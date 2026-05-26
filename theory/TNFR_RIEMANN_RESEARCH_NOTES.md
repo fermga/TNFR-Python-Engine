@@ -4361,6 +4361,223 @@ Procedure:
 
 #### §13vicies-novies.9 Results
 
-*To be appended in a subsequent commit after execution. Until then, this section is intentionally empty to preserve the pre-registration boundary.*
+**Execution metadata**
+
+- Pre-registration commit: `a6847706` (parent: `9414b1ce`).
+- Implementation: `benchmarks/remesh_infinity_riemann_composed.py`.
+- Interpreter: CPython 3.12 (`.venv312`); seeds: NumPy `default_rng(20260526)` for N1/N2/N3, `mpmath` `dps=30` for the Riemann anchor.
+- Output report: `results/remesh_infinity/remesh_infinity_riemann_composed.json`.
+- Joint dimension: $N\cdot(\tau_g+1) = 40\cdot 17 = 680$.
+
+**Structural prediction (a priori)**
+
+The unweighted Laplacian $L_{G_{P14}}$ of the canonical $P14$ prime-ladder graph
+(`build_prime_ladder_graph(n_primes=10, max_power=4, coupling=0.0)`) is a direct
+sum of ten copies of the $P_4$ path Laplacian. Its spectrum must therefore be
+exactly $\{0, 2-\sqrt{2}, 2, 2+\sqrt{2}\}$, each with multiplicity ten.
+
+Empirical eigenvalues (rounded to six decimals): $\{0.0,\ 0.585786,\ 2.0,\
+3.414214\}$, multiplicities $\{10,\ 10,\ 10,\ 10\}$. **Prediction confirmed
+exactly.**
+
+**F6-A KS distance vs GUE Wigner surmise**
+
+| Variant                          | Projection      | #spacings | $D_{\mathrm{GUE}}$ |
+|---------------------------------|-----------------|-----------|--------------------|
+| canonical `REMESH ∘ IL`         | $\mathrm{Im}$ upper | 319       | **0.9053**         |
+| N1 GOE                           | $\mathrm{Re}$ fallback | 679       | 0.1126             |
+| N2 Poisson                       | uniform iid     | 679       | 0.3032             |
+| N3 shuffled-prime relabelling   | $\mathrm{Im}$ upper | 319       | **0.9053**         |
+| N4 REMESH-isolated               | $\mathrm{Im}$ upper | 7         | 0.3082             |
+| Riemann reference (first 100 $\gamma_n$) | iid           | 99        | 0.0770             |
+
+**Threshold evaluation (pre-registered)**
+
+- $D_{\mathrm{GUE}}^{\mathrm{composed}} = 0.9053 > 0.30$: **REFUTED** by absolute
+  bound.
+- $D_{\mathrm{GUE}}^{\mathrm{composed}} = 0.9053 \ge
+  D_{\mathrm{GUE}}^{\mathrm{shuffled}} - 0.05 = 0.8553$: **REFUTED** by
+  separation criterion.
+- Both pre-registered REFUTED conditions hold; the SUPPORTED conditions
+  ($D_{\mathrm{composed}} < 0.15$ and $D_{\mathrm{composed}} <
+  D_{\mathrm{shuffled}} - 0.05$) fail simultaneously.
+
+**Verdict**
+
+- F6-A statistical verdict: **REFUTED**.
+- Milestone verdict: **`B1_COMPOSED_REFUTED_FOR_REMESH_o_IL`**.
+
+**Structural reading of the empirical pattern**
+
+The numerical identity $D_{\mathrm{canonical}} \equiv D_{\mathrm{shuffled}}$
+(bit-for-bit equal across the entire 319-element spacing distribution) is the
+empirical signature of the structural lemma derived in §13vicies-novies.10:
+relabelling the underlying primes is a graph automorphism of $G_{P14}$ that
+commutes with both the IL Laplacian smoother (which depends only on edge
+combinatorics) and the REMESH echo matrix (which is node-independent).
+Consequently the entire spectrum of $T = S_{\mathrm{IL}}\cdot M_{\mathrm{REMESH}}$
+on $G_{P14}$ is invariant under prime permutation. The Riemann content carried
+by the diagonal frequencies $\nu_f((p,k)) = k\log p$ never reaches the
+edge-propagation channel; it survives only in the *node attributes*, which are
+the data on which the P14 internal Hamiltonian (§13quinquies) operates.
+
+The composed operator therefore cannot encode Riemann-zero level statistics
+through its spectrum on $G_{P14}$. The B1 closure of R∞-1a in its naive form
+(spectrum of an edge-propagating composition equals the Riemann level
+structure) is empirically and structurally refuted.
+
+**Scope of the refutation**
+
+This rules out the *naive edge-channel route* for the pair $(\mathrm{REMESH},
+\mathrm{IL})$ on $G_{P14}$. It does **not** rule out:
+
+1. Composition routes acting on a state space that already carries prime data
+   (R∞-1b spectral-space composition over $|p,k\rangle$ basis of the P14
+   internal Hilbert space).
+2. Graph modifications canonically derived from the nodal equation that endow
+   inter-prime edges with Riemann content (R∞-1c).
+3. Any structural-coherence statement at the level of the diagnostic surface
+   built by milestones P17–P49.
+
+The catalog-wide structural argument explaining why every edge-propagating
+operator in the canonical 13-operator catalog fails by the same mechanism on
+$G_{P14}$ is given in §13vicies-novies.10.
+
+---
+
+### §13vicies-novies.10 Catalog structural lemma: which canonical operators can carry Riemann content on $G_{P14}$
+
+The empirical bit-for-bit identity
+$D_{\mathrm{canonical}}(\mathrm{REMESH}\circ\mathrm{IL}) =
+D_{\mathrm{shuffled}}(\mathrm{REMESH}\circ\mathrm{IL}) = 0.9053$
+reported in §13vicies-novies.9 is a numerical specialisation of a general
+structural property of the canonical 13-operator catalog acting on the P14
+prime-ladder graph. This subsection states and derives that property, classifies
+all 13 canonical operators by the channel through which they could in principle
+transport prime data, and identifies the two genuinely open B1-style avenues
+that remain available after the naive edge-channel route has been closed.
+
+**Setup.** Let $G_{P14}$ be the canonical prime-ladder graph of §13quinquies
+with $N=40$ nodes labelled $(p_i, k)$, $i=1,\dots,10$, $k=1,\dots,4$, structural
+attributes $\nu_f((p,k))=k\log p$, $\phi=0$, $\mathrm{EPI}=1$, $S_i=1$,
+$\Delta\mathrm{NFR}=0$, and edges $(p,k)\leftrightarrow(p,k+1)$ only (no
+inter-prime edges, by Euler-product orthogonality enforced at graph level).
+
+**Definition (prime-relabelling automorphism).** For any permutation
+$\sigma\in S_{10}$ of the ten primes, let $\Pi_\sigma:V(G_{P14})\to V(G_{P14})$
+be the bijection $(p_i,k)\mapsto(p_{\sigma(i)},k)$. Then $\Pi_\sigma$ is a graph
+automorphism of $G_{P14}$ (it permutes ten disjoint $P_4$ components). The
+attributes $\phi,\mathrm{EPI},S_i,\Delta\mathrm{NFR}$ are constant on $V$ and
+therefore $\Pi_\sigma$-invariant. The frequency attribute $\nu_f$ is *not*
+$\Pi_\sigma$-invariant: $\nu_f(\Pi_\sigma(p_i,k)) = k\log p_{\sigma(i)} \ne
+k\log p_i$ in general. All Riemann content of $G_{P14}$ is concentrated in
+$\nu_f$.
+
+**Operator channel classification.** Following the source-level review of
+`src/tnfr/operators/*` and `src/tnfr/dynamics/propagation.py`, the 13 canonical
+operators split by the data they couple to on $G_{P14}$:
+
+| Operator       | Action channel on $G_{P14}$                                                  | Depends on $\nu_f$ via edges? |
+|---------------|------------------------------------------------------------------------------|-------------------------------|
+| AL (emission)  | node-local: writes/raises $\mathrm{EPI}, \nu_f$                              | no (writes)                   |
+| EN (reception) | edge propagation of $\Delta\mathrm{NFR}$; weight = `dissonance_magnitude * coupling_weight * phase_weight` | no (frequency-blind)          |
+| IL (coherence) | node-local $\Delta\mathrm{NFR}$ contraction + Laplacian-pure phase smoother $(I-\eta L_G)$ on $\phi$ | no (only $L_G$)               |
+| OZ (dissonance, freq-blind branch) | edge propagation; same weight as EN                              | no                            |
+| OZ (dissonance, frequency-weighted branch) | edge propagation; weight includes `freq_weight = min(\nu_{f,i},\nu_{f,j})/max(\nu_{f,i},\nu_{f,j})` | **yes** — see Prime-Cancellation Lemma below |
+| UM (coupling)  | phase synchronisation gated by $\|\phi_i-\phi_j\|\le\Delta\phi_{\max}$; on $G_{P14}$ initial $\phi\equiv 0$ so trivial | no                            |
+| RA (resonance) | edge propagation amplifying coupling; weight = phase-and-coupling only       | no                            |
+| SHA (silence)  | freezes evolution; $\nu_f\to 0$                                              | no                            |
+| VAL (expansion)| node-local; raises $\dim(\mathrm{EPI})$                                      | no                            |
+| NUL (contraction)| node-local; lowers $\dim(\mathrm{EPI})$                                    | no                            |
+| THOL (self-organisation) | node-local with sub-EPI nesting                                    | no                            |
+| ZHIR (mutation)| node-local; phase jump at threshold                                          | no                            |
+| NAV (transition)| node-local regime switch                                                    | no                            |
+| REMESH (recursivity) | temporal echo $M_{\mathrm{REMESH}}=I_N\otimes M_{\tau_g+1}$; Kronecker with identity in node index | no                            |
+
+Eleven of the thirteen operators do not couple to $\nu_f$ at all when restricted
+to edge propagation on $G_{P14}$. The one operator with a frequency-weighted
+edge branch is OZ.
+
+**Prime-Cancellation Lemma.** On any edge of $G_{P14}$ the endpoints are
+$(p,k)$ and $(p,k+1)$ for some prime $p$ and some $k\in\{1,2,3\}$. The
+frequency-weight in `propagated_dnfr` therefore reduces to
+$$
+\frac{\min(k\log p,\,(k+1)\log p)}{\max(k\log p,\,(k+1)\log p)}
+= \frac{k\log p}{(k+1)\log p} = \frac{k}{k+1}.
+$$
+The factor $\log p$ cancels exactly. Consequently the frequency-weighted OZ
+edge propagation on $G_{P14}$ is *prime-blind*: its weights depend only on the
+echo index $k$, never on the prime label. This is the algebraic origin of the
+empirical observation $D_{\mathrm{canonical}}=D_{\mathrm{shuffled}}$.
+
+**Corollary (catalog-wide).** Every linear combination, composition, or
+sequence built from the canonical 13 operators that acts on $G_{P14}$ only
+through edge propagation has an iteration matrix that commutes with every
+prime-relabelling automorphism $\Pi_\sigma$. Its spectrum is therefore
+invariant under $S_{10}$ and cannot encode the Riemann-zero level statistics
+through prime data, regardless of how many composition layers, REMESH echo
+slots, or stabiliser insertions are added. The naive B1 closure of any R∞-1a
+generalisation (operator composition $\to$ spectrum $\to$ GUE) is structurally
+foreclosed on $G_{P14}$.
+
+**Where Riemann content does live on $G_{P14}$.** The diagonal frequencies
+$\{\nu_f((p,k))=k\log p\}$ are precisely the data fed to the P14 internal
+Hamiltonian construction of §13quinquies (`build_prime_ladder_hamiltonian`).
+That construction is *not* an iteration-matrix spectrum on $G_{P14}$; it is a
+self-adjoint operator on the internal Hilbert space spanned by $|p,k\rangle$
+basis states, whose diagonal block $\hat H_{\mathrm{freq}}$ has exactly these
+frequencies as eigenvalues. The prime content is preserved there because the
+basis is prime-indexed; relabelling primes corresponds to a unitary basis
+permutation that does *not* commute with operators expressed in the original
+$|p,k\rangle$ basis.
+
+**Two genuinely open B1-style avenues (post-refutation).** The
+structural lemma above leaves exactly two routes still available for a B1-style
+closure inside the canonical catalog:
+
+- **R∞-1b — Spectral-space composition on the P14 internal Hilbert space.**
+  Replace the iteration-matrix-on-$G_{P14}$ formulation by a composition that
+  acts on the prime-indexed basis $\{|p,k\rangle\}$ directly. Concretely:
+  attempt $T_{\mathrm{spec}} = S_{\mathrm{IL}}\cdot M_{\mathrm{REMESH}}$ where
+  $S_{\mathrm{IL}}$ is the spectral analogue of the IL contraction on
+  $\hat H_{P14}$ (e.g.\ $S_{\mathrm{IL}} = \exp(-\eta\hat H_{P14})$) and
+  $M_{\mathrm{REMESH}}$ is the canonical echo matrix lifted to the same space.
+  By construction this composition does not commute with prime relabelling
+  because $\hat H_{\mathrm{freq}}$ does not. Whether its spectrum can be made
+  to reproduce $\{\gamma_n\}$ level statistics is open and would constitute a
+  legitimate next gate.
+
+- **R∞-1c — Canonically modified graph with inter-prime edges.** Augment
+  $G_{P14}$ with inter-prime edges whose weights are *derived from the nodal
+  equation* $\partial\mathrm{EPI}/\partial t = \nu_f\cdot\Delta\mathrm{NFR}(t)$
+  rather than postulated. A canonical candidate is to permit edges
+  $(p_i,k)\leftrightarrow(p_j,k')$ only when $|\nu_f((p_i,k)) -
+  \nu_f((p_j,k'))| \le \delta_{\mathrm{coh}}$ for a coherence-derived threshold
+  $\delta_{\mathrm{coh}}$, breaking the Euler-product graph orthogonality in a
+  controlled way. Any such modification must be derived from the canonical
+  invariants 1–6 and validated against U1–U6, not introduced for spectral
+  convenience. Whether such a modification can survive U6 confinement and yet
+  carry Riemann data is open.
+
+Neither R∞-1b nor R∞-1c is opened in this commit. They are recorded here as
+the two structurally permitted exits left by the lemma, consistent with the
+program-wide branch B1/B2/B3 taxonomy of §13septies: a positive R∞-1b or
+R∞-1c result would constitute a B1 closure of a non-naive form; a negative
+result on both would constitute additional support for B2 (a new canonical
+operator is required) or B3 (no TNFR closure exists).
+
+**Cross-references.** Channel classifications were verified against
+`src/tnfr/operators/coherence.py` (IL), `src/tnfr/dynamics/propagation.py`
+(OZ/EN/RA frequency weights), `src/tnfr/operators/coupling.py` (UM),
+`src/tnfr/operators/recursivity.py` (REMESH), and
+`src/tnfr/riemann/prime_ladder_hamiltonian.py` (P14 graph and Hamiltonian).
+The full set of pre-registered controls and the empirical refutation are in
+§13vicies-novies.9.
+
+**Status.** B1 closure of R∞-1a in its naive edge-channel form is refuted on
+$G_{P14}$ both empirically (F6-A, §13vicies-novies.9) and structurally
+(Prime-Cancellation Lemma + catalog-wide corollary, this subsection). The
+program-level open question remains G4 = RH (and its twin $\mathrm{GRH}_\chi$);
+the open B1-style avenues are now exactly R∞-1b and R∞-1c.
 
 ---
