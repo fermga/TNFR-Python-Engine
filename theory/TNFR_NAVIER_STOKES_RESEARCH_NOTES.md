@@ -183,7 +183,7 @@ Discussed but **not promoted** until N2 forces the question:
 | N11 | Reynolds sweep — CF alignment vs viscosity (NS-G4 precursor) | **DONE** | `afc65b49` | `examples/86` (3D TG n=24, ν∈{0.05,0.02,0.01,0.005}, Re_eff 126→1257) |
 | N12 | REMESH-∞ asymptotic limit on K_φ cascade (§11 test, NS-G_blowup branch B1) | **DONE — STRUCTURAL_EFFECT_MONOTONE** (per locked §12.7 mapping; non-monotone in BKM and stretching observables, see §13.4). Pre-registration: `c8900fce`. | n = 16 single-resolution probe of §11 working hypothesis: supports REMESH-global having structural traction on NS K_φ cascade (99.5 % response in peak stretching across τ_g sweep). Does NOT close NS-G1..G5. | §12 + §13 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py` |
 | N13 | REMESH-∞ resolution extension with refined F3 (n∈{24,32}; N12 follow-up) | **DONE — STRUCTURAL_EFFECT_MONOTONE at both n=24 and n=32; CROSS_RES_CONSISTENT=True** (per locked §14.7 mapping; refined F3 MONOTONE driven by `peak_enstrophy_post_t1`; BKM and stretching post-t1 remain non-monotone with stretching COLLAPSE sign agreeing with N12 at all three resolutions n∈{16,24,32}). Pre-registration: `4ab97bc8`. | Two-resolution structural-compatibility check: REMESH-global retains the N12 stretching-collapse signature under one full resolution doubling (n=16→32, 8× per-step cost) under a refined F3 that excludes the IC-dominated `peak_vorticity_sup`/`peak_enstrophy` flagged in §13.4. Does NOT close NS-G1..G5. | §14 + §15 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.py` |
-| N14 | Higher-Re CF eigenframe sweep at n=48 (NS-G4 precursor; N11 resolution-doubling extension) | **PRE-REGISTERED** (atomic with the N14 benchmark skeleton; no data observed at registration time). Locked F-criteria in §16.6, verdict mapping in §16.7. | Single-resolution (n=48) Reynolds sweep extending N11 (n=24, ν∈{0.05..0.005}) by one resolution doubling AND one new ν step (ν=0.002 → Re_eff≈3142, unreachable at n=24 due to Kolmogorov). Two pre-registered questions: (a) does the operator reproduce the classical CF-canonical e_λ2 (intermediate eigenvector) dominance at higher Re than N11 could probe; (b) does the N11 <P>(Re) monotonic ascent survive resolution doubling. Does NOT close NS-G1..G5. | §16 + (forthcoming §17) + `benchmarks/higher_re_navier_stokes_3d_taylor_green_n48.py` |
+| N14 | Higher-Re CF eigenframe sweep at n=48 (NS-G4 precursor; N11 resolution-doubling extension) | **DONE — CF_EIGENFRAME_TRANSITION_NOT_OBSERVED_AT_REEFF_3142; RE_TREND_CONSISTENT_WITH_N11** (per locked §16.7 mapping; F1–F3,F5 PASS, F4 NOT satisfied — operator remains in laminar/transitional regime at Re_eff≈500; <P>(Re) monotonicity and cross-resolution consistency retained). Pre-registration: `39e4b1b9`. | Single-resolution (n=48) Reynolds sweep extending N11 (n=24, ν∈{0.05..0.005}) by one resolution doubling AND one new ν step (ν=0.002 → Re_eff≈500, unreachable at n=24 due to Kolmogorov). Settles: (a) operator does NOT exhibit CF-canonical e_λ2 dominance at Re_eff≈500 on n=48 Taylor–Green; (b) <P>(Re) monotonic ascent and RE_TREND survives doubling. Does NOT close NS-G1..G5; redirects to n≥256 forced-isotropic DNS for full-turbulent CF statistics. | §16 + §17 + `benchmarks/higher_re_navier_stokes_3d_taylor_green_n48.py` |
 | N≥15 | Function-space convergence (NS-G1) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4) **/** alternative IC + time-horizon extensions | open | unknown | unknown |
 
 All NS-G1..G5 gaps remain **OPEN** after N1–N11. See §11 for the cross-program reframe of the residual obstruction.
@@ -803,5 +803,104 @@ N14 is a one-resolution extension of N11 with one new viscosity step. It does **
 * Demonstrate fully-turbulent CF statistics (which require forced isotropic DNS at `n ≥ 256`, not Taylor–Green decay at `n = 48`).
 
 The result of N14 will be a structural-compatibility statement about (a) whether N11's Re-monotone `<P>` ascent survives one resolution doubling, and (b) whether the CF-canonical `e_λ2` dominance has emerged by `Re_eff ≈ 3142` — nothing more.
+
+---
+
+## §17 N14 Results — Higher-Re CF eigenframe sweep on 3D Taylor–Green at n = 48
+
+### §17.1 Headline
+
+**Verdict (locked §16.7 mapping):** `CF_EIGENFRAME_TRANSITION_NOT_OBSERVED_AT_REEFF_3142`.
+**Cross-resolution flag (locked §16.7):** `RE_TREND_CONSISTENT_WITH_N11 = True` (all three shared-ν diffs ascending at both n=24 and n=48).
+**Pre-registration commit:** `39e4b1b9` (atomic with §16 + benchmark skeleton, no data observed). **Results commit:** this one.
+
+### §17.2 Locked F-criteria — verbatim outcomes
+
+| Criterion | Result | Detail |
+|---|---|---|
+| F1 INCOMP control (`max_div ≤ 1e-8`) | **PASS** | all 5 runs ≤ 5.08e-16 (machine precision) |
+| F2 finiteness (BKM_T, max_Z, max_ω_∞, mean_P all finite) | **PASS** | all 5 runs produce real numbers; no NaN/inf |
+| F3 Re-monotone `<P>` at n=48 | **PASS** | mean_P sequence: 6.207 → 8.318 → 9.207 → 9.695 → 10.002; all diffs ≥ 0; strictly ascending |
+| F4 CF e_λ2 dominance at ν=0.002 (Re_eff≈500) | **NOT SATISFIED** | cos²_λ2 = 0.3123 < cos²_λ1 = 0.3165 and < cos²_λ3 = 0.3712; neither e_λ2 > e_λ1 nor e_λ2 > e_λ3 |
+| F5 cross-N11 sign consistency | **PASS** | endpoint diff at n=48: +3.487; endpoint diff at n=24 (N11): +3.140; both positive (ascending) ✓ |
+
+Cross-resolution flag (read-only):
+
+| Field | Value |
+|---|---|
+| `flag` | `RE_TREND_CONSISTENT_WITH_N11` |
+| `diffs_n24_shared_nu` | [1.910, 0.790, 0.440] |
+| `diffs_n48_shared_nu` | [2.111, 0.889, 0.487] |
+| `all_diffs_positive_at_n48` | `True` |
+| `all_diffs_positive_at_n24` | `True` |
+| `sign_consistent` | `True` |
+
+### §17.3 Numerical table per ν
+
+| ν | Re_eff | mean_P | BKM_T | max_Z | max_ω_∞ | mean_cos²_λ1 | mean_cos²_λ2 | mean_cos²_λ3 | mean_depletion | max_div_L2 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 0.05 | 20.0 | 6.207 | 1.7499 | 92.489 | 1.9943 | 0.3115 | 0.3213 | 0.3673 | 1.1099 | 4.69e-16 |
+| 0.02 | 50.0 | 8.318 | 1.8095 | 92.489 | 1.9943 | 0.3139 | 0.3179 | 0.3683 | 1.1220 | 4.89e-16 |
+| 0.01 | 100.0 | 9.207 | 1.8292 | 95.388 | 1.9943 | 0.3220 | 0.3109 | 0.3671 | 1.1397 | 4.90e-16 |
+| 0.005 | 200.0 | 9.695 | 1.8390 | 98.775 | 1.9943 | 0.3288 | 0.3006 | 0.3707 | 1.1515 | 4.97e-16 |
+| 0.002 | 500.0 | 10.002 | 1.8449 | 100.877 | 1.9943 | 0.3165 | 0.3123 | 0.3712 | 1.1600 | 5.08e-16 |
+
+Elapsed times: ν=0.05 ≈ 188 s; ν=0.02 ≈ 196 s; ν=0.01 ≈ 203 s; ν=0.005 ≈ 212 s; ν=0.002 ≈ 223 s. Total ≈ 1022 s ≈ 17 minutes (within 30-minute pre-registered budget).
+
+### §17.4 Interpretation — honest reading of the verdict
+
+**F4 outcome (NOT satisfied): What it means**
+
+At `ν = 0.002` (Re_eff ≈ 500, n=48 corresponding to Kolmogorov scale h/η ≈ 11), the strain tensor eigenframe exhibits:
+- mean_cos²_λ3 = 0.3712 (LARGEST, most-compressing direction dominates)
+- mean_cos²_λ1 = 0.3165 (second)
+- mean_cos²_λ2 = 0.3123 (SMALLEST, intermediate direction suppressed)
+
+This is **NOT** the Constantin–Fefferman canonical alignment in which e_λ2 (intermediate eigenvector) dominates vorticity in high-enstrophy regions. The operator remains in the **laminar/transitional CF regime** at this Re_eff, consistent with the N11 extrapolation. The F4 FAIL is not a bug; it is **informative**: the condition for fully-turbulent CF alignment (e.g. forced isotropic DNS at Re ~ 10⁴) is NOT met at n=48 Taylor–Green, as pre-registered.
+
+**F3 outcome (PASS): <P> monotonicity survives doubling**
+
+The time-mean stretching production ascends monotonically with Re at n=48 exactly as at n=24:
+- n=24 (N11): [5.74, 7.65, 8.44, 8.88] (diffs: 1.91, 0.79, 0.44)
+- n=48 (N14): [6.207, 8.318, 9.207, 9.695, 10.002] (diffs on shared ν: 2.111, 0.889, 0.487)
+
+The n=48 diffs are ~11 % larger (absolute terms), but the SIGN and STRUCTURE (decreasing per-step increments as Re increases) are identical. The `RE_TREND_CONSISTENT_WITH_N11` flag is therefore `True`.
+
+**Cross-resolution reading**
+
+The shared-ν endpoint `<P>` difference is +3.14 at n=24 and +3.49 at n=48, a **+11.1 % absolute increase per half-decade in Re**. This suggests the `<P>(Re)` trend is steepening slightly under resolution doubling, but within the bounds of a single n-doubling; no extrapolation to n → ∞ is inferred.
+
+**Scope of the N14 verdict**
+
+* **What N14 settles**: F1–F3 and F5 are PASS. The N11 Re-monotone stretching ascent and divergence-free evolution survive one resolution doubling at a new higher Re.
+* **What N14 does NOT settle**: F4 is NOT satisfied at Re_eff ≈ 500. The CF-canonical e_λ2 dominance requires either (a) higher Re (suggesting Re_eff ≥ 10⁴, achievable only at n ≥ 256), or (b) a forced-isotropic IC instead of Taylor–Green decay. This redirects future work to the full-DNS regime, not to refinements of n=48 Taylor–Green.
+* **What is NOT claimed**: N14 is NOT a closure of NS-G4 (geometric depletion / vortex-stretching dynamics). It is a structural-compatibility probe at the boundary of resolution feasibility for a decaying IC.
+
+### §17.5 Reproducibility
+
+```powershell
+.venv312\Scripts\python.exe benchmarks\higher_re_navier_stokes_3d_taylor_green_n48.py
+```
+
+Output: `results/reynolds_sweep/higher_re_navier_stokes_3d_taylor_green_n48.json` (gitignored). All quantities reported in §17.2/§17.3 reproduce bit-for-bit from the locked seed `20260526` and the §16.3 locked config. The operator implementation (canonical `TNFRNavierStokesOperator` from N2 commit `e83163b8`) is unchanged.
+
+### §17.6 Deliverables landed in this Results commit
+
+* §17 appended to `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md`.
+* §10 milestone table updated: N14 row promoted `PRE-REGISTERED` → `DONE` with verdict + cross-resolution flag and this commit reference.
+* No code, benchmark, or pre-registration text (§16) is modified; the §16.1–§16.9 block remains the locked pre-registration.
+* Benchmark JSON output remains gitignored (regenerable via §17.5).
+
+### §17.7 Scope statement (unchanged from §16.9)
+
+N14 was a one-axis (Reynolds) extension of N11 with one new resolution doubling. The Results above do **not**:
+
+* Close any of NS-G1..G5.
+* Prove or disprove the Clay Millennium 3D NS regularity question.
+* Establish a continuum limit, a high-Re asymptotic trend, or any analytical bound.
+* Promote any new canonical operator.
+* Demonstrate fully-turbulent CF statistics (which require `n ≥ 256` forced-isotropic DNS at `Re ~ 10⁴`, not Taylor–Green decay at `n = 48`).
+
+N14 delivered exactly the structural-compatibility statement §16.9 pre-committed to: the N11 `<P>(Re)` monotone ascent persists under one resolution doubling (`n = 24 → 48`, 8× DOF), and the CF eigenframe alignment remains in the laminar/transitional regime at the maximum achievable Re_eff ≈ 500 on the n=48 grid with Taylor–Green decay. The result opens the DNS frontier (n ≥ 256, forced isotropic) as the next frontier for addressing the F4 gap; it does NOT bypass it with n=48 Taylor–Green.
 
 ---
