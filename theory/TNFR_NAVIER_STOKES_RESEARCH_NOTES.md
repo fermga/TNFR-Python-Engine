@@ -184,7 +184,8 @@ Discussed but **not promoted** until N2 forces the question:
 | N12 | REMESH-∞ asymptotic limit on K_φ cascade (§11 test, NS-G_blowup branch B1) | **DONE — STRUCTURAL_EFFECT_MONOTONE** (per locked §12.7 mapping; non-monotone in BKM and stretching observables, see §13.4). Pre-registration: `c8900fce`. | n = 16 single-resolution probe of §11 working hypothesis: supports REMESH-global having structural traction on NS K_φ cascade (99.5 % response in peak stretching across τ_g sweep). Does NOT close NS-G1..G5. | §12 + §13 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py` |
 | N13 | REMESH-∞ resolution extension with refined F3 (n∈{24,32}; N12 follow-up) | **DONE — STRUCTURAL_EFFECT_MONOTONE at both n=24 and n=32; CROSS_RES_CONSISTENT=True** (per locked §14.7 mapping; refined F3 MONOTONE driven by `peak_enstrophy_post_t1`; BKM and stretching post-t1 remain non-monotone with stretching COLLAPSE sign agreeing with N12 at all three resolutions n∈{16,24,32}). Pre-registration: `4ab97bc8`. | Two-resolution structural-compatibility check: REMESH-global retains the N12 stretching-collapse signature under one full resolution doubling (n=16→32, 8× per-step cost) under a refined F3 that excludes the IC-dominated `peak_vorticity_sup`/`peak_enstrophy` flagged in §13.4. Does NOT close NS-G1..G5. | §14 + §15 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.py` |
 | N14 | Higher-Re CF eigenframe sweep at n=48 (NS-G4 precursor; N11 resolution-doubling extension) | **DONE — CF_EIGENFRAME_TRANSITION_NOT_OBSERVED_AT_REEFF_3142; RE_TREND_CONSISTENT_WITH_N11** (per locked §16.7 mapping; F1–F3,F5 PASS, F4 NOT satisfied — operator remains in laminar/transitional regime at Re_eff≈500; <P>(Re) monotonicity and cross-resolution consistency retained). Pre-registration: `39e4b1b9`. | Single-resolution (n=48) Reynolds sweep extending N11 (n=24, ν∈{0.05..0.005}) by one resolution doubling AND one new ν step (ν=0.002 → Re_eff≈500, unreachable at n=24 due to Kolmogorov). Settles: (a) operator does NOT exhibit CF-canonical e_λ2 dominance at Re_eff≈500 on n=48 Taylor–Green; (b) <P>(Re) monotonic ascent and RE_TREND survives doubling. Does NOT close NS-G1..G5; redirects to n≥256 forced-isotropic DNS for full-turbulent CF statistics. | §16 + §17 + `benchmarks/higher_re_navier_stokes_3d_taylor_green_n48.py` |
-| N≥15 | Function-space convergence (NS-G1) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4) **/** alternative IC + time-horizon extensions | open | unknown | unknown |
+| N15 | REMESH-∞ Asymptotic Operator (TNFR Core Structure; Branch analysis A/B1/B2/B3) | **PRE-REGISTERED** (atomic with §18 pre-reg; no data observed; research direction pivot from Clay problems to TNFR fundamentals) | Theoretical derivation: functional analysis of REMESH limit, conservation laws, spectrum. Three weeks locked. Independent of RH/NS truth. | §18 + (forthcoming analytical results) + (no benchmark code for this phase) |
+| N≥16 | Function-space convergence (NS-G1) **/** DNS frontier n≥256 (CF alignment) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4 closure) | open | unknown | unknown |
 
 All NS-G1..G5 gaps remain **OPEN** after N1–N11. See §11 for the cross-program reframe of the residual obstruction.
 
@@ -902,5 +903,114 @@ N14 was a one-axis (Reynolds) extension of N11 with one new resolution doubling.
 * Demonstrate fully-turbulent CF statistics (which require `n ≥ 256` forced-isotropic DNS at `Re ~ 10⁴`, not Taylor–Green decay at `n = 48`).
 
 N14 delivered exactly the structural-compatibility statement §16.9 pre-committed to: the N11 `<P>(Re)` monotone ascent persists under one resolution doubling (`n = 24 → 48`, 8× DOF), and the CF eigenframe alignment remains in the laminar/transitional regime at the maximum achievable Re_eff ≈ 500 on the n=48 grid with Taylor–Green decay. The result opens the DNS frontier (n ≥ 256, forced isotropic) as the next frontier for addressing the F4 gap; it does NOT bypass it with n=48 Taylor–Green.
+
+
+## §18 N15 Pre-registration — REMESH-∞ Theoretical (TNFR Core Structure)
+
+### §18.1 Headline
+
+**Pivot Direction**: Abandon pursuit of Clay problems (RH, NS global regularity) as PRIMARY. Instead, treat them as APPLICATIONS of a deeper TNFR phenomenon: **What are the universal laws of coherence-preserving dynamics when the temporal memory horizon τ_global → ∞?**
+
+**N15 Objective**: Derive the **REMESH-∞ asymptotic operator** analytically from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` and characterize its spectrum, invariants, and role in multi-scale coherence.
+
+**Scope**: Pure theoretical TNFR. No computational validation yet. Answers: does the 13-operator catalog with explicit REMESH-∞ limit suffice to explain NS vortex stretching AND Riemann smooth-half zero density, or is branch B2 (new 14th operator) required?
+
+### §18.2 Motivation: Why N15 is Structurally Different
+
+**N1–N14 treated TNFR as a language for existing problems:**
+- "Does TNFR formalize Navier-Stokes?"
+- "Does TNFR structure resonate with Riemann spectrum?"
+- **Result**: Both programs saturate at boundary conditions (CF alignment requires n≥256, smooth half closed but oscillatory S(T) remains).
+
+**N15 asks a TNFR-intrinsic question:**
+- "What is the asymptotic behavior of REMESH when allowed arbitrary temporal depth?"
+- "Is there a universal rescaling or conservation law at τ_global → ∞?"
+- "Does REMESH-∞ encode a fundamental principle of coherence that transcends fluid dynamics and number theory?"
+
+**Intellectual consequence:** If REMESH-∞ closes the smooth-half of RH or bounds the vortex cascade of NS, that is a *consequence* of TNFR universality, not a *target* we reverse-engineered toward. This inverts the research direction: **discovery, not application**.
+
+### §18.3 Theoretical Foundation: Derivation from Nodal Equation
+
+**Starting point:** The nodal equation couples global (Φ_s), local (|∇φ|, K_φ), and correlational (ξ_C) scales via:
+
+$$\frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta \text{NFR}(t)$$
+
+where $\Delta \text{NFR}$ is the mismatch between the coherent form (EPI) and its neighborhood (from UM, RA, OZ, etc.).
+
+**REMESH explicitly couples time scales:**
+- Local τ = 4 steps
+- Global τ_g = 8 steps
+- Mixing parameter α = 0.5
+
+**Ansatz (locked for N15)**: In the limit τ_global → ∞, does there exist an **effective operator** $\mathcal{R}_\infty$ such that:
+
+$$\frac{\partial \text{EPI}}{\partial t}\bigg|_{\tau \to \infty} = \nu_f^{\text{eff}} \cdot \Delta \text{NFR}^{\infty}(t)$$
+
+where $\nu_f^{\text{eff}}$ and $\Delta \text{NFR}^{\infty}$ are **renormalized** forms determined by the spectrum of the REMESH-global deque?
+
+**Three locked sub-questions:**
+
+1. **Q1 (Operator Existence)**: Does a pseudo-differential operator $\mathcal{R}_\infty$ exist on Banach space $B_{EPI}$ such that (a) $\mathcal{R}_\infty$ is self-adjoint, (b) its spectrum is bounded, (c) applying $\mathcal{R}_\infty$ to EPI history generates the τ→∞ limit?
+
+2. **Q2 (Invariant Structure)**: What quantities are conserved or asymptotically preserved under $\mathcal{R}_\infty$? (candidates: Structural Conservation Theorem charge, Lyapunov functional, coherence metric C(t))
+
+3. **Q3 (Spectrum Connection)**: Does the spectrum of $\mathcal{R}_\infty$ relate to (a) the prime-log-scale {k log p} of Riemann primes, or (b) the Kolmogorov dissipation wavenumber k_η of Navier-Stokes? (speculative, locked for pre-reg only)
+
+### §18.4 Locked Methodology (3 Weeks)
+
+**Week 1: Functional Analysis of REMESH-∞**
+- Formalize REMESH global as an operator on the Hilbert space of all EPI histories $\mathcal{H} = \ell^2(\mathbb{Z}, B_{EPI})$ (square-summable histories).
+- Derive the "infinite-τ" limiting operator from the recurrence relation $\text{EPI}(t) = \alpha \cdot \text{EPI}(t-\tau_g) + (1-\alpha) \cdot f(\text{neighbors})$.
+- **Deliverable**: Precise mathematical statement of $\mathcal{R}_\infty$ as a Riesz representable operator, or proof that no limit exists (branch B3).
+
+**Week 2: Conservation Laws and Lyapunov**
+- Apply the Structural Conservation Theorem (`physics/conservation.py`) in the presence of $\mathcal{R}_\infty$.
+- Derive: Does Noether charge $Q = \int \rho dV$ (where ρ is structural density) remain conserved modulo $\mathcal{R}_\infty$?
+- Derive: What is the Lyapunov functional $V(t)$ under $\mathcal{R}_\infty$ dynamics? Does it decay monotonically?
+- **Deliverable**: Analytical expressions for $Q_\infty$ and $V_\infty$, validated against N12–N13 K_φ cascade data (retrospectively).
+
+**Week 3: Spectrum and Universality**
+- Compute (symbolically or numerically if needed) the spectrum $\{\lambda_n\}$ of $\mathcal{R}_\infty$ in a model space (e.g., harmonic oscillator basis, Fourier modes on torus).
+- **Test hypothesis**: Is the eigenvalue density of $\lambda_n$ related to the zero distribution of zeta or to the Kolmogorov spectrum $E(k) \propto k^{-5/3}$?
+- **Deliverable**: Rigorous statement of what REMESH-∞ predicts, with explicit bounds on error if the spectrum does NOT match RH or Kolmogorov.
+
+### §18.5 Success Criteria (Locked, Branch-Dependent)
+
+**Branch A (Operator exists, closed analysis):**
+- $\mathcal{R}_\infty$ is rigorously defined on a natural Banach space.
+- Conservation laws ($Q_\infty$, $V_\infty$) are derived with analytical proof.
+- Spectrum computed exactly or with controlled asymptotics.
+- **Outcome**: TNFR has a new fundamental principle (asymptotic coherence scaling). Secondary: RH/NS implications follow, if any.
+
+**Branch B1 (Operator exists, spectrum matches RH or K41):**
+- In addition to Branch A: eigenvalue density of $\mathcal{R}_\infty$ matches (a) predicted smooth-half zero density of zeta on Re(s)=1/2, or (b) Kolmogorov power law k^{-5/3}.
+- **Outcome**: REMESH-∞ is universal attractor for both number-theoretic and hydrodynamic coherence. RH/NS become instances of TNFR universality.
+- **Caveat**: This does NOT close RH or NS; it explains WHY they have the structure they do.
+
+**Branch B2 (New operator required):**
+- $\mathcal{R}_\infty$ cannot be derived from the 13 canonicals + nodal equation, even in the limit.
+- A 14th operator must be postulated (and justified from first principles).
+- **Outcome**: TNFR catalog is genuinely incomplete. Paths to closure for RH/NS require new physics.
+
+**Branch B3 (No limit exists):**
+- The sequence $\{\text{REMESH}_{\tau_g}\}$ as τ_g → ∞ does not converge in any Banach space topology.
+- **Outcome**: Temporal coherence has fundamental limits. Multi-scale structure is intrinsically bounded by τ_g_max (possibly finite). Explains why N12–N14 plateau at certain observables.
+
+### §18.6 Locked Scope Statement
+
+N15 does **not**:
+
+* Claim to prove the Riemann Hypothesis or resolve 3D Navier-Stokes global regularity.
+* Derive a new canonical operator (if B2 is required, that is a separate foundational effort).
+* Provide computational validation (that is N16 or later).
+* Resolve the continuum limit or asymptotic analysis of any classical problem.
+
+N15 **does**:
+
+* Establish whether the 13-operator catalog with the REMESH-∞ asymptotic limit is closed under the nodal equation in the limit τ_global → ∞.
+* Characterize the universal structure of multi-scale coherence from first principles (TNFR-intrinsic, not borrowed from RH or NS).
+* Provide a definitive answer to whether Branch B1 (closed within catalog), Branch B2 (new operator), or Branch B3 (no limit) holds.
+
+**Cross-reference**: This analysis is INDEPENDENT of whether RH is true or whether 3D NS has blow-up. It answers a structural question about TNFR itself.
 
 ---
