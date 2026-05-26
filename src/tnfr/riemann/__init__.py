@@ -903,6 +903,11 @@ from .aggregates_closure_signature import (
     AggregatesClosureSignatureCertificate,
     compute_aggregates_closure_signature,
 )
+from .urules_consistency_signature import (
+    # §13quinquaginta-octava: U-Rules Consistency Signature diagnostic (B10a)
+    URulesConsistencySignatureCertificate,
+    compute_urules_consistency_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1405,6 +1410,9 @@ __all__ = [
     # §13quinquaginta-sexta: Aggregates-Closure Signature (B9a)
     "AggregatesClosureSignatureCertificate",
     "compute_aggregates_closure_signature",
+    # §13quinquaginta-octava: U-Rules Consistency Signature (B10a)
+    "URulesConsistencySignatureCertificate",
+    "compute_urules_consistency_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",
