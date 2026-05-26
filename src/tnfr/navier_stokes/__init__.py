@@ -30,6 +30,14 @@ operator
     Pressure (INCOMP) remains held in reserve; divergence drift is tracked
     explicitly and documented as the cost of deferring NS-G2.
 
+    N4: discrete Beale-Kato-Majda criterion via ``vorticity_2d()``,
+    ``vorticity_sup_norm()``, ``enstrophy_curl()`` and ``bkm_budget()``.
+    Tracks the BKM integral ``int_0^T ||omega||_{L^inf} dtau`` along the
+    discrete flow. In 2D this integral stays bounded (no vortex
+    stretching), consistent with the classical 2D global-regularity
+    result. The same infrastructure will lift to 3D where the open Clay
+    question (NS-G5) is whether the integral can diverge in finite time.
+
 Honest scope
 ------------
 This module does NOT claim a proof or disproof of the Clay statement. Both

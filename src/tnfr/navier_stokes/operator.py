@@ -426,6 +426,107 @@ class TNFRNavierStokesOperator:
         return grid
 
     # ------------------------------------------------------------------
+    # N4: vorticity, enstrophy, discrete BKM criterion (2D)
+    # ------------------------------------------------------------------
+    def vorticity_2d(self) -> np.ndarray:
+        """Discrete scalar vorticity ``omega = d_x v - d_y u`` on the 2D torus.
+
+        Uses central differences on the canonical ``(n, n)`` periodic grid
+        with spacing ``h = 2 pi / n``. Returns an ``(n, n)`` array. Only
+        defined for ``self.dimension == 2``.
+        """
+        if self.dimension != 2:
+            raise NotImplementedError(
+                "vorticity_2d() requires self.dimension == 2"
+            )
+        if "resolution" not in self.graph.graph:
+            raise RuntimeError("operator graph lacks 'resolution' metadata")
+        n = int(self.graph.graph["resolution"])
+        h = self._spacing
+        u = self._component_grid(0, n)
+        v = self._component_grid(1, n)
+        dv_dx = (np.roll(v, -1, axis=0) - np.roll(v, 1, axis=0)) / (2.0 * h)
+        du_dy = (np.roll(u, -1, axis=1) - np.roll(u, 1, axis=1)) / (2.0 * h)
+        return dv_dx - du_dy
+
+    def vorticity_sup_norm(self) -> float:
+        """Discrete ``|| omega ||_{L^inf}`` (2D only).
+
+        The Beale-Kato-Majda (BKM) criterion controls finite-time
+        continuation of smooth solutions by the time integral
+        ``int_0^T || omega(tau) ||_{L^inf} dtau``.
+        """
+        return float(np.max(np.abs(self.vorticity_2d())))
+
+    def enstrophy_curl(self) -> float:
+        """Discrete enstrophy ``Omega = (1/2) * integral omega^2 dA`` (2D).
+
+        Built from the true curl ``vorticity_2d()`` rather than the
+        Laplacian-squared proxy used by :meth:`enstrophy`. The integral
+        is approximated by Riemann sum with area element ``h^2``.
+        """
+        omega = self.vorticity_2d()
+        h2 = self._spacing ** 2
+        return 0.5 * float(np.sum(omega ** 2)) * h2
+
+    def bkm_budget(
+        self,
+        dt: float,
+        steps: int,
+        advection: bool = True,
+    ) -> dict[str, np.ndarray]:
+        """Track the discrete BKM integral and enstrophy along the flow.
+
+        Beale-Kato-Majda (BKM, 1984): a smooth solution on ``[0, T*)`` of
+        the incompressible Navier-Stokes equations extends past ``T*`` if
+        and only if
+
+            int_0^{T*} || omega(tau) ||_{L^inf} dtau  <  infinity.
+
+        In 2D the vorticity equation has no stretching term, so this
+        integral stays bounded for all time and the flow is globally
+        regular. The demo therefore certifies the *consistency* of the
+        discrete operator with the well-known 2D global-regularity
+        result, and provides the infrastructure that will be reused in
+        3D (where blow-up via vortex stretching is the open Clay
+        question, NS-G5).
+
+        Returns a dict with keys ``time``, ``vorticity_sup``,
+        ``enstrophy``, ``bkm_integral`` (trapezoidal cumulative sum) and
+        ``divergence``. Lengths are ``steps + 1``.
+        """
+        time_axis = np.zeros(steps + 1, dtype=float)
+        vort_sup = np.zeros(steps + 1, dtype=float)
+        enstrophy_hist = np.zeros(steps + 1, dtype=float)
+        bkm_int = np.zeros(steps + 1, dtype=float)
+        div_hist = np.zeros(steps + 1, dtype=float)
+
+        time_axis[0] = self.time
+        vort_sup[0] = self.vorticity_sup_norm()
+        enstrophy_hist[0] = self.enstrophy_curl()
+        div_hist[0] = self.divergence_residual()
+
+        for n_step in range(1, steps + 1):
+            self.step(dt, advection=advection)
+            time_axis[n_step] = self.time
+            vort_sup[n_step] = self.vorticity_sup_norm()
+            enstrophy_hist[n_step] = self.enstrophy_curl()
+            div_hist[n_step] = self.divergence_residual()
+            # Trapezoidal accumulation of int_0^{t_n} ||omega||_inf dtau
+            bkm_int[n_step] = bkm_int[n_step - 1] + 0.5 * dt * (
+                vort_sup[n_step - 1] + vort_sup[n_step]
+            )
+
+        return {
+            "time": time_axis,
+            "vorticity_sup": vort_sup,
+            "enstrophy": enstrophy_hist,
+            "bkm_integral": bkm_int,
+            "divergence": div_hist,
+        }
+
+
+    # ------------------------------------------------------------------
     # Analytical reference
     # ------------------------------------------------------------------
     def taylor_green_reference(
