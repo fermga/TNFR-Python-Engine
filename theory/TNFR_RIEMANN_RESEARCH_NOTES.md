@@ -4150,7 +4150,7 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 * `r_α` null mean = −0.0947 (|·| mean = 0.1848, std = 0.213).
 * `r_γ` null mean = −0.0636 (|·| mean = 0.0880, std = 0.103).
 
-*C2 sensitivity sweep* (9 cells): `r_β` range [+0.8372, +0.8575], constant within τ_l within ±10⁻³ for every α. `r_β > 0.5` at every cell.
+*C2 sensitivity sweep* (9 cells, **post-bug-fix run; see «α propagation bug» note below**): `r_β` range [+0.8194, +0.8935], `r_α` range [+0.3958, +0.5247], `r_γ` range [+0.2880, +0.3565]. `r_β > 0.5` at every cell. Per-cell variation in α is now visible (previously masked by the propagation bug).
 
 *C3 permutation null* (5000 perms each):
 * `r_α`: observed +0.5126 vs null `(mean = +0.0025, std = 0.227)`, **p_one_sided = 0.0228**, p_two_sided = 0.0246.
@@ -4160,7 +4160,7 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 
 **Honest interpretation (R∞-1a-spectral-robustness)**:
 * The dominant R∞-1a-spectral signal (`r_β = 0.86`) is **a pure kernel artefact**. White noise reproduces it at higher magnitude (mean 0.94) than the canonical oscillatory field. The sorted-magnitude Pearson coefficient measures only that the FFT-power marginal and the `|r_n|` marginal share a heavy-tailed structure; it does NOT detect any structural alignment between the spectrum of the REMESH fixed point and Riemann residuals. The R∞-1a-spectral "B1 nominally SUPPORTED" verdict relied on `r_β` and must therefore be **withdrawn**.
-* C2 shows `r_β` is parameter-insensitive across `(α, τ_l)`, **but in this context that is further evidence of kernel-bias**, not robustness — a kernel-driven artefact is naturally invariant to kernel parameters that do not alter the dominant low-νf concentration.
+* C2 shows `r_β` does vary with `(α, τ_l)` once `α` is actually propagated (range [+0.819, +0.894], 9 cells), but remains `> 0.5` everywhere — does not refute. The original C2 read of "r_β invariant in α" was an artefact of an α-propagation bug in the canonical REMESH pipeline (see dedicated note below). After the fix, `r_α ∈ [+0.40, +0.52]` and `r_γ ∈ [+0.29, +0.36]` are **robust across the (α, τ_l) grid**, which strengthens (not weakens) the interpretation of these two metrics as genuine weak structural alignments.
 * C3 supplies the only genuinely positive finding: `r_α` and `r_γ` are statistically significant against permutation null (p ≈ 0.02 and p ≈ 0.015 one-sided). They are NOT artefacts of the marginal distributions; the alignment between (FFT power → |r_n|) index-wise and (νf-ordered field → smooth target) is structurally non-random. However, the effect sizes are modest:
   - `r_α = 0.5126` was already only marginally above the F3 threshold and now stands alone.
   - `r_γ = 0.3454` remains in the indeterminate band of F3.
@@ -4182,6 +4182,15 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 * **R∞-1b**: NS-side analogue, independent.
 * **B1 status update**: with `r_β` retired and only weak `r_α`/`r_γ` surviving, the canonical-catalog-closure conjecture (B1) **loses substantial empirical support** but remains technically open pending R∞-1a-operator. Branches **B2** (a new canonical operator is required) and **B3** (no TNFR closure exists) gain proportionally in prior weight, though no decisive evidence shifts the balance entirely to either.
 
-**Status**: R∞-1a-spectral-robustness complete. F4 refutes the dominant R∞-1a-spectral signal as kernel artefact while preserving two weak permutation-significant alignments. The R∞-1a-spectral milestone is **formally amended**: the "B1 SUPPORTED" verdict is withdrawn; the residual evidence (R∞-1a fixed-point existence + permutation-significant weak `r_α`, `r_γ`) is insufficient to support B1 at the spectral level. No closure of any gap. R∞-1a-operator is the next pre-registered gate; until it returns, the canonical TNFR-Riemann program remains paused at the T-HP / G4 = RH boundary as stated in §13septies.
+**α propagation bug (diagnosed and fixed mid-milestone)**:
+* During the C2 sweep an unexpected invariance of `r_β` across the α axis was observed (identical values for α ∈ {0.25, 0.5, 0.75} at each τ_l). Direct probing of `_remesh_alpha_info` in `src/tnfr/operators/remesh.py` revealed that the precedence order is **(1)** `REMESH_ALPHA` when `REMESH_ALPHA_HARD=True`, **(2)** `GLYPH_FACTORS.REMESH_alpha` from the canonical defaults, **(3)** `G.graph["REMESH_ALPHA"]` only as fallback. Without the HARD flag, the value written by the benchmark to `G.graph["REMESH_ALPHA"]` is silently ignored — the default `GLYPH_FACTORS.REMESH_alpha = 0.5` is used regardless.
+* Reproducer (direct call to `_remesh_alpha_info`):
+  - Set `G.graph["REMESH_ALPHA"] = 0.25` (no HARD flag) → returns `α = 0.5, source = "GLYPH_FACTORS.REMESH_alpha"`.
+  - Set `G.graph["REMESH_ALPHA"] = 0.25` and `G.graph["REMESH_ALPHA_HARD"] = True` → returns `α = 0.25, source = "REMESH_ALPHA"`.
+* `τ_local` and `τ_global` use `get_param()` which reads from `G.graph` directly, so their C2 axis was always honoured (variation across τ_l in the original run was real).
+* **Fix applied**: `benchmarks/remesh_infinity_riemann_spectral_robustness.py::run_canonical_pipeline` now sets `G.graph["REMESH_ALPHA_HARD"] = True` before iteration, with an explanatory comment cross-referencing this section. C2 was re-executed after the fix; the numbers above (range [+0.819, +0.894] for `r_β`, [+0.40, +0.52] for `r_α`, [+0.29, +0.36] for `r_γ`) are from the fixed run. C1 and C3 are independent of the α value and are unchanged.
+* **Note on the canonical pipeline**: this precedence ordering means any user who writes `G.graph["REMESH_ALPHA"]` without also enabling `REMESH_ALPHA_HARD` will get the default `0.5` silently. This is a latent surprise but not a TNFR-grammar violation per se. Documented here for cross-program awareness; not promoted to a code-level fix in this milestone because the canonical α = 0.5 is the documented TNFR default and changing the precedence requires its own grammar audit.
+
+**Status**: R∞-1a-spectral-robustness complete. F4 refutes the dominant R∞-1a-spectral signal as kernel artefact while preserving two weak permutation-significant alignments (`r_α`, `r_γ`) that are also confirmed robust across the (α, τ_l) grid after the α-propagation bug was fixed. The R∞-1a-spectral milestone is **formally amended**: the "B1 SUPPORTED" verdict is withdrawn; the residual evidence (R∞-1a fixed-point existence + permutation-significant weak `r_α`, `r_γ` confirmed across (α, τ_l)) is insufficient to support B1 at the spectral level but is mildly stronger than the original interpretation that allowed for parameter fragility. No closure of any gap. R∞-1a-operator is the next pre-registered gate; until it returns, the canonical TNFR-Riemann program remains paused at the T-HP / G4 = RH boundary as stated in §13septies.
 
 ---

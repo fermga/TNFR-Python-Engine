@@ -192,6 +192,11 @@ def run_canonical_pipeline(
     init_func(G, tau_global + 20)
     G.graph["REMESH_TAU_LOCAL"] = tau_local
     G.graph["REMESH_ALPHA"] = alpha
+    # REMESH_ALPHA_HARD=True is REQUIRED: without it, _remesh_alpha_info()
+    # in src/tnfr/operators/remesh.py reads GLYPH_FACTORS.REMESH_alpha (default
+    # 0.5) BEFORE G.graph["REMESH_ALPHA"], silently overriding our setting.
+    # See §13vicies-novies.7 of TNFR_RIEMANN_RESEARCH_NOTES.md for diagnosis.
+    G.graph["REMESH_ALPHA_HARD"] = True
     G.graph["REMESH_TAU_GLOBAL"] = tau_global
     baseline_epi = snapshot_epi(G)
     # compute_fixed_point uses module-level TAU_LOCAL/TAU_GLOBAL/ALPHA from
