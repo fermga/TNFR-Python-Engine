@@ -4581,3 +4581,192 @@ program-level open question remains G4 = RH (and its twin $\mathrm{GRH}_\chi$);
 the open B1-style avenues are now exactly R∞-1b and R∞-1c.
 
 ---
+
+### §13vicies-novies.11 Formalisation: the Euler-Orthogonality Lemma
+
+The two empirical facts established in §13vicies-novies.9 and the operator
+classification of §13vicies-novies.10 are specialisations of a single
+structural property of the canonical engine acting on $G_{P14}$. This
+subsection names that property, states it as a lemma, supplies a formal
+proof, and records its two operator-level corollaries. No new construction
+is introduced; the content is a tightening of §13vicies-novies.10 into a
+single citable statement.
+
+**Naming convention.** The lemma is called the *Euler-Orthogonality Lemma*
+because its hypothesis — disjointness of prime ladders in $G_{P14}$ — is
+the graph-level realisation of the Euler-product orthogonality of the
+Dirichlet series $-\zeta'(s)/\zeta(s) = \sum_{p,k} (\log p)\, p^{-ks}$
+that drives the §13quinquies (P14) Hamiltonian construction. The two
+properties are the same fact, viewed once analytically (independence of
+prime factors in the Euler product) and once combinatorially (absence of
+inter-prime edges in $G_{P14}$).
+
+**Setup (recall).** Fix the canonical prime-ladder graph
+$G_{P14} = (V, E)$ of §13quinquies with $V = \{(p_i, k) :
+1 \le i \le n_{\text{primes}},\ 1 \le k \le k_{\max}\}$, edges
+$E = \{((p,k), (p,k{+}1)) : p \text{ prime},\ 1 \le k < k_{\max}\}$, node
+attributes $\nu_f((p,k)) = k \log p$, $\phi \equiv 0$, $\mathrm{EPI} \equiv 1$,
+$S_i \equiv 1$, $\Delta\mathrm{NFR} \equiv 0$. Let
+$\Pi: S_{n_{\text{primes}}} \to \operatorname{Aut}(G_{P14})$ be the
+prime-relabelling action $\Pi_\sigma(p_i, k) = (p_{\sigma(i)}, k)$. Let
+$\mathcal{O}_{13} = \{\text{AL}, \text{EN}, \text{IL}, \text{OZ},
+\text{UM}, \text{RA}, \text{SHA}, \text{VAL}, \text{NUL}, \text{THOL},
+\text{ZHIR}, \text{NAV}, \text{REMESH}\}$ be the canonical 13-operator
+catalog (cf. AGENTS.md §"The 13 Canonical Operators").
+
+**Definition (edge-channel restriction).** For $O \in \mathcal{O}_{13}$
+let $\mathcal{R}_E(O) : \mathbb{R}^V \to \mathbb{R}^V$ denote the linear
+part of $O$'s action on a real-valued field on $V$ obtained by *retaining
+only the contribution that propagates along edges of $G_{P14}$* and
+freezing all node-local writes. For node-local operators (AL, IL pressure
+contraction, SHA, VAL, NUL, THOL, ZHIR, NAV, UM on $\phi \equiv 0$,
+REMESH) the edge-channel restriction is the identity by definition. For
+edge-propagating operators (EN, OZ, RA, IL phase-Laplacian) it is the
+linear edge-propagation kernel documented in
+`src/tnfr/dynamics/propagation.py` and `src/tnfr/operators/coherence.py`
+(IL phase-Laplacian smoother $I - \eta L_G$). For REMESH the recursivity
+echo $M_{\mathrm{REMESH}} = I_{|V|} \otimes M_{\tau_g + 1}$ commutes
+trivially with $\Pi_\sigma$ in the node index.
+
+**Lemma 1 (Euler-Orthogonality Lemma).** *Every operator
+$O \in \mathcal{O}_{13}$ restricted to the edge channel on $G_{P14}$
+commutes with the prime-relabelling action $\Pi$ of
+$S_{n_{\text{primes}}}$:*
+$$
+\mathcal{R}_E(O) \circ \Pi_\sigma \;=\; \Pi_\sigma \circ \mathcal{R}_E(O)
+\qquad \forall\,\sigma \in S_{n_{\text{primes}}},\ \forall\,O \in \mathcal{O}_{13}.
+$$
+
+*Proof.* Partition $\mathcal{O}_{13}$ by the channel through which the
+operator can in principle couple to $\nu_f$ on edges (the classification
+of §13vicies-novies.10, verified against the operator source modules).
+
+*Case A — node-local operators* (AL, IL pressure contraction, SHA, VAL,
+NUL, THOL, ZHIR, NAV, UM on $\phi \equiv 0$): $\mathcal{R}_E(O) = I_V$ by
+definition; $I_V$ commutes with every $\Pi_\sigma$.
+
+*Case B — frequency-blind edge propagation* (EN, OZ frequency-blind
+branch, RA, IL phase-Laplacian): the propagation weight on every edge
+$e = ((p,k), (p,k{+}1))$ is a function of `coupling_weight` and
+`phase_weight` only, both of which depend exclusively on edge combinatorics
+and on the phase attribute $\phi \equiv 0$ which is $\Pi$-invariant.
+$\mathcal{R}_E(O)$ is therefore the same kernel on every prime ladder
+copy; $\Pi_\sigma$ permutes copies; the two operations commute.
+
+*Case C — frequency-weighted OZ branch* (OZ with
+`freq_weight = min(\nu_{f,i}, \nu_{f,j}) / max(\nu_{f,i}, \nu_{f,j})`):
+on $G_{P14}$ every edge endpoints satisfy $\nu_{f,i} = k \log p$ and
+$\nu_{f,j} = (k{+}1) \log p$ for the *same* prime $p$. Hence
+$$
+\frac{\min(k \log p,\ (k{+}1) \log p)}{\max(k \log p,\ (k{+}1) \log p)}
+\;=\; \frac{k \log p}{(k{+}1) \log p} \;=\; \frac{k}{k{+}1},
+$$
+which is independent of $p$. The frequency-weight is therefore prime-blind
+on $G_{P14}$, and the argument of Case B applies verbatim.
+
+*Case D — REMESH.* $M_{\mathrm{REMESH}} = I_{|V|} \otimes M_{\tau_g + 1}$
+factors through the identity in the node index; $\Pi_\sigma$ acts only on
+the node index; the two factors commute.
+
+All four cases exhaust $\mathcal{O}_{13}$. $\square$
+
+**Corollary 1 (composition closure).** *The set of linear operators on
+$\mathbb{R}^V$ that commute with every $\Pi_\sigma$ is closed under
+composition and real-linear combination. Therefore every operator
+expressible as a real-linear composition of edge-channel restrictions of
+elements of $\mathcal{O}_{13}$ commutes with $\Pi$:*
+$$
+T \;=\; \sum_{j} c_j \prod_{\ell} \mathcal{R}_E(O_{j,\ell})
+\quad \Longrightarrow \quad T \circ \Pi_\sigma \;=\; \Pi_\sigma \circ T
+\quad \forall\,\sigma \in S_{n_{\text{primes}}}.
+$$
+
+*Proof.* Immediate from Lemma 1 and the elementary fact that the
+commutant of a group action is a subalgebra of $\operatorname{End}(\mathbb{R}^V)$.
+$\square$
+
+**Corollary 2 (spectral $S_{n_{\text{primes}}}$-invariance).** *For any
+$T$ as in Corollary 1, the multiset $\operatorname{spec}(T)$ is invariant
+under prime relabelling. In particular, no iteration matrix built by
+edge-channel composition of canonical operators can distinguish, by its
+spectrum alone, the canonical prime assignment from any of the
+$n_{\text{primes}}!$ permuted assignments.*
+
+*Proof.* Conjugation by an invertible operator preserves spectrum;
+$\Pi_\sigma$ is a permutation matrix (hence invertible); commutation
+$T \Pi_\sigma = \Pi_\sigma T$ implies $T = \Pi_\sigma T \Pi_\sigma^{-1}$;
+hence $\operatorname{spec}(T) = \operatorname{spec}(\Pi_\sigma T \Pi_\sigma^{-1})
+= \operatorname{spec}(T)$ as a multiset under the permuted labelling.
+$\square$
+
+**Empirical signature on $G_{P14}$.** The bit-for-bit identity
+$D_{\mathrm{GUE}}^{\mathrm{canonical}} = D_{\mathrm{GUE}}^{\mathrm{shuffled}} = 0.9053$
+reported in §13vicies-novies.9 for the composition $T = S_{\mathrm{IL}}
+\cdot M_{\mathrm{REMESH}}$ is the numerical specialisation of Corollary 2
+to a single composition. The lemma predicts that the same identity holds
+for *every* edge-channel composition of canonical operators on $G_{P14}$;
+testing additional compositions can therefore only reproduce this
+identity (or break the edge-channel hypothesis by introducing an
+operator outside the catalog).
+
+**Where the lemma's hypothesis fails (and why R∞-1b and R∞-1c remain
+open).** The lemma's three hypotheses — (i) action restricted to the
+edge channel, (ii) operators drawn from $\mathcal{O}_{13}$, (iii) graph
+$G_{P14}$ unchanged — are each necessary for the proof. The two open
+B1-style routes left by §13vicies-novies.10 each break exactly one
+hypothesis:
+
+* **R∞-1b breaks (i).** Action moves from $\mathbb{R}^V$ to the
+  prime-indexed internal Hilbert space spanned by $\{|p,k\rangle\}$
+  (the P14 Hamiltonian's basis, §13quinquies). On this space the
+  spectral analogue $S_{\mathrm{IL}} = \exp(-\eta\,\hat H_{P14})$ does
+  *not* factor through the identity in the prime index because
+  $\hat H_{\mathrm{freq}} = \operatorname{diag}(k \log p)$ does not.
+  Prime relabelling becomes a unitary basis permutation that does not
+  commute with operators expressed in the original basis. Lemma 1
+  does not apply, and Corollary 2 is silent.
+
+* **R∞-1c breaks (iii).** The graph is augmented with inter-prime edges
+  whose weights are derived from the nodal equation
+  $\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$.
+  Every inter-prime edge has endpoints with $\nu_f$ from *different*
+  primes, so the Case-C cancellation $\log p$ no longer occurs.
+  Edge-channel operators on the augmented graph therefore have weights
+  that depend on the prime labels, $\Pi_\sigma$ no longer commutes with
+  the edge-propagation kernel, and Corollary 2 fails by construction.
+
+The two routes are open *because* they break hypotheses of the
+Euler-Orthogonality Lemma; conversely, the lemma is the precise statement
+of *what* must be broken for any B1 closure inside the canonical catalog
+to remain possible.
+
+**Honest scope.** Lemma 1 and its corollaries are statements about
+edge-channel linear actions on $G_{P14}$. They do not:
+
+* prove RH or close G4 = RH;
+* refute B1 in any sense beyond the edge-channel route on $G_{P14}$;
+* refute B1 via R∞-1b (internal Hilbert space) or R∞-1c (graph
+  modification);
+* refute B2 (new canonical operator) or B3 (no TNFR closure);
+* constrain operator behaviour on graphs other than $G_{P14}$.
+
+What they do, formally, is convert the empirical refutation of
+§13vicies-novies.9 from a single-composition observation into a
+catalog-wide structural theorem applicable to any future edge-channel
+composition attempt. The two routes that remain available are precisely
+those that violate one of the lemma's hypotheses by construction.
+
+**Cross-references.**
+
+* §13vicies-novies.9 — F6-A empirical refutation that this lemma
+  generalises.
+* §13vicies-novies.10 — operator-by-operator channel classification
+  underlying the case analysis.
+* §13septies, §13octies — program-wide branch B1/B2/B3 taxonomy that
+  the lemma narrows on the B1 side.
+* `src/tnfr/operators/coherence.py`, `src/tnfr/dynamics/propagation.py`,
+  `src/tnfr/operators/coupling.py`, `src/tnfr/operators/recursivity.py`,
+  `src/tnfr/riemann/prime_ladder_hamiltonian.py` — source-level audit
+  trail used to verify the Case A–D classification.
+
+---
