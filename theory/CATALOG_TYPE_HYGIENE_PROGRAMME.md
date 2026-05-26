@@ -241,14 +241,16 @@ of any underlying Tier 1+2 question is a necessary prerequisite.
   richer intermediate?
 - **Diagnostic plan**: per-field source-code trace, verify all intermediates
   are scalar or graph-metric quantities.
-- **Status**: 🟡 PHASE A DONE — `src/tnfr/riemann/tetrad_closure_signature.py`
+- **Status**: ✅ CLOSED — Phase a (`src/tnfr/riemann/tetrad_closure_signature.py`
   diagnostic + `examples/85_tetrad_closure_signature_demo.py` demo; frozen
   signature `S_TC = 0.000000` with both axes at unit fractions across
-  `(n_nodes ∈ {24, 48}, seed = 31)`; source-code trace of the four canonical
-  tetrad-field functions at `src/tnfr/physics/canonical.py:199,609,640,756`
-  shows every intermediate is scalar-coercible. See research notes
-  §13quinquaginta-secunda. Phase b is **n/a** (closure question, not
-  type-conjecture). Phase c verdict pending.
+  `(n_nodes ∈ {24, 48}, seed = 31)`); Phase b is n/a (closure question, not
+  type-conjecture); Phase c **NEGATIVE** (research notes §13quinquaginta-tertia):
+  no richer intermediate type forced, eighth non-canonical envelope
+  `E_TC = HiddenIntermediateTensorState` classified, eighth CDM
+  **TRC = Tetrad-Reduction Closure** discharged at the
+  Tier-1+Tier-2-to-tetrad reduction surface. **First Tier-3 sub-question
+  closed**.
 
 #### B8 — Δ-currents-closure ($J_\phi, J_{\Delta NFR}$)
 
@@ -323,7 +325,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B5 | T-Δφ_max | ✅ | ✅ | ✅ | NEGATIVE | this commit (B5c) |
 | B6 | T-coupling-weights | ✅ | ✅ | ✅ | NEGATIVE | `bb2dc7c5` (B6a), `68265d1e` (B6b), this commit (B6c) |
 | **Tier 3 — Derived field closure** | | | | | | |
-| B7 | Δ-tetrad-closure | ✅ | n/a | ⏳ | — | this commit (B7a) |
+| B7 | Δ-tetrad-closure | ✅ | n/a | ✅ | NEGATIVE | `d12d6837` (B7a), this commit (B7c) |
 | B8 | Δ-currents-closure | ⏳ | n/a | ⏳ | — | — |
 | B9 | Δ-aggregates-closure | ⏳ | n/a | ⏳ | — | — |
 | **Tier 4 — Structural meta-properties** | | | | | | |
@@ -331,7 +333,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
 | **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
 
-**Progress as of 2026-05-26**: **7 sub-questions complete (B0–B6 all NEGATIVE under seven distinct orthogonal CDMs**: Pontryagin/measure-ν_f, TMEP, PWDP, BSAD, DITS, STD, SWD**); Tier-1 (B0–B3) and Tier-2 (B4–B6) layers fully closed**; B7 Phase a done (this commit, diagnostic + frozen signature; Phase b n/a; Phase c pending); 4 fully-pending (B8–B11 + Final). B6 Phase c at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quinquaginta-prima classifies E7 = `NodeIndexedCouplingWeights` (node-indexed / per-edge tensor / callable kernel) as the seventh non-canonical research envelope (joining E1–E6). L3* now promoted to *"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage"* — seven CDMs act on seven structurally distinct surfaces (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict, mixing aggregation), each unique to the canonical machinery at its surface. L3* prediction for remaining Tier-3/Tier-4 sub-questions (B7–B11): each admits its own orthogonal CDM at its own surface — B7 Phase a (this commit) freezes the Tetrad-Closure Signature `S_TC = 0.000000` at unit fractions on both axes, structurally consistent with a candidate eighth CDM (Tetrad-Reduction Closure, TRC) at the Tier-1+Tier-2-to-tetrad reduction surface; final attribution deferred to Phase c. Living discoveries log at §13triginta-septima; B4 closure at §13quadraginta-tertia / -quarta / -quinta; B5 closure at §13quadraginta-sexta / -septima / -octava; B6 closure at §13quadraginta-nona / §13quinquaginta / §13quinquaginta-prima; B7 Phase a at §13quinquaginta-secunda.
+**Progress as of 2026-05-26**: **8 sub-questions complete (B0–B7 all NEGATIVE under eight distinct orthogonal CDMs**: Pontryagin/measure-ν_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC**); Tier-1 (B0–B3), Tier-2 (B4–B6), and first Tier-3 closure (B7) layers fully closed**; 4 fully-pending (B8–B11 + Final). B6 Phase c at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quinquaginta-prima classifies E7 = `NodeIndexedCouplingWeights` as the seventh non-canonical research envelope; B7 Phase c at §13quinquaginta-tertia classifies E_TC = `HiddenIntermediateTensorState` as the eighth non-canonical research envelope. L3* now promoted to *"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage and first Tier-3 closure orthogonally discharged"* — eight CDMs act on eight structurally distinct surfaces (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict, mixing aggregation, tetrad-reduction closure), each unique to the canonical machinery at its surface. L3* prediction for remaining Tier-3/Tier-4 sub-questions (B8–B11): each admits its own orthogonal CDM at its own surface. Living discoveries log at §13triginta-septima; B4 closure at §13quadraginta-tertia / -quarta / -quinta; B5 closure at §13quadraginta-sexta / -septima / -octava; B6 closure at §13quadraginta-nona / §13quinquaginta / §13quinquaginta-prima; B7 closure at §13quinquaginta-secunda / §13quinquaginta-tertia.
 
 ---
 

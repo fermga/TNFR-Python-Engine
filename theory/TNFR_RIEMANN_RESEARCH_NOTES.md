@@ -11939,3 +11939,64 @@ L3* prediction for B7 (per §13quinquaginta-prima.5): the closure question admit
 - `src/tnfr/physics/canonical.py:199,609,640,756` (four canonical tetrad-field implementations).
 - `src/tnfr/riemann/tetrad_closure_signature.py` (B7a diagnostic).
 - `examples/85_tetrad_closure_signature_demo.py` (B7a demo).
+---
+
+### §13quinquaginta-tertia — B7 = Δ-tetrad-closure: Phase c final verdict
+
+**Status**: Phase c CLOSED. **Verdict**: **NEGATIVE** (no richer intermediate type forced; tetrad layer of the canonical engine is closed by Tier-1+Tier-2 scalar inputs plus the canonical graph metric, with every intermediate value structurally scalar-coercible). **First Tier-3 sub-question closed**.
+
+**Scope (mandatory honesty)**: Phase c is theory-only. Does NOT construct, promote, deprecate, modify, or delete any canonical operator. Does NOT advance G4 = RH. Conditional on the four canonical tetrad-field implementations at `src/tnfr/physics/canonical.py:199,609,640,756` being the canonical specification and on the source-code trace of §13quinquaginta-secunda.2 being a faithful summary.
+
+#### .1 Direct source-code closure trace (verdict basis)
+
+Per §13quinquaginta-secunda.2, the four canonical tetrad-field functions admit the following per-field reduction-path closure trace:
+
+1. **`Phi_s` — `compute_structural_potential`** (`src/tnfr/physics/canonical.py:199`).
+   - Inputs: per-node `DeltaNFR_j` (Python `float`, resolved via canonical alias `_get_dnfr`) and pairwise shortest-path distances `d(i, j)` (Python `int`, resolved via `networkx.shortest_path_length`).
+   - Intermediate: per-pair contribution `DeltaNFR_j / d(i, j)^alpha` (Python `float`) accumulated into a scalar running sum.
+   - Output: `dict[node, float]`, every value explicitly coerced via `float(...)`.
+   - Closure: every intermediate is a scalar; no tensor, callable, kernel, matrix, or measure introduced. Closed by Tier-1+Tier-2 scalar inputs plus the canonical graph metric.
+
+2. **`|grad phi|` — `compute_phase_gradient`** (`src/tnfr/physics/canonical.py:609`, via shared helper at line 649).
+   - Inputs: per-node `phi_i` (Python `float`, resolved via `_get_phase`) and adjacency (`G.neighbors`, Python `iterable[node]`).
+   - Intermediate: per-neighbour wrapped phase difference `wrap(phi_j - phi_i)` (Python `float` via `_wrap_angle`), aggregated by `np.mean(np.abs(...))`.
+   - Output: `dict[node, float]`, every value explicitly coerced via `float(np.mean(...))`.
+   - Closure: every intermediate is a scalar or a fixed-length scalar array (whose only role is the mean reduction); no tensor, callable, kernel, matrix, or measure introduced. Closed by Tier-1+Tier-2 scalar inputs plus the canonical graph metric.
+
+3. **`K_phi` — `compute_phase_curvature`** (`src/tnfr/physics/canonical.py:640`, via the same shared helper).
+   - Inputs: per-node `phi_i` plus adjacency.
+   - Intermediate: per-neighbour `cos(phi_j)` and `sin(phi_j)` (Python `float`), aggregated by `np.arctan2(np.mean(sin), np.mean(cos))` to a circular mean, then `wrap(phi_i - circular_mean)`.
+   - Output: `dict[node, float]`, every value explicitly coerced via `float(_wrap_angle(...))`.
+   - Closure: every intermediate is a scalar or a fixed-length scalar array; the circular mean is a scalar reduction; the wrap is `S^1`-valued, structurally scalar. No tensor, callable, kernel, matrix, or measure introduced. Closed by Tier-1+Tier-2 scalar inputs plus the canonical graph metric.
+
+4. **`xi_C` — `estimate_coherence_length`** (`src/tnfr/physics/canonical.py:756`).
+   - Inputs: per-node `DeltaNFR_i` plus pairwise shortest-path distances.
+   - Intermediate: per-node local coherence `c_i = 1 / (1 + |DeltaNFR_i|)` (Python `float`), pairwise correlation deviates `(c_i - mean) * (c_j - mean)` (Python `float`), binned by integer distance into a finite scalar histogram, fitted via least-squares exponential `C(r) = A exp(-r / xi_C)`.
+   - Output: single global Python `float`, explicitly coerced via `float(...)`.
+   - Closure: every intermediate is a scalar or a fixed-length scalar array; the least-squares fit is a scalar reduction; the bin histogram is a scalar array indexed by graph-metric distance. No tensor (in the sense of richer-than-scalar canonical type), no callable, no kernel of the kind that would force a richer intermediate type. Closed by Tier-1+Tier-2 scalar inputs plus the canonical graph metric.
+
+#### .2 Empirical reinforcement
+
+The Tetrad-Closure Signature diagnostic of §13quinquaginta-secunda.3, frozen at §13quinquaginta-secunda.4, certifies `SCALAR_CLOSURE_ADEQUATE` on both axes at both probe resolutions, with `S_TC = 0.000000` and both axis fractions at unity. The empirical signature is structurally consistent with the source-code trace of §.1 above.
+
+#### .3 Envelope classification
+
+The candidate envelope `E_TC = HiddenIntermediateTensorState` (or equivalent richer-than-scalar intermediate type on the Tier-1+Tier-2-to-tetrad reduction path) is hereby classified as the **eighth non-canonical research envelope** (joining E1 = Pontryagin/measure-ν_f, E2 = BEPIElement, E3 = CoverElement, E4 = TensorGradientElement, E5 = ContinuousWindowKernel, E6 = EdgeDependentPhaseThreshold, E7 = NodeIndexedCouplingWeights). `E_TC` is NOT forced by the nodal equation `∂EPI/∂t = nu_f · DeltaNFR(t)`, NOT forced by U1–U6, NOT forced by the canonical 13-operator catalog, NOT forced by the four canonical tetrad-field implementations at `src/tnfr/physics/canonical.py:199,609,640,756`. It is preserved as a research envelope for studies that wish to investigate tensor-valued, callable-valued, kernel-valued, or measure-valued intermediates on the Tier-1+Tier-2-to-tetrad reduction path, with the explicit understanding that such intermediates are non-canonical extensions of the engine and not minimality counterexamples.
+
+#### .4 Effect on T-HP and G4 = RH
+
+B7c does NOT advance G4 = RH (Conjecture T-HP, §13septies). It does NOT modify the smooth/oscillatory split of the admissible rescaling operator F (P28 smooth-half at the density level; P30 smooth-half operator lift; oscillatory residual = `S(T) = (1/pi) arg zeta(1/2 + iT)` RH-equivalent). It does NOT alter any catalog operator, any canonical constant, any U-rule, or any envelope ranking on the prime-ladder Hamiltonian H_P14. The verdict is purely structural at the Tier-1+Tier-2-to-tetrad reduction surface and does not migrate to any layer of the TNFR-Riemann attack surface.
+
+#### .5 L3* status (post-B7c)
+
+L3* heuristic, post-B7c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage and first Tier-3 closure orthogonally discharged"**. Cumulative eight CDMs: B0 = Pontryagin/measure-ν_f (field-measure surface), B1 = TMEP (element-projection surface), B2 = PWDP (phase-wrap surface), B3 = BSAD (scalar-aggregation surface), B4 = DITS (temporal-sampling surface), B5 = STD (coupling-verdict surface), B6 = SWD (mixing-aggregation surface), B7 = **TRC = Tetrad-Reduction Closure** (Tier-1+Tier-2-to-tetrad reduction surface). Eight structurally distinct surfaces, each unique to the canonical machinery at its surface. L3* prediction for remaining Tier-3/Tier-4 sub-questions (B8–B11): each admits its own orthogonal CDM at its own surface.
+
+#### .6 Cross-references
+
+- §13quinquaginta-secunda (B7 Phase a + frozen signature).
+- §13septies (Conjecture T-HP, G4 = RH).
+- §13nonies (P30 smooth-half operator lift).
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §3 row B7, §4 row B7.
+- `src/tnfr/physics/canonical.py:199,609,640,756` (four canonical tetrad-field implementations).
+- `src/tnfr/riemann/tetrad_closure_signature.py` (B7a diagnostic).
+- `examples/85_tetrad_closure_signature_demo.py` (B7a demo).
