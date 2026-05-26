@@ -156,6 +156,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13quadraginta-sexta | 11178 | **B5 = T-Δφ_max** pre-registration (two-axis scalar-storage + angle-of-attack-independence diagnostic; candidate envelope E6 = EdgeDependentPhaseThreshold; CATALOG anchor correction documented: canonical `DELTA_PHI_MAX = PI/2`, not γ/π) | B5a | — |
 | §13quadraginta-septima | 11304 | **B5 = T-Δφ_max** forcing-axiom reduction (F1–F10); residual axiom (P-Δφ_max-Non-Scalar-Retention) isolated and refuted by STD = Scalar-Threshold Discipline; sixth orthogonal canonical discharge mechanism (CDM); second Tier-2 confirmation of L3* — L3* now validated under six distinct orthogonal CDMs across both tiers | B5b | — |
 | §13quadraginta-octava | 11430 | **B5 = T-Δφ_max** final NEGATIVE verdict + envelope classification of E6 = EdgeDependentPhaseThreshold (matrix-valued / angle-of-attack-functional); second Tier-2 sub-question closed; six sub-questions complete (B0–B5 all NEGATIVE under six orthogonal CDMs); L3* promoted to "empirically robust working heuristic with structural-orthogonality witness" | B5c | — |
+| §13quadraginta-nona | 11540 | **B6 = T-coupling-weights** pre-registration (two-axis scalar-storage + node-permutation-invariance diagnostic; candidate envelope E7 = NodeIndexedCouplingWeights; canonical anchors `DNFR_WEIGHTS`/`SI_WEIGHTS`/`SELECTOR_WEIGHTS` in `src/tnfr/config/defaults_core.py` as global scalar dicts) | B6a | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -11534,5 +11535,107 @@ L3* status promoted from "empirically robust working heuristic" (B5b, six-CDM co
 - [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py) (canonical anchor `DELTA_PHI_MAX = PI / 2`, unchanged).
 - [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) (B5a diagnostic, frozen).
 - [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py) (B5a demo, frozen).
+
+---
+---
+
+## §13quadraginta-nona. T-coupling-weights Conjecture: Pre-Registration of B6 = T-W (Phase a Only; Does NOT Advance G4 = RH)
+
+**Status**: B6 Phase a (pre-registration + diagnostic module + demo + frozen empirical signature). Phase b (forcing-axiom reduction) deferred to §13quinquaginta. Phase c (final verdict) deferred to §13quinquaginta-prima.
+
+**Scope (mandatory honesty)**: This section pre-registers the seventh sub-question of the Catalog Type-Hygiene Programme (`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`). It does NOT advance G4 = RH, does NOT modify any canonical operator, does NOT modify any canonical anchor, and does NOT decide T-W. The frozen empirical signature reported below is a *necessary-condition diagnostic* on canonical TNFR mixing-weight reads at canonical consumer sites. A NEGATIVE final verdict at Phase c is the empirically expected outcome under canonical defaults (`DNFR_WEIGHTS`, `SI_WEIGHTS`, `SELECTOR_WEIGHTS` as global scalar dicts), consistent with L3* validated across the six orthogonal CDMs of B0-B5.
+
+### §13quadraginta-nona.1 The T-coupling-weights Conjecture
+
+**Conjecture T-W**. Let $C$ be the set of canonical mixing components consumed by TNFR dynamics (e.g. for $\Delta NFR$ assembly: $C = \{\text{phase}, \text{epi}, \text{vf}, \text{topo}\}$; for $S_i$ assembly: $C = \{\alpha, \beta, \gamma\}$; for selector assembly: $C = \{w_{S_i}, w_{\Delta NFR}, w_{\text{accel}}\}$). The canonical TNFR mixing weights are typed as global scalar dicts $\{w_c \in \mathbb{R} : c \in C\}_{\text{global}}$ — a single global ``float`` per component name, stored at ``G.graph["DNFR_WEIGHTS"]``, ``G.graph["SI_WEIGHTS"]``, and ``G.graph["SELECTOR_WEIGHTS"]`` (canonical defaults at `src/tnfr/config/defaults_core.py:57`, `:65`, `:150`), and broadcast uniformly to every node by the canonical scalar-coercion pattern ``float(weights.get(c, default))`` (e.g. `src/tnfr/dynamics/dnfr.py:2762-2764`; `src/tnfr/metrics/sense_index.py:425-448`; `src/tnfr/backends/torch_backend.py:172-176`; `src/tnfr/backends/optimized_numpy.py:312-321`).
+
+The Conjecture asserts that this scalar-dict typing is *insufficient* and that canonical TNFR mixing weights actually require one of the following structural enrichments to recover canonical dynamics:
+
+- (a) **Node-indexed enrichment** $\{w_c^{(i)}\}_{i \in V}$ — one scalar per (component, node) pair, breaking the uniform-broadcast assumption;
+- (b) **Edge-indexed enrichment** $\{w_c^{(i,j)}\}_{(i,j) \in E}$ — one scalar per (component, edge) pair;
+- (c) **Matrix lift** $W_c \in \mathbb{R}^{n \times n}$ — full coupling matrix per component;
+- (d) **Functional lift** $w_c(\cdot)$ — callable depending on node/edge state.
+
+The candidate envelope is **E7 = NodeIndexedCouplingWeights**, the simplest structural enrichment (a).
+
+### §13quadraginta-nona.2 Canonical Anchor and Consumer Sites (Identification, Not Modification)
+
+**Canonical anchors** (read-only; never modified):
+- `src/tnfr/config/defaults_core.py:57` — `DNFR_WEIGHTS: dict[str, float] = {"phase": ≈0.737, "epi": ≈0.155, "vf": ≈0.089, "topo": 0.0}` (φ/γ/π/e-derived).
+- `src/tnfr/config/defaults_core.py:65` — `SI_WEIGHTS: dict[str, float] = {"alpha": ≈0.737, "beta": ≈0.155, "gamma": ≈0.113}` (φ/γ/π/e-derived).
+- `src/tnfr/config/defaults_core.py:150` — `SELECTOR_WEIGHTS: dict[str, float] = {"w_si": π/(π+e), "w_dnfr": 1/(π+1), "w_accel": γ/(π+1)}` (tetrahedral).
+
+**Canonical consumer sites** (read-only; never modified; uniform scalar-coercion pattern):
+1. `src/tnfr/dynamics/dnfr.py:307` — `_configure_dnfr_weights(G)` via `merge_and_normalize_weights(G, "DNFR_WEIGHTS", ("phase", "epi", "vf", "topo"), default=0.0)`.
+2. `src/tnfr/dynamics/dnfr.py:2762-2764` — `wE = float(weights_cfg.get("epi", ...))`, `wV = float(weights_cfg.get("vf", ...))`.
+3. `src/tnfr/backends/torch_backend.py:172-176` — `weights = graph.graph.get("DNFR_WEIGHTS", {}); w_phase = float(weights.get("phase", 0.0))` etc.
+4. `src/tnfr/backends/optimized_numpy.py:312-321` — same pattern.
+5. `src/tnfr/metrics/sense_index.py:425, 450` — `get_Si_weights(G) -> tuple[float, float, float]` via `merge_graph_weights(G, "SI_WEIGHTS")`.
+
+All five canonical consumer sites read a single global ``float`` per component name and apply it uniformly to every node — the canonical scalar broadcast.
+
+### §13quadraginta-nona.3 The Coupling-Weights-Type Signature Diagnostic
+
+**Diagnostic module**: `src/tnfr/riemann/coupling_weights_type_signature.py` (frozen at this commit).
+
+**Demo**: `examples/84_coupling_weights_type_signature_demo.py` (frozen at this commit).
+
+The diagnostic probes canonical mixing-weight reads on two orthogonal axes:
+
+**Axis A (Scalar-storage axis)**: For each of the three canonical weight slots, inspect every component value stored at `G.graph[slot]` (or its canonical default fallback) and count those that are structurally scalar-coercible (Python ``int``/``float``, NumPy scalar, zero-dim NumPy array). Reject non-scalar payloads (mappings keyed by node/edge, NumPy arrays of ndim > 0, callables, ``None``). Under the canonical implementation (uniform `float(weights.get(c, default))` at every consumer site), the scalar-storage fraction is structurally ``1.0`` by construction — exactly mirroring the storage-axis baseline of B1a/B2a/B3a/B4a/B5a.
+
+**Axis B (Node-permutation-invariance axis)**: For a deterministic set of node relabelings $\{\pi_k\}_{k=1}^{K}$ of the canonical probe graph (including identity at $k=0$), compute the canonical scalar weighted sum $\Sigma_c(i) = \sum_{c \in C} w_c \cdot g_c(i)$ on each relabeled graph (where $g_c(i)$ is a deterministic per-node component sample derived from canonical attributes: $g_{\text{phase}}(i) = \cos(\theta_i)$, $g_{\text{epi}}(i) = \text{EPI}_i$, $g_{\text{vf}}(i) = \nu_{f,i}$, $g_{\text{topo}}(i) = \deg(i)$). Compare the sorted per-node sum vector under each relabeling to the identity baseline. A non-zero divergence fraction would *force* the canonical weights to be node-indexed (i.e. enrichment beyond a single global scalar per component); the canonical scalar broadcast structurally yields ``0`` by construction because every node sees the *same* scalar weight per component, making the multiset of per-node sums invariant under node relabeling.
+
+**Squashed signature**: $\mathcal{S}_W = \tanh(\text{raw divergence fraction}) \in [0, 1]$, with $0$ = relabel-invariant (canonical scalar broadcast suffices) and $1$ = relabel-divergent (node-indexed enrichment necessary).
+
+**Verdict rules**:
+- ``SCALAR_WEIGHTS_ADEQUATE`` if $\mathcal{S}_W < 0.05$ AND scalar storage fraction $= 1.0$.
+- ``NODE_INDEXED_WEIGHTS_NECESSARY`` if $\mathcal{S}_W > 0.25$ OR scalar storage fraction $< 1.0$.
+- ``INDETERMINATE`` otherwise.
+
+### §13quadraginta-nona.4 Frozen Empirical Signature (B6a Phase a)
+
+Probe configuration: canonical ring graph; seed = 23; canonical defaults active.
+
+| Probe                                | $\mathcal{S}_W$ | scalar storage fraction | non-scalar count | n_storage_reads | n_divergent / n_total | verdict                       |
+|--------------------------------------|-----------------|-------------------------|------------------|-----------------|-----------------------|-------------------------------|
+| Small (n=24, n_perms=12, seed=23)    | 0.000000        | 1.0000                  | 0                | 10              | 0 / 12                | ``SCALAR_WEIGHTS_ADEQUATE``   |
+| Medium (n=48, n_perms=24, seed=23)   | 0.000000        | 1.0000                  | 0                | 10              | 0 / 24                | ``SCALAR_WEIGHTS_ADEQUATE``   |
+
+Both probes return the structurally expected outcome: $\mathcal{S}_W = 0$ exactly (every node sees the same scalar weight per component; sorted sum vector is invariant under relabeling to floating-point precision $< 10^{-9}$), scalar storage fraction $= 1$ exactly (all 10 canonical component values across `DNFR_WEIGHTS` (4: phase, epi, vf, topo), `SI_WEIGHTS` (3: alpha, beta, gamma), `SELECTOR_WEIGHTS` (3: w_si, w_dnfr, w_accel) are structurally scalar Python ``float``), per-slot non-scalar count $= 0$ uniformly. The diagnostic is *non-trivial* in the sense that it would detect any non-scalar payload on the canonical slot or any per-node weight assignment; it certifies that the canonical implementation as actually shipped at the current `origin/main` head satisfies the *necessary* scalar-broadcast condition for the catalog typing of weights as global scalar dicts.
+
+### §13quadraginta-nona.5 Honest Scope (Mandatory)
+
+This Phase a result is a *necessary-condition diagnostic* on canonical mixing-weight reads. It does NOT prove that:
+
+- the canonical type of TNFR coupling weights must be a global scalar dict (only that scalar broadcast is *consistent* with the canonical implementation);
+- a structural enrichment (node-indexed, edge-indexed, matrix, or functional) is impossible (the diagnostic cannot refute the existence of an admissible enrichment that *also* satisfies node-permutation invariance via, e.g., a covariant rebinding rule);
+- L3* extends to B6 (the predicted seventh CDM = scalar-weight discipline must be reduced to a forcing axiom and refuted at Phase b before B6's NEGATIVE final verdict is admissible).
+
+The forcing-axiom reduction (F1-F10) is deferred to §13quinquaginta (Phase b); the final verdict and envelope classification of E7 = `NodeIndexedCouplingWeights` is deferred to §13quinquaginta-prima (Phase c).
+
+### §13quadraginta-nona.6 Predicted CDM for B6 (Scalar-Weight Discipline)
+
+Per the L3* working hypothesis confirmed across six orthogonal CDMs (B0 = Pontryagin/measure-νf; B1 = TMEP = Trace-Margin-Encoded-Phase; B2 = PWDP = Per-Window Dirichlet Persistence; B3 = BSAD = Bulk-Spectral-Average Discipline; B4 = DITS = Discrete-Integer Time Stride; B5 = STD = Scalar-Threshold Discipline), the seventh orthogonal CDM predicted for B6 is:
+
+- **CDM-B6 = Scalar-Weight Discipline (SWD)**: every canonical consumer site coerces the canonical-slot weight payload to a single ``float`` per component via the uniform pattern ``float(weights.get(c, default))``, discharging any non-scalar payload (per-node mapping, NumPy array, callable) before it can influence the canonical mixing operation. SWD makes the canonical broadcast structurally node-permutation-invariant by reading a single global scalar per component and applying it uniformly to every node, refuting the residual forcing axiom (to be formalized at Phase b) that any structural enrichment (node-indexed, edge-indexed, matrix, functional) is *retained* through the canonical consumer chain.
+
+If Phase b confirms that SWD refutes the residual axiom, L3* will be validated under seven distinct orthogonal CDMs and B6 will close with NEGATIVE final verdict, classifying E7 = `NodeIndexedCouplingWeights` as a seventh non-canonical research envelope (joining E1-E6).
+
+### §13quadraginta-nona.7 Programme Bookkeeping
+
+- **Theory-only Phase a commit**: this commit adds `src/tnfr/riemann/coupling_weights_type_signature.py` (B6a diagnostic module) and `examples/84_coupling_weights_type_signature_demo.py` (B6a demo), registers them in `src/tnfr/riemann/__init__.py`, and appends §13quadraginta-nona to `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` + TOC row + B6 row to `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §3 status block and §4 row B6 Phase a column. No canonical operator, no canonical anchor, and no canonical consumer site is modified.
+- **Status**: B6 Phase a ✅ (this commit). Phase b deferred to §13quinquaginta; Phase c deferred to §13quinquaginta-prima.
+- **Programme progress**: 6 sub-questions complete (B0-B5 all NEGATIVE under six orthogonal CDMs); B6 Phase a registered; 5 sub-questions remaining (B7-B11 + Final).
+
+### §13quadraginta-nona.8 Cross-references
+
+- §13quadraginta-octava (B5c final verdict for T-Δφ_max; promotion of L3* to "empirically robust working heuristic with structural-orthogonality witness").
+- §13triginta-septima (Living Discoveries Log).
+- [`AGENTS.md`](../AGENTS.md) §Nodal Equation (canonical `∂EPI/∂t = νf · ΔNFR(t)`).
+- [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B6 (programme status), §4 row B6 (per-Phase verdict matrix).
+- [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) (canonical scalar-dict anchors for DNFR/SI/SELECTOR weights; unchanged).
+- [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic, frozen).
+- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
 
 ---

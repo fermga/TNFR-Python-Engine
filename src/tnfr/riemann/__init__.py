@@ -883,6 +883,11 @@ from .delta_phi_max_type_signature import (
     DeltaPhiMaxTypeSignatureCertificate,
     compute_delta_phi_max_type_signature,
 )
+from .coupling_weights_type_signature import (
+    # §13quadraginta-nona: Coupling-Weights-Type Signature diagnostic (B6a)
+    CouplingWeightsTypeSignatureCertificate,
+    compute_coupling_weights_type_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1373,6 +1378,9 @@ __all__ = [
     # §13quadraginta-sexta: Delta-Phi-Max-Type Signature (foundational diagnostic)
     "DeltaPhiMaxTypeSignatureCertificate",
     "compute_delta_phi_max_type_signature",
+    # §13quadraginta-nona: Coupling-Weights-Type Signature (B6a)
+    "CouplingWeightsTypeSignatureCertificate",
+    "compute_coupling_weights_type_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",
