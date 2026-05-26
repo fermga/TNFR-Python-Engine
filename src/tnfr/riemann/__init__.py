@@ -389,6 +389,24 @@ oscillatory_correction
     negative improvement corroborates branch B2. Does NOT close gap
     G4 = RH, does NOT close sub-problems (2) and (3) of Conjecture
     T-HP.
+twisted_oscillatory_correction
+    P49 chi-twisted prime-ladder oscillatory correction.  L-track
+    analogue of P31: reconstructs S_chi(T) = pi^{-1} arg L(1/2 + iT,
+    chi) from the canonical P34 chi-twisted prime-ladder spectrum
+    {(k log p, chi(p)^k log p)} via the chi-twisted Riemann-von
+    Mangoldt template, then applies the Newton step gamma_n^(chi) =
+    tilde gamma_n^(chi) - S_chi(tilde gamma_n^(chi)) / bar N'_chi(
+    tilde gamma_n^(chi)) on the canonical P46 chi-twisted smooth
+    targets per primitive real character.  Uses ONLY canonical
+    chi-twisted TNFR ingredients (no mpmath chi-zeros on the
+    construction side).  Reports the residual W_1 vs the true L(s,
+    chi) zeros honestly per character.  Positive improvement is
+    branch B1 evidence at the L-track level; negative improvement
+    corroborates branch B2.  Closes the final ZETA/L attack-surface
+    parity item (P31 -> P49): every canonical zeta-track operator
+    from P12 through P31 now has a matching chi-twisted L-track
+    counterpart.  Does NOT close G4 = RH, does NOT prove GRH for
+    any L(s, chi).
 """
 
 from .operator import (
@@ -943,6 +961,13 @@ from .twisted_admissible_rescaling import (
     TwistedAdmissibleRescalingCertificate,
     compute_twisted_admissible_rescaling_certificate,
 )
+from .twisted_oscillatory_correction import (
+    # P49: chi-twisted prime-ladder oscillatory correction
+    TwistedOscillatoryCorrectionCertificate,
+    apply_twisted_oscillatory_correction,
+    compute_twisted_oscillatory_correction_certificate,
+    twisted_prime_ladder_oscillatory_sum,
+)
 from .spectral_emergence import (
     # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -1369,6 +1394,11 @@ __all__ = [
     # P48: chi-twisted admissible spectral-rescaling operator
     "TwistedAdmissibleRescalingCertificate",
     "compute_twisted_admissible_rescaling_certificate",
+    # P49: chi-twisted prime-ladder oscillatory correction
+    "TwistedOscillatoryCorrectionCertificate",
+    "apply_twisted_oscillatory_correction",
+    "compute_twisted_oscillatory_correction_certificate",
+    "twisted_prime_ladder_oscillatory_sum",
     # P29: Spectral universality emergence under canonical UM+RA coupling
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",

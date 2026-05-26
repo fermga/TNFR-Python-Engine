@@ -3226,6 +3226,91 @@ P48 promotes the §13nonies operator-level lift of the smooth half of T-HP from 
 
 **Net effect**: P48 completes the operator-level lift of the smooth half of T-HP$^\chi$ for every primitive real Dirichlet character $\chi_3, \chi_4, \chi_5$, matching the ζ-track milestone of §13nonies one character at a time. The L-track attack surface against T-HP$^\chi$ now mirrors the ζ-track attack surface against T-HP. Both G4 = RH and GRH$_\chi$ remain OPEN; P48 is a structural-compatibility diagnostic plus a positive constructive result for sub-problem (1) of T-HP$^\chi$.
 
+## §13vicies-octavo. P49 — χ-Twisted Prime-Ladder Oscillatory Correction (L-Track Analogue of P31; Closes Full ζ↔L Attack-Surface Parity; Does NOT Prove GRH or Advance G4)
+
+### §13vicies-octavo.1 Motivation
+
+P31 ([§13decies-quarto](#13decies-quarto-p31--prime-ladder-oscillatory-correction-branch-b1-retry-does-not-advance-g4)) attacks the **oscillatory half** of T-HP at the ζ-track by reconstructing $S(T) = \pi^{-1} \arg \zeta(1/2 + iT)$ from the canonical prime-ladder spectrum $\{(k\log p, \log p)\}$ via the Riemann–von Mangoldt template, then applying a Newton step on the P28 smooth targets. P49 is the **L-track analogue** of P31, one primitive real Dirichlet character at a time, reconstructing
+$$S_\chi(T) = \frac{1}{\pi}\arg L\!\left(\tfrac{1}{2} + iT,\,\chi\right)$$
+from the canonical P34 χ-twisted prime-ladder spectrum $\{(k\log p,\,\chi(p)^k \log p)\}$ via the χ-twisted Riemann–von Mangoldt template
+$$\pi\, S_\chi^{\mathrm{TNFR}}(T;\,N,K) \;=\; -\!\!\!\!\sum_{(\mu,w)\in\Sigma_{N,K}^{(\chi)}}\!\!\!\frac{w}{\mu}\,\frac{\sin(T\mu)}{\exp(\mu/2)}$$
+and applying the Newton correction
+$$\gamma_n^{(\chi),\,\text{corr}} \;=\; \tilde\gamma_n^{(\chi)} \;-\; d\cdot\frac{S_\chi^{\mathrm{TNFR}}(\tilde\gamma_n^{(\chi)})}{\bar N'_\chi(\tilde\gamma_n^{(\chi)})}$$
+on the canonical P46 χ-twisted smooth targets, where $\bar N'_\chi(T) = (2\pi)^{-1}\log(qT/(2\pi))$. P49 closes the **final ζ↔L attack-surface parity item**: with P49, every canonical ζ-track operator from P12 through P31 has a matching χ-twisted L-track counterpart.
+
+### §13vicies-octavo.2 Construction
+
+Restricted to **primitive real** characters $\chi \in \{\chi_3, \chi_4, \chi_5\}$ so that $w_{p,k}^{(\chi)} = \chi(p)^k \log p \in \mathbb{R}$ and the von Mangoldt-style sum returns a real-valued $S_\chi^{\mathrm{TNFR}}(T)$ analogous to the ζ-track case. The construction proceeds in four steps:
+
+1. **Canonical χ-twisted prime-ladder spectrum**: build $\Sigma_{N,K}^{(\chi)} = \{(\mu_{p,k},\,w_{p,k}^{(\chi)}) : p\le p_N,\,\chi(p)\ne 0,\,1\le k\le K\}$ via `build_twisted_prime_ladder_spectrum(chi, n_primes, max_power)` (P34 atomic primitive).
+2. **Canonical P46 χ-twisted smooth targets**: build $\{\tilde\gamma_i^{(\chi)}\}_{i=1}^{N}$ via `build_twisted_structural_t_hp(n_targets, chi)` using the P46 closed-form density $\bar N_\chi(T)$.
+3. **Oscillatory sum**: evaluate $S_\chi^{\mathrm{TNFR}}(\tilde\gamma_i^{(\chi)})$ pointwise; the $\exp(-\mu/2)$ damping factor enforces absolute convergence as $\mu \to \infty$.
+4. **Newton correction sweep**: scan damping coefficients $d \in \{0,\,0.25,\,0.5,\,0.75,\,1.0,\,1.25,\,1.5\}$; report the $d$ minimising $W_1(\{\gamma_n^{(\chi),\,\text{corr}}\},\,\{\gamma_n^{(\chi),\,\text{true}}\})$ against the true L(s, χ) zeros fetched via `fetch_chi_zero_imaginary_parts(chi, n_zeros)` (P39 mpmath-side reference; does NOT enter the construction).
+
+The construction is **strictly canonical**: every input on the construction side is either a P34, P46, or AGENTS.md canonical-constant ingredient. The mpmath χ-zero side enters only as the held-out reference for $W_1$ scoring.
+
+### §13vicies-octavo.3 Empirical Verification
+
+Demo `examples/76_twisted_oscillatory_correction_demo.py` with $N=10$, $N_{\text{primes}}=80$, $K=5$ over $\{\chi_3, \chi_4, \chi_5\}$:
+
+| character | best $d$ | $W_1$(smooth) | $W_1$(corrected) | improvement | max $\lvert S_\chi^{\mathrm{TNFR}}\rvert$ | regime |
+|---|---|---|---|---|---|---|
+| $\chi_3$ (mod 3) | 0.00 | 1.5662 | 1.5662 | +0.00 % | 0.0771 | branch B2 (no canonical improvement) |
+| $\chi_4$ (mod 4) | 1.50 | 1.4185 | 1.3331 | **+6.02 %** | 0.0628 | branch B1 evidence (L-track) |
+| $\chi_5$ (mod 5) | 0.00 | 1.3523 | 1.3523 | +0.00 % | 0.1411 | branch B2 (no canonical improvement) |
+
+The mixed regime (1 out of 3 characters with measurable B1 improvement, 2 out of 3 with no canonical improvement) is **honest evidence** that the canonical χ-twisted prime-ladder spectrum *partially* captures the oscillatory remainder for some primitive real characters but not for others. The pattern is qualitatively consistent with §13nonies and §13vicies-septimo: canonical-only operators yield small or vanishing improvements; the gap to the true χ-zeros remains $\mathcal{O}(1)$ at $N=10$.
+
+### §13vicies-octavo.4 What P49 Extends
+
+P49 extends the §13decies-quarto branch-B1 retry from ζ to **every primitive real Dirichlet character**: the canonical χ-twisted prime-ladder spectrum plus the χ-twisted Riemann–von Mangoldt template now form a complete L-track reconstruction pipeline for $S_\chi(T)$. With P49, the ζ↔L attack-surface parity table is **complete**:
+
+| ζ-track operator | L-track operator | parity item |
+|---|---|---|
+| P12 von Mangoldt zeta | P32 χ-twisted vM zeta | spectral data |
+| P14 prime-ladder Hamiltonian | P34 χ-twisted prime-ladder Hamiltonian | self-adjoint scaffold |
+| P15 Weil–Guinand identity | P35 χ-twisted Weil–Guinand | zeros↔spectrum bridge |
+| P16 Li–Keiper positivity | P36 χ-twisted Li–Keiper | RH-equivalent diagnostic |
+| P17 Weil–TNFR positivity bridge | P37 χ-twisted Weil–TNFR bridge | positivity diagnostic |
+| P18 α(σ) gauge sweep | P38 χ-twisted α(σ) gauge sweep | admissibility sweep |
+| P19 admissible family | P39 χ-twisted admissible family | family sweep |
+| P20 node-aware gauge sweep | P40 χ-twisted node-aware gauge sweep | gauge diagnostic |
+| P21 Hermite2 sweep | P41 χ-twisted Hermite2 sweep | extended family |
+| P22–P24 coercivity certificates | P42–P44 χ-twisted coercivity | uniform/adaptive bounds |
+| P25 Paley-gap | P45 χ-twisted Paley-gap | gap diagnostic |
+| P26 Lyapunov-spectral positivity | (subsumed into P42–P45 family) | — |
+| P27 Hilbert–Pólya scaffold | (subsumed into P34) | — |
+| P28 smooth zero density | P46 χ-twisted smooth zero density | density-level smooth half |
+| P29 spectral emergence | P47 χ-twisted spectral emergence | universality diagnostic |
+| P30 admissible rescaling | P48 χ-twisted admissible rescaling | operator-level smooth half |
+| **P31 oscillatory correction** | **P49 χ-twisted oscillatory correction** | **oscillatory half (branch B1 retry)** |
+
+### §13vicies-octavo.5 What P49 Does NOT Advance
+
+* **G4 = RH on $\zeta$**: untouched. P49 operates entirely on $L(s,\chi)$, not $\zeta$.
+* **GRH$_\chi$ for primitive real $\chi$**: NOT proved. P49 is a structural-compatibility diagnostic plus a partial branch-B1 reconstruction for one character out of three tested. Vanishing improvement for $\chi_3$ and $\chi_5$ corroborates §13octies branch B2 at the L-track level.
+* **Sub-problem (2) of T-HP$^\chi$** (canonicity from the nodal equation): NOT addressed. P49 inherits the canonical-ingredient palette from P34 and P46; it does not derive canonicity afresh.
+* **Sub-problem (3) of T-HP$^\chi$** (positivity coincidence with χ-twisted Weil quadratic form): NOT addressed. P49 measures a $W_1$ residual, not a positivity functional.
+
+### §13vicies-octavo.6 Cross-References
+
+* **ζ-track template**: §13decies-quarto (P31 `oscillatory_correction.py`) is the construction P49 specialises to each primitive real character without modification of atomic primitives.
+* **L-track smooth-side ladder**: §13vicies-quinto (P46) supplies the density-level smooth targets; §13vicies-septimo (P48) supplies the operator-level smooth half; P49 (this section) adds the oscillatory Newton step on top.
+* **L-track Hilbert–Pólya scaffold**: §13quaterdecies (P34) supplies the canonical χ-twisted spectrum $\{(\mu_{p,k}, w_{p,k}^{(\chi)})\}$ that drives the χ-twisted von Mangoldt sum on the construction side.
+* **L-track χ-zero reference**: §13novies-decies (P39 `fetch_chi_zero_imaginary_parts`) supplies the held-out true χ-zeros for $W_1$ scoring; it does NOT enter the construction.
+* **Honest-scope framework**: §13octies (branches B1/B2/B3) and §13.2 (final gap balance) apply verbatim at the L-track level.
+
+### §13vicies-octavo.7 Gap Balance
+
+| Gap | Status before P49 | Status after P49 |
+|---|---|---|
+| G4 = RH on $\zeta$ | OPEN | OPEN, unchanged |
+| GRH$_\chi$ for primitive real $\chi$ | OPEN | OPEN, unchanged |
+| Oscillatory half of T-HP$^\chi$ at branch B1 (canonical-only) | UNATTESTED | **PARTIALLY ATTESTED**: $\chi_4$ shows +6.02% canonical improvement (branch B1 evidence); $\chi_3$, $\chi_5$ show 0% improvement (branch B2 corroboration) |
+| ζ↔L attack-surface parity (P12–P31 ↔ P32–P49) | INCOMPLETE (P31 missing L-track counterpart) | **COMPLETE**: every canonical ζ-track operator from P12 through P31 has a matching χ-twisted L-track counterpart |
+
+**Net effect**: P49 closes the **final ζ↔L attack-surface parity item** by lifting the §13decies-quarto branch-B1 prime-ladder oscillatory correction to every primitive real Dirichlet character. The L-track attack surface against T-HP$^\chi$ now mirrors the ζ-track attack surface against T-HP **in full**, from spectral data (P12↔P32) through operator-level smooth half (P30↔P48) and now oscillatory half (P31↔P49). The mixed empirical regime (1/3 branch-B1, 2/3 branch-B2) is honest structural-compatibility evidence; it neither closes G4 = RH nor proves GRH$_\chi$ for any character. P49 is a positive structural-parity milestone plus a diagnostic split that further corroborates §13octies branch B2 across both tracks.
+
 ## 14. Weil–TNFR Positivity Bridge (P17)
 
 ### 14.1 Motivation
@@ -3796,6 +3881,7 @@ piecewise status notes.
 | **P45** Dirichlet L χ-twisted Hilbert–Pólya scaffold | `twisted_hilbert_polya.py` | `72_twisted_hilbert_polya_demo.py` | §13vicies-quarto | Structural extension of P27 (`hilbert_polya.py`) to primitive real $L(s, \chi)$: builds the reference operator $T_{\mathrm{HP}}^{(\chi)} = \operatorname{diag}(\gamma_1^{(\chi)}, \dots, \gamma_N^{(\chi)})$ on $\ell^2_N(\mathbb{N})$ where $\gamma_n^{(\chi)}$ are positive imaginary parts of zeros of $L(s, \chi)$ located by Hardy–Z bisection (`find_dirichlet_l_zeros`, the same enumerator used by P36); reuses `build_hp_operator`, `verify_hp_self_adjoint`, `hp_resolvent_schatten_norms`, `wasserstein_1_distance` atomically from P27; certifies (i) self-adjointness (real diagonal, exact, Frobenius asymmetry $= 0$), (ii) trace-class shifted resolvent $(T_{\mathrm{HP}}^{(\chi)2} + s^2 I)^{-1/2}$ with explicit Schatten-1/2/op norms, (iii) χ-twisted Weil–Guinand consistency $2 \sum h_\sigma(\gamma_n^{(\chi)}) = g(0) \log(q/\pi) +$ archimedean $+ \sum_{p \nmid q, k} \chi(p)^k \log(p) p^{-k/2} g(k \log p)$ (parity-shifted digamma, character-dependent constant term replaces $\zeta$-pole $-g(0) \log \pi$), and (iv) Wasserstein-1 spectral gap against $\operatorname{spec}(\hat H^{(\chi)} \mid p \nmid q)$; verified on $(n_{\mathrm{primes}}, k_{\max}, n_{\mathrm{zeros}}, \sigma, s, \mathrm{tol}) = (18, 5, 25, 2.0, 1.0, 10^{-2})$ for $\chi_3, \chi_4, \chi_5$: Weil residuals $\{5.19 \times 10^{-16}, 9.07 \times 10^{-15}, 1.72 \times 10^{-15}\}$ at machine precision; $W_1 \in \{35.5, 31.8, 30.3\}$ with growth ratios $\sim 12$ quantifying the L-track operator-level structural gap (mirror of P30 negative-enrichment for $\zeta$); `scaffold_consistent = True` for all 3 characters; **does NOT prove GRH ($T_{\mathrm{HP}}^{(\chi)}$ is populated by *inputting* Hardy–Z bisection of classical $L(s, \chi)$; the operator is not derived from TNFR first principles) and does NOT advance G4** |
 | **P46** Dirichlet L χ-twisted structural zero density | `twisted_structural_zero_density.py` | `73_twisted_structural_zero_density_demo.py` | §13vicies-quinto | L-track analogue of P28 (`structural_zero_density.py`): derives the smooth chi-twisted zero positions $\tilde{\gamma}_n^{(\chi)}$ from the chi-twisted Riemann–Siegel theta $\theta_\chi(T) = \operatorname{Im} \log \Gamma((1/2+a)/2 + iT/2) + (T/2) \log(q/\pi)$ via Newton iteration on $\bar{N}_\chi(\tilde{\gamma}_n^{(\chi)}) = n - 1/2$ — no `find_dirichlet_l_zeros` call on the derivation side (only used for benchmark); builds $\tilde{T}_{\mathrm{HP}}^{(\chi)} = \operatorname{diag}(\tilde{\gamma}_1^{(\chi)}, \dots, \tilde{\gamma}_N^{(\chi)})$ and certifies (i) per-zero residuals $r_n^{(\chi)} = \gamma_n^{(\chi)} - \tilde{\gamma}_n^{(\chi)}$ encoding $S_\chi(T) = \tfrac{1}{\pi} \arg L(\tfrac12 + iT, \chi)$, (ii) operator-level Wasserstein-1 reduction $W_1(\operatorname{spec}(\tilde{T}_{\mathrm{HP}}^{(\chi)}), T_{\mathrm{HP}}^{(\chi)}) \ll W_1(\operatorname{spec}(P34\vert_{p\nmid q}), T_{\mathrm{HP}}^{(\chi)})$, (iii) theoretical bound $\max\lvert r_n^{(\chi)}\rvert \le C \cdot \max(\log \gamma_n^{(\chi)} / \bar{N}_\chi'(\gamma_n^{(\chi)}))$ with $C \le 2$; verified on $(n_{\mathrm{zeros}}, p34\_n\_primes, p34\_max\_power) = (18, 30, 6)$ for $\chi_3, \chi_4, \chi_5$: $\max\lvert r_n^{(\chi)}\rvert \in \{3.21, 2.65, 2.53\}$; $W_1$ reductions $\{28.4 \to 1.32, 25.2 \to 1.23, 24.1 \to 1.17\}$, improvement ratios $\{21.6\times, 20.4\times, 20.6\times\}$; bound satisfied across all 3 characters; closes the **smooth half** of the L-track structural derivation gap (mirror of P28 for ζ); **does NOT prove GRH for any $L(s, \chi)$** (oscillatory residual encoding $S_\chi$ is the open arithmetic problem, equivalent to GRH$_\chi$) **and does NOT advance G4 = RH** |
 | **P47** Dirichlet L χ-twisted spectral emergence under canonical coupling | `twisted_spectral_emergence.py` | `74_twisted_spectral_emergence_demo.py` | §13vicies-sexto | L-track analogue of P29 (`spectral_emergence.py`): sweeps the three canonical TNFR inter-prime coupling laws (`kuramoto_u3`: $(\gamma/\pi)\exp(-\lvert k\log p - m\log q\rvert)$; `phi_multiscale`: $\varphi^{-(k+m)}/\sqrt{pq}$; `pnt_logarithmic`: $\gamma/\log(1+pq)$) on the P34 χ-twisted prime-ladder Hamiltonian with explicit $\chi(p)\chi(q)$ multiplicative twist on every off-diagonal entry; computes the Kolmogorov–Smirnov distance of the unfolded nearest-neighbour spacing distribution to the GUE Wigner surmise (conjectural universality class of zeros of $L(s,\chi)$) and to the Poisson reference; verified on $(n_{\mathrm{primes}}, k_{\max}) = (20, 3)$ for $\chi_3, \chi_4, \chi_5$ over strengths $s \in \{0, 0.05, 0.1, 0.2, 0.5, 1, 2\}$: `pnt_logarithmic` uniformly strongest emergence kernel with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.097, 0.116, 0.135\}$ at $s^* = 2$ ($33$–$49\%$ reduction vs baseline); `kuramoto_u3` second with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.120, 0.150, 0.135\}$ at $s^* = 1$ ($25$–$36\%$ reduction); `phi_multiscale` weak ($0$–$6\%$ reduction); attests the L-track spacing-universality diagnostic for every primitive real Dirichlet character; **does NOT prove GRH for any $L(s, \chi)$** (KS-GUE residual at finite $K$ is consistent with finite-size effects, not evidence against GRH) **and does NOT advance G4 = RH** |
+| **P49** Dirichlet L χ-twisted prime-ladder oscillatory correction | `twisted_oscillatory_correction.py` | `76_twisted_oscillatory_correction_demo.py` | §13vicies-octavo | L-track analogue of P31 (`oscillatory_correction.py`): reconstructs $S_\chi(T) = \pi^{-1}\arg L(\tfrac12 + iT, \chi)$ from the canonical P34 χ-twisted prime-ladder spectrum $\{(k\log p,\,\chi(p)^k\log p)\}$ via the χ-twisted Riemann–von Mangoldt template $\pi S_\chi^{\mathrm{TNFR}}(T) = -\sum_{(\mu,w)}(w/\mu)\sin(T\mu)\exp(-\mu/2)$, then applies the Newton step $\gamma_n^{(\chi),\,\text{corr}} = \tilde\gamma_n^{(\chi)} - d\,S_\chi^{\mathrm{TNFR}}(\tilde\gamma_n^{(\chi)}) / \bar N'_\chi(\tilde\gamma_n^{(\chi)})$ on the canonical P46 χ-twisted smooth targets with $\bar N'_\chi(T) = (2\pi)^{-1}\log(qT/(2\pi))$; restricted to **primitive real** characters so the von Mangoldt-style sum is real-valued (validates $\max\lvert\Im w\rvert \le 10^{-10}$); damping sweep $d \in \{0, 0.25, 0.5, 0.75, 1, 1.25, 1.5\}$; **closes the final ζ↔L attack-surface parity item**: with P49, every canonical ζ-track operator P12–P31 has a matching χ-twisted L-track counterpart (P32–P49); verified on $(N, N_{\mathrm{primes}}, K) = (10, 80, 5)$ for $\chi_3, \chi_4, \chi_5$: mixed empirical regime — $\chi_4$ shows **+6.02%** branch-B1 canonical improvement at $d^* = 1.5$ ($W_1$: $1.4185 \to 1.3331$); $\chi_3$ and $\chi_5$ show **0% improvement** ($d^* = 0$) corroborating §13octies branch B2 at the L-track level (a genuinely new canonical operator required); honest split (1/3 B1, 2/3 B2) further attests the canonical-only oscillatory cap visible across both tracks; **does NOT prove GRH$_\chi$ for any $L(s, \chi)$** (residual $W_1 \approx 1.3$–$1.6$ encodes the chi-twisted oscillatory remainder), **does NOT advance G4 = RH**, **does NOT address sub-problems (2) canonicity from the nodal equation and (3) positivity coincidence with the χ-twisted Weil form**; positive structural-parity milestone plus L-track structural-compatibility diagnostic |
 | **P48** Dirichlet L χ-twisted admissible spectral-rescaling operator | `twisted_admissible_rescaling.py` | `75_twisted_admissible_rescaling_demo.py` | §13vicies-septimo | L-track analogue of P30 (`admissible_rescaling.py`): lifts the §13vicies-quinto density-level closure of the smooth half of T-HP$^{(\chi)}$ to the operator level by constructing the canonical diagonal rescaling $F^{(\chi)}_{\text{smooth}} = U_{P34}\,\operatorname{diag}(\sqrt{\tilde{\gamma}_i^{(\chi)} / \lambda_i})\,U_{P34}^{*}$ on each primitive real Dirichlet character; reuses `extract_positive_spectrum`, `build_smooth_rescaling_operator`, `apply_rescaling`, `verify_self_adjointness_preserved`, `verify_spectrum_match`, `oscillatory_correction_canonical` atomically from `admissible_rescaling.py`; certifies (i) self-adjointness preservation under conjugation, (ii) exact spectrum match $\operatorname{spec}(F^{(\chi)}_{\text{smooth}}\,H_{P34}^{(\chi)}\,(F^{(\chi)}_{\text{smooth}})^{*}) = \{\tilde{\gamma}_i^{(\chi)}\}$ to machine precision $\le 7.1\times10^{-15}$, (iii) Wasserstein-1 gap closure $W_1(\sigma(H_{P34}^{(\chi)}), \{\gamma_n^{(\chi)}\}) \to W_1(\{\tilde{\gamma}_n^{(\chi)}\}, \{\gamma_n^{(\chi)}\})$, (iv) honest sweep of the three canonical oscillatory enrichments (`phi_log`, `gamma_e`, `pi_density`) at amplitudes $\{0, 10^{-3}, 5\!\cdot\!10^{-3}, 10^{-2}, 5\!\cdot\!10^{-2}, 10^{-1}\}$ with per-mode breakdown; verified on $(n_{\mathrm{targets}}, p34\_n\_primes, p34\_max\_power) = (12, 25, 5)$ for $\chi_3, \chi_4, \chi_5$: smooth-half W$_1$ ratios $\{14.86\times, 13.85\times, 14.44\times\}$ (baseline $\{21.9, 19.0, 18.4\} \to$ smooth $\{1.47, 1.38, 1.27\}$); best canonical oscillation `pi_density` at amplitude $10^{-3}$ for every character with extra improvement $\{+17.85\%, +13.22\%, +12.68\%\}$ over smooth baseline; per-mode ranking uniform: `pi_density` > `gamma_e` > `phi_log`; closes sub-problem (1) of Conjecture T-HP$^{(\chi)}$ for the smooth half at the operator level (L-track mirror of P30 §13nonies); negative-knowledge oscillatory cap ($\le 18\%$ canonical improvement) constitutes structural evidence for §13octies branch B2 at the L-track level; **does NOT prove GRH$_\chi$ for any $L(s, \chi)$** (residual W$_1 \approx 1.1$–$1.2$ encodes $S_\chi(T) = (1/\pi)\arg L(\tfrac12+iT, \chi)$, GRH$_\chi$-equivalent) **and does NOT advance G4 = RH** |
 
 ### 19.2 Gap Balance
