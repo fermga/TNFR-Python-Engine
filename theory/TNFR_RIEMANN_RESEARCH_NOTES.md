@@ -5010,3 +5010,135 @@ observed; next commit will append results in a Results block as
 §13vicies-novies.13.
 
 ---
+
+### §13vicies-novies.13 R-inf-1c Results (post-registration data)
+
+**Execution context.** Driver
+`benchmarks/remesh_infinity_riemann_modified_graph.py` executed exactly
+as pre-registered in §13vicies-novies.12. No parameters changed; no
+seeds changed; no thresholds changed. Canonical configuration: $N=40$
+nodes, $\dim(\text{joint})=680$, $\delta_{\mathrm{coh}}=2.4747$ (single
+derived value from $(\gamma/\pi)\,k_{\max}\,\log p_{\max}$), 278
+canonical inter-prime edges, 278 shuffled inter-prime edges. Seed
+`np.random.default_rng(20260526)`, `mp.dps=30`. Output report:
+`results/remesh_infinity/remesh_infinity_riemann_modified_graph.json`.
+
+**Pre-registered F7-A statistic (KS distance vs GUE Wigner surmise).**
+
+| Label | Projection | #spacings | $D_{\mathrm{GUE}}$ |
+|---|---|---:|---:|
+| `canonical_REMESH_o_IL_aug` | `Im_upper` | 319 | **0.43058** |
+| `N1_GOE` | `Re_fallback` | 679 | 0.11259 |
+| `N2_Poisson` | `uniform_iid` | 679 | 0.30317 |
+| `N3_shuffled_prime` | `Im_upper` | 319 | **0.43058** |
+| `N4_REMESH_isolated` | `Im_upper` | 7 | 0.30820 |
+| `N5_random_augmentation` | `Im_upper` | 319 | 0.41543 |
+| `Riemann_reference` (mpmath zeros) | iid_or_zeros | 99 | 0.07700 |
+
+**Pre-registered F8 structural necessary condition
+($|D_{\mathrm{canonical}} - D_{\mathrm{shuffled}}| \ge 0.01$).**
+
+$$
+|D_{\mathrm{canonical}} - D_{\mathrm{shuffled}}| = 3.13 \times 10^{-13}
+\quad \text{(machine-precision zero)}, \qquad \text{F8 NOT satisfied.}
+$$
+
+**Pre-registered verdict.** `INDETERMINATE_DEGENERATE_CONSTRUCTION` →
+`B1_MODIFIED_GRAPH_INDETERMINATE_DEGENERATE_CONSTRUCTION`.
+
+**Structural reading (Euler-Orthogonality Lemma, §13vicies-novies.11
+specialised to the augmented graph).** The exact-to-13-decimal-places
+identity $D_{\mathrm{canonical}} = D_{\mathrm{shuffled}} = 0.43058$ is
+not a numerical accident: it is the predicted consequence of an
+unbroken $S_n$ prime-relabelling symmetry on the augmented graph. The
+canonical inter-prime weight law
+
+$$
+w_{ij} = \frac{\gamma}{\pi}\,
+\exp\!\left(-\frac{|\Delta \nu_f|^{2}}{2\,\delta_{\mathrm{coh}}^{2}}\right)
+$$
+
+depends on $\nu_f$ values only through pairwise differences, and the
+$\nu_f$ schedule on the prime ladder is itself a function of $p$ alone.
+Hence shuffling the prime labels acts on the augmented Laplacian
+$L_{G^{\mathrm{aug}}}$ by conjugation with a permutation matrix
+$P_{\sigma}\otimes I_{k_{\max}}$. This conjugation extends through the
+slot-0 IL smoother and through $M_{\mathrm{REMESH}}$ (both block-local
+in the canonical construction), so $T^{\mathrm{aug}}_{\mathrm{canonical}}$
+and $T^{\mathrm{aug}}_{\mathrm{shuffled}}$ are unitarily equivalent and
+therefore isospectral. The empirical $\Delta D = O(10^{-13})$ measures
+exactly the floating-point conjugation residual.
+
+**What this closes.** Within the canonical 13-operator catalog, the
+graph-modification sub-route R∞-1c — i.e. *any* augmentation of $G_{P14}$
+by inter-prime edges whose weights depend only on $(\nu_f, p)$ data
+through $S_n$-invariant combinations — is **structurally incapable of
+breaking the $S_n$ symmetry** and therefore **cannot encode Riemann
+level statistics** at the edge-channel level. This is the modified-graph
+analogue of the original Euler-Orthogonality Lemma for fixed $G_{P14}$.
+
+**What this does not close.** R∞-1c does not exhaust B1. The two
+mathematical hypotheses required to fall under the Euler-Orthogonality
+Lemma at the modified-graph level are (i) $S_n$-invariant weight law
+and (ii) block-local action of all composed canonical operators on
+$\mathbb{C}^{N}\otimes \mathbb{C}^{k_{\max}}$. Both hypotheses hold for
+the canonical Kuramoto-U3 augmentation tested here. The remaining
+structurally permitted B1 sub-route is **R∞-1b** (composition on the
+P14 *internal* Hilbert space, not the graph: by construction
+basis-permutation-non-commuting, hence not subject to the Euler-
+Orthogonality argument). R∞-1b has not been pre-registered or tested
+in this thread.
+
+**Control-by-control sanity.**
+- `N1_GOE` $D=0.113$: GOE→GUE Wigner-surmise mismatch is within the
+  expected $\approx 0.10$ range for $n_{\mathrm{spacings}}=679$;
+  pipeline calibration confirmed.
+- `N2_Poisson` $D=0.303$: uniform-iid baseline well separated from GUE,
+  as expected for non-correlated levels.
+- `Riemann_reference` $D=0.077$: classical Riemann zeros pass the GUE
+  test at the gold-standard level on 99 spacings; this is the
+  positive-control floor the canonical construction would need to
+  approach to count as `SUPPORTED`.
+- `N4_REMESH_isolated` reports only 7 spacings (degenerate sample
+  size; consistent with the §13vicies-novies.8 finding that
+  REMESH-iterated-in-isolation produces a rank-deficient iteration
+  matrix). Not used in verdict.
+- `N5_random_augmentation` $D=0.415$: Erdős–Rényi inter-prime
+  augmentation with uniform weight $\gamma/\pi$, same edge count.
+  $D_{\mathrm{random}} - D_{\mathrm{canonical}} = -0.015$ — random is
+  *closer* to GUE than canonical, which is itself a structural
+  signature of the symmetry obstruction (random breaks $S_n$;
+  canonical does not).
+
+**Status update for the B1 question.** After §13vicies-novies.13, the
+B1-at-edge-channel-level question on or around $G_{P14}$ is closed for
+every sub-route covered by the Euler-Orthogonality Lemma:
+
+| Sub-route | Object | Status |
+|---|---|---|
+| R∞-1a-operator (§.8) | REMESH iterated, fixed $G_{P14}$ | REFUTED |
+| R∞-1a-composed (§.9) | REMESH ∘ IL, fixed $G_{P14}$ | REFUTED |
+| R∞-1c (§.12–§.13) | $T^{\mathrm{aug}}$ on canonically augmented $G_{P14}$ | INDETERMINATE_DEGENERATE_CONSTRUCTION (Euler-Orthogonality at augmented level) |
+| R∞-1b | composition on P14 internal Hilbert space | NOT TESTED (structurally permitted) |
+
+The TNFR-Riemann program remains paused at the T-HP boundary
+(§13septies). G4 = RH is unchanged. What §13vicies-novies.13 supplies
+is a second empirical instantiation of the symmetry obstruction
+identified in §13vicies-novies.11, now at the graph-modification
+level, locking R∞-1b as the unique remaining sub-route of B1 that
+might admit a TNFR-canonical attack without going to B2 or B3.
+
+**Reproducibility.**
+
+```powershell
+$env:PYTHONPATH = (Resolve-Path ./src).Path
+& .\.venv312\Scripts\python.exe `
+    benchmarks\remesh_infinity_riemann_modified_graph.py
+```
+
+Output: `results/remesh_infinity/remesh_infinity_riemann_modified_graph.json`
+(gitignored). All four numerical entries quoted above (canonical $D$,
+N3 $D$, $|\Delta D|$, N5 $D$) reproduce from the locked seed
+`np.random.default_rng(20260526)`.
+
+---
