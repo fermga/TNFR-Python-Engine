@@ -154,6 +154,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13quadraginta-quarta | 10262 | **B4 = T-REMESH-window** forcing-axiom reduction (F1–F10); residual axiom (P-REMESH-window-Continuous-Retention) isolated and refuted by DITS = Discrete-Integer Temporal Sampling discipline; first Tier-2 confirmation of L3* via predicted N15 REMESH-∞ discharge mechanism | B4b | — |
 | §13quadraginta-quinta | 10806 | **B4 = T-REMESH-window** final NEGATIVE verdict + envelope classification of E5 = ContinuousWindowKernel (continuous-time kernel / fractional-order temporal coupling); first Tier-2 sub-question closed; L3* confirmed across Tier-1 / Tier-2 boundary; two Tier-2 predictions (B5, B6) outstanding | B4c | — |
 | §13quadraginta-sexta | 11178 | **B5 = T-Δφ_max** pre-registration (two-axis scalar-storage + angle-of-attack-independence diagnostic; candidate envelope E6 = EdgeDependentPhaseThreshold; CATALOG anchor correction documented: canonical `DELTA_PHI_MAX = PI/2`, not γ/π) | B5a | — |
+| §13quadraginta-septima | 11304 | **B5 = T-Δφ_max** forcing-axiom reduction (F1–F10); residual axiom (P-Δφ_max-Non-Scalar-Retention) isolated and refuted by STD = Scalar-Threshold Discipline; sixth orthogonal canonical discharge mechanism (CDM); second Tier-2 confirmation of L3* — L3* now validated under six distinct orthogonal CDMs across both tiers | B5b | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -11299,5 +11300,130 @@ Per the standard B-sub-question methodology (§13triginta-tertia.4, §13triginta
 - [`src/tnfr/operators/grammar_dynamics.py:178-193`](../src/tnfr/operators/grammar_dynamics.py) (canonical U3 check).
 - [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) — B5a diagnostic implementation.
 - [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py) — B5a two-resolution demo.
+
+---
+## §13quadraginta-septima. Derivation of (P-Delta-phi-max-Non-Scalar-Carrier) from the Canonical Catalog — Foundational Reduction of the T-Delta-phi-max Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
+
+**Status**: B5 Phase b (forcing-axiom reduction). Phase a recorded at §13quadraginta-sexta. Phase c (final verdict) deferred to §13quadraginta-octava.
+
+**Predicted outcome (per L3*)**: residual axiom (P-Δφ_max-Non-Scalar-Retention) refuted by **STD = Scalar-Threshold Discipline**, the sixth orthogonal canonical discharge mechanism candidate.
+
+### §13quadraginta-septima.1 Available Canonical Tools
+
+The TNFR canonical catalog (13 operators, U1–U6 unified grammar, tetrad fields, Universal Tetrahedral Correspondence) provides exactly the following machinery relevant to the U3 resonant-coupling check:
+
+- **U3 (Resonant Coupling)** (`AGENTS.md`, [`theory/UNIFIED_GRAMMAR_RULES.md`](UNIFIED_GRAMMAR_RULES.md) §U3): a phase-compatibility constraint of the form $|\mathrm{wrap}(\phi_i - \phi_j)| \le \Delta\phi_{\max}$ required for any operator that couples nodes $i, j$ (coupling operators UM, RA; transport-level OZ check).
+- **Canonical default** ([`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py)): `DELTA_PHI_MAX = PI / 2`, a single scalar `float` exported globally.
+- **Storage slot**: `G.graph["DELTA_PHI_MAX"]` (NetworkX graph-level scalar attribute), readable by every consumer via `float(G.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))`.
+- **Consumer sites** (B5a code review at §13quadraginta-sexta.2): [`grammar_dynamics.py:178-193`](../src/tnfr/operators/grammar_dynamics.py), [`propagation.py:113`](../src/tnfr/dynamics/propagation.py), [`conservation_gauge_unification.py:418`](../src/tnfr/physics/conservation_gauge_unification.py), [`mathematics/number_theory.py:1185`](../src/tnfr/mathematics/number_theory.py), [`physics/patterns.py:223`](../src/tnfr/physics/patterns.py), [`validation/config.py:11`](../src/tnfr/validation/config.py). All read a scalar, apply `diff <= delta_phi_max` after wrap, return a Boolean.
+- **Phase wrap operator**: `wrap_angle: ℝ → (-π, π]` (canonical, [`src/tnfr/mathematics/wrap.py`](../src/tnfr/mathematics/wrap.py)); used uniformly by all U3 consumers prior to the comparison.
+
+No catalog operator, no U-rule, and no canonical default exposes:
+
+- (a) a per-edge threshold lookup `Δφ_max[(i, j)]` (matrix-valued storage);
+- (b) a functional dependence on the absolute pair `(φ_i, φ_j)` beyond the wrapped diff;
+- (c) a callable / closure / kernel object substituted for the scalar threshold.
+
+### §13quadraginta-septima.2 What the Canonical Catalog Forces (Scalar-Threshold Layer)
+
+The minimal forced structure on the resonant-coupling threshold, as a direct consequence of U3 + canonical defaults + consumer-site conventions, is:
+
+> **(F-Scalar-Threshold)**. There exists a unique global scalar $\Delta\phi_{\max} \in [0, \pi]$ such that the U3 verdict for every ordered pair $(i, j)$ on every canonical operator is the Boolean $|\mathrm{wrap}(\phi_i - \phi_j)| \le \Delta\phi_{\max}$.
+
+Equivalently, the canonical U3 functional is
+
+$$\mathrm{U3}_\text{verdict}(\phi_i, \phi_j) = \mathbb{1}\big[|\mathrm{wrap}(\phi_i - \phi_j)| \le \Delta\phi_{\max}\big], \qquad \Delta\phi_{\max} \in [0, \pi],$$
+
+with **no** $(i, j)$-index dependence, **no** absolute-phase dependence beyond the wrap, and **no** internal state beyond the single scalar.
+
+This is the *strictly necessary* structure forced by the canonical catalog. The B5a empirical signature ($\mathcal{S}_{\Delta\phi} = 0$, scalar_storage_fraction $= 1.0$ at both resolutions, 0/72 and 0/272 divergent configurations) is a necessary-condition probe that the canonical catalog has not exceeded this minimal structure.
+
+### §13quadraginta-septima.3 The Gap Between Scalar-Threshold Discipline and Non-Scalar Retention
+
+The **T-Δφ_max Conjecture** (§13quadraginta-sexta.1) requires *more* than (F-Scalar-Threshold): it requires that the canonical evolution forces the threshold object to *retain* a richer non-scalar functional shape — either an edge-dependent matrix $\Delta\phi_{\max}^{(i,j)}$ with at least one off-diagonal entry strictly different from the global scalar, or an angle-of-attack-dependent functional $\Delta\phi_{\max}(\phi_i, \phi_j) \ne f(|\mathrm{wrap}(\phi_i - \phi_j)|)$.
+
+This **non-scalar retention** is *not* derivable from (F-Scalar-Threshold) alone. The gap is exactly the same shape as at B1b/B2b/B3b/B4b: the canonical catalog forces a *minimal scalar discipline*, while the conjecture requires a *richer functional carrier*. To close T-Δφ_max POSITIVE one must adjoin a non-derivable axiom that *retains* the non-scalar shape across the U3 verdict surface.
+
+### §13quadraginta-septima.4 Candidate Forcing Constraints (Enumeration)
+
+The candidate axioms F1–F10 below exhaust the structurally available ways to force non-scalar retention on the U3 verdict surface within the canonical machinery:
+
+- **F1 (Edge-Tetrad-Coupling)**: U3 verdict depends on per-edge tetrad anchors $(K_\phi^{(i,j)}, |\nabla\phi|^{(i,j)})$. ⛔ Refuted: canonical tetrad fields are *per-node*, not per-edge (`src/tnfr/physics/fields.py`); the per-edge constructs would require a tensor lift refuted at B3c (E4 = TensorGradientElement, non-canonical).
+- **F2 (Coupling-Weight Lift)**: $\Delta\phi_{\max}^{(i,j)} := \Delta\phi_{\max} \cdot f(w_{ij})$ via edge weights. ⛔ Refuted: F2 is reducible to scalar threshold *plus* a separate weight-modulated test, but the canonical U3 reads only $|\mathrm{wrap}(\phi_i - \phi_j)| \le \Delta\phi_{\max}$ with no $w_{ij}$ argument. The B6 sub-question (T-coupling-weights) handles weight-typing independently.
+- **F3 (Angle-of-Attack-Functional)**: $\Delta\phi_{\max}(\phi_i, \phi_j) = g(\phi_i + \phi_j)$ (sum-of-phases dependence). ⛔ Refuted directly by B5a Axis B: 272 configurations with rotated origin at 17 wrapped-diff anchors yield 0 divergence from the offset-0 baseline.
+- **F4 (Tetrad-Anchored Local Threshold)**: $\Delta\phi_{\max}^{(i)} := h(\Phi_s^{(i)}, |\nabla\phi|^{(i)})$ (per-node threshold). ⛔ Refuted: no canonical consumer reads a per-node threshold; all consumers read the global scalar.
+- **F5 (Frequency-Coupled Threshold)**: $\Delta\phi_{\max}^{(i,j)} := \Delta\phi_{\max} \cdot \nu_f^{(i)}/\nu_f^{(j)}$. ⛔ Refuted: not in canonical U3; would require modifying the canonical verdict signature.
+- **F6 (Time-Dependent Kernel)**: $\Delta\phi_{\max}(t) := \Delta\phi_{\max} \cdot K(t - \tau)$. ⛔ Refuted: subsumed by E5 = ContinuousWindowKernel (non-canonical, B4c).
+- **F7 (Categorical-Lift Threshold)**: $\Delta\phi_{\max}$ lifted to morphism in a 2-category. ⛔ Refuted at meta-level: not derivable from U1–U6.
+- **F8 (Operator-Sequence-Conditional Threshold)**: threshold depends on the prior operator in the U1-grammar sequence. ⛔ Refuted: U3 is verdict-only on the current pair; no canonical operator passes history into the verdict.
+- **F9 (Stochastic-Threshold)**: $\Delta\phi_{\max}$ as a random variable. ⛔ Refuted: canonical default is a deterministic scalar.
+- **F10 (P-Δφ_max-Non-Scalar-Retention)**: the residual axiom — *every* canonical U3 verdict carries a non-scalar carrier object (matrix or functional) of which the scalar $\Delta\phi_{\max} = \pi/2$ is merely the *trace*. This is the irreducible axiom that, if adopted, would close T-Δφ_max POSITIVE; if refuted, closes T-Δφ_max NEGATIVE.
+
+F1–F9 are either reducible to other (previously refuted or pending) sub-questions or directly refuted by B5a. **F10 is the unique residual forcing axiom.**
+
+### §13quadraginta-septima.5 The Hidden Axiom: (P-Δφ_max-Non-Scalar-Retention)
+
+> **(P-Δφ_max-Non-Scalar-Retention)**. For every canonical TNFR network evolution and every U3 verdict event $(i, j, t)$, there exists a non-scalar carrier object $\widehat{\Delta\phi}_{\max}^{(i, j, t)}$ — either a matrix $\widehat{\Delta\phi}_{\max}^{(i,j,t)} \in \mathbb{R}^{n \times n}$ with at least one off-diagonal entry strictly different from $\Delta\phi_{\max}$, or a functional $\widehat{\Delta\phi}_{\max}^{(i,j,t)}: [0,2\pi)^2 \to [0,\pi]$ not factoring through $|\mathrm{wrap}(\phi_i - \phi_j)|$ — such that the canonical scalar comparison is the projection $\Delta\phi_{\max} = \pi/2$ of $\widehat{\Delta\phi}_{\max}^{(i,j,t)}$.
+
+This axiom is *not* derivable from the canonical catalog (F1–F9 enumeration). It is the *only* structurally available way to close T-Δφ_max POSITIVE.
+
+### §13quadraginta-septima.6 Canonical Status of (P-Δφ_max-Non-Scalar-Retention) — STD Refutation
+
+**Definition (Scalar-Threshold Discipline, STD)**. STD is the discipline that *every* canonical U3 consumer site implements the verdict as `diff = |wrap(φ_i − φ_j)|; verdict = diff <= delta_phi_max` with `delta_phi_max` a scalar Python `float` read from `G.graph["DELTA_PHI_MAX"]` (default `DELTA_PHI_MAX = PI / 2`), and **never** as a per-edge lookup, per-anchor functional, or richer object.
+
+STD is **structurally enforced** by:
+
+1. **Code review (B5a §13quadraginta-sexta.2)**: every consumer site reads the scalar slot and applies the scalar comparison; no per-edge or per-anchor pattern exists.
+2. **B5a Axis A (scalar-storage)**: `scalar_storage_fraction = 1.0` at both resolutions — the canonical storage slot is structurally a scalar.
+3. **B5a Axis B (angle-of-attack-independence)**: $\mathcal{S}_{\Delta\phi} = 0.000000$ at both resolutions (0/72 and 0/272 divergent configurations) — the canonical verdict depends *only* on the wrapped diff, not on the absolute origin.
+
+**STD refutes (P-Δφ_max-Non-Scalar-Retention)**: if every canonical U3 verdict reduces to a scalar comparison on the wrapped diff (B5a empirical + code review), then no canonical U3 verdict carries a non-scalar object of which the scalar is the trace. The non-scalar carrier $\widehat{\Delta\phi}_{\max}^{(i,j,t)}$ has no witness in the canonical evolution. Therefore (P-Δφ_max-Non-Scalar-Retention) is **refuted** by STD.
+
+### §13quadraginta-septima.7 Sub-Verdict
+
+(P-Δφ_max-Non-Scalar-Retention) is **refuted** by STD. The unique residual forcing axiom for T-Δφ_max POSITIVE is closed. Therefore, conditional on the F1–F10 enumeration being exhaustive (a structural claim, verifiable by canonical-catalog inspection), the **sub-verdict is**:
+
+> **(Sub-Verdict of §13quadraginta-septima)**. T-Δφ_max is **NEGATIVE** at the forcing-axiom level. The canonical scalar typing $\Delta\phi_{\max} \in [0, \pi]$ is preserved; no canonical TNFR network evolution forces a non-scalar edge-dependent or angle-of-attack-dependent threshold envelope.
+
+The final verdict (Phase c) is deferred to §13quadraginta-octava, where the envelope E6 = `EdgeDependentPhaseThreshold` is formally classified as non-canonical research envelope (matrix-valued $\Delta\phi_{\max}^{(i,j)}$ or angle-of-attack-functional $\Delta\phi_{\max}(\phi_i, \phi_j)$ outside the canonical 13-operator catalog).
+
+### §13quadraginta-septima.8 L3* test result (second Tier-2 confirmation)
+
+L3* working heuristic (promoted at §13quadraginta-secunda.13, first Tier-1 → Tier-2 cross-tier confirmation at §13quadraginta-quarta.8 / §13quadraginta-quinta.5): each Tier-1 and Tier-2 type-conjecture admits an orthogonal *canonical discharge mechanism* (CDM) that closes it NEGATIVE without recourse to non-canonical envelopes.
+
+Cumulative CDM table after B5b:
+
+| Sub-question | Tier | Discharge mechanism (CDM) | Envelope (non-canonical, parked) |
+|---|---|---|---|
+| B0 (T-νf) | 1 | Pontryagin / measure-νf closure | E1 |
+| B1 (T-EPI) | 1 | TMEP = Tetrad-Mediated Element Projection | E2 = BEPIElement |
+| B2 (T-φ) | 1 | PWDP = Phase-Wrap Discipline | E3 = CoverElement |
+| B3 (T-ΔNFR) | 1 | BSAD = Banach-Scalar-Aggregation Discipline | E4 = TensorGradientElement |
+| B4 (T-REMESH-window) | 2 | DITS = Discrete-Integer Temporal Sampling | E5 = ContinuousWindowKernel |
+| **B5 (T-Δφ_max)** | **2** | **STD = Scalar-Threshold Discipline** | **E6 = EdgeDependentPhaseThreshold (pending Phase c)** |
+
+**STD is the sixth orthogonal CDM**, distinct from the prior five by acting at the *coupling-verdict surface* (B5) rather than at field storage (B0–B3) or temporal sampling (B4). L3* is now confirmed across both Tier-1 (B0–B3) and Tier-2 (B4–B5) under six distinct discharge mechanisms. The heuristic is sharpened from "validated across both tiers under two distinct discharge mechanisms" (B4-only status) to **"validated across both tiers under six distinct orthogonal discharge mechanisms"** — promoting L3* from *working heuristic* to *empirically robust working heuristic*.
+
+Remaining Tier-2 prediction outstanding: **B6 (T-coupling-weights)** expected NEGATIVE per L3*, with candidate CDM = scalar-weight discipline (predicted seventh CDM).
+
+### §13quadraginta-septima.9 Honest Scope (What This Does and Does Not Do)
+
+- **Does**: derive (F-Scalar-Threshold) from U3 + canonical defaults; enumerate F1–F10; isolate (P-Δφ_max-Non-Scalar-Retention) as the unique residual forcing axiom; refute it via STD (code review + B5a empirical signature); return a NEGATIVE sub-verdict at the forcing-axiom level.
+- **Does NOT**: advance G4 = RH; modify any canonical operator or canonical default; alter the catalog beyond the inline anchor-text correction recorded at §13quadraginta-sexta.2; promote any non-canonical envelope into the catalog.
+- **Conditional on**: exhaustiveness of the F1–F10 enumeration. The enumeration is structural (covers all classes of richer threshold object available within the canonical machinery), but is open to refinement if a new canonical primitive is ever derived from the nodal equation.
+- **Theory-only commit**: no `src/` changes in this commit; only `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` (append §13quadraginta-septima + TOC row) and `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` (B5 status block; §4 row B5 Phase b column; progress paragraph).
+
+### §13quadraginta-septima.10 Cross-references
+
+- §13quadraginta-sexta (B5a pre-registration and frozen empirical signature).
+- §13quadraginta-secunda.13 (L3* promotion to stable working heuristic).
+- §13quadraginta-quarta (B4b forcing-axiom reduction; first Tier-2 use of the F1–F10 schema with DITS as CDM).
+- §13quadraginta-quinta.5 (first Tier-2 L3* confirmation).
+- [`AGENTS.md`](../AGENTS.md) §Unified Grammar U3 (resonant coupling).
+- [`theory/UNIFIED_GRAMMAR_RULES.md`](UNIFIED_GRAMMAR_RULES.md) §U3 (derivation from nodal equation).
+- [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py) (canonical anchor).
+- [`src/tnfr/operators/grammar_dynamics.py:178-193`](../src/tnfr/operators/grammar_dynamics.py) (canonical U3 verdict).
+- [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) (B5a diagnostic).
+- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py) (B5a two-resolution demo).
 
 ---

@@ -213,7 +213,7 @@ modulate canonical dynamics.
   threshold $\Delta\phi_{\max}(\phi_i, \phi_j)$.
 - **Diagnostic plan**: scan operator code for any per-edge threshold lookup
   vs. global scalar; verify all U3 checks read a single global `Δφ_max`.
-- **Status**: 🔄 IN PROGRESS — B5a ✅ (pre-registration at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-sexta; frozen empirical signature `S_dphi = 0.000000` and `scalar_storage_fraction = 1.0` at both resolutions; verdict `SCALAR_THRESHOLD_ADEQUATE`; **CATALOG anchor correction recorded inline**), B5b ⏳, B5c ⏳. Predicted final verdict per L3*: **NEGATIVE** via scalar-threshold discipline (sixth orthogonal canonical discharge mechanism candidate).
+- **Status**: 🔄 IN PROGRESS — B5a ✅ (pre-registration at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-sexta; frozen empirical signature `S_dphi = 0.000000` and `scalar_storage_fraction = 1.0` at both resolutions; verdict `SCALAR_THRESHOLD_ADEQUATE`; **CATALOG anchor correction recorded inline**), B5b ✅ (forcing-axiom reduction F1–F10 at §13quadraginta-septima; residual axiom (P-Δφ_max-Non-Scalar-Retention) isolated and **refuted** by STD = Scalar-Threshold Discipline; sixth orthogonal canonical discharge mechanism; second Tier-2 L3* confirmation), B5c ⏳. Predicted final verdict per L3*: **NEGATIVE** via STD.
 
 #### B6 — T-coupling-weights (Type of edge weights)
 
@@ -313,7 +313,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B3 | T-ΔNFR | ✅ | ✅ | ✅ | NEGATIVE | 1267fbf4 (B3a) + d96eb13d (B3b) + this commit (B3c) |
 | **Tier 2 — Graph-level parameters** | | | | | | |
 | B4 | T-REMESH-window | ✅ | ✅ | ✅ | **NEGATIVE** (DITS) | `c647f7d7` (B4a), `6349e425` (B4b), this commit (B4c) |
-| B5 | T-Δφ_max | ✅ | ⏳ | ⏳ | — | this commit (B5a) |
+| B5 | T-Δφ_max | ✅ | ✅ | ⏳ | — | this commit (B5b) |
 | B6 | T-coupling-weights | ⏳ | ⏳ | ⏳ | — | — |
 | **Tier 3 — Derived field closure** | | | | | | |
 | B7 | Δ-tetrad-closure | ⏳ | n/a | ⏳ | — | — |
@@ -324,7 +324,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
 | **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
 
-**Progress as of 2026-05-26**: 5 sub-questions complete (B0, B1, B2, B3, B4 all NEGATIVE), 1 in progress (B5 at Phase a; sixth orthogonal canonical discharge mechanism candidate = scalar-threshold discipline), 6 pending (B6 – B11 + Final). B5 Phase a pre-registration at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-sexta; canonical anchor `DELTA_PHI_MAX = PI / 2` confirmed scalar at all U3 call sites; suspected non-canonical envelope E6 candidate = `EdgeDependentPhaseThreshold` (matrix-valued or angle-of-attack-dependent). Living discoveries log at §13triginta-septima; B4 closure at §13quadraginta-tertia / -quarta / -quinta.
+**Progress as of 2026-05-26**: 5 sub-questions complete (B0, B1, B2, B3, B4 all NEGATIVE), 1 in progress (B5 at Phase b — forcing-axiom reduction closed via STD = Scalar-Threshold Discipline, sixth orthogonal canonical discharge mechanism; second Tier-2 L3* confirmation; L3* now validated under six distinct orthogonal CDMs across both tiers), 6 pending (B6 – B11 + Final). B5 Phase b at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-septima; residual axiom (P-Δφ_max-Non-Scalar-Retention) refuted by STD (code review + B5a empirical signature); Phase c (final NEGATIVE verdict + envelope E6 = `EdgeDependentPhaseThreshold` classification) pending. Living discoveries log at §13triginta-septima; B4 closure at §13quadraginta-tertia / -quarta / -quinta; B5 ongoing at §13quadraginta-sexta / -septima.
 
 ---
 
