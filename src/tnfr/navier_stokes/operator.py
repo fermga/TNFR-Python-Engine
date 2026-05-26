@@ -197,7 +197,12 @@ class TNFRNavierStokesOperator:
     # ------------------------------------------------------------------
     # Dynamics
     # ------------------------------------------------------------------
-    def step(self, dt: float, advection: bool = False) -> None:
+    def step(
+        self,
+        dt: float,
+        advection: bool = False,
+        incompressible: bool = False,
+    ) -> None:
         """Advance the TNFR-NS flow by one time step.
 
         If ``advection`` is ``False`` (default, N2 baseline) the update is
@@ -216,12 +221,25 @@ class TNFRNavierStokesOperator:
         the discrete kinetic energy is dissipated solely by viscosity. This
         is the prerequisite for the discrete Leray energy inequality.
 
-        Pressure (and the candidate INCOMP operator) is NOT enforced here;
-        divergence may drift on the order of ``dt`` per step, which is
-        tracked explicitly by :meth:`divergence_residual`.
+        If ``incompressible`` is ``True`` (N5, INCOMP activated) the Leray-
+        Helmholtz projection :meth:`project_incompressible` is applied after
+        every sub-step that may break the divergence-free constraint (each
+        advection half-step). The viscous Crank-Nicolson update commutes
+        with the divergence on the periodic torus, so projection there is
+        unnecessary in exact arithmetic but is applied at the end of the
+        step as a defensive measure against accumulated round-off.
+
+        Pressure / INCOMP defaults to OFF; without it, divergence drifts on
+        the order of ``dt`` per advection step, which is tracked explicitly
+        by :meth:`divergence_residual`.
         """
         if dt <= 0:
             raise ValueError("dt must be positive")
+
+        if incompressible and self.dimension != 2:
+            raise NotImplementedError(
+                "INCOMP projection currently implemented for dimension == 2 only"
+            )
 
         if advection:
             if self.dimension != 2:
@@ -230,11 +248,17 @@ class TNFRNavierStokesOperator:
                 )
             adv1 = self._advection_term_2d()
             self.phi = self.phi + 0.5 * dt * adv1
+            if incompressible:
+                self.project_incompressible()
             self._viscous_substep(dt)
             adv2 = self._advection_term_2d()
             self.phi = self.phi + 0.5 * dt * adv2
+            if incompressible:
+                self.project_incompressible()
         else:
             self._viscous_substep(dt)
+            if incompressible:
+                self.project_incompressible()
 
         self.time += dt
 
@@ -277,6 +301,112 @@ class TNFRNavierStokesOperator:
                 result[a, k] = adv_grid[i, j]
         return result
 
+    # ------------------------------------------------------------------
+    # N5: INCOMP operator (Leray-Helmholtz projection on the periodic torus)
+    # ------------------------------------------------------------------
+    def project_incompressible(self) -> None:
+        """INCOMP: Leray-Helmholtz projection onto the divergence-free subspace.
+
+        Removes the gradient component of ``phi`` so that the discrete
+        central-difference divergence (the same operator probed by
+        :meth:`divergence_residual`) drops to round-off after the call.
+
+        The projection is performed in Fourier space using the *exact*
+        symbol of the central-difference operator
+
+            D_a f -> sin(2 pi m_a / n) / h
+
+        which guarantees that ``D_x u_proj + D_y v_proj == 0`` to machine
+        precision, not merely the *spectral* divergence ``i k . u_hat``.
+
+        Algorithm (pseudo-spectral, O(n^2 log n)):
+
+            1. FFT each component:    u_hat, v_hat = FFT2(u), FFT2(v)
+            2. Discrete symbols:      S_a = sin(2 pi m / n) / h
+            3. Discrete pressure:     p_hat = (S_x u_hat + S_y v_hat) / |S|^2
+            4. Project:               u_hat -= S_x p_hat;  v_hat -= S_y p_hat
+            5. Inverse FFT back to phi.
+
+        The zero mode (m = 0) and the Nyquist modes (m = n/2 for even n)
+        are in the null space of the central-difference operator and are
+        left unchanged; Taylor-Green initial data (lowest mode m = 1) is
+        unaffected by this null-space caveat.
+
+        Pressure interpretation (Phi_s field). The Lagrange multiplier
+        ``p_hat`` is exactly the discrete pressure that the incompressible
+        Navier-Stokes equation introduces to enforce ``div u = 0``; in
+        TNFR language this is the structural potential ``Phi_s`` whose
+        gradient cancels the longitudinal part of the convective term.
+        :meth:`pressure_field` returns the physical-space pressure.
+
+        Canonicity (open). INCOMP is a *global, non-local* operator on the
+        periodic Fourier basis; it cannot be decomposed into the
+        nearest-neighbour TNFR operators {IL, UM, RA, ...}. Whether it
+        should be promoted to the 14th canonical TNFR operator, or kept
+        as a derived projection bound to the incompressibility constraint
+        (mirroring how the Riemann program kept the catalog frozen at
+        13), is an open structural question documented in the NS research
+        notes alongside the analogous T-HP question.
+        """
+        if self.dimension != 2:
+            raise NotImplementedError(
+                "INCOMP projection currently implemented for dimension == 2 only"
+            )
+        if "resolution" not in self.graph.graph:
+            raise RuntimeError(
+                "graph lacks 'resolution' metadata; project_incompressible() "
+                "requires a torus graph built via build_torus_graph()"
+            )
+
+        n = int(self.graph.graph["resolution"])
+        h = self._spacing
+
+        u = self._component_grid(0, n)
+        v = self._component_grid(1, n)
+
+        u_hat = np.fft.fft2(u)
+        v_hat = np.fft.fft2(v)
+
+        # Discrete central-difference symbols matching divergence_residual()
+        # and _advection_term_2d().
+        m = np.arange(n)
+        S1d = np.sin(2.0 * np.pi * m / n) / h
+        Sx = S1d[:, None]            # varies along axis 0 (x)
+        Sy = S1d[None, :]            # varies along axis 1 (y)
+        S2 = Sx ** 2 + Sy ** 2
+
+        # Discrete pressure in Fourier space; null modes (S2 == 0)
+        # contribute 0 (left unchanged).
+        denom = np.where(S2 > 0.0, S2, 1.0)
+        p_hat = (Sx * u_hat + Sy * v_hat) / denom
+        p_hat = np.where(S2 > 0.0, p_hat, 0.0 + 0.0j)
+
+        u_hat_proj = u_hat - Sx * p_hat
+        v_hat_proj = v_hat - Sy * p_hat
+
+        u_proj = np.fft.ifft2(u_hat_proj).real
+        v_proj = np.fft.ifft2(v_hat_proj).real
+
+        # Cache pressure (physical space) for diagnostics / Phi_s readout.
+        self._pressure_grid = np.fft.ifft2(p_hat).real
+
+        # Write back to flat phi storage following canonical node order.
+        for k, node in enumerate(self._nodes):
+            i, j = node
+            self.phi[0, k] = u_proj[i, j]
+            self.phi[1, k] = v_proj[i, j]
+
+    def pressure_field(self) -> np.ndarray:
+        """Return the most recent INCOMP pressure (Phi_s) grid, shape (n, n).
+
+        Populated by :meth:`project_incompressible`. Returns an array of
+        ``nan`` when INCOMP has not been applied yet.
+        """
+        if getattr(self, "_pressure_grid", None) is None:
+            n = int(self.graph.graph.get("resolution", 0)) or 1
+            return np.full((n, n), float("nan"))
+        return self._pressure_grid.copy()
+
     def run(self, dt: float, steps: int, advection: bool = False) -> np.ndarray:
         """Run ``steps`` updates and return the energy history.
 
@@ -318,6 +448,7 @@ class TNFRNavierStokesOperator:
         dt: float,
         steps: int,
         advection: bool = True,
+        incompressible: bool = False,
     ) -> dict[str, np.ndarray]:
         """Run the flow and return the discrete Leray energy-inequality budget.
 
@@ -349,7 +480,7 @@ class TNFRNavierStokesOperator:
         divergence_history[0] = self.divergence_residual()
 
         for k in range(1, steps + 1):
-            self.step(dt, advection=advection)
+            self.step(dt, advection=advection, incompressible=incompressible)
             time_history[k] = self.time
             energy_history[k] = self.kinetic_energy()
             dissipation_history[k] = self.dissipation_rate()
@@ -474,6 +605,7 @@ class TNFRNavierStokesOperator:
         dt: float,
         steps: int,
         advection: bool = True,
+        incompressible: bool = False,
     ) -> dict[str, np.ndarray]:
         """Track the discrete BKM integral and enstrophy along the flow.
 
@@ -507,7 +639,7 @@ class TNFRNavierStokesOperator:
         div_hist[0] = self.divergence_residual()
 
         for n_step in range(1, steps + 1):
-            self.step(dt, advection=advection)
+            self.step(dt, advection=advection, incompressible=incompressible)
             time_axis[n_step] = self.time
             vort_sup[n_step] = self.vorticity_sup_norm()
             enstrophy_hist[n_step] = self.enstrophy_curl()

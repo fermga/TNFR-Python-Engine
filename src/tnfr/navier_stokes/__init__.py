@@ -38,6 +38,24 @@ operator
     result. The same infrastructure will lift to 3D where the open Clay
     question (NS-G5) is whether the integral can diverge in finite time.
 
+    N5: INCOMP operator (Leray-Helmholtz projection) via
+    ``project_incompressible()`` and ``pressure_field()``, plus an
+    ``incompressible=True`` keyword on ``step()``, ``leray_budget()`` and
+    ``bkm_budget()``. Uses pseudo-spectral projection with the *exact*
+    central-difference symbol ``S_a = sin(2*pi*m_a/n)/h`` (not the
+    spectral ``i k``), so the divergence operator probed by
+    ``divergence_residual()`` drops to round-off after every projection.
+    Activation on the 2D Taylor-Green benchmark (see ``examples/80_*``)
+    closes the N3/N4 INFO caveats: max ||div(t)||_2 ~ 1e-16, energy
+    matches ``E(0) exp(-4 nu t)`` within 0.13%, BKM integral matches its
+    analytical envelope within 0.61%, vorticity log-slope matches
+    ``-2 nu`` within 0.32%. Canonicity status: INCOMP is a *global,
+    non-local* projection and cannot be decomposed into nearest-neighbour
+    TNFR operators; whether it is the 14th canonical operator or a
+    derived projection bound to the incompressibility constraint is held
+    as an OPEN structural question, mirroring how the Riemann program
+    kept its catalog frozen at 13.
+
 Honest scope
 ------------
 This module does NOT claim a proof or disproof of the Clay statement. Both
