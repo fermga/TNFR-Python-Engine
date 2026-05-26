@@ -182,7 +182,7 @@ Discussed but **not promoted** until N2 forces the question:
 | N10 | 2D vs 3D dimensional asymmetry falsifiability (NS-G5 precursor) | **DONE** | `1fac358b` | `examples/85` (2D TG + 3D operator on 2D-embedded IC + 3D TG, side-by-side) |
 | N11 | Reynolds sweep — CF alignment vs viscosity (NS-G4 precursor) | **DONE** | `afc65b49` | `examples/86` (3D TG n=24, ν∈{0.05,0.02,0.01,0.005}, Re_eff 126→1257) |
 | N12 | REMESH-∞ asymptotic limit on K_φ cascade (§11 test, NS-G_blowup branch B1) | **DONE — STRUCTURAL_EFFECT_MONOTONE** (per locked §12.7 mapping; non-monotone in BKM and stretching observables, see §13.4). Pre-registration: `c8900fce`. | n = 16 single-resolution probe of §11 working hypothesis: supports REMESH-global having structural traction on NS K_φ cascade (99.5 % response in peak stretching across τ_g sweep). Does NOT close NS-G1..G5. | §12 + §13 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py` |
-| N13 | REMESH-∞ resolution extension with refined F3 (n∈{24,32}; N12 follow-up) | **PRE-REGISTERED** (this commit, atomic with benchmark skeleton; no data observed at registration time). | Resolution-consistency check of the N12 verdict under a corrected F3 that excludes IC-dominated observables (`peak_vorticity_sup`, `peak_enstrophy`). Two new post-IC observables added. Read-only `CROSS_RES_CONSISTENT` flag pre-registered. Does NOT close NS-G1..G5. | §14 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.py` |
+| N13 | REMESH-∞ resolution extension with refined F3 (n∈{24,32}; N12 follow-up) | **DONE — STRUCTURAL_EFFECT_MONOTONE at both n=24 and n=32; CROSS_RES_CONSISTENT=True** (per locked §14.7 mapping; refined F3 MONOTONE driven by `peak_enstrophy_post_t1`; BKM and stretching post-t1 remain non-monotone with stretching COLLAPSE sign agreeing with N12 at all three resolutions n∈{16,24,32}). Pre-registration: `4ab97bc8`. | Two-resolution structural-compatibility check: REMESH-global retains the N12 stretching-collapse signature under one full resolution doubling (n=16→32, 8× per-step cost) under a refined F3 that excludes the IC-dominated `peak_vorticity_sup`/`peak_enstrophy` flagged in §13.4. Does NOT close NS-G1..G5. | §14 + §15 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.py` |
 | N≥14 | Higher-Re CF eigenframe transition (n≥48, DNS) **/** function-space convergence (NS-G1) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4) | open | unknown | unknown |
 
 All NS-G1..G5 gaps remain **OPEN** after N1–N11. See §11 for the cross-program reframe of the residual obstruction.
@@ -556,6 +556,118 @@ N13 is a single-axis (resolution) extension of N12 with a corrected F3.  It does
 * Promote any new canonical operator.
 
 The result of N13 will be a structural-compatibility statement about the persistence of the N12 signature across one resolution doubling, under a corrected F3 — nothing more.
+
+---
+
+## §15 N13 Results — REMESH-∞ resolution extension on 3D Taylor–Green at n ∈ {24, 32}
+
+### §15.1 Headline
+
+**Per-resolution verdict (locked §14.7 mapping):** `STRUCTURAL_EFFECT_MONOTONE` at both `n = 24` and `n = 32`.
+**Cross-resolution read-only flag (locked §14.7):** `CROSS_RES_CONSISTENT = True` (`verdict_agree = True` AND stretching `sign_n24 = sign_n32 = sign_n16(N12) = COLLAPSE`).
+**Pre-registration commit:** `4ab97bc8` (atomic with §14 + benchmark skeleton, no data observed). **Results commit:** this one.
+
+### §15.2 Locked F-criteria — verbatim outcomes
+
+Refined F3 observable set (excluded `peak_vorticity_sup`, `peak_enstrophy`; included `BKM_T`, `peak_stretching`, `peak_stretching_post_t1`, `peak_enstrophy_post_t1`) per §14.6.
+
+| Criterion | n = 24 | n = 32 |
+|---|---|---|
+| F1 baseline fidelity (`rel_err ≤ 0.01`) | **PASS** (`rel_err = 0.0`, `BKM_baseline = 1.8250391450605314`) | **PASS** (`rel_err = 0.0`, `BKM_baseline = 1.8275702104673734`) |
+| F2 measurable response (`max_rel_change ≥ 0.05`) | **PASS** (`max_rel_change = 0.9948`, driver: `peak_stretching` / `peak_stretching_post_t1` at `τ_g = inf`) | **PASS** (`max_rel_change = 0.9948`, same driver) |
+| F3 refined monotonicity (≥1 included obs monotone in `τ_g`) | **MONOTONE** (monotone obs: `peak_enstrophy_post_t1`) | **MONOTONE** (monotone obs: `peak_enstrophy_post_t1`) |
+| F4 energy non-injection (`max_rel_excess ≤ 1e-10`) | **PASS** (`max_rel_excess = 0.0`) | **PASS** (`max_rel_excess = 0.0`) |
+| F5 divergence control (`max_div ≤ 1e-8`) | **PASS** (`max_div = 2.66e-16`) | **PASS** (`max_div = 2.55e-16`) |
+
+Cross-resolution flag (read-only, derived from per-resolution verdicts):
+
+| Field | Value |
+|---|---|
+| `flag` | `CROSS_RES_CONSISTENT` |
+| `verdict_agree` | `True` |
+| `verdict_n24` | `STRUCTURAL_EFFECT_MONOTONE` |
+| `verdict_n32` | `STRUCTURAL_EFFECT_MONOTONE` |
+| `sign_n24` (`peak_stretching_post_t1`) | `COLLAPSE` |
+| `sign_n32` (`peak_stretching_post_t1`) | `COLLAPSE` |
+| `sign_n16_n12_reference` | `COLLAPSE` |
+| `sign_consistent` | `True` |
+
+### §15.3 Numerical tables per τ_g
+
+**n = 24:**
+
+| τ_g | BKM(T) | peak \|ω\|_∞ (IC) | peak enstrophy | peak stretching | peak stretching post-t1 | peak enstrophy post-t1 |
+|---|---|---|---|---|---|---|
+| 0 | 1.825039 | 1.977232 | 92.637662 | 16.826125 | 16.826125 | 92.637662 |
+| 8 | 1.970527 | 1.977232 | 90.913019 | 2.075801 | 2.075801 | 90.886171 |
+| 32 | 1.967041 | 1.977232 | 90.913019 | 2.803702 | 2.803702 | 90.886171 |
+| 128 | 1.919312 | 1.977232 | 90.913019 | 10.790631 | 10.790631 | 90.886171 |
+| inf | 1.976913 | 1.977232 | 90.913019 | 0.087763 | 0.087763 | 90.899511 |
+
+**n = 32:**
+
+| τ_g | BKM(T) | peak \|ω\|_∞ (IC) | peak enstrophy | peak stretching | peak stretching post-t1 | peak enstrophy post-t1 |
+|---|---|---|---|---|---|---|
+| 0 | 1.827570 | 1.987174 | 94.211987 | 17.780916 | 17.780916 | 94.211987 |
+| 8 | 1.980267 | 1.987174 | 91.829569 | 2.166983 | 2.166983 | 91.802399 |
+| 32 | 1.976635 | 1.987174 | 91.829569 | 2.927276 | 2.927276 | 91.802399 |
+| 128 | 1.926505 | 1.987174 | 91.829569 | 11.320582 | 11.320582 | 91.802399 |
+| inf | 1.986851 | 1.987174 | 91.829569 | 0.091605 | 0.091605 | 91.815894 |
+
+Wall times (informational, not a verdict input): n=24 sweep ≈ 164.7 s total; n=32 sweep ≈ 372.7 s total (~2.3× per-step cost over n=24, ~3.4× over N12 n=16, consistent with the cubic-in-n DOF scaling).
+
+### §15.4 Interpretation — honest decomposition of the verdict
+
+* **Refined F3 was the right correction.** As anticipated in §13.4, the two excluded observables behave as predicted at both new resolutions: `peak_vorticity_sup` is identical to 6 digits across all five `τ_g` runs at each `n` (1.977232 at n=24, 1.987174 at n=32) because the global maximum is attained at the IC sample `k = 0`, before any REMESH mix fires; `peak_enstrophy` likewise sits at the IC for `τ_g = 0` and at a uniform mixed-flow value otherwise, with no `τ_g`-dependent ordering. The new `peak_enstrophy_post_t1` and `peak_stretching_post_t1` observables resolve this exactly — they exclude the IC bin and expose only the dynamically active portion of the trajectory.
+* **The N12 stretching-collapse signature persists under doubling.** At all three resolutions the `peak_stretching_post_t1` value at `τ_g = inf` is dramatically below the `τ_g = 0` value: 0.078/14.484 ≈ 0.54 % (n=16), 0.088/16.826 ≈ 0.52 % (n=24), 0.092/17.781 ≈ 0.52 % (n=32). The COLLAPSE sign is therefore stable to within ~0.02 percentage points across an 8× DOF increase. This is exactly the structural-compatibility statement §14.9 was constrained to deliver.
+* **BKM remains operationally non-monotone in `τ_g` at both new resolutions** (n=24: 1.825 → 1.971 → 1.967 → 1.919 → 1.977, U-shape with min at `τ_g = 128`; n=32: 1.828 → 1.980 → 1.977 → 1.927 → 1.987, same U-shape). The MONOTONE classification under refined F3 is driven exclusively by `peak_enstrophy_post_t1`, which is essentially flat (90.886→90.900 at n=24; 91.802→91.816 at n=32; rel-change ~1.9 % at n=24 and ~2.6 % at n=32, dominated by the `τ_g = 0` vs `τ_g > 0` gap rather than a smooth trend). As at n=16, "MONOTONE in some observable" remains technically correct under §14.6 but operationally pointed at the IC-flat enstrophy axis rather than at the BKM/stretching dynamics. This is **acknowledged honestly here**, in keeping with §13.4 discipline; **§14.1–§14.9 pre-registration is NOT retroactively edited**.
+* **F2 driver is identical at all three resolutions.** `max_rel_change` is dominated by `peak_stretching` / `peak_stretching_post_t1` at `τ_g = inf` and saturates at 0.9946 (n=16), 0.9948 (n=24), 0.9948 (n=32). The structural-traction magnitude of REMESH-global on the K_φ cascade is therefore essentially resolution-independent within this n-range.
+
+### §15.5 Status update to §11 working hypothesis (branch B1 of NS-G_blowup)
+
+The §11 working hypothesis — *canonical REMESH-global is the multi-scale closure primitive for the 3D NS K_φ cascade; no new operator needed* — is **SUPPORTED** by N13 at both new resolutions, with cross-resolution sign consistency (`CROSS_RES_CONSISTENT = True`).
+
+This does **not**:
+
+* Close NS-G_blowup or any of NS-G1..G5.
+* Establish a continuum limit (the comparison is over `n ∈ {16, 24, 32}` only; no extrapolation in `n → ∞` is performed or claimed).
+* Promote any new canonical operator (REMESH-global already in the 13-operator catalog).
+* Generalise to higher Reynolds, longer time horizons, alternative ICs, or non-Taylor–Green geometries (all left for N≥14).
+
+### §15.6 Reproducibility
+
+```powershell
+.venv312\Scripts\python.exe benchmarks\remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.py
+```
+
+Output: `results/remesh_infinity/remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.json` (gitignored). All quantities reported in §15.2/§15.3 reproduce bit-for-bit from the locked seed `np.random.default_rng(20260526)` and the §14.3 locked config.
+
+### §15.7 Deliverables landed in this Results commit
+
+* §15 appended to `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md`.
+* §10 milestone table updated: N13 row promoted `PRE-REGISTERED` → `DONE` with verdict + cross-resolution flag and this commit reference.
+* No code, benchmark, or pre-registration text (§14) is modified; the §14.1–§14.9 block remains the locked pre-registration.
+* Benchmark JSON output remains gitignored (regenerable via §15.6).
+
+### §15.8 Cross-link with Riemann §13vicies-novies
+
+The same canonical REMESH-global infrastructure (`alpha = 0.5`, lag-to-IC `τ_g = inf` limit) has now produced two structurally distinct signatures on two distinct discrete substrates within the same canonical 13-operator catalog:
+
+* **3D Taylor–Green NS (n ∈ {16, 24, 32}):** `STRUCTURAL_EFFECT_MONOTONE`, `CROSS_RES_CONSISTENT = True`, stretching `COLLAPSE` sign stable across one resolution doubling. **Non-degenerate** structural effect.
+* **Prime-ladder G_P14 + IL/spectral compositions:** `INDETERMINATE_DEGENERATE_CONSTRUCTION` (Euler–Orthogonality Lemma; `|D_can − D_shuf| ≈ 1e-13`). **Degenerate** by an S_n symmetry obstruction specific to the prime-relabelling structure on G_P14.
+
+The two outcomes are not in tension — they are different specialisations of the same canonical limit on different graph/Hamiltonian substrates. The NS result is **substrate-specific evidence** that the canonical REMESH limit is structurally active on dynamically non-trivial geometries; the Riemann result is **substrate-specific evidence** that an S_n-symmetric prime ladder kills the effect by group-theoretic obstruction. No cross-program implication is drawn beyond this factual comparison.
+
+### §15.9 Scope statement (unchanged from §14.9)
+
+N13 was a single-axis (resolution) extension of N12 with a corrected F3. The Results above do **not**:
+
+* Close any of NS-G1..G5.
+* Prove or disprove the Clay Millennium 3D NS regularity question.
+* Establish a continuum limit, an asymptotic-in-n trend, or any analytical bound.
+* Promote any new canonical operator.
+
+N13 delivered exactly the structural-compatibility statement §14.9 pre-committed to: the N12 stretching-collapse signature persists across one resolution doubling (`n = 16 → 32`, 8× DOF) under a corrected F3, with cross-resolution sign consistency. Nothing more.
 
 
 
