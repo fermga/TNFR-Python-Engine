@@ -5142,3 +5142,282 @@ N3 $D$, $|\Delta D|$, N5 $D$) reproduce from the locked seed
 `np.random.default_rng(20260526)`.
 
 ---
+
+### §13vicies-novies.14 R-inf-1b pre-registration: spectral-space composition on the P14 internal Hilbert space
+
+This subsection pre-registers the R-inf-1b milestone identified by
+§13vicies-novies.10 (Catalog structural lemma) and §13vicies-novies.11
+(Euler-Orthogonality Lemma) as the *unique* remaining structurally
+permitted B1 sub-route after R-inf-1a-operator (§13vicies-novies.8,
+REFUTED), R-inf-1a-composed (§13vicies-novies.9, REFUTED), and R-inf-1c
+(§13vicies-novies.12–§13vicies-novies.13,
+INDETERMINATE_DEGENERATE_CONSTRUCTION). No data is collected at commit
+time. The benchmark script
+`benchmarks/remesh_infinity_riemann_spectral_basis.py` is committed
+simultaneously; its first execution will append the Results block as
+§13vicies-novies.15.
+
+**Pre-registration discipline.** This subsection follows the same
+pattern as §13vicies-novies.12: methodology, parameters, seeds,
+decision thresholds, and verdict logic are all locked *before* any
+execution. Any deviation between the committed script and the published
+Results block (other than documented bug fixes) will be flagged in the
+post-execution amendment.
+
+**Origin.** §13vicies-novies.10 specifies the R-inf-1b sub-route as
+$T_{\mathrm{spec}} = S_{\mathrm{IL}} \cdot M_{\mathrm{REMESH}}$ with
+$S_{\mathrm{IL}} = \exp(-\eta\,\hat H_{P14})$ (spectral analogue of IL
+contraction in the P14 internal Hilbert space) and $M_{\mathrm{REMESH}}$
+the canonical REMESH echo matrix "lifted to the same space." The
+construction targets hypothesis (i) of the Euler-Orthogonality Lemma
+(action *in* a prime-indexed basis $\{|p,k\rangle\}$ rather than *on*
+the graph $G_{P14}$), as opposed to R-inf-1c which targeted hypothesis
+(iii) (graph modification).
+
+**Construction.** Let $V$ denote the canonical $G_{P14}$ node set
+($n_{\text{primes}} = 10$, $k_{\max} = 4$, $|V| = N = 40$) and identify
+each node with its prime-power label $(p_i, k)$, giving the basis
+$\{|p_i, k\rangle\}_{i=1,\dots,10;\ k=1,\dots,4}$ of the P14 internal
+Hilbert space $\mathcal{H}_{N}$. The lifted joint state space is
+$\mathcal{H}_{\mathrm{joint}} = \mathbb{C}^{\tau_g + 1} \otimes
+\mathcal{H}_{N}$ with $\dim \mathcal{H}_{\mathrm{joint}} = 17 \cdot 40 =
+680$, slot-major ordering (index $= \text{slot} \cdot N + (p,k)$).
+
+The two factors are:
+
+* $\hat H_{P14}$: the canonical P14 self-adjoint Hamiltonian
+  $H_{\mathrm{int}} = H_{\mathrm{coh}} + H_{\mathrm{freq}} +
+  H_{\mathrm{coupling}}$ built by
+  `src/tnfr/operators/hamiltonian.py::InternalHamiltonian` on the
+  canonical $G_{P14}$ with $\text{coupling} = 0$ (so
+  $H_{\mathrm{coupling}} = 0$ in this milestone, matching the P14
+  prime-ladder spectrum reference of §13quinquies).
+  $H_{\mathrm{freq}}$ is diagonal with entries
+  $k \log p_i$ (eigenvalues of the prime-ladder spectrum).
+* $M$: the canonical REMESH echo matrix
+  $(\alpha, \tau_l, \tau_g) = (0.5, 4, 16)$ as in
+  §13vicies-novies.9.
+
+**Iteration matrix.** Lift both factors to $\mathcal{H}_{\mathrm{joint}}$
+canonically:
+$$
+S_{\mathrm{IL}}^{\mathrm{spec}} \;=\; I_{\tau_g + 1} \otimes
+\exp\!\left(-\eta\,\hat H_{P14}\right),
+\qquad
+M_{\mathrm{REMESH}} \;=\; M \otimes I_{N},
+\qquad
+T_{\mathrm{spec}} \;=\; S_{\mathrm{IL}}^{\mathrm{spec}} \cdot
+M_{\mathrm{REMESH}}.
+$$
+Canonical parameters: $\eta = 0.3$ (matching §13vicies-novies.9 IL
+phase-locking coefficient), $\alpha = 0.5$, $\tau_l = 4$, $\tau_g = 16$.
+The matrix exponential $\exp(-\eta \hat H_{P14})$ is computed via
+`scipy.linalg.expm` on the $40 \times 40$ canonical $H_{\mathrm{int}}$.
+$\hat H_{P14}$ is symmetric (real self-adjoint by P14 construction); we
+verify $\|H - H^T\|_\infty < 10^{-12}$ at runtime and abort with
+`INDETERMINATE_NON_SELF_ADJOINT` if violated.
+
+The lift of $S_{\mathrm{IL}}^{\mathrm{spec}}$ is $I_{\tau_g + 1} \otimes
+\exp(-\eta \hat H_{P14})$ — *uniform across all slots*, in contrast to
+the slot-0-only IL smoother of §13vicies-novies.9 and
+§13vicies-novies.12. This uniform lift is the canonical choice for the
+spectral-space construction of §13vicies-novies.10: the spectral
+analogue of IL acts on the structural state independently of REMESH
+slot, exactly as $\exp(-\eta \hat H_{P14})$ acts on $\mathcal{H}_{N}$
+without temporal addressing.
+
+**F7-A statistic (decisive, pre-registered).** Mirror F7-A of
+§13vicies-novies.12 (and F6-A of §13vicies-novies.9):
+
+1. Remove trivial fixed-point cluster: $|\lambda - 1| < 10^{-9}$.
+2. Project to 1-D: $\operatorname{Im}(\lambda)$ for the upper-half-plane
+   subset ($\operatorname{Im}(\lambda) \ge 10^{-12}$), sorted ascending.
+   Fallback: $\operatorname{Re}(\lambda)$ sorted ascending if the
+   projection is empty. Both branches reported in the JSON.
+3. Normalised consecutive spacings: $\delta_k = (s_{k+1} - s_k) /
+   \overline{\Delta}$.
+4. KS sup-distance vs the GUE Wigner surmise $P_{\mathrm{GUE}}(s) =
+   (32/\pi^2)\, s^2 \exp(-4 s^2 / \pi)$.
+
+**F8 structural condition (necessary, pre-registered).** The
+Euler-Orthogonality Lemma (§13vicies-novies.11) uses prime-relabelling
+$S_n$ invariance under hypothesis (i) (basis-independent operator
+composition). R-inf-1b targets (i) by working in the prime-indexed
+basis $\{|p_i, k\rangle\}$ in which $\hat H_{P14}$ has explicit
+prime-label dependence ($H_{\mathrm{freq}}$ diagonal entries
+$k \log p_i$). The decisive structural test is whether re-instantiating
+$\hat H_{P14}$ on a prime-relabelled $G_{P14}$ yields a *different*
+spectrum for $T_{\mathrm{spec}}$:
+
+* **F8 SATISFIED**: $|D_{\mathrm{canonical}} - D_{\mathrm{shuffled}}| \ge 0.01$
+  (numerical floor; spectral-space composition genuinely breaks
+  $S_n$-equivariance).
+* **F8 FAILED**: $|D_{\mathrm{canonical}} - D_{\mathrm{shuffled}}| < 0.01$
+  (spectral equivalence persists; the canonical lift
+  $I_{\tau_g + 1} \otimes \exp(-\eta \hat H_{P14})$ commutes-up-to-
+  similarity with prime relabelling, extending the Euler-Orthogonality
+  obstruction from the edge-channel to the spectral channel —
+  INDETERMINATE_DEGENERATE_CONSTRUCTION).
+
+F8 is a *necessary* condition for R-inf-1b to be a meaningful test of
+its own hypothesis. F8 failure does not refute B1; it refutes the
+specific canonical-tensor-product lift used here and requires a
+documented amendment (e.g. a non-product lift of $M_{\mathrm{REMESH}}$
+that intertwines slot index with prime index, which would need its own
+canonical derivation).
+
+**Pre-registered theoretical expectation.** Under the canonical lift
+$M_{\mathrm{REMESH}} = M \otimes I_N$ and
+$S_{\mathrm{IL}}^{\mathrm{spec}} = I_{\tau_g + 1} \otimes \exp(-\eta
+\hat H_{P14})$, prime-relabelling by $\sigma \in S_n$ acts on
+$\mathcal{H}_{\mathrm{joint}}$ as the unitary $U_\sigma = I_{\tau_g + 1}
+\otimes P_\sigma$. Because $M \otimes I_N$ commutes with
+$I_{\tau_g + 1} \otimes P_\sigma$, and
+$P_\sigma \exp(-\eta \hat H_{P14}) P_\sigma^T = \exp(-\eta\,
+P_\sigma \hat H_{P14} P_\sigma^T) = \exp(-\eta\,\hat H_{P14}^{\sigma})$
+where $\hat H_{P14}^{\sigma}$ is the canonical Hamiltonian
+re-instantiated on the relabelled graph, we obtain
+$U_\sigma T_{\mathrm{spec}}^{\mathrm{canonical}} U_\sigma^* =
+T_{\mathrm{spec}}^{\sigma}$. Hence the canonical and shuffled iteration
+matrices are *unitarily equivalent*, and their spectra are *identical
+up to numerical precision*. The pre-registered theoretical prediction
+is therefore F8 FAILED with $|D_{\mathrm{canonical}} -
+D_{\mathrm{shuffled}}|$ at the machine-precision floor (the same
+qualitative outcome as R-inf-1c §13vicies-novies.13). If observed, this
+will constitute a *spectral-channel instantiation of the
+Euler-Orthogonality obstruction* and complete the structural closure of
+the canonical-tensor-product family of B1 sub-routes within the
+13-operator catalog.
+
+This prediction is recorded *before* execution as part of the
+pre-registration discipline. The empirical outcome will be reported in
+§13vicies-novies.15 regardless of whether it confirms or contradicts the
+prediction. Confirmation strengthens the structural picture without
+closing G4. A surprise outcome (F8 SATISFIED) would require revisiting
+the lift's commutation analysis and would be reported with full
+diagnostic detail.
+
+**Pre-registered controls.**
+
+* **N1 GOE** (random symmetric matrix of dimension $\dim
+  \mathcal{H}_{\mathrm{joint}} = 680$, scaled by $1/\sqrt{2 \cdot 680}$;
+  expected $D_{\mathrm{GUE}} \approx 0.10$–$0.20$ — GOE spacings
+  differ from the GUE Wigner surmise).
+* **N2 Poisson** (680 iid uniform points; expected $D_{\mathrm{GUE}}
+  \approx 0.30$–$0.50$).
+* **N3 shuffled-prime** (rebuild $G_{P14}$ with a random permutation of
+  the ten primes among the ladders, re-instantiate $\hat H_{P14}$ via
+  `InternalHamiltonian` on the shuffled graph, recompute $T_{\mathrm{spec}}$).
+  *Primary discriminator for F8*.
+* **N4 REMESH-isolated** (spectrum of $M$ alone; diagnostic baseline,
+  expected to be degenerate as in §13vicies-novies.9 and
+  §13vicies-novies.12).
+* **N5 random-self-adjoint-replacement** (replace $\hat H_{P14}$ in
+  $S_{\mathrm{IL}}^{\mathrm{spec}}$ with a random symmetric $40 \times
+  40$ matrix of the same spectral radius as $\hat H_{P14}$; tests
+  whether the canonical P14 spectrum structure carries any extra
+  content beyond a generic self-adjoint operator of comparable scale).
+
+**Riemann reference.** External anchor identical to §13vicies-novies.12:
+$D_{\mathrm{GUE}}$ for the first 100 Riemann zero imaginary parts via
+`mpmath.zetazero` at `mp.dps = 30`.
+
+**Pre-registered F7 verdict logic.** Identical to §13vicies-novies.12:
+
+* **SUPPORTED**:    $D_{\mathrm{canonical}} < 0.15$ **AND**
+  $D_{\mathrm{canonical}} < D_{\mathrm{shuffled}} - 0.05$ **AND**
+  $D_{\mathrm{canonical}} < D_{\mathrm{N5}} - 0.05$.
+* **REFUTED**:      $D_{\mathrm{canonical}} > 0.30$ **OR**
+  ($D_{\mathrm{canonical}} \ge D_{\mathrm{shuffled}} - 0.05$ **AND**
+  F8 SATISFIED).
+* **INDETERMINATE_DEGENERATE_CONSTRUCTION**: F8 FAILED.
+* **INDETERMINATE_OTHER**: F8 SATISFIED and neither SUPPORTED nor
+  REFUTED conditions hold.
+
+**Pre-registered milestone verdict logic.**
+
+* SUPPORTED $\Rightarrow$
+  `B1_SPECTRAL_BASIS_POTENTIALLY_OPEN_REQUIRES_REPLICATION` (deep
+  diagnostic + independent seeds + alternative spectral lifts before
+  any evidential update on B1).
+* REFUTED $\Rightarrow$
+  `B1_SPECTRAL_BASIS_REFUTED_FOR_CANONICAL_TENSOR_PRODUCT_LIFT`. Closes
+  R-inf-1b for the canonical $I_{\tau_g + 1} \otimes \exp(-\eta \hat
+  H_{P14})$ / $M \otimes I_N$ lift. Does NOT close R-inf-1b for
+  *non-product* lifts that intertwine slot index with prime index
+  (would require their own canonical derivation and pre-registration).
+* INDETERMINATE_DEGENERATE_CONSTRUCTION $\Rightarrow$
+  `B1_SPECTRAL_BASIS_INDETERMINATE_EULER_ORTHOGONALITY_EXTENDS_TO_SPECTRAL_CHANNEL`
+  if F8 fails at the machine-precision floor (predicted outcome).
+  This is itself a structural finding: the canonical-tensor-product
+  family of B1 sub-routes within the 13-operator catalog is closed by
+  $S_n$-equivariance at both the edge-channel
+  (§13vicies-novies.8/.9/.13) and spectral-channel levels.
+* INDETERMINATE_OTHER $\Rightarrow$ status unchanged; design refinement
+  needed before next attempt.
+
+**Pre-registered seeds and parameters.** All random elements (N1 GOE
+draw, N2 Poisson draw, N3 prime shuffle permutation, N5 random
+self-adjoint draw) use `numpy.random.default_rng(20260526)` (reused
+from §13vicies-novies.12 for cross-milestone reproducibility
+consistency). Riemann zeros via `mpmath.zetazero` at `mp.dps = 30`.
+REMESH parameters: $\alpha = 0.5$, $\tau_l = 4$, $\tau_g = 16$.
+Spectral IL coupling: $\eta = 0.3$. Graph: $n_{\text{primes}} = 10$,
+$\max\_\text{power} = 4$, $\text{coupling} = 0$. Canonical
+constants from `src/tnfr/constants/canonical.py`. Hamiltonian
+construction via
+`src/tnfr/riemann/prime_ladder_hamiltonian.py::build_prime_ladder_hamiltonian`
+(which internally invokes `tnfr.operators.hamiltonian.InternalHamiltonian`).
+
+**What this milestone CAN establish.**
+
+* A definitive verdict on the canonical tensor-product lift of the
+  spectral IL contraction $\exp(-\eta \hat H_{P14})$ composed with the
+  canonical REMESH echo matrix $M$ as a spectral-channel route to
+  encode Riemann content in the iteration-matrix spectrum.
+* Empirical evidence on whether the Euler-Orthogonality obstruction
+  (§13vicies-novies.11), proven for edge-channel compositions on fixed
+  $G_{P14}$ and observed empirically for canonically-augmented
+  $G_{P14}$ (§13vicies-novies.13), extends to the canonical-tensor-
+  product spectral-channel construction.
+
+**What this milestone CANNOT establish.**
+
+* R-inf-1b for non-product lifts that intertwine slot index with prime
+  index (orthogonal sub-route requiring its own canonical derivation).
+* R-inf-1b for alternative canonical spectral IL constructions (e.g.\
+  $\exp(-\eta H_{\mathrm{freq}})$ alone, or with $\text{coupling} \neq
+  0$; each would require its own pre-registration).
+* B1 closure outside the canonical 13-operator catalog (B2 territory).
+* G4 = RH, T-HP, or any closure beyond what F7 + F8 strictly test.
+
+**Why this is not a re-run of R-inf-1a-composed.** R-inf-1a-composed
+(§13vicies-novies.9) uses the *graph-Laplacian* IL smoother
+$(I_N - \eta L_{G_{P14}})$ in slot 0 only — a topology-only operator
+with no prime-label content beyond the canonical $G_{P14}$ structure
+(all ten $P_4$ ladders are graph-isomorphic, so $L_{G_{P14}}$ is
+explicitly $S_n$-equivariant). R-inf-1b uses the *full canonical
+internal Hamiltonian* $\exp(-\eta \hat H_{P14})$ lifted uniformly across
+all slots — a spectral-space operator whose $H_{\mathrm{freq}}$ block
+carries explicit prime-label content ($k \log p_i$ entries). The two
+milestones probe the same iteration-matrix architecture
+($S \cdot M_{\mathrm{REMESH}}$) under structurally different $S$
+operators: topology-only ($L_{G_{P14}}$, §.9) versus prime-label-
+spectral ($\hat H_{P14}$, §.14). The theoretical-expectation paragraph
+above explains why both lifts ultimately fall under the same
+$S_n$-equivariance argument despite their structural difference; the
+empirical F8 test in §.15 will confirm or contradict this.
+
+**Implementation.**
+`benchmarks/remesh_infinity_riemann_spectral_basis.py` (committed in
+the same commit as this pre-registration; no data collected at commit
+time). Output JSON written to
+`results/remesh_infinity/remesh_infinity_riemann_spectral_basis.json`
+(gitignored, not part of the audit trail; the audit trail is this
+file).
+
+**Status (pre-registration commit)**: methodology locked; no data
+observed; next commit will append results in a Results block as
+§13vicies-novies.15.
+
+---
