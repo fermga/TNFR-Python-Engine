@@ -56,6 +56,26 @@ operator
     as an OPEN structural question, mirroring how the Riemann program
     kept its catalog frozen at 13.
 
+    N6: 3D extension activating the genuine Clay regime. Adds
+    ``build_torus_graph_3d``, ``taylor_green_initial_condition_3d``,
+    an FFT-diagonalised Crank-Nicolson viscous half-step
+    (``_viscous_substep_fft_3d``, O(n^3 log n) per step), a 3D
+    skew-symmetric advection term, a 3D Leray-Helmholtz projection
+    using the same discrete central-difference symbol as in 2D, and
+    the Constantin-Fefferman vortex-stretching diagnostics
+    ``vorticity_3d()``, ``vortex_stretching_field()`` and the
+    production integral ``stretching_production()``. The dense
+    ``(n^d) x (n^d)`` Laplacian materialisation is skipped in 3D so
+    that resolutions up to ``n ~ 32`` (32^3 = 32768 nodes) fit in
+    memory; for n=12 a full T=1 Taylor-Green run gives
+    max ||div(t)||_2 ~ 1e-16, monotone energy 31.0 -> 23.0, monotone
+    enstrophy 84.8 -> 65.0, finite BKM integral ~1.71, and a
+    non-trivial final stretching production of ~7.1 (vs. zero in 2D).
+    Honest scope: this validates the discrete 3D infrastructure and
+    exposes the geometric-depletion mechanism for empirical study;
+    it does *not* close NS-G5. Global regularity of 3D incompressible
+    Navier-Stokes (Clay Millennium Problem) remains OPEN.
+
 Honest scope
 ------------
 This module does NOT claim a proof or disproof of the Clay statement. Both
@@ -68,11 +88,15 @@ transfer) in the research notes for the documented obstructions.
 from .operator import (
     TNFRNavierStokesOperator,
     build_torus_graph,
+    build_torus_graph_3d,
     taylor_green_initial_condition,
+    taylor_green_initial_condition_3d,
 )
 
 __all__ = [
     "TNFRNavierStokesOperator",
     "build_torus_graph",
+    "build_torus_graph_3d",
     "taylor_green_initial_condition",
+    "taylor_green_initial_condition_3d",
 ]

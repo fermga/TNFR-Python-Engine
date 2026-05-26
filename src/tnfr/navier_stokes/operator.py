@@ -118,6 +118,81 @@ def taylor_green_initial_condition(
     return u, v
 
 
+def build_torus_graph_3d(n: int) -> nx.Graph:
+    """Build a periodic ``n x n x n`` grid graph (3-torus topology).
+
+    Nodes are integer triples ``(i, j, k)`` with ``0 <= i, j, k < n`` and
+    carry a ``pos`` attribute giving the physical coordinate on
+    ``[0, 2 pi)^3``. Edges connect each node to its six nearest neighbours
+    with wrap-around on every axis.
+
+    Parameters
+    ----------
+    n : int
+        Linear grid resolution. Total number of nodes is ``n^3``.
+
+    Returns
+    -------
+    networkx.Graph
+        Undirected periodic 3D grid graph with ``pos`` node attribute,
+        ``spacing = 2*pi/n``, ``resolution = n`` and ``ndim = 3``.
+
+    Notes
+    -----
+    Used by the N6 milestone (vortex stretching / 3D NS). The viscous
+    Crank-Nicolson step uses FFT diagonalisation rather than the dense
+    Laplacian so that runtime is O(n^3 log n) instead of O(n^9).
+    """
+    if n < 2:
+        raise ValueError("torus grid must have at least 2 nodes per side")
+
+    G = nx.grid_graph(dim=(n, n, n), periodic=True)
+    h = 2.0 * math.pi / n
+    for (i, j, k) in G.nodes:
+        G.nodes[(i, j, k)]["pos"] = (i * h, j * h, k * h)
+    G.graph["spacing"] = h
+    G.graph["resolution"] = n
+    G.graph["ndim"] = 3
+    return G
+
+
+def taylor_green_initial_condition_3d(
+    G: nx.Graph,
+    amplitude: float = 1.0,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Return the classical 3D Taylor-Green velocity components sampled on ``G``.
+
+    Initial condition on ``[0, 2 pi]^3``:
+
+        u(x, y, z, 0) =   A * sin(x) * cos(y) * cos(z)
+        v(x, y, z, 0) = - A * cos(x) * sin(y) * cos(z)
+        w(x, y, z, 0) = 0
+
+    This field is exactly divergence-free in the continuum and is the
+    standard benchmark for 3D Navier-Stokes simulations of transition to
+    turbulence. Unlike the 2D Taylor-Green vortex, it activates the
+    vortex-stretching term ``(omega . grad) u`` immediately (the initial
+    vorticity ``omega(0)`` has all three components and is not aligned
+    with eigenvectors of the strain tensor), so it is the smallest test
+    case in which the genuine 3D NS non-linearity is exercised.
+
+    Returns
+    -------
+    (u, v, w) : tuple of numpy.ndarray
+        Arrays of length ``len(G.nodes)`` indexed by the canonical
+        ``list(G.nodes)`` order.
+    """
+    nodes = list(G.nodes)
+    u = np.empty(len(nodes), dtype=float)
+    v = np.empty(len(nodes), dtype=float)
+    w = np.zeros(len(nodes), dtype=float)
+    for idx, node in enumerate(nodes):
+        x, y, z = G.nodes[node]["pos"]
+        u[idx] = amplitude * math.sin(x) * math.cos(y) * math.cos(z)
+        v[idx] = -amplitude * math.cos(x) * math.sin(y) * math.cos(z)
+    return u, v, w
+
+
 @dataclass
 class TNFRNavierStokesOperator:
     """Discrete TNFR-NS operator on a periodic graph (linear viscous regime).
@@ -160,27 +235,44 @@ class TNFRNavierStokesOperator:
 
         self._nodes = list(self.graph.nodes)
         self._spacing = float(self.graph.graph["spacing"])
-        # Dense Laplacian is fine for the resolutions targeted in N2
-        # (n <= 64 -> 4096 nodes). Sparse variant deferred to N3.
-        self._laplacian = nx.laplacian_matrix(
-            self.graph, nodelist=self._nodes
-        ).toarray().astype(float)
+        if self.dimension == 2:
+            # Dense Laplacian is fine for 2D at the resolutions targeted in N2
+            # (n <= 64 -> 4096 nodes). 3D uses an FFT-diagonalised viscous step
+            # to avoid the O(n^9) cost of np.linalg.solve on a dense (n^3)x(n^3)
+            # operator (n=16 -> 4096^2 = 16.7 M entries, n=32 -> 1.07 G entries).
+            self._laplacian = nx.laplacian_matrix(
+                self.graph, nodelist=self._nodes
+            ).toarray().astype(float)
+        else:
+            # N6: 3D path skips the dense Laplacian. Viscous step uses FFT
+            # diagonalisation on the periodic torus; dissipation_rate() likewise
+            # routes through the FFT path.
+            self._laplacian = np.empty((0, 0), dtype=float)
         self.phi = np.zeros((self.dimension, len(self._nodes)), dtype=float)
 
     # ------------------------------------------------------------------
     # Initial conditions
     # ------------------------------------------------------------------
     def set_taylor_green(self, amplitude: float = 1.0) -> None:
-        """Initialise phi from the 2D Taylor-Green vortex.
+        """Initialise phi from the Taylor-Green vortex.
 
-        For ``dimension == 3`` the third component is initialised to zero
-        (the classical 2D Taylor-Green has no w component).
+        For ``dimension == 2`` uses the classical 2D Taylor-Green initial
+        condition; for ``dimension == 3`` uses the classical *3D* Taylor-
+        Green vortex (see :func:`taylor_green_initial_condition_3d`), which
+        is divergence-free and activates the vortex-stretching term
+        ``(omega . grad) u`` that vanishes identically in 2D.
         """
-        u, v = taylor_green_initial_condition(self.graph, amplitude=amplitude)
-        self.phi[0] = u
-        self.phi[1] = v
-        if self.dimension == 3:
-            self.phi[2] = 0.0
+        if self.dimension == 2:
+            u, v = taylor_green_initial_condition(self.graph, amplitude=amplitude)
+            self.phi[0] = u
+            self.phi[1] = v
+        else:
+            u, v, w = taylor_green_initial_condition_3d(
+                self.graph, amplitude=amplitude
+            )
+            self.phi[0] = u
+            self.phi[1] = v
+            self.phi[2] = w
         self.time = 0.0
 
     def set_components(self, components: list[np.ndarray] | np.ndarray) -> None:
@@ -236,22 +328,13 @@ class TNFRNavierStokesOperator:
         if dt <= 0:
             raise ValueError("dt must be positive")
 
-        if incompressible and self.dimension != 2:
-            raise NotImplementedError(
-                "INCOMP projection currently implemented for dimension == 2 only"
-            )
-
         if advection:
-            if self.dimension != 2:
-                raise NotImplementedError(
-                    "advection currently implemented for dimension == 2 only"
-                )
-            adv1 = self._advection_term_2d()
+            adv1 = self._advection_term()
             self.phi = self.phi + 0.5 * dt * adv1
             if incompressible:
                 self.project_incompressible()
             self._viscous_substep(dt)
-            adv2 = self._advection_term_2d()
+            adv2 = self._advection_term()
             self.phi = self.phi + 0.5 * dt * adv2
             if incompressible:
                 self.project_incompressible()
@@ -262,15 +345,24 @@ class TNFRNavierStokesOperator:
 
         self.time += dt
 
+    def _advection_term(self) -> np.ndarray:
+        """Dispatch to the dimension-specific skew-symmetric advection term."""
+        if self.dimension == 2:
+            return self._advection_term_2d()
+        return self._advection_term_3d()
+
     def _viscous_substep(self, dt: float) -> None:
         """Single Crank-Nicolson viscous update (does not advance ``time``)."""
-        coeff = self.viscosity * dt / (2.0 * self._spacing ** 2)
-        n = self._laplacian.shape[0]
-        identity = np.eye(n)
-        lhs = identity + coeff * self._laplacian
-        rhs_matrix = identity - coeff * self._laplacian
-        for a in range(self.dimension):
-            self.phi[a] = np.linalg.solve(lhs, rhs_matrix @ self.phi[a])
+        if self.dimension == 2:
+            coeff = self.viscosity * dt / (2.0 * self._spacing ** 2)
+            n = self._laplacian.shape[0]
+            identity = np.eye(n)
+            lhs = identity + coeff * self._laplacian
+            rhs_matrix = identity - coeff * self._laplacian
+            for a in range(self.dimension):
+                self.phi[a] = np.linalg.solve(lhs, rhs_matrix @ self.phi[a])
+        else:
+            self._viscous_substep_fft_3d(dt)
 
     def _advection_term_2d(self) -> np.ndarray:
         """Skew-symmetric discrete advection ``-(u . grad) u`` on the 2-torus.
@@ -305,7 +397,24 @@ class TNFRNavierStokesOperator:
     # N5: INCOMP operator (Leray-Helmholtz projection on the periodic torus)
     # ------------------------------------------------------------------
     def project_incompressible(self) -> None:
-        """INCOMP: Leray-Helmholtz projection onto the divergence-free subspace.
+        """Dispatch Leray-Helmholtz projection to the 2D or 3D implementation.
+
+        See :meth:`_project_incompressible_2d` (N5 baseline) and
+        :meth:`_project_incompressible_3d` (N6 extension) for the algorithm
+        details. Both use the *exact* central-difference symbol
+        ``S_a = sin(2 pi m_a / n) / h`` so that :meth:`divergence_residual`
+        drops to round-off after the call.
+
+        Pressure (Phi_s) is cached as a physical-space grid and exposed via
+        :meth:`pressure_field`.
+        """
+        if self.dimension == 2:
+            self._project_incompressible_2d()
+        else:
+            self._project_incompressible_3d()
+
+    def _project_incompressible_2d(self) -> None:
+        """INCOMP (2D): Leray-Helmholtz projection onto div-free subspace.
 
         Removes the gradient component of ``phi`` so that the discrete
         central-difference divergence (the same operator probed by
@@ -348,10 +457,6 @@ class TNFRNavierStokesOperator:
         13), is an open structural question documented in the NS research
         notes alongside the analogous T-HP question.
         """
-        if self.dimension != 2:
-            raise NotImplementedError(
-                "INCOMP projection currently implemented for dimension == 2 only"
-            )
         if "resolution" not in self.graph.graph:
             raise RuntimeError(
                 "graph lacks 'resolution' metadata; project_incompressible() "
@@ -437,11 +542,17 @@ class TNFRNavierStokesOperator:
         identity reads ``dE/dt = -nu * ||grad u||_{L^2}^2``, so the
         discrete analogue of the instantaneous dissipation that enters the
         Leray inequality is ``nu * sum_a <phi_a, L phi_a>``.
+
+        3D path. The dense Laplacian is not materialised in 3D; the same
+        quadratic form is evaluated in Fourier space using the analytic
+        eigenvalues of the periodic torus Laplacian.
         """
-        total = 0.0
-        for a in range(self.dimension):
-            total += float(self.phi[a] @ (self._laplacian @ self.phi[a]))
-        return self.viscosity * total
+        if self.dimension == 2:
+            total = 0.0
+            for a in range(self.dimension):
+                total += float(self.phi[a] @ (self._laplacian @ self.phi[a]))
+            return self.viscosity * total
+        return self._dissipation_rate_fft_3d()
 
     def leray_budget(
         self,
@@ -539,13 +650,20 @@ class TNFRNavierStokesOperator:
 
         n = int(self.graph.graph["resolution"])
         h = self._spacing
-        # Reshape each component onto the grid via the canonical node order
-        grids = [
-            self._component_grid(a, n) for a in range(min(self.dimension, 2))
-        ]
-        du_dx = (np.roll(grids[0], -1, axis=0) - np.roll(grids[0], 1, axis=0)) / (2.0 * h)
-        dv_dy = (np.roll(grids[1], -1, axis=1) - np.roll(grids[1], 1, axis=1)) / (2.0 * h)
-        div = du_dx + dv_dy
+        if self.dimension == 2:
+            u = self._component_grid(0, n)
+            v = self._component_grid(1, n)
+            du_dx = (np.roll(u, -1, axis=0) - np.roll(u, 1, axis=0)) / (2.0 * h)
+            dv_dy = (np.roll(v, -1, axis=1) - np.roll(v, 1, axis=1)) / (2.0 * h)
+            div = du_dx + dv_dy
+        else:
+            u = self._component_grid_3d(0, n)
+            v = self._component_grid_3d(1, n)
+            w = self._component_grid_3d(2, n)
+            du_dx = (np.roll(u, -1, axis=0) - np.roll(u, 1, axis=0)) / (2.0 * h)
+            dv_dy = (np.roll(v, -1, axis=1) - np.roll(v, 1, axis=1)) / (2.0 * h)
+            dw_dz = (np.roll(w, -1, axis=2) - np.roll(w, 1, axis=2)) / (2.0 * h)
+            div = du_dx + dv_dy + dw_dz
         return float(np.sqrt(np.mean(div ** 2)))
 
     def _component_grid(self, a: int, n: int) -> np.ndarray:
@@ -581,24 +699,35 @@ class TNFRNavierStokesOperator:
         return dv_dx - du_dy
 
     def vorticity_sup_norm(self) -> float:
-        """Discrete ``|| omega ||_{L^inf}`` (2D only).
+        """Discrete ``|| omega ||_{L^inf}`` (2D scalar or 3D vector).
 
-        The Beale-Kato-Majda (BKM) criterion controls finite-time
-        continuation of smooth solutions by the time integral
-        ``int_0^T || omega(tau) ||_{L^inf} dtau``.
+        In 2D ``omega`` is the scalar curl; in 3D it is the magnitude of
+        the vector curl ``|omega|``. The Beale-Kato-Majda (BKM) criterion
+        controls finite-time continuation of smooth solutions by the time
+        integral ``int_0^T || omega(tau) ||_{L^inf} dtau``.
         """
-        return float(np.max(np.abs(self.vorticity_2d())))
+        if self.dimension == 2:
+            return float(np.max(np.abs(self.vorticity_2d())))
+        omega = self.vorticity_3d()
+        mag = np.sqrt(omega[0] ** 2 + omega[1] ** 2 + omega[2] ** 2)
+        return float(np.max(mag))
 
     def enstrophy_curl(self) -> float:
-        """Discrete enstrophy ``Omega = (1/2) * integral omega^2 dA`` (2D).
+        """Discrete enstrophy ``Omega = (1/2) * integral |omega|^2 dV``.
 
-        Built from the true curl ``vorticity_2d()`` rather than the
-        Laplacian-squared proxy used by :meth:`enstrophy`. The integral
-        is approximated by Riemann sum with area element ``h^2``.
+        Built from the true curl (:meth:`vorticity_2d` in 2D,
+        :meth:`vorticity_3d` in 3D) rather than the Laplacian-squared proxy
+        used by :meth:`enstrophy`. The integral is approximated by Riemann
+        sum with volume element ``h^d``.
         """
-        omega = self.vorticity_2d()
-        h2 = self._spacing ** 2
-        return 0.5 * float(np.sum(omega ** 2)) * h2
+        if self.dimension == 2:
+            omega = self.vorticity_2d()
+            h2 = self._spacing ** 2
+            return 0.5 * float(np.sum(omega ** 2)) * h2
+        omega = self.vorticity_3d()
+        mag2 = omega[0] ** 2 + omega[1] ** 2 + omega[2] ** 2
+        h3 = self._spacing ** 3
+        return 0.5 * float(np.sum(mag2)) * h3
 
     def bkm_budget(
         self,
@@ -681,9 +810,323 @@ class TNFRNavierStokesOperator:
         prefactor = (math.pi ** 2) * amplitude ** 2
         return prefactor * np.exp(-4.0 * self.viscosity * np.asarray(times))
 
+    # ==================================================================
+    # N6: 3D extension (vortex stretching, Constantin-Fefferman regime)
+    # ==================================================================
+    # The methods below activate the genuine Clay regime: the velocity
+    # field lives on a periodic 3-torus, the advection term carries the
+    # vortex-stretching coupling ``(omega . grad) u`` that vanishes
+    # identically in 2D, and the Leray-Helmholtz projection enforces
+    # incompressibility in 3D. Honest scope: none of this *closes* the
+    # global-regularity question NS-G5 (Clay Millennium Problem). What
+    # it does is provide the discrete infrastructure on which the
+    # Constantin-Fefferman geometric-depletion mechanism (alignment of
+    # the vorticity direction with strain eigenvectors) can be measured
+    # empirically.
+    # ------------------------------------------------------------------
+
+    def _component_grid_3d(self, a: int, n: int) -> np.ndarray:
+        """Return ``phi^(a)`` reshaped onto the periodic ``(n, n, n)`` grid.
+
+        Indexed by the canonical node order ``(i, j, k)`` produced by
+        :func:`build_torus_graph_3d`.
+        """
+        grid = np.empty((n, n, n), dtype=float)
+        for idx, node in enumerate(self._nodes):
+            i, j, k = node
+            grid[i, j, k] = self.phi[a, idx]
+        return grid
+
+    def _flatten_grid_3d(self, grid: np.ndarray, a: int) -> None:
+        """Write a ``(n, n, n)`` grid back into ``self.phi[a]`` following node order."""
+        for idx, node in enumerate(self._nodes):
+            i, j, k = node
+            self.phi[a, idx] = grid[i, j, k]
+
+    def _fft_symbols_3d(self, n: int) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """Return the discrete central-difference symbols ``S_x, S_y, S_z`` and ``|S|^2``.
+
+        Matches the symbol used by :meth:`divergence_residual` and the
+        skew-symmetric advection term, so that projection drives the
+        physical-space discrete divergence to round-off.
+        """
+        h = self._spacing
+        m = np.arange(n)
+        S1d = np.sin(2.0 * np.pi * m / n) / h
+        Sx = S1d[:, None, None]
+        Sy = S1d[None, :, None]
+        Sz = S1d[None, None, :]
+        S2 = Sx ** 2 + Sy ** 2 + Sz ** 2
+        return Sx, Sy, Sz, S2
+
+    def _laplace_eigenvalues_3d(self, n: int) -> np.ndarray:
+        """Eigenvalues of the graph Laplacian on the periodic 3-torus.
+
+        For an unnormalised combinatorial Laplacian ``L = D - A`` with
+        degree 6 on a periodic 3D grid the eigenvalues at Fourier mode
+        ``(m1, m2, m3)`` are
+
+            lambda(m) = 2 * (3 - cos(2 pi m1/n) - cos(2 pi m2/n) - cos(2 pi m3/n)).
+
+        Returned as an ``(n, n, n)`` array indexed as ``[m1, m2, m3]``.
+        """
+        m = np.arange(n)
+        c = np.cos(2.0 * np.pi * m / n)
+        cx = c[:, None, None]
+        cy = c[None, :, None]
+        cz = c[None, None, :]
+        return 2.0 * (3.0 - cx - cy - cz)
+
+    def _viscous_substep_fft_3d(self, dt: float) -> None:
+        """Crank-Nicolson viscous half-step in 3D, diagonalised by FFT.
+
+        Replaces ``np.linalg.solve`` on a dense ``(n^3) x (n^3)`` matrix
+        with a per-mode scalar update, reducing cost from O(n^9) to
+        O(n^3 log n). Bit-equivalence with the dense 2D path is not
+        required (each path uses its own canonical implementation); both
+        paths use the *combinatorial* graph Laplacian with an explicit
+        ``1/h^2`` scale factor.
+        """
+        n = int(self.graph.graph["resolution"])
+        coeff = self.viscosity * dt / (2.0 * self._spacing ** 2)
+        lam = self._laplace_eigenvalues_3d(n)
+        amp = (1.0 - coeff * lam) / (1.0 + coeff * lam)
+        for a in range(self.dimension):
+            grid = self._component_grid_3d(a, n)
+            hat = np.fft.fftn(grid, axes=(0, 1, 2))
+            hat *= amp
+            grid = np.fft.ifftn(hat, axes=(0, 1, 2)).real
+            self._flatten_grid_3d(grid, a)
+
+    def _dissipation_rate_fft_3d(self) -> float:
+        """Instantaneous dissipation rate ``nu * sum_a <phi_a, L phi_a>`` in 3D.
+
+        Uses the analytic graph-Laplacian eigenvalues so that no dense
+        matrix is materialised. The convention matches the 2D path:
+        unnormalised combinatorial Laplacian (eigenvalues O(1)), not the
+        physical Laplacian ``L/h^2``.
+        """
+        n = int(self.graph.graph["resolution"])
+        lam = self._laplace_eigenvalues_3d(n)
+        total = 0.0
+        for a in range(self.dimension):
+            grid = self._component_grid_3d(a, n)
+            hat = np.fft.fftn(grid, axes=(0, 1, 2))
+            # Parseval: sum |hat|^2 / n^3 = sum |grid|^2 ; weighted by lambda.
+            total += float(np.sum(lam * np.abs(hat) ** 2)) / (n ** 3)
+        return self.viscosity * total
+
+    def _advection_term_3d(self) -> np.ndarray:
+        """Skew-symmetric 3D advection ``-(1/2)[(u.grad) phi + grad.(u phi)]``.
+
+        Returns an array shaped ``(dim, n_nodes)`` matching the layout of
+        ``self.phi``. The skew-symmetric (rotational) form is chosen so
+        that quadratic invariants (energy, helicity) are preserved
+        discretely by the advection step up to round-off (the dissipation
+        comes exclusively from the viscous CN step).
+
+        Vortex-stretching content. In 3D, after projection onto the
+        divergence-free subspace the convective term is equivalent to
+        ``(omega x u) + grad(|u|^2 / 2)``; the gradient part is removed
+        by INCOMP, leaving the Lamb form whose curl contains the genuine
+        ``(omega . grad) u`` stretching term that drives the Clay
+        question NS-G5. This term is exposed independently by
+        :meth:`vortex_stretching_field` for diagnostics.
+        """
+        n = int(self.graph.graph["resolution"])
+        h = self._spacing
+        u = self._component_grid_3d(0, n)
+        v = self._component_grid_3d(1, n)
+        w = self._component_grid_3d(2, n)
+        comps = (u, v, w)
+
+        def d_axis(arr: np.ndarray, axis: int) -> np.ndarray:
+            return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (2.0 * h)
+
+        result = np.empty_like(self.phi)
+        for a in range(3):
+            phi_a = comps[a]
+            # Convective form: u_b * d_b phi_a
+            conv = (
+                u * d_axis(phi_a, 0)
+                + v * d_axis(phi_a, 1)
+                + w * d_axis(phi_a, 2)
+            )
+            # Divergence form: d_b (u_b * phi_a)
+            divf = (
+                d_axis(u * phi_a, 0)
+                + d_axis(v * phi_a, 1)
+                + d_axis(w * phi_a, 2)
+            )
+            adv_grid = -0.5 * (conv + divf)
+            for idx, node in enumerate(self._nodes):
+                i, j, k = node
+                result[a, idx] = adv_grid[i, j, k]
+        return result
+
+    def _project_incompressible_3d(self) -> None:
+        """INCOMP (3D): Leray-Helmholtz projection onto the divergence-free subspace.
+
+        Pseudo-spectral algorithm using the *exact* discrete central-difference
+        symbol ``S_a = sin(2 pi m_a / n) / h``, so that
+        :meth:`divergence_residual` drops to round-off after the call (it
+        agrees with the central-difference divergence operator probed by
+        :meth:`divergence_residual`, not merely with the spectral symbol
+        ``i k . u_hat``).
+
+        Cost: O(n^3 log n) via :func:`numpy.fft.fftn`.
+
+        Pressure (Phi_s). The Lagrange multiplier ``p_hat`` is the discrete
+        pressure that the incompressible NS equation introduces to enforce
+        ``div u = 0``; in TNFR language this is the structural potential
+        ``Phi_s`` whose gradient cancels the longitudinal part of the
+        convective term. The physical-space pressure is cached as an
+        ``(n, n, n)`` array and exposed via :meth:`pressure_field`.
+
+        Null space: zero mode and Nyquist modes (``S2 == 0``) are left
+        unchanged; classical 3D Taylor-Green (lowest non-trivial mode) is
+        unaffected.
+        """
+        n = int(self.graph.graph["resolution"])
+        Sx, Sy, Sz, S2 = self._fft_symbols_3d(n)
+
+        u = self._component_grid_3d(0, n)
+        v = self._component_grid_3d(1, n)
+        w = self._component_grid_3d(2, n)
+
+        u_hat = np.fft.fftn(u, axes=(0, 1, 2))
+        v_hat = np.fft.fftn(v, axes=(0, 1, 2))
+        w_hat = np.fft.fftn(w, axes=(0, 1, 2))
+
+        denom = np.where(S2 > 0.0, S2, 1.0)
+        p_hat = (Sx * u_hat + Sy * v_hat + Sz * w_hat) / denom
+        p_hat = np.where(S2 > 0.0, p_hat, 0.0 + 0.0j)
+
+        u_hat_proj = u_hat - Sx * p_hat
+        v_hat_proj = v_hat - Sy * p_hat
+        w_hat_proj = w_hat - Sz * p_hat
+
+        u_proj = np.fft.ifftn(u_hat_proj, axes=(0, 1, 2)).real
+        v_proj = np.fft.ifftn(v_hat_proj, axes=(0, 1, 2)).real
+        w_proj = np.fft.ifftn(w_hat_proj, axes=(0, 1, 2)).real
+
+        self._pressure_grid = np.fft.ifftn(p_hat, axes=(0, 1, 2)).real
+
+        self._flatten_grid_3d(u_proj, 0)
+        self._flatten_grid_3d(v_proj, 1)
+        self._flatten_grid_3d(w_proj, 2)
+
+    def vorticity_3d(self) -> np.ndarray:
+        """Discrete vector vorticity ``omega = curl u`` on the 3D torus.
+
+        Returns an ``(3, n, n, n)`` array with components
+
+            omega_x = d_y w - d_z v
+            omega_y = d_z u - d_x w
+            omega_z = d_x v - d_y u
+
+        Central differences on the canonical periodic grid.
+        """
+        if self.dimension != 3:
+            raise NotImplementedError("vorticity_3d() requires self.dimension == 3")
+        n = int(self.graph.graph["resolution"])
+        h = self._spacing
+        u = self._component_grid_3d(0, n)
+        v = self._component_grid_3d(1, n)
+        w = self._component_grid_3d(2, n)
+
+        def d_axis(arr: np.ndarray, axis: int) -> np.ndarray:
+            return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (2.0 * h)
+
+        omega = np.empty((3, n, n, n), dtype=float)
+        omega[0] = d_axis(w, 1) - d_axis(v, 2)
+        omega[1] = d_axis(u, 2) - d_axis(w, 0)
+        omega[2] = d_axis(v, 0) - d_axis(u, 1)
+        return omega
+
+    def vortex_stretching_field(self) -> np.ndarray:
+        """Discrete vortex-stretching term ``S_a = (omega . grad) u_a`` (3D).
+
+        Returns an ``(3, n, n, n)`` array whose component ``a`` is
+
+            S_a = omega_x * d_x u_a + omega_y * d_y u_a + omega_z * d_z u_a.
+
+        This term is the *defining* obstacle of the 3D Navier-Stokes
+        global-regularity problem: in 2D it is identically zero (vorticity
+        is a scalar perpendicular to the velocity plane and has no
+        spatial gradient along the velocity direction), so 2D NS is
+        globally regular; in 3D it can in principle amplify enstrophy
+        without bound, and whether the viscous term ``nu * Delta omega``
+        always tames this amplification is the Clay Millennium Problem
+        NS-G5.
+
+        Constantin-Fefferman (1993). The geometric-depletion result
+        states that when the vorticity *direction* ``xi = omega / |omega|``
+        is uniformly Holder-(1/2) continuous in regions where ``|omega|``
+        is large, the projection of the stretching term onto ``omega``
+        decays as ``|omega|^2 * sin(theta)`` where ``theta`` is the angle
+        between ``omega`` and the eigenvector of the strain tensor; the
+        present routine returns the full vector field so that downstream
+        diagnostics can compute alignment angles and effective stretching
+        rates.
+        """
+        if self.dimension != 3:
+            raise NotImplementedError("vortex_stretching_field() requires self.dimension == 3")
+        n = int(self.graph.graph["resolution"])
+        h = self._spacing
+        omega = self.vorticity_3d()
+        comps = (
+            self._component_grid_3d(0, n),
+            self._component_grid_3d(1, n),
+            self._component_grid_3d(2, n),
+        )
+
+        def d_axis(arr: np.ndarray, axis: int) -> np.ndarray:
+            return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (2.0 * h)
+
+        stretch = np.empty((3, n, n, n), dtype=float)
+        for a in range(3):
+            ua = comps[a]
+            stretch[a] = (
+                omega[0] * d_axis(ua, 0)
+                + omega[1] * d_axis(ua, 1)
+                + omega[2] * d_axis(ua, 2)
+            )
+        return stretch
+
+    def stretching_production(self) -> float:
+        """Volume integral of ``omega . [(omega . grad) u]`` (3D).
+
+        This is the production term in the enstrophy budget
+
+            d/dt [ (1/2) integral |omega|^2 dV ]
+                = integral omega . (omega . grad) u  dV
+                  - nu * integral |grad omega|^2 dV.
+
+        A positive value means stretching is *injecting* enstrophy
+        (vorticity amplification); a negative value means folding /
+        depletion. Global regularity in 3D would follow if this
+        production were uniformly dominated by the viscous dissipation
+        in the enstrophy budget for all time, which is precisely the
+        Clay open question NS-G5.
+        """
+        if self.dimension != 3:
+            raise NotImplementedError("stretching_production() requires self.dimension == 3")
+        omega = self.vorticity_3d()
+        stretch = self.vortex_stretching_field()
+        h3 = self._spacing ** 3
+        prod = (
+            omega[0] * stretch[0]
+            + omega[1] * stretch[1]
+            + omega[2] * stretch[2]
+        )
+        return float(np.sum(prod)) * h3
+
 
 __all__ = [
     "TNFRNavierStokesOperator",
     "build_torus_graph",
+    "build_torus_graph_3d",
     "taylor_green_initial_condition",
+    "taylor_green_initial_condition_3d",
 ]
