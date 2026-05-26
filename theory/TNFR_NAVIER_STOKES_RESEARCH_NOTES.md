@@ -182,7 +182,8 @@ Discussed but **not promoted** until N2 forces the question:
 | N10 | 2D vs 3D dimensional asymmetry falsifiability (NS-G5 precursor) | **DONE** | `1fac358b` | `examples/85` (2D TG + 3D operator on 2D-embedded IC + 3D TG, side-by-side) |
 | N11 | Reynolds sweep — CF alignment vs viscosity (NS-G4 precursor) | **DONE** | `afc65b49` | `examples/86` (3D TG n=24, ν∈{0.05,0.02,0.01,0.005}, Re_eff 126→1257) |
 | N12 | REMESH-∞ asymptotic limit on K_φ cascade (§11 test, NS-G_blowup branch B1) | **DONE — STRUCTURAL_EFFECT_MONOTONE** (per locked §12.7 mapping; non-monotone in BKM and stretching observables, see §13.4). Pre-registration: `c8900fce`. | n = 16 single-resolution probe of §11 working hypothesis: supports REMESH-global having structural traction on NS K_φ cascade (99.5 % response in peak stretching across τ_g sweep). Does NOT close NS-G1..G5. | §12 + §13 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py` |
-| N≥13 | Higher-Re CF eigenframe transition (n≥48, DNS) **/** function-space convergence (NS-G1) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4) **/** N12 follow-up at n∈{24,32} | open | unknown | unknown |
+| N13 | REMESH-∞ resolution extension with refined F3 (n∈{24,32}; N12 follow-up) | **PRE-REGISTERED** (this commit, atomic with benchmark skeleton; no data observed at registration time). | Resolution-consistency check of the N12 verdict under a corrected F3 that excludes IC-dominated observables (`peak_vorticity_sup`, `peak_enstrophy`). Two new post-IC observables added. Read-only `CROSS_RES_CONSISTENT` flag pre-registered. Does NOT close NS-G1..G5. | §14 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.py` |
+| N≥14 | Higher-Re CF eigenframe transition (n≥48, DNS) **/** function-space convergence (NS-G1) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4) | open | unknown | unknown |
 
 All NS-G1..G5 gaps remain **OPEN** after N1–N11. See §11 for the cross-program reframe of the residual obstruction.
 
@@ -446,6 +447,115 @@ N12 is a single-resolution structural-compatibility probe.  It does **not**:
 * Make any claim about τ_g → ∞ as a *physical* limit beyond the operationally-implemented lag-to-IC realisation.
 
 The structural traction reported above is an empirical observation on one benchmark, in the same spirit as the Riemann §13vicies-novies thread on the analogous canonical infrastructure.
+
+---
+
+## §14 N13 — REMESH-∞ resolution extension with refined F3 (Pre-Registration, May 2026)
+
+**Status**: PRE-REGISTERED (this commit, atomic with the N13 benchmark skeleton; no data observed at registration time).  Mirrors the §12 discipline used for N12, and the Riemann R∞-1b pre-registration discipline (§13vicies-novies.14 of the Riemann notes).
+
+### §14.1 Motivation
+
+N12 returned `STRUCTURAL_EFFECT_MONOTONE` per the locked §12.7 mapping, but §13.4 documented honestly that the F3 MONOTONE classification was driven by two structurally insensitive observables (`peak_vorticity_sup` and `peak_enstrophy`), both of which attain their extremum at t = 0 IC, *before any REMESH-global mix has fired*.  The dynamically-active observables (`BKM(T)`, `peak_stretching`) were strongly non-monotone (BKM U-shaped with minimum at τ_g = 128; stretching collapsed 14.48 → 0.078 at τ_g = ∞).
+
+§13.4 flagged two questions left open by N12:
+
+1. **Does the dynamic non-monotonicity persist when F3 excludes IC-dominated observables?**  N12 cannot answer this — its F3 was locked before the artefact was identified.
+2. **Does the τ_g = ∞ stretching collapse and the τ_g = 128 U-shape minimum persist under spatial refinement, or is it an n = 16 artefact?**  The structural-traction reading of §13.5 (REMESH-global modulates accumulated and production observables of the K_φ cascade) only generalises if the response signature survives n → n' > 16.
+
+N13 addresses both questions by replicating N12 at `n ∈ {24, 32}` with a **refined F3** that restricts the monotonicity test to observables that *can* respond to mixing.
+
+### §14.2 Scope
+
+N13 is **not**:
+
+* A continuum-limit study (NS-G1 closure would require n ≥ 64 with uniform-in-h bounds, full Aubin–Lions compactness argument, and verification that the limit satisfies the continuum weak formulation — none addressed here).
+* A higher-Re study (ν is held at 0.01, identical to N12; the new variable is *only* the spatial resolution).
+* A claim about asymptotic behaviour of REMESH-∞ as n → ∞ (two points {24, 32} cannot establish a trend; they only test persistence of the N12 signature across one resolution doubling and one finer step).
+
+N13 **is**: a resolution-consistency check of the N12 verdict under a corrected F3, on the same IC (3D Taylor–Green), the same ν, the same dt, the same T, the same α, and the same τ_g sweep.  Two new observables are pre-registered, two existing observables are demoted from F3 (per §14.6).
+
+### §14.3 Configuration (locked)
+
+| Knob | Value | Source |
+|---|---|---|
+| Resolutions | `n ∈ {24, 32}` | N13-specific; outer loop |
+| Viscosity ν | 0.01 | Identical to N12 (§12.4) |
+| Time-step dt | 0.005 | Identical to N12; satisfies viscous CFL `dt ≤ h²/(2ν)` at both n (n=32: bound ≈ 1.93, ample) and advective CFL `dt ≤ h/A` (n=32: bound ≈ 0.20, ample) |
+| Final time T | 1.0 (200 steps) | Identical to N12 |
+| Amplitude A | 1.0 | Identical to N12 |
+| Mixing weight α | 0.5 | Identical to N12 (canonical `REMESH_ALPHA` default) |
+| τ_g sweep | `[0, 8, 32, 128, "inf"]` | Identical to N12 |
+| Seed label | `20260526` | Cross-program session continuity (Riemann R∞-1b + NS N12) |
+| Total runs | 5 × 2 = 10 | One full sweep per resolution |
+
+Anticipated wall time (extrapolated from N12 timings at n=16 with O(n³ log n) per step): n=24 sweep ≈ 3–4 minutes; n=32 sweep ≈ 8–10 minutes; F1 re-run overhead ≈ 1 minute per resolution.  Total budget ≤ 20 minutes.
+
+### §14.4 Operator instantiation
+
+Identical to §12.4: canonical `TNFRNavierStokesOperator` (3D torus, INCOMP active, advection ON, Crank–Nicolson FFT viscous half-step, central-difference skew-symmetric advection, INCOMP applied defensively after every NS step *and* after every REMESH-global mix).  No code changes to the operator.  The benchmark adds an outer loop over `n` and one fresh `build_torus_graph_3d(n)` per resolution; nothing else is altered.
+
+### §14.5 Constants pinned
+
+All §12.5 constants are inherited unchanged.  N13 adds:
+
+* `N_SWEEP = [24, 32]` (outer loop, two values)
+* `F3_REFINED_EXCLUDED = ["peak_vorticity_sup", "peak_enstrophy"]` (the IC-dominated observables identified in §13.4 — explicit exclusion list, not implicit)
+
+### §14.6 Observables — refined F3 list (locked)
+
+The F3 monotonicity test is restricted, at every resolution, to observables that can respond to mixing.  Pre-registered F3 set:
+
+| Observable | Definition | Included in F3 (N12) | Included in F3 (N13) | Rationale |
+|---|---|---|---|---|
+| `peak_vorticity_sup` | max over t of ‖ω(·,t)‖_∞ | YES | **NO** | Extremum at t = 0 IC (3D TG), insensitive to any post-IC operator (§13.4 finding 1) |
+| `peak_enstrophy` | max over t of ½ Σ ω² · h³ | YES | **NO** | Extremum in the early transient, nearly flat across mixing sweep at α = 0.5 because all τ_g cases mix before the enstrophy peak (§13.4 finding 2) |
+| `BKM_T` | ∫₀ᵀ ‖ω‖_∞ dt | YES | **YES** | Time-integrated, intrinsically post-IC, was dynamically active in N12 |
+| `peak_stretching` | max over t of \|ω · S · ω\| | YES | **YES** | Production term, was the most-responsive observable in N12 (99.5 % collapse at τ_g = ∞) |
+| `peak_stretching_post_t1` | max over t ≥ dt of \|ω · S · ω\| | — | **YES (NEW)** | Explicit post-IC variant; redundant with `peak_stretching` for 3D TG (initial stretching ≈ 7 × 10⁻¹⁸ by symmetry) but pre-registered to be robust to non-symmetric ICs in future milestones |
+| `peak_enstrophy_post_t1` | max over t ≥ dt of ½ Σ ω² · h³ | — | **YES (NEW)** | Post-IC variant of the demoted observable; restores the "amplitude" channel to F3 without the IC artefact |
+
+F3 verdict (N13 mapping, locked):
+
+* `FLAT` ⇔ F2 fails (no observable changed ≥ 5 %).
+* `MONOTONE` ⇔ F2 passes AND at least one of `{BKM_T, peak_stretching, peak_stretching_post_t1, peak_enstrophy_post_t1}` is monotone across `[tau_g=8, 32, 128, inf]` (strict ≥ 0 or ≤ 0 differences).
+* `NON_MONOTONE` ⇔ F2 passes AND none of the four observables are monotone.
+
+F1, F2, F4, F5 keep their N12 definitions and tolerances (§12.6).
+
+### §14.7 Verdict mapping (locked, per-resolution)
+
+Identical to §12.7, applied separately to each `n ∈ {24, 32}`:
+
+* `STRUCTURAL_EFFECT_MONOTONE` ⇔ F1+F2+F4+F5 PASS, F3 = MONOTONE.
+* `STRUCTURAL_EFFECT_NON_MONOTONE` ⇔ F1+F2+F4+F5 PASS, F3 = NON_MONOTONE.
+* `NULL_RESULT` ⇔ F1+F4+F5 PASS, F2 fails, F3 = FLAT.
+* `INDETERMINATE_INFRA_FAIL` ⇔ any of F1/F4/F5 fails.
+* `INDETERMINATE_OTHER` ⇔ any combination not covered above.
+
+A **cross-resolution agreement** flag is also pre-registered (read-only, not a verdict gate):
+
+* `CROSS_RES_CONSISTENT` ⇔ both n=24 and n=32 yield the same per-resolution verdict AND the sign of the τ_g=∞ change in `peak_stretching_post_t1` (i.e. "collapse" vs "growth" vs "≈ constant") agrees with the n=16 N12 reading.
+* `CROSS_RES_INCONSISTENT` otherwise.
+
+This flag does **not** strengthen or weaken §11 by itself — it only documents whether the N12 signature is resolution-robust at one doubling.
+
+### §14.8 Pre-registration commitment
+
+This §14 is committed atomically with the N13 benchmark skeleton (`benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.py`) in a single commit, **before any data is observed**.  The commit message will identify this as a pre-registration.  No edits to §14.1–§14.7 may be made retroactively after the Results commit lands.
+
+Honest acknowledgement, mirroring §12.8: failure modes that pre-registration cannot mitigate include (a) the absence of an external N11 trajectory archive (F1 remains a self-consistency check, identical to N12), (b) the operator-level h-correction caveat documented in N8 (which affects raw `dissipation_rate` only; F4 uses `kinetic_energy` directly and is unaffected), and (c) the fact that {24, 32} is two points only and cannot establish a convergence trend.
+
+### §14.9 Scope statement
+
+N13 is a single-axis (resolution) extension of N12 with a corrected F3.  It does **not**:
+
+* Close any of NS-G1..G5.
+* Prove or disprove the Clay Millennium 3D NS regularity question.
+* Establish a continuum limit, an asymptotic-in-n trend, or any analytical bound.
+* Promote any new canonical operator.
+
+The result of N13 will be a structural-compatibility statement about the persistence of the N12 signature across one resolution doubling, under a corrected F3 — nothing more.
 
 
 
