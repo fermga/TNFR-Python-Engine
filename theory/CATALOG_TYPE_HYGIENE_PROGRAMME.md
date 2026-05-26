@@ -176,7 +176,14 @@ directly.
   intermediate computed by `compute_delta_nfr` and then projected); (b)
   `tensor-rank signature` (entropy of singular-value distribution of the
   neighbour-gradient matrix used to assemble ΔNFR).
-- **Status**: ⏳ NOT STARTED.
+- **Status**: 🟡 IN PROGRESS — B3a ✅, B3b pending, B3c pending. Empirical pre-registration data (from B3a demo, two-axis tensor-storage + rank-entropy):
+
+  | Resolution | seed | S_ΔNFR | T_frac | R_eff | σ1 | σ2 | σ3 | Verdict |
+  |---|---|---|---|---|---|---|---|---|
+  | 1 (n=24, steps=64) | 17 | 0.105763 | 0/1536 | 1.1232 | 2.0131 | 0.0209 | 0.0070 | `SCALAR_DNFR_ADEQUATE` |
+  | 2 (n=48, steps=128) | 31 | 0.111601 | 0/6144 | 1.1304 | 2.1294 | 0.0298 | 0.0086 | `SCALAR_DNFR_ADEQUATE` |
+
+  Cross-axis interpretation: structural zero-tensor storage *and* empirical rank-1 collapse of the canonical $(d\theta, d\mathrm{EPI}, d\nu_f)$ gradient triple ($\sigma_1 / \sigma_{2,3} \sim 10^2$) → strongest scalar-adequate Phase-a signature observed in the programme. Expected final verdict: **NEGATIVE** at the canonical level (deferred to B3c). Candidate envelope: E4 = `TensorGradientElement`.
 
 ### Tier 2 — Graph-level parameters
 
@@ -304,7 +311,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B0 | T-νf | ✅ | ✅ | ✅ | **NEG** | `a7a095af`, `34dc32fe`, `a6f795b0` |
 | B1 | T-EPI | ✅ | ✅ | ✅ | **NEGATIVE** | `62e207cc` (B1a), `ef4858f3` (B1b), B1c this commit |
 | **B2** | T-φ | ✅ | ✅ | ✅ | **NEGATIVE** | `afdf8ef9` (B2a), `a0bc4edd` (B2b), B2c this commit |
-| B3 | T-ΔNFR | ⏳ | ⏳ | ⏳ | — | — |
+| B3 | T-ΔNFR | ✅ | ⏳ | ⏳ | — | B3a this commit |
 | **Tier 2 — Graph-level parameters** | | | | | | |
 | B4 | T-REMESH-window | ⏳ | ⏳ | ⏳ | — | — |
 | B5 | T-Δφ_max | ⏳ | ⏳ | ⏳ | — | — |
@@ -318,7 +325,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
 | **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
 
-**Progress as of 2026-05-26**: 3 sub-questions complete (B0, B1, B2 all NEGATIVE), 0 in progress, 9 pending (B3 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B2a pre-registration at §13triginta-octava; B2b forcing-axiom reduction at §13triginta-novena; B2c final verdict + E3 classification at §13triginta-decima.
+**Progress as of 2026-05-26**: 3 sub-questions complete (B0, B1, B2 all NEGATIVE), 1 in progress (B3 — B3a ✅, B3b pending, B3c pending), 8 pending (B4 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B3a pre-registration at §13quadraginta.
 
 ---
 

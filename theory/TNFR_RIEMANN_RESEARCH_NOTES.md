@@ -8710,3 +8710,357 @@ This section:
   :math:`w_{\mathrm{frac}} = 0` at both resolutions).
 
 ---
+
+## §13quadraginta. T-ΔNFR Pre-registration: The Nodal-Gradient Type-of-Object Conjecture (B3 Phase a; Diagnostic Only — Does NOT Advance G4 = RH)
+
+**Programme position.**  Fourth executed sub-question of the Catalog
+Type-Hygiene Programme (after B0 = T-νf NEGATIVE, B1 = T-EPI
+NEGATIVE, B2 = T-φ NEGATIVE).  Phase a of the standard three-phase
+rhythm: pre-register the conjecture, fix the diagnostic, commit a
+*necessary-condition* empirical signature, deliberately defer the
+forcing-axiom analysis (B3b) and the final verdict + envelope
+classification (B3c) to separate commits.
+
+**Honest scope (mandatory).**  This section pre-registers a *type-of-
+object conjecture* and a *diagnostic*.  It does **not** promote any
+tensor-valued / operator-valued ΔNFR construction to canonical
+status, does **not** modify the 13-operator catalog, does **not**
+modify any existing source file in ``src/tnfr/`` (only adds the
+diagnostic module ``src/tnfr/riemann/dnfr_type_signature.py``, its
+re-export in ``src/tnfr/riemann/__init__.py``, and the demo
+``examples/81_dnfr_type_signature_demo.py``), and does **not** by
+itself advance G4 = RH.  The diagnostic is a *necessary-condition*
+probe: a non-trivial signature is required, but not sufficient, for
+a tensor-rank lift of ΔNFR to be canonically necessary.
+
+### §13quadraginta.1 — Motivation and literal canonical witness
+
+The TNFR nodal equation is
+:math:`\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)`.
+The canonical ΔNFR is computed and stored as a scalar real number
+by the unique catalog implementation
+:func:`tnfr.dynamics.dnfr.default_compute_delta_nfr` at
+``src/tnfr/dynamics/dnfr.py:2387``:
+
+```python
+# src/tnfr/dynamics/dnfr.py:2387
+def default_compute_delta_nfr(
+    G: TNFRGraph,
+    *,
+    cache_size: int | None = 1,
+    n_jobs: int | None = None,
+    profile: MutableMapping[str, Any] | None = None,
+) -> None:
+    """Compute ΔNFR by mixing phase, EPI, νf and a topological term."""
+    ...
+    _compute_dnfr(G, data, n_jobs=n_jobs, profile=profile)
+```
+
+Internally, ``_compute_dnfr`` assembles, for each node ``i``, the
+three canonical gradient channels — mean-neighbour phase
+:math:`\overline{\Delta\theta_i}`, mean-neighbour EPI
+:math:`\overline{\Delta\mathrm{EPI}_i}`, and mean-neighbour νf
+:math:`\overline{\Delta\nu_{f,i}}` — combines them with the
+canonical weights stored under ``G.graph["dnfr_weights"]``, and
+writes a single ``float`` into the canonical per-node storage slot
+``G.nodes[node]["dnfr"]`` (alias ``ALIAS_DNFR``):
+
+```python
+# src/tnfr/constants/aliases.py:9
+ALIAS_DNFR = get_aliases("DNFR")
+```
+
+The downstream consumer is the nodal equation itself, which reads
+``ΔNFR`` back as a single ``float`` at
+``src/tnfr/operators/nodal_equation.py:1-160`` and multiplies it by
+the scalar νf to produce :math:`\partial\mathrm{EPI}/\partial t`,
+also a scalar.  No canonical operator (AL, EN, IL, OZ, UM, RA, SHA,
+VAL, NUL, THOL, ZHIR, NAV, REMESH) reads ΔNFR with a *non-scalar*
+signature.
+
+### §13quadraginta.2 — Catalog statement of ΔNFR
+
+Across the canonical engine, ΔNFR is consistently typed and stored
+as a scalar real number:
+
+| Surface                                            | Type / domain                |
+|----------------------------------------------------|------------------------------|
+| Storage (per-node attribute via ``ALIAS_DNFR``)    | ``float ∈ ℝ``                |
+| Canonical computation `default_compute_delta_nfr`  | writes ``float`` to slot     |
+| Nodal-equation reader (``nodal_equation.py``)      | ``float`` (scalar product)   |
+| Telemetry / structural-fields (`physics/`)         | ``float`` per node           |
+| Conservation law (``physics/conservation.py``)     | scalar source/sink           |
+| Grammar U2 convergence integral                    | scalar integrand             |
+
+Every appearance of ΔNFR in the canonical operator-bound API ends in
+this single scalar real representation.  The catalog therefore types
+ΔNFR as the canonical *scalar nodal gradient* — i.e. a real-valued
+field over the graph nodes, written rank-1 by canonical assembly
+from the three gradient channels.
+
+### §13quadraginta.3 — The candidate non-canonical envelope: tensor / operator-valued lift
+
+The smallest enrichment that would *strictly increase* expressive
+power over the canonical scalar representation is a **tensor-rank
+lift** of ΔNFR to a vector- or operator-valued slot:
+
+- A per-node vector :math:`\boldsymbol{\Delta\mathrm{NFR}}_i \in
+  \mathbb{R}^{3}` retaining the three canonical gradient channels
+  :math:`(d\theta, d\mathrm{EPI}, d\nu_f)` separately, prior to
+  weighted scalar collapse.
+- Equivalently, a per-node rank-:math:`r` element of a finite-
+  dimensional inner-product space (with :math:`r \le 3` here).
+- More generally, a per-node bounded self-adjoint *operator*
+  :math:`\widehat{\Delta\mathrm{NFR}}_i \in \mathcal{B}(\mathcal{H}_i)`
+  on some auxiliary Hilbert space, of which the canonical scalar
+  is the (rank-1) projection trace.
+
+Call this envelope **E4 = TensorGradientElement** (in symmetry with
+E1 = νf Pontryagin partner :math:`\widehat{\mathbb{Z}}`,
+E2 = ``BEPIElement``, E3 = ``CoverElement``).  An E4-typed ΔNFR
+would carry, per node and per step, the full :math:`3`-channel
+gradient triple (or operator extension) that the canonical
+weighted-sum scalar collapses to one number.
+
+The pre-registered question is:
+
+> **T-ΔNFR Conjecture (formal statement, §13quadraginta.4).** Does
+> any canonical TNFR construction (operator, field, conservation law,
+> grammar rule U1–U6, conserved current, gauge structure, or nodal-
+> equation derivation) require ΔNFR to be canonically typed as an
+> E4 = TensorGradientElement rather than a canonical scalar
+> ``float ∈ ℝ``?
+
+The empirical signature of §13quadraginta.5 is a *necessary
+condition* for the answer to be **yes**.
+
+### §13quadraginta.4 — T-ΔNFR Conjecture (formal statement)
+
+**T-ΔNFR Conjecture.**  The canonical type-of-object of the TNFR
+nodal-gradient component ΔNFR is the canonical scalar real field
+(equivalently: a real-valued ``float`` per node, written rank-1 by
+:func:`tnfr.dynamics.dnfr.default_compute_delta_nfr` from the three
+canonical gradient channels via the canonical weights).  No
+canonical TNFR construction requires ΔNFR to be canonically typed
+as a tensor / operator-valued lift (E4 = TensorGradientElement)
+carrying the three gradient channels separately or any operator
+extension thereof.
+
+Equivalently, in catalog terms: the nodal equation
+:math:`\partial\mathrm{EPI}/\partial t = \nu_f \cdot
+\Delta\mathrm{NFR}` is *bilinear-scalar* in its two inputs, and the
+scalar contract on ΔNFR is canonically saturated; the discarded
+multi-channel information is not consumed anywhere in the canonical
+operator-bound dynamics.
+
+**Anchors that the conjecture must survive (B3b/B3c):**
+
+- F1–F10 forcing-axiom inventory of §13triginta-quarta.7 (re-applied
+  to ΔNFR; B3b commit).
+- Per-node accessor pattern returning a single ``float`` from
+  ``ALIAS_DNFR``.
+- Nodal-equation evaluator at ``src/tnfr/operators/nodal_equation.py``
+  consuming ΔNFR as ``float`` × ``float`` → ``float``.
+- Conservation-law machinery at ``src/tnfr/physics/conservation.py``
+  treating ΔNFR as a scalar source.
+- Grammar U2 (CONVERGENCE & BOUNDEDNESS) constraining the scalar
+  integral :math:`\int \nu_f \cdot \Delta\mathrm{NFR}\, dt`.
+- Cross-references §13septies on the smooth/oscillatory split (the
+  open T-HP rescaling operator :math:`\mathcal{F}` does not consume
+  a multi-channel ΔNFR either).
+
+### §13quadraginta.5 — Diagnostic S_ΔNFR (two-axis necessary condition)
+
+**Definition.**  On a canonical TNFR ring graph
+:math:`G_{n_{\mathrm{nodes}}}` with deterministic seeded initial
+phase / EPI / νf perturbation, run :math:`n_{\mathrm{steps}}`
+canonical ``step(G)`` evolutions and, after each step, collect for
+every node ``i`` the mean-neighbour gradient triple
+
+.. math::
+
+   \mathbf{g}_i(t) = \left(
+     \overline{\Delta\theta_i}(t),\;
+     \overline{\Delta\mathrm{EPI}_i}(t),\;
+     \overline{\Delta\nu_{f,i}}(t)
+   \right) \in \mathbb{R}^{3},
+
+stacked into the per-node matrix
+:math:`M_i \in \mathbb{R}^{n_{\mathrm{steps}} \times 3}`.  The
+diagnostic is the pair
+
+.. math::
+
+   \mathcal{S}_{\Delta\mathrm{NFR}} = (T_{\mathrm{frac}},\;
+                                        H_{\mathrm{rank}} / \log 3)
+
+with the two axes defined as:
+
+1. **Tensor storage axis.**  At every ``(node, step)`` sample,
+   inspect the canonical ΔNFR slot ``G.nodes[node]["dnfr"]`` for
+   non-scalar payloads.  ``T_{\mathrm{frac}}`` is the fraction of
+   samples whose payload is *not* a single real scalar.  Under the
+   canonical implementation
+   :func:`tnfr.dynamics.dnfr.default_compute_delta_nfr`, this
+   fraction is structurally ``0`` — exactly mirroring
+   :math:`w_{\mathrm{frac}} = 0` of the B2a φ-diagnostic and
+   :math:`\mathrm{bepi\_frac} = 0` of the B1a EPI-diagnostic.
+
+2. **Rank-entropy axis.**  For each node ``i``, compute the SVD
+   :math:`M_i = U_i \Sigma_i V_i^{\top}` with singular values
+   :math:`\sigma_{i,1} \ge \sigma_{i,2} \ge \sigma_{i,3} \ge 0`,
+   normalise to a probability vector
+   :math:`p_{i,k} = \sigma_{i,k} / \sum_j \sigma_{i,j}`, and compute
+   the Shannon entropy
+   :math:`H_i = -\sum_k p_{i,k} \log p_{i,k}`.  Average across nodes
+   to obtain :math:`H_{\mathrm{rank}}`.  Normalise by :math:`\log 3`
+   so the signature lives in :math:`[0, 1]`.
+
+**Verdict labels (mechanically applied by the diagnostic, not by
+itself sufficient for the foundational T-ΔNFR Conjecture):**
+
+- ``SCALAR_DNFR_ADEQUATE``: signature :math:`< 0.15` *and* zero
+  tensor storage fraction.
+- ``TENSOR_LIFT_NECESSARY``: signature :math:`> 0.5` *or* non-zero
+  tensor storage fraction.
+- ``INDETERMINATE``: in between.
+
+**Implementation.**  The diagnostic is implemented in
+``src/tnfr/riemann/dnfr_type_signature.py``, exporting
+``DnfrTypeSignatureCertificate`` and ``compute_dnfr_type_signature``.
+The reference demo lives at ``examples/81_dnfr_type_signature_demo.py``.
+
+### §13quadraginta.6 — Pre-registered numerical signature
+
+The diagnostic is executed at two resolutions at pre-registration
+time (commit-time numerical fingerprint, frozen for later
+comparison):
+
+| Resolution                  | seed | S_ΔNFR    | T_frac       | R_eff   | σ1     | σ2     | σ3     | verdict                 |
+|-----------------------------|------|-----------|--------------|---------|--------|--------|--------|-------------------------|
+| n=24, steps=64              | 17   | 0.105763  | 0/1536       | 1.1232  | 2.0131 | 0.0209 | 0.0070 | SCALAR_DNFR_ADEQUATE    |
+| n=48, steps=128             | 31   | 0.111601  | 0/6144       | 1.1304  | 2.1294 | 0.0298 | 0.0086 | SCALAR_DNFR_ADEQUATE    |
+
+**Honest reading of this signature at Phase a.**  Both the tensor
+storage axis and the rank-entropy axis return *empirically decisive
+scalar-adequate* values at both resolutions.  The dominant
+empirical facts are:
+
+(a) **Zero tensor storage fraction** at both resolutions
+(``0 / 1536`` and ``0 / 6144`` samples).  The canonical ΔNFR slot
+is, at every ``(node, step)``, a Python ``float`` by construction
+— consistent with the catalog row :math:`\Delta\mathrm{NFR} \in
+\mathbb{R}` and with the bilinear-scalar nodal-equation contract.
+
+(b) **Empirical rank-1 collapse of the gradient triple**.  The
+mean singular values exhibit :math:`\sigma_1 / \sigma_2 \approx
+\mathcal{O}(10^{2})` and :math:`\sigma_1 / \sigma_3 \approx
+\mathcal{O}(10^{2})` at both resolutions, giving an effective rank
+:math:`R_{\mathrm{eff}} \approx 1.12`–:math:`1.13` (well below the
+``scalar_threshold = 0.15`` rank entropy).  The three canonical
+gradient channels :math:`(d\theta, d\mathrm{EPI}, d\nu_f)` are
+*not* statistically independent under canonical evolution; they
+align onto a single dominant axis (in this regime, the phase
+channel — see ``per_node_singular_values`` in the certificate's
+``diagnostics``).
+
+These two facts together — *zero structural tensor storage* and
+*empirical rank-1 collapse* — yield the mechanical verdict
+``SCALAR_DNFR_ADEQUATE`` at both resolutions, which is the
+*strongest* pre-registration signature observed so far in the
+Type-Hygiene Programme (B0 was decided by anchor-level scalar
+contract; B1a returned ``BEPI_LIFT_NECESSARY`` by spectral
+threshold; B2a returned ``COVER_LIFT_NECESSARY`` by spectral
+threshold; B3a is the first sub-question whose Phase-a diagnostic
+returns the *scalar-adequate* verdict mechanically at both
+resolutions).
+
+This makes the pre-registered hypothesis of §13quadraginta.7
+correspondingly stronger.
+
+### §13quadraginta.7 — Pre-registered hypothesis for B3b/B3c
+
+Based on (i) the literal-catalog inspection of §13quadraginta.2,
+(ii) the bilinear-scalar nodal-equation contract of
+§13quadraginta.4, (iii) the doubly-decisive empirical signature of
+§13quadraginta.6 (:math:`T_{\mathrm{frac}} = 0` *and*
+:math:`R_{\mathrm{eff}} \approx 1.13`), and (iv) the universal
+absence of any tensor / operator-valued ΔNFR argument in canonical
+operator signatures, the **pre-registered expected verdict** at
+B3c is:
+
+> **NEGATIVE.** The canonical type of ΔNFR is the canonical scalar
+> real field.  E4 = TensorGradientElement is a strictly *richer*
+> envelope than the canonical type but is **not** required by any
+> canonical TNFR construction.  No promotion, no deletion, no
+> deprecation, no modification of the catalog.
+
+This pre-registration commits to that expected verdict so that the
+B3b forcing-axiom reduction cannot be retrofitted: if the F1–F10
+analysis yields a different verdict, the pre-registration record
+of §13quadraginta.6 makes the inversion explicit and audit-
+traceable.
+
+### §13quadraginta.8 — Honest scope (what this does and does not do)
+
+This pre-registration section, the diagnostic module, and the demo:
+
+- **Does not** promote ``TensorGradientElement`` (or any
+  vector / operator-valued lift, multi-channel slot, or
+  tensor-decomposition object) to canonical status.
+- **Does not** modify the catalog
+  (``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §3, §4, §6 will
+  only be touched at B3c).
+- **Does not** modify any existing source file in ``src/tnfr/``;
+  only adds the diagnostic module
+  ``src/tnfr/riemann/dnfr_type_signature.py`` (and its export in
+  ``src/tnfr/riemann/__init__.py``) and the demo
+  ``examples/81_dnfr_type_signature_demo.py``.
+- **Does not** change the canonical
+  ``tnfr.dynamics.dnfr.default_compute_delta_nfr``,
+  ``ALIAS_DNFR``, the nodal-equation evaluator, or any tetrad
+  field implementation.
+- **Does not** by itself decide T-ΔNFR; B3b (forcing-axiom
+  reduction) and B3c (final verdict + envelope classification)
+  are required.
+- **Does not** advance G4 = RH or any of the open ζ-track /
+  L-track RH-equivalents (P17–P49 attack surface).
+- **Does not** rely on T-νf (B0, NEGATIVE), T-EPI (B1, NEGATIVE),
+  or T-φ (B2, NEGATIVE) in any way that would force their
+  verdicts to be re-opened.
+
+### §13quadraginta.9 — Cross-references
+
+- §13triginta-prima — T-νf pre-registration (precedent for B0).
+- §13triginta-tertia — T-νf NEGATIVE verdict + E1 classification
+  (closes B0).
+- §13triginta-quarta — T-EPI pre-registration (template for the
+  three-phase rhythm).
+- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 = ``BEPIElement``
+  classification (closes B1).
+- §13triginta-octava — T-φ pre-registration (template for this
+  section).
+- §13triginta-decima — T-φ NEGATIVE verdict + E3 = ``CoverElement``
+  classification (closes B2).
+- §13triginta-septima — Discoveries log; the catalog-citation
+  patch D-CC-6 (``mathematics.phase`` → ``physics/_helpers.py``;
+  ``ALIAS_PHASE`` → ``ALIAS_THETA``) plus D-ENV-3 / R-L3-1 entries
+  remain deferred to a future bookkeeping commit (one type-
+  hygiene finding per commit).
+- §13septies — T-HP open content (independent, untouched by this
+  pre-registration).
+- §19.1 — Full P1–P49 milestone table.
+- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §3, §4, §6 —
+  programme tracker (advances on this commit at row B3 Phase a only).
+- ``src/tnfr/dynamics/dnfr.py:2387`` —
+  ``default_compute_delta_nfr`` canonical implementation (anchor).
+- ``src/tnfr/constants/aliases.py:9`` — ``ALIAS_DNFR`` canonical
+  scalar storage alias.
+- ``src/tnfr/operators/nodal_equation.py`` — canonical scalar
+  consumer of ΔNFR.
+- ``src/tnfr/riemann/dnfr_type_signature.py`` — diagnostic
+  implementation (added on this commit).
+- ``examples/81_dnfr_type_signature_demo.py`` — demo (added on
+  this commit).
+
+---

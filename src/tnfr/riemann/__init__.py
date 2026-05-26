@@ -868,6 +868,11 @@ from .phi_type_signature import (
     PhiTypeSignatureCertificate,
     compute_phi_type_signature,
 )
+from .dnfr_type_signature import (
+    # §13quadraginta: DeltaNFR-Type Signature diagnostic (foundational sub-question)
+    DnfrTypeSignatureCertificate,
+    compute_dnfr_type_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1349,6 +1354,9 @@ __all__ = [
     # §13triginta-octava: phi-Type Signature (foundational diagnostic)
     "PhiTypeSignatureCertificate",
     "compute_phi_type_signature",
+    # §13quadraginta: DeltaNFR-Type Signature (foundational diagnostic)
+    "DnfrTypeSignatureCertificate",
+    "compute_dnfr_type_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",
