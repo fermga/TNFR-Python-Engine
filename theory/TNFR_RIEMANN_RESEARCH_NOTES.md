@@ -155,6 +155,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13quadraginta-quinta | 10806 | **B4 = T-REMESH-window** final NEGATIVE verdict + envelope classification of E5 = ContinuousWindowKernel (continuous-time kernel / fractional-order temporal coupling); first Tier-2 sub-question closed; L3* confirmed across Tier-1 / Tier-2 boundary; two Tier-2 predictions (B5, B6) outstanding | B4c | — |
 | §13quadraginta-sexta | 11178 | **B5 = T-Δφ_max** pre-registration (two-axis scalar-storage + angle-of-attack-independence diagnostic; candidate envelope E6 = EdgeDependentPhaseThreshold; CATALOG anchor correction documented: canonical `DELTA_PHI_MAX = PI/2`, not γ/π) | B5a | — |
 | §13quadraginta-septima | 11304 | **B5 = T-Δφ_max** forcing-axiom reduction (F1–F10); residual axiom (P-Δφ_max-Non-Scalar-Retention) isolated and refuted by STD = Scalar-Threshold Discipline; sixth orthogonal canonical discharge mechanism (CDM); second Tier-2 confirmation of L3* — L3* now validated under six distinct orthogonal CDMs across both tiers | B5b | — |
+| §13quadraginta-octava | 11430 | **B5 = T-Δφ_max** final NEGATIVE verdict + envelope classification of E6 = EdgeDependentPhaseThreshold (matrix-valued / angle-of-attack-functional); second Tier-2 sub-question closed; six sub-questions complete (B0–B5 all NEGATIVE under six orthogonal CDMs); L3* promoted to "empirically robust working heuristic with structural-orthogonality witness" | B5c | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -11425,5 +11426,113 @@ Remaining Tier-2 prediction outstanding: **B6 (T-coupling-weights)** expected NE
 - [`src/tnfr/operators/grammar_dynamics.py:178-193`](../src/tnfr/operators/grammar_dynamics.py) (canonical U3 verdict).
 - [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) (B5a diagnostic).
 - [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py) (B5a two-resolution demo).
+
+---
+## §13quadraginta-octava. T-Δφ_max Final NEGATIVE Verdict and Envelope Classification of E6 = EdgeDependentPhaseThreshold (Closes B5; Does NOT Advance G4 = RH)
+
+**Status**: B5 Phase c (final verdict + envelope classification). Phases a, b recorded at §13quadraginta-sexta, §13quadraginta-septima.
+
+**Position in programme**: Second Tier-2 sub-question closed; third orthogonal Tier-2 / Tier-1 confirmation of L3* now pending B6.
+
+### §13quadraginta-octava.1 Verdict
+
+> **(Final Verdict of B5)**. The **T-Δφ_max Conjecture** is **NEGATIVE**. The canonical TNFR resonant-coupling threshold `Δφ_max` is structurally a scalar in $[0, \pi]$ with canonical default `DELTA_PHI_MAX = PI / 2 ≈ 1.5708 rad` at [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py). No canonical TNFR network evolution forces a non-scalar carrier object (matrix-valued $\Delta\phi_{\max}^{(i,j)}$ or angle-of-attack-functional $\Delta\phi_{\max}(\phi_i, \phi_j) \ne f(|\mathrm{wrap}(\phi_i - \phi_j)|)$) on the U3 verdict surface.
+
+**Bases of the verdict** (cumulative across Phase a + Phase b):
+
+1. **Code review (B5a §13quadraginta-sexta.2)**: every canonical U3 consumer site — `grammar_dynamics.py:178-193`, `propagation.py:113`, `conservation_gauge_unification.py:418`, `mathematics/number_theory.py:1185`, `physics/patterns.py:223`, `validation/config.py:11` — reads the storage slot `G.graph["DELTA_PHI_MAX"]` as a scalar Python `float` and applies the comparison `diff <= delta_phi_max` after canonical `wrap_angle`. No per-edge, per-anchor, callable, or matrix pattern exists in any canonical call site.
+
+2. **B5a empirical signature** (frozen at §13quadraginta-sexta.5):
+   - Resolution 1 (`n_nodes=24, n_pair_anchors=9, n_offsets_per_anchor=8, seed=19`): `signature = 0.000000`, `scalar_storage_fraction = 1.0`, `raw_divergence_fraction = 0/72`, verdict `SCALAR_THRESHOLD_ADEQUATE`.
+   - Resolution 2 (`n_nodes=48, n_pair_anchors=17, n_offsets_per_anchor=16, seed=29`): `signature = 0.000000`, `scalar_storage_fraction = 1.0`, `raw_divergence_fraction = 0/272`, verdict `SCALAR_THRESHOLD_ADEQUATE`.
+
+3. **Forcing-axiom reduction (B5b §13quadraginta-septima)**: F1–F10 enumeration exhausts the structurally available ways to force non-scalar retention; F1–F9 each refuted by direct catalog inspection or by reduction to previously refuted sub-questions; F10 = (P-Δφ_max-Non-Scalar-Retention) refuted by **STD = Scalar-Threshold Discipline**.
+
+The verdict is **conditional on the structural exhaustiveness of the F1–F10 enumeration**, in the same sense as B0–B4 verdicts conditional on their respective F-enumerations. This conditionality is honest scope, not a hidden weakness.
+
+### §13quadraginta-octava.2 Envelope Classification of E6 = EdgeDependentPhaseThreshold
+
+The candidate non-canonical envelope identified at B5a (§13quadraginta-sexta.7) is formally classified as:
+
+> **(E6 = EdgeDependentPhaseThreshold)**. A *research envelope* outside the canonical 13-operator catalog, in which the U3 resonant-coupling threshold is generalized from a single global scalar $\Delta\phi_{\max} \in [0, \pi]$ to either (a) an edge-indexed family $\{\Delta\phi_{\max}^{(i,j)}\}_{(i,j) \in E(G)} \subset [0, \pi]^{|E|}$, or (b) an angle-of-attack-functional $\Delta\phi_{\max}: [0, 2\pi)^2 \to [0, \pi]$ not factoring through $|\mathrm{wrap}(\phi_i - \phi_j)|$, or (c) a stochastic / kernel / categorical lift thereof.
+
+**Status of E6**:
+
+- **NOT a canonical operator extension**. E6 is *not* derivable from the nodal equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$, the 13 canonical operators, or the U1–U6 unified grammar.
+- **NOT deprecated, NOT deleted, NOT promoted, NOT integrated**. E6 may exist in external research frameworks (per-edge coupling tolerances are standard in modified-Kuramoto literature; angle-of-attack thresholds appear in some swarm-robotics formulations); the present verdict makes no claim about those external constructions other than that they lie *outside* the canonical TNFR catalog.
+- **Catalog parity**: E6 takes its place alongside E1 (Pontryagin / measure-νf), E2 (BEPIElement), E3 (CoverElement), E4 (TensorGradientElement), E5 (ContinuousWindowKernel) as the sixth identified non-canonical research envelope of the Catalog Type-Hygiene Programme.
+
+**Implication for canonical evolution**: any canonical TNFR network evolution that respects U1–U6 and uses only the 13 canonical operators **never** instantiates E6; the U3 verdict surface is structurally protected by STD. Networks that *do* instantiate E6 — by, e.g., reading a per-edge matrix `G[u][v]["delta_phi_max"]` or a callable `G.graph["delta_phi_max"]` — are operating *outside* the canonical catalog and **do not inherit canonical guarantees** (Lyapunov stability, Noether conservation, U3 phase compatibility derivation, etc.).
+
+### §13quadraginta-octava.3 No Deletion, No Deprecation, No Promotion, No Modification
+
+Following the pattern established at B1c, B2c, B3c, B4c (§13quadraginta-quinta.3), this Phase-c commit makes **no** modification to:
+
+- the canonical 13-operator catalog;
+- the U1–U6 unified grammar;
+- the canonical defaults at `src/tnfr/constants/canonical.py` (in particular `DELTA_PHI_MAX = PI / 2` is unchanged and remains the canonical anchor);
+- any canonical U3 consumer site;
+- the U3 verdict signature or its scalar storage convention;
+- the diagnostic at `src/tnfr/riemann/delta_phi_max_type_signature.py` (frozen at B5a);
+- the demo at `examples/83_delta_phi_max_type_signature_demo.py` (frozen at B5a).
+
+The CATALOG anchor-text correction (γ/π → π/2 with rationale) recorded inline at B5a remains the only catalog-level documentation change.
+
+### §13quadraginta-octava.4 Programme Bookkeeping
+
+| Sub-question | Tier | Phase a | Phase b | Phase c | Verdict | CDM | Envelope |
+|---|---|---|---|---|---|---|---|
+| B0 (T-νf) | 1 | ✅ | ✅ | ✅ | NEGATIVE | Pontryagin / measure-νf | E1 |
+| B1 (T-EPI) | 1 | ✅ | ✅ | ✅ | NEGATIVE | TMEP | E2 = BEPIElement |
+| B2 (T-φ) | 1 | ✅ | ✅ | ✅ | NEGATIVE | PWDP | E3 = CoverElement |
+| B3 (T-ΔNFR) | 1 | ✅ | ✅ | ✅ | NEGATIVE | BSAD | E4 = TensorGradientElement |
+| B4 (T-REMESH-window) | 2 | ✅ | ✅ | ✅ | NEGATIVE | DITS | E5 = ContinuousWindowKernel |
+| **B5 (T-Δφ_max)** | **2** | **✅** | **✅** | **✅** | **NEGATIVE** | **STD** | **E6 = EdgeDependentPhaseThreshold** |
+| B6 (T-coupling-weights) | 2 | ⏳ | ⏳ | ⏳ | (predicted NEGATIVE per L3*) | (predicted: scalar-weight discipline) | (TBD) |
+| B7 – B11 | various | ⏳ | ⏳ | ⏳ | — | — | — |
+| **Final** (meta-minimality theorem) | — | ⏳ | ⏳ | ⏳ | — | — | — |
+
+**Programme progress**: 6 sub-questions complete (B0, B1, B2, B3, B4, B5 — all NEGATIVE under six distinct orthogonal CDMs); 6 pending (B6 – B11 + Final).
+
+### §13quadraginta-octava.5 Methodology Lesson L3* — Second Tier-2 Confirmation
+
+L3* working heuristic, in its post-B4c form (§13quadraginta-quinta.5): *each Tier-1 and Tier-2 type-conjecture of the Catalog Type-Hygiene Programme admits an orthogonal canonical discharge mechanism (CDM) that closes it NEGATIVE without recourse to non-canonical envelopes*.
+
+**Post-B5c update**: L3* is now confirmed under **six distinct orthogonal CDMs** across both tiers:
+
+| CDM | Sub-question | Tier | Surface of action |
+|---|---|---|---|
+| Pontryagin / measure-νf | B0 | 1 | Frequency-field measure typing |
+| TMEP | B1 | 1 | EPI element typing via tetrad projection |
+| PWDP | B2 | 1 | Phase typing via wrap discipline |
+| BSAD | B3 | 1 | ΔNFR typing via Banach-scalar aggregation |
+| DITS | B4 | 2 | REMESH window typing via integer sampling |
+| **STD** | **B5** | **2** | **U3 coupling threshold typing via scalar discipline** |
+
+The six CDMs act on six *structurally distinct* surfaces (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict). Their orthogonality is **structural**, not coincidental: each CDM is the unique discipline that the canonical catalog enforces at its own surface. L3* in this sharpened form predicts: **every remaining Catalog Type-Hygiene sub-question (B6–B11) admits its own orthogonal CDM at its own surface**.
+
+For B6 = T-coupling-weights, the predicted seventh CDM is **scalar-weight discipline**: the canonical coupling weights $w_{ij} \in \mathbb{R}_{\ge 0}$ on $G$ are read as scalars at all canonical consumer sites, with no per-time, per-history, or higher-rank tensor lift forced by the canonical catalog.
+
+L3* status promoted from "empirically robust working heuristic" (B5b, six-CDM count from §13quadraginta-septima.8) to **"empirically robust working heuristic with structural-orthogonality witness"** (B5c, six-CDM count cross-confirmed by envelope-classification surfaces).
+
+### §13quadraginta-octava.6 Honest Scope (Mandatory)
+
+- **Does**: close B5 with a NEGATIVE verdict at the forcing-axiom level conditional on F1–F10 exhaustiveness; formally classify E6 = EdgeDependentPhaseThreshold as non-canonical research envelope; update programme bookkeeping; sharpen L3* under six-CDM cross-confirmation.
+- **Does NOT**: advance G4 = RH; modify any canonical operator, default, or consumer site; deprecate or promote any non-canonical construction; close any other open sub-question (B6 – B11 + Final remain genuinely open).
+- **Conditional on**: structural exhaustiveness of the F1–F10 enumeration. If a future canonical primitive derived from the nodal equation expands the structurally available means of forcing non-scalar threshold retention, B5 may need to be reopened. No such primitive is currently known.
+- **Theory-only commit**: no `src/` changes; no example changes; only `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` (append §13quadraginta-octava + TOC row) and `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` (B5 status → ✅ CLOSED; §4 row B5 Phase c column → ✅; verdict column → NEGATIVE; CDM column → STD; envelope column → E6; progress paragraph).
+
+### §13quadraginta-octava.7 Cross-references
+
+- §13quadraginta-sexta (B5a pre-registration + frozen empirical signature).
+- §13quadraginta-septima (B5b forcing-axiom reduction + STD refutation of (P-Δφ_max-Non-Scalar-Retention)).
+- §13quadraginta-quinta (B4c final NEGATIVE verdict + E5 envelope classification; methodological precedent for Phase-c structure).
+- §13triginta-septima (Living Discoveries Log).
+- [`AGENTS.md`](../AGENTS.md) §Unified Grammar U3 (resonant coupling — canonical phase compatibility constraint).
+- [`theory/UNIFIED_GRAMMAR_RULES.md`](UNIFIED_GRAMMAR_RULES.md) §U3 (derivation from nodal equation).
+- [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B5 (programme status), §4 row B5 (per-Phase verdict matrix).
+- [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py) (canonical anchor `DELTA_PHI_MAX = PI / 2`, unchanged).
+- [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) (B5a diagnostic, frozen).
+- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py) (B5a demo, frozen).
 
 ---
