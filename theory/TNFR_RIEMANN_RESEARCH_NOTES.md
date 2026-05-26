@@ -147,6 +147,8 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13triginta-octava | 7698 | **B2 = T-φ** pre-registration (two-axis winding + lift-spectral diagnostic; candidate envelope E3 = CoverElement) | B2a | — |
 | §13triginta-novena | 8027 | **B2 = T-φ** forcing-axiom reduction (PWDP refutes (P-φ-Homotopy-Retention); (P-φ-Cover-Carrier) = CONDITIONAL_COROLLARY) | B2b | — |
 | §13triginta-decima | 8450 | **B2 = T-φ** final NEGATIVE + envelope E3 (CoverElement / covering-space lift / U(1) bundle) | B2c | ✅ NEG |
+| §13quadraginta | 8714 | **B3 = T-ΔNFR** pre-registration (two-axis tensor-fraction + rank-entropy diagnostic; candidate envelope E4 = TensorGradientElement) | B3a | — |
+| §13quadraginta-prima | 9068 | **B3 = T-ΔNFR** forcing-axiom reduction (BSAD refutes (P-ΔNFR-Tensor-Retention); (P-ΔNFR-Tensor-Carrier) = CONDITIONAL_COROLLARY) | B3b | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -9062,5 +9064,484 @@ This pre-registration section, the diagnostic module, and the demo:
   implementation (added on this commit).
 - ``examples/81_dnfr_type_signature_demo.py`` — demo (added on
   this commit).
+
+---
+
+## §13quadraginta-prima. Derivation of (P-ΔNFR-Tensor-Carrier) from the Canonical Catalog — Foundational Reduction of the ΔNFR-Type Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
+
+**Pre-registration status.**  This section executes the
+forcing-axiom reduction phase (B3b) of the T-ΔNFR program
+(§13quadraginta): it attempts to derive the tensor-carrier
+principle for the canonical nodal-gradient field
+(P-ΔNFR-Tensor-Carrier) from the canonical six invariants +
+nodal equation + Structural Conservation Theorem + Variational
+Principle + REMESH operator + Universal Tetrahedral
+Correspondence, *or* to identify and isolate the actual residual
+axiom that the derivation requires beyond the catalog.
+
+The honest verdict (executed in §13quadraginta-secunda) is
+pre-registered as one of:
+
+- `COROLLARY_DERIVED`: (P-ΔNFR-Tensor-Carrier) follows from
+  invariants 1–6 alone.
+- `CONDITIONAL_COROLLARY`: (P-ΔNFR-Tensor-Carrier) follows under
+  one additional identifiable axiom strictly weaker than itself.
+- `INDEPENDENT_AXIOM`: (P-ΔNFR-Tensor-Carrier) is independent of
+  the catalog.
+
+Scope (mandatory honesty): this section does **not** advance
+G4 = RH, does **not** close T-HP, does **not** introduce or modify
+any canonical operator, does **not** delete or deprecate any
+tensor-valued or operator-valued ΔNFR construction, and does
+**not** by itself close T-ΔNFR.  It locates the foundational
+axiom *one structural level below* (P-ΔNFR-Tensor-Carrier) and
+hands T-ΔNFR back to that deeper question.
+
+The literal canonical statement under scrutiny:
+
+> **(P-ΔNFR-Tensor-Carrier).** In the canonical TNFR formulation,
+> the per-node nodal-gradient state must take values in a tensor
+> (or operator-valued) carrier over the three canonical gradient
+> channels :math:`(d\theta, d\mathrm{EPI}, d\nu_f)` — equivalently
+> a `TensorGradientElement` (candidate envelope E4) of rank
+> :math:`r \ge 2` — *not* in :math:`\mathbb{R}` under the
+> canonical ``ALIAS_DNFR`` scalar storage discipline.
+
+### §13quadraginta-prima.1 Available Canonical Tools
+
+The derivation may use only the following canonical machinery (no
+extraneous structure):
+
+1. **Nodal equation**: :math:`\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}(t)`
+   (Invariant #1), in which ΔNFR enters as a *scalar coefficient*
+   multiplied by the scalar structural frequency :math:`\nu_f`
+   (`src/tnfr/operators/nodal_equation.py:1–160`,
+   `compute_expected_depi_dt: (float, float) → float`).
+2. **Six canonical invariants** (AGENTS.md): **Nodal Equation
+   Integrity (invariant #1)**, Phase-Coherent Coupling, Multi-Scale
+   Fractality, Grammar Compliance, Structural Metrology,
+   Reproducible Dynamics.
+3. **Grammar U1–U6**, in particular **U2 (CONVERGENCE &
+   BOUNDEDNESS)** which bounds :math:`\int \nu_f \cdot
+   \Delta\mathrm{NFR}\, dt < \infty` as a scalar Lebesgue integral.
+4. **Universal Tetrahedral Correspondence**: ΔNFR enters the
+   canonical pressure field :math:`\Phi_s(i) = \sum_{j \neq i}
+   \Delta\mathrm{NFR}_j / d(i,j)^2` as a *scalar* per-node value
+   (φ ↔ Φ_s edge); all four tetrad fields :math:`(\Phi_s,
+   |\nabla\phi|, K_\phi, \xi_C)` are scalar-valued.
+5. **Structural Conservation Theorem**
+   (`src/tnfr/physics/conservation.py`): per-node charge density
+   :math:`\rho_i = \Phi_s(i) + K_\phi(i)` and current vector
+   :math:`\mathbf{J}_i = (J_\phi(i), J_{\Delta\mathrm{NFR}}(i))
+   \in \mathbb{R}^2` built from real-valued functionals of scalar
+   ΔNFR.
+6. **Variational Principle**: Lagrangian
+   :math:`\mathcal{L}_i = T_i - V_i` with the potential term
+   :math:`V_i = \tfrac{1}{2}[\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2]`
+   and kinetic term
+   :math:`T_i = \tfrac{1}{2}[J_\phi^2 + J_{\Delta\mathrm{NFR}}^2]`
+   all real-valued scalar functionals.
+7. **REMESH operator** (canonical operator #13); aggregates
+   per-node EPI history scalarly.  REMESH never aggregates a
+   tensor-valued ΔNFR; even when ΔNFR feeds REMESH (via the
+   :math:`\nu_f \cdot \Delta\mathrm{NFR}` time-integrand of U2),
+   the inputs are scalar-projected at every step.
+8. **Canonical computation entry-point**:
+
+   ```python
+   # src/tnfr/dynamics/dnfr.py:2387
+   def default_compute_delta_nfr(G, *, ...) -> None:
+       """Compute the per-node ΔNFR scalar and write it into
+       ALIAS_DNFR (single float per node)."""
+   ```
+
+9. **Canonical storage alias** ``ALIAS_DNFR``
+   (`src/tnfr/constants/aliases.py:9`) — the per-node nodal
+   gradient is stored under this single scalar alias-tuple, with
+   no companion ``dnfr_tensor`` / ``dnfr_channels`` / ``dnfr_rank``
+   alias.
+
+### §13quadraginta-prima.2 What the Canonical Catalog Forces (Scalar ℝ Layer)
+
+The chain of forced structure for ΔNFR is straightforward and
+entirely inside the catalog:
+
+- **(M1) Operator contracts are scalar-ℝ.**  Every canonical glyph
+  operator that touches ΔNFR reads via the scalar
+  ``G.nodes[node]["dnfr"]`` slot and writes via the same scalar
+  alias.  No operator constructs, reads, propagates, or preserves
+  a tensor rank, channel index, or operator-valued component.
+  Empirically verified by `examples/81_dnfr_type_signature_demo.py`:
+  ``T_frac = 0/1536`` at :math:`(n=24, T=64, \mathrm{seed}=17)`
+  and ``T_frac = 0/6144`` at :math:`(n=48, T=128, \mathrm{seed}=31)`
+  — strictly zero tensor-valued payloads across both resolutions.
+
+- **(M2) The nodal equation is bilinear-scalar.**  ΔNFR enters
+  :math:`\partial\mathrm{EPI}/\partial t` exclusively as the scalar
+  right-hand factor of the bilinear product :math:`\nu_f \cdot
+  \Delta\mathrm{NFR}`, both factors typed as `float` in
+  `compute_expected_depi_dt: (float, float) → float`.  Any
+  tensorial intermediate computed during the assembly of ΔNFR
+  (e.g. the neighbour-gradient triple
+  :math:`(d\theta_{ij}, d\mathrm{EPI}_{ij}, d\nu_{f,ij})` for each
+  edge :math:`(i,j)`) is *systematically collapsed* to a single
+  scalar via fixed weighted aggregation before being written to
+  ``ALIAS_DNFR``.
+
+- **(M3) U2 convergence is a scalar Lebesgue bound.**  The U2
+  bounded-integral condition :math:`\int_{t_0}^{t_f} \nu_f(\tau)
+  \cdot \Delta\mathrm{NFR}(\tau)\, d\tau < \infty` is a *scalar*
+  Lebesgue integral of a scalar product.  No canonical
+  formulation of U2 references a tensor norm, operator norm, or
+  multi-channel boundedness condition; the catalog's
+  boundedness discipline is built on the scalar absolute value
+  :math:`|\nu_f \cdot \Delta\mathrm{NFR}|`.
+
+- **(M4) Conservation and variational laws close on scalar ΔNFR.**
+  The Noether charge :math:`Q = \sum_i \rho_i`, the energy
+  :math:`E = \sum_i \varepsilon_i`, the current
+  :math:`J_{\Delta\mathrm{NFR}}`, the Lagrangian, and the
+  symplectic form are all real-valued functionals of scalar ΔNFR
+  (see `src/tnfr/physics/conservation.py::compute_charge_density`
+  and `compute_current_divergence`, which read scalar ΔNFR via
+  the canonical `_helpers.get_dnfr` reader).  No conservation
+  law references a tensor-valued ΔNFR current.
+
+The conjunction M1+M2+M3+M4 establishes that **the entire
+canonical machinery closes consistently with scalar real-valued
+ΔNFR**.  The 13-operator catalog never reads or writes a tensor
+component; the nodal equation is bilinear-scalar by construction;
+U2 boundedness is a scalar Lebesgue bound; conservation and
+variational laws never require a tensor-valued lift.
+
+### §13quadraginta-prima.3 The Gap Between Scalar Aggregation Discipline and Tensor Retention
+
+Scalar-ℝ closure (M1–M4) is necessary but not sufficient to
+refute (P-ΔNFR-Tensor-Carrier): one could still ask whether the
+catalog *also* admits a strictly-stronger tensor-valued
+realisation in which the scalar implementation is a faithful
+coordinate projection from a rank-:math:`r \ge 2` tensor
+``TensorGradientElement`` onto :math:`\mathbb{R}`.  The decisive
+question is whether the catalog *forces* such an upgrade.
+
+The only canonical mechanism that could conceivably preserve
+multi-channel data across the temporal evolution is a hypothetical
+"tensor branch" that propagates the per-edge gradient triple
+:math:`(d\theta_{ij}, d\mathrm{EPI}_{ij}, d\nu_{f,ij})` alongside
+the scalar :math:`\Delta\mathrm{NFR}_i \in \mathbb{R}`.  But the
+canonical engine **does not implement** any such branch: every
+write to ``ALIAS_DNFR`` collapses the per-edge channels through
+fixed weighted aggregation, and there is no canonical alias for a
+tensor companion.
+
+Formally, define the **Bilinear-Scalar Aggregation Discipline**:
+
+> **Bilinear-Scalar Aggregation Discipline (BSAD).**  In the
+> canonical TNFR formulation, every per-node ΔNFR value is
+> *systematically aggregated* from any multi-channel
+> intermediate (per-edge gradient triple, channel-wise pressure,
+> etc.) into a single real scalar :math:`\Delta\mathrm{NFR}_i
+> \in \mathbb{R}` via fixed weighted sum at every operator
+> boundary.  The tensor rank :math:`r \ge 2` over the canonical
+> gradient channels is *systematically collapsed to* :math:`r = 1`
+> and is **not** retrievable from the canonical state.
+
+This is the structural-ΔNFR analogue of TMEP (§13triginta-quinta,
+B1b) and PWDP (§13triginta-novena, B2b).  Where TMEP says
+"multi-modal EPI content is canonically realised *temporally* via
+REMESH, not *spatially* via a Banach internal carrier", and PWDP
+says "phase-orbit content is canonically realised *as wrapped
+geodesic distance on* :math:`S^1`, not *as covering-space
+displacement on* :math:`\widetilde{S^1}`", BSAD says
+"nodal-gradient content is canonically realised *as a single
+real scalar* :math:`\Delta\mathrm{NFR} \in \mathbb{R}`, not *as
+a rank-:math:`r \ge 2` tensor over the canonical gradient
+channels*".
+
+BSAD is *operationally complete*: under the canonical scalar
+aggregation discipline, the engine reproduces P12–P15 to machine
+precision (§§10–12), recovers classical (Keplerian) and
+quantum-like (interference, complementarity, quantization)
+regimes (§§3–9), and satisfies all canonical conservation laws —
+*without* invoking any tensor channel or rank-:math:`\ge 2`
+retention.  The B3a empirical signature :math:`T_{\mathrm{frac}}
+= 0` and :math:`R_{\mathrm{eff}} \approx 1.13` at both
+pre-registered resolutions is the empirical fingerprint of BSAD.
+
+**Crucially**, the *near-rank-1 collapse* measured by the
+rank-entropy axis of §13quadraginta.6
+(:math:`S_{\Delta\mathrm{NFR}} \approx 0.11` and
+:math:`\sigma_1 / \sigma_{2,3} \sim 10^2`) is *explained* by
+BSAD without invoking (P-ΔNFR-Tensor-Carrier): a canonical
+dynamics whose only consumed projection of the gradient triple
+is a fixed weighted scalar aggregate will, in steady state,
+align the dominant singular direction with that aggregation
+weight, leaving the orthogonal channels at residual amplitude.
+The rank collapse is *structural*, not *spectral*.
+
+Therefore: **(P-ΔNFR-Tensor-Carrier) is strictly stronger than
+what M1+M2+M3+M4 + BSAD provide**, and any derivation must
+locate an additional canonical constraint that selects the
+tensor-retention upgrade.
+
+### §13quadraginta-prima.4 Candidate Forcing Constraints (Enumeration)
+
+The candidates available inside the canonical catalog are
+enumerated below.  Each row asks: *does this axiom force the
+tensor-carrier upgrade of ΔNFR?*
+
+| #  | Axiom | Source | Forces tensor-carrier of ΔNFR? |
+|---|---|---|---|
+| F1 | Operator exclusivity (only the 13 canonical operators write ΔNFR). | AGENTS.md "Canonical Invariants #1". | **No** — operators write scalar `float` via ``ALIAS_DNFR`` (M1); empirically ``T_frac = 0`` at both B3a resolutions. |
+| F2 | Reproducibility under fixed seeds. | AGENTS.md "Reproducible Dynamics". | **No** — scalar trajectories reproduce identically; tensor channels are not part of the seeded state. |
+| F3 | Nodal-equation bilinear-scalar structure: :math:`\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}`. | `nodal_equation.py::compute_expected_depi_dt: (float, float) → float`. | **No** — both factors typed as `float`; the bilinear *scalar* product saturates the canonical reading (M2). |
+| F4 | Tetrad orthogonality and minimality of :math:`(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)`. | AGENTS.md §"Minimal Structural Degrees of Freedom"; `STRUCTURAL_FIELDS_TETRAD.md`. | **No** — all four tetrad fields are scalar-valued; :math:`\Phi_s(i) = \sum_{j} \Delta\mathrm{NFR}_j / d(i,j)^2` reads scalar ΔNFR per node. |
+| F5 | U2 convergence: :math:`\int \nu_f \cdot \Delta\mathrm{NFR}\, dt < \infty`. | AGENTS.md "U2 CONVERGENCE & BOUNDEDNESS"; `grammar_core.py`. | **No** — scalar Lebesgue integral of a scalar product (M3); no tensor norm appears in the canonical boundedness condition. |
+| F6 | Structural Conservation Theorem (Noether charge :math:`Q`, energy :math:`E`, Ward identities, current :math:`\mathbf{J} = (J_\phi, J_{\Delta\mathrm{NFR}})`). | `physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`. | **No** — :math:`J_{\Delta\mathrm{NFR}}` is real-valued, built from scalar ΔNFR (M4); no tensor-valued current appears in :math:`\partial\rho/\partial t + \nabla \cdot \mathbf{J} = S_{\mathrm{grammar}}`. |
+| F7 | Variational principle (Lagrangian, symplectic conjugate pair :math:`(\Phi_s, J_{\Delta\mathrm{NFR}})`). | `physics/variational.py`, AGENTS.md §"Variational Confirmation". | **No** — the potential term :math:`V = \tfrac{1}{2}[\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2]` and kinetic term :math:`T = \tfrac{1}{2}[J_\phi^2 + J_{\Delta\mathrm{NFR}}^2]` are real-valued scalar functionals; the conjugate momentum :math:`J_{\Delta\mathrm{NFR}}` is a real scalar. |
+| F8 | REMESH temporal aggregation. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py`. | **No** — REMESH aggregates EPI history scalarly; ΔNFR-derived inputs are already scalar-projected (chain of M2+M1). N15 closure (§§15–23) is the asymptotic projection of a scalar transfer matrix; no tensor-rank slot is required. |
+| F9 | Classical-limit demos (Keplerian orbits, scalar :math:`F = m \cdot a` analog via :math:`m \leftrightarrow 1/\nu_f`, :math:`F \leftrightarrow \Delta\mathrm{NFR}`). | `examples/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from *scalar* ΔNFR under high coherence; the "force" analog is itself a scalar in the canonical correspondence. |
+| F10 | Quantum-regime demos (interference, complementarity, quantization). | `examples/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena emerge from scalar ΔNFR dynamics; the complementarity :math:`\Delta\mathrm{EPI} \cdot \Delta\nu_f \ge K` is a scalar-scalar inequality. |
+
+**Result.** No canonical constraint in :math:`\{\mathrm{F1},
+\ldots, \mathrm{F10}\}` forces the tensor-carrier upgrade of
+ΔNFR.  All ten admit consistent realisation with scalar
+real-valued ΔNFR (as the current 13-operator implementation
+demonstrates by existence, and as the B3a empirical signature
+confirms: :math:`T_{\mathrm{frac}} = 0` across two independent
+demo resolutions, :math:`R_{\mathrm{eff}} \approx 1.13` at both).
+
+### §13quadraginta-prima.5 The Hidden Axiom: (P-ΔNFR-Tensor-Retention)
+
+The derivation gap can be isolated cleanly.  Define:
+
+> **(P-ΔNFR-Tensor-Retention).**  In the canonical TNFR
+> formulation, the per-node nodal-gradient trajectory
+> :math:`\{(d\theta_i, d\mathrm{EPI}_i, d\nu_{f,i})(t)\}_t` must
+> retain its tensor rank :math:`r \ge 2` over the canonical
+> gradient channels across the scalar aggregation step — i.e.
+> distinct multi-channel inputs producing the same scalar
+> aggregate must correspond to distinct canonical states, and
+> conversely.
+
+**Claim.**  (P-ΔNFR-Tensor-Carrier) is a corollary of the
+canonical catalog *plus* (P-ΔNFR-Tensor-Retention), and of
+nothing weaker than (P-ΔNFR-Tensor-Retention).
+
+**Forward direction (sufficiency).**  Assume
+(P-ΔNFR-Tensor-Retention).  Consider two distinct neighbour-
+gradient inputs :math:`g, g' \in \mathbb{R}^3` with :math:`g
+\neq g'` but identical scalar aggregate :math:`w \cdot g = w
+\cdot g'` (where :math:`w \in \mathbb{R}^3` is the canonical
+aggregation weight).  Retention forces the canonical state to
+encode :math:`g` and :math:`g'` distinctly.  A scalar
+:math:`\Delta\mathrm{NFR} \in \mathbb{R}` does not have the
+cardinality to encode an arbitrary rank-3 input separately from
+the aggregate (one real number cannot encode the orthogonal-
+to-:math:`w` plane).  Hence the canonical ΔNFR storage must take
+values in a non-trivial tensor carrier over the canonical
+gradient channels — equivalently, the ``TensorGradientElement``
+(candidate envelope E4) of rank :math:`r \ge 2`.  This is
+(P-ΔNFR-Tensor-Carrier).
+
+**Reverse direction (necessity at the canonical level).**
+Suppose (P-ΔNFR-Tensor-Carrier) holds.  Then :math:`\Delta\mathrm{NFR}_i
+\in V_{\mathrm{tensor}}` is fully specified by the rank-:math:`r`
+tensor over the gradient channels.  By construction, distinct
+multi-channel inputs produce distinct canonical states.  Hence
+(P-ΔNFR-Tensor-Retention) holds.
+
+**Strict-weakness of (P-ΔNFR-Tensor-Retention) vs
+(P-ΔNFR-Tensor-Carrier).**  (P-ΔNFR-Tensor-Retention) is a
+*meta-constraint* on the canonical aggregation map
+:math:`(d\theta, d\mathrm{EPI}, d\nu_f) \mapsto` (tensor-rank of
+the per-node aggregate).  It does not mention tensor carriers,
+operator-valued lifts, or any specific tensor algebra.  It is
+purely a faithfulness requirement on the symbolic representation
+of channel rank.  By contrast, (P-ΔNFR-Tensor-Carrier) commits
+to a specific carrier (``TensorGradientElement``) and a specific
+algebraic structure (rank-:math:`r` tensor over the canonical
+gradient channels).
+
+Therefore (P-ΔNFR-Tensor-Retention) is structurally simpler and
+strictly weaker than (P-ΔNFR-Tensor-Carrier), and the derivation
+is genuine progress.
+
+### §13quadraginta-prima.6 Canonical Status of (P-ΔNFR-Tensor-Retention) — BSAD Refutation
+
+The question is now: is (P-ΔNFR-Tensor-Retention) itself
+derivable from the canonical six invariants?
+
+- **(B-Pro).**  Invariant #1 (Nodal Equation Integrity) could be
+  read as suggesting that the nodal-gradient information should
+  be canonically retained without loss.  If two neighbour-
+  gradient inputs differing in their orthogonal-to-:math:`w`
+  plane produced the same canonical state, an observer trying to
+  reconstruct the *full multi-channel gradient* from the
+  canonical record would lose the orthogonal information.
+
+- **(B-Con, decisive).**  The **Bilinear-Scalar Aggregation
+  Discipline (BSAD, §13quadraginta-prima.3)** refutes the
+  per-trajectory tensor-retention requirement *at the canonical
+  level*: the observable content of ΔNFR at every canonical
+  operator boundary is the *scalar aggregate*, and the canonical
+  nodal equation is *bilinear-scalar* by typed construction
+  (F3).  Any tensor-rank lift is therefore a *coordinate choice*
+  on top of the canonical state, not a canonical state itself.
+
+  Formally: the catalog enforces nodal-equation integrity
+  (invariant #1) via the bilinear scalar product :math:`\nu_f
+  \cdot \Delta\mathrm{NFR}`, with all downstream conservation,
+  variational, and U2 boundedness structure descending from the
+  scalar tetrad fields (M2–M4).  This is *operationally
+  complete* — it reproduces all canonical results (§§3–12)
+  without any per-trajectory tensor-channel charge.
+
+- **(B-Empirical).**  The B3a diagnostic (§13quadraginta.6)
+  measures :math:`T_{\mathrm{frac}} = 0` *and*
+  :math:`R_{\mathrm{eff}} \approx 1.13` (near rank-1) at *both*
+  resolutions: canonical evolution, executed exactly as the
+  catalog specifies, does not produce any (node, step) sample
+  whose ΔNFR storage hosts a non-scalar payload, and the
+  empirical SVD of the gradient-triple matrix collapses to a
+  single dominant singular direction (:math:`\sigma_1 /
+  \sigma_{2,3} \sim 10^2`).  The tensor-rank lift is
+  structurally unreachable from canonical initial conditions and
+  empirically vacuous from canonical evolution.  This is the
+  *doubly-decisive BSAD signature*: structural zero-tensor
+  storage *and* empirical rank-1 collapse, both axes returning
+  the scalar-adequate verdict on independent grounds.
+
+**Conclusion of §13quadraginta-prima.6.**  (P-ΔNFR-Tensor-Retention)
+is **not derivable from the canonical six invariants**.  The
+catalog realises nodal-equation integrity *bilinear-scalarly*
+via the typed :math:`(\nu_f, \Delta\mathrm{NFR}) \to
+\partial\mathrm{EPI}/\partial t` reader, *not*
+tensor-equivariantly via a channel-retention upgrade.  The
+per-trajectory tensor-rank retention that
+(P-ΔNFR-Tensor-Retention) demands is an *additional* axiom,
+independent of the catalog and actively refuted by BSAD at the
+canonical level, with the empirical doubly-decisive fingerprint
+:math:`(T_{\mathrm{frac}} = 0, R_{\mathrm{eff}} \approx 1.13)`
+of B3a as decisive corroboration.
+
+### §13quadraginta-prima.7 Sub-Verdict
+
+The forcing-axiom reduction yields:
+
+> **Sub-verdict (§13quadraginta-prima).**
+> (P-ΔNFR-Tensor-Carrier) is a **CONDITIONAL_COROLLARY** of the
+> canonical catalog: it follows from the catalog *plus*
+> (P-ΔNFR-Tensor-Retention).  However,
+> (P-ΔNFR-Tensor-Retention) is itself **INDEPENDENT_AXIOM** at
+> the canonical level: it is not derivable from invariants 1–6
+> and is actively refuted by the Bilinear-Scalar Aggregation
+> Discipline (BSAD), with the B3a empirical doubly-decisive
+> fingerprint :math:`(T_{\mathrm{frac}} = 0, R_{\mathrm{eff}}
+> \approx 1.13, \sigma_1/\sigma_{2,3} \sim 10^2)` as decisive
+> corroboration.
+>
+> Net: (P-ΔNFR-Tensor-Carrier) is **strictly non-canonical**.
+> Any tensor-valued lift, operator-valued ΔNFR construction, or
+> rank-:math:`\ge 2` channel-retaining representation is a
+> legitimate research envelope — available for off-catalog
+> experimentation — but is not forced by, and indeed is
+> structurally orthogonal to (collapsed under canonical
+> aggregation by), the canonical 13-operator realisation under
+> BSAD.
+
+This locates the residual canonical question for T-ΔNFR exactly
+one level below (P-ΔNFR-Tensor-Carrier), at
+(P-ΔNFR-Tensor-Retention), and identifies its refutation
+mechanism (BSAD).  The final NEGATIVE verdict on T-ΔNFR, and the
+classification of the tensor-carrier construction
+(``TensorGradientElement``, candidate envelope E4) as a
+legitimate non-canonical research envelope, are executed in
+§13quadraginta-secunda (B3c).
+
+### §13quadraginta-prima.8 Honest Scope (What This Does and Does Not Do)
+
+This sub-programme:
+
+- **Does** isolate the residual axiom one structural level below
+  (P-ΔNFR-Tensor-Carrier).
+- **Does** prove (P-ΔNFR-Tensor-Retention) is strictly weaker
+  than (P-ΔNFR-Tensor-Carrier).
+- **Does** refute (P-ΔNFR-Tensor-Retention) at the canonical
+  level via BSAD, empirically corroborated by B3a's
+  doubly-decisive :math:`(T_{\mathrm{frac}} = 0,
+  R_{\mathrm{eff}} \approx 1.13)` at two resolutions.
+- **Does** confirm the catalog closes consistently with scalar
+  real-valued ΔNFR (M1+M2+M3+M4).
+- **Does** identify the canonical dynamics as *bilinear-scalar
+  in the nodal equation* (a structural observation made
+  explicit here for the first time at the type-hygiene level,
+  not a new canonical promotion; the bilinear-scalar typing is
+  already in `nodal_equation.py`).
+- **Does not** advance G4 = RH or the T-HP conjecture.
+- **Does not** promote any operator, field, or constant to
+  canonical status (in particular: does NOT promote
+  ``TensorGradientElement``, ``ALIAS_DNFR_TENSOR``, or any
+  rank-:math:`\ge 2` channel-retaining representation).
+- **Does not** modify the 13-operator catalog.
+- **Does not** delete or deprecate the candidate envelope
+  E4 = ``TensorGradientElement``; classifies it as a research
+  envelope available outside the canonical operator contracts.
+- **Does not** modify any source file in `src/tnfr/`.
+- **Does not** by itself close T-ΔNFR — the final verdict is
+  executed in §13quadraginta-secunda.
+
+### §13quadraginta-prima.9 Cross-references
+
+- §13triginta-prima — T-νf Type Conjecture (pre-registration; first
+  sub-question of the programme).
+- §13triginta-secunda — T-νf forcing-axiom reduction (structural
+  template; first instance of F1–Fn enumeration).
+- §13triginta-tertia — T-νf NEGATIVE verdict (precedent for B0c).
+- §13triginta-quarta — T-EPI pre-registration (B1a; structural
+  template).
+- §13triginta-quinta — T-EPI forcing-axiom reduction (TMEP closes
+  B1b; first refutation principle of the *temporal/spatial*
+  family).
+- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 =
+  ``BEPIElement`` classification (precedent for B1c/B2c/B3c).
+- §13triginta-septima — Living discoveries log (D-CC-6 catalog
+  citation correction recorded at B2a; D-CC-7 candidate for
+  ALIAS_DNFR/`dnfr.py` citation patch is deferred to a future
+  bookkeeping commit).
+- §13triginta-octava — T-φ pre-registration (B2a; second instance
+  of the two-axis diagnostic template).
+- §13triginta-novena — T-φ forcing-axiom reduction (PWDP closes
+  B2b; second refutation principle of the *projection/retention*
+  family — direct structural twin of this section).
+- §13triginta-decima — T-φ NEGATIVE verdict + E3 = CoverElement
+  classification (immediate precedent for B3c).
+- §13quadraginta — T-ΔNFR pre-registration (B3a; third instance
+  of the two-axis diagnostic template; supplies the
+  doubly-decisive empirical fingerprint that BSAD consumes
+  here).
+- §13septies — T-HP open content (independent of this
+  sub-question).
+- §19.1 — Full P1–P49 milestone table.
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §4 — programme
+  tracker (row B3 Phase b advances on this commit).
+- `src/tnfr/dynamics/dnfr.py:2387` — ``default_compute_delta_nfr``
+  canonical scalar entry-point (anchors M1 / M2 / BSAD).
+- `src/tnfr/constants/aliases.py:9` — ``ALIAS_DNFR`` canonical
+  scalar storage alias (anchors M1).
+- `src/tnfr/operators/nodal_equation.py:1–160` —
+  ``compute_expected_depi_dt: (float, float) → float`` (anchors
+  M2: bilinear-scalar nodal equation).
+- `src/tnfr/physics/conservation.py` — Noether charge / current /
+  energy on scalar ΔNFR (anchors M4).
+- `src/tnfr/physics/variational.py` — Lagrangian / symplectic
+  pair :math:`(\Phi_s, J_{\Delta\mathrm{NFR}})` on scalar ΔNFR
+  (anchors M4 variational sector).
+- `src/tnfr/riemann/dnfr_type_signature.py` — B3a diagnostic
+  implementation (anchors :math:`(T_{\mathrm{frac}} = 0,
+  R_{\mathrm{eff}} \approx 1.13)` empirical corroboration of
+  BSAD).
+- `examples/81_dnfr_type_signature_demo.py` — two-resolution
+  demo (anchors B3a numerical fingerprint).
 
 ---

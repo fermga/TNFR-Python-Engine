@@ -176,7 +176,7 @@ directly.
   intermediate computed by `compute_delta_nfr` and then projected); (b)
   `tensor-rank signature` (entropy of singular-value distribution of the
   neighbour-gradient matrix used to assemble ΔNFR).
-- **Status**: 🟡 IN PROGRESS — B3a ✅, B3b pending, B3c pending. Empirical pre-registration data (from B3a demo, two-axis tensor-storage + rank-entropy):
+- **Status**: 🟡 IN PROGRESS — B3a ✅, B3b ✅, B3c pending. Empirical pre-registration data (from B3a demo, two-axis tensor-storage + rank-entropy):
 
   | Resolution | seed | S_ΔNFR | T_frac | R_eff | σ1 | σ2 | σ3 | Verdict |
   |---|---|---|---|---|---|---|---|---|
@@ -311,7 +311,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B0 | T-νf | ✅ | ✅ | ✅ | **NEG** | `a7a095af`, `34dc32fe`, `a6f795b0` |
 | B1 | T-EPI | ✅ | ✅ | ✅ | **NEGATIVE** | `62e207cc` (B1a), `ef4858f3` (B1b), B1c this commit |
 | **B2** | T-φ | ✅ | ✅ | ✅ | **NEGATIVE** | `afdf8ef9` (B2a), `a0bc4edd` (B2b), B2c this commit |
-| B3 | T-ΔNFR | ✅ | ⏳ | ⏳ | — | B3a this commit |
+| B3 | T-ΔNFR | ✅ | ✅ | ⏳ | — | 1267fbf4 (B3a) + this commit (B3b) |
 | **Tier 2 — Graph-level parameters** | | | | | | |
 | B4 | T-REMESH-window | ⏳ | ⏳ | ⏳ | — | — |
 | B5 | T-Δφ_max | ⏳ | ⏳ | ⏳ | — | — |
@@ -325,7 +325,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
 | **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
 
-**Progress as of 2026-05-26**: 3 sub-questions complete (B0, B1, B2 all NEGATIVE), 1 in progress (B3 — B3a ✅, B3b pending, B3c pending), 8 pending (B4 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B3a pre-registration at §13quadraginta.
+**Progress as of 2026-05-26**: 3 sub-questions complete (B0, B1, B2 all NEGATIVE), 1 in progress (B3 — B3a ✅, B3b ✅, B3c pending), 8 pending (B4 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B3a pre-registration at §13quadraginta; B3b forcing-axiom reduction at §13quadraginta-prima (BSAD refutes (P-ΔNFR-Tensor-Retention); (P-ΔNFR-Tensor-Carrier) = CONDITIONAL_COROLLARY).
 
 ---
 
