@@ -898,6 +898,11 @@ from .currents_closure_signature import (
     CurrentsClosureSignatureCertificate,
     compute_currents_closure_signature,
 )
+from .aggregates_closure_signature import (
+    # §13quinquaginta-sexta: Aggregates-Closure Signature diagnostic (B9a)
+    AggregatesClosureSignatureCertificate,
+    compute_aggregates_closure_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1397,6 +1402,9 @@ __all__ = [
     # §13quinquaginta-quarta: Currents-Closure Signature (B8a)
     "CurrentsClosureSignatureCertificate",
     "compute_currents_closure_signature",
+    # §13quinquaginta-sexta: Aggregates-Closure Signature (B9a)
+    "AggregatesClosureSignatureCertificate",
+    "compute_aggregates_closure_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",

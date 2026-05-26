@@ -276,11 +276,20 @@ of any underlying Tier 1+2 question is a necessary prerequisite.
 
 #### B9 — Δ-aggregates-closure (`C(t)`, `Si`, energy density $\mathcal{E}$, topological charge $\mathcal{Q}$)
 
-- **Sources**: `src/tnfr/operators/metrics.py`,
-  `src/tnfr/physics/conservation.py`.
+- **Sources**: `src/tnfr/metrics/common.py:29` (`compute_coherence`),
+  `src/tnfr/metrics/sense_index.py:665` (`compute_Si`),
+  `src/tnfr/physics/unified.py:136` (`compute_energy_density`),
+  `src/tnfr/physics/unified.py:209` (`compute_topological_charge`).
 - **Closure question**: all aggregates are scalar-valued functions of the
   tetrad and currents; no implicit measure or operator-valued aggregate.
-- **Status**: ⏳ NOT STARTED.
+- **Status**: 🟡 IN PROGRESS — Phase a ✅ (this commit; `S_AC = 0.000000`,
+  `input_scalar_fraction = 1.0`, `output_scalar_fraction = 1.0` at the
+  canonical small (n=24, seed=31) and medium (n=48, seed=31) probes;
+  verdict `SCALAR_CLOSURE_ADEQUATE` on both axes — input-domain and
+  output-scalar — for all four aggregates `C(t)`, `Si`,
+  $\mathcal{E}$, $\mathcal{Q}$). Phase b is **n/a** for B9 (closure
+  question, not type-conjecture). Phase c ⏳ (final verdict deferred to
+  research notes §13quinquaginta-septima).
 
 ### Tier 4 — Structural meta-properties
 
@@ -342,7 +351,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | **Tier 3 — Derived field closure** | | | | | | |
 | B7 | Δ-tetrad-closure | ✅ | n/a | ✅ | NEGATIVE | `d12d6837` (B7a), this commit (B7c) |
 | B8 | Δ-currents-closure | ✅ | n/a | ✅ | NEGATIVE | `c5230adb` (B8a), this commit (B8c) |
-| B9 | Δ-aggregates-closure | ⏳ | n/a | ⏳ | — | — |
+| B9 | Δ-aggregates-closure | ✅ | n/a | ⏳ | TBD (Phase c) | this commit (B9a) |
 | **Tier 4 — Structural meta-properties** | | | | | | |
 | B10 | U-rules type-hygiene | 🟡 | 🟡 | ⏳ | — | (ref: `UNIFIED_GRAMMAR_RULES.md`) |
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
