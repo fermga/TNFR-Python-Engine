@@ -4069,4 +4069,119 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 
 **Status**: R∞-1a baseline complete; primary deliverable is the empirical fact that iterated REMESH is contractive on this dynamics with a non-trivial fixed point. No closure of any gap.
 
+### §13vicies-novies.6 R∞-1a-spectral — Spectral projection onto Riemann basis
+
+**Milestone**: R∞-1a-spectral — first falsifiable spectral comparison between the R∞-1a fixed point and Riemann data. Gated follow-up to §13vicies-novies.5.
+
+**Implementation**: `benchmarks/remesh_infinity_riemann_spectral.py`. Output: `results/remesh_infinity/remesh_infinity_riemann_spectral.json`.
+
+**Setup**:
+* Identical prime-ladder, REMESH config, and Banach iteration as R∞-1a, run to `N_iter = 512` (true fixed point, not the intermediate `N = 256` state used in R∞-1a Track C).
+* Riemann reference: first 40 non-trivial zeros γ_n from `mpmath.zetazero` (dps=30) and the canonical smooth approximations γ̃_n via `derive_smooth_zero_position` (P28). Oscillatory residuals `r_n = γ_n - γ̃_n`.
+* Fixed point sorted by νf = k·log(p) → sequence `s_i, i = 1..40`. FFT of `s − mean(s)` → power bins `P_k, k = 1..M` with `M = 20`.
+
+**Pre-registered tests (none decisive on its own)**:
+* `r_α` = Pearson(P_k, |r_n|), index-aligned k=n=1..M.
+* `r_β` = Pearson(sort(P_k, desc), sort(|r_n|, desc)) — magnitude-distribution alignment.
+* `r_γ` = Pearson(s_i [νf-ordered], γ̃_n [n=1..N=40]) — node-field vs smooth target alignment.
+* `r_δ` = Spearman-rank(P_k, |r_n|).
+
+**Pre-registered falsification (F3)**:
+* `max(|r_α|, |r_β|, |r_γ|, |r_δ|) < 0.2` ⇒ B1 REFUTED at spectral level.
+* `max(…) > 0.5` ⇒ B1 SUPPORTED spectrally (does NOT prove RH; only empirical correspondence).
+* `max(…) ∈ [0.2, 0.5]` ⇒ INDETERMINATE.
+
+**Results (deterministic; same config reproducible)**:
+* True fixed point at `N = 512`: `‖EPI*‖_L2 = 1.6976`, `mean(EPI*) = −9.25e−02`, spectral total power = 50.87.
+* **Spectral shift between intermediate (N=256) and converged (N=512) states**: at N=256 the top-3 bins were high-νf `{16, 19, 20}` of 21 (R∞-1a Track C); at the true fixed point (N=512) the top-3 bins drop to low-νf `{1, 2, 4}` with fractions `{33.1%, 23.4%, 8.8%}`. Iterated REMESH transports power from high-νf to low-νf as it converges. The R∞-1a Track C statement that the fixed point is "dominated by high-νf modes" is therefore SUPERSEDED — the converged fixed point is low-νf dominated.
+* Pre-registered tests:
+  - `r_α = +0.5126` — crosses 0.5 threshold but only marginally.
+  - `r_β = +0.8575` — sorted-magnitude alignment, dominant signal.
+  - `r_γ = +0.3454` — node-field vs smooth target, indeterminate range.
+  - `r_δ = +0.4120` — Spearman, indeterminate range.
+  - `max|·| = 0.8575`.
+* **Verdict by the pre-registered criterion**: **F3 nominally SUPPORTED** (max > 0.5).
+* **Auxiliary controls (NOT in F3, declared in advance as diagnostic)**:
+  - `r(P_k, γ̃_n)` = −0.6690 (strong negative).
+  - `r(P_k, γ_n)` = −0.6726 (strong negative).
+  - `r(s_i, r_n)` = +0.0055 (no node-level signal at all).
+
+**Honest interpretation (R∞-1a-spectral)**:
+* The pre-registered criterion (F3 > 0.5) is met, but the support is fragile and requires multiple caveats before being accepted as evidence for branch B1:
+  1. The dominant test (`r_β = 0.86`) is **sorted-magnitude correlation**, which is statistically the weakest of the four. Any two positive heavy-tailed sequences with similar dynamic ranges tend to produce high sorted-magnitude correlation; this test does NOT establish structural alignment between the spectrum and the residuals.
+  2. The strongest structural test (`r_γ = 0.34`, node-field vs smooth target) sits in the indeterminate range.
+  3. The two auxiliary controls `r(P_k, γ_n) ≈ r(P_k, γ̃_n) ≈ −0.67` reveal that the spectrum is dominantly anti-correlated with the monotone-growing Riemann data, which is consistent with the low-νf concentration being a property of the REMESH mixing kernel rather than encoding Riemann content.
+  4. Node-level correlation between the fixed-point field and the residuals (`r(s_i, r_n) = +0.005`) is **zero within noise** — there is no per-mode encoding.
+* **What R∞-1a-spectral establishes**: existence of *some* monotone alignment between the magnitude distributions of (fixed-point FFT power) and (|r_n|). This is a necessary condition for B1 at the level of distributions, but is far from sufficient.
+* **What R∞-1a-spectral does NOT establish**: per-mode correspondence, operator-level alignment, robustness against synthetic-field choice, sensitivity to (α, τ_l, τ_g), independence from prime-ladder construction.
+
+**Branch verdict (R∞-1a-spectral slice only)**: this milestone does **not refute** B1 at the spectral level, and supplies one weak positive datum (magnitude-distribution alignment). It **does not** confirm B1 — the per-mode (`r_α`, `r_γ`, `r_δ`) tests are inconclusive, and the auxiliary controls flag a kernel-induced bias as a competing explanation. The result must be read as "B1 survives the first falsifiable spectral test, but only by its weakest available signal; further tests required before any B1 claim".
+
+**Next milestones (gated on this result)**:
+* **R∞-1a-spectral-robustness** (REQUIRED before any further B1 claim): re-run R∞-1a-spectral with (i) a randomized null synthetic field (white noise) to verify that `r_β` does NOT trigger on noise — kernel-bias control; (ii) sweep over `α ∈ {0.25, 0.5, 0.75}` and `τ_l ∈ {2, 4, 8}` to test sensitivity; (iii) alternative orderings (random permutation of νf-axis) as null controls for `r_α` and `r_γ`.
+* **R∞-1a-operator** (gated on robustness): if R∞-1a-spectral-robustness survives, construct a finite-rank approximation of the implied REMESH-∞ operator and compare its spectrum directly to {γ_n}. This is the proper operator-level test that the present field-level test only approximates.
+* **R∞-1b**: NS-side analogue (K_φ cascade), independent of Riemann result.
+
+**Status**: R∞-1a-spectral complete. F3 nominally satisfied with **substantial caveats**; the result is consistent with both B1-positive (REMESH-∞ carries weak Riemann signal) and B1-null-kernel-bias (sorted-magnitude alignment is an artefact of heavy-tailed marginals). No closure of any gap; no support for any cosmic claim. R∞-1a-spectral-robustness is the next pre-registered gate.
+
+### §13vicies-novies.7 R∞-1a-spectral-robustness — Falsification gate (REFUTES `r_β` as Riemann signal)
+
+**Milestone**: R∞-1a-spectral-robustness — pre-registered F4 gate for the R∞-1a-spectral result. Three independent controls executed simultaneously; outcome was decisive.
+
+**Implementation**: `benchmarks/remesh_infinity_riemann_spectral_robustness.py`. Output: `results/remesh_infinity/remesh_infinity_riemann_spectral_robustness.json`.
+
+**Setup**: identical pipeline to R∞-1a-spectral (same prime ladder, `N_iter = 512`, same Riemann reference from `mpmath.zetazero` + P28). Three independent controls:
+* **C1** white-noise null: 16 seeded runs (`numpy.random.default_rng(20260526 + seed)`, `seed ∈ {0..15}`) replacing the canonical oscillatory synthetic EPI field with zero-mean unit-variance white noise, identical REMESH iteration.
+* **C2** sensitivity sweep: 3 × 3 grid `(α, τ_l) ∈ {0.25, 0.5, 0.75} × {2, 4, 8}` on the canonical synthetic field.
+* **C3** permutation null: 5000 random permutations of `|r_n|` (for `r_α`) and `γ̃_n` (for `r_γ`) on the canonical fixed-point spectrum, `numpy` seed `20260526`.
+
+**Pre-registered falsification (F4)**:
+* REFUTED if ANY of: (a) C1 mean `|r_β|`-null > 0.5; (b) C2 `r_β < 0.5` anywhere in grid; (c) C3 both `p_α > 0.05` AND `p_γ > 0.05`.
+* STRENGTHENED if ALL of: (a) C1 mean `|r_β|`-null < 0.2 AND observed `r_β` outside 95% null; (b) C2 `r_β > 0.5` everywhere; (c) C3 `p_α < 0.05` OR `p_γ < 0.05`.
+* MIXED otherwise.
+
+**Results (deterministic; full per-run table in JSON)**:
+
+*Baseline (canonical)*: `r_α = +0.5126, r_β = +0.8575, r_γ = +0.3454, r_δ = +0.4120` (reproduces R∞-1a-spectral exactly).
+
+*C1 white-noise null* (16 seeds):
+* `r_β` null mean = **+0.9440**, `|·|` mean = 0.9440, std = 0.0286, 95% range = [+0.8888, +0.9763].
+* The baseline `r_β = +0.8575` is **below the 2.5% quantile** of the white-noise null distribution.
+* `r_α` null mean = −0.0947 (|·| mean = 0.1848, std = 0.213).
+* `r_γ` null mean = −0.0636 (|·| mean = 0.0880, std = 0.103).
+
+*C2 sensitivity sweep* (9 cells): `r_β` range [+0.8372, +0.8575], constant within τ_l within ±10⁻³ for every α. `r_β > 0.5` at every cell.
+
+*C3 permutation null* (5000 perms each):
+* `r_α`: observed +0.5126 vs null `(mean = +0.0025, std = 0.227)`, **p_one_sided = 0.0228**, p_two_sided = 0.0246.
+* `r_γ`: observed +0.3454 vs null `(mean = +0.0014, std = 0.160)`, **p_one_sided = 0.0154**, p_two_sided = 0.0304.
+
+**F4 verdict: REFUTED** (refute-C1 triggered).
+
+**Honest interpretation (R∞-1a-spectral-robustness)**:
+* The dominant R∞-1a-spectral signal (`r_β = 0.86`) is **a pure kernel artefact**. White noise reproduces it at higher magnitude (mean 0.94) than the canonical oscillatory field. The sorted-magnitude Pearson coefficient measures only that the FFT-power marginal and the `|r_n|` marginal share a heavy-tailed structure; it does NOT detect any structural alignment between the spectrum of the REMESH fixed point and Riemann residuals. The R∞-1a-spectral "B1 nominally SUPPORTED" verdict relied on `r_β` and must therefore be **withdrawn**.
+* C2 shows `r_β` is parameter-insensitive across `(α, τ_l)`, **but in this context that is further evidence of kernel-bias**, not robustness — a kernel-driven artefact is naturally invariant to kernel parameters that do not alter the dominant low-νf concentration.
+* C3 supplies the only genuinely positive finding: `r_α` and `r_γ` are statistically significant against permutation null (p ≈ 0.02 and p ≈ 0.015 one-sided). They are NOT artefacts of the marginal distributions; the alignment between (FFT power → |r_n|) index-wise and (νf-ordered field → smooth target) is structurally non-random. However, the effect sizes are modest:
+  - `r_α = 0.5126` was already only marginally above the F3 threshold and now stands alone.
+  - `r_γ = 0.3454` remains in the indeterminate band of F3.
+* **Net B1 evidential balance after R∞-1a-spectral-robustness**: the dominant claimed signal is artefact; two minor signals survive permutation testing but with modest effect sizes and neither alone meets the original F3 "SUPPORTED" threshold (one is marginal at 0.51, the other indeterminate at 0.35).
+
+**What R∞-1a-spectral-robustness establishes**:
+* `r_β` (sorted-magnitude Pearson on FFT power vs |r_n|) is **not a valid Riemann signal** in this benchmark family and must be retired.
+* Permutation-tested `r_α` (Pearson on power vs |r_n|, index-aligned) and `r_γ` (Pearson on νf-ordered field vs γ̃_n) carry **weak but genuine non-random structural alignment** that is not explained by marginal distributions or kernel parameters.
+
+**What R∞-1a-spectral-robustness does NOT establish**:
+* It does NOT confirm B1 — the surviving signals are below the originally pre-registered support threshold.
+* It does NOT refute B1 entirely — the permutation-significant `r_α` and `r_γ` remain a positive (though weak) datum.
+* It does NOT close T-HP, G4, or any gap.
+
+**Branch verdict (R∞-1a-spectral-robustness slice only)**: B1 is **WEAKENED but not refuted**. The R∞-1a-spectral claim of "B1 nominally SUPPORTED at the spectral level (max > 0.5)" is **withdrawn**. The current state of B1 evidence after this milestone is: one necessary positive datum (existence of non-trivial REMESH fixed point, R∞-1a), one withdrawn artefactual signal (`r_β`, this milestone), and two weak-but-permutation-significant alignments (`r_α ≈ 0.51`, `r_γ ≈ 0.35`, this milestone). This is far below what would be required to claim B1 closure of T-HP.
+
+**Next milestones (gated on this result)**:
+* **R∞-1a-operator** (REQUIRED before any further B1 evidential update): the field-level test in this milestone is at best a proxy for the actual structural question — does the REMESH-∞ operator, viewed as a linear map on the appropriate state space, have spectrum compatible with `{γ_n}`? Construct a finite-rank approximation of the REMESH iteration matrix on `EPI`-space, diagonalize, and compare the eigenvalue spectrum directly to `{γ_n}`. Pre-register: if the largest absolute correlation between (REMESH-∞ eigenvalue magnitudes) and (`γ_n` or `|r_n|`) is `< 0.5` after permutation testing, B1 is refuted at the operator level.
+* **R∞-1b**: NS-side analogue, independent.
+* **B1 status update**: with `r_β` retired and only weak `r_α`/`r_γ` surviving, the canonical-catalog-closure conjecture (B1) **loses substantial empirical support** but remains technically open pending R∞-1a-operator. Branches **B2** (a new canonical operator is required) and **B3** (no TNFR closure exists) gain proportionally in prior weight, though no decisive evidence shifts the balance entirely to either.
+
+**Status**: R∞-1a-spectral-robustness complete. F4 refutes the dominant R∞-1a-spectral signal as kernel artefact while preserving two weak permutation-significant alignments. The R∞-1a-spectral milestone is **formally amended**: the "B1 SUPPORTED" verdict is withdrawn; the residual evidence (R∞-1a fixed-point existence + permutation-significant weak `r_α`, `r_γ`) is insufficient to support B1 at the spectral level. No closure of any gap. R∞-1a-operator is the next pre-registered gate; until it returns, the canonical TNFR-Riemann program remains paused at the T-HP / G4 = RH boundary as stated in §13septies.
+
 ---
