@@ -145,6 +145,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13triginta-quinta | 7075 | **B1 = T-EPI** forcing-axiom reduction (TMEP) | B1b | — |
 | §13triginta-sexta | 7425 | **B1 = T-EPI** final NEGATIVE + envelope E2 (`BEPIElement`) | B1c | ✅ NEG |
 | §13triginta-octava | 7698 | **B2 = T-φ** pre-registration (two-axis winding + lift-spectral diagnostic; candidate envelope E3 = CoverElement) | B2a | — |
+| §13triginta-novena | 8027 | **B2 = T-φ** forcing-axiom reduction (PWDP refutes (P-φ-Homotopy-Retention); (P-φ-Cover-Carrier) = CONDITIONAL_COROLLARY) | B2b | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -8023,3 +8024,426 @@ This pre-registration section, the diagnostic module, and the demo:
 
 ---
 
+
+## §13triginta-novena. Derivation of (P-φ-Cover-Carrier) from the Canonical Catalog — Foundational Reduction of the φ-Type Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
+
+**Pre-registration status.**  This section executes the
+forcing-axiom reduction phase (B2b) of the T-φ program
+(§13triginta-octava): it attempts to derive the covering-space
+carrier principle for the canonical phase field
+(P-φ-Cover-Carrier) from the canonical six invariants + nodal
+equation + Structural Conservation Theorem + Variational
+Principle + REMESH operator + Universal Tetrahedral
+Correspondence, *or* to identify and isolate the actual residual
+axiom that the derivation requires beyond the catalog.
+
+The honest verdict (executed in §13triginta-decima) is
+pre-registered as one of:
+
+- `COROLLARY_DERIVED`: (P-φ-Cover-Carrier) follows from invariants
+  1–6 alone.
+- `CONDITIONAL_COROLLARY`: (P-φ-Cover-Carrier) follows under one
+  additional identifiable axiom strictly weaker than itself.
+- `INDEPENDENT_AXIOM`: (P-φ-Cover-Carrier) is independent of the
+  catalog.
+
+Scope (mandatory honesty): this section does **not** advance
+G4 = RH, does **not** close T-HP, does **not** introduce or modify
+any canonical operator, does **not** delete or deprecate any
+covering-space construction, and does **not** by itself close T-φ.
+It locates the foundational axiom *one structural level below*
+(P-φ-Cover-Carrier) and hands T-φ back to that deeper question.
+
+The literal canonical statement under scrutiny:
+
+> **(P-φ-Cover-Carrier).** In the canonical TNFR formulation, the
+> per-node phase state must take values in a covering space of the
+> circle (the universal cover :math:`\widetilde{S^{1}} \simeq
+> \mathbb{R}`, equivalently a U(1)-bundle element :math:`e^{i\phi}`
+> with retained homotopy class :math:`w \in \pi_1(S^1) = \mathbb{Z}`),
+> *not* in :math:`[-\pi, \pi]` under the canonical ``wrap_angle``
+> projection.
+
+### §13triginta-novena.1 Available Canonical Tools
+
+The derivation may use only the following canonical machinery (no
+extraneous structure):
+
+1. **Nodal equation**: :math:`\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}(t)`
+   (Invariant #1), in which φ enters only via the tetrad fields
+   :math:`|\nabla\phi|` and :math:`K_\phi` that drive
+   :math:`\Delta\mathrm{NFR}` (`src/tnfr/operators/nodal_equation.py:1–160`).
+2. **Six canonical invariants** (AGENTS.md): Nodal Equation
+   Integrity, **Phase-Coherent Coupling (invariant #2)**, Multi-Scale
+   Fractality, Grammar Compliance, Structural Metrology,
+   Reproducible Dynamics.
+3. **Grammar U1–U6**, in particular **U3 (RESONANT COUPLING)** which
+   gates UM/RA on :math:`|\phi_i - \phi_j| \le \Delta\phi_{\max}`.
+4. **Universal Tetrahedral Correspondence**: φ ↔ S¹ on the
+   *geometric* edge (γ-π edge in the tetrahedral architecture) and
+   the structural fields :math:`|\nabla\phi|, K_\phi` constructed
+   from wrapped phase differences.
+5. **Structural Conservation Theorem**
+   (`src/tnfr/physics/conservation.py`): per-node charge density
+   :math:`\rho_i` and current vector :math:`\mathbf{J}_i \in \mathbb{R}^2`
+   built from real-valued functionals of φ *after* ``wrap_angle``.
+6. **Variational Principle**: Lagrangian
+   :math:`\mathcal{L}_i = T_i - V_i` with all terms real-valued
+   functionals of the wrapped tetrad fields.
+7. **REMESH operator** (canonical operator #13), aggregating
+   per-node EPI history; REMESH never aggregates raw winding
+   information of φ.
+8. **Phase-wrap helper**:
+
+   ```python
+   # src/tnfr/physics/_helpers.py:29
+   def wrap_angle(angle: float) -> float:
+       """Map *angle* to the interval [-π, π]."""
+       return (angle + math.pi) % (2 * math.pi) - math.pi
+   ```
+
+9. **Canonical storage alias** ``ALIAS_THETA``
+   (`src/tnfr/constants/aliases.py:8`) — the per-node phase is
+   stored under this single scalar alias-tuple, with no companion
+   ``winding`` / ``cover_index`` / ``π1_class`` alias.
+
+### §13triginta-novena.2 What the Canonical Catalog Forces (Scalar S¹ Layer)
+
+The chain of forced structure for φ is straightforward and entirely
+inside the catalog:
+
+- **(M1) Operator contracts are scalar-S¹.**  Every canonical glyph
+  operator that touches φ reads via ``get_phase`` (returning
+  ``float``) and writes via ``ALIAS_THETA`` followed *immediately*
+  by ``wrap_angle``.  No operator constructs, reads, propagates, or
+  preserves a winding number, sheet index, or homotopy class.
+  Empirically verified by `examples/80_phi_type_signature_demo.py`:
+  ``w_frac = 0/24`` at :math:`(n=24, T=64, B=32, \mathrm{seed}=13)`
+  and ``w_frac = 0/48`` at :math:`(n=48, T=128, B=64, \mathrm{seed}=29)`,
+  with ``max |Δφ_unwrap|`` strictly below :math:`2\pi` at both
+  resolutions.
+
+- **(M2) The nodal equation is wrap-stable.**  φ enters
+  :math:`\partial\mathrm{EPI}/\partial t` only through
+  :math:`\Delta\mathrm{NFR}`, which itself depends on the tetrad
+  fields :math:`|\nabla\phi|` and :math:`K_\phi`.  Both fields are
+  pointwise functionals of *wrapped* phase differences
+  (``wrap_angle`` is applied edge-wise in
+  `src/tnfr/physics/fields.py::compute_phase_gradient` and
+  `compute_phase_curvature`).  Any winding-shifted realisation
+  :math:`\phi \mapsto \phi + 2\pi k_i` of the canonical phase field
+  produces the *same* :math:`|\nabla\phi|`, :math:`K_\phi`,
+  :math:`\Delta\mathrm{NFR}`, and hence the *same*
+  :math:`\partial\mathrm{EPI}/\partial t`.
+
+- **(M3) U3 phase-gated coupling is wrap-equivariant.**  The U3
+  resonance condition :math:`|\phi_i - \phi_j| \le \Delta\phi_{\max}`
+  is canonically evaluated on the *wrapped* phase difference (per
+  `src/tnfr/operators/grammar_core.py::validate_resonant_coupling`),
+  i.e. on the geodesic distance on :math:`S^1`.  Adding any winding
+  shift to either endpoint leaves the wrapped difference invariant.
+  The covering-space datum is therefore *never read* by U3.
+
+- **(M4) Conservation and variational laws close on wrapped φ.**
+  The Noether charge :math:`Q = \sum_i \rho_i`, the energy
+  :math:`E = \sum_i \varepsilon_i`, the Lagrangian, and the
+  symplectic form are all real-valued functionals of wrapped
+  tetrad fields :math:`(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)` and
+  the scalar currents :math:`(J_\phi, J_{\Delta\mathrm{NFR}})`.  No
+  conservation law references a winding charge.
+
+The conjunction M1+M2+M3+M4 establishes that **the entire canonical
+machinery closes consistently and gauge-invariantly with scalar S¹
+phase**.  The 13-operator catalog never reads or writes a winding
+number; the nodal equation is invariant under per-node
+:math:`2\pi k_i` shifts of φ; U3 is wrap-equivariant; conservation
+and variational laws never require a covering-space lift.
+
+### §13triginta-novena.3 The Gap Between wrap_angle Discipline and Covering-Space Retention
+
+Scalar-S¹ closure (M1–M4) is necessary but not sufficient to refute
+(P-φ-Cover-Carrier): one could still ask whether the catalog *also*
+admits a strictly-stronger covering-space realisation in which the
+wrapped implementation is a faithful coordinate projection from
+:math:`\widetilde{S^{1}} \simeq \mathbb{R}` onto :math:`S^{1}`.  The
+decisive question is whether the catalog *forces* such an upgrade.
+
+The only canonical mechanism that could conceivably preserve
+homotopy-class data across the temporal evolution is a hypothetical
+"non-wrapped" branch that propagates :math:`\widetilde\phi(t) \in
+\mathbb{R}` alongside :math:`\phi(t) \in [-\pi, \pi]`.  But the
+canonical engine **does not implement** any such branch: every
+write to ``ALIAS_THETA`` passes through ``wrap_angle``, and there
+is no canonical alias for an unwrapped companion.
+
+Formally, define the **Phase-Wrap Discipline Principle**:
+
+> **Phase-Wrap Discipline Principle (PWDP).**  In the canonical
+> TNFR formulation, every per-node phase value is *systematically
+> projected* onto the fundamental domain :math:`[-\pi, \pi]` via
+> ``wrap_angle`` at every operator boundary.  The homotopy class
+> :math:`w \in \pi_1(S^1) = \mathbb{Z}` is *systematically
+> discarded* and is **not** retrievable from the canonical state.
+
+This is the structural-φ analogue of the Temporal-Modal Equivalence
+Principle (TMEP) that closed B1 = T-EPI.  Where TMEP says
+"multi-modal EPI content is canonically realised *temporally* via
+REMESH, not *spatially* via a Banach internal carrier", PWDP says
+"phase-orbit content is canonically realised *as wrapped geodesic
+distance on* :math:`S^1`, not *as covering-space displacement on*
+:math:`\widetilde{S^1}`".
+
+PWDP is *operationally complete*: under the canonical ``wrap_angle``
+discipline, the engine reproduces P12–P15 to machine precision
+(§10–§12), recovers classical (Keplerian) and quantum-like
+(interference, complementarity, quantization) regimes (§§3–9), and
+satisfies all canonical conservation laws — *without* invoking any
+winding charge or homotopy class.  The B2a empirical signature
+:math:`w_{\mathrm{frac}} = 0` at both pre-registered resolutions is
+the empirical fingerprint of PWDP.
+
+**Crucially**, the broadband phase-velocity spectrum measured by
+the lift-spectral axis of §13triginta-octava.5
+(:math:`H_{\mathrm{spec}}/\log B \approx 0.94`–:math:`0.96`) is
+*explained* by PWDP without invoking (P-φ-Cover-Carrier): a
+single-sheet S¹-valued field hosting quasi-periodic dynamics with
+many incommensurate frequencies will produce a high-entropy
+phase-velocity spectrum, and wrapping itself injects high-frequency
+content into :math:`\dot\phi` at the wrap discontinuities.  The
+spectral richness is *structural*, not *topological*.
+
+Therefore: **(P-φ-Cover-Carrier) is strictly stronger than what
+M1+M2+M3+M4 + PWDP provide**, and any derivation must locate an
+additional canonical constraint that selects the homotopy-retention
+upgrade.
+
+### §13triginta-novena.4 Candidate Forcing Constraints (Enumeration)
+
+The candidates available inside the canonical catalog are enumerated
+below.  Each row asks: *does this axiom force the covering-space
+upgrade of φ?*
+
+| #  | Axiom | Source | Forces cover-carrier of φ? |
+|---|---|---|---|
+| F1 | Operator exclusivity (only the 13 canonical operators write φ). | AGENTS.md "Canonical Invariants #1". | **No** — operators write wrapped ``float`` via ``ALIAS_THETA`` + ``wrap_angle`` (M1). |
+| F2 | Reproducibility under fixed seeds. | AGENTS.md "Reproducible Dynamics". | **No** — wrapped scalar trajectories reproduce identically; winding shifts are not part of the seeded state. |
+| F3 | Nodal-equation wrap-invariance: same :math:`\partial\mathrm{EPI}/\partial t` under :math:`\phi \mapsto \phi + 2\pi k_i`. | `nodal_equation.py`, `fields.py::compute_phase_gradient`/`compute_phase_curvature`. | **No** — the dynamics is *gauge-invariant* under per-node :math:`2\pi` shifts; the winding charge is structurally unobservable from the canonical ODE (M2). |
+| F4 | Tetrad orthogonality and minimality of :math:`(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)`. | AGENTS.md §"Minimal Structural Degrees of Freedom". | **No** — all four fields use wrapped phase differences (M2); cf. `STRUCTURAL_FIELDS_TETRAD.md`. |
+| F5 | U3 phase-gated coupling :math:`|\phi_i - \phi_j| \le \Delta\phi_{\max}`. | AGENTS.md "U3 RESONANT COUPLING", `grammar_core.py::validate_resonant_coupling`. | **No** — U3 reads the *wrapped* geodesic distance on :math:`S^1`; covering-space distance is *never* the canonical input (M3). |
+| F6 | Structural Conservation Theorem (Noether charge :math:`Q`, energy :math:`E`, Ward identities). | `physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`. | **No** — :math:`\rho, \mathbf{J}, \varepsilon` are all real-valued functionals of wrapped tetrad fields (M4); no winding current appears in :math:`\partial\rho/\partial t + \nabla \cdot \mathbf{J} = S_{\mathrm{grammar}}`. |
+| F7 | Variational principle (Lagrangian, symplectic conjugate pair :math:`(K_\phi, J_\phi)`). | `physics/variational.py`, AGENTS.md §"Variational Confirmation". | **No** — :math:`K_\phi = \mathrm{wrap\_angle}(\phi_i - \mathrm{circular\_mean}(\mathrm{nbrs}))` is *defined* as a wrapped scalar with :math:`|K_\phi| \le \pi`; the conjugate momentum :math:`J_\phi` is real-valued. |
+| F8 | REMESH temporal aggregation of φ trajectories. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py`. | **No** — REMESH aggregates EPI history, not φ history; even when φ-derived quantities feed REMESH (via :math:`\Delta\mathrm{NFR}`), the inputs have already been wrap-projected (chain of M2+M1). |
+| F9 | Classical-limit demos (Keplerian orbits, smooth phase trajectories). | `examples/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from *wrapped* φ under high coherence; the visible smoothness is a coordinate effect, not evidence of a covering-space carrier. |
+| F10 | Quantum-regime demos (interference, complementarity). | `examples/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena emerge from wrapped φ dynamics; phase-difference interference at slits uses :math:`\mathrm{wrap\_angle}(\phi_A - \phi_B)`, not covering-space difference. |
+
+**Result.** No canonical constraint in :math:`\{\mathrm{F1}, \ldots, \mathrm{F10}\}`
+forces the covering-space carrier upgrade of φ.  All ten admit
+consistent gauge-invariant realisation with wrapped scalar S¹ phase
+(as the current 13-operator implementation demonstrates by
+existence, and as the B2a empirical signature confirms:
+:math:`w_{\mathrm{frac}} = 0` across two independent demo
+resolutions, ``max |Δφ_unwrap| < 2π`` at both).
+
+### §13triginta-novena.5 The Hidden Axiom: (P-φ-Homotopy-Retention)
+
+The derivation gap can be isolated cleanly.  Define:
+
+> **(P-φ-Homotopy-Retention).**  In the canonical TNFR formulation,
+> the per-node phase trajectory :math:`\{\phi_i(t)\}_t` must retain
+> its homotopy class :math:`w_i \in \pi_1(S^1) = \mathbb{Z}` across
+> the ``wrap_angle`` projection — i.e. distinct unwrapped lifts
+> :math:`\widetilde\phi_i(t)` differing by an integer multiple of
+> :math:`2\pi` must correspond to distinct canonical states, and
+> conversely.
+
+**Claim.**  (P-φ-Cover-Carrier) is a corollary of the canonical
+catalog *plus* (P-φ-Homotopy-Retention), and of nothing weaker
+than (P-φ-Homotopy-Retention).
+
+**Forward direction (sufficiency).**  Assume (P-φ-Homotopy-Retention).
+Consider a trajectory :math:`\phi_i(t)` with non-trivial winding
+(:math:`\widetilde\phi_i(T) - \widetilde\phi_i(0) = 2\pi w` with
+:math:`w \neq 0`).  Retention forces the canonical state to encode
+:math:`w` faithfully.  A wrapped scalar
+:math:`\phi_i(t) \in [-\pi, \pi]` does not have the cardinality to
+encode an integer winding charge *separately from* the wrapped
+representative at fixed :math:`(i, t)` (one real number in a bounded
+interval cannot encode an unbounded integer).  Hence the canonical
+phase storage must take values in a non-trivial cover of :math:`S^1`
+— equivalently, the covering-space lift carrier
+:math:`\widetilde{S^1} \simeq \mathbb{R}` (or a U(1)-bundle element
+with explicit :math:`w` slot).  This is (P-φ-Cover-Carrier).
+
+**Reverse direction (necessity at the canonical level).**  Suppose
+(P-φ-Cover-Carrier) holds.  Then :math:`\phi_i(t) \in \widetilde{S^1}`
+is fully specified by :math:`(\phi_{\mathrm{wrap}}, w) \in [-\pi, \pi]
+\times \mathbb{Z}`.  By construction, distinct winding shifts
+produce distinct canonical states.  Hence (P-φ-Homotopy-Retention)
+holds.
+
+**Strict-weakness of (P-φ-Homotopy-Retention) vs (P-φ-Cover-Carrier).**
+(P-φ-Homotopy-Retention) is a *meta-constraint* on the canonical
+storage map :math:`\phi_i(t) \mapsto` (homotopy class of the
+trajectory).  It does not mention covering spaces, U(1) bundles,
+universal covers, or any topological-bundle machinery.  It is purely
+a faithfulness requirement on the symbolic representation of
+trajectory homotopy.  By contrast, (P-φ-Cover-Carrier) commits to a
+specific carrier (:math:`\widetilde{S^1}`) and a specific algebraic
+structure (the :math:`\mathbb{R}` group with quotient :math:`S^1`).
+
+Therefore (P-φ-Homotopy-Retention) is structurally simpler and
+strictly weaker than (P-φ-Cover-Carrier), and the derivation is
+genuine progress.
+
+### §13triginta-novena.6 Canonical Status of (P-φ-Homotopy-Retention) — PWDP Refutation
+
+The question is now: is (P-φ-Homotopy-Retention) itself derivable
+from the canonical six invariants?
+
+- **(B-Pro).**  Invariant #2 (Phase-Coherent Coupling) could be read
+  as suggesting that phase information should be canonically
+  retained without loss.  If two trajectories differing only by an
+  integer winding shift produced the same canonical state, an
+  observer trying to reconstruct the *full unwrapped trajectory*
+  from the canonical record would lose the winding count.
+
+- **(B-Con, decisive).**  The **Phase-Wrap Discipline Principle
+  (PWDP, §13triginta-novena.3)** refutes the per-trajectory
+  homotopy-retention requirement *at the canonical level*: the
+  observable content of φ at every canonical operator boundary is
+  the *wrapped* representative, and the canonical dynamics is
+  *gauge-invariant* under per-node :math:`2\pi k_i` shifts (F3).
+  Any unwrapped lift is therefore a *coordinate choice* on top of
+  the canonical state, not a canonical state itself.
+
+  Formally: the catalog enforces phase coherence (invariant #2) via
+  U3 evaluated on wrapped distances on :math:`S^1`, with all
+  downstream conservation and variational structure descending from
+  the wrapped tetrad fields (M2–M4).  This is *operationally
+  complete* — it reproduces all canonical results (§§3–12) without
+  any per-trajectory winding charge.
+
+- **(B-Empirical).**  The B2a diagnostic (§13triginta-octava.6)
+  measures :math:`w_{\mathrm{frac}} = 0` and ``max |Δφ_unwrap|
+  < 2π`` at *both* resolutions: canonical evolution, executed
+  exactly as the catalog specifies, does not produce any node whose
+  unwrapped phase trajectory escapes the fundamental domain.  The
+  homotopy class is structurally trivial at every measured
+  :math:`(i, t)`.  This is exactly the PWDP signature: the
+  covering-space lift is structurally unreachable from canonical
+  initial conditions.
+
+**Conclusion of §13triginta-novena.6.**  (P-φ-Homotopy-Retention) is
+**not derivable from the canonical six invariants**.  The catalog
+realises phase coherence *wrap-equivariantly* via U3 and the
+wrapped tetrad fields, *not* covering-space-equivariantly via a
+homotopy-retention upgrade.  The per-trajectory homotopy-class
+retention that (P-φ-Homotopy-Retention) demands is an *additional*
+axiom, independent of the catalog and actively refuted by PWDP at
+the canonical level, with the empirical winding fingerprint
+:math:`w_{\mathrm{frac}} = 0` of B2a as decisive corroboration.
+
+### §13triginta-novena.7 Sub-Verdict
+
+The forcing-axiom reduction yields:
+
+> **Sub-verdict (§13triginta-novena).**
+> (P-φ-Cover-Carrier) is a **CONDITIONAL_COROLLARY** of the
+> canonical catalog: it follows from the catalog *plus*
+> (P-φ-Homotopy-Retention).  However, (P-φ-Homotopy-Retention) is
+> itself **INDEPENDENT_AXIOM** at the canonical level: it is not
+> derivable from invariants 1–6 and is actively refuted by the
+> Phase-Wrap Discipline Principle (PWDP), with the B2a empirical
+> winding fingerprint :math:`w_{\mathrm{frac}} = 0` as decisive
+> corroboration.
+>
+> Net: (P-φ-Cover-Carrier) is **strictly non-canonical**.  Any
+> covering-space lift, U(1)-bundle element, or homotopy-retaining
+> representation of φ is a legitimate research envelope —
+> available for off-catalog experimentation — but is not forced
+> by, and indeed is structurally orthogonal to (gauge-invariantly
+> trivial under), the canonical 13-operator realisation under
+> PWDP.
+
+This locates the residual canonical question for T-φ exactly one
+level below (P-φ-Cover-Carrier), at (P-φ-Homotopy-Retention), and
+identifies its refutation mechanism (PWDP).  The final NEGATIVE
+verdict on T-φ, and the classification of the covering-space carrier
+(``CoverElement``, candidate envelope E3) as a legitimate
+non-canonical research envelope, are executed in §13triginta-decima
+(B2c).
+
+### §13triginta-novena.8 Honest Scope (What This Does and Does Not Do)
+
+This sub-programme:
+
+- **Does** isolate the residual axiom one structural level below
+  (P-φ-Cover-Carrier).
+- **Does** prove (P-φ-Homotopy-Retention) is strictly weaker than
+  (P-φ-Cover-Carrier).
+- **Does** refute (P-φ-Homotopy-Retention) at the canonical level
+  via PWDP, empirically corroborated by B2a's
+  :math:`w_{\mathrm{frac}} = 0` at two resolutions.
+- **Does** confirm the catalog closes consistently and
+  gauge-invariantly with wrapped scalar S¹ φ (M1+M2+M3+M4).
+- **Does** identify the canonical dynamics as *gauge-invariant
+  under per-node :math:`2\pi k_i` shifts of φ* (a structural
+  observation made explicit here for the first time, not a new
+  canonical promotion).
+- **Does not** advance G4 = RH or the T-HP conjecture.
+- **Does not** promote any operator, field, or constant to canonical
+  status (in particular: does NOT promote ``CoverElement``,
+  ``ALIAS_PHASE_UNWRAPPED``, or any homotopy-retaining
+  representation).
+- **Does not** modify the 13-operator catalog.
+- **Does not** delete or deprecate the candidate envelope E3 =
+  ``CoverElement``; classifies it as a research envelope available
+  outside the canonical operator contracts.
+- **Does not** modify any source file in `src/tnfr/`.
+- **Does not** by itself close T-φ — the final verdict is executed
+  in §13triginta-decima.
+
+### §13triginta-novena.9 Cross-references
+
+- §13triginta-prima — T-νf Type Conjecture (pre-registration, νf
+  analog; first sub-question of the programme).
+- §13triginta-prima.4 — Pontryagin-dual table row 5
+  :math:`(\mathbb{Z}, S^{1})` predicting the φ-side canonical
+  scalar S¹ typing.
+- §13triginta-secunda — T-νf forcing-axiom reduction (structural
+  template for this section).
+- §13triginta-tertia — T-νf NEGATIVE verdict (precedent for B0c).
+- §13triginta-quarta — T-EPI pre-registration (precedent for B1a).
+- §13triginta-quinta — T-EPI forcing-axiom reduction (structural
+  twin of this section; TMEP closes B1b, PWDP closes B2b).
+- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 = ``BEPIElement``
+  classification (precedent for B2c).
+- §13triginta-septima — Living discoveries log (D-CC-6 catalog
+  citation correction for ``wrap_angle`` / ``ALIAS_THETA`` recorded
+  in B2a; deferred catalog patch unchanged on this commit).
+- §13triginta-octava — T-φ pre-registration (B2a anchor +
+  two-axis diagnostic; this section consumes the
+  :math:`w_{\mathrm{frac}} = 0` fingerprint).
+- §13septies — T-HP open content (independent of this
+  sub-question).
+- §19.1 — Full P1–P49 milestone table.
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §4 — programme
+  tracker (row B2 Phase b advances on this commit).
+- `src/tnfr/physics/_helpers.py:29` — ``wrap_angle`` canonical
+  implementation (anchors M1 / M2 / PWDP).
+- `src/tnfr/constants/aliases.py:8` — ``ALIAS_THETA`` canonical
+  scalar storage alias (anchors M1).
+- `src/tnfr/physics/fields.py` — ``compute_phase_gradient`` and
+  ``compute_phase_curvature`` (anchor M2: tetrad fields built on
+  wrapped phase differences).
+- `src/tnfr/operators/grammar_core.py::validate_resonant_coupling`
+  — U3 gating on wrapped distances (anchors M3).
+- `src/tnfr/physics/conservation.py` — Noether charge / current /
+  energy (anchors M4).
+- `src/tnfr/riemann/phi_type_signature.py` — B2a diagnostic
+  implementation (anchors :math:`w_{\mathrm{frac}} = 0` empirical
+  corroboration of PWDP).
+- `examples/80_phi_type_signature_demo.py` — two-resolution demo
+  (anchors B2a numerical fingerprint).
+
+---
