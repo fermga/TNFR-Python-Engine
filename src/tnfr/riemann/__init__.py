@@ -888,6 +888,11 @@ from .coupling_weights_type_signature import (
     CouplingWeightsTypeSignatureCertificate,
     compute_coupling_weights_type_signature,
 )
+from .tetrad_closure_signature import (
+    # §13quinquaginta-secunda: Tetrad-Closure Signature diagnostic (B7a)
+    TetradClosureSignatureCertificate,
+    compute_tetrad_closure_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1381,6 +1386,9 @@ __all__ = [
     # §13quadraginta-nona: Coupling-Weights-Type Signature (B6a)
     "CouplingWeightsTypeSignatureCertificate",
     "compute_coupling_weights_type_signature",
+    # §13quinquaginta-secunda: Tetrad-Closure Signature (B7a)
+    "TetradClosureSignatureCertificate",
+    "compute_tetrad_closure_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",

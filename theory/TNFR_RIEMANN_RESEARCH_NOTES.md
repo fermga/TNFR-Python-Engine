@@ -11873,3 +11873,69 @@ L3* status promoted from "empirically robust working heuristic with structural-o
 - [`examples/84_coupling_weights_type_signature_demo.py`](../examples/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
 
 ---
+---
+
+### §13quinquaginta-secunda — B7 = Δ-tetrad-closure: Phase a pre-registration, source-code trace, and frozen signature
+
+**Status**: Phase a CLOSED. Phase b is **n/a** for B7 (closure question, not type-conjecture). Phase c (final verdict) deferred to §13quinquaginta-tertia.
+
+**Scope (mandatory honesty)**: Phase a is theory + diagnostic + frozen empirical signature only. Does NOT construct, promote, deprecate, modify, or delete any canonical operator. Does NOT advance G4 = RH. The closure question is whether the canonical Tier-1+Tier-2 scalar inputs `(EPI_i, phi_i, DeltaNFR_i) in R x [0, 2pi) x R` plus the graph metric (adjacency + shortest-path distances) are structurally sufficient to reconstruct each of the four canonical tetrad fields `(Phi_s, |grad phi|, K_phi, xi_C)` as a scalar-valued (per-node or global) functional, with no hidden intermediate richer than the Tier-1+Tier-2 types and no implicit Banach-derivative apparatus, measure, callable kernel, or matrix lift introduced during the derivation. Conditional on the four canonical tetrad-field implementations at `src/tnfr/physics/canonical.py:199,609,640,756` being the canonical specification.
+
+#### .1 Pre-registration of B7 (closure question)
+
+**Closure question**: do the four canonical tetrad fields `(Phi_s, |grad phi|, K_phi, xi_C)` reduce, on the canonical TNFR engine, to scalar-valued (per-node or global) functionals of the Tier-1+Tier-2 scalar slots `(EPI_i, phi_i, DeltaNFR_i)` plus the canonical graph metric, with every intermediate value structurally scalar-coercible?
+
+A YES verdict (closure adequate, no leakage) confirms that the tetrad layer of the canonical engine introduces no richer intermediate type than the Tier-1+Tier-2 catalog already exposes. A NO verdict (closure inadequate) would force the catalog to admit a richer intermediate type on the Tier-1+Tier-2-to-tetrad reduction path (e.g. per-node tensor cache, callable kernel, matrix-valued intermediate).
+
+**Methodology**: Phase a freezes a two-axis diagnostic (input-domain-closure + output-scalar-closure) on a canonical probe graph; Phase b is **n/a** (no forcing axiom to reduce, since the question is closure of an existing reduction path rather than admission of a candidate richer type); Phase c emits the final verdict by direct source-code trace of the four canonical tetrad-field implementations.
+
+#### .2 Source-code trace of the four canonical tetrad-field functions
+
+The four canonical tetrad-field functions are exposed at `src/tnfr/physics/fields.py` (public façade) and implemented at `src/tnfr/physics/canonical.py`:
+
+1. **`Phi_s` — `compute_structural_potential`** at `src/tnfr/physics/canonical.py:199`. Computes `Phi_s(i) = Sum_{j != i} DeltaNFR_j / d(i, j)^alpha` with `alpha = 2.0` (canonical default). Inputs: per-node `DeltaNFR_j` (resolved via canonical alias `_get_dnfr`, returns Python `float`) and pairwise shortest-path distances `d(i, j)` (resolved via `networkx.shortest_path_length`, returns `int`). Output: `dict[node, float]`, with every per-node value explicitly coerced via `float(...)` at the inner accumulator. No tensor, callable, kernel, or matrix intermediate.
+2. **`|grad phi|` — `compute_phase_gradient`** at `src/tnfr/physics/canonical.py:609`. Computes `|grad phi|(i) = mean_{j in N(i)} |wrap(phi_j - phi_i)|`. Inputs: per-node `phi_i` (resolved via `_get_phase`, returns Python `float`) and graph adjacency (`G.neighbors`). Output: `dict[node, float]` via the shared `_compute_phase_gradient_and_curvature` helper at `src/tnfr/physics/canonical.py:649`, with every per-node value explicitly coerced via `float(np.mean(np.abs(wrapped_diffs)))`. No tensor, callable, kernel, or matrix intermediate.
+3. **`K_phi` — `compute_phase_curvature`** at `src/tnfr/physics/canonical.py:640`. Computes `K_phi(i) = wrap(phi_i - circular_mean(neighbour phases))`. Inputs: per-node `phi_i` plus adjacency. Output: `dict[node, float]` via the same `_compute_phase_gradient_and_curvature` helper, with every per-node value explicitly coerced via `float(_wrap_angle(phi_i - mean_phase))`. No tensor, callable, kernel, or matrix intermediate.
+4. **`xi_C` — `estimate_coherence_length`** at `src/tnfr/physics/canonical.py:756`. Computes `xi_C` from the spatial autocorrelation of the per-node local coherence `c_i = 1 / (1 + |DeltaNFR_i|)` against the canonical pairwise distance matrix. Inputs: per-node `DeltaNFR_i` plus pairwise shortest-path distances. Output: single global Python `float`, with the final exponential-fit coefficient explicitly coerced via `float(...)`. No tensor, callable, kernel, or matrix intermediate.
+
+All four canonical tetrad-field functions read only the Tier-1+Tier-2 scalar slots (B1 = EPI implicitly via downstream consumers, B2 = phi/theta, B0 = nu_f implicitly via downstream consumers, B3 = DeltaNFR) plus the graph metric (`G.neighbors`, `G.degree`, `networkx.shortest_path_length`); none of them reads a per-edge tensor, per-anchor callable, per-time history kernel, or per-node non-scalar payload; all return scalar-valued (per-node or global) outputs explicitly coerced via `float(...)`.
+
+#### .3 Tetrad-Closure Signature S_TC (diagnostic, two axes)
+
+Define the **Tetrad-Closure Signature** `S_TC` on a canonical probe graph as the combined non-scalar fraction across two orthogonal axes, squashed by `tanh`:
+
+```
+S_TC = tanh( (n_nonscalar_in + n_nonscalar_out) / (n_total_in + n_total_out) )
+```
+
+Axis 1 (**input-domain-closure**): for every node in the probe graph, inspect every value at the canonical Tier-1+Tier-2 per-node keys `(EPI, theta, nu_f)` plus the resolved `DeltaNFR` payload; count the fraction that are structurally scalar-coercible. Axis 2 (**output-scalar-closure**): call each of the four canonical tetrad-field functions on the probe graph; for each per-node output of `Phi_s`, `|grad phi|`, `K_phi` and for the global output of `xi_C`, count the fraction that are structurally scalar-coercible.
+
+A high S_TC is a *necessary-condition* check: it says only that the canonical tetrad-field pipeline touches non-scalar payloads on the canonical Tier-1+Tier-2-to-tetrad reduction path, so a richer intermediate type *might* be required to close the reduction. A low S_TC plus unit fractions on both axes is the empirically expected outcome — structurally consistent with the canonical implementations of the four tetrad-field functions.
+
+#### .4 B7a empirical signature (frozen)
+
+Implementation at `src/tnfr/riemann/tetrad_closure_signature.py`; demo at `examples/85_tetrad_closure_signature_demo.py`. Frozen empirical signature on the canonical probe graph:
+
+| Probe | n_nodes | n_input_reads | n_output_reads | S_TC | input_scalar_fraction | output_scalar_fraction | verdict |
+|---|---|---|---|---|---|---|---|
+| small | 24 | 96 | 73 | 0.000000 | 1.000000 | 1.000000 | SCALAR_CLOSURE_ADEQUATE |
+| medium | 48 | 192 | 145 | 0.000000 | 1.000000 | 1.000000 | SCALAR_CLOSURE_ADEQUATE |
+
+Per-key input non-scalar count is zero across all four Tier-1+Tier-2 keys (`EPI = 0`, `theta = 0`, `nu_f = 0`, `DeltaNFR = 0`); per-field output non-scalar count is zero across all four tetrad fields (`Phi_s = 0`, `grad_phi = 0`, `K_phi = 0`, `xi_C = 0`).
+
+#### .5 Scope and continuation
+
+Phase a CLOSED: the canonical probe certifies `SCALAR_CLOSURE_ADEQUATE` on both axes at both probe resolutions, and the source-code trace in §.2 confirms that every canonical tetrad-field implementation reads only Tier-1+Tier-2 scalar slots plus the graph metric and returns scalar-valued outputs explicitly coerced via `float(...)`. Phase b is **n/a** (no forcing axiom). Phase c (§13quinquaginta-tertia) emits the final verdict: NEGATIVE (no richer intermediate type forced; tetrad layer of the canonical engine is closed by Tier-1+Tier-2 scalar inputs plus the graph metric) is the structurally expected outcome conditional on the source-code trace of §.2.
+
+#### .6 L3* status (post-B7a)
+
+L3* prediction for B7 (per §13quinquaginta-prima.5): the closure question admits its own orthogonal CDM at its own surface — namely the **Tetrad-Reduction Closure** discipline (TRC) at the Tier-1+Tier-2-to-tetrad reduction surface. Phase a confirms the diagnostic-level orthogonality of TRC against the prior seven CDMs (Pontryagin/measure-nu_f at the field-measure surface; TMEP at the element-projection surface; PWDP at the phase-wrap surface; BSAD at the scalar-aggregation surface; DITS at the temporal-sampling surface; STD at the coupling-verdict surface; SWD at the mixing-aggregation surface). Eight CDMs would act on eight structurally distinct surfaces; final attribution of TRC as the eighth CDM is deferred to Phase c.
+
+#### .7 Cross-references
+
+- §13quadraginta-nona, §13quinquaginta, §13quinquaginta-prima (B6 closure thread).
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §3 row B7, §4 row B7.
+- `src/tnfr/physics/fields.py` (public façade).
+- `src/tnfr/physics/canonical.py:199,609,640,756` (four canonical tetrad-field implementations).
+- `src/tnfr/riemann/tetrad_closure_signature.py` (B7a diagnostic).
+- `examples/85_tetrad_closure_signature_demo.py` (B7a demo).
