@@ -151,6 +151,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13quadraginta-prima | 9068 | **B3 = T-ΔNFR** forcing-axiom reduction (BSAD refutes (P-ΔNFR-Tensor-Retention); (P-ΔNFR-Tensor-Carrier) = CONDITIONAL_COROLLARY) | B3b | — |
 | §13quadraginta-secunda | 9547 | **B3 = T-ΔNFR** final NEGATIVE + envelope E4 (TensorGradientElement / tensor-/operator-valued ΔNFR); L3* promoted to stable working heuristic; three Tier-2 predictions (B4/B5/B6 NEGATIVE) | B3c | ✅ NEG |
 | §13quadraginta-tertia | 9924 | **B4 = T-REMESH-window** pre-registration (two-axis integer-storage + window-refinement bracket diagnostic; candidate envelope E5 = ContinuousWindowKernel) | B4a | — |
+| §13quadraginta-quarta | 10262 | **B4 = T-REMESH-window** forcing-axiom reduction (F1–F10); residual axiom (P-REMESH-window-Continuous-Retention) isolated and refuted by DITS = Discrete-Integer Temporal Sampling discipline; first Tier-2 confirmation of L3* via predicted N15 REMESH-∞ discharge mechanism | B4b | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -10258,5 +10259,547 @@ This pre-registration section, the diagnostic module, and the demo:
   diagnostic implementation (added on this commit).
 - ``examples/82_remesh_window_type_signature_demo.py`` — demo
   (added on this commit).
+
+---
+## §13quadraginta-quarta. Derivation of (P-REMESH-window-Continuous-Kernel-Carrier) from the Canonical Catalog — Foundational Reduction of the REMESH-window-Type Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
+
+**Pre-registration status.**  This section executes the
+forcing-axiom reduction phase (B4b) of the T-REMESH-window
+program (§13quadraginta-tertia): it attempts to derive the
+continuous-kernel carrier principle for the canonical REMESH
+memory window (P-REMESH-window-Continuous-Kernel-Carrier) from
+the canonical six invariants + nodal equation + Structural
+Conservation Theorem + Variational Principle + REMESH operator
++ N15 REMESH-∞ closure, *or* to identify and isolate the actual
+residual axiom that the derivation requires beyond the catalog.
+
+The honest verdict (executed in §13quadraginta-quinta) is
+pre-registered as one of:
+
+- `COROLLARY_DERIVED`: the continuous-kernel carrier principle
+  follows from invariants 1–6 alone.
+- `CONDITIONAL_COROLLARY`: it follows under one additional
+  identifiable axiom strictly weaker than itself.
+- `INDEPENDENT_AXIOM`: it is independent of the catalog.
+
+Scope (mandatory honesty): this section does **not** advance
+G4 = RH, does **not** close T-HP, does **not** introduce or
+modify any canonical operator, does **not** delete or deprecate
+any continuous-kernel / fractional-order REMESH construction,
+and does **not** by itself close T-REMESH-window.  It locates
+the foundational axiom *one structural level below*
+(P-REMESH-window-Continuous-Kernel-Carrier) and hands
+T-REMESH-window back to that deeper question.
+
+The literal canonical statement under scrutiny:
+
+> **(P-REMESH-window-Continuous-Kernel-Carrier).**  In the
+> canonical TNFR formulation, the REMESH memory window must be
+> carried as a continuous-time integral kernel
+> :math:`K: \mathbb{R}_{\ge 0} \times \mathbb{R}_{\ge 0} \to
+> \mathbb{R}` with EPI coupled via
+> :math:`\int_0^t K(t, s)\, \mathrm{EPI}(s)\, ds`, or as a
+> fractional-order temporal coupling operator
+> :math:`\partial^\alpha\!/\!\partial t^\alpha\, \mathrm{EPI}`
+> for non-integer :math:`\alpha` — equivalently a
+> ``ContinuousWindowKernel`` (candidate envelope E5) — *not* via
+> the canonical integer pair :math:`(\tau_l, \tau_g) \in
+> \mathbb{N}^2` indexing the canonical EPI history deque.
+
+### §13quadraginta-quarta.1 Available Canonical Tools
+
+The derivation may use only the following canonical machinery:
+
+1. **Nodal equation**: :math:`\partial \mathrm{EPI}/\partial t =
+   \nu_f \cdot \Delta\mathrm{NFR}(t)`.  No memory-window term
+   appears in the canonical nodal equation; temporal coupling is
+   *external*, supplied exclusively by the REMESH operator.
+2. **Six canonical invariants** (AGENTS.md), in particular
+   **Reproducible Dynamics** (#6) which requires deterministic
+   integer-indexed state at every operator boundary.
+3. **Grammar U1–U6**, in particular **U2 (CONVERGENCE &
+   BOUNDEDNESS)** which bounds the time-integral
+   :math:`\int \nu_f \cdot \Delta\mathrm{NFR}\, dt < \infty`
+   along the canonical discrete trajectory.
+4. **REMESH operator** (canonical operator #13), implemented as
+   :func:`tnfr.operators.remesh.apply_network_remesh` at
+   ``src/tnfr/operators/remesh.py:1212`` reading the memory
+   window via integer Python indexing of the EPI history deque:
+
+   ```python
+   # src/tnfr/operators/remesh.py:1212
+   def apply_network_remesh(G: TNFRGraph) -> None:
+       ...
+       tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
+       tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
+       ...
+       past_g = hist[-(tau_g + 1)]
+       past_l = hist[-(tau_l + 1)]
+   ```
+
+5. **Canonical defaults** (``defaults_core.py:221-223``):
+   ``REMESH_TAU_LOCAL: int = 4``, ``REMESH_TAU_GLOBAL: int = 8``,
+   ``REMESH_ALPHA: float = 0.5``.  All canonical defaults are
+   integer-valued by typed declaration.
+6. **EPI history deque** ``G.graph["_epi_hist"]`` populated by
+   :func:`tnfr.dynamics.runtime._update_epi_hist` at
+   ``src/tnfr/dynamics/runtime.py:413``: a Python deque of
+   per-step EPI snapshots, integer-indexed by definition.
+7. **N15 REMESH-∞ asymptotic** (``REMESH_INFINITY_DERIVATION.md``
+   §§1–8): the REMESH-∞ operator
+   :math:`\mathcal{R}_\infty = \lim_{\tau_g \to \infty}
+   \mathcal{R}_{\tau_l, \tau_g, \alpha}` is constructed as the
+   mean-ergodic limit of a *contractive integer-indexed transfer
+   matrix* acting on the integer-indexed state vector
+   :math:`x(t) = (\mathrm{EPI}(t), \ldots,
+   \mathrm{EPI}(t - T_{\max}))^\top \in \mathbb{R}^{T_{\max}+1}`.
+   The asymptotic limit is taken over integer :math:`\tau_g`; no
+   continuous-time kernel appears.
+8. **Structural Conservation Theorem**
+   (`src/tnfr/physics/conservation.py`): conservation laws close
+   on the per-step canonical state at integer time indices; no
+   continuous-time current or fractional charge appears.
+
+### §13quadraginta-quarta.2 What the Canonical Catalog Forces (Integer-Window Layer)
+
+The chain of forced structure for the REMESH memory window is:
+
+- **(W1) The canonical REMESH reader is integer-indexed by typed
+  construction.**  The expression ``hist[-(tau + 1)]`` is a Python
+  list / deque negative-index lookup; ``tau`` is coerced to
+  ``int`` at function entry via ``int(get_param(...))``; the
+  index ``-(tau + 1)`` is a Python integer.  No interpolation
+  between adjacent history slots is performed, and no canonical
+  branch admits a non-integer offset.
+
+- **(W2) The EPI history deque is integer-indexed by
+  construction.**  ``_update_epi_hist`` appends one snapshot per
+  step.  The deque is a discrete sequence
+  :math:`(\mathrm{EPI}_0, \mathrm{EPI}_1, \ldots, \mathrm{EPI}_T)`
+  with :math:`T \in \mathbb{N}`; there is no canonical
+  in-between-step state and no canonical interpolation between
+  snapshots.
+
+- **(W3) U2 boundedness is a discrete sum (Riemann sum at unit
+  step) of a scalar integrand.**  The canonical
+  :math:`\int \nu_f \cdot \Delta\mathrm{NFR}\, dt` is realised as
+  a sum
+  :math:`\sum_{n=0}^{N-1} \nu_f(t_n) \cdot \Delta\mathrm{NFR}(t_n)
+  \cdot \Delta t` at integer time indices.  No canonical
+  formulation of U2 references a continuous-time Lebesgue
+  integral with non-trivial kernel; the integrand is sampled at
+  the canonical integer time grid.
+
+- **(W4) N15 REMESH-∞ closure is integer-indexed by
+  construction.**  The contractive transfer matrix is built from
+  the discrete state vector :math:`x(t) \in
+  \mathbb{R}^{T_{\max}+1}` with integer slot index, and the
+  mean-ergodic limit is taken over integer :math:`\tau_g`.  No
+  step of the §§1–8 derivation references a continuous-time
+  kernel, a fractional power of a continuous operator, or any
+  non-integer index.
+
+The conjunction W1+W2+W3+W4 establishes that **the entire
+canonical REMESH machinery closes consistently with the
+integer-window discipline**.  The 13-operator catalog never
+constructs, reads, propagates, or preserves a continuous-time
+kernel or fractional-order memory operator.
+
+### §13quadraginta-quarta.3 The Gap Between Integer-Sampling Discipline and Continuous-Kernel Retention
+
+Integer-window closure (W1–W4) is necessary but not sufficient
+to refute (P-REMESH-window-Continuous-Kernel-Carrier): one could
+still ask whether the catalog *also* admits a strictly-stronger
+continuous-kernel realisation in which the integer-indexed
+implementation is a faithful sampling projection from a
+continuous-time integral kernel :math:`K(t, s)` onto the
+canonical integer time grid.  The decisive question is whether
+the catalog *forces* such an upgrade.
+
+The only canonical mechanism that could conceivably preserve
+between-slot kernel data across the temporal evolution is a
+hypothetical "continuous branch" that propagates the full
+:math:`K(t, s)` alongside the integer-indexed EPI history deque.
+But the canonical engine **does not implement** any such branch:
+every REMESH event reads from the discrete deque at integer
+offsets, and there is no canonical alias for a continuous-kernel
+companion.
+
+Formally, define the **Discrete-Integer Temporal Sampling
+discipline**:
+
+> **Discrete-Integer Temporal Sampling discipline (DITS).**  In
+> the canonical TNFR formulation, every REMESH event *samples*
+> the EPI history at integer offsets
+> :math:`-(\tau + 1) \in -\mathbb{N}_{\ge 1}` via Python
+> negative-indexing of the canonical history deque.  Any
+> continuous-time intermediate (if it existed) is *systematically
+> projected* onto the canonical integer time grid via the
+> appended-per-step deque-population discipline of
+> ``_update_epi_hist``.  The continuous-kernel content :math:`K(t,
+> s)` for non-integer :math:`s` is *systematically collapsed to*
+> sampled values at integer :math:`s = t - (\tau + 1)\Delta t`
+> and is **not** retrievable from the canonical state.
+
+This is the temporal-window analogue of the family of refutation
+principles already established for B1 (TMEP), B2 (PWDP), and B3
+(BSAD).  Where TMEP says "multi-modal EPI content is canonically
+realised *temporally* via REMESH, not *spatially* via a Banach
+internal carrier", PWDP says "phase-orbit content is canonically
+realised *as wrapped geodesic distance on* :math:`S^1`, not *as
+covering-space displacement on* :math:`\widetilde{S^1}`", and
+BSAD says "nodal-gradient content is canonically realised *as a
+single real scalar*, not *as a rank-:math:`\ge 2` tensor*", DITS
+says "memory-window content is canonically realised *as
+discrete-integer sampling at the canonical time grid*, not *as a
+continuous-time integral kernel or fractional-order operator*".
+
+DITS is *operationally complete*: under the canonical
+integer-sampling discipline, the engine reproduces P12–P15 to
+machine precision (§§10–12), the N15 REMESH-∞ closure derives
+fully analytically from the integer-indexed contractive transfer
+matrix (`REMESH_INFINITY_DERIVATION.md` §§1–8), classical and
+quantum-like regimes emerge (§§3–9), and all canonical
+conservation laws hold — *without* invoking any continuous-time
+kernel or fractional-order operator.  The B4a empirical signature
+:math:`F_{\mathrm{int}} = 1.0` (perfect integer storage at both
+resolutions, 48/48 and 72/72) and :math:`S_\tau = 0` (machine-
+zero bracket variance at both resolutions) is the
+*doubly-decisive empirical fingerprint of DITS*: structural
+zero-non-integer storage *and* empirical zero bracket variance
+under integer-window refinement, both axes returning the
+integer-adequate verdict on independent grounds.
+
+**Crucially**, the *machine-zero bracket variance* measured by
+the window-refinement axis of §13quadraginta-tertia.6 is
+*explained* by DITS without invoking
+(P-REMESH-window-Continuous-Kernel-Carrier): a canonical
+dynamics whose only consumed temporal-coupling input is a fixed
+integer-offset sample of the history deque will, in steady
+state, produce identical post-REMESH states for adjacent integer
+windows that all sample inside the convergent contractive
+regime.  The bracket invariance is *structural* (consequence of
+the integer-sampling discipline and the contractive transfer
+matrix), not a numerical accident.
+
+Therefore: **(P-REMESH-window-Continuous-Kernel-Carrier) is
+strictly stronger than what W1+W2+W3+W4 + DITS provide**, and
+any derivation must locate an additional canonical constraint
+that selects the continuous-kernel upgrade.
+
+### §13quadraginta-quarta.4 Candidate Forcing Constraints (Enumeration)
+
+The candidates available inside the canonical catalog are
+enumerated below.  Each row asks: *does this axiom force the
+continuous-kernel upgrade of the REMESH memory window?*
+
+| #  | Axiom | Source | Forces continuous-kernel carrier of REMESH window? |
+|---|---|---|---|
+| F1 | Operator exclusivity (only the 13 canonical operators couple EPI temporally). | AGENTS.md "Canonical Invariants #1". | **No** — REMESH writes via integer-offset deque reads (W1); empirically ``F_int = 1.0`` at both B4a resolutions. |
+| F2 | Reproducibility under fixed seeds. | AGENTS.md "Reproducible Dynamics" (invariant #6). | **No** — integer-indexed trajectories reproduce identically; continuous-kernel content is not part of the seeded state. |
+| F3 | Nodal-equation bilinear-scalar structure. | `nodal_equation.py`. | **No** — the nodal equation has no memory-window term; temporal coupling is external to the nodal equation and supplied exclusively by REMESH at integer offsets. |
+| F4 | Tetrad orthogonality and minimality of :math:`(\Phi_s, \|\nabla\phi\|, K_\phi, \xi_C)`. | AGENTS.md §"Minimal Structural Degrees of Freedom"; `STRUCTURAL_FIELDS_TETRAD.md`. | **No** — all four tetrad fields are scalar-valued and integer-time-indexed; none references a continuous-time kernel. |
+| F5 | U2 convergence: :math:`\int \nu_f \cdot \Delta\mathrm{NFR}\, dt < \infty`. | AGENTS.md "U2 CONVERGENCE & BOUNDEDNESS"; `grammar_core.py`. | **No** — realised as a discrete Riemann sum at integer time indices (W3); no continuous-time kernel appears in the canonical boundedness condition. |
+| F6 | Structural Conservation Theorem. | `physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`. | **No** — conservation closes on the per-step canonical state at integer time indices; no fractional or continuous current appears in :math:`\partial\rho/\partial t + \nabla \cdot \mathbf{J} = S_{\mathrm{grammar}}`. |
+| F7 | Variational principle (Lagrangian, symplectic conjugate pairs). | `physics/variational.py`, AGENTS.md §"Variational Confirmation". | **No** — the Lagrangian and Hamiltonian are evaluated at integer time indices; no fractional derivative appears in :math:`\mathcal{L}_i = T_i - V_i`. |
+| F8 | REMESH temporal aggregation. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py:1212`. | **No** — REMESH samples the history deque at integer offsets via ``hist[-(tau+1)]``; the canonical implementation literally indexes by integer (W1+W2). |
+| F9 | N15 REMESH-∞ closure. | `REMESH_INFINITY_DERIVATION.md` §§1–8. | **No** — the entire N15 derivation is parameterised by integer :math:`\tau_g`; the contractive transfer matrix is integer-indexed; the mean-ergodic limit is taken over integer :math:`\tau_g \to \infty` (W4). |
+| F10 | Classical-limit / quantum-regime demos. | `examples/12_classical_mechanics_demo.py`, `examples/13_quantum_mechanics_demo.py`. | **No** — both regimes emerge from the integer-time-indexed canonical evolution; no demo references a continuous-time kernel or fractional-order temporal coupling. |
+
+**Result.** No canonical constraint in :math:`\{\mathrm{F1},
+\ldots, \mathrm{F10}\}` forces the continuous-kernel carrier
+upgrade of the REMESH memory window.  All ten admit consistent
+realisation with the integer-window discipline (as the current
+13-operator implementation demonstrates by existence, the N15
+closure demonstrates analytically, and the B4a empirical
+signature confirms doubly: :math:`F_{\mathrm{int}} = 1.0` across
+two independent demo resolutions, :math:`S_\tau = 0` at both —
+the *strongest pre-registration signature observed in the
+programme*).
+
+### §13quadraginta-quarta.5 The Hidden Axiom: (P-REMESH-window-Continuous-Retention)
+
+The derivation gap can be isolated cleanly.  Define:
+
+> **(P-REMESH-window-Continuous-Retention).**  In the canonical
+> TNFR formulation, the REMESH memory window must retain its
+> continuous-time content :math:`K(t, s)` for non-integer
+> :math:`s` across the integer-sampling step of
+> :func:`apply_network_remesh` — i.e. distinct continuous-time
+> intermediates producing the same integer-sampled value must
+> correspond to distinct canonical states, and conversely.
+
+**Claim.** (P-REMESH-window-Continuous-Kernel-Carrier) is a
+corollary of the canonical catalog *plus*
+(P-REMESH-window-Continuous-Retention), and of nothing weaker
+than (P-REMESH-window-Continuous-Retention).
+
+**Forward direction (sufficiency).**  Assume
+(P-REMESH-window-Continuous-Retention).  Consider two distinct
+continuous-time kernel inputs :math:`K, K' \in C(\mathbb{R}_{\ge
+0}^2)` with :math:`K \neq K'` but identical integer-sampled
+values :math:`K(t_n, t_n - (\tau+1)\Delta t) = K'(t_n, t_n -
+(\tau+1)\Delta t)` for every canonical integer time :math:`t_n`
+and every canonical integer offset :math:`\tau \in
+\{\tau_l, \tau_g\}`.  Retention forces the canonical state to
+encode :math:`K` and :math:`K'` distinctly.  An integer pair
+:math:`(\tau_l, \tau_g) \in \mathbb{N}^2` plus the discrete EPI
+history deque does not have the cardinality to encode an
+arbitrary continuous-time kernel separately from its sampled
+values (one cannot encode an entire :math:`L^2`-function of
+:math:`s` using countably many integer-sampled scalars).  Hence
+the canonical REMESH window must take values in a non-trivial
+continuous-kernel carrier — equivalently, the
+``ContinuousWindowKernel`` (candidate envelope E5).  This is
+(P-REMESH-window-Continuous-Kernel-Carrier).
+
+**Reverse direction (necessity at the canonical level).**
+Suppose (P-REMESH-window-Continuous-Kernel-Carrier) holds.  Then
+the REMESH window :math:`K(t, s) \in V_{\mathrm{continuous}}` is
+fully specified by the continuous-time kernel.  By construction,
+distinct continuous-time inputs produce distinct canonical
+states.  Hence (P-REMESH-window-Continuous-Retention) holds.
+
+**Strict-weakness of (P-REMESH-window-Continuous-Retention) vs
+(P-REMESH-window-Continuous-Kernel-Carrier).**
+(P-REMESH-window-Continuous-Retention) is a *meta-constraint* on
+the canonical sampling map (continuous kernel) :math:`\mapsto`
+(integer-sampled values).  It does not mention continuous
+kernels, fractional operators, or any specific functional space.
+It is purely a faithfulness requirement on the symbolic
+representation of between-slot content.  By contrast,
+(P-REMESH-window-Continuous-Kernel-Carrier) commits to a
+specific carrier (``ContinuousWindowKernel``) and a specific
+algebraic structure (continuous-time integral kernel
+:math:`K(t, s)` or fractional-order operator
+:math:`\partial^\alpha\!/\!\partial t^\alpha`).
+
+Therefore (P-REMESH-window-Continuous-Retention) is structurally
+simpler and strictly weaker than
+(P-REMESH-window-Continuous-Kernel-Carrier), and the derivation
+is genuine progress.
+
+### §13quadraginta-quarta.6 Canonical Status of (P-REMESH-window-Continuous-Retention) — DITS Refutation
+
+The question is now: is
+(P-REMESH-window-Continuous-Retention) itself derivable from the
+canonical six invariants?
+
+- **(W-Pro).**  Invariant #1 (Nodal Equation Integrity) could be
+  read as suggesting that the full temporal trajectory should be
+  canonically retained without loss.  If two continuous-time
+  kernels differing only at non-integer offsets produced the
+  same canonical state, an observer trying to reconstruct the
+  *full continuous-time history* from the canonical record would
+  lose the between-slot content.
+
+- **(W-Con, decisive).**  The **Discrete-Integer Temporal
+  Sampling discipline (DITS, §13quadraginta-quarta.3)** refutes
+  the continuous-time retention requirement *at the canonical
+  level*: the observable content of the REMESH memory window at
+  every canonical operator boundary is the *integer-sampled
+  value* ``hist[-(tau+1)]``, and the canonical EPI history deque
+  is *integer-indexed* by typed construction (W1+W2).  The N15
+  REMESH-∞ closure derives the asymptotic projection of the
+  *integer-indexed contractive transfer matrix* (W4); no
+  continuous-time intermediate is required at any step of the
+  catalog's analytical or numerical machinery.
+
+  Formally: the catalog enforces nodal-equation integrity
+  (invariant #1) and reproducibility (invariant #6) via the
+  integer-indexed discrete deque + integer-offset Python
+  indexing, with all downstream temporal-coupling, conservation,
+  variational, and U2 boundedness structure descending from the
+  integer-time-indexed state (W1–W4).  This is *operationally
+  complete* — it reproduces all canonical results (§§3–12) and
+  the N15 closure (§§15–23) without any between-slot kernel
+  retention.
+
+- **(W-Empirical).**  The B4a diagnostic
+  (§13quadraginta-tertia.6) measures :math:`F_{\mathrm{int}} =
+  1.0` *and* :math:`S_\tau = 0` at *both* resolutions (48/48 and
+  72/72 storage samples are integer-valued; bracket variance is
+  literally zero at the larger resolution and sub-nanoscale at
+  the smaller).  Canonical evolution, executed exactly as the
+  catalog specifies, does not produce any REMESH event whose
+  window storage hosts a non-integer payload, and the empirical
+  bracket of adjacent integer windows
+  :math:`\{(\tau_l + j, \tau_g + j) : j = 0, 1, 2\}` collapses
+  to a single post-REMESH state.  The continuous-kernel lift is
+  structurally unreachable from canonical initial conditions and
+  empirically vacuous from canonical evolution.  This is the
+  *doubly-decisive DITS signature*: structural zero-non-integer
+  storage *and* empirical zero bracket variance, both axes
+  returning the integer-adequate verdict on independent grounds
+  — the strongest such signature observed in the programme.
+
+**Conclusion of §13quadraginta-quarta.6.**
+(P-REMESH-window-Continuous-Retention) is **not derivable from
+the canonical six invariants**.  The catalog realises temporal
+coupling *discretely-integer-sampled* via the typed
+:math:`\mathrm{hist}[-(\tau + 1)]` Python indexing, *not*
+continuously via a between-slot kernel retention upgrade.  The
+between-slot continuous-time retention that
+(P-REMESH-window-Continuous-Retention) demands is an *additional*
+axiom, independent of the catalog and actively refuted by DITS at
+the canonical level, with the empirical doubly-decisive
+fingerprint :math:`(F_{\mathrm{int}} = 1.0, S_\tau = 0)` of B4a
+as decisive corroboration.
+
+### §13quadraginta-quarta.7 Sub-Verdict
+
+The forcing-axiom reduction yields:
+
+> **Sub-verdict (§13quadraginta-quarta).**
+> (P-REMESH-window-Continuous-Kernel-Carrier) is a
+> **CONDITIONAL_COROLLARY** of the canonical catalog: it follows
+> from the catalog *plus*
+> (P-REMESH-window-Continuous-Retention).  However,
+> (P-REMESH-window-Continuous-Retention) is itself
+> **INDEPENDENT_AXIOM** at the canonical level: it is not
+> derivable from invariants 1–6 and is actively refuted by the
+> Discrete-Integer Temporal Sampling discipline (DITS), with the
+> B4a empirical doubly-decisive fingerprint
+> :math:`(F_{\mathrm{int}} = 1.0, S_\tau = 0)` as decisive
+> corroboration.
+>
+> Net: (P-REMESH-window-Continuous-Kernel-Carrier) is **strictly
+> non-canonical**.  Any continuous-time integral-kernel lift,
+> fractional-order temporal-coupling operator, or
+> between-slot-retaining representation is a legitimate research
+> envelope — available for off-catalog experimentation — but is
+> not forced by, and indeed is structurally orthogonal to
+> (collapsed under canonical integer-sampling by), the canonical
+> 13-operator realisation under DITS, with the N15 REMESH-∞
+> closure (mean ergodic theorem on the contractive integer-
+> indexed transfer matrix) supplying the *predicted canonical
+> discharge mechanism* exactly as anticipated at
+> §13quadraginta-secunda.
+
+This locates the residual canonical question for T-REMESH-window
+exactly one level below
+(P-REMESH-window-Continuous-Kernel-Carrier), at
+(P-REMESH-window-Continuous-Retention), and identifies its
+refutation mechanism (DITS).  The final NEGATIVE verdict on
+T-REMESH-window, and the classification of the continuous-kernel
+construction (``ContinuousWindowKernel``, candidate envelope E5)
+as a legitimate non-canonical research envelope, are executed in
+§13quadraginta-quinta (B4c).
+
+### §13quadraginta-quarta.8 L3* test result (first Tier-2 confirmation)
+
+§13quadraginta-secunda promoted L3* to a stable working heuristic
+and made three pre-registered Tier-2 predictions for B4/B5/B6.
+B4 was the *first* of those three predictions.  The B4b
+forcing-axiom reduction executed above isolates exactly one
+residual axiom strictly weaker than the candidate Carrier axiom
+(namely (P-REMESH-window-Continuous-Retention)) and refutes it
+via a *fifth* orthogonal canonical discharge mechanism (DITS),
+in symmetry with the four already on record:
+
+| Sub-question | Refutation principle | Canonical discharge mechanism |
+|---|---|---|
+| B0 | Pontryagin / measure axis | scalar Hz_str typing of :math:`\nu_f` |
+| B1 | TMEP | temporal REMESH coupling vs spatial Banach carrier |
+| B2 | PWDP | wrapped geodesic distance on :math:`S^1` vs covering-space displacement |
+| B3 | BSAD | bilinear-scalar aggregation vs tensor retention |
+| B4 | **DITS** | **discrete-integer temporal sampling vs continuous-kernel retention** |
+
+This is **the first Tier-2 confirmation of L3***: the L3*
+prediction (B4 NEGATIVE) was made *in advance* at
+§13quadraginta-secunda and is now empirically and structurally
+discharged via the predicted canonical discharge mechanism (N15
+REMESH-∞ closure / integer-indexed contractive transfer matrix
+/ DITS) and the predicted verdict class (CONDITIONAL_COROLLARY
+of an independent residual axiom refuted by an orthogonal
+discipline).  Two further Tier-2 predictions (B5, B6) remain
+pending and will be tested in their respective Phase-b commits.
+
+### §13quadraginta-quarta.9 Honest Scope (What This Does and Does Not Do)
+
+This sub-programme:
+
+- **Does** isolate the residual axiom one structural level below
+  (P-REMESH-window-Continuous-Kernel-Carrier).
+- **Does** prove (P-REMESH-window-Continuous-Retention) is
+  strictly weaker than
+  (P-REMESH-window-Continuous-Kernel-Carrier).
+- **Does** refute (P-REMESH-window-Continuous-Retention) at the
+  canonical level via DITS, empirically corroborated by B4a's
+  doubly-decisive :math:`(F_{\mathrm{int}} = 1.0, S_\tau = 0)`
+  at two resolutions.
+- **Does** confirm the catalog closes consistently with the
+  discrete-integer temporal-sampling discipline
+  (W1+W2+W3+W4).
+- **Does** confirm the first Tier-2 L3* prediction (B4
+  NEGATIVE) via the predicted canonical discharge mechanism
+  (N15 REMESH-∞ closure).
+- **Does** identify the canonical temporal-coupling dynamics as
+  *integer-indexed by typed construction* (a structural
+  observation made explicit here for the first time at the
+  type-hygiene level, not a new canonical promotion; the
+  integer-indexing is already in `remesh.py:1212`,
+  `runtime.py:413`, and the N15 derivation).
+- **Does not** advance G4 = RH or the T-HP conjecture.
+- **Does not** promote any operator, field, or constant to
+  canonical status (in particular: does NOT promote
+  ``ContinuousWindowKernel``, ``REMESH_TAU_CONTINUOUS``, or any
+  fractional-order or continuous-kernel representation).
+- **Does not** modify the 13-operator catalog.
+- **Does not** delete or deprecate the candidate envelope
+  E5 = ``ContinuousWindowKernel``; classifies it as a research
+  envelope available outside the canonical operator contracts.
+- **Does not** modify any source file in `src/tnfr/`.
+- **Does not** by itself close T-REMESH-window — the final
+  verdict is executed in §13quadraginta-quinta.
+
+### §13quadraginta-quarta.10 Cross-references
+
+- §13triginta-prima — T-νf Type Conjecture (pre-registration).
+- §13triginta-secunda — T-νf forcing-axiom reduction (structural
+  template).
+- §13triginta-tertia — T-νf NEGATIVE verdict.
+- §13triginta-quarta — T-EPI pre-registration (B1a).
+- §13triginta-quinta — T-EPI forcing-axiom reduction (TMEP).
+- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 =
+  ``BEPIElement``.
+- §13triginta-octava — T-φ pre-registration (B2a).
+- §13triginta-novena — T-φ forcing-axiom reduction (PWDP).
+- §13triginta-decima — T-φ NEGATIVE verdict + E3 = CoverElement.
+- §13quadraginta — T-ΔNFR pre-registration (B3a).
+- §13quadraginta-prima — T-ΔNFR forcing-axiom reduction (BSAD;
+  direct structural twin of this section).
+- §13quadraginta-secunda — T-ΔNFR NEGATIVE verdict + E4 =
+  ``TensorGradientElement`` classification; **L3* promotion**;
+  three Tier-2 predictions (B4/B5/B6 NEGATIVE) — this section
+  confirms the first of those three.
+- §13quadraginta-tertia — T-REMESH-window pre-registration (B4a;
+  supplies the doubly-decisive empirical fingerprint that DITS
+  consumes here).
+- §13septies — T-HP open content (independent of this
+  sub-question).
+- §19.1 — Full P1–P49 milestone table.
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §4 — programme
+  tracker (row B4 Phase b advances on this commit).
+- `theory/REMESH_INFINITY_DERIVATION.md` §§1–8 — N15 REMESH-∞
+  closure (integer-indexed transfer-matrix derivation; predicted
+  canonical discharge mechanism, confirmed at this commit).
+- `src/tnfr/operators/remesh.py:1212` —
+  ``apply_network_remesh`` canonical integer-offset reader
+  (anchors W1 / DITS).
+- `src/tnfr/dynamics/runtime.py:413` — ``_update_epi_hist``
+  canonical integer-indexed history deque populator (anchors
+  W2).
+- `src/tnfr/config/defaults_core.py:221-223` — canonical integer
+  defaults (anchors W1+W2+W4).
+- `src/tnfr/physics/conservation.py` — integer-time-indexed
+  conservation laws (anchors W3+W4 conservation sector).
+- `src/tnfr/physics/variational.py` — integer-time-indexed
+  Lagrangian / Hamiltonian (anchors W3 variational sector).
+- `src/tnfr/riemann/remesh_window_type_signature.py` — B4a
+  diagnostic implementation (anchors :math:`(F_{\mathrm{int}} =
+  1.0, S_\tau = 0)` empirical corroboration of DITS).
+- `examples/82_remesh_window_type_signature_demo.py` —
+  two-resolution demo (anchors B4a numerical fingerprint).
 
 ---
