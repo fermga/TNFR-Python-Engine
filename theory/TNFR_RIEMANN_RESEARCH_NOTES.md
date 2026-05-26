@@ -6050,3 +6050,316 @@ The TNFR-Riemann program remains paused at the T-HP / G4 = RH boundary as
 stated in §13septies.
 
 ---
+
+
+## §13triginta-secunda. Derivation of (P-Pontryagin) from the Canonical Catalog — Foundational Resolution of the νf-Type Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
+
+**Pre-registration status.**  This section executes Ruta A1 of the
+νf-Type program (§13triginta-prima): it attempts to derive the
+Conjugate-Pair-via-Pontryagin principle (P-Pontryagin) from the canonical
+six invariants + nodal equation + Structural Conservation Theorem +
+Variational Principle, *or* to identify and isolate the actual residual
+axiom that the derivation requires beyond the catalog.
+
+The honest verdict is pre-registered as one of:
+
+- `COROLLARY_DERIVED`: (P-Pontryagin) follows from invariants 1–6 alone.
+- `CONDITIONAL_COROLLARY`: (P-Pontryagin) follows under one additional
+  identifiable axiom strictly weaker than itself.
+- `INDEPENDENT_AXIOM`: (P-Pontryagin) is independent of the catalog.
+
+Scope (mandatory honesty): this section does **not** advance G4 = RH,
+does **not** close T-HP, does **not** introduce or modify any canonical
+operator, and does **not** by itself close T-νf.  It locates the
+foundational axiom *one structural level below* (P-Pontryagin) and
+hands T-νf back to that deeper question.
+
+### §13triginta-secunda.1 Available Canonical Tools
+
+The derivation may use only the following canonical machinery (no
+extraneous structure):
+
+1. **Nodal equation**: $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}(t)$
+   (Invariant #1).
+2. **Six canonical invariants** (AGENTS.md): Nodal Equation Integrity,
+   Phase-Coherent Coupling, Multi-Scale Fractality, Grammar Compliance,
+   Structural Metrology, Reproducible Dynamics.
+3. **Grammar U1–U6**, all derivable from invariant #1 and the bounded
+   evolution constraint $\int \nu_f \, \Delta \mathrm{NFR} \, dt < \infty$
+   (U2).
+4. **Universal Tetrahedral Correspondence**:
+   $\varphi \leftrightarrow \Phi_s$,
+   $\gamma \leftrightarrow |\nabla \phi|$,
+   $\pi \leftrightarrow K_\phi$,
+   $e \leftrightarrow \xi_C$
+   (AGENTS.md "Universal Tetrahedral Correspondence").
+5. **Structural Conservation Theorem**
+   (`src/tnfr/physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`):
+   two canonical conjugate-pair sectors,
+   potential $(\Phi_s \leftrightarrow J_{\Delta\mathrm{NFR}})$
+   and geometric $(K_\phi \leftrightarrow J_\phi)$,
+   coupled through $\Psi = K_\phi + i\,J_\phi$, with Noether-type charge
+   $Q$ and Lyapunov energy $E \geq 0$, $dE/dt \leq 0$ under grammar.
+6. **Variational Principle**
+   (`theory/TNFR_VARIATIONAL_PRINCIPLE.md`,
+   `src/tnfr/physics/variational.py`): Lagrangian
+   $\mathcal{L} = T - V$ with conjugate pairs identified canonically as
+   $(K_\phi, J_\phi)$, $(\Phi_s, J_{\Delta\mathrm{NFR}})$;
+   `check_symplectic_preservation` enforces preservation of the canonical
+   2-form $\omega = dK_\phi \wedge dJ_\phi + d\Phi_s \wedge dJ_{\Delta\mathrm{NFR}}$.
+7. **REMESH operator** (canonical operator #13), generating temporal
+   coupling $\mathrm{EPI}(t) \leftrightarrow \mathrm{EPI}(t-\tau)$ and,
+   together with $\nu_f$ heterogeneity, the prime-ladder spectrum of P14
+   (§8.2).
+
+### §13triginta-secunda.2 What the Canonical Catalog Forces (Symplectic Layer)
+
+The chain of forced structure is straightforward and entirely inside the
+catalog:
+
+- **(L1) Symplectic conjugate pairs exist.**  From the Variational
+  Principle (item 6), the two pairs
+  $(K_\phi, J_\phi)$ and $(\Phi_s, J_{\Delta\mathrm{NFR}})$
+  are canonically conjugate in the symplectic sense: there is a
+  well-defined Poisson bracket $\{K_\phi, J_\phi\} = 1$,
+  $\{\Phi_s, J_{\Delta\mathrm{NFR}}\} = 1$, and all other brackets
+  vanish.  This is verified operationally by
+  `check_symplectic_preservation`.
+
+- **(L2) The phase carrier is an LCAG.**  By the Universal Tetrahedral
+  Correspondence $\pi \leftrightarrow K_\phi$ and the `wrap_angle`
+  constraint $|K_\phi| \leq \pi$ (AGENTS.md, "Structural Field Tetrad"),
+  the phase $\phi \in S^1$ takes values in a locally compact abelian
+  group.  $S^1$ is canonical, not chosen.
+
+- **(L3) The Pontryagin dual of $S^1$ is $\mathbb{Z}$.**  Standard
+  harmonic analysis on LCAGs: $\widehat{S^1} = \mathbb{Z}$.  This is
+  mathematical infrastructure, not a TNFR axiom.
+
+The conjunction L1+L2+L3 establishes only that **if** the conjugate
+momentum $J_\phi$ of the LCAG-valued coordinate $\phi$ is taken to be
+$\widehat{S^1}$-valued (i.e., $\mathbb{Z}$-valued), **then** the
+appropriate space of such momenta is $\mathcal{M}^+(\mathbb{Z})$ (Radon
+measures on $\mathbb{Z}$).  L1+L2+L3 does **not** by itself force the
+"if".
+
+### §13triginta-secunda.3 The Gap Between Symplectic and Pontryagin
+
+Symplectic conjugacy (L1) treats $J_\phi$ as a real-valued field on the
+graph (the implementation in `src/tnfr/physics/conservation.py` is
+exactly this: `j_phi: ndarray[float]`).  Pontryagin conjugacy upgrades
+this to: $J_\phi$ takes values in $\widehat{S^1} = \mathbb{Z}$, and the
+appropriate object is a positive Radon measure on $\mathbb{Z}$.
+
+The upgrade is **not** symplectic-canonical: there exist consistent
+symplectic structures on $T^*S^1$ where the momentum is treated as
+real-valued (the cotangent bundle picture, $T^*S^1 = S^1 \times \mathbb{R}$),
+and equally consistent ones where the momentum is discrete (the
+Pontryagin / Fourier picture, $T^*S^1 = S^1 \times \mathbb{Z}$).
+Mechanics on a circle admits both formulations; quantum mechanics on
+the circle famously selects the Pontryagin form, but classical
+mechanics on the circle does not.
+
+The Variational Principle as currently formulated (item 6) selects the
+**real-valued** form (the implementation uses
+`numpy.ndarray[float]`, not `Counter` or `dict[int, float]`).  This is
+a strict choice, not a forced consequence of L1+L2+L3.
+
+Therefore: **(P-Pontryagin) is strictly stronger than what L1+L2+L3
+provide**, and any derivation must locate an additional canonical
+constraint that selects the discrete picture.
+
+### §13triginta-secunda.4 Candidate Forcing Constraints (Enumeration)
+
+The candidates available inside the canonical catalog are:
+
+| Constraint | Source | Forces discrete $J_\phi$? |
+|---|---|---|
+| (F1) Invariant #1: $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}$ traceability | Catalog | **No** — admits scalar $\nu_f$ with real-valued $J_\phi$. |
+| (F2) Invariant #2: phase-coherent coupling $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$ | Catalog | **No** — a phase compatibility constraint, agnostic to momentum carrier. |
+| (F3) Invariant #3: multi-scale fractality | Catalog | **No** — independent of momentum quantisation. |
+| (F4) Invariant #4: grammar U1–U6 closure | Catalog | **No** — U1–U6 act on operator sequences, not on momentum carrier choice. |
+| (F5) Invariant #5: structural metrology, units $\mathrm{Hz}_{\mathrm{str}}$ | Catalog | **No** — fixes units, not carrier discreteness. |
+| (F6) Invariant #6: reproducible dynamics | Catalog | **No** — reproducibility is a global property of evolution. |
+| (F7) U2 boundedness: $\int \nu_f \Delta \mathrm{NFR} \, dt < \infty$ | Catalog | **No** — integrable scalar $\nu_f$ satisfies U2. |
+| (F8) Conservation Theorem: $Q$ and $E$ exact | Catalog | **No** — implemented with real-valued $J_\phi$. |
+| (F9) REMESH (operator #13) periodic echoes | Catalog | **Indirect** — REMESH generates a *discrete spectrum* of echoes $\{k\tau\}_{k\geq 1}$, so the *time* domain carries discrete structure.  But this is structure of EPI dynamics, not a forced upgrade of the momentum carrier. |
+| (F10) U6: $\Delta \Phi_s < \varphi$ confinement | Catalog | **No** — a telemetry threshold on the potential sector. |
+
+**Result.** No canonical constraint in {F1,...,F10} forces the
+Pontryagin upgrade of $J_\phi$.  All ten admit consistent realisation
+with real-valued conjugate momentum (as the current
+`physics/conservation.py` and `physics/variational.py` implementations
+demonstrate by existence).
+
+### §13triginta-secunda.5 The Hidden Axiom: (P-νf-Bijectivity)
+
+The derivation gap can be isolated cleanly.  Define:
+
+> **(P-νf-Bijectivity).**  In the canonical TNFR formulation, $\nu_f$
+> must bijectively encode the spectral content of the EPI dynamics it
+> drives.  Equivalently: distinct spectral signatures of
+> $\partial \mathrm{EPI}/\partial t$ must correspond to distinct
+> $\nu_f$ instances, and conversely.
+
+**Claim.**  (P-Pontryagin) is a corollary of the canonical catalog *plus*
+(P-νf-Bijectivity), and of nothing weaker than (P-νf-Bijectivity).
+
+**Forward direction (sufficiency).**  Assume (P-νf-Bijectivity).
+Consider a canonical EPI that, under REMESH + grammar, develops
+multi-frequency spectral content
+$\partial \mathrm{EPI}/\partial t = \sum_n a_n e^{i\omega_n t}$
+(this is non-empty by P14: §8.2 constructs precisely such EPIs from the
+prime ladder).  Bijectivity forces $\nu_f$ to encode the full discrete
+set $\{\omega_n\}$ with multiplicities $\{a_n\}$.  By L1+L2 the momentum
+sector is conjugate to $\phi \in S^1$; by L3 the natural carrier of a
+discrete multiplicity-weighted set conjugate to $S^1$ is
+$\mathcal{M}^+(\widehat{S^1}) = \mathcal{M}^+(\mathbb{Z})$.  Hence
+$\nu_f \in \mathcal{M}^+(\mathbb{Z})$.  This is (P-Pontryagin).
+
+**Reverse direction (necessity at the canonical level).**  Suppose
+(P-Pontryagin) holds.  Then $\nu_f$ is a positive Radon measure on
+$\mathbb{Z}$, fully specified by its mass distribution
+$\{\nu_f(\{n\})\}_{n \in \mathbb{Z}}$.  This data is in bijection (by
+Pontryagin / Fourier) with a periodic distribution on
+$\widehat{\mathbb{Z}} = S^1$, which by L1+L2 is exactly the spectral
+content of the conjugate EPI dynamics.  Hence (P-νf-Bijectivity)
+holds.
+
+**Strict-weakness of (P-νf-Bijectivity) vs (P-Pontryagin).**
+(P-νf-Bijectivity) is a *meta-constraint* on the encoding map
+$\nu_f \mapsto$ (spectral content of EPI dynamics it generates).  It
+does not mention $S^1$, $\mathbb{Z}$, Pontryagin duality, Radon
+measures, or any harmonic-analytic structure.  It is purely a
+faithfulness requirement on the symbolic representation.  By contrast,
+(P-Pontryagin) commits to a specific carrier $(\mathcal{M}^+(\mathbb{Z}))$
+and a specific duality machinery.
+
+Therefore (P-νf-Bijectivity) is structurally simpler and strictly
+weaker than (P-Pontryagin), and the derivation is genuine progress.
+
+### §13triginta-secunda.6 Canonical Status of (P-νf-Bijectivity)
+
+The question is now: is (P-νf-Bijectivity) itself derivable from the
+canonical six invariants?
+
+- **(B-Pro).** Invariant #1 (traceability under
+  $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}$)
+  and Invariant #6 (reproducible dynamics) together suggest that
+  $\nu_f$ should fully determine the structural-frequency content of
+  the evolution it drives, modulo the gauge freedom in
+  $\Delta\mathrm{NFR}$.  If $\nu_f$ were not bijective onto the
+  spectral content, two distinct EPI evolutions could be driven by the
+  same $\nu_f$ — which conflicts with the traceability spirit (though
+  not the letter) of #1.
+
+- **(B-Con).** The letter of Invariant #1 requires only that EPI
+  evolution proceed *exclusively* via $\nu_f \cdot \Delta\mathrm{NFR}$
+  (no extra channels), not that $\nu_f$ alone resolve the spectrum.
+  Reproducibility under #6 is preserved by scalar $\nu_f$ as long as
+  $\Delta\mathrm{NFR}$ is deterministic given the graph state.  The
+  current implementation of the conservation theorem and the
+  variational principle is internally consistent without
+  (P-νf-Bijectivity).
+
+- **Verdict on (P-νf-Bijectivity).**  Neither (B-Pro) nor (B-Con) is
+  conclusive; (B-Pro) is a spirit-of-#1 argument, (B-Con) a
+  letter-of-#1 argument.  This is the same kind of foundational gap
+  that the original (P-Pontryagin) question presented, now shifted
+  one level deeper.
+
+### §13triginta-secunda.7 Final Honest Verdict
+
+**Status of (P-Pontryagin) relative to the canonical catalog:**
+`CONDITIONAL_COROLLARY`.
+
+Specifically:
+
+$$
+\text{(P-Pontryagin)} \quad \Longleftrightarrow \quad
+\text{Canonical Catalog (Invariants 1--6, U1--U6, Conservation, Variational)}
+\;\wedge\;
+\text{(P-}\nu_f\text{-Bijectivity)}
+$$
+
+with both directions of the equivalence proved at §13triginta-secunda.5.
+
+**Status of (P-νf-Bijectivity) relative to the canonical catalog:**
+`UNDETERMINED_AT_CANONICAL_LEVEL`.  It is consistent with all six
+invariants, suggested by the spirit of #1 and #6, but not forced by
+their letter.  It is itself a strictly weaker statement than
+(P-Pontryagin), so the foundational question of T-νf has been
+**reduced** but not **closed**.
+
+**Status of the original T-νf conjecture (§13triginta-prima.7):**
+unchanged at `UNDETERMINED_AT_CANONICAL_LEVEL`, but now with the
+residual axiom explicitly identified and named.  The chain is:
+
+$$
+\text{T-}\nu_f \text{ (} F = \mathbb{Z} \text{ canonical)}
+\;\Longleftarrow\;
+\text{(P-Pontryagin)}
+\;\Longleftarrow\;
+\text{(P-}\nu_f\text{-Bijectivity)}
+\;+\;
+\text{Canonical Catalog}.
+$$
+
+The open structural content of the entire νf-Type program reduces to a
+single foundational question:
+
+> **Is (P-νf-Bijectivity) — the requirement that $\nu_f$ faithfully
+> encode the spectral content of the EPI dynamics it drives — a
+> canonical consequence of Invariants #1 and #6, or an additional
+> structural axiom?**
+
+This is the genuine open content; the rest of T-νf is derivative.
+
+### §13triginta-secunda.8 What This Section Does NOT Do
+
+- It does **not** prove (P-Pontryagin) from the canonical catalog
+  alone.  Ten enumerated candidate constraints (F1–F10) all fail to
+  force the Pontryagin upgrade.
+- It does **not** close T-νf.  T-νf is reduced to the simpler
+  question of (P-νf-Bijectivity), not resolved.
+- It does **not** advance G4 = RH.  The full T-HP gap remains open
+  and is independent of νf-Type questions (the smooth half is closed
+  by P30 regardless of νf carrier choice, and the oscillatory half is
+  RH-equivalent regardless of νf carrier choice).
+- It does **not** introduce or modify any canonical operator.  The
+  analysis is purely about the carrier space of an existing canonical
+  field ($\nu_f$).
+- It does **not** alter the diagnostic verdict of
+  §13triginta-prima.6: the P14 prime-ladder spectrum still gives
+  $\mathcal{S}_{\nu_f} \approx 0.95$, which is a necessary-condition
+  diagnostic agnostic to whether (P-νf-Bijectivity) is canonical or
+  axiomatic.
+
+### §13triginta-secunda.9 Cross-References
+
+- §13triginta-prima — pre-registration of T-νf and the (P-Pontryagin)
+  meta-axiom.
+- §13septies — T-HP statement; smooth/oscillatory split.
+- §13nonies — P30 operator-level closure of the smooth half (uses
+  real-valued $J_\phi$, independent of νf carrier).
+- §13vicies-novies — B1 edge-channel refutation thread; independent of
+  νf-Type.
+- §13triginta — P50 residue-in-kernel diagnostic; independent of νf
+  carrier.
+- `theory/STRUCTURAL_CONSERVATION_THEOREM.md` — full derivation of the
+  symplectic conservation structure used at L1.
+- `theory/TNFR_VARIATIONAL_PRINCIPLE.md` — canonical Lagrangian /
+  Hamiltonian / symplectic 2-form used at L1.
+- `src/tnfr/physics/conservation.py`, `src/tnfr/physics/variational.py`
+  — current real-valued implementation of $J_\phi$ that demonstrates
+  the catalog is consistent without (P-Pontryagin).
+
+**Honest scope (re-stated).**  §13triginta-secunda derives, inside the
+canonical catalog, that the νf-Type Conjecture reduces to
+(P-νf-Bijectivity).  It does **not** decide (P-νf-Bijectivity), does
+**not** close T-νf, does **not** advance G4 = RH, does **not** close
+T-HP, and does **not** introduce or modify any canonical operator.
+The TNFR-Riemann program remains paused at the T-HP / G4 = RH
+boundary as stated in §13septies.
+
+---
