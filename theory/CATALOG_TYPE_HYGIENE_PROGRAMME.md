@@ -207,14 +207,13 @@ modulate canonical dynamics.
 
 #### B5 — T-Δφ_max (Type of resonant-coupling threshold)
 
-- **Anchor (to verify)**: `Δφ_max` as scalar in $[0, \pi]$; canonical
-  default derived from $\gamma/\pi$ (Kuramoto critical coupling).
+- **Anchor (verified at B5a)**: `Δφ_max` as scalar in $[0, \pi]$; **canonical default `DELTA_PHI_MAX = PI / 2 ≈ 1.5708`** at `src/tnfr/constants/canonical.py:506` (90° maximum phase mismatch for U3 coupling). **CATALOG correction recorded at B5a**: this row previously stated "canonical default derived from γ/π (Kuramoto critical coupling)" — that is *incorrect for Δφ_max*. Per `AGENTS.md` U3, γ/π ≈ 0.184 is the safety threshold for the |∇φ| field (Universal Tetrahedral Correspondence γ ↔ |∇φ|), distinct from the U3 coupling threshold Δφ_max = π/2.
 - **Suspected non-canonical envelope**: edge-dependent threshold
   $\Delta\phi_{\max}^{(i,j)}$ (matrix-valued); or angle-of-attack-dependent
   threshold $\Delta\phi_{\max}(\phi_i, \phi_j)$.
 - **Diagnostic plan**: scan operator code for any per-edge threshold lookup
   vs. global scalar; verify all U3 checks read a single global `Δφ_max`.
-- **Status**: ⏳ NOT STARTED.
+- **Status**: 🔄 IN PROGRESS — B5a ✅ (pre-registration at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-sexta; frozen empirical signature `S_dphi = 0.000000` and `scalar_storage_fraction = 1.0` at both resolutions; verdict `SCALAR_THRESHOLD_ADEQUATE`; **CATALOG anchor correction recorded inline**), B5b ⏳, B5c ⏳. Predicted final verdict per L3*: **NEGATIVE** via scalar-threshold discipline (sixth orthogonal canonical discharge mechanism candidate).
 
 #### B6 — T-coupling-weights (Type of edge weights)
 
@@ -314,7 +313,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B3 | T-ΔNFR | ✅ | ✅ | ✅ | NEGATIVE | 1267fbf4 (B3a) + d96eb13d (B3b) + this commit (B3c) |
 | **Tier 2 — Graph-level parameters** | | | | | | |
 | B4 | T-REMESH-window | ✅ | ✅ | ✅ | **NEGATIVE** (DITS) | `c647f7d7` (B4a), `6349e425` (B4b), this commit (B4c) |
-| B5 | T-Δφ_max | ⏳ | ⏳ | ⏳ | — | — |
+| B5 | T-Δφ_max | ✅ | ⏳ | ⏳ | — | this commit (B5a) |
 | B6 | T-coupling-weights | ⏳ | ⏳ | ⏳ | — | — |
 | **Tier 3 — Derived field closure** | | | | | | |
 | B7 | Δ-tetrad-closure | ⏳ | n/a | ⏳ | — | — |
@@ -325,7 +324,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
 | **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
 
-**Progress as of 2026-05-26**: 5 sub-questions complete (B0, B1, B2, B3, B4 all NEGATIVE; Tier 1 closed; **first Tier-2 sub-question closed**; first cross-tier confirmation of L3*), 0 in progress, 7 pending (B5 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B4 closure at §13quadraginta-tertia (pre-reg), §13quadraginta-quarta (forcing-axiom reduction; DITS), §13quadraginta-quinta (NEGATIVE verdict + E5 = ContinuousWindowKernel envelope classification; first Tier-2 L3* confirmation; two outstanding Tier-2 predictions B5, B6 expected NEGATIVE).
+**Progress as of 2026-05-26**: 5 sub-questions complete (B0, B1, B2, B3, B4 all NEGATIVE), 1 in progress (B5 at Phase a; sixth orthogonal canonical discharge mechanism candidate = scalar-threshold discipline), 6 pending (B6 – B11 + Final). B5 Phase a pre-registration at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-sexta; canonical anchor `DELTA_PHI_MAX = PI / 2` confirmed scalar at all U3 call sites; suspected non-canonical envelope E6 candidate = `EdgeDependentPhaseThreshold` (matrix-valued or angle-of-attack-dependent). Living discoveries log at §13triginta-septima; B4 closure at §13quadraginta-tertia / -quarta / -quinta.
 
 ---
 

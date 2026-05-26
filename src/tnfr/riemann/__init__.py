@@ -878,6 +878,11 @@ from .remesh_window_type_signature import (
     RemeshWindowTypeSignatureCertificate,
     compute_remesh_window_type_signature,
 )
+from .delta_phi_max_type_signature import (
+    # §13quadraginta-sexta: Delta-Phi-Max-Type Signature diagnostic (foundational sub-question)
+    DeltaPhiMaxTypeSignatureCertificate,
+    compute_delta_phi_max_type_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1365,6 +1370,9 @@ __all__ = [
     # §13quadraginta-tertia: REMESH-window-Type Signature (foundational diagnostic)
     "RemeshWindowTypeSignatureCertificate",
     "compute_remesh_window_type_signature",
+    # §13quadraginta-sexta: Delta-Phi-Max-Type Signature (foundational diagnostic)
+    "DeltaPhiMaxTypeSignatureCertificate",
+    "compute_delta_phi_max_type_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",

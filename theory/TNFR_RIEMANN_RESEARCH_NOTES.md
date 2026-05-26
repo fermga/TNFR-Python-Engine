@@ -153,6 +153,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13quadraginta-tertia | 9924 | **B4 = T-REMESH-window** pre-registration (two-axis integer-storage + window-refinement bracket diagnostic; candidate envelope E5 = ContinuousWindowKernel) | B4a | — |
 | §13quadraginta-quarta | 10262 | **B4 = T-REMESH-window** forcing-axiom reduction (F1–F10); residual axiom (P-REMESH-window-Continuous-Retention) isolated and refuted by DITS = Discrete-Integer Temporal Sampling discipline; first Tier-2 confirmation of L3* via predicted N15 REMESH-∞ discharge mechanism | B4b | — |
 | §13quadraginta-quinta | 10806 | **B4 = T-REMESH-window** final NEGATIVE verdict + envelope classification of E5 = ContinuousWindowKernel (continuous-time kernel / fractional-order temporal coupling); first Tier-2 sub-question closed; L3* confirmed across Tier-1 / Tier-2 boundary; two Tier-2 predictions (B5, B6) outstanding | B4c | — |
+| §13quadraginta-sexta | 11178 | **B5 = T-Δφ_max** pre-registration (two-axis scalar-storage + angle-of-attack-independence diagnostic; candidate envelope E6 = EdgeDependentPhaseThreshold; CATALOG anchor correction documented: canonical `DELTA_PHI_MAX = PI/2`, not γ/π) | B5a | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -11173,5 +11174,130 @@ This section:
 - ``examples/82_remesh_window_type_signature_demo.py`` — B4a
   two-resolution demo (preserved as off-catalog measurement
   utility).
+
+---
+## §13quadraginta-sexta — B5 Phase a: Pre-registration of the T-Δφ_max (Type-of-Resonant-Coupling-Threshold) Conjecture
+
+**Status**: Phase a only (pre-registration + diagnostic module + demo + frozen empirical signature). Phase b (forcing-axiom reduction) deferred to §13quadraginta-septima. Phase c (final verdict) deferred to §13quadraginta-octava.
+
+**Predicted verdict (per L3* working heuristic, promoted at §13quadraginta-secunda.13)**: **NEGATIVE**. Predicted canonical discharge mechanism: **scalar-threshold discipline** — sixth orthogonal class candidate, structurally a *degenerate case* of projection discipline applied at the edge level (every edge inherits the same global scalar, so the "matrix" collapses to a scalar by global U3 design).
+
+### §13quadraginta-sexta.1 — The T-Δφ_max Conjecture (informal statement)
+
+**Catalog row 5 (B5)** of [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) types the canonical TNFR resonant-coupling threshold as
+
+$$\Delta\phi_{\max} \in [0, \pi] \subset \mathbb{R} \quad \text{(scalar)}.$$
+
+The **T-Δφ_max Conjecture** is the negation of canonicity for this typing:
+
+> **(T-Δφ_max)** There exists a canonical TNFR network evolution that *forces* the resonant-coupling threshold to be a non-scalar object — specifically, either (a) an edge-dependent matrix $\Delta\phi_{\max}^{(i,j)} \in \mathbb{R}^{n \times n}$ with at least one entry strictly different from the global scalar, or (b) an angle-of-attack-dependent functional $\Delta\phi_{\max}(\phi_i, \phi_j)$ whose verdict on the U3 (resonant-coupling) check depends on the *absolute* phase pair $(\phi_i, \phi_j)$ and not only on the wrapped absolute difference $d = |\mathrm{wrap}(\phi_i - \phi_j)|$.
+
+Negation: if the canonical evolution never forces such a non-scalar lift, then **B5 Verdict = NEGATIVE** and the scalar typing is preserved.
+
+### §13quadraginta-sexta.2 — Canonical anchor inspection (and CATALOG correction)
+
+**Canonical default** at [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py):
+
+```python
+DELTA_PHI_MAX = PI / 2  # π/2 ≈ 1.5708 rad (90° maximum phase mismatch for U3 coupling)
+```
+
+**All consumer sites read this as a scalar `float`** via `float(G.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))`:
+
+- [`src/tnfr/operators/grammar_dynamics.py:180`](../src/tnfr/operators/grammar_dynamics.py) — canonical U3 check `diff <= delta_phi_max` (scalar comparison).
+- [`src/tnfr/dynamics/propagation.py:113`](../src/tnfr/dynamics/propagation.py) — OZ phase threshold (falls back to `DELTA_PHI_MAX`).
+- [`src/tnfr/physics/conservation_gauge_unification.py:418`](../src/tnfr/physics/conservation_gauge_unification.py) — U3 saturation diagnostic (scalar comparison).
+- [`src/tnfr/mathematics/number_theory.py:1185+`](../src/tnfr/mathematics/number_theory.py) — `apply_coupling` consumes the same scalar.
+- [`src/tnfr/physics/patterns.py:223`](../src/tnfr/physics/patterns.py) — pattern recognition (scalar comparison).
+- [`src/tnfr/validation/config.py:11`](../src/tnfr/validation/config.py) — config validation (scalar field).
+
+No per-edge lookup pattern was observed; no angle-of-attack dependence (verdict is uniformly `|wrap(φ_i − φ_j)| ≤ delta_phi_max`); no callable / matrix / dict payload pattern.
+
+**CATALOG correction (recorded inline, no separate bookkeeping commit per the rules of §13quadraginta-quinta.4)**: [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 B5 spec previously stated "canonical default derived from γ/π (Kuramoto critical coupling)". This is **incorrect for Δφ_max**: the canonical scalar `DELTA_PHI_MAX = PI / 2` represents the *maximum phase mismatch tolerated by U3 coupling* (90°), not the Kuramoto critical coupling threshold. Per [`AGENTS.md`](../AGENTS.md) U3 specification, γ/π ≈ 0.184 is the **safety threshold for the |∇φ| field** (Universal Tetrahedral Correspondence γ ↔ |∇φ|), distinct from the U3 *coupling* threshold Δφ_max. The CATALOG anchor is corrected concurrently in the B5a commit.
+
+### §13quadraginta-sexta.3 — Diagnostic axes
+
+The B5a diagnostic module [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) probes two orthogonal axes:
+
+**Axis A — Scalar-storage axis.** Inspect the raw payload at `G.graph["DELTA_PHI_MAX"]` (or its canonical default fallback) for non-scalar-coercible values (mapping, NumPy array of ndim > 0, callable). Report `scalar_storage_fraction ∈ [0, 1]` and the count of non-scalar reads. Under the canonical implementation this is structurally `1.0` by construction — exactly mirroring the `w_frac = 0` (B2a), `bepi_frac = 0` (B1a), `T_frac = 0` (B3a), `noninteger_frac = 0` (B4a; B4 inverted polarity matches B5).
+
+**Axis B — Angle-of-attack-independence axis.** For each of `n_pair_anchors` wrapped-diff anchor values $d_a \in [0, \pi]$, construct `n_offsets_per_anchor` distinct absolute phase pairs $(\phi_i^{(k)}, \phi_j^{(k)})$ such that the wrapped diff is *exactly* $d_a$ but the absolute origin $\phi_i^{(k)}$ rotates around the unit circle; apply the canonical scalar U3 verdict $d_a \le \Delta\phi_{\max}$ and count divergences from the baseline (offset 0) at the same anchor. The signature is the tanh-squashed divergence fraction $\mathcal{S}_{\Delta\phi} = \tanh(n_\text{divergent} / n_\text{total}) \in [0, 1]$.
+
+**Combined verdict** of [`compute_delta_phi_max_type_signature(...)`](../src/tnfr/riemann/delta_phi_max_type_signature.py):
+
+- `SCALAR_THRESHOLD_ADEQUATE` if signature $< 0.05$ AND scalar storage fraction $= 1.0$.
+- `EDGE_DEPENDENT_THRESHOLD_NECESSARY` if signature $> 0.25$ OR scalar storage fraction $< 1.0$.
+- `INDETERMINATE` otherwise.
+
+### §13quadraginta-sexta.4 — Demo: two-resolution probe
+
+Demo at [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py).
+
+- **Resolution 1**: `n_nodes=24`, `n_pair_anchors=9`, `n_offsets_per_anchor=8`, `seed=19` (72 configurations).
+- **Resolution 2**: `n_nodes=48`, `n_pair_anchors=17`, `n_offsets_per_anchor=16`, `seed=29` (272 configurations).
+
+### §13quadraginta-sexta.5 — Frozen empirical signature
+
+**Verbatim numerical output** at commit time (do NOT re-run; if the diagnostic ever changes verdict at these exact parameters on subsequent code edits, that is a structural alert worth documenting separately):
+
+```
+========================================================================
+Delta-Phi-Max-Type Signature Diagnostic — §13quadraginta-sexta.5
+(Diagnostic only. Does NOT advance G4 = RH.)
+========================================================================
+
+--- Resolution 1: n_nodes=24, anchors=9, offsets=8, seed=19 ---
+Delta-Phi-Max-Type Signature certificate (diagnostic only — §13quadraginta-sexta.5)
+  signature S_dphi         : 0.000000   (0 = angle-independent, 1 = angle-divergent)
+  scalar storage fraction  : 1.0000  (0 non-scalar reads / 1 total reads)
+  raw divergence fraction  : 0.000000e+00 (0 / 72 configs)
+  canonical Delta_phi_max  : 1.570796 rad  (canonical default = pi/2 = 1.570796)
+  pair anchors x offsets   : 9 x 8  (72 configs)
+  probe graph              : 24 nodes
+  verdict                  : SCALAR_THRESHOLD_ADEQUATE
+  scope: necessary-condition diagnostic; does NOT advance G4 = RH
+
+--- Resolution 2: n_nodes=48, anchors=17, offsets=16, seed=29 ---
+Delta-Phi-Max-Type Signature certificate (diagnostic only — §13quadraginta-sexta.5)
+  signature S_dphi         : 0.000000   (0 = angle-independent, 1 = angle-divergent)
+  scalar storage fraction  : 1.0000  (0 non-scalar reads / 1 total reads)
+  raw divergence fraction  : 0.000000e+00 (0 / 272 configs)
+  canonical Delta_phi_max  : 1.570796 rad  (canonical default = pi/2 = 1.570796)
+  pair anchors x offsets   : 17 x 16  (272 configs)
+  probe graph              : 48 nodes
+  verdict                  : SCALAR_THRESHOLD_ADEQUATE
+  scope: necessary-condition diagnostic; does NOT advance G4 = RH
+
+Verdicts at the two resolutions:
+  res 1 (24/9/8/19):   SCALAR_THRESHOLD_ADEQUATE
+  res 2 (48/17/16/29): SCALAR_THRESHOLD_ADEQUATE
+```
+
+**Interpretation.** Both resolutions yield $\mathcal{S}_{\Delta\phi} = 0$ (structural: the canonical U3 check depends only on the wrapped diff, not on the absolute origin) and `scalar_storage_fraction = 1.0` (structural: canonical default is a scalar `float`). The verdict is `SCALAR_THRESHOLD_ADEQUATE` at both resolutions. This is the *necessary* condition that B5 will close NEGATIVE — it is **not yet a final verdict** (Phase a is pre-registration only). The forcing-axiom reduction (Phase b) and final verdict (Phase c) are deferred.
+
+### §13quadraginta-sexta.6 — Phase b and Phase c deferred
+
+Per the standard B-sub-question methodology (§13triginta-tertia.4, §13triginta-octava.4, §13quadraginta-prima.4, §13quadraginta-quarta):
+
+- **Phase b** (§13quadraginta-septima, B5b): forcing-axiom reduction F1–F10 isolating the residual axiom that, if refuted, closes T-Δφ_max NEGATIVE. Predicted refutation principle (per L3*): a **Scalar-Threshold Discipline** (STD) axiom — every U3 verdict on the canonical evolution depends only on the wrapped diff $d = |\mathrm{wrap}(\phi_i - \phi_j)|$ via a *single* global scalar comparator, independently of $(i, j)$ identity and of $(\phi_i, \phi_j)$ absolute values. STD would be refuted by exhibiting one canonical operator whose U3 verdict on a fixed graph differs across edges with identical wrapped diff (which the code review at §13quadraginta-sexta.2 indicates does NOT occur).
+- **Phase c** (§13quadraginta-octava, B5c): final verdict + envelope classification. If Phase b refutes the forcing axiom, the verdict is **NEGATIVE** and E6 = `EdgeDependentPhaseThreshold` (matrix-valued or angle-of-attack-dependent functional) joins the envelopes register (E1–E5) as a sixth non-canonical envelope.
+
+### §13quadraginta-sexta.7 — Honest scope
+
+- **Diagnostic only.** This module constructs nothing on the canonical evolution; it probes synthetic phase pairs with the canonical scalar U3 verdict and inspects the canonical storage slot. No operator promotion, no catalog modification (only the inline CATALOG anchor correction documented in §13quadraginta-sexta.2), no advance of G4 = RH.
+- **Necessary-condition only.** Both axes are *necessary* for NEGATIVE: $\mathcal{S}_{\Delta\phi} = 0$ and scalar_storage = 1.0 do *not by themselves* refute T-Δφ_max. The forcing-axiom reduction (B5b) is required for the actual verdict.
+- **Second Tier-2 sub-question.** B5 is the second Tier-2 sub-question (Tier-1 = B0/B1/B2/B3 = field-level objects; Tier-2 = grammar-level / coupling-level objects = B4/B5/B6/...). A NEGATIVE outcome at B5 would be the **second cross-tier confirmation** of L3* (after B4 at §13quadraginta-quarta.8 and §13quadraginta-quinta.5). This sharpens the L3* working heuristic from "stable" to "validated across both tiers under two distinct discharge mechanisms".
+
+### §13quadraginta-sexta.8 — Cross-references
+
+- [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B5 (status block; canonical anchor correction); §4 row B5 (tabulated progress).
+- [`AGENTS.md`](../AGENTS.md) Unified Grammar U3 (resonant coupling); Universal Tetrahedral Correspondence γ ↔ |∇φ| (distinct threshold; see §13quadraginta-sexta.2 anchor correction).
+- [`theory/UNIFIED_GRAMMAR_RULES.md`](UNIFIED_GRAMMAR_RULES.md) §U3 (resonant coupling derivation).
+- §13quadraginta-secunda.13 (L3* promotion to stable working heuristic).
+- §13quadraginta-quarta.8 and §13quadraginta-quinta.5 (first Tier-2 confirmation of L3* at B4).
+- [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py) (canonical anchor witness).
+- [`src/tnfr/operators/grammar_dynamics.py:178-193`](../src/tnfr/operators/grammar_dynamics.py) (canonical U3 check).
+- [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) — B5a diagnostic implementation.
+- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py) — B5a two-resolution demo.
 
 ---
