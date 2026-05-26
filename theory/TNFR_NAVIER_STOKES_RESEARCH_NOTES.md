@@ -181,7 +181,8 @@ Discussed but **not promoted** until N2 forces the question:
 | N9 | Vortex-stretching alignment & geometric depletion (NS-G4 precursor) | **DONE** | `fbbcaa34` | `examples/84` (3D TG n=16, strain eigenframe, CF alignment, depletion ratio) |
 | N10 | 2D vs 3D dimensional asymmetry falsifiability (NS-G5 precursor) | **DONE** | `1fac358b` | `examples/85` (2D TG + 3D operator on 2D-embedded IC + 3D TG, side-by-side) |
 | N11 | Reynolds sweep — CF alignment vs viscosity (NS-G4 precursor) | **DONE** | `afc65b49` | `examples/86` (3D TG n=24, ν∈{0.05,0.02,0.01,0.005}, Re_eff 126→1257) |
-| N≥12 | Higher-Re CF eigenframe transition (n≥48, DNS) **/** function-space convergence (NS-G1) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4) **/** REMESH-∞ asymptotic study (§11) | open | unknown | unknown |
+| N12 | REMESH-∞ asymptotic limit on K_φ cascade (§11 test, NS-G_blowup branch B1) | **PRE-REGISTERED** (this commit) | pending | §12 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py` |
+| N≥13 | Higher-Re CF eigenframe transition (n≥48, DNS) **/** function-space convergence (NS-G1) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4) **/** N12 follow-up at n∈{24,32} | open | unknown | unknown |
 
 All NS-G1..G5 gaps remain **OPEN** after N1–N11. See §11 for the cross-program reframe of the residual obstruction.
 
@@ -235,3 +236,131 @@ Additionally, `src/tnfr/multiscale/hierarchical.py` implements explicit cross-sc
 ---
 
 **Next action**: open milestone **N12** — analytical study of `REMESH-∞` (the canonical asymptotic limit of REMESH global) applied to the K_φ cascade observed in N6–N11. Success criterion: produce either an analytical bound on K_φ at scale → 0 derivable from canonical REMESH global semantics, or an empirical demonstration on 3D Taylor–Green at n ∈ {16, 24, 32} that the cascade behaviour under REMESH-global with τ_global → ∞ qualitatively matches (or fails to match) the classical Kolmogorov dissipation regime. This is **NOT** a closure of NS-G_blowup or any other gap; it is the analytical test of the §11 working hypothesis.
+
+---
+
+## 12. N12 — REMESH-∞ Pre-Registration (May 2026)
+
+### 12.1 Status and discipline
+
+**Status**: PRE-REGISTERED, not yet executed. This section locks methodology, parameters, seed, F-criteria, and verdict mapping *before* the benchmark is run, mirroring the pre-registration discipline used in the Riemann program (§13vicies-novies.12, §13vicies-novies.14 of `theory/TNFR_RIEMANN_RESEARCH_NOTES.md`).
+
+The benchmark skeleton ships in the same commit as this section. Execution and Results land in a separate commit (§13).
+
+### 12.2 Working hypothesis under test
+
+The §11 cross-program reframe asserts that the residual obstruction in NS-G_blowup is the **scale → 0 asymptotic limit of canonical REMESH global** applied to the spatial-scale hierarchy of the K_φ cascade. The N6–N11 milestones validated the discrete TNFR-NS operator at finite Re ∈ [126, 1257] on a 3D Taylor-Green vortex; the K_φ cascade is bounded and dissipates correctly. The question for N12 is whether REMESH-global mixing, applied between NS time-steps with τ_global → ∞, **affects** the cascade in a structurally meaningful way.
+
+Three possible outcomes (all informative, no preferred verdict):
+
+1. **STRUCTURAL_EFFECT_MONOTONE**: K_φ cascade observables respond monotonically to τ_g sweep. Supports §11 working hypothesis (canonical REMESH-global is a non-trivial regulator of the cascade at finite n).
+2. **STRUCTURAL_EFFECT_NON_MONOTONE**: cascade responds but non-monotonically. Compatible with §11 hypothesis but suggests resonant/interference regimes inside the τ_g sweep.
+3. **NULL_RESULT**: cascade observables flat (< 5% relative change) across full τ_g sweep including τ_g → ∞. **Falsifies §11 working hypothesis at n=16**, redirecting the program toward the higher-resolution / DNS milestone (n ≥ 48) or a non-product canonical lift inside the catalog.
+
+### 12.3 Canonical mapping of REMESH-∞ to per-component velocity fields
+
+The canonical engine (`src/tnfr/operators/remesh.py::apply_network_remesh`) implements the two-stage mix on graph-wide EPI:
+
+```
+mixed = (1 − α) · EPI(t) + α · EPI(t − τ_local)
+mixed = (1 − α) · mixed + α · EPI(t − τ_global)
+```
+
+with `REMESH_ALPHA = 0.5`, `REMESH_TAU_LOCAL = 4`, `REMESH_TAU_GLOBAL = 8` as canonical defaults (`src/tnfr/config/defaults_core.py`). For the N12 sweep we adopt the *one-stage global* form (τ_local set equal to τ_global to collapse to a single global lag, matching the asymptotic limit being probed):
+
+```
+φ^(a)_i(t) ← (1 − α) · φ^(a)_i(t) + α · φ^(a)_i(t − τ_g)        ∀ a ∈ {1,2,3}, ∀ i ∈ G
+```
+
+with the per-component velocity field playing the role of EPI on the periodic 3D torus graph. Three operational regimes:
+
+* **τ_g = 0**: no mixing — pure NS evolution baseline (must reproduce N6/N11 at n=16, ν=0.01).
+* **τ_g ∈ {8, 32, 128}**: finite REMESH-global lag in step units. At dt=0.005 these correspond to physical lags 0.04, 0.16, 0.64 (i.e., 4%, 16%, 64% of T_final = 1.0).
+* **τ_g = ∞ (lag-to-initial-condition)**: reference state is φ^(a)(t=0). Canonical realisation of the **REMESH global asymptotic limit** when the history window is large enough to contain the initial condition.
+
+Mixing is applied **after** the full Strang-split NS step (advection + Crank-Nicolson viscous + advection) and **before** the next step. Because mixing is a linear combination of two divergence-free states at α=0.5, the result is divergence-free in continuous arithmetic; defensive INCOMP projection is applied after mixing to absorb round-off (consistent with N5/N6 INCOMP discipline).
+
+The seed `20260526` is reused from the Riemann session (no stochastic RNG appears in this benchmark — TG is deterministic, INCOMP is FFT-deterministic — but the seed labels the session for reproducibility, matching the cross-program protocol).
+
+### 12.4 Configuration (locked)
+
+| Parameter | Value | Justification |
+|---|---|---|
+| Grid resolution | n = 16 | Smallest 3D TG sweep size used in N9 (`examples/84`) where CF eigenframe statistics are already well-defined; keeps τ_g sweep tractable in single run. |
+| Viscosity | ν = 0.01 | Mid-sweep value from N11 (Re_eff ≈ 628). Cascade is non-trivial (advection visible in K_φ) but resolved at n=16. |
+| Time step | dt = 0.005 | Same as N11 (`examples/86`). |
+| Final time | T = 1.0 | 200 steps. Same as N11. Long enough for cascade to develop, short enough for τ_g=128 to fit inside the simulation window. |
+| Amplitude | A = 1.0 | Canonical TG amplitude used throughout N6–N11. |
+| Advection | ON | Required to exercise vortex stretching (the K_φ cascade source). |
+| INCOMP | ON | Standard after N5. Re-applied after each REMESH-∞ mix. |
+| α (REMESH mixing) | 0.5 | Canonical default (`config/defaults_core.py::REMESH_ALPHA`). |
+| τ_g sweep | {0, 8, 32, 128, ∞} | 5 points covering the asymptotic limit. |
+| Seed label | 20260526 | Cross-program session continuity. |
+
+### 12.5 Observables (logged at every step)
+
+For each τ_g value:
+
+* `time[k]` — physical time at step k
+* `vorticity_sup[k]` — `||ω(t_k)||_∞` (BKM integrand)
+* `bkm_integral[k]` — `∫_0^{t_k} ||ω||_∞ dτ` (trapezoidal)
+* `enstrophy[k]` — `||ω||_{L²}²`
+* `kinetic_energy[k]` — `(1/2)·||u||_{L²}²`
+* `dissipation[k]` — `ν · ⟨φ, L φ⟩`
+* `divergence[k]` — `||∇·u||_{L²}` (must stay ≤ 1e-8 after INCOMP)
+* `stretching_production[k]` — `⟨ω, (ω·∇)u⟩` (N6 / `examples/81`)
+
+### 12.6 Pre-registered F-criteria
+
+Each criterion has a single PASS/FAIL verdict; no ad-hoc tolerance adjustment is permitted after execution.
+
+* **F1 — Baseline fidelity** (τ_g = 0 reproduces N6/N11):
+  `|BKM_integral(T)_baseline − BKM_integral(T)_reference| / BKM_integral(T)_reference ≤ 0.01` (1%) where the reference is the standalone N11 trajectory at (n=16, ν=0.01, T=1.0). PASS confirms the benchmark wiring is correct.
+
+* **F2 — Measurable response**: at least one of {peak `||ω||_∞`, BKM(T), peak enstrophy, peak stretching production} shows `≥ 5%` relative change between the baseline (τ_g=0) and any of the four mixing runs (τ_g ∈ {8, 32, 128, ∞}). PASS = REMESH-global has a structurally non-trivial effect on the cascade at n=16.
+
+* **F3 — Monotonicity classification**: examine the relative change of each cascade observable across the ordered τ_g sweep {0, 8, 32, 128, ∞}. Classify the response as:
+  * `MONOTONE` if the four mixing runs produce a monotonic sequence (ascending or descending) for at least one observable.
+  * `NON_MONOTONE` if a strict extremum appears inside the sweep for any observable.
+  * `FLAT` if no observable exceeds 5% change (≡ F2 failed → NULL_RESULT verdict).
+
+* **F4 — Energy non-injection**: across the full simulation,
+  `max_{k, τ_g} kinetic_energy[k](τ_g) ≤ kinetic_energy[0](τ_g) · (1 + 1e-10)`.
+  PASS = REMESH-∞ does not inject spurious energy. FAIL = methodological bug (mixing two divergence-free states cannot strictly add energy; if it does, INCOMP after mixing is broken).
+
+* **F5 — Divergence control**: `max_{k, τ_g} divergence[k] ≤ 1e-8`. PASS = INCOMP holds across the sweep including after each mixing step.
+
+### 12.7 Pre-registered verdict mapping
+
+| F1 | F2 | F3 | F4 | F5 | Verdict | Interpretation |
+|----|----|----|----|----|---------|----------------|
+| ✓ | ✓ | MONOTONE | ✓ | ✓ | `STRUCTURAL_EFFECT_MONOTONE` | Supports §11 working hypothesis: canonical REMESH-global non-trivially regulates the K_φ cascade with monotone τ_g dependence. |
+| ✓ | ✓ | NON_MONOTONE | ✓ | ✓ | `STRUCTURAL_EFFECT_NON_MONOTONE` | Compatible with §11; resonant regimes inside the τ_g sweep deserve further mapping. |
+| ✓ | ✗ | FLAT | ✓ | ✓ | `NULL_RESULT` | **Falsifies §11 working hypothesis at n=16**. Redirects the program toward higher-resolution DNS (n ≥ 48) or non-canonical-product lifts. |
+| ✗ | — | — | — | — | `INDETERMINATE_INFRA_FAIL` | Baseline does not reproduce N11; benchmark wiring bug — diagnose before any verdict claim. |
+| — | — | — | ✗ | — | `INDETERMINATE_INFRA_FAIL` | INCOMP after REMESH-∞ mixing is broken; methodological bug. |
+| — | — | — | — | ✗ | `INDETERMINATE_INFRA_FAIL` | Divergence control failed; INCOMP regression in the operator or in the wiring. |
+
+### 12.8 Honest scope (locked before execution)
+
+* N12 is a **single-resolution probe** at n=16. A PASS verdict does NOT extend to the continuum limit (NS-G1) or to higher Re (NS-G_blowup). A clean PASS at n=16 motivates extending to n ∈ {24, 32} in a follow-up milestone (N13), not in N12.
+* N12 **does not close any of NS-G1..G5**. It tests the §11 working hypothesis at the smallest 3D grid that resolves the K_φ cascade.
+* N12 **does not promote any new canonical operator**. REMESH-global is already in the catalog; this is an asymptotic specialisation of an existing operator, deliberately kept inside the 13-operator catalog.
+* A `NULL_RESULT` is a fully acceptable verdict and is informative: it falsifies §11 at n=16 and redirects the program.
+* This pre-registration commits to the verdict mapping **before** any data is observed. Post-hoc reclassification of a verdict is forbidden.
+
+### 12.9 Deliverables (this commit)
+
+* This section (§12, theory pre-registration).
+* `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py` (benchmark skeleton — execution NOT included in this commit).
+* No AGENTS.md update yet; NS program currently has no AGENTS.md section (only Riemann does).
+
+### 12.10 Execution and Results (next commit)
+
+After this commit lands, the benchmark is executed and §13 (Results) is appended in a separate commit, with:
+* Numerical table of all observables at the 5 τ_g points,
+* PASS/FAIL line for each of F1–F5,
+* Final verdict from the §12.7 mapping,
+* Reproducibility command line,
+* Memory and milestone-table updates as appropriate.
+
