@@ -8,6 +8,166 @@
 
 This memo defines the minimum structure required to evaluate TNFR claims about the Riemann Hypothesis (RH). It scopes the computational program, prescribes telemetry, and records open work items so contributors can extend the investigation without rewriting the physics or the SDK contracts. All historical notes remain in the appendix for context.
 
+---
+
+## 0. Navigation Index
+
+This file aggregates ~5.9k lines covering five intertwined programmes:
+the **ζ-track** (P12–P31), the **χ-twisted L-track** (P32–P49), the
+**REMESH-∞ / N15** cross-program lift (§13vicies-novies + §13triginta),
+the **catalog type-hygiene programme** (T-νf = B0, T-EPI = B1, …; full
+tracker in [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.md)),
+and a **living discoveries log** (§13triginta-septima). Section anchors
+are stable and referenced from `AGENTS.md`, the catalog tracker, and the
+code; **do not rename or split them.** Use this index to locate work
+without scrolling.
+
+**Legend**: ✅ CLOSED (operationally or with stated scope) · 🟡 OPEN ·
+🔁 LIVING (append-only) · ⛔ SUPERSEDED · 📖 PROSE (meta / status).
+
+### A. Memo Meta (lines 171–294)
+
+| § | Lines | Purpose |
+|---|---|---|
+| 1 | 171 | Purpose and Scope 📖 |
+| 2 | 177 | Program Objectives (partition, operator, confinement) 📖 |
+| 3 | 194 | Workflow Expectations 📖 |
+| 4 | 202 | Telemetry & Reproducibility 📖 |
+| 5 | 208 | Outstanding Work 📖 |
+| 6 | 214 | Cross-References 📖 |
+| 7 | 295 | **Conjecture 10.1 Gap Analysis** (affine bridge refuted; six missing pieces) 🟡 |
+
+### B. ζ-Track Foundation — Prime-Ladder vM Construction (lines 427–1047)
+
+| § | Lines | Milestone | Status |
+|---|---|---|---|
+| 8 | 427 | **P12** TNFR prime-ladder von Mangoldt construction (Re s > 1) | ✅ |
+| 9 | 550 | **P13** Analytic continuation of vM ζ to ℂ | ✅ |
+| 10 | 664 | **P14** Self-adjoint prime-ladder Hamiltonian (closes G1) | ✅ |
+| 11 | 789 | **P15** Weil–Guinand explicit formula (closes G3) | ✅ |
+| 12 | 920 | **P16** Li–Keiper positivity criterion (RH-equivalent diagnostic) | ✅ |
+
+### C. ζ-Track Coercivity & Lyapunov Layer (lines 1049–1727)
+
+| § | Lines | Milestone | Status |
+|---|---|---|---|
+| 13 | 1049 | **P22** Empirical uniform-coercivity certificate | ✅ |
+| 13bis | 1134 | **P24** Adaptive σ refinement | ✅ |
+| 13ter | 1207 | **P25** Paley-gap coercivity diagnostic | ✅ |
+| §13quater | 1356 | **P26** Lyapunov-spectral positivity for P14 | ✅ |
+| §13quinquies | 1515 | **P27** Hilbert–Pólya scaffold (diagnostic) | ✅ |
+| §13sexies | 1640 | **P28** Smooth zero density (closes density-level smooth half of T-HP) | ✅ |
+
+### D. T-HP Reformulation of G4 (lines 1728–2018)
+
+| § | Lines | Milestone | Status |
+|---|---|---|---|
+| §13septies | 1728 | **T-HP** Tetrad-Hilbert–Pólya reformulation of G4 = RH | 🟡 (open content) |
+| §13octies | 1915 | Assembled-argument audit (L1–L7 closed; L8 = T-HP open) | 🟡 |
+
+### E. ζ-Track Operator-Level Smooth Half (lines 2019–2172)
+
+| § | Lines | Milestone | Status |
+|---|---|---|---|
+| §13nonies | 2019 | **P30** Operator-level admissible rescaling (smooth half of T-HP) | ✅ (smooth half only) |
+
+### F. χ-Twisted L-Track Parity Layer P32–P49 (lines 2173–3482)
+
+| § | Lines | Milestone | Status |
+|---|---|---|---|
+| §13undecies | 2173 | **P32** Dirichlet L-function extension | ✅ |
+| §13duodecies | 2247 | **P33** Analytic continuation of χ-twisted vM L | ✅ |
+| §13terdecies | 2332 | **P34** χ-twisted prime-ladder Hamiltonian (closes G1$_\chi$) | ✅ |
+| §13quaterdecies | 2408 | **P35** χ-twisted Weil–Guinand (closes G3$_\chi$, primitive real χ) | ✅ |
+| §13quinquiesdecies | 2484 | **P36** χ-twisted Li–Keiper (GRH$_\chi$-equivalent diagnostic) | ✅ |
+| §13sexiesdecies | 2549 | **P37** χ-twisted Weil–TNFR positivity bridge | ✅ |
+| §13septiesdecies | 2627 | **P38** χ-twisted admissibility / α(σ;g) sweep | ✅ |
+| §13octiesdecies | 2686 | **P39** χ-twisted admissible-family + gauge sweep | ✅ |
+| §13noniesdecies | 2743 | **P40** χ-twisted node-aware gauge sweep | ✅ |
+| §13vicies | 2814 | **P41** χ-twisted Hermite2-Gaussian η-sweep | ✅ |
+| §13vicies-primo | 2885 | **P42** χ-twisted uniform-coercivity certificate | ✅ |
+| §13vicies-secundo | 2960 | **P43** χ-twisted Paley-gap consistency | ✅ |
+| §13vicies-tertio | 3034 | **P44** χ-twisted Lyapunov-spectral positivity | ✅ |
+| §13vicies-quarto | 3128 | **P45** χ-twisted Hilbert–Pólya scaffold | ✅ |
+| §13vicies-quinto | 3200 | **P46** χ-twisted structural zero density (smooth half) | ✅ |
+| §13vicies-sexto | 3268 | **P47** χ-twisted spectral emergence under coupling | ✅ |
+| §13vicies-septimo | 3337 | **P48** χ-twisted admissible spectral-rescaling op (smooth half) | ✅ |
+| §13vicies-octavo | 3398 | **P49** χ-twisted oscillatory correction (closes ζ↔L parity) | ✅ (parity closure) |
+
+### G. ζ-Track Admissibility / Gauge / Hermite Layer P17–P21 (lines 3483–3995)
+
+(Numbering note: §§ 14–18 appear after §13vicies-octavo because they were
+appended chronologically out of P-number order; the §13xxx anchors remain
+authoritative.)
+
+| § | Lines | Milestone | Status |
+|---|---|---|---|
+| 14 | 3483 | **P17** Weil–TNFR positivity bridge | ✅ |
+| 15 | 3620 | **P18** α(σ) admissibility & gauge sweep | ✅ |
+| 16 | 3761 | **P19** Admissible-family sweep | ✅ |
+| 17 | 3856 | **P20** Node-aware gauge sweep | ✅ |
+| 18 | 3938 | **P21** Hermite-family expansion | ✅ |
+
+### H. Program Status Snapshot (lines 3996–4169)
+
+| § | Lines | Purpose | Status |
+|---|---|---|---|
+| 19 | 3996 | **May 2026 Program Status** (full P1–P49 milestone table at §19.1) | 📖 |
+
+### I. REMESH Global Reframe + B1 Edge-Channel Refutation Thread (lines 4170–5715)
+
+The largest single block (~1.5k lines). Contains the cross-program
+discovery that REMESH is the canonical temporal aggregator, and the
+exhaustive structural refutation of branch B1 sub-routes on G_P14
+(R∞-1a-operator, R∞-1a-composed, Prime-Cancellation Lemma,
+Euler-Orthogonality Lemma, R∞-1c, R∞-1b spectral-channel).
+
+| § | Lines | Content | Status |
+|---|---|---|---|
+| §13vicies-novies | 4170 | **REMESH global reframe** + B1 sub-routes R∞-1a/1b/1c (all structurally refuted on G_P14 by S_n equivariance) | ✅ (refutation thread closed) |
+
+### J. P50 — REMESH-∞ Function-Space Lift (lines 5716–5916)
+
+| § | Lines | Milestone | Status |
+|---|---|---|---|
+| §13triginta | 5716 | **P50** REMESH-∞ residue split of P31 oscillatory correction (N15 lift into Riemann program) | ✅ |
+
+### K. Catalog Type-Hygiene Programme — Sub-Questions (lines 5917–7588)
+
+Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.md).
+
+| § | Lines | Sub-question | Phase | Verdict |
+|---|---|---|---|---|
+| §13triginta-prima | 5917 | **B0 = T-νf** pre-registration | B0a | — |
+| §13triginta-secunda | 6215 | **B0 = T-νf** forcing-axiom reduction | B0b | — |
+| §13triginta-tertia | 6528 | **B0 = T-νf** final NEGATIVE + envelope E1 (measure-valued νf) | B0c | ✅ NEG |
+| §13triginta-quarta | 6839 | **B1 = T-EPI** pre-registration | B1a | — |
+| §13triginta-quinta | 7075 | **B1 = T-EPI** forcing-axiom reduction (TMEP) | B1b | — |
+| §13triginta-sexta | 7425 | **B1 = T-EPI** final NEGATIVE + envelope E2 (`BEPIElement`) | B1c | ✅ NEG |
+
+### L. Living Discoveries Log (line 7589–end)
+
+| § | Lines | Purpose | Status |
+|---|---|---|---|
+| §13triginta-septima | 7589 | **TNFR Structure & Dynamics Discoveries Log** (canonical contracts D-CC-*, envelopes D-ENV-*, methodology patterns D-MP-*, ops D-OPS-*, open questions D-OQ-*) | 🔁 LIVING |
+
+### M. Final-Gap Bookmarks (Quick Recall)
+
+- **G4 = RH**: 🟡 OPEN. Canonical statement = **Conjecture T-HP** (§13septies).
+  Smooth half closed operationally by P28 (density) and P30 (operator).
+  Oscillatory half $S(T) = \tfrac{1}{\pi}\arg\zeta(\tfrac12+iT)$
+  remains RH-equivalent. P31 ζ-track and P49 χ-track attack this
+  half via canonical prime-ladder Newton correction; empirical regime
+  is mixed B1/B2 (§§13vicies-octavo, 19.1).
+- **GRH$_\chi$ (primitive real χ)**: 🟡 OPEN, parity with G4.
+- **Branch B1 sub-routes on G_P14**: ✅ structurally refuted by
+  Euler-Orthogonality Lemma (§13vicies-novies.11).
+  Surviving sub-routes inside B1 require non-product canonical lifts.
+- **Programme paused** at the T-HP boundary; no further diagnostic
+  surface planned until one of B1/B2/B3 (§13septies) is decided.
+
+---
+
 ## 1. Purpose and Scope
 
 - Translate RH questions into TNFR constructs: nodal operators, structural partition functions, and confinement criteria derived from Φ_s, |∇φ|, K_φ, and ξ_C.
