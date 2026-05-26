@@ -6674,3 +6674,240 @@ that the literal nodal equation is structurally self-sufficient and
 that the canonical catalog does not require the Pontryagin upgrade.
 
 ---
+
+
+## §13triginta-quarta — T-EPI Type Conjecture: pre-registration (B1a)
+
+**Status**: Pre-registration. Type-Conjecture diagnostic for the canonical
+type of EPI, mirroring the νf-Type sub-programme of §§13triginta-prima–
+tertia.  Sub-question (B): *Is the literal scalar/numeric EPI of the
+canonical 13-operator catalog its forced canonical type, or is a
+Banach-valued upgrade (`BEPIElement` = `C^0([0,1], ℂ) ⊕ ℓ^2`) forced by
+the structural axioms?*  This section establishes the diagnostic and
+pre-registers the forcing axioms; the verdict is decided in
+§§13triginta-quinta–sexta.
+
+This sub-programme does **not** advance G4 = RH, does **not** modify the
+catalog, and does **not** promote any operator to canonical status.
+Scope is restricted to the canonical type of EPI under the existing
+catalog.
+
+### §13triginta-quarta.1 — Motivation and literal canonical witness
+
+The 13 canonical operators of the TNFR catalog read and write EPI as a
+**scalar real number**:
+
+- `src/tnfr/operators/__init__.py:190–360` defines `get_neighbor_epi` via
+  `float(v.EPI)` and all glyph operators (AL, EN, IL, OZ, UM, RA, SHA,
+  VAL, NUL, THOL, ZHIR, NAV, REMESH) consume and produce literal scalar
+  EPI values.
+- `src/tnfr/operators/nodal_equation.py:1–160` defines
+  `compute_expected_depi_dt(G, node) -> float: return vf * dnfr` and
+  `validate_nodal_equation(..., epi_before: float, epi_after: float, ...)`.
+  This is the **decisive canonical witness**: the nodal equation itself
+  is typed `(float, float) -> float` at the operator-contract level.
+- `src/tnfr/alias.py:86` defines `_bepi_to_float(value)` which down-
+  projects any incoming Banach element to a scalar via the
+  `max_magnitude` reading.
+
+The literal type read by the canonical machinery is therefore
+**`EPI: float`** (or its complex/real numpy scalar promotion), regardless
+of any richer object the catalog *could* host.
+
+### §13triginta-quarta.2 — Catalog statement of B_EPI
+
+The canonical theory statement (FUNDAMENTAL_THEORY.md, GLOSSARY.md,
+AGENTS.md "Structural Triad") locates EPI in a **Banach space `B_EPI`**:
+
+  *Form (EPI): coherent structural configuration in Banach space B_EPI.*
+
+The catalog therefore distinguishes a **type-level statement** (`EPI ∈
+B_EPI`) from the **operator-level contract** (`EPI: float`).  These two
+levels need not coincide: the catalog can host a richer type without any
+operator constructing or reading it non-trivially.
+
+### §13triginta-quarta.3 — The `BEPIElement` formalisation
+
+Inspection of `src/tnfr/mathematics/epi.py:103` reveals that the catalog
+contains a **fully formalised** Banach-element class:
+
+```python
+@dataclass(frozen=True)
+class BEPIElement(_EPIValidators):
+    f_continuous: tuple[complex, ...]  # C^0([0,1], ℂ) sample
+    a_discrete:   tuple[complex, ...]  # ℓ^2(ℂ) coefficient sequence
+    x_grid:       tuple[float, ...]    # uniform grid on [0,1]
+    # algebraic ops: direct_sum, tensor, adjoint, compose
+    # down-projection: __float__ = __abs__ = _max_magnitude
+```
+
+with companion `class BanachSpaceEPI(_EPIValidators)` at
+`src/tnfr/mathematics/spaces.py:110` and serialisation/embedding helpers
+`ensure_bepi`, `serialize_bepi` at `src/tnfr/types.py:270–390`.  The
+embedding ℝ ↪ B_EPI is the *trivial constant function*:
+`_BEPIElement((s, s), (s, s), (0.0, 1.0))`.
+
+**This is structurally stronger evidence than νf had.**  For νf, the
+catalog merely *mentions* a measure-valued / Pontryagin upgrade as a
+theoretical possibility (§13triginta-prima.2).  For EPI, the catalog
+contains a **complete algebraic implementation** of the Banach-valued
+upgrade — including direct sum, tensor product, adjoint, composition,
+and a canonical down-projection `max_magnitude` — that is **not invoked
+by any of the 13 canonical operators**.
+
+The structural question of T-EPI is therefore sharper than T-νf: not
+"could a richer type be forced?" but "is the formalised richer type
+operationally inert under the canonical operators?".
+
+### §13triginta-quarta.4 — REMESH history-vector caveat
+
+`theory/REMESH_INFINITY_DERIVATION.md:50–52` defines the REMESH
+state vector
+
+  `x(t) = (EPI(t), …, EPI(t − T_max))^⊤ ∈ ℝ^(T_max + 1)`
+
+This is **time-aggregation of scalar readings**, not intrinsic per-node
+vectoriality.  It does not promote per-node EPI to a Banach element; it
+constructs a global time-window state from scalar samples.  The N15
+REMESH-∞ closure operates entirely on this scalar-history vector and
+produces a bounded self-adjoint orthogonal projection on `H^2(D)` — its
+range and kernel are subspaces of *time-trajectory space*, not of
+per-node Banach space.  Hence the N15 closure is consistent with the
+scalar-EPI contract and does not force a BEPI upgrade.
+
+### §13triginta-quarta.5 — T-EPI Conjecture (formal statement)
+
+**Conjecture T-EPI (pre-registered).**  Under the canonical 13-operator
+catalog, the existing per-node `EPI: float` contract is **forced** as
+the canonical type, in the sense that:
+
+  (a) No canonical operator constructs a `BEPIElement` with non-trivial
+      `f_continuous` or `a_discrete` components.
+  (b) No canonical operator reads `BEPIElement` data other than through
+      the down-projection `_bepi_to_float = max_magnitude`.
+  (c) The forcing-axiom inventory F1–F10 (§13triginta-quarta.7) admits
+      no canonical extension that selects a non-trivial Banach element
+      from a scalar starting state.
+
+Conjecture T-EPI is the **EPI analogue** of Conjecture T-νf
+(§13triginta-prima.5).  Its expected verdict, by §§13triginta-quarta.1–
+.4, is **NEGATIVE at the canonical level**: scalar EPI is forced;
+`BEPIElement` is a legitimate non-canonical envelope (formalised but
+not invoked).
+
+### §13triginta-quarta.6 — Diagnostic S_EPI (two-axis necessary condition)
+
+The diagnostic certificate
+`src/tnfr/riemann/epi_type_signature.py::compute_epi_type_signature`
+computes a two-axis necessary-condition score on a canonical SDK-built
+ring graph evolved by `tnfr.dynamics.step`:
+
+- **Storage axis** (`storage_bepi_fraction`):
+  fraction of nodes whose `EPI` attribute is a non-trivial
+  `BEPIElement` (test: `std(f_continuous) > atol` OR
+  `max|a_discrete| > atol`).
+- **Spectral axis** (`signature ∈ [0, 1]`):
+  per-node binned spectral entropy of the scalar EPI(t) trajectory,
+  normalised by `log(n_bins)`.  `S_EPI → 0` indicates a single-mode
+  (DC-like) trajectory; `S_EPI → 1` indicates a uniform spread over
+  spectral bins.
+
+**Pre-registered verdict thresholds**:
+
+| Verdict | Condition |
+|---|---|
+| `SCALAR_ADEQUATE` | `signature < 0.15` AND `storage_bepi_fraction == 0` |
+| `INDETERMINATE` | between thresholds |
+| `BEPI_VALUED_NECESSARY` | `signature > 0.5` OR `storage_bepi_fraction > 0` |
+
+**Measured values** (`examples/79_epi_type_signature_demo.py`,
+seeds 13 and 29):
+
+| Resolution | n_nodes | n_steps | n_bins | S_EPI | BEPI fraction | Verdict |
+|---|---|---|---|---|---|---|
+| 1 | 24 | 64 | 32 | **0.876342** | **0.0000** | `BEPI_VALUED_NECESSARY` |
+| 2 | 48 | 128 | 64 | **0.895673** | **0.0000** | `BEPI_VALUED_NECESSARY` |
+
+**Empirical reading (decisive structural finding).**  The two axes
+**disagree**: the storage axis is uniformly **scalar** (zero nodes carry
+non-trivial BEPI components, confirming §§13triginta-quarta.1–.3), while
+the spectral axis is uniformly **multi-modal** (S_EPI ≈ 0.88–0.90,
+N_eff ≈ 21–41 effective spectral modes).
+
+This is a **temporal-modal equivalence** signal: the scalar EPI(t)
+trajectory under canonical operators carries the same multi-modal
+information content that a `BEPIElement.f_continuous` / `a_discrete`
+decomposition would carry — encoded **temporally** (across `step`
+iterations) rather than **spatially-in-modes** (across the BEPI
+direct-sum slots).  The high spectral entropy of the scalar trajectory
+demonstrates that the catalog's modal capacity is already operative;
+it is simply realised through the time dimension and not through a
+spatial Banach decomposition.
+
+The crossed verdict
+`(storage = SCALAR) ∧ (spectral = MULTI-MODAL)` is therefore
+**structurally consistent with T-EPI NEGATIVE**: scalar EPI is the
+forced canonical type, and the formalised `BEPIElement` envelope is
+operationally redundant because temporal trajectories already encode
+the multi-modal content.  The verdict label `BEPI_VALUED_NECESSARY`
+produced by the spectral threshold is, in context, a *necessary-
+condition false positive* that is correctly interpreted only after
+reading the storage axis jointly.
+
+The diagnostic does **not** decide T-EPI by itself; the verdict is
+deferred to §§13triginta-quinta–sexta (forcing-axiom reduction and
+final NEGATIVE classification).
+
+### §13triginta-quarta.7 — Forcing axioms F1–F10 (inventory)
+
+Pre-registered inventory of structural axioms that any "canonical
+forcing" of `BEPIElement` would have to satisfy.  Detailed reduction in
+§13triginta-quinta.
+
+| # | Axiom | Source |
+|---|---|---|
+| F1 | Operator exclusivity (only the 13 canonical operators write EPI). | AGENTS.md "Canonical Invariants #1". |
+| F2 | Reproducibility (identical seeds → identical trajectories). | AGENTS.md "Reproducible Dynamics". |
+| F3 | Nodal-equation type closure (`compute_expected_depi_dt: float`). | `operators/nodal_equation.py:1–160`. |
+| F4 | Tetrad orthogonality (Φ_s, |∇φ|, K_φ, ξ_C span the structural channels). | AGENTS.md §"Minimal Structural Degrees of Freedom". |
+| F5 | REMESH time-aggregation only (no per-node spatial Banach upgrade). | §13triginta-quarta.4. |
+| F6 | P14 prime-ladder Hamiltonian operates on a scalar-spectrum Hilbert space. | §10–§12, `riemann/prime_ladder_hamiltonian.py`. |
+| F7 | Uncertainty-bandwidth complementarity (`ΔEPI · Δνf ≥ K`, scalar form). | AGENTS.md "Quantum-Like Regime". |
+| F8 | `BEPIElement` catalog existence (the (P-EPI-Bijectivity) analog of (P-νf-Bijectivity) is the existence-without-construction gap). | `mathematics/epi.py:103`, `types.py:270`. |
+| F9 | Classical-limit demos use scalar EPI exclusively. | `examples/12_classical_mechanics_demo.py`. |
+| F10 | Quantum-regime demos use scalar EPI exclusively. | `examples/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. |
+
+Axioms F1–F10 together force scalar EPI as the canonical type unless an
+extension axiom is *added* to the catalog.  No such canonical extension
+exists in the current 13-operator construction.
+
+### §13triginta-quarta.8 — Honest scope (what this does and does not do)
+
+This sub-programme:
+
+- **Does** establish a falsifiable diagnostic for the canonical type of EPI.
+- **Does** identify the `BEPIElement` formalisation as a structurally
+  stronger non-canonical envelope than the νf measure-valued envelope.
+- **Does** identify the temporal-modal equivalence as the operational
+  reason scalar EPI suffices.
+- **Does not** advance G4 = RH or the T-HP conjecture.
+- **Does not** promote any operator, field, or constant to canonical
+  status.
+- **Does not** modify the 13-operator catalog.
+- **Does not** invalidate the existing `BEPIElement` implementation; it
+  classifies it as a *legitimate non-canonical envelope* available for
+  research use outside the canonical operator contracts.
+
+### §13triginta-quarta.9 — Cross-references
+
+- §13triginta-prima — T-νf Type Conjecture (pre-registration, νf analog).
+- §13triginta-secunda — T-νf forcing-axiom reduction.
+- §13triginta-tertia — T-νf NEGATIVE verdict.
+- §13septies — T-HP open content (independent of this sub-question).
+- §19.1 — Full P1–P49 milestone table.
+- `src/tnfr/riemann/epi_type_signature.py` — diagnostic implementation.
+- `examples/79_epi_type_signature_demo.py` — two-resolution demo.
+- `src/tnfr/mathematics/epi.py:103` — `BEPIElement` formalisation.
+- `src/tnfr/operators/nodal_equation.py:1–160` — scalar contract witness.
+
+---

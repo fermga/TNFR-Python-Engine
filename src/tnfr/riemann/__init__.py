@@ -858,6 +858,11 @@ from .nuf_type_signature import (
     NufTypeSignatureCertificate,
     compute_nuf_type_signature,
 )
+from .epi_type_signature import (
+    # §13triginta-quarta: EPI-Type Signature diagnostic (foundational sub-question)
+    EpiTypeSignatureCertificate,
+    compute_epi_type_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1333,6 +1338,9 @@ __all__ = [
     # §13triginta-prima: νf-Type Signature (foundational diagnostic)
     "NufTypeSignatureCertificate",
     "compute_nuf_type_signature",
+    # §13triginta-quarta: EPI-Type Signature (foundational diagnostic)
+    "EpiTypeSignatureCertificate",
+    "compute_epi_type_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",
