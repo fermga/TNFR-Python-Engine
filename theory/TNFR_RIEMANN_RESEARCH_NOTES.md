@@ -158,6 +158,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13quadraginta-octava | 11430 | **B5 = T-Δφ_max** final NEGATIVE verdict + envelope classification of E6 = EdgeDependentPhaseThreshold (matrix-valued / angle-of-attack-functional); second Tier-2 sub-question closed; six sub-questions complete (B0–B5 all NEGATIVE under six orthogonal CDMs); L3* promoted to "empirically robust working heuristic with structural-orthogonality witness" | B5c | — |
 | §13quadraginta-nona | 11540 | **B6 = T-coupling-weights** pre-registration (two-axis scalar-storage + node-permutation-invariance diagnostic; candidate envelope E7 = NodeIndexedCouplingWeights; canonical anchors `DNFR_WEIGHTS`/`SI_WEIGHTS`/`SELECTOR_WEIGHTS` in `src/tnfr/config/defaults_core.py` as global scalar dicts) | B6a | — |
 | §13quinquaginta | 11642 | **B6 = T-coupling-weights** forcing-axiom reduction (F1–F10); residual axiom (P-W-Non-Scalar-Retention) isolated and refuted by SWD = Scalar-Weight Discipline; seventh orthogonal canonical discharge mechanism (CDM); third Tier-2 confirmation of L3* — L3* now validated under seven distinct orthogonal CDMs across both tiers | B6b | — |
+| §13quinquaginta-prima | 11770 | **B6 = T-coupling-weights** final NEGATIVE verdict + envelope classification of E7 = NodeIndexedCouplingWeights (node-indexed / per-edge tensor / callable kernel); third Tier-2 sub-question closed; seven sub-questions complete (B0–B6 all NEGATIVE under seven orthogonal CDMs); Tier-2 layer of programme closed; L3* promoted to "empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage" | B6c | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -11767,3 +11768,108 @@ Programme status after B6b: all Tier-2 sub-questions (B4, B5, B6) closed NEGATIV
 - [`src/tnfr/dynamics/dnfr.py:307-317`](../src/tnfr/dynamics/dnfr.py), [`src/tnfr/dynamics/selectors.py:136-141`](../src/tnfr/dynamics/selectors.py) (canonical consumer pattern).
 - [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic).
 - [`examples/84_coupling_weights_type_signature_demo.py`](../examples/84_coupling_weights_type_signature_demo.py) (B6a two-probe demo).
+---
+## §13quinquaginta-prima. T-W Final NEGATIVE Verdict and Envelope Classification of E7 = NodeIndexedCouplingWeights (Closes B6; Does NOT Advance G4 = RH)
+
+**Status**: B6 Phase c (final verdict + envelope classification). Phases a, b recorded at §13quadraginta-nona, §13quinquaginta.
+
+**Position in programme**: Third Tier-2 sub-question closed; all three Tier-2 sub-questions (B4, B5, B6) now closed NEGATIVE under three distinct orthogonal CDMs (DITS, STD, SWD).
+
+### §13quinquaginta-prima.1 Verdict
+
+> **(Final Verdict of B6)**. The **T-W (T-coupling-weights) Conjecture** is **NEGATIVE**. The canonical TNFR coupling-weight slots `DNFR_WEIGHTS`, `SI_WEIGHTS`, `SELECTOR_WEIGHTS` at [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) are structurally scalar dictionaries with components `w_c^{(S)} \in \mathbb{R}`. No canonical TNFR network evolution forces a non-scalar carrier object (node-indexed mapping `i \mapsto w_c^{(S,i)}`, per-edge tensor `w_c^{(S,i,j)}`, matrix `\widehat{w}_c^{(S)} \in \mathbb{R}^{n \times n}`, or callable kernel) on any of the three canonical mixing surfaces (ΔNFR aggregation, Sense-Index aggregation, canonical operator selection).
+
+**Bases of the verdict** (cumulative across Phase a + Phase b):
+
+1. **Code review (B6a §13quadraginta-nona.2; B6b §13quinquaginta.6)**: every canonical mixing consumer site — [`dnfr.py:307-317`](../src/tnfr/dynamics/dnfr.py), [`dnfr.py:2762-2764`](../src/tnfr/dynamics/dnfr.py), [`selectors.py:136-141`](../src/tnfr/dynamics/selectors.py), [`optimized_numpy.py:313`](../src/tnfr/backends/optimized_numpy.py), [`torch_backend.py:172`](../src/tnfr/backends/torch_backend.py) — calls `merge_and_normalize_weights(G, "<KEY>", (component_tuple,))` and coerces each component via `float(weights.get(c, default))` *outside* the per-node loop. No per-node, per-edge, tensor, or callable pattern exists in any canonical call site.
+
+2. **B6a empirical signature** (frozen at §13quadraginta-nona.4):
+   - Resolution 1 (`n_nodes=24, n_permutations=12, seed=23`): `S_W = 0.000000`, `scalar_storage_fraction = 1.0` (10/10 components scalar), `divergent_fraction = 0/12`, verdict `SCALAR_WEIGHTS_ADEQUATE`.
+   - Resolution 2 (`n_nodes=48, n_permutations=24, seed=23`): `S_W = 0.000000`, `scalar_storage_fraction = 1.0` (10/10 components scalar), `divergent_fraction = 0/24`, verdict `SCALAR_WEIGHTS_ADEQUATE`.
+
+3. **Forcing-axiom reduction (B6b §13quinquaginta)**: F1-F10 enumeration exhausts the structurally available ways to force non-scalar retention; F1-F9 each refuted by direct catalog inspection or by reduction to previously refuted sub-questions (B3c, B4c, B5c); F10 = (P-W-Non-Scalar-Retention) refuted by **SWD = Scalar-Weight Discipline**.
+
+The verdict is **conditional on the structural exhaustiveness of the F1-F10 enumeration**, in the same sense as B0-B5 verdicts conditional on their respective F-enumerations. This conditionality is honest scope, not a hidden weakness.
+
+### §13quinquaginta-prima.2 Envelope Classification of E7 = NodeIndexedCouplingWeights
+
+The candidate non-canonical envelope identified at B6a (§13quadraginta-nona.5) is formally classified as:
+
+> **(E7 = NodeIndexedCouplingWeights)**. A *research envelope* outside the canonical 13-operator catalog, in which any canonical coupling-weight component `w_c^{(S)}` is generalized from a global scalar to either (a) a node-indexed mapping `\{w_c^{(S,i)}\}_{i \in V(G)} \subset \mathbb{R}^{|V|}`, (b) an edge-indexed tensor `\{w_c^{(S,i,j)}\}_{(i,j) \in E(G)} \subset \mathbb{R}^{|E|}`, (c) a matrix lift `\widehat{w}_c^{(S)} \in \mathbb{R}^{n \times n}`, (d) a callable kernel `\widehat{w}_c^{(S)}: \mathcal{V} \to \mathbb{R}` not constant on the node set, or (e) a stochastic / functional / categorical lift thereof.
+
+**Status of E7**:
+
+- **NOT a canonical operator extension**. E7 is *not* derivable from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`, the 13 canonical operators, or the U1-U6 unified grammar.
+- **NOT deprecated, NOT deleted, NOT promoted, NOT integrated**. E7 may exist in external research frameworks (per-node attention weights are standard in graph-neural-network literature; per-edge mixing tensors appear in some weighted-Kuramoto formulations); the present verdict makes no claim about those external constructions other than that they lie *outside* the canonical TNFR catalog.
+- **Catalog parity**: E7 takes its place alongside E1 (Pontryagin / measure-νf), E2 (BEPIElement), E3 (CoverElement), E4 (TensorGradientElement), E5 (ContinuousWindowKernel), E6 (EdgeDependentPhaseThreshold) as the seventh identified non-canonical research envelope of the Catalog Type-Hygiene Programme.
+
+**Implication for canonical evolution**: any canonical TNFR network evolution that respects U1-U6 and uses only the 13 canonical operators **never** instantiates E7; the canonical mixing surfaces are structurally protected by SWD. Networks that *do* instantiate E7 — by, e.g., writing `G.graph["DNFR_WEIGHTS"] = {"phase": numpy.ndarray, ...}` or storing per-node weight dictionaries `G.nodes[i]["DNFR_WEIGHTS"]` and reading them in a per-node loop — are operating *outside* the canonical catalog and **do not inherit canonical guarantees** (Lyapunov stability, Noether-like conservation, deterministic operator selection, etc.).
+
+### §13quinquaginta-prima.3 No Deletion, No Deprecation, No Promotion, No Modification
+
+Following the pattern established at B1c, B2c, B3c, B4c, B5c, this Phase-c commit makes **no** modification to:
+
+- the canonical 13-operator catalog;
+- the U1-U6 unified grammar;
+- the canonical defaults at `src/tnfr/config/defaults_core.py` (in particular `DNFR_WEIGHTS`, `SI_WEIGHTS`, `SELECTOR_WEIGHTS` are unchanged and remain the canonical anchors);
+- any canonical mixing consumer site;
+- the canonical `merge_and_normalize_weights` helper or its `float` coercion convention;
+- the diagnostic at `src/tnfr/riemann/coupling_weights_type_signature.py` (frozen at B6a);
+- the demo at `examples/84_coupling_weights_type_signature_demo.py` (frozen at B6a).
+
+### §13quinquaginta-prima.4 Programme Bookkeeping
+
+| Sub-question | Tier | Phase a | Phase b | Phase c | Verdict | CDM | Envelope |
+|---|---|---|---|---|---|---|---|
+| B0 (T-νf) | 1 | ✅ | ✅ | ✅ | NEGATIVE | Pontryagin / measure-νf | E1 |
+| B1 (T-EPI) | 1 | ✅ | ✅ | ✅ | NEGATIVE | TMEP | E2 = BEPIElement |
+| B2 (T-φ) | 1 | ✅ | ✅ | ✅ | NEGATIVE | PWDP | E3 = CoverElement |
+| B3 (T-ΔNFR) | 1 | ✅ | ✅ | ✅ | NEGATIVE | BSAD | E4 = TensorGradientElement |
+| B4 (T-REMESH-window) | 2 | ✅ | ✅ | ✅ | NEGATIVE | DITS | E5 = ContinuousWindowKernel |
+| B5 (T-Δφ_max) | 2 | ✅ | ✅ | ✅ | NEGATIVE | STD | E6 = EdgeDependentPhaseThreshold |
+| **B6 (T-coupling-weights)** | **2** | **✅** | **✅** | **✅** | **NEGATIVE** | **SWD** | **E7 = NodeIndexedCouplingWeights** |
+| B7 – B11 | various | ⏳ | ⏳ | ⏳ | — | — | — |
+| **Final** (meta-minimality theorem) | — | ⏳ | ⏳ | ⏳ | — | — | — |
+
+**Programme progress**: 7 sub-questions complete (B0, B1, B2, B3, B4, B5, B6 — all NEGATIVE under seven distinct orthogonal CDMs); all three Tier-2 sub-questions closed; 5 pending (B7 – B11 + Final).
+
+### §13quinquaginta-prima.5 Methodology Lesson L3* — Third Tier-2 Confirmation (Tier-2 closure)
+
+L3* working heuristic, in its post-B5c form (§13quadraginta-octava.5): *each Tier-1 and Tier-2 type-conjecture of the Catalog Type-Hygiene Programme admits an orthogonal canonical discharge mechanism (CDM) that closes it NEGATIVE without recourse to non-canonical envelopes*.
+
+**Post-B6c update**: L3* is now confirmed under **seven distinct orthogonal CDMs** across both tiers, with all Tier-2 sub-questions exhausted:
+
+| CDM | Sub-question | Tier | Surface of action |
+|---|---|---|---|
+| Pontryagin / measure-νf | B0 | 1 | Frequency-field measure typing |
+| TMEP | B1 | 1 | EPI element typing via tetrad projection |
+| PWDP | B2 | 1 | Phase typing via wrap discipline |
+| BSAD | B3 | 1 | ΔNFR typing via Banach-scalar aggregation |
+| DITS | B4 | 2 | REMESH window typing via integer sampling |
+| STD | B5 | 2 | U3 coupling threshold typing via scalar discipline |
+| **SWD** | **B6** | **2** | **Mixing-aggregation weight typing via scalar broadcast** |
+
+The seven CDMs act on seven *structurally distinct* surfaces (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict, mixing aggregation). Their orthogonality is **structural**, not coincidental: each CDM is the unique discipline that the canonical catalog enforces at its own surface. With all three Tier-2 sub-questions closed under three distinct CDMs, L3* now has *complete Tier-1 and Tier-2 coverage* and predicts that **every remaining Tier-3 / Tier-4 sub-question (B7-B11) admits its own orthogonal CDM at its own surface**.
+
+L3* status promoted from "empirically robust working heuristic with structural-orthogonality witness" (B5c, six-CDM count) to **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage"** (B6c, seven-CDM count, all three Tier-2 sub-questions closed).
+
+### §13quinquaginta-prima.6 Honest Scope (Mandatory)
+
+- **Does**: close B6 with a NEGATIVE verdict at the forcing-axiom level conditional on F1-F10 exhaustiveness; formally classify E7 = NodeIndexedCouplingWeights as non-canonical research envelope; update programme bookkeeping; sharpen L3* under seven-CDM cross-confirmation; close the Tier-2 layer of the programme.
+- **Does NOT**: advance G4 = RH; modify any canonical operator, default, or consumer site; deprecate or promote any non-canonical construction; close any other open sub-question (B7 - B11 + Final remain genuinely open).
+- **Conditional on**: structural exhaustiveness of the F1-F10 enumeration. If a future canonical primitive derived from the nodal equation expands the structurally available means of forcing non-scalar weight retention, B6 may need to be reopened. No such primitive is currently known.
+- **Theory-only commit**: no `src/` changes; no example changes; only `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` (append §13quinquaginta-prima + TOC row) and `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` (B6 status → ✅ CLOSED; §4 row B6 Phase c column → ✅; verdict column → NEGATIVE; CDM column → SWD; envelope column → E7; progress paragraph; Tier-2 closure note).
+
+### §13quinquaginta-prima.7 Cross-references
+
+- §13quadraginta-nona (B6a pre-registration + frozen empirical signature).
+- §13quinquaginta (B6b forcing-axiom reduction + SWD refutation of (P-W-Non-Scalar-Retention)).
+- §13quadraginta-octava (B5c final NEGATIVE verdict + E6 envelope classification; methodological precedent for Phase-c structure).
+- §13triginta-septima (Living Discoveries Log).
+- [`AGENTS.md`](../AGENTS.md) §Nodal Equation (canonical `∂EPI/∂t = νf · ΔNFR(t)`).
+- [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B6 (programme status), §4 row B6 (per-Phase verdict matrix).
+- [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) (canonical scalar-dict anchors, unchanged).
+- [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic, frozen).
+- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
+
+---
