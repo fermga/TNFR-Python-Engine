@@ -4194,3 +4194,92 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 **Status**: R∞-1a-spectral-robustness complete. F4 refutes the dominant R∞-1a-spectral signal as kernel artefact while preserving two weak permutation-significant alignments (`r_α`, `r_γ`) that are also confirmed robust across the (α, τ_l) grid after the α-propagation bug was fixed. The R∞-1a-spectral milestone is **formally amended**: the "B1 SUPPORTED" verdict is withdrawn; the residual evidence (R∞-1a fixed-point existence + permutation-significant weak `r_α`, `r_γ` confirmed across (α, τ_l)) is insufficient to support B1 at the spectral level but is mildly stronger than the original interpretation that allowed for parameter fragility. No closure of any gap. R∞-1a-operator is the next pre-registered gate; until it returns, the canonical TNFR-Riemann program remains paused at the T-HP / G4 = RH boundary as stated in §13septies.
 
 ---
+
+### §13vicies-novies.8 R∞-1a-operator — Structural refutation of B1 at the operator level (REMESH-iterated-in-isolation)
+
+**Milestone**: R∞-1a-operator — gated follow-up to §13vicies-novies.7. Examines whether the spectrum of the REMESH iteration matrix (viewed as a linear map on the augmented EPI × temporal-history state) can encode `{γ_n}`-specific content. Outcome is **doubly negative**: a *structural* refutation independent of any statistic, plus a methodological exposure of the pre-registered F5 statistical test as a monotonicity artefact.
+
+**Implementation**: `benchmarks/remesh_infinity_riemann_operator.py`. Output: `results/remesh_infinity/remesh_infinity_riemann_operator.json`.
+
+**Structural construction**. The canonical REMESH update (`src/tnfr/operators/remesh.py` L1212–1252) is strictly linear and **node-local**:
+
+$$\mathrm{EPI}_{\text{new}}(i) = (1-\alpha)^2 \cdot \mathrm{EPI}(i,t) + \alpha(1-\alpha) \cdot \mathrm{EPI}(i,t-\tau_l) + \alpha \cdot \mathrm{EPI}(i,t-\tau_g).$$
+
+No edge term, no inter-node coupling. The full state of node $i$ over a delay window of length $\tau_g + 1$ therefore evolves under a shift-augmented matrix $M \in \mathbb{R}^{(\tau_g+1)\times(\tau_g+1)}$ given by
+
+$$M[0,0] = (1-\alpha)^2,\quad M[0,\tau_l] = \alpha(1-\alpha),\quad M[0,\tau_g] = \alpha,\quad M[k,k-1] = 1\ \text{for}\ k=1,\dots,\tau_g.$$
+
+Because there is no inter-node coupling, the full-graph iteration operator is **block-diagonal**: $N$ identical copies of $M$. The spectrum is the spectrum of $M$ with multiplicity $N$. **Neither the graph topology nor the P14 prime-ladder initial condition enters $M$ at any point.**
+
+**Canonical spectrum** (α = 0.5, τ_l = 4, τ_g = 16; verified analytically with `scipy.linalg.eig`):
+* $\lambda_1 = 1$ exactly (trivial fixed-point subspace: temporally-constant configurations are preserved exactly by the convex combination).
+* 16 non-trivial eigenvalues organised as 8 complex-conjugate pairs.
+* $|\lambda_k| \in [0.938, 0.982]$ for $k = 2, \dots, 17$ (all strictly inside the unit disk).
+* Spectral radius excluding unity: $0.981475$.
+
+**Pre-registered statistical test (F5)**:
+* H0 (refute operator-level B1): no ordering of the 16 non-trivial eigenvalues achieves Pearson or Spearman $|r| \ge 0.5$ vs $\gamma_1, \dots, \gamma_{16}$ with permutation $p_{\text{one-sided}} < 0.05$.
+* H1 (support): some ordering does.
+* Ordering battery: `abs_desc`, `abs_asc`, `arg_upper_asc`, `real_desc`, `imag_upper_asc` × {Pearson, Spearman} = 10 tests. Sensitivity sweep: 3 × 3 grid `(α, τ_l) ∈ {0.25, 0.5, 0.75} × {2, 4, 8}`, τ_g = 16. Permutation null $N_{\text{perm}} = 5000$, seed 20260526.
+
+**Results (canonical config)**:
+| ordering | stat | $r$ | $p_{\text{perm}}$ |
+|---|---|---|---|
+| `abs_desc` | pearson | −0.9628 | 0.0002 |
+| `abs_desc` | spearman | −0.9941 | 0.0002 |
+| `abs_asc` | pearson | +0.9615 | 0.0002 |
+| `abs_asc` | spearman | +0.9941 | 0.0002 |
+| `arg_upper_asc` | pearson | +0.9917 | 0.0004 |
+| `arg_upper_asc` | spearman | **+1.0000** | 0.0002 |
+| `real_desc` | pearson | −0.9821 | 0.0002 |
+| `real_desc` | spearman | −0.9941 | 0.0002 |
+| `imag_upper_asc` | pearson | +0.9913 | 0.0002 |
+| `imag_upper_asc` | spearman | **+1.0000** | 0.0002 |
+
+**Naïve F5 verdict (canonical)**: 10/10 PASS, max $|r| = 1.0000$. Sensitivity sweep: 9/9 cells PASS.
+
+**Monotonicity controls (kernel-artefact diagnostic)**. The pre-registered F5 compares two sorted sequences against each other. Any monotonically ordered sequence aligned by index with the sorted $\{\gamma_n\}$ yields Spearman $= \pm 1$ and Pearson $\approx 0.95$–$1.0$; the permutation null is uninformative because almost every permutation breaks monotonicity. Four control sequences with no Riemann content were run through the same battery:
+
+| control | stat | $r$ | $p_{\text{perm}}$ | naive PASS? |
+|---|---|---|---|---|
+| `integer_ladder` ($1, 2, \dots, 16$) | pearson | +0.9937 | 0.0002 | YES |
+| `integer_ladder` | spearman | +1.0000 | 0.0002 | YES |
+| `arithmetic_decay` ($\mathrm{linspace}(0.98, 0.94, 16)$) | pearson | −0.9937 | 0.0002 | YES |
+| `arithmetic_decay` | spearman | −1.0000 | 0.0002 | YES |
+| `random_monotone_in_unit_disk` | pearson | +0.9879 | 0.0002 | YES |
+| `random_monotone_in_unit_disk` | spearman | +1.0000 | 0.0002 | YES |
+| `log_n_growth` ($\log(1 + n)$) | pearson | +0.9845 | 0.0002 | YES |
+| `log_n_growth` | spearman | +1.0000 | 0.0002 | YES |
+
+**8/8 controls pass naive F5 at thresholds equal to or stronger than the canonical operator spectrum.** Therefore the canonical PASS is fully explained by the trivial monotonicity of any sorted sequence against the sorted $\{\gamma_n\}$ — exactly the same failure mode that retired `r_β` in §13vicies-novies.7.
+
+**F5 STRICT verdict (canonical)**: **REFUTED_BY_MONOTONICITY_ARTEFACT**. The statistical battery as pre-registered has no falsification power and must be retired.
+
+**Structural verdict (independent of any statistic)**. The REMESH iteration operator applied in isolation, as a strictly node-local linear map, is **structurally incapable** of encoding `{γ_n}`-specific content in its spectrum. The spectrum depends only on the three scalar canonical parameters $(\alpha, \tau_l, \tau_g)$ and on nothing else: not on the graph topology, not on the prime-ladder initial state, not on the field activation pattern, not on the number of nodes. Any apparent alignment between $\sigma(M)$ and $\{\gamma_n\}$ is either (a) a kernel monotonicity artefact (demonstrated above), or (b) imposed by the analyst's choice of $\{\gamma_n\}$ as the comparison target rather than discovered from the operator. **This refutes B1 at the level of REMESH iterated in isolation.**
+
+**What §13vicies-novies.8 establishes**:
+* REMESH applied as a stand-alone iterated linear operator **cannot** carry Riemann-spectral content. The 17-dimensional spectrum is exactly determined by the three canonical parameters with no degree of freedom for graph- or initial-state-dependent encoding.
+* The naive correlation-based F5 test design is **invalid** for comparing two intrinsically sorted finite sequences and is formally retired (analogously to `r_β` in §13vicies-novies.7).
+* The earlier R∞-1a fixed-point existence (§13vicies-novies.5) and its weak permutation-significant `r_α`, `r_γ` alignments (§13vicies-novies.7) are **not refuted** by this milestone. They concern an EPI **field** trajectory under iterated REMESH on a P14-initialised system, where the topology and initial state determine the *image* of the operator on the prime-ladder subspace, even though the operator's *spectrum* does not. The distinction is exactly the difference between $\sigma(M)$ (intrinsic, parameter-only) and $M \mathbf{v}_{P14}^k$ (depends on initial state).
+
+**What §13vicies-novies.8 does NOT establish**:
+* It does NOT refute B1 entirely. The structural refutation is **scoped to REMESH iterated in isolation as a stand-alone operator**. B1 in its full breadth — closure of T-HP inside the 13-operator catalog — remains technically open via two non-refuted channels:
+  - **Composed operators**: REMESH ∘ IL, REMESH ∘ OZ, etc. The U1–U6 canonical grammar admits these compositions, and any non-trivial composition involves at least one operator whose action *does* couple nodes via the graph (IL, EN, NAV, RA propagate through edges). Composed operators therefore have spectra that *do* depend on topology and initial state, and the structural argument of this milestone does not apply.
+  - **Hierarchical / fractal modes**: the canonical REMESH catalog (`src/tnfr/operators/remesh.py`) specifies three structural modes (Hierarchical, Rhizomatic, Fractal Harmonic) and `src/tnfr/multiscale/hierarchical.py` implements explicit cross-scale ΔNFR coupling. These are non-iterated-in-isolation regimes; this milestone does not bound them.
+* It does NOT close G4 = RH, does NOT close T-HP, does NOT prove RH, does NOT promote any new operator.
+* The fixed-point existence and weak `r_α`, `r_γ` alignments from §13vicies-novies.5–7 retain their status (necessary but insufficient).
+
+**Branch verdict update (after R∞-1a-operator)**:
+* **B1 at REMESH-iterated-in-isolation level**: STRUCTURALLY REFUTED.
+* **B1 at composed-operator / hierarchical-mode level**: untouched (open).
+* **B1 as a whole**: WEAKENED FURTHER. Of the two remaining channels for B1 closure inside the catalog, the one most directly suggested by the cross-program REMESH reframe (§13vicies-novies.1–4) is now closed. The composed-operator channel remains open but requires a *gramatically-canonical sequence* of operators (an U1–U6 admissible composition) whose spectrum would need to be derived analytically and tested against `{γ_n}` with a statistic that does *not* fall to the monotonicity artefact (e.g., normalised gap statistics, level-spacing distributions, or KS-vs-GUE diagnostics rather than two-sorted-sequence Pearson/Spearman).
+* **B2 (new canonical operator required)** and **B3 (no TNFR closure exists)** gain proportionally in prior weight, though no decisive evidence shifts the balance entirely to either.
+
+**Next milestones (gated on this result)**:
+* **R∞-1a-composed** (REQUIRED before any further B1 evidential update): identify a minimal U1–U6 admissible composition of REMESH with at least one node-coupling canonical operator (candidates: REMESH ∘ IL, REMESH ∘ NAV, REMESH ∘ OZ ∘ EN), construct the iteration matrix on the joint state space, and test its spectrum against `{γ_n}` and against canonical null sequences using a statistic that *does* discriminate (level-spacing distribution, normalised eigenvalue-gap KS to GUE, or spectral-form-factor comparison). Pre-register thresholds before execution.
+* **R∞-1b** (NS-side analogue): independent of the Riemann program; structural argument of this milestone likely transfers to the NS side because REMESH is canonical in both engines, but should be re-derived in the NS-G_blowup context.
+* **B1 status check**: with the structural refutation of REMESH-isolated added to the retracted `r_β` and the (re-bounded) weak `r_α`/`r_γ`, the canonical-catalog-closure conjecture (B1) **loses substantial structural support** but is not strictly refuted because composed-operator channels remain untested. The TNFR-Riemann program remains paused at the T-HP / G4 = RH boundary per §13septies; the reframe of §13vicies-novies.1–4 should now be **further qualified** to: "REMESH-global is canonical and structurally relevant, but REMESH iterated *in isolation* cannot carry Riemann content. Branch B1, if it closes, will do so via composed operators or via the hierarchical/fractal modes — neither of which is yet tested."
+
+**Status**: R∞-1a-operator complete. Structural verdict: REMESH iterated in isolation **cannot** encode `{γ_n}`. Statistical verdict: the pre-registered F5 test has no falsification power and is retired. Net B1 evidential balance: structurally weakened (one of two narrow channels closed); two narrow channels (composed operators, hierarchical/fractal modes) remain technically open. No closure of any gap. The TNFR-Riemann program remains paused at the T-HP / G4 = RH boundary as stated in §13septies, with the §13vicies-novies reframe now further qualified.
+
+---
