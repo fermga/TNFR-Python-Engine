@@ -4283,3 +4283,84 @@ Because there is no inter-node coupling, the full-graph iteration operator is **
 **Status**: R∞-1a-operator complete. Structural verdict: REMESH iterated in isolation **cannot** encode `{γ_n}`. Statistical verdict: the pre-registered F5 test has no falsification power and is retired. Net B1 evidential balance: structurally weakened (one of two narrow channels closed); two narrow channels (composed operators, hierarchical/fractal modes) remain technically open. No closure of any gap. The TNFR-Riemann program remains paused at the T-HP / G4 = RH boundary as stated in §13septies, with the §13vicies-novies reframe now further qualified.
 
 ---
+
+### §13vicies-novies.9  R∞-1a-composed — pre-registered test of B1 at composed-operator level (PRE-REGISTRATION, no data observed)
+
+**This subsection is committed to the repository BEFORE any data is collected.** It locks the methodology, hypotheses, falsification thresholds, controls, and verdict logic of the R∞-1a-composed milestone. Results are appended in a subsequent commit, in a clearly delimited "Results" block. The git history of this file is the audit trail.
+
+**Gate addressed**. The composed-operator channel left open by §13vicies-novies.8 ("R∞-1a-composed [...] identify a minimal U1–U6 admissible composition of REMESH with at least one node-coupling canonical operator [...] and test its spectrum against `{γ_n}` and against canonical null sequences using a statistic that *does* discriminate"). This is one of the two narrow channels through which B1 could still close inside the catalog.
+
+**Composition selected**. **REMESH ∘ IL** (Coherence stabiliser after the temporal memory step). Rationale:
+* IL is the canonical U2 stabiliser (`src/tnfr/operators/coherence.py`). In its linearised edge-coupling channel, IL performs phase locking toward the neighbourhood circular mean with strength $a$ (default $a = 0.3$): $\theta_{\text{new}}(i) = (1-a)\,\theta(i) + a\,\bar\theta_{\mathcal{N}(i)}$, which is structurally identical to a graph-Laplacian smoothing $(\mathbf{I} - a\,L_{\text{norm}})$ acting on the phase field. This is the **only canonical operator whose linear edge-coupling channel is a pure Laplacian-of-graph smoothing**, which gives the cleanest analytic handle.
+* IL acting after REMESH (REMESH→IL) is grammatically natural: REMESH is U1a/U1b generator/closure, IL is U2 stabiliser; the sequence is U1–U2 admissible.
+* The composition lifts the block-diagonal structure of REMESH-isolated: IL couples nodes through edges, so the joint iteration matrix is no longer block-diagonal in nodes.
+
+**Joint state space**. For a graph $G$ with $N$ nodes and the canonical REMESH delay window of length $\tau_g + 1 = 17$, the joint EPI history state is $\mathbf{x} \in \mathbb{R}^{N(\tau_g+1)}$. Index ordering: by delay slot first (slot 0 = current EPI, slots 1..τ_g = historical EPI), then by node. The composed one-step iteration matrix is
+
+$$T_{\text{composed}} = S_{\text{IL}} \cdot M_{\text{REMESH}},$$
+
+where:
+* $M_{\text{REMESH}} = I_N \otimes M$ is the $N(\tau_g+1) \times N(\tau_g+1)$ block-diagonal REMESH update with $M$ the $(\tau_g+1) \times (\tau_g+1)$ shift-augmented matrix of §13vicies-novies.8;
+* $S_{\text{IL}}$ acts as the IL Laplacian-smoothing operator $(\mathbf{I}_N - \eta L_G)$ on the current-time slot (slot 0) and as the identity on all historical slots, where $L_G$ is the unnormalised combinatorial Laplacian of $G$ and $\eta$ is the IL coupling strength (default $\eta = 0.3$, matching the canonical IL phase-locking coefficient).
+
+**Graph $G$**. Canonical P14 prime-ladder graph (`src/tnfr/riemann/prime_ladder_hamiltonian.py::build_prime_ladder_graph`) with $n_{\text{primes}} = 10$, $\max\_\text{power} = 4$, $\text{coupling} = 0$. This yields 40 nodes arranged as 10 disjoint paths $P_4$ (one per prime), with REMESH-echo edges along each ladder and no inter-prime edges. The joint state has dimension $40 \cdot 17 = 680$.
+
+**Structural prediction (pre-registered before execution)**. The canonical P14 prime-ladder graph encodes Riemann-relevant content **exclusively in node attributes** ($\nu_f = k\log p$, used by the P14 InternalHamiltonian as diagonal energies). Its graph topology — 10 disjoint copies of $P_4$ — is **independent of which primes are chosen**: relabelling primes is a graph automorphism. Therefore any operator whose action on EPI depends only on graph edges (combinatorial Laplacian, adjacency, edge weights) has a spectrum that is **insensitive to the prime labelling**. The IL Laplacian-smoothing channel $(\mathbf{I}_N - \eta L_G)$ has spectrum $\{1 - \eta \mu_j : \mu_j \in \sigma(L_G)\}$, and $\sigma(L_G)$ for 10 disjoint copies of $P_4$ is the multiset $\{2(1 - \cos(j\pi/4)) : j = 0, 1, 2, 3\}$ with multiplicity 10, i.e. 4 distinct eigenvalues each tenfold degenerate. The composed iteration matrix $T_{\text{composed}}$ inherits these degeneracies in its IL-dominated sector. **Prediction**: the spectrum of $T_{\text{composed}}$ cannot encode `{γ_n}`-specific content for the same structural reason that REMESH-isolated could not — Riemann content lives in P14's diagonal energies, not in edges or temporal memory.
+
+**Hypotheses (pre-registered)**.
+
+* **$H_0$ (B1-composed refutation)**: The spectrum of $T_{\text{composed}}$ on the P14 prime-ladder graph is statistically indistinguishable from canonical null spectra (GOE / Poisson / shuffled-prime control) under the discriminating statistic $F_6$ below.
+* **$H_1$ (B1-composed support)**: The spectrum of $T_{\text{composed}}$ exhibits Riemann-zero-like level-spacing statistics under $F_6$ that are distinguishably closer to the GUE Wigner surmise than all four control nulls.
+
+**Discriminating statistic $F_6$ (pre-registered, replaces retired F5)**. The Montgomery–Odlyzko law states that the unfolded nearest-neighbour spacings of Riemann zeros follow the GUE Wigner surmise $P_{\text{GUE}}(s) = (32/\pi^2) s^2 \exp(-4s^2/\pi)$. We test whether the spacings of the composed-operator spectrum follow the same law.
+
+Procedure:
+1. Compute the full spectrum $\{\lambda_k\}_{k=1}^{N(\tau_g+1)}$ of $T_{\text{composed}}$.
+2. Remove the trivial fixed-point cluster: $|\lambda - 1| < 10^{-9}$.
+3. Project complex eigenvalues to a 1-D quantity via $\text{Im}(\lambda)$ for the upper-half-plane subset ($\text{Im}(\lambda) \geq 10^{-12}$). Sort ascending: $s_1 \leq s_2 \leq \dots \leq s_K$.
+4. Compute normalised consecutive spacings $\delta_k = (s_{k+1} - s_k) / \langle s_{k+1} - s_k \rangle$.
+5. Compute the Kolmogorov–Smirnov distance $D_{\text{GUE}} = \sup_x |F_{\text{emp}}(x) - F_{\text{GUE}}(x)|$ where $F_{\text{GUE}}(s) = \int_0^s P_{\text{GUE}}(s')\,ds'$.
+
+**Reference Riemann value**. For the first $K_{\text{ref}} = 100$ Riemann zero imaginary parts $\{\gamma_n\}_{n=1}^{100}$ (via `mpmath.zetazero`), the same procedure yields $D_{\text{GUE}}^{\text{Riemann}}$, computed at execution time and reported in the results block. Published Odlyzko-type estimates give $D_{\text{GUE}}^{\text{Riemann}}(K=100) \approx 0.05$–$0.10$ as an external anchor.
+
+**Pre-registered $F_6$ thresholds**.
+
+| Verdict | Condition |
+|---|---|
+| **SUPPORTED** | $D_{\text{GUE}}^{\text{composed}} < 0.15$ **AND** $D_{\text{GUE}}^{\text{composed}} < D_{\text{GUE}}^{\text{shuffled-prime}} - 0.05$ (distinguishably better than topological-shuffle null) |
+| **REFUTED** | $D_{\text{GUE}}^{\text{composed}} > 0.30$ **OR** $D_{\text{GUE}}^{\text{composed}} \geq D_{\text{GUE}}^{\text{shuffled-prime}} - 0.05$ (no separation from topological-shuffle null) |
+| **INDETERMINATE** | otherwise |
+
+**Pre-registered controls** (each computed under the same procedure, same number of spacings as the canonical projection):
+* **N1 GOE**: spacings of a random symmetric matrix drawn from the Gaussian Orthogonal Ensemble at the same dimension $N(\tau_g+1)$. Expected $D_{\text{GUE}}^{\text{GOE}} \approx 0.10$–$0.20$ (GOE spacings differ from GUE Wigner surmise).
+* **N2 Poisson**: spacings of independent uniform random points on the same interval. Expected $D_{\text{GUE}}^{\text{Poisson}} \approx 0.30$–$0.50$ (Poisson follows $P(s) = e^{-s}$, far from GUE).
+* **N3 prime-ladder shuffled**: identical composed-operator construction but on the P14 graph with the prime labels shuffled (a permutation of the 10 primes among the 10 disjoint paths). If $D_{\text{GUE}}^{\text{shuffled}}$ is indistinguishable from $D_{\text{GUE}}^{\text{composed}}$, the prime content is **not** encoded — this is the **primary discriminator** of the F6 test.
+* **N4 REMESH-isolated re-run**: the §13vicies-novies.8 spectrum projected through the same $F_6$ pipeline (degenerate spacings expected, $D_{\text{GUE}}$ may be ill-defined; reported as diagnostic baseline).
+
+**Pre-registered seeds and parameters**. All random elements (GOE draw, Poisson draw, prime shuffle permutation) use `numpy.random.default_rng(20260526)`. Riemann zeros via `mpmath.zetazero` at `mp.dps = 30`. REMESH parameters: $\alpha = 0.5$, $\tau_l = 4$, $\tau_g = 16$. IL coupling: $\eta = 0.3$. Graph: $n_{\text{primes}} = 10$, $\max\_\text{power} = 4$.
+
+**Pre-registered verdict logic on B1-composed**. The milestone verdict combines the F6 statistic and the structural prediction:
+* If F6 = REFUTED **and** structural prediction confirmed: **B1-composed REFUTED for REMESH ∘ IL**. The composed-operator channel for B1 closure is narrowed: at minimum, IL is not the operator that closes it.
+* If F6 = SUPPORTED: **B1-composed POTENTIALLY OPEN; structural prediction CHALLENGED**. Requires deep diagnostic and replication on independent seeds and on alternative compositions (REMESH ∘ EN, REMESH ∘ NAV, REMESH ∘ RA) before any evidential update.
+* If F6 = INDETERMINATE: **status unchanged**; design refinement needed before next attempt.
+
+**What this milestone CAN establish**:
+* A definitive verdict on REMESH ∘ IL as a candidate B1-composed operator.
+* Empirical confirmation or falsification of the structural prediction that node-attribute-bearing Riemann content cannot be recovered by edge-coupling operators on the canonical P14 graph.
+
+**What this milestone CANNOT establish**:
+* B1-composed for other compositions (REMESH ∘ EN, REMESH ∘ NAV, REMESH ∘ RA, three-operator chains).
+* B1 via hierarchical/fractal REMESH modes (§13vicies-novies.8 second open channel).
+* G4 = RH, T-HP, or any closure beyond what F6 strictly tests.
+
+**Implementation**. `benchmarks/remesh_infinity_riemann_composed.py` (committed in the same commit as this pre-registration; no data collected at commit time). Output JSON written to `results/remesh_infinity/remesh_infinity_riemann_composed.json` (gitignored, not part of the audit trail; the audit trail is this file).
+
+**Status (pre-registration commit)**: methodology locked; no data observed; next commit will append results in a "Results" block delimited below.
+
+---
+
+#### §13vicies-novies.9 Results
+
+*To be appended in a subsequent commit after execution. Until then, this section is intentionally empty to preserve the pre-registration boundary.*
+
+---
