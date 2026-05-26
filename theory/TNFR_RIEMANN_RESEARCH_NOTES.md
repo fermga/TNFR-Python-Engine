@@ -5421,3 +5421,125 @@ observed; next commit will append results in a Results block as
 §13vicies-novies.15.
 
 ---
+
+### §13vicies-novies.15 R-inf-1b Results: pre-registered theoretical expectation confirmed at machine precision
+
+This subsection reports the result of executing
+`benchmarks/remesh_infinity_riemann_spectral_basis.py` once with the
+pre-registered seed `numpy.random.default_rng(20260526)` against the
+methodology locked in §13vicies-novies.14. No parameters were changed
+between pre-registration and execution.
+
+**Headline.**
+$$
+|D_{\mathrm{canonical}} - D_{\mathrm{shuffled}}| \;=\; 1.08 \times 10^{-13}
+\quad (<\; F8\ \text{floor}\;=\; 10^{-2}),
+$$
+so **F8 FAILED** at the machine-precision floor, exactly as
+pre-registered in the "Pre-registered theoretical expectation" paragraph
+of §13vicies-novies.14. The canonical and prime-shuffled iteration
+matrices $T_{\mathrm{spec}}$ are unitarily equivalent (their spectra
+coincide to 13 decimal places), confirming that the canonical
+tensor-product lift $I_{\tau_g + 1} \otimes \exp(-\eta \hat H_{P14})$
+and $M \otimes I_N$ commute with prime relabelling $I_{\tau_g + 1}
+\otimes P_\sigma$ up to unitary similarity. The Euler-Orthogonality
+obstruction (§13vicies-novies.11), proven for edge-channel
+compositions on fixed $G_{P14}$ and observed empirically for
+canonically-augmented $G_{P14}$ (§13vicies-novies.13), now extends to
+the canonical-tensor-product spectral-channel construction targeted by
+R-inf-1b.
+
+**Verdict.**
+
+* F7-A verdict: `INDETERMINATE_DEGENERATE_CONSTRUCTION` (F8 FAILED).
+* Milestone verdict:
+  `B1_SPECTRAL_BASIS_INDETERMINATE_EULER_ORTHOGONALITY_EXTENDS_TO_SPECTRAL_CHANNEL`.
+
+The INDETERMINATE_DEGENERATE_CONSTRUCTION verdict is itself a
+structural finding under the pre-registration protocol: it closes
+R-inf-1b for the canonical-tensor-product lift family within the
+13-operator catalog by demonstrating that the $S_n$-equivariance
+obstruction generalises from edge channel to spectral channel under
+canonical lifts.
+
+**Numerical results (F7-A KS distance vs the GUE Wigner surmise).**
+
+| Object                                                       | Projection      | #spacings | $D_{\mathrm{GUE}}$ |
+| ------------------------------------------------------------ | --------------- | --------: | -----------------: |
+| `canonical` $T_{\mathrm{spec}} = S_{\mathrm{IL}}^{\mathrm{spec}} M_{\mathrm{REMESH}}$ | Im upper-half   |       319 |             0.4732 |
+| N1 GOE (random symmetric, dim 680)                           | Re fallback     |       679 |             0.1126 |
+| N2 Poisson (680 iid uniform)                                 | iid uniform     |       679 |             0.3032 |
+| N3 shuffled-prime $T_{\mathrm{spec}}^{\sigma}$               | Im upper-half   |       319 |             0.4732 |
+| N4 REMESH-isolated (spectrum of $M$ alone)                   | Im upper-half   |         7 |             0.3082 |
+| N5 random self-adjoint (matched spectral radius)             | Im upper-half   |       319 |             0.7135 |
+| Riemann reference (first 100 zeros)                          | iid zeros       |        99 |             0.0770 |
+
+Auxiliary diagnostics: $H_{P14}$ spectral radius
+$= 13.469183$ (matches $4 \log 29 = k_{\max} \log p_{\max}$ to printed
+precision); $\dim \mathcal{H}_{\mathrm{joint}} = N(\tau_g + 1) = 680$;
+$N$-basis $= 40$; self-adjointness check passed
+($\|H - H^T\|_\infty < 10^{-12}$). The Re-fallback for N1 GOE is the
+expected branch (random symmetric matrices have real spectrum); all
+canonical and spectral-lift branches projected to Im upper-half as
+expected for a non-self-adjoint $T_{\mathrm{spec}}$.
+
+**Interpretation.**
+
+The F8 failure at $|\Delta D| \approx 10^{-13}$ is not a numerical
+artefact — it is the *predicted* signature of the unitary equivalence
+$U_\sigma T_{\mathrm{spec}}^{\mathrm{canonical}} U_\sigma^* =
+T_{\mathrm{spec}}^{\sigma}$ derived in §13vicies-novies.14. Because the
+canonical lifts $M_{\mathrm{REMESH}} = M \otimes I_N$ and
+$S_{\mathrm{IL}}^{\mathrm{spec}} = I_{\tau_g + 1} \otimes \exp(-\eta
+\hat H_{P14})$ are tensor-product separable in slot $\otimes$ basis,
+the prime-relabelling unitary $U_\sigma = I_{\tau_g + 1} \otimes
+P_\sigma$ conjugates $T_{\mathrm{spec}}$ to its shuffled image; spectra
+coincide.
+
+The canonical $D_{\mathrm{GUE}} = 0.4732$ value (far above both the
+GUE-class N1 GOE control at $D = 0.1126$ and the Riemann reference
+$D = 0.0770$) is not structurally interpretable as evidence for or
+against B1 because the F8 precondition has failed. Under
+INDETERMINATE_DEGENERATE_CONSTRUCTION, the F7-A signal is decoupled
+from the original hypothesis. The N5 random-self-adjoint control at
+$D = 0.7135$ confirms that a generic self-adjoint operator of matching
+spectral radius does not produce GUE-like statistics either; this rules
+out the trivial alternative explanation that *any* $40 \times 40$
+self-adjoint lift would yield $D \sim 0.47$ by chance. N4
+REMESH-isolated reproduces the degenerate 7-spacing diagnostic baseline
+of §13vicies-novies.9 and §13vicies-novies.13.
+
+**B1 status update (after §13vicies-novies.15).** The B1 status table
+of §13vicies-novies.13 is updated as:
+
+| Sub-route                          | Status                                                                                                                                                                                                                |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R-inf-1a-operator                  | REFUTED (§13vicies-novies.8).                                                                                                                                                                                         |
+| R-inf-1a-composed                  | REFUTED (§13vicies-novies.9).                                                                                                                                                                                         |
+| R-inf-1c                           | INDETERMINATE_DEGENERATE_CONSTRUCTION (§13vicies-novies.13). $|D_{\mathrm{can}} - D_{\mathrm{shuf}}| = 3.13 \times 10^{-13}$; modified-graph specialisation of Euler-Orthogonality under $S_n$-invariant weights.       |
+| R-inf-1b (canonical tensor-product lift) | INDETERMINATE_DEGENERATE_CONSTRUCTION (§13vicies-novies.15). $|D_{\mathrm{can}} - D_{\mathrm{shuf}}| = 1.08 \times 10^{-13}$; spectral-channel extension of Euler-Orthogonality under $M \otimes I_N$ and $I_{\tau_g+1} \otimes \exp(-\eta H)$ separable lifts. |
+| R-inf-1b (non-product / prime-indexed lifts) | NOT pre-registered, NOT tested. Would require its own canonical derivation of a slot $\otimes$ prime intertwining lift; such a lift is *not* among the catalog's standard product lifts and would need its own theoretical justification before any pre-registration.    |
+
+**Net B1 status.** With §13vicies-novies.15 the canonical-tensor-product
+family of B1 sub-routes within the 13-operator catalog on $G_{P14}$ —
+including its canonical augmentations and its canonical spectral
+lifts — is empirically closed by $S_n$-equivariance at both
+edge-channel and spectral-channel levels. The remaining structurally
+permitted sub-routes inside B1 are now restricted to *non-product
+canonical lifts* (would require canonical derivation of slot $\otimes$
+prime intertwining structure, not among standard product constructions
+in the catalog). This strengthens — but does not yet decide — the
+case for B2/B3 within the §13septies trichotomy. No claim is made about
+G4, T-HP, or B1 closure outside the catalog.
+
+**Reproducibility.** Single command, no flags:
+```
+PYTHONPATH=src python benchmarks/remesh_infinity_riemann_spectral_basis.py
+```
+Output JSON at
+`results/remesh_infinity/remesh_infinity_riemann_spectral_basis.json`
+(gitignored). All seven numerical entries quoted above (canonical $D$,
+N1–N5 $D$, $|\Delta D|$) reproduce from the locked seed
+`np.random.default_rng(20260526)`.
+
+---
