@@ -197,43 +197,182 @@ class TNFRNavierStokesOperator:
     # ------------------------------------------------------------------
     # Dynamics
     # ------------------------------------------------------------------
-    def step(self, dt: float) -> None:
-        """Advance the viscous TNFR-NS flow by one Crank-Nicolson half-step.
+    def step(self, dt: float, advection: bool = False) -> None:
+        """Advance the TNFR-NS flow by one time step.
 
-        The discrete update is the implicit-explicit midpoint
+        If ``advection`` is ``False`` (default, N2 baseline) the update is
+        the pure Crank-Nicolson viscous step
         ``(I + (nu dt / 2 h^2) L) phi_{n+1} = (I - (nu dt / 2 h^2) L) phi_n``,
-        which is unconditionally stable and second-order accurate in dt.
+        unconditionally stable and second-order accurate in dt.
+
+        If ``advection`` is ``True`` (N3) the non-linear term
+        ``-(u . grad) u`` is included via Strang splitting: half-step explicit
+        advection in skew-symmetric form, full Crank-Nicolson viscous step,
+        half-step explicit advection. The skew-symmetric form
+
+            A_a = -(1/2) [ u_b d_b phi_a + d_b (u_b phi_a) ]
+
+        annihilates ``<A, phi>`` to within round-off on the periodic grid, so
+        the discrete kinetic energy is dissipated solely by viscosity. This
+        is the prerequisite for the discrete Leray energy inequality.
+
+        Pressure (and the candidate INCOMP operator) is NOT enforced here;
+        divergence may drift on the order of ``dt`` per step, which is
+        tracked explicitly by :meth:`divergence_residual`.
         """
         if dt <= 0:
             raise ValueError("dt must be positive")
 
+        if advection:
+            if self.dimension != 2:
+                raise NotImplementedError(
+                    "advection currently implemented for dimension == 2 only"
+                )
+            adv1 = self._advection_term_2d()
+            self.phi = self.phi + 0.5 * dt * adv1
+            self._viscous_substep(dt)
+            adv2 = self._advection_term_2d()
+            self.phi = self.phi + 0.5 * dt * adv2
+        else:
+            self._viscous_substep(dt)
+
+        self.time += dt
+
+    def _viscous_substep(self, dt: float) -> None:
+        """Single Crank-Nicolson viscous update (does not advance ``time``)."""
         coeff = self.viscosity * dt / (2.0 * self._spacing ** 2)
         n = self._laplacian.shape[0]
         identity = np.eye(n)
         lhs = identity + coeff * self._laplacian
         rhs_matrix = identity - coeff * self._laplacian
-        # Solve component-wise. dimension is small (2 or 3), so the explicit
-        # loop is clearer than a tensor solve.
         for a in range(self.dimension):
             self.phi[a] = np.linalg.solve(lhs, rhs_matrix @ self.phi[a])
-        self.time += dt
 
-    def run(self, dt: float, steps: int) -> np.ndarray:
-        """Run ``steps`` Crank-Nicolson updates and return the energy history.
+    def _advection_term_2d(self) -> np.ndarray:
+        """Skew-symmetric discrete advection ``-(u . grad) u`` on the 2-torus.
+
+        Uses central differences on the canonical ``(n, n)`` grid layout.
+        Returns an array of shape ``(dimension, n_nodes)``.
+        """
+        n = int(self.graph.graph["resolution"])
+        h = self._spacing
+        u_grid = self._component_grid(0, n)
+        v_grid = self._component_grid(1, n)
+        result = np.zeros_like(self.phi)
+        for a in range(2):
+            phi_grid = self._component_grid(a, n)
+            dphi_dx = (np.roll(phi_grid, -1, axis=0) - np.roll(phi_grid, 1, axis=0)) / (2.0 * h)
+            dphi_dy = (np.roll(phi_grid, -1, axis=1) - np.roll(phi_grid, 1, axis=1)) / (2.0 * h)
+            conv = u_grid * dphi_dx + v_grid * dphi_dy
+
+            ux_phi = u_grid * phi_grid
+            vy_phi = v_grid * phi_grid
+            d_ux_phi = (np.roll(ux_phi, -1, axis=0) - np.roll(ux_phi, 1, axis=0)) / (2.0 * h)
+            d_vy_phi = (np.roll(vy_phi, -1, axis=1) - np.roll(vy_phi, 1, axis=1)) / (2.0 * h)
+            div_form = d_ux_phi + d_vy_phi
+
+            adv_grid = -0.5 * (conv + div_form)
+            for k, node in enumerate(self._nodes):
+                i, j = node
+                result[a, k] = adv_grid[i, j]
+        return result
+
+    def run(self, dt: float, steps: int, advection: bool = False) -> np.ndarray:
+        """Run ``steps`` updates and return the energy history.
 
         Returns
         -------
         numpy.ndarray
-            Array of length ``steps + 1`` with the discrete kinetic energy
-            (sum over nodes of ``0.5 * phi^2 * h^d``) at each step including
-            the initial state.
+            Array of length ``steps + 1`` with the discrete kinetic energy at
+            each step including the initial state.
         """
         history = np.empty(steps + 1, dtype=float)
         history[0] = self.kinetic_energy()
         for k in range(1, steps + 1):
-            self.step(dt)
+            self.step(dt, advection=advection)
             history[k] = self.kinetic_energy()
         return history
+
+    # ------------------------------------------------------------------
+    # Energy / dissipation diagnostics (N3)
+    # ------------------------------------------------------------------
+    def dissipation_rate(self) -> float:
+        """Instantaneous viscous dissipation rate ``nu * sum_a <phi_a, L phi_a>``.
+
+        On a periodic 2D grid the quadratic form ``<phi, L phi>`` equals
+        ``sum_edges (phi_i - phi_j)^2``, which approximates the continuum
+        ``integral |grad phi|^2 dA`` (the graph Laplacian carries an
+        implicit ``h^2`` factor that exactly cancels the Riemann area
+        element ``h^d`` in 2D). With ``E = (1/2) ||u||_{L^2}^2`` the energy
+        identity reads ``dE/dt = -nu * ||grad u||_{L^2}^2``, so the
+        discrete analogue of the instantaneous dissipation that enters the
+        Leray inequality is ``nu * sum_a <phi_a, L phi_a>``.
+        """
+        total = 0.0
+        for a in range(self.dimension):
+            total += float(self.phi[a] @ (self._laplacian @ self.phi[a]))
+        return self.viscosity * total
+
+    def leray_budget(
+        self,
+        dt: float,
+        steps: int,
+        advection: bool = True,
+    ) -> dict[str, np.ndarray]:
+        """Run the flow and return the discrete Leray energy-inequality budget.
+
+        Records, at every step ``n = 0 .. steps``,
+
+            - ``time``       : t_n = n * dt
+            - ``energy``     : E(t_n) = (1/2) ||phi||^2 * h^d
+            - ``dissipation``: D(t_n) = nu * sum_a <phi_a, L phi_a>
+            - ``cumulative`` : E(0) - E(t_n) - integral_0^{t_n} D(tau) dtau
+            - ``divergence`` : L2 residual of the discrete divergence
+
+        For the continuum Leray weak solution the inequality
+
+            E(t) + nu * integral_0^t ||grad u||^2 dtau  <=  E(0)
+
+        translates discretely to ``cumulative >= 0`` at every step (energy
+        dissipated viscously up to time t cannot exceed the energy actually
+        lost). A monotone non-decreasing ``cumulative`` sequence certifies
+        that the advection step does not inject spurious energy.
+        """
+        time_history = np.empty(steps + 1, dtype=float)
+        energy_history = np.empty(steps + 1, dtype=float)
+        dissipation_history = np.empty(steps + 1, dtype=float)
+        divergence_history = np.empty(steps + 1, dtype=float)
+
+        time_history[0] = self.time
+        energy_history[0] = self.kinetic_energy()
+        dissipation_history[0] = self.dissipation_rate()
+        divergence_history[0] = self.divergence_residual()
+
+        for k in range(1, steps + 1):
+            self.step(dt, advection=advection)
+            time_history[k] = self.time
+            energy_history[k] = self.kinetic_energy()
+            dissipation_history[k] = self.dissipation_rate()
+            divergence_history[k] = self.divergence_residual()
+
+        # Trapezoidal integral of dissipation (continuous-time analogue).
+        cumulative_dissipated = np.zeros(steps + 1, dtype=float)
+        for k in range(1, steps + 1):
+            cumulative_dissipated[k] = cumulative_dissipated[k - 1] + 0.5 * (
+                dissipation_history[k] + dissipation_history[k - 1]
+            ) * dt
+        cumulative_budget = (
+            energy_history[0] - energy_history - cumulative_dissipated
+        )
+
+        return {
+            "time": time_history,
+            "energy": energy_history,
+            "dissipation": dissipation_history,
+            "cumulative_dissipated": cumulative_dissipated,
+            "cumulative_budget": cumulative_budget,
+            "divergence": divergence_history,
+        }
 
     # ------------------------------------------------------------------
     # Diagnostics

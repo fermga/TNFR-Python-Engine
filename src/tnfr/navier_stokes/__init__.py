@@ -23,6 +23,13 @@ operator
     vortex against the analytical rate E(t) = E(0) * exp(-4 nu t) for the
     fundamental mode.
 
+    N3: skew-symmetric advection ``-(u . grad) u`` added via Strang splitting
+    + dissipation rate / Leray budget diagnostics. Verifies the discrete
+    analogue of the Leray energy inequality
+    E(t) + nu * int_0^t ||grad u||^2 dtau <= E(0) for E = (1/2) ||u||_L2^2.
+    Pressure (INCOMP) remains held in reserve; divergence drift is tracked
+    explicitly and documented as the cost of deferring NS-G2.
+
 Honest scope
 ------------
 This module does NOT claim a proof or disproof of the Clay statement. Both
