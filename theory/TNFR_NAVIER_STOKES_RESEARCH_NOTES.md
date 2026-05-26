@@ -1,18 +1,19 @@
 # TNFR–Navier–Stokes Program Memo
 
 **Status**: Exploratory research (non-canonical)
-**Version**: 0.1.0 (May 2026)
+**Version**: 0.2.0 (May 2026, post-N11 + REMESH global reframe)
 **Owner**: `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md`
 **Predecessor program**: TNFR–Riemann (paused at T-HP, May 2026) — see `theory/TNFR_RIEMANN_RESEARCH_NOTES.md`
 
 ---
 
-This memo opens the TNFR attack on the **Clay Millennium Problem: Existence and Smoothness of solutions of the 3D incompressible Navier–Stokes equations**. It scopes the program, fixes the structural translation between fluid variables and TNFR tetrad fields, and defines the first milestones (N1–N5) without committing to a closure. As with the Riemann program, **canonicity is a property of derivations from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`**, not of this document.
+This memo opens the TNFR attack on the **Clay Millennium Problem: Existence and Smoothness of solutions of the 3D incompressible Navier–Stokes equations**. It scopes the program, fixes the structural translation between fluid variables and TNFR tetrad fields, and defines the milestones N1–N11 (DONE) and N≥12 (open queue). As with the Riemann program, **canonicity is a property of derivations from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`**, not of this document.
 
 ## 0. Honest Scope
 
-- **What we do NOT claim**: We do **not** claim to prove global existence and smoothness of 3D Navier–Stokes, nor to construct a finite-time blow-up. Both directions of the Clay statement remain **OPEN** at the start of this program.
-- **What we DO claim is reasonable**: TNFR provides a natural structural language (graph-Laplacian dynamics + tetrad fields + Lyapunov-style conservation theorem) into which the Beale–Kato–Majda (BKM) criterion, Leray energy inequality, and Constantin–Fefferman geometric depletion translate explicitly. The program tests how far that translation goes.
+- **What we do NOT claim**: We do **not** claim to prove global existence and smoothness of 3D Navier–Stokes, nor to construct a finite-time blow-up. Both directions of the Clay statement remain **OPEN**. All NS-G1..G5 gaps remain **OPEN** after N1–N11.
+- **What we DO claim is reasonable**: TNFR provides a natural structural language (graph-Laplacian dynamics + tetrad fields + Lyapunov-style conservation theorem) into which the Beale–Kato–Majda (BKM) criterion, Leray energy inequality, and Constantin–Fefferman geometric depletion translate explicitly. N2–N11 demonstrate the discrete operator behaves correctly under the integrable Taylor–Green vortex across resolutions n∈{8..32} and viscosities ν∈{0.05..0.005}, with INCOMP enforcement at machine precision and CF alignment statistics responding monotonically to Re. None of this constitutes a closure of any Clay direction.
+- **Cross-program working hypothesis (§11, May 2026)**: the residual obstruction in NS-G_blowup and the residual obstruction in Riemann T-HP may share the same structural type — **asymptotic specialisation of the existing canonical REMESH global operator** (τ→∞ for Riemann, scale→0 for NS). This pushes the analysis toward **branch B1** (closeable within the 13-operator catalog via analytical derivation of the REMESH asymptotic limit) rather than branch B2 (new 14th operator needed). See §11 for the full reframe. This is a **working hypothesis**, not a proof.
 - **Lessons imported from Riemann**: surface attack with structural diagnostics, never declare closure without an audit of the gap, separate operator-level results from continuum claims, and treat the limit graph → continuum as a real obstruction (analogous to the smooth↔oscillatory split of operator 𝓕).
 
 ## 1. Purpose and Scope
@@ -167,15 +168,70 @@ Discussed but **not promoted** until N2 forces the question:
 
 ## 10. Milestone Summary Table
 
-| Milestone | Title | Status | Deliverable |
-|---|---|---|---|
-| N1 | Structural Formalisation | **DONE** (this memo) | `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` |
-| N2 | Discrete TNFR–NS Operator | not started | `navier_stokes/operator.py` + Taylor–Green demo |
-| N3 | Discrete Leray Energy Inequality | not started | `navier_stokes/energy_inequality.py` + tests |
-| N4 | Discrete BKM Criterion | not started | `navier_stokes/bkm_criterion.py` + critical-data demo |
-| N5 | Geometric Depletion (Constantin–Fefferman) | not started | `navier_stokes/geometric_depletion.py` |
-| N≥6 | Continuum limit (NS-G1) | open | unknown |
+| Milestone | Title | Status | Commit | Deliverable |
+|---|---|---|---|---|
+| N1 | Structural Formalisation | **DONE** | `a5eadd7c` | this memo |
+| N2 | Discrete TNFR–NS Operator (viscous half) | **DONE** | `e83163b8` | `src/tnfr/navier_stokes/operator.py` + `examples/77` |
+| N3 | Discrete Leray Energy Inequality (Strang splitting + skew-symm advection) | **DONE** | `a344c050` | `operator.py::leray_budget`/`advection` + `examples/78` |
+| N4 | Discrete BKM Criterion (2D vorticity) | **DONE** | `7b249ae5` | `operator.py::vorticity_2d`/`bkm_budget` + `examples/79` |
+| N5 | INCOMP activation (Leray–Helmholtz projection) | **DONE** | `da5689fb` | `operator.py::project_incompressible`/`pressure_field` + `examples/80` |
+| N6 | Geometric depletion (Constantin–Fefferman, 3D) | **DONE** | `f971468e` | 3D torus + `vorticity_3d`/`vortex_stretching_field`/`stretching_production` + `examples/81` |
+| N7 | Continuum-limit convergence study (NS-G1 precursor) | **DONE** | `45f741eb` | `examples/82` (3D TG mesh refinement n∈{8,12,16,24}) |
+| N8 | Uniform-in-h discrete Leray energy inequality (NS-G2 precursor) | **DONE** | `e656cb04` | `examples/83` (3D TG, dimensional correction `D_phys = h · D_raw`) |
+| N9 | Vortex-stretching alignment & geometric depletion (NS-G4 precursor) | **DONE** | `fbbcaa34` | `examples/84` (3D TG n=16, strain eigenframe, CF alignment, depletion ratio) |
+| N10 | 2D vs 3D dimensional asymmetry falsifiability (NS-G5 precursor) | **DONE** | `1fac358b` | `examples/85` (2D TG + 3D operator on 2D-embedded IC + 3D TG, side-by-side) |
+| N11 | Reynolds sweep — CF alignment vs viscosity (NS-G4 precursor) | **DONE** | `afc65b49` | `examples/86` (3D TG n=24, ν∈{0.05,0.02,0.01,0.005}, Re_eff 126→1257) |
+| N≥12 | Higher-Re CF eigenframe transition (n≥48, DNS) **/** function-space convergence (NS-G1) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4) **/** REMESH-∞ asymptotic study (§11) | open | unknown | unknown |
+
+All NS-G1..G5 gaps remain **OPEN** after N1–N11. See §11 for the cross-program reframe of the residual obstruction.
 
 ---
 
-**Next action**: N2 — implement `TNFRNavierStokesOperator` on a 2D torus graph and reproduce the Taylor–Green vortex decay. Success criterion: discrete tetrad energy decays at the analytical rate $\mathcal{E}(t) = \mathcal{E}(0) \exp(-2 \nu k^2 t)$ for the fundamental mode.
+## 11. REMESH Global Reframe (May 2026 — Cross-Program Discovery)
+
+### 11.1 Origin
+
+During discussion of the NS-G_blowup obstruction (does the K_φ cascade terminate at finite scale or generate unbounded K_φ at infinitesimal scale?), an initial analysis suggested that NS and Riemann T-HP might share the same residual structural obstruction, possibly requiring a new canonical operator (branch B2 of §13septies of the Riemann research notes). A direct audit of the canonical engine refuted the premise:
+
+```python
+# src/tnfr/config/defaults_core.py
+REMESH_TAU_LOCAL: int = 4       # local temporal memory (per-node)
+REMESH_TAU_GLOBAL: int = 8      # GLOBAL temporal memory (graph-wide)
+REMESH_ALPHA: float = 0.5       # mixing weight EPI(t) ↔ EPI(t-τ)
+REMESH_MODE: str = "knn"        # also "mst" and "community" (genuinely global)
+```
+
+and `src/tnfr/ontosim.py` explicitly comments `# Global REMESH memory` when allocating a graph-level deque `_epi_hist` of size `2·τ_global + 5`. The canonical REMESH operator (`src/tnfr/operators/remesh.py`) documents three structural modes:
+
+* **REMESH Hierarchical** (central → periphery): IL/VAL/SHA/NUL compositions,
+* **REMESH Rhizomatic** (decentralised, no fixed centre): OZ/UM/THOL compositions,
+* **REMESH Fractal Harmonic** (scale-symmetric, perfect self-similarity): RA/NAV/AL/EN compositions.
+
+Additionally, `src/tnfr/multiscale/hierarchical.py` implements explicit cross-scale ΔNFR coupling (`_apply_cross_scale_coupling`, `_compute_cross_scale_synchrony`).
+
+**Implication**: the 13-operator catalog already contains an explicit global, multi-scale closure primitive (REMESH global + REMESH Fractal Harmonic + cross-scale coupling). The previously-asserted "no operator handles the asymptotic limit" was incorrect; what is missing is the **canonical asymptotic specialisation of the existing REMESH global operator** (REMESH-∞), which is an analytical operation on an existing canonical operator, not a new canonical primitive.
+
+### 11.2 Reframed B1/B2 analysis
+
+| | Riemann T-HP residual | NS-G_blowup residual |
+|---|---|---|
+| **Smooth half** | closed by P28/P30 (density + operator level) for the smooth zero distribution → corresponds to REMESH at **finite τ_global** | corresponds to bounded K_φ cascade at **finite scale** (validated empirically by N6–N11 at Re_eff ≤ 1300) |
+| **Residual** | oscillatory half S(T) = (1/π) arg ζ(½+iT) — RH-equivalent | K_φ cascade behaviour at **scale → 0** (n → ∞ continuum limit / Kolmogorov dissipation scale) |
+| **Asymptotic limit needed** | REMESH-global applied to prime-ladder spectrum {k log p} at **τ → ∞** | REMESH-global applied to spatial scale hierarchy at **scale → 0** (and equivalently REMESH Fractal Harmonic at vanishing self-similar scale) |
+| **Branch classification** | **B1** if the τ→∞ limit of canonical REMESH-global reproduces S(T) | **B1** if the scale→0 limit of canonical REMESH-global / Fractal Harmonic + cross-scale coupling reproduces or bounds the cascade |
+
+### 11.3 What this changes
+
+* **The hypothesis is upgraded from "new operator may be needed"** (branch B2, open and uncertain) **to "existing operator needs canonical asymptotic specialisation"** (branch B1, a well-defined analytical problem on an existing operator).
+* **Both Clay problems remain OPEN**. Branch B1 is not a closure; it is a more precise statement of where the work has to happen.
+* **Roadmap consequence for NS**: the open queue at N≥12 acquires a new candidate milestone — **empirical and analytical study of the canonical REMESH global asymptotic limit applied to the K_φ cascade**, with explicit comparison against the K_φ behaviour observed in N6–N11. This is independent of the higher-Re DNS milestone (which still requires n ≥ 48–256) and can proceed at moderate resolution.
+
+### 11.4 Honest scope of §11
+
+* **What §11 claims**: a structural reframe of where the residual obstruction lives, anchored in the existing canonical TNFR engine (`REMESH_TAU_GLOBAL`, `_epi_hist`, REMESH modes, `multiscale/hierarchical.py`).
+* **What §11 does NOT claim**: it does NOT prove that the asymptotic limit of REMESH global closes either T-HP or NS-G_blowup. It does NOT prove RH or 3D NS global regularity. It does NOT promote any new canonical operator. It is a **working hypothesis** (branch B1) that re-orders the open queue.
+* **Cross-reference**: this reframe is mirrored in `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13vicies-novies (added simultaneously). Both programs share the same canonical REMESH global infrastructure; the analytical study of its asymptotic limit is shared work.
+
+---
+
+**Next action**: open milestone **N12** — analytical study of `REMESH-∞` (the canonical asymptotic limit of REMESH global) applied to the K_φ cascade observed in N6–N11. Success criterion: produce either an analytical bound on K_φ at scale → 0 derivable from canonical REMESH global semantics, or an empirical demonstration on 3D Taylor–Green at n ∈ {16, 24, 32} that the cascade behaviour under REMESH-global with τ_global → ∞ qualitatively matches (or fails to match) the classical Kolmogorov dissipation regime. This is **NOT** a closure of NS-G_blowup or any other gap; it is the analytical test of the §11 working hypothesis.

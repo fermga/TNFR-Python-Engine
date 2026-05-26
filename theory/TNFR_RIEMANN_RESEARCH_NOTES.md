@@ -3996,3 +3996,40 @@ helper functions; consult `src/tnfr/riemann/__init__.py` for the
 authoritative public surface.
 
 ---
+
+## §13vicies-novies. REMESH Global Reframe (Cross-Program Discovery; May 2026; Does NOT Close G4 = RH)
+
+**Status**: Working hypothesis (branch B1 of §13septies.7). Does **not** close G4 = RH, does **not** advance T-HP beyond §13nonies (P30 smooth half), does **not** promote any new canonical operator.
+
+### §13vicies-novies.1 Origin
+
+During the parallel TNFR–Navier–Stokes program (see `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §11), an analysis of the NS-G_blowup residual obstruction prompted re-examination of the 13-operator catalog for multi-scale closure primitives. A direct audit refuted the prior implicit assumption that no canonical operator handles asymptotic/global temporal coupling:
+
+* `src/tnfr/config/defaults_core.py`: `REMESH_TAU_GLOBAL = 8` (graph-wide temporal memory), `REMESH_TAU_LOCAL = 4`, `REMESH_MODE in {knn, mst, community}` with `community` mode genuinely global.
+* `src/tnfr/ontosim.py`: `# Global REMESH memory` allocates a graph-level `_epi_hist` deque of size `2·τ_global + 5`.
+* `src/tnfr/operators/remesh.py`: documents three REMESH structural modes — **Hierarchical** (IL/VAL/SHA/NUL), **Rhizomatic** (OZ/UM/THOL), **Fractal Harmonic** (RA/NAV/AL/EN, scale-symmetric).
+* `src/tnfr/multiscale/hierarchical.py`: explicit cross-scale ΔNFR coupling.
+
+The canonical engine therefore **already contains** a global, multi-scale closure primitive (REMESH global with Fractal Harmonic mode and cross-scale coupling). What is missing for T-HP is the **canonical asymptotic specialisation of the existing REMESH global operator** at `τ → ∞` applied to the prime-ladder spectrum, not a new canonical primitive.
+
+### §13vicies-novies.2 Reframed Branch Analysis of T-HP
+
+| Component | Status | REMESH-global interpretation |
+|---|---|---|
+| Smooth half of `F` | Closed at density level (P28, §13sexies) and operator level (P30, §13nonies) | REMESH global at **finite** `τ_global` applied to the prime-ladder spectrum `{k log p}` (P14 eigendata) |
+| Oscillatory half `S(T) = (1/π) arg ζ(½+iT)` | Open (RH-equivalent) | REMESH global at **`τ → ∞`** applied to the same prime-ladder spectrum |
+| Branch classification | Previously implicitly B2 (new operator) | **Reframed as B1** (closeable inside the catalog if the canonical `τ → ∞` limit of REMESH global is derivable) |
+
+### §13vicies-novies.3 What This Changes for the Riemann Program
+
+* **The hypothesis is upgraded** from "new operator may be needed" (branch B2, open and uncertain) **to** "existing operator needs canonical asymptotic specialisation" (branch B1, a well-defined analytical problem on an existing canonical operator).
+* **G4 = RH remains OPEN**. The P30 negative-enrichment result (canonical multiplicative perturbations of the smooth target failed to recover S(T)) is **reinterpretable**: the perturbations tested were finite-`τ` REMESH-global candidates, none of which can reproduce a `τ → ∞` limit by construction.
+* **The Riemann program remains paused at T-HP** (per §"Program Status" of `AGENTS.md`). The reframe does **not** authorise reopening the ζ-track or L-track attack surfaces; it only re-classifies the residual obstruction.
+
+### §13vicies-novies.4 Honest Scope
+
+* **What §13vicies-novies claims**: a structural reframe of the T-HP residual obstruction, anchored in canonical engine artefacts (`REMESH_TAU_GLOBAL`, `_epi_hist`, REMESH modes, `multiscale/hierarchical.py`).
+* **What §13vicies-novies does NOT claim**: does NOT prove RH, does NOT close G4, does NOT close T-HP, does NOT derive `REMESH-∞`, does NOT promote any new operator.
+* **Cross-reference**: mirrored in `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §11 (added simultaneously). Both programs share the same canonical REMESH global infrastructure; the analytical study of its `τ → ∞` (Riemann) / scale `→ 0` (NS) asymptotic limit is shared work.
+
+---
