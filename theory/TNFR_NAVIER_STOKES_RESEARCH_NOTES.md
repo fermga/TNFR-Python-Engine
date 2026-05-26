@@ -181,7 +181,7 @@ Discussed but **not promoted** until N2 forces the question:
 | N9 | Vortex-stretching alignment & geometric depletion (NS-G4 precursor) | **DONE** | `fbbcaa34` | `examples/84` (3D TG n=16, strain eigenframe, CF alignment, depletion ratio) |
 | N10 | 2D vs 3D dimensional asymmetry falsifiability (NS-G5 precursor) | **DONE** | `1fac358b` | `examples/85` (2D TG + 3D operator on 2D-embedded IC + 3D TG, side-by-side) |
 | N11 | Reynolds sweep — CF alignment vs viscosity (NS-G4 precursor) | **DONE** | `afc65b49` | `examples/86` (3D TG n=24, ν∈{0.05,0.02,0.01,0.005}, Re_eff 126→1257) |
-| N12 | REMESH-∞ asymptotic limit on K_φ cascade (§11 test, NS-G_blowup branch B1) | **PRE-REGISTERED** (this commit) | pending | §12 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py` |
+| N12 | REMESH-∞ asymptotic limit on K_φ cascade (§11 test, NS-G_blowup branch B1) | **DONE — STRUCTURAL_EFFECT_MONOTONE** (per locked §12.7 mapping; non-monotone in BKM and stretching observables, see §13.4). Pre-registration: `c8900fce`. | n = 16 single-resolution probe of §11 working hypothesis: supports REMESH-global having structural traction on NS K_φ cascade (99.5 % response in peak stretching across τ_g sweep). Does NOT close NS-G1..G5. | §12 + §13 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py` |
 | N≥13 | Higher-Re CF eigenframe transition (n≥48, DNS) **/** function-space convergence (NS-G1) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4) **/** N12 follow-up at n∈{24,32} | open | unknown | unknown |
 
 All NS-G1..G5 gaps remain **OPEN** after N1–N11. See §11 for the cross-program reframe of the residual obstruction.
@@ -363,4 +363,89 @@ After this commit lands, the benchmark is executed and §13 (Results) is appende
 * Final verdict from the §12.7 mapping,
 * Reproducibility command line,
 * Memory and milestone-table updates as appropriate.
+
+---
+
+## §13 N12 Results — REMESH-∞ on 3D Taylor–Green at n = 16
+
+**Status**: DONE.  Pre-registration commit: `c8900fce` (single atomic commit landing §12 + benchmark skeleton, before any data was observed).  Results commit: see §10 milestone table (this commit).
+
+### §13.1 Headline
+
+**Verdict per locked §12.7 mapping**: `STRUCTURAL_EFFECT_MONOTONE` (F1 PASS, F2 PASS, F3 MONOTONE, F4 PASS, F5 PASS).
+
+REMESH-global mixing applied between NS time-steps produces a **measurable structural response** on the 3D Taylor–Green vortex at n = 16: the τ_g sweep moves the time-integrated stretching observable by **≈ 99.5 %** (peak |∇u| projection on vorticity drops from 14.48 at τ_g = 0 to 0.078 at τ_g = ∞).  Energy is not injected (F4 PASS at machine precision), incompressibility is preserved (F5 PASS at machine precision), and the baseline run reproduces its reference exactly (F1 PASS, rel. err. 0.0).
+
+This **supports** the §11 working hypothesis that REMESH-global is not an inert operator on NS dynamics at this resolution: it has structural traction on the K_φ cascade — though the response signature is **mixed**, see §13.4.
+
+### §13.2 Locked F-criteria — verbatim outcomes
+
+| Criterion | Result | Detail |
+|---|---|---|
+| F1 baseline fidelity | **PASS** | rel. err. = 0.00e+00 (tol 1e-2) |
+| F2 measurable response | **PASS** | max rel. change = 0.9946 (threshold 0.05) |
+| F3 monotonicity | **MONOTONE** | monotone observables: `peak_vorticity_sup`, `peak_enstrophy` |
+| F4 energy non-injection | **PASS** | max rel. excess vs IC = 0.00e+00 (tol 1e-10) |
+| F5 divergence control | **PASS** | max div = 1.38e-16 (tol 1e-8) |
+
+### §13.3 Numerical table per τ_g
+
+| τ_g | peak \|ω\|_∞ | BKM(T) = ∫₀ᵀ\|ω\|_∞ dt | peak enstrophy ½∫\|ω\|² | peak stretching ω·S·ω | max div | wall (s) |
+|---|---|---|---|---|---|---|
+| 0 (baseline) | 1.948991 | 1.816225 | 88.521162 | 14.483747 | 1.38e-16 | 10.3 |
+| 8 | 1.948991 | 1.942807 | 88.334514 | 1.833837 | 1.30e-16 | 11.4 |
+| 32 | 1.948991 | 1.939696 | 88.334514 | 2.476090 | 1.27e-16 | 11.6 |
+| 128 | 1.948991 | 1.898164 | 88.334514 | 9.428035 | 1.31e-16 | 10.6 |
+| ∞ (lag-to-IC) | 1.948991 | 1.948682 | 88.334514 | 0.077555 | 1.30e-16 | 11.3 |
+
+Per-run JSON: `results/remesh_infinity/remesh_infinity_navier_stokes_3d_taylor_green.json` (gitignored — regenerable via the reproducibility command in §13.6).
+
+### §13.4 Interpretation — honest decomposition of the verdict
+
+The locked verdict is `STRUCTURAL_EFFECT_MONOTONE`, but the response is not uniform across observables.  Three regimes coexist in the table above:
+
+1. **Trivially flat** (peak \|ω\|_∞): identical to six digits across all five runs.  Mechanism: in 3D Taylor–Green starting from the canonical sin/cos IC, peak \|ω\|_∞ is attained at t = 0 (the IC itself), **before any mixing event fires** (finite τ_g cases have their first mix at step τ_g + 1, and even τ_g = ∞ first mixes at step 1, by which time \|ω\|_∞ has already decayed below the IC value).  This observable is therefore **structurally insensitive** to REMESH-global at this resolution — it would only respond if peak \|ω\|_∞ were attained at a strictly positive time (which would require a stronger forcing or longer T).
+
+2. **Nearly flat across the mixing sweep** (peak enstrophy): baseline 88.521 versus a uniform 88.335 for all four mixing runs (rel. drop ≈ 0.21 %).  Mechanism: peak enstrophy occurs early in the transient.  REMESH-global shaves it by a tiny amount regardless of τ_g, because in all four cases the first mix occurs before the enstrophy peak and the per-step mix amplitude (α = 0.5 against a single past frame) is τ_g-independent for the first effective mix.  This observable carries the F3 MONOTONE classification almost trivially (the strict monotonicity test passes because the 4 mixing values are equal, which satisfies both ascending and descending interpretations).
+
+3. **Dynamically active and non-monotone** (BKM(T) and peak stretching ω·S·ω): BKM(T) traces 1.816 (baseline) → 1.943 → 1.940 → 1.898 → 1.949, a U-shape with minimum at τ_g = 128.  Peak stretching traces 14.48 → 1.83 → 2.48 → 9.43 → 0.078, a sharp drop followed by a partial recovery at τ_g = 128 and a near-total collapse at τ_g = ∞.  These observables carry the F2 PASS (the 99.5 % figure comes from the τ_g = ∞ stretching collapse) and reveal the **actual** structural fingerprint of REMESH-global on the NS cascade: it is a **non-trivial, non-monotone modulator of the production term**, with a sweet spot around τ_g = 128 where the integrated BKM dips while the instantaneous stretching peak rebounds toward the baseline.
+
+The locked F3 classification (MONOTONE, driven by the flat observables) is therefore **technically correct under the pre-registered rule but operationally misleading** — the physically meaningful observables (BKM and stretching) are non-monotone.  This is **acknowledged honestly here**; the pre-registered verdict mapping is not retroactively edited.  Future N-milestones at higher resolution should pre-register a refined F3 that excludes structurally insensitive observables (peak \|ω\|_∞ when the peak occurs at t = 0).
+
+### §13.5 Status update to §11 working hypothesis
+
+The N12 result **supports** the §11 working hypothesis that REMESH-global has structural traction on the NS K_φ cascade — at n = 16, on 3D Taylor–Green, over T = 1.0 viscous time-units.  Specifically:
+
+* `STRUCTURAL_EFFECT_*` (either MONOTONE or NON_MONOTONE) was a pre-registered outcome consistent with §11.  The opposite outcome (`NULL_RESULT`) would have falsified §11 at this resolution; it did not occur.
+* The mixed signature (large response in time-integrated and stretching observables, trivially flat response in peak-amplitude observables) refines §11: REMESH-global modulates **accumulated** and **production** quantities, not transient amplitude peaks attained at the IC.
+* This is consistent with the Riemann §13vicies-novies thread on the *same* canonical REMESH-global infrastructure: there the analogous τ_g → ∞ limit on prime-path graphs returned `INDETERMINATE_DEGENERATE_CONSTRUCTION` at machine precision (a structural-symmetry obstruction).  Here the operator has non-degenerate traction.  The two outcomes are not in tension — they probe different specialisations of the same canonical limit (NS: continuum dynamics; Riemann: discrete spectral basis).
+
+This **does NOT close** any of NS-G1..G5.  It is a single-resolution empirical probe of one branch (B1) of the §11 working hypothesis at one resolution (n = 16) on one IC (3D Taylor–Green), as pre-registered.
+
+### §13.6 Reproducibility
+
+```powershell
+.venv312\Scripts\python.exe benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py
+```
+
+Locked seed label: `20260526`.  Configuration: N = 16, ν = 0.01, dt = 0.005, T = 1.0 (200 steps), α = 0.5, τ_g ∈ {0, 8, 32, 128, ∞}.  All knobs are module-level constants in `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py` (lines 121-160) and are pinned by §12.5 of this memo.
+
+### §13.7 Deliverables landed in this Results commit
+
+* §13 (this section) appended to `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md`.
+* §10 milestone table updated: N12 row promoted from `PRE-REGISTERED` to `DONE — STRUCTURAL_EFFECT_MONOTONE (non-monotone in BKM/stretching)` with results commit hash.
+* `/memories/repo/tnfr-navier-stokes-program-status.md` created with N12 entry at top, mirroring the Riemann program-status memory file.
+* Benchmark JSON output regenerable but gitignored (`results/` is in `.gitignore`).
+
+### §13.8 Scope statement (unchanged from §12.9)
+
+N12 is a single-resolution structural-compatibility probe.  It does **not**:
+* Close any of NS-G1..G5,
+* Prove or disprove the Clay Millennium 3D NS regularity question,
+* Promote any new canonical operator (REMESH-global is already in the 13-operator catalog),
+* Make any claim about τ_g → ∞ as a *physical* limit beyond the operationally-implemented lag-to-IC realisation.
+
+The structural traction reported above is an empirical observation on one benchmark, in the same spirit as the Riemann §13vicies-novies thread on the analogous canonical infrastructure.
+
+
 
