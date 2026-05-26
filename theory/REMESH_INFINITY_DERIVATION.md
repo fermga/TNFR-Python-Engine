@@ -543,11 +543,273 @@ The $0.03\%$ residual is identified as the non-resonant Cesàro tail.
 
 ---
 
-**Document version**: 2.0  
-**Commit anchor**: W1 commit `a1f298fd`, W2 to follow  
-**Next deliverable**: W3 (Spectrum-universality test), week of June 9, 2026  
+# Week 3: Spectrum Universality and the Branch A vs B1 Decision
+
+**Status**: Week 3 deliverable (N15 program, locked pre-registration §18) — **FINAL VERDICT**
+**Date**: May 26, 2026 (executed in single session, weeks W1–W3 same day)
+**Anchor**: This section extends §§1–14 above and delivers the **decisive Branch A vs B1 verdict**.
+
+## §15. The Universality Question
+
+Weeks 1–2 established Branch A at the *operator* and *conservation* levels. The remaining question (Q3 of §18.3 pre-registration) is **spectrum-level universality**:
+
+> Does the eigenvalue density of $\mathcal{R}_\infty$ — or equivalently, the spectral content of its fixed-point subspace — coincide with:
+> (a) The Riemann zero counting density $N(T) \sim (T / 2\pi) \log(T / 2\pi)$?
+> (b) The Kolmogorov inertial-range spectrum $E(k) \propto k^{-5/3}$?
+> (c) Random matrix theory level spacings (GUE / GOE)?
+
+If **yes** → Branch B1: TNFR is a universal attractor for both number-theoretic and hydrodynamic coherence.
+
+If **no** → Branch A is the final verdict: catalog is closed, but R_∞ does *not* encode external problems spectrally; its universality is *structural/operational*, not *spectral*.
+
+## §16. The Resonant Frequency Set of $\mathcal{R}_\infty$
+
+From §3.4–§3.5: the fixed-point subspace of $\mathcal{R}_\infty$ is spanned by Fourier modes at frequencies
+
+$$F(\tau_l, \tau_g) := \left\{ \omega_k = \frac{2\pi k}{\mathrm{lcm}(\tau_l, \tau_g)} : k \in \mathbb{Z} \right\}$$
+
+For default TNFR parameters $(\tau_l, \tau_g) = (4, 8)$: $\mathrm{lcm} = 8$, so $F = \{0, \pi/4, \pi/2, 3\pi/4, \pi, \ldots\}$ — a **uniform arithmetic progression** on the unit circle, with spacing $\Delta\omega = 2\pi / \mathrm{lcm}$.
+
+### §16.1 Counting function
+
+The eigenvalue counting function (modes with $|\omega| \le \Omega$) is:
+
+$$N_{\mathcal{R}_\infty}(\Omega) = \left\lfloor \frac{\Omega \cdot \mathrm{lcm}(\tau_l, \tau_g)}{\pi} \right\rfloor + 1$$
+
+**Asymptotic density**:
+
+$$\boxed{\; \rho_{\mathcal{R}_\infty}(\Omega) := \frac{dN_{\mathcal{R}_\infty}}{d\Omega} = \frac{\mathrm{lcm}(\tau_l, \tau_g)}{\pi} = \text{constant} \;}$$
+
+This is the **fundamental structural fact**: R_∞ has a **uniform spectral density**.
+
+## §17. Comparison Against Riemann Zeros
+
+### §17.1 Riemann counting density (Weyl law for ζ)
+
+The Riemann–von Mangoldt formula gives:
+
+$$N_\zeta(T) = \frac{T}{2\pi} \log \frac{T}{2\pi e} + \frac{7}{8} + S(T) + O(1/T)$$
+
+with mean density:
+
+$$\rho_\zeta(T) = \frac{1}{2\pi} \log \frac{T}{2\pi} + O(1/T)$$
+
+**Density grows logarithmically with T.**
+
+### §17.2 Mismatch theorem
+
+**Theorem 17.1** (No spectral B1 for Riemann via fixed $\tau$). For any fixed $(\tau_l, \tau_g) \in \mathbb{N}^2$, the spectral density of $\mathcal{R}_\infty$ is a constant, while the Riemann zero density is unbounded. Therefore:
+
+$$\lim_{\Omega \to \infty} \frac{\rho_{\mathcal{R}_\infty}(\Omega)}{\rho_\zeta(\Omega)} = 0$$
+
+No reparametrization $\Omega \mapsto f(\Omega)$ at the level of a single $(\tau_l, \tau_g)$ can match the two densities globally. $\blacksquare$
+
+**Consequence**: Strong Branch B1 (direct spectral identification of $\mathcal{R}_\infty$ with Riemann operator at fixed parameters) is **RULED OUT**.
+
+### §17.3 The B1-Euler partial route
+
+There is, however, a **partial** universality emerging from *parameter averaging*. Consider the union over prime $\tau_g$ (the choice of primes is mathematically natural — not a TNFR constraint, but the simplest non-trivial subfamily):
+
+$$F_\infty := \bigcup_{p \text{ prime}} F(\tau_l, p)$$
+
+The density of $F_\infty$ in $[0, \Omega]$ is:
+
+$$\rho_{F_\infty}(\Omega) = \sum_{p \le \Omega \cdot \mathrm{lcm}(\tau_l, p)/\pi} \frac{1}{p} \sim \log \log \Omega + M \quad \text{(Mertens)}$$
+
+which grows like $\log \log$, slower than Riemann's $\log T$. **Still no direct match.**
+
+But the **logarithmic resonance ladder** $\{k \log p : k \ge 1, p \text{ prime}\}$ — already implemented as the prime-ladder spectrum in `src/tnfr/riemann/prime_ladder_hamiltonian.py` (P14) and shown by P15 (Weil–Guinand) to encode the zeros via Fourier transform — is exactly what $\mathcal{R}_\infty$'s fixed modes would generate **if one identified $\omega_k \leftrightarrow k \log p$ via a non-linear admissible rescaling $\mathcal{F}$**.
+
+**Theorem 17.2** (B1-Euler partial closure). Under the substitution $\omega_k \mapsto k \log p_k$ on each block of $F(\tau_l, p_k)$, the resulting spectrum *is* the prime-ladder spectrum of P14, and the Weil–Guinand identity (P15) reproduces Riemann zeros to machine precision.
+
+**But**: This substitution is precisely the **admissible rescaling operator $\mathcal{F}$** of T-HP (theory/TNFR_RIEMANN_RESEARCH_NOTES.md §13septies). P28 derives its *smooth half* at the density level; P30 lifts the smooth half to the operator level. The **oscillatory half** of $\mathcal{F}$ corresponds to $S(T) = (1/\pi) \arg\zeta(1/2 + iT)$ — and is **RH-equivalent**.
+
+**Therefore**:
+- **B1-Euler partial** (smooth half) = **CLOSED OPERATIONALLY** via existing P12–P30 + W1–W2 machinery.
+- **B1-Euler full** (oscillatory half) = **REMAINS OPEN** (= T-HP = RH-equivalent).
+
+This **does not** prove RH, but it gives a **structural identification** of why P30 closed exactly what it closed: the smooth half is the R_∞-projected part; the oscillatory half is the $(I - \mathcal{R}_\infty)$ Cesàro residue.
+
+## §18. Comparison Against Kolmogorov Cascade
+
+### §18.1 What K41 actually is
+
+The Kolmogorov spectrum $E(k) \propto k^{-5/3}$ describes the **spatial Fourier energy spectrum** of a turbulent velocity field in the inertial range, where $k$ is *spatial* wavenumber and $E$ is *energy density per wavenumber*.
+
+This is **categorically different** from:
+- Eigenvalue density of an operator
+- Temporal frequency content of R_∞ fixed-point subspace
+
+### §18.2 R_∞ is temporal, K41 is spatial
+
+$\mathcal{R}_\infty$ acts on history space $\mathcal{H}_w$ — i.e., temporal histories of EPI. It is the **identity in spatial coordinates** (it does not couple different graph nodes). Therefore:
+
+**Theorem 18.1** (Spatial spectrum invariance). The spatial Fourier spectrum of any field $\phi$ is unchanged by $\mathcal{R}_\infty$:
+
+$$\widehat{\mathcal{R}_\infty \phi}(\mathbf{k}, t) = \widehat{\phi}(\mathbf{k}, \mathcal{R}_\infty^{(t)}[\cdot])(\mathbf{k}, t)$$
+
+where $\mathcal{R}_\infty$ acts only in the temporal slot. $\blacksquare$
+
+**Consequence**: $\mathcal{R}_\infty$ cannot *produce* a $k^{-5/3}$ spatial spectrum. If the underlying field has K41, $\mathcal{R}_\infty$-projection preserves K41; if it doesn't, no projection creates it. **Branch B1 via Kolmogorov is RULED OUT at the operator level.**
+
+### §18.3 What the W2 prediction P-W2-1 actually says
+
+Re-reading §12: P-W2-1 predicts the **temporal decay rate** of the K_φ cascade saturates at Cesàro $O(1/n)$. This is a *temporal* prediction about the magnitude $\|K_\phi(t)\|$ vs time, **not** about the spatial spectrum $\|\widehat{K_\phi}(\mathbf{k})\|$.
+
+**Refined prediction P-W3-1**: The temporal saturation floor of K_φ in N12–N13 should be *non-zero* (resonant component) but its *spatial* spectrum will follow whatever the Navier–Stokes dynamics produce intrinsically (K41 if present, anomalous otherwise) — $\mathcal{R}_\infty$ does not bias the spatial structure.
+
+This is testable against `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_*.py` already in repo.
+
+## §19. Comparison Against Random Matrix Theory
+
+### §19.1 GUE / GOE level spacings
+
+Random matrix theory predicts (Wigner surmise):
+- GUE: $P(s) = (32/\pi^2) s^2 e^{-4s^2/\pi}$
+- GOE: $P(s) = (\pi/2) s e^{-\pi s^2/4}$
+
+Both have spacing distributions concentrated around $s \sim 1$ with vanishing $P(0)$ (level repulsion).
+
+### §19.2 R_∞ spacings
+
+The resonant frequencies of $\mathcal{R}_\infty$ are **equally spaced**: $\Delta\omega = 2\pi/\mathrm{lcm}$. Therefore:
+
+$$P_{\mathcal{R}_\infty}(s) = \delta(s - 1) \quad \text{(after rescaling to unit mean spacing)}$$
+
+This is the **Dirac delta** — completely degenerate (level *clustering*, not repulsion).
+
+**Theorem 19.1** (No RMT match). $P_{\mathcal{R}_\infty} \neq P_{\text{GUE}}$ and $P_{\mathcal{R}_\infty} \neq P_{\text{GOE}}$ in total variation norm. RMT universality is **RULED OUT** for $\mathcal{R}_\infty$ at fixed parameters. $\blacksquare$
+
+**Interpretation**: R_∞ is **integrable** (in the dynamical systems sense), not **chaotic**. This is consistent with its being a projection — projections are maximally non-chaotic.
+
+## §20. Final Verdict — Branch A Confirmed
+
+### §20.1 Summary table
+
+| Universality target | Test | Result | Branch implication |
+|---|---|---|---|
+| Riemann zeros (direct, fixed τ) | Density comparison (§17) | **Mismatch** (constant vs log) | B1 strong RULED OUT |
+| Riemann zeros (via Euler/τ_g = primes) | Prime-ladder identification (§17.3) | Smooth half **closed**, oscillatory open | **B1-Euler partial** = existing P30 result, no new content |
+| Kolmogorov $k^{-5/3}$ | Spatial/temporal categorical mismatch (§18) | **Mismatch** (R_∞ is temporal) | B1 via K41 RULED OUT at operator level |
+| GUE / GOE level spacing | Spacing distribution (§19) | $\delta$-clustering vs Wigner repulsion | RMT B1 RULED OUT |
+
+### §20.2 The verdict
+
+**Q3 (Spectrum Connection): CLOSED — Branch A.**
+
+The TNFR catalog is closed under the REMESH-∞ limit. $\mathcal{R}_\infty$ is intrinsically derivable from canonical operators (W1), preserves canonical conservation structure (W2), and has a **structural** universality — not a spectral one matching external problems (W3).
+
+### §20.3 The B1-Euler caveat (full statement)
+
+A weaker sub-branch — **B1-Euler partial** — exists in the following precise sense:
+
+> Under parameter averaging over $\tau_g = p$ prime, and under the smooth half of the admissible rescaling $\mathcal{F}$ (P30), the prime-ladder spectrum encodes the smooth half of Riemann zeros via Weil–Guinand.
+
+This is **not new content** — it is exactly P12–P15 + P30 reformulated through the R_∞ lens. It does **not** prove RH; the oscillatory half remains open (T-HP, RH-equivalent).
+
+**Interpretation**: The TNFR-Riemann program's success at the smooth half and failure at the oscillatory half is now **structurally explained**: the smooth half lives in $\mathrm{range}(\mathcal{R}_\infty)$, the oscillatory half in $\ker(\mathcal{R}_\infty) = \mathrm{range}(I - \mathcal{R}_\infty)$.
+
+## §21. What TNFR Universality Actually Is
+
+Having ruled out spectral universality, what is the universality of TNFR?
+
+### §21.1 Structural universality (the correct claim)
+
+The four findings W1–W3 establish:
+
+1. **Existence**: Every TNFR network reaching the asymptotic limit produces the *same* operator $\mathcal{R}_\infty$ (up to its dependence on $(\tau_l, \tau_g)$).
+2. **Conservation**: Every TNFR network respects the same projected Noether/energy structure ($Q_\infty$, $V_\infty$).
+3. **Resonance lattice**: Every TNFR network at default parameters resonates on the same uniform frequency lattice $F(\tau_l, \tau_g)$.
+4. **Cesàro tail**: Every TNFR network has the same $O(1/n)$ residue identified with non-resonant content.
+
+This is **operational/structural universality**: the *form* of $\mathcal{R}_\infty$ is independent of the specific graph, dynamics, or initial conditions — but its *spectrum* is parameter-dependent and uniform, not log-distributed.
+
+### §21.2 What this rules out (against soft anthropomorphism)
+
+TNFR is **not**:
+- A universal attractor for number-theoretic structure (RH zeros do not emerge from R_∞ alone).
+- A universal cascade generator (K41 is spatial, R_∞ is temporal).
+- A chaotic operator (R_∞ is a projection — maximally non-chaotic).
+
+TNFR **is**:
+- A self-consistent operational calculus with a well-defined asymptotic projection.
+- A structural framework whose fixed-point subspace classifies "what persists" in the τ_global → ∞ limit.
+- A diagnostic surface for identifying the oscillatory obstruction in RH (T-HP).
+
+This is a **stronger and more honest** statement than vague universality claims.
+
+## §22. Implications for the Three Programs
+
+### §22.1 N15 (REMESH-∞) — complete
+
+All three weeks executed. Q1, Q2, Q3 closed. Branch A verdict locked.
+
+The 13-operator TNFR catalog is **closed under the REMESH-∞ limit**. No 14th operator is required. The asymptotic projection $\mathcal{R}_\infty$ and its conservation/Lyapunov structure are entirely derivable from canonical machinery.
+
+### §22.2 TNFR-Riemann program
+
+The N15 result *clarifies* but does **not advance** the RH attack:
+
+- **Clarified**: The smooth-half / oscillatory-half split of P30 is structurally identified with $\mathrm{range}(\mathcal{R}_\infty)$ / $\ker(\mathcal{R}_\infty)$ decomposition.
+- **Clarified**: T-HP's residual obstruction is RH-equivalent precisely because it lives in the Cesàro tail (slow $O(1/n)$ decay, not captured by R_∞).
+- **Not advanced**: G4 (RH) remains open. Branches B1/B2/B3 of the Riemann program (§13septies) are unaffected; N15's Branch A confirms that no *new canonical operator* (Riemann-B2) is needed for the **asymptotic projection** itself, but the **oscillatory rescaling** $\mathcal{F}_{\text{osc}}$ may still require Riemann-B2.
+
+### §22.3 TNFR-Navier-Stokes program
+
+The N15 result *bounds* what REMESH-∞ can deliver for NS:
+
+- **Negative**: R_∞ alone cannot enforce K41 cascade — the spatial spectrum is invariant under temporal projection.
+- **Positive**: P-W3-1 predicts a *temporal* K_φ saturation floor at Cesàro $O(1/n)$ rate. Testable against N12–N13 benchmarks already in repo.
+- **Unchanged**: NS global regularity is independent of N15. The W1 mean-ergodic-theorem closure rules out vortex-stretching divergence *only on the resonant temporal subspace*; spatial blow-up risk lives in $\ker(\mathcal{R}_\infty)$ and is untouched.
+
+### §22.4 TNFR-intrinsic science
+
+N15 delivers a genuine TNFR-intrinsic result: the asymptotic-coherence theorem (Branch A). This is the analogue, for TNFR, of the **mean ergodic theorem** for $L^2$ unitary actions — a structural foundation result, valuable in itself.
+
+## §23. Final Scope, Limitations, and Locked Conclusions
+
+### §23.1 What N15 settled
+
+- **Q1 (existence)**: CLOSED, Branch A — $\mathcal{R}_\infty = P_{\ker(I - \mathcal{R})}$, orthogonal projection on $H^2(D)$.
+- **Q2 (invariants)**: CLOSED, Branch A — $Q_\infty$ exactly conserved; $V_\infty \ge 0$, monotone, decaying Cesàro.
+- **Q3 (spectrum)**: CLOSED, Branch A — uniform spectral density, no direct B1 match to Riemann/K41/RMT; B1-Euler partial = P30 reformulated.
+
+### §23.2 What N15 did *not* and *could not* settle
+
+- **RH**: Untouched. T-HP remains open. N15 explains the smooth/oscillatory split but does not close the oscillatory half.
+- **NS global regularity**: Untouched. R_∞ acts temporally; spatial blow-up not affected.
+- **TNFR completeness across all asymptotic limits**: Only the $\tau_g \to \infty$ limit is settled. Other asymptotic limits (e.g., $\nu_f \to 0$, $\Delta NFR \to \infty$) are separate questions.
+
+### §23.3 Branch verdicts (locked)
+
+- Branch **A**: **CONFIRMED** — final verdict for N15.
+- Branch **B1 strong**: **RULED OUT** (§§17, 18, 19).
+- Branch **B1-Euler partial**: **EQUIVALENT** to existing P30 result (no new content).
+- Branch **B2**: **RULED OUT** (W1 §5, W2 §13.3, W3 §20.2).
+- Branch **B3**: **RULED OUT** (W1 §3, mean ergodic theorem).
+
+### §23.4 Reproducibility
+
+All derivations are analytical, depend only on:
+- Definition of REMESH operator in `src/tnfr/operators/remesh.py`
+- Canonical Noether/energy in `src/tnfr/physics/conservation.py`
+- Mean ergodic theorem (von Neumann, 1932)
+- Weyl law for ζ (Riemann–von Mangoldt)
+
+No numerical experiments were required for the verdicts. Empirical validation of P-W3-1 (Cesàro decay of K_φ temporal envelope) and P-W2-1 (Noether drift = Cesàro tail at $0.03\%$) is deferred to future benchmark runs.
+
+**N15 program status**: COMPLETE. Three-week deliverable closed in one session (May 26, 2026).
+
+---
+
+**Document final version**: 3.0  
+**Commit anchor**: W1 `a1f298fd`, W2 `badac156`, W3 to follow  
+**Total derivation**: §§1–23, three weeks executed in single session  
+**Final verdict**: **Branch A** (13-operator catalog closed under REMESH-∞ limit; structural-not-spectral universality)  
 **Cross-references**:
-- `src/tnfr/physics/conservation.py` (canonical $Q$, $E$)
-- `theory/STRUCTURAL_CONSERVATION_THEOREM.md` (full derivation of approximate conservation)
-- `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §17 (N12–N13 K_φ cascade data)
-- `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13nonies (P30 smooth-half closure)
+- W1: `theory/REMESH_INFINITY_DERIVATION.md` §§1–8 (existence)
+- W2: `theory/REMESH_INFINITY_DERIVATION.md` §§9–14 (conservation + Lyapunov)
+- W3: this section §§15–23 (spectrum + final verdict)
+- Pre-registration: `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §18 (commit `0bd2b423`)
+- Riemann linkage: `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13septies (T-HP, oscillatory obstruction)
+- NS linkage: `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §17 (N12–N13 K_φ cascade)
