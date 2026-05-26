@@ -205,6 +205,20 @@ where $\alpha = 0.5$ (weighted average preserving energy exactly: $\Delta E = 0$
 - Pre: Parent EPI properly formed; depth $\geq 1$.
 - Post: Nested structure maintained; parent identity preserved.
 
+**Asymptotic limit — REMESH-∞ (N15, May 2026)**:
+
+The two-stage canonical recurrence ($\beta = (1-\alpha)^2$, $\gamma = \alpha(1-\alpha)$, $\delta = \alpha$, defaults $\tau_l = 4$, $\tau_g = 8$) admits a well-defined asymptotic operator as $\tau_g \to \infty$:
+
+$$\mathcal{R}_\infty := \lim_{\tau_g \to \infty} \mathcal{R}_{\tau_l, \tau_g, \alpha} = P_{\ker(I - \mathcal{R})}$$
+
+The limit exists as a **bounded self-adjoint orthogonal projection** on $H^2(D)$ (the Hilbert space of EPI histories with geometric weight). Its fixed-point subspace is spanned by Fourier modes at frequencies $\omega_k = 2\pi k / \mathrm{lcm}(\tau_l, \tau_g)$ — a uniform resonant lattice with spectral density $\rho = \mathrm{lcm}(\tau_l, \tau_g) / \pi$.
+
+**Conservation under $\mathcal{R}_\infty$**: The projected Noether charge $Q_\infty$ is exactly conserved; the projected energy $V_\infty \ge 0$ is monotone and decays at Cesàro $O(1/n)$ when $\tau_g / \tau_l \in \mathbb{Q}$ (default case: $8/4 = 2$).
+
+**Catalog-completeness consequence**: The 13-operator TNFR catalog is **closed under the REMESH-∞ limit**. No 14th operator is required for the asymptotic projection, its conservation structure, or its spectral characterization. TNFR universality is **structural/operational** (same $\mathcal{R}_\infty$ form across all networks reaching the limit) and **NOT spectral** (no direct match to Riemann, Kolmogorov $k^{-5/3}$, or RMT GUE/GOE).
+
+**Full derivation**: [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) §§1–23 (W1 existence, W2 conservation + Lyapunov, W3 spectrum + final verdict). Commit anchors: W1 `a1f298fd`, W2 `badac156`, W3 `48b0574a`.
+
 ---
 
 ## 5. Integrator

@@ -803,13 +803,14 @@ No numerical experiments were required for the verdicts. Empirical validation of
 ---
 
 **Document final version**: 3.0  
-**Commit anchor**: W1 `a1f298fd`, W2 `badac156`, W3 to follow  
-**Total derivation**: §§1–23, three weeks executed in single session  
+**Commit anchors**: W1 `a1f298fd`, W2 `badac156`, W3 `48b0574a` (all on `origin/main`)  
+**Total derivation**: §§1–23, three weeks executed in single session (May 26, 2026)  
 **Final verdict**: **Branch A** (13-operator catalog closed under REMESH-∞ limit; structural-not-spectral universality)  
 **Cross-references**:
 - W1: `theory/REMESH_INFINITY_DERIVATION.md` §§1–8 (existence)
 - W2: `theory/REMESH_INFINITY_DERIVATION.md` §§9–14 (conservation + Lyapunov)
-- W3: this section §§15–23 (spectrum + final verdict)
+- W3: §§15–23 (spectrum + final verdict)
 - Pre-registration: `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §18 (commit `0bd2b423`)
 - Riemann linkage: `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13septies (T-HP, oscillatory obstruction)
 - NS linkage: `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §17 (N12–N13 K_φ cascade)
+- Catalog-completeness consequence: `AGENTS.md` § REMESH-∞ Closure; `theory/STRUCTURAL_OPERATORS.md` §4.3 (asymptotic projection note)

@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] - 2026-05-26
+
+### N15 REMESH-∞ Closure — Catalog-Completeness Theorem
+
+- **Master deliverable**: [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) §§1–23 (v3.0, ~825 lines). Three weeks (W1 + W2 + W3) executed in a single session and pushed to `origin/main`:
+  - W1 `a1f298fd` — operator existence: $\mathcal{R}_\infty = P_{\ker(I-\mathcal{R})}$, bounded self-adjoint orthogonal projection on $H^2(D)$
+  - W2 `badac156` — conservation + Lyapunov: projected Noether charge $Q_\infty$ exactly conserved; energy $V_\infty \ge 0$ monotone with Cesàro $O(1/n)$ tail at rational $\tau_g/\tau_l$
+  - W3 `48b0574a` — spectrum + final verdict: uniform spectral density $\rho = \mathrm{lcm}(\tau_l, \tau_g)/\pi$; **Branch A confirmed**
+- **Catalog completeness**: the 13-operator TNFR catalog is **closed under the REMESH-∞ asymptotic limit**. No 14th canonical operator is required.
+- **Branches ruled out**: B1 strong (constant vs log density, Thm 17.1), B1 via K41 (temporal vs spatial, Thm 18.1), B1 via RMT ($\delta$-clustering vs Wigner, Thm 19.1), B2 (no 14th operator), B3 (limit exists via mean ergodic theorem).
+- **B1-Euler partial = existing P30**: the partial universality (smooth half of T-HP) reduces to P12–P15 + P28 + P30 of the TNFR-Riemann program reformulated through the $\mathcal{R}_\infty$ lens (no new content). The oscillatory half ($S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$, RH-equivalent) lives in $\ker(\mathcal{R}_\infty)$ and remains open.
+- **Consolidation edits**:
+  - `AGENTS.md` — new top-level section *REMESH-∞ Closure: Catalog Completeness Theorem (N15, May 2026)*
+  - `theory/README.md` — added `REMESH_INFINITY_DERIVATION.md` to canonical document map
+  - `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §18.7 — N15 closure block with locked verdicts, B1/K41/RMT/B2/B3 ruled out, refined prediction P-W3-1 (temporal-only)
+  - `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13septies.5 — structural identification of T-HP smooth/oscillatory split with $\mathrm{range}/\ker$ of $\mathcal{R}_\infty$
+  - `theory/STRUCTURAL_OPERATORS.md` §4.3 — REMESH asymptotic limit note with operator definition, spectral density, and catalog-completeness consequence
+- **Scope (locked)**: N15 does NOT advance G4 = RH and does NOT resolve 3D Navier–Stokes global regularity. It settles only the $\tau_g \to \infty$ asymptotic limit of REMESH. Pure analytical result; no numerical experiments required for the verdict.
+
 ## [0.0.3.3] - 2026-03-07
 
 ### Documentation Audit (Sessions 1-4)

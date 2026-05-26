@@ -1656,6 +1656,15 @@ quadratic form $\mathcal{W}[\cdot]$.
 
 ### 13septies.5 Status: open, structurally well-posed
 
+> **Structural identification (N15, May 2026)**: The W3 result of the N15 program ([REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) §17.3) provides a structural identification of T-HP's smooth/oscillatory split with the canonical projection $\mathcal{R}_\infty$ on $H^2(D)$:
+>
+> - The **smooth half** of the admissible rescaling $\mathcal{F}$ (closed operationally by P28 at the density level and by P30 at the operator level) lives in $\mathrm{range}(\mathcal{R}_\infty)$.
+> - The **oscillatory half** $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$ — the RH-equivalent residue — lives in $\ker(\mathcal{R}_\infty) = \mathrm{range}(I - \mathcal{R}_\infty)$ and decays at Cesàro $O(1/n)$ rate.
+>
+> This **does not close G4**, but it explains structurally **why** P28/P30 closed precisely the smooth half: that half is an orthogonal-projection range (analytically integrable), while the oscillatory residue is a slow Cesàro tail of an isometry — not eliminable by projection. T-HP's open content is therefore identified with the missing operator-level lift of the Cesàro residue.
+>
+> N15 verdict for the Riemann program: **clarifies, does not advance**. Branches B1/B2/B3 of §13septies are unaffected. The 13-op TNFR catalog is closed under REMESH-∞ (N15 W1–W3); the Riemann B2 question (need for a new canonical operator to handle the *oscillatory* rescaling) is **distinct** from the N15 B2 question (no new operator needed for the *asymptotic projection* itself) and remains open.
+
 Conjecture T-HP is **open**.  It is *not* a closure of G4; it is the
 G4 problem **rewritten in tetrad-native language** so it becomes a
 constructive existence problem inside the TNFR engine.  Three

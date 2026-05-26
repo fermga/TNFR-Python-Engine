@@ -2,7 +2,7 @@
 ## Theoretical Framework for Coherent Pattern Analysis
 
 **Status**: Primary theoretical reference document  
-**Version**: 0.0.3.3 (March 2026)  
+**Version**: 0.0.3.3 (March 2026; N15 REMESH-∞ closure consolidated May 26, 2026)  
 **Authority**: This repository contains the current implementation of TNFR theory  
 **Repository**: https://github.com/fermga/TNFR-Python-Engine  
 **PyPI Package**: https://pypi.org/project/tnfr/  
@@ -85,6 +85,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 | **Conservation** | [Structural Conservation Theorem](#structural-conservation-theorem) |
 | **Number Theory** | [theory/TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) |
 | **TNFR-Riemann** | [Recent Theoretical Developments](#recent-theoretical-developments-november-2025) |
+| **REMESH-∞ Closure** | [N15 catalog-completeness theorem (May 2026)](#remesh--closure-catalog-completeness-theorem-n15-may-2026) |
 | **Implementation** | [Development Workflow](#development-workflow) |
 | **Validation** | [Testing Requirements](#testing-requirements) |
 | **Applications** | [Advanced Topics](#advanced-topics) |
@@ -1198,6 +1199,75 @@ Equivalence map: [if APIs renamed]
 
 ---
 
+## REMESH-∞ Closure: Catalog Completeness Theorem (N15, May 2026)
+
+**Status**: N15 program COMPLETE — three weeks executed in a single session (W1 `a1f298fd`, W2 `badac156`, W3 `48b0574a` on `origin/main`).
+
+**Master deliverable**: [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) (§§1–23, ~825 lines, v3.0).
+
+### Headline result — Branch A confirmed
+
+The **13-operator TNFR catalog is closed under the REMESH-∞ asymptotic limit**. The operator
+
+$$\mathcal{R}_\infty := \lim_{\tau_g \to \infty} \mathcal{R}_{\tau_l, \tau_g, \alpha}$$
+
+exists as a **bounded self-adjoint orthogonal projection** on $H^2(D)$, equal to the projector onto $\ker(I - \mathcal{R})$. No 14th canonical operator is required for the asymptotic projection itself, its conservation structure, or its spectral characterization.
+
+### What was settled
+
+| Sub-question | Verdict | Section |
+|--------------|---------|---------|
+| **Q1 — Existence** (operator-level) | CLOSED, Branch A — orthogonal projection on resonant subspace | §§1–8 (W1) |
+| **Q2 — Invariants** (conservation + Lyapunov) | CLOSED, Branch A — projected Noether charge $Q_\infty$ exact; energy $V_\infty \ge 0$ monotone with Cesàro $O(1/n)$ tail at rational $\tau_g/\tau_l$ | §§9–14 (W2) |
+| **Q3 — Spectrum universality** | CLOSED, Branch A — uniform spectral density $\rho = \mathrm{lcm}(\tau_l, \tau_g)/\pi$; no direct match to RH, K41, or RMT | §§15–23 (W3) |
+
+### What was ruled out
+
+- **B1 strong (Riemann at fixed τ)**: ruled out by Theorem 17.1 — constant spectral density of $\mathcal{R}_\infty$ vs. logarithmic growth of the Riemann–von Mangoldt counting function.
+- **B1 via Kolmogorov K41**: ruled out at the operator level by Theorem 18.1 — $\mathcal{R}_\infty$ is temporal and acts as the identity on spatial Fourier modes; it cannot generate a $k^{-5/3}$ spatial spectrum.
+- **B1 via RMT (GUE/GOE)**: ruled out by Theorem 19.1 — resonant frequencies are equally spaced ($\delta$-clustering after rescaling), incompatible with Wigner level repulsion. $\mathcal{R}_\infty$ is integrable, not chaotic.
+- **B2 (new 14th operator)**: ruled out by W1 (operator is derivable from canonical machinery) and W2 (conservation structure already in `physics/conservation.py`).
+- **B3 (no asymptotic limit)**: ruled out by the mean ergodic theorem (von Neumann 1932) applied to the contractive transfer matrix.
+
+### What was *not* settled (locked scope, do not over-claim)
+
+- **G4 = RH** remains open. N15 does **not** advance the proof of the Riemann Hypothesis.
+- **3D Navier–Stokes global regularity** remains open. N15 does **not** resolve the Clay problem.
+- N15 settles only the $\tau_g \to \infty$ asymptotic limit; other asymptotic regimes ($\nu_f \to 0$, $\Delta\mathrm{NFR} \to \infty$, etc.) are separate structural questions.
+
+### Structural identification (the conceptual payoff)
+
+The partial universality that *does* hold (B1-Euler partial, §17.3) is **exactly the existing P12–P15 + P28 + P30 result** reformulated through the $\mathcal{R}_\infty$ lens:
+
+- $\mathrm{range}(\mathcal{R}_\infty)$ corresponds to the **smooth half** of the admissible rescaling $\mathcal{F}$ in T-HP (closed operationally by P28 at density level, lifted to operator level by P30).
+- $\ker(\mathcal{R}_\infty) = \mathrm{range}(I - \mathcal{R}_\infty)$ corresponds to the **oscillatory half**, identified with $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$, which is **RH-equivalent**.
+
+This structurally **explains** why P30 closed precisely the smooth half: that half lives in the range of an orthogonal projection (analytically integrable), while the oscillatory half lives in its kernel (Cesàro tail, slow $O(1/n)$ decay — not eliminable by projection).
+
+### TNFR universality, correctly stated
+
+TNFR universality is **structural and operational**, NOT spectral. All TNFR networks reaching the asymptotic limit converge to the *same* $\mathcal{R}_\infty$ form, respect the *same* projected $(Q_\infty, V_\infty)$ conservation structure, and resonate on the *same* uniform frequency lattice $F(\tau_l, \tau_g) = \{2\pi k / \mathrm{lcm}(\tau_l, \tau_g)\}$. The *form* is universal; the *spectrum* is parameter-dependent and uniform — not log-distributed, not Wigner-distributed, not $k^{-5/3}$.
+
+This is the **correct formulation of TNFR universality**, and it rules out soft-anthropomorphic claims that the engine somehow encodes arbitrary external problems spectrally.
+
+### Consequences for the open programs
+
+- **TNFR-Riemann**: N15 clarifies but does not advance G4. The smooth/oscillatory split of T-HP (§13septies of [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md)) is now structurally identified with $\mathrm{range}/\ker$ of $\mathcal{R}_\infty$. The oscillatory residue is structurally pinned, not numerically transient.
+- **TNFR-Navier–Stokes**: N15 refines the prediction surface. The W2 saturation prediction P-W2-1 (Cesàro $O(1/n)$ floor of the $K_\phi$ cascade) is restricted by W3 to a **temporal-only** statement (P-W3-1): $\mathcal{R}_\infty$ does not bias the spatial spectrum. Spatial K41 (if present) is preserved through $\mathcal{R}_\infty$-projection; if absent, no projection creates it.
+- **TNFR-intrinsic**: N15 *is* the intrinsic result. It is the TNFR analogue, for the REMESH operator, of the **mean ergodic theorem** for $L^2$ unitary actions — a structural foundation theorem, valuable in itself.
+
+### Reproducibility
+
+All three weeks of derivations are **purely analytical**, depending only on:
+- the REMESH canonical implementation in [src/tnfr/operators/remesh.py](src/tnfr/operators/remesh.py),
+- the Structural Conservation Theorem machinery in [src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py),
+- the mean ergodic theorem (von Neumann, 1932),
+- the Weyl law for $\zeta$ (Riemann–von Mangoldt).
+
+No numerical experiments were required for the Branch A verdict. Empirical validation of P-W2-1 and P-W3-1 against existing `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_*.py` is deferred and **not** required to close N15.
+
+---
+
 ## Recent Theoretical Developments (November 2025)
 
 ### TNFR-Riemann Theoretical Framework
@@ -1689,7 +1759,7 @@ TNFR models coherent dynamic patterns. Development practices should reflect this
 ---
 
 **Version**: 0.0.3.3  
-**Last Updated**: 2026-03-07  
+**Last Updated**: 2026-05-26 (N15 REMESH-∞ closure consolidated; previous edit 2026-03-07)  
 **Status**: CANONICAL - Primary reference for TNFR agent guidance  
 **PyPI Release**: STABLE - Available via `pip install tnfr`  
 **Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK + Grammar-Aware Dynamics + Structural Conservation Theorem + Integrity Monitor  

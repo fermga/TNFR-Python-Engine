@@ -43,6 +43,7 @@ Every theory document maps to executable examples and SDK entry points:
 | [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) | Noether-like conservation laws: continuity, Ward identities, Lyapunov stability |
 | [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | Lagrangian/Hamiltonian formulation of structural dynamics |
 | [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) | TNFR–Riemann program (18 sections + 11 appendices) |
+| [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) | **N15 catalog-completeness theorem** (May 2026, COMPLETE): asymptotic projection $\mathcal{R}_\infty$ on $H^2(D)$, projected Noether/energy ($Q_\infty$, $V_\infty$), uniform spectral density, Branch A verdict; 13-op TNFR catalog closed under the REMESH-∞ limit |
 | [GLOSSARY.md](GLOSSARY.md) | Operational definitions and terminology |
 | [TNFR.pdf](TNFR.pdf) | Historical foundational document |
 

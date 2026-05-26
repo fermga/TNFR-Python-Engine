@@ -1013,4 +1013,30 @@ N15 **does**:
 
 **Cross-reference**: This analysis is INDEPENDENT of whether RH is true or whether 3D NS has blow-up. It answers a structural question about TNFR itself.
 
+### §18.7 N15 Closure — Branch A confirmed (May 26, 2026)
+
+N15 was executed in a single session, three weeks W1–W3 same day.
+
+**Master deliverable**: [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) (§§1–23, v3.0).
+
+**Commit anchors**: W1 `a1f298fd` (existence), W2 `badac156` (conservation + Lyapunov), W3 `48b0574a` (spectrum + final verdict) — all on `origin/main`.
+
+**Verdicts** (locked):
+
+| Pre-registered sub-question | Verdict | Reference |
+|------------------------------|---------|-----------|
+| Q1 (Operator existence) | **Branch A** — $\mathcal{R}_\infty$ exists as bounded self-adjoint orthogonal projection on $H^2(D)$, equal to $P_{\ker(I-\mathcal{R})}$ | §§1–8 |
+| Q2 (Invariant structure) | **Branch A** — projected Noether charge $Q_\infty$ exactly conserved; energy $V_\infty \ge 0$ monotone, Cesàro $O(1/n)$ tail at rational $\tau_g/\tau_l$ | §§9–14 |
+| Q3 (Spectrum universality) | **Branch A** — uniform spectral density $\rho = \mathrm{lcm}(\tau_l, \tau_g)/\pi$; B1 strong / K41 / RMT all RULED OUT | §§15–23 |
+
+**Branches ruled out**: B1 strong (constant vs log density, Thm 17.1), B1 via K41 (temporal vs spatial, Thm 18.1), B1 via RMT ($\delta$-clustering vs Wigner, Thm 19.1), B2 (no 14th operator required), B3 (limit exists, mean ergodic theorem).
+
+**B1-Euler partial**: a partial universality holds under parameter averaging over $\tau_g = p$ prime + admissible rescaling $\mathcal{F}$. This is **not new content** — it is exactly P12–P15 + P28 + P30 of the TNFR-Riemann program reformulated through the $\mathcal{R}_\infty$ lens. The smooth half lives in $\mathrm{range}(\mathcal{R}_\infty)$ (closed by P30); the oscillatory half lives in $\ker(\mathcal{R}_\infty)$ (= T-HP residue $S(T)$, RH-equivalent, OPEN).
+
+**Refined NS prediction P-W3-1** (replaces/refines P-W2-1): $\mathcal{R}_\infty$ is temporal and acts as the identity on spatial Fourier modes (Thm 18.1). The temporal envelope $\|K_\phi(t)\|$ may saturate at Cesàro $O(1/n)$ (resonant floor), but the **spatial spectrum** $\|\widehat{K_\phi}(\mathbf{k})\|$ is unaffected by $\mathcal{R}_\infty$ — K41 (if present) is preserved through projection; if absent, no projection creates it. Testable against `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_*.py`.
+
+**Scope confirmation**: N15 does **not** advance 3D NS global regularity. The W1 mean-ergodic closure rules out vortex-stretching divergence *only on the resonant temporal subspace*; spatial blow-up risk lives in $\ker(\mathcal{R}_\infty)$ and is untouched. The F4 gap (CF eigenframe alignment at $n \ge 256$, $\mathrm{Re} \sim 10^4$) remains the next frontier.
+
+**N15 status**: COMPLETE. Catalog-completeness theorem for the $\tau_g \to \infty$ asymptotic limit is locked.
+
 ---
