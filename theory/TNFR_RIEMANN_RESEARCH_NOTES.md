@@ -12055,3 +12055,131 @@ Per-key input non-scalar counts: `{theta: 0, DeltaNFR: 0}` on both probes. Per-f
 - `src/tnfr/riemann/currents_closure_signature.py` (B8a diagnostic).
 - `examples/86_currents_closure_signature_demo.py` (B8a demo).
 - Sec 13septies (Conjecture T-HP, G4 = RH; B8 does NOT advance this).
+
+### Sec 13quinquaginta-quinta — B8 Phase c: NEGATIVE verdict for T-currents-closure, CCC promoted as ninth CDM
+
+#### .1 Scope
+
+This section emits the **final Phase-c verdict** for B8 = Delta-currents-closure, by direct source-code trace of the three canonical current/divergence implementations. Scope is methodological: it closes the second Tier-3 sub-question (after B7), promotes **CCC = Currents-Closure Discipline** as the ninth Catalog-Discharge Mechanism, classifies **E_CC = HiddenIntermediateTensorStateOnCurrents** as the ninth non-canonical research envelope, and updates the cumulative L3* status. It does NOT modify any canonical implementation, does NOT alter the tetrad fields or any U-rule, and does NOT advance G4 = RH (Conjecture T-HP, Sec 13septies).
+
+#### .2 Per-current source-code closure trace
+
+**(i) `compute_phase_current` at `src/tnfr/physics/extended.py:60`.** Reads exactly two per-node attributes (phi/theta via `_get_phase`) plus the graph metric (`G.nodes()`, `G.edges()`, `G.is_directed()`, `G.degree[node]`, `G.neighbors(i)`). Vectorized path constructs `phases` (np.float64 1-D array, length n), `degrees` (np.float64 1-D array, length n), and two edge-index np.intp arrays, then calls `compute_phase_current_vectorized` and returns `{node: float(current_arr[i]) for i, node in enumerate(nodes)}` (explicit scalar coercion). Fallback path builds `phases_dict: dict[node, float]`, computes `wrapped_diffs` (np.float64 1-D array per node, fixed-length = degree(i), used only for scalar reduction via `np.mean(np.sin(...))`), and assigns `current[i] = float(np.mean(np.sin(wrapped_diffs)))` (explicit scalar coercion). Output type `dict[node, float]`. **No callable kernel, no measure, no operator-valued intermediate, no Banach-derivative apparatus introduced.**
+
+**(ii) `compute_dnfr_flux` at `src/tnfr/physics/extended.py:182`.** Structurally isomorphic to (i) with the substitution `phi -> DeltaNFR` (via canonical alias `_get_dnfr`) and `sin(phi_j - phi_i) -> (DeltaNFR_j - DeltaNFR_i)`. Vectorized path: `dnfr_arr` (np.float64 1-D, length n), `degrees` (np.float64 1-D, length n), edge-index np.intp arrays, `compute_dnfr_flux_vectorized` call, `{node: float(flux_arr[i]) ...}` return. Fallback path: `dnfr_values: dict[node, float]`, per-node `neighbors` list, scalar mean difference via `sum(...) / deg` followed by `float(...)` coercion. Output type `dict[node, float]`. **Same closure verdict as (i).**
+
+**(iii) `compute_current_divergence` at `src/tnfr/physics/conservation.py:209`.** Invokes (i) and (ii) to obtain `j_phi, j_dnfr: dict[node, float]`, then per node computes `div_j_phi = sum(j_phi.get(j, 0.0) - j_phi.get(i, 0.0) for j in neighbors) / deg` and analogously `div_j_dnfr`. Final assignment `divergence[i] = div_j_phi + div_j_dnfr` (Python float arithmetic on `dict.get`-fetched scalars). Output type `dict[node, float]`. **No Banach-derivative, no measure, no operator-valued lift; the divergence is by construction the same scalar-typed reduction as (i) and (ii) composed on the graph metric.**
+
+All three intermediate arrays (`phases`, `degrees`, `dnfr_arr`, `edge_src`, `edge_dst`, `wrapped_diffs`) are fixed-length NumPy arrays whose sole purpose is to feed scalar reductions (`np.mean`, `np.sum`, vectorized sum-reduce in `compute_phase_current_vectorized` / `compute_dnfr_flux_vectorized`); none escapes the function or is exposed as an output type. Per the convention frozen at Sec 13quinquaginta-tertia for B7, fixed-length scalar-array intermediates used purely for scalar reduction are **not** "richer intermediates" in the type-hygiene sense — they are the standard NumPy idiom for batched scalar computation, and the canonical output type remains `dict[node, float]`.
+
+#### .3 Phase-c verdict
+
+The closure question posed at Sec 13quinquaginta-quarta is **answered NEGATIVELY**:
+
+> The two canonical current fields (J_phi, J_DeltaNFR) and the conservation aggregator (div J) **do** reduce to scalar-valued (per-node) functionals of the canonical Tier-1+Tier-2 scalar slots (phi/theta + DeltaNFR via canonical alias `_get_dnfr`) plus the graph metric (`G.neighbors`, `G.degree`, `G.edges`, `G.is_directed`), with every intermediate scalar or scalar-array (fixed-length, used for scalar reduction) and **no implicit Banach-derivative apparatus, callable kernel, measure, or matrix lift** introduced along the reduction path. No richer intermediate type is forced.
+
+NEGATIVE here means: there is no forcing of a non-canonical envelope on the Tier-1+Tier-2-to-currents reduction surface. The candidate ninth non-canonical research envelope is therefore classified as
+
+**E_CC = HiddenIntermediateTensorStateOnCurrents** = "the would-be envelope that would have appeared if any of the three current/divergence implementations had introduced a callable, operator-valued, or measure-valued intermediate on its reduction path; structurally absent in the current canonical implementations".
+
+E_CC joins E1...E_TC as the ninth non-canonical research envelope (cumulative list: B0-E1, B1-E2, B2-E3, B3-E4, B4-E5, B5-E6, B6-E7, B7-E_TC, B8-E_CC). The candidate ninth CDM is promoted to canonical status:
+
+**CCC = Currents-Closure Discipline**, acting on the **Tier-1+Tier-2-to-currents reduction surface** (the third closure surface, after the Tier-1+Tier-2-to-tetrad reduction surface of B7).
+
+#### .4 Catalog-Discharge Mechanism orthogonality (post-B8c)
+
+Nine CDMs, nine structurally distinct surfaces:
+
+| # | CDM | Sub-question | Surface |
+|---|---|---|---|
+| 1 | Pontryagin/measure-nu_f | B0 | field-measure |
+| 2 | TMEP | B1 | element-projection |
+| 3 | PWDP | B2 | phase-wrap |
+| 4 | BSAD | B3 | scalar-aggregation |
+| 5 | DITS | B4 | temporal-sampling |
+| 6 | STD | B5 | coupling-verdict |
+| 7 | SWD | B6 | mixing-aggregation |
+| 8 | TRC | B7 | tetrad-reduction closure |
+| 9 | **CCC** | **B8** | **currents-reduction closure** |
+
+Each CDM is unique to the canonical machinery at its surface. No CDM is reused across sub-questions. The orthogonality is structural, not numerical.
+
+#### .5 L3* status (post-B8c)
+
+L3* heuristic, post-B8c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage and first two Tier-3 closures orthogonally discharged"**. Cumulative nine CDMs (see table above). L3* prediction for remaining Tier-3/Tier-4 sub-questions (B9-B11): each admits its own orthogonal CDM at its own surface.
+
+#### .6 Cross-references
+
+- Sec 13quinquaginta-quarta (B8 Phase a + frozen signature).
+- Sec 13quinquaginta-tertia (B7 Phase c + TRC, the conceptual template for the CCC discharge).
+- Sec 13septies (Conjecture T-HP, G4 = RH; B8c does NOT advance this).
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 row B8, Sec 4 row B8.
+- `src/tnfr/physics/extended.py:60` (`compute_phase_current`).
+- `src/tnfr/physics/extended.py:182` (`compute_dnfr_flux`).
+- `src/tnfr/physics/conservation.py:209` (`compute_current_divergence`).
+- `src/tnfr/riemann/currents_closure_signature.py` (B8a diagnostic).
+- `examples/86_currents_closure_signature_demo.py` (B8a demo).
+
+### Sec 13quinquaginta-quinta — B8 Phase c: NEGATIVE verdict for T-currents-closure, CCC promoted as ninth CDM
+
+#### .1 Scope
+
+This section emits the **final Phase-c verdict** for B8 = Delta-currents-closure, by direct source-code trace of the three canonical current/divergence implementations. Scope is methodological: it closes the second Tier-3 sub-question (after B7), promotes **CCC = Currents-Closure Discipline** as the ninth Catalog-Discharge Mechanism, classifies **E_CC = HiddenIntermediateTensorStateOnCurrents** as the ninth non-canonical research envelope, and updates the cumulative L3* status. It does NOT modify any canonical implementation, does NOT alter the tetrad fields or any U-rule, and does NOT advance G4 = RH (Conjecture T-HP, Sec 13septies).
+
+#### .2 Per-current source-code closure trace
+
+**(i) `compute_phase_current` at `src/tnfr/physics/extended.py:60`.** Reads exactly two per-node attributes (phi/theta via `_get_phase`) plus the graph metric (`G.nodes()`, `G.edges()`, `G.is_directed()`, `G.degree[node]`, `G.neighbors(i)`). Vectorized path constructs `phases` (np.float64 1-D array, length n), `degrees` (np.float64 1-D array, length n), and two edge-index np.intp arrays, then calls `compute_phase_current_vectorized` and returns `{node: float(current_arr[i]) for i, node in enumerate(nodes)}` (explicit scalar coercion). Fallback path builds `phases_dict: dict[node, float]`, computes `wrapped_diffs` (np.float64 1-D array per node, fixed-length = degree(i), used only for scalar reduction via `np.mean(np.sin(...))`), and assigns `current[i] = float(np.mean(np.sin(wrapped_diffs)))` (explicit scalar coercion). Output type `dict[node, float]`. **No callable kernel, no measure, no operator-valued intermediate, no Banach-derivative apparatus introduced.**
+
+**(ii) `compute_dnfr_flux` at `src/tnfr/physics/extended.py:182`.** Structurally isomorphic to (i) with the substitution `phi -> DeltaNFR` (via canonical alias `_get_dnfr`) and `sin(phi_j - phi_i) -> (DeltaNFR_j - DeltaNFR_i)`. Vectorized path: `dnfr_arr` (np.float64 1-D, length n), `degrees` (np.float64 1-D, length n), edge-index np.intp arrays, `compute_dnfr_flux_vectorized` call, `{node: float(flux_arr[i]) ...}` return. Fallback path: `dnfr_values: dict[node, float]`, per-node `neighbors` list, scalar mean difference via `sum(...) / deg` followed by `float(...)` coercion. Output type `dict[node, float]`. **Same closure verdict as (i).**
+
+**(iii) `compute_current_divergence` at `src/tnfr/physics/conservation.py:209`.** Invokes (i) and (ii) to obtain `j_phi, j_dnfr: dict[node, float]`, then per node computes `div_j_phi = sum(j_phi.get(j, 0.0) - j_phi.get(i, 0.0) for j in neighbors) / deg` and analogously `div_j_dnfr`. Final assignment `divergence[i] = div_j_phi + div_j_dnfr` (Python float arithmetic on `dict.get`-fetched scalars). Output type `dict[node, float]`. **No Banach-derivative, no measure, no operator-valued lift; the divergence is by construction the same scalar-typed reduction as (i) and (ii) composed on the graph metric.**
+
+All three intermediate arrays (`phases`, `degrees`, `dnfr_arr`, `edge_src`, `edge_dst`, `wrapped_diffs`) are fixed-length NumPy arrays whose sole purpose is to feed scalar reductions (`np.mean`, `np.sum`, vectorized sum-reduce in `compute_phase_current_vectorized` / `compute_dnfr_flux_vectorized`); none escapes the function or is exposed as an output type. Per the convention frozen at Sec 13quinquaginta-tertia for B7, fixed-length scalar-array intermediates used purely for scalar reduction are **not** "richer intermediates" in the type-hygiene sense — they are the standard NumPy idiom for batched scalar computation, and the canonical output type remains `dict[node, float]`.
+
+#### .3 Phase-c verdict
+
+The closure question posed at Sec 13quinquaginta-quarta is **answered NEGATIVELY**:
+
+> The two canonical current fields (J_phi, J_DeltaNFR) and the conservation aggregator (div J) **do** reduce to scalar-valued (per-node) functionals of the canonical Tier-1+Tier-2 scalar slots (phi/theta + DeltaNFR via canonical alias `_get_dnfr`) plus the graph metric (`G.neighbors`, `G.degree`, `G.edges`, `G.is_directed`), with every intermediate scalar or scalar-array (fixed-length, used for scalar reduction) and **no implicit Banach-derivative apparatus, callable kernel, measure, or matrix lift** introduced along the reduction path. No richer intermediate type is forced.
+
+NEGATIVE here means: there is no forcing of a non-canonical envelope on the Tier-1+Tier-2-to-currents reduction surface. The candidate ninth non-canonical research envelope is therefore classified as
+
+**E_CC = HiddenIntermediateTensorStateOnCurrents** = "the would-be envelope that would have appeared if any of the three current/divergence implementations had introduced a callable, operator-valued, or measure-valued intermediate on its reduction path; structurally absent in the current canonical implementations".
+
+E_CC joins E1...E_TC as the ninth non-canonical research envelope (cumulative list: B0-E1, B1-E2, B2-E3, B3-E4, B4-E5, B5-E6, B6-E7, B7-E_TC, B8-E_CC). The candidate ninth CDM is promoted to canonical status:
+
+**CCC = Currents-Closure Discipline**, acting on the **Tier-1+Tier-2-to-currents reduction surface** (the third closure surface, after the Tier-1+Tier-2-to-tetrad reduction surface of B7).
+
+#### .4 Catalog-Discharge Mechanism orthogonality (post-B8c)
+
+Nine CDMs, nine structurally distinct surfaces:
+
+| # | CDM | Sub-question | Surface |
+|---|---|---|---|
+| 1 | Pontryagin/measure-nu_f | B0 | field-measure |
+| 2 | TMEP | B1 | element-projection |
+| 3 | PWDP | B2 | phase-wrap |
+| 4 | BSAD | B3 | scalar-aggregation |
+| 5 | DITS | B4 | temporal-sampling |
+| 6 | STD | B5 | coupling-verdict |
+| 7 | SWD | B6 | mixing-aggregation |
+| 8 | TRC | B7 | tetrad-reduction closure |
+| 9 | **CCC** | **B8** | **currents-reduction closure** |
+
+Each CDM is unique to the canonical machinery at its surface. No CDM is reused across sub-questions. The orthogonality is structural, not numerical.
+
+#### .5 L3* status (post-B8c)
+
+L3* heuristic, post-B8c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage and first two Tier-3 closures orthogonally discharged"**. Cumulative nine CDMs (see table above). L3* prediction for remaining Tier-3/Tier-4 sub-questions (B9-B11): each admits its own orthogonal CDM at its own surface.
+
+#### .6 Cross-references
+
+- Sec 13quinquaginta-quarta (B8 Phase a + frozen signature).
+- Sec 13quinquaginta-tertia (B7 Phase c + TRC, the conceptual template for the CCC discharge).
+- Sec 13septies (Conjecture T-HP, G4 = RH; B8c does NOT advance this).
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 row B8, Sec 4 row B8.
+- `src/tnfr/physics/extended.py:60` (`compute_phase_current`).
+- `src/tnfr/physics/extended.py:182` (`compute_dnfr_flux`).
+- `src/tnfr/physics/conservation.py:209` (`compute_current_divergence`).
+- `src/tnfr/riemann/currents_closure_signature.py` (B8a diagnostic).
+- `examples/86_currents_closure_signature_demo.py` (B8a demo).
