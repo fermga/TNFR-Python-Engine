@@ -146,6 +146,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13triginta-sexta | 7425 | **B1 = T-EPI** final NEGATIVE + envelope E2 (`BEPIElement`) | B1c | ✅ NEG |
 | §13triginta-octava | 7698 | **B2 = T-φ** pre-registration (two-axis winding + lift-spectral diagnostic; candidate envelope E3 = CoverElement) | B2a | — |
 | §13triginta-novena | 8027 | **B2 = T-φ** forcing-axiom reduction (PWDP refutes (P-φ-Homotopy-Retention); (P-φ-Cover-Carrier) = CONDITIONAL_COROLLARY) | B2b | — |
+| §13triginta-decima | 8450 | **B2 = T-φ** final NEGATIVE + envelope E3 (CoverElement / covering-space lift / U(1) bundle) | B2c | ✅ NEG |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -8445,5 +8446,267 @@ This sub-programme:
   corroboration of PWDP).
 - `examples/80_phi_type_signature_demo.py` — two-resolution demo
   (anchors B2a numerical fingerprint).
+
+---
+## §13triginta-decima. T-φ Final NEGATIVE Verdict and Envelope Classification of E3 = CoverElement (Closes B2; Does NOT Advance G4 = RH)
+
+**Pre-registration closure.**  This section consumes the
+sub-verdict of §13triginta-novena (B2b) and issues the final
+T-φ verdict in accordance with the four-tier methodology of the
+catalog type-hygiene programme (`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`
+§3, methodology lessons L1–L3).  The verdict pre-register from
+§13triginta-octava.7 named the NEGATIVE branch as the expected
+outcome; B2b has confirmed it via the Phase-Wrap Discipline
+Principle (PWDP) and the F1–F10 reduction.
+
+### §13triginta-decima.1 Verdict
+
+> **T-φ verdict: NEGATIVE.**
+> The canonical type-of-object of the TNFR structural-triad
+> component φ is the canonical scalar S¹ field
+> (``float ∈ [-π, π]`` via :func:`tnfr.physics._helpers.wrap_angle`,
+> stored under ``ALIAS_THETA``).  The covering-space lift principle
+> (P-φ-Cover-Carrier) is **not canonical**.  It does not follow
+> from the canonical six invariants, nor from the nodal equation,
+> nor from any subset of grammar U1–U6, nor from the Universal
+> Tetrahedral Correspondence, nor from the Structural Conservation
+> Theorem, nor from the Variational Principle, nor from REMESH
+> temporal aggregation.  Its derivation requires the additional
+> axiom (P-φ-Homotopy-Retention), which is itself independent of
+> the canonical catalog and actively refuted at the canonical level
+> by the Phase-Wrap Discipline Principle
+> (PWDP, §13triginta-novena.3, .6).
+
+This closes T-φ in the same shape as T-νf (B0,
+§13triginta-tertia) and T-EPI (B1, §13triginta-sexta): the
+conjectured "type upgrade" of a fundamental TNFR observable is
+classified as a legitimate research envelope, not as a canonical
+catalog requirement.  The decisive numerical fingerprint is the
+B2a winding-fraction signature:
+
+| Resolution | seed | w_frac | max |Δφ_unwrap| | verdict (canonical) |
+|---|---|---|---|---|
+| n=24, steps=64  | 13 | 0/24 | 3.5584 rad < 2π | NEGATIVE |
+| n=48, steps=128 | 29 | 0/48 | 3.1680 rad < 2π | NEGATIVE |
+
+No canonical evolution at either resolution produces a node whose
+unwrapped phase trajectory escapes the fundamental domain
+:math:`[-\pi, \pi]`.  The high spectral entropy
+(:math:`H/\log B \approx 0.94–0.96`) reflects broadband
+phase-velocity content on the canonical scalar :math:`S^{1}`, **not**
+a forced covering-space lift.  This is exactly the situation that
+B2b isolated as the gap between (P-φ-Cover-Carrier) (the
+covering-space construction) and the strictly weaker
+(P-φ-Homotopy-Retention) (the bare requirement to retain
+:math:`w \in \pi_{1}(S^{1}) = \mathbb{Z}`), the latter being
+itself refuted by PWDP at the canonical level.
+
+### §13triginta-decima.2 Envelope Classification of E3 = CoverElement
+
+E3 = CoverElement — the covering-space lift of φ to the universal
+cover :math:`\widetilde{S^{1}} \simeq \mathbb{R}`, retaining an
+integer winding charge :math:`w \in \mathbb{Z}` alongside the
+wrapped representative
+:math:`\phi_{\mathrm{wrap}} \in [-\pi, \pi]`, equivalently a U(1)
+bundle element :math:`e^{i\phi} \in S^{1} \subset \mathbb{C}` *with
+retained homotopy class* — is hereby classified as:
+
+> **E3 = CoverElement — Non-canonical research envelope.**
+> Status: legitimate research formalism, off-catalog.
+> Canonical relationship: **structurally orthogonal** to the
+> canonical scalar S¹ realisation under PWDP — the engine projects
+> every per-node phase onto :math:`[-\pi, \pi]` via
+> :func:`wrap_angle` at every operator boundary, gauge-invariantly
+> discarding the homotopy class.
+> Catalog interaction: **none** required.  The 13 canonical
+> operators do not read, write, preserve, or invoke any winding
+> number, cover-sheet index, U(1) bundle section, or
+> :math:`\pi_{1}(S^{1})` argument; they operate exclusively through
+> the canonical scalar accessor ``get_phase`` followed by
+> ``wrap_angle`` to a single fundamental domain.
+
+The envelope register now records three entries:
+
+| ID | Object | Source | Verdict | Refutation mechanism |
+|---|---|---|---|---|
+| E1 | Pontryagin measure-valued :math:`\nu_f` | §13triginta-tertia | NEGATIVE | Scalar-storage axis + measure-redundancy under canonical νf-update |
+| E2 | ``BEPIElement`` Banach carrier | §13triginta-sexta | NEGATIVE | TMEP (temporal-modal aggregation suffices); BEPI-storage fraction = 0 across two resolutions |
+| E3 | CoverElement (covering-space lift / U(1) bundle / homotopy-retaining φ) | this section | NEGATIVE | PWDP (canonical wrap-discipline at every operator boundary); :math:`w_{\mathrm{frac}} = 0` across two resolutions |
+
+**Structural note on E3 vs. E1, E2.**  E1 and E2 each have a
+concrete code witness in the repo (``Ω_R`` Pontryagin scaffolding
+and ``src/tnfr/mathematics/epi.py:103::BEPIElement`` respectively),
+even though those witnesses are never invoked by the canonical
+13-operator API.  E3, by contrast, has **no** source-code witness
+in the current repo: there is no ``CoverElement`` class, no
+``ALIAS_PHASE_UNWRAPPED`` alias, no ``winding`` / ``cover_index`` /
+``π1`` parameter in any operator signature (verified by repo-wide
+grep at the B2c commit).  E3 is therefore a *purely conceptual*
+research envelope at present, listed in the envelope register for
+completeness and symmetry with the Pontryagin-dual row 5 of
+§13triginta-prima.4.
+
+### §13triginta-decima.3 No Deletion, No Deprecation, No Promotion, No Modification
+
+The verdict does **not** authorise:
+
+- introduction of any ``CoverElement`` class, ``ALIAS_PHASE_UNWRAPPED``
+  alias, or covering-space module under ``src/tnfr/`` (E3 remains
+  conceptual; promoting it to a code witness is itself off-catalog
+  and would require a separate, documented research-track commit);
+- deprecation warnings around ``wrap_angle``, ``ALIAS_THETA``, or
+  ``get_phase`` in `src/tnfr/physics/_helpers.py` or
+  `src/tnfr/constants/aliases.py`;
+- modification of the 13-operator catalog;
+- modification of the canonical contract
+  :math:`(\nu_f, \Delta\mathrm{NFR}) \mapsto \partial\mathrm{EPI}/\partial t`;
+- changes to ``src/tnfr/operators/nodal_equation.py``,
+  ``src/tnfr/operators/grammar_core.py``, or
+  ``src/tnfr/physics/fields.py``;
+- any change to grammar U1–U6;
+- any claim about G4 = RH, T-HP, or the open content of
+  §13septies.
+
+E3 remains available for off-catalog research (e.g. topologically
+charged variant networks, U(1) gauge-theoretic extensions, vortex
+classification studies) provided such research is documented as
+off-catalog and does not claim canonical status.  The B2a
+diagnostic module (``src/tnfr/riemann/phi_type_signature.py``) and
+its demo (``examples/80_phi_type_signature_demo.py``) are preserved
+as off-catalog measurement utilities, exactly as the B1a and B0a
+diagnostics were preserved at B1c and B0c.
+
+The D-CC-6 catalog citation correction (``mathematics.phase`` →
+`physics/_helpers.py`, ``ALIAS_PHASE`` → ``ALIAS_THETA``) recorded
+in §13triginta-septima at B2a remains a documentation-only finding
+on this commit (one-finding-per-commit rule); the catalog spec
+patch at §B2 L152–167 stays deferred to a future dedicated
+type-hygiene commit.
+
+### §13triginta-decima.4 Programme Bookkeeping
+
+- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §4 row B2: Phase c
+  advances ⏳ → ✅; Verdict column advances "—" → **NEGATIVE**;
+  commit-refs column appends the present commit hash.
+- §3 sub-question registry status: B2 transitions from
+  🟡 IN PROGRESS to ✅ COMPLETE; the B2 spec block (Tier 1 — Per-
+  node intrinsic types, "T-φ (Type of phase)") gains a closing
+  line analogous to B1's: *"Status: ✅ COMPLETE — B2a ✅, B2b ✅,
+  B2c ✅. Final verdict: NEGATIVE."*
+- §3 progress summary advances: 3 sub-questions complete
+  (B0 + B1 + B2 all NEGATIVE), 0 in progress, 9 pending
+  (B3 – B11 + Final).
+- §6 methodology lessons: an L3 confirmation entry is recorded
+  (see §13triginta-decima.5 below) reflecting that the
+  cross-conjecture pattern L3 first observed across B0 ∧ B1 now
+  holds also for B2.
+
+### §13triginta-decima.5 Methodology Lesson L3 — Confirmed Across B2
+
+T-νf (B0), T-EPI (B1), and T-φ (B2) have all closed NEGATIVE with
+the same structural shape established in §13triginta-sexta.5:
+
+1. **Anchor** identifies a candidate "type upgrade" of a canonical
+   observable (measure-valued :math:`\nu_f`; Banach-valued EPI;
+   covering-space-lifted φ).
+2. **Diagnostic** measures two orthogonal axes: scalar-storage
+   utilisation + spectral/entropy richness.
+3. **Forcing-axiom reduction** finds that no canonical constraint
+   forces the upgrade; isolates a single residual axiom strictly
+   weaker than the upgrade itself ((P-νf-Bijectivity);
+   (P-EPI-Bijectivity); (P-φ-Homotopy-Retention)).
+4. **Canonical-status check** finds that the residual axiom is itself
+   independent of the catalog and is actively refuted by an existing
+   canonical mechanism (scalar νf-update closure for B0; REMESH/TMEP
+   for B1; PWDP / wrap-discipline for B2).
+5. **Verdict** NEGATIVE; the upgrade-carrier is reclassified as a
+   legitimate non-canonical research envelope (E1; E2; E3).
+
+**L3 (cross-conjecture pattern), confirmed for B0 ∧ B1 ∧ B2.**
+*Whenever a candidate type-upgrade of a canonical observable can be
+matched by an existing canonical mechanism — Pontryagin-dual scalar
+νf-update closure for the frequency axis, REMESH temporal
+aggregation for the form axis, wrap-discipline for the phase axis —
+the upgrade is non-canonical and the existing mechanism is
+preferred.*  L3 is now corroborated across all three Tier-1 per-node
+intrinsic types tested so far.
+
+**Refinement noted (R-L3-1).**  The "matching canonical mechanism"
+varies by axis: it is a *closure* in B0 (νf-update), a *temporal
+aggregation* in B1 (REMESH), and a *projection discipline* in B2
+(wrap-angle).  This suggests a coarser super-pattern
+L3* (provisional): *each canonical observable comes with at least
+one canonical discharge mechanism for the expressivity demand that
+would otherwise force a type upgrade*.  L3* will be tested against
+B3 = T-ΔNFR onwards; if it holds across the remaining Tier-1
+question (B3), it will be promoted to a working heuristic for the
+Tier-2/3/4 sub-questions and the Final synthesis step.
+
+### §13triginta-decima.6 Honest Scope (Mandatory)
+
+This section:
+
+- **Does** close T-φ (B2) with a NEGATIVE verdict.
+- **Does** classify E3 = CoverElement (covering-space lift / U(1)
+  bundle element / homotopy-retaining φ representation) as
+  legitimate non-canonical research envelope.
+- **Does** advance the catalog type-hygiene programme to 3/11+1
+  complete (B0 + B1 + B2 all NEGATIVE).
+- **Does** record confirmation of cross-conjecture methodology
+  lesson L3 across B0 ∧ B1 ∧ B2 and introduce the provisional
+  refinement L3*.
+- **Does not** advance G4 = RH, does not close T-HP, does not
+  promote any operator/field/constant to canonical status, does not
+  modify the catalog operators/grammar/contracts, does not modify
+  any source file in ``src/tnfr/``, does not introduce a
+  ``CoverElement`` class or ``ALIAS_PHASE_UNWRAPPED`` alias, does
+  not delete or deprecate ``wrap_angle`` / ``ALIAS_THETA`` /
+  ``get_phase``, does not delete or modify the B2a diagnostic
+  module or its demo.
+- **Does not** make any claim about T-ΔNFR (B3) or any subsequent
+  sub-question; those are addressed sequentially per the programme
+  tracker.
+- **Does not** apply the D-CC-6 deferred catalog citation patch on
+  this commit (one finding per commit; D-CC-6 remains queued for
+  a future type-hygiene commit).
+
+### §13triginta-decima.7 Cross-references
+
+- §13triginta-prima — T-νf pre-registration (precedent template).
+- §13triginta-secunda — T-νf forcing-axiom reduction (precedent).
+- §13triginta-tertia — T-νf NEGATIVE verdict + E1 classification
+  (precedent for B2c).
+- §13triginta-quarta — T-EPI pre-registration (precedent template).
+- §13triginta-quinta — T-EPI forcing-axiom reduction (precedent for
+  TMEP-style canonical-mechanism refutation).
+- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 = ``BEPIElement``
+  classification (direct precedent; same shape).
+- §13triginta-septima — Living discoveries log; this commit appends
+  D-ENV-3 (E3 = CoverElement, NEGATIVE), and refines D-MP-3 = L3
+  with R-L3-1 (provisional L3* super-pattern); the D-CC-6 deferred
+  catalog citation patch remains unchanged on this commit.
+- §13triginta-octava — T-φ pre-registration (B2a anchor +
+  two-axis diagnostic; supplies the
+  :math:`w_{\mathrm{frac}} = 0` fingerprint consumed here).
+- §13triginta-novena — T-φ forcing-axiom reduction (B2b; PWDP
+  isolated (P-φ-Homotopy-Retention) as INDEPENDENT_AXIOM and
+  refuted it at the canonical level; supplies the decisive input
+  to this section).
+- §13septies — T-HP open content (independent, untouched by this
+  verdict).
+- §19.1 — Full P1–P49 milestone table.
+- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §3, §4, §6 —
+  programme tracker (advances on this commit at row B2 Phase c +
+  Verdict, B2 spec line, and §3 progress summary).
+- ``src/tnfr/physics/_helpers.py:29`` — ``wrap_angle`` canonical
+  implementation (canonical mechanism that refutes
+  (P-φ-Homotopy-Retention) and discharges E3 at the canonical level).
+- ``src/tnfr/constants/aliases.py:8`` — ``ALIAS_THETA`` canonical
+  scalar storage alias (canonical typing witness).
+- ``src/tnfr/riemann/phi_type_signature.py`` — B2a diagnostic
+  implementation (preserved as off-catalog measurement utility).
+- ``examples/80_phi_type_signature_demo.py`` — B2a two-resolution
+  demo (preserved; corroborates PWDP empirically with
+  :math:`w_{\mathrm{frac}} = 0` at both resolutions).
 
 ---

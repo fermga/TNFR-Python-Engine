@@ -161,7 +161,7 @@ directly.
   whose effective phase escapes the $[0, 2π)$ fundamental domain across
   evolution); (b) `lift-spectral signature` (entropy of phase-velocity
   spectrum to detect multi-valued lifts).
-- **Status**: ⏳ NOT STARTED.
+- **Status**: ✅ COMPLETE — B2a ✅, B2b ✅, B2c ✅. Final verdict: **NEGATIVE**. E3 = CoverElement (covering-space lift / U(1) bundle / homotopy-retaining φ) classified as legitimate non-canonical research envelope; refuted at the canonical level by the Phase-Wrap Discipline Principle (PWDP).
 
 #### B3 — T-ΔNFR (Type of nodal gradient)
 
@@ -303,7 +303,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | **Tier 1 — Per-node intrinsic types** | | | | | | |
 | B0 | T-νf | ✅ | ✅ | ✅ | **NEG** | `a7a095af`, `34dc32fe`, `a6f795b0` |
 | B1 | T-EPI | ✅ | ✅ | ✅ | **NEGATIVE** | `62e207cc` (B1a), `ef4858f3` (B1b), B1c this commit |
-| B2 | T-φ | ✅ | ✅ | ⏳ | — | `afdf8ef9` (B2a), B2b this commit |
+| **B2** | T-φ | ✅ | ✅ | ✅ | **NEGATIVE** | `afdf8ef9` (B2a), `a0bc4edd` (B2b), B2c this commit |
 | B3 | T-ΔNFR | ⏳ | ⏳ | ⏳ | — | — |
 | **Tier 2 — Graph-level parameters** | | | | | | |
 | B4 | T-REMESH-window | ⏳ | ⏳ | ⏳ | — | — |
@@ -318,7 +318,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
 | **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
 
-**Progress as of 2026-05-26**: 2 sub-questions complete (B0, B1 both NEGATIVE), 1 in progress (B2 Phases a+b complete, Phase c pending), 10 pending (B3 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B2a pre-registration at §13triginta-octava; B2b forcing-axiom reduction at §13triginta-novena.
+**Progress as of 2026-05-26**: 3 sub-questions complete (B0, B1, B2 all NEGATIVE), 0 in progress, 9 pending (B3 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B2a pre-registration at §13triginta-octava; B2b forcing-axiom reduction at §13triginta-novena; B2c final verdict + E3 classification at §13triginta-decima.
 
 ---
 
