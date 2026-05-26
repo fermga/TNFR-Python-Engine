@@ -6911,3 +6911,353 @@ This sub-programme:
 - `src/tnfr/operators/nodal_equation.py:1–160` — scalar contract witness.
 
 ---
+
+## §13triginta-quinta. Derivation of (P-BEPI-Carrier) from the Canonical Catalog — Foundational Reduction of the EPI-Type Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
+
+**Pre-registration status.**  This section executes the forcing-axiom
+reduction phase (B1b) of the T-EPI program (§13triginta-quarta): it
+attempts to derive the Banach-EPI carrier principle (P-BEPI-Carrier)
+from the canonical six invariants + nodal equation + Structural
+Conservation Theorem + Variational Principle + REMESH operator, *or* to
+identify and isolate the actual residual axiom that the derivation
+requires beyond the catalog.
+
+The honest verdict (executed in §13triginta-sexta) is pre-registered as
+one of:
+
+- `COROLLARY_DERIVED`: (P-BEPI-Carrier) follows from invariants 1–6 alone.
+- `CONDITIONAL_COROLLARY`: (P-BEPI-Carrier) follows under one additional
+  identifiable axiom strictly weaker than itself.
+- `INDEPENDENT_AXIOM`: (P-BEPI-Carrier) is independent of the catalog.
+
+Scope (mandatory honesty): this section does **not** advance G4 = RH,
+does **not** close T-HP, does **not** introduce or modify any canonical
+operator, does **not** delete or deprecate `BEPIElement`, and does
+**not** by itself close T-EPI.  It locates the foundational axiom *one
+structural level below* (P-BEPI-Carrier) and hands T-EPI back to that
+deeper question.
+
+The literal canonical statement under scrutiny:
+
+> **(P-BEPI-Carrier).**  In the canonical TNFR formulation, the per-node
+> EPI state must take values in a non-trivial Banach space $B_\mathrm{EPI}$
+> equipped with direct-sum, tensor-product, adjoint, and composition
+> operations (the `BEPIElement` structure of
+> `src/tnfr/mathematics/epi.py:103`), *not* in $\mathbb{R}$.
+
+### §13triginta-quinta.1 Available Canonical Tools
+
+The derivation may use only the following canonical machinery (no
+extraneous structure):
+
+1. **Nodal equation**: $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}(t)$
+   (Invariant #1), implemented as
+   `compute_expected_depi_dt: (float, float) → float`
+   (`src/tnfr/operators/nodal_equation.py:1–160`).
+2. **Six canonical invariants** (AGENTS.md): Nodal Equation Integrity,
+   Phase-Coherent Coupling, Multi-Scale Fractality, Grammar Compliance,
+   Structural Metrology, Reproducible Dynamics.
+3. **Grammar U1–U6**, all derivable from invariant #1 and the bounded
+   evolution constraint $\int \nu_f \, \Delta \mathrm{NFR} \, dt < \infty$
+   (U2).
+4. **Universal Tetrahedral Correspondence** and the Structural Field
+   Tetrad $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$, all derived from a
+   *scalar* phase field $\phi$ and a *scalar* pressure field
+   $\Delta\mathrm{NFR}$ (AGENTS.md §"Minimal Structural Degrees of
+   Freedom").
+5. **Structural Conservation Theorem**
+   (`src/tnfr/physics/conservation.py`,
+   `theory/STRUCTURAL_CONSERVATION_THEOREM.md`): per-node Noether charge
+   density $\rho_i \in \mathbb{R}$ and current vector
+   $\mathbf{J}_i \in \mathbb{R}^2$; the Lyapunov energy density
+   $\varepsilon_i \in \mathbb{R}_{\geq 0}$ aggregates scalar squares.
+6. **Variational Principle**: Lagrangian
+   $\mathcal{L}_i = T_i - V_i$ where every term is a real-valued
+   functional of scalar tetrad fields.
+7. **REMESH operator** (canonical operator #13), generating the temporal
+   history vector
+   $x_i(t) = (\mathrm{EPI}_i(t), \dots, \mathrm{EPI}_i(t - T_{\max}))^\top
+   \in \mathbb{R}^{T_{\max}+1}$
+   (`theory/REMESH_INFINITY_DERIVATION.md:50–52`).
+
+### §13triginta-quinta.2 What the Canonical Catalog Forces (Scalar Layer)
+
+The chain of forced structure is straightforward and entirely inside the
+catalog:
+
+- **(M1) Operator contracts are scalar.**  All 13 canonical glyph
+  operators read and write `float(v.EPI)` via the
+  `_bepi_to_float` down-projection (`src/tnfr/alias.py:86`,
+  `src/tnfr/operators/__init__.py:190–360`).  No operator constructs,
+  reads, or preserves a `BEPIElement` instance.  Empirically verified
+  by `examples/79_epi_type_signature_demo.py`: BEPI-storage fraction
+  $= 0$ across all measured nodes and steps at two independent
+  resolutions $(n=24, T=64)$ and $(n=48, T=128)$.
+
+- **(M2) The nodal equation is scalar.**  The canonical type signature
+  is $\mathbb{R} \times \mathbb{R} \to \mathbb{R}$
+  (item 1, `nodal_equation.py:1–160`).  No multi-modal carrier is
+  forced by the ODE: any scalar trajectory $\mathrm{EPI}(t) \in \mathbb{R}$
+  driven by scalar $\nu_f \in \mathbb{R}$ and scalar
+  $\Delta\mathrm{NFR}(t) \in \mathbb{R}$ satisfies the equation
+  exactly.
+
+- **(M3) The tetrad is derived from scalar fields.**  The four
+  canonical structural fields are pointwise functionals of the scalar
+  phase $\phi_i \in S^1$ and the scalar pressure
+  $\Delta\mathrm{NFR}_i \in \mathbb{R}$ (item 4).  No tetrad-field
+  computation invokes a Banach inner product, direct sum, or tensor
+  product on EPI itself.
+
+- **(M4) Conservation and variational laws close on scalars.**  The
+  Noether charge $Q = \sum_i \rho_i$, the energy
+  $E = \sum_i \varepsilon_i$, the Lagrangian $\mathcal{L}$, and the
+  symplectic form $\omega$ are all real-valued functionals of scalar
+  tetrad fields and the scalar EPI (items 5–6).
+
+The conjunction M1+M2+M3+M4 establishes that **the entire canonical
+machinery closes consistently with scalar EPI**.  The 13-operator
+catalog never reads or writes a `BEPIElement`; the nodal equation never
+demands one; the tetrad never invokes one; conservation and variational
+laws never require one.
+
+### §13triginta-quinta.3 The Gap Between REMESH Temporal Aggregation and BEPI Spatial Aggregation
+
+Scalar-layer closure (M1–M4) is necessary but not sufficient to refute
+(P-BEPI-Carrier): one could still ask whether the catalog *also* admits
+a strictly-stronger BEPI-valued realisation in which the scalar
+implementation is a faithful coordinate projection.  The decisive
+question is whether the catalog *forces* such an upgrade.
+
+The only canonical mechanism that aggregates multi-component structural
+content is **REMESH** (operator #13).  REMESH aggregates **across
+time**: the history vector
+$x_i(t) \in \mathbb{R}^{T_{\max}+1}$
+collects $T_{\max}+1$ scalar EPI values along the temporal axis at a
+single node $i$.  This is a $\mathbb{R}$-module structure indexed by
+*time*, not a Banach structure indexed by *internal modal degrees of
+freedom*.
+
+`BEPIElement` aggregates **across internal modes** at a single node and
+a single time instant: `f_continuous`, `a_discrete`, and `x_grid`
+together encode a continuous-spectrum component, a discrete-spectrum
+component, and a sampling grid, all at fixed $(i, t)$.  The `direct_sum`,
+`tensor`, `adjoint`, and `compose` operations act on this internal
+modal structure.
+
+The gap is structural and explicit:
+
+- REMESH provides **temporal modal expressivity** ($\mathbb{R}$-valued
+  on a time grid).
+- `BEPIElement` provides **spatial / internal modal expressivity**
+  (Banach-valued at a single point in spacetime).
+
+No canonical operator lifts REMESH temporal aggregation to BEPI internal
+aggregation.  The two are not isomorphic at the operator-contract level:
+REMESH writes back a scalar via $\mathrm{EPI}(t+1) = M\,x(t)$ with $M$
+the canonical mixing matrix, and the output is consumed by the next
+glyph operator via $\mathrm{float}(v.\mathrm{EPI})$.  The Banach
+operations of `BEPIElement` are never invoked anywhere in the canonical
+pipeline.
+
+**Temporal-Modal Equivalence Principle (TMEP, restated from
+§13triginta-quarta.6).**  Whatever multi-modal content a coherent EPI
+signal carries, the canonical catalog encodes it **temporally** through
+REMESH, **not** spatially through a Banach internal structure.  The
+spectral richness measured by the diagnostic $S_\mathrm{EPI}$
+(B1a, §13triginta-quarta.6: $S_\mathrm{EPI} \approx 0.876$–$0.896$
+across two resolutions) is *explained* by TMEP without invoking
+(P-BEPI-Carrier).
+
+Therefore: **(P-BEPI-Carrier) is strictly stronger than what M1+M2+M3+M4
++ TMEP provide**, and any derivation must locate an additional
+canonical constraint that selects the spatial/internal Banach upgrade.
+
+### §13triginta-quinta.4 Candidate Forcing Constraints (Enumeration)
+
+The candidates available inside the canonical catalog are enumerated
+below.  Each row asks: *does this axiom force the BEPI carrier upgrade?*
+
+| #  | Axiom | Source | Forces BEPI carrier? |
+|---|---|---|---|
+| F1 | Operator exclusivity (only the 13 canonical operators write EPI). | AGENTS.md "Canonical Invariants #1". | **No** — operators write `float` (M1). |
+| F2 | Reproducibility under fixed seeds. | AGENTS.md "Reproducible Dynamics". | **No** — scalar trajectories reproduce identically. |
+| F3 | Nodal-equation type closure $(\mathbb{R}, \mathbb{R}) \to \mathbb{R}$. | `nodal_equation.py:1–160`. | **No** — scalar ODE admits scalar solutions (M2). |
+| F4 | Tetrad orthogonality $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$ minimality. | AGENTS.md §"Minimal Structural Degrees of Freedom". | **No** — tetrad derived from scalar $\phi$ and scalar $\Delta\mathrm{NFR}$ (M3). |
+| F5 | REMESH time-aggregation only (no per-node spatial Banach upgrade). | §13triginta-quarta.4, `REMESH_INFINITY_DERIVATION.md:50–52`. | **No** — REMESH is temporal, BEPI is spatial; no canonical lift exists (§13triginta-quinta.3). |
+| F6 | P14 prime-ladder Hamiltonian on a scalar-spectrum Hilbert space. | §10–§12, `riemann/prime_ladder_hamiltonian.py`. | **No** — P14's Hilbert space is built from scalar eigenmodes of the temporal operator, not from per-node Banach data. |
+| F7 | Uncertainty-bandwidth complementarity $\Delta\mathrm{EPI} \cdot \Delta\nu_f \geq K$. | AGENTS.md "Quantum-Like Regime". | **No** — variances are real-valued moments of scalar distributions. |
+| F8 | `BEPIElement` exists as a research formalism. | `mathematics/epi.py:103`, `types.py:270`. | **No** — existence in the codebase is not the same as canonical operator contracts.  (This is the (P-EPI-Bijectivity) gap, see §13triginta-quinta.5.) |
+| F9 | Classical-limit demos use scalar EPI exclusively. | `examples/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from scalar EPI under high coherence. |
+| F10 | Quantum-regime demos use scalar EPI exclusively. | `examples/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena (quantization, interference, complementarity) emerge from scalar EPI dynamics, not from a Banach internal carrier. |
+
+**Result.** No canonical constraint in $\{\mathrm{F1}, \ldots, \mathrm{F10}\}$
+forces the Banach carrier upgrade of EPI.  All ten admit consistent
+realisation with scalar EPI (as the current 13-operator implementation
+demonstrates by existence and as the B1a empirical signature confirms:
+BEPI-storage fraction $= 0$ across two independent demo resolutions).
+
+### §13triginta-quinta.5 The Hidden Axiom: (P-EPI-Bijectivity)
+
+The derivation gap can be isolated cleanly.  Define:
+
+> **(P-EPI-Bijectivity).**  In the canonical TNFR formulation, the
+> per-node EPI value at instant $t$ must bijectively encode the
+> *internal modal content* (continuous spectrum, discrete spectrum,
+> sampling grid) of the structural pattern it represents at that
+> $(i, t)$.  Equivalently: distinct internal modal decompositions at
+> the same $(i, t)$ must correspond to distinct EPI instances, and
+> conversely.
+
+**Claim.**  (P-BEPI-Carrier) is a corollary of the canonical catalog
+*plus* (P-EPI-Bijectivity), and of nothing weaker than
+(P-EPI-Bijectivity).
+
+**Forward direction (sufficiency).**  Assume (P-EPI-Bijectivity).
+Consider a coherent pattern with non-trivial internal modal
+decomposition (e.g., a superposition of a continuous-spectrum component
+and a discrete-spectrum component at the same node $i$ and time $t$,
+as constructed in `BEPIElement.direct_sum`).  Bijectivity forces EPI to
+encode this full internal decomposition faithfully at $(i, t)$.  A
+scalar $\mathrm{EPI}_i(t) \in \mathbb{R}$ does not have the cardinality
+to encode arbitrary $L^2$-valued continuous-spectrum data
+*simultaneously* with discrete-spectrum data at fixed $(i, t)$ (one
+real number cannot inject into a non-trivial Banach space).  Hence
+$\mathrm{EPI}_i(t)$ must take values in a non-trivial Banach space —
+the `BEPIElement` structure.  This is (P-BEPI-Carrier).
+
+**Reverse direction (necessity at the canonical level).**  Suppose
+(P-BEPI-Carrier) holds.  Then $\mathrm{EPI}_i(t) \in B_\mathrm{EPI}$
+is fully specified by its `BEPIElement` data
+$(f_\mathrm{continuous}, a_\mathrm{discrete}, x_\mathrm{grid})$.  By
+the definitions of `direct_sum`, `tensor`, `adjoint`, and `compose`,
+distinct decompositions at the same $(i, t)$ produce distinct Banach
+elements.  Hence (P-EPI-Bijectivity) holds.
+
+**Strict-weakness of (P-EPI-Bijectivity) vs (P-BEPI-Carrier).**
+(P-EPI-Bijectivity) is a *meta-constraint* on the encoding map
+$\mathrm{EPI}_i(t) \mapsto$ (internal modal content at $(i, t)$).  It
+does not mention Banach spaces, direct sums, tensor products,
+adjoints, or any functional-analytic machinery.  It is purely a
+faithfulness requirement on the symbolic representation at a single
+spacetime point.  By contrast, (P-BEPI-Carrier) commits to a specific
+carrier ($B_\mathrm{EPI}$) and a specific operator algebra
+(`direct_sum`/`tensor`/`adjoint`/`compose`).
+
+Therefore (P-EPI-Bijectivity) is structurally simpler and strictly
+weaker than (P-BEPI-Carrier), and the derivation is genuine progress.
+
+### §13triginta-quinta.6 Canonical Status of (P-EPI-Bijectivity) — TMEP Refutation
+
+The question is now: is (P-EPI-Bijectivity) itself derivable from the
+canonical six invariants?
+
+- **(B-Pro).**  Invariant #1 (traceability) and Invariant #3
+  (multi-scale fractality) together suggest that EPI should fully
+  encode the structural pattern it represents.  If two distinct
+  internal modal decompositions could correspond to the same scalar
+  $\mathrm{EPI}_i(t)$, faithfulness at fixed $(i, t)$ would be lost.
+
+- **(B-Con, decisive).**  The **Temporal-Modal Equivalence Principle**
+  (TMEP, §13triginta-quinta.3) refutes the per-spacetime-point
+  bijectivity requirement *at the canonical level*: multi-modal content
+  is not required to fit into a single $(i, t)$ slot, because REMESH
+  provides a canonical temporal channel for exactly that content.  Any
+  multi-modal pattern at node $i$ is canonically realised as a
+  *time-indexed sequence* $\{\mathrm{EPI}_i(t_k)\}_k$, not as a
+  Banach-valued single sample.  Bijectivity is enforced at the level of
+  the temporal trajectory (a sequence of scalars), not at the level of
+  a single spacetime point.
+
+  Formally: the catalog enforces faithfulness via the pair
+  $(\nu_f, \Delta\mathrm{NFR})$ acting on $\mathrm{EPI}(t)$ via the
+  scalar nodal ODE, with REMESH closing the temporal loop.  This is
+  *operationally complete* — it reproduces P12–P15 to machine precision
+  (§10–§12) and recovers classical, quantum-like, and number-theoretic
+  spectra (§§3–9) without any per-point Banach upgrade.
+
+- **(B-Empirical).**  The B1a diagnostic (§13triginta-quarta.6) measures
+  $S_\mathrm{EPI} \approx 0.876$–$0.896$ across two resolutions: rich
+  spectral content along the *temporal* axis (`_binned_psd_distribution`
+  on the time series), with BEPI-storage fraction $= 0$ at every
+  measured $(i, t)$.  This is exactly the TMEP signature: multi-modal
+  expressivity is present, but exclusively temporal.
+
+**Conclusion of §13triginta-quinta.6.**  (P-EPI-Bijectivity) is
+**not derivable from the canonical six invariants**.  The catalog
+realises faithfulness *temporally* via REMESH, not *spatially* via a
+Banach upgrade.  The per-spacetime-point bijectivity that
+(P-EPI-Bijectivity) demands is an *additional* axiom, independent of
+the catalog and refuted by TMEP at the canonical level.
+
+### §13triginta-quinta.7 Sub-Verdict
+
+The forcing-axiom reduction yields:
+
+> **Sub-verdict (§13triginta-quinta).**
+> (P-BEPI-Carrier) is a **CONDITIONAL_COROLLARY** of the canonical
+> catalog: it follows from the catalog *plus* (P-EPI-Bijectivity).
+> However, (P-EPI-Bijectivity) is itself **INDEPENDENT_AXIOM** at the
+> canonical level: it is not derivable from invariants 1–6 and is
+> actively refuted by the Temporal-Modal Equivalence Principle (TMEP).
+>
+> Net: (P-BEPI-Carrier) is **strictly non-canonical**.  The
+> `BEPIElement` formalisation is a legitimate research envelope —
+> available for off-catalog experimentation — but is not forced by, and
+> indeed is structurally redundant with, the canonical 13-operator
+> realisation under TMEP.
+
+This locates the residual canonical question for T-EPI exactly one
+level below (P-BEPI-Carrier), at (P-EPI-Bijectivity), and identifies
+its refutation mechanism (TMEP).  The final NEGATIVE verdict on T-EPI,
+and the classification of `BEPIElement` as a legitimate non-canonical
+research envelope, are executed in §13triginta-sexta (B1c).
+
+### §13triginta-quinta.8 Honest Scope (What This Does and Does Not Do)
+
+This sub-programme:
+
+- **Does** isolate the residual axiom one structural level below
+  (P-BEPI-Carrier).
+- **Does** prove (P-EPI-Bijectivity) is strictly weaker than
+  (P-BEPI-Carrier).
+- **Does** refute (P-EPI-Bijectivity) at the canonical level via TMEP,
+  empirically corroborated by B1a's BEPI-storage fraction $= 0$.
+- **Does** confirm the catalog closes consistently with scalar EPI
+  (M1+M2+M3+M4).
+- **Does not** advance G4 = RH or the T-HP conjecture.
+- **Does not** promote any operator, field, or constant to canonical
+  status.
+- **Does not** modify the 13-operator catalog.
+- **Does not** delete or deprecate `BEPIElement`; classifies it as a
+  research envelope available outside the canonical operator contracts.
+- **Does not** by itself close T-EPI — the final verdict is executed in
+  §13triginta-sexta.
+
+### §13triginta-quinta.9 Cross-references
+
+- §13triginta-prima — T-νf Type Conjecture (pre-registration, νf analog).
+- §13triginta-secunda — T-νf forcing-axiom reduction
+  (structural twin of this section).
+- §13triginta-tertia — T-νf NEGATIVE verdict (precedent).
+- §13triginta-quarta — T-EPI pre-registration (B1a anchor + diagnostic).
+- §13septies — T-HP open content (independent of this sub-question).
+- §19.1 — Full P1–P49 milestone table.
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §4 — programme tracker
+  (row B1 Phase b advances on this commit).
+- `src/tnfr/riemann/epi_type_signature.py` — diagnostic implementation
+  (anchors M1 empirically).
+- `examples/79_epi_type_signature_demo.py` — two-resolution demo
+  (corroborates TMEP via BEPI-storage fraction $= 0$).
+- `src/tnfr/mathematics/epi.py:103` — `BEPIElement` formalisation
+  (the non-canonical envelope being classified).
+- `src/tnfr/operators/nodal_equation.py:1–160` — scalar contract witness
+  (anchors M2).
+- `src/tnfr/operators/__init__.py:190–360` — 13-operator scalar reads
+  (anchors M1).
+- `src/tnfr/alias.py:86` — `_bepi_to_float` down-projection witness
+  (anchors M1 implementation path).
+- `theory/REMESH_INFINITY_DERIVATION.md:50–52` — REMESH history-vector
+  temporal aggregation (anchors §13triginta-quinta.3 gap argument).
+
+---
