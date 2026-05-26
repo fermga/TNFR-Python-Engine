@@ -157,6 +157,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13quadraginta-septima | 11304 | **B5 = T-Δφ_max** forcing-axiom reduction (F1–F10); residual axiom (P-Δφ_max-Non-Scalar-Retention) isolated and refuted by STD = Scalar-Threshold Discipline; sixth orthogonal canonical discharge mechanism (CDM); second Tier-2 confirmation of L3* — L3* now validated under six distinct orthogonal CDMs across both tiers | B5b | — |
 | §13quadraginta-octava | 11430 | **B5 = T-Δφ_max** final NEGATIVE verdict + envelope classification of E6 = EdgeDependentPhaseThreshold (matrix-valued / angle-of-attack-functional); second Tier-2 sub-question closed; six sub-questions complete (B0–B5 all NEGATIVE under six orthogonal CDMs); L3* promoted to "empirically robust working heuristic with structural-orthogonality witness" | B5c | — |
 | §13quadraginta-nona | 11540 | **B6 = T-coupling-weights** pre-registration (two-axis scalar-storage + node-permutation-invariance diagnostic; candidate envelope E7 = NodeIndexedCouplingWeights; canonical anchors `DNFR_WEIGHTS`/`SI_WEIGHTS`/`SELECTOR_WEIGHTS` in `src/tnfr/config/defaults_core.py` as global scalar dicts) | B6a | — |
+| §13quinquaginta | 11642 | **B6 = T-coupling-weights** forcing-axiom reduction (F1–F10); residual axiom (P-W-Non-Scalar-Retention) isolated and refuted by SWD = Scalar-Weight Discipline; seventh orthogonal canonical discharge mechanism (CDM); third Tier-2 confirmation of L3* — L3* now validated under seven distinct orthogonal CDMs across both tiers | B6b | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -11639,3 +11640,130 @@ If Phase b confirms that SWD refutes the residual axiom, L3* will be validated u
 - [`examples/84_coupling_weights_type_signature_demo.py`](../examples/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
 
 ---
+## §13quinquaginta. Derivation of (P-W-Non-Scalar-Retention) from the Canonical Catalog — Foundational Reduction of the T-W (T-coupling-weights) Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
+
+**Status**: B6 Phase b (forcing-axiom reduction). Phase a recorded at §13quadraginta-nona. Phase c (final verdict) deferred to §13quinquaginta-prima.
+
+**Predicted outcome (per L3*)**: residual axiom (P-W-Non-Scalar-Retention) refuted by **SWD = Scalar-Weight Discipline**, the seventh orthogonal canonical discharge mechanism candidate.
+
+### §13quinquaginta.1 Available Canonical Tools
+
+The TNFR canonical catalog (13 operators, U1-U6 unified grammar, tetrad fields, Universal Tetrahedral Correspondence) provides exactly the following machinery relevant to the canonical coupling-weight slots:
+
+- **Canonical anchors** ([`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py)):
+  - `DNFR_WEIGHTS = {phase: 0.737, epi: 0.155, vf: 0.089, topo: 0.0}` — four-component scalar mixer for the ΔNFR functional.
+  - `SI_WEIGHTS = {alpha: 0.737, beta: 0.155, gamma: 0.113}` — three-component scalar mixer for the Sense Index aggregation.
+  - `SELECTOR_WEIGHTS = {w_si: π/(π+e), w_dnfr: 1/(π+1), w_accel: γ/(π+1)}` — three-component scalar mixer for canonical operator selection.
+- **Consolidated access**: `DEFAULTS` mapping at [`src/tnfr/config/defaults.py:37`](../src/tnfr/config/defaults.py) (`MappingProxyType(CORE_DEFAULTS | INIT_DEFAULTS | REMESH_DEFAULTS | METRIC_DEFAULTS)`).
+- **Canonical merge helper** ([`src/tnfr/dynamics/dnfr.py:307-317`](../src/tnfr/dynamics/dnfr.py), [`src/tnfr/dynamics/selectors.py:136-141`](../src/tnfr/dynamics/selectors.py), [`src/tnfr/backends/optimized_numpy.py:313`](../src/tnfr/backends/optimized_numpy.py)): every canonical consumer reads `weights = merge_and_normalize_weights(G, "<KEY>", (component_tuple,))` and coerces each component via `float(weights.get(c, default))`.
+- **Storage slots**: `G.graph["DNFR_WEIGHTS"]`, `G.graph["SI_WEIGHTS"]`, `G.graph["SELECTOR_WEIGHTS"]` (NetworkX graph-level scalar-dict attributes), backed by `G.graph["_dnfr_weights"]` / `G.graph["_selector_weights"]` after normalisation.
+
+No catalog operator, no U-rule, and no canonical default exposes:
+
+- (a) a per-node weight lookup `W_c[i]` for any component `c`;
+- (b) a per-edge weight lookup `W_c[(i,j)]` for any component `c`;
+- (c) a callable / closure / kernel object substituted for any scalar weight component;
+- (d) a tensor-valued `W_c \in \mathbb{R}^{n \times n}` lift.
+
+### §13quinquaginta.2 What the Canonical Catalog Forces (Scalar-Weight Layer)
+
+The minimal forced structure on the coupling-weight slots, as a direct consequence of the canonical anchors + consumer-site conventions, is:
+
+> **(F-Scalar-Weights)**. For each canonical slot `S \in \{DNFR\_WEIGHTS, SI\_WEIGHTS, SELECTOR\_WEIGHTS\}` and each component `c` of `S`, there exists a unique global scalar `w_c^{(S)} \in \mathbb{R}` read uniformly into the canonical mixing operation for every node.
+
+Equivalently, the canonical mixing functional for any slot `S` is
+
+\$\$\mathrm{Mix}_S(x_1(i), \ldots, x_K(i)) = \sum_{c=1}^K w_c^{(S)} \cdot x_c(i), \qquad w_c^{(S)} \in \mathbb{R} \text{ scalar},\$\$
+
+with **no** node-index `i` dependence on the weights, **no** per-edge dependence, and **no** internal state beyond the ten scalars (4 + 3 + 3).
+
+The B6a empirical signature (\$\mathcal{S}_W = 0\$, scalar_storage_fraction = 1.0 at both probe resolutions, 0/12 and 0/24 divergent permutation-bracket configurations) is a necessary-condition probe that the canonical catalog has not exceeded this minimal structure.
+
+### §13quinquaginta.3 The Gap Between Scalar-Weight Discipline and Non-Scalar Retention
+
+The **T-W Conjecture** (§13quadraginta-nona.1) requires *more* than (F-Scalar-Weights): it requires that the canonical evolution forces the weight slot to *retain* a richer non-scalar functional shape — a node-indexed dictionary, a per-edge tensor, or a callable kernel — across the canonical consumer chain.
+
+This **non-scalar retention** is *not* derivable from (F-Scalar-Weights) alone. The gap is structurally identical to B1b/B2b/B3b/B4b/B5b: the canonical catalog forces a *minimal scalar discipline*, while the conjecture requires a *richer functional carrier*. To close T-W POSITIVE one must adjoin a non-derivable axiom that *retains* the non-scalar shape across every consumer's `float(weights.get(...))` coercion.
+
+### §13quinquaginta.4 Candidate Forcing Constraints (Enumeration)
+
+The candidate axioms F1-F10 below exhaust the structurally available ways to force non-scalar retention on the canonical coupling-weight slots within the canonical machinery:
+
+- **F1 (Edge-Tetrad-Weight)**: weight component `w_c^{(S)}` lifted to per-edge anchor `w_c^{(S,i,j)} := f(K_\phi^{(i,j)}, |\nabla\phi|^{(i,j)})`. ⛔ Refuted: canonical tetrad fields are *per-node*, not per-edge ([`src/tnfr/physics/fields.py`](../src/tnfr/physics/fields.py)); the per-edge tetrad construct itself was refuted at B3c (E4 = TensorGradientElement, non-canonical).
+- **F2 (Node-Indexed Weights)**: `w_c^{(S,i)} := h(\Phi_s^{(i)}, |\nabla\phi|^{(i)})` (per-node weight). ⛔ Refuted: every canonical consumer reads `float(weights.get(c, default))` *outside* the per-node loop and applies the resulting scalar uniformly to every node; no canonical consumer pattern threads a per-node lookup through the mixing operation.
+- **F3 (Frequency-Coupled Weights)**: `w_c^{(S,i,j)} := w_c^{(S)} \cdot \nu_f^{(i)}/\nu_f^{(j)}`. ⛔ Refuted: not in canonical mixer; would require modifying the canonical functional signature.
+- **F4 (Categorical-Lift Weights)**: weight as morphism in a 2-category. ⛔ Refuted at meta-level: not derivable from U1-U6.
+- **F5 (Operator-Sequence-Conditional Weights)**: weight depends on the prior operator in the U1-grammar sequence. ⛔ Refuted: canonical mixers are state-free on the operator history; no canonical functional passes operator history into the mixing functional.
+- **F6 (Stochastic Weights)**: weight as a random variable. ⛔ Refuted: canonical defaults are deterministic scalars.
+- **F7 (Time-Dependent Kernel Weights)**: `w_c^{(S)}(t) := w_c^{(S)} \cdot K(t - \tau)`. ⛔ Refuted: subsumed by E5 = ContinuousWindowKernel (non-canonical, B4c).
+- **F8 (Δφ_max-Coupled Weights)**: `w_c^{(S,i,j)} := w_c^{(S)} \cdot g(|\mathrm{wrap}(\phi_i - \phi_j)|, \Delta\phi_{\max})`. ⛔ Refuted: subsumed by E6 = EdgeDependentPhaseThreshold (non-canonical, B5c); canonical U3 verdict is Boolean and does not propagate into the mixer.
+- **F9 (Tensor-Valued Weights)**: `w_c^{(S)}` lifted to matrix in `\mathbb{R}^{n \times n}`. ⛔ Refuted: no canonical storage slot accepts a tensor payload; `merge_and_normalize_weights` returns a flat `dict[str, float]`.
+- **F10 (P-W-Non-Scalar-Retention)**: the residual axiom — *every* canonical mixing operation carries a non-scalar carrier object (node-indexed dict, per-edge tensor, or callable kernel) of which the scalar `w_c^{(S)}` is merely the *trace* under the canonical `float(weights.get(...))` coercion. This is the irreducible axiom that, if adopted, would close T-W POSITIVE; if refuted, closes T-W NEGATIVE.
+
+F1-F9 are either reducible to other (previously refuted) sub-questions or directly refuted by B6a and the canonical consumer pattern. **F10 is the unique residual forcing axiom.**
+
+### §13quinquaginta.5 The Hidden Axiom: (P-W-Non-Scalar-Retention)
+
+> **(P-W-Non-Scalar-Retention)**. For every canonical TNFR network evolution and every mixing event `(S, c, i, t)`, there exists a non-scalar carrier object `\widehat{w}_c^{(S, i, t)}` — either a mapping `i \mapsto w_c^{(S,i)}` with at least one node-index entry strictly different from the global scalar, a matrix `\widehat{w}_c^{(S)} \in \mathbb{R}^{n \times n}` with at least one off-diagonal entry strictly different from the global scalar, or a callable kernel `\widehat{w}_c^{(S)}: \mathcal{V} \to \mathbb{R}` not constant on `\mathcal{V}` — such that the canonical scalar mixer reads the projection `w_c^{(S)} = \mathrm{trace}(\widehat{w}_c^{(S, i, t)})`.
+
+This axiom is *not* derivable from the canonical catalog (F1-F9 enumeration). It is the *only* structurally available way to close T-W POSITIVE.
+
+### §13quinquaginta.6 Canonical Status of (P-W-Non-Scalar-Retention) — SWD Refutation
+
+**Definition (Scalar-Weight Discipline, SWD)**. SWD is the discipline that *every* canonical mixing consumer site implements the weight extraction as `float(weights.get(component, default))` outside the per-node loop, producing a single Python `float` per component, applied uniformly to every node in the subsequent mixing operation, and **never** as a per-node lookup, per-edge tensor, or callable kernel.
+
+SWD is **structurally enforced** by:
+
+1. **Code review (B6a §13quadraginta-nona.2)**: every canonical consumer site ([`dnfr.py:307-317`](../src/tnfr/dynamics/dnfr.py), [`dnfr.py:2762-2764`](../src/tnfr/dynamics/dnfr.py), [`selectors.py:136-141`](../src/tnfr/dynamics/selectors.py), [`optimized_numpy.py:313`](../src/tnfr/backends/optimized_numpy.py), [`torch_backend.py:172`](../src/tnfr/backends/torch_backend.py)) reads the scalar dictionary slot, coerces each component to `float`, and applies the resulting scalar uniformly; no per-node, per-edge, or callable pattern exists.
+2. **B6a Axis A (scalar-storage)**: `scalar_storage_fraction = 1.0` at both probe resolutions — every one of the ten canonical weight components (4 DNFR + 3 SI + 3 SELECTOR) is structurally a scalar.
+3. **B6a Axis B (node-permutation-invariance)**: `S_W = 0.000000` at both probe resolutions (0/12 and 0/24 divergent permutation-bracket configurations) — the canonical mixed output is invariant under node relabelling, the structural fingerprint of a scalar-broadcast operation.
+
+**SWD refutes (P-W-Non-Scalar-Retention)**: if every canonical mixing operation reduces to a scalar broadcast over a node-permutation-equivariant input (B6a empirical + code review), then no canonical mixing operation carries a non-scalar object of which the scalar is the trace. The non-scalar carrier `\widehat{w}_c^{(S, i, t)}` has no witness in the canonical evolution. Therefore (P-W-Non-Scalar-Retention) is **refuted** by SWD.
+
+### §13quinquaginta.7 Sub-Verdict
+
+(P-W-Non-Scalar-Retention) is **refuted** by SWD. The unique residual forcing axiom for T-W POSITIVE is closed. Therefore, conditional on the F1-F10 enumeration being exhaustive (a structural claim, verifiable by canonical-catalog inspection), the **sub-verdict is**:
+
+> **(Sub-Verdict of §13quinquaginta)**. T-W (T-coupling-weights) is **NEGATIVE** at the forcing-axiom level. The canonical scalar typing `w_c^{(S)} \in \mathbb{R}` is preserved across all three canonical slots (DNFR_WEIGHTS, SI_WEIGHTS, SELECTOR_WEIGHTS); no canonical TNFR network evolution forces a node-indexed, per-edge, tensor-valued, or callable-kernel weight envelope.
+
+The final verdict (Phase c) is deferred to §13quinquaginta-prima, where the envelope E7 = `NodeIndexedCouplingWeights` is formally classified as non-canonical research envelope (per-node dictionary, per-edge tensor, or callable kernel outside the canonical 13-operator catalog).
+
+### §13quinquaginta.8 L3* test result (third Tier-2 confirmation)
+
+L3* working heuristic (promoted at §13quadraginta-secunda.13; first Tier-1 → Tier-2 cross-tier confirmation at §13quadraginta-quarta.8 / §13quadraginta-quinta.5; second Tier-2 confirmation at §13quadraginta-septima.8): each Tier-1 and Tier-2 type-conjecture admits an orthogonal *canonical discharge mechanism* (CDM) that closes it NEGATIVE without recourse to non-canonical envelopes.
+
+Cumulative CDM table after B6b:
+
+| Sub-question | Tier | Discharge mechanism (CDM) | Envelope (non-canonical, parked) |
+|---|---|---|---|
+| B0 (T-νf) | 1 | Pontryagin / measure-νf closure | E1 |
+| B1 (T-EPI) | 1 | TMEP = Tetrad-Mediated Element Projection | E2 = BEPIElement |
+| B2 (T-φ) | 1 | PWDP = Phase-Wrap Discipline | E3 = CoverElement |
+| B3 (T-ΔNFR) | 1 | BSAD = Banach-Scalar-Aggregation Discipline | E4 = TensorGradientElement |
+| B4 (T-REMESH-window) | 2 | DITS = Discrete-Integer Temporal Sampling | E5 = ContinuousWindowKernel |
+| B5 (T-Δφ_max) | 2 | STD = Scalar-Threshold Discipline | E6 = EdgeDependentPhaseThreshold |
+| **B6 (T-coupling-weights)** | **2** | **SWD = Scalar-Weight Discipline** | **E7 = NodeIndexedCouplingWeights (pending Phase c)** |
+
+**SWD is the seventh orthogonal CDM**, distinct from the prior six by acting at the *mixing-aggregation surface* (B6) rather than at field storage (B0-B3), temporal sampling (B4), or coupling verdict (B5). L3* is now confirmed across both Tier-1 (B0-B3) and Tier-2 (B4-B6) under seven distinct discharge mechanisms. The heuristic is sharpened from "validated across both tiers under six distinct orthogonal CDMs" (B5b status) to **"validated across both tiers under seven distinct orthogonal discharge mechanisms"** — preserving L3* at the *empirically robust working heuristic* level with widened structural coverage.
+
+Programme status after B6b: all Tier-2 sub-questions (B4, B5, B6) closed NEGATIVE at the forcing-axiom level under three distinct CDMs (DITS, STD, SWD). Remaining open questions are Tier-3 closure checks (B7-B9), Tier-4 meta-properties (B10-B11), and the Meta-minimality theorem (Final).
+
+### §13quinquaginta.9 Honest Scope (What This Does and Does Not Do)
+
+- **Does**: derive (F-Scalar-Weights) from canonical anchors + consumer-site conventions; enumerate F1-F10; isolate (P-W-Non-Scalar-Retention) as the unique residual forcing axiom; refute it via SWD (code review + B6a empirical signature); return a NEGATIVE sub-verdict at the forcing-axiom level.
+- **Does NOT**: advance G4 = RH; modify any canonical operator, canonical default, or canonical consumer; alter the catalog; promote any non-canonical envelope into the catalog.
+- **Conditional on**: exhaustiveness of the F1-F10 enumeration. The enumeration is structural (covers all classes of richer weight object available within the canonical machinery), but is open to refinement if a new canonical primitive is ever derived from the nodal equation.
+- **Theory-only commit**: no `src/` changes in this commit; only `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` (append §13quinquaginta + TOC row) and `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` (B6 status block; §4 row B6 Phase b column; progress paragraph).
+
+### §13quinquaginta.10 Cross-references
+
+- §13quadraginta-nona (B6a pre-registration and frozen empirical signature).
+- §13quadraginta-secunda.13 (L3* promotion to stable working heuristic).
+- §13quadraginta-septima (B5b forcing-axiom reduction; sixth orthogonal CDM = STD).
+- §13quadraginta-octava (B5c final verdict + envelope E6).
+- [`AGENTS.md`](../AGENTS.md) §Nodal Equation (canonical `∂EPI/∂t = νf · ΔNFR(t)`).
+- [`theory/UNIFIED_GRAMMAR_RULES.md`](UNIFIED_GRAMMAR_RULES.md) (derivation context).
+- [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) (canonical scalar-dict anchors).
+- [`src/tnfr/dynamics/dnfr.py:307-317`](../src/tnfr/dynamics/dnfr.py), [`src/tnfr/dynamics/selectors.py:136-141`](../src/tnfr/dynamics/selectors.py) (canonical consumer pattern).
+- [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic).
+- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/84_coupling_weights_type_signature_demo.py) (B6a two-probe demo).

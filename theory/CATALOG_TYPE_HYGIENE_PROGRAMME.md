@@ -224,7 +224,7 @@ modulate canonical dynamics.
   $w_{ij} \in \mathbb{C}$ (unitary-bundle parallel transport), or
   tensor-valued $w_{ij} \in \mathbb{R}^{4\times 4}$ (tetrad-channel coupling
   matrix).
-- **Status**: 🟡 Phase a complete — B6a ✅ (pre-registration at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-nona; frozen empirical signature `S_W = 0.000000` and `scalar_storage_fraction = 1.0` at both probe resolutions (n=24/n_perms=12 and n=48/n_perms=24); verdict `SCALAR_WEIGHTS_ADEQUATE`; canonical anchors `DNFR_WEIGHTS`/`SI_WEIGHTS`/`SELECTOR_WEIGHTS` at `src/tnfr/config/defaults_core.py:57,65,150` as global scalar dicts; candidate envelope **E7 = NodeIndexedCouplingWeights**; predicted seventh CDM = SWD = Scalar-Weight Discipline). B6b ⏳ (forcing-axiom F1–F10 reduction deferred to §13quinquaginta). B6c ⏳ (final verdict deferred to §13quinquaginta-prima).
+- **Status**: 🟡 Phases a–b complete — B6a ✅ (pre-registration at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-nona; frozen empirical signature `S_W = 0.000000` and `scalar_storage_fraction = 1.0` at both probe resolutions (n=24/n_perms=12 and n=48/n_perms=24); verdict `SCALAR_WEIGHTS_ADEQUATE`; canonical anchors `DNFR_WEIGHTS`/`SI_WEIGHTS`/`SELECTOR_WEIGHTS` at `src/tnfr/config/defaults_core.py:57,65,150` as global scalar dicts; candidate envelope **E7 = NodeIndexedCouplingWeights**), B6b ✅ (forcing-axiom F1–F10 reduction at §13quinquaginta; residual axiom (P-W-Non-Scalar-Retention) **refuted** by SWD = Scalar-Weight Discipline; seventh orthogonal canonical discharge mechanism; third Tier-2 L3* confirmation). B6c ⏳ (final verdict deferred to §13quinquaginta-prima).
 
 ### Tier 3 — Derived diagnostic fields (closure checks)
 
@@ -314,7 +314,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | **Tier 2 — Graph-level parameters** | | | | | | |
 | B4 | T-REMESH-window | ✅ | ✅ | ✅ | **NEGATIVE** (DITS) | `c647f7d7` (B4a), `6349e425` (B4b), this commit (B4c) |
 | B5 | T-Δφ_max | ✅ | ✅ | ✅ | NEGATIVE | this commit (B5c) |
-| B6 | T-coupling-weights | ✅ | ⏳ | ⏳ | — | this commit (B6a) |
+| B6 | T-coupling-weights | ✅ | ✅ | ⏳ | — | `bb2dc7c5` (B6a), this commit (B6b) |
 | **Tier 3 — Derived field closure** | | | | | | |
 | B7 | Δ-tetrad-closure | ⏳ | n/a | ⏳ | — | — |
 | B8 | Δ-currents-closure | ⏳ | n/a | ⏳ | — | — |
@@ -324,7 +324,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
 | **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
 
-**Progress as of 2026-05-26**: 6 sub-questions complete (B0, B1, B2, B3, B4, B5 — all NEGATIVE under six distinct orthogonal CDMs: Pontryagin/measure-ν_f, TMEP, PWDP, BSAD, DITS, STD); B6 Phase a registered (T-coupling-weights, frozen empirical signature `S_W = 0.000000` with `scalar_storage_fraction = 1.0`, candidate envelope E7 = `NodeIndexedCouplingWeights`); 5 fully-pending (B7 – B11 + Final). B5 Phase c at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-octava classifies E6 = `EdgeDependentPhaseThreshold` (matrix-valued / angle-of-attack-functional) as the sixth non-canonical research envelope. L3* now promoted to "empirically robust working heuristic with structural-orthogonality witness" — the six CDMs act on six structurally distinct surfaces (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict). Predicted seventh CDM for B6 = T-coupling-weights: SWD = Scalar-Weight Discipline (under empirical evaluation at B6b). Living discoveries log at §13triginta-septima; B4 closure at §13quadraginta-tertia / -quarta / -quinta; B5 closure at §13quadraginta-sexta / -septima / -octava; B6 Phase a at §13quadraginta-nona.
+**Progress as of 2026-05-26**: 6 sub-questions complete (B0, B1, B2, B3, B4, B5 — all NEGATIVE under six distinct orthogonal CDMs: Pontryagin/measure-ν_f, TMEP, PWDP, BSAD, DITS, STD); B6 Phases a–b registered (T-coupling-weights, frozen empirical signature `S_W = 0.000000` with `scalar_storage_fraction = 1.0`; forcing-axiom reduction F1–F10 refutes (P-W-Non-Scalar-Retention) via the seventh orthogonal CDM **SWD = Scalar-Weight Discipline**; candidate envelope E7 = `NodeIndexedCouplingWeights`); 5 fully-pending (B7 – B11 + Final). B5 Phase c at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-octava classifies E6 = `EdgeDependentPhaseThreshold` (matrix-valued / angle-of-attack-functional) as the sixth non-canonical research envelope. L3* is now validated across both tiers under **seven distinct orthogonal discharge mechanisms** (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict, mixing aggregation). All three Tier-2 sub-questions (B4, B5, B6) are closed NEGATIVE at the forcing-axiom level under three distinct CDMs (DITS, STD, SWD). Living discoveries log at §13triginta-septima; B4 closure at §13quadraginta-tertia / -quarta / -quinta; B5 closure at §13quadraginta-sexta / -septima / -octava; B6 Phases a–b at §13quadraginta-nona / §13quinquaginta.
 
 ---
 
