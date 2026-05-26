@@ -109,7 +109,7 @@ src/tnfr/
 ├── physics/           # Structural fields, conservation, integrity (26 modules)
 ├── engines/           # Self-optimization, pattern discovery, GPU/FFT (7 modules)
 ├── dynamics/          # Nodal equation integration
-├── riemann/           # TNFR-Riemann program (14 modules)
+├── riemann/           # TNFR-Riemann program (48 modules, P1–P49; paused at T-HP)
 ├── sdk/               # Simplified & Fluent API (7 modules)
 │   └── simple.py      # Tetrad, conservation, grammar-aware dynamics, integrity
 ├── mathematics/       # Number theory, backends
