@@ -873,6 +873,11 @@ from .dnfr_type_signature import (
     DnfrTypeSignatureCertificate,
     compute_dnfr_type_signature,
 )
+from .remesh_window_type_signature import (
+    # §13quadraginta-tertia: REMESH-window-Type Signature diagnostic (foundational sub-question)
+    RemeshWindowTypeSignatureCertificate,
+    compute_remesh_window_type_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1357,6 +1362,9 @@ __all__ = [
     # §13quadraginta: DeltaNFR-Type Signature (foundational diagnostic)
     "DnfrTypeSignatureCertificate",
     "compute_dnfr_type_signature",
+    # §13quadraginta-tertia: REMESH-window-Type Signature (foundational diagnostic)
+    "RemeshWindowTypeSignatureCertificate",
+    "compute_remesh_window_type_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",

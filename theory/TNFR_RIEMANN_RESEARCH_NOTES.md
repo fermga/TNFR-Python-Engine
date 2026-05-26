@@ -150,6 +150,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13quadraginta | 8714 | **B3 = T-ΔNFR** pre-registration (two-axis tensor-fraction + rank-entropy diagnostic; candidate envelope E4 = TensorGradientElement) | B3a | — |
 | §13quadraginta-prima | 9068 | **B3 = T-ΔNFR** forcing-axiom reduction (BSAD refutes (P-ΔNFR-Tensor-Retention); (P-ΔNFR-Tensor-Carrier) = CONDITIONAL_COROLLARY) | B3b | — |
 | §13quadraginta-secunda | 9547 | **B3 = T-ΔNFR** final NEGATIVE + envelope E4 (TensorGradientElement / tensor-/operator-valued ΔNFR); L3* promoted to stable working heuristic; three Tier-2 predictions (B4/B5/B6 NEGATIVE) | B3c | ✅ NEG |
+| §13quadraginta-tertia | 9924 | **B4 = T-REMESH-window** pre-registration (two-axis integer-storage + window-refinement bracket diagnostic; candidate envelope E5 = ContinuousWindowKernel) | B4a | — |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -9919,5 +9920,343 @@ This section:
   demo (preserved; corroborates BSAD empirically with
   :math:`T_{\mathrm{frac}} = 0` and
   :math:`\sigma_1 / \sigma_{2,3} \sim 10^2` at both resolutions).
+
+---
+## §13quadraginta-tertia. T-REMESH-window Pre-registration: The Memory-Window Type-of-Object Conjecture (B4 Phase a; Diagnostic Only — Does NOT Advance G4 = RH)
+
+**Programme position.**  Fifth executed sub-question of the Catalog
+Type-Hygiene Programme (after B0 = T-νf NEGATIVE, B1 = T-EPI
+NEGATIVE, B2 = T-φ NEGATIVE, B3 = T-ΔNFR NEGATIVE — Tier 1 closed).
+Phase a of the standard three-phase rhythm: pre-register the
+conjecture, fix the diagnostic, commit a *necessary-condition*
+empirical signature, deliberately defer the forcing-axiom analysis
+(B4b) and the final verdict + envelope classification (B4c) to
+separate commits.
+
+**Honest scope (mandatory).**  This section pre-registers a
+*type-of-object conjecture* and a *diagnostic*.  It does **not**
+promote any continuous-time / fractional-order REMESH-window
+construction to canonical status, does **not** modify the
+13-operator catalog, does **not** modify any existing source file
+in ``src/tnfr/`` (only adds the diagnostic module
+``src/tnfr/riemann/remesh_window_type_signature.py``, its
+re-export in ``src/tnfr/riemann/__init__.py``, and the demo
+``examples/82_remesh_window_type_signature_demo.py``), and does
+**not** by itself advance G4 = RH.  The diagnostic is a
+*necessary-condition* probe: a non-trivial signature is required,
+but not sufficient, for a continuous-kernel or fractional-order
+lift of the REMESH window to be canonically necessary.
+
+### §13quadraginta-tertia.1 — Motivation and literal canonical witness
+
+The TNFR REMESH operator implements temporal coupling EPI(t) ↔
+EPI(t − τ) across the canonical memory window
+(τ_l, τ_g) ∈ ℕ × ℕ.  The canonical implementation
+:func:`tnfr.operators.remesh.apply_network_remesh` at
+``src/tnfr/operators/remesh.py:1212`` reads the window via
+``int(get_param(...))``:
+
+```python
+# src/tnfr/operators/remesh.py:1212
+def apply_network_remesh(G: TNFRGraph) -> None:
+    ...
+    tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
+    tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
+    ...
+    past_g = hist[-(tau_g + 1)]
+    past_l = hist[-(tau_l + 1)]
+```
+
+Canonical defaults are integer-valued
+(``src/tnfr/config/defaults_core.py:221-223``):
+
+```python
+REMESH_TAU_GLOBAL: int = 8
+REMESH_TAU_LOCAL: int = 4
+REMESH_ALPHA: float = 0.5
+```
+
+The downstream consumers are the canonical EPI history deque
+``G.graph["_epi_hist"]`` populated by
+:func:`tnfr.dynamics.runtime._update_epi_hist` at
+``src/tnfr/dynamics/runtime.py:413``, and the N15 REMESH-∞ closure
+(``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8) whose entire
+derivation is parametrised by integer (τ_l, τ_g) ∈ ℕ² and whose
+transfer-matrix construction is integer-indexed by construction.
+
+### §13quadraginta-tertia.2 — Catalog statement of the REMESH window
+
+Across the canonical engine, (τ_l, τ_g) is consistently typed and
+stored as a pair of non-negative integers:
+
+| Surface                                                       | Type / domain                        |
+|---------------------------------------------------------------|--------------------------------------|
+| Storage (``G.graph["REMESH_TAU_LOCAL"]``, ``..._GLOBAL``)     | ``int ∈ ℕ_{≥0}``                     |
+| Canonical reader ``apply_network_remesh``                     | ``int()`` coercion at entry          |
+| Canonical defaults (``defaults_core.py:221-223``)             | ``int = 4``, ``int = 8``             |
+| EPI history indexer ``hist[-(tau + 1)]``                      | integer Python negative index        |
+| N15 REMESH-∞ asymptotic (``REMESH_INFINITY_DERIVATION.md``)   | integer-indexed transfer matrix      |
+| RemeshMeta dict log (``tau_global``, ``tau_local``)           | ``int`` per recorded event           |
+
+Every appearance of the REMESH window in the canonical operator-
+bound API resolves to a pair of Python ``int`` values.  The
+catalog therefore types the REMESH window as the canonical
+*integer memory window* — i.e. an element of ℕ² indexing the
+discrete temporal coupling between the canonical EPI history deque
+slots.
+
+### §13quadraginta-tertia.3 — The candidate non-canonical envelope: continuous kernel / fractional-order lift
+
+The smallest enrichment that would *strictly increase* expressive
+power over the canonical integer-window representation is a
+**continuous-window lift** of the REMESH coupling to a non-integer
+indexing scheme:
+
+- A per-event real-valued window
+  :math:`(\tau_l, \tau_g) \in \mathbb{R}_{>0}^{2}` requiring
+  interpolation between adjacent EPI history slots.
+- A continuous-time integral kernel
+  :math:`K(t, s)` with EPI(t) coupled to ``∫ K(t, s) EPI(s) ds``
+  rather than to a single discretely-indexed past sample.
+- A fractional-order temporal coupling operator
+  :math:`{\partial^{\alpha}\!/\!\partial t^{\alpha}}\,\mathrm{EPI}`
+  for non-integer :math:`\alpha`, equivalent in the Caputo /
+  Riemann–Liouville sense to a memory kernel with non-integer
+  decay exponent.
+
+Call this envelope **E5 = ContinuousWindowKernel** (in symmetry
+with E1 = νf Pontryagin partner :math:`\widehat{\mathbb{Z}}`,
+E2 = ``BEPIElement``, E3 = ``CoverElement``,
+E4 = ``TensorGradientElement``).  An E5-typed REMESH window would
+carry, per event, either a continuous real-valued window or an
+integral kernel that the canonical integer-window mechanism cannot
+in general represent without interpolation.
+
+The pre-registered question is:
+
+> **T-REMESH-window Conjecture (formal statement,
+> §13quadraginta-tertia.4).**  Does any canonical TNFR
+> construction force the REMESH memory window to be typed as an
+> E5 = ContinuousWindowKernel object — i.e. is there a canonical
+> operator, telemetry surface, conservation law, or grammar rule
+> whose specification requires non-integer (τ_l, τ_g) or a
+> continuous integral kernel K(t, s) rather than the canonical
+> integer pair?
+
+The empirical signature of §13quadraginta-tertia.5 is a *necessary
+condition*: if the canonical engine produces
+:math:`S_{\tau} \approx 0` and integer storage fraction
+:math:`= 1.0`, then no canonical mechanism observed at the
+diagnostic surface forces the E5 envelope.
+
+### §13quadraginta-tertia.4 — T-REMESH-window Conjecture (formal statement)
+
+The two-axis diagnostic operationalises the following formal
+question:
+
+> **T-REMESH-window Conjecture.**  Let
+> :math:`(\tau_l, \tau_g) \in \mathbb{N}_{\ge 0}^{2}` denote the
+> canonical REMESH memory window, stored as Python integers in
+> ``G.graph["REMESH_TAU_LOCAL"]`` and ``G.graph["REMESH_TAU_GLOBAL"]``
+> and read by ``apply_network_remesh`` via ``int(get_param(...))``.
+> Then no canonical TNFR construction (no canonical operator
+> :math:`\in` {AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR,
+> NAV, REMESH}, no telemetry surface in ``src/tnfr/physics/``, no
+> conservation law in ``physics/conservation.py``, no grammar rule
+> in U1–U6, no rule of the N15 REMESH-∞ closure in
+> ``REMESH_INFINITY_DERIVATION.md``) requires the window to be
+> typed as an E5 = ContinuousWindowKernel object.
+
+The pre-registered hypothesis (§13quadraginta-tertia.7) is the
+**NEGATIVE** answer.
+
+### §13quadraginta-tertia.5 — Diagnostic S_τ (two-axis necessary condition)
+
+The diagnostic
+:func:`tnfr.riemann.compute_remesh_window_type_signature` returns a
+:class:`RemeshWindowTypeSignatureCertificate` with the following
+two structural axes:
+
+**Axis A — Integer storage axis.**  At every recorded REMESH event
+(at every step where ``apply_network_remesh`` is invoked), inspect
+the canonical storage slots ``G.graph["REMESH_TAU_LOCAL"]`` and
+``G.graph["REMESH_TAU_GLOBAL"]``.  Record the fraction
+:math:`F_{\mathrm{int}}` of slot reads whose stored value is a
+Python ``int`` (or a numerical value with zero fractional part).
+The canonical engine produces :math:`F_{\mathrm{int}} = 1.0` by
+construction (the ``int(get_param(...))`` coercion at entry).  Any
+:math:`F_{\mathrm{int}} < 1.0` would be a structural witness that
+some canonical surface stores or propagates a non-integer window —
+direct evidence for the E5 envelope.
+
+**Axis B — Window-refinement bracket axis.**  For each integer
+offset :math:`j \in \{0, 1, 2\}`, build a freshly-warmed canonical
+graph from the same seed, set
+:math:`(\tau_l, \tau_g) = (\tau_l^{0} + j, \tau_g^{0} + j)`, fire
+:func:`apply_network_remesh` ``n_events`` times, and record the
+final per-node EPI snapshot.  Compute, per node, the relative
+variance
+:math:`\mathrm{Var}(\mathrm{EPI})\,/\,\langle |\mathrm{EPI}| \rangle`
+across the bracket, average across nodes, and squash via
+:math:`\tanh` to a signature
+:math:`S_{\tau} \in [0, 1]`.  If
+:math:`S_{\tau} \approx 0`, the canonical post-REMESH state is
+*flat* under integer-window refinement — adjacent integer windows
+in the bracket already produce indistinguishable outputs, so no
+canonical mechanism distinguishes between them in a way that would
+force interpolation.  If :math:`S_{\tau} \to 1`, the canonical
+post-REMESH state is *saturated* across the bracket — the integer-
+resolution discretisation is at the edge of what the canonical
+mechanism can resolve, and a continuous-window lift might be
+canonically necessary.
+
+The verdict triad is:
+
+- ``INTEGER_WINDOW_ADEQUATE`` if
+  :math:`S_{\tau} < 0.15` **and** :math:`F_{\mathrm{int}} = 1.0`.
+- ``CONTINUOUS_KERNEL_NECESSARY`` if
+  :math:`S_{\tau} > 0.5` **or** :math:`F_{\mathrm{int}} < 1.0`.
+- ``INDETERMINATE`` otherwise.
+
+### §13quadraginta-tertia.6 — Pre-registered numerical signature
+
+The diagnostic is executed at two resolutions at pre-registration
+time (commit-time numerical fingerprint, frozen for later
+comparison):
+
+| Resolution                            | seed | S_τ        | F_int (int/total)     | raw rel.var. | bracket L2 | windows                              | verdict                     |
+|---------------------------------------|------|------------|-----------------------|--------------|------------|--------------------------------------|-----------------------------|
+| n=24, warmup=16, (τ_l,τ_g)=(4,8), e=8 | 17   | 0.000000   | 1.0000 (48/48)        | 4.107780e-09 | 0.000021   | {(4,8), (5,9), (6,10)}               | INTEGER_WINDOW_ADEQUATE     |
+| n=48, warmup=24, (τ_l,τ_g)=(6,12), e=12 | 31 | 0.000000   | 1.0000 (72/72)        | 0.000000e+00 | 0.000000   | {(6,12), (7,13), (8,14)}             | INTEGER_WINDOW_ADEQUATE     |
+
+**Honest reading of this signature at Phase a.**  Both the integer
+storage axis and the window-refinement bracket axis return
+*empirically decisive integer-adequate* values at both
+resolutions.  The dominant empirical facts are:
+
+(a) **Perfect integer storage fraction** at both resolutions
+(``48/48`` and ``72/72`` samples).  The canonical REMESH window
+slots are, at every recorded event, Python ``int`` values by
+construction — consistent with the catalog row
+:math:`(\tau_l, \tau_g) \in \mathbb{N}^{2}` and with the
+``int(get_param(...))`` coercion at the canonical reader entry.
+
+(b) **Machine-zero bracket signature** at both resolutions
+(:math:`S_{\tau} = 0` with raw relative variance
+:math:`\sim 10^{-9}` at the smaller resolution and literally
+:math:`0.0` at the larger).  Adjacent integer windows in the
+bracket produce indistinguishable post-REMESH EPI snapshots —
+there is no canonical mechanism in the observed surface that
+distinguishes :math:`(\tau_l, \tau_g)` from :math:`(\tau_l + 1,
+\tau_g + 1)` or :math:`(\tau_l + 2, \tau_g + 2)` in a way that
+would force interpolation between integer slots.
+
+These two facts together — *perfect integer storage* and
+*machine-zero bracket signature* — yield the mechanical verdict
+``INTEGER_WINDOW_ADEQUATE`` at both resolutions, which is the
+*strongest* pre-registration signature observed so far in the
+Type-Hygiene Programme (stronger than B3a, which still showed
+:math:`R_{\mathrm{eff}} \approx 1.13`; here the bracket variance
+is literally zero at the larger resolution).
+
+This makes the pre-registered hypothesis of
+§13quadraginta-tertia.7 correspondingly stronger.
+
+### §13quadraginta-tertia.7 — Pre-registered hypothesis for B4b/B4c
+
+Based on (i) the literal-catalog inspection of
+§13quadraginta-tertia.2, (ii) the integer-indexed transfer-matrix
+construction of the N15 REMESH-∞ closure
+(``REMESH_INFINITY_DERIVATION.md`` §§1–8), (iii) the doubly-
+decisive empirical signature of §13quadraginta-tertia.6
+(:math:`F_{\mathrm{int}} = 1.0` *and* :math:`S_{\tau} = 0` at both
+resolutions), (iv) the universal absence of any continuous-kernel /
+fractional-order REMESH-window argument in canonical operator
+signatures, and (v) the Tier-2 prediction from §13quadraginta-
+secunda (B4 predicted NEGATIVE per L3*), the **pre-registered
+expected verdict** at B4c is:
+
+> **NEGATIVE.** The canonical type of the REMESH memory window is
+> the canonical integer pair :math:`(\tau_l, \tau_g) \in
+> \mathbb{N}^{2}`.  E5 = ContinuousWindowKernel is a strictly
+> *richer* envelope than the canonical type but is **not** required
+> by any canonical TNFR construction.  The predicted canonical
+> discharge mechanism is the N15 REMESH-∞ closure (mean ergodic
+> theorem applied to the contractive transfer matrix at integer
+> :math:`\tau_g \to \infty`).  No promotion, no deletion, no
+> deprecation, no modification of the catalog.
+
+This pre-registration commits to that expected verdict so that the
+B4b forcing-axiom reduction cannot be retrofitted: if the F1–F10
+analysis yields a different verdict, the pre-registration record of
+§13quadraginta-tertia.6 makes the inversion explicit and audit-
+traceable.
+
+### §13quadraginta-tertia.8 — Honest scope (what this does and does not do)
+
+This pre-registration section, the diagnostic module, and the demo:
+
+- **Does not** promote ``ContinuousWindowKernel`` (or any
+  continuous-time / fractional-order REMESH-window lift) to
+  canonical status.
+- **Does not** modify the catalog
+  (``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §3, §4, §6 will
+  only be touched at B4c; B4a touches only the §4 row Phase-a
+  column and the §3 progress paragraph).
+- **Does not** modify any existing source file in ``src/tnfr/``;
+  only adds the diagnostic module
+  ``src/tnfr/riemann/remesh_window_type_signature.py`` (and its
+  export in ``src/tnfr/riemann/__init__.py``) and the demo
+  ``examples/82_remesh_window_type_signature_demo.py``.
+- **Does not** change the canonical
+  ``tnfr.operators.remesh.apply_network_remesh``,
+  ``REMESH_TAU_LOCAL`` / ``REMESH_TAU_GLOBAL`` defaults, the EPI
+  history deque, the N15 REMESH-∞ derivation, or any tetrad field
+  implementation.
+- **Does not** by itself decide T-REMESH-window; B4b (forcing-
+  axiom reduction) and B4c (final verdict + envelope
+  classification) are required.
+- **Does not** advance G4 = RH or any of the open ζ-track / L-track
+  RH-equivalents (P17–P49 attack surface).
+- **Does not** rely on T-νf (B0, NEGATIVE), T-EPI (B1, NEGATIVE),
+  T-φ (B2, NEGATIVE), or T-ΔNFR (B3, NEGATIVE) in any way that
+  would force their verdicts to be re-opened.
+
+### §13quadraginta-tertia.9 — Cross-references
+
+- §13triginta-prima — T-νf pre-registration (precedent for B0).
+- §13triginta-tertia — T-νf NEGATIVE verdict + E1 classification
+  (closes B0).
+- §13triginta-quarta — T-EPI pre-registration (template for the
+  three-phase rhythm).
+- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 = ``BEPIElement``
+  classification (closes B1).
+- §13triginta-octava — T-φ pre-registration.
+- §13triginta-decima — T-φ NEGATIVE verdict + E3 = ``CoverElement``
+  classification (closes B2).
+- §13quadraginta — T-ΔNFR pre-registration (template for this
+  section).
+- §13quadraginta-secunda — T-ΔNFR NEGATIVE verdict +
+  E4 = ``TensorGradientElement`` classification + L3* promotion
+  + three Tier-2 NEGATIVE predictions for B4/B5/B6 (closes B3,
+  closes Tier 1, sets predictive baseline for this sub-question).
+- §13septies — T-HP open content (independent, untouched by this
+  pre-registration).
+- §19.1 — Full P1–P49 milestone table.
+- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §3, §4 —
+  programme tracker (advances on this commit at row B4 Phase a only).
+- ``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8 — N15 REMESH-∞
+  closure (integer-indexed transfer-matrix derivation; predicted
+  canonical discharge mechanism for B4c).
+- ``src/tnfr/operators/remesh.py:1212`` —
+  ``apply_network_remesh`` canonical implementation (anchor).
+- ``src/tnfr/config/defaults_core.py:221-223`` — canonical integer
+  defaults ``REMESH_TAU_LOCAL = 4``, ``REMESH_TAU_GLOBAL = 8``.
+- ``src/tnfr/dynamics/runtime.py:413`` —
+  ``_update_epi_hist`` (canonical EPI history deque populator).
+- ``src/tnfr/riemann/remesh_window_type_signature.py`` —
+  diagnostic implementation (added on this commit).
+- ``examples/82_remesh_window_type_signature_demo.py`` — demo
+  (added on this commit).
 
 ---

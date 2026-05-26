@@ -203,7 +203,7 @@ modulate canonical dynamics.
   integer-indexed history slots.
 - **Cross-reference**: N15 closure (`theory/REMESH_INFINITY_DERIVATION.md`)
   already constrains this from the asymptotic side.
-- **Status**: ⏳ NOT STARTED.
+- **Status**: 🔄 IN PROGRESS — B4a ✅ (pre-registration at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quadraginta-tertia; two-axis integer-storage + window-refinement bracket diagnostic returns **strongest pre-registration signature observed in the programme** at both resolutions: $S_\tau = 0$ and $F_{\mathrm{int}} = 1.0$ (48/48 and 72/72 samples) → verdict `INTEGER_WINDOW_ADEQUATE`. Candidate envelope: E5 = ContinuousWindowKernel (continuous-time integral kernel $K(t,s)$ or fractional-order window). Expected B4c verdict: **NEGATIVE** per L3* + empirical signature; predicted canonical discharge mechanism: N15 REMESH-∞ closure (mean ergodic theorem on contractive transfer matrix at integer $\tau_g \to \infty$). B4b, B4c ⏳ pending.
 
 #### B5 — T-Δφ_max (Type of resonant-coupling threshold)
 
@@ -313,7 +313,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | **B2** | T-φ | ✅ | ✅ | ✅ | **NEGATIVE** | `afdf8ef9` (B2a), `a0bc4edd` (B2b), B2c this commit |
 | B3 | T-ΔNFR | ✅ | ✅ | ✅ | NEGATIVE | 1267fbf4 (B3a) + d96eb13d (B3b) + this commit (B3c) |
 | **Tier 2 — Graph-level parameters** | | | | | | |
-| B4 | T-REMESH-window | ⏳ | ⏳ | ⏳ | — | — |
+| B4 | T-REMESH-window | ✅ | ⏳ | ⏳ | — | this commit (B4a) |
 | B5 | T-Δφ_max | ⏳ | ⏳ | ⏳ | — | — |
 | B6 | T-coupling-weights | ⏳ | ⏳ | ⏳ | — | — |
 | **Tier 3 — Derived field closure** | | | | | | |
@@ -325,7 +325,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B11 | Operator-catalog closure | 🟡 | 🟡 | ⏳ | — | (ref: `OPERATOR_COMPLETENESS.md`) |
 | **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
 
-**Progress as of 2026-05-26**: 4 sub-questions complete (B0, B1, B2, B3 all NEGATIVE; Tier 1 closed), 0 in progress, 8 pending (B4 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B3 closure at §13quadraginta (pre-reg), §13quadraginta-prima (forcing-axiom reduction; BSAD), §13quadraginta-secunda (NEGATIVE verdict + E4 envelope classification; L3* promoted to stable working heuristic; three Tier-2 predictions B4/B5/B6 expected NEGATIVE).
+**Progress as of 2026-05-26**: 4 sub-questions complete (B0, B1, B2, B3 all NEGATIVE; Tier 1 closed), 1 in progress (B4 at Phase a), 7 pending (B5 – B11 + Final). Living discoveries log at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13triginta-septima; B3 closure at §13quadraginta (pre-reg), §13quadraginta-prima (forcing-axiom reduction; BSAD), §13quadraginta-secunda (NEGATIVE verdict + E4 envelope classification; L3* promoted to stable working heuristic; three Tier-2 predictions B4/B5/B6 expected NEGATIVE); B4 Phase a pre-registration at §13quadraginta-tertia (strongest pre-registration signature observed: $S_\tau = 0$ and $F_{\mathrm{int}} = 1.0$ at both resolutions; candidate envelope E5 = ContinuousWindowKernel; expected B4c verdict NEGATIVE — first Tier-2 L3* test in progress).
 
 ---
 
