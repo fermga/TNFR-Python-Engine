@@ -863,6 +863,11 @@ from .epi_type_signature import (
     EpiTypeSignatureCertificate,
     compute_epi_type_signature,
 )
+from .phi_type_signature import (
+    # §13triginta-octava: phi-Type Signature diagnostic (foundational sub-question)
+    PhiTypeSignatureCertificate,
+    compute_phi_type_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1341,6 +1346,9 @@ __all__ = [
     # §13triginta-quarta: EPI-Type Signature (foundational diagnostic)
     "EpiTypeSignatureCertificate",
     "compute_epi_type_signature",
+    # §13triginta-octava: phi-Type Signature (foundational diagnostic)
+    "PhiTypeSignatureCertificate",
+    "compute_phi_type_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",

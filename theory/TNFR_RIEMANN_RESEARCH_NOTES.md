@@ -132,7 +132,7 @@ Euler-Orthogonality Lemma, R∞-1c, R∞-1b spectral-channel).
 |---|---|---|---|
 | §13triginta | 5716 | **P50** REMESH-∞ residue split of P31 oscillatory correction (N15 lift into Riemann program) | ✅ |
 
-### K. Catalog Type-Hygiene Programme — Sub-Questions (lines 5917–7588)
+### K. Catalog Type-Hygiene Programme — Sub-Questions (lines 5917–7588, 7698–end)
 
 Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.md).
 
@@ -144,8 +144,9 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 | §13triginta-quarta | 6839 | **B1 = T-EPI** pre-registration | B1a | — |
 | §13triginta-quinta | 7075 | **B1 = T-EPI** forcing-axiom reduction (TMEP) | B1b | — |
 | §13triginta-sexta | 7425 | **B1 = T-EPI** final NEGATIVE + envelope E2 (`BEPIElement`) | B1c | ✅ NEG |
+| §13triginta-octava | 7698 | **B2 = T-φ** pre-registration (two-axis winding + lift-spectral diagnostic; candidate envelope E3 = CoverElement) | B2a | — |
 
-### L. Living Discoveries Log (line 7589–end)
+### L. Living Discoveries Log (lines 7589–7697)
 
 | § | Lines | Purpose | Status |
 |---|---|---|---|
@@ -7630,6 +7631,18 @@ Categories are open — add new ones as discoveries warrant.
   node), **not spatial/modal**.  REMESH writes back a scalar
   ($\mathrm{EPI}(t+1) = M\, x(t)$) consumed by the next glyph via
   `float(v.EPI)`.  See `theory/REMESH_INFINITY_DERIVATION.md:50–52`.
+- **D-CC-6.**  The canonical phase-wrap helper lives at
+  `src/tnfr/physics/_helpers.py:29::wrap_angle` (the unique
+  ``def wrap_angle`` in the repo, verified by repo-wide grep).  The
+  canonical per-node phase alias is ``ALIAS_THETA``
+  (`src/tnfr/constants/aliases.py:8`); no ``ALIAS_PHASE`` symbol
+  exists.  **Catalog correction (discovered during B2a,
+  §13triginta-octava.1):** `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`
+  §B2 cites the anchor as `tnfr.mathematics.phase.wrap_angle`; no
+  such module exists.  Documentation finding only — no code change;
+  the catalog row will be patched on the next type-hygiene commit
+  that touches `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` for an
+  unrelated reason.
 
 ### §13triginta-septima.2 Non-Canonical Research Envelopes
 
@@ -7695,3 +7708,318 @@ Categories are open — add new ones as discoveries warrant.
   not silent edits.
 
 ---
+## §13triginta-octava. T-φ Pre-registration: The Phase Type-of-Object Conjecture (B2 Phase a; Diagnostic Only — Does NOT Advance G4 = RH)
+
+**Programme position.**  Third executed sub-question of the Catalog
+Type-Hygiene Programme (after B0 = T-νf NEGATIVE, B1 = T-EPI
+NEGATIVE).  Phase a of the standard three-phase rhythm: pre-register
+the conjecture, fix the diagnostic, commit a *necessary-condition*
+empirical signature, deliberately defer the forcing-axiom analysis
+(B2b) and the final verdict + envelope classification (B2c) to
+separate commits.
+
+**Honest scope (mandatory).**  This section pre-registers a *type-of-
+object conjecture* and a *diagnostic*.  It does **not** promote any
+covering-space construction to canonical status, does **not** modify
+the 13-operator catalog, does **not** modify any existing source
+file in `src/tnfr/`, and does **not** by itself advance G4 = RH.
+The diagnostic is a *necessary-condition* probe: a non-trivial
+signature is required, but not sufficient, for a covering-space lift
+of φ to be canonically necessary.
+
+### §13triginta-octava.1 — Motivation and literal canonical witness
+
+The TNFR structural triad is (EPI, νf, φ) where φ is the canonical
+**phase**, treated everywhere in the engine as a scalar in
+:math:`[-\pi, \pi]` and *wrapped* to that fundamental domain by
+:func:`tnfr.physics._helpers.wrap_angle`:
+
+```python
+# src/tnfr/physics/_helpers.py:29
+def wrap_angle(angle: float) -> float:
+    """Map *angle* to the interval [-π, π]."""
+    return (angle + math.pi) % (2 * math.pi) - math.pi
+```
+
+The canonical storage aliases for φ are exposed via ``ALIAS_THETA``
+(canonical phase is stored under the θ alias-tuple; the engine
+uniformly uses θ as the alphabetic symbol for what AGENTS.md
+documents as φ):
+
+```python
+# src/tnfr/constants/aliases.py:8
+ALIAS_THETA = get_aliases("THETA")
+```
+
+and read by the canonical scalar accessor:
+
+```python
+# src/tnfr/physics/_helpers.py
+def get_phase(G: Any, node: Any) -> float:
+    """Retrieve phase value φ for *node* (radians in [0, 2π))."""
+    ...
+```
+
+**Catalog-citation correction (recorded in the §13triginta-septima
+discoveries log).**  The
+`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §B2 spec at L152–167
+cites the anchor as `tnfr.mathematics.phase.wrap_angle`.  No such
+module exists in the current repo: the unique canonical
+implementation lives at `src/tnfr/physics/_helpers.py:29`, and the
+canonical storage alias is ``ALIAS_THETA``, not the catalog-implied
+``ALIAS_PHASE``.  The catalog row has been logged for correction in
+§13triginta-septima but is **not** modified here (one type-hygiene
+finding per commit; the catalog patch will ride on the next
+type-hygiene commit).
+
+### §13triginta-octava.2 — Catalog statement of φ
+
+Across the canonical engine, φ is consistently typed and stored as
+a scalar real number in a single fundamental domain:
+
+| Surface                                       | Type / domain                |
+|-----------------------------------------------|------------------------------|
+| Storage (per-node attribute via ALIAS_THETA)  | ``float ∈ [-π, π]``         |
+| Wrapping helper `wrap_angle`                  | ``float → float ∈ [-π, π]``  |
+| Scalar reader `get_phase`                     | ``float`` (re-wrapped)       |
+| Tetrad field `|∇φ|`                           | ``float`` over edges         |
+| Phase-gated coupling (U3) check               | ``|φᵢ − φⱼ| ≤ Δφ_max``       |
+
+Every appearance of φ in the canonical operator-bound API ends in
+this single-sheet representation.  The catalog therefore types φ as
+the canonical scalar S¹ field — i.e. a section of the *trivial*
+circle bundle over the graph, parametrised by a single fundamental
+domain :math:`[-\pi, \pi]` (equivalently :math:`[0, 2\pi)`).
+
+### §13triginta-octava.3 — The candidate non-canonical envelope: covering-space lift
+
+The smallest enrichment that would *strictly increase* expressive
+power over the canonical scalar S¹ representation is a **covering-
+space lift** of φ to a multi-sheet cover of :math:`S^{1}`:
+
+- A non-trivial element of the universal cover :math:`\widetilde{S^{1}}
+  \simeq \mathbb{R}`, retaining an integer winding number
+  :math:`w \in \mathbb{Z}` alongside the wrapped representative
+  :math:`\phi_{\mathrm{wrap}} \in [-\pi, \pi]`.
+- Equivalently, a U(1) bundle element :math:`e^{i\phi} \in S^{1}
+  \subset \mathbb{C}` *with retained homotopy class* (`π₁(S¹) = ℤ`).
+
+Call this envelope **E3 = CoverElement** (in symmetry with E1 = ``νf
+Pontryagin partner Ẑ`` and E2 = ``BEPIElement``).  An E3-typed φ
+would carry, per node and per trajectory, an extra integer winding
+charge :math:`w` that the canonical ``wrap_angle`` discards every
+single step.
+
+The pre-registered question is:
+
+> **T-φ Conjecture (formal statement, §13triginta-octava.4).** Does
+> any canonical TNFR construction (operator, field, conservation law,
+> grammar rule U1–U6, conserved current, gauge structure, or nodal-
+> equation derivation) require φ to be canonically typed as an
+> E3 = CoverElement rather than a canonical scalar S¹ field?
+
+The empirical signature of §13triginta-octava.5 is a *necessary
+condition* for the answer to be **yes**.
+
+### §13triginta-octava.4 — T-φ Conjecture (formal statement)
+
+**T-φ Conjecture.**  The canonical type-of-object of the TNFR
+structural-triad component φ is the canonical scalar S¹ field
+(equivalently: a section of the trivial circle bundle over the
+graph, parametrised by ``float ∈ [-π, π]`` via :func:`wrap_angle`).
+No canonical TNFR construction requires φ to be canonically typed as
+a covering-space lift (E3 = CoverElement) carrying an integer
+winding charge :math:`w \in \mathbb{Z}` separate from the wrapped
+representative.
+
+Equivalently, in catalog terms: the canonical phase row of
+§13triginta-prima.4 — :math:`(\nu_f, \widehat{\nu_f}) =
+(\mathbb{Z}, S^{1})` — fixes φ on the *dual* side as a scalar
+S¹-valued field, and this typing is canonically saturated; the
+discarded winding information is not used anywhere in the canonical
+operator-bound dynamics.
+
+**Anchors that the conjecture must survive (B2b/B2c):**
+
+- F1–F10 forcing-axiom inventory of §13triginta-quarta.7 (re-applied
+  to φ; B2b commit).
+- Per-node accessor `get_phase` returning a single ``float``
+  (canonical scalar reader).
+- All canonical phase-gated couplings (U3) operating on
+  ``|φᵢ − φⱼ|`` *after* wrapping, with no winding-number argument
+  ever supplied.
+- Cross-references §13quinquies, §13septies, §15 on phase-derived
+  quantities :math:`|\nabla\phi|` and :math:`K_\phi`.
+
+### §13triginta-octava.5 — Diagnostic S_φ (two-axis necessary condition)
+
+**Definition.**  On a canonical TNFR ring graph
+:math:`G_{n_{\mathrm{nodes}}}` with deterministic seeded initial
+phase / EPI perturbation, run :math:`n_{\mathrm{steps}}` canonical
+``step(G)`` evolutions and collect the per-node wrapped phase
+trajectory :math:`\phi_i(t) \in [-\pi, \pi]` for
+:math:`t \in \{0, 1, \dots, n_{\mathrm{steps}}\}` (length
+:math:`n_{\mathrm{steps}} + 1`).  The diagnostic is the pair
+
+.. math::
+
+   \mathcal{S}_{\phi} = (w_{\mathrm{frac}}, \; H_{\mathrm{spec}} / \log B)
+
+with the two axes defined as:
+
+1. **Winding storage axis.**  For each node, reconstruct the
+   *unwrapped* trajectory :math:`\widetilde{\phi}_i(t) =
+   \mathrm{unwrap}(\phi_i(\cdot))_t` (NumPy ``np.unwrap``), then count
+   the node as winding-non-trivial iff
+
+   .. math::
+
+      |\widetilde{\phi}_i(n_{\mathrm{steps}}) - \widetilde{\phi}_i(0)|
+      \;\ge\; 2\pi - \mathrm{winding\_atol}.
+
+   The winding fraction is
+   :math:`w_{\mathrm{frac}} = N_{\mathrm{wind}} / N`.
+
+2. **Lift-spectral axis.**  For each node compute the phase-velocity
+   :math:`\dot\phi_i(t) := \mathrm{wrap}(\phi_i(t+1) - \phi_i(t))`,
+   take its real-FFT magnitude (mean-subtracted), bin onto :math:`B`
+   uniform frequency bins to obtain a probability distribution
+   :math:`p_i`, and compute the Shannon entropy
+   :math:`H_i = -\sum_b p_i(b) \log p_i(b)`.  Average across nodes
+   to obtain :math:`H_{\mathrm{spec}}`.  Normalise by :math:`\log B`
+   so the signature lives in :math:`[0, 1]`.
+
+**Verdict labels (mechanically applied by the diagnostic, not by
+itself sufficient for the foundational T-φ Conjecture):**
+
+- ``SCALAR_S1_ADEQUATE``: signature :math:`< 0.15` *and* zero
+  winding fraction.
+- ``COVER_LIFT_NECESSARY``: signature :math:`> 0.5` *or* non-zero
+  winding fraction.
+- ``INDETERMINATE``: in between.
+
+**Implementation.**  The diagnostic is implemented in
+`src/tnfr/riemann/phi_type_signature.py`, exporting
+``PhiTypeSignatureCertificate`` and ``compute_phi_type_signature``.
+The reference demo lives at `examples/80_phi_type_signature_demo.py`.
+
+### §13triginta-octava.6 — Pre-registered numerical signature
+
+The diagnostic is executed at two resolutions at pre-registration
+time (commit-time numerical fingerprint, frozen for later
+comparison):
+
+| Resolution                        | seed | S_φ      | w_frac | max \|Δφ_unwrap\| | mean H (nats) | N_eff | verdict                |
+|-----------------------------------|------|----------|--------|--------------------|---------------|-------|------------------------|
+| n=24, steps=64, bins=32           | 13   | 0.941600 | 0/24   | 3.5584 rad         | 3.2633        | 26.14 | COVER_LIFT_NECESSARY*  |
+| n=48, steps=128, bins=64          | 29   | 0.957087 | 0/48   | 3.1680 rad         | 3.9804        | 53.54 | COVER_LIFT_NECESSARY*  |
+
+\* The ``COVER_LIFT_NECESSARY`` label is **mechanically issued by
+the spectral-axis threshold alone**.  The winding axis is *zero* at
+both resolutions, and the maximum unwrapped phase displacement is
+strictly **below** :math:`2\pi \approx 6.2832` rad (max observed
+3.5584 rad).  **No canonical evolution at the pre-registered scales
+produces a topological winding.**  The diagnostic is honestly
+flagging that:
+
+(a) canonical phase-velocity is *broadband* (≈ 26–54 effective
+spectral modes); a covering-space lift would be *one* construction
+capable of representing this richness, but it is far from the only
+one — a single-sheet scalar S¹ field hosting quasi-periodic
+dynamics with many incommensurate frequencies will also produce a
+high-entropy phase-velocity spectrum without any winding;
+
+(b) the spectral threshold (``cover_threshold = 0.5``) is inherited
+from the EPI diagnostic of §13triginta-quarta.6 and is *preliminary
+for φ*; phase is constrained to a compact manifold :math:`S^{1}`
+where wrapping itself injects high-frequency content into
+:math:`\dot\phi`, so the per-resolution baseline of the spectral
+axis is structurally elevated relative to EPI (which lives in
+:math:`\mathbb{R}`).  Re-calibration of the φ-specific threshold is
+deferred to B2b.
+
+**Honest reading of this signature at Phase a.**  The dominant
+empirical fact is the *zero winding fraction* at both resolutions:
+canonical evolution, executed exactly as the catalog specifies,
+does **not** produce any node whose unwrapped phase trajectory
+escapes the fundamental domain :math:`[-\pi, \pi]`.  This is
+structurally consistent with the canonical
+``wrap_angle`` discipline and with the catalog row
+:math:`(\mathbb{Z}, S^{1})` of §13triginta-prima.4.  The
+high spectral entropy is a *separate* phenomenon (broadband
+phase-velocity) that the B2b forcing-axiom analysis must isolate
+from the covering-space question proper.
+
+### §13triginta-octava.7 — Pre-registered hypothesis for B2b/B2c
+
+Based on (i) the literal-catalog inspection of
+§13triginta-octava.2, (ii) the Pontryagin-dual row 5 of
+§13triginta-prima.4, (iii) the zero-winding empirical fact of
+§13triginta-octava.6, and (iv) the universal absence of any
+``winding`` / ``cover_index`` / ``π1`` argument in canonical
+operator signatures, the **pre-registered expected verdict** at
+B2c is:
+
+> **NEGATIVE.** The canonical type of φ is the canonical scalar
+> S¹ field.  E3 = CoverElement is a strictly *richer* envelope
+> than the canonical type but is **not** required by any
+> canonical TNFR construction.  No promotion, no deletion, no
+> deprecation, no modification of the catalog.
+
+This pre-registration commits to that expected verdict so that the
+B2b forcing-axiom reduction cannot be retrofitted: if the F1–F10
+analysis yields a different verdict, the pre-registration record
+of §13triginta-octava.6 makes the inversion explicit and
+audit-traceable.
+
+### §13triginta-octava.8 — Honest scope (what this does and does not do)
+
+This pre-registration section, the diagnostic module, and the demo:
+
+- **Does not** promote ``CoverElement`` (or any covering-space lift,
+  U(1) bundle element, or multi-sheet object) to canonical status.
+- **Does not** modify the catalog
+  (`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §3, §4, §6 will only
+  be touched at B2c).
+- **Does not** modify any existing source file in `src/tnfr/`; only
+  adds the diagnostic module `src/tnfr/riemann/phi_type_signature.py`
+  (and its export in `src/tnfr/riemann/__init__.py`) and the demo
+  `examples/80_phi_type_signature_demo.py`.
+- **Does not** change the canonical
+  `tnfr.physics._helpers.wrap_angle`, `get_phase`, ``ALIAS_THETA``,
+  or any tetrad field implementation.
+- **Does not** by itself decide T-φ; B2b (forcing-axiom reduction)
+  and B2c (final verdict + envelope classification) are required.
+- **Does not** advance G4 = RH or any of the open ζ-track / L-track
+  RH-equivalents (P17–P49 attack surface).
+- **Does not** rely on T-νf (B0, NEGATIVE) or T-EPI (B1, NEGATIVE)
+  in any way that would force their verdicts to be re-opened.
+
+### §13triginta-octava.9 — Cross-references
+
+- §13triginta-prima — T-νf pre-registration (precedent for B0).
+- §13triginta-prima.4 — Pontryagin-dual table row 5
+  :math:`(\mathbb{Z}, S^{1})` predicting the φ-side typing.
+- §13triginta-tertia — T-νf NEGATIVE verdict + E1 classification
+  (closes B0).
+- §13triginta-quarta — T-EPI pre-registration (precedent template
+  for this section).
+- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 = ``BEPIElement``
+  classification (closes B1).
+- §13triginta-septima — Discoveries log; the catalog-citation
+  correction (`mathematics.phase` → `physics/_helpers.py`,
+  ``ALIAS_PHASE`` → ``ALIAS_THETA``) will be recorded there in the
+  next type-hygiene commit.
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §3, §4, §6 — programme
+  tracker (advances on this commit at row B2 Phase a only).
+- `src/tnfr/physics/_helpers.py:29` — `wrap_angle` canonical
+  implementation (anchor).
+- `src/tnfr/constants/aliases.py:8` — ``ALIAS_THETA`` canonical
+  alias tuple.
+- `src/tnfr/riemann/phi_type_signature.py` — diagnostic
+  implementation (added on this commit).
+- `examples/80_phi_type_signature_demo.py` — demo (added on this
+  commit).
+
+---
+
