@@ -254,10 +254,21 @@ of any underlying Tier 1+2 question is a necessary prerequisite.
 
 #### B8 — Δ-currents-closure ($J_\phi, J_{\Delta NFR}$)
 
-- **Sources**: `src/tnfr/physics/conservation.py` (Noether-like currents).
-- **Closure question**: time-derivative currents must reduce to finite-
-  difference of scalar fields; no Banach-derivative apparatus invoked.
-- **Status**: ⏳ NOT STARTED.
+- **Sources**: `src/tnfr/physics/extended.py` (`compute_phase_current`,
+  `compute_dnfr_flux`), `src/tnfr/physics/conservation.py`
+  (`compute_current_divergence`).
+- **Closure question**: time-derivative currents and their divergence
+  must reduce to finite-difference of scalar fields ($\phi$, $\Delta NFR$)
+  on the graph metric; no Banach-derivative apparatus, callable kernel,
+  or richer intermediate invoked.
+- **Diagnostic plan**: per-current source-code trace, verify all
+  intermediates are scalar or graph-metric quantities.
+- **Status**: 🟡 IN PROGRESS — Phase a (`src/tnfr/riemann/currents_closure_signature.py`
+  diagnostic + `examples/86_currents_closure_signature_demo.py` demo;
+  frozen signature `S_CC = 0.000000` with both axes at unit fractions
+  across `(n_nodes ∈ {24, 48}, seed = 31)`); Phase b is n/a (closure
+  question, not type-conjecture); Phase c pending in research notes
+  §13quinquaginta-quinta.
 
 #### B9 — Δ-aggregates-closure (`C(t)`, `Si`, energy density $\mathcal{E}$, topological charge $\mathcal{Q}$)
 
@@ -326,7 +337,7 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B6 | T-coupling-weights | ✅ | ✅ | ✅ | NEGATIVE | `bb2dc7c5` (B6a), `68265d1e` (B6b), this commit (B6c) |
 | **Tier 3 — Derived field closure** | | | | | | |
 | B7 | Δ-tetrad-closure | ✅ | n/a | ✅ | NEGATIVE | `d12d6837` (B7a), this commit (B7c) |
-| B8 | Δ-currents-closure | ⏳ | n/a | ⏳ | — | — |
+| B8 | Δ-currents-closure | ✅ | n/a | ⏳ | — | this commit (B8a) |
 | B9 | Δ-aggregates-closure | ⏳ | n/a | ⏳ | — | — |
 | **Tier 4 — Structural meta-properties** | | | | | | |
 | B10 | U-rules type-hygiene | 🟡 | 🟡 | ⏳ | — | (ref: `UNIFIED_GRAMMAR_RULES.md`) |

@@ -893,6 +893,11 @@ from .tetrad_closure_signature import (
     TetradClosureSignatureCertificate,
     compute_tetrad_closure_signature,
 )
+from .currents_closure_signature import (
+    # §13quinquaginta-quarta: Currents-Closure Signature diagnostic (B8a)
+    CurrentsClosureSignatureCertificate,
+    compute_currents_closure_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1389,6 +1394,9 @@ __all__ = [
     # §13quinquaginta-secunda: Tetrad-Closure Signature (B7a)
     "TetradClosureSignatureCertificate",
     "compute_tetrad_closure_signature",
+    # §13quinquaginta-quarta: Currents-Closure Signature (B8a)
+    "CurrentsClosureSignatureCertificate",
+    "compute_currents_closure_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",

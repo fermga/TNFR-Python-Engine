@@ -12000,3 +12000,58 @@ L3* heuristic, post-B7c, is promoted to: **"empirically robust working heuristic
 - `src/tnfr/physics/canonical.py:199,609,640,756` (four canonical tetrad-field implementations).
 - `src/tnfr/riemann/tetrad_closure_signature.py` (B7a diagnostic).
 - `examples/85_tetrad_closure_signature_demo.py` (B7a demo).
+
+### Sec 13quinquaginta-quarta — B8 Phase a: Currents-Closure Signature diagnostic (T-currents-closure)
+
+#### .1 Scope and disclaimer
+
+This section freezes the Phase-a diagnostic for B8 = Delta-currents-closure of the Catalog Type-Hygiene Programme. Scope is strictly methodological: it pre-registers the closure question for the two canonical current fields (J_phi, J_DeltaNFR) and the conservation aggregator (div J), and freezes one empirical observable, the **Currents-Closure Signature** S_CC. It does NOT promote or modify any canonical operator, does NOT alter the tetrad fields, does NOT advance G4 = RH (Conjecture T-HP, Sec 13septies), and does NOT by itself emit the closure verdict. Final verdict reserved for Phase c (Sec 13quinquaginta-quinta) by direct source-code trace.
+
+#### .2 Closure question
+
+Do the two canonical current functions
+
+- `compute_phase_current(G) -> dict[node, float]` at `src/tnfr/physics/extended.py:60`,
+- `compute_dnfr_flux(G) -> dict[node, float]` at `src/tnfr/physics/extended.py:182`,
+
+and the conservation aggregator
+
+- `compute_current_divergence(G) -> dict[node, float]` at `src/tnfr/physics/conservation.py:209`,
+
+reduce to scalar-valued (per-node) functionals of the canonical Tier-1+Tier-2 scalar slots (phi/theta via direct read, DeltaNFR via canonical alias `_get_dnfr`) plus the graph metric (`G.neighbors`, `G.degree`, `G.edges`), with every intermediate scalar or scalar-array (fixed-length, used for scalar reduction) and no implicit Banach-derivative apparatus, measure, callable kernel, or matrix lift introduced along the reduction path?
+
+Phase b is **n/a** for B8 (closure question, not type-conjecture; there is no forcing axiom to reduce — the question is whether the *existing* canonical Tier-1+Tier-2 types plus graph metric close the current functionals and their divergence without leakage to a richer intermediate type).
+
+#### .3 Diagnostic: Currents-Closure Signature
+
+The B8a diagnostic is implemented at `src/tnfr/riemann/currents_closure_signature.py` as `compute_currents_closure_signature(...)` returning a frozen `CurrentsClosureSignatureCertificate`. It probes two orthogonal axes:
+
+- **Input-domain-closure axis**: for every node, every canonical per-node attribute touched by the three current/divergence calls (`theta` direct + `DeltaNFR` via `_get_dnfr`) is inspected and certified scalar-coercible (Python `float`, NumPy scalar, or zero-dim NumPy array).
+- **Output-scalar-closure axis**: each of the three functions is called on a canonical probe graph and every per-node output value is inspected and certified scalar-coercible.
+
+The combined signature is
+
+S_CC = tanh( (n_nonscalar_in + n_nonscalar_out) / (n_total_in + n_total_out) ).
+
+A zero signature plus unit fractions on both axes is the structurally expected outcome; any non-zero contribution would force the introduction of a hidden richer intermediate type on the Tier-1+Tier-2-to-currents reduction path.
+
+#### .4 Frozen empirical signature (B8a)
+
+Demo at `examples/86_currents_closure_signature_demo.py`. Frozen at two canonical probe resolutions:
+
+| Probe | n_input_reads | n_output_reads | input_scalar_fraction | output_scalar_fraction | S_CC | verdict |
+|---|---|---|---|---|---|---|
+| small (n_nodes=24, seed=31) | 48 | 72 | 1.000000 | 1.000000 | 0.000000 | SCALAR_CLOSURE_ADEQUATE |
+| medium (n_nodes=48, seed=31) | 96 | 144 | 1.000000 | 1.000000 | 0.000000 | SCALAR_CLOSURE_ADEQUATE |
+
+Per-key input non-scalar counts: `{theta: 0, DeltaNFR: 0}` on both probes. Per-field output non-scalar counts: `{J_phi: 0, J_dnfr: 0, div_J: 0}` on both probes. The diagnostic empirically certifies, at the Phase-a level, that the canonical Tier-1+Tier-2 scalar typing plus the graph metric structurally suffice for the two current fields and the conservation aggregator. Final verdict reserved for Phase c.
+
+#### .5 Cross-references
+
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 row B8, Sec 4 row B8.
+- `src/tnfr/physics/extended.py:60` (`compute_phase_current`).
+- `src/tnfr/physics/extended.py:182` (`compute_dnfr_flux`).
+- `src/tnfr/physics/conservation.py:209` (`compute_current_divergence`).
+- `src/tnfr/riemann/currents_closure_signature.py` (B8a diagnostic).
+- `examples/86_currents_closure_signature_demo.py` (B8a demo).
+- Sec 13septies (Conjecture T-HP, G4 = RH; B8 does NOT advance this).
