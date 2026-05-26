@@ -407,6 +407,29 @@ twisted_oscillatory_correction
     from P12 through P31 now has a matching chi-twisted L-track
     counterpart.  Does NOT close G4 = RH, does NOT prove GRH for
     any L(s, chi).
+remesh_infinity_residue_split
+    P50 function-space diagnostic that lifts the N15 REMESH-infinity
+    closure (theory/REMESH_INFINITY_DERIVATION.md) into the
+    TNFR-Riemann program.  Splits the canonical P31 oscillatory
+    correction signal S_TNFR(T) into its projections on
+    range(R_infinity) and ker(R_infinity) using the N15-resonant
+    Fourier-mode mask at the canonical pair (tau_l, tau_g) = (4, 8).
+    Pre-registered structural prediction: the prime-ladder spectrum
+    has Fourier support exclusively at {k log p}, which by Baker's
+    theorem on linear independence of logarithms of algebraic
+    numbers is disjoint from the N15-resonant rational-multiple-of-
+    pi lattice; therefore the canonical reconstruction must lie
+    asymptotically in ker(R_infinity).  Verdicts:
+    RESIDUE_IN_KER_ONLY (branch B2 evidence at the function-space
+    level; corroborates the section 13septies / 13nonies structural
+    identification of the T-HP residual obstruction with the
+    oscillatory half), RESIDUE_IN_RANGE_ONLY (would refute P31),
+    RESIDUE_MIXED (gauge leak in P30 or boundary artefact).  Does
+    NOT advance G4 = RH; does NOT close T-HP; does NOT promote any
+    new canonical operator beyond the 13-operator catalog.
+    Complementary to the section 13vicies-novies graph-iteration-
+    matrix tests (which act on EPI-history state vectors): P50 acts
+    on a function in H^2(T-axis), a different mathematical object.
 """
 
 from .operator import (
@@ -822,6 +845,13 @@ from .oscillatory_correction import (
     prime_ladder_oscillatory_sum,
     apply_oscillatory_correction,
     compute_oscillatory_correction_certificate,
+)
+from .remesh_infinity_residue_split import (
+    # P50: R_infinity residue split of the P31 oscillatory correction
+    ResidueSplitCertificate,
+    build_resonant_bin_mask,
+    split_residue_by_remesh_infinity,
+    compute_residue_split_certificate,
 )
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
@@ -1290,6 +1320,11 @@ __all__ = [
     "prime_ladder_oscillatory_sum",
     "apply_oscillatory_correction",
     "compute_oscillatory_correction_certificate",
+    # P50: R_infinity residue split of P31 oscillatory correction
+    "ResidueSplitCertificate",
+    "build_resonant_bin_mask",
+    "split_residue_by_remesh_infinity",
+    "compute_residue_split_certificate",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",

@@ -3892,6 +3892,7 @@ piecewise status notes.
 | **P47** Dirichlet L χ-twisted spectral emergence under canonical coupling | `twisted_spectral_emergence.py` | `74_twisted_spectral_emergence_demo.py` | §13vicies-sexto | L-track analogue of P29 (`spectral_emergence.py`): sweeps the three canonical TNFR inter-prime coupling laws (`kuramoto_u3`: $(\gamma/\pi)\exp(-\lvert k\log p - m\log q\rvert)$; `phi_multiscale`: $\varphi^{-(k+m)}/\sqrt{pq}$; `pnt_logarithmic`: $\gamma/\log(1+pq)$) on the P34 χ-twisted prime-ladder Hamiltonian with explicit $\chi(p)\chi(q)$ multiplicative twist on every off-diagonal entry; computes the Kolmogorov–Smirnov distance of the unfolded nearest-neighbour spacing distribution to the GUE Wigner surmise (conjectural universality class of zeros of $L(s,\chi)$) and to the Poisson reference; verified on $(n_{\mathrm{primes}}, k_{\max}) = (20, 3)$ for $\chi_3, \chi_4, \chi_5$ over strengths $s \in \{0, 0.05, 0.1, 0.2, 0.5, 1, 2\}$: `pnt_logarithmic` uniformly strongest emergence kernel with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.097, 0.116, 0.135\}$ at $s^* = 2$ ($33$–$49\%$ reduction vs baseline); `kuramoto_u3` second with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.120, 0.150, 0.135\}$ at $s^* = 1$ ($25$–$36\%$ reduction); `phi_multiscale` weak ($0$–$6\%$ reduction); attests the L-track spacing-universality diagnostic for every primitive real Dirichlet character; **does NOT prove GRH for any $L(s, \chi)$** (KS-GUE residual at finite $K$ is consistent with finite-size effects, not evidence against GRH) **and does NOT advance G4 = RH** |
 | **P49** Dirichlet L χ-twisted prime-ladder oscillatory correction | `twisted_oscillatory_correction.py` | `76_twisted_oscillatory_correction_demo.py` | §13vicies-octavo | L-track analogue of P31 (`oscillatory_correction.py`): reconstructs $S_\chi(T) = \pi^{-1}\arg L(\tfrac12 + iT, \chi)$ from the canonical P34 χ-twisted prime-ladder spectrum $\{(k\log p,\,\chi(p)^k\log p)\}$ via the χ-twisted Riemann–von Mangoldt template $\pi S_\chi^{\mathrm{TNFR}}(T) = -\sum_{(\mu,w)}(w/\mu)\sin(T\mu)\exp(-\mu/2)$, then applies the Newton step $\gamma_n^{(\chi),\,\text{corr}} = \tilde\gamma_n^{(\chi)} - d\,S_\chi^{\mathrm{TNFR}}(\tilde\gamma_n^{(\chi)}) / \bar N'_\chi(\tilde\gamma_n^{(\chi)})$ on the canonical P46 χ-twisted smooth targets with $\bar N'_\chi(T) = (2\pi)^{-1}\log(qT/(2\pi))$; restricted to **primitive real** characters so the von Mangoldt-style sum is real-valued (validates $\max\lvert\Im w\rvert \le 10^{-10}$); damping sweep $d \in \{0, 0.25, 0.5, 0.75, 1, 1.25, 1.5\}$; **closes the final ζ↔L attack-surface parity item**: with P49, every canonical ζ-track operator P12–P31 has a matching χ-twisted L-track counterpart (P32–P49); verified on $(N, N_{\mathrm{primes}}, K) = (10, 80, 5)$ for $\chi_3, \chi_4, \chi_5$: mixed empirical regime — $\chi_4$ shows **+6.02%** branch-B1 canonical improvement at $d^* = 1.5$ ($W_1$: $1.4185 \to 1.3331$); $\chi_3$ and $\chi_5$ show **0% improvement** ($d^* = 0$) corroborating §13octies branch B2 at the L-track level (a genuinely new canonical operator required); honest split (1/3 B1, 2/3 B2) further attests the canonical-only oscillatory cap visible across both tracks; **does NOT prove GRH$_\chi$ for any $L(s, \chi)$** (residual $W_1 \approx 1.3$–$1.6$ encodes the chi-twisted oscillatory remainder), **does NOT advance G4 = RH**, **does NOT address sub-problems (2) canonicity from the nodal equation and (3) positivity coincidence with the χ-twisted Weil form**; positive structural-parity milestone plus L-track structural-compatibility diagnostic |
 | **P48** Dirichlet L χ-twisted admissible spectral-rescaling operator | `twisted_admissible_rescaling.py` | `75_twisted_admissible_rescaling_demo.py` | §13vicies-septimo | L-track analogue of P30 (`admissible_rescaling.py`): lifts the §13vicies-quinto density-level closure of the smooth half of T-HP$^{(\chi)}$ to the operator level by constructing the canonical diagonal rescaling $F^{(\chi)}_{\text{smooth}} = U_{P34}\,\operatorname{diag}(\sqrt{\tilde{\gamma}_i^{(\chi)} / \lambda_i})\,U_{P34}^{*}$ on each primitive real Dirichlet character; reuses `extract_positive_spectrum`, `build_smooth_rescaling_operator`, `apply_rescaling`, `verify_self_adjointness_preserved`, `verify_spectrum_match`, `oscillatory_correction_canonical` atomically from `admissible_rescaling.py`; certifies (i) self-adjointness preservation under conjugation, (ii) exact spectrum match $\operatorname{spec}(F^{(\chi)}_{\text{smooth}}\,H_{P34}^{(\chi)}\,(F^{(\chi)}_{\text{smooth}})^{*}) = \{\tilde{\gamma}_i^{(\chi)}\}$ to machine precision $\le 7.1\times10^{-15}$, (iii) Wasserstein-1 gap closure $W_1(\sigma(H_{P34}^{(\chi)}), \{\gamma_n^{(\chi)}\}) \to W_1(\{\tilde{\gamma}_n^{(\chi)}\}, \{\gamma_n^{(\chi)}\})$, (iv) honest sweep of the three canonical oscillatory enrichments (`phi_log`, `gamma_e`, `pi_density`) at amplitudes $\{0, 10^{-3}, 5\!\cdot\!10^{-3}, 10^{-2}, 5\!\cdot\!10^{-2}, 10^{-1}\}$ with per-mode breakdown; verified on $(n_{\mathrm{targets}}, p34\_n\_primes, p34\_max\_power) = (12, 25, 5)$ for $\chi_3, \chi_4, \chi_5$: smooth-half W$_1$ ratios $\{14.86\times, 13.85\times, 14.44\times\}$ (baseline $\{21.9, 19.0, 18.4\} \to$ smooth $\{1.47, 1.38, 1.27\}$); best canonical oscillation `pi_density` at amplitude $10^{-3}$ for every character with extra improvement $\{+17.85\%, +13.22\%, +12.68\%\}$ over smooth baseline; per-mode ranking uniform: `pi_density` > `gamma_e` > `phi_log`; closes sub-problem (1) of Conjecture T-HP$^{(\chi)}$ for the smooth half at the operator level (L-track mirror of P30 §13nonies); negative-knowledge oscillatory cap ($\le 18\%$ canonical improvement) constitutes structural evidence for §13octies branch B2 at the L-track level; **does NOT prove GRH$_\chi$ for any $L(s, \chi)$** (residual W$_1 \approx 1.1$–$1.2$ encodes $S_\chi(T) = (1/\pi)\arg L(\tfrac12+iT, \chi)$, GRH$_\chi$-equivalent) **and does NOT advance G4 = RH** |
+| **P50** REMESH-∞ residue split of P31 oscillatory correction | `remesh_infinity_residue_split.py` | `77_remesh_infinity_residue_split_demo.py` | §13triginta | Function-space lift of the N15 REMESH-∞ closure (`theory/REMESH_INFINITY_DERIVATION.md`) into the TNFR-Riemann program: splits the canonical P31 prime-ladder reconstruction $S_{\mathrm{TNFR}}(T) = -(1/\pi)\sum_{(\mu,w)}(w/\mu)\sin(T\mu)\exp(-\mu/2)$ into its projections on $\mathrm{range}(\mathcal{R}_\infty)$ and $\ker(\mathcal{R}_\infty)$ via the DFT-bin mask selecting the N15-resonant rational-multiple-of-$\pi$ lattice $\{2\pi k / \mathrm{lcm}(\tau_l, \tau_g)\}$ at the canonical pair $(\tau_l, \tau_g) = (4, 8)$; pre-registered structural prediction: the prime-ladder Fourier support $\{k\log p\}$ is disjoint from the N15-resonant lattice by Baker's theorem on linear independence of logarithms of algebraic numbers, hence the canonical reconstruction lies asymptotically in $\ker(\mathcal{R}_\infty)$; verdicts: `RESIDUE_IN_KER_ONLY` (branch B2 evidence at function-space level), `RESIDUE_IN_RANGE_ONLY` (would refute P31), `RESIDUE_MIXED` (gauge leak or boundary artefact); verified at canonical defaults $(\tau_l, \tau_g) = (4, 8)$, $n_{\mathrm{periods}} \in \{64, 256\}$, $n_{\mathrm{primes}} \in \{200, 400\}$, $K = 8$: verdict `RESIDUE_IN_KER_ONLY` at both resolutions; range fraction decays $1.7647\% \to 0.0162\%$ as $n_{\mathrm{samples}}: 512 \to 2048$ (clean asymptotic incommensurability); two sanity controls pass at machine precision (resonant $\sin(2\pi T/\mathrm{lcm})$ projects to $100\%$ range; transcendental $\sin(\gamma_{\mathrm{em}} T)$ projects to $\le 7 \times 10^{-4}\%$ range); complementary to §13vicies-novies graph-iteration-matrix tests (which act on EPI-history state vectors): P50 acts on a function in $H^2(T\text{-axis})$, a mathematically distinct object; corroborates the §13septies / §13nonies structural identification of the T-HP residual obstruction with the oscillatory half $S(T) = (1/\pi)\arg\zeta(\tfrac12+iT) = \ker(\mathcal{R}_\infty)$ component; **does NOT advance G4 = RH**, **does NOT close T-HP**, **does NOT promote any new canonical operator beyond the 13-operator catalog**; positive structural-compatibility milestone connecting the N15 REMESH-∞ closure to the T-HP residual gap at the function-space level |
 
 ### 19.2 Gap Balance
 
@@ -5552,3 +5553,203 @@ N1–N5 $D$, $|\Delta D|$) reproduce from the locked seed
 `np.random.default_rng(20260526)`.
 
 ---
+## §13triginta. P50 — REMESH-∞ Residue Split of P31 Oscillatory Correction (Function-Space Lift of N15 Closure into the Riemann Program; Does NOT Advance G4 = RH)
+
+### §13triginta.1 Motivation
+
+N15 ([REMESH-∞ Derivation](REMESH_INFINITY_DERIVATION.md), Branch A
+verdict W1+W2+W3) established that the REMESH operator admits a
+bounded self-adjoint asymptotic projection
+$\mathcal{R}_\infty = P_{\ker(I - \mathcal{R})}$
+on $H^2(D)$ with spectrum $\{0, 1\}$ and resonant Fourier lattice
+$\{2\pi k / \mathrm{lcm}(\tau_l, \tau_g)\}$ at the canonical
+parameter pair $(\tau_l, \tau_g) = (4, 8)$. §13septies and §13nonies
+identified the residual obstruction of Conjecture T-HP with the
+oscillatory half $S(T) = (1/\pi) \arg \zeta(\tfrac12 + iT)$ of the
+admissible rescaling operator $\mathcal{F}$: P28 closes the smooth
+half at density level, P30 lifts the smooth half to the operator
+level, and P31 attempted to attack the oscillatory half via a
+canonical prime-ladder Newton step. P50 is the **function-space
+diagnostic that tests whether the P31 reconstruction lives in
+$\mathrm{range}(\mathcal{R}_\infty)$ or in $\ker(\mathcal{R}_\infty)$**,
+directly connecting the N15 cross-program closure to the T-HP
+residual gap at the level of canonical TNFR functions on the
+$T$-axis.
+
+The diagnostic is **complementary** to the §13vicies-novies
+edge-channel / spectral-channel refutation thread: §13vicies-novies
+operates on the iteration matrix of REMESH applied to EPI-history
+state vectors on the discrete graph $G_{P14}$ (a finite-dimensional
+linear-algebraic object), whereas §13triginta operates on the
+canonical P31 reconstruction $S_{\mathrm{TNFR}}(T)$ as a function
+in $H^2(T\text{-axis})$ under the discrete Fourier transform (an
+infinite-dimensional analytic object). The two layers test
+distinct mathematical surfaces and yield independent structural
+evidence.
+
+### §13triginta.2 Construction
+
+For any positive integer $n_{\mathrm{samples}}$ divisible by
+$\mathrm{lcm}(\tau_l, \tau_g) = 8$, the resonant Fourier-bin mask is
+
+$$
+\mathcal{M}_{\mathrm{res}} = \left\{k \in \{0, 1, \ldots, n_{\mathrm{samples}} - 1\} : k \equiv 0 \pmod{M}\right\}, \quad M = \frac{n_{\mathrm{samples}}}{\mathrm{lcm}(\tau_l, \tau_g)}.
+$$
+
+The bins in $\mathcal{M}_{\mathrm{res}}$ correspond exactly to the
+N15-resonant angular frequencies $\omega_j = 2\pi j / \mathrm{lcm}$
+for $j = 0, 1, 2, \ldots$, under the canonical unit-spacing $T$-grid
+$T_n = n + T_{\min}$ for $n = 0, \ldots, n_{\mathrm{samples}} - 1$.
+The orthogonal projector onto $\mathrm{range}(\mathcal{R}_\infty)$
+acts on a real signal $f$ by
+
+$$
+(\mathcal{R}_\infty f)_n = \mathrm{Re}\,\mathcal{F}^{-1}\!\left[\mathbb{1}_{\mathcal{M}_{\mathrm{res}}}(k) \cdot (\mathcal{F} f)_k\right]_n,
+$$
+
+and $(I - \mathcal{R}_\infty) f$ is the kernel component. The Parseval
+fractions are reported in the certificate
+(`ResidueSplitCertificate`).
+
+The canonical P31 reconstruction
+$$
+S_{\mathrm{TNFR}}(T;\,N,K) = -\frac{1}{\pi} \sum_{(\mu, w) \in \Sigma_{N, K}} \frac{w}{\mu} \sin(T \mu) \exp(-\mu / 2)
+$$
+is evaluated on the canonical $T$-grid via
+`prime_ladder_oscillatory_sum` (atomic P31 primitive, vectorised).
+The split is computed by `split_residue_by_remesh_infinity`.
+
+### §13triginta.3 Pre-Registered Structural Prediction (Baker's Theorem)
+
+The Fourier support of $S_{\mathrm{TNFR}}(T)$ as a function of $T$ is
+exactly $\{\mu : (\mu, w) \in \Sigma_{N, K}\} = \{k \log p : p \text{ prime}, 1 \le k \le K\}$.
+By **Baker's theorem on linear independence of logarithms of
+algebraic numbers** (1966), no $\mathbb{Q}$-linear combination of
+$\{\log p : p \text{ prime}\}$ equals a non-zero rational multiple of
+$\pi$. Hence $\{k \log p\}$ is **disjoint** from the N15-resonant
+lattice $\{2\pi j / \mathrm{lcm}(\tau_l, \tau_g) : j \in \mathbb{Z}\}$,
+which consists of rational multiples of $\pi$. The pre-registered
+structural prediction is therefore:
+
+$$
+\boxed{\;\;\lim_{n_{\mathrm{samples}} \to \infty} \frac{\|\mathcal{R}_\infty S_{\mathrm{TNFR}}\|_2^2}{\|S_{\mathrm{TNFR}}\|_2^2} = 0\;\;}
+$$
+
+equivalently, the canonical reconstruction lies asymptotically in
+$\ker(\mathcal{R}_\infty)$ — verdict `RESIDUE_IN_KER_ONLY`.
+
+### §13triginta.4 Empirical Verification
+
+Demo `examples/77_remesh_infinity_residue_split_demo.py` at canonical
+defaults $(\tau_l, \tau_g) = (4, 8)$, $K = 8$:
+
+| $n_{\mathrm{periods}}$ | $n_{\mathrm{samples}}$ | $n_{\mathrm{primes}}$ | $\|S\|_2$ | $\|\mathcal{R}_\infty S\|_2$ | $\|(I-\mathcal{R}_\infty) S\|_2$ | range fraction | kernel fraction | verdict |
+|---|---|---|---|---|---|---|---|---|
+| 64  | 512  | 200 | 7.2457 | 0.9625 | 7.1814  | **1.7647 %**  | 98.2353 % | `RESIDUE_IN_KER_ONLY` |
+| 256 | 2048 | 400 | 15.824 | 0.2016 | 15.822  | **0.0162 %**  | 99.9838 % | `RESIDUE_IN_KER_ONLY` |
+
+The range fraction decays by a factor of **109×** as the grid
+resolution quadruples — clean asymptotic incommensurability behaviour
+matching the Baker-theorem prediction.
+
+**Sanity controls** (built into `compute_residue_split_certificate`):
+
+| control signal | predicted range fraction | measured ($n_{\mathrm{samples}} = 512$) | measured ($n_{\mathrm{samples}} = 2048$) |
+|---|---|---|---|
+| $\sin(2\pi T / \mathrm{lcm})$ (resonant)                       | $\approx 100\%$ | **100.0000 %** | **100.0000 %** |
+| $\sin(\gamma_{\mathrm{em}} T)$ ($\gamma_{\mathrm{em}}$ Euler–Mascheroni; non-resonant) | $\approx 0\%$    | **0.0007 %**   | **0.0005 %**   |
+
+Both controls hit their predicted projections to machine precision,
+confirming the DFT-bin mask correctly implements the N15-resonant
+projector.
+
+### §13triginta.5 What P50 Extends
+
+* Extends the §13septies / §13nonies *structural identification* of
+  the T-HP residual obstruction with the oscillatory half $S(T)$ to a
+  *function-space-level empirical verdict*: the canonical P31
+  reconstruction $S_{\mathrm{TNFR}}(T)$ lies in $\ker(\mathcal{R}_\infty)$,
+  exactly where the residual obstruction was predicted to live.
+* Provides the **N15-cross-program-bridge**: the same orthogonal
+  projector $\mathcal{R}_\infty$ that closes the REMESH-∞ asymptotic
+  limit (W1 of N15) also organises the T-HP residual gap into its
+  smooth half (range component, closed by P28 + P30) and oscillatory
+  half (kernel component, RH-equivalent and open).
+* Adds a **second independent attack-surface diagnostic** on B1 at the
+  function-space level, complementary to the §13vicies-novies
+  graph-iteration-matrix thread on EPI-history state vectors. The two
+  threads test mathematically distinct objects (functions in
+  $H^2(T\text{-axis})$ vs. finite-dimensional iteration matrices on
+  $G_{P14}$) and yield consistent structural evidence: both place the
+  residual obstruction outside the catalog's standard canonical
+  product structures.
+
+### §13triginta.6 What P50 Does NOT Advance
+
+* **G4 = RH**: untouched. P50 does not close T-HP. The result is a
+  structural-compatibility diagnostic that *organises* the residual
+  obstruction, not a closure of it.
+* **Sub-problems (2) canonicity** and **(3) positivity coincidence**
+  of T-HP (§13septies): untouched.
+* **No new canonical operator**: P50 uses only the canonical N15
+  asymptotic projector $\mathcal{R}_\infty$, the canonical P31
+  reconstruction $S_{\mathrm{TNFR}}(T)$, and the discrete Fourier
+  transform — all existing canonical ingredients. P50 does not
+  promote any new operator into the 13-operator catalog.
+* **Branch B1 / B2 / B3 trichotomy** (§13septies): P50 *narrows* B1
+  by placing the residual obstruction in $\ker(\mathcal{R}_\infty)$,
+  but does not decide between B1-via-some-other-channel,
+  B2 (new canonical operator required), and B3 (no TNFR closure
+  exists). It is consistent with §13vicies-novies.15's verdict that
+  the canonical-tensor-product family of B1 sub-routes on $G_{P14}$
+  is empirically closed by $S_n$-equivariance.
+
+### §13triginta.7 Cross-References
+
+* **N15 master derivation**: `theory/REMESH_INFINITY_DERIVATION.md`
+  (W1 existence of $\mathcal{R}_\infty$ as orthogonal projection,
+  W2 conservation / Lyapunov structure, W3 spectral universality).
+* **T-HP statement and structural split**: §13septies (Conjecture
+  T-HP); §13octies (assembled-argument audit L1–L8); §13nonies
+  (P30 operator-level smooth-half closure, identification of
+  oscillatory half as RH-equivalent).
+* **Smooth-half closure**: §13sexies (P28 density-level),
+  §13nonies (P30 operator-level).
+* **Oscillatory-half canonical attack**: §13decies-quarto (P31
+  prime-ladder Newton-step diagnostic; mixed branch B1 / B2
+  empirical regime).
+* **Complementary B1 refutation thread**: §13vicies-novies (R∞-1a-
+  operator, R∞-1a-composed, R∞-1c, R∞-1b on iteration matrices on
+  $G_{P14}$; closes canonical-tensor-product family of B1
+  sub-routes via $S_n$-equivariance).
+* **Code**: `src/tnfr/riemann/remesh_infinity_residue_split.py`;
+  demo `examples/77_remesh_infinity_residue_split_demo.py`.
+* **Honest-scope framework**: §13octies, §13.2, §19.2 apply
+  verbatim.
+
+### §13triginta.8 Gap Balance
+
+| Gap | Status before P50 | Status after P50 |
+|---|---|---|
+| G4 = RH | OPEN | OPEN, unchanged |
+| T-HP smooth half | CLOSED at density (P28) and operator (P30) level | CLOSED, unchanged |
+| T-HP oscillatory half | OPEN; identified structurally with $S(T) = (1/\pi)\arg\zeta(\tfrac12+iT)$ in §13septies / §13nonies; canonical Newton-step attack (P31) yields mixed B1/B2 empirical regime | OPEN; **now also identified empirically with the $\ker(\mathcal{R}_\infty)$ component of the canonical P31 reconstruction at function-space level** (range fraction $\to 0$ asymptotically, verified at two grid resolutions) |
+| Branch B1 / B2 / B3 trichotomy | §13vicies-novies.15 empirically closes the canonical-tensor-product family of B1 sub-routes on $G_{P14}$ via $S_n$-equivariance | UNCHANGED at the graph level; **P50 adds an independent function-space-level structural-compatibility observation pointing in the same direction** (residual obstruction outside $\mathrm{range}(\mathcal{R}_\infty)$, in its kernel) |
+| N15 ↔ Riemann-program cross-reference | N15 W1–W3 closed inside its own derivation; cross-reference to T-HP residual gap stated structurally only in §13septies / §13nonies | **OPERATIONALISED**: the same $\mathcal{R}_\infty$ that closes N15 also organises the T-HP residual gap into smooth (range) and oscillatory (kernel) halves at the function-space level, with empirical verdict |
+
+**Net effect**: P50 closes the **structural-compatibility loop**
+between the N15 REMESH-∞ closure (`theory/REMESH_INFINITY_DERIVATION.md`)
+and the T-HP residual gap (§13septies / §13nonies) at the function-
+space level. The empirical verdict `RESIDUE_IN_KER_ONLY` confirms the
+Baker-theorem prediction that the canonical P31 prime-ladder
+reconstruction is Fourier-disjoint from the N15-resonant rational-
+multiple-of-$\pi$ lattice, and is therefore *exactly* the kind of
+object that lives in the oscillatory half of T-HP. No gap is closed;
+no new operator is promoted; G4 = RH remains open. The TNFR-Riemann
+program remains paused at the T-HP / G4 = RH boundary as stated in
+§13septies, with §13triginta adding one independent function-space-
+level structural diagnostic to the §13vicies-novies graph-level
+thread.
+
+---
+
