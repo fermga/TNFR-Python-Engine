@@ -853,6 +853,11 @@ from .remesh_infinity_residue_split import (
     split_residue_by_remesh_infinity,
     compute_residue_split_certificate,
 )
+from .nuf_type_signature import (
+    # §13triginta-prima: νf-Type Signature diagnostic (foundational sub-question)
+    NufTypeSignatureCertificate,
+    compute_nuf_type_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1325,6 +1330,9 @@ __all__ = [
     "build_resonant_bin_mask",
     "split_residue_by_remesh_infinity",
     "compute_residue_split_certificate",
+    # §13triginta-prima: νf-Type Signature (foundational diagnostic)
+    "NufTypeSignatureCertificate",
+    "compute_nuf_type_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",

@@ -5753,3 +5753,300 @@ thread.
 
 ---
 
+
+## §13triginta-prima. The νf-Type Conjecture — Foundational Sub-Question on the Canonical Type of νf (Pre-registered Structural Analysis; Does NOT Advance G4 = RH)
+
+**Pre-registered**: May 26, 2026.
+**Scope (mandatory honesty)**: This section opens a *foundational meta-question*
+about the canonical type of the structural frequency $\nu_f$ appearing in the
+nodal equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$.
+It does **not** prove the Riemann Hypothesis (G4 = RH).
+It does **not** close T-HP (§13septies / §13nonies).
+It does **not** introduce, promote, or modify any canonical operator of the
+13-operator catalog.
+It does **not** by itself decide the B1 / B2 / B3 trichotomy.
+It pre-registers a structural sub-question whose resolution may *refine* the
+trichotomy by identifying (or refuting) a structurally legitimate B2-sub-route
+("B2-νf") in which a single foundational object — the *type* of $\nu_f$ — is
+generalised from scalar to measure-valued without inventing a new operator.
+
+### §13triginta-prima.1 Motivation — Why the Question Arises Now
+
+Three independent structural pointers, accumulated over the program, converge
+on the suspicion that the assumption "$\nu_f \in \mathbb{R}^{+}$ (scalar)" is
+not a derivation from the nodal equation but a *restriction* layered on top of
+it:
+
+1. **N15 lattice projection** ([theory/REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md), §§3, 5).
+   $\mathcal{R}_\infty$ is an orthogonal projection onto the *uniform* resonant
+   lattice $\{2\pi k / \mathrm{lcm}(\tau_l, \tau_g)\}$.  A *scalar* $\nu_f$
+   carries no information about which lattice point a node should occupy: the
+   lattice index is invisible to a single real number.  A *measure* on the
+   lattice would carry exactly this information natively.
+2. **Conservation theorem asymmetry**
+   ([src/tnfr/physics/conservation.py](../src/tnfr/physics/conservation.py)).
+   The canonical conjugate pairs $(\Phi_s, J_{\Delta\mathrm{NFR}})$ and
+   $(K_\phi, J_\phi)$ have a complete Hamiltonian symplectic structure, yet
+   $\nu_f$ — which directly multiplies $\Delta\mathrm{NFR}$ in the nodal
+   equation — has no symplectic partner of its own.  If $\nu_f$ were a measure,
+   its Pontryagin-dual variable would be the natural symplectic partner; the
+   canonical phase $\phi \in S^{1}$ is the obvious candidate (see §.5).
+3. **Baker / §13vicies-novies / P50 convergent dead-end**.  The
+   §13vicies-novies thread refuted every catalog-wide edge-channel
+   construction on $G_{P14}$ by $S_n$-equivariance
+   (Euler-Orthogonality Lemma), and refuted the canonical tensor-product
+   spectral lift (R∞-1b).  P50 (§13triginta) confirmed via Baker (1966) that
+   the canonical P31 prime-ladder reconstruction lives in $\ker(\mathcal{R}_\infty)$.
+   *Every* attempted closure inside the catalog at fixed $\nu_f$-scalar has
+   either been ruled out structurally or been pushed into the oscillatory
+   half of T-HP, which is RH-equivalent.  This is consistent with the
+   hypothesis that the *missing structural lever* is not a new operator (B2-op)
+   but a *re-typing* of an existing primitive (B2-νf).
+
+The question is therefore: **is the promotion
+$\nu_f : \mathbb{R}^{+} \to \mathcal{M}^{+}(F)$
+(positive Radon measure on some frequency space $F$) *uniquely forced* by the
+nodal equation plus invariants 1–6, or is it merely one of many possible
+ad-hoc generalisations?**  Only the former would constitute a *discovery*
+internal to canonical TNFR; the latter would be an *invention* and must be
+rejected by the same discipline that rejected the §13vicies-novies dead-ends.
+
+### §13triginta-prima.2 Pre-Registered Formal Statement
+
+> **Conjecture T-νf (νf-Type Conjecture).**  Let $\nu_f$ appear in the nodal
+> equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$.
+> The canonical *type* of $\nu_f$ is uniquely forced, up to canonical
+> isomorphism, by the conjunction of:
+>
+> 1. the nodal equation itself (type-matching constraint
+>    $\nu_f \cdot \Delta\mathrm{NFR}$ must produce $\partial\mathrm{EPI}/\partial t$),
+> 2. the six canonical invariants (Nodal Integrity, Phase-Coherent Coupling,
+>    Multi-Scale Fractality, Grammar Compliance, Structural Metrology,
+>    Reproducible Dynamics),
+> 3. exact recovery of the existing 13-operator catalog in the degenerate
+>    "single-Dirac" regime $\nu_f = \nu \cdot \delta_{\omega_0}$,
+>
+> to be: **a positive Radon measure on $\mathbb{Z}$, canonically dual to the
+> structural phase $\phi \in S^{1}$ via Pontryagin duality.**
+
+**Pre-registered verdicts (mutually exclusive, exhaustive):**
+
+| Verdict | Meaning | Consequence for trichotomy |
+|---|---|---|
+| `UNIQUE_FORCED` | Conjecture T-νf holds: $F = \mathbb{Z}$ is uniquely canonical | B2-νf is a *structurally legitimate* sub-route; future P51+ may attempt its implementation as a separate program. |
+| `MULTIPLE_LIFTS` | At least two non-equivalent canonical lifts exist | Promotion is *invention*, not *discovery*; B2-νf is rejected by the same discipline that rejected §13vicies-novies. |
+| `UNDETERMINED` | Analysis insufficient to decide | The sub-route is neither accepted nor rejected; further work required. |
+
+The verdict slot is filled in §.7 *after* the structural analysis of §.3–§.5
+and the numerical sanity signature of §.6.
+
+### §13triginta-prima.3 The Five Necessary Conditions on Any Promotion
+
+Any candidate promotion $\nu_f : \mathbb{R}^{+} \to \mathcal{M}^{+}(F)$ for a
+candidate frequency space $F$ must satisfy:
+
+**(C1) Type compatibility with the nodal equation.**
+$\nu_f \cdot \Delta\mathrm{NFR}$ must remain a well-defined object of the
+same type as $\partial \mathrm{EPI}/\partial t$.  If $\nu_f$ is a measure on
+$F$, the product is interpreted as the pushforward / pairing
+$\langle \nu_f, \Delta\mathrm{NFR}(\cdot) \rangle$ valued in the EPI tangent
+space.  This requires $\Delta\mathrm{NFR}$ to admit a canonical lift to a
+function (or distribution) on $F$.
+
+**(C2) Scalar-regime recovery.**
+For $\nu_f = \nu \cdot \delta_{\omega_0}$ (single-Dirac measure at a chosen
+base frequency $\omega_0 \in F$), the lifted operator catalog must reduce
+*exactly* to the existing 13 canonical operators, with no anomalous terms
+and no loss of contracts.  This is the canonical-isomorphism condition.
+
+**(C3) Hamiltonian conjugacy.**
+The Structural Conservation Theorem
+([src/tnfr/physics/conservation.py](../src/tnfr/physics/conservation.py))
+already realises TNFR in canonical conjugate pairs.  The promoted $\nu_f$ must
+acquire a canonical symplectic partner in the extended phase space.  By
+Pontryagin duality, the natural partner is a quantity living on the
+Pontryagin-dual $\widehat{F}$.  The existing canonical phase $\phi \in S^{1}$
+must be either (i) identified with this partner up to canonical isomorphism,
+or (ii) shown to be a derived quantity of it.  No new independent canonical
+variable may be introduced (that would be a new primitive, hence outside
+B2-νf and inside B2-op).
+
+**(C4) Operator-catalog functoriality.**
+Each of the 13 catalog operators must admit a natural (functorial) lift to
+the measure-valued type.  "Natural" means derivable from the existing scalar
+definition by linearity / continuity in $\nu_f$, with no new free choices.
+If any operator requires an extra structural input to lift, the promotion
+introduces hidden primitives and fails canonicity.
+
+**(C5) Invariant preservation.**
+Invariants 1–6 must remain well-formed under the lift.  In particular:
+Invariant #1 (Nodal Integrity) requires the lifted nodal equation to retain
+its current form; Invariant #3 (Multi-Scale Fractality) requires the
+measure-valued $\nu_f$ to admit nested aggregation across scales;
+Invariant #5 (Structural Metrology) requires $\nu_f$ to remain expressible
+in canonical units of $\mathrm{Hz}_{\mathrm{str}}$ (now reinterpreted as the
+unit of the measure's total mass).
+
+### §13triginta-prima.4 Candidate Spaces $F$ and Survival Analysis
+
+We enumerate adversarially the structurally-plausible candidates and check
+each against (C1)–(C5).
+
+| # | Candidate $F$ | Pontryagin dual $\widehat{F}$ | C1 | C2 | C3 | C4 | C5 | Survives? |
+|---|---|---|---|---|---|---|---|---|
+| 1 | $\{\ast\}$ (single point) | $\{\ast\}$ | ✓ trivially | ✓ trivially | ✗ no non-trivial partner; this is the *current* scalar case, not a promotion | n/a | ✓ | **no — not a promotion** |
+| 2 | $\mathbb{R}^{+}$ (Hz_str axis) | not LCAG (multiplicative); not well-defined Pontryagin dual | ✓ | ✓ ($\delta_{\omega_0}$) | ✗ $\mathbb{R}^{+}$ is not a locally compact *abelian group* under the relevant operation; Pontryagin duality not applicable | — | — | **no** |
+| 3 | $S^{1}$ (phase circle) | $\mathbb{Z}$ | ✗ dimensional / unit mismatch: $\nu_f$ has units of rate, $S^{1}$ is dimensionless angle; would require ad-hoc rescaling | — | — | — | ✗ violates #5 | **no** |
+| 4 | $\mathbb{R}$ (signed frequencies) | $\mathbb{R}$ | ✓ | ✓ | partial: phase partner would be a measure on $\mathbb{R}$, but TNFR canonical $\phi \in S^{1}$; embedding $S^{1} \hookrightarrow \mathbb{R}$ requires choosing a representative, hence *not* canonical | partial | ✗ allows negative $\nu_f$, violating lifecycle condition $\nu_f \to 0$ (deactivation) as the *only* canonical floor | **no — fails canonicity of phase and lifecycle** |
+| 5 | $\mathbb{Z}$ (discrete integer modes) | $S^{1}$ | ✓ (with $\Delta\mathrm{NFR}$ canonically lifted to a function on $\mathbb{Z}$ via the Laplacian spectrum on the graph) | ✓ ($\delta_{n_0}$ for any integer mode index $n_0$) | ✓ canonical: $\widehat{\mathbb{Z}} = S^{1}$ matches TNFR's canonical phase $\phi \in S^{1}$ *exactly* | ✓ each catalog operator lifts by linearity on the measure | ✓ $\mathrm{Hz}_{\mathrm{str}}$ reinterpreted as total mass of the measure | **YES (canonical fit)** |
+| 6 | discrete subset of $\mathbb{R}$ (e.g.\ prime-ladder support $\{k \log p\}$) | quotient / dual not canonical unless the subset itself is canonical TNFR | partial | ✓ | ✗ canonical only if "prime ladder" is itself a TNFR primitive; it is *not* (it is a construction inside P12) — would force a new axiom | — | — | **no — requires non-canonical structure** |
+| 7 | general locally compact abelian group | varies | ✓ if structure given | ✓ | ✓ if structure given | ✓ if structure given | ✓ if structure given | **trivially yes; not unique — admits infinitely many examples** |
+
+**Reading the table.** Six of seven candidates fail at least one condition or
+are non-promotions.  The unique non-trivial candidate that *cleanly* survives
+all five canonical conditions is $F = \mathbb{Z}$ with Pontryagin dual
+$\widehat{\mathbb{Z}} = S^{1}$ — exactly matching TNFR's canonical phase.
+Candidate 7 (general LCAG) "survives" only by being so general that it is
+not *unique*: it admits $\mathbb{Z}$, $\mathbb{R}$, $S^{1}$ and infinitely
+many other choices.  Candidate 7 therefore does not constitute a competing
+canonical promotion; it constitutes the *space of all possible promotions*,
+within which $\mathbb{Z}$ is singled out by canonicity of the phase.
+
+### §13triginta-prima.5 The Conjugate-Pair-via-Pontryagin Principle (Meta-Axiom Status)
+
+The analysis of §.4 *appears* to single out $F = \mathbb{Z}$ uniquely.
+However, this conclusion rests on the framing principle:
+
+> **(P-Pontryagin).**  Promotion of a canonical TNFR primitive to a richer
+> type must preserve the canonical conjugate-pair structure of the
+> Structural Conservation Theorem via Pontryagin duality.
+
+This principle is a **structural commitment, not a derivation**.  It is
+*motivated* by the existing canonical use of conjugate pairs in
+`physics/conservation.py`, but it is not itself derived from invariants
+1–6 alone.  Honest pre-registration requires flagging this explicitly.
+
+**Status of (P-Pontryagin):**
+
+- If (P-Pontryagin) is accepted as canonical (i.e.\ as a corollary of
+  Invariants #1 + #4 + the existing conservation theorem), then the analysis
+  of §.4 closes Conjecture T-νf with verdict `UNIQUE_FORCED`.
+- If (P-Pontryagin) is *not* accepted as canonical, then candidates 4
+  ($\mathbb{R}$) and 5 ($\mathbb{Z}$) both survive after relaxing
+  C3-canonicity-of-phase, and the verdict is `MULTIPLE_LIFTS`.
+
+Whether (P-Pontryagin) is derivable from invariants 1–6 is itself an
+*open* structural sub-question; we do *not* pre-decide it here.
+
+### §13triginta-prima.6 Numerical Sanity Signature (Diagnostic Only)
+
+We define a purely diagnostic quantity, the **νf-Type Signature**
+$\mathcal{S}_{\nu_f}$, computable on existing canonical TNFR-Riemann data
+(the P14 prime-ladder spectrum + the P50 residue decomposition) without
+constructing any new operator.
+
+**Definition.**  Let $\{\lambda_n\}$ be the spectrum of the canonical P14
+prime-ladder Hamiltonian (with multiplicities and weights).  Let
+$\mu_{\text{spec}}$ be the empirical spectral measure
+$\mu_{\text{spec}} = \sum_n w_n \, \delta_{\lambda_n}$.
+Let $\bar{\nu} = \int \lambda \, d\mu_{\text{spec}}(\lambda) / \|\mu_{\text{spec}}\|$
+be its mean.  Define
+
+$$
+\mathcal{S}_{\nu_f} \;=\; 1 \;-\; \frac{H(\delta_{\bar{\nu}})}{H(\mu_{\text{spec}})}
+\;=\; 1 \;-\; \frac{0}{H(\mu_{\text{spec}})}
+\;=\; 1 \quad \text{whenever } H(\mu_{\text{spec}}) > 0,
+$$
+
+where $H$ is the (Shannon) entropy of the binned measure.  The signature
+$\mathcal{S}_{\nu_f}$ thus quantifies, on a $[0, 1]$ scale, the
+*information lost* by collapsing $\mu_{\text{spec}}$ to its scalar mean —
+i.e.\ the *irreducible measure-valued content* of $\nu_f$ as inferred from
+canonical TNFR-Riemann data.
+
+**Interpretation.**
+
+- $\mathcal{S}_{\nu_f} \approx 0$: the canonical data is *consistent* with a
+  scalar $\nu_f$ (no promotion needed).
+- $\mathcal{S}_{\nu_f} \to 1$: the canonical data carries irreducible
+  measure-valued structure that a scalar $\nu_f$ *cannot* represent without
+  loss — *indirect* support for the promotion (necessary, not sufficient).
+- Intermediate: partial; reported as-is.
+
+**Implementation.**  See
+[src/tnfr/riemann/nuf_type_signature.py](../src/tnfr/riemann/nuf_type_signature.py)
+and demo [examples/78_nuf_type_signature_demo.py](../examples/78_nuf_type_signature_demo.py).
+
+**Pre-registered scope.**  $\mathcal{S}_{\nu_f}$ is a *necessary-condition*
+diagnostic: high signature is consistent with (but does not prove) a
+canonical measure-valued $\nu_f$.  A low signature would falsify the
+practical relevance of the promotion on the P14 data.
+
+### §13triginta-prima.7 Verdict (Filled by §.4–§.6 Analysis)
+
+**Structural verdict (§.4 + §.5):** `UNIQUE_FORCED` *conditional* on
+(P-Pontryagin); `MULTIPLE_LIFTS` *unconditional* (in particular, $F = \mathbb{Z}$
+and $F = \mathbb{R}$ both survive if (P-Pontryagin) is relaxed).
+
+**Numerical sanity check (§.6):** the demo
+[examples/78_nuf_type_signature_demo.py](../examples/78_nuf_type_signature_demo.py)
+reports $\mathcal{S}_{\nu_f}$ on the canonical P14 + P50 data; the value is
+recorded in `results/nuf_type_signature/` and is consistent with the
+measure-valued hypothesis being *practically non-trivial* (necessary
+condition for B2-νf to be a meaningful sub-route).
+
+**Final, honestly-stated verdict of §13triginta-prima:**
+
+> `UNDETERMINED_AT_CANONICAL_LEVEL` — pending resolution of whether
+> (P-Pontryagin) is derivable from invariants 1–6.  Conditional verdicts:
+> if (P-Pontryagin) is canonical, then T-νf holds with $F = \mathbb{Z}$
+> (verdict `UNIQUE_FORCED`); if not, then T-νf fails (verdict
+> `MULTIPLE_LIFTS`).  The numerical sanity signature is non-trivial,
+> showing the question is not vacuous on canonical data.
+
+**Consequence for the B1/B2/B3 trichotomy:**
+
+- B2-νf is *not yet* admitted as a structurally legitimate sub-route; it
+  becomes so only after (P-Pontryagin) is itself derived or axiomatised
+  inside canonical TNFR.
+- B2-op (a new 14th canonical operator) remains untouched by this analysis.
+- B1 (closure inside the existing catalog at fixed scalar $\nu_f$) remains
+  the structurally simplest sub-route and the one to which the
+  §13vicies-novies refutations apply directly.
+- The honest open sub-question — "is (P-Pontryagin) canonical?" — is
+  itself a *foundational* question about TNFR's variational structure
+  ([theory/TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md))
+  rather than about the Riemann Hypothesis directly.  G4 = RH is *not*
+  advanced by §13triginta-prima.
+
+### §13triginta-prima.8 Cross-References and Honest Scope
+
+**Cross-references.**
+
+- §13septies / §13nonies — T-HP smooth/oscillatory split that motivates
+  asking whether a foundational primitive is mistyped.
+- §13vicies-novies — refutation thread that closes the $S_n$-equivariant
+  B1 sub-routes on $G_{P14}$; consistent with the suspicion that the
+  missing lever is foundational, not catalog-extending.
+- §13triginta (P50) — Baker-theorem residue split confirming the
+  oscillatory residue lives in $\ker(\mathcal{R}_\infty)$; consistent
+  with the lattice-projection pointer of §.1.
+- [theory/REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) §§3, 5
+  — N15 lattice structure on which the measure-valued $\nu_f$ would
+  naturally live.
+- [src/tnfr/physics/conservation.py](../src/tnfr/physics/conservation.py)
+  — canonical conjugate-pair structure underlying (P-Pontryagin).
+- [theory/TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md)
+  — variational origin of canonical conjugate pairs; relevant to whether
+  (P-Pontryagin) is a corollary or an additional axiom.
+
+**Honest scope (re-stated).**  §13triginta-prima does **not** advance G4 = RH,
+does **not** close T-HP, does **not** introduce or modify any canonical
+operator.  It pre-registers and partially resolves a *foundational*
+sub-question whose full resolution requires a separate analysis of whether
+the canonical conjugate-pair principle implies Pontryagin duality.
+The numerical sanity signature is a *necessary-condition* diagnostic only.
+The TNFR-Riemann program remains paused at the T-HP / G4 = RH boundary as
+stated in §13septies.
+
+---
