@@ -28,6 +28,9 @@ Every theory document maps to executable examples and SDK entry points:
 | [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) | 78–89 (B0–B11 type-signature demos) | `tnfr.riemann` (type-signature modules) |
 | [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | [04](../examples/04_operator_sequences.py), [10](../examples/10_simplified_sdk_showcase.py), [29](../examples/29_lyapunov_stability_demo.py), [36](../examples/36_grammar_violation_detector.py), [37](../examples/37_operator_tetrad_synergy.py), [38](../examples/38_grammar_energy_landscape.py), [39](../examples/39_nodal_equation_decomposition.py) | `.evolve_grammar_aware()`, `.integrity_check()`, `Operator.__call__()` |
 | [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) | [16](../examples/16_riemann_operator_demo.py), [40](../examples/40_arithmetic_number_theory.py) | `tnfr.mathematics.number_theory`, `tnfr.riemann` |
+| [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) | [77 (REMESH-∞)](../examples/77_remesh_infinity_residue_split_demo.py) | `tnfr.operators.remesh`, `tnfr.physics.conservation` |
+| [NUCLEUS_A_PRIME_LADDER_ATLAS.md](NUCLEUS_A_PRIME_LADDER_ATLAS.md) | 41–44 (P12–P15 pipeline) | `tnfr.riemann.von_mangoldt`, `tnfr.riemann.prime_ladder_hamiltonian` |
+| [NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md) | 78–89 (Type-Hygiene B0–B11) | `tnfr.riemann` (equivariance diagnostics) |
 | [GLOSSARY.md](GLOSSARY.md) | All | All (terminology reference) |
 
 **SDK quick start**: `from tnfr.sdk import TNFR` — see [SDK README](../src/tnfr/sdk/README.md) and [example 10](../examples/10_simplified_sdk_showcase.py).
@@ -79,7 +82,7 @@ Every theory document maps to executable examples and SDK entry points:
 1. [../AGENTS.md](../AGENTS.md) — Primary theoretical reference (complete framework overview)
 2. **This directory** — Specialized derivations and domain applications
 3. [../docs/](../docs/) — Implementation specifications
-4. [../examples/](../examples/) — Executable demonstrations (01–76 sequential; dual-series 77–86)
+4. [../examples/](../examples/) — Executable demonstrations (01–76 sequential; NS-series 77–86; Type-Hygiene series 77–89; plus `pytorch_cuda_demo.py`, `unified_fields_showcase.py`)
 5. [../src/tnfr/sdk/](../src/tnfr/sdk/) — Simplified SDK API
 
 ---

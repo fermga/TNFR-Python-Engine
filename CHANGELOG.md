@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### N15 REMESH-∞ Closure — Catalog-Completeness Theorem
 
-- **Master deliverable**: [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) §§1–23 (v3.0, ~825 lines). Three weeks (W1 + W2 + W3) executed in a single session and pushed to `origin/main`:
+- **Master deliverable**: [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) §§1–23 (v3.0, ~816 lines). Three weeks (W1 + W2 + W3) executed in a single session and pushed to `origin/main`:
   - W1 `a1f298fd` — operator existence: $\mathcal{R}_\infty = P_{\ker(I-\mathcal{R})}$, bounded self-adjoint orthogonal projection on $H^2(D)$
   - W2 `badac156` — conservation + Lyapunov: projected Noether charge $Q_\infty$ exactly conserved; energy $V_\infty \ge 0$ monotone with Cesàro $O(1/n)$ tail at rational $\tau_g/\tau_l$
   - W3 `48b0574a` — spectrum + final verdict: uniform spectral density $\rho = \mathrm{lcm}(\tau_l, \tau_g)/\pi$; **Branch A confirmed**

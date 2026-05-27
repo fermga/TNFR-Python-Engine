@@ -117,6 +117,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
   - **Pattern Discovery**: [src/tnfr/engines/pattern_discovery/](src/tnfr/engines/pattern_discovery/) - Mathematical pattern detection
   - **Computation**: [src/tnfr/engines/computation/](src/tnfr/engines/computation/) - GPU acceleration & FFT processing
   - **Integration**: [src/tnfr/engines/integration/](src/tnfr/engines/integration/) - Multi-scale emergent integration
+  - **Constants**: [src/tnfr/engines/constants/](src/tnfr/engines/constants/) - Engine-scoped canonical constants (canonical.py)
 - **Software Development Kit**: [src/tnfr/sdk/](src/tnfr/sdk/) - API implementation
 
 **Reference Sources**:
@@ -1206,7 +1207,7 @@ Equivalence map: [if APIs renamed]
 
 **Status**: N15 program COMPLETE — three weeks executed in a single session (W1 `a1f298fd`, W2 `badac156`, W3 `48b0574a` on `origin/main`).
 
-**Master deliverable**: [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) (§§1–23, ~476 lines, v3.0).
+**Master deliverable**: [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) (§§1–23, ~816 lines, v3.0).
 
 ### Headline result — Branch A confirmed
 
@@ -1467,7 +1468,7 @@ When adding to grammar documentation:
 - **[src/tnfr/operators/grammar_memoization.py](src/tnfr/operators/grammar_memoization.py)**: Validation caching (static aspects only, preserves TNFR semantics)
 - **[src/tnfr/operators/grammar_telemetry.py](src/tnfr/operators/grammar_telemetry.py)**: Grammar constraint telemetry and monitoring
 
-**Implementation Core — Operators (56 modules)**:
+**Implementation Core — Operators (65 modules)**:
 - **[src/tnfr/operators/definitions.py](src/tnfr/operators/definitions.py)**: 13 canonical operators + base class + registry
 - **[src/tnfr/operators/nodal_equation.py](src/tnfr/operators/nodal_equation.py)**: Nodal equation (`∂EPI/∂t = νf·ΔNFR`) implementation
 - **[src/tnfr/operators/canonical_patterns.py](src/tnfr/operators/canonical_patterns.py)**: Bootstrap, Stabilize, Explore, Propagate sequence templates
