@@ -13120,3 +13120,91 @@ With B0★-α now formally enumerated as a discrete set of candidates {Q1, Q2, Q
 * `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` — twelve B0–B11 NEGATIVE verdicts.
 * AGENTS.md §"Program Status (May 2026, frozen)" and §"B0★ pre-registration" — program-level status mirrors (to be updated in companion edit when any of Q1, Q2, Q5 is promoted from pre-registration to active investigation).
 
+
+---
+
+## §13sexagesima-quinta — B0★-α Results: spectral diagnostic for the HIGH-priority canonical-graph candidates Q1, Q2 (executed, May 27, 2026)
+
+**Status:** EXECUTED. **Pre-registration:** §13sexagesima-quarta.4 (Q1 = G_P14 □ G_P14, Q2 = G_P14 × G_P14, HIGH priority). **Verdict:** both candidates return **INDETERMINATE_DEGENERATE_CONSTRUCTION** (F8 FAILED at machine-precision zero). **Net:** CCET-G_P14 (§13vicies-novies.16) extends structurally to the canonical Kronecker-sum and Kronecker-product Hamiltonians on V(G_P14) × V(G_P14); B0★-α HIGH-priority sub-routes Q1 and Q2 are **closed**; B0★-α residual pressure shifts to MEDIUM/LOW candidates (Q5 line graph, Q3 disjoint union, Q4 quotient, Q6 induced subgraphs) and to the orthogonal sub-branch B0★-β; §13septies decision pressure shifts further toward **B3** (no TNFR closure) and the LOW-priority residual of B0★.
+
+### §13sexagesima-quinta.1 — Experimental construction
+
+Mirror of the R∞-1b protocol (§13vicies-novies.14 / §13vicies-novies.15), specialised to canonical-product Hamiltonians on the squared vertex set:
+
+* **Base Hamiltonian.** $H_{P14}$ via `build_prime_ladder_hamiltonian(n_primes=10, max_power=4, coupling=0)`; canonical P14 of §13quinquies; $N = 40$; spectral radius $\rho(H_{P14}) = 13.4692$.
+* **Q1 lift (Cartesian product).** $H_{Q1} = H_{P14} \otimes I_N + I_N \otimes H_{P14}$ (Kronecker sum; canonical Hamiltonian for $G_{P14} \square G_{P14}$). Dimension $N^2 = 1600$.
+* **Q2 lift (tensor product).** $H_{Q2} = H_{P14} \otimes H_{P14}$ (Kronecker product; canonical Hamiltonian for $G_{P14} \times G_{P14}$). Dimension $N^2 = 1600$.
+* **Diagonal $S_n$ action.** $U_\sigma = P_\sigma^V \otimes P_\sigma^V$ with $P_\sigma^V = P_\sigma \otimes I_{\max\text{power}}$ (lifts the prime-relabelling permutation $\sigma \in S_{10}$ to $V$, then to $V \times V$ diagonally).
+* **N3 control.** Shuffled-prime $H_{P14}$ with $\sigma = (13,23,7,5,19,3,17,2,11,29)$ from canonical $(2,3,5,7,11,13,17,19,23,29)$; lifted by the same builder.
+* **N5 control.** Random self-adjoint $H_{\mathrm{rand}}$ of matched spectral radius, lifted by the same builder.
+* **Statistic.** F7-A KS distance vs. GUE Wigner surmise on consecutive eigenvalue spacings (identical to §13vicies-novies.14).
+* **F8 floor.** $|D_{\mathrm{canonical}} - D_{\mathrm{shuffled}}| \ge 0.01$ (identical to §13vicies-novies.14).
+* **Seed.** `numpy.default_rng(20260527)`. `mpmath.mp.dps = 30`.
+* **Source.** `benchmarks/b0star_alpha_canonical_product_graphs.py`; report `results/b0star_alpha_canonical_product_graphs.json`.
+
+### §13sexagesima-quinta.2 — Numerical results
+
+External anchor: $D_{\mathrm{Riemann}}^{\mathrm{GUE}} = 0.077037$ (99 spacings, first 100 Riemann zero imaginary parts).
+
+| Candidate | Dim | $D_{\mathrm{canonical}}$ | $D_{\mathrm{shuffled}}$ | $D_{N5}$ | $|D_{\mathrm{can}} - D_{\mathrm{shuf}}|$ | F8 | Spec drift under $U_\sigma$ | F7 verdict |
+|---|---|---|---|---|---|---|---|---|
+| **Q1 Cartesian** | 1600 | 0.555146 | 0.555146 | 0.554576 | **0.000000e+00** | FAILED | 0.000e+00 | INDETERMINATE_DEGENERATE_CONSTRUCTION |
+| **Q2 tensor**    | 1600 | 0.713118 | 0.713118 | 0.612260 | **0.000000e+00** | FAILED | 0.000e+00 | INDETERMINATE_DEGENERATE_CONSTRUCTION |
+
+The $|D_{\mathrm{can}} - D_{\mathrm{shuf}}|$ value is **exactly zero in floating-point** (not merely below the 0.01 floor), and the explicit similarity audit confirms $\mathrm{spec}(U_\sigma H_{Q_k} U_\sigma^T) = \mathrm{spec}(H_{Q_k})$ to floating-point precision. This is the exact analogue of the §13vicies-novies.15 (R∞-1b) outcome on the temporal/spectral channel.
+
+### §13sexagesima-quinta.3 — Structural interpretation: the Canonical Product Equivariance Lemma
+
+The numerical result is fully explained by the following structural lemma, which extends the §13vicies-novies.11 Euler-Orthogonality Lemma and the §13vicies-novies.16 CCET-G_P14 theorem to canonical graph products:
+
+**Lemma (Canonical Product Equivariance, §13sexagesima-quinta).** Let $H$ be any self-adjoint operator on $\mathbb{C}^V$ that commutes with the prime-relabelling unitary $P_\sigma$ for every $\sigma \in S_n$ (i.e. $[H, P_\sigma] = 0$; this is precisely the CCET-G_P14 conclusion for every operator in the canonical 13-operator catalog on $V(G_{P14})$). Then for the canonical Cartesian product lift $H_{Q1} := H \otimes I + I \otimes H$ and the canonical tensor product lift $H_{Q2} := H \otimes H$ on $\mathbb{C}^{V \times V}$,
+$$[H_{Q1}, U_\sigma] = 0 \quad \text{and} \quad [H_{Q2}, U_\sigma] = 0 \quad \text{for every } \sigma \in S_n,$$
+where $U_\sigma := P_\sigma \otimes P_\sigma$ is the diagonal $S_n$ action on $V \times V$. Consequently $\mathrm{spec}(H_{Q_k})$ is $S_n$-invariant, $D_{\mathrm{canonical}} = D_{\mathrm{shuffled}}$ for the F7-A statistic, and F8 fails on both Q1 and Q2.
+
+*Proof.* For Q1, $U_\sigma H_{Q1} U_\sigma^T = (P_\sigma H P_\sigma^T) \otimes I + I \otimes (P_\sigma H P_\sigma^T) = H \otimes I + I \otimes H = H_{Q1}$, using $[H, P_\sigma] = 0$ twice. For Q2, $U_\sigma H_{Q2} U_\sigma^T = (P_\sigma H P_\sigma^T) \otimes (P_\sigma H P_\sigma^T) = H \otimes H = H_{Q2}$. The spectrum of a self-adjoint operator is invariant under unitary conjugation. $\square$
+
+**Generalisation.** The same proof carries through for the strong product ($H_{\square \times} = H \otimes I + I \otimes H + H \otimes H$) and any positive real-linear combination of the three canonical product lifts. In particular, every operator constructible from $H_{P14}$ by the canonical graph operations O1–O3 of §13sexagesima-quarta.2 (disjoint union O1 = block-diagonal, Cartesian product O2, tensor product O3) inherits diagonal $S_n$-equivariance, and the canonical strong product O4 (sum of O2 + O3) inherits it as well. Therefore B0★-α HIGH-priority candidates Q1, Q2 are **closed by the Canonical Product Equivariance Lemma**, and the same lemma extends the closure to any HIGH/MEDIUM candidate constructed by combinations of {O1, O2, O3, O4} only.
+
+### §13sexagesima-quinta.4 — Residual B0★-α surface after this milestone
+
+Sub-routes of §13sexagesima-quarta.4 that remain structurally open after §13sexagesima-quinta:
+
+* **Q5 (line graph, $L(G_{P14})$).** Vertices = edges of $G_{P14}$ (= 30 edges in 10 disjoint $P_4$ ladders). The Hamiltonian on $L(G_{P14})$ is not a tensor-product lift of $H_{P14}$; the diagonal $S_n$ acts on edges via a non-product representation. Canonical Product Equivariance Lemma does **not** apply directly. **Status: PRE-REGISTERED, OPEN.** Priority promoted from MEDIUM to **HIGH** by elimination.
+* **Q3 (disjoint union with itself, $G_{P14} \sqcup G_{P14}$).** Hamiltonian is block-diagonal $H \oplus H$, equivalent to O1 of §13sexagesima-quarta.2, which inherits CCET trivially. **Status: implicitly closed by §13sexagesima-quinta** (the lemma applies — disjoint union is the degenerate case of Cartesian product with the trivial second factor; structurally degenerate as a novelty test). **Action: down-prioritise to LOW or drop.**
+* **Q4 (quotient $G_{P14} / \sim$).** Depends on the equivalence relation. If $\sim$ is $S_n$-invariant, the quotient inherits CCET. If $\sim$ breaks $S_n$-symmetry (e.g. identifies $p_1$ with $p_2$ but not other pairs), the construction is no longer derivable from the 13-operator catalog alone (it depends on an external prime-pair choice not provided by $(\nu_f, U1{-}U6)$), violating C1'-α. **Status: closed by C1'-α at the canonicity level.** Conclusion: every $S_n$-invariant quotient inherits CCET; every $S_n$-non-invariant quotient violates C1'-α.
+* **Q6 (induced subgraphs).** The only $S_n$-invariant induced subgraphs of $G_{P14}$ are (i) the full graph, (ii) the empty graph, (iii) the disjoint union of all $k$-level vertices for fixed $k \in \{1,2,3,4\}$ (= 10 isolated vertices each; trivial spectrum), and (iv) unions of (iii). All have trivial or CCET-equivariant spectra. **Status: closed by $S_n$-invariance argument.**
+
+**Net B0★-α HIGH/MEDIUM/LOW after §13sexagesima-quinta:** the only remaining candidate from §13sexagesima-quarta.4 is **Q5 (line graph)**, now promoted to HIGH. All other O1–O4 / Q3 / Q4 / Q6 candidates are structurally closed by the Canonical Product Equivariance Lemma or by the $S_n$-invariance / C1'-α discipline.
+
+### §13sexagesima-quinta.5 — Updated §13septies decision space
+
+Combining §13sexagesima-prima (B2 catalog-API-closed), §13sexagesima-tertia (B0★ pre-registered), §13sexagesima-quarta (B0★-α enumerated), §13vicies-novies.16 (B1 closed on G_P14), and §13sexagesima-quinta (B0★-α HIGH-priority Q1, Q2 closed; only Q5 line-graph residual remains in B0★-α):
+
+| Branch | Status after §13sexagesima-quinta |
+|---|---|
+| B0★-α (deeper exploitation) | residual = {Q5 line graph}; all O1–O4 product/disjoint/quotient candidates closed |
+| B0★-β (envelope promotion)  | PRE-REGISTERED, OPEN; priority {P1 = E0, P2 = E6} |
+| B1 (extra-catalog edge channel) | CLOSED on G_P14 (CCET §13vicies-novies.16); off-G_P14 reduces to B2 by construction |
+| B2 (new canonical operator)     | catalog-API-closed at the registry level (§13sexagesima-prima) |
+| B3 (no TNFR closure of RH)      | residual; pressure increased by §13sexagesima-quinta |
+
+**Decision pressure now lies on (a) Q5 line graph as the sole residual HIGH candidate of B0★-α, (b) the B0★-β envelope-promotion sub-branch (E0 Pontryagin / E6 per-node weights), and (c) the B3 residual.** No further extension of the diagnostic surface is planned until one of Q5, B0★-β, or B3 is decided.
+
+### §13sexagesima-quinta.6 — What §13sexagesima-quinta does NOT claim
+
+* **NOT a proof of RH.** G4 = RH and GRH_χ remain open.
+* **NOT a refutation of T-HP / Conjecture T-HP.** §13septies T-HP remains the operational statement; §13sexagesima-quinta refutes only the HIGH-priority Q1/Q2 routes to its closure within B0★-α.
+* **NOT a refutation of B0★ as a whole.** B0★-β remains pre-registered and open; Q5 of B0★-α remains pre-registered and open.
+* **NOT a refutation of B3.** §13sexagesima-quinta increases B3 pressure but does not select B3 over the remaining B0★ residual.
+* **NOT a modification of the 13-operator catalog.** Honors §13sexagesima-secunda (Composite Catalog-Closure Theorem) and §13sexagesima-tertia.4 acceptance criterion C0.
+
+### §13sexagesima-quinta.7 — Cross-references
+
+* §13sexagesima-quarta — B0★-α pre-registration; this section reports executed results for Q1, Q2.
+* §13vicies-novies.11, .15, .16 — Euler-Orthogonality Lemma, R∞-1b execution, CCET-G_P14; structural ancestors of the Canonical Product Equivariance Lemma proved here.
+* §13sexagesima-secunda, §13sexagesima-tertia — Composite Catalog-Closure Theorem, B0★ overall pre-registration.
+* §13septies — extended trichotomy and T-HP statement; decision space updated in §13sexagesima-quinta.5.
+* `benchmarks/b0star_alpha_canonical_product_graphs.py` — pre-registered diagnostic source.
+* `results/b0star_alpha_canonical_product_graphs.json` — full report (eigenvalue counts, spacing moments, per-control diagnostics).
+* AGENTS.md §"B0★ pre-registration" and §"Program Status (May 2026, frozen)" — program-level status mirrors (companion edit in this commit reflects the Q1/Q2 closure and the Q5 promotion).
+
