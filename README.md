@@ -109,7 +109,8 @@ src/tnfr/
 ├── physics/           # Structural fields, conservation, integrity (26 modules)
 ├── engines/           # Self-optimization, pattern discovery, GPU/FFT (7 modules)
 ├── dynamics/          # Nodal equation integration
-├── riemann/           # TNFR-Riemann program (48 modules, P1–P49; paused at T-HP)
+├── riemann/           # TNFR-Riemann program (62 modules, P1–P49; paused at T-HP)
+├── navier_stokes/     # TNFR-Navier–Stokes program (N1–N17; NS-G5 closed)
 ├── sdk/               # Simplified & Fluent API (7 modules)
 │   └── simple.py      # Tetrad, conservation, grammar-aware dynamics, integrity
 ├── mathematics/       # Number theory, backends
@@ -118,10 +119,10 @@ src/tnfr/
 ├── validation/        # Structural health monitoring
 └── factorization/     # Spectral factorization workflow
 
-examples/              # 42 sequential tutorials (01-40 + extras)
-tests/                 # 1,655 tests
+examples/              # 101 files (sequential tutorials 01–89 + extras)
+tests/                 # 1,662 tests
 theory/                # Theoretical derivations
-benchmarks/            # Performance validation (14 suites)
+benchmarks/            # Performance validation (25 suites)
 ```
 
 ---
@@ -135,6 +136,7 @@ benchmarks/            # Performance validation (14 suites)
 | [theory/FUNDAMENTAL_THEORY.md](theory/FUNDAMENTAL_THEORY.md) | Universal Tetrahedral Correspondence |
 | [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) | Field implementation specifications |
 | [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | TNFR-Riemann program |
+| [theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) | TNFR-Navier–Stokes program |
 | [theory/GLOSSARY.md](theory/GLOSSARY.md) | Terminology and definitions |
 | [examples/](examples/) | Sequential tutorials |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System design |
