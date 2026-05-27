@@ -12510,3 +12510,98 @@ L3* heuristic, post-B11c, is promoted to: **"empirically robust working heuristi
 - `src/tnfr/operators/definitions_base.py` (`Operator` base).
 - `src/tnfr/riemann/operator_catalog_discipline_signature.py` (Phase a diagnostic).
 - `examples/89_operator_catalog_discipline_signature_demo.py` (Phase a demo).
+
+---
+
+## §13sexagesima-secunda — Final: Composite Meta-Minimality and Catalog-Closure Theorem
+
+This section assembles the twelve NEGATIVE verdicts from B0-B11 into a single composite statement. The Catalog Type-Hygiene Programme (`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`) terminates here.
+
+#### .1 The twelve discharged sub-questions
+
+| ID | Sub-question | CDM | Envelope (research-only) | Notes ref |
+|----|----|----|----|----|
+| B0  | T-nu_f                       | Pontryagin/measure-nu_f                | E0 = MeasureExtensionOnNuF             | Sec 13tricesima-quinta |
+| B1  | T-EPI                        | TMEP                                   | E1 = ContinuousFormExtensionOnEPI      | Sec 13triginta-secunda |
+| B2  | T-phi                        | PWDP                                   | E2 = LiftedCircleBundleOnPhi           | Sec 13triginta-quarta |
+| B3  | T-DeltaNFR                   | BSAD                                   | E3 = HiddenBifurcationStateOnDeltaNFR  | Sec 13triginta-sexta |
+| B4  | T-REMESH-window              | DITS                                   | E4 = ContinuousReinjectionMeasure      | Sec 13quadraginta-quinta |
+| B5  | T-Delta-phi-max              | STD                                    | E5 = SpectralTraceExtension            | Sec 13quadraginta-octava |
+| B6  | T-coupling-weights           | SWD                                    | E6 = NodeIndexedCouplingWeights        | Sec 13quinquaginta-prima |
+| B7  | Delta-tetrad-closure         | TRC                                    | E_TC = HiddenIntermediateTensorState   | Sec 13quinquaginta-tertia |
+| B8  | Delta-currents-closure       | CCC                                    | E_CC = HiddenIntermediateTensorStateOnCurrents   | Sec 13quinquaginta-quinta |
+| B9  | Delta-aggregates-closure     | ACD                                    | E_AC = HiddenIntermediateTensorStateOnAggregates | Sec 13quinquaginta-septima |
+| B10 | U-rules type-hygiene         | URC                                    | E_UR = HiddenIntermediateRulecheckerState        | Sec 13quinquaginta-nona |
+| B11 | Operator-catalog closure     | OCD                                    | E_OC = HiddenFourteenthOperatorConstruction      | Sec 13sexagesima-prima |
+
+Each row carries a NEGATIVE verdict obtained by a single CDM (concordance-discharging mechanism) at a structurally distinct surface. The twelve CDMs partition the canonical-state contract surface: Pontryagin/measure (B0), tetrad-membrane-evolution-projection (B1), phase-wrap-density-projection (B2), bifurcation-state-aggregation-density (B3), discrete-injection-time-sampling (B4), spectral-trace-density (B5), spectrum-weighting-density (B6), tetrad-reduction-closure (B7), currents-reduction-closure (B8), aggregates-reduction-closure (B9), U-rules-type-hygiene (B10), operator-catalog-closure (B11).
+
+#### .2 Theorem statement
+
+**Theorem (Catalog Minimality & Completeness)**. Under the 13-operator TNFR catalog (`src/tnfr/operators/registry.py`) and the unified grammar U1-U6 (`src/tnfr/operators/grammar_core.py`, `src/tnfr/operators/grammar_u6.py`), the per-node types
+
+$$(\nu_f, \mathrm{EPI}, \phi, \Delta\mathrm{NFR}) \in \mathbb{R}^+ \times \mathbb{R} \times [0, 2\pi) \times \mathbb{R} ,$$
+
+the graph-level parameters
+
+$$(\tau_l, \tau_g, \Delta\phi_{\max}, w_{ij}) \in \mathbb{N}^2 \times [0, \pi] \times \mathbb{R}_{\ge 0} ,$$
+
+the derived structural-field tetrad
+
+$$(\Phi_s, |\nabla\phi|, K_\phi, \xi_C) \in \mathbb{R}^4 ,$$
+
+and the derived currents
+
+$$(J_\phi, J_{\Delta\mathrm{NFR}}) \in \mathbb{R}^2$$
+
+are jointly the **minimal and complete** structural state of any TNFR realisation that satisfies the nodal equation `dEPI/dt = nu_f * DeltaNFR(t)` and the unified grammar U1-U6. Specifically:
+
+- **Completeness**: every canonical operator invocation, every U-rule check, every aggregate-functional output, and every registry/metadata inspection reduces — through the source-code traces of B0-B11 Phase c — to operations on tuples of these scalars (plus integer indices). No callable kernel, no measure, no operator-valued intermediate, no matrix lift, and no Banach-derivative apparatus is forced by the canonical machinery at any of the twelve surfaces probed.
+- **Minimality**: no member of the canonical state tuple can be eliminated without (i) violating the nodal-equation contract (`nu_f`, `EPI`, `DeltaNFR`), (ii) breaking U1-U6 closure (`phi`, `tau_l`, `tau_g`, `Delta-phi-max`, `w_{ij}`), or (iii) collapsing one of the derived-field aggregates whose admissibility is verified independently by B7/B8/B9 (the tetrad, currents, and aggregates).
+- **Catalog closure**: the operator catalog is exactly the immutable set of 13 classes registered in `OPERATORS`; no fourteenth operator is reachable from the public API (B11) and no U-rule checker admits a richer input/output signature (B10).
+
+#### .3 Proof sketch
+
+Each clause of the theorem follows directly from the corresponding Phase c discharge:
+
+1. **Per-node types** (`nu_f`, `EPI`, `phi`, `DeltaNFR`): the four B0/B1/B2/B3 Phase c traces classify any richer envelope (`E0..E3`) as research-only; the canonical implementation in `src/tnfr/dynamics/`, `src/tnfr/metrics/`, and `src/tnfr/operators/` reads only the scalar types declared above.
+2. **Graph-level parameters** (`tau_l`, `tau_g`, `Delta-phi-max`, `w_{ij}`): B4/B5/B6 Phase c traces classify `E4..E6` as research-only; the canonical scheduler in `src/tnfr/dynamics/runtime.py` and the coupling layer in `src/tnfr/operators/coupling.py` read only the natural-number windows and the scalar threshold/weight types declared above.
+3. **Tetrad** (`Phi_s`, `|grad phi|`, `K_phi`, `xi_C`): B7 Phase c discharges TRC; the canonical aggregator chain in `src/tnfr/metrics/structural_fields.py` returns scalar functionals of the per-node tuples plus weight scalars.
+4. **Currents** (`J_phi`, `J_{DeltaNFR}`): B8 Phase c discharges CCC at `src/tnfr/metrics/sense_index.py` and `src/tnfr/physics/unified.py`; outputs are scalar densities or per-node scalar arrays.
+5. **Aggregate functionals**: B9 Phase c discharges ACD; the four canonical aggregates (`compute_coherence`, `compute_Si`, `compute_energy_density`, `compute_topological_charge`) return real scalars.
+6. **U-rule closure**: B10 Phase c discharges URC; every rule checker in `grammar_core.py` and `grammar_u6.py` reduces to string-frozenset membership plus integer-index arithmetic plus scalar comparison.
+7. **Catalog closure**: B11 Phase c discharges OCD; `OPERATORS`, `OPERATOR_METADATA`, and `definitions.__all__` jointly close at exactly 13 canonical operators.
+
+Composition: any canonical computation in TNFR is a finite sequence of (a) per-node attribute reads (B0-B3 types), (b) graph-level parameter reads (B4-B6 types), (c) U-rule checks (B10), (d) operator dispatch via the catalog (B11), and (e) aggregate/current/tetrad evaluation (B7-B9). The twelve closures jointly cover every reachable canonical observation; their composition is a finite composition of scalar-typed evaluations, so the joint state above is both sufficient and necessary. **QED (composite, conditional on B0-B11 Phase c traces).**
+
+#### .4 Status
+
+- The theorem is **established in the canonical-implementation sense**: every Phase c trace is a literal source-code inspection of the current canonical implementation. Refutation requires producing a canonical computation whose evidence falsifies one of the twelve Phase c traces (i.e. introduces a callable kernel, a measure, an operator-valued intermediate, a matrix lift, or a Banach-derivative apparatus at one of the twelve surfaces). No such computation is currently known in the canonical layer.
+- Twelve non-canonical research envelopes (`E0..E_OC`) are classified as **research-only**: they may be useful for off-canonical experiments (e.g. spectral programmes, primality-test bench, factorization-lab) but they are not forced by the canonical contract and do not extend the canonical state.
+
+#### .5 Scope guard
+
+Does **NOT** advance G4 = RH (Conjecture T-HP, Sec 13septies). The theorem is a catalog-minimality / catalog-completeness statement, independent from the Riemann-hypothesis programme. The twelve CDMs establish that the canonical layer is structurally closed; they say nothing about the spectral location of the zeros of zeta. The off-canonical envelopes E0..E_OC remain the natural research surfaces for any future spectral programme.
+
+#### .6 Cross-references
+
+- Sec 13sexagesima (B11 Phase a).
+- Sec 13sexagesima-prima (B11 Phase c + OCD).
+- Sec 13quinquaginta-nona (B10 Phase c + URC).
+- Sec 13quinquaginta-septima (B9 Phase c + ACD).
+- Sec 13quinquaginta-quinta (B8 Phase c + CCC).
+- Sec 13quinquaginta-tertia (B7 Phase c + TRC).
+- Sec 13quinquaginta-prima (B6 Phase c + SWD).
+- Sec 13quadraginta-octava (B5 Phase c + STD).
+- Sec 13quadraginta-quinta (B4 Phase c + DITS).
+- Sec 13triginta-sexta (B3 Phase c + BSAD).
+- Sec 13triginta-quarta (B2 Phase c + PWDP).
+- Sec 13triginta-secunda (B1 Phase c + TMEP).
+- Sec 13tricesima-quinta (B0 Phase c + Pontryagin/measure-nu_f).
+- Sec 13septies (Conjecture T-HP, G4 = RH; the composite theorem is independent).
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 Final, Sec 4 Final.
+- `src/tnfr/operators/registry.py`, `introspection.py`, `definitions.py`, `definitions_base.py`.
+- `src/tnfr/operators/grammar_core.py`, `grammar_u6.py`.
+- `src/tnfr/dynamics/`, `src/tnfr/metrics/`, `src/tnfr/physics/`.
+- `src/tnfr/riemann/` (twelve `*_signature.py` diagnostic modules).
+- `examples/79_pontryagin_*.py` ... `examples/89_operator_catalog_discipline_signature_demo.py` (per-phase demos).

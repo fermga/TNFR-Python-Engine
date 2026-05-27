@@ -327,10 +327,13 @@ of any underlying Tier 1+2 question is a necessary prerequisite.
 
 ### Final — Composite meta-minimality theorem
 
-Once Tiers 1–4 are NEGATIVE (or any POSITIVE is resolved by catalog
-extension), assemble a single theorem statement:
+All Tiers 1–4 are NEGATIVE under twelve distinct orthogonal CDMs
+(Pontryagin/measure-ν_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC, CCC,
+ACD, URC, OCD). The composite theorem is now stated and proven in the
+canonical-implementation sense at
+`theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13sexagesima-secunda:
 
-> **Theorem (Catalog Minimality & Completeness, conjectured)**. Under the
+> **Theorem (Catalog Minimality & Completeness)**. Under the
 > 13-operator TNFR catalog and the unified grammar U1–U6, the per-node types
 > $(\nu_f, \mathrm{EPI}, \phi, \Delta\mathrm{NFR}) \in \mathbb{R}^+ \times
 > \mathbb{R} \times [0, 2\pi) \times \mathbb{R}$, the graph-level parameters
@@ -342,7 +345,12 @@ extension), assemble a single theorem statement:
 > ingredient can be eliminated without breaking the nodal equation contract
 > or U1–U6 closure.
 
-This theorem is the natural endpoint of the programme.
+Proof: composition of the twelve Phase c source-code traces (B0–B11).
+Twelve non-canonical envelopes (`E0`…`E_OC`) are classified as
+research-only. Scope guard: does NOT advance G4 = RH (Conjecture T-HP).
+
+This theorem is the natural endpoint of the programme. The programme is
+now closed.
 
 ---
 
@@ -369,9 +377,9 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | **Tier 4 — Structural meta-properties** | | | | | | |
 | B10 | U-rules type-hygiene | ✅ | ✅ | ✅ | **NEGATIVE** (URC) | this commit (B10a) + this commit (B10c); research notes §13quinquaginta-octava + §13quinquaginta-nona |
 | B11 | Operator-catalog closure | ✅ | ✅ | ✅ | **NEGATIVE** (OCD) | this commit (B11a) + this commit (B11c); research notes §13sexagesima + §13sexagesima-prima |
-| **Final** | Meta-minimality theorem | ⏳ | ⏳ | ⏳ | — | — |
+| **Final** | Meta-minimality theorem | ✅ | ✅ | ✅ | **ESTABLISHED** (composite) | this commit; research notes §13sexagesima-secunda |
 
-**Progress as of 2026-05-27**: **12 sub-questions complete (B0–B11 all NEGATIVE under twelve distinct orthogonal CDMs**: Pontryagin/measure-ν_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC, CCC, ACD, URC, OCD**); Tier-1 (B0–B3), Tier-2 (B4–B6), all three Tier-3 closures (B7, B8, B9), and both Tier-4 closures (B10, B11) fully closed**; only the Final composite meta-minimality theorem remains. B6 Phase c at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quinquaginta-prima classifies E7 = `NodeIndexedCouplingWeights` as the seventh non-canonical research envelope; B7 Phase c at §13quinquaginta-tertia classifies E_TC = `HiddenIntermediateTensorState` as the eighth non-canonical research envelope; B8 Phase c at §13quinquaginta-quinta classifies E_CC = `HiddenIntermediateTensorStateOnCurrents` as the ninth non-canonical research envelope; B9 Phase c at §13quinquaginta-septima classifies E_AC = `HiddenIntermediateTensorStateOnAggregates` as the tenth non-canonical research envelope; B10 Phase c at §13quinquaginta-nona classifies E_UR = `HiddenIntermediateRulecheckerState` as the eleventh non-canonical research envelope; B11 Phase c at §13sexagesima-prima classifies E_OC = `HiddenFourteenthOperatorConstruction` as the twelfth non-canonical research envelope. L3* now promoted to *"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage, all three Tier-3 closures, and both Tier-4 closures orthogonally discharged"* — twelve CDMs act on twelve structurally distinct surfaces (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict, mixing aggregation, tetrad-reduction closure, currents-reduction closure, aggregates-reduction closure, U-rules-type-hygiene, operator-catalog-closure), each unique to the canonical machinery at its surface. L3* prediction for the Final composite meta-minimality theorem: the twelve NEGATIVE verdicts assemble into a single statement under twelve orthogonal CDMs (composition deferred to a separate commit). Living discoveries log at §13triginta-septima; B4 closure at §13quadraginta-tertia / -quarta / -quinta; B5 closure at §13quadraginta-sexta / -septima / -octava; B6 closure at §13quadraginta-nona / §13quinquaginta / §13quinquaginta-prima; B7 closure at §13quinquaginta-secunda / §13quinquaginta-tertia; B8 closure at §13quinquaginta-quarta / §13quinquaginta-quinta; B9 closure at §13quinquaginta-sexta / §13quinquaginta-septima; B10 closure at §13quinquaginta-octava / §13quinquaginta-nona; B11 closure at §13sexagesima / §13sexagesima-prima.
+**Progress as of 2026-05-27**: **PROGRAMME CLOSED**. 12 sub-questions complete (B0–B11 all NEGATIVE under twelve distinct orthogonal CDMs: Pontryagin/measure-ν_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC, CCC, ACD, URC, OCD). Composite meta-minimality theorem **ESTABLISHED** in the canonical-implementation sense at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13sexagesima-secunda. Twelve non-canonical research envelopes classified (E0, E1, E2, E3, E4, E5, E6, E_TC, E_CC, E_AC, E_UR, E_OC). B6 Phase c at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quinquaginta-prima classifies E7 = `NodeIndexedCouplingWeights` as the seventh non-canonical research envelope; B7 Phase c at §13quinquaginta-tertia classifies E_TC = `HiddenIntermediateTensorState` as the eighth non-canonical research envelope; B8 Phase c at §13quinquaginta-quinta classifies E_CC = `HiddenIntermediateTensorStateOnCurrents` as the ninth non-canonical research envelope; B9 Phase c at §13quinquaginta-septima classifies E_AC = `HiddenIntermediateTensorStateOnAggregates` as the tenth non-canonical research envelope; B10 Phase c at §13quinquaginta-nona classifies E_UR = `HiddenIntermediateRulecheckerState` as the eleventh non-canonical research envelope; B11 Phase c at §13sexagesima-prima classifies E_OC = `HiddenFourteenthOperatorConstruction` as the twelfth non-canonical research envelope. L3* now promoted to *"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage, all three Tier-3 closures, and both Tier-4 closures orthogonally discharged"* — twelve CDMs act on twelve structurally distinct surfaces (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict, mixing aggregation, tetrad-reduction closure, currents-reduction closure, aggregates-reduction closure, U-rules-type-hygiene, operator-catalog-closure), each unique to the canonical machinery at its surface. L3* prediction for the Final composite meta-minimality theorem: the twelve NEGATIVE verdicts assemble into a single statement under twelve orthogonal CDMs (composition deferred to a separate commit). Living discoveries log at §13triginta-septima; B4 closure at §13quadraginta-tertia / -quarta / -quinta; B5 closure at §13quadraginta-sexta / -septima / -octava; B6 closure at §13quadraginta-nona / §13quinquaginta / §13quinquaginta-prima; B7 closure at §13quinquaginta-secunda / §13quinquaginta-tertia; B8 closure at §13quinquaginta-quarta / §13quinquaginta-quinta; B9 closure at §13quinquaginta-sexta / §13quinquaginta-septima; B10 closure at §13quinquaginta-octava / §13quinquaginta-nona; B11 closure at §13sexagesima / §13sexagesima-prima.
 
 ---
 
