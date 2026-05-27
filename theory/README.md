@@ -24,6 +24,7 @@ Every theory document maps to executable examples and SDK entry points:
 | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | [20](../examples/20_eigenmode_tetrad.py), [33](../examples/33_complex_field_unification.py), [unified_fields](../examples/unified_fields_showcase.py) | `.tensor_invariants()`, `.emergent_fields()` |
 | [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) | [16](../examples/16_riemann_operator_demo.py)–[25](../examples/25_analytical_convergence_demo.py) | `tnfr.riemann` |
 | [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) | [16](../examples/16_riemann_operator_demo.py), [18](../examples/18_riemann_convergence_proof.py)–[23](../examples/23_random_ensemble_rmt_demo.py), [25](../examples/25_analytical_convergence_demo.py), 41–76 (P12–P49 ζ-track + χ-twisted L-track), 78–89 (Type-Hygiene B0–B11) | `tnfr.riemann` |
+| [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) | 77–86 NS-series (Taylor–Green, energy inequality, BKM criterion, vortex stretching, Reynolds sweep) | `tnfr.navier_stokes` |
 | [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) | 78–89 (B0–B11 type-signature demos) | `tnfr.riemann` (type-signature modules) |
 | [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | [04](../examples/04_operator_sequences.py), [10](../examples/10_simplified_sdk_showcase.py), [29](../examples/29_lyapunov_stability_demo.py), [36](../examples/36_grammar_violation_detector.py), [37](../examples/37_operator_tetrad_synergy.py), [38](../examples/38_grammar_energy_landscape.py), [39](../examples/39_nodal_equation_decomposition.py) | `.evolve_grammar_aware()`, `.integrity_check()`, `Operator.__call__()` |
 | [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) | [16](../examples/16_riemann_operator_demo.py), [40](../examples/40_arithmetic_number_theory.py) | `tnfr.mathematics.number_theory`, `tnfr.riemann` |
@@ -44,6 +45,7 @@ Every theory document maps to executable examples and SDK entry points:
 | [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) | Noether-like conservation laws: continuity, Ward identities, Lyapunov stability |
 | [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | Lagrangian/Hamiltonian formulation of structural dynamics |
 | [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) | TNFR–Riemann program (18 sections + 11 appendices) |
+| [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) | TNFR–Navier–Stokes program (N12–N13 K_φ cascade, Taylor–Green experiments, N15 linkage) |
 | [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) | **N15 catalog-completeness theorem** (May 2026, COMPLETE): asymptotic projection $\mathcal{R}_\infty$ on $H^2(D)$, projected Noether/energy ($Q_\infty$, $V_\infty$), uniform spectral density, Branch A verdict; 13-op TNFR catalog closed under the REMESH-∞ limit |
 | [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) | **Catalog Type-Hygiene Programme** (CLOSED 2026-05-27): twelve orthogonal CDMs B0–B11, all NEGATIVE; composite meta-minimality theorem — 13-operator catalog types minimal and complete; twelve non-canonical research envelopes classified |
 | [GLOSSARY.md](GLOSSARY.md) | Operational definitions and terminology |
@@ -69,13 +71,15 @@ Every theory document maps to executable examples and SDK entry points:
 | [SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md](SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md) | Logarithmic spiral from nodal equation; golden spiral condition; tetrad signatures; φ as structural attractor; anti-resonance property |
 | [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | Complete specification of 13 canonical operators: physics, transformations, constants, energy bounds, postconditions, compositions |
 | [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) | Arithmetic TNFR: primality as ΔNFR = 0, canonical constants, pressure components, dual-lever decomposition, spectral factorization, Riemann connection |
+| [NUCLEUS_A_PRIME_LADDER_ATLAS.md](NUCLEUS_A_PRIME_LADDER_ATLAS.md) | Canonical prime-ladder construction atlas: P12–P15 pipeline, self-adjoint Hamiltonian, Weil–Guinand verification |
+| [NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md) | Equivariance obstructions on G_P14: CCET, Prime-Cancellation Lemma, Euler-Orthogonality Lemma, B1 closure |
 
 ### Hierarchy
 
 1. [../AGENTS.md](../AGENTS.md) — Primary theoretical reference (complete framework overview)
 2. **This directory** — Specialized derivations and domain applications
 3. [../docs/](../docs/) — Implementation specifications
-4. [../examples/](../examples/) — Executable demonstrations (01–40)
+4. [../examples/](../examples/) — Executable demonstrations (01–76 sequential; dual-series 77–86)
 5. [../src/tnfr/sdk/](../src/tnfr/sdk/) — Simplified SDK API
 
 ---

@@ -124,6 +124,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 - **Theoretical Foundation**: [Structural Fields and Universal Tetrahedral Correspondence](theory/FUNDAMENTAL_THEORY.md)
 - **Minimality Proof**: [theory/MINIMAL_STRUCTURAL_DEGREES.md](theory/MINIMAL_STRUCTURAL_DEGREES.md) - Why exactly four structural fields
 - **TNFR-Riemann Program**: [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) - Research notes on discrete prime operators and Riemann Hypothesis connection
+- **TNFR-Navier–Stokes Program**: [theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) - Navier–Stokes research notes (N15 linkage, K_φ cascade, Taylor–Green experiments)
 - **Number Theory**: [theory/TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) - Primality as ΔNFR = 0, arithmetic structural triad, canonical constants, spectral factorization
 
 **Validation and Examples**:
@@ -1205,7 +1206,7 @@ Equivalence map: [if APIs renamed]
 
 **Status**: N15 program COMPLETE — three weeks executed in a single session (W1 `a1f298fd`, W2 `badac156`, W3 `48b0574a` on `origin/main`).
 
-**Master deliverable**: [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) (§§1–23, ~825 lines, v3.0).
+**Master deliverable**: [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) (§§1–23, ~476 lines, v3.0).
 
 ### Headline result — Branch A confirmed
 
@@ -1491,14 +1492,15 @@ When adding to grammar documentation:
   - **[src/tnfr/riemann/topology.py](src/tnfr/riemann/topology.py)**: Topology comparison analysis
   - **[src/tnfr/riemann/spectral_conservation.py](src/tnfr/riemann/spectral_conservation.py)**: Spectral conservation laws
   - **[src/tnfr/riemann/analytical_convergence.py](src/tnfr/riemann/analytical_convergence.py)**: Analytical convergence analysis
+- **[src/tnfr/navier_stokes/](src/tnfr/navier_stokes/)**: TNFR-Navier–Stokes program (2 modules: `__init__.py`, `operator.py`)
 
 **SDK & Applications**:
 - **[src/tnfr/sdk/](src/tnfr/sdk/)**: Simplified & Fluent API with research-grade access (7 modules)
   - **[src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)**: TetradSnapshot, ConservationReport, TNFR.analyze(), grammar-aware evolution, integrity monitoring
   - **[src/tnfr/sdk/fluent.py](src/tnfr/sdk/fluent.py)**: Fluent API with auto_optimize()
   - **[src/tnfr/sdk/adaptive_system.py](src/tnfr/sdk/adaptive_system.py)**: Adaptive system patterns
-- **[examples/](examples/)**: 01–89 numbered examples + `pytorch_cuda_demo.py` + `unified_fields_showcase.py` (101 files total)
-- **[benchmarks/](benchmarks/)**: Production-grade validation suites (14 benchmark scripts)
+- **[examples/](examples/)**: 101 files total — sequential 01–76; then two parallel series with shared numbering 77–86: Navier–Stokes NS-series (`77_navier_stokes_taylor_green_demo.py` … `86_navier_stokes_reynolds_sweep.py`) and Riemann/Type-Hygiene series (`77_remesh_infinity_residue_split_demo.py`, `78_nuf_type_signature_demo.py` … `89_operator_catalog_discipline_signature_demo.py`); plus `pytorch_cuda_demo.py` and `unified_fields_showcase.py`
+- **[benchmarks/](benchmarks/)**: Production-grade validation suites (25 benchmark scripts)
 
 **Development**:
 - **ARCHITECTURE.md**: System design principles
@@ -1533,6 +1535,8 @@ When adding to grammar documentation:
 - **Grammar-Energy Landscape**: [examples/38_grammar_energy_landscape.py](examples/38_grammar_energy_landscape.py) (Lyapunov refinement)
 - **Nodal Equation Decomposition**: [examples/39_nodal_equation_decomposition.py](examples/39_nodal_equation_decomposition.py) (Dual-lever, Φ_s linear response)
 - **Arithmetic Number Theory**: [examples/40_arithmetic_number_theory.py](examples/40_arithmetic_number_theory.py) (Primality, pressure components, coherence landscape)
+- **TNFR-Navier–Stokes (Taylor–Green)**: [examples/77_navier_stokes_taylor_green_demo.py](examples/77_navier_stokes_taylor_green_demo.py) (3D vortex, K_φ cascade pre-registration N12–N13)
+- **REMESH-∞ Residue Split**: [examples/77_remesh_infinity_residue_split_demo.py](examples/77_remesh_infinity_residue_split_demo.py) (smooth/oscillatory split, N15 structural identification)
 - **Production Validation**: [tests/](tests/) (comprehensive test suite)
 
 ---
