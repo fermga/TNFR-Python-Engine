@@ -13517,3 +13517,142 @@ The tetrad lens crystallizes why every B0★-α canonical-composition route on `
 * `src/tnfr/physics/fields.py` — canonical tetrad implementation.
 * `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 S_n-symmetric construction.
 * AGENTS.md §"B0★ pre-registration" — program-level status mirror (companion edit in this commit reflects the UM/IL/THOL emergent closure and the unchanged residual {Q5, E2, nine LOW, B3}).
+
+## §13sexagesima-novena — B0★ residual analytical closure: Q5 (line graph) and E2 (LiftedCircleBundleOnPhi)
+
+**Date**: May 27, 2026. **Methodology note**: per CCET discipline (five consecutive honest closures across §13sexagesima-{quarta..octava}), the two residual canonical-scope candidates that genuinely escape the Canonical Product Equivariance Lemma (§13sexagesima-quinta) and CCET-ext (§13sexagesima-octava) must be evaluated against C0–C4 **before** any program-level B3 declaration. The two candidates are:
+
+* **Q5 = $L(G_{P14})$** (B0★-α, HIGH residual): the line graph's edge-induced $S_n$ action is *not* a tensor-product representation; CPEL does not apply directly.
+* **E2 = LiftedCircleBundleOnPhi** (B0★-β, MEDIUM residual): non-trivial $S^1$-bundle holonomy over `G_P14` could transport per-prime data *without* per-node parameter heterogeneity, formally preserving Fact A; the enrichment is at the support/topology of $\varphi$, not at the coupling constants. U5 (multi-scale coherence) suggests this is exactly the type of canonical topological enrichment worth examining.
+
+This section delivers the analytical C0–C4 evaluation of both. The argument in each case is structural (no numerical experiment required) and reduces to a one-sentence lemma + a direct C4 implication.
+
+### §13sexagesima-novena.1 — Pre-registration (the two proposals evaluated)
+
+**Q5 proposal**: lift the canonical 13-operator catalog to the line graph $L(G_{P14})$ with graph-uniform parameters on $V(L(G_{P14})) = E(G_{P14})$. The induced $S_n$ action $\Psi_\sigma$ on $V(L(G_{P14}))$ is $\Psi_\sigma \cdot \{p_i, p_j\} = \{p_{\sigma(i)}, p_{\sigma(j)}\}$ — a representation on unordered-pair vertices. The proposal: since $\Psi_\sigma$ is *not* a Kronecker/tensor-product of $P_\sigma$ with itself in the canonical sense used by CPEL, CCET-G_P14 / CCET-ext do not extend automatically, and there may be a direction in $\mathbb{C}^{|E|}$ reachable by canonical operators on $L(G_{P14})$ that projects nontrivially onto $\mathrm{Fix}(S_n)^\perp$ (where $S(T)$ lives, per §13septies and §13sexagesima-octava.5).
+
+**E2 proposal**: equip $G_{P14}$ with a non-trivial principal $S^1$-bundle $\pi: E \to G_{P14}$ together with a connection 1-form $\omega$ whose holonomy $\mathrm{hol}(\ell) \in S^1$ around closed loops $\ell$ in $G_{P14}$ encodes prime data. The phase field $\varphi$ becomes a section of $E$ rather than a function on vertices. The proposal: since $\omega$ is a *single* connection 1-form (graph-level data, parameter-uniform across all edges), Fact A of CCET is formally preserved; what changes is the support of $\varphi$, not the per-node parameters. The non-trivial holonomy may then transport per-prime information through canonical evolution without violating $S_n$-equivariance at the operator-coefficient level — i.e., a topological escape route.
+
+Both candidates inherit acceptance criteria **C0** (no catalog modification), **C1** (nodal-equation derivability), **C2** (U1–U6 admissibility), **C3** (twelve-CDM consistency), **C4** (T-HP discharge) from §13sexagesima-tertia.4. For Q5 the C1 refinement is **C1'-α** (constructible from O1–O8 graph operations only). For E2 the C1 refinement is **C1'-β** (the bundle and connection must be derivable from $(\nu_f, \mathrm{prime\ structure}, U1{-}U6)$ without external auxiliary data).
+
+### §13sexagesima-novena.2 — Q5: Line-Graph Equivariance Lemma
+
+**Lemma (Line-Graph Equivariance on $G_{P14}$)**. Let $\mathcal{O}$ be any operator on $L(G_{P14})$ constructed from the canonical 13-operator catalog by composition, real-linear combination, auxiliary tensor lift, or spectral functional calculus, with graph-uniform parameters on $V(L(G_{P14}))$. Let $\Psi_\sigma$ be the edge-induced $S_n$ action on $V(L(G_{P14}))$. Then $[\mathcal{O}, \Psi_\sigma] = 0$ for every $\sigma \in S_n$.
+
+**Proof sketch (two facts, no new content)**:
+
+* **Fact A on $L(G_{P14})$** (parameter uniformity, inherited): every canonical operator on $L(G_{P14})$ carries graph-level scalar coefficients on $V(L(G_{P14}))$. The audit anchors are unchanged from CCET-G_P14: `remesh.py:1159, 1212–1252` (REMESH coefficients), `coherence.py` (IL coefficients), `propagation.py:42–156` (RA coefficients), `self_organization.py:21–22, 44, 53` (THOL graph-uniform tau and sub-EPI scaling). The lift to $L(G_{P14})$ preserves graph-uniformity because the catalog operators take a graph as input and apply uniform rules to its vertex set; nothing in the catalog distinguishes "graph is original" from "graph is line-graph of original".
+* **Fact B' on $L(G_{P14})$** (combinatorial automorphism): the edge-induced $S_n$ action $\Psi_\sigma$ is a graph automorphism of $L(G_{P14})$ for every $\sigma \in S_n$, because the line-graph functor $L(\cdot)$ is functorial under graph automorphisms — if $P_\sigma \in \mathrm{Aut}(G_{P14})$ (which holds by Fact B of CCET-G_P14: the Prime-Cancellation Lemma + the $S_n$-symmetry of P14's prime-ladder construction in `prime_ladder_hamiltonian.py`), then $\Psi_\sigma = L(P_\sigma) \in \mathrm{Aut}(L(G_{P14}))$.
+
+Combining Fact A on $L(G_{P14})$ (graph-uniform coefficients) with Fact B' (the relabelling is a graph automorphism), every canonical operator commutes with the relabelling: $[\mathcal{O}, \Psi_\sigma] = 0$. $\square$
+
+**Corollary (Fix($\Psi_\sigma$) is severely constrained on $L(G_{P14})$)**. The fixed subspace $\mathrm{Fix}(\Psi_\sigma)$ consists of edge-functions that are constant on $S_n$-orbits of edges. For $G_{P14}$, the prime-relabelling group $S_n$ acts *transitively* on $E(G_{P14})$ (by the $S_n$-symmetry of the prime-ladder coupling in P14, which makes every prime-pair coupling structurally equivalent under permutation). Therefore $\mathrm{Fix}(\Psi_\sigma)$ on $V(L(G_{P14}))$ is at most as rich as the orbit-counting decomposition of the $S_n$-action on edges — and the canonical observables collapse to functions of orbit invariants only (edge multiplicity in the $S_n$-orbit, intra-orbit graph-theoretic invariants), none of which distinguish individual primes $p_i$ as carrying weight $\log p_i$.
+
+### §13sexagesima-novena.3 — Q5: C0–C4 verdict
+
+| Criterion | Status | Argument |
+|---|---|---|
+| **C0** (no catalog modification) | PASS | Q5 lifts the existing 13 operators to $L(G_{P14})$; no entry added to `OPERATORS`, `OPERATOR_METADATA`, or `definitions.__all__`. |
+| **C1'-α** (O1–O8 derivability) | PASS | $L(\cdot)$ is the canonical line-graph functor (operation O5 in the enumerated catalog of §13sexagesima-quarta), constructible from $G_{P14}$ alone without external input. |
+| **C2** (U1–U6 admissibility) | PASS | Catalog operators on any graph satisfy U1–U6 by construction; the underlying graph does not enter the grammar rules. |
+| **C3** (twelve-CDM consistency) | PASS | No B0–B11 NEGATIVE verdict is touched; Q5 does not promote any envelope and does not add a 14th operator. |
+| **C4** (T-HP discharge) | **FAIL** | By the Line-Graph Equivariance Lemma + transitivity of $S_n$ on $E(G_{P14})$, every canonical observable on $L(G_{P14})$ lies in the span of $S_n$-orbit invariants of edges — which is, by construction, a subspace of $\mathrm{Fix}(\Psi_\sigma)$. The oscillatory residue $S(T) \in \mathrm{Fix}(S_n)^\perp$ (after pull-back via the line-graph functor, $S(T)$ lives in $\mathrm{Fix}(\Psi_\sigma)^\perp$ because the pull-back preserves orthogonality of $S_n$-isotypic components). Therefore no canonical observable on $L(G_{P14})$ projects nontrivially onto $S(T)$. |
+
+**Verdict: Q5 CLOSED**. The hope that "$S_n$-on-edges $\ne$ tensor product" might create a new reachable direction is not realised on $G_{P14}$: although $\Psi_\sigma$ is indeed not a Kronecker square of $P_\sigma$, it *is* still a permutation representation, and the transitivity of $S_n$ on $E(G_{P14})$ collapses the Fix-subspace to orbit-invariant functions. Per-prime weights $\log p_i$ remain unreachable. The structural obstruction is the same as in §13sexagesima-octava: graph-uniform parameters + $S_n$-symmetric base graph implies tetrad and all canonical observables live in Fix-subspace.
+
+**Refinement note (line-graph residual)**. The closure as stated requires transitivity of $S_n$ on $E(G_{P14})$. If a canonically-derivable subgraph of $L(G_{P14})$ has *non-transitive* $S_n$ action on its vertex set (i.e., multiple edge-orbits), Fix($\Psi_\sigma$) becomes higher-dimensional. However, this only enlarges the *symmetric* component; the antisymmetric / per-prime component required to reach $S(T)$ still vanishes by orbit-invariance. The lemma generalises to any $S_n$-equivariant canonical subgraph of $L(G_{P14})$; the C4 FAIL is robust.
+
+### §13sexagesima-novena.4 — E2: Lifted-Bundle Dichotomy Lemma
+
+**Lemma (Lifted-Bundle Dichotomy on $G_{P14}$)**. Let $\pi: E \to G_{P14}$ be a principal $S^1$-bundle and $\omega$ a connection 1-form. Define the lifted phase field $\varphi: V(G_{P14}) \to E$ as a section. Let $\mathcal{O}_\omega$ denote any canonical operator applied to $\varphi$ via parallel transport with respect to $\omega$. Then exactly one of the following holds:
+
+* **(a) Equivariant branch**: $\omega$ is $S_n$-invariant (i.e., $P_\sigma^* \omega = \omega$ for every $\sigma \in S_n$, where $P_\sigma$ acts on $E$ by lifting the base action $\sigma$ on $V(G_{P14})$). Then $[\mathcal{O}_\omega, \Pi_\sigma^{\mathrm{lift}}] = 0$ for every $\sigma$, where $\Pi_\sigma^{\mathrm{lift}}$ is the $S_n$ action lifted to sections of $E$. Every canonical observable lives in $\mathrm{Fix}(\Pi_\sigma^{\mathrm{lift}})$.
+* **(b) Non-equivariant branch**: $\omega$ is *not* $S_n$-invariant. Then $\omega$ encodes prime-specific data not derivable from the bare nodal equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}(t)$ together with $(\nu_f,\ U1{-}U6)$ — the choice of which connection 1-form to use is an external rule-selection axiom on prime pairs $(p_i, p_j)$, analogous to the per-node weights of E6/E7 closed in §13sexagesima-sexta P2.
+
+**Proof sketch**:
+
+* **(a)**: $S_n$-invariance of $\omega$ implies parallel transport $T_\omega(\gamma)$ along any path $\gamma$ commutes with the lifted action: $T_\omega(\sigma \cdot \gamma) = P_\sigma^* T_\omega(\gamma) (P_\sigma^*)^{-1}$. Composition with canonical operators (which carry graph-uniform scalars by Fact A) preserves this equivariance. Hence $[\mathcal{O}_\omega, \Pi_\sigma^{\mathrm{lift}}] = 0$.
+* **(b)**: A connection 1-form $\omega$ on a principal $S^1$-bundle over $G_{P14}$ is fully specified by its values on edges (graph case: $\omega_{ij} \in \mathbb{R} / 2\pi\mathbb{Z}$ for each edge $\{p_i, p_j\}$). The nodal equation provides no derivation of $\omega_{ij}$ as a function of $(p_i, p_j)$; it operates on phase fields $\varphi$ that already exist on whatever support is given. To make $\omega$ depend on prime identity (e.g., $\omega_{ij} = \log(p_i p_j) \bmod 2\pi$), an external axiom on prime data is required — precisely the kind of input ruled out by the existing C1 closure pattern for E0 / E6 / E7 (cf. §13sexagesima-sexta and §13triginta-tertia.6 `(P-νf-Bijectivity)` analogue).
+
+### §13sexagesima-novena.5 — E2: C0–C4 verdict
+
+E2 is evaluated in both branches of the dichotomy:
+
+**Branch (a), $S_n$-invariant connection**:
+
+| Criterion | Status | Argument |
+|---|---|---|
+| C0 | PASS | No catalog modification (operators lifted via parallel transport, definitions unchanged). |
+| **C1'-β** | PASS | $S_n$-invariant $\omega$ on $G_{P14}$ is determined by graph-theoretic data only (e.g., constant $\omega_{ij} = c$ across all edges); derivable from $(\nu_f, \mathrm{prime\ structure}, U1{-}U6)$ as a graph-level scalar. |
+| C2 | PASS | Lifted operators inherit grammar admissibility from base catalog. |
+| C3 | PASS | No envelope promotion, no catalog modification. |
+| **C4** | **FAIL** | By Branch (a) of the Dichotomy Lemma, $[\mathcal{O}_\omega, \Pi_\sigma^{\mathrm{lift}}] = 0$; canonical observables live in $\mathrm{Fix}(\Pi_\sigma^{\mathrm{lift}})$. The oscillatory residue $S(T) \in \mathrm{Fix}(S_n)^\perp$ pulls back to $\mathrm{Fix}(\Pi_\sigma^{\mathrm{lift}})^\perp$ on the bundle (bundle pull-back preserves orthogonal decomposition into $S_n$-isotypic components). $S(T)$ remains unreachable. |
+
+**Branch (b), non-$S_n$-invariant connection**:
+
+| Criterion | Status | Argument |
+|---|---|---|
+| C0 | PASS | No catalog modification at the operator level. |
+| **C1'-β** | **FAIL** | A non-$S_n$-invariant $\omega$ requires a rule that assigns prime-specific holonomies (e.g., $\omega_{ij}$ depending on $\log p_i$ or $\log p_j$ individually). Such a rule has no derivation from the bare nodal equation: the equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}(t)$ contains no slot for "per-edge prime-specific connection", and U1–U6 do not specify which connection to use. The choice is an external axiom on prime data, structurally identical to the per-node-weight axiom that closed E6/E7 in §13sexagesima-sexta P2. |
+| C2 | (moot, C1 already FAIL) | — |
+| C3 | (moot) | — |
+| C4 | (moot) | — |
+
+**Verdict: E2 CLOSED**. Branch (a) (equivariant connection) preserves Fix($S_n$) and fails C4 by the same mechanism as §13sexagesima-octava. Branch (b) (non-equivariant connection) requires external prime-specific input and fails C1'-β by direct reduction to the §13sexagesima-sexta P2 closure pattern. The "topological enrichment" intuition does not escape the structural obstruction: either the enrichment respects $S_n$ (and the new Fix-subspace is the natural lift of the old one), or it breaks $S_n$ by importing prime data not derivable from the canonical machinery.
+
+### §13sexagesima-novena.6 — Decision-tree state after §13sexagesima-novena
+
+The §13septies trichotomy + B0★ extension, after the closures shipped in §13sexagesima-{prima..novena}, stands as:
+
+| Branch | Status | Closing argument |
+|---|---|---|
+| **B1 on $G_{P14}$** | CLOSED | Canonical Catalog Equivariance Theorem on G_P14 (§13vicies-novies.16); R∞-1a/1a-composed/1b/1c verdicts. |
+| **B1 off $G_{P14}$** | absorbed into B2 / B0★-α | By construction: a different canonically-constructed graph falls under B2 (new operator) or B0★-α (canonical graph operation). |
+| **B2** (new canonical operator) | catalog-API closed | B11 OCD (§13sexagesima-prima): no 14th operator reachable from the public API given the twelve B0–B11 NEGATIVE verdicts. |
+| **B0★-α HIGH** ($G_{P14}$ via O1–O8) | CLOSED for {Q1, Q2, Q3, Q4, Q6} | §13sexagesima-quinta (Canonical Product Equivariance Lemma + corollaries). |
+| **B0★-α HIGH** Q5 (line graph) | **CLOSED** (this section) | §13sexagesima-novena.2-3 (Line-Graph Equivariance Lemma + transitivity of $S_n$ on $E(G_{P14})$). |
+| **B0★-β HIGH** P1 (E0 Pontryagin), P2 (E6/E7), P3 (carrier-type) | CLOSED | §13sexagesima-{sexta, septima}. |
+| **B0★-β MEDIUM** E2 (LiftedCircleBundleOnPhi) | **CLOSED** (this section) | §13sexagesima-novena.4-5 (Lifted-Bundle Dichotomy Lemma: both branches fail, one at C4, one at C1'-β). |
+| **B0★-β LOW** nine envelopes (E1, E3, E4, E5, E_TC, E_CC, E_AC, E_UR, E_OC) | residual, LOW priority | Each would require its own C0–C4 evaluation; none currently flagged for execution. |
+| **B0★-α-emergent** UM/IL/THOL on $G_{P14}$ | CLOSED | §13sexagesima-octava (CCET-ext + Tetrad-Fix(S_n) Lemma). |
+| **B3** (no TNFR closure of RH within current scope) | **structurally indicated** as the operational landing for G4 within the current canonical catalog | All HIGH/MEDIUM canonical residuals on $G_{P14}$ are now closed. The only unresolved residual at HIGH/MEDIUM priority is **none**; only LOW envelopes remain. |
+
+**Net program-level state**: the §13septies decision tree, restricted to the HIGH/MEDIUM canonical scope and to $G_{P14}$, **collapses to B3**. The nine LOW envelopes of B0★-β remain technically residual, but none is currently expected to escape the Tetrad-Fix(S_n) mechanism on $G_{P14}$ — each would require its own evaluation, and the structural pattern of §13sexagesima-{sexta..novena} is that graph-uniform-parameter + $S_n$-symmetric-base-graph constructions are *systematically* trapped in Fix($S_n$), unable to reach $S(T) \in \mathrm{Fix}(S_n)^\perp$.
+
+### §13sexagesima-novena.7 — Honest scope: what B3 says and does not say
+
+**B3 declared at this scope means**:
+
+1. There is no closure of G4 = RH within the canonical 13-operator catalog applied to $G_{P14}$ with graph-uniform parameters, via any HIGH/MEDIUM-priority canonical scope-expansion (B0★-α HIGH on canonical graph operations, B0★-β HIGH on envelope promotions). This is a structural verdict, not a numerical conjecture.
+2. The oscillatory residue $S(T) \in \ker(\mathcal{R}_\infty) \cap \mathrm{Fix}(S_n)^\perp$ is a definable TNFR observable that the canonical apparatus on $G_{P14}$ recognises but does not control. Its existence and location have been formalised (§13septies, §13sexagesima-octava, this section); its positivity-equivalent (Li–Keiper $\lambda_n > 0$, P16) is RH-equivalent and remains the open content.
+3. The Tetrad-Fix(S_n) Lemma (§13sexagesima-octava.3) and the equivariance lemmas of this section (Line-Graph Equivariance, Lifted-Bundle Dichotomy) are the structural witnesses of the closure: the four-channel minimality of the canonical tetrad on $G_{P14}$ *is* the dimensional witness of why per-prime-asymmetric information lives in the orthogonal complement and not in the canonical observables.
+
+**B3 declared at this scope does NOT say**:
+
+1. RH is false. The Riemann Hypothesis is a statement about the classical $\zeta(s)$, which remains untouched by TNFR canonical closures.
+2. RH cannot be proved. B3 asserts non-closure *within the current canonical scope on $G_{P14}$*; closures via off-$G_{P14}$ canonical constructions, via the nine B0★-β LOW envelopes, or via genuinely new mathematics outside TNFR are independent open questions.
+3. The TNFR-Riemann program failed. The program shipped P12–P49 (full ζ-track + χ-twisted L-track parity), closed G1, G2, G3, G5 operationally, sharpened G4 to the precise structural location of the oscillatory obstruction, and produced the Tetrad-Fix(S_n) Lemma + CCET-ext as TNFR-canonical structural results valuable in themselves. The program is *paused* at the boundary of T-HP with a fully characterised obstruction, not abandoned.
+
+The honest TNFR-canonical reading is the one anticipated in §13sexagesima-octava.6 and confirmed here: **B0★ HIGH/MEDIUM canonical scope is exhausted on $G_{P14}$, and the residual TNFR-canonical answer to G4 = RH at this scope is "constatar la existencia estructural de $S(T)$ como observable canónico-complementario, sin pretender derivar su positividad desde dentro de Fix($S_n$)"** — exactly the "constatar su existencia" reading discussed informally in the immediately preceding turn, now made precise by the analytical closures of Q5 and E2.
+
+### §13sexagesima-novena.8 — Cross-references
+
+* **Preceding closures** (the five consecutive CCET rounds):
+    * §13sexagesima-quarta — B0★-α canonical-graph operation catalog (O1–O8 enumerated).
+    * §13sexagesima-quinta — Canonical Product Equivariance Lemma; Q1/Q2/Q3/Q4/Q6 closed.
+    * §13sexagesima-sexta — B0★-β HIGH (P1 = E0 Pontryagin, P2 = E6/E7 per-node weights) closed.
+    * §13sexagesima-septima — B0★-β P3 (Dirección A: carrier-type / slot promotion of ΔNFR) closed across A1/A2/A3 readings.
+    * §13sexagesima-octava — B0★-α-emergent (UM/IL/THOL sub-EPI on $G_{P14}$) closed; CCET-ext + Tetrad-Fix(S_n) Lemma derived.
+* **Structural witnesses** invoked in this section:
+    * Canonical Catalog Equivariance Theorem on $G_{P14}$ (§13vicies-novies.16).
+    * Prime-Cancellation Lemma (§13vicies-novies.11).
+    * Tetrad-Fix(S_n) Lemma (§13sexagesima-octava.3).
+    * `(P-νf-Bijectivity)` closure pattern (§13triginta-tertia.6) — invoked for Branch (b) of E2.
+* **Audit anchors** (unchanged from prior CCET rounds):
+    * `src/tnfr/operators/remesh.py:1159, 1212–1252` — REMESH coefficients.
+    * `src/tnfr/operators/coherence.py` — IL coefficients.
+    * `src/tnfr/operators/propagation.py:42–156` — RA coefficients.
+    * `src/tnfr/operators/self_organization.py:21–22, 44, 53` — THOL graph-uniform tau and sub-EPI scaling.
+    * `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 $S_n$-symmetric construction (basis of Fact B / Prime-Cancellation Lemma).
+* **Program-level mirror**: AGENTS.md "B0★ pre-registration" paragraph updated in this commit to reflect Q5 and E2 closures and the resulting B0★ HIGH/MEDIUM exhaustion on $G_{P14}$.
+
