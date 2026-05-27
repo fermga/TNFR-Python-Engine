@@ -13024,3 +13024,99 @@ The decision pressure that §13vicies-novies.16's "Net consequence for the progr
 * `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` — full B0–B11 programme.
 * AGENTS.md §"Program Status (May 2026, frozen)" and §"B1 sub-route status" — program-level status mirrors (to be updated in companion edit if B0★ is promoted from pre-registration to active investigation).
 
+
+## §13sexagesima-quarta. Branch B0★-α — Deeper Exploitation of the Existing 13 Operators on Canonically-Constructed Graphs ≠ G_P14 (Pre-registration; Does NOT advance G4 = RH)
+
+**Status**: PRE-REGISTERED, OPEN (May 2026). Specialisation of §13sexagesima-tertia at the *graph* axis.
+
+### §13sexagesima-quarta.1 Motivation
+
+§13sexagesima-tertia formalised B0★ as the fourth branch of the §13septies trichotomy: scope-expansion of the existing TNFR theory **without adding any operator**. B0★ split into two sub-branches: α (deeper exploitation of the existing 13 operators on canonical graphs other than G_P14) and β (canonicity-promotion of one of the twelve research envelopes E0..E_OC).
+
+This section pre-registers B0★-α.
+
+B0★-α scope: keep `OPERATORS` intact, keep `OPERATOR_METADATA` intact, keep `definitions.__all__` intact, keep the nodal equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$ intact, keep U1–U6 intact, AND keep all twelve B0–B11 NEGATIVE verdicts. Vary only the *graph* on which the canonical compositions act.
+
+Structural rationale: the §13vicies-novies Canonical Catalog Equivariance Theorem (CCET) closure of B1 is **specific to G_P14**. Its proof reduces to two source-auditable facts: (A) parameter uniformity (every canonical operator's coupling constants are graph-level scalars) and (B) on G_P14 every edge-propagating canonical operator decomposes as $I_{n_{\mathrm{primes}}} \otimes O_{P_4}$ with prime-independent four-dimensional kernel (Prime-Cancellation Lemma). On a *different* canonically-derivable graph the analogue of Fact B in general fails — the kernel decomposition depends on the graph's symmetry group, and a graph whose automorphism group is not $S_n$ (or whose $S_n$-action admits non-trivial antisymmetric invariant subspaces) can carry canonical operator spectra that G_P14 forbids by symmetry.
+
+### §13sexagesima-quarta.2 Catalog of canonically-derivable graph constructions
+
+Elementary categorical operations on graphs that require no envelope promotion (each is a functor in the category of graphs and is definable purely from $(\nu_f, \mathrm{prime\ structure}, U1{-}U6)$):
+
+| ID | Operation | Definition | Symmetry implication |
+|---|---|---|---|
+| O1 | Disjoint union $G \sqcup G'$ | $V(G) \cup V(G')$, $E(G) \cup E(G')$ | $\mathrm{Aut}(G) \times \mathrm{Aut}(G')$ |
+| O2 | Cartesian product $G \square G'$ | $V(G) \times V(G')$, edges where one coord equals and other differs by an edge | Product (diagonal if $G = G'$) |
+| O3 | Tensor product $G \times G'$ | $V(G) \times V(G')$, edges where both coords differ by edges | Product (diagonal if $G = G'$) |
+| O4 | Strong product $G \boxtimes G'$ | Union of O2 ∪ O3 edges | Product (diagonal if $G = G'$) |
+| O5 | Line graph $L(G)$ | Nodes are edges of $G$; edges where two edges share a vertex | Induced action of $\mathrm{Aut}(G)$ |
+| O6 | Subdivision $S_k(G)$ | Replace each edge by a path of length $k+1$ | $\mathrm{Aut}(G)$ |
+| O7 | Induced subgraph $G[V']$ | Restrict to $V' \subseteq V(G)$ | Setwise stabiliser of $V'$ |
+| O8 | Quotient $G/\sim$ | Identify nodes by an equivalence relation derivable from canonical data | Quotient automorphism group |
+
+C1'-α is the requirement that a B0★-α candidate graph be reachable from G_P14 (or from the prime-ladder $G_{PL}$ used by P12–P16) by a finite composition of O1–O8 alone.
+
+### §13sexagesima-quarta.3 Already-shipped constructions (B0★-α surface that is NOT new)
+
+| Construction | Operation chain | Status |
+|---|---|---|
+| Prime-ladder $G_{PL}$ (P12–P16) | O7 induced subgraph on $\{p^k : p \in \mathbb{P}, 1 \le k \le K\}$ of the integer line | ✅ shipped; smooth half of T-HP closed operationally by P28 + P30 |
+| REMESH-lifted slot graph $G_{\mathrm{slot}}$ (R∞-1b, §13vicies-novies.15) | Auxiliary tensor lift $G_{P14} \otimes I_{\tau_g + 1}$ | ✅ executed; refuted (`INDETERMINATE_DEGENERATE_CONSTRUCTION`) |
+| χ-twisted ladder $G_{PL}^\chi$ (P32–P49) | Edge-weight twist of $G_{PL}$ by primitive real Dirichlet character | ✅ shipped; GRH$_\chi$ residual is the twin of G4 |
+| R∞-1c augmented edge graph (§13vicies-novies.13) | $G_{P14}$ + canonically-symmetric inter-prime edges | ✅ executed; refuted by augmented-graph specialisation of Euler-Orthogonality Lemma |
+
+Note on χ-twisting: the $\chi$-twist is canonical because $\chi$ is a *character* on $(\mathbb{Z}/q)^\times$ — i.e. an arithmetic datum of the prime structure itself, not an operator and not an envelope. It enters the B0★-α surface as a canonical edge-weight, not as a new operator.
+
+### §13sexagesima-quarta.4 New B0★-α candidates (not yet investigated)
+
+| Candidate | Construction | Symmetry break vs G_P14 | Priority | Structural motivation |
+|---|---|---|---|---|
+| **Q1** | $G_{P14} \square G_{P14}$ (O2) | Diagonal $S_n$ admits non-trivial antisymmetric invariant subspace on $V \otimes V$ | **HIGH** | Pair $(p_i, p_j)$ structure is precisely the data of Montgomery's pair-correlation conjecture (RH-equivalent); anti-diagonal subspace under diagonal $S_n$ carries asymmetric spectral content that G_P14 forbids by Prime-Cancellation Lemma |
+| **Q2** | $G_{P14} \times G_{P14}$ (O3) | Same as Q1 | **HIGH** | Same target as Q1 but with parallel-evolution connectivity instead of single-coord moves; distinguishes correlation-channel from parallel-channel contributions to the antisymmetric spectrum |
+| **Q3** | $L(G_{P14})$ (O5) | Induced $S_n$ on prime-adjacent edges; no qualitative break | LOW | $G_{P14}$ is a path so $L(G_{P14})$ is a shorter path; topology too close to G_P14 to escape CCET-style equivariance |
+| **Q4** | $S_2(G_{P14})$ (O6) | Adds edge-labelled intermediate nodes; $S_n$ preserved | LOW | Adds capacity slots without breaking $S_n$-equivariance; expected CCET-equivalent to G_P14 under canonical fold |
+| **Q5** | $G_{PL} \square G_{PL}$ (O2) | Diagonal product symmetry on prime-ladder | MEDIUM | Higher-rank version of Q1 coupling prime label with prime-power exponent; combinatorially richer but closer to existing P14/P16 attack surface |
+| **Q6** | $G_{P14}[V_{\le N}]$ (O7) | Same $S_N$, smaller orbit | LOW | Already implicit in $k \to \infty$ regime of P14/P16; no new content |
+
+The HIGH-priority candidates Q1 and Q2 are the natural B0★-α entry points because: (i) pair-correlation is RH-equivalent on the ζ-side (Montgomery 1973, conjecture verified asymptotically by Rudnick–Sarnak under GUE-like assumptions); (ii) the anti-diagonal subspace under diagonal $S_n$ is the smallest symmetry-broken invariant subspace reachable from G_P14 by a single canonical product; (iii) the construction is purely combinatorial — no envelope, no character, no new parameter, no new operator. The Q5 (prime-ladder square) extension is a natural second move once Q1/Q2 diagnostics are available.
+
+### §13sexagesima-quarta.5 What B0★-α does NOT claim
+
+* Does NOT modify `OPERATORS`, `OPERATOR_METADATA`, `definitions.__all__`, the nodal equation, or U1–U6 (honours §13sexagesima-secunda).
+* Does NOT re-open any of the twelve B0–B11 Phase c NEGATIVE verdicts (envelopes E0..E_OC remain research-only at the operator-contract level; B0★-α modifies the *graph*, not the operator catalog).
+* Does NOT claim that any specific construction in §.4 will close G4 = RH; the section is a pre-registered enumeration, not a result.
+* Does NOT execute the Q1, Q2, Q5 diagnostic in this commit. Per-candidate diagnostics deferred to subsequent commits.
+* Does NOT add a 14th operator (B2 remains catalog-API-closed by §13sexagesima-prima).
+* Does NOT promote any envelope (B0★-β remains pre-registered separately in §13sexagesima-tertia.3).
+
+### §13sexagesima-quarta.6 Acceptance criteria (specialisation of C0–C4 to B0★-α)
+
+A B0★-α candidate $Q_k$ is admissible iff:
+
+* **C0** (unchanged): no entry added to `OPERATORS`, `OPERATOR_METADATA`, or `definitions.__all__`;
+* **C1'-α** (canonical-construction derivation): $Q_k$ is built from $G_{P14}$ and/or $G_{PL}$ by a finite composition of the eight categorical operations O1–O8 of §.2, using no input external to $(\nu_f, \mathrm{prime\ structure}, U1{-}U6)$;
+* **C2** (unchanged): U1–U6 admissibility lifts to $Q_k$ via the natural functorial action of canonical operators on the product/quotient/induced construction (continuity equation $\partial \rho / \partial t + \mathrm{div}\,\mathbf{J} = S_{\mathrm{grammar}} \to 0$ preserved);
+* **C3** (unchanged): no envelope $E_k$ is promoted; no forcing axiom F1–F10 is added at any of the twelve type-hygiene surfaces;
+* **C4** (unchanged): the resulting Hamiltonian on $Q_k$ discharges the T-HP statement, i.e. its spectrum, after applying a smooth admissible rescaling derivable from canonical means, reproduces $\{\gamma_n\}$ (the imaginary parts of the non-trivial Riemann zeros).
+
+### §13sexagesima-quarta.7 Reduced §13septies decision space (after B0★-α pre-registration)
+
+With B0★-α now formally enumerated as a discrete set of candidates {Q1, Q2, Q5, …}, the §13septies decision pressure refines to:
+
+* **B1**: closed on G_P14 (CCET, §13vicies-novies.16). Off-G_P14 channels reachable by O1–O8 fall under **B0★-α** (this section); off-G_P14 channels NOT reachable by O1–O8 fall under B2.
+* **B2**: catalog-API-closed by §13sexagesima-prima (B11 OCD NEGATIVE; no 14th operator reachable from the public API).
+* **B0★-α** (this section): pre-registered, OPEN. Priority candidates Q1, Q2 (Cartesian and tensor squares of G_P14), Q5 (prime-ladder square).
+* **B0★-β** (§13sexagesima-tertia.3): pre-registered, OPEN. Priority candidates P1 ($E_0$ Pontryagin-dual measure on $\nu_f$), P2 ($E_6$ per-node coupling weights).
+* **B3**: residual permitted verdict (no TNFR closure exists).
+
+### §13sexagesima-quarta.8 Cross-references
+
+* §13septies — original trichotomy {B1, B2, B3}.
+* §13vicies-novies.16 — Canonical Catalog Equivariance Theorem on G_P14 (closes B1 on G_P14; bounds CCET's domain to G_P14).
+* §13sexagesima-prima — B11 OCD Phase c NEGATIVE (catalog-API closure of B2).
+* §13sexagesima-secunda — Composite Catalog-Closure Theorem.
+* §13sexagesima-tertia — B0★ overall pre-registration; this section specialises sub-branch α.
+* §8 (P12), §10 (P14), §13terdecies (P34) — already-shipped constructions on $G_{PL}$ and $G_{PL}^\chi$.
+* `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` — twelve B0–B11 NEGATIVE verdicts.
+* AGENTS.md §"Program Status (May 2026, frozen)" and §"B0★ pre-registration" — program-level status mirrors (to be updated in companion edit when any of Q1, Q2, Q5 is promoted from pre-registration to active investigation).
+
