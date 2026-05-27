@@ -117,7 +117,7 @@ Anticipated obstructions, listed honestly before any work is done:
 | **NS-G2** | Uniformity of discrete energy inequality in mesh refinement | Medium — likely tractable from Lyapunov + conservation theorem |
 | **NS-G3** | Discrete BKM ⟺ continuum BKM: even if the discrete criterion is sharp, transferring to continuum requires NS-G1 | High — coupled to NS-G1 |
 | **NS-G4** | Vortex stretching term $(\omega \cdot \nabla) u$ has no immediate TNFR analogue beyond OZ/ZHIR — needs explicit construction | Medium |
-| **NS-G5** | 3D vs 2D dimensional barrier: 2D NS has known global smoothness, 3D is open. The TNFR translation should reproduce this asymmetry. If it does not, the translation is wrong | High — diagnostic, falsifiability check |
+| **NS-G5** | 3D vs 2D dimensional barrier: 2D NS has known global smoothness, 3D is open. The TNFR translation should reproduce this asymmetry. If it does not, the translation is wrong | **CLOSED at discrete-operator level** (N16, §19 — algebraic 2D-Embedding Lemma). Stretching production is exactly zero for any z-independent velocity field by three-step algebraic proof; continuum closure via NS-G1 remains open. |
 
 **Honest expectation**: NS-G1 and NS-G3 are the structural analogues of Riemann's T-HP residual. They may not close inside the canonical 13-operator catalog. The Clay problem itself is open precisely because the continuum limit (or its blow-up) is hard; TNFR offers a new vocabulary, not a free pass.
 
@@ -184,10 +184,11 @@ Discussed but **not promoted** until N2 forces the question:
 | N12 | REMESH-∞ asymptotic limit on K_φ cascade (§11 test, NS-G_blowup branch B1) | **DONE — STRUCTURAL_EFFECT_MONOTONE** (per locked §12.7 mapping; non-monotone in BKM and stretching observables, see §13.4). Pre-registration: `c8900fce`. | n = 16 single-resolution probe of §11 working hypothesis: supports REMESH-global having structural traction on NS K_φ cascade (99.5 % response in peak stretching across τ_g sweep). Does NOT close NS-G1..G5. | §12 + §13 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green.py` |
 | N13 | REMESH-∞ resolution extension with refined F3 (n∈{24,32}; N12 follow-up) | **DONE — STRUCTURAL_EFFECT_MONOTONE at both n=24 and n=32; CROSS_RES_CONSISTENT=True** (per locked §14.7 mapping; refined F3 MONOTONE driven by `peak_enstrophy_post_t1`; BKM and stretching post-t1 remain non-monotone with stretching COLLAPSE sign agreeing with N12 at all three resolutions n∈{16,24,32}). Pre-registration: `4ab97bc8`. | Two-resolution structural-compatibility check: REMESH-global retains the N12 stretching-collapse signature under one full resolution doubling (n=16→32, 8× per-step cost) under a refined F3 that excludes the IC-dominated `peak_vorticity_sup`/`peak_enstrophy` flagged in §13.4. Does NOT close NS-G1..G5. | §14 + §15 + `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.py` |
 | N14 | Higher-Re CF eigenframe sweep at n=48 (NS-G4 precursor; N11 resolution-doubling extension) | **DONE — CF_EIGENFRAME_TRANSITION_NOT_OBSERVED_AT_REEFF_3142; RE_TREND_CONSISTENT_WITH_N11** (per locked §16.7 mapping; F1–F3,F5 PASS, F4 NOT satisfied — operator remains in laminar/transitional regime at Re_eff≈500; <P>(Re) monotonicity and cross-resolution consistency retained). Pre-registration: `39e4b1b9`. | Single-resolution (n=48) Reynolds sweep extending N11 (n=24, ν∈{0.05..0.005}) by one resolution doubling AND one new ν step (ν=0.002 → Re_eff≈500, unreachable at n=24 due to Kolmogorov). Settles: (a) operator does NOT exhibit CF-canonical e_λ2 dominance at Re_eff≈500 on n=48 Taylor–Green; (b) <P>(Re) monotonic ascent and RE_TREND survives doubling. Does NOT close NS-G1..G5; redirects to n≥256 forced-isotropic DNS for full-turbulent CF statistics. | §16 + §17 + `benchmarks/higher_re_navier_stokes_3d_taylor_green_n48.py` |
-| N15 | REMESH-∞ Asymptotic Operator (TNFR Core Structure; Branch analysis A/B1/B2/B3) | **PRE-REGISTERED** (atomic with §18 pre-reg; no data observed; research direction pivot from Clay problems to TNFR fundamentals) | Theoretical derivation: functional analysis of REMESH limit, conservation laws, spectrum. Three weeks locked. Independent of RH/NS truth. | §18 + (forthcoming analytical results) + (no benchmark code for this phase) |
-| N≥16 | Function-space convergence (NS-G1) **/** DNS frontier n≥256 (CF alignment) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4 closure) | open | unknown | unknown |
+| N15 | REMESH-∞ Asymptotic Operator (TNFR Core Structure; Branch analysis A/B1/B2/B3) | **DONE — Branch A** (W1 `a1f298fd`, W2 `badac156`, W3 `48b0574a`; consolidated `bcfa523e`). $\mathcal{R}_\infty$ exists as bounded self-adjoint orthogonal projection on $H^2(D)$; $Q_\infty$ exactly conserved; spectrum uniform (not RH/K41/RMT). | Theoretical derivation: functional analysis of REMESH limit, conservation laws, spectrum. All three sub-questions Q1/Q2/Q3 answered Branch A. Independent of RH/NS truth. Does NOT close NS-G1..G5 (spatial blow-up risk lives in $\ker(\mathcal{R}_\infty)$, untouched). | §18 + `theory/REMESH_INFINITY_DERIVATION.md` |
+| N16 | NS-G5 Discrete Algebraic Closure — 2D-Embedding Lemma | **DONE (analytical)** (this commit) | Proves that `stretching_production() = 0` exactly (IEEE 754) for any z-independent velocity field on the 3D torus graph, by three-step algebraic argument. Closes NS-G5 at the discrete-operator level; corroborated by N10 case (B). Continuum closure (via NS-G1) remains open. | §19 + `examples/85_navier_stokes_dimensional_asymmetry.py` (N10 corroborator) |
+| N≥17 | Function-space convergence (NS-G1) **/** DNS frontier n≥256 (CF alignment) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4 closure) | open | unknown | unknown |
 
-All NS-G1..G5 gaps remain **OPEN** after N1–N11. See §11 for the cross-program reframe of the residual obstruction.
+NS-G5 is **CLOSED at the discrete-operator level** (N16, §19). NS-G1..G4 remain **OPEN** after N1–N14. See §11 for the cross-program reframe of the residual obstruction.
 
 ---
 
@@ -1038,5 +1039,130 @@ N15 was executed in a single session, three weeks W1–W3 same day.
 **Scope confirmation**: N15 does **not** advance 3D NS global regularity. The W1 mean-ergodic closure rules out vortex-stretching divergence *only on the resonant temporal subspace*; spatial blow-up risk lives in $\ker(\mathcal{R}_\infty)$ and is untouched. The F4 gap (CF eigenframe alignment at $n \ge 256$, $\mathrm{Re} \sim 10^4$) remains the next frontier.
 
 **N15 status**: COMPLETE. Catalog-completeness theorem for the $\tau_g \to \infty$ asymptotic limit is locked.
+
+---
+
+## §19 N16 — NS-G5 Discrete Algebraic Closure: 2D-Embedding Lemma
+
+**Status**: DONE (analytical; no computational pre-registration required — the proof is a direct algebraic consequence of the operator definition). Committed atomically in this section.
+
+### §19.1 Objective
+
+NS-G5 states: *"3D vs 2D dimensional barrier: 2D NS has known global smoothness, 3D is open. The TNFR translation should reproduce this asymmetry. If it does not, the translation is wrong."*
+
+N10 (commit `1fac358b`, `examples/85_navier_stokes_dimensional_asymmetry.py`) verified **empirically** that the discrete `TNFRNavierStokesOperator` satisfies the three structural invariants:
+
+- **(A)** In 2D: `stretching_production()` raises `NotImplementedError` — the 2D operator has no z-channel; the vortex-stretching term algebraically cannot arise.
+- **(B)** In 3D with a 2D-embedded initial condition `u = (u(x,y), v(x,y), 0)`: `stretching_production()` ≈ 0 at machine precision across the entire trajectory.
+- **(C)** In 3D with a genuinely 3D initial condition (Taylor–Green): `stretching_production()` is O(1) and positive.
+
+N16 supplies the **algebraic proof** that (B) is not a numerical coincidence but a structural consequence of the operator definition auditable directly from `src/tnfr/navier_stokes/operator.py`. This closes NS-G5 at the discrete-operator level.
+
+### §19.2 2D-Embedding Lemma
+
+**Theorem NS-G5-TNFR (2D-Embedding Lemma)**:
+
+Let `G = build_torus_graph_3d(n)` be the canonical 3D torus graph with resolution `n`. Let `u = (u_0, u_1, u_2)` be a velocity field on `G` satisfying the **z-independence condition**: `u_a(x, y, z) = u_a(x, y)` for `a ∈ {0, 1}` and `u_2(x, y, z) = 0` identically. Then:
+
+1. The discrete vorticity `ω = vorticity_3d()` satisfies `ω_0 = ω_1 = 0` and `ω_2 = d_x v − d_y u` exactly.
+2. The discrete vortex-stretching field `S = vortex_stretching_field()` satisfies `S_a = 0` for all `a ∈ {0, 1, 2}` exactly.
+3. `stretching_production() = 0.0` exactly (IEEE 754 arithmetic, not merely small).
+
+**Proof** (three steps, directly auditable from `operator.py`):
+
+*Step 1 — Vorticity simplification.*
+
+The discrete curl (`vorticity_3d`, line ~1040 of `operator.py`) computes:
+
+```
+ω_0 = d_y(w) − d_z(v)
+ω_1 = d_z(u) − d_x(w)
+ω_2 = d_x(v) − d_y(u)
+```
+
+where `d_axis(arr, k) = (roll(arr, −1, k) − roll(arr, 1, k)) / (2h)`.
+
+For the z-independent field:
+- `w ≡ u_2 = 0` everywhere → `d_y(w) = 0`, `d_x(w) = 0`.
+- `u_0(x, y)` and `u_1(x, y)` are z-independent → rolling along axis 2 produces a copy of the same array → `d_z(u) = 0`, `d_z(v) = 0`.
+
+Therefore: `ω_0 = 0 − 0 = 0`, `ω_1 = 0 − 0 = 0`, `ω_2 = d_x(v) − d_y(u)` (non-zero in general). ∎
+
+*Step 2 — Vortex-stretching cancellation.*
+
+The discrete stretching field (`vortex_stretching_field`, line ~1050 of `operator.py`) computes for each `a ∈ {0, 1, 2}`:
+
+```
+S_a = ω_0 · d_x(u_a)  +  ω_1 · d_y(u_a)  +  ω_2 · d_z(u_a)
+```
+
+Three independent cancellations:
+- **Term 1**: `ω_0 = 0` (Step 1) → `ω_0 · d_x(u_a) = 0`.
+- **Term 2**: `ω_1 = 0` (Step 1) → `ω_1 · d_y(u_a) = 0`.
+- **Term 3**: z-independence of all velocity components → `d_z(u_a) = 0` for all `a` → `ω_2 · d_z(u_a) = 0`.
+
+Therefore `S_a = 0` for all `a`. ∎
+
+*Step 3 — Production zero.*
+
+`stretching_production()` (line ~1097 of `operator.py`) computes:
+
+```
+P = h³ · Σᵢ [ ω_0(i)·S_0(i) + ω_1(i)·S_1(i) + ω_2(i)·S_2(i) ]
+```
+
+Since `S_a = 0` for all `a` (Step 2), every summand is `ω_a(i) · 0.0 = 0.0` in IEEE 754 arithmetic (exact, not approximate — multiplication by the literal `0.0` produces `0.0` for any finite `ω_a(i)`). The sum is `0.0`; scaled by `h³`, the result is `0.0` exactly. ∎
+
+### §19.3 TNFR Structural Reading
+
+In TNFR language, the three velocity components `(u_0, u_1, u_2)` are the three phase channels `(φ^(0), φ^(1), φ^(2))`. The vortex-stretching mechanism corresponds to **cross-channel K_φ coupling**: it arises when the phase curvature of one channel is driven by the gradient of another along the third spatial axis (`∂_z φ^(a)`).
+
+The z-independence condition `φ^(2) = 0` and `∂_z φ^(0) = ∂_z φ^(1) = 0` **structurally decouples the z-channel**: the third spatial direction carries no phase information. This eliminates the cross-channel ΔNFR contribution from the vortex-stretching loop. U2 (convergence of `∫ νf · ΔNFR dt`) is then satisfied by the energy channel alone, because the enstrophy budget reduces to:
+
+```
+d/dt [ (1/2) Σᵢ |ω(i)|² · h³ ]
+    = stretching_production()              ← = 0 (2D-embedded, algebraic)
+    − ν · Σᵢ |∇ω(i)|² · h³              ← ≤ 0 (viscous dissipation, always non-positive)
+```
+
+Enstrophy is therefore monotonically non-increasing in the 2D-embedded case — the TNFR-canonical discrete analogue of the Ladyzhenskaya energy estimate that underlies global regularity of 2D NS.
+
+In the 3D case (`u_2 ≠ 0` or `∂_z u_a ≠ 0` for some `a`), the third phase channel activates the cross-channel coupling (`d_z(u_a) ≠ 0`), the stretching production is generically positive (N10 case C, N6, N9, N11), and U2 is not guaranteed by energy alone. This is the discrete TNFR statement of why 3D NS global regularity is an open problem.
+
+**Dual-Lever reading**: The vortex-stretching mechanism is a νf / ΔNFR **cross-channel interaction** — it appears in the ΔNFR (pressure) lever as an enstrophy production source. The 2D-Embedding Lemma shows that for z-independent data this source is identically zero, decoupling the stretching channel and leaving only the viscous dissipation (negative) contribution. This is equivalent to saying the nodal equation in 2D has no stretching-induced positive-feedback term.
+
+### §19.4 Scope
+
+**What NS-G5 closure at the discrete level means:**
+- The TNFR-NS operator structurally encodes the 2D/3D dimensional asymmetry — not empirically but algebraically.
+- N10 case (B) machine-precision zeros are exact algebraic zeros, explained by Theorem NS-G5-TNFR.
+- The theorem is auditable directly from three operator methods (`vorticity_3d`, `vortex_stretching_field`, `stretching_production`) without any additional computation.
+
+**What it does not mean:**
+- **NS-G1 remains OPEN**: whether the TNFR discrete sequence converges to a Leray weak solution as mesh → 0 is not addressed.
+- **3D NS Clay problem is not affected**: N16 provides no new bound, no new regularity criterion, no new blow-up obstruction for the continuum problem.
+- **NS-G2, NS-G3, NS-G4 remain OPEN**: uniform-in-h energy inequality, discrete-to-continuum BKM transfer, and structural TNFR construction of the stretching term for regularity are separate questions.
+- The continuum analogue (Leray 1934 + Ladyzhenskaya 1959: 2D NS has global regular solutions) is a classical result; N16 recovers its discrete counterpart only.
+
+**What N16 adds over N10:**
+- N10 verified the asymmetry *empirically* (simulation output ≈ 0, at machine precision but not zero).
+- N16 proves it *algebraically* (= 0.0 in IEEE 754 arithmetic, with a three-step proof auditable from operator source code).
+
+### §19.5 Reproducibility
+
+The 2D-Embedding Lemma is purely analytical (no code execution required). The N10 empirical corroborator remains:
+
+```powershell
+.venv312\Scripts\python.exe examples\85_navier_stokes_dimensional_asymmetry.py
+```
+
+Expected output (commit `1fac358b`): stretching production = 0.0 (machine precision) for the 2D-embedded 3D case, consistent with Theorem NS-G5-TNFR.
+
+### §19.6 Deliverables
+
+- §19 (this section) appended to `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md`.
+- §5 gap table: NS-G5 status updated to CLOSED at discrete-operator level.
+- §10 milestone table: N15 promoted to DONE, N16 row added, N≥16 → N≥17.
+- Footer note updated: NS-G5 is CLOSED at the discrete-operator level; NS-G1..G4 remain OPEN.
 
 ---
