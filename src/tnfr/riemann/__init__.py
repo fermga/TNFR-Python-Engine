@@ -908,6 +908,12 @@ from .urules_consistency_signature import (
     URulesConsistencySignatureCertificate,
     compute_urules_consistency_signature,
 )
+from .operator_catalog_discipline_signature import (
+    # §13sexagesima: Operator-Catalog Discipline Signature diagnostic (B11a)
+    CANONICAL_CATALOG_SIZE,
+    OperatorCatalogDisciplineSignatureCertificate,
+    compute_operator_catalog_discipline_signature,
+)
 from .dirichlet_l import (
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     DirichletCharacter,
@@ -1413,6 +1419,10 @@ __all__ = [
     # §13quinquaginta-octava: U-Rules Consistency Signature (B10a)
     "URulesConsistencySignatureCertificate",
     "compute_urules_consistency_signature",
+    # §13sexagesima: Operator-Catalog Discipline Signature (B11a)
+    "CANONICAL_CATALOG_SIZE",
+    "OperatorCatalogDisciplineSignatureCertificate",
+    "compute_operator_catalog_discipline_signature",
     # P32: Dirichlet L-function extension (chi-twisted prime ladder)
     "DirichletCharacter",
     "principal_character",
