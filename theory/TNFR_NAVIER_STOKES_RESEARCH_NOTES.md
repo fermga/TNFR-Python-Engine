@@ -186,9 +186,10 @@ Discussed but **not promoted** until N2 forces the question:
 | N14 | Higher-Re CF eigenframe sweep at n=48 (NS-G4 precursor; N11 resolution-doubling extension) | **DONE — CF_EIGENFRAME_TRANSITION_NOT_OBSERVED_AT_REEFF_3142; RE_TREND_CONSISTENT_WITH_N11** (per locked §16.7 mapping; F1–F3,F5 PASS, F4 NOT satisfied — operator remains in laminar/transitional regime at Re_eff≈500; <P>(Re) monotonicity and cross-resolution consistency retained). Pre-registration: `39e4b1b9`. | Single-resolution (n=48) Reynolds sweep extending N11 (n=24, ν∈{0.05..0.005}) by one resolution doubling AND one new ν step (ν=0.002 → Re_eff≈500, unreachable at n=24 due to Kolmogorov). Settles: (a) operator does NOT exhibit CF-canonical e_λ2 dominance at Re_eff≈500 on n=48 Taylor–Green; (b) <P>(Re) monotonic ascent and RE_TREND survives doubling. Does NOT close NS-G1..G5; redirects to n≥256 forced-isotropic DNS for full-turbulent CF statistics. | §16 + §17 + `benchmarks/higher_re_navier_stokes_3d_taylor_green_n48.py` |
 | N15 | REMESH-∞ Asymptotic Operator (TNFR Core Structure; Branch analysis A/B1/B2/B3) | **DONE — Branch A** (W1 `a1f298fd`, W2 `badac156`, W3 `48b0574a`; consolidated `bcfa523e`). $\mathcal{R}_\infty$ exists as bounded self-adjoint orthogonal projection on $H^2(D)$; $Q_\infty$ exactly conserved; spectrum uniform (not RH/K41/RMT). | Theoretical derivation: functional analysis of REMESH limit, conservation laws, spectrum. All three sub-questions Q1/Q2/Q3 answered Branch A. Independent of RH/NS truth. Does NOT close NS-G1..G5 (spatial blow-up risk lives in $\ker(\mathcal{R}_\infty)$, untouched). | §18 + `theory/REMESH_INFINITY_DERIVATION.md` |
 | N16 | NS-G5 Discrete Algebraic Closure — 2D-Embedding Lemma | **DONE (analytical)** (this commit) | Proves that `stretching_production() = 0` exactly (IEEE 754) for any z-independent velocity field on the 3D torus graph, by three-step algebraic argument. Closes NS-G5 at the discrete-operator level; corroborated by N10 case (B). Continuum closure (via NS-G1) remains open. | §19 + `examples/85_navier_stokes_dimensional_asymmetry.py` (N10 corroborator) |
-| N≥17 | Function-space convergence (NS-G1) **/** DNS frontier n≥256 (CF alignment) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4 closure) | open | unknown | unknown |
+| N17 | U3+U5 → K41: Analytical Cascade Locality Study (N17-A); Empirical Energy Spectrum (N17-B, deferred) | **DONE (analytical — ANALYTICAL_CONSISTENT_CONDITIONAL)** / N17-B **PRE-REGISTERED** (deferred, §20.10) | N17-A: pure analytical; no benchmark run. U3+U5+CDC → K41 conditionally closed. CDC identified as irreducible additional hypothesis (structural analogue of S(T) in Riemann program). N17-B pre-registered: `energy_spectrum_3d()` spec + config locked (n∈{32,48}, ν∈{0.01,0.005}, T=2.0, TG IC) + F-criteria (F1/F2/F3); expected verdict `STEEPER_THAN_K41`. | §20 + §20.10 (N17-B pre-registration) |
+| N≥18 | Function-space convergence (NS-G1) **/** DNS frontier n≥256 (CF alignment) **/** analytical NS-G2 bounds **/** discrete-to-continuum BKM (NS-G3) **/** structural TNFR construction of (ω·∇)u (NS-G4 closure) **/** N17-B empirical energy spectrum | open | unknown | unknown |
 
-NS-G5 is **CLOSED at the discrete-operator level** (N16, §19). NS-G1..G4 remain **OPEN** after N1–N14. See §11 for the cross-program reframe of the residual obstruction.
+NS-G5 is **CLOSED at the discrete-operator level** (N16, §19). NS-G1..G4 remain **OPEN** after N1–N17 (N17-A analytical conditional; N17-B deferred). See §11 for the cross-program reframe of the residual obstruction.
 
 ---
 
@@ -1166,3 +1167,192 @@ Expected output (commit `1fac358b`): stretching production = 0.0 (machine precis
 - Footer note updated: NS-G5 is CLOSED at the discrete-operator level; NS-G1..G4 remain OPEN.
 
 ---
+---
+
+## §20  N17 — U3+U5 → K41: Analytical Cascade Locality Study (May 2026)
+
+### §20.1  Motivation
+
+N15 (§18) ruled out REMESH-∞ as the mechanism generating a $k^{-5/3}$ spatial spectrum.
+N14 (§17) showed that CF-eigenframe transition is not observed at Re_eff ≤ 500 on n=48
+Taylor–Green.  NS-G1..G4 remain open.  The natural next analytical question is:
+
+> Can the TNFR grammar rules **U3** (phase-gated coupling) and **U5** (multi-scale coherence)
+> together derive the K41 locality condition — i.e., that energy flux is scale-local — without
+> additional empirical input?
+
+This is the N17-A analytical sub-route.  N17-B (empirical energy spectrum via
+`energy_spectrum_3d()`) is pre-registered in §20.10 and deferred.
+
+### §20.2  Scope
+
+* **N17-A (this section):** Purely analytical.  No new benchmark runs.  No new code.
+* **N17-B (§20.10, deferred):** Empirical — requires implementing `energy_spectrum_3d()`
+  in `src/tnfr/navier_stokes/operator.py` and running Taylor–Green sweeps at n ∈ {32, 48}.
+
+### §20.3  Setup: hierarchical TNFR cascade
+
+Consider an $m$-level TNFR hierarchy with levels $\ell = 0, 1, \ldots, m-1$:
+
+* **Scale ladder:** $r_\ell = L \cdot \lambda^\ell$ with $L$ the integral scale and $0 < \lambda < 1$.
+* **Velocity scale:** $u_\ell^2 = \langle |u|^2 \rangle_\ell$ (mean-square velocity at level $\ell$).
+* **Energy injection rate:** $\varepsilon$ (assumed constant in the inertial range, $\varepsilon > 0$).
+
+**U5 constraint (multi-scale coherence):**
+$$C_{\mathrm{parent},\ell} \ge \alpha \cdot \sum_{\ell' > \ell} C_{\ell'}, \quad \alpha \sim \frac{1}{\sqrt{N_{\mathrm{children}}} \cdot \eta_{\mathrm{phase}}}.$$
+U5 applies the **same structural law at every level** with the **same canonical constants**.
+
+**U3 constraint (resonant coupling):**
+Coupling between nodes $i \in \mathrm{level}_\ell$ and $j \in \mathrm{level}_{\ell'}$ is permitted
+only if $|\phi_i - \phi_j| \le \Delta\phi_{\max}$.
+
+### §20.4  Step 1 — Lemma U5-SS (U5 + U2 → scale self-similarity)
+
+**Claim:** In the inertial range, U5 + U2 imply $u_\ell \sim (\varepsilon \, r_\ell)^{1/3}$.
+
+**Proof sketch:**  U5 applies the same structural law at every level with the same canonical
+constants.  U2 (convergence/boundedness) requires
+$\int \nu_f \cdot \Delta\mathrm{NFR} \, dt < \infty$ at every level.
+
+In the inertial range (energy injection scale $L$ and dissipation scale $\eta$ are the only
+externally fixed scales; intermediate scales see only $\varepsilon$ and $r_\ell$):
+
+1. By U5-uniformity (same constants at every level), the only dimensionless combination of
+   $u_\ell$, $r_\ell$, $\varepsilon$ is $u_\ell / (\varepsilon r_\ell)^{1/3}$.
+2. U5-uniformity forces this ratio to be level-independent, hence a universal constant $C$:
+   $u_\ell = C \cdot (\varepsilon r_\ell)^{1/3}$.
+3. Setting $C = 1$ by absorbing into $\varepsilon$ normalisation gives **K41 scaling**:
+   $u_\ell \sim (\varepsilon r_\ell)^{1/3}$.
+
+*Condition:* This argument requires the inertial range to exist (i.e., $L \gg \eta$ with a
+range of scales where neither forcing nor dissipation is dominant).
+
+### §20.5  Step 2 — Lemma U3-CL (U3 → cascade locality, conditional)
+
+**Claim:** Under Lemma U5-SS, U3 forces energy flux to be scale-local **if and only if**
+adjacent cascade levels have decorrelated phases (Cascade Development Condition, §20.6).
+
+**Derivation:**  Under Lemma U5-SS, the phase velocity at level $\ell$ scales as
+$u_\ell \sim (\varepsilon r_\ell)^{1/3}$.  The phase difference between a node at level $\ell$
+and a node at level $\ell' = \ell + p$ ($p \ge 1$) accumulates as
+
+$$|\phi_{\ell,i} - \phi_{\ell+p,j}| \;\sim\; (\varepsilon r_\ell)^{1/3} \bigl(1 + \lambda^{p/3}\bigr).$$
+
+**If** the Cascade Development Condition (CDC, §20.6) holds — i.e., adjacent levels have
+$|\phi_{\ell,i} - \phi_{\ell+1,j}| \ge \Delta\phi_{\max}$ for all $i, j$ — **then**:
+
+* U3 blocks all cross-level interactions (no inter-level coupling is permitted).
+* Energy flux is therefore purely intra-level (scale-local): $\Pi_\ell = u_\ell^3 / r_\ell$.
+* Combining with Lemma U5-SS: $\Pi_\ell = C^3 \varepsilon = \varepsilon$ (constant flux).
+
+This is Kolmogorov's locality condition: constant energy flux through scales.
+
+### §20.6  Conditional K41 result
+
+**Theorem (U3+U5+CDC → K41):**  Under U2, U3, U5, and the Cascade Development Condition,
+the energy spectrum in the inertial range satisfies
+
+$$E(k_\ell) \;\sim\; \varepsilon^{2/3} \, k_\ell^{-5/3}.$$
+
+*Proof:*  From Lemma U5-SS, $u_\ell \sim (\varepsilon r_\ell)^{1/3}$.  Energy density at level $\ell$
+is $E_\ell \sim u_\ell^2 \sim \varepsilon^{2/3} r_\ell^{2/3}$.  Spectral energy density (energy per
+unit wavenumber) at $k_\ell = 2\pi / r_\ell$ is $E(k_\ell) = E_\ell / \Delta k_\ell$ where
+$\Delta k_\ell \sim k_\ell$ (logarithmic wavenumber bands).  Therefore
+$E(k_\ell) \sim \varepsilon^{2/3} r_\ell^{2/3} / k_\ell \sim \varepsilon^{2/3} k_\ell^{-2/3} k_\ell^{-1}
+= \varepsilon^{2/3} k_\ell^{-5/3}$. $\square$
+
+### §20.7  The irreducible gap: Cascade Development Condition (CDC)
+
+**CDC:**  Adjacent cascade levels have decorrelated phases:
+$$|\phi_{\ell,i} - \phi_{\ell+1,j}| \ge \Delta\phi_{\max} \quad \text{for all } i \in \mathrm{level}_\ell,\; j \in \mathrm{level}_{\ell+1},\; \ell = 0,\ldots,m-2.$$
+
+**CDC is not derivable from U3, U5, or the nodal equation:**
+
+1. **U3** constrains which couplings are *permitted*, not what phase values *arise*.  A system
+   satisfying U3 can have any inter-level phase difference; U3 merely blocks coupling when
+   the difference exceeds $\Delta\phi_{\max}$, but does not force the difference to attain
+   that threshold.
+2. **U5** constrains intra-level coherence ($C_{\mathrm{parent}} \ge \alpha \sum C_{\mathrm{child}}$).
+   It says nothing about inter-level phase differences.
+3. **The nodal equation** $\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$
+   determines EPI trajectories given initial conditions and coupling topology; it does not
+   constrain the initial inter-level phase distribution.
+
+**CDC is equivalent to the K41 locality hypothesis in TNFR language.**
+Within the TNFR multi-scale hierarchy, CDC and "energy flux is scale-local" are
+mutually equivalent: each implies the other given U3.  CDC is K41's locality assumption
+re-stated as a phase-decorrelation condition on the TNFR level structure.
+
+**Structural type:**  CDC is a *developed turbulence condition* — a statement about
+the statistical state of the cascade, not a consequence of the grammar rules alone.  It is
+the TNFR analogue of the oscillatory residual $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$
+in the Riemann programme: CDC lives in the same structural position as $S(T)$ lives in
+$\ker(\mathcal{R}_\infty) \cap \mathrm{Fix}(S_n)^\perp$ — reachable only if the
+cascade has "developed" sufficiently, not derivable from the canonical operator catalog alone.
+
+### §20.8  Formal verdict
+
+```
+VERDICT: ANALYTICAL_CONSISTENT_CONDITIONAL
+```
+
+| Claim | Status |
+|-------|--------|
+| U3 + U5 are **necessary** for K41 | ✓ — without U3, cross-level coupling destroys locality; without U5, scale self-similarity fails |
+| U3 + U5 are **sufficient** for K41 | ✗ — CDC is an additional irreducible hypothesis |
+| U2 + U3 + U5 + CDC → K41 is algebraically closed | ✓ — conditional derivation complete (§20.4–§20.6) |
+| N17-A closes NS-G1..G4 | ✗ — gaps concern continuum limit, uniform h bounds, BKM criterion, vortex stretching |
+
+### §20.9  Scope statement — what N17-A does and does not establish
+
+**N17-A DOES:**
+* Establish U3 + U5 as the TNFR structural framework for K41 cascade locality.
+* Identify CDC as the minimal additional hypothesis — the irreducible gap.
+* Provide a conditional derivation (U2+U3+U5+CDC → K41) that is algebraically closed.
+* Show that CDC is equivalent to the K41 locality hypothesis in TNFR language.
+
+**N17-A does NOT:**
+* Prove K41 as a theorem from grammar alone.
+* Close any of NS-G1..G4 (those gaps concern continuum-limit and regularity questions, not cascade locality).
+* Make empirical claims about any specific simulation.
+* Establish that CDC holds for Taylor–Green initial conditions at any finite Re.
+
+### §20.10  N17-B Pre-Registration (Empirical Spectrum, Deferred)
+
+**Objective:** Measure the discrete energy spectrum $E(k)$ from `TNFRNavierStokesOperator`
+to check whether the computational cascade exhibits K41 scaling or a steeper spectrum
+(as expected when CDC is not satisfied at accessible Reynolds numbers).
+
+**Implementation required:**
+```python
+def energy_spectrum_3d(self) -> tuple[np.ndarray, np.ndarray]:
+    """Shell-averaged kinetic energy spectrum E(k).
+
+    Returns (k_shells, E_shells) where k_shells[i] is the shell centre
+    wavenumber and E_shells[i] = sum_{|k|~k_shells[i]} (1/2)|u_hat(k)|^2 / dk.
+    Uses FFT on each velocity component (periodic torus), shells of width
+    dk = 2*pi/L, and sums over the three components.
+    """
+```
+
+**Configuration (locked at pre-registration):**
+* Resolutions: n ∈ {32, 48}; viscosity: ν ∈ {0.01, 0.005}
+* Initial condition: Taylor–Green 3D (`taylor_green_initial_condition_3d`)
+* Integration time: T = 2.0 (same as N11/N14 sweeps)
+* Analysis: shell-averaged spectrum at t = 1.0 and t = 2.0
+
+**F-criteria (locked):**
+
+| Criterion | Pass condition |
+|-----------|---------------|
+| F1 | `energy_spectrum_3d()` returns finite non-NaN arrays for all configs |
+| F2 | At least 4 shell bins with measurable energy above noise floor |
+| F3 | Log-log slope of $E(k)$ vs $k$ classifiable as: STEEPER_THAN_K41 (slope < −5/3), K41_COMPATIBLE (slope ∈ [−5/3 ± 0.2]), or SHALLOWER |
+
+**Expected verdict:** `STEEPER_THAN_K41` — at n=32/48, Re_eff ≤ 500, CDC is not satisfied
+(inter-level phase decorrelation has not developed), so the cascade is not fully turbulent
+and the spectrum should be steeper than $k^{-5/3}$.  This would be consistent with
+N17-A (CDC not satisfied → K41 not reached) and with N14 (CF transition not observed).
+
+**Status:** PRE-REGISTERED.  Deferred until `energy_spectrum_3d()` is implemented and
+a dedicated benchmark run is scheduled.
