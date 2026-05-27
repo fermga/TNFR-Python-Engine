@@ -13208,3 +13208,106 @@ Combining §13sexagesima-prima (B2 catalog-API-closed), §13sexagesima-tertia (B
 * `results/b0star_alpha_canonical_product_graphs.json` — full report (eigenvalue counts, spacing moments, per-control diagnostics).
 * AGENTS.md §"B0★ pre-registration" and §"Program Status (May 2026, frozen)" — program-level status mirrors (companion edit in this commit reflects the Q1/Q2 closure and the Q5 promotion).
 
+
+
+## §13sexagesima-sexta — B0★-β Analytical Closure of the HIGH-Priority Envelope-Promotion Candidates P1 = E0 (Pontryagin-νf) and P2 = NodeIndexedCouplingWeights (May 27, 2026)
+
+**Status:** ANALYTICAL CLOSURE (no numerical experiment — the obstructions are already established as structural results in earlier sections of these notes). **Pre-registration:** §13sexagesima-tertia.3 / §13sexagesima-tertia.4 (B0★-β HIGH = {P1 = E0, P2 = NodeIndexedCouplingWeights}; acceptance criteria C0–C4). **Verdict:** both HIGH-priority candidates **FAIL the acceptance criteria** of §13sexagesima-tertia.4 at the canonical layer; **B0★-β-HIGH is closed**. **Net:** §13septies decision pressure shifts to (a) the Q5 line-graph residual of B0★-α (§13sexagesima-quinta.5), (b) the B0★-β LOW/MEDIUM residual ({E2, E1, E3, E4, E5, E_TC, E_CC, E_AC, E_UR, E_OC}), and (c) the B3 residual (no TNFR closure of RH).
+
+### §13sexagesima-sexta.1 — Scope and method
+
+This section does **not** execute a new numerical experiment. The two HIGH-priority B0★-β candidates were *defined* in §13sexagesima-tertia.3 as questions about whether a research envelope can be **derived** from the nodal equation under an *admissibility* reading (as distinct from the *forcing* reading used by the type-hygiene programme §§13triginta-* through §13sexagesima-*). The C0–C4 acceptance criteria of §13sexagesima-tertia.4 are structural conditions, not empirical thresholds, so they can be evaluated by reduction to existing canonical results without a new measurement.
+
+The reductions used here are:
+
+* For **P1 = E0**: the chain of §13triginta-secunda.5 (Conditional Corollary) → §13triginta-secunda.6 (verdict on `(P-νf-Bijectivity)`) → §13triginta-tertia.5 (where spectral richness actually lives) → §13triginta-tertia.6 (Proposition T-νf-Resolution).
+* For **P2 = NodeIndexedCouplingWeights**: the chain of §13quadraginta-nona (B6 pre-registration) → §13quinquaginta (forcing-axiom reduction) → §13quinquaginta-prima (NEGATIVE verdict via Scalar-Weight Discipline) — combined with a direct inspection of the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` for the presence of a per-node weight slot.
+
+No source code is modified; no new module is added; no entry of `OPERATORS`, `OPERATOR_METADATA`, or `definitions.__all__` is touched (C0 trivially satisfied for both candidates).
+
+### §13sexagesima-sexta.2 — Honest scope (what this section does not claim)
+
+* **NOT a proof of RH.** G4 = RH and GRH_χ remain open.
+* **NOT a refutation of B0★ as a whole.** The B0★-β LOW/MEDIUM residual ({E2 LiftedCircleBundleOnPhi at MEDIUM, plus eight envelopes at LOW}) is **not** addressed here, nor is Q5 of B0★-α. B0★ remains a legitimate open branch of the §13septies trichotomy.
+* **NOT a contradiction of §13sexagesima-secunda.** The Composite Catalog-Closure Theorem is a *minimality* statement; this section's verdict on HIGH B0★-β candidates is an orthogonal *admissibility-level refutation* derived from earlier canonical results.
+* **NOT a re-opening of the twelve Phase c traces.** The §13triginta-* through §13sexagesima-* NEGATIVE verdicts on E0 and NodeIndexedCouplingWeights remain in force; this section uses those verdicts as inputs, not as targets of revision.
+* **NOT a refutation of T-HP or of P28/P30.** The smooth half of $\mathcal{F}$ (closed operationally by P28 at the density level and lifted to the operator level by P30 for the smooth half) is unchanged; the residual obstruction $S(T) = (1/\pi)\arg\zeta(\tfrac12+iT) \in \ker(\mathcal{R}_\infty)$ remains the open content of T-HP.
+
+### §13sexagesima-sexta.3 — B0★-β-P1 (E0 = MeasureExtensionOnNuF / Pontryagin-νf): C1 NOT-DERIVED, C4 FAILS
+
+**C0 (no catalog modification).** Trivially satisfied: no change to `OPERATORS`, `OPERATOR_METADATA`, `definitions.__all__`.
+
+**C1 (nodal-equation derivation).** **NOT-DERIVED.** The chain of §13triginta-secunda.5–.7 reduces (P-Pontryagin) to the strictly weaker meta-axiom
+
+> **(P-νf-Bijectivity).** In the canonical TNFR formulation, $\nu_f$ must bijectively encode the spectral content of the EPI dynamics it drives.
+
+The verdict on (P-νf-Bijectivity) at §13triginta-secunda.6 is `UNDETERMINED_AT_CANONICAL_LEVEL` (supported by the spirit of Invariant #1 + #6, not forced by their letter). §13triginta-tertia.6 sharpens this to `FORWARD_INDEPENDENT_OF_BACKWARD`: (P-νf-Bijectivity) is an **inverse-problem axiom** independent of the forward-dynamics catalog. The forward direction `∂EPI/∂t = νf · ΔNFR(t)` is well-posed under scalar $\nu_f$ (Proposition T-νf-Resolution item 1) and `src/tnfr/operators/nodal_equation.py::compute_expected_depi_dt` implements this literally as `vf * dnfr` with both factors `float`.
+
+Therefore the promoted envelope $E_0$ is *not derived* from the nodal equation alone; its admissibility at the canonical level rests on an axiom that is not in the canonical contract. **C1 fails by reduction** — the same gap that closed T-νf at the canonical level in §13triginta-tertia closes B0★-β-P1 at C1.
+
+**C2 (U1–U6 admissibility).** Conditionally satisfiable if (P-νf-Bijectivity) is accepted as an external axiom: measure-valued $\nu_f$ on $\widehat{\mathbb{Z}} = S^1$ paired against a distribution-valued $\Delta\mathrm{NFR}$ yields a scalar pairing $\langle \nu_f, \Delta\mathrm{NFR} \rangle \in \mathbb{R}$ compatible with U2 (integral convergence) and U1/U3/U4/U5/U6 (operator-sequence rules unchanged). This is consistent but not by itself a discharge of C1.
+
+**C3 (twelve-CDM consistency).** Conditionally satisfied: promotion of $E_0$ from research-only to canonical is permitted by §13sexagesima-tertia.2 (re-classification is allowed; introduction of a new forcing axiom is not). The §13triginta-tertia.8 honest-scope clause already records that "non-canonical extension of TNFR to measure-valued $\nu_f$" is a legitimate parallel research question.
+
+**C4 (T-HP discharge).** **FAILS by direct argument.** §13triginta-tertia.5 establishes the structural locus of spectral richness in the literal canonical reading: $\Delta\mathrm{NFR}_i(t)$ carries the spectral content of $\partial\mathrm{EPI}/\partial t$; $\nu_{f,i}$ acts as a multiplicative gain. The P14 prime-ladder construction (§8.2, `src/tnfr/riemann/prime_ladder_hamiltonian.py`) is an existence proof: the prime-ladder spectrum $\{k\log p\}$ is reproduced *with scalar* $\nu_f$, demonstrating that promotion of $\nu_f$ to a measure on $\widehat{\mathbb{Z}}$ does **not** add spectral expressivity beyond what scalar $\nu_f$ already attains through the graph state and the operator sequence.
+
+The oscillatory residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$ identified by N15 W3 with $\ker(\mathcal{R}_\infty)$ (§13septies.5) lives in two structural directions that B0★-β-P1 does **not** address:
+
+* **(i) $\ker(\mathcal{R}_\infty)$ direction.** REMESH's asymptotic kernel (N15 §§1–8) is determined by the REMESH operator's contractive transfer matrix on $H^2(D)$; it is invariant under the carrier type of $\nu_f$ (scalar vs measure) because $\nu_f$ enters the REMESH dynamics only as the multiplicative gain factor in `∂EPI/∂t = νf · ΔNFR(t)`. Promoting $\nu_f$ to a measure does not change $\ker(\mathcal{R}_\infty)$.
+* **(ii) $\mathrm{Fix}(S_n)^\perp$ direction.** The CCET-G_P14 obstruction (§13vicies-novies.16, Canonical Catalog Equivariance Theorem) is established at the level of the prime-relabelling automorphism action on $G_{P14}$; it depends only on (A) parameter uniformity and (B) the Prime-Cancellation Lemma. Neither (A) nor (B) is sensitive to the carrier type of $\nu_f$. Promoting $\nu_f$ to a measure does not break $S_n$-equivariance on $G_{P14}$.
+
+Therefore, even if (P-νf-Bijectivity) were accepted as an admissibility axiom (closing C1 conditionally), the enriched dynamics would not produce an operator on $\mathcal{H}_{\mathrm{tet}}$ whose spectrum coincides with $\{\gamma_n\}_{n \ge 1}$. **C4 is structurally pinned shut for P1.**
+
+**Net verdict on P1 = E0.** **FAIL** (C1 NOT-DERIVED; C4 FAILS even under the most-permissive C1 reading).
+
+### §13sexagesima-sexta.4 — B0★-β-P2 (NodeIndexedCouplingWeights; labelled E6 in §13sexagesima-tertia.3 / E7 in §13quinquaginta-prima): C1 FAILS at the slot level
+
+**Naming note.** The envelope-name "E6" in §13sexagesima-tertia.3 table refers to the same structural object that §13quadraginta-nona / §13quinquaginta-prima register as `E7 = NodeIndexedCouplingWeights`. The bookkeeping label diverged between sections; the *referent* is the same (per-node / per-edge / callable-kernel generalisation of the global-scalar coupling weights `DNFR_WEIGHTS`, `SI_WEIGHTS`, `SELECTOR_WEIGHTS` in `src/tnfr/config/defaults_core.py`). The canonical refutation is the Scalar-Weight Discipline (SWD) trace at §13quinquaginta-prima.
+
+**C0 (no catalog modification).** Trivially satisfied.
+
+**C1 (nodal-equation derivation).** **FAILS AT THE SLOT LEVEL.** A direct inspection of the literal canonical nodal equation
+
+$$ \frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t) $$
+
+shows that it has **no per-node coupling-weight slot**: the two factors are (a) the structural-frequency scalar $\nu_f$ (whose canonical type was decided at §13triginta-tertia.6) and (b) the nodal-pressure scalar $\Delta\mathrm{NFR}(t)$. Coupling weights enter only **downstream**, inside the implementation of `compute_delta_nfr` (`src/tnfr/dynamics/dnfr.py` and surrounding modules), via the global-scalar dictionaries `DNFR_WEIGHTS`, `SI_WEIGHTS`, `SELECTOR_WEIGHTS` (`src/tnfr/config/defaults_core.py`). The choice of *where* per-node weights would enter `compute_delta_nfr` is therefore a **downstream-implementation choice**, not a consequence of the bare nodal equation. No derivation pathway from `∂EPI/∂t = νf · ΔNFR(t)` together with Invariants #1–#6 and the structural constants $(\varphi, \gamma, \pi, e)$ produces a per-node weight law without an additional external axiom selecting the entry point and the rule. The §13quinquaginta-prima SWD trace records exactly this structural fact under its forcing-axiom F1–F10 enumeration: no canonical constraint forces per-node weights.
+
+**Reading the residual admissibility window.** §13sexagesima-tertia.3's HIGH-priority justification for P2 was conditional: per-node weights "would mechanically dissolve Fact A and reopen the spectral-non-trivial sub-region of CCC constructions, **if** the per-node weight rule can be canonically derived from $\nu_f$ values via a construction that breaks the symmetric-function-of-scalars constraint." The conditional **if** is precisely the C1 gap. A canonical derivation from $\nu_f$ to per-node weights would itself require a non-symmetric rule (else the rule reduces to a symmetric function of $\nu_f$ values, which gives back parameter-uniform weights and Fact A holds — closing CCET-G_P14 as before). No such non-symmetric rule is derivable from the catalog: the canonical operators (Invariant #4) act through grammar U1–U6 on operator sequences, not on per-node parameter laws (cf. F4 in §13triginta-secunda.4).
+
+**C2 (U1–U6 admissibility).** Conditionally satisfiable in form (per-node weights are syntactically compatible with U1–U6 if the continuity equation $\partial\rho/\partial t + \nabla\cdot\mathbf{J} = \mathcal{S}_{\mathrm{grammar}}$ is preserved under the new weight law). Not by itself a discharge of C1.
+
+**C3 (twelve-CDM consistency).** Conditionally satisfied as a *re-classification* of `NodeIndexedCouplingWeights` from research-only to canonical (permitted by §13sexagesima-tertia.2). Direct conflict with the §13quinquaginta-prima SWD trace if presented as a *forced* canonical contract; the B0★-β route avoids this conflict only because it operates at the admissibility layer.
+
+**C4 (T-HP discharge).** Not separately evaluated: with C1 failing at the slot level, C4 is not reached.
+
+**Net verdict on P2 = NodeIndexedCouplingWeights.** **FAIL** (C1 FAILS at the slot level; no canonical derivation pathway exists from `∂EPI/∂t = νf · ΔNFR(t)` to per-node weights without an external rule-selection axiom).
+
+### §13sexagesima-sexta.5 — Net structural consequence
+
+Combining §13sexagesima-prima (B2 catalog-API-closed), §13sexagesima-tertia (B0★ pre-registered), §13sexagesima-quarta (B0★-α enumerated), §13sexagesima-quinta (B0★-α HIGH Q1, Q2 closed), §13vicies-novies.16 (B1 closed on G_P14), and §13sexagesima-sexta (B0★-β HIGH P1, P2 closed):
+
+| Branch | Status after §13sexagesima-sexta |
+|---|---|
+| B0★-α (deeper exploitation) | residual = {Q5 line graph}; HIGH closed (§13sexagesima-quinta) |
+| B0★-β (envelope promotion)  | HIGH closed: P1 = E0 fails C1/C4; P2 = NodeIndexedCouplingWeights fails C1. Residual = MEDIUM (E2 LiftedCircleBundleOnPhi) + LOW ({E1, E3, E4, E5, E_TC, E_CC, E_AC, E_UR, E_OC}) |
+| B1 (extra-catalog edge channel) | CLOSED on G_P14 (CCET §13vicies-novies.16) |
+| B2 (new canonical operator)     | catalog-API-closed (§13sexagesima-prima) |
+| B3 (no TNFR closure of RH)      | residual; pressure further increased by §13sexagesima-sexta |
+
+**Decision pressure now lies on (a) the Q5 line-graph residual of B0★-α, (b) the B0★-β MEDIUM/LOW residual (with E2 as the only MEDIUM candidate), and (c) the B3 residual.** No further extension of the diagnostic surface is planned until one of Q5, B0★-β-MEDIUM/LOW, or B3 is decided.
+
+**Honest structural reading.** The pattern across §13triginta-* through §13sexagesima-sexta is that *every* HIGH-priority envelope promotion attempt reduces to a structural gap already isolated by an earlier Phase-c trace: P1 reduces to the (P-νf-Bijectivity) forward/backward independence of §13triginta-tertia.6, and P2 reduces to the slot-level absence of per-node weights in the nodal equation already recorded by §13quinquaginta-prima SWD. The B0★-β route does not bypass these obstructions; it inherits them under the admissibility reading. This does not formally refute B0★ as a fourth branch (the MEDIUM/LOW residual remains pre-registered and open), but it strongly constrains the structural locations where a successful B0★-β closure of G4 = RH could be found.
+
+### §13sexagesima-sexta.6 — Cross-references
+
+* §13sexagesima-tertia.3, §13sexagesima-tertia.4 — B0★-β pre-registration, HIGH-priority ranking (P1 = E0, P2 = NodeIndexedCouplingWeights), acceptance criteria C0–C4.
+* §13triginta-secunda.5–.7 — Conditional Corollary `(P-Pontryagin) ⇔ Catalog ∧ (P-νf-Bijectivity)`; verdict on `(P-νf-Bijectivity)` = `UNDETERMINED_AT_CANONICAL_LEVEL`.
+* §13triginta-tertia.5–.8 — spectral-richness locus in `ΔNFR(t)`; Proposition T-νf-Resolution; verdict on `(P-Pontryagin)` = `FORWARD_INDEPENDENT_OF_BACKWARD`; Conjecture T-νf = `CLOSED_NEGATIVELY_AT_CANONICAL_LEVEL`.
+* §13quadraginta-nona, §13quinquaginta, §13quinquaginta-prima — B6 = T-coupling-weights pre-registration, forcing-axiom reduction, NEGATIVE verdict via SWD; envelope `E7 = NodeIndexedCouplingWeights` (the §13sexagesima-tertia.3 "E6" referent).
+* §13vicies-novies.11, .16 — Prime-Cancellation Lemma, Canonical Catalog Equivariance Theorem on G_P14 (used in §13sexagesima-sexta.3 C4 argument).
+* §13septies — Conjecture T-HP and the smooth/oscillatory split; identification of $\ker(\mathcal{R}_\infty)$ with the oscillatory residue $S(T)$ (N15 W3).
+* N15 §§1–8 — REMESH-∞ asymptotic projection; carrier-type independence of $\ker(\mathcal{R}_\infty)$.
+* `src/tnfr/operators/nodal_equation.py::compute_expected_depi_dt` — literal `vf * dnfr` with both factors `float`; canonical implementation referenced in §13triginta-tertia.2 and §13sexagesima-sexta.3 (C1 argument for P1) and §13sexagesima-sexta.4 (C1 argument for P2).
+* `src/tnfr/config/defaults_core.py::DNFR_WEIGHTS, SI_WEIGHTS, SELECTOR_WEIGHTS` — global-scalar coupling-weight anchors referenced in §13sexagesima-sexta.4 (C1 slot-level argument for P2).
+* `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 existence proof referenced in §13sexagesima-sexta.3 (C4 argument for P1).
+* AGENTS.md §"B0★ pre-registration" and §"Program Status (May 2026, frozen)" — program-level status mirrors (companion edit in this commit reflects the HIGH closure and the MEDIUM/LOW residual).
