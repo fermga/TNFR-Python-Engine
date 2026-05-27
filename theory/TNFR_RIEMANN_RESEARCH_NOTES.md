@@ -12915,3 +12915,112 @@ Does **NOT** advance G4 = RH (Conjecture T-HP, Sec 13septies). The theorem is a 
 - `src/tnfr/dynamics/`, `src/tnfr/metrics/`, `src/tnfr/physics/`.
 - `src/tnfr/riemann/` (twelve `*_signature.py` diagnostic modules).
 - `examples/79_pontryagin_*.py` ... `examples/89_operator_catalog_discipline_signature_demo.py` (per-phase demos).
+
+
+## §13sexagesima-tertia. Branch B0★ — Scope-Expansion of Existing TNFR Theory (Pre-registration of a Fourth Branch of the §13septies Trichotomy; Does NOT advance G4 = RH)
+
+### .1 Motivation: a fourth branch the §13septies trichotomy did not enumerate
+
+The §13septies trichotomy for G4 = RH was stated as:
+
+* **B1** — closure inside the canonical 13-operator catalog (CCET-G_P14, §13vicies-novies.16, **CLOSED on G_P14**; status off G_P14: open in principle).
+* **B2** — new canonical operator derivable from the nodal equation, intertwining slot with prime in a way the catalog cannot.
+* **B3** — no TNFR closure exists.
+
+§13sexagesima-secunda (Composite Catalog-Closure Theorem, B11 NEGATIVE) established that **no 14th canonical operator is reachable from the public API**: the registry `OPERATORS`, the introspection metadata `OPERATOR_METADATA`, and `definitions.__all__` jointly close the catalog at exactly 13 operators, and the lazy-loading guard plus the immutable grammar frozensets make a hypothetical 14th operator (envelope `E_OC = HiddenFourteenthOperatorConstruction`) structurally unreachable in the canonical layer.
+
+Read literally, this **forces §13septies B2 NEGATIVE** at the level of the catalog: any candidate that materialises as a 14th `Operator` subclass in `OPERATORS` is excluded by §13sexagesima-prima. The §13septies trichotomy would thus reduce to **{B1-off-G_P14, B3}**.
+
+But the §13septies trichotomy as written did not enumerate a structurally legitimate fourth branch that this work has surfaced:
+
+> **B0★ — scope-expansion of the existing TNFR theory** — close G4 without adding any operator to `OPERATORS` and without dropping any of the twelve B0–B11 NEGATIVE verdicts, by either (α) extracting consequences of the existing 13 operators that have not yet been derived, or (β) promoting one or more of the twelve research envelopes `E0..E_OC` to canonical status.
+
+This subsection pre-registers B0★ as the fourth branch. It does **not** execute any sub-branch; per-envelope and per-consequence analyses are deferred to subsequent commits.
+
+### .2 Definition of B0★ and orthogonality to §13sexagesima-secunda
+
+**Definition (B0★).** A branch-B0★ closure attempt for G4 = RH is any structural argument that:
+
+1. does **not** modify `src/tnfr/operators/registry.py::OPERATORS` (no 14th operator);
+2. does **not** add a member to `src/tnfr/operators/introspection.py::OPERATOR_METADATA`;
+3. does **not** add a class to `src/tnfr/operators/definitions.py::__all__`;
+4. does **not** modify the nodal equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$;
+5. does **not** modify the unified grammar U1–U6;
+
+and yet closes G4 = RH (or its T-HP reformulation, §13septies.4) by either of the following two sub-mechanisms:
+
+* **B0★-α (deeper-exploitation sub-branch).** Derive a previously-uncomputed structural consequence of the existing 13 operators (in particular, of their compositions under C1–C5 of CCET-G_P14, evaluated on canonically-constructed graphs other than G_P14) that closes the oscillatory half of the admissible rescaling operator $\mathcal{F}$ of Conjecture T-HP (§13septies.4). The catalog is unchanged; only the analysis is deeper.
+
+* **B0★-β (envelope-promotion sub-branch).** Promote one or more of the twelve research envelopes
+  $\{E_0, E_1, E_2, E_3, E_4, E_5, E_6, E_{TC}, E_{CC}, E_{AC}, E_{UR}, E_{OC}\}$
+  (catalog of §13sexagesima-secunda.1) from *research-only* to *canonical* by supplying a missing canonical derivation from the nodal equation that the §13triginta-* through §13sexagesima-* programme did not produce (or did not attempt). The 13 operators stay fixed; the *state-space types* on which they operate become richer, and the closure of G4 may follow from the enriched types alone.
+
+**Orthogonality to §13sexagesima-secunda.** Neither sub-branch contradicts the Composite Catalog-Closure Theorem:
+
+* B0★-α uses the closed catalog as input and extracts consequences; it adds no operator and no envelope.
+* B0★-β promotes envelopes that were classified as *research-only* by the twelve Phase c traces. The §13triginta-* through §13sexagesima-* NEGATIVE verdicts say each envelope is **not forced** by the current canonical contract; they do **not** say each envelope is **incompatible** with a future canonical contract. The distinction is the same as between "not currently needed" and "ruled out". The Composite Theorem is a *minimality* statement (no envelope is forced); B0★-β is an orthogonal *maximality* question (can an envelope be admitted without breaking the nodal equation or U1–U6).
+
+In particular: a successful B0★-β closure would *not* require re-opening the twelve Phase c traces; it would re-classify one or more envelopes from *research-only* to *canonical* by supplying a derivation from the nodal equation that the type-hygiene programme did not search for (it was searching for forcing-axioms F1–F10, not admissibility-axioms).
+
+### .3 Mapping B0★-β candidates against §13septies B2 / G4 = RH relevance
+
+The twelve envelopes inventoried in §13sexagesima-secunda.1 are not equally relevant to the open content of T-HP (oscillatory half of $\mathcal{F}$, identified in §13septies.5 / N15 W3 with $\ker(\mathcal{R}_\infty)$ and the residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$). The structural-relevance ranking is:
+
+| Envelope | Promotion would add | Relevance to T-HP oscillatory half | Priority |
+|---|---|---|---|
+| $E_0$ = MeasureExtensionOnNuF | $\nu_f$ becomes a measure on the Pontryagin dual $\widehat{\mathbb{Z}} = S^1$ rather than a scalar in $\mathbb{R}^+$ | **HIGH** — Pontryagin-dual measure carries oscillatory harmonic content that a scalar $\nu_f$ discards; matches the Fourier-pair structure of the Weil–Guinand prime side | **P1** |
+| $E_6$ = NodeIndexedCouplingWeights | coupling weights $w_{ij}$ become per-node-indexed rather than graph-level scalars | **HIGH** — directly breaks Fact A of CCET-G_P14 (parameter uniformity); enables prime-arithmetic-dependent edge structure if the per-node rule is derivable from $\nu_f$ via a non-symmetric construction | **P2** |
+| $E_2$ = LiftedCircleBundleOnPhi | $\phi$ becomes a covering-space lift with integer winding $w \in \mathbb{Z}$ | **MEDIUM** — adds homotopy data; could carry oscillatory phase information but does not obviously break prime-relabelling symmetry on $G_{P14}$ | P3 |
+| $E_1$ = ContinuousFormExtensionOnEPI | EPI becomes a continuous form rather than a scalar | LOW — does not obviously connect to oscillatory-half closure | — |
+| $E_3$ = HiddenBifurcationStateOnDeltaNFR | $\Delta\mathrm{NFR}$ carries bifurcation-state aggregation | LOW — bifurcation structure not obviously oscillatory-relevant | — |
+| $E_4, E_5, E_{TC}, E_{CC}, E_{AC}, E_{UR}, E_{OC}$ | various derived-aggregate / control-surface enrichments | LOW — derived from primary types; do not add primary-type expressivity for $\mathcal{F}$ | — |
+
+**P1 (Pontryagin-dual measure $E_0$)** is the structurally most natural B0★-β candidate because the missing canonical content (oscillatory residue of $\mathcal{F}$) is exactly what a measure on the Pontryagin dual encodes that a scalar discards. The §13tricesima-quinta Phase c trace established that the **canonical implementation** does not need this enrichment; B0★-β-P1 asks the orthogonal question: can a measure-valued $\nu_f$ be **derived** from the nodal equation as canonically as the scalar version, and if so, does the resulting enriched dynamics close the oscillatory half?
+
+**P2 (per-node coupling weights $E_6$)** is structurally next-most-natural because Fact A of CCET-G_P14 is the principal obstruction to slot-prime intertwining inside the catalog. Promoting $E_6$ would mechanically dissolve Fact A and reopen the spectral-non-trivial sub-region of CCC constructions, *if* the per-node weight rule can be canonically derived from $\nu_f$ values via a construction that breaks the symmetric-function-of-scalars constraint.
+
+### .4 Pre-registered B0★ sub-route pre-conditions (acceptance / refutation criteria)
+
+For any B0★ closure attempt to be admissible at the canonical layer, the following five acceptance criteria must be met (mirroring the canonicity criteria of Conjecture T-HP §13septies.4 items 1–3, with item 0 added for B0★ specifically):
+
+* **C0 — No catalog modification.** The candidate adds no entry to `OPERATORS`, `OPERATOR_METADATA`, or `definitions.__all__`. (Verifiable by `git diff src/tnfr/operators/registry.py introspection.py definitions.py`.)
+* **C1 — Nodal-equation derivation.** The promoted envelope (B0★-β) or the extracted consequence (B0★-α) is *derived* from $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$ together with the canonical invariants 1–6 and structural constants $(\varphi, \gamma, \pi, e)$ only. A successful fit, post-hoc rationalisation, or external-axiom adoption fails C1.
+* **C2 — U1–U6 admissibility.** The enriched dynamics (B0★-β) or the extracted consequence (B0★-α) preserves the unified grammar U1–U6, including the continuity equation $\partial \rho / \partial t + \nabla \cdot \mathbf{J} = \mathcal{S}_{\mathrm{grammar}}$ with uniformly-bounded source term.
+* **C3 — Twelve-CDM consistency.** The candidate does not contradict any of the twelve B0–B11 Phase c traces in their literal source-code statements; in particular, it does not introduce a callable kernel, measure, operator-valued intermediate, matrix lift, or Banach-derivative apparatus at any of the twelve surfaces *as a forced canonical contract* (re-classification from research-only to canonical is permitted; introduction of a new forcing axiom is not).
+* **C4 — T-HP discharge.** The candidate, when composed with the existing canonical catalog and the smooth half of $\mathcal{F}$ closed by P28/P30, produces an operator on $\mathcal{H}_{\mathrm{tet}}$ whose spectrum coincides with $\{\gamma_n\}_{n \ge 1}$ (Conjecture T-HP item 3).
+
+Failure of any C0–C4 disqualifies the candidate as a B0★ closure. C4 is the empirical/derivational core; C0–C3 are admissibility filters.
+
+### .5 What B0★ does NOT claim
+
+* B0★ is a **pre-registration of a fourth branch**, not a closure attempt. No envelope is promoted in this commit; no consequence is extracted; no acceptance criterion is yet evaluated against P1 or P2.
+* B0★ does **not** advance G4 = RH. The branch is structurally legitimate but its closure content is open.
+* B0★ does **not** contradict §13sexagesima-secunda. The Composite Catalog-Closure Theorem is a minimality statement; B0★ is an orthogonal maximality question.
+* B0★ does **not** re-open the twelve Phase c NEGATIVE verdicts. Those traces established that the current canonical implementation does not *force* any enrichment; B0★-β asks whether an enrichment can be *admitted* by a future canonical derivation.
+* B0★ does **not** weaken CCET-G_P14. CCET is a closure of CCC constructions on $G_{P14}$ under closure rules C1–C5; B0★-β-P2 (promotion of $E_6$) would change the inputs to C1 (Fact A no longer holds), not the closure rules themselves, so a B0★-β-P2 closure would constitute an extension *orthogonal* to CCET, not a refutation of it.
+
+### .6 Reduced §13septies trichotomy with B0★ pre-registered
+
+With B0★ pre-registered as the fourth branch, the §13septies decision space is:
+
+* **B1** — canonical-catalog closure: CLOSED on $G_{P14}$ (CCET, §13vicies-novies.16); open in principle off $G_{P14}$, but the off-$G_{P14}$ sub-route requires a canonically-derived graph $G' \ne G_{P14}$ and is structurally constrained by the canonicity-arithmetic separation noted in CCET .§13vicies-novies.16's honest-scope clause.
+* **B2** — new canonical operator: CLOSED at the catalog-API level by §13sexagesima-prima (B11 OCD NEGATIVE). No 14th operator is reachable from the public API.
+* **B0★** — scope-expansion of existing theory (this section). OPEN; pre-registered with sub-branches B0★-α (deeper exploitation) and B0★-β (envelope promotion, priorities P1 = $E_0$, P2 = $E_6$).
+* **B3** — no TNFR closure: permitted residual outcome if B0★ is also refuted across all sub-branches and B1-off-$G_{P14}$ is also closed.
+
+The decision pressure that §13vicies-novies.16's "Net consequence for the program" placed on **B2 or B3** is therefore re-routed: with B2 catalog-API-closed by B11, the program-level pressure now lies on **B0★ or B3**. Per-envelope analysis of B0★-β-P1 and B0★-β-P2, plus an enumeration of B0★-α candidates, is deferred to subsequent commits.
+
+### .7 Cross-references
+
+* §13septies — Conjecture T-HP and original B1/B2/B3 trichotomy.
+* §13vicies-novies.16 — CCET-G_P14 (B1 closure on $G_{P14}$).
+* §13triginta-prima through §13triginta-tertia — T-$\nu_f$ NEGATIVE (Phase c, $E_0$ research-only).
+* §13triginta-quarta through §13triginta-sexta — T-EPI NEGATIVE (Phase c, $E_1$ research-only).
+* §13triginta-octava through §13triginta-decima — T-$\phi$ NEGATIVE (Phase c, $E_2$ research-only).
+* §13quinquaginta-prima — B6 SWD Phase c NEGATIVE ($E_6$ research-only).
+* §13sexagesima — B11 OCD Phase a.
+* §13sexagesima-prima — B11 OCD Phase c NEGATIVE ($E_{OC}$ research-only; no 14th operator reachable).
+* §13sexagesima-secunda — Composite Catalog-Closure Theorem.
+* `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` — full B0–B11 programme.
+* AGENTS.md §"Program Status (May 2026, frozen)" and §"B1 sub-route status" — program-level status mirrors (to be updated in companion edit if B0★ is promoted from pre-registration to active investigation).
+
