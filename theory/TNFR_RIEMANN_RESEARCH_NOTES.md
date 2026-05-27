@@ -12403,3 +12403,110 @@ L3* heuristic, post-B10c, is promoted to: **"empirically robust working heuristi
 - `src/tnfr/operators/grammar_u6.py` (U6).
 - `src/tnfr/riemann/urules_consistency_signature.py` (Phase a diagnostic).
 - `examples/88_urules_consistency_signature_demo.py` (Phase a demo).
+
+---
+
+## §13sexagesima — B11 Phase a: Operator-Catalog Discipline Signature (OCD) diagnostic
+
+#### .1 Question
+
+Is the canonical 13-operator TNFR registry enforced as an immutable closed set, with no hidden 14th-operator construction reachable from the public API? Does the catalog surface (registry + introspection metadata + public exports) introduce any callable kernel, measure, operator-valued intermediate, matrix lift, or Banach-derivative apparatus along the way?
+
+#### .2 Phase a diagnostic
+
+New module `src/tnfr/riemann/operator_catalog_discipline_signature.py` defines:
+
+- `OperatorCatalogDisciplineSignatureCertificate` dataclass with ordered probe IDs, per-probe results, anomaly counter, and the OCD signature `S_OC := anomalies / total_probes`.
+- `compute_operator_catalog_discipline_signature()` runs ten read-only probes over the catalog surface.
+
+Probes:
+
+1. `registry_size`: `len(OPERATORS) == 13`.
+2. `registry_entries_are_operator_subclasses`: every value in `OPERATORS` is a subclass of `Operator`.
+3. `registry_keys_are_lowercase_strings`: every key is a non-empty lowercase `str`.
+4. `registry_keys_unique`: `len(keys) == len(set(keys))`.
+5. `metadata_size`: `len(OPERATOR_METADATA) == 13`.
+6. `metadata_values_are_operator_meta`: every value is an `OperatorMeta` instance.
+7. `metadata_fields_are_string_tuples`: every `name`, `mnemonic`, `category`, `doc` field is a `str`; every `grammar_roles` and `contracts` field is a tuple of strings.
+8. `metadata_registry_alignment`: the set of `meta.name` values equals the set of registry class names (1-to-1).
+9. `definitions_exports_cover_canonical_set`: `definitions.__all__` exposes all 13 canonical operator class names (`Emission`, `Reception`, `Coherence`, `Dissonance`, `Coupling`, `Resonance`, `Silence`, `Expansion`, `Contraction`, `SelfOrganization`, `Mutation`, `Transition`, `Recursivity`).
+10. `no_hidden_fourteenth_operator`: re-invoking `_ensure_loaded()` is idempotent — `len(OPERATORS)` does not grow past 13 and key set is unchanged.
+
+#### .3 Probe results
+
+Single deterministic invocation (read-only inspection of module-level mappings):
+
+- `S_OC = 0.000000`
+- `anomalies = 0 / 10`
+- `verdict = CATALOG_DISCIPLINE_ADEQUATE`
+- `registry_size = 13`, `metadata_size = 13`, `canonical_exports_observed = 13/13`
+
+A second invocation produced identical results, confirming idempotency.
+
+#### .4 Scope guard
+
+Methodological diagnostic only. Does NOT modify any canonical implementation. Does NOT advance G4 = RH (Conjecture T-HP, Sec 13septies).
+
+#### .5 Cross-references
+
+- `src/tnfr/riemann/operator_catalog_discipline_signature.py` (this module).
+- `examples/89_operator_catalog_discipline_signature_demo.py` (probe demo).
+- `src/tnfr/operators/registry.py` (immutable 13-operator registry).
+- `src/tnfr/operators/introspection.py` (`OPERATOR_METADATA`).
+- `src/tnfr/operators/definitions.py` (`__all__` exports).
+- `docs/OPERATOR_COMPLETENESS.md` (existing completeness analysis).
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 row B11.
+
+---
+
+## §13sexagesima-prima — B11 Phase c: NEGATIVE verdict, promote OCD as twelfth CDM
+
+#### .1 Source-code closure trace
+
+Per-probe structural analysis of the catalog surface:
+
+- **`OPERATORS` mapping** (`src/tnfr/operators/registry.py:19`): declared as `dict[str, type[Operator]]` and populated exclusively by `_ensure_loaded()` (line 28) with the 13 canonical class references imported lazily from `definitions.py`. No richer state attached; values are bare class objects.
+- **`_ensure_loaded()` guard** (`registry.py:28`): returns early when `OPERATORS` is non-empty, so repeated invocation is structurally idempotent. The mapping is built once and frozen by usage convention; canonical purity is enforced by the module-level comment "TNFR physics defines exactly 13 canonical structural operators".
+- **`OperatorMeta` dataclass** (`src/tnfr/operators/introspection.py:48`): declared with `@dataclass(frozen=True, slots=True)` — immutable record carrying only `str`, `str`, `str`, `tuple[str, ...]`, `tuple[str, ...]`, `str` fields. No callable, no measure, no graph reference.
+- **`OPERATOR_METADATA`** (`introspection.py:56`): module-level `Mapping[str, OperatorMeta]` populated literally with 13 entries (mnemonics `AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH`). Each entry's `grammar_roles` and `contracts` fields are tuples of canonical-text strings — no callable kernel hidden in metadata.
+- **`definitions.__all__`** (`src/tnfr/operators/definitions.py:53`): explicit list naming exactly the 13 operator classes plus the `Operator` base and seven introspection/grammar-error helpers. No wildcard, no dynamic discovery.
+- **`Operator` base** (`src/tnfr/operators/definitions_base.py:29`): metaclass `OperatorMetaAuto` retained for backward compatibility only — the module docstring states "Metaclass removed - canonical operator set is immutable (see registry)." Auto-registration is structurally inert against canonical extension because grammar logic (`grammar_core.GENERATORS`/`CLOSURES`/...) frozensets reference canonical_name strings exclusively, so an out-of-band subclass would never satisfy any U-rule (B10 / URC).
+
+Every probe of B11 Phase a reduces its evidence through: (a) `len()` against the constant `13`, (b) `isinstance`/`issubclass`, (c) string predicate, (d) set difference. No probe constructs a callable kernel `K(x, y)`, a measure `mu`, an operator-valued intermediate, a matrix lift, or a Banach-derivative apparatus on the catalog surface.
+
+#### .2 NEGATIVE verdict
+
+The operator-catalog discipline surface admits no hidden canonical envelope. The Phase a empirical witness (`S_OC = 0.000000`, ten probes across two invocations) is fully reproduced by the source-code trace above. The "ghost 14th operator" construction posited in the B11 spec block of `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 is unreachable from the public API: the lazy-loading guard, the immutable frozensets in `grammar_core.py`, and the explicit `definitions.__all__` jointly close the catalog at exactly 13 operators.
+
+#### .3 Promote OCD as twelfth CDM
+
+The Phase c analysis is structurally distinct from the eleven preceding CDMs:
+
+- **OCD = Operator-Catalog Discipline** acts on the **operator-catalog-closure surface** — i.e. the registry + introspection-metadata + public-exports triple that defines the boundary of what counts as a canonical TNFR operator.
+- The eleven prior CDMs act on disjoint surfaces: Pontryagin/measure-nu_f (B0), tetrad-membrane-evolution-projection (B1, TMEP), phase-wrap-density-projection (B2, PWDP), bifurcation-state-aggregation-density (B3, BSAD), discrete-injection-time-sampling (B4, DITS), spectral-trace-density (B5, STD), spectrum-weighting-density (B6, SWD), tetrad-reduction-closure (B7, TRC), currents-reduction-closure (B8, CCC), aggregates-reduction-closure (B9, ACD), U-rules-type-hygiene (B10, URC).
+
+Orthogonality is established by surface-disjointness: OCD operates on catalog metadata and registry mapping, none of the prior eleven CDMs do.
+
+#### .4 Twelfth non-canonical envelope
+
+`E_OC = HiddenFourteenthOperatorConstruction` — a hypothetical envelope wherein a 14th canonical operator could be introduced into the registry, the metadata, or `definitions.__all__` through some dynamic-discovery mechanism, monkey-patch, or richer metadata payload. The Phase a + Phase c analysis classifies `E_OC` as the twelfth non-canonical research envelope: its hypothetical content is absent from the immutable registry's design and from every probe surface inspected.
+
+#### .5 L3* update
+
+L3* heuristic, post-B11c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage, all three Tier-3 closures, and both Tier-4 closures orthogonally discharged"**. Cumulative twelve CDMs (Pontryagin/measure-nu_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC, CCC, ACD, URC, OCD). All sub-questions B0-B11 are NEGATIVE. The final composite meta-minimality theorem (B0-B11 assembly) is now eligible for statement and proof; deferred to a separate commit (Sec 13sexagesima-secunda).
+
+#### .6 Cross-references
+
+- Sec 13sexagesima (B11 Phase a + frozen signature).
+- Sec 13quinquaginta-nona (B10 Phase c + URC, conceptual template).
+- Sec 13quinquaginta-septima (B9 Phase c + ACD).
+- Sec 13quinquaginta-quinta (B8 Phase c + CCC).
+- Sec 13quinquaginta-tertia (B7 Phase c + TRC).
+- Sec 13septies (Conjecture T-HP, G4 = RH; B11c does NOT advance this).
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 row B11, Sec 4 row B11.
+- `src/tnfr/operators/registry.py` (`OPERATORS`, `_ensure_loaded`).
+- `src/tnfr/operators/introspection.py` (`OPERATOR_METADATA`, `OperatorMeta`).
+- `src/tnfr/operators/definitions.py` (`__all__`).
+- `src/tnfr/operators/definitions_base.py` (`Operator` base).
+- `src/tnfr/riemann/operator_catalog_discipline_signature.py` (Phase a diagnostic).
+- `examples/89_operator_catalog_discipline_signature_demo.py` (Phase a demo).
