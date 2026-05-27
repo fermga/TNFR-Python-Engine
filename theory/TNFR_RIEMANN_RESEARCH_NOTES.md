@@ -13311,3 +13311,92 @@ Combining §13sexagesima-prima (B2 catalog-API-closed), §13sexagesima-tertia (B
 * `src/tnfr/config/defaults_core.py::DNFR_WEIGHTS, SI_WEIGHTS, SELECTOR_WEIGHTS` — global-scalar coupling-weight anchors referenced in §13sexagesima-sexta.4 (C1 slot-level argument for P2).
 * `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 existence proof referenced in §13sexagesima-sexta.3 (C4 argument for P1).
 * AGENTS.md §"B0★ pre-registration" and §"Program Status (May 2026, frozen)" — program-level status mirrors (companion edit in this commit reflects the HIGH closure and the MEDIUM/LOW residual).
+
+## §13sexagesima-septima — B0★-β-P3 (Dirección A: ΔNFR carrier-type / slot promotion) Analytical Closure (May 27, 2026)
+
+**Status:** ANALYTICAL CLOSURE (no numerical experiment — every canonically-derivable reading of "promote ΔNFR beyond scalar field" reduces to a structural obstruction already established elsewhere in these notes). **Pre-registration of candidate:** this section itself (no prior dedicated pre-registration; Dirección A was raised in the program-level discussion accompanying §13sexagesima-sexta as the "dual lever" symmetric counterpart of P1). **Acceptance criteria:** C0–C4 of §13sexagesima-tertia.4. **Verdict:** Dirección A is **structurally CLOSED** at the canonical layer across its three canonically-derivable readings. **Net:** B0★-β residual narrows to {E2 LiftedCircleBundleOnPhi at MEDIUM} ∪ {nine LOW envelopes}; §13septies decision pressure remains on (a) Q5 line-graph from B0★-α, (b) the B0★-β MEDIUM/LOW residual, (c) B3.
+
+### §13sexagesima-septima.1 — Motivation and the three canonically-derivable readings
+
+The §13triginta-tertia.5 fact that **spectral richness of $\partial \mathrm{EPI}/\partial t$ lives in ΔNFR(t), not in $\nu_f$** suggests, at first glance, that the symmetric candidate to P1 = E0 (carrier-type promotion of $\nu_f$) — namely **carrier-type promotion of ΔNFR** — should be evaluated as a separate B0★-β candidate. Call this "Dirección A". Closer reading reveals that "ΔNFR promotion" is not a single proposal but a family of three structurally distinct readings, each of which has already been touched by an existing canonical result:
+
+| Reading | Promotion (informal) | Structural content |
+|---|---|---|
+| **A1** | $\Delta\mathrm{NFR}_j: \mathbb{R} \to \mathcal{M}(X)$ for some label space $X$ | Spatial measure-valued field, per node |
+| **A2** | $\mathrm{EPI}_j \in \mathcal{H}_\mathrm{int}$ Hilbert space ⇒ $\Delta\mathrm{NFR}_j \in B(\mathcal{H}_\mathrm{int})$ | Operator-valued ΔNFR via internal slot lift |
+| **A3** | $\Delta\mathrm{NFR}(t) \in L^2(\mathbb{R}_t)$ exploited as temporal Fourier object | Spectral content of dynamics in time |
+
+Each reading is evaluated against C0–C4 below. Method is identical to §13sexagesima-sexta: analytical reduction to existing Phase-c canonical results, no fresh numerical run.
+
+### §13sexagesima-septima.2 — Honest scope
+
+* NOT a proof of RH. G4 and GRH_χ remain open.
+* NOT a refutation of T-HP. The smooth half closed by P28 / P30 is unchanged.
+* NOT a refutation of B0★ as a whole. The B0★-β MEDIUM/LOW residual remains open; B0★-α residual {Q5} remains open.
+* NOT a re-opening of any prior Phase-c verdict. This section uses §13triginta-tertia, §13vicies-novies.15–16, N15 W3, and the L-track parity layer (P32–P49) as inputs.
+* Honors C0 (no catalog modification) and C3 (twelve-CDM consistency) by construction.
+
+### §13sexagesima-septima.3 — A1 (carrier-type promotion of ΔNFR per node): FAIL by direct reduction to the P1 closure pattern
+
+**C0** trivially satisfied (carrier-type promotion of a field does not modify `OPERATORS`, `OPERATOR_METADATA`, `definitions.__all__`, the nodal equation, or U1–U6).
+
+**C1 NOT-DERIVED.** The lift $\Delta\mathrm{NFR}_j: \mathbb{R} \to \mathcal{M}(X)$ requires external specification of three independent choices: (i) the label space $X$ on which the measure lives; (ii) how the canonical neighbor-difference recipe `compute_delta_nfr` (whose source-level signature returns a `float` per node) projects to a measure; (iii) how the time-integral $\int_0^t \nu_f(\tau) \cdot \Delta\mathrm{NFR}(\tau)\,d\tau$ in the nodal equation interprets a measure-valued integrand (Bochner integral, distributional pairing, etc.). None of these three choices is forced by the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`. This is the same structural problem as P1 (cf. §13sexagesima-sexta.3): the canonical nodal equation has both `νf` and `ΔNFR` as scalar fields by construction in `compute_expected_depi_dt`; promoting either to a measure requires an external admissibility axiom not derivable from the bare nodal equation. Reduction: `(P-ΔNFR-Bijectivity)` is the exact analogue of `(P-νf-Bijectivity)` (§13triginta-secunda.6 / §13triginta-tertia.6), with the same `FORWARD_INDEPENDENT_OF_BACKWARD` structure.
+
+**C4 FAILS** by direct argument, even under permissive C1. Three independent obstructions, each of which alone is sufficient:
+
+(i) **§13triginta-tertia.5 reread.** The "spectral richness in ΔNFR(t)" of §13triginta-tertia.5 is a statement about ΔNFR(t) as a *time series* of scalars, not about per-node ΔNFR carrying internal spectral structure at a fixed time. The dynamics generate rich temporal Fourier content even with scalar per-node ΔNFR (because the graph coupling redistributes phase). A1 is therefore answering a different structural question than §13triginta-tertia.5 raises; A1's per-node measure structure is not the locus identified by §13triginta-tertia.5 as "where the spectral richness lives".
+
+(ii) **P14 existence proof (`src/tnfr/riemann/prime_ladder_hamiltonian.py`).** The full prime-ladder spectrum $\{k \log p\}$ — i.e., the data that drives the von Mangoldt / Weil–Guinand prime side, equivalently $-\zeta'(s)/\zeta(s) = \sum_n \Lambda(n) n^{-s}$ — is reproduced by P14 with **scalar** ΔNFR per node, encoded through the prime-indexed coordinates of the diagonal potential $V_\sigma$. The "measure content" of P14 is not in ΔNFR; it is in the spectral measure of the self-adjoint operator $H_{P14} = L_k + V_\sigma$. Carrier-type promotion of ΔNFR is therefore not required to reach the closed half of T-HP, and provides no canonical lever on the open half.
+
+(iii) **§13septies oscillatory residue invariance.** The residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$ lives in $\ker(\mathcal{R}_\infty) \cap \mathrm{Fix}(S_n)^\perp$. Both invariants are stable under carrier-type promotion of ΔNFR for the same two reasons that pinned P1: $\ker(\mathcal{R}_\infty)$ is determined by the REMESH transfer-matrix structure on $H^2(D)$ (N15 §§1–8), which is carrier-type independent; $\mathrm{Fix}(S_n)^\perp$ is determined by parameter uniformity (CCET-G_P14 Fact A, §13vicies-novies.16), which is preserved if the measure type is graph-uniform (the only canonically-derivable case under C0 / C2).
+
+**Net A1:** FAIL ⇒ **CLOSED**, structurally identical to P1.
+
+### §13sexagesima-septima.4 — A2 (slot-internal Hilbert-space promotion of EPI): already CLOSED by §13vicies-novies.15
+
+The reading "ΔNFR as operator-valued via promotion of $\mathrm{EPI}_j$ to a vector in some internal Hilbert space $\mathcal{H}_\mathrm{int}$" is, structurally, exactly the **R∞-1b** sub-route of B1 pre-registered at §13vicies-novies.14 and executed at §13vicies-novies.15. The canonical tensor-product lifts $S_\mathrm{IL}^{\mathrm{spec}} = I_{\tau_g+1} \otimes \exp(-\eta H_{P14})$ and $M_\mathrm{REMESH} = M \otimes I_N$ on the canonical $\mathcal{H}_\mathrm{int}$ returned `INDETERMINATE_DEGENERATE_CONSTRUCTION` with $|D_\mathrm{canonical} - D_\mathrm{shuffled}| = 1.08 \times 10^{-13}$ (machine-precision zero), because the prime-relabelling unitary $U_\sigma = I_{\tau_g+1} \otimes P_\sigma$ conjugates the spectral-channel operator to its shuffled image. The spectral-channel extension of the Euler-Orthogonality Lemma (§13vicies-novies.15) and the Canonical Catalog Equivariance Theorem on G_P14 (Theorem 2, §13vicies-novies.16) jointly close this sub-route within the canonical catalog.
+
+**Net A2:** CLOSED by §13vicies-novies.15.
+
+Note: A2 is not strictly a "ΔNFR carrier-type promotion" in the field-theoretic sense — it is a slot-internal lift of EPI that induces an operator-valued ΔNFR. But the relevant structural test (S_n equivariance on G_P14) is identical to A1, and the verdict is the same.
+
+### §13sexagesima-septima.5 — A3 (temporal Fourier content of ΔNFR(t)): SUPERSEDED by the L-track parity layer
+
+The temporal Fourier content of ΔNFR(t) — i.e., the spectral resolution of ΔNFR viewed as an element of $L^2(\mathbb{R}_t)$ along a trajectory — is **already exploited** at the canonical layer by the χ-twisted L-track parity infrastructure (P32–P49) and by the original ζ-track Hermite / admissible-family sweeps (P19, P21, P25, P31). Concretely, the canonical modules `src/tnfr/riemann/dirichlet_l*.py`, `src/tnfr/riemann/twisted_*.py`, `src/tnfr/riemann/admissible_family_sweep.py`, and `src/tnfr/riemann/oscillatory_correction.py` consume ΔNFR-derived temporal data and feed it into the twisted Weil–Guinand explicit formula, the Li–Keiper twisted positivity diagnostic, the Hermite admissible-family sweeps, and the prime-ladder Newton-step oscillatory correction. None of these P17–P49 components closes GRH_χ or G4 = RH; they form the full attack-surface parity. Re-introducing "ΔNFR temporal Fourier" as a fresh B0★-β candidate would therefore duplicate existing canonical infrastructure without adding a new structural lever.
+
+**Net A3:** SUPERSEDED by P17–P49. Not an open B0★-β candidate.
+
+### §13sexagesima-septima.6 — Net structural consequence
+
+| Reading | Status | Reduction |
+|---|---|---|
+| A1 (carrier-type promotion of ΔNFR per node) | FAIL ⇒ CLOSED | §13triginta-tertia.6 + P14 (existence) + N15 W3 / §13septies + CCET §13vicies-novies.16 |
+| A2 (slot-internal Hilbert lift on EPI inducing operator-valued ΔNFR) | CLOSED | §13vicies-novies.15 (R∞-1b spectral channel) |
+| A3 (temporal Fourier content of ΔNFR(t)) | SUPERSEDED | P17–P49 ζ-track and χ-twisted L-track parity layer |
+
+**Updated §13septies decision space after §13sexagesima-septima:**
+
+| Branch | Status |
+|---|---|
+| B1 (off-catalog edge / spectral channel on G_P14) | CLOSED on G_P14 (§13vicies-novies.16); off-G_P14 inherits B2 by construction |
+| B2 (new canonical operator) | catalog-API-closed (§13sexagesima-prima) |
+| B0★-α (deeper exploitation) | HIGH/MEDIUM closed (§13sexagesima-quinta); residual = {Q5 line graph} |
+| B0★-β (envelope promotion) | HIGH closed (§13sexagesima-sexta); Dirección A closed (§13sexagesima-septima); residual = {E2 MEDIUM} ∪ {nine LOW envelopes} |
+| B3 (no TNFR closure of RH) | residual; pressure further increased by §13sexagesima-septima |
+
+**Honest structural reading.** The Phase-c pattern continues to hold: every canonically-derivable promotion of a scalar field in the nodal equation (νf in P1, per-node coupling weights in P2, ΔNFR in P3 = Dirección A) is closed by reduction to a previously-established Phase-c obstruction. The persistent open candidates are (i) Q5 (a graph-construction route that escapes CCET because the line-graph action of $S_n$ on edges is not tensor-product), (ii) E2 LiftedCircleBundleOnPhi (a topological enrichment of φ that breaks $S_n$ at the bundle level rather than at the coupling-constant level — i.e., not addressed by CCET Fact A), and (iii) the nine LOW envelopes. The pattern strongly suggests — without proving — that any successful B0★-β closure of G4 = RH must break $S_n$ either through graph construction (B0★-α route, Q5) or through topological / fiber-bundle structure (B0★-β E2), rather than through scalar-to-richer-carrier promotions of fields in the nodal equation itself.
+
+### §13sexagesima-septima.7 — Cross-references
+
+* §13sexagesima-tertia.3, §13sexagesima-tertia.4 — B0★ pre-registration and acceptance criteria C0–C4 (this section's evaluation framework).
+* §13sexagesima-sexta.3 — P1 closure pattern (template for A1's C1 / C4 arguments).
+* §13triginta-tertia.5, .6 — spectral-richness locus in ΔNFR(t) (temporal, not per-node-carrier); `FORWARD_INDEPENDENT_OF_BACKWARD` template for `(P-ΔNFR-Bijectivity)`.
+* §13vicies-novies.14, .15 — R∞-1b pre-registration and spectral-channel verdict (used in A2 closure).
+* §13vicies-novies.16 — CCET-G_P14 Theorem 2 (used in A1 C4 third obstruction and A2).
+* §13septies — Conjecture T-HP, smooth/oscillatory split, identification of $\ker(\mathcal{R}_\infty)$ with the oscillatory residue $S(T)$ (used in A1 C4 third obstruction).
+* N15 §§1–8, §§15–23 — REMESH-∞ projection; carrier-type independence of $\ker(\mathcal{R}_\infty)$; W3 spectrum universality.
+* §13sexagesima-quinta.5, §13sexagesima-sexta.5 — §13septies decision-space mirrors, updated here in §13sexagesima-septima.6.
+* `src/tnfr/operators/nodal_equation.py::compute_expected_depi_dt` — literal `vf * dnfr` with both factors `float`; canonical scalar implementation referenced in A1 C1.
+* `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 existence proof referenced in A1 C4 (ii).
+* `src/tnfr/riemann/dirichlet_l*.py`, `src/tnfr/riemann/twisted_*.py`, `src/tnfr/riemann/admissible_family_sweep.py`, `src/tnfr/riemann/oscillatory_correction.py` — L-track parity infrastructure referenced in A3 SUPERSEDED verdict.
+* AGENTS.md §"B0★ pre-registration" — program-level status mirror (companion edit in this commit reflects the Dirección A closure and the narrowed B0★-β residual).
