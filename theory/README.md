@@ -23,7 +23,8 @@ Every theory document maps to executable examples and SDK entry points:
 | [PHYSICAL_REGIME_CORRESPONDENCES.md](PHYSICAL_REGIME_CORRESPONDENCES.md) | [11](../examples/11_classical_limit_comparison.py)–[15](../examples/15_train_crossing_demo.py) | `tnfr.physics.classical_mechanics`, `tnfr.physics.quantum_mechanics` |
 | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | [20](../examples/20_eigenmode_tetrad.py), [33](../examples/33_complex_field_unification.py), [unified_fields](../examples/unified_fields_showcase.py) | `.tensor_invariants()`, `.emergent_fields()` |
 | [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) | [16](../examples/16_riemann_operator_demo.py)–[25](../examples/25_analytical_convergence_demo.py) | `tnfr.riemann` |
-| [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) | [16](../examples/16_riemann_operator_demo.py), [18](../examples/18_riemann_convergence_proof.py)–[23](../examples/23_random_ensemble_rmt_demo.py), [25](../examples/25_analytical_convergence_demo.py) | `tnfr.riemann` |
+| [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) | [16](../examples/16_riemann_operator_demo.py), [18](../examples/18_riemann_convergence_proof.py)–[23](../examples/23_random_ensemble_rmt_demo.py), [25](../examples/25_analytical_convergence_demo.py), 41–76 (P12–P49 ζ-track + χ-twisted L-track), 78–89 (Type-Hygiene B0–B11) | `tnfr.riemann` |
+| [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) | 78–89 (B0–B11 type-signature demos) | `tnfr.riemann` (type-signature modules) |
 | [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | [04](../examples/04_operator_sequences.py), [10](../examples/10_simplified_sdk_showcase.py), [29](../examples/29_lyapunov_stability_demo.py), [36](../examples/36_grammar_violation_detector.py), [37](../examples/37_operator_tetrad_synergy.py), [38](../examples/38_grammar_energy_landscape.py), [39](../examples/39_nodal_equation_decomposition.py) | `.evolve_grammar_aware()`, `.integrity_check()`, `Operator.__call__()` |
 | [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) | [16](../examples/16_riemann_operator_demo.py), [40](../examples/40_arithmetic_number_theory.py) | `tnfr.mathematics.number_theory`, `tnfr.riemann` |
 | [GLOSSARY.md](GLOSSARY.md) | All | All (terminology reference) |
@@ -44,6 +45,7 @@ Every theory document maps to executable examples and SDK entry points:
 | [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | Lagrangian/Hamiltonian formulation of structural dynamics |
 | [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) | TNFR–Riemann program (18 sections + 11 appendices) |
 | [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) | **N15 catalog-completeness theorem** (May 2026, COMPLETE): asymptotic projection $\mathcal{R}_\infty$ on $H^2(D)$, projected Noether/energy ($Q_\infty$, $V_\infty$), uniform spectral density, Branch A verdict; 13-op TNFR catalog closed under the REMESH-∞ limit |
+| [CATALOG_TYPE_HYGIENE_PROGRAMME.md](CATALOG_TYPE_HYGIENE_PROGRAMME.md) | **Catalog Type-Hygiene Programme** (CLOSED 2026-05-27): twelve orthogonal CDMs B0–B11, all NEGATIVE; composite meta-minimality theorem — 13-operator catalog types minimal and complete; twelve non-canonical research envelopes classified |
 | [GLOSSARY.md](GLOSSARY.md) | Operational definitions and terminology |
 | [TNFR.pdf](TNFR.pdf) | Historical foundational document |
 
