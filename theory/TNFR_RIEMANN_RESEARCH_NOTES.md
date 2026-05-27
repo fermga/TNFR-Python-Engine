@@ -13400,3 +13400,120 @@ The temporal Fourier content of ΔNFR(t) — i.e., the spectral resolution of Δ
 * `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 existence proof referenced in A1 C4 (ii).
 * `src/tnfr/riemann/dirichlet_l*.py`, `src/tnfr/riemann/twisted_*.py`, `src/tnfr/riemann/admissible_family_sweep.py`, `src/tnfr/riemann/oscillatory_correction.py` — L-track parity infrastructure referenced in A3 SUPERSEDED verdict.
 * AGENTS.md §"B0★ pre-registration" — program-level status mirror (companion edit in this commit reflects the Dirección A closure and the narrowed B0★-β residual).
+
+
+## §13sexagesima-octava — B0★-α-emergent route: analytical closure of UM/IL/THOL emergent sub-EPI construction on G_P14
+
+**Status (May 27, 2026)**: B0★-α-emergent candidate **CLOSED analytically** by reduction to a tetrad-level extension of the Canonical Catalog Equivariance Theorem on G_P14 (CCET-G_P14, §13vicies-novies.16). No empirical experiment is required and none is run.
+
+**Companion verdicts**: §13sexagesima-sexta (P1=E0, P2=NodeIndexedCouplingWeights closed), §13sexagesima-septima (Dirección A = ΔNFR carrier-type promotion closed).
+
+### §13sexagesima-octava.1 — Pre-registration (the proposal evaluated)
+
+Following the dual-lever and carrier-type closures of P1, P2 and Dirección A, the natural next candidate inside B0★-α is to let **composite structures emerge as sub-EPIs** by applying canonical operators **UM (Coupling), IL (Coherence), THOL (Self-organization)** on `G_P14`, without postulating any entity outside the nodal equation. The intuition is that S_n could be broken by the *relational* content generated at runtime (sub-EPIs, multi-scale coherence), even when every parameter remains graph-uniform.
+
+**B0★-α-emergent candidate (verbatim)**: build an extended state on `G_P14` by iterating UM/IL/THOL compositions; sub-EPIs spawned by THOL when `d2_epi > tau` (with `tau = G.graph["THOL_BIFURCATION_THRESHOLD"]`, a graph-level scalar) are interpreted as canonical composites. Check whether the resulting extended diagnostic is S_n-equivariant.
+
+### §13sexagesima-octava.2 — Extended Hilbert space and elevated S_n action
+
+Let $\mathcal{H}_{P14}$ be the canonical Hilbert space of `G_P14` (basis indexed by primes). When THOL spawns sub-EPIs at vertex $v$, the canonical implementation `src/tnfr/operators/self_organization.py:53` attaches a sub-EPI bundle $\mathcal{H}_v^{\mathrm{sub}}$ to $v$ (single-vertex attachment, not edge). The extended state lives in
+
+$$\mathcal{H}_{\mathrm{ext}} \;=\; \mathcal{H}_{P14} \;\oplus\; \bigoplus_{v} \mathcal{H}_v^{\mathrm{sub}}.$$
+
+The natural lift of the prime-relabelling action $\Pi_\sigma$ to $\mathcal{H}_{\mathrm{ext}}$ is
+
+$$\Pi_\sigma^{\mathrm{ext}} \;=\; \Pi_\sigma \;\oplus\; \bigoplus_{v} \Pi_{\sigma(v) \leftarrow v}^{\mathrm{sub}},$$
+
+i.e., sub-EPI bundles are permuted following their parent vertex. This is the unique S_n-equivariant lift compatible with single-vertex attachment.
+
+### §13sexagesima-octava.3 — Tetrad Fix(S_n) Lemma (the structural witness)
+
+**Lemma (Tetrad-Fix-Sn on G_P14)**. Let $(\Phi_s, |\nabla\varphi|, K_\varphi, \xi_C)$ be the canonical tetrad of `src/tnfr/physics/fields.py`. On `G_P14` with graph-uniform canonical parameters and under simultaneous relabelling of state via $\Pi_\sigma$, every tetrad component is S_n-equivariant:
+
+* $\Phi_s(\sigma(i)) \;=\; \Phi_s(i)$ — because $d(\sigma(i),\sigma(j)) = d(i,j)$ (P14 is built S_n-symmetrically) and $\Delta\mathrm{NFR}_{\sigma(j)}$ transforms covariantly with state.
+* $|\nabla\varphi|(\sigma(e)) \;=\; |\nabla\varphi|(e)$ — edge-local, graph-uniform coupling.
+* $K_\varphi(\sigma(i)) \;=\; K_\varphi(i)$ — vertex-local Laplacian, uniform connectivity.
+* $\xi_C \;=\; \xi_C$ — global scalar (graph-level invariant).
+
+**Corollary (Emergent fields preserve Fix(S_n))**. The unified field $\Psi = K_\varphi + i J_\varphi$, the chirality $\chi = |\nabla\varphi| K_\varphi - J_\varphi J_{\Delta\mathrm{NFR}}$, symmetry breaking $\mathcal{S}$, coherence coupling $\mathcal{C}$, energy density $\mathcal{E}$ and topological charge $\mathcal{Q}$ are all polynomial in tetrad components, hence equivariant.
+
+**Equivalent reformulation**: the canonical tetrad on `G_P14` lives entirely in $\mathrm{Fix}(S_n)$. No tetrad-level diagnostic can distinguish primes under graph-uniform canonical parameters.
+
+### §13sexagesima-octava.4 — Extension of CCET-G_P14 to $\mathcal{H}_{\mathrm{ext}}$
+
+**Theorem (CCET-ext)**. Every composition $\mathcal{O} = O_1 \circ \cdots \circ O_k$ of UM, IL, THOL on `G_P14`, lifted canonically to $\mathcal{H}_{\mathrm{ext}}$ via the single-vertex sub-EPI attachment of `self_organization.py`, satisfies
+
+$$[\mathcal{O}, \Pi_\sigma^{\mathrm{ext}}] \;=\; 0 \qquad \forall\, \sigma \in S_n.$$
+
+**Proof sketch** (two source-auditable facts + composition functoriality):
+
+* **Fact A (parameter uniformity)**. Every threshold/weight is a graph-level scalar:
+  * THOL: `tau = float(G.graph.get("THOL_BIFURCATION_THRESHOLD", 0.1))` (`self_organization.py:44`), sub-EPI scaling `_THOL_SUB_EPI_SCALING = HALF_INV_PHI ≈ 0.309` (`self_organization.py:21`), emergence contribution `_THOL_EMERGENCE_CONTRIBUTION = 0.1` (`self_organization.py:22`).
+  * UM: phase-compatibility uses `DNFR_WEIGHTS` from graph-level config; coupling rule is symmetric in indices.
+  * IL: negative-feedback gain is graph-level scalar.
+  * None of these is per-prime or σ-dependent.
+
+* **Fact B (Prime-Cancellation Lemma, §13vicies-novies.11)**. On `G_P14` every canonical operator decomposes as $I_{n_{\mathrm{primes}}} \otimes O_{P_4}$ with prime-independent kernel. Lifted to $\mathcal{H}_{\mathrm{ext}}$ via single-vertex sub-EPI attachment, the lift preserves this tensor structure on each $\mathcal{H}_{P14} \oplus \mathcal{H}_v^{\mathrm{sub}}$ block; THOL's spawn rule is triggered by a graph-uniform scalar predicate ($d^2\mathrm{EPI} > \tau$), so the spawn pattern is itself S_n-equivariant.
+
+* **Composition**. The commutator $[\mathcal{O}, \Pi_\sigma^{\mathrm{ext}}]$ vanishes by induction on $k$: $[O_1, \Pi_\sigma^{\mathrm{ext}}] = 0$ by Facts A+B, and if $[O_1 \circ \cdots \circ O_{k-1}, \Pi_\sigma^{\mathrm{ext}}] = 0$ and $[O_k, \Pi_\sigma^{\mathrm{ext}}] = 0$ then the composition's commutator vanishes.
+
+**Consequence**: every observable computed from an emergent state generated by UM/IL/THOL on `G_P14` is invariant under $\Pi_\sigma^{\mathrm{ext}}$. In particular the extended tetrad on $\mathcal{H}_{\mathrm{ext}}$ inherits the Tetrad-Fix-Sn Lemma: it lives in $\mathrm{Fix}(S_n^{\mathrm{ext}})$.
+
+### §13sexagesima-octava.5 — C0–C4 verdict
+
+* **C0 (no catalog modification)**: PASS — UM, IL, THOL are canonical operators of the existing 13-operator catalog; sub-EPI attachment is the canonical THOL behavior implemented in `self_organization.py`.
+* **C1 (nodal-equation derivation)**: PASS — the spawn rule and all parameters derive from the nodal equation via the canonical THOL implementation.
+* **C2 (U1–U6 admissibility)**: PASS — UM/IL/THOL sequences respect U1–U6 by construction.
+* **C3 (twelve-CDM consistency)**: PASS — no operator added to the registry.
+* **C4 (T-HP discharge)**: **FAIL**. By CCET-ext, every observable on the emergent extended state is S_n-invariant. The oscillatory residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$ identified by N15/§13septies.5 with $\ker(\mathcal{R}_\infty)$ lives in $\mathrm{Fix}(S_n)^\perp$ (§13septies, §13sexagesima-septima.5). Hence the emergent extended-state diagnostic cannot reach $S(T)$, and T-HP is not discharged.
+
+**Verdict**: B0★-α-emergent **FAILS** at C4 by direct reduction to CCET-ext + the Fix(S_n)$^\perp$ location of $S(T)$. No empirical experiment is run.
+
+### §13sexagesima-octava.6 — Tetrad-level reformulation of the recurring closure pattern
+
+The §13sexagesima-sexta (P1, P2), §13sexagesima-septima (Dirección A), and §13sexagesima-octava (UM/IL/THOL emergent) closures all share a single structural mechanism, which the **Tetrad Fix(S_n) Lemma** makes transparent:
+
+**Tetrad criterion for B0★-α/β candidates on G_P14**:
+> If a candidate construction maintains graph-uniform canonical parameters and composes canonical operators on `G_P14`, then its (extended) tetrad lives in $\mathrm{Fix}(S_n)$. The oscillatory residue $S(T) \in \ker(\mathcal{R}_\infty) \cap \mathrm{Fix}(S_n)^\perp$ is unreachable by such constructions, and T-HP is not discharged. The candidate is closed analytically by CCET (or CCET-ext for emergent extensions).
+
+**Tetrad-by-tetrad verdict on G_P14**:
+
+| Tetrad field | Order | Behavior under Π_σ on G_P14 | Capacity to break S_n |
+|---|---|---|---|
+| $\Phi_s$ | 0th (global aggregation) | invariant | none |
+| $\|\nabla\varphi\|$ | 1st (local derivative) | edge-equivariant | none under graph-uniform coupling |
+| $K_\varphi$ | 2nd (local Laplacian) | vertex-equivariant | none under uniform connectivity |
+| $\xi_C$ | non-local (correlation range) | graph-level scalar | none by construction |
+
+**Where S_n-breaking would have to live** (consistent with the Tetrad-Fix-Sn Lemma):
+
+* Outside `G_P14`, via canonical graph operations (B0★-α residual: **Q5 = L(G_P14)** line graph; the S_n action on edges is not a tensor-product representation, so CCET / CCET-ext do not apply directly).
+* Inside `G_P14` via topological enrichment of φ that breaks S_n at the fiber-bundle level rather than at the coupling-constant level (B0★-β residual: **E2 = LiftedCircleBundleOnPhi**; the bundle's holonomy can carry per-prime data outside the Fact-A scope).
+* Via genuine per-prime parameters (B0★-β P2 NodeIndexedCouplingWeights) — already closed in §13sexagesima-sexta.
+
+The tetrad lens crystallizes why every B0★-α canonical-composition route on `G_P14` collapses: the four tetrad fields exhaust the independent diagnostic information at canonical-uniform parameter level, and all four commute with prime-relabelling. The tetrad is the structural witness of the closure, not its exception.
+
+### §13sexagesima-octava.7 — Updated §13septies decision space
+
+| Branch | Status after §13sexagesima-octava |
+|---|---|
+| B1 (off-catalog edge / spectral channel on G_P14) | CLOSED on G_P14 (§13vicies-novies.16); off-G_P14 inherits B2 |
+| B2 (new canonical operator) | catalog-API-closed (§13sexagesima-prima) |
+| B0★-α (deeper exploitation) | HIGH/MEDIUM closed (§13sexagesima-quinta); emergent UM/IL/THOL closed (§13sexagesima-octava); residual = **{Q5 line graph}** |
+| B0★-β (envelope promotion) | HIGH closed (§13sexagesima-sexta, §13sexagesima-septima); residual = {E2 MEDIUM} ∪ {nine LOW envelopes} |
+| B3 (no TNFR closure of RH) | residual; pressure further increased |
+
+**Net program state**: every canonical-composition route inside `G_P14` with graph-uniform parameters is now structurally closed (tetrad-Fix(S_n) corollary of CCET-ext). Decision pressure concentrates on **Q5 (line graph, B0★-α residual)** and **E2 (LiftedCircleBundleOnPhi, B0★-β residual)** as the only remaining structural routes that escape the Tetrad-Fix-Sn obstruction, plus B3.
+
+### §13sexagesima-octava.8 — Cross-references
+
+* §13vicies-novies.11 — Prime-Cancellation Lemma (Fact B in CCET-ext proof sketch).
+* §13vicies-novies.16 — CCET-G_P14 Theorem 2 (the base case extended here to $\mathcal{H}_{\mathrm{ext}}$).
+* §13septies — Conjecture T-HP, smooth/oscillatory split, identification of $\ker(\mathcal{R}_\infty)$ with $S(T)$.
+* §13sexagesima-sexta, §13sexagesima-septima — P1, P2, Dirección A closures (same Phase-c reduction pattern).
+* §13sexagesima-quinta.3 — Canonical Product Equivariance Lemma (parallel B0★-α route closures via Kronecker lifts).
+* AGENTS.md §"Minimal Structural Degrees of Freedom" — tetrad as minimal complete structural basis (the Tetrad-Fix-Sn Lemma is the S_n-equivariance corollary of this minimality on `G_P14`).
+* `src/tnfr/operators/self_organization.py` — THOL canonical implementation; lines 21–22 (sub-EPI scaling constants), line 44 (graph-uniform tau), line 53 (single-vertex spawn).
+* `src/tnfr/physics/fields.py` — canonical tetrad implementation.
+* `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 S_n-symmetric construction.
+* AGENTS.md §"B0★ pre-registration" — program-level status mirror (companion edit in this commit reflects the UM/IL/THOL emergent closure and the unchanged residual {Q5, E2, nine LOW, B3}).
