@@ -111,6 +111,7 @@ src/tnfr/
 ├── dynamics/          # Nodal equation integration
 ├── riemann/           # TNFR-Riemann program (62 modules, P1–P49; paused at T-HP)
 ├── navier_stokes/     # TNFR-Navier–Stokes program (N1–N17; NS-G5 closed)
+├── yang_mills/        # TNFR–Yang–Mills structural gap diagnostics (Y1–Y5)
 ├── sdk/               # Simplified & Fluent API (7 modules)
 │   └── simple.py      # Tetrad, conservation, grammar-aware dynamics, integrity
 ├── mathematics/       # Number theory, backends
@@ -120,7 +121,7 @@ src/tnfr/
 └── factorization/     # Spectral factorization workflow
 
 examples/              # 101 files (sequential tutorials 01–89 + extras)
-tests/                 # 1,662 tests
+tests/                 # 1,695 tests
 theory/                # Theoretical derivations
 benchmarks/            # Performance validation (25 suites)
 ```
@@ -137,6 +138,7 @@ benchmarks/            # Performance validation (25 suites)
 | [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) | Field implementation specifications |
 | [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | TNFR-Riemann program |
 | [theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) | TNFR-Navier–Stokes program |
+| [theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md](theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md) | TNFR–Yang–Mills structural gap programme (Y1–Y5; Branch B classified) |
 | [theory/GLOSSARY.md](theory/GLOSSARY.md) | Terminology and definitions |
 | [examples/](examples/) | Sequential tutorials |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System design |
@@ -147,7 +149,7 @@ benchmarks/            # Performance validation (25 suites)
 ## Testing
 
 ```bash
-pytest                             # all tests (1,655)
+pytest                             # all tests (1,695 under tests/)
 pytest tests/sdk/                  # SDK tests (tetrad, conservation, grammar)
 pytest tests/unit/                 # unit tests
 .\make.cmd smoke-tests             # smoke tests (Windows)

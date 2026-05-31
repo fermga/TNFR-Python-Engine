@@ -2,7 +2,54 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 2026-05-27
+## [Unreleased] - 2026-05-31
+
+### Y5 — TNFR–Yang–Mills Closure / Obstruction Classification
+
+- **Verdict**: `BRANCH_B_OBSTRUCTION_CLASSIFIED` — Y1–Y4 establish a finite TNFR `U(1)` structural gauge diagnostic surface, but Clay-strength closure requires a new canonical non-Abelian derivation plus a continuum / thermodynamic lower-bound theorem.
+- **New API**: `classify_yang_mills_closure()` in `src/tnfr/yang_mills/closure.py`, exported from `tnfr.yang_mills` with `YangMillsClosureReport`.
+- **Finite TNFR branch**: `A_FINITE_U1_DIAGNOSTIC_SURFACE` when Y4 reports stable finite positive gaps.
+- **Clay-strength branch**: `B_REQUIRES_NEW_CANONICAL_NONABELIAN_DERIVATION` because Y3 remains `OPEN_DERIVABILITY_GAP`.
+- **Scope discipline**: `clay_problem_resolved = False`; the obstruction is localized, not removed.
+- **Validation**: 4 new tests in `tests/physics/test_yang_mills_closure.py` cover Branch-B classification, report reuse, sampled collapse handling, and package-root import. Y1–Y5 focused run: `33 passed`.
+- **Next target**: Y6 / Branch-B derivation search for a TNFR-native non-Abelian connection and non-commuting generator algebra. If no derivation exists without external group labels, the programme should pause at Branch B.
+
+### Y4 — TNFR–Yang–Mills Finite Scaling Diagnostic
+
+- **Verdict surface**: `FINITE_SCALING_EVIDENCE` or `GAP_COLLAPSE_OBSERVED` depending on sampled finite graph families. This is a finite diagnostic only, not a continuum theorem.
+- **New API**: `run_finite_scaling_study()` in `src/tnfr/yang_mills/scaling.py`, exported from `tnfr.yang_mills` with `FiniteScalingPoint` and `FiniteScalingReport`.
+- **Scaling coordinate**: graph node count `n` under fixed U6 target ratios `ρ_U6 = max_i |Φ_s(i)| / φ`; grouped reports fit finite log-log slopes of mean gap versus `n`.
+- **Scope discipline**: Y4 runs while YMG-4 remains open. Therefore finite positive scaling evidence cannot be promoted to a Clay-strength Yang–Mills mass-gap claim.
+- **Validation**: 6 new tests in `tests/physics/test_yang_mills_scaling.py` cover report shape/scope, grouped finite scaling, reproducibility, sampled collapse classification, invalid input rejection, and package-root import. Y1–Y4 focused run: `29 passed`.
+- **Next target**: Y5 closure / obstruction classification, likely Branch B unless a later TNFR-native non-Abelian connection and generator algebra are derived.
+
+### Y3 — TNFR–Yang–Mills Non-Abelian Derivability Audit
+
+- **Verdict**: `OPEN_DERIVABILITY_GAP` — audited candidate routes for deriving a non-Abelian / multi-channel gauge sector from TNFR-internal data only; no route is promoted to canonical status.
+- **New API**: `audit_nonabelian_derivability()` in `src/tnfr/yang_mills/derivability.py`, exported from `tnfr.yang_mills` with `NonAbelianCandidateAudit` and `NonAbelianDerivabilityReport`.
+- **Routes audited**: U5 nested-EPI multiplets, THOL/REMESH operator-history internal spaces, and graph cycle-basis bundles.
+- **Obstruction**: current canonical `Ψ = K_φ + i·J_φ` gauge structure supplies a scalar local `U(1)` connection. Nested EPI or operator-history data do not yet derive component-mixing parallel transport or non-commuting generator algebra; cycle-basis routes require non-canonical basis/orientation selection.
+- **Validation**: 5 new tests in `tests/physics/test_yang_mills_derivability.py` cover baseline `U(1)` confirmation, nested-EPI obstruction, cycle-bundle rejection, unsupported route errors, and package-root import. Y1+Y2+Y3 focused run: `23 passed`.
+- **Open boundary**: YMG-4 remains open. Y4 scaling can proceed only as a conditional finite diagnostic; it cannot become a Clay-strength claim while non-Abelian derivability is unresolved.
+
+### Y2 — TNFR–Yang–Mills U6 Confinement Sweep
+
+- **Verdict**: `EMPIRICAL_FINITE_GRAPH_ONLY` — finite sweep surface created for testing how the Y1 structural gauge gap behaves across U6-confined and U6-unconfined regimes.
+- **New API**: `run_u6_confinement_sweep()` in `src/tnfr/yang_mills/u6_sweep.py`, exported from `tnfr.yang_mills`.
+- **Sweep coordinate**: `ρ_U6 = max_i |Φ_s(i)| / φ`; `ρ_U6 < 1` is U6-confined and `ρ_U6 ≥ 1` intentionally probes unconfined finite structural-potential regimes.
+- **Telemetry recorded**: gap statistics, self-adjointness, seeded local-U(1) spectral invariance, Yang–Mills equation residuals, curvature activity, grammar-rule counts, U6 ratios, and finite-scope metadata.
+- **Validation**: 5 new tests in `tests/physics/test_yang_mills_u6_sweep.py` cover report shape/scope, U6 target tracking, gap contracts, reproducibility, invalid input rejection, and package-root import. Y1+Y2 focused run: `18 passed`.
+- **Open boundary**: Y2 does not prove a U6 lower-bound theorem and does not address non-Abelian derivability (YMG-4) or continuum scaling (YMG-5). Next target: Y3 derivability audit.
+
+### Y1 — TNFR–Yang–Mills Finite Structural Gauge Gap Diagnostic
+
+- **Verdict**: `DIAGNOSTIC_SURFACE_CREATED` — first TNFR-native Yang–Mills / structural mass-gap attack surface implemented as a finite-graph diagnostic, not a Clay-strength proof.
+- **New package**: `src/tnfr/yang_mills/` with `build_structural_gauge_graph()`, `build_structural_gauge_gap_operator()`, and `compute_structural_gauge_gap()`.
+- **Operator**: `H_YM^TNFR = L_A + V_F + V_U6`, where `L_A` is the gauge-covariant graph Laplacian from `A_ij`, `V_F` is cycle-curvature potential from `F_C²/π²`, and `V_U6` is structural-potential confinement from `Φ_s²/φ²`.
+- **TNFR scope discipline**: no separate quantum ontology; the gap is interpreted as spectral isolation of the first non-trivial nodal reorganisation mode above the coherent attractor.
+- **Validation**: 13 new tests in `tests/physics/test_yang_mills_structural_gap.py` cover graph construction, self-adjointness, non-negative finite gap reporting, seeded local-U(1) spectral invariance, reproducibility, package imports, and no EPI/phase mutation. Focused run: `13 passed`.
+- **Open boundaries**: non-Abelian derivability (YMG-4) and continuum / thermodynamic scaling (YMG-5) remain open.
+- **Documentation**: `theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md` records the Y-series gap ledger and updates the next target to Y2 (U6 confinement sweep).
 
 ### N17-A — U3+U5 → K41: Analytical Cascade Locality (ANALYTICAL_CONSISTENT_CONDITIONAL)
 

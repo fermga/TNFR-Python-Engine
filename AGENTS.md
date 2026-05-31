@@ -487,11 +487,11 @@ This **integral convergence requirement** is the physical basis for grammar rule
 
 ---
 
-## Classical & Quantum Regime Correspondences
+## Regime Correspondences from Nodal Dynamics
 
-TNFR identifies formal correspondences between its nodal dynamics and classical/quantum mechanics. These are **structural analogies** within the TNFR formalism, not claims of deriving established physics from first principles.
+TNFR does not introduce separate classical or quantum ontologies. It studies one nodal structural dynamics governed by `∂EPI/∂t = νf · ΔNFR(t)`. Smooth-trajectory behavior and discrete-mode behavior are coherence regimes of the same equation. External labels such as "classical" or "quantum-like" are comparison terms only, not additional TNFR primitives.
 
-### Classical Correspondence (High Coherence Regime)
+### Smooth-Trajectory Correspondence (High Coherence Regime)
 
 When $C(t) \to 1$ and $|\nabla \phi| \to 0$, the Nodal Equation reduces to a form isomorphic to Newton's Second Law:
 
@@ -503,17 +503,17 @@ When $C(t) \to 1$ and $|\nabla \phi| \to 0$, the Nodal Equation reduces to a for
 
 **Implementation**: [src/tnfr/physics/classical_mechanics.py](src/tnfr/physics/classical_mechanics.py), [examples/12_classical_mechanics_demo.py](examples/12_classical_mechanics_demo.py)
 
-### Quantum-Like Regime (High Dissonance)
+### Discrete-Mode Correspondence (High Dissonance Regime)
 
-When $|\nabla \phi| \sim \pi$ or near phase singularities, the system exhibits phenomena formally analogous to quantum behavior:
+When $|\nabla \phi| \sim \pi$ or near phase singularities, the same nodal equation supports discrete resonant modes formally analogous to quantum-mechanical behavior:
 
 - **Discrete modes**: Bounded structural manifolds support only discrete resonant eigenmodes
 - **Complementarity**: Fourier relationship between EPI localization and $\nu_f$ bandwidth ($\Delta EPI \cdot \Delta \nu_f \ge K$)
 - **Superposition**: Linear combinations of EPI states evolve coherently until environmental coupling selects an eigenstate
 
-**Implementation**: [src/tnfr/physics/quantum_mechanics.py](src/tnfr/physics/quantum_mechanics.py), [examples/13_quantum_mechanics_demo.py](examples/13_quantum_mechanics_demo.py)
+**Implementation**: [src/tnfr/physics/quantum_mechanics.py](src/tnfr/physics/quantum_mechanics.py), [examples/13_quantum_mechanics_demo.py](examples/13_quantum_mechanics_demo.py) (legacy external-comparison naming; TNFR interpretation is discrete-mode nodal dynamics)
 
-**Scope**: These correspondences demonstrate that the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` admits both smooth-trajectory and discrete-mode solutions depending on the coherence regime. They are TNFR-internal results, not derivations of quantum mechanics or general relativity.
+**Scope**: These correspondences demonstrate that the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` admits both smooth-trajectory and discrete-mode solutions depending on the coherence regime. They are TNFR-internal results and must not be presented as a separate quantum substrate.
 
 ---
 
