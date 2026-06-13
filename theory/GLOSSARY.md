@@ -19,7 +19,7 @@
 **Space:** \(B_{\text{EPI}}\) (Banach space)  
 **Rules:** Modified only via structural operators, never directly  
 **API:** `tnfr.structural` operators  
-**Math:** [§2.2 Banach Space B_EPI](MATHEMATICAL_DYNAMICS_BASIS.md_epi)
+**Math:** [FUNDAMENTAL_THEORY.md §2.2 (Structural Triad — Banach space B_EPI)](FUNDAMENTAL_THEORY.md)
 
 ### Structural Frequency (νf)
 
@@ -29,7 +29,7 @@
 **Range:** \(\mathbb{R}^+\) (positive reals; node collapse when \(\nu_f \to 0\))  
 **What:** Rate of structural reorganization  
 **API:** `adapt_vf_by_coherence()`, operators  
-**Math:** [§3.2 Frequency Operator Ĵ](MATHEMATICAL_DYNAMICS_BASIS.mdĵ)
+**Math:** [FUNDAMENTAL_THEORY.md §2 (Governing Dynamics)](FUNDAMENTAL_THEORY.md)
 
 ### Internal Reorganization Operator (ΔNFR)
 
@@ -38,7 +38,7 @@
 **What:** Structural evolution gradient (drives reorganization)  
 **Sign:** Positive = expansion, Negative = contraction  
 **Compute:** Via `default_compute_delta_nfr` hook, automatic in `step()`  
-**Math:** [§3.3 Reorganization Operator](MATHEMATICAL_DYNAMICS_BASIS.mdδnfr)
+**Math:** [FUNDAMENTAL_THEORY.md §2.1 (Nodal Equation)](FUNDAMENTAL_THEORY.md)
 
 ### Phase (φ, θ)
 
@@ -48,16 +48,16 @@
 **What:** Network synchrony parameter (relative timing)  
 **Phase difference:** \(\Delta\theta = \theta_i - \theta_j\)  
 **API:** Phase adaptation in dynamics  
-**Math:** [§4 Nodal Equation](MATHEMATICAL_DYNAMICS_BASIS.md)
+**Math:** [FUNDAMENTAL_THEORY.md §2.2 (Structural Triad — phase)](FUNDAMENTAL_THEORY.md)
 
 ### Total Coherence (C(t))
 
 **Code:** `compute_coherence(G)` → float ∈ [0,1]  
 **Symbol:** \(C(t)\)  
-**Formula:** \(C(t) = \text{Tr}(\hat{C}\rho)\) where \(\hat{C}\) is the coherence operator  
+**Formula:** \(C(t) = 1/(1 + \overline{|\Delta\text{NFR}|} + \overline{|d\text{EPI}|})\) (canonical; derived from the nodal equation — equilibrium \(\Delta\text{NFR}\to 0 \wedge d\text{EPI}\to 0 \Rightarrow C\to 1\))  
 **Range:** \([0, 1]\) where 1 = perfect coherence, 0 = total fragmentation  
-**What:** Global network stability measure  
-**Math:** [§3.1 Coherence Operator Ĉ](MATHEMATICAL_DYNAMICS_BASIS.mdĉ)
+**What:** Global network stability measure (primary canonical metric, recorded in `history['C_steps']`)  
+**Math:** [FUNDAMENTAL_THEORY.md §5.1 (Total Coherence)](FUNDAMENTAL_THEORY.md)
 
 ### Coherence Operator (Ĉ)
 
@@ -66,7 +66,7 @@
 **Matrix element:** \(w_{ij} \approx \langle i | \hat{C} | j \rangle\)  
 **Properties:** Hermitian (\(\hat{C}^\dagger = \hat{C}\)), positive semi-definite  
 **What:** Operator measuring structural stability between nodes  
-**Math:** [§3.1 Theory](MATHEMATICAL_DYNAMICS_BASIS.mdĉ) + [§3.1.1 Implementation](MATHEMATICAL_DYNAMICS_BASIS.md)
+**Math:** [src/tnfr/metrics/coherence.py](../src/tnfr/metrics/coherence.py) (`coherence_matrix`)
 
 ### Sense Index (Si)
 
@@ -129,7 +129,7 @@
 **Formula:** \(\Phi_s(i) = \sum_{j \neq i} \frac{\Delta\text{NFR}_j}{d(i,j)^\alpha}\) where \(\alpha = 2\)  
 **What:** Global structural potential field from ΔNFR distribution  
 **Status:** **CANONICAL** (Nov 2025)  
-**Validation:** 1,655 tests across 5 topologies  
+**Validation:** 1,945 tests across 5 topologies  
 **Physics:** Passive equilibrium confinement landscape  
 **Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < φ ≈ 1.618 canonical confinement; ceiling 2.0 binary escape)  
 **API:** `tnfr.physics.fields.compute_structural_potential()`  
@@ -330,7 +330,7 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 
 **Canonicity Levels:**
 - **ABSOLUTE**: Mathematical necessity (direct consequence of nodal equation)
-- **STRONG**: Strong empirical/theoretical support (1,655 tests for U6)
+- **STRONG**: Strong empirical/theoretical support (1,945 tests for U6)
 
 **Recent Updates:**
 - U5 added 2025-11-10 (hierarchical REMESH stabilization)

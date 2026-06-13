@@ -1,7 +1,7 @@
 # TNFR Fundamental Theory
 
 **Status**: Canonical reference
-**Version**: 0.0.3.1
+**Version**: 0.0.3.3
 **Date**: March 2026
 
 ---

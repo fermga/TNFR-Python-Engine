@@ -35,7 +35,7 @@ The golden ratio φ = (1 + √5)/2 ≈ 1.618 is the unique positive solution of 
 - Penrose tilings (quasicrystal geometry)
 - Continued fraction representation: φ = [1; 1, 1, 1, ...] (the slowest-converging continued fraction, making φ the "most irrational" number)
 
-**TNFR correspondence**: φ ↔ Φ_s (structural potential). The recursive summation Φ_s = Σ ΔNFR_j / d(i,j)² on self-similar networks converges to bounds controlled by φ (see [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) §4.1).
+**TNFR correspondence**: φ ↔ Φ_s (structural potential). The inverse-square accumulation Φ_s = Σ ΔNFR_j / d(i,j)² saturates on a resonant chain to the Basel value ζ(2) = π²/6 ≈ 1.6449 — a genuine closed-form property of the kernel. The U6 drift-confinement scale φ ≈ 1.6180 is *adopted* (not derived) as the operational threshold sitting 1.64% inside that saturation, motivated by φ being the most-irrational number (golden-mean KAM tori are the last to break under resonant perturbation) rather than by the heuristic fixed-point relation x = 1 + 1/x, which is **superseded** for this correspondence (see [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) §4.1).
 
 ### 2.2 Discrete Accumulation (γ)
 
