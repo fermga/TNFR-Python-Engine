@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,916 tests across multiple topologies
+- Experimental Validation: 1,924 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -539,7 +539,7 @@ the **discrete diffusion equation** with diffusivity $\nu_f$. What emerges, in T
 - **Equilibrium ⟺ no gradients**: $\Delta\mathrm{NFR} = 0 \Leftrightarrow$ the field is uniform across neighbourhoods (the diffusive steady state). $\nu_f$ is the **mobility/diffusivity**; ΔNFR is the **structural pressure** driving the flux.
 - **Synchronization** (phase channel): the phase term aligns θ to the neighbour mean, driving Kuramoto-type synchronization ($R \to 1$) — also empirically demonstrated (fireflies, pacemaker cells, neurons, Josephson junctions).
 
-This is the irreducible, empirically-grounded transport dynamics on which the emergent geometric tower (symplectic substrate, conservation laws) sits. **Implementation**: [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py)::`verify_structural_diffusion` (+ `structural_diffusion_operator`, `relaxation_spectrum`, `degree_weighted_total`, `verify_overdamped_regime`); 19 tests in [tests/physics/test_structural_diffusion.py](tests/physics/test_structural_diffusion.py); demonstrated in [examples/99_structural_diffusion.py](examples/99_structural_diffusion.py). **Honest scope**: the EPI-channel ↔ graph-Laplacian identity is exact; the full ΔNFR is multi-channel (diffusion + synchronization + νf/topology homogenization); this characterises the transport content of the nodal dynamics and does not, by itself, resolve any open program.
+This is the irreducible, empirically-grounded transport dynamics on which the emergent geometric tower (symplectic substrate, conservation laws) sits. **Implementation**: [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py)::`verify_structural_diffusion` (+ `structural_diffusion_operator`, `relaxation_spectrum`, `degree_weighted_total`, `verify_overdamped_regime`, `verify_discrete_modes`, `structural_eigenmodes`); 27 tests in [tests/physics/test_structural_diffusion.py](tests/physics/test_structural_diffusion.py); demonstrated in [examples/99_structural_diffusion.py](examples/99_structural_diffusion.py). **Honest scope**: the EPI-channel ↔ graph-Laplacian identity is exact; the full ΔNFR is multi-channel (diffusion + synchronization + νf/topology homogenization); this characterises the transport content of the nodal dynamics and does not, by itself, resolve any open program.
 
 ---
 
@@ -567,15 +567,18 @@ The **inertial Newtonian regime** ($\ddot q = F/m$, second order, oscillation) i
 
 ### Discrete-Mode Correspondence (High Dissonance Regime)
 
-When $|\nabla \phi| \sim \pi$ or near phase singularities, the same nodal equation supports discrete resonant modes formally analogous to quantum-mechanical behavior:
+On a **bounded** structural manifold (a finite graph) the diffusion operator has a **discrete** spectrum of orthonormal **standing-wave eigenmodes** — the structural origin of "discrete modes". This is the discrete-harmonic structure of any bounded elastic medium, established by the strictest empirical method (a vibrating string's harmonics — Pythagoras; Chladni plate modes — 1787; molecular vibrational spectra), *not* an imported quantum postulate:
 
-- **Discrete modes**: Bounded structural manifolds support only discrete resonant eigenmodes
-- **Complementarity**: Fourier relationship between EPI localization and $\nu_f$ bandwidth ($\Delta EPI \cdot \Delta \nu_f \ge K$)
-- **Superposition**: Linear combinations of EPI states evolve coherently until environmental coupling selects an eigenstate
+- **Discrete spectrum**: a finite manifold supports a finite, discrete set of eigenvalues $\{\lambda_k\}$ of the symmetric normalized Laplacian $L_{\mathrm{sym}}$ (which shares the diffusion operator $L_{\mathrm{rw}}$'s spectrum). $\lambda_1 = 0$ is the uniform mode; $\lambda_2$ (the spectral gap) is the first non-trivial mode.
+- **Standing-wave shapes**: the eigenvectors are orthonormal standing waves; on a path graph they are the degree-weighted cosine standing waves of a vibrating string (overlap > 0.99).
+- **Nodal-domain ordering** (Courant): the number of sign changes grows with the mode index $k$ — the structural "mode number" emerges from the bounded geometry. On a 1D manifold, mode $k$ has exactly $k$ nodes.
+- **Two time-regimes, same modes**: under diffusion (first order) mode $k$ relaxes as $e^{-\nu_f \lambda_k t}$; under the wave/substrate flow (second order) it oscillates at the standing-wave frequency $\omega_k = \sqrt{\lambda_k}$.
 
-**Implementation**: [src/tnfr/physics/quantum_mechanics.py](src/tnfr/physics/quantum_mechanics.py), [examples/13_quantum_mechanics_demo.py](examples/13_quantum_mechanics_demo.py) (legacy external-comparison naming; TNFR interpretation is discrete-mode nodal dynamics)
+The complex field $\Psi = K_\varphi + i J_\varphi$ (the gauge/substrate complex coordinate, [src/tnfr/physics/gauge.py](src/tnfr/physics/gauge.py)) supplies the phase that lets these standing modes carry the discrete-mode dynamics.
 
-**Scope**: These correspondences demonstrate that the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` admits both smooth-trajectory and discrete-mode solutions depending on the coherence regime. They are TNFR-internal results and must not be presented as a separate quantum substrate.
+**Implementation**: [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py)::`verify_discrete_modes` (+ `structural_eigenmodes`, `nodal_domain_count`), [examples/99_structural_diffusion.py](examples/99_structural_diffusion.py) Experiment 5; legacy mapping in [src/tnfr/physics/quantum_mechanics.py](src/tnfr/physics/quantum_mechanics.py), [examples/13_quantum_mechanics_demo.py](examples/13_quantum_mechanics_demo.py).
+
+**Scope**: These correspondences demonstrate that the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` admits both smooth-trajectory (overdamped drift) and discrete-mode (bounded-manifold standing-wave) solutions depending on the coherence regime. They are TNFR-internal, empirically-anchored results (mobility, diffusion, synchronization, standing waves) and must not be presented as a separate quantum substrate.
 
 ---
 
@@ -837,7 +840,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,916 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,924 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1574,7 +1577,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,916 tests)
+- **TESTING.md**: Test strategy (1,924 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)

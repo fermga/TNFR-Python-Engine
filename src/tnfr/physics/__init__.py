@@ -268,13 +268,17 @@ from .symplectic_substrate import (
 from .structural_diffusion import (
     StructuralDiffusionCertificate,
     OverdampedRegimeCertificate,
+    DiscreteModeCertificate,
     structural_diffusion_operator,
     structural_field,
     structural_diffusivity,
     relaxation_spectrum,
     degree_weighted_total,
+    structural_eigenmodes,
+    nodal_domain_count,
     verify_structural_diffusion,
     verify_overdamped_regime,
+    verify_discrete_modes,
 )
 from .gauge import (
     GaugeSnapshot,
@@ -523,13 +527,17 @@ __all__ = [
     # --- Structural Diffusion (transport content of the nodal equation) ---
     "StructuralDiffusionCertificate",
     "OverdampedRegimeCertificate",
+    "DiscreteModeCertificate",
     "structural_diffusion_operator",
     "structural_field",
     "structural_diffusivity",
     "relaxation_spectrum",
     "degree_weighted_total",
+    "structural_eigenmodes",
+    "nodal_domain_count",
     "verify_structural_diffusion",
     "verify_overdamped_regime",
+    "verify_discrete_modes",
     # --- Gauge Structure (U(1) Symmetry of Ψ = K_φ + i·J_φ) ---
     "GaugeSnapshot",
     "GaugeInvarianceResult",

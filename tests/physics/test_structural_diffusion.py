@@ -18,13 +18,17 @@ from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from tnfr.physics.structural_diffusion import (
     StructuralDiffusionCertificate,
     OverdampedRegimeCertificate,
+    DiscreteModeCertificate,
     structural_diffusion_operator,
     structural_field,
     structural_diffusivity,
     relaxation_spectrum,
     degree_weighted_total,
+    structural_eigenmodes,
+    nodal_domain_count,
     verify_structural_diffusion,
     verify_overdamped_regime,
+    verify_discrete_modes,
 )
 
 
@@ -211,3 +215,74 @@ class TestOverdampedRegime:
         assert cert.is_overdamped_drift
         assert "VALID" in cert.summary()
         assert "mobility law" in cert.summary()
+
+
+class TestDiscreteModes:
+    """A bounded manifold has discrete standing-wave eigenmodes."""
+
+    def test_spectrum_is_discrete_and_finite(self) -> None:
+        G = nx.path_graph(30)
+        eigvals, eigvecs = structural_eigenmodes(G)
+        assert eigvals.shape == (30,)
+        assert eigvecs.shape == (30, 30)
+        assert np.all(np.isfinite(eigvals))
+
+    def test_modes_orthonormal(self) -> None:
+        G = nx.path_graph(30)
+        _, eigvecs = structural_eigenmodes(G)
+        gram = eigvecs.T @ eigvecs
+        assert np.allclose(gram, np.eye(30), atol=1e-9)
+
+    def test_uniform_zero_mode(self) -> None:
+        # λ₁ = 0 (uniform mode / conserved diffusion mode)
+        G = nx.path_graph(30)
+        eigvals, _ = structural_eigenmodes(G)
+        assert abs(float(eigvals[0])) < 1e-9
+        assert float(eigvals[1]) > 0.0  # spectral gap positive
+
+    def test_path_modes_are_cosine_standing_waves(self) -> None:
+        # path-graph L_sym mode k is a degree-weighted cosine standing wave
+        G = nx.path_graph(40)
+        _, eigvecs = structural_eigenmodes(G)
+        k = 3
+        i = np.arange(40)
+        deg = np.array([G.degree(n) for n in G.nodes()], dtype=float)
+        cos_pred = np.sqrt(deg) * np.cos(np.pi * k * (i + 0.5) / 40)
+        cos_pred /= np.linalg.norm(cos_pred)
+        mode = eigvecs[:, k] / np.linalg.norm(eigvecs[:, k])
+        assert abs(float(np.dot(mode, cos_pred))) > 0.99
+
+    def test_nodal_domain_count_grows_on_path(self) -> None:
+        # Courant: k-th mode has exactly k sign changes on a 1D manifold
+        G = nx.path_graph(40)
+        _, eigvecs = structural_eigenmodes(G)
+        counts = [nodal_domain_count(eigvecs[:, k]) for k in range(6)]
+        assert counts == [0, 1, 2, 3, 4, 5]
+
+    def test_spectrum_matches_diffusion_operator(self) -> None:
+        # L_sym spectrum == L_rw (diffusion operator) spectrum
+        G = nx.watts_strogatz_graph(40, 4, 0.2, seed=5)
+        eigvals, _ = structural_eigenmodes(G)
+        _, lrw = structural_diffusion_operator(G)
+        rw_spec = np.sort(np.linalg.eigvals(lrw).real)
+        assert np.allclose(np.sort(eigvals), rw_spec, atol=1e-7)
+
+    def test_standing_wave_frequencies_are_sqrt_lambda(self) -> None:
+        G = nx.path_graph(30)
+        eigvals, _ = structural_eigenmodes(G)
+        cert = verify_discrete_modes(G)
+        for k, f in enumerate(cert.standing_wave_frequencies):
+            assert f == __import__("pytest").approx(
+                float(np.sqrt(eigvals[k]))
+            )
+
+    def test_certificate_valid_across_topologies(self) -> None:
+        for G in (
+            nx.path_graph(40),
+            nx.cycle_graph(40),
+            nx.watts_strogatz_graph(40, 4, 0.2, seed=5),
+        ):
+            cert = verify_discrete_modes(G)
+            assert isinstance(cert, DiscreteModeCertificate)
+            assert cert.is_valid_discrete_modes
+            assert "VALID" in cert.summary()

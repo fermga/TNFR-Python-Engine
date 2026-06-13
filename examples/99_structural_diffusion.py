@@ -50,8 +50,11 @@ from tnfr.observers import kuramoto_order
 from tnfr.physics.structural_diffusion import (
     verify_structural_diffusion,
     verify_overdamped_regime,
+    verify_discrete_modes,
     structural_diffusion_operator,
     structural_field,
+    structural_eigenmodes,
+    nodal_domain_count,
     relaxation_spectrum,
     degree_weighted_total,
 )
@@ -183,6 +186,36 @@ def experiment_4_overdamped_regime():
     print()
 
 
+def experiment_5_discrete_modes():
+    """A bounded manifold has discrete standing-wave eigenmodes."""
+    print("=" * 72)
+    print("EXPERIMENT 5: Discrete modes = bounded-manifold standing waves")
+    print("=" * 72)
+    print()
+    print("On a BOUNDED structural manifold (finite graph) the diffusion")
+    print("operator has a DISCRETE spectrum of orthonormal standing-wave")
+    print("modes — the same structure as the discrete harmonics of a")
+    print("vibrating string (Pythagoras), a Chladni plate, or a molecular")
+    print("vibrational spectrum. The discreteness comes from the bounded")
+    print("geometry, not a quantum postulate.")
+    print()
+
+    G = nx.path_graph(40)  # a 1D structural 'string'
+    cert = verify_discrete_modes(G)
+    print(cert.summary())
+    print()
+    _, eigvecs = structural_eigenmodes(G)
+    counts = [nodal_domain_count(eigvecs[:, k]) for k in range(6)]
+    print(f"  nodal-domain count of modes 0..5 (the structural mode number):")
+    print(f"    {counts}   (mode k has k nodes — Courant/Chladni ordering)")
+    print()
+    print("VALIDATED: the 'discrete modes' are the Laplacian eigenmodes of")
+    print("the bounded manifold = standing waves / normal modes. Two regimes")
+    print("share them: diffusion (1st order) decays as exp(−νf·λ_k·t); the")
+    print("wave/substrate (2nd order) oscillates at ω_k = √λ_k.")
+    print()
+
+
 def main():
     print()
     print("  TNFR Example 99: Structural Diffusion")
@@ -194,6 +227,7 @@ def main():
     experiment_2_diffusion_signatures()
     experiment_3_synchronization()
     experiment_4_overdamped_regime()
+    experiment_5_discrete_modes()
 
     print("=" * 72)
     print("WHAT THIS ESTABLISHES")
@@ -207,13 +241,16 @@ def main():
     print("  • the phase channel synchronizes (Kuramoto);")
     print("  • being first-order, it produces the overdamped drift law")
     print("    q̇ = νf·F (Stokes/Einstein), not inertial Newton — that lives")
-    print("    in the second-order symplectic substrate.")
+    print("    in the second-order symplectic substrate;")
+    print("  • a bounded manifold has discrete standing-wave modes (the")
+    print("    Laplacian eigenmodes — Pythagoras/Chladni harmonics).")
     print()
     print("These are reproduced as the SAME mathematics as the empirically-")
-    print("demonstrated phenomena of diffusion and synchronization — in")
-    print("TNFR's own variables (EPI, ΔNFR, νf, θ), not borrowed concepts.")
-    print("The emergent geometric tower (symplectic substrate, conservation")
-    print("laws) sits on top of this irreducible transport dynamics.")
+    print("demonstrated phenomena of diffusion, synchronization, mobility,")
+    print("and standing waves — in TNFR's own variables (EPI, ΔNFR, νf, θ),")
+    print("not borrowed concepts. The emergent geometric tower (symplectic")
+    print("substrate, conservation laws) sits on top of this irreducible")
+    print("transport dynamics.")
     print()
 
 
