@@ -73,6 +73,12 @@ EPI_ALIAS_KEYS: tuple[str, ...] = (EPI_PRIMARY,) + tuple(
     alias for alias in _EPI_ALIASES if alias != EPI_PRIMARY
 )
 
+_THETA_ALIASES = get_aliases("THETA")
+THETA_PRIMARY = _THETA_ALIASES[0]
+THETA_ALIAS_KEYS: tuple[str, ...] = (THETA_PRIMARY,) + tuple(
+    alias for alias in _THETA_ALIASES if alias != THETA_PRIMARY
+)
+
 # CLI summaries should remain concise by default while allowing callers to
 # inspect the full glyphogram series when needed.
 DEFAULT_SUMMARY_SERIES_LIMIT = 10
@@ -826,8 +832,12 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
         if edges:
             phase_violations = []
             for u, v in edges:
-                theta_u = float(graph.nodes[u].get("theta", 0.0))
-                theta_v = float(graph.nodes[v].get("theta", 0.0))
+                theta_u = float(
+                    get_attr(graph.nodes[u], THETA_ALIAS_KEYS, 0.0)
+                )
+                theta_v = float(
+                    get_attr(graph.nodes[v], THETA_ALIAS_KEYS, 0.0)
+                )
                 # Check if phases are defined (not both zero)
                 if abs(theta_u) > tolerance or abs(theta_v) > tolerance:
                     # Phase difference should be bounded

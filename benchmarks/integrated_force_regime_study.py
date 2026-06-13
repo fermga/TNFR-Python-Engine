@@ -84,10 +84,10 @@ def make_graph(topology: str, n: int, seed: int) -> nx.Graph:
 def set_initial_state(G: nx.Graph, nu_f: float, seed: int) -> None:
     random.seed(seed)
     for node in G.nodes:
-        G.nodes[node]['vf'] = float(nu_f)
+        G.nodes[node]['nu_f'] = float(nu_f)
         G.nodes[node]['dnfr'] = random.uniform(0.01, 0.05)
         G.nodes[node]['delta_nfr'] = random.uniform(0.01, 0.05)
-        G.nodes[node]['epi'] = random.uniform(0.4, 0.7)
+        G.nodes[node]['EPI'] = random.uniform(0.4, 0.7)
         G.nodes[node]['phase'] = random.uniform(0.0, 2 * math.pi)
         G.nodes[node]['theta'] = G.nodes[node]['phase']
         # Coherence surrogate for ξ_C estimation
@@ -107,9 +107,9 @@ def apply_operator_like(
     random.seed(seed)
     if op == 'emission':
         for n in G.nodes:
-            G.nodes[n]['epi'] += random.uniform(0.05, 0.12) * intensity
-            G.nodes[n]['vf'] = max(
-                G.nodes[n]['vf'],
+            G.nodes[n]['EPI'] += random.uniform(0.05, 0.12) * intensity
+            G.nodes[n]['nu_f'] = max(
+                G.nodes[n]['nu_f'],
                 random.uniform(0.8, 1.2) * intensity,
             )
     elif op == 'coherence':
@@ -139,7 +139,7 @@ def apply_operator_like(
             G.nodes[n]['delta_nfr'] += random.uniform(0.15, 0.3) * intensity
     elif op == 'silence':
         for n in G.nodes:
-            G.nodes[n]['vf'] *= (0.95 / max(intensity, 1e-6))
+            G.nodes[n]['nu_f'] *= (0.95 / max(intensity, 1e-6))
             G.nodes[n]['dnfr'] *= (0.85 / max(intensity, 1e-6))
             G.nodes[n]['delta_nfr'] *= (0.85 / max(intensity, 1e-6))
     else:

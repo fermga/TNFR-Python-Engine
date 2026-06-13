@@ -37,7 +37,8 @@ import networkx as nx
 from ..structural import create_nfr, run_sequence
 from ..metrics.coherence import compute_coherence
 from ..metrics.sense_index import compute_Si
-from ..constants.aliases import ALIAS_DNFR
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import PI as _PI
 from ..validation import validate_sequence
 
@@ -863,7 +864,9 @@ class TNFRNetwork:
         # Extract ΔNFR values
         delta_nfr_dict = {}
         for node_id in self._graph.nodes():
-            delta_nfr_dict[node_id] = self._graph.nodes[node_id].get(ALIAS_DNFR, 0.0)
+            delta_nfr_dict[node_id] = get_attr(
+                self._graph.nodes[node_id], ALIAS_DNFR, 0.0
+            )
 
         # Compute aggregate statistics
         vf_sum = 0.0
@@ -872,8 +875,8 @@ class TNFRNetwork:
 
         for node_id in self._graph.nodes():
             node_data = self._graph.nodes[node_id]
-            vf_sum += node_data.get("nu_f", 0.0)
-            phase_sum += node_data.get("phase", 0.0)
+            vf_sum += get_attr(node_data, ALIAS_VF, 0.0)
+            phase_sum += get_attr(node_data, ALIAS_THETA, 0.0)
 
         avg_vf = vf_sum / node_count if node_count > 0 else 0.0
         avg_phase = phase_sum / node_count if node_count > 0 else 0.0

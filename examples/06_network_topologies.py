@@ -240,7 +240,7 @@ def network_topologies_demo():
         np.random.seed(42)  # Reproducible
         for node in G.nodes():
             G.nodes[node]['phase'] = np.random.uniform(0, 2 * np.pi)
-            G.nodes[node]['vf'] = 1.0
+            G.nodes[node]['nu_f'] = 1.0
         
         initial_coherence = compute_coherence(G)
         

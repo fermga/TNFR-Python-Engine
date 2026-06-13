@@ -15,6 +15,8 @@ import math
 from typing import Any
 
 from ..mathematics.unified_numerical import np
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_DNFR
 
 try:
     import networkx as nx
@@ -37,7 +39,7 @@ except ImportError:
         return G.nodes[node].get('phase', G.nodes[node].get('theta', 0.0))
 
     def _get_dnfr(G: Any, node: Any) -> float:
-        return G.nodes[node].get('delta_nfr', G.nodes[node].get('dnfr', 0.0))
+        return float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
 
     def _wrap_angle(angle: float) -> float:
         return (angle + math.pi) % (2 * math.pi) - math.pi

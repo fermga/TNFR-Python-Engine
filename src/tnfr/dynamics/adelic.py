@@ -13,7 +13,6 @@ from typing import Any
 from dataclasses import dataclass
 
 from ..constants.canonical import (
-    PHI,  # Golden ratio for structural potential
     DYNAMICS_ADELIC_DRIFT_CANONICAL,
     DYNAMICS_ADELIC_DT_STEP_CANONICAL,
 )
@@ -154,8 +153,8 @@ class AdelicDynamics:
             return {}
             
         # Compute fields using centralized physics engine
-        # We use a dummy alpha since we don't have real NFR distribution
-        phi_s = compute_structural_potential(G, alpha=PHI)
+        # Canonical inverse-square kernel (alpha=2); see tetrad phi<->Phi_s
+        phi_s = compute_structural_potential(G, alpha=2.0)
         grad_phi = compute_phase_gradient(G)
         phase_current = compute_phase_current(G)
         dnfr_flux = compute_dnfr_flux(G)

@@ -36,6 +36,8 @@ from .strategy import (
     PartitionBlock,
     PreparedBlock
 )
+from ...alias import get_attr, set_attr
+from ...constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
 class GPUEmissionStrategy:
     """GPU-accelerated Emission (AL) operator implementation."""
@@ -121,16 +123,18 @@ class GPUEmissionStrategy:
             # Apply emission logic (simplified)
             # In real implementation, this would follow AL operator contracts
             for node in graph.nodes():
-                current_epi = graph.nodes[node].get("epi", 0.5)
+                current_epi = get_attr(graph.nodes[node], ALIAS_EPI, 0.5)
                 dnfr = delta_nfr_results.get(node, 0.0)
                 
                 # Emission increases EPI based on ΔNFR
                 new_epi = current_epi + abs(dnfr) * 0.1
-                graph.nodes[node]["epi"] = min(1.0, new_epi)
+                set_attr(graph.nodes[node], ALIAS_EPI, min(1.0, new_epi))
                 
                 # Update νf (structural frequency)
-                current_vf = graph.nodes[node].get("nu_f", 1.0)
-                graph.nodes[node]["nu_f"] = min(5.0, current_vf * 1.1)
+                current_vf = get_attr(graph.nodes[node], ALIAS_VF, 1.0)
+                set_attr(
+                    graph.nodes[node], ALIAS_VF, min(5.0, current_vf * 1.1)
+                )
             
             # Compute telemetry
             telemetry = {
@@ -229,16 +233,25 @@ class GPUResonanceStrategy:
                 if not neighbors:
                     continue
                     
-                node_phase = graph.nodes[node].get("phase", 0.0)
-                neighbor_phases = [graph.nodes[n].get("phase", 0.0) for n in neighbors]
+                node_phase = get_attr(
+                    graph.nodes[node], ALIAS_THETA, 0.0
+                )
+                neighbor_phases = [
+                    get_attr(graph.nodes[n], ALIAS_THETA, 0.0)
+                    for n in neighbors
+                ]
                 
                 # Compute phase synchronization
-                phase_sync = np.mean([np.cos(node_phase - np) for np in neighbor_phases])
+                phase_sync = np.mean(
+                    [np.cos(node_phase - ph) for ph in neighbor_phases]
+                )
                 
                 # Amplify νf based on synchronization
-                current_vf = graph.nodes[node].get("nu_f", 1.0)
+                current_vf = get_attr(graph.nodes[node], ALIAS_VF, 1.0)
                 amplification = 1.0 + phase_sync * 0.2
-                graph.nodes[node]["nu_f"] = current_vf * amplification
+                set_attr(
+                    graph.nodes[node], ALIAS_VF, current_vf * amplification
+                )
             
             telemetry = {
                 "gpu_acceleration": True,

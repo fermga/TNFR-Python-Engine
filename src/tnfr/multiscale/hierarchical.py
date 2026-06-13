@@ -144,11 +144,11 @@ class HierarchicalTNFRNetwork:
             # Initialize each node with TNFR attributes
             for node in G.nodes():
                 f"{scale.name}_{node}"
-                G.nodes[node]["epi"] = rng.uniform(0.0, 1.0)
-                G.nodes[node]["vf"] = rng.uniform(0.5, 1.5)
+                G.nodes[node]["EPI"] = rng.uniform(0.0, 1.0)
+                G.nodes[node]["nu_f"] = rng.uniform(0.5, 1.5)
                 G.nodes[node]["phase"] = rng.uniform(0.0, 2 * np.pi)
                 G.nodes[node]["delta_nfr"] = 0.0
-                G.nodes[node]["si"] = 0.0
+                G.nodes[node]["Si"] = 0.0
 
             # set base coupling weights
             for u, v in G.edges():
@@ -323,7 +323,7 @@ class HierarchicalTNFRNetwork:
             # Simple evolution: update ΔNFR for all nodes
             for node in G.nodes():
                 phase = G.nodes[node]["phase"]
-                vf = G.nodes[node]["vf"]
+                vf = G.nodes[node]["nu_f"]
 
                 # Compute neighbor phase difference contribution
                 neighbors = list(G.neighbors(node))
@@ -336,7 +336,7 @@ class HierarchicalTNFRNetwork:
                 G.nodes[node]["delta_nfr"] = dnfr
 
                 # Update EPI according to nodal equation: ∂EPI/∂t = νf · ΔNFR
-                G.nodes[node]["epi"] += vf * dnfr * dt
+                G.nodes[node]["EPI"] += vf * dnfr * dt
 
             results[scale_name] = {"coherence": self._scale_coherence(G)}
 
@@ -377,7 +377,7 @@ class HierarchicalTNFRNetwork:
         # Same logic as _evolve_sequential but for one scale
         for node in G.nodes():
             phase = G.nodes[node]["phase"]
-            vf = G.nodes[node]["vf"]
+            vf = G.nodes[node]["nu_f"]
 
             neighbors = list(G.neighbors(node))
             if neighbors:
@@ -387,7 +387,7 @@ class HierarchicalTNFRNetwork:
                 dnfr = 0.0
 
             G.nodes[node]["delta_nfr"] = dnfr
-            G.nodes[node]["epi"] += vf * dnfr * dt
+            G.nodes[node]["EPI"] += vf * dnfr * dt
 
         return {"coherence": self._scale_coherence(G)}
 
@@ -418,8 +418,8 @@ class HierarchicalTNFRNetwork:
 
                 # Apply cross-scale effect to EPI
                 if cross_contribution != 0.0:
-                    vf = G_target.nodes[node]["vf"]
-                    G_target.nodes[node]["epi"] += vf * cross_contribution * dt
+                    vf = G_target.nodes[node]["nu_f"]
+                    G_target.nodes[node]["EPI"] += vf * cross_contribution * dt
 
     def _scale_coherence(self, G: TNFRGraph) -> float:
         """Compute coherence for a single scale."""

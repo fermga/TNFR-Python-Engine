@@ -1,6 +1,10 @@
 from ..mathematics.unified_numerical import np
 import networkx as nx
 
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_THETA
+
+
 class QuantumMechanicsMapper:
     """
     Maps Quantum Mechanical concepts to TNFR Structural Fields.
@@ -55,7 +59,7 @@ class QuantumMechanicsMapper:
         else:
             amplitude = 1.0
             
-        phi = G.nodes[node].get('phase', 0.0)
+        phi = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
         
         return amplitude * np.exp(1j * phi)
 

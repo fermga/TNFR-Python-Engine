@@ -31,6 +31,8 @@ Status: CANONICAL SPECTRAL ARITHMETIC ENGINE
 from ..errors import TNFRValueError
 
 from ..mathematics.unified_numerical import np
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_VF
 from typing import Any
 from dataclasses import dataclass, field
 from enum import Enum
@@ -318,7 +320,9 @@ class TNFRAdvancedFFTEngine:
         if signal1 is None:
             signal1 = np.array([G.nodes[node].get('EPI', 0.0) for node in G.nodes()])
         if signal2 is None:
-            signal2 = np.array([G.nodes[node].get('nu_f', 1.0) for node in G.nodes()])
+            signal2 = np.array(
+                [get_attr(G.nodes[node], ALIAS_VF, 1.0) for node in G.nodes()]
+            )
             
         # Use GPU backend for large signals when available
         if HAS_MATH_BACKENDS and len(signal1) > 100:

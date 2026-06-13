@@ -18,6 +18,9 @@ from ..mathematics.unified_numerical import np
 from typing import Any
 from dataclasses import dataclass
 
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_THETA, ALIAS_VF
+
 try:
     import networkx as nx
     HAS_NETWORKX = True
@@ -128,7 +131,9 @@ class NodalEquationOptimizer:
         # Extract νf values in node order
         nodes = list(G.nodes())
         node_index = {node: i for i, node in enumerate(nodes)}
-        vf_vector = np.array([G.nodes[node].get('nu_f', 1.0) for node in nodes])
+        vf_vector = np.array(
+            [get_attr(G.nodes[node], ALIAS_VF, 1.0) for node in nodes]
+        )
         
         # Create optimization state
         opt_state = NodalOptimizationState(
@@ -167,7 +172,9 @@ class NodalEquationOptimizer:
         
         # Extract current EPI and phase vectors
         epi_vector = np.array([G.nodes[node].get('EPI', 0.0) for node in nodes])
-        phase_vector = np.array([G.nodes[node].get('phase', 0.0) for node in nodes])
+        phase_vector = np.array(
+            [get_attr(G.nodes[node], ALIAS_THETA, 0.0) for node in nodes]
+        )
         
         # Compute ΔNFR field using spectral methods
         dnfr_vector = self._compute_spectral_dnfr(G, opt_state, epi_vector, phase_vector)

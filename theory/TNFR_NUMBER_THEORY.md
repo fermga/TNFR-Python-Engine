@@ -94,7 +94,7 @@ $$\mathrm{EPI}(n) = 1 + \alpha \cdot \Omega(n) + \beta \cdot \ln(\tau(n)) + \gam
 
 where:
 - $\alpha = 1/\varphi \approx 0.6180$ — factorization complexity weight
-- $\beta = \gamma/(\pi + \gamma) \approx 0.1550$ — divisor complexity weight
+- $\beta = \gamma/(\pi + \gamma) \approx 0.1552$ — divisor complexity weight
 - $\gamma_{\mathrm{epi}} = \gamma/\pi \approx 0.1837$ — abundance deviation weight
 
 **Physical interpretation**: EPI(n) is the structural form of the number, analogous to the configuration of an oscillator. Primes have the simplest forms; highly composite numbers have the richest.
@@ -106,8 +106,8 @@ The reorganization capacity of a number measures how rapidly its structural form
 $$\nu_f(n) = \nu_0 \cdot \left(1 + \delta \cdot \frac{\tau(n)}{n} + \varepsilon \cdot \frac{\Omega(n)}{\ln(n)}\right)$$
 
 where:
-- $\nu_0 = (\varphi/\gamma)/\pi \approx 0.8925$ — base frequency
-- $\delta = \gamma/(\varphi \cdot \pi) \approx 0.1137$ — divisor density modulation
+- $\nu_0 = (\varphi/\gamma)/\pi \approx 0.8923$ — base frequency
+- $\delta = \gamma/(\varphi \cdot \pi) \approx 0.1136$ — divisor density modulation
 - $\varepsilon = e^{-\pi} \approx 0.0432$ — factorization complexity modulation
 
 **Physical interpretation**: $\nu_f$ is the capacity lever in the nodal equation. Numbers with rich divisor structures have slightly higher reorganization capacity, but this is irrelevant for primes because the pressure lever vanishes.
@@ -203,15 +203,15 @@ $$\theta = \frac{1}{\varphi} = \varphi - 1 \approx 0.6180$$
 | Parameter | Expression | Value | Physical meaning |
 |-----------|------------|-------|-----------------|
 | $\alpha$ | $1/\varphi$ | $\approx 0.6180$ | Factorization complexity weight |
-| $\beta$ | $\gamma/(\pi+\gamma)$ | $\approx 0.1550$ | Divisor logarithmic weight |
+| $\beta$ | $\gamma/(\pi+\gamma)$ | $\approx 0.1552$ | Divisor logarithmic weight |
 | $\gamma_{\mathrm{epi}}$ | $\gamma/\pi$ | $\approx 0.1837$ | Abundance deviation weight |
 
 ### 5.4 Frequency Parameters
 
 | Parameter | Expression | Value | Physical meaning |
 |-----------|------------|-------|-----------------|
-| $\nu_0$ | $(\varphi/\gamma)/\pi$ | $\approx 0.8925$ | Base structural frequency |
-| $\delta$ | $\gamma/(\varphi\pi)$ | $\approx 0.1137$ | Divisor density modulation |
+| $\nu_0$ | $(\varphi/\gamma)/\pi$ | $\approx 0.8923$ | Base structural frequency |
+| $\delta$ | $\gamma/(\varphi\pi)$ | $\approx 0.1136$ | Divisor density modulation |
 | $\varepsilon$ | $e^{-\pi}$ | $\approx 0.0432$ | Factorization modulation |
 
 ### 5.5 Detection Thresholds
@@ -222,9 +222,9 @@ $$\theta = \frac{1}{\varphi} = \varphi - 1 \approx 0.6180$$
 | Primality tolerance | $10^{-10}$ | $10^{-10}$ | Floating-point zero detection |
 | 2× structural | $2\gamma/(e\pi)$ | $\approx 0.1352$ | Extended significance band |
 
-### 5.6 Zero Empirical Fitting
+### 5.6 Derivation Status
 
-All 12 arithmetic parameters (3 pressure + 3 EPI + 3 frequency + 3 thresholds) are derived exclusively from $(\varphi, \gamma, \pi, e)$. No parameter has been fitted to numerical data. The constants emerge from the mathematical structure of the Universal Tetrahedral Correspondence applied to arithmetic functions.
+The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are written as expressions of $(\varphi, \gamma, \pi, e)$ from the Universal Tetrahedral Correspondence applied to arithmetic functions. The 3 arithmetic **thresholds** are *empirically recalibrated* values (e.g. $\Phi_s < 0.7452$ vs the general 0.7711), not closed-form derivations — the general per-node $\Phi_s$ threshold on which they are based is itself empirically validated without a derivation (see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4.3). The "zero empirical fitting" characterization applies to the dynamical parameters, not to the thresholds.
 
 ---
 
@@ -293,7 +293,7 @@ $$\Phi_s(n) = \sum_{m \neq n} \frac{\Delta\mathrm{NFR}(m)}{d(n, m)^2}$$
 
 where $d(n, m)$ is the graph distance in the arithmetic network. Primes, being zero-pressure nodes, act as **sinks** in the potential field — they attract nearby composites toward equilibrium.
 
-**Threshold**: $|\Phi_s| < 0.7711$ (von Koch fractal bound) in the general tetrad; arithmetic-specific recalibration gives $\Phi_s < 0.7452$.
+**Threshold**: $|\Phi_s| < 0.7711$ (empirically validated; no closed-form derivation — see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4.3) in the general tetrad; arithmetic-specific recalibration gives $\Phi_s < 0.7452$.
 
 ### 7.2 Phase Gradient: $|\nabla\phi|$
 

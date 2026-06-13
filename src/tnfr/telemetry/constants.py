@@ -1,8 +1,8 @@
 """Centralized telemetry thresholds and labels (CANONICAL).
 
-All thresholds derive from classical mathematical theory:
-- Φ_s: von Koch fractal bounds + combinatorial number theory
-- |∇φ|: Harmonic oscillator stability + Kuramoto synchronization  
+Threshold provenance (three first-principles, one empirical):
+- Φ_s: empirical per-node threshold (0.7711; no closed-form derivation)
+- |∇φ|: Harmonic oscillator stability + Kuramoto synchronization
 - |K_φ|: TNFR formalism constraints + 90% safety margin
 - ξ_C: Spatial correlation theory + critical phenomena
 

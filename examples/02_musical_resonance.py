@@ -154,7 +154,7 @@ def musical_resonance_demo():
     base_phase = 0.0
     for i, node in enumerate(G.nodes()):
         G.nodes[node]['theta'] = base_phase + i * 0.1  # Slight variation
-        G.nodes[node]['nf'] = 1.0  # Standard frequency
+        G.nodes[node]['nu_f'] = 1.0  # Standard frequency
     
     # Track evolution
     evolution = []
@@ -187,7 +187,7 @@ def musical_resonance_demo():
     musical_intervals = [0, 0.3, 0.7, 1.0, 1.4, 1.7, 2.0]
     for i, node in enumerate(G2.nodes()):
         G2.nodes[node]['theta'] = musical_intervals[i]
-        G2.nodes[node]['nf'] = 1.0
+        G2.nodes[node]['nu_f'] = 1.0
     
     # Track evolution
     evolution2 = []
@@ -220,7 +220,7 @@ def musical_resonance_demo():
     np.random.seed(42)
     for node in G3.nodes():
         G3.nodes[node]['theta'] = np.random.uniform(0, 2 * np.pi)
-        G3.nodes[node]['nf'] = 1.0
+        G3.nodes[node]['nu_f'] = 1.0
     
     # Track evolution
     evolution3 = []

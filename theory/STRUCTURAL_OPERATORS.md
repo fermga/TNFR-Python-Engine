@@ -54,7 +54,7 @@ The operator count is not arbitrary. The 13 operators arise from exhaustive enum
 Throughout this document:
 - Glyph codes (AL, EN, IL, ...) reference the structural symbols.
 - English names (Emission, Reception, Coherence, ...) are the public API identifiers.
-- All constants derive from $(\varphi, \gamma, \pi, e)$ — zero empirical fitting.
+- Operator constants derive from $(\varphi, \gamma, \pi, e)$ where canonically defined; the engine-configuration tier in `canonical.py` is calibrated, not derived (see its two-tier docstring).
 - Grammar roles reference rules U1–U6 from [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
 - Energy bounds reference the Lyapunov analysis from [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md).
 
@@ -678,7 +678,7 @@ Every operator has a postcondition contract verified at runtime by the structura
 
 ## 14. Operator Constants Reference
 
-All operator constants derive from the four fundamental mathematical constants $(\varphi, \gamma, \pi, e)$ via first-principles derivation. No empirical fitting is used.
+All operator constants derive from the four fundamental mathematical constants $(\varphi, \gamma, \pi, e)$ via algebraic combination. (The engine-configuration tier in `canonical.py` — cache, FFT, optimization, and performance constants — is calibrated to operational targets, not derived; see its two-tier docstring.)
 
 ### 14.1 Fundamental Constants
 
@@ -698,8 +698,8 @@ All operator constants derive from the four fundamental mathematical constants $
 | IL glyph factor | $\varphi/(\varphi + \gamma)$ | $\approx 0.737$ | IL reduction, UM compatibility |
 | VAL scale factor | $1 + \gamma/(\pi e)$ | $\approx 1.067$ | VAL expansion |
 | VAL min EPI | $\gamma/(\pi + \gamma)$ | $\approx 0.155$ | VAL threshold |
-| SHA/NUL frequency factor | $1 - \gamma/(\pi + e)$ | $\approx 0.902$ | SHA suppression, NUL compression |
-| ZHIR viability | $\varphi/(e + \gamma)$ | $\approx 0.489$ | ZHIR min $\nu_f$ |
+| SHA/NUL frequency factor | $1 - \gamma/(\pi + e)$ | $\approx 0.901$ | SHA suppression, NUL compression |
+| ZHIR viability | $\varphi/(e + \gamma)$ | $\approx 0.491$ | ZHIR min $\nu_f$ |
 | Emission amplitude | $1/(\pi e)$ | $\approx 0.117$ | AL creation |
 | THOL fractal scale | $1/(2\varphi)$ | $\approx 0.309$ | Sub-EPI scaling |
 | Resonance threshold | $e^{-\varphi}$ | $\approx 0.198$ | RA detection |
@@ -719,7 +719,7 @@ Every constant connects to a specific operator and grammar rule:
 1/(πe) ≈ 0.117  →  AL (amplitude)  →  U1a (generator)
 ```
 
-**Source**: `src/tnfr/constants/canonical.py` (300+ constants, zero empirical fitting).
+**Source**: `src/tnfr/constants/canonical.py` (two tiers: physics-derived constants + calibrated engine-configuration constants; see its docstring).
 
 ---
 
@@ -804,7 +804,7 @@ The 13 canonical TNFR operators form a complete, irreducible algebra for structu
 1. **Completeness**: The operators span all independent transformations of the structural triad $(\text{EPI}, \nu_f, \phi)$ compatible with the nodal equation.
 2. **Irreducibility**: No operator decomposes into a composition of others without loss of physical semantics.
 3. **Grammar closure**: The operator set satisfies all grammar roles required by U1–U6.
-4. **First-principles constants**: All operator parameters derive from $(\varphi, \gamma, \pi, e)$ — zero empirical fitting.
+4. **First-principles constants**: Operator constants defined in `canonical.py` derive from $(\varphi, \gamma, \pi, e)$; the engine-configuration tier is calibrated, not derived (see its two-tier docstring).
 5. **Lyapunov stability**: Grammar-compliant sequences reduce structural energy ($\sum \Delta E \leq 0$).
 6. **Runtime verification**: 13/13 postcondition contracts enforced by the structural integrity monitor.
 7. **Canonical compositions**: Standard patterns (Bootstrap, Stabilize, Explore, Propagate) encode common structural workflows.

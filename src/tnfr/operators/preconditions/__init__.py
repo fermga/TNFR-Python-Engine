@@ -258,7 +258,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     1. **Graph connectivity**: At least one other node exists for coupling
     2. **Active EPI**: Node has sufficient structural form (EPI > threshold)
     3. **Structural frequency**: Node has capacity for synchronization (νf > threshold)
-    4. **Phase compatibility** (MANDATORY per Invariant #5): At least one neighbor within phase range
+    4. **Phase compatibility** (MANDATORY per Invariant #2): At least one neighbor within phase range
 
     Configuration Parameters
     ------------------------
@@ -268,7 +268,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
         Minimum structural frequency required for coupling
     UM_STRICT_PHASE_CHECK : bool, default True (changed from False per U3)
         Enable strict phase compatibility checking with existing neighbors.
-        **MANDATORY per AGENTS.md Invariant #5**: "no coupling is valid without
+        **MANDATORY per AGENTS.md Invariant #2**: "no coupling is valid without
         explicit phase verification (synchrony)"
     UM_MAX_PHASE_DIFF : float, default π/2
         Maximum phase difference for compatible coupling (radians)
@@ -292,7 +292,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     Notes
     -----
     **IMPORTANT**: Phase compatibility check is now MANDATORY by default
-    (UM_STRICT_PHASE_CHECK=True) to align with AGENTS.md Invariant #5 and U3.
+    (UM_STRICT_PHASE_CHECK=True) to align with AGENTS.md Invariant #2 and U3.
 
     [Legacy note: Previously referenced RC3. See docs/grammar/DEPRECATION-INDEX.md]
 
@@ -315,7 +315,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     See Also
     --------
     Coupling : UM operator that uses this validation
-    AGENTS.md : Invariant #5 (phase check mandatory)
+    AGENTS.md : Invariant #2 (phase check mandatory)
     UNIFIED_GRAMMAR_RULES.md : U3 derivation
 
     [Legacy: Previously referenced EMERGENT_GRAMMAR_ANALYSIS.md RC3]
@@ -344,7 +344,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
         )
 
     # U3: Phase compatibility check (was RC3)
-    # Per AGENTS.md Invariant #5: "no coupling is valid without explicit phase verification"
+    # Per AGENTS.md Invariant #2: "no coupling is valid without explicit phase verification"
     # Changed from False to True to align with canonical physics requirements
     strict_phase = bool(G.graph.get("UM_STRICT_PHASE_CHECK", True))
     if strict_phase:

@@ -9,8 +9,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..constants.canonical import PHI  # Golden ratio for structural potential
-
 try:
     import networkx as nx
 except ImportError:
@@ -114,7 +112,7 @@ def compute_structural_telemetry(G: Any) -> dict[str, Any]:
     
     # 4. Compute Structural Potential (O(N^2) with precomputed D)
     phi_s = compute_phi_s_exact_vectorized(
-        G, nodes, dnfr_map, alpha=PHI, dtype=dtype, distance_matrix=distance_matrix
+        G, nodes, dnfr_map, alpha=2.0, dtype=dtype, distance_matrix=distance_matrix
     )
     
     # 5. Compute Coherence Length (O(N^2) with precomputed D)

@@ -23,6 +23,7 @@ from __future__ import annotations
 import math
 from typing import Any, Mapping
 
+from ..mathematics.unified_numerical import np
 from ..utils import get_logger
 
 logger = get_logger(__name__)
@@ -63,8 +64,6 @@ def _compute_canonical_gradients_jit_kernel(
 
     It supports both directed and undirected (symmetric) graphs.
     """
-    from ..mathematics.unified_numerical import np
-    
     # Allocations (Numba handles these efficiently in nopython mode)
     cos_sum = np.zeros(n_nodes, dtype=np.float64)
     sin_sum = np.zeros(n_nodes, dtype=np.float64)
@@ -240,7 +239,6 @@ def compute_fused_gradients_symmetric(
     ndarray
         ΔNFR gradient vector (shape: [N])
     """
-    from ..mathematics.unified_numerical import np
     n_nodes = phase.shape[0]
     n_edges = edge_src.shape[0]
 

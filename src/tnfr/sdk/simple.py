@@ -47,7 +47,7 @@ from ..mathematics.unified_numerical import np
 from ..structural import create_nfr, run_sequence
 from ..metrics.coherence import compute_coherence
 from ..metrics.sense_index import compute_Si
-from ..alias import get_attr
+from ..alias import get_attr, set_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
 from ..operators.nodal_equation import compute_expected_depi_dt, compute_d2epi_dt2
 
@@ -768,7 +768,10 @@ class Network:
         """📐 Average node phase [0, 2π]."""
         if not self.G.nodes():
             return 0.0
-        phases = [self.G.nodes[n].get('phase', 0) for n in self.G.nodes()]
+        phases = [
+            get_attr(self.G.nodes[n], ALIAS_THETA, 0.0)
+            for n in self.G.nodes()
+        ]
         result = np.mean(phases)
         try:
             return float(np.asarray(result).flat[0])
@@ -1089,9 +1092,16 @@ class Network:
         for n in self.G.nodes():
             neighbors = list(self.G.neighbors(n))
             if neighbors:
-                mean_ph = float(np.mean([self.G.nodes[nb].get('phase', 0.0) for nb in neighbors]))
-                self.G.nodes[n]['phase'] = self.G.nodes[n].get('phase', 0.0) + dt * 0.05 * (mean_ph - self.G.nodes[n].get('phase', 0.0))
-                self.G.nodes[n]['theta'] = self.G.nodes[n]['phase']
+                mean_ph = float(np.mean([
+                    get_attr(self.G.nodes[nb], ALIAS_THETA, 0.0)
+                    for nb in neighbors
+                ]))
+                cur = get_attr(self.G.nodes[n], ALIAS_THETA, 0.0)
+                set_attr(
+                    self.G.nodes[n],
+                    ALIAS_THETA,
+                    cur + dt * 0.05 * (mean_ph - cur),
+                )
         snap_after = capture_conservation_snapshot(self.G)
         balance = verify_conservation_balance(snap_before, snap_after, dt=dt * 0.05)
         return detect_grammar_violations_from_conservation(balance)

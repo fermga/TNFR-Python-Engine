@@ -22,11 +22,12 @@ from functools import wraps
 import hashlib
 
 from ..constants.canonical import (
-    PHI,  # Golden ratio for structural potential
     # PHASE 6 FINAL Canonical Constants for magic number elimination
     STRUCT_CACHE_INTERPOLATE_CANONICAL,  # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
     STRUCT_CACHE_EVICTION_CANONICAL      # φ/(φ+γ) ≈ 0.7371 (0.8 → canonical)
 )
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
 try:
     import networkx as nx
@@ -119,7 +120,10 @@ class StructuralCoherenceCache:
         node_props = []
         for node in nodes:
             props = G.nodes[node]
-            prop_str = f"{props.get('EPI', 0):.3f}_{props.get('nu_f', 1):.3f}_{props.get('phase', 0):.3f}"
+            epi_v = get_attr(props, ALIAS_EPI, 0.0)
+            vf_v = get_attr(props, ALIAS_VF, 1.0)
+            ph_v = get_attr(props, ALIAS_THETA, 0.0)
+            prop_str = f"{epi_v:.3f}_{vf_v:.3f}_{ph_v:.3f}"
             node_props.append(prop_str)
         
         combined = f"n{len(nodes)}_e{len(edges)}_props{'_'.join(node_props)}"
@@ -180,7 +184,7 @@ class StructuralCoherenceCache:
             
         try:
             # Compute canonical structural fields
-            phi_s = compute_structural_potential(G, alpha=PHI)
+            phi_s = compute_structural_potential(G, alpha=2.0)
             grad_phi = compute_phase_gradient(G)
             k_phi = compute_phase_curvature(G)
             xi_c = estimate_coherence_length(G)
@@ -275,7 +279,7 @@ class StructuralCoherenceCache:
         # Simple coherence proxy: phase synchronization
         phases = []
         for node in G.nodes():
-            phase = G.nodes[node].get('phase', 0.0)
+            phase = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
             phases.append(phase)
             
         if not phases:

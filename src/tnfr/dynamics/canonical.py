@@ -39,6 +39,8 @@ from ..errors.contextual import (
     NetworkConfigError,
     TNFRValueError,
 )
+from ..alias import get_attr, set_attr
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 
 if TYPE_CHECKING:
     from ..types import GraphLike
@@ -653,10 +655,17 @@ def _integrate_with_backend(
     if n_nodes == 0:
         return {"converged": True, "steps": 0, "final_error": 0.0, "time_ms": 0.0}
     
-    # Initialize arrays using backend
-    epi_values = backend.as_array([G.nodes[node].get("epi", 0.0) for node in nodes])
-    vf_values = backend.as_array([G.nodes[node].get("vf", 1.0) for node in nodes])
-    dnfr_values = backend.as_array([G.nodes[node].get("delta_nfr", 0.0) for node in nodes])
+    # Initialize arrays using backend (canonical alias-aware reads:
+    # honour Greek primaries 'νf'/'ΔNFR' as well as ASCII aliases)
+    epi_values = backend.as_array(
+        [get_attr(G.nodes[node], ALIAS_EPI, 0.0) for node in nodes]
+    )
+    vf_values = backend.as_array(
+        [get_attr(G.nodes[node], ALIAS_VF, 1.0) for node in nodes]
+    )
+    dnfr_values = backend.as_array(
+        [get_attr(G.nodes[node], ALIAS_DNFR, 0.0) for node in nodes]
+    )
     
     converged = False
     final_error = float('inf')
@@ -700,10 +709,10 @@ def _integrate_with_backend(
             converged = True
             break
     
-    # Update graph with final values
+    # Update graph with final values (canonical alias-aware write)
     epi_final = backend.to_numpy(epi_values)
     for i, node in enumerate(nodes):
-        G.nodes[node]["epi"] = float(epi_final[i])
+        set_attr(G.nodes[node], ALIAS_EPI, float(epi_final[i]))
     
     end_time = time.perf_counter()
     

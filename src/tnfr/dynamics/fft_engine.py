@@ -20,6 +20,9 @@ from typing import Any, TYPE_CHECKING
 from dataclasses import dataclass
 import time
 
+from ..alias import get_attr, set_attr
+from ..constants.aliases import ALIAS_THETA, ALIAS_VF
+
 if TYPE_CHECKING:
     from .fft_cache_coordinator import FFTCacheCoordinator
 
@@ -154,7 +157,9 @@ class FFTDynamicsEngine:
         # Extract spatial domain data
         nodes = list(G.nodes())
         epi_spatial = np.array([G.nodes[node].get('EPI', 0.0) for node in nodes])
-        phase_spatial = np.array([G.nodes[node].get('phase', 0.0) for node in nodes])
+        phase_spatial = np.array(
+            [get_attr(G.nodes[node], ALIAS_THETA, 0.0) for node in nodes]
+        )
         
         # Transform to spectral domain using Graph Fourier Transform
         spectral_epi = gft(epi_spatial, eigenvecs)
@@ -185,7 +190,9 @@ class FFTDynamicsEngine:
         
         # Extract νf values in node order
         nodes = list(G.nodes())
-        vf_spatial = np.array([G.nodes[node].get('nu_f', 1.0) for node in nodes])
+        vf_spatial = np.array(
+            [get_attr(G.nodes[node], ALIAS_VF, 1.0) for node in nodes]
+        )
         
         # Transform νf to spectral domain  
         vf_spectral = gft(vf_spatial, fft_state.eigenvectors)
@@ -284,7 +291,9 @@ class FFTDynamicsEngine:
         nodes = list(G.nodes())
         for i, node in enumerate(nodes):
             G.nodes[node]['EPI'] = float(epi_spatial[i].real)
-            G.nodes[node]['phase'] = float(phase_spatial[i].real)
+            set_attr(
+                G.nodes[node], ALIAS_THETA, float(phase_spatial[i].real)
+            )
     
     @cache_tnfr_computation(
         level=CacheLevel.DERIVED_METRICS, 

@@ -253,7 +253,7 @@ def propagate_subepi_to_network(
     TNFR Principle: "Sub-EPIs propagate to coupled neighbors, triggering their
     own bifurcations when ∂²EPI/∂t² > τ" (canonical THOL dynamics).
 
-    **AGENTS.md Invariant #5**: No coupling is valid without explicit phase
+    **AGENTS.md Invariant #2**: No coupling is valid without explicit phase
     verification. This function enforces phase compatibility before propagation:
     - Computes coupling_strength = 1.0 - (|Δθ| / π) using angle_diff()
     - Rejects neighbors with coupling_strength < threshold (antiphase blocked)
@@ -299,7 +299,7 @@ def propagate_subepi_to_network(
     for neighbor in neighbors:
         neighbor_theta = float(get_attr(G.nodes[neighbor], ALIAS_THETA, 0.0))
 
-        # INVARIANT #5: Phase verification before coupling
+        # INVARIANT #2: Phase verification before coupling
         # Compute coupling strength based on phase alignment
         # coupling_strength ∈ [0, 1]: 1 = in-phase, 0 = antiphase
         phase_diff = abs(angle_diff(neighbor_theta, parent_theta))
@@ -429,7 +429,7 @@ def compute_hierarchical_depth(G: TNFRGraph, node: NodeId) -> int:
     Notes
     -----
     TNFR Principle: Hierarchical depth reflects operational fractality
-    (Invariant #7) - the ability of sub-EPIs to bifurcate recursively,
+    (Invariant #3) - the ability of sub-EPIs to bifurcate recursively,
     creating multi-scale emergent structures.
 
     This function recursively traverses all branches to find the deepest

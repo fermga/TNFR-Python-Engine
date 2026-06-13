@@ -120,7 +120,7 @@ src/tnfr/
 ├── validation/        # Structural health monitoring
 └── factorization/     # Spectral factorization workflow
 
-examples/              # 101 files (sequential tutorials 01–89 + extras)
+examples/              # 106 files (sequential tutorials 01–93 + extras)
 tests/                 # 1,695 tests
 theory/                # Theoretical derivations
 benchmarks/            # Performance validation (25 suites)
@@ -136,6 +136,7 @@ benchmarks/            # Performance validation (25 suites)
 | [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) | U1-U6 grammar derivations from physics |
 | [theory/FUNDAMENTAL_THEORY.md](theory/FUNDAMENTAL_THEORY.md) | Universal Tetrahedral Correspondence |
 | [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) | Field implementation specifications |
+| [docs/STRUCTURAL_INTERFACE_THEORY.md](docs/STRUCTURAL_INTERFACE_THEORY.md) | Structural-interface programme: pipelines, fair benchmarks, validated results, limitations |
 | [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | TNFR-Riemann program |
 | [theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) | TNFR-Navier–Stokes program |
 | [theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md](theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md) | TNFR–Yang–Mills structural gap programme (Y1–Y5; Branch B classified) |

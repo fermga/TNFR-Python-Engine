@@ -5,10 +5,10 @@ based on the mathematical derivation in docs/LIFE_MATHEMATICAL_DERIVATION.md.
 
 Contracts and Invariants (TNFR):
 - No direct EPI mutation; always observe via metrics (Invariant #1)
-- Structural units preserved (νf in Hz_str) (Invariant #2)
-- ΔNFR semantics preserved as structural pressure (Invariant #3)
+- Structural units preserved (νf in Hz_str) (Invariant #5)
+- ΔNFR semantics preserved as structural pressure (Invariant #1)
 - Operator closure: this module only measures, does not alter operator sequences (Invariant #4)
-- Phase verification upheld in coupling metrics (U3) (Invariant #5)
+- Phase verification upheld in coupling metrics (U3) (Invariant #2)
 
 Metrics:
 - Vitality Index (Vi)

@@ -739,6 +739,154 @@ def target_force_study_plots() -> None:
     print(f"force-study-plots -> {FORCE_STUDY_PATH}")
 
 
+def target_external_phase_gate_validation() -> None:
+    script = REPO_ROOT / "benchmarks" / "external_phase_gate_validation.py"
+    if not script.exists():
+        raise FileNotFoundError(script)
+    command = [PYTHON, str(script)]
+    print("[run ] external-phase-gate-validation benchmark")
+    result = subprocess.run(command, cwd=REPO_ROOT, check=False)
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(result.returncode, command)
+    print("external-phase-gate-validation complete")
+
+
+def target_wdbc_phase_gate_demo() -> None:
+    script = REPO_ROOT / "examples" / "91_breast_cancer_phase_gate_demo.py"
+    if not script.exists():
+        raise FileNotFoundError(script)
+    command = [PYTHON, str(script)]
+    print("[run ] wdbc-phase-gate-demo")
+    result = subprocess.run(command, cwd=REPO_ROOT, check=False)
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(result.returncode, command)
+    print("wdbc-phase-gate-demo complete")
+
+
+def target_wine_quality_phase_gate_demo() -> None:
+    script = REPO_ROOT / "examples" / "92_wine_quality_phase_gate_demo.py"
+    if not script.exists():
+        raise FileNotFoundError(script)
+    command = [PYTHON, str(script)]
+    print("[run ] wine-quality-phase-gate-demo")
+    result = subprocess.run(command, cwd=REPO_ROOT, check=False)
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(result.returncode, command)
+    print("wine-quality-phase-gate-demo complete")
+
+
+def _run_structural_interface_benchmark(dataset: str, *, target: str = "circular") -> None:
+    script = REPO_ROOT / "benchmarks" / "structural_interface_benchmark.py"
+    if not script.exists():
+        raise FileNotFoundError(script)
+    _ensure_dir(REPORTS_DIR)
+    command = [
+        PYTHON,
+        str(script),
+        "--dataset",
+        dataset,
+        "--target",
+        target,
+        "--output",
+        str(REPORTS_DIR.relative_to(REPO_ROOT)),
+    ]
+    print(f"[run ] structural-interface-benchmark ({dataset}, target={target})")
+    result = subprocess.run(command, cwd=REPO_ROOT, check=False)
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(result.returncode, command)
+    print(f"structural-interface-benchmark ({dataset}, target={target}) complete")
+
+
+def target_structural_interface_benchmark() -> None:
+    _run_structural_interface_benchmark("all")
+
+
+def target_structural_interface_all() -> None:
+    _run_structural_interface_benchmark("all", target="all")
+
+
+def target_structural_interface_wdbc() -> None:
+    _run_structural_interface_benchmark("wdbc")
+
+
+def target_structural_interface_offline() -> None:
+    _run_structural_interface_benchmark("offline", target="all")
+
+
+def target_structural_interface_model_error() -> None:
+    _run_structural_interface_benchmark("all", target="model_error")
+
+
+def target_structural_interface_wine() -> None:
+    _run_structural_interface_benchmark("wine")
+
+
+def _run_temporal_interface_benchmark(
+    source: str, *, year: int = 2020, month: int = 1
+) -> None:
+    script = REPO_ROOT / "benchmarks" / "temporal_interface_benchmark.py"
+    if not script.exists():
+        raise FileNotFoundError(script)
+    _ensure_dir(REPORTS_DIR)
+    command = [
+        PYTHON,
+        str(script),
+        "--source",
+        source,
+        "--year",
+        str(year),
+        "--month",
+        str(month),
+        "--output",
+        str(REPORTS_DIR.relative_to(REPO_ROOT)),
+    ]
+    print(f"[run ] temporal-interface-benchmark (source={source})")
+    result = subprocess.run(command, cwd=REPO_ROOT, check=False)
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(result.returncode, command)
+    print(f"temporal-interface-benchmark (source={source}) complete")
+
+
+def target_temporal_interface_benchmark() -> None:
+    # Offline synthetic fixture by default (no network required).
+    _run_temporal_interface_benchmark("synthetic")
+
+
+def target_temporal_interface_grid() -> None:
+    # Real grid-frequency data (downloaded + cached, bounded; graceful skip).
+    _run_temporal_interface_benchmark("grid")
+
+
+def _run_multichannel_interface_benchmark(source: str) -> None:
+    script = REPO_ROOT / "benchmarks" / "multichannel_interface_benchmark.py"
+    if not script.exists():
+        raise FileNotFoundError(script)
+    _ensure_dir(REPORTS_DIR)
+    command = [
+        PYTHON,
+        str(script),
+        "--source",
+        source,
+        "--output",
+        str(REPORTS_DIR.relative_to(REPO_ROOT)),
+    ]
+    print(f"[run ] multichannel-interface-benchmark (source={source})")
+    result = subprocess.run(command, cwd=REPO_ROOT, check=False)
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(result.returncode, command)
+    print(f"multichannel-interface-benchmark (source={source}) complete")
+
+
+def target_multichannel_interface_benchmark() -> None:
+    # Offline synthetic Kuramoto fixture by default (no network required).
+    _run_multichannel_interface_benchmark("synthetic")
+
+
+def target_multichannel_interface_eeg() -> None:
+    # Real EEG Eye State data (downloaded + cached, bounded; graceful skip).
+    _run_multichannel_interface_benchmark("eeg")
+
+
 # ---------------------------------------------------------------------------
 # Smoke + clean helpers
 # ---------------------------------------------------------------------------
@@ -783,6 +931,19 @@ TARGETS: Dict[str, Callable[[], None]] = {
     "atom-atlas-script": target_atom_atlas_script,
     "periodic-table-script": target_periodic_table_script,
     "force-study-plots": target_force_study_plots,
+    "external-phase-gate-validation": target_external_phase_gate_validation,
+    "wdbc-phase-gate-demo": target_wdbc_phase_gate_demo,
+    "wine-quality-phase-gate-demo": target_wine_quality_phase_gate_demo,
+    "structural-interface-benchmark": target_structural_interface_benchmark,
+    "structural-interface-all": target_structural_interface_all,
+    "structural-interface-offline": target_structural_interface_offline,
+    "structural-interface-wdbc": target_structural_interface_wdbc,
+    "structural-interface-model-error": target_structural_interface_model_error,
+    "structural-interface-wine": target_structural_interface_wine,
+    "temporal-interface-benchmark": target_temporal_interface_benchmark,
+    "temporal-interface-grid": target_temporal_interface_grid,
+    "multichannel-interface-benchmark": target_multichannel_interface_benchmark,
+    "multichannel-interface-eeg": target_multichannel_interface_eeg,
     "report-tetrad": target_report_tetrad,
     "report-triatomic-atlas": target_report_triatomic_atlas,
     "report-phase-gated": target_report_phase_gated,

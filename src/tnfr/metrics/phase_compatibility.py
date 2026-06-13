@@ -3,7 +3,7 @@
 This module provides canonical implementations of phase-based coupling strength
 calculations used by multiple TNFR operators (UM, RA, THOL). All operators that
 perform phase-based coupling or propagation MUST use these functions to ensure
-consistency with TNFR physics and Invariant #5.
+consistency with TNFR physics and Invariant #2.
 
 Physical Foundation
 -------------------
@@ -25,7 +25,7 @@ where Δφ is the phase difference in radians.
 - Δφ = π/2 (orthogonal) → coupling = 0.5 (partial coupling)
 - Δφ = π (antiphase) → coupling = 0.0 (destructive interference)
 
-**TNFR Invariant #5:** "No coupling without explicit phase verification"
+**TNFR Invariant #2:** "No coupling without explicit phase verification"
 (see AGENTS.md). All coupling operations must verify phase compatibility
 before propagating structural information.
 
@@ -75,11 +75,11 @@ False
 **Network phase alignment:**
 
 >>> import networkx as nx
->>> from tnfr.constants.aliases import ALIAS_THETA
+>>> from tnfr.constants import THETA_PRIMARY
 >>> G = nx.Graph()
 >>> G.add_edges_from([(0, 1), (1, 2)])
 >>> for i, theta in enumerate([0.0, 0.1, 0.2]):
-...     G.nodes[i][ALIAS_THETA] = theta
+...     G.nodes[i][THETA_PRIMARY] = theta
 >>> alignment = compute_network_phase_alignment(G, node=1, radius=1)
 >>> 0.0 <= alignment <= 1.0
 True
@@ -89,14 +89,14 @@ See Also
 
 operators.definitions : Operator implementations (UM, RA, THOL)
 metrics.phase_coherence : Kuramoto order parameter and phase metrics
-AGENTS.md : Invariant #5 - Phase Verification requirement
+AGENTS.md : Invariant #2 - Phase Verification requirement
 UNIFIED_GRAMMAR_RULES.md : U3 - RESONANT COUPLING grammar rule
 
 References
 ----------
 
 .. [1] TNFR.pdf § 2.3: Phase synchronization and coupling
-.. [2] AGENTS.md: Invariant #5 - No coupling without phase verification
+.. [2] AGENTS.md: Invariant #2 - No coupling without phase verification
 .. [3] UNIFIED_GRAMMAR_RULES.md: U3 - Resonant Coupling requires |φᵢ - φⱼ| ≤ Δφ_max
 """
 
@@ -164,8 +164,8 @@ def compute_phase_coupling_strength(
     - RA (Resonance): For gating coherence propagation to neighbors
     - THOL (Self-organization): For sub-EPI propagation through coupled nodes
 
-    **Invariant #5:** This function implements the explicit phase verification
-    required by TNFR Invariant #5 (AGENTS.md). All coupling operations must
+    **Invariant #2:** This function implements the explicit phase verification
+    required by TNFR Invariant #2 (AGENTS.md). All coupling operations must
     verify phase compatibility before propagating structural information.
 
     Examples
@@ -235,8 +235,8 @@ def is_phase_compatible(
     - **RA (Resonance)**: Filter neighbors for coherence propagation
     - **THOL propagation**: Minimum coupling for sub-EPI propagation
 
-    **Invariant #5:** This function provides a boolean interface to the
-    phase verification requirement (AGENTS.md Invariant #5).
+    **Invariant #2:** This function provides a boolean interface to the
+    phase verification requirement (AGENTS.md Invariant #2).
 
     Examples
     --------
@@ -316,21 +316,21 @@ def compute_network_phase_alignment(
     Examples
     --------
     >>> import networkx as nx
-    >>> from tnfr.constants.aliases import ALIAS_THETA
+    >>> from tnfr.constants import THETA_PRIMARY
     >>> G = nx.Graph()
     >>> G.add_edges_from([(0, 1), (1, 2), (2, 3)])
     >>> # Highly aligned phases
     >>> for i in range(4):
-    ...     G.nodes[i][ALIAS_THETA] = i * 0.1
+    ...     G.nodes[i][THETA_PRIMARY] = i * 0.1
     >>> alignment = compute_network_phase_alignment(G, node=1, radius=1)
     >>> alignment > 0.9  # High alignment
     True
     >>> # Random phases
     >>> import math
-    >>> G.nodes[0][ALIAS_THETA] = 0.0
-    >>> G.nodes[1][ALIAS_THETA] = math.pi/3
-    >>> G.nodes[2][ALIAS_THETA] = 2*math.pi/3
-    >>> G.nodes[3][ALIAS_THETA] = math.pi
+    >>> G.nodes[0][THETA_PRIMARY] = 0.0
+    >>> G.nodes[1][THETA_PRIMARY] = math.pi/3
+    >>> G.nodes[2][THETA_PRIMARY] = 2*math.pi/3
+    >>> G.nodes[3][THETA_PRIMARY] = math.pi
     >>> alignment = compute_network_phase_alignment(G, node=1, radius=1)
     >>> 0.0 <= alignment <= 1.0
     True

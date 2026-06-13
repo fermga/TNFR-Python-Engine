@@ -37,8 +37,9 @@ ratios because Φ_s is linear in ΔNFR. This produces zero drift detection:
 to create spatial gradients. For cache workarounds in tests, vary alpha
 (e.g., 2.0 → 2.001) to force cache miss via different function arguments.
 
-**Physics**: U6 structural potential confinement (|Φ_s| < 0.771 classical threshold from von Koch)
-requires spatial ΔNFR gradients to produce measurable drift for passive
+**Physics**: U6 structural potential confinement (|Φ_s| < 0.771,
+an empirical per-node threshold) requires spatial ΔNFR gradients to
+produce measurable drift for passive
 equilibrium validation. Uniform scaling defeats gradient detection.
 
 See: tests/unit/operators/test_unified_grammar.py TestU6 for examples

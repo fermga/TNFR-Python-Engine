@@ -91,12 +91,12 @@ class ArithmeticTNFRParameters:
 
     # EPI parameters (derived from golden ratio optimality)
     alpha: float = INV_PHI                   # 1/φ ≈ 0.6180 (factorization complexity - CANONICAL)
-    beta: float = GAMMA / (PI + GAMMA)       # γ/(π+γ) ≈ 0.1550 (divisor complexity - CANONICAL)
+    beta: float = GAMMA / (PI + GAMMA)       # γ/(π+γ) ≈ 0.1552 (divisor complexity - CANONICAL)
     gamma: float = GAMMA / PI                # γ/π ≈ 0.1837 (divisor excess - CANONICAL)
 
     # Frequency parameters (from νf theory)
-    nu_0: float = (PHI / GAMMA) / PI         # (φ/γ)/π ≈ 0.8925 (base frequency - CANONICAL)
-    delta: float = GAMMA / (PHI * PI)        # γ/(φ×π) ≈ 0.1137 (divisor density - CANONICAL)
+    nu_0: float = (PHI / GAMMA) / PI         # (φ/γ)/π ≈ 0.8923 (base frequency - CANONICAL)
+    delta: float = GAMMA / (PHI * PI)        # γ/(φ×π) ≈ 0.1136 (divisor density - CANONICAL)
     epsilon: float = math.exp(-PI)           # e^(-π) ≈ 0.0432 (factorization complexity - CANONICAL)
 
     # Pressure parameters (from ΔNFR theory)
@@ -336,7 +336,7 @@ class ArithmeticTNFRNetwork:
                 'omega': omega_n,        # Prime factor count (with multiplicity)
                 'EPI': epi_n,            # Structural form
                 'nu_f': nu_f_n,          # Structural frequency
-                'DELTA_NFR': delta_nfr_n,  # Factorization pressure
+                'delta_nfr': delta_nfr_n,  # Factorization pressure
                 'is_prime': self._is_prime(n),  # Ground truth for validation
                 'structural_terms': terms,
                 'delta_components': component_pressures,
@@ -506,7 +506,7 @@ class ArithmeticTNFRNetwork:
         candidates = []
         
         for n in self.graph.nodes():
-            delta_nfr = self.graph.nodes[n]['DELTA_NFR']
+            delta_nfr = self.graph.nodes[n]['delta_nfr']
             if abs(delta_nfr) <= delta_nfr_threshold:
                 if return_certificates:
                     candidates.append(self.get_prime_certificate(n, tolerance=tolerance))
@@ -651,7 +651,7 @@ class ArithmeticTNFRNetwork:
             'omega': node_data['omega'],
             'EPI': node_data['EPI'],
             'nu_f': node_data['nu_f'],
-            'DELTA_NFR': node_data['DELTA_NFR'],
+            'DELTA_NFR': node_data['delta_nfr'],
             'is_prime': node_data['is_prime'],
             'structural_terms': node_data['structural_terms'].as_dict() if isinstance(node_data.get('structural_terms'), ArithmeticStructuralTerms) else node_data.get('structural_terms'),
             'delta_components': dict(node_data['delta_components']) if node_data.get('delta_components') is not None else None,
@@ -673,7 +673,7 @@ class ArithmeticTNFRNetwork:
             node_data = self.graph.nodes[p]
             characteristics['EPI_values'].append(node_data['EPI'])
             characteristics['nu_f_values'].append(node_data['nu_f'])
-            characteristics['DELTA_NFR_values'].append(node_data['DELTA_NFR'])
+            characteristics['DELTA_NFR_values'].append(node_data['delta_nfr'])
             
         return characteristics
     
@@ -684,11 +684,11 @@ class ArithmeticTNFRNetwork:
         composites = [n for n in all_nodes if not self.graph.nodes[n]['is_prime']]
         
         # Prime statistics
-        prime_delta_nfr = [self.graph.nodes[p]['DELTA_NFR'] for p in primes]
+        prime_delta_nfr = [self.graph.nodes[p]['delta_nfr'] for p in primes]
         prime_epi = [self.graph.nodes[p]['EPI'] for p in primes]
         
     # Composite statistics
-        composite_delta_nfr = [self.graph.nodes[c]['DELTA_NFR'] for c in composites]
+        composite_delta_nfr = [self.graph.nodes[c]['delta_nfr'] for c in composites]
         composite_epi = [self.graph.nodes[c]['EPI'] for c in composites]
         
         return {
@@ -720,14 +720,14 @@ class ArithmeticTNFRNetwork:
     @staticmethod
     @cache_tnfr_computation(
         level=CacheLevel.DERIVED_METRICS if _CACHE_OK else None,
-        dependencies={'DELTA_NFR', 'graph_structure'},
+        dependencies={'delta_nfr', 'graph_structure'},
     )
     def _cached_phi_s_helper(
         G: nx.Graph,
         *,
-        alpha: float = PHI,
+        alpha: float = 2.0,
         distance_mode: str = "topological",
-        dnfr_attr: str = 'DELTA_NFR',
+        dnfr_attr: str = 'delta_nfr',
     ) -> dict[int, float]:
         phi_s: dict[int, float] = {}
         if distance_mode == 'topological':
@@ -758,14 +758,14 @@ class ArithmeticTNFRNetwork:
     @staticmethod
     @cache_tnfr_computation(
         level=CacheLevel.DERIVED_METRICS if _CACHE_OK else None,
-        dependencies={'DELTA_NFR', 'graph_structure'},
+        dependencies={'delta_nfr', 'graph_structure'},
     )
     def _cached_xi_c_helper(
         G: nx.Graph,
         *,
         min_pairs: int = 5,
         distance_mode: str = 'topological',
-        dnfr_attr: str = 'DELTA_NFR',
+        dnfr_attr: str = 'delta_nfr',
     ) -> dict[str, object]:
         c = {i: 1.0 / (1.0 + abs(float(G.nodes[i].get(dnfr_attr, 0.0)))) for i in G.nodes()}
         accum: dict[int, list[float]] = {}
@@ -1065,7 +1065,7 @@ class ArithmeticTNFRNetwork:
             'distance_mode': distance_mode,
         }
 
-    def compute_structural_potential(self, alpha: float = PHI, distance_mode: str = "topological") -> dict[int, float]:
+    def compute_structural_potential(self, alpha: float = 2.0, distance_mode: str = "topological") -> dict[int, float]:
         """
         Compute Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α.
 
@@ -1097,7 +1097,7 @@ class ArithmeticTNFRNetwork:
         G = self._get_undirected_graph()
         # store local coherence (used by downstream analyses)
         for i in G.nodes():
-            self.graph.nodes[i]['coherence_local'] = 1.0 / (1.0 + abs(self.graph.nodes[i]['DELTA_NFR']))
+            self.graph.nodes[i]['coherence_local'] = 1.0 / (1.0 + abs(self.graph.nodes[i]['delta_nfr']))
         
         # Use centralized CANONICAL function when distance_mode is topological
         if HAS_CENTRALIZED_FIELDS and distance_mode == "topological":
@@ -1157,7 +1157,7 @@ class ArithmeticTNFRNetwork:
         phi = self.compute_phase(method=phase_method, store=True)
         grad = self.compute_phase_gradient()
         curv = self.compute_phase_curvature()
-        phi_s = self.compute_structural_potential(alpha=PHI)
+        phi_s = self.compute_structural_potential(alpha=2.0)
         xi = self.estimate_coherence_length()
         kphi_safety = self.compute_kphi_safety()
         kphi_multiscale = self.k_phi_multiscale_safety(distance_mode='arithmetic')

@@ -301,7 +301,7 @@ class OptimizedNumPyBackend(TNFRBackend):
             apply_vf_scaling,
         )
         from ..alias import get_attr, set_dnfr
-        from ..constants.aliases import ALIAS_EPI, ALIAS_VF
+        from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
         from ..metrics.common import merge_and_normalize_weights
 
         if profile is not None:
@@ -332,7 +332,9 @@ class OptimizedNumPyBackend(TNFRBackend):
         vf = self._np.zeros(n_nodes, dtype=float)
 
         for idx, node in enumerate(nodes):
-            phase[idx] = float(graph.nodes[node].get("phase", 0.0))
+            phase[idx] = float(
+                get_attr(graph.nodes[node], ALIAS_THETA, 0.0)
+            )
             epi[idx] = float(get_attr(graph.nodes[node], ALIAS_EPI, 0.5))
             vf[idx] = float(get_attr(graph.nodes[node], ALIAS_VF, 1.0))
 

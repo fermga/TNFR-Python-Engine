@@ -93,6 +93,8 @@ except ImportError:  # pragma: no cover
     nx = None
 
 from ..constants.canonical import DELTA_PHI_MAX, PHI, PI
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_THETA
 
 # Conservation layer
 from .conservation import (
@@ -409,8 +411,8 @@ def compute_grammar_symmetry_mapping(G: Any) -> list[GrammarSymmetryMapping]:
     # Phase differences for U3
     max_phase_diff = 0.0
     for u, v in G.edges():
-        phi_u = G.nodes[u].get('phase', 0.0)
-        phi_v = G.nodes[v].get('phase', 0.0)
+        phi_u = get_attr(G.nodes[u], ALIAS_THETA, 0.0)
+        phi_v = get_attr(G.nodes[v], ALIAS_THETA, 0.0)
         diff = abs(phi_u - phi_v)
         diff = min(diff, 2 * math.pi - diff)
         max_phase_diff = max(max_phase_diff, diff)

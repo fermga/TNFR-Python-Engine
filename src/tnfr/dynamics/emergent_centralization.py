@@ -28,6 +28,8 @@ Status: CANONICAL EMERGENT CENTRALIZATION ENGINE
 from ..mathematics.unified_numerical import np
 from typing import Any
 from dataclasses import dataclass
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_THETA, ALIAS_VF
 from enum import Enum
 import time
 import threading
@@ -196,7 +198,7 @@ class TNFREmergentCentralizationEngine:
                         # Calculate coordination capacity based on network position
                         degree = G.degree(node)
                         epi_value = G.nodes[node].get('EPI', 0.0)
-                        vf_value = G.nodes[node].get('vf', 1.0)
+                        vf_value = get_attr(G.nodes[node], ALIAS_VF, 1.0)
                         
                         # Mathematical signature for this coordination node
                         signature = {
@@ -258,7 +260,7 @@ class TNFREmergentCentralizationEngine:
                     info_gradient = sum(abs(epi - nepi) for nepi in neighbor_epi) / max(1, len(neighbor_epi))
                     
                     # Coordination capacity based on information processing
-                    vf_value = G.nodes[node].get('vf', 1.0)
+                    vf_value = get_attr(G.nodes[node], ALIAS_VF, 1.0)
                     coordination_capacity = epi_fraction * info_gradient * vf_value
                     
                     if coordination_capacity > self.coordination_threshold:
@@ -307,7 +309,10 @@ class TNFREmergentCentralizationEngine:
             return coordination_nodes
             
         # Analyze νf distribution
-        vf_values = {node: G.nodes[node].get('vf', 1.0) for node in G.nodes()}
+        vf_values = {
+            node: get_attr(G.nodes[node], ALIAS_VF, 1.0)
+            for node in G.nodes()
+        }
         max_vf = max(vf_values.values()) if vf_values else 1.0
         
         # High-frequency nodes become natural coordinators
@@ -371,7 +376,10 @@ class TNFREmergentCentralizationEngine:
             return coordination_nodes
             
         # Analyze phase distribution
-        phase_values = {node: G.nodes[node].get('phase', 0.0) for node in G.nodes()}
+        phase_values = {
+            node: get_attr(G.nodes[node], ALIAS_THETA, 0.0)
+            for node in G.nodes()
+        }
         
         for node in G.nodes():
             phase = phase_values[node]
@@ -386,7 +394,7 @@ class TNFREmergentCentralizationEngine:
                 phase_coherence = 1.0 / (1.0 + avg_phase_diff)  # Higher coherence = lower differences
                 
                 # Phase coordination capacity
-                vf = G.nodes[node].get('vf', 1.0)
+                vf = get_attr(G.nodes[node], ALIAS_VF, 1.0)
                 coordination_capacity = phase_coherence * len(neighbors) * vf
                 
                 if phase_coherence > EMERGENT_CENTRALITY_THRESHOLD_CANONICAL and coordination_capacity > self.coordination_threshold:  # φ/(φ+γ) ≈ 0.737

@@ -108,7 +108,7 @@ def create_coherence_evolution_plot():
         np.random.seed(42)
         for node in G.nodes():
             G.nodes[node]['phase'] = np.random.uniform(0, 2*np.pi)
-            G.nodes[node]['vf'] = 1.0
+            G.nodes[node]['nu_f'] = 1.0
         
         # Evolve and track
         steps = 50
@@ -157,7 +157,7 @@ def create_phase_space_visualization():
     phases_init = [0, np.pi/3, 2*np.pi/3, np.pi, 4*np.pi/3, 5*np.pi/3]
     for i, node in enumerate(G.nodes()):
         G.nodes[node]['phase'] = phases_init[i]
-        G.nodes[node]['vf'] = 1.0
+        G.nodes[node]['nu_f'] = 1.0
     
     # Track evolution
     steps = 30
@@ -254,7 +254,7 @@ def create_network_topology_comparison():
         np.random.seed(42)
         for node in G.nodes():
             G.nodes[node]['phase'] = np.random.uniform(0, 2*np.pi)
-            G.nodes[node]['vf'] = 1.0
+            G.nodes[node]['nu_f'] = 1.0
         
         # Evolve to show final state
         for _ in range(30):
@@ -336,7 +336,7 @@ def create_frequency_resonance_plot():
         np.random.seed(42)
         for i, node in enumerate(G.nodes()):
             G.nodes[node]['phase'] = np.random.uniform(0, 2*np.pi)
-            G.nodes[node]['vf'] = frequencies[i]
+            G.nodes[node]['nu_f'] = frequencies[i]
         
         # Track evolution
         steps = 60
@@ -348,7 +348,7 @@ def create_frequency_resonance_plot():
             phase_coherence = compute_coherence(G)
             
             # Frequency coherence
-            node_frequencies = [G.nodes[n]['vf'] for n in G.nodes()]
+            node_frequencies = [G.nodes[n]['nu_f'] for n in G.nodes()]
             freq_var = np.var(node_frequencies)
             freq_mean = np.mean(node_frequencies)
             freq_coherence = 1.0 / (1.0 + freq_var / freq_mean) if freq_mean > 0 else 0.0
@@ -408,10 +408,10 @@ def create_emergence_metrics_dashboard():
     for node in G.nodes():
         G.nodes[node]['phase'] = np.random.uniform(0, 2*np.pi)
         if node in leaders:
-            G.nodes[node]['vf'] = 2.0  # Leaders have higher frequency
+            G.nodes[node]['nu_f'] = 2.0  # Leaders have higher frequency
             G.nodes[node]['role'] = 'leader'
         else:
-            G.nodes[node]['vf'] = 1.0
+            G.nodes[node]['nu_f'] = 1.0
             G.nodes[node]['role'] = 'follower'
     
     # Track metrics over time

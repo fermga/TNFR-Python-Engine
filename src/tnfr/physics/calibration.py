@@ -50,7 +50,7 @@ def create_topology_calibration_profiles() -> dict[str, CalibrationProfile]:
         parameter_dependencies={
             'n_nodes': PHYSICS_N_NODES_DEPENDENCY_CANONICAL,      # γ/(π×e×φ) ≈ 0.0418 (weak dependency on network size)
             'k_degree': PHYSICS_K_DEGREE_DEPENDENCY_CANONICAL,    # -γ/(π+γ) ≈ -0.1552 (stronger dependency on connectivity)
-            'p_rewire': PHYSICS_P_REWIRE_DEPENDENCY_CANONICAL,    # γ/(π+e+γ) ≈ 0.0890 (moderate dependency on rewiring probability)
+            'p_rewire': PHYSICS_P_REWIRE_DEPENDENCY_CANONICAL,    # γ/(π+e+γ) ≈ 0.0897 (moderate dependency on rewiring probability)
         },
         sample_size=32,
         confidence_level=0.95

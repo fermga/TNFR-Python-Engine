@@ -154,7 +154,7 @@ def phase_transition_experiment():
     np.random.seed(42)
     for node in G.nodes():
         G.nodes[node]['phase'] = np.random.uniform(0, 2*np.pi)
-        G.nodes[node]['vf'] = 0.8
+        G.nodes[node]['nu_f'] = 0.8
         G.nodes[node]['history'] = []
     
     initial_coherence = compute_coherence(G)
@@ -232,7 +232,7 @@ def hysteresis_experiment():
     # Initialize synchronized state
     for node in G.nodes():
         G.nodes[node]['phase'] = 0.0  # All synchronized
-        G.nodes[node]['vf'] = 1.0
+        G.nodes[node]['nu_f'] = 1.0
     
     # Forward path: increasing dissonance
     dissonance_levels = np.linspace(0.0, 0.8, 16)
@@ -306,7 +306,7 @@ def critical_point_analysis():
         np.random.seed(42 + size)
         for node in G.nodes():
             G.nodes[node]['phase'] = np.random.uniform(0, 2*np.pi)
-            G.nodes[node]['vf'] = 1.0
+            G.nodes[node]['nu_f'] = 1.0
         
         # Find critical dissonance level
         critical_level = None
@@ -360,7 +360,7 @@ def grammar_u4_demonstration():
     # Initialize synchronized
     for node in G.nodes():
         G.nodes[node]['phase'] = 0.0
-        G.nodes[node]['vf'] = 1.0
+        G.nodes[node]['nu_f'] = 1.0
     
     print("\n1️⃣ INCORRECT: Dissonance without handler")
     

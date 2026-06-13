@@ -12,11 +12,11 @@ Where J_membrane represents phase-selective transport across cellular boundaries
 
 Contracts and Invariants (TNFR):
 - No direct EPI mutation; always observe via metrics (Invariant #1)
-- Structural units preserved (νf in Hz_str) (Invariant #2)
-- ΔNFR semantics preserved as structural pressure (Invariant #3)
+- Structural units preserved (νf in Hz_str) (Invariant #5)
+- ΔNFR semantics preserved as structural pressure (Invariant #1)
 - Operator closure: this module only measures, does not alter operator sequences (Invariant #4)
-- Phase verification upheld in coupling metrics (U3) (Invariant #5)
-- Multi-scale coherence preserved (U5) for nested cellular EPIs (Invariant #7)
+- Phase verification upheld in coupling metrics (U3) (Invariant #2)
+- Multi-scale coherence preserved (U5) for nested cellular EPIs (Invariant #3)
 
 Cellular Criteria (Building on Life A > 1.0):
 1. Boundary Coherence: C_boundary > 0.8 (strong membrane coherence)
@@ -41,6 +41,8 @@ from typing import Sequence
 from ..mathematics.unified_numerical import np
 import networkx as nx
 from ..metrics.common import compute_coherence
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_DNFR
 
 @dataclass
 class CellTelemetry:
@@ -335,8 +337,10 @@ def detect_cell_formation(
         # Collect internal ΔNFR values
         internal_dnfr = []
         for node in internal_nodes:
-            if node in graph.nodes() and 'delta_nfr' in graph.nodes[node]:
-                internal_dnfr.append(graph.nodes[node]['delta_nfr'])
+            if node in graph.nodes():
+                dnfr_val = get_attr(graph.nodes[node], ALIAS_DNFR, None)
+                if dnfr_val is not None:
+                    internal_dnfr.append(dnfr_val)
         
         internal_delta_nfr_history.extend(internal_dnfr)
         

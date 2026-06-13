@@ -18,7 +18,9 @@ from ..constants.canonical import (
     DT_CANONICAL, DT_MIN_CANONICAL, EPI_MAX_CANONICAL, EPI_MIN_CANONICAL,
     VF_MAX_CANONICAL, VF_MIN_CANONICAL, KL_MIN_CANONICAL, KL_MAX_CANONICAL,
     UP_CANONICAL, DOWN_CANONICAL, AL_BOOST_CANONICAL, VF_ADAPT_MU_CANONICAL,
-    GLYPH_SELECTOR_MARGIN_CANONICAL
+    GLYPH_SELECTOR_MARGIN_CANONICAL,
+    # Tetrad field thresholds (single canonical source)
+    GRAD_PHI_CANONICAL_THRESHOLD, K_PHI_CANONICAL_THRESHOLD,
 )
 
 # U6 Structural Potential Confinement Constants
@@ -27,12 +29,12 @@ STRUCTURAL_ESCAPE_THRESHOLD = U6_STRUCTURAL_POTENTIAL_LIMIT  # φ ≈ 1.618 (can
 
 SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
     {
-        "si_hi": round(2.0 / (PI + GAMMA), 3),  # 2/(π+γ) ≈ 0.663 (tetrahedral correspondence: dual transcendental balance)
-        "si_lo": round(1.0 / (PI + GAMMA), 3),  # 1/(π+γ) ≈ 0.331 (tetrahedral correspondence: transcendental unity)
-        "dnfr_hi": round(GAMMA / (PHI + E), 3),  # γ/(φ+e) ≈ 0.500 (tetrahedral correspondence: dynamic balance between harmony and exponential growth)
-        "dnfr_lo": round(GAMMA / (E * PI), 3),  # γ/(e×π) ≈ 0.102 (tetrahedral correspondence: constrained dynamics beneath natural exponential-geometric product)
-        "accel_hi": round(PHI / (PI + E), 3),  # φ/(π+e) ≈ 0.503 (tetrahedral correspondence: golden ratio acceleration bounded by geometric-exponential sum)
-        "accel_lo": round(GAMMA / (PHI * PI), 3),  # γ/(φ×π) ≈ 0.113 (tetrahedral correspondence: Euler constant constrained by golden-geometric product)
+        "si_hi": round(2.0 / (PI + GAMMA), 3),  # 2/(π+γ) ≈ 0.538 (tetrahedral correspondence: dual transcendental balance)
+        "si_lo": round(1.0 / (PI + GAMMA), 3),  # 1/(π+γ) ≈ 0.269 (tetrahedral correspondence: transcendental unity)
+        "dnfr_hi": round(GAMMA / (PHI + E), 3),  # γ/(φ+e) ≈ 0.133 (tetrahedral correspondence: dynamic balance between harmony and exponential growth)
+        "dnfr_lo": round(GAMMA / (E * PI), 3),  # γ/(e×π) ≈ 0.068 (tetrahedral correspondence: constrained dynamics beneath natural exponential-geometric product)
+        "accel_hi": round(PHI / (PI + E), 3),  # φ/(π+e) ≈ 0.276 (tetrahedral correspondence: golden ratio acceleration bounded by geometric-exponential sum)
+        "accel_lo": round(GAMMA / (PHI * PI), 3),  # γ/(φ×π) ≈ 0.114 (tetrahedral correspondence: Euler constant constrained by golden-geometric product)
     }
 )
 
@@ -58,7 +60,7 @@ class CoreDefaults:
         default_factory=lambda: {
             "phase": round(PHI_GAMMA_NORMALIZED, 3),      # φ/(φ+γ) ≈ 0.737 (dominant golden-euler)
             "epi": round(GAMMA_PI_RATIO, 3),             # γ/(π+γ) ≈ 0.155 (Euler-pi stabilizer)
-            "vf": round(PI_MINUS_E_OVER_PI * (2 / 3), 3),   # ((π-e)/π) * (2/3) ≈ 0.089 (moderate transcendental)
+            "vf": round(PI_MINUS_E_OVER_PI * (2 / 3), 3),   # ((π-e)/π) * (2/3) ≈ 0.090 (moderate transcendental)
             "topo": 0.0,                                 # Topological weight remains zero
         }
     )
@@ -66,18 +68,18 @@ class CoreDefaults:
         default_factory=lambda: {
             "alpha": round(PHI_GAMMA_NORMALIZED, 3),     # φ/(φ+γ) ≈ 0.737 (golden coherence)
             "beta": round(GAMMA_PI_RATIO, 3),            # γ/(π+γ) ≈ 0.155 (Euler stability)
-            "gamma": round(GAMMA / (PHI * PI), 3)  # γ/(φ×π) ≈ 0.113 (tetrahedral reorganization via Euler constant constrained by golden-geometric product)
+            "gamma": round(GAMMA / (PHI * PI), 3)  # γ/(φ×π) ≈ 0.114 (tetrahedral reorganization via Euler constant constrained by golden-geometric product)
         }
     )
-    PHASE_K_GLOBAL: float = round(GAMMA_OVER_PI_PLUS_E / 2, 4)  # γ/(π+e) / 2 ≈ 0.0495 (canonical global phase coupling)
+    PHASE_K_GLOBAL: float = round(GAMMA_OVER_PI_PLUS_E / 2, 4)  # γ/(π+e) / 2 ≈ 0.0493 (canonical global phase coupling)
     PHASE_K_LOCAL: float = round(GAMMA_PI_RATIO, 3)            # γ/(π+γ) ≈ 0.155 (canonical local phase coupling)
     PHASE_ADAPT: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
-            "R_hi": round(E * PHI / (PI + E), 3),  # (e×φ)/(π+e) ≈ 0.747 (tetrahedral high R threshold via exponential-harmonic ratio)
-            "R_lo": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.630 (tetrahedral low R threshold)
+            "R_hi": round(E * PHI / (PI + E), 3),  # (e×φ)/(π+e) ≈ 0.751 (tetrahedral high R threshold via exponential-harmonic ratio)
+            "R_lo": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.639 (tetrahedral low R threshold)
             "disr_hi": round(PI / (PI + E), 3),  # π/(π+e) ≈ 0.536 (tetrahedral high disruption threshold)
-            "disr_lo": round(1.0 / (PI + 1.0), 3),  # 1/(π+1) ≈ 0.242 (tetrahedral low disruption threshold)
+            "disr_lo": round(1.0 / (PI + 1.0), 3),  # 1/(π+1) ≈ 0.241 (tetrahedral low disruption threshold)
             "kG_min": round(1.0 / (10 * PI * E), 4),  # 1/(10πe) ≈ 0.0117 (tetrahedral minimum phase coupling)
             "kG_max": round(GAMMA / (PI + 1.0), 3),  # γ/(π+1) ≈ 0.139 (tetrahedral maximum phase coupling)
             "kL_min": KL_MIN_CANONICAL,  # γ/(π×e×φ) ≈ 0.0418 (tetrahedral minimum coupling)
@@ -113,13 +115,13 @@ class CoreDefaults:
             # while maintaining meaningful expansion capacity. Critical threshold:
             # EPI × 1.05 = 1.0 when EPI ≈ 0.952 (vs previous threshold ≈ 0.870).
             # This preserves structural identity at boundary (EPI_MAX as identity frontier).
-            "VAL_scale": VAL_SCALE_FACTOR,  # 1 + γ/(π×e) ≈ 1.0673 (canonical natural expansion rate)
-            "NUL_scale": NUL_SCALE_FACTOR,  # 1 - γ/(π+e) ≈ 0.8476 (canonical contraction factor)
+            "VAL_scale": VAL_SCALE_FACTOR,  # 1 + γ/(π×e) ≈ 1.0676 (canonical natural expansion rate)
+            "NUL_scale": NUL_SCALE_FACTOR,  # 1 - γ/(π+e) ≈ 0.9015 (canonical contraction factor)
             # NUL canonical ΔNFR densification factor: implements structural pressure
             # concentration due to volume reduction. When V' = V × 0.85, density increases
             # by ~1.176× geometrically. Canonical value 1.35 accounts for nonlinear
             # structural effects at smaller scales, per TNFR theory.
-            "NUL_densification_factor": NUL_DENSIFICATION_FACTOR,  # φ/γ ≈ 2.8025 (canonical golden densification)
+            "NUL_densification_factor": NUL_DENSIFICATION_FACTOR,  # φ/γ ≈ 2.8032 (canonical golden densification)
             "THOL_accel": 0.10,
             # ZHIR now uses canonical transformation by default (θ → θ' based on ΔNFR)
             # To use fixed shift, explicitly set ZHIR_theta_shift in graph
@@ -137,13 +139,13 @@ class CoreDefaults:
     RANDOM_SEED: int = 0
     JITTER_CACHE_SIZE: int = 256
     OZ_NOISE_MODE: bool = False
-    OZ_SIGMA: float = round(GAMMA / (E * PI), 3)  # γ/(e×π) ≈ 0.102 (tetrahedral dissonance sigma)
+    OZ_SIGMA: float = round(GAMMA / (E * PI), 3)  # γ/(e×π) ≈ 0.068 (tetrahedral dissonance sigma)
     GRAMMAR: dict[str, Any] = field(
         default_factory=lambda: {
             "window": 3,
             "avoid_repeats": ["ZHIR", "OZ", "THOL"],
-            "force_dnfr": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.630 (tetrahedral force threshold)
-            "force_accel": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.630 (tetrahedral acceleration threshold)
+            "force_dnfr": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.639 (tetrahedral force threshold)
+            "force_accel": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.639 (tetrahedral acceleration threshold)
             "fallbacks": {"ZHIR": "NAV", "OZ": "ZHIR", "THOL": "NAV"},
         }
     )
@@ -185,7 +187,7 @@ class CoreDefaults:
     VAL_MIN_DNFR: float = (
         1e-6  # Minimum positive ΔNFR for coherent expansion (very low to minimize breaking changes)
     )
-    VAL_MIN_EPI: float = VAL_MIN_EPI  # γ/(π+γ) ≈ 0.1550 (canonical minimum structural base)
+    VAL_MIN_EPI: float = VAL_MIN_EPI  # γ/(π+γ) ≈ 0.1552 (canonical minimum structural base)
     VAL_CHECK_NETWORK_CAPACITY: bool = False  # Optional network capacity validation
     VAL_MAX_NETWORK_SIZE: int = 1000  # Maximum network size if capacity checking enabled
 
@@ -205,15 +207,15 @@ class RemeshDefaults:
 
     EPS_DNFR_STABLE: float = 1e-3
     EPS_DEPI_STABLE: float = 1e-3
-    FRACTION_STABLE_REMESH: float = round(4.0 / (E + PHI), 3)  # 4/(e+φ) ≈ 0.798 (tetrahedral stable fraction)
+    FRACTION_STABLE_REMESH: float = round(4.0 / (E + PHI), 3)  # 4/(e+φ) ≈ 0.922 (tetrahedral stable fraction)
     REMESH_COOLDOWN_WINDOW: int = 20
     REMESH_COOLDOWN_TS: float = 0.0
     REMESH_REQUIRE_STABILITY: bool = True
     REMESH_STABILITY_WINDOW: int = 25
-    REMESH_MIN_PHASE_SYNC: float = round((E * PHI) / (PI + E), 3)  # (e×φ)/(π+e) ≈ 0.747 (tetrahedral phase sync threshold via exponential-harmonic ratio)
+    REMESH_MIN_PHASE_SYNC: float = round((E * PHI) / (PI + E), 3)  # (e×φ)/(π+e) ≈ 0.751 (tetrahedral phase sync threshold via exponential-harmonic ratio)
     REMESH_MAX_GLYPH_DISR: float = round(1.0 / (PI + GAMMA), 3)  # 1/(π+γ) ≈ 0.269 → maximum glyph disruption via tetrahedral correspondence
     REMESH_MIN_SIGMA_MAG: float = round(PI / (PI + E), 3)  # π/(π+e) ≈ 0.536 (tetrahedral sigma magnitude threshold)
-    REMESH_MIN_KURAMOTO_R: float = round(4.0 / (E + PHI), 3)  # 4/(e+φ) ≈ 0.798 (tetrahedral Kuramoto threshold)
+    REMESH_MIN_KURAMOTO_R: float = round(4.0 / (E + PHI), 3)  # 4/(e+φ) ≈ 0.922 (tetrahedral Kuramoto threshold)
     REMESH_MIN_SI_HI_FRAC: float = round(PI / (PI + E), 3)  # π/(π+e) ≈ 0.536 (tetrahedral SI high fraction)
     REMESH_LOG_EVENTS: bool = True
     REMESH_MODE: str = "knn"
@@ -235,8 +237,9 @@ REMESH_DEFAULTS = MappingProxyType(_remesh_defaults)
 
 # Structural Field Thresholds (Research Constants)
 K_PHI_ASYMPTOTIC_ALPHA = 2.76  # Power-law exponent for multiscale K_φ variance
-K_PHI_CURVATURE_THRESHOLD = PI * 0.9  # 0.9×π ≈ 2.827 (90% of theoretical maximum)
-PHASE_GRADIENT_THRESHOLD = GAMMA / PI  # γ/π ≈ 0.1837 (Kuramoto critical coupling in TNFR units)
+# Tetrad thresholds: alias the single canonical source (constants.canonical)
+K_PHI_CURVATURE_THRESHOLD = K_PHI_CANONICAL_THRESHOLD  # 0.9×π ≈ 2.8274 (90% of theoretical maximum)
+PHASE_GRADIENT_THRESHOLD = GRAD_PHI_CANONICAL_THRESHOLD  # γ/π ≈ 0.1837 (Kuramoto critical coupling in TNFR units)
 
 # Business Domain Thresholds (Tetrahedral Correspondence)
 MIN_BUSINESS_COHERENCE = MIN_BUSINESS_COHERENCE_CANONICAL  # (e×φ)/(π+e) ≈ 0.7506 (from constants.canonical)
@@ -253,7 +256,7 @@ ISING_3D_EXPONENT = 0.63  # 3D Ising universality class
 ISING_2D_EXPONENT = 1.0  # 2D Ising universality class
 
 # Coherence Length Constants
-CRITICAL_INFORMATION_DENSITY = E * PHI / PI  # (e×φ)/π ≈ 2.015 (tetrahedral critical density)
+CRITICAL_INFORMATION_DENSITY = E * PHI / PI  # (e×φ)/π ≈ 1.400 (tetrahedral critical density)
 MIN_DISTANCE_THRESHOLD = 0.01  # Numerical stability minimum distance
 
 # Field Optimization Constants

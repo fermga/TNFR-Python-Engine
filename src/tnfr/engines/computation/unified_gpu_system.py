@@ -47,6 +47,8 @@ from ...mathematics.unified_numerical import np
 # Unified mathematics backend integration
 from ...mathematics.backend import get_backend
 from ...config import get_config
+from ...alias import get_attr
+from ...constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
 logger = logging.getLogger(__name__)
 
@@ -406,9 +408,9 @@ class TNFRUnifiedGPUSystem:
         phase_vec = np.zeros(n)
 
         for i, node in enumerate(nodes):
-            epi_vec[i] = graph.nodes[node].get('epi', 0.0)
-            vf_vec[i] = graph.nodes[node].get('nu_f', 0.0)
-            phase_vec[i] = graph.nodes[node].get('phase', 0.0)
+            epi_vec[i] = get_attr(graph.nodes[node], ALIAS_EPI, 0.0)
+            vf_vec[i] = get_attr(graph.nodes[node], ALIAS_VF, 0.0)
+            phase_vec[i] = get_attr(graph.nodes[node], ALIAS_THETA, 0.0)
             
         for i, j in graph.edges():
             idx_i = node_to_idx[i]

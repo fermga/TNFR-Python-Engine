@@ -220,7 +220,7 @@ def compute_bifurcation_score(
     substrate_factor = min(epi / (4.0 / (E + PHI)), 1.0) if epi >= 0 else 0.0
 
     # Weighted combination via tetrahedral correspondence (percentages sum to 100%)
-    w_accel = 2.0 / (E + PHI)  # ≈ 0.447 - acceleration weight via tetrahedral normalization
+    w_accel = 2.0 / (E + PHI)  # ≈ 0.461 - acceleration weight via tetrahedral normalization
     w_instab = GAMMA / (PHI + GAMMA)  # ≈ 0.263 - instability weight via golden-Euler balance
     w_capac = GAMMA / (PI + 1.0)  # ≈ 0.139 - capacity weight via transcendental constraint
     w_substr = 1.0 - (w_accel + w_instab + w_capac)  # ≈ 0.151 - remainder for substrate

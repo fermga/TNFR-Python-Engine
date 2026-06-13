@@ -52,6 +52,7 @@ from ..constants.aliases import (
     ALIAS_DNFR,
     ALIAS_EPI,
     ALIAS_EPI_KIND,
+    ALIAS_THETA,
     ALIAS_VF,
 )
 from ..gamma import _get_gamma_spec, eval_gamma, eval_gamma_vectorized
@@ -1087,12 +1088,12 @@ def _compute_synthetic_phase_current(G: TNFRGraph, node: NodeId) -> float:
     if G.degree(node) == 0:
         return 0.0
     
-    node_theta = G.nodes[node].get('theta', 0.0)
+    node_theta = get_attr(G.nodes[node], ALIAS_THETA, 0.0)
     
     # Compute phase differences with neighbors
     phase_diffs = []
     for neighbor in G.neighbors(node):
-        neighbor_theta = G.nodes[neighbor].get('theta', 0.0)
+        neighbor_theta = get_attr(G.nodes[neighbor], ALIAS_THETA, 0.0)
         # Use circular difference for phases
         diff = neighbor_theta - node_theta
         # Normalize to [-π, π]
@@ -1116,12 +1117,12 @@ def _compute_synthetic_dnfr_divergence(G: TNFRGraph, node: NodeId) -> float:
     if G.degree(node) == 0:
         return 0.0
     
-    node_dnfr = G.nodes[node].get(ALIAS_DNFR, 0.0)
+    node_dnfr = get_attr(G.nodes[node], ALIAS_DNFR, 0.0)
     
     # Compute ΔNFR differences with neighbors  
     dnfr_diffs = []
     for neighbor in G.neighbors(node):
-        neighbor_dnfr = G.nodes[neighbor].get(ALIAS_DNFR, 0.0)
+        neighbor_dnfr = get_attr(G.nodes[neighbor], ALIAS_DNFR, 0.0)
         diff = neighbor_dnfr - node_dnfr
         dnfr_diffs.append(diff)
     
@@ -1171,7 +1172,7 @@ def _estimate_local_coupling_strength(G: TNFRGraph, node: NodeId) -> float:
     normalized_degree = min(degree / 10.0, 1.0)  # Saturation at degree 10
     # Import canonical coupling factor
     from ..constants.canonical import PI_PLUS_E_HALF
-    coupling_factor = PI_PLUS_E_HALF  # π + e/2 ≈ 4.500 (transcendental sensitivity)
+    coupling_factor = PI_PLUS_E_HALF  # π + e/2 ≈ 4.501 (transcendental sensitivity)
     coupling = 1.0 / (1.0 + math.exp(-coupling_factor * (normalized_degree - INTEGRATORS_SIGMOID_OFFSET_CANONICAL)))
     
     return coupling

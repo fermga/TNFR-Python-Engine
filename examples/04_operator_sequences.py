@@ -16,7 +16,7 @@ def simple_coherence_measure(G):
         return 0.0
     
     # Measure based on structural stress (DNFR) and connectivity
-    total_stress = sum(G.nodes[n].get('DNFR', 0.1) for n in G.nodes())
+    total_stress = sum(G.nodes[n].get('delta_nfr', 0.1) for n in G.nodes())
     avg_stress = total_stress / G.number_of_nodes()
     
     # Lower stress = higher coherence
@@ -33,9 +33,9 @@ def apply_sequence_effect(G, node, sequence_name, stress_changes):
     
     # Apply stress changes sequentially
     for i, stress_change in enumerate(stress_changes):
-        current_stress = G.nodes[node]['DNFR']
+        current_stress = G.nodes[node]['delta_nfr']
         new_stress = max(0.01, current_stress + stress_change)  # Keep positive
-        G.nodes[node]['DNFR'] = new_stress
+        G.nodes[node]['delta_nfr'] = new_stress
         
         step_coherence = simple_coherence_measure(G)
         operator_effect = "↑" if stress_change < 0 else "↓" if stress_change > 0 else "→"
@@ -69,9 +69,9 @@ def operator_sequences_demo():
     # Initialize nodes with moderate structural stress
     for node in G.nodes():
         G.nodes[node]['EPI'] = 0.2
-        G.nodes[node]['nf'] = 1.0
+        G.nodes[node]['nu_f'] = 1.0
         G.nodes[node]['theta'] = 0.1 * node
-        G.nodes[node]['DNFR'] = 0.3  # Moderate stress
+        G.nodes[node]['delta_nfr'] = 0.3  # Moderate stress
     
     print("🏗️ NETWORK SETUP:")
     print(f"   Nodes: {G.number_of_nodes()}, Edges: {G.number_of_edges()}")

@@ -43,9 +43,9 @@ from ..operators import grammar as _grammar
 from ..types import Glyph
 from .config import ValidationConfig, configure_validation, validation_config  # noqa: F401
 from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401
-from .unified_validation_system import (
+from .unified_validation_system import (  # noqa: F401,F811
     ValidationError,
-    get_unified_validation_system
+    get_unified_validation_system,
 )
 # Legacy exports mapped to unified system where possible
 # validate_dnfr_value, validate_epi_value etc are deprecated
@@ -76,9 +76,84 @@ from .soft_filters import (  # noqa: F401
 )
 from .validator import TNFRValidationError, TNFRValidator  # noqa: F401
 from .window import validate_window  # noqa: F401
+from .phase_gate import (  # noqa: F401
+    DEFAULT_MIN_COMPLIANCE,
+    DEFAULT_PHASE_GATE,
+    PhaseGateCompliance,
+    PhaseGateOperatorPrescription,
+    PhaseGateReport,
+    PhaseGateViolation,
+    PhaseStressHotspot,
+    analyze_phase_gate,
+    compare_against_global_baselines,
+    compute_edge_gate_compliance,
+    detect_phase_gate_violations,
+    export_phase_gate_report,
+    prescribe_phase_gate_operators,
+    rank_phase_stress_hotspots,
+)
+from .structural_interface import (  # noqa: F401
+    StructuralInterfaceProblem,
+    StructuralInterfaceScore,
+    baseline_score_maps,
+    build_knn_graph,
+    encode_phase_from_binary_state,
+    evaluate_interface_scores,
+    export_structural_interface_report,
+    full_baseline_score_maps,
+    interface_score_maps,
+    local_state_disagreement,
+    render_structural_interface_html,
+    render_structural_interface_markdown,
+    score_structural_interfaces,
+)
+from .interface_baselines import (  # noqa: F401
+    BASELINE_FORMULAS,
+    compute_all_baselines,
+    constant_baseline,
+    degree_score,
+    feature_deviation,
+    graph_cut_contribution,
+    graph_total_variation,
+    label_propagation_residual,
+    local_class_entropy,
+    local_disagreement,
+    mean_neighbour_distance,
+    random_baseline,
+)
+from .temporal_interface import (  # noqa: F401
+    EarlyWarningComparison,
+    TemporalInterfaceConfig,
+    WindowTetradSeries,
+    build_temporal_proximity_graph,
+    delay_embedding,
+    evaluate_early_warning,
+    hilbert_instantaneous_phase,
+    kendall_tau,
+    local_structural_pressure,
+    rolling_lag1_autocorrelation,
+    rolling_variance,
+    window_tetrad_series,
+)
+from .multichannel_interface import (  # noqa: F401
+    MultichannelConfig,
+    MultichannelWindowSeries,
+    SynchronyDiscrimination,
+    amplitude_pressure,
+    analytic_phase_amplitude,
+    build_coupling_graph,
+    evaluate_synchrony_discrimination,
+    fft_bandpass,
+    kuramoto_order_parameter,
+    mean_field_order,
+    multichannel_window_series,
+    phase_amplitude_matrices,
+    phase_locking_matrix,
+    phase_offsets,
+)
 
 # Unified validation system exports
-from .unified_validation_system import (
+from .unified_validation_system import (  # noqa: F401,F811
     TNFRUnifiedValidationSystem,
     ValidationConfig,
     ValidationResult,
@@ -89,7 +164,7 @@ from .unified_validation_system import (
     validate_coherence,
     validate_string_input,
     get_unified_validation_stats,
-)  # noqa: F401
+)
 
 # NOTE: Compatibility module deprecated - grammar emerges from TNFR structural dynamics
 # Legacy exports kept for backward compatibility but will be removed in future versions
@@ -183,11 +258,77 @@ _RUNTIME_EXPORTS = (
     "ValidationConfig",
     "validation_config",
     "configure_validation",
+    "DEFAULT_MIN_COMPLIANCE",
+    "DEFAULT_PHASE_GATE",
+    "PhaseGateCompliance",
+    "PhaseGateOperatorPrescription",
+    "PhaseGateReport",
+    "PhaseGateViolation",
+    "PhaseStressHotspot",
+    "analyze_phase_gate",
+    "compare_against_global_baselines",
+    "compute_edge_gate_compliance",
+    "detect_phase_gate_violations",
+    "export_phase_gate_report",
+    "prescribe_phase_gate_operators",
+    "rank_phase_stress_hotspots",
+    "StructuralInterfaceProblem",
+    "StructuralInterfaceScore",
+    "build_knn_graph",
+    "encode_phase_from_binary_state",
+    "local_state_disagreement",
+    "score_structural_interfaces",
+    "interface_score_maps",
+    "baseline_score_maps",
+    "full_baseline_score_maps",
+    "evaluate_interface_scores",
+    "render_structural_interface_markdown",
+    "render_structural_interface_html",
+    "export_structural_interface_report",
+    "BASELINE_FORMULAS",
+    "compute_all_baselines",
+    "constant_baseline",
+    "degree_score",
+    "feature_deviation",
+    "graph_cut_contribution",
+    "graph_total_variation",
+    "label_propagation_residual",
+    "local_class_entropy",
+    "local_disagreement",
+    "mean_neighbour_distance",
+    "random_baseline",
+    "TemporalInterfaceConfig",
+    "WindowTetradSeries",
+    "EarlyWarningComparison",
+    "hilbert_instantaneous_phase",
+    "delay_embedding",
+    "local_structural_pressure",
+    "build_temporal_proximity_graph",
+    "window_tetrad_series",
+    "rolling_variance",
+    "rolling_lag1_autocorrelation",
+    "kendall_tau",
+    "evaluate_early_warning",
+    "MultichannelConfig",
+    "MultichannelWindowSeries",
+    "SynchronyDiscrimination",
+    "fft_bandpass",
+    "analytic_phase_amplitude",
+    "phase_amplitude_matrices",
+    "mean_field_order",
+    "kuramoto_order_parameter",
+    "phase_locking_matrix",
+    "phase_offsets",
+    "amplitude_pressure",
+    "build_coupling_graph",
+    "multichannel_window_series",
+    "evaluate_synchrony_discrimination",
 )
 
 __all__ = _GRAMMAR_EXPORTS + _RUNTIME_EXPORTS
 
 _ENFORCE_CANONICAL_GRAMMAR = _grammar.enforce_canonical_grammar
+
 
 def enforce_canonical_grammar(
     G: Any,
@@ -208,6 +349,7 @@ def enforce_canonical_grammar(
         if translated is not None:
             return translated
     return result
+
 
 def __getattr__(name: str) -> Any:
     if name == "NFRValidator":

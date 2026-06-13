@@ -367,8 +367,12 @@ def demo_cross_topology_verification() -> None:
         print(f"  {name:<18}  {max_phi_s:10.4f}  {max_grad:14.4f}  "
               f"{max_k:10.4f}  {'SAFE' if safe else 'WARN':>8}")
 
-    print(f"\n  All thresholds derived from (phi, gamma, pi, e).")
-    print(f"  Zero empirical fitting — 100% first-principles derivation.")
+    print("\n  Three of four tetrad thresholds derive from "
+          "(phi, gamma, pi, e);")
+    print("  the per-node Phi_s threshold (0.7711) is empirically "
+          "validated")
+    print("  without a closed-form derivation (see FUNDAMENTAL_THEORY "
+          "section 4.3).")
 
 
 # ---------------------------------------------------------------------------
@@ -423,8 +427,11 @@ def main() -> None:
     pi <-> K_phi  (2nd order: curvature / Laplacian)
     e <-> xi_C   (non-local: correlation range)
 
-  All {len('300+')} constants in canonical.py are algebraic combinations
-  of these four — zero empirical fitting.
+  The physics-tier constants in canonical.py (tetrad, grammar,
+  operators) are algebraic combinations of these four. The
+  engine-configuration tier (cache, FFT, optimization) is
+  calibrated to operational targets, not derived; the per-node
+  Phi_s threshold (0.7711) is empirically validated.
 """)
 
 

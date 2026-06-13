@@ -349,7 +349,7 @@ class TNFRDistributedEngine:
         for node in G.nodes():
             G.nodes[node]["nu_f"] = 1.0
             G.nodes[node]["phase"] = 0.0
-            G.nodes[node]["epi"] = 0.5
+            G.nodes[node]["EPI"] = 0.5
             G.nodes[node]["delta_nfr"] = 0.0
 
         # Compute Si using distributed backend

@@ -49,6 +49,10 @@ semgrep.sarif
 # Validation outputs (generated)
 validation_outputs/
 
+# Scratch example/render output and smoke-test fixtures (generated, local-only)
+output/
+_smoke_test/
+
 # Generated results and outputs (not needed in repo)
 results/
 outputs/

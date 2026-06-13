@@ -121,7 +121,7 @@ def compute_emergence_metrics(G):
         integration = sync_index
     
     # 5. Complexity (balance between order and disorder)
-    frequencies = [G.nodes[n]['vf'] for n in G.nodes()]
+    frequencies = [G.nodes[n]['nu_f'] for n in G.nodes()]
     freq_entropy = -sum(f * np.log(f + 1e-10) for f in frequencies) / len(frequencies)
     complexity = sync_index * freq_entropy  # Order × Diversity
     
@@ -179,13 +179,13 @@ def swarm_intelligence_demo():
     np.random.seed(42)
     for node in G.nodes():
         G.nodes[node]['phase'] = np.random.uniform(0, 2*np.pi)
-        G.nodes[node]['vf'] = np.random.uniform(0.5, 2.0)  # Diverse frequencies
+        G.nodes[node]['nu_f'] = np.random.uniform(0.5, 2.0)  # Diverse frequencies
         G.nodes[node]['role'] = 'follower'
     
     # Designate some nodes as "leaders" with higher frequencies
     leaders = np.random.choice(list(G.nodes()), size=3, replace=False)
     for leader in leaders:
-        G.nodes[leader]['vf'] = 2.5  # Higher frequency = more influential
+        G.nodes[leader]['nu_f'] = 2.5  # Higher frequency = more influential
         G.nodes[leader]['role'] = 'leader'
     
     print(f"Swarm configuration:")
@@ -273,7 +273,7 @@ def consensus_formation_demo():
         else:
             G.nodes[node]['phase'] = np.random.normal(4.0, 0.3) % (2*np.pi)  # Cluster 2
         
-        G.nodes[node]['vf'] = np.random.uniform(0.8, 1.5)  # Varying influence
+        G.nodes[node]['nu_f'] = np.random.uniform(0.8, 1.5)  # Varying influence
         G.nodes[node]['conviction'] = np.random.uniform(0.3, 1.0)  # Opinion strength
     
     # Identify initial opinion clusters
@@ -297,7 +297,7 @@ def consensus_formation_demo():
         
         for node in G.nodes():
             current_phase = G.nodes[node]['phase']
-            vf = G.nodes[node]['vf']
+            vf = G.nodes[node]['nu_f']
             conviction = G.nodes[node]['conviction']
             neighbors = list(G.neighbors(node))
             
@@ -379,7 +379,7 @@ def self_organization_demo():
     np.random.seed(456)
     for node in G.nodes():
         G.nodes[node]['phase'] = np.random.uniform(0, 2*np.pi)
-        G.nodes[node]['vf'] = np.random.uniform(0.1, 3.0)
+        G.nodes[node]['nu_f'] = np.random.uniform(0.1, 3.0)
         G.nodes[node]['organization_level'] = 0.0  # Track self-organization
     
     initial_metrics = compute_emergence_metrics(G)
@@ -417,9 +417,9 @@ def self_organization_demo():
                 local_org = G.nodes[node]['organization_level']
                 # Higher organization → more stable frequency
                 if local_org > 0.7:
-                    G.nodes[node]['vf'] *= 0.95  # Slightly reduce frequency
+                    G.nodes[node]['nu_f'] *= 0.95  # Slightly reduce frequency
                 elif local_org < 0.3:
-                    G.nodes[node]['vf'] *= 1.05  # Slightly increase frequency
+                    G.nodes[node]['nu_f'] *= 1.05  # Slightly increase frequency
     
     # Final organization analysis
     final_metrics = compute_emergence_metrics(G)

@@ -121,7 +121,7 @@ def coherence_evolution_demo():
         np.random.seed(42)  # Reproducible
         for node in G.nodes():
             G.nodes[node]['phase'] = np.random.uniform(0, 2*np.pi)
-            G.nodes[node]['vf'] = np.random.uniform(0.8, 1.2)  # Structural frequency
+            G.nodes[node]['nu_f'] = np.random.uniform(0.8, 1.2)  # Structural frequency
         
         # Measure initial state
         initial_coherence = compute_coherence(G)

@@ -34,7 +34,7 @@ except ImportError:
         
         # Add TNFR attributes
         for node in G.nodes():
-            G.nodes[node]['epi'] = np.random.uniform(0.1, 1.0)
+            G.nodes[node]['EPI'] = np.random.uniform(0.1, 1.0)
             G.nodes[node]['nu_f'] = np.random.uniform(0.5, 2.0)
             G.nodes[node]['phase'] = np.random.uniform(0, 2*np.pi)
             

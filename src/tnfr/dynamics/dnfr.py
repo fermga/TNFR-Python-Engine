@@ -509,7 +509,8 @@ def _ensure_numpy_degrees(
     4. **Invalidation**: Cache is cleared when graph.edges changes or when
        _dnfr_prep_dirty flag is set, ensuring fresh allocation on next use.
 
-    This pattern maintains ΔNFR computational accuracy (Invariant #8) while
+    This pattern maintains ΔNFR computational accuracy (Invariant #1:
+    Nodal Equation Integrity) while
     minimizing allocations for stable topologies.
     """
 
@@ -1663,7 +1664,8 @@ def _accumulate_neighbors_broadcasted(
     value must be copied to the destination. The workspace pattern minimizes
     the number of temporary arrays created during edge value extraction.
 
-    This approach maintains ΔNFR computational accuracy (Invariant #8) while
+    This approach maintains ΔNFR computational accuracy (Invariant #1:
+    Nodal Equation Integrity) while
     reducing memory footprint for repeated accumulations with stable topology.
     """
     from ..mathematics.unified_numerical import np
@@ -1992,7 +1994,8 @@ def _build_neighbor_sums_common(
 
     # Fallback: when np is None but we have cached NumPy buffers,
     # attempt to retrieve NumPy from sys.modules to avoid losing vectorization.
-    # This preserves ΔNFR semantics (Invariant #3) and maintains performance.
+    # This preserves ΔNFR semantics (Invariant #1: Nodal Equation Integrity)
+    # and maintains performance.
     if use_numpy and np_module is None and has_numpy_buffers:
         candidate = sys.modules.get("numpy")
         # Validate the candidate module has required NumPy attributes
@@ -2327,13 +2330,22 @@ def _compute_dnfr(
 
         # Note: accumulate_both_directions=False because _build_edge_index_arrays
         # already generates bidirectional edges for undirected graphs (via G.neighbors).
+        # compute_fused_gradients_symmetric expects w_-prefixed weight keys
+        # (the convention used by the optimized_numpy backend); data carries
+        # them as w_phase/w_epi/w_vf/w_topo from _prepare_dnfr_data. Passing the
+        # bare _dnfr_weights dict ({phase,epi,vf,topo}) silently zeroed ΔNFR.
         dnfr_values = compute_fused_gradients_symmetric(
             edge_src=edge_src,
             edge_dst=edge_dst,
             phase=state["theta"],
             epi=state["epi"],
             vf=state["vf"],
-            weights=data["weights"],
+            weights={
+                "w_phase": data["w_phase"],
+                "w_epi": data["w_epi"],
+                "w_vf": data["w_vf"],
+                "w_topo": data["w_topo"],
+            },
             accumulate_both_directions=False,
         )
 

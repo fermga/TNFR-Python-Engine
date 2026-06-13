@@ -53,6 +53,8 @@ except ImportError:
 from ..constants.canonical import (
     UNIFIED_CACHE_MIN_COHERENCE_CANONICAL  # φ/(φ+1) ≈ 0.6180 (0.5 → canonical)
 )
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
 # Import mathematical engines
 try:
@@ -241,9 +243,9 @@ class TNFRUnifiedMathematicalCacheOrchestrator:
         node_properties = []
         for node in nodes[:5]:  # Sample first 5 nodes for efficiency
             props = G.nodes[node]
-            epi = props.get('EPI', 0.0)
-            vf = props.get('nu_f', 1.0)
-            phase = props.get('phase', 0.0)
+            epi = get_attr(props, ALIAS_EPI, 0.0)
+            vf = get_attr(props, ALIAS_VF, 1.0)
+            phase = get_attr(props, ALIAS_THETA, 0.0)
             node_properties.append(f"{epi:.3f}_{vf:.3f}_{phase:.3f}")
             
         props_sig = "_".join(node_properties)

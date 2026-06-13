@@ -46,7 +46,7 @@ Definition (α = 2 by default):
 \[\Phi_s(i) = \sum_{j\neq i} \frac{\Delta NFR_j}{d(i,j)^\alpha}\]
 
 - Long-range, global potential derived from ΔNFR distribution
-- Safety criterion (telemetry-based): ΔΦ_s < 2.0 typical; escape threshold at ~2.0 (classical: von Koch bounds)
+- Safety criterion (telemetry-based): ΔΦ_s < φ ≈ 1.618 (golden-ratio confinement); theoretical ceiling 2.0 = e^ln(2) (binary escape)
 - Implementation: `compute_structural_potential(G, alpha=2.0)`
 
 **Linear response**: Perturbation analysis confirms |r| = 1.000 (Pearson correlation) between DNFR changes and Phi_s response, validating its 0th-order position in the operator-derivative tower. See [example 39](../examples/39_nodal_equation_decomposition.py).

@@ -28,6 +28,8 @@ Status: CANONICAL SELF-OPTIMIZING ENGINE
 import hashlib
 import json
 from ..errors import TNFRValueError
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_DNFR, ALIAS_VF
 from ..mathematics.unified_numerical import np
 import re
 from pathlib import Path
@@ -415,8 +417,12 @@ class TNFRSelfOptimizingEngine:
             
         # Nodal equation analysis
         epi_values = [_extract_scalar_epi(G.nodes[node].get('EPI', 0.0)) for node in G.nodes()]
-        vf_values = [G.nodes[node].get('vf', 1.0) for node in G.nodes()]
-        dnfr_values = [G.nodes[node].get('DNFR', 0.0) for node in G.nodes()]
+        vf_values = [
+            get_attr(G.nodes[node], ALIAS_VF, 1.0) for node in G.nodes()
+        ]
+        dnfr_values = [
+            get_attr(G.nodes[node], ALIAS_DNFR, 0.0) for node in G.nodes()
+        ]
         
         # Mathematical properties for optimization
         epi_variance = np.var(epi_values)

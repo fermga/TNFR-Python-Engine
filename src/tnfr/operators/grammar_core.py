@@ -237,7 +237,7 @@ class GrammarValidator:
     ) -> tuple[bool, str]:
         """Validate U3: Resonant coupling.
 
-        Physical basis: AGENTS.md Invariant #5 states "no coupling is valid
+        Physical basis: AGENTS.md Invariant #2 states "no coupling is valid
         without explicit phase verification (synchrony)".
 
         Resonance physics requires phase compatibility:
@@ -268,7 +268,7 @@ class GrammarValidator:
         The actual phase check happens in operator preconditions.
 
         This grammar rule documents the requirement and ensures awareness
-        that phase checks are MANDATORY (Invariant #5), not optional.
+        that phase checks are MANDATORY (Invariant #2), not optional.
         """
         # Check if sequence contains coupling/resonance operators
         coupling_ops = [
@@ -284,14 +284,14 @@ class GrammarValidator:
             return True, "U3: not applicable (no coupling/resonance operators)"
 
         # U3 satisfied: Sequence contains coupling/resonance
-        # Phase verification is MANDATORY per Invariant #5
+        # Phase verification is MANDATORY per Invariant #2
         # Actual check happens in operator preconditions
         return (
             True,
             (
                 "U3 awareness: operators "
                 f"{coupling_ops} require phase verification "
-                "(MANDATORY per Invariant #5). Enforced in preconditions."
+                "(MANDATORY per Invariant #2). Enforced in preconditions."
             ),
         )
 
@@ -629,7 +629,7 @@ class GrammarValidator:
         ----------
         - TNFR.pdf § 2.1: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
     - Problem statement: "The Pulse That Traverses Us.pdf"
-        - AGENTS.md: Invariant #7 (Operational Fractality)
+        - AGENTS.md: Invariant #3 (Multi-Scale Fractality)
         - Contract IL: Reduces |ΔNFR| at all scales
         - Contract THOL: Autopoietic closure across hierarchical levels
         """

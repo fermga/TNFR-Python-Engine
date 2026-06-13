@@ -597,8 +597,8 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 
 ### **1. Structural Potential Field (Φ_s)**
 **Classical Threshold**: |Φ_s| < **0.7711** 
-- **Theory**: von Koch fractal bounds + combinatorial number theory
-- **Derivation**: Experimentally validated constant (0.7711) from Koch snowflake perimeter growth analysis. Confirmed across 5 topologies. Canonical source: `src/tnfr/constants/canonical.py::PHI_S_VON_KOCH_THRESHOLD`
+- **Theory**: empirically-validated per-node confinement scale (no closed-form derivation established)
+- **Derivation**: Experimentally validated constant (0.7711), confirmed across 5 topologies. **No closed-form first-principles derivation is currently established** (open problem); the previously claimed Γ(4/3)/Γ(1/3) identity is incorrect — that ratio equals 1/3, not 0.7711. Canonical source: `src/tnfr/constants/canonical.py::PHI_S_VON_KOCH_THRESHOLD`
 - **Physics**: Global structural field escape threshold from distance-weighted ΔNFR distribution
 - **Grammar**: U6 telemetry-based safety criterion (passive equilibrium confinement)
 
@@ -624,10 +624,10 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Theory**: Spatial correlation theory + critical phenomena + renormalization group
 - **Derivation**: Universal scaling ratios from correlation function C(r) = A exp(-r/ξ_C)
 
-### **Mathematical Maturity Achievement**
-- **4/4 canonical parameters** have rigorous mathematical foundations  
-- **0% empirical fitting** → **100% first-principles derivation**  
-- **Universal constants** are derived from first principles (π, exponential bounds, fractal ratios)  
+### **Tetrad Mathematical Status**
+- **3/4 tetrad thresholds** derived from first principles (|∇φ| < γ/π, |K_φ| < 0.9×π, exponential ξ_C scaling)  
+- **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
+- **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
 - **Complete validation** via 1,655 tests across 5 topologies
 

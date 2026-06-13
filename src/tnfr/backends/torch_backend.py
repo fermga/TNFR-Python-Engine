@@ -27,6 +27,8 @@ from typing import Any, MutableMapping
 
 from . import TNFRBackend
 from ..types import TNFRGraph
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
 class TorchBackend(TNFRBackend):
     """PyTorch GPU-accelerated implementation of TNFR kernels (Experimental).
@@ -151,11 +153,17 @@ class TorchBackend(TNFRBackend):
 
         # Get node attributes as numpy arrays first
         phase = np.array(
-            [graph.nodes[node].get("phase", 0.0) for node in node_list],
+            [
+                get_attr(graph.nodes[node], ALIAS_THETA, 0.0)
+                for node in node_list
+            ],
             dtype=np.float32,
         )
-        epi = np.array([graph.nodes[node].get("EPI", 0.5) for node in node_list], dtype=np.float32)
-        vf = np.array([graph.nodes[node].get("nu_f", 1.0) for node in node_list], dtype=np.float32)
+        epi = np.array([get_attr(graph.nodes[node], ALIAS_EPI, 0.5) for node in node_list], dtype=np.float32)
+        vf = np.array(
+            [get_attr(graph.nodes[node], ALIAS_VF, 1.0) for node in node_list],
+            dtype=np.float32,
+        )
 
         # Get edge list
         edges = list(graph.edges())
@@ -168,8 +176,14 @@ class TorchBackend(TNFRBackend):
         edge_src = np.array([node_to_idx[src] for src, _ in edges], dtype=np.int64)
         edge_dst = np.array([node_to_idx[dst] for _, dst in edges], dtype=np.int64)
 
-        # Get weights
-        weights = graph.graph.get("DNFR_WEIGHTS", {})
+        # Get weights via the canonical mechanism (defaults + normalization),
+        # mirroring optimized_numpy so both fast backends agree with the
+        # serial ΔNFR path. Avoids the silent {}→all-zero fallback.
+        from ..metrics.common import merge_and_normalize_weights
+
+        weights = merge_and_normalize_weights(
+            graph, "DNFR_WEIGHTS", ("phase", "epi", "vf", "topo"), default=0.0
+        )
         w_phase = float(weights.get("phase", 0.0))
         w_epi = float(weights.get("epi", 0.0))
         w_vf = float(weights.get("vf", 0.0))

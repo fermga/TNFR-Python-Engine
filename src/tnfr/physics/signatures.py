@@ -26,6 +26,8 @@ try:
 except ImportError:
     _HAS_SPECTRAL_OPTIMIZATIONS = False
 
+from ..alias import get_attr, set_attr
+from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
 from .fields import (
     compute_structural_potential,
     compute_phase_gradient,
@@ -145,7 +147,7 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
     # First ensure nodes have coherence attribute for ξ_C calculation
     for n in G.nodes():
         if "coherence" not in G.nodes[n]:
-            dnfr = abs(G.nodes[n].get("delta_nfr", G.nodes[n].get("dnfr", 0.05)))
+            dnfr = abs(get_attr(G.nodes[n], ALIAS_DNFR, 0.05))
             G.nodes[n]["coherence"] = 1.0 / (1.0 + dnfr)
     
     xi_c = float(estimate_coherence_length(G, coherence_key="coherence"))
@@ -174,8 +176,8 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
         original_state = {}
         for n in G.nodes():
             original_state[n] = {
-                'phase': G.nodes[n].get('phase', 0.0),
-                'delta_nfr': G.nodes[n].get('delta_nfr', 0.05),
+                'phase': get_attr(G.nodes[n], ALIAS_THETA, 0.0),
+                'delta_nfr': get_attr(G.nodes[n], ALIAS_DNFR, 0.05),
             }
         
         # Apply synthetic step (canonical parameters from Universal Tetrahedral Correspondence)
@@ -186,8 +188,8 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
         
         # Restore original state to keep function side-effect free
         for n in G.nodes():
-            G.nodes[n]['phase'] = original_state[n]['phase']
-            G.nodes[n]['delta_nfr'] = original_state[n]['delta_nfr']
+            set_attr(G.nodes[n], ALIAS_THETA, original_state[n]['phase'])
+            set_attr(G.nodes[n], ALIAS_DNFR, original_state[n]['delta_nfr'])
 
     # Canonical threshold checks (Universal Tetrahedral Correspondence: γ ↔ |∇φ|)
     phase_grad_ok = mean_grad < GRAD_PHI_CANONICAL_THRESHOLD  # γ/π ≈ 0.1837 Kuramoto critical coupling

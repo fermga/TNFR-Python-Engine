@@ -153,7 +153,7 @@ The correspondences form a conceptual tetrahedron:
 
 ### 4.3 Derivation Outline
 
-1. **$\Phi_s \leftrightarrow \varphi$**: The golden ratio emerges as the upper bound for aggregated inverse-square potentials on regular lattices. $\Phi_s$ exceeding $\varphi$ correlates with runaway accumulation of $\Delta\mathrm{NFR}$. Per-node safety: $|\Phi_s| < 0.7711$ (von Koch fractal bound, $\Gamma(4/3)/\Gamma(1/3)$).
+1. **$\Phi_s \leftrightarrow \varphi$**: The golden ratio is the confinement scale for aggregated inverse-square potentials; $\Phi_s$ exceeding $\varphi$ correlates with runaway accumulation of $\Delta\mathrm{NFR}$. **Grounding (upgraded 2026-06)**: the one-sided inverse-square accumulation on a 1D resonant chain saturates to $\zeta(2)=\pi^2/6\approx1.6449$ (Basel), a genuine closed-form property of the kernel; $\varphi\approx1.6180$ is *adopted* as the U6 drift threshold because it is the nearest tetrad vertex sitting $1.64\%$ *inside* that saturation, with the most-irrational/KAM resonance-robustness argument as motivation (not a closed-form identity, since $\varphi\neq\pi^2/6$). The earlier $x=1+1/x$ fixed-point rationale is **superseded**. Per-node safety: $|\Phi_s| < 0.7711$, an **empirically validated** threshold (5 topologies) lying within the $\mathrm{O}(1)$ band set by the $\zeta(4)=\pi^4/90$ variance of inverse-square pressure; it has **no closed form** in $(\varphi,\gamma,\pi,e)$. The previously stated identity $\Gamma(4/3)/\Gamma(1/3)$ is **incorrect**: $\Gamma(4/3)/\Gamma(1/3) = 1/3$, not 0.7711. Both anchors require $\alpha=2$; see `benchmarks/phi_s_confinement_investigation.py`.
 
 2. **$|\nabla\phi| \leftrightarrow \gamma$**: The gradient threshold inherits the ratio $\gamma/\pi$ from the Kuramoto critical coupling condition expressed in TNFR units. This field captures dynamics that $C(t)$ misses due to scaling invariance: $C(t) = 1 - (\sigma_{\Delta\mathrm{NFR}}/\Delta\mathrm{NFR}_{\max})$ is invariant to proportional scaling.
 
@@ -236,7 +236,7 @@ Key observations:
 1. Telemetry violations coincide with coherence loss within two operator steps.
 2. Correlation between predicted thresholds and observed failure events exceeds 0.8 in all datasets.
 3. Identical thresholds function without retuning across classical mechanics, molecular network, and TNFR-Riemann case studies.
-4. Four of four canonical parameters have rigorous mathematical foundations with zero empirical fitting (100% first-principles derivation).
+4. Three of the four tetrad thresholds are derived from first principles ($|\nabla\phi| < \gamma/\pi$, $|K_\phi| < 0.9\pi$, exponential $\xi_C$ scaling); the fourth — the per-node $\Phi_s$ threshold (0.7711) — is empirically validated without a closed-form derivation (see §4.3).
 
 ---
 

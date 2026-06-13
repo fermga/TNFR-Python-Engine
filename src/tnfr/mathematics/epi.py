@@ -223,7 +223,7 @@ class BEPIElement(_EPIValidators):
         """Serialize BEPIElement to a JSON-compatible dict with real/imag pairs.
 
         This method enables pickle, JSON, and YAML serialization while preserving
-        TNFR invariant #1 (EPI as coherent form) and #7 (operational fractality).
+        TNFR invariant #1 (Nodal Equation Integrity, EPI as coherent form) and #3 (Multi-Scale Fractality).
         """
         # Convert numpy arrays to lists for serialization
         continuous = self.f_continuous.tolist()

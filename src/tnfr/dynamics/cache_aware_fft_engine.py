@@ -72,8 +72,8 @@ from ..constants.canonical import (
     EMERGENT_FREQ_BALANCE_CANONICAL,      # e/(π+e) ≈ 0.4638 (0.5 → canonical)
     EMERGENT_EFFICIENCY_GAIN_CANONICAL,   # γ/π ≈ 0.1837 (0.25 → canonical)
     EMERGENT_COORDINATION_BOOST_CANONICAL,  # 2·φ/π ≈ 1.0309 (2.0 → canonical)
-    EMERGENT_COUPLING_STRENGTH_CANONICAL,   # φ/(π+γ) ≈ 0.7320 (0.75 → canonical)
-    ARITHMETIC_FFT_ENHANCEMENT_CANONICAL,   # φ²/π ≈ 0.8326 (4.0 → 4·φ²/π canonical)
+    EMERGENT_COUPLING_STRENGTH_CANONICAL,   # φ/(π+γ) ≈ 0.4351 (0.7 → canonical)
+    ARITHMETIC_FFT_ENHANCEMENT_CANONICAL,   # 4·φ²/π² ≈ 1.0610 (4.0 → canonical scaling)
 )
 
 class FFTOperationType(Enum):

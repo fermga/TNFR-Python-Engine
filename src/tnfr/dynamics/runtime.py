@@ -741,7 +741,7 @@ def step(
 
     >>> from tnfr.utils import CallbackEvent, callback_manager
     >>> from tnfr.dynamics import selectors
-    >>> from tnfr.dynamics.runtime import ALIAS_VF
+    >>> from tnfr.dynamics.runtime import ALIAS_VF, get_attr
     >>> from tnfr.structural import create_nfr
     >>> G, node = create_nfr("seed", epi=0.2, vf=1.5)
     >>> callback_manager.register_callback(
@@ -751,7 +751,7 @@ def step(
     ... )
     >>> G.graph["glyph_selector"] = selectors.ParametricGlyphSelector()
     >>> step(G, dt=0.05, n_jobs={"dnfr_n_jobs": 1})
-    >>> ALIAS_VF in G.nodes[node]
+    >>> get_attr(G.nodes[node], ALIAS_VF, None) is not None
     True
     """
     job_overrides = _normalize_job_overrides(n_jobs)

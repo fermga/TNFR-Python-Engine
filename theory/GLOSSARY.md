@@ -75,7 +75,7 @@
 **Formula:** \(\text{Si} = \alpha \cdot \nu_{f,\text{norm}} + \beta \cdot (1 - \text{disp}_\theta) + \gamma \cdot (1 - |\Delta\text{NFR}|_{\text{norm}})\)  
 **Range:** \([0, 1^+]\) typically, higher = more stable reorganization  
 **What:** Capacity for stable structural reorganization  
-**Weights:** \(\alpha + \beta + \gamma = 1\) (default: 0.4, 0.3, 0.3)  
+**Weights:** canonical defaults \(\alpha = \varphi/(\varphi+\gamma) \approx 0.737\), \(\beta = \gamma/(\pi+\gamma) \approx 0.155\), \(\gamma_w = \gamma/(\varphi\pi) \approx 0.114\) (`SI_WEIGHTS` in `config/defaults_core.py`; sum \(\approx 1\))  
 **Math:** [Mathematical Foundations - Metrics](docs/source/theory/mathematical_foundations.md)
 
 ### Phase Gradient (|∇φ|) - CANONICAL
@@ -133,7 +133,7 @@
 **Physics:** Passive equilibrium confinement landscape  
 **Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < φ ≈ 1.618 canonical confinement; ceiling 2.0 binary escape)  
 **API:** `tnfr.physics.fields.compute_structural_potential()`  
-**Threshold:** Classical bound |Φ_s| < 0.771 (von Koch fractal theory)  
+**Threshold:** Per-node bound |Φ_s| < 0.7711 (empirically validated; no closed-form derivation — the "von Koch / Γ(4/3)/Γ(1/3)" derivation is incorrect, that ratio = 1/3)  
 **Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)
 - [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - Implementation
 
@@ -724,7 +724,7 @@ Tetrad fields are diagnostic outputs, not independent dynamical variables. They 
 
 **Value:** PHI_S_VON_KOCH_THRESHOLD = 0.7711  
 **What:** Per-node safety threshold for structural potential |Φ_s|.  
-**Derivation:** Experimentally validated constant from Koch snowflake perimeter growth analysis, confirmed across 5 topologies.  
+**Derivation:** Empirically validated, confirmed across 5 topologies. **No closed-form first-principles derivation is currently established** (open problem). The constant name retains "VON_KOCH" for code-compatibility, but the previously claimed identity Γ(4/3)/Γ(1/3) ≈ 0.7711 is **incorrect**: Γ(4/3)/Γ(1/3) = 1/3, not 0.7711.  
 **Usage:** |Φ_s(i)| < 0.7711 indicates safe per-node structural potential.  
 **API:** `tnfr.constants.canonical.PHI_S_VON_KOCH_THRESHOLD`  
 **Relation to U6:** Part of three-tier Φ_s monitoring: 0.7711 (per-node) → φ ≈ 1.618 (drift confinement) → 2.0 (escape ceiling).
@@ -764,7 +764,7 @@ Quick reference for canonical threshold values from `src/tnfr/constants/canonica
 
 | Threshold | Value | Derivation | Usage |
 |-----------|-------|------------|-------|
-| PHI_S_VON_KOCH_THRESHOLD | 0.7711 | Koch snowflake perimeter growth | Per-node Φ_s safety |
+| PHI_S_VON_KOCH_THRESHOLD | 0.7711 | Empirical (no closed-form derivation; Γ(4/3)/Γ(1/3)=1/3, not 0.7711) | Per-node Φ_s safety |
 | PHASE_GRADIENT_THRESHOLD | γ/π ≈ 0.1837 | Kuramoto critical coupling | \|∇φ\| stability |
 | K_PHI_CANONICAL_THRESHOLD | 0.9×π ≈ 2.8274 | 90% of wrap_angle π bound | K_φ fault zone detection |
 | U6 canonical confinement | φ ≈ 1.618 | Universal Tetrahedral Correspondence | ΔΦ_s drift safety |

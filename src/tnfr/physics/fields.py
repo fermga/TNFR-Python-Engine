@@ -246,7 +246,7 @@ def measure_phase_symmetry(G: Any) -> float:
     -----
     - Read-only; does not mutate graph state (grammar safe).
     - Provides backward compatibility for benchmarks expecting this symbol.
-    - Invariant #5 respected (phase verification external to this metric).
+    - Invariant #2 respected (phase verification external to this metric).
     """
     phases: list[float] = []
     # Collect phases from node attributes using alias list

@@ -110,10 +110,7 @@ class TNFRParallelEngine:
                 from ..constants.aliases import ALIAS_VF
 
                 vf_sum = sum(
-                    float(
-                        get_attr(subgraph.nodes[n], ALIAS_VF, None)
-                        or subgraph.nodes[n].get("vf", 1.0)
-                    )
+                    float(get_attr(subgraph.nodes[n], ALIAS_VF, 1.0))
                     for n in node_set
                 )
                 return vf_sum / len(node_set)

@@ -15,6 +15,8 @@ from typing import Any, ClassVar
 
 from ..config.operator_names import SILENCE
 from ..types import Glyph, TNFRGraph
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_EPI
 from .definitions_base import Operator
 
 class Silence(Operator):
@@ -49,8 +51,7 @@ class Silence(Operator):
         G.nodes[node]["latency_start_time"] = (
             datetime.now(timezone.utc).isoformat()
         )
-        epi_attr = getattr(G.nodes[node], "epi", G.nodes[node].get("epi", 0.0))
-        epi_value = float(epi_attr)
+        epi_value = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
         G.nodes[node]["preserved_epi"] = epi_value
         G.nodes[node]["silence_duration"] = 0.0
         

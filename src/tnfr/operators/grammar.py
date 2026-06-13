@@ -31,7 +31,7 @@ U2: CONVERGENCE & BOUNDEDNESS
 
 U3: RESONANT COUPLING
     If coupling/resonance, then verify phase compatibility
-    Basis: AGENTS.md Invariant #5 + resonance physics
+    Basis: AGENTS.md Invariant #2 + resonance physics
 
 U4: BIFURCATION DYNAMICS
     U4a: If bifurcation triggers, then include handlers

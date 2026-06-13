@@ -80,7 +80,7 @@ def network_formation_demo():
         np.random.seed(42)  # Reproducible
         for node in G.nodes():
             G.nodes[node]['theta'] = np.random.uniform(0, 2*np.pi)  # Random phases
-            G.nodes[node]['nf'] = 1.0 + 0.2 * np.random.normal()    # Frequency variation
+            G.nodes[node]['nu_f'] = 1.0 + 0.2 * np.random.normal()    # Frequency variation
         
         print(f"   Initial coherence: {simple_coherence_measure(G):.3f}")
         

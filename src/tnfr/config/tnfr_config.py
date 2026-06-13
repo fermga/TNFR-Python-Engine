@@ -119,7 +119,7 @@ class TNFRConfig:
         if not self._validate_invariants:
             return True
 
-        # Invariant 2: Structural units - νf in Hz_str, must be positive
+        # Invariant 5: Structural Metrology - νf in Hz_str, must be positive
         if vf_min is not None and vf_min < 0.0:
             raise TNFRConfigError(f"VF_MIN must be >= 0 (Hz_str units), got {vf_min}")
 
@@ -168,7 +168,7 @@ class TNFRConfig:
 
         import math
 
-        # Invariant 5: Phase check - valid synchrony requires bounded phase
+        # Invariant 2: Phase-Coherent Coupling - valid synchrony requires bounded phase
         if theta is not None and not theta_wrap:
             if not (-math.pi <= theta <= math.pi):
                 raise TNFRConfigError(
@@ -210,7 +210,7 @@ class TNFRConfig:
         if not self._validate_invariants:
             return True
 
-        # Invariant 1: EPI as coherent form - must have valid bounds
+        # Invariant 1: Nodal Equation Integrity (EPI as coherent form) - must have valid bounds
         if epi_max is not None and epi_min is not None and epi_max < epi_min:
             raise TNFRConfigError(f"EPI_MAX ({epi_max}) must be >= EPI_MIN ({epi_min})")
 
@@ -253,7 +253,7 @@ class TNFRConfig:
         if not self._validate_invariants:
             return True
 
-        # Invariant 3: ΔNFR semantics - modulates reorganization rate
+        # Invariant 1: Nodal Equation Integrity (ΔNFR semantics) - modulates reorganization rate
         # Sign and magnitude are semantically significant
         # This validation ensures we don't reinterpret ΔNFR incorrectly
 

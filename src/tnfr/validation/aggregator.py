@@ -16,7 +16,7 @@ Design Principles
 
 Threshold Defaults (Canonical / Safety)
 --------------------------------------
-|Φ_s|_max      : 0.771  (classical threshold, U6 confinement from von Koch bounds)
+|Φ_s|_max      : 0.771  (empirical per-node threshold, U6 confinement)
 |∇φ|_max      : 0.38   (stable operation upper bound)
 |K_φ|_flag    : 2.8274    (local confinement / fault zone flag)
 ξ_C_crit_mult : 1.0    (ξ_C > system_diameter signals critical approach)

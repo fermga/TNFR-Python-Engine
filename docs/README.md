@@ -7,18 +7,20 @@ The `docs/` folder contains specialized technical documentation for TNFR theory 
 ### Core Documentation Files
 
 | Document | Status | Purpose |
-|----------|--------|---------|
+| ---------- | -------- | --------- |
 | **[AGENTS.md](../AGENTS.md)** | **CANONICAL** | Primary reference for TNFR theory |
 | **[STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md)** | **CANONICAL** | Formal field definitions (Φ_s, \|∇φ\|, K_φ, ξ_C) |
 | **[API_CONTRACTS.md](API_CONTRACTS.md)** | Active | Formal contracts for 13 canonical operators |
 | **[CANONICAL_OZ_SEQUENCES.md](CANONICAL_OZ_SEQUENCES.md)** | Active | Guide to dissonance-based operator sequences |
+| **[STRUCTURAL_INTERFACE_THEORY.md](STRUCTURAL_INTERFACE_THEORY.md)** | Active | Structural-interface programme: pipelines, fair benchmarks, validated results, limitations |
+| **[STRUCTURAL_INTERFACE_THEORY_PLAN.md](STRUCTURAL_INTERFACE_THEORY_PLAN.md)** | Planning | Roadmap for structural-interface diagnostics, benchmarks, and TNFR prescriptions |
 | **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** | Active | Solutions for operator sequence validation |
 | **[grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md)** | **CANONICAL** | U1-U6 mathematical proofs from nodal equation |
 
 ### Implementation & Operations
 
 | Document | Status | Purpose |
-|----------|--------|---------|
+| ---------- | -------- | --------- |
 | **[SELF_OPTIMIZATION_INTEGRATION.md](SELF_OPTIMIZATION_INTEGRATION.md)** | Active | Self-optimization pipeline, CLI workflow, promotion guidance |
 | **[FACTORIZATION_SCALING_PLAN.md](FACTORIZATION_SCALING_PLAN.md)** | Active | Partitioning, distributed FFT, operator streaming roadmap |
 | **[FACTOR_REPLAY_GUIDE.md](FACTOR_REPLAY_GUIDE.md)** | Active | Manifest replay workflow |
@@ -26,6 +28,7 @@ The `docs/` folder contains specialized technical documentation for TNFR theory 
 | **[SCALABILITY.md](SCALABILITY.md)** | Active | Multi-scale hierarchical networks |
 | **[REPRODUCIBILITY.md](REPRODUCIBILITY.md)** | Active | Reproducibility infrastructure |
 | **[OPERATOR_COMPLETENESS.md](OPERATOR_COMPLETENESS.md)** | Active | Operator coverage analysis |
+| **[STRUCTURAL_INTERFACE_THEORY_PLAN.md](STRUCTURAL_INTERFACE_THEORY_PLAN.md)** | Planning | Cross-domain benchmark plan for structural-interface analysis |
 
 ### External
 
@@ -64,15 +67,18 @@ self-optimization guidelines.
 
 1. **[STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md)** - Structural field validation
 2. **[CANONICAL_OZ_SEQUENCES.md](CANONICAL_OZ_SEQUENCES.md)** - Dissonance patterns
-3. **[benchmarks/](../benchmarks/)** - Experimental validation
+3. **[STRUCTURAL_INTERFACE_THEORY.md](STRUCTURAL_INTERFACE_THEORY.md)** - Structural-interface programme (results + limitations)
+4. **[STRUCTURAL_INTERFACE_THEORY_PLAN.md](STRUCTURAL_INTERFACE_THEORY_PLAN.md)** - Structural-interface programme roadmap
+5. **[benchmarks/](../benchmarks/)** - Experimental validation
 
 ---
 
 ## Documentation Status Summary
 
 | Category | Count | Details |
-|----------|-------|---------|
+| ---------- | ------- | --------- |
 | **Canonical** | 3 | AGENTS.md + STRUCTURAL_FIELDS_TETRAD.md + PHYSICS_VERIFICATION.md |
-| **Active** | 10 | Current and maintained |
+| **Active** | 11 | Current and maintained |
+| **Planning** | 1 | Structural Interface Theory roadmap |
 
-**Total Active Documentation**: 13 files providing complete TNFR coverage
+**Total Documentation**: 15 files providing complete TNFR coverage and roadmap planning

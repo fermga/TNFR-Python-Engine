@@ -59,9 +59,9 @@ def _build_graph(n: int = 20, seed: int = SEED) -> nx.Graph:
     inject_defaults(G)
     for node in G.nodes():
         G.nodes[node]['EPI'] = float(rng.uniform(0.5, 2.0))
-        G.nodes[node]['vf'] = float(rng.uniform(0.5, 2.0))
+        G.nodes[node]['nu_f'] = float(rng.uniform(0.5, 2.0))
         G.nodes[node]['phase'] = float(rng.uniform(0, 2 * np.pi))
-        G.nodes[node]['DNFR'] = float(rng.uniform(-0.3, 0.3))
+        G.nodes[node]['delta_nfr'] = float(rng.uniform(-0.3, 0.3))
     return G
 
 
@@ -166,9 +166,9 @@ def demo_spectral_gap() -> None:
         rng = np.random.default_rng(SEED)
         for node in G.nodes():
             G.nodes[node]['EPI'] = float(rng.uniform(0.5, 2.0))
-            G.nodes[node]['vf'] = float(rng.uniform(0.5, 2.0))
+            G.nodes[node]['nu_f'] = float(rng.uniform(0.5, 2.0))
             G.nodes[node]['phase'] = float(rng.uniform(0, 2 * np.pi))
-            G.nodes[node]['DNFR'] = float(rng.uniform(-0.3, 0.3))
+            G.nodes[node]['delta_nfr'] = float(rng.uniform(-0.3, 0.3))
 
         spec = analyze_spectral_gap(G)
         tau_str = f"{spec.relaxation_time:.4f}" if spec.relaxation_time < 1e6 else "∞"

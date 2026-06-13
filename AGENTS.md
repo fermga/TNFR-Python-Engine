@@ -291,7 +291,7 @@ The correspondences form a **conceptual tetrahedron**:
 
 - **Completeness**: Exactly 4 independent structural channels characterize coherent systems on graphs
 - **Predictability**: The correspondences enable precise forecasting of TNFR network behavior
-- **Consistency**: All canonical constants derive from (φ, γ, π, e) with zero empirical fitting
+- **Consistency**: Physics-tier constants (tetrad, grammar, operators) derive from (φ, γ, π, e); engine-configuration constants are expressed in the same vertices but calibrated to operational targets (see the two-tier docstring in `canonical.py`)
 
 ### Illustrative Example: Hydrodynamic Vortex
 
@@ -355,7 +355,7 @@ Each correspondence has a specific mathematical derivation (all implementations 
 
 ### Tetrahedral Edge Relationships
 
-Every pair of constants generates a canonical combination used in the engine (300+ constants in `canonical.py`, zero empirical fitting):
+Every pair of constants generates a canonical combination used in the engine (physics tier; the engine-configuration tier in `canonical.py` is calibrated, not derived — see its two-tier docstring):
 
 | Edge | Expression | Value | Role in TNFR |
 |------|-----------|-------|-------------|
@@ -740,8 +740,8 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 
 ### **1. Structural Potential Field (Φ_s)**
 **Classical Threshold**: |Φ_s| < **0.7711** 
-- **Theory**: von Koch fractal bounds + combinatorial number theory
-- **Derivation**: Experimentally validated constant (0.7711) from Koch snowflake perimeter growth analysis. Confirmed across 5 topologies. Canonical source: `src/tnfr/constants/canonical.py::PHI_S_VON_KOCH_THRESHOLD`
+- **Theory**: empirically-validated per-node confinement scale (no closed-form derivation established)
+- **Derivation**: Experimentally validated constant (0.7711), confirmed across 5 topologies. **No closed-form first-principles derivation is currently established** (open problem); the previously claimed Γ(4/3)/Γ(1/3) identity is incorrect — that ratio equals 1/3, not 0.7711. Canonical source: `src/tnfr/constants/canonical.py::PHI_S_VON_KOCH_THRESHOLD`
 - **Physics**: Global structural field escape threshold from distance-weighted ΔNFR distribution
 - **Linear response**: |r| = 1.000 to ΔNFR perturbations, confirming 0th-order derivative tower position (see [example 39](examples/39_nodal_equation_decomposition.py))
 - **Grammar**: U6 telemetry-based safety criterion (passive equilibrium confinement)
@@ -768,10 +768,10 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Theory**: Spatial correlation theory + critical phenomena + renormalization group
 - **Derivation**: Universal scaling ratios from correlation function C(r) = A exp(-r/ξ_C)
 
-### **Mathematical Maturity Achievement**
-- **4/4 canonical parameters** have rigorous mathematical foundations  
-- **0% empirical fitting** → **100% first-principles derivation**  
-- **Universal constants** are derived from first principles (π, exponential bounds, fractal ratios)  
+### **Tetrad Mathematical Status**
+- **3/4 tetrad thresholds** derived from first principles (|∇φ| < γ/π, |K_φ| < 0.9×π, exponential ξ_C scaling)  
+- **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
+- **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
 - **Complete validation** via comprehensive test suite (1,662 tests) across 5 topologies
 
@@ -1599,7 +1599,7 @@ When adding to grammar documentation:
 
 - Global structural potential, passive equilibrium states
 - Safety criterion (U6 telemetry): Δ Φ_s < φ ≈ 1.618 (canonical confinement); theoretical ceiling: 2.0 = e^ln(2) (binary escape)
-- Per-node safety: |Φ_s| < 0.7711 (von Koch fractal bound)
+- Per-node safety: |Φ_s| < 0.7711 (empirically validated; no closed-form derivation — Γ(4/3)/Γ(1/3)=1/3, not 0.7711)
 - For full physics, equations, and validation, see `docs/STRUCTURAL_FIELDS_TETRAD.md`.
 
 ---

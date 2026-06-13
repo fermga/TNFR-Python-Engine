@@ -31,7 +31,7 @@ def hello_world():
     # Add basic TNFR properties
     np.random.seed(42)  # For reproducible results
     for node in G.nodes():
-        G.nodes[node]['nf'] = 1.0  # Structural frequency
+        G.nodes[node]['nu_f'] = 1.0  # Structural frequency
         G.nodes[node]['theta'] = np.random.uniform(0, 2*np.pi)  # Phase
         G.nodes[node]['EPI'] = np.random.uniform(0.1, 0.3)  # Small EPI values
     

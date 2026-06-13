@@ -154,7 +154,7 @@ class StructuralMetabolism:
             # Higher tau reduces bifurcation probability
             # Import canonical constants  
             from ..constants.canonical import PI_MINUS_E_OVER_PI
-            tau_self_org = PI_MINUS_E_OVER_PI * 1.5  # ((π-e)/π) * 1.5 ≈ 0.203
+            tau_self_org = PI_MINUS_E_OVER_PI * 1.5  # ((π-e)/π) * 1.5 ≈ 0.202
             SelfOrganization()(self.G, self.node, tau=tau_self_org)
 
     def cascading_reorganization(self, depth: int = 3) -> None:

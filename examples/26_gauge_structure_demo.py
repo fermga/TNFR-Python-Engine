@@ -73,7 +73,7 @@ def _make_tnfr_graph(n: int = 20, p: float = 0.3, seed: int = 42) -> nx.Graph:
         G.nodes[node]["EPI"] = float(rng.uniform(0.5, 2.0))
         G.nodes[node]["nu_f"] = float(rng.uniform(0.1, 1.0))
         G.nodes[node]["theta"] = float(rng.uniform(0.0, 2.0 * np.pi))
-        G.nodes[node]["delta_NFR"] = float(rng.uniform(-0.5, 0.5))
+        G.nodes[node]["delta_nfr"] = float(rng.uniform(-0.5, 0.5))
     return G
 
 

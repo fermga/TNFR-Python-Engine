@@ -10,9 +10,14 @@ Canonical Structural Field Tetrad (Telemetry)
 All four fields below are CANONICAL (November 2025) and read-only:
 
 1) Structural Potential (Φ_s)
-   - Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α (α=2)
+   - Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α (α=2, inverse-square)
    - Validation: 2,400+ experiments; corr(ΔΦ_s, ΔC) = -0.822; CV = 0.1%
-   - Safety criterion: |Φ_s| < 0.771 (classical threshold from ψ(x) - x bounds; U6 telemetry)
+   - Drift scale (U6): Δ Φ_s < φ ≈ 1.618 — a conservative bound just inside
+     the ζ(2) = π²/6 ≈ 1.6449 saturation of inverse-square accumulation
+   - Per-node safety: |Φ_s| < 0.7711 — EMPIRICAL threshold (no closed form;
+     lies within the O(1) ζ(4)=π⁴/90 variance band of inverse-square
+     pressure). The earlier "ψ(x) − x bounds" rationale was fabricated and is
+     withdrawn; see theory/MINIMAL_STRUCTURAL_DEGREES.md §4.1.
 
 2) Phase Gradient (|∇φ|)
    - |∇φ|(i) = mean_{j∈N(i)} |wrap(φ_j − φ_i)| (circular differences)
@@ -75,7 +80,7 @@ Examples
 >>> G = nx.karate_club_graph()
 >>> for node in G.nodes():
 ...     G.nodes[node]['delta_nfr'] = 0.5
->>> phi_s = compute_structural_potential(G, alpha=PHI)
+>>> phi_s = compute_structural_potential(G)  # canonical α=2 (inverse-square)
 >>> print(f"Potential at node 0: {phi_s[0]:.3f}")
 
 >>> # Telemetry-based U6 safety (ΔΦ_s drift)

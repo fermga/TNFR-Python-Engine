@@ -107,7 +107,7 @@ class OperatorSequenceError(TNFRUserError):
     - Valid next operators
     - Fuzzy matching for typos
 
-    Enforces Invariant #4: Operator closure from AGENTS.md
+    Enforces Invariant #4: Grammar Compliance (operator closure) from AGENTS.md
 
     Parameters
     ----------
@@ -205,9 +205,9 @@ class NetworkConfigError(TNFRUserError):
     with physical/structural meaning.
 
     Enforces multiple invariants:
-    - Invariant #2: Structural units (νf in Hz_str)
-    - Invariant #5: Phase check requirements
-    - Invariant #6: Node birth/collapse conditions
+    - Invariant #5: Structural Metrology (νf in Hz_str)
+    - Invariant #2: Phase-Coherent Coupling (phase check requirements)
+    - Invariant #1: Nodal Equation Integrity (node birth/collapse conditions)
 
     Parameters
     ----------
@@ -313,7 +313,7 @@ class PhaseError(TNFRUserError):
     TNFR requires explicit phase checking before coupling operations.
     This error indicates phase incompatibility between nodes.
 
-    Enforces Invariant #5: Phase check from AGENTS.md
+    Enforces Invariant #2: Phase-Coherent Coupling from AGENTS.md
 
     Parameters
     ----------
@@ -371,7 +371,7 @@ class CoherenceError(TNFRUserError):
     Coherence operator must not decrease C(t) except in controlled
     dissonance tests. This error indicates unexpected coherence loss.
 
-    Enforces Invariant #1: EPI coherent form from AGENTS.md
+    Enforces Invariant #1: Nodal Equation Integrity (EPI coherent form) from AGENTS.md
 
     Parameters
     ----------
@@ -430,7 +430,7 @@ class FrequencyError(TNFRUserError):
     Structural frequency must be positive and expressed in Hz_str
     (structural hertz) units. This error indicates frequency violations.
 
-    Enforces Invariant #2: Structural units from AGENTS.md
+    Enforces Invariant #5: Structural Metrology (structural units) from AGENTS.md
 
     Parameters
     ----------

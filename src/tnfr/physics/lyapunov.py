@@ -104,9 +104,9 @@ _GLYPH_DEFAULTS: dict[str, float] = {
     "RA_vf_amplification": 0.05,
     "RA_phase_coupling": 0.10,
     "SHA_vf_factor": round(SHA_VF_FACTOR, 4),    # 1 - γ/(π+e) ≈ 0.9015
-    "VAL_scale": round(VAL_SCALE_FACTOR, 4),     # 1 + γ/(π×e) ≈ 1.0673
+    "VAL_scale": round(VAL_SCALE_FACTOR, 4),     # 1 + γ/(π×e) ≈ 1.0676
     "NUL_scale": round(NUL_SCALE_FACTOR, 4),     # 1 - γ/(π+e) ≈ 0.9015
-    "NUL_densification_factor": round(NUL_DENSIFICATION_FACTOR, 4),  # φ/γ ≈ 2.8025
+    "NUL_densification_factor": round(NUL_DENSIFICATION_FACTOR, 4),  # φ/γ ≈ 2.8032
     "THOL_accel": 0.10,
     "ZHIR_theta_shift_factor": 0.3,
     "NAV_eta": 0.5,

@@ -28,6 +28,8 @@ from enum import Enum
 import time
 
 from ..errors import TNFRValueError
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_THETA, ALIAS_VF
 
 try:
     import networkx as nx
@@ -267,12 +269,14 @@ class TNFRUnifiedBackend:
         results = {}
         for node in G.nodes():
             epi = G.nodes[node].get('EPI', 0.0)
-            nu_f = G.nodes[node].get('nu_f', 1.0)
+            nu_f = get_attr(G.nodes[node], ALIAS_VF, 1.0)
             dnfr = G.nodes[node].get('ΔNFR', 0.0)
             
             # Basic Euler integration
             new_epi = epi + dt * nu_f * dnfr
-            results[node] = (new_epi, G.nodes[node].get('phase', 0.0))
+            results[node] = (
+                new_epi, get_attr(G.nodes[node], ALIAS_THETA, 0.0)
+            )
             
         return {"nodal_states": results, "backend": backend}
         

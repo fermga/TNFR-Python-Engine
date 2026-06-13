@@ -65,7 +65,7 @@ def print_bifurcation_hierarchy(
 
     Notes
     -----
-    TNFR Principle: Operational fractality (Invariant #7) enables recursive
+    TNFR Principle: Operational fractality (Invariant #3) enables recursive
     bifurcation. This visualization makes hierarchical structures visible for:
     - Debugging nested THOL sequences
     - Validating depth constraints
