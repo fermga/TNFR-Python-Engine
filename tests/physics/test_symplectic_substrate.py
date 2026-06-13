@@ -30,8 +30,10 @@ from tnfr.physics.symplectic_substrate import (
     hamiltonian_vector_field,
     kahler_potential,
     liouville_divergence,
+    loop_action_integral,
     noether_charges,
     potential_sector_energy,
+    substrate_flow_matrix,
     substrate_hamiltonian,
     symplectic_form_matrix,
     to_action_angle,
@@ -40,6 +42,7 @@ from tnfr.physics.symplectic_substrate import (
     verify_hermitian_structure,
     verify_integrability,
     verify_noether_conservation,
+    verify_poincare_cartan,
 )
 
 
@@ -394,6 +397,65 @@ class TestIntegrability:
         assert cert.sector_actions_match_charges
         assert cert.degrees_of_freedom == 60
         assert "INTEGRABLE" in cert.summary()
+
+
+class TestPoincareCartan:
+    """The flow preserves the Poincaré–Cartan integral invariants."""
+
+    def test_flow_matrix_is_symplectic(self) -> None:
+        m = substrate_flow_matrix(4, 0.7)
+        omega = symplectic_form_matrix(4)
+        # 1st Poincaré invariant: M preserves ω.
+        assert np.allclose(m.T @ omega @ m, omega)
+
+    def test_flow_matrix_unit_determinant(self) -> None:
+        m = substrate_flow_matrix(5, 1.3)
+        # Top invariant ω^N = Liouville volume.
+        assert abs(float(np.linalg.det(m)) - 1.0) < 1e-12
+
+    def test_flow_matrix_dimension(self) -> None:
+        assert substrate_flow_matrix(7, 0.4).shape == (28, 28)
+
+    def test_flow_matrix_palindromic_spectrum(self) -> None:
+        m = substrate_flow_matrix(3, 0.9)
+        coeffs = np.poly(m)
+        # Reciprocal symplectic spectrum → palindromic char poly.
+        assert np.allclose(coeffs, coeffs[::-1], atol=1e-9)
+        eig = np.linalg.eigvals(m)
+        assert np.allclose(np.abs(eig), 1.0)
+
+    def test_flow_matrix_invalid_nodes(self) -> None:
+        import pytest
+
+        with pytest.raises(ValueError):
+            substrate_flow_matrix(0, 0.5)
+
+    def test_loop_action_integral_equals_minus_2pi_I(self) -> None:
+        # ∮ p dq = −2π·I (negative enclosed area) for the torus loop.
+        val = loop_action_integral(2.0)
+        assert abs(val - (-2.0 * np.pi * 2.0)) < 1e-3
+
+    def test_relative_invariant_preserved(self) -> None:
+        G = _canonical_graph(24)
+        cert = verify_poincare_cartan(G)
+        assert cert.relative_invariant_preserved
+        assert cert.max_relative_drift < 1e-9
+
+    def test_bohr_sommerfeld_holds(self) -> None:
+        G = _canonical_graph(24)
+        cert = verify_poincare_cartan(G)
+        # |∮ p dq| = 2π I on the action torus.
+        assert cert.bohr_sommerfeld_holds
+
+    def test_certificate_all_invariants_hold(self) -> None:
+        G = _canonical_graph(30)
+        cert = verify_poincare_cartan(G)
+        assert cert.all_invariants_hold
+        assert cert.preserves_symplectic_form
+        assert cert.volume_preserved
+        assert cert.char_poly_palindromic
+        assert cert.phase_space_dimension == 120
+        assert "ALL HOLD" in cert.summary()
 
 
 class TestSubstrateIntegration:

@@ -137,6 +137,7 @@ __all__ = [
     "NoetherChargeCertificate",
     "HermitianStructureCertificate",
     "IntegrabilityCertificate",
+    "PoincareCartanCertificate",
     "extract_phase_space_point",
     "symplectic_form_matrix",
     "complex_structure_matrix",
@@ -158,6 +159,9 @@ __all__ = [
     "verify_hermitian_structure",
     "to_action_angle",
     "verify_integrability",
+    "substrate_flow_matrix",
+    "loop_action_integral",
+    "verify_poincare_cartan",
 ]
 
 
@@ -537,6 +541,94 @@ class IntegrabilityCertificate:
             f"(max bracket {self.max_involution_bracket:.1e}), "
             f"action drift {self.max_action_drift:.1e}, "
             f"angle error {self.max_angle_error:.1e}"
+        )
+
+
+@dataclass(frozen=True)
+class PoincareCartanCertificate:
+    r"""Verification of the Poincaré–Cartan integral invariants of the flow.
+
+    The substrate Hamiltonian flow φ_t preserves the symplectic form ω
+    (φ_t^* ω = ω), so it preserves the whole tower of **Poincaré–Cartan
+    integral invariants** ω^k (k = 1 … N, with N = 2·n_nodes the number of
+    conjugate pairs):
+
+    - **k = 1** — the *relative integral invariant of Poincaré*
+      ∮_γ λ = ∮_γ Σ p_i dq_i over any closed loop γ (λ the tautological
+      1-form, ω = dλ).  Equivalently the *absolute* invariant ∬ ω over any
+      2-cycle.  At matrix level the flow map M(t) is **symplectic**
+      (Mᵀ Ω M = Ω).
+    - **1 < k < N** — the intermediate invariants ∫ ω^k, encoded by the
+      **palindromic characteristic polynomial** of M(t): its spectrum is
+      the reciprocal symplectic set {e^{+it}, e^{−it}}, so every coefficient
+      (= a sum of 2k×2k principal symplectic minors = the ω^k invariant) is
+      preserved.
+    - **k = N** — the top invariant ω^N / N! is the **Liouville volume**
+      (det M = 1).
+
+    On an action torus I = const, the relative invariant evaluates to the
+    **Bohr–Sommerfeld** quantum: ∮_{γ_i} p dq = 2π I_i, tying the integral
+    invariant to the action variables of :class:`IntegrabilityCertificate`.
+
+    Attributes
+    ----------
+    n_nodes : int
+    phase_space_dimension : int
+        4·n_nodes.
+    preserves_symplectic_form : bool
+        Mᵀ Ω M = Ω for all sampled flow times (1st invariant).
+    volume_preserved : bool
+        det M = 1 (top invariant, Liouville volume).
+    char_poly_palindromic : bool
+        Characteristic polynomial of M is palindromic (reciprocal
+        symplectic spectrum → the full ω^k tower is preserved).
+    relative_invariant_preserved : bool
+        ∮_γ p dq over an action-torus loop is constant along the flow.
+    bohr_sommerfeld_holds : bool
+        |∮_γ p dq| = 2π I on the action torus.
+    max_omega_drift : float
+        Max ‖Mᵀ Ω M − Ω‖ over sampled times.
+    max_relative_drift : float
+        Max change of ∮ p dq along the flow.
+    max_bohr_error : float
+        Max |‖∮ p dq‖ − 2π I| over the sampled pairs.
+    """
+
+    n_nodes: int
+    phase_space_dimension: int
+    preserves_symplectic_form: bool
+    volume_preserved: bool
+    char_poly_palindromic: bool
+    relative_invariant_preserved: bool
+    bohr_sommerfeld_holds: bool
+    max_omega_drift: float
+    max_relative_drift: float
+    max_bohr_error: float
+
+    @property
+    def all_invariants_hold(self) -> bool:
+        """True when every Poincaré–Cartan invariant is preserved."""
+        return (
+            self.preserves_symplectic_form
+            and self.volume_preserved
+            and self.char_poly_palindromic
+            and self.relative_invariant_preserved
+            and self.bohr_sommerfeld_holds
+        )
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "ALL HOLD" if self.all_invariants_hold else "VIOLATED"
+        return (
+            f"Poincaré–Cartan [{ok}]: dim={self.phase_space_dimension}, "
+            f"ω-preserved={self.preserves_symplectic_form} "
+            f"(drift {self.max_omega_drift:.1e}), "
+            f"volume={self.volume_preserved}, "
+            f"palindromic={self.char_poly_palindromic}, "
+            f"∮p·dq const={self.relative_invariant_preserved} "
+            f"(drift {self.max_relative_drift:.1e}), "
+            f"Bohr–Sommerfeld={self.bohr_sommerfeld_holds} "
+            f"(err {self.max_bohr_error:.1e})"
         )
 
 
@@ -1282,4 +1374,172 @@ def verify_integrability(
         max_angle_error=angle_error,
         max_involution_bracket=involution,
         sector_actions_match_charges=sector_match,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Poincaré–Cartan integral invariants: the ω^k tower and Bohr–Sommerfeld
+# ---------------------------------------------------------------------------
+
+
+def substrate_flow_matrix(n_nodes: int, t: float) -> Any:
+    r"""Return the 4N×4N matrix M(t) of the substrate Hamiltonian flow.
+
+    The flow of X_H integrates exactly as the harmonic rotation
+    q(t) = q·cos t + p·sin t, p(t) = −q·sin t + p·cos t per conjugate pair.
+    In the per-node basis (q^A, p^A, q^B, p^B) the matrix is block-diagonal
+    with two copies (geometric, potential) of the 2×2 rotation
+
+        R(t) = [[ cos t, sin t],
+                [−sin t, cos t]]
+
+    per node.  M(t) is **symplectic** (Mᵀ Ω M = Ω) with det M = 1, and its
+    spectrum is the reciprocal symplectic set {e^{+it}, e^{−it}}.
+
+    Parameters
+    ----------
+    n_nodes : int
+    t : float
+        Flow time.
+
+    Returns
+    -------
+    np.ndarray
+        The 4N×4N symplectic flow matrix.
+    """
+    if n_nodes < 1:
+        raise ValueError("n_nodes must be >= 1")
+    c = float(np.cos(t))
+    s = float(np.sin(t))
+    rot = np.array([[c, s], [-s, c]], dtype=float)
+    dim = 4 * n_nodes
+    out = np.zeros((dim, dim), dtype=float)
+    for i in range(n_nodes):
+        b = 4 * i
+        out[b:b + 2, b:b + 2] = rot       # geometric pair (q^A, p^A)
+        out[b + 2:b + 4, b + 2:b + 4] = rot  # potential pair (q^B, p^B)
+    return out
+
+
+def loop_action_integral(action: float, *, n_points: int = 4000) -> float:
+    r"""Relative integral invariant ∮_γ p dq over an action-torus loop.
+
+    Parametrises the loop of a single conjugate pair at fixed action I,
+
+        (q, p) = (√(2I)·cos s, √(2I)·sin s),   s ∈ [0, 2π),
+
+    and returns ∮ p dq by the trapezoidal rule over the closed loop.  The
+    exact value is −2π·I (the negative of the enclosed area π·(2I)); its
+    magnitude is the **Bohr–Sommerfeld** quantum 2π·I.
+
+    Parameters
+    ----------
+    action : float
+        The action variable I = ½|ζ|² of the conjugate pair.
+    n_points : int, optional
+        Number of quadrature points around the loop.
+
+    Returns
+    -------
+    float
+        ∮ p dq (negative for the counter-clockwise parametrisation).
+    """
+    r = float(np.sqrt(2.0 * max(action, 0.0)))
+    s = np.linspace(0.0, 2.0 * np.pi, n_points)
+    q = r * np.cos(s)
+    p = r * np.sin(s)
+    return float(np.trapezoid(p, q))
+
+
+def verify_poincare_cartan(
+    G: Any,
+    *,
+    flow_times: tuple[float, ...] = (0.3, 0.9, 1.7, 3.1),
+    tolerance: float = 1e-6,
+) -> PoincareCartanCertificate:
+    r"""Verify the Poincaré–Cartan integral invariants of the substrate flow.
+
+    Confirms the whole tower ω^k (k = 1 … N) of integral invariants:
+
+    - **ω-preservation** (1st / relative invariant): the flow matrix M(t) is
+      symplectic, Mᵀ Ω M = Ω, for every sampled time.
+    - **palindromic characteristic polynomial** of M(t): the reciprocal
+      symplectic spectrum {e^{±it}} encodes every intermediate invariant.
+    - **volume** (top invariant): det M = 1 (Liouville).
+    - **relative invariant** ∮_γ p dq over an action-torus loop is constant
+      along the flow.
+    - **Bohr–Sommerfeld**: |∮_γ p dq| = 2π I on the action torus.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    flow_times : tuple of float
+        Sampling times for the invariance checks.
+    tolerance : float
+        Maximum allowed drift / error.
+
+    Returns
+    -------
+    PoincareCartanCertificate
+    """
+    point = extract_phase_space_point(G)
+    n = point.n_nodes
+    omega = symplectic_form_matrix(n)
+
+    # --- 1st invariant: flow is symplectic, and tower via palindromic poly ---
+    omega_drift = 0.0
+    palindromic = True
+    volume_ok = True
+    for t in flow_times:
+        m = substrate_flow_matrix(n, t)
+        omega_drift = max(
+            omega_drift, float(np.max(np.abs(m.T @ omega @ m - omega)))
+        )
+        det_err = abs(float(np.linalg.det(m)) - 1.0)
+        volume_ok = volume_ok and det_err < tolerance
+        coeffs = np.poly(m)
+        palindromic = palindromic and bool(
+            np.allclose(coeffs, coeffs[::-1], atol=1e-9)
+        )
+    preserves_omega = omega_drift < tolerance
+
+    # --- relative invariant ∮ p dq on an action-torus loop, under the flow ---
+    aa = to_action_angle(point)
+    actions = np.concatenate(
+        [aa["action_geometric"], aa["action_potential"]]
+    )
+    # Use the largest-action pair as the representative torus loop.
+    i_star = int(np.argmax(actions)) if actions.size else 0
+    action_star = float(actions[i_star]) if actions.size else 0.0
+
+    r = float(np.sqrt(2.0 * action_star))
+    s = np.linspace(0.0, 2.0 * np.pi, 4000)
+    q0 = r * np.cos(s)
+    p0 = r * np.sin(s)
+    base_loop = float(np.trapezoid(p0, q0))
+
+    relative_drift = 0.0
+    for t in flow_times:
+        c, sn = float(np.cos(t)), float(np.sin(t))
+        q_t = q0 * c + p0 * sn
+        p_t = -q0 * sn + p0 * c
+        loop_t = float(np.trapezoid(p_t, q_t))
+        relative_drift = max(relative_drift, abs(loop_t - base_loop))
+    relative_ok = relative_drift < tolerance
+
+    # --- Bohr–Sommerfeld: |∮ p dq| = 2π I (quadrature tol is looser) ---
+    bohr_error = abs(abs(base_loop) - 2.0 * np.pi * action_star)
+    bohr_ok = bohr_error < 1e-3
+
+    return PoincareCartanCertificate(
+        n_nodes=n,
+        phase_space_dimension=4 * n,
+        preserves_symplectic_form=preserves_omega,
+        volume_preserved=volume_ok,
+        char_poly_palindromic=palindromic,
+        relative_invariant_preserved=relative_ok,
+        bohr_sommerfeld_holds=bohr_ok,
+        max_omega_drift=omega_drift,
+        max_relative_drift=relative_drift,
+        max_bohr_error=float(bohr_error),
     )

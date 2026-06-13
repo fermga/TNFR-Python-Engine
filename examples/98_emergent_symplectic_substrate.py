@@ -76,6 +76,7 @@ from tnfr.physics.symplectic_substrate import (
     noether_charges,
     verify_hermitian_structure,
     verify_integrability,
+    verify_poincare_cartan,
 )
 
 
@@ -325,6 +326,48 @@ def experiment_6_integrability():
     print()
 
 
+# ============================================================================
+# EXPERIMENT 7: Poincaré–Cartan integral invariants — the ω^k tower
+# ============================================================================
+def experiment_7_poincare_cartan():
+    """The flow preserves the ω^k tower; ∮p·dq = 2π·I (Bohr–Sommerfeld)."""
+    print("=" * 72)
+    print("EXPERIMENT 7: Poincaré–Cartan Integral Invariants")
+    print("=" * 72)
+    print()
+    print("The flow φ_t preserves the symplectic form ω (φ_t^* ω = ω), so it")
+    print("preserves the whole tower of integral invariants ω^k (k = 1 … N):")
+    print("  k=1   relative invariant ∮ p dq  (M symplectic, MᵀΩM = Ω),")
+    print("  1<k<N intermediate ∫ω^k  (palindromic char. poly of M),")
+    print("  k=N   Liouville volume ω^N  (det M = 1).")
+    print()
+
+    G = _build_graph(30)
+    cert = verify_poincare_cartan(G)
+
+    print(f"  ω preserved (MᵀΩM = Ω)         : "
+          f"{cert.preserves_symplectic_form} "
+          f"(drift {cert.max_omega_drift:.1e})")
+    print(f"  palindromic char. polynomial   : "
+          f"{cert.char_poly_palindromic}")
+    print(f"  Liouville volume (det M = 1)   : {cert.volume_preserved}")
+    print(f"  ∮ p dq constant under flow     : "
+          f"{cert.relative_invariant_preserved} "
+          f"(drift {cert.max_relative_drift:.1e})")
+    print(f"  Bohr–Sommerfeld |∮p dq| = 2πI  : "
+          f"{cert.bohr_sommerfeld_holds} "
+          f"(err {cert.max_bohr_error:.1e})")
+    print()
+    print(f"  ALL INVARIANTS HOLD: {cert.all_invariants_hold}")
+    print()
+    print("VALIDATED: ω-preservation (Poincaré's relative invariant) is the")
+    print("integral form of Liouville's theorem and is STRONGER than div=0:")
+    print("it preserves areas ∮ p dq, not just the top volume. On an action")
+    print("torus ∮ p dq = 2π·I recovers the Bohr–Sommerfeld quantum, tying")
+    print("the integral invariant to the action variables of Experiment 6.")
+    print()
+
+
 def main():
     print()
     print("  TNFR Example 98: The Emergent Symplectic Substrate")
@@ -338,6 +381,7 @@ def main():
     experiment_4_noether_charges()
     experiment_5_hermitian_structure()
     experiment_6_integrability()
+    experiment_7_poincare_cartan()
 
     print("=" * 72)
     print("WHAT THIS ESTABLISHES")
@@ -350,6 +394,7 @@ def main():
     print("  • symmetries generate conserved charges (Noether, Exp. 4),")
     print("  • Ψ is the complex coordinate of a Hermitian structure (Exp. 5),")
     print("  • the flow is completely integrable (action–angle, Exp. 6),")
+    print("  • it preserves the Poincaré–Cartan invariants (Exp. 7),")
     print("  • the nodal equation is the overdamped Hamiltonian flow.")
     print()
     print("This substrate is EMERGENT (derived from the conservation laws),")

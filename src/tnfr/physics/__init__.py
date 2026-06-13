@@ -229,6 +229,7 @@ from .symplectic_substrate import (
     NoetherChargeCertificate,
     HermitianStructureCertificate,
     IntegrabilityCertificate,
+    PoincareCartanCertificate,
     extract_phase_space_point,
     symplectic_form_matrix,
     complex_structure_matrix,
@@ -250,6 +251,9 @@ from .symplectic_substrate import (
     verify_hermitian_structure,
     to_action_angle,
     verify_integrability,
+    substrate_flow_matrix,
+    loop_action_integral,
+    verify_poincare_cartan,
 )
 from .gauge import (
     GaugeSnapshot,
@@ -460,6 +464,7 @@ __all__ = [
     "NoetherChargeCertificate",
     "HermitianStructureCertificate",
     "IntegrabilityCertificate",
+    "PoincareCartanCertificate",
     "extract_phase_space_point",
     "symplectic_form_matrix",
     "complex_structure_matrix",
@@ -481,6 +486,9 @@ __all__ = [
     "verify_hermitian_structure",
     "to_action_angle",
     "verify_integrability",
+    "substrate_flow_matrix",
+    "loop_action_integral",
+    "verify_poincare_cartan",
     # --- Gauge Structure (U(1) Symmetry of Ψ = K_φ + i·J_φ) ---
     "GaugeSnapshot",
     "GaugeInvarianceResult",

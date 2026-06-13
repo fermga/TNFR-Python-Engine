@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,865 tests across multiple topologies
+- Experimental Validation: 1,874 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -410,6 +410,8 @@ The variational structure is not merely a confirmation — it **is the geometry 
 **Compatible Hermitian (flat Kähler) structure**: the substrate carries a compatible triple (ω, J, g). The **complex structure** J = −ω satisfies J² = −I and acts as multiplication by i on ζ = q + i·p; the **compatible metric** g(u,v) = ω(u, Jv) = identity is positive-definite, with ω(u,v) = g(Ju,v). Each fiber ℝ⁴ ≅ ℂ² becomes Hermitian, with complex coordinates ζ^A = K_φ + i·J_φ = **Ψ** (geometric sector — exactly the complex field of [src/tnfr/physics/gauge.py](src/tnfr/physics/gauge.py)) and ζ^B = Φ_s + i·J_ΔNFR (potential). So **Ψ is not ad-hoc**: it is the complex coordinate the substrate's J induces — the "i" in Ψ *is* the complex structure J = −ω. H_sub = ½Σ|ζ|² is the Kähler potential, and the flow is the diagonal U(1) phase rotation ζ → e^{−it}ζ (so the geometric Noether charge is its moment map). The structure is **flat** (constant-coefficient): a linear Kähler / Hermitian vector space, not a curved manifold.
 
 **Complete integrability (action–angle)**: because H_sub = ½Σ(K_φ² + J_φ² + Φ_s² + J_ΔNFR²) is a sum of decoupled oscillators — one per conjugate pair — the substrate flow is **completely integrable** (Liouville–Arnold). Each pair gives an **action variable** I = ½|ζ|² (I^A = ½|Ψ|² geometric, I^B = ½|ζ^B|² potential), so a 2N-degree-of-freedom system has 2N independent integrals, pairwise in involution ({I_i, I_j} = 0) and conserved along the flow; the conjugate **angles** θ = arg ζ advance linearly θ(t) = θ(0) − t. The sector action sums recover the Noether charges (Σ I^A = E_geo, Σ I^B = E_pot), so (I_i, θ_i) are global action–angle coordinates in which the harmonic backbone is trivial. The actions are the adiabatic invariants; the 13 operators are canonical transformations that redistribute them. Honest scope: integrability of the **H_sub backbone**, not of the full nonlinear operator dynamics.
+
+**Poincaré–Cartan integral invariants**: the flow φ_t preserves the symplectic form ω (φ_t^* ω = ω — the flow matrix M(t) is symplectic, MᵀΩM = Ω), so it preserves the whole tower of integral invariants ω^k (k = 1 … N). The **k = 1** case is Poincaré's *relative integral invariant* ∮_γ Σ p·dq over any closed loop (equivalently the absolute ∬ ω over a 2-cycle); the **intermediate** invariants are encoded by the *palindromic characteristic polynomial* of M(t) (reciprocal symplectic spectrum {e^{±it}}); the **k = N** case is the Liouville volume ω^N (det M = 1). ω-preservation is the **integral form of Liouville's theorem and is stronger than div(X_H)=0**: it preserves areas ∮p·dq, not just the top volume. On an action torus ∮_{γ_i} p·dq = 2π I_i recovers the **Bohr–Sommerfeld** quantum, tying the integral invariant to the action variables above ([src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py)::`verify_poincare_cartan`).
 
 **The nodal equation lives here**: ∂EPI/∂t = νf·ΔNFR(t) is the overdamped projection of the Hamiltonian flow on this substrate (with ΔNFR = −∂V/∂EPI). The substrate is the geometric arena the nodal equation already inhabits — emergent, not imposed.
 
@@ -804,7 +806,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,865 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,874 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1541,7 +1543,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,865 tests)
+- **TESTING.md**: Test strategy (1,874 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
