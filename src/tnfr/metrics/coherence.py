@@ -52,7 +52,7 @@ where:
 - :math:`s_{\text{Si}}(i,j) = 1 - |\text{Si}_i - \text{Si}_j|` : Stability similarity
 
 and :math:`w_{\text{phase}}, w_{\text{EPI}}, w_{\nu_f}, w_{\text{Si}}` are structural weights
-(default: 0.25 each).
+(canonical defaults: phase 0.34, EPI 0.33, :math:`\nu_f` 0.20, Si 0.13; normalized to sum 1).
 
 Implementation Map
 ------------------
@@ -60,7 +60,7 @@ Implementation Map
 **Core Functions**:
 
 - :func:`coherence_matrix` : Constructs :math:`W \approx \hat{C}` matrix representation
-- :func:`compute_coherence` : Computes :math:`C(t) = \text{Tr}(\hat{C}\rho)` from graph (imported from `.common`)
+- :func:`compute_coherence` : Global scalar coherence :math:`C = 1/(1 + \overline{|\Delta\text{NFR}|} + \overline{|d\text{EPI}|})` (imported from `.common`; distinct from the operator trace above)
 - :func:`compute_wij_phase_epi_vf_si` : Computes similarity components :math:`(s_{\text{phase}}, s_{\text{EPI}}, s_{\nu_f}, s_{\text{Si}})`
 
 **Helper Functions**:
@@ -364,7 +364,7 @@ def compute_wij_phase_epi_vf_si(
     See Also
     --------
     coherence_matrix : Constructs full :math:`W \approx \hat{C}` matrix
-    compute_coherence : Computes :math:`C(t) = \text{Tr}(\hat{C}\rho)`
+    compute_coherence : Global scalar :math:`C = 1/(1 + \overline{|\Delta\text{NFR}|} + \overline{|d\text{EPI}|})`
     _combine_similarity : Weighted combination of similarity components
 
     Notes
@@ -1015,7 +1015,7 @@ def coherence_matrix(
 
     See Also
     --------
-    compute_coherence : Computes C(t) = Tr(Ĉρ)
+    compute_coherence : Global scalar C = 1/(1 + mean|ΔNFR| + mean|dEPI|)
     Mathematical Foundations §3.1: Theory + Implementation Bridge
 
     Examples

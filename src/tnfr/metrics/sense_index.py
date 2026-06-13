@@ -48,10 +48,10 @@ The Sense Index is defined as a weighted combination:
 
 **Structural weights**:
 
-- :math:`\alpha`: Frequency weight (default: 0.4) - emphasizes reorganization capacity
-- :math:`\beta`: Phase weight (default: 0.3) - emphasizes network synchrony
-- :math:`\gamma`: ΔNFR weight (default: 0.3) - emphasizes pressure damping
-- Constraint: :math:`\alpha + \beta + \gamma = 1`
+- :math:`\alpha`: Frequency weight (default: φ/(φ+γ) ≈ 0.737) - emphasizes reorganization capacity
+- :math:`\beta`: Phase weight (default: γ/(π+γ) ≈ 0.155) - emphasizes network synchrony
+- :math:`\gamma`: ΔNFR weight (default: γ/(φπ) ≈ 0.114) - emphasizes pressure damping
+- Constraint: weights are normalized so :math:`\alpha + \beta + \gamma = 1`
 
 **Final clamping**: :math:`\text{Si}_{\text{final}} = \max(0, \min(1, \text{Si}))`
 
@@ -115,11 +115,12 @@ Examples
 >>> G.graph["SI_WEIGHTS"] = {"alpha": 0.5, "beta": 0.3, "gamma": 0.2}
 >>> result = compute_Si(G, inplace=False)
 >>> round(result["sensor"], 3), round(result["relay"], 3)
-(0.767, 0.857)
+(0.79, 0.679)
 
-The heavier :math:`\alpha` weight privileges the sensor's fast :math:`\nu_f` even
-though it suffers larger :math:`\Delta\text{NFR}`. The relay keeps Si high thanks
-to calmer :math:`\Delta\text{NFR}` despite slower frequency.
+The heavier :math:`\alpha` weight privileges the sensor's fast :math:`\nu_f`
+(Si ≈ 0.79) over the relay (Si ≈ 0.679): the sensor's high :math:`\nu_f` term
+outweighs its larger :math:`\Delta\text{NFR}`, while the relay's slower
+frequency caps its index despite calmer :math:`\Delta\text{NFR}`.
 
 **Single-node computation**:
 
@@ -464,8 +465,8 @@ def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     --------
     >>> import networkx as nx
     >>> G = nx.Graph()
-    >>> get_Si_weights(G)
-    (0.0, 0.0, 0.0)
+    >>> tuple(round(w, 3) for w in get_Si_weights(G))  # canonical normalized defaults
+    (0.733, 0.154, 0.113)
     """
 
     return _cache_weights(G)
