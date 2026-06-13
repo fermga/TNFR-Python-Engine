@@ -1,4 +1,4 @@
-actualiza el resto de documentos teoricos y el codigo para reflejar estos descubrimientos#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Example 39 — Nodal Equation Operator Decomposition
 ===================================================

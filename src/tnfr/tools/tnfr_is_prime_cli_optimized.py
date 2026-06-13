@@ -197,13 +197,13 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Optimized TNFR primality check using ΔNFR equations",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=\"\"\"
+        epilog="""
 Examples:
   tnfr-is-prime 17 99991 999983          # Basic usage
   tnfr-is-prime --cached 982451653       # Use caching
   tnfr-is-prime --benchmark 10000        # Benchmark mode  
   tnfr-is-prime --timing 17 97           # With timing
-        \"\"\"
+        """
     )
     
     parser.add_argument("numbers", nargs="*", type=int, help="Integers to check")
@@ -219,7 +219,7 @@ Examples:
         print(f"Running TNFR primality benchmark up to {args.benchmark}...")
         results = benchmark_basic(args.benchmark)
         
-        print("\\nBenchmark Results:")
+        print("\nBenchmark Results:")
         print("=" * 50)
         print(f"Numbers tested: {results['total_numbers']:,}")
         print(f"Primes found: {results['primes_found']:,}")
@@ -231,7 +231,7 @@ Examples:
         print(f"Speedup (2nd run): {results['speedup_2nd_run']:.2f}x")
         
         if args.stats:
-            print("\\nCache Statistics:")
+            print("\nCache Statistics:")
             print("-" * 30)
             for func_name, cache_info in results['cache_info'].items():
                 print(f"{func_name}:")
@@ -270,7 +270,7 @@ Examples:
     
     # Show cache statistics if requested
     if args.stats and args.cached:
-        print("\\nCache Statistics:")
+        print("\nCache Statistics:")
         print("-" * 25)
         cache_stats = {
             'delta_nfr': tnfr_delta_nfr_cached.cache_info(),
@@ -292,7 +292,7 @@ Examples:
     
     if args.timing and len(args.numbers) > 1:
         avg_time = total_time / len(args.numbers)
-        print(f"\\nAverage time: {avg_time:.2f} μs/number")
+        print(f"\nAverage time: {avg_time:.2f} μs/number")
     
     return 0
 
