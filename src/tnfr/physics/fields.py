@@ -863,7 +863,26 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
         }
     except Exception:
         conservation = {}
-    
+
+    # Emergent symplectic substrate (the geometry the dynamics generates;
+    # canonical source: symplectic_substrate.py)
+    try:
+        from .symplectic_substrate import (
+            extract_phase_space_point,
+            substrate_hamiltonian,
+            background_potential,
+            liouville_divergence,
+        )
+        _pt = extract_phase_space_point(G)
+        symplectic_substrate = {
+            "phase_space_dimension": _pt.dimension,
+            "hamiltonian": substrate_hamiltonian(_pt),
+            "background_potential": background_potential(_pt),
+            "liouville_divergence": liouville_divergence(_pt),
+        }
+    except Exception:
+        symplectic_substrate = {}
+
     return {
         "canonical": canonical_telemetry,
         "extended_canonical": extended_suite,
@@ -871,6 +890,7 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
         "emergent_fields": emergent_fields,
         "tensor_invariants": tensor_invariants,
         "conservation": conservation,
+        "symplectic_substrate": symplectic_substrate,
         "unified_field_version": "1.0.0",  # Track implementation version
     }
 

@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,829 tests across multiple topologies
+- Experimental Validation: 1,833 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -796,7 +796,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,829 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,833 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -920,6 +920,9 @@ fields = net.fields()       # -> dict of per-node field arrays
 # Conservation laws (Noether charge, Lyapunov stability)
 cons = net.conservation()   # -> ConservationReport with quality, summary()
 
+# Emergent symplectic substrate (the geometry the dynamics generates)
+sub = net.symplectic_substrate()  # -> SymplecticReport (dim, H_sub, U, div, valid)
+
 # Unified telemetry
 telem = net.telemetry()     # -> dict with C(t), Si, phase_sync, tetrad
 
@@ -940,6 +943,7 @@ analysis = TNFR.analyze(net)  # -> dict with all metrics + tetrad + conservation
 **Dataclasses**:
 - `TetradSnapshot`: phi_s, grad_phi, k_phi, xi_c, j_phi, j_dnfr + `is_safe()`, `summary()`
 - `ConservationReport`: noether_charge, energy, lyapunov_stable, lyapunov_derivative, conservation_quality + `summary()`
+- `SymplecticReport`: phase_space_dimension, hamiltonian, background_potential, liouville_divergence, is_valid_manifold + `summary()`
 
 **Physics**: This is not "AI magic" but **gradient descent on the structural manifold**, driven by the nodal equation's pressure term ΔNFR.
 
@@ -1520,7 +1524,7 @@ When adding to grammar documentation:
 
 **SDK & Applications**:
 - **[src/tnfr/sdk/](src/tnfr/sdk/)**: Simplified & Fluent API with research-grade access (7 modules)
-  - **[src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)**: TetradSnapshot, ConservationReport, TNFR.analyze(), grammar-aware evolution, integrity monitoring
+  - **[src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)**: TetradSnapshot, ConservationReport, SymplecticReport, TNFR.analyze(), grammar-aware evolution, integrity monitoring
   - **[src/tnfr/sdk/fluent.py](src/tnfr/sdk/fluent.py)**: Fluent API with auto_optimize()
   - **[src/tnfr/sdk/adaptive_system.py](src/tnfr/sdk/adaptive_system.py)**: Adaptive system patterns
 - **[examples/](examples/)**: 101 files total — sequential 01–76; then two parallel series with shared numbering 77–86: Navier–Stokes NS-series (`77_navier_stokes_taylor_green_demo.py` … `86_navier_stokes_reynolds_sweep.py`) and Riemann/Type-Hygiene series (`77_remesh_infinity_residue_split_demo.py`, `78_nuf_type_signature_demo.py` … `89_operator_catalog_discipline_signature_demo.py`); plus `pytorch_cuda_demo.py` and `unified_fields_showcase.py`
@@ -1529,7 +1533,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,829 tests)
+- **TESTING.md**: Test strategy (1,833 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)

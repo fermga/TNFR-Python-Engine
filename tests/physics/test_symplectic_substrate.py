@@ -178,3 +178,49 @@ class TestCanonicalCertificate:
         G = _canonical_graph(10)
         cert = verify_canonical_structure(G)
         assert abs(cert.determinant - 1.0) < 1e-12
+
+
+class TestSubstrateIntegration:
+    """The emergent substrate is exposed across SDK, telemetry, and API."""
+
+    def test_physics_package_exports(self) -> None:
+        from tnfr.physics import (
+            extract_phase_space_point as _eps,
+            verify_canonical_structure as _vcs,
+            substrate_hamiltonian as _sh,
+            symplectic_form_matrix as _sfm,
+        )
+
+        assert callable(_eps)
+        assert callable(_vcs)
+        assert callable(_sh)
+        assert callable(_sfm)
+
+    def test_unified_telemetry_includes_substrate(self) -> None:
+        from tnfr.physics.fields import compute_unified_telemetry
+
+        G = _canonical_graph(20)
+        telemetry = compute_unified_telemetry(G)
+        assert "symplectic_substrate" in telemetry
+        sub = telemetry["symplectic_substrate"]
+        assert sub["phase_space_dimension"] == 80
+        assert abs(sub["liouville_divergence"]) < 1e-9
+
+    def test_sdk_symplectic_substrate_method(self) -> None:
+        from tnfr.sdk import TNFR, SymplecticReport
+
+        net = TNFR.create(20).ring().evolve(2)
+        report = net.symplectic_substrate()
+        assert isinstance(report, SymplecticReport)
+        assert report.is_valid_manifold
+        assert report.phase_space_dimension == 80
+        assert "VALID" in report.summary()
+
+    def test_sdk_analyze_includes_substrate(self) -> None:
+        from tnfr.sdk import TNFR
+
+        net = TNFR.create(15).ring().evolve(2)
+        analysis = TNFR.analyze(net)
+        assert "symplectic_substrate" in analysis
+        assert analysis["features"]["symplectic_substrate"] is True
+

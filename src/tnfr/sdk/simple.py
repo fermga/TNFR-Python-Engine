@@ -89,6 +89,18 @@ try:
 except ImportError:
     _HAS_CONSERVATION = False
 
+# Emergent symplectic substrate (geometry the nodal dynamics generates)
+try:
+    from ..physics.symplectic_substrate import (
+        extract_phase_space_point,
+        verify_canonical_structure,
+        substrate_hamiltonian,
+        background_potential,
+    )
+    _HAS_SUBSTRATE = True
+except ImportError:
+    _HAS_SUBSTRATE = False
+
 # Structural Integrity Monitor
 try:
     from ..physics.integrity import StructuralIntegrityMonitor, MonitorMode
@@ -214,6 +226,32 @@ class ConservationReport:
             f"Q={self.noether_charge:.4f}, E={self.energy:.4f}, "
             f"dE/dt={self.lyapunov_derivative:.4f} ({stable_str}), "
             f"quality={self.conservation_quality:.3f}"
+        )
+
+
+@dataclass
+class SymplecticReport:
+    """Emergent symplectic substrate diagnostics.
+
+    Captures the geometry the nodal dynamics generates from itself: phase
+    space dimension 4N, the substrate Hamiltonian H_sub, the configuration
+    background U, the Liouville divergence (≈0), and whether the structure
+    is a valid symplectic manifold.
+    """
+    phase_space_dimension: int = 0
+    hamiltonian: float = 0.0
+    background_potential: float = 0.0
+    liouville_divergence: float = 0.0
+    is_valid_manifold: bool = False
+
+    def summary(self) -> str:
+        """One-line symplectic substrate summary."""
+        valid_str = "VALID" if self.is_valid_manifold else "INVALID"
+        return (
+            f"dim={self.phase_space_dimension}, "
+            f"H_sub={self.hamiltonian:.4f}, "
+            f"U={self.background_potential:.4f}, "
+            f"div(X_H)={self.liouville_divergence:.2e} ({valid_str})"
         )
 
 
@@ -989,6 +1027,33 @@ class Network:
             conservation_quality=quality,
         )
 
+    def symplectic_substrate(self) -> SymplecticReport:
+        """Diagnose the emergent symplectic substrate.
+
+        The TNFR nodal dynamics generates its own geometry: a symplectic
+        phase space P = R^{4N} with canonical conjugate pairs (K_phi, J_phi)
+        and (Phi_s, J_dnfr), on which the energy functional is the
+        Hamiltonian and the 13 operators are symplectomorphisms.
+
+        Returns
+        -------
+        SymplecticReport
+            phase_space_dimension, hamiltonian H_sub, background_potential U
+            (with H_sub + U = energy functional), liouville_divergence, and
+            is_valid_manifold.
+        """
+        if not _HAS_SUBSTRATE:
+            return SymplecticReport()
+        cert = verify_canonical_structure(self.G)
+        pt = extract_phase_space_point(self.G)
+        return SymplecticReport(
+            phase_space_dimension=cert.dimension,
+            hamiltonian=substrate_hamiltonian(pt),
+            background_potential=background_potential(pt),
+            liouville_divergence=cert.liouville_divergence,
+            is_valid_manifold=cert.is_valid_symplectic_manifold,
+        )
+
     # === UNIFIED TELEMETRY ===
 
     def telemetry(self) -> dict[str, Any]:
@@ -1413,11 +1478,14 @@ class TNFR:
             result['emergent_fields'] = network.emergent_fields()
         if _HAS_CONSERVATION:
             result['conservation'] = network.conservation()
+        if _HAS_SUBSTRATE:
+            result['symplectic_substrate'] = network.symplectic_substrate()
         if _HAS_INTEGRITY:
             result['integrity'] = network.integrity_check()
         result['features'] = {
             'fields': _HAS_FIELDS,
             'conservation': _HAS_CONSERVATION,
+            'symplectic_substrate': _HAS_SUBSTRATE,
             'integrity': _HAS_INTEGRITY,
             'grammar_dynamics': _HAS_GRAMMAR_DYNAMICS,
             'optimization': _HAS_OPTIMIZATION,
@@ -1579,6 +1647,7 @@ __all__ = [
     'Results',
     'TetradSnapshot',
     'ConservationReport',
+    'SymplecticReport',
     'FactorizationReport',
     'PrimalityReport',
     'NodalStateReport',

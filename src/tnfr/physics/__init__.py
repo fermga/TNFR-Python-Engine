@@ -221,6 +221,19 @@ from .variational import (
     analyze_potential_critical_points,
     compute_variational_suite,
 )
+from .symplectic_substrate import (
+    PhaseSpacePoint,
+    CanonicalStructureCertificate,
+    extract_phase_space_point,
+    symplectic_form_matrix,
+    substrate_hamiltonian,
+    background_potential,
+    hamiltonian_vector_field,
+    poisson_bracket,
+    canonical_bracket_table,
+    liouville_divergence,
+    verify_canonical_structure,
+)
 from .gauge import (
     GaugeSnapshot,
     GaugeInvarianceResult,
@@ -422,6 +435,18 @@ __all__ = [
     "analyze_grammar_stationarity",
     "analyze_potential_critical_points",
     "compute_variational_suite",
+    # --- Emergent Symplectic Substrate (geometry the dynamics generates) ---
+    "PhaseSpacePoint",
+    "CanonicalStructureCertificate",
+    "extract_phase_space_point",
+    "symplectic_form_matrix",
+    "substrate_hamiltonian",
+    "background_potential",
+    "hamiltonian_vector_field",
+    "poisson_bracket",
+    "canonical_bracket_table",
+    "liouville_divergence",
+    "verify_canonical_structure",
     # --- Gauge Structure (U(1) Symmetry of Ψ = K_φ + i·J_φ) ---
     "GaugeSnapshot",
     "GaugeInvarianceResult",
