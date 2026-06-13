@@ -16,7 +16,7 @@ from .init import LazyImportProxy, cached_import, get_logger, warn_once
 logger = get_logger(__name__)
 
 _ORJSON_PARAMS_MSG = (
-    "'ensure_ascii', 'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
+    "'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
 )
 
 _warn_ignored_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
@@ -47,11 +47,16 @@ DEFAULT_PARAMS = JsonDumpsParams()
 def _collect_ignored_params(
     params: JsonDumpsParams, extra_kwargs: dict[str, Any]
 ) -> frozenset[str]:
-    """Return a stable set of parameters ignored by :mod:`orjson`."""
+    """Return a stable set of parameters ignored by :mod:`orjson`.
+
+    ``ensure_ascii`` is intentionally excluded: orjson always emits UTF-8,
+    which is byte-identical to the standard library's
+    ``ensure_ascii=False`` output (verified) and parses to the same object
+    regardless of the requested value. It is therefore honored natively
+    rather than dropped.
+    """
 
     ignored: set[str] = set()
-    if params.ensure_ascii is not True:
-        ignored.add("ensure_ascii")
     if params.separators != (",", ":"):
         ignored.add("separators")
     if params.cls is not None:
