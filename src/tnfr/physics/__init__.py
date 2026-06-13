@@ -224,6 +224,7 @@ from .variational import (
 from .symplectic_substrate import (
     PhaseSpacePoint,
     CanonicalStructureCertificate,
+    NoetherChargeCertificate,
     extract_phase_space_point,
     symplectic_form_matrix,
     substrate_hamiltonian,
@@ -233,6 +234,11 @@ from .symplectic_substrate import (
     canonical_bracket_table,
     liouville_divergence,
     verify_canonical_structure,
+    evolve_substrate_flow,
+    geometric_sector_energy,
+    potential_sector_energy,
+    noether_charges,
+    verify_noether_conservation,
 )
 from .gauge import (
     GaugeSnapshot,
@@ -438,6 +444,7 @@ __all__ = [
     # --- Emergent Symplectic Substrate (geometry the dynamics generates) ---
     "PhaseSpacePoint",
     "CanonicalStructureCertificate",
+    "NoetherChargeCertificate",
     "extract_phase_space_point",
     "symplectic_form_matrix",
     "substrate_hamiltonian",
@@ -447,6 +454,11 @@ __all__ = [
     "canonical_bracket_table",
     "liouville_divergence",
     "verify_canonical_structure",
+    "evolve_substrate_flow",
+    "geometric_sector_energy",
+    "potential_sector_energy",
+    "noether_charges",
+    "verify_noether_conservation",
     # --- Gauge Structure (U(1) Symmetry of Ψ = K_φ + i·J_φ) ---
     "GaugeSnapshot",
     "GaugeInvarianceResult",

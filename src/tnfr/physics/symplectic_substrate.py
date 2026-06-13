@@ -132,6 +132,7 @@ __all__ = [
     "CONJUGATE_PAIR_LABELS",
     "PhaseSpacePoint",
     "CanonicalStructureCertificate",
+    "NoetherChargeCertificate",
     "extract_phase_space_point",
     "symplectic_form_matrix",
     "substrate_hamiltonian",
@@ -141,6 +142,11 @@ __all__ = [
     "canonical_bracket_table",
     "liouville_divergence",
     "verify_canonical_structure",
+    "evolve_substrate_flow",
+    "geometric_sector_energy",
+    "potential_sector_energy",
+    "noether_charges",
+    "verify_noether_conservation",
 ]
 
 
@@ -280,6 +286,71 @@ class CanonicalStructureCertificate:
             f"{self.brackets_canonical}, jacobi={self.jacobi_satisfied}, "
             f"div(X_H)={self.liouville_divergence:.2e}, "
             f"harmonic_flow={self.flow_is_harmonic}"
+        )
+
+
+@dataclass(frozen=True)
+class NoetherChargeCertificate:
+    r"""Noether charges of the substrate flow and their conservation.
+
+    Noether's theorem on the emergent symplectic substrate: each
+    continuous symmetry of the substrate Hamiltonian generates a
+    conserved quantity along the Hamiltonian flow.
+
+    Three symmetries with their charges:
+
+    - **Time translation** → ``hamiltonian`` H_sub (total energy).
+    - **Geometric U(1)** (Ψ → e^{iα}Ψ, the :mod:`tnfr.physics.gauge`
+      symmetry of Ψ = K_φ + i·J_φ) → ``geometric_energy`` ½Σ|Ψ|²
+      = ½Σ(K_φ² + J_φ²).
+    - **Potential U(1)** (rotation of (Φ_s, J_ΔNFR)) →
+      ``potential_energy`` ½Σ(Φ_s² + J_ΔNFR²).
+
+    The total energy splits exactly: H_sub = E_geo + E_pot. The two
+    sector charges are *separately* conserved — the U(1)×U(1) symmetry
+    refines the single time-translation conservation.
+
+    Attributes
+    ----------
+    hamiltonian : float
+        H_sub (time-translation charge).
+    geometric_energy : float
+        ½Σ(K_φ² + J_φ²) = ½Σ|Ψ|² (geometric-U(1)/gauge charge).
+    potential_energy : float
+        ½Σ(Φ_s² + J_ΔNFR²) (potential-U(1) charge).
+    max_hamiltonian_drift : float
+        Max |H_sub(t) − H_sub(0)| over the sampled flow.
+    max_geometric_drift : float
+        Max drift of E_geo along the flow.
+    max_potential_drift : float
+        Max drift of E_pot along the flow.
+    is_conserved : bool
+        True when all three drifts are below tolerance.
+    splits_exactly : bool
+        True when H_sub = E_geo + E_pot to machine precision.
+    """
+
+    hamiltonian: float
+    geometric_energy: float
+    potential_energy: float
+    max_hamiltonian_drift: float
+    max_geometric_drift: float
+    max_potential_drift: float
+    is_conserved: bool
+    splits_exactly: bool
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        cons = "CONSERVED" if self.is_conserved else "NOT-CONSERVED"
+        return (
+            f"Noether charges [{cons}]: H_sub={self.hamiltonian:.4f} = "
+            f"E_geo={self.geometric_energy:.4f} + "
+            f"E_pot={self.potential_energy:.4f} "
+            f"(split_exact={self.splits_exactly}); "
+            f"max drift H/geo/pot = "
+            f"{self.max_hamiltonian_drift:.1e}/"
+            f"{self.max_geometric_drift:.1e}/"
+            f"{self.max_potential_drift:.1e}"
         )
 
 
@@ -563,4 +634,156 @@ def verify_canonical_structure(G: Any) -> CanonicalStructureCertificate:
         liouville_divergence=div,
         flow_is_harmonic=flow_ok,
         determinant=det,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Noether's theorem on the substrate: symmetries → conserved charges
+# ---------------------------------------------------------------------------
+
+
+def evolve_substrate_flow(point: PhaseSpacePoint, t: float) -> PhaseSpacePoint:
+    r"""Evolve a phase-space point along the substrate Hamiltonian flow.
+
+    The flow of X_H = J ∇H_sub is the harmonic rotation q̇ = p, ṗ = −q
+    per conjugate pair, integrated *exactly* (no numerical scheme):
+
+        q(t) = q(0)·cos t + p(0)·sin t,
+        p(t) = −q(0)·sin t + p(0)·cos t.
+
+    The background coordinate |∇φ| is a configuration potential with no
+    conjugate momentum, so it is held fixed along the symplectic flow.
+
+    Parameters
+    ----------
+    point : PhaseSpacePoint
+    t : float
+        Flow time.
+
+    Returns
+    -------
+    PhaseSpacePoint
+        The evolved point at flow time ``t``.
+    """
+    c = float(np.cos(t))
+    s = float(np.sin(t))
+    k_phi = np.asarray(point.k_phi, dtype=float)
+    j_phi = np.asarray(point.j_phi, dtype=float)
+    phi_s = np.asarray(point.phi_s, dtype=float)
+    j_dnfr = np.asarray(point.j_dnfr, dtype=float)
+    return PhaseSpacePoint(
+        nodes=point.nodes,
+        k_phi=k_phi * c + j_phi * s,
+        j_phi=-k_phi * s + j_phi * c,
+        phi_s=phi_s * c + j_dnfr * s,
+        j_dnfr=-phi_s * s + j_dnfr * c,
+        grad_phi=np.asarray(point.grad_phi, dtype=float),
+    )
+
+
+def geometric_sector_energy(point: PhaseSpacePoint) -> float:
+    r"""Geometric-sector Noether charge E_geo = ½Σ(K_φ² + J_φ²) = ½Σ|Ψ|².
+
+    This is the conserved charge of the geometric U(1) symmetry
+    Ψ → e^{iα}Ψ (Ψ = K_φ + i·J_φ), the gauge symmetry established in
+    :mod:`tnfr.physics.gauge`.  It is conserved along the substrate flow.
+    """
+    k = np.asarray(point.k_phi, dtype=float)
+    j = np.asarray(point.j_phi, dtype=float)
+    return 0.5 * float(np.dot(k, k) + np.dot(j, j))
+
+
+def potential_sector_energy(point: PhaseSpacePoint) -> float:
+    r"""Potential-sector Noether charge E_pot = ½Σ(Φ_s² + J_ΔNFR²).
+
+    The conserved charge of the potential U(1) symmetry (rotation of the
+    (Φ_s, J_ΔNFR) conjugate pair).  Conserved along the substrate flow.
+    """
+    p = np.asarray(point.phi_s, dtype=float)
+    j = np.asarray(point.j_dnfr, dtype=float)
+    return 0.5 * float(np.dot(p, p) + np.dot(j, j))
+
+
+def noether_charges(point: PhaseSpacePoint) -> dict[str, float]:
+    r"""Return the three Noether charges of the substrate flow.
+
+    Maps each continuous symmetry to its conserved quantity:
+
+    - ``"time_translation"`` → H_sub (total energy)
+    - ``"geometric_u1"`` → ½Σ|Ψ|² (gauge U(1) of Ψ = K_φ + i·J_φ)
+    - ``"potential_u1"`` → ½Σ(Φ_s² + J_ΔNFR²)
+
+    The total splits exactly: H_sub = E_geo + E_pot.
+
+    Returns
+    -------
+    dict[str, float]
+    """
+    e_geo = geometric_sector_energy(point)
+    e_pot = potential_sector_energy(point)
+    return {
+        "time_translation": e_geo + e_pot,
+        "geometric_u1": e_geo,
+        "potential_u1": e_pot,
+    }
+
+
+def verify_noether_conservation(
+    G: Any,
+    *,
+    flow_times: tuple[float, ...] = (0.0, 0.5, 1.3, 2.7, 5.0, 10.0),
+    tolerance: float = 1e-9,
+) -> NoetherChargeCertificate:
+    r"""Verify the Noether charges are conserved along the substrate flow.
+
+    Extracts the phase-space point, evolves it along the exact substrate
+    Hamiltonian flow at each ``flow_time``, and checks that H_sub, E_geo,
+    and E_pot remain constant (Noether's theorem).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    flow_times : tuple of float
+        Sampling times for the conservation check.
+    tolerance : float
+        Maximum allowed drift for the conserved quantities.
+
+    Returns
+    -------
+    NoetherChargeCertificate
+    """
+    point = extract_phase_space_point(G)
+    h0 = substrate_hamiltonian(point)
+    e_geo0 = geometric_sector_energy(point)
+    e_pot0 = potential_sector_energy(point)
+
+    h_drift = 0.0
+    geo_drift = 0.0
+    pot_drift = 0.0
+    for t in flow_times:
+        evolved = evolve_substrate_flow(point, t)
+        h_drift = max(h_drift, abs(substrate_hamiltonian(evolved) - h0))
+        geo_drift = max(
+            geo_drift, abs(geometric_sector_energy(evolved) - e_geo0)
+        )
+        pot_drift = max(
+            pot_drift, abs(potential_sector_energy(evolved) - e_pot0)
+        )
+
+    is_conserved = (
+        h_drift < tolerance
+        and geo_drift < tolerance
+        and pot_drift < tolerance
+    )
+    splits_exactly = abs(h0 - (e_geo0 + e_pot0)) < 1e-12
+
+    return NoetherChargeCertificate(
+        hamiltonian=h0,
+        geometric_energy=e_geo0,
+        potential_energy=e_pot0,
+        max_hamiltonian_drift=h_drift,
+        max_geometric_drift=geo_drift,
+        max_potential_drift=pot_drift,
+        is_conserved=is_conserved,
+        splits_exactly=splits_exactly,
     )

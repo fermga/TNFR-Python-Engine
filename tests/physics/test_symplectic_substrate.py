@@ -20,12 +20,17 @@ from tnfr.physics.symplectic_substrate import (
     BLOCK_SYMPLECTIC_FORM,
     background_potential,
     canonical_bracket_table,
+    evolve_substrate_flow,
     extract_phase_space_point,
+    geometric_sector_energy,
     hamiltonian_vector_field,
     liouville_divergence,
+    noether_charges,
+    potential_sector_energy,
     substrate_hamiltonian,
     symplectic_form_matrix,
     verify_canonical_structure,
+    verify_noether_conservation,
 )
 
 
@@ -180,6 +185,64 @@ class TestCanonicalCertificate:
         assert abs(cert.determinant - 1.0) < 1e-12
 
 
+class TestNoetherCharges:
+    """Noether's theorem: substrate symmetries generate conserved charges."""
+
+    def test_charges_split_total_energy(self) -> None:
+        import pytest
+
+        G = _canonical_graph(25)
+        pt = extract_phase_space_point(G)
+        charges = noether_charges(pt)
+        # H_sub = E_geo + E_pot exactly.
+        assert charges["time_translation"] == pytest.approx(
+            charges["geometric_u1"] + charges["potential_u1"], abs=1e-12
+        )
+        assert charges["time_translation"] == pytest.approx(
+            substrate_hamiltonian(pt), abs=1e-12
+        )
+
+    def test_sector_energies_nonnegative(self) -> None:
+        G = _canonical_graph(20)
+        pt = extract_phase_space_point(G)
+        assert geometric_sector_energy(pt) >= 0.0
+        assert potential_sector_energy(pt) >= 0.0
+
+    def test_charges_conserved_under_flow(self) -> None:
+        G = _canonical_graph(30)
+        cert = verify_noether_conservation(G)
+        assert cert.is_conserved
+        assert cert.splits_exactly
+        assert cert.max_hamiltonian_drift < 1e-9
+        assert cert.max_geometric_drift < 1e-9
+        assert cert.max_potential_drift < 1e-9
+
+    def test_flow_preserves_hamiltonian(self) -> None:
+        import pytest
+
+        G = _canonical_graph(20)
+        pt = extract_phase_space_point(G)
+        h0 = substrate_hamiltonian(pt)
+        for t in (0.5, 1.3, 2.7, 10.0):
+            evolved = evolve_substrate_flow(pt, t)
+            assert substrate_hamiltonian(evolved) == pytest.approx(
+                h0, abs=1e-9
+            )
+
+    def test_flow_at_zero_is_identity(self) -> None:
+        G = _canonical_graph(15)
+        pt = extract_phase_space_point(G)
+        evolved = evolve_substrate_flow(pt, 0.0)
+        assert np.allclose(evolved.to_vector(), pt.to_vector())
+
+    def test_certificate_summary(self) -> None:
+        G = _canonical_graph(12)
+        cert = verify_noether_conservation(G)
+        summary = cert.summary()
+        assert "CONSERVED" in summary
+        assert "H_sub" in summary
+
+
 class TestSubstrateIntegration:
     """The emergent substrate is exposed across SDK, telemetry, and API."""
 
@@ -223,4 +286,3 @@ class TestSubstrateIntegration:
         analysis = TNFR.analyze(net)
         assert "symplectic_substrate" in analysis
         assert analysis["features"]["symplectic_substrate"] is True
-
