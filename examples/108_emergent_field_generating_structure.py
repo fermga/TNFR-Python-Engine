@@ -5,33 +5,37 @@ Example 108 — The Generating Structure of the Emergent Fields
 
 A hidden algebraic dependence in the TNFR ontology, measured exactly.
 
-The unified-field layer exposes six "emergent fields" as if they were
-independent diagnostics:
+The unified-field layer (src/tnfr/physics/unified.py) defines SEVEN derived
+quantities computed from the base fields:
 
-    Psi  = K_phi + i*J_phi        (complex geometric field)
-    chi  = |grad phi|*K_phi - J_phi*J_dnfr        (chirality)
-    Q    = |grad phi|*J_phi - K_phi*J_dnfr        (topological charge)
-    S    = (|grad phi|^2 - K_phi^2) + (J_phi^2 - J_dnfr^2)  (symmetry breaking)
-    E    = Phi_s^2 + |grad phi|^2 + K_phi^2 + J_phi^2 + J_dnfr^2  (energy density)
-    C    = Phi_s * |Psi|          (coherence coupling)
+    Psi = K_phi + i*J_phi                                   (complex geometric)
+    chi = |grad phi|*K_phi - J_phi*J_dnfr                   (chirality)
+    S   = (|grad phi|^2 - K_phi^2) + (J_phi^2 - J_dnfr^2)   (symmetry breaking)
+    C   = Phi_s * |Psi|                                     (coherence coupling)
+    E   = Phi_s^2 + |grad phi|^2 + K_phi^2 + J_phi^2 + J_dnfr^2  (energy density)
+    A   = Phi_s*|grad phi| + K_phi*J_phi + |grad phi|*J_dnfr (action density)
+    Q   = |grad phi|*J_phi - K_phi*J_dnfr                   (topological charge)
 
-They are NOT independent. Introducing the second natural complex field
+They are NOT independent. Psi is one of two complex GENERATORS; with the
+second natural complex field
 
     Omega = |grad phi| + i*J_dnfr   (the "gradient-flux" sector)
 
 — which already exists in the codebase, buried inside
 ``gauge.compute_topological_norm`` as the gauge singlet that makes
-|T|^2 = |Psi|^2 * |Omega|^2 manifestly invariant — every emergent field
-collapses to the scalar Phi_s and the two complex fields Psi, Omega:
+|T|^2 = |Psi|^2 * |Omega|^2 manifestly invariant — the six downstream
+fields (chi, S, C, E, A, Q) all collapse to the scalar Phi_s and the two
+complex fields Psi, Omega:
 
     E   = Phi_s^2 + |Psi|^2 + |Omega|^2           (a norm)
     C   = Phi_s * |Psi|
     S   = Re(Omega^2 - Psi^2)                      (difference of squares)
     chi = Re(Psi * Omega)                          (product, real part)
+    A   = Phi_s*Re(Omega) + Im(Psi^2)/2 + Im(Omega^2)/2   (action density)
     Q   = Im(Psi * conj(Omega))                    (product, imaginary part)
 
-So the six emergent fields carry NO information beyond the five base
-fields, repackaged as Phi_s (scalar) + Psi (geometric) + Omega
+So the six downstream emergent fields carry NO information beyond the five
+base reals, repackaged as Phi_s (scalar) + Psi (geometric) + Omega
 (gradient-flux). The two complex sectors are the whole story; the rest
 are their bilinear contractions.
 
@@ -75,8 +79,16 @@ Honest scope
   (Phi_s, J_dnfr)); it is the grouping under which the emergent-field
   definitions factorise. This is a statement about how the emergent
   fields are built, not a new dynamical conjugate pair.
-- Net: the emergent-field "basis" is redundant. 6 emergent fields = 5
+- Net: the emergent-field "basis" is redundant. 6 downstream fields = 5
   reals = Phi_s + Psi + Omega.
+
+Note on counting
+----------------
+The tetrad (Phi_s, |grad phi|, K_phi, xi_C) <-> (phi, gamma, pi, e) is the
+FUNDAMENTAL canonical layer. The emergent/derived fields here are a SEPARATE
+diagnostic layer built from five base scalars (Phi_s, |grad phi|, K_phi,
+J_phi, J_dnfr -- note xi_C does NOT enter this algebra). This example shows
+that derived layer is redundant; it does not add fundamental fields.
 
 References
 ----------
@@ -105,6 +117,7 @@ from tnfr.physics.unified import (
     compute_dnfr_flux,
     compute_energy_density,
     compute_coherence_coupling_field,
+    compute_action_density,
 )
 from tnfr.physics.fields import compute_structural_potential
 from tnfr.physics.gauge import compute_topological_norm
@@ -136,12 +149,12 @@ def experiment_1_generating_structure():
     print()
     print("Claimed (machine precision):")
     print("  E = Phi_s^2 + |Psi|^2 + |Omega|^2     C = Phi_s*|Psi|")
-    print("  S = Re(Omega^2 - Psi^2)")
+    print("  S = Re(Omega^2 - Psi^2)   A = Phi_s*Re(Omega)+Im(Psi^2)/2+Im(Omega^2)/2")
     print("  chi = Re(Psi*Omega)   Q = Im(Psi*conj(Omega))")
     print()
-    print(f"  {'graph':>14} {'E':>9} {'C':>9} {'S':>9} {'chi':>9} {'Q':>9}")
+    print(f"  {'graph':>14} {'E':>9} {'C':>9} {'S':>9} {'chi':>9} {'A':>9} {'Q':>9}")
 
-    worst = {k: 0.0 for k in ("E", "C", "S", "chi", "Q")}
+    worst = {k: 0.0 for k in ("E", "C", "S", "chi", "A", "Q")}
     for seed in range(6):
         n = 22 + seed
         G = build_graph(seed, n)
@@ -155,6 +168,7 @@ def experiment_1_generating_structure():
         S = compute_symmetry_breaking_field(G)
         E = compute_energy_density(G)
         Cc = compute_coherence_coupling_field(G)
+        A = compute_action_density(G)
 
         r = {k: 0.0 for k in worst}
         for nd in G.nodes():
@@ -165,20 +179,23 @@ def experiment_1_generating_structure():
             r["C"] = max(r["C"], abs(Cc[nd] - ps * abs(Psi)))
             r["S"] = max(r["S"], abs(S[nd] - (Om * Om - Psi * Psi).real))
             r["chi"] = max(r["chi"], abs(chi[nd] - (Psi * Om).real))
+            r["A"] = max(r["A"], abs(A[nd] - (ps * Om.real
+                                              + (Psi * Psi).imag / 2
+                                              + (Om * Om).imag / 2)))
             r["Q"] = max(r["Q"], abs(Q[nd] - (Psi * Om.conjugate()).imag))
         for k in worst:
             worst[k] = max(worst[k], r[k])
         print(f"  ws(n={n},s={seed})  {r['E']:9.1e} {r['C']:9.1e} "
-              f"{r['S']:9.1e} {r['chi']:9.1e} {r['Q']:9.1e}")
+              f"{r['S']:9.1e} {r['chi']:9.1e} {r['A']:9.1e} {r['Q']:9.1e}")
 
     print()
     print(f"  worst residual over all graphs: "
           f"E={worst['E']:.1e} C={worst['C']:.1e} S={worst['S']:.1e} "
-          f"chi={worst['chi']:.1e} Q={worst['Q']:.1e}")
+          f"chi={worst['chi']:.1e} A={worst['A']:.1e} Q={worst['Q']:.1e}")
     print()
-    print("VERDICT: the six emergent fields carry NO information beyond the")
-    print("scalar Phi_s and the two complex fields Psi and Omega. The")
-    print("emergent-field basis is redundant: 6 fields = 5 reals.")
+    print("VERDICT: the six downstream emergent fields carry NO information")
+    print("beyond the scalar Phi_s and the two complex fields Psi and Omega.")
+    print("The emergent-field basis is redundant: 6 fields = 5 reals.")
     print()
 
 
