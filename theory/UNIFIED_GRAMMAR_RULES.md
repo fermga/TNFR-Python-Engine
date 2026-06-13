@@ -8,9 +8,9 @@ This document defines the **unified canonical grammar** for TNFR that consolidat
 
 **Related Documentation:**
 - **[AGENTS.md](../AGENTS.md)** - Concise grammar reference for developers
-- **[docs/grammar/02-CANONICAL-CONSTRAINTS.md](../docs/grammar/PHYSICS_VERIFICATION.md)** - Technical specifications with implementation examples
+- **[docs/grammar/PHYSICS_VERIFICATION.md](../docs/grammar/PHYSICS_VERIFICATION.md)** - Technical specifications with implementation examples
 - **[GLOSSARY.md](GLOSSARY.md)** - Quick term reference
-- **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)** - Canonical implementation
+- **[src/tnfr/operators/grammar.py](../src/tnfr/operators/grammar.py)** - Canonical implementation
 
 ---
 
@@ -646,7 +646,7 @@ With stabilizers:
 
 **Canonicity Level**: **ABSOLUTE** - Mathematical theorem from integral convergence.
 
-**Experimental refinement (Grammar-Energy Landscape)**: The Lyapunov contractivity bound ($\Pi < 1$) derived from U2 is *sufficient* but not *necessary* for energy descent. Grammar-compliant sequences with $\Pi > 1$ can still achieve net energy decrease due to nonlinear operator interactions on the shared graph state. See [STRUCTURAL_OPERATORS.md §17.6](STRUCTURAL_OPERATORS.md) and [example 38](../examples/38_grammar_energy_landscape.py).
+**Experimental refinement (Grammar-Energy Landscape)**: The Lyapunov contractivity bound ($\Pi < 1$) derived from U2 is *sufficient* but not *necessary* for energy descent. Grammar-compliant sequences with $\Pi > 1$ can still achieve net energy decrease due to nonlinear operator interactions on the shared graph state. See [STRUCTURAL_OPERATORS.md §17.6](STRUCTURAL_OPERATORS.md) and [example 38](../examples/02_physics_regimes/38_grammar_energy_landscape.py).
 
 **Traceability**: Analysis (integral convergence) + Nodal equation → Direct mathematical necessity
 
@@ -1201,9 +1201,9 @@ net = TNFR.create(15).random(0.3).evolve_grammar_aware(steps=10)
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [04_operator_sequences.py](../examples/04_operator_sequences.py) | U1–U6 validation: valid vs invalid sequences |
-| [07_phase_transitions.py](../examples/07_phase_transitions.py) | Bifurcation dynamics (U4), critical thresholds |
-| [36_grammar_violation_detector.py](../examples/36_grammar_violation_detector.py) | Systematic violation detection: conservation residuals diagnose U1–U6 breaches in real time |
+| [04_operator_sequences.py](../examples/01_foundations/04_operator_sequences.py) | U1–U6 validation: valid vs invalid sequences |
+| [07_phase_transitions.py](../examples/01_foundations/07_phase_transitions.py) | Bifurcation dynamics (U4), critical thresholds |
+| [36_grammar_violation_detector.py](../examples/02_physics_regimes/36_grammar_violation_detector.py) | Systematic violation detection: conservation residuals diagnose U1–U6 breaches in real time |
 
 ### Key Source Modules
 

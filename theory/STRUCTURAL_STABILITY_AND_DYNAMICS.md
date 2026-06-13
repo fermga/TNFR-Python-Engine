@@ -62,7 +62,7 @@ lever ($\nu_f$: UM, SHA, VAL, NUL), the pressure lever ($\Delta$NFR: IL, OZ,
 THOL, ZHIR, NAV), both, or neither (AL, EN, RA, REMESH). The energy class
 (stabiliser/destabiliser/neutral/mixed) is the net consequence of which
 lever(s) the operator engages. See [STRUCTURAL_OPERATORS.md
-§17.1](STRUCTURAL_OPERATORS.md) and [example 39](../examples/39_nodal_equation_decomposition.py).
+§17.1](STRUCTURAL_OPERATORS.md) and [example 39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py).
 
 ### 1.3 Grammar U2 Lyapunov Theorem
 
@@ -76,7 +76,7 @@ This confirms Lyapunov stability for the full 13-operator algebra.
 
 **Refinement**: The formal bound $\sum \Delta E_{\text{op}} \le 0$ is
 *sufficient* but not *necessary* for energy descent. Experimental
-observation ([example 38](../examples/38_grammar_energy_landscape.py)) shows
+observation ([example 38](../examples/02_physics_regimes/38_grammar_energy_landscape.py)) shows
 grammar-compliant sequences with cumulative Lyapunov product $\Pi \approx
 1.288$ (formally non-contractive) that still achieve net energy decrease
 ($\Delta E = -9.59$). The multiplicative bound is conservative because
@@ -377,7 +377,7 @@ report = net.integrity_check()    # IntegrityReport (13/13 operators)
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [29_lyapunov_stability_demo.py](../examples/29_lyapunov_stability_demo.py) | All 13 operator Lyapunov bounds, energy class taxonomy, U2 net-contractivity proof, spectral gap, self-sustaining dynamics/autopoiesis |
+| [29_lyapunov_stability_demo.py](../examples/02_physics_regimes/29_lyapunov_stability_demo.py) | All 13 operator Lyapunov bounds, energy class taxonomy, U2 net-contractivity proof, spectral gap, self-sustaining dynamics/autopoiesis |
 
 ### Key Source Modules
 

@@ -696,7 +696,7 @@ Tetrad fields are diagnostic outputs, not independent dynamical variables. They 
 **API:** `tnfr.physics.integrity`  
 **Coverage:** 13/13 operators verified — monotonicity (IL), ΔNFR increase (OZ), phase preservation (SHA), EPI creation (AL), coupling validity (UM/RA), etc.  
 **Usage:** Automatic contract verification in `apply_glyph_with_grammar()` pipeline.  
-**Documentation:** [src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py)
+**Documentation:** [src/tnfr/physics/integrity.py](../src/tnfr/physics/integrity.py)
 
 ---
 
@@ -706,7 +706,7 @@ Tetrad fields are diagnostic outputs, not independent dynamical variables. They 
 **API:** `tnfr.operators.grammar_dynamics.GrammarAwareDynamics`  
 **Checks:** U1a initiation, U2 destabilizer/stabilizer debt tracking, U3 phase compatibility for UM/RA, U4a/U4b bifurcation context  
 **Physics:** Proactive enforcement prevents grammar violations *before* they corrupt graph state.  
-**Documentation:** [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.py)
+**Documentation:** [src/tnfr/operators/grammar_dynamics.py](../src/tnfr/operators/grammar_dynamics.py)
 
 ---
 
@@ -716,7 +716,7 @@ Tetrad fields are diagnostic outputs, not independent dynamical variables. They 
 **API:** `tnfr.operators.grammar_application.apply_glyph_with_grammar()`  
 **Pipeline:** Grammar check → operator application → postcondition verification (integrity monitor)  
 **Physics:** Ensures every structural mutation passes U1-U6 before modifying graph state.  
-**Documentation:** [src/tnfr/operators/grammar_application.py](src/tnfr/operators/grammar_application.py)
+**Documentation:** [src/tnfr/operators/grammar_application.py](../src/tnfr/operators/grammar_application.py)
 
 ---
 

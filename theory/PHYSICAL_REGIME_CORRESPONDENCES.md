@@ -292,11 +292,11 @@ All regimes emerge from the same nodal equation as limiting cases under differen
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [11_classical_limit_comparison.py](../examples/11_classical_limit_comparison.py) | TNFR vs classical N-body comparison |
-| [12_classical_mechanics_demo.py](../examples/12_classical_mechanics_demo.py) | Keplerian orbits from symplectic integrator |
-| [13_quantum_mechanics_demo.py](../examples/13_quantum_mechanics_demo.py) | Emergent quantization from resonant standing waves |
-| [14_uncertainty_and_interference.py](../examples/14_uncertainty_and_interference.py) | Structural uncertainty (ΔForm·Δνf ≥ K), double slit |
-| [15_train_crossing_demo.py](../examples/15_train_crossing_demo.py) | Free-particle classical kinematics |
+| [11_classical_limit_comparison.py](../examples/02_physics_regimes/11_classical_limit_comparison.py) | TNFR vs classical N-body comparison |
+| [12_classical_mechanics_demo.py](../examples/02_physics_regimes/12_classical_mechanics_demo.py) | Keplerian orbits from symplectic integrator |
+| [13_quantum_mechanics_demo.py](../examples/02_physics_regimes/13_quantum_mechanics_demo.py) | Emergent quantization from resonant standing waves |
+| [14_uncertainty_and_interference.py](../examples/02_physics_regimes/14_uncertainty_and_interference.py) | Structural uncertainty (ΔForm·Δνf ≥ K), double slit |
+| [15_train_crossing_demo.py](../examples/02_physics_regimes/15_train_crossing_demo.py) | Free-particle classical kinematics |
 
 ### Key Source Modules
 

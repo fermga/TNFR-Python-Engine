@@ -176,7 +176,7 @@ The golden ratio has the slowest rational approximation of any irrational number
 
 **Hypothesis**: These ratios should cluster near φ for networks in stable coherent regimes. This would demonstrate that the golden ratio emerges as a **dynamical attractor** of the nodal equation, not merely a prescribed threshold.
 
-**Status**: Validated — see [32_spiral_attractors_demo.py](../examples/32_spiral_attractors_demo.py) for multi-topology execution.
+**Status**: Validated — see [32_spiral_attractors_demo.py](../examples/02_physics_regimes/32_spiral_attractors_demo.py) for multi-topology execution.
 
 ---
 
@@ -227,9 +227,9 @@ Thus γ governs the **fidelity** of discrete spiral dynamics: it quantifies how 
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [32_spiral_attractors_demo.py](../examples/32_spiral_attractors_demo.py) | Golden spiral condition, tetrad signatures along spiral, φ-attractor verification (§6.3) |
-| [08_emergent_phenomena.py](../examples/08_emergent_phenomena.py) | Collective spiral-like emergence |
-| [10_simplified_sdk_showcase.py](../examples/10_simplified_sdk_showcase.py) | SDK access to tetrad for spiral monitoring |
+| [32_spiral_attractors_demo.py](../examples/02_physics_regimes/32_spiral_attractors_demo.py) | Golden spiral condition, tetrad signatures along spiral, φ-attractor verification (§6.3) |
+| [08_emergent_phenomena.py](../examples/01_foundations/08_emergent_phenomena.py) | Collective spiral-like emergence |
+| [10_simplified_sdk_showcase.py](../examples/01_foundations/10_simplified_sdk_showcase.py) | SDK access to tetrad for spiral monitoring |
 
 ### External References
 

@@ -34,7 +34,7 @@ All from §13sexagesima-{tertia..novena} of the research notes. Listed in depend
 
 | Lemma | Location | Content |
 |-------|----------|---------|
-| **Fact A — Parameter Uniformity** | source audit at [src/tnfr/operators/remesh.py:1159, 1212–1252](../src/tnfr/operators/remesh.py), [coherence.py](../src/tnfr/operators/coherence.py), [propagation.py:42–156](../src/tnfr/operators/propagation.py), [self_organization.py:21–22, 44, 53](../src/tnfr/operators/self_organization.py) | Every canonical operator's coupling constants are graph-level scalars (no per-node parameters) |
+| **Fact A — Parameter Uniformity** | source audit at [src/tnfr/operators/remesh.py:1159, 1212–1252](../src/tnfr/operators/remesh.py), [coherence.py](../src/tnfr/operators/coherence.py), [propagation.py:42–156](../src/tnfr/dynamics/propagation.py), [self_organization.py:21–22, 44, 53](../src/tnfr/operators/self_organization.py) | Every canonical operator's coupling constants are graph-level scalars (no per-node parameters) |
 | **Fact B — Prime-Cancellation Lemma** | §13vicies-novies.11 | On $G_{P14}$, every edge-propagating canonical operator decomposes as $I_{n_\text{primes}} \otimes O_{P_4}$ with prime-independent kernel |
 | **Euler-Orthogonality Lemma** | §13vicies-novies.11 | Catalog-wide edge-channel compositions on $G_{P14}$ commute with $S_n$ |
 | **CCET on $G_{P14}$** (Theorem 2, §13vicies-novies.16) | §13vicies-novies | Every operator built from the 13 canonical operators by composition / real-linear combination / auxiliary tensor lift / spectral functional calculus on $G_{P14}$ commutes with $\Pi_\sigma \otimes I_\text{aux}$ |

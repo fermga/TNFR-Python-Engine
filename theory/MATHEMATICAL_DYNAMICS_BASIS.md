@@ -330,13 +330,13 @@ The observations in this document generate specific testable predictions. These 
 ### 8.1 Immediate Computational Experiments
 
 **Experiment A (Golden ratio emergence)**: Run grammar-compliant operator sequences on random networks (seed-controlled, multiple topologies). After convergence, measure ratios between structural observables at different scales. Test whether ratios Φ_s(scale k) / Φ_s(scale k+1) cluster near φ.
-**Status**: Implemented — see [31_mathematical_constants_basis.py](../examples/31_mathematical_constants_basis.py) for multi-topology constant emergence verification.
+**Status**: Implemented — see [31_mathematical_constants_basis.py](../examples/02_physics_regimes/31_mathematical_constants_basis.py) for multi-topology constant emergence verification.
 
 **Experiment B (C_crit universality)**: Verify that the coherence threshold C_crit = φe/(π+e) ≈ 0.7506 separates stable from bifurcating regimes across topologies *without being imposed as a parameter*. The threshold is already used in the codebase (MIN_BUSINESS_COHERENCE); the experiment tests whether it emerges from dynamics rather than being a design choice.
-**Status**: Implemented — see [31_mathematical_constants_basis.py](../examples/31_mathematical_constants_basis.py) which verifies C_crit emergence across ring, random, small-world, and scale-free topologies.
+**Status**: Implemented — see [31_mathematical_constants_basis.py](../examples/02_physics_regimes/31_mathematical_constants_basis.py) which verifies C_crit emergence across ring, random, small-world, and scale-free topologies.
 
 **Experiment C (Spiral trajectories)**: Evolve networks with simultaneous rotation (coupling operators UM/RA) and growth (emission AL). Plot the trajectory in (|EPI|, θ) space. Test whether the growth parameter b = ln(φ)/(π/2) produces the most stable spiral.
-**Status**: Implemented — see [32_spiral_attractors_demo.py](../examples/32_spiral_attractors_demo.py) for golden spiral condition verification and tetrad signatures along spiral trajectories.
+**Status**: Implemented — see [32_spiral_attractors_demo.py](../examples/02_physics_regimes/32_spiral_attractors_demo.py) for golden spiral condition verification and tetrad signatures along spiral trajectories.
 
 ### 8.2 Analytical Verification
 
@@ -429,10 +429,10 @@ The recurrence of four-fold structure is suggestive but should be treated as an 
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [31_mathematical_constants_basis.py](../examples/31_mathematical_constants_basis.py) | Four-constant emergence, C_crit universality, edge/face values (§5, §8.1 A–B) |
-| [32_spiral_attractors_demo.py](../examples/32_spiral_attractors_demo.py) | Golden spiral trajectories from nodal equation (§6, §8.1 C) |
-| [05_coherence_evolution.py](../examples/05_coherence_evolution.py) | Coherence thresholds governed by constant-derived values |
-| [10_simplified_sdk_showcase.py](../examples/10_simplified_sdk_showcase.py) | SDK access to tetrad fields and constant-derived thresholds |
+| [31_mathematical_constants_basis.py](../examples/02_physics_regimes/31_mathematical_constants_basis.py) | Four-constant emergence, C_crit universality, edge/face values (§5, §8.1 A–B) |
+| [32_spiral_attractors_demo.py](../examples/02_physics_regimes/32_spiral_attractors_demo.py) | Golden spiral trajectories from nodal equation (§6, §8.1 C) |
+| [05_coherence_evolution.py](../examples/01_foundations/05_coherence_evolution.py) | Coherence thresholds governed by constant-derived values |
+| [10_simplified_sdk_showcase.py](../examples/01_foundations/10_simplified_sdk_showcase.py) | SDK access to tetrad fields and constant-derived thresholds |
 
 ---
 

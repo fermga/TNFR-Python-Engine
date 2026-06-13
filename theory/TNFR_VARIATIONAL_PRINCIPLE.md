@@ -138,7 +138,7 @@ is engaged. The Generating class corresponds predominantly to pressure-lever
 operators that inject $\Delta$NFR; the Dissipative class corresponds to
 pressure-lever operators that absorb it. See
 [STRUCTURAL_OPERATORS.md §17.1](STRUCTURAL_OPERATORS.md) and
-[example 39](../examples/39_nodal_equation_decomposition.py).
+[example 39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py).
 
 ---
 
@@ -290,7 +290,7 @@ from tnfr.physics.variational import (
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [27_variational_principle_demo.py](../examples/27_variational_principle_demo.py) | Lagrangian snapshots, conjugate pairs, Euler-Lagrange residual, action functional, symplectic preservation, grammar stationarity, critical points |
+| [27_variational_principle_demo.py](../examples/02_physics_regimes/27_variational_principle_demo.py) | Lagrangian snapshots, conjugate pairs, Euler-Lagrange residual, action functional, symplectic preservation, grammar stationarity, critical points |
 
 ### Key Source Modules
 

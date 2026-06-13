@@ -159,7 +159,7 @@ The dissipative conservation tracker provides real-time monitoring via:
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [28_dissipative_systems_demo.py](../examples/28_dissipative_systems_demo.py) | Lindblad decoherence, purity decay, entropy production, dissipative regime classification, grammar violations as collapse operators |
+| [28_dissipative_systems_demo.py](../examples/02_physics_regimes/28_dissipative_systems_demo.py) | Lindblad decoherence, purity decay, entropy production, dissipative regime classification, grammar violations as collapse operators |
 
 ### Key Source Modules
 

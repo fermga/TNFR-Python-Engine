@@ -482,7 +482,7 @@ sinks).
 §7.2 are consistent with the experimentally observed **complete causal chain**:
 Operator → (ν_f, ΔNFR) → dEPI/dt → Tetrad → (ℰ, Q). Each operator
 produces a unique tetrad fingerprint (see [STRUCTURAL_OPERATORS.md
-§17.2](STRUCTURAL_OPERATORS.md) and [example 37](../examples/37_operator_tetrad_synergy.py)).
+§17.2](STRUCTURAL_OPERATORS.md) and [example 37](../examples/02_physics_regimes/37_operator_tetrad_synergy.py)).
 The IL-OZ symmetry (ΔE = −0.011 for both, despite opposite physics)
 confirms that charge source/sink classification depends on signed ΔNFR, not
 the perturbation magnitude.
@@ -526,7 +526,7 @@ bounds in §8.4 provide supporting evidence.
 
 **Refinement (Grammar-Energy Landscape)**: The Lyapunov contractivity bound
 ($\Pi < 1$) is *sufficient* but not *necessary* for energy descent.
-Experimental evidence ([example 38](../examples/38_grammar_energy_landscape.py))
+Experimental evidence ([example 38](../examples/02_physics_regimes/38_grammar_energy_landscape.py))
 shows sequences with $\Pi \approx 1.288$ (non-contractive) that still achieve
 net energy descent ($\Delta E = -9.59$). The formal bound is conservative;
 actual grammar-compliant sequences may descend more steeply than the
@@ -798,7 +798,7 @@ The sector decomposition predicts failure modes:
 ### 12.5 Operator-Tetrad Fingerprinting
 
 The per-operator Ward identities (§7.2) are experimentally confirmed by the
-**operator-tetrad fingerprint matrix** ([example 37](../examples/37_operator_tetrad_synergy.py)).
+**operator-tetrad fingerprint matrix** ([example 37](../examples/02_physics_regimes/37_operator_tetrad_synergy.py)).
 Each operator produces a unique signature across (Φ_s, |∇φ|, K_φ, ξ_C),
 and the causal chain Operator → Tetrad → (ℰ, Q) is unidirectional. This
 fingerprint can serve as a runtime diagnostic to identify which operator was
@@ -903,10 +903,10 @@ print(cons.summary())                # Q, E, dE/dt, stability
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [17_conservation_law_demo.py](../examples/17_conservation_law_demo.py) | Noether charge, energy functional, Lyapunov stability, Ward identities |
-| [24_spectral_conservation_demo.py](../examples/24_spectral_conservation_demo.py) | Spectral conservation + grammar compliance at σ = 1/2 |
-| [34_conservation_protocol_suite.py](../examples/34_conservation_protocol_suite.py) | Multi-topology conservation protocol: charge drift, q(N) scaling, sector decomposition (§10) |
-| [36_grammar_violation_detector.py](../examples/36_grammar_violation_detector.py) | Grammar violation detection via conservation residuals (§12.1), violation classification |
+| [17_conservation_law_demo.py](../examples/02_physics_regimes/17_conservation_law_demo.py) | Noether charge, energy functional, Lyapunov stability, Ward identities |
+| [24_spectral_conservation_demo.py](../examples/03_riemann_zeta/24_spectral_conservation_demo.py) | Spectral conservation + grammar compliance at σ = 1/2 |
+| [34_conservation_protocol_suite.py](../examples/02_physics_regimes/34_conservation_protocol_suite.py) | Multi-topology conservation protocol: charge drift, q(N) scaling, sector decomposition (§10) |
+| [36_grammar_violation_detector.py](../examples/02_physics_regimes/36_grammar_violation_detector.py) | Grammar violation detection via conservation residuals (§12.1), violation classification |
 
 ### Key Source Modules
 

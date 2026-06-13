@@ -1279,7 +1279,7 @@ $\texttt{coupling}$ deforms the Hamiltonian spectrum and produces a
 measurable $g_{\mathrm{cross}}$ free of classical-truncation noise.
 
 Module: [`src/tnfr/riemann/paley_gap_coercivity.py`](../src/tnfr/riemann/paley_gap_coercivity.py).
-Demo: [`examples/52_paley_gap_coercivity_demo.py`](../examples/52_paley_gap_coercivity_demo.py).
+Demo: [`examples/52_paley_gap_coercivity_demo.py`](../examples/03_riemann_zeta/52_paley_gap_coercivity_demo.py).
 
 ### 13ter.3 Numerical Outcome
 
@@ -1442,7 +1442,7 @@ conservation is exactly the check in step 4.
 
 ### 13quater.3 Numerical outcome
 
-Demo: [`examples/53_lyapunov_spectral_positivity_demo.py`](../examples/53_lyapunov_spectral_positivity_demo.py).
+Demo: [`examples/53_lyapunov_spectral_positivity_demo.py`](../examples/03_riemann_zeta/53_lyapunov_spectral_positivity_demo.py).
 
 Decoupled certificate (`n_primes = 12`, `max_power = 5`, $J_0 = 0$,
 $\dim \mathcal H = 60$, shift $c = 1$):
@@ -6460,7 +6460,7 @@ canonical TNFR-Riemann data.
 
 **Implementation.**  See
 [src/tnfr/riemann/nuf_type_signature.py](../src/tnfr/riemann/nuf_type_signature.py)
-and demo [examples/78_nuf_type_signature_demo.py](../examples/78_nuf_type_signature_demo.py).
+and demo [examples/78_nuf_type_signature_demo.py](../examples/05_type_hygiene/78_nuf_type_signature_demo.py).
 
 **Pre-registered scope.**  $\mathcal{S}_{\nu_f}$ is a *necessary-condition*
 diagnostic: high signature is consistent with (but does not prove) a
@@ -6474,7 +6474,7 @@ practical relevance of the promotion on the P14 data.
 and $F = \mathbb{R}$ both survive if (P-Pontryagin) is relaxed).
 
 **Numerical sanity check (§.6):** the demo
-[examples/78_nuf_type_signature_demo.py](../examples/78_nuf_type_signature_demo.py)
+[examples/78_nuf_type_signature_demo.py](../examples/05_type_hygiene/78_nuf_type_signature_demo.py)
 reports $\mathcal{S}_{\nu_f}$ on the canonical P14 + P50 data; the value is
 recorded in `results/nuf_type_signature/` and is consistent with the
 measure-valued hypothesis being *practically non-trivial* (necessary
@@ -11546,7 +11546,7 @@ The B5a diagnostic module [`src/tnfr/riemann/delta_phi_max_type_signature.py`](.
 
 ### §13quadraginta-sexta.4 — Demo: two-resolution probe
 
-Demo at [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py).
+Demo at [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py).
 
 - **Resolution 1**: `n_nodes=24`, `n_pair_anchors=9`, `n_offsets_per_anchor=8`, `seed=19` (72 configurations).
 - **Resolution 2**: `n_nodes=48`, `n_pair_anchors=17`, `n_offsets_per_anchor=16`, `seed=29` (272 configurations).
@@ -11613,7 +11613,7 @@ Per the standard B-sub-question methodology (§13triginta-tertia.4, §13triginta
 - [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py) (canonical anchor witness).
 - [`src/tnfr/operators/grammar_dynamics.py:178-193`](../src/tnfr/operators/grammar_dynamics.py) (canonical U3 check).
 - [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) — B5a diagnostic implementation.
-- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py) — B5a two-resolution demo.
+- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) — B5a two-resolution demo.
 
 ---
 ## §13quadraginta-septima. Derivation of (P-Delta-phi-max-Non-Scalar-Carrier) from the Canonical Catalog — Foundational Reduction of the T-Delta-phi-max Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
@@ -11630,7 +11630,7 @@ The TNFR canonical catalog (13 operators, U1–U6 unified grammar, tetrad fields
 - **Canonical default** ([`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py)): `DELTA_PHI_MAX = PI / 2`, a single scalar `float` exported globally.
 - **Storage slot**: `G.graph["DELTA_PHI_MAX"]` (NetworkX graph-level scalar attribute), readable by every consumer via `float(G.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))`.
 - **Consumer sites** (B5a code review at §13quadraginta-sexta.2): [`grammar_dynamics.py:178-193`](../src/tnfr/operators/grammar_dynamics.py), [`propagation.py:113`](../src/tnfr/dynamics/propagation.py), [`conservation_gauge_unification.py:418`](../src/tnfr/physics/conservation_gauge_unification.py), [`mathematics/number_theory.py:1185`](../src/tnfr/mathematics/number_theory.py), [`physics/patterns.py:223`](../src/tnfr/physics/patterns.py), [`validation/config.py:11`](../src/tnfr/validation/config.py). All read a scalar, apply `diff <= delta_phi_max` after wrap, return a Boolean.
-- **Phase wrap operator**: `wrap_angle: ℝ → (-π, π]` (canonical, [`src/tnfr/mathematics/wrap.py`](../src/tnfr/mathematics/wrap.py)); used uniformly by all U3 consumers prior to the comparison.
+- **Phase wrap operator**: `wrap_angle: ℝ → (-π, π]` (canonical, [`src/tnfr/physics/_helpers.py`](../src/tnfr/physics/_helpers.py)); used uniformly by all U3 consumers prior to the comparison.
 
 No catalog operator, no U-rule, and no canonical default exposes:
 
@@ -11738,7 +11738,7 @@ Remaining Tier-2 prediction outstanding: **B6 (T-coupling-weights)** expected NE
 - [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py) (canonical anchor).
 - [`src/tnfr/operators/grammar_dynamics.py:178-193`](../src/tnfr/operators/grammar_dynamics.py) (canonical U3 verdict).
 - [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) (B5a diagnostic).
-- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py) (B5a two-resolution demo).
+- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) (B5a two-resolution demo).
 
 ---
 ## §13quadraginta-octava. T-Δφ_max Final NEGATIVE Verdict and Envelope Classification of E6 = EdgeDependentPhaseThreshold (Closes B5; Does NOT Advance G4 = RH)
@@ -11846,7 +11846,7 @@ L3* status promoted from "empirically robust working heuristic" (B5b, six-CDM co
 - [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B5 (programme status), §4 row B5 (per-Phase verdict matrix).
 - [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py) (canonical anchor `DELTA_PHI_MAX = PI / 2`, unchanged).
 - [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) (B5a diagnostic, frozen).
-- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/83_delta_phi_max_type_signature_demo.py) (B5a demo, frozen).
+- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) (B5a demo, frozen).
 
 ---
 ---
@@ -11948,7 +11948,7 @@ If Phase b confirms that SWD refutes the residual axiom, L3* will be validated u
 - [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B6 (programme status), §4 row B6 (per-Phase verdict matrix).
 - [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) (canonical scalar-dict anchors for DNFR/SI/SELECTOR weights; unchanged).
 - [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic, frozen).
-- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
+- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
 
 ---
 ## §13quinquaginta. Derivation of (P-W-Non-Scalar-Retention) from the Canonical Catalog — Foundational Reduction of the T-W (T-coupling-weights) Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
@@ -12077,7 +12077,7 @@ Programme status after B6b: all Tier-2 sub-questions (B4, B5, B6) closed NEGATIV
 - [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) (canonical scalar-dict anchors).
 - [`src/tnfr/dynamics/dnfr.py:307-317`](../src/tnfr/dynamics/dnfr.py), [`src/tnfr/dynamics/selectors.py:136-141`](../src/tnfr/dynamics/selectors.py) (canonical consumer pattern).
 - [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic).
-- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/84_coupling_weights_type_signature_demo.py) (B6a two-probe demo).
+- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a two-probe demo).
 ---
 ## §13quinquaginta-prima. T-W Final NEGATIVE Verdict and Envelope Classification of E7 = NodeIndexedCouplingWeights (Closes B6; Does NOT Advance G4 = RH)
 
@@ -12180,7 +12180,7 @@ L3* status promoted from "empirically robust working heuristic with structural-o
 - [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B6 (programme status), §4 row B6 (per-Phase verdict matrix).
 - [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) (canonical scalar-dict anchors, unchanged).
 - [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic, frozen).
-- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
+- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
 
 ---
 ---

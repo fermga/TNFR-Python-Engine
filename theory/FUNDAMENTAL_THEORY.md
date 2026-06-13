@@ -280,13 +280,13 @@ analysis = TNFR.analyze(net)               # Comprehensive analysis
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [01_hello_world.py](../examples/01_hello_world.py) | Network creation, EPI/νf/θ assignment, C(t) computation |
-| [02_musical_resonance.py](../examples/02_musical_resonance.py) | Phase synchronization, harmonic coupling |
-| [03_network_formation.py](../examples/03_network_formation.py) | Network building, coherence emergence |
-| [05_coherence_evolution.py](../examples/05_coherence_evolution.py) | Coherence trajectories under nodal evolution |
-| [06_network_topologies.py](../examples/06_network_topologies.py) | Topology-dependent dynamics |
-| [08_emergent_phenomena.py](../examples/08_emergent_phenomena.py) | Collective behaviour from nodal equations |
-| [10_simplified_sdk_showcase.py](../examples/10_simplified_sdk_showcase.py) | SDK API: tetrad, conservation, grammar-aware evolution |
+| [01_hello_world.py](../examples/01_foundations/01_hello_world.py) | Network creation, EPI/νf/θ assignment, C(t) computation |
+| [02_musical_resonance.py](../examples/01_foundations/02_musical_resonance.py) | Phase synchronization, harmonic coupling |
+| [03_network_formation.py](../examples/01_foundations/03_network_formation.py) | Network building, coherence emergence |
+| [05_coherence_evolution.py](../examples/01_foundations/05_coherence_evolution.py) | Coherence trajectories under nodal evolution |
+| [06_network_topologies.py](../examples/01_foundations/06_network_topologies.py) | Topology-dependent dynamics |
+| [08_emergent_phenomena.py](../examples/01_foundations/08_emergent_phenomena.py) | Collective behaviour from nodal equations |
+| [10_simplified_sdk_showcase.py](../examples/01_foundations/10_simplified_sdk_showcase.py) | SDK API: tetrad, conservation, grammar-aware evolution |
 
 ### Key Source Modules
 

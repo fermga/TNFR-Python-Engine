@@ -298,7 +298,7 @@ This provides the structural basis for the convergence proved in `src/tnfr/riema
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [26_gauge_structure_demo.py](../examples/26_gauge_structure_demo.py) | U(1) gauge symmetry of Ψ, connections, curvature, Wilson loops |
+| [26_gauge_structure_demo.py](../examples/02_physics_regimes/26_gauge_structure_demo.py) | U(1) gauge symmetry of Ψ, connections, curvature, Wilson loops |
 
 ### Key Source Modules
 

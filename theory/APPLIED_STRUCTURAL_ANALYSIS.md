@@ -135,13 +135,13 @@ Key verified properties:
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [16_riemann_operator_demo.py](../examples/16_riemann_operator_demo.py) | Discrete TNFR-Riemann eigenvalues, critical parameter |
-| [18_riemann_convergence_proof.py](../examples/18_riemann_convergence_proof.py) | Spectral convergence σ_c → 1/2 |
-| [19_topology_comparison.py](../examples/19_topology_comparison.py) | Cross-topology universality |
-| [21_complex_extension_demo.py](../examples/21_complex_extension_demo.py) | Non-Hermitian operator, complex s |
-| [22_spectral_zeta_demo.py](../examples/22_spectral_zeta_demo.py) | Spectral zeta, heat kernel, Mellin bridge |
-| [23_random_ensemble_rmt_demo.py](../examples/23_random_ensemble_rmt_demo.py) | Random matrix ensembles on prime graphs |
-| [25_analytical_convergence_demo.py](../examples/25_analytical_convergence_demo.py) | Analytical proof via PNT + telescoping identity |
+| [16_riemann_operator_demo.py](../examples/03_riemann_zeta/16_riemann_operator_demo.py) | Discrete TNFR-Riemann eigenvalues, critical parameter |
+| [18_riemann_convergence_proof.py](../examples/03_riemann_zeta/18_riemann_convergence_proof.py) | Spectral convergence σ_c → 1/2 |
+| [19_topology_comparison.py](../examples/03_riemann_zeta/19_topology_comparison.py) | Cross-topology universality |
+| [21_complex_extension_demo.py](../examples/03_riemann_zeta/21_complex_extension_demo.py) | Non-Hermitian operator, complex s |
+| [22_spectral_zeta_demo.py](../examples/03_riemann_zeta/22_spectral_zeta_demo.py) | Spectral zeta, heat kernel, Mellin bridge |
+| [23_random_ensemble_rmt_demo.py](../examples/03_riemann_zeta/23_random_ensemble_rmt_demo.py) | Random matrix ensembles on prime graphs |
+| [25_analytical_convergence_demo.py](../examples/03_riemann_zeta/25_analytical_convergence_demo.py) | Analytical proof via PNT + telescoping identity |
 
 ### Key Source Modules
 

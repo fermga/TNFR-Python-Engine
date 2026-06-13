@@ -770,10 +770,10 @@ The `Operator.__call__(G, node, **kw)` method implements the canonical execution
 
 | Example | Operators demonstrated |
 |---------|----------------------|
-| [04_operator_sequences.py](../examples/04_operator_sequences.py) | All 13 operators, canonical compositions |
-| [10_simplified_sdk_showcase.py](../examples/10_simplified_sdk_showcase.py) | SDK-level operator usage |
-| [29_lyapunov_stability_demo.py](../examples/29_lyapunov_stability_demo.py) | All 13 energy bounds, Lyapunov stability |
-| [36_grammar_violation_detector.py](../examples/36_grammar_violation_detector.py) | Grammar enforcement across sequences |
+| [04_operator_sequences.py](../examples/01_foundations/04_operator_sequences.py) | All 13 operators, canonical compositions |
+| [10_simplified_sdk_showcase.py](../examples/01_foundations/10_simplified_sdk_showcase.py) | SDK-level operator usage |
+| [29_lyapunov_stability_demo.py](../examples/02_physics_regimes/29_lyapunov_stability_demo.py) | All 13 energy bounds, Lyapunov stability |
+| [36_grammar_violation_detector.py](../examples/02_physics_regimes/36_grammar_violation_detector.py) | Grammar enforcement across sequences |
 
 ### 15.4 SDK Entry Points
 
