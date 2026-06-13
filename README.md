@@ -5,7 +5,9 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics.
+A mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics on networks.
+
+A single **nodal equation** drives every node. From it, a complete **transport and geometric structure emerges** — measured by the engine, verified to machine precision, and anchored to classical, experimentally-established physics. The graph is only the substrate; the dynamics generates its own geometry.
 
 ```bash
 pip install tnfr
@@ -34,6 +36,36 @@ System state is characterized by four **structural fields** — the Universal Te
 
 ---
 
+## From One Equation, a Geometry Emerges
+
+TNFR is more than dynamics on a graph. The graph is only the substrate; the nodal equation **generates its own geometry**, which the engine *measures* rather than postulates. Every structure below is verified to machine precision and anchored to classical, experimentally-established phenomena:
+
+- **Transport layer** (empirically anchored) — channel by channel, the nodal equation is a graph-Laplacian diffusion. From it emerge diffusion, synchronization (Kuramoto), random walks, effective resistance (Ohm/Kirchhoff), and standing-wave modes — all textbook phenomena.
+- **Emergent symplectic substrate** (TNFR-native) — the same dynamics carries a phase space with conserved charges (Noether), a Hamiltonian equal to the energy functional, complete integrability, and a polarization structure (Stokes/Poincaré).
+- **Orthogonal structure** — the dissipative (transport) and conservative (symplectic) parts are the two orthogonal Helmholtz–Hodge components of one flow.
+
+**Honest scope**: this reorganizes known mathematics and physics inside a single framework, verified in code. It is a *characterization* of structure the nodal equation already contains — not a claim of new physics.
+
+---
+
+## Research Status
+
+Two clearly-separated layers:
+
+**Solid and verified.** The engine, the tetrad, grammar U1–U6, conservation laws, and the emergent transport + symplectic geometry are implemented, anchored to experimentally-established phenomena, and covered by 1,947 tests.
+
+**Open research programs.** TNFR is also used to probe famous open problems. These are honest, in-progress programs that **do not claim proofs**:
+
+| Program | Done | Open |
+|---------|------|------|
+| TNFR–Riemann (P1–P49) | discrete operator σ_c → 1/2; ζ↔L attack surface | Riemann Hypothesis (gap G4) — **paused at T-HP** |
+| TNFR–Navier–Stokes (N1–N17) | NS-G5 closed at discrete-operator level | continuum limit / Clay (NS-G1..G4) — **open** |
+| TNFR–Yang–Mills (Y1–Y5) | finite U(1) structural diagnostics | non-Abelian mass gap — **open** (Branch B) |
+
+See [AGENTS.md](AGENTS.md) and the `theory/` research notes for the full, audited status.
+
+---
+
 ## Quick Start
 
 ```python
@@ -58,6 +90,14 @@ print(tetrad.is_safe())  # canonical threshold checks
 cons = net.conservation()
 print(cons.summary())
 # -> Q=1.2340, E=0.5678, dE/dt=-0.0012 (STABLE), quality=0.998
+```
+
+```python
+# Emergent symplectic substrate — the geometry the dynamics generates
+sub = net.symplectic_substrate()
+print(sub.summary())
+# -> dim=80, H_sub=0.0000, U=0.0000, div(X_H)=0.00e+00 (VALID)
+# dim = 4N phase space; div(X_H)=0 => Liouville (volume-preserving)
 ```
 
 ```python
@@ -105,25 +145,25 @@ pip install -e ".[compute-torch]"      # PyTorch backend
 
 ```text
 src/tnfr/
-├── operators/         # 13 canonical operators + grammar validation (56 modules)
-├── physics/           # Structural fields, conservation, integrity (26 modules)
-├── engines/           # Self-optimization, pattern discovery, GPU/FFT (7 modules)
+├── operators/         # 13 canonical operators + grammar U1–U6 (65 modules)
+├── physics/           # Tetrad, conservation, emergent symplectic substrate, structural diffusion (30 modules)
+├── engines/           # Self-optimization, pattern discovery, GPU/FFT (14 modules)
 ├── dynamics/          # Nodal equation integration
-├── riemann/           # TNFR-Riemann program (62 modules, P1–P49; paused at T-HP)
-├── navier_stokes/     # TNFR-Navier–Stokes program (N1–N17; NS-G5 closed)
-├── yang_mills/        # TNFR–Yang–Mills structural gap diagnostics (Y1–Y5)
-├── sdk/               # Simplified & Fluent API (7 modules)
-│   └── simple.py      # Tetrad, conservation, grammar-aware dynamics, integrity
+├── riemann/           # TNFR–Riemann program (62 modules, P1–P49; paused at T-HP, RH open)
+├── navier_stokes/     # TNFR–Navier–Stokes program (N1–N17; NS-G5 closed at discrete level, Clay open)
+├── yang_mills/        # TNFR–Yang–Mills diagnostics (Y1–Y5; Branch B, mass gap open)
+├── sdk/               # Simplified & Fluent API (8 modules)
+│   └── simple.py      # Tetrad, conservation, symplectic substrate, grammar-aware dynamics
 ├── mathematics/       # Number theory, backends
 ├── constants/         # Canonical constants (mpmath 35-digit precision)
 ├── metrics/           # Coherence, Si, phase sync, telemetry
 ├── validation/        # Structural health monitoring
 └── factorization/     # Spectral factorization workflow
 
-examples/              # 106 files (sequential tutorials 01–93 + extras)
-tests/                 # 1,695 tests
+examples/              # 120 files (tutorials 01–76, 90–107; parallel Riemann/NS/Type-Hygiene series 77–89)
+tests/                 # 1,947 tests
 theory/                # Theoretical derivations
-benchmarks/            # Performance validation (25 suites)
+benchmarks/            # 50 performance & structural-validation scripts
 ```
 
 ---
@@ -150,7 +190,7 @@ benchmarks/            # Performance validation (25 suites)
 ## Testing
 
 ```bash
-pytest                             # all tests (1,695 under tests/)
+pytest                             # all tests (1,947 under tests/)
 pytest tests/sdk/                  # SDK tests (tetrad, conservation, grammar)
 pytest tests/unit/                 # unit tests
 .\make.cmd smoke-tests             # smoke tests (Windows)
