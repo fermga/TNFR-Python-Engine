@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,662 tests across multiple topologies
+- Experimental Validation: 1,808 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -723,9 +723,11 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 
 **C(t)**: Total Coherence [0, 1]
 - Global network stability (fundamental)
+- **Canonical formula**: C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|), derived directly from the nodal equation (equilibrium ΔNFR→0 ∧ dEPI→0 ⟹ C→1). This is the value recorded in `history['C_steps']` each step (`metrics.common.compute_coherence`).
 - C(t) > MIN_BUSINESS_COHERENCE ≈ 0.7506 = strong coherence (e×φ)/(π+e)
 - C(t) < THOL_MIN_COLLECTIVE_COHERENCE = 1/(π+1) ≈ 0.2415 = fragmentation risk
 - **CANONICAL**: Primary stability indicator
+- *Auxiliary view*: `compute_global_coherence` = 1 − σ_ΔNFR/ΔNFR_max is a scale-invariant **dispersion** diagnostic (homogeneity of ΔNFR), not the primary C(t).
 
 **Si**: Sense Index [0, 1+]
 - Capacity for stable reorganization
@@ -773,7 +775,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,662 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,808 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1506,7 +1508,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,662 tests)
+- **TESTING.md**: Test strategy (1,808 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
@@ -1610,9 +1612,9 @@ When adding to grammar documentation:
 - Safety criterion: |∇φ| < γ/π ≈ 0.1837 for stable operation (Kuramoto critical coupling in TNFR units)
 - For formal definition and evidence, see `docs/STRUCTURAL_FIELDS_TETRAD.md`.
 
-**Critical Discovery**: C(t) = 1-(σ_ΔNFR/ΔNFR_max) is invariant to proportional scaling. 
-|∇φ| correlation validated against alternative metrics (max_ΔNFR, mean_ΔNFR, Si) that 
-capture dynamics C(t) misses.
+**Critical Discovery**: The primary C(t) = 1/(1 + mean|ΔNFR| + mean|dEPI|) is a *global aggregate* — it averages over the network and cannot resolve *local* phase desynchronization. The scale-invariant dispersion variant (1 − σ_ΔNFR/ΔNFR_max) makes this blind spot explicit: it is invariant under proportional scaling of ΔNFR, so neither global form captures the local phase stress that |∇φ| measures.
+|∇φ| correlation validated against alternative metrics (max_ΔNFR, mean_ΔNFR, Si) that
+capture dynamics the global C(t) misses.
 
 **Usage**:
 - Import from [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)
@@ -1766,7 +1768,7 @@ TNFR models coherent dynamic patterns. Development practices should reflect this
 ---
 
 **Version**: 0.0.3.3  
-**Last Updated**: 2026-05-26 (N15 REMESH-∞ closure consolidated; previous edit 2026-03-07)  
+**Last Updated**: 2026-06-13 (canonical C(t) definition consolidated: primary C(t)=1/(1+mean|ΔNFR|+mean|dEPI|); N15 REMESH-∞ closure May 26, 2026)  
 **Status**: CANONICAL - Primary reference for TNFR agent guidance  
 **PyPI Release**: STABLE - Available via `pip install tnfr`  
 **Production Ready**: Complete Tetrad Fields + Unified Grammar U1-U6 + Simplified SDK + Grammar-Aware Dynamics + Structural Conservation Theorem + Integrity Monitor  

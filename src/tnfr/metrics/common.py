@@ -29,7 +29,25 @@ __all__ = (
 def compute_coherence(
     G: GraphLike, *, return_means: bool = False
 ) -> float | tuple[float, float, float]:
-    """Compute global coherence ``C`` from ``ΔNFR`` and ``dEPI``."""
+    r"""Compute the canonical total coherence ``C(t)`` of the network.
+
+    This is the **primary canonical coherence metric** of the TNFR engine:
+    the value recorded in ``history['C_steps']`` on every ``step()`` (see
+    :func:`tnfr.metrics.coherence._update_coherence`) and exposed through the
+    SDK, telemetry, and the structural-health interface.
+
+    .. math::
+        C(t) = \frac{1}{1 + \overline{|\Delta\mathrm{NFR}|} + \overline{|d\mathrm{EPI}|}}
+
+    where the bars denote network means. It is derived directly from the nodal
+    equation :math:`\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}`:
+    structural equilibrium is :math:`\Delta\mathrm{NFR}\to 0` (no pressure) and
+    :math:`d\mathrm{EPI}\to 0` (no change), so :math:`C\to 1` at equilibrium and
+    :math:`C\to 0` under unbounded pressure/change. The map
+    :math:`[0,\infty)\to(0,1]` is monotone and, unlike the dispersion variant
+    :func:`coherence.compute_global_coherence`, is **not** scale-invariant: it
+    tracks the absolute magnitude of reorganization pressure.
+    """
 
     count = G.number_of_nodes()
     if count == 0:

@@ -187,7 +187,7 @@ xi = estimate_coherence_length(G, coherence_key='coherence')  # if provided
 
 - Physics-first: all field definitions derive from nodal equation semantics
 - No ad-hoc mutations: fields are telemetry-only; EPI changes go through operators
-- Units and invariants preserved (see AGENTS.md invariants 1–10)
+- Units and invariants preserved (see AGENTS.md invariants 1–6)
 - Canonical docs: this page + UNIFIED_GRAMMAR_RULES.md are the reference
 
 ---
@@ -226,7 +226,7 @@ Q7. ξ_C returned NaN/inf. What does that mean?
 - Near criticality, an exponential fit may be ill-posed (flat or noisy C(r)). Re-run with more samples, verify `coherence` distribution, or widen the r-range. If the system is truly at/near I_c, very large ξ_C is expected; treat it as a warning for imminent system-wide reorganization.
 
 Q8. How does the tetrad relate to C(t) and Si?
-- C(t) is a global coherence scalar; Si measures stable reorganization capacity. The tetrad provides complementary structure: Φ_s (global field), |∇φ| (local stress), K_φ (geometric confinement), ξ_C (spatial correlation scale). Use them together for a complete picture. Note: C(t) is invariant to proportional ΔNFR scaling; |∇φ| often captures early local stress better.
+- C(t) is a global coherence scalar; Si measures stable reorganization capacity. The tetrad provides complementary structure: Φ_s (global field), |∇φ| (local stress), K_φ (geometric confinement), ξ_C (spatial correlation scale). Use them together for a complete picture. Note: the primary C(t) = 1/(1 + mean|ΔNFR| + mean|dEPI|) is a global aggregate (its scale-invariant dispersion variant 1 − σ_ΔNFR/ΔNFR_max makes the blind spot explicit); |∇φ| often captures early local stress better.
 
 Q9. Performance tips for large graphs?
 - Φ_s requires many distance evaluations; on large graphs, consider limiting to a radius, sampling source nodes, or caching all-pairs shortest paths if topology is static. |∇φ| and K_φ are O(E) and scale well. ξ_C can subsample pairs at each distance bin.

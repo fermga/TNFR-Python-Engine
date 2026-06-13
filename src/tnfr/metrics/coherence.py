@@ -1737,13 +1737,22 @@ def _aggregate_si(
         logger.debug("Si aggregation failed: %s", exc)
 
 def compute_global_coherence(G: TNFRGraph) -> float:
-    """Compute global coherence C(t) for entire network.
+    """Compute the dispersion-based auxiliary coherence (scale-invariant).
 
-    C(t) = 1 - (σ_ΔNFR / ΔNFR_max)
+    C_disp = 1 - (σ_ΔNFR / ΔNFR_max)
 
-    This is the canonical TNFR coherence metric that measures global structural
-    stability through the dispersion of reorganization pressure (ΔNFR) across
-    the network.
+    This is an **auxiliary** structural-stability diagnostic that measures how
+    *uniformly* reorganization pressure (ΔNFR) is distributed across the
+    network. It is invariant under proportional scaling of ΔNFR (both σ and
+    max scale together), which makes it useful as a homogeneity probe but means
+    it does **not** track absolute pressure magnitude.
+
+    .. note::
+        The **primary** canonical total coherence ``C(t)`` of the engine is
+        :func:`tnfr.metrics.common.compute_coherence`
+        (``1/(1 + mean|ΔNFR| + mean|dEPI|)``), the value recorded in
+        ``history['C_steps']``. This dispersion form is a complementary,
+        scale-invariant view, not the value the dynamics records.
 
     Parameters
     ----------
@@ -1776,14 +1785,16 @@ def compute_global_coherence(G: TNFRGraph) -> float:
 
     **TNFR Context:**
 
-    C(t) is the primary metric for measuring IL (Coherence) operator
-    effectiveness. When IL is applied, C(t) should increase as ΔNFR
-    becomes more uniformly distributed (ideally all approaching zero).
+    This dispersion diagnostic complements the primary coherence ``C(t)``
+    (:func:`tnfr.metrics.common.compute_coherence`) when assessing IL
+    (Coherence) operator effectiveness. When IL is applied, both the primary
+    ``C(t)`` rises (pressure shrinks toward zero) and this dispersion form
+    rises (ΔNFR becomes more uniform).
 
     See Also
     --------
     compute_local_coherence : Local coherence for node neighborhoods
-    compute_coherence : Alternative coherence metric (legacy)
+    tnfr.metrics.common.compute_coherence : Primary canonical total coherence C(t).
 
     Examples
     --------

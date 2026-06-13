@@ -100,7 +100,7 @@ The physics-essential constants — the four tetrad thresholds together with the
 
 **Grammar integration**: Smooth evolution requirement — |∇φ| < γ/π for stable dynamics.
 
-**Critical discovery**: C(t) = 1 − (σ_ΔNFR / ΔNFR_max) is invariant under proportional scaling of ΔNFR. The phase gradient |∇φ| breaks this invariance and captures local stress that C(t) misses.
+**Critical discovery**: the global aggregate coherence C(t) = 1/(1 + mean|ΔNFR| + mean|dEPI|) averages over the network and cannot resolve local phase stress; its scale-invariant dispersion variant C_disp = 1 − (σ_ΔNFR / ΔNFR_max) is invariant under proportional scaling of ΔNFR, making the blind spot explicit. The phase gradient |∇φ| breaks this invariance and captures the local stress that global C(t) misses.
 
 ### 4.3 π ↔ K_φ: Geometric Spatial Constraints
 
