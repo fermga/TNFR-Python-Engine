@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,924 tests across multiple topologies
+- Experimental Validation: 1,931 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -538,8 +538,9 @@ the **discrete diffusion equation** with diffusivity $\nu_f$. What emerges, in T
 - **Conserved structural total**: $L_{\mathrm{rw}}$ conserves the **degree-weighted total** $\sum_i \deg(i)\,\mathrm{EPI}(i)$ (its left null vector is the degree vector) — the analogue of the conserved amount of a diffusing substance.
 - **Equilibrium ⟺ no gradients**: $\Delta\mathrm{NFR} = 0 \Leftrightarrow$ the field is uniform across neighbourhoods (the diffusive steady state). $\nu_f$ is the **mobility/diffusivity**; ΔNFR is the **structural pressure** driving the flux.
 - **Synchronization** (phase channel): the phase term aligns θ to the neighbour mean, driving Kuramoto-type synchronization ($R \to 1$) — also empirically demonstrated (fireflies, pacemaker cells, neurons, Josephson junctions).
+- **Structural stability** (dispersion relation): the growth/decay of each structural eigenmode under diffusion plus a local reaction rate $r$ follows $\sigma_k = r - \nu_f \lambda_k$ (the universal linear-stability law). Pure diffusion ($r=0$) decays every non-uniform mode (stable equilibrium); the threshold $r_c = \nu_f \lambda_2$ (the spectral gap) separates uniform amplification from **structural pattern formation** — above it the **Fiedler mode** grows, partitioning the network along its weakest structural cut (the empirically-validated spectral-clustering result). This is the spectral form of grammar rule **U2**: a destabilizer raises $r$, a stabilizer lowers it; bounded evolution requires $r \le r_c$.
 
-This is the irreducible, empirically-grounded transport dynamics on which the emergent geometric tower (symplectic substrate, conservation laws) sits. **Implementation**: [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py)::`verify_structural_diffusion` (+ `structural_diffusion_operator`, `relaxation_spectrum`, `degree_weighted_total`, `verify_overdamped_regime`, `verify_discrete_modes`, `structural_eigenmodes`); 27 tests in [tests/physics/test_structural_diffusion.py](tests/physics/test_structural_diffusion.py); demonstrated in [examples/99_structural_diffusion.py](examples/99_structural_diffusion.py). **Honest scope**: the EPI-channel ↔ graph-Laplacian identity is exact; the full ΔNFR is multi-channel (diffusion + synchronization + νf/topology homogenization); this characterises the transport content of the nodal dynamics and does not, by itself, resolve any open program.
+This is the irreducible, empirically-grounded transport dynamics on which the emergent geometric tower (symplectic substrate, conservation laws) sits. **Implementation**: [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py)::`verify_structural_diffusion` (+ `structural_diffusion_operator`, `relaxation_spectrum`, `degree_weighted_total`, `verify_overdamped_regime`, `verify_discrete_modes`, `structural_eigenmodes`, `verify_structural_stability`, `dispersion_relation`, `instability_threshold`, `fiedler_partition`); 34 tests in [tests/physics/test_structural_diffusion.py](tests/physics/test_structural_diffusion.py); demonstrated in [examples/99_structural_diffusion.py](examples/99_structural_diffusion.py). **Honest scope**: the EPI-channel ↔ graph-Laplacian identity is exact; the full ΔNFR is multi-channel (diffusion + synchronization + νf/topology homogenization); the dispersion-relation mechanism is canonical (from the Laplacian spectrum) while the reaction rate $r$ is supplied by the operators; a two-channel differential-diffusion + activator–inhibitor coupling supports the empirically-demonstrated Turing pattern-formation mechanism but those kinetics are a model input, not TNFR-derived. This characterises the transport content of the nodal dynamics and does not, by itself, resolve any open program.
 
 ---
 
@@ -840,7 +841,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,924 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,931 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1577,7 +1578,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,924 tests)
+- **TESTING.md**: Test strategy (1,931 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)

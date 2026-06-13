@@ -19,6 +19,7 @@ from tnfr.physics.structural_diffusion import (
     StructuralDiffusionCertificate,
     OverdampedRegimeCertificate,
     DiscreteModeCertificate,
+    StructuralStabilityCertificate,
     structural_diffusion_operator,
     structural_field,
     structural_diffusivity,
@@ -26,9 +27,13 @@ from tnfr.physics.structural_diffusion import (
     degree_weighted_total,
     structural_eigenmodes,
     nodal_domain_count,
+    dispersion_relation,
+    instability_threshold,
+    fiedler_partition,
     verify_structural_diffusion,
     verify_overdamped_regime,
     verify_discrete_modes,
+    verify_structural_stability,
 )
 
 
@@ -285,4 +290,71 @@ class TestDiscreteModes:
             cert = verify_discrete_modes(G)
             assert isinstance(cert, DiscreteModeCertificate)
             assert cert.is_valid_discrete_modes
+            assert "VALID" in cert.summary()
+
+
+class TestStructuralStability:
+    """The dispersion relation governs structural linear stability."""
+
+    @staticmethod
+    def _graph(builder):
+        G = builder()
+        for nd in G.nodes():
+            G.nodes[nd]["nu_f"] = 1.0
+        return G
+
+    def test_dispersion_at_zero_is_negative_relaxation(self) -> None:
+        G = self._graph(lambda: nx.watts_strogatz_graph(50, 6, 0.2, seed=7))
+        sigma0 = dispersion_relation(G, 0.0)
+        rates = relaxation_spectrum(G)
+        assert np.allclose(np.sort(-sigma0), np.sort(rates), atol=1e-7)
+
+    def test_pure_diffusion_decays_nonuniform_modes(self) -> None:
+        # at r=0 every non-uniform mode decays (sigma_k < 0 for k >= 1)
+        G = self._graph(lambda: nx.cycle_graph(40))
+        sigma0 = dispersion_relation(G, 0.0)
+        assert np.all(sigma0[1:] < 1e-9)
+
+    def test_instability_threshold_is_nu_times_lambda2(self) -> None:
+        import pytest
+
+        G = self._graph(lambda: nx.watts_strogatz_graph(50, 6, 0.2, seed=7))
+        eigvals, _ = structural_eigenmodes(G)
+        nu = structural_diffusivity(G)
+        assert instability_threshold(G) == pytest.approx(
+            float(nu * eigvals[1])
+        )
+
+    def test_below_threshold_only_uniform_grows(self) -> None:
+        G = self._graph(lambda: nx.cycle_graph(40))
+        rc = instability_threshold(G)
+        sigma = dispersion_relation(G, 0.5 * rc)
+        # no non-uniform mode unstable below threshold
+        assert np.all(sigma[1:] < 1e-9)
+
+    def test_above_threshold_fiedler_grows(self) -> None:
+        G = self._graph(lambda: nx.cycle_graph(40))
+        rc = instability_threshold(G)
+        sigma = dispersion_relation(G, rc + 0.01)
+        # the Fiedler mode (k=1) is now unstable
+        assert sigma[1] > 0.0
+
+    def test_fiedler_partition_splits_barbell_evenly(self) -> None:
+        # the two communities of a barbell are the weakest cut
+        G = self._graph(lambda: nx.barbell_graph(20, 0))
+        part_a, part_b = fiedler_partition(G)
+        assert {len(part_a), len(part_b)} == {20}
+
+    def test_certificate_valid_across_topologies(self) -> None:
+        for builder in (
+            lambda: nx.cycle_graph(40),
+            lambda: nx.barbell_graph(20, 0),
+            lambda: nx.watts_strogatz_graph(60, 6, 0.2, seed=7),
+        ):
+            G = self._graph(builder)
+            cert = verify_structural_stability(G)
+            assert isinstance(cert, StructuralStabilityCertificate)
+            assert cert.is_valid_stability
+            assert cert.first_unstable_mode == 1  # Fiedler
+            assert cert.pure_diffusion_stable
             assert "VALID" in cert.summary()

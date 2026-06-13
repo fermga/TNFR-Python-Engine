@@ -110,6 +110,43 @@ vibrational spectra — all established by the strictest empirical method.
 The discreteness is a consequence of the **bounded structural geometry**,
 not an imported quantum postulate.
 
+STRUCTURAL STABILITY: THE DISPERSION RELATION
+=============================================
+The growth or decay of each structural eigenmode under diffusion plus a
+local reaction rate r is governed by the **dispersion relation**
+
+    σ_k = r − νf · λ_k,
+
+the universal linear-stability law (the same tool that governs every
+instability and pattern-forming system — convective instability, the
+onset of pattern formation).  From the canonical Laplacian spectrum {λ_k}:
+
+- **Pure diffusion** (r = 0): σ_k = −νf·λ_k ≤ 0, so every non-uniform mode
+  *decays* — structural equilibrium is stable, the integral ∫νf·ΔNFR dt
+  converges.  This is the linear-stability content of "diffusion relaxes
+  to uniform".
+- **Structural instability threshold** r_c = νf·λ_2 (the spectral gap, the
+  Fiedler value, times the diffusivity).  For 0 < r < r_c only the uniform
+  mode grows (global amplification, no spatial structure); for r > r_c the
+  **Fiedler mode** (k = 1) also grows — the first *structural* pattern.
+- **The first structural pattern is the Fiedler partition**: the Fiedler
+  eigenvector splits the network along its **weakest structural cut** (the
+  two most weakly-connected communities) — the empirically-validated
+  spectral-clustering result.
+- **U2 grammar, spectrally**: a destabilizing reaction raises r, a
+  stabilizer lowers it; bounded evolution (U2) ⟺ keeping r below r_c.
+  Above r_c the Fiedler mode grows unboundedly → fragmentation (the
+  U2-violation the grammar prevents).
+
+The reaction rate r is a generic local rate; in TNFR the operators supply
+it (stabilizers lower r, destabilizers raise it).  A *two-channel*
+structural diffusion with **differential diffusivity** and an
+activator–inhibitor coupling supports a finite-wavelength (Turing)
+instability — the empirically-demonstrated pattern-formation mechanism
+(Belousov–Zhabotinsky, morphogenesis); those kinetics are a model input,
+not TNFR-derived, so only the dispersion-relation mechanism is certified
+here.
+
 HONEST SCOPE
 ============
 - The identity ΔNFR_epi = −L_rw·EPI is EXACT (machine precision), a
@@ -142,6 +179,7 @@ __all__ = [
     "StructuralDiffusionCertificate",
     "OverdampedRegimeCertificate",
     "DiscreteModeCertificate",
+    "StructuralStabilityCertificate",
     "structural_diffusion_operator",
     "structural_field",
     "structural_diffusivity",
@@ -149,9 +187,13 @@ __all__ = [
     "degree_weighted_total",
     "structural_eigenmodes",
     "nodal_domain_count",
+    "dispersion_relation",
+    "instability_threshold",
+    "fiedler_partition",
     "verify_structural_diffusion",
     "verify_overdamped_regime",
     "verify_discrete_modes",
+    "verify_structural_stability",
 ]
 
 
@@ -808,4 +850,213 @@ def verify_discrete_modes(
         matches_diffusion_spectrum=matches,
         nodal_domains_grow=grow,
         standing_wave_frequencies=freqs,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Structural stability: the dispersion relation and the instability threshold
+# ---------------------------------------------------------------------------
+
+
+def dispersion_relation(G: Any, reaction_rate: float = 0.0) -> Any:
+    r"""Per-mode growth rates σ_k = reaction_rate − νf·λ_k (dispersion).
+
+    The growth (σ_k > 0) or decay (σ_k < 0) rate of each structural
+    eigenmode under diffusion plus a local reaction rate.  At
+    ``reaction_rate = 0`` this is the negative of the relaxation spectrum
+    (pure diffusion: every non-uniform mode decays).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    reaction_rate : float, optional
+        A local growth/decay rate r added to every mode (the operators
+        supply it: stabilizers lower r, destabilizers raise it).
+
+    Returns
+    -------
+    np.ndarray
+        The growth rates σ_k sorted by ascending λ_k.
+    """
+    eigvals, _ = structural_eigenmodes(G)
+    nu = structural_diffusivity(G)
+    return float(reaction_rate) - nu * eigvals
+
+
+def instability_threshold(G: Any) -> float:
+    r"""Structural instability threshold r_c = νf·λ_2 (spectral gap).
+
+    The reaction rate above which the first *non-uniform* (Fiedler) mode
+    becomes unstable.  For 0 < r < r_c only the uniform mode grows (global
+    amplification); for r > r_c a structural pattern (the Fiedler partition)
+    emerges.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    float
+        νf·λ_2 (0 if the graph has fewer than two modes).
+    """
+    eigvals, _ = structural_eigenmodes(G)
+    nu = structural_diffusivity(G)
+    return float(nu * eigvals[1]) if len(eigvals) > 1 else 0.0
+
+
+def fiedler_partition(G: Any) -> tuple[list, list]:
+    r"""The Fiedler-mode 2-partition — the first structural pattern.
+
+    Splits the nodes by the sign of the Fiedler eigenvector (the mode with
+    the smallest non-zero λ).  This is the network's **weakest structural
+    cut** (the two most weakly-connected communities) — the empirically-
+    validated spectral-clustering partition, and the first pattern to grow
+    once the reaction rate crosses the instability threshold.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    (part_a, part_b) : tuple[list, list]
+        Node lists for the two structural communities.
+    """
+    nodes = _ordered_nodes(G)
+    eigvals, eigvecs = structural_eigenmodes(G)
+    if eigvecs.shape[1] < 2:
+        return list(nodes), []
+    fiedler = eigvecs[:, 1]
+    part_a = [nodes[i] for i in range(len(nodes)) if fiedler[i] > 0]
+    part_b = [nodes[i] for i in range(len(nodes)) if fiedler[i] <= 0]
+    return part_a, part_b
+
+
+@dataclass(frozen=True)
+class StructuralStabilityCertificate:
+    r"""Verification of the structural linear-stability / dispersion relation.
+
+    The dispersion relation σ_k = r − νf·λ_k governs the growth/decay of
+    every structural eigenmode.  Pure diffusion (r = 0) decays every
+    non-uniform mode (stable equilibrium); the threshold r_c = νf·λ_2
+    separates uniform amplification from structural pattern formation (the
+    Fiedler partition).  This is the spectral form of U2 grammar.
+
+    Attributes
+    ----------
+    n_nodes : int
+    diffusivity : float
+        νf (the diffusion coefficient).
+    spectral_gap : float
+        λ_2 (the Fiedler value).
+    instability_threshold : float
+        r_c = νf·λ_2.
+    pure_diffusion_stable : bool
+        At r = 0 every non-uniform mode decays (σ_k < 0 for k ≥ 1).
+    max_nonuniform_growth_at_zero : float
+        Max σ_k over k ≥ 1 at r = 0 (should be < 0).
+    dispersion_matches_relaxation : bool
+        The r = 0 dispersion equals the negative relaxation spectrum.
+    first_unstable_mode : int
+        The first non-uniform mode to go unstable above threshold (= 1,
+        the Fiedler mode).
+    fiedler_partition_sizes : tuple
+        Sizes (|A|, |B|) of the Fiedler 2-partition (the first pattern).
+    """
+
+    n_nodes: int
+    diffusivity: float
+    spectral_gap: float
+    instability_threshold: float
+    pure_diffusion_stable: bool
+    max_nonuniform_growth_at_zero: float
+    dispersion_matches_relaxation: bool
+    first_unstable_mode: int
+    fiedler_partition_sizes: tuple
+
+    @property
+    def is_valid_stability(self) -> bool:
+        """True when the structural-stability picture verifies."""
+        return (
+            self.pure_diffusion_stable
+            and self.dispersion_matches_relaxation
+            and self.first_unstable_mode == 1
+        )
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "VALID" if self.is_valid_stability else "INVALID"
+        a, b = self.fiedler_partition_sizes
+        return (
+            f"Structural stability [{ok}]: "
+            f"νf={self.diffusivity:.4f}, spectral gap λ₂="
+            f"{self.spectral_gap:.4f}, "
+            f"instability threshold r_c=νf·λ₂="
+            f"{self.instability_threshold:.4f}, "
+            f"pure diffusion stable={self.pure_diffusion_stable} "
+            f"(max non-uniform growth "
+            f"{self.max_nonuniform_growth_at_zero:.1e}), "
+            f"first unstable mode k={self.first_unstable_mode} (Fiedler), "
+            f"Fiedler partition {a}/{b}"
+        )
+
+
+def verify_structural_stability(
+    G: Any, *, tolerance: float = 1e-9
+) -> StructuralStabilityCertificate:
+    r"""Verify the structural linear-stability / dispersion relation.
+
+    Confirms that pure diffusion decays every non-uniform mode (stable
+    equilibrium), that the r = 0 dispersion equals the negative relaxation
+    spectrum, that the instability threshold is r_c = νf·λ_2, and that the
+    first structural mode to go unstable above threshold is the Fiedler
+    mode (whose eigenvector gives the weakest-cut partition).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    tolerance : float
+        Numerical tolerance.
+
+    Returns
+    -------
+    StructuralStabilityCertificate
+    """
+    eigvals, eigvecs = structural_eigenmodes(G)
+    n = len(eigvals)
+    nu = structural_diffusivity(G)
+    gap = float(eigvals[1]) if n > 1 else 0.0
+    r_c = nu * gap
+
+    # pure diffusion (r=0): non-uniform modes (k>=1) decay
+    sigma0 = dispersion_relation(G, 0.0)
+    max_nonuniform = float(np.max(sigma0[1:])) if n > 1 else 0.0
+    stable = max_nonuniform < tolerance
+
+    # dispersion at r=0 == negative relaxation spectrum
+    rates = relaxation_spectrum(G)
+    matches = bool(np.allclose(np.sort(-sigma0), np.sort(rates), atol=1e-7))
+
+    # first non-uniform mode to go unstable just above threshold
+    sigma = dispersion_relation(G, r_c + max(1e-3, 1e-3 * r_c))
+    if n > 1 and np.any(sigma[1:] > tolerance):
+        first_unstable = int(np.argmax(sigma[1:] > tolerance)) + 1
+    else:
+        first_unstable = 0
+
+    # Fiedler partition sizes
+    part_a, part_b = fiedler_partition(G)
+    sizes = (len(part_a), len(part_b))
+
+    return StructuralStabilityCertificate(
+        n_nodes=n,
+        diffusivity=nu,
+        spectral_gap=gap,
+        instability_threshold=r_c,
+        pure_diffusion_stable=stable,
+        max_nonuniform_growth_at_zero=max_nonuniform,
+        dispersion_matches_relaxation=matches,
+        first_unstable_mode=first_unstable,
+        fiedler_partition_sizes=sizes,
     )

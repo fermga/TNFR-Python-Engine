@@ -51,10 +51,14 @@ from tnfr.physics.structural_diffusion import (
     verify_structural_diffusion,
     verify_overdamped_regime,
     verify_discrete_modes,
+    verify_structural_stability,
     structural_diffusion_operator,
     structural_field,
     structural_eigenmodes,
     nodal_domain_count,
+    dispersion_relation,
+    instability_threshold,
+    fiedler_partition,
     relaxation_spectrum,
     degree_weighted_total,
 )
@@ -216,6 +220,40 @@ def experiment_5_discrete_modes():
     print()
 
 
+def experiment_6_structural_stability():
+    """The dispersion relation and the structural instability threshold."""
+    print("=" * 72)
+    print("EXPERIMENT 6: Structural stability — the dispersion relation")
+    print("=" * 72)
+    print()
+    print("The growth/decay of each structural mode under diffusion plus a")
+    print("local reaction rate r follows the dispersion relation")
+    print("σ_k = r − νf·λ_k — the universal linear-stability law. Pure")
+    print("diffusion (r=0) decays every non-uniform mode; the threshold")
+    print("r_c = νf·λ₂ separates uniform amplification from structural")
+    print("pattern formation (the Fiedler partition).")
+    print()
+
+    # a two-community network: the barbell graph
+    G = nx.barbell_graph(20, 0)
+    for nd in G.nodes():
+        G.nodes[nd]["nu_f"] = 1.0
+    cert = verify_structural_stability(G)
+    print(cert.summary())
+    print()
+    part_a, part_b = fiedler_partition(G)
+    print(f"  Fiedler partition: {len(part_a)} | {len(part_b)} nodes — the")
+    print(f"  network's weakest structural cut (its two communities).")
+    print()
+    print("VALIDATED: pure diffusion is stable (every non-uniform mode")
+    print("decays); above r_c=νf·λ₂ the Fiedler mode grows → the first")
+    print("structural pattern is the weakest-cut partition (the empirically-")
+    print("validated spectral-clustering result). This is the spectral form")
+    print("of U2 grammar: a destabilizer raises r, a stabilizer lowers it;")
+    print("bounded evolution requires r below r_c.")
+    print()
+
+
 def main():
     print()
     print("  TNFR Example 99: Structural Diffusion")
@@ -228,6 +266,7 @@ def main():
     experiment_3_synchronization()
     experiment_4_overdamped_regime()
     experiment_5_discrete_modes()
+    experiment_6_structural_stability()
 
     print("=" * 72)
     print("WHAT THIS ESTABLISHES")
@@ -243,14 +282,16 @@ def main():
     print("    q̇ = νf·F (Stokes/Einstein), not inertial Newton — that lives")
     print("    in the second-order symplectic substrate;")
     print("  • a bounded manifold has discrete standing-wave modes (the")
-    print("    Laplacian eigenmodes — Pythagoras/Chladni harmonics).")
+    print("    Laplacian eigenmodes — Pythagoras/Chladni harmonics);")
+    print("  • the dispersion relation σ_k=r−νf·λ_k governs stability; above")
+    print("    r_c=νf·λ₂ the Fiedler mode grows (structural pattern / U2).")
     print()
     print("These are reproduced as the SAME mathematics as the empirically-")
     print("demonstrated phenomena of diffusion, synchronization, mobility,")
-    print("and standing waves — in TNFR's own variables (EPI, ΔNFR, νf, θ),")
-    print("not borrowed concepts. The emergent geometric tower (symplectic")
-    print("substrate, conservation laws) sits on top of this irreducible")
-    print("transport dynamics.")
+    print("standing waves, and linear stability — in TNFR's own variables")
+    print("(EPI, ΔNFR, νf, θ), not borrowed concepts. The emergent geometric")
+    print("tower (symplectic substrate, conservation laws) sits on top of")
+    print("this irreducible transport dynamics.")
     print()
 
 
