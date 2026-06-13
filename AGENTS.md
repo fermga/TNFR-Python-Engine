@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,812 tests across multiple topologies
+- Experimental Validation: 1,829 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -385,6 +385,27 @@ The tetrad admits a complete Lagrangian/Hamiltonian formulation (see [theory/TNF
 - **Lyapunov stability**: E = ½Σ_i ε(i) ≥ 0 with dE/dt ≤ 0 observed under grammar-compliant evolution (proof sketch)
 
 The existence of a well-posed variational structure with canonical conjugate pairs confirms that the four tetrad fields are the natural phase-space coordinates for coherent systems.
+
+### Emergent Symplectic Substrate (CANONICAL)
+
+The variational structure is not merely a confirmation — it **is the geometry the nodal dynamics generates from itself**. TNFR computes its fields on a graph (an imposed combinatorial substrate), but the conservation laws reveal that the dynamics carries its own intrinsic geometry: a **symplectic phase space** on which the nodal equation, conservation laws, and 13 operators all live as canonical structures.
+
+**The emergent phase space** P = ℝ^{4N} has two canonical conjugate pairs per node:
+
+- Geometric sector: (q^A, p^A) = (K_φ, J_φ) — curvature ↔ phase current
+- Potential sector: (q^B, p^B) = (Φ_s, J_ΔNFR) — potential ↔ ΔNFR flux
+
+**Symplectic 2-form**: ω = Σ_i [dK_φ(i) ∧ dJ_φ(i) + dΦ_s(i) ∧ dJ_ΔNFR(i)], with per-node block J₄ that is antisymmetric (J₄ᵀ = −J₄), non-degenerate (det J₄ = 1), and closed (dω = 0, constant coefficients). All exact.
+
+**Canonical Poisson brackets**: {K_φ, J_φ} = {Φ_s, J_ΔNFR} = 1, all cross/self brackets = 0; the Jacobi identity holds, so (P, {·,·}) is a Poisson manifold.
+
+**The Hamiltonian is the energy functional**: H_sub = ½Σ(K_φ² + J_φ² + Φ_s² + J_ΔNFR²) plus the configuration background ½Σ|∇φ|² equals `compute_energy_functional` exactly. The Hamiltonian flow X_H = J∇H reproduces the harmonic canonical dynamics q̇ = p, ṗ = −q per sector.
+
+**Liouville is structural**: div(X_H) = tr(J·Hess H) = 0 for *any* Hamiltonian (J antisymmetric, Hessian symmetric). This is the geometric origin of why the 13 operators are **symplectomorphisms** (phase-space-volume-preserving).
+
+**The nodal equation lives here**: ∂EPI/∂t = νf·ΔNFR(t) is the overdamped projection of the Hamiltonian flow on this substrate (with ΔNFR = −∂V/∂EPI). The substrate is the geometric arena the nodal equation already inhabits — emergent, not imposed.
+
+**Implementation**: [src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py) (delegates all field computation to canonical sources; no formula duplication). Verified by 17 tests in [tests/physics/test_symplectic_substrate.py](tests/physics/test_symplectic_substrate.py); demonstrated in [examples/98_emergent_symplectic_substrate.py](examples/98_emergent_symplectic_substrate.py). **Scope**: a canonical consolidation of the geometry implied by [src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py) and [src/tnfr/physics/variational.py](src/tnfr/physics/variational.py); it does not, by itself, resolve any open program (Riemann G4, Navier–Stokes).
 
 ### Structural Parallels (Analogies)
 
@@ -775,7 +796,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,812 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,829 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1508,7 +1529,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,812 tests)
+- **TESTING.md**: Test strategy (1,829 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
