@@ -63,6 +63,7 @@ Two clearly-separated layers:
 | TNFR–Yang–Mills (Y1–Y5) | finite U(1) structural diagnostics | non-Abelian mass gap — **open** (Branch B) |
 | TNFR–P vs NP (PNP-1) | coherence verification O(\|E\|) vs synthesis trapping | worst-case separation — **open** (Branch B) |
 | TNFR–BSD (BSD-1) | rank separation via structural-pressure accumulation | rank ↔ order of vanishing — **open** (Branch B) |
+| TNFR–Hodge (HC-1) | discrete Hodge = homology exactly (Eckmann) | (p,p) bigrading + algebraicity — **structurally blind** (Branch B3-leaning) |
 
 See [AGENTS.md](AGENTS.md) and the `theory/` research notes for the full, audited status.
 
@@ -184,6 +185,7 @@ benchmarks/            # 50 performance & structural-validation scripts
 | [theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md](theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md) | TNFR–Yang–Mills structural gap programme (Y1–Y5; Branch B classified) |
 | [theory/TNFR_P_VS_NP_RESEARCH_NOTES.md](theory/TNFR_P_VS_NP_RESEARCH_NOTES.md) | TNFR–P vs NP synthesis-vs-verification programme (PNP-1; Branch B, not a proof) |
 | [theory/TNFR_BSD_RESEARCH_NOTES.md](theory/TNFR_BSD_RESEARCH_NOTES.md) | TNFR–Birch–Swinnerton-Dyer structural-pressure programme (BSD-1; Branch B, not a proof) |
+| [theory/TNFR_HODGE_RESEARCH_NOTES.md](theory/TNFR_HODGE_RESEARCH_NOTES.md) | TNFR–Hodge discrete cochain programme (HC-1; Branch B3-leaning strong negative, not a proof) |
 | [theory/GLOSSARY.md](theory/GLOSSARY.md) | Terminology and definitions |
 | [examples/](examples/) | Sequential tutorials |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System design |
