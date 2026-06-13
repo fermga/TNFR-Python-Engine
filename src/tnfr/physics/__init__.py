@@ -265,6 +265,15 @@ from .symplectic_substrate import (
     verify_hidden_u2_symmetry,
     verify_substrate_geometry,
 )
+from .structural_diffusion import (
+    StructuralDiffusionCertificate,
+    structural_diffusion_operator,
+    structural_field,
+    structural_diffusivity,
+    relaxation_spectrum,
+    degree_weighted_total,
+    verify_structural_diffusion,
+)
 from .gauge import (
     GaugeSnapshot,
     GaugeInvarianceResult,
@@ -509,6 +518,14 @@ __all__ = [
     "isospin_density",
     "verify_hidden_u2_symmetry",
     "verify_substrate_geometry",
+    # --- Structural Diffusion (transport content of the nodal equation) ---
+    "StructuralDiffusionCertificate",
+    "structural_diffusion_operator",
+    "structural_field",
+    "structural_diffusivity",
+    "relaxation_spectrum",
+    "degree_weighted_total",
+    "verify_structural_diffusion",
     # --- Gauge Structure (U(1) Symmetry of Ψ = K_φ + i·J_φ) ---
     "GaugeSnapshot",
     "GaugeInvarianceResult",
