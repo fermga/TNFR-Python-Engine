@@ -129,12 +129,17 @@ from .extended import (
 
 __all__ = [
     "BLOCK_SYMPLECTIC_FORM",
+    "BLOCK_COMPLEX_STRUCTURE",
+    "BLOCK_COMPATIBLE_METRIC",
     "CONJUGATE_PAIR_LABELS",
     "PhaseSpacePoint",
     "CanonicalStructureCertificate",
     "NoetherChargeCertificate",
+    "HermitianStructureCertificate",
     "extract_phase_space_point",
     "symplectic_form_matrix",
+    "complex_structure_matrix",
+    "compatible_metric_matrix",
     "substrate_hamiltonian",
     "background_potential",
     "hamiltonian_vector_field",
@@ -147,6 +152,9 @@ __all__ = [
     "potential_sector_energy",
     "noether_charges",
     "verify_noether_conservation",
+    "to_complex_coordinates",
+    "kahler_potential",
+    "verify_hermitian_structure",
 ]
 
 
@@ -161,6 +169,15 @@ BLOCK_SYMPLECTIC_FORM = np.array(
     ],
     dtype=float,
 )
+
+# Compatible complex structure J = −ω (per node).  J² = −I, and J acts as
+# multiplication by i on the complex coordinate ζ = q + i·p: J(q,p) = (−p, q).
+# This is the "i" of the complex geometric field Ψ = K_φ + i·J_φ.
+BLOCK_COMPLEX_STRUCTURE = -BLOCK_SYMPLECTIC_FORM
+
+# Compatible Riemannian metric g(u,v) = ω(u, J v) = identity (per node).
+# (ω, J, g) form a compatible triple → a flat Hermitian (Kähler) structure.
+BLOCK_COMPATIBLE_METRIC = BLOCK_SYMPLECTIC_FORM @ BLOCK_COMPLEX_STRUCTURE
 
 # Conjugate pair labels (position, momentum) per sector.
 CONJUGATE_PAIR_LABELS = (
@@ -351,6 +368,84 @@ class NoetherChargeCertificate:
             f"{self.max_hamiltonian_drift:.1e}/"
             f"{self.max_geometric_drift:.1e}/"
             f"{self.max_potential_drift:.1e}"
+        )
+
+
+@dataclass(frozen=True)
+class HermitianStructureCertificate:
+    r"""Verification of the compatible Hermitian (flat Kähler) structure.
+
+    The emergent phase space carries a compatible triple (ω, J, g):
+
+    - **ω** — the symplectic form (:data:`BLOCK_SYMPLECTIC_FORM`).
+    - **J** — the complex structure J = −ω (:data:`BLOCK_COMPLEX_STRUCTURE`),
+      with J² = −I; J acts as multiplication by i on ζ = q + i·p.
+    - **g** — the compatible metric g(u,v) = ω(u, J v) = identity
+      (:data:`BLOCK_COMPATIBLE_METRIC`), symmetric positive-definite.
+
+    These satisfy the compatibility ω(u, v) = g(J u, v), making each fiber
+    ℝ⁴ ≅ ℂ² a Hermitian vector space.  The complex coordinates are
+
+        ζ^A = K_φ + i·J_φ = Ψ   (geometric sector, the gauge field of
+                                  :mod:`tnfr.physics.gauge`),
+        ζ^B = Φ_s + i·J_ΔNFR    (potential sector),
+
+    so the substrate Hamiltonian is the **Kähler potential**
+    H_sub = ½Σ(|ζ^A|² + |ζ^B|²), and the Hamiltonian flow is the diagonal
+    U(1) phase rotation ζ → e^{−it}ζ.  The structure is **flat**
+    (constant-coefficient): a linear Kähler / Hermitian vector space, not a
+    curved Kähler manifold.
+
+    Attributes
+    ----------
+    n_nodes : int
+    complex_dimension : int
+        Complex dimension 2N (two complex coordinates per node).
+    j_squared_is_minus_id : bool
+        J² = −I (J is an almost-complex structure).
+    metric_is_identity : bool
+        g = ω·J equals the identity (positive-definite).
+    j_is_orthogonal : bool
+        Jᵀ g J = g (J preserves the metric).
+    compatible : bool
+        ω(u,v) = g(Ju,v) (the (ω, J, g) compatibility).
+    psi_is_geometric_coordinate : bool
+        ζ^A = K_φ + i·J_φ equals Ψ from the canonical complex field.
+    kahler_potential_matches : bool
+        H_sub = ½Σ|ζ|² (the substrate Hamiltonian is the Kähler potential).
+    """
+
+    n_nodes: int
+    complex_dimension: int
+    j_squared_is_minus_id: bool
+    metric_is_identity: bool
+    j_is_orthogonal: bool
+    compatible: bool
+    psi_is_geometric_coordinate: bool
+    kahler_potential_matches: bool
+
+    @property
+    def is_valid_hermitian_structure(self) -> bool:
+        """True when all compatibility conditions hold."""
+        return (
+            self.j_squared_is_minus_id
+            and self.metric_is_identity
+            and self.j_is_orthogonal
+            and self.compatible
+            and self.kahler_potential_matches
+        )
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "VALID" if self.is_valid_hermitian_structure else "INVALID"
+        return (
+            f"Hermitian (flat Kähler) structure [{ok}]: "
+            f"dim_C={self.complex_dimension}, J²=−I="
+            f"{self.j_squared_is_minus_id}, g=I={self.metric_is_identity}, "
+            f"J-orthogonal={self.j_is_orthogonal}, "
+            f"compatible={self.compatible}, "
+            f"Ψ=ζ^A={self.psi_is_geometric_coordinate}, "
+            f"Kähler_potential={self.kahler_potential_matches}"
         )
 
 
@@ -786,4 +881,170 @@ def verify_noether_conservation(
         max_potential_drift=pot_drift,
         is_conserved=is_conserved,
         splits_exactly=splits_exactly,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Compatible Hermitian (flat Kähler) structure: ω, J, g and Ψ as ζ-coordinate
+# ---------------------------------------------------------------------------
+
+
+def complex_structure_matrix(n_nodes: int) -> Any:
+    r"""Return the complex structure J = −ω as a 4N×4N block matrix.
+
+    Block-diagonal with ``n_nodes`` copies of :data:`BLOCK_COMPLEX_STRUCTURE`.
+    Satisfies J² = −I and acts as multiplication by i on ζ = q + i·p.
+
+    Parameters
+    ----------
+    n_nodes : int
+
+    Returns
+    -------
+    np.ndarray
+    """
+    if n_nodes < 1:
+        raise ValueError("n_nodes must be >= 1")
+    dim = 4 * n_nodes
+    out = np.zeros((dim, dim), dtype=float)
+    for i in range(n_nodes):
+        s = 4 * i
+        out[s:s + 4, s:s + 4] = BLOCK_COMPLEX_STRUCTURE
+    return out
+
+
+def compatible_metric_matrix(n_nodes: int) -> Any:
+    r"""Return the compatible metric g = ω·J (= identity) as a 4N×4N matrix.
+
+    Block-diagonal with ``n_nodes`` copies of :data:`BLOCK_COMPATIBLE_METRIC`,
+    which equals the identity.  g is the Riemannian metric of the compatible
+    triple (ω, J, g).
+
+    Parameters
+    ----------
+    n_nodes : int
+
+    Returns
+    -------
+    np.ndarray
+    """
+    if n_nodes < 1:
+        raise ValueError("n_nodes must be >= 1")
+    dim = 4 * n_nodes
+    out = np.zeros((dim, dim), dtype=float)
+    for i in range(n_nodes):
+        s = 4 * i
+        out[s:s + 4, s:s + 4] = BLOCK_COMPATIBLE_METRIC
+    return out
+
+
+def to_complex_coordinates(point: PhaseSpacePoint) -> dict[str, Any]:
+    r"""Return the complex coordinates ζ of the Hermitian phase space.
+
+    Each conjugate pair (q, p) becomes a complex coordinate ζ = q + i·p:
+
+        ζ^A = K_φ + i·J_φ = Ψ   (geometric sector — the canonical complex
+                                  field of :mod:`tnfr.physics.gauge`),
+        ζ^B = Φ_s + i·J_ΔNFR     (potential sector).
+
+    So the gauge field Ψ is *not* an ad-hoc construction: it is the complex
+    coordinate the substrate's complex structure J induces on the geometric
+    sector.
+
+    Parameters
+    ----------
+    point : PhaseSpacePoint
+
+    Returns
+    -------
+    dict[str, np.ndarray]
+        ``"geometric"`` → ζ^A = Ψ, ``"potential"`` → ζ^B (complex arrays).
+    """
+    k_phi = np.asarray(point.k_phi, dtype=float)
+    j_phi = np.asarray(point.j_phi, dtype=float)
+    phi_s = np.asarray(point.phi_s, dtype=float)
+    j_dnfr = np.asarray(point.j_dnfr, dtype=float)
+    return {
+        "geometric": k_phi + 1j * j_phi,
+        "potential": phi_s + 1j * j_dnfr,
+    }
+
+
+def kahler_potential(point: PhaseSpacePoint) -> float:
+    r"""Kähler potential H = ½Σ(|ζ^A|² + |ζ^B|²) = H_sub.
+
+    The substrate Hamiltonian read as the Kähler potential of the Hermitian
+    structure.  Equals :func:`substrate_hamiltonian` exactly.
+
+    Parameters
+    ----------
+    point : PhaseSpacePoint
+
+    Returns
+    -------
+    float
+    """
+    z = to_complex_coordinates(point)
+    za = z["geometric"]
+    zb = z["potential"]
+    return 0.5 * float(
+        np.sum(np.abs(za) ** 2) + np.sum(np.abs(zb) ** 2)
+    )
+
+
+def verify_hermitian_structure(G: Any) -> HermitianStructureCertificate:
+    r"""Verify the compatible Hermitian (flat Kähler) structure on ``G``.
+
+    Checks the (ω, J, g) compatibility (J² = −I, g = identity,
+    J-orthogonality, ω(u,v) = g(Ju,v)), that Ψ is exactly the geometric
+    complex coordinate, and that H_sub is the Kähler potential.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    HermitianStructureCertificate
+    """
+    omega = BLOCK_SYMPLECTIC_FORM
+    j_cs = BLOCK_COMPLEX_STRUCTURE
+    g = BLOCK_COMPATIBLE_METRIC
+    eye4 = np.eye(4)
+
+    j_sq = bool(np.allclose(j_cs @ j_cs, -eye4))
+    metric_id = bool(np.allclose(g, eye4))
+    j_orth = bool(np.allclose(j_cs.T @ g @ j_cs, g))
+    compat = bool(np.allclose(omega, j_cs.T @ g))
+
+    # Ψ == ζ^A (geometric complex coordinate)?
+    psi_is_coord = True
+    try:
+        from .unified import compute_complex_geometric_field
+
+        point = extract_phase_space_point(G)
+        coords = to_complex_coordinates(point)
+        psi = compute_complex_geometric_field(G)
+        psi_arr = np.array(
+            [psi.get(n, 0.0) for n in point.nodes], dtype=complex
+        )
+        psi_is_coord = bool(np.allclose(coords["geometric"], psi_arr))
+    except Exception:
+        point = extract_phase_space_point(G)
+        psi_is_coord = False
+
+    # H_sub == Kähler potential?
+    kahler_matches = bool(
+        abs(kahler_potential(point) - substrate_hamiltonian(point)) < 1e-9
+    )
+
+    return HermitianStructureCertificate(
+        n_nodes=point.n_nodes,
+        complex_dimension=2 * point.n_nodes,
+        j_squared_is_minus_id=j_sq,
+        metric_is_identity=metric_id,
+        j_is_orthogonal=j_orth,
+        compatible=compat,
+        psi_is_geometric_coordinate=psi_is_coord,
+        kahler_potential_matches=kahler_matches,
     )

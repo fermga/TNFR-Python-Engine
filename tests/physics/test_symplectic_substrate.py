@@ -18,18 +18,25 @@ from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.physics.conservation import compute_energy_functional
 from tnfr.physics.symplectic_substrate import (
     BLOCK_SYMPLECTIC_FORM,
+    BLOCK_COMPLEX_STRUCTURE,
+    BLOCK_COMPATIBLE_METRIC,
     background_potential,
     canonical_bracket_table,
+    complex_structure_matrix,
+    compatible_metric_matrix,
     evolve_substrate_flow,
     extract_phase_space_point,
     geometric_sector_energy,
     hamiltonian_vector_field,
+    kahler_potential,
     liouville_divergence,
     noether_charges,
     potential_sector_energy,
     substrate_hamiltonian,
     symplectic_form_matrix,
+    to_complex_coordinates,
     verify_canonical_structure,
+    verify_hermitian_structure,
     verify_noether_conservation,
 )
 
@@ -241,6 +248,75 @@ class TestNoetherCharges:
         summary = cert.summary()
         assert "CONSERVED" in summary
         assert "H_sub" in summary
+
+
+class TestHermitianStructure:
+    """The substrate carries a compatible Hermitian (flat Kähler) structure."""
+
+    def test_complex_structure_squares_to_minus_id(self) -> None:
+        j = BLOCK_COMPLEX_STRUCTURE
+        assert np.allclose(j @ j, -np.eye(4))
+
+    def test_complex_structure_is_minus_symplectic_form(self) -> None:
+        assert np.allclose(BLOCK_COMPLEX_STRUCTURE, -BLOCK_SYMPLECTIC_FORM)
+
+    def test_compatible_metric_is_identity(self) -> None:
+        assert np.allclose(BLOCK_COMPATIBLE_METRIC, np.eye(4))
+
+    def test_metric_is_positive_definite(self) -> None:
+        eigvals = np.linalg.eigvalsh(BLOCK_COMPATIBLE_METRIC)
+        assert np.all(eigvals > 0)
+
+    def test_compatibility_omega_equals_jt_g(self) -> None:
+        # ω(u,v) = g(Ju,v)  ⟺  Ω = Jᵀ g.
+        j = BLOCK_COMPLEX_STRUCTURE
+        g = BLOCK_COMPATIBLE_METRIC
+        assert np.allclose(BLOCK_SYMPLECTIC_FORM, j.T @ g)
+
+    def test_j_is_metric_orthogonal(self) -> None:
+        j = BLOCK_COMPLEX_STRUCTURE
+        g = BLOCK_COMPATIBLE_METRIC
+        assert np.allclose(j.T @ g @ j, g)
+
+    def test_block_matrices_dimension(self) -> None:
+        assert complex_structure_matrix(5).shape == (20, 20)
+        assert compatible_metric_matrix(5).shape == (20, 20)
+
+    def test_complex_structure_acts_as_i(self) -> None:
+        # J(q,p) = (−p, q) for ζ = q + i·p (multiplication by i).
+        j = BLOCK_COMPLEX_STRUCTURE
+        assert np.allclose(j @ np.array([1.0, 0, 0, 0]), [0, 1, 0, 0])
+        assert np.allclose(j @ np.array([0, 1.0, 0, 0]), [-1, 0, 0, 0])
+
+    def test_psi_is_geometric_complex_coordinate(self) -> None:
+        from tnfr.physics.unified import compute_complex_geometric_field
+
+        G = _canonical_graph(20)
+        point = extract_phase_space_point(G)
+        coords = to_complex_coordinates(point)
+        psi = compute_complex_geometric_field(G)
+        psi_arr = np.array(
+            [psi[n] for n in point.nodes], dtype=complex
+        )
+        assert np.allclose(coords["geometric"], psi_arr)
+
+    def test_kahler_potential_equals_hamiltonian(self) -> None:
+        import pytest
+
+        G = _canonical_graph(25)
+        point = extract_phase_space_point(G)
+        assert kahler_potential(point) == pytest.approx(
+            substrate_hamiltonian(point), abs=1e-9
+        )
+
+    def test_certificate_valid(self) -> None:
+        G = _canonical_graph(30)
+        cert = verify_hermitian_structure(G)
+        assert cert.is_valid_hermitian_structure
+        assert cert.psi_is_geometric_coordinate
+        assert cert.kahler_potential_matches
+        assert cert.complex_dimension == 60
+        assert "VALID" in cert.summary()
 
 
 class TestSubstrateIntegration:

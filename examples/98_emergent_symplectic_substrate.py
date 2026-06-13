@@ -74,6 +74,7 @@ from tnfr.physics.symplectic_substrate import (
     symplectic_form_matrix,
     verify_noether_conservation,
     noether_charges,
+    verify_hermitian_structure,
 )
 
 
@@ -240,6 +241,46 @@ def experiment_4_noether_charges():
     print()
 
 
+# ============================================================================
+# EXPERIMENT 5: Hermitian (flat Kähler) structure — Ψ is the complex coordinate
+# ============================================================================
+def experiment_5_hermitian_structure():
+    """The substrate is Hermitian; Ψ = K_φ + i·J_φ is the complex coord."""
+    print("=" * 72)
+    print("EXPERIMENT 5: Hermitian (flat Kähler) Structure")
+    print("=" * 72)
+    print()
+    print("The substrate carries a compatible triple (ω, J, g):")
+    print("  ω = symplectic form,  J = −ω (complex structure, J² = −I),")
+    print("  g = ω·J = identity (compatible metric).")
+    print("The complex coordinate ζ = q + i·p makes each fiber ℝ⁴ ≅ ℂ².")
+    print()
+
+    G = _build_graph(30)
+    cert = verify_hermitian_structure(G)
+
+    print(f"  J² = −I                       : {cert.j_squared_is_minus_id}")
+    print(f"  g = identity (pos. definite)  : {cert.metric_is_identity}")
+    print(f"  J is g-orthogonal             : {cert.j_is_orthogonal}")
+    print(f"  compatible ω(u,v) = g(Ju,v)    : {cert.compatible}")
+    print(f"  Ψ = ζ^A (geometric coordinate) : "
+          f"{cert.psi_is_geometric_coordinate}")
+    print(f"  H_sub = Kähler potential       : "
+          f"{cert.kahler_potential_matches}")
+    print(f"  complex dimension dim_ℂ        : {cert.complex_dimension}")
+    print()
+    print(f"  VALID HERMITIAN STRUCTURE: "
+          f"{cert.is_valid_hermitian_structure}")
+    print()
+    print("VALIDATED: Ψ = K_φ + i·J_φ of physics/gauge.py is NOT ad-hoc — it")
+    print("is the complex coordinate ζ^A the substrate's complex structure J")
+    print("induces on the geometric sector. The 'i' in Ψ IS the J = −ω of")
+    print("the emergent geometry. H_sub = ½Σ|ζ|² is the Kähler potential, and")
+    print("the substrate flow is the diagonal U(1) phase rotation")
+    print("ζ → e^{−it}ζ.")
+    print()
+
+
 def main():
     print()
     print("  TNFR Example 98: The Emergent Symplectic Substrate")
@@ -251,6 +292,7 @@ def main():
     experiment_2_energy_consistency()
     experiment_3_liouville_structural()
     experiment_4_noether_charges()
+    experiment_5_hermitian_structure()
 
     print("=" * 72)
     print("WHAT THIS ESTABLISHES")
@@ -261,6 +303,7 @@ def main():
     print("  • the energy functional is the Hamiltonian (Experiment 2),")
     print("  • the 13 operators are symplectomorphisms (Liouville, Exp. 3),")
     print("  • symmetries generate conserved charges (Noether, Exp. 4),")
+    print("  • Ψ is the complex coordinate of a Hermitian structure (Exp. 5),")
     print("  • the nodal equation is the overdamped Hamiltonian flow.")
     print()
     print("This substrate is EMERGENT (derived from the conservation laws),")
