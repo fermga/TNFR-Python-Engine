@@ -553,6 +553,7 @@ Structural triad: $\mathrm{EPI}(30) \approx 3.43$, $\nu_f(30) \approx 0.95$, $C_
 | [95_primes_from_spectral_waves.py](../examples/95_primes_from_spectral_waves.py) | Prime staircase ψ(x) as spectral-wave superposition; spectral coherence ⟺ RH (honest scope) |
 | [96_spectral_vibration_of_coherence.py](../examples/96_spectral_vibration_of_coherence.py) | Oscillatory residue S(T) as prime-ladder vibration {k·log p}; why aggregate C(t) is blind (honest scope) |
 | [97_goldbach_additive_multiplicative.py](../examples/97_goldbach_additive_multiplicative.py) | Goldbach phase-matching: negative structural result; additive/multiplicative orthogonality; B2/B3 ontological note |
+| [100_prime_families_orbits.py](../examples/100_prime_families_orbits.py) | Special prime families (twin, cousin, sexy, Sophie Germain, safe, Cunningham, Mersenne, constellations) as orbits and level-sets of arithmetic maps on the zero-pressure fixed-point set $Z=\{\Delta\mathrm{NFR}=0\}$; three generator classes; detection exact, infinitude open (honest scope) |
 
 ### 12.3 Test Coverage
 
@@ -583,6 +584,7 @@ Structural triad: $\mathrm{EPI}(30) \approx 3.43$, $\nu_f(30) \approx 0.95$, $C_
 
 ### 13.3 Structural
 
+- **Special prime families** (PARTIALLY ADDRESSED — [100_prime_families_orbits.py](../examples/100_prime_families_orbits.py)): twin, cousin, sexy, Sophie Germain, safe, Cunningham, Mersenne, and constellation families are organized as **structured subsets of the zero-pressure fixed-point set** $Z=\{n\ge 2:\Delta\mathrm{NFR}(n)=0\}$ (the primes), carved out by three classes of arithmetic map: additive-gap level-sets ($S_g(p)=p+g$), affine-recurrence orbits ($T(p)=2p+1$: Sophie Germain, safe, Cunningham chains), and exponential-form images ($M(p)=2^p-1$: Mersenne). Detection/generation is exact via the verified $\Delta\mathrm{NFR}=0$ theorem; **infinitude conjectures** (twin-prime, Sophie Germain, Mersenne) remain OPEN — the same honest stance as Goldbach (§13.2). The witness pressure signatures (e.g. the twin witness $p+1$ divisible by 6) are faithful TNFR restatements of classical divisibility facts.
 - **Higher-order pressure**: Are there fourth or fifth pressure components (beyond $\Omega$, $\tau$, $\sigma$) that provide additional structural information?
 - **Algebraic number fields**: Extension of the arithmetic triad to Gaussian integers, Eisenstein integers, or general number fields.
 - **p-adic structure**: Connection between the arithmetic tetrad and p-adic analysis.
