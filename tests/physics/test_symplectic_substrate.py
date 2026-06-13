@@ -28,6 +28,7 @@ from tnfr.physics.symplectic_substrate import (
     extract_phase_space_point,
     geometric_sector_energy,
     hamiltonian_vector_field,
+    isospin_charges,
     kahler_potential,
     liouville_divergence,
     loop_action_integral,
@@ -41,6 +42,7 @@ from tnfr.physics.symplectic_substrate import (
     to_complex_coordinates,
     verify_canonical_structure,
     verify_hermitian_structure,
+    verify_hidden_u2_symmetry,
     verify_integrability,
     verify_noether_conservation,
     verify_poincare_cartan,
@@ -517,6 +519,59 @@ class TestMarsdenWeinstein:
         assert "VALID" in cert.summary()
 
 
+class TestHiddenU2Symmetry:
+    """The substrate carries a hidden U(2) symmetry with isospin charges."""
+
+    def test_isospin_charges_present(self) -> None:
+        G = _canonical_graph(24)
+        ch = isospin_charges(extract_phase_space_point(G))
+        assert set(ch) == {"i_1", "i_2", "i_3", "casimir"}
+
+    def test_i3_equals_sector_energy_difference(self) -> None:
+        import pytest
+
+        G = _canonical_graph(24)
+        point = extract_phase_space_point(G)
+        ch = isospin_charges(point)
+        e_diff = (
+            geometric_sector_energy(point) - potential_sector_energy(point)
+        )
+        assert ch["i_3"] == pytest.approx(e_diff)
+
+    def test_casimir_is_sum_of_squares(self) -> None:
+        import pytest
+
+        G = _canonical_graph(20)
+        ch = isospin_charges(extract_phase_space_point(G))
+        assert ch["casimir"] == pytest.approx(
+            ch["i_1"] ** 2 + ch["i_2"] ** 2 + ch["i_3"] ** 2
+        )
+
+    def test_su2_algebra_closes(self) -> None:
+        G = _canonical_graph(24)
+        cert = verify_hidden_u2_symmetry(G)
+        assert cert.su2_algebra_closes
+        assert cert.max_algebra_residual < 1e-6
+
+    def test_rotation_is_symplectic(self) -> None:
+        G = _canonical_graph(24)
+        cert = verify_hidden_u2_symmetry(G)
+        assert cert.rotation_is_symplectic
+
+    def test_charges_conserved_along_flow(self) -> None:
+        G = _canonical_graph(24)
+        cert = verify_hidden_u2_symmetry(G)
+        assert cert.charges_conserved
+        assert cert.max_charge_drift < 1e-6
+
+    def test_certificate_valid_u2(self) -> None:
+        G = _canonical_graph(30)
+        cert = verify_hidden_u2_symmetry(G)
+        assert cert.is_valid_u2_symmetry
+        assert cert.i3_equals_energy_difference
+        assert "VALID" in cert.summary()
+
+
 class TestSubstrateGeometryReport:
     """The consolidated aggregator runs the whole tower in one call."""
 
@@ -527,7 +582,7 @@ class TestSubstrateGeometryReport:
         assert report.n_nodes == 30
         assert report.phase_space_dimension == 120
 
-    def test_bundles_six_certificates(self) -> None:
+    def test_bundles_seven_certificates(self) -> None:
         G = _canonical_graph(20)
         report = verify_substrate_geometry(G)
         # Each sub-certificate is the same type the individual verify returns.
@@ -537,6 +592,7 @@ class TestSubstrateGeometryReport:
         assert report.integrability.is_completely_integrable
         assert report.poincare_cartan.all_invariants_hold
         assert report.marsden_weinstein.is_valid_reduction
+        assert report.hidden_u2.is_valid_u2_symmetry
 
     def test_sub_certificates_match_individual_calls(self) -> None:
         G = _canonical_graph(24)
@@ -549,13 +605,13 @@ class TestSubstrateGeometryReport:
         )
         assert report.marsden_weinstein.reduced_dimension == 4 * 24 - 2
 
-    def test_summary_lists_all_six(self) -> None:
+    def test_summary_lists_all_seven(self) -> None:
         G = _canonical_graph(20)
         report = verify_substrate_geometry(G)
         summary = report.summary()
         assert "ALL VALID" in summary
-        # Six numbered structures appear in the multi-line summary.
-        for k in range(1, 7):
+        # Seven numbered structures appear in the multi-line summary.
+        for k in range(1, 8):
             assert f"  {k}." in summary
 
 

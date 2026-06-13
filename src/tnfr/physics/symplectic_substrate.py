@@ -176,6 +176,7 @@ __all__ = [
     "IntegrabilityCertificate",
     "PoincareCartanCertificate",
     "MarsdenWeinsteinCertificate",
+    "HiddenU2Certificate",
     "SubstrateGeometryReport",
     "extract_phase_space_point",
     "symplectic_form_matrix",
@@ -204,6 +205,8 @@ __all__ = [
     "diagonal_moment_map",
     "reduced_symplectic_form_matrix",
     "verify_symplectic_reduction",
+    "isospin_charges",
+    "verify_hidden_u2_symmetry",
     "verify_substrate_geometry",
 ]
 
@@ -763,6 +766,105 @@ class MarsdenWeinsteinCertificate:
 
 
 @dataclass(frozen=True)
+class HiddenU2Certificate:
+    r"""Verification of the substrate's hidden U(2) symmetry.
+
+    Because the substrate Hamiltonian is the squared norm of a **complex
+    doublet** per node,
+
+        H_sub = ½ Σ_i ‖(ζ^A_i, ζ^B_i)‖²,
+        ζ^A = K_φ + i·J_φ (geometric),  ζ^B = Φ_s + i·J_ΔNFR (potential),
+
+    it is invariant not only under the U(1)×U(1) sector phases (the
+    :class:`NoetherChargeCertificate` charges) but under the **full U(2)**
+    acting on the (ζ^A, ζ^B) doublet — the TNFR analogue of the hidden
+    SU(n) symmetry of the n-dimensional isotropic harmonic oscillator.
+    U(2) = U(1) × SU(2): the U(1) centre is the substrate flow itself, and
+    the U(1)×U(1) Noether sectors are the **Cartan torus** of U(2).
+
+    The SU(2) part supplies three conserved **isospin charges** (the moment
+    map of the global diagonal SU(2) acting on the doublet):
+
+        I_3 = ½ Σ (|ζ^A|² − |ζ^B|²) = E_geo − E_pot,
+        I_1 = Σ Re(ζ̄^A ζ^B) = Σ (K_φ·Φ_s + J_φ·J_ΔNFR),
+        I_2 = Σ Im(ζ̄^A ζ^B) = Σ (K_φ·J_ΔNFR − J_φ·Φ_s).
+
+    I_3 is the (already-known) sector-energy difference, but **I_1 and I_2
+    are genuinely new conserved charges** — the cross-sector correlations
+    between the geometric and potential sectors.  They satisfy the su(2)
+    algebra under the canonical Poisson bracket, {I_a, I_b} = 2 ε_abc I_c
+    (so ½I_a are textbook-normalised generators), and are conserved along
+    the substrate flow (the diagonal U(1) ⊂ U(2) commutes with SU(2)).
+
+    HONEST SCOPE: this is a **hidden dynamical symmetry of the flat,
+    isotropic H_sub backbone** (like the Runge–Lenz / accidental
+    degeneracy symmetries of the oscillator), not a gauge symmetry of the
+    field content. The SU(2) rotation mixes the *physically distinct*
+    geometric and potential sectors; it is canonical (preserves ω and
+    H_sub) but is **not** one of the 13 operators. I_1, I_2, I_3 are exact
+    conserved charges along the substrate flow and diagnostics at the full
+    nonlinear operator level.
+
+    Attributes
+    ----------
+    n_nodes : int
+    i_1, i_2, i_3 : float
+        The three SU(2) isospin charges.
+    casimir : float
+        I_1² + I_2² + I_3² (the SU(2) Casimir of the global charges).
+    i3_equals_energy_difference : bool
+        I_3 = E_geo − E_pot to machine precision.
+    su2_algebra_closes : bool
+        {I_a, I_b} = 2 ε_abc I_c under the canonical Poisson bracket.
+    rotation_is_symplectic : bool
+        A finite SU(2) sector-mixing rotation preserves ω.
+    charges_conserved : bool
+        I_1, I_2, I_3 are conserved along the substrate flow.
+    max_charge_drift : float
+        Max drift of the isospin charges over the sampled flow.
+    max_algebra_residual : float
+        Max |{I_a, I_b} − 2 ε_abc I_c| over the three brackets.
+    """
+
+    n_nodes: int
+    i_1: float
+    i_2: float
+    i_3: float
+    casimir: float
+    i3_equals_energy_difference: bool
+    su2_algebra_closes: bool
+    rotation_is_symplectic: bool
+    charges_conserved: bool
+    max_charge_drift: float
+    max_algebra_residual: float
+
+    @property
+    def is_valid_u2_symmetry(self) -> bool:
+        """True when the hidden U(2) symmetry fully verifies."""
+        return (
+            self.i3_equals_energy_difference
+            and self.su2_algebra_closes
+            and self.rotation_is_symplectic
+            and self.charges_conserved
+        )
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "VALID" if self.is_valid_u2_symmetry else "INVALID"
+        return (
+            f"Hidden U(2) symmetry [{ok}]: "
+            f"isospin I=({self.i_1:.4f}, {self.i_2:.4f}, {self.i_3:.4f}), "
+            f"|I|²={self.casimir:.4f}, "
+            f"I₃=E_geo−E_pot={self.i3_equals_energy_difference}, "
+            f"su(2) closes={self.su2_algebra_closes} "
+            f"(res {self.max_algebra_residual:.1e}), "
+            f"SU(2) symplectic={self.rotation_is_symplectic}, "
+            f"conserved={self.charges_conserved} "
+            f"(drift {self.max_charge_drift:.1e})"
+        )
+
+
+@dataclass(frozen=True)
 class SubstrateGeometryReport:
     r"""Consolidated report of the complete emergent geometric tower.
 
@@ -784,6 +886,7 @@ class SubstrateGeometryReport:
     integrability : IntegrabilityCertificate
     poincare_cartan : PoincareCartanCertificate
     marsden_weinstein : MarsdenWeinsteinCertificate
+    hidden_u2 : HiddenU2Certificate
     """
 
     n_nodes: int
@@ -794,6 +897,7 @@ class SubstrateGeometryReport:
     integrability: IntegrabilityCertificate
     poincare_cartan: PoincareCartanCertificate
     marsden_weinstein: MarsdenWeinsteinCertificate
+    hidden_u2: HiddenU2Certificate
 
     @property
     def all_structures_valid(self) -> bool:
@@ -805,6 +909,7 @@ class SubstrateGeometryReport:
             and self.integrability.is_completely_integrable
             and self.poincare_cartan.all_invariants_hold
             and self.marsden_weinstein.is_valid_reduction
+            and self.hidden_u2.is_valid_u2_symmetry
         )
 
     def summary(self) -> str:
@@ -819,6 +924,7 @@ class SubstrateGeometryReport:
             f"  4. {self.integrability.summary()}",
             f"  5. {self.poincare_cartan.summary()}",
             f"  6. {self.marsden_weinstein.summary()}",
+            f"  7. {self.hidden_u2.summary()}",
         ]
         return "\n".join(lines)
 
@@ -1879,6 +1985,170 @@ def verify_symplectic_reduction(
 
 
 # ---------------------------------------------------------------------------
+# Hidden U(2) symmetry: SU(2) isospin charges of the (ζ^A, ζ^B) doublet
+# ---------------------------------------------------------------------------
+
+
+def isospin_charges(point: PhaseSpacePoint) -> dict[str, float]:
+    r"""SU(2) isospin charges of the (ζ^A, ζ^B) doublet.
+
+    The substrate Hamiltonian H_sub = ½Σ‖(ζ^A, ζ^B)‖² is the squared norm
+    of a complex doublet, so it carries a hidden U(2) symmetry.  The SU(2)
+    moment map (global diagonal SU(2)) gives three conserved charges:
+
+        I_3 = ½ Σ (|ζ^A|² − |ζ^B|²) = E_geo − E_pot,
+        I_1 = Σ Re(ζ̄^A ζ^B) = Σ (K_φ·Φ_s + J_φ·J_ΔNFR),
+        I_2 = Σ Im(ζ̄^A ζ^B) = Σ (K_φ·J_ΔNFR − J_φ·Φ_s),
+
+    with Casimir |I|² = I_1² + I_2² + I_3².  I_1 and I_2 are the new
+    cross-sector correlation charges; I_3 is the sector-energy difference.
+
+    Parameters
+    ----------
+    point : PhaseSpacePoint
+
+    Returns
+    -------
+    dict[str, float]
+        ``"i_1"``, ``"i_2"``, ``"i_3"``, ``"casimir"``.
+    """
+    k = np.asarray(point.k_phi, dtype=float)
+    jp = np.asarray(point.j_phi, dtype=float)
+    ps = np.asarray(point.phi_s, dtype=float)
+    jd = np.asarray(point.j_dnfr, dtype=float)
+    # ζ^A = k + i·jp,  ζ^B = ps + i·jd ;  ζ̄^A ζ^B = (k − i·jp)(ps + i·jd)
+    i_1 = float(np.sum(k * ps + jp * jd))      # Re(ζ̄^A ζ^B)
+    i_2 = float(np.sum(k * jd - jp * ps))      # Im(ζ̄^A ζ^B)
+    i_3 = 0.5 * float(np.sum(k * k + jp * jp - ps * ps - jd * jd))
+    return {
+        "i_1": i_1,
+        "i_2": i_2,
+        "i_3": i_3,
+        "casimir": i_1 * i_1 + i_2 * i_2 + i_3 * i_3,
+    }
+
+
+def _isospin_gradients(point: PhaseSpacePoint) -> tuple[Any, Any, Any]:
+    r"""Phase-space gradients ∇I_1, ∇I_2, ∇I_3 (for the Poisson brackets)."""
+    n = point.n_nodes
+    k = np.asarray(point.k_phi, dtype=float)
+    jp = np.asarray(point.j_phi, dtype=float)
+    ps = np.asarray(point.phi_s, dtype=float)
+    jd = np.asarray(point.j_dnfr, dtype=float)
+    g1 = np.zeros(4 * n)
+    g2 = np.zeros(4 * n)
+    g3 = np.zeros(4 * n)
+    for i in range(n):
+        b = 4 * i
+        # basis (q^A, p^A, q^B, p^B) = (K_φ, J_φ, Φ_s, J_ΔNFR)
+        g1[b:b + 4] = [ps[i], jd[i], k[i], jp[i]]        # ∇I_1
+        g2[b:b + 4] = [jd[i], -ps[i], -jp[i], k[i]]      # ∇I_2
+        g3[b:b + 4] = [k[i], jp[i], -ps[i], -jd[i]]      # ∇I_3
+    return g1, g2, g3
+
+
+def verify_hidden_u2_symmetry(
+    G: Any,
+    *,
+    flow_times: tuple[float, ...] = (0.4, 1.1, 2.3, 4.0),
+    tolerance: float = 1e-6,
+) -> HiddenU2Certificate:
+    r"""Verify the substrate's hidden U(2) symmetry and isospin charges.
+
+    Confirms the three SU(2) isospin charges (I_1, I_2, I_3), that
+    I_3 = E_geo − E_pot, that the su(2) algebra closes
+    ({I_a, I_b} = 2 ε_abc I_c) under the canonical Poisson bracket, that a
+    finite SU(2) sector-mixing rotation is symplectic (preserves ω), and
+    that the charges are conserved along the substrate flow.
+
+    HONEST SCOPE: a hidden dynamical symmetry of the flat, isotropic H_sub
+    backbone (the SU(2) mixes the physically distinct geometric and
+    potential sectors and is not one of the 13 operators); the charges are
+    exact along the substrate flow and diagnostics at the full nonlinear
+    level.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    flow_times : tuple of float
+        Sampling times for the conservation check.
+    tolerance : float
+        Maximum allowed drift / residual.
+
+    Returns
+    -------
+    HiddenU2Certificate
+    """
+    point = extract_phase_space_point(G)
+    n = point.n_nodes
+    charges = isospin_charges(point)
+    i_1, i_2, i_3 = charges["i_1"], charges["i_2"], charges["i_3"]
+
+    # I_3 = E_geo − E_pot.
+    e_diff = geometric_sector_energy(point) - potential_sector_energy(point)
+    i3_matches = abs(i_3 - e_diff) < tolerance
+
+    # su(2) algebra: {I_a, I_b} = 2 ε_abc I_c under the canonical bracket.
+    omega = symplectic_form_matrix(n)
+    g1, g2, g3 = _isospin_gradients(point)
+    b12 = float(g1 @ (omega @ g2))
+    b23 = float(g2 @ (omega @ g3))
+    b31 = float(g3 @ (omega @ g1))
+    algebra_residual = max(
+        abs(b12 - 2.0 * i_3),
+        abs(b23 - 2.0 * i_1),
+        abs(b31 - 2.0 * i_2),
+    )
+    algebra_closes = algebra_residual < max(
+        tolerance, 1e-9 * (abs(i_1) + abs(i_2) + abs(i_3))
+    )
+
+    # Finite SU(2) sector-mixing rotation is symplectic.
+    th = 0.6
+    c, s = float(np.cos(th)), float(np.sin(th))
+    rot4 = np.array(
+        [[c, 0, -s, 0], [0, c, 0, -s], [s, 0, c, 0], [0, s, 0, c]],
+        dtype=float,
+    )
+    m_rot = np.zeros((4 * n, 4 * n))
+    for i in range(n):
+        b = 4 * i
+        m_rot[b:b + 4, b:b + 4] = rot4
+    rotation_symplectic = bool(
+        np.allclose(m_rot.T @ omega @ m_rot, omega)
+    )
+
+    # Conservation along the substrate flow.
+    charge_drift = 0.0
+    for t in flow_times:
+        evolved = evolve_substrate_flow(point, t)
+        ch = isospin_charges(evolved)
+        charge_drift = max(
+            charge_drift,
+            abs(ch["i_1"] - i_1),
+            abs(ch["i_2"] - i_2),
+            abs(ch["i_3"] - i_3),
+        )
+    charges_conserved = charge_drift < max(
+        tolerance, 1e-9 * (abs(i_1) + abs(i_2) + abs(i_3))
+    )
+
+    return HiddenU2Certificate(
+        n_nodes=n,
+        i_1=i_1,
+        i_2=i_2,
+        i_3=i_3,
+        casimir=charges["casimir"],
+        i3_equals_energy_difference=i3_matches,
+        su2_algebra_closes=algebra_closes,
+        rotation_is_symplectic=rotation_symplectic,
+        charges_conserved=charges_conserved,
+        max_charge_drift=charge_drift,
+        max_algebra_residual=algebra_residual,
+    )
+
+
+# ---------------------------------------------------------------------------
 # Consolidated entry point: the complete geometric tower in one call
 # ---------------------------------------------------------------------------
 
@@ -1886,7 +2156,7 @@ def verify_symplectic_reduction(
 def verify_substrate_geometry(G: Any) -> SubstrateGeometryReport:
     r"""Verify the complete emergent geometric tower in a single call.
 
-    Runs all six structural verifications and bundles their certificates
+    Runs all seven structural verifications and bundles their certificates
     into one :class:`SubstrateGeometryReport`:
 
     1. :func:`verify_canonical_structure` — symplectic / Poisson / Liouville,
@@ -1894,7 +2164,8 @@ def verify_substrate_geometry(G: Any) -> SubstrateGeometryReport:
     3. :func:`verify_hermitian_structure` — Hermitian (flat Kähler),
     4. :func:`verify_integrability` — action–angle integrability,
     5. :func:`verify_poincare_cartan` — Poincaré–Cartan invariants,
-    6. :func:`verify_symplectic_reduction` — Marsden–Weinstein reduction.
+    6. :func:`verify_symplectic_reduction` — Marsden–Weinstein reduction,
+    7. :func:`verify_hidden_u2_symmetry` — hidden U(2) / isospin charges.
 
     This is the consolidated entry point to the whole classical
     Hamiltonian-geometry tower the nodal dynamics generates from itself.
@@ -1917,4 +2188,5 @@ def verify_substrate_geometry(G: Any) -> SubstrateGeometryReport:
         integrability=verify_integrability(G),
         poincare_cartan=verify_poincare_cartan(G),
         marsden_weinstein=verify_symplectic_reduction(G),
+        hidden_u2=verify_hidden_u2_symmetry(G),
     )
