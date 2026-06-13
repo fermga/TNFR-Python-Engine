@@ -28,8 +28,8 @@ from tnfr.physics.symplectic_substrate import (
     extract_phase_space_point,
     geometric_sector_energy,
     hamiltonian_vector_field,
-    isospin_charges,
-    isospin_density,
+    polarization_vector,
+    polarization_density,
     kahler_potential,
     liouville_divergence,
     loop_action_integral,
@@ -43,7 +43,7 @@ from tnfr.physics.symplectic_substrate import (
     to_complex_coordinates,
     verify_canonical_structure,
     verify_hermitian_structure,
-    verify_hidden_u2_symmetry,
+    verify_polarization_symmetry,
     verify_integrability,
     verify_noether_conservation,
     verify_poincare_cartan,
@@ -520,68 +520,68 @@ class TestMarsdenWeinstein:
         assert "VALID" in cert.summary()
 
 
-class TestHiddenU2Symmetry:
-    """The substrate carries a hidden U(2) symmetry with isospin charges."""
+class TestPolarizationSymmetry:
+    """The substrate carries a polarization symmetry (U(2)) with Stokes vector."""
 
-    def test_isospin_charges_present(self) -> None:
+    def test_polarization_vector_present(self) -> None:
         G = _canonical_graph(24)
-        ch = isospin_charges(extract_phase_space_point(G))
-        assert set(ch) == {"i_1", "i_2", "i_3", "casimir"}
+        ch = polarization_vector(extract_phase_space_point(G))
+        assert set(ch) == {"p_1", "p_2", "p_3", "magnitude_sq"}
 
-    def test_i3_equals_sector_energy_difference(self) -> None:
+    def test_p3_equals_sector_energy_difference(self) -> None:
         import pytest
 
         G = _canonical_graph(24)
         point = extract_phase_space_point(G)
-        ch = isospin_charges(point)
+        ch = polarization_vector(point)
         e_diff = (
             geometric_sector_energy(point) - potential_sector_energy(point)
         )
-        assert ch["i_3"] == pytest.approx(e_diff)
+        assert ch["p_3"] == pytest.approx(e_diff)
 
-    def test_casimir_is_sum_of_squares(self) -> None:
+    def test_magnitude_is_sum_of_squares(self) -> None:
         import pytest
 
         G = _canonical_graph(20)
-        ch = isospin_charges(extract_phase_space_point(G))
-        assert ch["casimir"] == pytest.approx(
-            ch["i_1"] ** 2 + ch["i_2"] ** 2 + ch["i_3"] ** 2
+        ch = polarization_vector(extract_phase_space_point(G))
+        assert ch["magnitude_sq"] == pytest.approx(
+            ch["p_1"] ** 2 + ch["p_2"] ** 2 + ch["p_3"] ** 2
         )
 
     def test_su2_algebra_closes(self) -> None:
         G = _canonical_graph(24)
-        cert = verify_hidden_u2_symmetry(G)
+        cert = verify_polarization_symmetry(G)
         assert cert.su2_algebra_closes
         assert cert.max_algebra_residual < 1e-6
 
     def test_rotation_is_symplectic(self) -> None:
         G = _canonical_graph(24)
-        cert = verify_hidden_u2_symmetry(G)
+        cert = verify_polarization_symmetry(G)
         assert cert.rotation_is_symplectic
 
     def test_charges_conserved_along_flow(self) -> None:
         G = _canonical_graph(24)
-        cert = verify_hidden_u2_symmetry(G)
+        cert = verify_polarization_symmetry(G)
         assert cert.charges_conserved
         assert cert.max_charge_drift < 1e-6
 
-    def test_certificate_valid_u2(self) -> None:
+    def test_certificate_valid_polarization(self) -> None:
         G = _canonical_graph(30)
-        cert = verify_hidden_u2_symmetry(G)
-        assert cert.is_valid_u2_symmetry
-        assert cert.i3_equals_energy_difference
+        cert = verify_polarization_symmetry(G)
+        assert cert.is_valid_polarization_symmetry
+        assert cert.p3_equals_energy_difference
         assert "VALID" in cert.summary()
 
-    def test_hopf_map_per_node_radius_equals_energy(self) -> None:
+    def test_full_polarization_per_node_radius_equals_energy(self) -> None:
         G = _canonical_graph(24)
-        d = isospin_density(extract_phase_space_point(G))
-        # |I_node| = e_node (Hopf fibration S³ → S²).
+        d = polarization_density(extract_phase_space_point(G))
+        # |P_node| = e_node (the Poincaré sphere S²; fully polarized).
         assert np.allclose(d["radius"], d["energy"])
 
-    def test_isospin_density_bloch_is_unit(self) -> None:
+    def test_polarization_density_poincare_is_unit(self) -> None:
         G = _canonical_graph(20)
-        d = isospin_density(extract_phase_space_point(G))
-        norms = np.sqrt((d["bloch"] ** 2).sum(axis=0))
+        d = polarization_density(extract_phase_space_point(G))
+        norms = np.sqrt((d["poincare"] ** 2).sum(axis=0))
         assert np.allclose(norms, 1.0)
 
     def test_density_sums_to_global_charges(self) -> None:
@@ -589,18 +589,18 @@ class TestHiddenU2Symmetry:
 
         G = _canonical_graph(24)
         point = extract_phase_space_point(G)
-        d = isospin_density(point)
-        glob = isospin_charges(point)
-        assert float(d["i_1"].sum()) == pytest.approx(glob["i_1"])
-        assert float(d["i_2"].sum()) == pytest.approx(glob["i_2"])
-        assert float(d["i_3"].sum()) == pytest.approx(glob["i_3"])
+        d = polarization_density(point)
+        glob = polarization_vector(point)
+        assert float(d["p_1"].sum()) == pytest.approx(glob["p_1"])
+        assert float(d["p_2"].sum()) == pytest.approx(glob["p_2"])
+        assert float(d["p_3"].sum()) == pytest.approx(glob["p_3"])
 
-    def test_certificate_reports_hopf(self) -> None:
+    def test_certificate_reports_full_polarization(self) -> None:
         G = _canonical_graph(30)
-        cert = verify_hidden_u2_symmetry(G)
-        assert cert.hopf_map_holds
-        assert cert.max_hopf_residual < 1e-9
-        assert "Hopf" in cert.summary()
+        cert = verify_polarization_symmetry(G)
+        assert cert.full_polarization_holds
+        assert cert.max_polarization_residual < 1e-9
+        assert "fully polarized" in cert.summary()
 
 
 class TestSubstrateGeometryReport:
@@ -623,7 +623,7 @@ class TestSubstrateGeometryReport:
         assert report.integrability.is_completely_integrable
         assert report.poincare_cartan.all_invariants_hold
         assert report.marsden_weinstein.is_valid_reduction
-        assert report.hidden_u2.is_valid_u2_symmetry
+        assert report.polarization.is_valid_polarization_symmetry
 
     def test_sub_certificates_match_individual_calls(self) -> None:
         G = _canonical_graph(24)

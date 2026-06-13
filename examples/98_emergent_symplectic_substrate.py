@@ -78,7 +78,7 @@ from tnfr.physics.symplectic_substrate import (
     verify_integrability,
     verify_poincare_cartan,
     verify_symplectic_reduction,
-    verify_hidden_u2_symmetry,
+    verify_polarization_symmetry,
     verify_substrate_geometry,
 )
 
@@ -417,50 +417,54 @@ def experiment_8_symplectic_reduction():
 
 
 # ============================================================================
-# EXPERIMENT 9: Hidden U(2) symmetry — new isospin charges
+# EXPERIMENT 9: Polarization symmetry (U(2)) — new Stokes charges
 # ============================================================================
-def experiment_9_hidden_u2():
-    """H_sub is a ℂ² doublet norm → hidden U(2) → new isospin charges."""
+def experiment_9_polarization():
+    """H_sub is a ℂ² doublet norm → U(2) polarization symmetry → Stokes vector."""
     print("=" * 72)
-    print("EXPERIMENT 9: Hidden U(2) Symmetry (new conserved charges)")
+    print("EXPERIMENT 9: Polarization Symmetry U(2) (new conserved charges)")
     print("=" * 72)
     print()
     print("H_sub = ½Σ‖(ζ^A, ζ^B)‖² is the squared norm of a complex doublet")
     print("(ζ^A geometric, ζ^B potential), so it is invariant under the FULL")
-    print("U(2) on the doublet — the TNFR analogue of the hidden SU(n)")
-    print("symmetry of the isotropic oscillator. U(1)×U(1) (Noether) is its")
-    print("Cartan torus; the SU(2) part gives three isospin charges.")
+    print("U(2) on the doublet — the POLARIZATION symmetry of a two-component")
+    print("complex field (the same math as classical wave polarization,")
+    print("Stokes 1852 / Poincaré 1892). U(1)×U(1) (Noether) is its Cartan")
+    print("torus; the SU(2) part gives the three Stokes parameters.")
     print()
 
     G = _build_graph(30)
-    cert = verify_hidden_u2_symmetry(G)
+    cert = verify_polarization_symmetry(G)
 
-    print(f"  I_1 = Σ(K_φ·Φ_s + J_φ·J_ΔNFR)  : {cert.i_1:.4f}  (NEW)")
-    print(f"  I_2 = Σ(K_φ·J_ΔNFR − J_φ·Φ_s)  : {cert.i_2:.4f}  (NEW)")
-    print(f"  I_3 = E_geo − E_pot            : {cert.i_3:.4f}")
-    print(f"  Casimir |I|²                   : {cert.casimir:.4f}")
-    print(f"  I_3 = E_geo − E_pot            : "
-          f"{cert.i3_equals_energy_difference}")
-    print(f"  su(2) closes {{I_a,I_b}}=2εI_c   : "
+    print(f"  P_1 = Σ(K_φ·Φ_s + J_φ·J_ΔNFR)  : {cert.p_1:.4f}  (NEW)")
+    print(f"  P_2 = Σ(K_φ·J_ΔNFR − J_φ·Φ_s)  : {cert.p_2:.4f}  (NEW)")
+    print(f"  P_3 = E_geo − E_pot            : {cert.p_3:.4f}")
+    print(f"  squared magnitude |P|²         : {cert.magnitude_sq:.4f}")
+    print(f"  P_3 = E_geo − E_pot            : "
+          f"{cert.p3_equals_energy_difference}")
+    print(f"  su(2) closes {{P_a,P_b}}=2εP_c   : "
           f"{cert.su2_algebra_closes} (res {cert.max_algebra_residual:.1e})")
     print(f"  SU(2) rotation symplectic      : {cert.rotation_is_symplectic}")
     print(f"  charges conserved along flow   : "
           f"{cert.charges_conserved} (drift {cert.max_charge_drift:.1e})")
-    print(f"  Hopf |I_node| = e_node (S³→S²) : "
-          f"{cert.hopf_map_holds} (res {cert.max_hopf_residual:.1e})")
+    print(f"  fully polarized |P_node|=e_node: "
+          f"{cert.full_polarization_holds} "
+          f"(res {cert.max_polarization_residual:.1e})")
     print()
-    print(f"  VALID HIDDEN U(2) SYMMETRY: {cert.is_valid_u2_symmetry}")
+    print(f"  VALID POLARIZATION SYMMETRY: {cert.is_valid_polarization_symmetry}")
     print()
-    print("VALIDATED: I_1 and I_2 are GENUINELY NEW conserved charges — the")
+    print("VALIDATED: P_1 and P_2 are GENUINELY NEW conserved charges — the")
     print("cross-sector correlations between the geometric and potential")
-    print("sectors — beyond the known I_3 = E_geo − E_pot. They close the")
+    print("sectors — beyond the known P_3 = E_geo − E_pot. They close the")
     print("su(2) algebra and are conserved along the flow. Per node the")
-    print("isospin 3-vector has length = energy (Hopf map S³→S²): each node")
-    print("carries a Bloch vector of radius = its substrate energy.")
-    print("HONEST SCOPE: a hidden dynamical symmetry of the flat isotropic")
-    print("H_sub backbone (the SU(2) mixes physically distinct sectors and")
-    print("is not one of the 13 operators); the charges are exact along the")
-    print("substrate flow and diagnostics at the full nonlinear level.")
+    print("Stokes 3-vector has length = energy: each node is fully polarized,")
+    print("a unit point on the Poincaré sphere of radius = its energy.")
+    print("HONEST SCOPE: a dynamical symmetry of the flat isotropic H_sub")
+    print("backbone (the SU(2) mixes physically distinct sectors and is not")
+    print("one of the 13 operators); the charges are exact along the substrate")
+    print("flow and diagnostics at the full nonlinear level. The substrate is")
+    print("a CLASSICAL phase field: this is the polarization (Stokes/Poincaré)")
+    print("of a wave, NOT a quantum two-level system (no entanglement).")
     print()
 
 
@@ -501,7 +505,7 @@ def main():
     experiment_6_integrability()
     experiment_7_poincare_cartan()
     experiment_8_symplectic_reduction()
-    experiment_9_hidden_u2()
+    experiment_9_polarization()
     experiment_10_consolidated_tower()
 
     print("=" * 72)
@@ -517,7 +521,8 @@ def main():
     print("  • the flow is completely integrable (action–angle, Exp. 6),")
     print("  • it preserves the Poincaré–Cartan invariants (Exp. 7),")
     print("  • it reduces by its U(1) symmetry (Marsden–Weinstein, Exp. 8),")
-    print("  • it carries a hidden U(2) with new isospin charges (Exp. 9),")
+    print("  • it carries a U(2) polarization symmetry with new Stokes")
+    print("    charges (Exp. 9),")
     print("  • the whole tower verifies in one call (Exp. 10),")
     print("  • the nodal equation is the overdamped Hamiltonian flow.")
     print()

@@ -176,7 +176,7 @@ __all__ = [
     "IntegrabilityCertificate",
     "PoincareCartanCertificate",
     "MarsdenWeinsteinCertificate",
-    "HiddenU2Certificate",
+    "PolarizationSymmetryCertificate",
     "SubstrateGeometryReport",
     "extract_phase_space_point",
     "symplectic_form_matrix",
@@ -205,9 +205,9 @@ __all__ = [
     "diagonal_moment_map",
     "reduced_symplectic_form_matrix",
     "verify_symplectic_reduction",
-    "isospin_charges",
-    "isospin_density",
-    "verify_hidden_u2_symmetry",
+    "polarization_vector",
+    "polarization_density",
+    "verify_polarization_symmetry",
     "verify_substrate_geometry",
 ]
 
@@ -767,8 +767,8 @@ class MarsdenWeinsteinCertificate:
 
 
 @dataclass(frozen=True)
-class HiddenU2Certificate:
-    r"""Verification of the substrate's hidden U(2) symmetry.
+class PolarizationSymmetryCertificate:
+    r"""Verification of the substrate's polarization symmetry (U(2)).
 
     Because the substrate Hamiltonian is the squared norm of a **complex
     doublet** per node,
@@ -778,107 +778,117 @@ class HiddenU2Certificate:
 
     it is invariant not only under the U(1)×U(1) sector phases (the
     :class:`NoetherChargeCertificate` charges) but under the **full U(2)**
-    acting on the (ζ^A, ζ^B) doublet — the TNFR analogue of the hidden
-    SU(n) symmetry of the n-dimensional isotropic harmonic oscillator.
-    U(2) = U(1) × SU(2): the U(1) centre is the substrate flow itself, and
-    the U(1)×U(1) Noether sectors are the **Cartan torus** of U(2).
+    acting on the (ζ^A, ζ^B) doublet.  This is exactly the **polarization
+    symmetry** of a two-component complex field: the SAME mathematics as
+    classical wave polarization (Stokes 1852, Poincaré 1892), an
+    empirically-demonstrated phenomenon.  U(2) = U(1) × SU(2): the U(1)
+    centre is the substrate flow itself, and the U(1)×U(1) Noether sectors
+    are the **Cartan torus** of U(2).
 
-    The SU(2) part supplies three conserved **isospin charges** (the moment
-    map of the global diagonal SU(2) acting on the doublet):
+    The SU(2) part supplies the three conserved **Stokes parameters** (the
+    polarization 3-vector; the moment map of the global diagonal SU(2)):
 
-        I_3 = ½ Σ (|ζ^A|² − |ζ^B|²) = E_geo − E_pot,
-        I_1 = Σ Re(ζ̄^A ζ^B) = Σ (K_φ·Φ_s + J_φ·J_ΔNFR),
-        I_2 = Σ Im(ζ̄^A ζ^B) = Σ (K_φ·J_ΔNFR − J_φ·Φ_s).
+        P_3 = ½ Σ (|ζ^A|² − |ζ^B|²) = E_geo − E_pot   (sector difference),
+        P_1 = Σ Re(ζ̄^A ζ^B) = Σ (K_φ·Φ_s + J_φ·J_ΔNFR)   (real cross-corr.),
+        P_2 = Σ Im(ζ̄^A ζ^B) = Σ (K_φ·J_ΔNFR − J_φ·Φ_s)   (imag cross-corr.).
 
-    I_3 is the (already-known) sector-energy difference, but **I_1 and I_2
-    are genuinely new conserved charges** — the cross-sector correlations
-    between the geometric and potential sectors.  They satisfy the su(2)
-    algebra under the canonical Poisson bracket, {I_a, I_b} = 2 ε_abc I_c
-    (so ½I_a are textbook-normalised generators), and are conserved along
-    the substrate flow (the diagonal U(1) ⊂ U(2) commutes with SU(2)).
+    These are the Stokes parameters of the doublet in the substrate's
+    natural (Noether-charge) normalization; the textbook optical Stokes
+    parameters are 2× these.  P_3 is the (already-known) sector-energy
+    difference, but **P_1 and P_2 are genuinely new conserved charges** —
+    the cross-sector correlations between the geometric and potential
+    sectors.  They satisfy the su(2) algebra under the canonical Poisson
+    bracket, {P_a, P_b} = 2 ε_abc P_c, and are conserved along the
+    substrate flow (the diagonal U(1) ⊂ U(2) commutes with SU(2)).
 
-    **Hopf map (per-node geometric content)**: per node, the isospin
-    3-vector (I_1^i, I_2^i, I_3^i) has length equal to the per-node
-    substrate energy, |I_node| = e_node = ½(|ζ^A|² + |ζ^B|²).  This is the
-    Hopf fibration S³ → S² of the doublet ζ ∈ ℂ²: each node carries a
-    **Bloch vector** (the isospin direction on S²) of radius = its energy,
-    the same geometry as a two-level (qubit) system.
+    **Poincaré sphere (per-node geometric content)**: per node, the
+    polarization 3-vector (P_1^i, P_2^i, P_3^i) has length equal to the
+    per-node substrate energy, |P_node| = e_node = ½(|ζ^A|² + |ζ^B|²).
+    The normalized vector P_node / e_node is therefore a unit vector on the
+    **Poincaré sphere** S² — i.e. each node is **fully polarized** (degree
+    of polarization = 1).  Mathematically this is the Hopf fibration
+    S³ → S² of the doublet ζ ∈ ℂ²; the empirical anchor is the
+    classical Poincaré sphere of polarization optics.
 
-    HONEST SCOPE: this is a **hidden dynamical symmetry of the flat,
-    isotropic H_sub backbone** (like the Runge–Lenz / accidental
-    degeneracy symmetries of the oscillator), not a gauge symmetry of the
-    field content. The SU(2) rotation mixes the *physically distinct*
-    geometric and potential sectors; it is canonical (preserves ω and
-    H_sub) but is **not** one of the 13 operators. I_1, I_2, I_3 are exact
-    conserved charges along the substrate flow and diagnostics at the full
-    nonlinear operator level.
+    HONEST SCOPE: this is a **dynamical symmetry of the flat, isotropic
+    H_sub backbone** (like the accidental-degeneracy symmetries of the
+    oscillator), not a gauge symmetry of the field content. The SU(2)
+    rotation mixes the *physically distinct* geometric and potential
+    sectors; it is canonical (preserves ω and H_sub) but is **not** one of
+    the 13 operators. P_1, P_2, P_3 are exact conserved charges along the
+    substrate flow and diagnostics at the full nonlinear operator level.
+    The substrate is a CLASSICAL phase field: this is the polarization
+    (Stokes/Poincaré) of a wave, NOT a quantum two-level system — there is
+    no superposition or entanglement (the doublet is per-node, so the
+    global state is a product, a classical polarization texture).
 
     Attributes
     ----------
     n_nodes : int
-    i_1, i_2, i_3 : float
-        The three SU(2) isospin charges.
-    casimir : float
-        I_1² + I_2² + I_3² (the SU(2) Casimir of the global charges).
-    i3_equals_energy_difference : bool
-        I_3 = E_geo − E_pot to machine precision.
+    p_1, p_2, p_3 : float
+        The three Stokes parameters (the global polarization 3-vector).
+    magnitude_sq : float
+        P_1² + P_2² + P_3² (the SU(2) Casimir = squared polarization).
+    p3_equals_energy_difference : bool
+        P_3 = E_geo − E_pot to machine precision.
     su2_algebra_closes : bool
-        {I_a, I_b} = 2 ε_abc I_c under the canonical Poisson bracket.
+        {P_a, P_b} = 2 ε_abc P_c under the canonical Poisson bracket.
     rotation_is_symplectic : bool
         A finite SU(2) sector-mixing rotation preserves ω.
     charges_conserved : bool
-        I_1, I_2, I_3 are conserved along the substrate flow.
+        P_1, P_2, P_3 are conserved along the substrate flow.
     max_charge_drift : float
-        Max drift of the isospin charges over the sampled flow.
+        Max drift of the Stokes parameters over the sampled flow.
     max_algebra_residual : float
-        Max |{I_a, I_b} − 2 ε_abc I_c| over the three brackets.
-    hopf_map_holds : bool
-        Per node, the isospin 3-vector length equals the per-node energy,
-        |I_node| = e_node (the Hopf map S³ → S² of the ζ ∈ ℂ² doublet).
-    max_hopf_residual : float
-        Max | |I_node| − e_node | over the nodes (should be ~0).
+        Max |{P_a, P_b} − 2 ε_abc P_c| over the three brackets.
+    full_polarization_holds : bool
+        Per node, the polarization 3-vector length equals the per-node
+        energy, |P_node| = e_node — each node is fully polarized (a unit
+        point on the Poincaré sphere S²).
+    max_polarization_residual : float
+        Max | |P_node| − e_node | over the nodes (should be ~0).
     """
 
     n_nodes: int
-    i_1: float
-    i_2: float
-    i_3: float
-    casimir: float
-    i3_equals_energy_difference: bool
+    p_1: float
+    p_2: float
+    p_3: float
+    magnitude_sq: float
+    p3_equals_energy_difference: bool
     su2_algebra_closes: bool
     rotation_is_symplectic: bool
     charges_conserved: bool
     max_charge_drift: float
     max_algebra_residual: float
-    hopf_map_holds: bool
-    max_hopf_residual: float
+    full_polarization_holds: bool
+    max_polarization_residual: float
 
     @property
-    def is_valid_u2_symmetry(self) -> bool:
-        """True when the hidden U(2) symmetry fully verifies."""
+    def is_valid_polarization_symmetry(self) -> bool:
+        """True when the polarization (U(2)) symmetry fully verifies."""
         return (
-            self.i3_equals_energy_difference
+            self.p3_equals_energy_difference
             and self.su2_algebra_closes
             and self.rotation_is_symplectic
             and self.charges_conserved
-            and self.hopf_map_holds
+            and self.full_polarization_holds
         )
 
     def summary(self) -> str:
         """Human-readable one-line verdict."""
-        ok = "VALID" if self.is_valid_u2_symmetry else "INVALID"
+        ok = "VALID" if self.is_valid_polarization_symmetry else "INVALID"
         return (
-            f"Hidden U(2) symmetry [{ok}]: "
-            f"isospin I=({self.i_1:.4f}, {self.i_2:.4f}, {self.i_3:.4f}), "
-            f"|I|²={self.casimir:.4f}, "
-            f"I₃=E_geo−E_pot={self.i3_equals_energy_difference}, "
+            f"Polarization symmetry [{ok}]: "
+            f"Stokes P=({self.p_1:.4f}, {self.p_2:.4f}, {self.p_3:.4f}), "
+            f"|P|²={self.magnitude_sq:.4f}, "
+            f"P₃=E_geo−E_pot={self.p3_equals_energy_difference}, "
             f"su(2) closes={self.su2_algebra_closes} "
             f"(res {self.max_algebra_residual:.1e}), "
             f"SU(2) symplectic={self.rotation_is_symplectic}, "
             f"conserved={self.charges_conserved} "
             f"(drift {self.max_charge_drift:.1e}), "
-            f"Hopf |I_node|=e_node={self.hopf_map_holds} "
-            f"(res {self.max_hopf_residual:.1e})"
+            f"fully polarized |P_node|=e_node={self.full_polarization_holds} "
+            f"(res {self.max_polarization_residual:.1e})"
         )
 
 
@@ -904,7 +914,7 @@ class SubstrateGeometryReport:
     integrability : IntegrabilityCertificate
     poincare_cartan : PoincareCartanCertificate
     marsden_weinstein : MarsdenWeinsteinCertificate
-    hidden_u2 : HiddenU2Certificate
+    polarization : PolarizationSymmetryCertificate
     """
 
     n_nodes: int
@@ -915,7 +925,7 @@ class SubstrateGeometryReport:
     integrability: IntegrabilityCertificate
     poincare_cartan: PoincareCartanCertificate
     marsden_weinstein: MarsdenWeinsteinCertificate
-    hidden_u2: HiddenU2Certificate
+    polarization: PolarizationSymmetryCertificate
 
     @property
     def all_structures_valid(self) -> bool:
@@ -927,7 +937,7 @@ class SubstrateGeometryReport:
             and self.integrability.is_completely_integrable
             and self.poincare_cartan.all_invariants_hold
             and self.marsden_weinstein.is_valid_reduction
-            and self.hidden_u2.is_valid_u2_symmetry
+            and self.polarization.is_valid_polarization_symmetry
         )
 
     def summary(self) -> str:
@@ -942,7 +952,7 @@ class SubstrateGeometryReport:
             f"  4. {self.integrability.summary()}",
             f"  5. {self.poincare_cartan.summary()}",
             f"  6. {self.marsden_weinstein.summary()}",
-            f"  7. {self.hidden_u2.summary()}",
+            f"  7. {self.polarization.summary()}",
         ]
         return "\n".join(lines)
 
@@ -2003,23 +2013,28 @@ def verify_symplectic_reduction(
 
 
 # ---------------------------------------------------------------------------
-# Hidden U(2) symmetry: SU(2) isospin charges of the (ζ^A, ζ^B) doublet
+# Polarization symmetry: Stokes parameters of the (ζ^A, ζ^B) doublet
 # ---------------------------------------------------------------------------
 
 
-def isospin_charges(point: PhaseSpacePoint) -> dict[str, float]:
-    r"""SU(2) isospin charges of the (ζ^A, ζ^B) doublet.
+def polarization_vector(point: PhaseSpacePoint) -> dict[str, float]:
+    r"""Stokes parameters (polarization 3-vector) of the (ζ^A, ζ^B) doublet.
 
     The substrate Hamiltonian H_sub = ½Σ‖(ζ^A, ζ^B)‖² is the squared norm
-    of a complex doublet, so it carries a hidden U(2) symmetry.  The SU(2)
-    moment map (global diagonal SU(2)) gives three conserved charges:
+    of a complex doublet, so it carries the **polarization symmetry** U(2)
+    of a two-component complex field — the same mathematics as classical
+    wave polarization (Stokes 1852, Poincaré 1892).  The SU(2) moment map
+    (global diagonal SU(2)) gives the three conserved **Stokes parameters**:
 
-        I_3 = ½ Σ (|ζ^A|² − |ζ^B|²) = E_geo − E_pot,
-        I_1 = Σ Re(ζ̄^A ζ^B) = Σ (K_φ·Φ_s + J_φ·J_ΔNFR),
-        I_2 = Σ Im(ζ̄^A ζ^B) = Σ (K_φ·J_ΔNFR − J_φ·Φ_s),
+        P_3 = ½ Σ (|ζ^A|² − |ζ^B|²) = E_geo − E_pot   (sector difference),
+        P_1 = Σ Re(ζ̄^A ζ^B) = Σ (K_φ·Φ_s + J_φ·J_ΔNFR)   (real cross-corr.),
+        P_2 = Σ Im(ζ̄^A ζ^B) = Σ (K_φ·J_ΔNFR − J_φ·Φ_s)   (imag cross-corr.),
 
-    with Casimir |I|² = I_1² + I_2² + I_3².  I_1 and I_2 are the new
-    cross-sector correlation charges; I_3 is the sector-energy difference.
+    with squared magnitude |P|² = P_1² + P_2² + P_3².  P_1 and P_2 are the
+    new cross-sector correlation charges; P_3 is the sector-energy
+    difference.  These are the Stokes parameters in the substrate's natural
+    (Noether-charge) normalization; the textbook optical Stokes parameters
+    are 2× these.
 
     Parameters
     ----------
@@ -2028,39 +2043,41 @@ def isospin_charges(point: PhaseSpacePoint) -> dict[str, float]:
     Returns
     -------
     dict[str, float]
-        ``"i_1"``, ``"i_2"``, ``"i_3"``, ``"casimir"``.
+        ``"p_1"``, ``"p_2"``, ``"p_3"``, ``"magnitude_sq"``.
     """
     k = np.asarray(point.k_phi, dtype=float)
     jp = np.asarray(point.j_phi, dtype=float)
     ps = np.asarray(point.phi_s, dtype=float)
     jd = np.asarray(point.j_dnfr, dtype=float)
     # ζ^A = k + i·jp,  ζ^B = ps + i·jd ;  ζ̄^A ζ^B = (k − i·jp)(ps + i·jd)
-    i_1 = float(np.sum(k * ps + jp * jd))      # Re(ζ̄^A ζ^B)
-    i_2 = float(np.sum(k * jd - jp * ps))      # Im(ζ̄^A ζ^B)
-    i_3 = 0.5 * float(np.sum(k * k + jp * jp - ps * ps - jd * jd))
+    p_1 = float(np.sum(k * ps + jp * jd))      # Re(ζ̄^A ζ^B)
+    p_2 = float(np.sum(k * jd - jp * ps))      # Im(ζ̄^A ζ^B)
+    p_3 = 0.5 * float(np.sum(k * k + jp * jp - ps * ps - jd * jd))
     return {
-        "i_1": i_1,
-        "i_2": i_2,
-        "i_3": i_3,
-        "casimir": i_1 * i_1 + i_2 * i_2 + i_3 * i_3,
+        "p_1": p_1,
+        "p_2": p_2,
+        "p_3": p_3,
+        "magnitude_sq": p_1 * p_1 + p_2 * p_2 + p_3 * p_3,
     }
 
 
-def isospin_density(point: PhaseSpacePoint) -> dict[str, Any]:
-    r"""Per-node isospin 3-vector, energy, and Bloch vector (Hopf map).
+def polarization_density(point: PhaseSpacePoint) -> dict[str, Any]:
+    r"""Per-node Stokes 3-vector, energy, and Poincaré-sphere unit vector.
 
-    The global :func:`isospin_charges` are sums of per-node densities.  Per
-    node, the doublet ζ_i = (ζ^A_i, ζ^B_i) ∈ ℂ² projects to an isospin
+    The global :func:`polarization_vector` are sums of per-node densities.
+    Per node, the doublet ζ_i = (ζ^A_i, ζ^B_i) ∈ ℂ² projects to a Stokes
     3-vector
 
-        I_1^i = Re(ζ̄^A_i ζ^B_i),  I_2^i = Im(ζ̄^A_i ζ^B_i),
-        I_3^i = ½(|ζ^A_i|² − |ζ^B_i|²),
+        P_1^i = Re(ζ̄^A_i ζ^B_i),  P_2^i = Im(ζ̄^A_i ζ^B_i),
+        P_3^i = ½(|ζ^A_i|² − |ζ^B_i|²),
 
     whose **length equals the per-node substrate energy**,
-    |I_node| = e_node = ½(|ζ^A_i|² + |ζ^B_i|²).  This is the Hopf
-    fibration S³ → S²: the normalised vector ``bloch`` = I_node / e_node is
-    a unit Bloch vector on S² (the qubit geometry), and ``e_node`` is its
-    radius.
+    |P_node| = e_node = ½(|ζ^A_i|² + |ζ^B_i|²).  The normalised vector
+    ``poincare`` = P_node / e_node is therefore a unit vector on the
+    **Poincaré sphere** S² — each node is fully polarized (degree of
+    polarization = 1), and ``e_node`` is its radius.  (Mathematically this
+    is the Hopf fibration S³ → S² of the doublet; the empirical anchor is
+    the classical Poincaré sphere of polarization optics.)
 
     Parameters
     ----------
@@ -2069,32 +2086,32 @@ def isospin_density(point: PhaseSpacePoint) -> dict[str, Any]:
     Returns
     -------
     dict[str, np.ndarray]
-        ``"i_1"``, ``"i_2"``, ``"i_3"`` (per-node 3-vector components),
-        ``"radius"`` (|I_node|), ``"energy"`` (e_node), and ``"bloch"``
-        (a ``(3, N)`` array of unit Bloch vectors).
+        ``"p_1"``, ``"p_2"``, ``"p_3"`` (per-node Stokes components),
+        ``"radius"`` (|P_node|), ``"energy"`` (e_node), and ``"poincare"``
+        (a ``(3, N)`` array of unit Poincaré-sphere vectors).
     """
     k = np.asarray(point.k_phi, dtype=float)
     jp = np.asarray(point.j_phi, dtype=float)
     ps = np.asarray(point.phi_s, dtype=float)
     jd = np.asarray(point.j_dnfr, dtype=float)
-    i_1 = k * ps + jp * jd            # Re(ζ̄^A ζ^B) per node
-    i_2 = k * jd - jp * ps            # Im(ζ̄^A ζ^B) per node
-    i_3 = 0.5 * (k * k + jp * jp - ps * ps - jd * jd)
-    radius = np.sqrt(i_1 * i_1 + i_2 * i_2 + i_3 * i_3)
+    p_1 = k * ps + jp * jd            # Re(ζ̄^A ζ^B) per node
+    p_2 = k * jd - jp * ps            # Im(ζ̄^A ζ^B) per node
+    p_3 = 0.5 * (k * k + jp * jp - ps * ps - jd * jd)
+    radius = np.sqrt(p_1 * p_1 + p_2 * p_2 + p_3 * p_3)
     energy = 0.5 * (k * k + jp * jp + ps * ps + jd * jd)
-    bloch = np.array([i_1, i_2, i_3]) / (radius + 1e-300)
+    poincare = np.array([p_1, p_2, p_3]) / (radius + 1e-300)
     return {
-        "i_1": i_1,
-        "i_2": i_2,
-        "i_3": i_3,
+        "p_1": p_1,
+        "p_2": p_2,
+        "p_3": p_3,
         "radius": radius,
         "energy": energy,
-        "bloch": bloch,
+        "poincare": poincare,
     }
 
 
-def _isospin_gradients(point: PhaseSpacePoint) -> tuple[Any, Any, Any]:
-    r"""Phase-space gradients ∇I_1, ∇I_2, ∇I_3 (for the Poisson brackets)."""
+def _polarization_gradients(point: PhaseSpacePoint) -> tuple[Any, Any, Any]:
+    r"""Phase-space gradients ∇P_1, ∇P_2, ∇P_3 (for the Poisson brackets)."""
     n = point.n_nodes
     k = np.asarray(point.k_phi, dtype=float)
     jp = np.asarray(point.j_phi, dtype=float)
@@ -2106,31 +2123,34 @@ def _isospin_gradients(point: PhaseSpacePoint) -> tuple[Any, Any, Any]:
     for i in range(n):
         b = 4 * i
         # basis (q^A, p^A, q^B, p^B) = (K_φ, J_φ, Φ_s, J_ΔNFR)
-        g1[b:b + 4] = [ps[i], jd[i], k[i], jp[i]]        # ∇I_1
-        g2[b:b + 4] = [jd[i], -ps[i], -jp[i], k[i]]      # ∇I_2
-        g3[b:b + 4] = [k[i], jp[i], -ps[i], -jd[i]]      # ∇I_3
+        g1[b:b + 4] = [ps[i], jd[i], k[i], jp[i]]        # ∇P_1
+        g2[b:b + 4] = [jd[i], -ps[i], -jp[i], k[i]]      # ∇P_2
+        g3[b:b + 4] = [k[i], jp[i], -ps[i], -jd[i]]      # ∇P_3
     return g1, g2, g3
 
 
-def verify_hidden_u2_symmetry(
+def verify_polarization_symmetry(
     G: Any,
     *,
     flow_times: tuple[float, ...] = (0.4, 1.1, 2.3, 4.0),
     tolerance: float = 1e-6,
-) -> HiddenU2Certificate:
-    r"""Verify the substrate's hidden U(2) symmetry and isospin charges.
+) -> PolarizationSymmetryCertificate:
+    r"""Verify the substrate's polarization symmetry (U(2)) and Stokes vector.
 
-    Confirms the three SU(2) isospin charges (I_1, I_2, I_3), that
-    I_3 = E_geo − E_pot, that the su(2) algebra closes
-    ({I_a, I_b} = 2 ε_abc I_c) under the canonical Poisson bracket, that a
-    finite SU(2) sector-mixing rotation is symplectic (preserves ω), and
-    that the charges are conserved along the substrate flow.
+    Confirms the three Stokes parameters (P_1, P_2, P_3), that
+    P_3 = E_geo − E_pot, that the su(2) algebra closes
+    ({P_a, P_b} = 2 ε_abc P_c) under the canonical Poisson bracket, that a
+    finite SU(2) sector-mixing rotation is symplectic (preserves ω), that
+    the charges are conserved along the substrate flow, and that each node
+    is fully polarized (|P_node| = e_node, a point on the Poincaré sphere).
 
-    HONEST SCOPE: a hidden dynamical symmetry of the flat, isotropic H_sub
+    HONEST SCOPE: a dynamical symmetry of the flat, isotropic H_sub
     backbone (the SU(2) mixes the physically distinct geometric and
     potential sectors and is not one of the 13 operators); the charges are
     exact along the substrate flow and diagnostics at the full nonlinear
-    level.
+    level.  This is the classical polarization (Stokes/Poincaré) of a wave
+    phase field — NOT a quantum two-level system (no superposition or
+    entanglement; the doublet is per-node, the global state a product).
 
     Parameters
     ----------
@@ -2142,30 +2162,30 @@ def verify_hidden_u2_symmetry(
 
     Returns
     -------
-    HiddenU2Certificate
+    PolarizationSymmetryCertificate
     """
     point = extract_phase_space_point(G)
     n = point.n_nodes
-    charges = isospin_charges(point)
-    i_1, i_2, i_3 = charges["i_1"], charges["i_2"], charges["i_3"]
+    charges = polarization_vector(point)
+    p_1, p_2, p_3 = charges["p_1"], charges["p_2"], charges["p_3"]
 
-    # I_3 = E_geo − E_pot.
+    # P_3 = E_geo − E_pot.
     e_diff = geometric_sector_energy(point) - potential_sector_energy(point)
-    i3_matches = abs(i_3 - e_diff) < tolerance
+    p3_matches = abs(p_3 - e_diff) < tolerance
 
-    # su(2) algebra: {I_a, I_b} = 2 ε_abc I_c under the canonical bracket.
+    # su(2) algebra: {P_a, P_b} = 2 ε_abc P_c under the canonical bracket.
     omega = symplectic_form_matrix(n)
-    g1, g2, g3 = _isospin_gradients(point)
+    g1, g2, g3 = _polarization_gradients(point)
     b12 = float(g1 @ (omega @ g2))
     b23 = float(g2 @ (omega @ g3))
     b31 = float(g3 @ (omega @ g1))
     algebra_residual = max(
-        abs(b12 - 2.0 * i_3),
-        abs(b23 - 2.0 * i_1),
-        abs(b31 - 2.0 * i_2),
+        abs(b12 - 2.0 * p_3),
+        abs(b23 - 2.0 * p_1),
+        abs(b31 - 2.0 * p_2),
     )
     algebra_closes = algebra_residual < max(
-        tolerance, 1e-9 * (abs(i_1) + abs(i_2) + abs(i_3))
+        tolerance, 1e-9 * (abs(p_1) + abs(p_2) + abs(p_3))
     )
 
     # Finite SU(2) sector-mixing rotation is symplectic.
@@ -2187,40 +2207,40 @@ def verify_hidden_u2_symmetry(
     charge_drift = 0.0
     for t in flow_times:
         evolved = evolve_substrate_flow(point, t)
-        ch = isospin_charges(evolved)
+        ch = polarization_vector(evolved)
         charge_drift = max(
             charge_drift,
-            abs(ch["i_1"] - i_1),
-            abs(ch["i_2"] - i_2),
-            abs(ch["i_3"] - i_3),
+            abs(ch["p_1"] - p_1),
+            abs(ch["p_2"] - p_2),
+            abs(ch["p_3"] - p_3),
         )
     charges_conserved = charge_drift < max(
-        tolerance, 1e-9 * (abs(i_1) + abs(i_2) + abs(i_3))
+        tolerance, 1e-9 * (abs(p_1) + abs(p_2) + abs(p_3))
     )
 
-    # Hopf map: per node |I_node| = e_node (the ζ ∈ ℂ² fibration S³ → S²).
-    density = isospin_density(point)
-    hopf_residual = float(
+    # Full polarization: per node |P_node| = e_node (the Poincaré sphere).
+    density = polarization_density(point)
+    pol_residual = float(
         np.max(np.abs(density["radius"] - density["energy"]))
     )
-    hopf_holds = hopf_residual < max(
+    pol_holds = pol_residual < max(
         tolerance, 1e-9 * float(np.max(density["energy"]) + 1e-300)
     )
 
-    return HiddenU2Certificate(
+    return PolarizationSymmetryCertificate(
         n_nodes=n,
-        i_1=i_1,
-        i_2=i_2,
-        i_3=i_3,
-        casimir=charges["casimir"],
-        i3_equals_energy_difference=i3_matches,
+        p_1=p_1,
+        p_2=p_2,
+        p_3=p_3,
+        magnitude_sq=charges["magnitude_sq"],
+        p3_equals_energy_difference=p3_matches,
         su2_algebra_closes=algebra_closes,
         rotation_is_symplectic=rotation_symplectic,
         charges_conserved=charges_conserved,
         max_charge_drift=charge_drift,
         max_algebra_residual=algebra_residual,
-        hopf_map_holds=hopf_holds,
-        max_hopf_residual=hopf_residual,
+        full_polarization_holds=pol_holds,
+        max_polarization_residual=pol_residual,
     )
 
 
@@ -2241,7 +2261,8 @@ def verify_substrate_geometry(G: Any) -> SubstrateGeometryReport:
     4. :func:`verify_integrability` — action–angle integrability,
     5. :func:`verify_poincare_cartan` — Poincaré–Cartan invariants,
     6. :func:`verify_symplectic_reduction` — Marsden–Weinstein reduction,
-    7. :func:`verify_hidden_u2_symmetry` — hidden U(2) / isospin charges.
+    7. :func:`verify_polarization_symmetry` — polarization symmetry (U(2)),
+       the Stokes parameters of the (ζ^A, ζ^B) doublet.
 
     This is the consolidated entry point to the whole classical
     Hamiltonian-geometry tower the nodal dynamics generates from itself.
@@ -2264,5 +2285,5 @@ def verify_substrate_geometry(G: Any) -> SubstrateGeometryReport:
         integrability=verify_integrability(G),
         poincare_cartan=verify_poincare_cartan(G),
         marsden_weinstein=verify_symplectic_reduction(G),
-        hidden_u2=verify_hidden_u2_symmetry(G),
+        polarization=verify_polarization_symmetry(G),
     )
