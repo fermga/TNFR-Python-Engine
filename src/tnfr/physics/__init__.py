@@ -201,6 +201,7 @@ from .variational import (
     SymplecticCheck,
     GrammarStationarityAnalysis,
     CriticalPointAnalysis,
+    ThresholdDerivation,
     VariationalTimeSeries,
     VariationalTracker,
     compute_kinetic_density,
@@ -219,6 +220,7 @@ from .variational import (
     classify_operator_canonical,
     analyze_grammar_stationarity,
     analyze_potential_critical_points,
+    derive_tetrad_threshold_values,
     compute_variational_suite,
 )
 from .symplectic_substrate import (
@@ -431,6 +433,7 @@ __all__ = [
     "SymplecticCheck",
     "GrammarStationarityAnalysis",
     "CriticalPointAnalysis",
+    "ThresholdDerivation",
     "VariationalTimeSeries",
     "VariationalTracker",
     "compute_kinetic_density",
@@ -449,6 +452,7 @@ __all__ = [
     "classify_operator_canonical",
     "analyze_grammar_stationarity",
     "analyze_potential_critical_points",
+    "derive_tetrad_threshold_values",
     "compute_variational_suite",
     # --- Emergent Symplectic Substrate (geometry the dynamics generates) ---
     "PhaseSpacePoint",

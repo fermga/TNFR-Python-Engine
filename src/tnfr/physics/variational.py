@@ -93,7 +93,7 @@ from dataclasses import dataclass, field
 from typing import Any, Sequence
 
 from ..mathematics.unified_numerical import np
-from ..constants.canonical import PHI, GAMMA, PI
+from ..constants.canonical import PHI, GAMMA, PI, E
 
 # ---------------------------------------------------------------------------
 # Critical point classification
@@ -301,6 +301,94 @@ class CriticalPointAnalysis:
     is_critical: bool
     curvature_at_threshold: float
     critical_type: str
+
+@dataclass(frozen=True)
+class ThresholdDerivation:
+    r"""Derivation of a tetrad-threshold *value* from its accumulation law.
+
+    :func:`analyze_potential_critical_points` *identifies* the tetrad
+    thresholds as boundaries of the confining well ½x², taking their values
+    (φ, γ/π, 0.9π, e-scaling) as given from the Universal Tetrahedral
+    Correspondence.  This dataclass records the complementary result: each
+    canonical constant is the **fixed point / limit of the accumulation law
+    of its tetrad field**, recovered non-circularly from that law.
+
+    The four tetrad fields are the four orders of the structural derivative
+    tower (AGENTS.md §"Minimal Structural Degrees of Freedom"), and each
+    order has its own accumulation law, whose structural invariant is one of
+    the four canonical constants:
+
+    ======== ============== ==================== ==========
+    field    tower order    accumulation law     constant
+    ======== ============== ==================== ==========
+    Φ_s      0th (global)   inverse-square       φ
+    |∇φ|     1st            harmonic             γ
+    K_φ      2nd            circle (S¹)          π
+    ξ_C      correlation    exponential          e
+    ======== ============== ==================== ==========
+
+    - **φ** is the fixed point of inverse-square self-similar accumulation:
+      Σ_k s^{−2k} = 1/(1 − s^{−2}) reproduces the scaling factor s iff
+      s² − s − 1 = 0, i.e. s = φ (equivalently the fixed point of
+      x = 1 + 1/x).  Recovered by fixed-point iteration (no use of ``PHI``).
+    - **γ** is the harmonic-accumulation gap lim(H_n − ln n) — its defining
+      limit.  Recovered from the harmonic sum with the Euler–Maclaurin tail.
+    - **π** is the maximum phase angle on S¹ (the wrap_angle bound), a
+      geometric primitive = arccos(−1), not an accumulation fixed point.
+    - **e** is the unique base of scale-invariant memoryless (Markov) decay
+      C(r) = e^{−r/ξ_C}.  Recovered from Σ 1/k! (its defining series).
+
+    Attributes
+    ----------
+    field_name : str
+        Tetrad field ('Phi_s', 'grad_phi', 'K_phi', 'xi_C').
+    constant_name : str
+        Canonical constant ('phi', 'gamma', 'pi', 'e').
+    tower_order : str
+        Derivative-tower order of the field.
+    accumulation_law : str
+        The structural accumulation law of that order.
+    derived_value : float
+        Value recovered non-circularly from the accumulation law.
+    canonical_value : float
+        Value used in the engine (from ``constants.canonical``).
+    relative_error : float
+        |derived − canonical| / |canonical|.
+    matches : bool
+        True when ``relative_error`` is below tolerance.
+    threshold_expression : str
+        How the engine threshold is built from the constant.
+    status : str
+        ``'derived'`` (accumulation fixed point / defining limit),
+        ``'geometric'`` (geometric primitive), or ``'calibrated'``
+        (involves a safety-margin / normalisation choice).
+    note : str
+        Honest scope note for this threshold.
+    """
+
+    field_name: str
+    constant_name: str
+    tower_order: str
+    accumulation_law: str
+    derived_value: float
+    canonical_value: float
+    relative_error: float
+    matches: bool
+    threshold_expression: str
+    status: str
+    note: str
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "OK" if self.matches else "MISMATCH"
+        return (
+            f"{self.constant_name} ↔ {self.field_name} "
+            f"({self.accumulation_law}) [{ok}, {self.status}]: "
+            f"derived={self.derived_value:.10f}, "
+            f"canonical={self.canonical_value:.10f}, "
+            f"rel_err={self.relative_error:.1e}; "
+            f"threshold={self.threshold_expression}"
+        )
 
 @dataclass
 class VariationalTimeSeries:
@@ -1089,6 +1177,147 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
 
     return results
 
+
+def _derive_phi_fixed_point(iterations: int = 200) -> float:
+    r"""Recover φ as the fixed point of x = 1 + 1/x (non-circular).
+
+    This is the self-consistency condition of inverse-square self-similar
+    accumulation: Σ_k s^{−2k} = 1/(1 − s^{−2}) equals the scaling factor s
+    iff s² − s − 1 = 0.  Iterating x ← 1 + 1/x converges to that positive
+    root without referencing the canonical ``PHI``.
+    """
+    x = 1.0
+    for _ in range(iterations):
+        x = 1.0 + 1.0 / x
+    return x
+
+
+def _derive_gamma_harmonic_gap(n: int = 100_000) -> float:
+    r"""Recover γ as the harmonic-accumulation gap lim(H_n − ln n).
+
+    Uses the Euler–Maclaurin asymptotic of the harmonic number
+    H_n = ln n + γ + 1/(2n) − 1/(12n²) + O(n^{−4}) to converge quickly,
+    without referencing the canonical ``GAMMA``.
+    """
+    k = np.arange(1, n + 1, dtype=float)
+    h_n = float(np.sum(1.0 / k))
+    return h_n - math.log(n) - 1.0 / (2.0 * n) + 1.0 / (12.0 * n * n)
+
+
+def _derive_e_factorial_series(terms: int = 25) -> float:
+    r"""Recover e as Σ 1/k! (non-circular).
+
+    e is the unique base of scale-invariant memoryless (Markov) decay
+    C(r) = e^{−r/ξ_C}; its defining series Σ 1/k! recovers the value without
+    referencing the canonical ``E``.
+    """
+    total = 0.0
+    factorial = 1.0
+    for k in range(terms):
+        if k > 0:
+            factorial *= k
+        total += 1.0 / factorial
+    return total
+
+
+def derive_tetrad_threshold_values(
+    *, tolerance: float = 1e-6
+) -> list[ThresholdDerivation]:
+    r"""Derive the tetrad-threshold *values* from their accumulation laws.
+
+    Complements :func:`analyze_potential_critical_points` (which identifies
+    the thresholds as confining-well boundaries) by recovering each
+    canonical constant non-circularly from the accumulation law of its
+    tetrad field — the four orders of the structural derivative tower.
+
+    ======== ============== ================ ========= ============
+    field    accumulation   constant         status    threshold
+    ======== ============== ================ ========= ============
+    Φ_s      inverse-square φ                derived   Δφ_s < φ
+    |∇φ|     harmonic       γ                derived   |∇φ| < γ/π
+    K_φ      circle (S¹)    π                geometric |K_φ| < 0.9π
+    ξ_C      exponential    e                derived   C(r)=e^{−r/ξ}
+    ======== ============== ================ ========= ============
+
+    Honest scope:
+
+    - **φ** and **e** are recovered as the fixed point / defining series of
+      their accumulation laws; **γ** as its defining limit.  These are
+      genuine value derivations.
+    - **π** is a geometric primitive (the maximum phase angle on S¹), not an
+      accumulation fixed point.
+    - The threshold *expressions* γ/π (Kuramoto-type critical coupling) and
+      0.9π (a 90 % safety margin) involve an identification / calibration on
+      top of the derived constant; this is flagged per row via ``status``
+      and ``note``.
+
+    Parameters
+    ----------
+    tolerance : float, optional
+        Maximum relative error for ``matches``.
+
+    Returns
+    -------
+    list[ThresholdDerivation]
+        One derivation per tetrad field.
+    """
+    phi = _derive_phi_fixed_point()
+    gamma = _derive_gamma_harmonic_gap()
+    pi_val = math.acos(-1.0)  # maximum phase angle on S¹ (wrap_angle bound)
+    e_val = _derive_e_factorial_series()
+
+    rows = [
+        (
+            "Phi_s", "phi", "0th (global aggregation)", "inverse-square",
+            phi, PHI, "Δφ_s < φ", "derived",
+            "φ is the fixed point of inverse-square self-similar "
+            "accumulation (s²−s−1=0); the confinement bound is φ directly.",
+        ),
+        (
+            "grad_phi", "gamma", "1st (local derivative)", "harmonic",
+            gamma, GAMMA, "|∇φ| < γ/π", "derived",
+            "γ is the harmonic-accumulation gap lim(H_n−ln n). The "
+            "threshold γ/π divides it by the phase-circle constant π "
+            "(Kuramoto-type critical coupling — the ratio is an "
+            "identification, the constant γ is derived).",
+        ),
+        (
+            "K_phi", "pi", "2nd (discrete Laplacian)", "circle (S¹)",
+            pi_val, PI, "|K_φ| < 0.9·π", "geometric",
+            "π is the maximum phase angle on S¹ (the wrap_angle bound = "
+            "arccos(−1)), a geometric primitive. The 0.9 factor is a 90 % "
+            "safety margin (calibrated, not derived).",
+        ),
+        (
+            "xi_C", "e", "correlation (non-local)", "exponential",
+            e_val, E, "C(r) = e^{−r/ξ_C}", "derived",
+            "e is the unique base of scale-invariant memoryless (Markov) "
+            "decay C(r)=e^{−r/ξ_C}, recovered from Σ 1/k!. The ξ_C scale "
+            "thresholds (diameter, π·mean-distance) are calibrated.",
+        ),
+    ]
+
+    out: list[ThresholdDerivation] = []
+    for (
+        field_name, const_name, tower, law, derived, canonical,
+        expr, status, note,
+    ) in rows:
+        rel_err = abs(derived - canonical) / (abs(canonical) + 1e-300)
+        out.append(ThresholdDerivation(
+            field_name=field_name,
+            constant_name=const_name,
+            tower_order=tower,
+            accumulation_law=law,
+            derived_value=float(derived),
+            canonical_value=float(canonical),
+            relative_error=float(rel_err),
+            matches=bool(rel_err < tolerance),
+            threshold_expression=expr,
+            status=status,
+            note=note,
+        ))
+    return out
+
 # ---------------------------------------------------------------------------
 #  Operator canonical classification
 # ---------------------------------------------------------------------------
@@ -1311,6 +1540,7 @@ __all__ = [
     "SymplecticCheck",
     "GrammarStationarityAnalysis",
     "CriticalPointAnalysis",
+    "ThresholdDerivation",
     "VariationalTimeSeries",
     # Core Lagrangian
     "compute_kinetic_density",
@@ -1336,6 +1566,7 @@ __all__ = [
     "analyze_grammar_stationarity",
     # Critical points
     "analyze_potential_critical_points",
+    "derive_tetrad_threshold_values",
     # Comprehensive suite
     "compute_variational_suite",
 ]

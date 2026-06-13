@@ -40,7 +40,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import PHI, GAMMA, PI
+from tnfr.constants.canonical import PHI, GAMMA, PI, E
 
 from tnfr.physics.variational import (
     ConjugatePair,
@@ -66,6 +66,7 @@ from tnfr.physics.variational import (
     classify_operator_canonical,
     analyze_grammar_stationarity,
     analyze_potential_critical_points,
+    derive_tetrad_threshold_values,
     compute_variational_suite,
 )
 from tnfr.physics.unified import compute_energy_density
@@ -388,6 +389,63 @@ class TestCriticalPoints:
         results = analyze_potential_critical_points(ws_graph)
         for r in results:
             assert r.critical_type in ('minimum', 'maximum', 'saddle', 'regular')
+
+
+class TestThresholdDerivation:
+    """Tetrad-threshold VALUES are recovered from their accumulation laws."""
+
+    def test_four_fields_derived(self):
+        rows = derive_tetrad_threshold_values()
+        names = {r.field_name for r in rows}
+        assert names == {'Phi_s', 'grad_phi', 'K_phi', 'xi_C'}
+
+    def test_all_match_canonical_constants(self):
+        rows = derive_tetrad_threshold_values()
+        for r in rows:
+            assert r.matches, f"{r.constant_name} did not match canonical"
+
+    def test_phi_from_inverse_square_fixed_point(self):
+        rows = {r.field_name: r for r in derive_tetrad_threshold_values()}
+        phi_row = rows['Phi_s']
+        # φ recovered non-circularly equals the canonical golden ratio.
+        assert abs(phi_row.derived_value - PHI) < 1e-9
+        # and satisfies the self-consistency φ² − φ − 1 = 0.
+        d = phi_row.derived_value
+        assert abs(d * d - d - 1.0) < 1e-9
+        assert phi_row.status == 'derived'
+
+    def test_gamma_from_harmonic_gap(self):
+        rows = {r.field_name: r for r in derive_tetrad_threshold_values()}
+        gamma_row = rows['grad_phi']
+        assert abs(gamma_row.derived_value - GAMMA) < 1e-6
+        assert gamma_row.status == 'derived'
+
+    def test_pi_is_geometric_primitive(self):
+        rows = {r.field_name: r for r in derive_tetrad_threshold_values()}
+        pi_row = rows['K_phi']
+        assert abs(pi_row.derived_value - PI) < 1e-12
+        # π is the geometric maximum phase angle on S¹, not an
+        # accumulation fixed point.
+        assert pi_row.status == 'geometric'
+
+    def test_e_from_factorial_series(self):
+        rows = {r.field_name: r for r in derive_tetrad_threshold_values()}
+        e_row = rows['xi_C']
+        assert abs(e_row.derived_value - E) < 1e-12
+        assert e_row.status == 'derived'
+
+    def test_summary_contains_verdict(self):
+        rows = derive_tetrad_threshold_values()
+        for r in rows:
+            s = r.summary()
+            assert 'OK' in s
+            assert r.constant_name in s
+
+    def test_tolerance_rejects_mismatch(self):
+        # matches = rel_err < tolerance; at tolerance 0 no row matches
+        # (rel_err < 0 is always False, even for the exact rel_err = 0).
+        rows = derive_tetrad_threshold_values(tolerance=0.0)
+        assert all(not r.matches for r in rows)
 
 
 # ---------------------------------------------------------------------------

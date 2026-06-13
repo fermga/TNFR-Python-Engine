@@ -38,6 +38,7 @@ from tnfr.physics.variational import (
     identify_conjugate_pairs,
     compute_phase_space_volume,
     analyze_potential_critical_points,
+    derive_tetrad_threshold_values,
 )
 
 SEED = 42
@@ -306,6 +307,30 @@ def demo_critical_points() -> None:
     print()
 
 
+def demo_threshold_derivation() -> None:
+    """Derive the tetrad-threshold VALUES from their accumulation laws."""
+    print("=" * 60)
+    print("9. THRESHOLD VALUES  —  constants from accumulation laws")
+    print("=" * 60)
+    print("Each tetrad field is one order of the structural derivative")
+    print("tower; its accumulation law has a canonical constant as its")
+    print("fixed point / limit (recovered non-circularly below).")
+    print()
+
+    for r in derive_tetrad_threshold_values():
+        print(f"  {r.constant_name:5s} <- {r.field_name:8s} "
+              f"({r.accumulation_law:14s})  "
+              f"derived={r.derived_value:.10f}  "
+              f"rel_err={r.relative_error:.1e}  [{r.status}]")
+    print()
+    print("DERIVED: phi (inverse-square fixed point s^2-s-1=0), gamma")
+    print("(harmonic gap lim H_n-ln n), e (memoryless decay sum 1/k!).")
+    print("GEOMETRIC: pi (max phase angle on S^1 = arccos(-1)). The")
+    print("threshold ratios gamma/pi and 0.9*pi add a Kuramoto")
+    print("identification / safety margin on top of the derived constant.")
+    print()
+
+
 # ------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------
@@ -325,6 +350,7 @@ def main() -> None:
     demo_grammar_stationarity()
     demo_sector_translation()
     demo_critical_points()
+    demo_threshold_derivation()
 
     print("=" * 60)
     print("CONCLUSION: The nodal equation emerges from an action principle.")

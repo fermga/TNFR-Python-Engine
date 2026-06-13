@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,857 tests across multiple topologies
+- Experimental Validation: 1,865 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -352,6 +352,8 @@ Each correspondence has a specific mathematical derivation (all implementations 
 3. **π ↔ K_φ**: Phase curvature lives on S¹ (the circle). The wrap_angle operation constrains |K_φ| ≤ π by construction — the geometric constant that defines maximum angular deviation.
 
 4. **e ↔ ξ_C**: Correlation decay is inherently exponential (Markov process along graph paths). Napier's constant ensures scale invariance: rescaling r → αr simply rescales ξ_C → αξ_C.
+
+**Computational derivation (verifiable)**: [src/tnfr/physics/variational.py](src/tnfr/physics/variational.py)::`derive_tetrad_threshold_values` recovers each constant **non-circularly from the accumulation law of its tetrad field** — the four orders of the structural derivative tower. φ is recovered as the fixed point of inverse-square self-similar accumulation (x = 1 + 1/x ⟺ s² − s − 1 = 0); γ as the harmonic-accumulation gap lim(H_n − ln n); e as the memoryless-decay series Σ 1/k!; π as the maximum phase angle on S¹ (arccos(−1)). Honest status: **φ, γ, e are derived** (accumulation fixed point / defining limit), **π is a geometric primitive**, and the threshold *expressions* γ/π (Kuramoto-type critical coupling) and 0.9π (90 % safety margin) add an identification / calibration on top of the derived constant. This complements [src/tnfr/physics/variational.py](src/tnfr/physics/variational.py)::`analyze_potential_critical_points`, which *identifies* the same thresholds as confining-well boundaries.
 
 ### Tetrahedral Edge Relationships
 
@@ -802,7 +804,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,857 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,865 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1539,7 +1541,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,857 tests)
+- **TESTING.md**: Test strategy (1,865 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
