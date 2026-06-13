@@ -551,6 +551,7 @@ Structural triad: $\mathrm{EPI}(30) \approx 3.43$, $\nu_f(30) \approx 0.95$, $C_
 | [40_arithmetic_number_theory.py](../examples/40_arithmetic_number_theory.py) | Primality, triad, component analysis |
 | [94_generative_number_construction.py](../examples/94_generative_number_construction.py) | Compositional generation from prime atoms; U5 fractality; grammar certification |
 | [95_primes_from_spectral_waves.py](../examples/95_primes_from_spectral_waves.py) | Prime staircase ψ(x) as spectral-wave superposition; spectral coherence ⟺ RH (honest scope) |
+| [96_spectral_vibration_of_coherence.py](../examples/96_spectral_vibration_of_coherence.py) | Oscillatory residue S(T) as prime-ladder vibration {k·log p}; why aggregate C(t) is blind (honest scope) |
 
 ### 12.3 Test Coverage
 
