@@ -189,7 +189,7 @@ The TNFR grammar system is **mathematically derived** from the **4 universal rel
 
 **Every grammar constraint derives inevitably from physics** - no arbitrary rules exist.
 
-**Complete Derivations**: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)  
+**Complete Derivations**: [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md)  
 **Quick Reference**: [AGENTS.md § Unified Grammar](AGENTS.md#unified-grammar-u1-u6)
 
 1. **U1 - INITIATION & CLOSURE**: Mathematical necessity at EPI=0, action potential endpoints

@@ -52,9 +52,9 @@ result = TNFR.create(100).evolve(10).auto_optimize().results()
 
 ## 📚 **Documentation**
 
-- **Theory**: [AGENTS.md](../../AGENTS.md) - Single Source of Truth
-- **Grammar**: [UNIFIED_GRAMMAR_RULES.md](../../UNIFIED_GRAMMAR_RULES.md) 
-- **Examples**: [examples/](../../examples/) - Sequential tutorials
+- **Theory**: [AGENTS.md](../../../AGENTS.md) - Single Source of Truth
+- **Grammar**: [UNIFIED_GRAMMAR_RULES.md](../../../theory/UNIFIED_GRAMMAR_RULES.md) 
+- **Examples**: [examples/](../../../examples/) - Sequential tutorials
 - **Individual engines**: See README.md in each subdirectory
 
 ## 🎯 **Engine Selection Guide**

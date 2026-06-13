@@ -1,6 +1,6 @@
 # Microbenchmarks
 
-> DEPRECATION NOTICE (Docs): Benchmark documentation is developer-focused and not part of the centralized user documentation. For canonical docs, start with `docs/source/index.rst` and `docs/DOCUMENTATION_INDEX.md`.
+> DEPRECATION NOTICE (Docs): Benchmark documentation is developer-focused and not part of the centralized user documentation. For canonical docs, start with `docs/README.md` and `AGENTS.md`.
 
 This directory hosts **targeted microbenchmarks** for hot paths in the TNFR
 engine. Each script isolates a specific optimisation and contrasts it with a
@@ -763,7 +763,7 @@ PYTHONPATH=src python benchmarks/comprehensive_cache_profiler.py \
 * `sense_index`: 0.7% hit rate, 100% buffer reuse (expected - creates new structural arrays)
 * `dnfr_laplacian`: 0.0% hit rate, 100% buffer reuse (by design - stateless gradients)
 
-For detailed analysis see `docs/CACHE_OPTIMIZATION_ANALYSIS.md` and `ARCHITECTURE.md`.
+For detailed analysis see `ARCHITECTURE.md`.
 
 **Usage Examples:**
 

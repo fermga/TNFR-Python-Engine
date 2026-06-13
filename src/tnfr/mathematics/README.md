@@ -13,11 +13,11 @@ Scope and guarantees:
 If any other document disagrees with this README on core computational mathematics, defer to this README and file an issue to reconcile the inconsistency.
 
 Quick pointers:
-- Formal theory: [docs/source/theory/mathematical_foundations.md](../../../docs/source/theory/mathematical_foundations.md)
+- Formal theory: [docs/source/theory/mathematical_foundations.md](../../../theory/MATHEMATICAL_DYNAMICS_BASIS.md)
 - Symbolic suite: [src/tnfr/math](../math/README.md)
 - Fields (Φ_s, |∇φ|, K_φ, ξ_C): [src/tnfr/physics/fields.py](../physics/fields.py) and docs sections below
-- Number theory guide (ΔNFR prime criterion): [docs/TNFR_NUMBER_THEORY_GUIDE.md](../../../docs/TNFR_NUMBER_THEORY_GUIDE.md)
-- Interactive notebook: [examples/tnfr_prime_checker.ipynb](../../../examples/tnfr_prime_checker.ipynb)
+- Number theory guide (ΔNFR prime criterion): [docs/TNFR_NUMBER_THEORY_GUIDE.md](../../../theory/TNFR_NUMBER_THEORY.md)
+- Interactive notebook: [examples/tnfr_prime_checker.ipynb](../../../examples/07_number_theory/40_arithmetic_number_theory.py)
 
 ## Module Organization
 
@@ -101,7 +101,7 @@ isometry_factory = build_isometry_factory(
 
 ## Factory Design Patterns
 
-All factories in this module follow the patterns documented in [Architecture Guide — Factory Patterns](../../../docs/source/advanced/ARCHITECTURE_GUIDE.md#factory-patterns):
+All factories in this module follow the patterns documented in [Architecture Guide — Factory Patterns](../../../ARCHITECTURE.md):
 
 1. **Clear naming**: `make_*` for operators, `build_*` for generators
 2. **Input validation**: Dimension checks, spectrum validation, topology verification
@@ -189,11 +189,11 @@ See [tests/mathematics](../../../tests/mathematics) for the complete test suite.
 
 ## Related Documentation
 
-- [Architecture Guide — Factory Patterns](../../../docs/source/advanced/ARCHITECTURE_GUIDE.md#factory-patterns) — Comprehensive factory design patterns
+- [Architecture Guide — Factory Patterns](../../../ARCHITECTURE.md) — Comprehensive factory design patterns
 - [TNFR Paradigm](../../../TNFR.pdf) — Theoretical foundations
 - [AGENTS.md](../../../AGENTS.md) — Structural invariants and contracts
-- [API Overview](../../../docs/source/api/overview.md) — Package-level documentation
-- [Mathematical Foundations (theory)](../../../docs/source/theory/mathematical_foundations.md) — Complete derivations
+- [API Overview](../../../AGENTS.md) — Package-level documentation
+- [Mathematical Foundations (theory)](../../../theory/MATHEMATICAL_DYNAMICS_BASIS.md) — Complete derivations
 
 ## Canonical equations and contracts
 
@@ -340,7 +340,7 @@ Outputs include:
 
 A ready-to-use notebook verifies a number’s primality using only the TNFR pressure equation ΔNFR (no factorization or external primality tests):
 
-- Path: [examples/tnfr_prime_checker.ipynb](../../../examples/tnfr_prime_checker.ipynb)
+- Path: [examples/tnfr_prime_checker.ipynb](../../../examples/07_number_theory/40_arithmetic_number_theory.py)
 - Cells: explanation, imports, `tnfr_is_prime(n)` function, interactive and batch tests
 
 Logic: `tnfr_is_prime(n) := (ΔNFR_n == 0)` with ΔNFR_n as defined above. This complies with U1–U4 and preserves the invariants (ΔNFR as structural pressure, νf in Hz_str, no ad-hoc EPI mutations).
@@ -352,8 +352,8 @@ Notes:
 ## Classical mechanics emergence (cross-reference)
 
 For the emergence of classical mechanics from TNFR (mass m = 1/νf; force as coherence gradient), see:
-- [docs/source/theory/07_emergence_classical_mechanics.md](../../../docs/source/theory/07_emergence_classical_mechanics.md)
-- [docs/source/theory/08_classical_mechanics_euler_lagrange.md](../../../docs/source/theory/08_classical_mechanics_euler_lagrange.md)
-- [docs/source/theory/09_classical_mechanics_numerical_validation.md](../../../docs/source/theory/09_classical_mechanics_numerical_validation.md)
+- [docs/source/theory/07_emergence_classical_mechanics.md](../../../theory/PHYSICAL_REGIME_CORRESPONDENCES.md)
+- [docs/source/theory/08_classical_mechanics_euler_lagrange.md](../../../theory/TNFR_VARIATIONAL_PRINCIPLE.md)
+- [docs/source/theory/09_classical_mechanics_numerical_validation.md](../../../examples/02_physics_regimes/12_classical_mechanics_demo.py)
 
 This README serves as the hub; the above documents contain full derivations and validation results.

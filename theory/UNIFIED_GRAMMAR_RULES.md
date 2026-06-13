@@ -7,8 +7,8 @@ This document defines the **unified canonical grammar** for TNFR that consolidat
 **Goal:** One grammar, derived 100% from TNFR physics, with no duplication or inconsistency.
 
 **Related Documentation:**
-- **[AGENTS.md](AGENTS.md)** - Concise grammar reference for developers
-- **[docs/grammar/02-CANONICAL-CONSTRAINTS.md](docs/grammar/02-CANONICAL-CONSTRAINTS.md)** - Technical specifications with implementation examples
+- **[AGENTS.md](../AGENTS.md)** - Concise grammar reference for developers
+- **[docs/grammar/02-CANONICAL-CONSTRAINTS.md](../docs/grammar/PHYSICS_VERIFICATION.md)** - Technical specifications with implementation examples
 - **[GLOSSARY.md](GLOSSARY.md)** - Quick term reference
 - **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)** - Canonical implementation
 
@@ -1218,7 +1218,7 @@ net = TNFR.create(15).random(0.3).evolve_grammar_aware(steps=10)
 - **Tetrad** (read-only telemetry under U6): Φ_s, |∇φ|, K_φ, ξ_C
 - **Flux Pair** (dynamics variables): J_φ, ∇·J_ΔNFR
 
-**See**: [docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md](docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md)
+**See**: [docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
 
 ---
 

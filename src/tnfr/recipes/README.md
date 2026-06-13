@@ -212,7 +212,7 @@ For detailed recipe documentation including:
 - Variations and adaptations
 - Quick reference tables
 
-See: **[docs/PATTERN_COOKBOOK.md](../../../docs/PATTERN_COOKBOOK.md)**
+See: **[AGENTS.md — Operator Composition](../../../AGENTS.md#operator-composition)**
 
 ## Integration with Other Components
 

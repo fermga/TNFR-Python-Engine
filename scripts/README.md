@@ -134,7 +134,7 @@ When writing factory functions, follow these steps to maintain stub synchronizat
 3. **Verify the stub**: Check that `.pyi` matches your signatures
 4. **Commit both files**: `.py` and `.pyi` together
 
-See [Architecture Guide — Factory Patterns](../docs/source/advanced/ARCHITECTURE_GUIDE.md#factory-patterns) for factory function guidelines.
+See [Architecture Guide — Factory Patterns](../ARCHITECTURE.md) for factory function guidelines.
 
 ### Troubleshooting
 
@@ -160,8 +160,8 @@ If a file is reported as outdated but hasn't changed:
 
 ### Related Documentation
 
-- [Architecture Guide — Factory Patterns](../docs/source/advanced/ARCHITECTURE_GUIDE.md#factory-patterns) - Factory function guidelines
-- [Architecture Guide](../docs/source/advanced/ARCHITECTURE_GUIDE.md) - Consolidated architecture and patterns
+- [Architecture Guide — Factory Patterns](../ARCHITECTURE.md) - Factory function guidelines
+- [Architecture Guide](../ARCHITECTURE.md) - Consolidated architecture and patterns
 - [mypy stubgen documentation](https://mypy.readthedocs.io/en/stable/stubgen.html)
 
 ## Other Scripts

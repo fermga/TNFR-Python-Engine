@@ -278,7 +278,7 @@ Publishers should copy `LICENSE_SNAPSHOT.md` alongside the archives to satisfy Z
 licensing policy and attach the generated `dist/sha256.txt` checksum file described in
 `ZENODO_PUBLICATION_GUIDE.md`.
 
-Operator-sequence certificate design notes now live in `docs/OPERATOR_CERTIFICATES.md`.
+Operator-sequence certificate design notes are maintained with the certificate tooling in this lab.
 They outline how future releases will prove factor claims via canonical sequences (e.g.,
 `[AL, UM, RA, IL, SHA, THOL, NAV]`) so gcd corroboration becomes supportive rather than
 primary evidence.

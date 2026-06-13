@@ -20,7 +20,7 @@ TNFR dynamics begins with a fundamental equation governing each node:
 - **ΔNFR**: Reorganization gradient (structural pressure)
 
 **Emergent principles** from this equation:
-- **U1-U6**: Unified grammar → [`UNIFIED_GRAMMAR_RULES.md`](../../../UNIFIED_GRAMMAR_RULES.md)
+- **U1-U6**: Unified grammar → [`UNIFIED_GRAMMAR_RULES.md`](../../../theory/UNIFIED_GRAMMAR_RULES.md)
 - **Canonical invariants** → [`AGENTS.md`](../../../AGENTS.md)
 - **Physical foundations** → [`TNFR.pdf`](../../../TNFR.pdf) §1-2
 
@@ -33,7 +33,7 @@ From the nodal equation emerge **four canonical fields** that characterize the s
 ### **Structural Tetrad (Canonical Definitions)**
 
 - Physics, equations, and thresholds → [`docs/STRUCTURAL_FIELDS_TETRAD.md`](../../../docs/STRUCTURAL_FIELDS_TETRAD.md)
-- Grammar / U6 safety roles and Hexad taxonomy → [`docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md`](../../../docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md)
+- Grammar / U6 safety roles and Hexad taxonomy → [`docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md`](../../../docs/STRUCTURAL_FIELDS_TETRAD.md)
 
 Brief overview (see docs above for full details):
 
@@ -43,11 +43,11 @@ Brief overview (see docs above for full details):
 4. **ξ_C (Coherence Length)**: Spatial correlation scale / critical behavior
 
 **Implementation**: [`src/tnfr/physics/fields.py`](fields.py)  
-**Extended canonical fields (flux pair & spectra)**: see [`docs/EXTENDED_FIELDS_INTEGRATION_SUMMARY.md`](../../../docs/EXTENDED_FIELDS_INTEGRATION_SUMMARY.md)
+**Extended canonical fields (flux pair & spectra)**: see [`docs/EXTENDED_FIELDS_INTEGRATION_SUMMARY.md`](../../../theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md)
 
 **OZ→IL precision walks & telemetry behavior** (Φ_s, |∇φ|, K_φ, ξ_C under dissonance/coherence sequences):
-- Canonical correlation narrative → [`benchmarks/results/ozil_hi_correlation_summary.md`](../../../benchmarks/results/ozil_hi_correlation_summary.md)
-- Aggregated snapshots / dashboards → [`benchmarks/results/precision_walk_dashboard.md`](../../../benchmarks/results/precision_walk_dashboard.md)
+- Canonical correlation narrative → [`benchmarks/results/ozil_hi_correlation_summary.md`](../../../benchmarks/README.md)
+- Aggregated snapshots / dashboards → [`benchmarks/results/precision_walk_dashboard.md`](../../../benchmarks/README.md)
 
 ---
 
@@ -82,10 +82,10 @@ When patterns achieve **sufficient self-organization**, autopoietic behavior eme
 - **M (Stability Margin)**: Robustness against perturbations
 
 **Theoretical documentation**:
-- Conceptual framework → [`docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md`](../../../docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md)
-- Mathematical derivation → [`docs/LIFE_MATHEMATICAL_DERIVATION.md`](../../../docs/LIFE_MATHEMATICAL_DERIVATION.md)
+- Conceptual framework → [`docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md`](../../../AGENTS.md)
+- Mathematical derivation → [`docs/LIFE_MATHEMATICAL_DERIVATION.md`](../../../AGENTS.md)
 
-**Experimental validation**: [`examples/life_experiments.py`](../../../examples/life_experiments.py)
+**Experimental validation**: [`examples/life_experiments.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
 
 ---
 
@@ -112,8 +112,8 @@ Upon the autopoietic foundation (A > 1.0), **cellular organization** emerges thr
 - **Homeostatic index**: `compute_homeostatic_index()`
 - **Membrane integrity**: `compute_membrane_integrity()`
 
-**Theoretical documentation**: [`docs/CELL_EMERGENCE_FROM_TNFR.md`](../../../docs/CELL_EMERGENCE_FROM_TNFR.md)  
-**Experimental validation**: [`examples/cell_experiments.py`](../../../examples/cell_experiments.py)
+**Theoretical documentation**: [`docs/CELL_EMERGENCE_FROM_TNFR.md`](../../../AGENTS.md)  
+**Experimental validation**: [`examples/cell_experiments.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
 
 ---
 
@@ -129,8 +129,8 @@ Upon the autopoietic foundation (A > 1.0), **cellular organization** emerges thr
 
 **Physical principle**: Elements are **stable coherence patterns** modeled within TNFR nodal dynamics.
 
-**Documentation hub**: [`docs/MOLECULAR_CHEMISTRY_HUB.md`](../../../docs/MOLECULAR_CHEMISTRY_HUB.md)  
-**Validation**: [`examples/elements_signature_study.py`](../../../examples/elements_signature_study.py)
+**Documentation hub**: [`docs/MOLECULAR_CHEMISTRY_HUB.md`](../../../AGENTS.md)  
+**Validation**: [`examples/elements_signature_study.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
 
 ---
 
@@ -188,17 +188,17 @@ Upon the autopoietic foundation (A > 1.0), **cellular organization** emerges thr
 ### **Level 4: Vital Emergence** → A > 1.0
 **Input**: Self-organized patterns  
 **Output**: Autopoietic behavior (Vi, A, S, M)  
-**Implementation**: [`life.py`](life.py) + [`examples/life_experiments.py`](../../../examples/life_experiments.py)
+**Implementation**: [`life.py`](life.py) + [`examples/life_experiments.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
 
 ### **Level 5: Cellular Organization** → Compartmentalization  
 **Input**: Autopoietic foundation (A > 1.0)  
 **Output**: Cells with selective membranes (C_boundary, ρ_selectivity, H_index, I_compartment)  
-**Implementation**: [`cell.py`](cell.py) + [`examples/cell_experiments.py`](../../../examples/cell_experiments.py)
+**Implementation**: [`cell.py`](cell.py) + [`examples/cell_experiments.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
 
 ### **Level 6: Molecular Chemistry** → Elemental attractors
 **Input**: Cellular organization + multi-scale optimization  
 **Output**: Chemical elements as stable patterns (H, C, N, O, Au)  
-**Implementation**: [`signatures.py`](signatures.py) + [`examples/elements_signature_study.py`](../../../examples/elements_signature_study.py)
+**Implementation**: [`signatures.py`](signatures.py) + [`examples/elements_signature_study.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
 
 ---
 
@@ -206,17 +206,17 @@ Upon the autopoietic foundation (A > 1.0), **cellular organization** emerges thr
 
 ### **Canonical Documentation**
 - **Foundations**: [`TNFR.pdf`](../../../TNFR.pdf), [`AGENTS.md`](../../../AGENTS.md)
-- **Grammar**: [`UNIFIED_GRAMMAR_RULES.md`](../../../UNIFIED_GRAMMAR_RULES.md)
+- **Grammar**: [`UNIFIED_GRAMMAR_RULES.md`](../../../theory/UNIFIED_GRAMMAR_RULES.md)
 - **Fields**: [`docs/STRUCTURAL_FIELDS_TETRAD.md`](../../../docs/STRUCTURAL_FIELDS_TETRAD.md)
-- **Life**: [`docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md`](../../../docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md)
-- **Cells**: [`docs/CELL_EMERGENCE_FROM_TNFR.md`](../../../docs/CELL_EMERGENCE_FROM_TNFR.md)
-- **Chemistry**: [`docs/MOLECULAR_CHEMISTRY_HUB.md`](../../../docs/MOLECULAR_CHEMISTRY_HUB.md)
+- **Life**: [`docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md`](../../../AGENTS.md)
+- **Cells**: [`docs/CELL_EMERGENCE_FROM_TNFR.md`](../../../AGENTS.md)
+- **Chemistry**: [`docs/MOLECULAR_CHEMISTRY_HUB.md`](../../../AGENTS.md)
 
 ### **Experimental Validation**
-- **Fields**: [`notebooks/Force_Fields_Tetrad_Exploration.ipynb`](../../../notebooks/Force_Fields_Tetrad_Exploration.ipynb)
-- **Life**: [`examples/life_experiments.py`](../../../examples/life_experiments.py)
-- **Cells**: [`examples/cell_experiments.py`](../../../examples/cell_experiments.py)
-- **Chemistry**: [`examples/elements_signature_study.py`](../../../examples/elements_signature_study.py)
+- **Fields**: [`notebooks/Force_Fields_Tetrad_Exploration.ipynb`](../../../examples/02_physics_regimes/35_tetrad_irreducibility.py)
+- **Life**: [`examples/life_experiments.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
+- **Cells**: [`examples/cell_experiments.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
+- **Chemistry**: [`examples/elements_signature_study.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
 
 ### **Complete API**
 - **Fields**: `fields.py` (compute_structural_potential, compute_phase_gradient, etc.)
@@ -248,13 +248,13 @@ Upon the autopoietic foundation (A > 1.0), **cellular organization** emerges thr
 
 ### **For Users** (1 hour)
 1. **Foundations**: Read [`AGENTS.md`](../../../AGENTS.md) (nodal equation, invariants)
-2. **Fields**: Run [`notebooks/Force_Fields_Tetrad_Exploration.ipynb`](../../../notebooks/Force_Fields_Tetrad_Exploration.ipynb)  
-3. **Life**: Run [`examples/life_experiments.py`](../../../examples/life_experiments.py)
-4. **Cells**: Run [`examples/cell_experiments.py`](../../../examples/cell_experiments.py)
+2. **Fields**: Run [`notebooks/Force_Fields_Tetrad_Exploration.ipynb`](../../../examples/02_physics_regimes/35_tetrad_irreducibility.py)  
+3. **Life**: Run [`examples/life_experiments.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
+4. **Cells**: Run [`examples/cell_experiments.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
 
 ### **For Researchers** (1 week)  
-1. **Complete theory**: [`TNFR.pdf`](../../../TNFR.pdf) + [`UNIFIED_GRAMMAR_RULES.md`](../../../UNIFIED_GRAMMAR_RULES.md)
-2. **Theoretical frameworks**: Life ([`docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md`](../../../docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md)), Cells ([`docs/CELL_EMERGENCE_FROM_TNFR.md`](../../../docs/CELL_EMERGENCE_FROM_TNFR.md))
+1. **Complete theory**: [`TNFR.pdf`](../../../TNFR.pdf) + [`UNIFIED_GRAMMAR_RULES.md`](../../../theory/UNIFIED_GRAMMAR_RULES.md)
+2. **Theoretical frameworks**: Life ([`docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md`](../../../AGENTS.md)), Cells ([`docs/CELL_EMERGENCE_FROM_TNFR.md`](../../../AGENTS.md))
 3. **Validation**: Run all experiments + notebooks
 4. **API**: Explore modules `fields.py`, `life.py`, `cell.py`
 

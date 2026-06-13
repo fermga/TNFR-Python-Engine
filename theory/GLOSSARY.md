@@ -3,9 +3,9 @@
 **Purpose**: Operational quick reference for the Resonant Fractal Nature Theory (TNFR) v0.0.3  
 **Status**: Complete reference for current implementation  
 **Version**: March 2026  
-**Authority**: Aligned with [AGENTS.md](AGENTS.md) as single source of truth  
+**Authority**: Aligned with [AGENTS.md](../AGENTS.md) as single source of truth  
 
-**Scope**: This glossary provides **API-focused definitions** for developers implementing TNFR networks. For complete theoretical foundations, see [AGENTS.md](AGENTS.md) and [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
+**Scope**: This glossary provides **API-focused definitions** for developers implementing TNFR networks. For complete theoretical foundations, see [AGENTS.md](../AGENTS.md) and [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
 
 ---
 
@@ -19,7 +19,7 @@
 **Space:** \(B_{\text{EPI}}\) (Banach space)  
 **Rules:** Modified only via structural operators, never directly  
 **API:** `tnfr.structural` operators  
-**Math:** [§2.2 Banach Space B_EPI](docs/source/theory/mathematical_foundations.md#22-banach-space-b_epi)
+**Math:** [§2.2 Banach Space B_EPI](MATHEMATICAL_DYNAMICS_BASIS.md_epi)
 
 ### Structural Frequency (νf)
 
@@ -29,7 +29,7 @@
 **Range:** \(\mathbb{R}^+\) (positive reals; node collapse when \(\nu_f \to 0\))  
 **What:** Rate of structural reorganization  
 **API:** `adapt_vf_by_coherence()`, operators  
-**Math:** [§3.2 Frequency Operator Ĵ](docs/source/theory/mathematical_foundations.md#32-frequency-operator-ĵ)
+**Math:** [§3.2 Frequency Operator Ĵ](MATHEMATICAL_DYNAMICS_BASIS.mdĵ)
 
 ### Internal Reorganization Operator (ΔNFR)
 
@@ -38,7 +38,7 @@
 **What:** Structural evolution gradient (drives reorganization)  
 **Sign:** Positive = expansion, Negative = contraction  
 **Compute:** Via `default_compute_delta_nfr` hook, automatic in `step()`  
-**Math:** [§3.3 Reorganization Operator](docs/source/theory/mathematical_foundations.md#33-reorganization-operator-δnfr)
+**Math:** [§3.3 Reorganization Operator](MATHEMATICAL_DYNAMICS_BASIS.mdδnfr)
 
 ### Phase (φ, θ)
 
@@ -48,7 +48,7 @@
 **What:** Network synchrony parameter (relative timing)  
 **Phase difference:** \(\Delta\theta = \theta_i - \theta_j\)  
 **API:** Phase adaptation in dynamics  
-**Math:** [§4 Nodal Equation](docs/source/theory/mathematical_foundations.md#4-the-nodal-equation-complete-derivation)
+**Math:** [§4 Nodal Equation](MATHEMATICAL_DYNAMICS_BASIS.md)
 
 ### Total Coherence (C(t))
 
@@ -57,7 +57,7 @@
 **Formula:** \(C(t) = \text{Tr}(\hat{C}\rho)\) where \(\hat{C}\) is the coherence operator  
 **Range:** \([0, 1]\) where 1 = perfect coherence, 0 = total fragmentation  
 **What:** Global network stability measure  
-**Math:** [§3.1 Coherence Operator Ĉ](docs/source/theory/mathematical_foundations.md#31-coherence-operator-ĉ)
+**Math:** [§3.1 Coherence Operator Ĉ](MATHEMATICAL_DYNAMICS_BASIS.mdĉ)
 
 ### Coherence Operator (Ĉ)
 
@@ -66,7 +66,7 @@
 **Matrix element:** \(w_{ij} \approx \langle i | \hat{C} | j \rangle\)  
 **Properties:** Hermitian (\(\hat{C}^\dagger = \hat{C}\)), positive semi-definite  
 **What:** Operator measuring structural stability between nodes  
-**Math:** [§3.1 Theory](docs/source/theory/mathematical_foundations.md#31-coherence-operator-ĉ) + [§3.1.1 Implementation](docs/source/theory/mathematical_foundations.md#311-implementation-bridge-theory-to-code)
+**Math:** [§3.1 Theory](MATHEMATICAL_DYNAMICS_BASIS.mdĉ) + [§3.1.1 Implementation](MATHEMATICAL_DYNAMICS_BASIS.md)
 
 ### Sense Index (Si)
 
@@ -76,7 +76,7 @@
 **Range:** \([0, 1^+]\) typically, higher = more stable reorganization  
 **What:** Capacity for stable structural reorganization  
 **Weights:** canonical defaults \(\alpha = \varphi/(\varphi+\gamma) \approx 0.737\), \(\beta = \gamma/(\pi+\gamma) \approx 0.155\), \(\gamma_w = \gamma/(\varphi\pi) \approx 0.114\) (`SI_WEIGHTS` in `config/defaults_core.py`; sum \(\approx 1\))  
-**Math:** [Mathematical Foundations - Metrics](docs/source/theory/mathematical_foundations.md)
+**Math:** [Mathematical Foundations - Metrics](MATHEMATICAL_DYNAMICS_BASIS.md)
 
 ### Phase Gradient (|∇φ|) - CANONICAL
 
@@ -89,7 +89,7 @@
 **Threshold:** Canonical bound |∇φ| < γ/π ≈ 0.1837 (Kuramoto critical coupling in TNFR units)  
 **API:** `tnfr.physics.fields.compute_phase_gradient()`  
 **Usage:** Stress detection, local instability prediction  
-**Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)
+**Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
 
 ### Phase Curvature (K_φ) - CANONICAL
 
@@ -102,7 +102,7 @@
 **Threshold:** Classical bound |K_φ| < 2.8274 (90% of π theoretical maximum)  
 **API:** `tnfr.physics.fields.compute_phase_curvature()`  
 **Usage:** Geometric confinement monitoring, bifurcation prediction  
-**Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)
+**Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
 
 ### Coherence Length (ξ_C) - CANONICAL
 
@@ -118,7 +118,7 @@
 - Stable: ξ_C < mean_distance (bulk behavior)  
 **API:** `tnfr.physics.fields.estimate_coherence_length()`  
 **Usage:** Critical point detection, correlation analysis  
-**Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)
+**Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
 
 ---
 
@@ -134,8 +134,8 @@
 **Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < φ ≈ 1.618 canonical confinement; ceiling 2.0 binary escape)  
 **API:** `tnfr.physics.fields.compute_structural_potential()`  
 **Threshold:** Per-node bound |Φ_s| < 0.7711 (empirically validated; no closed-form derivation — the "von Koch / Γ(4/3)/Γ(1/3)" derivation is incorrect, that ratio = 1/3)  
-**Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)
-- [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - Implementation
+**Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
+- [src/tnfr/physics/fields.py](../src/tnfr/physics/fields.py) - Implementation
 
 **Interpretation:**
 - Φ_s minima = passive equilibrium states
@@ -168,7 +168,7 @@
 - When \(\Delta\text{NFR} = 0\), structure reaches equilibrium
 
 **Implementation:** See `src/tnfr/dynamics/` for numerical integration  
-**Theory:** [§4 The Nodal Equation](docs/source/theory/mathematical_foundations.md#4-the-nodal-equation-complete-derivation)
+**Theory:** [§4 The Nodal Equation](MATHEMATICAL_DYNAMICS_BASIS.md)
 
 ---
 
@@ -176,7 +176,7 @@
 
 The 13 canonical operators are the **only way** to modify nodes in TNFR. They're not arbitrary functions—they're **resonant transformations** with rigorous physics.
 
-For complete specifications with physics derivations, contracts, and usage examples, see **[AGENTS.md § The 13 Canonical Operators](AGENTS.md#-the-13-canonical-operators)**.
+For complete specifications with physics derivations, contracts, and usage examples, see **[AGENTS.md § The 13 Canonical Operators](../AGENTS.md#-the-13-canonical-operators)**.
 
 ### Quick Reference
 
@@ -213,14 +213,14 @@ Operators combine into **sequences** that implement complex behaviors:
 - `validate_sequence(ops)` - Check grammar compliance
 
 **Grammar:** See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete rules  
-**Detailed Specs:** See [AGENTS.md § The 13 Canonical Operators](AGENTS.md#-the-13-canonical-operators)  
-**Math:** [Mathematical Foundations §5](docs/source/theory/mathematical_foundations.md)
+**Detailed Specs:** See [AGENTS.md § The 13 Canonical Operators](../AGENTS.md#-the-13-canonical-operators)  
+**Math:** [Mathematical Foundations §5](MATHEMATICAL_DYNAMICS_BASIS.md)
 
 ---
 
 ## Canonical Invariants (Optimized Set)
 
-From [AGENTS.md](AGENTS.md) - Optimized from 10 to 6 invariants based on mathematical derivation:
+From [AGENTS.md](../AGENTS.md) - Optimized from 10 to 6 invariants based on mathematical derivation:
 
 1. **Nodal Equation Integrity**: EPI evolution only via ∂EPI/∂t = νf · ΔNFR(t)
 2. **Phase-Coherent Coupling**: |φᵢ - φⱼ| ≤ Δφ_max required for resonant operations
@@ -312,7 +312,7 @@ All simulations must be:
 The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and RC1-RC4 systems.
 
 **Source of Truth:** [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)  
-**Quick Reference:** [AGENTS.md § Unified Grammar (U1-U6)](AGENTS.md#-unified-grammar-u1-u6)  
+**Quick Reference:** [AGENTS.md § Unified Grammar (U1-U6)](../AGENTS.md#-unified-grammar-u1-u6)  
 **Implementation:** `src/tnfr/operators/grammar.py`
 
 **Grammar Completeness**: The canonical TNFR grammar consists of **exactly six rules (U1-U6)** and is **COMPLETE**. No additional rules (U7, U8, etc.) are required or planned. Extended dynamics (flux fields) add telemetry, not prescriptive constraints.
@@ -346,11 +346,11 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 
 **See Also:**
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) - Complete derivations from physics
-- [AGENTS.md § Unified Grammar](AGENTS.md#-unified-grammar-u1-u6) - Quick reference
-- [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - U6 complete specification
-- [docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md](docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md) - Why no U7/U8
-- [STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) - U6 validation details
-- [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - Φ_s implementation
+- [AGENTS.md § Unified Grammar](../AGENTS.md#-unified-grammar-u1-u6) - Quick reference
+- [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](../docs/grammar/PHYSICS_VERIFICATION.md) - U6 complete specification
+- [docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md) - Why no U7/U8
+- [STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md) - U6 validation details
+- [src/tnfr/physics/fields.py](../src/tnfr/physics/fields.py) - Φ_s implementation
 
 ---
 
@@ -493,48 +493,48 @@ Operators that perform graduated destabilization for phase transitions.
 ## Related Documentation
 
 ### Core References (Essential)
-- **[AGENTS.md](AGENTS.md)** ⭐ - Single source of truth for TNFR agent guidance, invariants, and philosophy
+- **[AGENTS.md](../AGENTS.md)** ⭐ - Single source of truth for TNFR agent guidance, invariants, and philosophy
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** ⭐ - Grammar single source of truth (U1-U6 complete derivations)
-- **[Mathematical Foundations](docs/source/theory/mathematical_foundations.md)** ⭐ - **SINGLE SOURCE FOR ALL MATH** (formalization, proofs, spectral theory)
+- **[Mathematical Foundations](MATHEMATICAL_DYNAMICS_BASIS.md)** ⭐ - **SINGLE SOURCE FOR ALL MATH** (formalization, proofs, spectral theory)
 
 ### Theory & Physics
 - [TNFR.pdf](TNFR.pdf) - Original theoretical companion (paradigm, nodal equation, foundational physics)
-- [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md) - U6 complete specification
-- [STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) - Structural fields validation (Φ_s, phase gradients)
+- [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](../docs/grammar/PHYSICS_VERIFICATION.md) - U6 complete specification
+- [STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md) - Structural fields validation (Φ_s, phase gradients)
 
 
 ### Implementation & API
-- [ARCHITECTURE.md](ARCHITECTURE.md) - System design and architecture patterns
-- [Foundations](docs/source/foundations.md) - Runtime/API guide
-- [API Overview](docs/source/api/overview.md) - Package architecture
-- [Structural Operators](docs/source/api/operators.md) - Operator implementation details
-- [Examples](docs/source/examples/README.md) - Runnable scenarios across domains
+- [ARCHITECTURE.md](../ARCHITECTURE.md) - System design and architecture patterns
+- [Foundations](../AGENTS.md) - Runtime/API guide
+- [API Overview](../AGENTS.md) - Package architecture
+- [Structural Operators](STRUCTURAL_OPERATORS.md) - Operator implementation details
+- [Examples](../examples/README.md) - Runnable scenarios across domains
 
 ### Grammar & Migration
-- [docs/grammar/](docs/grammar/) - Grammar documentation directory (U6, fundamental concepts, etc.)
+- [docs/grammar/](../docs/grammar/) - Grammar documentation directory (U6, fundamental concepts, etc.)
 
 ### Testing & Development
-- [TESTING.md](TESTING.md) - Test conventions and invariant verification
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Detailed contribution guidelines
-- [REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) - Determinism requirements
+- [TESTING.md](../TESTING.md) - Test conventions and invariant verification
+- [CONTRIBUTING.md](../CONTRIBUTING.md) - Detailed contribution guidelines
+- [REPRODUCIBILITY.md](../AGENTS.md) - Determinism requirements
 
 ### Cross-References and Documentation Hub
 
 **Primary Sources:**  
-- **[AGENTS.md](AGENTS.md)** - Single source of truth for TNFR theory  
+- **[AGENTS.md](../AGENTS.md)** - Single source of truth for TNFR theory  
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Complete U1-U6 grammar derivations  
 - **[Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_THEORY.md)** - Mathematical foundations
 
 **Implementation References:**  
-- **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)** - Unified Structural Field Tetrad (Canonical)  
-- **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)** - Self-optimization & auto-optimization  
-- **[docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md)** - Technical field specifications  
-- **[docs/grammar/PHYSICS_VERIFICATION.md](docs/grammar/PHYSICS_VERIFICATION.md)** - Grammar physics verification
+- **[src/tnfr/physics/fields.py](../src/tnfr/physics/fields.py)** - Unified Structural Field Tetrad (Canonical)  
+- **[src/tnfr/dynamics/self_optimizing_engine.py](../src/tnfr/dynamics/self_optimizing_engine.py)** - Self-optimization & auto-optimization  
+- **[docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)** - Technical field specifications  
+- **[docs/grammar/PHYSICS_VERIFICATION.md](../docs/grammar/PHYSICS_VERIFICATION.md)** - Grammar physics verification
 
 **Development Resources:**  
-- **[src/tnfr/sdk/](src/tnfr/sdk/)** - Simplified & Fluent API  
-- **[examples/](examples/)** - Complete tutorial suite  
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design patterns
+- **[src/tnfr/sdk/](../src/tnfr/sdk/)** - Simplified & Fluent API  
+- **[examples/](../examples/)** - Complete tutorial suite  
+- **[ARCHITECTURE.md](../ARCHITECTURE.md)** - System design patterns
 
 ---
 
@@ -580,8 +580,8 @@ Operators that perform graduated destabilization for phase transitions.
 **Prediction:** Stable configurations minimize reorganization pressure  
 **API:** Network topology analysis after coupling sequences  
 
-**Complete Theory:** [MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md](docs/examples/MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md)  
-**Implementation:** [Physics README § 9-10](src/tnfr/physics/README.md)
+**Complete Theory:** [MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md](../examples/07_number_theory/emergent_chemistry_particles_demo.py)  
+**Implementation:** [Physics README § 9-10](../src/tnfr/physics/README.md)
 
 ## Self-Optimizing Engine
 
@@ -778,7 +778,7 @@ Quick reference for canonical threshold values from `src/tnfr/constants/canonica
 
 When adding new functionality:
 
-1. **Verify theoretical foundation**: Align with [AGENTS.md](AGENTS.md) physics  
+1. **Verify theoretical foundation**: Align with [AGENTS.md](../AGENTS.md) physics  
 2. **Preserve canonical invariants**: Follow optimized 6-invariant set  
 3. **Use established terminology**: Reference this glossary for consistency  
 4. **Map to canonical operators**: All functions must correspond to 13 canonical operators  
@@ -787,10 +787,10 @@ When adding new functionality:
 7. **Write comprehensive tests**: Cover invariants and operator contracts
 
 **Development Workflow:**  
-1. Read [AGENTS.md](AGENTS.md) completely - **SINGLE SOURCE OF TRUTH**  
+1. Read [AGENTS.md](../AGENTS.md) completely - **SINGLE SOURCE OF TRUTH**  
 2. Study [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for physics foundations  
-3. Follow [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines  
-4. Test with [TESTING.md](TESTING.md) requirements
+3. Follow [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines  
+4. Test with [TESTING.md](../TESTING.md) requirements
 
 **Version**: 0.0.3.3 (March 2026)  
 **Status**: Complete operational reference for current TNFR implementation  
