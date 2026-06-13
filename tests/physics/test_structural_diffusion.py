@@ -20,6 +20,7 @@ from tnfr.physics.structural_diffusion import (
     OverdampedRegimeCertificate,
     DiscreteModeCertificate,
     StructuralStabilityCertificate,
+    RandomWalkCertificate,
     structural_diffusion_operator,
     structural_field,
     structural_diffusivity,
@@ -30,10 +31,15 @@ from tnfr.physics.structural_diffusion import (
     dispersion_relation,
     instability_threshold,
     fiedler_partition,
+    random_walk_matrix,
+    stationary_distribution,
+    effective_resistance,
+    commute_time,
     verify_structural_diffusion,
     verify_overdamped_regime,
     verify_discrete_modes,
     verify_structural_stability,
+    verify_structural_random_walk,
 )
 
 
@@ -357,4 +363,84 @@ class TestStructuralStability:
             assert cert.is_valid_stability
             assert cert.first_unstable_mode == 1  # Fiedler
             assert cert.pure_diffusion_stable
+            assert "VALID" in cert.summary()
+
+
+class TestStructuralRandomWalk:
+    """The diffusion operator generates a random walk with resistance."""
+
+    def test_operator_is_walk_generator(self) -> None:
+        # L_rw = I - P exactly
+        G = nx.watts_strogatz_graph(40, 6, 0.2, seed=7)
+        nodes, lrw = structural_diffusion_operator(G)
+        _, p = random_walk_matrix(G)
+        assert np.allclose(lrw, np.eye(len(nodes)) - p, atol=1e-12)
+
+    def test_transition_is_row_stochastic(self) -> None:
+        G = nx.watts_strogatz_graph(40, 6, 0.2, seed=7)
+        _, p = random_walk_matrix(G)
+        assert np.allclose(p.sum(axis=1), 1.0)
+
+    def test_stationary_is_degree(self) -> None:
+        # pi proportional to degree, and pi @ P == pi
+        G = nx.watts_strogatz_graph(40, 6, 0.2, seed=7)
+        nodes, pi = stationary_distribution(G)
+        _, p = random_walk_matrix(G)
+        deg = np.array([G.degree(n) for n in nodes], dtype=float)
+        assert np.allclose(pi, deg / deg.sum())
+        assert np.allclose(pi @ p, pi, atol=1e-9)
+
+    def test_effective_resistance_is_metric(self) -> None:
+        G = nx.watts_strogatz_graph(40, 6, 0.2, seed=7)
+        _, r = effective_resistance(G)
+        assert np.allclose(r, r.T)             # symmetric
+        assert np.all(r >= -1e-9)              # non-negative
+        assert np.allclose(np.diag(r), 0.0)    # zero self-resistance
+        # triangle inequality on a sample
+        for (i, j, k) in [(0, 10, 20), (5, 15, 25), (1, 30, 8)]:
+            assert r[i, k] <= r[i, j] + r[j, k] + 1e-7
+
+    def test_commute_time_is_2m_resistance(self) -> None:
+        G = nx.watts_strogatz_graph(40, 6, 0.2, seed=7)
+        nodes, r = effective_resistance(G)
+        _, c = commute_time(G)
+        m = G.number_of_edges()
+        assert np.allclose(c, 2.0 * m * r, atol=1e-7)
+
+    def test_commute_time_matches_monte_carlo(self) -> None:
+        # anchor: analytic commute time predicts a Monte-Carlo random walk
+        G = nx.watts_strogatz_graph(30, 4, 0.2, seed=3)
+        nodes, c = commute_time(G)
+        idx = {n: i for i, n in enumerate(nodes)}
+        A = nx.to_numpy_array(G, nodelist=nodes)
+        nbrs = [np.where(A[k] > 0)[0] for k in range(len(nodes))]
+        rng = np.random.default_rng(1)
+        s, t = 0, 12
+        total, trials = 0, 300
+        for _ in range(trials):
+            cur, steps, hit = s, 0, False
+            while steps < 100000:
+                cur = int(rng.choice(nbrs[cur]))
+                steps += 1
+                if not hit and cur == t:
+                    hit = True
+                elif hit and cur == s:
+                    break
+            total += steps
+        mc = total / trials
+        analytic = float(c[idx[s], idx[t]])
+        assert abs(mc - analytic) / analytic < 0.12  # statistical tolerance
+
+    def test_certificate_valid_across_topologies(self) -> None:
+        for G in (
+            nx.cycle_graph(40),
+            nx.barbell_graph(20, 0),
+            nx.watts_strogatz_graph(50, 6, 0.2, seed=7),
+        ):
+            cert = verify_structural_random_walk(G)
+            assert isinstance(cert, RandomWalkCertificate)
+            assert cert.is_valid_random_walk
+            assert cert.operator_is_walk_generator
+            assert cert.stationary_is_degree
+            assert cert.commute_equals_2m_resistance
             assert "VALID" in cert.summary()

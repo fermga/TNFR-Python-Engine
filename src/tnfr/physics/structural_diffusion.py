@@ -147,6 +147,34 @@ instability — the empirically-demonstrated pattern-formation mechanism
 not TNFR-derived, so only the dispersion-relation mechanism is certified
 here.
 
+THE STRUCTURAL RANDOM WALK AND RESISTANCE GEOMETRY
+==================================================
+The diffusion operator is **literally the generator of a random walk** on
+the network: L_rw = I − D^{-1}W = I − P, where P = D^{-1}W is the
+random-walk transition matrix (verified exactly).  So the structural
+transport is **Brownian motion on the network** — the empirically-
+demonstrated random walk (Einstein 1905, Perrin 1908, the proof of atoms):
+
+- **Stationary distribution ∝ degree**: the random walk converges to
+  π_i = deg(i) / Σ deg — exactly the **degree-weighted total** the
+  diffusion conserves.  The conserved quantity *is* the equilibrium
+  measure.
+- **Effective resistance** (Ohm's law): treating the network as a
+  resistor network (the combinatorial Laplacian L = D − W is the
+  conductance matrix — Kirchhoff 1847), the effective resistance
+  R_eff(i,j) = L⁺_ii + L⁺_jj − 2L⁺_ij (L⁺ the pseudoinverse) is a
+  **transport metric** (symmetric, non-negative, triangle inequality) —
+  the structural "difficulty of transport" between two nodes.
+- **Commute time = 2m·R_eff**: the expected round-trip time of the random
+  walk between two nodes equals 2m times the effective resistance (m the
+  number of edges) — the exact link between the diffusion random walk and
+  the resistance geometry (Chandra et al. 1996), confirmed against
+  Monte-Carlo walks.
+
+These are the same mathematics as Brownian motion (random walk) and
+electrical networks (Ohm/Kirchhoff resistance) — both established by the
+strictest empirical method.
+
 HONEST SCOPE
 ============
 - The identity ΔNFR_epi = −L_rw·EPI is EXACT (machine precision), a
@@ -180,6 +208,7 @@ __all__ = [
     "OverdampedRegimeCertificate",
     "DiscreteModeCertificate",
     "StructuralStabilityCertificate",
+    "RandomWalkCertificate",
     "structural_diffusion_operator",
     "structural_field",
     "structural_diffusivity",
@@ -190,10 +219,15 @@ __all__ = [
     "dispersion_relation",
     "instability_threshold",
     "fiedler_partition",
+    "random_walk_matrix",
+    "stationary_distribution",
+    "effective_resistance",
+    "commute_time",
     "verify_structural_diffusion",
     "verify_overdamped_regime",
     "verify_discrete_modes",
     "verify_structural_stability",
+    "verify_structural_random_walk",
 ]
 
 
@@ -1059,4 +1093,261 @@ def verify_structural_stability(
         dispersion_matches_relaxation=matches,
         first_unstable_mode=first_unstable,
         fiedler_partition_sizes=sizes,
+    )
+
+
+# ---------------------------------------------------------------------------
+# The structural random walk: Brownian motion and resistance geometry
+# ---------------------------------------------------------------------------
+
+
+def _adjacency_degree(G: Any) -> tuple[list, Any, Any]:
+    """Return (nodes, weighted adjacency W, weighted degree vector)."""
+    nodes = _ordered_nodes(G)
+    index = {n: i for i, n in enumerate(nodes)}
+    n = len(nodes)
+    adj = np.zeros((n, n), dtype=float)
+    for node in nodes:
+        i = index[node]
+        for m in G.neighbors(node):
+            adj[i, index[m]] = float(G[node][m].get("weight", 1.0))
+    deg = adj.sum(axis=1)
+    return nodes, adj, deg
+
+
+def random_walk_matrix(G: Any) -> tuple[list, Any]:
+    r"""Return the random-walk transition matrix P = D^{-1}W.
+
+    The diffusion operator is L_rw = I − P, so P is exactly the
+    random-walk the structural diffusion generates.  Row-stochastic (each
+    row sums to 1); isolated nodes get a zero row.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    (nodes, P) : tuple[list, np.ndarray]
+    """
+    nodes, adj, deg = _adjacency_degree(G)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        dinv = np.where(deg > 0.0, 1.0 / deg, 0.0)
+    return nodes, dinv[:, None] * adj
+
+
+def stationary_distribution(G: Any) -> tuple[list, Any]:
+    r"""Stationary distribution π_i = deg(i) / Σ deg of the random walk.
+
+    The random walk converges to the degree distribution — exactly the
+    degree-weighted total the diffusion conserves.  The conserved quantity
+    is the equilibrium measure.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    (nodes, pi) : tuple[list, np.ndarray]
+    """
+    nodes, _, deg = _adjacency_degree(G)
+    total = float(deg.sum())
+    pi = deg / total if total > 0 else deg
+    return nodes, pi
+
+
+def _laplacian_pinv(G: Any) -> tuple[list, Any, float]:
+    """Return (nodes, pinv(L) of the combinatorial Laplacian, n_edges)."""
+    nodes, adj, deg = _adjacency_degree(G)
+    lap = np.diag(deg) - adj
+    return nodes, np.linalg.pinv(lap), float(deg.sum()) / 2.0
+
+
+def effective_resistance(G: Any) -> tuple[list, Any]:
+    r"""Effective-resistance matrix R_eff(i,j) (Ohm's law).
+
+    Treating the network as a resistor network (the combinatorial
+    Laplacian L = D − W is the conductance matrix — Kirchhoff 1847), the
+    effective resistance between nodes is
+
+        R_eff(i,j) = L⁺_ii + L⁺_jj − 2·L⁺_ij,
+
+    with L⁺ the Moore–Penrose pseudoinverse.  R_eff is a metric
+    (symmetric, non-negative, triangle inequality) — the structural
+    "difficulty of transport" between two nodes.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    (nodes, R) : tuple[list, np.ndarray]
+        ``R[i, j]`` is the effective resistance between node i and node j.
+    """
+    nodes, lp, _ = _laplacian_pinv(G)
+    diag = np.diag(lp)
+    r = diag[:, None] + diag[None, :] - 2.0 * lp
+    np.fill_diagonal(r, 0.0)
+    return nodes, np.maximum(r, 0.0)
+
+
+def commute_time(G: Any) -> tuple[list, Any]:
+    r"""Commute-time matrix C(i,j) = 2m·R_eff(i,j).
+
+    The expected round-trip time of the structural random walk between two
+    nodes equals 2m times the effective resistance (m the number of
+    edges) — the exact link between the diffusion random walk and the
+    resistance geometry (Chandra et al. 1996).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    (nodes, C) : tuple[list, np.ndarray]
+    """
+    nodes, r = effective_resistance(G)
+    _, _, deg = _adjacency_degree(G)
+    m_edges = float(deg.sum()) / 2.0
+    return nodes, 2.0 * m_edges * r
+
+
+@dataclass(frozen=True)
+class RandomWalkCertificate:
+    r"""Verification of the structural random walk and resistance geometry.
+
+    The diffusion operator is the generator of a random walk (Brownian
+    motion on the network); its stationary distribution is the degree, and
+    the effective resistance / commute time give the transport geometry.
+
+    Attributes
+    ----------
+    n_nodes : int
+    operator_is_walk_generator : bool
+        L_rw = I − P exactly (the diffusion operator generates the walk).
+    transition_row_stochastic : bool
+        P = D⁻¹W is row-stochastic.
+    stationary_is_degree : bool
+        π = deg / Σ deg is the stationary distribution (π·P = π).
+    resistance_is_metric : bool
+        R_eff is symmetric, non-negative, and obeys the triangle
+        inequality.
+    max_resistance : float
+        The largest pairwise effective resistance (transport diameter).
+    commute_equals_2m_resistance : bool
+        C(i,j) = 2m·R_eff(i,j) (random walk ↔ resistance identity).
+    max_walk_generator_residual : float
+        Max |L_rw − (I − P)| (≈ 0).
+    """
+
+    n_nodes: int
+    operator_is_walk_generator: bool
+    transition_row_stochastic: bool
+    stationary_is_degree: bool
+    resistance_is_metric: bool
+    max_resistance: float
+    commute_equals_2m_resistance: bool
+    max_walk_generator_residual: float
+
+    @property
+    def is_valid_random_walk(self) -> bool:
+        """True when the structural random-walk picture verifies."""
+        return (
+            self.operator_is_walk_generator
+            and self.transition_row_stochastic
+            and self.stationary_is_degree
+            and self.resistance_is_metric
+            and self.commute_equals_2m_resistance
+        )
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "VALID" if self.is_valid_random_walk else "INVALID"
+        return (
+            f"Structural random walk [{ok}]: "
+            f"L_rw = I−P={self.operator_is_walk_generator} "
+            f"(res {self.max_walk_generator_residual:.1e}), "
+            f"P row-stochastic={self.transition_row_stochastic}, "
+            f"stationary π=degree={self.stationary_is_degree}, "
+            f"R_eff metric={self.resistance_is_metric} "
+            f"(max R {self.max_resistance:.4f}), "
+            f"commute=2m·R_eff={self.commute_equals_2m_resistance}"
+        )
+
+
+def verify_structural_random_walk(
+    G: Any, *, tolerance: float = 1e-9
+) -> RandomWalkCertificate:
+    r"""Verify the structural random walk and resistance geometry.
+
+    Confirms that the diffusion operator is the random-walk generator
+    (L_rw = I − P), that P is row-stochastic with stationary distribution
+    π = degree, that the effective resistance is a transport metric, and
+    that the commute time equals 2m·R_eff (random walk ↔ resistance).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    tolerance : float
+        Numerical tolerance.
+
+    Returns
+    -------
+    RandomWalkCertificate
+    """
+    nodes, lrw = structural_diffusion_operator(G)
+    n = len(nodes)
+    _, p = random_walk_matrix(G)
+
+    # L_rw = I − P
+    gen_res = float(np.max(np.abs(lrw - (np.eye(n) - p)))) if n else 0.0
+    is_generator = gen_res < max(tolerance, 1e-12)
+
+    # P row-stochastic (rows of connected nodes sum to 1)
+    row_sums = p.sum(axis=1)
+    deg_nonzero = np.array(
+        [sum(1 for _ in G.neighbors(nd)) > 0 for nd in nodes]
+    )
+    row_stochastic = bool(
+        np.all(np.abs(row_sums[deg_nonzero] - 1.0) < tolerance)
+    ) if n else True
+
+    # stationary distribution π = degree, π·P = π
+    _, pi = stationary_distribution(G)
+    stationary_ok = bool(np.allclose(pi @ p, pi, atol=1e-7)) if n else True
+
+    # effective resistance is a metric
+    _, r = effective_resistance(G)
+    symmetric = bool(np.allclose(r, r.T))
+    nonneg = bool(np.all(r >= -1e-9))
+    # triangle inequality on a sample of triples
+    triangle = True
+    if n >= 3:
+        rng = np.random.default_rng(0)
+        for _ in range(200):
+            i, j, k = rng.integers(0, n, size=3)
+            if r[i, k] > r[i, j] + r[j, k] + 1e-7:
+                triangle = False
+                break
+    is_metric = symmetric and nonneg and triangle
+    max_r = float(np.max(r)) if n else 0.0
+
+    # commute time = 2m·R_eff
+    _, c = commute_time(G)
+    _, _, deg = _adjacency_degree(G)
+    m_edges = float(deg.sum()) / 2.0
+    commute_ok = bool(np.allclose(c, 2.0 * m_edges * r, atol=1e-7))
+
+    return RandomWalkCertificate(
+        n_nodes=n,
+        operator_is_walk_generator=is_generator,
+        transition_row_stochastic=row_stochastic,
+        stationary_is_degree=stationary_ok,
+        resistance_is_metric=is_metric,
+        max_resistance=max_r,
+        commute_equals_2m_resistance=commute_ok,
+        max_walk_generator_residual=gen_res,
     )

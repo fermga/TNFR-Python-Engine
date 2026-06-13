@@ -52,6 +52,7 @@ from tnfr.physics.structural_diffusion import (
     verify_overdamped_regime,
     verify_discrete_modes,
     verify_structural_stability,
+    verify_structural_random_walk,
     structural_diffusion_operator,
     structural_field,
     structural_eigenmodes,
@@ -59,6 +60,8 @@ from tnfr.physics.structural_diffusion import (
     dispersion_relation,
     instability_threshold,
     fiedler_partition,
+    effective_resistance,
+    commute_time,
     relaxation_spectrum,
     degree_weighted_total,
 )
@@ -254,6 +257,37 @@ def experiment_6_structural_stability():
     print()
 
 
+def experiment_7_random_walk():
+    """The diffusion operator generates a random walk; resistance geometry."""
+    print("=" * 72)
+    print("EXPERIMENT 7: The structural random walk and resistance geometry")
+    print("=" * 72)
+    print()
+    print("The diffusion operator is literally the generator of a random")
+    print("walk: L_rw = I − P, with P = D⁻¹W the transition matrix. So the")
+    print("structural transport is Brownian motion on the network (Einstein")
+    print("1905, Perrin — the proof of atoms). Its stationary distribution")
+    print("is the degree; the effective resistance (Ohm's law) is a transport")
+    print("metric; commute time = 2m·R_eff links the walk to the resistance.")
+    print()
+
+    G = nx.watts_strogatz_graph(50, 6, 0.2, seed=7)
+    cert = verify_structural_random_walk(G)
+    print(cert.summary())
+    print()
+    nodes, R = effective_resistance(G)
+    _, C = commute_time(G)
+    print(f"  effective resistance R_eff(0,25) = {float(R[0, 25]):.4f}")
+    print(f"  commute time C(0,25) = 2m·R_eff = {float(C[0, 25]):.1f} steps")
+    print()
+    print("VALIDATED: the structural diffusion operator generates a random")
+    print("walk whose stationary measure is the degree (the conserved")
+    print("degree-weighted total). The effective resistance is a transport")
+    print("metric (Ohm/Kirchhoff); commute time = 2m·R_eff ties the random")
+    print("walk to the resistance geometry — both empirically demonstrated.")
+    print()
+
+
 def main():
     print()
     print("  TNFR Example 99: Structural Diffusion")
@@ -267,6 +301,7 @@ def main():
     experiment_4_overdamped_regime()
     experiment_5_discrete_modes()
     experiment_6_structural_stability()
+    experiment_7_random_walk()
 
     print("=" * 72)
     print("WHAT THIS ESTABLISHES")
@@ -284,14 +319,16 @@ def main():
     print("  • a bounded manifold has discrete standing-wave modes (the")
     print("    Laplacian eigenmodes — Pythagoras/Chladni harmonics);")
     print("  • the dispersion relation σ_k=r−νf·λ_k governs stability; above")
-    print("    r_c=νf·λ₂ the Fiedler mode grows (structural pattern / U2).")
+    print("    r_c=νf·λ₂ the Fiedler mode grows (structural pattern / U2);")
+    print("  • the operator generates a random walk (Brownian motion); its")
+    print("    resistance geometry is a transport metric (Ohm/Kirchhoff).")
     print()
     print("These are reproduced as the SAME mathematics as the empirically-")
     print("demonstrated phenomena of diffusion, synchronization, mobility,")
-    print("standing waves, and linear stability — in TNFR's own variables")
-    print("(EPI, ΔNFR, νf, θ), not borrowed concepts. The emergent geometric")
-    print("tower (symplectic substrate, conservation laws) sits on top of")
-    print("this irreducible transport dynamics.")
+    print("standing waves, linear stability, and random walks / resistance —")
+    print("in TNFR's own variables (EPI, ΔNFR, νf, θ), not borrowed concepts.")
+    print("The emergent geometric tower (symplectic substrate, conservation")
+    print("laws) sits on top of this irreducible transport dynamics.")
     print()
 
 
