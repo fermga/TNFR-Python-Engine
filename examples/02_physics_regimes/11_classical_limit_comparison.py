@@ -7,8 +7,12 @@ initial conditions. When phases remain synchronized and coherence length is
 large, the TNFR dynamics collapses onto the classical prediction.
 
 The script now also reports per-body physical quantities by extracting them from
-TNFR telemetry: the structural frequency νf gives inertial mass (m = 1/νf), the
-EPI velocity component maps to classical velocity, ΔNFR tracks force density,
+TNFR telemetry: in this low-dissonance / second-order (symplectic-substrate)
+limit the structural frequency νf reads as inertial mass (m = 1/νf). Note the
+regime: the bare first-order nodal equation ∂EPI/∂t = νf·ΔNFR is OVERDAMPED, where
+νf is a mobility (drift velocity ∝ νf·force), not an inverse inertial mass; the
+inertial reading holds at the 2nd-order substrate level this experiment probes.
+The EPI velocity component maps to classical velocity, ΔNFR tracks force density,
 and the combination of Φ_s with ξ_C produces an effective coherence size that we
 use to estimate density. This makes the “velocity/density/mass/size” mapping
 explicit for each body.

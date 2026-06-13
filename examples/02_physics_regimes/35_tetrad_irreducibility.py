@@ -195,7 +195,8 @@ def demo_blind_spot_grad_phi() -> None:
         G.nodes[n]["phase"] = math.pi - 0.05  # Nearly pi away
         G.nodes[n]["delta_nfr"] = 0.1
 
-    # DELTA_NFR is uniform => C(t) = 1 - (sigma / max) is high
+    # DELTA_NFR is uniform => the auxiliary dispersion C_disp = 1 - (sigma/max)
+    # is high (the primary C(t) = 1/(1+mean|DNFR|+mean|dEPI|) would be too)
     # But phase gradient at the boundary is extreme
 
     fields = _report_fields(G, skip="|grad_phi|")

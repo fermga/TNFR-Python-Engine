@@ -121,7 +121,7 @@ def experiment_1_intrinsic():
     default_compute_delta_nfr(G)
     pt, dens = _substrate_density(G)
 
-    # (A) Hopf identity: per-node |I| = energy (Bloch vector on S²)
+    # (A) Hopf identity: per-node |polarization| = energy (Poincaré sphere)
     res = float(np.max(np.abs(dens["radius"] - dens["energy"])))
     unit = float(np.max(np.abs(np.linalg.norm(dens["poincare"], axis=0) - 1)))
     print("A. Poincaré sphere: each node is fully polarized, radius = energy")
