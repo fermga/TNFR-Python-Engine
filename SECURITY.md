@@ -408,25 +408,30 @@ While pip-audit is valuable for CI/CD, it is **not included in pre-commit hooks*
 - It would slow down developer workflow for every commit
 - The automated CI/CD scanning catches issues before merge
 
-**Dependabot Integration:**
+**Dependabot:**
 
-In addition to pip-audit, Dependabot is enabled to:
-- Automatically create pull requests for dependency updates
-- Monitor dependencies for security advisories
-- Suggest version updates with changelogs
-
-Both tools work together to ensure dependencies remain secure and up-to-date.
+Automated Dependabot **version updates** (the `.github/dependabot.yml`
+configuration that opened `dependabot/*` branches) have been **removed** to
+avoid automated branch/PR noise. Dependabot **security updates** and
+**alerts** are disabled at the repository settings level. Dependency
+vulnerability coverage is provided by the pip-audit CI workflow described
+above, which scans installed packages against the PyPA advisory database on
+every push/PR to `main`, on a weekly schedule, and on manual dispatch.
 
 ### Static Analysis
 
-The repository uses multiple security scanning tools:
+The repository relies on a single automated vulnerability scanner plus
+notification-only repository safeguards:
 
-- **Bandit**: Python code security scanner
-- **Semgrep**: Pattern-based code analysis
-- **CodeQL**: Semantic code analysis
-- **pip-audit**: Dependency vulnerability scanner
+- **pip-audit**: Dependency vulnerability scanner (CI workflow; never creates
+  branches or pull requests)
+- **Secret scanning** + **push protection**: Enabled at the repository
+  settings level (notification-only; prevents committing credentials)
 
-All security scans run automatically on pull requests and commits to the main branch.
+The previous CodeQL and Bandit/Semgrep (SAST) **CI workflows were removed** to
+eliminate redundant automated scanning. `bandit.yaml` and
+`tools/bandit_to_sarif.py` remain available for optional manual local audits
+(`bandit -r src -c bandit.yaml`).
 
 ## Security Features
 
@@ -479,7 +484,8 @@ The following Bandit checks are intentionally excluded in `bandit.yaml`:
 1. **Critical vulnerabilities**: Patched within 48-72 hours
 2. **High severity**: Patched within 1 week
 3. **Medium/Low severity**: Patched in next minor release
-4. **Dependency updates**: Applied automatically via Dependabot
+4. **Dependency updates**: Reviewed and applied manually (surfaced by the
+   pip-audit CI workflow)
 
 ## Attribution
 

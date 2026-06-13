@@ -29,28 +29,9 @@ This document describes the CI/CD workflows configured for this repository.
 
 ### Security Workflows
 
-#### 3. CodeQL Analysis (`codeql-analysis.yml`)
-**Triggers:** Push/PR to main/master, weekly schedule (Monday 3 AM UTC)  
-**Purpose:** Advanced security scanning using GitHub CodeQL  
-**Jobs:**
-- Initialize CodeQL for Python
-- Autobuild and analyze
-- Upload SARIF results to GitHub Security tab
-
-**Status:** ✅ Working correctly
-
-#### 4. SAST Lint (`sast-lint.yml`)
-**Triggers:** Push to main, PRs, manual dispatch  
-**Purpose:** Static Application Security Testing  
-**Jobs:**
-- **Bandit scan**: Security vulnerability detection in Python code
-- **Semgrep scan**: Pattern-based security and bug detection
-
-**Status:** ✅ Working correctly
-
-#### 5. Dependency Vulnerability Audit (`pip-audit.yml`)
-**Triggers:** Push/PR to main/master, weekly schedule (Monday 5 AM UTC)  
-**Purpose:** Scan Python dependencies for known vulnerabilities  
+#### 3. Dependency Vulnerability Audit (`pip-audit.yml`)
+**Triggers:** Push/PR to main/master, weekly schedule (Monday 5 AM UTC), manual dispatch  
+**Purpose:** Scan Python dependencies for known vulnerabilities (PyPA Advisory Database)  
 **Jobs:**
 - Install all project dependencies
 - Run pip-audit against installed packages
@@ -58,6 +39,13 @@ This document describes the CI/CD workflows configured for this repository.
 - Fail build if vulnerabilities detected
 
 **Status:** ✅ Working correctly
+
+**Note:** This is the single retained automated vulnerability scanner. It runs
+as a CI check and never creates branches or pull requests. The previous CodeQL
+and Bandit/Semgrep (SAST Lint) workflows and the Dependabot version-update
+configuration were removed to eliminate automated branch/alert noise. Secret
+scanning and push protection remain enabled at the repository settings level
+(notification-only, no branches generated).
 
 ### Quality Assurance Workflows
 
