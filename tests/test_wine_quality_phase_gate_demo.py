@@ -13,7 +13,7 @@ pytest.importorskip("sklearn")
 
 def _load_demo_module():
     root = Path(__file__).resolve().parents[1]
-    path = root / "examples" / "92_wine_quality_phase_gate_demo.py"
+    path = root / "examples" / "10_applications" / "92_wine_quality_phase_gate_demo.py"
     spec = importlib.util.spec_from_file_location("wine_quality_phase_gate_demo", path)
     assert spec is not None
     assert spec.loader is not None

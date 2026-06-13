@@ -1,207 +1,114 @@
-# TNFR Examples — Theory-Linked Tutorial Suite
+# TNFR Examples
 
-**Purpose**: Executable demonstrations of TNFR theory, each linked to specific documents in [`theory/`](../theory/).
+125 runnable examples organized by theme. Every example derives from the
+nodal equation `∂EPI/∂t = νf · ΔNFR(t)`, the 13 canonical operators, grammar
+U1–U6, and the structural field tetrad `(Φ_s, |∇φ|, K_φ, ξ_C)`.
 
-All dynamics derive from the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`.
+Each file keeps a **stable global number** as its identifier (the number does
+not change when an example moves); the **folder gives the theme**. Run any
+example directly, e.g.:
+
+```bash
+python examples/01_foundations/01_hello_world.py
+python examples/09_millennium/109_p_vs_np_coherence_synthesis.py
+```
+
+`tnfr` resolves from the editable install (`pip install -e .`), so examples run
+from any location.
 
 ---
 
-## Suite Overview (01–30 + 2 utility)
+## 01_foundations — first contact with TNFR
 
-### Foundational Dynamics — [`FUNDAMENTAL_THEORY.md`](../theory/FUNDAMENTAL_THEORY.md)
+Basic tutorials: nodes, operators, grammar, coherence, topologies, the SDK.
 
-**SDK**: `TNFR.create(n).ring()`, `.tetrad()`, `.telemetry()`, `TNFR.analyze(net)`
+- `01_hello_world.py` — your first nodal network
+- `02_musical_resonance.py` — phase synchronization as resonance
+- `03_network_formation.py` — building coupled networks
+- `04_operator_sequences.py` — grammar U1–U6 in action
+- `05_coherence_evolution.py` — C(t) dynamics
+- `06_network_topologies.py` — TNFR across graph structures
+- `07_phase_transitions.py` — bifurcation dynamics (U4)
+- `08_emergent_phenomena.py` — collective behaviors
+- `09_visualization_suite.py` — dynamic plotting
+- `10_simplified_sdk_showcase.py` — the Simple SDK
 
-| # | File | Concept |
-|---|------|---------|
-| 01 | `01_hello_world.py` | Create network, assign EPI/νf/θ, compute C(t) |
-| 02 | `02_musical_resonance.py` | Phase synchronization via harmonic coupling |
-| 03 | `03_network_formation.py` | Network building strategies and coherence emergence |
-| 05 | `05_coherence_evolution.py` | Coherence trajectories under nodal evolution |
-| 06 | `06_network_topologies.py` | Topology-dependent dynamics (8+ types) |
-| 08 | `08_emergent_phenomena.py` | Collective behaviour from individual nodal equations |
-| 09 | `09_visualization_suite.py` | Visual representation of structural dynamics |
+## 02_physics_regimes — regimes and structure of the nodal dynamics
 
-### Grammar & Operators — [`UNIFIED_GRAMMAR_RULES.md`](../theory/UNIFIED_GRAMMAR_RULES.md)
+Classical/quantum correspondences, conservation, gauge, variational, tetrad,
+and operator–tetrad synergies.
 
-**SDK**: `net.evolve_grammar_aware(steps)`, `net.integrity_check()`
+- `11`–`15` — classical limit, mechanics, quantum mechanics, uncertainty, kinematics
+- `17` conservation law · `26` gauge structure · `27` variational principle
+- `28` dissipative systems · `29` Lyapunov stability · `30` self-optimization
+- `31` constants basis · `32` spiral attractors · `33` complex-field unification
+- `34` conservation protocol · `35` tetrad irreducibility · `36` grammar violations
+- `37` operator–tetrad synergy · `38` grammar-energy landscape · `39` nodal decomposition
 
-| # | File | Concept |
-|---|------|---------|
-| 04 | `04_operator_sequences.py` | U1–U6 validation: valid vs invalid sequences |
-| 07 | `07_phase_transitions.py` | Bifurcation dynamics (U4), critical thresholds |
+## 03_riemann_zeta — TNFR–Riemann ζ-track (P1–P31)
 
-### SDK & Telemetry — [`FUNDAMENTAL_THEORY.md`](../theory/FUNDAMENTAL_THEORY.md) + [`GLOSSARY.md`](../theory/GLOSSARY.md)
+Discrete prime-path operators, von Mangoldt prime ladder, Weil formula,
+Li–Keiper, and the ζ-track attack surface. Program **open** (paused at T-HP).
 
-**SDK**: `from tnfr.sdk import TNFR` — primary entry point for all examples below
+- `16, 18–25` — operator, convergence, topology, eigenmodes, spectral zeta, RMT
+- `41–58` — von Mangoldt → oscillatory correction (P12–P31)
 
-| # | File | Concept |
-|---|------|---------|
-| 10 | `10_simplified_sdk_showcase.py` | `TNFR.create()`, `.tetrad()`, `.conservation()`, `.evolve_grammar_aware()` |
+## 04_riemann_L_twisted — TNFR–Riemann χ-twisted L-track (P32–P49)
 
-### Classical & Quantum Regimes — [`PHYSICAL_REGIME_CORRESPONDENCES.md`](../theory/PHYSICAL_REGIME_CORRESPONDENCES.md)
+Dirichlet L-functions and the χ-twisted parity layer (GL(1)).
 
-**SDK**: `net.telemetry()` (coherence regime classification), `net.tetrad()` (field monitoring)
+- `59–63` — Dirichlet L: construction, continuation, Hamiltonian, Weil, Li–Keiper
+- `64–76` — twisted positivity → twisted oscillatory correction
 
-| # | File | Concept |
-|---|------|---------|
-| 11 | `11_classical_limit_comparison.py` | TNFR vs classical N-body comparison |
-| 12 | `12_classical_mechanics_demo.py` | Keplerian orbits from symplectic integrator |
-| 13 | `13_quantum_mechanics_demo.py` | Emergent quantization from resonant standing waves |
-| 14 | `14_uncertainty_and_interference.py` | Structural uncertainty (ΔForm·Δνf ≥ K), double slit |
-| 15 | `15_train_crossing_demo.py` | Free-particle classical kinematics |
+## 05_type_hygiene — catalog type-hygiene programme (B0–B11)
 
-### TNFR-Riemann Program — [`TNFR_RIEMANN_RESEARCH_NOTES.md`](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md)
+REMESH-∞ residue split + the twelve type-signature / closure-discipline demos.
 
-**SDK**: Uses `src/tnfr/riemann/` modules directly (specialised domain, not wrapped in Simple SDK)
+- `77_remesh_infinity_residue_split_demo.py`
+- `78–89` — νf / EPI / φ / ΔNFR / REMESH-window / Δφ_max / coupling / tetrad / currents / aggregates / U-rules / catalog signatures
 
-| # | File | Concept |
-|---|------|---------|
-| 16 | `16_riemann_operator_demo.py` | Discrete TNFR-Riemann eigenvalues, critical parameter |
-| 18 | `18_riemann_convergence_proof.py` | Spectral convergence σ_c → 1/2 (four lines of attack) |
-| 19 | `19_topology_comparison.py` | Cross-topology universality (path/cycle/star/complete/tree/ER) |
-| 20 | `20_eigenmode_tetrad.py` | Per-eigenmode structural field tetrad on H^(k)(σ) |
-| 21 | `21_complex_extension_demo.py` | Non-Hermitian operator, complex s, pseudo-spectrum |
-| 22 | `22_spectral_zeta_demo.py` | Spectral zeta ζ_H(σ,u), heat kernel, Mellin bridge |
-| 23 | `23_random_ensemble_rmt_demo.py` | Random matrix ensembles on prime graphs (GOE/GUE/Poisson) |
-| 25 | `25_analytical_convergence_demo.py` | Analytical proof σ* → 1/2 via PNT + telescoping identity |
+## 06_navier_stokes — TNFR–Navier–Stokes programme (N1–N17)
 
-### Conservation & Gauge — [`STRUCTURAL_CONSERVATION_THEOREM.md`](../theory/STRUCTURAL_CONSERVATION_THEOREM.md) + [`GAUGE_SYMMETRY_AND_UNIFICATION.md`](../theory/GAUGE_SYMMETRY_AND_UNIFICATION.md)
+3D Taylor–Green, Leray/BKM, incompressibility, geometric depletion, Reynolds
+sweeps. NS-G5 closed at the discrete level; Clay **open**.
 
-**SDK**: `net.conservation()` → `ConservationReport`, `net.tensor_invariants()`
+- `77–86` — Taylor–Green → Reynolds sweep
 
-| # | File | Concept |
-|---|------|---------|
-| 17 | `17_conservation_law_demo.py` | Noether charge, energy, Lyapunov, Ward identities |
-| 24 | `24_spectral_conservation_demo.py` | Spectral conservation + grammar compliance at σ = 1/2 |
-| 26 | `26_gauge_structure_demo.py` | U(1) gauge symmetry of Ψ, connections, curvature, Wilson loops |
+## 07_number_theory — primality and arithmetic as structural equilibrium
 
-### Variational Mechanics — [`TNFR_VARIATIONAL_PRINCIPLE.md`](../theory/TNFR_VARIATIONAL_PRINCIPLE.md)
+Primality ⟺ ΔNFR = 0, Goldbach, prime families/orbits, numbers as a coupled
+network, and emergent chemistry/particles from the same criterion.
 
-**SDK**: Uses `src/tnfr/physics/variational.py` directly
+- `40` arithmetic number theory · `94–97` generative / spectral / Goldbach
+- `100–102` prime families, numbers-as-network, nodal flow on numbers
+- `emergent_chemistry_particles_demo.py` — chemistry/particles from ΔNFR = 0
 
-| # | File | Concept |
-|---|------|---------|
-| 27 | `27_variational_principle_demo.py` | Lagrangian/Hamiltonian, Euler-Lagrange residual, conjugate pairs, symplectic preservation, action functional |
+## 08_emergent_geometry — the geometry the dynamics generates from itself
 
-### Dissipative & Open Systems — [`DISSIPATIVE_AND_OPEN_SYSTEMS.md`](../theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md)
+Emergent symplectic substrate, structural diffusion/transport, polarization,
+Helmholtz–Hodge orthogonality, generating structure, flow prediction.
 
-**SDK**: Uses `src/tnfr/physics/dissipative_conservation.py` directly
+- `98` symplectic substrate · `99` structural diffusion
+- `103–105` substrate↔Riemann, NS-is-not-Riemann, NS enstrophy
+- `106` polarization · `107` orthogonal structure · `108` generating structure
+- `112` structure predicts the coherence flow · `unified_fields_showcase.py`
 
-| # | File | Concept |
-|---|------|---------|
-| 28 | `28_dissipative_systems_demo.py` | Lindblad decoherence, purity decay, entropy production, dissipative regime classification, grammar violations as collapse operators |
+## 09_millennium — Millennium-problem reformulations (honest scope)
 
-### Stability & Emergence — [`STRUCTURAL_STABILITY_AND_DYNAMICS.md`](../theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md)
+TNFR-native reformulations that **localise the obstruction**, not solutions.
 
-**SDK**: `net.integrity_check()` → `IntegrityReport`, `net.conservation()` (Lyapunov stability)
+- `109_p_vs_np_coherence_synthesis.py` — synthesis vs verification (Branch B)
+- `110_bsd_rank_structural_pressure.py` — rank as structural pressure (Branch B)
+- `111_hodge_discrete_and_honest_gap.py` — discrete Hodge, blindness (Branch B3-leaning)
 
-| # | File | Concept |
-|---|------|---------|
-| 29 | `29_lyapunov_stability_demo.py` | All 13 operator Lyapunov bounds, energy class taxonomy, U2 net-contractivity proof, spectral gap, self-sustaining dynamics/autopoiesis |
+## 10_applications — applied phase-gated coupling and infrastructure
 
-### Self-Optimisation Dynamics — [AGENTS.md § Self-Optimizing Dynamics](../AGENTS.md)
-
-**SDK**: `TNFRNetwork(G).focus(n).auto_optimize().execute()`, `from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine`
-
-| # | File | Concept |
-|---|------|---------|
-| 30 | `30_self_optimization_demo.py` | Optimisation landscape, strategy recommendation, experience-based learning, dry-run analysis, conservation feedback loop |
-
-### Extended Fields — [`EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md`](../theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md)
-
-**SDK**: `net.tensor_invariants()`, `net.emergent_fields()`
-
-| # | File | Concept |
-|---|------|---------|
-| — | `unified_fields_showcase.py` | Ψ = K_φ + i·J_φ, emergent fields χ/𝒮/𝒞, tensor invariants |
-
-### Mathematical Foundations — [`MINIMAL_STRUCTURAL_DEGREES.md`](../theory/MINIMAL_STRUCTURAL_DEGREES.md) + [`SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md`](../theory/SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md)
-
-**SDK**: `net.complex_field()`, `net.j_phi()`, `net.j_dnfr()`, `net.noether_charge()`, `net.energy()`, `net.grammar_violations()`
-
-| # | File | Concept |
-|---|------|---------|
-| 31 | `31_mathematical_constants_basis.py` | (φ, γ, π, e) as irreducible dynamics basis; tetrahedral edges; cross-topology |
-| 32 | `32_spiral_attractors_demo.py` | Golden spiral (b = 2·ln φ/π), U6 confinement, KAM perturbation resilience |
-| 33 | `33_complex_field_unification.py` | Ψ = K_φ + i·J_φ anticorrelation, emergent fields χ/𝒮/𝒞, tensor invariants |
-| 34 | `34_conservation_protocol_suite.py` | Full §10 validation: charge drift, quality tracking, sector decomposition, scaling |
-| 35 | `35_tetrad_irreducibility.py` | Blind spot verification: removing each field exposes undetectable pathology |
-| 36 | `36_grammar_violation_detector.py` | U2/U3/U6 violations detected and classified via conservation residuals (§12) |
-
-### Computational Infrastructure
-
-| # | File | Concept |
-|---|------|---------|
-| — | `pytorch_cuda_demo.py` | PyTorch GPU acceleration for large-scale field computation |
+- `90` phase-gate monitor · `91` breast-cancer · `92` wine-quality · `93` structural interface
+- `pytorch_cuda_demo.py` — GPU backend
 
 ---
 
-## Learning Paths
-
-### Beginner (15 min)
-```bash
-python 01_hello_world.py
-python 02_musical_resonance.py
-python 03_network_formation.py
-python 04_operator_sequences.py
-```
-
-### Intermediate (1 hr)
-```bash
-python 05_coherence_evolution.py
-python 07_phase_transitions.py
-python 10_simplified_sdk_showcase.py
-python 12_classical_mechanics_demo.py
-python 13_quantum_mechanics_demo.py
-python 27_variational_principle_demo.py
-```
-
-### Advanced — Riemann Program (2+ hrs)
-```bash
-python 16_riemann_operator_demo.py
-python 18_riemann_convergence_proof.py
-python 19_topology_comparison.py
-python 20_eigenmode_tetrad.py
-python 26_gauge_structure_demo.py
-```
-
-### Advanced — Stability & Self-Optimisation (1 hr)
-```bash
-python 28_dissipative_systems_demo.py
-python 29_lyapunov_stability_demo.py
-python 30_self_optimization_demo.py
-```
-
-### Advanced — Mathematical Foundations (1 hr)
-```bash
-python 31_mathematical_constants_basis.py
-python 32_spiral_attractors_demo.py
-python 33_complex_field_unification.py
-python 34_conservation_protocol_suite.py
-python 35_tetrad_irreducibility.py
-python 36_grammar_violation_detector.py
-```
-
----
-
-## Physics Standards
-
-Every example maintains:
-
-1. **Nodal equation traceability**: all dynamics from `∂EPI/∂t = νf · ΔNFR(t)`
-2. **Grammar compliance**: operator sequences satisfy U1-U6
-3. **Operator semantics**: only the 13 canonical operators modify EPI
-4. **Field monitoring**: tetrad (Φ_s, |∇φ|, K_φ, ξ_C) tracked where applicable
-5. **Reproducibility**: fixed seeds, deterministic trajectories
-6. **Units**: νf in Hz_str, ΔNFR as structural pressure
-
----
-
-## Documentation Links
-
-- **Theory hub**: [theory/README.md](../theory/README.md)
-- **Primary reference**: [AGENTS.md](../AGENTS.md)
-- **Grammar rules**: [theory/UNIFIED_GRAMMAR_RULES.md](../theory/UNIFIED_GRAMMAR_RULES.md)
-- **Glossary**: [theory/GLOSSARY.md](../theory/GLOSSARY.md)
-- **SDK API**: [src/tnfr/sdk/](../src/tnfr/sdk/)
+**Note on the two `77–86` series**: `05_type_hygiene/` and `06_navier_stokes/`
+were two programmes developed in parallel that previously shared the numbers
+77–86. The thematic folders resolve that collision; the global numbers are
+preserved as stable identifiers.

@@ -163,7 +163,7 @@ src/tnfr/
 ├── validation/        # Structural health monitoring
 └── factorization/     # Spectral factorization workflow
 
-examples/              # 120 files (tutorials 01–76, 90–107; parallel Riemann/NS/Type-Hygiene series 77–89)
+examples/              # 125 examples in 10 thematic subfolders (see examples/README.md)
 tests/                 # 1,947 tests
 theory/                # Theoretical derivations
 benchmarks/            # 50 performance & structural-validation scripts
