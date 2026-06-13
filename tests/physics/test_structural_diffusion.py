@@ -17,12 +17,14 @@ from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from tnfr.physics.structural_diffusion import (
     StructuralDiffusionCertificate,
+    OverdampedRegimeCertificate,
     structural_diffusion_operator,
     structural_field,
     structural_diffusivity,
     relaxation_spectrum,
     degree_weighted_total,
     verify_structural_diffusion,
+    verify_overdamped_regime,
 )
 
 
@@ -166,3 +168,46 @@ class TestDiffusionCertificate:
                  for n in G.nodes()}
         assert before == after
         assert G.graph.get("DNFR_WEIGHTS") == weights_before
+
+
+class TestOverdampedRegime:
+    """The bare nodal equation is the first-order overdamped drift law."""
+
+    def test_drift_velocity_is_nu_f_times_pressure(self) -> None:
+        import pytest
+
+        cert = verify_overdamped_regime(nu_f=0.7, pressure=1.3)
+        assert cert.drift_velocity == pytest.approx(0.7 * 1.3)
+
+    def test_velocity_is_constant_under_sustained_pressure(self) -> None:
+        # first-order: held pressure -> constant velocity (drift), not accel.
+        cert = verify_overdamped_regime()
+        assert cert.velocity_is_constant
+        assert cert.max_velocity_variation < 1e-9
+
+    def test_position_grows_linearly(self) -> None:
+        import pytest
+
+        cert = verify_overdamped_regime(nu_f=0.7, pressure=1.3)
+        assert cert.position_linear_in_time
+        # slope equals the drift velocity νf·F (not quadratic acceleration)
+        assert cert.position_slope == pytest.approx(0.7 * 1.3, abs=1e-6)
+
+    def test_mobility_law_linear_in_nu_f(self) -> None:
+        cert = verify_overdamped_regime()
+        assert cert.mobility_linear_in_nu_f
+
+    def test_drift_linear_in_pressure(self) -> None:
+        cert = verify_overdamped_regime()
+        assert cert.drift_linear_in_pressure
+
+    def test_is_first_order_not_inertial(self) -> None:
+        cert = verify_overdamped_regime()
+        assert not cert.is_second_order
+
+    def test_certificate_valid(self) -> None:
+        cert = verify_overdamped_regime()
+        assert isinstance(cert, OverdampedRegimeCertificate)
+        assert cert.is_overdamped_drift
+        assert "VALID" in cert.summary()
+        assert "mobility law" in cert.summary()

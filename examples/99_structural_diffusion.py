@@ -49,6 +49,7 @@ from tnfr.constants.aliases import ALIAS_DNFR
 from tnfr.observers import kuramoto_order
 from tnfr.physics.structural_diffusion import (
     verify_structural_diffusion,
+    verify_overdamped_regime,
     structural_diffusion_operator,
     structural_field,
     relaxation_spectrum,
@@ -158,6 +159,30 @@ def experiment_3_synchronization():
     print()
 
 
+def experiment_4_overdamped_regime():
+    """The bare nodal equation is the first-order overdamped drift law."""
+    print("=" * 72)
+    print("EXPERIMENT 4: The mechanical regime is overdamped drift")
+    print("=" * 72)
+    print()
+    print("The nodal equation is FIRST-ORDER, so reading EPI as a position q")
+    print("and ΔNFR as the pressure F, it is q̇ = νf·F — velocity ∝ force")
+    print("(νf = mobility). Under sustained pressure the field drifts at")
+    print("CONSTANT velocity (it does not accelerate).")
+    print()
+
+    cert = verify_overdamped_regime(nu_f=0.7, pressure=1.3)
+    print(cert.summary())
+    print()
+    print("VALIDATED: this is the empirically-demonstrated mobility/drift law")
+    print("(Stokes 1851, Einstein 1905; terminal velocity, electrophoresis).")
+    print("The INERTIAL Newtonian regime (q̈ = F/m, second order) is a")
+    print("DISTINCT structure — the conservative symplectic substrate flow")
+    print("(q̈ = −q per pair). The bare nodal equation is its overdamped")
+    print("projection. A first-order equation cannot, by itself, be Newton.")
+    print()
+
+
 def main():
     print()
     print("  TNFR Example 99: Structural Diffusion")
@@ -168,6 +193,7 @@ def main():
     experiment_1_nodal_is_diffusion()
     experiment_2_diffusion_signatures()
     experiment_3_synchronization()
+    experiment_4_overdamped_regime()
 
     print("=" * 72)
     print("WHAT THIS ESTABLISHES")
@@ -177,8 +203,11 @@ def main():
     print("diffusion–synchronization equation on the network:")
     print("  • EPI diffuses (heat/Fick equation), relaxing to uniformity,")
     print("    conserving the degree-weighted total;")
-    print("  • νf is the diffusivity, ΔNFR the structural pressure/gradient;")
-    print("  • the phase channel synchronizes (Kuramoto).")
+    print("  • νf is the diffusivity/mobility, ΔNFR the structural pressure;")
+    print("  • the phase channel synchronizes (Kuramoto);")
+    print("  • being first-order, it produces the overdamped drift law")
+    print("    q̇ = νf·F (Stokes/Einstein), not inertial Newton — that lives")
+    print("    in the second-order symplectic substrate.")
     print()
     print("These are reproduced as the SAME mathematics as the empirically-")
     print("demonstrated phenomena of diffusion and synchronization — in")

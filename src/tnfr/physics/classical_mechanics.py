@@ -15,6 +15,20 @@ dynamics where:
 2. Structural frequency (νf) acts as inverse inertia.
 3. Structural pressure (ΔNFR) manifests as phenomenological force.
 
+REGIME NOTE (two distinct mechanical regimes — keep them separate)
+------------------------------------------------------------------
+The inertial reading below (m = 1/νf, F = ΔNFR giving second-order
+F = ma / Hamilton equations) is the **symplectic-substrate** regime: the
+conservative Hamiltonian flow of :mod:`tnfr.physics.symplectic_substrate`,
+which is second order (q̈ = −∂V/∂q per conjugate pair).  The **bare** nodal
+equation ∂EPI/∂t = νf·ΔNFR is *first order*, so by itself it produces the
+**overdamped drift** law q̇ = νf·F (velocity ∝ force, νf = mobility), the
+empirically-demonstrated Stokes/Einstein mobility regime
+(:func:`tnfr.physics.structural_diffusion.verify_overdamped_regime`).  The
+bare nodal equation is the overdamped projection of the substrate flow; the
+inertial mapping here applies at the substrate (second-order) level, not to
+the first-order nodal equation in isolation.
+
 Canonical Mappings:
 1. Generalized Coordinates (q) <--> EPI Spatial Components
 2. Generalized Velocities (q_dot) <--> EPI Velocity Components

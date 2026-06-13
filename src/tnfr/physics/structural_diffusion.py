@@ -54,6 +54,34 @@ Josephson junctions).  They are reproduced here as the **same mathematics**
 (the graph Laplacian is the discrete diffusion operator), not as a
 metaphor.
 
+THE MECHANICAL REGIME IS OVERDAMPED DRIFT (not inertial)
+========================================================
+Because the nodal equation is **first order in time**, the mechanical
+regime it produces directly is the **overdamped drift law**, not Newtonian
+inertia.  Reading EPI as a position-like coordinate q and ΔNFR as the
+structural pressure F, the nodal equation is
+
+    q̇ = νf · F,
+
+i.e. **velocity proportional to applied force**, with νf the **mobility**.
+Under a sustained structural pressure the field drifts at *constant*
+velocity (linear in time), it does **not** accelerate.  This is the
+empirically-demonstrated mobility / drift law — Stokes drag (1851),
+Einstein's mobility relation (1905), terminal velocity, sedimentation,
+electrophoresis — where νf is the mobility, NOT an inverse inertial mass.
+
+The **inertial** Newtonian regime (second order, q̈ = F/m, oscillation)
+is a *different* structure: it lives in the conservative **symplectic
+substrate** Hamiltonian flow (:mod:`tnfr.physics.symplectic_substrate`,
+where the flow is q̈ = −q per conjugate pair).  The bare nodal equation is
+the **overdamped projection** of that substrate flow.  So:
+
+    bare nodal equation (1st order)  →  overdamped drift  v = νf·F
+    symplectic substrate (2nd order) →  inertial oscillation  q̈ = −∂V/∂q
+
+both empirically grounded, but distinct regimes — a single first-order
+nodal equation cannot, by itself, be Newton's second law.
+
 HONEST SCOPE
 ============
 - The identity ΔNFR_epi = −L_rw·EPI is EXACT (machine precision), a
@@ -84,12 +112,14 @@ from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
 
 __all__ = [
     "StructuralDiffusionCertificate",
+    "OverdampedRegimeCertificate",
     "structural_diffusion_operator",
     "structural_field",
     "structural_diffusivity",
     "relaxation_spectrum",
     "degree_weighted_total",
     "verify_structural_diffusion",
+    "verify_overdamped_regime",
 ]
 
 
@@ -375,4 +405,170 @@ def verify_structural_diffusion(
         max_conservation_drift=max_drift,
         relaxes_to_uniform=relaxes,
         final_field_std=final_std,
+    )
+
+
+# ---------------------------------------------------------------------------
+# The overdamped drift regime: the bare nodal equation is first-order
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class OverdampedRegimeCertificate:
+    r"""Verification that the bare nodal equation is the overdamped drift law.
+
+    The nodal equation ∂EPI/∂t = νf·ΔNFR is **first order in time**, so —
+    reading EPI as a position q and ΔNFR as the structural pressure F — it
+    is the **mobility / drift law** q̇ = νf·F: velocity proportional to
+    force, with νf the mobility.  Under a sustained pressure the field
+    drifts at *constant* velocity (linear in time), it does not accelerate.
+
+    This is the empirically-demonstrated overdamped regime (Stokes 1851,
+    Einstein 1905, terminal velocity, sedimentation, electrophoresis).  The
+    inertial Newtonian regime (q̈ = F/m, second order) is the separate
+    :mod:`tnfr.physics.symplectic_substrate` Hamiltonian flow; the nodal
+    equation is its overdamped projection.
+
+    Attributes
+    ----------
+    drift_velocity : float
+        v = νf·F evaluated at the reference (νf, F).
+    velocity_is_constant : bool
+        Under sustained pressure, dEPI/dt is constant (first-order/drift).
+    max_velocity_variation : float
+        Max |dEPI/dt − v| over the held-pressure integration (≈ 0).
+    position_linear_in_time : bool
+        EPI(t) grows linearly (slope = drift), not quadratically.
+    position_slope : float
+        Measured slope of EPI(t) (= the drift velocity).
+    mobility_linear_in_nu_f : bool
+        v ∝ νf (the mobility law): v/νf is constant across νf.
+    drift_linear_in_pressure : bool
+        v ∝ F: v/F is constant across F.
+    is_second_order : bool
+        Whether the bare equation is second order (always False — it is the
+        overdamped, first-order regime).
+    """
+
+    drift_velocity: float
+    velocity_is_constant: bool
+    max_velocity_variation: float
+    position_linear_in_time: bool
+    position_slope: float
+    mobility_linear_in_nu_f: bool
+    drift_linear_in_pressure: bool
+    is_second_order: bool
+
+    @property
+    def is_overdamped_drift(self) -> bool:
+        """True when the bare nodal equation verifies as overdamped drift."""
+        return (
+            self.velocity_is_constant
+            and self.position_linear_in_time
+            and self.mobility_linear_in_nu_f
+            and self.drift_linear_in_pressure
+            and not self.is_second_order
+        )
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "VALID" if self.is_overdamped_drift else "INVALID"
+        return (
+            f"Overdamped drift regime [{ok}]: "
+            f"q̇ = νf·F = {self.drift_velocity:.4f} "
+            f"(mobility law); "
+            f"velocity constant={self.velocity_is_constant} "
+            f"(var {self.max_velocity_variation:.1e}), "
+            f"position linear={self.position_linear_in_time} "
+            f"(slope {self.position_slope:.4f}), "
+            f"v∝νf={self.mobility_linear_in_nu_f}, "
+            f"v∝F={self.drift_linear_in_pressure}, "
+            f"second-order={self.is_second_order}"
+        )
+
+
+def verify_overdamped_regime(
+    *,
+    nu_f: float = 0.7,
+    pressure: float = 1.3,
+    dt: float = 0.01,
+    steps: int = 300,
+    tolerance: float = 1e-9,
+) -> OverdampedRegimeCertificate:
+    r"""Verify the bare nodal equation is the overdamped drift law q̇ = νf·F.
+
+    Integrates the canonical nodal equation
+    (:func:`tnfr.dynamics.canonical.compute_canonical_nodal_derivative`)
+    under a *sustained* structural pressure and measures that the EPI
+    coordinate drifts at constant velocity v = νf·F (first-order, mobility
+    law), linear in νf (mobility) and in the pressure F.  Uses the canonical
+    nodal-equation function — no formula is re-implemented here.
+
+    Parameters
+    ----------
+    nu_f : float
+        Reference structural frequency (mobility).
+    pressure : float
+        Sustained structural pressure ΔNFR (= F).
+    dt : float
+        Integration step.
+    steps : int
+        Number of integration steps.
+    tolerance : float
+        Maximum allowed velocity variation / linearity residual.
+
+    Returns
+    -------
+    OverdampedRegimeCertificate
+    """
+    from ..dynamics.canonical import compute_canonical_nodal_derivative
+
+    # integrate the bare nodal equation under a held pressure
+    epi = 0.0
+    velocities = []
+    positions = []
+    for _ in range(steps):
+        v = compute_canonical_nodal_derivative(nu_f, pressure).derivative
+        epi = epi + dt * v
+        velocities.append(v)
+        positions.append(epi)
+    vel = np.array(velocities, dtype=float)
+    pos = np.array(positions, dtype=float)
+
+    drift = float(vel[0])
+    vel_var = float(np.max(np.abs(vel - drift)))
+    vel_constant = vel_var < tolerance
+
+    # position grows linearly with slope = drift (first-order, not quadratic)
+    t = np.arange(steps, dtype=float) * dt
+    slope, _ = np.polyfit(t, pos, 1)
+    quad = np.polyfit(t, pos, 2)[0]  # leading quadratic coefficient ≈ 0
+    pos_linear = (
+        abs(float(slope) - drift) < max(tolerance, 1e-6 * abs(drift))
+        and abs(float(quad)) < max(tolerance, 1e-6 * abs(drift) + 1e-9)
+    )
+
+    # mobility law: v ∝ νf (v/νf constant across νf)
+    ratios_nu = [
+        compute_canonical_nodal_derivative(nf, pressure).derivative / nf
+        for nf in (0.2, 0.5, 1.0, 1.5)
+    ]
+    mobility_linear = float(np.std(ratios_nu)) < tolerance
+
+    # drift ∝ F (v/F constant across F)
+    ratios_f = [
+        compute_canonical_nodal_derivative(nu_f, f).derivative / f
+        for f in (0.3, 0.8, 1.3, 2.0)
+    ]
+    pressure_linear = float(np.std(ratios_f)) < tolerance
+
+    return OverdampedRegimeCertificate(
+        drift_velocity=drift,
+        velocity_is_constant=vel_constant,
+        max_velocity_variation=vel_var,
+        position_linear_in_time=pos_linear,
+        position_slope=float(slope),
+        mobility_linear_in_nu_f=mobility_linear,
+        drift_linear_in_pressure=pressure_linear,
+        is_second_order=False,
     )

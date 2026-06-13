@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,909 tests across multiple topologies
+- Experimental Validation: 1,916 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -539,7 +539,7 @@ the **discrete diffusion equation** with diffusivity $\nu_f$. What emerges, in T
 - **Equilibrium ⟺ no gradients**: $\Delta\mathrm{NFR} = 0 \Leftrightarrow$ the field is uniform across neighbourhoods (the diffusive steady state). $\nu_f$ is the **mobility/diffusivity**; ΔNFR is the **structural pressure** driving the flux.
 - **Synchronization** (phase channel): the phase term aligns θ to the neighbour mean, driving Kuramoto-type synchronization ($R \to 1$) — also empirically demonstrated (fireflies, pacemaker cells, neurons, Josephson junctions).
 
-This is the irreducible, empirically-grounded transport dynamics on which the emergent geometric tower (symplectic substrate, conservation laws) sits. **Implementation**: [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py)::`verify_structural_diffusion` (+ `structural_diffusion_operator`, `relaxation_spectrum`, `degree_weighted_total`); 12 tests in [tests/physics/test_structural_diffusion.py](tests/physics/test_structural_diffusion.py); demonstrated in [examples/99_structural_diffusion.py](examples/99_structural_diffusion.py). **Honest scope**: the EPI-channel ↔ graph-Laplacian identity is exact; the full ΔNFR is multi-channel (diffusion + synchronization + νf/topology homogenization); this characterises the transport content of the nodal dynamics and does not, by itself, resolve any open program.
+This is the irreducible, empirically-grounded transport dynamics on which the emergent geometric tower (symplectic substrate, conservation laws) sits. **Implementation**: [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py)::`verify_structural_diffusion` (+ `structural_diffusion_operator`, `relaxation_spectrum`, `degree_weighted_total`, `verify_overdamped_regime`); 19 tests in [tests/physics/test_structural_diffusion.py](tests/physics/test_structural_diffusion.py); demonstrated in [examples/99_structural_diffusion.py](examples/99_structural_diffusion.py). **Honest scope**: the EPI-channel ↔ graph-Laplacian identity is exact; the full ΔNFR is multi-channel (diffusion + synchronization + νf/topology homogenization); this characterises the transport content of the nodal dynamics and does not, by itself, resolve any open program.
 
 ---
 
@@ -549,15 +549,21 @@ TNFR does not introduce separate classical or quantum ontologies. It studies one
 
 ### Smooth-Trajectory Correspondence (High Coherence Regime)
 
-When $C(t) \to 1$ and $|\nabla \phi| \to 0$, the Nodal Equation reduces to a form isomorphic to Newton's Second Law:
+The nodal equation `∂EPI/∂t = νf · ΔNFR(t)` is **first order in time**, so the mechanical behaviour it produces *directly* is the **overdamped drift regime**, not inertial Newtonian motion. Reading EPI as a position-like coordinate $q$ and ΔNFR as the structural pressure $F$:
 
-| Classical Concept | Symbol | TNFR Analogue | Symbol | Relation |
-|-------------------|--------|---------------|--------|----------|
-| **Inertial Mass** | $m$ | Inverse Structural Frequency | $1/\nu_f$ | $m = 1/\nu_f$ |
-| **Force** | $F$ | Structural Pressure | $\Delta NFR$ | $F = \Delta NFR$ |
-| **Action** | $S$ | Phase Accumulation | $\Phi$ | $S \sim \int \phi dt$ |
+$$\dot{q} = \nu_f \cdot F \quad\text{(velocity} \propto \text{force, } \nu_f = \text{mobility).}$$
 
-**Implementation**: [src/tnfr/physics/classical_mechanics.py](src/tnfr/physics/classical_mechanics.py), [examples/12_classical_mechanics_demo.py](examples/12_classical_mechanics_demo.py)
+Under a sustained structural pressure the field drifts at **constant velocity** (linear in time) — it does not accelerate. This is the empirically-demonstrated **mobility / drift law** (Stokes 1851, Einstein 1905; terminal velocity, sedimentation, electrophoresis), where $\nu_f$ is the **mobility**, *not* an inverse inertial mass.
+
+| Overdamped (drift) Concept | TNFR quantity | Relation | Empirical anchor |
+|----------------------------|---------------|----------|------------------|
+| Drift velocity | $\dot{\mathrm{EPI}}$ | $\dot q = \nu_f\,F$ | Stokes drag, terminal velocity |
+| Mobility | $\nu_f$ | $v \propto \nu_f$ | Einstein mobility relation |
+| Applied force | $\Delta\mathrm{NFR}$ | $v \propto F$ | measured drift ∝ field |
+
+The **inertial Newtonian regime** ($\ddot q = F/m$, second order, oscillation) is a *distinct* structure: it lives in the conservative **symplectic substrate** Hamiltonian flow ([src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py), where the flow is $\ddot q = -q$ per conjugate pair). The bare nodal equation is the **overdamped projection** of that substrate flow. A single first-order nodal equation cannot, by itself, *be* Newton's second law; the two regimes are both empirically grounded but distinct.
+
+**Implementation**: [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py)::`verify_overdamped_regime` (measures the drift law from the canonical nodal-equation function); inertial regime in [src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py), [examples/12_classical_mechanics_demo.py](examples/12_classical_mechanics_demo.py).
 
 ### Discrete-Mode Correspondence (High Dissonance Regime)
 
@@ -831,7 +837,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,909 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,916 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1568,7 +1574,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,909 tests)
+- **TESTING.md**: Test strategy (1,916 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
