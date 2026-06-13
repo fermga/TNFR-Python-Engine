@@ -21,19 +21,24 @@ warnings.filterwarnings('ignore', 'Glyph .* missing from font.*')
 
 
 def compute_coherence(G):
-    """Compute network coherence from phase synchronization."""
-    phases = [G.nodes[n].get('theta', 0) for n in G.nodes()]
-    if len(phases) < 2:
+    """Network phase synchronization: the canonical Kuramoto order
+    parameter R = |<e^{iθ}>|.
+
+    R = 1 when phases are fully aligned, R -> 0 when desynchronized
+    (random or antiphase). AGENTS.md frames TNFR phase coupling as
+    Kuramoto synchronization, so this is the canonical phase-synchrony
+    measure. The distinct total coherence
+    C(t) = 1/(1 + mean|ΔNFR| + mean|dEPI|) lives in
+    tnfr.metrics.coherence and requires the dynamics pipeline.
+    """
+    thetas = np.array(
+        [G.nodes[n].get('theta', G.nodes[n].get('phase', 0.0))
+         for n in G.nodes()],
+        dtype=float,
+    )
+    if thetas.size == 0:
         return 1.0
-    
-    phase_diffs = []
-    for i in range(len(phases)):
-        for j in range(i + 1, len(phases)):
-            diff = abs(phases[i] - phases[j])
-            diff = min(diff, 2 * np.pi - diff)
-            phase_diffs.append(diff)
-    
-    return 1.0 - (np.mean(phase_diffs) / np.pi) if phase_diffs else 1.0
+    return float(abs(np.mean(np.exp(1j * thetas))))
 
 
 def apply_resonance_evolution(G, steps=10):

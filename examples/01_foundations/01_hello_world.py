@@ -43,21 +43,12 @@ def hello_world():
     print("🎵 STEP 2: Measuring initial coherence...")
     print("   Physics: Coherence measures how well synchronized the system is")
     
-    # Simple coherence calculation
-    phases = [G.nodes[n]['theta'] for n in G.nodes()]
-    phase_differences = []
-    for i in range(len(phases)):
-        for j in range(i+1, len(phases)):
-            diff = abs(phases[i] - phases[j])
-            if diff > np.pi:
-                diff = 2*np.pi - diff
-            phase_differences.append(diff)
-    
-    avg_phase_diff = np.mean(phase_differences)
-    initial_coherence = 1.0 - (avg_phase_diff / np.pi)  # Normalized coherence
-    
-    print(f"   📊 Initial coherence: {initial_coherence:.3f}")
-    print(f"   🎯 Average phase difference: {avg_phase_diff:.2f} radians")
+    # Phase synchronization: the canonical Kuramoto order parameter
+    # R = |<e^{iθ}>|  (R = 1 fully aligned, R -> 0 desynchronized/antiphase).
+    thetas = np.array([G.nodes[n]['theta'] for n in G.nodes()])
+    initial_coherence = float(abs(np.mean(np.exp(1j * thetas))))
+
+    print(f"   📊 Initial phase synchrony R: {initial_coherence:.3f}")
     print()
     
     # STEP 3: Simulate synchronization
@@ -85,21 +76,12 @@ def hello_world():
         for node in G.nodes():
             G.nodes[node]['theta'] = new_phases[node]
     
-    # Measure final coherence
-    final_phases = [G.nodes[n]['theta'] for n in G.nodes()]
-    final_phase_differences = []
-    for i in range(len(final_phases)):
-        for j in range(i+1, len(final_phases)):
-            diff = abs(final_phases[i] - final_phases[j])
-            if diff > np.pi:
-                diff = 2*np.pi - diff
-            final_phase_differences.append(diff)
-    
-    final_avg_diff = np.mean(final_phase_differences)
-    final_coherence = 1.0 - (final_avg_diff / np.pi)
+    # Measure final phase synchrony (same canonical Kuramoto R)
+    final_thetas = np.array([G.nodes[n]['theta'] for n in G.nodes()])
+    final_coherence = float(abs(np.mean(np.exp(1j * final_thetas))))
     
     print("   ✅ Synchronization complete!")
-    print(f"   📊 Final coherence: {final_coherence:.3f}")
+    print(f"   📊 Final phase synchrony R: {final_coherence:.3f}")
     print(f"   📈 Improvement: {final_coherence - initial_coherence:.3f}")
     print()
     

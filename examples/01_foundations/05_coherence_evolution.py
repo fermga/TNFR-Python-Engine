@@ -12,28 +12,33 @@ import time
 
 
 def compute_coherence(G):
-    """Compute network coherence from phase synchronization."""
-    phases = [G.nodes[n].get('phase', 0) for n in G.nodes()]
-    if len(phases) < 2:
+    """Network phase synchronization: the canonical Kuramoto order
+    parameter R = |<e^{iθ}>|.
+
+    R = 1 when phases are fully aligned, R -> 0 when desynchronized
+    (random or antiphase). AGENTS.md frames TNFR phase coupling as
+    Kuramoto synchronization, so this is the canonical phase-synchrony
+    measure. The distinct total coherence
+    C(t) = 1/(1 + mean|ΔNFR| + mean|dEPI|) lives in
+    tnfr.metrics.coherence and requires the dynamics pipeline.
+    """
+    thetas = np.array(
+        [G.nodes[n].get('theta', G.nodes[n].get('phase', 0.0))
+         for n in G.nodes()],
+        dtype=float,
+    )
+    if thetas.size == 0:
         return 1.0
-    
-    # Coherence = 1 - (phase variance / maximum possible variance)
-    phase_diffs = []
-    for i in range(len(phases)):
-        for j in range(i + 1, len(phases)):
-            diff = abs(phases[i] - phases[j])
-            diff = min(diff, 2 * np.pi - diff)  # Circular distance
-            phase_diffs.append(diff)
-    
-    if not phase_diffs:
-        return 1.0
-        
-    mean_diff = np.mean(phase_diffs)
-    return 1.0 - (mean_diff / np.pi)
+    return float(abs(np.mean(np.exp(1j * thetas))))
 
 
 def compute_delta_nfr(G, node):
-    """Compute ΔNFR (structural pressure) for a node."""
+    """Phase-channel ΔNFR (neighbour phase mismatch) for a node.
+
+    This is the Kuramoto / phase term of the canonical multi-channel
+    ΔNFR = w_phase·g_phase + w_epi·g_epi + w_vf·g_vf + w_topo·g_topo
+    (see tnfr.dynamics.dnfr). Here only the phase channel is exercised.
+    """
     if node not in G.nodes():
         return 0.0
     
@@ -54,7 +59,14 @@ def compute_delta_nfr(G, node):
 
 
 def evolve_network_step(G, dt=0.1):
-    """Single evolution step: ∂EPI/∂t = νf · ΔNFR(t)"""
+    """Single phase-channel step (Kuramoto synchronization).
+
+    The phase θ relaxes toward the neighbour mean at rate
+    ν_f·ΔNFR_phase — the phase term of the canonical nodal dynamics
+    (AGENTS.md: the phase channel of ΔNFR drives Kuramoto sync). Phase
+    is a distinct member of the structural triad (EPI, ν_f, θ); it is
+    NOT a stand-in for EPI.
+    """
     new_phases = {}
     
     for node in G.nodes():
@@ -62,11 +74,11 @@ def evolve_network_step(G, dt=0.1):
         current_phase = G.nodes[node].get('phase', 0)
         vf = G.nodes[node].get('vf', 1.0)  # Structural frequency
         
-        # Compute ΔNFR (structural pressure)
+        # Phase-channel ΔNFR (neighbour phase mismatch)
         delta_nfr = compute_delta_nfr(G, node)
         
-        # Apply nodal equation: ∂EPI/∂t = νf · ΔNFR
-        # Here EPI is represented by phase
+        # Phase channel of the nodal dynamics: θ advances at rate
+        # ν_f·ΔNFR_phase (Kuramoto synchronization, AGENTS.md).
         phase_change = vf * delta_nfr * dt
         
         # Update phase toward neighbors (synchronization)
