@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,893 tests across multiple topologies
+- Experimental Validation: 1,897 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -415,13 +415,13 @@ The variational structure is not merely a confirmation — it **is the geometry 
 
 **Marsden–Weinstein symplectic reduction**: the flow ζ → e^{−it}ζ is the **diagonal U(1)** action rotating every conjugate pair together, whose **moment map** is J = Σ_k I_k = H_sub — exactly the time-translation Noether charge, so *the symmetry that generates the flow is the symmetry one reduces by*. The reduced phase space P//U(1) = J⁻¹(μ)/U(1) quotients out the collective phase θ_0, leaving the (m−1) actions and the (m−1) **relative phases** φ_k = θ_k − θ_0 (invariant under the diagonal U(1)) as reduced coordinates. The reduced 2-form Σ_{k≥1} dI_k ∧ dφ_k is canonical and **non-degenerate** (det = (2N)²), so P//U(1) is a genuine symplectic manifold of dimension **4N − 2** (reducing by the sector U(1)×U(1) instead gives 4N − 4). Honest scope: reduction of the **flat** substrate by its diagonal U(1); the reduced space is a flat linear symplectic space, not a curved reduced manifold ([src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py)::`verify_symplectic_reduction`).
 
-**Hidden U(2) symmetry (new conserved charges)**: because H_sub = ½Σ‖(ζ^A, ζ^B)‖² is the squared norm of a **complex doublet** (ζ^A = K_φ + i·J_φ geometric, ζ^B = Φ_s + i·J_ΔNFR potential), it is invariant not only under the U(1)×U(1) sector phases but under the **full U(2)** on the doublet — the TNFR analogue of the hidden SU(n) symmetry of the n-dimensional isotropic harmonic oscillator. U(2) = U(1) × SU(2): the U(1) centre is the substrate flow itself, and the U(1)×U(1) Noether sectors are the **Cartan torus** of U(2). The SU(2) part supplies three conserved **isospin charges** (the moment map of the global diagonal SU(2)): I_3 = ½Σ(|ζ^A|² − |ζ^B|²) = E_geo − E_pot, I_1 = Σ Re(ζ̄^A ζ^B) = Σ(K_φ·Φ_s + J_φ·J_ΔNFR), and I_2 = Σ Im(ζ̄^A ζ^B) = Σ(K_φ·J_ΔNFR − J_φ·Φ_s). I_3 is the (known) sector-energy difference, but **I_1 and I_2 are genuinely new conserved charges** — the cross-sector correlations — satisfying the su(2) algebra {I_a, I_b} = 2ε_abc I_c under the canonical Poisson bracket and conserved along the flow. Honest scope: a **hidden dynamical symmetry of the flat, isotropic H_sub backbone** (the SU(2) mixes the physically distinct geometric and potential sectors and is **not** one of the 13 operators); I_1, I_2, I_3 are exact along the substrate flow and diagnostics at the full nonlinear operator level ([src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py)::`verify_hidden_u2_symmetry`, `isospin_charges`).
+**Hidden U(2) symmetry (new conserved charges)**: because H_sub = ½Σ‖(ζ^A, ζ^B)‖² is the squared norm of a **complex doublet** (ζ^A = K_φ + i·J_φ geometric, ζ^B = Φ_s + i·J_ΔNFR potential), it is invariant not only under the U(1)×U(1) sector phases but under the **full U(2)** on the doublet — the TNFR analogue of the hidden SU(n) symmetry of the n-dimensional isotropic harmonic oscillator. U(2) = U(1) × SU(2): the U(1) centre is the substrate flow itself, and the U(1)×U(1) Noether sectors are the **Cartan torus** of U(2). The SU(2) part supplies three conserved **isospin charges** (the moment map of the global diagonal SU(2)): I_3 = ½Σ(|ζ^A|² − |ζ^B|²) = E_geo − E_pot, I_1 = Σ Re(ζ̄^A ζ^B) = Σ(K_φ·Φ_s + J_φ·J_ΔNFR), and I_2 = Σ Im(ζ̄^A ζ^B) = Σ(K_φ·J_ΔNFR − J_φ·Φ_s). I_3 is the (known) sector-energy difference, but **I_1 and I_2 are genuinely new conserved charges** — the cross-sector correlations — satisfying the su(2) algebra {I_a, I_b} = 2ε_abc I_c under the canonical Poisson bracket and conserved along the flow. The **per-node geometric content is the Hopf map** S³ → S²: per node the isospin 3-vector (I_1^i, I_2^i, I_3^i) has length equal to the per-node substrate energy, |I_node| = e_node = ½(|ζ^A|² + |ζ^B|²), so each node carries a **Bloch vector** (the isospin direction on S²) of radius = its energy — the same geometry as a two-level (qubit) system. Honest scope: a **hidden dynamical symmetry of the flat, isotropic H_sub backbone** (the SU(2) mixes the physically distinct geometric and potential sectors and is **not** one of the 13 operators); I_1, I_2, I_3 are exact along the substrate flow and diagnostics at the full nonlinear operator level ([src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py)::`verify_hidden_u2_symmetry`, `isospin_charges`, `isospin_density`).
 
 **The nodal equation lives here**: ∂EPI/∂t = νf·ΔNFR(t) is the overdamped projection of the Hamiltonian flow on this substrate (with ΔNFR = −∂V/∂EPI). The substrate is the geometric arena the nodal equation already inhabits — emergent, not imposed.
 
 **Consolidated entry point**: the whole tower — symplectic/Poisson/Liouville, Noether charges, Hermitian (flat Kähler), complete integrability, Poincaré–Cartan invariants, the Marsden–Weinstein reduction, and the hidden U(2) symmetry — verifies in a single call, [src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py)::`verify_substrate_geometry`, which bundles the seven certificates into a `SubstrateGeometryReport` with an `all_structures_valid` flag and a multi-line `summary()`.
 
-**Implementation**: [src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py) (delegates all field computation to canonical sources; no formula duplication). Verified by 73 tests in [tests/physics/test_symplectic_substrate.py](tests/physics/test_symplectic_substrate.py); demonstrated in [examples/98_emergent_symplectic_substrate.py](examples/98_emergent_symplectic_substrate.py). **Scope**: a canonical consolidation of the geometry implied by [src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py) and [src/tnfr/physics/variational.py](src/tnfr/physics/variational.py); it does not, by itself, resolve any open program (Riemann G4, Navier–Stokes).
+**Implementation**: [src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py) (delegates all field computation to canonical sources; no formula duplication). Verified by 77 tests in [tests/physics/test_symplectic_substrate.py](tests/physics/test_symplectic_substrate.py); demonstrated in [examples/98_emergent_symplectic_substrate.py](examples/98_emergent_symplectic_substrate.py). **Scope**: a canonical consolidation of the geometry implied by [src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py) and [src/tnfr/physics/variational.py](src/tnfr/physics/variational.py); it does not, by itself, resolve any open program (Riemann G4, Navier–Stokes).
 
 ### Structural Parallels (Analogies)
 
@@ -812,7 +812,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,893 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,897 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1549,7 +1549,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,893 tests)
+- **TESTING.md**: Test strategy (1,897 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)

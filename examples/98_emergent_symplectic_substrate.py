@@ -446,13 +446,17 @@ def experiment_9_hidden_u2():
     print(f"  SU(2) rotation symplectic      : {cert.rotation_is_symplectic}")
     print(f"  charges conserved along flow   : "
           f"{cert.charges_conserved} (drift {cert.max_charge_drift:.1e})")
+    print(f"  Hopf |I_node| = e_node (S³→S²) : "
+          f"{cert.hopf_map_holds} (res {cert.max_hopf_residual:.1e})")
     print()
     print(f"  VALID HIDDEN U(2) SYMMETRY: {cert.is_valid_u2_symmetry}")
     print()
     print("VALIDATED: I_1 and I_2 are GENUINELY NEW conserved charges — the")
     print("cross-sector correlations between the geometric and potential")
     print("sectors — beyond the known I_3 = E_geo − E_pot. They close the")
-    print("su(2) algebra and are conserved along the flow.")
+    print("su(2) algebra and are conserved along the flow. Per node the")
+    print("isospin 3-vector has length = energy (Hopf map S³→S²): each node")
+    print("carries a Bloch vector of radius = its substrate energy.")
     print("HONEST SCOPE: a hidden dynamical symmetry of the flat isotropic")
     print("H_sub backbone (the SU(2) mixes physically distinct sectors and")
     print("is not one of the 13 operators); the charges are exact along the")

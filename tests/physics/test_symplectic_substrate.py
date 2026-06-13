@@ -29,6 +29,7 @@ from tnfr.physics.symplectic_substrate import (
     geometric_sector_energy,
     hamiltonian_vector_field,
     isospin_charges,
+    isospin_density,
     kahler_potential,
     liouville_divergence,
     loop_action_integral,
@@ -570,6 +571,36 @@ class TestHiddenU2Symmetry:
         assert cert.is_valid_u2_symmetry
         assert cert.i3_equals_energy_difference
         assert "VALID" in cert.summary()
+
+    def test_hopf_map_per_node_radius_equals_energy(self) -> None:
+        G = _canonical_graph(24)
+        d = isospin_density(extract_phase_space_point(G))
+        # |I_node| = e_node (Hopf fibration S³ → S²).
+        assert np.allclose(d["radius"], d["energy"])
+
+    def test_isospin_density_bloch_is_unit(self) -> None:
+        G = _canonical_graph(20)
+        d = isospin_density(extract_phase_space_point(G))
+        norms = np.sqrt((d["bloch"] ** 2).sum(axis=0))
+        assert np.allclose(norms, 1.0)
+
+    def test_density_sums_to_global_charges(self) -> None:
+        import pytest
+
+        G = _canonical_graph(24)
+        point = extract_phase_space_point(G)
+        d = isospin_density(point)
+        glob = isospin_charges(point)
+        assert float(d["i_1"].sum()) == pytest.approx(glob["i_1"])
+        assert float(d["i_2"].sum()) == pytest.approx(glob["i_2"])
+        assert float(d["i_3"].sum()) == pytest.approx(glob["i_3"])
+
+    def test_certificate_reports_hopf(self) -> None:
+        G = _canonical_graph(30)
+        cert = verify_hidden_u2_symmetry(G)
+        assert cert.hopf_map_holds
+        assert cert.max_hopf_residual < 1e-9
+        assert "Hopf" in cert.summary()
 
 
 class TestSubstrateGeometryReport:

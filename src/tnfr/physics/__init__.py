@@ -261,6 +261,7 @@ from .symplectic_substrate import (
     reduced_symplectic_form_matrix,
     verify_symplectic_reduction,
     isospin_charges,
+    isospin_density,
     verify_hidden_u2_symmetry,
     verify_substrate_geometry,
 )
@@ -505,6 +506,7 @@ __all__ = [
     "reduced_symplectic_form_matrix",
     "verify_symplectic_reduction",
     "isospin_charges",
+    "isospin_density",
     "verify_hidden_u2_symmetry",
     "verify_substrate_geometry",
     # --- Gauge Structure (U(1) Symmetry of Ψ = K_φ + i·J_φ) ---

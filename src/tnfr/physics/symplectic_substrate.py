@@ -206,6 +206,7 @@ __all__ = [
     "reduced_symplectic_form_matrix",
     "verify_symplectic_reduction",
     "isospin_charges",
+    "isospin_density",
     "verify_hidden_u2_symmetry",
     "verify_substrate_geometry",
 ]
@@ -796,6 +797,13 @@ class HiddenU2Certificate:
     (so ½I_a are textbook-normalised generators), and are conserved along
     the substrate flow (the diagonal U(1) ⊂ U(2) commutes with SU(2)).
 
+    **Hopf map (per-node geometric content)**: per node, the isospin
+    3-vector (I_1^i, I_2^i, I_3^i) has length equal to the per-node
+    substrate energy, |I_node| = e_node = ½(|ζ^A|² + |ζ^B|²).  This is the
+    Hopf fibration S³ → S² of the doublet ζ ∈ ℂ²: each node carries a
+    **Bloch vector** (the isospin direction on S²) of radius = its energy,
+    the same geometry as a two-level (qubit) system.
+
     HONEST SCOPE: this is a **hidden dynamical symmetry of the flat,
     isotropic H_sub backbone** (like the Runge–Lenz / accidental
     degeneracy symmetries of the oscillator), not a gauge symmetry of the
@@ -824,6 +832,11 @@ class HiddenU2Certificate:
         Max drift of the isospin charges over the sampled flow.
     max_algebra_residual : float
         Max |{I_a, I_b} − 2 ε_abc I_c| over the three brackets.
+    hopf_map_holds : bool
+        Per node, the isospin 3-vector length equals the per-node energy,
+        |I_node| = e_node (the Hopf map S³ → S² of the ζ ∈ ℂ² doublet).
+    max_hopf_residual : float
+        Max | |I_node| − e_node | over the nodes (should be ~0).
     """
 
     n_nodes: int
@@ -837,6 +850,8 @@ class HiddenU2Certificate:
     charges_conserved: bool
     max_charge_drift: float
     max_algebra_residual: float
+    hopf_map_holds: bool
+    max_hopf_residual: float
 
     @property
     def is_valid_u2_symmetry(self) -> bool:
@@ -846,6 +861,7 @@ class HiddenU2Certificate:
             and self.su2_algebra_closes
             and self.rotation_is_symplectic
             and self.charges_conserved
+            and self.hopf_map_holds
         )
 
     def summary(self) -> str:
@@ -860,7 +876,9 @@ class HiddenU2Certificate:
             f"(res {self.max_algebra_residual:.1e}), "
             f"SU(2) symplectic={self.rotation_is_symplectic}, "
             f"conserved={self.charges_conserved} "
-            f"(drift {self.max_charge_drift:.1e})"
+            f"(drift {self.max_charge_drift:.1e}), "
+            f"Hopf |I_node|=e_node={self.hopf_map_holds} "
+            f"(res {self.max_hopf_residual:.1e})"
         )
 
 
@@ -2028,6 +2046,53 @@ def isospin_charges(point: PhaseSpacePoint) -> dict[str, float]:
     }
 
 
+def isospin_density(point: PhaseSpacePoint) -> dict[str, Any]:
+    r"""Per-node isospin 3-vector, energy, and Bloch vector (Hopf map).
+
+    The global :func:`isospin_charges` are sums of per-node densities.  Per
+    node, the doublet ζ_i = (ζ^A_i, ζ^B_i) ∈ ℂ² projects to an isospin
+    3-vector
+
+        I_1^i = Re(ζ̄^A_i ζ^B_i),  I_2^i = Im(ζ̄^A_i ζ^B_i),
+        I_3^i = ½(|ζ^A_i|² − |ζ^B_i|²),
+
+    whose **length equals the per-node substrate energy**,
+    |I_node| = e_node = ½(|ζ^A_i|² + |ζ^B_i|²).  This is the Hopf
+    fibration S³ → S²: the normalised vector ``bloch`` = I_node / e_node is
+    a unit Bloch vector on S² (the qubit geometry), and ``e_node`` is its
+    radius.
+
+    Parameters
+    ----------
+    point : PhaseSpacePoint
+
+    Returns
+    -------
+    dict[str, np.ndarray]
+        ``"i_1"``, ``"i_2"``, ``"i_3"`` (per-node 3-vector components),
+        ``"radius"`` (|I_node|), ``"energy"`` (e_node), and ``"bloch"``
+        (a ``(3, N)`` array of unit Bloch vectors).
+    """
+    k = np.asarray(point.k_phi, dtype=float)
+    jp = np.asarray(point.j_phi, dtype=float)
+    ps = np.asarray(point.phi_s, dtype=float)
+    jd = np.asarray(point.j_dnfr, dtype=float)
+    i_1 = k * ps + jp * jd            # Re(ζ̄^A ζ^B) per node
+    i_2 = k * jd - jp * ps            # Im(ζ̄^A ζ^B) per node
+    i_3 = 0.5 * (k * k + jp * jp - ps * ps - jd * jd)
+    radius = np.sqrt(i_1 * i_1 + i_2 * i_2 + i_3 * i_3)
+    energy = 0.5 * (k * k + jp * jp + ps * ps + jd * jd)
+    bloch = np.array([i_1, i_2, i_3]) / (radius + 1e-300)
+    return {
+        "i_1": i_1,
+        "i_2": i_2,
+        "i_3": i_3,
+        "radius": radius,
+        "energy": energy,
+        "bloch": bloch,
+    }
+
+
 def _isospin_gradients(point: PhaseSpacePoint) -> tuple[Any, Any, Any]:
     r"""Phase-space gradients ∇I_1, ∇I_2, ∇I_3 (for the Poisson brackets)."""
     n = point.n_nodes
@@ -2133,6 +2198,15 @@ def verify_hidden_u2_symmetry(
         tolerance, 1e-9 * (abs(i_1) + abs(i_2) + abs(i_3))
     )
 
+    # Hopf map: per node |I_node| = e_node (the ζ ∈ ℂ² fibration S³ → S²).
+    density = isospin_density(point)
+    hopf_residual = float(
+        np.max(np.abs(density["radius"] - density["energy"]))
+    )
+    hopf_holds = hopf_residual < max(
+        tolerance, 1e-9 * float(np.max(density["energy"]) + 1e-300)
+    )
+
     return HiddenU2Certificate(
         n_nodes=n,
         i_1=i_1,
@@ -2145,6 +2219,8 @@ def verify_hidden_u2_symmetry(
         charges_conserved=charges_conserved,
         max_charge_drift=charge_drift,
         max_algebra_residual=algebra_residual,
+        hopf_map_holds=hopf_holds,
+        max_hopf_residual=hopf_residual,
     )
 
 
