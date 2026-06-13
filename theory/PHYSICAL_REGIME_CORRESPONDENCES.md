@@ -54,7 +54,9 @@ $$
 \frac{dv}{dt} = \nu_f \, \Delta\mathrm{NFR}_{\mathrm{force}}
 $$
 
-Substituting $\nu_f = 1/m$ yields $F = ma$. The correspondence is exact under the regime conditions; departures introduce corrections proportional to $|\nabla\phi|$.
+Substituting $\nu_f = 1/m$ yields $F = ma$ under the inertial reading; departures introduce corrections proportional to $|\nabla\phi|$.
+
+**Regime refinement.** The bare nodal equation is *first order* in time, so taken literally (EPI as a position-like coordinate, $\Delta\mathrm{NFR}$ as force) it yields the **overdamped drift law** $\dot{q} = \nu_f\,F$ — velocity proportional to force, with $\nu_f$ acting as a **mobility**, not an inverse mass. The genuine **inertial** Newtonian regime ($\ddot{q} = F/m$, second order) demonstrated below — Keplerian orbits and the symplectic integrators of §2.5 — is realized through the second-order **emergent symplectic substrate** (Hamiltonian flow), not through the first-order nodal equation alone. Both regimes are empirically grounded but structurally distinct; see [../AGENTS.md](../AGENTS.md) §"Smooth-Trajectory Correspondence" and §"Emergent Symplectic Substrate".
 
 ### 2.4 Force Interpretation
 
@@ -76,7 +78,7 @@ Workflow:
 
 ### 2.6 Validation
 
-**Kepler benchmark** (`examples/12_classical_mechanics_demo.py`): single node in coherence-gradient potential approximating an ellipse with eccentricity $e \approx 0.5$. Artifacts include trajectory overlays, phase-space loops, and conservation plots (energy/angular momentum drift target $< 10^{-4}$).
+**Kepler benchmark** (`examples/02_physics_regimes/12_classical_mechanics_demo.py`): single node in coherence-gradient potential approximating an ellipse with eccentricity $e \approx 0.5$. Artifacts include trajectory overlays, phase-space loops, and conservation plots (energy/angular momentum drift target $< 10^{-4}$).
 
 ---
 
@@ -99,7 +101,7 @@ With zero $\Delta\mathrm{NFR}$, the structural state is frozen and nodes transla
 
 ### 3.3 Validation
 
-**Two-train benchmark** (`examples/15_train_crossing_demo.py`):
+**Two-train benchmark** (`examples/02_physics_regimes/15_train_crossing_demo.py`):
 
 | Parameter | Train A | Train B |
 |-----------|---------|---------|
@@ -144,7 +146,7 @@ Quantized spectra arise from the boundary conditions and resonant mode selection
 
 ### 4.4 Validation
 
-**One-dimensional cavity benchmark** (`examples/13_quantum_mechanics_demo.py`): define cavity length $L$, initialize with random $\nu_f$ and phase profile ($C(t_0) > 0.6$), integrate until $\nu_f$ converges. Expected outcome: discrete $\nu_n$ proportional to $n^2$ (linear dispersion) or $n$ (other media).
+**One-dimensional cavity benchmark** (`examples/02_physics_regimes/13_quantum_mechanics_demo.py`): define cavity length $L$, initialize with random $\nu_f$ and phase profile ($C(t_0) > 0.6$), integrate until $\nu_f$ converges. Expected outcome: discrete $\nu_n$ proportional to $n^2$ (linear dispersion) or $n$ (other media).
 
 ---
 
@@ -171,7 +173,7 @@ Interference is described entirely through phase-coupled dynamics. No wave/parti
 
 ### 5.3 Validation
 
-`examples/14_uncertainty_and_interference.py` generates: scatter of $\sigma_t$ vs. $\sigma_f$ with constant-product reference line, 2D detector intensity maps, and fringe-spacing line profiles.
+`examples/02_physics_regimes/14_uncertainty_and_interference.py` generates: scatter of $\sigma_t$ vs. $\sigma_f$ with constant-product reference line, 2D detector intensity maps, and fringe-spacing line profiles.
 
 > **Note**: The example demonstrates qualitative uncertainty behavior (constant $\sigma_t \cdot \sigma_f$ product) but does not validate the product against a specific analytical bound. The double-slit section is incomplete. No dedicated test module exists.
 
@@ -250,10 +252,10 @@ All regimes emerge from the same nodal equation as limiting cases under differen
 | Quantum mechanics module | `src/tnfr/physics/quantum_mechanics.py` |
 | Symplectic integrators | `src/tnfr/dynamics/symplectic.py` |
 | Structural field computation | `src/tnfr/physics/fields.py` |
-| Kepler benchmark | `examples/12_classical_mechanics_demo.py` |
-| Quantum cavity benchmark | `examples/13_quantum_mechanics_demo.py` |
-| Uncertainty/interference | `examples/14_uncertainty_and_interference.py` |
-| Two-train kinematics | `examples/15_train_crossing_demo.py` |
+| Kepler benchmark | `examples/02_physics_regimes/12_classical_mechanics_demo.py` |
+| Quantum cavity benchmark | `examples/02_physics_regimes/13_quantum_mechanics_demo.py` |
+| Uncertainty/interference | `examples/02_physics_regimes/14_uncertainty_and_interference.py` |
+| Two-train kinematics | `examples/02_physics_regimes/15_train_crossing_demo.py` |
 
 ---
 

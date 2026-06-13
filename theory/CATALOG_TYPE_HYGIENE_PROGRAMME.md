@@ -109,7 +109,7 @@ directly.
 - **Suspected non-canonical envelope**: Pontryagin-dual measure-valued νf on
   $\widehat{\mathbb{R}}$ (or any locally compact abelian group).
 - **Diagnostic**: `src/tnfr/riemann/nuf_type_signature.py`.
-- **Demo**: `examples/78_nuf_type_signature_demo.py`.
+- **Demo**: `examples/05_type_hygiene/78_nuf_type_signature_demo.py`.
 - **Research-notes sections**: `§13triginta-prima` (B0a, pre-registration),
   `§13triginta-secunda` (B0b, forcing-axiom reduction), `§13triginta-tertia`
   (B0c, verdict + classification).
@@ -131,7 +131,7 @@ directly.
   *Structurally stronger evidence than B0 had.*
 - **Diagnostic**: `src/tnfr/riemann/epi_type_signature.py` (two-axis: storage
   fraction + binned spectral entropy of scalar EPI(t)).
-- **Demo**: `examples/79_epi_type_signature_demo.py`.
+- **Demo**: `examples/05_type_hygiene/79_epi_type_signature_demo.py`.
 - **Research-notes sections**:
   - B1a — `§13triginta-quarta` (DONE, commit `62e207cc`)
   - B1b — `§13triginta-quinta` (DONE; sub-verdict CONDITIONAL_COROLLARY via (P-EPI-Bijectivity); refuted at canonical level by TMEP)
@@ -242,7 +242,7 @@ of any underlying Tier 1+2 question is a necessary prerequisite.
 - **Diagnostic plan**: per-field source-code trace, verify all intermediates
   are scalar or graph-metric quantities.
 - **Status**: ✅ CLOSED — Phase a (`src/tnfr/riemann/tetrad_closure_signature.py`
-  diagnostic + `examples/85_tetrad_closure_signature_demo.py` demo; frozen
+  diagnostic + `examples/05_type_hygiene/85_tetrad_closure_signature_demo.py` demo; frozen
   signature `S_TC = 0.000000` with both axes at unit fractions across
   `(n_nodes ∈ {24, 48}, seed = 31)`); Phase b is n/a (closure question, not
   type-conjecture); Phase c **NEGATIVE** (research notes §13quinquaginta-tertia):
@@ -264,7 +264,7 @@ of any underlying Tier 1+2 question is a necessary prerequisite.
 - **Diagnostic plan**: per-current source-code trace, verify all
   intermediates are scalar or graph-metric quantities.
 - **Status**: ✅ CLOSED — Phase a (`src/tnfr/riemann/currents_closure_signature.py`
-  diagnostic + `examples/86_currents_closure_signature_demo.py` demo;
+  diagnostic + `examples/05_type_hygiene/86_currents_closure_signature_demo.py` demo;
   frozen signature `S_CC = 0.000000` with both axes at unit fractions
   across `(n_nodes ∈ {24, 48}, seed = 31)`); Phase b is n/a (closure
   question, not type-conjecture); Phase c **NEGATIVE** (research notes
@@ -504,8 +504,8 @@ It **does**:
 - `docs/OPERATOR_COMPLETENESS.md` — operator catalog completeness (B11).
 - `src/tnfr/riemann/nuf_type_signature.py` — B0 diagnostic.
 - `src/tnfr/riemann/epi_type_signature.py` — B1 diagnostic.
-- `examples/78_nuf_type_signature_demo.py` — B0 demo.
-- `examples/79_epi_type_signature_demo.py` — B1 demo.
+- `examples/05_type_hygiene/78_nuf_type_signature_demo.py` — B0 demo.
+- `examples/05_type_hygiene/79_epi_type_signature_demo.py` — B1 demo.
 
 ### External
 

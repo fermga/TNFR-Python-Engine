@@ -84,7 +84,7 @@ and is **not** assumed.
 Birch and Swinnerton-Dyer discovered the conjecture (EDSAC computer, 1965 —
 the strictest empirical method) precisely through the growth of `P(X)`.
 Reproduced and reframed structurally in
-`examples/110_bsd_rank_structural_pressure.py`, using brute-force point
+`examples/09_millennium/110_bsd_rank_structural_pressure.py`, using brute-force point
 counting `#E(F_p)` (the arithmetic side — **not** an analytic L-function
 library), over primes up to 4000 for the standard smallest-conductor curves
 of each rank:

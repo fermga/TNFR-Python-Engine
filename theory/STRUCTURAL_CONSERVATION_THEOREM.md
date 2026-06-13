@@ -863,7 +863,7 @@ applied from conservation residual patterns.
 
 ### 13.4 Example
 
-**File**: `examples/17_conservation_law_demo.py`
+**File**: `examples/02_physics_regimes/17_conservation_law_demo.py`
 
 ---
 

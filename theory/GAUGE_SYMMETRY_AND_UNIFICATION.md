@@ -288,7 +288,7 @@ This provides the structural basis for the convergence proved in `src/tnfr/riema
 
 **Tests**: `tests/test_gauge.py`, `tests/test_conservation_gauge_unification.py`, `tests/test_spectral_conservation.py`
 
-**Example**: `examples/26_gauge_structure_demo.py`
+**Example**: `examples/02_physics_regimes/26_gauge_structure_demo.py`
 
 ---
 

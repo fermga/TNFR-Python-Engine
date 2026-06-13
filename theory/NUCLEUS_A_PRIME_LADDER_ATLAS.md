@@ -64,7 +64,7 @@ All commands assume the repo root and an activated virtual environment (`.venv31
 ### 4.1 P12 — TNFR vM ζ on $\operatorname{Re}(s) > 1$
 
 ```powershell
-python examples/41_von_mangoldt_demo.py
+python examples/03_riemann_zeta/41_von_mangoldt_zeta_demo.py
 ```
 
 Expected: residual $|\,\text{TNFR\_vM}(s) - (-\zeta'(s)/\zeta(s))\,| \le 10^{-12}$ across the test grid.
@@ -72,7 +72,7 @@ Expected: residual $|\,\text{TNFR\_vM}(s) - (-\zeta'(s)/\zeta(s))\,| \le 10^{-12
 ### 4.2 P13 — Analytic continuation
 
 ```powershell
-python examples/42_analytic_continuation_demo.py
+python examples/03_riemann_zeta/42_riemann_zeros_as_resonances.py
 ```
 
 Expected: Riemann zeros recovered as resonance poles on $\operatorname{Re}(s) = 1/2$ to mpmath precision.
@@ -80,7 +80,7 @@ Expected: Riemann zeros recovered as resonance poles on $\operatorname{Re}(s) = 
 ### 4.3 P14 — Prime-ladder Hamiltonian
 
 ```powershell
-python examples/43_prime_ladder_hamiltonian_demo.py
+python examples/03_riemann_zeta/43_prime_ladder_hamiltonian_demo.py
 ```
 
 Expected: eigenvalues match $\{k \log p : p \in \text{primes}, k \in \{1, \ldots, K\}\}$ to $10^{-14}$.
@@ -88,7 +88,7 @@ Expected: eigenvalues match $\{k \log p : p \in \text{primes}, k \in \{1, \ldots
 ### 4.4 P15 — Weil–Guinand verification
 
 ```powershell
-python examples/44_weil_guinand_demo.py
+python examples/03_riemann_zeta/44_weil_explicit_formula_demo.py
 ```
 
 Expected: residual $\le 10^{-15}$ for $\sigma \in \{3, 5, 8, 12, 18\}$ with the canonical test family.
@@ -96,7 +96,7 @@ Expected: residual $\le 10^{-15}$ for $\sigma \in \{3, 5, 8, 12, 18\}$ with the 
 ### 4.5 P16 — Li–Keiper positivity (diagnostic, not a proof)
 
 ```powershell
-python examples/45_li_keiper_demo.py
+python examples/03_riemann_zeta/45_li_keiper_demo.py
 ```
 
 Expected: $\lambda_n > 0$ for $n \in \{1, \ldots, N\}$ using `mpmath.zetazero` as the zero source.
@@ -104,7 +104,7 @@ Expected: $\lambda_n > 0$ for $n \in \{1, \ldots, N\}$ using `mpmath.zetazero` a
 ### 4.6 P28 / P30 — Smooth half of T-HP
 
 ```powershell
-python examples/58_admissible_rescaling_demo.py
+python examples/03_riemann_zeta/57_admissible_rescaling_demo.py
 ```
 
 Expected: smooth zero-counting term reproduced; oscillatory residual flagged explicitly as unresolved.

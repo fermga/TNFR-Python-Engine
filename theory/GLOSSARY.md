@@ -642,13 +642,13 @@ Reference: [STRUCTURAL_OPERATORS.md §17](STRUCTURAL_OPERATORS.md), examples 37-
 - **Capacity lever** (vf): UM, SHA, VAL, NUL adjust the reorganization rate.
 - **Pressure lever** (DNFR): IL, OZ, THOL, ZHIR, NAV adjust the structural pressure.
 - **Neutral**: AL, EN, RA, REMESH do not directly modify either lever at the single-node level.
-**Evidence:** Classification from `examples/39_nodal_equation_decomposition.py`.
+**Evidence:** Classification from `examples/02_physics_regimes/39_nodal_equation_decomposition.py`.
 
 ### Operator-Tetrad Fingerprint Matrix
 
 **What:** Each operator produces a unique signature across the four tetrad fields. The fingerprint matrix tabulates relative changes (dPhi_s, d|grad_phi|, dK_phi, dxi_C) per operator.
 **Example:** UM modifies all four fields (strongest Phi_s at -73.7%); SHA is tetrad-neutral.
-**Evidence:** `examples/37_operator_tetrad_synergy.py`.
+**Evidence:** `examples/02_physics_regimes/37_operator_tetrad_synergy.py`.
 
 ### IL-OZ Tetrad Symmetry
 
@@ -659,7 +659,7 @@ Reference: [STRUCTURAL_OPERATORS.md §17](STRUCTURAL_OPERATORS.md), examples 37-
 
 **What:** Phi_s responds linearly to DNFR perturbations with |r| = 1.000 (Pearson correlation). This confirms its 0th-order position in the operator-derivative tower.
 **Contrast:** xi_C transitions to strongly nonlinear behaviour above DNFR ~ 0.3.
-**Evidence:** `examples/39_nodal_equation_decomposition.py`.
+**Evidence:** `examples/02_physics_regimes/39_nodal_equation_decomposition.py`.
 
 ### Complete Causal Chain
 
@@ -671,7 +671,7 @@ Tetrad fields are diagnostic outputs, not independent dynamical variables. They 
 
 **What:** Lyapunov contractivity (cumulative multiplier Pi < 1) is sufficient but not necessary for energy descent. Experimentally: lambda = 1.288 (non-contractive) yet net dE = -9.59 (energy descent).
 **Interpretation:** The Lyapunov bound is conservative; actual grammar-compliant sequences may descend more steeply than the bound predicts.
-**Evidence:** `examples/38_grammar_energy_landscape.py`.
+**Evidence:** `examples/02_physics_regimes/38_grammar_energy_landscape.py`.
 
 ---
 

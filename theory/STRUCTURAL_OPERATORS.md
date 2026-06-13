@@ -898,9 +898,9 @@ Grammar-compliant sequences produce net energy descent across all four canonical
 
 | Example | Experiment | Key metric |
 |---------|------------|------------|
-| `examples/37_operator_tetrad_synergy.py` | Fingerprint matrix, energy signatures, safety envelope, Noether conservation | Per-operator tetrad coupling (%) |
-| `examples/38_grammar_energy_landscape.py` | Energy landscape, Lyapunov bounds, canonical pattern comparison | Energy trajectory $E(t)$ through sequence |
-| `examples/39_nodal_equation_decomposition.py` | Lever classification, causal chain, waveform trajectory, response functions | $\nu_f$ vs $\Delta\text{NFR}$ per operator |
+| `examples/02_physics_regimes/37_operator_tetrad_synergy.py` | Fingerprint matrix, energy signatures, safety envelope, Noether conservation | Per-operator tetrad coupling (%) |
+| `examples/02_physics_regimes/38_grammar_energy_landscape.py` | Energy landscape, Lyapunov bounds, canonical pattern comparison | Energy trajectory $E(t)$ through sequence |
+| `examples/02_physics_regimes/39_nodal_equation_decomposition.py` | Lever classification, causal chain, waveform trajectory, response functions | $\nu_f$ vs $\Delta\text{NFR}$ per operator |
 
 All experiments use seed 42 for reproducibility (Invariant #6).
 
@@ -915,7 +915,7 @@ All experiments use seed 42 for reproducibility (Invariant #6).
 - Variational formulation: [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md)
 - Structural field tetrad: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §3
 - Canonical constants: `src/tnfr/constants/canonical.py`
-- Operator-tetrad synergy experiment: `examples/37_operator_tetrad_synergy.py`
-- Grammar-energy landscape experiment: `examples/38_grammar_energy_landscape.py`
-- Nodal equation decomposition experiment: `examples/39_nodal_equation_decomposition.py`
+- Operator-tetrad synergy experiment: `examples/02_physics_regimes/37_operator_tetrad_synergy.py`
+- Grammar-energy landscape experiment: `examples/02_physics_regimes/38_grammar_energy_landscape.py`
+- Nodal equation decomposition experiment: `examples/02_physics_regimes/39_nodal_equation_decomposition.py`
 - Glossary: [GLOSSARY.md](GLOSSARY.md)

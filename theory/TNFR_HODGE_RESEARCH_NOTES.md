@@ -51,7 +51,7 @@ Eckmann's theorem (1944): harmonic `k`-cochains `≅` homology `H_k`, so
 
 ## 2. HC-1 Result (DONE)
 
-Reproduced in `examples/111_hodge_discrete_and_honest_gap.py`.
+Reproduced in `examples/09_millennium/111_hodge_discrete_and_honest_gap.py`.
 
 - **Chain complex.** `d1 d2 = 0` to machine precision (the tetrad cochain
   tower is a genuine complex).

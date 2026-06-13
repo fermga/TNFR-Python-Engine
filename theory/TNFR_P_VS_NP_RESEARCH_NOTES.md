@@ -94,7 +94,7 @@ the local-optima (dissonance-basin) landscape.
 Measured on random 3-regular graphs (a standard frustrated family), 3 instances
 per size, `R = 200` random initial conditions each; exact MAX-CUT by
 enumeration; relaxation 400 steps, `dt = 0.1`. Reproducible in
-`examples/109_p_vs_np_coherence_synthesis.py`.
+`examples/09_millennium/109_p_vs_np_coherence_synthesis.py`.
 
 | n | \|E\| | global reachable | hit rate | restarts ≈ 1/hr |
 | ---: | ---: | :---: | ---: | ---: |

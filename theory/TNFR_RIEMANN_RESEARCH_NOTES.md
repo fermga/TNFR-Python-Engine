@@ -186,7 +186,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 ## 1. Purpose and Scope
 
 - Translate RH questions into TNFR constructs: nodal operators, structural partition functions, and confinement criteria derived from Φ_s, |∇φ|, K_φ, and ξ_C.
-- Maintain reproducible sandboxes (finite prime graphs, spectral benchmarks, telemetry artifacts) that connect theoretical conjectures to code in `src/tnfr/riemann/` and `examples/16_riemann_operator_demo.py`.
+- Maintain reproducible sandboxes (finite prime graphs, spectral benchmarks, telemetry artifacts) that connect theoretical conjectures to code in `src/tnfr/riemann/` and `examples/03_riemann_zeta/16_riemann_operator_demo.py`.
 - Document how canonical operators (AL, UM, RA, OZ, IL, THOL) compose to form the discrete TNFR Riemann operator used in experiments.
 
 ## 2. Program Objectives
@@ -212,7 +212,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 2. **Operator execution** – Use SDK helpers (`TNFRRiemannOperator`) to generate spectra while logging ν_f, ΔNFR, Φ_s, |∇φ|, and effective σ(t) trajectories.
 3. **Spectral analysis** – Compute eigenvalue ladders, determinant surrogates, and compare against ζ/ξ predictions. Scripts belong in `scripts/riemann/` or notebooks under `notebooks/Riemann/` with nbconvert support.
 4. **Benchmark enforcement** – Run `python benchmarks/riemann_program.py` (invoked automatically via `make test`/CI) to regress σ_c^{(k)} estimates across graph sizes and emit telemetry in `results/riemann_program/`.
-5. **Validation** – Run targeted tests (e.g., `examples/16_riemann_operator_demo.py`, new `tests/test_riemann_operator.py`) to ensure deterministic seeds and grammar compliance (U1–U6).
+5. **Validation** – Run targeted tests (e.g., `examples/03_riemann_zeta/16_riemann_operator_demo.py`, new `tests/test_riemann_operator.py`) to ensure deterministic seeds and grammar compliance (U1–U6).
 
 ## 4. Telemetry & Reproducibility
 
@@ -445,7 +445,7 @@ Following Section 7.6, this section records the first concrete attempt at
 the priority route: build a TNFR-native spectral object whose Dirichlet
 transform reproduces $-\zeta'(s)/\zeta(s)$ on its half-plane of
 convergence.  Implementation: `src/tnfr/riemann/von_mangoldt.py`.
-Demonstration: `examples/41_von_mangoldt_zeta_demo.py`.
+Demonstration: `examples/03_riemann_zeta/41_von_mangoldt_zeta_demo.py`.
 
 ### 8.1 Mathematical Target
 
@@ -566,7 +566,7 @@ designed to surface.
 
 **Status**: Implemented and numerically verified (June 2026).
 **Code**: `src/tnfr/riemann/analytic_continuation.py`,
-`examples/42_riemann_zeros_as_resonances.py`.
+`examples/03_riemann_zeta/42_riemann_zeros_as_resonances.py`.
 
 ### 9.1 Problem statement (Gap G2)
 
@@ -680,7 +680,7 @@ with a non-affine bridge) remain open.
 
 **Status**: Implemented and numerically certified (May 2026).
 **Code**: `src/tnfr/riemann/prime_ladder_hamiltonian.py`,
-`examples/43_prime_ladder_hamiltonian_demo.py`.
+`examples/03_riemann_zeta/43_prime_ladder_hamiltonian_demo.py`.
 
 ### 10.1 Problem statement (Gap G1)
 
@@ -1065,7 +1065,7 @@ claim to) eliminate.
 
 **Status**: Implemented and numerically evaluated (May 2026).
 **Code**: `src/tnfr/riemann/coercivity_uniform.py`,
-`examples/50_uniform_coercivity_demo.py`.
+`examples/03_riemann_zeta/50_uniform_coercivity_demo.py`.
 
 ### 13.1 Motivation
 
@@ -1179,7 +1179,7 @@ The result lives in four new fields of `UniformCoercivityCertificate`:
 `interval_lower_bound_local_refined`,
 `interval_lower_local_refined_positive`.
 
-### 13bis.3 Numerical Outcome (examples/51_adaptive_coercivity_demo.py)
+### 13bis.3 Numerical Outcome (examples/03_riemann_zeta/51_adaptive_coercivity_demo.py)
 
 Bundle: `n_primes=18, max_power=5, coupling=0.0`.
 Certificate: `sigma=[0.5, 4.0], n_sigma=10, n_zeros=24, max_zeros=96,
@@ -1279,7 +1279,7 @@ $\texttt{coupling}$ deforms the Hamiltonian spectrum and produces a
 measurable $g_{\mathrm{cross}}$ free of classical-truncation noise.
 
 Module: [`src/tnfr/riemann/paley_gap_coercivity.py`](../src/tnfr/riemann/paley_gap_coercivity.py).
-Demo: [`examples/52_paley_gap_coercivity_demo.py`](../examples/03_riemann_zeta/52_paley_gap_coercivity_demo.py).
+Demo: [`examples/03_riemann_zeta/52_paley_gap_coercivity_demo.py`](../examples/03_riemann_zeta/52_paley_gap_coercivity_demo.py).
 
 ### 13ter.3 Numerical Outcome
 
@@ -1442,7 +1442,7 @@ conservation is exactly the check in step 4.
 
 ### 13quater.3 Numerical outcome
 
-Demo: [`examples/53_lyapunov_spectral_positivity_demo.py`](../examples/03_riemann_zeta/53_lyapunov_spectral_positivity_demo.py).
+Demo: [`examples/03_riemann_zeta/53_lyapunov_spectral_positivity_demo.py`](../examples/03_riemann_zeta/53_lyapunov_spectral_positivity_demo.py).
 
 Decoupled certificate (`n_primes = 12`, `max_power = 5`, $J_0 = 0$,
 $\dim \mathcal H = 60$, shift $c = 1$):
@@ -1577,7 +1577,7 @@ axes:
 
 The orchestrator is `compute_hilbert_polya_certificate` in
 `src/tnfr/riemann/hilbert_polya.py`; the demo lives in
-`examples/54_hilbert_polya_demo.py`.
+`examples/03_riemann_zeta/54_hilbert_polya_demo.py`.
 
 ### 13quinquies.3 Numerical outcome (defaults $n_{\mathrm{primes}}=50$, $K=8$, $N=80$, $\sigma=8$)
 
@@ -1728,7 +1728,7 @@ across all tested $n \le 100$.  This is the **smooth quantitative form** of the 
 ### 13sexies.6 Implementation pointers
 
 * Module: `src/tnfr/riemann/structural_zero_density.py` — `riemann_siegel_theta`, `smooth_zero_count`, `smooth_zero_density`, `derive_smooth_zero_position`, `build_structural_t_hp`, `compute_structural_zero_density_certificate`, `StructuralZeroDensityCertificate`.
-* Demo: `examples/55_structural_zero_density_demo.py`.
+* Demo: `examples/03_riemann_zeta/55_structural_zero_density_demo.py`.
 * Wiring: `src/tnfr/riemann/__init__.py` exposes the P28 names; the catalog docstring labels the module unambiguously.
 * Reuses P14 (`prime_ladder_hamiltonian`) for the baseline spectrum and P15 (`weil_explicit_formula`) for the archimedean conceptual ingredient (the actual derivation of $\theta(T)$ uses `mpmath.loggamma` directly; no new external dependency).
 
@@ -2035,7 +2035,7 @@ has been rewritten to reflect this audit.
 
 **Status**: Sub-problem (1) of Conjecture T-HP — **smooth half operationally closed**.  
 **Module**: `src/tnfr/riemann/admissible_rescaling.py`  
-**Demo**: `examples/57_admissible_rescaling_demo.py`  
+**Demo**: `examples/03_riemann_zeta/57_admissible_rescaling_demo.py`  
 **Disclaimer**: P30 does NOT close gap G4 (RH); it lifts the §13sexies (P28) density-level closure of the smooth zero distribution to an explicit operator-level rescaling object.
 
 ### §13nonies.1 Motivation
@@ -2064,7 +2064,7 @@ so the conjugated spectrum equals `{ñ_i}` **exactly** (verified at machine prec
 
 ### §13nonies.3 Empirical Results
 
-Running `examples/57_admissible_rescaling_demo.py`:
+Running `examples/03_riemann_zeta/57_admissible_rescaling_demo.py`:
 
 | Resolution | N  | max `|spec − ñ_i|` | W₁(σ(P14), {γ_n}) | W₁({ñ_i}, {γ_n}) | Improvement |
 |------------|----|---------------------|-------------------|------------------|-------------|
@@ -2102,7 +2102,7 @@ Three canonical multiplicative perturbations of the smooth targets were tested:
 - §13septies: full statement of Conjecture T-HP and its three sub-problems.
 - §13octies, L8 audit: T-HP identified as the break-point of the assembled argument. P30 narrows L8 by closing one of its four prerequisites (smooth half, operator level) while corroborating branch B2 for the rest.
 - `src/tnfr/riemann/admissible_rescaling.py`: canonical implementation.
-- `examples/57_admissible_rescaling_demo.py`: reproducible demonstration.
+- `examples/03_riemann_zeta/57_admissible_rescaling_demo.py`: reproducible demonstration.
 
 ### §13nonies.7 Status Update for §19.2 Gap Balance
 
@@ -2132,7 +2132,7 @@ $$ \gamma_i^{\mathrm{corr}} \;=\; \tilde\gamma_i \;-\; d \cdot \frac{S_{\mathrm{
 
 with $d$ a non-canonical scalar **diagnostic** damping factor used to map out the local landscape (the structurally canonical value is $d = 1$).
 
-**Empirical result.** Reproduced via `examples/58_oscillatory_correction_demo.py` and `compute_oscillatory_correction_certificate`:
+**Empirical result.** Reproduced via `examples/03_riemann_zeta/58_oscillatory_correction_demo.py` and `compute_oscillatory_correction_certificate`:
 
 | $N$ | primes | $K$ | $W_1^{\mathrm{smooth}}$ | best $d$ | $W_1^{\mathrm{corrected}}$ | improvement | $\max\,\lvert S_{\mathrm{TNFR}}\rvert$ |
 |---|---|---|---|---|---|---|---|
@@ -2171,7 +2171,7 @@ P31 is therefore **stronger branch-B2 evidence than §13nonies.4**: it shows tha
 * §13octies, L8 audit: branch B1 / B2 / B3 framing of the open content of G4.
 * §13nonies.4: prior single-frequency canonical enrichment with $\approx 0\%$ improvement (now superseded as a *separate* test, not as a result).
 * `src/tnfr/riemann/oscillatory_correction.py`: canonical implementation of P31.
-* `examples/58_oscillatory_correction_demo.py`: reproducible demonstration.
+* `examples/03_riemann_zeta/58_oscillatory_correction_demo.py`: reproducible demonstration.
 
 ### §13decies.1 Status Update for §19.2 Gap Balance
 
@@ -2210,7 +2210,7 @@ By direct expansion, $Z_{\mathrm{TNFR}}(s, \chi) \xrightarrow[K, n_{\text{primes
 
 ### §13undecies.3 Empirical Verification (May 2026 run)
 
-`examples/59_dirichlet_l_function_demo.py` runs the canonical verification with $n_{\text{primes}} = 200$, $K = 12$, $n_{\max}^{\mathrm{classical}} = 100\,000$, across four canonical real characters and five complex spectral points with $\operatorname{Re}(s) \in \{2, 3, 5\}$:
+`examples/04_riemann_L_twisted/59_dirichlet_l_function_demo.py` runs the canonical verification with $n_{\text{primes}} = 200$, $K = 12$, $n_{\max}^{\mathrm{classical}} = 100\,000$, across four canonical real characters and five complex spectral points with $\operatorname{Re}(s) \in \{2, 3, 5\}$:
 
 | Character | Modulus $q$ | $\max\, \text{rel\_err}$ ($\operatorname{Re}(s)=5$) | $\max\, \text{rel\_err}$ ($\operatorname{Re}(s)=2$) |
 |-----------|-------------|------------------------------------------------------|------------------------------------------------------|
@@ -2245,7 +2245,7 @@ P32 is a **structural extension**, not progress on the open arithmetic content o
 * §7.8: G5 supersession by P12+P13+P15 (the operational route P32 extends to characters).
 * §13octies: assembled-argument audit for G4; the same audit applies, character by character, to GRH.
 * `src/tnfr/riemann/dirichlet_l.py`: canonical implementation of P32.
-* `examples/59_dirichlet_l_function_demo.py`: reproducible verification across four canonical real characters.
+* `examples/04_riemann_L_twisted/59_dirichlet_l_function_demo.py`: reproducible verification across four canonical real characters.
 
 ### §13undecies.7 Status Update for §19.2 Gap Balance
 
@@ -2327,7 +2327,7 @@ P33 is a **structural extension**, not progress on the open arithmetic content o
 * §9: P13 analytic continuation of the prime-ladder vM zeta (the template P33 generalises).
 * §13undecies: P32 χ-twisted prime ladder (the representation P33 continues).
 * `src/tnfr/riemann/analytic_continuation_dirichlet.py`: canonical implementation of P33.
-* `examples/60_dirichlet_l_continuation_demo.py`: demo verifying agreement on $\operatorname{Re}(s) > 1$ and critical-line zero detection for $\chi_3$ and $\chi_4$.
+* `examples/04_riemann_L_twisted/60_dirichlet_l_continuation_demo.py`: demo verifying agreement on $\operatorname{Re}(s) > 1$ and critical-line zero detection for $\chi_3$ and $\chi_4$.
 
 ### §13duodecies.7 Status Update for §19.2 Gap Balance
 
@@ -2372,7 +2372,7 @@ Let $\chi$ be a Dirichlet character of conductor $q$ and $K \ge 1$ a REMESH echo
 
 ### §13terdecies.3 Empirical Verification (May 2026 run)
 
-`examples/61_dirichlet_l_hamiltonian_demo.py`, with $n_{\mathrm{primes}} = 20$, $K = 8$ (Hilbert dimension $N = 152$, $19$ active primes, $1$ excluded), $s$-values $\{2, 3, 2+i, 3+2i, 5, 10\}$:
+`examples/04_riemann_L_twisted/61_dirichlet_l_hamiltonian_demo.py`, with $n_{\mathrm{primes}} = 20$, $K = 8$ (Hilbert dimension $N = 152$, $19$ active primes, $1$ excluded), $s$-values $\{2, 3, 2+i, 3+2i, 5, 10\}$:
 
 | Character | $N$ | $n_{\mathrm{active}}$ | spectrum_max_abs_error | trace_max_rel_error | overall_ok |
 |-----------|----:|----------------------:|-----------------------:|--------------------:|-----------:|
@@ -2403,7 +2403,7 @@ Step 3 of the demo also verifies the **triple agreement** P34 ≡ P32 (machine p
 * §13undecies: P32 χ-twisted prime ladder (the spectrum/weight data P34 represents).
 * §13duodecies: P33 analytic continuation of $-L'(s,\chi)/L(s,\chi)$ (the off-$\operatorname{Re}(s) > 1$ extension).
 * `src/tnfr/riemann/twisted_prime_ladder_hamiltonian.py`: canonical implementation of P34.
-* `examples/61_dirichlet_l_hamiltonian_demo.py`: demo verifying spectrum-exact / trace-machine-precision reproduction for $\chi_3, \chi_4, \chi_5$ and triple agreement P34 ≡ P32 ≡ P33 on $\operatorname{Re}(s) > 1$.
+* `examples/04_riemann_L_twisted/61_dirichlet_l_hamiltonian_demo.py`: demo verifying spectrum-exact / trace-machine-precision reproduction for $\chi_3, \chi_4, \chi_5$ and triple agreement P34 ≡ P32 ≡ P33 on $\operatorname{Re}(s) > 1$.
 
 ### §13terdecies.7 Status Update for §19.2 Gap Balance
 
@@ -2482,7 +2482,7 @@ All nine $(\chi, \sigma)$ pairs verify the identity to machine precision (relati
 * §13duodecies: P33 χ-twisted analytic continuation.
 * §13terdecies: P34 χ-twisted Hamiltonian (prime side of P35).
 * `src/tnfr/riemann/twisted_weil_explicit_formula.py`: canonical implementation of P35.
-* `examples/62_dirichlet_weil_explicit_formula_demo.py`: demo verifying nine $(\chi, \sigma)$ pairs to machine precision.
+* `examples/04_riemann_L_twisted/62_dirichlet_weil_explicit_formula_demo.py`: demo verifying nine $(\chi, \sigma)$ pairs to machine precision.
 
 ### §13quaterdecies.7 Gap Balance
 
@@ -2528,7 +2528,7 @@ Positivity of $\lambda_n(\chi)$ verified for the three primitive real characters
 | $\chi_4$  | 4   | 1         | 37              | $+6.791 \times 10^{-2}$  | yes                           |
 | $\chi_5$  | 5   | 0         | 40              | $+6.802 \times 10^{-2}$  | yes                           |
 
-(Reproduced by `examples/63_dirichlet_li_keiper_demo.py`.)
+(Reproduced by `examples/04_riemann_L_twisted/63_dirichlet_li_keiper_demo.py`.)
 
 ### §13quinquiesdecies.4 What P36 Extends
 
@@ -2547,7 +2547,7 @@ Positivity of $\lambda_n(\chi)$ verified for the three primitive real characters
 * §13quaterdecies: P35 χ-twisted Weil–Guinand explicit formula (supplies the zero enumerator).
 * §13septies: Conjecture T-HP (unchanged by P36).
 * `src/tnfr/riemann/twisted_li_keiper.py`: canonical P36 implementation.
-* `examples/63_dirichlet_li_keiper_demo.py`: demo with full positivity sweep.
+* `examples/04_riemann_L_twisted/63_dirichlet_li_keiper_demo.py`: demo with full positivity sweep.
 
 ### §13quinquiesdecies.7 Gap Balance
 
@@ -2590,7 +2590,7 @@ $$\boxed{\;\alpha_\chi(\sigma) := \frac{W_\chi[\sigma]}{E_{\mathrm{TNFR}}^\chi[\
 
 ### §13sexiesdecies.3 Empirical Verification
 
-Configuration: $N_{\mathrm{primes}} = 25$, $k_{\max} = 6$, decoupled spectrum (coupling = 0), $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$.  Demo: `examples/64_twisted_weil_positivity_demo.py`.
+Configuration: $N_{\mathrm{primes}} = 25$, $k_{\max} = 6$, decoupled spectrum (coupling = 0), $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$.  Demo: `examples/04_riemann_L_twisted/64_twisted_weil_positivity_demo.py`.
 
 For χ$_3$ the consistency residual is $|W_{\mathrm{zero}} - W_{\mathrm{XF}}| \le 6.1 \times 10^{-6}$ at $\sigma = 1.0$ and $\le 2.4 \times 10^{-16}$ for $\sigma \in \{2.0, 2.5, 3.0\}$ (machine precision once enough zeros enter the Gaussian window).  Aggregate verdicts:
 
@@ -2625,7 +2625,7 @@ All three primitive real characters pass both the Weil positivity check and the 
 * §13quaterdecies (P35): χ-twisted Weil–Guinand explicit formula (zero side + RHS).
 * §13quinquiesdecies (P36): χ-twisted Li–Keiper diagnostic (complementary GRH$_\chi$-equivalent surface).
 * `src/tnfr/riemann/twisted_weil_positivity.py`: canonical P37 implementation.
-* `examples/64_twisted_weil_positivity_demo.py`: demo with the full χ$_3$/χ$_4$/χ$_5$ sweep.
+* `examples/04_riemann_L_twisted/64_twisted_weil_positivity_demo.py`: demo with the full χ$_3$/χ$_4$/χ$_5$ sweep.
 
 ### §13sexiesdecies.7 Gap Balance
 
@@ -2657,7 +2657,7 @@ The certificate is a frozen `TwistedAlphaSweepCertificate` carrying the $W_\chi$
 
 ### §13septiesdecies.3 Empirical Verification
 
-The reference demo `examples/65_twisted_alpha_sweep_demo.py` sweeps $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$ and all six gauges across $\chi_3, \chi_4, \chi_5$ (decoupled spectrum, $n_{\mathrm{primes}} = 25$, $\max_{\mathrm{power}} = 6$):
+The reference demo `examples/04_riemann_L_twisted/65_twisted_alpha_sweep_demo.py` sweeps $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$ and all six gauges across $\chi_3, \chi_4, \chi_5$ (decoupled spectrum, $n_{\mathrm{primes}} = 25$, $\max_{\mathrm{power}} = 6$):
 
 | χ | $q$ | $W_\chi \ge 0$ | $\alpha_\chi > 0$ | $\alpha_{\min}$ @ $(\sigma, g)$ | $\alpha_{\max}$ |
 |---|---|---|---|---|---|
@@ -2684,7 +2684,7 @@ Positivity holds across every $(\sigma, g)$ combination for every tested charact
 * §15: P18 (ζ-side admissibility / gauge sweep; canonical reference template).
 * §13septies: Conjecture T-HP (unchanged by P38).
 * `src/tnfr/riemann/twisted_alpha_sweep.py`: canonical P38 implementation.
-* `examples/65_twisted_alpha_sweep_demo.py`: reference demo.
+* `examples/04_riemann_L_twisted/65_twisted_alpha_sweep_demo.py`: reference demo.
 
 ### §13septiesdecies.7 Gap Balance
 
@@ -2712,7 +2712,7 @@ where $W_\chi[\sigma; f]$ is the P35 chi-twisted zero-side enumerator evaluated 
 
 ### §13octiesdecies.3 Empirical Verification
 
-Demo `examples/66_twisted_admissible_family_sweep_demo.py` evaluates the sweep for $\chi_3, \chi_4, \chi_5$ across 3 families × 6 gauges × 5 widths $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$ (90 cells per character, 270 cells total).  Aggregate result:
+Demo `examples/04_riemann_L_twisted/66_twisted_admissible_family_sweep_demo.py` evaluates the sweep for $\chi_3, \chi_4, \chi_5$ across 3 families × 6 gauges × 5 widths $\sigma \in \{1.0, 1.5, 2.0, 2.5, 3.0\}$ (90 cells per character, 270 cells total).  Aggregate result:
 
 | Character | Modulus | $W_\chi \ge 0$ | $\alpha_\chi > 0$ | $\alpha_{\min}$ | @(σ, family, gauge) | $\alpha_{\max}$ |
 |-----------|---------|----------------|-------------------|-----------------|---------------------|-----------------|
@@ -2740,7 +2740,7 @@ P39 is a strict diagnostic and inherits every limitation of P19 / P38.  It does 
 * P38 (chi-twisted gauge sweep): `src/tnfr/riemann/twisted_alpha_sweep.py`, §13septiesdecies.
 * P17 (canonical Weil–TNFR positivity bridge): `src/tnfr/riemann/weil_positivity.py`, §14.
 * Implementation: `src/tnfr/riemann/twisted_admissible_family_sweep.py`.
-* Demo: `examples/66_twisted_admissible_family_sweep_demo.py`.
+* Demo: `examples/04_riemann_L_twisted/66_twisted_admissible_family_sweep_demo.py`.
 
 ### §13octiesdecies.7 Gap Balance
 
@@ -2779,7 +2779,7 @@ where $\hat\nu_f(n)$ and $\hat w(n) = \log p / \max_{n'} \log p$ are the per-nod
 
 ### §13noniesdecies.3 Empirical Verification
 
-`examples/67_twisted_nodeaware_gauge_sweep_demo.py` evaluates the sweep for every primitive real Dirichlet character of conductor $q \le 5$ with bundle $(n_{\mathrm{primes}}, k_{\max}, J) = (25, 6, 0)$:
+`examples/04_riemann_L_twisted/67_twisted_nodeaware_gauge_sweep_demo.py` evaluates the sweep for every primitive real Dirichlet character of conductor $q \le 5$ with bundle $(n_{\mathrm{primes}}, k_{\max}, J) = (25, 6, 0)$:
 
 | $\chi$ | $q$ | $W_\chi \ge 0$ | $\alpha_\chi > 0$ | $\alpha_{\min}$ | argmin $(\sigma, f, g)$ | $\alpha_{\max}$ |
 |--------|----:|:--------------:|:-----------------:|----------------:|:-----------------------:|----------------:|
@@ -2807,7 +2807,7 @@ P40 is a **finite-grid robustness diagnostic**: positivity of $\alpha_\chi(\sigm
 ### §13noniesdecies.6 Cross-References
 
 - Implementation: `src/tnfr/riemann/twisted_nodeaware_gauge_sweep.py` (module), `src/tnfr/riemann/__init__.py` (canonical exports).
-- Demonstration: `examples/67_twisted_nodeaware_gauge_sweep_demo.py`.
+- Demonstration: `examples/04_riemann_L_twisted/67_twisted_nodeaware_gauge_sweep_demo.py`.
 - ζ-track parent: P20 (§13ter `nodeaware_gauge_sweep.py`).
 - L-track parents: P34 (χ-twisted bundle), P35 (`twisted_weil_zero_side`), P37 (`verify_twisted_weil_tnfr_bridge`, energy functional), P38 (scalar-gauge twisted sweep), P39 (admissible-family + scalar-gauge twisted sweep).
 - Inherited canonical pieces: `DEFAULT_TEST_FAMILIES` (P19), `DEFAULT_NODEAWARE_GAUGES` (P20), `compute_energy_functional` (P17).
@@ -2850,7 +2850,7 @@ across (i) the Hermite2 envelope-strength grid `DEFAULT_HERMITE2_ETAS = (0.0, 0.
 
 ### §13vicies.3 Empirical Verification
 
-`examples/68_twisted_hermite_family_demo.py` evaluates the sweep for every primitive real Dirichlet character of conductor $q \le 5$ with bundle $(n_{\mathrm{primes}}, k_{\max}, J) = (25, 6, 0)$:
+`examples/04_riemann_L_twisted/68_twisted_hermite_family_demo.py` evaluates the sweep for every primitive real Dirichlet character of conductor $q \le 5$ with bundle $(n_{\mathrm{primes}}, k_{\max}, J) = (25, 6, 0)$:
 
 | $\chi$ | $q$ | $W_\chi \ge 0$ | $\alpha_\chi > 0$ | $\alpha_{\min}$ | argmin $(\sigma, \eta, g)$ | $\alpha_{\max}$ |
 |--------|----:|:--------------:|:-----------------:|----------------:|:--------------------------:|----------------:|
@@ -2878,7 +2878,7 @@ P41 is a **finite-grid robustness diagnostic**: positivity of $\alpha_\chi(\sigm
 ### §13vicies.6 Cross-References
 
 - Implementation: `src/tnfr/riemann/twisted_hermite_family.py` (module), `src/tnfr/riemann/__init__.py` (canonical exports).
-- Demonstration: `examples/68_twisted_hermite_family_demo.py`.
+- Demonstration: `examples/04_riemann_L_twisted/68_twisted_hermite_family_demo.py`.
 - ζ-track parent: P21 (Hermite2 added to `DEFAULT_TEST_FAMILIES`).
 - L-track parents: P34 (χ-twisted bundle), P35 (`twisted_weil_zero_side`), P37 (energy functional), P38 (scalar-gauge twisted sweep), P39 (admissible-family + scalar-gauge twisted sweep; supplies `build_twisted_test_state_from_test_function`), P40 (node-aware twisted sweep).
 - Inherited canonical pieces: `Hermite2GaussianTestFunction` (P19), `DEFAULT_GAUGES` (P18), `compute_energy_functional` (P17).
@@ -2923,7 +2923,7 @@ The construction does NOT touch the gauge-independent zero side $W_\chi$ (comput
 
 ### §13vicies-primo.3 Empirical Verification
 
-`examples/69_twisted_coercivity_uniform_demo.py` evaluates the certificate for every primitive real Dirichlet character of conductor $q \le 5$ with bundle $(n_{\mathrm{primes}}, k_{\max}, J) = (15, 4, 0)$ on the log-spaced window $\sigma \in [1.0, 3.0]$ with $N = 5$, using `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_GAUGES` (P18) for the scalar sweep and `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_NODEAWARE_GAUGES` (P20) for the node-aware sweep:
+`examples/04_riemann_L_twisted/69_twisted_coercivity_uniform_demo.py` evaluates the certificate for every primitive real Dirichlet character of conductor $q \le 5$ with bundle $(n_{\mathrm{primes}}, k_{\max}, J) = (15, 4, 0)$ on the log-spaced window $\sigma \in [1.0, 3.0]$ with $N = 5$, using `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_GAUGES` (P18) for the scalar sweep and `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_NODEAWARE_GAUGES` (P20) for the node-aware sweep:
 
 | $\chi$ | $q$ | $\alpha^{\mathrm{samp}}_{\chi,\min}$ | $\alpha^{\mathrm{samp}}_{\chi,\max}$ | $L^{\mathrm{proxy}}_\chi$ | $\mathrm{lb}_{\mathrm{global}}$ | $\mathrm{lb}_{\mathrm{strat}}$ | $\mathrm{lb}_{\mathrm{local}}$ | all+ |
 |--------|----:|------------------------------------:|------------------------------------:|--------------------------:|--------------------------------:|-------------------------------:|-------------------------------:|:----:|
@@ -2953,7 +2953,7 @@ P42 is a **finite-grid Lipschitz-mesh interval diagnostic**: positive interval l
 ### §13vicies-primo.6 Cross-References
 
 - Implementation: `src/tnfr/riemann/twisted_coercivity_uniform.py` (module), `src/tnfr/riemann/__init__.py` (canonical exports).
-- Demonstration: `examples/69_twisted_coercivity_uniform_demo.py`.
+- Demonstration: `examples/04_riemann_L_twisted/69_twisted_coercivity_uniform_demo.py`.
 - ζ-track parent: P22 / P23 / P24 (uniform, stratified, adaptive coercivity in `coercivity_uniform.py`).
 - L-track parents: P34 (χ-twisted bundle), P35 (`twisted_weil_zero_side`), P37 (energy functional), P38 (scalar-gauge twisted sweep), P39 (admissible-family + scalar-gauge twisted sweep), P40 (node-aware twisted sweep), P41 (Hermite2 η-sweep).
 - Inherited canonical pieces: `_max_abs_slope`, `_segmentwise_interval_lower_bound`, `_stratified_interval_lower_bound`, `_worst_segment_indices` (P22 / P23 / P24 helpers reused unchanged from `coercivity_uniform.py`); `sweep_twisted_admissible_family` (P39); `sweep_twisted_nodeaware_gauge` (P40).
@@ -3026,7 +3026,7 @@ P43 is a **consistency diagnostic at coupling zero and a deformation magnitude a
 ### §13vicies-secundo.6 Cross-References
 
 - Implementation: `src/tnfr/riemann/twisted_paley_gap_coercivity.py` (module), `src/tnfr/riemann/__init__.py` (canonical exports).
-- Demonstration: `examples/70_twisted_paley_gap_coercivity_demo.py`.
+- Demonstration: `examples/04_riemann_L_twisted/70_twisted_paley_gap_coercivity_demo.py`.
 - ζ-track parent: P25 (`paley_gap_coercivity.py`).
 - L-track parents: P32 (`tnfr_log_l_derivative`, `TwistedPrimeLadderSpectrum`), P34 (`TwistedPrimeLadderHamiltonian`, `twisted_weighted_spectral_trace`).
 - Inherited canonical pieces: `tnfr_log_l_derivative` (P32 Route A), `twisted_weighted_spectral_trace` (P34 Route B), `classical_log_l_derivative` (classical reference), `build_twisted_prime_ladder_hamiltonian` (P34 bundle constructor) reused unchanged.
@@ -3089,7 +3089,7 @@ with `perturbation_safe = True` iff the right-hand side is strictly positive. Th
 
 ### §13vicies-tertio.3 Empirical Verification
 
-P44 was run on the canonical config $(n_{\mathrm{primes}}, k_{\max}, c) = (18, 5, 1.0)$ for $\chi_3, \chi_4, \chi_5$ at $J_0 \in \{0, 10^{-2}\}$ (`examples/71_twisted_lyapunov_spectral_demo.py`):
+P44 was run on the canonical config $(n_{\mathrm{primes}}, k_{\max}, c) = (18, 5, 1.0)$ for $\chi_3, \chi_4, \chi_5$ at $J_0 \in \{0, 10^{-2}\}$ (`examples/04_riemann_L_twisted/71_twisted_lyapunov_spectral_demo.py`):
 
 | Character | $J_0$ | $\min(\lambda)$ | $\Delta_0^{(\chi)}$ | $\|\hat V\|$ | Guaranteed gap | `perturbation_safe` | Max norm drift | `unitary` | `structural_positivity` |
 |---|---|---|---|---|---|---|---|---|---|
@@ -3122,7 +3122,7 @@ P44 is an **operator-level positivity certificate on the finite-dimensional χ-t
 ### §13vicies-tertio.6 Cross-References
 
 - Implementation: `src/tnfr/riemann/twisted_lyapunov_spectral_positivity.py` (module), `src/tnfr/riemann/__init__.py` (canonical exports).
-- Demonstration: `examples/71_twisted_lyapunov_spectral_demo.py`.
+- Demonstration: `examples/04_riemann_L_twisted/71_twisted_lyapunov_spectral_demo.py`.
 - ζ-track parent: P26 (`lyapunov_spectral_positivity.py`, §13quater) — atomic primitives `_matrix_exponential_skew` and `resolvent_schatten_norms` reused unchanged.
 - L-track parents: P32 (`TwistedPrimeLadderSpectrum` providing the active-prime catalogue), P34 (`TwistedPrimeLadderHamiltonian` providing `H_int`, `H_freq`, `H_coupling`).
 - Compendium: §19.1 P44 row.
@@ -3170,7 +3170,7 @@ Given $\chi$ primitive real, $n_{\mathrm{primes}}$, $k_{\max}$, $N = n_{\mathrm{
 
 ### §13vicies-quarto.3 Empirical Verification
 
-P45 was run on the canonical config $(n_{\mathrm{primes}}, k_{\max}, n_{\mathrm{zeros}}, \sigma, s, \mathrm{tol}) = (18, 5, 25, 2.0, 1.0, 10^{-2})$ for $\chi_3, \chi_4, \chi_5$ (`examples/72_twisted_hilbert_polya_demo.py`):
+P45 was run on the canonical config $(n_{\mathrm{primes}}, k_{\max}, n_{\mathrm{zeros}}, \sigma, s, \mathrm{tol}) = (18, 5, 25, 2.0, 1.0, 10^{-2})$ for $\chi_3, \chi_4, \chi_5$ (`examples/04_riemann_L_twisted/72_twisted_hilbert_polya_demo.py`):
 
 | Character | $q$ | $a_\chi$ | self-adj | trace-class | Weil residual | $W_1(P34, T_{\mathrm{HP}}^{(\chi)})$ | growth ratio | scaffold consistent |
 |---|---|---|---|---|---|---|---|---|
@@ -3306,7 +3306,7 @@ All kernel constants $(\varphi, \gamma, \pi)$ are canonical TNFR tetrad constant
 
 ### §13vicies-sexto.3 Empirical Verification
 
-Demo `examples/74_twisted_spectral_emergence_demo.py` at $(n_{\text{primes}}, K) = (20, 3)$:
+Demo `examples/04_riemann_L_twisted/74_twisted_spectral_emergence_demo.py` at $(n_{\text{primes}}, K) = (20, 3)$:
 
 | $\chi$ | Law | $\mathrm{KS}_{\text{GUE}}^{\min}$ | $s^*$ | $\mathrm{KS}_{\text{GUE}}\vert_{s=0}$ | Improvement |
 |---|---|---|---|---|---|
@@ -3370,7 +3370,7 @@ Reuses the atomic primitives (`extract_positive_spectrum`, `build_smooth_rescali
 
 ### §13vicies-septimo.3 Empirical Verification
 
-Demo `examples/75_twisted_admissible_rescaling_demo.py` with $n_{\text{targets}} = 12$, $n_{\text{primes}}^{P34} = 25$, $k_{\max} = 5$:
+Demo `examples/04_riemann_L_twisted/75_twisted_admissible_rescaling_demo.py` with $n_{\text{targets}} = 12$, $n_{\text{primes}}^{P34} = 25$, $k_{\max} = 5$:
 
 | Character | $W_1(\sigma(H_{P34}^{(\chi)}), \{\gamma_n^{(\chi)}\})$ | $W_1$ smooth | Smooth ratio | Best osc. mode | Osc. gain vs. smooth |
 |---|---|---|---|---|---|
@@ -3435,7 +3435,7 @@ The construction is **strictly canonical**: every input on the construction side
 
 ### §13vicies-octavo.3 Empirical Verification
 
-Demo `examples/76_twisted_oscillatory_correction_demo.py` with $N=10$, $N_{\text{primes}}=80$, $K=5$ over $\{\chi_3, \chi_4, \chi_5\}$:
+Demo `examples/04_riemann_L_twisted/76_twisted_oscillatory_correction_demo.py` with $N=10$, $N_{\text{primes}}=80$, $K=5$ over $\{\chi_3, \chi_4, \chi_5\}$:
 
 | character | best $d$ | $W_1$(smooth) | $W_1$(corrected) | improvement | max $\lvert S_\chi^{\mathrm{TNFR}}\rvert$ | regime |
 |---|---|---|---|---|---|---|
@@ -3684,7 +3684,7 @@ $\alpha_{\max} = 1.06 \times 10^{1}$ at $\sigma = 12$, $g = $
 `dnfr_only`. $W[\sigma] \ge 0$ on every grid point.
 
 Selected $\alpha$ values (full table in
-`examples/47_alpha_sweep_demo.py` output):
+`examples/03_riemann_zeta/47_alpha_sweep_demo.py` output):
 
 | $\sigma$ | `canonical` | `dnfr_only` | `epi_only` |
 |---:|---:|---:|---:|
@@ -3812,7 +3812,7 @@ Core components:
 
 ### 16.3 Numerical Results (May 2026 run)
 
-Run: `examples/48_admissible_family_sweep_demo.py`
+Run: `examples/03_riemann_zeta/48_admissible_family_sweep_demo.py`
 
 Configuration:
 
@@ -3902,7 +3902,7 @@ Key additions:
 
 ### 17.3 Numerical Results (May 2026 run)
 
-Run: `examples/49_nodeaware_gauge_sweep_demo.py`
+Run: `examples/03_riemann_zeta/49_nodeaware_gauge_sweep_demo.py`
 
 Configuration:
 
@@ -3982,9 +3982,9 @@ API additions:
 
 With the default family set expanded to 3 families, both audits hold:
 
-* P19 (`examples/48_admissible_family_sweep_demo.py`):
+* P19 (`examples/03_riemann_zeta/48_admissible_family_sweep_demo.py`):
    `W_all_positive=True`, `alpha_all_positive=True`
-* P20 (`examples/49_nodeaware_gauge_sweep_demo.py`):
+* P20 (`examples/03_riemann_zeta/49_nodeaware_gauge_sweep_demo.py`):
    `W_all_positive=True`, `alpha_all_positive=True`
 
 Hermite branch extrema from the P19 run:
@@ -6125,7 +6125,7 @@ $\ker(\mathcal{R}_\infty)$ — verdict `RESIDUE_IN_KER_ONLY`.
 
 ### §13triginta.4 Empirical Verification
 
-Demo `examples/77_remesh_infinity_residue_split_demo.py` at canonical
+Demo `examples/05_type_hygiene/77_remesh_infinity_residue_split_demo.py` at canonical
 defaults $(\tau_l, \tau_g) = (4, 8)$, $K = 8$:
 
 | $n_{\mathrm{periods}}$ | $n_{\mathrm{samples}}$ | $n_{\mathrm{primes}}$ | $\|S\|_2$ | $\|\mathcal{R}_\infty S\|_2$ | $\|(I-\mathcal{R}_\infty) S\|_2$ | range fraction | kernel fraction | verdict |
@@ -6208,7 +6208,7 @@ projector.
   $G_{P14}$; closes canonical-tensor-product family of B1
   sub-routes via $S_n$-equivariance).
 * **Code**: `src/tnfr/riemann/remesh_infinity_residue_split.py`;
-  demo `examples/77_remesh_infinity_residue_split_demo.py`.
+  demo `examples/05_type_hygiene/77_remesh_infinity_residue_split_demo.py`.
 * **Honest-scope framework**: §13octies, §13.2, §19.2 apply
   verbatim.
 
@@ -6460,7 +6460,7 @@ canonical TNFR-Riemann data.
 
 **Implementation.**  See
 [src/tnfr/riemann/nuf_type_signature.py](../src/tnfr/riemann/nuf_type_signature.py)
-and demo [examples/78_nuf_type_signature_demo.py](../examples/05_type_hygiene/78_nuf_type_signature_demo.py).
+and demo [examples/05_type_hygiene/78_nuf_type_signature_demo.py](../examples/05_type_hygiene/78_nuf_type_signature_demo.py).
 
 **Pre-registered scope.**  $\mathcal{S}_{\nu_f}$ is a *necessary-condition*
 diagnostic: high signature is consistent with (but does not prove) a
@@ -6474,7 +6474,7 @@ practical relevance of the promotion on the P14 data.
 and $F = \mathbb{R}$ both survive if (P-Pontryagin) is relaxed).
 
 **Numerical sanity check (§.6):** the demo
-[examples/78_nuf_type_signature_demo.py](../examples/05_type_hygiene/78_nuf_type_signature_demo.py)
+[examples/05_type_hygiene/78_nuf_type_signature_demo.py](../examples/05_type_hygiene/78_nuf_type_signature_demo.py)
 reports $\mathcal{S}_{\nu_f}$ on the canonical P14 + P50 data; the value is
 recorded in `results/nuf_type_signature/` and is consistent with the
 measure-valued hypothesis being *practically non-trivial* (necessary
@@ -7305,7 +7305,7 @@ ring graph evolved by `tnfr.dynamics.step`:
 | `INDETERMINATE` | between thresholds |
 | `BEPI_VALUED_NECESSARY` | `signature > 0.5` OR `storage_bepi_fraction > 0` |
 
-**Measured values** (`examples/79_epi_type_signature_demo.py`,
+**Measured values** (`examples/05_type_hygiene/79_epi_type_signature_demo.py`,
 seeds 13 and 29):
 
 | Resolution | n_nodes | n_steps | n_bins | S_EPI | BEPI fraction | Verdict |
@@ -7359,8 +7359,8 @@ forcing" of `BEPIElement` would have to satisfy.  Detailed reduction in
 | F6 | P14 prime-ladder Hamiltonian operates on a scalar-spectrum Hilbert space. | §10–§12, `riemann/prime_ladder_hamiltonian.py`. |
 | F7 | Uncertainty-bandwidth complementarity (`ΔEPI · Δνf ≥ K`, scalar form). | AGENTS.md "Quantum-Like Regime". |
 | F8 | `BEPIElement` catalog existence (the (P-EPI-Bijectivity) analog of (P-νf-Bijectivity) is the existence-without-construction gap). | `mathematics/epi.py:103`, `types.py:270`. |
-| F9 | Classical-limit demos use scalar EPI exclusively. | `examples/12_classical_mechanics_demo.py`. |
-| F10 | Quantum-regime demos use scalar EPI exclusively. | `examples/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. |
+| F9 | Classical-limit demos use scalar EPI exclusively. | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. |
+| F10 | Quantum-regime demos use scalar EPI exclusively. | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. |
 
 Axioms F1–F10 together force scalar EPI as the canonical type unless an
 extension axiom is *added* to the catalog.  No such canonical extension
@@ -7391,7 +7391,7 @@ This sub-programme:
 - §13septies — T-HP open content (independent of this sub-question).
 - §19.1 — Full P1–P49 milestone table.
 - `src/tnfr/riemann/epi_type_signature.py` — diagnostic implementation.
-- `examples/79_epi_type_signature_demo.py` — two-resolution demo.
+- `examples/05_type_hygiene/79_epi_type_signature_demo.py` — two-resolution demo.
 - `src/tnfr/mathematics/epi.py:103` — `BEPIElement` formalisation.
 - `src/tnfr/operators/nodal_equation.py:1–160` — scalar contract witness.
 
@@ -7475,7 +7475,7 @@ catalog:
   `_bepi_to_float` down-projection (`src/tnfr/alias.py:86`,
   `src/tnfr/operators/__init__.py:190–360`).  No operator constructs,
   reads, or preserves a `BEPIElement` instance.  Empirically verified
-  by `examples/79_epi_type_signature_demo.py`: BEPI-storage fraction
+  by `examples/05_type_hygiene/79_epi_type_signature_demo.py`: BEPI-storage fraction
   $= 0$ across all measured nodes and steps at two independent
   resolutions $(n=24, T=64)$ and $(n=48, T=128)$.
 
@@ -7573,8 +7573,8 @@ below.  Each row asks: *does this axiom force the BEPI carrier upgrade?*
 | F6 | P14 prime-ladder Hamiltonian on a scalar-spectrum Hilbert space. | §10–§12, `riemann/prime_ladder_hamiltonian.py`. | **No** — P14's Hilbert space is built from scalar eigenmodes of the temporal operator, not from per-node Banach data. |
 | F7 | Uncertainty-bandwidth complementarity $\Delta\mathrm{EPI} \cdot \Delta\nu_f \geq K$. | AGENTS.md "Quantum-Like Regime". | **No** — variances are real-valued moments of scalar distributions. |
 | F8 | `BEPIElement` exists as a research formalism. | `mathematics/epi.py:103`, `types.py:270`. | **No** — existence in the codebase is not the same as canonical operator contracts.  (This is the (P-EPI-Bijectivity) gap, see §13triginta-quinta.5.) |
-| F9 | Classical-limit demos use scalar EPI exclusively. | `examples/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from scalar EPI under high coherence. |
-| F10 | Quantum-regime demos use scalar EPI exclusively. | `examples/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena (quantization, interference, complementarity) emerge from scalar EPI dynamics, not from a Banach internal carrier. |
+| F9 | Classical-limit demos use scalar EPI exclusively. | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from scalar EPI under high coherence. |
+| F10 | Quantum-regime demos use scalar EPI exclusively. | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena (quantization, interference, complementarity) emerge from scalar EPI dynamics, not from a Banach internal carrier. |
 
 **Result.** No canonical constraint in $\{\mathrm{F1}, \ldots, \mathrm{F10}\}$
 forces the Banach carrier upgrade of EPI.  All ten admit consistent
@@ -7732,7 +7732,7 @@ This sub-programme:
   (row B1 Phase b advances on this commit).
 - `src/tnfr/riemann/epi_type_signature.py` — diagnostic implementation
   (anchors M1 empirically).
-- `examples/79_epi_type_signature_demo.py` — two-resolution demo
+- `examples/05_type_hygiene/79_epi_type_signature_demo.py` — two-resolution demo
   (corroborates TMEP via BEPI-storage fraction $= 0$).
 - `src/tnfr/mathematics/epi.py:103` — `BEPIElement` formalisation
   (the non-canonical envelope being classified).
@@ -7907,7 +7907,7 @@ This section:
   as envelope E2).
 - `src/tnfr/riemann/epi_type_signature.py` — diagnostic (preserved as
   off-catalog measurement utility).
-- `examples/79_epi_type_signature_demo.py` — demo (preserved; corroborates TMEP empirically).
+- `examples/05_type_hygiene/79_epi_type_signature_demo.py` — demo (preserved; corroborates TMEP empirically).
 
 ---
 
@@ -8225,7 +8225,7 @@ itself sufficient for the foundational T-φ Conjecture):**
 **Implementation.**  The diagnostic is implemented in
 `src/tnfr/riemann/phi_type_signature.py`, exporting
 ``PhiTypeSignatureCertificate`` and ``compute_phi_type_signature``.
-The reference demo lives at `examples/80_phi_type_signature_demo.py`.
+The reference demo lives at `examples/05_type_hygiene/80_phi_type_signature_demo.py`.
 
 ### §13triginta-octava.6 — Pre-registered numerical signature
 
@@ -8308,7 +8308,7 @@ This pre-registration section, the diagnostic module, and the demo:
 - **Does not** modify any existing source file in `src/tnfr/`; only
   adds the diagnostic module `src/tnfr/riemann/phi_type_signature.py`
   (and its export in `src/tnfr/riemann/__init__.py`) and the demo
-  `examples/80_phi_type_signature_demo.py`.
+  `examples/05_type_hygiene/80_phi_type_signature_demo.py`.
 - **Does not** change the canonical
   `tnfr.physics._helpers.wrap_angle`, `get_phase`, ``ALIAS_THETA``,
   or any tetrad field implementation.
@@ -8342,7 +8342,7 @@ This pre-registration section, the diagnostic module, and the demo:
   alias tuple.
 - `src/tnfr/riemann/phi_type_signature.py` — diagnostic
   implementation (added on this commit).
-- `examples/80_phi_type_signature_demo.py` — demo (added on this
+- `examples/05_type_hygiene/80_phi_type_signature_demo.py` — demo (added on this
   commit).
 
 ---
@@ -8440,7 +8440,7 @@ inside the catalog:
   ``float``) and writes via ``ALIAS_THETA`` followed *immediately*
   by ``wrap_angle``.  No operator constructs, reads, propagates, or
   preserves a winding number, sheet index, or homotopy class.
-  Empirically verified by `examples/80_phi_type_signature_demo.py`:
+  Empirically verified by `examples/05_type_hygiene/80_phi_type_signature_demo.py`:
   ``w_frac = 0/24`` at :math:`(n=24, T=64, B=32, \mathrm{seed}=13)`
   and ``w_frac = 0/48`` at :math:`(n=48, T=128, B=64, \mathrm{seed}=29)`,
   with ``max |Δφ_unwrap|`` strictly below :math:`2\pi` at both
@@ -8556,8 +8556,8 @@ upgrade of φ?*
 | F6 | Structural Conservation Theorem (Noether charge :math:`Q`, energy :math:`E`, Ward identities). | `physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`. | **No** — :math:`\rho, \mathbf{J}, \varepsilon` are all real-valued functionals of wrapped tetrad fields (M4); no winding current appears in :math:`\partial\rho/\partial t + \nabla \cdot \mathbf{J} = S_{\mathrm{grammar}}`. |
 | F7 | Variational principle (Lagrangian, symplectic conjugate pair :math:`(K_\phi, J_\phi)`). | `physics/variational.py`, AGENTS.md §"Variational Confirmation". | **No** — :math:`K_\phi = \mathrm{wrap\_angle}(\phi_i - \mathrm{circular\_mean}(\mathrm{nbrs}))` is *defined* as a wrapped scalar with :math:`|K_\phi| \le \pi`; the conjugate momentum :math:`J_\phi` is real-valued. |
 | F8 | REMESH temporal aggregation of φ trajectories. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py`. | **No** — REMESH aggregates EPI history, not φ history; even when φ-derived quantities feed REMESH (via :math:`\Delta\mathrm{NFR}`), the inputs have already been wrap-projected (chain of M2+M1). |
-| F9 | Classical-limit demos (Keplerian orbits, smooth phase trajectories). | `examples/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from *wrapped* φ under high coherence; the visible smoothness is a coordinate effect, not evidence of a covering-space carrier. |
-| F10 | Quantum-regime demos (interference, complementarity). | `examples/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena emerge from wrapped φ dynamics; phase-difference interference at slits uses :math:`\mathrm{wrap\_angle}(\phi_A - \phi_B)`, not covering-space difference. |
+| F9 | Classical-limit demos (Keplerian orbits, smooth phase trajectories). | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from *wrapped* φ under high coherence; the visible smoothness is a coordinate effect, not evidence of a covering-space carrier. |
+| F10 | Quantum-regime demos (interference, complementarity). | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena emerge from wrapped φ dynamics; phase-difference interference at slits uses :math:`\mathrm{wrap\_angle}(\phi_A - \phi_B)`, not covering-space difference. |
 
 **Result.** No canonical constraint in :math:`\{\mathrm{F1}, \ldots, \mathrm{F10}\}`
 forces the covering-space carrier upgrade of φ.  All ten admit
@@ -8766,7 +8766,7 @@ This sub-programme:
 - `src/tnfr/riemann/phi_type_signature.py` — B2a diagnostic
   implementation (anchors :math:`w_{\mathrm{frac}} = 0` empirical
   corroboration of PWDP).
-- `examples/80_phi_type_signature_demo.py` — two-resolution demo
+- `examples/05_type_hygiene/80_phi_type_signature_demo.py` — two-resolution demo
   (anchors B2a numerical fingerprint).
 
 ---
@@ -8894,7 +8894,7 @@ charged variant networks, U(1) gauge-theoretic extensions, vortex
 classification studies) provided such research is documented as
 off-catalog and does not claim canonical status.  The B2a
 diagnostic module (``src/tnfr/riemann/phi_type_signature.py``) and
-its demo (``examples/80_phi_type_signature_demo.py``) are preserved
+its demo (``examples/05_type_hygiene/80_phi_type_signature_demo.py``) are preserved
 as off-catalog measurement utilities, exactly as the B1a and B0a
 diagnostics were preserved at B1c and B0c.
 
@@ -9027,7 +9027,7 @@ This section:
   scalar storage alias (canonical typing witness).
 - ``src/tnfr/riemann/phi_type_signature.py`` — B2a diagnostic
   implementation (preserved as off-catalog measurement utility).
-- ``examples/80_phi_type_signature_demo.py`` — B2a two-resolution
+- ``examples/05_type_hygiene/80_phi_type_signature_demo.py`` — B2a two-resolution
   demo (preserved; corroborates PWDP empirically with
   :math:`w_{\mathrm{frac}} = 0` at both resolutions).
 
@@ -9050,7 +9050,7 @@ status, does **not** modify the 13-operator catalog, does **not**
 modify any existing source file in ``src/tnfr/`` (only adds the
 diagnostic module ``src/tnfr/riemann/dnfr_type_signature.py``, its
 re-export in ``src/tnfr/riemann/__init__.py``, and the demo
-``examples/81_dnfr_type_signature_demo.py``), and does **not** by
+``examples/05_type_hygiene/81_dnfr_type_signature_demo.py``), and does **not** by
 itself advance G4 = RH.  The diagnostic is a *necessary-condition*
 probe: a non-trivial signature is required, but not sufficient, for
 a tensor-rank lift of ΔNFR to be canonically necessary.
@@ -9250,7 +9250,7 @@ itself sufficient for the foundational T-ΔNFR Conjecture):**
 **Implementation.**  The diagnostic is implemented in
 ``src/tnfr/riemann/dnfr_type_signature.py``, exporting
 ``DnfrTypeSignatureCertificate`` and ``compute_dnfr_type_signature``.
-The reference demo lives at ``examples/81_dnfr_type_signature_demo.py``.
+The reference demo lives at ``examples/05_type_hygiene/81_dnfr_type_signature_demo.py``.
 
 ### §13quadraginta.6 — Pre-registered numerical signature
 
@@ -9337,7 +9337,7 @@ This pre-registration section, the diagnostic module, and the demo:
   only adds the diagnostic module
   ``src/tnfr/riemann/dnfr_type_signature.py`` (and its export in
   ``src/tnfr/riemann/__init__.py``) and the demo
-  ``examples/81_dnfr_type_signature_demo.py``.
+  ``examples/05_type_hygiene/81_dnfr_type_signature_demo.py``.
 - **Does not** change the canonical
   ``tnfr.dynamics.dnfr.default_compute_delta_nfr``,
   ``ALIAS_DNFR``, the nodal-equation evaluator, or any tetrad
@@ -9382,7 +9382,7 @@ This pre-registration section, the diagnostic module, and the demo:
   consumer of ΔNFR.
 - ``src/tnfr/riemann/dnfr_type_signature.py`` — diagnostic
   implementation (added on this commit).
-- ``examples/81_dnfr_type_signature_demo.py`` — demo (added on
+- ``examples/05_type_hygiene/81_dnfr_type_signature_demo.py`` — demo (added on
   this commit).
 
 ---
@@ -9491,7 +9491,7 @@ entirely inside the catalog:
   ``G.nodes[node]["dnfr"]`` slot and writes via the same scalar
   alias.  No operator constructs, reads, propagates, or preserves
   a tensor rank, channel index, or operator-valued component.
-  Empirically verified by `examples/81_dnfr_type_signature_demo.py`:
+  Empirically verified by `examples/05_type_hygiene/81_dnfr_type_signature_demo.py`:
   ``T_frac = 0/1536`` at :math:`(n=24, T=64, \mathrm{seed}=17)`
   and ``T_frac = 0/6144`` at :math:`(n=48, T=128, \mathrm{seed}=31)`
   — strictly zero tensor-valued payloads across both resolutions.
@@ -9620,8 +9620,8 @@ tensor-carrier upgrade of ΔNFR?*
 | F6 | Structural Conservation Theorem (Noether charge :math:`Q`, energy :math:`E`, Ward identities, current :math:`\mathbf{J} = (J_\phi, J_{\Delta\mathrm{NFR}})`). | `physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`. | **No** — :math:`J_{\Delta\mathrm{NFR}}` is real-valued, built from scalar ΔNFR (M4); no tensor-valued current appears in :math:`\partial\rho/\partial t + \nabla \cdot \mathbf{J} = S_{\mathrm{grammar}}`. |
 | F7 | Variational principle (Lagrangian, symplectic conjugate pair :math:`(\Phi_s, J_{\Delta\mathrm{NFR}})`). | `physics/variational.py`, AGENTS.md §"Variational Confirmation". | **No** — the potential term :math:`V = \tfrac{1}{2}[\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2]` and kinetic term :math:`T = \tfrac{1}{2}[J_\phi^2 + J_{\Delta\mathrm{NFR}}^2]` are real-valued scalar functionals; the conjugate momentum :math:`J_{\Delta\mathrm{NFR}}` is a real scalar. |
 | F8 | REMESH temporal aggregation. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py`. | **No** — REMESH aggregates EPI history scalarly; ΔNFR-derived inputs are already scalar-projected (chain of M2+M1). N15 closure (§§15–23) is the asymptotic projection of a scalar transfer matrix; no tensor-rank slot is required. |
-| F9 | Classical-limit demos (Keplerian orbits, scalar :math:`F = m \cdot a` analog via :math:`m \leftrightarrow 1/\nu_f`, :math:`F \leftrightarrow \Delta\mathrm{NFR}`). | `examples/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from *scalar* ΔNFR under high coherence; the "force" analog is itself a scalar in the canonical correspondence. |
-| F10 | Quantum-regime demos (interference, complementarity, quantization). | `examples/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena emerge from scalar ΔNFR dynamics; the complementarity :math:`\Delta\mathrm{EPI} \cdot \Delta\nu_f \ge K` is a scalar-scalar inequality. |
+| F9 | Classical-limit demos (Keplerian orbits, scalar :math:`F = m \cdot a` analog via :math:`m \leftrightarrow 1/\nu_f`, :math:`F \leftrightarrow \Delta\mathrm{NFR}`). | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from *scalar* ΔNFR under high coherence; the "force" analog is itself a scalar in the canonical correspondence. |
+| F10 | Quantum-regime demos (interference, complementarity, quantization). | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena emerge from scalar ΔNFR dynamics; the complementarity :math:`\Delta\mathrm{EPI} \cdot \Delta\nu_f \ge K` is a scalar-scalar inequality. |
 
 **Result.** No canonical constraint in :math:`\{\mathrm{F1},
 \ldots, \mathrm{F10}\}` forces the tensor-carrier upgrade of
@@ -9861,7 +9861,7 @@ This sub-programme:
   implementation (anchors :math:`(T_{\mathrm{frac}} = 0,
   R_{\mathrm{eff}} \approx 1.13)` empirical corroboration of
   BSAD).
-- `examples/81_dnfr_type_signature_demo.py` — two-resolution
+- `examples/05_type_hygiene/81_dnfr_type_signature_demo.py` — two-resolution
   demo (anchors B3a numerical fingerprint).
 
 ---
@@ -10028,7 +10028,7 @@ detection, tensor-rank diagnostics for grammar-violation
 classification) provided such research is documented as
 off-catalog and does not claim canonical status.  The B3a
 diagnostic module (``src/tnfr/riemann/dnfr_type_signature.py``)
-and its demo (``examples/81_dnfr_type_signature_demo.py``) are
+and its demo (``examples/05_type_hygiene/81_dnfr_type_signature_demo.py``) are
 preserved as off-catalog measurement utilities, exactly as the
 B0a, B1a, and B2a diagnostics were preserved at B0c, B1c, and B2c.
 
@@ -10234,7 +10234,7 @@ This section:
   storage alias (canonical typing witness).
 - ``src/tnfr/riemann/dnfr_type_signature.py`` — B3a diagnostic
   implementation (preserved as off-catalog measurement utility).
-- ``examples/81_dnfr_type_signature_demo.py`` — B3a two-resolution
+- ``examples/05_type_hygiene/81_dnfr_type_signature_demo.py`` — B3a two-resolution
   demo (preserved; corroborates BSAD empirically with
   :math:`T_{\mathrm{frac}} = 0` and
   :math:`\sigma_1 / \sigma_{2,3} \sim 10^2` at both resolutions).
@@ -10259,7 +10259,7 @@ construction to canonical status, does **not** modify the
 in ``src/tnfr/`` (only adds the diagnostic module
 ``src/tnfr/riemann/remesh_window_type_signature.py``, its
 re-export in ``src/tnfr/riemann/__init__.py``, and the demo
-``examples/82_remesh_window_type_signature_demo.py``), and does
+``examples/05_type_hygiene/82_remesh_window_type_signature_demo.py``), and does
 **not** by itself advance G4 = RH.  The diagnostic is a
 *necessary-condition* probe: a non-trivial signature is required,
 but not sufficient, for a continuous-kernel or fractional-order
@@ -10525,7 +10525,7 @@ This pre-registration section, the diagnostic module, and the demo:
   only adds the diagnostic module
   ``src/tnfr/riemann/remesh_window_type_signature.py`` (and its
   export in ``src/tnfr/riemann/__init__.py``) and the demo
-  ``examples/82_remesh_window_type_signature_demo.py``.
+  ``examples/05_type_hygiene/82_remesh_window_type_signature_demo.py``.
 - **Does not** change the canonical
   ``tnfr.operators.remesh.apply_network_remesh``,
   ``REMESH_TAU_LOCAL`` / ``REMESH_TAU_GLOBAL`` defaults, the EPI
@@ -10574,7 +10574,7 @@ This pre-registration section, the diagnostic module, and the demo:
   ``_update_epi_hist`` (canonical EPI history deque populator).
 - ``src/tnfr/riemann/remesh_window_type_signature.py`` —
   diagnostic implementation (added on this commit).
-- ``examples/82_remesh_window_type_signature_demo.py`` — demo
+- ``examples/05_type_hygiene/82_remesh_window_type_signature_demo.py`` — demo
   (added on this commit).
 
 ---
@@ -10821,7 +10821,7 @@ continuous-kernel upgrade of the REMESH memory window?*
 | F7 | Variational principle (Lagrangian, symplectic conjugate pairs). | `physics/variational.py`, AGENTS.md §"Variational Confirmation". | **No** — the Lagrangian and Hamiltonian are evaluated at integer time indices; no fractional derivative appears in :math:`\mathcal{L}_i = T_i - V_i`. |
 | F8 | REMESH temporal aggregation. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py:1212`. | **No** — REMESH samples the history deque at integer offsets via ``hist[-(tau+1)]``; the canonical implementation literally indexes by integer (W1+W2). |
 | F9 | N15 REMESH-∞ closure. | `REMESH_INFINITY_DERIVATION.md` §§1–8. | **No** — the entire N15 derivation is parameterised by integer :math:`\tau_g`; the contractive transfer matrix is integer-indexed; the mean-ergodic limit is taken over integer :math:`\tau_g \to \infty` (W4). |
-| F10 | Classical-limit / quantum-regime demos. | `examples/12_classical_mechanics_demo.py`, `examples/13_quantum_mechanics_demo.py`. | **No** — both regimes emerge from the integer-time-indexed canonical evolution; no demo references a continuous-time kernel or fractional-order temporal coupling. |
+| F10 | Classical-limit / quantum-regime demos. | `examples/02_physics_regimes/12_classical_mechanics_demo.py`, `examples/02_physics_regimes/13_quantum_mechanics_demo.py`. | **No** — both regimes emerge from the integer-time-indexed canonical evolution; no demo references a continuous-time kernel or fractional-order temporal coupling. |
 
 **Result.** No canonical constraint in :math:`\{\mathrm{F1},
 \ldots, \mathrm{F10}\}` forces the continuous-kernel carrier
@@ -11116,7 +11116,7 @@ This sub-programme:
 - `src/tnfr/riemann/remesh_window_type_signature.py` — B4a
   diagnostic implementation (anchors :math:`(F_{\mathrm{int}} =
   1.0, S_\tau = 0)` empirical corroboration of DITS).
-- `examples/82_remesh_window_type_signature_demo.py` —
+- `examples/05_type_hygiene/82_remesh_window_type_signature_demo.py` —
   two-resolution demo (anchors B4a numerical fingerprint).
 
 ---
@@ -11311,7 +11311,7 @@ integer-time discretisation as a structural feature rather than
 an approximation) provided such research is documented as
 off-catalog and does not claim canonical status.  The B4a
 diagnostic module (``src/tnfr/riemann/remesh_window_type_signature.py``)
-and its demo (``examples/82_remesh_window_type_signature_demo.py``)
+and its demo (``examples/05_type_hygiene/82_remesh_window_type_signature_demo.py``)
 are preserved as off-catalog measurement utilities, exactly as
 the B0a, B1a, B2a, and B3a diagnostics were preserved at B0c,
 B1c, B2c, and B3c.
@@ -11486,7 +11486,7 @@ This section:
 - ``src/tnfr/riemann/remesh_window_type_signature.py`` — B4a
   diagnostic implementation (preserved as off-catalog
   measurement utility).
-- ``examples/82_remesh_window_type_signature_demo.py`` — B4a
+- ``examples/05_type_hygiene/82_remesh_window_type_signature_demo.py`` — B4a
   two-resolution demo (preserved as off-catalog measurement
   utility).
 
@@ -11546,7 +11546,7 @@ The B5a diagnostic module [`src/tnfr/riemann/delta_phi_max_type_signature.py`](.
 
 ### §13quadraginta-sexta.4 — Demo: two-resolution probe
 
-Demo at [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py).
+Demo at [`examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py).
 
 - **Resolution 1**: `n_nodes=24`, `n_pair_anchors=9`, `n_offsets_per_anchor=8`, `seed=19` (72 configurations).
 - **Resolution 2**: `n_nodes=48`, `n_pair_anchors=17`, `n_offsets_per_anchor=16`, `seed=29` (272 configurations).
@@ -11613,7 +11613,7 @@ Per the standard B-sub-question methodology (§13triginta-tertia.4, §13triginta
 - [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py) (canonical anchor witness).
 - [`src/tnfr/operators/grammar_dynamics.py:178-193`](../src/tnfr/operators/grammar_dynamics.py) (canonical U3 check).
 - [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) — B5a diagnostic implementation.
-- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) — B5a two-resolution demo.
+- [`examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) — B5a two-resolution demo.
 
 ---
 ## §13quadraginta-septima. Derivation of (P-Delta-phi-max-Non-Scalar-Carrier) from the Canonical Catalog — Foundational Reduction of the T-Delta-phi-max Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
@@ -11738,7 +11738,7 @@ Remaining Tier-2 prediction outstanding: **B6 (T-coupling-weights)** expected NE
 - [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py) (canonical anchor).
 - [`src/tnfr/operators/grammar_dynamics.py:178-193`](../src/tnfr/operators/grammar_dynamics.py) (canonical U3 verdict).
 - [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) (B5a diagnostic).
-- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) (B5a two-resolution demo).
+- [`examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) (B5a two-resolution demo).
 
 ---
 ## §13quadraginta-octava. T-Δφ_max Final NEGATIVE Verdict and Envelope Classification of E6 = EdgeDependentPhaseThreshold (Closes B5; Does NOT Advance G4 = RH)
@@ -11787,7 +11787,7 @@ Following the pattern established at B1c, B2c, B3c, B4c (§13quadraginta-quinta.
 - any canonical U3 consumer site;
 - the U3 verdict signature or its scalar storage convention;
 - the diagnostic at `src/tnfr/riemann/delta_phi_max_type_signature.py` (frozen at B5a);
-- the demo at `examples/83_delta_phi_max_type_signature_demo.py` (frozen at B5a).
+- the demo at `examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py` (frozen at B5a).
 
 The CATALOG anchor-text correction (γ/π → π/2 with rationale) recorded inline at B5a remains the only catalog-level documentation change.
 
@@ -11846,7 +11846,7 @@ L3* status promoted from "empirically robust working heuristic" (B5b, six-CDM co
 - [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B5 (programme status), §4 row B5 (per-Phase verdict matrix).
 - [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py) (canonical anchor `DELTA_PHI_MAX = PI / 2`, unchanged).
 - [`src/tnfr/riemann/delta_phi_max_type_signature.py`](../src/tnfr/riemann/delta_phi_max_type_signature.py) (B5a diagnostic, frozen).
-- [`examples/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) (B5a demo, frozen).
+- [`examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) (B5a demo, frozen).
 
 ---
 ---
@@ -11890,7 +11890,7 @@ All five canonical consumer sites read a single global ``float`` per component n
 
 **Diagnostic module**: `src/tnfr/riemann/coupling_weights_type_signature.py` (frozen at this commit).
 
-**Demo**: `examples/84_coupling_weights_type_signature_demo.py` (frozen at this commit).
+**Demo**: `examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py` (frozen at this commit).
 
 The diagnostic probes canonical mixing-weight reads on two orthogonal axes:
 
@@ -11936,7 +11936,7 @@ If Phase b confirms that SWD refutes the residual axiom, L3* will be validated u
 
 ### §13quadraginta-nona.7 Programme Bookkeeping
 
-- **Theory-only Phase a commit**: this commit adds `src/tnfr/riemann/coupling_weights_type_signature.py` (B6a diagnostic module) and `examples/84_coupling_weights_type_signature_demo.py` (B6a demo), registers them in `src/tnfr/riemann/__init__.py`, and appends §13quadraginta-nona to `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` + TOC row + B6 row to `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §3 status block and §4 row B6 Phase a column. No canonical operator, no canonical anchor, and no canonical consumer site is modified.
+- **Theory-only Phase a commit**: this commit adds `src/tnfr/riemann/coupling_weights_type_signature.py` (B6a diagnostic module) and `examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py` (B6a demo), registers them in `src/tnfr/riemann/__init__.py`, and appends §13quadraginta-nona to `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` + TOC row + B6 row to `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §3 status block and §4 row B6 Phase a column. No canonical operator, no canonical anchor, and no canonical consumer site is modified.
 - **Status**: B6 Phase a ✅ (this commit). Phase b deferred to §13quinquaginta; Phase c deferred to §13quinquaginta-prima.
 - **Programme progress**: 6 sub-questions complete (B0-B5 all NEGATIVE under six orthogonal CDMs); B6 Phase a registered; 5 sub-questions remaining (B7-B11 + Final).
 
@@ -11948,7 +11948,7 @@ If Phase b confirms that SWD refutes the residual axiom, L3* will be validated u
 - [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B6 (programme status), §4 row B6 (per-Phase verdict matrix).
 - [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) (canonical scalar-dict anchors for DNFR/SI/SELECTOR weights; unchanged).
 - [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic, frozen).
-- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
+- [`examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
 
 ---
 ## §13quinquaginta. Derivation of (P-W-Non-Scalar-Retention) from the Canonical Catalog — Foundational Reduction of the T-W (T-coupling-weights) Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
@@ -12077,7 +12077,7 @@ Programme status after B6b: all Tier-2 sub-questions (B4, B5, B6) closed NEGATIV
 - [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) (canonical scalar-dict anchors).
 - [`src/tnfr/dynamics/dnfr.py:307-317`](../src/tnfr/dynamics/dnfr.py), [`src/tnfr/dynamics/selectors.py:136-141`](../src/tnfr/dynamics/selectors.py) (canonical consumer pattern).
 - [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic).
-- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a two-probe demo).
+- [`examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a two-probe demo).
 ---
 ## §13quinquaginta-prima. T-W Final NEGATIVE Verdict and Envelope Classification of E7 = NodeIndexedCouplingWeights (Closes B6; Does NOT Advance G4 = RH)
 
@@ -12125,7 +12125,7 @@ Following the pattern established at B1c, B2c, B3c, B4c, B5c, this Phase-c commi
 - any canonical mixing consumer site;
 - the canonical `merge_and_normalize_weights` helper or its `float` coercion convention;
 - the diagnostic at `src/tnfr/riemann/coupling_weights_type_signature.py` (frozen at B6a);
-- the demo at `examples/84_coupling_weights_type_signature_demo.py` (frozen at B6a).
+- the demo at `examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py` (frozen at B6a).
 
 ### §13quinquaginta-prima.4 Programme Bookkeeping
 
@@ -12180,7 +12180,7 @@ L3* status promoted from "empirically robust working heuristic with structural-o
 - [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B6 (programme status), §4 row B6 (per-Phase verdict matrix).
 - [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) (canonical scalar-dict anchors, unchanged).
 - [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic, frozen).
-- [`examples/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
+- [`examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
 
 ---
 ---
@@ -12224,7 +12224,7 @@ A high S_TC is a *necessary-condition* check: it says only that the canonical te
 
 #### .4 B7a empirical signature (frozen)
 
-Implementation at `src/tnfr/riemann/tetrad_closure_signature.py`; demo at `examples/85_tetrad_closure_signature_demo.py`. Frozen empirical signature on the canonical probe graph:
+Implementation at `src/tnfr/riemann/tetrad_closure_signature.py`; demo at `examples/05_type_hygiene/85_tetrad_closure_signature_demo.py`. Frozen empirical signature on the canonical probe graph:
 
 | Probe | n_nodes | n_input_reads | n_output_reads | S_TC | input_scalar_fraction | output_scalar_fraction | verdict |
 |---|---|---|---|---|---|---|---|
@@ -12248,7 +12248,7 @@ L3* prediction for B7 (per §13quinquaginta-prima.5): the closure question admit
 - `src/tnfr/physics/fields.py` (public façade).
 - `src/tnfr/physics/canonical.py:199,609,640,756` (four canonical tetrad-field implementations).
 - `src/tnfr/riemann/tetrad_closure_signature.py` (B7a diagnostic).
-- `examples/85_tetrad_closure_signature_demo.py` (B7a demo).
+- `examples/05_type_hygiene/85_tetrad_closure_signature_demo.py` (B7a demo).
 ---
 
 ### §13quinquaginta-tertia — B7 = Δ-tetrad-closure: Phase c final verdict
@@ -12309,7 +12309,7 @@ L3* heuristic, post-B7c, is promoted to: **"empirically robust working heuristic
 - `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §3 row B7, §4 row B7.
 - `src/tnfr/physics/canonical.py:199,609,640,756` (four canonical tetrad-field implementations).
 - `src/tnfr/riemann/tetrad_closure_signature.py` (B7a diagnostic).
-- `examples/85_tetrad_closure_signature_demo.py` (B7a demo).
+- `examples/05_type_hygiene/85_tetrad_closure_signature_demo.py` (B7a demo).
 
 ### Sec 13quinquaginta-quarta — B8 Phase a: Currents-Closure Signature diagnostic (T-currents-closure)
 
@@ -12347,7 +12347,7 @@ A zero signature plus unit fractions on both axes is the structurally expected o
 
 #### .4 Frozen empirical signature (B8a)
 
-Demo at `examples/86_currents_closure_signature_demo.py`. Frozen at two canonical probe resolutions:
+Demo at `examples/05_type_hygiene/86_currents_closure_signature_demo.py`. Frozen at two canonical probe resolutions:
 
 | Probe | n_input_reads | n_output_reads | input_scalar_fraction | output_scalar_fraction | S_CC | verdict |
 |---|---|---|---|---|---|---|
@@ -12363,7 +12363,7 @@ Per-key input non-scalar counts: `{theta: 0, DeltaNFR: 0}` on both probes. Per-f
 - `src/tnfr/physics/extended.py:182` (`compute_dnfr_flux`).
 - `src/tnfr/physics/conservation.py:209` (`compute_current_divergence`).
 - `src/tnfr/riemann/currents_closure_signature.py` (B8a diagnostic).
-- `examples/86_currents_closure_signature_demo.py` (B8a demo).
+- `examples/05_type_hygiene/86_currents_closure_signature_demo.py` (B8a demo).
 - Sec 13septies (Conjecture T-HP, G4 = RH; B8 does NOT advance this).
 
 ### Sec 13quinquaginta-quinta — B8 Phase c: NEGATIVE verdict for T-currents-closure, CCC promoted as ninth CDM
@@ -12428,7 +12428,7 @@ L3* heuristic, post-B8c, is promoted to: **"empirically robust working heuristic
 - `src/tnfr/physics/extended.py:182` (`compute_dnfr_flux`).
 - `src/tnfr/physics/conservation.py:209` (`compute_current_divergence`).
 - `src/tnfr/riemann/currents_closure_signature.py` (B8a diagnostic).
-- `examples/86_currents_closure_signature_demo.py` (B8a demo).
+- `examples/05_type_hygiene/86_currents_closure_signature_demo.py` (B8a demo).
 
 ### Sec 13quinquaginta-quinta — B8 Phase c: NEGATIVE verdict for T-currents-closure, CCC promoted as ninth CDM
 
@@ -12492,7 +12492,7 @@ L3* heuristic, post-B8c, is promoted to: **"empirically robust working heuristic
 - `src/tnfr/physics/extended.py:182` (`compute_dnfr_flux`).
 - `src/tnfr/physics/conservation.py:209` (`compute_current_divergence`).
 - `src/tnfr/riemann/currents_closure_signature.py` (B8a diagnostic).
-- `examples/86_currents_closure_signature_demo.py` (B8a demo).
+- `examples/05_type_hygiene/86_currents_closure_signature_demo.py` (B8a demo).
 
 ### Sec 13quinquaginta-sexta — B9 Phase a: Aggregates-Closure Signature diagnostic (T-aggregates-closure)
 
@@ -12527,7 +12527,7 @@ Note on output denominators: the global scalar `C(t)` contributes a single entry
 #### .4 Files
 
 - `src/tnfr/riemann/aggregates_closure_signature.py` (new): `AggregatesClosureSignatureCertificate` + `compute_aggregates_closure_signature`.
-- `examples/87_aggregates_closure_signature_demo.py` (new): two-probe demo (n_nodes = 24, n_nodes = 48; seed = 31).
+- `examples/05_type_hygiene/87_aggregates_closure_signature_demo.py` (new): two-probe demo (n_nodes = 24, n_nodes = 48; seed = 31).
 - `src/tnfr/riemann/__init__.py`: B9a re-exports.
 - `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`: B9 spec block + table row -> IN PROGRESS.
 
@@ -12602,7 +12602,7 @@ L3* heuristic, post-B9c, is promoted to: **"empirically robust working heuristic
 - `src/tnfr/physics/unified.py:136` (`compute_energy_density`).
 - `src/tnfr/physics/unified.py:209` (`compute_topological_charge`).
 - `src/tnfr/riemann/aggregates_closure_signature.py` (B9a diagnostic).
-- `examples/87_aggregates_closure_signature_demo.py` (B9a demo).
+- `examples/05_type_hygiene/87_aggregates_closure_signature_demo.py` (B9a demo).
 
 ---
 
@@ -12652,7 +12652,7 @@ Methodological diagnostic only. Does NOT modify any canonical implementation. Do
 #### .5 Cross-references
 
 - `src/tnfr/riemann/urules_consistency_signature.py` (this module).
-- `examples/88_urules_consistency_signature_demo.py` (probe demo).
+- `examples/05_type_hygiene/88_urules_consistency_signature_demo.py` (probe demo).
 - `src/tnfr/operators/grammar_core.py` (U1-U5 + temporal_ordering rule checkers).
 - `src/tnfr/operators/grammar_u6.py` (U6 rule checker).
 - `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 row B10.
@@ -12712,7 +12712,7 @@ L3* heuristic, post-B10c, is promoted to: **"empirically robust working heuristi
 - `src/tnfr/operators/grammar_core.py` (U1-U5 + temporal_ordering).
 - `src/tnfr/operators/grammar_u6.py` (U6).
 - `src/tnfr/riemann/urules_consistency_signature.py` (Phase a diagnostic).
-- `examples/88_urules_consistency_signature_demo.py` (Phase a demo).
+- `examples/05_type_hygiene/88_urules_consistency_signature_demo.py` (Phase a demo).
 
 ---
 
@@ -12760,7 +12760,7 @@ Methodological diagnostic only. Does NOT modify any canonical implementation. Do
 #### .5 Cross-references
 
 - `src/tnfr/riemann/operator_catalog_discipline_signature.py` (this module).
-- `examples/89_operator_catalog_discipline_signature_demo.py` (probe demo).
+- `examples/05_type_hygiene/89_operator_catalog_discipline_signature_demo.py` (probe demo).
 - `src/tnfr/operators/registry.py` (immutable 13-operator registry).
 - `src/tnfr/operators/introspection.py` (`OPERATOR_METADATA`).
 - `src/tnfr/operators/definitions.py` (`__all__` exports).
@@ -12819,7 +12819,7 @@ L3* heuristic, post-B11c, is promoted to: **"empirically robust working heuristi
 - `src/tnfr/operators/definitions.py` (`__all__`).
 - `src/tnfr/operators/definitions_base.py` (`Operator` base).
 - `src/tnfr/riemann/operator_catalog_discipline_signature.py` (Phase a diagnostic).
-- `examples/89_operator_catalog_discipline_signature_demo.py` (Phase a demo).
+- `examples/05_type_hygiene/89_operator_catalog_discipline_signature_demo.py` (Phase a demo).
 
 ---
 
@@ -12914,7 +12914,7 @@ Does **NOT** advance G4 = RH (Conjecture T-HP, Sec 13septies). The theorem is a 
 - `src/tnfr/operators/grammar_core.py`, `grammar_u6.py`.
 - `src/tnfr/dynamics/`, `src/tnfr/metrics/`, `src/tnfr/physics/`.
 - `src/tnfr/riemann/` (twelve `*_signature.py` diagnostic modules).
-- `examples/79_pontryagin_*.py` ... `examples/89_operator_catalog_discipline_signature_demo.py` (per-phase demos).
+- `examples/79_pontryagin_*.py` ... `examples/05_type_hygiene/89_operator_catalog_discipline_signature_demo.py` (per-phase demos).
 
 
 ## §13sexagesima-tertia. Branch B0★ — Scope-Expansion of Existing TNFR Theory (Pre-registration of a Fourth Branch of the §13septies Trichotomy; Does NOT advance G4 = RH)
