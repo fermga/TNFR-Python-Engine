@@ -725,7 +725,7 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 - Global network stability (fundamental)
 - **Canonical formula**: C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|), derived directly from the nodal equation (equilibrium ΔNFR→0 ∧ dEPI→0 ⟹ C→1). This is the value recorded in `history['C_steps']` each step (`metrics.common.compute_coherence`).
 - C(t) > MIN_BUSINESS_COHERENCE ≈ 0.7506 = strong coherence (e×φ)/(π+e)
-- C(t) < THOL_MIN_COLLECTIVE_COHERENCE = 1/(π+1) ≈ 0.2415 = fragmentation risk (⟺ mean|ΔNFR|+mean|dEPI| = π: total structural pressure reaches the phase-space geometric constant, derived from C=1/(1+X) with X=π)
+- C(t) < THOL_MIN_COLLECTIVE_COHERENCE = 1/(π+1) ≈ 0.2415 = fragmentation risk (⟺ mean|ΔNFR|+mean|dEPI| = π under the primary C=1/(1+X))
 - **CANONICAL**: Primary stability indicator
 - *Auxiliary view*: `compute_global_coherence` = 1 − σ_ΔNFR/ΔNFR_max is a scale-invariant **dispersion** diagnostic (homogeneity of ΔNFR), not the primary C(t).
 
