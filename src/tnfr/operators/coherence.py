@@ -53,7 +53,7 @@ class Coherence(Operator):
         **C(t) Coherence Tracking:**
 
         Captures global/local coherence before & after:
-        - C_global: 1 - (sigma_dnfr / dnfr_max)
+        - C_global: 1 - (sigma_dnfr / max|dnfr|)
         - C_local: neighborhood coherence (radius)
 
         Stored in G.graph['IL_coherence_tracking'].

@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,808 tests across multiple topologies
+- Experimental Validation: 1,812 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -725,7 +725,7 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 - Global network stability (fundamental)
 - **Canonical formula**: C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|), derived directly from the nodal equation (equilibrium ΔNFR→0 ∧ dEPI→0 ⟹ C→1). This is the value recorded in `history['C_steps']` each step (`metrics.common.compute_coherence`).
 - C(t) > MIN_BUSINESS_COHERENCE ≈ 0.7506 = strong coherence (e×φ)/(π+e)
-- C(t) < THOL_MIN_COLLECTIVE_COHERENCE = 1/(π+1) ≈ 0.2415 = fragmentation risk
+- C(t) < THOL_MIN_COLLECTIVE_COHERENCE = 1/(π+1) ≈ 0.2415 = fragmentation risk (⟺ mean|ΔNFR|+mean|dEPI| = π: total structural pressure reaches the phase-space geometric constant, derived from C=1/(1+X) with X=π)
 - **CANONICAL**: Primary stability indicator
 - *Auxiliary view*: `compute_global_coherence` = 1 − σ_ΔNFR/ΔNFR_max is a scale-invariant **dispersion** diagnostic (homogeneity of ΔNFR), not the primary C(t).
 
@@ -775,7 +775,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,808 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,812 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1508,7 +1508,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,808 tests)
+- **TESTING.md**: Test strategy (1,812 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)

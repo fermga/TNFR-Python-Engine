@@ -1739,13 +1739,14 @@ def _aggregate_si(
 def compute_global_coherence(G: TNFRGraph) -> float:
     """Compute the dispersion-based auxiliary coherence (scale-invariant).
 
-    C_disp = 1 - (σ_ΔNFR / ΔNFR_max)
+    C_disp = 1 - (σ_ΔNFR / max|ΔNFR|)
 
     This is an **auxiliary** structural-stability diagnostic that measures how
     *uniformly* reorganization pressure (ΔNFR) is distributed across the
     network. It is invariant under proportional scaling of ΔNFR (both σ and
-    max scale together), which makes it useful as a homogeneity probe but means
-    it does **not** track absolute pressure magnitude.
+    max scale together) and under the global sign of ΔNFR (normalization uses
+    the magnitude scale max|ΔNFR|), which makes it useful as a homogeneity
+    probe but means it does **not** track absolute pressure magnitude.
 
     .. note::
         The **primary** canonical total coherence ``C(t)`` of the engine is
@@ -1774,7 +1775,7 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     how uniformly reorganization pressure is distributed across nodes:
 
     - **σ_ΔNFR**: Standard deviation of ΔNFR values measures dispersion
-    - **ΔNFR_max**: Maximum ΔNFR provides normalization scale
+    - **max|ΔNFR|**: Magnitude scale provides sign-invariant normalization
     - **C(t)**: Higher values indicate more uniform structural state
 
     **Special Cases:**
@@ -1819,13 +1820,15 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     if np is not None:
         dnfr_array = np.array(dnfr_values)
         sigma_dnfr = float(np.std(dnfr_array))
-        dnfr_max = float(np.max(dnfr_array))
+        # Normalize by the magnitude scale max|ΔNFR| so the metric is
+        # invariant to the global sign of structural pressure.
+        dnfr_max = float(np.max(np.abs(dnfr_array)))
     else:
         # Pure Python fallback
         mean_dnfr = sum(dnfr_values) / len(dnfr_values)
         variance = sum((v - mean_dnfr) ** 2 for v in dnfr_values) / len(dnfr_values)
         sigma_dnfr = variance**0.5
-        dnfr_max = max(dnfr_values)
+        dnfr_max = max(abs(v) for v in dnfr_values)
 
     if dnfr_max == 0:
         return 1.0
@@ -1838,10 +1841,11 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     return max(0.0, min(1.0, C_t))
 
 def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
-    """Compute local coherence for node and its neighborhood.
+    """Compute local dispersion-based coherence for a node neighborhood.
 
-    Local coherence applies the same C(t) formula to a neighborhood subgraph:
-    C_local(t) = 1 - (σ_ΔNFR_local / ΔNFR_max_local)
+    Local counterpart of :func:`compute_global_coherence` (the scale-invariant
+    dispersion diagnostic, **not** the primary ``C(t)``):
+    C_local = 1 - (σ_ΔNFR_local / max|ΔNFR|_local)
 
     This measures structural stability within a node's local vicinity, useful
     for identifying coherence gradients and structural weak points in networks.
@@ -1920,13 +1924,14 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
     if np is not None:
         dnfr_array = np.array(dnfr_values)
         sigma_dnfr = float(np.std(dnfr_array))
-        dnfr_max = float(np.max(dnfr_array))
+        # Normalize by max|ΔNFR| (sign-invariant magnitude scale).
+        dnfr_max = float(np.max(np.abs(dnfr_array)))
     else:
         # Pure Python fallback
         mean_dnfr = sum(dnfr_values) / len(dnfr_values)
         variance = sum((v - mean_dnfr) ** 2 for v in dnfr_values) / len(dnfr_values)
         sigma_dnfr = variance**0.5
-        dnfr_max = max(dnfr_values)
+        dnfr_max = max(abs(v) for v in dnfr_values)
 
     if dnfr_max == 0:
         return 1.0
