@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,850 tests across multiple topologies
+- Experimental Validation: 1,857 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -406,6 +406,8 @@ The variational structure is not merely a confirmation — it **is the geometry 
 **Noether's theorem on the substrate**: each continuous symmetry of H_sub generates a conserved charge along the Hamiltonian flow (verified to machine precision). Time translation → H_sub (total energy); the **geometric U(1)** (Ψ → e^{iα}Ψ, the gauge symmetry of [src/tnfr/physics/gauge.py](src/tnfr/physics/gauge.py)) → E_geo = ½Σ|Ψ|² = ½Σ(K_φ² + J_φ²); the **potential U(1)** → E_pot = ½Σ(Φ_s² + J_ΔNFR²). The total splits exactly: H_sub = E_geo + E_pot, so the U(1)×U(1) symmetry refines the single time-translation conservation into two separately-conserved sector charges. The geometric charge coincides with the gauge invariant — Noether's theorem ties the substrate flow to the gauge structure.
 
 **Compatible Hermitian (flat Kähler) structure**: the substrate carries a compatible triple (ω, J, g). The **complex structure** J = −ω satisfies J² = −I and acts as multiplication by i on ζ = q + i·p; the **compatible metric** g(u,v) = ω(u, Jv) = identity is positive-definite, with ω(u,v) = g(Ju,v). Each fiber ℝ⁴ ≅ ℂ² becomes Hermitian, with complex coordinates ζ^A = K_φ + i·J_φ = **Ψ** (geometric sector — exactly the complex field of [src/tnfr/physics/gauge.py](src/tnfr/physics/gauge.py)) and ζ^B = Φ_s + i·J_ΔNFR (potential). So **Ψ is not ad-hoc**: it is the complex coordinate the substrate's J induces — the "i" in Ψ *is* the complex structure J = −ω. H_sub = ½Σ|ζ|² is the Kähler potential, and the flow is the diagonal U(1) phase rotation ζ → e^{−it}ζ (so the geometric Noether charge is its moment map). The structure is **flat** (constant-coefficient): a linear Kähler / Hermitian vector space, not a curved manifold.
+
+**Complete integrability (action–angle)**: because H_sub = ½Σ(K_φ² + J_φ² + Φ_s² + J_ΔNFR²) is a sum of decoupled oscillators — one per conjugate pair — the substrate flow is **completely integrable** (Liouville–Arnold). Each pair gives an **action variable** I = ½|ζ|² (I^A = ½|Ψ|² geometric, I^B = ½|ζ^B|² potential), so a 2N-degree-of-freedom system has 2N independent integrals, pairwise in involution ({I_i, I_j} = 0) and conserved along the flow; the conjugate **angles** θ = arg ζ advance linearly θ(t) = θ(0) − t. The sector action sums recover the Noether charges (Σ I^A = E_geo, Σ I^B = E_pot), so (I_i, θ_i) are global action–angle coordinates in which the harmonic backbone is trivial. The actions are the adiabatic invariants; the 13 operators are canonical transformations that redistribute them. Honest scope: integrability of the **H_sub backbone**, not of the full nonlinear operator dynamics.
 
 **The nodal equation lives here**: ∂EPI/∂t = νf·ΔNFR(t) is the overdamped projection of the Hamiltonian flow on this substrate (with ΔNFR = −∂V/∂EPI). The substrate is the geometric arena the nodal equation already inhabits — emergent, not imposed.
 
@@ -800,7 +802,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,850 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,857 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1537,7 +1539,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,850 tests)
+- **TESTING.md**: Test strategy (1,857 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)

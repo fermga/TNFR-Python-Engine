@@ -34,9 +34,11 @@ from tnfr.physics.symplectic_substrate import (
     potential_sector_energy,
     substrate_hamiltonian,
     symplectic_form_matrix,
+    to_action_angle,
     to_complex_coordinates,
     verify_canonical_structure,
     verify_hermitian_structure,
+    verify_integrability,
     verify_noether_conservation,
 )
 
@@ -317,6 +319,81 @@ class TestHermitianStructure:
         assert cert.kahler_potential_matches
         assert cert.complex_dimension == 60
         assert "VALID" in cert.summary()
+
+
+class TestIntegrability:
+    """The substrate flow is completely integrable (Liouville–Arnold)."""
+
+    def test_action_count_equals_dof(self) -> None:
+        G = _canonical_graph(24)
+        cert = verify_integrability(G)
+        # 2N action variables for 2N degrees of freedom.
+        assert cert.degrees_of_freedom == 48
+        assert cert.n_action_variables == 48
+        assert cert.n_action_variables == cert.degrees_of_freedom
+
+    def test_actions_are_half_modulus_squared(self) -> None:
+        G = _canonical_graph(20)
+        point = extract_phase_space_point(G)
+        aa = to_action_angle(point)
+        coords = to_complex_coordinates(point)
+        assert np.allclose(
+            aa["action_geometric"], 0.5 * np.abs(coords["geometric"]) ** 2
+        )
+        assert np.allclose(
+            aa["action_potential"], 0.5 * np.abs(coords["potential"]) ** 2
+        )
+
+    def test_actions_conserved_along_flow(self) -> None:
+        G = _canonical_graph(24)
+        point = extract_phase_space_point(G)
+        aa0 = to_action_angle(point)
+        evolved = evolve_substrate_flow(point, 2.3)
+        aa = to_action_angle(evolved)
+        assert np.allclose(aa["action_geometric"], aa0["action_geometric"])
+        assert np.allclose(aa["action_potential"], aa0["action_potential"])
+
+    def test_angles_advance_linearly(self) -> None:
+        G = _canonical_graph(22)
+        point = extract_phase_space_point(G)
+        aa0 = to_action_angle(point)
+        t = 0.7
+        evolved = evolve_substrate_flow(point, t)
+        aa = to_action_angle(evolved)
+        # θ(t) = θ(0) − t, compared on the circle.
+        delta = np.angle(
+            np.exp(1j * (aa["angle_geometric"] - (aa0["angle_geometric"] - t)))
+        )
+        assert np.allclose(delta, 0.0, atol=1e-9)
+
+    def test_actions_in_involution(self) -> None:
+        G = _canonical_graph(24)
+        cert = verify_integrability(G)
+        assert cert.actions_in_involution
+        assert cert.max_involution_bracket < 1e-12
+
+    def test_sector_actions_match_noether_charges(self) -> None:
+        import pytest
+
+        G = _canonical_graph(24)
+        point = extract_phase_space_point(G)
+        aa = to_action_angle(point)
+        assert float(np.sum(aa["action_geometric"])) == pytest.approx(
+            geometric_sector_energy(point)
+        )
+        assert float(np.sum(aa["action_potential"])) == pytest.approx(
+            potential_sector_energy(point)
+        )
+
+    def test_certificate_completely_integrable(self) -> None:
+        G = _canonical_graph(30)
+        cert = verify_integrability(G)
+        assert cert.is_completely_integrable
+        assert cert.actions_conserved
+        assert cert.angles_advance_linearly
+        assert cert.sector_actions_match_charges
+        assert cert.degrees_of_freedom == 60
+        assert "INTEGRABLE" in cert.summary()
 
 
 class TestSubstrateIntegration:

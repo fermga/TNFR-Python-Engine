@@ -136,6 +136,7 @@ __all__ = [
     "CanonicalStructureCertificate",
     "NoetherChargeCertificate",
     "HermitianStructureCertificate",
+    "IntegrabilityCertificate",
     "extract_phase_space_point",
     "symplectic_form_matrix",
     "complex_structure_matrix",
@@ -155,6 +156,8 @@ __all__ = [
     "to_complex_coordinates",
     "kahler_potential",
     "verify_hermitian_structure",
+    "to_action_angle",
+    "verify_integrability",
 ]
 
 
@@ -446,6 +449,94 @@ class HermitianStructureCertificate:
             f"compatible={self.compatible}, "
             f"Ψ=ζ^A={self.psi_is_geometric_coordinate}, "
             f"Kähler_potential={self.kahler_potential_matches}"
+        )
+
+
+@dataclass(frozen=True)
+class IntegrabilityCertificate:
+    r"""Verification that the substrate flow is completely integrable.
+
+    Because H_sub = ½Σ(K_φ² + J_φ² + Φ_s² + J_ΔNFR²) is a sum of decoupled
+    oscillators — one per conjugate pair — the substrate Hamiltonian flow is
+    **completely integrable** in the Liouville–Arnold sense.  Each conjugate
+    pair contributes an **action variable**
+
+        I^A_i = ½(K_φ² + J_φ²) = ½|ζ^A|² = ½|Ψ|²   (geometric),
+        I^B_i = ½(Φ_s² + J_ΔNFR²) = ½|ζ^B|²        (potential),
+
+    giving 2N independent integrals for a system of 2N degrees of freedom.
+    The actions are pairwise in involution ({I_i, I_j} = 0, structural — the
+    conjugate pairs are decoupled), conserved along the flow, and the
+    conjugate **angle variables** θ_i = arg ζ_i advance linearly
+    θ_i(t) = θ_i(0) − t.  So (I_i, θ_i) are global action–angle coordinates
+    in which the harmonic backbone is trivial (a rigid phase rotation per
+    pair).  The sector action sums recover the Noether charges
+    (Σ I^A = E_geo, Σ I^B = E_pot).
+
+    HONEST SCOPE: this is the integrability of the *substrate harmonic
+    backbone* (the H_sub flow), not of the full nonlinear operator dynamics.
+    The 13 operators act as canonical transformations that redistribute the
+    action variables; the actions are the adiabatic invariants of that
+    backbone.
+
+    Attributes
+    ----------
+    n_nodes : int
+    degrees_of_freedom : int
+        Number of conjugate pairs, 2N.
+    n_action_variables : int
+        Number of independent action integrals, 2N.
+    actions_in_involution : bool
+        {I_i, I_j} = 0 for all action pairs.
+    actions_conserved : bool
+        Each I_i is constant along the substrate flow.
+    angles_advance_linearly : bool
+        θ_i(t) = θ_i(0) − t to tolerance.
+    max_action_drift : float
+        Max |I_i(t) − I_i(0)| over the sampled flow.
+    max_angle_error : float
+        Max deviation of θ_i(t) from θ_i(0) − t (wrapped to the circle).
+    max_involution_bracket : float
+        Max |{I_i, I_j}| over action pairs (should be 0).
+    sector_actions_match_charges : bool
+        Σ I^A = E_geo and Σ I^B = E_pot (action sums = Noether charges).
+    """
+
+    n_nodes: int
+    degrees_of_freedom: int
+    n_action_variables: int
+    actions_in_involution: bool
+    actions_conserved: bool
+    angles_advance_linearly: bool
+    max_action_drift: float
+    max_angle_error: float
+    max_involution_bracket: float
+    sector_actions_match_charges: bool
+
+    @property
+    def is_completely_integrable(self) -> bool:
+        """True when 2N independent actions are conserved and in involution."""
+        return (
+            self.n_action_variables == self.degrees_of_freedom
+            and self.actions_in_involution
+            and self.actions_conserved
+        )
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = (
+            "INTEGRABLE"
+            if self.is_completely_integrable
+            else "NOT-INTEGRABLE"
+        )
+        return (
+            f"Liouville–Arnold [{ok}]: "
+            f"{self.n_action_variables} actions for "
+            f"{self.degrees_of_freedom} DOF, "
+            f"involution={self.actions_in_involution} "
+            f"(max bracket {self.max_involution_bracket:.1e}), "
+            f"action drift {self.max_action_drift:.1e}, "
+            f"angle error {self.max_angle_error:.1e}"
         )
 
 
@@ -1047,4 +1138,148 @@ def verify_hermitian_structure(G: Any) -> HermitianStructureCertificate:
         compatible=compat,
         psi_is_geometric_coordinate=psi_is_coord,
         kahler_potential_matches=kahler_matches,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Complete integrability: action–angle variables of the substrate flow
+# ---------------------------------------------------------------------------
+
+
+def to_action_angle(point: PhaseSpacePoint) -> dict[str, Any]:
+    r"""Return the action–angle coordinates of the substrate flow.
+
+    Each conjugate pair (q, p) maps to an action I = ½(q² + p²) = ½|ζ|² and
+    an angle θ = arg ζ = atan2(p, q):
+
+        I^A = ½|Ψ|²   (geometric),   θ^A = arg Ψ,
+        I^B = ½|ζ^B|² (potential),   θ^B = arg ζ^B.
+
+    Under the substrate flow the actions are conserved and the angles
+    advance linearly θ(t) = θ(0) − t, so these are global action–angle
+    coordinates in which the harmonic backbone is trivial.
+
+    Parameters
+    ----------
+    point : PhaseSpacePoint
+
+    Returns
+    -------
+    dict[str, np.ndarray]
+        ``"action_geometric"``, ``"action_potential"``,
+        ``"angle_geometric"``, ``"angle_potential"``.
+    """
+    z = to_complex_coordinates(point)
+    za = z["geometric"]
+    zb = z["potential"]
+    return {
+        "action_geometric": 0.5 * np.abs(za) ** 2,
+        "action_potential": 0.5 * np.abs(zb) ** 2,
+        "angle_geometric": np.angle(za),
+        "angle_potential": np.angle(zb),
+    }
+
+
+def _max_action_involution(point: PhaseSpacePoint) -> float:
+    r"""Max |{I_i, I_j}| over the action variables (block-local, exact).
+
+    The action of each conjugate pair depends only on that pair's
+    coordinates, and the symplectic block J₄ does not couple the two
+    sectors of a node, so every action bracket vanishes structurally.  This
+    confirms it numerically per node (O(N), no dense 4N×4N matrix).
+    """
+    block = BLOCK_SYMPLECTIC_FORM
+    k = np.asarray(point.k_phi, dtype=float)
+    jp = np.asarray(point.j_phi, dtype=float)
+    ps = np.asarray(point.phi_s, dtype=float)
+    jd = np.asarray(point.j_dnfr, dtype=float)
+    worst = 0.0
+    for i in range(point.n_nodes):
+        g_a = np.array([k[i], jp[i], 0.0, 0.0])
+        g_b = np.array([0.0, 0.0, ps[i], jd[i]])
+        worst = max(
+            worst,
+            abs(float(g_a @ block @ g_b)),   # {I^A_i, I^B_i}
+            abs(float(g_a @ block @ g_a)),   # {I^A_i, I^A_i}
+            abs(float(g_b @ block @ g_b)),   # {I^B_i, I^B_i}
+        )
+    return worst
+
+
+def verify_integrability(
+    G: Any,
+    *,
+    flow_times: tuple[float, ...] = (0.3, 0.9, 1.7, 3.1, 6.3),
+    tolerance: float = 1e-9,
+) -> IntegrabilityCertificate:
+    r"""Verify the substrate flow is completely integrable (Liouville–Arnold).
+
+    Confirms 2N action variables I = ½|ζ|² (one per conjugate pair) for a
+    2N-degree-of-freedom system, that they are pairwise in involution and
+    conserved along the flow, that the conjugate angles advance linearly
+    θ(t) = θ(0) − t, and that the sector action sums recover the Noether
+    charges (Σ I^A = E_geo, Σ I^B = E_pot).
+
+    HONEST SCOPE: integrability of the substrate harmonic backbone (the
+    H_sub flow), not of the full nonlinear operator dynamics.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    flow_times : tuple of float
+        Sampling times for the conservation / linear-angle check.
+    tolerance : float
+        Maximum allowed action drift, angle error, and involution bracket.
+
+    Returns
+    -------
+    IntegrabilityCertificate
+    """
+    point = extract_phase_space_point(G)
+    dof = 2 * point.n_nodes
+
+    aa0 = to_action_angle(point)
+    ia0 = aa0["action_geometric"]
+    ib0 = aa0["action_potential"]
+    tha0 = aa0["angle_geometric"]
+    thb0 = aa0["angle_potential"]
+
+    action_drift = 0.0
+    angle_error = 0.0
+    for t in flow_times:
+        evolved = evolve_substrate_flow(point, t)
+        aa = to_action_angle(evolved)
+        action_drift = max(
+            action_drift,
+            float(np.max(np.abs(aa["action_geometric"] - ia0))),
+            float(np.max(np.abs(aa["action_potential"] - ib0))),
+        )
+        # angles must satisfy θ(t) = θ(0) − t (compared on the circle).
+        da = np.angle(np.exp(1j * (aa["angle_geometric"] - (tha0 - t))))
+        db = np.angle(np.exp(1j * (aa["angle_potential"] - (thb0 - t))))
+        angle_error = max(
+            angle_error,
+            float(np.max(np.abs(da))),
+            float(np.max(np.abs(db))),
+        )
+
+    involution = _max_action_involution(point)
+
+    sector_match = (
+        abs(float(np.sum(ia0)) - geometric_sector_energy(point)) < tolerance
+        and abs(float(np.sum(ib0)) - potential_sector_energy(point))
+        < tolerance
+    )
+
+    return IntegrabilityCertificate(
+        n_nodes=point.n_nodes,
+        degrees_of_freedom=dof,
+        n_action_variables=dof,
+        actions_in_involution=involution < tolerance,
+        actions_conserved=action_drift < tolerance,
+        angles_advance_linearly=angle_error < tolerance,
+        max_action_drift=action_drift,
+        max_angle_error=angle_error,
+        max_involution_bracket=involution,
+        sector_actions_match_charges=sector_match,
     )

@@ -75,6 +75,7 @@ from tnfr.physics.symplectic_substrate import (
     verify_noether_conservation,
     noether_charges,
     verify_hermitian_structure,
+    verify_integrability,
 )
 
 
@@ -281,6 +282,49 @@ def experiment_5_hermitian_structure():
     print()
 
 
+# ============================================================================
+# EXPERIMENT 6: Complete integrability — action–angle variables (Liouville)
+# ============================================================================
+def experiment_6_integrability():
+    """The substrate flow is completely integrable; actions are ½|ζ|²."""
+    print("=" * 72)
+    print("EXPERIMENT 6: Complete Integrability (Liouville–Arnold)")
+    print("=" * 72)
+    print()
+    print("H_sub = ½Σ(K_φ² + J_φ² + Φ_s² + J_ΔNFR²) is a sum of decoupled")
+    print("oscillators — one per conjugate pair. So each pair contributes an")
+    print("action I = ½|ζ|², giving 2N integrals for a 2N-DOF system: the")
+    print("flow is completely integrable, with action–angle coordinates")
+    print("(I_i, θ_i) in which it is a rigid phase rotation θ → θ − t.")
+    print()
+
+    G = _build_graph(30)
+    cert = verify_integrability(G)
+
+    print(f"  degrees of freedom (2N)        : {cert.degrees_of_freedom}")
+    print(f"  independent action variables   : {cert.n_action_variables}")
+    print(f"  actions in involution {{I,J}}=0  : "
+          f"{cert.actions_in_involution} "
+          f"(max |bracket| {cert.max_involution_bracket:.1e})")
+    print(f"  actions conserved along flow   : {cert.actions_conserved} "
+          f"(max drift {cert.max_action_drift:.1e})")
+    print(f"  angles advance θ(t) = θ(0) − t : "
+          f"{cert.angles_advance_linearly} "
+          f"(max err {cert.max_angle_error:.1e})")
+    print(f"  Σ I^A = E_geo,  Σ I^B = E_pot   : "
+          f"{cert.sector_actions_match_charges}")
+    print()
+    print(f"  COMPLETELY INTEGRABLE: {cert.is_completely_integrable}")
+    print()
+    print("VALIDATED: the per-node moduli ½|ζ|² are the action variables /")
+    print("adiabatic invariants of the substrate harmonic backbone, and the")
+    print("U(1) phases θ = arg ζ are their conjugate angles. The 13 operators")
+    print("act as canonical transformations that redistribute these actions.")
+    print("HONEST SCOPE: this is the integrability of the H_sub backbone, not")
+    print("of the full nonlinear operator dynamics.")
+    print()
+
+
 def main():
     print()
     print("  TNFR Example 98: The Emergent Symplectic Substrate")
@@ -293,6 +337,7 @@ def main():
     experiment_3_liouville_structural()
     experiment_4_noether_charges()
     experiment_5_hermitian_structure()
+    experiment_6_integrability()
 
     print("=" * 72)
     print("WHAT THIS ESTABLISHES")
@@ -304,6 +349,7 @@ def main():
     print("  • the 13 operators are symplectomorphisms (Liouville, Exp. 3),")
     print("  • symmetries generate conserved charges (Noether, Exp. 4),")
     print("  • Ψ is the complex coordinate of a Hermitian structure (Exp. 5),")
+    print("  • the flow is completely integrable (action–angle, Exp. 6),")
     print("  • the nodal equation is the overdamped Hamiltonian flow.")
     print()
     print("This substrate is EMERGENT (derived from the conservation laws),")
