@@ -49,7 +49,7 @@ Definition (α = 2 by default):
 - Safety criterion (telemetry-based): ΔΦ_s < φ ≈ 1.618 (golden-ratio confinement); theoretical ceiling 2.0 = e^ln(2) (binary escape)
 - Implementation: `compute_structural_potential(G, alpha=2.0)`
 
-**Linear response**: Perturbation analysis confirms |r| = 1.000 (Pearson correlation) between DNFR changes and Phi_s response, validating its 0th-order position in the operator-derivative tower. See [example 39](../examples/39_nodal_equation_decomposition.py).
+**Linear response**: Perturbation analysis confirms |r| = 1.000 (Pearson correlation) between DNFR changes and Phi_s response, validating its 0th-order position in the operator-derivative tower. See [example 39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py).
 
 ### 2.2 Phase Gradient |∇φ| (Local stress)
 
@@ -241,7 +241,7 @@ Q12. Can I extend these fields or add new ones?
 - Yes, but only with physics-first justification. Derive from the nodal equation, preserve invariants, map to operators where applicable, and add tests and documentation. Experimental fields must be clearly labeled non-canonical until validated.
 
 Q13. How do individual operators affect the tetrad?
-- Each operator produces a unique fingerprint across (Phi_s, |grad_phi|, K_phi, xi_C). Coupling (UM) modifies all four fields (strongest Phi_s at -73.7%); Silence (SHA) is tetrad-neutral; Coherence (IL) and Dissonance (OZ) share identical perturbation magnitudes despite opposite physics (IL-OZ symmetry). The complete causal chain is: Operator -> (vf, DNFR) -> dEPI/dt -> Tetrad -> (E, Q). See [STRUCTURAL_OPERATORS.md S17](../theory/STRUCTURAL_OPERATORS.md) and [example 37](../examples/37_operator_tetrad_synergy.py).
+- Each operator produces a unique fingerprint across (Phi_s, |grad_phi|, K_phi, xi_C). Coupling (UM) modifies all four fields (strongest Phi_s at -73.7%); Silence (SHA) is tetrad-neutral; Coherence (IL) and Dissonance (OZ) share identical perturbation magnitudes despite opposite physics (IL-OZ symmetry). The complete causal chain is: Operator -> (vf, DNFR) -> dEPI/dt -> Tetrad -> (E, Q). See [STRUCTURAL_OPERATORS.md S17](../theory/STRUCTURAL_OPERATORS.md) and [example 37](../examples/02_physics_regimes/37_operator_tetrad_synergy.py).
 
 ---
 

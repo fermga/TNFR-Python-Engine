@@ -4,9 +4,8 @@
 
 Active.  This document describes a completed, reproducible TNFR programme for
 **structural-interface analysis** on real graph and time-series data.  It
-consolidates the work planned in
-[STRUCTURAL_INTERFACE_THEORY_PLAN.md](STRUCTURAL_INTERFACE_THEORY_PLAN.md) and
-reports the validated results, including the cases where classical baselines win.
+consolidates the earlier planning work and reports the validated results,
+including the cases where classical baselines win.
 
 This is an **operational framework**, not a new fundamental physical law.  It
 reuses the existing TNFR Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) and the
@@ -215,10 +214,10 @@ data) and skip gracefully when an online dataset is unreachable.  Set
 ### Try it (offline, deterministic)
 
 ```bash
-python examples/93_structural_interface_demo.py
+python examples/10_applications/93_structural_interface_demo.py
 ```
 
-[examples/93_structural_interface_demo.py](../examples/93_structural_interface_demo.py)
+[examples/10_applications/93_structural_interface_demo.py](../examples/10_applications/93_structural_interface_demo.py)
 runs the static-spatial pipeline on a synthetic two-cluster graph and a
 synthetic multi-channel regime switch, printing the honest baseline comparison
 and a grammar-valid prescription.
@@ -297,7 +296,6 @@ Reports are written to `results/reports/` as JSON, Markdown, and HTML.
 
 ## References
 
-- Planning roadmap: [STRUCTURAL_INTERFACE_THEORY_PLAN.md](STRUCTURAL_INTERFACE_THEORY_PLAN.md)
 - Field definitions: [STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md)
 - Grammar derivations: [grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md)
 - Primary theory: [AGENTS.md](../AGENTS.md)

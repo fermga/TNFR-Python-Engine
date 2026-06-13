@@ -846,9 +846,9 @@ All new operators must pass:
 ## 📚 Related Documentation
 
 - **[AGENTS.md](../AGENTS.md)**: Complete TNFR theory and canonical invariants
-- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)**: Grammar validation error solutions
+- **[grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md)**: U1–U6 grammar derivations
 - **[CANONICAL_OZ_SEQUENCES.md](CANONICAL_OZ_SEQUENCES.md)**: Dissonance-based patterns
-- **[examples/04_operator_sequences.py](../examples/04_operator_sequences.py)**: Live operator examples
+- **[examples/01_foundations/04_operator_sequences.py](../examples/01_foundations/04_operator_sequences.py)**: Live operator examples
 - **[src/tnfr/operators/](../src/tnfr/operators/)**: Implementation source code
 4. **Maintain TYPE_CHECKING Guards**: For forward references without runtime cycles
 5. **Continue Modular Design**: New utilities should follow same layered approach
