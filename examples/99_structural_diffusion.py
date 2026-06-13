@@ -53,6 +53,7 @@ from tnfr.physics.structural_diffusion import (
     verify_discrete_modes,
     verify_structural_stability,
     verify_structural_random_walk,
+    verify_structural_flow,
     structural_diffusion_operator,
     structural_field,
     structural_eigenmodes,
@@ -62,6 +63,8 @@ from tnfr.physics.structural_diffusion import (
     fiedler_partition,
     effective_resistance,
     commute_time,
+    structural_current,
+    current_divergence,
     relaxation_spectrum,
     degree_weighted_total,
 )
@@ -288,6 +291,43 @@ def experiment_7_random_walk():
     print()
 
 
+def experiment_8_structural_flow():
+    """The diffusion current: Fick, Kirchhoff (continuity), and Ohm."""
+    print("=" * 72)
+    print("EXPERIMENT 8: The structural flow — current, Kirchhoff, Ohm")
+    print("=" * 72)
+    print()
+    print("The transport carries a current: along each edge the diffusion")
+    print("flux is J_ij = EPI_i − EPI_j (Fick's law, antisymmetric). The net")
+    print("outflow at a node is Kirchhoff's current law — the discrete")
+    print("continuity equation div(J) = L·EPI — so ∂EPI/∂t + div(J) = 0.")
+    print("Under an injected current the potential drop is the effective")
+    print("resistance (Ohm's law). All empirically demonstrated (Fick,")
+    print("Kirchhoff 1845, Ohm).")
+    print()
+
+    G = nx.watts_strogatz_graph(50, 6, 0.2, seed=7)
+    rng = np.random.default_rng(7)
+    for node in G.nodes():
+        G.nodes[node]["EPI"] = float(rng.uniform(-0.4, 0.4))
+    cert = verify_structural_flow(G)
+    print(cert.summary())
+    print()
+    nodes, j = structural_current(G)
+    _, div = current_divergence(G)
+    print(f"  current is antisymmetric (J = −Jᵀ): max|J+Jᵀ| "
+          f"= {float(np.max(np.abs(j + j.T))):.1e}")
+    print(f"  Kirchhoff continuity Σ div(J) = 0 (closed network): "
+          f"{float(div.sum()):.1e}")
+    print()
+    print("VALIDATED: the structural flow is the diffusion current. Its edge")
+    print("current is Fick's law; Kirchhoff's current law IS the continuity")
+    print("equation div(J) = L·EPI (complementary to the tetrad-field")
+    print("continuity in conservation.py); the potential drop under an")
+    print("injected current is the effective resistance (Ohm).")
+    print()
+
+
 def main():
     print()
     print("  TNFR Example 99: Structural Diffusion")
@@ -302,6 +342,7 @@ def main():
     experiment_5_discrete_modes()
     experiment_6_structural_stability()
     experiment_7_random_walk()
+    experiment_8_structural_flow()
 
     print("=" * 72)
     print("WHAT THIS ESTABLISHES")
@@ -322,6 +363,8 @@ def main():
     print("    r_c=νf·λ₂ the Fiedler mode grows (structural pattern / U2);")
     print("  • the operator generates a random walk (Brownian motion); its")
     print("    resistance geometry is a transport metric (Ohm/Kirchhoff).")
+    print("  • the transport carries a Fick current whose Kirchhoff balance")
+    print("    is the continuity equation div(J)=L·EPI (Ohm under injection).")
     print()
     print("These are reproduced as the SAME mathematics as the empirically-")
     print("demonstrated phenomena of diffusion, synchronization, mobility,")

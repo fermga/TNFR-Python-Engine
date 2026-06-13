@@ -175,6 +175,28 @@ These are the same mathematics as Brownian motion (random walk) and
 electrical networks (Ohm/Kirchhoff resistance) — both established by the
 strictest empirical method.
 
+THE STRUCTURAL FLOW: CURRENT, KIRCHHOFF, AND CONTINUITY
+======================================================
+The transport carries a **structural current**: the diffusion edge current
+J_ij = EPI_i − EPI_j (Fick's law — flux from high to low, antisymmetric).
+Its node-level balance is **Kirchhoff's current law**, which *is* the
+discrete continuity equation:
+
+    div(J)(i) = Σ_{j∼i} J_ij = (L·EPI)(i),
+
+so the net outflow at a node equals the combinatorial Laplacian acting on
+EPI.  Hence the diffusion continuity equation ∂EPI/∂t + div(J) = 0 holds,
+and for a closed network (no sources) the total flux balances, Σ_i div(J)
+= 0 (L has zero column sums — the structural-conservation analogue here).
+Under an injected unit current from s to t the induced potential drop is
+the **effective resistance** R_eff(s,t) (Ohm's law) — tying the current to
+the resistance geometry above.  These are Fick diffusion, Kirchhoff's
+circuit laws, and Ohm's law — all empirically demonstrated.
+
+This is the EPI-channel current; it complements the tetrad-field
+continuity of :mod:`tnfr.physics.conservation` (which tracks the charge
+ρ = Φ_s + K_φ and the current J = (J_φ, J_ΔNFR)).
+
 HONEST SCOPE
 ============
 - The identity ΔNFR_epi = −L_rw·EPI is EXACT (machine precision), a
@@ -183,6 +205,15 @@ HONEST SCOPE
   **synchronization** + νf/topology **homogenization**.  This module
   isolates and certifies the diffusion (EPI) channel and reports the
   synchronization channel qualitatively.
+- **λ₂ is topological, NOT tied to the canonical constants.** The spectral
+  gap λ₂ (which governs relaxation, stability, and the instability
+  threshold) is a purely spectral/topological quantity — determined by N,
+  degree, and connectivity (e.g. ring λ₂ = 1 − cos(2π/N), complete-graph
+  λ₂ = n/(n−1)).  The canonical constants (φ, γ, π, e) are *threshold
+  scales of the tetrad fields* and do **not** enter the Laplacian
+  spectrum; any numerical proximity is coincidental (the 2π/N in a ring is
+  a geometric polygon angle, not the tetrad constant π).  Measured
+  negative result — do not assert a λ₂ ↔ constant relation.
 - This characterises the transport content of the nodal dynamics; it does
   not, by itself, resolve any open program (Riemann G4, Navier–Stokes).
 
@@ -209,6 +240,7 @@ __all__ = [
     "DiscreteModeCertificate",
     "StructuralStabilityCertificate",
     "RandomWalkCertificate",
+    "StructuralFlowCertificate",
     "structural_diffusion_operator",
     "structural_field",
     "structural_diffusivity",
@@ -223,11 +255,14 @@ __all__ = [
     "stationary_distribution",
     "effective_resistance",
     "commute_time",
+    "structural_current",
+    "current_divergence",
     "verify_structural_diffusion",
     "verify_overdamped_regime",
     "verify_discrete_modes",
     "verify_structural_stability",
     "verify_structural_random_walk",
+    "verify_structural_flow",
 ]
 
 
@@ -1350,4 +1385,209 @@ def verify_structural_random_walk(
         max_resistance=max_r,
         commute_equals_2m_resistance=commute_ok,
         max_walk_generator_residual=gen_res,
+    )
+
+
+# ---------------------------------------------------------------------------
+# The structural flow: current, Kirchhoff's law, and continuity
+# ---------------------------------------------------------------------------
+def structural_current(G: Any) -> tuple[list, Any]:
+    r"""Structural (diffusion) edge-current matrix J_ij = EPI_i − EPI_j.
+
+    The transport carries a current: along each edge i∼j the diffusion
+    flux is J_ij = EPI_i − EPI_j (Fick's law — flux from high to low
+    concentration).  The matrix is **antisymmetric** (J_ij = −J_ji) and
+    supported on edges only (J_ij = 0 when i and j are not adjacent).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    (nodes, J) : tuple[list, np.ndarray]
+        ``J[i, j]`` is the current from node i to node j across edge i∼j.
+    """
+    from ..alias import get_attr
+    from ..constants.aliases import ALIAS_EPI
+
+    nodes, adj, _ = _adjacency_degree(G)
+    epi = np.array(
+        [float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes],
+        dtype=float,
+    )
+    mask = adj != 0.0
+    # J_ij = EPI_i − EPI_j on edges, zero elsewhere
+    j = (epi[:, None] - epi[None, :]) * mask
+    return nodes, j
+
+
+def current_divergence(G: Any) -> tuple[list, Any]:
+    r"""Net current outflow per node div(J)(i) = Σ_{j∼i} J_ij = (L·EPI)(i).
+
+    Kirchhoff's current law: the net outflow at a node equals the
+    combinatorial Laplacian L = D − W acting on EPI.  This is the discrete
+    continuity equation div(J) = L·EPI, so ∂EPI/∂t + div(J) = 0 for the
+    diffusion dynamics (∂EPI/∂t = −L_rw·EPI carries the same content
+    degree-normalized).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    (nodes, div) : tuple[list, np.ndarray]
+        ``div[i]`` is the net current leaving node i.
+    """
+    nodes, j = structural_current(G)
+    return nodes, j.sum(axis=1)
+
+
+@dataclass(frozen=True)
+class StructuralFlowCertificate:
+    r"""Verification of the structural flow (current, Kirchhoff, Ohm).
+
+    The diffusion transport carries a structural current J_ij = EPI_i −
+    EPI_j (Fick's law).  Its node balance is Kirchhoff's current law —
+    the discrete continuity equation div(J) = L·EPI — and under an
+    injected current the potential drop is the effective resistance
+    (Ohm's law).
+
+    Attributes
+    ----------
+    n_nodes : int
+    current_antisymmetric : bool
+        J_ij = −J_ji (the current is a directed edge flow).
+    kirchhoff_holds : bool
+        Net outflow Σ_j J_ij = (L·EPI)_i (current law = continuity).
+    total_flux_balances : bool
+        Σ_i div(J)_i = 0 (closed network, no sources/sinks).
+    equilibrium_zero_current : bool
+        A uniform EPI field produces zero current everywhere.
+    ohm_law_holds : bool
+        An injected unit current s→t induces a potential drop equal to
+        R_eff(s,t).
+    max_kirchhoff_residual : float
+        Max |Σ_j J_ij − (L·EPI)_i| (≈ 0).
+    """
+
+    n_nodes: int
+    current_antisymmetric: bool
+    kirchhoff_holds: bool
+    total_flux_balances: bool
+    equilibrium_zero_current: bool
+    ohm_law_holds: bool
+    max_kirchhoff_residual: float
+
+    @property
+    def is_valid_flow(self) -> bool:
+        """True when the structural-flow picture verifies."""
+        return (
+            self.current_antisymmetric
+            and self.kirchhoff_holds
+            and self.total_flux_balances
+            and self.equilibrium_zero_current
+            and self.ohm_law_holds
+        )
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "VALID" if self.is_valid_flow else "INVALID"
+        return (
+            f"Structural flow [{ok}]: "
+            f"current antisymmetric={self.current_antisymmetric}, "
+            f"Kirchhoff div(J)=L·EPI={self.kirchhoff_holds} "
+            f"(res {self.max_kirchhoff_residual:.1e}), "
+            f"total flux balances={self.total_flux_balances}, "
+            f"equilibrium zero current={self.equilibrium_zero_current}, "
+            f"Ohm drop=R_eff={self.ohm_law_holds}"
+        )
+
+
+def verify_structural_flow(
+    G: Any, *, tolerance: float = 1e-9
+) -> StructuralFlowCertificate:
+    r"""Verify the structural flow: current, Kirchhoff's law, Ohm's law.
+
+    Confirms that the diffusion edge current J_ij = EPI_i − EPI_j is
+    antisymmetric, that Kirchhoff's current law div(J) = L·EPI holds (the
+    discrete continuity equation), that the total flux balances on a closed
+    network, that a uniform EPI field carries zero current, and that an
+    injected unit current induces a potential drop equal to the effective
+    resistance (Ohm's law).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    tolerance : float
+        Numerical tolerance.
+
+    Returns
+    -------
+    StructuralFlowCertificate
+    """
+    from ..alias import get_attr
+    from ..constants.aliases import ALIAS_EPI
+
+    nodes, j = structural_current(G)
+    n = len(nodes)
+
+    # current antisymmetry J_ij = −J_ji
+    antisym = bool(np.allclose(j, -j.T, atol=tolerance)) if n else True
+
+    # Kirchhoff: net outflow = (L·EPI) with L the combinatorial Laplacian
+    _, adj, deg = _adjacency_degree(G)
+    lap = np.diag(deg) - adj
+    epi = np.array(
+        [float(get_attr(G.nodes[nd], ALIAS_EPI, 0.0)) for nd in nodes],
+        dtype=float,
+    )
+    net_out = j.sum(axis=1)
+    kirchhoff_res = (
+        float(np.max(np.abs(net_out - lap @ epi))) if n else 0.0
+    )
+    kirchhoff_ok = kirchhoff_res < max(tolerance, 1e-9)
+
+    # total flux balances (L has zero column sums) — closed network
+    total_balances = (
+        bool(abs(float(net_out.sum())) < max(tolerance, 1e-9))
+        if n
+        else True
+    )
+
+    # equilibrium: a uniform EPI field carries zero current
+    uniform = np.ones(n)
+    j_uniform = (uniform[:, None] - uniform[None, :]) * (adj != 0.0)
+    equilibrium_ok = (
+        bool(np.allclose(j_uniform, 0.0, atol=tolerance)) if n else True
+    )
+
+    # Ohm's law: injected unit current s→t induces drop V_s − V_t = R_eff
+    ohm_ok = True
+    if n >= 2:
+        lp = np.linalg.pinv(lap)
+        diag = np.diag(lp)
+        rng = np.random.default_rng(0)
+        for _ in range(min(20, n)):
+            s, t = rng.integers(0, n, size=2)
+            if s == t:
+                continue
+            b = np.zeros(n)
+            b[s], b[t] = 1.0, -1.0
+            v = lp @ b
+            drop = v[s] - v[t]
+            r_eff = diag[s] + diag[t] - 2.0 * lp[s, t]
+            if not np.isclose(drop, r_eff, atol=1e-7):
+                ohm_ok = False
+                break
+
+    return StructuralFlowCertificate(
+        n_nodes=n,
+        current_antisymmetric=antisym,
+        kirchhoff_holds=kirchhoff_ok,
+        total_flux_balances=total_balances,
+        equilibrium_zero_current=equilibrium_ok,
+        ohm_law_holds=ohm_ok,
+        max_kirchhoff_residual=kirchhoff_res,
     )

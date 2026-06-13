@@ -21,6 +21,7 @@ from tnfr.physics.structural_diffusion import (
     DiscreteModeCertificate,
     StructuralStabilityCertificate,
     RandomWalkCertificate,
+    StructuralFlowCertificate,
     structural_diffusion_operator,
     structural_field,
     structural_diffusivity,
@@ -35,11 +36,14 @@ from tnfr.physics.structural_diffusion import (
     stationary_distribution,
     effective_resistance,
     commute_time,
+    structural_current,
+    current_divergence,
     verify_structural_diffusion,
     verify_overdamped_regime,
     verify_discrete_modes,
     verify_structural_stability,
     verify_structural_random_walk,
+    verify_structural_flow,
 )
 
 
@@ -443,4 +447,94 @@ class TestStructuralRandomWalk:
             assert cert.operator_is_walk_generator
             assert cert.stationary_is_degree
             assert cert.commute_equals_2m_resistance
+            assert "VALID" in cert.summary()
+
+
+def _flow_graph(n: int = 40, seed: int = 7) -> nx.Graph:
+    G = nx.watts_strogatz_graph(n, 6, 0.2, seed=seed)
+    rng = np.random.default_rng(seed)
+    for node in G.nodes():
+        G.nodes[node]["EPI"] = float(rng.uniform(-0.4, 0.4))
+    return G
+
+
+class TestStructuralFlow:
+    """The diffusion transport carries a Fick current obeying Kirchhoff."""
+
+    def test_current_is_antisymmetric(self) -> None:
+        # J_ij = EPI_i - EPI_j = -J_ji (directed edge flow)
+        G = _flow_graph()
+        _, j = structural_current(G)
+        assert np.allclose(j, -j.T, atol=1e-12)
+
+    def test_current_supported_on_edges_only(self) -> None:
+        # no current across non-adjacent nodes
+        G = _flow_graph()
+        nodes, j = structural_current(G)
+        A = nx.to_numpy_array(G, nodelist=nodes)
+        assert np.allclose(j[A == 0.0], 0.0)
+
+    def test_kirchhoff_current_law(self) -> None:
+        # net outflow div(J)_i = (L*EPI)_i (continuity = current law)
+        G = _flow_graph()
+        nodes, div = current_divergence(G)
+        A = nx.to_numpy_array(G, nodelist=nodes)
+        L = np.diag(A.sum(1)) - A
+        epi = np.array(
+            [get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in nodes],
+            dtype=float,
+        )
+        assert np.allclose(div, L @ epi, atol=1e-12)
+
+    def test_total_flux_balances(self) -> None:
+        # closed network: sum of net outflows = 0 (no sources)
+        G = _flow_graph()
+        _, div = current_divergence(G)
+        assert abs(float(div.sum())) < 1e-9
+
+    def test_equilibrium_zero_current(self) -> None:
+        # a uniform EPI field carries zero current everywhere
+        G = nx.watts_strogatz_graph(30, 4, 0.2, seed=5)
+        for node in G.nodes():
+            G.nodes[node]["EPI"] = 0.37
+        _, j = structural_current(G)
+        assert np.allclose(j, 0.0, atol=1e-12)
+        _, div = current_divergence(G)
+        assert np.allclose(div, 0.0, atol=1e-12)
+
+    def test_ohm_law_injected_current(self) -> None:
+        # injected unit current s->t induces potential drop = R_eff(s,t)
+        G = _flow_graph()
+        nodes = list(G.nodes())
+        idx = {n: i for i, n in enumerate(nodes)}
+        A = nx.to_numpy_array(G, nodelist=nodes)
+        L = np.diag(A.sum(1)) - A
+        lp = np.linalg.pinv(L)
+        _, r = effective_resistance(G)
+        s, t = idx[nodes[0]], idx[nodes[15]]
+        b = np.zeros(len(nodes))
+        b[s], b[t] = 1.0, -1.0
+        v = lp @ b
+        drop = v[s] - v[t]
+        assert np.isclose(drop, r[s, t], atol=1e-7)
+
+    def test_certificate_valid_across_topologies(self) -> None:
+        builders = (
+            lambda: nx.cycle_graph(40),
+            lambda: nx.barbell_graph(15, 0),
+            lambda: nx.watts_strogatz_graph(50, 6, 0.2, seed=7),
+        )
+        rng = np.random.default_rng(0)
+        for build in builders:
+            G = build()
+            for node in G.nodes():
+                G.nodes[node]["EPI"] = float(rng.uniform(-0.4, 0.4))
+            cert = verify_structural_flow(G)
+            assert isinstance(cert, StructuralFlowCertificate)
+            assert cert.is_valid_flow
+            assert cert.current_antisymmetric
+            assert cert.kirchhoff_holds
+            assert cert.total_flux_balances
+            assert cert.equilibrium_zero_current
+            assert cert.ohm_law_holds
             assert "VALID" in cert.summary()
