@@ -1577,7 +1577,7 @@ When adding to grammar documentation:
   - **[src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)**: TetradSnapshot, ConservationReport, SymplecticReport, TNFR.analyze(), grammar-aware evolution, integrity monitoring
   - **[src/tnfr/sdk/fluent.py](src/tnfr/sdk/fluent.py)**: Fluent API with auto_optimize()
   - **[src/tnfr/sdk/adaptive_system.py](src/tnfr/sdk/adaptive_system.py)**: Adaptive system patterns
-- **[examples/](examples/)**: 115 files total — sequential 01–76 and 90–102; then two parallel series with shared numbering 77–86: Navier–Stokes NS-series (`77_navier_stokes_taylor_green_demo.py` … `86_navier_stokes_reynolds_sweep.py`) and Riemann/Type-Hygiene series (`77_remesh_infinity_residue_split_demo.py`, `78_nuf_type_signature_demo.py` … `89_operator_catalog_discipline_signature_demo.py`); plus `pytorch_cuda_demo.py` and `unified_fields_showcase.py`
+- **[examples/](examples/)**: 116 files total — sequential 01–76 and 90–103; then two parallel series with shared numbering 77–86: Navier–Stokes NS-series (`77_navier_stokes_taylor_green_demo.py` … `86_navier_stokes_reynolds_sweep.py`) and Riemann/Type-Hygiene series (`77_remesh_infinity_residue_split_demo.py`, `78_nuf_type_signature_demo.py` … `89_operator_catalog_discipline_signature_demo.py`); plus `pytorch_cuda_demo.py` and `unified_fields_showcase.py`
 - **[benchmarks/](benchmarks/)**: Production-grade validation suites (25 benchmark scripts)
 
 **Development**:
@@ -1616,6 +1616,7 @@ When adding to grammar documentation:
 - **Prime Families as Orbits**: [examples/100_prime_families_orbits.py](examples/100_prime_families_orbits.py) (Twin, Sophie Germain, Cunningham, Mersenne families as arithmetic maps on the zero-pressure fixed-point set)
 - **Numbers as a Coupled Network**: [examples/101_numbers_as_coupled_network.py](examples/101_numbers_as_coupled_network.py) (Ω-graded centrality; primes as the transport periphery of the divisibility/GCD network; correspondence through Ω, not identity)
 - **Nodal Flow on Numbers**: [examples/102_nodal_flow_primes_equilibria.py](examples/102_nodal_flow_primes_equilibria.py) (running ∂EPI/∂t=νf·ΔNFR: primes are the equilibria/§4 theorem in motion but NOT attractors; refines the §7.1 sink reading)
+- **Emergent Substrate Meets Riemann**: [examples/103_emergent_substrate_meets_riemann.py](examples/103_emergent_substrate_meets_riemann.py) (the symplectic substrate on P14: static graph blind to primes, dynamics-emergent geometry carries {k·log p} with r≈0.99, but re-expresses not adds Riemann structure; characterization, NOT a G4 closure — program stays paused at T-HP)
 - **TNFR-Navier–Stokes (Taylor–Green)**: [examples/77_navier_stokes_taylor_green_demo.py](examples/77_navier_stokes_taylor_green_demo.py) (3D vortex, K_φ cascade pre-registration N12–N13)
 - **REMESH-∞ Residue Split**: [examples/77_remesh_infinity_residue_split_demo.py](examples/77_remesh_infinity_residue_split_demo.py) (smooth/oscillatory split, N15 structural identification)
 - **Production Validation**: [tests/](tests/) (comprehensive test suite)
