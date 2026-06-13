@@ -79,6 +79,35 @@ of why the 13 operators preserve phase-space volume (they are
 **symplectomorphisms** — verified by
 :func:`tnfr.physics.variational.check_symplectic_preservation`).
 
+THE COMPLETE GEOMETRIC TOWER
+============================
+On this substrate the entire classical Hamiltonian-geometry tower is
+derived from the nodal dynamics — each structure has a certificate
+dataclass (full detail in its docstring) and a ``verify_*`` function, and
+:func:`verify_substrate_geometry` runs them all at once:
+
+1. **Symplectic / Poisson / Liouville**
+   (:class:`CanonicalStructureCertificate`,
+   :func:`verify_canonical_structure`) — ω closed & non-degenerate,
+   canonical brackets, Jacobi, div(X_H)=0.
+2. **Noether charges** (:class:`NoetherChargeCertificate`,
+   :func:`verify_noether_conservation`) — H_sub = E_geo + E_pot splits
+   exactly; the geometric U(1) charge ½Σ|Ψ|² is the gauge invariant of
+   :mod:`tnfr.physics.gauge`.
+3. **Hermitian / flat Kähler** (:class:`HermitianStructureCertificate`,
+   :func:`verify_hermitian_structure`) — compatible triple (ω, J=−ω, g=I);
+   the complex coordinate ζ^A = K_φ + i·J_φ **is** the gauge field Ψ, so
+   H_sub = ½Σ|ζ|² is the Kähler potential.
+4. **Complete integrability** (:class:`IntegrabilityCertificate`,
+   :func:`verify_integrability`) — action–angle variables I = ½|ζ|²
+   (2N integrals in involution); the flow is Liouville–Arnold integrable.
+5. **Poincaré–Cartan invariants** (:class:`PoincareCartanCertificate`,
+   :func:`verify_poincare_cartan`) — the flow preserves the whole ω^k
+   tower; ∮ p dq = 2π I (Bohr–Sommerfeld) on the action torus.
+6. **Marsden–Weinstein reduction** (:class:`MarsdenWeinsteinCertificate`,
+   :func:`verify_symplectic_reduction`) — moment map J = H_sub; the
+   quotient P//U(1) is a symplectic manifold of dimension 4N − 2.
+
 THE NODAL EQUATION LIVES HERE
 =============================
 The nodal equation ∂EPI/∂t = νf·ΔNFR(t) is the **overdamped projection**
@@ -94,8 +123,15 @@ HONEST SCOPE
   a *canonical consolidation*, not a new physical postulate.
 - The phase-space coordinates are derived from existing canonical fields;
   no field formula is duplicated or redefined.
-- The symplectic form, brackets, Liouville theorem, and operator
-  symplectomorphism are EXACT structural results.
+- The symplectic form, brackets, Liouville theorem, operator
+  symplectomorphism, Noether charges, Hermitian (ω, J, g) compatibility,
+  action–angle integrability, Poincaré–Cartan invariants, and the
+  Marsden–Weinstein reduction are EXACT structural results.
+- The Kähler / integrability / reduction results are for the **flat**
+  (constant-coefficient) substrate and its **H_sub harmonic backbone** —
+  a flat linear symplectic space, NOT a curved manifold, and NOT the full
+  nonlinear operator dynamics (the 13 operators are canonical transforms
+  *on* this substrate).
 - The nodal-equation correspondence is the established overdamped limit
   of the variational principle (cited, not re-derived numerically).
 - This does NOT, by itself, resolve any open program (Riemann G4, NS).
@@ -108,6 +144,7 @@ References
 - :mod:`tnfr.physics.conservation` — conjugate pairs, energy, Noether charge
 - :mod:`tnfr.physics.gauge` — U(1) gauge structure of Psi = K_phi + i*J_phi
 - theory/TNFR_VARIATIONAL_PRINCIPLE.md — full derivation
+- AGENTS.md §"Emergent Symplectic Substrate (CANONICAL)" — the full tower
 - AGENTS.md §"Minimal Structural Degrees of Freedom" — why the tetrad
 """
 
@@ -139,6 +176,7 @@ __all__ = [
     "IntegrabilityCertificate",
     "PoincareCartanCertificate",
     "MarsdenWeinsteinCertificate",
+    "SubstrateGeometryReport",
     "extract_phase_space_point",
     "symplectic_form_matrix",
     "complex_structure_matrix",
@@ -166,6 +204,7 @@ __all__ = [
     "diagonal_moment_map",
     "reduced_symplectic_form_matrix",
     "verify_symplectic_reduction",
+    "verify_substrate_geometry",
 ]
 
 
@@ -721,6 +760,67 @@ class MarsdenWeinsteinCertificate:
             f"(det {self.reduced_form_determinant:.3g}), "
             f"relative-phase invariant={self.relative_phases_invariant}"
         )
+
+
+@dataclass(frozen=True)
+class SubstrateGeometryReport:
+    r"""Consolidated report of the complete emergent geometric tower.
+
+    Aggregates the six structural certificates produced by
+    :func:`verify_substrate_geometry`, giving a single entry point to the
+    whole classical Hamiltonian-geometry tower derived from the nodal
+    dynamics: symplectic/Poisson/Liouville, Noether charges, Hermitian
+    (flat Kähler), complete integrability, Poincaré–Cartan invariants, and
+    the Marsden–Weinstein reduction.
+
+    Attributes
+    ----------
+    n_nodes : int
+    phase_space_dimension : int
+        4·n_nodes.
+    canonical : CanonicalStructureCertificate
+    noether : NoetherChargeCertificate
+    hermitian : HermitianStructureCertificate
+    integrability : IntegrabilityCertificate
+    poincare_cartan : PoincareCartanCertificate
+    marsden_weinstein : MarsdenWeinsteinCertificate
+    """
+
+    n_nodes: int
+    phase_space_dimension: int
+    canonical: CanonicalStructureCertificate
+    noether: NoetherChargeCertificate
+    hermitian: HermitianStructureCertificate
+    integrability: IntegrabilityCertificate
+    poincare_cartan: PoincareCartanCertificate
+    marsden_weinstein: MarsdenWeinsteinCertificate
+
+    @property
+    def all_structures_valid(self) -> bool:
+        """True when every structure in the tower verifies."""
+        return (
+            self.canonical.is_valid_symplectic_manifold
+            and self.noether.is_conserved
+            and self.hermitian.is_valid_hermitian_structure
+            and self.integrability.is_completely_integrable
+            and self.poincare_cartan.all_invariants_hold
+            and self.marsden_weinstein.is_valid_reduction
+        )
+
+    def summary(self) -> str:
+        """Multi-line verdict listing every structure in the tower."""
+        ok = "ALL VALID" if self.all_structures_valid else "INCOMPLETE"
+        lines = [
+            f"Emergent substrate geometry [{ok}] "
+            f"(N={self.n_nodes}, dim P={self.phase_space_dimension}):",
+            f"  1. {self.canonical.summary()}",
+            f"  2. {self.noether.summary()}",
+            f"  3. {self.hermitian.summary()}",
+            f"  4. {self.integrability.summary()}",
+            f"  5. {self.poincare_cartan.summary()}",
+            f"  6. {self.marsden_weinstein.summary()}",
+        ]
+        return "\n".join(lines)
 
 
 def extract_phase_space_point(G: Any) -> PhaseSpacePoint:
@@ -1775,4 +1875,46 @@ def verify_symplectic_reduction(
         relative_phases_invariant=phases_ok,
         max_moment_drift=moment_drift,
         reduced_form_determinant=det_reduced,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Consolidated entry point: the complete geometric tower in one call
+# ---------------------------------------------------------------------------
+
+
+def verify_substrate_geometry(G: Any) -> SubstrateGeometryReport:
+    r"""Verify the complete emergent geometric tower in a single call.
+
+    Runs all six structural verifications and bundles their certificates
+    into one :class:`SubstrateGeometryReport`:
+
+    1. :func:`verify_canonical_structure` — symplectic / Poisson / Liouville,
+    2. :func:`verify_noether_conservation` — Noether charges,
+    3. :func:`verify_hermitian_structure` — Hermitian (flat Kähler),
+    4. :func:`verify_integrability` — action–angle integrability,
+    5. :func:`verify_poincare_cartan` — Poincaré–Cartan invariants,
+    6. :func:`verify_symplectic_reduction` — Marsden–Weinstein reduction.
+
+    This is the consolidated entry point to the whole classical
+    Hamiltonian-geometry tower the nodal dynamics generates from itself.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    SubstrateGeometryReport
+    """
+    point = extract_phase_space_point(G)
+    return SubstrateGeometryReport(
+        n_nodes=point.n_nodes,
+        phase_space_dimension=4 * point.n_nodes,
+        canonical=verify_canonical_structure(G),
+        noether=verify_noether_conservation(G),
+        hermitian=verify_hermitian_structure(G),
+        integrability=verify_integrability(G),
+        poincare_cartan=verify_poincare_cartan(G),
+        marsden_weinstein=verify_symplectic_reduction(G),
     )

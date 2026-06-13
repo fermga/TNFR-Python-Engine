@@ -231,6 +231,7 @@ from .symplectic_substrate import (
     IntegrabilityCertificate,
     PoincareCartanCertificate,
     MarsdenWeinsteinCertificate,
+    SubstrateGeometryReport,
     extract_phase_space_point,
     symplectic_form_matrix,
     complex_structure_matrix,
@@ -258,6 +259,7 @@ from .symplectic_substrate import (
     diagonal_moment_map,
     reduced_symplectic_form_matrix,
     verify_symplectic_reduction,
+    verify_substrate_geometry,
 )
 from .gauge import (
     GaugeSnapshot,
@@ -470,6 +472,7 @@ __all__ = [
     "IntegrabilityCertificate",
     "PoincareCartanCertificate",
     "MarsdenWeinsteinCertificate",
+    "SubstrateGeometryReport",
     "extract_phase_space_point",
     "symplectic_form_matrix",
     "complex_structure_matrix",
@@ -497,6 +500,7 @@ __all__ = [
     "diagonal_moment_map",
     "reduced_symplectic_form_matrix",
     "verify_symplectic_reduction",
+    "verify_substrate_geometry",
     # --- Gauge Structure (U(1) Symmetry of Ψ = K_φ + i·J_φ) ---
     "GaugeSnapshot",
     "GaugeInvarianceResult",

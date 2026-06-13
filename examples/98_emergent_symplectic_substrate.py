@@ -78,6 +78,7 @@ from tnfr.physics.symplectic_substrate import (
     verify_integrability,
     verify_poincare_cartan,
     verify_symplectic_reduction,
+    verify_substrate_geometry,
 )
 
 
@@ -414,6 +415,28 @@ def experiment_8_symplectic_reduction():
     print()
 
 
+# ============================================================================
+# EXPERIMENT 9: Consolidated tower — the whole geometry in one call
+# ============================================================================
+def experiment_9_consolidated_tower():
+    """verify_substrate_geometry runs the whole tower in a single call."""
+    print("=" * 72)
+    print("EXPERIMENT 9: Consolidated Geometric Tower (single entry point)")
+    print("=" * 72)
+    print()
+    print("verify_substrate_geometry(G) runs all six structural")
+    print("verifications and bundles their certificates into one report —")
+    print("the consolidated entry point to the whole emergent geometry.")
+    print()
+
+    G = _build_graph(30)
+    report = verify_substrate_geometry(G)
+    print(report.summary())
+    print()
+    print(f"  ALL STRUCTURES VALID: {report.all_structures_valid}")
+    print()
+
+
 def main():
     print()
     print("  TNFR Example 98: The Emergent Symplectic Substrate")
@@ -429,6 +452,7 @@ def main():
     experiment_6_integrability()
     experiment_7_poincare_cartan()
     experiment_8_symplectic_reduction()
+    experiment_9_consolidated_tower()
 
     print("=" * 72)
     print("WHAT THIS ESTABLISHES")
@@ -443,6 +467,7 @@ def main():
     print("  • the flow is completely integrable (action–angle, Exp. 6),")
     print("  • it preserves the Poincaré–Cartan invariants (Exp. 7),")
     print("  • it reduces by its U(1) symmetry (Marsden–Weinstein, Exp. 8),")
+    print("  • the whole tower verifies in one call (Exp. 9),")
     print("  • the nodal equation is the overdamped Hamiltonian flow.")
     print()
     print("This substrate is EMERGENT (derived from the conservation laws),")

@@ -44,6 +44,7 @@ from tnfr.physics.symplectic_substrate import (
     verify_integrability,
     verify_noether_conservation,
     verify_poincare_cartan,
+    verify_substrate_geometry,
     verify_symplectic_reduction,
     diagonal_moment_map,
 )
@@ -514,6 +515,48 @@ class TestMarsdenWeinstein:
         assert cert.moment_map_is_hamiltonian
         assert cert.reduced_dimension == 118
         assert "VALID" in cert.summary()
+
+
+class TestSubstrateGeometryReport:
+    """The consolidated aggregator runs the whole tower in one call."""
+
+    def test_all_structures_valid(self) -> None:
+        G = _canonical_graph(30)
+        report = verify_substrate_geometry(G)
+        assert report.all_structures_valid
+        assert report.n_nodes == 30
+        assert report.phase_space_dimension == 120
+
+    def test_bundles_six_certificates(self) -> None:
+        G = _canonical_graph(20)
+        report = verify_substrate_geometry(G)
+        # Each sub-certificate is the same type the individual verify returns.
+        assert report.canonical.is_valid_symplectic_manifold
+        assert report.noether.is_conserved
+        assert report.hermitian.is_valid_hermitian_structure
+        assert report.integrability.is_completely_integrable
+        assert report.poincare_cartan.all_invariants_hold
+        assert report.marsden_weinstein.is_valid_reduction
+
+    def test_sub_certificates_match_individual_calls(self) -> None:
+        G = _canonical_graph(24)
+        report = verify_substrate_geometry(G)
+        # The aggregated canonical certificate matches a direct call.
+        direct = verify_canonical_structure(G)
+        assert (
+            report.canonical.is_valid_symplectic_manifold
+            == direct.is_valid_symplectic_manifold
+        )
+        assert report.marsden_weinstein.reduced_dimension == 4 * 24 - 2
+
+    def test_summary_lists_all_six(self) -> None:
+        G = _canonical_graph(20)
+        report = verify_substrate_geometry(G)
+        summary = report.summary()
+        assert "ALL VALID" in summary
+        # Six numbered structures appear in the multi-line summary.
+        for k in range(1, 7):
+            assert f"  {k}." in summary
 
 
 class TestSubstrateIntegration:

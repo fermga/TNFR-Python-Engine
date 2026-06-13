@@ -61,7 +61,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 **Computational Implementation**:
 - Self-Optimizing Engine: Algorithmic structural optimization
 - Software Development Kit: API for TNFR implementation  
-- Experimental Validation: 1,882 tests across multiple topologies
+- Experimental Validation: 1,886 tests across multiple topologies
 - Distribution Platform: PyPI package with documentation
 
 **Application Domains**:
@@ -417,7 +417,9 @@ The variational structure is not merely a confirmation — it **is the geometry 
 
 **The nodal equation lives here**: ∂EPI/∂t = νf·ΔNFR(t) is the overdamped projection of the Hamiltonian flow on this substrate (with ΔNFR = −∂V/∂EPI). The substrate is the geometric arena the nodal equation already inhabits — emergent, not imposed.
 
-**Implementation**: [src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py) (delegates all field computation to canonical sources; no formula duplication). Verified by 17 tests in [tests/physics/test_symplectic_substrate.py](tests/physics/test_symplectic_substrate.py); demonstrated in [examples/98_emergent_symplectic_substrate.py](examples/98_emergent_symplectic_substrate.py). **Scope**: a canonical consolidation of the geometry implied by [src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py) and [src/tnfr/physics/variational.py](src/tnfr/physics/variational.py); it does not, by itself, resolve any open program (Riemann G4, Navier–Stokes).
+**Consolidated entry point**: the whole tower — symplectic/Poisson/Liouville, Noether charges, Hermitian (flat Kähler), complete integrability, Poincaré–Cartan invariants, and the Marsden–Weinstein reduction — verifies in a single call, [src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py)::`verify_substrate_geometry`, which bundles the six certificates into a `SubstrateGeometryReport` with an `all_structures_valid` flag and a multi-line `summary()`.
+
+**Implementation**: [src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py) (delegates all field computation to canonical sources; no formula duplication). Verified by 66 tests in [tests/physics/test_symplectic_substrate.py](tests/physics/test_symplectic_substrate.py); demonstrated in [examples/98_emergent_symplectic_substrate.py](examples/98_emergent_symplectic_substrate.py). **Scope**: a canonical consolidation of the geometry implied by [src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py) and [src/tnfr/physics/variational.py](src/tnfr/physics/variational.py); it does not, by itself, resolve any open program (Riemann G4, Navier–Stokes).
 
 ### Structural Parallels (Analogies)
 
@@ -808,7 +810,7 @@ The **Structural Field Tetrad** (Φ_s, |∇φ|, **Ψ**, ξ_C) now has **complete
 - **Per-node Φ_s threshold (0.7711)**: empirically validated, no closed-form derivation established (open problem)  
 - **Universal constants** (γ/π, 0.9×π, exponential bounds) derived from the tetrahedral correspondence  
 - **Theory-code consistency** maintained throughout codebase  
-- **Complete validation** via comprehensive test suite (1,882 tests) across 5 topologies
+- **Complete validation** via comprehensive test suite (1,886 tests) across 5 topologies
 
 **Status**: TNFR Structural Field Tetrad mathematical foundations **COMPLETE**.
 
@@ -1545,7 +1547,7 @@ When adding to grammar documentation:
 **Development**:
 - **ARCHITECTURE.md**: System design principles
 - **CONTRIBUTING.md**: Workflow and standards
-- **TESTING.md**: Test strategy (1,882 tests)
+- **TESTING.md**: Test strategy (1,886 tests)
 
 **Domain Showcases**:
 - **Network Dynamics**: [examples/03_network_formation.py](examples/03_network_formation.py)
