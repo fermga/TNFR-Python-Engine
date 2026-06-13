@@ -33,6 +33,7 @@ from tnfr.physics.symplectic_substrate import (
     loop_action_integral,
     noether_charges,
     potential_sector_energy,
+    reduced_symplectic_form_matrix,
     substrate_flow_matrix,
     substrate_hamiltonian,
     symplectic_form_matrix,
@@ -43,6 +44,8 @@ from tnfr.physics.symplectic_substrate import (
     verify_integrability,
     verify_noether_conservation,
     verify_poincare_cartan,
+    verify_symplectic_reduction,
+    diagonal_moment_map,
 )
 
 
@@ -456,6 +459,61 @@ class TestPoincareCartan:
         assert cert.char_poly_palindromic
         assert cert.phase_space_dimension == 120
         assert "ALL HOLD" in cert.summary()
+
+
+class TestMarsdenWeinstein:
+    """The flow's diagonal U(1) admits a Marsden–Weinstein reduction."""
+
+    def test_moment_map_equals_hamiltonian(self) -> None:
+        import pytest
+
+        G = _canonical_graph(20)
+        point = extract_phase_space_point(G)
+        j = diagonal_moment_map(point)
+        assert j == pytest.approx(substrate_hamiltonian(point))
+
+    def test_moment_map_conserved(self) -> None:
+        G = _canonical_graph(24)
+        cert = verify_symplectic_reduction(G)
+        assert cert.moment_map_conserved
+        assert cert.max_moment_drift < 1e-9
+
+    def test_reduced_dimension_is_4n_minus_2(self) -> None:
+        G = _canonical_graph(20)
+        cert = verify_symplectic_reduction(G)
+        assert cert.phase_space_dimension == 80
+        assert cert.reduced_dimension == 78
+
+    def test_reduced_form_shape_and_determinant(self) -> None:
+        # Reduced form is (4N−2)×(4N−2), det = (2N)².
+        red = reduced_symplectic_form_matrix(3)
+        assert red.shape == (10, 10)
+        assert abs(float(np.linalg.det(red)) - 36.0) < 1e-6
+
+    def test_reduced_form_nondegenerate(self) -> None:
+        G = _canonical_graph(24)
+        cert = verify_symplectic_reduction(G)
+        assert cert.reduced_form_nondegenerate
+        assert abs(cert.reduced_form_determinant) > 1.0
+
+    def test_reduced_form_invalid_nodes(self) -> None:
+        import pytest
+
+        with pytest.raises(ValueError):
+            reduced_symplectic_form_matrix(0)
+
+    def test_relative_phases_invariant(self) -> None:
+        G = _canonical_graph(24)
+        cert = verify_symplectic_reduction(G)
+        assert cert.relative_phases_invariant
+
+    def test_certificate_valid_reduction(self) -> None:
+        G = _canonical_graph(30)
+        cert = verify_symplectic_reduction(G)
+        assert cert.is_valid_reduction
+        assert cert.moment_map_is_hamiltonian
+        assert cert.reduced_dimension == 118
+        assert "VALID" in cert.summary()
 
 
 class TestSubstrateIntegration:

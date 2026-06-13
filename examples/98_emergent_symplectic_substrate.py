@@ -77,6 +77,7 @@ from tnfr.physics.symplectic_substrate import (
     verify_hermitian_structure,
     verify_integrability,
     verify_poincare_cartan,
+    verify_symplectic_reduction,
 )
 
 
@@ -368,6 +369,51 @@ def experiment_7_poincare_cartan():
     print()
 
 
+# ============================================================================
+# EXPERIMENT 8: Marsden–Weinstein symplectic reduction by the U(1) flow
+# ============================================================================
+def experiment_8_symplectic_reduction():
+    """The diagonal U(1) flow symmetry reduces P to a P//U(1) of dim 4N−2."""
+    print("=" * 72)
+    print("EXPERIMENT 8: Marsden–Weinstein Symplectic Reduction")
+    print("=" * 72)
+    print()
+    print("The flow ζ → e^{−it}ζ is the diagonal U(1) action rotating every")
+    print("conjugate pair together. Its moment map is J = Σ I_k = H_sub (the")
+    print("time-translation Noether charge). Reducing P by this symmetry —")
+    print("P//U(1) = J⁻¹(μ)/U(1) — quotients the collective phase, leaving")
+    print("the relative phases φ_k = θ_k − θ_0 as the reduced coordinates.")
+    print()
+
+    G = _build_graph(30)
+    cert = verify_symplectic_reduction(G)
+
+    print(f"  moment map J = Σ I_k = H_sub   : "
+          f"{cert.moment_map_is_hamiltonian} "
+          f"(J = {cert.moment_map_value:.4f})")
+    print(f"  J conserved (U(1) symmetry)    : "
+          f"{cert.moment_map_conserved} "
+          f"(drift {cert.max_moment_drift:.1e})")
+    print(f"  dim P → dim P//U(1)            : "
+          f"{cert.phase_space_dimension} → {cert.reduced_dimension}  "
+          f"(4N−2)")
+    print(f"  reduced ω non-degenerate       : "
+          f"{cert.reduced_form_nondegenerate} "
+          f"(det {cert.reduced_form_determinant:.3g})")
+    print(f"  relative phases φ_k invariant  : "
+          f"{cert.relative_phases_invariant}")
+    print()
+    print(f"  VALID REDUCTION: {cert.is_valid_reduction}")
+    print()
+    print("VALIDATED: the reduced 2-form Σ dI_k ∧ dφ_k is canonical and")
+    print("non-degenerate, so P//U(1) is a genuine symplectic manifold of")
+    print("dimension 4N−2. The symmetry that GENERATES the flow (time")
+    print("translation) is the symmetry one reduces by — moment map = H_sub.")
+    print("HONEST SCOPE: reduction of the FLAT substrate by its diagonal")
+    print("U(1); the reduced space is a flat linear symplectic space.")
+    print()
+
+
 def main():
     print()
     print("  TNFR Example 98: The Emergent Symplectic Substrate")
@@ -382,6 +428,7 @@ def main():
     experiment_5_hermitian_structure()
     experiment_6_integrability()
     experiment_7_poincare_cartan()
+    experiment_8_symplectic_reduction()
 
     print("=" * 72)
     print("WHAT THIS ESTABLISHES")
@@ -395,6 +442,7 @@ def main():
     print("  • Ψ is the complex coordinate of a Hermitian structure (Exp. 5),")
     print("  • the flow is completely integrable (action–angle, Exp. 6),")
     print("  • it preserves the Poincaré–Cartan invariants (Exp. 7),")
+    print("  • it reduces by its U(1) symmetry (Marsden–Weinstein, Exp. 8),")
     print("  • the nodal equation is the overdamped Hamiltonian flow.")
     print()
     print("This substrate is EMERGENT (derived from the conservation laws),")

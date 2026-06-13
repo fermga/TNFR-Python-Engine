@@ -138,6 +138,7 @@ __all__ = [
     "HermitianStructureCertificate",
     "IntegrabilityCertificate",
     "PoincareCartanCertificate",
+    "MarsdenWeinsteinCertificate",
     "extract_phase_space_point",
     "symplectic_form_matrix",
     "complex_structure_matrix",
@@ -162,6 +163,9 @@ __all__ = [
     "substrate_flow_matrix",
     "loop_action_integral",
     "verify_poincare_cartan",
+    "diagonal_moment_map",
+    "reduced_symplectic_form_matrix",
+    "verify_symplectic_reduction",
 ]
 
 
@@ -629,6 +633,93 @@ class PoincareCartanCertificate:
             f"(drift {self.max_relative_drift:.1e}), "
             f"Bohr–Sommerfeld={self.bohr_sommerfeld_holds} "
             f"(err {self.max_bohr_error:.1e})"
+        )
+
+
+@dataclass(frozen=True)
+class MarsdenWeinsteinCertificate:
+    r"""Verification of the Marsden–Weinstein symplectic reduction.
+
+    The substrate flow is the **diagonal U(1)** action ζ → e^{−it}ζ rotating
+    every conjugate pair together (θ_k → θ_k − t for all k).  Its
+    **moment map** is J = Σ_k I_k = ½Σ|ζ|² = H_sub — the total energy, which
+    is exactly the Noether charge of time translation (so the symmetry that
+    generates the flow is the symmetry one reduces by).
+
+    The Marsden–Weinstein quotient P//U(1) = J⁻¹(μ)/U(1) is built explicitly
+    in action–angle coordinates (m = 2·n_nodes conjugate pairs):
+
+    - **level set** J⁻¹(μ): Σ_k I_k = μ (codimension 1),
+    - **quotient** by the collective phase θ_0: the reduced coordinates are
+      the (m−1) independent actions and the (m−1) **relative phases**
+      φ_k = θ_k − θ_0, which are invariant under the diagonal U(1).
+
+    The reduced symplectic form is Σ_{k≥1} dI_k ∧ dφ_k — canonical and
+    **non-degenerate** — so the reduced space is a genuine symplectic
+    manifold of dimension 4N − 2.  (Reducing instead by the sector
+    U(1)×U(1) of :class:`NoetherChargeCertificate` gives 4N − 4.)
+
+    HONEST SCOPE: this reduces the **flat** substrate by its diagonal U(1)
+    flow symmetry; the reduced space is a flat linear symplectic space (the
+    relative-phase coordinates), not a curved reduced manifold.
+
+    Attributes
+    ----------
+    n_nodes : int
+    phase_space_dimension : int
+        4·n_nodes.
+    moment_map_value : float
+        J = Σ I_k evaluated at the graph state.
+    moment_map_is_hamiltonian : bool
+        J = H_sub (moment map equals the energy / time-translation charge).
+    moment_map_conserved : bool
+        J is invariant along the flow (drift below tolerance).
+    reduced_dimension : int
+        Dimension of P//U(1) = 4N − 2.
+    reduced_form_nondegenerate : bool
+        The reduced symplectic form has non-zero determinant.
+    relative_phases_invariant : bool
+        φ_k = θ_k − θ_0 are invariant under the diagonal U(1) flow.
+    max_moment_drift : float
+        Max |J(t) − J(0)| over the sampled flow.
+    reduced_form_determinant : float
+        Determinant of the reduced symplectic form (≠ 0 ⇒ symplectic).
+    """
+
+    n_nodes: int
+    phase_space_dimension: int
+    moment_map_value: float
+    moment_map_is_hamiltonian: bool
+    moment_map_conserved: bool
+    reduced_dimension: int
+    reduced_form_nondegenerate: bool
+    relative_phases_invariant: bool
+    max_moment_drift: float
+    reduced_form_determinant: float
+
+    @property
+    def is_valid_reduction(self) -> bool:
+        """True when the reduction yields a valid symplectic quotient."""
+        return (
+            self.moment_map_is_hamiltonian
+            and self.moment_map_conserved
+            and self.reduced_form_nondegenerate
+            and self.relative_phases_invariant
+        )
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "VALID" if self.is_valid_reduction else "INVALID"
+        return (
+            f"Marsden–Weinstein [{ok}]: "
+            f"P//U(1) dim {self.phase_space_dimension}→"
+            f"{self.reduced_dimension}, "
+            f"J=H_sub={self.moment_map_is_hamiltonian} "
+            f"(J={self.moment_map_value:.4f}, "
+            f"drift {self.max_moment_drift:.1e}), "
+            f"reduced ω non-degenerate={self.reduced_form_nondegenerate} "
+            f"(det {self.reduced_form_determinant:.3g}), "
+            f"relative-phase invariant={self.relative_phases_invariant}"
         )
 
 
@@ -1542,4 +1633,146 @@ def verify_poincare_cartan(
         max_omega_drift=omega_drift,
         max_relative_drift=relative_drift,
         max_bohr_error=float(bohr_error),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Marsden–Weinstein symplectic reduction by the diagonal U(1) flow symmetry
+# ---------------------------------------------------------------------------
+
+
+def diagonal_moment_map(point: PhaseSpacePoint) -> float:
+    r"""Moment map J = Σ_k I_k of the diagonal U(1) flow symmetry.
+
+    The substrate flow is the diagonal U(1) action ζ → e^{−it}ζ rotating
+    every conjugate pair together.  Its moment map is the sum of all action
+    variables J = Σ_k ½|ζ_k|² = H_sub — equal to the substrate Hamiltonian
+    (the time-translation Noether charge).
+
+    Parameters
+    ----------
+    point : PhaseSpacePoint
+
+    Returns
+    -------
+    float
+    """
+    aa = to_action_angle(point)
+    return float(
+        np.sum(aa["action_geometric"]) + np.sum(aa["action_potential"])
+    )
+
+
+def reduced_symplectic_form_matrix(n_nodes: int) -> Any:
+    r"""Reduced symplectic form of P//U(1) in action–angle coordinates.
+
+    Builds the Marsden–Weinstein reduced 2-form explicitly.  With
+    m = 2·n_nodes conjugate pairs and ω = Σ_k dI_k ∧ dθ_k, the diagonal
+    U(1) (generator ξ = Σ_k ∂/∂θ_k, moment map J = Σ_k I_k) is reduced by
+
+    - restricting to the level set Σ_k dI_k = 0 (tangent action directions
+      a_k = dI_k − dI_0, k = 1…m−1), and
+    - quotienting by ξ (relative-phase directions b_k = dθ_k − dθ_0).
+
+    The pullback Bᵀ Ω B of the full 2m×2m form Ω to this basis is the
+    reduced symplectic form, a (4N−2)×(4N−2) non-degenerate matrix
+    (det = (2N)² = m²) ⇒ the quotient is a symplectic manifold.
+
+    Parameters
+    ----------
+    n_nodes : int
+
+    Returns
+    -------
+    np.ndarray
+        The (4N−2)×(4N−2) reduced symplectic form.
+    """
+    if n_nodes < 1:
+        raise ValueError("n_nodes must be >= 1")
+    m = 2 * n_nodes
+    # Full canonical form on (I_0..I_{m-1}, θ_0..θ_{m-1}).
+    eye_m = np.eye(m)
+    zero_m = np.zeros((m, m))
+    omega_full = np.block([[zero_m, eye_m], [-eye_m, zero_m]])
+    # Reduced basis columns: action directions then relative-phase directions.
+    cols = []
+    for k in range(1, m):
+        a = np.zeros(2 * m)
+        a[k] = 1.0
+        a[0] = -1.0          # dI_k − dI_0 (lives on the level set)
+        cols.append(a)
+    for k in range(1, m):
+        b = np.zeros(2 * m)
+        b[m + k] = 1.0
+        b[m + 0] = -1.0      # dθ_k − dθ_0 (transverse to ξ)
+        cols.append(b)
+    basis = np.array(cols).T  # (2m) × (2(m-1))
+    return basis.T @ omega_full @ basis
+
+
+def verify_symplectic_reduction(
+    G: Any,
+    *,
+    flow_times: tuple[float, ...] = (0.5, 1.7, 3.0),
+    tolerance: float = 1e-9,
+) -> MarsdenWeinsteinCertificate:
+    r"""Verify the Marsden–Weinstein reduction of the substrate.
+
+    Confirms that the diagonal U(1) flow symmetry has moment map J = H_sub
+    (the time-translation Noether charge), that J is conserved, that the
+    reduced phase space P//U(1) has dimension 4N − 2 with a non-degenerate
+    reduced symplectic form, and that the relative phases φ_k = θ_k − θ_0
+    (the reduced coordinates) are invariant under the flow.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    flow_times : tuple of float
+        Sampling times for the conservation / invariance checks.
+    tolerance : float
+        Maximum allowed drift.
+
+    Returns
+    -------
+    MarsdenWeinsteinCertificate
+    """
+    point = extract_phase_space_point(G)
+    n = point.n_nodes
+
+    j0 = diagonal_moment_map(point)
+    is_hamiltonian = abs(j0 - substrate_hamiltonian(point)) < tolerance
+
+    # Moment-map conservation and relative-phase invariance along the flow.
+    aa0 = to_action_angle(point)
+    th0 = np.concatenate([aa0["angle_geometric"], aa0["angle_potential"]])
+    rel0 = np.angle(np.exp(1j * (th0 - th0[0])))
+
+    moment_drift = 0.0
+    phases_ok = True
+    for t in flow_times:
+        evolved = evolve_substrate_flow(point, t)
+        moment_drift = max(
+            moment_drift, abs(diagonal_moment_map(evolved) - j0)
+        )
+        aa = to_action_angle(evolved)
+        th = np.concatenate([aa["angle_geometric"], aa["angle_potential"]])
+        rel = np.angle(np.exp(1j * (th - th[0])))
+        phases_ok = phases_ok and bool(np.allclose(rel, rel0, atol=1e-7))
+    moment_conserved = moment_drift < tolerance
+
+    reduced = reduced_symplectic_form_matrix(n)
+    det_reduced = float(np.linalg.det(reduced))
+    nondegenerate = abs(det_reduced) > tolerance
+
+    return MarsdenWeinsteinCertificate(
+        n_nodes=n,
+        phase_space_dimension=4 * n,
+        moment_map_value=j0,
+        moment_map_is_hamiltonian=is_hamiltonian,
+        moment_map_conserved=moment_conserved,
+        reduced_dimension=4 * n - 2,
+        reduced_form_nondegenerate=nondegenerate,
+        relative_phases_invariant=phases_ok,
+        max_moment_drift=moment_drift,
+        reduced_form_determinant=det_reduced,
     )
