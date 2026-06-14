@@ -2900,6 +2900,39 @@ def _extract_graph_from_args(args: tuple, kwargs: dict) -> Any | None:
         return kwargs['G']
     return None
 
+# Sentinel distinguishing "alias key absent" from "value is None" when
+# hashing node-attribute dependencies for cache keys.
+_DEP_HASH_MISSING = object()
+
+def _dependency_alias_keys(dep: str) -> tuple[str, ...]:
+    """Map a ``node_*`` cache dependency to its canonical alias keys.
+
+    The canonical field writer (:func:`tnfr.alias.set_attr`) stores each
+    field under the FIRST alias of its tuple, which is the Greek/canonical
+    key (e.g. ``'ΔNFR'``, ``'νf'``, ``'EPI'``) — NOT the English dependency
+    token.  The cache-key dependency hash MUST therefore resolve through the
+    alias tuple; reading a hardcoded English name (``data='delta_nfr'``)
+    silently yields ``None`` for every node, making the key blind to the
+    field and returning stale results (the bug this maps around).
+    """
+    try:
+        from ..constants.aliases import (
+            ALIAS_DNFR,
+            ALIAS_EPI,
+            ALIAS_THETA,
+            ALIAS_VF,
+        )
+    except Exception:
+        return ()
+    mapping = {
+        'node_phase': ALIAS_THETA,
+        'node_dnfr': ALIAS_DNFR,
+        'node_epi': ALIAS_EPI,
+        'node_vf': ALIAS_VF,
+    }
+    keys = mapping.get(dep)
+    return tuple(keys) if keys else ()
+
 def _compute_dependency_hash(graph: Any, dependencies: set[str]) -> str:
     """Compute a hash of the graph properties specified in dependencies.
     
@@ -2942,35 +2975,40 @@ def _compute_dependency_hash(graph: Any, dependencies: set[str]) -> str:
     sorted_deps = sorted(node_deps)
 
     for dep in sorted_deps:
-        attr_name = None
-        if dep == 'node_phase':
-            attr_name = 'phase'
-        elif dep == 'node_dnfr':
-            attr_name = 'delta_nfr'
-        elif dep == 'node_epi':
-            attr_name = 'epi'
-        elif dep == 'node_vf':
-            attr_name = 'vf'
-            
-        if attr_name:
-            try:
-                # Get all node attributes
-                # sorting by node ID ensures determinism
-                # str(node) handles non-sortable node IDs
-                items = list(graph.nodes(data=attr_name, default=None))
-                items.sort(key=lambda x: str(x[0]))
-                
-                hasher.update(dep.encode('utf-8'))
-                for node, val in items:
-                    # Hash the value. Use str() for simplicity.
-                    # For floats, this might be sensitive to formatting, but
-                    # within the same process/machine it should be consistent.
-                    if val is not None:
-                        hasher.update(str(val).encode('utf-8'))
-            except Exception:
-                # If graph doesn't support this, skip
-                pass
-                
+        alias_keys = _dependency_alias_keys(dep)
+        if not alias_keys:
+            continue
+        try:
+            # Resolve through the canonical alias tuple: the writer stores
+            # under the FIRST alias (Greek/canonical, e.g. 'ΔNFR', 'νf',
+            # 'EPI'), so try alias keys in order and use the first one
+            # actually present.  A hardcoded English name would silently
+            # read None for every node and make the key blind to the field.
+            items = None
+            for key in alias_keys:
+                candidate = list(
+                    graph.nodes(data=key, default=_DEP_HASH_MISSING)
+                )
+                if any(v is not _DEP_HASH_MISSING for _, v in candidate):
+                    items = candidate
+                    break
+            if items is None:
+                continue
+            # sorting by node ID ensures determinism;
+            # str(node) handles non-sortable node IDs
+            items.sort(key=lambda x: str(x[0]))
+
+            hasher.update(dep.encode('utf-8'))
+            for node, val in items:
+                # Hash the value. Use str() for simplicity.
+                # For floats, this might be sensitive to formatting, but
+                # within the same process/machine it should be consistent.
+                if val is not _DEP_HASH_MISSING and val is not None:
+                    hasher.update(str(val).encode('utf-8'))
+        except Exception:
+            # If graph doesn't support this, skip
+            pass
+
     return hasher.hexdigest()
 
 def cache_tnfr_computation(

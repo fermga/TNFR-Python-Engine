@@ -21,28 +21,35 @@ Fields respect global precision_mode from tnfr.config:
 NEVER grammar (U1-U6), operator contracts, or coherence semantics.
 U6 decisions must be invariant across precision modes.
 
-CRITICAL TECHNICAL NOTE (Cache Invalidation Issue - Nov 2025):
---------------------------------------------------------------
-compute_structural_potential is cached via @cache_tnfr_computation.
-Cache key depends on: graph_topology + node_dnfr distribution.
+CACHE INVALIDATION (root cause corrected + fixed, May 2026):
+------------------------------------------------------------
+compute_structural_potential (and estimate_coherence_length, J_ΔNFR) is
+cached via @cache_tnfr_computation with dependencies
+{graph_topology, node_dnfr}. The cache key embeds a dependency hash of the
+node fields, so changing ΔNFR on a fixed topology MUST invalidate the entry.
 
-**Issue**: Uniform ΔNFR scaling (e.g., all nodes 0.5→3.0) preserves Φ_s
-ratios because Φ_s is linear in ΔNFR. This produces zero drift detection:
-  Φ_s(ΔNFR) = Σ_j ΔNFR_j/d_ij^α
-  Φ_s(k·ΔNFR) = k·Φ_s(ΔNFR)
-  → Drift = Φ_s_after - Φ_s_before = k·Φ - Φ = (k-1)·Φ scales uniformly
-  → No spatial gradient created, U6 validation fails
+**Historical bug (now fixed)**: the dependency hash
+(tnfr.utils.cache._compute_dependency_hash) read node values by hardcoded
+English keys ('delta_nfr', 'vf', 'epi'), but the canonical writer
+(tnfr.alias.set_attr) stores each field under its FIRST alias — the
+Greek/canonical key ('ΔNFR', 'νf', 'EPI'). The mismatch made the hash read
+None for every node, so the cache key was BLIND to ΔNFR: Φ_s returned stale
+values after ANY ΔNFR change (uniform or not), and two distinct graphs with
+identical topology but different ΔNFR collided.
 
-**Solution**: Use non-uniform ΔNFR patterns (e.g., alternating 5.0/0.1)
-to create spatial gradients. For cache workarounds in tests, vary alpha
-(e.g., 2.0 → 2.001) to force cache miss via different function arguments.
+**Earlier misdiagnosis (superseded)**: this was previously attributed to
+"uniform ΔNFR scaling producing no spatial gradient", with an
+alpha-variation (2.0→2.001) workaround to force cache misses. That analysis
+was incorrect — Φ_s is linear in ΔNFR (Φ_s(k·ΔNFR) = k·Φ_s), so uniform
+scaling DOES change Φ_s and DOES yield a non-zero drift (k−1)·Φ_s; the
+zero-drift symptom was entirely the cache bug, not the physics.
 
-**Physics**: U6 structural potential confinement (|Φ_s| < 0.771,
-an empirical per-node threshold) requires spatial ΔNFR gradients to
-produce measurable drift for passive
-equilibrium validation. Uniform scaling defeats gradient detection.
+**Fix**: tnfr.utils.cache._compute_dependency_hash now resolves
+dependencies through the canonical alias tuples (_dependency_alias_keys),
+so ΔNFR/νf/EPI changes correctly invalidate dependent caches. No
+alpha-variation workaround is needed.
 
-See: tests/unit/operators/test_unified_grammar.py TestU6 for examples
+See: tests/physics/test_field_cache_invalidation.py for regression coverage
 """
 
 from __future__ import annotations

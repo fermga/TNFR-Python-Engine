@@ -1566,28 +1566,19 @@ validator = UnifiedGrammarValidator(u6_spacing=2, u6_alpha=0.7)
 
 ## Appendix: Key Technical Discoveries (Nov 2025)
 
-### Discovery 1: Cache Invalidation Issue (Φ_s Validation)
+### Discovery 1: Cache Invalidation Bug (Φ_s / ξ_C / J_ΔNFR)
 
-**Problem**: U6 structural potential tests failing with zero drift detection despite ΔNFR changes.
+**Problem**: U6 structural potential tests reported zero drift despite ΔNFR changes; `compute_structural_potential` returned bit-identical Φ_s after ΔNFR was modified on a fixed topology.
 
-**Root Cause**: `compute_structural_potential()` cached via `@cache_tnfr_computation` with cache key depending on `graph_topology + node_dnfr`. Uniform ΔNFR scaling (e.g., all nodes 0.5→3.0) produces proportional Φ_s changes:
+**Original misdiagnosis (Nov 2025, superseded)**: the symptom was attributed to "uniform ΔNFR scaling preserving Φ_s ratios" and worked around by (1) non-uniform ΔNFR patterns and (2) varying `alpha` (2.0→2.001) to force a cache miss. This was incorrect: Φ_s is linear in ΔNFR (`Φ_s(k·ΔNFR) = k·Φ_s`), so uniform scaling DOES change Φ_s and DOES produce a non-zero drift `(k−1)·Φ_s`. The zero-drift symptom was not physics — it was a cache bug.
 
-```
-Φ_s(ΔNFR) = Σ_j ΔNFR_j / d_ij^α
-Φ_s(k·ΔNFR) = k·Φ_s(ΔNFR)
-→ Drift = Φ_s_after - Φ_s_before = k·Φ - Φ = (k-1)·Φ
-```
+**Actual root cause (corrected May 2026)**: `@cache_tnfr_computation` builds its key from a dependency hash (`tnfr.utils.cache._compute_dependency_hash`). For `node_dnfr`/`node_vf`/`node_epi` dependencies it read node values by hardcoded English keys (`'delta_nfr'`, `'vf'`, `'epi'`), but the canonical writer (`tnfr.alias.set_attr`) stores each field under its FIRST alias — the Greek/canonical key (`'ΔNFR'`, `'νf'`, `'EPI'`). The mismatch made the hash read `None` for every node, so the cache key was **blind** to ΔNFR: any ΔNFR change returned stale Φ_s, and two distinct graphs with identical topology but different ΔNFR collided. (The `alpha`-variation workaround "worked" only because `alpha` is part of the function-argument key, forcing an unrelated miss.)
 
-This scales uniformly without creating spatial gradients, defeating U6 validation which requires detecting structural pressure gradients.
+**Fix**: `_compute_dependency_hash` now resolves dependencies through the canonical alias tuples (`_dependency_alias_keys`), so ΔNFR/νf/EPI changes correctly invalidate dependent caches. The `node_phase` path was already correct (phase is stored under both `'theta'` and `'phase'`). Affected canonical functions: `compute_structural_potential` (Φ_s), `estimate_coherence_length` (ξ_C), `compute_dnfr_flux` (J_ΔNFR), and `physics/telemetry.py`.
 
-**Solution**:
-1. **Non-uniform ΔNFR patterns**: Use alternating high/low values (e.g., 5.0/0.1) to create spatial gradients
-2. **Alpha variation workaround**: Change alpha parameter (2.0→2.001) to force cache miss in tests
-3. **Import correction**: Use `tnfr.physics.canonical` instead of `tnfr.physics.fields`
+**Regression**: `tests/physics/test_field_cache_invalidation.py` (Φ_s/ξ_C respond to ΔNFR changes; no same-topology collisions; the dependency hash reflects ΔNFR/νf/EPI changes).
 
-**Physics Insight**: U6 structural potential confinement (Δ Φ_s < 2.0 threshold) measures passive equilibrium through spatial ΔNFR gradients. Uniform scaling preserves network topology symmetry, producing no measurable structural pressure differential.
-
-**Location**: `src/tnfr/physics/canonical.py` module docstring, `tests/unit/operators/test_unified_grammar.py` TestU6 class
+**Location**: `src/tnfr/utils/cache.py` (`_compute_dependency_hash`, `_dependency_alias_keys`), `src/tnfr/physics/canonical.py` module docstring
 
 ---
 
