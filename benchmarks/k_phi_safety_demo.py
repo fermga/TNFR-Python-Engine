@@ -66,7 +66,7 @@ def main():
     grad_mean_after = float(np.mean(list(grad_after.values())))
 
     # K_φ safety (use global alpha_hint from Task 3)
-    safety = k_phi_multiscale_safety(G, scales=(1, 2, 3, 5), alpha_hint=2.76)
+    safety = k_phi_multiscale_safety(G, alpha_hint=2.76)
 
     print("\nResults:")
     print(f"- Topology: {topo}, nodes={n_nodes}, seed={seed}")
@@ -75,7 +75,8 @@ def main():
     print("- K_φ multiscale safety:")
     print(
         f"   safe={safety['safe']} fit: α={safety['fit']['alpha']:.2f}, "
-        f"R²={safety['fit']['r_squared']:.3f}, n={safety['fit']['n_points']}"
+        f"R²={safety['fit']['r_squared']:.3f}, "
+        f"n={len(safety['variance_by_scale'])}"
     )
     if safety.get('violations'):
         print(f"   tolerance violations at scales: {safety['violations']}")
