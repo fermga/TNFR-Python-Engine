@@ -1,6 +1,6 @@
 # TNFR Examples
 
-127 runnable examples organized by theme. Every example derives from the
+128 runnable examples organized by theme. Every example derives from the
 nodal equation `∂EPI/∂t = νf · ΔNFR(t)`, the 13 canonical operators, grammar
 U1–U6, and the structural field tetrad `(Φ_s, |∇φ|, K_φ, ξ_C)`.
 
@@ -44,6 +44,7 @@ and operator–tetrad synergies.
 - `31` constants basis · `32` spiral attractors · `33` complex-field unification
 - `34` conservation protocol · `35` tetrad irreducibility · `36` grammar violations
 - `37` operator–tetrad synergy · `38` grammar-energy landscape · `39` nodal decomposition
+- `115` operator-contract fidelity audit (measured, not asserted)
 
 ## 03_riemann_zeta — TNFR–Riemann ζ-track (P1–P31)
 

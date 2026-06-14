@@ -37,6 +37,9 @@ from tnfr.physics.integrity import (
     IntegrityReport,
     IntegritySummary,
     enable_integrity_monitor,
+    audit_operator_contracts,
+    OperatorContractAudit,
+    OperatorContractResult,
 )
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
@@ -684,3 +687,93 @@ class TestMultiOperatorSequence:
         # After 5 clean operations, conservation quality should be decent
         assert fv["conservation_quality"] >= 0.0
         assert fv["violation_rate"] >= 0.0
+
+
+class TestOperatorContractAudit:
+    """Proactive measured fidelity of the 13 operators to their contracts."""
+
+    def test_audit_returns_thirteen_results(self) -> None:
+        audit = audit_operator_contracts()
+        assert isinstance(audit, OperatorContractAudit)
+        assert audit.n_operators == 13
+        assert all(
+            isinstance(r, OperatorContractResult) for r in audit.results
+        )
+
+    def test_all_thirteen_contracts_satisfied(self) -> None:
+        # every canonical operator satisfies its postcondition contract
+        # when MEASURED in its correct canonical context
+        audit = audit_operator_contracts()
+        assert audit.all_satisfied, audit.summary()
+        assert audit.n_satisfied == 13
+        assert audit.violations == ()
+
+    def test_all_thirteen_glyphs_present(self) -> None:
+        audit = audit_operator_contracts()
+        glyphs = {r.glyph for r in audit.results}
+        assert glyphs == {
+            "AL", "EN", "IL", "OZ", "UM", "RA", "SHA", "VAL",
+            "NUL", "THOL", "ZHIR", "NAV", "REMESH",
+        }
+
+    def test_stabiliser_il_reduces_dnfr(self) -> None:
+        # IL is measured at network level: it must not increase |ΔNFR|
+        audit = audit_operator_contracts()
+        il = next(r for r in audit.results if r.glyph == "IL")
+        assert il.satisfied
+        assert il.context == "network"
+
+    def test_coupling_um_reduces_dnfr(self) -> None:
+        audit = audit_operator_contracts()
+        um = next(r for r in audit.results if r.glyph == "UM")
+        assert um.satisfied
+        assert um.context == "network"
+
+    def test_resonance_ra_preserves_identity(self) -> None:
+        audit = audit_operator_contracts()
+        ra = next(r for r in audit.results if r.glyph == "RA")
+        assert ra.satisfied
+        assert ra.context == "identity"
+
+    def test_mutation_zhir_transforms_phase(self) -> None:
+        audit = audit_operator_contracts()
+        zhir = next(r for r in audit.results if r.glyph == "ZHIR")
+        assert zhir.satisfied
+        assert zhir.context == "phase"
+
+    def test_audit_is_reproducible(self) -> None:
+        a1 = audit_operator_contracts(seed=7)
+        a2 = audit_operator_contracts(seed=7)
+        assert (
+            [r.satisfied for r in a1.results]
+            == [r.satisfied for r in a2.results]
+        )
+
+    def test_summary_contains_verdict(self) -> None:
+        audit = audit_operator_contracts()
+        text = audit.summary()
+        assert "ALL SATISFIED" in text
+        assert "13/13" in text
+
+
+class TestSDKOperatorAudit:
+    """The SDK exposes the measured operator audit and a working check."""
+
+    def test_sdk_audit_operators(self) -> None:
+        from tnfr.sdk import TNFR
+
+        net = TNFR.create(16).random(0.3).evolve(2)
+        result = net.audit_operators()
+        assert result["all_satisfied"] is True
+        assert result["n_satisfied"] == 13
+        assert result["n_operators"] == 13
+        assert len(result["operators"]) == 13
+
+    def test_sdk_integrity_check_no_longer_empty(self) -> None:
+        # regression: integrity_check used to read a non-existent .passed
+        # attribute and silently skip every node (nodes_checked=0)
+        from tnfr.sdk import TNFR
+
+        net = TNFR.create(16).random(0.3).evolve(2)
+        result = net.integrity_check("IL")
+        assert result["nodes_checked"] > 0

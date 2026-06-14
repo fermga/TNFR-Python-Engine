@@ -1247,7 +1247,7 @@ class Network:
                 report = self._monitor.after_operator(self.G, node, operator_name)
                 reports.append({
                     'node': node,
-                    'passed': report.passed,
+                    'passed': report.is_healthy,
                     'details': str(report),
                 })
             except Exception:
@@ -1260,6 +1260,46 @@ class Network:
             'failed': len(reports) - passed_count,
             'pass_rate': passed_count / max(len(reports), 1),
             'reports': reports,
+        }
+
+    def audit_operators(self) -> dict[str, Any]:
+        """Proactively MEASURE all 13 operator-contract fidelities.
+
+        Unlike :meth:`integrity_check` (which inspects the current network
+        state), this applies each of the 13 canonical operators in its
+        correct canonical context and measures whether its postcondition
+        contract (AGENTS.md §Operators) is satisfied — the measured-not-
+        asserted operator-fidelity audit.
+
+        Returns
+        -------
+        dict[str, Any]
+            ``all_satisfied`` (bool), ``n_satisfied``/``n_operators`` (int),
+            ``operators`` (per-operator list of glyph/contract/context/
+            satisfied/detail), and ``summary`` (str).  Empty dict if the
+            integrity module is unavailable.
+        """
+        if not _HAS_INTEGRITY:
+            return {}
+        from ..physics.integrity import audit_operator_contracts
+
+        audit = audit_operator_contracts()
+        return {
+            'all_satisfied': audit.all_satisfied,
+            'n_operators': audit.n_operators,
+            'n_satisfied': audit.n_satisfied,
+            'operators': [
+                {
+                    'glyph': r.glyph,
+                    'operator': r.operator,
+                    'contract': r.contract,
+                    'context': r.context,
+                    'satisfied': r.satisfied,
+                    'detail': r.detail,
+                }
+                for r in audit.results
+            ],
+            'summary': audit.summary(),
         }
 
     # === ANALYSIS ===

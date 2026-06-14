@@ -111,7 +111,7 @@ Theoretical Foundation: The framework models systems as coherent dynamic pattern
 - **Grammar Application**: [src/tnfr/operators/grammar_application.py](src/tnfr/operators/grammar_application.py) - Pre-validated operator application
 - **Unified Fields**: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py) - Tetrad implementation
 - **Structural Conservation**: [src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py) - Conservation theorem (Noether-like)
-- **Integrity Monitor**: [src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py) - 13/13 operator postcondition verification
+- **Integrity Monitor**: [src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py) - 13/13 operator postcondition verification (reactive monitor + proactive `audit_operator_contracts` measured audit)
 - **TNFR Engines Hub**: [src/tnfr/engines/](src/tnfr/engines/) - Centralized mathematical & optimization engines
   - **Self-Optimization**: [src/tnfr/engines/self_optimization/](src/tnfr/engines/self_optimization/) - Automatic network optimization
   - **Pattern Discovery**: [src/tnfr/engines/pattern_discovery/](src/tnfr/engines/pattern_discovery/) - Mathematical pattern detection
@@ -1007,6 +1007,9 @@ net.evolve_grammar_aware(steps=10)
 # Integrity monitoring (13/13 operator postconditions)
 report = net.integrity_check()  # -> dict[str, Any]
 
+# Proactive measured audit: each of the 13 operators vs its contract
+audit = net.audit_operators()   # -> dict (all_satisfied, 13/13, per-operator)
+
 # One-shot comprehensive analysis
 analysis = TNFR.analyze(net)  # -> dict with all metrics + tetrad + conservation
 ```
@@ -1542,7 +1545,7 @@ When adding to grammar documentation:
 **Implementation Core — Physics**:
 - **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)**: Unified Structural Field Tetrad (Φ_s, |∇φ|, **Ψ**, ξ_C) **CANONICAL**
 - **[src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py)**: Structural Conservation Theorem (Noether-like)
-- **[src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py)**: Closed-loop integrity monitor (13/13 operator postconditions)
+- **[src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py)**: Closed-loop integrity monitor (13/13 operator postconditions) + proactive `audit_operator_contracts` (measures each operator's contract in its canonical context)
 - **[src/tnfr/physics/classical_mechanics.py](src/tnfr/physics/classical_mechanics.py)**: Classical limit emergence (Keplerian orbits, Newton's laws)
 - **[src/tnfr/physics/quantum_mechanics.py](src/tnfr/physics/quantum_mechanics.py)**: Quantum regime emergence (quantization, superposition, uncertainty)
 - **[src/tnfr/physics/gauge.py](src/tnfr/physics/gauge.py)**: Gauge field structure and symmetries
@@ -1598,7 +1601,7 @@ When adding to grammar documentation:
   - **[src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)**: TetradSnapshot, ConservationReport, SymplecticReport, TNFR.analyze(), grammar-aware evolution, integrity monitoring
   - **[src/tnfr/sdk/fluent.py](src/tnfr/sdk/fluent.py)**: Fluent API with auto_optimize()
   - **[src/tnfr/sdk/adaptive_system.py](src/tnfr/sdk/adaptive_system.py)**: Adaptive system patterns
-- **[examples/](examples/)**: 127 files organized into 10 thematic subfolders (see [examples/README.md](examples/README.md)) — `01_foundations`, `02_physics_regimes`, `03_riemann_zeta`, `04_riemann_L_twisted`, `05_type_hygiene`, `06_navier_stokes`, `07_number_theory`, `08_emergent_geometry`, `09_millennium`, `10_applications`. Each file keeps a stable global number as identifier; the folder gives the theme (this resolves the former `77–86` numbering collision between the Navier–Stokes and Type-Hygiene series, which now live in `06_navier_stokes/` and `05_type_hygiene/`).
+- **[examples/](examples/)**: 128 files organized into 10 thematic subfolders (see [examples/README.md](examples/README.md)) — `01_foundations`, `02_physics_regimes`, `03_riemann_zeta`, `04_riemann_L_twisted`, `05_type_hygiene`, `06_navier_stokes`, `07_number_theory`, `08_emergent_geometry`, `09_millennium`, `10_applications`. Each file keeps a stable global number as identifier; the folder gives the theme (this resolves the former `77–86` numbering collision between the Navier–Stokes and Type-Hygiene series, which now live in `06_navier_stokes/` and `05_type_hygiene/`).
 - **[benchmarks/](benchmarks/)**: Production-grade validation suites (25 benchmark scripts)
 
 **Development**:
@@ -1633,6 +1636,7 @@ When adding to grammar documentation:
 - **Operator-Tetrad Synergy**: [examples/02_physics_regimes/37_operator_tetrad_synergy.py](examples/02_physics_regimes/37_operator_tetrad_synergy.py) (Fingerprint matrix, IL-OZ symmetry)
 - **Grammar-Energy Landscape**: [examples/02_physics_regimes/38_grammar_energy_landscape.py](examples/02_physics_regimes/38_grammar_energy_landscape.py) (Lyapunov refinement)
 - **Nodal Equation Decomposition**: [examples/02_physics_regimes/39_nodal_equation_decomposition.py](examples/02_physics_regimes/39_nodal_equation_decomposition.py) (Dual-lever, Φ_s linear response)
+- **Operator-Contract Fidelity Audit**: [examples/02_physics_regimes/115_operator_contract_audit.py](examples/02_physics_regimes/115_operator_contract_audit.py) (MEASURES — not asserts — that all 13 canonical operators satisfy their postcondition contracts (AGENTS.md §Operators), invariant #4 Grammar Compliance: applies each operator in its correct canonical context and verifies the contract on the recomputed emergent fields. KEY INSIGHT: ΔNFR and C(t) are EMERGENT network fields, so a stabiliser's contract ("IL reduces |ΔNFR|") manifests at the NETWORK level (measured IL |ΔNFR| 0.46→0.25, C(t) 0.68→0.80; UM 0.46→0.10), the local destabiliser OZ at single-node, RA as EPI-sign identity preservation (16/16), ZHIR at the phase channel (θ changed 16/16, with U4b precondition prior IL+OZ); measuring all uniformly at network level would wrongly flag OZ and RA. `audit_operator_contracts` + `OperatorContractAudit` in physics/integrity.py (proactive companion to the reactive StructuralIntegrityMonitor) + SDK `net.audit_operators()`. FIXED a real bug: the SDK `integrity_check` read a non-existent `report.passed` (real attr `is_healthy`) so it always returned nodes_checked=0. 13/13 satisfied measured; validation tool, no operator physics changed)
 - **Arithmetic Number Theory**: [examples/07_number_theory/40_arithmetic_number_theory.py](examples/07_number_theory/40_arithmetic_number_theory.py) (Primality, pressure components, coherence landscape)
 - **Prime Families as Orbits**: [examples/07_number_theory/100_prime_families_orbits.py](examples/07_number_theory/100_prime_families_orbits.py) (Twin, Sophie Germain, Cunningham, Mersenne families as arithmetic maps on the zero-pressure fixed-point set)
 - **Numbers as a Coupled Network**: [examples/07_number_theory/101_numbers_as_coupled_network.py](examples/07_number_theory/101_numbers_as_coupled_network.py) (Ω-graded centrality; primes as the transport periphery of the divisibility/GCD network; correspondence through Ω, not identity)

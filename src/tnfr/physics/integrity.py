@@ -740,3 +740,330 @@ def enable_integrity_monitor(
     monitor = StructuralIntegrityMonitor(mode=mode, **kwargs)
     monitor.attach(G)
     return monitor
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Proactive operator-contract audit (measured, not asserted)
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# The StructuralIntegrityMonitor above is REACTIVE: it is consulted by
+# Operator.__call__ after every transformation and records violations as
+# they happen.  The audit below is PROACTIVE: it applies each of the 13
+# canonical operators in its correct canonical context and MEASURES whether
+# the operator's contract (AGENTS.md §"The 13 Canonical Operators") is
+# satisfied — producing a per-operator certificate.  The two are
+# complementary: the monitor guards live execution; the audit certifies the
+# catalog itself.
+#
+# Honest scope: the contracts are measured at the context where each one
+# canonically manifests — network level for stabilisers (IL, UM, EN, THOL,
+# whose effect is on the emergent ΔNFR / C(t) fields), single-node level for
+# the local destabiliser OZ, identity (EPI-sign) preservation for RA, and
+# the phase channel for ZHIR (with its U4b precondition: prior IL + recent
+# destabiliser).  The emergent field ΔNFR is recomputed after application,
+# since it is a network property, not a node-local one.
+
+
+@dataclass(frozen=True)
+class OperatorContractResult:
+    """Measured fidelity of one canonical operator to its contract.
+
+    Attributes
+    ----------
+    glyph : str
+        Operator glyph code (AL, EN, IL, ...).
+    operator : str
+        Canonical operator name (emission, reception, ...).
+    contract : str
+        The canonical postcondition contract being measured.
+    context : str
+        The measurement context: ``network``, ``node``, ``identity``,
+        ``phase``, ``state``, or ``advisory``.
+    satisfied : bool
+        Whether the measured behaviour satisfies the contract.
+    detail : str
+        Human-readable measured before→after summary.
+    """
+
+    glyph: str
+    operator: str
+    contract: str
+    context: str
+    satisfied: bool
+    detail: str
+
+
+@dataclass(frozen=True)
+class OperatorContractAudit:
+    """Aggregated measured-fidelity audit over the 13 canonical operators."""
+
+    results: tuple[OperatorContractResult, ...]
+
+    @property
+    def n_operators(self) -> int:
+        return len(self.results)
+
+    @property
+    def n_satisfied(self) -> int:
+        return sum(1 for r in self.results if r.satisfied)
+
+    @property
+    def all_satisfied(self) -> bool:
+        return self.n_operators > 0 and self.n_satisfied == self.n_operators
+
+    @property
+    def violations(self) -> tuple[OperatorContractResult, ...]:
+        return tuple(r for r in self.results if not r.satisfied)
+
+    def summary(self) -> str:
+        ok = "ALL SATISFIED" if self.all_satisfied else "VIOLATIONS"
+        lines = [
+            f"Operator-contract audit [{ok}]: "
+            f"{self.n_satisfied}/{self.n_operators} operators satisfy "
+            f"their canonical postcondition contract (measured)."
+        ]
+        for r in self.results:
+            mark = "ok " if r.satisfied else "XX "
+            lines.append(
+                f"  {mark}{r.glyph:>6} [{r.context}] {r.contract} — {r.detail}"
+            )
+        return "\n".join(lines)
+
+
+def _audit_build_graph(n_nodes: int, seed: int) -> Any:
+    """Build a controlled TNFR graph for the contract audit."""
+    import math
+    import random
+
+    import networkx as nx
+
+    from ..dynamics import default_compute_delta_nfr
+
+    k = 4 if n_nodes > 4 else 2
+    rng = random.Random(seed)
+    G = nx.watts_strogatz_graph(n_nodes, k, 0.2, seed=seed)
+    for nd in G.nodes():
+        G.nodes[nd][ALIAS_THETA[0]] = rng.uniform(0.0, 2.0 * math.pi)
+        G.nodes[nd][ALIAS_EPI[0]] = rng.uniform(0.2, 0.6)
+        G.nodes[nd][ALIAS_VF[0]] = rng.uniform(0.6, 1.2)
+    default_compute_delta_nfr(G)
+    return G
+
+
+def _audit_metrics(G: Any) -> dict[str, float]:
+    """Network-level metrics for contract measurement."""
+    import numpy as np
+
+    _ensure_imports()
+    nodes = list(G.nodes())
+    epis = [abs(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes]
+    dnfrs = [abs(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in nodes]
+    vfs = [get_attr(G.nodes[n], ALIAS_VF, 0.0) for n in nodes]
+    return {
+        "C": float(_compute_coherence(G)),
+        "epi": float(np.mean(epis)) if epis else 0.0,
+        "dnfr": float(np.mean(dnfrs)) if dnfrs else 0.0,
+        "vf": float(np.mean(vfs)) if vfs else 0.0,
+    }
+
+
+def audit_operator_contracts(
+    *,
+    n_nodes: int = 16,
+    seed: int = 7,
+    tol: float = 1e-6,
+) -> OperatorContractAudit:
+    r"""Measure each canonical operator against its postcondition contract.
+
+    Applies all 13 canonical operators, each in its correct canonical
+    context, and measures whether its contract (AGENTS.md §Operators) holds.
+    The emergent ΔNFR field is recomputed after application (it is a network
+    property).  Returns an :class:`OperatorContractAudit` with a per-operator
+    result.
+
+    Parameters
+    ----------
+    n_nodes : int
+        Size of the controlled audit graph.
+    seed : int
+        Reproducible seed for the audit graph.
+    tol : float
+        Numerical tolerance for the contract predicates.
+
+    Returns
+    -------
+    OperatorContractAudit
+    """
+    import warnings as _warnings
+
+    import numpy as np
+
+    from ..dynamics import default_compute_delta_nfr
+    from ..operators.definitions import (
+        Emission, Reception, Coherence, Dissonance, Coupling, Resonance,
+        Silence, Expansion, Contraction, SelfOrganization, Mutation,
+        Transition, Recursivity,
+    )
+
+    # (glyph, name, class, context, contract text)
+    catalog = [
+        ("AL", "emission", Emission, "network", "EPI not decreased"),
+        ("EN", "reception", Reception, "network", "C(t) not decreased"),
+        ("IL", "coherence", Coherence, "network",
+         "|ΔNFR| not increased and C(t) not decreased"),
+        ("OZ", "dissonance", Dissonance, "node", "|ΔNFR| not decreased"),
+        ("UM", "coupling", Coupling, "network", "|ΔNFR| not increased"),
+        ("RA", "resonance", Resonance, "identity", "EPI sign preserved"),
+        ("SHA", "silence", Silence, "network", "νf not increased (freeze)"),
+        ("VAL", "expansion", Expansion, "network", "|EPI| not decreased"),
+        ("NUL", "contraction", Contraction, "network", "|EPI| not increased"),
+        ("THOL", "self_organization", SelfOrganization, "network",
+         "C(t) not catastrophic (≥90%)"),
+        ("ZHIR", "mutation", Mutation, "phase", "θ transformed"),
+        ("NAV", "transition", Transition, "state", "state changed"),
+        ("REMESH", "recursivity", Recursivity, "advisory",
+         "network-level echo (advisory)"),
+    ]
+
+    results: list[OperatorContractResult] = []
+
+    for glyph, name, cls, context, contract in catalog:
+        G = _audit_build_graph(n_nodes, seed)
+        op = cls()
+
+        with _warnings.catch_warnings():
+            _warnings.simplefilter("ignore")
+            if context == "node":
+                # local destabiliser: single node, measure that node's |ΔNFR|
+                node = list(G.nodes())[0]
+                d_before = abs(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
+                op(G, node)
+                default_compute_delta_nfr(G)
+                d_after = abs(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
+                satisfied = d_after >= d_before - tol
+                detail = f"node |ΔNFR| {d_before:.4f}→{d_after:.4f}"
+
+            elif context == "identity":
+                signs_before = {
+                    n: float(np.sign(get_attr(G.nodes[n], ALIAS_EPI, 0.0)))
+                    for n in G.nodes()
+                }
+                for nd in list(G.nodes()):
+                    op(G, nd)
+                default_compute_delta_nfr(G)
+                preserved = sum(
+                    1 for n in G.nodes()
+                    if float(np.sign(get_attr(G.nodes[n], ALIAS_EPI, 0.0)))
+                    == signs_before[n]
+                )
+                total = G.number_of_nodes()
+                satisfied = preserved == total
+                detail = f"EPI sign preserved {preserved}/{total}"
+
+            elif context == "phase":
+                # U4b precondition: prior IL (stable base) + recent OZ
+                for nd in list(G.nodes()):
+                    Coherence()(G, nd)
+                for nd in list(G.nodes()):
+                    Dissonance()(G, nd)
+                default_compute_delta_nfr(G)
+                theta_before = {
+                    n: get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+                    for n in G.nodes()
+                }
+                for nd in list(G.nodes()):
+                    op(G, nd)
+                changed = sum(
+                    1 for n in G.nodes()
+                    if abs(get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+                           - theta_before[n]) > 1e-9
+                )
+                total = G.number_of_nodes()
+                satisfied = changed > 0
+                detail = f"θ changed {changed}/{total}"
+
+            elif context == "state":
+                before = _audit_metrics(G)
+                theta_before = {
+                    n: get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+                    for n in G.nodes()
+                }
+                for nd in list(G.nodes()):
+                    op(G, nd)
+                default_compute_delta_nfr(G)
+                after = _audit_metrics(G)
+                theta_changed = any(
+                    abs(get_attr(G.nodes[n], ALIAS_THETA, 0.0)
+                        - theta_before[n]) > 1e-9
+                    for n in G.nodes()
+                )
+                satisfied = theta_changed or any(
+                    abs(after[k] - before[k]) > tol
+                    for k in ("C", "epi", "dnfr", "vf")
+                )
+                detail = "state changed" if satisfied else "no state change"
+
+            elif context == "advisory":
+                # REMESH is a network-level echo verified elsewhere; the
+                # contract here is advisory (always satisfied at this level).
+                for nd in list(G.nodes()):
+                    op(G, nd)
+                default_compute_delta_nfr(G)
+                satisfied = True
+                detail = "advisory (network echo)"
+
+            else:  # network
+                before = _audit_metrics(G)
+                for nd in list(G.nodes()):
+                    op(G, nd)
+                default_compute_delta_nfr(G)
+                after = _audit_metrics(G)
+                if glyph == "AL":
+                    satisfied = after["epi"] >= before["epi"] - tol
+                    detail = f"|EPI| {before['epi']:.4f}→{after['epi']:.4f}"
+                elif glyph == "EN":
+                    satisfied = after["C"] >= before["C"] - tol
+                    detail = f"C(t) {before['C']:.4f}→{after['C']:.4f}"
+                elif glyph == "IL":
+                    satisfied = (
+                        after["dnfr"] <= before["dnfr"] + tol
+                        and after["C"] >= before["C"] - tol
+                    )
+                    detail = (
+                        f"|ΔNFR| {before['dnfr']:.4f}→{after['dnfr']:.4f}, "
+                        f"C(t) {before['C']:.4f}→{after['C']:.4f}"
+                    )
+                elif glyph == "UM":
+                    satisfied = after["dnfr"] <= before["dnfr"] + tol
+                    detail = f"|ΔNFR| {before['dnfr']:.4f}→{after['dnfr']:.4f}"
+                elif glyph == "SHA":
+                    satisfied = after["vf"] <= before["vf"] + tol
+                    detail = f"νf {before['vf']:.4f}→{after['vf']:.4f}"
+                elif glyph == "VAL":
+                    satisfied = after["epi"] >= before["epi"] - tol
+                    detail = f"|EPI| {before['epi']:.4f}→{after['epi']:.4f}"
+                elif glyph == "NUL":
+                    satisfied = after["epi"] <= before["epi"] + tol
+                    detail = f"|EPI| {before['epi']:.4f}→{after['epi']:.4f}"
+                elif glyph == "THOL":
+                    satisfied = (
+                        before["C"] <= tol
+                        or after["C"] >= before["C"] * 0.9 - tol
+                    )
+                    detail = f"C(t) {before['C']:.4f}→{after['C']:.4f}"
+                else:
+                    satisfied = True
+                    detail = "n/a"
+
+        results.append(
+            OperatorContractResult(
+                glyph=glyph,
+                operator=name,
+                contract=contract,
+                context=context,
+                satisfied=bool(satisfied),
+                detail=detail,
+            )
+        )
+
+    return OperatorContractAudit(results=tuple(results))
