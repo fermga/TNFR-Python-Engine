@@ -82,7 +82,7 @@ network, and emergent chemistry/particles from the same criterion.
 
 - `40` arithmetic number theory · `94–97` generative / spectral / Goldbach
 - `100–102` prime families, numbers-as-network, nodal flow on numbers
-- `116` νf-embedded prime visibility (arithmetic via νf only; diffusion sees it, substrate blind)
+- `116` νf-embedded prime visibility (arithmetic via νf only; diffusion echoes ANY νf carrier — prime ≈ arbitrary set ≈ Ω(n)/log n — substrate blind)
 - `emergent_chemistry_particles_demo.py` — chemistry/particles from ΔNFR = 0
 
 ## 08_emergent_geometry — the geometry the dynamics generates from itself
