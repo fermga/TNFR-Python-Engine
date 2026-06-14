@@ -18,6 +18,7 @@ from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from tnfr.physics.structural_diffusion import (
     StructuralDiffusionCertificate,
     OverdampedRegimeCertificate,
+    OverdampedProjectionCertificate,
     DiscreteModeCertificate,
     StructuralStabilityCertificate,
     RandomWalkCertificate,
@@ -40,6 +41,8 @@ from tnfr.physics.structural_diffusion import (
     current_divergence,
     verify_structural_diffusion,
     verify_overdamped_regime,
+    damped_wave_rates,
+    verify_overdamped_projection,
     verify_discrete_modes,
     verify_structural_stability,
     verify_structural_random_walk,
@@ -230,6 +233,72 @@ class TestOverdampedRegime:
         assert cert.is_overdamped_drift
         assert "VALID" in cert.summary()
         assert "mobility law" in cert.summary()
+
+
+class TestOverdampedProjection:
+    """Diffusion is the overdamped projection of the substrate wave flow."""
+
+    def test_damped_wave_roots_satisfy_characteristic_equation(self) -> None:
+        import pytest
+
+        G = _canonical_graph(40)
+        gamma = 50.0
+        lambdas, s_slow, s_fast = damped_wave_rates(G, gamma)
+        # s^2 + gamma s + lambda = 0  =>  s_slow + s_fast = -gamma,
+        # s_slow * s_fast = lambda (Vieta).
+        assert s_slow + s_fast == pytest.approx(
+            -gamma * np.ones_like(lambdas)
+        )
+        assert s_slow * s_fast == pytest.approx(lambdas)
+
+    def test_slow_root_converges_to_diffusion_rate(self) -> None:
+        # the slow root -> -lambda_k/gamma (the diffusion rate nu_f*lambda_k)
+        G = _canonical_graph(40)
+        cert = verify_overdamped_projection(G, gamma=50.0)
+        assert cert.max_rate_rel_error < 1e-2
+
+    def test_bridge_error_scales_as_inverse_gamma_squared(self) -> None:
+        import pytest
+
+        # rate_error * gamma^2 -> constant ~ lambda_max as gamma grows
+        G = _canonical_graph(40)
+        c1 = verify_overdamped_projection(G, gamma=50.0)
+        c2 = verify_overdamped_projection(G, gamma=200.0)
+        # larger gamma => the constant sits closer to lambda_max
+        err1 = abs(c1.rate_error_times_gamma_sq - c1.lambda_max)
+        err2 = abs(c2.rate_error_times_gamma_sq - c2.lambda_max)
+        assert err2 <= err1 + 1e-9
+        assert c2.rate_error_times_gamma_sq == pytest.approx(
+            c2.lambda_max, rel=0.05
+        )
+
+    def test_nu_f_is_inverse_damping(self) -> None:
+        import pytest
+
+        G = _canonical_graph(40)
+        cert = verify_overdamped_projection(G, gamma=40.0)
+        assert cert.nu_f_effective == pytest.approx(1.0 / 40.0)
+
+    def test_slowest_mode_matches_diffusion_spectral_gap(self) -> None:
+        import pytest
+
+        G = _canonical_graph(40)
+        cert = verify_overdamped_projection(G, gamma=100.0)
+        assert cert.slowest_slow_rate == pytest.approx(
+            cert.slowest_diffusion_rate, rel=2e-2
+        )
+
+    def test_trajectory_collapses_onto_diffusion(self) -> None:
+        G = _canonical_graph(40)
+        cert = verify_overdamped_projection(G, gamma=100.0)
+        assert cert.trajectory_max_rel_error < 1e-2
+
+    def test_certificate_valid(self) -> None:
+        G = _canonical_graph(40)
+        cert = verify_overdamped_projection(G, gamma=50.0)
+        assert isinstance(cert, OverdampedProjectionCertificate)
+        assert cert.is_valid_projection
+        assert "VALID" in cert.summary()
 
 
 class TestDiscreteModes:

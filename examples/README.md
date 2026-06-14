@@ -1,6 +1,6 @@
 # TNFR Examples
 
-125 runnable examples organized by theme. Every example derives from the
+126 runnable examples organized by theme. Every example derives from the
 nodal equation `∂EPI/∂t = νf · ΔNFR(t)`, the 13 canonical operators, grammar
 U1–U6, and the structural field tetrad `(Φ_s, |∇φ|, K_φ, ξ_C)`.
 
@@ -91,7 +91,7 @@ Helmholtz–Hodge orthogonality, generating structure, flow prediction.
 - `98` symplectic substrate · `99` structural diffusion
 - `103–105` substrate↔Riemann, NS-is-not-Riemann, NS enstrophy
 - `106` polarization · `107` orthogonal structure · `108` generating structure
-- `112` structure predicts the coherence flow · `unified_fields_showcase.py`
+- `112` structure predicts the coherence flow · `113` overdamped projection bridge · `unified_fields_showcase.py`
 
 ## 09_millennium — Millennium-problem reformulations (honest scope)
 

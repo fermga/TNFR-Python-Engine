@@ -237,6 +237,7 @@ from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
 __all__ = [
     "StructuralDiffusionCertificate",
     "OverdampedRegimeCertificate",
+    "OverdampedProjectionCertificate",
     "DiscreteModeCertificate",
     "StructuralStabilityCertificate",
     "RandomWalkCertificate",
@@ -259,6 +260,8 @@ __all__ = [
     "current_divergence",
     "verify_structural_diffusion",
     "verify_overdamped_regime",
+    "damped_wave_rates",
+    "verify_overdamped_projection",
     "verify_discrete_modes",
     "verify_structural_stability",
     "verify_structural_random_walk",
@@ -714,6 +717,226 @@ def verify_overdamped_regime(
         mobility_linear_in_nu_f=mobility_linear,
         drift_linear_in_pressure=pressure_linear,
         is_second_order=False,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Overdamped projection: the bridge from the conservative substrate wave
+# to the dissipative structural diffusion
+# ---------------------------------------------------------------------------
+
+
+def damped_wave_rates(G: Any, gamma: float) -> tuple[Any, Any, Any]:
+    r"""Per-mode slow/fast rates of the damped graph wave q̈ + γq̇ + Lq = 0.
+
+    The conservative symplectic substrate carries the graph **wave**
+    equation q̈ = −L q (second order, mode k oscillating at √λ_k — the
+    standing-wave ``discrete modes`` of :func:`verify_discrete_modes`).
+    Adding a damping γ gives the damped oscillator q̈ + γq̇ + L q = 0, whose
+    per-mode characteristic equation is
+
+        s² + γ s + λ_k = 0   ⟹   s± = ½(−γ ± √(γ² − 4λ_k)).
+
+    For γ² > 4λ_k (overdamped per mode) both roots are real: a **slow** root
+    s₋ → −λ_k/γ (the diffusion rate) and a **fast** root s₊ → −γ (a
+    transient that dies immediately).  This is the spectral content of the
+    overdamped projection: after the fast transient, mode k relaxes at
+    λ_k/γ = ν_f·λ_k with ν_f = 1/γ.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    gamma : float
+        Damping coefficient.  Its inverse is the effective diffusivity
+        (mobility) ν_f = 1/γ.
+
+    Returns
+    -------
+    (lambdas, s_slow, s_fast) : tuple[np.ndarray, np.ndarray, np.ndarray]
+        Sorted Laplacian eigenvalues and the (real-part) slow/fast roots.
+    """
+    _, lap = structural_diffusion_operator(G)
+    lambdas = np.sort(np.linalg.eigvals(lap).real)
+    lambdas = np.clip(lambdas, 0.0, None)
+    disc = gamma * gamma - 4.0 * lambdas + 0j
+    root = np.sqrt(disc)
+    s_slow = ((-gamma + root) / 2.0).real
+    s_fast = ((-gamma - root) / 2.0).real
+    return lambdas, s_slow, s_fast
+
+
+@dataclass(frozen=True)
+class OverdampedProjectionCertificate:
+    r"""Verification that structural diffusion is the overdamped projection
+    of the conservative symplectic-substrate wave flow.
+
+    The conservative substrate (:mod:`tnfr.physics.symplectic_substrate`)
+    carries the graph wave q̈ = −L q (second order).  Damping it and taking
+    the strong-damping (Smoluchowski) limit collapses it onto the
+    first-order structural diffusion q̇ = −(1/γ) L q, with the
+    identification **ν_f = 1/γ** (structural frequency = inverse damping =
+    mobility).  Both endpoints are canonical TNFR objects; this certificate
+    measures the bridge between them.
+
+    Attributes
+    ----------
+    n_nodes : int
+    gamma : float
+        Damping coefficient used for the projection.
+    nu_f_effective : float
+        The effective diffusivity 1/γ recovered by the projection.
+    spectral_gap : float
+        λ₂ of L_rw (the Fiedler value).
+    lambda_max : float
+        Largest Laplacian eigenvalue (sets the bridge error scale).
+    max_rate_rel_error : float
+        Max over modes of |s_slow + λ_k/γ| / (λ_k/γ): how far the damped
+        slow rate is from the diffusion rate.
+    rate_error_times_gamma_sq : float
+        ``max_rate_rel_error · γ²`` — converges to ≈ λ_max, confirming the
+        bridge error scales as O(λ_max/γ²).
+    slowest_slow_rate : float
+        Overdamped slow rate of the Fiedler mode, −s_slow(λ₂).
+    slowest_diffusion_rate : float
+        The diffusion spectral gap ν_f·λ₂ = λ₂/γ.
+    trajectory_max_rel_error : float
+        Max relative L² error between the damped-wave trajectory and the
+        diffusion trajectory exp(−L t/γ)·q₀ over an overdamped time window.
+    projects_to_diffusion : bool
+        Whether both the rate and trajectory errors fall within tolerance.
+    """
+
+    n_nodes: int
+    gamma: float
+    nu_f_effective: float
+    spectral_gap: float
+    lambda_max: float
+    max_rate_rel_error: float
+    rate_error_times_gamma_sq: float
+    slowest_slow_rate: float
+    slowest_diffusion_rate: float
+    trajectory_max_rel_error: float
+    projects_to_diffusion: bool
+
+    @property
+    def is_valid_projection(self) -> bool:
+        """True when the damped substrate wave projects onto diffusion."""
+        return self.projects_to_diffusion
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "VALID" if self.is_valid_projection else "INVALID"
+        return (
+            f"Overdamped projection [{ok}]: damped substrate wave "
+            f"projects onto diffusion with nu_f=1/gamma="
+            f"{self.nu_f_effective:.4f}; rate error "
+            f"{self.max_rate_rel_error:.2e} (x gamma^2="
+            f"{self.rate_error_times_gamma_sq:.3f} ~ lambda_max="
+            f"{self.lambda_max:.3f}), slow gap {self.slowest_slow_rate:.5f} "
+            f"vs diffusion gap {self.slowest_diffusion_rate:.5f}, "
+            f"trajectory error {self.trajectory_max_rel_error:.2e}"
+        )
+
+
+def verify_overdamped_projection(
+    G: Any,
+    *,
+    gamma: float = 50.0,
+    n_time_samples: int = 40,
+    tolerance: float = 1e-2,
+) -> OverdampedProjectionCertificate:
+    r"""Verify diffusion is the overdamped projection of the substrate wave.
+
+    Builds the canonical random-walk Laplacian L_rw, forms the damped graph
+    wave q̈ + γq̇ + L q = 0, and measures two things in the strong-damping
+    limit: (i) the per-mode **slow rate** converges to the diffusion rate
+    λ_k/γ = ν_f·λ_k (ν_f = 1/γ), with error scaling as O(λ_max/γ²); and
+    (ii) the damped-wave **trajectory** (from q₀ at rest) collapses onto the
+    structural-diffusion trajectory exp(−L t/γ)·q₀.  No field formula is
+    re-implemented — L_rw comes from
+    :func:`structural_diffusion_operator` and the orthonormal eigenbasis
+    from the symmetric normalized Laplacian.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    gamma : float
+        Damping coefficient (effective diffusivity ν_f = 1/γ).  Must satisfy
+        γ² > 4·λ_max for every mode to be overdamped.
+    n_time_samples : int
+        Time samples in the overdamped window for the trajectory check.
+    tolerance : float
+        Maximum relative error (rate and trajectory) for a valid projection.
+
+    Returns
+    -------
+    OverdampedProjectionCertificate
+    """
+    nodes, lap = structural_diffusion_operator(G)
+    n = len(nodes)
+    lambdas = np.sort(np.linalg.eigvals(lap).real)
+    lambdas = np.clip(lambdas, 0.0, None)
+    lam_max = float(lambdas[-1]) if n else 0.0
+    nonzero = lambdas[lambdas > 1e-9]
+    lam2 = float(nonzero[0]) if nonzero.size else 0.0
+    nu_f = 1.0 / gamma
+
+    # (i) per-mode slow rate vs diffusion rate
+    disc = gamma * gamma - 4.0 * lambdas + 0j
+    s_slow = ((-gamma + np.sqrt(disc)) / 2.0).real
+    diff_rate = lambdas / gamma  # = nu_f * lambda_k
+    mask = lambdas > 1e-9
+    if np.any(mask):
+        rel = np.abs(s_slow[mask] + diff_rate[mask]) / diff_rate[mask]
+        max_rate_rel = float(np.max(rel))
+    else:
+        max_rate_rel = 0.0
+    # Fiedler (slowest) mode
+    if lam2 > 0.0:
+        s_gap = (-gamma + np.sqrt(gamma * gamma - 4.0 * lam2)) / 2.0
+        slow_gap = float(-s_gap)
+    else:
+        slow_gap = 0.0
+    diff_gap = lam2 / gamma
+
+    # (ii) trajectory: damped wave vs diffusion in the orthonormal eigenbasis
+    sym_nodes, lsym = _symmetric_normalized_laplacian(G)
+    w, V = np.linalg.eigh(lsym)
+    w = np.clip(w, 0.0, None)
+    q0 = structural_field(G, sym_nodes)
+    c0 = V.T @ q0
+    disc_w = gamma * gamma - 4.0 * w + 0j
+    root_w = np.sqrt(disc_w)
+    ss = (-gamma + root_w) / 2.0
+    sf = (-gamma - root_w) / 2.0
+    denom = sf - ss
+    safe = np.abs(denom) > 1e-12
+    a = np.where(safe, c0 * sf / np.where(safe, denom, 1.0), c0)
+    b = np.where(safe, -c0 * ss / np.where(safe, denom, 1.0), 0.0)
+    horizon = 3.0 * gamma / lam2 if lam2 > 0.0 else gamma
+    ts = np.linspace(0.05 * horizon, horizon, max(2, n_time_samples))
+    traj_err = 0.0
+    for t in ts:
+        q_wave = V @ (a * np.exp(ss * t) + b * np.exp(sf * t)).real
+        q_diff = V @ (c0 * np.exp(-w * t / gamma))
+        denom_t = float(np.linalg.norm(q_diff)) + 1e-12
+        err = float(np.linalg.norm(q_wave - q_diff)) / denom_t
+        traj_err = max(traj_err, err)
+
+    projects = (max_rate_rel < tolerance) and (traj_err < tolerance)
+
+    return OverdampedProjectionCertificate(
+        n_nodes=n,
+        gamma=float(gamma),
+        nu_f_effective=float(nu_f),
+        spectral_gap=lam2,
+        lambda_max=lam_max,
+        max_rate_rel_error=max_rate_rel,
+        rate_error_times_gamma_sq=float(max_rate_rel * gamma * gamma),
+        slowest_slow_rate=slow_gap,
+        slowest_diffusion_rate=float(diff_gap),
+        trajectory_max_rel_error=traj_err,
+        projects_to_diffusion=bool(projects),
     )
 
 
