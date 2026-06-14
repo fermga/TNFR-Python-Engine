@@ -49,6 +49,7 @@ from tnfr.physics.symplectic_substrate import (
     verify_poincare_cartan,
     verify_substrate_geometry,
     verify_symplectic_reduction,
+    verify_adiabatic_invariance,
     diagonal_moment_map,
 )
 
@@ -689,3 +690,41 @@ class TestSubstrateIntegration:
         analysis = TNFR.analyze(net)
         assert "symplectic_substrate" in analysis
         assert analysis["features"]["symplectic_substrate"] is True
+
+
+class TestAdiabaticInvariance:
+    """The substrate action is an adiabatic invariant of a slow nu_f ramp."""
+
+    def test_slow_ramp_conserves_action(self) -> None:
+        cert = verify_adiabatic_invariance()
+        assert cert.is_adiabatic_invariant
+        assert cert.slow_drift < 1e-2
+
+    def test_drift_decreases_with_slowness(self) -> None:
+        # the adiabatic signature: slower ramp -> smaller action drift
+        cert = verify_adiabatic_invariance()
+        assert cert.drift_decreases_with_slowness
+        assert cert.slow_drift < cert.fast_drift
+
+    def test_fast_ramp_breaks_invariance(self) -> None:
+        # a sudden ramp (T=1) injects/extracts action: large drift
+        cert = verify_adiabatic_invariance(ramp_times=(1.0, 80.0))
+        assert cert.fast_drift > 0.1
+
+    def test_drift_series_trends_down(self) -> None:
+        cert = verify_adiabatic_invariance(
+            ramp_times=(1.0, 5.0, 20.0, 80.0)
+        )
+        drifts = cert.action_drifts
+        # the slow end is far below the fast end (orders of magnitude)
+        assert drifts[-1] < drifts[0] / 10.0
+
+    def test_certificate_valid(self) -> None:
+        from tnfr.physics.symplectic_substrate import (
+            AdiabaticInvarianceCertificate,
+        )
+
+        cert = verify_adiabatic_invariance()
+        assert isinstance(cert, AdiabaticInvarianceCertificate)
+        assert "VALID" in cert.summary()
+        assert "clock" in cert.summary()

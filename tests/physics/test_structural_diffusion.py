@@ -19,6 +19,7 @@ from tnfr.physics.structural_diffusion import (
     StructuralDiffusionCertificate,
     OverdampedRegimeCertificate,
     OverdampedProjectionCertificate,
+    UndampedLimitCertificate,
     DiscreteModeCertificate,
     StructuralStabilityCertificate,
     RandomWalkCertificate,
@@ -43,6 +44,7 @@ from tnfr.physics.structural_diffusion import (
     verify_overdamped_regime,
     damped_wave_rates,
     verify_overdamped_projection,
+    verify_undamped_limit,
     verify_discrete_modes,
     verify_structural_stability,
     verify_structural_random_walk,
@@ -298,6 +300,58 @@ class TestOverdampedProjection:
         cert = verify_overdamped_projection(G, gamma=50.0)
         assert isinstance(cert, OverdampedProjectionCertificate)
         assert cert.is_valid_projection
+        assert "VALID" in cert.summary()
+
+
+class TestUndampedLimit:
+    """The gamma->0 end of the bridge: damped wave -> standing waves."""
+
+    def test_small_gamma_recovers_standing_waves(self) -> None:
+        G = _canonical_graph(40)
+        cert = verify_undamped_limit(G, gamma=1e-3)
+        assert cert.matches_discrete_modes
+        assert cert.max_freq_rel_error < 1e-2
+
+    def test_decay_rate_is_half_gamma(self) -> None:
+        import pytest
+
+        # underdamped envelope decay Re(s) = gamma/2
+        G = _canonical_graph(40)
+        gamma = 1e-3
+        cert = verify_undamped_limit(G, gamma=gamma)
+        assert cert.max_decay_rate == pytest.approx(gamma / 2.0, rel=1e-6)
+
+    def test_frequency_error_scales_as_gamma_squared(self) -> None:
+        # freq error / gamma^2 -> constant as gamma shrinks
+        G = _canonical_graph(40)
+        c1 = verify_undamped_limit(G, gamma=1e-2)
+        c2 = verify_undamped_limit(G, gamma=1e-3)
+        # the constant stabilises: the two normalised values agree closely
+        assert abs(
+            c2.freq_error_times_inv_gamma_sq
+            - c1.freq_error_times_inv_gamma_sq
+        ) < 0.05 * c1.freq_error_times_inv_gamma_sq
+
+    def test_frequencies_match_eigenmode_sqrt(self) -> None:
+        import pytest
+
+        # standing-wave frequencies are sqrt of the diffusion eigenvalues,
+        # in ascending-eigenvalue order including the uniform mode (omega~0),
+        # matching the verify_discrete_modes convention.
+        G = _canonical_graph(40)
+        cert = verify_undamped_limit(G, gamma=1e-3)
+        _, lap = structural_diffusion_operator(G)
+        lam = np.sort(np.clip(np.linalg.eigvals(lap).real, 0.0, None))
+        expected = [float(x) ** 0.5 for x in lam[:6]]
+        assert len(cert.standing_wave_frequencies) == len(expected)
+        for got, exp in zip(cert.standing_wave_frequencies, expected):
+            assert got == pytest.approx(exp, abs=1e-6)
+
+    def test_certificate_valid(self) -> None:
+        G = _canonical_graph(40)
+        cert = verify_undamped_limit(G, gamma=1e-3)
+        assert isinstance(cert, UndampedLimitCertificate)
+        assert cert.is_valid_undamped_limit
         assert "VALID" in cert.summary()
 
 

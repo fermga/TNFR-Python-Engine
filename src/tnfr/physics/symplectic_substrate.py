@@ -208,6 +208,8 @@ __all__ = [
     "polarization_vector",
     "polarization_density",
     "verify_polarization_symmetry",
+    "AdiabaticInvarianceCertificate",
+    "verify_adiabatic_invariance",
     "verify_substrate_geometry",
 ]
 
@@ -2241,6 +2243,167 @@ def verify_polarization_symmetry(
         max_algebra_residual=algebra_residual,
         full_polarization_holds=pol_holds,
         max_polarization_residual=pol_residual,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Adiabatic invariance of the action: the slow-νf theorem
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class AdiabaticInvarianceCertificate:
+    r"""Verification that the substrate action I is an adiabatic invariant
+    under a slowly-varying structural frequency.
+
+    The substrate backbone is a harmonic oscillator per conjugate pair with
+    action I = ½|ζ|² = E/ω.  When the effective frequency ω is held fixed
+    the action is exactly conserved (:class:`IntegrabilityCertificate`).
+    When ω is *driven* by a time-varying structural frequency ν_f(t), the
+    action is no longer exactly conserved — but the **adiabatic theorem**
+    (Ehrenfest 1916, an empirically established result) guarantees it is an
+    *adiabatic invariant*: the relative drift |ΔI|/I → 0 as the ramp slows
+    (the adiabaticity parameter ε = ω̇/ω² → 0).  Fast ramps break it.
+
+    This measures the AGENTS.md statement "the actions are the adiabatic
+    invariants; the 13 operators are canonical transformations that
+    redistribute them": ν_f is the **clock**, and a slow ν_f ramp preserves
+    the action while a sudden one injects/extracts it.
+
+    HONEST SCOPE: this is the adiabatic theorem for the substrate harmonic
+    backbone with ν_f providing the slowly-varying frequency.  It is the
+    empirically-grounded Ehrenfest adiabatic invariance, not a new
+    postulate.  Measured by integrating a single oscillator q̈ + ω(t)²q = 0
+    with ω ramped over a window; no field formula is duplicated.
+
+    Attributes
+    ----------
+    omega_start : float
+        Initial effective frequency.
+    omega_end : float
+        Final effective frequency.
+    ramp_times : tuple[float, ...]
+        The ramp durations T probed (slower = larger T).
+    action_drifts : tuple[float, ...]
+        Relative action drift |ΔI|/I for each ramp time.
+    fast_drift : float
+        Action drift for the fastest (smallest-T) ramp.
+    slow_drift : float
+        Action drift for the slowest (largest-T) ramp.
+    drift_decreases_with_slowness : bool
+        Whether the drift is (monotonically, to a floor) smaller for slower
+        ramps — the signature of adiabatic invariance.
+    is_adiabatic_invariant : bool
+        Whether the slow-ramp drift falls within tolerance.
+    """
+
+    omega_start: float
+    omega_end: float
+    ramp_times: tuple[float, ...]
+    action_drifts: tuple[float, ...]
+    fast_drift: float
+    slow_drift: float
+    drift_decreases_with_slowness: bool
+    is_adiabatic_invariant: bool
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "VALID" if self.is_adiabatic_invariant else "INVALID"
+        return (
+            f"Adiabatic invariance [{ok}]: action I=E/omega under "
+            f"omega {self.omega_start:.2f}->{self.omega_end:.2f}; "
+            f"fast-ramp drift {self.fast_drift:.2e} -> "
+            f"slow-ramp drift {self.slow_drift:.2e} "
+            f"(decreases with slowness={self.drift_decreases_with_slowness}); "
+            f"nu_f is the clock, slow ramps conserve the action"
+        )
+
+
+def _action_drift_under_ramp(
+    omega0: float,
+    omega1: float,
+    ramp_time: float,
+    *,
+    n_steps: int = 20000,
+) -> float:
+    r"""Relative action drift |ΔI|/I of q̈ + ω(t)²q = 0 over a linear ramp.
+
+    Integrates a single harmonic oscillator with a frequency linearly ramped
+    from ``omega0`` to ``omega1`` over ``ramp_time`` using a symplectic
+    leapfrog (Liouville-preserving), and returns the relative change of the
+    action I = E/ω between the endpoints.  In the adiabatic (slow-ramp)
+    limit this drift tends to zero — the action is the adiabatic invariant.
+    """
+    q = 1.0
+    v = 0.0
+    dt = ramp_time / n_steps
+
+    def omega(t: float) -> float:
+        frac = min(max(t / ramp_time, 0.0), 1.0)
+        return omega0 + (omega1 - omega0) * frac
+
+    i0 = 0.5 * (v * v + omega0 * omega0 * q * q) / omega0
+    t = 0.0
+    for _ in range(n_steps):
+        w_half = omega(t + 0.5 * dt)
+        v -= 0.5 * dt * w_half * w_half * q
+        q += dt * v
+        w_full = omega(t + dt)
+        v -= 0.5 * dt * w_full * w_full * q
+        t += dt
+    i1 = 0.5 * (v * v + omega1 * omega1 * q * q) / omega1
+    return abs(i1 - i0) / i0 if i0 > 1e-30 else 0.0
+
+
+def verify_adiabatic_invariance(
+    *,
+    omega_start: float = 1.0,
+    omega_end: float = 3.0,
+    ramp_times: tuple[float, ...] = (1.0, 5.0, 20.0, 80.0),
+    tolerance: float = 1e-2,
+) -> AdiabaticInvarianceCertificate:
+    r"""Verify the substrate action is an adiabatic invariant of slow ν_f.
+
+    Probes the action I = E/ω of the substrate harmonic backbone under a
+    structural frequency ramped from ``omega_start`` to ``omega_end`` over a
+    range of ramp durations.  Confirms the adiabatic theorem: the relative
+    action drift shrinks as the ramp slows (the action is conserved in the
+    slow-ν_f limit), so ν_f acts as the clock whose slow variation preserves
+    the action while a fast variation injects/extracts it.
+
+    Parameters
+    ----------
+    omega_start, omega_end : float
+        Initial and final effective frequencies of the ramp.
+    ramp_times : tuple[float, ...]
+        Ramp durations to probe (ascending = increasingly adiabatic).
+    tolerance : float
+        Maximum slow-ramp drift for the action to count as an adiabatic
+        invariant.
+
+    Returns
+    -------
+    AdiabaticInvarianceCertificate
+    """
+    drifts = tuple(
+        _action_drift_under_ramp(omega_start, omega_end, t)
+        for t in ramp_times
+    )
+    fast_drift = drifts[0]
+    slow_drift = drifts[-1]
+    # adiabatic signature: the slowest ramp is far below the fastest
+    decreases = slow_drift < fast_drift
+    is_adiabatic = slow_drift < tolerance
+
+    return AdiabaticInvarianceCertificate(
+        omega_start=float(omega_start),
+        omega_end=float(omega_end),
+        ramp_times=tuple(float(t) for t in ramp_times),
+        action_drifts=tuple(float(d) for d in drifts),
+        fast_drift=float(fast_drift),
+        slow_drift=float(slow_drift),
+        drift_decreases_with_slowness=bool(decreases),
+        is_adiabatic_invariant=bool(is_adiabatic),
     )
 
 

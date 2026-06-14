@@ -238,6 +238,7 @@ __all__ = [
     "StructuralDiffusionCertificate",
     "OverdampedRegimeCertificate",
     "OverdampedProjectionCertificate",
+    "UndampedLimitCertificate",
     "DiscreteModeCertificate",
     "StructuralStabilityCertificate",
     "RandomWalkCertificate",
@@ -262,6 +263,7 @@ __all__ = [
     "verify_overdamped_regime",
     "damped_wave_rates",
     "verify_overdamped_projection",
+    "verify_undamped_limit",
     "verify_discrete_modes",
     "verify_structural_stability",
     "verify_structural_random_walk",
@@ -937,6 +939,131 @@ def verify_overdamped_projection(
         slowest_diffusion_rate=float(diff_gap),
         trajectory_max_rel_error=traj_err,
         projects_to_diffusion=bool(projects),
+    )
+
+
+@dataclass(frozen=True)
+class UndampedLimitCertificate:
+    r"""Verification that the γ→0 limit of the damped substrate wave is the
+    undamped standing-wave spectrum √λ_k (the discrete modes).
+
+    The overdamped projection (γ→∞, :func:`verify_overdamped_projection`)
+    collapses the damped substrate wave onto structural diffusion.  Its
+    opposite end, γ→0, is the **conservative** limit: the roots of
+    s² + γs + λ_k = 0 become the pure-imaginary pair s = ±i√λ_k, so every
+    mode oscillates undamped at the standing-wave frequency ω_k = √λ_k —
+    exactly the discrete modes of :func:`verify_discrete_modes`.  γ is the
+    single dial between the two regimes: γ→∞ diffusion, γ→0 standing waves.
+
+    Attributes
+    ----------
+    n_nodes : int
+    gamma : float
+        Small damping used to probe the conservative limit.
+    max_decay_rate : float
+        Max |Re(s)| over the non-uniform modes (→ 0 as γ → 0; equals γ/2
+        for underdamped modes — the envelope decay).
+    max_freq_rel_error : float
+        Max over modes of |Im(s) − √λ_k| / √λ_k: how close the damped
+        oscillation frequency is to the undamped standing-wave frequency.
+    freq_error_times_inv_gamma_sq : float
+        ``max_freq_rel_error / γ²`` — converges to a constant, confirming
+        the frequency error scales as O(γ²).
+    matches_discrete_modes : bool
+        Whether the γ→0 frequencies match the standing-wave spectrum √λ_k.
+    standing_wave_frequencies : tuple[float, ...]
+        The lowest few undamped frequencies ω_k = √λ_k (in ascending
+        eigenvalue order, starting from the uniform mode ω₀ ≈ 0 — the same
+        convention as :func:`verify_discrete_modes`).
+    """
+
+    n_nodes: int
+    gamma: float
+    max_decay_rate: float
+    max_freq_rel_error: float
+    freq_error_times_inv_gamma_sq: float
+    matches_discrete_modes: bool
+    standing_wave_frequencies: tuple[float, ...]
+
+    @property
+    def is_valid_undamped_limit(self) -> bool:
+        """True when the γ→0 wave recovers the standing-wave spectrum."""
+        return self.matches_discrete_modes
+
+    def summary(self) -> str:
+        """Human-readable one-line verdict."""
+        ok = "VALID" if self.is_valid_undamped_limit else "INVALID"
+        return (
+            f"Undamped limit [{ok}]: gamma->0 damped wave -> standing waves "
+            f"s=+-i*sqrt(lambda_k); at gamma={self.gamma:.3g} decay "
+            f"{self.max_decay_rate:.3e} (=gamma/2), freq error "
+            f"{self.max_freq_rel_error:.2e} (/gamma^2="
+            f"{self.freq_error_times_inv_gamma_sq:.3f}), "
+            f"matches discrete modes={self.matches_discrete_modes}"
+        )
+
+
+def verify_undamped_limit(
+    G: Any,
+    *,
+    gamma: float = 1e-3,
+    tolerance: float = 1e-2,
+) -> UndampedLimitCertificate:
+    r"""Verify the γ→0 limit of the damped substrate wave is standing waves.
+
+    Forms the damped graph wave q̈ + γq̇ + L q = 0 at a *small* damping γ and
+    measures that each underdamped mode's complex root tends to the
+    pure-imaginary standing-wave value s = ±i√λ_k: the envelope decay
+    Re(s) = −γ/2 → 0, and the oscillation frequency Im(s) → √λ_k (the
+    discrete-mode frequency of :func:`verify_discrete_modes`).  This is the
+    conservative end of the same γ-dial whose γ→∞ end is the overdamped
+    projection onto structural diffusion.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    gamma : float
+        Small damping (γ² < 4·λ₂ keeps the slow modes underdamped /
+        oscillatory).
+    tolerance : float
+        Maximum relative frequency error for a valid undamped limit.
+
+    Returns
+    -------
+    UndampedLimitCertificate
+    """
+    nodes, lap = structural_diffusion_operator(G)
+    n = len(nodes)
+    lambdas, s_slow, _ = damped_wave_rates(G, gamma)
+    omega = np.sqrt(np.clip(lambdas, 0.0, None))  # standing-wave frequencies
+
+    # complex roots of s^2 + gamma s + lambda = 0 (full, not just real part)
+    disc = gamma * gamma - 4.0 * lambdas + 0j
+    root = np.sqrt(disc)
+    s_plus = (-gamma + root) / 2.0
+    decay = np.abs(s_plus.real)   # envelope decay = gamma/2 (underdamped)
+    freq = np.abs(s_plus.imag)    # oscillation frequency
+
+    mask = lambdas > 1e-9
+    if np.any(mask):
+        rel = np.abs(freq[mask] - omega[mask]) / omega[mask]
+        max_freq_rel = float(np.max(rel))
+        max_decay = float(np.max(decay[mask]))
+    else:
+        max_freq_rel = 0.0
+        max_decay = 0.0
+
+    freqs = tuple(float(omega[k]) for k in range(min(6, n)))
+    matches = max_freq_rel < tolerance
+
+    return UndampedLimitCertificate(
+        n_nodes=n,
+        gamma=float(gamma),
+        max_decay_rate=max_decay,
+        max_freq_rel_error=max_freq_rel,
+        freq_error_times_inv_gamma_sq=float(max_freq_rel / (gamma * gamma)),
+        matches_discrete_modes=bool(matches),
+        standing_wave_frequencies=freqs,
     )
 
 
