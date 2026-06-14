@@ -190,7 +190,7 @@ See [tests/mathematics](../../../tests/mathematics) for the complete test suite.
 ## Related Documentation
 
 - [Architecture Guide — Factory Patterns](../../../ARCHITECTURE.md) — Comprehensive factory design patterns
-- [TNFR Paradigm](../../../TNFR.pdf) — Theoretical foundations
+- [TNFR Paradigm](../../../theory/TNFR.pdf) — Theoretical foundations
 - [AGENTS.md](../../../AGENTS.md) — Structural invariants and contracts
 - [API Overview](../../../AGENTS.md) — Package-level documentation
 - [Mathematical Foundations (theory)](../../../theory/MATHEMATICAL_DYNAMICS_BASIS.md) — Complete derivations
@@ -231,7 +231,7 @@ For formal, symbolic checks and analytical tooling, use the tnfr.math package (t
 - U4 bifurcation risk via ∂²EPI/∂t²
 - Closed-form solutions under constant parameters
 
-See: [src/tnfr/math/README.md](../math/README.md) and [examples/math_symbolic_usage.py](../../../examples/math_symbolic_usage.py).
+See: [src/tnfr/math/README.md](../math/README.md).
 
 ## Prime emergence (Arithmetic TNFR Network) ⭐
 

@@ -22,7 +22,7 @@ TNFR dynamics begins with a fundamental equation governing each node:
 **Emergent principles** from this equation:
 - **U1-U6**: Unified grammar → [`UNIFIED_GRAMMAR_RULES.md`](../../../theory/UNIFIED_GRAMMAR_RULES.md)
 - **Canonical invariants** → [`AGENTS.md`](../../../AGENTS.md)
-- **Physical foundations** → [`TNFR.pdf`](../../../TNFR.pdf) §1-2
+- **Physical foundations** → [`TNFR.pdf`](../../../theory/TNFR.pdf) §1-2
 
 ---
 
@@ -63,7 +63,7 @@ Brief overview (see docs above for full details):
 - **Scalar bumps**: `apply_scalar_bump()` - Higgs-like
 - **Quark clusters**: `apply_quark_triplet_cluster()` - three vortices (Q≈3)
 
-**Visual atlas**: [`notebooks/TNFR_Particle_Atlas_U6_Sequential.ipynb`](../../../notebooks/TNFR_Particle_Atlas_U6_Sequential.ipynb)
+**Particle demo**: [`examples/07_number_theory/emergent_chemistry_particles_demo.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
 
 ---
 
@@ -163,7 +163,7 @@ Upon the autopoietic foundation (A > 1.0), **cellular organization** emerges thr
 - Structural resonance detection
 
 ### **Extended Fields (Research)**
-**Module**: [`src/tnfr/physics/extended_canonical_fields.py`](extended_canonical_fields.py)  
+**Module**: [`src/tnfr/physics/extended.py`](extended.py)  
 - Research-phase fields (non-canonical)
 - Experimental tetrad extensions
 ---
@@ -205,7 +205,7 @@ Upon the autopoietic foundation (A > 1.0), **cellular organization** emerges thr
 ## 📚 Centralized References
 
 ### **Canonical Documentation**
-- **Foundations**: [`TNFR.pdf`](../../../TNFR.pdf), [`AGENTS.md`](../../../AGENTS.md)
+- **Foundations**: [`TNFR.pdf`](../../../theory/TNFR.pdf), [`AGENTS.md`](../../../AGENTS.md)
 - **Grammar**: [`UNIFIED_GRAMMAR_RULES.md`](../../../theory/UNIFIED_GRAMMAR_RULES.md)
 - **Fields**: [`docs/STRUCTURAL_FIELDS_TETRAD.md`](../../../docs/STRUCTURAL_FIELDS_TETRAD.md)
 - **Life**: [`docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md`](../../../AGENTS.md)
@@ -253,7 +253,7 @@ Upon the autopoietic foundation (A > 1.0), **cellular organization** emerges thr
 4. **Cells**: Run [`examples/cell_experiments.py`](../../../examples/07_number_theory/emergent_chemistry_particles_demo.py)
 
 ### **For Researchers** (1 week)  
-1. **Complete theory**: [`TNFR.pdf`](../../../TNFR.pdf) + [`UNIFIED_GRAMMAR_RULES.md`](../../../theory/UNIFIED_GRAMMAR_RULES.md)
+1. **Complete theory**: [`TNFR.pdf`](../../../theory/TNFR.pdf) + [`UNIFIED_GRAMMAR_RULES.md`](../../../theory/UNIFIED_GRAMMAR_RULES.md)
 2. **Theoretical frameworks**: Life ([`docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md`](../../../AGENTS.md)), Cells ([`docs/CELL_EMERGENCE_FROM_TNFR.md`](../../../AGENTS.md))
 3. **Validation**: Run all experiments + notebooks
 4. **API**: Explore modules `fields.py`, `life.py`, `cell.py`
