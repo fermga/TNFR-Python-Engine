@@ -492,6 +492,25 @@ Across odd $n$ the spectral test "$3$ distinct $\iff$ prime" is **18/18 correct*
 
 **Honest scope.** A clean **measured negative**: it confirms the analytical closure, it does **not** break the wall, and it closes no open problem. It is a re-expression of two known structural facts — no canonical per-node observable exists on a homogeneous (vertex-transitive) graph, and the nodal equation carries no per-node weight slot — measured here in TNFR's own substrate.
 
+### 9.9 Factorization in the Phase Sector — the Complex Spectrum Completes the Recovery (MEASURED)
+
+§9.6 (Reading B, real sector) recovered the factor coset $(i\bmod p)$ of a semiprime $n=p\cdot q$ as an $\eta^2\to 1$ Fourier mode of the emergent diffusion spectrum, but only **partially**: it missed the high-frequency factor modes of $51=3\cdot 17$ and $91=7\cdot 13$. §9.6/§9.7 showed the missing content lives in the **phase** (the complex spectrum of the directed residue digraph). Example [122_factorization_phase_sector.py](../examples/08_emergent_geometry/122_factorization_phase_sector.py) uses that phase sector to **complete** the factor-coset recovery.
+
+**The structural fact (CRT, present in both sectors).** For $n=p\cdot q$ the factor coset $(i\bmod p)$ corresponds to the Fourier frequencies $k=$ multiples of the cofactor $q$. A pure Fourier mode $\exp(2\pi i k j/n)$ with $k$ a multiple of $q$ is **constant within each coset** $(i\bmod p)$, hence an **exact eigenvector** of the emergent operator (a circulant / Cayley digraph) — verified to machine precision (eigenvector residual $\sim 10^{-14}$) for BOTH the undirected (real) and directed (complex) residue operator. The factor coset is CRT/circulant structure ($\mathbb{Z}_n\cong\mathbb{Z}_p\times\mathbb{Z}_q$), present in both spectra.
+
+**Why the real sector misses 51 and 91.** The undirected residue operator is **symmetric**: its eigenvalues come in degenerate pairs ($\lambda_k=\lambda_{n-k}$). When the factor-coset frequency lands in a degenerate eigenspace, the eigensolver returns an arbitrary real combination that **scrambles** the coset structure, so the $\eta^2$ test fails (51, 91). The directed operator is **non-normal**: its eigenvalues are complex Gauss sums, which are **less degenerate** and **isolate** the factor-coset mode — so the complex spectrum exposes precisely the modes the real sector loses.
+
+**Measured (the correct complex-mean $\eta^2$).** *(One must use complex means: a Fourier mode has flat magnitude, so a magnitude-$\eta^2$ is blind to the coset.)*
+
+| Sector | Factor recovery (scan prime $d\le\sqrt n$, smallest with best $\eta^2>0.9$) |
+|---|---|
+| Real undirected | **8/10** — fails on exactly 51 and 91 (the §9.6 caveat) |
+| Complex directed | **10/10** — recovers 51 and 91 via the phase |
+
+The shuffle control collapses the factor-coset $\eta^2$ from $1.0$ to the random baseline ($\sim 0.1$–$0.2$): the signal is the CRT/circulant structure, not an artefact.
+
+**Honest scope.** This re-expresses CRT / Fourier **period** structure (the content Shor's algorithm exploits via period finding) in the canonical emergent spectrum. It is **not** a new or fast factoring algorithm: the candidate scan is $O(\sqrt n)$ prime divisors — the same order as trial division, **no speedup**, and **no cryptographic threat**. The complex sector's only advantage is reduced eigenvalue degeneracy (a linear-algebra fact about circulant / Cayley digraphs), which isolates the factor-coset mode. The result **completes** §9.6's partial real-sector recovery ($8/10\to 10/10$) via the phase sector; it closes no open problem.
+
 ---
 
 ## 10. Prime Path Graphs and the TNFR-Riemann Connection
