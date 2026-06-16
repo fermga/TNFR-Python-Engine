@@ -52,7 +52,9 @@ from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
 from ..operators.nodal_equation import compute_expected_depi_dt, compute_d2epi_dt2
 
 try:
-    from ..dynamics.self_optimizing_engine import TNFRSelfOptimizingEngine
+    # Availability probe for the self-optimization engine (capability flag
+    # only; auto_optimize uses the grammar-aware stabilizer path directly).
+    import tnfr.dynamics.self_optimizing_engine  # noqa: F401
     _HAS_OPTIMIZATION = True
 except ImportError:
     _HAS_OPTIMIZATION = False
@@ -758,24 +760,28 @@ class Network:
         return self
     
     def auto_optimize(self) -> Network:
-        """🤖 Auto-optimize using self-optimizing engine."""
-        if not _HAS_OPTIMIZATION:
-            print("⚠️  Auto-optimization not available - using basic evolution")
-            return self.evolve(3, "stabilization")
-        
+        """🤖 Auto-optimize: drive the network toward coherence.
+
+        Self-optimization in TNFR is *gradient descent on the structural
+        manifold* (AGENTS.md §Self-Optimizing Dynamics): apply grammar-valid
+        **stabilizers** (coherence IL, reception EN, resonance RA, coupling
+        UM) per node, which monotonically reduce |ΔNFR| and raise C(t).
+
+        This delegates to the grammar-aware evolution restricted to a
+        stabilizer-only candidate set, so it never destabilizes (the full
+        glyph selector would explore/destabilize fragile nodes, which is the
+        general dynamics, not coherence optimization).
+
+        Returns
+        -------
+        Network
+            self (for chaining).
+        """
         if not all('EPI' in self.G.nodes[n] for n in self.G.nodes()):
             create_nfr(self.G)
-        
-        engine = TNFRSelfOptimizingEngine(self.G)
-        
-        # Try to optimize a few nodes
-        for node in list(self.G.nodes())[:min(5, len(self.G.nodes()))]:
-            try:
-                engine.step(node)
-            except Exception:
-                continue  # Skip if optimization fails
-        
-        return self
+        return self.evolve_grammar_aware(
+            steps=3, candidates=['IL', 'EN', 'RA', 'UM']
+        )
     
     # === METRICS ===
     
@@ -1202,7 +1208,11 @@ class Network:
             create_nfr(self.G)
         if candidates is None:
             candidates = ['IL', 'EN', 'RA', 'OZ', 'UM']
-        from ..operators.registry import get_operator_class
+        # Apply via apply_glyph, which accepts glyph CODES ('IL', ...).
+        # get_operator_class is keyed by canonical NAMES ('coherence', ...)
+        # and raises KeyError on codes, which previously made this loop a
+        # silent no-op (every node skipped).
+        from ..operators import apply_glyph
         for _step in range(steps):
             for node in self.G.nodes():
                 valid = filter_candidates(self.G, node, candidates)
@@ -1210,11 +1220,7 @@ class Network:
                     continue
                 glyph_code = valid[0]  # safest first
                 try:
-                    op_cls = get_operator_class(glyph_code)
-                except KeyError:
-                    continue
-                try:
-                    run_sequence(self.G, node, [op_cls()])
+                    apply_glyph(self.G, node, glyph_code)
                 except Exception:
                     continue
         return self
