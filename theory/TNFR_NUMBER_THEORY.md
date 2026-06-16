@@ -474,6 +474,24 @@ Across odd $n$ the spectral test "$3$ distinct $\iff$ prime" is **18/18 correct*
 
 **Honest scope.** This **explains** the $e$–$\pi$ / $\mathrm{Fix}(G)^\perp$ wall structurally (vertex-transitivity / representation theory); it does **not** cross it and closes no open problem. It confirms, with a measured double dissociation and an arithmetic-neutral control, that running the directed dynamics does **not** let the per-node substrate see arithmetic — the blindness is a **symmetry constraint**, not a dynamics artefact. The arithmetic remains spectral, bounded by the same wall as the paused Riemann program.
 
+### 9.8 Can a Canonical Symmetry-Break Cross the Wall? — The B2-P2 Lever, Measured (NEGATIVE)
+
+§9.7 located the wall at vertex-transitivity. The obvious next move is to **break** that symmetry canonically — the TNFR-Riemann program calls this candidate **B2-P2 (NodeIndexedCouplingWeights)**. The analytical verdict is on record: AGENTS.md "B0★-β-P2 FAILS" (§13sexagesima-sexta) closes P2 at the **slot level** — the nodal equation $\partial\mathrm{EPI}/\partial t=\nu_f\cdot\Delta\mathrm{NFR}$ has no per-node-weight slot; weights enter only as graph-level **channel** scalars ($\texttt{DNFR\_WEIGHTS}=\{\text{phase},\text{epi},\text{vf},\text{topo}\}$), so any per-node law needs an external rule-selection axiom not derivable from the catalog. Example [121_canonical_symmetry_break_negative.py](../examples/08_emergent_geometry/121_canonical_symmetry_break_negative.py) **measures** this closure at the number-theory level.
+
+**The code fact (the missing slot).** `tnfr.dynamics.dnfr._configure_dnfr_weights` produces ONE graph-level dict of channel weights, normalized once and reused for every node. There is no per-node weight in the canonical machinery; the only per-node levers are (a) the initial seed and (b) the per-node $\nu_f$. Both are tested.
+
+**The three levers (measured).**
+
+| Lever | Result | Reading |
+|---|---|---|
+| **D1** symmetric seed | $\sigma(\Phi_s)\sim 10^{-32}$ (machine zero), prime & composite alike | the canonical dynamics ALONE makes zero per-node structure ($\Delta\mathrm{NFR}=0$ on a uniform field); all of §9.7's variation came from the random seed |
+| **D2** structure-derived $\nu_f$ | in/out-degree, triangle counts: $\sigma=0$ exactly | every per-node structural invariant is constant on the vertex-transitive graph → any canonical structure-derived $\nu_f$ is uniform → no break |
+| **D3** arithmetic-injected $\nu_f$ | $\sigma_{\mathrm{arith}}/\sigma_{\mathrm{shuffled}}\approx 1$ (0.96–1.05) | injecting $\nu_f=1+[\,i\in\mathrm{QR}\,]$ does break uniformity, but a shuffled control with the same $\nu_f$ multiset (QR labels destroyed) gives identical dispersion → the substrate echoes the injected **multiset**, not the arithmetic (§9.5/ex 116 mechanism), and is circular |
+
+**Conclusion.** There is **no canonical (non-circular) per-node lever** that breaks vertex-transitivity: the nodal equation has no per-node weight slot (code fact); structure-derived levers are uniform (D2); the symmetric dynamics makes no structure (D1); and the only lever that does break uniformity is an external arithmetic injection that the shuffled control reveals as echo (D3). This is the **empirical, number-theory-level confirmation** of the analytical B2-P2 closure. The wall of §9.7 is **structural**, not an artefact of which canonical knob was turned.
+
+**Honest scope.** A clean **measured negative**: it confirms the analytical closure, it does **not** break the wall, and it closes no open problem. It is a re-expression of two known structural facts — no canonical per-node observable exists on a homogeneous (vertex-transitive) graph, and the nodal equation carries no per-node weight slot — measured here in TNFR's own substrate.
+
 ---
 
 ## 10. Prime Path Graphs and the TNFR-Riemann Connection

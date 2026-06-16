@@ -98,6 +98,7 @@ Helmholtz–Hodge orthogonality, generating structure, flow prediction.
 - `118` where the emergent operator diverges from the classical Laplacian (residue graphs are regular Cayley → identical; on irregular graphs L_rw IS the Shi–Malik degree-aware Ncut → more balanced cuts)
 - `119` the phase sector — directed residue operator (n≡3 mod4 → Paley tournament → complex spectrum; "3 distinct eigenvalues ⟺ odd prime" 58/58, resolves prime powers, phase encodes √n; extends Reading B to all odd primes, still e–π/Fix(G)^⊥ bounded)
 - `120` the symmetry wall (vertex-transitivity of the residue Cayley digraph confines arithmetic to the spectrum; double dissociation — spectrum sees the QR arithmetic, per-node symplectic substrate is blind; same Fix(G)^⊥ wall as the paused Riemann program, explained not crossed)
+- `121` can a canonical symmetry-break cross the wall? (B2-P2 lever, measured NEGATIVE: the nodal equation has no per-node weight slot; structure-derived νf is uniform on the vertex-transitive graph; arithmetic-injected νf is circular echo (shuffled control identical) — confirms the analytical B0★-β-P2 closure at the NT level)
 
 ## 09_millennium — Millennium-problem reformulations (honest scope)
 
