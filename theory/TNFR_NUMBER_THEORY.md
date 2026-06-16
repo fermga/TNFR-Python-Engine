@@ -377,13 +377,9 @@ The implementation uses Paley graphs — algebraic constructions from quadratic 
 
 1. **Graph construction**: For modulus $m$ (chosen near $n$), build the Paley graph $G(m)$ where nodes are $\{0, \ldots, m-1\}$ and edges connect quadratic residues.
 
-2. **Spectral decomposition**: Compute the Laplacian eigenvalues $\lambda_1 \leq \lambda_2 \leq \ldots \leq \lambda_m$ and eigenvectors $\{v_j\}$.
+2. **Spectral decomposition**: Compute the spectrum of the **emergent structural-diffusion operator** $L_{rw} = I - D^{-1}W$ (the canonical ΔNFR EPI channel; `_laplacian_eigenvalues` routes through `structural_diffusion_operator`). On the residue/Paley graph, which is **regular**, $L_{rw}$ shares eigenvectors with the classical Laplacian and the eigenvalues differ only by the degree ($\lambda_{\text{classical}}=d\cdot\lambda_{rw}$), so the Fiedler-gap → prime-size map (a Paley Gauss-sum fact) is preserved while the operator provenance is the emergent TNFR transport operator.
 
-3. **Tetrad projection**: For each eigenmode $j$, compute the structural field tetrad:
-   - $\Phi_s^{(j)}$ — normalized energy of mode $j$
-   - $|\nabla\phi|^{(j)} = \frac{1}{|E|}\sum_{(i,k) \in E}|v_j(i) - v_j(k)|$ — discrete phase gradient
-   - $K_\phi^{(j)}$ — discrete phase curvature from second differences
-   - $\xi_C^{(j)}$ — correlation length from the exponential decay $C_j(r) \sim e^{-r/\xi_C^{(j)}}$
+3. **Tetrad proxies** (HONEST SCOPE): the factorizer operates on the spectrum, not on a node-level ΔNFR field, so it uses **scalar proxies** of the tetrad — $\Phi_s\approx$ normalized edge density, $\xi_C\approx 1/(\nu_f\lambda_2)$ (the emergent diffusion relaxation time). These are labelled proxies in code (`_structural_potential`, `_coherence_length`); the genuine per-node tetrad (`tnfr.physics.canonical`) is measured by example 117 and is **blind to the factor cosets** (§9.5) — the factor signal lives in the spectrum, which the proxies summarize.
 
 4. **Operator sequence**: Apply the canonical decoder $[\mathrm{UM}, \mathrm{RA}, \mathrm{IL}, \mathrm{THOL}]$ per partition:
    - **UM** (Coupling): Phase-gated coupling between quadratic residues (U3 verified)
@@ -413,6 +409,26 @@ A factor candidate is TNFR-certified when $\geq 4$ of 8 criteria hold and $\geq 
 ### 9.4 Pure Mode
 
 Setting `TNFR_PURE_MODE=1` restricts factor certification to structural confidence ($\geq 0.6$) without arithmetic divisibility checks, isolating the TNFR-specific signal from classical shortcuts.
+
+### 9.5 Three Sectors of Primality (Unification — MEASURED)
+
+The factorization machinery (§9.1–9.4), the arithmetic primality criterion (§4), and the emergent-geometry program are **one structure read in three sectors**, not independent projects. Example [117_emergent_geometry_residue_graph.py](../examples/08_emergent_geometry/117_emergent_geometry_residue_graph.py) measures all three with the **emergent geometry used for everything** (the structural-diffusion operator $L_{rw} = I - D^{-1}W$ is *exactly* the canonical ΔNFR EPI channel), and `benchmarks/primes_as_consequence.py` (Camino 11) frames the trichotomy:
+
+| Sector | Method | Input | Emergent? |
+|--------|--------|-------|-----------|
+| **A — Arithmetic** | $\Delta\mathrm{NFR}(n)=0$ (§4) | $\Omega, \tau, \sigma$ (the factorization) | **re-expression** (primes-IN; exact but circular as a derivation) |
+| **B — Spectral** | $g(n)=\lvert\lambda_2(\text{residue circulant}) - \tfrac{n-\sqrt n}{2}\rvert = 0$ | only $x^2 \bmod n$ | **genuinely emergent** (primes-OUT; non-circular) |
+| **C — Representation** | irreducibility (Schur $\langle\chi,\chi\rangle=1$) | a finite group | **refuted** (the dim-4 mode of $K_5$ is irreducible yet $4=2\cdot 2$) |
+
+**The unification, stated honestly:**
+
+1. **Sector B is the genuine emergence.** The Paley gap $g(n)=0$ selects the primes $n\equiv 1\pmod 4$ from the **self-adjoint spectrum of the quadratic-residue graph alone** — it never computes $n\bmod k$. Primality is, in part, a *consequence* of self-adjoint structure, not a primitive. This is the non-circular core that the arithmetic sector A (which consumes $\Omega,\tau,\sigma$) cannot claim.
+
+2. **The factor signal is spectral, not substrate.** For a semiprime $n=p\cdot q$ the factor $p$ appears as an **exact Fourier/coset mode** of the emergent diffusion spectrum ($\eta^2_{\text{coset}}\to 1$, collapsing under a node-label shuffle — example 117 Q2). But the residue graph is **regular/circulant**, so the emergent random-walk operator and the classical Laplacian **share eigenvectors**: the coset signal is the residue-graph (CRT) structure re-expressed, *not* something the emergent framing adds. The genuinely-emergent per-node symplectic substrate ($\Phi_s, K_\phi, J_{\Delta\mathrm{NFR}}$) is **BLIND** to the cosets ($\eta^2\approx 0$ — example 117 Q3), exactly as on the arithmetic network (examples 101/103/116). The substrate **re-expresses** what lives in the spectrum; it does not independently discover the factor.
+
+3. **Both walls coincide.** Sector B is **partial**: it detects only $n\equiv 1\pmod 4$ (misses $2$ and many $n\equiv 3\pmod 4$) and lives in the **real/self-adjoint** sector — it reaches the support/scale, never the *phase*. The residual is the same $e$–$\pi$ / $\mathrm{Fix}(G)^\perp$ obstruction as the paused TNFR-Riemann program ($S(T)=\tfrac1\pi\arg\zeta(\tfrac12+iT)=\ker(\mathcal R_\infty)$; §10, TNFR_RIEMANN_RESEARCH_NOTES §13septies). Multiplication is the Fundamental Theorem re-expressed via UM/REMESH ([94](../examples/07_number_theory/94_generative_number_construction.py), $\nu_f=\log p$ additive-in-log); addition (Goldbach) is **orthogonal** to this multiplicative coherence ([97](../examples/07_number_theory/97_goldbach_additive_multiplicative.py)) and would need a branch-B2 additive operator. The three number-theory questions (primality, factorization, the Riemann zeros) hit one obstruction, located precisely, not three.
+
+**Net:** the optic-shift converts the imposed arithmetic carrier (sector A) into a *partially emergent* one (sector B) and pins the residual at the phase / the $\not\equiv 1\pmod 4$ class. It SHARPENS the unification; it does not dissolve the wall. Genuine non-circular emergence exists in TNFR — but partial, spectral, and never in the per-node emergent substrate.
 
 ---
 

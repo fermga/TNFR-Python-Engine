@@ -18,6 +18,11 @@ import numpy as np
 
 from tnfr.cache import CacheLevel, cache_tnfr_computation
 from tnfr.config.operator_names import CANONICAL_OPERATOR_NAMES
+from tnfr.constants.canonical import (
+    PHI_S_VON_KOCH_THRESHOLD,        # general Φ_s: 0.7711 (von Koch)
+    GRAD_PHI_CANONICAL_THRESHOLD,    # general |∇φ|: γ/π ≈ 0.1837 (Kuramoto)
+    K_PHI_CANONICAL_THRESHOLD,       # general K_φ: 0.9×π ≈ 2.8274
+)
 from tnfr.dynamics.advanced_fft_arithmetic import TNFRAdvancedFFTEngine
 from tnfr.dynamics.fft_backend import FFTBackend
 from tnfr.mathematics.number_theory import (
@@ -53,13 +58,41 @@ _REPLAY_METADATA_VERSION = "1.0"
 
 # ---------------------------------------------------------------------------
 # Arithmetic-recalibrated tetrad thresholds (§7.5, TNFR_NUMBER_THEORY.md)
-# The arithmetic network has distinct topology from general TNFR networks
-# (divisibility graphs are highly structured, not random).  These thresholds
-# are derived from validated experiments across prime/composite distributions.
+# The residue/divisibility-graph topology is highly structured (not random),
+# so §7.5 recalibrates the canonical GENERAL tetrad thresholds empirically.
+# The general baselines are the single source of truth in
+# tnfr.constants.canonical (imported below, never re-typed as magic literals).
+# The arithmetic values are the §7.5-measured recalibrations kept EXACT (they
+# are independent empirical constants, not derivations of the baselines); the
+# imported baselines are used to document and runtime-check the deviation, so
+# the link stays live if the canonical baselines ever change.
 # ---------------------------------------------------------------------------
-_ARITHMETIC_PHI_S_THRESHOLD = 0.7452        # general: 0.7711 (von Koch)
-_ARITHMETIC_GRAD_PHI_THRESHOLD = 0.2591     # general: γ/π ≈ 0.1837 (Kuramoto)
-_ARITHMETIC_K_PHI_THRESHOLD = 3.2275        # general: 0.9×π ≈ 2.8274
+from tnfr.constants.canonical import (
+    PHI_S_VON_KOCH_THRESHOLD,        # general Φ_s: 0.7711 (von Koch)
+    GRAD_PHI_CANONICAL_THRESHOLD,    # general |∇φ|: γ/π ≈ 0.1837 (Kuramoto)
+    K_PHI_CANONICAL_THRESHOLD,       # general K_φ: 0.9×π ≈ 2.8274
+)
+
+# §7.5 arithmetic recalibrations (exact empirical values, validated across the
+# prime/composite distribution). Deviation vs the canonical general baseline:
+#   Φ_s:   0.7452 ≈ 0.966 × 0.7711   (tighter — structured topology)
+#   |∇φ|:  0.2591 ≈ 1.41  × (γ/π)    (looser — residue graphs are dense)
+#   K_φ:   3.2275 ≈ 1.14  × (0.9π)
+_ARITHMETIC_PHI_S_THRESHOLD = 0.7452
+_ARITHMETIC_GRAD_PHI_THRESHOLD = 0.2591
+_ARITHMETIC_K_PHI_THRESHOLD = 3.2275
+
+# Provenance guard: if the canonical general baselines drift, the documented
+# §7.5 ratios above are stale and must be re-derived. (Cheap module-load check.)
+assert 0.95 < _ARITHMETIC_PHI_S_THRESHOLD / PHI_S_VON_KOCH_THRESHOLD < 0.98, (
+    "§7.5 Φ_s recalibration ratio drifted from canonical PHI_S_VON_KOCH_THRESHOLD"
+)
+assert 1.3 < _ARITHMETIC_GRAD_PHI_THRESHOLD / GRAD_PHI_CANONICAL_THRESHOLD < 1.5, (
+    "§7.5 |∇φ| recalibration ratio drifted from canonical GRAD_PHI_CANONICAL_THRESHOLD"
+)
+assert 1.0 < _ARITHMETIC_K_PHI_THRESHOLD / K_PHI_CANONICAL_THRESHOLD < 1.3, (
+    "§7.5 K_φ recalibration ratio drifted from canonical K_PHI_CANONICAL_THRESHOLD"
+)
 
 # Dual-lever operator classification (§8, TNFR_NUMBER_THEORY.md)
 _CAPACITY_LEVER_OPERATORS = frozenset({"um", "sha", "val", "nul"})
@@ -992,8 +1025,36 @@ def _jacobi_symbol(a: int, n: int) -> int:
 
 
 def _laplacian_eigenvalues(graph: nx.Graph) -> np.ndarray:
-    """Return the Laplacian eigenvalues as a dense NumPy array."""
+    """Return the structural spectrum, derived from the EMERGENT TNFR operator.
 
+    Canonical provenance: the spectrum is taken from the emergent
+    structural-diffusion operator L_rw = I − D⁻¹W
+    (:func:`tnfr.physics.structural_diffusion.structural_diffusion_operator`),
+    which is *exactly* the canonical ΔNFR EPI channel
+    (ΔNFR = neighbour_mean − self = −L_rw·EPI). On the residue/Paley graph,
+    which is **regular** (constant degree d), the emergent random-walk
+    Laplacian and the classical combinatorial Laplacian share eigenvectors
+    and their eigenvalues differ only by the degree: λ_classical = d·λ_rw.
+    Rescaling by d recovers the combinatorial spectrum exactly, so the
+    Fiedler-gap → prime-size map (a Paley Gauss-sum fact) is preserved while
+    the operator provenance is the emergent TNFR transport operator, not an
+    externally-imposed Laplacian.
+
+    For non-regular graphs (no single degree) the rescaling is ill-defined;
+    we fall back to the combinatorial Laplacian and the random-walk spectrum
+    is still available via the emergent operator for telemetry.
+    """
+    from tnfr.physics.structural_diffusion import structural_diffusion_operator
+
+    degrees = [d for _, d in graph.degree()]
+    if degrees and min(degrees) == max(degrees) and degrees[0] > 0:
+        # Regular graph: emergent L_rw spectrum × degree == combinatorial spectrum.
+        _, l_rw = structural_diffusion_operator(graph)
+        eig_rw = np.linalg.eigvals(l_rw).real
+        eig_rw.sort()
+        return np.asarray(eig_rw * float(degrees[0]), dtype=float)
+
+    # Irregular fallback: combinatorial Laplacian (degree rescaling undefined).
     try:
         laplacian_matrix = nx.laplacian_matrix(graph, dtype=float)
     except TypeError:  # NetworkX >=3.4 removed the dtype keyword
@@ -1020,7 +1081,18 @@ def _first_positive_eigenvalue(eigenvalues: Sequence[float] | np.ndarray) -> flo
 
 
 def _structural_potential(nodes: int, edges: int) -> float:
-    """Normalize edge density to emulate Φ_s telemetry."""
+    """Edge-density PROXY for Φ_s (NOT the canonical per-node field).
+
+    HONEST SCOPE: the canonical Φ_s
+    (:func:`tnfr.physics.canonical.compute_structural_potential`) is a
+    per-node field Σ_j ΔNFR_j / d(i,j)^α requiring a ΔNFR distribution on
+    the graph. The factorizer operates on the residue-graph *spectrum*
+    (eigenvalues of the emergent operator), not on a node-level ΔNFR field,
+    so it uses this normalized edge density as a scalar coherence proxy.
+    The genuine per-node tetrad is measured by example 117 and is BLIND to
+    the factor cosets — the factor signal lives in the spectrum, which this
+    proxy summarizes. Kept as a proxy by design, labelled as such.
+    """
 
     if nodes < 2:
         return 0.0
@@ -1029,7 +1101,16 @@ def _structural_potential(nodes: int, edges: int) -> float:
 
 
 def _coherence_length(laplacian_gap: float) -> float:
-    """Approximate ξ_C via the inverse Laplacian gap (diffusion time scale)."""
+    """ξ_C PROXY via the inverse emergent spectral gap (diffusion timescale).
+
+    HONEST SCOPE: the canonical ξ_C
+    (:func:`tnfr.physics.canonical.estimate_coherence_length`) is a spatial
+    autocorrelation length of the local coherence field. Here the gap is the
+    Fiedler value of the EMERGENT structural-diffusion operator (see
+    :func:`_laplacian_eigenvalues`), so 1/gap is the canonical diffusion
+    relaxation timescale τ = 1/(νf·λ₂) at νf = 1 — a legitimate emergent
+    quantity, used as the ξ_C proxy on the spectral (not node-field) path.
+    """
 
     if laplacian_gap <= 0:
         return float("inf")
