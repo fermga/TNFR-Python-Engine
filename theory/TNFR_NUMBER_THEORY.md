@@ -511,6 +511,36 @@ The shuffle control collapses the factor-coset $\eta^2$ from $1.0$ to the random
 
 **Honest scope.** This re-expresses CRT / Fourier **period** structure (the content Shor's algorithm exploits via period finding) in the canonical emergent spectrum. It is **not** a new or fast factoring algorithm: the candidate scan is $O(\sqrt n)$ prime divisors — the same order as trial division, **no speedup**, and **no cryptographic threat**. The complex sector's only advantage is reduced eigenvalue degeneracy (a linear-algebra fact about circulant / Cayley digraphs), which isolates the factor-coset mode. The result **completes** §9.6's partial real-sector recovery ($8/10\to 10/10$) via the phase sector; it closes no open problem.
 
+### 9.10 The Symmetry-Sector Decomposition — the General Principle Behind the Whole Arc (MEASURED, CAPSTONE)
+
+§9.7 located the residue-digraph wall at vertex-transitivity. Example [123_symmetry_sector_decomposition.py](../examples/08_emergent_geometry/123_symmetry_sector_decomposition.py) shows that is a **special case** of a general representation-theoretic principle of the canonical emergent operator — the single structure behind every wall in the §9.5–§9.9 arc (and the Riemann residual).
+
+**The principle (Schur, applied to the canonical emergent operator).** For **any** graph $G$ with automorphism group $\mathrm{Aut}(G)$, the canonical emergent operator $L_{rw}=I-D^{-1}W$ is **equivariant**: it commutes with the permutation representation of every automorphism, $P_\sigma L_{rw}=L_{rw}P_\sigma$ for all $\sigma\in\mathrm{Aut}(G)$. By Schur's lemma an equivariant operator block-diagonalizes by the isotypic components (irreps) of $\mathrm{Aut}(G)$. The coarsest split is
+
+$$\mathbb{R}^N=\mathrm{Fix}(G)\ \oplus\ \mathrm{Fix}(G)^\perp,$$
+
+where $\mathrm{Fix}(G)=\{\text{functions constant on the orbits of }\mathrm{Aut}(G)\}$ is the trivial isotypic component and $\dim\mathrm{Fix}(G)=$ the number of vertex orbits. $L_{rw}$ preserves each block. Consequently any canonical **per-node** observable that is itself $\mathrm{Aut}(G)$-invariant lands in $\mathrm{Fix}(G)$ — constant **within** each orbit, never resolving node-from-node inside an orbit — while all **discriminating** information lives in $\mathrm{Fix}(G)^\perp$, the spectrum.
+
+**Measured (five symmetry groups — cyclic, full-symmetric, star, path, product).**
+
+| Graph | $\lvert\mathrm{Aut}\rvert$ | orbits | $\dim\mathrm{Fix}(G)$ | equivariance | $L_{rw}$ preserves $\mathrm{Fix}(G)$ |
+|---|---:|---:|---:|---:|---:|
+| cycle $C_8$ ($D_8$) | 16 | 1 | 1 | $0$ | $0$ |
+| complete $K_6$ ($S_6$) | 720 | 1 | 1 | $0$ | $\sim10^{-17}$ |
+| star $K_{1,5}$ ($S_5$) | 120 | 2 | 2 | $0$ | $\sim10^{-17}$ |
+| path $P_6$ ($\mathbb{Z}_2$) | 2 | 3 | 3 | $0$ | $0$ |
+| torus $C_3\square C_3$ | 72 | 1 | 1 | $0$ | $0$ |
+
+- **M1**: equivariance $\lVert P_\sigma L_{rw}-L_{rw}P_\sigma\rVert=0$ (machine zero) for **every** automorphism.
+- **M2**: $\mathrm{rank}(P_{\mathrm{triv}})=$ #orbits exactly ($P_{\mathrm{triv}}=$ mean of $P_\sigma$).
+- **M3**: $L_{rw}$ preserves $\mathrm{Fix}(G)$ ($\sim10^{-17}$): block-diagonal.
+- **M4**: the canonical per-node symplectic substrate from a symmetric seed satisfies $P_{\mathrm{triv}}v=v$ exactly (orbit-constant); vertex-transitive $\Rightarrow$ $\sigma(\Phi_s)=0$ — the §9.7 blindness, now a **corollary**.
+- **M5**: only the constant eigenmode has $\lVert P_{\mathrm{triv}}v\rVert=1$ (it **is** $\mathrm{Fix}(G)$); every node-separating mode has $\lVert P_{\mathrm{triv}}v\rVert=0$ ($\mathrm{Fix}(G)^\perp$).
+
+**The unification.** The residue-digraph wall (§9.7), the substrate blindness (§9.5/ex 103/116), the spectral primality (§9.6), and the Riemann oscillatory residue $S(T)\in\ker(\mathcal R_\infty)\cap\mathrm{Fix}(S_n)^\perp$ are the **same** $\mathrm{Fix}(G)/\mathrm{Fix}(G)^\perp$ split for different symmetry groups. The star and path (non-vertex-transitive) sharpen the binary blind/sees of §9.7 to the full orbit structure: the substrate resolves the orbit partition and no finer.
+
+**Honest scope.** This is the representation theory of graph automorphisms (Schur's lemma applied to an equivariant operator) re-expressed in the canonical emergent operator. It **explains and unifies** the arc's walls; it is not new mathematics and closes no open problem.
+
 ---
 
 ## 10. Prime Path Graphs and the TNFR-Riemann Connection

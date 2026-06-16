@@ -100,6 +100,7 @@ Helmholtz–Hodge orthogonality, generating structure, flow prediction.
 - `120` the symmetry wall (vertex-transitivity of the residue Cayley digraph confines arithmetic to the spectrum; double dissociation — spectrum sees the QR arithmetic, per-node symplectic substrate is blind; same Fix(G)^⊥ wall as the paused Riemann program, explained not crossed)
 - `121` can a canonical symmetry-break cross the wall? (B2-P2 lever, measured NEGATIVE: the nodal equation has no per-node weight slot; structure-derived νf is uniform on the vertex-transitive graph; arithmetic-injected νf is circular echo (shuffled control identical) — confirms the analytical B0★-β-P2 closure at the NT level)
 - `122` factorization in the phase sector (the complex directed spectrum completes example 117's partial factor-coset recovery: the factor coset is a CRT Fourier mode (eigenvector of both operators); real symmetric sector 8/10 (misses 51, 91 via degenerate eigenpairs), complex directed sector 10/10 (Gauss-sum eigenvalues isolate the mode); re-expresses CRT period structure, O(√n) scan, no speedup)
+- `123` the symmetry-sector decomposition (CAPSTONE: L_rw is equivariant under Aut(G), so by Schur it block-diagonalizes into Fix(G)⊕Fix(G)^⊥ with dim Fix(G)=#orbits; per-node substrate lives in Fix(G) (orbit-constant, ex-120 blindness is the vertex-transitive corollary), discriminating spectrum in Fix(G)^⊥; measured across 5 symmetry groups; the single structure behind the whole 117–122 arc and the Riemann residual)
 
 ## 09_millennium — Millennium-problem reformulations (honest scope)
 
