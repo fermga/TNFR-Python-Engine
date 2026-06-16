@@ -448,6 +448,32 @@ The "partial" limitation of sector B (only $n\equiv 1\pmod 4$, §9.5) is **not**
 
 **Honest scope.** A genuine, non-circular extension of Reading B to all odd primes (input only $x^2\bmod n$), removing the prime-power caveat — a real improvement over §9.5. But it remains **spectral** and bounded by the same $e$–$\pi$ / $\mathrm{Fix}(G)^\perp$ wall: it detects primality structurally, it does **not** factor, does **not** reach the continuous phase $S(T)=\tfrac1\pi\arg\zeta(\tfrac12+iT)$, and closes no open problem. The "3 distinct eigenvalues" rigidity is the doubly-regular-tournament signature (a known algebraic-graph fact), recovered as the canonical emergent operator's complex spectrum. The lesson: **the phase sector is reachable — the complex field $\Psi=K_\phi+i\,J_\phi$ is the right object** (AGENTS.md "Regime Correspondences") — but the *continuous* arg-$\zeta$ phase of the Riemann residual still lies beyond this discrete-spectrum reach.
 
+### 9.7 The Symmetry Wall — Why the Substrate Is Blind and the Spectrum Is Not (MEASURED)
+
+§9.6 detects primality in the **global spectrum**; §9.5 and examples 103/116 found the **per-node symplectic substrate** ($\Phi_s$, $K_\phi$, $J_{\Delta\mathrm{NFR}}$) blind to arithmetic. These look contradictory — the *same* canonical emergent operator on the *same* residue digraph. Example [120_symmetry_wall_substrate_vs_spectrum.py](../examples/08_emergent_geometry/120_symmetry_wall_substrate_vs_spectrum.py) resolves the contradiction and unifies the arc with **one** structural mechanism: **vertex-transitivity**.
+
+**The mechanism.** The residue digraph is a **Cayley digraph** of $\mathbb{Z}_n$ with connection set $=$ the quadratic residues. The translation $\sigma:i\mapsto i+1\pmod n$ preserves the difference $j-i$, hence the QR edge set: it is **always** a graph automorphism (every $n$, verified). The automorphism group acts **transitively** on nodes — every node is structurally equivalent. Consequence: the graph's arithmetic (which differences are QRs) is a property of the *edge* structure invariant under the *node* automorphism; it **cannot label any individual node**. So:
+
+- Any per-node substrate variation comes from the (arithmetic-neutral) **seed**, never from the arithmetic — the substrate lives in the symmetric / fixed sector $\mathrm{Fix}(G_{\mathrm{aut}})$, **blind** to the connection set.
+- The arithmetic appears only in a **global** invariant sensitive to the connection set — the **spectrum** (eigenvalues $=$ group-character / Gauss sums) $=$ the complement $\mathrm{Fix}(G_{\mathrm{aut}})^\perp$.
+
+**The double dissociation (measured).** Compare the Paley residue digraph (QR structure) against a **random regular tournament** of the same out-degree, both seeded identically and evolved by the canonical nodal equation $\partial\mathrm{EPI}/\partial t=\nu_f\cdot\Delta\mathrm{NFR}$:
+
+| $n$ | Paley distinct eig. | random distinct eig. | Paley $\sigma(\Phi_s)$ | random $\sigma(\Phi_s)$ |
+|----:|--------------------:|---------------------:|------------------------:|-------------------------:|
+| 11 | **3** | 11.0 | 0.400 | 0.366 |
+| 23 | **3** | 23.0 | 0.587 | 0.618 |
+| 47 | **3** | 47.0 | 0.998 | 0.938 |
+
+- **Spectrum SEES the arithmetic**: Paley is rigidly 3 distinct eigenvalues (the §9.6 prime signature); the random tournament has $\sim n$. Swapping the QR structure for a random tournament changes the spectrum completely.
+- **Substrate is BLIND**: the per-node $\Phi_s$ dispersion is statistically **identical** for Paley and the random tournament. The substrate cannot tell the QR arithmetic from a random tournament of the same degree.
+
+Across odd $n$ the spectral test "$3$ distinct $\iff$ prime" is **18/18 correct**, while $\sigma(\Phi_s)$ grows monotonically with $n$ (graph size) and composites can exceed primes (e.g. $25$ vs $29$) — the substrate tracks size, not primality.
+
+**The unification (one wall, four domains).** Vertex-transitivity confines arithmetic to the spectral / group-representation sector $\mathrm{Fix}(G_{\mathrm{aut}})^\perp$ and leaves the per-node substrate in the symmetric sector $\mathrm{Fix}(G_{\mathrm{aut}})$, blind. This is the **same** structure as the paused TNFR-Riemann program, where the oscillatory residue $S(T)=\tfrac1\pi\arg\zeta(\tfrac12+iT)$ lives in $\ker(\mathcal R_\infty)\cap\mathrm{Fix}(S_n)^\perp$, unreachable by symmetric ($\mathrm{Fix}$-trapped) constructions (AGENTS.md "REMESH-∞ Closure"; TNFR_RIEMANN_RESEARCH_NOTES §13septies, §13sexagesima-octava Tetrad-$\mathrm{Fix}(S_n)$ Lemma). Physics (the symplectic substrate), number theory (Gauss sums, primality), emergent geometry (the canonical operator) and the Riemann residual hit **one symmetry wall**, located precisely: arithmetic is in the spectrum, the per-node substrate is in the fixed sector.
+
+**Honest scope.** This **explains** the $e$–$\pi$ / $\mathrm{Fix}(G)^\perp$ wall structurally (vertex-transitivity / representation theory); it does **not** cross it and closes no open problem. It confirms, with a measured double dissociation and an arithmetic-neutral control, that running the directed dynamics does **not** let the per-node substrate see arithmetic — the blindness is a **symmetry constraint**, not a dynamics artefact. The arithmetic remains spectral, bounded by the same wall as the paused Riemann program.
+
 ---
 
 ## 10. Prime Path Graphs and the TNFR-Riemann Connection
