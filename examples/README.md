@@ -95,6 +95,7 @@ Helmholtz–Hodge orthogonality, generating structure, flow prediction.
 - `106` polarization · `107` orthogonal structure · `108` generating structure
 - `112` structure predicts the coherence flow · `113` overdamped projection bridge · `114` substrate conserved quantities · `unified_fields_showcase.py`
 - `117` emergent geometry on the residue graph (Paley factorization, honest: diffusion spectrum carries the factor cosets, symplectic substrate is blind; unifies factorization-lab ↔ emergent geometry)
+- `118` where the emergent operator diverges from the classical Laplacian (residue graphs are regular Cayley → identical; on irregular graphs L_rw IS the Shi–Malik degree-aware Ncut → more balanced cuts)
 
 ## 09_millennium — Millennium-problem reformulations (honest scope)
 
