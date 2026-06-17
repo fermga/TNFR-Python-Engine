@@ -21,7 +21,7 @@ All systems evolve via the **nodal equation**:
 
 $$\frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t)$$
 
-Structural changes occur exclusively through **13 canonical operators** (AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH) governed by **unified grammar rules U1-U6**.
+Structural changes occur exclusively through **13 canonical operators** (AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH) governed by **unified grammar rules U1-U6**. Each operator carries a canonical contract: it acts on exactly one channel of the nodal equation — the form EPI, the capacity νf, the phase θ, or the pressure ΔNFR — at node or network scale.
 
 System state is characterized by four **structural fields** — the Universal Tetrahedral Correspondence:
 
@@ -52,7 +52,7 @@ TNFR is more than dynamics on a graph. The graph is only the substrate; the noda
 
 Two clearly-separated layers:
 
-**Solid and verified.** The engine, the tetrad, grammar U1–U6, conservation laws, and the emergent transport + symplectic geometry are implemented, anchored to experimentally-established phenomena, and covered by 1,947 tests.
+**Solid and verified.** The engine, the tetrad, grammar U1–U6, conservation laws, and the emergent transport + symplectic geometry are implemented, anchored to experimentally-established phenomena, and covered by 2,041 tests.
 
 **Open research programs.** TNFR is also used to probe famous open problems. These are honest, in-progress programs that **do not claim proofs**:
 
@@ -123,9 +123,9 @@ from tnfr.metrics.coherence import compute_coherence
 
 G = nx.erdos_renyi_graph(20, 0.2)
 for node in G.nodes():
-    Emission().apply(G, node)
-    Coherence().apply(G, node)
-    Silence().apply(G, node)
+    Emission()(G, node)
+    Coherence()(G, node)
+    Silence()(G, node)
 
 print(f"Coherence: {compute_coherence(G):.3f}")
 ```
@@ -148,14 +148,14 @@ pip install -e ".[compute-torch]"      # PyTorch backend
 
 ```text
 src/tnfr/
-├── operators/         # 13 canonical operators + grammar U1–U6 (65 modules)
-├── physics/           # Tetrad, conservation, emergent symplectic substrate, structural diffusion (30 modules)
-├── engines/           # Self-optimization, pattern discovery, GPU/FFT (14 modules)
-├── dynamics/          # Nodal equation integration
-├── riemann/           # TNFR–Riemann program (62 modules, P1–P49; paused at T-HP, RH open)
+├── operators/         # 13 canonical operators + grammar U1–U6 (62 modules)
+├── physics/           # Tetrad, conservation, emergent symplectic substrate, structural diffusion (29 modules)
+├── engines/           # Self-optimization, pattern discovery, GPU/FFT (8 modules across 5 subpackages)
+├── dynamics/           # Nodal equation integration
+├── riemann/           # TNFR–Riemann program (61 modules, P1–P49; paused at T-HP, RH open)
 ├── navier_stokes/     # TNFR–Navier–Stokes program (N1–N17; NS-G5 closed at discrete level, Clay open)
 ├── yang_mills/        # TNFR–Yang–Mills diagnostics (Y1–Y5; Branch B, mass gap open)
-├── sdk/               # Simplified & Fluent API (8 modules)
+├── sdk/               # Simplified & Fluent API (7 modules)
 │   └── simple.py      # Tetrad, conservation, symplectic substrate, grammar-aware dynamics
 ├── mathematics/       # Number theory, backends
 ├── constants/         # Canonical constants (mpmath 35-digit precision)
@@ -163,8 +163,8 @@ src/tnfr/
 ├── validation/        # Structural health monitoring
 └── factorization/     # Spectral factorization workflow
 
-examples/              # 128 examples in 10 thematic subfolders (see examples/README.md)
-tests/                 # 1,947 tests
+examples/              # 162 examples in 10 thematic subfolders (see examples/README.md)
+tests/                 # 2,041 tests
 theory/                # Theoretical derivations
 benchmarks/            # 50 performance & structural-validation scripts
 ```
@@ -196,7 +196,7 @@ benchmarks/            # 50 performance & structural-validation scripts
 ## Testing
 
 ```bash
-pytest                             # all tests (1,947 under tests/)
+pytest                             # all tests (2,041 under tests/)
 pytest tests/sdk/                  # SDK tests (tetrad, conservation, grammar)
 pytest tests/unit/                 # unit tests
 .\make.cmd smoke-tests             # smoke tests (Windows)

@@ -611,34 +611,29 @@ Every composition above satisfies:
 
 ## 12. Per-Operator Energy Bounds
 
-The structural energy functional $E = \frac{1}{2}\sum_i \left[\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\text{NFR}}^2\right]$ serves as a Lyapunov candidate. Each operator changes $E$ by a bounded amount.
+The structural energy functional $E = \frac{1}{2}\sum_i \left[\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\text{NFR}}^2\right]$ serves as a Lyapunov candidate. It is **emergent**: built entirely from the tetrad fields, it contains **no $\text{EPI}$ or $\nu_f$ term** (measured: scaling $\text{EPI}$ or $\nu_f$ on every node leaves $E$ unchanged; the phase $\theta$ and the pressure $\Delta\text{NFR}$ do enter it). Consequently each operator's energy role **is its canonical grammar U2 role**, derived from `config.physics_derivation` — not a separate energy algebra.
 
-### 12.1 Energy Classes
+### 12.1 Energy Classes (= Grammar U2 Role)
 
-| Class | Operators | Energy change |
-|-------|-----------|---------------|
-| **Contracting** ($\Delta E \leq 0$) | IL, EN, UM, THOL, NAV | Reduces structural energy |
-| **Expanding** ($\Delta E \leq \kappa E$) | OZ, VAL, AL, RA | Bounded energy increase |
-| **Quasi-isometric** ($|\Delta E| \leq \epsilon$) | SHA, ZHIR, REMESH | Near-zero energy change |
-| **Mixed** | NUL | Context-dependent |
+| Class | Operators | Mechanism |
+|-------|-----------|-----------|
+| **Stabiliser** ($\Delta E \leq 0$) | IL, THOL | Reduce $|\Delta\text{NFR}|$ (negative feedback) |
+| **Destabiliser** ($\Delta E \leq \kappa E$) | OZ, ZHIR, VAL | Raise $|\Delta\text{NFR}|$ (bounded expansion) |
+| **Neutral** ($\Delta E \approx 0$) | AL, EN, RA, REMESH (EPI/form); UM, SHA, NUL, NAV | Act on the form (LHS), capacity, phase, or controlled channel that the pressure functional does not penalise by its grammatical role |
 
-### 12.2 Complete Energy Bound Table
+### 12.2 Energy Rate Table
 
-| Operator | Glyph factor | Bound | Value |
-|----------|-------------|-------|-------|
-| IL | $\varphi/(\varphi + \gamma) \approx 0.737$ | $\rho = 1 - f^2 \approx 0.457$ | Contraction |
-| EN | $1/(\pi + 1) \approx 0.241$ | $\rho = m(1-m) \approx 0.183$ | Contraction |
-| UM | $\Delta\text{NFR}_{\text{red}} = 0.15$ | $\rho \geq 0.15$ | Contraction |
-| THOL | accel $= 0.10$ | $\rho \approx 0.10$ | Contraction |
-| NAV | $\eta = 0.5$, jitter $= 0.05$ | $\rho \approx 0.499$ | Contraction |
-| OZ | $\varphi/\gamma \approx 2.803$ | $\kappa = f^2 - 1 \approx 6.857$ | Expansion |
-| VAL | $1 + \gamma/(\pi e) \approx 1.067$ | $\kappa = f^2 - 1 \approx 0.139$ | Expansion |
-| AL | $1/(\pi e) \approx 0.117$ | $\kappa = b^2 \approx 0.014$ | Expansion |
-| RA | $a = 0.05$ | $\kappa = (1+a)^2 - 1 \approx 0.103$ | Expansion |
-| SHA | $1 - \gamma/(\pi + e)$ | $|\Delta E| \leq 0.187$ | Quasi-isometric |
-| ZHIR | $0.3 \cdot \Delta\text{NFR}$ | $|\Delta E| \leq 0.056$ | Quasi-isometric |
-| REMESH | $\alpha = 0.5$ | $\Delta E = 0$ (exact) | Isometric |
-| NUL | context-dependent | $\kappa \approx 6.854$ (worst) / $\rho \approx 0.187$ (best) | Mixed |
+| Operator | Class | Pressure factor | Rate |
+|----------|-------|-----------------|------|
+| IL | Stabiliser | $\varphi/(\varphi + \gamma) \approx 0.737$ | $\rho = 1 - f \approx 0.263$ |
+| THOL | Stabiliser | accel $= 0.10$ | $\rho \approx 0.100$ |
+| OZ | Destabiliser | $\varphi/\gamma \approx 2.803$ | $\kappa = f - 1 \approx 1.803$ |
+| ZHIR | Destabiliser | $\theta$-shift $= 0.30$ | $\kappa \approx 0.300$ |
+| VAL | Destabiliser | $\nu_f$-scale $\approx 1.068$ | $\kappa \approx 0.068$ |
+| AL, EN, RA, REMESH | Neutral | — (write EPI, the LHS) | $0$ |
+| UM, SHA, NUL, NAV | Neutral | — (phase / capacity / controlled) | $0$ |
+
+**Dual-lever note**: the *energy/Lyapunov role* (stabiliser/destabiliser, the sign of the $|\Delta\text{NFR}|$ feedback) is distinct from the *dual-lever* (§17.1, which RHS factor an operator modulates). VAL engages the capacity lever yet is a U2 destabiliser; NAV engages the pressure lever yet is U2-neutral (controlled trajectory). See `src/tnfr/physics/lyapunov.py`.
 
 ### 12.3 Grammar U2 Lyapunov Theorem
 
@@ -656,23 +651,23 @@ This guarantees that grammar-compliant evolution is Lyapunov-stable with respect
 
 ## 13. Postcondition Contracts
 
-Every operator has a postcondition contract verified at runtime by the structural integrity monitor (`src/tnfr/physics/integrity.py`). The monitor supports three modes: OFF (production), OBSERVE (log violations), ENFORCE (raise exceptions).
+Every operator has a postcondition contract anchored to the **direct effect on node state** (the nodal dynamics $\partial\text{EPI}/\partial t = \nu_f\cdot\Delta\text{NFR}$, anchored to TNFR.pdf §2.2.1). The canonical contract layer `src/tnfr/operators/operator_contracts.py` is the **single source of truth** — it records each operator's `primary_channel` (one nodal-equation channel: $\text{EPI}$ / $\nu_f$ / $\theta$ / $\Delta\text{NFR}$), `scale` (NODE for twelve operators, NETWORK for the U5 operator REMESH), and `postcondition`. The proactive audit (`audit_operator_contracts`), the reactive integrity monitor (`POSTCONDITIONS`, `src/tnfr/physics/integrity.py`), and the introspection metadata all derive from this spec. The monitor supports three modes: OFF (production), OBSERVE (log violations), ENFORCE (raise exceptions).
 
-| # | Operator | Glyph | Postcondition |
-|---|----------|-------|---------------|
-| 1 | Emission | AL | $\text{EPI} > 0$; $\nu_f$ increased; activation flag set |
-| 2 | Reception | EN | $C(t)$ not decreased; source integration recorded |
-| 3 | Coherence | IL | $C(t)$ non-decreasing; $|\Delta\text{NFR}|$ reduced |
-| 4 | Dissonance | OZ | $|\Delta\text{NFR}|$ increased |
-| 5 | Coupling | UM | Phase compatibility maintained; EPI identity preserved |
-| 6 | Resonance | RA | EPI identity preserved; phase sync not decreased |
-| 7 | Silence | SHA | EPI unchanged; $\nu_f \to 0$; latent flag set |
-| 8 | Expansion | VAL | $\dim(\text{EPI})$ increased |
-| 9 | Contraction | NUL | $\dim(\text{EPI})$ decreased |
-| 10 | Self-Organization | THOL | Global form preserved; sub-EPIs created (if bifurcation) |
-| 11 | Mutation | ZHIR | Phase $\theta$ changed; identity preserved |
-| 12 | Transition | NAV | Controlled trajectory; no coherence collapse |
-| 13 | Recursivity | REMESH | Nested structure maintained; parent identity preserved |
+| # | Operator | Glyph | Channel | Postcondition |
+|---|----------|-------|---------|---------------|
+| 1 | Emission | AL | EPI | $\text{EPI}$ not decreased ($\partial\text{EPI}/\partial t \ge 0$) |
+| 2 | Reception | EN | EPI | $C(t)$ not decreased (coherent integration) |
+| 3 | Coherence | IL | $\Delta\text{NFR}$ | $C(t)$ non-decreasing; $|\Delta\text{NFR}|$ reduced |
+| 4 | Dissonance | OZ | $\Delta\text{NFR}$ | $|\Delta\text{NFR}|$ not decreased |
+| 5 | Coupling | UM | $\theta$ | Phase compatibility $|\phi_i - \phi_j| \le \Delta\phi_{\max}$ |
+| 6 | Resonance | RA | EPI | EPI structural identity (sign/kind) preserved |
+| 7 | Silence | SHA | $\nu_f$ | EPI preserved over time; $\nu_f$ frozen |
+| 8 | Expansion | VAL | $\nu_f$ | $\nu_f$ not decreased (capacity added) |
+| 9 | Contraction | NUL | $\nu_f$ | $\nu_f$ not increased (capacity removed) |
+| 10 | Self-Organization | THOL | $\Delta\text{NFR}$ | Global form preserved; sub-EPIs created (if bifurcation) |
+| 11 | Mutation | ZHIR | $\theta$ | Phase $\theta$ changed when $\Delta\text{EPI}/\Delta t > \xi$ |
+| 12 | Transition | NAV | $\Delta\text{NFR}$ | Controlled trajectory; no coherence collapse |
+| 13 | Recursivity | REMESH | EPI (network) | Nested structure maintained; parent identity preserved |
 
 ---
 
@@ -747,6 +742,8 @@ Every constant connects to a specific operator and grammar rule:
 | `src/tnfr/operators/nodal_equation.py` | Nodal equation validation |
 | `src/tnfr/operators/canonical_patterns.py` | Canonical sequence definitions |
 | `src/tnfr/operators/introspection.py` | `OperatorMeta` metadata registry |
+| `src/tnfr/operators/operator_contracts.py` | **Canonical contract layer** (single source of truth: channel × scale × postcondition) |
+| `src/tnfr/operators/grammar_canon.py` | Canonical grammar spec (U1–U6 role table, structural typology, glyphic macros) |
 | `src/tnfr/operators/grammar.py` | Grammar validation (public API facade) |
 | `src/tnfr/operators/grammar_dynamics.py` | Incremental grammar-aware dynamics |
 | `src/tnfr/operators/grammar_application.py` | Pre-validated operator application |

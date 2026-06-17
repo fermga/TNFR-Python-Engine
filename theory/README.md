@@ -102,7 +102,7 @@ Each program restates a Clay Millennium Problem in TNFR-native terms and classif
 1. [../AGENTS.md](../AGENTS.md) — Primary theoretical reference (complete framework overview)
 2. **This directory** — Specialized derivations and domain applications
 3. [../docs/](../docs/) — Implementation specifications
-4. [../examples/](../examples/) — 125 executable demonstrations across 10 thematic subfolders (`01_foundations`, `02_physics_regimes`, `03_riemann_zeta`, `04_riemann_L_twisted`, `05_type_hygiene`, `06_navier_stokes`, `07_number_theory`, `08_emergent_geometry`, `09_millennium`, `10_applications`). Each file keeps a stable global number as identifier; the folder gives the theme.
+4. [../examples/](../examples/) — 162 executable demonstrations across 10 thematic subfolders (`01_foundations`, `02_physics_regimes`, `03_riemann_zeta`, `04_riemann_L_twisted`, `05_type_hygiene`, `06_navier_stokes`, `07_number_theory`, `08_emergent_geometry`, `09_millennium`, `10_applications`). Each file keeps a stable global number as identifier; the folder gives the theme.
 5. [../src/tnfr/sdk/](../src/tnfr/sdk/) — Simplified SDK API
 
 ---

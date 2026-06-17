@@ -18,51 +18,38 @@ $$
 
 For grammar-compliant evolution: $dE/dt \le 0$ (Lyapunov stability).
 
-### 1.2 Per-Operator Energy Bounds
+### 1.2 Per-Operator Lyapunov Role
 
-Each canonical operator changes $E$ by a bounded amount $\Delta E$ whose sign and magnitude depend on the operator's glyph factor. The glyph factors are derived from the canonical constants $\varphi$, $\gamma$, $\pi$, $e$.
+The structural energy functional $E$ above is **emergent**: it is built entirely from the tetrad fields $(\Phi_s, |\nabla\phi|, K_\phi, J_\phi, J_{\Delta\mathrm{NFR}})$ and contains **no $\mathrm{EPI}$ or $\nu_f$ term**. Measured directly: scaling the form $\mathrm{EPI}$ or the capacity $\nu_f$ on every node leaves $E$ unchanged ($\Delta E = 0$), while the phase $\theta$ (through $|\nabla\phi|, K_\phi, J_\phi$) and the structural pressure $\Delta\mathrm{NFR}$ (through $\Phi_s, J_{\Delta\mathrm{NFR}}$) do enter it. The coherence $C(t) = 1/(1 + \mathrm{mean}|\Delta\mathrm{NFR}| + \mathrm{mean}|\mathrm{dEPI}|)$ likewise responds to the pressure channel. Both Lyapunov candidates share one structural-pressure channel, $|\Delta\mathrm{NFR}|$.
 
-#### Stabilisers ($\Delta E \le 0$)
+Consequently each operator's Lyapunov role **is its canonical grammar U2 role**, derived from `config.physics_derivation` (the single source of truth, identical to the U2 stabiliser/destabiliser classification) — not a separate energy algebra. An operator contracts the Lyapunov functional iff it provides negative feedback on $|\Delta\mathrm{NFR}|$, and expands it iff it raises $|\Delta\mathrm{NFR}|$. The contraction/expansion rate is the operator's own structural-pressure factor.
 
-| Operator | Glyph factor | Contraction rate $\rho$ | Derivation |
-|----------|-------------|------------------------|-----------|
-| **IL** (Coherence) | $f = \varphi/(\varphi + \gamma) \approx 0.737$ | $\rho = 1 - f^2 \approx 0.457$ | $\Delta E = \frac{1}{2}(f^2 - 1)\sum\Delta\mathrm{NFR}^2$ |
-| **EN** (Reception) | $m = 1/(\pi + 1) \approx 0.241$ | $\rho = m(1-m) \approx 0.183$ | Mixing contraction: $E' = m\,E_{\text{in}} + (1-m)\,E$ |
-| **UM** (Coupling) | $\Delta\mathrm{NFR}_{\text{red}} = 0.15$ | $\rho \ge 0.15$ | Phase sync reduces local $\Delta\mathrm{NFR}$ by fraction |
-| **THOL** (Self-org) | accel $= 0.10$ | $\rho \approx 0.10$ | Autopoietic organisation reduces net energy |
-| **NAV** (Transition) | $\eta = 0.5$, jitter $= 0.05$ | $\rho \approx 0.499$ | Weighted interpolation: $E' = \eta\,E_t + (1-\eta)\,E$ |
+#### Stabilisers ($\Delta E \le 0$ — reduce $|\Delta\mathrm{NFR}|$)
 
-#### Destabilisers ($\Delta E \le C_{\text{op}} \cdot E$)
+| Operator | Pressure factor | Contraction rate $\rho$ |
+|----------|-----------------|-------------------------|
+| **IL** (Coherence) | $f = \varphi/(\varphi + \gamma) \approx 0.737$ | $\rho = 1 - f \approx 0.263$ |
+| **THOL** (Self-organization) | accel $= 0.10$ | $\rho \approx 0.100$ |
 
-| Operator | Glyph factor | Expansion rate $\kappa$ | Derivation |
-|----------|-------------|----------------------|-----------|
-| **OZ** (Dissonance) | $f = \varphi/\gamma \approx 2.803$ | $\kappa = f^2 - 1 \approx 6.857$ | $\Delta E = \frac{1}{2}(f^2 - 1)\sum\Delta\mathrm{NFR}^2$ |
-| **VAL** (Expansion) | $f = 1 + \gamma/(\pi \cdot e) \approx 1.067$ | $\kappa = f^2 - 1 \approx 0.139$ | Dimensional scaling $E' = f^2 \cdot E$ |
-| **AL** (Emission) | $b = 1/(\pi \cdot e) \approx 0.117$ | $\kappa = b^2 \approx 0.014$ per node | Creation from vacuum: $\Delta E = b^2$ |
-| **RA** (Resonance) | $a = 0.05$ (amplification) | $\kappa = (1+a)^2 - 1 \approx 0.103$ | Amplification: $E' = (1+a)^2 \cdot E$ |
+#### Destabilisers ($\Delta E \le \kappa \cdot E$ — raise $|\Delta\mathrm{NFR}|$)
 
-#### Neutral / Quasi-Isometric
+| Operator | Pressure factor | Expansion rate $\kappa$ |
+|----------|-----------------|-------------------------|
+| **OZ** (Dissonance) | $f = \varphi/\gamma \approx 2.803$ | $\kappa = f - 1 \approx 1.803$ |
+| **ZHIR** (Mutation) | $\theta$-shift $= 0.30$ | $\kappa \approx 0.300$ |
+| **VAL** (Expansion) | $\nu_f$-scale $\approx 1.068$ | $\kappa \approx 0.068$ |
 
-| Operator | Bound | Note |
-|----------|-------|------|
-| **SHA** (Silence) | $|\Delta E| \le 0.187$ | Freezes $\nu_f$ via factor $(1 - \gamma/(\pi+e))$ |
-| **ZHIR** (Mutation) | $|\Delta E| \le 0.056$ per node | Phase shift by $0.3 \cdot \Delta\mathrm{NFR}$ |
-| **REMESH** (Recursivity) | $\Delta E = 0$ (exact) | $\alpha = 0.5$ weighted average preserves energy exactly |
+#### Neutral ($\Delta E \approx 0$ by grammatical role)
 
-#### Mixed
+| Operators | Channel | Why neutral |
+|-----------|---------|-------------|
+| **AL, EN, RA, REMESH** | EPI (the form, LHS) | Write the left-hand side of the nodal equation, absent from $E$ |
+| **UM** | $\theta$ (phase) | Coupling via U3 phase sync; no net $|\Delta\mathrm{NFR}|$ sign |
+| **SHA** | $\nu_f$ (capacity) | Freezes $\nu_f$, absent from $E$ |
+| **NUL** | $\nu_f$ + $\Delta\mathrm{NFR}$ | Pulls both levers; net role not a pure stabiliser/destabiliser |
+| **NAV** | $\Delta\mathrm{NFR}$ (controlled) | Controlled trajectory, excluded from the U2 destabiliser set |
 
-| Operator | Worst case | Best case |
-|----------|-----------|-----------|
-| **NUL** (Contraction) | $\kappa \approx 6.854$ (densification) | $\rho \approx 0.187$ (simple contraction) |
-
-**Dual-Lever Interpretation**: The energy bounds above classify operators by
-their *energy effect*, but the underlying mechanism is the **dual-lever
-structure** of the nodal equation: each operator acts through the capacity
-lever ($\nu_f$: UM, SHA, VAL, NUL), the pressure lever ($\Delta$NFR: IL, OZ,
-THOL, ZHIR, NAV), both, or neither (AL, EN, RA, REMESH). The energy class
-(stabiliser/destabiliser/neutral/mixed) is the net consequence of which
-lever(s) the operator engages. See [STRUCTURAL_OPERATORS.md
-§17.1](STRUCTURAL_OPERATORS.md) and [example 39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py).
+**Dual-lever vs Lyapunov role**: The dual-lever structure ([STRUCTURAL_OPERATORS.md §17.1](STRUCTURAL_OPERATORS.md)) classifies operators by which right-hand-side factor of the nodal equation they modulate — the capacity lever $\nu_f$ (UM, SHA, VAL), the pressure lever $\Delta\mathrm{NFR}$ (IL, OZ, THOL, ZHIR, NAV), both (NUL), or neither/the form on the LHS (AL, EN, RA, REMESH). The Lyapunov role above is the grammar U2 role (stabiliser/destabiliser), which depends on the *sign* of the $|\Delta\mathrm{NFR}|$ feedback: VAL engages the capacity lever yet is a U2 destabiliser, while NAV engages the pressure lever yet is U2-neutral because its trajectory is controlled. The two classifications are related but distinct. See [example 39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py) and `src/tnfr/physics/lyapunov.py`.
 
 ### 1.3 Grammar U2 Lyapunov Theorem
 
@@ -317,15 +304,15 @@ The integrity monitor verifies **postconditions** of all 13 canonical operators 
 
 | Operator | Contract verified |
 |----------|------------------|
-| **AL** (Emission) | $\mathrm{EPI} > 0$ and $\nu_f$ increased |
+| **AL** (Emission) | $\mathrm{EPI}$ not decreased ($\partial\mathrm{EPI}/\partial t \ge 0$) |
 | **EN** (Reception) | $C(t)$ not decreased |
 | **IL** (Coherence) | $C(t)$ not decreased (outside dissonance test) |
 | **OZ** (Dissonance) | $|\Delta\mathrm{NFR}|$ increased |
 | **UM** (Coupling) | Phase compatibility $|\phi_i - \phi_j| \le \Delta\phi_{\max}$ |
-| **RA** (Resonance) | EPI identity preserved; phase sync not decreased |
-| **SHA** (Silence) | EPI unchanged; $\nu_f \to 0$ |
-| **VAL** (Expansion) | $\dim(\mathrm{EPI})$ increased |
-| **NUL** (Contraction) | $\dim(\mathrm{EPI})$ decreased |
+| **RA** (Resonance) | EPI structural identity (sign/kind) preserved |
+| **SHA** (Silence) | EPI preserved over time; $\nu_f$ frozen |
+| **VAL** (Expansion) | $\nu_f$ not decreased (capacity added) |
+| **NUL** (Contraction) | $\nu_f$ not increased (capacity removed) |
 | **THOL** (Self-org) | Global form preserved; sub-EPIs created |
 | **ZHIR** (Mutation) | Phase $\theta$ changed when $\Delta\mathrm{EPI}/\Delta t > \xi$ |
 | **NAV** (Transition) | Controlled trajectory; no coherence collapse |

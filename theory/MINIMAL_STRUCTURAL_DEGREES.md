@@ -181,7 +181,7 @@ Removing any single field creates a detectable structural blind spot:
 
 **Theorem (Irreducibility)**: For any subset S ⊂ {Φ_s, |∇φ|, K_φ, ξ_C} with |S| = 3, there exists a graph state G that is structurally healthy according to S but structurally pathological according to the missing field.
 
-This has been verified computationally across ring, random, small-world, scale-free, and complete topologies (1,945+ tests).
+This has been verified computationally across ring, random, small-world, scale-free, and complete topologies (2,041 tests).
 
 ---
 

@@ -227,7 +227,52 @@ Every domain study must quantify the four structural fields:
 
 ---
 
-## 7. Empirical Validation
+## 7. Emergent Geometry from the Nodal Equation
+
+The nodal equation is more than dynamics on a graph: the graph is only the substrate, and Eq. (1) **generates its own geometry**, which the engine *measures* rather than postulates. Every structure below is verified to machine precision and anchored to classical, experimentally-established phenomena.
+
+### 7.1 Transport Layer (Structural Diffusion)
+
+Channel by channel, the canonical $\Delta\mathrm{NFR}$ is a *neighbour-mean-minus-self* gradient. For the EPI channel this is exactly the random-walk graph Laplacian $L_{\mathrm{rw}} = I - D^{-1}W$:
+
+$$
+\Delta\mathrm{NFR}_{\text{epi}}(i) = \overline{\mathrm{EPI}}_{\mathcal{N}(i)} - \mathrm{EPI}(i) = -(L_{\mathrm{rw}}\,\mathrm{EPI})(i),
+$$
+
+so the EPI channel of Eq. (1) is the **discrete diffusion equation** $\partial\mathrm{EPI}/\partial t = -\nu_f L_{\mathrm{rw}}\,\mathrm{EPI}$ with diffusivity $\nu_f$ (verified to residual $\sim 10^{-16}$). From this single identity the engine measures, in TNFR's own variables, a tower of empirically-established transport phenomena:
+
+- **Diffusion / relaxation**: each Laplacian eigenmode decays as $e^{-\nu_f\lambda_k t}$; the slowest rate is the spectral gap $\nu_f\lambda_2$ (Fourier 1822, Fick 1855).
+- **Synchronization**: the phase channel aligns $\theta$ to the neighbour circular mean, driving a Kuramoto transition ($R \to 1$).
+- **Structural random walk**: $L_{\mathrm{rw}}$ generates a random walk with stationary distribution $\pi_i = \deg(i)/\sum\deg$ (Einstein 1905); the effective resistance $R_{\mathrm{eff}}$ (Ohm/Kirchhoff) is its transport metric.
+- **Structural flow**: the EPI current $J_{ij} = \mathrm{EPI}_i - \mathrm{EPI}_j$ (Fick) obeys Kirchhoff's current law, the discrete continuity equation.
+- **Standing modes**: on a bounded graph the spectrum is discrete; eigenvectors are orthonormal standing waves (vibrating string, Chladni plates).
+- **Stability / pattern formation**: the dispersion relation $\sigma_k = r - \nu_f\lambda_k$ gives the threshold $r_c = \nu_f\lambda_2$ separating homogenization from Fiedler-mode pattern formation — the spectral form of grammar U2.
+
+**Implementation**: `src/tnfr/physics/structural_diffusion.py`. **Examples**: 99, 134, 135.
+
+### 7.2 Emergent Symplectic Substrate
+
+The same dynamics carries an intrinsic **symplectic phase space** $\mathcal{P} = \mathbb{R}^{4N}$ with two canonical conjugate pairs per node — the *geometric* sector $(K_\phi, J_\phi)$ and the *potential* sector $(\Phi_s, J_{\Delta\mathrm{NFR}})$:
+
+- **Symplectic form** $\omega = \sum_i [dK_\phi \wedge dJ_\phi + d\Phi_s \wedge dJ_{\Delta\mathrm{NFR}}]$ — antisymmetric, non-degenerate, closed (all exact).
+- **Hamiltonian = energy functional**: $H_{\mathrm{sub}} = \tfrac12\sum(K_\phi^2 + J_\phi^2 + \Phi_s^2 + J_{\Delta\mathrm{NFR}}^2) + \tfrac12\sum|\nabla\phi|^2$ equals the structural energy $E$ ([STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md)) exactly.
+- **Liouville**: $\mathrm{div}(X_H) = 0$ structurally — the 13 operators are volume-preserving symplectomorphisms.
+- **Noether charges**: time translation $\to H_{\mathrm{sub}}$; the geometric $U(1)$ (the gauge symmetry of $\Psi = K_\phi + iJ_\phi$) $\to E_{\mathrm{geo}} = \tfrac12\sum|\Psi|^2$; the potential $U(1)$ $\to E_{\mathrm{pot}}$.
+- **Hermitian (flat Kähler) structure**: the compatible complex structure $J = -\omega$ acts as multiplication by $i$ on $\zeta^A = K_\phi + iJ_\phi = \Psi$ — so $\Psi$ is the complex coordinate the substrate induces, not an ad-hoc field.
+- **Complete integrability**: $H_{\mathrm{sub}}$ is a sum of decoupled oscillators, giving global action–angle coordinates (Liouville–Arnold); the actions are adiabatic invariants and the operators redistribute them.
+- **U(2) polarization symmetry**: $H_{\mathrm{sub}}$ is the squared norm of a complex doublet, invariant under $U(2)$; the $SU(2)$ part supplies three conserved Stokes parameters, and each node is a fully-polarized point on the Poincaré sphere (classical wave polarization, Stokes 1852 / Poincaré 1892 — *not* a quantum two-level system).
+
+**Implementation**: `src/tnfr/physics/symplectic_substrate.py` (one-shot `verify_substrate_geometry`); SDK `net.symplectic_substrate()`. **Examples**: 98, 106, 114.
+
+### 7.3 Orthogonal Structure and the Overdamped Projection
+
+The dissipative (transport) tower and the conservative (symplectic) tower are the two orthogonal **Helmholtz–Hodge** components of one flow (verified $\langle\cdot,\cdot\rangle = 0$ to machine precision). The bare nodal equation, being first-order in time, is the **overdamped projection** of the substrate's second-order Hamiltonian flow, with $\nu_f$ playing the role of mobility (inverse damping).
+
+**Honest scope**: this section *reorganizes* known mathematics and physics (diffusion, Kuramoto, Ohm/Kirchhoff, symplectic mechanics, Stokes/Poincaré polarization) inside a single framework and verifies it in code. It is a **characterization** of structure the nodal equation already contains — not a claim of new physics, and it does not by itself resolve any open research program.
+
+---
+
+## 8. Empirical Validation
 
 The correspondence has been validated across 2,400+ simulations covering five topologies: lattice, scale-free, modular, random geometric, and fully connected.
 
@@ -240,7 +285,7 @@ Key observations:
 
 ---
 
-## 8. Practical Guidance
+## 9. Practical Guidance
 
 1. **Monitoring**: Export $\Phi_s$, $|\nabla\phi|$, $K_\phi$, $\xi_C$ after every operator batch; treat threshold crossings as actionable events.
 2. **Operator design**: When introducing new operators, specify their expected effect on each field to maintain grammar compliance.
@@ -249,7 +294,7 @@ Key observations:
 
 ---
 
-## 9. Implementation Reference
+## 10. Implementation Reference
 
 | Component | Location |
 |-----------|----------|
@@ -259,11 +304,13 @@ Key observations:
 | Integrity monitor | `src/tnfr/physics/integrity.py` |
 | Canonical constants | `src/tnfr/constants/canonical.py` |
 | SDK access (tetrad, conservation) | `src/tnfr/sdk/simple.py` |
-| Test suite | `tests/` (1,641+ passing) |
+| Emergent symplectic substrate | `src/tnfr/physics/symplectic_substrate.py` |
+| Structural diffusion (transport) | `src/tnfr/physics/structural_diffusion.py` |
+| Test suite | `tests/` (2,041 passing) |
 
 ---
 
-## 10. Implementation & Examples
+## 11. Implementation & Examples
 
 ### SDK Entry Points
 
@@ -297,7 +344,7 @@ analysis = TNFR.analyze(net)               # Comprehensive analysis
 
 ---
 
-## 11. References
+## 12. References
 
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 derivations
 - [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Why exactly four structural fields (minimality + completeness proof)
