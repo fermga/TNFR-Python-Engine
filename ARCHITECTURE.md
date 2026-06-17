@@ -1,6 +1,6 @@
 # TNFR Python Engine - Architecture Guide
 
-**Version**: 0.0.3.3  
+**Version**: 0.0.3.4  
 **Status**: Production-ready framework with mathematical foundations  
 **Foundation**: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)
 

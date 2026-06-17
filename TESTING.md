@@ -566,4 +566,4 @@ pytest -W error
 ---
 
 **Last Updated**: November 2025  
-**Version**: 0.0.3.3
+**Version**: 0.0.3.4

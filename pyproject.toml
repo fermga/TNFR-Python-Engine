@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tnfr"
-version = "0.0.3.3"
+version = "0.0.3.4"
 description = "Resonant Fractal Nature Theory (TNFR) - Computational engine for modeling coherent patterns through resonance dynamics"
 readme = "README.md"
 authors = ["F. F. Martinez Gamo"]
@@ -9,7 +9,7 @@ packages = [{include = "tnfr", from = "src"}]
 
 [project]
 name = "tnfr"
-version = "0.0.3.3"
+version = "0.0.3.4"
 description = "Resonant Fractal Nature Theory (TNFR) - Computational engine for modeling coherent patterns through resonance dynamics"
 readme = "README.md"
 requires-python = ">=3.10"
