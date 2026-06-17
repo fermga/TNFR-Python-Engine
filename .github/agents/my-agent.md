@@ -664,14 +664,16 @@ Operators constitute the exclusive mechanism for node modification in TNFR syste
 **Physics**: Phase transformation at threshold  
 **Effect**: θ → θ' when ΔEPI/Δt > ξ  
 **When**: Qualitative state changes  
-**Grammar**: Bifurcation trigger (U4a), Transformer (U4b)  
-**Contract**: Requires prior IL and recent destabilizer (U4b)
+**Grammar**: Destabilizer (U2), Bifurcation trigger (U4a), Transformer (U4b)  
+**Contract**: Requires prior IL and recent destabilizer (U4b)  
+**U2 note**: ZHIR is a destabilizer (∈ {OZ, ZHIR, VAL}) because the phase jump θ→θ' desynchronizes the node from its neighbors, raising |∇φ| and hence |ΔNFR|. It is BOTH a destabilizer (it raises pressure) AND a transformer (it consumes a recent destabilizer to cross the threshold) — both roles are canonical.
 
 ### 12. Transition (NAV)
 **Physics**: Regime shift, activates latent EPI  
 **Effect**: Controlled trajectory through structural space  
 **When**: Switching between attractor states  
-**Grammar**: Generator (U1a), Closure (U1b)
+**Grammar**: Generator (U1a), Closure (U1b)  
+**U2 note**: NAV is NOT a destabilizer. Its trajectory is *controlled* (it does not drive the integral ∫νf·ΔNFR dt toward divergence), so it is excluded from the U2 destabilizer set {OZ, ZHIR, VAL}.
 
 ### 13. Recursivity (REMESH)
 **Physics**: Echoes structure across scales (operational fractality)  
@@ -730,6 +732,7 @@ The grammar emerges from TNFR physics rather than arbitrary constraints.
 - **Rationale**: Without stabilizers, integral diverges leading to fragmentation
 - **Mathematical basis**: Exponential growth without negative feedback
 - **Canonicity**: Integral convergence theorem
+- **Single source of truth**: The operator-classification sets (generators, closures, stabilizers `{IL, THOL}`, destabilizers `{OZ, ZHIR, VAL}`, transformers `{ZHIR, THOL}`, bifurcation triggers/handlers) are DERIVED from per-operator nodal-equation predicates in [src/tnfr/config/physics_derivation.py](src/tnfr/config/physics_derivation.py) (`increases_structural_pressure`, `provides_negative_feedback`, `executes_bifurcation`, …) and re-exported by [src/tnfr/operators/grammar_types.py](src/tnfr/operators/grammar_types.py). Every grammar consumer imports from `grammar_types`; the cross-module consistency is pinned by [tests/operators/test_grammar_canonical_consistency.py](tests/operators/test_grammar_canonical_consistency.py). The membership emerges from the structural-pressure channel: OZ/VAL/ZHIR raise |ΔNFR| (destabilizers); NAV is excluded because its trajectory is *controlled* (it does not drive divergence) — it is a generator/closure, not a destabilizer.
 
 **U2-REMESH: Recursive Amplification Control** (sub-rule, enforced as hard constraint)
 - **Physics**: REMESH implements temporal coupling EPI(t) ↔ EPI(t-τ). When combined with destabilizers {OZ, ZHIR, VAL}, recursive feedback amplifies ΔNFR, driving ∫νf·ΔNFR dt → ∞

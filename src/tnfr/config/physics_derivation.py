@@ -33,10 +33,20 @@ from __future__ import annotations
 __all__ = [
     "derive_start_operators_from_physics",
     "derive_end_operators_from_physics",
+    "derive_stabilizers_from_physics",
+    "derive_destabilizers_from_physics",
+    "derive_transformers_from_physics",
+    "derive_bifurcation_triggers_from_physics",
+    "derive_bifurcation_handlers_from_physics",
     "can_generate_epi_from_null",
     "can_activate_latent_epi",
     "can_stabilize_reorganization",
     "achieves_operational_closure",
+    "increases_structural_pressure",
+    "provides_negative_feedback",
+    "executes_bifurcation",
+    "triggers_bifurcation",
+    "handles_bifurcation",
 ]
 
 def can_generate_epi_from_null(operator: str) -> bool:
@@ -344,3 +354,151 @@ def derive_end_operators_from_physics() -> frozenset[str]:
     valid_ends = stabilizers | closures | questionable
 
     return frozenset(valid_ends)
+
+
+# ===========================================================================
+# U2 / U4 classification — derived from the structural-pressure channel ΔNFR
+# ===========================================================================
+#
+# U2 (convergence/boundedness) is a property of the integral ∫νf·ΔNFR dt.  An
+# operator's U2 role is therefore determined by the SIGN of its effect on the
+# structural pressure |ΔNFR|:
+#   - DESTABILIZER: increases |ΔNFR| (positive feedback → integral may diverge)
+#   - STABILIZER:   reduces  |ΔNFR| (negative feedback → integral converges)
+# U4 (bifurcation) is governed by the second derivative ∂²EPI/∂t²: triggers
+# raise it past τ, handlers absorb it, transformers execute the threshold
+# crossing.  Each predicate below encodes the per-operator nodal-equation
+# rationale (see the operator contracts in AGENTS.md §Operators); the
+# derive_* helpers turn the predicates into the canonical operator sets.
+
+
+def increases_structural_pressure(operator: str) -> bool:
+    """U2 Destabilizer test: does the operator raise |ΔNFR| (positive feedback)?
+
+    From ∂EPI/∂t = νf·ΔNFR, an operator destabilizes when it raises the
+    structural pressure |ΔNFR|, pushing the integral ∫νf·ΔNFR dt toward
+    divergence.  Exactly three canonical operators do this:
+
+    **DISSONANCE (OZ)**: ✓ destabilizer
+    - Contract: "must increase |ΔNFR|" — injects controlled instability directly
+      into the structural-pressure channel.
+
+    **EXPANSION (VAL)**: ✓ destabilizer
+    - dim(EPI) increases — every new structural degree of freedom enters
+      unaligned with the existing form, raising |ΔNFR|.
+
+    **MUTATION (ZHIR)**: ✓ destabilizer
+    - θ → θ' phase jump — desynchronizes the node from its neighbours, raising
+      the phase gradient |∇φ| (the phase channel of ΔNFR).
+
+    **Why others are NOT destabilizers:**
+    - TRANSITION (NAV): a *controlled* trajectory between attractors — it is a
+      generator/closure, not positive feedback; it does not drive unbounded
+      pressure growth.
+    - RECEPTION (EN): integrates incoming resonance (contract: must not reduce
+      C(t)) — neutral, not positive feedback.
+    - CONTRACTION (NUL): dim(EPI) decreases — removes degrees of freedom, the
+      opposite of expansion.
+    """
+    return operator in {"dissonance", "expansion", "mutation"}
+
+
+def provides_negative_feedback(operator: str) -> bool:
+    """U2 Stabilizer test: does the operator reduce |ΔNFR| (negative feedback)?
+
+    A stabilizer drives ∫νf·ΔNFR dt toward convergence by reducing the
+    structural pressure.  Two canonical operators do this:
+
+    **COHERENCE (IL)**: ✓ stabilizer
+    - Contract: "reduces |ΔNFR|, increases C(t)" — direct negative feedback on
+      the structural-pressure channel (measured: network |ΔNFR| 0.46 → 0.25).
+
+    **SELF-ORGANIZATION (THOL)**: ✓ stabilizer
+    - Autopoietic stabilization — bounds the aggregate child reorganization
+      while preserving the global form (U5: C_parent ≥ α·Σ C_child).
+    """
+    return operator in {"coherence", "self_organization"}
+
+
+def executes_bifurcation(operator: str) -> bool:
+    """U4b Transformer test: does the operator execute a structural bifurcation
+    that needs threshold context (a recent destabilizer)?
+
+    **MUTATION (ZHIR)**: ✓ transformer
+    - Phase transition θ → θ' when ΔEPI/Δt > ξ — crosses a structural threshold,
+      requiring elevated |ΔNFR| (recent destabilizer) plus a stable base
+      (prior IL).
+
+    **SELF-ORGANIZATION (THOL)**: ✓ transformer
+    - Spontaneous autopoietic reorganization — spawns sub-EPIs once the second
+      derivative ∂²EPI/∂t² exceeds τ.
+    """
+    return operator in {"mutation", "self_organization"}
+
+
+def triggers_bifurcation(operator: str) -> bool:
+    """U4a Bifurcation-trigger test: ∂²EPI/∂t² > τ may follow the operator.
+
+    **DISSONANCE (OZ)**: ✓ trigger — may push ∂²EPI/∂t² past τ.
+    **MUTATION (ZHIR)**: ✓ trigger — a phase transformation is itself a
+    bifurcation event.
+    """
+    return operator in {"dissonance", "mutation"}
+
+
+def handles_bifurcation(operator: str) -> bool:
+    """U4a Bifurcation-handler test: stabilizes a triggered bifurcation.
+
+    **SELF-ORGANIZATION (THOL)**: ✓ handler — channels the reorganization into
+    sub-EPIs (controlled cascade).
+    **COHERENCE (IL)**: ✓ handler — damps the elevated |ΔNFR| back toward
+    equilibrium.
+    """
+    return operator in {"self_organization", "coherence"}
+
+
+def _all_canonical_operator_names() -> frozenset[str]:
+    """The 13 canonical operator function names (single source)."""
+    from .operator_names import CANONICAL_OPERATOR_NAMES
+
+    return frozenset(CANONICAL_OPERATOR_NAMES)
+
+
+def derive_stabilizers_from_physics() -> frozenset[str]:
+    """Derive the U2 stabilizer set: operators that reduce |ΔNFR|."""
+    return frozenset(
+        op for op in _all_canonical_operator_names()
+        if provides_negative_feedback(op)
+    )
+
+
+def derive_destabilizers_from_physics() -> frozenset[str]:
+    """Derive the U2 destabilizer set: operators that increase |ΔNFR|."""
+    return frozenset(
+        op for op in _all_canonical_operator_names()
+        if increases_structural_pressure(op)
+    )
+
+
+def derive_transformers_from_physics() -> frozenset[str]:
+    """Derive the U4b transformer set: operators that execute bifurcations."""
+    return frozenset(
+        op for op in _all_canonical_operator_names()
+        if executes_bifurcation(op)
+    )
+
+
+def derive_bifurcation_triggers_from_physics() -> frozenset[str]:
+    """Derive the U4a bifurcation-trigger set."""
+    return frozenset(
+        op for op in _all_canonical_operator_names()
+        if triggers_bifurcation(op)
+    )
+
+
+def derive_bifurcation_handlers_from_physics() -> frozenset[str]:
+    """Derive the U4a bifurcation-handler set."""
+    return frozenset(
+        op for op in _all_canonical_operator_names()
+        if handles_bifurcation(op)
+    )

@@ -68,12 +68,18 @@ __all__ = [
     "GenerationResult",
 ]
 
-# Operator groups for intelligent variation
+# Operator groups for intelligent variation.
+# NOTE: these are GENERATION heuristics (which operators to try when proposing
+# candidate sequences), NOT the canonical grammar-classification sets used by the
+# validator.  The canonical U1-U6 sets live in tnfr.operators.grammar_types
+# (single source of truth); generated candidates are validated against those.
+# In particular _TRANSFORMERS here = regime-shifting generation group (NAV, REMESH,
+# ZHIR), distinct from the canonical U4b TRANSFORMERS = {ZHIR, THOL}.
 _STABILIZERS = [COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE]
-_DESTABILIZERS = [DISSONANCE, MUTATION, EXPANSION]
+_DESTABILIZERS = [DISSONANCE, MUTATION, EXPANSION]  # == canonical {OZ, ZHIR, VAL}
 _ACTIVATORS = [EMISSION, RECEPTION]
 _CONNECTORS = [COUPLING, RESONANCE]
-_TRANSFORMERS = [TRANSITION, RECURSIVITY, MUTATION]
+_TRANSFORMERS = [TRANSITION, RECURSIVITY, MUTATION]  # generation heuristic, not U4b
 
 # ---------------------------------------------------------------------------
 # Health improvement thresholds

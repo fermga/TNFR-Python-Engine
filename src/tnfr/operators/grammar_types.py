@@ -26,36 +26,52 @@ from ..validation.base import ValidationOutcome
 # ============================================================================
 # Operator Sets (Derived from TNFR Physics)
 # ============================================================================
+#
+# SINGLE SOURCE OF TRUTH.  These sets are DERIVED from the per-operator
+# nodal-equation predicates in ``tnfr.config.physics_derivation`` — they are not
+# hand-maintained frozensets.  Every grammar consumer (the U1-U6 validator,
+# grammar_dynamics, grammar_patterns, the runtime preconditions) must import
+# from here.  The derivation rationale (why each operator is a generator /
+# closure / stabilizer / destabilizer / transformer) lives in the predicate
+# docstrings of physics_derivation, grounded in ∂EPI/∂t = νf·ΔNFR.
 
-# U1a: Generators - Create EPI from null/dormant states
-GENERATORS = frozenset({"emission", "transition", "recursivity"})
+from ..config.physics_derivation import (
+    derive_start_operators_from_physics as _derive_starts,
+    derive_end_operators_from_physics as _derive_ends,
+    derive_stabilizers_from_physics as _derive_stabilizers,
+    derive_destabilizers_from_physics as _derive_destabilizers,
+    derive_transformers_from_physics as _derive_transformers,
+    derive_bifurcation_triggers_from_physics as _derive_triggers,
+    derive_bifurcation_handlers_from_physics as _derive_handlers,
+)
 
-# U1b: Closures - Leave system in coherent attractor states
-CLOSURES = frozenset({"silence", "transition", "recursivity", "dissonance"})
+# U1a: Generators - Create EPI from null/dormant states (AL, NAV, REMESH)
+GENERATORS = _derive_starts()
 
-# U2: Stabilizers - Provide negative feedback for convergence
-# Canonical set from UNIFIED_GRAMMAR_RULES.md U2: {IL, THOL}
-STABILIZERS = frozenset({"coherence", "self_organization"})
+# U1b: Closures - Leave system in coherent attractor states (SHA, NAV, REMESH, OZ)
+CLOSURES = _derive_ends()
 
-# U2: Destabilizers - Increase |ΔNFR| (positive feedback)
-# Canonical set from AGENTS.md U2: {OZ, ZHIR, VAL} = {dissonance, mutation, expansion}
-DESTABILIZERS = frozenset({"dissonance", "mutation", "expansion"})
+# U2: Stabilizers - Reduce |ΔNFR| (negative feedback → integral converges): IL, THOL
+STABILIZERS = _derive_stabilizers()
+
+# U2: Destabilizers - Increase |ΔNFR| (positive feedback): OZ, ZHIR, VAL
+DESTABILIZERS = _derive_destabilizers()
 
 # U3: Coupling/Resonance - Require phase verification
 COUPLING_RESONANCE = frozenset({"coupling", "resonance"})
 
-# U4a: Bifurcation triggers - May initiate phase transitions
-BIFURCATION_TRIGGERS = frozenset({"dissonance", "mutation"})
+# U4a: Bifurcation triggers - May initiate phase transitions (OZ, ZHIR)
+BIFURCATION_TRIGGERS = _derive_triggers()
 
-# U4a: Bifurcation handlers - Manage reorganization when ∂²EPI/∂t² > τ
-BIFURCATION_HANDLERS = frozenset({"self_organization", "coherence"})
+# U4a: Bifurcation handlers - Manage reorganization when ∂²EPI/∂t² > τ (THOL, IL)
+BIFURCATION_HANDLERS = _derive_handlers()
 
-# U4b: Transformers - Execute structural bifurcations
-TRANSFORMERS = frozenset({"mutation", "self_organization"})
+# U4b: Transformers - Execute structural bifurcations (ZHIR, THOL)
+TRANSFORMERS = _derive_transformers()
 
 # U5: Multi-Scale Coherence - Recursive generators and scale stabilizers
 RECURSIVE_GENERATORS = frozenset({"recursivity"})
-SCALE_STABILIZERS = frozenset({"coherence", "self_organization"})
+SCALE_STABILIZERS = STABILIZERS
 
 class StructuralPattern(Enum):
     """Classification of structural patterns in TNFR sequences.

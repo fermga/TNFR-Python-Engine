@@ -30,6 +30,16 @@ GLYPHS_CANONICAL: tuple[str, ...] = (
 
 GLYPHS_CANONICAL_SET: frozenset[str] = frozenset(GLYPHS_CANONICAL)
 
+# ---------------------------------------------------------------------------
+# TELEMETRY glyph groupings (morphosyntactic metrics + σ-plane angle map).
+# WARNING: these are NOT the canonical grammar U2 sets.  They group glyphs by
+# their σ-plane orientation / timing role for telemetry, so STABILIZERS here =
+# {IL, RA, UM, SHA} (calming glyphs) and DISRUPTORS = {OZ, ZHIR, NAV, THOL}
+# (active glyphs) — distinct from the grammar classification.  The canonical
+# grammar sets (U2 STABILIZERS = {IL, THOL}, DESTABILIZERS = {OZ, ZHIR, VAL})
+# live in tnfr.operators.grammar_types (single source of truth).  Do NOT use
+# these telemetry tuples in any grammar-validation path.
+# ---------------------------------------------------------------------------
 STABILIZERS: tuple[str, ...] = (
     Glyph.IL.value,
     Glyph.RA.value,

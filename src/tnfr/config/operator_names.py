@@ -104,25 +104,33 @@ VALID_END_OPERATORS = frozenset({SILENCE, TRANSITION, RECURSIVITY, DISSONANCE})
 SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 
 # R4 Bifurcation control: operators that enable structural transformations
-# Legacy single-level destabilizers (for backward compatibility)
-DESTABILIZERS = frozenset({DISSONANCE, TRANSITION, EXPANSION})  # OZ, NAV, VAL
+# CANONICAL destabilizer set = {OZ, ZHIR, VAL} (dissonance, mutation, expansion),
+# matching tnfr.operators.grammar_types.DESTABILIZERS (single source of truth,
+# derived in physics_derivation.increases_structural_pressure).  These three
+# operators raise |ΔNFR|; NAV (controlled transition) and EN (reception) do NOT
+# and are therefore NOT destabilizers — see validate_physics_derivation().
+DESTABILIZERS = frozenset({DISSONANCE, MUTATION, EXPANSION})  # OZ, ZHIR, VAL
 TRANSFORMERS = frozenset({MUTATION, SELF_ORGANIZATION})  # ZHIR, THOL
-BIFURCATION_WINDOW = 3  # Legacy: Search window for destabilizer precedent
+BIFURCATION_WINDOW = 3  # Canonical U4b window (~3 ops, AGENTS.md U4b)
 
-# R4 Extended: Graduated destabilizer classification by intensity
+# R4 Extended: Graduated destabilizer split (a window refinement of the flat
+# AGENTS.md U4b model).  The UNION DESTABILIZERS_ALL must equal the canonical
+# DESTABILIZERS = {OZ, ZHIR, VAL}; the split only ranks how far each destabilizer
+# can reach a transformer.  OZ (explicit dissonance) is the strong destabilizer;
+# VAL (added DOF) and ZHIR (phase jump) are the indirect ones.
 DESTABILIZERS_STRONG = frozenset({DISSONANCE})  # OZ: explicit dissonance
-DESTABILIZERS_MODERATE = frozenset({TRANSITION, EXPANSION})  # NAV, VAL: indirect
-DESTABILIZERS_WEAK = frozenset({RECEPTION})  # EN: latent potential
+DESTABILIZERS_MODERATE = frozenset({EXPANSION, MUTATION})  # VAL, ZHIR: indirect
+DESTABILIZERS_WEAK = frozenset()  # (none: EN/reception is NOT a destabilizer)
 
-# All destabilizers (union of all levels)
+# All destabilizers (union of all levels) == canonical {OZ, ZHIR, VAL}
 DESTABILIZERS_ALL = DESTABILIZERS_STRONG | DESTABILIZERS_MODERATE | DESTABILIZERS_WEAK
 
-# R4 Extended: Bifurcation windows by destabilizer intensity
-# These define how many operators can separate a destabilizer from a transformer
+# R4 Extended: Bifurcation windows by destabilizer reach (canonical base = 3).
+# These define how many operators can separate a destabilizer from a transformer.
 BIFURCATION_WINDOWS = {
     "strong": 4,  # OZ permits ZHIR/THOL within 4 operators
-    "moderate": 2,  # NAV/VAL permit ZHIR/THOL within 2 operators
-    "weak": 1,  # EN requires ZHIR/THOL as immediate successor
+    "moderate": 2,  # VAL/ZHIR permit ZHIR/THOL within 2 operators
+    "weak": 1,  # (vestigial: no weak destabilizers in the canonical set)
 }
 
 def canonical_operator_name(name: str) -> str:

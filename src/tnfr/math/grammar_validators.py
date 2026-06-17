@@ -18,20 +18,33 @@ from ..types import Glyph
 # from . import symbolic  # Not used directly, but is the conceptual basis
 
 # ============================================================================
-# GLYPH CLASSIFICATION (based on physics)
+# GLYPH CLASSIFICATION — derived from the canonical single source
 # ============================================================================
+#
+# These sets are NOT redefined here: they are converted, glyph-for-glyph, from
+# the canonical operator-name sets in tnfr.operators.grammar_types (the single
+# source of truth, derived in config.physics_derivation).  This guarantees this
+# math-layer validator can never drift from the canonical U2/U4 grammar.
 
-# U2: Destabilizers increase |ΔNFR|, risking divergence
-DESTABILIZERS = {Glyph.OZ, Glyph.ZHIR, Glyph.VAL}
+from ..operators.grammar_types import (
+    DESTABILIZERS as _DESTABILIZER_NAMES,
+    STABILIZERS as _STABILIZER_NAMES,
+    BIFURCATION_TRIGGERS as _TRIGGER_NAMES,
+    BIFURCATION_HANDLERS as _HANDLER_NAMES,
+    function_name_to_glyph as _to_glyph,
+)
 
-# U2: Stabilizers reduce |ΔNFR|, promoting convergence
-STABILIZERS = {Glyph.IL, Glyph.THOL}
+# U2: Destabilizers increase |ΔNFR|, risking divergence  ({OZ, ZHIR, VAL})
+DESTABILIZERS = {_to_glyph(n) for n in _DESTABILIZER_NAMES}
 
-# U4a: Bifurcation triggers (high ∂²EPI/∂t²)
-BIFURCATION_TRIGGERS = {Glyph.OZ, Glyph.ZHIR}
+# U2: Stabilizers reduce |ΔNFR|, promoting convergence  ({IL, THOL})
+STABILIZERS = {_to_glyph(n) for n in _STABILIZER_NAMES}
 
-# U4a: Bifurcation handlers (control high ∂²EPI/∂t²)
-BIFURCATION_HANDLERS = {Glyph.THOL, Glyph.IL}
+# U4a: Bifurcation triggers (high ∂²EPI/∂t²)  ({OZ, ZHIR})
+BIFURCATION_TRIGGERS = {_to_glyph(n) for n in _TRIGGER_NAMES}
+
+# U4a: Bifurcation handlers (control high ∂²EPI/∂t²)  ({THOL, IL})
+BIFURCATION_HANDLERS = {_to_glyph(n) for n in _HANDLER_NAMES}
 
 # ============================================================================
 # U2: CONVERGENCE & BOUNDEDNESS VALIDATION
