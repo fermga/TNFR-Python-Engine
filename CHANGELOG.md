@@ -2,9 +2,199 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 2026-05-31
+## [0.0.3.4] - 2026-06-17
 
-### Y5 — TNFR–Yang–Mills Closure / Obstruction Classification
+This release consolidates the emergent-geometry program, centralizes the
+operator/grammar/contract layer onto single canonical sources, opens three new
+TNFR-native Millennium-problem programs, and refactors the documentation to the
+current engine state. The 13-operator catalog, grammar U1–U6, and the nodal
+equation are unchanged; everything below either *measures* structure the nodal
+equation already contains or removes duplication. Full suite: 2043 passed, 2
+skipped.
+
+### Emergent Geometry — Symplectic Substrate (canonical)
+
+The nodal equation generates its own geometry; the graph is only the data
+substrate. The conservation laws of `physics/conservation.py` are consolidated
+into an explicit emergent **symplectic phase space** that the engine measures
+rather than postulates.
+
+- **New module**: `src/tnfr/physics/symplectic_substrate.py` — phase space
+  `P = ℝ^{4N}` with conjugate pairs `(K_φ, J_φ)` (geometric) and `(Φ_s, J_ΔNFR)`
+  (potential); symplectic 2-form `ω` (antisymmetric, non-degenerate, closed);
+  canonical Poisson brackets; `H_sub = ½Σ(K_φ²+J_φ²+Φ_s²+J_ΔNFR²)` equal to the
+  energy functional exactly; Liouville `div(X_H)=0` (the 13 operators are
+  symplectomorphisms).
+- **Derived structure tower** (each measured to machine precision):
+  Noether charges (time-translation → `H_sub`; geometric U(1) → `E_geo = ½Σ|Ψ|²`;
+  potential U(1) → `E_pot`); the compatible Hermitian / flat-Kähler triple
+  `(ω, J, g)` with `J = −ω` — so the `i` in `Ψ = K_φ + i·J_φ` *is* the complex
+  structure the substrate induces; complete integrability (action–angle,
+  Liouville–Arnold); Poincaré–Cartan integral invariants; Marsden–Weinstein
+  symplectic reduction; and the hidden **U(2) polarization symmetry** whose
+  SU(2) part supplies three conserved **Stokes parameters** on the per-node
+  Poincaré sphere (classical wave polarization — Stokes 1852 / Poincaré 1892 —
+  not isospin or qubits).
+- **Threshold values derived non-circularly**: `physics/variational.py`
+  `derive_tetrad_threshold_values` recovers φ (inverse-square self-similar fixed
+  point), γ (harmonic-accumulation gap), e (memoryless-decay series) from each
+  tetrad field's accumulation law; π remains a geometric primitive.
+- **Consolidated entry point**: `verify_substrate_geometry(G)` bundles all
+  certificates into a `SubstrateGeometryReport`.
+- **SDK**: `Network.symplectic_substrate()` + `SymplecticReport`, in
+  `TNFR.analyze()`.
+- **Honest scope**: a flat, constant-coefficient linear Kähler backbone — a
+  consolidation of geometry already implied by `conservation.py` +
+  `variational.py`; it does not resolve any open program.
+- **Demonstrations**: `examples/08_emergent_geometry/98`, `106`, `114`.
+
+### Emergent Geometry — Structural Diffusion (transport layer)
+
+The EPI channel of the canonical ΔNFR is the random-walk graph Laplacian
+`−L_rw·EPI` (verified to residual ~1e-16), so the nodal equation is literally a
+discrete diffusion equation with diffusivity `νf`. From this single identity the
+engine measures, in TNFR's own variables, a tower of empirically-established
+transport phenomena.
+
+- **New module**: `src/tnfr/physics/structural_diffusion.py` — six transport
+  layers: diffusion/synchronization (Fourier/Fick/Kuramoto), overdamped drift
+  (`q̇ = νf·F`, Stokes/Einstein mobility — corrects the prior "Newton's second
+  law" reading: the bare first-order nodal equation is overdamped, νf is mobility
+  not inverse mass), discrete standing-wave modes (bounded-manifold Laplacian
+  eigenmodes), structural-stability dispersion relation (`σ_k = r − νf·λ_k`, the
+  spectral form of U2), random walk + effective resistance (Ohm/Kirchhoff), and
+  structural flow (current, Kirchhoff continuity, Ohm).
+- **Overdamped-projection bridge**: the nodal equation is the strong-damping
+  limit of the substrate wave `q̈ + γq̇ + Lq = 0` with `νf = 1/γ`; the γ-dial
+  spans diffusion (γ→∞) to standing waves (γ→0).
+- **Honest scope**: the EPI-channel ↔ Laplacian identity is exact; the full ΔNFR
+  is multi-channel; `λ_2` is purely topological and does not encode any canonical
+  constant (measured negative result).
+- **Demonstrations**: `examples/08_emergent_geometry/99`, `113`, `134`, `135`.
+
+### Operator Contracts & Energy — Centralization and Emergence
+
+- **Canonical contract layer**: new `src/tnfr/operators/operator_contracts.py` —
+  the single source of truth for what each operator does to node state, anchored
+  to the direct `_op_*` effect (TNFR.pdf §2.2.1). Each `OperatorContract` records
+  the public English name, the `primary_channel` (one nodal-equation channel:
+  EPI / νf / θ / ΔNFR), the `scale` (NODE for twelve operators, NETWORK for the
+  U5 operator REMESH), and a verifiable postcondition. The proactive audit
+  (`audit_operator_contracts`), the reactive integrity monitor (`POSTCONDITIONS`),
+  and the introspection metadata now all derive from this spec — eliminating the
+  historical drift where scattered copies disagreed (e.g. AL claiming "positive
+  ΔNFR" though `_op_AL` only raises EPI; RA checked for EPI increase though it
+  preserves identity; VAL/NUL checked |EPI| though they scale νf).
+- **Public English names**: the structural-operator name (Emission, Reception, …)
+  is canonical at the public level; the glyph code (AL, EN, …) is the internal
+  symbol.
+- **Energy/coherence are emergent**: the structural energy
+  `E = ½Σ(Φ_s²+|∇φ|²+K_φ²+J_φ²+J_ΔNFR²)` contains no EPI or νf term (measured:
+  scaling EPI or νf leaves E unchanged). The per-operator Lyapunov role in
+  `physics/lyapunov.py` is therefore re-derived from the canonical grammar U2 role
+  (`config.physics_derivation`), not from a hardcoded energy algebra:
+  stabilisers {IL, THOL}, destabilisers {OZ, ZHIR, VAL}, the rest neutral. The
+  form-channel operators (AL, EN, RA, REMESH) are energy-neutral because EPI is
+  absent from E.
+- **Dual-lever clarified**: the two levers are the two right-hand-side factors of
+  the nodal equation — νf (capacity) and ΔNFR (pressure); operators that write
+  the form EPI (the LHS) sit on neither lever.
+- **Demonstrations**: `examples/08_emergent_geometry/152`,
+  `examples/02_physics_regimes/115`.
+
+### Grammar — Single Canonical Source & Formal-Language Characterization
+
+- **Centralization**: the operator-classification sets (generators, closures,
+  stabilizers, destabilizers, transformers, bifurcation triggers/handlers) are
+  derived once in `config.physics_derivation` and re-exported by
+  `operators/grammar_types.py`. Every grammar consumer — the U1–U6 validator,
+  the secondary sequence validator, grammar_dynamics, the runtime preconditions,
+  the error factory, and the operator metadata — now reads the single source.
+  Parallel hardcoded copies (including a secondary validator that wrongly listed
+  NUL as a U2 destabilizer) were removed and pinned by
+  `tests/operators/test_grammar_canonical_consistency.py`.
+- **Canonical grammar spec**: new `operators/grammar_canon.py` materializes the
+  U1–U6 role table, the five-type structural typology, and the canonical glyphic
+  macros (anchored to TNFR.pdf §2.3), with a self-consistency check.
+- **Formal-language thread** (characterization, demos only): the grammar is a
+  regular language with a 29-state minimal DFA and exact Perron–Frobenius
+  capacity; the asymptotic constraint lives entirely in the bifurcation rule
+  (U4b); the syntactic monoid is aperiodic so the language is star-free /
+  first-order definable; nesting `THOL[...]` lifts the glyphic sub-language to
+  context-free (Dyck/Catalan); the emergent operator distribution is the
+  Shannon–Parry maximum-entropy equilibrium.
+- **Demonstrations**: `examples/08_emergent_geometry/139`–`152`.
+
+### Number Theory & the Dual-Lever
+
+- Prime families as orbits on the zero-pressure set `{ΔNFR = 0}`; numbers as a
+  coupled network (Ω-graded centrality, primes as the transport periphery); the
+  nodal flow on numbers (primes as equilibria, not attractors); primality as
+  grammatical inertness; numbers as free-monoid words with the dual-lever as the
+  two additive gradings (count Ω → ΔNFR pressure, size log → νf capacity); the
+  capacity arm carries von Mangoldt and the prime-ladder Hamiltonian P14 is the
+  capacity-arm operator — locating the Riemann oscillatory obstruction on the
+  capacity axis the per-node substrate is blind to.
+- **Honest scope**: these restate classical multiplicative number theory through
+  the grammar/dual-lever lens; they close no open problem.
+- **Demonstrations**: `examples/07_number_theory/94`–`97`, `100`–`102`,
+  `116`, `146`–`149`.
+
+### Millennium Problem Programs (TNFR-native reformulations)
+
+Three new programs join Riemann / Navier–Stokes / Yang–Mills. **None claims a
+solution** — each carries an explicit honest-scope statement and classified
+obstruction.
+
+- **P vs NP (PNP-1)** — the nodal equation is a gradient flow, so verifying a
+  configuration's coherence is `O(|E|)` but synthesizing a globally coherent one
+  by relaxation traps in dissonance basins (measured global-optimum hit rate
+  drops monotonically with problem size on frustrated MAX-CUT). Mirrors P≠NP;
+  Branch B open. `theory/TNFR_P_VS_NP_RESEARCH_NOTES.md`,
+  `examples/09_millennium/109`.
+- **Birch–Swinnerton-Dyer (BSD-1)** — `a_p = p+1−#E(F_p)` as structural pressure;
+  the accumulated product reproduces the original 1965 empirical rank separation
+  by brute-force point counting. GL(1)→GL(2) gap open; Branch B.
+  `theory/TNFR_BSD_RESEARCH_NOTES.md`, `examples/09_millennium/110`.
+- **Hodge (HC-1)** — the tetrad cochain tower carries a complete discrete Hodge
+  decomposition (harmonic = homology exactly, Eckmann 1944), but is structurally
+  blind to the (p,p) bigrading and algebraicity the conjecture requires (a strong
+  negative, Branch B3-leaning). `theory/TNFR_HODGE_RESEARCH_NOTES.md`,
+  `examples/09_millennium/111`.
+
+### Documentation, Examples & Repository Hygiene
+
+- **README + core theory docs** refactored to the current engine state: corrected
+  a real API note (operators are callable, there is no `.apply()`), added the
+  emergent-geometry section to `theory/FUNDAMENTAL_THEORY.md`, rewrote the energy
+  classification in `theory/STRUCTURAL_OPERATORS.md` /
+  `theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md` to the emergent/grammar-U2 frame,
+  and updated counts.
+- **Examples reorganized** into 10 thematic subfolders (`01_foundations` …
+  `10_applications`), resolving the prior 77–86 numbering collision; each file
+  keeps a stable global number. Foundational examples refactored to the canonical
+  Kuramoto phase-synchrony physics.
+- **Documentation-integrity pass**: repaired all dangling example/source/`.md`
+  links repo-wide, pruned 9 obsolete `docs/` files, rebuilt the `theory/` hub,
+  and resynced the derived `.github/agents/my-agent.md` mirror.
+- **Deep repo cleanup**: removed foreign GraphQL scratch JSONs, a CUDA debug
+  script, a backup test, an empty dead CLI module, and a stale task tracker; fixed
+  a dangling `tnfr-validate` console-script entry point in `pyproject.toml`.
+- **Registry consolidation + lint**: the SDK fluent glyph→operator map and the
+  lyapunov operator table now derive from the canonical registries; cleared a
+  small set of dead-code lint findings.
+- **SDK fixes**: repaired silent no-ops in `auto_optimize` and
+  `evolve_grammar_aware`; added a proactive measured operator-contract fidelity
+  audit (`net.audit_operators()`).
+
+### Research Program Milestones (Yang–Mills Y1–Y5, REMESH-∞ N15, Navier–Stokes N16–N17)
+
+The Yang–Mills (Y1–Y5) and REMESH-∞ / Navier–Stokes (N15–N17) program
+milestones below were developed earlier in the cycle and are part of this
+release. Each carries an explicit honest-scope statement; none resolves a Clay
+Millennium Problem.
+
+#### Y5 — TNFR–Yang–Mills Closure / Obstruction Classification
 
 - **Verdict**: `BRANCH_B_OBSTRUCTION_CLASSIFIED` — Y1–Y4 establish a finite TNFR `U(1)` structural gauge diagnostic surface, but Clay-strength closure requires a new canonical non-Abelian derivation plus a continuum / thermodynamic lower-bound theorem.
 - **New API**: `classify_yang_mills_closure()` in `src/tnfr/yang_mills/closure.py`, exported from `tnfr.yang_mills` with `YangMillsClosureReport`.
@@ -14,7 +204,7 @@ All notable changes to this project will be documented in this file.
 - **Validation**: 4 new tests in `tests/physics/test_yang_mills_closure.py` cover Branch-B classification, report reuse, sampled collapse handling, and package-root import. Y1–Y5 focused run: `33 passed`.
 - **Next target**: Y6 / Branch-B derivation search for a TNFR-native non-Abelian connection and non-commuting generator algebra. If no derivation exists without external group labels, the programme should pause at Branch B.
 
-### Y4 — TNFR–Yang–Mills Finite Scaling Diagnostic
+#### Y4 — TNFR–Yang–Mills Finite Scaling Diagnostic
 
 - **Verdict surface**: `FINITE_SCALING_EVIDENCE` or `GAP_COLLAPSE_OBSERVED` depending on sampled finite graph families. This is a finite diagnostic only, not a continuum theorem.
 - **New API**: `run_finite_scaling_study()` in `src/tnfr/yang_mills/scaling.py`, exported from `tnfr.yang_mills` with `FiniteScalingPoint` and `FiniteScalingReport`.
@@ -23,7 +213,7 @@ All notable changes to this project will be documented in this file.
 - **Validation**: 6 new tests in `tests/physics/test_yang_mills_scaling.py` cover report shape/scope, grouped finite scaling, reproducibility, sampled collapse classification, invalid input rejection, and package-root import. Y1–Y4 focused run: `29 passed`.
 - **Next target**: Y5 closure / obstruction classification, likely Branch B unless a later TNFR-native non-Abelian connection and generator algebra are derived.
 
-### Y3 — TNFR–Yang–Mills Non-Abelian Derivability Audit
+#### Y3 — TNFR–Yang–Mills Non-Abelian Derivability Audit
 
 - **Verdict**: `OPEN_DERIVABILITY_GAP` — audited candidate routes for deriving a non-Abelian / multi-channel gauge sector from TNFR-internal data only; no route is promoted to canonical status.
 - **New API**: `audit_nonabelian_derivability()` in `src/tnfr/yang_mills/derivability.py`, exported from `tnfr.yang_mills` with `NonAbelianCandidateAudit` and `NonAbelianDerivabilityReport`.
@@ -32,7 +222,7 @@ All notable changes to this project will be documented in this file.
 - **Validation**: 5 new tests in `tests/physics/test_yang_mills_derivability.py` cover baseline `U(1)` confirmation, nested-EPI obstruction, cycle-bundle rejection, unsupported route errors, and package-root import. Y1+Y2+Y3 focused run: `23 passed`.
 - **Open boundary**: YMG-4 remains open. Y4 scaling can proceed only as a conditional finite diagnostic; it cannot become a Clay-strength claim while non-Abelian derivability is unresolved.
 
-### Y2 — TNFR–Yang–Mills U6 Confinement Sweep
+#### Y2 — TNFR–Yang–Mills U6 Confinement Sweep
 
 - **Verdict**: `EMPIRICAL_FINITE_GRAPH_ONLY` — finite sweep surface created for testing how the Y1 structural gauge gap behaves across U6-confined and U6-unconfined regimes.
 - **New API**: `run_u6_confinement_sweep()` in `src/tnfr/yang_mills/u6_sweep.py`, exported from `tnfr.yang_mills`.
@@ -41,7 +231,7 @@ All notable changes to this project will be documented in this file.
 - **Validation**: 5 new tests in `tests/physics/test_yang_mills_u6_sweep.py` cover report shape/scope, U6 target tracking, gap contracts, reproducibility, invalid input rejection, and package-root import. Y1+Y2 focused run: `18 passed`.
 - **Open boundary**: Y2 does not prove a U6 lower-bound theorem and does not address non-Abelian derivability (YMG-4) or continuum scaling (YMG-5). Next target: Y3 derivability audit.
 
-### Y1 — TNFR–Yang–Mills Finite Structural Gauge Gap Diagnostic
+#### Y1 — TNFR–Yang–Mills Finite Structural Gauge Gap Diagnostic
 
 - **Verdict**: `DIAGNOSTIC_SURFACE_CREATED` — first TNFR-native Yang–Mills / structural mass-gap attack surface implemented as a finite-graph diagnostic, not a Clay-strength proof.
 - **New package**: `src/tnfr/yang_mills/` with `build_structural_gauge_graph()`, `build_structural_gauge_gap_operator()`, and `compute_structural_gauge_gap()`.
@@ -51,7 +241,7 @@ All notable changes to this project will be documented in this file.
 - **Open boundaries**: non-Abelian derivability (YMG-4) and continuum / thermodynamic scaling (YMG-5) remain open.
 - **Documentation**: `theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md` records the Y-series gap ledger and updates the next target to Y2 (U6 confinement sweep).
 
-### N17-A — U3+U5 → K41: Analytical Cascade Locality (ANALYTICAL_CONSISTENT_CONDITIONAL)
+#### N17-A — U3+U5 → K41: Analytical Cascade Locality (ANALYTICAL_CONSISTENT_CONDITIONAL)
 
 - **Verdict**: `ANALYTICAL_CONSISTENT_CONDITIONAL` — K41 $k^{-5/3}$ spectrum derived conditionally from TNFR grammar rules U2+U3+U5+CDC; algebraically closed given the Cascade Development Condition.
 - **Lemma U5-SS** (U5 + U2 → scale self-similarity): U5-uniformity (same canonical operators and constants at every hierarchy level) + U2 force $u_\ell = C(\varepsilon r_\ell)^{1/3}$ in the inertial range. The K41 scaling emerges from grammar structure (U5 collapses the dimensionless ratio to a level-independent constant), not from external dimensional analysis.
@@ -62,7 +252,7 @@ All notable changes to this project will be documented in this file.
 - **N17-B pre-registered** (deferred): empirical energy spectrum via `energy_spectrum_3d()` (to be implemented in `src/tnfr/navier_stokes/operator.py`), n ∈ {32, 48}, ν ∈ {0.01, 0.005}, T = 2.0. Expected verdict: `STEEPER_THAN_K41` (CDC not satisfied at Re_eff ≤ 500).
 - **Documentation**: `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §20 (full lemmas, theorem, CDC gap analysis, verdict table, N17-B pre-registration spec).
 
-### N16 — NS-G5 Closure: 2D-Embedding Lemma
+#### N16 — NS-G5 Closure: 2D-Embedding Lemma
 
 - **Verdict**: NS-G5 **CLOSED** at the discrete-operator level via the **2D-Embedding Lemma (Theorem NS-G5-TNFR)**.
 - **Algebraic proof** (three steps using existing `TNFRNavierStokesOperator` methods on z-independent u = (u₀(x,y), u₁(x,y), 0)):
@@ -75,7 +265,7 @@ All notable changes to this project will be documented in this file.
 - **Scope**: NS-G5 closure does NOT affect NS-G1..G4 and does NOT address the Clay Millennium Problem (3D global regularity).
 - **Documentation**: `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §19.
 
-### N15 REMESH-∞ Closure — Catalog-Completeness Theorem
+#### N15 REMESH-∞ Closure — Catalog-Completeness Theorem
 
 - **Master deliverable**: [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) §§1–23 (v3.0, ~816 lines). Three weeks (W1 + W2 + W3) executed in a single session and pushed to `origin/main`:
   - W1 `a1f298fd` — operator existence: $\mathcal{R}_\infty = P_{\ker(I-\mathcal{R})}$, bounded self-adjoint orthogonal projection on $H^2(D)$
