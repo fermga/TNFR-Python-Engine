@@ -192,7 +192,6 @@ release = [
 
 [project.scripts]
 tnfr = "tnfr.cli:main"
-tnfr-validate = "tnfr.cli.validate:main"
 tnfr-is-prime = "tnfr.tools.tnfr_is_prime_cli:main"
 
 [project.urls]
