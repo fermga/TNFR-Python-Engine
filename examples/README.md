@@ -83,6 +83,7 @@ network, and emergent chemistry/particles from the same criterion.
 - `40` arithmetic number theory · `94–97` generative / spectral / Goldbach
 - `100–102` prime families, numbers-as-network, nodal flow on numbers
 - `116` νf-embedded prime visibility (arithmetic via νf only; diffusion echoes ANY νf carrier — prime ≈ arbitrary set ≈ Ω(n)/log n — substrate blind)
+- `146` primality as grammatical inertness (bridges the grammar thread 139-145 to number theory: every operator acts through the single nodal rule ∂EPI/∂t=νf·ΔNFR, so on arithmetic nodes — where ΔNFR is the §4 primality field, prime ⟺ ΔNFR=0 — primes are the KERNEL of the capacity (νf) lever, frozen under every grammatical program; M1 prime ⟺ ΔNFR=0 ⟺ C=1 maximal coherence (exact, 0 mismatches); M2 νf-lever is a scalar gain, composite drift = (νf gain)×pressure exactly (27/27), every prime in the kernel; M3 the U2 convergence target ΔNFR→0 = C→1 IS primality, C decreases monotonically with Ω (1.0→0.24→0.13→0.089→0.085, coherence debt = factorization complexity), a prime needs the EMPTY word (the identity of the star-free syntactic monoid, ex 145). HONEST: restates the §4 primality theorem through the grammar dynamics — the NEW part is the grammar-lens reading; arithmetic ΔNFR is per-node not graph diffusion so canonical graph operators are not used; not new number theory, closes no open problem)
 - `emergent_chemistry_particles_demo.py` — chemistry/particles from ΔNFR = 0
 
 ## 08_emergent_geometry — the geometry the dynamics generates from itself
