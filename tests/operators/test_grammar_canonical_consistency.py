@@ -137,3 +137,62 @@ class TestStaticRuntimeU4bAgree:
         # [AL, IL, OZ, ZHIR, SHA]: OZ provides U4b context -> valid.
         seq = [Emission(), Coherence(), Dissonance(), Mutation(), Silence()]
         assert validate_grammar(seq, epi_initial=0.0) is True
+
+
+class TestSecondaryValidatorReadsCanonicalSets:
+    """The secondary string-based validator (grammar_patterns.validate_sequence,
+    exported as grammar.validate_sequence) must read the SAME canonical
+    classification sets as the object-based validator.
+
+    Both validators legitimately have different public contracts (objects->bool
+    vs strings->rich result), but the SHARED U1/U2/U4b rules must agree because
+    both read config.operator_names (pinned == grammar_types == physics_derivation
+    by the tests above).  A June 2026 audit found the secondary validator carried
+    a hardcoded inline U2 set {dissonance, mutation, expansion, CONTRACTION} that
+    wrongly included NUL; these tests pin that the inline copies are gone and the
+    two validators concur on the shared classification rules.
+    """
+
+    def _passes(self, names: list[str]) -> bool:
+        from tnfr.operators.grammar import validate_sequence
+
+        return validate_sequence(names).passed
+
+    def test_nul_is_not_a_u2_destabilizer(self) -> None:
+        # NUL (contraction) is the dual-lever 'both' operator, U2-NEUTRAL.
+        # A bare emission->contraction->silence is rejected by the ADJACENT
+        # compatibility rule, not U2, so probe NUL in a compatible context:
+        # the U2 stabilizer requirement must NOT fire for NUL alone.
+        from tnfr.operators.grammar import validate_sequence
+
+        r = validate_sequence(["emission", "coupling", "contraction", "silence"])
+        # Whatever the verdict, it must NOT be a missing-stabilizer (U2) failure,
+        # because NUL is not a destabilizer.
+        assert "missing stabilizer" not in r.message
+
+    def test_canonical_destabilizers_trigger_u2(self) -> None:
+        # Each canonical destabilizer {OZ, ZHIR, VAL} without a stabilizer must
+        # fail with the U2 missing-stabilizer message.
+        from tnfr.operators.grammar import validate_sequence
+
+        for destab in ("dissonance", "expansion"):
+            r = validate_sequence(["emission", destab, "silence"])
+            assert r.passed is False
+            assert "missing stabilizer" in r.message
+
+    def test_destabilizer_with_stabilizer_clears_u2(self) -> None:
+        # VAL + IL clears the U2 requirement (does not fail on missing stabilizer).
+        assert self._passes(["emission", "expansion", "coherence", "silence"])
+
+    def test_secondary_agrees_with_canonical_on_valid_words(self) -> None:
+        # A canonical valid word passes BOTH validators.
+        from tnfr.operators.definitions import (
+            Emission, Coupling, Coherence, Silence,
+        )
+        from tnfr.operators.grammar_validate import validate_grammar
+
+        names = ["emission", "coupling", "coherence", "silence"]
+        ops = [Emission(), Coupling(), Coherence(), Silence()]
+        assert self._passes(names) is True
+        assert validate_grammar(ops, epi_initial=0.0) is True
+

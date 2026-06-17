@@ -46,6 +46,7 @@ from ..config.operator_names import (
     DESTABILIZERS_STRONG,
     DESTABILIZERS_MODERATE,
     DESTABILIZERS_WEAK,
+    TRANSFORMERS,
     BIFURCATION_WINDOWS,
 )
 from ..validation.compatibility import get_compatibility_level, CompatibilityLevel
@@ -88,7 +89,7 @@ def _compute_metadata(tokens: list[str]) -> dict[str, object]:
     meta["has_coherence"] = "coherence" in tokens
     meta["has_dissonance"] = "dissonance" in tokens
     meta["has_stabilizer"] = any(
-        t in {"coherence", "self_organization"} for t in tokens
+        t in {COHERENCE, SELF_ORGANIZATION} for t in tokens
     )
     try:
         pattern = detect_pattern(tokens)
@@ -159,7 +160,7 @@ def _check_end_rule(
             ),
         )
     if last == "dissonance" and not any(
-        t in {"coherence", "self_organization"} for t in tokens[:-1]
+        t in {COHERENCE, SELF_ORGANIZATION} for t in tokens[:-1]
     ):
         return (
             False,
@@ -243,9 +244,10 @@ def _is_canonical_therapeutic_pattern(tokens: list[str]) -> bool:
 def _check_transformer_windows(
     tokens: list[str],
 ) -> tuple[bool, int | None, str | None]:
-    transformers = {"mutation", "self_organization"}
+    # U4b transformers (ZHIR, THOL) = canonical TRANSFORMERS set (single source
+    # config.operator_names.TRANSFORMERS, derived in physics_derivation).
     for i, tok in enumerate(tokens):
-        if tok not in transformers:
+        if tok not in TRANSFORMERS:
             continue
 
         found = False
@@ -509,7 +511,7 @@ def parse_sequence(names: Sequence[str]) -> SequenceValidationResult:
         )
 
     # Stabilizer presence
-    if not any(t in {"coherence", "self_organization"} for t in tokens):
+    if not any(t in {COHERENCE, SELF_ORGANIZATION} for t in tokens):
         raise SequenceSyntaxError(
             0,
             tokens[0],
