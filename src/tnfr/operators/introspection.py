@@ -29,7 +29,10 @@ OperatorMeta.contracts     Short, stable contract statements
 OperatorMeta.doc           Concise physics rationale (1-2 sentences)
 
 Note: Grammar rule U6 (confinement) is telemetry-only and not included
-as an active role.
+as an active role. The ``grammar_roles`` tuples are the canonical per-operator
+U1-U5 roles derived from the operator's role set in
+:mod:`tnfr.operators.grammar_canon` (single source of truth); the agreement is
+pinned by ``test_grammar_canon.py`` (``u_rules_for_operator``).
 """
 
 from __future__ import annotations
@@ -91,7 +94,7 @@ OPERATOR_METADATA: Mapping[str, OperatorMeta] = {
         name="Dissonance",
         mnemonic="OZ",
         category="destabilizer",
-        grammar_roles=("U2", "U4a"),
+        grammar_roles=("U1b", "U2", "U4a"),
         contracts=(
             "Increases |ΔNFR|",
             "May trigger bifurcation",
@@ -155,7 +158,7 @@ OPERATOR_METADATA: Mapping[str, OperatorMeta] = {
         name="Mutation",
         mnemonic="ZHIR",
         category="transformer",
-        grammar_roles=("U4a", "U4b"),
+        grammar_roles=("U2", "U4a", "U4b"),
         contracts=(
             "Phase transform threshold",
             "Requires prior IL",
@@ -175,7 +178,7 @@ OPERATOR_METADATA: Mapping[str, OperatorMeta] = {
         name="Recursivity",
         mnemonic="REMESH",
         category="generator",
-        grammar_roles=("U1a", "U1b"),
+        grammar_roles=("U1a", "U1b", "U5"),
         contracts=("Cross-scale echoing", "Supports fractality"),
         doc="Echoes patterns across scales for memory/nesting.",
     ),

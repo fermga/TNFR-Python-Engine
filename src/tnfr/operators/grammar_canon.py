@@ -112,6 +112,10 @@ __all__ = [
     "GrammarRule",
     "GRAMMAR_RULES",
     "rule",
+    "GRAMMAR_COMPLIANCE_INVARIANT",
+    "related_invariants",
+    "ROLE_TO_URULE",
+    "u_rules_for_operator",
     "StructuralType",
     "StructuralTypeSpec",
     "STRUCTURAL_TYPOLOGY",
@@ -328,6 +332,63 @@ def rule(rule_id: str) -> GrammarRule:
         if r.rule_id == rule_id:
             return r
     raise KeyError(f"Unknown grammar rule id: {rule_id!r}")
+
+
+#: Canonical invariant index for "Grammar Compliance" (AGENTS.md §Canonical
+#: Invariants, the 6-invariant model). Every grammar-rule violation relates to
+#: this invariant by definition, in addition to the rule's primary physics
+#: invariant.
+GRAMMAR_COMPLIANCE_INVARIANT = 4
+
+
+def related_invariants(rule_id: str) -> tuple[int, ...]:
+    """Canonical invariants a violation of ``rule_id`` relates to.
+
+    Returns the rule's primary physics invariant plus Grammar Compliance (#4),
+    sorted and de-duplicated. This is the single source of the rule→invariant
+    annotation, reconciled to the 6-invariant canon (AGENTS.md §Canonical
+    Invariants); it replaces the stale pre-optimization 10-invariant numbering.
+    """
+    try:
+        primary = rule(rule_id).invariant
+    except KeyError:
+        return (GRAMMAR_COMPLIANCE_INVARIANT,)
+    return tuple(sorted({primary, GRAMMAR_COMPLIANCE_INVARIANT}))
+
+
+#: Map each grammatical role to the active U1-U5 rule id it participates in.
+#: (U6 confinement is telemetry-only and is not an active operator role.)
+ROLE_TO_URULE: dict[GrammarRole, str] = {
+    GrammarRole.GENERATOR: "U1a",
+    GrammarRole.CLOSURE: "U1b",
+    GrammarRole.STABILIZER: "U2",
+    GrammarRole.DESTABILIZER: "U2",
+    GrammarRole.COUPLING: "U3",
+    GrammarRole.TRIGGER: "U4a",
+    GrammarRole.HANDLER: "U4a",
+    GrammarRole.TRANSFORMER: "U4b",
+    GrammarRole.RECURSIVE: "U5",
+}
+
+#: Resolve a glyph mnemonic (e.g. "ZHIR") back to its function name.
+_OPERATOR_BY_GLYPH: dict[str, str] = {
+    g.glyph: op for op, g in OPERATOR_ROLES.items()
+}
+
+
+def u_rules_for_operator(op: str) -> tuple[str, ...]:
+    """The active U1-U5 rule ids an operator participates in (sorted, unique).
+
+    Derived from the operator's canonical role set. ``op`` may be a function
+    name (e.g. ``"mutation"``) or a glyph mnemonic (e.g. ``"ZHIR"``). U6
+    (confinement) is telemetry-only and is not an active operator role, so it
+    never appears here. Single source of the per-operator grammar-role table.
+    """
+    name = _OPERATOR_BY_GLYPH.get(op, op)
+    grammar = OPERATOR_ROLES.get(name)
+    if grammar is None:
+        return ()
+    return tuple(sorted({ROLE_TO_URULE[r] for r in grammar.roles}))
 
 
 #: The TNFR.pdf §2.3.3 "Esquema formal de sintaxis" positions (theory anchor).

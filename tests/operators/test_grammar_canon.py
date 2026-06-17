@@ -171,3 +171,65 @@ class TestRuleRegistry:
         schema = gc.FORMAL_SYNTAX_SCHEMA
         assert "AL" in schema["start"]
         assert "SHA" in schema["closure"]
+
+
+class TestRelatedInvariants:
+    """The rule→invariant annotation is canonical (6-invariant model)."""
+
+    def test_every_rule_relates_to_grammar_compliance(self) -> None:
+        # Grammar Compliance (#4) is in every grammar-rule's related set.
+        for r in gc.GRAMMAR_RULES:
+            assert gc.GRAMMAR_COMPLIANCE_INVARIANT in gc.related_invariants(
+                r.rule_id
+            )
+
+    def test_invariants_are_in_the_six_invariant_canon(self) -> None:
+        # No stale references to the old 10-invariant numbering (7, 9, …).
+        for r in gc.GRAMMAR_RULES:
+            for inv in gc.related_invariants(r.rule_id):
+                assert 1 <= inv <= 6
+
+    def test_primary_invariant_is_included(self) -> None:
+        for r in gc.GRAMMAR_RULES:
+            assert r.invariant in gc.related_invariants(r.rule_id)
+
+    def test_error_factory_mapping_is_derived(self) -> None:
+        # The error factory's _RULE_INVARIANTS must come from grammar_canon.
+        from tnfr.operators import grammar_error_factory as gef
+
+        for r in gc.GRAMMAR_RULES:
+            assert gef._RULE_INVARIANTS[r.rule_id] == gc.related_invariants(
+                r.rule_id
+            )
+        # The U6 confinement alias maps to the canonical U6 rule.
+        assert gef._RULE_INVARIANTS["U6_CONFINEMENT"] == gc.related_invariants(
+            "U6"
+        )
+
+
+class TestOperatorMetadataRolesAreCanonical:
+    """introspection.OPERATOR_METADATA.grammar_roles == the canonical roles."""
+
+    def test_every_operator_metadata_matches_canon(self) -> None:
+        from tnfr.operators.introspection import OPERATOR_METADATA
+
+        for mnemonic, meta in OPERATOR_METADATA.items():
+            expected = gc.u_rules_for_operator(mnemonic)
+            assert tuple(meta.grammar_roles) == expected, (
+                f"{mnemonic}: metadata {meta.grammar_roles} != canon {expected}"
+            )
+
+    def test_u_rules_accepts_function_name_and_glyph(self) -> None:
+        # Same result whether queried by function name or glyph mnemonic.
+        assert gc.u_rules_for_operator("mutation") == gc.u_rules_for_operator(
+            "ZHIR"
+        )
+        assert gc.u_rules_for_operator("ZHIR") == ("U2", "U4a", "U4b")
+
+    def test_remesh_carries_the_recursive_rule(self) -> None:
+        # REMESH is the U5 recursive generator (was historically omitted).
+        assert "U5" in gc.u_rules_for_operator("REMESH")
+
+    def test_dissonance_is_also_a_closure(self) -> None:
+        # OZ is a closure (∈ CLOSURES) → U1b (was historically omitted).
+        assert "U1b" in gc.u_rules_for_operator("OZ")

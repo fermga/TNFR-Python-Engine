@@ -23,18 +23,22 @@ collect_grammar_errors(sequence, epi_initial=0.0) -> list[ExtendedGrammarError]
 make_grammar_error(rule, candidate, message, sequence, index=None)
     -> ExtendedGrammarError
 
-Invariants Mapping (Minimal)
-----------------------------
-U1a -> (1,4)        # EPI initiation & operator closure precondition
-U1b -> (4)          # Closure / bounded sequence end
-U2  -> (3,4)        # ΔNFR semantics & closure (stabilizer presence)
-U3  -> (5)          # Phase verification
-U4a -> (3,4,5)      # Trigger handling (ΔNFR pressure + handlers + phase)
-U4b -> (3,4,7)      # Transformers need stabilised base & fractality preserved
-U6  -> (3,9)        # Potential confinement + metrics integrity
+Invariants Mapping (canonical, derived)
+---------------------------------------
+Each grammar-rule violation relates to its primary physics invariant plus
+Grammar Compliance (#4). The mapping is DERIVED from
+``grammar_canon.GRAMMAR_RULES`` (the single source of truth) via
+``related_invariants``, reconciled to the 6-invariant canon (AGENTS.md
+§Canonical Invariants):
 
-NOTE: Mapping kept intentionally lean; can be extended in future without
-breaking existing consumers.
+U1a/U1b/U2 -> (1, 4)   # Nodal Equation Integrity + Grammar Compliance
+U3         -> (2, 4)   # Phase-Coherent Coupling + Grammar Compliance
+U4a/U4b    -> (4,)     # Grammar Compliance (bifurcation dynamics)
+U5         -> (3, 4)   # Multi-Scale Fractality + Grammar Compliance
+U6         -> (4, 5)   # Grammar Compliance + Structural Metrology
+
+NOTE: Sourced from grammar_canon so the annotation cannot drift from the
+canonical rule registry; a consistency test pins the agreement.
 """
 
 from __future__ import annotations
@@ -43,6 +47,10 @@ from dataclasses import dataclass
 from typing import Any, Sequence
 
 from .definitions import get_operator_meta
+from .grammar_canon import (
+    GRAMMAR_RULES as _GRAMMAR_RULES,
+    related_invariants as _related_invariants,
+)
 from .grammar_core import GrammarValidator
 from .grammar_types import StructuralGrammarError
 
@@ -52,15 +60,16 @@ __all__ = [
     "make_grammar_error",
 ]
 
-_RULE_INVARIANTS = {
-    "U1a": (1, 4),
-    "U1b": (4,),
-    "U2": (3, 4),
-    "U3": (5,),
-    "U4a": (3, 4, 5),
-    "U4b": (3, 4, 7),
-    "U6_CONFINEMENT": (3, 9),
+# U-rule violation → canonical invariants it relates to (its primary physics
+# invariant + Grammar Compliance #4). DERIVED from grammar_canon.GRAMMAR_RULES,
+# the single source of truth, reconciled to the 6-invariant canon (AGENTS.md
+# §Canonical Invariants). This replaces the stale pre-optimization 10-invariant
+# numbering (which referenced invariants 7/9 that no longer exist). The
+# "U6_CONFINEMENT" key aliases the canonical "U6" telemetry rule.
+_RULE_INVARIANTS: dict[str, tuple[int, ...]] = {
+    r.rule_id: _related_invariants(r.rule_id) for r in _GRAMMAR_RULES
 }
+_RULE_INVARIANTS["U6_CONFINEMENT"] = _related_invariants("U6")
 
 @dataclass(slots=True)
 class ExtendedGrammarError:
