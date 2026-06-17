@@ -279,12 +279,24 @@ def _postcond_resonance(
     G: TNFRGraph, node: Any,
     before: dict[str, Any], after: dict[str, Any],
 ) -> str | None:
-    """RA: EPI must not decrease; νf must not decrease (amplification)."""
+    """RA: structural identity (EPI sign) preserved; νf must not decrease.
+
+    Canonical ground truth (``_op_RA``): Resonance PROPAGATES EPI toward the
+    neighbour field (so the node's EPI may rise or fall — it is reorganised,
+    not monotonically increased) while preserving structural identity and
+    amplifying νf. The contract is therefore identity preservation, NOT an
+    EPI-magnitude bound.
+    """
+    # Identity: EPI sign must be preserved during propagation.
     e_before = before.get("epi", 0.0)
     e_after = after.get("epi", 0.0)
-    if e_after < e_before - 1e-6:
+    if (
+        abs(e_before) > 1e-9
+        and abs(e_after) > 1e-9
+        and (e_before > 0) != (e_after > 0)
+    ):
         return (
-            f"EPI decreased during Resonance: "
+            f"EPI sign flipped during Resonance (identity not preserved): "
             f"{e_before:.6f} → {e_after:.6f}"
         )
     # νf must not decrease (glyph amplifies: vf *= 1 + boost)
@@ -323,13 +335,18 @@ def _postcond_expansion(
     G: TNFRGraph, node: Any,
     before: dict[str, Any], after: dict[str, Any],
 ) -> str | None:
-    """VAL: EPI complexity (magnitude) must increase."""
-    e_before = abs(before.get("epi", 0.0))
-    e_after = abs(after.get("epi", 0.0))
-    if e_after < e_before - 1e-6:
+    """VAL: νf (reorganization capacity) must not decrease.
+
+    Canonical ground truth (``_make_scale_op``): Expansion scales νf up
+    (νf *= 1.0676), adding reorganization capacity — it acts on the νf
+    channel, not on |EPI|.
+    """
+    vf_before = before.get("vf", 0.0)
+    vf_after = after.get("vf", 0.0)
+    if vf_after < vf_before - 1e-9:
         return (
-            f"|EPI| decreased during Expansion: "
-            f"{e_before:.6f} → {e_after:.6f}"
+            f"νf decreased during Expansion: "
+            f"{vf_before:.6f} → {vf_after:.6f}"
         )
     return None
 
@@ -337,13 +354,18 @@ def _postcond_contraction(
     G: TNFRGraph, node: Any,
     before: dict[str, Any], after: dict[str, Any],
 ) -> str | None:
-    """NUL: EPI complexity (magnitude) must decrease."""
-    e_before = abs(before.get("epi", 0.0))
-    e_after = abs(after.get("epi", 0.0))
-    if e_after > e_before + 1e-6:
+    """NUL: νf (reorganization capacity) must not increase.
+
+    Canonical ground truth (``_make_scale_op``): Contraction scales νf down
+    (νf *= 0.9015) and densifies ΔNFR — it removes capacity on the νf
+    channel, not |EPI|.
+    """
+    vf_before = before.get("vf", 0.0)
+    vf_after = after.get("vf", 0.0)
+    if vf_after > vf_before + 1e-9:
         return (
-            f"|EPI| increased during Contraction: "
-            f"{e_before:.6f} → {e_after:.6f}"
+            f"νf increased during Contraction: "
+            f"{vf_before:.6f} → {vf_after:.6f}"
         )
     return None
 
@@ -770,10 +792,13 @@ class OperatorContractResult:
 
     Attributes
     ----------
+    english_name : str
+        Public structural-operator name (Emission, Reception, ...). This is the
+        canonical public identifier; ``glyph`` is the internal symbolic code.
     glyph : str
-        Operator glyph code (AL, EN, IL, ...).
+        Internal symbolic glyph code (AL, EN, IL, ...).
     operator : str
-        Canonical operator name (emission, reception, ...).
+        Canonical function name (emission, reception, ...).
     contract : str
         The canonical postcondition contract being measured.
     context : str
@@ -785,6 +810,7 @@ class OperatorContractResult:
         Human-readable measured before→after summary.
     """
 
+    english_name: str
     glyph: str
     operator: str
     contract: str
@@ -825,7 +851,8 @@ class OperatorContractAudit:
         for r in self.results:
             mark = "ok " if r.satisfied else "XX "
             lines.append(
-                f"  {mark}{r.glyph:>6} [{r.context}] {r.contract} — {r.detail}"
+                f"  {mark}{r.english_name:>16} [{r.context}] "
+                f"{r.contract} — {r.detail}"
             )
         return "\n".join(lines)
 
@@ -904,30 +931,26 @@ def audit_operator_contracts(
         Silence, Expansion, Contraction, SelfOrganization, Mutation,
         Transition, Recursivity,
     )
+    from ..operators.operator_contracts import OPERATOR_CONTRACTS, iter_contracts
 
-    # (glyph, name, class, context, contract text)
+    _classes = {
+        "emission": Emission, "reception": Reception, "coherence": Coherence,
+        "dissonance": Dissonance, "coupling": Coupling, "resonance": Resonance,
+        "silence": Silence, "expansion": Expansion, "contraction": Contraction,
+        "self_organization": SelfOrganization, "mutation": Mutation,
+        "transition": Transition, "recursivity": Recursivity,
+    }
+    # Catalog DERIVED from the canonical contract spec (single source of truth):
+    # (glyph, name, class, context, postcondition) per operator.
     catalog = [
-        ("AL", "emission", Emission, "network", "EPI not decreased"),
-        ("EN", "reception", Reception, "network", "C(t) not decreased"),
-        ("IL", "coherence", Coherence, "network",
-         "|ΔNFR| not increased and C(t) not decreased"),
-        ("OZ", "dissonance", Dissonance, "node", "|ΔNFR| not decreased"),
-        ("UM", "coupling", Coupling, "network", "|ΔNFR| not increased"),
-        ("RA", "resonance", Resonance, "identity", "EPI sign preserved"),
-        ("SHA", "silence", Silence, "network", "νf not increased (freeze)"),
-        ("VAL", "expansion", Expansion, "network", "|EPI| not decreased"),
-        ("NUL", "contraction", Contraction, "network", "|EPI| not increased"),
-        ("THOL", "self_organization", SelfOrganization, "network",
-         "C(t) not catastrophic (≥90%)"),
-        ("ZHIR", "mutation", Mutation, "phase", "θ transformed"),
-        ("NAV", "transition", Transition, "state", "state changed"),
-        ("REMESH", "recursivity", Recursivity, "advisory",
-         "network-level echo (advisory)"),
+        (c.glyph, c.name, _classes[c.name], c.context.value, c.postcondition)
+        for c in iter_contracts()
     ]
 
     results: list[OperatorContractResult] = []
 
     for glyph, name, cls, context, contract in catalog:
+        eng_name = OPERATOR_CONTRACTS[name].english_name
         G = _audit_build_graph(n_nodes, seed)
         op = cls()
 
@@ -1040,11 +1063,11 @@ def audit_operator_contracts(
                     satisfied = after["vf"] <= before["vf"] + tol
                     detail = f"νf {before['vf']:.4f}→{after['vf']:.4f}"
                 elif glyph == "VAL":
-                    satisfied = after["epi"] >= before["epi"] - tol
-                    detail = f"|EPI| {before['epi']:.4f}→{after['epi']:.4f}"
+                    satisfied = after["vf"] >= before["vf"] - tol
+                    detail = f"νf {before['vf']:.4f}→{after['vf']:.4f}"
                 elif glyph == "NUL":
-                    satisfied = after["epi"] <= before["epi"] + tol
-                    detail = f"|EPI| {before['epi']:.4f}→{after['epi']:.4f}"
+                    satisfied = after["vf"] <= before["vf"] + tol
+                    detail = f"νf {before['vf']:.4f}→{after['vf']:.4f}"
                 elif glyph == "THOL":
                     satisfied = (
                         before["C"] <= tol
@@ -1057,6 +1080,7 @@ def audit_operator_contracts(
 
         results.append(
             OperatorContractResult(
+                english_name=eng_name,
                 glyph=glyph,
                 operator=name,
                 contract=contract,

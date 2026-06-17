@@ -243,23 +243,64 @@ class TestPostconditions:
         report = monitor.after_operator(G, 0, "Mutation")
         assert report.postcondition_ok is False
 
-    def test_expansion_postcondition_passes_on_epi_increase(self) -> None:
-        """VAL postcondition: |EPI| must increase."""
+    def test_expansion_postcondition_passes_on_vf_increase(self) -> None:
+        """VAL postcondition: νf (capacity) must not decrease."""
         G = _make_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor.before_operator(G, 0)
-        G.nodes[0]["EPI"] = G.nodes[0]["EPI"] + 5.0
+        G.nodes[0]["nu_f"] = G.nodes[0]["nu_f"] + 0.5
         report = monitor.after_operator(G, 0, "Expansion")
         assert report.postcondition_ok is True
 
-    def test_contraction_postcondition_passes_on_epi_decrease(self) -> None:
-        """NUL postcondition: |EPI| must decrease."""
+    def test_expansion_postcondition_fails_on_vf_decrease(self) -> None:
+        """VAL postcondition detects νf decrease (capacity must not shrink)."""
         G = _make_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor.before_operator(G, 0)
-        G.nodes[0]["EPI"] = 0.01
+        G.nodes[0]["nu_f"] = 0.01
+        report = monitor.after_operator(G, 0, "Expansion")
+        assert report.postcondition_ok is False
+        assert "νf decreased" in report.postcondition_detail
+
+    def test_contraction_postcondition_passes_on_vf_decrease(self) -> None:
+        """NUL postcondition: νf (capacity) must not increase."""
+        G = _make_graph()
+        monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
+        monitor.before_operator(G, 0)
+        G.nodes[0]["nu_f"] = G.nodes[0]["nu_f"] * 0.85
         report = monitor.after_operator(G, 0, "Contraction")
         assert report.postcondition_ok is True
+
+    def test_contraction_postcondition_fails_on_vf_increase(self) -> None:
+        """NUL postcondition detects νf increase (capacity must not grow)."""
+        G = _make_graph()
+        monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
+        monitor.before_operator(G, 0)
+        G.nodes[0]["nu_f"] = G.nodes[0]["nu_f"] + 0.5
+        report = monitor.after_operator(G, 0, "Contraction")
+        assert report.postcondition_ok is False
+        assert "νf increased" in report.postcondition_detail
+
+    def test_resonance_postcondition_preserves_identity(self) -> None:
+        """RA postcondition: EPI sign (structural identity) preserved."""
+        G = _make_graph()
+        monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
+        monitor.before_operator(G, 0)
+        # νf up (amplification) and same-sign EPI change → identity preserved
+        G.nodes[0]["nu_f"] = G.nodes[0]["nu_f"] * 1.05
+        report = monitor.after_operator(G, 0, "Resonance")
+        assert report.postcondition_ok is True
+
+    def test_resonance_postcondition_fails_on_sign_flip(self) -> None:
+        """RA postcondition detects EPI sign flip (identity not preserved)."""
+        G = _make_graph()
+        monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
+        monitor.before_operator(G, 0)
+        # Flip EPI sign → structural identity violated
+        G.nodes[0]["EPI"] = -abs(G.nodes[0]["EPI"]) - 0.5
+        report = monitor.after_operator(G, 0, "Resonance")
+        assert report.postcondition_ok is False
+        assert "sign flipped" in report.postcondition_detail
 
     def test_unknown_operator_skips_postcondition(self) -> None:
         """Operators without specific postconditions pass by default."""

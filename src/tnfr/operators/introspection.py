@@ -184,6 +184,30 @@ OPERATOR_METADATA: Mapping[str, OperatorMeta] = {
     ),
 }
 
+
+# ── Centralize contract text from the canonical spec (drift-proof) ───────────
+# The per-operator contract is owned by
+# :data:`tnfr.operators.operator_contracts.OPERATOR_CONTRACTS` (the single
+# source of truth, derived from the nodal-equation ground-truth effects +
+# TNFR.pdf §2.2.1). Rebuild each metadata entry's ``contracts`` from the spec
+# so the two can never diverge. This eliminates the historical AL drift
+# ("Positive ΔNFR" / "Initialises νf" — AL only raises EPI) by construction.
+def _centralize_contracts(
+    table: Mapping[str, OperatorMeta],
+) -> dict[str, OperatorMeta]:
+    from dataclasses import replace
+
+    from .operator_contracts import contract_for
+
+    out: dict[str, OperatorMeta] = {}
+    for mnemonic, meta in table.items():
+        spec = contract_for(mnemonic)
+        out[mnemonic] = replace(meta, contracts=(spec.postcondition,))
+    return out
+
+
+OPERATOR_METADATA = _centralize_contracts(OPERATOR_METADATA)
+
 def get_operator_meta(identifier: str) -> OperatorMeta:
     """Return metadata for glyph mnemonic or class name.
 
