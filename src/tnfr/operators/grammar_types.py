@@ -74,34 +74,64 @@ RECURSIVE_GENERATORS = frozenset({"recursivity"})
 SCALE_STABILIZERS = STABILIZERS
 
 class StructuralPattern(Enum):
-    """Classification of structural patterns in TNFR sequences.
+    """Classification labels for TNFR operator sequences.
 
-    Used by canonical_patterns module for backward compatibility.
-    Deprecated - use pattern_detection module for new code.
+    Two distinct axes are mixed in this legacy enum. The CANONICAL grammar
+    typology is the structural-shape axis — exactly five types from TNFR.pdf
+    §2.3 "Tabla comparativa de estructuras glíficas" (LINEAR, BIFURCATED,
+    FRACTAL, CYCLIC, HIERARCHICAL), mirrored by
+    :class:`tnfr.operators.grammar_canon.StructuralType`. The remaining members
+    are NON-canonical heuristic application labels (domain, learning process,
+    operational meta) kept for backward compatibility; they do not emerge from
+    the nodal dynamics and are not part of the canonical grammar typology.
+
+    For canonical structural classification use ``grammar_canon.StructuralType``
+    and ``CANONICAL_STRUCTURAL_TYPES`` below; ``grammar_canon`` also provides
+    the mapping from any label here to its canonical structural type.
     """
 
-    BIFURCATED = "bifurcated"
+    # --- CANONICAL structural typology (TNFR.pdf "Tabla comparativa") ---------
+    BIFURCATED = "bifurcated"        # Bifurcada — OZ → [ZHIR | NUL] (union)
+    LINEAR = "linear"                # Lineal — concatenation
+    HIERARCHICAL = "hierarchical"    # Jerárquica — nested THOL[...] (Dyck)
+    FRACTAL = "fractal"              # Fractal — self-similar repeat (star)
+    CYCLIC = "cyclic"                # Cíclica — close-and-reopen feedback cycle
+
+    # --- LEGACY heuristic labels (NON-canonical application metadata) ---------
+    # Application domain axis (not a structural shape):
     THERAPEUTIC = "therapeutic"
     EDUCATIONAL = "educational"
     ORGANIZATIONAL = "organizational"
     CREATIVE = "creative"
     REGENERATIVE = "regenerative"
+    # Operational meta axis (reduce to a canonical type via grammar_canon):
     COMPLEX = "complex"
     COMPRESS = "compress"
     EXPLORE = "explore"
     RESONATE = "resonate"
     BOOTSTRAP = "bootstrap"
     STABILIZE = "stabilize"
-    LINEAR = "linear"
-    HIERARCHICAL = "hierarchical"
-    FRACTAL = "fractal"
-    CYCLIC = "cyclic"
+    # Learning-process axis (not a structural shape):
     BASIC_LEARNING = "basic_learning"
     DEEP_LEARNING = "deep_learning"
     EXPLORATORY_LEARNING = "exploratory_learning"
     CONSOLIDATION_CYCLE = "consolidation_cycle"
     ADAPTIVE_MUTATION = "adaptive_mutation"
     UNKNOWN = "unknown"
+
+
+#: The five canonical structural types (TNFR.pdf "Tabla comparativa"), the only
+#: members of :class:`StructuralPattern` that constitute the canonical grammar
+#: typology. Mirrored by :class:`grammar_canon.StructuralType`.
+CANONICAL_STRUCTURAL_TYPES = frozenset(
+    {
+        StructuralPattern.LINEAR,
+        StructuralPattern.BIFURCATED,
+        StructuralPattern.FRACTAL,
+        StructuralPattern.CYCLIC,
+        StructuralPattern.HIERARCHICAL,
+    }
+)
 
 # ============================================================================
 # Glyph-Function Name Mappings

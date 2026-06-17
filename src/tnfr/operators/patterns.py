@@ -82,8 +82,17 @@ _CANONICAL_ORDER = (
     CONTRACTION,
 )
 
-_STABILIZERS = {COHERENCE, SELF_ORGANIZATION}
-_DESTABILIZERS = {DISSONANCE, MUTATION, EXPANSION}
+# Grammar classification sets — single source of truth (grammar_types, derived
+# from the nodal-equation predicates in config.physics_derivation).  Imported
+# rather than hardcoded so this heuristic detector cannot drift from the canon.
+from .grammar_types import (
+    STABILIZERS as _STABILIZERS,
+    DESTABILIZERS as _DESTABILIZERS,
+)
+
+# Heuristic-only set (NOT a grammar set): operators that read as "intermediate"
+# development steps for pattern detection (coupling/resonance are U3, dissonance
+# is a destabilizer).  Local to the detector's heuristics.
 _INTERMEDIATE = {COUPLING, RESONANCE, DISSONANCE}
 
 _COHERENCE_WEIGHTS = {

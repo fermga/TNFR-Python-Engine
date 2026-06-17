@@ -47,8 +47,8 @@ BIFURCATED_COLLAPSE = CanonicalSequence(
 THERAPEUTIC_PROTOCOL = CanonicalSequence(
     name="therapeutic_protocol",
     glyphs=[
-        Glyph.EN,
         Glyph.AL,
+        Glyph.EN,
         Glyph.IL,
         Glyph.OZ,
         Glyph.THOL,
@@ -56,7 +56,8 @@ THERAPEUTIC_PROTOCOL = CanonicalSequence(
         Glyph.SHA,
     ],
     pattern_type=StructuralPattern.THERAPEUTIC,
-    description="Reception-led therapeutic cycle with self-organization",
+    description="Emission-anchored therapeutic cycle with reception and "
+    "self-organization (U1a generator start + U4b handler).",
     use_cases=["biomedical", "healing"],
     domain="biomedical",
     references=["The Pulse That Traverses Us", "EMISSION_METRICS_GUIDE.md"],
@@ -78,13 +79,15 @@ FULL_DEPLOYMENT = CanonicalSequence(
         Glyph.AL,
         Glyph.UM,
         Glyph.RA,
+        Glyph.IL,
         Glyph.OZ,
         Glyph.ZHIR,
         Glyph.IL,
         Glyph.SHA,
     ],
     pattern_type=StructuralPattern.COMPLEX,
-    description="Deployment pipeline with exploration and stabilization",
+    description="Deployment pipeline with exploration and stabilization "
+    "(IL stabilizes before OZ so ZHIR has the U4b base + recent destabilizer).",
     use_cases=["rollout", "integration"],
     domain="social",
     references=["ARCHITECTURE.md", "CROSS_REFERENCE_MATRIX.md"],
