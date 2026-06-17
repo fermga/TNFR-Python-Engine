@@ -7,25 +7,34 @@ in ``tnfr.constants.canonical``.
 
 Physics Foundation
 ------------------
-The structural energy functional
+The structural Lyapunov functional is **emergent**, not imposed.  It is the
+coherence the operators natively alter, which has two equivalent emergent forms:
 
-    E[G] = ½ Σ_i [Φ_s(i)² + |∇φ|(i)² + K_φ(i)² + J_φ(i)² + J_ΔNFR(i)²]
+- the **coherence** ``C(t) = 1/(1 + mean|ΔNFR| + mean|dEPI|)``, emerging directly
+  from the nodal dynamics ``∂EPI/∂t = νf·ΔNFR``; and
+- the **tetrad energy** ``E = ½ Σ_i [Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²]``
+  (conservation.py), which emerges purely from the tetrad geometry — Φ_s and
+  J_ΔNFR from the structural pressure ΔNFR, and |∇φ|/K_φ/J_φ from the phase θ.
+  E contains **no EPI or νf term** (measured: scaling EPI or νf leaves E
+  unchanged); both functionals share the structural-pressure channel |ΔNFR|.
 
-serves as a Lyapunov candidate.  Each canonical operator changes E by a
-bounded amount ΔE whose sign and magnitude depend on the operator's glyph
-factor.  In TNFR notation:
+Each operator changes the coherence by a bounded amount whose sign is its
+canonical grammar role, DERIVED from ``config.physics_derivation`` (the single
+source of truth, identical to the grammar U2 classification):
 
-- **Stabilisers** (IL, EN, UM, THOL, NAV): ΔE ≤ 0 with explicit
-  contraction rate derived from the glyph factor.
-- **Destabilisers** (OZ, VAL, AL, RA): ΔE ≤ C_op · E  with explicit
-  constant C_op derived from the glyph factor.
-- **Neutral / quasi-isometric** (SHA, ZHIR, REMESH): |ΔE| bounded by a
-  small residual term proportional to the frozen/shifted attribute.
+- **Stabilisers** (IL, THOL): reduce |ΔNFR| → raise coherence (Lyapunov-
+  contractive), with a contraction rate from the operator's pressure factor.
+- **Destabilisers** (OZ, ZHIR, VAL): raise |ΔNFR| → lower coherence, with an
+  explicit expansion rate.
+- **Neutral** (AL, EN, RA, UM, SHA, NUL, NAV, REMESH): act on the EPI-form,
+  νf-capacity, θ-phase or advisory channel that the coherence-pressure functional
+  does not penalise by its grammatical role — so they neither contract nor expand
+  coherence (|ΔE_coherence| ≈ 0 by their U2 role).
 
 Grammar rule U2 (CONVERGENCE & BOUNDEDNESS) requires that every
 destabiliser be accompanied by a stabiliser.  The derivation argues that
-the *net* energy change across a grammar-compliant sequence is
-non-positive, supporting the Lyapunov proposition for all 13 operators.
+the *net* coherence change across a grammar-compliant sequence is
+non-negative (energy non-positive), supporting the Lyapunov proposition.
 A complete formal proof of asymptotic stability remains open (see §8.2 of
 the theory document for the proof sketch and its limitations).
 
@@ -184,300 +193,132 @@ def _build_bounds() -> dict[str, OperatorLyapunovBound]:
     """
     gf = _GLYPH_DEFAULTS
 
-    # Helper: contraction rate from a multiplicative ΔNFR scaling factor f.
-    # If ΔNFR_new = f · ΔNFR_old then the ΔNFR² term in E changes by
-    # (f² - 1) · ΔNFR_old².  For f < 1 this is negative → stabiliser.
-    # The fractional energy change of the *ΔNFR component* is (f² - 1).
-    # Since ΔNFR is only one of five quadratic terms, the total E change
-    # is bounded by (f² - 1) · (ΔNFR² / 2E) ≤ (f² - 1).
+    # ── CANONICAL CLASSIFICATION — single source of truth ───────────────────
+    #
+    # The structural Lyapunov functional is EMERGENT, not a pre-existing
+    # scoreboard: the tetrad energy E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²)
+    # (conservation.py) emerges from the phase field θ and the structural
+    # pressure ΔNFR — Φ_s and J_ΔNFR come from ΔNFR, |∇φ|/K_φ/J_φ from θ.  It
+    # contains NO EPI or νf term (measured: scaling EPI or νf leaves E exactly
+    # unchanged).  Equivalently, the primary coherence
+    # C(t) = 1/(1 + mean|ΔNFR| + mean|dEPI|) emerges from the nodal dynamics
+    # ∂EPI/∂t = νf·ΔNFR.  What operators NATIVELY alter is the coherence,
+    # through the structural-pressure channel |ΔNFR|.
+    #
+    # The per-operator Lyapunov role is therefore the canonical grammar
+    # coherence-pressure role, DERIVED from the nodal-equation predicates in
+    # ``config.physics_derivation`` (the SAME single source of truth the grammar
+    # U2 sets derive from) — NOT from hardcoded energy algebra that wrongly
+    # assumed EPI/νf entered E:
+    #   provides_negative_feedback(op)   → STABILISER (reduces |ΔNFR| → raises C)
+    #   increases_structural_pressure(op)→ DESTABILISER (raises |ΔNFR| → lowers C)
+    #   otherwise                        → NEUTRAL  (acts on the EPI-form,
+    #       νf-capacity, θ-phase or advisory channel that the coherence-pressure
+    #       functional does not penalise by its grammatical role).
+    from ..config.physics_derivation import (
+        increases_structural_pressure,
+        provides_negative_feedback,
+    )
+    from ..config.operator_names import (
+        COHERENCE,
+        CONTRACTION,
+        COUPLING,
+        DISSONANCE,
+        EMISSION,
+        EXPANSION,
+        MUTATION,
+        RECEPTION,
+        RECURSIVITY,
+        RESONANCE,
+        SELF_ORGANIZATION,
+        SILENCE,
+        TRANSITION,
+    )
 
-    il_f = gf["IL_dnfr_factor"]          # 0.737
-    oz_f = gf["OZ_dnfr_factor"]          # 2.803
-    sha_f = gf["SHA_vf_factor"]          # 0.9015
-    val_f = gf["VAL_scale"]              # 1.0673
-    nul_s = gf["NUL_scale"]              # 0.9015
-    nul_d = gf["NUL_densification_factor"]  # 2.8025
-    en_m = gf["EN_mix"]                  # 0.2413
-    um_d = gf["UM_dnfr_reduction"]       # 0.15
-    al_b = gf["AL_boost"]               # 0.1171
-    ra_v = gf["RA_vf_amplification"]     # 0.05
-    thol = gf["THOL_accel"]             # 0.10
-    nav_e = gf["NAV_eta"]               # 0.5
-    zhir = gf["ZHIR_theta_shift_factor"]  # 0.3
-    remesh = gf["REMESH_alpha"]          # 0.5
+    # (function name, English name, glyph, dominant structural-pressure factor)
+    _OPS = (
+        (EMISSION, "Emission", "AL", "AL_boost"),
+        (RECEPTION, "Reception", "EN", "EN_mix"),
+        (COHERENCE, "Coherence", "IL", "IL_dnfr_factor"),
+        (DISSONANCE, "Dissonance", "OZ", "OZ_dnfr_factor"),
+        (COUPLING, "Coupling", "UM", "UM_dnfr_reduction"),
+        (RESONANCE, "Resonance", "RA", "RA_vf_amplification"),
+        (SILENCE, "Silence", "SHA", "SHA_vf_factor"),
+        (EXPANSION, "Expansion", "VAL", "VAL_scale"),
+        (CONTRACTION, "Contraction", "NUL", "NUL_scale"),
+        (SELF_ORGANIZATION, "SelfOrganization", "THOL", "THOL_accel"),
+        (MUTATION, "Mutation", "ZHIR", "ZHIR_theta_shift_factor"),
+        (TRANSITION, "Transition", "NAV", "NAV_eta"),
+        (RECURSIVITY, "Recursivity", "REMESH", "REMESH_alpha"),
+    )
 
     bounds: dict[str, OperatorLyapunovBound] = {}
-
-    # ------------------------------------------------------------------
-    # 1. Coherence (IL) — STABILISER
-    # ΔNFR_new = IL_dnfr_factor × ΔNFR_old  (f = 0.737 < 1)
-    # ΔE_ΔNFR = ½(f² - 1)·Σ ΔNFR² → contraction rate ρ = 1 - f² ≈ 0.457
-    # ------------------------------------------------------------------
-    bounds["Coherence"] = OperatorLyapunovBound(
-        operator_name="Coherence",
-        glyph="IL",
-        energy_class=EnergyClass.STABILISER,
-        contraction_rate=1.0 - il_f ** 2,   # ≈ 0.457
-        glyph_factor_name="IL_dnfr_factor",
-        glyph_factor_value=il_f,
-        derivation=(
-            "ΔNFR → f·ΔNFR (f=0.737).  "
-            "ΔE_ΔNFR = ½(f²−1)Σ ΔNFR² ≤ 0.  "
-            "Contraction rate ρ = 1−f² ≈ 0.457 on J_ΔNFR component."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 2. Reception (EN) — STABILISER
-    # EPI_new = (1−m)·EPI + m·<EPI_neighbors>  (convex combination, m=0.2413)
-    # By Jensen's inequality the variance of EPI decreases.
-    # ΔE is bounded by -m·(1-m)·Var(EPI) across neighbors.
-    # Contraction rate ρ ≈ m·(1-m) ≈ 0.183 on EPI-coupled fields.
-    # ------------------------------------------------------------------
-    bounds["Reception"] = OperatorLyapunovBound(
-        operator_name="Reception",
-        glyph="EN",
-        energy_class=EnergyClass.STABILISER,
-        contraction_rate=en_m * (1.0 - en_m),  # ≈ 0.183
-        glyph_factor_name="EN_mix",
-        glyph_factor_value=en_m,
-        derivation=(
-            "EPI → (1-m)·EPI + m·<neighbors> (m=0.2413).  "
-            "Jensen: Var(EPI) decreases.  "
-            "ρ = m(1-m) ≈ 0.183 on EPI-dependent energy terms."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 3. Coupling (UM) — STABILISER
-    # θ pushed toward consensus, ΔNFR reduced by UM_dnfr_reduction,
-    # νf synchronised.  Net effect: phase alignment + ΔNFR damping.
-    # Contraction rate ρ ≈ UM_dnfr_reduction = 0.15 (ΔNFR component).
-    # ------------------------------------------------------------------
-    bounds["Coupling"] = OperatorLyapunovBound(
-        operator_name="Coupling",
-        glyph="UM",
-        energy_class=EnergyClass.STABILISER,
-        contraction_rate=um_d,  # 0.15
-        glyph_factor_name="UM_dnfr_reduction",
-        glyph_factor_value=um_d,
-        derivation=(
-            "θ→consensus, ΔNFR reduced by 15%, νf synchronised.  "
-            "Phase alignment reduces |∇φ|² and K_φ² terms.  "
-            "ρ ≥ UM_dnfr_reduction = 0.15 on J_ΔNFR component."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 4. Self-organisation (THOL) — STABILISER
-    # ΔNFR += THOL_accel × d²EPI.  Redistributes pressure into
-    # sub-EPIs, reducing net |ΔNFR| through structural reorganisation.
-    # Contraction rate ρ ≈ THOL_accel = 0.10 (redistribution efficiency).
-    # ------------------------------------------------------------------
-    bounds["SelfOrganization"] = OperatorLyapunovBound(
-        operator_name="SelfOrganization",
-        glyph="THOL",
-        energy_class=EnergyClass.STABILISER,
-        contraction_rate=thol,  # 0.10
-        glyph_factor_name="THOL_accel",
-        glyph_factor_value=thol,
-        derivation=(
-            "ΔNFR += accel×d²EPI (accel=0.10).  "
-            "Sub-EPI formation redistributes energy from ΔNFR into "
-            "lower-variance sub-structures.  ρ ≈ 0.10."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 5. Transition (NAV) — STABILISER
-    # ΔNFR → (1−η)·ΔNFR + η·target ± jitter.
-    # With η = 0.5, this is a contraction toward target.
-    # Contraction rate ρ ≈ η·(1−jitter²) ≈ 0.499.
-    # ------------------------------------------------------------------
-    nav_j = gf["NAV_jitter"]  # 0.05
-    bounds["Transition"] = OperatorLyapunovBound(
-        operator_name="Transition",
-        glyph="NAV",
-        energy_class=EnergyClass.STABILISER,
-        contraction_rate=nav_e * (1.0 - nav_j ** 2),  # ≈ 0.499
-        glyph_factor_name="NAV_eta",
-        glyph_factor_value=nav_e,
-        derivation=(
-            "ΔNFR → (1-η)·ΔNFR + η·target (η=0.5).  "
-            "Contraction to attractor.  "
-            "ρ = η(1-jitter²) ≈ 0.499 on J_ΔNFR component."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 6. Dissonance (OZ) — DESTABILISER
-    # ΔNFR_new = OZ_dnfr_factor × ΔNFR_old  (f = 2.803 > 1)
-    # ΔE_ΔNFR = ½(f² - 1)·Σ ΔNFR² → expansion rate κ = f² - 1 ≈ 6.857
-    # ------------------------------------------------------------------
-    bounds["Dissonance"] = OperatorLyapunovBound(
-        operator_name="Dissonance",
-        glyph="OZ",
-        energy_class=EnergyClass.DESTABILISER,
-        contraction_rate=oz_f ** 2 - 1.0,  # ≈ 6.857
-        glyph_factor_name="OZ_dnfr_factor",
-        glyph_factor_value=oz_f,
-        derivation=(
-            "ΔNFR → f·ΔNFR (f=2.803).  "
-            "ΔE_ΔNFR = ½(f²−1)Σ ΔNFR² > 0.  "
-            "Expansion rate κ = f²−1 ≈ 6.857 on J_ΔNFR component."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 7. Expansion (VAL) — DESTABILISER
-    # EPI *= VAL_scale, νf *= VAL_scale  (f = 1.0673 > 1)
-    # Both Φ_s-coupled and νf-coupled terms expand.
-    # κ = f² - 1 ≈ 0.139 per EPI/νf-dependent term.
-    # ------------------------------------------------------------------
-    bounds["Expansion"] = OperatorLyapunovBound(
-        operator_name="Expansion",
-        glyph="VAL",
-        energy_class=EnergyClass.DESTABILISER,
-        contraction_rate=val_f ** 2 - 1.0,  # ≈ 0.139
-        glyph_factor_name="VAL_scale",
-        glyph_factor_value=val_f,
-        derivation=(
-            "EPI,νf → f·(EPI,νf) (f=1.0673).  "
-            "ΔE = ½(f²−1)Σ(EPI² + νf²) > 0.  "
-            "Expansion rate κ = f²−1 ≈ 0.139."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 8. Emission (AL) — DESTABILISER
-    # EPI += AL_boost  (additive, boost = 0.1171)
-    # ΔE = AL_boost · Σ EPI + ½ N · AL_boost²
-    # Worst-case per node: κ ≤ AL_boost² / (2·E_min_per_node)
-    # For small networks this is bounded by N · AL_boost² / 2.
-    # ------------------------------------------------------------------
-    bounds["Emission"] = OperatorLyapunovBound(
-        operator_name="Emission",
-        glyph="AL",
-        energy_class=EnergyClass.DESTABILISER,
-        contraction_rate=al_b ** 2,  # ≈ 0.0137 per node
-        glyph_factor_name="AL_boost",
-        glyph_factor_value=al_b,
-        derivation=(
-            "EPI += b (b=0.1171).  "
-            "ΔE ≤ b·Σ|EPI| + ½N·b².  "
-            "Per-node: κ ≤ b² ≈ 0.014."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 9. Resonance (RA) — DESTABILISER
-    # νf *= (1 + RA_vf_amplification)  (f = 1.05)
-    # EPI diffusion and phase coupling can increase energy.
-    # κ = (1+a)² - 1 ≈ 0.1025 where a = 0.05.
-    # ------------------------------------------------------------------
-    bounds["Resonance"] = OperatorLyapunovBound(
-        operator_name="Resonance",
-        glyph="RA",
-        energy_class=EnergyClass.DESTABILISER,
-        contraction_rate=(1.0 + ra_v) ** 2 - 1.0,  # ≈ 0.1025
-        glyph_factor_name="RA_vf_amplification",
-        glyph_factor_value=ra_v,
-        derivation=(
-            "νf → (1+a)·νf (a=0.05).  "
-            "ΔE_νf = ½((1+a)²−1)Σ νf² > 0.  "
-            "Expansion rate κ = (1+a)²−1 ≈ 0.1025."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 10. Silence (SHA) — NEUTRAL
-    # νf *= SHA_vf_factor  (f = 0.9015);  EPI unchanged.
-    # νf decrease reduces νf-coupled energy, but no ΔNFR change.
-    # |ΔE| ≤ ½(1 - f²)·Σ νf² ≈ 0.187·Σ νf² (small, monotone decrease).
-    # Classified as neutral because the effect is purely on νf (freeze).
-    # ------------------------------------------------------------------
-    bounds["Silence"] = OperatorLyapunovBound(
-        operator_name="Silence",
-        glyph="SHA",
-        energy_class=EnergyClass.NEUTRAL,
-        contraction_rate=1.0 - sha_f ** 2,  # ≈ 0.187
-        glyph_factor_name="SHA_vf_factor",
-        glyph_factor_value=sha_f,
-        derivation=(
-            "νf → f·νf (f=0.9015), EPI frozen.  "
-            "|ΔE| ≤ ½(1-f²)Σ νf² ≈ 0.187·Σ νf².  "
-            "Quasi-isometric: only νf diminishes toward zero."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 11. Mutation (ZHIR) — NEUTRAL
-    # θ → θ + sign(ΔNFR)·π/4·ZHIR_theta_shift_factor
-    # Phase-only transformation; EPI, νf, ΔNFR unchanged.
-    # Energy change comes only from altered phase-dependent fields
-    # (|∇φ|, K_φ).  Bounded by |Δθ|² per node.
-    # ε = (π/4 · 0.3)² ≈ 0.0555 per node.
-    # ------------------------------------------------------------------
-    d_theta = math.pi / 4.0 * zhir
-    bounds["Mutation"] = OperatorLyapunovBound(
-        operator_name="Mutation",
-        glyph="ZHIR",
-        energy_class=EnergyClass.NEUTRAL,
-        contraction_rate=d_theta ** 2,  # ≈ 0.0555
-        glyph_factor_name="ZHIR_theta_shift_factor",
-        glyph_factor_value=zhir,
-        derivation=(
-            "θ → θ + sgn(ΔNFR)·π/4·f (f=0.3).  "
-            "EPI, νf, ΔNFR invariant.  "
-            "|ΔE| ≤ N·(Δθ)² where Δθ = π/4·f ≈ 0.236.  "
-            "ε = (Δθ)² ≈ 0.056 per node."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 12. Recursivity (REMESH) — NEUTRAL
-    # Advisory operator: echoes structure across scales.
-    # No direct node attribute modification.
-    # ΔE = 0 (isometric).
-    # ------------------------------------------------------------------
-    bounds["Recursivity"] = OperatorLyapunovBound(
-        operator_name="Recursivity",
-        glyph="REMESH",
-        energy_class=EnergyClass.NEUTRAL,
-        contraction_rate=0.0,
-        glyph_factor_name="REMESH_alpha",
-        glyph_factor_value=remesh,
-        derivation=(
-            "Advisory (network-scale remesh).  "
-            "No direct node-attribute modification.  "
-            "ΔE = 0 (exact isometry)."
-        ),
-    )
-
-    # ------------------------------------------------------------------
-    # 13. Contraction (NUL) — MIXED
-    # EPI *= NUL_scale (0.9015 → decrease)
-    # νf *= NUL_scale (0.9015 → decrease)
-    # ΔNFR *= NUL_densification_factor (2.8025 → increase)
-    # EPI/νf terms decrease, ΔNFR term increases.
-    # Net: ΔE = ½[(s²-1)Σ(EPI²+νf²) + (d²-1)Σ ΔNFR²]
-    # Worst-case (all energy in ΔNFR): κ = d²-1 ≈ 6.854
-    # Best-case (all energy in EPI): ρ = 1-s² ≈ 0.187
-    # ------------------------------------------------------------------
-    bounds["Contraction"] = OperatorLyapunovBound(
-        operator_name="Contraction",
-        glyph="NUL",
-        energy_class=EnergyClass.MIXED,
-        contraction_rate=nul_d ** 2 - 1.0,  # worst-case ≈ 6.854
-        glyph_factor_name="NUL_densification_factor",
-        glyph_factor_value=nul_d,
-        derivation=(
-            "EPI,νf → s·(EPI,νf) (s=0.9015); ΔNFR → d·ΔNFR (d=2.8025).  "
-            "ΔE = ½[(s²-1)Σ(EPI²+νf²) + (d²-1)Σ ΔNFR²].  "
-            "Worst-case κ = d²-1 ≈ 6.854 (ΔNFR dominant).  "
-            "Best-case ρ = 1-s² ≈ 0.187 (EPI dominant)."
-        ),
-    )
+    for fname, ename, glyph, factor_name in _OPS:
+        factor_val = float(gf.get(factor_name, 0.0))
+        if provides_negative_feedback(fname):
+            energy_class = EnergyClass.STABILISER
+            if fname == COHERENCE:
+                # IL scales |ΔNFR| → f·|ΔNFR| (f<1); pressure contraction = 1−f.
+                rate = max(0.0, 1.0 - factor_val)
+                deriv = (
+                    f"IL reduces structural pressure |ΔNFR| → f·|ΔNFR| "
+                    f"(f={factor_val:.3f}); coherence C=1/(1+mean|ΔNFR|+…) "
+                    f"rises. Pressure contraction ρ = 1−f ≈ {rate:.3f}."
+                )
+            else:  # THOL
+                # THOL redistributes |ΔNFR| into coherent sub-EPIs (handler).
+                rate = factor_val
+                deriv = (
+                    f"THOL redistributes |ΔNFR| into coherent sub-EPIs "
+                    f"(accel={factor_val:.3f}); the negative feedback raises "
+                    f"coherence. Redistribution ρ ≈ {rate:.3f}."
+                )
+        elif increases_structural_pressure(fname):
+            energy_class = EnergyClass.DESTABILISER
+            if fname == DISSONANCE:
+                # OZ scales |ΔNFR| → f·|ΔNFR| (f>1); pressure expansion = f−1.
+                rate = max(0.0, factor_val - 1.0)
+                deriv = (
+                    f"OZ raises structural pressure |ΔNFR| → f·|ΔNFR| "
+                    f"(f={factor_val:.3f}); coherence falls. Pressure "
+                    f"expansion κ = f−1 ≈ {rate:.3f}."
+                )
+            elif fname == EXPANSION:
+                # VAL adds unaligned DOF (scales νf); the new DOF raise |ΔNFR|.
+                rate = max(0.0, factor_val - 1.0)
+                deriv = (
+                    f"VAL adds unaligned structural DOF (νf scale "
+                    f"{factor_val:.3f}); the new DOF raise |ΔNFR| → coherence "
+                    f"falls. Nominal expansion κ ≈ {rate:.3f}."
+                )
+            else:  # ZHIR
+                # ZHIR's θ→θ' jump desynchronises the node → raises |∇φ| and
+                # hence the structural pressure |ΔNFR|.
+                rate = factor_val
+                deriv = (
+                    f"ZHIR jumps θ→θ' (shift factor {factor_val:.3f}); the "
+                    f"phase desync raises |∇φ| → raises |ΔNFR| → coherence "
+                    f"falls. Nominal expansion κ ≈ {rate:.3f}."
+                )
+        else:
+            energy_class = EnergyClass.NEUTRAL
+            rate = 0.0
+            deriv = (
+                "Coherence-neutral by grammatical role: acts on the EPI-form "
+                "(AL/EN/RA), νf-capacity (SHA/NUL), θ-phase (UM) or advisory "
+                "(NAV/REMESH) channel, not the structural-pressure |ΔNFR| axis "
+                "the coherence functional penalises — so it neither contracts "
+                "nor expands coherence by its U2 role."
+            )
+        bounds[ename] = OperatorLyapunovBound(
+            operator_name=ename,
+            glyph=glyph,
+            energy_class=energy_class,
+            contraction_rate=rate,
+            glyph_factor_name=factor_name,
+            glyph_factor_value=factor_val,
+            derivation=deriv,
+        )
 
     return bounds
 

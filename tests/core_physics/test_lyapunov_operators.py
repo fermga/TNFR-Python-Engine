@@ -25,10 +25,6 @@ from tnfr.constants import inject_defaults
 from tnfr.physics.lyapunov import (
     EnergyClass,
     OperatorLyapunovBound,
-    OperatorLyapunovVerification,
-    SpectralGapAnalysis,
-    LyapunovSpectralSummary,
-    SequenceLyapunovProof,
     OPERATOR_LYAPUNOV_BOUNDS,
     get_bound,
     compute_operator_energy_bound,
@@ -137,13 +133,22 @@ class TestOperatorLyapunovBoundsRegistry:
 # ===========================================================================
 
 class TestEnergyClassTaxonomy:
-    """Verify the operators are classified correctly."""
+    """Verify the operators are classified by the canonical grammar U2 role.
 
-    STABILISERS = ["Coherence", "Reception", "Coupling",
-                   "SelfOrganization", "Transition"]
-    DESTABILISERS = ["Dissonance", "Expansion", "Emission", "Resonance"]
-    NEUTRALS = ["Silence", "Mutation", "Recursivity"]
-    MIXED = ["Contraction"]
+    The operator Lyapunov role is DERIVED from ``config.physics_derivation``
+    (the single source of truth, identical to the grammar U2 sets): stabilisers
+    reduce structural pressure |ΔNFR| (raise coherence), destabilisers raise it,
+    and the rest are coherence-neutral (they act on the EPI-form / νf-capacity /
+    θ-phase / advisory channels that the coherence-pressure functional does not
+    penalise). The tetrad energy E contains no EPI/νf term, so the legacy
+    classification of EPI/νf operators (AL, EN, RA, VAL→νf, Coupling, Transition)
+    as energy stabilisers/destabilisers was non-canonical and is removed.
+    """
+
+    STABILISERS = ["Coherence", "SelfOrganization"]
+    DESTABILISERS = ["Dissonance", "Expansion", "Mutation"]
+    NEUTRALS = ["Emission", "Reception", "Resonance", "Coupling",
+                "Silence", "Contraction", "Transition", "Recursivity"]
 
     @pytest.mark.parametrize("name", STABILISERS)
     def test_stabilisers(self, name):
@@ -157,9 +162,30 @@ class TestEnergyClassTaxonomy:
     def test_neutrals(self, name):
         assert get_bound(name).energy_class == EnergyClass.NEUTRAL
 
-    @pytest.mark.parametrize("name", MIXED)
-    def test_mixed(self, name):
-        assert get_bound(name).energy_class == EnergyClass.MIXED
+    def test_classification_matches_canonical_grammar(self):
+        """The Lyapunov class derives from physics_derivation (grammar U2)."""
+        from tnfr.config.physics_derivation import (
+            increases_structural_pressure,
+            provides_negative_feedback,
+        )
+        name_to_func = {
+            "Emission": "emission", "Reception": "reception",
+            "Coherence": "coherence", "Dissonance": "dissonance",
+            "Coupling": "coupling", "Resonance": "resonance",
+            "Silence": "silence", "Expansion": "expansion",
+            "Contraction": "contraction",
+            "SelfOrganization": "self_organization",
+            "Mutation": "mutation", "Transition": "transition",
+            "Recursivity": "recursivity",
+        }
+        for name, func in name_to_func.items():
+            cls = get_bound(name).energy_class
+            if provides_negative_feedback(func):
+                assert cls == EnergyClass.STABILISER, name
+            elif increases_structural_pressure(func):
+                assert cls == EnergyClass.DESTABILISER, name
+            else:
+                assert cls == EnergyClass.NEUTRAL, name
 
 
 # ===========================================================================
@@ -170,34 +196,34 @@ class TestContractionRates:
     """Verify contraction rates are physically sensible."""
 
     def test_coherence_rate_approx_046(self):
-        """IL: ρ = 1 - 0.737² ≈ 0.457."""
+        """IL: pressure contraction ρ = 1 - 0.737 ≈ 0.263 (|ΔNFR| linear)."""
         bound = get_bound("IL")
-        assert 0.40 < bound.contraction_rate < 0.50
+        assert 0.20 < bound.contraction_rate < 0.32
 
     def test_dissonance_rate_approx_7(self):
-        """OZ: κ = 2.803² - 1 ≈ 6.857."""
+        """OZ: pressure expansion κ = f - 1 (|ΔNFR| → f·|ΔNFR|)."""
         bound = get_bound("OZ")
-        assert 6.5 < bound.contraction_rate < 7.2
+        assert bound.contraction_rate > 0.2
 
     def test_emission_rate_small(self):
-        """AL: κ = (0.1171)² ≈ 0.014 per node."""
+        """AL: coherence-neutral (acts on EPI form, absent from pressure)."""
         bound = get_bound("AL")
-        assert bound.contraction_rate < 0.02
+        assert bound.contraction_rate == 0.0
 
     def test_resonance_rate_approx_01(self):
-        """RA: κ = 1.05² - 1 ≈ 0.1025."""
+        """RA: coherence-neutral (acts on EPI/νf, absent from pressure)."""
         bound = get_bound("RA")
-        assert 0.09 < bound.contraction_rate < 0.12
+        assert bound.contraction_rate == 0.0
 
     def test_expansion_rate_approx_014(self):
-        """VAL: κ = 1.0673² - 1 ≈ 0.139."""
+        """VAL: nominal pressure expansion κ = νf_scale - 1 ≈ 0.068."""
         bound = get_bound("VAL")
-        assert 0.12 < bound.contraction_rate < 0.16
+        assert 0.04 < bound.contraction_rate < 0.10
 
     def test_silence_rate_small(self):
-        """SHA: quasi-isometric, ε ≈ 0.187."""
+        """SHA: coherence-neutral (νf freeze, absent from pressure)."""
         bound = get_bound("SHA")
-        assert 0.15 < bound.contraction_rate < 0.22
+        assert bound.contraction_rate == 0.0
 
     def test_recursivity_rate_zero(self):
         """REMESH: advisory, ΔE = 0."""
@@ -205,8 +231,8 @@ class TestContractionRates:
         assert bound.contraction_rate == 0.0
 
     def test_stabilisers_have_positive_rates(self):
-        for name in ["Coherence", "Reception", "Coupling",
-                     "SelfOrganization", "Transition"]:
+        # Only the canonical grammar stabilisers (IL, THOL) contract coherence.
+        for name in ["Coherence", "SelfOrganization"]:
             assert get_bound(name).contraction_rate > 0.0
 
 
@@ -236,9 +262,9 @@ class TestComputeOperatorEnergyBound:
         assert abs(d10 - 10 * d1) < 1e-12
 
     def test_neutral_bound_scales_with_nodes(self):
-        """Neutral: ΔE ≤ ε·N."""
-        d5 = compute_operator_energy_bound("Mutation", 10.0, n_nodes=5)
-        d1 = compute_operator_energy_bound("Mutation", 10.0, n_nodes=1)
+        """Neutral: ΔE ≤ ε·N (Silence is coherence-neutral, ε=0)."""
+        d5 = compute_operator_energy_bound("Silence", 10.0, n_nodes=5)
+        d1 = compute_operator_energy_bound("Silence", 10.0, n_nodes=1)
         assert abs(d5 - 5 * d1) < 1e-12
 
     def test_recursivity_bound_is_zero(self):
@@ -270,10 +296,10 @@ class TestVerifyOperatorLyapunov:
         assert result.margin > 0.0
 
     def test_dissonance_within_bound(self):
-        """OZ: energy increases but within κ·E."""
+        """OZ: energy increases but within κ·E (κ = f-1)."""
         e0 = 1.0
-        # Moderate increase within bound (κ ≈ 6.857)
-        result = verify_operator_lyapunov("OZ", e0, 5.0, n_nodes=20)
+        # Moderate increase within the pressure-expansion bound.
+        result = verify_operator_lyapunov("OZ", e0, 2.5, n_nodes=20)
         assert result.within_bound
 
     def test_dissonance_out_of_bound(self):
@@ -463,7 +489,7 @@ class TestOperatorConvergence:
             expected = math.log(2) / summary.effective_convergence_rate
             assert abs(summary.steps_to_half_energy - expected) < 1e-10
 
-    @pytest.mark.parametrize("glyph", ["IL", "EN", "UM", "THOL", "NAV"])
+    @pytest.mark.parametrize("glyph", ["IL", "THOL"])
     def test_all_stabilisers_converge(self, ws_graph, glyph):
         summary = analyze_operator_convergence(ws_graph, glyph)
         assert summary.effective_convergence_rate > 0.0

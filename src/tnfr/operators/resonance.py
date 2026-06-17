@@ -1,9 +1,9 @@
 """Resonance (RA) operator.
 
 Purpose: propagate coherence through coupled phase-aligned nodes.
-Physics: circulates structural pattern without altering epi identity.
+Physics: circulates structural pattern preserving epi identity (sign/kind).
 Grammar: requires prior coupling (U3) when strict phase validation active.
-Effects: raises global C(t); may amplify vf; keeps epi form intact.
+Effects: propagates/redistributes epi (identity preserved); amplifies vf.
 Preconditions: coherent epi, edges, phase alignment, sufficient vf.
 Typical: UM->RA; IL->RA; AL->RA; RA->IL; RA->EN.
 Avoid: OZ->RA without IL; SHA->RA; repeated RA chains without IL.
@@ -20,7 +20,7 @@ from .definitions_base import Operator
 class Resonance(Operator):
     """Propagate coherence across coupled nodes; amplify network alignment.
 
-    Invariants: preserve epi; adjust vf moderately; may raise C(t); limit dnfr.
+    Invariants: preserve epi identity (sign/kind); amplify vf; limit dnfr.
     Typical: UM->RA, IL->RA, AL->RA, RA->IL, RA->EN. Avoid OZ->RA w/o IL.
     Metrics: propagation distance, amplification factor, phase order param.
     """

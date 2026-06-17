@@ -3,7 +3,7 @@
 Purpose: inject controlled instability; widen dnfr; test bifurcation.
 Physics: raises structural pressure; may push second derivative over tau.
 Grammar: destabilizer (U2); trigger (U4a); closure-capable.
-Effects: dnfr up; phase may wander; vf often rises; epi stressed.
+Effects: dnfr up (the direct OZ channel); epi, vf and phase unaffected.
 Preconditions: sufficient epi/vf; dnfr below critical; prior stability.
 Typical: OZ->IL; OZ->THOL; IL->OZ->THOL growth cycle; AL->OZ->RA.
 Avoid: OZ->SHA; repeated OZ without IL/THOL containment.

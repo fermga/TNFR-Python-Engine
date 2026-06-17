@@ -31,16 +31,18 @@ class Emission(Operator):
     In the Resonant Fractal Nature paradigm, Emission (AL) represents
     the moment when a latent Primary Information Structure (EPI) begins
     to emit coherence toward its surrounding network. This is not passive
-    information broadcast but active structural reorganization that
-    increases the node's νf (structural frequency) and initiates positive
-    ΔNFR flow.
+    information broadcast but active structural reorganization that boosts
+    the node's EPI (the form) from its latent state. Per the canonical
+    contract the EPI channel is the direct effect; νf settles at its basal
+    ν₀⁺ and ΔNFR/phase are left untouched.
 
     **Key Elements:**
         - **Coherent Emergence**: Node exists because it resonates;
             AL starts resonance
-    - **Structural Frequency**: Activates νf (Hz_str) to enable reorganization
+    - **Form Activation**: Raises EPI (Primary Information Structure)
+    - **Structural Frequency**: νf settles at its basal ν₀⁺ (not driven by AL)
     - **Network Coupling**: Prepares node for phase alignment
-    - **Nodal Equation**: Implements ∂EPI/∂t = νf · ΔNFR(t) with positive ΔNFR
+    - **Nodal Equation**: Drives ∂EPI/∂t ≥ 0 directly on the EPI channel
 
     **Structural Irreversibility (TNFR.pdf §2.2.1):**
     AL is inherently irreversible - once activated, it leaves a persistent
@@ -80,10 +82,10 @@ class Emission(Operator):
 
     Structural Effects
     ------------------
-    **EPI**: Increments (form activation)
-    **νf**: Activates/increases (Hz_str)
-    **ΔNFR**: Initializes positive reorganization
-    **θ**: Influences phase alignment
+    **EPI**: Increments (form activation) — the direct AL channel
+    **νf**: Untouched (settles at basal ν₀⁺)
+    **ΔNFR**: Untouched (AL does not impose reorganization pressure)
+    **θ**: Untouched
 
     Examples
     --------

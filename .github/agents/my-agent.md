@@ -644,14 +644,16 @@ Operators constitute the exclusive mechanism for node modification in TNFR syste
 
 ### 8. Expansion (VAL)
 **Physics**: Increases structural complexity  
-**Effect**: dim(EPI) increases  
+**Effect**: νf increases (adds reorganization capacity); raises structural complexity  
 **When**: Adding degrees of freedom  
-**Grammar**: Destabilizer (U2)
+**Grammar**: Destabilizer (U2)  
+**Contract**: νf not decreased — primary channel νf (capacity lever; see operator_contracts.py)
 
 ### 9. Contraction (NUL)
 **Physics**: Reduces structural complexity  
-**Effect**: dim(EPI) decreases  
-**When**: Simplification, dimensionality reduction
+**Effect**: νf decreases (removes capacity) and ΔNFR densifies (pressure concentration)  
+**When**: Simplification, dimensionality reduction  
+**Contract**: νf not increased — acts on both levers (νf↓ + ΔNFR; see operator_contracts.py)
 
 ### 10. Self-organization (THOL)
 **Physics**: Spontaneous autopoietic pattern formation  
@@ -717,7 +719,7 @@ All composed sequences must satisfy unified grammar (U1-U6).
 
 Systematic experiments ([examples/37-39](examples/02_physics_regimes/37_operator_tetrad_synergy.py)) revealed six structural results linking operators to the tetrad:
 
-1. **Dual-Lever Structure**: Every operator acts through νf (capacity lever: UM, SHA, VAL, NUL), ΔNFR (pressure lever: IL, OZ, THOL, ZHIR, NAV), both (NUL), or neither (AL, EN, RA, REMESH). This classification is orthogonal to the grammar categories (generator/stabilizer/destabilizer).
+1. **Dual-Lever Structure**: The two levers ARE the two right-hand-side rate-driver factors of the nodal equation `∂EPI/∂t = νf · ΔNFR` — νf (capacity lever: UM, SHA, VAL) and ΔNFR (pressure lever: IL, OZ, THOL, ZHIR, NAV; ZHIR reaches it as a θ-jump that raises |∇φ|→|ΔNFR|), with NUL pulling both (νf↓ + ΔNFR densification). The operators that write **EPI directly — the form on the LHS, not a rate-driver factor** — therefore sit on *neither* lever: AL sources a new form (founding emission), EN integrates an external form, RA transports form across couplings (also amplifying νf), and REMESH echoes form across scales (U5, network). These four are **energy-neutral** precisely because EPI is absent from the emergent energy E (measured dE≈0 under EPI scaling); the form they plant becomes energetically and coherently visible only once the levers (νf·ΔNFR) and the phase geometry reorganize it — energy emerges downstream of the tetrad, it is not carried by the form. This **form (LHS) vs rate-driver (RHS)** split is itself emergent from the nodal equation, and is orthogonal to the grammar categories (generator/stabilizer/destabilizer).
 2. **Operator-Tetrad Fingerprint Matrix**: Each operator produces a unique coupling profile across (Φ_s, |∇φ|, K_φ, ξ_C). UM modifies all four fields (strongest Φ_s at −73.7%); SHA is tetrad-neutral.
 3. **IL-OZ Tetrad Symmetry**: Coherence (IL) and Dissonance (OZ) produce identical tetrad perturbations (dE = −0.011) despite opposite physics, because both perturb |ΔNFR| by the same magnitude (0.0096).
 4. **Φ_s Linear Response**: |r| = 1.000 correlation between ΔNFR perturbations and Φ_s changes, confirming the 0th-order position in the derivative tower.
