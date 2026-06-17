@@ -409,7 +409,7 @@ def validate_sequence_cached(
 
 def clear_validation_cache() -> None:
     """Clear validation cache to free memory."""
-    global _validation_cache, _cache_hits, _cache_misses
+    global _cache_hits, _cache_misses
     _validation_cache.clear()
     _validate_grammar_rules_cached.cache_clear()
     _cache_hits = 0

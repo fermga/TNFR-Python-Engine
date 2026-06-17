@@ -39,8 +39,10 @@ from ..config.operator_names import (
     VALID_END_OPERATORS,
     CANONICAL_OPERATOR_NAMES,
     INTERMEDIATE_OPERATORS,
+    COHERENCE,
     SELF_ORGANIZATION,
     SELF_ORGANIZATION_CLOSURES,
+    DESTABILIZERS,
     DESTABILIZERS_STRONG,
     DESTABILIZERS_MODERATE,
     DESTABILIZERS_WEAK,
@@ -403,10 +405,12 @@ def validate_sequence(
             metadata=meta,
         )
 
-    # U2: Destabilizers require stabilizers (IL or THOL)
-    destabilizers = {"dissonance", "mutation", "expansion", "contraction"}
-    has_destabilizer = any(t in destabilizers for t in tokens)
-    has_stabilizer = any(t in {"coherence", "self_organization"} for t in tokens)
+    # U2: Destabilizers require stabilizers (IL or THOL). The destabilizer set
+    # is the canonical {OZ, ZHIR, VAL} (config.operator_names.DESTABILIZERS,
+    # derived in physics_derivation.increases_structural_pressure); NUL
+    # (contraction) is NOT a U2 destabilizer (dual-lever 'both', U2-neutral).
+    has_destabilizer = any(t in DESTABILIZERS for t in tokens)
+    has_stabilizer = any(t in {COHERENCE, SELF_ORGANIZATION} for t in tokens)
     
     if has_destabilizer and not has_stabilizer:
         diag = bool(context.get("diagnostic", False)) if context else False

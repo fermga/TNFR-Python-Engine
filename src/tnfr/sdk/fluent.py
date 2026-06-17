@@ -993,41 +993,16 @@ class TNFRNetwork:
         # Configure metrics collection
         self._graph.graph["COLLECT_OPERATOR_METRICS"] = collect_metrics
 
-        # Map glyphs to operator instances
-        from ..operators.definitions import (
-            Emission,
-            Reception,
-            Coherence,
-            Dissonance,
-            Coupling,
-            Resonance,
-            Silence,
-            Expansion,
-            Contraction,
-            SelfOrganization,
-            Mutation,
-            Transition,
-            Recursivity,
-        )
-        from ..types import Glyph
+        # Map glyphs to operator instances via the canonical single sources:
+        # grammar_types.GLYPH_TO_FUNCTION (glyph -> function name) and
+        # registry.OPERATORS (function name -> operator class).
+        from ..operators.registry import OPERATORS, _ensure_loaded
+        from ..operators.grammar_types import GLYPH_TO_FUNCTION
 
-        glyph_to_operator = {
-            Glyph.AL: Emission(),
-            Glyph.EN: Reception(),
-            Glyph.IL: Coherence(),
-            Glyph.OZ: Dissonance(),
-            Glyph.UM: Coupling(),
-            Glyph.RA: Resonance(),
-            Glyph.SHA: Silence(),
-            Glyph.VAL: Expansion(),
-            Glyph.NUL: Contraction(),
-            Glyph.THOL: SelfOrganization(),
-            Glyph.ZHIR: Mutation(),
-            Glyph.NAV: Transition(),
-            Glyph.REMESH: Recursivity(),
-        }
-
-        operators = [glyph_to_operator[g] for g in sequence.glyphs]
+        _ensure_loaded()
+        operators = [
+            OPERATORS[GLYPH_TO_FUNCTION[g]]() for g in sequence.glyphs
+        ]
         run_sequence(self._graph, target_node, operators)
 
         return self

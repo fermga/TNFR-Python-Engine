@@ -50,10 +50,9 @@ _CACHE_AVAILABLE = True
 
 # Import TNFR aliases
 try:
-    from ..constants.aliases import ALIAS_THETA, ALIAS_DNFR
+    from ..constants.aliases import ALIAS_THETA
 except ImportError:
     ALIAS_THETA = ["phase", "theta"]
-    ALIAS_DNFR = ["delta_nfr", "dnfr"]
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,

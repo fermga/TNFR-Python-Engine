@@ -223,9 +223,6 @@ class GPUResonanceStrategy:
         engine = prepared["engine"]
         
         try:
-            # Compute phase gradients using GPU
-            delta_nfr_results = engine.compute_delta_nfr_from_graph(graph)
-            
             # Resonance propagates coherence through phase-aligned nodes
             for node in graph.nodes():
                 # Get neighbor phases

@@ -44,7 +44,6 @@ from ..constants.canonical import (
     CACHE_OPT_MEDIUM_PRIORITY_CANONICAL,
     CACHE_OPT_LOW_PRIORITY_CANONICAL,
     CACHE_OPT_PRESERVED_MEMORY_CANONICAL,
-    CACHE_OPT_ENTRY_SIZE_CANONICAL,
     CACHE_OPT_MAX_EVICTION_CANONICAL,
     CACHE_OPT_COMPRESSION_BASE_CANONICAL,
     CACHE_OPT_COMPRESSION_SCALE_CANONICAL,
@@ -354,10 +353,7 @@ class TNFRAdvancedCacheOptimizer:
         if target_memory_mb and current_size > target_memory_mb:
             # Calculate how much to evict
             evict_size = current_size - target_memory_mb
-            
-            # Estimate evicted entries (low importance first)
-            evicted_entries = int(evict_size / CACHE_OPT_ENTRY_SIZE_CANONICAL)  # Estimate canonical MB per entry
-            
+
             # Memory saved is the evicted amount
             memory_saved = min(evict_size, current_size * CACHE_OPT_MAX_EVICTION_CANONICAL)  # Max canonical% eviction
             

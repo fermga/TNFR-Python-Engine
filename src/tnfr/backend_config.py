@@ -190,7 +190,6 @@ def configure(**kwargs: Any) -> None:
     >>> configure(math_backend="torch", cuda_enabled=True)
     >>> configure(validation_level="strict", enable_telemetry=False)
     """
-    global _global_config
     config = get_config()
     
     for key, value in kwargs.items():

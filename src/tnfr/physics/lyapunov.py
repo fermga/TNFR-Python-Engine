@@ -219,6 +219,7 @@ def _build_bounds() -> dict[str, OperatorLyapunovBound]:
         increases_structural_pressure,
         provides_negative_feedback,
     )
+    from ..operators.operator_contracts import contract_for
     from ..config.operator_names import (
         COHERENCE,
         CONTRACTION,
@@ -235,25 +236,30 @@ def _build_bounds() -> dict[str, OperatorLyapunovBound]:
         TRANSITION,
     )
 
-    # (function name, English name, glyph, dominant structural-pressure factor)
+    # (function name, dominant structural-pressure factor). The English name
+    # and glyph are NOT duplicated here — they derive from the canonical
+    # operator_contracts single source via contract_for() below.
     _OPS = (
-        (EMISSION, "Emission", "AL", "AL_boost"),
-        (RECEPTION, "Reception", "EN", "EN_mix"),
-        (COHERENCE, "Coherence", "IL", "IL_dnfr_factor"),
-        (DISSONANCE, "Dissonance", "OZ", "OZ_dnfr_factor"),
-        (COUPLING, "Coupling", "UM", "UM_dnfr_reduction"),
-        (RESONANCE, "Resonance", "RA", "RA_vf_amplification"),
-        (SILENCE, "Silence", "SHA", "SHA_vf_factor"),
-        (EXPANSION, "Expansion", "VAL", "VAL_scale"),
-        (CONTRACTION, "Contraction", "NUL", "NUL_scale"),
-        (SELF_ORGANIZATION, "SelfOrganization", "THOL", "THOL_accel"),
-        (MUTATION, "Mutation", "ZHIR", "ZHIR_theta_shift_factor"),
-        (TRANSITION, "Transition", "NAV", "NAV_eta"),
-        (RECURSIVITY, "Recursivity", "REMESH", "REMESH_alpha"),
+        (EMISSION, "AL_boost"),
+        (RECEPTION, "EN_mix"),
+        (COHERENCE, "IL_dnfr_factor"),
+        (DISSONANCE, "OZ_dnfr_factor"),
+        (COUPLING, "UM_dnfr_reduction"),
+        (RESONANCE, "RA_vf_amplification"),
+        (SILENCE, "SHA_vf_factor"),
+        (EXPANSION, "VAL_scale"),
+        (CONTRACTION, "NUL_scale"),
+        (SELF_ORGANIZATION, "THOL_accel"),
+        (MUTATION, "ZHIR_theta_shift_factor"),
+        (TRANSITION, "NAV_eta"),
+        (RECURSIVITY, "REMESH_alpha"),
     )
 
     bounds: dict[str, OperatorLyapunovBound] = {}
-    for fname, ename, glyph, factor_name in _OPS:
+    for fname, factor_name in _OPS:
+        contract = contract_for(fname)
+        ename = contract.english_name
+        glyph = contract.glyph
         factor_val = float(gf.get(factor_name, 0.0))
         if provides_negative_feedback(fname):
             energy_class = EnergyClass.STABILISER
