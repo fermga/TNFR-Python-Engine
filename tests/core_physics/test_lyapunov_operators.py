@@ -480,7 +480,7 @@ class TestOperatorConvergence:
         summary = analyze_operator_convergence(ws_graph, "IL")
         bound = get_bound("IL")
         spectral = analyze_spectral_gap(ws_graph)
-        expected = min(bound.contraction_rate, spectral.spectral_gap)
+        expected = min(bound.contraction_rate, spectral.diffusion_gap)
         assert abs(summary.effective_convergence_rate - expected) < 1e-12
 
     def test_steps_to_half_uses_ln2(self, ws_graph):

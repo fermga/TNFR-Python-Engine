@@ -40,15 +40,19 @@ the theory document for the proof sketch and its limitations).
 
 Spectral Gap Characterisation
 -----------------------------
-The algebraic connectivity λ₁ of the graph Laplacian controls the
-*relaxation time* τ = 1/λ₁ for diffusive modes.  This module provides
-``analyze_spectral_gap`` which computes:
+``analyze_spectral_gap`` reports two distinct, both-meaningful quantities:
 
-- λ₁ (algebraic connectivity)
-- Relaxation time τ_relax = 1/λ₁
-- Mixing time estimate t_mix ~ ln(N)/λ₁
-- Cheeger-type lower bound h²/(2d_max) ≤ λ₁
-- Convergence rate for stabiliser-dominated sequences
+- the **combinatorial algebraic connectivity** λ₁ (Fiedler value) of
+  L = D − A — a graph-topology measure; and
+- the **canonical diffusion relaxation gap** λ₂ of the symmetric normalized
+  Laplacian L_sym = I − D^{-1/2} W D^{-1/2}, which shares the spectrum of the
+  canonical TNFR diffusion operator L_rw = I − D⁻¹W (``structural_diffusion``).
+
+The *diffusive* relaxation time-scale is set by the **diffusion gap**: the EPI
+field relaxes as exp(−ν_f·λ₂·t).  The two gaps coincide only up to the degree
+normalisation (λ₁/d on a d-regular graph) and differ on irregular graphs.
+Derived: relaxation time, mixing-time estimate, Cheeger-type bound, and the
+stabiliser convergence rate (which uses the canonical diffusion gap).
 
 References
 ----------
@@ -540,9 +544,18 @@ class SpectralGapAnalysis:
     Attributes
     ----------
     spectral_gap : float
-        λ₁ — algebraic connectivity of the graph Laplacian.
+        λ₁ — combinatorial algebraic connectivity (Fiedler value): the
+        second-smallest eigenvalue of L = D − A.  A graph-topology measure.
     fiedler_value : float
         Same as spectral_gap (alternative name from spectral graph theory).
+    diffusion_gap : float
+        λ₂ of the symmetric normalized Laplacian L_sym = I − D^{-1/2} W D^{-1/2},
+        which shares the spectrum of the canonical TNFR diffusion operator
+        L_rw = I − D⁻¹W.  This is the **canonical structural relaxation rate**
+        (per unit ν_f): the EPI field relaxes as exp(−ν_f·λ₂·t).  Use this — not
+        the combinatorial ``spectral_gap`` — for the diffusive relaxation
+        time-scale.  Equals ``spectral_gap``/d on a d-regular graph; differs on
+        irregular graphs.
     relaxation_time : float
         τ_relax = 1/λ₁ — time for the slowest non-trivial mode to decay
         by factor e.  ``inf`` if graph is disconnected (λ₁ = 0).
@@ -568,6 +581,7 @@ class SpectralGapAnalysis:
 
     spectral_gap: float
     fiedler_value: float
+    diffusion_gap: float
     relaxation_time: float
     convergence_rate: float
     mixing_time_bound: float
@@ -605,6 +619,7 @@ def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
         return SpectralGapAnalysis(
             spectral_gap=0.0,
             fiedler_value=0.0,
+            diffusion_gap=0.0,
             relaxation_time=float("inf"),
             convergence_rate=0.0,
             mixing_time_bound=float("inf"),
@@ -633,11 +648,25 @@ def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
     eigvals = np.linalg.eigvalsh(L)
     eigvals = np.sort(eigvals)
 
-    # λ₁ = second-smallest eigenvalue
+    # λ₁ = second-smallest eigenvalue (combinatorial algebraic connectivity)
     lambda_1 = float(eigvals[1]) if n > 1 else 0.0
     lambda_1 = max(0.0, lambda_1)  # numerical safety
 
     lambda_max = float(eigvals[-1])
+
+    # Canonical structural relaxation rate: λ₂ of the symmetric normalized
+    # Laplacian L_sym = I − D^{-1/2} W D^{-1/2}, which shares the spectrum of the
+    # canonical TNFR diffusion operator L_rw = I − D⁻¹W (structural_diffusion).
+    if nx is not None and isinstance(G, nx.Graph):
+        L_sym = nx.normalized_laplacian_matrix(G).toarray().astype(float)
+    else:
+        deg = L.diagonal().astype(float)
+        with np.errstate(divide="ignore"):
+            d_inv_sqrt = np.where(deg > 0.0, 1.0 / np.sqrt(deg), 0.0)
+        adjacency = np.diag(deg) - L  # A = D − L recovers the weight matrix
+        L_sym = np.eye(n) - d_inv_sqrt[:, None] * adjacency * d_inv_sqrt[None, :]
+    sym_eigs = np.sort(np.linalg.eigvalsh(L_sym))
+    diffusion_gap = max(0.0, float(sym_eigs[1])) if n > 1 else 0.0
 
     is_connected = lambda_1 > 1e-10
     tau = 1.0 / lambda_1 if is_connected else float("inf")
@@ -652,6 +681,7 @@ def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
     return SpectralGapAnalysis(
         spectral_gap=lambda_1,
         fiedler_value=lambda_1,
+        diffusion_gap=diffusion_gap,
         relaxation_time=tau,
         convergence_rate=lambda_1,
         mixing_time_bound=mixing,
@@ -698,7 +728,9 @@ def analyze_operator_convergence(
     r"""Combine per-operator Lyapunov bound with spectral gap analysis.
 
     For stabilisers, the effective convergence rate is the tighter of
-    the operator's contraction rate ρ and the graph's spectral gap λ₁.
+    the operator's contraction rate ρ and the graph's canonical diffusion
+    relaxation gap λ₂(L_sym) (``diffusion_gap``, the structural_diffusion
+    relaxation rate — not the combinatorial algebraic connectivity).
     The number of steps to halve energy is ln(2)/rate.
 
     Parameters
@@ -716,7 +748,10 @@ def analyze_operator_convergence(
     spectral = analyze_spectral_gap(G)
 
     if bound.energy_class == EnergyClass.STABILISER:
-        rate = min(bound.contraction_rate, spectral.spectral_gap)
+        # The diffusive relaxation bound is the CANONICAL diffusion gap
+        # λ₂(L_sym) (= the structural_diffusion relaxation rate), not the
+        # combinatorial algebraic connectivity.
+        rate = min(bound.contraction_rate, spectral.diffusion_gap)
         steps = math.log(2) / rate if rate > 1e-15 else float("inf")
     else:
         rate = 0.0

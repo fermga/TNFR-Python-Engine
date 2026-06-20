@@ -1067,7 +1067,9 @@ class SpectralConservation:
     r"""Spectral decomposition of the conservation fields.
 
     Expands charge density ρ and current divergence in the eigenbasis of the
-    graph Laplacian L: ρ(i) = Σ_k ρ̂_k ψ_k(i).
+    symmetric normalized Laplacian L_sym = I − D^{-1/2} W D^{-1/2}, whose
+    spectrum is that of the canonical TNFR diffusion operator L_rw = I − D⁻¹W
+    (the EPI channel of the nodal equation): ρ(i) = Σ_k ρ̂_k ψ_k(i).
 
     The continuity equation mode-by-mode reads:
         dρ̂_k/dt + λ_k Ĵ_k = Ŝ_k
@@ -1078,7 +1080,8 @@ class SpectralConservation:
     Attributes
     ----------
     eigenvalues : np.ndarray
-        Laplacian eigenvalues λ_k (sorted ascending).
+        L_sym eigenvalues λ_k (sorted ascending) — the canonical L_rw
+        relaxation spectrum.
     rho_spectrum : np.ndarray
         Charge density coefficients ρ̂_k in the eigenbasis.
     div_spectrum : np.ndarray
@@ -1102,9 +1105,9 @@ def compute_spectral_conservation(
     G: Any,
     snapshot: ConservationSnapshot | None = None,
 ) -> SpectralConservation:
-    r"""Decompose conservation fields in the graph Laplacian eigenbasis.
+    r"""Decompose conservation fields in the normalized Laplacian eigenbasis.
 
-    Connects TNFR conservation to spectral graph theory.  The Laplacian
+    Connects TNFR conservation to spectral graph theory.  The L_sym
     eigenvalues determine at which structural scales conservation holds
     most precisely:
 
@@ -1131,21 +1134,29 @@ def compute_spectral_conservation(
     nodes = sorted(snapshot.charge_density.keys())
     n = len(nodes)
 
-    # Build graph Laplacian
+    # Build the symmetric normalized Laplacian L_sym = I − D^{-1/2} W D^{-1/2},
+    # whose spectrum is that of the canonical TNFR diffusion operator
+    # L_rw = I − D⁻¹W (the EPI channel; see ``structural_diffusion``).  This is
+    # consistent with the §9.1 normalized divergence (∇·J = L_rw·J).
     if nx is not None and isinstance(G, nx.Graph):
-        L = nx.laplacian_matrix(G).toarray().astype(float)
+        L = nx.normalized_laplacian_matrix(G).toarray().astype(float)
     else:
-        # Fallback: build from adjacency
-        L = np.zeros((n, n))
+        # Fallback: build the combinatorial Laplacian then symmetric-normalize
+        Lc = np.zeros((n, n))
         node_idx = {nd: i for i, nd in enumerate(nodes)}
         for u, v in G.edges():
             i, j = node_idx[u], node_idx[v]
-            L[i, j] = -1.0
-            L[j, i] = -1.0
-            L[i, i] += 1.0
-            L[j, j] += 1.0
+            Lc[i, j] -= 1.0
+            Lc[j, i] -= 1.0
+            Lc[i, i] += 1.0
+            Lc[j, j] += 1.0
+        deg = Lc.diagonal().astype(float)
+        with np.errstate(divide="ignore"):
+            d_inv_sqrt = np.where(deg > 0.0, 1.0 / np.sqrt(deg), 0.0)
+        adjacency = np.diag(deg) - Lc
+        L = np.eye(n) - d_inv_sqrt[:, None] * adjacency * d_inv_sqrt[None, :]
 
-    # Eigendecomposition
+    # Eigendecomposition (orthonormal eigenbasis of L_sym)
     eigvals, eigvecs = np.linalg.eigh(L)
 
     # Project charge density and divergence into eigenbasis

@@ -599,9 +599,17 @@ $(1 + 6.857) \times (1 - 0.457)^4 = 7.857 \times 0.087 \approx 0.68 < 1$ ✓
 
 ### 8.5 Spectral Gap Characterisation
 
-The **algebraic connectivity** $\lambda_1$ (smallest non-zero eigenvalue of
-the graph Laplacian $L = D - A$) controls the diffusive relaxation time-scale
-and provides a topology-dependent convergence rate.
+The **diffusive relaxation time-scale** is controlled by the canonical TNFR
+diffusion operator $L_{\mathrm{rw}} = I - D^{-1}W$ (the EPI channel of the nodal
+equation; see `structural_diffusion`): the field relaxes as
+$e^{-\nu_f \lambda_2 t}$, where $\lambda_2$ is the spectral gap of the symmetric
+normalized Laplacian $L_{\mathrm{sym}} = I - D^{-1/2} W D^{-1/2}$ (same spectrum as
+$L_{\mathrm{rw}}$, orthonormal eigenbasis).  The **combinatorial algebraic
+connectivity** $\lambda_1$ of $L = D - A$ is the related graph-topology measure;
+the two coincide only up to the degree normalisation ($\lambda_1/d$ on a
+$d$-regular graph) and differ on irregular graphs.  The convergence rate below
+uses the **normalized** (canonical) gap; `analyze_spectral_gap` exposes it as
+`diffusion_gap`.
 
 **Spectral Quantities**
 
@@ -639,10 +647,14 @@ bounds, spectral gap analysis, and sequence contractiveness proofs.
 
 ### 9.1 Graph Laplacian Connection
 
-The discrete divergence used in TNFR conservation relates to the
-**graph Laplacian** $L = D - A$:
+The discrete divergence used in TNFR conservation is the **random-walk graph
+Laplacian** $L_{\mathrm{rw}} = I - D^{-1}W$ — the $1/d_i$ normalisation turns the
+combinatorial Laplacian $L = D - A$ into $L_{\mathrm{rw}}$:
 
-$$(\nabla \cdot \mathbf{J})(i) \approx \frac{1}{d_i} \sum_{j \sim i} [J(j) - J(i)] = \frac{1}{d_i} (L \cdot \mathbf{J})_i$$
+$$(\nabla \cdot \mathbf{J})(i) \approx \frac{1}{d_i} \sum_{j \sim i} [J(j) - J(i)] = \frac{1}{d_i} (L \cdot \mathbf{J})_i = (L_{\mathrm{rw}} \mathbf{J})_i$$
+
+so the relaxation spectrum governing conservation is that of $L_{\mathrm{rw}}$
+(equivalently the symmetric $L_{\mathrm{sym}}$), consistent with §8.5.
 
 This connects conservation on graphs to spectral graph theory.
 
