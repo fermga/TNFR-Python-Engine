@@ -74,6 +74,13 @@ from .number_theory import (
     ArithmeticTNFRNetwork,
     PrimeCertificate,
     run_basic_validation,
+    quadratic_residue_set,
+    power_residue_set,
+    unitary_residue_set,
+    arithmetic_cayley_digraph,
+    residue_network_rank,
+    power_residue_rank,
+    quadratic_residue_annotated_rank,
 )
 
 """Symbolic analysis exports
@@ -154,6 +161,14 @@ __all__ = [
     "ArithmeticTNFRNetwork",
     "PrimeCertificate",
     "run_basic_validation",
+    # Arithmetic residue networks (structural-frequency rank, cyclotomy)
+    "quadratic_residue_set",
+    "power_residue_set",
+    "unitary_residue_set",
+    "arithmetic_cayley_digraph",
+    "residue_network_rank",
+    "power_residue_rank",
+    "quadratic_residue_annotated_rank",
 ]
 
 # Add symbolic analysis functions if available

@@ -247,6 +247,7 @@ __all__ = [
     "structural_field",
     "structural_diffusivity",
     "relaxation_spectrum",
+    "structural_frequency_rank",
     "degree_weighted_total",
     "structural_eigenmodes",
     "nodal_domain_count",
@@ -369,6 +370,49 @@ def relaxation_spectrum(G: Any) -> Any:
     eig = np.linalg.eigvals(lap).real
     eig.sort()
     return structural_diffusivity(G) * eig
+
+
+def structural_frequency_rank(G: Any, decimals: int = 8) -> int:
+    r"""Number of distinct structural frequencies (the structural rank).
+
+    The distinct eigenvalues of the canonical random-walk Laplacian L_rw are
+    the network's structural frequencies (the relaxation rates of
+    ∂EPI/∂t = −νf·L_rw·EPI, up to the νf scale). This returns their count s(G)
+    — the size of the distinct-frequency spectrum — complementing
+    ``relaxation_spectrum`` (which returns the rates themselves).
+
+    For a connected graph, s distinct eigenvalues bound the diameter by s−1,
+    and s = 2 iff the graph is complete (regular case). On arithmetic Cayley
+    networks the rank is a primality / cyclotomy diagnostic (see
+    :mod:`tnfr.mathematics.number_theory`): the quadratic-residue network on an
+    odd prime has rank 3, and the k-th power residue network on a prime p has
+    rank ``gcd(k, p-1) + 1``.
+
+    Note
+    ----
+    For large or dense graphs the distinct-eigenvalue count is sensitive to the
+    ``decimals`` rounding (floating-point noise in ``eigvals`` can split truly
+    equal eigenvalues). For arithmetic residue networks the exact multiplicative
+    :func:`tnfr.mathematics.number_theory.quadratic_residue_annotated_rank` is
+    the robust closed-form object; this scalar count agrees with it for small
+    moduli.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    decimals : int
+        Rounding applied to the real and imaginary parts before counting
+        distinct values (the spectrum may be complex for directed graphs).
+
+    Returns
+    -------
+    int
+        The number of distinct eigenvalues of L_rw.
+    """
+    _, lap = structural_diffusion_operator(G)
+    eig = np.linalg.eigvals(lap)
+    rounded = np.round(eig.real, decimals) + 1j * np.round(eig.imag, decimals)
+    return int(np.unique(rounded).size)
 
 
 @dataclass(frozen=True)

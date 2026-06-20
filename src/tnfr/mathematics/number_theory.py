@@ -1660,3 +1660,174 @@ class AdelicOperator:
                 suggestion="Ensure wavefunction dimension matches p-1."
             )
         return self.eigenvalues * wavefunction
+
+
+# ---------------------------------------------------------------------------
+# Arithmetic residue networks and their structural-frequency rank
+# ---------------------------------------------------------------------------
+# The canonical structural-diffusion operator (physics.structural_diffusion,
+# L_rw = I − D⁻¹W = the ΔNFR EPI channel) applied to a directed Cayley network
+# on ℤ/mℤ with an arithmetic connection set has a distinct-eigenvalue STRUCTURAL
+# RANK that detects primality and cyclotomy. Documented in
+# examples/07_number_theory/153 and theory/TNFR_NUMBER_THEORY.md.
+# Honest scope: the underlying spectra are classical (Gauss periods, Ramanujan
+# sums); this is their canonical TNFR structural-diffusion framing.
+
+
+def quadratic_residue_set(m: int) -> set[int]:
+    """Nonzero quadratic residues modulo ``m``: ``{x^2 mod m} \\ {0}``."""
+    m = int(m)
+    if m < 2:
+        raise TNFRValueError(
+            f"Modulus {m} must be at least 2.",
+            context={"modulus": m},
+            suggestion="Provide an integer modulus >= 2.",
+        )
+    return {(x * x) % m for x in range(1, m)} - {0}
+
+
+def power_residue_set(m: int, k: int) -> set[int]:
+    """Nonzero ``k``-th power residues modulo ``m``: ``{x^k mod m} \\ {0}``."""
+    m, k = int(m), int(k)
+    if m < 2:
+        raise TNFRValueError(
+            f"Modulus {m} must be at least 2.",
+            context={"modulus": m},
+            suggestion="Provide an integer modulus >= 2.",
+        )
+    if k < 1:
+        raise TNFRValueError(
+            f"Power {k} must be at least 1.",
+            context={"power": k},
+            suggestion="Provide a positive integer power.",
+        )
+    return {pow(x, k, m) for x in range(1, m)} - {0}
+
+
+def unitary_residue_set(m: int) -> set[int]:
+    """Units modulo ``m``: ``{u : gcd(u, m) = 1}`` (the Ramanujan-sum network)."""
+    m = int(m)
+    if m < 2:
+        raise TNFRValueError(
+            f"Modulus {m} must be at least 2.",
+            context={"modulus": m},
+            suggestion="Provide an integer modulus >= 2.",
+        )
+    return {u for u in range(1, m) if math.gcd(u, m) == 1}
+
+
+def arithmetic_cayley_digraph(m: int, connection: Iterable[int]) -> nx.DiGraph:
+    """Directed Cayley graph ``Cay(ℤ/mℤ, connection)``.
+
+    Vertex set ``{0, …, m−1}``; a directed edge ``a → a+c (mod m)`` for each
+    ``c`` in the connection set. This is the substrate on which the canonical
+    structural-diffusion operator is evaluated.
+    """
+    m = int(m)
+    connection = list(connection)
+    graph = nx.DiGraph()
+    graph.add_nodes_from(range(m))
+    for a in range(m):
+        for c in connection:
+            graph.add_edge(a, (a + c) % m)
+    return graph
+
+
+def _prime_factorization(m: int) -> dict[int, int]:
+    """Prime factorization exponents of ``m`` (sympy if present, else trial)."""
+    m = int(m)
+    if m < 1:
+        raise TNFRValueError(
+            f"Cannot factorize {m}; expected a positive integer.",
+            context={"value": m},
+            suggestion="Provide a positive integer.",
+        )
+    if HAS_SYMPY:
+        return {int(p): int(e) for p, e in factorint(m).items()}
+    factors: dict[int, int] = {}
+    remaining, divisor = m, 2
+    while divisor * divisor <= remaining:
+        while remaining % divisor == 0:
+            factors[divisor] = factors.get(divisor, 0) + 1
+            remaining //= divisor
+        divisor += 1
+    if remaining > 1:
+        factors[remaining] = factors.get(remaining, 0) + 1
+    return factors
+
+
+def power_residue_rank(p: int, k: int) -> int:
+    r"""Closed-form structural rank of the ``k``-th power residue network on a
+    prime ``p``: the cyclotomy law ``s_k(p) = gcd(k, p−1) + 1``.
+
+    Equivalently the number of Gauss periods of degree ``gcd(k, p−1)`` plus the
+    trivial frequency. The maximal rank ``k+1`` is reached iff ``p ≡ 1 (mod k)``,
+    i.e. iff ``p`` splits completely in the cyclotomic field ``ℚ(ζ_k)``. The
+    quadratic-residue case is ``k = 2`` (``gcd(2, p−1) = 2`` ⟹ uniform rank 3).
+
+    Honest scope: classical cyclotomy / Gauss-period theory, in the canonical
+    TNFR structural-diffusion framing. Validated against the measured network
+    rank in ``examples/07_number_theory/153``.
+    """
+    p, k = int(p), int(k)
+    return math.gcd(k, p - 1) + 1
+
+
+def quadratic_residue_annotated_rank(m: int) -> int:
+    r"""Multiplicative conductor-annotated quadratic-residue structural rank
+    ``A(m)``.
+
+    ``A`` is multiplicative with ``A(p^e) = e + ceil(e/2) + 1 = floor(3(e+1)/2)``.
+    For odd ``m`` it equals the distinct-eigenvalue count of the
+    conductor-annotated quadratic-residue Cayley digraph; on squarefree ``m`` it
+    is ``3^ω(m)`` (the per-prime rank 3 raised to the number of prime factors),
+    and ``A(m) ≥ τ(m)`` always. The unannotated scalar count can be smaller on
+    mixed composites (the first separation is at ``3^7·5^2·41^2``).
+
+    Honest scope: a classical multiplicative arithmetic function generalizing
+    ``3^ω`` (OEIS A074816) in the canonical TNFR framing.
+    """
+    rank = 1
+    for exponent in _prime_factorization(m).values():
+        rank *= exponent + (exponent + 1) // 2 + 1
+    return rank
+
+
+def residue_network_rank(m: int, kind: str = "quadratic", k: int = 2) -> int:
+    """Structural-frequency rank of an arithmetic residue network on ``ℤ/mℤ``.
+
+    Builds the canonical Cayley network for the requested connection set and
+    returns its :func:`~tnfr.physics.structural_diffusion.structural_frequency_rank`
+    (the canonical spectral diagnostic — the distinct-eigenvalue count of the
+    structural-diffusion operator ``L_rw``).
+
+    Parameters
+    ----------
+    m : int
+        The modulus.
+    kind : {"quadratic", "power", "unitary"}
+        Which arithmetic connection set to use.
+    k : int
+        The power, used only when ``kind == "power"``.
+
+    Returns
+    -------
+    int
+        The structural rank. For an odd prime ``m``: quadratic → 3, power →
+        ``gcd(k, m−1) + 1`` (the cyclotomy law), unitary → 2.
+    """
+    from ..physics.structural_diffusion import structural_frequency_rank
+
+    if kind == "quadratic":
+        connection = quadratic_residue_set(m)
+    elif kind == "power":
+        connection = power_residue_set(m, k)
+    elif kind == "unitary":
+        connection = unitary_residue_set(m)
+    else:
+        raise TNFRValueError(
+            f"Unknown residue-network kind {kind!r}.",
+            context={"kind": kind},
+            suggestion="Use one of: 'quadratic', 'power', 'unitary'.",
+        )
+    return structural_frequency_rank(arithmetic_cayley_digraph(m, connection))
