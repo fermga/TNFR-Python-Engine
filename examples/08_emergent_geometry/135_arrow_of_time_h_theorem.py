@@ -57,10 +57,12 @@ functionals of the heat semigroup / reversible Markov chain), and the arrow of
 time / second law is one of the most empirically-established phenomena in physics
 (Clausius, Boltzmann). This re-expresses the irreversibility of the diffusion
 equation -- which we established IS the nodal EPI channel (ex 99, 134) -- in
-thermodynamic language. It is distinct from the tetrad Lyapunov energy
-(conservation.py) and the Lindblad / Von Neumann entropy
-(dissipative_conservation.py). It is not new mathematics and closes no open
-problem.
+thermodynamic language. It is a distinct functional from the tetrad Lyapunov
+energy (conservation.py) and the Lindblad / Von Neumann entropy
+(dissipative_conservation.py), though it shares the canonical relaxation clock
+nu_f*lambda_2(L_sym) with the tetrad Lyapunov energy (theorem 8.6 of
+STRUCTURAL_CONSERVATION_THEOREM.md). It is not new mathematics and closes no
+open problem.
 
 References
 ----------
@@ -256,9 +258,9 @@ def main():
     print("provable (Lyapunov functionals of the heat semigroup), and the second")
     print("law / arrow of time is empirically ironclad (Clausius, Boltzmann). It")
     print("re-expresses the irreversibility of the EPI diffusion channel (ex 99,")
-    print("134) in thermodynamic language; distinct from the tetrad Lyapunov energy")
-    print("(conservation.py) and the Lindblad / Von Neumann entropy")
-    print("(dissipative_conservation.py). Not new mathematics, closes no open problem.")
+    print("134) in thermodynamic language; a distinct functional from the tetrad")
+    print("Lyapunov energy (conservation.py) but sharing its relaxation clock")
+    print("nu_f*lambda_2(L_sym) (theorem 8.6). Not new mathematics, closes no problem.")
 
 
 if __name__ == "__main__":

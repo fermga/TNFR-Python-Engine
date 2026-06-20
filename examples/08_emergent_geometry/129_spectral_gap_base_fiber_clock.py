@@ -10,7 +10,7 @@ coupling: it sets the rate at which the nodal equation's linear field relaxes,
 which is what drives the fiber substrate. This example measures the four faces of
 that clock, and closes the loop with the co-emergent footing of example 128.
 
-The four faces of lambda_2 (all canonical)
+The five faces of lambda_2 (all canonical)
 ------------------------------------------
   1. RELAXATION RATE. The slowest linear-field decay rate is nu_f*lambda_2: the
      non-uniform modes decay as exp(-nu_f*lambda_k*t), and the spectral gap is
@@ -26,6 +26,10 @@ The four faces of lambda_2 (all canonical)
      (example 128) is a spanning TREE; trees are the weakest-connected spanning
      structures, so they have the SMALLEST lambda_2 -- the slowest, most fragile
      base->fiber clock. The dynamics settles on the weakest self-consistent base.
+  5. THE LYAPUNOV CLOCK. The same nu_f*lambda_2 is the relaxation rate of the
+     structural Lyapunov energy's gradient sectors, via the proven diffusion
+     H-theorem (theorem 8.6). The conservation/Lyapunov module exposes it as
+     diffusion_gap = lambda_2(L_sym), NOT the combinatorial lambda_2(D-A).
 
 Doctrine compliance
 -------------------
@@ -35,7 +39,7 @@ All four faces are canonical: the relaxation rate and Cheeger gap come from
 Fiedler cut from `fiedler_partition`; the co-emergent tree from the canonical
 REMESH helper `_mst_edges_from_epi`. Nothing is imposed.
 
-Four measured results
+Five measured results
 ---------------------
 M1 lambda_2 IS THE CLOCK. The canonical verify confirms nu_f*lambda_2 is the
    slowest relaxation rate on a path, a cycle and a complete graph. Small gap
@@ -57,6 +61,12 @@ M4 THE CO-EMERGENT TREE HAS THE SMALLEST GAP. The co-emergent fixed point (a
    on the weakest-connected self-consistent structure -- the slowest base->fiber
    clock.
 
+M5 lambda_2 IS ALSO THE LYAPUNOV CLOCK. analyze_spectral_gap's diffusion_gap
+   (the conservation/Lyapunov relaxation rate) equals the structural-diffusion
+   lambda_2 on every test graph, while the combinatorial lambda_2(D-A) differs:
+   the four faces above and the conservation Lyapunov share ONE clock
+   (theorem 8.6).
+
 Honest scope
 ------------
 The four faces of lambda_2 are standard spectral graph theory (relaxation,
@@ -76,6 +86,8 @@ References
 - examples/08_emergent_geometry/126_two_layers_base_fiber.py (the two-layer optic)
 - examples/08_emergent_geometry/128_base_substrate_coemergence.py (the tree attractor)
 - examples/08_emergent_geometry/112_structure_predicts_coherence_flow.py (nu_f*lambda_2)
+- src/tnfr/physics/lyapunov.py (analyze_spectral_gap: diffusion_gap = lambda_2(L_sym))
+- theory/STRUCTURAL_CONSERVATION_THEOREM.md section 8.6 (the relaxation-rate identity)
 - AGENTS.md "Transport Content of the Nodal Equation" (the dispersion relation, U2)
 """
 
@@ -98,6 +110,7 @@ from tnfr.physics.structural_diffusion import (
     structural_eigenmodes,
     verify_structural_diffusion,
 )
+from tnfr.physics.lyapunov import analyze_spectral_gap
 
 NXMOD, _ = _get_networkx_modules()
 
@@ -254,6 +267,40 @@ def experiment_4_coemergent_tree():
     print("     on the weakest-connected self-consistent base = the slowest clock.")
 
 
+def experiment_5_lyapunov_clock():
+    """M5: the same lambda_2 is the conservation/Lyapunov relaxation clock."""
+    print()
+    print("=" * 74)
+    print("EXPERIMENT 5: lambda_2 Is Also the Conservation/Lyapunov Clock (8.6)")
+    print("=" * 74)
+    print("The structural Lyapunov energy's gradient sectors relax by the proven")
+    print("diffusion H-theorem at rate nu_f*lambda_2 -- the SAME clock. The")
+    print("conservation/Lyapunov module (analyze_spectral_gap) exposes it as")
+    print("diffusion_gap = lambda_2(L_sym), NOT the combinatorial lambda_2(D-A).")
+    print()
+    print(f"  {'graph':18s} {'diffusion l2':>13} {'Lyapunov gap':>13} "
+          f"{'combinatorial':>14} {'match?':>7}")
+    cases = [
+        ("path P12", nx.path_graph(12)),
+        ("barbell (2 K5)", nx.barbell_graph(5, 0)),
+        ("cycle C12", nx.cycle_graph(12)),
+        ("complete K8", nx.complete_graph(8)),
+    ]
+    for name, G in cases:
+        for nd in G.nodes():
+            set_attr(G.nodes[nd], ALIAS_VF, 1.0)
+        ev, _ = structural_eigenmodes(G)
+        lam2 = float(ev[1])
+        sg = analyze_spectral_gap(G)
+        match = abs(lam2 - sg.diffusion_gap) < 1e-9
+        print(f"  {name:18s} {lam2:>13.4f} {sg.diffusion_gap:>13.4f} "
+              f"{sg.spectral_gap:>14.4f} {str(match):>7}")
+    print()
+    print("  -> the diffusion lambda_2 and the Lyapunov diffusion_gap are the")
+    print("     SAME (match=True); the combinatorial gap differs. The four faces")
+    print("     above and the conservation Lyapunov share ONE clock (8.6).")
+
+
 def main():
     print()
     print("  TNFR Example 129: The Spectral Gap Is the Base->Fiber Coupling Clock")
@@ -264,19 +311,22 @@ def main():
     experiment_2_cheeger()
     experiment_3_threshold()
     experiment_4_coemergent_tree()
+    experiment_5_lyapunov_clock()
     print()
     print("=" * 74)
     print("WHAT THIS ESTABLISHES")
     print("=" * 74)
     print("The spectral gap lambda_2 is the base->fiber COUPLING CLOCK of the")
-    print("two-layer optic (example 126), with four canonical faces: (1) the")
+    print("two-layer optic (example 126), with five canonical faces: (1) the")
     print("slowest relaxation rate nu_f*lambda_2 (the clock); (2) the Cheeger")
     print("bottleneck (lambda_2 set by the network's weakest cut, the Fiedler")
     print("partition); (3) the instability threshold r_c = nu_f*lambda_2 (the")
     print("dispersion relation, the spectral form of grammar U2); and (4) the")
     print("co-emergent tree (example 128) has the SMALLEST gap -- the slowest,")
     print("most fragile clock, on which the nodal dynamics self-consistently")
-    print("settles. HONEST SCOPE: the four faces are standard spectral graph")
+    print("settles; and (5) the conservation/Lyapunov energy relaxes on this")
+    print("SAME clock (theorem 8.6, diffusion_gap = lambda_2(L_sym)).")
+    print("HONEST SCOPE: the five faces are standard spectral graph")
     print("theory (relaxation, Cheeger, linear stability) re-expressed in the")
     print("canonical operator; the Cheeger bound uses the Fiedler-cut conductance")
     print("as a bottleneck proxy (the exact constant is NP-hard); the")
