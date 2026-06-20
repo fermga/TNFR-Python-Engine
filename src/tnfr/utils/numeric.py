@@ -1,6 +1,11 @@
 """Numeric helper functions and compensated summation utilities.
 
-DEPRECATED: Use src/tnfr/mathematics/unified_numerical.py instead.
+The scalar wrappers here (``clamp``, ``clamp01``, ``within_range``,
+``kahan_sum_nd``, …) are thin compatibility shims that delegate to the canonical
+:mod:`tnfr.mathematics.unified_numerical`.  The phase-difference helpers
+``angle_diff`` and ``angle_diff_array`` are **defined here** (they are not part
+of ``unified_numerical``) and are re-exported as the canonical public API via
+:mod:`tnfr.utils` — prefer ``from tnfr.utils import angle_diff``.
 """
 
 from __future__ import annotations
