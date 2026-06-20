@@ -677,6 +677,13 @@ def compute_noether_charge(G: Any) -> float:
     The charge Q integrates global (potential) and local (geometric)
     structural information into a single scalar.
 
+    This **tetrad** charge is **distinct** from the EPI-channel degree-weighted
+    total Σ_i deg(i)·EPI(i)
+    (:func:`tnfr.physics.structural_diffusion.degree_weighted_total`), the
+    conserved quantity of the random-walk diffusion: TNFR carries two distinct
+    conservation laws, on the tetrad fields and on the EPI field respectively
+    (see STRUCTURAL_CONSERVATION_THEOREM §8.7).
+
     Parameters
     ----------
     G : TNFRGraph

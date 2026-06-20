@@ -677,6 +677,27 @@ Markov H-theorem, `examples/08_emergent_geometry/150_emergent_grammatical_patter
 all three functionals relax to equilibrium by one mechanism, on the one canonical
 clock $\nu_f\,\lambda_2(L_{\mathrm{sym}})$.
 
+### 8.7 The two conservation/Lyapunov structures
+
+TNFR carries **two distinct conservation laws**, on two different fields, sharing
+the one relaxation clock of §8.6:
+
+| | EPI channel (diffusion) | Tetrad / grammar |
+|---|---|---|
+| **Field** | the scalar form EPI | the tetrad $(\Phi_s, \lvert\nabla\phi\rvert, K_\phi, \dots)$ |
+| **Conserved quantity** | degree-weighted total $\sum_i \deg(i)\,\mathrm{EPI}_i$ (left null vector of $L_{\mathrm{rw}}$) | Noether charge $Q=\sum_i(\Phi_s+K_\phi)$ |
+| **Conserved under** | $\partial_t\mathrm{EPI}=-\nu_f L_{\mathrm{rw}}\mathrm{EPI}$ | grammar U1–U6 |
+| **Lyapunov functional** | Dirichlet energy $F=\tfrac12\sum A_{ij}(\mathrm{EPI}_i-\mathrm{EPI}_j)^2$ | $E=\tfrac12\sum(\Phi_s^2+\lvert\nabla\phi\rvert^2+K_\phi^2+J_\phi^2+J_{\Delta\mathrm{NFR}}^2)$ |
+| **Equilibrium** | uniform EPI (stationary measure $\pi_i\propto\deg i$) | confined tetrad (U2 satisfied) |
+| **Implementation** | `structural_diffusion.degree_weighted_total`, `stationary_distribution` | `conservation.compute_noether_charge`, `compute_energy_functional` |
+
+The two are **independent** (the degree-weighted total acts on EPI; $Q$ on the
+tetrad), but both relax on the **same clock** $\nu_f\,\lambda_2(L_{\mathrm{sym}})$
+(§8.6): $F$ provably (the structural H-theorem), $E$ for its diffusion-governed
+sectors. This is standard graph-diffusion conservation plus the tetrad
+conservation law of §8.1–§8.6; the only contribution is the explicit statement
+that TNFR runs **two** parallel conservation/Lyapunov structures on one clock.
+
 ---
 
 ## 9. Discrete Formulation on Graphs

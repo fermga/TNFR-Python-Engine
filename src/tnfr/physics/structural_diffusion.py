@@ -389,6 +389,14 @@ def degree_weighted_total(G: Any) -> float:
     The random-walk Laplacian conserves the degree-weighted total (its left
     null vector is the degree vector), the analogue of the conserved amount
     of a diffusing substance.
+
+    This is the **EPI-channel** conserved quantity (of the diffusion
+    ∂EPI/∂t = −νf·L_rw·EPI).  It is **distinct** from the tetrad Noether charge
+    Q = Σ(Φ_s + K_φ)
+    (:func:`tnfr.physics.conservation.compute_noether_charge`), conserved under
+    grammar U1–U6: TNFR carries two distinct conservation laws, on the EPI
+    field and on the tetrad fields respectively (see
+    STRUCTURAL_CONSERVATION_THEOREM §8.7).
     """
     nodes = _ordered_nodes(G)
     total = 0.0
