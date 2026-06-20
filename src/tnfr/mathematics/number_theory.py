@@ -1765,9 +1765,13 @@ def power_residue_rank(p: int, k: int) -> int:
     i.e. iff ``p`` splits completely in the cyclotomic field ``ℚ(ζ_k)``. The
     quadratic-residue case is ``k = 2`` (``gcd(2, p−1) = 2`` ⟹ uniform rank 3).
 
-    Honest scope: classical cyclotomy / Gauss-period theory, in the canonical
-    TNFR structural-diffusion framing. Validated against the measured network
-    rank in ``examples/07_number_theory/153``.
+    Proved for all ``k`` via Gauss periods (theory/TNFR_NUMBER_THEORY.md §9.11):
+    the ``k``-th power Cayley eigenvalues are the ``gcd(k, p-1)`` Gauss periods
+    (distinct, none rational) plus the trivial frequency. Honest scope: classical
+    cyclotomy in the canonical TNFR structural-diffusion framing; verified
+    computationally for ``k <= 40``, ``p < 64`` (680 cases, 0 failures) and proved
+    in general. The formula is odd-prime only: ``(Z/2^e)^*`` is non-cyclic for
+    ``e >= 3``, so the even sector is the arithmetic continuation (§9.11).
     """
     p, k = int(p), int(k)
     return math.gcd(k, p - 1) + 1

@@ -541,6 +541,31 @@ where $\mathrm{Fix}(G)=\{\text{functions constant on the orbits of }\mathrm{Aut}
 
 **Honest scope.** This is the representation theory of graph automorphisms (Schur's lemma applied to an equivariant operator) re-expressed in the canonical emergent operator. It **explains and unifies** the arc's walls; it is not new mathematics and closes no open problem.
 
+### 9.11 The Cyclotomy Law — Proof via Gauss Periods (PROVED)
+
+§9.6 established the **measured** signature "$3$ distinct eigenvalues $\iff$ odd prime" for the quadratic-residue ($k=2$) digraph. Example [153_structural_frequency_rank_cyclotomy.py](../examples/07_number_theory/153_structural_frequency_rank_cyclotomy.py) generalizes it to the $k$-th power residue network and measures the **cyclotomy law** $s_k(p)=\gcd(k,p-1)+1$. Unlike §9.5–§9.10 (all measured), this law is a **theorem** — it follows from classical Gauss-period theory, here proved for **all** $k$ and every odd prime $p$.
+
+**Setup.** Fix an odd prime $p$ and an integer $k\ge 1$; let $d=\gcd(k,p-1)$ and $\zeta=e^{2\pi i/p}$. Because $(\mathbb{Z}/p\mathbb{Z})^\times$ is **cyclic** of order $p-1$, the nonzero $k$-th power residues $R_k=\{x^k\bmod p\}$ form the unique subgroup $H\le(\mathbb{Z}/p\mathbb{Z})^\times$ of index $d$ (the $d$-th powers), with $\lvert H\rvert=(p-1)/d=:f$. The structural rank $s_k(p)$ is the number of distinct eigenvalues of the canonical $L_{rw}$ on $\mathrm{Cay}(\mathbb{Z}/p\mathbb{Z},R_k)$; since $L_{rw}=I-A/f$ is an affine image of the circulant adjacency $A$, $s_k(p)=\#\{\lambda(t):t\in\mathbb{Z}/p\mathbb{Z}\}$ with
+$$\lambda(t)=\sum_{r\in H}\zeta^{tr}.$$
+
+**Theorem (cyclotomy law).** $\;s_k(p)=d+1=\gcd(k,p-1)+1$.
+
+**Proof.**
+
+1. *Coset invariance.* For $t\ne 0$, $\lambda(t)$ depends only on the coset $tH$: if $t'=th$ with $h\in H$ then $\{hr:r\in H\}=H$ (group closure), so $\lambda(t')=\sum_{r\in H}\zeta^{t(hr)}=\lambda(t)$. The cosets partition $(\mathbb{Z}/p\mathbb{Z})^\times$ into $d$ classes, so over $t\ne 0$ the value $\lambda(t)$ takes the $d$ **Gauss periods** $\eta_0,\dots,\eta_{d-1}$ (one per coset); the remaining value is $\lambda(0)=\lvert H\rvert=f$. Hence $s_k(p)\le d+1$.
+
+2. *The $d$ periods are distinct.* The only $\mathbb{Z}$-linear relation among $\{\zeta^i\}_{i=0}^{p-1}$ is $\sum_{i=0}^{p-1}\zeta^i=0$; restricted to two $0/1$-supported sums on $\{1,\dots,p-1\}$, $\sum_{i\in S}\zeta^i=\sum_{i\in S'}\zeta^i\iff S=S'$. Therefore $\sigma_a:\zeta\mapsto\zeta^a$ fixes $\eta_0=\sum_{r\in H}\zeta^r$ iff $aH=H$ iff $a\in H$. So the $\mathrm{Gal}(\mathbb{Q}(\zeta)/\mathbb{Q})\cong(\mathbb{Z}/p\mathbb{Z})^\times$ stabilizer of $\eta_0$ is exactly $H$: $\eta_0$ generates the unique degree-$d$ subfield $K_d=\mathbb{Q}(\zeta)^H$, and its $d$ Galois conjugates $\eta_0,\dots,\eta_{d-1}$ are **distinct**.
+
+3. *No period equals the rational $\lambda(0)$.* For $d\ge 2$: the Galois group permutes $\{\eta_j\}$ **transitively** (through $(\mathbb{Z}/p\mathbb{Z})^\times/H\cong\mathbb{Z}/d\mathbb{Z}$); if some $\eta_{j_0}=f\in\mathbb{Q}$ then every conjugate would equal $f$ (Galois fixes $\mathbb{Q}$), contradicting distinctness. For $d=1$: $H=(\mathbb{Z}/p\mathbb{Z})^\times$, so $\eta_0=\sum_{i=1}^{p-1}\zeta^i=-1\ne p-1=f$. Either way no $\eta_j$ equals $f$.
+
+4. *Conclusion.* The distinct values are exactly $\{f,\eta_0,\dots,\eta_{d-1}\}$ — $(d+1)$ of them — so $s_k(p)=d+1=\gcd(k,p-1)+1$. $\blacksquare$
+
+**Reading of the law.** $s_k(p)-1=\gcd(k,p-1)=[(\mathbb{Z}/p\mathbb{Z})^\times:H]=$ the number of $k$-th power classes $=[K_d:\mathbb{Q}]$, the degree of the cyclotomic subfield carrying the periods. The maximal rank $k+1$ is attained $\iff d=k\iff k\mid p-1\iff p\equiv 1\pmod k\iff p$ splits completely in $\mathbb{Q}(\zeta_k)$. The quadratic case is $k=2$ ($\gcd(2,p-1)=2$ for every odd $p$ $\Rightarrow$ the **uniform rank 3** of §9.6); the extreme $d=p-1$ ($R_k=\{1\}$) is the directed $p$-cycle, all $p$ characters distinct, $s=p=(p-1)+1$.
+
+**The even-modulus boundary (PROVED).** The proof uses cyclicity of $(\mathbb{Z}/p\mathbb{Z})^\times$ at exactly one point — that the $k$-th powers form a single index-$d$ subgroup. This holds at every **odd** prime power $p^e$ (where $(\mathbb{Z}/p^e\mathbb{Z})^\times$ is cyclic), giving the local quadratic factor $f(e)=e+\lceil e/2\rceil+1$ and the conductor-annotated product theorem over odd moduli. It **fails at the prime $2$**: $(\mathbb{Z}/2^e\mathbb{Z})^\times$ is **non-cyclic** for $e\ge 3$ ($\cong\mathbb{Z}/2\times\mathbb{Z}/2^{e-2}$), so the squares form an index-$4$ (not index-$2$) subgroup and the Gauss-sum stratification differs; already $2^1$ is degenerate (the sole unit is $1$). Measured (example 154 machinery): the conductor-annotated count at $2^e$ is $2,4,8,10,14,16,20$ for $e=1,\dots,7$ versus $f(e)=3,4,6,7,9,10,12$ — agreeing only at $e=2$ by coincidence, while every odd prime power matches $f(e)$ exactly. Hence the conductor-annotated product theorem and the cyclotomy law are genuinely **odd-only**, and $A(2^e)$ is the arithmetic continuation, not a spectral count.
+
+**Honest scope.** The cyclotomy law is classical Gauss-period / cyclotomy theory (the $k$-th power Cayley eigenvalues are Gauss periods of degree $\gcd(k,p-1)$); the contribution is the **TNFR structural-diffusion framing** and the closed-form `power_residue_rank` — now a **proved** canonical fact, not a measured pattern. Verified computationally for $k\le 40$ across the primes $p<64$ (680 cases, 0 failures) and proved for all $k$. It detects primality/cyclotomy structurally; it does not factor, does not reach the continuous arg-$\zeta$ phase, and closes no open problem.
+
 ---
 
 ## 10. Prime Path Graphs and the TNFR-Riemann Connection

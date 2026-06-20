@@ -56,11 +56,12 @@ M1 TWO-ARM PRIMALITY. Primality is a simultaneous fixed point of BOTH dual-lever
    spectrum (example 119), the two arms of the dual-lever.
 
 M2 THE CYCLOTOMY LAW. The structural rank of the k-th power residue network on a
-   prime p is s_k(p) = gcd(k,p−1)+1 (measured, 0 failures for k≤10, p<60). The
+   prime p is s_k(p) = gcd(k,p−1)+1 (PROVED for all k via Gauss periods, theory
+   §9.11; verified here for k=2..6, and to k=1..40, p<64 in the test suite). The
    maximal rank k+1 is reached exactly when p ≡ 1 (mod k), i.e. exactly when p
    splits completely in the cyclotomic field ℚ(ζ_k) (0 mismatches). The QR result
-   is the k=2 special case (gcd(2,p−1)=2 ⟹ uniform rank 3). So the structural
-   rank READS p's cyclotomic splitting.
+   is the k=2 special case (gcd(2,p−1)=2 ⟹ uniform rank 3). So the structural rank
+   READS p's cyclotomic splitting.
 
 M3 FREE-MONOID EXPONENTIAL GRADING. On squarefree m the structural rank is
    (per-prime rank)^ω: the QR network gives 3^ω (= the multiplicative A(m)), the
@@ -73,7 +74,8 @@ M3 FREE-MONOID EXPONENTIAL GRADING. On squarefree m the structural rank is
 Honest scope
 ------------
 primality ⟺ ΔNFR=0 (§4) and the QR 3-eigenvalue signature (example 119) pre-exist;
-the cyclotomy law s_k(p)=gcd(k,p−1)+1 is, underneath, classical Gauss-period /
+the cyclotomy law s_k(p)=gcd(k,p−1)+1 is now PROVED for all k (theory/
+TNFR_NUMBER_THEORY.md §9.11) and is, underneath, classical Gauss-period /
 cyclotomic-number theory (the eigenvalues of the k-th power Cayley graph are
 Gauss periods of degree gcd(k,p−1), taking that many distinct values plus the
 trivial one). The NEW content is the unified TNFR structural-diffusion framing:
