@@ -655,16 +655,10 @@ def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
     lambda_max = float(eigvals[-1])
 
     # Canonical structural relaxation rate: λ₂ of the symmetric normalized
-    # Laplacian L_sym = I − D^{-1/2} W D^{-1/2}, which shares the spectrum of the
-    # canonical TNFR diffusion operator L_rw = I − D⁻¹W (structural_diffusion).
-    if nx is not None and isinstance(G, nx.Graph):
-        L_sym = nx.normalized_laplacian_matrix(G).toarray().astype(float)
-    else:
-        deg = L.diagonal().astype(float)
-        with np.errstate(divide="ignore"):
-            d_inv_sqrt = np.where(deg > 0.0, 1.0 / np.sqrt(deg), 0.0)
-        adjacency = np.diag(deg) - L  # A = D − L recovers the weight matrix
-        L_sym = np.eye(n) - d_inv_sqrt[:, None] * adjacency * d_inv_sqrt[None, :]
+    # Laplacian L_sym (shares the spectrum of the canonical diffusion operator
+    # L_rw = I − D⁻¹W; built once in structural_diffusion).
+    from .structural_diffusion import symmetric_normalized_laplacian
+    _, L_sym = symmetric_normalized_laplacian(G)
     sym_eigs = np.sort(np.linalg.eigvalsh(L_sym))
     diffusion_gap = max(0.0, float(sym_eigs[1])) if n > 1 else 0.0
 

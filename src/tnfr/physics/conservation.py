@@ -726,6 +726,22 @@ def compute_energy_functional(G: Any) -> float:
     raw = _raw_energy_density(G)
     return 0.5 * sum(raw.values())
 
+def _energy_from_snapshot(snapshot: ConservationSnapshot) -> float:
+    r"""E = ½ Σ_i (Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) from a captured snapshot.
+
+    Snapshot-field counterpart of :func:`compute_energy_functional` (which reads
+    the live graph): both evaluate the same canonical quadratic form, so the
+    energy-density definition lives in one place rather than being inlined.
+    """
+    return 0.5 * sum(
+        snapshot.phi_s[n] ** 2
+        + snapshot.grad_phi[n] ** 2
+        + snapshot.k_phi[n] ** 2
+        + snapshot.j_phi[n] ** 2
+        + snapshot.j_dnfr[n] ** 2
+        for n in snapshot.phi_s
+    )
+
 # ---------------------------------------------------------------------------
 # Sector coupling analysis (the deep physics insight)
 # ---------------------------------------------------------------------------
@@ -887,18 +903,8 @@ def compute_ward_identity(
         e_before = compute_energy_functional(G_before)
         e_after = compute_energy_functional(G_after)
     else:
-        e_before = 0.5 * sum(
-            before.phi_s[n] ** 2 + before.grad_phi[n] ** 2
-            + before.k_phi[n] ** 2
-            + before.j_phi[n] ** 2 + before.j_dnfr[n] ** 2
-            for n in before.phi_s
-        )
-        e_after = 0.5 * sum(
-            after.phi_s[n] ** 2 + after.grad_phi[n] ** 2
-            + after.k_phi[n] ** 2
-            + after.j_phi[n] ** 2 + after.j_dnfr[n] ** 2
-            for n in after.phi_s
-        )
+        e_before = _energy_from_snapshot(before)
+        e_after = _energy_from_snapshot(after)
     delta_e = e_after - e_before
 
     # Classify charge character
@@ -1033,18 +1039,8 @@ def compute_lyapunov_derivative(
     -------
     LyapunovResult
     """
-    e_before = 0.5 * sum(
-        before.phi_s[n] ** 2 + before.grad_phi[n] ** 2
-        + before.k_phi[n] ** 2
-        + before.j_phi[n] ** 2 + before.j_dnfr[n] ** 2
-        for n in before.phi_s
-    )
-    e_after = 0.5 * sum(
-        after.phi_s[n] ** 2 + after.grad_phi[n] ** 2
-        + after.k_phi[n] ** 2
-        + after.j_phi[n] ** 2 + after.j_dnfr[n] ** 2
-        for n in after.phi_s
-    )
+    e_before = _energy_from_snapshot(before)
+    e_after = _energy_from_snapshot(after)
 
     de_dt = (e_after - e_before) / dt
     dissipation = max(0.0, -de_dt)
@@ -1138,23 +1134,8 @@ def compute_spectral_conservation(
     # whose spectrum is that of the canonical TNFR diffusion operator
     # L_rw = I − D⁻¹W (the EPI channel; see ``structural_diffusion``).  This is
     # consistent with the §9.1 normalized divergence (∇·J = L_rw·J).
-    if nx is not None and isinstance(G, nx.Graph):
-        L = nx.normalized_laplacian_matrix(G).toarray().astype(float)
-    else:
-        # Fallback: build the combinatorial Laplacian then symmetric-normalize
-        Lc = np.zeros((n, n))
-        node_idx = {nd: i for i, nd in enumerate(nodes)}
-        for u, v in G.edges():
-            i, j = node_idx[u], node_idx[v]
-            Lc[i, j] -= 1.0
-            Lc[j, i] -= 1.0
-            Lc[i, i] += 1.0
-            Lc[j, j] += 1.0
-        deg = Lc.diagonal().astype(float)
-        with np.errstate(divide="ignore"):
-            d_inv_sqrt = np.where(deg > 0.0, 1.0 / np.sqrt(deg), 0.0)
-        adjacency = np.diag(deg) - Lc
-        L = np.eye(n) - d_inv_sqrt[:, None] * adjacency * d_inv_sqrt[None, :]
+    from .structural_diffusion import symmetric_normalized_laplacian
+    _, L = symmetric_normalized_laplacian(G)
 
     # Eigendecomposition (orthonormal eigenbasis of L_sym)
     eigvals, eigvecs = np.linalg.eigh(L)

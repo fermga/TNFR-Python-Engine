@@ -244,6 +244,7 @@ __all__ = [
     "RandomWalkCertificate",
     "StructuralFlowCertificate",
     "structural_diffusion_operator",
+    "symmetric_normalized_laplacian",
     "structural_field",
     "structural_diffusivity",
     "relaxation_spectrum",
@@ -313,6 +314,51 @@ def structural_diffusion_operator(G: Any) -> tuple[list, Any]:
         lap[i, i] = 1.0
         for m, w in zip(neigh, weights):
             lap[i, index[m]] -= w / deg
+    return nodes, lap
+
+
+def symmetric_normalized_laplacian(
+    G: Any, nodes: list | None = None
+) -> tuple[list, Any]:
+    r"""Return the symmetric normalized Laplacian L_sym = I − D^{-1/2} W D^{-1/2}.
+
+    L_sym shares the spectrum of the canonical diffusion operator
+    L_rw = I − D⁻¹W (:func:`structural_diffusion_operator`) but is symmetric, so
+    it has an orthonormal eigenbasis and real eigenvalues — the canonical choice
+    for the relaxation spectrum (its λ₂ is the structural ``diffusion_gap``).
+    Isolated nodes (degree 0) get a zero row.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    nodes : list, optional
+        Node ordering; defaults to the stable ``list(G.nodes())`` order.
+
+    Returns
+    -------
+    (nodes, L_sym) : tuple[list, np.ndarray]
+        The node ordering and the N×N symmetric normalized Laplacian.
+    """
+    if nodes is None:
+        nodes = _ordered_nodes(G)
+    index = {nd: i for i, nd in enumerate(nodes)}
+    n = len(nodes)
+    deg = np.zeros(n, dtype=float)
+    for node in nodes:
+        deg[index[node]] = sum(
+            float(G[node][m].get("weight", 1.0)) for m in G.neighbors(node)
+        )
+    d_inv_sqrt = np.where(deg > 0.0, 1.0 / np.sqrt(deg), 0.0)
+    lap = np.zeros((n, n), dtype=float)
+    for node in nodes:
+        i = index[node]
+        if deg[i] <= 0.0:
+            continue
+        lap[i, i] = 1.0
+        for m in G.neighbors(node):
+            j = index[m]
+            w = float(G[node][m].get("weight", 1.0))
+            lap[i, j] -= w * d_inv_sqrt[i] * d_inv_sqrt[j]
     return nodes, lap
 
 
