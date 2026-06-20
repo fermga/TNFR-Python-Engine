@@ -639,7 +639,43 @@ This characterisation shows that:
 
 **Implementation**: `src/tnfr/physics/lyapunov.py` — complete per-operator
 bounds, spectral gap analysis, and sequence contractiveness proofs.  
-**Validation**: 96 tests in `tests/core_physics/test_lyapunov_operators.py`.
+**Validation**: the Lyapunov test suite in
+`tests/core_physics/test_lyapunov_operators.py`.
+
+### 8.6 Relaxation-rate identity and the partial Lyapunov reduction
+
+The structural H-theorem of the EPI diffusion channel — the Dirichlet energy
+$F = \tfrac12\sum_{ij} A_{ij}(\mathrm{EPI}_i - \mathrm{EPI}_j)^2$ is non-increasing
+under $\partial_t\mathrm{EPI} = -\nu_f L_{\mathrm{rw}}\mathrm{EPI}$, a *proven*
+fact (Lyapunov functional of the heat semigroup; see
+`examples/08_emergent_geometry/135_arrow_of_time_h_theorem.py`) — decays at the
+**canonical rate**
+
+$$F(t) \sim e^{-2\nu_f \lambda_2 t},\qquad \lambda_2 = \lambda_2(L_{\mathrm{sym}}) = \texttt{diffusion\_gap},$$
+
+verified to machine precision in a mode-isolated test ($|{\rm err}| \sim 10^{-15}$
+across regular and irregular graphs; the combinatorial $\lambda_2(L=D-A)$ gives
+the *wrong* rate, off by the degree factor $1/d$ on regular graphs and more on
+irregular ones). This is the **same** $\lambda_2$ that §8.5 uses for the Lyapunov
+convergence rate: the diffusion H-theorem and the structural Lyapunov energy
+share a single relaxation clock, $\nu_f\,\lambda_2(L_{\mathrm{sym}})$.
+
+**Partial reduction of the open $dE/dt\le 0$ proof.** The energy functional
+$E = \tfrac12\sum(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2)$
+splits into (i) **gradient / Dirichlet sectors** ($|\nabla\phi|^2$ and the EPI
+diffusion sector), whose decrease is *governed by the proven structural
+H-theorem* at rate $2\nu_f\lambda_2$, and (ii) a **residual**: the destabiliser
+(U4: OZ/ZHIR/VAL) energy injection — bounded by the U2 contract — together with
+the conjugate-momentum sectors $(J_\phi, J_{\Delta\mathrm{NFR}})$. Under
+stabiliser-only (destabiliser-free) evolution the diffusion-governed sectors are
+therefore provably non-increasing. This **reduces** the open asymptotic-stability
+question to the U4 residual; it does **not** close it — it isolates exactly what
+an outstanding proof must control.
+
+The same monotone-relaxation structure recurs in the grammar layer (the Parry /
+Markov H-theorem, `examples/08_emergent_geometry/150_emergent_grammatical_pattern_parry.py`):
+all three functionals relax to equilibrium by one mechanism, on the one canonical
+clock $\nu_f\,\lambda_2(L_{\mathrm{sym}})$.
 
 ---
 

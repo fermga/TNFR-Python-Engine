@@ -34,6 +34,7 @@ from tnfr.physics.lyapunov import (
     analyze_spectral_gap,
     analyze_operator_convergence,
 )
+from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
 
 # ---------------------------------------------------------------------------
@@ -456,6 +457,51 @@ class TestSpectralGapAnalysis:
         result = analyze_spectral_gap(G)
         assert result.spectral_gap > 0.0
         assert result.is_connected
+
+
+class TestDiffusionHTheoremRate:
+    """The proven diffusion H-theorem relaxes at the canonical diffusion_gap rate.
+
+    Connects the structural H-theorem (Dirichlet energy of the EPI diffusion
+    channel, example 135) to the conservation/Lyapunov relaxation rate: the
+    canonical relaxation eigenvalue is λ₂(L_sym) = diffusion_gap (the Fiedler
+    eigenvalue of L_rw), NOT the combinatorial λ₂(L = D − A).  The Dirichlet
+    energy decays at 2·νf·diffusion_gap.  See STRUCTURAL_CONSERVATION_THEOREM §8.6.
+    """
+
+    def test_diffusion_gap_is_the_h_theorem_relaxation_rate(self):
+        G = nx.barabasi_albert_graph(30, 2, seed=3)  # irregular: the gaps differ
+        inject_defaults(G)
+        nodes, L_rw = structural_diffusion_operator(G)
+        L_rw = np.asarray(L_rw, dtype=float)
+        A = nx.to_numpy_array(G, nodelist=nodes)
+        deg = A.sum(1)
+        L_comb = np.diag(deg) - A
+        L_sym = nx.normalized_laplacian_matrix(G, nodelist=nodes).toarray()
+        vals, vecs = np.linalg.eigh(L_sym)
+        order = np.argsort(vals)
+        lam2 = float(vals[order[1]])
+        d_inv_sqrt = np.where(deg > 0, 1.0 / np.sqrt(deg), 0.0)
+        v2 = d_inv_sqrt * vecs[:, order[1]]  # L_rw eigenvector for λ₂
+
+        sg = analyze_spectral_gap(G)
+        # diffusion_gap == λ₂(L_sym), the canonical relaxation eigenvalue
+        assert abs(sg.diffusion_gap - lam2) < 1e-9
+        # it is the Fiedler eigenvalue of the canonical operator L_rw itself
+        assert (
+            np.linalg.norm(L_rw @ v2 - sg.diffusion_gap * v2)
+            < 1e-9 * np.linalg.norm(v2)
+        )
+        # and NOT the combinatorial gap on this irregular graph
+        assert abs(sg.diffusion_gap - sg.spectral_gap) > 1e-3
+
+        # the diffusion H-theorem's Dirichlet energy decays at 2·νf·diffusion_gap:
+        # one explicit Euler step of ∂EPI/∂t = −νf·L_rw·EPI on the λ₂ mode
+        vf, dt = 0.7, 0.02
+        f0 = float(v2 @ L_comb @ v2)
+        epi_dt = v2 - dt * vf * (L_rw @ v2)
+        f_dt = float(epi_dt @ L_comb @ epi_dt)
+        assert abs(f_dt / f0 - (1.0 - dt * vf * sg.diffusion_gap) ** 2) < 1e-9
 
 
 # ===========================================================================
