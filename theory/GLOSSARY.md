@@ -1,15 +1,38 @@
 # TNFR Glossary
 
-**Purpose**: Operational quick reference for the Resonant Fractal Nature Theory (TNFR) v0.0.3  
-**Status**: Complete reference for current implementation  
-**Version**: March 2026  
-**Authority**: Aligned with [AGENTS.md](../AGENTS.md) as single source of truth  
+**Purpose**: Operational quick reference for the Resonant Fractal Nature Theory (TNFR)  
+**Status**: Canonical reference, aligned with the current engine and TNFR.pdf  
+**Version**: 0.0.3.4 (June 2026)  
+**Authority**: [AGENTS.md](../AGENTS.md) is the single source of truth; this glossary mirrors it API-first  
 
-**Scope**: This glossary provides **API-focused definitions** for developers implementing TNFR networks. For complete theoretical foundations, see [AGENTS.md](../AGENTS.md) and [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
+**Scope**: API-focused definitions for developers implementing TNFR networks — the
+nodal equation, the structural triad and the **fractal-resonant node (NFR)**, the
+structural-field tetrad, the 13 operators and the unified grammar (U1–U6). For full
+derivations see [AGENTS.md](../AGENTS.md), [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md)
+and [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
 
 ---
 
 ## Core Variables
+
+### Fractal-Resonant Node (NFR)
+
+**What:** **Nodo Fractal Resonante** — a *region of structural coherence coupled to a
+network* (TNFR.pdf §1.4.1), the fundamental entity of TNFR. The structural triad
+(EPI, νf, φ) **defines** it; it is read out as a whole by `Network.nfr()`.  
+**Properties:** **multiscalar** (an NFR can nest other NFRs — operational fractality),
+**autopoietic** (emerges by local reorganization, no external support), **relational**
+(exists only by coupling) and **temporal** (persists while it reorganizes its coherence).  
+**Nodal topology:** **radial** (one central nucleus), **annular** (passive center,
+peripheral ring) or **multinodal** (several centers), classified from the
+structural-potential geometry by `classify_nodal_topology(G)`.  
+**Equilibrium:** `ΔNFR = 0` is **not** an NFR but its **resonant-coherence attractor**
+(`C → 1`); under canonical relaxation the EPI channel diffuses to a uniform field, so a
+fully relaxed network is one uniform NFR. Scale-relative: a single node is a micro-NFR,
+a coherent region a macro-NFR.  
+**API:** `tnfr.physics.fields.classify_nodal_topology`, `tnfr.sdk.simple.Network.nfr`,
+`tnfr.structural.create_nfr`  
+**Theory:** [AGENTS.md §2 (The fractal-resonant node)](../AGENTS.md), TNFR.pdf §1.4.1
 
 ### Primary Information Structure (EPI)
 
@@ -35,10 +58,12 @@
 
 **Code:** `G.nodes[n]['dnfr']`, `ALIAS_DNFR`  
 **Symbol:** \(\Delta\text{NFR}\)  
-**What:** Structural evolution gradient (drives reorganization)  
-**Sign:** Positive = expansion, Negative = contraction  
-**Compute:** Via `default_compute_delta_nfr` hook, automatic in `step()`  
-**Math:** [FUNDAMENTAL_THEORY.md §2.1 (Nodal Equation)](FUNDAMENTAL_THEORY.md)
+**What:** Structural reorganization **pressure** — the gradient driving evolution.  
+**Four gradient channels:** \(\Delta\text{NFR} = w_\phi\,\partial\phi + w_E\,\partial\text{EPI} + w_{\nu}\,\partial\nu_f + w_\tau\,\partial\text{topo}\) (phase desync, EPI gradient, νf gradient, topology). Canonical default weights `DNFR_WEIGHTS = {phase ≈ 0.737, epi ≈ 0.155, vf ≈ 0.090, topo = 0.0}` in [config/defaults_core.py](../src/tnfr/config/defaults_core.py); normalized and applied by `_configure_dnfr_weights` in [dynamics/dnfr.py](../src/tnfr/dynamics/dnfr.py).  
+**EPI channel = graph diffusion (KEY):** the EPI channel is exactly the random-walk graph Laplacian, \(\Delta\text{NFR}_\text{epi}(i) = \overline{\text{EPI}}_{\mathcal{N}(i)} - \text{EPI}(i) = -(L_\text{rw}\,\text{EPI})(i)\), so \(\partial\text{EPI}/\partial t = -\nu_f L_\text{rw}\,\text{EPI}\) is the **discrete diffusion (heat) equation** with diffusivity νf — eigenmode decay \(e^{-\nu_f \lambda_k t}\), conserved degree-weighted total, equilibrium ⟺ uniform field.  
+**Sign:** positive = expansion, negative = contraction.  
+**Compute:** `default_compute_delta_nfr` hook, automatic in `step()`.  
+**Math:** [FUNDAMENTAL_THEORY.md §2.1](FUNDAMENTAL_THEORY.md), [AGENTS.md §2 (Transport content)](../AGENTS.md), [src/tnfr/physics/structural_diffusion.py](../src/tnfr/physics/structural_diffusion.py)
 
 ### Phase (φ, θ)
 
@@ -52,12 +77,21 @@
 
 ### Total Coherence (C(t))
 
-**Code:** `compute_coherence(G)` → float ∈ [0,1]  
+**Code:** `compute_coherence(G)` → float ∈ [0,1]; per-node kernel `structural_coherence(dnfr, depi)`  
 **Symbol:** \(C(t)\)  
 **Formula:** \(C(t) = 1/(1 + \overline{|\Delta\text{NFR}|} + \overline{|d\text{EPI}|})\) (canonical; derived from the nodal equation — equilibrium \(\Delta\text{NFR}\to 0 \wedge d\text{EPI}\to 0 \Rightarrow C\to 1\))  
 **Range:** \([0, 1]\) where 1 = perfect coherence, 0 = total fragmentation  
-**What:** Global network stability measure (primary canonical metric, recorded in `history['C_steps']`)  
-**Math:** [FUNDAMENTAL_THEORY.md §5.1 (Total Coherence)](FUNDAMENTAL_THEORY.md)
+**What:** Global stability measure (recorded in `history['C_steps']`). **Dual status:** beyond a telemetry read-out, its per-node kernel `structural_coherence` (= \(1/(1+|\Delta\text{NFR}|+|d\text{EPI}|)\)) is the **single constitutive coherence map** every domain reads (graph, arithmetic, chemical) — an NFR *is* a region of structural coherence, so \(C\) measures the coherence that **defines** NFR-hood. `compute_coherence` delegates to this kernel.  
+**Thresholds:** strong \(C > 0.7506\); fragmentation risk \(C < 0.2415\) (heuristic telemetry cuts, not derived).  
+**Code:** [src/tnfr/metrics/common.py](../src/tnfr/metrics/common.py) (`compute_coherence`, `structural_coherence`)  
+**Math:** [FUNDAMENTAL_THEORY.md §5.1](FUNDAMENTAL_THEORY.md), [AGENTS.md §7](../AGENTS.md)
+
+### Structural Equilibrium (ΔNFR = 0)
+
+**Code:** `is_structural_equilibrium(dnfr, depi=0, *, eps_dnfr, eps_depi)` → bool  
+**What:** The canonical **fixed-point predicate** of the nodal equation: a node sits at the resonant-coherence attractor when \(|\Delta\text{NFR}| \le\) `eps_dnfr` **and** \(|d\text{EPI}| \le\) `eps_depi` (default `EPS_DNFR_STABLE = 1e-3`). This is the ONE deep invariant recurring fractally across TNFR: a relaxed graph node, a structural prime (\(\Delta\text{NFR}_\text{arith} = 0\)) and a noble-gas element (\(\Delta\text{NFR}_\text{chem} = 0\)) are the *same* fixed point under a domain-specific ΔNFR. The tolerance is a per-domain numerical scale (1e-12 for exact integer arithmetic), not a different logic.  
+**Code:** [src/tnfr/metrics/common.py](../src/tnfr/metrics/common.py) (`is_structural_equilibrium`)  
+**Theory:** [AGENTS.md §2, §7](../AGENTS.md)
 
 ### Coherence Operator (Ĉ)
 
@@ -74,7 +108,7 @@
 **Symbol:** \(\text{Si}\) (global) or \(S_i\) (node i)  
 **Formula:** \(\text{Si} = \alpha \cdot \nu_{f,\text{norm}} + \beta \cdot (1 - \text{disp}_\theta) + \gamma \cdot (1 - |\Delta\text{NFR}|_{\text{norm}})\)  
 **Range:** \([0, 1^+]\) typically, higher = more stable reorganization  
-**What:** Capacity for stable structural reorganization  
+**What:** Reorganization-capacity predictor. Unlike `C(t)`, Si is a **heuristic composite** (weighted νf, phase sync, \(|\Delta\text{NFR}|\)) — predictive/diagnostic, **not** constitutive of NFR-hood. `Si > 0.8` excellent; `Si < 0.4` bifurcation-prone.  
 **Weights:** canonical defaults \(\alpha = \varphi/(\varphi+\gamma) \approx 0.737\), \(\beta = \gamma/(\pi+\gamma) \approx 0.155\), \(\gamma_w = \gamma/(\varphi\pi) \approx 0.114\) (`SI_WEIGHTS` in `config/defaults_core.py`; sum \(\approx 1\))  
 **Math:** [Mathematical Foundations - Metrics](MATHEMATICAL_DYNAMICS_BASIS.md)
 
@@ -172,6 +206,55 @@
 
 ---
 
+## Structural Diffusion & Spectral Parameters
+
+The EPI channel of ΔNFR makes the nodal equation a **graph diffusion**, so the dynamics
+are governed by the spectrum of the graph Laplacian. These are the factors that set
+*how fast* a network relaxes and *toward what* pattern.
+
+| Factor | Symbol | Meaning | API |
+| --- | --- | --- | --- |
+| Diffusivity | νf | reorganization rate / mobility (Hz_str) | `structural_diffusivity(G)` |
+| Spectral gap (Fiedler value) | λ₂ | smallest non-zero Laplacian eigenvalue; sets the **slowest** relaxation and the synchronization tendency | `relaxation_spectrum(G)` |
+| Relaxation rate | r_k = νf·λ_k | decay rate of eigenmode k (amplitude ∝ e^{−r_k t}) | `relaxation_spectrum(G)` |
+| Critical rate | r_c = νf·λ₂ | spectral form of grammar U2: below r_c only the uniform mode survives; above it the Fiedler mode grows → fragmentation | — |
+| Coherence length | ξ_C | correlation range, ξ_C ∝ 1/√λ₂ | `estimate_coherence_length(G)` |
+| Fiedler partition | — | the first *structural* pattern to emerge (the network's natural 2-cut) | `fiedler_partition(G)` |
+| Structural rank | — | number of distinct relaxation frequencies | `structural_frequency_rank(G)` |
+| Conserved EPI total | Σ deg·EPI | the EPI-channel invariant (L_rw left-null vector = degree vector) | `degree_weighted_total(G)` |
+
+- **λ₁ = 0** is the conserved uniform mode; the **degree-weighted total Σ deg·EPI is
+  invariant** (`degree_weighted_total`). This EPI-channel conservation is **distinct** from
+  the tetrad Noether charge Q = Σ(Φ_s + K_φ) (`compute_noether_charge`) — TNFR carries
+  **two** conservation laws (EPI field vs tetrad fields).
+- A fully relaxed network is **one uniform NFR**; differentiated nodal topology
+  (radial/annular/multinodal) lives off-equilibrium.
+- **API:** [src/tnfr/physics/structural_diffusion.py](../src/tnfr/physics/structural_diffusion.py), [src/tnfr/physics/conservation.py](../src/tnfr/physics/conservation.py).
+
+---
+
+## Key Parameters & Factors
+
+The quantities that govern TNFR dynamics, with their canonical status.
+
+| Parameter | Symbol | Default / value | Role | Status |
+| --- | --- | --- | --- | --- |
+| Structural frequency | νf | ℝ⁺ (Hz_str) | reorganization capacity = diffusivity/**mobility**; νf→0 inactivates | state |
+| Reorganization pressure | ΔNFR | ℝ | drive (4 channels); ΔNFR=0 = equilibrium | state |
+| Phase | φ, θ | [0, 2π) | synchronization | state |
+| Phase-coupling tolerance | Δφ_max | π/2 ≈ 1.5708 rad (90°) | U3 admissible coupling \|φᵢ−φⱼ\| ≤ Δφ_max | derived bound |
+| Mutation threshold | ξ | ZHIR_THRESHOLD_XI = 0.1 | ZHIR transforms θ when dEPI/dt > ξ (bifurcation) | heuristic |
+| Equilibrium tolerance | eps_dnfr / eps_depi | EPS_DNFR_STABLE = 1e-3 | `is_structural_equilibrium` cut (1e-12 for exact arithmetic) | numerical scale |
+| Spectral gap | λ₂ | graph-dependent | slowest relaxation; ξ_C ∝ 1/√λ₂; r_c = νf·λ₂ | structural |
+| Phase scale | π | exact | the **one genuine structural constant**: bounds \|∇φ\| and \|K_φ\| | genuine |
+| Overlay constants | φ, γ, e | notational | label parameters; the thresholds they name are empirical/heuristic, not derived | notational |
+
+**Only π is a genuine structural constant** (the phase-wrap bound). φ, γ, e are notational
+overlays — the thresholds they label (φ≈1.618 for ΔΦ_s, γ/π≈0.184 heuristic early-warning
+for |∇φ|) are empirical/heuristic, **not** derived from the nodal equation.
+
+---
+
 ## Structural Operators
 
 The 13 canonical operators are the **only way** to modify nodes in TNFR. They're not arbitrary functions—they're **resonant transformations** with rigorous physics.
@@ -264,6 +347,16 @@ run_sequence(G, node_id, [Emission(), Coherence(), Resonance()])
 # Evolution step
 from tnfr.dynamics import step
 step(G, use_Si=True, apply_glyphs=True)
+
+# Canonical fixed point (per-node kernel + equilibrium predicate)
+from tnfr.metrics.common import structural_coherence, is_structural_equilibrium
+C_node = structural_coherence(G.nodes[node_id]['dnfr'])
+at_equilibrium = is_structural_equilibrium(G.nodes[node_id]['dnfr'])
+
+# Whole-NFR read-out (region) + nodal topology (radial/annular/multinodal)
+from tnfr.sdk import TNFR
+net = TNFR.create(20).ring().evolve(5)
+nfr = net.nfr()  # topology, centers, coherence, equilibrium_fraction, coherence_length
 ```
 
 ---
@@ -283,14 +376,25 @@ Expose in telemetry:
 
 ---
 
-## Domain Neutrality
+## Domain Neutrality & the Two-Layer Ontology
 
-TNFR is designed to be **domain-neutral**:
-- Applicable across multiple domains (network science, number theory, chemistry applications)
-- No built-in assumptions about specific domains
-- Structural operators apply to graph-coupled networks
+TNFR is **domain-neutral**: the structural operators apply to any graph-coupled network,
+with no built-in domain assumptions. Across domains the *same* nodal-equation fixed
+point `ΔNFR = 0` is read out on two layers:
 
-**Guideline:** Avoid domain-specific hard-coding in core engine
+- **Physical layer — particles** (genuine *direct* emergence): the integer winding
+  `W ∈ ℤ` is a topological invariant of the phase field (nothing imposed).
+- **Symbolic / informational layer — numbers, chemistry** (a *projection* of the same
+  fixed point): a structural prime is `ΔNFR_arith = 0` and a noble gas is
+  `ΔNFR_chem = 0`, but these **consume** their domain data (divisibility τ/σ/ω, the
+  aufbau order) — the informational shadow of the structural grammar, not a direct
+  topological emergence.
+
+Only the equilibrium criterion (`is_structural_equilibrium`) and the coherence kernel
+(`structural_coherence`) are shared; each domain realizes its own ΔNFR.
+
+**Guideline:** avoid domain-specific hard-coding in the core engine; be honest about
+emerge-vs-consume per layer.
 
 ---
 
@@ -324,7 +428,7 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 | **U1** | STRUCTURAL INITIATION & CLOSURE | ∂EPI/∂t undefined at EPI=0 | Start with generator {AL, NAV, REMESH}, End with closure {SHA, NAV, REMESH, OZ} | ABSOLUTE |
 | **U2** | CONVERGENCE & BOUNDEDNESS | ∫νf·ΔNFR dt must converge | If destabilizer {OZ, ZHIR, VAL}, then include stabilizer {IL, THOL} | ABSOLUTE |
 | **U3** | RESONANT COUPLING | Phase compatibility required for resonance | If coupling {UM, RA}, verify \|φᵢ - φⱼ\| ≤ Δφ_max | ABSOLUTE |
-| **U4** | BIFURCATION DYNAMICS | ∂²EPI/∂t² > τ requires control | Triggers {OZ, ZHIR} need handlers {THOL, IL}; Transformers need context | STRONG |
+| **U4** | BIFURCATION DYNAMICS | ZHIR mutates θ when dEPI/dt > ξ; bifurcations need control | Triggers {OZ, ZHIR} need handlers {THOL, IL}; Transformers need a recent destabilizer (ZHIR also a prior IL) | STRONG |
 | **U5** | MULTI-SCALE COHERENCE | Hierarchical coupling + chain rule | Nested EPIs require stabilizers {IL, THOL} at each level | ABSOLUTE |
 | **U6** | STRUCTURAL POTENTIAL CONFINEMENT | Emergent Φ_s field: Φ_s(i) = Σ ΔNFR_j/d(i,j)² | Monitor Δ Φ_s < φ ≈ 1.618 (canonical confinement); ceiling 2.0 | STRONG |
 
@@ -443,13 +547,41 @@ The engine uses four mathematical constants (φ, γ, π, e) as notational labels
 
 ---
 
+### Flux Fields & the Emergent Symplectic Substrate
+
+The tetrad has two **conjugate flux fields** that complete it into a symplectic structure
+(the field hexad). They are the *currents* paired with the static fields.
+
+- **Phase current J_φ** — geometric, phase-driven transport; conjugate to curvature K_φ.
+  Compute: `compute_phase_current(G)`.
+- **ΔNFR flux J_ΔNFR** — potential-driven reorganization transport; conjugate to the
+  potential Φ_s. Compute: `compute_dnfr_flux(G)`.
+- **API:** `tnfr.physics.extended` (`compute_phase_current`, `compute_dnfr_flux`).
+
+**Emergent symplectic substrate.** The dynamics generate a symplectic phase space
+\\(\\mathbb{R}^{4N}\\) with two canonical conjugate pairs per node — **geometric**
+\\((K_\\phi, J_\\phi)\\) and **potential** \\((\\Phi_s, J_{\\Delta\\text{NFR}})\\) — with brackets
+\\(\\{K_\\phi, J_\\phi\\} = \\{\\Phi_s, J_{\\Delta\\text{NFR}}\\} = 1\\) and Hamiltonian
+\\(H_\\text{sub} = \\tfrac{1}{2}\\sum(K_\\phi^2 + J_\\phi^2 + \\Phi_s^2 + J_{\\Delta\\text{NFR}}^2)\\).
+The flow is a **symplectomorphism** (Liouville: phase volume preserved), so the 13
+operators are canonical volume-preserving transforms. The complex coordinate
+\\(\\Psi = K_\\phi + i\\,J_\\phi\\) carries a **U(1)** gauge symmetry; the substrate further
+carries a **U(2)** polarization symmetry (per-node Poincaré sphere, classical Stokes
+texture — **not** a quantum state). The nodal equation is the **overdamped projection**
+of this Hamiltonian flow.
+
+**API:** `tnfr.physics.symplectic_substrate`, `Network.symplectic_substrate()`.  
+**Documentation:** [AGENTS.md §4 (Emergent geometry)](../AGENTS.md), [src/tnfr/physics/symplectic_substrate.py](../src/tnfr/physics/symplectic_substrate.py)
+
+---
+
 ### Bifurcation Trigger
 
 Operators that may trigger phase transitions.
 
 **Set:** BIFURCATION_TRIGGERS = {dissonance, mutation}
 
-**Physics:** Can cause ∂²EPI/∂t² > τ (bifurcation)
+**Physics:** ZHIR (Mutation) is the canonical bifurcation operator — it transforms θ when the structural change rate crosses the mutation threshold, `dEPI/dt > ξ`.
 
 **Grammar Rule:** U4a (requires handlers)
 
@@ -535,7 +667,14 @@ Operators that perform graduated destabilization for phase transitions.
 
 ## Molecular Chemistry from TNFR
 
-**Technical approach**: Chemistry modeled via TNFR nodal dynamics applied to atomic-scale graph networks.
+**Technical approach:** chemistry on atomic-scale graph networks — the **symbolic-layer**
+read-out of the nodal fixed point. A **closed shell** is `ΔNFR_chem(Z) = 0`
+(`is_structural_equilibrium`), the chemical mirror of the primality criterion; the
+**magic numbers** (noble-gas Z) combine genuinely-emergent subshell capacities `2l+1`
+(manifold eigenmode degeneracies) with an *assumed* `(n+l)` aufbau order. See
+[src/tnfr/physics/emergent_chemistry.py](../src/tnfr/physics/emergent_chemistry.py)
+(`classify_element`, `emergent_magic_numbers`) and the SDK `TNFR.element(Z)` /
+`TNFR.magic_numbers()`.
 
 ### Element Signatures
 
@@ -575,8 +714,7 @@ Operators that perform graduated destabilization for phase transitions.
 **Prediction:** Stable configurations minimize reorganization pressure  
 **API:** Network topology analysis after coupling sequences  
 
-**Complete Theory:** [MOLECULAR_CHEMISTRY_FROM_NODAL_DYNAMICS.md](../examples/07_number_theory/emergent_chemistry_particles_demo.py)  
-**Implementation:** [Physics README § 9-10](../src/tnfr/physics/README.md)
+**Implementation:** [src/tnfr/physics/emergent_chemistry.py](../src/tnfr/physics/emergent_chemistry.py), [src/tnfr/physics/signatures.py](../src/tnfr/physics/signatures.py)
 
 ## Self-Optimizing Engine
 
@@ -631,13 +769,18 @@ Operators that perform graduated destabilization for phase transitions.
 Six experimentally validated results connecting canonical operators to the structural field tetrad.
 Reference: [STRUCTURAL_OPERATORS.md §17](STRUCTURAL_OPERATORS.md), examples 37-39.
 
-### Dual-Lever Structure
+### Dual-Lever Structure (channel partition)
 
-**What:** Operators modify the nodal equation through exactly one of two channels (or both, or neither):
-- **Capacity lever** (vf): UM, SHA, VAL, NUL adjust the reorganization rate.
-- **Pressure lever** (DNFR): IL, OZ, THOL, ZHIR, NAV adjust the structural pressure.
-- **Neutral**: AL, EN, RA, REMESH do not directly modify either lever at the single-node level.
-**Evidence:** Classification from `examples/02_physics_regimes/39_nodal_equation_decomposition.py`.
+**What:** Each operator's primary effect lands on exactly **one nodal channel** — the
+partition is simultaneously the dual-lever (capacity νf vs pressure ΔNFR), the tetrad
+driver and the number-theory grading (AGENTS.md §5):
+- **νf (capacity):** Silence (SHA), Expansion (VAL), Contraction (NUL).
+- **ΔNFR (pressure):** Coherence (IL), Dissonance (OZ), Self-organization (THOL), Transition (NAV).
+- **θ (phase):** Coupling (UM), Mutation (ZHIR).
+- **EPI (written directly):** Emission (AL), Reception (EN), Resonance (RA), Recursivity (REMESH).
+
+**Source of truth:** [src/tnfr/operators/operator_contracts.py](../src/tnfr/operators/operator_contracts.py).
+**Evidence:** `examples/02_physics_regimes/39_nodal_equation_decomposition.py`.
 
 ### Operator-Tetrad Fingerprint Matrix
 
@@ -726,29 +869,38 @@ Tetrad fields are diagnostic outputs, not independent dynamical variables. They 
 
 ---
 
-## Classical-Quantum Regime Emergence
+## Regime Correspondences
 
-**Theory:** Classical and quantum mechanics emerge as different structural regimes of nodal dynamics, not distinct sets of laws.
+**Theory:** The single nodal dynamics produces two empirically-anchored regimes. The
+external labels "classical"/"quantum-like" are comparisons only, not TNFR primitives.
 
-### Classical Limit (High Coherence)
+### Smooth-Trajectory / Overdamped-Drift Regime (High Coherence)
 **Condition:** C(t) → 1, |∇φ| → 0  
-**Correspondence:** m = 1/νf (mass ↔ inverse frequency), F = ΔNFR (force ↔ structural pressure)  
-**API:** `tnfr.physics.classical_mechanics`
+**Correspondence:** first order in time, `q̇ = νf·F` — drift velocity ∝ force, so **νf is
+mobility** (Stokes/Einstein), **not** inverse mass; `F = ΔNFR` (force ↔ structural
+pressure). The inertial (second-order) regime lives in the conservative symplectic
+substrate, not here.  
+**API:** `tnfr.physics.structural_diffusion`, `tnfr.physics.classical_mechanics`
 
-### Quantum Regime (High Dissonance)
+### Discrete-Mode Regime (High Dissonance)
 **Condition:** |∇φ| ~ π, near phase singularities  
-**Emergent:** Discrete states (resonant eigenmodes), uncertainty (Fourier ΔEPi·Δνf ≥ K), superposition  
-**API:** `tnfr.physics.quantum_mechanics`
+**Emergent:** on a bounded graph the diffusion operator has a discrete spectrum of
+orthonormal standing-wave eigenmodes (vibrating-string / Chladni analogue), with
+nodal-domain ordering (Courant); uncertainty (Fourier ΔEPI·Δνf ≥ K), superposition.  
+**API:** `tnfr.physics.structural_diffusion`, `tnfr.physics.quantum_mechanics`
 
 ---
 
 ## TNFR-Riemann Program
 
-**What:** Theoretical framework connecting discrete TNFR operators to the Riemann Hypothesis through structural coherence.  
+**What:** A structural attack surface relating discrete TNFR operators to the Riemann
+zeta function. **Not a proof of RH** — the bridge is the open conjecture **T-HP** (gap G4).  
 **Core Operator:** H^(k)(σ) = L_k + V_σ where L_k = graph Laplacian, V_σ = diagonal potential  
-**Discovery:** Critical parameter σ_c^(k) → 1/2 as k → ∞  
-**Convergence:** σ_c^(k) = 1/2 + O(log⁻¹ k) (universal across topologies)  
-**Implementation:** `src/tnfr/riemann/` — 14 modules (operator, spectral_proof, complex_extension, spectral_zeta, topology, spectral_conservation, analytical_convergence, etc.)  
+**Numerical result:** the critical parameter σ_c^(k) → 1/2 as k → ∞, verified across
+topologies (`σ_c^(k) = 1/2 + O(log⁻¹ k)`).  
+**Honest scope:** TNFR-internal structural results and numerical evidence; no classical
+open problem is closed.  
+**Implementation:** `src/tnfr/riemann/`  
 **Documentation:** [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md)
 
 ---
@@ -787,6 +939,6 @@ When adding new functionality:
 3. Follow [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines  
 4. Test with [TESTING.md](../TESTING.md) requirements
 
-**Version**: 0.0.3.3 (March 2026)  
-**Status**: Complete operational reference for current TNFR implementation  
+**Version**: 0.0.3.4 (June 2026)  
+**Status**: Canonical operational reference, aligned with the current engine, AGENTS.md and TNFR.pdf  
 **Language**: English only (canonical documentation policy)
