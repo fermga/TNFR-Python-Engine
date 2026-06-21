@@ -83,6 +83,7 @@ Every theory document maps to executable examples and SDK entry points:
 | [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) | Arithmetic TNFR: primality as ΔNFR = 0, canonical constants, pressure components, dual-lever decomposition, spectral factorization, Riemann connection |
 | [NUCLEUS_A_PRIME_LADDER_ATLAS.md](NUCLEUS_A_PRIME_LADDER_ATLAS.md) | Canonical prime-ladder construction atlas: P12–P15 pipeline, self-adjoint Hamiltonian, Weil–Guinand verification |
 | [NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md) | Equivariance obstructions on G_P14: CCET, Prime-Cancellation Lemma, Euler-Orthogonality Lemma, B1 closure |
+| [EMERGENT_ONTOLOGY.md](EMERGENT_ONTOLOGY.md) | *Exploratory draft* — catalog of structures the one nodal equation manifests across scales (diffusive face → emergent thermodynamics; conservative face → relativistic structure; shared geometry, synchronization, charge/gauge), each entry labelled POSITED / DERIVED / ANALOGY / OPEN CONJECTURE |
 
 ### Millennium Problem Programs (TNFR-native reformulations)
 

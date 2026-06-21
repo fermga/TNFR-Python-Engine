@@ -44,6 +44,16 @@ not a source of novel empirical predictions. Pre-registered tests
 where a distinctive TNFR construct out-predicts standard methods on an established problem. The
 value here is *one vocabulary for many structures*, not *better forecasts*.
 
+**Scope axis (read second).** This document catalogs emergence *within* the graph dynamics
+— the physical/structural manifestations (geometry, thermodynamics, relativistic structure,
+gauge) of the one nodal equation. That is **one axis** of the emergent ontology. The
+orthogonal **cross-domain** axis — how the *same* fixed point `ΔNFR = 0` is read out across
+domains as a **spectrum of emergence** (particle winding *directly*; the number-theory
+spectral sector *genuinely* but partially; the arithmetic `ΔNFR` a *circular* re-expression
+that consumes divisibility; chemistry *mixed*) — is the three-sector trichotomy of
+[TNFR_NUMBER_THEORY.md §9.5](TNFR_NUMBER_THEORY.md) and the two-layer ontology of
+[GLOSSARY.md](GLOSSARY.md). Together: one fixed point, many read-outs.
+
 ---
 
 ## 1. First principles

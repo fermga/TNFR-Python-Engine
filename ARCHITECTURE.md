@@ -27,7 +27,7 @@ TNFR Engine features a mature, production-grade architecture with mathematical p
 
 ```
 src/tnfr/                          # ~346 files, ~104k LOC
-├── constants/canonical.py          # 497+ Universal constants (φ,γ,π,e derivations)
+├── constants/canonical.py          # 497+ notational constants (φ,γ,π,e combinations; only π genuine)
 ├── operators/                      # 13 Canonical operators + U1-U6 grammar
 │   ├── grammar.py                  # Unified grammar validation
 │   ├── grammar_dynamics.py         # Grammar-aware dynamic selection
