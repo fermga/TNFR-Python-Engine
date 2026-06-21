@@ -113,18 +113,18 @@ spectral form of U2. See [src/tnfr/physics/structural_diffusion.py](src/tnfr/phy
 
 ## 3. The structural tetrad
 
-Four structural fields characterize any coherent system on a graph (the minimal
-derivative tower — minimality is DERIVED). Each field is *associated* with a
-mathematical constant `(φ, γ, π, e)` as a notational label; of these, only **π**
-is a genuine structural scale (the phase-wrap bound of the phase sector). The
-characteristic scale of each field is given below.
+Four structural fields characterize any coherent system on a graph — the four
+orders of the discrete derivative tower (minimality is DERIVED). They are the
+canonical state read-out of a network; their characteristic scales are given
+below. The one genuine structural constant is **π**, which scales the phase
+sector (it bounds both `|∇φ|` and `K_φ`).
 
-| Constant | Value | Structural field | Symbol | Role |
-|----------|-------|------------------|--------|------|
-| **φ** golden ratio | 1.618… | Structural potential | Φ_s | Global stability (0th order, aggregation) |
-| **γ** Euler–Mascheroni | 0.577… | Phase gradient | \|∇φ\| | Local desync stress (1st order) |
-| **π** pi | 3.141… | Phase curvature | K_φ | Geometric torsion (2nd order) |
-| **e** Napier | 2.718… | Coherence length | ξ_C | Correlation range (non-local) |
+| Structural field | Symbol | Tower order | Role |
+|------------------|--------|-------------|------|
+| Structural potential | Φ_s | 0th (aggregation) | Global stability |
+| Phase gradient | \|∇φ\| | 1st (local) | Local desynchronization stress |
+| Phase curvature | K_φ | 2nd (local) | Geometric torsion |
+| Coherence length | ξ_C | non-local | Correlation range |
 
 ### Field scales
 
@@ -135,12 +135,12 @@ characteristic scale:
   angles**, so `|∇φ| ≤ π` *and* `|K_φ| ≤ π` for any configuration — π scales the
   whole **phase sector**, not K_φ alone. `|K_φ| < 0.9·π ≈ 2.827` sits at this wrap
   limit (exact, parameter-free).
-- **|∇φ| — phase-wrap bounded.** Its genuine bound is `|∇φ| ≤ π`. The early-warning
-  level `γ/π ≈ 0.1837` is a heuristic, **not** a structural scale: the measured sync
-  onset is `≈ 0.29` and σ-dependent (a dynamical transition value).
+- **|∇φ| — phase-wrap bounded.** Its genuine bound is `|∇φ| ≤ π`. There is no fixed
+  structural constant for the synchronization onset: the measured value is `≈ 0.29`
+  and σ-dependent (a dynamical transition, not a derived threshold).
 - **ξ_C — spectral gap.** The correlation length is set by the **spectral gap**:
-  `ξ_C ∝ 1/√λ₂` (verified). Exponential decay has base `e` tautologically.
-- **Φ_s — empirical confinement.** `Δ Φ_s < φ`, per-node `|Φ_s| < 0.7711`, an
+  `ξ_C ∝ 1/√λ₂` (verified).
+- **Φ_s — empirical confinement.** `Δ Φ_s < 1.618`, per-node `|Φ_s| < 0.7711`, an
   empirically validated source-distribution bound with **no closed form**.
 
 **Structure (verified).** `K_φ` **is** the central operator applied to phase
@@ -316,7 +316,7 @@ derivations [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md).
   prior IL (stable base).
 - **U5 — Multi-scale coherence.** Nested EPIs require stabilizers at each level;
   `C_parent ≥ α · Σ C_child`.
-- **U6 — Structural potential confinement.** Telemetry safety: monitor `Δ Φ_s < φ ≈ 1.618`
+- **U6 — Structural potential confinement.** Telemetry safety: monitor `Δ Φ_s < 1.618`
   (`Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²`). Read-only check, not a sequence constraint.
 
 **Single source of truth.** The operator-classification sets (generators, closures,
@@ -335,16 +335,15 @@ in [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.
 
 - **C(t) — total coherence** `[0,1]`, the primary stability indicator:
   `C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|)`, derived from the nodal equation
-  (equilibrium → `C → 1`). Strong coherence `C > (e·φ)/(π+e) ≈ 0.7506`; fragmentation
-  risk `C < 1/(π+1) ≈ 0.2415`. The two threshold *values* are notational
-  tetrad-constant combinations (not derived from the dynamics, nor fitted to data;
-  treat as heuristic telemetry cuts).
+  (equilibrium → `C → 1`). Strong coherence `C > 0.7506`; fragmentation
+  risk `C < 0.2415`. The two threshold *values* are heuristic telemetry cuts
+  (not derived from the dynamics, nor fitted to data).
 - **Si — sense index** `[0,1+]`, reorganization-capacity predictor: `Si > 0.8`
   excellent; `Si < 0.4` bifurcation-prone.
 - **Tetrad safety** (telemetry; see §3): only `|K_φ| < 0.9·π ≈ 2.827` is a genuine
-  geometric bound (phase wrap). `Δ Φ_s < 1.618` / `|Φ_s| < 0.7711` are empirical; `|∇φ| < 0.1837`
-  is a dynamical transition value (σ-dependent, not a constant); `ξ_C` is set by the spectral
-  gap `λ₂` (`ξ_C ∝ 1/√λ₂`), not by `e`.
+  geometric bound (phase wrap). `Δ Φ_s < 1.618` / `|Φ_s| < 0.7711` are empirical; the `|∇φ|`
+  sync onset is `≈ 0.29` (σ-dependent, not a fixed constant); `ξ_C` is set by the spectral
+  gap `λ₂` (`ξ_C ∝ 1/√λ₂`).
 
 Required telemetry must stay in TNFR-coherent terms (C(t), Si, phase, νf, and the
 tetrad), in Hz_str units. Computation: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py),
