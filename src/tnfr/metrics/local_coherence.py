@@ -5,8 +5,9 @@ based on neighbor |ΔNFR| and |dEPI| means:
 
     C_local ≈ 1 / (1 + mean(|ΔNFR|) + mean(|dEPI/dt|))
 
-It intentionally avoids importing heavier coherence modules to keep
-operator metrics lean and prevent circular dependencies.
+It computes the neighbourhood means then applies the canonical
+:func:`tnfr.metrics.common.structural_coherence` kernel (imported lazily to
+keep operator-metric module load lean and avoid circular dependencies).
 """
 
 from __future__ import annotations
@@ -46,4 +47,6 @@ def compute_local_coherence_fallback(G: Any, node: Any) -> float:
 
     dnfr_mean = sum(dnfr_vals) / len(dnfr_vals) if dnfr_vals else 0.0
     depi_mean = sum(depi_vals) / len(depi_vals) if depi_vals else 0.0
-    return 1.0 / (1.0 + dnfr_mean + depi_mean)
+    from .common import structural_coherence
+
+    return structural_coherence(dnfr_mean, depi_mean)

@@ -307,7 +307,12 @@ def classify_element(
     config = electron_configuration(Z, max_n=max_n)
     v, n_max = _valence_electrons(config)
     dnfr = valence_delta_nfr(Z, max_n=max_n)
-    closed = math.isclose(dnfr, 0.0, abs_tol=1e-12)
+    # Closed shell = the canonical nodal-equation fixed point ΔNFR = 0, read out
+    # on the chemical valence-pressure field -- the same equilibrium criterion
+    # as the structural prime and the relaxed graph node.
+    from ..metrics.common import is_structural_equilibrium
+
+    closed = is_structural_equilibrium(dnfr, eps_dnfr=1e-12)
     magic = Z in emergent_magic_numbers(max_n=max_n)
     label = " ".join(
         f"{n}{_SUBSHELL_LABEL[l]}{o}" for n, l, o in config

@@ -146,6 +146,7 @@ __all__ = [
     # Research-phase utilities
     "path_integrated_gradient",
     "compute_phase_winding",
+    "classify_nodal_topology",
     "compute_k_phi_multiscale_variance",
     "fit_k_phi_asymptotic_alpha",
     "k_phi_multiscale_safety",
@@ -318,6 +319,106 @@ def compute_phase_winding(G: Any, cycle_nodes: list[Any]) -> int:
 
     q = int(round(total / (2.0 * math.pi)))
     return q
+
+
+# Nodal-topology classification thresholds (TNFR.pdf §1.4.1: radial / annular /
+# multinodal). MEASURED and validated on canonical topologies (star, ring,
+# complete, barbell, two-hub, build_element_radial_pattern); these are
+# calibration cuts, NOT physical constants.
+_NFR_TOPOLOGY_ANNULAR_CONC_MAX = 1.10  # max/mean centrality below this = no
+#   distinguished center (ring/complete ~1.00; center-bearing forms >= 1.17).
+_NFR_TOPOLOGY_CENTER_TIER = 0.85       # centrality >= tier*max = a "center"
+#   (radial -> exactly 1 center; multinodal -> >= 2).
+
+
+def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
+    r"""Classify a network's nodal topology: radial / annular / multinodal.
+
+    Per TNFR.pdf §1.4.1, every Fractal-Resonant Node (NFR) is a *region of
+    structural coherence* with an internal **nodal topology**: radial (one
+    central nucleus), annular (passive center, peripheral ring) or multinodal
+    (several connected centers). This reads that topology from the canonical
+    structural-potential geometry -- the Green's function of :math:`\Phi_s`
+    under a *unit* structural source,
+
+    .. math::
+        c(i) = \sum_{j \neq i} \frac{1}{d(i,j)^\alpha}, \qquad \alpha = 2,
+
+    i.e. the same inverse-square kernel as :func:`compute_structural_potential`
+    (grammar U6) but sourced uniformly. It therefore reads the *structural*
+    form of the region and is robust at the :math:`\Delta\mathrm{NFR}=0`
+    equilibrium, where the dynamical :math:`\Phi_s` vanishes (the relaxed
+    network is one uniform NFR).
+
+    The classification is emergent and threshold-light: the concentration
+    ``max(c)/mean(c)`` separates the rotationally-symmetric annular form
+    (:math:`\approx 1`) from center-bearing forms; among the latter, the count
+    of near-maximal centers (``c >= 0.85*max``) is 1 for radial and >= 2 for
+    multinodal. Both cuts are measured/validated on canonical topologies, not
+    physical constants.
+
+    Returns
+    -------
+    dict
+        ``topology`` ("radial"/"annular"/"multinodal"), ``centers`` (center
+        node ids), ``concentration`` (max/mean), ``dispersion`` (coefficient
+        of variation), ``centrality`` (per-node geometric centrality) and
+        ``n_nodes``.
+    """
+    if nx is None:
+        raise RuntimeError(
+            "networkx is required for nodal-topology classification"
+        )
+    nodes = list(G.nodes())
+    n = len(nodes)
+    if n == 0:
+        return {
+            "topology": "annular",
+            "centers": [],
+            "concentration": 0.0,
+            "dispersion": 0.0,
+            "centrality": {},
+            "n_nodes": 0,
+        }
+    lengths = dict(nx.all_pairs_shortest_path_length(G))
+    centrality: dict[Any, float] = {}
+    for i in nodes:
+        s = 0.0
+        for j, d in lengths.get(i, {}).items():
+            if j != i and d > 0:
+                s += 1.0 / (float(d) ** alpha)
+        centrality[i] = s
+    vals = np.asarray([centrality[i] for i in nodes], dtype=float)
+    mean = float(vals.mean())
+    vmax = float(vals.max())
+    if mean <= 0.0:
+        return {
+            "topology": "annular",
+            "centers": [],
+            "concentration": 0.0,
+            "dispersion": 0.0,
+            "centrality": centrality,
+            "n_nodes": n,
+        }
+    conc = vmax / mean
+    cv = float(vals.std()) / mean
+    if conc < _NFR_TOPOLOGY_ANNULAR_CONC_MAX:
+        topology = "annular"
+        centers: list[Any] = []
+    else:
+        centers = [
+            i for i in nodes
+            if centrality[i] >= _NFR_TOPOLOGY_CENTER_TIER * vmax
+        ]
+        topology = "radial" if len(centers) == 1 else "multinodal"
+    return {
+        "topology": topology,
+        "centers": centers,
+        "concentration": conc,
+        "dispersion": cv,
+        "centrality": centrality,
+        "n_nodes": n,
+    }
 
 
 def _ego_mean(values: dict[Any, float], nodes: list) -> float:

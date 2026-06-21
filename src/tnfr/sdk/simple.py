@@ -37,19 +37,93 @@ dynamics, and research-grade telemetry.
 """
 
 from __future__ import annotations
-from typing import Any
+from typing import Any, Callable
 from dataclasses import dataclass, field
+import warnings
 import networkx as nx
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
 
 # TNFR core imports
-from ..structural import create_nfr, run_sequence
+from ..structural import create_nfr
 from ..metrics.coherence import compute_coherence
+from ..metrics.common import is_structural_equilibrium, structural_coherence
 from ..metrics.sense_index import compute_Si
 from ..alias import get_attr, set_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
+from ..constants import DEFAULTS
+from ..constants.canonical import (
+    MIN_BUSINESS_COHERENCE_CANONICAL as COHERENCE_STRONG,
+)
 from ..operators.nodal_equation import compute_expected_depi_dt, compute_d2epi_dt2
+
+# Canonical telemetry marks (AGENTS.md §7) -- heuristic cuts, not fitted:
+#   C(t) > COHERENCE_STRONG ((e*phi)/(pi+e) ~ 0.7506) -> strong coherence
+#   Si   > SENSE_INDEX_EXCELLENT (~0.8)               -> excellent sense index
+SENSE_INDEX_EXCELLENT = 0.8
+
+# Canonical mutation/bifurcation threshold xi. ZHIR (Mutation) is the
+# structural bifurcation operator: it transforms phase when the structural
+# change rate crosses xi (AGENTS.md §5: "ZHIR transforms theta when
+# dEPI/dt > xi"). Mirrors the engine default ZHIR_THRESHOLD_XI.
+_ZHIR_THRESHOLD_XI_DEFAULT = 0.1
+
+# Canonical graph-node equilibrium tolerance (EPS_DNFR_STABLE ~ 1e-3): the same
+# cut the engine's stability tracker uses (metrics/coherence). The per-node
+# micro-NFR equilibrium (nodal_state) and the region macro-NFR equilibrium
+# (Network.nfr) share this single canonical tolerance.
+_EPS_DNFR_STABLE_DEFAULT = float(DEFAULTS["EPS_DNFR_STABLE"])
+
+
+def _run_network_sequence(
+    G: nx.Graph,
+    operator_names: list[str],
+    *,
+    cycles: int = 1,
+    validate: bool = True,
+    suppress_birth_warnings: bool = False,
+    context: dict[str, Any] | None = None,
+    on_step: Callable[[str], None] | None = None,
+) -> None:
+    """Evolve all nodes synchronously (lock-step) by an operator sequence.
+
+    Canonical network-evolution primitive shared by the SDK surfaces. Each
+    operator in *operator_names* is applied to EVERY node before advancing to
+    the next, honouring the temporal simultaneity of the nodal equation
+    dEPI/dt = nu_f * dNFR(t): the coupling operators (Reception, Resonance,
+    Coupling) see neighbours at the same time step. A row-major schedule
+    (whole sequence per node) would fracture coupling symmetry.
+
+    The grammar (U1-U6) is validated once when *validate* is True; every node
+    then receives the same validated trajectory, interleaved across the
+    lock-step. Form (EPI) is created from the structural vacuum by the
+    Emission generator that opens canonical sequences -- never by direct
+    assignment (invariant #1; grammar U1).
+    """
+    from ..operators.registry import get_operator_class
+    from ..validation import validate_sequence
+
+    names = list(operator_names)
+    if not names:
+        return
+    if validate:
+        validate_sequence(names, context=context)
+    ops = [get_operator_class(n)() for n in names]
+    compute = G.graph.get("compute_delta_nfr")
+    nodes = list(G.nodes())
+    with warnings.catch_warnings():
+        if suppress_birth_warnings:
+            warnings.filterwarnings("ignore", message=r".*has no sources.*")
+        for _ in range(cycles):
+            for op in ops:
+                for node in nodes:
+                    G._last_operator_applied = op.name
+                    op(G, node)
+                if callable(compute):
+                    compute(G)
+                if on_step is not None:
+                    on_step(op.name)
+
 
 try:
     # Availability probe for the self-optimization engine (capability flag
@@ -348,6 +422,7 @@ class NodalStateReport:
     epi: float
     nu_f: float
     delta_nfr: float
+    coherence: float
     phase: float
     expected_depi_dt: float
     d2epi_dt2: float
@@ -370,6 +445,7 @@ class NodalStateReport:
             'epi': float(self.epi),
             'nu_f': float(self.nu_f),
             'delta_nfr': float(self.delta_nfr),
+            'coherence': float(self.coherence),
             'phase': float(self.phase),
             'expected_depi_dt': float(self.expected_depi_dt),
             'd2epi_dt2': float(self.d2epi_dt2),
@@ -385,8 +461,8 @@ class NodalDynamicsReport:
     """Global nodal-dynamics report for study and diagnostics."""
 
     nodes: dict[Any, NodalStateReport] = field(default_factory=dict)
-    equilibrium_tolerance: float = 1e-10
-    bifurcation_threshold: float = 0.5
+    equilibrium_tolerance: float = _EPS_DNFR_STABLE_DEFAULT
+    bifurcation_threshold: float = _ZHIR_THRESHOLD_XI_DEFAULT
 
     def summary(self) -> str:
         n = len(self.nodes)
@@ -397,9 +473,10 @@ class NodalDynamicsReport:
         equilibrium = sum(1 for s in values if s.equilibrium)
         bif = sum(1 for s in values if s.near_bifurcation)
         mean_abs_rate = sum(abs(s.expected_depi_dt) for s in values) / n
+        mean_coh = sum(s.coherence for s in values) / n
         return (
             f"NodalDynamics(N={n}, active={active}, equilibrium={equilibrium}, "
-            f"bifurcation={bif}, mean|∂EPI/∂t|={mean_abs_rate:.4g})"
+            f"bifurcation={bif}, C={mean_coh:.3f}, mean|∂EPI/∂t|={mean_abs_rate:.4g})"
         )
 
     def top_pressure_nodes(self, k: int = 5) -> list[NodalStateReport]:
@@ -471,7 +548,10 @@ def _build_factorization_report(
         coherence_alignment = max(0.0, 1.0 - abs(net_coherence - coherence_score))
         nodal_drive = abs(arithmetic_nu_f * delta_nfr)
         drive_score = nodal_drive / (1.0 + nodal_drive)
-        synergy_index = 0.7 * coherence_alignment + 0.3 * drive_score
+        # Equal-weight aggregate of the canonical components (coherence
+        # alignment and the nodal-drive |nu_f * dNFR| score) -- equipartition,
+        # avoiding arbitrary weighting.
+        synergy_index = (coherence_alignment + drive_score) / 2.0
         topology_resonance = [
             int(f) for f in candidate_factors
             if f > 1 and len(network.G.nodes()) % int(f) == 0
@@ -530,7 +610,12 @@ def _build_primality_report(
             prime_resonance = net_si
         else:
             prime_resonance = max(0.0, 1.0 - net_si)
-        synergy_index = 0.5 * coherence_alignment + 0.3 * pressure_score + 0.2 * prime_resonance
+        # Equal-weight aggregate of the canonical components (coherence
+        # alignment, dNFR pressure score, Si-based prime resonance) --
+        # equipartition, avoiding arbitrary weighting.
+        synergy_index = (
+            coherence_alignment + pressure_score + prime_resonance
+        ) / 3.0
         network_synergy = {
             'network_nodes': len(network.G.nodes()),
             'network_coherence': net_coherence,
@@ -595,12 +680,12 @@ class Results:
         return '\n'.join(lines)
 
     def is_coherent(self) -> bool:
-        """Quick coherence check (C > 0.7)."""
-        return self.coherence > 0.7
+        """Quick coherence check (C(t) > strong mark ~0.7506; AGENTS.md §7)."""
+        return self.coherence > COHERENCE_STRONG
 
     def is_stable(self) -> bool:
-        """Quick stability check (Si > 0.8)."""
-        return self.sense_index > 0.8
+        """Quick stability check (Si > excellent mark ~0.8; AGENTS.md §7)."""
+        return self.sense_index > SENSE_INDEX_EXCELLENT
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize results to a plain dictionary."""
@@ -635,41 +720,61 @@ class Network:
     checks for research-grade analysis.
     """
 
-    def __init__(self, graph: nx.Graph, name: str = "network"):
-        """Initialize with a NetworkX graph."""
+    def __init__(self, graph: nx.Graph, name: str = "network", seed: int | None = None):
+        """Initialize with a NetworkX graph.
+
+        Parameters
+        ----------
+        graph : nx.Graph
+            Graph whose nodes carry the canonical TNFR triad (EPI, νf, θ).
+        name : str
+            Network label.
+        seed : int, optional
+            Seed governing the stochastic topology builders (``random``,
+            ``small_world``, ``scale_free``) so identical seeds reproduce
+            identical trajectories (canonical invariant #6).
+        """
         self.G = graph
         self.name = name
+        self._seed = seed
         self._tracker: Any = None  # ConservationTracker (lazy)
         self._monitor: Any = None  # StructuralIntegrityMonitor (lazy)
     
     # === TOPOLOGY BUILDERS ===
     
     def ring(self) -> Network:
-        """🔄 Connect nodes in a ring topology."""
+        """Connect nodes in a ring (each node to its two neighbours)."""
         nodes = list(self.G.nodes())
         edges = [(nodes[i], nodes[(i+1) % len(nodes)]) for i in range(len(nodes))]
         self.G.add_edges_from(edges)
         return self
     
     def complete(self) -> Network:
-        """🌐 Connect all nodes to all other nodes."""
+        """Connect every node to every other node (complete graph)."""
         nodes = list(self.G.nodes())
         for i, u in enumerate(nodes):
             for v in nodes[i+1:]:
                 self.G.add_edge(u, v)
         return self
     
-    def random(self, probability: float = 0.3) -> Network:
-        """🎲 Add random connections with given probability."""
+    def random(self, probability: float = 0.3, seed: int | None = None) -> Network:
+        """Add random edges with given probability (Erdos-Renyi).
+
+        Reproducible when *seed* (or the network seed set at ``create``) is
+        supplied, so identical seeds reproduce identical topologies
+        (canonical invariant #6).
+        """
+        s = seed if seed is not None else self._seed
+        rng = np.random.RandomState(s)
         nodes = list(self.G.nodes())
         for i, u in enumerate(nodes):
             for v in nodes[i+1:]:
-                if np.random.random() < probability:
+                if rng.random_sample() < probability:
                     self.G.add_edge(u, v)
         return self
     
     def star(self, center: int | None = None) -> Network:
-        """⭐ Create star topology with optional center node."""
+        """Connect every node to a single central hub (star topology)."""
         nodes = list(self.G.nodes())
         if center is None:
             center = nodes[0]
@@ -739,28 +844,72 @@ class Network:
     # === EVOLUTION ===
     
     def evolve(self, steps: int = 5, sequence: str = "basic_activation") -> Network:
-        """🧬 Evolve network using TNFR dynamics."""
-        # Ensure nodes have TNFR properties
-        if not all('EPI' in self.G.nodes[n] for n in self.G.nodes()):
-            create_nfr(self.G)
-        
-        # Simple evolution: Apply coherence improvement to all nodes
-        from ..operators.definitions import Coherence, Resonance
-        
-        for step in range(steps):
-            for node in self.G.nodes():
-                try:
-                    # Simple sequence: Coherence -> Resonance
-                    ops = [Coherence(), Resonance()]
-                    run_sequence(self.G, node, ops)
-                except Exception:
-                    # If sequence fails, just continue
-                    continue
-        
+        """Evolve the network by applying a canonical operator sequence.
+
+        The named *sequence* is resolved to canonical structural operators
+        and applied to the whole network in **lock-step** (synchronously):
+        each operator is applied to *every* node before advancing to the
+        next, honouring the temporal simultaneity of the nodal equation
+        ``dEPI/dt = vf * dNFR(t)`` -- the coupling operators (Resonance,
+        Coupling) see neighbours at the *same* time step. Form (EPI) is
+        created from the structural vacuum by the **Emission** generator that
+        opens every canonical sequence -- never by direct assignment
+        (invariant #1; the grammar U1 initiation rule).
+
+        Lock-step is the canonical network evolution. A row-major schedule
+        (whole sequence per node) would let Reception fire before any
+        neighbour has emitted, fracturing the coupling symmetry of a
+        symmetric graph (a measurable, non-physical artifact).
+
+        Parameters
+        ----------
+        steps : int
+            Number of times the sequence is applied to the whole network.
+        sequence : str
+            Name of a canonical sequence (see
+            :data:`tnfr.sdk.fluent.NAMED_SEQUENCES`). Defaults to
+            ``"basic_activation"`` =
+            ``[Emission, Reception, Coherence, Resonance, Silence]``.
+
+        Returns
+        -------
+        Network
+            self (for chaining).
+
+        Raises
+        ------
+        TNFRValueError
+            If *sequence* is not a known canonical sequence; an invalid
+            sequence is rejected (by name lookup or grammar validation)
+            rather than silently ignored.
+        """
+        from .fluent import NAMED_SEQUENCES
+
+        operator_names = NAMED_SEQUENCES.get(sequence)
+        if operator_names is None:
+            available = ", ".join(sorted(NAMED_SEQUENCES))
+            raise TNFRValueError(
+                f"Unknown sequence '{sequence}'.",
+                context={
+                    "requested": sequence,
+                    "available": list(NAMED_SEQUENCES),
+                },
+                suggestion=f"Choose from: {available}",
+            )
+        # Lock-step network evolution from the canonical primitive. The
+        # sub-threshold birth phase (neighbour EPI < ACTIVE_EMISSION_THRESHOLD
+        # ~ 0.464) makes Reception correctly find no sources; that transient
+        # warning is silenced on the high-level SDK surface.
+        _run_network_sequence(
+            self.G,
+            operator_names,
+            cycles=steps,
+            suppress_birth_warnings=True,
+        )
         return self
     
     def auto_optimize(self) -> Network:
-        """🤖 Auto-optimize: drive the network toward coherence.
+        """Auto-optimize: drive the network toward coherence.
 
         Self-optimization in TNFR is *gradient descent on the structural
         manifold* (AGENTS.md §Self-Optimizing Dynamics): apply grammar-valid
@@ -777,16 +926,81 @@ class Network:
         Network
             self (for chaining).
         """
-        if not all('EPI' in self.G.nodes[n] for n in self.G.nodes()):
-            create_nfr(self.G)
         return self.evolve_grammar_aware(
-            steps=3, candidates=['IL', 'EN', 'RA', 'UM']
+            steps=3,
+            candidates=['coherence', 'reception', 'resonance', 'coupling'],
         )
-    
+
+    def trajectory(
+        self, cycles: int = 3, sequence: str = "basic_activation"
+    ) -> list[dict[str, Any]]:
+        """Record canonical metrics after EACH operator (fine-grained dynamics).
+
+        Applies *sequence* in lock-step for *cycles* repetitions and records a
+        snapshot of C(t) and Si after every operator is applied to the whole
+        network, so the intra-sequence transient -- how each structural
+        operator moves the metrics -- can be studied, not just the post-cycle
+        fixed point. Reuses the canonical lock-step primitive via a per-step
+        callback.
+
+        Parameters
+        ----------
+        cycles : int
+            Number of times the sequence is repeated.
+        sequence : str
+            Canonical sequence name (see
+            :data:`tnfr.sdk.fluent.NAMED_SEQUENCES`).
+
+        Returns
+        -------
+        list[dict]
+            One snapshot per applied operator with keys ``step``,
+            ``operator`` (name), ``coherence`` (C(t)) and ``sense_index``
+            (Si).
+
+        Examples
+        --------
+        >>> hist = TNFR.create(12, seed=1).random(0.3).trajectory(2)
+        >>> [(h["operator"], round(h["coherence"], 3)) for h in hist]  # doctest: +SKIP
+        """
+        from .fluent import NAMED_SEQUENCES
+
+        operator_names = NAMED_SEQUENCES.get(sequence)
+        if operator_names is None:
+            available = ", ".join(sorted(NAMED_SEQUENCES))
+            raise TNFRValueError(
+                f"Unknown sequence '{sequence}'.",
+                context={
+                    "requested": sequence,
+                    "available": list(NAMED_SEQUENCES),
+                },
+                suggestion=f"Choose from: {available}",
+            )
+        history: list[dict[str, Any]] = []
+
+        def _record(operator_name: str) -> None:
+            history.append(
+                {
+                    "step": len(history) + 1,
+                    "operator": operator_name,
+                    "coherence": self.coherence(),
+                    "sense_index": self.sense_index(),
+                }
+            )
+
+        _run_network_sequence(
+            self.G,
+            operator_names,
+            cycles=int(cycles),
+            suppress_birth_warnings=True,
+            on_step=_record,
+        )
+        return history
+
     # === METRICS ===
     
     def coherence(self) -> float:
-        """📏 Current network coherence [0,1]."""
+        """Current network coherence C(t) in [0,1]."""
         result = compute_coherence(self.G)
         try:
             return float(np.asarray(result).flat[0])
@@ -794,7 +1008,7 @@ class Network:
             return float(result)
     
     def sense_index(self) -> float:
-        """🎯 Current sense index [0,1+]."""
+        """Current sense index Si in [0,1+]."""
         result = compute_Si(self.G)
         try:
             return float(np.asarray(result).flat[0])
@@ -802,14 +1016,14 @@ class Network:
             return float(result)
     
     def density(self) -> float:
-        """🔗 Network density [0,1]."""
+        """Network density [0,1]."""
         n = len(self.G.nodes())
         if n < 2:
             return 0.0
         return 2 * len(self.G.edges()) / (n * (n - 1))
     
     def avg_phase(self) -> float:
-        """📐 Average node phase [0, 2π]."""
+        """Average node phase [0, 2π]."""
         if not self.G.nodes():
             return 0.0
         phases = [
@@ -828,7 +1042,7 @@ class Network:
         self,
         node: Any,
         *,
-        equilibrium_tolerance: float = 1e-10,
+        equilibrium_tolerance: float = _EPS_DNFR_STABLE_DEFAULT,
         bifurcation_threshold: float | None = None,
     ) -> NodalStateReport:
         """Return node-level state from the canonical nodal equation.
@@ -852,10 +1066,13 @@ class Network:
         expected_depi_dt = float(compute_expected_depi_dt(self.G, node))
         d2epi_dt2 = float(compute_d2epi_dt2(self.G, node))
 
-        tau = float(
+        # ZHIR (Mutation) is the canonical bifurcation operator: a node nears
+        # bifurcation when its structural change rate dEPI/dt = nu_f * dNFR
+        # crosses the mutation threshold xi (AGENTS.md §5).
+        xi = float(
             bifurcation_threshold
             if bifurcation_threshold is not None
-            else self.G.graph.get('OZ_BIFURCATION_THRESHOLD', 0.5)
+            else self.G.graph.get('ZHIR_THRESHOLD_XI', _ZHIR_THRESHOLD_XI_DEFAULT)
         )
 
         return NodalStateReport(
@@ -863,20 +1080,23 @@ class Network:
             epi=epi,
             nu_f=nu_f,
             delta_nfr=delta_nfr,
+            coherence=structural_coherence(delta_nfr),
             phase=phase,
             expected_depi_dt=expected_depi_dt,
             d2epi_dt2=d2epi_dt2,
             degree=int(self.G.degree(node)),
-            equilibrium=abs(delta_nfr) <= float(equilibrium_tolerance),
+            equilibrium=is_structural_equilibrium(
+                delta_nfr, eps_dnfr=float(equilibrium_tolerance)
+            ),
             active=nu_f > 0.0,
-            near_bifurcation=abs(d2epi_dt2) > tau,
+            near_bifurcation=abs(expected_depi_dt) > xi,
         )
 
     def nodal_scan(
         self,
         nodes: list[Any] | None = None,
         *,
-        equilibrium_tolerance: float = 1e-10,
+        equilibrium_tolerance: float = _EPS_DNFR_STABLE_DEFAULT,
         bifurcation_threshold: float | None = None,
     ) -> NodalDynamicsReport:
         """Scan nodal dynamics over a subset (or all) nodes.
@@ -894,22 +1114,22 @@ class Network:
                 bifurcation_threshold=bifurcation_threshold,
             )
 
-        tau = float(
+        xi = float(
             bifurcation_threshold
             if bifurcation_threshold is not None
-            else self.G.graph.get('OZ_BIFURCATION_THRESHOLD', 0.5)
+            else self.G.graph.get('ZHIR_THRESHOLD_XI', _ZHIR_THRESHOLD_XI_DEFAULT)
         )
         return NodalDynamicsReport(
             nodes=report_nodes,
             equilibrium_tolerance=float(equilibrium_tolerance),
-            bifurcation_threshold=tau,
+            bifurcation_threshold=xi,
         )
 
     def nodal_profile(
         self,
         node: Any,
         *,
-        equilibrium_tolerance: float = 1e-10,
+        equilibrium_tolerance: float = _EPS_DNFR_STABLE_DEFAULT,
         bifurcation_threshold: float | None = None,
     ) -> dict[str, Any]:
         """Convenience dict profile for notebooks/reporting pipelines."""
@@ -937,7 +1157,7 @@ class Network:
         )
     
     def summary(self) -> str:
-        """📋 Quick network summary."""
+        """Quick network summary."""
         return self.results().summary()
     
     # === STRUCTURAL FIELD TETRAD ===
@@ -1104,6 +1324,200 @@ class Network:
             return {}
         return compute_emergent_fields(self.G)
 
+    # === EMERGENT ONTOLOGY (particle / phase from graph state) ===
+
+    def particle(self, order: list[Any] | None = None) -> dict[str, Any]:
+        """Classify this network's coherent mode as an emergent particle.
+
+        The class is an OUTPUT of the measured quantized topological winding
+        number W of the phase field along a closed loop -- not an imposed
+        label: ``|W| = 0`` -> boson/scalar-like, ``|W| = 1`` -> fermion-like,
+        ``|W| > 1`` -> composite; ``sign(W)`` -> chirality (matter /
+        antimatter-like). The integer ``W`` emerges *directly* as a topological
+        invariant of the dynamics -- this is the **physical-layer** read-out of
+        the same ``ΔNFR = 0`` fixed point whose **symbolic-layer** shadow is
+        the structural prime (:meth:`TNFR.primes`). Energy- and charge-density
+        telemetry support the integer invariant. Most informative after
+        :meth:`evolve`.
+
+        Parameters
+        ----------
+        order : list, optional
+            Node order defining the closed loop along which the winding is
+            measured. Defaults to the graph's node order.
+
+        Returns
+        -------
+        dict
+            winding, raw_winding, chirality, energy_density,
+            charge_density_mean, particle_class, is_quantized.
+        """
+        from ..physics.emergent_particles import classify_particle
+
+        return classify_particle(self.G, order=order).as_dict()
+
+    def phase(self) -> dict[str, Any]:
+        """Classify the network's emergent structural phase.
+
+        Second-order symmetry breaking of the structural fields sets the
+        phase: ``non_life`` (symmetric, <S> ~ 0, |<chi>| ~ 0), ``critical``
+        (near the transition), or ``life`` (broken symmetry <S> != 0 with
+        non-zero chirality chi). Uses a sampling z-score significance test --
+        no magic constants. Most informative after :meth:`evolve`.
+
+        Returns
+        -------
+        dict
+            ``phase`` (``"non_life"`` / ``"critical"`` / ``"life"``),
+            ``is_life`` (bool), the order parameter ``order_parameter`` (<S>),
+            ``chirality_mean`` (<chi>), ``coherence_length`` (xi_C) and
+            ``has_homochirality`` (bool).
+        """
+        from ..physics.phase_transition import capture_phase_snapshot, Phase
+
+        snap = capture_phase_snapshot(self.G)
+        return {
+            "phase": snap.phase.value,
+            "is_life": snap.phase is Phase.LIFE,
+            "order_parameter": float(snap.order_parameter),
+            "chirality_mean": float(snap.chirality_mean),
+            "coherence_length": float(snap.coherence_length),
+            "has_homochirality": bool(snap.has_homochirality),
+        }
+
+    def gauge(self) -> dict[str, Any]:
+        """Classify the network's emergent gauge-interaction regimes.
+
+        The complex geometric field Psi = K_phi + i*J_phi carries an emergent
+        U(1) gauge connection on edges and curvature F_C on plaquettes. Each
+        node is classified into an interaction regime (em_like / weak_like /
+        strong_like / gravity_like) from arg(Psi) and the structural
+        potential. Most informative after :meth:`evolve`.
+
+        Returns
+        -------
+        dict
+            ``per_node``, ``regime_distribution``, ``dominant_regime``,
+            ``mean_gauge_curvature`` (mean |F_C|) and ``gauge_flatness``.
+        """
+        from ..physics.gauge import classify_network_regimes
+
+        return classify_network_regimes(self.G)
+
+    def spectrum(self) -> dict[str, Any]:
+        """Structural relaxation spectrum of the diffusion operator.
+
+        The EPI channel of the nodal equation is exactly a graph diffusion
+        dEPI/dt = -nu_f * L_rw * EPI. Its eigenmodes relax as
+        exp(-nu_f*lambda_k*t): lambda_1 = 0 is the conserved uniform mode and
+        the spectral gap lambda_2 (the Fiedler value) sets the slowest
+        relaxation, the synchronization tendency, and -- via the coherence
+        length xi_C ~ 1/sqrt(lambda_2) -- the structural correlation range.
+
+        Returns
+        -------
+        dict
+            ``diffusivity`` (mean nu_f), ``relaxation_rates``
+            (nu_f*lambda_k ascending), ``spectral_gap`` (nu_f*lambda_2),
+            ``structural_rank`` (distinct frequencies) and
+            ``coherence_length`` (xi_C ~ 1/sqrt(spectral_gap)).
+        """
+        from ..physics.structural_diffusion import (
+            relaxation_spectrum,
+            structural_diffusivity,
+            structural_frequency_rank,
+        )
+
+        rates = [float(r) for r in relaxation_spectrum(self.G)]
+        gap = next((r for r in rates if r > 1e-12), 0.0)
+        xi_c = 1.0 / float(np.sqrt(gap)) if gap > 1e-12 else float("inf")
+        return {
+            "diffusivity": float(structural_diffusivity(self.G)),
+            "relaxation_rates": rates,
+            "spectral_gap": gap,
+            "structural_rank": int(structural_frequency_rank(self.G)),
+            "coherence_length": xi_c,
+        }
+
+    def nfr(self) -> dict[str, Any]:
+        """Characterize the network as a Fractal-Resonant Node (NFR).
+
+        Per TNFR.pdf section 1.4.1, an NFR is "a region of structural coherence
+        coupled to a network", defined by the triad (EPI, nu_f, phase) with a
+        nodal topology and the multiescalar (fractal) + autopoietic properties.
+        This surfaces the NFR as the joint read-out of its three emergent
+        facets, each from canonical quantities:
+
+        - RESONANT: proximity to the dNFR = 0 coherence attractor
+          (:func:`~tnfr.metrics.common.is_structural_equilibrium`).
+        - GEOMETRIC: the nodal topology radial / annular / multinodal
+          (:func:`~tnfr.physics.fields.classify_nodal_topology`, read from the
+          structural-potential geometry).
+        - FRACTAL: the multi-scale coherence range xi_C (region size).
+
+        A fully relaxed network (dNFR -> 0) is one uniform NFR; off-equilibrium
+        the geometry differentiates sub-NFRs. Most informative after
+        :meth:`evolve`.
+
+        Returns
+        -------
+        dict
+            ``topology``, ``centers``, ``concentration`` (geometry);
+            ``coherence``, ``equilibrium_fraction`` (resonance);
+            ``coherence_length`` (xi_C, fractal/region scale); ``triad`` (mean
+            EPI, nu_f and the Kuramoto phase synchrony); ``n_nodes``.
+        """
+        from ..physics.fields import classify_nodal_topology
+
+        topo = classify_nodal_topology(self.G)
+        nodes = list(self.G.nodes())
+        n = len(nodes)
+        if n:
+            dnfr = [
+                float(get_attr(self.G.nodes[k], ALIAS_DNFR, 0.0) or 0.0)
+                for k in nodes
+            ]
+            eq_frac = sum(1 for d in dnfr if is_structural_equilibrium(d)) / n
+            epi_mean = sum(
+                float(get_attr(self.G.nodes[k], ALIAS_EPI, 0.0) or 0.0)
+                for k in nodes
+            ) / n
+            vf_mean = sum(
+                float(get_attr(self.G.nodes[k], ALIAS_VF, 0.0) or 0.0)
+                for k in nodes
+            ) / n
+            thetas = [
+                float(get_attr(self.G.nodes[k], ALIAS_THETA, 0.0) or 0.0)
+                for k in nodes
+            ]
+            if np is not None:
+                phase_sync = float(abs(np.mean(np.exp(1j * np.asarray(thetas)))))
+            else:
+                phase_sync = 0.0
+        else:
+            eq_frac = epi_mean = vf_mean = phase_sync = 0.0
+        try:
+            # Spectral coherence length xi_C ~ 1/sqrt(nu_f*lambda_2): the
+            # structural region scale, robust at the uniform dNFR=0 equilibrium
+            # (where the correlation-fit xi_C is undefined).
+            xi_c = float(self.spectrum()["coherence_length"])
+        except Exception:
+            xi_c = float("nan")
+        return {
+            "topology": topo["topology"],
+            "centers": topo["centers"],
+            "concentration": topo["concentration"],
+            "coherence": self.coherence(),
+            "equilibrium_fraction": eq_frac,
+            "coherence_length": xi_c,
+            "triad": {
+                "epi_mean": epi_mean,
+                "vf_mean": vf_mean,
+                "phase_sync": phase_sync,
+            },
+            "n_nodes": n,
+        }
+
     # === COMPLEX FIELD & EXTENDED ACCESS ===
 
     def complex_field(self) -> dict[str, Any]:
@@ -1194,8 +1608,10 @@ class Network:
         steps : int
             Number of evolution steps.
         candidates : list[str] | None
-            Operator codes to consider.  Defaults to common set
-            ['IL', 'EN', 'RA', 'OZ', 'UM'].
+            Operator NAMES to consider (the canonical public identifiers,
+            AGENTS.md §5). Defaults to the stabilizer-leaning set
+            ['coherence', 'reception', 'resonance', 'dissonance', 'coupling'].
+            Legacy glyph codes ('IL', 'EN', ...) are still accepted.
 
         Returns
         -------
@@ -1204,18 +1620,19 @@ class Network:
         """
         if not _HAS_GRAMMAR_DYNAMICS:
             return self.evolve(steps)
-        if not all('EPI' in self.G.nodes[n] for n in self.G.nodes()):
-            create_nfr(self.G)
         if candidates is None:
-            candidates = ['IL', 'EN', 'RA', 'OZ', 'UM']
-        # Apply via apply_glyph, which accepts glyph CODES ('IL', ...).
-        # get_operator_class is keyed by canonical NAMES ('coherence', ...)
-        # and raises KeyError on codes, which previously made this loop a
-        # silent no-op (every node skipped).
+            candidates = [
+                'coherence', 'reception', 'resonance', 'dissonance', 'coupling'
+            ]
+        # Public API speaks operator NAMES; the grammar machinery
+        # (filter_candidates/apply_glyph) operates on glyph codes. Translate
+        # names -> glyphs here (legacy codes pass through unchanged).
+        from ..operators.grammar_types import function_name_to_glyph
         from ..operators import apply_glyph
+        glyphs = [function_name_to_glyph(c, default=c) for c in candidates]
         for _step in range(steps):
             for node in self.G.nodes():
-                valid = filter_candidates(self.G, node, candidates)
+                valid = filter_candidates(self.G, node, glyphs)
                 if not valid:
                     continue
                 glyph_code = valid[0]  # safest first
@@ -1227,14 +1644,15 @@ class Network:
 
     # === INTEGRITY MONITORING ===
 
-    def integrity_check(self, operator_name: str = "IL") -> dict[str, Any]:
+    def integrity_check(self, operator_name: str = "coherence") -> dict[str, Any]:
         """Run structural integrity check via postcondition monitor.
 
         Parameters
         ----------
         operator_name : str
-            Operator code to verify postconditions for
-            (default 'IL' — coherence).
+            Operator NAME whose postconditions are verified (the canonical
+            public identifier, AGENTS.md §5; default 'coherence'). Glyph
+            codes are accepted but only names resolve a postcondition check.
 
         Returns
         -------
@@ -1373,7 +1791,7 @@ class Network:
         return self.primality(n, tolerance=tolerance).is_prime
 
 class TNFR:
-    """🌊 **Static Factory for Instant TNFR Networks** ⭐
+    """Static factory for instant TNFR networks.
     
     Main entry point for the simplified TNFR SDK.
     All methods are static for maximum convenience.
@@ -1382,30 +1800,199 @@ class TNFR:
     """
     
     @staticmethod
-    def create(num_nodes: int, name: str = "network") -> Network:
-        """🏗️ Create empty TNFR network with specified nodes.
-        
-        Args:
-            num_nodes: Number of nodes to create
-            name: Optional network name
-            
-        Returns:
-            Network ready for topology and evolution
-            
-        Example:
-            >>> net = TNFR.create(10)  # 10 isolated nodes
+    def create(
+        num_nodes: int, name: str = "network", seed: int | None = None
+    ) -> Network:
+        """Create a TNFR network of nodes in structural vacuum.
+
+        Each node is anchored via :func:`create_nfr` with the canonical
+        triad initialised to the structural vacuum: EPI = 0, νf = 1 Hz_str,
+        θ = 0. **Form (EPI) is not assigned here** -- it emerges canonically
+        from the Emission generator the first time :meth:`evolve` runs a
+        sequence (invariant #1; grammar U1). The *seed* governs the
+        stochastic topology builders for reproducibility (invariant #6).
+
+        Parameters
+        ----------
+        num_nodes : int
+            Number of nodes to anchor.
+        name : str
+            Optional network label.
+        seed : int, optional
+            Seed propagated to ``random``/``small_world``/``scale_free`` so
+            identical seeds reproduce identical trajectories.
+
+        Returns
+        -------
+        Network
+            Network of nodes in vacuum, ready for topology and evolution.
+
+        Examples
+        --------
+        >>> net = TNFR.create(10, seed=7).ring().evolve(5)
         """
+        if num_nodes < 0:
+            raise TNFRValueError(
+                "num_nodes must be non-negative.",
+                context={"num_nodes": num_nodes},
+            )
         G = nx.Graph()
-        G.add_nodes_from(range(num_nodes))
-        
-        # Initialize with TNFR properties
-        create_nfr(G)
-        
-        return Network(G, name)
+        for i in range(num_nodes):
+            create_nfr(i, graph=G, epi=0.0, vf=1.0, theta=0.0)
+        return Network(G, name, seed=seed)
+
+    @staticmethod
+    def operators(name: str | None = None) -> Any:
+        """Return the canonical contract catalog of the 13 structural operators.
+
+        Reads straight from the contract source of truth
+        (:mod:`tnfr.operators.operator_contracts`). Each entry exposes the
+        operator's public name, internal glyph, nodal-equation channel
+        (EPI/nu_f/theta/dNFR), scale (NODE/NETWORK), grammar role(s),
+        canonical purpose and postcondition, and TNFR.pdf anchor -- the
+        canonical structure for understanding the operator algebra.
+
+        Parameters
+        ----------
+        name : str, optional
+            An operator name (``"emission"``) or glyph (``"AL"``). If given,
+            return only that operator's contract; otherwise all 13
+            (channel-ordered).
+
+        Returns
+        -------
+        dict | list[dict]
+            One contract dict or the list of all 13.
+
+        Examples
+        --------
+        >>> TNFR.operators("emission")["channel"]  # doctest: +SKIP
+        'EPI'
+        """
+        from ..operators.operator_contracts import (
+            iter_contracts,
+            contract_for,
+        )
+        from ..operators.grammar_types import (
+            GENERATORS,
+            CLOSURES,
+            STABILIZERS,
+            DESTABILIZERS,
+            TRANSFORMERS,
+            COUPLING_RESONANCE,
+        )
+
+        def _roles(n: str) -> list[str]:
+            roles: list[str] = []
+            if n in GENERATORS:
+                roles.append("generator")
+            if n in CLOSURES:
+                roles.append("closure")
+            if n in STABILIZERS:
+                roles.append("stabilizer")
+            if n in DESTABILIZERS:
+                roles.append("destabilizer")
+            if n in TRANSFORMERS:
+                roles.append("transformer")
+            if n in COUPLING_RESONANCE:
+                roles.append("coupling/resonance")
+            return roles
+
+        def _to_dict(c: Any) -> dict[str, Any]:
+            return {
+                "name": c.english_name,
+                "glyph": c.glyph,
+                "channel": c.primary_channel.value,
+                "scale": c.scale.value,
+                "roles": _roles(c.name),
+                "purpose": c.purpose,
+                "postcondition": c.postcondition,
+                "pdf_reference": c.pdf_reference,
+            }
+
+        if name is not None:
+            return _to_dict(contract_for(name))
+        return [_to_dict(c) for c in iter_contracts()]
+
+    @staticmethod
+    def explain_sequence(operators: list[str]) -> dict[str, Any]:
+        """Validate an operator sequence and explain its canonical grammar.
+
+        A teaching/diagnostic aid: reports each operator's grammar role and
+        whether the whole sequence satisfies the unified grammar (U1-U6) --
+        why a structural "word" is or is not canonical. Accepts operator
+        names or glyph codes.
+
+        Parameters
+        ----------
+        operators : list[str]
+            Operator names (``["emission", "coherence", "silence"]``) or
+            glyph codes (``["AL", "IL", "SHA"]``).
+
+        Returns
+        -------
+        dict
+            ``valid`` (bool), ``operators`` (canonical names), ``roles``
+            (per-operator), U1 flags ``starts_with_generator`` /
+            ``ends_with_closure``, U2 flags ``has_destabilizer`` /
+            ``has_stabilizer``, and a human-readable ``message``.
+        """
+        from ..validation import validate_sequence
+        from ..operators.operator_contracts import contract_for
+        from ..operators.grammar_types import (
+            GENERATORS,
+            CLOSURES,
+            STABILIZERS,
+            DESTABILIZERS,
+            TRANSFORMERS,
+            COUPLING_RESONANCE,
+        )
+
+        def _roles(n: str) -> list[str]:
+            roles: list[str] = []
+            if n in GENERATORS:
+                roles.append("generator")
+            if n in CLOSURES:
+                roles.append("closure")
+            if n in STABILIZERS:
+                roles.append("stabilizer")
+            if n in DESTABILIZERS:
+                roles.append("destabilizer")
+            if n in TRANSFORMERS:
+                roles.append("transformer")
+            if n in COUPLING_RESONANCE:
+                roles.append("coupling/resonance")
+            return roles
+
+        contracts = [contract_for(op) for op in operators]
+        names = [c.name for c in contracts]
+        roles = [
+            {"name": c.english_name, "glyph": c.glyph, "roles": _roles(c.name)}
+            for c in contracts
+        ]
+        try:
+            outcome = validate_sequence(names)
+            valid = bool(getattr(outcome, "passed", bool(outcome)))
+            summary = getattr(outcome, "summary", {}) or {}
+            default_msg = "valid sequence" if valid else "invalid sequence"
+            message = summary.get("message", default_msg)
+        except Exception as exc:  # validation raised -> invalid
+            valid = False
+            message = str(exc)
+        return {
+            "valid": valid,
+            "operators": [c.english_name for c in contracts],
+            "roles": roles,
+            "starts_with_generator": bool(names) and names[0] in GENERATORS,
+            "ends_with_closure": bool(names) and names[-1] in CLOSURES,
+            "has_destabilizer": any(n in DESTABILIZERS for n in names),
+            "has_stabilizer": any(n in STABILIZERS for n in names),
+            "message": message,
+        }
     
     @staticmethod
     def template(template_name: str) -> Network:
-        """📋 Create network from pre-configured template.
+        """Create network from pre-configured template.
         
         Available templates:
         - 'small': 5 nodes, ring topology
@@ -1518,6 +2105,10 @@ class TNFR:
             'avg_phase': network.avg_phase(),
             'nodal_dynamics': network.nodal_scan(),
         }
+        try:
+            result['nfr'] = network.nfr()
+        except Exception:
+            pass
         if _HAS_FIELDS:
             result['tetrad'] = network.tetrad()
             result['tensor_invariants'] = network.tensor_invariants()
@@ -1547,7 +2138,14 @@ class TNFR:
         certificate_dir: str | None = None,
         network: Network | None = None,
     ) -> FactorizationReport:
-        """Canonical factorization via SDK, optionally fused with network telemetry.
+        """Canonical TNFR factorization, optionally fused with network telemetry.
+
+        Like primality, factorization is a **symbolic-layer** operation: it
+        drives the canonical operator dynamics over the residue structure of
+        ``n`` and reads the same ``ΔNFR = 0`` equilibrium on an arithmetic
+        field that consumes ``n``'s divisibility -- the informational shadow of
+        the structural grammar (see :meth:`primes`), not a claim of speedup
+        over classical factoring.
 
         Parameters
         ----------
@@ -1591,7 +2189,12 @@ class TNFR:
         tolerance: float = 1e-10,
         network: Network | None = None,
     ) -> PrimalityReport:
-        """Canonical primality analysis via SDK, optionally fused with network telemetry."""
+        """Canonical primality analysis via SDK, optionally fused with telemetry.
+
+        Reads the arithmetic equilibrium ``ΔNFR_arith(n) = 0`` -- the
+        symbolic-layer shadow of the same fixed point as the particle winding
+        (see :meth:`primes`); it consumes ``n``'s divisibility data.
+        """
         if not _HAS_PRIMALITY:
             raise TNFRValueError(
                 "Primality bridge is unavailable.",
@@ -1612,6 +2215,154 @@ class TNFR:
     ) -> bool:
         """Convenience boolean primality check from canonical SDK bridge."""
         return TNFR.primality(n, tolerance=tolerance).is_prime
+
+    @staticmethod
+    def primes(max_number: int = 100) -> dict[str, Any]:
+        """Read structural primes off the arithmetic equilibrium field.
+
+        A number ``n`` is structurally prime when its arithmetic reorganization
+        pressure vanishes, ``ΔNFR_arith(n) = 0`` -- the exact nodal-equation
+        equilibrium (:func:`tnfr.metrics.common.is_structural_equilibrium`)
+        that a relaxed graph node and a noble-gas atom also satisfy. Primes are
+        thus the **symbolic-layer** read-out -- the informational shadow cast
+        by the structural grammar -- of the *same* fixed-point process whose
+        **physical-layer** read-out is the particle winding
+        (:meth:`Network.particle`).
+
+        Honest scope: unlike the particle, whose integer winding ``W`` emerges
+        *directly* as a topological invariant of the phase field, the prime is
+        a symbolic *projection* -- the arithmetic ``ΔNFR`` consumes the
+        divisibility data ``(τ, σ, ω)`` of ``n``. Same process, two layers: one
+        emergent invariant, one symbolic encoding.
+
+        Parameters
+        ----------
+        max_number : int
+            Largest integer to include in the arithmetic network.
+
+        Returns
+        -------
+        dict
+            ``max_number``, ``primes`` (sorted list) and ``count``.
+
+        Examples
+        --------
+        >>> TNFR.primes(30)["primes"]  # doctest: +SKIP
+        [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+        """
+        from ..mathematics.number_theory import ArithmeticTNFRNetwork
+
+        net = ArithmeticTNFRNetwork(int(max_number))
+        candidates = net.detect_prime_candidates()
+        primes = sorted(int(n) for n, _delta in candidates)
+        return {
+            "max_number": int(max_number),
+            "primes": primes,
+            "count": len(primes),
+        }
+
+    @staticmethod
+    def magic_numbers(max_n: int = 7) -> list[int]:
+        """Noble-gas atomic numbers from the structural shell-filling equilibrium.
+
+        The closed-shell counts (2, 10, 18, 36, 54, 86, ...) combine two
+        ingredients of *different* status:
+
+        - the subshell capacities ``2l+1`` **emerge** from the degenerate
+          eigenmodes of a closed structural manifold (its phase-curvature /
+          Laplace-Beltrami spectrum) -- a genuine dynamical emergence;
+        - the ``(n+l)`` filling order is an **assumed** integer count rule
+          (Madelung), retained because the free manifold spectrum does not by
+          itself reproduce it.
+
+        A closed shell is ``ΔNFR_chem = 0``
+        (:func:`tnfr.metrics.common.is_structural_equilibrium`): the chemical
+        read-out of the same fixed point as the structural prime -- another
+        symbolic-layer shadow of the equilibrium process whose physical
+        read-out is the particle winding.
+
+        Parameters
+        ----------
+        max_n : int
+            Highest principal shell index to fill.
+
+        Returns
+        -------
+        list[int]
+            The noble-gas atomic numbers.
+        """
+        from ..physics.emergent_chemistry import emergent_magic_numbers
+
+        return [int(z) for z in emergent_magic_numbers(max_n=int(max_n))]
+
+    @staticmethod
+    def element(Z: int, *, max_n: int = 7) -> dict[str, Any]:
+        """Structural characterization of the element with count Z.
+
+        Pure-TNFR atomic structure: electron configuration, valence count,
+        structural valence pressure ``ΔNFR_chem`` and reactivity ``|ΔNFR|``.
+        The subshell capacities ``2l+1`` emerge from the manifold eigenmode
+        degeneracies; the ``(n+l)`` aufbau order is an *assumed* integer count
+        rule, not a spectral derivation. A closed shell is ``ΔNFR_chem(Z) = 0``
+        -- the chemical read-out of the *same* nodal-equation fixed point
+        (:func:`tnfr.metrics.common.is_structural_equilibrium`) as the
+        primality criterion ``ΔNFR_arith(n) = 0``: the symbolic-layer shadow of
+        the equilibrium process whose physical read-out is the particle
+        (:meth:`Network.particle`).
+
+        Parameters
+        ----------
+        Z : int
+            Atomic number (count of filled structural eigenmodes).
+        max_n : int
+            Highest principal shell index available.
+
+        Returns
+        -------
+        dict
+            Z, configuration, valence_electrons, outer_shell_n, delta_nfr,
+            closed_shell, magic_number, reactivity, config_label.
+        """
+        from ..physics.emergent_chemistry import classify_element
+
+        return classify_element(int(Z), max_n=int(max_n)).as_dict()
+
+    @staticmethod
+    def weyl_spectrum(k: int = 1) -> dict[str, Any]:
+        """Weyl spectral asymptotics of the k-th TNFR-Riemann operator.
+
+        Research diagnostic for the TNFR-Riemann program (theory/
+        TNFR_RIEMANN_RESEARCH_NOTES.md): the eigenvalue counting function
+        N(lambda) = #{lambda_j <= lambda} ~ A * lambda^alpha of the
+        prime-weighted structural Laplacian. The exponent alpha encodes the
+        spectral dimension (alpha = 1/2 for a uniform 1D chain; prime-gap
+        weights modify it). The operator *consumes* the prime support (``νf``
+        weighted by the primes) as input, so this is a symbolic-layer probe of
+        the equilibrium structure -- a NUMERICAL diagnostic of the
+        sigma_c -> 1/2 program, NOT a direct emergence and NOT a proof of the
+        Riemann Hypothesis.
+
+        Parameters
+        ----------
+        k : int
+            Operator index in the TNFR-Riemann spectral family.
+
+        Returns
+        -------
+        dict
+            ``k``, ``alpha`` (Weyl exponent), ``A_coeff`` (prefactor),
+            ``r_squared`` (log-log fit quality) and ``n_eigenvalues``.
+        """
+        from ..riemann.zeta_bridge import compute_weyl_asymptotic
+
+        w = compute_weyl_asymptotic(int(k))
+        return {
+            "k": int(w.k),
+            "alpha": float(w.alpha),
+            "A_coeff": float(w.A_coeff),
+            "r_squared": float(w.r_squared),
+            "n_eigenvalues": int(len(w.eigenvalues)),
+        }
 
     @staticmethod
     def guide() -> str:
@@ -1651,6 +2402,7 @@ class TNFR:
             ".nodal_state(node)             TNFR.pdf §2.1 (nodal equation)                 04, 05",
             ".nodal_scan()                  TNFR.pdf §2.1 + U4 bifurcation diagnostics      07",
             ".nodal_profile(node)           TNFR nodal telemetry bridge                     10",
+            ".nfr()                         TNFR.pdf §1.4.1 (NFR region of coherence)        —",
             ".grammar_violations()          STRUCTURAL_CONSERVATION_THEOREM.md ss12        36",
             ".telemetry()                   FUNDAMENTAL_THEORY.md                         10",
             ".auto_optimize()               AGENTS.md § Self-Optimizing Dynamics           30",

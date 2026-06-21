@@ -1,4 +1,4 @@
-"""**TNFR SDK** - Simple & Powerful API for TNFR Networks ⭐ **OPTIMIZED**
+"""TNFR SDK - API for TNFR Networks.
 
 The TNFR SDK provides an intuitive, production-ready interface for creating,
 evolving, and analyzing Resonant Fractal Networks with complete theoretical
@@ -15,7 +15,7 @@ results = TNFR.create(10).ring().evolve(5).results()
 print(f'Coherence: {results.coherence:.3f}')
 ```
 
-**PRIMARY API** ⭐ **SIMPLIFIED**:
+**PRIMARY API**:
 ----------
 **TNFR**
     Static factory for instant network creation with method chaining.

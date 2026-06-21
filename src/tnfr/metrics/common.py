@@ -16,6 +16,8 @@ from ..mathematics.unified_numerical import np
 __all__ = (
     "GraphLike",
     "compute_coherence",
+    "structural_coherence",
+    "is_structural_equilibrium",
     "compute_dnfr_accel_max",
     "normalize_dnfr",
     "ensure_neighbors_map",
@@ -25,6 +27,77 @@ __all__ = (
     "_coerce_jobs",
     "_get_vf_dnfr_max",
 )
+
+# Canonical structural-equilibrium tolerances: the nodal-equation fixed point
+# dEPI/dt = vf*dNFR = 0. Sourced from the same DEFAULTS the per-node stability
+# tracker uses (tnfr.metrics.coherence._track_stability), so this module is the
+# single source of truth for the equilibrium criterion.
+_EPS_DNFR_STABLE: float = float(DEFAULTS["EPS_DNFR_STABLE"])
+_EPS_DEPI_STABLE: float = float(DEFAULTS["EPS_DEPI_STABLE"])
+
+def structural_coherence(dnfr: float, depi: float = 0.0) -> float:
+    r"""Per-node structural coherence ``C = 1/(1 + |ΔNFR| + |dEPI|)``.
+
+    The single-node kernel of the canonical network coherence
+    :func:`compute_coherence`. It is the **one** local coherence map shared by
+    every TNFR domain, derived directly from the nodal equation
+    :math:`\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}`: at the
+    equilibrium fixed point (:math:`\Delta\mathrm{NFR}=0\Rightarrow d\mathrm{EPI}=0`)
+    it returns ``1`` and decays monotonically towards ``0`` under unbounded
+    reorganization pressure.
+
+    Domains differ only in how they *realise* ``ΔNFR`` -- the graph random-walk
+    Laplacian for the dynamics, an arithmetic pressure for number theory, a
+    valence pressure for chemistry. The coherence map itself is invariant; this
+    is what makes the equilibrium structure fractal and resonant across scales.
+
+    Parameters
+    ----------
+    dnfr : float
+        Structural reorganization pressure ``ΔNFR`` at the node.
+    depi : float, optional
+        Structural change rate ``dEPI`` at the node (default ``0`` for static
+        scalar fields that carry no explicit time derivative).
+    """
+    return 1.0 / (1.0 + abs(dnfr) + abs(depi))
+
+def is_structural_equilibrium(
+    dnfr: float,
+    depi: float = 0.0,
+    *,
+    eps_dnfr: float = _EPS_DNFR_STABLE,
+    eps_depi: float = _EPS_DEPI_STABLE,
+) -> bool:
+    r"""Canonical equilibrium fixed-point predicate of the nodal equation.
+
+    Returns ``True`` iff the node sits at the structural-equilibrium fixed
+    point of :math:`\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}`,
+    tested as ``|ΔNFR| <= eps_dnfr`` **and** ``|dEPI| <= eps_depi`` -- exactly
+    the per-node stability criterion used by the engine's coherence tracker
+    (:func:`tnfr.metrics.coherence._track_stability`).
+
+    This is the ONE deep structural invariant that recurs fractally across
+    TNFR: a relaxed graph node (``ΔNFR → 0``), a structural prime
+    (``ΔNFR_arith = 0``) and a noble-gas element (``ΔNFR_chem = 0``) are the
+    *same* fixed point read out under a domain-specific ``ΔNFR``. The tolerance
+    is a per-domain numerical scale (``1e-3`` for the graph dynamics; ``1e-12``
+    for exact integer arithmetic), **not** a different logic.
+
+    Particles read this fixed point *directly* as a topological winding of the
+    phase field (the physical layer); numbers and elements read it
+    *symbolically* (the informational shadow of the structural grammar),
+    consuming their domain data -- the same process on two layers.
+
+    Parameters
+    ----------
+    dnfr : float
+        Structural reorganization pressure ``ΔNFR``.
+    depi : float, optional
+        Structural change rate ``dEPI`` (default ``0``).
+    eps_dnfr, eps_depi : float, optional
+        Equilibrium tolerances (default: the canonical ``EPS_*_STABLE``).
+    """
+    return abs(dnfr) <= eps_dnfr and abs(depi) <= eps_depi
 
 def compute_coherence(
     G: GraphLike, *, return_means: bool = False
@@ -68,7 +141,7 @@ def compute_coherence(
         dnfr_mean = dnfr_sum / count
         depi_mean = depi_sum / count
 
-    coherence = 1.0 / (1.0 + dnfr_mean + depi_mean)
+    coherence = structural_coherence(dnfr_mean, depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
 
 def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:

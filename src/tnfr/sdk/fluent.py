@@ -41,14 +41,27 @@ from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import PI as _PI
 from ..validation import validate_sequence
+from ..constants.canonical import (
+    MIN_BUSINESS_COHERENCE_CANONICAL as COHERENCE_STRONG,
+    THOL_MIN_COLLECTIVE_COHERENCE as COHERENCE_FRAGMENTATION,
+)
 
 # ---------------------------------------------------------------------------
-# Adaptive coherence thresholds for auto_optimize()
+# Canonical coherence marks for adaptive sequence selection.
+#
+# These are the C(t) telemetry marks from AGENTS.md §7, reused from the
+# canonical constants as a single source of truth (heuristic cuts -- not magic
+# numbers, not fitted to data):
+#   - COHERENCE_STRONG        ((e*phi)/(pi+e) ~ 0.7506): C(t) at/above -> strong
+#   - COHERENCE_FRAGMENTATION (1/(pi+1)       ~ 0.2415): C(t) below   -> fragmenting
+# Adaptive selection keys on these: below fragmentation the network is
+# breaking up (heal); below the strong/target mark it consolidates
+# (stabilize); at/above the strong mark it can explore (optimize/innovate).
 # ---------------------------------------------------------------------------
-_COHERENCE_HEALING_THRESHOLD = 0.3
-_COHERENCE_STABILIZATION_THRESHOLD = 0.5
-_COHERENCE_INNOVATION_THRESHOLD = 0.8
-_IMPROVEMENT_FACTOR_THRESHOLD = 1.1
+
+# Minimum compute-engine speed-up worth reporting (display-only; NOT a TNFR
+# coherence threshold).
+_MIN_REPORTABLE_SPEEDUP = 1.1
 
 # Auto-optimization imports (NEW - Nov 28, 2025)
 try:
@@ -702,31 +715,48 @@ class TNFRNetwork:
         if self._config.validate_invariants:
             validate_sequence(operator_list, context=context)
 
-        # Convert operator names to operator instances
-        from ..operators.registry import get_operator_class
+        # Lock-step network evolution from the canonical SDK primitive: each
+        # operator is applied to every node before advancing, honouring the
+        # temporal simultaneity of dEPI/dt = vf * dNFR(t). A row-major
+        # schedule (whole sequence per node) fractures coupling symmetry.
+        from .simple import _run_network_sequence
 
-        operator_instances = [get_operator_class(name)() for name in operator_list]
-
-        # Apply sequence repeatedly to all nodes
-        for _ in range(repeat):
-            for node in list(self._graph.nodes()):
-                run_sequence(self._graph, node, operator_instances, context=context)
+        _run_network_sequence(
+            self._graph,
+            operator_list,
+            cycles=repeat,
+            validate=False,
+            context=context,
+        )
 
         return self
     
-    def apply_adaptive_sequence(self, base_sequence: str = "basic_activation", target_coherence: float = 0.7) -> "TNFRNetwork":
+    def apply_adaptive_sequence(
+        self,
+        base_sequence: str = "basic_activation",
+        target_coherence: float = COHERENCE_STRONG,
+    ) -> "TNFRNetwork":
         """Apply adaptive sequence selection based on network state.
-        
-        Automatically selects and applies the most appropriate sequence based on
-        current network coherence and structure.
-        
+
+        Selects a canonical sequence from the current coherence C(t), keyed
+        on the canonical C(t) telemetry marks (AGENTS.md §7):
+
+        - ``C < COHERENCE_FRAGMENTATION`` (~0.2415): the network is breaking
+          up -> ``"healing"``.
+        - ``COHERENCE_FRAGMENTATION <= C < target_coherence``: it consolidates
+          -> ``"stabilization"``.
+        - ``C >= target_coherence`` (default ``COHERENCE_STRONG`` ~0.7506):
+          strong enough to explore -> ``"optimization"`` (>5 nodes) or
+          ``"innovation"``.
+
         Parameters
         ----------
         base_sequence : str, default="basic_activation"
-            Fallback sequence if adaptive selection fails.
-        target_coherence : float, default=0.7
-            Desired coherence level for adaptive optimization.
-            
+            Fallback sequence when the graph has no nodes.
+        target_coherence : float, default=COHERENCE_STRONG
+            Upper coherence mark separating consolidation from exploration;
+            defaults to the canonical strong-coherence mark.
+
         Returns
         -------
         TNFRNetwork
@@ -734,27 +764,18 @@ class TNFRNetwork:
         """
         if not self._graph.nodes:
             return self.apply_sequence(base_sequence)
-            
-        # Measure current state
+
         current_coherence = compute_coherence(self._graph)
-        
-        # Adaptive sequence selection logic
-        if current_coherence < _COHERENCE_HEALING_THRESHOLD:
-            # Low coherence - use healing
+
+        if current_coherence < COHERENCE_FRAGMENTATION:
             selected_sequence = "healing"
-        elif current_coherence < _COHERENCE_STABILIZATION_THRESHOLD:
-            # Medium coherence - use stabilization
-            selected_sequence = "stabilization"
         elif current_coherence < target_coherence:
-            # Good coherence but below target - use harmonization
-            selected_sequence = "harmonization"
-        elif current_coherence >= _COHERENCE_INNOVATION_THRESHOLD:
-            # High coherence - ready for innovation or optimization
-            selected_sequence = "optimization" if len(self._graph.nodes) > 5 else "innovation"
+            selected_sequence = "stabilization"
         else:
-            # Default case
-            selected_sequence = base_sequence
-            
+            selected_sequence = (
+                "optimization" if len(self._graph.nodes) > 5 else "innovation"
+            )
+
         return self.apply_sequence(selected_sequence)
     
     def apply_multiple_sequences(self, sequences: list[tuple[str, dict[str, Any] | None, int]]) -> "TNFRNetwork":
@@ -1403,12 +1424,12 @@ class TNFRNetwork:
             })
             
             if optimization_result.get("optimization_applied", False):
-                print(f"✅ Optimization applied: {optimization_result.get('strategy_used', 'unknown')}")
+                print(f"Optimization applied: {optimization_result.get('strategy_used', 'unknown')}")
                 improvement = optimization_result.get("performance_improvement", 1.0)
-                if improvement > _IMPROVEMENT_FACTOR_THRESHOLD:
+                if improvement > _MIN_REPORTABLE_SPEEDUP:
                     print(f"   Expected speedup: {improvement:.2f}x")
             else:
-                print("ℹ️ No optimization applied (using standard computation)")
+                print("No optimization applied (using standard computation)")
                 
         except Exception as e:
             print(f"Warning: Auto-optimization failed: {e}")

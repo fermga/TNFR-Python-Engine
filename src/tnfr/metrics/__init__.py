@@ -14,6 +14,11 @@ from .coherence import (
     local_phase_sync_weighted,
     register_coherence_callbacks,
 )
+from .common import (
+    compute_coherence,
+    is_structural_equilibrium,
+    structural_coherence,
+)
 from .core import register_metrics_callbacks
 from .diagnosis import (
     dissonance_events,
@@ -66,6 +71,9 @@ __all__ = (
     "local_phase_sync",
     "local_phase_sync_weighted",
     "register_coherence_callbacks",
+    "compute_coherence",
+    "structural_coherence",
+    "is_structural_equilibrium",
     "register_diagnosis_callbacks",
     "dissonance_events",
     "export_metrics",

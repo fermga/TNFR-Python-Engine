@@ -255,10 +255,8 @@ class HierarchicalTNFRNetwork:
         total_nodes = 0
 
         for scale_name, G in self.networks_by_scale.items():
-            # Simplified coherence: 1 - mean(|ΔNFR|)
-            dnfr_values = [abs(G.nodes[n].get("delta_nfr", 0.0)) for n in G.nodes()]
-            mean_abs_dnfr = np.mean(dnfr_values) if dnfr_values else 0.0
-            scale_coherence = 1.0 / (1.0 + mean_abs_dnfr)
+            # Per-scale coherence via the canonical kernel (see _scale_coherence)
+            scale_coherence = self._scale_coherence(G)
 
             # Weight by node count
             node_count = G.number_of_nodes()
@@ -422,10 +420,12 @@ class HierarchicalTNFRNetwork:
                     G_target.nodes[node]["EPI"] += vf * cross_contribution * dt
 
     def _scale_coherence(self, G: TNFRGraph) -> float:
-        """Compute coherence for a single scale."""
+        """Per-scale coherence via the canonical kernel C = 1/(1+mean|ΔNFR|)."""
+        from ..metrics.common import structural_coherence
+
         dnfr_values = [abs(G.nodes[n].get("delta_nfr", 0.0)) for n in G.nodes()]
-        mean_abs_dnfr = np.mean(dnfr_values) if dnfr_values else 0.0
-        return 1.0 / (1.0 + mean_abs_dnfr)
+        mean_abs_dnfr = float(np.mean(dnfr_values)) if dnfr_values else 0.0
+        return structural_coherence(mean_abs_dnfr)
 
     def _compute_cross_scale_synchrony(self) -> float:
         """Compute cross-scale phase synchronization."""

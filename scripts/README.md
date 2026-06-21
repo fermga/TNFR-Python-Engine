@@ -5,7 +5,6 @@ This directory contains **essential utility scripts** for maintaining the TNFR P
 ## 📋 Essential Scripts Inventory
 
 ### 🔧 **Build & Infrastructure**
-- **`windows_make.py`** - Windows shim for Makefile (used by `make.cmd`)
 - **`run_tests.sh`** - Test execution script (used in release workflow)
 
 ### 🤖 **CI/CD Integration**  

@@ -10,6 +10,16 @@ Theoretical foundation: theory/TNFR_NUMBER_THEORY.md (Canonical)
   - Canonical constants derived from φ, γ, π, e
   - Spectral factorization via Paley-Jacobi decoding
 
+Ontological status: numbers are the SYMBOLIC-layer read-out -- the
+informational shadow cast by the structural grammar -- of the same
+nodal-equation fixed point ΔNFR = 0 whose PHYSICAL-layer read-out is the
+particle winding (tnfr.physics.emergent_particles). Both are one equilibrium
+process on two layers. The arithmetic ΔNFR here is a per-node realisation that
+CONSUMES divisibility (τ, σ, ω): primality is a symbolic projection of the
+fixed point, not a direct topological emergence like the winding number. Only
+the equilibrium criterion (tnfr.metrics.common.is_structural_equilibrium) is
+shared across domains; the ΔNFR realisations are domain-specific.
+
 Author: TNFR Research Team
 Date: 2025-11-13
 Status: CANONICAL (theory/TNFR_NUMBER_THEORY.md)
@@ -175,7 +185,17 @@ class ArithmeticTNFRFormalism:
 
     @staticmethod
     def local_coherence(delta_nfr: float) -> float:
-        return 1.0 / (1.0 + abs(delta_nfr))
+        """Per-node arithmetic coherence ``C = 1/(1 + |ΔNFR_arith|)``.
+
+        Delegates to the canonical single-node coherence kernel
+        :func:`tnfr.metrics.common.structural_coherence`. A structural prime
+        sits at the same ``C = 1`` equilibrium as a relaxed graph node; only
+        the ``ΔNFR`` realisation (arithmetic pressure vs graph Laplacian)
+        differs, so the coherence map is shared, not re-derived.
+        """
+        from ..metrics.common import structural_coherence
+
+        return structural_coherence(delta_nfr)
 
     @staticmethod
     def symbolic_delta_nfr(params: ArithmeticTNFRParameters | None = None):
@@ -205,10 +225,16 @@ class ArithmeticTNFRFormalism:
         tolerance: float = 1e-12,
         components: dict[str, float] | None = None,
     ) -> PrimeCertificate:
+        from ..metrics.common import is_structural_equilibrium
+
         if components is None:
             components = ArithmeticTNFRFormalism.component_breakdown(n, terms, params)
         delta = ArithmeticTNFRFormalism.delta_nfr_value(n, terms, params)
-        structural_prime = abs(delta) <= tolerance
+        # Primality = the canonical nodal-equation fixed point ΔNFR = 0, read
+        # out on the arithmetic pressure field. The SAME equilibrium criterion
+        # the graph dynamics and the chemical octet rule use; only the ΔNFR
+        # realisation differs (this consumes divisibility via (τ, σ, ω)).
+        structural_prime = is_structural_equilibrium(delta, eps_dnfr=tolerance)
         explanation = (
             "ΔNFR vanishes within tolerance; node is a structural attractor"
             if structural_prime else
@@ -767,7 +793,12 @@ class ArithmeticTNFRNetwork:
         distance_mode: str = 'topological',
         dnfr_attr: str = 'delta_nfr',
     ) -> dict[str, object]:
-        c = {i: 1.0 / (1.0 + abs(float(G.nodes[i].get(dnfr_attr, 0.0)))) for i in G.nodes()}
+        from ..metrics.common import structural_coherence
+
+        c = {
+            i: structural_coherence(float(G.nodes[i].get(dnfr_attr, 0.0)))
+            for i in G.nodes()
+        }
         accum: dict[int, list[float]] = {}
         nodes = sorted(G.nodes())
         if distance_mode == 'topological':
@@ -1096,8 +1127,12 @@ class ArithmeticTNFRNetwork:
         """
         G = self._get_undirected_graph()
         # store local coherence (used by downstream analyses)
+        from ..metrics.common import structural_coherence
+
         for i in G.nodes():
-            self.graph.nodes[i]['coherence_local'] = 1.0 / (1.0 + abs(self.graph.nodes[i]['delta_nfr']))
+            self.graph.nodes[i]['coherence_local'] = structural_coherence(
+                float(self.graph.nodes[i]['delta_nfr'])
+            )
         
         # Use centralized CANONICAL function when distance_mode is topological
         if HAS_CENTRALIZED_FIELDS and distance_mode == "topological":

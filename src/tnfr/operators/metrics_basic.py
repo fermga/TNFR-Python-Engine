@@ -223,7 +223,9 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
         - dnfr_reduction: Absolute reduction (before - after)
         - dnfr_reduction_pct: Percentage reduction relative to before
         - stability_gain: Improvement in stability (reduction of |ΔNFR|)
-        - is_stabilized: Whether node reached stable state (|ΔNFR| < 0.1)
+        - is_stabilized: Coarse operator-effectiveness flag (|ΔNFR| < 0.1) --
+          NOT the structural-equilibrium fixed point (|ΔNFR| <= 1e-3; see
+          metrics.common.is_structural_equilibrium)
         - C_global: Global network coherence (current)
         - C_local: Local neighborhood coherence (current)
         - phase_alignment: Local phase alignment quality (Kuramoto order parameter)
@@ -269,7 +271,9 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
         "stabilization_quality": C_local * (1.0 - dnfr_after),  # Combined metric
         "epi_final": epi,
         "vf_final": vf,
-        "is_stabilized": abs(dnfr_after) < 0.1,  # Configurable threshold
+        # Coarse operator-effectiveness flag, NOT structural equilibrium (the
+        # canonical fixed point is |ΔNFR| <= 1e-3; see is_structural_equilibrium)
+        "is_stabilized": abs(dnfr_after) < 0.1,
     }
 
 def dissonance_metrics(G, node, dnfr_before, theta_before):

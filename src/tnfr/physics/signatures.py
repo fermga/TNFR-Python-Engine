@@ -21,7 +21,7 @@ except ImportError:
 # TNFR Optimizations Integration
 try:
     from ..mathematics.spectral import gft
-    from ..mathematics.unified_cache import cache_tnfr_computation
+    from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
     _HAS_SPECTRAL_OPTIMIZATIONS = True
 except ImportError:
     _HAS_SPECTRAL_OPTIMIZATIONS = False
@@ -45,7 +45,7 @@ from ..constants.canonical import (
 
 # Spectral-optimized element detection cache
 if _HAS_SPECTRAL_OPTIMIZATIONS:
-    @cache_tnfr_computation()
+    @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
     def _detect_element_patterns_spectral(phase_data: tuple, dnfr_data: tuple, n_nodes: int) -> dict[str, float]:
         """FFT-optimized element pattern detection.
         
@@ -143,14 +143,10 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
     if nx is None:
         raise RuntimeError("NetworkX is required for signature computation")
 
-    # Compute base tetrad metrics
-    # First ensure nodes have coherence attribute for ξ_C calculation
-    for n in G.nodes():
-        if "coherence" not in G.nodes[n]:
-            dnfr = abs(get_attr(G.nodes[n], ALIAS_DNFR, 0.05))
-            G.nodes[n]["coherence"] = 1.0 / (1.0 + dnfr)
-    
-    xi_c = float(estimate_coherence_length(G, coherence_key="coherence"))
+    # Compute base tetrad metrics. The canonical estimate_coherence_length
+    # computes per-node coherence C = 1/(1+|ΔNFR|) internally from ΔNFR (the
+    # structural_coherence kernel), so no coherence pre-seeding is required.
+    xi_c = float(estimate_coherence_length(G))
 
     grad_dict = compute_phase_gradient(G)
     grad_values = list(grad_dict.values())
@@ -169,8 +165,13 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
     phi_s_drift = 0.0
 
     if apply_synthetic_step:
-        # Import locally to avoid hard dependency
-        from ..examples_utils.demo_sequences import apply_synthetic_activation_sequence
+        # Import locally; optional soft dependency (may have been removed).
+        try:
+            from ..examples_utils.demo_sequences import (
+                apply_synthetic_activation_sequence,
+            )
+        except ImportError:
+            apply_synthetic_activation_sequence = None
         
         # Save original state (shallow copy of phase/delta_nfr)
         original_state = {}
@@ -180,11 +181,13 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
                 'delta_nfr': get_attr(G.nodes[n], ALIAS_DNFR, 0.05),
             }
         
-        # Apply synthetic step (notational (φ,γ,π,e) parameters; audit 2026: not derived)
-        apply_synthetic_activation_sequence(G, alpha=CRITICAL_EXPONENT, dnfr_factor=EMERGENT_STABILITY_THRESHOLD_CANONICAL)  # γ/π, (φ+γ)/(π+γ)
-        phi_s_after = compute_structural_potential(G)
-        phi_s_after_mean = sum(phi_s_after.values()) / len(phi_s_after) if phi_s_after else 0.0
-        phi_s_drift = abs(phi_s_after_mean - phi_s_before_mean)
+        # Apply the synthetic step only if the helper is available; otherwise
+        # the defaults hold (phi_s_drift = 0, phi_s_after_mean = phi_s_before_mean).
+        if apply_synthetic_activation_sequence is not None:
+            apply_synthetic_activation_sequence(G, alpha=CRITICAL_EXPONENT, dnfr_factor=EMERGENT_STABILITY_THRESHOLD_CANONICAL)  # γ/π, (φ+γ)/(π+γ)
+            phi_s_after = compute_structural_potential(G)
+            phi_s_after_mean = sum(phi_s_after.values()) / len(phi_s_after) if phi_s_after else 0.0
+            phi_s_drift = abs(phi_s_after_mean - phi_s_before_mean)
         
         # Restore original state to keep function side-effect free
         for n in G.nodes():

@@ -507,10 +507,12 @@ def compute_coherence_length_vectorized(
     if n < 3:
         return float('nan')
         
-    # 1. Compute local coherence array
-    # C_i = 1 / (1 + |ΔNFR_i|)
+    # 1. Compute local coherence array via the canonical kernel (numpy-broadcast)
+    # C_i = structural_coherence(ΔNFR_i) = 1 / (1 + |ΔNFR_i|)
+    from ..metrics.common import structural_coherence
+
     dnfr_arr = np.array([abs(delta_nfr.get(node, 0.0)) for node in nodes], dtype=dtype)
-    coherence_arr = 1.0 / (1.0 + dnfr_arr)
+    coherence_arr = structural_coherence(dnfr_arr)
     
     # 2. Compute Distance Matrix
     # For N < 1000, full matrix is fine (1M entries = 8MB)

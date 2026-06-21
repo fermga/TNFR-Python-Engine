@@ -146,12 +146,16 @@ class TNFRExperimentBuilder:
         network.add_nodes(nodes, vf_range=(SDK_VF_RANGE_MODERATE_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Canonical moderate range
         network.connect_nodes(coupling_strength, "random")
 
-        # Multi-phase synchronization protocol
+        # Multi-phase synchronization protocol. Phase boundaries scale with
+        # the requested step budget (activation : synchronization :
+        # consolidation ~ 1 : 2 : 1) so no absolute step counts are baked in.
+        activation_end = steps // 4
+        synchronization_end = 3 * steps // 4
         for step in range(steps):
-            if step < 5:
+            if step < activation_end:
                 # Initial activation
                 network.apply_sequence("basic_activation")
-            elif step < 15:
+            elif step < synchronization_end:
                 # Synchronization phase
                 network.apply_sequence("network_sync")
             else:
@@ -177,8 +181,9 @@ class TNFRExperimentBuilder:
         ----------
         nodes : int, default=20
             Number of nodes (ideas/concepts).
-        mutation_intensity : float, default=0.3
-            Not currently used, reserved for future mutation parameters.
+        mutation_intensity : float, default=gamma/(pi+1)
+            ZHIR phase-transform magnitude (canonical ZHIR_theta_shift_factor)
+            governing how strongly the mutation operator reorganizes phase.
         steps : int, default=15
             Number of creative mutation cycles.
         random_seed : int, optional
@@ -198,12 +203,15 @@ class TNFRExperimentBuilder:
         if random_seed is not None:
             network._config.random_seed = random_seed
 
-        return (
-            network.add_nodes(nodes, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX))  # High diversity canonical
-            .connect_nodes(SDK_CONNECTIVITY_DEFAULT, "ring")  # Conservative canonical connectivity
-            .apply_sequence("creative_mutation", repeat=steps)
-            .measure()
-        )
+        network.add_nodes(
+            nodes, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX)
+        )  # High diversity (canonical low-vf range)
+        network.connect_nodes(SDK_CONNECTIVITY_DEFAULT, "ring")
+        # Controlled mutation: drive the ZHIR phase-transform magnitude from
+        # the requested intensity (canonical ZHIR_theta_shift_factor config)
+        # so the mutation operator actually honours mutation_intensity.
+        network._graph.graph["ZHIR_theta_shift_factor"] = float(mutation_intensity)
+        return network.apply_sequence("creative_mutation", repeat=steps).measure()
 
     @staticmethod
     def compare_topologies(
