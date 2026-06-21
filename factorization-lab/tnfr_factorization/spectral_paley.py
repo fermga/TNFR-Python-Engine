@@ -19,9 +19,9 @@ import numpy as np
 from tnfr.cache import CacheLevel, cache_tnfr_computation
 from tnfr.config.operator_names import CANONICAL_OPERATOR_NAMES
 from tnfr.constants.canonical import (
-    PHI_S_VON_KOCH_THRESHOLD,        # general Φ_s: 0.7711 (von Koch)
-    GRAD_PHI_CANONICAL_THRESHOLD,    # general |∇φ|: γ/π ≈ 0.1837 (Kuramoto)
-    K_PHI_CANONICAL_THRESHOLD,       # general K_φ: 0.9×π ≈ 2.8274
+    PHI_S_VON_KOCH_THRESHOLD,        # general Φ_s: 0.7711 (von Koch, empirical)
+    GRAD_PHI_CANONICAL_THRESHOLD,    # general |∇φ|: γ/π ≈ 0.1837 (heuristic, not derived)
+    K_PHI_CANONICAL_THRESHOLD,       # general K_φ: 0.9×π ≈ 2.8274 (phase wrap)
 )
 from tnfr.dynamics.advanced_fft_arithmetic import TNFRAdvancedFFTEngine
 from tnfr.dynamics.fft_backend import FFTBackend
@@ -69,8 +69,8 @@ _REPLAY_METADATA_VERSION = "1.0"
 # ---------------------------------------------------------------------------
 from tnfr.constants.canonical import (
     PHI_S_VON_KOCH_THRESHOLD,        # general Φ_s: 0.7711 (von Koch)
-    GRAD_PHI_CANONICAL_THRESHOLD,    # general |∇φ|: γ/π ≈ 0.1837 (Kuramoto)
-    K_PHI_CANONICAL_THRESHOLD,       # general K_φ: 0.9×π ≈ 2.8274
+    GRAD_PHI_CANONICAL_THRESHOLD,    # general |∇φ|: γ/π ≈ 0.1837 (heuristic, not derived)
+    K_PHI_CANONICAL_THRESHOLD,       # general K_φ: 0.9×π ≈ 2.8274 (phase wrap)
 )
 
 # §7.5 arithmetic recalibrations (exact empirical values, validated across the

@@ -54,7 +54,8 @@ cell : Cell formation from compartmentalized TNFR life patterns
     - Requires life foundation (A > 1.0) plus spatial organization
 phase_transition : Life/non-life phase transition as universal symmetry breaking
     - Order parameter 𝒮, chirality χ, susceptibility, coherence length
-    - Critical exponent γ_c = γ/π ≈ 0.1837 from Tetrahedral Correspondence
+    - Critical exponent measured as an observable (audit 2026: NOT the
+      universal γ/π; the fitted exponent is protocol-dependent)
     - Second-order transition with divergent ξ_C at criticality
 
 See Also
@@ -317,8 +318,8 @@ from .gauge import (
     BianchiIdentityResult,
     InteractionRegimeMetrics,
     NetworkInteractionProfile,
-    REGIME_DOMINANCE_THRESHOLD,
-    REGIME_STRONG_THRESHOLD,
+    N_REGIMES,
+    REGIME_ACTIVITY_SHARE,
     compute_matter_current,
     compute_yang_mills_equations,
     verify_bianchi_identity,
@@ -331,9 +332,8 @@ from .phase_transition import (
     Phase,
     PhaseTransitionTelemetry,
     PhaseSnapshot,
-    GAMMA_C,
-    ORDER_PARAMETER_NOISE_FLOOR,
-    CHIRALITY_THRESHOLD,
+    Z_SIGNIFICANCE,
+    symmetry_zscore,
     compute_order_parameter,
     compute_chirality_statistics,
     classify_phase,
@@ -591,8 +591,8 @@ __all__ = [
     "BianchiIdentityResult",
     "InteractionRegimeMetrics",
     "NetworkInteractionProfile",
-    "REGIME_DOMINANCE_THRESHOLD",
-    "REGIME_STRONG_THRESHOLD",
+    "N_REGIMES",
+    "REGIME_ACTIVITY_SHARE",
     "compute_matter_current",
     "compute_yang_mills_equations",
     "verify_bianchi_identity",
@@ -604,9 +604,8 @@ __all__ = [
     "Phase",
     "PhaseTransitionTelemetry",
     "PhaseSnapshot",
-    "GAMMA_C",
-    "ORDER_PARAMETER_NOISE_FLOOR",
-    "CHIRALITY_THRESHOLD",
+    "Z_SIGNIFICANCE",
+    "symmetry_zscore",
     "compute_order_parameter",
     "compute_chirality_statistics",
     "classify_phase",

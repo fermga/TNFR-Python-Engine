@@ -1,9 +1,11 @@
 """
-Canonical Constants for TNFR Primality Testing
+Constants for TNFR Primality Testing
 
-All constants derived from the four fundamental mathematical constants
-(φ, γ, π, e) via the Universal Tetrahedral Correspondence. Zero empirical
-fitting — every value traces back to first-principles derivation.
+The three ΔNFR pressure coefficients are WRITTEN as (φ, γ, π, e) combinations
+for notational consistency, but (audit 2026) this is NOT a first-principles
+derivation: the combos were chosen to APPROXIMATE the original empirical
+values (ζ=1.0, η=0.8, θ=0.6). Only π is a genuine structural scale; here
+(φ, γ, π, e) are a notational/calibration overlay.
 
 Source: TNFR-Python-Engine canonical.py (CanonicalArithmeticParameters)
 
@@ -22,7 +24,9 @@ Mathematical Foundation:
 
 Changelog:
     v1.0: Original empirical constants (ζ=1.0, η=0.8, θ=0.6)
-    v2.0: Canonical derivation from (φ, γ, π, e) — zero fitting
+    v2.0: Rewritten as (φ, γ, π, e) combinations approximating those values
+          (notational; audit 2026: NOT a derivation — the values barely moved:
+          ζ 1.0→0.934, η 0.8→1.121, θ 0.6→0.618)
 """
 from __future__ import annotations
 

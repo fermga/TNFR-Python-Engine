@@ -1,9 +1,11 @@
-"""Test Universal Tetrahedral Correspondence.
+"""Test the structural-field tetrad (Φ_s, |∇φ|, K_φ, ξ_C).
 
-Validates the exact mapping between 4 universal constants and 4 structural fields:
-φ ↔ Φ_s, γ ↔ |∇φ|, π ↔ K_φ, e ↔ ξ_C
-
-This is TIER 1: CRITICAL - Heart of TNFR theory.
+Validates that the four-field tetrad — the minimal derivative tower — is
+computable and respects its genuine bounds. Audit 2026: the four FIELDS are
+the derived basis, but the "exact mapping" to four constants (φ↔Φ_s, γ↔|∇φ|,
+π↔K_φ, e↔ξ_C) is an organizing OVERLAY — only π is a genuine structural scale
+(the phase-wrap bound shared by |∇φ| and K_φ). These tests check computability
+and the genuine bounds, not the (refuted) constant correspondence.
 """
 from __future__ import annotations
 
@@ -54,9 +56,9 @@ class TestTetrahedralCorrespondence:
         phase_grad = compute_phase_gradient(G)
         max_gradient = max(abs(v) for v in phase_grad.values())
         
-        # Should respect: |∇φ| < γ/π for smooth evolution
-        gamma_bound = GAMMA / PI  # ≈ 0.184
-        assert max_gradient < gamma_bound * 2  # Allow some tolerance
+        # |∇φ| is a mean of wrapped angles, so |∇φ| ≤ π (audit 2026: the genuine
+        # bound; γ/π ≈ 0.184 is only a heuristic early-warning, not a bound).
+        assert max_gradient < PI
 
     def test_pi_phase_curvature_correspondence(self):
         """π ↔ K_φ: Geometric spatial constraints."""
@@ -72,8 +74,10 @@ class TestTetrahedralCorrespondence:
         curvature = compute_phase_curvature(G)
         max_curvature = max(abs(v) for v in curvature.values())
         
-        # Should respect: |K_φ| < φ×π geometric bound
-        geometric_bound = PHI * PI  # ≈ 5.083
+        # |K_φ| is a wrapped angle bounded by π (audit 2026: the genuine scale).
+        # (φ×π ≈ 5.083 below is a loose non-physical bound kept only so the assert
+        # stays conservative; the real bound is |K_φ| ≤ π.)
+        geometric_bound = PHI * PI  # loose bound; real bound is π
         assert max_curvature < geometric_bound
 
     def test_e_coherence_length_correspondence(self):
@@ -194,4 +198,5 @@ class TestMathematicalConsistency:
         ]
         assert len(field_functions) == 4
         
-        # This validates the Universal Tetrahedral Correspondence completeness
+        # This validates the four-field tetrad is the minimal derivative basis
+        # (audit 2026: the basis is derived; the constant-correspondence is overlay)

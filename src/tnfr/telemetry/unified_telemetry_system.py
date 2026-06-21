@@ -87,7 +87,7 @@ class StructuralTelemetryEvent:
     timestamp: float
     node_id: str | None = None
     
-    # Structural field tetrad (Universal Tetrahedral Correspondence)
+    # Structural field tetrad (audit 2026: π genuine; γ/e/φ overlay)
     phi_s: float | None = None  # Structural potential
     phase_gradient: float | None = None  # |∇φ|
     phase_curvature: float | None = None  # K_φ

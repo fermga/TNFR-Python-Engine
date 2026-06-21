@@ -510,7 +510,7 @@ def k_phi_multiscale_safety(
         r
         for r, var in variance_by_scale.items()
         if var > defaults.K_PHI_CURVATURE_THRESHOLD ** 2
-    ]  # Canonical threshold from tetrahedral correspondence
+    ]  # Phase-wrap threshold: K_φ ≤ π (audit 2026: π is the genuine scale)
 
     # Assess safety
     safe_by_fit = (
@@ -555,7 +555,7 @@ def fit_correlation_length_exponent(
     xi_c_values : np.ndarray
         Corresponding coherence lengths xi_C
     I_c : float, default=CRITICAL_INFORMATION_DENSITY
-        Critical intensity (tetrahedral: (e×φ)/π ≈ 2.015)
+        Critical intensity (calibrated TIER-2 scale (e×φ)/π ≈ 2.015)
     min_distance : float, default=MIN_DISTANCE_THRESHOLD
         Minimum |I - I_c| to avoid divergence noise
 

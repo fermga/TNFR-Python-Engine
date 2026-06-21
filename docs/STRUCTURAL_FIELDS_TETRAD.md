@@ -46,7 +46,7 @@ Definition (α = 2 by default):
 \[\Phi_s(i) = \sum_{j\neq i} \frac{\Delta NFR_j}{d(i,j)^\alpha}\]
 
 - Long-range, global potential derived from ΔNFR distribution
-- Safety criterion (telemetry-based): ΔΦ_s < φ ≈ 1.618 (golden-ratio confinement); theoretical ceiling 2.0 = e^ln(2) (binary escape)
+- Safety criterion (telemetry-based, EMPIRICAL): per-node |Φ_s| < 0.7711 and drift ΔΦ_s < φ ≈ 1.618. These have **no closed form** (φ is motivation via the KAM most-irrational argument, not a derivation).
 - Implementation: `compute_structural_potential(G, alpha=2.0)`
 
 **Linear response**: Perturbation analysis confirms |r| = 1.000 (Pearson correlation) between DNFR changes and Phi_s response, validating its 0th-order position in the operator-derivative tower. See [example 39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py).
@@ -58,7 +58,7 @@ Wrapped neighbor differences (circular topology):
 \[|\nabla\varphi|(i) = \operatorname{mean}_{j\in N(i)} \big|\operatorname{wrap}(\varphi_j-\varphi_i)\big|\]
 
 - Early warning for fragmentation via local desynchronization
-- Safety criterion: |∇φ| < γ/π ≈ 0.1837 for stable operation (Kuramoto critical coupling in TNFR units)
+- Kinematic bound: |∇φ| ≤ π — a mean of WRAPPED phase angles, the SAME bound as K_φ (π scales the whole phase sector). `γ/π ≈ 0.1837` is a heuristic early-warning level, not a derived bound: the measured sync-onset is ≈ 0.29 and σ-dependent.
 - Implementation: `compute_phase_gradient(G)`
 
 ### 2.3 Phase Curvature K_φ (Geometric confinement)
@@ -123,11 +123,11 @@ Each function documents parameters and return types inline in `fields.py`.
 
 ## 5. Validation and Safety Thresholds
 
-Canonical telemetry thresholds (empirical, cross-topology):
-- Φ_s: maintain ΔΦ_s < 2.0 (escape threshold)  — see AGENTS.md (U6)
-- |∇φ|: keep < γ/π ≈ 0.1837 for stable operation (Kuramoto critical coupling); track spikes as early warning
-- K_φ: flag |K_φ| ≥ 2.8274 as hotspots; assess multiscale decay var(K_φ) ~ 1/r^α
-- ξ_C: monitor divergence around I_c; large ξ_C indicates global reorganization
+Canonical telemetry thresholds (only the π phase-wrap bounds are genuine; the rest are empirical/heuristic):
+- Φ_s: maintain ΔΦ_s < 2.0 (escape threshold, empirical)  — see AGENTS.md (U6)
+- |∇φ|: kinematic bound |∇φ| ≤ π (phase wrap); γ/π ≈ 0.1837 is only a HEURISTIC early-warning level (not derived), track spikes
+- K_φ: flag |K_φ| ≥ 2.8274 (= 0.9π, phase wrap — genuine) as hotspots; assess multiscale decay var(K_φ) ~ 1/r^α
+- ξ_C: monitor divergence around I_c; the ξ_C scale is set by the spectral gap (ξ_C ∝ 1/√λ₂)
 
 Minimum tests (see tests/ and AGENTS.md):
 - Coherence monotonicity under IL
@@ -213,8 +213,8 @@ Q2. Why are phase differences wrapped? Can I just subtract angles?
 Q3. How should I choose α in Φ_s?
 - α = 2.0 is canonical (inverse-square analog) and validated across topologies. Deviations are research-only; if you change α, document and justify the physics in your application.
 
-Q4. Are thresholds (ΔΦ_s < 2.0, |∇φ| < γ/π ≈ 0.1837, |K_φ| ≥ 2.8274) universal?
-- They are telemetry-based and robust across the tested families (WS, scale-free, grid, trees) but still empirical. Treat them as safety guidance, not as hard correctness proofs. Monitor trends over time, not just single snapshots.
+Q4. Are the tetrad thresholds universal?
+- No. Only the π phase-wrap bounds are genuine and exact: |∇φ| ≤ π and |K_φ| < 0.9π ≈ 2.8274 (both phase derivatives are wrapped angles). The Φ_s bounds are empirical (no closed form), and |∇φ| < γ/π ≈ 0.1837 is a heuristic early-warning level, NOT a derived threshold (the measured sync-onset is ≈ 0.29 and σ-dependent). ξ_C is set by the spectral gap (ξ_C ∝ 1/√λ₂). Treat the non-π thresholds as heuristic safety guidance, not derived constants.
 
 Q5. What graphs are supported? Weighted? Directed?
 - Implementations are designed for undirected, unweighted graphs. Φ_s currently uses unweighted shortest-path distances. If your graph is weighted or directed, pre-process to an appropriate undirected/unweighted view or extend the distance routine consistently with TNFR physics.

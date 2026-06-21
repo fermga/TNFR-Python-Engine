@@ -4,9 +4,10 @@ CONSOLIDATION ACHIEVEMENT: This module unifies all numerical operations and
 constants across TNFR codebase under a single coherent interface.
 
 Theoretical Foundation:
-Based on Universal Tetrahedral Correspondence mapping four fundamental
-mathematical constants (φ, γ, π, e) to structural fields that characterize
-coherent systems per TNFR nodal equation ∂EPI/∂t = νf · ΔNFR(t).
+Grounded in the nodal equation ∂EPI/∂t = νf · ΔNFR(t). The four structural
+fields (Φ_s, |∇φ|, K_φ, ξ_C) are the orders of the derivative tower. Note
+(audit 2026): the four constants (φ, γ, π, e) are a notational convention for
+parameters, NOT four derived structural scales — only π (phase wrap) is genuine.
 
 Unified Architecture:
 - Standardized NumPy imports with consistent aliasing (np)
@@ -74,25 +75,27 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 # ============================================================================
-# UNIVERSAL MATHEMATICAL CONSTANTS - Tetrahedral Correspondence Foundation
+# MATHEMATICAL CONSTANTS - notational parameter vertices (audit 2026)
 # ============================================================================
 
 @dataclass(frozen=True)
 class TNFRConstants:
-    """Universal mathematical constants from Tetrahedral Correspondence.
-    
-    THEORETICAL BASIS: Universal Tetrahedral Correspondence establishes
-    exact mapping between four fundamental mathematical constants and
-    four structural fields that characterize coherent systems.
-    
-    Constants Hierarchy:
-    1. φ (Golden Ratio) ↔ Φ_s (Global harmonic confinement)
-    2. γ (Euler Constant) ↔ |∇φ| (Local dynamic evolution)  
-    3. π (Pi) ↔ K_φ (Geometric spatial constraints)
-    4. e (Euler Number) ↔ ξ_C (Correlational memory decay)
+    """Mathematical constants used as notational parameter vertices.
+
+    AUDIT 2026: an earlier framing claimed an "exact mapping" between the four
+    constants and the four structural fields. Only π is a genuine structural
+    scale (the phase-wrap bound shared by |∇φ| and K_φ); γ, e, φ are an
+    organizing overlay (recoverable identities, not the fields' scales), and
+    ξ_C is set by the spectral gap (ξ_C ∝ 1/√λ₂), not e.
+
+    Field association (overlay, for reference only):
+    1. φ ~ Φ_s (empirical confinement; no closed form)
+    2. γ ~ |∇φ| (overlay; bound is the π phase-wrap)
+    3. π ↔ K_φ (GENUINE; phase-wrap bound; K_φ = L_rw·φ)
+    4. e ~ ξ_C (near-tautological; scale is 1/√λ₂)
     """
     
-    # TETRAHEDRAL CORRESPONDENCE CONSTANTS
+    # NOTATIONAL CONSTANT VERTICES (audit 2026: not field scales except π)
     PHI: float = PHI  # Golden ratio φ - Global harmony
     GAMMA: float = GAMMA  # Euler-Mascheroni constant γ - Local dynamics
     PI: float = PI  # π - Geometric relations
@@ -100,9 +103,9 @@ class TNFRConstants:
     
     # TNFR-DERIVED STRUCTURAL CONSTANTS
     
-    # Coherence thresholds from Universal Tetrahedral Correspondence
-    MIN_BUSINESS_COHERENCE: float = float(E * PHI / (PI + E))  # (e×φ)/(π+e) ≈ 0.7506 (canonical)
-    THOL_MIN_COLLECTIVE_COHERENCE: float = float(1.0 / (PI + 1))  # 1/(π+1) ≈ 0.2415 (canonical)
+    # Coherence thresholds (notational (φ,γ,π,e) combinations, not derived)
+    MIN_BUSINESS_COHERENCE: float = float(E * PHI / (PI + E))  # (e×φ)/(π+e) ≈ 0.7506 (notational)
+    THOL_MIN_COLLECTIVE_COHERENCE: float = float(1.0 / (PI + 1))  # 1/(π+1) ≈ 0.2415 (notational)
     HIGH_CORRELATION_THRESHOLD: float = 0.8  # Excellent stability threshold
     
     # Phase and frequency bounds
@@ -110,12 +113,12 @@ class TNFRConstants:
     MIN_STRUCTURAL_FREQUENCY: float = 0.0  # Hz_str minimum
     MAX_STRUCTURAL_FREQUENCY: float = 1000.0  # Hz_str practical maximum
     
-    # Structural field bounds from tetrahedral correspondence
-    # (Canonical source: constants/canonical.py)
-    STRUCTURAL_POTENTIAL_ESCAPE_THRESHOLD: float = 2.0  # Δ Φ_s < 2.0 (binary escape)
-    PHASE_GRADIENT_STABILITY_THRESHOLD: float = float(GAMMA / PI)  # |∇φ| < γ/π ≈ 0.1837
-    PHASE_CURVATURE_CONFINEMENT_THRESHOLD: float = float(0.9 * PI)  # |K_φ| < 0.9×π ≈ 2.8274
-    COHERENCE_LENGTH_CRITICAL_RATIO: float = PI  # ξ_C threshold = π
+    # Structural field bounds (audit 2026: only the π phase-wrap bounds are
+    # genuine; γ/π is a heuristic early-warning level, not a derived bound).
+    STRUCTURAL_POTENTIAL_ESCAPE_THRESHOLD: float = 2.0  # Δ Φ_s < 2.0 (empirical)
+    PHASE_GRADIENT_STABILITY_THRESHOLD: float = float(GAMMA / PI)  # heuristic early-warning ≈ 0.1837 (kinematic bound is |∇φ| ≤ π)
+    PHASE_CURVATURE_CONFINEMENT_THRESHOLD: float = float(0.9 * PI)  # |K_φ| < 0.9×π ≈ 2.8274 (phase wrap — genuine)
+    COHERENCE_LENGTH_CRITICAL_RATIO: float = PI  # ξ_C scale set by spectral gap (ξ_C ∝ 1/√λ₂)
     
     # Numerical precision constants
     FLOAT_TOLERANCE: float = 1e-12  # Numerical precision for TNFR operations
@@ -358,7 +361,7 @@ class TNFRNumericalUtilities:
     def clamp_value(self, value: ArrayLike, min_val: float, max_val: float) -> ArrayLike:
         """Clamp values to specified range.
         
-        TNFR PHYSICS: Enforces structural bounds per tetrahedral correspondence
+        TNFR PHYSICS: Enforces structural bounds (audit 2026: only π phase-wrap is genuine)
         to prevent parameter escape beyond coherence thresholds.
         """
         if NUMPY_AVAILABLE:

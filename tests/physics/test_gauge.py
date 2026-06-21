@@ -49,8 +49,8 @@ from tnfr.physics.gauge import (
     BianchiIdentityResult,
     InteractionRegimeMetrics,
     NetworkInteractionProfile,
-    REGIME_DOMINANCE_THRESHOLD,
-    REGIME_STRONG_THRESHOLD,
+    REGIME_ACTIVITY_SHARE,
+    N_REGIMES,
     apply_gauge_transformation,
     compute_gauge_connection,
     compute_gauge_curvature,
@@ -89,7 +89,6 @@ from tnfr.physics.extended import (
     compute_phase_current,
     compute_dnfr_flux,
 )
-from tnfr.constants.canonical import INV_PHI, CRITICAL_EXPONENT
 
 
 # ---------------------------------------------------------------------------
@@ -914,20 +913,17 @@ class TestGaugeCouplingConstant:
         assert g_sq <= math.pi ** 2 + 1e-10
 
 
-class TestRegimeThresholds:
-    """Regime threshold constants derived from TNFR canonical constants."""
+class TestRegimeActivityCriterion:
+    """Emergent equipartition activity criterion (no overlay constant)."""
 
-    def test_dominance_is_inv_phi(self):
-        """REGIME_DOMINANCE_THRESHOLD = 1/φ."""
-        assert REGIME_DOMINANCE_THRESHOLD == pytest.approx(INV_PHI, abs=1e-14)
+    def test_share_is_equipartition(self):
+        """REGIME_ACTIVITY_SHARE = 1/N_REGIMES (max-entropy reference)."""
+        assert REGIME_ACTIVITY_SHARE == pytest.approx(1.0 / N_REGIMES, abs=1e-14)
 
-    def test_strong_is_critical_exponent(self):
-        """REGIME_STRONG_THRESHOLD = γ/π."""
-        assert REGIME_STRONG_THRESHOLD == pytest.approx(CRITICAL_EXPONENT, abs=1e-14)
-
-    def test_ordering(self):
-        """Strong threshold < dominance threshold."""
-        assert REGIME_STRONG_THRESHOLD < REGIME_DOMINANCE_THRESHOLD
+    def test_four_regimes(self):
+        """Four gauge sectors (the tetrad of structural channels) => share=0.25."""
+        assert N_REGIMES == 4
+        assert REGIME_ACTIVITY_SHARE == pytest.approx(0.25, abs=1e-14)
 
 
 class TestFormalInteractionRegimes:
@@ -970,21 +966,13 @@ class TestFormalInteractionRegimes:
             assert m.dominant_regime in valid
 
     def test_threshold_consistency(self, ws_graph):
-        """above_threshold flags are consistent with order parameters."""
+        """above_threshold flags use the equipartition share on the scores."""
         for node in list(ws_graph.nodes())[:5]:
             m = classify_interaction_regime_formal(ws_graph, node)
-            assert m.above_threshold["em_like"] == (
-                m.em_order_parameter > REGIME_DOMINANCE_THRESHOLD
-            )
-            assert m.above_threshold["weak_like"] == (
-                m.weak_order_parameter > REGIME_DOMINANCE_THRESHOLD
-            )
-            assert m.above_threshold["strong_like"] == (
-                m.strong_order_parameter > REGIME_STRONG_THRESHOLD
-            )
-            assert m.above_threshold["gravity_like"] == (
-                m.gravity_order_parameter > REGIME_DOMINANCE_THRESHOLD
-            )
+            for regime in ("em_like", "weak_like", "strong_like", "gravity_like"):
+                assert m.above_threshold[regime] == (
+                    m.regime_scores[regime] > REGIME_ACTIVITY_SHARE
+                )
 
     def test_mixing_angle_range(self, ws_graph):
         """Mixing angle arg(Ψ) ∈ [−π, π]."""

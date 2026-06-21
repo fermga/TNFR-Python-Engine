@@ -14,8 +14,8 @@ serves as the **order parameter** of a second-order phase transition
 between non-life (symmetric, ⟨𝒮⟩ = 0) and life (broken symmetry,
 ⟨𝒮⟩ ≠ 0).
 
-Key predictions derived from the nodal equation and Universal
-Tetrahedral Correspondence:
+Key predictions derived from the nodal equation (audit 2026: the
+constant correspondence is an overlay, only π is a genuine scale):
 
 1. **Symmetry classification**:
        𝒮 = 0  ⟹  symmetric phase (non-life)
@@ -24,10 +24,12 @@ Tetrahedral Correspondence:
 2. **Chirality requirement**: Life requires non-zero chirality
    χ = |∇φ|·K_φ − J_φ·J_ΔNFR (biological homochirality).
 
-3. **Critical exponent**: The transition obeys a power law
-       |⟨𝒮⟩| ~ |p − p_c|^{γ_c}
-   with **universal** critical exponent γ_c = γ/π ≈ 0.1837,
-   derived from the Universal Tetrahedral Correspondence (γ ↔ |∇φ|).
+3. **Critical exponent**: Near the transition the order parameter follows
+   a power law |⟨𝒮⟩| ~ |p − p_c|^{β}. The exponent is an OBSERVABLE to be
+   MEASURED (``fit_critical_exponent``); it is NOT a derived universal
+   constant — a measurement across sweep protocols gives protocol-dependent
+   values (audit 2026), so the reference scale γ/π ≈ 0.1837 used below is a
+   calibrated TIER-2 parameter, not a prediction.
 
 4. **Divergent correlation length**: ξ_C → ∞ at the critical point,
    as required for any continuous phase transition.
@@ -50,9 +52,11 @@ sector, breaking the conjugate symmetry: ⟨𝒮⟩ ≠ 0.
 (|χ| > 0), providing the homochirality signature of biological systems.
 
 **Step 4**: Near the critical point p_c, the order parameter scales as
-|⟨𝒮⟩| ~ |p − p_c|^{γ_c} with γ_c = γ/π from the Universal Tetrahedral
-Correspondence, since γ governs local dynamic evolution and π governs
-geometric spatial constraints.
+|⟨𝒮⟩| ~ |p − p_c|^{β}. The exponent β is MEASURED, not derived: a sweep
+across protocols gives protocol-dependent values (audit 2026), so there is
+no universal closed-form exponent. The constant γ/π ≈ 0.1837 is retained
+only as a calibrated reference / noise-floor scale (TIER-2), not a
+prediction of the nodal equation.
 
 **Step 5**: The coherence length ξ_C diverges at p_c via standard
 Landau theory, signalling the onset of long-range structural
@@ -62,7 +66,9 @@ Physics Foundation
 ------------------
 - Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 - Unified fields: 𝒮 and χ from unified.py (single source of truth)
-- Universal Tetrahedral Correspondence: γ/π ≈ 0.1837
+- Phase-gradient reference scale: γ/π ≈ 0.1837 (calibrated TIER-2; audit
+  2026: NOT a derived universal exponent — the measured exponent is
+  protocol-dependent)
 - Coherence length: ξ_C from canonical.py
 
 See Also
@@ -81,7 +87,6 @@ from enum import Enum
 from typing import Any, Sequence
 
 from ..mathematics.unified_numerical import np
-from ..constants.canonical import GAMMA, PI, CRITICAL_EXPONENT
 
 try:
     import networkx as nx
@@ -98,22 +103,36 @@ from .canonical import (
 )
 
 # ============================================================================
-# CONSTANTS — derived from Universal Tetrahedral Correspondence
+# EMERGENT CLASSIFICATION — sampling-noise z-scores (NO magic constant)
 # ============================================================================
+# Audit 2026: the symmetric phase has ⟨𝒮⟩ = 0 EXACTLY (by symmetry), so any
+# finite-N deviation is sampling noise with standard error SE = √(Var/N). The
+# phase is decided by the z-score |⟨𝒮⟩|/SE — the statistical significance of
+# the symmetry breaking, MEASURED from the system itself. The previous magic
+# scales ((γ/π)², γ/(π+γ)) were verified INERT (they sat in a two-order-of-
+# magnitude gap; sweeping them changed no classification) and were removed.
+# The only cut is z = 1 (one sampling sigma) — the noise scale itself, not a
+# free parameter.
 
-# Critical exponent γ_c = γ/π ≈ 0.1837 (already in canonical constants)
-GAMMA_C: float = CRITICAL_EXPONENT
+#: Significance cut: a field is "broken" when its z-score exceeds one sampling
+#: standard error (z > 1). This is the noise scale, not a tunable constant.
+Z_SIGNIFICANCE: float = 1.0
 
-# Susceptibility noise floor: below this |⟨𝒮⟩| the system is in the
-# symmetric (non-life) phase.  Derived from the phase gradient critical
-# threshold: (γ/π)² ≈ 0.0337, matching the square of the order parameter
-# exponent as expected from scaling relations.
-ORDER_PARAMETER_NOISE_FLOOR: float = GAMMA_C ** 2  # ≈ 0.0337
 
-# Chirality significance threshold: minimum |⟨χ⟩| for homochirality.
-# From Tetrahedral Correspondence: γ/(π+γ) ≈ 0.155, the ratio at which
-# local dynamics become geometrically distinguishable.
-CHIRALITY_THRESHOLD: float = GAMMA / (PI + GAMMA)  # ≈ 0.155
+def symmetry_zscore(mean_abs: float, variance: float, n: int) -> float:
+    r"""Sampling-noise z-score |mean| / SE, with SE = √(Var/N).
+
+    The emergent significance of a field's deviation from zero, measured
+    against the system's own finite-N sampling noise — no magic constant.
+    Returns 0.0 for a perfectly uniform zero field (Var=0, mean=0) and +∞
+    for a uniform non-zero field (Var=0, mean>0, a fully broken state).
+    """
+    if n <= 0:
+        return 0.0
+    se = math.sqrt(max(variance, 0.0) / n)
+    if se == 0.0:
+        return 0.0 if mean_abs == 0.0 else math.inf
+    return mean_abs / se
 
 # ============================================================================
 # DATA STRUCTURES
@@ -163,10 +182,10 @@ class PhaseTransitionTelemetry:
     critical_time : float | None
         Time of maximum susceptibility (closest to critical point).
     measured_exponent : float | None
-        Fitted critical exponent from |⟨𝒮⟩| ~ |t − t_c|^{γ_c} in the
-        post-transition regime.  Compare with γ_c = γ/π ≈ 0.1837.
-    theoretical_exponent : float
-        Universal prediction γ_c = γ/π (from Tetrahedral Correspondence).
+        Fitted critical exponent from |⟨𝒮⟩| ~ |t − t_c|^{β} in the
+        post-transition regime. This is the real observable (audit 2026:
+        the exponent is protocol-dependent, not a universal constant — there
+        is no derived 'theoretical' value to compare against).
     exponent_fit_r_squared : float | None
         Coefficient of determination R² for the power-law fit.
     """
@@ -181,7 +200,6 @@ class PhaseTransitionTelemetry:
     transition_time: float | None = None
     critical_time: float | None = None
     measured_exponent: float | None = None
-    theoretical_exponent: float = GAMMA_C
     exponent_fit_r_squared: float | None = None
 
 @dataclass
@@ -274,57 +292,39 @@ def compute_chirality_statistics(G: Any) -> dict[str, float]:
     }
 
 def classify_phase(
-    order_parameter_abs: float,
-    chirality_abs_mean: float,
-    susceptibility: float,
-    coherence_length: float,
-    *,
-    order_threshold: float = ORDER_PARAMETER_NOISE_FLOOR,
-    chirality_threshold: float = CHIRALITY_THRESHOLD,
+    order_z: float,
+    chirality_z: float,
 ) -> Phase:
-    r"""Classify the structural phase from field diagnostics.
+    r"""Classify the structural phase from emergent z-scores.
 
-    Classification rules derived from symmetry breaking theory:
+    The phase is decided by the STATISTICAL SIGNIFICANCE of symmetry
+    breaking, measured against the system's own sampling noise — no magic
+    constant (audit 2026). With ``order_z = |⟨𝒮⟩|/SE`` and
+    ``chirality_z = ⟨|χ|⟩/SE`` (SE = √(Var/N), via :func:`symmetry_zscore`):
 
-    - **LIFE**: |⟨𝒮⟩| > threshold AND |⟨χ⟩| > chirality threshold
-      (broken symmetry with homochirality).
-    - **CRITICAL**: |⟨𝒮⟩| > threshold but chirality below threshold,
-      OR susceptibility is anomalously large relative to |⟨𝒮⟩|.
-    - **NON_LIFE**: |⟨𝒮⟩| ≤ threshold (symmetric phase).
+    - **NON_LIFE**: ``order_z ≤ 1`` — ⟨𝒮⟩ is within one sampling sigma of
+      zero (symmetric phase).
+    - **LIFE**: ``order_z > 1`` AND ``chirality_z > 1`` — significant
+      symmetry breaking with significant homochirality.
+    - **CRITICAL**: ``order_z > 1`` but ``chirality_z ≤ 1`` — broken
+      magnitude without a significant preferred handedness (intermediate).
 
     Parameters
     ----------
-    order_parameter_abs : float
-        |⟨𝒮⟩| — magnitude of network-averaged symmetry breaking.
-    chirality_abs_mean : float
-        ⟨|χ|⟩ — mean absolute chirality.
-    susceptibility : float
-        N · Var(𝒮) — fluctuation susceptibility.
-    coherence_length : float
-        ξ_C — spatial correlation length.
-    order_threshold : float
-        Noise floor for order parameter (default: γ_c²).
-    chirality_threshold : float
-        Minimum chirality for homochirality (default: γ/(π+γ)).
+    order_z : float
+        Sampling-noise z-score of |⟨𝒮⟩| (symmetry-breaking significance).
+    chirality_z : float
+        Sampling-noise z-score of ⟨|χ|⟩ (homochirality significance).
 
     Returns
     -------
     Phase
         NON_LIFE, CRITICAL, or LIFE.
     """
-    if order_parameter_abs <= order_threshold:
-        # Check if susceptibility is anomalously high (approaching critical)
-        if susceptibility > 0 and order_parameter_abs > 0:
-            ratio = susceptibility / (order_parameter_abs + 1e-15)
-            if ratio > 1.0 / GAMMA_C:  # 1/γ_c ≈ 5.44
-                return Phase.CRITICAL
+    if order_z <= Z_SIGNIFICANCE:
         return Phase.NON_LIFE
-
-    # Order parameter above noise — check chirality
-    if chirality_abs_mean > chirality_threshold:
+    if chirality_z > Z_SIGNIFICANCE:
         return Phase.LIFE
-
-    # Broken symmetry but no clear chirality — critical regime
     return Phase.CRITICAL
 
 def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
@@ -346,12 +346,10 @@ def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
     if math.isnan(xi):
         xi = 0.0
 
-    phase = classify_phase(
-        order_parameter_abs=op['abs_mean'],
-        chirality_abs_mean=chi['abs_mean'],
-        susceptibility=op['susceptibility'],
-        coherence_length=xi,
-    )
+    n_nodes = op['n_nodes']
+    order_z = symmetry_zscore(op['abs_mean'], op['variance'], n_nodes)
+    chirality_z = symmetry_zscore(chi['abs_mean'], chi['variance'], n_nodes)
+    phase = classify_phase(order_z, chirality_z)
 
     return PhaseSnapshot(
         order_parameter=op['mean'],
@@ -361,7 +359,7 @@ def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
         susceptibility=op['susceptibility'],
         coherence_length=xi,
         phase=phase,
-        has_homochirality=chi['abs_mean'] > CHIRALITY_THRESHOLD,
+        has_homochirality=chirality_z > Z_SIGNIFICANCE,
     )
 
 # ============================================================================
@@ -404,6 +402,7 @@ def detect_phase_transition(
     chi_abs_mean = np.zeros(n)
     suscept = np.zeros(n)
     xi_c = np.zeros(n)
+    order_z_series = np.zeros(n)
     phases: list[Phase] = []
 
     for i, G in enumerate(graph_sequence):
@@ -420,17 +419,18 @@ def detect_phase_transition(
         suscept[i] = op['susceptibility']
         xi_c[i] = xi
 
-        phase = classify_phase(
-            order_parameter_abs=op['abs_mean'],
-            chirality_abs_mean=chi['abs_mean'],
-            susceptibility=op['susceptibility'],
-            coherence_length=xi,
-        )
+        n_nodes = op['n_nodes']
+        order_z = symmetry_zscore(op['abs_mean'], op['variance'], n_nodes)
+        chirality_z = symmetry_zscore(chi['abs_mean'], chi['variance'], n_nodes)
+        order_z_series[i] = order_z
+
+        phase = classify_phase(order_z, chirality_z)
         phases.append(phase)
 
-    # --- Transition time: interpolate where |⟨𝒮⟩| crosses the noise floor ---
+    # --- Transition time: interpolate where the symmetry-breaking z-score ---
+    # --- crosses the significance cut (z = 1), the emergent noise scale.   ---
     transition_time = _find_crossing_time(
-        times, order_param_abs, ORDER_PARAMETER_NOISE_FLOOR
+        times, order_z_series, Z_SIGNIFICANCE
     )
 
     # --- Critical time: peak susceptibility ---
@@ -456,7 +456,6 @@ def detect_phase_transition(
         transition_time=transition_time,
         critical_time=critical_time,
         measured_exponent=measured_exp,
-        theoretical_exponent=GAMMA_C,
         exponent_fit_r_squared=r_squared,
     )
 
@@ -490,8 +489,9 @@ def fit_critical_exponent(
     Returns
     -------
     dict[str, float | None]
-        'exponent': fitted γ_c, 'r_squared': R², 'theoretical': γ/π.
-        Values are None if fit is impossible (insufficient data).
+        'exponent': fitted β, 'r_squared': R². Values are None if the fit
+        is impossible (insufficient data). There is no 'theoretical' value:
+        the exponent is a measured observable, not a derived constant.
     """
     exponent, r_sq = _fit_critical_exponent(
         list(times), order_parameter_abs, critical_time
@@ -499,7 +499,6 @@ def fit_critical_exponent(
     return {
         'exponent': exponent,
         'r_squared': r_sq,
-        'theoretical': GAMMA_C,
     }
 
 # ============================================================================
@@ -587,10 +586,9 @@ __all__ = [
     "Phase",
     "PhaseTransitionTelemetry",
     "PhaseSnapshot",
-    # Constants
-    "GAMMA_C",
-    "ORDER_PARAMETER_NOISE_FLOOR",
-    "CHIRALITY_THRESHOLD",
+    # Emergent classification
+    "Z_SIGNIFICANCE",
+    "symmetry_zscore",
     # Core computations
     "compute_order_parameter",
     "compute_chirality_statistics",

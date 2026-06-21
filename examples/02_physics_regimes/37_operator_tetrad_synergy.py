@@ -287,17 +287,18 @@ def experiment_energy_signature():
 def experiment_tetrad_safety():
     """Verify that grammar-compliant sequences keep tetrad within safety.
 
-    Universal Tetrahedral Correspondence predicts:
-        phi  <-> Phi_s :  |Phi_s| < 0.7711 (von Koch threshold)
-        gamma<-> |grad_phi|:  |grad_phi| < 0.1837 (gamma/pi, Kuramoto)
-        pi   <-> K_phi :  |K_phi| < 2.8274 (0.9*pi, safety margin)
+    Tetrad safety bounds (audit 2026: only the pi phase-wrap is genuine):
+        Phi_s :  |Phi_s| < 0.7711 (empirical, no closed form)
+        |grad_phi|:  |grad_phi| <= pi (phase wrap); gamma/pi ~ 0.1837 is a
+                     heuristic early-warning only, not a derived bound
+        K_phi :  |K_phi| < 2.8274 (0.9*pi, phase wrap -- genuine)
 
     We run a Bootstrap + Stabilise sequence (grammar-compliant) and
     verify the tetrad stays within its canonical safety envelope.
     """
     print('\n' + '=' * 72)
     print('  EXPERIMENT 3: Tetrad Safety Envelope Under Grammar Compliance')
-    print('  (Universal Tetrahedral Correspondence verification)')
+    print('  (tetrad safety-bound verification; audit 2026: only pi genuine)')
     print('=' * 72)
 
     G = _build_graph(n=20, p=0.25)
@@ -352,7 +353,7 @@ def experiment_tetrad_safety():
               f" {snap['xi_C']:10.4f}")
 
     print(f'\n  Safety envelope maintained: {"YES" if all_safe else "NO"}')
-    print('  This confirms the Universal Tetrahedral Correspondence:')
+    print('  Tetrad fields stay within their safety bounds (audit 2026):')
     print(f'    phi <-> Phi_s  threshold = {PHI_S_VON_KOCH_THRESHOLD:.4f}')
     print(f'    gamma <-> |grad_phi| threshold = {GRAD_PHI_CANONICAL_THRESHOLD:.4f}'
           f' (gamma/pi = {GAMMA / PI:.4f})')
@@ -448,8 +449,8 @@ def main():
 
   3. Tetrad Safety Envelope:
      Grammar-compliant sequences maintain all four tetrad fields
-     within their canonical safety thresholds, confirming the
-     Universal Tetrahedral Correspondence as an operational bound.
+     within their safety bounds. Audit 2026: only the pi phase-wrap is
+     a genuine structural scale; the four-constant correspondence is overlay.
 
   4. Noether Charge Conservation:
      Q = sum(Phi_s + K_phi) is approximately conserved under

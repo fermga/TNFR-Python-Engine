@@ -4,7 +4,7 @@
 
 ## Abstract
 
-This package implements **advanced TNFR-based primality testing** using the full **Resonant Fractal Nature Theory** infrastructure. Unlike traditional primality tests, our approach leverages **structural coherence analysis** through the **Universal Tetrahedral Correspondence** and **canonical operators** from the complete TNFR repository.
+This package implements **advanced TNFR-based primality testing** using the full **Resonant Fractal Nature Theory** infrastructure. Unlike traditional primality tests, our approach leverages **structural coherence analysis** through the **structural-field tetrad** and **canonical operators** from the complete TNFR repository.
 
 **Key Innovations**:
 1. **ΔNFR Equation**: `n` is prime ⟺ `ΔNFR(n) = 0`
@@ -21,12 +21,12 @@ Where:
 - `Ω(n)` = prime factor count with multiplicity (big Omega)
 - `τ(n)` = number of divisors (O(log n) computation)
 - `σ(n)` = sum of divisors (cached + symbolic math)
-- `ζ = φ×γ ≈ 0.9340` — factorization pressure (canonical)
-- `η = (γ/φ)×π ≈ 1.1207` — divisor pressure (canonical)
-- `θ = 1/φ ≈ 0.6180` — abundance pressure (canonical)
+- `ζ = φ×γ ≈ 0.9340` — factorization pressure (notational)
+- `η = (γ/φ)×π ≈ 1.1207` — divisor pressure (notational)
+- `θ = 1/φ ≈ 0.6180` — abundance pressure (notational)
 
-All coefficients derived from (φ, γ, π, e) via Universal Tetrahedral Correspondence
-— zero empirical fitting.
+These coefficients are (φ, γ, π, e) combinations chosen to approximate the
+original empirical values (1.0, 0.8, 0.6) — notational, NOT derived.
 
 ## Advanced Performance Characteristics
 
@@ -227,7 +227,7 @@ This work represents a **significant advancement** in several fields:
 
 ### Number Theory Innovations
 - **Structural Coherence Characterization**: First implementation of prime detection via TNFR dynamics
-- **Universal Tetrahedral Correspondence**: Practical application of φ ↔ Φ_s, γ ↔ |∇φ|, π ↔ K_φ, e ↔ ξ_C mapping
+- **Structural-field tetrad**: monitoring of Φ_s, |∇φ|, K_φ, ξ_C (associated with φ,γ,π,e notationally — only π is a genuine structural scale)
 - **Canonical Operator Integration**: Direct use of 13 canonical operators (AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH)
 - **Prime Certificate Framework**: Mathematical proof generation for primality decisions
 

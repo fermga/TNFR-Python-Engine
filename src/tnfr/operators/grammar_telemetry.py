@@ -13,12 +13,12 @@ from typing import Any
 
 from ..mathematics.unified_numerical import np
 from ..config.defaults_core import K_PHI_CURVATURE_THRESHOLD  # 0.9×π ≈ 2.827 canonical threshold
-from ..constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD  # γ/π ≈ 0.1837
+from ..constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD  # heuristic ≈ 0.1837
 
 def warn_phase_gradient_telemetry(
     G: Any,
     *,
-    threshold: float = GRAD_PHI_CANONICAL_THRESHOLD,  # γ/π canonical (Kuramoto critical coupling)
+    threshold: float = GRAD_PHI_CANONICAL_THRESHOLD,  # heuristic early-warning (audit 2026: not derived)
 ) -> tuple[bool, dict[str, float], str, list[Any]]:
     """Emit non-blocking telemetry warning for |∇φ| (phase gradient).
 
@@ -29,7 +29,8 @@ def warn_phase_gradient_telemetry(
     Returns (safe, stats, message, flagged_nodes) where safe indicates
     mean and max are below threshold (stable regime). Always non-blocking.
 
-    Safety criterion: |∇φ| < γ/π ≈ 0.1837 (Kuramoto critical coupling)
+    Safety criterion (heuristic early-warning, audit 2026: NOT a derived bound;
+    the kinematic |∇φ| bound is π (phase wrap), the same as K_φ).
 
     References: AGENTS.md Structural Fields; fields.compute_phase_gradient
     """

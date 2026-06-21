@@ -8,9 +8,10 @@ e-pi circle?
 commutant_bridge.py (Camino 7) unified the Riemann S_n-breaking gap and the
 Yang-Mills U(1) -> non-Abelian gap as ONE fact: confinement of the catalog to a
 COMMUTANT. This harness drills into WHY the open target is a phase. It is the exact
-mirror of Camino 7 for the e-pi edge of the Universal Tetrahedral Correspondence:
-the four constants (phi, gamma, pi, e) are the four REAL scales of the derivative
-tower over the graph (AGENTS.md, "The Operator-Derivative Tower"), and the catalog
+mirror of Camino 7 for the e-pi edge of the structural-field tetrad: the four
+fields are the four orders of the derivative tower over the graph (AGENTS.md);
+they are *associated* with (phi, gamma, pi, e), but audit 2026 found only pi is a
+genuine structural scale (gamma/e/phi are an overlay). The catalog
 f(A, L) is built from the SYMMETRIC coupling A and the self-adjoint dNFR operator
 L = D - A. Self-adjoint => real spectrum => the only phases it carries are arg in
 {0, pi} (a sign). The Riemann residue S(T) = (1/pi) arg zeta(1/2 + iT) is a
@@ -48,8 +49,9 @@ ENGINE (known theorems -- independent ground truth, all pre-TNFR):
 TNFR reading (AGENTS.md + src/tnfr/dynamics/adelic.py): nu_f = log p is a REAL
 per-node scalar frequency; the adelic phase exp(i t nu_f) is a DERIVED unitary
 rotation, not a generator, and its content (which primes, hence the residue's
-oscillation) is imposed, not derived. The four tetrad constants are real scales;
-the phase sector requires complexification through the e-pi circle, which leaves
+oscillation) is imposed, not derived. (Audit 2026: of the four tetrad constants
+only pi is a genuine structural scale; the others are an overlay.) The phase
+sector requires complexification through the e-pi circle, which leaves
 the self-adjoint catalog.
 
 HONEST SCOPE -- structural CHECKS pass; the THESIS verdict is OPEN, not PASS:
@@ -106,7 +108,7 @@ TOL = 1e-9
 _ZERO_EIG = 1e-6                     # eigenvalues below this have undefined phase
 _REAL_AXIS = np.array([0.0, np.pi, -np.pi])   # arg of a real number
 
-# The four constants of the Universal Tetrahedral Correspondence (real scales).
+# The four tetrad-associated constants (audit 2026: only pi is a genuine scale).
 PHI = (1.0 + np.sqrt(5.0)) / 2.0    # golden ratio        <-> Phi_s   (global)
 GAMMA = 0.5772156649015329          # Euler-Mascheroni    <-> |grad phi| (local)
 PI = np.pi                          # pi                  <-> K_phi   (curvature)

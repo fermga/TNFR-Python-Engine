@@ -114,7 +114,7 @@ _PARITY_TOL = 1e-8                  # |R v -/+ v| tolerance for definite parity
 _DRIFT_MARGIN = 3.0                 # barrier_drift must exceed stable_drift by this
 _CLASSICAL_REL_TOL = 5e-2          # TNFR Z vs classical -zeta'/zeta agreement
 
-# The four constants of the Universal Tetrahedral Correspondence (real scales).
+# The four tetrad-associated constants (audit 2026: only pi is a genuine scale).
 PHI = (1.0 + np.sqrt(5.0)) / 2.0
 GAMMA = 0.5772156649015329
 PI = np.pi

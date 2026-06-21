@@ -392,10 +392,10 @@ Conclusion: U6 follows from:
 
 **Why Δ Φ_s < φ ≈ 1.618?**
 
-From Universal Tetrahedral Correspondence:
+Empirical confinement bound (φ is adopted as motivation, no closed form):
 
-- **Theory:** φ ↔ Φ_s (golden ratio corresponds to structural potential field)
-- **Derivation:** Harmonic confinement - structural potential cannot exceed golden ratio
+- **Association (notational):** φ ~ Φ_s (golden ratio associated with the structural potential field)
+- **Status:** the Φ_s bound is empirical; φ is the nearest tetrad vertex below the ζ(2) saturation, not a derivation
 - **Below φ:** System remains in harmonic regime, structural confinement
 - **Above φ:** Harmonic breakdown → fragmentation (coherent → incoherent)
 - **Physical analog:** Golden ratio stability in natural systems

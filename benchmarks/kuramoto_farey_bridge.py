@@ -89,7 +89,7 @@ _SRC = os.path.abspath(os.path.join(_HERE, "..", "src"))
 if _SRC not in sys.path:
     sys.path.insert(0, _SRC)
 
-try:  # canonical golden ratio (phi <-> Phi_s, one of the four constants)
+try:  # golden ratio (phi, a notational tetrad vertex; audit 2026: overlay, not a derived scale)
     from tnfr.constants.canonical import PHI as _CANON_PHI  # noqa: E402
 
     _HAVE_CANON_PHI = True

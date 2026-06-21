@@ -2,7 +2,7 @@
 
 **Status**: Established result — derived from nodal equation and validated computationally  
 **Version**: 1.0 (March 2026)  
-**Prerequisite**: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4 (Universal Tetrahedral Correspondence)
+**Prerequisite**: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4 (the structural-field tetrad)
 
 ---
 
@@ -357,7 +357,7 @@ On the specific prime-ladder graph $G_{P14}$ used in the TNFR-Riemann program, w
 ## 14. References
 
 - [AGENTS.md](../AGENTS.md) — Primary repository reference (minimality summary)
-- [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — Universal Tetrahedral Correspondence (§4)
+- [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — the structural-field tetrad (§4)
 - [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — Deep analysis of the four constants
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 grammar derivations
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Noether-like conservation laws

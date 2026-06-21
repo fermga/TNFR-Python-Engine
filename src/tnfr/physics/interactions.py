@@ -166,7 +166,9 @@ def em_like(
     compute_phi_s : bool, default False
         If True, compute Φ_s before/after and report mean drift.
     grad_threshold : float, default PHYSICS_GRAD_THRESHOLD_CANONICAL
-        Threshold for mean |∇φ| warning (γ/π ≈ 0.1837).
+        Heuristic early-warning threshold for mean |∇φ| (γ/π ≈ 0.1837;
+        calibrated, audit 2026: NOT a derived bound — the kinematic bound is
+        |∇φ| ≤ π and the sync-onset is σ-dependent ≈ 0.29).
 
     Returns
     -------
@@ -244,7 +246,9 @@ def weak_like(
     ensure_stable_base : bool, default True
         Insert IL before OZ→ZHIR to satisfy U4b stable base requirement.
     grad_threshold : float, default PHYSICS_GRAD_THRESHOLD_CANONICAL
-        Threshold for mean |∇φ| warning (γ/π ≈ 0.1837).
+        Heuristic early-warning threshold for mean |∇φ| (γ/π ≈ 0.1837;
+        calibrated, audit 2026: NOT a derived bound — the kinematic bound is
+        |∇φ| ≤ π and the sync-onset is σ-dependent ≈ 0.29).
 
     Returns
     -------

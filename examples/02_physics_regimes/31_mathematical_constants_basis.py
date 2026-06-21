@@ -14,8 +14,8 @@ Key results shown:
   2. Harmonic accumulation: H_n - ln(n) -> gamma
   3. Phase curvature confinement: wrap_angle bounds |K_phi| <= pi
   4. Exponential correlation decay: C(r) ~ exp(-r/xi_C) with base e
-  5. Tetrahedral edge relations from canonical.py (zero empirical fitting)
-  6. Coherence threshold C_crit = phi*e/(pi+e) derived from {phi, e, pi} face
+  5. Constant-combination relations from canonical.py (notational, not derived)
+  6. Coherence threshold C_crit = phi*e/(pi+e) (notational combo, not derived)
   7. Cross-topology verification of canonical thresholds
 
 Physics basis:
@@ -126,8 +126,9 @@ def demo_gamma_accumulation() -> None:
             error = abs(diff - GAMMA)
             print(f"  {n:8d}  {h_n:14.10f}  {diff:14.10f}  {error:12.2e}")
 
-    # Kuramoto critical coupling: gamma/pi
-    print(f"\n  Critical coupling threshold (Kuramoto condition):")
+    # gamma/pi heuristic early-warning level (audit 2026: NOT a derived bound;
+    # the |grad phi| bound is the pi phase-wrap, the same as K_phi)
+    print(f"\n  Phase-gradient early-warning level (heuristic, not derived):")
     print(f"    gamma/pi = {GAMMA/PI:.10f}")
     print(f"    CRITICAL_EXPONENT = {CRITICAL_EXPONENT:.10f}")
     print(f"    In canonical.py: GRAD_PHI_CANONICAL_THRESHOLD = {GRAD_PHI_CANONICAL_THRESHOLD:.10f}")
@@ -261,7 +262,7 @@ def demo_e_propagation() -> None:
     print(f"\n  TNFR connection:")
     print(f"    Correlation decay is inherently exponential (Markov process)")
     print(f"    Base e ensures scale invariance under graph rescaling")
-    print(f"    e <-> xi_C in Universal Tetrahedral Correspondence")
+    print(f"    (e<->xi_C is near-tautological; the xi_C scale is 1/sqrt(lambda_2))")
 
 
 # ---------------------------------------------------------------------------
@@ -271,14 +272,14 @@ def demo_e_propagation() -> None:
 def demo_tetrahedral_edges() -> None:
     """Show all 6 edge and 4 face combinations from the tetrahedron."""
     print("\n" + "=" * 65)
-    print("  5. TETRAHEDRAL EDGE RELATIONS — Zero Empirical Fitting")
+    print("  5. CONSTANT-COMBINATION RELATIONS (notational, not derived)")
     print("=" * 65)
 
     edges = [
         ("phi-gamma", "phi/gamma", PHI / GAMMA, "Structural frequency base (nu_f scaling)"),
         ("phi-pi", "phi/(phi+pi)", PHI / (PHI + PI), "Optimization penalty factor"),
         ("phi-e", "phi/e", PHI / E, "EPI maximum canonical bound"),
-        ("gamma-pi", "gamma/pi", GAMMA / PI, "Phase gradient threshold (Kuramoto)"),
+        ("gamma-pi", "gamma/pi", GAMMA / PI, "Phase gradient early-warning (heuristic, not derived)"),
         ("gamma-e", "gamma/(e+gamma)", GAMMA / (E + GAMMA), "Temporal evolution rate"),
         ("pi-e", "pi/e", PI / E, "Spectral speedup factor"),
     ]

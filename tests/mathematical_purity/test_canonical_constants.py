@@ -1,9 +1,11 @@
-"""Test canonical constants mathematical purity.
+"""Test the canonical constants.
 
-Validates that all TNFR constants derive from universal constants (φ, γ, π, e)
-with zero empirical fitting and exact mathematical derivations.
-
-This is TIER 1: CRITICAL - Foundation of mathematical purity.
+Validates that the four constants (φ, γ, π, e) have exact mathematical values
+and that the named derived constants equal their (φ,γ,π,e) expressions. Audit
+2026: these expressions are a NOTATIONAL convention, NOT physical derivations —
+only π (phase wrap) and ξ_C ∝ 1/√λ₂ are genuine structural scales. This file
+checks internal consistency of the constant values, not a "mathematical purity"
+or constant↔field correspondence claim.
 """
 from __future__ import annotations
 
@@ -107,11 +109,12 @@ class TestZeroEmpiricalFitting:
         assert abs(INV_PHI - (PHI - 1.0)) < 1e-14
 
     def test_universal_tetrahedral_correspondence_constants(self):
-        """Test constants match Universal Tetrahedral Correspondence."""
-        # φ ↔ Φ_s (Global Harmonic)
+        """Test the four constant values (audit 2026: their field association is
+        an overlay, not a derivation — only π is a genuine structural scale)."""
+        # φ (associated with Φ_s as overlay)
         assert PHI > 1.618 and PHI < 1.619  # φ ≈ 1.618
         
-        # γ ↔ |∇φ| (Local Dynamic)  
+        # γ (associated with |∇φ| as overlay; the genuine bound is the π wrap)
         assert GAMMA > 0.577 and GAMMA < 0.578  # γ ≈ 0.577
         
         # π ↔ K_φ (Geometric Spatial)

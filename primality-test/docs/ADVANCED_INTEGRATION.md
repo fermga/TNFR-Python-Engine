@@ -246,13 +246,14 @@ print(f"Constants verified: {info['constants']}")
 
 ## Theoretical Integration
 
-### Universal Tetrahedral Correspondence
+### Structural-Field Tetrad
 
-The implementation provides the first practical application of the mapping:
-- **φ ↔ Φ_s**: Global harmonic confinement
-- **γ ↔ |∇φ|**: Local dynamic evolution  
-- **π ↔ K_φ**: Geometric spatial constraints
-- **e ↔ ξ_C**: Correlational memory decay
+The implementation uses the four-field tetrad (associated with the
+four constants notationally — only π is a genuine structural scale):
+- **Φ_s** (0th order): empirical confinement bound (φ is motivation only)
+- **|∇φ|** (1st order): bound |∇φ| ≤ π (phase wrap)
+- **π ↔ K_φ** (2nd order): the genuine phase-wrap scale; K_φ = L_rw·φ
+- **ξ_C** (correlation): scale set by the spectral gap, ξ_C ∝ 1/√λ₂
 
 ### Canonical Operator Integration
 
@@ -284,7 +285,7 @@ All operations comply with TNFR unified grammar rules U1-U6:
 
 ### Research Directions
 
-1. **Extended tetrahedral correspondence**: Higher-dimensional mappings
+1. **Extended tetrad fields**: Higher-order structural derivatives
 2. **Quantum TNFR integration**: Coherence in quantum systems
 3. **Cryptographic applications**: TNFR-based encryption schemes
 4. **Number theory exploration**: Deep prime structure analysis

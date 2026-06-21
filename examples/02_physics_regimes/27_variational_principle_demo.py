@@ -326,8 +326,8 @@ def demo_threshold_derivation() -> None:
     print("DERIVED: phi (inverse-square fixed point s^2-s-1=0), gamma")
     print("(harmonic gap lim H_n-ln n), e (memoryless decay sum 1/k!).")
     print("GEOMETRIC: pi (max phase angle on S^1 = arccos(-1)). The")
-    print("threshold ratios gamma/pi and 0.9*pi add a Kuramoto")
-    print("identification / safety margin on top of the derived constant.")
+    print("the |grad phi| bound is the pi phase-wrap (0.9*pi), same as K_phi;")
+    print("gamma/pi is a heuristic early-warning only (audit 2026: not derived).")
     print()
 
 

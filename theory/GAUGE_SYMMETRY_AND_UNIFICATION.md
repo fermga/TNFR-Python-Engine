@@ -128,11 +128,9 @@ Four interaction regimes emerge from the gauge structure, classified by which se
 | **strong_like** | $|F_C| \gg 0$ | Gauge confinement, strong curvature |
 | **gravity_like** | $\Phi_s \gg |\Psi|$ | Potential-dominant, long-range |
 
-**Constants**:
-- Regime dominance threshold: $1/\varphi \approx 0.618$
-- Strong regime threshold: $\gamma/\pi \approx 0.1837$
+**Activity criterion** (audit 2026 redesign): the four sectors share a unit score budget; a sector is *active* when its normalised score exceeds the equipartition share $1/N_\text{regimes} = 1/4$ (the maximum-entropy reference). This is parameter-free — it derives from the number of gauge sectors (the four structural channels), with no $(\varphi,\gamma,\pi,e)$ overlay constant. The dominant regime is always the sector with the highest score. The earlier per-sector thresholds ($1/\varphi$ for em/weak/gravity, $\gamma/\pi$ for strong, justified as a "Kuramoto critical coupling in gauge") were overlay values refuted by the 2026 tetrad audit and removed.
 
-**Implementation**: `src/tnfr/physics/gauge.py` — `classify_interaction_regime()`, `GaugeSnapshot` dataclass.
+**Implementation**: `src/tnfr/physics/gauge.py` — `classify_interaction_regime()`, `classify_interaction_regime_formal()`, `GaugeSnapshot` dataclass.
 
 ---
 

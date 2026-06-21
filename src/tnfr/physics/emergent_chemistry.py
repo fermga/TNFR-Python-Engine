@@ -26,17 +26,28 @@ already-emergent fact as the foundation:
      vanishes exactly at closed-shell (noble-like) configurations, in direct
      analogy with the primality criterion ΔNFR(n) = 0. Reactivity is |ΔNFR|.
 
-All coefficients derive from the canonical constants (φ, γ, π, e); there is no
-empirical fitting. The atomic number Z is therefore an *emergent count of
-filled structural eigenmodes*, not an imported physical constant.
+This layer has NO free scale parameters (audit 2026 redesign). The structural
+valence pressure ΔNFR_chem(Z) is the INTEGER structural distance of the outer
+shell to a closed configuration — the chemical analogue of the primality
+criterion ΔNFR(n) = 0, in natural units (one subshell step = 1). The (n+l)
+filling order is a pure integer excitation-count rule (total radial+angular
+quanta), not a constant correspondence. The earlier γ/π "excitation scale" and
+the 1/φ valence weight were overlay/notational factors (refuted 2026: only π is
+a genuine structural scale) and are removed. The atomic number Z is an
+*emergent count of filled structural eigenmodes*, not an imported constant.
 
 Honest scope:
   - The (2l+1) degeneracy is a rigorous numerical consequence of the manifold
     Laplacian (Laplace–Beltrami spectrum on the sphere).
-  - The aufbau (n+l) ordering is *structurally motivated* (νf ∝ excitation),
-    not derived from a variational nodal-equation argument; it is the minimal
-    assumption that lets the emergent magic numbers match the empirical noble
-    gases (2, 10, 18, 36, 54, 86). This assumption is flagged in the code.
+  - The aufbau (n+l) ordering is an integer EXCITATION-COUNT rule (total
+    radial + angular quanta), not a constant correspondence. It was tested
+    against the raw Laplacian spectrum of a concentric multi-shell manifold
+    (audit 2026): the free spectrum does NOT reproduce the (n+l) order, because
+    Madelung ordering reflects electron-electron screening that is absent from
+    a free graph Laplacian. The (n+l) count is therefore retained as an
+    explicit structural rule — the minimal integer ordering matching the
+    empirical noble gases (2, 10, 18, 36, 54, 86) — flagged as a count rule,
+    not a spectral derivation.
 
 Theoretical foundation: AGENTS.md (nodal equation, tetrad, discrete-mode
 regime), theory/TNFR_NUMBER_THEORY.md (ΔNFR = 0 equilibrium template).
@@ -52,36 +63,11 @@ from dataclasses import dataclass
 
 import networkx as nx
 
-from ..constants.canonical import PHI, GAMMA, PI, INV_PHI
 from ..mathematics.unified_numerical import np
 
 # ============================================================================
-# CANONICAL CHEMISTRY PARAMETERS (derived from φ, γ, π, e — no empirical fit)
+# STRUCTURAL CONSTANTS (integer eigenmode counts — no free scale parameters)
 # ============================================================================
-
-
-@dataclass(frozen=True)
-class EmergentChemistryParameters:
-    """Canonical coefficients for the emergent-chemistry layer.
-
-    Every coefficient is a pure function of (φ, γ, π, e), mirroring
-    ``ArithmeticTNFRParameters`` in the number-theory layer.
-    """
-
-    # Valence structural pressure weight (ΔNFR_chem scale). Mirrors the
-    # number-theory σ-pressure coefficient θ = 1/φ.
-    theta_valence: float = INV_PHI                 # 1/φ ≈ 0.6180
-
-    # Base structural frequency for the lowest eigenmode (νf_0). Same form as
-    # the arithmetic base frequency (φ/γ)/π.
-    nu_0: float = (PHI / GAMMA) / PI               # ≈ 0.8923
-
-    # Excitation-frequency increment per unit (n+l) total mode number.
-    # γ/π is the canonical phase-gradient scale (Kuramoto critical coupling).
-    nu_excitation: float = GAMMA / PI              # ≈ 0.1837
-
-    # Shell-gap coherence weight (used to score closed-shell stability).
-    coherence_gap: float = PHI * GAMMA             # φ·γ ≈ 0.9340
 
 
 # Subshell capacity: 2*(2l+1) = number of distinct ± phase-winding eigenmodes
@@ -260,28 +246,28 @@ def _valence_electrons(config: list[tuple[int, int, int]]) -> tuple[int, int]:
 
 def valence_delta_nfr(
     Z: int,
-    params: EmergentChemistryParameters | None = None,
     *,
     max_n: int = 7,
 ) -> float:
     """Structural valence pressure ΔNFR_chem(Z).
 
-    ΔNFR_chem = θ · d(Z), where d(Z) is the structural distance of the
-    outermost shell to a closed configuration. d(Z) = 0 *iff* the outer shell
-    is a closed duet (n=1) or octet (n>1). Thus:
+    ΔNFR_chem = d(Z), the INTEGER structural distance of the outermost shell
+    to a closed configuration, in natural units (one subshell step = 1).
+    d(Z) = 0 *iff* the outer shell is a closed duet (n=1) or octet (n>1):
 
         Z is noble-like  ⟺  ΔNFR_chem(Z) = 0
 
-    in direct analogy with the primality criterion ΔNFR(n) = 0.
+    in direct analogy with the primality criterion ΔNFR(n) = 0. There is no
+    free scale parameter (audit 2026 redesign).
     """
-    params = params or EmergentChemistryParameters()
     config = electron_configuration(Z, max_n=max_n)
     v, n_max = _valence_electrons(config)
     target = 2 if n_max == 1 else 8
     v_eff = v % target
-    # Structural distance to the nearest closed shell (gain vs. loss symmetry).
+    # Structural distance to the nearest closed shell (gain vs. loss symmetry),
+    # in natural units (one subshell step = 1). No free scale parameter.
     dist = min(v_eff, target - v_eff) if v_eff != 0 else 0
-    return params.theta_valence * float(dist)
+    return float(dist)
 
 
 @dataclass(frozen=True)
@@ -314,15 +300,13 @@ class EmergentElement:
 
 def classify_element(
     Z: int,
-    params: EmergentChemistryParameters | None = None,
     *,
     max_n: int = 7,
 ) -> EmergentElement:
     """Full pure-TNFR structural classification of element with count Z."""
-    params = params or EmergentChemistryParameters()
     config = electron_configuration(Z, max_n=max_n)
     v, n_max = _valence_electrons(config)
-    dnfr = valence_delta_nfr(Z, params, max_n=max_n)
+    dnfr = valence_delta_nfr(Z, max_n=max_n)
     closed = math.isclose(dnfr, 0.0, abs_tol=1e-12)
     magic = Z in emergent_magic_numbers(max_n=max_n)
     label = " ".join(
@@ -342,7 +326,6 @@ def classify_element(
 
 
 __all__ = [
-    "EmergentChemistryParameters",
     "EigenmodeShell",
     "EmergentElement",
     "fibonacci_sphere_graph",

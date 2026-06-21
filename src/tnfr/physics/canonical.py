@@ -635,8 +635,13 @@ def compute_phase_gradient(G: Any) -> dict[Any, float]:
     synchronized state (|∇φ| = 0), and high |∇φ| = high potential energy
     = high stress.
 
-    Safety threshold: |∇φ| < γ/π ≈ 0.1837 (Kuramoto critical coupling
-    in TNFR units, from Universal Tetrahedral Correspondence γ ↔ |∇φ|).
+    Safety threshold (telemetry): |∇φ| < γ/π ≈ 0.1837 is the *claimed* Kuramoto
+    critical coupling (Universal Tetrahedral Correspondence γ ↔ |∇φ|). NOTE
+    (audit 2026-06): a fair test finds |∇φ| at the synchronization onset is
+    ≈ 0.29 and σ-dependent, **not** the constant γ/π. The genuine kinematic
+    bound is |∇φ| ≤ π (a mean of wrapped angles); γ/π is a *dynamical transition*
+    value, not a universal constant. Treat it as an organizing heuristic, not a
+    derived threshold.
     """
     grad, _ = _compute_phase_gradient_and_curvature(G)
     return grad

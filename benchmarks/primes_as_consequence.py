@@ -18,8 +18,8 @@ THE TNFR MEANING (canonical, theory/TNFR_NUMBER_THEORY.md S3.3-S4):
   A natural number n carries structural pressure
       dNFR(n) = zeta.(Omega(n) - 1) + eta.(tau(n) - 2)
                 + theta.(sigma(n)/n - (1 + 1/n))
-  with canonical coefficients zeta = phi.gamma, eta = (gamma/phi).pi, theta = 1/phi
-  (Universal Tetrahedral Correspondence, zero fitting). For a prime p:
+  with coefficients zeta = phi.gamma, eta = (gamma/phi).pi, theta = 1/phi
+  (notational combos approximating empirical values; audit 2026: not derived). For a prime p:
   Omega(p) = 1, tau(p) = 2, sigma(p)/p = 1 + 1/p, so ALL THREE terms vanish:
       n is prime  <=>  dNFR(n) = 0.
   So a prime is a ZERO-PRESSURE structural equilibrium -- the optic-shift is real
@@ -137,7 +137,7 @@ except Exception:  # pragma: no cover
 TOL = 1e-9
 _DNFR_EPS = 1e-9                  # dNFR below this counts as a zero-pressure prime
 
-# Universal Tetrahedral Correspondence (canonical pressure coefficients).
+# Pressure coefficients (notational (phi,gamma,pi,e) combos; audit 2026: not derived).
 PHI = (1.0 + math.sqrt(5.0)) / 2.0
 GAMMA = 0.5772156649015329
 PI = math.pi
@@ -231,7 +231,7 @@ def test_reading_a_redescription(limit: int = 200) -> bool:
 
     src = "canonical tnfr_primality.core" if _HAVE_PRIMALITY else "inline fallback"
     print(f"  pressure source : {src} (coeffs zeta=phi.gamma, eta=(gamma/phi).pi,")
-    print("                    theta=1/phi -- Universal Tetrahedral Correspondence)")
+    print("                    theta=1/phi -- notational, not derived)")
     print(f"  range           : n = 2..{limit}")
     print(f"  dNFR(n) = 0 set == primes ?  exact = {exact} "
           f"(extra = {extra}, missed = {miss})")

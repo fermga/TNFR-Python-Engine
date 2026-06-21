@@ -14,8 +14,8 @@ The arithmetic ΔNFR equation
     ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
 
 vanishes if and only if n is prime (Theorem 4.1, TNFR_NUMBER_THEORY.md).
-Each coefficient (ζ, η, θ) derives from the Universal Tetrahedral
-Correspondence (φ, γ, π, e) with zero empirical fitting.
+Each coefficient (ζ, η, θ) is WRITTEN as a (φ, γ, π, e) combination chosen to
+approximate the original empirical values (audit 2026: notational, NOT derived).
 
 Experiments
 -----------
@@ -147,7 +147,7 @@ def experiment_2_component_breakdown():
     print()
 
     params = ArithmeticTNFRParameters()
-    print(f"Canonical coefficients (zero empirical fitting):")
+    print(f"Pressure coefficients (notational (phi,gamma,pi,e) combos, not derived):")
     print(f"  ζ = φ×γ     = {params.zeta:.4f}")
     print(f"  η = (γ/φ)×π = {params.eta:.4f}")
     print(f"  θ = 1/φ     = {params.theta:.4f}")

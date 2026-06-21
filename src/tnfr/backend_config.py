@@ -59,7 +59,7 @@ class TNFRConfig:
     cache_validation_results: bool = True
     max_validation_time_ms: float = 1000.0
     
-    # Structural Field Tetrad Parameters (Universal Tetrahedral Correspondence)
+    # Structural Field Tetrad Parameters (audit 2026: π genuine; γ/e/φ overlay)
     structural_potential_threshold: float = STRUCTURAL_ESCAPE_THRESHOLD_THEORETICAL  # e^ln(2) = 2.0
     phase_gradient_threshold: float = PHASE_GRADIENT_THRESHOLD_CANONICAL  # γ/π ≈ 0.1837
     phase_curvature_threshold: float = PHYSICS_CURVATURE_HOTSPOT_CANONICAL  # 0.9×π ≈ 2.8274
@@ -145,7 +145,7 @@ class TNFRConfig:
         }
     
     def get_structural_config(self) -> dict[str, Any]:
-        """Get structural field thresholds (Universal Tetrahedral Correspondence)."""
+        """Get structural field thresholds (tetrad; audit 2026: π genuine, rest overlay)."""
         return {
             "phi_s_threshold": self.structural_potential_threshold,
             "phase_gradient_threshold": self.phase_gradient_threshold,

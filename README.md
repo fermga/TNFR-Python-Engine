@@ -23,14 +23,14 @@ $$\frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t)$$
 
 Structural changes occur exclusively through **13 canonical operators** (AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH) governed by **unified grammar rules U1-U6**. Each operator carries a canonical contract: it acts on exactly one channel of the nodal equation — the form EPI, the capacity νf, the phase θ, or the pressure ΔNFR — at node or network scale.
 
-System state is characterized by four **structural fields** — the Universal Tetrahedral Correspondence:
+System state is characterized by four **structural fields** — the four orders of the discrete structural-derivative tower (the tetrad). Each is *associated* with a constant as a notational label; only **π** is a genuine structural scale (the phase-wrap bound of the phase sector). γ, e, φ are notational, not derived structural scales.
 
-| Constant | Field | Meaning |
-|----------|-------|---------|
-| φ | Φ_s | Structural potential (global stability) |
-| γ | \|∇φ\| | Phase gradient (local stress) |
-| π | K_φ | Phase curvature (geometric confinement) |
-| e | ξ_C | Coherence length (spatial correlations) |
+| Field | Tower order | Meaning & bound |
+|-------|-------------|------------------------------|
+| Φ_s | 0th (aggregation) | Structural potential (global stability); empirical bound, no closed form |
+| \|∇φ\| | 1st (local) | Phase gradient (local stress); bound \|∇φ\| ≤ π (phase wrap) |
+| K_φ | 2nd (local) | Phase curvature; bound \|K_φ\| < 0.9π; K_φ = L_rw·φ |
+| ξ_C | correlation | Coherence length; scale set by spectral gap, ξ_C ∝ 1/√λ₂ |
 
 **Complete theory**: [AGENTS.md](AGENTS.md)
 
@@ -177,7 +177,7 @@ benchmarks/            # 50 performance & structural-validation scripts
 |----------|-------------|
 | [AGENTS.md](AGENTS.md) | **Primary reference** — complete TNFR theory, operators, grammar, fields |
 | [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) | U1-U6 grammar derivations from physics |
-| [theory/FUNDAMENTAL_THEORY.md](theory/FUNDAMENTAL_THEORY.md) | Universal Tetrahedral Correspondence |
+| [theory/FUNDAMENTAL_THEORY.md](theory/FUNDAMENTAL_THEORY.md) | Structural-field tetrad & field scales |
 | [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) | Field implementation specifications |
 | [docs/STRUCTURAL_INTERFACE_THEORY.md](docs/STRUCTURAL_INTERFACE_THEORY.md) | Structural-interface programme: pipelines, fair benchmarks, validated results, limitations |
 | [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | TNFR-Riemann program |

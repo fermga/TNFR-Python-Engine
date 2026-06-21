@@ -121,7 +121,7 @@ _GAP_EPS = 1e-9                     # g(n) below this counts as a Paley-gap zero
 _ZERO_EIG = 1e-6                    # eigenvalues below this have undefined phase
 _REAL_AXIS = np.array([0.0, np.pi, -np.pi])   # arg of a real number
 
-# The four constants of the Universal Tetrahedral Correspondence (real scales).
+# The four tetrad-associated constants (audit 2026: only pi is a genuine scale).
 PHI = (1.0 + np.sqrt(5.0)) / 2.0
 GAMMA = 0.5772156649015329
 PI = np.pi

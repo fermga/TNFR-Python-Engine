@@ -309,7 +309,7 @@ All regimes emerge from the same nodal equation as limiting cases under differen
 
 ## 9. References
 
-- [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — Universal Tetrahedral Correspondence
+- [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — the structural-field tetrad
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 derivations
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws
 - [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) — Lagrangian formulation

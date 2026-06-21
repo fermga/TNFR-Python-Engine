@@ -180,7 +180,7 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
                 'delta_nfr': get_attr(G.nodes[n], ALIAS_DNFR, 0.05),
             }
         
-        # Apply synthetic step (canonical parameters from Universal Tetrahedral Correspondence)
+        # Apply synthetic step (notational (φ,γ,π,e) parameters; audit 2026: not derived)
         apply_synthetic_activation_sequence(G, alpha=CRITICAL_EXPONENT, dnfr_factor=EMERGENT_STABILITY_THRESHOLD_CANONICAL)  # γ/π, (φ+γ)/(π+γ)
         phi_s_after = compute_structural_potential(G)
         phi_s_after_mean = sum(phi_s_after.values()) / len(phi_s_after) if phi_s_after else 0.0
@@ -191,9 +191,10 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
             set_attr(G.nodes[n], ALIAS_THETA, original_state[n]['phase'])
             set_attr(G.nodes[n], ALIAS_DNFR, original_state[n]['delta_nfr'])
 
-    # Canonical threshold checks (Universal Tetrahedral Correspondence: γ ↔ |∇φ|)
-    phase_grad_ok = mean_grad < GRAD_PHI_CANONICAL_THRESHOLD  # γ/π ≈ 0.1837 Kuramoto critical coupling
-    curv_hotspots_ok = max_curv_abs < K_PHI_CANONICAL_THRESHOLD  # 0.9×π ≈ 2.8274 theoretical bounds
+    # Threshold checks (audit 2026: |∇φ| γ/π is a heuristic early-warning, not
+    # derived; the genuine bound is the π phase-wrap shared by |∇φ| and K_φ)
+    phase_grad_ok = mean_grad < GRAD_PHI_CANONICAL_THRESHOLD  # heuristic ≈ 0.1837 (kinematic bound is π)
+    curv_hotspots_ok = max_curv_abs < K_PHI_CANONICAL_THRESHOLD  # 0.9×π ≈ 2.8274 (phase wrap — genuine)
 
     # Coherence length categorization (empirical heuristic)
     n_nodes = len(G.nodes())

@@ -99,7 +99,7 @@ print(f"Accuracy: {results['accuracy']}")
 ### **Academic Contributions (v2.0)**
 
 #### **Number Theory Innovations**
-- 🏆 **First practical implementation** of Universal Tetrahedral Correspondence
+- 🏆 **First practical implementation** of structural-coherence prime detection (ΔNFR = 0)
 - 🏆 **Canonical operator integration** in computational number theory
 - 🏆 **Structural field analysis** for prime characteristics
 - 🏆 **Mathematical certificate system** with formal proofs

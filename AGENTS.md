@@ -111,10 +111,13 @@ spectral form of U2. See [src/tnfr/physics/structural_diffusion.py](src/tnfr/phy
 
 ---
 
-## 3. The structural tetrad & Universal Tetrahedral Correspondence
+## 3. The structural tetrad
 
-Four universal constants correspond exactly to four structural fields that
-characterize any coherent system on a graph.
+Four structural fields characterize any coherent system on a graph (the minimal
+derivative tower — minimality is DERIVED). Each field is *associated* with a
+mathematical constant `(φ, γ, π, e)` as a notational label; of these, only **π**
+is a genuine structural scale (the phase-wrap bound of the phase sector). The
+characteristic scale of each field is given below.
 
 | Constant | Value | Structural field | Symbol | Role |
 |----------|-------|------------------|--------|------|
@@ -123,16 +126,29 @@ characterize any coherent system on a graph.
 | **π** pi | 3.141… | Phase curvature | K_φ | Geometric torsion (2nd order) |
 | **e** Napier | 2.718… | Coherence length | ξ_C | Correlation range (non-local) |
 
-### Correspondence thresholds
+### Field scales
 
-- **φ ↔ Φ_s** — global harmonic confinement: `Δ Φ_s < φ ≈ 1.618` (U6 safety;
-  ceiling `2.0` = binary escape). Per-node `|Φ_s| < 0.7711` is **empirically
-  validated with no established closed form** (the earlier Γ(4/3)/Γ(1/3) identity
-  is wrong — that ratio is 1/3).
-- **γ ↔ |∇φ|** — Kuramoto critical coupling: `|∇φ| < γ/π ≈ 0.1837`.
-- **π ↔ K_φ** — circular geometry: `|K_φ| < 0.9·π ≈ 2.827` (90 % of the wrap-angle
-  bound `π`).
-- **e ↔ ξ_C** — exponential correlation decay `C(r) ~ exp(−r/ξ_C)`.
+The four-field basis is the minimal derivative tower. Each field has a
+characteristic scale:
+
+- **π — phase scale (geometric, exact).** Both phase derivatives are **wrapped
+  angles**, so `|∇φ| ≤ π` *and* `|K_φ| ≤ π` for any configuration — π scales the
+  whole **phase sector**, not K_φ alone. `|K_φ| < 0.9·π ≈ 2.827` sits at this wrap
+  limit (exact, parameter-free).
+- **|∇φ| — phase-wrap bounded.** Its genuine bound is `|∇φ| ≤ π`. The early-warning
+  level `γ/π ≈ 0.1837` is a heuristic, **not** a structural scale: the measured sync
+  onset is `≈ 0.29` and σ-dependent (a dynamical transition value).
+- **ξ_C — spectral gap.** The correlation length is set by the **spectral gap**:
+  `ξ_C ∝ 1/√λ₂` (verified). Exponential decay has base `e` tautologically.
+- **Φ_s — empirical confinement.** `Δ Φ_s < φ`, per-node `|Φ_s| < 0.7711`, an
+  empirically validated source-distribution bound with **no closed form**.
+
+**Structure (verified).** `K_φ` **is** the central operator applied to phase
+(`K_φ = L_rw·φ` in the smooth limit, corr = 1.000) — the phase image of the one operator that
+generates geometry/diffusion/modes; `ξ_C ∝ 1/√λ₂`. The organizing axis is **local** phase
+derivatives (`|∇φ|`, `K_φ`; π-bounded) vs **non-local** source/correlation (`Φ_s`, `ξ_C`), across
+the derivative orders. The tetrad is a real minimal basis; among the constants, only **π** is a
+genuine structural scale.
 
 ### Why exactly four (minimality)
 
@@ -320,12 +336,15 @@ in [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.
 - **C(t) — total coherence** `[0,1]`, the primary stability indicator:
   `C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|)`, derived from the nodal equation
   (equilibrium → `C → 1`). Strong coherence `C > (e·φ)/(π+e) ≈ 0.7506`; fragmentation
-  risk `C < 1/(π+1) ≈ 0.2415`. Both thresholds derive from the tetrad constants
-  (the tetrahedral correspondence), not from fitting.
+  risk `C < 1/(π+1) ≈ 0.2415`. The two threshold *values* are notational
+  tetrad-constant combinations (not derived from the dynamics, nor fitted to data;
+  treat as heuristic telemetry cuts).
 - **Si — sense index** `[0,1+]`, reorganization-capacity predictor: `Si > 0.8`
   excellent; `Si < 0.4` bifurcation-prone.
-- **Tetrad safety**: `Δ Φ_s < 1.618` (per-node `|Φ_s| < 0.7711`), `|∇φ| < 0.1837`,
-  `|K_φ| < 2.827`, `ξ_C` exponential scaling (critical above system diameter).
+- **Tetrad safety** (telemetry; see §3): only `|K_φ| < 0.9·π ≈ 2.827` is a genuine
+  geometric bound (phase wrap). `Δ Φ_s < 1.618` / `|Φ_s| < 0.7711` are empirical; `|∇φ| < 0.1837`
+  is a dynamical transition value (σ-dependent, not a constant); `ξ_C` is set by the spectral
+  gap `λ₂` (`ξ_C ∝ 1/√λ₂`), not by `e`.
 
 Required telemetry must stay in TNFR-coherent terms (C(t), Si, phase, νf, and the
 tetrad), in Hz_str units. Computation: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py),

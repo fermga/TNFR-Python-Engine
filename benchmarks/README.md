@@ -362,8 +362,9 @@ shape*, never that TNFR proves Yang–Mills, RH, or a mass gap.
 
 `phase_wall.py` is the e–π companion to that deepest path and its thesis verdict
 is likewise, by design, **OPEN**. It asks *why* the open target is a phase. The
-four constants of the Universal Tetrahedral Correspondence (`φ, γ, π, e`) are the
-four **real** scales of the derivative tower over the graph, and the catalog is
+four fields of the tetrad are the four orders of the derivative tower over the
+graph (associated with `φ, γ, π, e` notationally; only π is a
+genuine scale), and the catalog is
 built from the symmetric coupling `A = Aᵀ` and the self-adjoint `L = D − A`. Its
 structural checks pass at machine precision: every `f(A,L)` is self-adjoint, so its
 spectrum is real and its eigen-phases are locked to `arg ∈ {0, π}` (a sign), while
@@ -445,7 +446,7 @@ and `paley_bridge.py`'s `is_prime`/`paley_gap`, and cross-checks the canonical
 `tnfr.riemann.paley_gap_coercivity`. It separates two readings of the canonical
 theorem *“n prime ⟺ ΔNFR(n) = 0”* (`theory/TNFR_NUMBER_THEORY.md` §4): **Reading A**
 evaluates `ΔNFR(n) = ζ(Ω−1) + η(τ−2) + θ(σ/n − (1+1/n))` (coefficients `ζ = φγ`,
-`η = (γ/φ)π`, `θ = 1/φ` — Universal Tetrahedral Correspondence, zero fitting) and
+`η = (γ/φ)π`, `θ = 1/φ` — notational combos approximating empirical values; not derived) and
 reproduces the primes `n ≤ 200` *exactly*, but it **consumes the factorization** —
 `Ω, τ, σ` are obtained by `n % d`, so as a *derivation* it is circular (`3026` trial
 divisions consumed; primes go IN and come back re-labelled `ΔNFR = 0`). **Reading B**

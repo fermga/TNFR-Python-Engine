@@ -107,7 +107,7 @@ def demo_chemistry() -> None:
               f"{e.delta_nfr:7.4f}   {status}")
     nobles_ok = all(classify_element(z).closed_shell for z in (2, 10, 18, 36, 54))
     print(f"  → every noble gas has ΔNFR_chem = 0: {nobles_ok}")
-    print("  → halogens & alkali share |ΔNFR| = 1/φ ≈ 0.618 (one step from closure)")
+    print("  → halogens & alkali share |ΔNFR| = 1 (one structural step from closure)")
 
 
 def demo_particles() -> None:

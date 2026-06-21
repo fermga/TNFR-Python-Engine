@@ -108,10 +108,7 @@ except ImportError:  # pragma: no cover
     nx = None
 
 from ..constants.canonical import (
-    GAMMA,
     PI as PI_CONST,
-    INV_PHI,
-    CRITICAL_EXPONENT,
 )
 from .canonical import (
     compute_structural_potential,
@@ -1174,39 +1171,42 @@ class BianchiIdentityResult:
     num_coboundaries_tested: int
 
 # ---------------------------------------------------------------------------
-# Regime thresholds — derived from Universal Tetrahedral Correspondence
+# Regime activity criterion — emergent equipartition (audit 2026 redesign)
 # ---------------------------------------------------------------------------
-
-# Dominance threshold: φ/(1+φ) = 1/φ ≈ 0.618
-# A field sector "dominates" when its normalised contribution exceeds
-# the golden fraction — the self-similar partition of the unit interval.
-REGIME_DOMINANCE_THRESHOLD = INV_PHI  # 1/φ ≈ 0.6180
-
-# Gauge curvature criticality: γ/π ≈ 0.1837
-# Same threshold as the phase gradient critical coupling (Kuramoto in
-# TNFR units).  When <|F|>/π exceeds this, the gauge field is in the
-# "strong" confinement regime.
-REGIME_STRONG_THRESHOLD = CRITICAL_EXPONENT  # γ/π ≈ 0.1837
-
-# Sub-dominant secondary threshold: γ/(π+γ) ≈ 0.155
-REGIME_SECONDARY_THRESHOLD = GAMMA / (PI_CONST + GAMMA)
+# A node's interaction character is shared among the four gauge sectors
+# (em/weak/strong/gravity) as normalised scores that sum to 1. The neutral,
+# maximum-entropy reference is the equipartition share 1/N_REGIMES = 1/4: a
+# sector is "active" when it captures MORE than its fair quarter of the
+# four-channel budget. This boundary is derived purely from the NUMBER of
+# gauge sectors (the four structural channels of the tetrad), with NO
+# (φ,γ,π,e) overlay constant.
+#
+# The earlier per-sector thresholds (1/φ for em/weak/gravity, γ/π for strong)
+# were calibrated overlay values whose "derived" status was refuted by the
+# 2026 tetrad audit (only π is a genuine structural scale, and the γ/π strong
+# boundary in particular carried the refuted "Kuramoto critical coupling"
+# justification). They are removed in favour of this parameter-free criterion.
+N_REGIMES = 4
+REGIME_ACTIVITY_SHARE = 1.0 / N_REGIMES  # equipartition reference = 0.25
 
 @dataclass(frozen=True)
 class InteractionRegimeMetrics:
-    r"""Quantitative per-node interaction regime with TNFR-derived thresholds.
+    r"""Quantitative per-node interaction regime with an emergent activity rule.
 
-    Four order parameters, each derived from the Universal Tetrahedral
-    Correspondence, classify the local interaction character:
+    Four order parameters characterise the local interaction character; the
+    dominant regime is the one capturing the largest share of the four-sector
+    energy budget. Sector "activity" uses the parameter-free equipartition
+    criterion (audit 2026 redesign): a sector is active when its normalised
+    score exceeds 1/N_REGIMES = 0.25, the maximum-entropy reference. No
+    (φ,γ,π,e) overlay constant enters the classification.
 
     O_em  = |cos(arg Ψ)| — geometric (K_φ) dominance fraction
     O_wk  = |sin(arg Ψ)| — transport (J_φ) dominance fraction
-    O_st  = ⟨|F_C|⟩ / π  — mean normalised gauge curvature
+    O_st  = ⟨|F_C|⟩ / π  — mean normalised gauge curvature (π = phase-wrap scale)
     O_gr  = Φ_s² / (Φ_s² + |Ψ|²) — potential dominance fraction
 
-    Threshold derivation:
-    - em/weak: O > 1/φ ≈ 0.618 (golden fraction dominance)
-    - strong:  O > γ/π ≈ 0.184 (Kuramoto critical coupling in gauge sector)
-    - gravity: O > 1/φ ≈ 0.618 (golden fraction dominance)
+    Activity criterion (uniform across sectors):
+    - a sector is active ⟺ regime_scores[sector] > 1/N_REGIMES = 0.25.
 
     Attributes
     ----------
@@ -1225,7 +1225,8 @@ class InteractionRegimeMetrics:
     regime_scores : dict[str, float]
         Normalised scores for each regime (sum ≈ 1).
     above_threshold : dict[str, bool]
-        Whether each order parameter exceeds its canonical threshold.
+        Whether each regime's normalised score exceeds the equipartition
+        share 1/N_REGIMES = 0.25 (emergent activity, no overlay constant).
     mixing_angle : float
         arg(Ψ) in radians — the gauge-dependent mixing angle between
         geometric (K_φ) and transport (J_φ) sectors.
@@ -1591,28 +1592,28 @@ def classify_interaction_regime_formal(
     G: Any,
     node: Any,
 ) -> InteractionRegimeMetrics:
-    r"""Classify the interaction regime with formal TNFR-derived metrics.
+    r"""Classify the interaction regime with formal TNFR structural metrics.
 
     Computes four order parameters at the node and classifies the dominant
     interaction character.  Unlike the heuristic ``classify_interaction_regime``,
-    this function uses thresholds derived exclusively from the Universal
-    Tetrahedral Correspondence constants (φ, γ, π, e).
+    this function also reports per-sector ``above_threshold`` activity using the
+    parameter-free equipartition criterion (audit 2026 redesign): a sector is
+    active when its normalised score exceeds 1/N_REGIMES = 0.25. No (φ, γ, π, e)
+    overlay constant enters the classification.
 
     **Order parameters**:
 
     1. O_em = |cos(arg Ψ)| — geometric (K_φ) contribution to |Ψ|.
-       Threshold: O_em > 1/φ ≈ 0.618 (golden dominance fraction).
 
     2. O_wk = |sin(arg Ψ)| — transport (J_φ) contribution to |Ψ|.
-       Threshold: O_wk > 1/φ ≈ 0.618.
 
-    3. O_st = ⟨|F_C|⟩ / π — normalised gauge curvature.
-       Threshold: O_st > γ/π ≈ 0.184 (phase gradient criticality).
+    3. O_st = ⟨|F_C|⟩ / π — normalised gauge curvature (π = phase-wrap scale).
 
     4. O_gr = Φ_s² / (Φ_s² + |Ψ|²) — potential dominance.
-       Threshold: O_gr > 1/φ ≈ 0.618.
 
-    The dominant regime is the one with the highest normalised score.
+    The dominant regime is the one with the highest normalised score; a sector
+    is "active" (``above_threshold``) when its score exceeds the equipartition
+    share 1/N_REGIMES = 0.25, uniformly across all four sectors.
 
     Parameters
     ----------
@@ -1666,13 +1667,12 @@ def classify_interaction_regime_formal(
 
     dominant = max(scores, key=scores.get)  # type: ignore
 
-    # --- Threshold checks ---
-    above = {
-        "em_like": o_em > REGIME_DOMINANCE_THRESHOLD,
-        "weak_like": o_wk > REGIME_DOMINANCE_THRESHOLD,
-        "strong_like": o_st > REGIME_STRONG_THRESHOLD,
-        "gravity_like": o_gr > REGIME_DOMINANCE_THRESHOLD,
-    }
+    # --- Regime activity (emergent equipartition criterion) ---
+    # A sector is "active" when its normalised score exceeds the neutral
+    # equipartition share 1/N_REGIMES = 0.25 (it captures more than its fair
+    # quarter of the four-channel budget). Derived from the number of gauge
+    # sectors, with no overlay constant; uniform across all four sectors.
+    above = {k: scores[k] > REGIME_ACTIVITY_SHARE for k in scores}
 
     return InteractionRegimeMetrics(
         node=node,

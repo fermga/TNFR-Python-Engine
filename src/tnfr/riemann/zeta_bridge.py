@@ -44,12 +44,11 @@ from .spectral_zeta import (
     test_conjecture_10_1,
 )
 
-# Canonical regularisation buffer for the spectral zeta reflection.
-# Derived from the Universal Tetrahedral Correspondence (γ ↔ |∇φ|):
-# CRITICAL_EXPONENT = γ/π ≈ 0.1837 is the same Kuramoto-derived threshold
-# used as the canonical phase-gradient bound across TNFR. Using it as the
-# spectral-shift buffer replaces the prior ad-hoc 0.1 value with a
-# first-principles constant traceable to the nodal equation.
+# Regularisation buffer for the spectral zeta reflection. A small positive
+# shift that ensures (λ + a) > 0; its exact value is immaterial (any small
+# positive buffer works). It is written as γ/π ≈ 0.1837 for notational
+# consistency, but (audit 2026) this is NOT a first-principles constant —
+# γ/π is a heuristic, not derived from the nodal equation.
 _SPECTRAL_ZETA_SHIFT_BUFFER = CRITICAL_EXPONENT
 
 # ---------------------------------------------------------------------------
@@ -169,10 +168,10 @@ class SpectralZetaReflection:
     shift_value: float = 0.0
     """Regularisation shift a applied to all spectra: ζ(u;a)=Σ(λ+a)^(-u).
 
-    Composed as a = max(0, -min_eigenvalue) + γ/π, where the canonical
-    buffer γ/π = CRITICAL_EXPONENT comes from the Universal Tetrahedral
-    Correspondence (γ ↔ |∇φ|). This replaces a prior ad-hoc 0.1 buffer
-    with a constant derivable from TNFR first principles.
+    Composed as a = max(0, -min_eigenvalue) + γ/π, where the buffer γ/π =
+    CRITICAL_EXPONENT is a small positive shift written for notational
+    consistency. Its exact value is immaterial (any small positive buffer
+    works); audit 2026: γ/π is a heuristic, NOT a first-principles constant.
     """
 
     shift_canonical: bool = True
@@ -460,8 +459,8 @@ def compute_spectral_zeta_reflection(
     evals_L, _ = compute_eigensystem(k, 0.5)
 
     # Regularisation shift: ensure all (λ + a) > 0 for ALL spectra.
-    # The buffer is γ/π (canonical, Universal Tetrahedral Correspondence)
-    # rather than the previous ad-hoc 0.1.
+    # The buffer is γ/π (a small positive shift, notational; audit 2026: not
+    # derived — its exact value is immaterial, any small positive buffer works).
     all_min = min(evals_s.min(), evals_r.min(), evals_L.min())
     shift = max(0.0, -all_min) + _SPECTRAL_ZETA_SHIFT_BUFFER
 

@@ -18,7 +18,7 @@ Expected blind spots:
                     fields look safe, but Phi_s exceeds 0.7711
   - Without |grad_phi|:  Local fragmentation masked by high C(t)
                     because C(t) is scaling-invariant; |grad_phi| shows
-                    gradient exceeding gamma/pi
+                    gradient exceeding its heuristic early-warning (gamma/pi)
   - Without K_phi:  Geometric singularities hidden; same |grad_phi|
                     but hidden torsion/vortex; K_phi exceeds 2.83
   - Without xi_C:  Phase transition undetectable; all pointwise fields

@@ -6,7 +6,7 @@ the translation layer requested in the "Módulo Traductor Mecánica Clásica" ta
 
 Theoretical Foundation
 ----------------------
-The mapping relies on the Universal Tetrahedral Correspondence and the Nodal Equation:
+The mapping relies on the Nodal Equation:
     ∂EPI/∂t = νf · ΔNFR(t)
 
 This relationship reveals that Classical Mechanics is a limiting case of TNFR

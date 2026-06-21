@@ -29,11 +29,18 @@ TIER 2 — ENGINE-CONFIGURATION CONSTANTS
     derived from the nodal equation. They carry no nodal-physics meaning
     and must not be cited as first-principles results.
 
-The four canonical vertices:
-- φ (Golden Ratio): structural optimality / confinement scale
-- γ (Euler–Mascheroni): arithmetic / harmonic-accumulation coupling
-- π (Archimedes): geometric / phase coupling
-- e (Napier): natural exponential base (correlation decay)
+The four notational vertices (audit 2026: these are a parametrisation
+convention, NOT four equal structural scales — only π is a genuine
+structural scale; γ, e, φ are recoverable as mathematical identities but
+are an organizing overlay):
+- π (Archimedes): GENUINE structural scale — the phase-wrap bound shared
+  by |∇φ| and K_φ (the whole phase sector); K_φ = L_rw·φ.
+- φ (Golden Ratio): motivation for the Φ_s confinement scale (empirical,
+  no closed form); a notational vertex elsewhere.
+- γ (Euler–Mascheroni): harmonic-accumulation identity; NOT the scale of
+  |∇φ| (overlay). A notational vertex.
+- e (Napier): base of exponential decay (tautological); the ξ_C scale is
+  the spectral gap ξ_C ∝ 1/√λ₂, not e. A notational vertex.
 
 Author: TNFR Research Team
 Date: November 29, 2025 (two-tier scope clarified 2026-06)
@@ -106,7 +113,9 @@ PHASE_COUPLING_BASE = GAMMA / PHI           # γ/φ ≈ 0.3567 (phase synchroniz
 RESONANCE_THRESHOLD = math.exp(-PHI)        # e^(-φ) ≈ 0.1983 (resonance detection)
 BIFURCATION_THRESHOLD = PHI**2              # φ² ≈ 2.6180 (bifurcation trigger)
 COHERENCE_SCALING = INV_PHI                 # 1/φ ≈ 0.6180 (coherence normalization)
-CRITICAL_EXPONENT = GAMMA / PI              # γ/π ≈ 0.1837 (scaling exponent)
+# Audit 2026: HEURISTIC regime-classification scale, NOT a derived critical
+# exponent (the measured phase-transition exponent is protocol-dependent).
+CRITICAL_EXPONENT = GAMMA / PI              # γ/π ≈ 0.1837 (heuristic scale)
 
 # Operator scaling factors (canonical derivations)
 SHA_VF_FACTOR = 1.0 - GAMMA / (PI + E)     # 1 - γ/(π+e) ≈ 0.9015 (silence frequency reduction)
@@ -153,7 +162,7 @@ VF_MAX_CANONICAL = PI * PHI                 # π×φ ≈ 5.0832 (geometric-harmo
 VF_MIN_CANONICAL = 0.0                      # Zero remains canonical (death state)
 
 # Coupling constants (canonical local interactions)
-KL_MIN_CANONICAL = GAMMA / (PI * E * PHI)   # γ/(π×e×φ) ≈ 0.0418 (tetrahedral minimum coupling)
+KL_MIN_CANONICAL = GAMMA / (PI * E * PHI)   # γ/(π×e×φ) ≈ 0.0418 (notational minimum coupling)
 KL_MAX_CANONICAL = GAMMA / (PI + GAMMA)     # γ/(π+γ) ≈ 0.1552 (transcendental coupling limit)
 
 # Adaptation constants (canonical change rates)
@@ -176,7 +185,7 @@ GLYPH_SELECTOR_MARGIN_CANONICAL = GAMMA / (PI * E * PHI)  # Same as KL_MIN (boun
 # ============================================================================
 
 # Topological factor bounds (canonical spectral limits)
-K_TOP_MIN_CANONICAL = GAMMA / (PI * E * PHI)        # γ/(π×e×φ) ≈ 0.0418 (tetrahedral spectral minimum)
+K_TOP_MIN_CANONICAL = GAMMA / (PI * E * PHI)        # γ/(π×e×φ) ≈ 0.0418 (notational spectral minimum)
 K_TOP_MAX_CANONICAL = PHI * GAMMA                   # φ×γ ≈ 0.9340 (harmonic spectral maximum)
 K_TOP_FALLBACK_CANONICAL = PHI / GAMMA             # φ/γ ≈ 2.8032 (golden ratio fallback)
 
@@ -495,8 +504,10 @@ class CanonicalArithmeticParameters:
 # equals 1/3, not 0.7711. The name retains VON_KOCH for code-compat.
 PHI_S_VON_KOCH_THRESHOLD: float = 0.7711
 
-# |∇φ|: Phase Gradient Field — γ/π from Kuramoto critical coupling (Universal Tetrahedral Correspondence)
-GRAD_PHI_CANONICAL_THRESHOLD = GAMMA / PI                # γ/π ≈ 0.1837
+# |∇φ|: Phase Gradient Field — HEURISTIC early-warning level γ/π (audit 2026:
+# NOT a derived bound; the kinematic bound is |∇φ| ≤ π (wrap), the SAME as K_φ;
+# the sync-onset is σ-dependent ≈ 0.29, not the constant γ/π).
+GRAD_PHI_CANONICAL_THRESHOLD = GAMMA / PI                # heuristic ≈ 0.1837
 
 # |K_φ|: Phase Curvature Field — 0.9×π from wrap_angle bounds (90% of π maximum)
 K_PHI_CANONICAL_THRESHOLD = 0.9 * PI                     # 0.9×π ≈ 2.8274
@@ -581,10 +592,10 @@ ARITHMETIC_FFT_ENHANCEMENT_CANONICAL = 4 * (PHI**2) / (PI**2)        # 4·φ²/�
 # PHASE 7: Physics Module Canonicalization (Fields & Interactions)
 # ============================================================================
 
-# Physics interactions canonical thresholds
-# Phase gradient threshold: γ/π from Kuramoto critical coupling in TNFR units
-# (Universal Tetrahedral Correspondence: γ ↔ |∇φ|)
-PHASE_GRADIENT_THRESHOLD_CANONICAL = GRAD_PHI_CANONICAL_THRESHOLD  # γ/π ≈ 0.1837 (alias)
+# Physics interactions thresholds
+# Phase-gradient early-warning level γ/π (audit 2026: HEURISTIC, not derived —
+# the kinematic |∇φ| bound is π (wrap); the sync-onset is σ-dependent).
+PHASE_GRADIENT_THRESHOLD_CANONICAL = GRAD_PHI_CANONICAL_THRESHOLD  # heuristic ≈ 0.1837 (alias)
 # Legacy alias for backward compatibility
 PHYSICS_GRAD_THRESHOLD_CANONICAL = PHASE_GRADIENT_THRESHOLD_CANONICAL
 PHYSICS_CURVATURE_HOTSPOT_CANONICAL = K_PHI_CANONICAL_THRESHOLD  # 0.9×π ≈ 2.8274 (alias)

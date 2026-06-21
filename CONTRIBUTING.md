@@ -1,9 +1,9 @@
 # Contributing to TNFR
 
 **Version**: 0.0.3.4  
-**Status**: Complete theoretical framework with Universal Tetrahedral Correspondence  
-**Authority**: Canonical constants derived from TNFR theory  
-**Quality**: Production-ready with 1,655 tests (1,646 passing, 9 skipped)  
+**Status**: Complete theoretical framework grounded in the nodal equation  
+**Authority**: the nodal equation ∂EPI/∂t = νf·ΔNFR(t) and the structural-field tetrad  
+**Quality**: Production-ready test suite  
 
 This document provides guidelines for contributing to the TNFR (Resonant Fractal Nature Theory) project. TNFR constitutes a computational framework for modeling complex systems through coherent patterns and resonance dynamics.
 
@@ -11,9 +11,9 @@ This document provides guidelines for contributing to the TNFR (Resonant Fractal
 
 All contributions must maintain theoretical consistency. Requirements:
 
-- **Derived Parameters**: All numerical values must derive from universal constants (φ, γ, π, e)  
-- **Canonical Constants**: Use `from tnfr.constants.canonical import *`  
-- **Physics-Based Design**: Trace all decisions to nodal equation or Universal Tetrahedral Correspondence  
+- **Physics-derived where it counts**: structural bounds must trace to the nodal equation / dynamics (e.g. π phase-wrap, ξ_C ∝ 1/√λ₂, sampling-noise z-score scales). Other parameters MAY be expressed as (φ,γ,π,e) combinations as a notational anti-magic-number convention, but must NOT be presented as derived/canonical.  
+- **No magic, no fake derivation**: prefer a quantity measured from the system over a fixed combination of constants; never present a notational combination as a derivation.  
+- **Canonical Constants**: Use `from tnfr.constants.canonical import *` for the notational constants.  
 - **Grammar Compliance**: Operator sequences must satisfy U1-U6 rules
 
 ## Table of Contents

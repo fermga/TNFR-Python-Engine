@@ -79,7 +79,7 @@ ZETA_CANONICAL = 1.0  # Factorization pressure coefficient
 ETA_CANONICAL = 0.8   # Divisor pressure coefficient  
 THETA_CANONICAL = 0.6 # Sigma pressure coefficient
 
-# Optimized thresholds from tetrahedral correspondence
+# Optimized thresholds (notational (φ,γ,π,e) combos; audit 2026: not derived)
 PRIME_THRESHOLD_HP = GAMMA_HP / (E_HP * PI_HP)  # ≈ 0.0676
 
 @dataclass

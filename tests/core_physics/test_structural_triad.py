@@ -269,7 +269,7 @@ class TestTriadCoherence:
         
     def test_triad_canonical_parameter_relationships(self) -> None:
         """Test triad respects universal constants."""
-        G = nx.complete_graph(4)  # Tetrahedral (4 universal constants)
+        G = nx.complete_graph(4)  # 4-node complete graph (seeded with the four constant values)
         
         # Initialize with canonical parameter relationships
         constants = [PHI, GAMMA, PI, E]
@@ -290,7 +290,7 @@ class TestTriadCoherence:
             # Phase should be φ-normalized and in valid range
             assert 0 <= phase < 2*PI
             
-        # Network should maintain tetrahedral correspondence
-        assert len(G.nodes()) == 4  # Four nodes for four constants
+        # 4-node complete graph seeded with the four constant values
+        assert len(G.nodes()) == 4  # four nodes (notational, audit 2026)
         frequencies = [G.nodes[node]['νf'] for node in G.nodes()]
         assert set(frequencies) == set(constants)  # All constants represented

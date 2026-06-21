@@ -94,7 +94,7 @@ class CycleDetector:
     """
 
     # Minimum health score for valid regenerative cycle
-    MIN_HEALTH_SCORE = CYCLE_MIN_HEALTH_CANONICAL  # φ/(e+γ) ≈ 0.4910 (canonical health threshold from tetrahedral correspondence)
+    MIN_HEALTH_SCORE = CYCLE_MIN_HEALTH_CANONICAL  # φ/(e+γ) ≈ 0.4910 (notational health threshold)
 
     def analyze_potential_cycle(
         self, sequence: Sequence[str], regenerator_index: int
@@ -314,28 +314,28 @@ class CycleDetector:
 
         # 1. Good start (emission or reception)
         if sequence[0] in {EMISSION, RECEPTION, COHERENCE}:
-            score += round(1.0 / (PI + 1.0), 3)  # 1/(π+1) ≈ 0.242 (tetrahedral correspondence: initiation bonus via geometric transcendence)
+            score += round(1.0 / (PI + 1.0), 3)  # 1/(π+1) ≈ 0.242 (notational: initiation bonus)
 
         # 2. Good ending (check has_closure from health metrics)
         if health_metrics.get("has_closure", False):
-            score += round(1.0 / (PI + 1.0), 3)  # 1/(π+1) ≈ 0.242 (tetrahedral correspondence: closure bonus via geometric transcendence)
+            score += round(1.0 / (PI + 1.0), 3)  # 1/(π+1) ≈ 0.242 (notational: closure bonus)
 
         # 3. Contains coupling (network integration)
         if COUPLING in sequence:
-            score += round(GAMMA / (PI + E), 3)  # γ/(π+e) ≈ 0.154 (tetrahedral correspondence: coupling bonus via dynamic constraint)
+            score += round(GAMMA / (PI + E), 3)  # γ/(π+e) ≈ 0.154 (notational: coupling bonus)
 
         # 4. Contains resonance (amplification)
         if RESONANCE in sequence:
-            score += round(GAMMA / (PI + E), 3)  # γ/(π+e) ≈ 0.154 (tetrahedral correspondence: resonance bonus via dynamic constraint)
+            score += round(GAMMA / (PI + E), 3)  # γ/(π+e) ≈ 0.154 (notational: resonance bonus)
 
         # 5. Has emission or reception (information flow)
         if EMISSION in sequence or RECEPTION in sequence:
-            score += round(1.0 / (E + PHI * 2), 3)  # 1/(e+2φ) ≈ 0.103 (tetrahedral correspondence: flow bonus via exponential-harmonic constraint)
+            score += round(1.0 / (E + PHI * 2), 3)  # 1/(e+2φ) ≈ 0.103 (notational: flow bonus)
 
         # 6. Bonus for cyclic closure (starts and ends with stabilizers)
         if len(sequence) >= 2:
             if sequence[0] in _STABILIZERS_SET and sequence[-1] in _STABILIZERS_SET:
-                score += round(1.0 / (E + PHI * 2), 3)  # 1/(e+2φ) ≈ 0.103 (tetrahedral correspondence: closure bonus via exponential-harmonic constraint)
+                score += round(1.0 / (E + PHI * 2), 3)  # 1/(e+2φ) ≈ 0.103 (notational: closure bonus)
 
         return min(1.0, score)
 

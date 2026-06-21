@@ -1,10 +1,10 @@
-# TNFR Mathematical Purity Era Test Suite
+# TNFR Test Suite
 
-This document describes the completely rewritten test suite for TNFR after achieving **497+ canonical constants** and **pure mathematical framework** status. All tests now validate mathematical purity, canonical parameter usage, and fundamental TNFR physics.
+This document describes the TNFR test suite. Parameters written as (φ,γ,π,e) combinations are a notational convention, NOT derivations; only π (phase wrap) and ξ_C ∝ 1/√λ₂ are genuine structural scales. Tests validate the nodal equation, structural fields, grammar U1-U6, and the 13 operators.
 
-## Test Organization (Mathematical Purity Era)
+## Test Organization
 
-- **mathematical_purity/** - TIER 1: Canonical constants and zero empirical fitting validation
+- **mathematical_purity/** - TIER 1: canonical-constants consistency (notational)
 - **core_physics/** - TIER 2: Nodal equation, structural fields, and fundamental physics
 - **grammar_operators/** - TIER 3: Unified grammar U1-U6 and 13 canonical operators  
 - **integration/** - TIER 4: End-to-end pure TNFR engine workflows

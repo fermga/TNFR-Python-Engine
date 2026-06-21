@@ -19,18 +19,18 @@ The core of TNFR primality testing is the arithmetic pressure equation:
 - `τ(n)` = total number of divisors of n  
 - `σ(n)` = sum of all divisors of n
 
-**Canonical TNFR coefficients** (derived from φ, γ, π, e — zero empirical fitting):
+**TNFR pressure coefficients** (written as (φ, γ, π, e) combinations; audit
+2026: notational, NOT derived — chosen to approximate the original empirical
+values ζ=1.0, η=0.8, θ=0.6):
 - `ζ = φ×γ ≈ 0.9340` = factorization pressure coefficient
 - `η = (γ/φ)×π ≈ 1.1207` = divisor pressure coefficient  
 - `θ = 1/φ ≈ 0.6180` = abundance pressure coefficient
 
-These coefficients emerge from the Universal Tetrahedral Correspondence:
-- ζ = φ×γ links the golden ratio (harmonic proportion) with the Euler constant
-  (harmonic growth rate) to weight factorization complexity
-- η = (γ/φ)×π combines the Kuramoto coupling ratio γ/φ with the geometric
-  constant π to weight divisor structure
-- θ = 1/φ = φ−1 is the golden-ratio reciprocal (recursive self-similarity
-  constant) weighting abundance deviation
+These are a notational convention (only π is a genuine structural
+scale). The narrative below is mnemonic, not a derivation:
+- ζ = φ×γ (a combination near the empirical 1.0)
+- η = (γ/φ)×π (a combination near the empirical 0.8)
+- θ = 1/φ = φ−1 (a combination near the empirical 0.6)
 
 ### Pressure components
 
@@ -58,7 +58,7 @@ These coefficients emerge from the Universal Tetrahedral Correspondence:
 This equivalence holds because:
 1. All three pressure components are zero if and only if n is prime
 2. Any composite structure introduces positive pressure in at least one component
-3. The coefficients are derived from (φ, γ, π, e) via Universal Tetrahedral Correspondence
+3. The coefficients are written as (φ, γ, π, e) combinations (notational, not derived)
 4. ΔNFR(p) = 0 is independent of coefficient values (all three terms vanish individually for primes)
 5. Coefficient values affect composite separation (TNFR pressure landscape), not prime detection correctness
 

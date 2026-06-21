@@ -86,7 +86,7 @@
 **What:** Local phase desynchronization / stress proxy field  
 **Status:** **CANONICAL** (Nov 2025)  
 **Physics:** Captures dynamics C(t) misses due to scaling invariance  
-**Threshold:** Canonical bound |∇φ| < γ/π ≈ 0.1837 (Kuramoto critical coupling in TNFR units)  
+**Threshold:** Kinematic bound |∇φ| ≤ π (phase wrap — same as K_φ); γ/π ≈ 0.1837 is only a heuristic early-warning level, NOT a derived bound (measured sync-onset ≈ 0.29, σ-dependent)  
 **API:** `tnfr.physics.fields.compute_phase_gradient()`  
 **Usage:** Stress detection, local instability prediction  
 **Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
@@ -424,9 +424,9 @@ Operators that require phase verification for valid coupling.
 
 ---
 
-## Universal Tetrahedral Correspondence
+## The Structural-Field Tetrad
 
-**Theory:** Central TNFR discovery establishing exact correspondence between four universal mathematical constants and four structural fields.
+**Theory:** The four structural fields are the minimal derivative tower (DERIVED). They are *associated* with four constants as a notational label; only π is a genuine structural scale (the phase-wrap bound shared by |∇φ| and K_φ).
 
 ### Mathematical Constants
 
@@ -437,14 +437,14 @@ Operators that require phase verification for valid coupling.
 | **π** (Pi) | 3.141593... | Geometric relations | Geometric/Spatial |
 | **e** (Euler Number) | 2.718282... | Exponential base | Correlational/Temporal |
 
-### Structural Field Correspondences
+### Structural Fields and their bounds
 
-1. **φ ↔ Φ_s**: Global harmonic confinement (Δ Φ_s < φ ≈ 1.618)
-2. **γ ↔ |∇φ|**: Local dynamic evolution (|∇φ| < γ/π ≈ 0.184)
-3. **π ↔ K_φ**: Geometric spatial constraints (|K_φ| < 0.9×π ≈ 2.827)
-4. **e ↔ ξ_C**: Correlational memory decay (C(r) ~ exp(-r/ξ_C))
+1. **Φ_s** (0th order): empirical confinement Δ Φ_s < φ ≈ 1.618 (no closed form; φ is motivation only)
+2. **|∇φ|** (1st order): bound |∇φ| ≤ π (phase wrap); γ/π ≈ 0.184 is a heuristic early-warning only
+3. **K_φ** (2nd order): bound |K_φ| < 0.9×π ≈ 2.827 (phase wrap — GENUINE); K_φ = L_rw·φ
+4. **ξ_C** (correlation): scale set by the spectral gap, ξ_C ∝ 1/√λ₂ (not base e)
 
-**Documentation:** [Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_THEORY.md)
+**Documentation:** [Structural-field tetrad](FUNDAMENTAL_THEORY.md)
 
 ---
 
@@ -523,7 +523,7 @@ Operators that perform graduated destabilization for phase transitions.
 **Primary Sources:**  
 - **[AGENTS.md](../AGENTS.md)** - Single source of truth for TNFR theory  
 - **[UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)** - Complete U1-U6 grammar derivations  
-- **[Structural Fields and Universal Tetrahedral Correspondence](FUNDAMENTAL_THEORY.md)** - Mathematical foundations
+- **[Structural Fields and the Tetrad](FUNDAMENTAL_THEORY.md)** - Mathematical foundations
 
 **Implementation References:**  
 - **[src/tnfr/physics/fields.py](../src/tnfr/physics/fields.py)** - Unified Structural Field Tetrad (Canonical)  
@@ -765,11 +765,11 @@ Quick reference for canonical threshold values from `src/tnfr/constants/canonica
 | Threshold | Value | Derivation | Usage |
 |-----------|-------|------------|-------|
 | PHI_S_VON_KOCH_THRESHOLD | 0.7711 | Empirical (no closed-form derivation; Γ(4/3)/Γ(1/3)=1/3, not 0.7711) | Per-node Φ_s safety |
-| PHASE_GRADIENT_THRESHOLD | γ/π ≈ 0.1837 | Kuramoto critical coupling | \|∇φ\| stability |
-| K_PHI_CANONICAL_THRESHOLD | 0.9×π ≈ 2.8274 | 90% of wrap_angle π bound | K_φ fault zone detection |
-| U6 canonical confinement | φ ≈ 1.618 | Universal Tetrahedral Correspondence | ΔΦ_s drift safety |
+| PHASE_GRADIENT_THRESHOLD | γ/π ≈ 0.1837 | Heuristic early-warning (not derived; bound is π) | \|∇φ\| stability |
+| K_PHI_CANONICAL_THRESHOLD | 0.9×π ≈ 2.8274 | 90% of wrap_angle π bound (genuine) | K_φ fault zone detection |
+| U6 canonical confinement | φ ≈ 1.618 | Empirical/notational (φ is motivation, no closed form) | ΔΦ_s drift safety |
 | STRUCTURAL_ESCAPE_THRESHOLD | e^ln(2) = 2.0 | Binary escape theory | ΔΦ_s absolute ceiling |
-| MIN_BUSINESS_COHERENCE | (e×φ)/(π+e) ≈ 0.7506 | Tetrahedral correspondence | Strong coherence threshold |
+| MIN_BUSINESS_COHERENCE | (e×φ)/(π+e) ≈ 0.7506 | Notational combination | Strong coherence threshold |
 | THOL_MIN_COLLECTIVE_COHERENCE | 1/(π+1) ≈ 0.2415 | Geometric series bound | Fragmentation risk threshold |
 
 ---

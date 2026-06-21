@@ -141,7 +141,7 @@ Geometric confinement     → Angular/curvature bounds → π        → K_φ
 Temporal propagation      → Exponential decay        → e        → ξ_C
 ```
 
-This mapping is the content of the Universal Tetrahedral Correspondence ([FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4).
+This mapping is the notational constant↔field association ([FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4; only π is a genuine structural scale).
 
 ---
 
@@ -375,7 +375,7 @@ In the TNFR-Riemann programme ([TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RES
 | Tetrad field | Role in prime path graphs |
 |-------------|--------------------------|
 | Φ_s | Accumulated prime connectivity pressure |
-| \|∇φ\| | Phase mismatch between connected primes (governed by γ/π threshold) |
+| \|∇φ\| | Phase mismatch between connected primes (bound by the π phase-wrap) |
 | K_φ | Curvature of the eigenvalue spectrum near σ = 1/2 |
 | ξ_C | Correlation length of the spectral density (diverges at critical σ_c) |
 
@@ -439,7 +439,7 @@ The recurrence of four-fold structure is suggestive but should be treated as an 
 ## 12. References
 
 - [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Irreducibility and completeness of the tetrad
-- [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — Universal Tetrahedral Correspondence (§4)
+- [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — the structural-field tetrad (§4)
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — Grammar rules derived from constants
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws from symmetry
 - [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) — γ and prime distribution

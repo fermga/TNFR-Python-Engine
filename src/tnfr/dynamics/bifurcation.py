@@ -87,12 +87,12 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     paths = []
 
     # ZHIR (Mutation) viable if sufficient νf for controlled transformation
-    zhir_threshold = float(G.graph.get("ZHIR_BIFURCATION_VF_THRESHOLD", ZHIR_VF_THRESHOLD_CANONICAL))  # φ/(e+γ) ≈ 0.489 (tetrahedral: golden ratio bounded by exponential-dynamic sum)
+    zhir_threshold = float(G.graph.get("ZHIR_BIFURCATION_VF_THRESHOLD", ZHIR_VF_THRESHOLD_CANONICAL))  # φ/(e+γ) ≈ 0.489 (notational)
     if vf > zhir_threshold:
         paths.append(Glyph.ZHIR)
 
     # NUL (Contraction) viable if EPI low enough for safe collapse
-    nul_threshold = float(G.graph.get("NUL_BIFURCATION_EPI_THRESHOLD", NUL_EPI_THRESHOLD_CANONICAL))  # π/(π+e) ≈ 0.536 (tetrahedral: geometric dominance over exponential growth)
+    nul_threshold = float(G.graph.get("NUL_BIFURCATION_EPI_THRESHOLD", NUL_EPI_THRESHOLD_CANONICAL))  # π/(π+e) ≈ 0.536 (notational)
     if epi < nul_threshold:
         paths.append(Glyph.NUL)
 
@@ -111,7 +111,7 @@ def compute_bifurcation_score(
     dnfr: float,
     vf: float,
     epi: float,
-    tau: float = NUL_EPI_THRESHOLD_CANONICAL,  # π/(π+e) ≈ 0.536 (tetrahedral: geometric dominance over exponential growth)
+    tau: float = NUL_EPI_THRESHOLD_CANONICAL,  # π/(π+e) ≈ 0.536 (notational)
 ) -> float:
     """Compute quantitative bifurcation potential [0,1].
 
@@ -137,8 +137,8 @@ def compute_bifurcation_score(
         bifurcation. Higher EPI indicates more material to reorganize.
     tau : float, default π/(π+e) ≈ 0.536
         Bifurcation acceleration threshold. When |d2epi| > tau, bifurcation
-        becomes active. Default π/(π+e) ≈ 0.536 is the canonical TNFR threshold derived from
-        tetrahedral correspondence (geometric dominance over exponential growth).
+        becomes active. Default π/(π+e) ≈ 0.536 is a notational TNFR threshold
+        (audit 2026: a (φ,γ,π,e) combination, not derived).
 
     Returns
     -------
@@ -168,9 +168,9 @@ def compute_bifurcation_score(
        Measures available structural material. Higher EPI provides more
        degrees of freedom for bifurcation paths. Weight computed as remainder.
 
-    Formula (tetrahedral correspondence):
+    Formula (notational weights):
         score = w_accel * accel + w_instab * instability + w_capac * capacity + w_substr * substrate
-        where weights derived from universal constants φ, γ, π, e
+        where weights are (φ, γ, π, e) combinations (audit 2026: notational, not derived)
 
     All factors are normalized to [0, 1] and clipped before combination.
 
@@ -216,17 +216,17 @@ def compute_bifurcation_score(
     capacity_factor = min(vf / E, 1.0) if vf >= 0 else 0.0
 
     # 4. Substrate factor (structural material available)
-    # Normalize by 4/(e+φ) ≈ 0.798 (tetrahedral EPI normalization threshold)
+    # Normalize by 4/(e+φ) ≈ 0.798 (notational EPI normalization)
     substrate_factor = min(epi / (4.0 / (E + PHI)), 1.0) if epi >= 0 else 0.0
 
-    # Weighted combination via tetrahedral correspondence (percentages sum to 100%)
-    w_accel = 2.0 / (E + PHI)  # ≈ 0.461 - acceleration weight via tetrahedral normalization
+    # Weighted combination (notational weights; percentages sum to 100%)
+    w_accel = 2.0 / (E + PHI)  # ≈ 0.461 - acceleration weight (notational)
     w_instab = GAMMA / (PHI + GAMMA)  # ≈ 0.263 - instability weight via golden-Euler balance
     w_capac = GAMMA / (PI + 1.0)  # ≈ 0.139 - capacity weight via transcendental constraint
     w_substr = 1.0 - (w_accel + w_instab + w_capac)  # ≈ 0.151 - remainder for substrate
     
     score = (
-        w_accel * accel_factor  # tetrahedral primary
+        w_accel * accel_factor  # notational primary
         + w_instab * instability_factor  # golden-Euler secondary
         + w_capac * capacity_factor  # transcendental capability
         + w_substr * substrate_factor  # remainder material

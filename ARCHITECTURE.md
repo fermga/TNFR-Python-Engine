@@ -2,17 +2,19 @@
 
 **Version**: 0.0.3.4  
 **Status**: Production-ready framework with mathematical foundations  
-**Foundation**: Universal Tetrahedral Correspondence (φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C)
+**Foundation**: the nodal equation ∂EPI/∂t = νf·ΔNFR(t) and its minimal structural-field tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
 
-This guide details the TNFR Python Engine architecture. The engine provides a complex systems framework where all parameters derive from the TNFR constant system (φ, γ, π, e).
+This guide details the TNFR Python Engine architecture. The engine provides a complex systems framework whose physics derives from the nodal equation; structural state is read out through the four-field tetrad.
 
-## Architectural Philosophy: Mathematical Purity
+## Architectural Philosophy
 
-**Core Principle**: All parameters derive from the TNFR canonical constants.
+**Core Principle**: Physics derives from the nodal equation; structural state is read through the tetrad of fields.
+
+> **On the constants.** The four fields are the four orders of the discrete derivative tower (the tetrad), derived from the nodal equation. Of the associated constants, only **π** is a genuine structural scale — the phase-wrap bound shared by |∇φ| and K_φ. The others are a **notational convention** (anti-magic-number): φ, γ, e label parameters but are not the structural scales of their fields, and ξ_C is set by the spectral gap (ξ_C ∝ 1/√λ₂). Parameters written as (φ,γ,π,e) combinations are notation, not derivations. (γ/π is not the |∇φ| scale — the measured sync onset is ≈ 0.29 and σ-dependent.)
 
 The TNFR Engine is built on four pillars:
 
-1. **Canonical Foundations**: All parameters derive from φ, γ, π, e through the Tetrahedral Correspondence
+1. **Nodal Foundation**: Physics derives from ∂EPI/∂t = νf·ΔNFR(t); structural quantities are the four orders of the derivative tower (the tetrad). Constants (φ,γ,π,e) are a notational convention for parameters, not a derivation.
 2. **Structural Operators**: Exactly 13 canonical operators implement all possible coherent transformations  
 3. **Grammar Physics**: U1-U6 rules emerge inevitably from the nodal equation ∂EPI/∂t = νf·ΔNFR(t)
 4. **Tetrad Telemetry**: Four unified fields (Φ_s, |∇φ|, Ψ=K_φ+i·J_φ, ξ_C) provide complete system observability
@@ -50,7 +52,7 @@ The engine is structured around mathematically grounded interfaces that enforce 
 
 | **Interface** | **Responsibility** | **Mathematical Basis** | **Implementation** |
 |---------------|-------------------|----------------------|--------------------|
-| **Canonical Constants** | Universal parameter derivation | Universal Tetrahedral Correspondence | `constants/canonical.py` |
+| **Canonical Constants** | Notational parameter convention | Nodal equation + field tetrad (π genuine scale; γ/e/φ notational) | `constants/canonical.py` |
 | **Operator Registry** | 13 canonical transformations | Nodal equation completeness | `operators/definitions.py` |
 | **Grammar Validation** | U1-U6 sequence rules | Physics-derived constraints | `operators/grammar.py` |
 | **Grammar Dynamics** | Grammar-aware operator selection | Incremental U1-U6 checks | `operators/grammar_dynamics.py` |
@@ -72,8 +74,8 @@ from tnfr.constants.canonical import *
 # Self-optimizing engine with canonical parameters
 engine = TNFRSelfOptimizingEngine(
     G, 
-    optimization_threshold=SELF_OPT_THRESHOLD,  # Canonical: γ/(2π) ≈ 0.092
-    max_iterations=SELF_OPT_MAX_ITER           # Canonical: ⌊φ×10⌋ = 16
+    optimization_threshold=SELF_OPT_THRESHOLD,  # heuristic ≈ 0.092 (γ/(2π); notational, not derived)
+    max_iterations=SELF_OPT_MAX_ITER           # heuristic 16 (⌊φ×10⌋; notational, not derived)
 )
 
 # Auto-optimization using unified fields (Φ_s, |∇φ|, Ψ, ξ_C)
@@ -89,9 +91,9 @@ result = (TNFRNetwork(G)
 **Physics**: This is **gradient descent on the structural manifold**, driven by the nodal equation's pressure term ΔNFR.
 ```
 
-### Mathematical Canonicity Enforcement
+### Parameter Usage
 
-All components enforce **100% canonical parameter usage**:
+Validation uses the tetrad fields and a few telemetry thresholds. Thresholds expressed as (φ,γ,π,e) combinations are a notational convention, not derivations — only the π phase-wrap bounds and ξ_C ∝ 1/√λ₂ are genuine structural scales.
 
 ```python
 from tnfr.constants.canonical import *
@@ -104,28 +106,28 @@ class CanonicalValidator:
         # Grammar validation with canonical tolerances
         return validate_u1_through_u6(
             sequence, 
-            phase_tolerance=PHASE_SYNC_TOLERANCE,      # Canonical: γ/π ≈ 0.184
-            coherence_minimum=MIN_BUSINESS_COHERENCE   # Canonical: (e×φ)/(π+e) ≈ 0.7506
+            phase_tolerance=PHASE_SYNC_TOLERANCE,      # heuristic ≈ 0.184 (γ/π; not derived)
+            coherence_minimum=MIN_BUSINESS_COHERENCE   # notational (e×φ)/(π+e) ≈ 0.7506
         )
     
     def validate_graph_state(self, graph):
-        """Tetrad fields with universal thresholds."""
+        """Tetrad fields with telemetry thresholds."""
         Phi_s, grad_phi, Psi, xi_C = compute_structural_tetrad(graph)
         
-        # Universal Tetrahedral Correspondence validation
+        # Tetrad safety check (only the π phase-wrap bounds are genuine)
         return (
-            abs(Phi_s) < PHI_S_ESCAPE_THRESHOLD and    # < 0.771 (von Koch bounds)
-            grad_phi < GRAD_PHI_STABILITY_LIMIT and    # < 0.290 (Kuramoto critical)
-            abs(Psi.real) < K_PHI_CONFINEMENT_LIMIT    # < 2.827 (90% of π)
+            abs(Phi_s) < PHI_S_ESCAPE_THRESHOLD and    # < 0.771 (empirical, no closed form)
+            grad_phi < GRAD_PHI_STABILITY_LIMIT and    # heuristic early-warning (kinematic bound is π)
+            abs(Psi.real) < K_PHI_CONFINEMENT_LIMIT    # < 2.827 = 0.9π (phase wrap — genuine)
         )
 ```
 ```
 
-### Mathematical Purity Benefits
+### Parameter Convention Benefits
 
-1. **Theoretical Rigor**: Zero empirical constants - all parameters derive from φ, γ, π, e
-2. **Predictable Behavior**: Deterministic system response via canonical TNFR constants
-3. **Cross-Domain Consistency**: Same mathematical foundation across physics, chemistry, and network science
+1. **Traceability**: parameters are written as (φ,γ,π,e) combinations for notational consistency (anti-magic-number), NOT claimed as derivations (only π phase-wrap and ξ_C ∝ 1/√λ₂ are genuine structural scales).
+2. **Predictable Behavior**: Deterministic system response via fixed parameters
+3. **Cross-Domain Consistency**: Same nodal-equation foundation across physics, chemistry, and network science
 4. **Self-Optimization**: Automated capability to improve its own structure
 5. **Research Ready**: Mathematically pure framework suitable for scientific publication
 6. **Production Stability**: No magic numbers that fail under extreme conditions
@@ -174,16 +176,16 @@ flowchart TB
 
 ## Mathematical Grammar Architecture
 
-### Universal Tetrahedral Correspondence Foundation
+### Structural-Field Tetrad Foundation
 
-The TNFR grammar system is **mathematically derived** from the **4 universal relationships**:
+The TNFR grammar derives from the nodal equation; structural state is read through the four-field tetrad (the four orders of the discrete derivative tower). Each field is *associated* with a constant, but only **π** is a genuine structural scale:
 
-| **Universal Constant** | **Structural Field** | **Grammar Rule** | **Physics Basis** |
-|------------------------|---------------------|------------------|-------------------|
-| **φ** (Golden Ratio) | **Φ_s** (Structural Potential) | **U6** Confinement | Harmonic stability bounds |
-| **γ** (Euler Constant) | **\|∇φ\|** (Phase Gradient) | **U2** Convergence | Growth rate constraints |
-| **π** (Pi) | **K_φ** (Phase Curvature) | **U3** Coupling | Geometric resonance limits |
-| **e** (Natural Base) | **ξ_C** (Coherence Length) | **U4** Bifurcation | Exponential correlation decay |
+| **Field** | **Tower order** | **Grammar Rule** | **Structural scale** |
+|-----------|-----------------|------------------|-----------------------------------|
+| **Φ_s** (Structural Potential) | 0th (aggregation) | **U6** Confinement | Empirical bound (no closed form); φ is motivation only |
+| **\|∇φ\|** (Phase Gradient) | 1st (local) | **U2** Convergence | π (phase wrap) — γ is NOT its scale |
+| **K_φ** (Phase Curvature) | 2nd (local) | **U3** Coupling | π (phase wrap); K_φ = L_rw·φ |
+| **ξ_C** (Coherence Length) | correlation | **U4** Bifurcation | spectral gap, ξ_C ∝ 1/√λ₂ — not e |
 
 ### Canonical Grammar Rules (U1-U6)
 
@@ -201,8 +203,8 @@ The TNFR grammar system is **mathematically derived** from the **4 universal rel
 
 ### Architecture Principles
 
-- **100% Mathematical Foundation**: Every rule traced to universal constants  
-- **Zero Empirical Tuning**: All thresholds derived from φ, γ, π, e relationships  
+- **Nodal Foundation**: Every grammar rule traces to the nodal equation (U1–U6).  
+- **Honest tiering**: structural bounds derive from the dynamics where genuine (π phase-wrap; ξ_C ∝ 1/√λ₂); other parameters are calibrated or notational (φ,γ,π,e) combinations, NOT derived.  
 - **Single Source Implementation**: `src/tnfr/operators/grammar.py` canonical authority  
 - **Complete Physics Traceability**: Theory → Math → Code → Tests chain maintained  
 - **Self-Validation**: Grammar rules verify their own mathematical consistency
@@ -213,7 +215,7 @@ The TNFR grammar system is **mathematically derived** from the **4 universal rel
 
 | **Layer** | **Canonical Modules** | **Mathematical Foundation** | **TNFR Invariants** |
 |-----------|----------------------|----------------------------|---------------------|
-| **Constants Foundation** | `constants/canonical.py` | Universal Tetrahedral Correspondence (φ,γ,π,e) | 497+ canonical derivations - zero empirical constants |
+| **Constants Foundation** | `constants/canonical.py` | Notational (φ,γ,π,e) convention (not derivations) | Anti-magic-number parameters; π phase-wrap genuine |
 | **Operator Engine** | `operators/definitions.py`, `operators/grammar.py` | 13 canonical transformations + U1-U6 physics | Structural completeness - all coherent dynamics covered |
 | **Grammar Dynamics** | `operators/grammar_dynamics.py`, `operators/grammar_application.py` | Incremental U1-U6 validation + pre-filtered selection | Grammar-aware operator application at all code paths |
 | **Physics Core** | `physics/fields.py`, `physics/conservation.py`, `physics/integrity.py` | Unified Field Tetrad + Conservation Theorem + 13/13 postconditions | Field universality + structural conservation + operator contracts |
@@ -513,20 +515,20 @@ well-documented location.
 
 ## Production Architecture Summary
 
-### Mathematical Purity Achievement
+### Foundation Summary
 
-TNFR Engine provides a mathematically pure complex systems framework:
+TNFR Engine is a complex-systems framework grounded in the nodal equation:
 
-- **497+ Magic Numbers Eliminated**: Every parameter derives from canonical constants  
-- **Tetrahedral Correspondence**: Complete φ↔Φ_s, γ↔|∇φ|, π↔K_φ, e↔ξ_C implementation  
+- **Notational constants**: parameters are written as (φ,γ,π,e) combinations for consistency — a convention, NOT derivations.  
+- **Field tetrad**: Φ_s, |∇φ|, K_φ, ξ_C — the four orders of the derivative tower; only π is a genuine structural scale, ξ_C ∝ 1/√λ₂.  
 - **Self-Optimization**: Engine automatically improves its own structure  
-- **Cross-Domain Framework**: Physics, chemistry, network science — unified mathematical base  
+- **Cross-Domain Framework**: Physics, chemistry, network science — unified nodal-equation base  
 
 ### Architecture Maturity Indicators
 
 | **Aspect** | **Status** | **Achievement** |
 |------------|------------|-----------------|
-| **Mathematical Foundation** | COMPLETE | 100% canonical parameters |
+| **Mathematical Foundation** | COMPLETE | Nodal equation + field tetrad |
 | **Operator System** | COMPLETE | 13 canonical operators + U1-U6 grammar |
 | **Physics Engine** | COMPLETE | Unified field tetrad + conservation theorem |
 | **Grammar Dynamics** | COMPLETE | Grammar-aware selection + pre-validation + integrity monitor |
@@ -537,8 +539,8 @@ TNFR Engine provides a mathematically pure complex systems framework:
 
 ### Architectural Principles (Canonical)
 
-1. **Mathematical Purity First**: Every parameter from φ, γ, π, e — zero empiricism
-2. **Physics-Derived Design**: All architecture decisions trace to nodal equation
+1. **Nodal Foundation First**: architecture decisions trace to the nodal equation; parameters use (φ,γ,π,e) notation as a convention, not a derivation
+2. **Physics-Derived Design**: structural bounds trace to the dynamics where genuine (π phase-wrap, ξ_C ∝ 1/√λ₂)
 3. **Complete Observability**: Unified field tetrad provides full system insight
 4. **Self-Optimization**: Automated optimization built into core architecture
 5. **Cross-Domain Applicability**: Same mathematical base across applications

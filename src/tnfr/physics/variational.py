@@ -307,36 +307,37 @@ class ThresholdDerivation:
     r"""Derivation of a tetrad-threshold *value* from its accumulation law.
 
     :func:`analyze_potential_critical_points` *identifies* the tetrad
-    thresholds as boundaries of the confining well ½x², taking their values
-    (φ, γ/π, 0.9π, e-scaling) as given from the Universal Tetrahedral
-    Correspondence.  This dataclass records the complementary result: each
-    canonical constant is the **fixed point / limit of the accumulation law
-    of its tetrad field**, recovered non-circularly from that law.
+    thresholds as boundaries of the confining well ½x². This dataclass
+    records the complementary mathematical fact: each canonical constant is
+    recoverable non-circularly as the fixed point / limit / series of the
+    accumulation law of its tetrad-field order.
 
-    The four tetrad fields are the four orders of the structural derivative
-    tower (AGENTS.md §"Minimal Structural Degrees of Freedom"), and each
-    order has its own accumulation law, whose structural invariant is one of
-    the four canonical constants:
+    The four tetrad FIELDS are the four orders of the structural derivative
+    tower (AGENTS.md §"Minimal Structural Degrees of Freedom") — this basis
+    is DERIVED. Each order has an accumulation law from which a constant is
+    recoverable; BUT (audit 2026) only **π** is a genuine STRUCTURAL scale,
+    the others are an organizing overlay:
 
-    ======== ============== ==================== ==========
-    field    tower order    accumulation law     constant
-    ======== ============== ==================== ==========
-    Φ_s      0th (global)   inverse-square       φ
-    |∇φ|     1st            harmonic             γ
-    K_φ      2nd            circle (S¹)          π
-    ξ_C      correlation    exponential          e
-    ======== ============== ==================== ==========
+    ======== ============== ==================== ========== ==========
+    field    tower order    accumulation law     constant   status
+    ======== ============== ==================== ========== ==========
+    Φ_s      0th (global)   inverse-square       φ          overlay
+    |∇φ|     1st            harmonic             γ          overlay
+    K_φ      2nd            circle (S¹)          π          structural
+    ξ_C      correlation    exponential          e          overlay
+    ======== ============== ==================== ========== ==========
 
-    - **φ** is the fixed point of inverse-square self-similar accumulation:
-      Σ_k s^{−2k} = 1/(1 − s^{−2}) reproduces the scaling factor s iff
-      s² − s − 1 = 0, i.e. s = φ (equivalently the fixed point of
-      x = 1 + 1/x).  Recovered by fixed-point iteration (no use of ``PHI``).
-    - **γ** is the harmonic-accumulation gap lim(H_n − ln n) — its defining
-      limit.  Recovered from the harmonic sum with the Euler–Maclaurin tail.
-    - **π** is the maximum phase angle on S¹ (the wrap_angle bound), a
-      geometric primitive = arccos(−1), not an accumulation fixed point.
-    - **e** is the unique base of scale-invariant memoryless (Markov) decay
-      C(r) = e^{−r/ξ_C}.  Recovered from Σ 1/k! (its defining series).
+    - **φ** is the fixed point of x = 1 + 1/x (inverse-square self-similar
+      accumulation, s²−s−1=0) — a true identity — but the Φ_s bound 0.7711
+      is empirical (no closed form), so φ↔Φ_s is an overlay.
+    - **γ** is the harmonic gap lim(H_n − ln n) — a true identity — but it is
+      NOT the scale of |∇φ|: |∇φ| ≤ π (phase wrap), the same bound as K_φ.
+    - **π** is the GENUINE structural scale: the maximum phase angle on S¹
+      (wrap_angle = arccos(−1)). It scales the WHOLE phase sector (both |∇φ|
+      and K_φ), and K_φ = L_rw·φ is the central operator applied to phase.
+    - **e** is Σ 1/k! — a true identity — but the e↔ξ_C link is near-
+      tautological (any exponential decay has base e); the structural scale
+      of ξ_C is the spectral gap, ξ_C ∝ 1/√λ₂.
 
     Attributes
     ----------
@@ -1098,9 +1099,13 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
     For each field, V has the form ½x² so ∂V/∂x = x (zero at x=0).
     The canonical thresholds mark boundaries of the confining well:
 
-    - Φ_s threshold at φ ≈ 1.618: potential energy exceeds golden ratio bound
-    - |∇φ| threshold at γ/π ≈ 0.184: Kuramoto synchronisation boundary
-    - K_φ threshold at 0.9π ≈ 2.827: geometric confinement limit
+    - Φ_s threshold at φ ≈ 1.618: golden-ratio drift-confinement scale
+      (EMPIRICAL; per-node bound 0.7711 has no closed form — audit 2026)
+    - |∇φ| threshold at 0.9π ≈ 2.827: phase-wrap confinement limit. |∇φ| is
+      a mean of WRAPPED angles, so |∇φ| ≤ π — the SAME bound as K_φ (audit
+      2026: π scales the whole phase sector). The earlier γ/π was an overlay,
+      not a derived bound (measured sync-onset ≈ 0.29, σ-dependent).
+    - K_φ threshold at 0.9π ≈ 2.827: phase-wrap confinement limit (same bound)
 
     At these values, the effective potential transitions from confining
     (restoring force towards equilibrium) to expelling (runaway dynamics).
@@ -1119,10 +1124,15 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
 
     results: list[CriticalPointAnalysis] = []
 
-    # Threshold values from Universal Tetrahedral Correspondence
+    # Canonical thresholds. Both phase derivatives (|∇φ|, K_φ) are means of
+    # WRAPPED angles bounded by π (audit 2026: π scales the whole phase
+    # sector), so they share the SAME 0.9π wrap-margin threshold. Φ_s uses the
+    # empirical golden-ratio confinement scale (no closed form). The earlier
+    # γ/π for |∇φ| was an overlay, not a derived bound: the measured
+    # sync-onset is ≈ 0.29 and σ-dependent.
     thresholds = [
         ('Phi_s', PHI, phi_s),
-        ('grad_phi', GAMMA / PI, grad_phi),
+        ('grad_phi', 0.9 * PI, grad_phi),
         ('K_phi', 0.9 * PI, k_phi),
     ]
 
@@ -1230,26 +1240,28 @@ def derive_tetrad_threshold_values(
     canonical constant non-circularly from the accumulation law of its
     tetrad field — the four orders of the structural derivative tower.
 
-    ======== ============== ================ ========= ============
-    field    accumulation   constant         status    threshold
-    ======== ============== ================ ========= ============
-    Φ_s      inverse-square φ                derived   Δφ_s < φ
-    |∇φ|     harmonic       γ                derived   |∇φ| < γ/π
-    K_φ      circle (S¹)    π                geometric |K_φ| < 0.9π
-    ξ_C      exponential    e                derived   C(r)=e^{−r/ξ}
-    ======== ============== ================ ========= ============
+    ======== ============== ================ ========= =====================
+    field    accumulation   constant         status    structural threshold
+    ======== ============== ================ ========= =====================
+    Φ_s      inverse-square φ                overlay   Δφ_s < φ (empirical)
+    |∇φ|     harmonic       γ                overlay   |∇φ| < 0.9π (wrap)
+    K_φ      circle (S¹)    π                geometric |K_φ| < 0.9π (wrap)
+    ξ_C      exponential    e                overlay   ξ_C ∝ 1/√λ₂ (spectral)
+    ======== ============== ================ ========= =====================
 
-    Honest scope:
+    Honest scope (audit 2026):
 
-    - **φ** and **e** are recovered as the fixed point / defining series of
-      their accumulation laws; **γ** as its defining limit.  These are
-      genuine value derivations.
-    - **π** is a geometric primitive (the maximum phase angle on S¹), not an
-      accumulation fixed point.
-    - The threshold *expressions* γ/π (Kuramoto-type critical coupling) and
-      0.9π (a 90 % safety margin) involve an identification / calibration on
-      top of the derived constant; this is flagged per row via ``status``
-      and ``note``.
+    - **φ**, **γ**, **e** are recovered as the fixed point / limit / defining
+      series of their accumulation laws — these are TRUE mathematical
+      identities. But they are NOT the structural scales of their tetrad
+      fields: only **π** is. ``status='overlay'`` flags this.
+    - **π** is the GENUINE structural scale: the maximum phase angle on S¹
+      (wrap bound), and it scales the WHOLE phase sector — BOTH |∇φ| and K_φ
+      are wrapped angles ≤ π (so both share the 0.9π threshold).
+    - The genuine structural relations are: |∇φ|, K_φ ≤ π (phase wrap),
+      K_φ = L_rw·φ (the central operator on phase), and ξ_C ∝ 1/√λ₂ (the
+      spectral gap). The φ↔Φ_s, γ↔|∇φ|, e↔ξ_C links are an organizing
+      overlay / parametrisation convention, not derived structural scales.
 
     Parameters
     ----------
@@ -1269,31 +1281,40 @@ def derive_tetrad_threshold_values(
     rows = [
         (
             "Phi_s", "phi", "0th (global aggregation)", "inverse-square",
-            phi, PHI, "Δφ_s < φ", "derived",
-            "φ is the fixed point of inverse-square self-similar "
-            "accumulation (s²−s−1=0); the confinement bound is φ directly.",
+            phi, PHI, "ΔΦ_s < φ (empirical)", "overlay",
+            "φ is the fixed point of inverse-square self-similar accumulation "
+            "(s²−s−1=0), a true identity, and motivates the drift-confinement "
+            "scale via the KAM most-irrational argument. But the per-node "
+            "bound 0.7711 is EMPIRICAL (no closed form; the Γ(4/3)/Γ(1/3) "
+            "identity is wrong, that ratio = 1/3), so φ↔Φ_s is an organizing "
+            "overlay, not a derived structural scale (audit 2026).",
         ),
         (
             "grad_phi", "gamma", "1st (local derivative)", "harmonic",
-            gamma, GAMMA, "|∇φ| < γ/π", "derived",
-            "γ is the harmonic-accumulation gap lim(H_n−ln n). The "
-            "threshold γ/π divides it by the phase-circle constant π "
-            "(Kuramoto-type critical coupling — the ratio is an "
-            "identification, the constant γ is derived).",
+            gamma, GAMMA, "|∇φ| < 0.9·π (phase wrap)", "overlay",
+            "γ is recoverable as the harmonic-accumulation gap lim(H_n−ln n) "
+            "(a true identity), but it is NOT the structural scale of |∇φ|. "
+            "|∇φ| is a mean of WRAPPED phase angles, so |∇φ| ≤ π — the SAME "
+            "bound as K_φ (audit 2026: π scales the whole phase sector). The "
+            "earlier γ/π threshold was an overlay; the measured sync-onset is "
+            "≈ 0.29 and σ-dependent, not the constant γ/π.",
         ),
         (
             "K_phi", "pi", "2nd (discrete Laplacian)", "circle (S¹)",
             pi_val, PI, "|K_φ| < 0.9·π", "geometric",
-            "π is the maximum phase angle on S¹ (the wrap_angle bound = "
-            "arccos(−1)), a geometric primitive. The 0.9 factor is a 90 % "
-            "safety margin (calibrated, not derived).",
+            "π is the GENUINE structural scale (audit 2026): the maximum phase "
+            "angle on S¹ (wrap_angle bound = arccos(−1)). It scales the WHOLE "
+            "phase sector — both K_φ AND |∇φ| are wrapped angles ≤ π. K_φ is "
+            "moreover the central operator applied to phase (K_φ = L_rw·φ in "
+            "the smooth limit). The 0.9 factor is a 90 % safety margin.",
         ),
         (
             "xi_C", "e", "correlation (non-local)", "exponential",
-            e_val, E, "C(r) = e^{−r/ξ_C}", "derived",
-            "e is the unique base of scale-invariant memoryless (Markov) "
-            "decay C(r)=e^{−r/ξ_C}, recovered from Σ 1/k!. The ξ_C scale "
-            "thresholds (diameter, π·mean-distance) are calibrated.",
+            e_val, E, "ξ_C ∝ 1/√λ₂ (spectral gap)", "overlay",
+            "e is recoverable as Σ 1/k! (a true identity) and is the base of "
+            "ANY exponential decay C(r)=e^{−r/ξ_C} — which makes the e↔ξ_C "
+            "link near-tautological. The structural scale of ξ_C is set by "
+            "the spectral gap: ξ_C ∝ 1/√λ₂ (audit 2026), not by e.",
         ),
     ]
 

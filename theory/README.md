@@ -64,7 +64,7 @@ Every theory document maps to executable examples and SDK entry points:
 
 | Document | Scope |
 |----------|-------|
-| [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) | Nodal equation, structural field tetrad, Universal Tetrahedral Correspondence, emergent invariants, multiscale domain mapping |
+| [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) | Nodal equation, structural field tetrad and field scales, emergent invariants, multiscale domain mapping |
 | [PHYSICAL_REGIME_CORRESPONDENCES.md](PHYSICAL_REGIME_CORRESPONDENCES.md) | Classical mechanics limit, inertial regime, quantum regime, structural uncertainty, thermodynamic demonstration |
 | [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) | Spectral factorization (verified), demonstration-level particle collisions and elemental structure |
 
@@ -115,14 +115,16 @@ $$
 \frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t)
 $$
 
-### Universal Tetrahedral Correspondence
+### Structural-Field Tetrad
 
-| Constant | Field | Threshold |
-|----------|-------|-----------|
-| $\varphi$ (Golden Ratio) | $\Phi_s$ (Structural Potential) | $\Delta\Phi_s < \varphi \approx 1.618$ |
-| $\gamma$ (Euler Constant) | $|\nabla\phi|$ (Phase Gradient) | $|\nabla\phi| < \gamma/\pi \approx 0.184$ |
-| $\pi$ | $K_\phi$ (Phase Curvature) | $|K_\phi| < 0.9\pi \approx 2.827$ |
-| $e$ (Euler Number) | $\xi_C$ (Coherence Length) | $C(r) \sim e^{-r/\xi_C}$ |
+The four fields are the four orders of the discrete derivative tower (this basis is DERIVED). Each is *associated* with a constant as a notational label; only **π** is a genuine structural scale (the phase-wrap bound of the phase sector).
+
+| Field | Tower order | Structural bound |
+|-------|-------------|-------------------------------|
+| $\Phi_s$ (Structural Potential) | 0th (aggregation) | $\|\Phi_s\| < 0.7711$ empirical (no closed form; $\varphi$ is motivation only) |
+| $\|\nabla\phi\|$ (Phase Gradient) | 1st (local) | $\|\nabla\phi\| \le \pi$ (phase wrap; $\gamma/\pi$ is heuristic, not a bound) |
+| $K_\phi$ (Phase Curvature) | 2nd (local) | $\|K_\phi\| < 0.9\pi \approx 2.827$ (phase wrap); $K_\phi = L_{rw}\phi$ |
+| $\xi_C$ (Coherence Length) | correlation | $\xi_C \propto 1/\sqrt{\lambda_2}$ (spectral gap; not base $e$) |
 
 ### 13 Canonical Operators
 
@@ -145,7 +147,7 @@ AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH
 
 1. [../AGENTS.md](../AGENTS.md) — Paradigm and complete framework overview
 2. [GLOSSARY.md](GLOSSARY.md) — Terminology and operational definitions
-3. [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — Nodal equation, tetrad, Universal Tetrahedral Correspondence
+3. [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — Nodal equation, tetrad and field scales
 4. **Try**: [01_foundations/01_hello_world.py](../examples/01_foundations/01_hello_world.py), [01_foundations/10_simplified_sdk_showcase.py](../examples/01_foundations/10_simplified_sdk_showcase.py)
 
 ### Intermediate (1–2 days)

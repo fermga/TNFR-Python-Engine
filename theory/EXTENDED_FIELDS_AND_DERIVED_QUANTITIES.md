@@ -189,7 +189,7 @@ Element-specific structural signatures are constructed from the field tetrad and
 
 | Threshold | Value | Derivation |
 |-----------|-------|-----------|
-| $|\nabla\phi|$ canonical | $\gamma/\pi \approx 0.1837$ | Kuramoto critical coupling |
+| $|\nabla\phi|$ bound | $\le \pi$ (phase wrap) | Wrapped-angle bound (γ/π ≈ 0.1837 is heuristic only, not derived) |
 | $K_\phi$ canonical | $0.9\pi \approx 2.827$ | 90% of wrap-angle maximum |
 | Permissive curvature (Au) | $(\varphi + 1)\pi/e \approx 3.025$ | Golden-ratio adjusted |
 

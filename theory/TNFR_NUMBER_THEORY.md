@@ -37,7 +37,7 @@ is applied to a network whose nodes are natural numbers and whose edges encode a
 - **Composites carry structural pressure**: $\Delta\mathrm{NFR}(n) > 0$ whenever $n$ is composite, with magnitude proportional to factorization complexity.
 - **Factorization as spectral decoding**: discovering the factors of a composite can be framed as resolving the coherent sub-modes of its structural pressure field.
 
-This document formalizes these observations, derives every constant from the Universal Tetrahedral Correspondence ($\varphi$, $\gamma$, $\pi$, $e$), and maps the theory to its implementations in the repository.
+This document formalizes these observations, expresses the arithmetic constants as notational $(\varphi, \gamma, \pi, e)$ combinations, and maps the theory to its implementations in the repository.
 
 ### Scope
 
@@ -171,9 +171,9 @@ The primality criterion $\Delta\mathrm{NFR}(n) = 0$ is **independent of the coef
 
 ## 5. Canonical Arithmetic Constants
 
-### 5.1 The Universal Tetrahedral Correspondence
+### 5.1 Notational Constant Combinations
 
-All arithmetic TNFR constants derive from four universal mathematical constants via the Universal Tetrahedral Correspondence:
+The arithmetic TNFR constants are written as notational $(\varphi, \gamma, \pi, e)$ combinations (only $\pi$ is a genuine structural scale):
 
 | Constant | Value | Mathematical Role |
 |----------|-------|-------------------|
@@ -224,7 +224,7 @@ $$\theta = \frac{1}{\varphi} = \varphi - 1 \approx 0.6180$$
 
 ### 5.6 Derivation Status
 
-The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are written as expressions of $(\varphi, \gamma, \pi, e)$ from the Universal Tetrahedral Correspondence applied to arithmetic functions. The 3 arithmetic **thresholds** are *empirically recalibrated* values (e.g. $\Phi_s < 0.7452$ vs the general 0.7711), not closed-form derivations — the general per-node $\Phi_s$ threshold on which they are based is itself empirically validated without a derivation (see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4.3). The "zero empirical fitting" characterization applies to the dynamical parameters, not to the thresholds.
+The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are written as notational $(\varphi, \gamma, \pi, e)$ combinations applied to arithmetic functions. The 3 arithmetic **thresholds** are *empirically recalibrated* values (e.g. $\Phi_s < 0.7452$ vs the general 0.7711), not closed-form derivations — the general per-node $\Phi_s$ threshold on which they are based is itself empirically validated without a derivation (see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4.3). The "zero empirical fitting" characterization applies to the dynamical parameters, not to the thresholds.
 
 ---
 

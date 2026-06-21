@@ -9,7 +9,8 @@ Tests verify:
 1.  Symmetric phase: uniform/equilibrium graphs → ⟨𝒮⟩ = 0 (NON_LIFE)
 2.  Broken symmetry: heterogeneous phases/ΔNFR → ⟨𝒮⟩ ≠ 0 (LIFE)
 3.  Chirality: life phase requires ⟨|χ|⟩ > 0 (homochirality)
-4.  Critical exponent: γ_c = γ/π ≈ 0.1837 from Tetrahedral Correspondence
+4.  Critical exponent reference: γ_c = γ/π ≈ 0.1837 (calibrated TIER-2 scale;
+    audit 2026: the measured exponent is protocol-dependent, not universal)
 5.  Susceptibility: diverges near critical point (peak at transition)
 6.  Coherence length: grows near critical regime
 7.  Phase classification consistency across topologies
@@ -39,15 +40,13 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import GAMMA, PI, CRITICAL_EXPONENT
 
 from tnfr.physics.phase_transition import (
     Phase,
     PhaseTransitionTelemetry,
     PhaseSnapshot,
-    GAMMA_C,
-    ORDER_PARAMETER_NOISE_FLOOR,
-    CHIRALITY_THRESHOLD,
+    Z_SIGNIFICANCE,
+    symmetry_zscore,
     compute_order_parameter,
     compute_chirality_statistics,
     classify_phase,
@@ -128,29 +127,35 @@ def _build_transition_sequence(n_steps: int = 20, seed: int = 42) -> tuple:
 # Test 1: Constants consistency with canonical module
 # ============================================================================
 
-class TestConstants:
-    """Verify critical constants are consistent with canonical module."""
+class TestEmergentClassification:
+    """The classification scale is the emergent sampling-noise z-score.
 
-    def test_gamma_c_equals_gamma_over_pi(self):
-        """γ_c = γ/π from Tetrahedral Correspondence."""
-        assert GAMMA_C == pytest.approx(GAMMA / PI, rel=1e-10)
+    Audit 2026: the magic scales (γ/π)² and γ/(π+γ) were proven INERT
+    (they sat in a two-order-of-magnitude gap; sweeping them changed no
+    classification) and were removed. The phase is now decided by the
+    statistical significance of symmetry breaking measured from the system.
+    """
 
-    def test_gamma_c_equals_canonical_critical_exponent(self):
-        """GAMMA_C must equal CRITICAL_EXPONENT from canonical constants."""
-        assert GAMMA_C == pytest.approx(CRITICAL_EXPONENT, rel=1e-15)
+    def test_z_significance_is_one_sigma(self):
+        """The only cut is z = 1 (the sampling-noise scale, not a constant)."""
+        assert Z_SIGNIFICANCE == 1.0
 
-    def test_gamma_c_numerical_value(self):
-        """γ_c ≈ 0.1837 (well-known value)."""
-        assert GAMMA_C == pytest.approx(0.1837, abs=0.001)
+    def test_zscore_zero_for_uniform_zero_field(self):
+        """A perfectly uniform zero field has z = 0 (symmetric)."""
+        assert symmetry_zscore(0.0, 0.0, 30) == 0.0
 
-    def test_order_parameter_noise_floor(self):
-        """Noise floor = γ_c² (scaling relation)."""
-        assert ORDER_PARAMETER_NOISE_FLOOR == pytest.approx(GAMMA_C ** 2, rel=1e-10)
+    def test_zscore_infinite_for_uniform_nonzero_field(self):
+        """A uniform non-zero field (Var=0, mean>0) is fully broken: z = ∞."""
+        assert symmetry_zscore(0.5, 0.0, 30) == math.inf
 
-    def test_chirality_threshold(self):
-        """Chirality threshold = γ/(π+γ) from Tetrahedral Correspondence."""
-        expected = GAMMA / (PI + GAMMA)
-        assert CHIRALITY_THRESHOLD == pytest.approx(expected, rel=1e-10)
+    def test_zscore_is_mean_over_standard_error(self):
+        """z = |mean| / sqrt(Var/N) — emergent, measured from the system."""
+        z = symmetry_zscore(0.2, 0.01, 25)
+        assert z == pytest.approx(0.2 / math.sqrt(0.01 / 25), rel=1e-12)
+
+    def test_zscore_zero_nodes_is_zero(self):
+        """Empty system has no significance."""
+        assert symmetry_zscore(1.0, 1.0, 0) == 0.0
 
 
 # ============================================================================
@@ -198,7 +203,7 @@ class TestBrokenSymmetry:
     def test_heterogeneous_nonzero_order_parameter(self, heterogeneous_graph):
         """⟨|𝒮|⟩ > 0 for diverse phases and ΔNFR."""
         op = compute_order_parameter(heterogeneous_graph)
-        assert op['abs_mean'] > ORDER_PARAMETER_NOISE_FLOOR
+        assert op['abs_mean'] > 0
 
     def test_heterogeneous_nonzero_chirality(self, heterogeneous_graph):
         """⟨|χ|⟩ > 0 for diverse phases (broken mirror symmetry)."""
@@ -258,39 +263,37 @@ class TestChirality:
 # ============================================================================
 
 class TestPhaseClassification:
-    """Verify classify_phase() logic boundaries."""
+    """Verify classify_phase() z-score logic (emergent, no magic constant)."""
 
-    def test_zero_order_param_is_non_life(self):
-        """|⟨𝒮⟩| = 0 → NON_LIFE."""
-        phase = classify_phase(0.0, 0.0, 0.0, 0.0)
-        assert phase == Phase.NON_LIFE
+    def test_zero_zscore_is_non_life(self):
+        """order_z = 0 → NON_LIFE (within sampling noise of zero)."""
+        assert classify_phase(0.0, 0.0) == Phase.NON_LIFE
+
+    def test_subsigma_order_is_non_life(self):
+        """order_z ≤ 1 → NON_LIFE even with high chirality_z."""
+        assert classify_phase(0.9, 5.0) == Phase.NON_LIFE
+
+    def test_boundary_z_equals_one_is_non_life(self):
+        """order_z = 1 exactly → NON_LIFE (the cut is z > 1)."""
+        assert classify_phase(1.0, 2.0) == Phase.NON_LIFE
 
     def test_high_order_high_chirality_is_life(self):
-        """|⟨𝒮⟩| >> threshold, |⟨χ⟩| >> threshold → LIFE."""
-        phase = classify_phase(1.0, 1.0, 10.0, 5.0)
-        assert phase == Phase.LIFE
+        """order_z > 1 AND chirality_z > 1 → LIFE."""
+        assert classify_phase(5.0, 5.0) == Phase.LIFE
 
     def test_high_order_low_chirality_is_critical(self):
-        """|⟨𝒮⟩| >> threshold but chirality ~ 0 → CRITICAL."""
-        phase = classify_phase(1.0, 0.01, 10.0, 5.0)
-        assert phase == Phase.CRITICAL
-
-    def test_near_threshold_high_susceptibility_is_critical(self):
-        """𝒮 ≈ 0 but high χ_𝒮/𝒮 ratio → CRITICAL (approaching transition)."""
-        # susceptibility/order_param_abs > 1/γ_c ≈ 5.44
-        phase = classify_phase(0.01, 0.0, 0.1, 2.0)
-        assert phase == Phase.CRITICAL
+        """order_z > 1 but chirality_z ≤ 1 → CRITICAL."""
+        assert classify_phase(5.0, 0.5) == Phase.CRITICAL
 
     def test_phase_is_enum(self):
         """Phase classification returns Phase enum."""
-        phase = classify_phase(0.0, 0.0, 0.0, 0.0)
-        assert isinstance(phase, Phase)
+        assert isinstance(classify_phase(0.0, 0.0), Phase)
 
     def test_all_phases_reachable(self):
-        """All three phases are reachable."""
-        assert classify_phase(0.0, 0.0, 0.0, 0.0) == Phase.NON_LIFE
-        assert classify_phase(1.0, 1.0, 10.0, 5.0) == Phase.LIFE
-        assert classify_phase(1.0, 0.01, 10.0, 5.0) == Phase.CRITICAL
+        """All three phases are reachable from z-scores."""
+        assert classify_phase(0.0, 0.0) == Phase.NON_LIFE
+        assert classify_phase(5.0, 5.0) == Phase.LIFE
+        assert classify_phase(5.0, 0.5) == Phase.CRITICAL
 
 
 # ============================================================================
@@ -381,11 +384,16 @@ class TestPhaseTransitionDetection:
         tel = detect_phase_transition(graphs, times)
         assert tel.critical_time is not None
 
-    def test_theoretical_exponent_stored(self):
-        """Theoretical exponent γ/π is stored."""
+    def test_measured_exponent_is_only_exponent(self):
+        """Only the MEASURED exponent is stored; no derived 'theoretical' one.
+
+        Audit 2026: the exponent is protocol-dependent (measured), not a
+        universal γ/π constant, so theoretical_exponent was removed.
+        """
         graphs, times = _build_transition_sequence(n_steps=20, seed=42)
         tel = detect_phase_transition(graphs, times)
-        assert tel.theoretical_exponent == pytest.approx(GAMMA_C, rel=1e-10)
+        assert hasattr(tel, 'measured_exponent')
+        assert not hasattr(tel, 'theoretical_exponent')
 
     def test_telemetry_arrays_correct_length(self):
         """All arrays have matching length."""
@@ -439,12 +447,15 @@ class TestCriticalExponentFit:
         )
         assert 'exponent' in result
         assert 'r_squared' in result
-        assert 'theoretical' in result
 
-    def test_theoretical_exponent_in_result(self):
-        """Theoretical γ/π is always returned."""
+    def test_fit_result_has_no_theoretical(self):
+        """The fit returns only measured observables (no derived 'theoretical').
+
+        Audit 2026: there is no universal γ/π exponent to compare against.
+        """
         result = fit_critical_exponent([0, 1, 2], np.array([0.0, 0.1, 0.5]), None)
-        assert result['theoretical'] == pytest.approx(GAMMA_C, rel=1e-10)
+        assert 'theoretical' not in result
+        assert 'exponent' in result and 'r_squared' in result
 
     def test_fit_with_insufficient_data_returns_none(self):
         """Too few data points → exponent is None."""
@@ -497,7 +508,7 @@ class TestMultiTopology:
             G.nodes[node]["delta_nfr"] = rng.uniform(0.1, 1.5)
         snap = capture_phase_snapshot(G)
         assert snap.phase in (Phase.LIFE, Phase.CRITICAL)
-        assert snap.order_parameter_abs > ORDER_PARAMETER_NOISE_FLOOR
+        assert snap.order_parameter_abs > 0
 
 
 # ============================================================================

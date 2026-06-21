@@ -487,7 +487,7 @@ class ArithmeticTNFRNetwork:
     
     def detect_prime_candidates(
         self,
-        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_CANONICAL,  # γ/(e×π) ≈ 0.0676 (tetrahedral prime detection threshold)
+        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_CANONICAL,  # γ/(e×π) ≈ 0.0676 (notational prime detection threshold)
         *,
         tolerance: float = 1e-12,
         return_certificates: bool = False,
@@ -1364,7 +1364,7 @@ class ArithmeticTNFRNetwork:
         self,
         path: str,
         *,
-        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL,  # 2γ/(e×π) ≈ 0.1352 (tetrahedral higher threshold for emergent patterns)
+        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL,  # 2γ/(e×π) ≈ 0.1352 (notational higher threshold for emergent patterns)
         fmt: str = "jsonl",
         include_components: bool = True,
     ) -> int:
@@ -1534,7 +1534,7 @@ def run_basic_validation(max_number: int = 50) -> None:
     
     # Test prime detection
     logger.info("Testing prime detection...")
-    validation = network.validate_prime_detection(delta_nfr_threshold=MATH_DELTA_NFR_THRESHOLD_CANONICAL)  # tetrahedral threshold
+    validation = network.validate_prime_detection(delta_nfr_threshold=MATH_DELTA_NFR_THRESHOLD_CANONICAL)  # notational threshold
     logger.info(f"  Precision: {validation['precision']:.3f}")
     logger.info(f"  Recall: {validation['recall']:.3f}")
     logger.info(f"  F1-score: {validation['f1_score']:.3f}")

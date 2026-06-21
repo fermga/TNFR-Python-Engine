@@ -350,7 +350,7 @@ class TNFRUnifiedGPUSystem:
     ) -> GPUOperationResult:
         """Compute structural field tetrad using GPU acceleration.
         
-        Computes (Φ_s, |∇φ|, K_φ, ξ_C) following Universal Tetrahedral Correspondence
+        Computes the structural-field tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
         with automatic memory management and fallback.
         """
         import time

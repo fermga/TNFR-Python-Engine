@@ -381,7 +381,7 @@ class TestCriticalPoints:
             if r.field_name == 'Phi_s':
                 assert abs(r.threshold_value - PHI) < 1e-10
             elif r.field_name == 'grad_phi':
-                assert abs(r.threshold_value - GAMMA / PI) < 1e-10
+                assert abs(r.threshold_value - 0.9 * PI) < 1e-10
             elif r.field_name == 'K_phi':
                 assert abs(r.threshold_value - 0.9 * PI) < 1e-10
 
@@ -412,13 +412,17 @@ class TestThresholdDerivation:
         # and satisfies the self-consistency φ² − φ − 1 = 0.
         d = phi_row.derived_value
         assert abs(d * d - d - 1.0) < 1e-9
-        assert phi_row.status == 'derived'
+        # φ is recoverable (true identity) but φ↔Φ_s is an overlay, not a
+        # derived structural scale (audit 2026: 0.7711 bound is empirical).
+        assert phi_row.status == 'overlay'
 
     def test_gamma_from_harmonic_gap(self):
         rows = {r.field_name: r for r in derive_tetrad_threshold_values()}
         gamma_row = rows['grad_phi']
         assert abs(gamma_row.derived_value - GAMMA) < 1e-6
-        assert gamma_row.status == 'derived'
+        # γ is recoverable from the harmonic gap (true identity) but is NOT
+        # the structural scale of |∇φ| (audit 2026: |∇φ| ≤ π phase wrap).
+        assert gamma_row.status == 'overlay'
 
     def test_pi_is_geometric_primitive(self):
         rows = {r.field_name: r for r in derive_tetrad_threshold_values()}
@@ -432,7 +436,9 @@ class TestThresholdDerivation:
         rows = {r.field_name: r for r in derive_tetrad_threshold_values()}
         e_row = rows['xi_C']
         assert abs(e_row.derived_value - E) < 1e-12
-        assert e_row.status == 'derived'
+        # e is recoverable from Σ 1/k! (true identity) but e↔ξ_C is near-
+        # tautological; the structural scale of ξ_C is ξ_C ∝ 1/√λ₂ (audit 2026).
+        assert e_row.status == 'overlay'
 
     def test_summary_contains_verdict(self):
         rows = derive_tetrad_threshold_values()

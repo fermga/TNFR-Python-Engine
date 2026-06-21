@@ -11,12 +11,12 @@ Where:
 - Ω(n) = prime factor count with multiplicity (big Omega)
 - τ(n) = number of divisors
 - σ(n) = sum of divisors
-- ζ = φ×γ ≈ 0.9340  (factorization pressure, canonical)
-- η = (γ/φ)×π ≈ 1.1207  (divisor pressure, canonical)
-- θ = 1/φ ≈ 0.6180  (abundance pressure, canonical)
+- ζ = φ×γ ≈ 0.9340  (factorization pressure, notational)
+- η = (γ/φ)×π ≈ 1.1207  (divisor pressure, notational)
+- θ = 1/φ ≈ 0.6180  (abundance pressure, notational)
 
-All coefficients derived from (φ, γ, π, e) via Universal Tetrahedral
-Correspondence — zero empirical fitting.
+These coefficients are (φ, γ, π, e) combinations chosen to approximate the
+original empirical values (1.0, 0.8, 0.6) — notational, NOT derived (audit 2026).
 
 Theorem: n is prime ⟺ ΔNFR(n) = 0
 

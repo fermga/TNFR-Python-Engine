@@ -80,7 +80,7 @@ setup(
         "structural coherence",
         "deterministic algorithms",
         "hierarchical caching",
-        "tetrahedral correspondence",
+        "structural field tetrad",
         "canonical operators",
         "prime certificates",
         "structural fields",

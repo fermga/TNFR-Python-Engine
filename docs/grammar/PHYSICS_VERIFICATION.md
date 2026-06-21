@@ -181,7 +181,7 @@ Var(ΔNFR_parent) ≈ (1/N) · ∑ᵢ Var(ΔNFR_childᵢ) → bounded
 
 ### U6: STRUCTURAL POTENTIAL CONFINEMENT
 
-**Mathematical Foundation**: Universal Tetrahedral Correspondence (φ ↔ Φ_s)
+**Mathematical Foundation**: Φ_s field (0th-order tetrad field, ΔNFR aggregation)
 
 **Structural Potential Field**: Emergent field from ΔNFR distribution:
 ```
@@ -197,7 +197,7 @@ Var(ΔNFR_parent) ≈ (1/N) · ∑ᵢ Var(ΔNFR_childᵢ) → bounded
 
 **Mechanism**: **Passive equilibrium**—grammar acts as natural confinement, not active attraction.
 
-**Canonicity**: **STRONG** (theoretically derived from Universal Tetrahedral Correspondence + experimentally validated across 2,400+ experiments)
+**Canonicity**: **MODERATE** (the Φ_s confinement bound is empirical — φ ≈ 1.618 is adopted as motivation, with no closed form; validated across topologies, not a closed-form derivation)
 
 ---
 
@@ -227,7 +227,7 @@ Var(ΔNFR_parent) ≈ (1/N) · ∑ᵢ Var(ΔNFR_childᵢ) → bounded
 | U4a | STRONG | Bifurcation control | Chaos prevention |
 | U4b | STRONG | Threshold physics | Energy/timing requirements |
 | U5 | ABSOLUTE | Central limit theorem | Hierarchical correlation |
-| U6 | STRONG | Tetrahedral correspondence | Harmonic confinement |
+| U6 | MODERATE | Φ_s confinement (empirical) | Harmonic confinement |
 
 ---
 
@@ -267,7 +267,7 @@ Var(ΔNFR_parent) ≈ (1/N) · ∑ᵢ Var(ΔNFR_childᵢ) → bounded
 3. **U3**: Wave interference physics for coherent coupling
 4. **U4**: Bifurcation theory for controlled transitions
 5. **U5**: Hierarchical dynamics + statistical mechanics
-6. **U6**: Universal Tetrahedral Correspondence constraints
+6. **U6**: Structural-potential (Φ_s) confinement constraints
 
 **Conclusion**: The grammar is not imposed but **emerges inevitably** from TNFR physics.
 

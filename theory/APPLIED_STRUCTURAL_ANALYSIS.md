@@ -38,7 +38,7 @@ A factor candidate is TNFR-certified when $\geq 4$ of 8 structural criteria hold
 |-----------|-----------|-------|
 | $\Delta\mathrm{NFR}$ gain | $\geq 0.15$ drop | Nodal equation convergence |
 | Coherence ratio | $0.72 \leq r \leq 1.38$ | Structural similarity bounds |
-| $\Phi_s$ delta | $\leq 0.35$ | Tetrahedral correspondence confinement |
+| $\Phi_s$ delta | $\leq 0.35$ | Structural-potential confinement (empirical) |
 | Gradient delta | $\leq 0.40$ | Phase desynchronization limits |
 | Curvature delta | $\leq 0.45$ | Geometric torsion stability |
 | Periodicity confidence | $\geq 0.55$ | Structural mode certification |

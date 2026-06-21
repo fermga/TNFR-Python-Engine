@@ -49,9 +49,10 @@ Honest scope (mandatory, see AGENTS.md sec. 13.2):
 
 Coupling families implemented
 -----------------------------
-All three families are built from the canonical TNFR constants
-(phi, gamma, pi, e) with zero empirical fitting, per the project's
-canonical-derivation policy:
+All three families are written with the notational TNFR constants
+(phi, gamma, pi, e) for consistency (audit 2026: a parametrisation
+convention, NOT a derivation — gamma/pi here is a heuristic coupling
+scale, not a first-principles constant):
 
 * ``"kuramoto_u3"``: J_{(p,k),(q,l)} = strength * (gamma/pi) *
   exp(-|k log p - l log q|).  U3-phase-gated Kuramoto-style

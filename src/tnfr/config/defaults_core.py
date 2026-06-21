@@ -1,4 +1,13 @@
-"""Core constants."""
+"""Core constants.
+
+AUDIT 2026: thresholds below are written as combinations of (φ, γ, π, e) for
+notational consistency (an anti-magic-number convention) and many carry a
+"(tetrahedral correspondence: ...)" narrative. These are NOT derivations from
+the nodal equation — only π (the phase-wrap bound) is a genuine structural
+scale; γ, e, φ are an organizing overlay, and ξ_C's scale is the spectral gap
+(1/√λ₂). Treat these values as calibrated/notational parameters, not derived
+constants. See AGENTS.md §3 and CHANGELOG (tetrad correspondence audit).
+"""
 
 from __future__ import annotations
 
@@ -29,12 +38,12 @@ STRUCTURAL_ESCAPE_THRESHOLD = U6_STRUCTURAL_POTENTIAL_LIMIT  # φ ≈ 1.618 (can
 
 SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
     {
-        "si_hi": round(2.0 / (PI + GAMMA), 3),  # 2/(π+γ) ≈ 0.538 (tetrahedral correspondence: dual transcendental balance)
-        "si_lo": round(1.0 / (PI + GAMMA), 3),  # 1/(π+γ) ≈ 0.269 (tetrahedral correspondence: transcendental unity)
-        "dnfr_hi": round(GAMMA / (PHI + E), 3),  # γ/(φ+e) ≈ 0.133 (tetrahedral correspondence: dynamic balance between harmony and exponential growth)
-        "dnfr_lo": round(GAMMA / (E * PI), 3),  # γ/(e×π) ≈ 0.068 (tetrahedral correspondence: constrained dynamics beneath natural exponential-geometric product)
-        "accel_hi": round(PHI / (PI + E), 3),  # φ/(π+e) ≈ 0.276 (tetrahedral correspondence: golden ratio acceleration bounded by geometric-exponential sum)
-        "accel_lo": round(GAMMA / (PHI * PI), 3),  # γ/(φ×π) ≈ 0.114 (tetrahedral correspondence: Euler constant constrained by golden-geometric product)
+        "si_hi": round(2.0 / (PI + GAMMA), 3),  # 2/(π+γ) ≈ 0.538 (notational)
+        "si_lo": round(1.0 / (PI + GAMMA), 3),  # 1/(π+γ) ≈ 0.269 (notational)
+        "dnfr_hi": round(GAMMA / (PHI + E), 3),  # γ/(φ+e) ≈ 0.133 (notational)
+        "dnfr_lo": round(GAMMA / (E * PI), 3),  # γ/(e×π) ≈ 0.068 (notational)
+        "accel_hi": round(PHI / (PI + E), 3),  # φ/(π+e) ≈ 0.276 (notational)
+        "accel_lo": round(GAMMA / (PHI * PI), 3),  # γ/(φ×π) ≈ 0.114 (notational)
     }
 )
 
@@ -68,7 +77,7 @@ class CoreDefaults:
         default_factory=lambda: {
             "alpha": round(PHI_GAMMA_NORMALIZED, 3),     # φ/(φ+γ) ≈ 0.737 (golden coherence)
             "beta": round(GAMMA_PI_RATIO, 3),            # γ/(π+γ) ≈ 0.155 (Euler stability)
-            "gamma": round(GAMMA / (PHI * PI), 3)  # γ/(φ×π) ≈ 0.114 (tetrahedral reorganization via Euler constant constrained by golden-geometric product)
+            "gamma": round(GAMMA / (PHI * PI), 3)  # γ/(φ×π) ≈ 0.114 (notational)
         }
     )
     PHASE_K_GLOBAL: float = round(GAMMA_OVER_PI_PLUS_E / 2, 4)  # γ/(π+e) / 2 ≈ 0.0493 (canonical global phase coupling)
@@ -76,13 +85,13 @@ class CoreDefaults:
     PHASE_ADAPT: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
-            "R_hi": round(E * PHI / (PI + E), 3),  # (e×φ)/(π+e) ≈ 0.751 (tetrahedral high R threshold via exponential-harmonic ratio)
-            "R_lo": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.639 (tetrahedral low R threshold)
-            "disr_hi": round(PI / (PI + E), 3),  # π/(π+e) ≈ 0.536 (tetrahedral high disruption threshold)
-            "disr_lo": round(1.0 / (PI + 1.0), 3),  # 1/(π+1) ≈ 0.241 (tetrahedral low disruption threshold)
-            "kG_min": round(1.0 / (10 * PI * E), 4),  # 1/(10πe) ≈ 0.0117 (tetrahedral minimum phase coupling)
-            "kG_max": round(GAMMA / (PI + 1.0), 3),  # γ/(π+1) ≈ 0.139 (tetrahedral maximum phase coupling)
-            "kL_min": KL_MIN_CANONICAL,  # γ/(π×e×φ) ≈ 0.0418 (tetrahedral minimum coupling)
+            "R_hi": round(E * PHI / (PI + E), 3),  # (e×φ)/(π+e) ≈ 0.751 (notational)
+            "R_lo": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.639 (notational)
+            "disr_hi": round(PI / (PI + E), 3),  # π/(π+e) ≈ 0.536 (notational)
+            "disr_lo": round(1.0 / (PI + 1.0), 3),  # 1/(π+1) ≈ 0.241 (notational)
+            "kG_min": round(1.0 / (10 * PI * E), 4),  # 1/(10πe) ≈ 0.0117 (notational)
+            "kG_max": round(GAMMA / (PI + 1.0), 3),  # γ/(π+1) ≈ 0.139 (notational)
+            "kL_min": KL_MIN_CANONICAL,  # γ/(π×e×φ) ≈ 0.0418 (notational)
             "kL_max": KL_MAX_CANONICAL,  # γ/(π+γ) ≈ 0.1552 (transcendental coupling limit)
             "up": UP_CANONICAL,  # γ/(e×π) ≈ 0.0676 (constrained increment)
             "down": DOWN_CANONICAL,  # γ/(φ×π) ≈ 0.1136 (harmonic-geometric decrement)
@@ -132,25 +141,25 @@ class CoreDefaults:
         }
     )
     GLYPH_THRESHOLDS: dict[str, float] = field(
-        default_factory=lambda: {"hi": round(2.0 / (PI + GAMMA), 3), "lo": round(1.0 / (PI + GAMMA), 3), "dnfr": 1e-3}  # tetrahedral hi/lo thresholds
+        default_factory=lambda: {"hi": round(2.0 / (PI + GAMMA), 3), "lo": round(1.0 / (PI + GAMMA), 3), "dnfr": 1e-3}  # notational hi/lo thresholds
     )
     NAV_RANDOM: bool = True
     NAV_STRICT: bool = False
     RANDOM_SEED: int = 0
     JITTER_CACHE_SIZE: int = 256
     OZ_NOISE_MODE: bool = False
-    OZ_SIGMA: float = round(GAMMA / (E * PI), 3)  # γ/(e×π) ≈ 0.068 (tetrahedral dissonance sigma)
+    OZ_SIGMA: float = round(GAMMA / (E * PI), 3)  # γ/(e×π) ≈ 0.068 (notational)
     GRAMMAR: dict[str, Any] = field(
         default_factory=lambda: {
             "window": 3,
             "avoid_repeats": ["ZHIR", "OZ", "THOL"],
-            "force_dnfr": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.639 (tetrahedral force threshold)
-            "force_accel": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.639 (tetrahedral acceleration threshold)
+            "force_dnfr": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.639 (notational force threshold)
+            "force_accel": round(PI / (E + PHI + GAMMA), 3),  # π/(e+φ+γ) ≈ 0.639 (notational acceleration threshold)
             "fallbacks": {"ZHIR": "NAV", "OZ": "ZHIR", "THOL": "NAV"},
         }
     )
     SELECTOR_WEIGHTS: dict[str, float] = field(
-        default_factory=lambda: {"w_si": round(PI / (PI + E), 3), "w_dnfr": round(1.0 / (PI + 1.0), 3), "w_accel": round(GAMMA / (PI + 1.0), 3)}  # tetrahedral selector weights: π/(π+e), 1/(π+1), γ/(π+1)
+        default_factory=lambda: {"w_si": round(PI / (PI + E), 3), "w_dnfr": round(1.0 / (PI + 1.0), 3), "w_accel": round(GAMMA / (PI + 1.0), 3)}  # notational selector weights: π/(π+e), 1/(π+1), γ/(π+1)
     )
     SELECTOR_THRESHOLDS: dict[str, float] = field(
         default_factory=lambda: dict(SELECTOR_THRESHOLD_DEFAULTS)
@@ -207,16 +216,16 @@ class RemeshDefaults:
 
     EPS_DNFR_STABLE: float = 1e-3
     EPS_DEPI_STABLE: float = 1e-3
-    FRACTION_STABLE_REMESH: float = round(4.0 / (E + PHI), 3)  # 4/(e+φ) ≈ 0.922 (tetrahedral stable fraction)
+    FRACTION_STABLE_REMESH: float = round(4.0 / (E + PHI), 3)  # 4/(e+φ) ≈ 0.922 (notational stable fraction)
     REMESH_COOLDOWN_WINDOW: int = 20
     REMESH_COOLDOWN_TS: float = 0.0
     REMESH_REQUIRE_STABILITY: bool = True
     REMESH_STABILITY_WINDOW: int = 25
-    REMESH_MIN_PHASE_SYNC: float = round((E * PHI) / (PI + E), 3)  # (e×φ)/(π+e) ≈ 0.751 (tetrahedral phase sync threshold via exponential-harmonic ratio)
-    REMESH_MAX_GLYPH_DISR: float = round(1.0 / (PI + GAMMA), 3)  # 1/(π+γ) ≈ 0.269 → maximum glyph disruption via tetrahedral correspondence
-    REMESH_MIN_SIGMA_MAG: float = round(PI / (PI + E), 3)  # π/(π+e) ≈ 0.536 (tetrahedral sigma magnitude threshold)
-    REMESH_MIN_KURAMOTO_R: float = round(4.0 / (E + PHI), 3)  # 4/(e+φ) ≈ 0.922 (tetrahedral Kuramoto threshold)
-    REMESH_MIN_SI_HI_FRAC: float = round(PI / (PI + E), 3)  # π/(π+e) ≈ 0.536 (tetrahedral SI high fraction)
+    REMESH_MIN_PHASE_SYNC: float = round((E * PHI) / (PI + E), 3)  # (e×φ)/(π+e) ≈ 0.751 (notational phase sync threshold)
+    REMESH_MAX_GLYPH_DISR: float = round(1.0 / (PI + GAMMA), 3)  # 1/(π+γ) ≈ 0.269 (notational maximum glyph disruption)
+    REMESH_MIN_SIGMA_MAG: float = round(PI / (PI + E), 3)  # π/(π+e) ≈ 0.536 (notational sigma magnitude threshold)
+    REMESH_MIN_KURAMOTO_R: float = round(4.0 / (E + PHI), 3)  # 4/(e+φ) ≈ 0.922 (notational Kuramoto-R threshold)
+    REMESH_MIN_SI_HI_FRAC: float = round(PI / (PI + E), 3)  # π/(π+e) ≈ 0.536 (notational SI high fraction)
     REMESH_LOG_EVENTS: bool = True
     REMESH_MODE: str = "knn"
     REMESH_COMMUNITY_K: int = 2
@@ -232,18 +241,18 @@ CORE_DEFAULTS = MappingProxyType(_core_defaults)
 REMESH_DEFAULTS = MappingProxyType(_remesh_defaults)
 
 # ============================================================================
-# STRUCTURAL FIELD CONSTANTS (Universal Tetrahedral Correspondence)
+# STRUCTURAL FIELD CONSTANTS (notational (φ,γ,π,e) combinations; audit 2026: not derived — only π phase-wrap is genuine)
 # ============================================================================
 
 # Structural Field Thresholds (Research Constants)
 K_PHI_ASYMPTOTIC_ALPHA = 2.76  # Power-law exponent for multiscale K_φ variance
 # Tetrad thresholds: alias the single canonical source (constants.canonical)
 K_PHI_CURVATURE_THRESHOLD = K_PHI_CANONICAL_THRESHOLD  # 0.9×π ≈ 2.8274 (90% of theoretical maximum)
-PHASE_GRADIENT_THRESHOLD = GRAD_PHI_CANONICAL_THRESHOLD  # γ/π ≈ 0.1837 (Kuramoto critical coupling in TNFR units)
+PHASE_GRADIENT_THRESHOLD = GRAD_PHI_CANONICAL_THRESHOLD  # heuristic early-warning ≈ 0.1837 (audit 2026: not derived; |∇φ| bound is π)
 
-# Business Domain Thresholds (Tetrahedral Correspondence)
-MIN_BUSINESS_COHERENCE = MIN_BUSINESS_COHERENCE_CANONICAL  # (e×φ)/(π+e) ≈ 0.7506 (from constants.canonical)
-MIN_BUSINESS_SENSE_INDEX = round(1 / PHI + 0.082, 3)  # 1/φ + calibration ≈ 0.700 (golden ratio foundation + empirical adjustment)
+# Business Domain Thresholds (notational (φ,γ,π,e) constants, not derived)
+MIN_BUSINESS_COHERENCE = MIN_BUSINESS_COHERENCE_CANONICAL  # (e×φ)/(π+e) ≈ 0.7506 (notational)
+MIN_BUSINESS_SENSE_INDEX = round(1 / PHI + 0.082, 3)  # ≈ 0.700 (CALIBRATED target; the "1/φ + 0.082" form is cosmetic — an empirical value, not derived)
 
 # Statistical Analysis Constants
 STATISTICAL_SIGNIFICANCE_THRESHOLD = 0.5  # R² threshold for regression validity
@@ -256,7 +265,7 @@ ISING_3D_EXPONENT = 0.63  # 3D Ising universality class
 ISING_2D_EXPONENT = 1.0  # 2D Ising universality class
 
 # Coherence Length Constants
-CRITICAL_INFORMATION_DENSITY = E * PHI / PI  # (e×φ)/π ≈ 1.400 (tetrahedral critical density)
+CRITICAL_INFORMATION_DENSITY = E * PHI / PI  # (e×φ)/π ≈ 1.400 (notational critical density)
 MIN_DISTANCE_THRESHOLD = 0.01  # Numerical stability minimum distance
 
 # Field Optimization Constants
@@ -264,7 +273,7 @@ HIGH_CORRELATION_THRESHOLD = 0.8  # Strong field duality threshold
 VERY_HIGH_CORRELATION_THRESHOLD = 0.95  # Very strong field duality
 MODERATE_CORRELATION_THRESHOLD = 0.5  # Moderate correlation for speedup
 CHIRALITY_THRESHOLD = 1.0  # Chirality magnitude threshold
-HIGH_ENERGY_THRESHOLD = PHI * PI  # φ×π ≈ 5.083 (tetrahedral high energy threshold)
+HIGH_ENERGY_THRESHOLD = PHI * PI  # φ×π ≈ 5.083 (notational high energy threshold)
 LOW_ENERGY_THRESHOLD = 1.0  # Low energy density threshold
 COMPLEX_FIELD_THRESHOLD = PHI  # φ ≈ 1.618 (golden ratio threshold for complex fields)
 SYMMETRY_BREAKING_THRESHOLD = 1.0  # Symmetry breaking threshold

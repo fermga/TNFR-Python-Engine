@@ -95,33 +95,34 @@ $$
 
 ### 2.2 Phase Classification
 
+The phase is decided by the sampling-noise z-score of the symmetry breaking,
+$z = |\langle\mathcal{S}\rangle| / \mathrm{SE}$ with $\mathrm{SE} = \sqrt{\mathrm{Var}(\mathcal{S})/N}$ — the
+statistical significance measured from the system itself. The only cut is $z = 1$ (one
+sampling sigma); likewise $z_\chi$ for the chirality field.
+
 | Phase | Condition | Physical meaning |
 |-------|-----------|------------------|
-| **NON_LIFE** | $\langle\mathcal{S}\rangle < \gamma_c^2$ | Below noise floor; no emergent organisation |
-| **CRITICAL** | $\gamma_c^2 \le \langle\mathcal{S}\rangle < \gamma_c$ | Near critical point; susceptibility diverges |
-| **LIFE** | $\langle\mathcal{S}\rangle \ge \gamma_c$ | Emergent self-organisation |
+| **NON_LIFE** | $z \le 1$ | $\langle\mathcal{S}\rangle$ within sampling noise of zero (symmetric) |
+| **LIFE** | $z > 1$ AND $z_\chi > 1$ | significant symmetry breaking + homochirality |
+| **CRITICAL** | $z > 1$ AND $z_\chi \le 1$ | broken magnitude, no preferred handedness |
 
-### 2.3 Critical Exponent
+### 2.3 Critical Exponent (measured observable)
 
-The universal critical exponent emerges from the Euler constant / $\pi$ ratio:
-
-$$
-\gamma_c = \gamma/\pi \approx 0.1837
-$$
-
-Near the critical point:
+Near the critical point the order parameter follows a power law:
 
 $$
-|\langle\mathcal{S}\rangle| \sim |p - p_c|^{\gamma_c}
+|\langle\mathcal{S}\rangle| \sim |p - p_c|^{\beta}
 $$
+
+The exponent $\beta$ is an **observable to be measured** (`fit_critical_exponent`), **not** a derived universal constant. A measurement across sweep protocols gives protocol-dependent values, so there is no universal closed-form exponent. The constant $\gamma/\pi \approx 0.1837$ is retained only as a **calibrated reference / noise-floor scale** (TIER-2), not a prediction of the nodal equation.
 
 ### 2.4 Constants
 
-| Constant | Value | Derivation |
-|----------|-------|-----------|
-| Critical exponent $\gamma_c$ | $\gamma/\pi \approx 0.1837$ | Universal Tetrahedral Correspondence |
-| Noise floor | $\gamma_c^2 \approx 0.0337$ | Squared critical exponent |
-| Chirality threshold | $\gamma/(\pi + \gamma) \approx 0.155$ | Homochirality significance boundary |
+| Constant | Value | Status |
+|----------|-------|--------|
+| Reference scale $\gamma_c$ | $\gamma/\pi \approx 0.1837$ | Calibrated TIER-2 (not a derived universal exponent) |
+| Noise floor | $\gamma_c^2 \approx 0.0337$ | Calibrated detection threshold |
+| Chirality threshold | $\gamma/(\pi + \gamma) \approx 0.155$ | Calibrated TIER-2 reference |
 
 ### 2.5 Susceptibility
 

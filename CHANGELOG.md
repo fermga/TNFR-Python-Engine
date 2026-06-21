@@ -2,6 +2,148 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] — Tetrad correspondence audit (2026-06-20)
+
+A computational audit of the "Universal Tetrahedral Correspondence" found that
+only **π** is a genuine structural scale; the four-constant correspondence
+(φ↔Φ_s, γ↔|∇φ|, e↔ξ_C) is mostly an **organizing overlay**. Several thresholds
+asserted as "derived" were empirical, inert (magic), or measured false. This
+work corrects the claims and replaces magic thresholds with emergent,
+system-measured quantities. The nodal equation, the 13 operators, and grammar
+U1–U6 are unchanged.
+
+### Corrected (canonicity claims)
+
+- **Only π is a genuine structural scale** — the phase-wrap bound shared by BOTH
+  `|∇φ|` and `K_φ` (both are means of wrapped angles, ≤ π). γ, e, φ are
+  recoverable as mathematical identities but are NOT the structural scales of
+  their tetrad fields. `K_φ = L_rw·φ` (the central operator on phase, corr ≈ 1);
+  `ξ_C ∝ 1/√λ₂` (spectral gap, not base e).
+- **`|∇φ|` bound corrected** from `γ/π ≈ 0.1837` to the phase-wrap bound `0.9π`
+  in `physics/variational.py`, symmetric with `K_φ`. The measured synchronization
+  onset is ≈ 0.29 and σ-dependent, NOT the constant γ/π; γ/π is retained
+  elsewhere only as a heuristic early-warning level, explicitly labelled
+  non-derived.
+- **`derive_tetrad_threshold_values`** rows re-statused: π `geometric`; φ, γ, e
+  `overlay` (recoverable identities, not structural scales).
+- **`ARCHITECTURE.md`, `.zenodo.json`, `CONTRIBUTING.md`, `theory/README.md`,
+  `docs/STRUCTURAL_FIELDS_TETRAD.md`, `constants/canonical.py`** — removed the
+  "Universal Tetrahedral Correspondence foundation / 100% derived / zero
+  empirical tuning / verified to machine precision" claims; replaced with the
+  honest tiering (π genuine; γ/e/φ notational overlay).
+- **Second audit pass (repo-wide)** — removed the remaining "Universal
+  Tetrahedral Correspondence / canonical derivation / Kuramoto critical
+  coupling" claims and internal contradictions across `ARCHITECTURE.md`
+  (the "Mathematical Purity / 497 magic numbers eliminated / zero empirical"
+  sections), `README.md`, `theory/FUNDAMENTAL_THEORY.md`, `theory/GLOSSARY.md`,
+  `theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md`, `AGENTS.md` (+ mirror),
+  `docs/grammar/PHYSICS_VERIFICATION.md`, and the central constants modules
+  (`telemetry/constants.py`, `mathematics/unified_numerical.py`,
+  `config/defaults_core.py`, `physics/signatures.py`,
+  `operators/grammar_telemetry.py`, `physics/emergent_chemistry.py`) plus four
+  benchmarks. Exposed cosmetic "derivations" (e.g. `MIN_BUSINESS_SENSE_INDEX =
+  1/φ + 0.082 ≈ 0.700`, `⌊φ×10⌋ = 16`) as calibrated/notational values.
+
+### Changed (emergent replacement of magic thresholds)
+
+- **`physics/phase_transition.py` fully redesigned** to emergent sampling-noise
+  z-scores. The "universal critical exponent γ_c = γ/π" was **measured false**
+  (the fitted exponent is protocol-dependent), and the classification noise
+  floor `(γ/π)²` was **proven inert** (it sat in a two-order-of-magnitude gap;
+  sweeping it changed no classification). Removed the magic constants `GAMMA_C`,
+  `ORDER_PARAMETER_NOISE_FLOOR`, `CHIRALITY_THRESHOLD` and the
+  `theoretical_exponent` field; added `symmetry_zscore(mean, var, n) =
+  |mean|/√(Var/N)` and the single cut `Z_SIGNIFICANCE = 1` (the sampling-noise
+  scale, not a tunable constant). `classify_phase(order_z, chirality_z)` now
+  decides phases from statistical significance measured from the system itself.
+- **Named γ/π constants relabelled** as heuristic / non-derived in
+  `constants/canonical.py` (`CRITICAL_EXPONENT`, `GRAD_PHI_CANONICAL_THRESHOLD`,
+  `PHASE_GRADIENT_THRESHOLD_CANONICAL`) and `mathematics/unified_numerical.py`;
+  `gauge.py`, `emergent_chemistry.py`, `interactions.py` regime thresholds
+  marked calibrated/heuristic, not derived.
+
+### Notes
+
+- **Third audit pass (repo-wide, exhaustive)** — removed the remaining
+  "Universal Tetrahedral Correspondence / canonical derivation / zero empirical
+  fitting" claims across the two subprojects (`primality-test/`,
+  `factorization-lab/`), examples, benchmarks, the `mathematical_purity` tests
+  (now check genuine bounds, not the refuted mapping), all theory docs
+  (`FUNDAMENTAL_THEORY.md §4` and `GLOSSARY` renamed to "structural-field
+  tetrad"), and ~40 in-code combo comments (`defaults_core.py`, `bifurcation.py`,
+  `cycle_detection.py`, `number_theory.py`, etc.) now marked notational. Exposed
+  the primality coefficients (ζ=φγ, η=(γ/φ)π, θ=1/φ) as combos chosen to
+  approximate the original empirical values (ζ=1.0, η=0.8, θ=0.6).
+- The gauge force-regime classification and emergent-chemistry excitation scale
+  were flagged here for full emergent rework; that rework is now complete — see
+  "Emergent redesign" below.
+- Full test suite green (2196 passed) after all three passes.
+
+### Consequences audit (computational impact, 2026-06-21)
+
+A measure-first review of whether *calculations* (not just narrative) depended
+on the refuted tetrad values. Main finding: **the significant results are
+robust**, because they emerge from STRUCTURE (integer orderings, exact zeros,
+relative scores) rather than the scale values (γ/π, etc.):
+
+- **Emergent chemistry** (periodic table, magic numbers 2/10/18/36/54/86,
+  octet): the aufbau filling order uses only the integers (n+l, n); the octet
+  is the exact ΔNFR=0 zero — both independent of any scale coefficient. The
+  `nu_excitation` (=γ/π), `nu_0`, `coherence_gap` fields were DEAD (defined,
+  never consumed) and were removed; only `theta_valence` enters, as a positive
+  scale (the zero is robust to its value).
+- **Number-theory primality** (n prime ⟺ ΔNFR=0): each pressure term vanishes
+  individually for primes (Ω−1, τ−2, σ/n−(1+1/n) are all 0), so the result is
+  independent of the coefficients ζ, η, θ.
+- **Gauge interaction regimes**: `dominant_regime` is decided by relative
+  scores, NOT the γ/π threshold; `above_threshold` (which used γ/π) is metadata.
+- **Riemann ζ-bridge buffer** γ/π: a regularisation shift whose exact value is
+  immaterial. **K_φ asymptotic exponent** α≈2.76: a measured fit, unrelated.
+
+Real consequences corrected:
+- `PHASE_CURVATURE_ABS_THRESHOLD = φ×π ≈ 5.083` was a **non-physical** K_φ bound
+  (|K_φ| ≤ π by phase wrap, so any check using it was a no-op); it was dead code,
+  corrected to `0.9π ≈ 2.827`.
+- `STRUCTURAL_STABILITY_AND_DYNAMICS.md §2.2` still described the old γ_c
+  classification table; updated to the emergent z-score rule.
+- Removed the dead chemistry scale parameters; fixed a residual
+  `MATHEMATICAL_DYNAMICS_BASIS.md` |∇φ| claim. Full suite green (2196 passed).
+
+### Emergent redesign (gauge regimes + chemistry excitation, 2026-06-21)
+
+Completed the full emergent rework of the two studies whose conceptual base was
+the (now-refuted) four-constant overlay. Both were rebuilt to rest on STRUCTURE
+alone (measure-first; no value replaced by another magic value):
+
+- **Gauge interaction-regime classification** (`physics/gauge.py`): removed the
+  three overlay threshold constants `REGIME_DOMINANCE_THRESHOLD` (1/φ),
+  `REGIME_STRONG_THRESHOLD` (γ/π, "Kuramoto critical coupling in gauge") and the
+  unused `REGIME_SECONDARY_THRESHOLD` (γ/(π+γ)). The per-sector `above_threshold`
+  activity flags now use a single parameter-free criterion: a sector is *active*
+  when its normalised score exceeds the equipartition share `1/N_REGIMES = 0.25`
+  (the maximum-entropy reference, derived from the number of gauge sectors — the
+  four structural channels of the tetrad). Uniform across all four sectors; no
+  overlay constant. New public symbols `N_REGIMES`, `REGIME_ACTIVITY_SHARE`
+  replace the removed thresholds. `dominant_regime` (relative `max` of scores)
+  is unchanged — it was already robust. Measured: the criterion always flags the
+  dominant sector and additionally marks genuine co-active secondaries.
+- **Emergent-chemistry valence scale** (`physics/emergent_chemistry.py`): removed
+  the last free scale parameter (`theta_valence = 1/φ`) and the now-trivial
+  `EmergentChemistryParameters` dataclass. `ΔNFR_chem(Z)` is now the **integer**
+  structural distance of the outer shell to a closed configuration, in natural
+  units (one subshell step = 1) — the exact chemical analogue of primality
+  `ΔNFR(n)=0`. Noble gases (2,10,18,36,54,86) → ΔNFR=0; halogens/alkali → 1;
+  oxygen → 2; carbon → 4. Magic numbers and the octet are unchanged (they always
+  emerged from the integer (n+l) ordering and the exact zero).
+- **Measured (chemistry):** tested whether the (n+l) filling order could emerge
+  from the raw Laplacian spectrum of a concentric multi-shell ("onion") manifold.
+  It does NOT — Madelung ordering reflects electron-electron screening absent
+  from a free graph Laplacian. (n+l) is therefore documented honestly as an
+  integer excitation-count rule (total radial+angular quanta), not a spectral
+  derivation and not a constant correspondence.
+- Tests updated (`test_gauge.py`: `TestRegimeActivityCriterion`, equipartition
+  consistency). Full suite green (2195 passed, 2 skipped).
+
 ## [0.0.3.4] - 2026-06-17
 
 This release consolidates the emergent-geometry program, centralizes the
