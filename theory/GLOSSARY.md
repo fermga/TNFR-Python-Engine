@@ -379,22 +379,41 @@ Expose in telemetry:
 ## Domain Neutrality & the Two-Layer Ontology
 
 TNFR is **domain-neutral**: the structural operators apply to any graph-coupled network,
-with no built-in domain assumptions. Across domains the *same* nodal-equation fixed
-point `ΔNFR = 0` is read out on two layers:
+with no built-in domain assumptions. The genuinely canonical invariant — derivable
+*directly* from the nodal equation — is the **fixed point `ΔNFR = 0`** (structural
+equilibrium / resonant-coherence attractor); every domain realizes its own ΔNFR but shares
+this one fixed point, read through the single kernel `structural_coherence` and the
+predicate `is_structural_equilibrium`. Around that invariant the read-outs span a
+**spectrum of emergence**, contrasted as two layers:
 
-- **Physical layer — particles** (genuine *direct* emergence): the integer winding
-  `W ∈ ℤ` is a topological invariant of the phase field (nothing imposed).
-- **Symbolic / informational layer — numbers, chemistry** (a *projection* of the same
-  fixed point): a structural prime is `ΔNFR_arith = 0` and a noble gas is
-  `ΔNFR_chem = 0`, but these **consume** their domain data (divisibility τ/σ/ω, the
+- **Physical layer — particles** (*direct* emergence): the integer winding `W ∈ ℤ` is a
+  topological invariant of the phase field — its **integrality** emerges (any single-valued
+  phase field on a loop has integer winding; nothing imposes it). The class
+  (boson/fermion/composite) is an *output* of measuring `W`, not an imposed label
+  (`tnfr.physics.emergent_particles`).
+- **Symbolic / informational layer — numbers, chemistry** (*projection* of the same fixed
+  point): a structural prime is `ΔNFR_arith = 0` and a noble gas is `ΔNFR_chem = 0`. The
+  per-node arithmetic/chemical ΔNFR **consumes** its domain data (divisibility τ/σ/ω; the
   aufbau order) — the informational shadow of the structural grammar, not a direct
-  topological emergence.
+  *topological* emergence.
+
+**Refinement — emergence is a spectrum, not a clean binary.** The symbolic layer is not
+uniformly "consuming". Per [TNFR_NUMBER_THEORY.md §9.5](TNFR_NUMBER_THEORY.md), primality
+has three sectors: **A** (arithmetic `ΔNFR = 0`, what the SDK `primes()`/`primality()`
+expose) is an exact but *circular* re-expression that consumes Ω/τ/σ; **B** (spectral — the
+Paley/residue Fiedler gap, input only `x² mod n`) is **genuinely emergent** (primes-OUT,
+non-circular); **C** (representation-theoretic irreducibility) is *refuted*. So numbers do
+carry a non-circular emergent core, but it is **spectral**, partial (the real spectrum
+reaches only `n ≡ 1 (mod 4)`), and never lives in the per-node substrate — the residual is
+the same `Fix(G)^⊥` obstruction as the paused TNFR-Riemann program. The two-layer split is
+the SDK-level contrast; the trichotomy is the precise account.
 
 Only the equilibrium criterion (`is_structural_equilibrium`) and the coherence kernel
 (`structural_coherence`) are shared; each domain realizes its own ΔNFR.
 
-**Guideline:** avoid domain-specific hard-coding in the core engine; be honest about
-emerge-vs-consume per layer.
+**Guideline:** avoid domain-specific hard-coding in the core engine; be honest about the
+emergence spectrum (direct topological / spectral-emergent / divisibility-consuming) per
+read-out.
 
 ---
 

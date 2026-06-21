@@ -1,8 +1,8 @@
 """
 TNFR Arithmetic Network: Prime Numbers as Structural Attractors
 
-Implementation of the theoretical framework for detecting prime emergence
-from TNFR structural dynamics applied to natural numbers.
+Implementation of the theoretical framework for detecting structural primality
+(ΔNFR = 0) in TNFR arithmetic networks over the natural numbers.
 
 Theoretical foundation: theory/TNFR_NUMBER_THEORY.md (Canonical)
   - Primality as structural equilibrium (ΔNFR = 0)
@@ -10,13 +10,15 @@ Theoretical foundation: theory/TNFR_NUMBER_THEORY.md (Canonical)
   - Canonical constants derived from φ, γ, π, e
   - Spectral factorization via Paley-Jacobi decoding
 
-Ontological status: numbers are the SYMBOLIC-layer read-out -- the
-informational shadow cast by the structural grammar -- of the same
-nodal-equation fixed point ΔNFR = 0 whose PHYSICAL-layer read-out is the
-particle winding (tnfr.physics.emergent_particles). Both are one equilibrium
-process on two layers. The arithmetic ΔNFR here is a per-node realisation that
-CONSUMES divisibility (τ, σ, ω): primality is a symbolic projection of the
-fixed point, not a direct topological emergence like the winding number. Only
+Ontological status (theory/TNFR_NUMBER_THEORY.md §9.5): the same nodal-equation
+fixed point ΔNFR = 0 is read out across a spectrum of emergence. The PHYSICAL
+layer (particles) reads it *directly* as the topological winding W
+(tnfr.physics.emergent_particles). For numbers there are three sectors: this
+module is SECTOR A -- the per-node arithmetic ΔNFR (an exact but *circular*
+re-expression) CONSUMES divisibility (Ω, τ, σ); SECTOR B -- the spectral
+Paley/residue Fiedler gap (input only x^2 mod n) -- is GENUINELY EMERGENT
+(primes-OUT, non-circular), carried by the spectral factorizer
+(factorization-lab); SECTOR C (rep-theoretic irreducibility) is refuted. Only
 the equilibrium criterion (tnfr.metrics.common.is_structural_equilibrium) is
 shared across domains; the ΔNFR realisations are domain-specific.
 

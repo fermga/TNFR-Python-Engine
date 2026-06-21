@@ -84,9 +84,10 @@ def is_structural_equilibrium(
     for exact integer arithmetic), **not** a different logic.
 
     Particles read this fixed point *directly* as a topological winding of the
-    phase field (the physical layer); numbers and elements read it
-    *symbolically* (the informational shadow of the structural grammar),
-    consuming their domain data -- the same process on two layers.
+    phase field; the arithmetic and chemical read-outs are *symbolic* -- the
+    per-node ΔNFR consumes the domain data -- while number theory additionally
+    carries a genuinely emergent *spectral* read-out (the Paley/residue Fiedler
+    gap; theory §9.5). One fixed point, a spectrum of emergence.
 
     Parameters
     ----------

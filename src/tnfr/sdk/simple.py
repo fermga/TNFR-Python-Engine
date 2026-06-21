@@ -2140,12 +2140,16 @@ class TNFR:
     ) -> FactorizationReport:
         """Canonical TNFR factorization, optionally fused with network telemetry.
 
-        Like primality, factorization is a **symbolic-layer** operation: it
-        drives the canonical operator dynamics over the residue structure of
-        ``n`` and reads the same ``ΔNFR = 0`` equilibrium on an arithmetic
-        field that consumes ``n``'s divisibility -- the informational shadow of
-        the structural grammar (see :meth:`primes`), not a claim of speedup
-        over classical factoring.
+        Factorization is the **spectral** sector (theory
+        TNFR_NUMBER_THEORY.md §9.5): the factor signal of a semiprime
+        ``n = p*q`` appears as a *coset / Fourier mode* of the emergent
+        structural-diffusion spectrum ``L_rw = I - D^{-1} W`` (the canonical
+        ``ΔNFR`` EPI channel) on the residue/Paley graph -- a *partially
+        emergent* read-out, not the symbolic per-node ``ΔNFR`` (which is blind
+        to the cosets). Honest scope: the residue graph is regular, so ``L_rw``
+        shares eigenvectors with the classical Laplacian and the coset signal
+        is the CRT structure *re-expressed*, not added by the emergent framing;
+        TNFR factorization is **not** a speedup over classical factoring.
 
         Parameters
         ----------
@@ -2191,9 +2195,10 @@ class TNFR:
     ) -> PrimalityReport:
         """Canonical primality analysis via SDK, optionally fused with telemetry.
 
-        Reads the arithmetic equilibrium ``ΔNFR_arith(n) = 0`` -- the
-        symbolic-layer shadow of the same fixed point as the particle winding
-        (see :meth:`primes`); it consumes ``n``'s divisibility data.
+        Reads the arithmetic equilibrium ``ΔNFR_arith(n) = 0`` (**sector A** --
+        an exact but *circular* re-expression that consumes ``n``'s
+        divisibility; the genuinely emergent primality is the spectral
+        sector B, see :meth:`primes` and theory §9.5).
         """
         if not _HAS_PRIMALITY:
             raise TNFRValueError(
@@ -2223,17 +2228,18 @@ class TNFR:
         A number ``n`` is structurally prime when its arithmetic reorganization
         pressure vanishes, ``ΔNFR_arith(n) = 0`` -- the exact nodal-equation
         equilibrium (:func:`tnfr.metrics.common.is_structural_equilibrium`)
-        that a relaxed graph node and a noble-gas atom also satisfy. Primes are
-        thus the **symbolic-layer** read-out -- the informational shadow cast
-        by the structural grammar -- of the *same* fixed-point process whose
-        **physical-layer** read-out is the particle winding
-        (:meth:`Network.particle`).
+        that a relaxed graph node and a noble-gas atom also satisfy.
 
-        Honest scope: unlike the particle, whose integer winding ``W`` emerges
-        *directly* as a topological invariant of the phase field, the prime is
-        a symbolic *projection* -- the arithmetic ``ΔNFR`` consumes the
-        divisibility data ``(τ, σ, ω)`` of ``n``. Same process, two layers: one
-        emergent invariant, one symbolic encoding.
+        Emergence status (theory/TNFR_NUMBER_THEORY.md §9.5). This method is
+        **sector A**: the arithmetic ``ΔNFR`` is an *exact but circular*
+        re-expression that **consumes** ``n``'s divisibility ``(Ω, τ, σ)`` --
+        the symbolic shadow of the fixed point whose *physical*-layer read-out
+        is the directly-emergent particle winding ``W``
+        (:meth:`Network.particle`). The genuinely **emergent** primality is
+        **sector B** -- the spectral Paley/residue Fiedler gap (input only
+        ``x^2 mod n``, primes-OUT, non-circular), carried by the spectral
+        factorizer (:meth:`factorize`), not by this arithmetic read-out. One
+        fixed point, a spectrum of emergence.
 
         Parameters
         ----------
