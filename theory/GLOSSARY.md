@@ -168,7 +168,7 @@
 - When \(\Delta\text{NFR} = 0\), structure reaches equilibrium
 
 **Implementation:** See `src/tnfr/dynamics/` for numerical integration  
-**Theory:** [§4 The Nodal Equation](MATHEMATICAL_DYNAMICS_BASIS.md)
+**Theory:** [Nodal equation](FUNDAMENTAL_THEORY.md) §2
 
 ---
 
@@ -214,7 +214,7 @@ Operators combine into **sequences** that implement complex behaviors:
 
 **Grammar:** See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete rules  
 **Detailed Specs:** See [AGENTS.md § The 13 Canonical Operators](../AGENTS.md#-the-13-canonical-operators)  
-**Math:** [Mathematical Foundations §5](MATHEMATICAL_DYNAMICS_BASIS.md)
+**Math:** [Mathematical Foundations](MATHEMATICAL_DYNAMICS_BASIS.md)
 
 ---
 
@@ -428,14 +428,9 @@ Operators that require phase verification for valid coupling.
 
 **Theory:** The four structural fields are the minimal derivative tower (DERIVED). They are *associated* with four constants as a notational label; only π is a genuine structural scale (the phase-wrap bound shared by |∇φ| and K_φ).
 
-### Mathematical Constants
+### The constants
 
-| Constant | Value | Role | Domain |
-|----------|-------|------|--------|
-| **φ** (Golden Ratio) | 1.618034... | Harmonic proportion | Global/Harmonic |
-| **γ** (Euler Constant) | 0.577216... | Harmonic growth rate | Local/Dynamic |
-| **π** (Pi) | 3.141593... | Geometric relations | Geometric/Spatial |
-| **e** (Euler Number) | 2.718282... | Exponential base | Correlational/Temporal |
+The engine uses four mathematical constants (φ, γ, π, e) as notational labels for parameters. Only **π** is a genuine structural scale — it bounds the phase sector (|∇φ| ≤ π and |K_φ| ≤ π). φ, γ, e are notational; the bounds they label are empirical or heuristic, not derived from the nodal equation.
 
 ### Structural Fields and their bounds
 

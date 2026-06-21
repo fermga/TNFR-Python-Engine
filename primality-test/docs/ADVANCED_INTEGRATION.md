@@ -72,12 +72,7 @@ from tnfr.mathematics.constants import (
 delta_nfr = compute_structural_pressure(n, phi=PHI, gamma=GAMMA)
 ```
 
-**Constants Available:**
-- **φ (Golden Ratio)**: 1.618033988750 - Harmonic proportion
-- **γ (Euler Constant)**: 0.577215664902 - Harmonic growth rate  
-- **π (Pi)**: 3.141592653590 - Geometric relations
-- **e (Euler Number)**: 2.718281828459 - Exponential base
-- **Tolerance**: 0.067591759866 - TNFR canonical threshold
+**Constants Available:** the engine exposes `PHI`, `GAMMA`, `PI`, `E` as notational labels for parameters. Only **π** is a genuine structural scale (it bounds the phase sector); φ, γ, e are notational. A canonical tolerance (≈ 0.0676) is also exposed.
 
 ### 5. Prime Certificate System
 

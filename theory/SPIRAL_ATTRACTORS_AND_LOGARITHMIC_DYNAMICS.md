@@ -2,13 +2,13 @@
 
 **Status**: Derived result — logarithmic spiral trajectories follow from nodal equation under rotation + growth  
 **Version**: 1.0 (March 2026)  
-**Prerequisites**: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §3 (Nodal Equation), [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) §6
+**Prerequisites**: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §3 (Nodal Equation)
 
 ---
 
 ## 1. Overview
 
-The logarithmic spiral $r(\theta) = a \, e^{b\theta}$ is the unique plane curve that is simultaneously **self-similar** and **equiangular**. It unifies three of the four TNFR constants:
+The logarithmic spiral $r(\theta) = a \, e^{b\theta}$ is the unique plane curve that is simultaneously **self-similar** and **equiangular**. It involves three mathematical constants:
 
 | Constant | Role in the spiral |
 |----------|-------------------|
@@ -215,7 +215,7 @@ Thus γ governs the **fidelity** of discrete spiral dynamics: it quantifies how 
 
 ## 9. References
 
-- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — Four constants as basis of mathematical dynamics
+- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad and the notational constants
 - [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — Nodal equation and structural triad (§3)
 - [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Tetrad irreducibility and edge relations
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U2 (convergence), U5 (multi-scale), U6 (confinement)

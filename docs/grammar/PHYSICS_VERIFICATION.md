@@ -188,9 +188,9 @@ Var(ΔNFR_parent) ≈ (1/N) · ∑ᵢ Var(ΔNFR_childᵢ) → bounded
 Φ_s(i) = ∑_{j≠i} ΔNFR_j / d(i,j)²
 ```
 
-**Confinement Principle**: From harmonic analysis:
+**Confinement Principle**: empirical confinement bound:
 ```
-Δ Φ_s < φ ≈ 1.618 (golden ratio threshold)
+Δ Φ_s < 1.618 (empirical threshold; no closed form)
 ```
 
 **Physical Meaning**: Structural potential changes bounded by harmonic proportions. Beyond this threshold, the system escapes harmonic confinement and fragments.

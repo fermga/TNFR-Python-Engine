@@ -125,39 +125,40 @@ From the tetrad, the following tensor invariants emerge:
 
 The four structural fields are the four orders of the discrete derivative tower (the tetrad — this basis is DERIVED and minimal). Each is *associated* with a mathematical constant as a notational label; only **π** is a genuine structural scale (the phase-wrap bound shared by $|\nabla\phi|$ and $K_\phi$). γ, e, φ are recoverable as identities but are not the structural scales of their fields. The thresholds below are telemetry guidance; only the π phase-wrap bounds and $\xi_C \propto 1/\sqrt{\lambda_2}$ are genuine structural scales.
 
-| Constant | Value | Field | Operational limit | Structural status |
-|----------|-------|-------|-------------------|------------|
-| $\varphi$ (golden ratio) | 1.618034... | $\Phi_s$ | $\Delta\Phi_s < \varphi$ | Empirical (no closed form); $\varphi$ adopted as motivation, not derived |
-| $\gamma$ (Euler–Mascheroni) | 0.577216... | $|\nabla\phi|$ | $|\nabla\phi| \le \pi$ (phase wrap) | Wrapped-angle bound, SAME as $K_\phi$; $\gamma/\pi \approx 0.184$ is a heuristic early-warning only |
-| $\pi$ (Archimedes) | 3.141593... | $K_\phi$ | $|K_\phi| < 0.9\pi \approx 2.827$ | **Genuine** structural scale (wrap bound); $K_\phi = L_{rw}\phi$ |
-| $e$ (Napier) | 2.718282... | $\xi_C$ | $C(r) \sim \exp(-r/\xi_C)$ | Near-tautological; the $\xi_C$ scale is the spectral gap, $\xi_C \propto 1/\sqrt{\lambda_2}$ |
+| Field | Symbol | Operational limit | Structural scale |
+|-------|--------|-------------------|------------------|
+| Structural potential | $\Phi_s$ | $\Delta\Phi_s < 1.618$ | Empirical confinement (no closed form) |
+| Phase gradient | $|\nabla\phi|$ | $|\nabla\phi| \le \pi$ (phase wrap) | $\pi$ (phase-wrap bound), same as $K_\phi$ |
+| Phase curvature | $K_\phi$ | $|K_\phi| < 0.9\pi \approx 2.827$ | $\pi$ (phase-wrap bound); $K_\phi = L_{rw}\phi$ |
+| Coherence length | $\xi_C$ | $C(r) \sim \exp(-r/\xi_C)$ | Spectral gap, $\xi_C \propto 1/\sqrt{\lambda_2}$ |
 
-Each constant governs a distinct class of mathematical dynamics (self-similar proportion, discrete accumulation, circular geometry, exponential growth/decay). See [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) for the full classification and [SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md](SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md) for how three constants (φ, π, e) combine in logarithmic spiral trajectories derived from the nodal equation.
+Only the $\pi$ phase-wrap bounds and the spectral-gap scaling $\xi_C \propto 1/\sqrt{\lambda_2}$ are genuine structural scales; the $\Phi_s$ bound is empirical. The mathematical dynamics each constant represents are catalogued in [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md), and [SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md](SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md) covers logarithmic spiral trajectories — but these constants are notational labels, not the structural scales of the fields.
 
-### 4.2 Mathematical Architecture
+### 4.2 The four fields
 
-The correspondences form a conceptual tetrahedron:
+The tetrad spans four independent structural channels — the orders of the
+derivative tower:
 
 ```text
-        φ (Global Harmony)
+        Φ_s (0th — global aggregation)
              /|\
             / | \
            /  |  \
-      γ ------+------ π
-  (Local)     |   (Geometric)
+  |∇φ| ------+------ K_φ
+  (1st)      |  (2nd; π-bounded)
           \   |   /
            \  |  /
             \|/
-          e (Correlational)
+          ξ_C (non-local — spectral gap)
 ```
 
 ### 4.3 Derivation Outline
 
-1. **$\Phi_s \leftrightarrow \varphi$**: The golden ratio is the confinement scale for aggregated inverse-square potentials; $\Phi_s$ exceeding $\varphi$ correlates with runaway accumulation of $\Delta\mathrm{NFR}$. **Grounding (upgraded 2026-06)**: the one-sided inverse-square accumulation on a 1D resonant chain saturates to $\zeta(2)=\pi^2/6\approx1.6449$ (Basel), a genuine closed-form property of the kernel; $\varphi\approx1.6180$ is *adopted* as the U6 drift threshold because it is the nearest tetrad vertex sitting $1.64\%$ *inside* that saturation, with the most-irrational/KAM resonance-robustness argument as motivation (not a closed-form identity, since $\varphi\neq\pi^2/6$). The earlier $x=1+1/x$ fixed-point rationale is **superseded**. Per-node safety: $|\Phi_s| < 0.7711$, an **empirically validated** threshold (5 topologies) lying within the $\mathrm{O}(1)$ band set by the $\zeta(4)=\pi^4/90$ variance of inverse-square pressure; it has **no closed form** in $(\varphi,\gamma,\pi,e)$. Both anchors require $\alpha=2$; see `benchmarks/phi_s_confinement_investigation.py`.
+1. **$\Phi_s$ (0th order)**: The confinement scale for aggregated inverse-square potentials; $\Phi_s$ exceeding $\varphi$ correlates with runaway accumulation of $\Delta\mathrm{NFR}$. **Grounding (upgraded 2026-06)**: the one-sided inverse-square accumulation on a 1D resonant chain saturates to $\zeta(2)=\pi^2/6\approx1.6449$ (Basel), a genuine closed-form property of the kernel; $\varphi\approx1.6180$ is *adopted* as the U6 drift threshold because it is the nearest tetrad vertex sitting $1.64\%$ *inside* that saturation, with the most-irrational/KAM resonance-robustness argument as motivation (not a closed-form identity, since $\varphi\neq\pi^2/6$). The earlier $x=1+1/x$ fixed-point rationale is **superseded**. Per-node safety: $|\Phi_s| < 0.7711$, an **empirically validated** threshold (5 topologies) lying within the $\mathrm{O}(1)$ band set by the $\zeta(4)=\pi^4/90$ variance of inverse-square pressure; it has **no closed form** in $(\varphi,\gamma,\pi,e)$. Both anchors require $\alpha=2$; see `benchmarks/phi_s_confinement_investigation.py`.
 
 2. **$|\nabla\phi|$ (1st order)**: $|\nabla\phi|$ is a mean of WRAPPED phase angles, so its genuine bound is $|\nabla\phi| \le \pi$ — the SAME phase-wrap bound as $K_\phi$ ($\pi$ scales the whole phase sector). $\gamma/\pi \approx 0.184$ is a heuristic early-warning level, not a derived bound: the measured synchronization onset is $\approx 0.29$ and $\sigma$-dependent. $\gamma$ is recoverable as the harmonic-accumulation gap but is NOT the structural scale of $|\nabla\phi|$. This field captures local phase stress that the *global aggregate* coherence $C(t) = 1/(1 + \overline{|\Delta\mathrm{NFR}|} + \overline{|d\mathrm{EPI}|})$ averages away; the scale-invariant dispersion variant $1 - (\sigma_{\Delta\mathrm{NFR}}/\Delta\mathrm{NFR}_{\max})$ makes the blind spot explicit, being invariant under proportional scaling of $\Delta\mathrm{NFR}$.
 
-3. **$K_\phi \leftrightarrow \pi$**: Phase curvature must remain below $\pi$ (the theoretical maximum from wrap_angle bounds). The operational threshold uses a 90% safety margin: $0.9\pi \approx 2.8274$.
+3. **$K_\phi$ (2nd order)**: Phase curvature must remain below $\pi$ (the theoretical maximum from wrap_angle bounds). The operational threshold uses a 90% safety margin: $0.9\pi \approx 2.8274$.
 
 4. **$\xi_C$ (correlation)**: correlation decay is exponential, so its base is $e$ — but that is near-tautological (any exponential decay has base $e$). The genuine structural scale of $\xi_C$ is the **spectral gap**: $\xi_C \propto 1/\sqrt{\lambda_2}$, not $e$. Critical thresholds: $\xi_C > \mathrm{diameter}$ (critical), $\xi_C > \pi \cdot \bar{d}$ (watch), $\xi_C < \bar{d}$ (stable).
 

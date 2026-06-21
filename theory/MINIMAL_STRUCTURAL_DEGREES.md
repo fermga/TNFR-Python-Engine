@@ -69,13 +69,13 @@ where f(x) is a local structural observable (e.g., coherence). The exponential f
 
 ---
 
-## 4. Derivation of Each Correspondence
+## 4. The Field Scales
 
-The physics-essential constants — the four tetrad thresholds together with the grammar and operator constants — derive from the four canonical vertices (φ, γ, π, e). Implementation: `src/tnfr/constants/canonical.py`.
+Each field has a characteristic scale, read directly from the graph and the nodal equation. Only **π** is a genuine structural constant (it bounds the phase sector); the Φ_s bound is empirical, ξ_C is set by the spectral gap, and the γ/π level for |∇φ| is a heuristic early-warning, not a derived bound. Implementation: `src/tnfr/constants/canonical.py`.
 
 **Scope caveat (added 2026-06)**: that module also hosts a tier of *engine-configuration* constants (cache sizes, FFT and optimization tuning, performance estimates) that are *written* as combinations of (φ, γ, π, e) for notational consistency but were calibrated to operational targets rather than derived from the nodal equation. Those carry no nodal-physics meaning and must not be read as first-principles results. The "zero empirical fitting" characterization applies to the physics tier only; the per-node Φ_s threshold (0.7711, §4.1) is the one physics-tier constant that is empirically validated without a closed-form derivation.
 
-### 4.1 φ ↔ Φ_s: Global Harmonic Confinement
+### 4.1 Φ_s — empirical confinement
 
 **Derivation chain** (spectral saturation of the inverse-square kernel; see status note for what is derived vs. adopted):
 
@@ -89,20 +89,16 @@ The physics-essential constants — the four tetrad thresholds together with the
 
 **Grammar integration**: U6 structural confinement — Δ Φ_s < φ ≈ 1.618 (a conservative bound just inside the ζ(2) = π²/6 saturation of inverse-square accumulation).
 
-### 4.2 γ ↔ |∇φ|: Local Dynamic Evolution
+### 4.2 |∇φ| — phase-wrap bound
 
-**Derivation chain**:
+**Scale**:
 
-1. The Euler–Mascheroni constant γ ≈ 0.577 measures the asymptotic gap between the harmonic series H_n = Σ_{k=1}^{n} 1/k and ln(n).
-2. In the Kuramoto model, the critical coupling strength K_c for synchronization onset scales as K_c ~ 2/(π·g(0)), where g(0) is the distribution peak.
-3. Translating to TNFR structural units: the critical phase gradient threshold is γ/π ≈ 0.1837.
-4. Below this threshold, local phase differences remain within the linear (smooth evolution) regime. Above it, nonlinear desynchronization cascades.
-
-**Grammar integration**: Smooth evolution requirement — |∇φ| < γ/π for stable dynamics.
+1. |∇φ|(i) is the mean wrapped phase difference to neighbours; being a mean of WRAPPED angles, its genuine bound is **|∇φ| ≤ π** — the same phase-wrap bound as K_φ.
+2. The synchronization onset is a measured ≈ 0.29 and σ-dependent (a dynamical transition, not a constant). The level γ/π ≈ 0.1837 is retained only as a heuristic early-warning, **not** a derived threshold.
 
 **Critical discovery**: the global aggregate coherence C(t) = 1/(1 + mean|ΔNFR| + mean|dEPI|) averages over the network and cannot resolve local phase stress; its scale-invariant dispersion variant C_disp = 1 − (σ_ΔNFR / ΔNFR_max) is invariant under proportional scaling of ΔNFR, making the blind spot explicit. The phase gradient |∇φ| breaks this invariance and captures the local stress that global C(t) misses.
 
-### 4.3 π ↔ K_φ: Geometric Spatial Constraints
+### 4.3 K_φ — geometric phase-wrap (π, genuine)
 
 **Derivation chain**:
 
@@ -114,44 +110,20 @@ The physics-essential constants — the four tetrad thresholds together with the
 
 **Grammar integration**: Geometric confinement monitoring — K_φ flags mutation-prone loci.
 
-### 4.4 e ↔ ξ_C: Correlational Memory Decay
+### 4.4 ξ_C — spectral gap
 
-**Derivation chain**:
+**Scale**:
 
-1. On a graph, structural correlations propagate along paths. Each hop introduces a multiplicative decay factor (Markov property).
-2. After r hops: C(r) = C(0) · ρ^r = C(0) · exp(−r/ξ_C) where ξ_C = −1/ln(ρ).
-3. The exponential function exp(·) with base e is the unique function satisfying f'(x) = f(x), making e the natural base for Markovian decay.
-4. This ensures scale invariance: rescaling r → αr simply rescales ξ_C → αξ_C without changing the functional form.
+1. On a graph, structural correlations propagate along paths, decaying per hop (Markov property): C(r) = C(0)·exp(−r/ξ_C). Exponential decay has base e tautologically.
+2. The genuine structural scale is the **spectral gap** (Fiedler value λ₂): ξ_C ∝ 1/√λ₂. Rescaling r → αr rescales ξ_C → αξ_C without changing the functional form.
 
 **Grammar integration**: U5 multi-scale coherence — ξ_C divergence signals critical transitions.
 
 ---
 
-## 5. Tetrahedral Edge Relationships
+## 5. Notational parameters
 
-The six edges of the tetrahedron formed by (φ, γ, π, e) each generate a canonical constant used in the engine. These are not fitting parameters but algebraic consequences of the four vertices.
-
-### 5.1 Edge Table
-
-| Edge | Expression | Value | Physical role |
-|------|-----------|-------|---------------|
-| φ–γ | φ/γ | ≈ 2.803 | Structural frequency base (νf scaling) |
-| φ–π | φ/(φ+π) | ≈ 0.340 | Optimization penalty factor |
-| φ–e | φ/e | ≈ 0.595 | EPI maximum canonical bound |
-| γ–π | γ/π | ≈ 0.184 | Phase gradient safety threshold |
-| γ–e | γ/(e+γ) | ≈ 0.175 | Temporal evolution rate |
-| π–e | π/e | ≈ 1.156 | Spectral speedup factor |
-
-### 5.2 Vertex Table
-
-| Vertex pair | Triangle | Combination | Role |
-|-------------|----------|-------------|------|
-| (φ, γ, π) | Omitting e | (e·φ)/(π+e) ≈ 0.751 | MIN_BUSINESS_COHERENCE threshold |
-| (φ, γ, e) | Omitting π | γ/(e+γ) ≈ 0.175 | Temporal rate constant |
-| (φ, π, e) | Omitting γ | φ/(φ+π) ≈ 0.340 | Optimization penalty |
-| (γ, π, e) | Omitting φ | 1/(π+1) ≈ 0.241 | THOL_MIN_COLLECTIVE_COHERENCE |
-
-Every constant in `canonical.py` is *written* as an algebraic expression of (φ, γ, π, e). For the physics tier (tetrad, grammar, operator constants) these expressions are derivations; for the engine-configuration tier (§4 scope caveat) they are notational wrappers fitted to operational targets, not derivations.
+Some engine parameters are *written* as algebraic combinations of (φ, γ, π, e) for notational consistency (an anti-magic-number convention). Except for the π phase-wrap bounds and ξ_C ∝ 1/√λ₂, these combinations are heuristic or empirical telemetry values, not derivations from the nodal equation.
 
 ---
 
@@ -318,7 +290,7 @@ The six edges and four faces of the mathematical tetrahedron produce operational
 - Mathematical context: Combines geometry (π/e), dynamics, and proportion (1/φ). The quantity √π universally appears in diffusion processes.
 - Status: Approximate, not an exact identity. Error is 20× smaller than Relation 1.
 
-**Important**: These are numerical observations, not theorems. Their significance lies in suggesting structural connections between the four dynamics classes, not in establishing identities. Converting them into rigorous results is part of the TNFR research programme ([MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) §8).
+**Important**: These are numerical observations, not theorems. Their significance lies in suggesting structural connections between the four dynamics classes, not in establishing identities. Converting them into rigorous results is part of the TNFR research programme ([MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md)).
 
 The face value φe/(π+e) ≈ 0.7506 is *not* an approximation — it is the algebraically exact coherence threshold implemented as `MIN_BUSINESS_COHERENCE_CANONICAL` in `canonical.py`.
 

@@ -108,19 +108,12 @@ class TestZeroEmpiricalFitting:
         # 1/φ = φ - 1 (golden ratio property)
         assert abs(INV_PHI - (PHI - 1.0)) < 1e-14
 
-    def test_universal_tetrahedral_correspondence_constants(self):
-        """Test the four constant values (audit 2026: their field association is
-        an overlay, not a derivation — only π is a genuine structural scale)."""
-        # φ (associated with Φ_s as overlay)
+    def test_constant_values(self):
+        """Test the four constant values (notational labels; only π is a genuine
+        structural scale — the phase-wrap bound of the phase sector)."""
         assert PHI > 1.618 and PHI < 1.619  # φ ≈ 1.618
-        
-        # γ (associated with |∇φ| as overlay; the genuine bound is the π wrap)
         assert GAMMA > 0.577 and GAMMA < 0.578  # γ ≈ 0.577
-        
-        # π ↔ K_φ (Geometric Spatial)
-        assert PI > 3.141 and PI < 3.142  # π ≈ 3.141
-        
-        # e ↔ ξ_C (Correlational Memory)
+        assert PI > 3.141 and PI < 3.142  # π ≈ 3.141 (genuine phase scale)
         assert E > 2.718 and E < 2.719  # e ≈ 2.718
 
 

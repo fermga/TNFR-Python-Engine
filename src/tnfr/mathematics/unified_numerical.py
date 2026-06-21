@@ -406,7 +406,7 @@ class TNFRNumericalUtilities:
             "operation_count": self._operation_count,
             "total_time": self._total_time,
             "seed": self.seed,
-            "constants_version": "tetrahedral_correspondence_v1"
+            "constants_version": "structural_tetrad_v1"
         }
     
     def reset_seed(self, new_seed: int) -> None:

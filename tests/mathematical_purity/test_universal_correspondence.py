@@ -21,11 +21,11 @@ from tnfr.physics.fields import (
 )
 
 
-class TestTetrahedralCorrespondence:
-    """Test the 4×4 universal correspondence."""
+class TestStructuralFieldTetrad:
+    """Test the structural-field tetrad: computability and genuine bounds."""
 
     def test_phi_structural_potential_correspondence(self):
-        """φ ↔ Φ_s: Global harmonic confinement."""
+        """Φ_s (structural potential): computable and confined."""
         # φ ≈ 1.618 should bound structural potential
         assert PHI > 1.618 and PHI < 1.619
         
@@ -43,7 +43,7 @@ class TestTetrahedralCorrespondence:
         assert max_phi_s < PHI
         
     def test_gamma_phase_gradient_correspondence(self):
-        """γ ↔ |∇φ|: Local dynamic evolution bounds.""" 
+        """|∇φ| (phase gradient): bounded by the π wrap.""" 
         # γ ≈ 0.577 should bound local phase changes
         assert GAMMA > 0.577 and GAMMA < 0.578
         
@@ -56,12 +56,12 @@ class TestTetrahedralCorrespondence:
         phase_grad = compute_phase_gradient(G)
         max_gradient = max(abs(v) for v in phase_grad.values())
         
-        # |∇φ| is a mean of wrapped angles, so |∇φ| ≤ π (audit 2026: the genuine
-        # bound; γ/π ≈ 0.184 is only a heuristic early-warning, not a bound).
+        # |∇φ| is a mean of wrapped angles, so |∇φ| ≤ π (the genuine bound;
+        # γ/π ≈ 0.184 is only a heuristic early-warning, not a bound).
         assert max_gradient < PI
 
     def test_pi_phase_curvature_correspondence(self):
-        """π ↔ K_φ: Geometric spatial constraints."""
+        """K_φ (phase curvature): bounded by the π wrap."""
         # π ≈ 3.141 should bound phase curvature
         assert abs(PI - math.pi) < 1e-15
         
@@ -74,14 +74,14 @@ class TestTetrahedralCorrespondence:
         curvature = compute_phase_curvature(G)
         max_curvature = max(abs(v) for v in curvature.values())
         
-        # |K_φ| is a wrapped angle bounded by π (audit 2026: the genuine scale).
+        # |K_φ| is a wrapped angle bounded by π (the genuine scale).
         # (φ×π ≈ 5.083 below is a loose non-physical bound kept only so the assert
         # stays conservative; the real bound is |K_φ| ≤ π.)
         geometric_bound = PHI * PI  # loose bound; real bound is π
         assert max_curvature < geometric_bound
 
     def test_e_coherence_length_correspondence(self):
-        """e ↔ ξ_C: Correlational memory decay."""
+        """ξ_C (coherence length): computable."""
         # e ≈ 2.718 should govern correlation decay
         assert abs(E - math.e) < 1e-15
         
@@ -110,7 +110,7 @@ class TestCorrespondenceInvariance:
     """Test that correspondence holds across different topologies."""
 
     def test_correspondence_complete_graph(self):
-        """Test tetrahedral correspondence on complete graphs."""
+        """Test tetrad fields on complete graphs."""
         G = nx.complete_graph(6)
         
         # Initialize with proper TNFR structure
@@ -167,18 +167,14 @@ class TestMathematicalConsistency:
         # Euler constant approximation bounds
         assert 0.5 < GAMMA < 0.6
 
-    def test_tetrahedral_geometry_preserved(self):
-        """Test that 4D tetrahedral structure is preserved."""
-        # The four constants should form vertices of conceptual tetrahedron
-        # Test pairwise relationships preserve tetrahedral symmetry
-        
+    def test_constants_distinct(self):
+        """The four notational constants are distinct positive numbers."""
         constants = [PHI, GAMMA, PI, E]
         
         # All should be positive and distinct
         assert all(c > 0 for c in constants)
         assert len(set(constants)) == 4  # All distinct
         
-        # Should span appropriate numerical ranges for tetrahedral spacing
         const_range = max(constants) - min(constants)
         assert const_range > 2.0  # Reasonable separation
         assert const_range < 4.0  # Not too dispersed

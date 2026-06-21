@@ -77,7 +77,7 @@ Every theory document maps to executable examples and SDK entry points:
 | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Extended fields (J_φ, J_ΔNFR), complex geometric field Ψ, derived invariants (χ, 𝒮, 𝒞, ℰ, 𝒬), energy decomposition |
 | [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Lindblad dissipator, dissipative continuity equation, purity decay, entropy production, dissipation tiers |
 | [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Lyapunov per-operator bounds, phase transitions, life/autopoiesis, node lifecycle, Hamiltonian, integrity monitor |
-| [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | Four constants (φ, γ, π, e) as minimal basis of mathematical dynamics; classification completeness; inter-constant relations; coherence threshold derivation; Mertens connection |
+| [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | The structural-field tetrad as the minimal basis; the notational constants and their mathematical character; genuine vs notational scales |
 | [SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md](SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md) | Logarithmic spiral from nodal equation; golden spiral condition; tetrad signatures; φ as structural attractor; anti-resonance property |
 | [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | Complete specification of 13 canonical operators: physics, transformations, constants, energy bounds, postconditions, compositions |
 | [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) | Arithmetic TNFR: primality as ΔNFR = 0, canonical constants, pressure components, dual-lever decomposition, spectral factorization, Riemann connection |

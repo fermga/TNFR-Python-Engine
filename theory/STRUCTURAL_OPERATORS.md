@@ -673,7 +673,7 @@ Every operator has a postcondition contract anchored to the **direct effect on n
 
 ## 14. Operator Constants Reference
 
-All operator constants derive from the four fundamental mathematical constants $(\varphi, \gamma, \pi, e)$ via algebraic combination. (The engine-configuration tier in `canonical.py` — cache, FFT, optimization, and performance constants — is calibrated to operational targets, not derived; see its two-tier docstring.)
+All operator constants are written as notational combinations of $(\varphi, \gamma, \pi, e)$ — a parametrisation convention (anti-magic-number), not derivations from the nodal equation; only $\pi$ is a genuine structural scale. (The engine-configuration tier in `canonical.py` — cache, FFT, optimization, and performance constants — is calibrated to operational targets, not derived; see its two-tier docstring.)
 
 ### 14.1 Fundamental Constants
 
@@ -684,7 +684,7 @@ All operator constants derive from the four fundamental mathematical constants $
 | $\pi$ | Pi | $3.141592653589793$ |
 | $e$ | Euler Number | $2.718281828459045$ |
 
-### 14.2 Derived Operator Constants
+### 14.2 Operator Constants (notational combinations)
 
 | Constant | Expression | Value | Used by |
 |----------|-----------|-------|---------|

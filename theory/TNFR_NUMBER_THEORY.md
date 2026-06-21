@@ -188,15 +188,15 @@ The three coefficients in the $\Delta\mathrm{NFR}$ equation are:
 
 $$\zeta = \varphi \times \gamma \approx 0.9340$$
 
-**Derivation**: Links the golden ratio (optimal harmonic proportion in self-similar structures) with the Euler constant (growth rate of harmonic series $H_n \sim \ln n + \gamma$). Since $\Omega(n)$ counts prime factors — an additive function that grows like $\ln \ln n$ on average by the Erdős-Kac theorem — the natural weight combines the harmonic proportion constant with the harmonic growth rate constant.
+**Notational rationale**: Links the golden ratio (optimal harmonic proportion in self-similar structures) with the Euler constant (growth rate of harmonic series $H_n \sim \ln n + \gamma$). Since $\Omega(n)$ counts prime factors — an additive function that grows like $\ln \ln n$ on average by the Erdős-Kac theorem — the combination weights the factorization term.
 
 $$\eta = \frac{\gamma}{\varphi} \times \pi \approx 1.1207$$
 
-**Derivation**: The ratio $\gamma/\varphi \approx 0.3567$ is the Kuramoto coupling ratio in TNFR units (phase gradient threshold normalized by harmonic proportion). Multiplying by $\pi$ (the geometric constant governing circular phase space) gives the natural weight for divisor count $\tau(n)$, which measures the geometric complexity of the divisor lattice.
+**Notational rationale**: The ratio $\gamma/\varphi \approx 0.3567$ (a notational combination), multiplied by $\pi$, gives the weight for divisor count $\tau(n)$, which measures the geometric complexity of the divisor lattice.
 
 $$\theta = \frac{1}{\varphi} = \varphi - 1 \approx 0.6180$$
 
-**Derivation**: The reciprocal of the golden ratio is the unique positive number satisfying $\theta^2 + \theta = 1$, the recursive self-similarity equation. This weights the abundance ratio $\sigma(n)/n$, which measures how the divisor sum scales relative to the number itself — a ratio whose deviation from the prime value $(1 + 1/n)$ captures the self-similar structure of the divisor lattice.
+**Notational rationale**: The reciprocal of the golden ratio is the unique positive number satisfying $\theta^2 + \theta = 1$, the recursive self-similarity equation. This weights the abundance ratio $\sigma(n)/n$, which measures how the divisor sum scales relative to the number itself — a ratio whose deviation from the prime value $(1 + 1/n)$ captures the self-similar structure of the divisor lattice.
 
 ### 5.3 EPI Parameters
 
@@ -763,7 +763,7 @@ Structural triad: $\mathrm{EPI}(30) \approx 3.43$, $\nu_f(30) \approx 0.95$, $C_
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) — Spectral factorization verification
 - [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) — TNFR-Riemann program (18 sections + 11 appendices)
-- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — Role of (φ, γ, π, e)
+- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad; the notational constants
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions
 
 ### External

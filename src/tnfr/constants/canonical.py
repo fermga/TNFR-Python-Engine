@@ -10,15 +10,16 @@ Single source of truth for TNFR constants. Nodal equation:
 The constants here fall into TWO TIERS. This distinction is canonical
 and must be respected when citing values as "first-principles".
 
-TIER 1 — PHYSICS-DERIVED CANONICAL CONSTANTS
+TIER 1 — STRUCTURAL CONSTANTS
     Values that enter the nodal equation, the 13 operators, the unified
     grammar (U1-U6), or the structural-field tetrad (Φ_s, |∇φ|, K_φ,
-    ξ_C). These are derived from the four canonical vertices and the
-    structural dynamics — with one documented exception,
-    PHI_S_VON_KOCH_THRESHOLD = 0.7711, which is empirically validated
-    WITHOUT a closed-form derivation (see the note at its definition;
-    the formerly claimed Γ(4/3)/Γ(1/3) identity is incorrect — that
-    ratio equals 1/3, not 0.7711).
+    ξ_C). Of these, the genuinely structural scales are the π phase-wrap
+    bounds (|∇φ| ≤ π, |K_φ| < 0.9π) and the spectral-gap coherence length
+    (ξ_C ∝ 1/√λ₂). The Φ_s confinement bound (PHI_S_VON_KOCH_THRESHOLD =
+    0.7711) is empirically validated WITHOUT a closed-form derivation, and
+    the |∇φ| early-warning level (γ/π) is heuristic. Other parameters are
+    written as (φ, γ, π, e) combinations for notational consistency, NOT as
+    derivations from the nodal equation.
 
 TIER 2 — ENGINE-CONFIGURATION CONSTANTS
     Cache sizes, FFT/optimization tuning, performance/speedup estimates,
@@ -29,10 +30,9 @@ TIER 2 — ENGINE-CONFIGURATION CONSTANTS
     derived from the nodal equation. They carry no nodal-physics meaning
     and must not be cited as first-principles results.
 
-The four notational vertices (audit 2026: these are a parametrisation
-convention, NOT four equal structural scales — only π is a genuine
-structural scale; γ, e, φ are recoverable as mathematical identities but
-are an organizing overlay):
+The four notational constants (these are a parametrisation convention, NOT
+four equal structural scales — only π is a genuine structural scale; γ, e, φ
+are recoverable as mathematical identities but are notational labels):
 - π (Archimedes): GENUINE structural scale — the phase-wrap bound shared
   by |∇φ| and K_φ (the whole phase sector); K_φ = L_rw·φ.
 - φ (Golden Ratio): motivation for the Φ_s confinement scale (empirical,
@@ -100,7 +100,8 @@ PI_PLUS_GAMMA = PI + GAMMA                  # π+γ ≈ 3.719 (transcendental su
 PI_PLUS_E_HALF = PI + E / 2.0               # π+e/2 ≈ 4.501 (transcendental semi-sum)
 
 # ============================================================================
-# TNFR STRUCTURAL CONSTANTS (Derived from Nodal Equation)
+# TNFR STRUCTURAL CONSTANTS (notational combinations; only the π phase-wrap
+# bounds and the spectral-gap ξ_C are genuine structural scales — see header)
 # ============================================================================
 
 # Coupling constants from ∂EPI/∂t = νf · ΔNFR
@@ -117,24 +118,24 @@ COHERENCE_SCALING = INV_PHI                 # 1/φ ≈ 0.6180 (coherence normali
 # exponent (the measured phase-transition exponent is protocol-dependent).
 CRITICAL_EXPONENT = GAMMA / PI              # γ/π ≈ 0.1837 (heuristic scale)
 
-# Operator scaling factors (canonical derivations)
+# Operator scaling factors (notational)
 SHA_VF_FACTOR = 1.0 - GAMMA / (PI + E)     # 1 - γ/(π+e) ≈ 0.9015 (silence frequency reduction)
 NUL_SCALE_FACTOR = SHA_VF_FACTOR            # Same confinement physics as SHA (structural continuity)
 
-# VAL expansion thresholds (canonical derivations)
+# VAL expansion thresholds (notational)
 VAL_MIN_EPI = GAMMA / (PI + GAMMA)          # γ/(π+γ) ≈ 0.1552 (minimum structural base)
 VAL_BIFURCATION_THRESHOLD = 1.0 / (PI + 1)  # 1/(π+1) ≈ 0.2415 (bifurcation detection)
 VAL_MIN_COHERENCE = math.sin(PI / 3)        # sin(π/3) = √3/2 ≈ 0.8660 (60° harmonic coherence)
 
-# THOL self-organization thresholds (canonical derivations)  
+# THOL self-organization thresholds (notational)  
 THOL_MIN_COLLECTIVE_COHERENCE = 1.0 / (PI + 1)  # 1/(π+1) ≈ 0.2415 (same physics as VAL bifurcation)
 
-# Coupling and mixing thresholds (canonical derivations)
+# Coupling and mixing thresholds (notational)
 UM_COMPAT_THRESHOLD = PHI / (PHI + GAMMA)       # φ/(φ+γ) ≈ 0.7371 (golden-Euler compatibility)
 EN_MIX_FACTOR = 1.0 / (PI + 1)                 # 1/(π+1) ≈ 0.2415 (reception mixing fraction)
 UM_THETA_PUSH = EN_MIX_FACTOR                  # Same physics as EN mixing (coupling phase push)
 
-# Expansion and contraction scaling (canonical derivations)
+# Expansion and contraction scaling (notational)
 VAL_SCALE_FACTOR = 1.0 + GAMMA / (PI * E)      # 1 + γ/(π×e) ≈ 1.0676 (natural expansion rate)
 NUL_DENSIFICATION_FACTOR = PHI / GAMMA         # φ/γ ≈ 2.8032 (golden ratio densification)
 

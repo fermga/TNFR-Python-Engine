@@ -162,12 +162,11 @@ class TestSpectralZetaReflection:
         assert r.max_relative_error < 0.5
 
     def test_shift_is_canonical(self) -> None:
-        """Regularisation buffer equals γ/π (canonical, not ad-hoc).
+        """Regularisation buffer equals γ/π (notational constant).
 
         The shift is composed as a = max(0, -min_eigenvalue) + γ/π,
-        where γ/π = CRITICAL_EXPONENT comes from the Universal
-        Tetrahedral Correspondence (γ ↔ |∇φ|). This replaces the
-        previous ad-hoc 0.1 buffer with a first-principles constant.
+        where γ/π = CRITICAL_EXPONENT is the notational buffer; its
+        exact value is immaterial to the regularisation.
         """
         from tnfr.constants.canonical import CRITICAL_EXPONENT
         from tnfr.riemann.spectral_proof import compute_eigensystem
