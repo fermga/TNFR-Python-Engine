@@ -137,6 +137,8 @@ test-all = [
   "flake8-pyproject>=1.2,<2.0",
   "vulture>=2,<3",
   "matplotlib>=3.7,<4.0",
+  "scipy>=1.9",
+  "sympy>=1.10",
 ]
 test = [  # Legacy alias
   "pytest>=7,<10",
@@ -151,6 +153,8 @@ test = [  # Legacy alias
   "flake8-pyproject>=1.2,<2.0",
   "vulture>=2,<3",
   "matplotlib>=3.7,<4.0",
+  "scipy>=1.9",
+  "sympy>=1.10",
 ]
 
 # Type checking
