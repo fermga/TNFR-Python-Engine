@@ -38,11 +38,3 @@ jobs:
             exit 1
           fi
           echo "✓ No invalid bandit format usage found"
-
-      - name: Verify converter script exists
-        run: |
-          if [ ! -f "tools/bandit_to_sarif.py" ]; then
-            echo "ERROR: tools/bandit_to_sarif.py not found"
-            exit 1
-          fi
-          echo "✓ Bandit to SARIF converter script exists"

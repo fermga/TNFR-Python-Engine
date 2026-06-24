@@ -25,4 +25,4 @@ jobs:
 
       - name: Run focused tests
         run: |
-          pytest -q tests/examples/test_u6_sequential_demo.py tests/examples/test_atom_atlas_minimal.py tests/examples/test_periodic_table_basic.py
+          pytest -q tests/sdk
