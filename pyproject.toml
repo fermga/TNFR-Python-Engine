@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "tnfr"
-version = "0.0.3.4"
-description = "Resonant Fractal Nature Theory (TNFR) - Computational engine for modeling coherent patterns through resonance dynamics"
+version = "0.0.3.5"
+description = "TNFR (Resonant Fractal Nature Theory): a mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics on networks."
 readme = "README.md"
 authors = ["F. F. Martinez Gamo"]
 license = "MIT"
@@ -9,8 +9,8 @@ packages = [{include = "tnfr", from = "src"}]
 
 [project]
 name = "tnfr"
-version = "0.0.3.4"
-description = "Resonant Fractal Nature Theory (TNFR) - Computational engine for modeling coherent patterns through resonance dynamics"
+version = "0.0.3.5"
+description = "TNFR (Resonant Fractal Nature Theory): a mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics on networks."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

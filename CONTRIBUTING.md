@@ -1,6 +1,6 @@
 # Contributing to TNFR
 
-**Version**: 0.0.3.4  
+**Version**: 0.0.3.5  
 **Status**: Complete theoretical framework grounded in the nodal equation  
 **Authority**: the nodal equation ∂EPI/∂t = νf·ΔNFR(t) and the structural-field tetrad  
 **Quality**: Production-ready test suite  

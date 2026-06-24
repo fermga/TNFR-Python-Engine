@@ -2,7 +2,7 @@
 
 **Purpose**: Operational quick reference for the Resonant Fractal Nature Theory (TNFR)  
 **Status**: Canonical reference, aligned with the current engine and TNFR.pdf  
-**Version**: 0.0.3.4 (June 2026)  
+**Version**: 0.0.3.5 (June 2026)  
 **Authority**: [AGENTS.md](../AGENTS.md) is the single source of truth; this glossary mirrors it API-first  
 
 **Scope**: API-focused definitions for developers implementing TNFR networks — the
@@ -958,6 +958,6 @@ When adding new functionality:
 3. Follow [CONTRIBUTING.md](../CONTRIBUTING.md) for detailed guidelines  
 4. Test with [TESTING.md](../TESTING.md) requirements
 
-**Version**: 0.0.3.4 (June 2026)  
+**Version**: 0.0.3.5 (June 2026)  
 **Status**: Canonical operational reference, aligned with the current engine, AGENTS.md and TNFR.pdf  
 **Language**: English only (canonical documentation policy)

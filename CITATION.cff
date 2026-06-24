@@ -2,8 +2,8 @@ cff-version: 1.2.0
 title: "TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation"
 message: "If you use this software, please cite it as below."
 type: software
-version: "0.0.3.4"
-date-released: "2026-06-17"
+version: "0.0.3.5"
+date-released: "2026-06-24"
 authors:
   - given-names: "F. F. Martinez Gamo"
     family-names: ""

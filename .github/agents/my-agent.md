@@ -2,7 +2,7 @@
 
 **Theoretical framework and engine for coherent pattern analysis on graph-coupled networks.**
 
-- **Version**: 0.0.3.4
+- **Version**: 0.0.3.5
 - **Status**: Canonical synthesized reference for TNFR agent guidance
 - **Repository**: https://github.com/fermga/TNFR-Python-Engine · **PyPI**: `pip install tnfr`
 

@@ -1,6 +1,6 @@
 # TNFR Python Engine - Architecture Guide
 
-**Version**: 0.0.3.4  
+**Version**: 0.0.3.5  
 **Status**: Production-ready framework with mathematical foundations  
 **Foundation**: the nodal equation ∂EPI/∂t = νf·ΔNFR(t) and its minimal structural-field tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
 

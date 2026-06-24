@@ -2,7 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] — Tetrad correspondence audit (2026-06-20)
+## [Unreleased]
+
+## [0.0.3.5] - 2026-06-24 — Tetrad correspondence audit & emergent redesign
 
 A computational audit of the "Universal Tetrahedral Correspondence" found that
 only **π** is a genuine structural scale; the four-constant correspondence
