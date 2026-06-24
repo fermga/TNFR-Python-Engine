@@ -32,7 +32,9 @@ from ..constants.aliases import (
 _HAS_EMISSION_TIMESTAMP_ALIAS = False
 _ALIAS_EMISSION_TIMESTAMP_TUPLE: tuple[str, ...] = ()
 try:
-    from ..constants.aliases import ALIAS_EMISSION_TIMESTAMP as _ALIAS_TS  # type: ignore
+    from ..constants.aliases import (
+        ALIAS_EMISSION_TIMESTAMP as _ALIAS_TS,  # type: ignore
+    )
 
     _ALIAS_EMISSION_TIMESTAMP_TUPLE = _ALIAS_TS
     _HAS_EMISSION_TIMESTAMP_ALIAS = True
@@ -54,7 +56,10 @@ __all__ = [
 HAS_EMISSION_TIMESTAMP_ALIAS = _HAS_EMISSION_TIMESTAMP_ALIAS
 EMISSION_TIMESTAMP_TUPLE = _ALIAS_EMISSION_TIMESTAMP_TUPLE
 
-def get_node_attr(G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0) -> float:
+
+def get_node_attr(
+    G: TNFRGraph, node: NodeId, aliases: tuple[str, ...], default: float = 0.0
+) -> float:
     """Get node attribute using alias fallback.
 
     Wrapper around alias.get_attr that ensures float return type and handles

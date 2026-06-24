@@ -16,6 +16,7 @@ result = engine.integrate_scales(network)
 
 try:
     from .emergent_integration import TNFREmergentIntegrationEngine
+
     __all__ = ["TNFREmergentIntegrationEngine"]
 except ImportError:
     __all__ = []

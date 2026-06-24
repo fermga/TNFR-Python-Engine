@@ -67,6 +67,7 @@ Run:
 
 Status: RESEARCH (chiral-involution falsifier; Camino 6 of the unification map).
 """
+
 from __future__ import annotations
 
 import os
@@ -77,11 +78,10 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Robust fallback so the harness also runs without PYTHONPATH=src preset.
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
-from composition_arithmetic import (  # noqa: E402
-    adj_spectrum,
-    automorphism_matrices,
+sys.path.insert(
+    0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")
 )
+from composition_arithmetic import adj_spectrum, automorphism_matrices  # noqa: E402
 from emergent_rationals import integer_spectrum, is_pm_symmetric  # noqa: E402
 
 from tnfr.physics.emergent_particles import (  # noqa: E402
@@ -149,15 +149,17 @@ def test_chiral_gives_additive_inverse():
         A = adjacency(G, nodes)
         Gamma = chirality_operator(G, nodes)
         invol = float(np.linalg.norm(Gamma @ Gamma - np.eye(len(nodes))))
-        anti = anticommutator_norm(Gamma, A)                 # {Gamma, A} = 0
+        anti = anticommutator_norm(Gamma, A)  # {Gamma, A} = 0
         chiral = float(np.linalg.norm(Gamma @ A @ Gamma + A))  # Gamma A Gamma = -A
         spec = adj_spectrum(G)
         sym = is_pm_symmetric(spec)
         ok = invol < TOL and anti < TOL and chiral < TOL and sym
         all_ok &= ok
-        print(f"  {name:<16} Gamma^2=I:{invol:.1e}  {{Gamma,A}}=0:{anti:.1e}  "
-              f"GammaAGamma+A:{chiral:.1e}  spec+/-sym:{sym}  -> "
-              f"{'OK' if ok else 'FAIL'}")
+        print(
+            f"  {name:<16} Gamma^2=I:{invol:.1e}  {{Gamma,A}}=0:{anti:.1e}  "
+            f"GammaAGamma+A:{chiral:.1e}  spec+/-sym:{sym}  -> "
+            f"{'OK' if ok else 'FAIL'}"
+        )
 
     # non-bipartite: no 2-colouring => no chiral Gamma => spectrum not +/- symmetric
     none_chiral = True
@@ -170,19 +172,25 @@ def test_chiral_gives_additive_inverse():
             has_gamma = False
         sym = is_pm_symmetric(adj_spectrum(G))
         none_chiral &= (not has_gamma) and (not sym)
-        print(f"  {name:<16} bipartite/chiral Gamma exists? {has_gamma}  "
-              f"spec +/- symmetric? {sym}   (non-bipartite contrast)")
+        print(
+            f"  {name:<16} bipartite/chiral Gamma exists? {has_gamma}  "
+            f"spec +/- symmetric? {sym}   (non-bipartite contrast)"
+        )
 
     # integral bipartite -> SIGNED INTEGERS Z
     q3 = integer_spectrum(adj_spectrum(nx.hypercube_graph(3)))
     signed = sorted(set(int(v) for v in q3))
-    z_ok = (-min(signed) == max(signed))
-    print(f"  Q3 gives SIGNED INTEGERS: {signed}  -> N extends to Z   "
-          f"({'OK' if z_ok else 'FAIL'})")
+    z_ok = -min(signed) == max(signed)
+    print(
+        f"  Q3 gives SIGNED INTEGERS: {signed}  -> N extends to Z   "
+        f"({'OK' if z_ok else 'FAIL'})"
+    )
 
     ok = all_ok and none_chiral and z_ok
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the chiral Z_2 builds -n; "
-          "without bipartiteness there is no such involution")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the chiral Z_2 builds -n; "
+        "without bipartiteness there is no such involution"
+    )
     print()
     return ok
 
@@ -217,8 +225,11 @@ def test_same_involution_gives_antiparticle():
         direct = winding_ring(n, -k)
         w_d, _ = winding_number(direct)
         same_field = all(
-            abs(conjugate_phase_node(matter.nodes[v]["phase"])
-                - direct.nodes[v]["phase"]) < 1e-9
+            abs(
+                conjugate_phase_node(matter.nodes[v]["phase"])
+                - direct.nodes[v]["phase"]
+            )
+            < 1e-9
             for v in matter.nodes()
         )
 
@@ -230,18 +241,31 @@ def test_same_involution_gives_antiparticle():
             back.nodes[v]["theta"] = cphi
         w_back, _ = winding_number(back)
 
-        ok = (w_m == k and w_a == -k and w_d == -k and same_field
-              and w_back == k and cm.chirality == 1 and ca.chirality == -1
-              and abs(cm.winding) == abs(ca.winding))
+        ok = (
+            w_m == k
+            and w_a == -k
+            and w_d == -k
+            and same_field
+            and w_back == k
+            and cm.chirality == 1
+            and ca.chirality == -1
+            and abs(cm.winding) == abs(ca.winding)
+        )
         all_ok &= ok
-        print(f"  k={k}: W(matter)={w_m:+d} (chirality {cm.chirality:+d}), "
-              f"C: W(antimatter)={w_a:+d} (chirality {ca.chirality:+d}), "
-              f"same |W|={abs(cm.winding) == abs(ca.winding)}")
-        print(f"        winding_ring(n,-k)=W={w_d:+d} is the conjugate field? "
-              f"{same_field};  C^2: W back to {w_back:+d}  -> "
-              f"{'OK' if ok else 'FAIL'}")
-    print(f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- charge conjugation is "
-          "the chiral Z_2 acting on the phase field")
+        print(
+            f"  k={k}: W(matter)={w_m:+d} (chirality {cm.chirality:+d}), "
+            f"C: W(antimatter)={w_a:+d} (chirality {ca.chirality:+d}), "
+            f"same |W|={abs(cm.winding) == abs(ca.winding)}"
+        )
+        print(
+            f"        winding_ring(n,-k)=W={w_d:+d} is the conjugate field? "
+            f"{same_field};  C^2: W back to {w_back:+d}  -> "
+            f"{'OK' if ok else 'FAIL'}"
+        )
+    print(
+        f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- charge conjugation is "
+        "the chiral Z_2 acting on the phase field"
+    )
     print()
     return all_ok
 
@@ -262,8 +286,10 @@ def test_shared_vacuum_annihilation():
         mirror_present = (-n) in set(int(v) for v in q3)
         sums_to_zero = (n + (-n)) == 0
         number_ok &= mirror_present and sums_to_zero
-        print(f"  number: mode n={n:+d} has chiral partner -n={-n:+d} present? "
-              f"{mirror_present};  n+(-n)={n + (-n)}  (additive identity)")
+        print(
+            f"  number: mode n={n:+d} has chiral partner -n={-n:+d} present? "
+            f"{mirror_present};  n+(-n)={n + (-n)}  (additive identity)"
+        )
 
     # particle side: matter W=+k and antimatter W=-k sum to net 0 = scalar vacuum
     nring = 12
@@ -276,13 +302,17 @@ def test_shared_vacuum_annihilation():
         vac = classify_particle(winding_ring(nring, 0))
         annihilates = (net == 0) and (vac.winding == 0)
         particle_ok &= annihilates
-        print(f"  particle: W(matter)={w_m:+d} + W(antimatter)={w_a:+d} = "
-              f"net {net}  -> scalar |W|=0 vacuum? {vac.winding == 0}  "
-              f"({'annihilates' if annihilates else 'FAIL'})")
+        print(
+            f"  particle: W(matter)={w_m:+d} + W(antimatter)={w_a:+d} = "
+            f"net {net}  -> scalar |W|=0 vacuum? {vac.winding == 0}  "
+            f"({'annihilates' if annihilates else 'FAIL'})"
+        )
 
     ok = number_ok and particle_ok
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the additive zero of Z and "
-          "the |W|=0 vacuum are the same neutral element of the chiral Z_2")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the additive zero of Z and "
+        "the |W|=0 vacuum are the same neutral element of the chiral Z_2"
+    )
     print()
     return ok
 
@@ -294,42 +324,60 @@ def test_one_z2_anticommuting_contrast():
     print("=" * 78)
     print("(4) ONE chiral Z_2 vs. Camino 5: automorphisms COMMUTE, Gamma ANTICOMMUTES")
     print("=" * 78)
-    G = nx.cycle_graph(6)                      # bipartite, Aut = D_6
+    G = nx.cycle_graph(6)  # bipartite, Aut = D_6
     nodes = list(G.nodes())
     A = adjacency(G, nodes)
     eye = np.eye(len(nodes))
 
     # Camino-5 Z_2: a graph automorphism (permutation) commutes with A
     mats = automorphism_matrices(G, nodes)
-    P = next(M for M in mats if np.linalg.norm(M - eye) > 1e-9)   # any non-identity
-    p_is_perm = bool(np.allclose(P.sum(axis=0), 1) and np.allclose(P.sum(axis=1), 1)
-                     and np.allclose(P, P.astype(bool)))
-    p_comm = commutator_norm(A, P)             # [A, P] = 0  (P A P^T = +A)
+    P = next(M for M in mats if np.linalg.norm(M - eye) > 1e-9)  # any non-identity
+    p_is_perm = bool(
+        np.allclose(P.sum(axis=0), 1)
+        and np.allclose(P.sum(axis=1), 1)
+        and np.allclose(P, P.astype(bool))
+    )
+    p_comm = commutator_norm(A, P)  # [A, P] = 0  (P A P^T = +A)
     p_invol = float(np.linalg.norm(P @ P - eye))
 
     # Camino-6 Z_2: the chiral diagonal Gamma anticommutes with A
     Gamma = chirality_operator(G, nodes)
-    g_is_perm = bool(np.allclose(Gamma.sum(axis=0), 1)
-                     and np.allclose(np.abs(Gamma).sum(axis=1), 1)
-                     and np.all(Gamma >= 0))
-    g_comm = commutator_norm(A, Gamma)         # [A, Gamma] != 0
-    g_anti = anticommutator_norm(A, Gamma)     # {A, Gamma} = 0
+    g_is_perm = bool(
+        np.allclose(Gamma.sum(axis=0), 1)
+        and np.allclose(np.abs(Gamma).sum(axis=1), 1)
+        and np.all(Gamma >= 0)
+    )
+    g_comm = commutator_norm(A, Gamma)  # [A, Gamma] != 0
+    g_anti = anticommutator_norm(A, Gamma)  # {A, Gamma} = 0
     g_invol = float(np.linalg.norm(Gamma @ Gamma - eye))
 
-    print(f"  automorphism P (Camino 5): permutation? {p_is_perm}  "
-          f"P^2=I:{p_invol:.1e}  [A,P]={p_comm:.2e} (COMMUTES, P A P^T=+A)")
-    print(f"  chiral Gamma  (Camino 6): permutation? {g_is_perm}  "
-          f"Gamma^2=I:{g_invol:.1e}  [A,Gamma]={g_comm:.2e} (NOT 0)  "
-          f"{{A,Gamma}}={g_anti:.2e} (ANTICOMMUTES, Gamma A Gamma=-A)")
+    print(
+        f"  automorphism P (Camino 5): permutation? {p_is_perm}  "
+        f"P^2=I:{p_invol:.1e}  [A,P]={p_comm:.2e} (COMMUTES, P A P^T=+A)"
+    )
+    print(
+        f"  chiral Gamma  (Camino 6): permutation? {g_is_perm}  "
+        f"Gamma^2=I:{g_invol:.1e}  [A,Gamma]={g_comm:.2e} (NOT 0)  "
+        f"{{A,Gamma}}={g_anti:.2e} (ANTICOMMUTES, Gamma A Gamma=-A)"
+    )
     print("  => both are involutions (Z_2), but the COMMUTING one builds the")
     print("     equivariance wall (Camino 5) while the ANTICOMMUTING one builds")
     print("     the additive inverse / the antiparticle (Camino 6). Two distinct")
     print("     Z_2 actions on the same bipartite graph.")
 
-    ok = (p_is_perm and p_invol < TOL and p_comm < TOL
-          and (not g_is_perm) and g_invol < TOL and g_comm > 1e-3 and g_anti < TOL)
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- one abstract Z_2, two reps; "
-          "anticommuting (not the Camino-5 commuting wall)")
+    ok = (
+        p_is_perm
+        and p_invol < TOL
+        and p_comm < TOL
+        and (not g_is_perm)
+        and g_invol < TOL
+        and g_comm > 1e-3
+        and g_anti < TOL
+    )
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- one abstract Z_2, two reps; "
+        "anticommuting (not the Camino-5 commuting wall)"
+    )
     print()
     return ok
 
@@ -337,14 +385,19 @@ def test_one_z2_anticommuting_contrast():
 def main():
     print(__doc__)
     results = [
-        ("(1) chiral involution -> additive inverse (Z)",
-         test_chiral_gives_additive_inverse()),
-        ("(2) same involution -> antiparticle (sign(W) flip)",
-         test_same_involution_gives_antiparticle()),
-        ("(3) shared vacuum: n+(-n)=0 <-> W+(-W)=0",
-         test_shared_vacuum_annihilation()),
-        ("(4) one Z_2, anticommuting (contrast with Camino 5)",
-         test_one_z2_anticommuting_contrast()),
+        (
+            "(1) chiral involution -> additive inverse (Z)",
+            test_chiral_gives_additive_inverse(),
+        ),
+        (
+            "(2) same involution -> antiparticle (sign(W) flip)",
+            test_same_involution_gives_antiparticle(),
+        ),
+        ("(3) shared vacuum: n+(-n)=0 <-> W+(-W)=0", test_shared_vacuum_annihilation()),
+        (
+            "(4) one Z_2, anticommuting (contrast with Camino 5)",
+            test_one_z2_anticommuting_contrast(),
+        ),
     ]
     print("=" * 78)
     print("SUMMARY")

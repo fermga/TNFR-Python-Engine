@@ -6,11 +6,11 @@ from pathlib import Path
 import networkx as nx
 import pytest
 
-from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine
 from tnfr.dynamics.self_optimizing_engine import (
-    SelfOptimizationResult,
     OptimizationExperience,
+    SelfOptimizationResult,
 )
+from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine
 
 
 def _read_signature(signature_path: Path) -> str:
@@ -113,10 +113,7 @@ class TestConservationFeedbackInResult:
     def test_conservation_feedback_propagated_from_monitor(self) -> None:
         """When the integrity monitor is attached, conservation_feedback
         contains the four canonical fields from feedback_vector()."""
-        from tnfr.physics.integrity import (
-            MonitorMode,
-            enable_integrity_monitor,
-        )
+        from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
@@ -145,10 +142,7 @@ class TestConservationAwareStrategyReordering:
     def test_safe_strategies_promoted_when_quality_low(self) -> None:
         """Strategies containing 'cache'/'structural'/'stabiliz' are moved
         to the front when conservation_quality < 0.7."""
-        from tnfr.physics.integrity import (
-            enable_integrity_monitor,
-            MonitorMode,
-        )
+        from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph(20)
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
@@ -172,24 +166,23 @@ class TestConservationAwareStrategyReordering:
         if len(strategies) >= 2:
             safe_kw = ("cache", "structural", "stabiliz", "memo")
             safe_indices = [
-                i for i, s in enumerate(strategies)
+                i
+                for i, s in enumerate(strategies)
                 if any(kw in s.lower() for kw in safe_kw)
             ]
             other_indices = [
-                i for i, s in enumerate(strategies)
+                i
+                for i, s in enumerate(strategies)
                 if not any(kw in s.lower() for kw in safe_kw)
             ]
             if safe_indices and other_indices:
-                assert max(safe_indices) < min(other_indices), (
-                    f"Safe strategies should precede others: {strategies}"
-                )
+                assert max(safe_indices) < min(
+                    other_indices
+                ), f"Safe strategies should precede others: {strategies}"
 
     def test_no_reordering_when_quality_high(self) -> None:
         """When conservation_quality >= 0.7 and dE/dt <= 0, no reordering."""
-        from tnfr.physics.integrity import (
-            enable_integrity_monitor,
-            MonitorMode,
-        )
+        from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph(20)
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
@@ -230,8 +223,12 @@ class TestConservationInExperienceRecording:
             timestamp=0.0,
             success=True,
         )
-        assert exp.performance_metrics["conservation_charge_drift"] == pytest.approx(0.02)
-        assert exp.performance_metrics["conservation_energy_derivative"] == pytest.approx(-0.005)
+        assert exp.performance_metrics["conservation_charge_drift"] == pytest.approx(
+            0.02
+        )
+        assert exp.performance_metrics[
+            "conservation_energy_derivative"
+        ] == pytest.approx(-0.005)
 
 
 class TestAdaptiveConfigTracksConservation:
@@ -293,7 +290,7 @@ class TestConservationLowQualityRecommendations:
     indicates problems (closed-loop from integrity monitor)."""
 
     def test_low_quality_generates_stabilize_recommendation(self) -> None:
-        from tnfr.physics.integrity import enable_integrity_monitor, MonitorMode
+        from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
@@ -311,7 +308,7 @@ class TestConservationLowQualityRecommendations:
         assert "lyapunov_unstable_add_IL" in strategies
 
     def test_high_charge_drift_recommendation(self) -> None:
-        from tnfr.physics.integrity import enable_integrity_monitor, MonitorMode
+        from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
@@ -326,7 +323,7 @@ class TestConservationLowQualityRecommendations:
         assert "noether_charge_drift_correction" in result.recommended_strategies
 
     def test_high_violation_rate_recommendation(self) -> None:
-        from tnfr.physics.integrity import enable_integrity_monitor, MonitorMode
+        from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)

@@ -349,9 +349,7 @@ def verify_weil_positivity(
     )
 
     pole_side = weil_pole_side(test)
-    arch_side = weil_archimedean_integral(
-        test, integration_limit=integration_limit
-    )
+    arch_side = weil_archimedean_integral(test, integration_limit=integration_limit)
     prime_side = weil_prime_side_from_hamiltonian(bundle, test)
     g_zero = test.g_zero()
     explicit_formula_rhs = (

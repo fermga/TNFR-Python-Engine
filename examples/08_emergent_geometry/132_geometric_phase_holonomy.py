@@ -79,10 +79,10 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.alias import set_attr
 from tnfr.constants.aliases import ALIAS_EPI, ALIAS_VF
@@ -149,12 +149,20 @@ def experiment_1_bargmann_identity():
     p = extract_phase_space_point(G)
     print(f"  {'triple':>14} {'Bargmann':>11} {'0.5*Omega':>11} {'|diff|':>9}")
     n_match = 0
-    triples = [(0, 1, 2), (3, 5, 7), (1, 4, 9), (2, 6, 10), (0, 5, 11),
-               (4, 8, 11), (1, 6, 9)]
-    for (i, j, k) in triples:
+    triples = [
+        (0, 1, 2),
+        (3, 5, 7),
+        (1, 4, 9),
+        (2, 6, 10),
+        (0, 5, 11),
+        (4, 8, 11),
+        (1, 6, 9),
+    ]
+    for i, j, k in triples:
         ph = bargmann_phase(doublet(p, i), doublet(p, j), doublet(p, k))
-        half = 0.5 * solid_angle(stokes_unit(p, i), stokes_unit(p, j),
-                                 stokes_unit(p, k))
+        half = 0.5 * solid_angle(
+            stokes_unit(p, i), stokes_unit(p, j), stokes_unit(p, k)
+        )
         d = abs(ph - half)
         n_match += int(d < 1e-9)
         print(f"  {str((i, j, k)):>14} {ph:>11.6f} {half:>11.6f} {d:>9.1e}")
@@ -211,8 +219,9 @@ def experiment_3_holonomy_solid_angle():
         seed_network(G, np.random.default_rng(s))
         p = extract_phase_space_point(G)
         ph = bargmann_phase(doublet(p, 0), doublet(p, 3), doublet(p, 6))
-        half = 0.5 * solid_angle(stokes_unit(p, 0), stokes_unit(p, 3),
-                                 stokes_unit(p, 6))
+        half = 0.5 * solid_angle(
+            stokes_unit(p, 0), stokes_unit(p, 3), stokes_unit(p, 6)
+        )
         d = abs(ph - half)
         n_match += int(d < 1e-9)
         print(f"  {s:>6} {ph:>12.6f} {half:>12.6f} {d:>9.1e}")

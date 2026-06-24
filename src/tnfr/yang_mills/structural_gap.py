@@ -39,9 +39,7 @@ from ..constants.canonical import DELTA_PHI_MAX, PHI, PI
 from ..mathematics.unified_numerical import np
 from ..physics._helpers import wrap_angle
 from ..physics.canonical import compute_structural_potential
-from ..physics.conservation_gauge_unification import (
-    compute_grammar_symmetry_mapping,
-)
+from ..physics.conservation_gauge_unification import compute_grammar_symmetry_mapping
 from ..physics.gauge import (
     compute_gauge_connection,
     compute_gauge_coupling_constant,
@@ -237,11 +235,7 @@ def build_structural_gauge_gap_operator(
     index = {node: idx for idx, node in enumerate(nodes)}
     n = len(nodes)
 
-    conn = (
-        dict(connection)
-        if connection is not None
-        else compute_gauge_connection(G)
-    )
+    conn = dict(connection) if connection is not None else compute_gauge_connection(G)
     matrix = np.zeros((n, n), dtype=complex)
 
     for u, v in G.edges():
@@ -290,9 +284,7 @@ def build_structural_gauge_gap_operator(
     )
     try:
         grammar = compute_grammar_symmetry_mapping(G)
-        grammar_rules_satisfied = sum(
-            1 for item in grammar if item.is_satisfied
-        )
+        grammar_rules_satisfied = sum(1 for item in grammar if item.is_satisfied)
         grammar_rules_total = len(grammar)
     except Exception as exc:  # pragma: no cover - defensive metadata only
         grammar_rules_satisfied = None

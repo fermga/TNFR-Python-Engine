@@ -8,13 +8,13 @@ from dataclasses import asdict, is_dataclass
 from typing import Any, Callable, Dict, Iterable, List, Mapping, Optional, Tuple
 
 from tnfr.dynamics.advanced_fft_arithmetic import TNFRAdvancedFFTEngine
+from tnfr.dynamics.distributed_fft import DistributedFFTEngine, annotate_dispatcher
 from tnfr.dynamics.fft_backend import FFTBackend
 from tnfr.dynamics.fft_dispatchers import HTTPFFTDispatcher, ThreadedQueueDispatcher
-from tnfr.dynamics.distributed_fft import DistributedFFTEngine, annotate_dispatcher
 
 from .spectral_paley import (
-    SpectralPaleyFactorizer,
     SpectralAnalysisResult,
+    SpectralPaleyFactorizer,
     _load_callable_dispatcher,
 )
 
@@ -26,7 +26,9 @@ def _build_parser() -> argparse.ArgumentParser:
             "and emit coherence telemetry for each query."
         )
     )
-    parser.add_argument("targets", nargs="+", type=int, help="Composite candidates to analyze.")
+    parser.add_argument(
+        "targets", nargs="+", type=int, help="Composite candidates to analyze."
+    )
     parser.add_argument(
         "--modulus",
         type=int,
@@ -140,8 +142,12 @@ def _format_result(result: SpectralAnalysisResult) -> Iterable[str]:
     yield f"  modulus={result.modulus} (nodes={result.node_count}, edges={result.edge_count})"
     yield f"  laplacian_gap={result.laplacian_gap:.6f} | coherence_score={result.coherence_score:.6f}"
     yield (
-        "  phi_s={:.4f}, grad_phi={:.6f}, k_phi={:.6f}, xi_c={:.4f}"
-        .format(result.phi_s, result.phase_gradient, result.phase_curvature, result.coherence_length)
+        "  phi_s={:.4f}, grad_phi={:.6f}, k_phi={:.6f}, xi_c={:.4f}".format(
+            result.phi_s,
+            result.phase_gradient,
+            result.phase_curvature,
+            result.coherence_length,
+        )
     )
     yield (
         f"  delta_nfr={result.arithmetic_delta_nfr:.6e}, "
@@ -206,11 +212,15 @@ def _select_fft_backend_from_cli(args: argparse.Namespace) -> Optional[FFTBacken
     return None
 
 
-def _build_dispatcher_from_args(args: argparse.Namespace) -> Callable[[str, Dict[str, Any]], Any]:
+def _build_dispatcher_from_args(
+    args: argparse.Namespace,
+) -> Callable[[str, Dict[str, Any]], Any]:
     dispatcher_name = (getattr(args, "fft_dispatcher", "queue") or "queue").strip()
 
     if dispatcher_name.lower() == "queue":
-        request_serializer, request_deserializer = _select_codec(args.dispatcher_serializer)
+        request_serializer, request_deserializer = _select_codec(
+            args.dispatcher_serializer
+        )
 
         dispatcher = ThreadedQueueDispatcher(
             timeout=float(args.dispatcher_timeout),
@@ -262,7 +272,9 @@ def _build_dispatcher_from_args(args: argparse.Namespace) -> Callable[[str, Dict
     )
 
 
-def _select_codec(name: str) -> Tuple[Callable[[Dict[str, Any]], Any], Callable[[Any], Dict[str, Any]]]:
+def _select_codec(
+    name: str,
+) -> Tuple[Callable[[Dict[str, Any]], Any], Callable[[Any], Dict[str, Any]]]:
     if name == "identity":
         return (lambda payload: payload, lambda payload: payload)  # type: ignore[return-value]
     if name == "pickle":
@@ -275,7 +287,9 @@ def _select_codec(name: str) -> Tuple[Callable[[Dict[str, Any]], Any], Callable[
     raise ValueError(f"Unsupported dispatcher serializer '{name}'")
 
 
-def _build_callable_dispatcher_from_spec(spec: str, *, wrapper: str | None = None) -> Callable[[str, Dict[str, Any]], Any]:
+def _build_callable_dispatcher_from_spec(
+    spec: str, *, wrapper: str | None = None
+) -> Callable[[str, Dict[str, Any]], Any]:
     metadata = {
         "type": "callable",
         "source": "cli",

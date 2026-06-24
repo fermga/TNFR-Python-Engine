@@ -1,14 +1,10 @@
 name: Reproducibility Check
 
 on:
-  push:
-    branches:
-      - main
-      - master
-  pull_request:
-    branches:
-      - main
-      - master
+  # NOTE: The benchmark scripts referenced by
+  # scripts/run_reproducible_benchmarks.py (BENCHMARK_CONFIGS) are not present in
+  # the repository, so this workflow is manual-only until a reproducible
+  # benchmark is provided. Re-add push/pull_request triggers at that point.
   workflow_dispatch:
 
 concurrency:

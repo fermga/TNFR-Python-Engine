@@ -67,16 +67,18 @@ def main() -> None:
                 f"[{eig_lo:>8.3g}, {eig_hi:>8.3g}]"
             )
         print()
-        print(f"  Best KS_GUE:                {report.best_ks_to_gue:.4f} "
-              f"at strength = {report.best_strength_gue:.4g}")
         print(
-            f"  Baseline (decoupled) KS_GUE: "
-            f"{report.poisson_baseline_ks_gue:.4f}"
+            f"  Best KS_GUE:                {report.best_ks_to_gue:.4f} "
+            f"at strength = {report.best_strength_gue:.4g}"
+        )
+        print(
+            f"  Baseline (decoupled) KS_GUE: " f"{report.poisson_baseline_ks_gue:.4f}"
         )
         improvement = report.poisson_baseline_ks_gue - report.best_ks_to_gue
         rel = improvement / max(report.poisson_baseline_ks_gue, 1e-12)
-        print(f"  Absolute improvement:        {improvement:+.4f} "
-              f"({rel * 100:+.1f}%)")
+        print(
+            f"  Absolute improvement:        {improvement:+.4f} " f"({rel * 100:+.1f}%)"
+        )
         for note in report.notes:
             print(f"  Note: {note}")
         print()

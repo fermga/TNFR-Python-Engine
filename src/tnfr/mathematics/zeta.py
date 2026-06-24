@@ -16,10 +16,11 @@ Functions:
 """
 
 from typing import Any
-from .unified_numerical import np
 
 # Import TNFR Cache Infrastructure
-from .unified_cache import cache_tnfr_computation, CacheLevel
+from .unified_cache import CacheLevel, cache_tnfr_computation
+from .unified_numerical import np
+
 _CACHE_AVAILABLE = True
 
 # Import Unified Backend
@@ -30,7 +31,16 @@ except ImportError:
 
 # We use mpmath for high precision (FFT-based arithmetic for large numbers)
 try:
-    from mpmath import mp, zeta as mp_zeta, gamma as mp_gamma, sin as mp_sin, pi as mp_pi, power as mp_power, log as mp_log, fabs as mp_fabs, zetazero as mp_zetazero
+    from mpmath import fabs as mp_fabs
+    from mpmath import gamma as mp_gamma
+    from mpmath import log as mp_log
+    from mpmath import mp
+    from mpmath import pi as mp_pi
+    from mpmath import power as mp_power
+    from mpmath import sin as mp_sin
+    from mpmath import zeta as mp_zeta
+    from mpmath import zetazero as mp_zetazero
+
     HAS_MPMATH = True
 except ImportError:
     HAS_MPMATH = False
@@ -39,10 +49,12 @@ except ImportError:
 if HAS_MPMATH:
     mp.dps = 25
 
+
 def _ensure_complex(s: Any) -> Any:
     if HAS_MPMATH:
         return mp.mpc(s)
     return complex(s)
+
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
 def zeta_zero(n: int) -> complex:
@@ -53,11 +65,12 @@ def zeta_zero(n: int) -> complex:
         return mp_zetazero(n)
     raise ImportError("mpmath required for zeta zeros.")
 
+
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
 def zeta_function(s: complex | float | Any) -> Any:
     """
     Compute the Riemann Zeta function ζ(s).
-    
+
     Integration:
     - Uses mpmath for high-precision FFT-based arithmetic.
     - Uses TNFR Cache for structural field memoization.
@@ -65,13 +78,15 @@ def zeta_function(s: complex | float | Any) -> Any:
     """
     if HAS_MPMATH:
         return mp_zeta(s)
-    
+
     # Fallback to scipy if available, else raise
     try:
         from scipy.special import zeta as scipy_zeta
+
         return scipy_zeta(s)
     except ImportError:
         raise ImportError("mpmath or scipy required for zeta function.")
+
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
 def chi_factor(s: complex | float | Any) -> Any:
@@ -81,11 +96,17 @@ def chi_factor(s: complex | float | Any) -> Any:
     """
     if HAS_MPMATH:
         s_mp = mp.mpc(s)
-        return mp_power(2, s_mp) * mp_power(mp_pi, s_mp - 1) * mp_sin(mp_pi * s_mp / 2) * mp_gamma(1 - s_mp)
-    
+        return (
+            mp_power(2, s_mp)
+            * mp_power(mp_pi, s_mp - 1)
+            * mp_sin(mp_pi * s_mp / 2)
+            * mp_gamma(1 - s_mp)
+        )
+
     # Standard float implementation
     s_c = complex(s)
-    return (2**s_c) * (np.pi**(s_c - 1)) * np.sin(np.pi * s_c / 2) * np.math.gamma(1 - s_c)  # type: ignore
+    return (2**s_c) * (np.pi ** (s_c - 1)) * np.sin(np.pi * s_c / 2) * np.math.gamma(1 - s_c)  # type: ignore
+
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
 def structural_potential(s: complex | float | Any) -> float:
@@ -97,6 +118,7 @@ def structural_potential(s: complex | float | Any) -> float:
     if HAS_MPMATH:
         return float(mp_log(mag + 1e-20))
     return float(np.log(mag + 1e-20))
+
 
 @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
 def structural_pressure(s: complex | float | Any) -> float:

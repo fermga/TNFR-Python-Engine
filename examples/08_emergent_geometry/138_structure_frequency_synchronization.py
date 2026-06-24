@@ -71,10 +71,10 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 
 def wrap(x):
@@ -140,8 +140,10 @@ def experiment_1_2_delay_and_sharpness():
             Rs = sweep(A, om, Ks, s)
             Kcs.append(Ks[np.argmax(Rs > 0.5)] if Rs.max() > 0.5 else np.nan)
             jumps.append(float(np.max(np.diff(Rs))))
-        print(f"  {label:>12}: K_c = {np.nanmean(Kcs):.2f}, "
-              f"max up-jump = {np.mean(jumps):.3f}  (4-seed mean)")
+        print(
+            f"  {label:>12}: K_c = {np.nanmean(Kcs):.2f}, "
+            f"max up-jump = {np.mean(jumps):.3f}  (4-seed mean)"
+        )
     print()
     print("  -> degree-correlated nu_f DELAYS the onset (higher K_c) and makes")
     print("     it SHARPER (bigger jump): the structure-dynamics correlation")
@@ -161,8 +163,7 @@ def experiment_3_hubs_lock_last():
     corrs = []
     for s in range(4):
         rng = np.random.default_rng(s)
-        theta = evolve(A, rng.uniform(0, 2 * np.pi, len(deg)), om, K=2.0,
-                       steps=600)
+        theta = evolve(A, rng.uniform(0, 2 * np.pi, len(deg)), om, K=2.0, steps=600)
         psi = np.angle(np.mean(np.exp(1j * theta)))
         lock = np.cos(theta - psi)
         lock_acc += lock
@@ -173,8 +174,10 @@ def experiment_3_hubs_lock_last():
     print("  degree quintile -> mean lock to the global phase (1 = locked):")
     print(f"  {'quintile':>10} {'mean deg':>9} {'mean lock':>10}")
     for k, q in enumerate(qs):
-        print(f"  {('Q' + str(k + 1)):>10} {deg[q].mean():>9.1f} "
-              f"{lock_mean[q].mean():>10.3f}")
+        print(
+            f"  {('Q' + str(k + 1)):>10} {deg[q].mean():>9.1f} "
+            f"{lock_mean[q].mean():>10.3f}"
+        )
     print()
     print(f"  corr(degree, lock) = {np.mean(corrs):.3f} (4-seed mean)")
     print("  -> negative: the high-degree hubs lock LEAST. The nodal structure")

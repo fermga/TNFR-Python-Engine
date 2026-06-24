@@ -20,7 +20,6 @@ functional while still benefiting from acceleration when present.
 
 from __future__ import annotations
 
-from ..compat.dataclass import dataclass
 import os
 from typing import (
     Any,
@@ -30,16 +29,17 @@ from typing import (
     Mapping,
     MutableMapping,
     Protocol,
-    runtime_checkable,
     cast,
+    runtime_checkable,
 )
 
-from ..errors import TNFRValueError
-
-from ..utils import cached_import, get_logger
+from ..compat.dataclass import dataclass
 from ..core.exceptions import BackendUnavailableError
+from ..errors import TNFRValueError
+from ..utils import cached_import, get_logger
 
 logger = get_logger(__name__)
+
 
 @runtime_checkable
 class MathematicsBackend(Protocol):
@@ -66,7 +66,9 @@ class MathematicsBackend(Protocol):
     def matrix_exp(self, matrix: Any) -> Any:
         """Compute the matrix exponential of ``matrix``."""
 
-    def norm(self, value: Any, *, ord: Any | None = None, axis: Any | None = None) -> Any:
+    def norm(
+        self, value: Any, *, ord: Any | None = None, axis: Any | None = None
+    ) -> Any:
         """Return the matrix or vector norm according to ``ord``."""
 
     def einsum(self, pattern: str, *operands: Any, **kwargs: Any) -> Any:
@@ -93,7 +95,9 @@ class MathematicsBackend(Protocol):
     def get_backend_info(self) -> Mapping[str, Any]:
         """Return detailed backend information."""
 
+
 BackendFactory = Callable[[], MathematicsBackend]
+
 
 @dataclass(slots=True)
 class _NumpyBackend:
@@ -122,7 +126,9 @@ class _NumpyBackend:
         exp_vals = self._np.exp(eigvals)
         return eigvecs @ self._np.diag(exp_vals) @ inv
 
-    def norm(self, value: Any, *, ord: Any | None = None, axis: Any | None = None) -> Any:
+    def norm(
+        self, value: Any, *, ord: Any | None = None, axis: Any | None = None
+    ) -> Any:
         return self._np.linalg.norm(value, ord=ord, axis=axis)
 
     def einsum(self, pattern: str, *operands: Any, **kwargs: Any) -> Any:
@@ -151,8 +157,9 @@ class _NumpyBackend:
             "name": self.name,
             "version": self._np.__version__,
             "device": "cpu",
-            "accelerated": False
+            "accelerated": False,
         }
+
 
 @dataclass(slots=True)
 class _JaxBackend:
@@ -177,7 +184,9 @@ class _JaxBackend:
     def matrix_exp(self, matrix: Any) -> Any:
         return self._jax_linalg.expm(matrix)
 
-    def norm(self, value: Any, *, ord: Any | None = None, axis: Any | None = None) -> Any:
+    def norm(
+        self, value: Any, *, ord: Any | None = None, axis: Any | None = None
+    ) -> Any:
         return self._jnp.linalg.norm(value, ord=ord, axis=axis)
 
     def einsum(self, pattern: str, *operands: Any, **kwargs: Any) -> Any:
@@ -216,8 +225,9 @@ class _JaxBackend:
             "name": self.name,
             "version": self._jax.__version__,
             "device": self.get_device_name(),
-            "accelerated": self.is_gpu_available()
+            "accelerated": self.is_gpu_available(),
         }
+
 
 @dataclass(slots=True)
 class _TorchBackend:
@@ -290,7 +300,9 @@ class _TorchBackend:
     def matrix_exp(self, matrix: Any) -> Any:
         return self._torch_linalg.matrix_exp(matrix)
 
-    def norm(self, value: Any, *, ord: Any | None = None, axis: Any | None = None) -> Any:
+    def norm(
+        self, value: Any, *, ord: Any | None = None, axis: Any | None = None
+    ) -> Any:
         if axis is None:
             return self._torch.linalg.norm(value, ord=ord)
         return self._torch.linalg.norm(value, ord=ord, dim=axis)
@@ -327,7 +339,7 @@ class _TorchBackend:
             "version": self._torch.__version__,
             "device": self.get_device_name(),
             "accelerated": self.is_gpu_available(),
-            "details": self.get_device_info()
+            "details": self.get_device_info(),
         }
 
     def get_device_info(self) -> dict[str, Any]:
@@ -335,18 +347,26 @@ class _TorchBackend:
         info = {
             "device": str(self._device),
             "use_cuda": self._use_cuda,
-            "cuda_available": self._torch.cuda.is_available() if hasattr(self._torch, 'cuda') else False
+            "cuda_available": (
+                self._torch.cuda.is_available()
+                if hasattr(self._torch, "cuda")
+                else False
+            ),
         }
-        
-        if self._use_cuda and hasattr(self._torch, 'cuda'):
-            info.update({
-                "device_count": self._torch.cuda.device_count(),
-                "current_device": self._torch.cuda.current_device(),
-                "device_name": self._torch.cuda.get_device_name(self._torch.cuda.current_device()),
-                "memory_allocated": self._torch.cuda.memory_allocated(),
-                "memory_reserved": self._torch.cuda.memory_reserved(),
-            })
-        
+
+        if self._use_cuda and hasattr(self._torch, "cuda"):
+            info.update(
+                {
+                    "device_count": self._torch.cuda.device_count(),
+                    "current_device": self._torch.cuda.current_device(),
+                    "device_name": self._torch.cuda.get_device_name(
+                        self._torch.cuda.current_device()
+                    ),
+                    "memory_allocated": self._torch.cuda.memory_allocated(),
+                    "memory_reserved": self._torch.cuda.memory_reserved(),
+                }
+            )
+
         return info
 
     def to_cuda(self, value: Any) -> Any:
@@ -361,8 +381,10 @@ class _TorchBackend:
             return value.cpu()
         return value
 
+
 def _normalise_name(name: str) -> str:
     return name.strip().lower()
+
 
 _BACKEND_FACTORIES: MutableMapping[str, BackendFactory] = {}
 _BACKEND_ALIASES: MutableMapping[str, str] = {}
@@ -370,6 +392,7 @@ _BACKEND_CACHE: MutableMapping[str, MathematicsBackend] = {}
 
 _AUTO_BACKEND_SENTINEL = "auto"
 _AUTO_BACKEND_PRIORITY = ("jax", "torch", "numpy")
+
 
 def ensure_array(
     value: Any,
@@ -382,11 +405,13 @@ def ensure_array(
     resolved = backend or get_backend()
     return resolved.as_array(value, dtype=dtype)
 
+
 def ensure_numpy(value: Any, *, backend: MathematicsBackend | None = None) -> Any:
     """Export ``value`` from the backend into :class:`numpy.ndarray`."""
 
     resolved = backend or get_backend()
     return resolved.to_numpy(value)
+
 
 def register_backend(
     name: str,
@@ -414,7 +439,7 @@ def register_backend(
         raise TNFRValueError(
             f"Backend '{name}' already registered",
             context={"name": name, "existing": list(_BACKEND_FACTORIES.keys())},
-            suggestion="Use override=True to replace the existing backend registration."
+            suggestion="Use override=True to replace the existing backend registration.",
         )
     _BACKEND_FACTORIES[key] = factory
     if aliases:
@@ -423,20 +448,32 @@ def register_backend(
             if not override and alias_key in _BACKEND_ALIASES:
                 raise TNFRValueError(
                     f"Backend alias '{alias}' already registered",
-                    context={"alias": alias, "existing_aliases": list(_BACKEND_ALIASES.keys())},
-                    suggestion="Use override=True or choose a different alias."
+                    context={
+                        "alias": alias,
+                        "existing_aliases": list(_BACKEND_ALIASES.keys()),
+                    },
+                    suggestion="Use override=True or choose a different alias.",
                 )
             _BACKEND_ALIASES[alias_key] = key
+
 
 def _resolve_backend_name(name: str | None) -> str:
     if name:
         normalised = _normalise_name(name)
-        return _AUTO_BACKEND_SENTINEL if normalised == _AUTO_BACKEND_SENTINEL else normalised
+        return (
+            _AUTO_BACKEND_SENTINEL
+            if normalised == _AUTO_BACKEND_SENTINEL
+            else normalised
+        )
 
     env_choice = os.getenv("TNFR_MATH_BACKEND")
     if env_choice:
         normalised = _normalise_name(env_choice)
-        return _AUTO_BACKEND_SENTINEL if normalised == _AUTO_BACKEND_SENTINEL else normalised
+        return (
+            _AUTO_BACKEND_SENTINEL
+            if normalised == _AUTO_BACKEND_SENTINEL
+            else normalised
+        )
 
     backend_from_config: str | None = None
     try:
@@ -452,12 +489,14 @@ def _resolve_backend_name(name: str | None) -> str:
 
     return _AUTO_BACKEND_SENTINEL
 
+
 def _resolve_factory(name: str) -> BackendFactory:
     canonical = _BACKEND_ALIASES.get(name, name)
     try:
         return _BACKEND_FACTORIES[canonical]
     except KeyError as exc:  # pragma: no cover - defensive path
         raise LookupError(f"Unknown mathematics backend: {name}") from exc
+
 
 def _construct_backend(name: str) -> MathematicsBackend | None:
     canonical = _BACKEND_ALIASES.get(name, name)
@@ -474,6 +513,7 @@ def _construct_backend(name: str) -> MathematicsBackend | None:
     _BACKEND_CACHE[canonical] = backend
     return backend
 
+
 def get_backend(name: str | None = None) -> MathematicsBackend:
     """Return a backend instance using the configured resolution order."""
 
@@ -483,7 +523,11 @@ def get_backend(name: str | None = None) -> MathematicsBackend:
         for candidate in _AUTO_BACKEND_PRIORITY:
             backend = _construct_backend(candidate)
             if backend is not None and backend.is_gpu_available():
-                logger.info("Auto-selected GPU-accelerated backend '%s' (%s)", candidate, backend.get_device_name())
+                logger.info(
+                    "Auto-selected GPU-accelerated backend '%s' (%s)",
+                    candidate,
+                    backend.get_device_name(),
+                )
                 return backend
 
         # Second pass: Fallback to any available backend
@@ -494,7 +538,8 @@ def get_backend(name: str | None = None) -> MathematicsBackend:
                     logger.info("Auto-selected CPU backend '%s'", candidate)
                 return backend
         raise BackendUnavailableError(
-            "No mathematical backend available; tried: " + ", ".join(_AUTO_BACKEND_PRIORITY)
+            "No mathematical backend available; tried: "
+            + ", ".join(_AUTO_BACKEND_PRIORITY)
         )
 
     backend = _construct_backend(resolved_name)
@@ -507,12 +552,16 @@ def get_backend(name: str | None = None) -> MathematicsBackend:
         if fallback is not None:
             return fallback
 
-    raise BackendUnavailableError(f"Unable to initialise mathematics backend '{resolved_name}'")
+    raise BackendUnavailableError(
+        f"Unable to initialise mathematics backend '{resolved_name}'"
+    )
+
 
 def available_backends() -> Mapping[str, BackendFactory]:
     """Return the registered backend factories."""
 
     return dict(_BACKEND_FACTORIES)
+
 
 def _make_numpy_backend() -> MathematicsBackend:
     np_module = cached_import("numpy")
@@ -520,9 +569,12 @@ def _make_numpy_backend() -> MathematicsBackend:
         raise BackendUnavailableError("NumPy is not installed")
     scipy_linalg = cached_import("scipy.linalg")
     if scipy_linalg is None:
-        logger.debug("SciPy not available; falling back to eigen decomposition for expm")
+        logger.debug(
+            "SciPy not available; falling back to eigen decomposition for expm"
+        )
     backend = _NumpyBackend(np_module, scipy_linalg)  # type: ignore[call-arg]
     return cast(MathematicsBackend, backend)
+
 
 def _make_jax_backend() -> MathematicsBackend:
     jnp_module = cached_import("jax.numpy")
@@ -552,36 +604,48 @@ def _make_jax_backend() -> MathematicsBackend:
     backend = _JaxBackend(jnp_module, jax_scipy, jax_module)  # type: ignore[call-arg]
     return cast(MathematicsBackend, backend)
 
+
 def _make_torch_backend() -> MathematicsBackend:
     torch_module = cached_import("torch")
     if torch_module is None:
         raise BackendUnavailableError("PyTorch is not installed")
     torch_linalg = cached_import("torch.linalg")
     if torch_linalg is None:
-        raise BackendUnavailableError("torch.linalg is required for linear algebra operations")
-    
+        raise BackendUnavailableError(
+            "torch.linalg is required for linear algebra operations"
+        )
+
     # CUDA device detection and configuration
     use_cuda = False
     device = torch_module.device("cpu")
-    
-    if hasattr(torch_module, 'cuda') and torch_module.cuda.is_available():
+
+    if hasattr(torch_module, "cuda") and torch_module.cuda.is_available():
         # Check environment variable for CUDA preference
-        cuda_enabled = os.getenv("TNFR_CUDA_ENABLED", "true").lower() in ("true", "1", "yes")
+        cuda_enabled = os.getenv("TNFR_CUDA_ENABLED", "true").lower() in (
+            "true",
+            "1",
+            "yes",
+        )
         if cuda_enabled:
             try:
                 device = torch_module.device("cuda")
                 use_cuda = True
-                logger.info(f"CUDA enabled: {torch_module.cuda.get_device_name()} with {torch_module.cuda.get_device_properties(0).total_memory / 1e9:.1f}GB")
+                logger.info(
+                    f"CUDA enabled: {torch_module.cuda.get_device_name()} with {torch_module.cuda.get_device_properties(0).total_memory / 1e9:.1f}GB"
+                )
             except Exception as e:
-                logger.warning(f"CUDA available but failed to initialize: {e}. Falling back to CPU.")
+                logger.warning(
+                    f"CUDA available but failed to initialize: {e}. Falling back to CPU."
+                )
                 device = torch_module.device("cpu")
         else:
             logger.info("CUDA available but disabled via TNFR_CUDA_ENABLED=false")
     else:
         logger.info("CUDA not available, using CPU backend")
-    
+
     backend = _TorchBackend(torch_module, torch_linalg, device, use_cuda)  # type: ignore[call-arg]
     return cast(MathematicsBackend, backend)
+
 
 register_backend("numpy", _make_numpy_backend, aliases=("np",))
 register_backend("jax", _make_jax_backend)

@@ -36,10 +36,10 @@ PHI = (1 + mp.sqrt(5)) / 2
 GAMMA = mp.euler
 PI = mp.pi
 E = mp.e
-BASEL = PI**2 / 6           # zeta(2)
+BASEL = PI**2 / 6  # zeta(2)
 ZETA3 = mp.zeta(3)
 CATALAN = mp.catalan
-TARGET = mp.mpf("0.7711")   # the empirical per-node threshold
+TARGET = mp.mpf("0.7711")  # the empirical per-node threshold
 
 
 def sep(title: str) -> None:
@@ -60,8 +60,10 @@ def q1_basel_vs_phi() -> None:
     print("One-sided chain saturation  S(alpha) = zeta(alpha):")
     for a in [1.5, PHI, 1.8, 2.0, 2.5, 3.0]:
         z = mp.zeta(a)
-        print(f"  alpha={float(a):.3f}  zeta(alpha)={float(z):8.4f}"
-              f"   2-sided={float(2*z):8.4f}")
+        print(
+            f"  alpha={float(a):.3f}  zeta(alpha)={float(z):8.4f}"
+            f"   2-sided={float(2*z):8.4f}"
+        )
     print()
     print("Reading: only alpha=2 gives one-sided saturation ~= phi.")
     print("With alpha=phi the saturation is zeta(phi) ~= 2.27 (far).")
@@ -75,8 +77,9 @@ def _stats(vals: list[float]) -> tuple[float, float, float]:
     return float(a.mean()), float(np.median(a)), float(a.max())
 
 
-def _measure(G: nx.Graph, mode: str, rng: np.random.Generator,
-             alpha: float) -> tuple[float, float, float]:
+def _measure(
+    G: nx.Graph, mode: str, rng: np.random.Generator, alpha: float
+) -> tuple[float, float, float]:
     n = G.number_of_nodes()
     if mode == "uniform":
         d = {node: 1.0 for node in G.nodes()}
@@ -104,15 +107,13 @@ def q2_topologies() -> None:
     }
     for alpha in (2.0, float(PHI)):
         print(f"\n--- alpha = {alpha:.4f} ---")
-        hdr = f"{'topology':16} {'mode':8} {'mean':>9} " \
-              f"{'median':>9} {'max':>9}"
+        hdr = f"{'topology':16} {'mode':8} {'mean':>9} " f"{'median':>9} {'max':>9}"
         print(hdr)
         for name, build in builders.items():
             for mode in ("uniform", "signed"):
                 G = nx.convert_node_labels_to_integers(build())
                 mean, med, mx = _measure(G, mode, rng, alpha)
-                print(f"{name:16} {mode:8} {mean:9.4f} "
-                      f"{med:9.4f} {mx:9.4f}")
+                print(f"{name:16} {mode:8} {mean:9.4f} " f"{med:9.4f} {mx:9.4f}")
     print("\n0.7711 = per-node threshold; phi=1.618; pi^2/6=1.6449")
 
 
@@ -122,9 +123,16 @@ def q2_topologies() -> None:
 def q3_closed_form_search() -> None:
     sep("Q3  Closed-form search for 0.7711 (proximity != derivation)")
     base = {
-        "phi": PHI, "gamma": GAMMA, "pi": PI, "e": E,
-        "zeta2": BASEL, "zeta3": ZETA3, "catalan": CATALAN,
-        "ln2": mp.log(2), "sqrt2": mp.sqrt(2), "sqrt3": mp.sqrt(3),
+        "phi": PHI,
+        "gamma": GAMMA,
+        "pi": PI,
+        "e": E,
+        "zeta2": BASEL,
+        "zeta3": ZETA3,
+        "catalan": CATALAN,
+        "ln2": mp.log(2),
+        "sqrt2": mp.sqrt(2),
+        "sqrt3": mp.sqrt(3),
         "1": mp.mpf(1),
     }
     cands: dict[str, mp.mpf] = {}
@@ -155,8 +163,7 @@ def q3_closed_form_search() -> None:
     print(f"{'expr':28} {'value':>12} {'abs.resid':>12} {'rel':>9}")
     for resid, name, val in scored[:14]:
         rel = float(resid / TARGET)
-        print(f"{name:28} {float(val):12.6f} "
-              f"{float(resid):12.2e} {rel:9.3%}")
+        print(f"{name:28} {float(val):12.6f} " f"{float(resid):12.2e} {rel:9.3%}")
     print("\nNote: a match below ~1e-4 with a *structurally meaningful*")
     print("expression would be a derivation candidate; random small")
     print("combinations landing within ~1% are expected by density and")
@@ -174,7 +181,7 @@ def q4_per_node_variance_scale() -> None:
     """
     sep("Q4  Per-node Phi_s scale vs zeta(4) variance prediction")
     zeta4 = PI**4 / 90
-    chain_std = mp.sqrt(2 * zeta4)          # two-sided chain
+    chain_std = mp.sqrt(2 * zeta4)  # two-sided chain
     print(f"zeta(4)=pi^4/90      = {float(zeta4):.6f}")
     print(f"sqrt(2*zeta(4))      = {float(chain_std):.6f}  (chain std)")
     print(f"half-normal median   = {float(0.6745*chain_std):.6f}")
@@ -193,12 +200,12 @@ def q4_per_node_variance_scale() -> None:
             for node, v in zip(G.nodes(), x):
                 G.nodes[node]["delta_nfr"] = float(v)
             phi_s = compute_structural_potential(G, alpha=2.0)
-            vals = np.abs([v for k, v in phi_s.items()
-                           if not str(k).startswith("__")])
+            vals = np.abs([v for k, v in phi_s.items() if not str(k).startswith("__")])
             meds.append(float(np.median(vals)))
             stds.append(float(vals.std()))
-        print(f"{name:12} median|Phi_s|={np.mean(meds):.4f} "
-              f"std={np.mean(stds):.4f}")
+        print(
+            f"{name:12} median|Phi_s|={np.mean(meds):.4f} " f"std={np.mean(stds):.4f}"
+        )
     print("\nReading: per-node scale is O(1), set by the zeta(4)")
     print("variance of inverse-square accumulation; 0.7711 is the")
     print("empirical operating point within this O(1) band, not a")

@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
 __all__ = ["validate_coherence_strict", "diagnose_coherence_readiness"]
 
+
 def validate_coherence_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for IL (Coherence) operator.
 
@@ -87,13 +88,8 @@ def validate_coherence_strict(G: TNFRGraph, node: Any) -> None:
     import warnings
 
     from ...alias import get_attr
+    from ...config.thresholds import DNFR_IL_CRITICAL, EPI_IL_MAX, EPI_IL_MIN, VF_IL_MIN
     from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
-    from ...config.thresholds import (
-        DNFR_IL_CRITICAL,
-        EPI_IL_MAX,
-        EPI_IL_MIN,
-        VF_IL_MIN,
-    )
 
     # Get current node state
     epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
@@ -171,6 +167,7 @@ def validate_coherence_strict(G: TNFRGraph, node: Any) -> None:
             stacklevel=3,
         )
 
+
 def diagnose_coherence_readiness(G: TNFRGraph, node: Any) -> dict:
     """Diagnose node readiness for IL (Coherence) operator.
 
@@ -226,13 +223,8 @@ def diagnose_coherence_readiness(G: TNFRGraph, node: Any) -> dict:
     validate_coherence_strict : Strict precondition validator
     """
     from ...alias import get_attr
+    from ...config.thresholds import DNFR_IL_CRITICAL, EPI_IL_MAX, EPI_IL_MIN, VF_IL_MIN
     from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
-    from ...config.thresholds import (
-        DNFR_IL_CRITICAL,
-        EPI_IL_MAX,
-        EPI_IL_MIN,
-        VF_IL_MIN,
-    )
 
     # Get current node state
     epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
@@ -268,7 +260,9 @@ def diagnose_coherence_readiness(G: TNFRGraph, node: Any) -> dict:
         recommendations.append("Apply AL (Emission) to activate node")
 
     if checks["epi_active"] and not checks["epi_not_saturated"]:
-        recommendations.append("Apply NUL (Contraction) to consolidate saturated structure")
+        recommendations.append(
+            "Apply NUL (Contraction) to consolidate saturated structure"
+        )
 
     if not checks["vf_active"]:
         recommendations.append("Apply AL (Emission) or NAV (Transition) to activate νf")
@@ -280,7 +274,9 @@ def diagnose_coherence_readiness(G: TNFRGraph, node: Any) -> dict:
         recommendations.append("⚠ High ΔNFR - consider OZ (Dissonance) → IL sequence")
 
     if not checks["has_connections"]:
-        recommendations.append("⚠ Isolated node - consider UM (Coupling) to enable phase locking")
+        recommendations.append(
+            "⚠ Isolated node - consider UM (Coupling) to enable phase locking"
+        )
 
     if all_critical_passed:
         recommendations.insert(0, "✓ Node ready for IL (Coherence)")

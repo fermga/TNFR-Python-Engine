@@ -7,6 +7,7 @@ from typing import Any
 from ..errors import TNFRValueError
 from .advanced_fft_arithmetic import TNFRAdvancedFFTEngine
 
+
 class _DefaultFFTWorker:
     """Singleton worker that owns a TNFRAdvancedFFTEngine instance."""
 
@@ -17,7 +18,9 @@ class _DefaultFFTWorker:
         if action == "get_spectral_state":
             graph = payload["graph"]
             force_recompute = payload.get("force_recompute", False)
-            return self._engine.get_spectral_state(graph, force_recompute=force_recompute)
+            return self._engine.get_spectral_state(
+                graph, force_recompute=force_recompute
+            )
         if action == "spectral_convolution":
             graph = payload["graph"]
             signal1 = payload.get("signal1")
@@ -39,11 +42,14 @@ class _DefaultFFTWorker:
             suggestion="Use 'get_spectral_state' or 'spectral_convolution'.",
         )
 
+
 _default_worker = _DefaultFFTWorker()
+
 
 def default_fft_worker(action: str, payload: dict[str, Any]) -> Any:
     """Return spectral results using the shared TNFRAdvancedFFTEngine."""
 
     return _default_worker(action, payload)
+
 
 __all__ = ["default_fft_worker"]

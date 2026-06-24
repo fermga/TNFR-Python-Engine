@@ -80,10 +80,8 @@ remains open.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Callable, Sequence
-
 import math
+from dataclasses import dataclass
 
 import mpmath
 from scipy import integrate
@@ -137,9 +135,7 @@ class GaussianTestFunction:
     def g(self, u: float) -> float:
         """Evaluate the Fourier transform ``g(u)`` on the real line."""
         sigma = self.sigma
-        return (sigma / math.sqrt(2.0 * math.pi)) * math.exp(
-            -(sigma**2) * u**2 / 2.0
-        )
+        return (sigma / math.sqrt(2.0 * math.pi)) * math.exp(-(sigma**2) * u**2 / 2.0)
 
     def g_zero(self) -> float:
         """Return ``g(0) = sigma / sqrt(2 pi)``."""
@@ -200,9 +196,7 @@ def weil_archimedean_integral(
     def integrand(t: float) -> float:
         return test.h(t) * _digamma_real_part(t)
 
-    val, _err = integrate.quad(
-        integrand, -integration_limit, integration_limit, **kw
-    )
+    val, _err = integrate.quad(integrand, -integration_limit, integration_limit, **kw)
     return float(val / (2.0 * math.pi))
 
 
@@ -227,17 +221,13 @@ def weil_prime_side_from_hamiltonian(
     """
     eigvals, eigvecs = bundle.hamiltonian.get_spectrum()
     eigvals_real = np.real(eigvals)
-    g_values = np.array(
-        [test.g(float(e)) for e in eigvals_real], dtype=float
-    )
+    g_values = np.array([test.g(float(e)) for e in eigvals_real], dtype=float)
     half_decay = np.exp(-eigvals_real / 2.0)
     # Diagonal weight operator in the node basis
     weights_diag = np.real(np.diag(bundle.weight_operator))
     # Transform weight operator to eigenbasis: <e_i|W|e_i>
     # = sum_n |<n|e_i>|^2 W_nn
-    W_diag_eig = np.einsum(
-        "ni,n,ni->i", np.conj(eigvecs), weights_diag, eigvecs
-    ).real
+    W_diag_eig = np.einsum("ni,n,ni->i", np.conj(eigvecs), weights_diag, eigvecs).real
     contributions = W_diag_eig * half_decay * g_values
     return float(-2.0 * np.sum(contributions))
 
@@ -364,9 +354,7 @@ def verify_weil_explicit_formula(
         max_zeros=max_zeros,
     )
     pole = weil_pole_side(test)
-    arch = weil_archimedean_integral(
-        test, integration_limit=integration_limit
-    )
+    arch = weil_archimedean_integral(test, integration_limit=integration_limit)
     prime = weil_prime_side_from_hamiltonian(bundle, test)
     log_pi_term = -test.g_zero() * math.log(math.pi)
     rhs = pole + log_pi_term + arch + prime

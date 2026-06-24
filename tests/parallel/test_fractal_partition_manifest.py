@@ -70,7 +70,9 @@ def test_manifest_structure_is_valid(sample_network):
         # Check network metadata
         assert manifest["network_metadata"]["node_count"] == len(sample_network.nodes())
         assert manifest["network_metadata"]["edge_count"] == len(sample_network.edges())
-        assert manifest["network_metadata"]["partition_count"] == len(result["partitions"])
+        assert manifest["network_metadata"]["partition_count"] == len(
+            result["partitions"]
+        )
 
         # Check communities are serialized
         assert isinstance(manifest["communities"], list)
@@ -137,7 +139,9 @@ def test_sdk_wrapper_accepts_fractal_partition_manifests(sample_network):
             # Expected if manifest format doesn't match CLI runner expectations
             # This is acceptable - the SDK wrapper correctly passed the parameters
             if "entries" in str(e):
-                pytest.skip("CLI runner expects 'entries' format - integration test requires format alignment")
+                pytest.skip(
+                    "CLI runner expects 'entries' format - integration test requires format alignment"
+                )
             else:
                 raise
 

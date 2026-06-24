@@ -10,11 +10,15 @@ References
 Magnien, Latapy, Habib (2009): "Fast computation of empirically tight
 bounds for the diameter of massive graphs"
 """
-import networkx as nx
+
 from typing import Any
 
-from tnfr.mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+import networkx as nx
+
+from tnfr.mathematics.unified_cache import CacheLevel, cache_tnfr_computation
+
 _CACHE_AVAILABLE = True
+
 
 def approximate_diameter_2sweep(G: Any) -> int:
     """Approximate graph diameter using 2-sweep BFS heuristic.
@@ -80,6 +84,7 @@ def approximate_diameter_2sweep(G: Any) -> int:
 
     return int(max(d1, d2))
 
+
 def approximate_diameter_4sweep(G: Any) -> tuple[int, int]:
     """Improved 4-sweep heuristic for tighter diameter bounds.
 
@@ -132,9 +137,10 @@ def approximate_diameter_4sweep(G: Any) -> tuple[int, int]:
 
     return (int(lower_bound), int(upper_bound))
 
+
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={'graph_topology'},
+    dependencies={"graph_topology"},
 )
 def compute_eccentricity_cached(G: Any) -> dict[Any, int]:
     """Compute node eccentricity with automatic caching. [OPTIMIZED]
@@ -146,10 +152,10 @@ def compute_eccentricity_cached(G: Any) -> dict[Any, int]:
     **Caching**: Automatically cached at CacheLevel.DERIVED_METRICS.
     Invalidated only when graph_topology changes (structural coupling).
 
-    **Performance**: 
+    **Performance**:
     - First call: O(N² + NM) via NetworkX BFS from all nodes
     - Cached calls: O(1) lookup, ~2.3s → 0.000s (infinite speedup)
-    
+
     Parameters
     ----------
     G : NetworkX graph
@@ -175,6 +181,7 @@ def compute_eccentricity_cached(G: Any) -> dict[Any, int]:
     """
     return nx.eccentricity(G)  # type: ignore
 
+
 def validate_diameter_approximation(
     G: Any, true_diameter: int, approx_diameter: int
 ) -> dict:
@@ -198,7 +205,7 @@ def validate_diameter_approximation(
     """
     error_abs = abs(true_diameter - approx_diameter)
     error_rel = error_abs / max(true_diameter, 1)
-    exact_match = (error_abs == 0)
+    exact_match = error_abs == 0
     within_2x = (approx_diameter >= true_diameter / 2.0) and (
         approx_diameter <= true_diameter * 2.0
     )
@@ -213,6 +220,7 @@ def validate_diameter_approximation(
         "nodes": G.number_of_nodes(),
         "edges": G.number_of_edges(),
     }
+
 
 if __name__ == "__main__":
     # Quick validation

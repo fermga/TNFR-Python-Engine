@@ -9,9 +9,20 @@ import json
 import math
 import os
 import time
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence, Set, Tuple, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    cast,
+)
 
 import networkx as nx
 import numpy as np
@@ -19,9 +30,13 @@ import numpy as np
 from tnfr.cache import CacheLevel, cache_tnfr_computation
 from tnfr.config.operator_names import CANONICAL_OPERATOR_NAMES
 from tnfr.constants.canonical import (
-    PHI_S_VON_KOCH_THRESHOLD,        # general Φ_s: 0.7711 (von Koch, empirical)
-    GRAD_PHI_CANONICAL_THRESHOLD,    # general |∇φ|: γ/π ≈ 0.1837 (heuristic, not derived)
-    K_PHI_CANONICAL_THRESHOLD,       # general K_φ: 0.9×π ≈ 2.8274 (phase wrap)
+    GRAD_PHI_CANONICAL_THRESHOLD,  # general |∇φ|: γ/π ≈ 0.1837 (heuristic, not derived)
+)
+from tnfr.constants.canonical import (
+    K_PHI_CANONICAL_THRESHOLD,  # general K_φ: 0.9×π ≈ 2.8274 (phase wrap)
+)
+from tnfr.constants.canonical import (
+    PHI_S_VON_KOCH_THRESHOLD,  # general Φ_s: 0.7711 (von Koch, empirical)
 )
 from tnfr.dynamics.advanced_fft_arithmetic import TNFRAdvancedFFTEngine
 from tnfr.dynamics.fft_backend import FFTBackend
@@ -37,19 +52,17 @@ from tnfr.operators.strategies import (
     StrategyRegistry,
     StructuralFields,
 )
+
+from .failure_telemetry import FailureTelemetryManager
 from .partitioning import (
-    PartitionPlannerConfig,
-    PartitionedPaleyGraph,
     PaleyPartition,
+    PartitionedPaleyGraph,
+    PartitionPlannerConfig,
     aggregate_partition_metrics,
     annotate_partition_candidates,
     plan_paley_partitions,
 )
-from .self_opt_support import (
-    attach_self_opt_sequences,
-    run_partition_self_optimization,
-)
-from .failure_telemetry import FailureTelemetryManager
+from .self_opt_support import attach_self_opt_sequences, run_partition_self_optimization
 
 # Certificate versioning and hashing constants
 _CERTIFICATE_VERSION = "1.0"
@@ -68,9 +81,13 @@ _REPLAY_METADATA_VERSION = "1.0"
 # the link stays live if the canonical baselines ever change.
 # ---------------------------------------------------------------------------
 from tnfr.constants.canonical import (
-    PHI_S_VON_KOCH_THRESHOLD,        # general Φ_s: 0.7711 (von Koch)
-    GRAD_PHI_CANONICAL_THRESHOLD,    # general |∇φ|: γ/π ≈ 0.1837 (heuristic, not derived)
-    K_PHI_CANONICAL_THRESHOLD,       # general K_φ: 0.9×π ≈ 2.8274 (phase wrap)
+    GRAD_PHI_CANONICAL_THRESHOLD,  # general |∇φ|: γ/π ≈ 0.1837 (heuristic, not derived)
+)
+from tnfr.constants.canonical import (
+    K_PHI_CANONICAL_THRESHOLD,  # general K_φ: 0.9×π ≈ 2.8274 (phase wrap)
+)
+from tnfr.constants.canonical import (
+    PHI_S_VON_KOCH_THRESHOLD,  # general Φ_s: 0.7711 (von Koch)
 )
 
 # §7.5 arithmetic recalibrations (exact empirical values, validated across the
@@ -84,15 +101,15 @@ _ARITHMETIC_K_PHI_THRESHOLD = 3.2275
 
 # Provenance guard: if the canonical general baselines drift, the documented
 # §7.5 ratios above are stale and must be re-derived. (Cheap module-load check.)
-assert 0.95 < _ARITHMETIC_PHI_S_THRESHOLD / PHI_S_VON_KOCH_THRESHOLD < 0.98, (
-    "§7.5 Φ_s recalibration ratio drifted from canonical PHI_S_VON_KOCH_THRESHOLD"
-)
-assert 1.3 < _ARITHMETIC_GRAD_PHI_THRESHOLD / GRAD_PHI_CANONICAL_THRESHOLD < 1.5, (
-    "§7.5 |∇φ| recalibration ratio drifted from canonical GRAD_PHI_CANONICAL_THRESHOLD"
-)
-assert 1.0 < _ARITHMETIC_K_PHI_THRESHOLD / K_PHI_CANONICAL_THRESHOLD < 1.3, (
-    "§7.5 K_φ recalibration ratio drifted from canonical K_PHI_CANONICAL_THRESHOLD"
-)
+assert (
+    0.95 < _ARITHMETIC_PHI_S_THRESHOLD / PHI_S_VON_KOCH_THRESHOLD < 0.98
+), "§7.5 Φ_s recalibration ratio drifted from canonical PHI_S_VON_KOCH_THRESHOLD"
+assert (
+    1.3 < _ARITHMETIC_GRAD_PHI_THRESHOLD / GRAD_PHI_CANONICAL_THRESHOLD < 1.5
+), "§7.5 |∇φ| recalibration ratio drifted from canonical GRAD_PHI_CANONICAL_THRESHOLD"
+assert (
+    1.0 < _ARITHMETIC_K_PHI_THRESHOLD / K_PHI_CANONICAL_THRESHOLD < 1.3
+), "§7.5 K_φ recalibration ratio drifted from canonical K_PHI_CANONICAL_THRESHOLD"
 
 # Dual-lever operator classification (§8, TNFR_NUMBER_THEORY.md)
 _CAPACITY_LEVER_OPERATORS = frozenset({"um", "sha", "val", "nul"})
@@ -101,28 +118,30 @@ _PRESSURE_LEVER_OPERATORS = frozenset({"il", "oz", "thol", "zhir", "nav"})
 Dispatcher = Callable[[str, Dict[str, Any]], Any]
 
 
-def _generate_partition_hash_chain(partitioning: PartitionedPaleyGraph | None) -> Dict[str, Any] | None:
+def _generate_partition_hash_chain(
+    partitioning: PartitionedPaleyGraph | None,
+) -> Dict[str, Any] | None:
     """Generate reproducible hash chain for all partitions.
-    
+
     Creates deterministic hash chain linking partition states, telemetry,
     and structural transitions for complete reproducibility validation.
     """
     if not partitioning:
         return None
-        
+
     partitions = list(partitioning.iter_partitions())
     if not partitions:
         return None
-    
+
     partition_hashes = []
     chain_data = {
         "algorithm": _PARTITION_HASH_ALGORITHM,
         "version": _CERTIFICATE_VERSION,
         "partition_count": len(partitions),
         "total_nodes": sum(len(p.node_indices) for p in partitions),
-        "partitions": []
+        "partitions": [],
     }
-    
+
     for partition in partitions:
         # Deterministic partition state serialization
         partition_state = {
@@ -132,34 +151,50 @@ def _generate_partition_hash_chain(partitioning: PartitionedPaleyGraph | None) -
             "candidate_factors": sorted(partition.candidate_factors),
             "telemetry": {
                 "phi_s": partition.telemetry.phi_s if partition.telemetry else None,
-                "phase_gradient": partition.telemetry.phase_gradient if partition.telemetry else None,
-                "phase_curvature": partition.telemetry.phase_curvature if partition.telemetry else None,
-                "coherence_length": partition.telemetry.coherence_length if partition.telemetry else None,
-                "notes": partition.telemetry.notes if partition.telemetry else ""
+                "phase_gradient": (
+                    partition.telemetry.phase_gradient if partition.telemetry else None
+                ),
+                "phase_curvature": (
+                    partition.telemetry.phase_curvature if partition.telemetry else None
+                ),
+                "coherence_length": (
+                    partition.telemetry.coherence_length
+                    if partition.telemetry
+                    else None
+                ),
+                "notes": partition.telemetry.notes if partition.telemetry else "",
             },
-            "metadata": partition.metadata if partition.metadata else None
+            "metadata": partition.metadata if partition.metadata else None,
         }
-        
+
         # Generate deterministic hash for this partition
-        partition_blob = json.dumps(partition_state, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        partition_blob = json.dumps(
+            partition_state, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
         partition_hash = hashlib.sha256(partition_blob).hexdigest()
         partition_hashes.append(partition_hash)
-        
-        chain_data["partitions"].append({
-            "partition_id": partition.partition_id,
-            "hash": partition_hash,
-            "node_count": len(partition.node_indices),
-            "boundary_count": len(partition.boundary_nodes),
-            "factor_count": len(partition.candidate_factors)
-        })
-    
+
+        chain_data["partitions"].append(
+            {
+                "partition_id": partition.partition_id,
+                "hash": partition_hash,
+                "node_count": len(partition.node_indices),
+                "boundary_count": len(partition.boundary_nodes),
+                "factor_count": len(partition.candidate_factors),
+            }
+        )
+
     # Generate chain hash linking all partitions
-    chain_blob = json.dumps({
-        "partition_hashes": partition_hashes,
-        "algorithm": _PARTITION_HASH_ALGORITHM,
-        "version": _CERTIFICATE_VERSION
-    }, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    
+    chain_blob = json.dumps(
+        {
+            "partition_hashes": partition_hashes,
+            "algorithm": _PARTITION_HASH_ALGORITHM,
+            "version": _CERTIFICATE_VERSION,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+
     chain_data["chain_hash"] = hashlib.sha256(chain_blob).hexdigest()
     return chain_data
 
@@ -167,10 +202,10 @@ def _generate_partition_hash_chain(partitioning: PartitionedPaleyGraph | None) -
 def _generate_replay_metadata(
     result: Any,
     arithmetic: Any | None = None,
-    partitioning: PartitionedPaleyGraph | None = None
+    partitioning: PartitionedPaleyGraph | None = None,
 ) -> Dict[str, Any]:
     """Generate comprehensive replay metadata for exact reproducibility.
-    
+
     Captures all seeds, backend parameters, and configuration needed
     to reproduce the exact factorization attempt.
     """
@@ -179,35 +214,39 @@ def _generate_replay_metadata(
         "timestamp": time.time(),
         "algorithm_version": _CERTIFICATE_VERSION,
         "environment": {
-            "pure_mode": os.getenv("TNFR_PURE_MODE", "false").lower() in {"1", "true", "yes", "on"},
-            "pure_mode_verify_divisibility": os.getenv("TNFR_PURE_MODE_VERIFY_DIVISIBILITY", "false").lower() in {"1", "true", "yes", "on"},
+            "pure_mode": os.getenv("TNFR_PURE_MODE", "false").lower()
+            in {"1", "true", "yes", "on"},
+            "pure_mode_verify_divisibility": os.getenv(
+                "TNFR_PURE_MODE_VERIFY_DIVISIBILITY", "false"
+            ).lower()
+            in {"1", "true", "yes", "on"},
         },
         "parameters": {
-            "n": getattr(result, 'n', None),
-            "modulus": getattr(result, 'modulus', None),
-            "node_count": getattr(result, 'node_count', None),
-            "edge_count": getattr(result, 'edge_count', None)
+            "n": getattr(result, "n", None),
+            "modulus": getattr(result, "modulus", None),
+            "node_count": getattr(result, "node_count", None),
+            "edge_count": getattr(result, "edge_count", None),
         },
         "backend": {
-            "fft_backend": getattr(result, 'fft_backend', None),
-            "fft_capabilities": getattr(result, 'fft_capabilities', None)
-        }
+            "fft_backend": getattr(result, "fft_backend", None),
+            "fft_capabilities": getattr(result, "fft_capabilities", None),
+        },
     }
-    
+
     # Add arithmetic seeds if available
     if arithmetic:
         metadata["arithmetic"] = {
-            "delta_nfr": getattr(arithmetic, 'delta_nfr', None),
-            "local_coherence": getattr(arithmetic, 'local_coherence', None),
-            "components": getattr(arithmetic, 'components', {})
+            "delta_nfr": getattr(arithmetic, "delta_nfr", None),
+            "local_coherence": getattr(arithmetic, "local_coherence", None),
+            "components": getattr(arithmetic, "components", {}),
         }
-    
+
     return metadata
 
 
 def _capture_deterministic_seeds() -> Dict[str, Any]:
     """Capture all RNG seeds and spectral parameters for deterministic replay.
-    
+
     Records numpy random state, backend-specific seeds, and any other
     sources of non-determinism for complete reproducibility.
     """
@@ -215,9 +254,9 @@ def _capture_deterministic_seeds() -> Dict[str, Any]:
         "capture_timestamp": time.time(),
         "numpy_random_state": None,
         "environment_seeds": {},
-        "backend_seeds": {}
+        "backend_seeds": {},
     }
-    
+
     # Capture numpy random state
     try:
         random_state = np.random.get_state()
@@ -225,24 +264,36 @@ def _capture_deterministic_seeds() -> Dict[str, Any]:
         if isinstance(random_state, tuple) and len(random_state) >= 5:
             seeds["numpy_random_state"] = {
                 "state_type": str(random_state[0]),
-                "state_array": random_state[1].tolist() if random_state[1] is not None else None,
-                "state_pos": int(random_state[2]) if random_state[2] is not None else None,
-                "state_has_gauss": int(random_state[3]) if random_state[3] is not None else None,
-                "state_cached_gaussian": float(random_state[4]) if random_state[4] is not None else None
+                "state_array": (
+                    random_state[1].tolist() if random_state[1] is not None else None
+                ),
+                "state_pos": (
+                    int(random_state[2]) if random_state[2] is not None else None
+                ),
+                "state_has_gauss": (
+                    int(random_state[3]) if random_state[3] is not None else None
+                ),
+                "state_cached_gaussian": (
+                    float(random_state[4]) if random_state[4] is not None else None
+                ),
             }
     except Exception as e:
         seeds["numpy_random_state_error"] = str(e)
-    
+
     # Capture environment-based seeds
     seed_envs = [
-        "PYTHONHASHSEED", "TNFR_SPECTRAL_SEED", "TNFR_FFT_SEED",
-        "TNFR_PARTITION_SEED", "NUMPY_SEED", "RANDOM_SEED"
+        "PYTHONHASHSEED",
+        "TNFR_SPECTRAL_SEED",
+        "TNFR_FFT_SEED",
+        "TNFR_PARTITION_SEED",
+        "NUMPY_SEED",
+        "RANDOM_SEED",
     ]
     for env_var in seed_envs:
         value = os.getenv(env_var)
         if value is not None:
             seeds["environment_seeds"][env_var] = value
-    
+
     return seeds
 
 
@@ -286,7 +337,9 @@ def _default_certificate_dir() -> Path:
 
 
 def _partition_filelist_threshold() -> int:
-    threshold = _read_threshold_env(_PARTITION_FILELIST_THRESHOLD_ENV, _DEFAULT_FILELIST_THRESHOLD)
+    threshold = _read_threshold_env(
+        _PARTITION_FILELIST_THRESHOLD_ENV, _DEFAULT_FILELIST_THRESHOLD
+    )
     if threshold is None:
         return _DEFAULT_FILELIST_THRESHOLD
     return max(1, threshold)
@@ -354,7 +407,9 @@ class SpectralAnalysisResult:
     tnfr_certified_factors: List[int] | None = None
     tnfr_verification: Dict[str, Any] | None = None
     tnfr_factor_signature: Dict[str, Any] | None = None
-    tnfr_composite_signature: Dict[str, Any] | None = None  # multi-factor / power structure
+    tnfr_composite_signature: Dict[str, Any] | None = (
+        None  # multi-factor / power structure
+    )
     dual_lever_analysis: Dict[str, Any] | None = None  # §8 capacity vs pressure
     self_optimization_summary: Dict[str, Any] | None = None
     failure_diagnostics: Dict[str, Any] | None = None
@@ -440,7 +495,9 @@ class SpectralPaleyFactorizer:
         self._failure_telemetry_manager: FailureTelemetryManager | None = None
         if failure_telemetry:
             try:
-                self._failure_telemetry_manager = FailureTelemetryManager(failure_telemetry_root)
+                self._failure_telemetry_manager = FailureTelemetryManager(
+                    failure_telemetry_root
+                )
             except Exception:
                 self._failure_telemetry_manager = None
         if TNFRSelfOptimizingEngine is not None and not self._optimizer_disabled:
@@ -501,7 +558,9 @@ class SpectralPaleyFactorizer:
                         capabilities_obj = None
                     else:
                         backend_capabilities = _json_safe(asdict(capabilities_obj))
-                get_dispatcher_info = getattr(self._fft_backend, "get_dispatcher_telemetry", None)
+                get_dispatcher_info = getattr(
+                    self._fft_backend, "get_dispatcher_telemetry", None
+                )
                 if callable(get_dispatcher_info):
                     try:
                         dispatcher_telemetry = _json_safe(get_dispatcher_info())
@@ -516,13 +575,17 @@ class SpectralPaleyFactorizer:
         edge_count = graph.number_of_edges()
         phi_s = _structural_potential(node_count, edge_count)
         phase_gradient = laplacian_gap / max(node_count, 1)
-        phase_curvature = (eigenvalues[-1] if eigenvalues.size else 0.0) / max(node_count, 1)
+        phase_curvature = (eigenvalues[-1] if eigenvalues.size else 0.0) / max(
+            node_count, 1
+        )
         coherence_length = (
             spectral_state.coherence_length
             if spectral_state is not None and spectral_state.coherence_length > 0
             else _coherence_length(laplacian_gap)
         )
-        coherence_score = _coherence_score(phi_s, phase_gradient, phase_curvature, coherence_length)
+        coherence_score = _coherence_score(
+            phi_s, phase_gradient, phase_curvature, coherence_length
+        )
         arithmetic = _compute_arithmetic_telemetry(n)
 
         candidates = _candidate_factors(
@@ -587,18 +650,32 @@ class SpectralPaleyFactorizer:
         # Generate reproducibility metadata for certificates
         partition_hash_chain = _generate_partition_hash_chain(partitioning)
         # Create temporary result for replay metadata generation
-        temp_result = type('TempResult', (), {
-            'n': n, 'modulus': working_modulus, 'node_count': node_count, 'edge_count': edge_count,
-            'fft_backend': backend_name, 'fft_capabilities': backend_capabilities
-        })()
-        replay_metadata = _generate_replay_metadata(temp_result, arithmetic, partitioning)
-        
+        temp_result = type(
+            "TempResult",
+            (),
+            {
+                "n": n,
+                "modulus": working_modulus,
+                "node_count": node_count,
+                "edge_count": edge_count,
+                "fft_backend": backend_name,
+                "fft_capabilities": backend_capabilities,
+            },
+        )()
+        replay_metadata = _generate_replay_metadata(
+            temp_result, arithmetic, partitioning
+        )
+
         # Add deterministic seeds to replay metadata
         if replay_metadata:
             replay_metadata["deterministic_seeds"] = _capture_deterministic_seeds()
-        
-        tnfr_signature = _build_factor_signature(n, tnfr_verification, partition_hash_chain, replay_metadata)
-        tnfr_composite_signature = _build_composite_signature(n, tnfr_verification, partition_hash_chain, replay_metadata)
+
+        tnfr_signature = _build_factor_signature(
+            n, tnfr_verification, partition_hash_chain, replay_metadata
+        )
+        tnfr_composite_signature = _build_composite_signature(
+            n, tnfr_verification, partition_hash_chain, replay_metadata
+        )
 
         if tnfr_certified_factors:
             tnfr_order = sorted({int(value) for value in tnfr_certified_factors})
@@ -618,11 +695,13 @@ class SpectralPaleyFactorizer:
             f"modulus={working_modulus} (auto {'yes' if modulus is None else 'no'})",
             f"nodes={node_count}",
             f"laplacian_gap={laplacian_gap:.4f}",
-
-
             f"ΔNFR={arithmetic.delta_nfr:.3e}",
             "even factor 2 flagged" if auto_even_hint else "",
-            "candidates=" + ",".join(str(c) for c in candidates) if candidates else "no nodal factors",
+            (
+                "candidates=" + ",".join(str(c) for c in candidates)
+                if candidates
+                else "no nodal factors"
+            ),
         ]
         if fallback_used:
             note_bits.append("fallback=trial-division")
@@ -665,17 +744,31 @@ class SpectralPaleyFactorizer:
             optimizer_metadata=_json_safe(sequence_selection.optimizer_metadata),
             fft_backend=backend_name,
             fft_capabilities=backend_capabilities,
-            partition_summary=_json_safe(partitioning.summary()) if partitioning else None,
-            partition_aggregation=_json_safe(partition_aggregation.to_mapping())
-            if partition_aggregation
-            else None,
+            partition_summary=(
+                _json_safe(partitioning.summary()) if partitioning else None
+            ),
+            partition_aggregation=(
+                _json_safe(partition_aggregation.to_mapping())
+                if partition_aggregation
+                else None
+            ),
             dispatcher_telemetry=dispatcher_telemetry,
             operator_strategy_plan=_json_safe(strategy_plan) if strategy_plan else None,
             nodal_decoding=_json_safe(nodal_decoding) if nodal_decoding else None,
-            tnfr_certified_factors=list(tnfr_certified_factors) if tnfr_certified_factors else None,
-            tnfr_verification=_json_safe(tnfr_verification) if tnfr_verification else None,
-            tnfr_factor_signature=_json_safe(tnfr_signature) if tnfr_signature else None,
-            tnfr_composite_signature=_json_safe(tnfr_composite_signature) if tnfr_composite_signature else None,
+            tnfr_certified_factors=(
+                list(tnfr_certified_factors) if tnfr_certified_factors else None
+            ),
+            tnfr_verification=(
+                _json_safe(tnfr_verification) if tnfr_verification else None
+            ),
+            tnfr_factor_signature=(
+                _json_safe(tnfr_signature) if tnfr_signature else None
+            ),
+            tnfr_composite_signature=(
+                _json_safe(tnfr_composite_signature)
+                if tnfr_composite_signature
+                else None
+            ),
             dual_lever_analysis=_json_safe(dual_lever),
         )
 
@@ -692,11 +785,17 @@ class SpectralPaleyFactorizer:
                 result.partition_artifact_dir = str(partition_dir)
             if manifest_artifacts:
                 if manifest_artifacts.manifest_absolute is not None:
-                    result.partition_manifest_path = str(manifest_artifacts.manifest_absolute)
+                    result.partition_manifest_path = str(
+                        manifest_artifacts.manifest_absolute
+                    )
                 if manifest_artifacts.summary_absolute is not None:
-                    result.partition_manifest_index_path = str(manifest_artifacts.summary_absolute)
+                    result.partition_manifest_index_path = str(
+                        manifest_artifacts.summary_absolute
+                    )
                 if manifest_artifacts.archive_absolute is not None:
-                    result.partition_file_archive_path = str(manifest_artifacts.archive_absolute)
+                    result.partition_file_archive_path = str(
+                        manifest_artifacts.archive_absolute
+                    )
 
         if self._failure_telemetry_manager and not tnfr_certified_factors:
             stage, reason = self._classify_failure_context(
@@ -757,7 +856,11 @@ class SpectralPaleyFactorizer:
         config = self._partition_config
         if config and isinstance(config.notes, str) and config.notes.startswith("auto"):
             adaptive_target = max(8, modulus // 4)
-            adaptive_target = min(config.target_size, adaptive_target) if adaptive_target else config.target_size
+            adaptive_target = (
+                min(config.target_size, adaptive_target)
+                if adaptive_target
+                else config.target_size
+            )
             if adaptive_target != config.target_size:
                 config = PartitionPlannerConfig(
                     target_size=adaptive_target,
@@ -849,7 +952,11 @@ class SpectralPaleyFactorizer:
         """Use the TNFR self-optimizing engine to choose operator sequences."""
 
         if TNFRSelfOptimizingEngine is None or self._optimizer is None:
-            reason = "optimizer_disabled" if getattr(self, "_optimizer_disabled", False) else "optimizer_unavailable"
+            reason = (
+                "optimizer_disabled"
+                if getattr(self, "_optimizer_disabled", False)
+                else "optimizer_unavailable"
+            )
             return _default_sequence_selection(reason)
 
         try:
@@ -891,10 +998,14 @@ class SpectralPaleyFactorizer:
         backend_capabilities: Dict[str, Any] | None,
     ) -> Dict[str, Any] | None:
         tracked_glyphs = {"AL", "IL", "RA", "SHA"}
-        glyph_sequence = [glyph for glyph in sequence.glyph_sequence if glyph in tracked_glyphs]
+        glyph_sequence = [
+            glyph for glyph in sequence.glyph_sequence if glyph in tracked_glyphs
+        ]
         if not glyph_sequence:
             return None
-        registry_snapshot = {glyph: StrategyRegistry.get(glyph) for glyph in tracked_glyphs}
+        registry_snapshot = {
+            glyph: StrategyRegistry.get(glyph) for glyph in tracked_glyphs
+        }
         if all(not bucket for bucket in registry_snapshot.values()):
             return None
 
@@ -905,7 +1016,10 @@ class SpectralPaleyFactorizer:
             phase_curvature=phase_curvature,
             coherence_length=coherence_length,
         )
-        plan: Dict[str, Any] = {"sequence": list(sequence.glyph_sequence), "per_partition": {}}
+        plan: Dict[str, Any] = {
+            "sequence": list(sequence.glyph_sequence),
+            "per_partition": {},
+        }
 
         for partition in partitioning.iter_partitions():
             block_entries: List[Dict[str, Any]] = []
@@ -914,9 +1028,12 @@ class SpectralPaleyFactorizer:
             if telemetry is not None:
                 fields = StructuralFields(
                     phi_s=telemetry.phi_s or parent_fields.phi_s,
-                    phase_gradient=telemetry.phase_gradient or parent_fields.phase_gradient,
-                    phase_curvature=telemetry.phase_curvature or parent_fields.phase_curvature,
-                    coherence_length=telemetry.coherence_length or parent_fields.coherence_length,
+                    phase_gradient=telemetry.phase_gradient
+                    or parent_fields.phase_gradient,
+                    phase_curvature=telemetry.phase_curvature
+                    or parent_fields.phase_curvature,
+                    coherence_length=telemetry.coherence_length
+                    or parent_fields.coherence_length,
                 )
 
             for idx, glyph in enumerate(glyph_sequence):
@@ -1129,12 +1246,16 @@ def _coherence_score(
     because the Paley graph has structured (non-random) topology.
     """
 
-    phi_penalty = max(0.0, phi_s - _ARITHMETIC_PHI_S_THRESHOLD) / _ARITHMETIC_PHI_S_THRESHOLD
+    phi_penalty = (
+        max(0.0, phi_s - _ARITHMETIC_PHI_S_THRESHOLD) / _ARITHMETIC_PHI_S_THRESHOLD
+    )
     gradient_penalty = (
-        max(0.0, phase_gradient - _ARITHMETIC_GRAD_PHI_THRESHOLD) / _ARITHMETIC_GRAD_PHI_THRESHOLD
+        max(0.0, phase_gradient - _ARITHMETIC_GRAD_PHI_THRESHOLD)
+        / _ARITHMETIC_GRAD_PHI_THRESHOLD
     )
     curvature_penalty = (
-        max(0.0, phase_curvature - _ARITHMETIC_K_PHI_THRESHOLD) / _ARITHMETIC_K_PHI_THRESHOLD
+        max(0.0, phase_curvature - _ARITHMETIC_K_PHI_THRESHOLD)
+        / _ARITHMETIC_K_PHI_THRESHOLD
     )
 
     if coherence_length == float("inf"):
@@ -1187,9 +1308,9 @@ def _classify_dual_lever(
             "components": {k: round(v, 6) for k, v in arithmetic.components.items()},
         },
         "classification": (
-            "pressure-dominated" if pressure_ratio > 0.6
-            else "capacity-dominated" if capacity_ratio > 0.6
-            else "balanced"
+            "pressure-dominated"
+            if pressure_ratio > 0.6
+            else "capacity-dominated" if capacity_ratio > 0.6 else "balanced"
         ),
     }
 
@@ -1222,7 +1343,9 @@ def _candidate_factors(
     estimates = _estimate_prime_like_values(gap)
     seeds: Set[int] = set()
     # Nodal / spectral driven seeds
-    seeds.update(max(2, int(round(value))) for value in estimates if value and value > 1)
+    seeds.update(
+        max(2, int(round(value))) for value in estimates if value and value > 1
+    )
     seeds.update(max(2, int(round(value))) for value in hints if value)
     # Structural modulus vicinity & sqrt heuristic (still spectral/size derived)
     seeds.update({max(2, modulus - 1), modulus, modulus + 1, max(2, math.isqrt(n))})
@@ -1447,7 +1570,9 @@ def _emit_certificate(
             certificate.partition_file_archive = manifest_artifacts.archive_relative
 
     self_opt_summary = run_partition_self_optimization(
-        manifest_path=(manifest_artifacts.manifest_absolute if manifest_artifacts else None),
+        manifest_path=(
+            manifest_artifacts.manifest_absolute if manifest_artifacts else None
+        ),
         manifest_summary_path=(
             manifest_artifacts.summary_absolute if manifest_artifacts else None
         ),
@@ -1459,7 +1584,9 @@ def _emit_certificate(
         certificate.self_optimization_summary = serialized_summary
         result.self_optimization_summary = serialized_summary
         existing_plan = (
-            result.operator_strategy_plan if isinstance(result.operator_strategy_plan, dict) else None
+            result.operator_strategy_plan
+            if isinstance(result.operator_strategy_plan, dict)
+            else None
         )
         merged_plan = attach_self_opt_sequences(existing_plan, self_opt_summary)
         if merged_plan is not None:
@@ -1573,7 +1700,9 @@ def _write_partition_manifest(
             "modulus": result.modulus,
             "timestamp": timestamp,
             "partition_directory": (
-                relative_directory.as_posix() if relative_directory else str(partition_directory)
+                relative_directory.as_posix()
+                if relative_directory
+                else str(partition_directory)
             ),
             "partition_files": list(partition_files_payload),
             "entries": list(manifest_entries),
@@ -1672,13 +1801,19 @@ def _build_operator_certificate(
 
     # Generate certificate-specific hash chain and replay metadata
     certificate_hash_chain = _generate_partition_hash_chain(partitioning)
-    certificate_replay_metadata = _generate_replay_metadata(result, partitioning=partitioning)
+    certificate_replay_metadata = _generate_replay_metadata(
+        result, partitioning=partitioning
+    )
     if certificate_replay_metadata:
-        certificate_replay_metadata["certificate_seeds"] = _capture_deterministic_seeds()
-    
+        certificate_replay_metadata["certificate_seeds"] = (
+            _capture_deterministic_seeds()
+        )
+
     return OperatorCertificate(
         n=result.n,
-        candidate_factor=result.candidate_factors[0] if result.candidate_factors else None,
+        candidate_factor=(
+            result.candidate_factors[0] if result.candidate_factors else None
+        ),
         operators=operators,
         canonical_operators=canonical_ops,
         telemetry=telemetry,
@@ -1690,18 +1825,30 @@ def _build_operator_certificate(
         strategy_plan_snapshot=strategy_snapshot,
         nodal_decoding_snapshot=nodal_snapshot,
         tnfr_verification_snapshot=tnfr_snapshot,
-        tnfr_factor_signature=_json_safe(result.tnfr_factor_signature)
-        if result.tnfr_factor_signature
-        else None,
-        tnfr_composite_signature=_json_safe(result.tnfr_composite_signature)
-        if result.tnfr_composite_signature
-        else None,
-        certificate_hash_chain=_json_safe(certificate_hash_chain) if certificate_hash_chain else None,
-        replay_metadata=_json_safe(certificate_replay_metadata) if certificate_replay_metadata else None,
+        tnfr_factor_signature=(
+            _json_safe(result.tnfr_factor_signature)
+            if result.tnfr_factor_signature
+            else None
+        ),
+        tnfr_composite_signature=(
+            _json_safe(result.tnfr_composite_signature)
+            if result.tnfr_composite_signature
+            else None
+        ),
+        certificate_hash_chain=(
+            _json_safe(certificate_hash_chain) if certificate_hash_chain else None
+        ),
+        replay_metadata=(
+            _json_safe(certificate_replay_metadata)
+            if certificate_replay_metadata
+            else None
+        ),
     )
 
 
-def _collect_partition_states(partitioning: PartitionedPaleyGraph | None) -> Dict[str, Any] | None:
+def _collect_partition_states(
+    partitioning: PartitionedPaleyGraph | None,
+) -> Dict[str, Any] | None:
     if partitioning is None:
         return None
 
@@ -1715,7 +1862,9 @@ def _collect_partition_states(partitioning: PartitionedPaleyGraph | None) -> Dic
             "coherence_length": telemetry.coherence_length if telemetry else None,
             "notes": telemetry.notes if telemetry else "",
         }
-        nodal_state = partition.metadata.get("nodal_state", {}) if partition.metadata else {}
+        nodal_state = (
+            partition.metadata.get("nodal_state", {}) if partition.metadata else {}
+        )
         block[partition.partition_id] = {
             "before": before,
             "after": nodal_state,
@@ -1739,7 +1888,11 @@ def _verify_factors_tnfr(
     if not partitions:
         return [], None
 
-    entries = nodal_decoding.get("partitions") if isinstance(nodal_decoding, Mapping) else None
+    entries = (
+        nodal_decoding.get("partitions")
+        if isinstance(nodal_decoding, Mapping)
+        else None
+    )
     if not isinstance(entries, Sequence):
         return [], None
 
@@ -1755,12 +1908,16 @@ def _verify_factors_tnfr(
             continue
         partition_id = str(entry.get("partition_id", ""))
         partition = partition_map.get(partition_id)
-        node_count = int(entry.get("node_count") or (len(partition.node_indices) if partition else 0))
+        node_count = int(
+            entry.get("node_count") or (len(partition.node_indices) if partition else 0)
+        )
         dnfr_before = float(entry.get("dnfr_before") or 0.0)
         dnfr_after = float(entry.get("dnfr_after") or 0.0)
         dnfr_gain = 0.0
         if dnfr_before > 0.0:
-            dnfr_gain = max(0.0, (dnfr_before - dnfr_after) / max(abs(dnfr_before), 1e-9))
+            dnfr_gain = max(
+                0.0, (dnfr_before - dnfr_after) / max(abs(dnfr_before), 1e-9)
+            )
         coherence_ratio = float(entry.get("coherence_ratio") or 0.0)
         local_phi = float(entry.get("local_phi_s") or 0.0)
         phi_baseline = parent_phi_s
@@ -1778,9 +1935,15 @@ def _verify_factors_tnfr(
             telemetry.phase_curvature if telemetry else parent_phase_curvature,
             parent_phase_curvature,
         )
-        periodicity = entry.get("periodicity") if isinstance(entry.get("periodicity"), Mapping) else None
+        periodicity = (
+            entry.get("periodicity")
+            if isinstance(entry.get("periodicity"), Mapping)
+            else None
+        )
         periodic_flag = bool(periodicity and periodicity.get("period") == factor)
-        periodic_confidence = float(periodicity.get("confidence")) if periodicity else 0.0
+        periodic_confidence = (
+            float(periodicity.get("confidence")) if periodicity else 0.0
+        )
         criteria_gradient_max = criteria.get("gradient_delta_max", 1.0)
         criteria_curvature_max = criteria.get("curvature_delta_max", 1.0)
         criteria_confidence_min = criteria.get("periodicity_confidence_min", 0.0)
@@ -1797,7 +1960,10 @@ def _verify_factors_tnfr(
             "curvature": curvature_ok,
             "periodic_confidence": periodic_confidence_ok,
         }
-        endorsement = sum(1 for value in flags.values() if value) >= criteria["min_partition_flags"]
+        endorsement = (
+            sum(1 for value in flags.values() if value)
+            >= criteria["min_partition_flags"]
+        )
         factor_block = per_factor.setdefault(
             factor,
             {
@@ -1876,15 +2042,32 @@ def _verify_factors_tnfr(
             "average_dnfr_gain": average_gain,
             "coverage_fraction": coverage_fraction,
             "phi_delta_max": max(phi_samples) if phi_samples else 0.0,
-            "phi_delta_avg": (sum(phi_samples) / len(phi_samples)) if phi_samples else 0.0,
+            "phi_delta_avg": (
+                (sum(phi_samples) / len(phi_samples)) if phi_samples else 0.0
+            ),
             "coherence_span": [
                 min(coherence_samples) if coherence_samples else 0.0,
                 max(coherence_samples) if coherence_samples else 0.0,
             ],
             "stabilized_fraction": block["stabilized_count"] / total if total else 0.0,
-            "gradient_delta_avg": (sum(gradient_samples) / len(gradient_samples)) if gradient_samples else 0.0,
-            "curvature_delta_avg": (sum(curvature_samples) / len(curvature_samples)) if curvature_samples else 0.0,
-            "periodicity_confidence_avg": (sum(periodicity_confidence_samples) / len(periodicity_confidence_samples)) if periodicity_confidence_samples else 0.0,
+            "gradient_delta_avg": (
+                (sum(gradient_samples) / len(gradient_samples))
+                if gradient_samples
+                else 0.0
+            ),
+            "curvature_delta_avg": (
+                (sum(curvature_samples) / len(curvature_samples))
+                if curvature_samples
+                else 0.0
+            ),
+            "periodicity_confidence_avg": (
+                (
+                    sum(periodicity_confidence_samples)
+                    / len(periodicity_confidence_samples)
+                )
+                if periodicity_confidence_samples
+                else 0.0
+            ),
             "partitions": block["partitions"],
             "support_divisible": (n % factor == 0),
             "certified": False,
@@ -1913,7 +2096,8 @@ def _verify_factors_tnfr(
             and average_gain >= criteria["dnfr_gain_min"]
             and stabilized_fraction >= min_stabilized
             and coverage_fraction >= criteria.get("min_coverage_fraction", 0.0)
-            and periodicity_confidence_avg >= criteria.get("periodicity_confidence_min", 0.0)
+            and periodicity_confidence_avg
+            >= criteria.get("periodicity_confidence_min", 0.0)
         )
         if pass_all:
             block_summary["certified"] = True
@@ -1938,7 +2122,7 @@ def _build_factor_signature(
     n: int,
     verification: Mapping[str, Any] | None,
     partition_hash_chain: Dict[str, Any] | None = None,
-    replay_metadata: Dict[str, Any] | None = None
+    replay_metadata: Dict[str, Any] | None = None,
 ) -> Dict[str, Any] | None:
     if not verification:
         return None
@@ -1963,18 +2147,20 @@ def _build_factor_signature(
         "timestamp": verification.get("timestamp"),
         "certificate_version": _CERTIFICATE_VERSION,
     }
-    
+
     # Add partition hash chain for reproducibility
     if partition_hash_chain:
         payload["partition_hash_chain"] = partition_hash_chain
-    
+
     # Add replay metadata for deterministic reproduction
     if replay_metadata:
         payload["replay_metadata"] = replay_metadata
-    
-    blob = json.dumps(_json_safe(payload), sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+    blob = json.dumps(
+        _json_safe(payload), sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
     digest = hashlib.sha256(blob).hexdigest()
-    
+
     return {
         "algorithm": "sha256",
         "hash": digest,
@@ -1986,8 +2172,9 @@ def _build_factor_signature(
         "reproducibility": {
             "hash_chain_present": partition_hash_chain is not None,
             "replay_metadata_present": replay_metadata is not None,
-            "deterministic_seeds_captured": replay_metadata and "numpy_random_state" in replay_metadata
-        }
+            "deterministic_seeds_captured": replay_metadata
+            and "numpy_random_state" in replay_metadata,
+        },
     }
 
 
@@ -1995,7 +2182,7 @@ def _build_composite_signature(
     n: int,
     verification: Mapping[str, Any] | None,
     partition_hash_chain: Dict[str, Any] | None = None,
-    replay_metadata: Dict[str, Any] | None = None
+    replay_metadata: Dict[str, Any] | None = None,
 ) -> Dict[str, Any] | None:
     """Derive composite factorization signature including powers and multi-factor sets.
 
@@ -2003,7 +2190,7 @@ def _build_composite_signature(
     structural composites without divisibility assertion, tagging them as
     'structural_hypothesis'. Exponents estimated by repeated division in assisted
     mode or endorsement multiplicity in pure mode.
-    
+
     Enhanced with partition hash chains and replay metadata for reproducibility.
     """
     if not verification:
@@ -2018,7 +2205,11 @@ def _build_composite_signature(
     if not factors:
         return None
     pure_mode = os.getenv("TNFR_PURE_MODE", "").lower() in {"1", "true", "yes", "on"}
-    per_factor = verification.get("per_factor") if isinstance(verification.get("per_factor"), Mapping) else {}
+    per_factor = (
+        verification.get("per_factor")
+        if isinstance(verification.get("per_factor"), Mapping)
+        else {}
+    )
 
     # Determine exponents.
     exponents: Dict[int, int] = {}
@@ -2026,7 +2217,9 @@ def _build_composite_signature(
     for f in factors:
         if pure_mode:
             # Estimate exponent structurally via stabilized_fraction scaling.
-            block = per_factor.get(str(f), {}) if isinstance(per_factor, Mapping) else {}
+            block = (
+                per_factor.get(str(f), {}) if isinstance(per_factor, Mapping) else {}
+            )
             stabilized_fraction = float(block.get("stabilized_fraction") or 0.0)
             # Heuristic: exponent proportional to stabilized_fraction * coverage.
             coverage_fraction = float(block.get("coverage_fraction") or 0.0)
@@ -2070,21 +2263,24 @@ def _build_composite_signature(
         "mode": "pure" if pure_mode else "assisted",
         "certificate_version": _CERTIFICATE_VERSION,
     }
-    
+
     # Add reproducibility metadata
     if partition_hash_chain:
         payload["partition_hash_chain"] = partition_hash_chain
     if replay_metadata:
         payload["replay_metadata"] = replay_metadata
-    
-    blob = json.dumps(_json_safe(payload), sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+    blob = json.dumps(
+        _json_safe(payload), sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
     digest = hashlib.sha256(blob).hexdigest()
     payload["algorithm"] = "sha256"
     payload["hash"] = digest
     payload["reproducibility"] = {
         "hash_chain_present": partition_hash_chain is not None,
         "replay_metadata_present": replay_metadata is not None,
-        "deterministic_seeds_captured": replay_metadata and "numpy_random_state" in replay_metadata
+        "deterministic_seeds_captured": replay_metadata
+        and "numpy_random_state" in replay_metadata,
     }
     return payload
 
@@ -2246,27 +2442,83 @@ _GLYPH_TO_CANONICAL = {
     "REMESH": "recursivity",
 }
 
-_CANONICAL_TO_GLYPH = {name.lower(): glyph for glyph, name in _GLYPH_TO_CANONICAL.items()}
-_DEFAULT_CANONICAL_SEQUENCE = ["emission", "coupling", "resonance", "coherence", "silence"]
+_CANONICAL_TO_GLYPH = {
+    name.lower(): glyph for glyph, name in _GLYPH_TO_CANONICAL.items()
+}
+_DEFAULT_CANONICAL_SEQUENCE = [
+    "emission",
+    "coupling",
+    "resonance",
+    "coherence",
+    "silence",
+]
 
 _RECOMMENDATION_SEQUENCE_MAP = {
-    "use_spectral_methods": ["emission", "coupling", "resonance", "coherence", "silence"],
-    "use_hierarchical_methods": ["recursivity", "coupling", "self_organization", "coherence", "silence"],
-    "use_chiral_optimization": ["emission", "dissonance", "self_organization", "coherence", "silence"],
+    "use_spectral_methods": [
+        "emission",
+        "coupling",
+        "resonance",
+        "coherence",
+        "silence",
+    ],
+    "use_hierarchical_methods": [
+        "recursivity",
+        "coupling",
+        "self_organization",
+        "coherence",
+        "silence",
+    ],
+    "use_chiral_optimization": [
+        "emission",
+        "dissonance",
+        "self_organization",
+        "coherence",
+        "silence",
+    ],
     "use_phase_transition_handling": ["transition", "mutation", "coherence", "silence"],
-    "enhance_coherence_coupling": ["emission", "coupling", "coherence", "resonance", "silence"],
-    "topological_defect_correction": ["emission", "coupling", "self_organization", "coherence", "silence"],
+    "enhance_coherence_coupling": [
+        "emission",
+        "coupling",
+        "coherence",
+        "resonance",
+        "silence",
+    ],
+    "topological_defect_correction": [
+        "emission",
+        "coupling",
+        "self_organization",
+        "coherence",
+        "silence",
+    ],
     "high_energy_stabilization": ["emission", "coherence", "silence"],
     "low_variance_epi_optimization": ["emission", "coherence", "resonance", "silence"],
     "uniform_vf_optimization": ["emission", "resonance", "coherence", "silence"],
     "high_dnfr_stabilization": ["emission", "dissonance", "coherence", "silence"],
-    "large_graph_optimization": ["recursivity", "coupling", "resonance", "coherence", "silence"],
-    "dense_graph_optimization": ["emission", "resonance", "self_organization", "coherence", "silence"],
+    "large_graph_optimization": [
+        "recursivity",
+        "coupling",
+        "resonance",
+        "coherence",
+        "silence",
+    ],
+    "dense_graph_optimization": [
+        "emission",
+        "resonance",
+        "self_organization",
+        "coherence",
+        "silence",
+    ],
     "sparse_graph_optimization": ["emission", "coupling", "coherence", "silence"],
 }
 
 _RECOMMENDATION_PREFIX_MAP = {
-    "use_compression_": ["emission", "coherence", "contraction", "coherence", "silence"],
+    "use_compression_": [
+        "emission",
+        "coherence",
+        "contraction",
+        "coherence",
+        "silence",
+    ],
     "use_prediction_": ["emission", "reception", "coupling", "resonance", "silence"],
 }
 
@@ -2274,17 +2526,17 @@ _NODAL_OPERATOR_SEQUENCE = ["UM", "RA", "IL", "THOL"]
 
 _TNFR_VERIFICATION_CRITERIA = {
     "min_partition_flags": 4,  # require more structural conditions per partition
-    "dnfr_gain_min": 0.15,     # minimum relative ΔNFR attenuation
-    "coherence_min": 0.72,     # coherence similarity lower bound
-    "coherence_max": 1.38,     # coherence similarity upper bound
-    "phi_delta_max": 0.35,     # structural potential deviation threshold
+    "dnfr_gain_min": 0.15,  # minimum relative ΔNFR attenuation
+    "coherence_min": 0.72,  # coherence similarity lower bound
+    "coherence_max": 1.38,  # coherence similarity upper bound
+    "phi_delta_max": 0.35,  # structural potential deviation threshold
     "gradient_delta_max": 0.40,  # relative phase gradient deviation limit
     "curvature_delta_max": 0.45,  # relative phase curvature deviation limit
     "periodicity_confidence_min": 0.55,  # minimum structural periodicity confidence
-    "required_partition_ratio": 0.5,     # fraction of partition endorsements needed
-    "min_endorsements": 1,               # absolute minimum endorsements
-    "min_stabilized_fraction": 0.30,     # fraction of partitions with stabilized flag
-    "min_coverage_fraction": 0.15,       # coverage across modulus (nodes_accumulated/modulus)
+    "required_partition_ratio": 0.5,  # fraction of partition endorsements needed
+    "min_endorsements": 1,  # absolute minimum endorsements
+    "min_stabilized_fraction": 0.30,  # fraction of partitions with stabilized flag
+    "min_coverage_fraction": 0.15,  # coverage across modulus (nodes_accumulated/modulus)
 }
 
 
@@ -2335,7 +2587,9 @@ def _select_strategy_candidate(
     return best_name, best_estimate
 
 
-def _default_sequence_selection(reason: str, error: str | None = None) -> OperatorSequenceSelection:
+def _default_sequence_selection(
+    reason: str, error: str | None = None
+) -> OperatorSequenceSelection:
     canonical = list(_DEFAULT_CANONICAL_SEQUENCE)
     metadata: Dict[str, Any] = {"reason": reason}
     if error:
@@ -2386,8 +2640,12 @@ def _evaluate_partition_nodal_sequence(
     local_phi_s = _structural_potential(node_count, local_edges)
     telemetry = partition.telemetry
     partition_phi = telemetry.phi_s if telemetry is not None else local_phi_s
-    partition_gradient = telemetry.phase_gradient if telemetry is not None else parent_phase_gradient
-    partition_curvature = telemetry.phase_curvature if telemetry is not None else parent_phase_curvature
+    partition_gradient = (
+        telemetry.phase_gradient if telemetry is not None else parent_phase_gradient
+    )
+    partition_curvature = (
+        telemetry.phase_curvature if telemetry is not None else parent_phase_curvature
+    )
     local_coherence_length = (
         _coherence_length(local_gap)
         if node_count >= 2 and local_gap > 0
@@ -2407,7 +2665,9 @@ def _evaluate_partition_nodal_sequence(
     dnfr_after = _simulate_partition_sequence(dnfr_before, local_phi_s, node_count)
     dnfr_converged = dnfr_after <= max(1e-4, dnfr_before * 0.2)
     coherence_ratio = _coherence_similarity(local_coherence_length, node_count)
-    coherence_matched = math.isfinite(coherence_ratio) and 0.75 <= coherence_ratio <= 1.35
+    coherence_matched = (
+        math.isfinite(coherence_ratio) and 0.75 <= coherence_ratio <= 1.35
+    )
     stabilized = dnfr_converged and coherence_matched
 
     period, periodicity_block = _infer_partition_periodicity(nodes, modulus)
@@ -2478,7 +2738,9 @@ def _partition_delta_nfr(
     return gap_component + phi_delta + 0.5 * (gradient_delta + curvature_delta)
 
 
-def _simulate_partition_sequence(delta_nfr: float, local_phi_s: float, node_count: int) -> float:
+def _simulate_partition_sequence(
+    delta_nfr: float, local_phi_s: float, node_count: int
+) -> float:
     if delta_nfr <= 0:
         return 0.0
     phi_clamped = min(1.0, max(0.0, local_phi_s))
@@ -2486,7 +2748,9 @@ def _simulate_partition_sequence(delta_nfr: float, local_phi_s: float, node_coun
     resonance_gain = 0.2 * phi_clamped
     coherence_gain = 0.25 + 0.15 * phi_clamped
     self_org_gain = 0.1 if node_count > 1 else 0.05
-    attenuation = min(0.95, coupling_gain + resonance_gain + coherence_gain + self_org_gain)
+    attenuation = min(
+        0.95, coupling_gain + resonance_gain + coherence_gain + self_org_gain
+    )
     return max(0.0, delta_nfr * (1.0 - attenuation))
 
 
@@ -2500,7 +2764,9 @@ def _coherence_similarity(local_length: float, node_count: int) -> float:
     return local_length / float(node_count)
 
 
-def _infer_partition_periodicity(nodes: Sequence[int], modulus: int) -> Tuple[int | None, Dict[str, Any]]:
+def _infer_partition_periodicity(
+    nodes: Sequence[int], modulus: int
+) -> Tuple[int | None, Dict[str, Any]]:
     """Infer structural periodicity using nodal offsets and diff statistics.
 
     Pure TNFR mode avoids arithmetic gcd; period derived from dominant spacing
@@ -2516,7 +2782,8 @@ def _infer_partition_periodicity(nodes: Sequence[int], modulus: int) -> Tuple[in
             "origin": node_list[0] if node_list else None,
             "size_hint": len(node_list),
             "confidence": 0.0,
-            "pure_mode": os.getenv("TNFR_PURE_MODE", "").lower() in {"1", "true", "yes", "on"},
+            "pure_mode": os.getenv("TNFR_PURE_MODE", "").lower()
+            in {"1", "true", "yes", "on"},
         }
 
     pure_mode = os.getenv("TNFR_PURE_MODE", "").lower() in {"1", "true", "yes", "on"}
@@ -2589,7 +2856,7 @@ def _infer_partition_periodicity(nodes: Sequence[int], modulus: int) -> Tuple[in
     }
     if arith_support is not None:
         payload["arith_support"] = arith_support
-        payload["arith_support_match"] = (arith_support == dominant_spacing)
+        payload["arith_support_match"] = arith_support == dominant_spacing
     return period, payload
 
 
@@ -2655,7 +2922,9 @@ def _compute_arithmetic_telemetry(n: int) -> ArithmeticTelemetry:
     epi = ArithmeticTNFRFormalism.epi_value(n, terms, _ARITHMETIC_PARAMS)
     nu_f = ArithmeticTNFRFormalism.frequency_value(n, terms, _ARITHMETIC_PARAMS)
     delta_nfr = ArithmeticTNFRFormalism.delta_nfr_value(n, terms, _ARITHMETIC_PARAMS)
-    components = ArithmeticTNFRFormalism.component_breakdown(n, terms, _ARITHMETIC_PARAMS)
+    components = ArithmeticTNFRFormalism.component_breakdown(
+        n, terms, _ARITHMETIC_PARAMS
+    )
     local_coherence = ArithmeticTNFRFormalism.local_coherence(delta_nfr)
 
     return ArithmeticTelemetry(
@@ -2672,7 +2941,9 @@ def _select_fft_backend(max_nodes: int | None) -> FFTBackend:
     preference = os.getenv("TNFR_FFT_BACKEND", "").strip().lower()
     dispatcher = _load_fft_dispatcher()
     threshold = _read_threshold_env("TNFR_FFT_AUTO_THRESHOLD", default=4096)
-    auto_large = max_nodes is not None and threshold is not None and max_nodes >= threshold
+    auto_large = (
+        max_nodes is not None and threshold is not None and max_nodes >= threshold
+    )
 
     if preference == "distributed" or auto_large:
         backend = _instantiate_distributed_backend(dispatcher)
@@ -2682,7 +2953,9 @@ def _select_fft_backend(max_nodes: int | None) -> FFTBackend:
     return TNFRAdvancedFFTEngine()
 
 
-def _instantiate_distributed_backend(dispatcher: Dispatcher | None) -> FFTBackend | None:
+def _instantiate_distributed_backend(
+    dispatcher: Dispatcher | None,
+) -> FFTBackend | None:
     try:
         from tnfr.dynamics.distributed_fft import DistributedFFTEngine
     except Exception:  # pragma: no cover - optional dependency

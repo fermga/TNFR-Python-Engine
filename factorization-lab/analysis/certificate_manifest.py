@@ -1,4 +1,5 @@
 """Certificate telemetry manifest and optional TNFR pattern discovery."""
+
 from __future__ import annotations
 
 import argparse
@@ -23,8 +24,8 @@ _DEFAULT_OUTPUT = _REPO_ROOT / "results" / "analysis" / "certificate_manifest.js
 
 try:  # Factorization helpers (Paley graphs live in the lab package).
     from tnfr_factorization.spectral_paley import (  # type: ignore[attr-defined,import-not-found]  # noqa: E402
-        _build_paley_graph,
         _annotate_graph_for_fft,
+        _build_paley_graph,
     )
 except ModuleNotFoundError as exc:  # pragma: no cover - propagates with actionable hint
     raise RuntimeError(
@@ -36,6 +37,7 @@ try:  # Pattern engine for emergent mathematical structure detection.
         EmergentPattern,
         TNFREmergentPatternEngine,
     )
+
     _PATTERN_ENGINE_ERROR: str | None = None
 except ModuleNotFoundError as exc:  # pragma: no cover - optional dependency
     EmergentPattern = Any  # type: ignore[assignment]
@@ -67,34 +69,32 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--cert-dir",
         default=str(_DEFAULT_CERT_DIR),
-        help="Directory containing certificate_*.json files"
+        help="Directory containing certificate_*.json files",
     )
     parser.add_argument(
         "--output",
         default=str(_DEFAULT_OUTPUT),
-        help="Path for the manifest JSON output"
+        help="Path for the manifest JSON output",
     )
     parser.add_argument(
-        "--patterns",
-        action="store_true",
-        help="Enable emergent pattern discovery pass"
+        "--patterns", action="store_true", help="Enable emergent pattern discovery pass"
     )
     parser.add_argument(
         "--pattern-depth",
         choices=("shallow", "medium", "deep"),
         default="medium",
-        help="Discovery depth for TNFREmergentPatternEngine (default: medium)"
+        help="Discovery depth for TNFREmergentPatternEngine (default: medium)",
     )
     parser.add_argument(
         "--pattern-limit",
         type=int,
         default=128,
-        help="Maximum number of certificates to feed into pattern discovery (default: 128)."
+        help="Maximum number of certificates to feed into pattern discovery (default: 128).",
     )
     parser.add_argument(
         "--detectors",
         default="eigenmode,spectral",
-        help="Comma-separated list of detectors (eigenmode,spectral,entropy,topology)."
+        help="Comma-separated list of detectors (eigenmode,spectral,entropy,topology).",
     )
     return parser.parse_args(argv)
 
@@ -176,14 +176,20 @@ def _manifest_entry(path: Path) -> Dict[str, Any]:
         "coherence_score": _safe_float(telemetry.get("coherence_score")),
         "delta_nfr": _safe_float(telemetry.get("delta_nfr")),
         "local_coherence": _safe_float(telemetry.get("local_coherence")),
-        "arith_factorization_pressure": _safe_float(telemetry.get("arith_factorization_pressure")),
+        "arith_factorization_pressure": _safe_float(
+            telemetry.get("arith_factorization_pressure")
+        ),
         "arith_divisor_pressure": _safe_float(telemetry.get("arith_divisor_pressure")),
         "arith_sigma_pressure": _safe_float(telemetry.get("arith_sigma_pressure")),
-        "modulus": _safe_int(data.get("partitions", {}).get("summary", {}).get("modulus")),
+        "modulus": _safe_int(
+            data.get("partitions", {}).get("summary", {}).get("modulus")
+        ),
         "operator_count": len(data.get("operators", [])),
         **partitions,
     }
-    tnfr_verification = data.get("tnfr_verification_snapshot") or data.get("tnfr_verification")
+    tnfr_verification = data.get("tnfr_verification_snapshot") or data.get(
+        "tnfr_verification"
+    )
     if isinstance(tnfr_verification, Mapping):
         entry["tnfr_verification_passed"] = bool(tnfr_verification.get("passed", True))
         entry["tnfr_verification_hash"] = tnfr_verification.get("verification_hash")
@@ -251,7 +257,11 @@ def discover_patterns(
     detector_warnings: Dict[str, str] = {}
     runnable_detectors: List[str] = []
     for detector_name in detectors:
-        missing = [dep for dep in _DETECTOR_DEPENDENCIES.get(detector_name, ()) if not _module_ready(dep)]
+        missing = [
+            dep
+            for dep in _DETECTOR_DEPENDENCIES.get(detector_name, ())
+            if not _module_ready(dep)
+        ]
         if missing:
             detector_warnings[detector_name] = (
                 f"skipped (missing modules: {', '.join(sorted(missing))})"
@@ -260,7 +270,9 @@ def discover_patterns(
         runnable_detectors.append(detector_name)
 
     if not runnable_detectors:
-        detector_warnings["__global__"] = "no detectors runnable with current engine configuration"
+        detector_warnings["__global__"] = (
+            "no detectors runnable with current engine configuration"
+        )
 
     analyzed = 0
     pattern_results: List[Dict[str, Any]] = []
@@ -283,7 +295,9 @@ def discover_patterns(
             continue
 
         analyzed += 1
-        detector_payload: Dict[str, List[Dict[str, Any]]] = {name: [] for name in detectors}
+        detector_payload: Dict[str, List[Dict[str, Any]]] = {
+            name: [] for name in detectors
+        }
 
         for detector_name in runnable_detectors:
             detector_fn = _DETECTORS[detector_name]

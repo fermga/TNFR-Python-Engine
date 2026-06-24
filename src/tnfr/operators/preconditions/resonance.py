@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 
 __all__ = ["validate_resonance_strict", "diagnose_resonance_readiness"]
 
+
 def validate_resonance_strict(
     G: TNFRGraph,
     node: Any,
@@ -205,6 +206,7 @@ def validate_resonance_strict(
             # Phase validation is optional, don't fail if unavailable
             pass
 
+
 def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
     """Diagnose node readiness for RA (Resonance) operator.
 
@@ -286,7 +288,9 @@ def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
         checks["network_connectivity"] = "passed"
     else:
         checks["network_connectivity"] = "failed"
-        recommendations.append("Apply UM (Coupling) to establish network connections before RA")
+        recommendations.append(
+            "Apply UM (Coupling) to establish network connections before RA"
+        )
 
     # Check 3: Structural frequency
     if vf >= min_vf:
@@ -304,7 +308,8 @@ def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
     else:
         checks["controlled_dissonance"] = "failed"
         recommendations.append(
-            f"Apply IL (Coherence) to reduce |ΔNFR| from {dnfr:.3f} " f"to <= {max_dissonance:.1f}"
+            f"Apply IL (Coherence) to reduce |ΔNFR| from {dnfr:.3f} "
+            f"to <= {max_dissonance:.1f}"
         )
 
     # Check 5: Phase alignment (warning only)

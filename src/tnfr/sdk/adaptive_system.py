@@ -15,13 +15,14 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR
-from ..dynamics.feedback import StructuralFeedbackLoop
 from ..dynamics.adaptive_sequences import AdaptiveSequenceSelector
+from ..dynamics.feedback import StructuralFeedbackLoop
 from ..dynamics.homeostasis import StructuralHomeostasis
 from ..dynamics.learning import AdaptiveLearningSystem
 from ..dynamics.metabolism import StructuralMetabolism
 
 __all__ = ["TNFRAdaptiveSystem"]
+
 
 class TNFRAdaptiveSystem:
     """Complete adaptive system integrating all TNFR dynamic components.
@@ -90,6 +91,7 @@ class TNFRAdaptiveSystem:
     # ΔNFR normalization constant: γ/(π+e) ≈ 0.0993 (notational dynamic threshold)
     # Represents canonical maximum stress before structural reorganization required
     from ..config import defaults_core
+
     STRESS_NORM = defaults_core.GAMMA / (defaults_core.PI + defaults_core.E)
 
     def __init__(

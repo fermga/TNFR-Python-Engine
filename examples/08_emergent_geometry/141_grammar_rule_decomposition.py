@@ -74,17 +74,33 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np
 
 from tnfr.operators.grammar_types import (
-    GENERATORS, CLOSURES, STABILIZERS, DESTABILIZERS, TRANSFORMERS,
+    CLOSURES,
+    DESTABILIZERS,
+    GENERATORS,
+    STABILIZERS,
+    TRANSFORMERS,
 )
 
-ALPHA = ["emission", "reception", "coherence", "dissonance", "coupling",
-         "resonance", "silence", "expansion", "contraction",
-         "self_organization", "mutation", "transition", "recursivity"]
+ALPHA = [
+    "emission",
+    "reception",
+    "coherence",
+    "dissonance",
+    "coupling",
+    "resonance",
+    "silence",
+    "expansion",
+    "contraction",
+    "self_organization",
+    "mutation",
+    "transition",
+    "recursivity",
+]
 START = ("START",)
 
 
@@ -99,20 +115,24 @@ def tag(x):
 
 def make_automaton(u1a=True, u1b=True, u2=True, u4b=True):
     """Build the grammar automaton with the given canonical rules enabled."""
+
     def transition(state, x):
         if state == START:
             if u1a and x not in GENERATORS:
                 return None
-            return ((tag(x),), x in DESTABILIZERS, x in STABILIZERS,
-                    x in CLOSURES)
+            return ((tag(x),), x in DESTABILIZERS, x in STABILIZERS, x in CLOSURES)
         win, has_d, has_s, _lc = state
         if u4b and x in TRANSFORMERS:
             if "D" not in win:
                 return None
             if x == "mutation" and "I" not in win:
                 return None
-        return ((win + (tag(x),))[-3:], has_d or x in DESTABILIZERS,
-                has_s or x in STABILIZERS, x in CLOSURES)
+        return (
+            (win + (tag(x),))[-3:],
+            has_d or x in DESTABILIZERS,
+            has_s or x in STABILIZERS,
+            x in CLOSURES,
+        )
 
     def is_accept(state):
         if len(state) != 4:
@@ -184,15 +204,11 @@ def experiment_1_ablation_table():
     print("Each U1-U6 rule toggled on the canonical automaton (ex 140).")
     print()
     configs = [
-        ("none (full alphabet)", dict(u1a=False, u1b=False, u2=False,
-                                      u4b=False)),
-        ("U1a only (start gen)", dict(u1a=True, u1b=False, u2=False,
-                                      u4b=False)),
-        ("U1b only (end closure)", dict(u1a=False, u1b=True, u2=False,
-                                        u4b=False)),
+        ("none (full alphabet)", dict(u1a=False, u1b=False, u2=False, u4b=False)),
+        ("U1a only (start gen)", dict(u1a=True, u1b=False, u2=False, u4b=False)),
+        ("U1b only (end closure)", dict(u1a=False, u1b=True, u2=False, u4b=False)),
         ("U2 only (no debt)", dict(u1a=False, u1b=False, u2=True, u4b=False)),
-        ("U4b only (xform ctx)", dict(u1a=False, u1b=False, u2=False,
-                                      u4b=True)),
+        ("U4b only (xform ctx)", dict(u1a=False, u1b=False, u2=False, u4b=True)),
         ("ALL (U1a+U1b+U2+U4b)", dict(u1a=True, u1b=True, u2=True, u4b=True)),
     ]
     print(f"  {'rules enabled':>24} {'N(4)':>9} {'lambda':>10} {'log2 lam':>9}")
@@ -200,8 +216,9 @@ def experiment_1_ablation_table():
         st, ed, acc = make_automaton(**cfg)
         N4 = count_n(st, ed, acc, 4)
         L = capacity(st, ed, acc)
-        print(f"  {label:>24} {N4:>9} {L:>10.4f} "
-              f"{np.log2(L) if L > 0 else 0:>9.4f}")
+        print(
+            f"  {label:>24} {N4:>9} {L:>10.4f} " f"{np.log2(L) if L > 0 else 0:>9.4f}"
+        )
     print()
     print("  -> every rule cuts N(4), but only U4b changes lambda: U1a/U1b/U2")
     print("     leave lambda = 13 (the full alphabet), U4b drops it to 11.56.")
@@ -218,8 +235,9 @@ def experiment_2_only_u4b_costs_capacity():
     lam_no_u4b = capacity(*make_automaton(True, True, True, False))
     print(f"  U4b alone       lambda = {lam_u4b:.10f}")
     print(f"  ALL rules       lambda = {lam_all:.10f}")
-    print(f"  |difference|           = {abs(lam_u4b - lam_all):.2e}  "
-          f"(exactly equal)")
+    print(
+        f"  |difference|           = {abs(lam_u4b - lam_all):.2e}  " f"(exactly equal)"
+    )
     print(f"  U1a+U1b+U2 (no U4b)    = {lam_no_u4b:.10f}  (= alphabet size 13)")
     print()
     print("  -> the bifurcation-context rule U4b ALONE fixes the language's")
@@ -244,8 +262,10 @@ def experiment_3_boundary_vs_transition():
         n4 = count_n(*make_automaton(**cfg), 4)
         L = capacity(*make_automaton(**cfg))
         kind = "TRANSITION (cuts lambda)" if L < 12.99 else "BOUNDARY (prefactor)"
-        print(f"  {label:>18}: N(4) {base} -> {n4} "
-              f"(x{base / n4:.2f}), lambda={L:.4f}  [{kind}]")
+        print(
+            f"  {label:>18}: N(4) {base} -> {n4} "
+            f"(x{base / n4:.2f}), lambda={L:.4f}  [{kind}]"
+        )
     print()
     print("  -> U1a/U1b/U2 are BOUNDARY conditions: they constrain how a finite")
     print("     sequence starts, ends, and settles its convergence debt — cutting")

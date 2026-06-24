@@ -11,13 +11,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..mathematics.unified_numerical import np
 from ..constants.canonical import PHI  # φ ≈ 1.618 (golden ratio)
+from ..mathematics.unified_numerical import np
 from .grammar_types import StructuralPotentialConfinementError
 
 # ============================================================================
 # U6: Structural Potential Confinement (CANONICAL as of 2025-11-11)
 # ============================================================================
+
 
 def validate_structural_potential_confinement(
     G: Any,
@@ -149,4 +150,3 @@ def validate_structural_potential_confinement(
                 sequence=None,  # Sequence not available in this context
             )
         return False, delta_phi_s, msg
-

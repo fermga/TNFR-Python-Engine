@@ -25,11 +25,11 @@ import sys
 from tnfr.riemann import (
     build_prime_ladder_hamiltonian,
     gaussian_test_function,
+    verify_weil_explicit_formula,
     weil_archimedean_integral,
     weil_pole_side,
     weil_prime_side_from_hamiltonian,
     weil_zero_side,
-    verify_weil_explicit_formula,
 )
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -66,9 +66,7 @@ def main() -> None:
     log_pi = -test.g_zero() * math.log(math.pi)
     arch = weil_archimedean_integral(test)
     prime = weil_prime_side_from_hamiltonian(bundle, test)
-    zero_total, n_used = weil_zero_side(
-        test, n_zeros=100, max_zeros=300
-    )
+    zero_total, n_used = weil_zero_side(test, n_zeros=100, max_zeros=300)
     rhs = pole + log_pi + arch + prime
     print(f"  h(i/2)+h(-i/2)         = {pole:+.10f}")
     print(f"  -g(0) log pi           = {log_pi:+.10f}")

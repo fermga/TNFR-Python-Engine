@@ -49,11 +49,7 @@ import networkx as nx
 from ..mathematics.unified_numerical import np
 from ..physics.conservation import compute_energy_functional
 from .prime_ladder_hamiltonian import PrimeLadderHamiltonian
-from .weil_explicit_formula import (
-    gaussian_test_function,
-    weil_zero_side,
-)
-
+from .weil_explicit_formula import gaussian_test_function, weil_zero_side
 
 # ---------------------------------------------------------------------------
 # Gauge family — canonical and probe variants

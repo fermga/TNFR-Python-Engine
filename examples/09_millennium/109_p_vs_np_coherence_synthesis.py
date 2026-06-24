@@ -70,14 +70,14 @@ References
 - AGENTS.md section "Regime Correspondences from Nodal Dynamics"
 """
 
+import itertools
 import os
 import sys
-import itertools
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 
 def max_cut_bruteforce(G):
@@ -121,8 +121,10 @@ def experiment_trapping():
     print("Verification (evaluate a cut)   = O(|E|), polynomial -- cheap.")
     print("Synthesis (relaxation -> global) = measured hit rate below.")
     print()
-    print(f"  {'n':>3} {'|E|':>4} {'global':>6} {'hit_rate':>9} "
-          f"{'restarts~1/hr':>13} {'best/all':>9}")
+    print(
+        f"  {'n':>3} {'|E|':>4} {'global':>6} {'hit_rate':>9} "
+        f"{'restarts~1/hr':>13} {'best/all':>9}"
+    )
 
     R = 200
     rows = []
@@ -144,10 +146,12 @@ def experiment_trapping():
             hit_rates.append(hits / R)
             reached_global = reached_global and (best >= gc)
         hr = float(np.mean(hit_rates))
-        restarts = (1.0 / hr) if hr > 0 else float('inf')
+        restarts = (1.0 / hr) if hr > 0 else float("inf")
         rows.append((n, hr))
-        print(f"  {n:>3} {edges_last:>4} {'yes' if reached_global else 'NO':>6} "
-              f"{hr:>9.3f} {restarts:>13.2f} {'reached' if reached_global else 'MISS':>9}")
+        print(
+            f"  {n:>3} {edges_last:>4} {'yes' if reached_global else 'NO':>6} "
+            f"{hr:>9.3f} {restarts:>13.2f} {'reached' if reached_global else 'MISS':>9}"
+        )
 
     ns = np.array([r[0] for r in rows], float)
     hrs = np.array([r[1] for r in rows], float)

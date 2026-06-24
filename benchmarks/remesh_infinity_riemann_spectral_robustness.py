@@ -97,9 +97,9 @@ from remesh_infinity_riemann_spectral import (  # noqa: E402
     spearman_rank,
     vec,
 )
+
 from tnfr.alias import set_attr  # noqa: E402
 from tnfr.constants.aliases import ALIAS_EPI  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -128,6 +128,7 @@ PERM_SEED: int = 20260526
 # Pipeline helpers
 # ---------------------------------------------------------------------------
 
+
 def populate_history_white_noise(G, n_steps: int, rng: np.random.Generator) -> None:
     """Populate _epi_hist with zero-mean unit-variance white noise.
 
@@ -150,6 +151,7 @@ def populate_history_white_noise(G, n_steps: int, rng: np.random.Generator) -> N
 def populate_history_canonical(G, n_steps: int) -> None:
     """Re-implements R∞-1a-spectral populate_history (canonical osc field)."""
     from remesh_infinity_riemann_spectral import synthetic_epi_snapshot
+
     hist: deque = deque(maxlen=n_steps + 10)
     for step in range(n_steps):
         hist.append(synthetic_epi_snapshot(G, step * DT))
@@ -160,8 +162,13 @@ def populate_history_canonical(G, n_steps: int) -> None:
 
 
 def compute_correlations(
-    fixed_point: dict, nodes: list, gamma: np.ndarray,
-    gamma_tilde: np.ndarray, abs_r: np.ndarray, M: int, n_nodes: int,
+    fixed_point: dict,
+    nodes: list,
+    gamma: np.ndarray,
+    gamma_tilde: np.ndarray,
+    abs_r: np.ndarray,
+    M: int,
+    n_nodes: int,
 ) -> dict[str, float]:
     """Return r_α, r_β, r_γ, r_δ for a given fixed point."""
     fp_vec = vec(fixed_point, nodes)
@@ -171,7 +178,7 @@ def compute_correlations(
     s_demean = s_ordered - s_ordered.mean()
     spectrum = np.fft.rfft(s_demean)
     power = (np.abs(spectrum) ** 2).astype(float)
-    P = power[1:M + 1]
+    P = power[1 : M + 1]
     return {
         "r_alpha": pearson(P, abs_r[:M]),
         "r_beta": pearson(np.sort(P)[::-1], np.sort(abs_r[:M])[::-1]),
@@ -181,9 +188,15 @@ def compute_correlations(
 
 
 def run_canonical_pipeline(
-    alpha: float, tau_local: int, tau_global: int, n_iter: int,
-    init_func, gamma: np.ndarray, gamma_tilde: np.ndarray,
-    abs_r: np.ndarray, M: int,
+    alpha: float,
+    tau_local: int,
+    tau_global: int,
+    n_iter: int,
+    init_func,
+    gamma: np.ndarray,
+    gamma_tilde: np.ndarray,
+    abs_r: np.ndarray,
+    M: int,
 ) -> dict[str, Any]:
     """Build fresh graph, populate via init_func, iterate REMESH, correlate."""
     G = build_prime_ladder_graph(n_primes=N_PRIMES, max_power=MAX_POWER)
@@ -226,6 +239,7 @@ def run_canonical_pipeline(
 # Main protocol
 # ---------------------------------------------------------------------------
 
+
 def run() -> dict[str, Any]:
     # Shared Riemann reference (identical to R∞-1a-spectral)
     G0 = build_prime_ladder_graph(n_primes=N_PRIMES, max_power=MAX_POWER)
@@ -240,29 +254,52 @@ def run() -> dict[str, Any]:
     # ---- Baseline (re-run R∞-1a-spectral inline for fair comparison) ----
     print("[1/3] Baseline (canonical α=0.5, τ_l=4, τ_g=16) ...", flush=True)
     baseline_result = run_canonical_pipeline(
-        ALPHA_CANON, TAU_LOCAL_CANON, TAU_GLOBAL_CANON, N_ITER,
-        populate_history_canonical, gamma, gamma_tilde, abs_r, M,
+        ALPHA_CANON,
+        TAU_LOCAL_CANON,
+        TAU_GLOBAL_CANON,
+        N_ITER,
+        populate_history_canonical,
+        gamma,
+        gamma_tilde,
+        abs_r,
+        M,
     )
-    print(f"      r_β={baseline_result['r_beta']:+.4f}  "
-          f"r_α={baseline_result['r_alpha']:+.4f}  "
-          f"r_γ={baseline_result['r_gamma']:+.4f}  "
-          f"r_δ={baseline_result['r_delta']:+.4f}", flush=True)
+    print(
+        f"      r_β={baseline_result['r_beta']:+.4f}  "
+        f"r_α={baseline_result['r_alpha']:+.4f}  "
+        f"r_γ={baseline_result['r_gamma']:+.4f}  "
+        f"r_δ={baseline_result['r_delta']:+.4f}",
+        flush=True,
+    )
 
     # ---- C1 white-noise null ----
     print(f"[2/3] C1 white-noise null ({N_NULL_SEEDS} seeds) ...", flush=True)
     c1_runs: list[dict] = []
     for seed in range(N_NULL_SEEDS):
         rng = np.random.default_rng(20260526 + seed)
-        def init(G, n): return populate_history_white_noise(G, n, rng)
+
+        def init(G, n):
+            return populate_history_white_noise(G, n, rng)
+
         res = run_canonical_pipeline(
-            ALPHA_CANON, TAU_LOCAL_CANON, TAU_GLOBAL_CANON, N_ITER,
-            init, gamma, gamma_tilde, abs_r, M,
+            ALPHA_CANON,
+            TAU_LOCAL_CANON,
+            TAU_GLOBAL_CANON,
+            N_ITER,
+            init,
+            gamma,
+            gamma_tilde,
+            abs_r,
+            M,
         )
         res["seed"] = seed
         c1_runs.append(res)
-        print(f"      seed={seed:>2}  r_β={res['r_beta']:+.4f}  "
-              f"r_α={res['r_alpha']:+.4f}  r_γ={res['r_gamma']:+.4f}  "
-              f"r_δ={res['r_delta']:+.4f}", flush=True)
+        print(
+            f"      seed={seed:>2}  r_β={res['r_beta']:+.4f}  "
+            f"r_α={res['r_alpha']:+.4f}  r_γ={res['r_gamma']:+.4f}  "
+            f"r_δ={res['r_delta']:+.4f}",
+            flush=True,
+        )
 
     def _stats(key: str) -> dict[str, float]:
         vals = np.asarray([r[key] for r in c1_runs])
@@ -285,21 +322,32 @@ def run() -> dict[str, Any]:
     }
 
     # ---- C2 sensitivity sweep ----
-    print(f"[3/3] C2 sensitivity sweep ({len(ALPHA_GRID)}×{len(TAU_LOCAL_GRID)}) ...",
-          flush=True)
+    print(
+        f"[3/3] C2 sensitivity sweep ({len(ALPHA_GRID)}×{len(TAU_LOCAL_GRID)}) ...",
+        flush=True,
+    )
     c2_runs: list[dict] = []
     for alpha in ALPHA_GRID:
         for tau_l in TAU_LOCAL_GRID:
             res = run_canonical_pipeline(
-                alpha, tau_l, TAU_GLOBAL_CANON, N_ITER,
-                populate_history_canonical, gamma, gamma_tilde, abs_r, M,
+                alpha,
+                tau_l,
+                TAU_GLOBAL_CANON,
+                N_ITER,
+                populate_history_canonical,
+                gamma,
+                gamma_tilde,
+                abs_r,
+                M,
             )
             res["alpha"] = alpha
             res["tau_local"] = tau_l
             c2_runs.append(res)
-            print(f"      α={alpha} τ_l={tau_l}  r_β={res['r_beta']:+.4f}  "
-                  f"r_α={res['r_alpha']:+.4f}  r_γ={res['r_gamma']:+.4f}",
-                  flush=True)
+            print(
+                f"      α={alpha} τ_l={tau_l}  r_β={res['r_beta']:+.4f}  "
+                f"r_α={res['r_alpha']:+.4f}  r_γ={res['r_gamma']:+.4f}",
+                flush=True,
+            )
 
     c2_beta_vals = np.asarray([r["r_beta"] for r in c2_runs])
     c2_beta_min = float(c2_beta_vals.min())
@@ -320,7 +368,7 @@ def run() -> dict[str, Any]:
     order_c = np.argsort(nu_f_c)
     s_ord = fp_vec_c[order_c]
     s_dem = s_ord - s_ord.mean()
-    P_c = (np.abs(np.fft.rfft(s_dem)) ** 2)[1:M + 1]
+    P_c = (np.abs(np.fft.rfft(s_dem)) ** 2)[1 : M + 1]
 
     rng_perm = np.random.default_rng(PERM_SEED)
     null_alpha = np.empty(N_PERM)
@@ -366,8 +414,7 @@ def run() -> dict[str, Any]:
     refute_any = refute_a or refute_b or refute_c
 
     strengthen_a = (null_beta_absmean < 0.2) and (
-        obs_beta < c1_stats["r_beta"]["q025"]
-        or obs_beta > c1_stats["r_beta"]["q975"]
+        obs_beta < c1_stats["r_beta"]["q025"] or obs_beta > c1_stats["r_beta"]["q975"]
     )
     strengthen_b = c2_beta_min > 0.5
     strengthen_c = (p_alpha_one < 0.05) or (p_gamma_one < 0.05)
@@ -442,23 +489,33 @@ def print_report(s: dict[str, Any]) -> None:
     print("R∞-1a-spectral-robustness — F4 gate")
     print("=" * 78)
     b = s["baseline_canonical"]
-    print(f"BASELINE (canonical):  r_α={b['r_alpha']:+.4f}  "
-          f"r_β={b['r_beta']:+.4f}  r_γ={b['r_gamma']:+.4f}  "
-          f"r_δ={b['r_delta']:+.4f}")
+    print(
+        f"BASELINE (canonical):  r_α={b['r_alpha']:+.4f}  "
+        f"r_β={b['r_beta']:+.4f}  r_γ={b['r_gamma']:+.4f}  "
+        f"r_δ={b['r_delta']:+.4f}"
+    )
     print()
     c1 = s["C1_white_noise_null"]
     rb = c1["stats"]["r_beta"]
     ra = c1["stats"]["r_alpha"]
     rg = c1["stats"]["r_gamma"]
     print(f"C1 white-noise null  N={c1['n_seeds']}:")
-    print(f"  r_β   mean={rb['mean']:+.4f}  |mean|={rb['abs_mean']:.4f}  "
-          f"std={rb['std']:.4f}  q025={rb['q025']:+.4f}  q975={rb['q975']:+.4f}")
-    print(f"  r_α   mean={ra['mean']:+.4f}  |mean|={ra['abs_mean']:.4f}  "
-          f"std={ra['std']:.4f}")
-    print(f"  r_γ   mean={rg['mean']:+.4f}  |mean|={rg['abs_mean']:.4f}  "
-          f"std={rg['std']:.4f}")
-    print(f"  baseline r_β={c1['observed_r_beta_baseline']:+.4f}  "
-          f"inside null 95%? {c1['observed_inside_null_95pct_r_beta']}")
+    print(
+        f"  r_β   mean={rb['mean']:+.4f}  |mean|={rb['abs_mean']:.4f}  "
+        f"std={rb['std']:.4f}  q025={rb['q025']:+.4f}  q975={rb['q975']:+.4f}"
+    )
+    print(
+        f"  r_α   mean={ra['mean']:+.4f}  |mean|={ra['abs_mean']:.4f}  "
+        f"std={ra['std']:.4f}"
+    )
+    print(
+        f"  r_γ   mean={rg['mean']:+.4f}  |mean|={rg['abs_mean']:.4f}  "
+        f"std={rg['std']:.4f}"
+    )
+    print(
+        f"  baseline r_β={c1['observed_r_beta_baseline']:+.4f}  "
+        f"inside null 95%? {c1['observed_inside_null_95pct_r_beta']}"
+    )
     print()
     c2 = s["C2_sensitivity_sweep"]
     print(f"C2 sensitivity sweep ({len(c2['runs'])} cells):")
@@ -467,20 +524,30 @@ def print_report(s: dict[str, Any]) -> None:
     print()
     c3 = s["C3_permutation_null"]
     print(f"C3 permutation null  N_perm={c3['n_perm']}:")
-    print(f"  observed r_α={c3['observed_r_alpha']:+.4f}  "
-          f"null mean={c3['null_alpha_mean']:+.4f}  std={c3['null_alpha_std']:.4f}")
-    print(f"    p_one_sided={c3['p_alpha_one_sided']:.4f}  "
-          f"p_two_sided={c3['p_alpha_two_sided']:.4f}")
-    print(f"  observed r_γ={c3['observed_r_gamma']:+.4f}  "
-          f"null mean={c3['null_gamma_mean']:+.4f}  std={c3['null_gamma_std']:.4f}")
-    print(f"    p_one_sided={c3['p_gamma_one_sided']:.4f}  "
-          f"p_two_sided={c3['p_gamma_two_sided']:.4f}")
+    print(
+        f"  observed r_α={c3['observed_r_alpha']:+.4f}  "
+        f"null mean={c3['null_alpha_mean']:+.4f}  std={c3['null_alpha_std']:.4f}"
+    )
+    print(
+        f"    p_one_sided={c3['p_alpha_one_sided']:.4f}  "
+        f"p_two_sided={c3['p_alpha_two_sided']:.4f}"
+    )
+    print(
+        f"  observed r_γ={c3['observed_r_gamma']:+.4f}  "
+        f"null mean={c3['null_gamma_mean']:+.4f}  std={c3['null_gamma_std']:.4f}"
+    )
+    print(
+        f"    p_one_sided={c3['p_gamma_one_sided']:.4f}  "
+        f"p_two_sided={c3['p_gamma_two_sided']:.4f}"
+    )
     print()
     f4 = s["F4_falsification"]
     print(f"F4 VERDICT: {f4['verdict']}")
     print(f"  refute_C1_kernel_artefact:        {f4['refute_C1_kernel_artefact']}")
     print(f"  refute_C2_parameter_fragile:      {f4['refute_C2_parameter_fragile']}")
-    print(f"  refute_C3_permutation_nonsignif:  {f4['refute_C3_permutation_nonsignificant']}")
+    print(
+        f"  refute_C3_permutation_nonsignif:  {f4['refute_C3_permutation_nonsignificant']}"
+    )
     print(f"  strengthen_C1:                    {f4['strengthen_C1']}")
     print(f"  strengthen_C2:                    {f4['strengthen_C2']}")
     print(f"  strengthen_C3:                    {f4['strengthen_C3']}")

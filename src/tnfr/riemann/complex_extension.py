@@ -41,11 +41,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-
 from ..mathematics.unified_numerical import np
-from .operator import (
-    build_tridiagonal_h_tnfr_complex,
-)
+from .operator import build_tridiagonal_h_tnfr_complex
 
 # ---------------------------------------------------------------------------
 # First 20 known Riemann zeta zeros (imaginary parts), high precision.
@@ -108,6 +105,7 @@ __all__ = [
 # Data Structures
 # ============================================================================
 
+
 @dataclass(frozen=True)
 class ComplexEigenResult:
     r"""Complex eigenvalue result for H(s) at a single s value.
@@ -136,6 +134,7 @@ class ComplexEigenResult:
     min_abs_eigenvalue: float
     condition_number: float
     non_hermiticity: float
+
 
 @dataclass(frozen=True)
 class CriticalLineScan:
@@ -171,6 +170,7 @@ class CriticalLineScan:
     non_hermiticity: np.ndarray
     local_minima_t: np.ndarray
     local_minima_val: np.ndarray
+
 
 @dataclass(frozen=True)
 class PseudoSpectrumResult:
@@ -208,6 +208,7 @@ class PseudoSpectrumResult:
     sigma_min_grid: np.ndarray
     eigenvalues: np.ndarray
 
+
 @dataclass(frozen=True)
 class ResolventAnalysis:
     r"""Resolvent norm along the critical line at a fixed probe z.
@@ -239,6 +240,7 @@ class ResolventAnalysis:
     peak_t_values: np.ndarray
     peak_norms: np.ndarray
 
+
 @dataclass
 class ComplexPlaneAnalysis:
     r"""Integrated P4 complex-s plane analysis.
@@ -268,20 +270,21 @@ class ComplexPlaneAnalysis:
 
     k: int = 0
     critical_line: CriticalLineScan | None = None
-    riemann_comparison: list[tuple[float, float, float]] = field(
-        default_factory=list
-    )
+    riemann_comparison: list[tuple[float, float, float]] = field(default_factory=list)
     non_hermiticity_at_half: float = 0.0
     mean_non_hermiticity: float = 0.0
     zero_crossing_count: int = 0
     summary: str = ""
 
+
 # ============================================================================
 # Core Spectral Computation (Non-Hermitian)
 # ============================================================================
 
+
 def _build_dense_from_tridiag(
-    d: np.ndarray, e: np.ndarray,
+    d: np.ndarray,
+    e: np.ndarray,
 ) -> np.ndarray:
     """Reconstruct dense matrix from tridiagonal components."""
     k = len(d)
@@ -289,6 +292,7 @@ def _build_dense_from_tridiag(
     if k >= 2:
         H += np.diag(e, 1) + np.diag(e, -1)
     return H
+
 
 def compute_complex_eigenspectrum(
     k: int,
@@ -316,13 +320,16 @@ def compute_complex_eigenspectrum(
         Complex eigenvalues sorted by real part, shape (k,).
     """
     d, e, _ = build_tridiagonal_h_tnfr_complex(
-        k, s, weight_by_log_gap=weight_by_log_gap,
+        k,
+        s,
+        weight_by_log_gap=weight_by_log_gap,
     )
     H = _build_dense_from_tridiag(d, e)
     eigenvalues = np.linalg.eig(H)[0]
     # Sort by real part, then imaginary part for determinism
     idx = np.lexsort((eigenvalues.imag, eigenvalues.real))
     return eigenvalues[idx]
+
 
 def compute_complex_eigensystem(
     k: int,
@@ -342,12 +349,15 @@ def compute_complex_eigensystem(
         to eigenvalues[j].  Both may be complex.
     """
     d, e, _ = build_tridiagonal_h_tnfr_complex(
-        k, s, weight_by_log_gap=weight_by_log_gap,
+        k,
+        s,
+        weight_by_log_gap=weight_by_log_gap,
     )
     H = _build_dense_from_tridiag(d, e)
     eigenvalues, eigenvectors = np.linalg.eig(H)
     idx = np.lexsort((eigenvalues.imag, eigenvalues.real))
     return eigenvalues[idx], eigenvectors[:, idx]
+
 
 def analyze_non_hermiticity(
     k: int,
@@ -367,7 +377,9 @@ def analyze_non_hermiticity(
     (relevant for pseudo-spectral analysis).
     """
     d, e, _ = build_tridiagonal_h_tnfr_complex(
-        k, s, weight_by_log_gap=weight_by_log_gap,
+        k,
+        s,
+        weight_by_log_gap=weight_by_log_gap,
     )
     H = _build_dense_from_tridiag(d, e)
 
@@ -393,9 +405,11 @@ def analyze_non_hermiticity(
         non_hermiticity=nh,
     )
 
+
 # ============================================================================
 # Critical Line Scan: s = 1/2 + it
 # ============================================================================
+
 
 def scan_critical_line(
     k: int,
@@ -436,7 +450,9 @@ def scan_critical_line(
 
     # Precompute Laplacian and potential vector (structure is constant)
     d_L, e, log_p = build_tridiagonal_h_tnfr_complex(
-        k, 0.5 + 0j, weight_by_log_gap=weight_by_log_gap,
+        k,
+        0.5 + 0j,
+        weight_by_log_gap=weight_by_log_gap,
     )
     H_laplacian = _build_dense_from_tridiag(d_L, e)
     V1 = np.diag(log_p)  # V_1 = diag(log p_i)
@@ -452,9 +468,7 @@ def scan_critical_line(
         # Non-Hermiticity
         norm_H = np.linalg.norm(H, "fro")
         if norm_H > 0:
-            nh_values[idx] = float(
-                np.linalg.norm(H - H.conj().T, "fro") / norm_H
-            )
+            nh_values[idx] = float(np.linalg.norm(H - H.conj().T, "fro") / norm_H)
 
     # Find local minima in min_abs
     local_min_indices = _find_local_minima(min_abs)
@@ -470,6 +484,7 @@ def scan_critical_line(
         local_minima_t=local_minima_t,
         local_minima_val=local_minima_val,
     )
+
 
 def find_eigenvalue_zero_crossings(
     k: int,
@@ -506,7 +521,9 @@ def find_eigenvalue_zero_crossings(
     list of (t_zero, min_abs_eigenvalue) tuples, sorted by t.
     """
     scan = scan_critical_line(
-        k, t_max, n_coarse,
+        k,
+        t_max,
+        n_coarse,
         weight_by_log_gap=weight_by_log_gap,
     )
 
@@ -520,23 +537,29 @@ def find_eigenvalue_zero_crossings(
         t_lo = max(0.0, t_candidate - 2 * dt)
         t_hi = t_candidate + 2 * dt
         refined = scan_critical_line(
-            k, t_hi, n_refine,
+            k,
+            t_hi,
+            n_refine,
             t_min=t_lo,
             weight_by_log_gap=weight_by_log_gap,
         )
         best_idx = int(np.argmin(refined.min_abs_eigenvalue))
-        results.append((
-            float(refined.t_values[best_idx]),
-            float(refined.min_abs_eigenvalue[best_idx]),
-        ))
+        results.append(
+            (
+                float(refined.t_values[best_idx]),
+                float(refined.min_abs_eigenvalue[best_idx]),
+            )
+        )
 
     # Deduplicate close results
     results.sort(key=lambda x: x[0])
     return _deduplicate_crossings(results, min_gap=1.0)
 
+
 # ============================================================================
 # Pseudo-Spectrum
 # ============================================================================
+
 
 def compute_pseudospectrum(
     k: int,
@@ -574,7 +597,9 @@ def compute_pseudospectrum(
         Use log-gap edge weights.
     """
     d, e, _ = build_tridiagonal_h_tnfr_complex(
-        k, s, weight_by_log_gap=weight_by_log_gap,
+        k,
+        s,
+        weight_by_log_gap=weight_by_log_gap,
     )
     H = _build_dense_from_tridiag(d, e)
     eigenvalues = np.linalg.eig(H)[0]
@@ -604,6 +629,7 @@ def compute_pseudospectrum(
         eigenvalues=eigenvalues,
     )
 
+
 def compute_resolvent_norm(
     k: int,
     s: complex,
@@ -616,7 +642,9 @@ def compute_resolvent_norm(
     Returns infinity if z is an eigenvalue of H(s).
     """
     d, e, _ = build_tridiagonal_h_tnfr_complex(
-        k, s, weight_by_log_gap=weight_by_log_gap,
+        k,
+        s,
+        weight_by_log_gap=weight_by_log_gap,
     )
     H = _build_dense_from_tridiag(d, e)
     M = z * np.eye(k, dtype=complex) - H
@@ -624,9 +652,11 @@ def compute_resolvent_norm(
     smin = float(sv[-1])
     return 1.0 / smin if smin > 1e-15 else float("inf")
 
+
 # ============================================================================
 # Resolvent Analysis Along Critical Line
 # ============================================================================
+
 
 def analyze_resolvent_along_critical_line(
     k: int,
@@ -658,7 +688,9 @@ def analyze_resolvent_along_critical_line(
     resolvent_norms = np.zeros(n_points)
 
     d_L, e, log_p = build_tridiagonal_h_tnfr_complex(
-        k, 0.5 + 0j, weight_by_log_gap=weight_by_log_gap,
+        k,
+        0.5 + 0j,
+        weight_by_log_gap=weight_by_log_gap,
     )
     H_laplacian = _build_dense_from_tridiag(d_L, e)
     V1 = np.diag(log_p)
@@ -685,9 +717,11 @@ def analyze_resolvent_along_critical_line(
         peak_norms=peak_vals,
     )
 
+
 # ============================================================================
 # Comparison with Known Riemann Zeros
 # ============================================================================
+
 
 def compare_with_riemann_zeros(
     k: int,
@@ -724,7 +758,10 @@ def compare_with_riemann_zeros(
     list of (t_candidate, nearest_riemann_zero, distance) tuples.
     """
     scan = scan_critical_line(
-        k, t_max, n_points, weight_by_log_gap=weight_by_log_gap,
+        k,
+        t_max,
+        n_points,
+        weight_by_log_gap=weight_by_log_gap,
     )
 
     n_zeros = min(n_zeros, len(KNOWN_RIEMANN_ZEROS))
@@ -737,17 +774,21 @@ def compare_with_riemann_zeros(
         # Find nearest known zero
         distances = np.abs(zeros - t_min)
         nearest_idx = int(np.argmin(distances))
-        results.append((
-            float(t_min),
-            float(zeros[nearest_idx]),
-            float(distances[nearest_idx]),
-        ))
+        results.append(
+            (
+                float(t_min),
+                float(zeros[nearest_idx]),
+                float(distances[nearest_idx]),
+            )
+        )
 
     return results
+
 
 # ============================================================================
 # Integrated Analysis
 # ============================================================================
+
 
 def run_complex_plane_analysis(
     k: int,
@@ -779,7 +820,10 @@ def run_complex_plane_analysis(
     """
     # Critical line scan
     crit = scan_critical_line(
-        k, t_max, n_points, weight_by_log_gap=weight_by_log_gap,
+        k,
+        t_max,
+        n_points,
+        weight_by_log_gap=weight_by_log_gap,
     )
 
     # Non-Hermiticity at s = 1/2 (should be ~0)
@@ -788,7 +832,9 @@ def run_complex_plane_analysis(
 
     # Compare with Riemann zeros
     comparison = compare_with_riemann_zeros(
-        k, t_max, n_points,
+        k,
+        t_max,
+        n_points,
         n_zeros=n_zeros,
         weight_by_log_gap=weight_by_log_gap,
     )
@@ -821,9 +867,11 @@ def run_complex_plane_analysis(
         summary="\n".join(lines),
     )
 
+
 # ============================================================================
 # Private Helpers
 # ============================================================================
+
 
 def _find_local_minima(arr: np.ndarray) -> np.ndarray:
     """Find indices of local minima in a 1D array."""
@@ -835,6 +883,7 @@ def _find_local_minima(arr: np.ndarray) -> np.ndarray:
             indices.append(i)
     return np.array(indices, dtype=int)
 
+
 def _find_local_maxima(arr: np.ndarray) -> np.ndarray:
     """Find indices of local maxima in a 1D array."""
     if len(arr) < 3:
@@ -844,6 +893,7 @@ def _find_local_maxima(arr: np.ndarray) -> np.ndarray:
         if arr[i] > arr[i - 1] and arr[i] > arr[i + 1]:
             indices.append(i)
     return np.array(indices, dtype=int)
+
 
 def _deduplicate_crossings(
     crossings: list[tuple[float, float]],

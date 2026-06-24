@@ -30,9 +30,7 @@ import sys
 import numpy as np
 
 from tnfr.riemann.paley_gap_coercivity import sweep_paley_gap
-from tnfr.riemann.prime_ladder_hamiltonian import (
-    build_prime_ladder_hamiltonian,
-)
+from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_hamiltonian
 
 
 def _ensure_utf8_stdout() -> None:
@@ -56,8 +54,10 @@ def main() -> int:
     print("=" * 78)
     print(f"n_primes        = {n_primes}")
     print(f"max_power       = {max_power}")
-    print(f"sigma grid      = [{sigmas[0]:.3f}, {sigmas[-1]:.3f}],"
-          f" {sigmas.size} points")
+    print(
+        f"sigma grid      = [{sigmas[0]:.3f}, {sigmas[-1]:.3f}],"
+        f" {sigmas.size} points"
+    )
     print(f"n_max_classical = {n_max_classical}")
     print()
 
@@ -77,8 +77,7 @@ def main() -> int:
     print("[A] Decoupled bundle (coupling = 0)")
     print("    " + sweep_decoupled.summary())
     print()
-    print(f"    {'sigma':>8s}  {'g_P12':>14s}  "
-          f"{'g_P14':>14s}  {'g_cross':>14s}")
+    print(f"    {'sigma':>8s}  {'g_P12':>14s}  " f"{'g_P14':>14s}  {'g_cross':>14s}")
     for s, g12, g14, gc in zip(
         sweep_decoupled.sigmas,
         sweep_decoupled.g_p12,
@@ -105,8 +104,7 @@ def main() -> int:
     print(f"[B] Weakly coupled bundle (coupling = {coupling_b:.1e})")
     print("    " + sweep_coupled.summary())
     print()
-    print(f"    {'sigma':>8s}  {'g_P12':>14s}  "
-          f"{'g_P14':>14s}  {'g_cross':>14s}")
+    print(f"    {'sigma':>8s}  {'g_P12':>14s}  " f"{'g_P14':>14s}  {'g_cross':>14s}")
     for s, g12, g14, gc in zip(
         sweep_coupled.sigmas,
         sweep_coupled.g_p12,

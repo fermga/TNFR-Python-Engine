@@ -9,10 +9,11 @@ agnostic about execution details.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Mapping, Protocol, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Mapping, Protocol
 
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard
     from .advanced_fft_arithmetic import FFTArithmeticResult, SpectralState
+
 
 @dataclass(frozen=True)
 class FFTBackendCapabilities:
@@ -24,6 +25,7 @@ class FFTBackendCapabilities:
     supports_distributed: bool = False
     extra: Mapping[str, Any] | None = None
 
+
 class FFTBackend(Protocol):
     """Protocol implemented by FFT engines used across TNFR."""
 
@@ -32,7 +34,9 @@ class FFTBackend(Protocol):
     def get_capabilities(self) -> FFTBackendCapabilities:
         """Return static capability metadata used for planning."""
 
-    def get_spectral_state(self, G: Any, force_recompute: bool = False) -> "SpectralState":
+    def get_spectral_state(
+        self, G: Any, force_recompute: bool = False
+    ) -> "SpectralState":
         """Return the spectral decomposition of ``G``."""
 
     def spectral_convolution(

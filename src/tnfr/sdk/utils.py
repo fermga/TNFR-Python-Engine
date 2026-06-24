@@ -6,11 +6,12 @@ analysis, and visualization support.
 
 from __future__ import annotations
 
-from typing import Any
 import json
 from pathlib import Path
+from typing import Any
 
-from ..mathematics.unified_numerical import np, NUMPY_AVAILABLE as HAS_NUMPY
+from ..mathematics.unified_numerical import NUMPY_AVAILABLE as HAS_NUMPY
+from ..mathematics.unified_numerical import np
 
 __all__ = [
     "compare_networks",
@@ -18,6 +19,7 @@ __all__ = [
     "export_to_json",
     "import_from_json",
 ]
+
 
 def compare_networks(
     networks: dict[str, Any],
@@ -57,7 +59,9 @@ def compare_networks(
 
         if "avg_si" in metrics:
             si_values = list(results.sense_indices.values())
-            comparison[name]["avg_si"] = sum(si_values) / len(si_values) if si_values else 0.0
+            comparison[name]["avg_si"] = (
+                sum(si_values) / len(si_values) if si_values else 0.0
+            )
 
         if "avg_delta_nfr" in metrics:
             dnfr_values = list(results.delta_nfr.values())
@@ -69,6 +73,7 @@ def compare_networks(
             comparison[name]["node_count"] = len(results.sense_indices)
 
     return comparison
+
 
 def compute_network_statistics(results: Any) -> dict[str, float]:
     """Compute extended statistics for a network.
@@ -131,6 +136,7 @@ def compute_network_statistics(results: Any) -> dict[str, float]:
 
     return stats
 
+
 def export_to_json(
     network_data: Any,
     filepath: Path | str,
@@ -169,6 +175,7 @@ def export_to_json(
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=indent, ensure_ascii=False)
 
+
 def import_from_json(filepath: Path | str) -> dict[str, Any]:
     """Import network data from JSON file.
 
@@ -194,6 +201,7 @@ def import_from_json(filepath: Path | str) -> dict[str, Any]:
         data = json.load(f)
 
     return data
+
 
 def format_comparison_table(
     comparison: dict[str, dict[str, float]],
@@ -242,6 +250,7 @@ def format_comparison_table(
         lines.append(f"{network_name:<20} {values}")
 
     return "\n".join(lines)
+
 
 def suggest_sequence_for_goal(goal: str) -> tuple[str, str]:
     """Suggest operator sequence for a specific goal.
@@ -322,4 +331,6 @@ def suggest_sequence_for_goal(goal: str) -> tuple[str, str]:
         ),
     }
 
-    return suggestions.get(goal_lower, ("basic_activation", "Default: basic activation sequence"))
+    return suggestions.get(
+        goal_lower, ("basic_activation", "Default: basic activation sequence")
+    )

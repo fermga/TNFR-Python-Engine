@@ -12,6 +12,7 @@ from ..compat.dataclass import dataclass
 
 SubjectT = TypeVar("SubjectT")
 
+
 @dataclass(slots=True)
 class ValidationOutcome(Generic[SubjectT]):
     """Result emitted by all canonical TNFR validators."""
@@ -28,15 +29,19 @@ class ValidationOutcome(Generic[SubjectT]):
     artifacts: Mapping[str, Any] | None = None
     """Optional artefacts (e.g. clamped nodes, normalised vectors)."""
 
+
 @runtime_checkable
 class Validator(Protocol[SubjectT]):
     """Contract implemented by runtime and spectral validators."""
 
-    def validate(self, subject: SubjectT, /, **kwargs: Any) -> ValidationOutcome[SubjectT]:
+    def validate(
+        self, subject: SubjectT, /, **kwargs: Any
+    ) -> ValidationOutcome[SubjectT]:
         """Validate ``subject`` returning a :class:`ValidationOutcome`."""
 
     def report(self, outcome: "ValidationOutcome[SubjectT]") -> str:
         """Produce a concise textual explanation for ``outcome``."""
+
 
 __all__ = (
     "SubjectT",

@@ -34,15 +34,13 @@ from tnfr.riemann.dirichlet_l import (
     real_character_mod_4,
     real_character_mod_5,
 )
+from tnfr.riemann.twisted_hilbert_polya import fetch_chi_zero_imaginary_parts
 from tnfr.riemann.twisted_structural_zero_density import (
     compute_twisted_structural_zero_density_certificate,
     derive_twisted_smooth_zero_position,
     twisted_smooth_zero_count,
     twisted_smooth_zero_density,
     twisted_theta,
-)
-from tnfr.riemann.twisted_hilbert_polya import (
-    fetch_chi_zero_imaginary_parts,
 )
 from tnfr.riemann.twisted_weil_explicit_formula import character_parity
 
@@ -81,8 +79,7 @@ def main() -> int:
     # Section 1: archimedean ingredients
     # ------------------------------------------------------------------
     print("-" * 78)
-    print("Section 1: archimedean ingredients (theta_chi, N-bar_chi, "
-          "N-bar'_chi)")
+    print("Section 1: archimedean ingredients (theta_chi, N-bar_chi, " "N-bar'_chi)")
     print("-" * 78)
     sample_T = [10.0, 25.0, 50.0, 100.0]
     for chi in characters:
@@ -99,8 +96,7 @@ def main() -> int:
             count = twisted_smooth_zero_count(T, chi)
             density = twisted_smooth_zero_density(T, chi)
             print(
-                f"  {T:>8.2f} | {theta:>12.6f} | "
-                f"{count:>10.6f} | {density:>14.6f}"
+                f"  {T:>8.2f} | {theta:>12.6f} | " f"{count:>10.6f} | {density:>14.6f}"
             )
 
     # ------------------------------------------------------------------
@@ -108,8 +104,10 @@ def main() -> int:
     # ------------------------------------------------------------------
     print()
     print("-" * 78)
-    print("Section 2: tilde gamma_n^(chi) (Newton on N-bar_chi) "
-          "vs gamma_n^(chi) (Hardy-Z)")
+    print(
+        "Section 2: tilde gamma_n^(chi) (Newton on N-bar_chi) "
+        "vs gamma_n^(chi) (Hardy-Z)"
+    )
     print("-" * 78)
     for chi in characters:
         print()
@@ -123,10 +121,7 @@ def main() -> int:
             tilde = derive_twisted_smooth_zero_position(n, chi)
             actual = float(actual_full[n - 1])
             r = actual - tilde
-            print(
-                f"  {n:>3} | {tilde:>14.6f} | "
-                f"{actual:>10.6f} | {r:>+14.6f}"
-            )
+            print(f"  {n:>3} | {tilde:>14.6f} | " f"{actual:>10.6f} | {r:>+14.6f}")
 
     # ------------------------------------------------------------------
     # Section 3 + 4: full P46 certificate per character

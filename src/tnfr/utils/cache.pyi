@@ -160,8 +160,12 @@ class InstrumentedLRUCache(MutableMapping[K, V], Generic[K, V]):
         *,
         manager: CacheManager | None = ...,
         metrics_key: str | None = ...,
-        telemetry_callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None = ...,
-        eviction_callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None = ...,
+        telemetry_callbacks: (
+            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
+        ) = ...,
+        eviction_callbacks: (
+            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
+        ) = ...,
         locks: MutableMapping[K, Any] | None = ...,
         getsizeof: Callable[[V], int] | None = ...,
         count_overwrite_hit: bool = ...,
@@ -198,8 +202,12 @@ class ManagedLRUCache(LRUCache[K, V], Generic[K, V]):
         *,
         manager: CacheManager | None = ...,
         metrics_key: str | None = ...,
-        eviction_callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None = ...,
-        telemetry_callbacks: Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None = ...,
+        eviction_callbacks: (
+            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
+        ) = ...,
+        telemetry_callbacks: (
+            Iterable[Callable[[K, V], None]] | Callable[[K, V], None] | None
+        ) = ...,
         locks: MutableMapping[K, Any] | None = ...,
     ) -> None: ...
     def popitem(self) -> tuple[K, V]: ...
@@ -441,7 +449,9 @@ class ScopedCounterCache(Generic[K]):
         manager: CacheManager | None = ...,
         default_max_entries: int = ...,
     ) -> None: ...
-    def configure(self, *, force: bool = ..., max_entries: int | None = ...) -> None: ...
+    def configure(
+        self, *, force: bool = ..., max_entries: int | None = ...
+    ) -> None: ...
     def clear(self) -> None: ...
     def bump(self, key: K) -> int: ...
     def __len__(self) -> int: ...

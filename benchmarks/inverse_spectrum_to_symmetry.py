@@ -76,13 +76,14 @@ from dataclasses import dataclass
 import networkx as nx
 import numpy as np
 
-
 # ---------------------------------------------------------------------------
 # Emergent integers: multiplicities of the structural Laplacian L = D - A
 # ---------------------------------------------------------------------------
 
 
-def laplacian_multiplicities(G: nx.Graph, *, tol: float = 1e-6) -> list[tuple[float, int]]:
+def laplacian_multiplicities(
+    G: nx.Graph, *, tol: float = 1e-6
+) -> list[tuple[float, int]]:
     """Return (eigenvalue, multiplicity) pairs of L = D - A, ascending."""
     G = nx.Graph(G)
     A = nx.to_numpy_array(G, nodelist=sorted(G.nodes()))
@@ -104,10 +105,10 @@ def laplacian_multiplicities(G: nx.Graph, *, tol: float = 1e-6) -> list[tuple[fl
 # Rotation point groups relevant to the polyhedral manifolds, with the full
 # multiset of irreducible-representation dimensions (independent ground truth).
 IRREP_DIMS: dict[str, list[int]] = {
-    "C/D (cyclic/dihedral)": [1, 1, 2],      # dims that occur: {1,2}
-    "T (tetrahedral)": [1, 1, 1, 3],          # |T| = 12
-    "O (octahedral)": [1, 1, 2, 3, 3],        # |O| = 24
-    "I (icosahedral)": [1, 3, 3, 4, 5],       # |I| = 60
+    "C/D (cyclic/dihedral)": [1, 1, 2],  # dims that occur: {1,2}
+    "T (tetrahedral)": [1, 1, 1, 3],  # |T| = 12
+    "O (octahedral)": [1, 1, 2, 3, 3],  # |O| = 24
+    "I (icosahedral)": [1, 3, 3, 4, 5],  # |I| = 60
 }
 
 
@@ -121,11 +122,11 @@ def infer_group(observed_mults: set[int]) -> str:
     """
     nz = {m for m in observed_mults if m > 1}
     if 5 in nz or 4 in nz:
-        return "I (icosahedral)"          # only icosahedral has dims 4 or 5
+        return "I (icosahedral)"  # only icosahedral has dims 4 or 5
     if 3 in nz and 2 in nz:
-        return "O (octahedral)"           # 2 and 3 together -> octahedral
+        return "O (octahedral)"  # 2 and 3 together -> octahedral
     if 3 in nz:
-        return "T (tetrahedral)"          # 3 without 2 -> tetrahedral
+        return "T (tetrahedral)"  # 3 without 2 -> tetrahedral
     if 2 in nz:
         return "C/D (cyclic/dihedral)"
     return "C/D (cyclic/dihedral)"
@@ -140,8 +141,8 @@ def infer_group(observed_mults: set[int]) -> str:
 class Prediction:
     inferred_group: str
     observed: list[int]
-    predicted_existing: set[int]   # irrep dims the group HAS but we have not seen
-    forbidden_above: int           # no multiplicity may exceed this
+    predicted_existing: set[int]  # irrep dims the group HAS but we have not seen
+    forbidden_above: int  # no multiplicity may exceed this
 
 
 def make_prediction(observed_seq: list[int]) -> Prediction:
@@ -221,8 +222,8 @@ def eigenspace_irreducibility(
 
     out: list[tuple[float, int, float]] = []
     for grp in groups:
-        U = evecs[:, grp]               # n x d, orthonormal columns
-        P = U @ U.T                     # projector onto the eigenspace
+        U = evecs[:, grp]  # n x d, orthonormal columns
+        P = U @ U.T  # projector onto the eigenspace
         s = sum(float(np.trace(P @ M)) ** 2 for M in mats)
         out.append((float(evals[grp[0]]), len(grp), s / order))
     return out
@@ -245,13 +246,17 @@ def headline_icosahedral_prediction() -> bool:
     _rule("HEADLINE — predict an unmeasured degeneracy (the hidden '4')")
 
     ico = nx.icosahedral_graph()
-    observed = low_modes(ico, 3)              # reveal only [1, 3, 5]
+    observed = low_modes(ico, 3)  # reveal only [1, 3, 5]
     pred = make_prediction(observed)
     print(f"  observed (icosahedron, low modes only): {observed}")
     print(f"  inferred group (from the 5)           : {pred.inferred_group}")
-    print(f"  group-theory irrep dims               : "
-          f"{sorted(allowed_dims(pred.inferred_group))}")
-    print(f"  PREDICTION: a degeneracy in {sorted(pred.predicted_existing)} must exist in")
+    print(
+        f"  group-theory irrep dims               : "
+        f"{sorted(allowed_dims(pred.inferred_group))}"
+    )
+    print(
+        f"  PREDICTION: a degeneracy in {sorted(pred.predicted_existing)} must exist in"
+    )
     print("              this symmetry family, though unseen in the input.")
     print(f"  PREDICTION: no multiplicity will ever exceed {pred.forbidden_above}.")
 
@@ -266,11 +271,15 @@ def headline_icosahedral_prediction() -> bool:
 
     # Also confirm the icosahedron itself genuinely hides the 4.
     ico_full = full_modes(ico)
-    print(f"  icosahedron full spectrum             : {ico_full}  "
-          f"(note: never shows a 4)")
+    print(
+        f"  icosahedron full spectrum             : {ico_full}  "
+        f"(note: never shows a 4)"
+    )
 
     ok = four_appears and no_excess and (4 not in set(ico_full))
-    print(f"\n  VERDICT: {'PASS — predicted an integer absent from the input' if ok else 'FAIL'}")
+    print(
+        f"\n  VERDICT: {'PASS — predicted an integer absent from the input' if ok else 'FAIL'}"
+    )
     return ok
 
 
@@ -285,7 +294,11 @@ def control_irreducibility() -> bool:
 
     print("  Icosahedron (group I — HAS a 5D irrep):")
     for _ev, mult, norm in eigenspace_irreducibility(nx.icosahedral_graph()):
-        kind = "irreducible (protected)" if abs(norm - 1) < 0.3 else f"reducible (~{round(norm)} irreps)"
+        kind = (
+            "irreducible (protected)"
+            if abs(norm - 1) < 0.3
+            else f"reducible (~{round(norm)} irreps)"
+        )
         flag = "   <- the 5 is a PROTECTED irrep" if mult == 5 else ""
         print(f"    mult={mult}  <chi,chi>={norm:4.1f}  {kind}{flag}")
         if mult == 5:
@@ -311,7 +324,9 @@ def control_irreducibility() -> bool:
     print(f"    icosahedron {ico_m}, dodecahedron {dod_m}: no 2-fold = {no2}")
     ok = ok and no2
 
-    print(f"\n  VERDICT: {'PASS — same integer 5 is irreducible in I, reducible (2+3) in O; exclusion holds' if ok else 'FAIL'}")
+    print(
+        f"\n  VERDICT: {'PASS — same integer 5 is irreducible in I, reducible (2+3) in O; exclusion holds' if ok else 'FAIL'}"
+    )
     return ok
 
 
@@ -322,20 +337,24 @@ def within_manifold_prediction() -> bool:
 
     dodeca = nx.dodecahedral_graph()
     full = full_modes(dodeca)
-    observed = full[:3]                       # reveal [1, 3, 5]; hide [4, 4, 3]
+    observed = full[:3]  # reveal [1, 3, 5]; hide [4, 4, 3]
     hidden = full[3:]
     pred = make_prediction(observed)
     print(f"  dodecahedron — revealed low modes     : {observed}")
     print(f"  dodecahedron — hidden higher modes    : {'?' * len(hidden)} (concealed)")
     print(f"  inferred group (from the 5)           : {pred.inferred_group}")
-    print(f"  PREDICTION: hidden modes must include a degeneracy in "
-          f"{sorted(pred.predicted_existing)}.")
+    print(
+        f"  PREDICTION: hidden modes must include a degeneracy in "
+        f"{sorted(pred.predicted_existing)}."
+    )
 
     revealed_hidden = hidden
     hit = bool(pred.predicted_existing & set(revealed_hidden))
     print(f"\n  reveal hidden modes                   : {revealed_hidden}")
     print(f"  predicted integer found in hidden set : {hit}")
-    print(f"\n  VERDICT: {'PASS — hidden degeneracy predicted before revealing' if hit else 'FAIL'}")
+    print(
+        f"\n  VERDICT: {'PASS — hidden degeneracy predicted before revealing' if hit else 'FAIL'}"
+    )
     return hit
 
 

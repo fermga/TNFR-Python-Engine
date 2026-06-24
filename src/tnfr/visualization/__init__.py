@@ -37,20 +37,17 @@ Examples
 """
 
 # Always available (no dependencies)
-from .hierarchy import (
-    print_bifurcation_hierarchy,
-    get_hierarchy_info,
-)
+from .hierarchy import get_hierarchy_info, print_bifurcation_hierarchy
 
 _import_error: ImportError | None = None
 
 try:
-    from .sequence_plotter import SequenceVisualizer
     from .cascade_viz import (
+        plot_cascade_metrics_summary,
         plot_cascade_propagation,
         plot_cascade_timeline,
-        plot_cascade_metrics_summary,
     )
+    from .sequence_plotter import SequenceVisualizer
 
     __all__ = [
         "SequenceVisualizer",
@@ -79,7 +76,8 @@ except ImportError as _import_err:
             ) from _import_error
         else:
             raise ImportError(
-                "Visualization functions are not available. " "Install with: pip install tnfr[viz]"
+                "Visualization functions are not available. "
+                "Install with: pip install tnfr[viz]"
             ) from _import_error
 
     SequenceVisualizer = _missing_viz_dependency  # type: ignore[assignment]

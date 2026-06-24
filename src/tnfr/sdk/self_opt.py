@@ -12,6 +12,7 @@ __all__ = [
     "run_batch_certificate_optimization",
 ]
 
+
 def run_partition_self_optimization(
     manifest_path: Path | str,
     *,
@@ -37,7 +38,9 @@ def run_partition_self_optimization(
     """
 
     manifest_path_obj = Path(manifest_path).resolve()
-    summary_path_obj = Path(manifest_summary_path).resolve() if manifest_summary_path else None
+    summary_path_obj = (
+        Path(manifest_summary_path).resolve() if manifest_summary_path else None
+    )
     payload_root = Path(output_root).resolve() if output_root else None
     effective_base_name = base_name or manifest_path_obj.stem
 
@@ -45,8 +48,12 @@ def run_partition_self_optimization(
         raise FileNotFoundError(f"Manifest not found: {manifest_path_obj}")
 
     try:
-        from tnfr_factorization.self_opt_support import run_partition_self_optimization as _runner
-    except ImportError as exc:  # pragma: no cover - optional dependency in minimal installs
+        from tnfr_factorization.self_opt_support import (
+            run_partition_self_optimization as _runner,
+        )
+    except (
+        ImportError
+    ) as exc:  # pragma: no cover - optional dependency in minimal installs
         raise RuntimeError(
             "Self-optimization helpers require the 'tnfr_factorization' package to be available"
         ) from exc
@@ -58,6 +65,7 @@ def run_partition_self_optimization(
         operation_type=operation_type,
         output_root=payload_root,
     )
+
 
 def run_pattern_discovery_optimization(
     manifest_path: Path | str,
@@ -100,6 +108,7 @@ def run_pattern_discovery_optimization(
         output_root=output_root,
     )
 
+
 def run_fractal_partition_optimization(
     manifest_path: Path | str,
     *,
@@ -140,6 +149,7 @@ def run_fractal_partition_optimization(
         operation_type="fractal_partition",
         output_root=output_root,
     )
+
 
 def run_batch_certificate_optimization(
     manifest_path: Path | str,

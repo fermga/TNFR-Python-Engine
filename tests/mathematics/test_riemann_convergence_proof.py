@@ -23,34 +23,27 @@ import math
 import numpy as np
 import pytest
 
-from tnfr.riemann.convergence_proof import (
-    # Data structures
-    ProofStep,
+from tnfr.riemann.convergence_proof import (  # Data structures; Dusart bounds; Proof steps; Explicit bound; C(k) asymptotics; Integration
+    CKAsymptoticFit,
+    CurvatureGrowthResult,
     DusartVerification,
     ExplicitBoundResult,
-    CurvatureGrowthResult,
-    CKAsymptoticFit,
     FormalConvergenceProof,
-    # Dusart bounds
+    ProofStep,
+    compute_explicit_bound_constant,
     dusart_lower_bound,
     dusart_upper_bound,
-    verify_dusart_bounds,
-    # Proof steps
-    prove_bilinear_decomposition,
-    prove_telescoping,
-    prove_sum_lower_bound,
-    prove_convergence_rate,
-    prove_explicit_bound,
-    prove_curvature_divergence,
-    # Explicit bound
-    scan_effective_constant,
-    compute_explicit_bound_constant,
-    # C(k) asymptotics
     fit_ck_asymptotics,
-    # Integration
+    prove_bilinear_decomposition,
+    prove_convergence_rate,
+    prove_curvature_divergence,
+    prove_explicit_bound,
+    prove_sum_lower_bound,
+    prove_telescoping,
     run_formal_convergence_proof,
+    scan_effective_constant,
+    verify_dusart_bounds,
 )
-
 
 # ============================================================================
 # 1. Dusart Prime Bounds

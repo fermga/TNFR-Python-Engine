@@ -304,9 +304,7 @@ def sweep_twisted_alpha(
     for i, name in enumerate(gauge_names):
         gauge_fn = gauge_map[name]
         for j, sigma in enumerate(sigma_array):
-            G = build_twisted_test_state_with_gauge(
-                bundle, float(sigma), gauge_fn
-            )
+            G = build_twisted_test_state_with_gauge(bundle, float(sigma), gauge_fn)
             energy_table[i, j] = float(compute_energy_functional(G))
 
     # ----- Alpha table (handle zero-energy edge cases gracefully) -----

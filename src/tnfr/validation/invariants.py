@@ -53,6 +53,7 @@ __all__ = [
     "Invariant10_DomainNeutrality",
 ]
 
+
 class InvariantSeverity(Enum):
     """Severity levels for invariant violations."""
 
@@ -60,6 +61,7 @@ class InvariantSeverity(Enum):
     WARNING = "warning"  # Minor inconsistency
     ERROR = "error"  # Violation that prevents execution
     CRITICAL = "critical"  # Data corruption
+
 
 @dataclass
 class InvariantViolation:
@@ -72,6 +74,7 @@ class InvariantViolation:
     expected_value: Any | None = None
     actual_value: Any | None = None
     suggestion: str | None = None
+
 
 class TNFRInvariant(ABC):
     """Base class for TNFR invariant validators."""
@@ -89,6 +92,7 @@ class TNFRInvariant(ABC):
     @abstractmethod
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
         """Validates invariant in the graph, returns found violations."""
+
 
 class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
     """Invariant 1: EPI changes only through structural operators."""
@@ -123,7 +127,9 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                     if isinstance(epi_value, complex):
                         epi_value = abs(epi_value)
                     current_epi = (
-                        float(epi_value) if isinstance(epi_value, (int, float, complex)) else 0.0
+                        float(epi_value)
+                        if isinstance(epi_value, (int, float, complex))
+                        else 0.0
                     )
                 else:
                     # Skip validation for complex structures we can't interpret
@@ -148,7 +154,9 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                 )
 
             # Verify that EPI is a finite number
-            if not isinstance(current_epi, (int, float)) or not math.isfinite(current_epi):
+            if not isinstance(current_epi, (int, float)) or not math.isfinite(
+                current_epi
+            ):
                 violations.append(
                     InvariantViolation(
                         invariant_id=1,
@@ -190,13 +198,18 @@ class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
                     epi_val = epi_val[0]
                 if isinstance(epi_val, complex):
                     epi_val = abs(epi_val)
-                epi_value = float(epi_val) if isinstance(epi_val, (int, float, complex)) else 0.0
+                epi_value = (
+                    float(epi_val)
+                    if isinstance(epi_val, (int, float, complex))
+                    else 0.0
+                )
             elif isinstance(epi_value, complex):
                 epi_value = abs(epi_value)
 
             self._previous_epi_values[node_id] = epi_value
 
         return violations
+
 
 class Invariant2_VfInHzStr(TNFRInvariant):
     """Invariante 2: νf stays in Hz_str units."""
@@ -259,6 +272,7 @@ class Invariant2_VfInHzStr(TNFRInvariant):
                 )
 
         return violations
+
 
 class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
     """Invariante 5: Explicit phase checks for coupling."""
@@ -343,6 +357,7 @@ class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
 
         return violations
 
+
 class Invariant3_DNFRSemantics(TNFRInvariant):
     """Invariante 3: ΔNFR semantics - sign and magnitude modulate reorganization rate."""
 
@@ -389,6 +404,7 @@ class Invariant3_DNFRSemantics(TNFRInvariant):
 
         return violations
 
+
 class Invariant4_OperatorClosure(TNFRInvariant):
     """Invariante 4: Operator closure - composition yields valid TNFR states."""
 
@@ -434,6 +450,7 @@ class Invariant4_OperatorClosure(TNFRInvariant):
                 )
 
         return violations
+
 
 class Invariant6_NodeBirthCollapse(TNFRInvariant):
     """Invariante 6: Node birth/collapse - minimal conditions maintained."""
@@ -487,6 +504,7 @@ class Invariant6_NodeBirthCollapse(TNFRInvariant):
 
         return violations
 
+
 class Invariant7_OperationalFractality(TNFRInvariant):
     """Invariante 7: Operational fractality - EPIs can nest without losing identity."""
 
@@ -526,7 +544,9 @@ class Invariant7_OperationalFractality(TNFRInvariant):
                         sub_epi = epi[key]
                         if isinstance(sub_epi, (tuple, list)):
                             for val in sub_epi:
-                                if isinstance(val, complex) and not math.isfinite(abs(val)):
+                                if isinstance(val, complex) and not math.isfinite(
+                                    abs(val)
+                                ):
                                     violations.append(
                                         InvariantViolation(
                                             invariant_id=7,
@@ -540,6 +560,7 @@ class Invariant7_OperationalFractality(TNFRInvariant):
                                     )
 
         return violations
+
 
 class Invariant8_ControlledDeterminism(TNFRInvariant):
     """Invariante 8: Controlled determinism - reproducible and traceable."""
@@ -581,6 +602,7 @@ class Invariant8_ControlledDeterminism(TNFRInvariant):
                 )
 
         return violations
+
 
 class Invariant9_StructuralMetrics(TNFRInvariant):
     """Invariante 9: Structural metrics - expose C(t), Si, phase, νf."""
@@ -635,6 +657,7 @@ class Invariant9_StructuralMetrics(TNFRInvariant):
                 )
 
         return violations
+
 
 class Invariant10_DomainNeutrality(TNFRInvariant):
     """Invariante 10: Domain neutrality - trans-scale and trans-domain."""

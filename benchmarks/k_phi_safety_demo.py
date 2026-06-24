@@ -11,8 +11,8 @@ operator sequence, and reports three telemetry metrics side-by-side:
 Usage: python benchmarks/k_phi_safety_demo.py
 """
 
-import sys
 import random
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -20,21 +20,21 @@ import numpy as np
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.tnfr.physics.fields import (  # noqa: E402
-    compute_structural_potential,
-    compute_phase_gradient,
-    k_phi_multiscale_safety,
-)
 from benchmarks.benchmark_utils import (  # noqa: E402
     create_tnfr_topology,
     initialize_tnfr_nodes,
 )
-from src.tnfr.operators.definitions import Dissonance, Coherence  # noqa: E402
+from src.tnfr.operators.definitions import Coherence, Dissonance  # noqa: E402
+from src.tnfr.physics.fields import (  # noqa: E402
+    compute_phase_gradient,
+    compute_structural_potential,
+    k_phi_multiscale_safety,
+)
 
 
 def main():
     print("🛡️ TNFR Safety Triad Demo (Φ_s, |∇φ|, K_φ)")
-    topo = 'ws'
+    topo = "ws"
     seed = 1234
     n_nodes = 40
 
@@ -78,7 +78,7 @@ def main():
         f"R²={safety['fit']['r_squared']:.3f}, "
         f"n={len(safety['variance_by_scale'])}"
     )
-    if safety.get('violations'):
+    if safety.get("violations"):
         print(f"   tolerance violations at scales: {safety['violations']}")
 
 

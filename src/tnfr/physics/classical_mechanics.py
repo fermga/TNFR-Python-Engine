@@ -65,22 +65,22 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable
 
-from ..errors import TNFRValueError
-
-from ..mathematics.unified_numerical import np
-
 # Canonical constants and keys
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
+
+from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import np
+
 
 @dataclass
 class GeneralizedCoordinateSystem:
     """Represents a system in generalized coordinates (q, p)."""
-    
+
     q: np.ndarray  # Generalized coordinates
     p: np.ndarray | None = None  # Generalized momenta (for Hamiltonian)
     q_dot: np.ndarray | None = None  # Generalized velocities (for Lagrangian)
     masses: np.ndarray | None = None  # Masses associated with coordinates
-    
+
     def __post_init__(self):
         if self.p is None and self.q_dot is None:
             # Allow initialization with just q, but warn or handle if needed
@@ -93,6 +93,7 @@ class GeneralizedCoordinateSystem:
     def dimension(self) -> int:
         return len(self.q)
 
+
 class ClassicalMechanicsMapper:
     """Translates Classical Mechanics formulations to TNFR Structural Dynamics."""
 
@@ -100,7 +101,7 @@ class ClassicalMechanicsMapper:
     def lagrangian_to_tnfr(
         L: Callable[[np.ndarray, np.ndarray, float], float],
         system: GeneralizedCoordinateSystem,
-        t: float = 0.0
+        t: float = 0.0,
     ) -> dict[str, Any]:
         """
         Maps a Lagrangian L(q, q_dot, t) to a TNFR Nodal State.
@@ -117,20 +118,22 @@ class ClassicalMechanicsMapper:
             - ΔNFR: Structural pressure (derived from Euler-Lagrange)
         """
         if system.q_dot is None:
-            raise TNFRValueError("Lagrangian mapping requires generalized velocities (q_dot).")
+            raise TNFRValueError(
+                "Lagrangian mapping requires generalized velocities (q_dot)."
+            )
 
         # 1. Map Mass to Frequency: νf = 1/m
         # We take the mean mass if multiple, or return a vector if supported.
         # For a single node representing the system, we might use an effective mass.
         # Here we assume the system represents a single entity or we return arrays.
         # To keep it simple for the mapper, we map per-coordinate if possible.
-        
+
         # In TNFR, a node usually has one scalar νf. If this system is multi-body,
         # it should probably map to a Graph. For now, we map to attributes of a single
         # representative node or a list of attributes.
-        
+
         # Let's assume 1D or N-D system mapped to N-D EPI.
-        
+
         # νf (Structural Frequency) <--> 1 / Mass
         # Using the first mass as reference or vector if supported by custom node types.
         # Standard TNFR nodes have scalar νf.
@@ -147,29 +150,29 @@ class ClassicalMechanicsMapper:
         # => F = ∂L/∂q
         # In TNFR: ∂EPI/∂t = νf · ΔNFR
         # Ideally ΔNFR corresponds to the Force term.
-        
+
         # We can approximate ∂L/∂q numerically or symbolically.
         # For this mapper, we might need the force function explicitly or use autodiff.
         # Since we only have the function L, we can't easily get gradients without autodiff.
         # For now, we will return a placeholder or require the force function.
-        
+
         # However, the prompt asks for the *mapper structure*.
         # We will return the mapped state.
-        
+
         return {
             EPI_PRIMARY: epi_vector,
             VF_PRIMARY: nu_f,
             "classical_L": L(system.q, system.q_dot, t),
             # ΔNFR would be calculated by the engine using the potential,
             # here we just set up the state.
-            DNFR_PRIMARY: np.zeros_like(epi_vector)  # Placeholder
+            DNFR_PRIMARY: np.zeros_like(epi_vector),  # Placeholder
         }
 
     @staticmethod
     def hamiltonian_to_tnfr(
         H: Callable[[np.ndarray, np.ndarray, float], float],
         system: GeneralizedCoordinateSystem,
-        t: float = 0.0
+        t: float = 0.0,
     ) -> dict[str, Any]:
         """
         Maps a Hamiltonian H(q, p, t) to a TNFR Nodal State.
@@ -183,7 +186,9 @@ class ClassicalMechanicsMapper:
             dict containing TNFR nodal attributes.
         """
         if system.p is None:
-            raise TNFRValueError("Hamiltonian mapping requires generalized momenta (p).")
+            raise TNFRValueError(
+                "Hamiltonian mapping requires generalized momenta (p)."
+            )
 
         # 1. Map Mass to Frequency
         mass_ref = np.mean(system.masses) if system.masses is not None else 1.0
@@ -201,30 +206,29 @@ class ClassicalMechanicsMapper:
         # H is total energy.
         # In TNFR, Φ_s (Structural Potential) relates to Potential Energy.
         # But H includes Kinetic.
-        
+
         return {
             EPI_PRIMARY: epi_vector,
             VF_PRIMARY: nu_f,
             "classical_H": H(system.q, system.p, t),
-            DNFR_PRIMARY: np.zeros_like(epi_vector)
+            DNFR_PRIMARY: np.zeros_like(epi_vector),
         }
 
     @staticmethod
     def equations_of_motion_to_operators(
-        forces: np.ndarray,
-        masses: np.ndarray
+        forces: np.ndarray, masses: np.ndarray
     ) -> list[str]:
         """
         Translates phenomenological forces into their fundamental Structural Operator equivalents.
-        
+
         Classical F=ma is the limiting case of ∂EPI/∂t = νf · ΔNFR where:
         - Force (F) corresponds to Structural Pressure (ΔNFR)
         - Mass (m) corresponds to Inverse Structural Frequency (1/νf)
-        
+
         This suggests that 'Force' is applied via 'Dissonance' (OZ) or 'Reception' (EN)
         depending on whether it's internal or external, followed by 'Coherence' (IL)
         to stabilize the new state.
-        
+
         Args:
             forces: Array of force vectors
             masses: Array of masses
@@ -236,24 +240,23 @@ class ClassicalMechanicsMapper:
         # In TNFR, change is driven by ΔNFR.
         # To induce ΔNFR, we might use Dissonance (OZ) to break equilibrium,
         # or Reception (EN) to intake information (force).
-        
+
         # Canonical sequence for state update:
         # 1. Dissonance (OZ) - Introduces ΔNFR (Force)
         # 2. Coherence (IL) - Stabilizes the new trajectory (Integration)
-        
+
         ops = []
         if np.any(np.abs(forces) > 1e-9):
             ops.append("OZ")  # Apply Force / Pressure
             ops.append("IL")  # Integrate / Stabilize
         else:
             ops.append("SHA")  # Silence / Inertia
-            
+
         return ops
 
     @staticmethod
     def state_vector_to_generalized(
-        epi: np.ndarray,
-        nu_f: float
+        epi: np.ndarray, nu_f: float
     ) -> GeneralizedCoordinateSystem:
         """
         Inverse mapping: TNFR EPI -> Generalized Coordinates.
@@ -264,18 +267,16 @@ class ClassicalMechanicsMapper:
         q_dot = epi[n:]
         mass = 1.0 / nu_f if nu_f > 0 else 1.0
         p = q_dot * mass
-        
+
         return GeneralizedCoordinateSystem(
-            q=q,
-            q_dot=q_dot,
-            p=p,
-            masses=np.full_like(q, mass)
+            q=q, q_dot=q_dot, p=p, masses=np.full_like(q, mass)
         )
+
 
 class ClassicalForceTranslator:
     """
     Translates phenomenological forces into fundamental Structural Mechanisms.
-    
+
     This class provides the dictionary between observed classical forces and
     the underlying nodal dynamics that generate them.
     """
@@ -284,12 +285,12 @@ class ClassicalForceTranslator:
     def gravity_to_tnfr() -> str:
         """
         Gravity corresponds to the Coherence Gradient (-∇Φ_s).
-        
+
         Mechanism:
         Nodes naturally evolve to maximize phase synchronization (minimize dissonance).
         This creates an emergent attractive force between coherent structures,
         which we observe macroscopically as gravity.
-        
+
         Returns:
             Description of the mechanism.
         """
@@ -299,13 +300,13 @@ class ClassicalForceTranslator:
     def friction_to_tnfr() -> str:
         """
         Friction corresponds to Structural Damping / Coherence Stabilization.
-        
+
         Mechanism:
         The 'Coherence' (IL) operator acts as a stabilizer, reducing high-frequency
         fluctuations (thermal energy) and aligning velocity vectors. This manifests
         as a dissipative force (friction) that removes kinetic energy from the
         macroscopic mode.
-        
+
         Returns:
             Description of the mechanism.
         """
@@ -315,12 +316,12 @@ class ClassicalForceTranslator:
     def harmonic_restoring_to_tnfr() -> str:
         """
         Harmonic forces (Springs) correspond to Structural Confinement.
-        
+
         Mechanism:
         When a node deviates from its equilibrium position in the structural manifold,
         the Phase Gradient (|∇φ|) increases. The system generates a restoring
         pressure (ΔNFR) to return to the low-gradient state (equilibrium).
-        
+
         Returns:
             Description of the mechanism.
         """
@@ -331,65 +332,64 @@ class ClassicalForceTranslator:
         f: Callable[[GeneralizedCoordinateSystem], float],
         g: Callable[[GeneralizedCoordinateSystem], float],
         system: GeneralizedCoordinateSystem,
-        epsilon: float = 1e-5
+        epsilon: float = 1e-5,
     ) -> float:
         """
         Computes the Poisson Bracket {f, g} numerically on the Structural Manifold.
-        
+
         {f, g} = Σ (∂f/∂q_i ∂g/∂p_i - ∂f/∂p_i ∂g/∂q_i)
-        
+
         This metric quantifies the structural commutation relation between two
         observables. If {f, H} = 0, then f is a conserved structural invariant.
-        
+
         Args:
             f: First observable function.
             g: Second observable function.
             system: Current state.
             epsilon: Finite difference step size.
-            
+
         Returns:
             Value of the Poisson Bracket.
         """
         n = system.dimension
         bracket = 0.0
-        
+
         # We need to perturb q and p.
         # Since GeneralizedCoordinateSystem is immutable-ish (dataclass),
         # we create copies.
-        
+
         # Helper to evaluate gradient
         def gradient(func, sys, var_name, idx):
             original = getattr(sys, var_name)[idx]
-            
+
             # Forward
             getattr(sys, var_name)[idx] = original + epsilon
             val_plus = func(sys)
-            
+
             # Backward
             getattr(sys, var_name)[idx] = original - epsilon
             val_minus = func(sys)
-            
+
             # Restore
             getattr(sys, var_name)[idx] = original
-            
+
             return (val_plus - val_minus) / (2 * epsilon)
 
         # We need mutable arrays for this to work efficiently,
         # or we construct new systems.
         # The dataclass fields are numpy arrays, which are mutable.
         # So we can modify in place and restore.
-        
+
         if system.p is None:
             raise TNFRValueError("Poisson Bracket requires momenta (p).")
-            
-        for i in range(n):
-            df_dq = gradient(f, system, 'q', i)
-            dg_dp = gradient(g, system, 'p', i)
-            
-            df_dp = gradient(f, system, 'p', i)
-            dg_dq = gradient(g, system, 'q', i)
-            
-            bracket += (df_dq * dg_dp) - (df_dp * dg_dq)
-            
-        return bracket
 
+        for i in range(n):
+            df_dq = gradient(f, system, "q", i)
+            dg_dp = gradient(g, system, "p", i)
+
+            df_dp = gradient(f, system, "p", i)
+            dg_dq = gradient(g, system, "q", i)
+
+            bracket += (df_dq * dg_dp) - (df_dp * dg_dq)
+
+        return bracket

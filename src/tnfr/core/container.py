@@ -31,6 +31,7 @@ T = TypeVar("T")
 
 __all__ = ("TNFRContainer",)
 
+
 class TNFRContainer:
     """Dependency injection container for TNFR engine components.
 
@@ -90,7 +91,9 @@ class TNFRContainer:
         self._factories[interface] = lambda: implementation
         self._is_singleton[interface] = True
 
-    def register_factory(self, interface: type[T], factory_func: Callable[[], T]) -> None:
+    def register_factory(
+        self, interface: type[T], factory_func: Callable[[], T]
+    ) -> None:
         """Register a factory function for creating instances.
 
         The factory will be called each time the interface is requested,

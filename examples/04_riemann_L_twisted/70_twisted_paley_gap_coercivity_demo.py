@@ -59,12 +59,12 @@ def _ensure_utf8_stdout() -> None:
 
 
 def _print_sweep_table(sweep) -> None:
-    print(
-        f"    {'sigma':>8s}  {'g_P32':>14s}  "
-        f"{'g_P34':>14s}  {'g_cross':>14s}"
-    )
+    print(f"    {'sigma':>8s}  {'g_P32':>14s}  " f"{'g_P34':>14s}  {'g_cross':>14s}")
     for s, g32, g34, gc in zip(
-        sweep.sigmas, sweep.g_p32, sweep.g_p34, sweep.g_cross,
+        sweep.sigmas,
+        sweep.g_p32,
+        sweep.g_p34,
+        sweep.g_cross,
     ):
         print(f"    {s:>8.3f}  {g32:>14.6e}  {g34:>14.6e}  {gc:>14.6e}")
 
@@ -86,8 +86,10 @@ def main() -> int:
 
     print("=" * 78)
     print("P43 CHI-TWISTED PALEY-GAP COERCIVITY DEMO")
-    print("(L-track analogue of P25; after Mart\u00ednez Gamo, "
-          "Zenodo 17665853 v2, 2025)")
+    print(
+        "(L-track analogue of P25; after Mart\u00ednez Gamo, "
+        "Zenodo 17665853 v2, 2025)"
+    )
     print("=" * 78)
     print(f"n_primes        = {n_primes}")
     print(f"max_power       = {max_power}")
@@ -121,7 +123,10 @@ def main() -> int:
             coupling=0.0,
         )
         sweep_a = sweep_twisted_paley_gap(
-            bundle_a, chi, sigmas, n_max_classical=n_max_classical,
+            bundle_a,
+            chi,
+            sigmas,
+            n_max_classical=n_max_classical,
         )
         print(f"[A] {name} decoupled bundle (coupling = 0)")
         print("    " + sweep_a.summary())
@@ -139,7 +144,10 @@ def main() -> int:
             coupling=coupling_b,
         )
         sweep_b = sweep_twisted_paley_gap(
-            bundle_b, chi, sigmas, n_max_classical=n_max_classical,
+            bundle_b,
+            chi,
+            sigmas,
+            n_max_classical=n_max_classical,
         )
         print(f"[B] {name} weakly coupled bundle (coupling = {coupling_b:.1e})")
         print("    " + sweep_b.summary())

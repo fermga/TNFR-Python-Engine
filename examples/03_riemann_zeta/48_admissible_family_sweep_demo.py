@@ -17,10 +17,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 import numpy as np
 
-from tnfr.riemann import (
-    build_prime_ladder_hamiltonian,
-    sweep_alpha_admissible_family,
-)
+from tnfr.riemann import build_prime_ladder_hamiltonian, sweep_alpha_admissible_family
 
 
 def main() -> None:
@@ -36,10 +33,7 @@ def main() -> None:
         coupling=0.0,
     )
     dim = n_primes * max_power
-    print(
-        f"\nBundle: n_primes={n_primes}, "
-        f"max_power={max_power}, dim={dim}"
-    )
+    print(f"\nBundle: n_primes={n_primes}, " f"max_power={max_power}, dim={dim}")
 
     sigmas = np.logspace(np.log10(0.5), np.log10(8.0), 10).tolist()
     print("Sigma grid:")

@@ -92,43 +92,37 @@ try:
 except ImportError:  # pragma: no cover
     nx = None
 
-from ..constants.canonical import DELTA_PHI_MAX, PHI, PI
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA
+from ..constants.canonical import DELTA_PHI_MAX, PHI, PI
+
+# Canonical fields
+from .canonical import (
+    compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
+)
 
 # Conservation layer
-from .conservation import (
-    compute_energy_functional,
-    compute_noether_charge,
+from .conservation import compute_energy_functional, compute_noether_charge
+from .extended import compute_dnfr_flux, compute_phase_current
+
+# Gauge layer
+from .gauge import (
+    GaugeInvarianceResult,
+    capture_gauge_snapshot,
+    compute_covariant_derivative_magnitude,
+    compute_gauge_curvature,
+    compute_yang_mills_action,
+    verify_gauge_invariance,
 )
 
 # Variational layer
 from .variational import (
     capture_lagrangian_snapshot,
-    identify_conjugate_pairs,
     compute_phase_space_volume,
     compute_poisson_bracket_estimate,
-)
-
-# Gauge layer
-from .gauge import (
-    capture_gauge_snapshot,
-    compute_gauge_curvature,
-    compute_covariant_derivative_magnitude,
-    verify_gauge_invariance,
-    compute_yang_mills_action,
-    GaugeInvarianceResult,
-)
-
-# Canonical fields
-from .canonical import (
-    compute_structural_potential,
-    compute_phase_gradient,
-    compute_phase_curvature,
-)
-from .extended import (
-    compute_phase_current,
-    compute_dnfr_flux,
+    identify_conjugate_pairs,
 )
 
 # ---------------------------------------------------------------------------
@@ -155,6 +149,7 @@ __all__ = [
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class GrammarSymmetryMapping:
@@ -185,6 +180,7 @@ class GrammarSymmetryMapping:
     variational_role: str
     is_satisfied: bool
     diagnostic_value: float
+
 
 @dataclass(frozen=True)
 class ActionEnergyConsistency:
@@ -219,6 +215,7 @@ class ActionEnergyConsistency:
     total_kinetic: float
     total_potential: float
     kinetic_fraction: float
+
 
 @dataclass(frozen=True)
 class NoetherGaugeDecomposition:
@@ -263,6 +260,7 @@ class NoetherGaugeDecomposition:
     noether_gauge_ratio: float
     decomposition_quality: float
 
+
 @dataclass(frozen=True)
 class GaugeConservationCoupling:
     """Quantifies how gauge structure and conservation laws couple.
@@ -301,6 +299,7 @@ class GaugeConservationCoupling:
     sector_coupling_parameter: float
     ward_gauge_consistency: float
 
+
 @dataclass(frozen=True)
 class SymplecticGaugeCompatibility:
     """Verifies that the symplectic form ω is compatible with gauge structure.
@@ -337,6 +336,7 @@ class SymplecticGaugeCompatibility:
     potential_poisson: float
     gauge_volume_invariance: float
     is_compatible: bool
+
 
 @dataclass(frozen=True)
 class ConservationGaugeUnification:
@@ -376,9 +376,11 @@ class ConservationGaugeUnification:
     unification_quality: float
     summary: dict[str, Any]
 
+
 # ---------------------------------------------------------------------------
 # 1. Grammar → Symmetry mapping
 # ---------------------------------------------------------------------------
+
 
 def compute_grammar_symmetry_mapping(G: Any) -> list[GrammarSymmetryMapping]:
     """Map grammar rules U1-U6 to their symmetry types and conservation laws.
@@ -417,7 +419,7 @@ def compute_grammar_symmetry_mapping(G: Any) -> list[GrammarSymmetryMapping]:
         diff = min(diff, 2 * math.pi - diff)
         max_phase_diff = max(max_phase_diff, diff)
 
-    delta_phi_max = G.graph.get('delta_phi_max', DELTA_PHI_MAX)
+    delta_phi_max = G.graph.get("delta_phi_max", DELTA_PHI_MAX)
 
     # Gauge curvature for U4
     curvature = compute_gauge_curvature(G)
@@ -433,83 +435,97 @@ def compute_grammar_symmetry_mapping(G: Any) -> list[GrammarSymmetryMapping]:
     # U1: STRUCTURAL INITIATION & CLOSURE
     # Symmetry: Boundary conditions on S_TNFR
     # Conservation: Energy finiteness (action has well-defined endpoints)
-    mappings.append(GrammarSymmetryMapping(
-        rule='U1',
-        symmetry_type='boundary',
-        conservation_law='Action finiteness — well-defined energy at boundaries',
-        variational_role='Boundary conditions δS|_∂ = 0 on action endpoints',
-        is_satisfied=True,  # static check: graph exists with nodes
-        diagnostic_value=0.0,
-    ))
+    mappings.append(
+        GrammarSymmetryMapping(
+            rule="U1",
+            symmetry_type="boundary",
+            conservation_law="Action finiteness — well-defined energy at boundaries",
+            variational_role="Boundary conditions δS|_∂ = 0 on action endpoints",
+            is_satisfied=True,  # static check: graph exists with nodes
+            diagnostic_value=0.0,
+        )
+    )
 
     # U2: CONVERGENCE & BOUNDEDNESS
     # Symmetry: Time-translation (energy conservation)
     # Conservation: Lyapunov stability dH/dt ≤ 0
     is_finite = bool(np.isfinite(E) and E < 1e6 * len(G.nodes()))
-    mappings.append(GrammarSymmetryMapping(
-        rule='U2',
-        symmetry_type='stability',
-        conservation_law='Lyapunov stability — dH/dt ≤ 0 under grammar',
-        variational_role='Finite action ∫νf·ΔNFR dt < ∞ ↔ convergent integral',
-        is_satisfied=is_finite,
-        diagnostic_value=0.0 if is_finite else float(E),
-    ))
+    mappings.append(
+        GrammarSymmetryMapping(
+            rule="U2",
+            symmetry_type="stability",
+            conservation_law="Lyapunov stability — dH/dt ≤ 0 under grammar",
+            variational_role="Finite action ∫νf·ΔNFR dt < ∞ ↔ convergent integral",
+            is_satisfied=is_finite,
+            diagnostic_value=0.0 if is_finite else float(E),
+        )
+    )
 
     # U3: RESONANT COUPLING
     # Symmetry: Gauge connection regularity
     # Conservation: Phase current continuity
     u3_sat = max_phase_diff <= delta_phi_max * 1.1  # small tolerance
-    mappings.append(GrammarSymmetryMapping(
-        rule='U3',
-        symmetry_type='gauge',
-        conservation_law='Gauge connection regularity — A_ij smooth on coupled edges',
-        variational_role='Regularity of coupling terms in S_TNFR',
-        is_satisfied=u3_sat,
-        diagnostic_value=max(0.0, max_phase_diff - delta_phi_max),
-    ))
+    mappings.append(
+        GrammarSymmetryMapping(
+            rule="U3",
+            symmetry_type="gauge",
+            conservation_law="Gauge connection regularity — A_ij smooth on coupled edges",
+            variational_role="Regularity of coupling terms in S_TNFR",
+            is_satisfied=u3_sat,
+            diagnostic_value=max(0.0, max_phase_diff - delta_phi_max),
+        )
+    )
 
     # U4: BIFURCATION DYNAMICS
     # Symmetry: Topological protection
     # Conservation: Topological charge quantisation at critical points
     u4_sat = max_curv < PI  # no extreme gauge curvature
-    mappings.append(GrammarSymmetryMapping(
-        rule='U4',
-        symmetry_type='topological',
-        conservation_law='Topological charge quantisation at bifurcation points',
-        variational_role='Morse-theory constraints at critical points of V',
-        is_satisfied=u4_sat,
-        diagnostic_value=max(0.0, max_curv - PI),
-    ))
+    mappings.append(
+        GrammarSymmetryMapping(
+            rule="U4",
+            symmetry_type="topological",
+            conservation_law="Topological charge quantisation at bifurcation points",
+            variational_role="Morse-theory constraints at critical points of V",
+            is_satisfied=u4_sat,
+            diagnostic_value=max(0.0, max_curv - PI),
+        )
+    )
 
     # U5: MULTI-SCALE COHERENCE
     # Symmetry: Scale separation
     # Conservation: Hierarchical energy factorisation
-    mappings.append(GrammarSymmetryMapping(
-        rule='U5',
-        symmetry_type='hierarchical',
-        conservation_law='Hierarchical energy factorisation across scales',
-        variational_role='S_TNFR = Σ_ℓ S^(ℓ) scale-by-scale decomposition',
-        is_satisfied=True,  # satisfied for single-scale graphs
-        diagnostic_value=0.0,
-    ))
+    mappings.append(
+        GrammarSymmetryMapping(
+            rule="U5",
+            symmetry_type="hierarchical",
+            conservation_law="Hierarchical energy factorisation across scales",
+            variational_role="S_TNFR = Σ_ℓ S^(ℓ) scale-by-scale decomposition",
+            is_satisfied=True,  # satisfied for single-scale graphs
+            diagnostic_value=0.0,
+        )
+    )
 
     # U6: STRUCTURAL POTENTIAL CONFINEMENT
     # Symmetry: Bounded potential sector
     # Conservation: Potential energy confinement V < ½φ²·N
-    mappings.append(GrammarSymmetryMapping(
-        rule='U6',
-        symmetry_type='confinement',
-        conservation_law='Potential energy confinement — V bounded by φ',
-        variational_role='V(i) < ½φ² at each node (bounded potential well)',
-        is_satisfied=phi_s_confined,
-        diagnostic_value=max(0.0, max_phi_s - PHI),
-    ))
+    mappings.append(
+        GrammarSymmetryMapping(
+            rule="U6",
+            symmetry_type="confinement",
+            conservation_law="Potential energy confinement — V bounded by φ",
+            variational_role="V(i) < ½φ² at each node (bounded potential well)",
+            is_satisfied=phi_s_confined,
+            diagnostic_value=max(0.0, max_phi_s - PHI),
+        )
+    )
 
     return mappings
+
 
 # ---------------------------------------------------------------------------
 # 2. Action-Energy consistency: H_variational = E_conservation
 # ---------------------------------------------------------------------------
+
 
 def verify_action_energy_consistency(
     G: Any,
@@ -554,9 +570,11 @@ def verify_action_energy_consistency(
         kinetic_fraction=T / max(H_var, 1e-15),
     )
 
+
 # ---------------------------------------------------------------------------
 # 3. Noether-Gauge decomposition
 # ---------------------------------------------------------------------------
+
 
 def compute_noether_gauge_decomposition(G: Any) -> NoetherGaugeDecomposition:
     """Decompose the symmetry of S_TNFR into Noether and gauge sectors.
@@ -592,7 +610,7 @@ def compute_noether_gauge_decomposition(G: Any) -> NoetherGaugeDecomposition:
 
     # Matter action (covariant derivative sector)
     cov_mag = compute_covariant_derivative_magnitude(G)
-    s_matter = sum(m ** 2 for m in cov_mag.values())
+    s_matter = sum(m**2 for m in cov_mag.values())
 
     # Noether-gauge ratio
     ratio = abs(Q) / max(E, 1e-15)
@@ -616,9 +634,11 @@ def compute_noether_gauge_decomposition(G: Any) -> NoetherGaugeDecomposition:
         decomposition_quality=quality,
     )
 
+
 # ---------------------------------------------------------------------------
 # 4. Gauge-Conservation coupling
 # ---------------------------------------------------------------------------
+
 
 def compute_gauge_conservation_coupling(
     G: Any,
@@ -684,12 +704,12 @@ def compute_gauge_conservation_coupling(
     for n in nodes:
         kn = k_phi.get(n, 0.0)
         jn = j_phi.get(n, 0.0)
-        e_geo += 0.5 * (kn ** 2 + jn ** 2)
+        e_geo += 0.5 * (kn**2 + jn**2)
 
         fn = phi_s.get(n, 0.0)
         gn = grad_phi.get(n, 0.0)
         dn = j_dnfr.get(n, 0.0)
-        e_pot += 0.5 * (fn ** 2 + gn ** 2 + dn ** 2)
+        e_pot += 0.5 * (fn**2 + gn**2 + dn**2)
 
     total_e = e_geo + e_pot
     kappa = e_geo / max(total_e, 1e-15)
@@ -708,9 +728,11 @@ def compute_gauge_conservation_coupling(
         ward_gauge_consistency=ward_gauge,
     )
 
+
 # ---------------------------------------------------------------------------
 # 5. Symplectic-Gauge compatibility
 # ---------------------------------------------------------------------------
+
 
 def verify_symplectic_gauge_compatibility(
     G: Any,
@@ -798,9 +820,11 @@ def verify_symplectic_gauge_compatibility(
         is_compatible=True,  # exact: det(rotation) = 1, so ω is preserved
     )
 
+
 # ---------------------------------------------------------------------------
 # 6. Complete unification
 # ---------------------------------------------------------------------------
+
 
 def run_conservation_gauge_unification(
     G: Any,
@@ -848,52 +872,52 @@ def run_conservation_gauge_unification(
 
     # Aggregate quality
     checks = [
-        action_cons.is_consistent,       # H_var = E_cons
-        gauge_inv.is_invariant,           # gauge invariance
-        symp_gauge.is_compatible,         # symplectic compatibility
-        n_satisfied == len(grammar),      # all grammar rules satisfied
+        action_cons.is_consistent,  # H_var = E_cons
+        gauge_inv.is_invariant,  # gauge invariance
+        symp_gauge.is_compatible,  # symplectic compatibility
+        n_satisfied == len(grammar),  # all grammar rules satisfied
     ]
     quality_scores = [
         1.0 - min(action_cons.relative_error * 1e8, 1.0),  # action consistency
-        1.0 if gauge_inv.is_invariant else 0.5,             # gauge invariance
-        1.0 if symp_gauge.is_compatible else 0.5,           # symplectic
-        n_satisfied / max(len(grammar), 1),                 # grammar coverage
-        noether_gauge.decomposition_quality,                # decomposition
-        gauge_cons.ward_gauge_consistency,                  # ward-gauge
+        1.0 if gauge_inv.is_invariant else 0.5,  # gauge invariance
+        1.0 if symp_gauge.is_compatible else 0.5,  # symplectic
+        n_satisfied / max(len(grammar), 1),  # grammar coverage
+        noether_gauge.decomposition_quality,  # decomposition
+        gauge_cons.ward_gauge_consistency,  # ward-gauge
     ]
     quality = float(np.mean(quality_scores))
     is_unified = all(checks) and quality > 0.8
 
     # Summary
     summary = {
-        'grammar_rules_satisfied': f'{n_satisfied}/{len(grammar)}',
-        'H_variational': action_cons.hamiltonian_variational,
-        'E_conservation': action_cons.energy_conservation,
-        'H_E_relative_error': action_cons.relative_error,
-        'T_kinetic': action_cons.total_kinetic,
-        'V_potential': action_cons.total_potential,
-        'kinetic_fraction': action_cons.kinetic_fraction,
-        'noether_charge_Q': noether_gauge.noether_charge,
-        'gauge_invariant_energy': noether_gauge.gauge_invariant_energy,
-        'yang_mills_action': noether_gauge.yang_mills_action,
-        'mean_psi_magnitude': noether_gauge.mean_psi_magnitude,
-        'geometric_sector_energy': gauge_cons.geometric_sector_energy,
-        'potential_sector_energy': gauge_cons.potential_sector_energy,
-        'sector_coupling_kappa': gauge_cons.sector_coupling_parameter,
-        'shared_K_phi_fraction': gauge_cons.shared_field_fraction,
-        'gauge_charge_sensitivity': gauge_cons.gauge_charge_sensitivity,
-        'energy_gauge_invariance_dev': gauge_cons.energy_gauge_invariance,
-        'symplectic_volume_geo': symp_gauge.geometric_volume,
-        'symplectic_volume_pot': symp_gauge.potential_volume,
-        'poisson_bracket_geo': symp_gauge.geometric_poisson,
-        'poisson_bracket_pot': symp_gauge.potential_poisson,
-        'unification_quality': quality,
-        'is_unified': is_unified,
-        'narrative': (
-            'Grammar(U1-U6) → Symmetry(Translation×U(1)) '
-            '→ Conservation(H=E,Q) → Gauge(Ψ,A,F) — UNIFIED'
-            if is_unified else
-            'Partial unification — check diagnostics'
+        "grammar_rules_satisfied": f"{n_satisfied}/{len(grammar)}",
+        "H_variational": action_cons.hamiltonian_variational,
+        "E_conservation": action_cons.energy_conservation,
+        "H_E_relative_error": action_cons.relative_error,
+        "T_kinetic": action_cons.total_kinetic,
+        "V_potential": action_cons.total_potential,
+        "kinetic_fraction": action_cons.kinetic_fraction,
+        "noether_charge_Q": noether_gauge.noether_charge,
+        "gauge_invariant_energy": noether_gauge.gauge_invariant_energy,
+        "yang_mills_action": noether_gauge.yang_mills_action,
+        "mean_psi_magnitude": noether_gauge.mean_psi_magnitude,
+        "geometric_sector_energy": gauge_cons.geometric_sector_energy,
+        "potential_sector_energy": gauge_cons.potential_sector_energy,
+        "sector_coupling_kappa": gauge_cons.sector_coupling_parameter,
+        "shared_K_phi_fraction": gauge_cons.shared_field_fraction,
+        "gauge_charge_sensitivity": gauge_cons.gauge_charge_sensitivity,
+        "energy_gauge_invariance_dev": gauge_cons.energy_gauge_invariance,
+        "symplectic_volume_geo": symp_gauge.geometric_volume,
+        "symplectic_volume_pot": symp_gauge.potential_volume,
+        "poisson_bracket_geo": symp_gauge.geometric_poisson,
+        "poisson_bracket_pot": symp_gauge.potential_poisson,
+        "unification_quality": quality,
+        "is_unified": is_unified,
+        "narrative": (
+            "Grammar(U1-U6) → Symmetry(Translation×U(1)) "
+            "→ Conservation(H=E,Q) → Gauge(Ψ,A,F) — UNIFIED"
+            if is_unified
+            else "Partial unification — check diagnostics"
         ),
     }
 

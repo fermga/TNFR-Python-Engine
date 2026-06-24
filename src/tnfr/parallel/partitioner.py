@@ -14,7 +14,8 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:  # pragma: no cover
     from ..types import TNFRGraph
 
-from ..mathematics.unified_numerical import np, NUMPY_AVAILABLE as HAS_NUMPY
+from ..mathematics.unified_numerical import NUMPY_AVAILABLE as HAS_NUMPY
+from ..mathematics.unified_numerical import np
 
 try:
     from scipy.spatial import KDTree
@@ -34,6 +35,7 @@ _DENSITY_DENSE_THRESHOLD = 0.5
 _DENSITY_MEDIUM_THRESHOLD = 0.1
 _CLUSTERING_HIGH_THRESHOLD = 0.6
 _CLUSTERING_LOW_THRESHOLD = 0.2
+
 
 class FractalPartitioner:
     """Partitions TNFR networks respecting structural coherence.
@@ -231,7 +233,9 @@ class FractalPartitioner:
             return
 
         # Extract νf and phase coordinates
-        def _get_node_attr(node_id: Any, alias: tuple, fallback_key: str, default: float) -> float:
+        def _get_node_attr(
+            node_id: Any, alias: tuple, fallback_key: str, default: float
+        ) -> float:
             """Get node attribute via TNFR alias or direct access."""
             return float(
                 get_attr(graph.nodes[node_id], alias, None)
@@ -359,7 +363,9 @@ class FractalPartitioner:
 
         # Use spatial index if available for faster neighbor finding
         if self.use_spatial_index and self._kdtree is not None:
-            candidates = set(self._find_coherent_neighbors_spatial(graph, seed, available, k=50))
+            candidates = set(
+                self._find_coherent_neighbors_spatial(graph, seed, available, k=50)
+            )
         else:
             neighbors = graph.neighbors(seed)
             candidates = set(neighbors) & available
@@ -370,7 +376,9 @@ class FractalPartitioner:
             best_coherence = -1.0
 
             for candidate in candidates:
-                coherence = self._compute_community_coherence(graph, community, candidate)
+                coherence = self._compute_community_coherence(
+                    graph, community, candidate
+                )
                 if coherence > best_coherence:
                     best_coherence = coherence
                     best_candidate = candidate
@@ -420,7 +428,9 @@ class FractalPartitioner:
         if not community:
             return 0.0
 
-        def _get_node_attr(node_id: Any, alias: tuple, fallback_key: str, default: float) -> float:
+        def _get_node_attr(
+            node_id: Any, alias: tuple, fallback_key: str, default: float
+        ) -> float:
             """Get node attribute via TNFR alias or direct access."""
             return float(
                 get_attr(graph.nodes[node_id], alias, None)
@@ -499,6 +509,7 @@ class FractalPartitioner:
         telemetry = {}
         try:
             from ..physics import compute_coherence, compute_sense_index
+
             telemetry["coherence"] = float(compute_coherence(graph))
             telemetry["sense_index"] = float(compute_sense_index(graph))
         except Exception:
@@ -507,6 +518,7 @@ class FractalPartitioner:
 
         try:
             from ..physics.fields import compute_structural_potential_field
+
             phi_s_values = compute_structural_potential_field(graph)
             if phi_s_values:
                 telemetry["structural_potential_range"] = [
@@ -529,6 +541,7 @@ class FractalPartitioner:
             community_coherence = None
             try:
                 from ..physics import compute_coherence
+
                 community_coherence = float(compute_coherence(subgraph))
             except Exception:
                 pass
@@ -536,7 +549,9 @@ class FractalPartitioner:
             community_data = {
                 "partition_index": partition_idx,
                 "node_count": len(node_set),
-                "edge_count": len(subgraph.edges()) if hasattr(subgraph, "edges") else 0,
+                "edge_count": (
+                    len(subgraph.edges()) if hasattr(subgraph, "edges") else 0
+                ),
                 "node_ids": [str(n) for n in sorted(node_set)],
                 "community_coherence": community_coherence,
             }

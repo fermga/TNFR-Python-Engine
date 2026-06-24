@@ -143,15 +143,9 @@ def _extract_arff_text(raw: bytes) -> str | None:
     if raw[:2] == b"PK":  # zip magic
         try:
             with zipfile.ZipFile(BytesIO(raw)) as archive:
-                names = [
-                    n for n in archive.namelist() if n.lower().endswith(".arff")
-                ]
+                names = [n for n in archive.namelist() if n.lower().endswith(".arff")]
                 if not names:
-                    names = [
-                        n
-                        for n in archive.namelist()
-                        if not n.endswith("/")
-                    ]
+                    names = [n for n in archive.namelist() if not n.endswith("/")]
                 if not names:
                     return None
                 return archive.read(names[0]).decode("utf-8", errors="ignore")
@@ -200,7 +194,9 @@ def parse_arff(text: str) -> tuple[np.ndarray, np.ndarray] | None:
     return signals, labels
 
 
-def _robust_clip(signals: np.ndarray, *, sigma: float = ROBUST_CLIP_SIGMA) -> np.ndarray:
+def _robust_clip(
+    signals: np.ndarray, *, sigma: float = ROBUST_CLIP_SIGMA
+) -> np.ndarray:
     """Clip per-channel sensor spikes to a robust ``median ± σ·MAD`` band."""
     cleaned = np.array(signals, dtype=float, copy=True)
     for j in range(cleaned.shape[0]):
@@ -374,9 +370,7 @@ def run_multichannel_benchmark(
         )
         return report
 
-    discrimination = evaluate_synchrony_discrimination(
-        signals, labels, config=config
-    )
+    discrimination = evaluate_synchrony_discrimination(signals, labels, config=config)
     series = multichannel_window_series(signals, config=config)
 
     report["status"] = "ok"
@@ -392,7 +386,9 @@ def run_multichannel_benchmark(
         "auc": round(float(discrimination.best_baseline[1]), 4),
     }
     report["block_means"] = {
-        name: _block_means(getattr(series, name), _series_labels(series, labels, config))
+        name: _block_means(
+            getattr(series, name), _series_labels(series, labels, config)
+        )
         for name in (
             "grad_phi",
             "k_phi",

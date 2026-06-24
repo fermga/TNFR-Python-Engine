@@ -11,8 +11,8 @@ from tnfr.mathematics import (
     HilbertSpace,
     build_delta_nfr,
     build_lindblad_delta_nfr,
-    make_coherence_operator,
     ensure_numpy,
+    make_coherence_operator,
 )
 
 
@@ -24,7 +24,9 @@ def _steady_state_from_generator(generator: np.ndarray, dim: int) -> np.ndarray:
     density = 0.5 * (density + density.conj().T)
     trace = np.trace(density)
     if np.isclose(trace, 0.0):
-        raise ValueError("Steady state trace collapsed; generator lacks a stationary density.")
+        raise ValueError(
+            "Steady state trace collapsed; generator lacks a stationary density."
+        )
     return density / trace
 
 
@@ -53,7 +55,9 @@ def test_lindblad_generator_preserves_trace(hilbert_qubit: HilbertSpace) -> None
         nu_f=1.0,
     )
 
-    identity_vector = np.eye(hilbert_qubit.dimension, dtype=np.complex128).reshape(-1, order="F")
+    identity_vector = np.eye(hilbert_qubit.dimension, dtype=np.complex128).reshape(
+        -1, order="F"
+    )
     assert np.allclose(
         identity_vector.conj().T @ generator, np.zeros_like(identity_vector), atol=1e-9
     )
@@ -197,7 +201,9 @@ def test_qutrit_pure_dephasing_matches_ground_truth(
     steady = _steady_state_from_generator(generator, hilbert_qutrit.dimension)
     trajectory = ensure_numpy(engine.evolve(initial, steps=3, dt=dt))
     distances = [_trace_distance(trajectory[k], steady) for k in range(len(trajectory))]
-    assert all(distances[k] >= distances[k + 1] - 1e-7 for k in range(len(distances) - 1))
+    assert all(
+        distances[k] >= distances[k + 1] - 1e-7 for k in range(len(distances) - 1)
+    )
 
 
 def test_unitary_generator_remains_available(hilbert_qubit: HilbertSpace) -> None:
@@ -220,7 +226,9 @@ def test_defective_generator_works_with_scipy(hilbert_qubit: HilbertSpace) -> No
     generator[2, 3] = 1.0
 
     # Create engine with scipy (should work even for complex generators)
-    engine = ContractiveDynamicsEngine(generator, hilbert_qubit, use_scipy=True, ensure_contractive=False)
+    engine = ContractiveDynamicsEngine(
+        generator, hilbert_qubit, use_scipy=True, ensure_contractive=False
+    )
     initial = np.eye(dim, dtype=np.complex128) / dim
     evolved = engine.step(initial, dt=0.25)
 

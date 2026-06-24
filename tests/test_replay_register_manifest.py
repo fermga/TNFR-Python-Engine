@@ -65,7 +65,12 @@ def _write_sample(tmp_path: Path, *, inline: bool) -> tuple[Path, Path, Path | N
         "candidate_stats": {"min": 8, "max": 12, "avg": 10.0},
         "node_stats": {"min": 192, "max": 256, "avg": 224.0},
         "boundary_stats": {"min": 12, "max": 16, "avg": 14.0},
-        "telemetry_keys": ["phi_s", "phase_gradient", "phase_curvature", "coherence_length"],
+        "telemetry_keys": [
+            "phi_s",
+            "phase_gradient",
+            "phase_curvature",
+            "coherence_length",
+        ],
         "file_index": {
             "inline": inline,
             "threshold": 1000,
@@ -122,4 +127,7 @@ def test_register_manifest_archive(tmp_path: Path) -> None:
     assert record["partition_files"]["source"] == "archive"
     assert record["partition_files"]["sample"]
     assert record["file_index"]["archive_absolute"].endswith("_partition_files.txt.gz")
-    assert record["structural_fields"]["phi_s"]["max"] > record["structural_fields"]["phi_s"]["min"]
+    assert (
+        record["structural_fields"]["phi_s"]["max"]
+        > record["structural_fields"]["phi_s"]["min"]
+    )

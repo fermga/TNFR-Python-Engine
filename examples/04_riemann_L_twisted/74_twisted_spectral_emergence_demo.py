@@ -105,8 +105,7 @@ def main() -> int:
                 f"at strength = {r.best_strength_gue:.4g}"
             )
             print(
-                f"    Baseline (decoupled) KS_GUE: "
-                f"{r.poisson_baseline_ks_gue:.4f}"
+                f"    Baseline (decoupled) KS_GUE: " f"{r.poisson_baseline_ks_gue:.4f}"
             )
             improvement = r.poisson_baseline_ks_gue - r.best_ks_to_gue
             rel = improvement / max(r.poisson_baseline_ks_gue, 1e-12)
@@ -126,9 +125,7 @@ def main() -> int:
         f"{'KS_GUE@0':>12s}"
     )
     for chi_name, reports in all_reports.items():
-        for law, r in sorted(
-            reports.items(), key=lambda kv: kv[1].best_ks_to_gue
-        ):
+        for law, r in sorted(reports.items(), key=lambda kv: kv[1].best_ks_to_gue):
             print(
                 f"  {chi_name:<14s} {law:<20s} "
                 f"{r.best_ks_to_gue:>12.4f} "

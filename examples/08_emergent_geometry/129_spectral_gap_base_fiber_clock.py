@@ -94,15 +94,16 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-from tnfr.alias import set_attr, get_attr
-from tnfr.constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
+from tnfr.alias import get_attr, set_attr
+from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from tnfr.dynamics import default_compute_delta_nfr
-from tnfr.operators.remesh import _mst_edges_from_epi, _get_networkx_modules
+from tnfr.operators.remesh import _get_networkx_modules, _mst_edges_from_epi
+from tnfr.physics.lyapunov import analyze_spectral_gap
 from tnfr.physics.structural_diffusion import (
     dispersion_relation,
     fiedler_partition,
@@ -110,7 +111,6 @@ from tnfr.physics.structural_diffusion import (
     structural_eigenmodes,
     verify_structural_diffusion,
 )
-from tnfr.physics.lyapunov import analyze_spectral_gap
 
 NXMOD, _ = _get_networkx_modules()
 
@@ -164,16 +164,22 @@ def experiment_1_clock():
     print("is the slowest of them -- the clock that times the base->fiber coupling.")
     print()
     print(f"  {'graph':14s} {'lambda_2':>9} {'nu_f*lambda_2':>14} {'clock':>10}")
-    for name, G in [("path P12", nx.path_graph(12)),
-                    ("cycle C12", nx.cycle_graph(12)),
-                    ("complete K8", nx.complete_graph(8))]:
+    for name, G in [
+        ("path P12", nx.path_graph(12)),
+        ("cycle C12", nx.cycle_graph(12)),
+        ("complete K8", nx.complete_graph(8)),
+    ]:
         _seed(G, np.random.default_rng(0))
         cert = verify_structural_diffusion(G)
-        speed = ("slow" if cert.slowest_relaxation_rate < 0.1
-                 else "fast" if cert.slowest_relaxation_rate > 0.5
-                 else "medium")
-        print(f"  {name:14s} {cert.spectral_gap:>9.4f} "
-              f"{cert.slowest_relaxation_rate:>14.4f} {speed:>10}")
+        speed = (
+            "slow"
+            if cert.slowest_relaxation_rate < 0.1
+            else "fast" if cert.slowest_relaxation_rate > 0.5 else "medium"
+        )
+        print(
+            f"  {name:14s} {cert.spectral_gap:>9.4f} "
+            f"{cert.slowest_relaxation_rate:>14.4f} {speed:>10}"
+        )
     print()
     print("  -> nu_f*lambda_2 is the slowest relaxation rate: small gap (path)")
     print("     = slow clock, large gap (complete) = fast clock.")
@@ -188,8 +194,10 @@ def experiment_2_cheeger():
     print("Cheeger: h^2/2 <= lambda_2 <= 2h. The Fiedler partition is the")
     print("weakest cut; its conductance h bounds the spectral gap.")
     print()
-    print(f"  {'graph':20s} {'lambda_2':>9} {'h(Fiedler)':>11} "
-          f"{'h^2/2':>8} {'2h':>7} {'in bounds?':>11}")
+    print(
+        f"  {'graph':20s} {'lambda_2':>9} {'h(Fiedler)':>11} "
+        f"{'h^2/2':>8} {'2h':>7} {'in bounds?':>11}"
+    )
     cases = [
         ("path P12", nx.path_graph(12)),
         ("barbell (2 K5)", nx.barbell_graph(5, 0)),
@@ -204,8 +212,10 @@ def experiment_2_cheeger():
         A, _ = fiedler_partition(G)
         h = _fiedler_conductance(G, A)
         in_bounds = (h * h / 2 - 1e-9) <= lam2 <= (2 * h + 1e-9)
-        print(f"  {name:20s} {lam2:>9.4f} {h:>11.4f} {h*h/2:>8.4f} "
-              f"{2*h:>7.4f} {str(in_bounds):>11}")
+        print(
+            f"  {name:20s} {lam2:>9.4f} {h:>11.4f} {h*h/2:>8.4f} "
+            f"{2*h:>7.4f} {str(in_bounds):>11}"
+        )
     print()
     print("  -> lambda_2 sits between h^2/2 and 2h: the spectral gap = the")
     print("     network's weakest cut. (Honest: h is the Fiedler-cut conductance,")
@@ -226,11 +236,15 @@ def experiment_3_threshold():
     r_c = instability_threshold(G)
     print(f"  barbell (2 K5): r_c = nu_f*lambda_2 = {r_c:.4f}")
     print(f"  {'reaction r':>12} {'unstable modes':>15} {'regime':>22}")
-    for label, r in [("0", 0.0), ("0.5 r_c", 0.5 * r_c),
-                     ("0.99 r_c", 0.99 * r_c), ("1.5 r_c", 1.5 * r_c)]:
+    for label, r in [
+        ("0", 0.0),
+        ("0.5 r_c", 0.5 * r_c),
+        ("0.99 r_c", 0.99 * r_c),
+        ("1.5 r_c", 1.5 * r_c),
+    ]:
         sigma = dispersion_relation(G, reaction_rate=r)
         n_unstable = int(np.sum(sigma > 1e-9))
-        regime = ("uniform only" if n_unstable <= 1 else "Fiedler pattern grows")
+        regime = "uniform only" if n_unstable <= 1 else "Fiedler pattern grows"
         print(f"  {label:>12} {n_unstable:>15} {regime:>22}")
     print()
     print("  -> r < r_c: homogenization (uniform mode); r > r_c: the Fiedler")
@@ -278,8 +292,10 @@ def experiment_5_lyapunov_clock():
     print("conservation/Lyapunov module (analyze_spectral_gap) exposes it as")
     print("diffusion_gap = lambda_2(L_sym), NOT the combinatorial lambda_2(D-A).")
     print()
-    print(f"  {'graph':18s} {'diffusion l2':>13} {'Lyapunov gap':>13} "
-          f"{'combinatorial':>14} {'match?':>7}")
+    print(
+        f"  {'graph':18s} {'diffusion l2':>13} {'Lyapunov gap':>13} "
+        f"{'combinatorial':>14} {'match?':>7}"
+    )
     cases = [
         ("path P12", nx.path_graph(12)),
         ("barbell (2 K5)", nx.barbell_graph(5, 0)),
@@ -293,8 +309,10 @@ def experiment_5_lyapunov_clock():
         lam2 = float(ev[1])
         sg = analyze_spectral_gap(G)
         match = abs(lam2 - sg.diffusion_gap) < 1e-9
-        print(f"  {name:18s} {lam2:>13.4f} {sg.diffusion_gap:>13.4f} "
-              f"{sg.spectral_gap:>14.4f} {str(match):>7}")
+        print(
+            f"  {name:18s} {lam2:>13.4f} {sg.diffusion_gap:>13.4f} "
+            f"{sg.spectral_gap:>14.4f} {str(match):>7}"
+        )
     print()
     print("  -> the diffusion lambda_2 and the Lyapunov diffusion_gap are the")
     print("     SAME (match=True); the combinatorial gap differs. The four faces")

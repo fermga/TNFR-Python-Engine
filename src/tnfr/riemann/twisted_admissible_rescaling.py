@@ -110,12 +110,9 @@ from .admissible_rescaling import (
 from .dirichlet_l import DirichletCharacter
 from .hilbert_polya import wasserstein_1_distance
 from .twisted_hilbert_polya import fetch_chi_zero_imaginary_parts
-from .twisted_prime_ladder_hamiltonian import (
-    build_twisted_prime_ladder_hamiltonian,
-)
+from .twisted_prime_ladder_hamiltonian import build_twisted_prime_ladder_hamiltonian
 from .twisted_structural_zero_density import build_twisted_structural_t_hp
 from .twisted_weil_explicit_formula import character_parity
-
 
 __all__ = [
     "TwistedAdmissibleRescalingCertificate",
@@ -212,27 +209,21 @@ class TwistedAdmissibleRescalingCertificate:
             f"{self.character_name} (mod {self.character_modulus}, "
             f"{self.character_parity})",
             f"  n_targets                       : {self.n_targets}",
-            "  --- Smooth half of F^(chi)_cand "
-            "(operator-level lift of P46) ---",
-            f"  self-adjoint after conjugation  : "
-            f"{self.smooth_self_adjoint}",
+            "  --- Smooth half of F^(chi)_cand " "(operator-level lift of P46) ---",
+            f"  self-adjoint after conjugation  : " f"{self.smooth_self_adjoint}",
             f"  spectrum matches smooth targets : "
             f"{self.smooth_spectrum_matches_targets}",
-            f"  max |spec - n_i^(chi)|          : "
-            f"{self.smooth_max_spec_diff:.4e}",
+            f"  max |spec - n_i^(chi)|          : " f"{self.smooth_max_spec_diff:.4e}",
             "  --- W_1 gaps to true chi-twisted zeros ---",
-            f"  W_1(sigma(P34),  {{gamma_i^(chi)}})  : "
-            f"{self.w1_p34_vs_true:.4e}",
+            f"  W_1(sigma(P34),  {{gamma_i^(chi)}})  : " f"{self.w1_p34_vs_true:.4e}",
             f"  W_1({{n_i^(chi)}}, {{gamma_i^(chi)}}) "
             f"(smooth) : "
             f"{self.w1_smooth_vs_true:.4e}",
             f"  smooth improvement ratio        : "
             f"{self.smooth_improvement_ratio:.2f}x",
             "  --- Canonical oscillatory enrichment ---",
-            f"  best mode                       : "
-            f"{self.oscillatory_mode}",
-            f"  best amplitude                  : "
-            f"{self.oscillatory_amplitude:.4e}",
+            f"  best mode                       : " f"{self.oscillatory_mode}",
+            f"  best amplitude                  : " f"{self.oscillatory_amplitude:.4e}",
             f"  W_1(osc, {{gamma_i^(chi)}})      : "
             f"{self.w1_oscillatory_vs_true:.4e}",
             f"  rel improvement over smooth     : "
@@ -240,13 +231,10 @@ class TwistedAdmissibleRescalingCertificate:
             "  --- Per-mode breakdown (best W_1 per family) ---",
         ]
         for mode, (amp, w1) in self.per_mode_best_w1.items():
-            lines.append(
-                f"    {mode:<14s} : amp={amp:.2e}  W_1={w1:.4e}"
-            )
+            lines.append(f"    {mode:<14s} : amp={amp:.2e}  W_1={w1:.4e}")
         lines.append("")
         lines.append(
-            f"  structurally derived            : "
-            f"{self.structurally_derived}"
+            f"  structurally derived            : " f"{self.structurally_derived}"
         )
         if self.notes:
             lines.append("")
@@ -314,7 +302,12 @@ def compute_twisted_admissible_rescaling_certificate(
         raise ValueError("n_targets must be >= 4")
     if oscillatory_amplitudes is None:
         oscillatory_amplitudes = (
-            0.0, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1,
+            0.0,
+            1e-3,
+            5e-3,
+            1e-2,
+            5e-2,
+            1e-1,
         )
 
     # 1. P34 chi-twisted spectrum & eigenvectors via canonical API
@@ -326,14 +319,10 @@ def compute_twisted_admissible_rescaling_certificate(
     eigvals_all, eigvecs_all = bundle.hamiltonian.get_spectrum()
     eigvals_all = np.real(np.asarray(eigvals_all, dtype=float))
     eigvecs_all = np.asarray(eigvecs_all)
-    lambdas, U_kept = extract_positive_spectrum(
-        eigvals_all, eigvecs_all, n_targets
-    )
+    lambdas, U_kept = extract_positive_spectrum(eigvals_all, eigvecs_all, n_targets)
 
     # 2. Canonical chi-twisted targets (P46 smooth zero positions)
-    smooth_targets = build_twisted_structural_t_hp(
-        n_targets, chi, dps=dps
-    )
+    smooth_targets = build_twisted_structural_t_hp(n_targets, chi, dps=dps)
 
     # 3. Smooth rescaling operator + verification.
     # The full-ambient operator is exposed via
@@ -341,9 +330,7 @@ def compute_twisted_admissible_rescaling_certificate(
     # in the kept eigenbasis where H_sub = diag(lambdas) and
     # F_sub = diag(sqrt(mu_i^(chi)/lambda_i)). The conjugation is
     # exact by construction (verified below at machine precision).
-    _F_smooth_ambient = build_smooth_rescaling_operator(
-        lambdas, U_kept, smooth_targets
-    )
+    _F_smooth_ambient = build_smooth_rescaling_operator(lambdas, U_kept, smooth_targets)
     _ = _F_smooth_ambient  # exposed via build_smooth_rescaling_operator
     H_sub = np.diag(lambdas)
     F_sub = np.diag(np.sqrt(smooth_targets / lambdas))
@@ -352,14 +339,10 @@ def compute_twisted_admissible_rescaling_certificate(
     spec_check = verify_spectrum_match(H_tilde_sub, smooth_targets)
 
     # 4. W_1 gaps vs true chi-twisted Dirichlet zeros
-    true_chi_gammas = fetch_chi_zero_imaginary_parts(
-        chi, n_targets, dps=dps
-    )
+    true_chi_gammas = fetch_chi_zero_imaginary_parts(chi, n_targets, dps=dps)
     w1_smooth = wasserstein_1_distance(smooth_targets, true_chi_gammas)
     w1_p34 = wasserstein_1_distance(lambdas, true_chi_gammas)
-    improvement = (
-        w1_p34 / w1_smooth if w1_smooth > 0.0 else float("inf")
-    )
+    improvement = w1_p34 / w1_smooth if w1_smooth > 0.0 else float("inf")
 
     # 5. Per-mode oscillatory canonical sweep (reuses P30 atomic)
     per_mode_best: dict = {}
@@ -389,9 +372,7 @@ def compute_twisted_admissible_rescaling_certificate(
             best_mode = mode
 
     rel_improvement_osc = (
-        (w1_smooth - best_w1_overall) / w1_smooth
-        if w1_smooth > 0.0
-        else 0.0
+        (w1_smooth - best_w1_overall) / w1_smooth if w1_smooth > 0.0 else 0.0
     )
 
     notes = (

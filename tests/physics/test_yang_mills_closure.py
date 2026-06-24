@@ -45,9 +45,7 @@ class TestYangMillsClosureClassification:
             report.open_requirements
         )
         assert report.evidence["canonical_gauge_group"] == "U(1)"
-        assert report.metadata["scope"] == (
-            "Y5_closure_obstruction_not_clay_proof"
-        )
+        assert report.metadata["scope"] == ("Y5_closure_obstruction_not_clay_proof")
 
     def test_existing_reports_can_be_reused(self):
         derivability = audit_nonabelian_derivability(seed=7)
@@ -58,9 +56,7 @@ class TestYangMillsClosureClassification:
         )
         assert report.evidence["derivability_verdict"] == derivability.verdict
         assert report.evidence["scaling_verdict"] == scaling.verdict
-        assert report.evidence["finite_group_count"] == scaling.summary[
-            "n_groups"
-        ]
+        assert report.evidence["finite_group_count"] == scaling.summary["n_groups"]
 
     def test_sampled_gap_collapse_is_recorded_but_y3_still_blocks_clay(self):
         collapse_scaling = run_finite_scaling_study(
@@ -80,9 +76,7 @@ class TestYangMillsClosureClassification:
             "B_REQUIRES_NEW_CANONICAL_NONABELIAN_DERIVATION"
         )
         assert report.verdict == "BRANCH_B_OBSTRUCTION_CLASSIFIED"
-        assert "stabilize_positive_finite_gap_surface" in (
-            report.open_requirements
-        )
+        assert "stabilize_positive_finite_gap_surface" in (report.open_requirements)
 
     def test_imports_from_package_root(self):
         from tnfr import yang_mills

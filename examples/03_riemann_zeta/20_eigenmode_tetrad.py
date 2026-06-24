@@ -56,14 +56,19 @@ def main() -> None:
     print("-" * 55)
 
     analysis = compute_eigenmode_tetrad(50, sigma=0.5)
-    print(f"  k = {analysis.k},  sigma = {analysis.sigma},  "
-          f"modes computed = {len(analysis.tetrads)}")
+    print(
+        f"  k = {analysis.k},  sigma = {analysis.sigma},  "
+        f"modes computed = {len(analysis.tetrads)}"
+    )
     print()
 
-    print(f"  {'j':>4}  {'lambda':>10}  {'Phi_s':>10}  "
-          f"{'|grad|':>10}  {'K_phi':>10}  {'xi_C':>10}")
-    print(f"  {'─' * 4}  {'─' * 10}  {'─' * 10}  "
-          f"{'─' * 10}  {'─' * 10}  {'─' * 10}")
+    print(
+        f"  {'j':>4}  {'lambda':>10}  {'Phi_s':>10}  "
+        f"{'|grad|':>10}  {'K_phi':>10}  {'xi_C':>10}"
+    )
+    print(
+        f"  {'─' * 4}  {'─' * 10}  {'─' * 10}  " f"{'─' * 10}  {'─' * 10}  {'─' * 10}"
+    )
 
     # Show first 10, last 5
     tetrads = analysis.tetrads
@@ -83,10 +88,14 @@ def main() -> None:
             print(f"  {'...':>4}")
 
     print()
-    print(f"  Aggregate:  mean Phi_s = {analysis.mean_phi_s:.4f},  "
-          f"mean |grad| = {analysis.mean_grad_phi:.6f}")
-    print(f"              mean K_phi = {analysis.mean_k_phi:.6f},  "
-          f"mean xi_C   = {analysis.mean_xi_c:.4f}")
+    print(
+        f"  Aggregate:  mean Phi_s = {analysis.mean_phi_s:.4f},  "
+        f"mean |grad| = {analysis.mean_grad_phi:.6f}"
+    )
+    print(
+        f"              mean K_phi = {analysis.mean_k_phi:.6f},  "
+        f"mean xi_C   = {analysis.mean_xi_c:.4f}"
+    )
     print()
 
     # ------------------------------------------------------------------
@@ -103,28 +112,35 @@ def main() -> None:
 
     # Quartile analysis
     n = len(tetrads)
-    q1 = tetrads[:n // 4]
-    q4 = tetrads[3 * n // 4:]
+    q1 = tetrads[: n // 4]
+    q4 = tetrads[3 * n // 4 :]
 
     mean_q1_phi_s = sum(t.phi_s for t in q1) / len(q1)
     mean_q4_phi_s = sum(t.phi_s for t in q4) / len(q4)
     mean_q1_grad = sum(t.grad_phi for t in q1) / len(q1)
     mean_q4_grad = sum(t.grad_phi for t in q4) / len(q4)
 
-    print(f"  Quartile analysis (Q1 = modes 0..{n // 4 - 1}, "
-          f"Q4 = modes {3 * n // 4}..{n - 1}):")
-    print(f"    Phi_s:    Q1 mean = {mean_q1_phi_s:.4f},  "
-          f"Q4 mean = {mean_q4_phi_s:.4f}")
-    print(f"    |grad|:   Q1 mean = {mean_q1_grad:.6f},  "
-          f"Q4 mean = {mean_q4_grad:.6f}")
+    print(
+        f"  Quartile analysis (Q1 = modes 0..{n // 4 - 1}, "
+        f"Q4 = modes {3 * n // 4}..{n - 1}):"
+    )
+    print(
+        f"    Phi_s:    Q1 mean = {mean_q1_phi_s:.4f},  "
+        f"Q4 mean = {mean_q4_phi_s:.4f}"
+    )
+    print(
+        f"    |grad|:   Q1 mean = {mean_q1_grad:.6f},  " f"Q4 mean = {mean_q4_grad:.6f}"
+    )
     print()
 
     # Gradient summary
     grads = [t.grad_phi for t in tetrads]
     print(f"  |grad_phi|(j) range: [{min(grads):.6f}, {max(grads):.6f}]")
-    print(f"  K_phi(j) range:      "
-          f"[{min(t.k_phi for t in tetrads):.6f}, "
-          f"{max(t.k_phi for t in tetrads):.6f}]")
+    print(
+        f"  K_phi(j) range:      "
+        f"[{min(t.k_phi for t in tetrads):.6f}, "
+        f"{max(t.k_phi for t in tetrads):.6f}]"
+    )
     print()
 
     # ------------------------------------------------------------------
@@ -143,23 +159,25 @@ def main() -> None:
     n_modes = len(analysis.tetrads)
 
     print(f"  Von Koch threshold ({PHI_S_VON_KOCH_THRESHOLD}):")
-    n_conf_vk = int(u6_vk['fraction'] * n_modes)
-    print(f"    Confined: {n_conf_vk} / {n_modes}  "
-          f"({u6_vk['fraction']:.1%})")
-    violator_vk = u6_vk['violations']
+    n_conf_vk = int(u6_vk["fraction"] * n_modes)
+    print(f"    Confined: {n_conf_vk} / {n_modes}  " f"({u6_vk['fraction']:.1%})")
+    violator_vk = u6_vk["violations"]
     if violator_vk:
-        print(f"    Violating modes: {violator_vk[:10]}"
-              f"{'...' if len(violator_vk) > 10 else ''}")
+        print(
+            f"    Violating modes: {violator_vk[:10]}"
+            f"{'...' if len(violator_vk) > 10 else ''}"
+        )
     print()
 
     print(f"  Golden threshold ({PHI_S_GOLDEN_THRESHOLD}):")
-    n_conf_g = int(u6_gold['fraction'] * n_modes)
-    print(f"    Confined: {n_conf_g} / {n_modes}  "
-          f"({u6_gold['fraction']:.1%})")
-    violator_g = u6_gold['violations']
+    n_conf_g = int(u6_gold["fraction"] * n_modes)
+    print(f"    Confined: {n_conf_g} / {n_modes}  " f"({u6_gold['fraction']:.1%})")
+    violator_g = u6_gold["violations"]
     if violator_g:
-        print(f"    Violating modes: {violator_g[:10]}"
-              f"{'...' if len(violator_g) > 10 else ''}")
+        print(
+            f"    Violating modes: {violator_g[:10]}"
+            f"{'...' if len(violator_g) > 10 else ''}"
+        )
     print()
 
     # ------------------------------------------------------------------
@@ -175,8 +193,7 @@ def main() -> None:
         u6_threshold=PHI_S_GOLDEN_THRESHOLD,
     )
 
-    print(f"  {'sigma':>6}  {'fraction':>10}  "
-          f"{'mean Phi_s':>10}")
+    print(f"  {'sigma':>6}  {'fraction':>10}  " f"{'mean Phi_s':>10}")
     print(f"  {'─' * 6}  {'─' * 10}  {'─' * 10}")
 
     best_sigma = None
@@ -187,15 +204,13 @@ def main() -> None:
         if frac > best_frac:
             best_frac = frac
             best_sigma = sigma_val
-        print(
-            f"  {sigma_val:6.2f}  "
-            f"{frac:10.1%}  "
-            f"{entry['mean_phi_s']:10.4f}"
-        )
+        print(f"  {sigma_val:6.2f}  " f"{frac:10.1%}  " f"{entry['mean_phi_s']:10.4f}")
 
     print()
-    print(f"  Best confinement at sigma = {best_sigma} "
-          f"({best_frac:.1%} modes confined)")
+    print(
+        f"  Best confinement at sigma = {best_sigma} "
+        f"({best_frac:.1%} modes confined)"
+    )
     print("  --> Confinement is expected to peak near sigma = 1/2")
     print("      where the potential term V_sigma vanishes.")
     print()
@@ -206,8 +221,10 @@ def main() -> None:
     print("Section 5: Scaling of Eigenmode Fields with k")
     print("-" * 55)
 
-    print(f"  {'k':>6}  {'mean Phi_s':>10}  {'max |grad|':>10}  "
-          f"{'mean K_phi':>10}  {'u6_frac':>8}")
+    print(
+        f"  {'k':>6}  {'mean Phi_s':>10}  {'max |grad|':>10}  "
+        f"{'mean K_phi':>10}  {'u6_frac':>8}"
+    )
     print(f"  {'─' * 6}  {'─' * 10}  {'─' * 10}  {'─' * 10}  {'─' * 8}")
 
     for k in [10, 20, 50, 100, 200]:
@@ -231,7 +248,10 @@ def main() -> None:
     print("Section 6: Cross-Topology Eigenmode Tetrad (k = 30)")
     print("-" * 55)
 
-    from tnfr.riemann.topology import build_prime_cycle_graph, build_prime_complete_graph
+    from tnfr.riemann.topology import (
+        build_prime_complete_graph,
+        build_prime_cycle_graph,
+    )
 
     k_topo = 30
 
@@ -252,10 +272,13 @@ def main() -> None:
         "complete": complete_result,
     }
 
-    print(f"  {'topology':>10}  {'mean Phi_s':>10}  {'mean |grad|':>11}  "
-          f"{'mean K_phi':>10}  {'mean xi_C':>10}  {'u6_frac':>8}")
-    print(f"  {'─' * 10}  {'─' * 10}  {'─' * 11}  "
-          f"{'─' * 10}  {'─' * 10}  {'─' * 8}")
+    print(
+        f"  {'topology':>10}  {'mean Phi_s':>10}  {'mean |grad|':>11}  "
+        f"{'mean K_phi':>10}  {'mean xi_C':>10}  {'u6_frac':>8}"
+    )
+    print(
+        f"  {'─' * 10}  {'─' * 10}  {'─' * 11}  " f"{'─' * 10}  {'─' * 10}  {'─' * 8}"
+    )
 
     for name, res in results.items():
         u6 = check_u6_confinement(res, u6_threshold=PHI_S_GOLDEN_THRESHOLD)

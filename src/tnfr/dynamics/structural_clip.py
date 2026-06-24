@@ -18,14 +18,17 @@ from ..config.defaults_core import CoreDefaults
 
 # PHASE 6 EXTENDED: Canonical constants for structural clipping
 from ..constants.canonical import (
-    NODAL_OPT_COUPLING_CANONICAL,       # γ/(π+e) ≈ 0.0985 (0.1 → canonical margin)
-    OPT_ORCH_FFT_SPEEDUP_CANONICAL,     # e-γ ≈ 2.1411 (2.0 → canonical normalization)
+    NODAL_OPT_COUPLING_CANONICAL,  # γ/(π+e) ≈ 0.0985 (0.1 → canonical margin)
+)
+from ..constants.canonical import (
+    OPT_ORCH_FFT_SPEEDUP_CANONICAL,  # e-γ ≈ 2.1411 (2.0 → canonical normalization)
 )
 
 __all__ = [
     "structural_clip",
     "StructuralClipStats",
 ]
+
 
 class StructuralClipStats:
     """Telemetry for structural boundary interventions.
@@ -86,16 +89,20 @@ class StructuralClipStats:
             ),
         }
 
+
 # Global statistics instance (optional telemetry)
 _global_stats = StructuralClipStats()
+
 
 def get_clip_stats() -> StructuralClipStats:
     """Return the global clip statistics instance."""
     return _global_stats
 
+
 def reset_clip_stats() -> None:
     """Reset global clip statistics."""
     _global_stats.reset()
+
 
 def structural_clip(
     value: float,
@@ -175,7 +182,9 @@ def structural_clip(
 
         # First, clamp to slightly extended range to handle the mapping
         # Map [lo, hi] to working range
-        margin = (hi - lo) * NODAL_OPT_COUPLING_CANONICAL  # γ/(π+e) ≈ 0.0985 margin for smooth transition
+        margin = (
+            hi - lo
+        ) * NODAL_OPT_COUPLING_CANONICAL  # γ/(π+e) ≈ 0.0985 margin for smooth transition
         working_lo = lo - margin
         working_hi = hi + margin
 
@@ -186,7 +195,11 @@ def structural_clip(
             # Degenerate case: return midpoint
             return (lo + hi) / 2.0
 
-        normalized = OPT_ORCH_FFT_SPEEDUP_CANONICAL * (value - (working_lo + working_hi) / 2.0) / range_width
+        normalized = (
+            OPT_ORCH_FFT_SPEEDUP_CANONICAL
+            * (value - (working_lo + working_hi) / 2.0)
+            / range_width
+        )
 
         # Apply tanh with steepness k for smooth S-curve
         # tanh maps R → (-1, 1), scaled by k to control steepness

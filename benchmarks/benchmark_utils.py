@@ -6,43 +6,51 @@ operator sequences, and running experiments.
 
 Status: RESEARCH - Support infrastructure for validation experiments
 """
+
 from __future__ import annotations
 
 import math
 import random
-from pathlib import Path
-from typing import List, Any
-
-import networkx as nx
 
 # Import TNFR core
 import sys
+from pathlib import Path
+from typing import Any, List
+
+import networkx as nx
+
 _ROOT = Path(__file__).resolve().parents[1]
 _SRC = _ROOT / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
 from tnfr.config import (
-    EPI_PRIMARY,
-    VF_PRIMARY,
     DNFR_PRIMARY,
+    EPI_PRIMARY,
     THETA_PRIMARY,
+    VF_PRIMARY,
     inject_defaults,
 )
 from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Resonance, Coupling,
-    SelfOrganization, Mutation, Silence, Expansion, Contraction,
-    Transition, Recursivity,
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
 )
 
 
-def create_tnfr_topology(
-    topology: str,
-    n_nodes: int,
-    seed: int
-) -> nx.Graph:
+def create_tnfr_topology(topology: str, n_nodes: int, seed: int) -> nx.Graph:
     """Create a network topology with proper TNFR initialization.
-    
+
     Parameters
     ----------
     topology : str
@@ -51,22 +59,22 @@ def create_tnfr_topology(
         Number of nodes
     seed : int
         Random seed for reproducibility
-        
+
     Returns
     -------
     nx.Graph
         Graph with TNFR defaults injected but nodes not yet initialized
     """
     random.seed(seed)
-    
-    if topology == 'ring':
+
+    if topology == "ring":
         G = nx.cycle_graph(n_nodes)
-    elif topology == 'scale_free':
+    elif topology == "scale_free":
         G = nx.scale_free_graph(n_nodes, seed=seed).to_undirected()
-    elif topology == 'ws':  # small-world
+    elif topology == "ws":  # small-world
         k = min(4, n_nodes - 1) if n_nodes > 1 else 0
         G = nx.watts_strogatz_graph(n_nodes, k=k, p=0.3, seed=seed)
-    elif topology == 'tree':
+    elif topology == "tree":
         if n_nodes <= 1:
             G = nx.Graph()
             G.add_node(0)
@@ -76,7 +84,7 @@ def create_tnfr_topology(
             if G.number_of_nodes() > n_nodes:
                 nodes_to_remove = list(G.nodes)[n_nodes:]
                 G.remove_nodes_from(nodes_to_remove)
-    elif topology == 'grid':
+    elif topology == "grid":
         if n_nodes <= 1:
             G = nx.Graph()
             G.add_node(0)
@@ -91,10 +99,10 @@ def create_tnfr_topology(
                 G.remove_nodes_from(nodes_to_remove)
     else:
         raise ValueError(f"Unknown topology: {topology}")
-    
+
     # Inject TNFR defaults into graph
     inject_defaults(G)
-    
+
     return G
 
 
@@ -105,7 +113,7 @@ def initialize_tnfr_nodes(
     seed: int = 42,
 ) -> None:
     """Initialize node attributes with proper TNFR primary keys.
-    
+
     Parameters
     ----------
     G : nx.Graph
@@ -118,7 +126,7 @@ def initialize_tnfr_nodes(
         Random seed
     """
     random.seed(seed)
-    
+
     for node in G.nodes:
         G.nodes[node][EPI_PRIMARY] = random.uniform(*epi_range)
         G.nodes[node][VF_PRIMARY] = nu_f
@@ -134,13 +142,13 @@ def generate_grammar_valid_sequence(
     intensity: float = 1.0,
 ) -> List[Any]:
     """Generate operator sequences that comply with TNFR grammar (U1-U4).
-    
+
     All sequences:
     - Start with generator (U1a): Emission, Transition, or Recursivity
     - End with closure (U1b): Silence, Transition, Recursivity, or Dissonance
     - Include stabilizers after destabilizers (U2)
     - Respect canonical flow compatibility matrix
-    
+
     Parameters
     ----------
     sequence_type : str
@@ -148,15 +156,15 @@ def generate_grammar_valid_sequence(
         'balanced' (mixed)
     intensity : float
         Multiplier for sequence length (1.0 = baseline)
-        
+
     Returns
     -------
     List
         List of operator instances forming a valid sequence
     """
     base_length = max(3, int(intensity * 5))
-    
-    if sequence_type == 'RA_dominated':
+
+    if sequence_type == "RA_dominated":
         # Resonance/coupling focused sequence
         # Pattern: AL → IL → (RA → IL)* → SHA
         seq = [Emission(), Coherence()]
@@ -164,8 +172,8 @@ def generate_grammar_valid_sequence(
         for _ in range(n_resonance):
             seq.extend([Resonance(), Coherence()])
         seq.append(Silence())
-        
-    elif sequence_type == 'OZ_heavy':
+
+    elif sequence_type == "OZ_heavy":
         # Dissonance-heavy sequence with required stabilizers
         # Pattern: AL → (OZ → IL)* → (VAL → THOL) → SHA
         seq = [Emission()]
@@ -175,8 +183,8 @@ def generate_grammar_valid_sequence(
         # Add expansion with self-organization (U2: destabilizer needs stabilizer)
         seq.extend([Dissonance(), Expansion(), SelfOrganization(), Coherence()])
         seq.append(Silence())
-        
-    elif sequence_type == 'balanced':
+
+    elif sequence_type == "balanced":
         # Mix of operators maintaining grammar compliance
         # Pattern: AL → IL → (OZ → IL → RA → IL)* → SHA
         seq = [Emission(), Coherence()]
@@ -184,27 +192,27 @@ def generate_grammar_valid_sequence(
         for _ in range(n_cycles):
             seq.extend([Dissonance(), Coherence(), Resonance(), Coherence()])
         seq.append(Silence())
-        
+
     else:
         raise ValueError(f"Unknown sequence type: {sequence_type}")
-    
+
     return seq
 
 
 # Validation: Ensure sequences comply with grammar
 def validate_sequence_grammar(sequence: List[Any]) -> tuple[bool, str]:
     """Validate that a sequence complies with TNFR grammar rules.
-    
+
     Checks:
     - U1a: Starts with generator (AL, NAV, REMESH)
     - U1b: Ends with closure (SHA, NAV, REMESH, OZ)
     - U2: Destabilizers (OZ, VAL, ZHIR) followed by stabilizers (IL, THOL)
-    
+
     Parameters
     ----------
     sequence : List
         List of operator instances
-        
+
     Returns
     -------
     tuple[bool, str]
@@ -212,24 +220,24 @@ def validate_sequence_grammar(sequence: List[Any]) -> tuple[bool, str]:
     """
     if not sequence:
         return False, "Empty sequence"
-    
+
     # Map operators to their names
     op_names = [op.__class__.__name__ for op in sequence]
-    
+
     # U1a: Generator check
-    generators = {'Emission', 'Transition', 'Recursivity'}
+    generators = {"Emission", "Transition", "Recursivity"}
     if op_names[0] not in generators:
         return False, f"Must start with generator, got {op_names[0]}"
-    
+
     # U1b: Closure check
-    closures = {'Silence', 'Transition', 'Recursivity', 'Dissonance'}
+    closures = {"Silence", "Transition", "Recursivity", "Dissonance"}
     if op_names[-1] not in closures:
         return False, f"Must end with closure, got {op_names[-1]}"
-    
+
     # U2: Destabilizer → Stabilizer check
-    destabilizers = {'Dissonance', 'Expansion', 'Mutation'}
-    stabilizers = {'Coherence', 'SelfOrganization'}
-    
+    destabilizers = {"Dissonance", "Expansion", "Mutation"}
+    stabilizers = {"Coherence", "SelfOrganization"}
+
     for i, op_name in enumerate(op_names):
         if op_name in destabilizers:
             # Look ahead for stabilizer within next 3 operators
@@ -239,14 +247,17 @@ def validate_sequence_grammar(sequence: List[Any]) -> tuple[bool, str]:
                     found_stabilizer = True
                     break
             if not found_stabilizer:
-                return False, f"Destabilizer {op_name} at position {i} needs stabilizer within 3 ops"
-    
+                return (
+                    False,
+                    f"Destabilizer {op_name} at position {i} needs stabilizer within 3 ops",
+                )
+
     return True, "Valid"
 
 
 __all__ = [
-    'create_tnfr_topology',
-    'initialize_tnfr_nodes',
-    'generate_grammar_valid_sequence',
-    'validate_sequence_grammar',
+    "create_tnfr_topology",
+    "initialize_tnfr_nodes",
+    "generate_grammar_valid_sequence",
+    "validate_sequence_grammar",
 ]

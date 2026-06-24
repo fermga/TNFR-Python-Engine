@@ -110,7 +110,6 @@ from .dirichlet_l import (
 )
 from .operator import _first_primes
 
-
 __all__ = [
     "build_twisted_prime_ladder_graph",
     "build_twisted_prime_ladder_weight_operator",
@@ -125,6 +124,7 @@ __all__ = [
 # ---------------------------------------------------------------------------
 # Graph construction
 # ---------------------------------------------------------------------------
+
 
 def build_twisted_prime_ladder_graph(
     chi: DirichletCharacter,
@@ -316,6 +316,7 @@ def build_twisted_prime_ladder_weight_operator(
 # Hamiltonian wrapper
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class TwistedPrimeLadderHamiltonian:
     r"""Bundled χ-twisted prime-ladder Hamiltonian, weight operator, and spectrum.
@@ -422,6 +423,7 @@ def build_twisted_prime_ladder_hamiltonian(
 # Spectral observables
 # ---------------------------------------------------------------------------
 
+
 def twisted_weighted_spectral_trace(
     H_freq: np.ndarray,
     W_chi: np.ndarray,
@@ -482,6 +484,7 @@ def twisted_weighted_spectral_trace(
 # ---------------------------------------------------------------------------
 # Certificate: Hamiltonian reproduces the χ-twisted prime-ladder data
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class TwistedPrimeLadderHamiltonianCertificate:
@@ -614,9 +617,7 @@ def verify_twisted_hamiltonian_reproduces_prime_ladder(
     eigvals_ham, _ = H.get_spectrum()
     eigvals_ham_sorted = np.sort(np.real(eigvals_ham))
     eigvals_ref_sorted = np.sort(spectrum.eigenvalues)
-    spectrum_abs_error = float(
-        np.max(np.abs(eigvals_ham_sorted - eigvals_ref_sorted))
-    )
+    spectrum_abs_error = float(np.max(np.abs(eigvals_ham_sorted - eigvals_ref_sorted)))
     spectrum_ok = spectrum_abs_error <= spectrum_tol
 
     # --- χ-twisted weighted trace check ---
@@ -633,11 +634,7 @@ def verify_twisted_hamiltonian_reproduces_prime_ladder(
 
     n_active = int(spectrum.n_active)
     n_excluded = int(spectrum.n_excluded)
-    seed = (
-        int(n_primes_seed)
-        if n_primes_seed is not None
-        else n_active + n_excluded
-    )
+    seed = int(n_primes_seed) if n_primes_seed is not None else n_active + n_excluded
 
     return TwistedPrimeLadderHamiltonianCertificate(
         character_modulus=bundle.character_modulus,

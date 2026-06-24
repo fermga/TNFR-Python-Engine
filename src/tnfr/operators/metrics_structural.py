@@ -4,23 +4,18 @@ from __future__ import annotations
 
 from typing import Any
 
-from .metrics_core import (
-    get_node_attr as _get_node_attr,
-    ALIAS_D2EPI,
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from .metrics_core import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from .metrics_core import get_node_attr as _get_node_attr
 
 # --- Regime classification thresholds ---
-_VF_LATENT_THRESHOLD = 0.05      # νf below this → latent node
-_EPI_RESONANT_THRESHOLD = 0.5    # EPI above this (+ high νf) → resonant
-_VF_RESONANT_THRESHOLD = 0.8     # νf above this (+ high EPI) → resonant
+_VF_LATENT_THRESHOLD = 0.05  # νf below this → latent node
+_EPI_RESONANT_THRESHOLD = 0.5  # EPI above this (+ high νf) → resonant
+_VF_RESONANT_THRESHOLD = 0.8  # νf above this (+ high EPI) → resonant
 _PHASE_COHERENCE_COUPLING = 0.5  # phase coherence above → network coupled
 _NEIGHBOR_CHANGE_THRESHOLD = 0.05  # neighbor delta above → significant
-_PHASE_SHIFT_THRESHOLD = 0.5     # |Δθ| above → phase change event
-_SIGNIFICANT_PHASE_SHIFT = 0.3   # |Δθ| above → regime transition type
+_PHASE_SHIFT_THRESHOLD = 0.5  # |Δθ| above → phase change event
+_SIGNIFICANT_PHASE_SHIFT = 0.3  # |Δθ| above → regime transition type
+
 
 def _detect_regime_from_state(epi: float, vf: float, latent: bool) -> str:
     """Detect structural regime from node state.
@@ -52,6 +47,7 @@ def _detect_regime_from_state(epi: float, vf: float, latent: bool) -> str:
         return "resonant"
     else:
         return "active"
+
 
 def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str, Any]:
     """VAL - Enhanced expansion metrics with structural indicators (Issue #2724).
@@ -176,7 +172,9 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
     # Growth rates (relative to initial values)
     epi_growth_rate = (delta_epi / epi_before) if epi_before > 1e-9 else 0.0
     vf_growth_rate = (delta_vf / vf_before) if vf_before > 1e-9 else 0.0
-    growth_ratio = vf_growth_rate / epi_growth_rate if abs(epi_growth_rate) > 1e-9 else 0.0
+    growth_ratio = (
+        vf_growth_rate / epi_growth_rate if abs(epi_growth_rate) > 1e-9 else 0.0
+    )
 
     # Coherence preservation
     # Local coherence via extracted helper
@@ -195,7 +193,9 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         phase_coherence_neighbors = 0.0
 
     # Bifurcation magnitude (ratio to threshold)
-    bifurcation_magnitude = abs(d2epi) / bifurcation_threshold if bifurcation_threshold > 0 else 0.0
+    bifurcation_magnitude = (
+        abs(d2epi) / bifurcation_threshold if bifurcation_threshold > 0 else 0.0
+    )
 
     # Boolean indicators
     bifurcation_risk = abs(d2epi) > bifurcation_threshold
@@ -207,11 +207,16 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         if abs(epi_growth_rate) > 1e-9
         else True
     )
-    network_coupled = neighbor_count > 0 and phase_coherence_neighbors > _PHASE_COHERENCE_COUPLING
+    network_coupled = (
+        neighbor_count > 0 and phase_coherence_neighbors > _PHASE_COHERENCE_COUPLING
+    )
 
     # Overall health indicator
     expansion_healthy = (
-        dnfr_positive and not bifurcation_risk and coherence_preserved and fractal_preserved
+        dnfr_positive
+        and not bifurcation_risk
+        and coherence_preserved
+        and fractal_preserved
     )
 
     return {
@@ -251,6 +256,7 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
         # Metadata
         "metrics_version": "3.0_canonical",
     }
+
 
 def contraction_metrics(G, node, vf_before, epi_before):
     """NUL - Contraction metrics: νf decrease, core concentration, ΔNFR densification.
@@ -335,7 +341,9 @@ def contraction_metrics(G, node, vf_before, epi_before):
     # Calculate structural density before and after
     # Density = |ΔNFR| / max(EPI, ε)
     density_before = (
-        abs(dnfr_before) / max(abs(epi_before), EPSILON) if dnfr_before is not None else 0.0
+        abs(dnfr_before) / max(abs(epi_before), EPSILON)
+        if dnfr_before is not None
+        else 0.0
     )
     density_after = abs(dnfr_after) / max(abs(epi_after), EPSILON)
 
@@ -374,6 +382,7 @@ def contraction_metrics(G, node, vf_before, epi_before):
     metrics["is_critical_density"] = is_critical_density
 
     return metrics
+
 
 def self_organization_metrics(G, node, epi_before, vf_before):
     """THOL - Enhanced metrics with cascade dynamics and collective coherence.
@@ -448,9 +457,9 @@ def self_organization_metrics(G, node, epi_before, vf_before):
     from .cascade import detect_cascade
     from .metabolism import (
         compute_cascade_depth,
+        compute_metabolic_activity_index,
         compute_propagation_radius,
         compute_subepi_collective_coherence,
-        compute_metabolic_activity_index,
     )
 
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
@@ -497,8 +506,12 @@ def self_organization_metrics(G, node, epi_before, vf_before):
         "subepi_coherence": subepi_coherence,
         "metabolic_activity_index": metabolic_activity,
         # NEW: Network emergence indicator
-        "network_emergence": (cascade_analysis["is_cascade"] and subepi_coherence > _PHASE_COHERENCE_COUPLING),
+        "network_emergence": (
+            cascade_analysis["is_cascade"]
+            and subepi_coherence > _PHASE_COHERENCE_COUPLING
+        ),
     }
+
 
 def mutation_metrics(
     G,
@@ -636,7 +649,9 @@ def mutation_metrics(
 
     # === THRESHOLD VERIFICATION ===
     # Compute ∂EPI/∂t from history
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get("_epi_history", [])
+    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
+        "_epi_history", []
+    )
     if len(epi_history) >= 2:
         depi_dt = abs(epi_history[-1] - epi_history[-2])
     else:
@@ -675,7 +690,9 @@ def mutation_metrics(
 
     # === BIFURCATION ANALYSIS ===
     tau = float(
-        G.graph.get("BIFURCATION_THRESHOLD_TAU", G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5))
+        G.graph.get(
+            "BIFURCATION_THRESHOLD_TAU", G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5)
+        )
     )
     bifurcation_potential = d2epi > tau
 
@@ -694,7 +711,9 @@ def mutation_metrics(
     # === STRUCTURAL PRESERVATION ===
     epi_kind_before = G.nodes[node].get("_epi_kind_before")
     epi_kind_after = G.nodes[node].get("epi_kind")
-    identity_preserved = epi_kind_before == epi_kind_after if epi_kind_before is not None else True
+    identity_preserved = (
+        epi_kind_before == epi_kind_after if epi_kind_before is not None else True
+    )
 
     # Track frequency and pressure changes
     delta_vf = vf_after - vf_before if vf_before is not None else 0.0
@@ -720,8 +739,12 @@ def mutation_metrics(
                 # Check if neighbor has changed recently (has history)
                 neighbor_theta_history = G.nodes[n].get("theta_history", [])
                 if len(neighbor_theta_history) >= 2:
-                    neighbor_change = abs(neighbor_theta_history[-1] - neighbor_theta_history[-2])
-                    if neighbor_change > _NEIGHBOR_CHANGE_THRESHOLD:  # Neighbor experienced change
+                    neighbor_change = abs(
+                        neighbor_theta_history[-1] - neighbor_theta_history[-2]
+                    )
+                    if (
+                        neighbor_change > _NEIGHBOR_CHANGE_THRESHOLD
+                    ):  # Neighbor experienced change
                         impacted_neighbors += 1
 
         # Phase coherence with neighbors after mutation
@@ -746,7 +769,9 @@ def mutation_metrics(
     il_precedence_found = any("IL" in str(g) for g in glyph_history)
 
     # Check if destabilizer is recent (within ~3 operators)
-    destabilizer_recent = destabilizer_distance is not None and destabilizer_distance <= 3
+    destabilizer_recent = (
+        destabilizer_distance is not None and destabilizer_distance <= 3
+    )
 
     grammar_u4b_satisfied = il_precedence_found and destabilizer_recent
 
@@ -824,6 +849,7 @@ def mutation_metrics(
         # === METADATA ===
         "metrics_version": "2.0_canonical",
     }
+
 
 def transition_metrics(
     G,
@@ -946,7 +972,9 @@ def transition_metrics(
     if regime_origin is None:
         # Fallback: detect regime from before state
         regime_origin = _detect_regime_from_state(
-            epi_before or epi_after, vf_before, False  # Cannot access latent flag from before
+            epi_before or epi_after,
+            vf_before,
+            False,  # Cannot access latent flag from before
         )
 
     # Detect destination regime
@@ -1013,6 +1041,7 @@ def transition_metrics(
         "latency_duration": latency_duration,
     }
 
+
 def recursivity_metrics(G, node, epi_before, vf_before):
     """REMESH - Recursivity metrics: fractal propagation, multi-scale coherence.
 
@@ -1050,4 +1079,3 @@ def recursivity_metrics(G, node, epi_before, vf_before):
         "fractal_depth": echo_count,
         "multi_scale_active": echo_count > 0,
     }
-

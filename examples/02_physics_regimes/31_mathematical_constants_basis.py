@@ -30,37 +30,40 @@ Physics basis:
 from __future__ import annotations
 
 import math
-import sys
 import os
+import sys
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 # Ensure src/ is importable when running from examples/
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
+from tnfr.constants import inject_defaults
 from tnfr.constants.canonical import (
-    PHI, GAMMA, PI, E,
     CRITICAL_EXPONENT,
-    STRUCTURAL_FREQUENCY_BASE,
-    ZETA_COUPLING_STRENGTH,
-    PHI_S_VON_KOCH_THRESHOLD,
+    GAMMA,
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
     MIN_BUSINESS_COHERENCE_CANONICAL,
+    PHI,
+    PHI_S_VON_KOCH_THRESHOLD,
+    PI,
+    STRUCTURAL_FREQUENCY_BASE,
+    ZETA_COUPLING_STRENGTH,
+    E,
 )
-from tnfr.constants import inject_defaults
 from tnfr.physics.fields import (
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
     estimate_coherence_length,
 )
-
 
 # ---------------------------------------------------------------------------
 # 1. Golden Ratio (phi): Self-similar proportion
 # ---------------------------------------------------------------------------
+
 
 def demo_phi_convergence() -> None:
     """Show phi emerges as the unique fixed point of x = 1 + 1/x."""
@@ -99,7 +102,9 @@ def demo_phi_convergence() -> None:
 
     # TNFR connection: Phi_s confinement
     print(f"\n  TNFR connection:")
-    print(f"    Structural potential threshold: |Phi_s| < {PHI_S_VON_KOCH_THRESHOLD:.4f}")
+    print(
+        f"    Structural potential threshold: |Phi_s| < {PHI_S_VON_KOCH_THRESHOLD:.4f}"
+    )
     print(f"    U6 confinement: Delta Phi_s < phi = {PHI:.4f}")
     print(f"    Physics: Global harmonic confinement (phi <-> Phi_s)")
 
@@ -107,6 +112,7 @@ def demo_phi_convergence() -> None:
 # ---------------------------------------------------------------------------
 # 2. Euler-Mascheroni (gamma): Logarithmic accumulation
 # ---------------------------------------------------------------------------
+
 
 def demo_gamma_accumulation() -> None:
     """Show gamma governs the gap between harmonic sums and log growth."""
@@ -131,7 +137,9 @@ def demo_gamma_accumulation() -> None:
     print(f"\n  Phase-gradient early-warning level (heuristic, not derived):")
     print(f"    gamma/pi = {GAMMA/PI:.10f}")
     print(f"    CRITICAL_EXPONENT = {CRITICAL_EXPONENT:.10f}")
-    print(f"    In canonical.py: GRAD_PHI_CANONICAL_THRESHOLD = {GRAD_PHI_CANONICAL_THRESHOLD:.10f}")
+    print(
+        f"    In canonical.py: GRAD_PHI_CANONICAL_THRESHOLD = {GRAD_PHI_CANONICAL_THRESHOLD:.10f}"
+    )
     print(f"    Match: {abs(CRITICAL_EXPONENT - GRAD_PHI_CANONICAL_THRESHOLD) < 1e-10}")
 
     # Mertens theorem: product over primes
@@ -144,7 +152,9 @@ def demo_gamma_accumulation() -> None:
         product *= 1.0 / (1.0 - 1.0 / p)
     mertens_ratio = product * math.log(primes[999])
     print(f"    Product(1/(1-1/p)) * ln(p_1000)  = {mertens_ratio:.6f}")
-    print(f"    Relative error from e^gamma       = {abs(mertens_ratio - math.exp(GAMMA))/math.exp(GAMMA)*100:.4f}%")
+    print(
+        f"    Relative error from e^gamma       = {abs(mertens_ratio - math.exp(GAMMA))/math.exp(GAMMA)*100:.4f}%"
+    )
 
     print(f"\n  TNFR connection:")
     print(f"    Phase gradient threshold: |grad_phi| < gamma/pi = {GAMMA/PI:.4f}")
@@ -154,6 +164,7 @@ def demo_gamma_accumulation() -> None:
 # ---------------------------------------------------------------------------
 # 3. Pi: Periodicity and curvature confinement
 # ---------------------------------------------------------------------------
+
 
 def demo_pi_curvature() -> None:
     """Show pi governs angular periodicity and curvature bounds."""
@@ -187,14 +198,19 @@ def demo_pi_curvature() -> None:
         G.nodes[n]["delta_nfr"] = rng.uniform(-0.5, 0.5)
     k_phi = compute_phase_curvature(G)
     k_arr = np.array(list(k_phi.values()))
-    print(f"    max |K_phi| = {np.max(np.abs(k_arr)):.4f}  (threshold = {K_PHI_CANONICAL_THRESHOLD:.4f})")
+    print(
+        f"    max |K_phi| = {np.max(np.abs(k_arr)):.4f}  (threshold = {K_PHI_CANONICAL_THRESHOLD:.4f})"
+    )
     print(f"    All |K_phi| <= pi? {np.all(np.abs(k_arr) <= PI)}")
-    print(f"    Nodes beyond 0.9*pi: {np.sum(np.abs(k_arr) >= K_PHI_CANONICAL_THRESHOLD)} / {len(k_arr)}")
+    print(
+        f"    Nodes beyond 0.9*pi: {np.sum(np.abs(k_arr) >= K_PHI_CANONICAL_THRESHOLD)} / {len(k_arr)}"
+    )
 
 
 # ---------------------------------------------------------------------------
 # 4. Euler's Number (e): Exponential propagation
 # ---------------------------------------------------------------------------
+
 
 def demo_e_propagation() -> None:
     """Show e governs exponential correlation decay C(r) ~ exp(-r/xi_C)."""
@@ -246,14 +262,14 @@ def demo_e_propagation() -> None:
         log_c = np.log(c_fit)
         # Linear fit: log(C) = log(A) - d/xi_C
         coeffs = np.polyfit(d_fit, log_c, 1)
-        xi_c_fit = -1.0 / coeffs[0] if coeffs[0] < 0 else float('inf')
+        xi_c_fit = -1.0 / coeffs[0] if coeffs[0] < 0 else float("inf")
         A_fit = math.exp(coeffs[1])
         print(f"    Fitted xi_C = {xi_c_fit:.4f}")
         print(f"    Fitted A    = {A_fit:.4f}")
         r_squared = 1.0 - np.var(log_c - np.polyval(coeffs, d_fit)) / np.var(log_c)
         print(f"    R^2 (exponential fit) = {r_squared:.4f}")
     else:
-        xi_c_fit = float('nan')
+        xi_c_fit = float("nan")
         print(f"    (Not enough positive correlations for fit)")
 
     # SDK coherence length
@@ -269,6 +285,7 @@ def demo_e_propagation() -> None:
 # 5. Tetrahedral edge relations
 # ---------------------------------------------------------------------------
 
+
 def demo_tetrahedral_edges() -> None:
     """Show all 6 edge and 4 face combinations from the tetrahedron."""
     print("\n" + "=" * 65)
@@ -276,10 +293,20 @@ def demo_tetrahedral_edges() -> None:
     print("=" * 65)
 
     edges = [
-        ("phi-gamma", "phi/gamma", PHI / GAMMA, "Structural frequency base (nu_f scaling)"),
+        (
+            "phi-gamma",
+            "phi/gamma",
+            PHI / GAMMA,
+            "Structural frequency base (nu_f scaling)",
+        ),
         ("phi-pi", "phi/(phi+pi)", PHI / (PHI + PI), "Optimization penalty factor"),
         ("phi-e", "phi/e", PHI / E, "EPI maximum canonical bound"),
-        ("gamma-pi", "gamma/pi", GAMMA / PI, "Phase gradient early-warning (heuristic, not derived)"),
+        (
+            "gamma-pi",
+            "gamma/pi",
+            GAMMA / PI,
+            "Phase gradient early-warning (heuristic, not derived)",
+        ),
         ("gamma-e", "gamma/(e+gamma)", GAMMA / (E + GAMMA), "Temporal evolution rate"),
         ("pi-e", "pi/e", PI / E, "Spectral speedup factor"),
     ]
@@ -292,13 +319,24 @@ def demo_tetrahedral_edges() -> None:
 
     # Verify against canonical.py
     print(f"\n  Verification against canonical.py:")
-    print(f"    STRUCTURAL_FREQUENCY_BASE = phi/gamma = {STRUCTURAL_FREQUENCY_BASE:.6f} (expected {PHI/GAMMA:.6f})")
-    print(f"    CRITICAL_EXPONENT = gamma/pi = {CRITICAL_EXPONENT:.6f} (expected {GAMMA/PI:.6f})")
-    print(f"    ZETA_COUPLING_STRENGTH = phi*gamma = {ZETA_COUPLING_STRENGTH:.6f} (expected {PHI*GAMMA:.6f})")
+    print(
+        f"    STRUCTURAL_FREQUENCY_BASE = phi/gamma = {STRUCTURAL_FREQUENCY_BASE:.6f} (expected {PHI/GAMMA:.6f})"
+    )
+    print(
+        f"    CRITICAL_EXPONENT = gamma/pi = {CRITICAL_EXPONENT:.6f} (expected {GAMMA/PI:.6f})"
+    )
+    print(
+        f"    ZETA_COUPLING_STRENGTH = phi*gamma = {ZETA_COUPLING_STRENGTH:.6f} (expected {PHI*GAMMA:.6f})"
+    )
 
     # 4 Faces (triples of constants)
     faces = [
-        ("phi-gamma-pi", "phi*gamma/pi", PHI * GAMMA / PI, "Resonance-curvature coupling"),
+        (
+            "phi-gamma-pi",
+            "phi*gamma/pi",
+            PHI * GAMMA / PI,
+            "Resonance-curvature coupling",
+        ),
         ("phi-gamma-e", "phi*gamma/e", PHI * GAMMA / E, "Growth-accumulation coupling"),
         ("phi-pi-e", "phi*e/(pi+e)", PHI * E / (PI + E), "Coherence threshold C_crit"),
         ("gamma-pi-e", "gamma*e/pi", GAMMA * E / PI, "Critical amplitude"),
@@ -311,13 +349,16 @@ def demo_tetrahedral_edges() -> None:
         print(f"  {name:<15}  {expr:<18}  {val:10.6f}  {role}")
 
     print(f"\n  Critical result: C_crit = phi*e/(pi+e) = {PHI*E/(PI+E):.10f}")
-    print(f"  MIN_BUSINESS_COHERENCE_CANONICAL     = {MIN_BUSINESS_COHERENCE_CANONICAL:.10f}")
+    print(
+        f"  MIN_BUSINESS_COHERENCE_CANONICAL     = {MIN_BUSINESS_COHERENCE_CANONICAL:.10f}"
+    )
     print(f"  Match: {abs(PHI*E/(PI+E) - MIN_BUSINESS_COHERENCE_CANONICAL) < 1e-10}")
 
 
 # ---------------------------------------------------------------------------
 # 6. Cross-topology verification
 # ---------------------------------------------------------------------------
+
 
 def demo_cross_topology_verification() -> None:
     """Verify canonical thresholds hold across 6 network topologies."""
@@ -334,12 +375,16 @@ def demo_cross_topology_verification() -> None:
         "BA (N=30)": lambda: nx.barabasi_albert_graph(30, 2, seed=42),
     }
 
-    print(f"\n  Threshold: |Phi_s| < {PHI_S_VON_KOCH_THRESHOLD:.4f}, "
-          f"|grad_phi| < {GRAD_PHI_CANONICAL_THRESHOLD:.4f}, "
-          f"|K_phi| < {K_PHI_CANONICAL_THRESHOLD:.4f}")
+    print(
+        f"\n  Threshold: |Phi_s| < {PHI_S_VON_KOCH_THRESHOLD:.4f}, "
+        f"|grad_phi| < {GRAD_PHI_CANONICAL_THRESHOLD:.4f}, "
+        f"|K_phi| < {K_PHI_CANONICAL_THRESHOLD:.4f}"
+    )
     print()
-    print(f"  {'Topology':<18}  {'max|Phi_s|':>10}  {'max|grad_phi|':>14}  "
-          f"{'max|K_phi|':>10}  {'All safe':>8}")
+    print(
+        f"  {'Topology':<18}  {'max|Phi_s|':>10}  {'max|grad_phi|':>14}  "
+        f"{'max|K_phi|':>10}  {'All safe':>8}"
+    )
     print("  " + "-" * 68)
 
     rng = np.random.default_rng(42)
@@ -362,23 +407,25 @@ def demo_cross_topology_verification() -> None:
         max_phi_s = max(abs(v) for v in phi_s.values())
         max_grad = max(abs(v) for v in grad_phi.values())
         max_k = max(abs(v) for v in k_phi.values())
-        safe = (max_phi_s < PHI_S_VON_KOCH_THRESHOLD
-                and max_grad < GRAD_PHI_CANONICAL_THRESHOLD
-                and max_k < K_PHI_CANONICAL_THRESHOLD)
-        print(f"  {name:<18}  {max_phi_s:10.4f}  {max_grad:14.4f}  "
-              f"{max_k:10.4f}  {'SAFE' if safe else 'WARN':>8}")
+        safe = (
+            max_phi_s < PHI_S_VON_KOCH_THRESHOLD
+            and max_grad < GRAD_PHI_CANONICAL_THRESHOLD
+            and max_k < K_PHI_CANONICAL_THRESHOLD
+        )
+        print(
+            f"  {name:<18}  {max_phi_s:10.4f}  {max_grad:14.4f}  "
+            f"{max_k:10.4f}  {'SAFE' if safe else 'WARN':>8}"
+        )
 
-    print("\n  Three of four tetrad thresholds derive from "
-          "(phi, gamma, pi, e);")
-    print("  the per-node Phi_s threshold (0.7711) is empirically "
-          "validated")
-    print("  without a closed-form derivation (see FUNDAMENTAL_THEORY "
-          "section 4.3).")
+    print("\n  Three of four tetrad thresholds derive from " "(phi, gamma, pi, e);")
+    print("  the per-node Phi_s threshold (0.7711) is empirically " "validated")
+    print("  without a closed-form derivation (see FUNDAMENTAL_THEORY " "section 4.3).")
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _sieve(limit: int) -> list[int]:
     """Return list of primes up to limit via sieve of Eratosthenes."""
@@ -394,6 +441,7 @@ def _sieve(limit: int) -> list[int]:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     print()
@@ -413,7 +461,8 @@ def main() -> None:
     print("\n" + "=" * 65)
     print("  SUMMARY")
     print("=" * 65)
-    print(f"""
+    print(
+        f"""
   The four constants (phi, gamma, pi, e) are NOT an arbitrary choice.
   They are the UNIQUE mathematical constants that:
 
@@ -433,7 +482,8 @@ def main() -> None:
   engine-configuration tier (cache, FFT, optimization) is
   calibrated to operational targets, not derived; the per-node
   Phi_s threshold (0.7711) is empirically validated.
-""")
+"""
+    )
 
 
 if __name__ == "__main__":

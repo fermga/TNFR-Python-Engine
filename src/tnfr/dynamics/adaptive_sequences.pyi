@@ -1,7 +1,8 @@
 """Type stubs for tnfr.dynamics.adaptive_sequences module."""
 
 from typing import Any, Dict, List
-from ..types import TNFRGraph, NodeId
+
+from ..types import NodeId, TNFRGraph
 
 class AdaptiveSequenceSelector:
     G: TNFRGraph

@@ -24,18 +24,19 @@ Model neural network with TNFR principles:
 
 from __future__ import annotations
 
-from .fluent import TNFRNetwork, NetworkResults
 from ..constants.canonical import (
     SDK_CONNECTIVITY_DEFAULT,
-    SDK_INTERACTION_STRENGTH,
     SDK_INSPIRATION_LEVEL,
-    SDK_VF_RANGE_LOW_MIN,
+    SDK_INTERACTION_STRENGTH,
     SDK_VF_RANGE_LOW_MAX,
-    SDK_VF_RANGE_MODERATE_MIN,
+    SDK_VF_RANGE_LOW_MIN,
     SDK_VF_RANGE_MODERATE_MAX,
+    SDK_VF_RANGE_MODERATE_MIN,
 )
+from .fluent import NetworkResults, TNFRNetwork
 
 __all__ = ["TNFRTemplates"]
+
 
 class TNFRTemplates:
     """Pre-configured templates for common domain-specific use cases.
@@ -94,7 +95,9 @@ class TNFRTemplates:
             network._config.random_seed = random_seed
 
         # Human timescale frequencies: moderate reorganization rates
-        network.add_nodes(people, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Human timescale canonical
+        network.add_nodes(
+            people, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX)
+        )  # Human timescale canonical
 
         # Small-world topology reflects real social structures
         network.connect_nodes(connection_prob, "small_world")
@@ -109,7 +112,9 @@ class TNFRTemplates:
         network.apply_sequence("network_sync", repeat=steps_per_phase)
 
         # Phase 3: Consolidation (stabilization of relationships)
-        network.apply_sequence("consolidation", repeat=simulation_steps - 2 * steps_per_phase)
+        network.apply_sequence(
+            "consolidation", repeat=simulation_steps - 2 * steps_per_phase
+        )
 
         return network.measure()
 
@@ -154,7 +159,9 @@ class TNFRTemplates:
             network._config.random_seed = random_seed
 
         # Neural frequencies: high end of valid range (0.5-1.0 Hz_str)
-        network.add_nodes(neurons, vf_range=(SDK_VF_RANGE_MODERATE_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Neural frequencies canonical
+        network.add_nodes(
+            neurons, vf_range=(SDK_VF_RANGE_MODERATE_MIN, SDK_VF_RANGE_MODERATE_MAX)
+        )  # Neural frequencies canonical
 
         # Sparse random connectivity typical of cortical networks
         network.connect_nodes(connectivity, "random")
@@ -204,7 +211,9 @@ class TNFRTemplates:
             network._config.random_seed = random_seed
 
         # Biological timescales: diversity within bounds (0.2-0.9 Hz_str)
-        network.add_nodes(species, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Biological timescales canonical
+        network.add_nodes(
+            species, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX)
+        )  # Biological timescales canonical
 
         # Random interaction network
         network.connect_nodes(interaction_strength, "random")
@@ -266,10 +275,14 @@ class TNFRTemplates:
             network._config.random_seed = random_seed
 
         # Diverse frequencies for creative exploration (0.3-0.9 Hz_str)
-        network.add_nodes(ideas, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Creative exploration canonical
+        network.add_nodes(
+            ideas, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX)
+        )  # Creative exploration canonical
 
         # Sparse initial connectivity: ideas start disconnected
-        network.connect_nodes(SDK_CONNECTIVITY_DEFAULT, "random")  # Canonical sparse connectivity
+        network.connect_nodes(
+            SDK_CONNECTIVITY_DEFAULT, "random"
+        )  # Canonical sparse connectivity
 
         # Creative process in phases
         cycles_per_phase = development_cycles // 3
@@ -281,7 +294,9 @@ class TNFRTemplates:
         network.apply_sequence("creative_mutation", repeat=cycles_per_phase)
 
         # Phase 3: Integration (convergent synthesis)
-        network.apply_sequence("network_sync", repeat=development_cycles - 2 * cycles_per_phase)
+        network.apply_sequence(
+            "network_sync", repeat=development_cycles - 2 * cycles_per_phase
+        )
 
         return network.measure()
 
@@ -324,7 +339,9 @@ class TNFRTemplates:
             network._config.random_seed = random_seed
 
         # Organizational timescales: moderate frequencies
-        network.add_nodes(agents, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX))  # Market agent canonical frequencies
+        network.add_nodes(
+            agents, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX)
+        )  # Market agent canonical frequencies
 
         # Small-world topology approximates organizational structure
         # (local teams + cross-functional connections)
@@ -337,6 +354,8 @@ class TNFRTemplates:
         network.apply_sequence("network_sync", repeat=steps_per_phase)
 
         # Phase 2: Stabilization of coordinated action
-        network.apply_sequence("consolidation", repeat=coordination_steps - steps_per_phase)
+        network.apply_sequence(
+            "consolidation", repeat=coordination_steps - steps_per_phase
+        )
 
         return network.measure()

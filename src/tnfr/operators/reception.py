@@ -14,7 +14,7 @@ from typing import Any, ClassVar
 from ..config.operator_names import RECEPTION
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
- 
+
 
 class Reception(Operator):
     """Integrate external resonance; reduce ΔNFR; preserve pattern identity.
@@ -31,14 +31,10 @@ class Reception(Operator):
         """Detect sources (optional); apply grammar; integrate intake."""
         # Detect emission sources BEFORE applying reception
         if kw.get("track_sources", True):
-            from .network_analysis.source_detection import (
-                detect_emission_sources,
-            )
+            from .network_analysis.source_detection import detect_emission_sources
 
             max_distance = kw.get("max_distance", 2)
-            sources = detect_emission_sources(
-                G, node, max_distance=max_distance
-            )
+            sources = detect_emission_sources(G, node, max_distance=max_distance)
 
             # Store detected sources in node metadata for metrics and analysis
             G.nodes[node]["_reception_sources"] = sources

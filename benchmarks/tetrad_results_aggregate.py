@@ -38,16 +38,17 @@ The aggregator is deterministic; ordering of input lines is preserved.
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import glob
 import json
 import os
 import sys
-import datetime as _dt
-from typing import Iterable, List, Dict, Any
+from typing import Any, Dict, Iterable, List
 
 try:  # Optional dependency for Parquet
     import pyarrow as pa  # type: ignore
     import pyarrow.parquet as pq  # type: ignore
+
     _PARQUET_AVAILABLE = True
 except Exception:  # pragma: no cover - availability branch
     _PARQUET_AVAILABLE = False
@@ -115,10 +116,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--fail-on-missing",
         action="store_true",
-        help=(
-            "Fail if any required field missing (default: skip invalid "
-            "records)"
-        ),
+        help=("Fail if any required field missing (default: skip invalid " "records)"),
     )
     parser.add_argument(
         "--no-parquet",
@@ -227,8 +225,7 @@ def main() -> None:
                 invalid_count += 1
                 if args.fail_on_missing:
                     print(
-                        f"[ERROR] Missing required fields in record from "
-                        f"{fpath}."
+                        f"[ERROR] Missing required fields in record from " f"{fpath}."
                     )
                     sys.exit(2)
                 continue

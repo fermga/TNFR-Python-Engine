@@ -27,13 +27,8 @@ try:  # pragma: no cover - available in the test environment
 except ImportError:  # pragma: no cover
     nx = None
 
-from ..physics.conservation_gauge_unification import (
-    compute_grammar_symmetry_mapping,
-)
-from ..physics.gauge import (
-    compute_gauge_connection,
-    compute_gauge_curvature,
-)
+from ..physics.conservation_gauge_unification import compute_grammar_symmetry_mapping
+from ..physics.gauge import compute_gauge_connection, compute_gauge_curvature
 from ..physics.unified import compute_complex_geometric_field
 from .structural_gap import build_structural_gauge_graph
 
@@ -101,9 +96,7 @@ def audit_nonabelian_derivability(
         G = build_structural_gauge_graph(12, topology="complete", seed=seed)
 
     route_tuple = tuple(routes)
-    unknown_routes = sorted(
-        set(route_tuple).difference(DEFAULT_NONABELIAN_ROUTES)
-    )
+    unknown_routes = sorted(set(route_tuple).difference(DEFAULT_NONABELIAN_ROUTES))
     if unknown_routes:
         raise ValueError(
             "unsupported non-Abelian derivability route(s): "
@@ -167,16 +160,12 @@ def _collect_baseline_evidence(G: Any) -> dict[str, Any]:
         "connection_scalar": all(
             _is_real_scalar(value) for value in connection.values()
         ),
-        "curvature_scalar": all(
-            _is_real_scalar(value) for value in curvature.values()
-        ),
+        "curvature_scalar": all(_is_real_scalar(value) for value in curvature.values()),
         "cycle_rank": _cycle_rank(G),
         "cycle_count_detected": len(curvature),
         "nested_epi_nodes": _count_nested_epi_nodes(G),
         "operator_history_events": _count_operator_history_events(G),
-        "grammar_rules_satisfied": sum(
-            1 for item in grammar if item.is_satisfied
-        ),
+        "grammar_rules_satisfied": sum(1 for item in grammar if item.is_satisfied),
         "grammar_rules_total": len(grammar),
     }
 
@@ -195,7 +184,7 @@ def _audit_route(
 
 
 def _audit_u5_nested_epi_multiplet(
-    evidence: dict[str, Any]
+    evidence: dict[str, Any],
 ) -> NonAbelianCandidateAudit:
     has_multiplet = evidence["nested_epi_nodes"] > 0
     status = (
@@ -208,10 +197,7 @@ def _audit_u5_nested_epi_multiplet(
         "canonical gauge connection remains scalar A_ij and does not derive "
         "component-mixing parallel transport or non-commuting generators."
         if has_multiplet
-        else (
-            "No nested EPI multiplet is present; Ψ is a single complex "
-            "scalar."
-        )
+        else ("No nested EPI multiplet is present; Ψ is a single complex " "scalar.")
     )
     return NonAbelianCandidateAudit(
         route="u5_nested_epi_multiplet",
@@ -232,7 +218,7 @@ def _audit_u5_nested_epi_multiplet(
 
 
 def _audit_thol_remesh_internal_space(
-    evidence: dict[str, Any]
+    evidence: dict[str, Any],
 ) -> NonAbelianCandidateAudit:
     has_history = evidence["operator_history_events"] > 0
     status = (
@@ -246,8 +232,7 @@ def _audit_thol_remesh_internal_space(
         "a derived non-commuting generator algebra for gauge transport."
         if has_history
         else (
-            "No THOL/REMESH-derived internal state space is recorded on "
-            "the graph."
+            "No THOL/REMESH-derived internal state space is recorded on " "the graph."
         )
     )
     return NonAbelianCandidateAudit(
@@ -268,9 +253,7 @@ def _audit_thol_remesh_internal_space(
     )
 
 
-def _audit_cycle_basis_bundle(
-    evidence: dict[str, Any]
-) -> NonAbelianCandidateAudit:
+def _audit_cycle_basis_bundle(evidence: dict[str, Any]) -> NonAbelianCandidateAudit:
     has_cycle_basis = evidence["cycle_rank"] > 1
     status = (
         "FAILED_BASIS_DEPENDENT_EXTERNAL_SELECTION"
@@ -322,11 +305,7 @@ def _cycle_rank(G: Any) -> int:
     else:
         undirected = G
     components = nx.number_connected_components(undirected)
-    return int(
-        undirected.number_of_edges()
-        - undirected.number_of_nodes()
-        + components
-    )
+    return int(undirected.number_of_edges() - undirected.number_of_nodes() + components)
 
 
 def _count_nested_epi_nodes(G: Any) -> int:

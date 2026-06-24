@@ -11,9 +11,10 @@ from typing import Mapping, TextIO
 from ..config.constants import GLYPHS_CANONICAL
 from ..errors import TNFRValueError
 from ..glyph_history import ensure_history
-from ..utils import json_dumps, safe_write
 from ..types import Graph, SigmaTrace
+from ..utils import json_dumps, safe_write
 from .core import glyphogram_series
+
 
 def _write_csv(
     path: str,
@@ -30,6 +31,7 @@ def _write_csv(
 
     safe_write(path, _write, newline="", base_dir=output_dir)
 
+
 def _iter_glif_rows(
     glyph: Mapping[str, Sequence[float]],
 ) -> Iterator[list[float]]:
@@ -41,6 +43,7 @@ def _iter_glif_rows(
     cols = [glyph.get(g, default_col) for g in GLYPHS_CANONICAL]
     for i, t in enumerate(ts):
         yield [t] + [col[i] for col in cols]
+
 
 def export_metrics(
     G: Graph,
@@ -78,7 +81,9 @@ def export_metrics(
     sigma_mag = hist.get("sense_sigma_mag", [])
     sigma_angle = hist.get("sense_sigma_angle", [])
     t_series = hist.get("sense_sigma_t", []) or glyph.get("t", [])
-    rows_raw = zip_longest(t_series, sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=None)
+    rows_raw = zip_longest(
+        t_series, sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=None
+    )
 
     def _clean(value: float | None) -> float:
         """Return ``0`` for ``None`` or ``NaN`` values."""
@@ -155,7 +160,10 @@ def export_metrics(
                 (
                     "_epi_support.csv",
                     ["t", "size", "epi_norm"],
-                    ([row.get("t"), row.get("size"), row.get("epi_norm")] for row in epi_supp),
+                    (
+                        [row.get("t"), row.get("size"), row.get("epi_norm")]
+                        for row in epi_supp
+                    ),
                 )
             )
         for suffix, headers, rows in specs:

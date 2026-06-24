@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_VF, ALIAS_D2EPI
+from tnfr.constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_VF
 from tnfr.operators.metrics_core import get_node_attr as _get_node_attr
 
 # ---------------------------------------------------------------------------
@@ -33,6 +33,7 @@ __all__ = [
     "compute_bifurcation_index",
 ]
 
+
 def measure_tau_relax_observed(
     G: Any,
     node_id: Any,
@@ -49,7 +50,9 @@ def measure_tau_relax_observed(
 
     # Approximate local coherence using neighborhood ΔNFR variability
     neighbors = (
-        list(getattr(G, "neighbors", lambda n: [])(node_id)) if hasattr(G, "neighbors") else []
+        list(getattr(G, "neighbors", lambda n: [])(node_id))
+        if hasattr(G, "neighbors")
+        else []
     )
     dnfr_vals = [abs(_get_node_attr(G, node_id, ALIAS_DNFR))]
     for nb in neighbors:
@@ -64,7 +67,9 @@ def measure_tau_relax_observed(
         var_dnfr = sum((x - mean_dnfr) ** 2 for x in dnfr_vals) / len(dnfr_vals)
         sigma = var_dnfr**0.5
         dnfr_max = max(dnfr_vals)
-        coherence_initial = 1.0 if dnfr_max == 0 else max(0.0, min(1.0, 1.0 - (sigma / dnfr_max)))
+        coherence_initial = (
+            1.0 if dnfr_max == 0 else max(0.0, min(1.0, 1.0 - (sigma / dnfr_max)))
+        )
 
     # Spectral topological estimate (existing proxy)
     try:
@@ -83,7 +88,10 @@ def measure_tau_relax_observed(
     slow_mode_real = None
     try:
         # Preferred: use proper Liouvillian spectrum computation
-        from tnfr.mathematics.liouville import get_liouvillian_spectrum, get_slow_relaxation_mode  # type: ignore
+        from tnfr.mathematics.liouville import (  # type: ignore
+            get_liouvillian_spectrum,
+            get_slow_relaxation_mode,
+        )
 
         liouv_eigs = get_liouvillian_spectrum(G)
         if liouv_eigs is not None:
@@ -119,6 +127,7 @@ def measure_tau_relax_observed(
         "node_id": node_id,
         "requires_monitoring_infrastructure": True,
     }
+
 
 def measure_nonlinear_accumulation(
     G: Any,
@@ -158,6 +167,7 @@ def measure_nonlinear_accumulation(
         "amplification_severity": severity,
         "node_id": node_id,
     }
+
 
 def compute_bifurcation_index(G: Any, node_id: Any) -> dict[str, Any]:
     """Compute bifurcation index B = |d2EPI| / νf^2."""

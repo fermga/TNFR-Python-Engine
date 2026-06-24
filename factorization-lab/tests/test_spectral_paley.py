@@ -18,8 +18,13 @@ if str(LAB_ROOT) not in sys.path:
     sys.path.insert(0, str(LAB_ROOT))
 
 import tnfr_factorization.spectral_paley as sp  # type: ignore[import]  # noqa: E402
-from tnfr_factorization import SpectralPaleyFactorizer  # type: ignore[import]  # noqa: E402
-from tnfr.dynamics.fft_backend import FFTBackendCapabilities  # type: ignore[import]  # noqa: E402
+from tnfr_factorization import (  # type: ignore[import]  # noqa: E402
+    SpectralPaleyFactorizer,
+)
+
+from tnfr.dynamics.fft_backend import (  # type: ignore[import]  # noqa: E402
+    FFTBackendCapabilities,
+)
 
 
 @dataclass
@@ -38,12 +43,16 @@ class _RecordingFFTEngine:
         self.calls = 0
         self.last_node_count: Optional[int] = None
 
-    def get_spectral_state(self, graph: Any, force_recompute: bool = False) -> _StubSpectralState:  # noqa: D401
+    def get_spectral_state(
+        self, graph: Any, force_recompute: bool = False
+    ) -> _StubSpectralState:  # noqa: D401
         self.calls += 1
         self.last_node_count = graph.number_of_nodes()
         count = self.last_node_count or 1
         eigenvalues = np.linspace(0.0, 1.0, count, dtype=float)
-        return _StubSpectralState(eigenvalues=eigenvalues, coherence_length=self.coherence_length)
+        return _StubSpectralState(
+            eigenvalues=eigenvalues, coherence_length=self.coherence_length
+        )
 
     def get_capabilities(self) -> FFTBackendCapabilities:
         return FFTBackendCapabilities(
@@ -87,7 +96,9 @@ def test_partition_env_controls_size(monkeypatch: MonkeyPatch) -> None:
     assert result.partition_aggregation
     assert result.partition_aggregation["phi_s_ratio"] > 0.0
     if result.candidate_factors:
-        assert result.partition_aggregation["candidate_total"] == len(result.candidate_factors)
+        assert result.partition_aggregation["candidate_total"] == len(
+            result.candidate_factors
+        )
     assert "partition_candidates" in result.partition_aggregation
     assert result.operator_strategy_plan
     per_partition = result.operator_strategy_plan["per_partition"]
@@ -104,7 +115,9 @@ def test_nodal_decoder_derives_partition_factors(monkeypatch: MonkeyPatch) -> No
     decoding = result.nodal_decoding
     assert decoding, "nodal decoding metadata should be present"
     assert decoding["sequence"] == ["UM", "RA", "IL", "THOL"]
-    assert 13 in decoding["dynamic_factors"], "partition sequence should surface factor 13"
+    assert (
+        13 in decoding["dynamic_factors"]
+    ), "partition sequence should surface factor 13"
     assert 13 in result.candidate_factors
     partitions = decoding.get("partitions", [])
     assert any(entry.get("inferred_factor") == 13 for entry in partitions)
@@ -115,7 +128,9 @@ def test_nodal_decoder_derives_partition_factors(monkeypatch: MonkeyPatch) -> No
     assert result.tnfr_factor_signature
     assert 13 in result.tnfr_factor_signature.get("certified", [])
     assert result.partition_aggregation
-    assert result.partition_aggregation["candidate_total"] == len(result.candidate_factors)
+    assert result.partition_aggregation["candidate_total"] == len(
+        result.candidate_factors
+    )
 
 
 def test_arithmetic_cache_invoked_once(monkeypatch: MonkeyPatch) -> None:
@@ -145,7 +160,9 @@ def test_arithmetic_cache_invoked_once(monkeypatch: MonkeyPatch) -> None:
     assert pytest.approx(first.arithmetic_delta_nfr) == second.arithmetic_delta_nfr
 
 
-def test_certificate_emission_obeys_grammar(tmp_path: pathlib.Path, monkeypatch: MonkeyPatch) -> None:
+def test_certificate_emission_obeys_grammar(
+    tmp_path: pathlib.Path, monkeypatch: MonkeyPatch
+) -> None:
     partition_root = tmp_path / "partition_outputs"
     monkeypatch.setenv("TNFR_PARTITION_OUTPUT_DIR", str(partition_root))
     monkeypatch.setenv("TNFR_PARTITION_TARGET_SIZE", "13")
@@ -164,7 +181,10 @@ def test_certificate_emission_obeys_grammar(tmp_path: pathlib.Path, monkeypatch:
     certificate_path = certificate_files[0]
     payload = json.loads(certificate_path.read_text())
 
-    assert payload["candidate_factor"] in result.candidate_factors or payload["candidate_factor"] is None
+    assert (
+        payload["candidate_factor"] in result.candidate_factors
+        or payload["candidate_factor"] is None
+    )
 
     assert payload.get("canonical_operators")
     optimizer_block = payload.get("optimizer")
@@ -190,7 +210,12 @@ def test_certificate_emission_obeys_grammar(tmp_path: pathlib.Path, monkeypatch:
     assert invariant_report and invariant_report.get("grammar_rules")
     assert "U1" in invariant_report["grammar_rules"]
     nodal_snapshot = payload.get("nodal_decoding_snapshot")
-    assert nodal_snapshot and nodal_snapshot.get("sequence") == ["UM", "RA", "IL", "THOL"]
+    assert nodal_snapshot and nodal_snapshot.get("sequence") == [
+        "UM",
+        "RA",
+        "IL",
+        "THOL",
+    ]
     tnfr_snapshot = payload.get("tnfr_verification_snapshot")
     assert tnfr_snapshot and tnfr_snapshot.get("criteria")
     signature_block = payload.get("tnfr_factor_signature")
@@ -226,7 +251,9 @@ def test_certificate_emission_obeys_grammar(tmp_path: pathlib.Path, monkeypatch:
 def test_env_preference_selects_distributed_backend(monkeypatch: MonkeyPatch) -> None:
     fake_backend = _RecordingFFTEngine()
     monkeypatch.setenv("TNFR_FFT_BACKEND", "distributed")
-    monkeypatch.setattr(sp, "_instantiate_distributed_backend", lambda dispatcher: fake_backend)
+    monkeypatch.setattr(
+        sp, "_instantiate_distributed_backend", lambda dispatcher: fake_backend
+    )
 
     factorizer = SpectralPaleyFactorizer()
 
@@ -245,7 +272,10 @@ def test_http_dispatcher_loader(monkeypatch: MonkeyPatch) -> None:
         def __init__(self, base_url: str, auth_token: str | None = None) -> None:
             captured["base_url"] = base_url
             captured["auth_token"] = auth_token
-            self.dispatch = lambda action, payload: {"action": action, "payload": payload}
+            self.dispatch = lambda action, payload: {
+                "action": action,
+                "payload": payload,
+            }
 
     monkeypatch.setattr(dispatchers, "HTTPFFTDispatcher", _FakeHTTPDispatcher)
 
@@ -270,7 +300,9 @@ def test_trial_division_fallback_engages(monkeypatch: MonkeyPatch) -> None:
     assert "fallback=trial-division" in result.notes
 
 
-def test_failure_telemetry_records_when_no_certification(monkeypatch: MonkeyPatch) -> None:
+def test_failure_telemetry_records_when_no_certification(
+    monkeypatch: MonkeyPatch,
+) -> None:
     """Ensure failure telemetry runs when TNFR verification certifies nothing."""
 
     monkeypatch.setenv("TNFR_FAILURE_TELEMETRY", "0")
@@ -294,7 +326,9 @@ def test_failure_telemetry_records_when_no_certification(monkeypatch: MonkeyPatc
             self.calls: list[dict[str, Any]] = []
             self.payload = {"run_id": "fake-run", "telemetry": "ok"}
 
-        def record_failure(self, result: sp.SpectralAnalysisResult, **kwargs: Any) -> _FakeRecord:
+        def record_failure(
+            self, result: sp.SpectralAnalysisResult, **kwargs: Any
+        ) -> _FakeRecord:
             entry = dict(kwargs)
             entry["result"] = result
             self.calls.append(entry)

@@ -101,10 +101,7 @@ def fmt_signed(x: float, width: int = 12, prec: int = 4) -> str:
 
 
 def block_detailed_chi3() -> None:
-    banner(
-        "BLOCK 1: detailed (family, gauge) chart for chi_3 "
-        "across sigma grid"
-    )
+    banner("BLOCK 1: detailed (family, gauge) chart for chi_3 " "across sigma grid")
     chi = real_character_mod_3()
     bundle = build_twisted_prime_ladder_hamiltonian(
         chi,
@@ -114,8 +111,7 @@ def block_detailed_chi3() -> None:
     )
     cert = sweep_twisted_admissible_family(chi, bundle, SIGMAS)
 
-    print(f"  character  : {cert.character_name} "
-          f"(q={cert.character_modulus})")
+    print(f"  character  : {cert.character_name} " f"(q={cert.character_modulus})")
     print(f"  n_sigma    : {len(cert.sigmas)}")
     print(f"  families   : {cert.families}")
     print(f"  gauges     : {cert.gauges}")
@@ -123,14 +119,18 @@ def block_detailed_chi3() -> None:
 
     # W_chi[family, sigma] table (gauge-independent)
     print("  W_chi[sigma; family] (gauge-independent):")
-    header = "    " + f"{'family':<22}" + " ".join(
-        f"sigma={s:>5.2f}" for s in cert.sigmas
+    header = (
+        "    " + f"{'family':<22}" + " ".join(f"sigma={s:>5.2f}" for s in cert.sigmas)
     )
     print(header)
     for i, fname in enumerate(cert.families):
-        row = "    " + f"{fname:<22}" + " ".join(
-            fmt_signed(float(cert.weil_table[i, j]), width=11, prec=3)
-            for j in range(len(cert.sigmas))
+        row = (
+            "    "
+            + f"{fname:<22}"
+            + " ".join(
+                fmt_signed(float(cert.weil_table[i, j]), width=11, prec=3)
+                for j in range(len(cert.sigmas))
+            )
         )
         print(row)
     print()
@@ -139,15 +139,20 @@ def block_detailed_chi3() -> None:
     j_target = len(cert.sigmas) // 2
     sigma_target = float(cert.sigmas[j_target])
     print(f"  alpha_chi(sigma={sigma_target:.3f}; family, gauge):")
-    header = "    " + f"{'family\\gauge':<22}" + " ".join(
-        f"{gn[:11]:>12}" for gn in cert.gauges
+    header = (
+        "    "
+        + f"{'family\\gauge':<22}"
+        + " ".join(f"{gn[:11]:>12}" for gn in cert.gauges)
     )
     print(header)
     for i, fname in enumerate(cert.families):
-        row = "    " + f"{fname:<22}" + " ".join(
-            fmt_signed(float(cert.alpha_table[i, k, j_target]),
-                       width=12, prec=3)
-            for k in range(len(cert.gauges))
+        row = (
+            "    "
+            + f"{fname:<22}"
+            + " ".join(
+                fmt_signed(float(cert.alpha_table[i, k, j_target]), width=12, prec=3)
+                for k in range(len(cert.gauges))
+            )
         )
         print(row)
     print()
@@ -231,9 +236,7 @@ def main() -> None:
     block_detailed_chi3()
     certs = block_aggregate_sweep()
     block_summaries(certs)
-    n_pass = sum(
-        1 for c in certs if c.weil_all_positive and c.alpha_all_positive
-    )
+    n_pass = sum(1 for c in certs if c.weil_all_positive and c.alpha_all_positive)
     print()
     print(f"  P39 sweep PASS rate: {n_pass}/{len(certs)} characters")
 

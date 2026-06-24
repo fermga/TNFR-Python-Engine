@@ -55,10 +55,10 @@ References:
 - AGENTS.md §"Regime Correspondences from Nodal Dynamics"
 """
 
-import os
-import sys
 import math
+import os
 import random
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
@@ -95,15 +95,19 @@ def experiment_1_rate_convergence():
     print()
 
     G = _build(40)
-    print(f"{'gamma':>7} {'nu_f=1/g':>9} {'rate_err':>11} {'err*g^2':>9} "
-          f"{'~lambda_max':>11} {'valid':>6}")
+    print(
+        f"{'gamma':>7} {'nu_f=1/g':>9} {'rate_err':>11} {'err*g^2':>9} "
+        f"{'~lambda_max':>11} {'valid':>6}"
+    )
     for gamma in (5.0, 10.0, 20.0, 50.0, 100.0, 200.0):
         cert = verify_overdamped_projection(G, gamma=gamma)
-        print(f"{gamma:>7.0f} {cert.nu_f_effective:>9.4f} "
-              f"{cert.max_rate_rel_error:>11.3e} "
-              f"{cert.rate_error_times_gamma_sq:>9.3f} "
-              f"{cert.lambda_max:>11.3f} "
-              f"{str(cert.is_valid_projection):>6}")
+        print(
+            f"{gamma:>7.0f} {cert.nu_f_effective:>9.4f} "
+            f"{cert.max_rate_rel_error:>11.3e} "
+            f"{cert.rate_error_times_gamma_sq:>9.3f} "
+            f"{cert.lambda_max:>11.3f} "
+            f"{str(cert.is_valid_projection):>6}"
+        )
     print()
     print("-> err*gamma^2 stabilises near lambda_max: the bridge error is")
     print("   O(lambda_max/gamma^2). The projection is exact in the limit.")
@@ -119,16 +123,15 @@ def experiment_2_spectral_gap_match():
 
     G = _build(40)
     cert = verify_overdamped_projection(G, gamma=100.0)
-    ratio = (
-        cert.slowest_slow_rate / cert.spectral_gap
-        if cert.spectral_gap > 0
-        else 0.0
-    )
+    ratio = cert.slowest_slow_rate / cert.spectral_gap if cert.spectral_gap > 0 else 0.0
     print(f"  damped slowest (Fiedler) slow rate : {cert.slowest_slow_rate:.6f}")
-    print(f"  diffusion spectral gap nu_f*lambda_2: "
-          f"{cert.slowest_diffusion_rate:.6f}")
-    print(f"  slow_rate / lambda_2 (recovers nu_f): {ratio:.6f} "
-          f"(= 1/gamma = {cert.nu_f_effective:.6f})")
+    print(
+        f"  diffusion spectral gap nu_f*lambda_2: " f"{cert.slowest_diffusion_rate:.6f}"
+    )
+    print(
+        f"  slow_rate / lambda_2 (recovers nu_f): {ratio:.6f} "
+        f"(= 1/gamma = {cert.nu_f_effective:.6f})"
+    )
     print()
     print("-> the slowest surviving overdamped mode is exactly the diffusion")
     print("   spectral gap, and slow_rate/lambda_2 recovers nu_f = 1/gamma.")
@@ -152,9 +155,11 @@ def experiment_3_nu_f_is_mobility():
         lambdas, s_slow, s_fast = damped_wave_rates(G, gamma)
         # the fast roots cluster near -gamma (the transient), the slow near 0
         fast_mean = float(s_fast.mean())
-        print(f"  gamma={gamma:>6.1f} -> nu_f=1/gamma={cert.nu_f_effective:.4f}; "
-              f"fast roots ~ {fast_mean:.2f} (= -gamma transient); "
-              f"trajectory err {cert.trajectory_max_rel_error:.2e}")
+        print(
+            f"  gamma={gamma:>6.1f} -> nu_f=1/gamma={cert.nu_f_effective:.4f}; "
+            f"fast roots ~ {fast_mean:.2f} (= -gamma transient); "
+            f"trajectory err {cert.trajectory_max_rel_error:.2e}"
+        )
     print()
     print("-> nu_f = 1/gamma confirmed: the structural frequency IS the")
     print("   mobility (inverse damping) of the conservative substrate.")

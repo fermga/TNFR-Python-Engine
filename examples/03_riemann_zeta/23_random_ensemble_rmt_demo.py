@@ -27,26 +27,26 @@ Usage:
 
 from __future__ import annotations
 
+from tnfr.mathematics.unified_numerical import np
 from tnfr.riemann.random_ensemble import (
-    EnsembleConfig,
-    goe_wigner_surmise,
-    gue_wigner_surmise,
-    poisson_spacing_pdf,
-    generate_er_ensemble,
-    generate_wigner_ensemble,
-    compute_ensemble_spacings,
-    compute_mean_spacing_ratio,
-    compute_level_repulsion_exponent,
-    ks_test_vs_reference,
-    classify_ensemble,
-    run_rmt_ensemble_analysis,
-    rmt_convergence_study,
     GOE_MEAN_RATIO,
     GUE_MEAN_RATIO,
     POISSON_MEAN_RATIO,
+    EnsembleConfig,
+    _compute_spacing_stats,
+    classify_ensemble,
+    compute_ensemble_spacings,
+    compute_level_repulsion_exponent,
+    compute_mean_spacing_ratio,
+    generate_er_ensemble,
+    generate_wigner_ensemble,
+    goe_wigner_surmise,
+    gue_wigner_surmise,
+    ks_test_vs_reference,
+    poisson_spacing_pdf,
+    rmt_convergence_study,
+    run_rmt_ensemble_analysis,
 )
-from tnfr.riemann.random_ensemble import _compute_spacing_stats
-from tnfr.mathematics.unified_numerical import np
 
 
 def section(title: str) -> None:
@@ -124,12 +124,18 @@ def main() -> None:
     # ------------------------------------------------------------------
     section("4. Full RMT Classification")
     analysis = run_rmt_ensemble_analysis(
-        k=25, n_samples=60, ensemble_type="erdos_renyi",
-        edge_prob=0.35, seed=42, compute_long_range=True,
+        k=25,
+        n_samples=60,
+        ensemble_type="erdos_renyi",
+        edge_prob=0.35,
+        seed=42,
+        compute_long_range=True,
     )
     rmt = analysis.rmt_comparison
-    print(f"  Ensemble: ER, k={analysis.config.k}, "
-          f"n={analysis.config.n_samples}, p={analysis.config.edge_prob}")
+    print(
+        f"  Ensemble: ER, k={analysis.config.k}, "
+        f"n={analysis.config.n_samples}, p={analysis.config.edge_prob}"
+    )
     print(f"\n  KS classification:    {rmt.best_match}")
     print(f"  Ratio classification: {rmt.ratio_best_match}")
     print(f"\n  KS statistics:")
@@ -163,14 +169,20 @@ def main() -> None:
     print("  -------  ------   ------   -------  ----------")
     for scale in [0.01, 0.1, 0.5, 1.0, 2.0]:
         w_analysis = run_rmt_ensemble_analysis(
-            k=20, n_samples=40, ensemble_type="wigner",
-            wigner_scale=scale, seed=42, compute_long_range=False,
+            k=20,
+            n_samples=40,
+            ensemble_type="wigner",
+            wigner_scale=scale,
+            seed=42,
+            compute_long_range=False,
         )
         sp = w_analysis.spacing_stats
         rm = w_analysis.rmt_comparison
-        print(f"  {scale:7.2f}  {sp.mean_spacing_ratio:6.4f}   "
-              f"{sp.level_repulsion_beta:6.3f}   "
-              f"{rm.ks_goe:7.4f}  {rm.ks_poisson:10.4f}")
+        print(
+            f"  {scale:7.2f}  {sp.mean_spacing_ratio:6.4f}   "
+            f"{sp.level_repulsion_beta:6.3f}   "
+            f"{rm.ks_goe:7.4f}  {rm.ks_poisson:10.4f}"
+        )
 
     # ------------------------------------------------------------------
     # 6. k-convergence study
@@ -178,17 +190,22 @@ def main() -> None:
     section("6. Convergence Study (k = [8, 12, 16, 20, 25, 30])")
     k_vals = [8, 12, 16, 20, 25, 30]
     results = rmt_convergence_study(
-        k_vals, n_samples=40, edge_prob=0.35, seed=42,
+        k_vals,
+        n_samples=40,
+        edge_prob=0.35,
+        seed=42,
     )
     print("  k    n_spacings   <r>      beta    best(KS)")
     print("  ---  ----------  ------   ------   --------")
     for r in results:
         sp = r.spacing_stats
         rm = r.rmt_comparison
-        print(f"  {r.config.k:3d}  {sp.n_spacings:10d}  "
-              f"{sp.mean_spacing_ratio:6.4f}   "
-              f"{sp.level_repulsion_beta:6.3f}   "
-              f"{rm.best_match:8s}")
+        print(
+            f"  {r.config.k:3d}  {sp.n_spacings:10d}  "
+            f"{sp.mean_spacing_ratio:6.4f}   "
+            f"{sp.level_repulsion_beta:6.3f}   "
+            f"{rm.best_match:8s}"
+        )
 
     # ------------------------------------------------------------------
     # 7. ER edge probability sweep
@@ -198,14 +215,20 @@ def main() -> None:
     print("  ------  ------   ------   -------  --------")
     for p_edge in [0.1, 0.2, 0.3, 0.5, 0.7, 1.0]:
         er_analysis = run_rmt_ensemble_analysis(
-            k=20, n_samples=40, ensemble_type="erdos_renyi",
-            edge_prob=p_edge, seed=42, compute_long_range=False,
+            k=20,
+            n_samples=40,
+            ensemble_type="erdos_renyi",
+            edge_prob=p_edge,
+            seed=42,
+            compute_long_range=False,
         )
         sp = er_analysis.spacing_stats
         rm = er_analysis.rmt_comparison
-        print(f"  {p_edge:6.2f}  {sp.mean_spacing_ratio:6.4f}   "
-              f"{sp.level_repulsion_beta:6.3f}   "
-              f"{rm.ks_goe:7.4f}  {rm.best_match:8s}")
+        print(
+            f"  {p_edge:6.2f}  {sp.mean_spacing_ratio:6.4f}   "
+            f"{sp.level_repulsion_beta:6.3f}   "
+            f"{rm.ks_goe:7.4f}  {rm.best_match:8s}"
+        )
 
     # ------------------------------------------------------------------
     # 8. Summary

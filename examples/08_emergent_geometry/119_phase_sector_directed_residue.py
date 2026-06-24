@@ -68,11 +68,11 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
-from sympy import isprime, factorint
+import numpy as np
+from sympy import factorint, isprime
 
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
@@ -118,21 +118,28 @@ def experiment_1_unified_primality():
     print("n=3 mod4 the spectrum is COMPLEX (Paley tournament). Rigidity test:")
     print("'exactly 3 distinct eigenvalues' <=> odd prime.")
     print()
-    print(f"  {'n':>4} {'mod4':>5} {'prime':>6} {'n_distinct':>11} "
-          f"{'max|Im|':>9} {'3-rigid?':>9}")
+    print(
+        f"  {'n':>4} {'mod4':>5} {'prime':>6} {'n_distinct':>11} "
+        f"{'max|Im|':>9} {'3-rigid?':>9}"
+    )
     for n in (7, 11, 13, 19, 23, 29, 31, 37, 15, 21, 33, 35):
         ev = _emergent_spectrum(n)
         d = _n_distinct(ev)
         mi = float(np.max(np.abs(ev.imag)))
         ok = "YES" if (d == 3) == isprime(n) else "MISS"
-        print(f"  {n:>4} {n % 4:>5} {str(isprime(n)):>6} {d:>11} "
-              f"{mi:>9.4f} {ok:>9}")
+        print(
+            f"  {n:>4} {n % 4:>5} {str(isprime(n)):>6} {d:>11} " f"{mi:>9.4f} {ok:>9}"
+        )
     # full sweep
-    correct = sum((_n_distinct(_emergent_spectrum(n)) == 3) == isprime(n)
-                  for n in range(5, 120, 2))
+    correct = sum(
+        (_n_distinct(_emergent_spectrum(n)) == 3) == isprime(n)
+        for n in range(5, 120, 2)
+    )
     print()
-    print(f"  full sweep odd n in [5,119]: "
-          f"'3 distinct == prime' correct = {correct}/58")
+    print(
+        f"  full sweep odd n in [5,119]: "
+        f"'3 distinct == prime' correct = {correct}/58"
+    )
     print("  -> extends Reading B from n=1 mod4 (ex 117) to ALL odd primes.")
     print()
 

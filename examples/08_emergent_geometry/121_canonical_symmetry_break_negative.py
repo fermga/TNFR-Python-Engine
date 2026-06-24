@@ -86,10 +86,10 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 from sympy import isprime
 
 from tnfr.alias import get_attr, set_attr
@@ -191,8 +191,10 @@ def experiment_2_structure_constant():
         indeg = [d for _, d in G.in_degree()]
         outdeg = [d for _, d in G.out_degree()]
         tri = list(nx.triangles(G.to_undirected()).values())
-        print(f"  {n:>4} {np.std(indeg):>12.2e} {np.std(outdeg):>12.2e} "
-              f"{np.std(tri):>10.2e}")
+        print(
+            f"  {n:>4} {np.std(indeg):>12.2e} {np.std(outdeg):>12.2e} "
+            f"{np.std(tri):>10.2e}"
+        )
     print()
     print("  -> all sigma = 0: every node is structurally equivalent.")
 
@@ -209,8 +211,7 @@ def experiment_3_injection_echo():
     print("labels. If the substrate dispersion is unchanged -> it echoes the")
     print("injected multiset, not the arithmetic (ex 116 mechanism), circular.")
     print()
-    print(f"  {'n':>4} {'arith phiStd':>13} {'shuffled phiStd':>16} "
-          f"{'ratio':>7}")
+    print(f"  {'n':>4} {'arith phiStd':>13} {'shuffled phiStd':>16} " f"{'ratio':>7}")
     for n in [11, 19, 23, 31, 43]:
         R = _qr(n)
         G = residue_digraph(n)
@@ -229,8 +230,10 @@ def experiment_3_injection_echo():
         _evolve(Gs)
         sp_shuf, _ = _substrate_std(Gs)
 
-        print(f"  {n:>4} {sp_arith:>13.4f} {sp_shuf:>16.4f} "
-              f"{sp_arith / max(sp_shuf, 1e-12):>7.3f}")
+        print(
+            f"  {n:>4} {sp_arith:>13.4f} {sp_shuf:>16.4f} "
+            f"{sp_arith / max(sp_shuf, 1e-12):>7.3f}"
+        )
     print()
     print("  -> ratio ~ 1: the substrate echoes the injected nu_f multiset,")
     print("     not the QR structure. Injection, not emergence -- and circular.")

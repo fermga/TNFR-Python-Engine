@@ -79,21 +79,22 @@ References
 - AGENTS.md §"Telemetry — Core Metrics" (aggregate C(t) blind spot, |∇φ|)
 """
 
+import math
 import os
 import sys
-import math
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np
 
-from tnfr.riemann.von_mangoldt import build_prime_ladder_spectrum
 from tnfr.riemann.oscillatory_correction import prime_ladder_oscillatory_sum
+from tnfr.riemann.von_mangoldt import build_prime_ladder_spectrum
 
 
 def _s_true(T: float) -> float:
     """True oscillatory residue S(T) = (1/π)·arg ζ(½+iT) via mpmath."""
     import mpmath as mp
+
     with mp.workdps(25):
         val = mp.arg(mp.zeta(mp.mpf(0.5) + 1j * mp.mpf(T))) / mp.pi
     return float(val)
@@ -116,8 +117,10 @@ def experiment_1_vibration():
     mu = np.sort(np.asarray(spec.eigenvalues, dtype=float))
     print("Lowest prime-ladder frequencies μ = k·log p:")
     print(f"  {[round(float(x), 4) for x in mu[:6]]}")
-    print(f"  (log2={math.log(2):.4f}, log3={math.log(3):.4f}, "
-          f"2·log2={2 * math.log(2):.4f}, log5={math.log(5):.4f})")
+    print(
+        f"  (log2={math.log(2):.4f}, log3={math.log(3):.4f}, "
+        f"2·log2={2 * math.log(2):.4f}, log5={math.log(5):.4f})"
+    )
     print()
 
     heights = [20.3, 30.7, 40.1, 50.9, 60.3, 75.2]
@@ -129,7 +132,7 @@ def experiment_1_vibration():
         sx = float(prime_ladder_oscillatory_sum(T, spec))
         same = (st * sx > 0) or (abs(st) < 0.05)
         sign_ok += int(same)
-        tag = 'OK' if same else '--'
+        tag = "OK" if same else "--"
         print(f"{T:>7.1f}  {st:>9.4f}  {sx:>9.4f}  {tag:>5}")
 
     print()
@@ -164,8 +167,10 @@ def experiment_2_spectral_decomposition():
     top = np.argsort(amp)[-5:][::-1]
 
     prime_freqs = {
-        "log 2": math.log(2), "log 3": math.log(3),
-        "log 5": math.log(5), "2·log 2": 2 * math.log(2),
+        "log 2": math.log(2),
+        "log 3": math.log(3),
+        "log 5": math.log(5),
+        "2·log 2": 2 * math.log(2),
         "log 7": math.log(7),
     }
 

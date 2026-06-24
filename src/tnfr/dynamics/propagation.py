@@ -27,13 +27,14 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
-from ..constants.canonical import EMERGENT_FREQ_BALANCE_CANONICAL, DELTA_PHI_MAX
+from ..constants.canonical import DELTA_PHI_MAX, EMERGENT_FREQ_BALANCE_CANONICAL
 
 __all__ = [
     "propagate_dissonance",
     "compute_network_dissonance_field",
     "detect_bifurcation_cascade",
 ]
+
 
 def propagate_dissonance(
     G: TNFRGraph,
@@ -127,7 +128,9 @@ def propagate_dissonance(
 
         # Compute frequency matching
         if propagation_mode == "frequency_weighted":
-            freq_ratio = min(neighbor_vf, source_vf) / max(neighbor_vf, source_vf, 1e-10)
+            freq_ratio = min(neighbor_vf, source_vf) / max(
+                neighbor_vf, source_vf, 1e-10
+            )
             freq_weight = freq_ratio
         else:
             freq_weight = 1.0
@@ -137,7 +140,9 @@ def propagate_dissonance(
         coupling_weight = edge_data.get("weight", 1.0) if edge_data else 1.0
 
         # Compute propagated dissonance
-        propagated_dnfr = dissonance_magnitude * coupling_weight * phase_weight * freq_weight
+        propagated_dnfr = (
+            dissonance_magnitude * coupling_weight * phase_weight * freq_weight
+        )
 
         if abs(propagated_dnfr) >= min_propagation:
             # Apply propagated dissonance to neighbor
@@ -159,6 +164,7 @@ def propagate_dissonance(
             )
 
     return affected
+
 
 def compute_network_dissonance_field(
     G: TNFRGraph,
@@ -212,7 +218,9 @@ def compute_network_dissonance_field(
     source_dnfr = abs(float(get_attr(G.nodes[source_node], ALIAS_DNFR, 0.0)))
 
     # Get decay factor from graph config
-    decay_factor = float(G.graph.get("OZ_DECAY_FACTOR", EMERGENT_FREQ_BALANCE_CANONICAL))
+    decay_factor = float(
+        G.graph.get("OZ_DECAY_FACTOR", EMERGENT_FREQ_BALANCE_CANONICAL)
+    )
 
     # BFS to propagate with distance decay
     # Optimized implementation using single_source_shortest_path_length
@@ -226,6 +234,7 @@ def compute_network_dissonance_field(
         field[node] = source_dnfr * decay
 
     return field
+
 
 def detect_bifurcation_cascade(
     G: TNFRGraph,

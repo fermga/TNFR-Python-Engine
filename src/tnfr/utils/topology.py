@@ -15,9 +15,8 @@ Spectral analysis (eigenvalues, Fiedler value) is NEW functionality.
 
 from __future__ import annotations
 
-from ..mathematics.unified_numerical import np
 from ..errors import TNFRValueError
-
+from ..mathematics.unified_numerical import np
 from ..types import Graph as TNFRGraph  # noqa: F401 - used in docstrings
 
 __all__ = [
@@ -25,6 +24,7 @@ __all__ = [
     "compute_laplacian_spectrum",
     "compute_fiedler_value",
 ]
+
 
 def compute_laplacian_spectrum(G) -> tuple[np.ndarray, np.ndarray]:
     """Compute eigenvalues and eigenvectors of the normalized graph Laplacian.
@@ -115,6 +115,7 @@ def compute_laplacian_spectrum(G) -> tuple[np.ndarray, np.ndarray]:
 
     return eigenvalues, eigenvectors
 
+
 def compute_fiedler_value(G) -> float:
     """Compute Fiedler value (second-smallest Laplacian eigenvalue).
 
@@ -150,6 +151,7 @@ def compute_fiedler_value(G) -> float:
         return 0.0  # Trivial graph
 
     return float(eigenvalues[1])
+
 
 def compute_k_top_spectral(
     G,
@@ -233,6 +235,7 @@ def compute_k_top_spectral(
     if lambda_1 < 1e-6:
         # Graph is disconnected or trivial
         from ..constants.canonical import K_TOP_FALLBACK_CANONICAL
+
         return K_TOP_FALLBACK_CANONICAL  # Canonical slow relaxation
 
     if method == "fiedler_inverse":
@@ -256,6 +259,7 @@ def compute_k_top_spectral(
         except nx.NetworkXError:
             # Graph disconnected - use canonical fallback
             from ..constants.canonical import K_TOP_FALLBACK_CANONICAL
+
             k_top = K_TOP_FALLBACK_CANONICAL
     else:
         msg = f"Unknown method '{method}'"
@@ -269,7 +273,8 @@ def compute_k_top_spectral(
         )
 
     # Clamp to canonical range (notational (φ,γ,π,e) bounds)
-    from ..constants.canonical import K_TOP_MIN_CANONICAL, K_TOP_MAX_CANONICAL
+    from ..constants.canonical import K_TOP_MAX_CANONICAL, K_TOP_MIN_CANONICAL
+
     k_top = np.clip(k_top, K_TOP_MIN_CANONICAL, K_TOP_MAX_CANONICAL)
 
     return float(k_top)

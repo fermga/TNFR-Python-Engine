@@ -86,7 +86,9 @@ P_THRESHOLD: float = 0.05
 def build_remesh_iteration_matrix(alpha: float, tau_l: int, tau_g: int) -> np.ndarray:
     """Construct the (τ_g+1)×(τ_g+1) shift-augmented REMESH update matrix."""
     if tau_l < 1 or tau_g < 1 or tau_l > tau_g:
-        raise ValueError(f"require 1 <= tau_l <= tau_g, got tau_l={tau_l}, tau_g={tau_g}")
+        raise ValueError(
+            f"require 1 <= tau_l <= tau_g, got tau_l={tau_l}, tau_g={tau_g}"
+        )
     if not (0.0 < alpha < 1.0):
         raise ValueError(f"require 0 < alpha < 1, got alpha={alpha}")
     dim = tau_g + 1
@@ -115,14 +117,20 @@ class CorrelationTest:
     p_two_sided_analytical: float
     p_one_sided_permutation: float
 
-    def passes_significance(self, threshold: float = CORR_THRESHOLD,
-                            p_thresh: float = P_THRESHOLD) -> bool:
+    def passes_significance(
+        self, threshold: float = CORR_THRESHOLD, p_thresh: float = P_THRESHOLD
+    ) -> bool:
         return abs(self.r) >= threshold and self.p_one_sided_permutation < p_thresh
 
 
-def permutation_p_one_sided(observed_r: float, x: np.ndarray, y: np.ndarray,
-                            statistic: str, rng: np.random.Generator,
-                            n_perm: int = PERM_N) -> float:
+def permutation_p_one_sided(
+    observed_r: float,
+    x: np.ndarray,
+    y: np.ndarray,
+    statistic: str,
+    rng: np.random.Generator,
+    n_perm: int = PERM_N,
+) -> float:
     """One-sided p-value: P(|r_perm| >= |r_obs|) under random reordering of y."""
     abs_obs = abs(observed_r)
     count = 0
@@ -141,8 +149,9 @@ def permutation_p_one_sided(observed_r: float, x: np.ndarray, y: np.ndarray,
     return (count + 1) / (n_perm + 1)
 
 
-def run_correlation_battery(eigvals: np.ndarray, gammas: np.ndarray,
-                            rng: np.random.Generator) -> list[CorrelationTest]:
+def run_correlation_battery(
+    eigvals: np.ndarray, gammas: np.ndarray, rng: np.random.Generator
+) -> list[CorrelationTest]:
     """Compute the pre-registered set of correlations between eigenvalue
     orderings and γ_n.
 
@@ -168,8 +177,9 @@ def run_correlation_battery(eigvals: np.ndarray, gammas: np.ndarray,
         for stat_name, fn in (("pearson", pearsonr), ("spearman", spearmanr)):
             r, p_an = fn(x, y)
             p_perm = permutation_p_one_sided(r, x, y, stat_name, rng)
-            tests.append(CorrelationTest(name, stat_name, float(r),
-                                         float(p_an), float(p_perm)))
+            tests.append(
+                CorrelationTest(name, stat_name, float(r), float(p_an), float(p_perm))
+            )
 
     # ordering 3: arg(lambda) for upper half plane
     upper = eigvals[np.imag(eigvals) >= 1e-12]
@@ -181,8 +191,11 @@ def run_correlation_battery(eigvals: np.ndarray, gammas: np.ndarray,
     for stat_name, fn in (("pearson", pearsonr), ("spearman", spearmanr)):
         r, p_an = fn(x, y)
         p_perm = permutation_p_one_sided(r, x, y, stat_name, rng)
-        tests.append(CorrelationTest("arg_upper_asc", stat_name, float(r),
-                                     float(p_an), float(p_perm)))
+        tests.append(
+            CorrelationTest(
+                "arg_upper_asc", stat_name, float(r), float(p_an), float(p_perm)
+            )
+        )
 
     # ordering 4: Re(lambda) sorted descending
     re_desc = np.sort(np.real(eigvals))[::-1]
@@ -192,8 +205,11 @@ def run_correlation_battery(eigvals: np.ndarray, gammas: np.ndarray,
     for stat_name, fn in (("pearson", pearsonr), ("spearman", spearmanr)):
         r, p_an = fn(x, y)
         p_perm = permutation_p_one_sided(r, x, y, stat_name, rng)
-        tests.append(CorrelationTest("real_desc", stat_name, float(r),
-                                     float(p_an), float(p_perm)))
+        tests.append(
+            CorrelationTest(
+                "real_desc", stat_name, float(r), float(p_an), float(p_perm)
+            )
+        )
 
     # ordering 5: Im(lambda) for upper half plane, ascending
     im_upper = np.imag(eigvals[np.imag(eigvals) >= 1e-12])
@@ -204,14 +220,18 @@ def run_correlation_battery(eigvals: np.ndarray, gammas: np.ndarray,
     for stat_name, fn in (("pearson", pearsonr), ("spearman", spearmanr)):
         r, p_an = fn(x, y)
         p_perm = permutation_p_one_sided(r, x, y, stat_name, rng)
-        tests.append(CorrelationTest("imag_upper_asc", stat_name, float(r),
-                                     float(p_an), float(p_perm)))
+        tests.append(
+            CorrelationTest(
+                "imag_upper_asc", stat_name, float(r), float(p_an), float(p_perm)
+            )
+        )
 
     return tests
 
 
-def run_sensitivity_sweep(alpha_grid: list[float], tau_l_grid: list[int],
-                          tau_g: int, rng: np.random.Generator) -> list[dict[str, Any]]:
+def run_sensitivity_sweep(
+    alpha_grid: list[float], tau_l_grid: list[int], tau_g: int, rng: np.random.Generator
+) -> list[dict[str, Any]]:
     """Re-run the correlation battery on every (α, τ_l) cell. Returns one
     record per cell with the maximum |r| achieved and its associated p_perm."""
     records: list[dict[str, Any]] = []
@@ -226,22 +246,25 @@ def run_sensitivity_sweep(alpha_grid: list[float], tau_l_grid: list[int],
             gammas = compute_riemann_zeros(n_nontrivial)
             tests = run_correlation_battery(nontrivial, gammas, rng)
             best = max(tests, key=lambda t: abs(t.r))
-            records.append({
-                "alpha": alpha,
-                "tau_l": tau_l,
-                "tau_g": tau_g,
-                "n_nontrivial_eigvals": n_nontrivial,
-                "best_ordering": best.ordering_name,
-                "best_statistic": best.statistic_name,
-                "best_r": best.r,
-                "best_p_perm": best.p_one_sided_permutation,
-                "best_passes": best.passes_significance(),
-            })
+            records.append(
+                {
+                    "alpha": alpha,
+                    "tau_l": tau_l,
+                    "tau_g": tau_g,
+                    "n_nontrivial_eigvals": n_nontrivial,
+                    "best_ordering": best.ordering_name,
+                    "best_statistic": best.statistic_name,
+                    "best_r": best.r,
+                    "best_p_perm": best.p_one_sided_permutation,
+                    "best_passes": best.passes_significance(),
+                }
+            )
     return records
 
 
-def run_monotonicity_controls(gammas: np.ndarray,
-                              rng: np.random.Generator) -> list[dict[str, Any]]:
+def run_monotonicity_controls(
+    gammas: np.ndarray, rng: np.random.Generator
+) -> list[dict[str, Any]]:
     """Compute the same Pearson/Spearman + permutation null on control sequences
     that are monotone but carry no Riemann content. Purpose: expose the design
     flaw whereby comparing two sorted sequences yields trivially high r and a
@@ -256,8 +279,7 @@ def run_monotonicity_controls(gammas: np.ndarray,
     controls: list[tuple[str, np.ndarray]] = [
         ("integer_ladder", np.arange(1, n + 1, dtype=np.float64)),
         ("arithmetic_decay", np.linspace(0.98, 0.94, n)),
-        ("random_monotone_in_unit_disk",
-            np.sort(rng.uniform(0.9, 1.0, n))),
+        ("random_monotone_in_unit_disk", np.sort(rng.uniform(0.9, 1.0, n))),
         ("log_n_growth", np.log1p(np.arange(1, n + 1, dtype=np.float64))),
     ]
     records: list[dict[str, Any]] = []
@@ -265,15 +287,18 @@ def run_monotonicity_controls(gammas: np.ndarray,
         for stat_name, fn in (("pearson", pearsonr), ("spearman", spearmanr)):
             r, p_an = fn(x, gammas)
             p_perm = permutation_p_one_sided(r, x, gammas, stat_name, rng)
-            records.append({
-                "control_name": name,
-                "statistic_name": stat_name,
-                "r": float(r),
-                "p_two_sided_analytical": float(p_an),
-                "p_one_sided_permutation": float(p_perm),
-                "passes_naive_F5": (abs(r) >= CORR_THRESHOLD
-                                     and p_perm < P_THRESHOLD),
-            })
+            records.append(
+                {
+                    "control_name": name,
+                    "statistic_name": stat_name,
+                    "r": float(r),
+                    "p_two_sided_analytical": float(p_an),
+                    "p_one_sided_permutation": float(p_perm),
+                    "passes_naive_F5": (
+                        abs(r) >= CORR_THRESHOLD and p_perm < P_THRESHOLD
+                    ),
+                }
+            )
     return records
 
 
@@ -350,13 +375,15 @@ def run_milestone(out_path: Path, perm_n: int = PERM_N) -> dict[str, Any]:
             "spectrum_independent_of_prime_ladder_initial_state": True,
             "trivial_eigenvalue_lambda_1_present": True,
             "n_nontrivial_eigenvalues": int(n_nontrivial),
-            "spectral_radius_excluding_unity": float(
-                np.abs(nontrivial).max()
-            ),
+            "spectral_radius_excluding_unity": float(np.abs(nontrivial).max()),
         },
         "canonical_spectrum": [
-            {"real": float(z.real), "imag": float(z.imag),
-             "abs": float(abs(z)), "arg": float(np.angle(z))}
+            {
+                "real": float(z.real),
+                "imag": float(z.imag),
+                "abs": float(abs(z)),
+                "arg": float(np.angle(z)),
+            }
             for z in eigvals_sorted_by_abs
         ],
         "first_n_riemann_gammas": [float(g) for g in gammas],
@@ -394,43 +421,64 @@ def _print_summary(report: dict[str, Any]) -> None:
     print("R-inf-1a-operator  (REMESH iteration matrix spectrum vs {gamma_n})")
     print("=" * 70)
     cfg = report["canonical_config"]
-    print(f"Canonical config: alpha={cfg['alpha']}, tau_l={cfg['tau_l']}, "
-          f"tau_g={cfg['tau_g']}, dim(M)={cfg['matrix_dim']}")
+    print(
+        f"Canonical config: alpha={cfg['alpha']}, tau_l={cfg['tau_l']}, "
+        f"tau_g={cfg['tau_g']}, dim(M)={cfg['matrix_dim']}"
+    )
     print()
     print("Structural observations:")
-    print(f"  operator block-diagonal in nodes              : "
-          f"{obs['operator_is_block_diagonal_in_nodes']}")
-    print(f"  spectrum independent of graph topology        : "
-          f"{obs['spectrum_independent_of_graph_topology']}")
-    print(f"  spectrum independent of P14 initial condition : "
-          f"{obs['spectrum_independent_of_prime_ladder_initial_state']}")
-    print(f"  number of non-trivial eigenvalues             : "
-          f"{obs['n_nontrivial_eigenvalues']}")
-    print(f"  spectral radius (excluding lambda=1)          : "
-          f"{obs['spectral_radius_excluding_unity']:.6f}")
+    print(
+        f"  operator block-diagonal in nodes              : "
+        f"{obs['operator_is_block_diagonal_in_nodes']}"
+    )
+    print(
+        f"  spectrum independent of graph topology        : "
+        f"{obs['spectrum_independent_of_graph_topology']}"
+    )
+    print(
+        f"  spectrum independent of P14 initial condition : "
+        f"{obs['spectrum_independent_of_prime_ladder_initial_state']}"
+    )
+    print(
+        f"  number of non-trivial eigenvalues             : "
+        f"{obs['n_nontrivial_eigenvalues']}"
+    )
+    print(
+        f"  spectral radius (excluding lambda=1)          : "
+        f"{obs['spectral_radius_excluding_unity']:.6f}"
+    )
     print()
     print("Correlation battery on canonical config:")
     print(f"  {'ordering':18s} {'stat':10s} {'r':>9s} {'p_perm':>9s}  passes")
     for t in report["correlation_battery"]:
-        passes = (abs(t["r"]) >= CORR_THRESHOLD
-                  and t["p_one_sided_permutation"] < P_THRESHOLD)
-        print(f"  {t['ordering_name']:18s} {t['statistic_name']:10s} "
-              f"{t['r']:+9.4f} {t['p_one_sided_permutation']:9.4f}  "
-              f"{'YES' if passes else 'no'}")
+        passes = (
+            abs(t["r"]) >= CORR_THRESHOLD and t["p_one_sided_permutation"] < P_THRESHOLD
+        )
+        print(
+            f"  {t['ordering_name']:18s} {t['statistic_name']:10s} "
+            f"{t['r']:+9.4f} {t['p_one_sided_permutation']:9.4f}  "
+            f"{'YES' if passes else 'no'}"
+        )
     print()
-    print(f"Best test: {best['ordering_name']} ({best['statistic_name']}) "
-          f"r={best['r']:+.4f}  p_perm={best['p_one_sided_permutation']:.4f}")
+    print(
+        f"Best test: {best['ordering_name']} ({best['statistic_name']}) "
+        f"r={best['r']:+.4f}  p_perm={best['p_one_sided_permutation']:.4f}"
+    )
     print(f"F5 verdict (naive, canonical): {report['f5_verdict_canonical']}")
     print()
     print("Monotonicity controls (sorted non-Riemann sequences vs gammas):")
     print(f"  {'control':32s} {'stat':10s} {'r':>9s} {'p_perm':>9s}  passes_naive")
     for c in report["monotonicity_controls"]:
-        print(f"  {c['control_name']:32s} {c['statistic_name']:10s} "
-              f"{c['r']:+9.4f} {c['p_one_sided_permutation']:9.4f}  "
-              f"{'YES' if c['passes_naive_F5'] else 'no'}")
-    print(f"  -> {report['n_controls_passing_naive_F5']}/{report['n_controls_total']} "
-          f"controls pass naive F5; controls_invalidate_canonical_pass = "
-          f"{report['controls_invalidate_canonical_pass']}")
+        print(
+            f"  {c['control_name']:32s} {c['statistic_name']:10s} "
+            f"{c['r']:+9.4f} {c['p_one_sided_permutation']:9.4f}  "
+            f"{'YES' if c['passes_naive_F5'] else 'no'}"
+        )
+    print(
+        f"  -> {report['n_controls_passing_naive_F5']}/{report['n_controls_total']} "
+        f"controls pass naive F5; controls_invalidate_canonical_pass = "
+        f"{report['controls_invalidate_canonical_pass']}"
+    )
     print()
     print(f"F5 STRICT verdict: {report['f5_verdict_strict']}")
     print()
@@ -438,22 +486,29 @@ def _print_summary(report: dict[str, Any]) -> None:
     print(f"  refuted = {report['structural_b1_operator_level_refuted']}")
     print(f"  basis   = {report['structural_b1_refutation_basis']}")
     print()
-    print(f"Sensitivity sweep ({len(report['sensitivity_sweep'])} cells): "
-          f"any cell passes = {report['any_sweep_cell_passes']}")
+    print(
+        f"Sensitivity sweep ({len(report['sensitivity_sweep'])} cells): "
+        f"any cell passes = {report['any_sweep_cell_passes']}"
+    )
     for rec in report["sensitivity_sweep"]:
-        print(f"  alpha={rec['alpha']}, tau_l={rec['tau_l']}: "
-              f"best |r|={abs(rec['best_r']):.4f} ({rec['best_ordering']}, "
-              f"{rec['best_statistic']}, p={rec['best_p_perm']:.4f})  "
-              f"{'PASS' if rec['best_passes'] else 'fail'}")
+        print(
+            f"  alpha={rec['alpha']}, tau_l={rec['tau_l']}: "
+            f"best |r|={abs(rec['best_r']):.4f} ({rec['best_ordering']}, "
+            f"{rec['best_statistic']}, p={rec['best_p_perm']:.4f})  "
+            f"{'PASS' if rec['best_passes'] else 'fail'}"
+        )
     print("=" * 70)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--out", type=Path,
-        default=REPO_ROOT / "results" / "remesh_infinity"
-                / "remesh_infinity_riemann_operator.json",
+        "--out",
+        type=Path,
+        default=REPO_ROOT
+        / "results"
+        / "remesh_infinity"
+        / "remesh_infinity_riemann_operator.json",
     )
     parser.add_argument("--perm-n", type=int, default=PERM_N)
     args = parser.parse_args()

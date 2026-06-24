@@ -22,40 +22,46 @@ without duplicating logic.
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 from typing import Any, Callable
-import time
 
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
 
 try:  # Optional dependency
     import networkx as nx  # noqa: F401
+
     HAS_NETWORKX = True
 except ImportError:  # pragma: no cover - optional runtime dependency
     HAS_NETWORKX = False
 
 try:
     from ..mathematics.spectral import get_laplacian_spectrum
+
     HAS_SPECTRAL = True
 except ImportError:  # pragma: no cover - handled upstream
     HAS_SPECTRAL = False
 
 try:
-    from ..utils.cache import cache_tnfr_computation, CacheLevel
+    from ..utils.cache import CacheLevel, cache_tnfr_computation
+
     _CORE_CACHE_AVAILABLE = True
 except ImportError:  # pragma: no cover - cache infra optional in some builds
     _CORE_CACHE_AVAILABLE = False
 
 # PHASE 6 EXTENDED: Canonical constants for FFT cache coordination
 from ..constants.canonical import (
-    PI,                                    # π ≈ 3.1416 (3.0 → canonical)
-    OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,   # e·φ/π ≈ 1.4048 (1.5 → canonical)
     FFT_OPT_SEQUENTIAL_IMPROVEMENT_CANONICAL,  # φ·γ/(π·e) ≈ 0.1095 (mathematical importance scaling)
 )
+from ..constants.canonical import (
+    OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,  # e·φ/π ≈ 1.4048 (1.5 → canonical)
+)
+from ..constants.canonical import PI  # π ≈ 3.1416 (3.0 → canonical)
 
 try:
-    from .multi_modal_cache import get_unified_cache, CacheEntryType
+    from .multi_modal_cache import CacheEntryType, get_unified_cache
+
     HAS_UNIFIED_CACHE = True
 except ImportError:  # pragma: no cover
     HAS_UNIFIED_CACHE = False
@@ -63,9 +69,11 @@ except ImportError:  # pragma: no cover
 
 try:
     from .structural_cache import get_structural_cache
+
     HAS_STRUCTURAL_CACHE = True
 except ImportError:  # pragma: no cover
     HAS_STRUCTURAL_CACHE = False
+
 
 @dataclass
 class SpectralBasis:
@@ -75,6 +83,7 @@ class SpectralBasis:
     eigenvectors: np.ndarray
     signature: str
     computed_at: float
+
 
 @dataclass
 class FFTCacheStats:
@@ -86,6 +95,7 @@ class FFTCacheStats:
     kernel_hits: int = 0
     kernel_misses: int = 0
     registered_results: int = 0
+
 
 class FFTCacheCoordinator:
     """Bridge between FFT arithmetic and repo-wide cache subsystems."""
@@ -275,7 +285,9 @@ class FFTCacheCoordinator:
         del graph_signature  # Stable cache key already encodes signature
         return get_laplacian_spectrum(G)
 
+
 _global_fft_cache: FFTCacheCoordinator | None = None
+
 
 def get_fft_cache_coordinator() -> FFTCacheCoordinator:
     """Return process-wide FFT cache coordinator instance."""
@@ -285,8 +297,11 @@ def get_fft_cache_coordinator() -> FFTCacheCoordinator:
         _global_fft_cache = FFTCacheCoordinator()
     return _global_fft_cache
 
+
 if _CORE_CACHE_AVAILABLE:
     FFTCacheCoordinator._compute_spectrum_repo_cached = cache_tnfr_computation(  # type: ignore[attr-defined]
         level=CacheLevel.GRAPH_STRUCTURE,
         dependencies={"graph_topology"},
-    )(FFTCacheCoordinator._compute_spectrum_repo_cached)  # type: ignore[attr-defined]
+    )(
+        FFTCacheCoordinator._compute_spectrum_repo_cached
+    )  # type: ignore[attr-defined]

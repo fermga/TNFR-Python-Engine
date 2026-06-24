@@ -32,11 +32,7 @@ import time
 
 import numpy as np
 
-from tnfr.navier_stokes import (
-    TNFRNavierStokesOperator,
-    build_torus_graph_3d,
-)
-
+from tnfr.navier_stokes import TNFRNavierStokesOperator, build_torus_graph_3d
 
 # -------------------------------------------------------------------------
 # Configuration
@@ -50,7 +46,7 @@ STEPS = int(round(T_FINAL / DT))
 
 # Acceptance tolerances
 TOL_DIV = 1e-8
-TOL_MIN_ORDER = 1.0   # empirical lower bound (theoretical = 2)
+TOL_MIN_ORDER = 1.0  # empirical lower bound (theoretical = 2)
 
 
 def run_resolution(n: int) -> dict:
@@ -60,9 +56,7 @@ def run_resolution(n: int) -> dict:
     op.set_taylor_green(AMPLITUDE)
 
     t0 = time.perf_counter()
-    report = op.bkm_budget(
-        DT, STEPS, advection=True, incompressible=True
-    )
+    report = op.bkm_budget(DT, STEPS, advection=True, incompressible=True)
     elapsed = time.perf_counter() - t0
 
     divs = np.asarray(report["divergence"])
@@ -113,9 +107,7 @@ def convergence_order(values: list[float], hs: list[float]) -> list[float]:
 
 def main() -> int:
     print("=" * 72)
-    print(
-        "N7: 3D TNFR-NS continuum-limit study (Taylor-Green, NS-G1 precursor)"
-    )
+    print("N7: 3D TNFR-NS continuum-limit study (Taylor-Green, NS-G1 precursor)")
     print("=" * 72)
     print(f"  Resolutions n     : {RESOLUTIONS}")
     print(f"  Time step dt      : {DT}")
@@ -126,7 +118,9 @@ def main() -> int:
 
     results: list[dict] = []
     for n in RESOLUTIONS:
-        print(f"  Running n = {n:3d}  (n^3 = {n ** 3:6d} nodes) ...", end=" ", flush=True)
+        print(
+            f"  Running n = {n:3d}  (n^3 = {n ** 3:6d} nodes) ...", end=" ", flush=True
+        )
         r = run_resolution(n)
         results.append(r)
         print(f"done in {r['elapsed_s']:6.2f}s")

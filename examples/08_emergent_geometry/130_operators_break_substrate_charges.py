@@ -90,39 +90,66 @@ import os
 import sys
 import warnings
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.constants import inject_defaults
 from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Coupling, Resonance,
-    Silence, Expansion, Contraction, SelfOrganization, Mutation,
-    Transition, Recursivity,
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
 )
 from tnfr.physics.symplectic_substrate import (
     extract_phase_space_point,
     geometric_sector_energy,
-    potential_sector_energy,
     polarization_vector,
+    potential_sector_energy,
     substrate_hamiltonian,
 )
 
 OPS = [
-    ("AL", Emission), ("EN", Reception), ("IL", Coherence),
-    ("OZ", Dissonance), ("UM", Coupling), ("RA", Resonance),
-    ("SHA", Silence), ("VAL", Expansion), ("NUL", Contraction),
-    ("THOL", SelfOrganization), ("ZHIR", Mutation),
-    ("NAV", Transition), ("REMESH", Recursivity),
+    ("AL", Emission),
+    ("EN", Reception),
+    ("IL", Coherence),
+    ("OZ", Dissonance),
+    ("UM", Coupling),
+    ("RA", Resonance),
+    ("SHA", Silence),
+    ("VAL", Expansion),
+    ("NUL", Contraction),
+    ("THOL", SelfOrganization),
+    ("ZHIR", Mutation),
+    ("NAV", Transition),
+    ("REMESH", Recursivity),
 ]
 
 # Dual-lever classification (AGENTS.md "Dual-Lever Structure", example 37).
 LEVER = {
-    "UM": "nu_f", "SHA": "nu_f", "VAL": "nu_f",
-    "IL": "dNFR", "OZ": "dNFR", "THOL": "dNFR", "ZHIR": "dNFR", "NAV": "dNFR",
+    "UM": "nu_f",
+    "SHA": "nu_f",
+    "VAL": "nu_f",
+    "IL": "dNFR",
+    "OZ": "dNFR",
+    "THOL": "dNFR",
+    "ZHIR": "dNFR",
+    "NAV": "dNFR",
     "NUL": "both",
-    "AL": "neither", "EN": "neither", "RA": "neither", "REMESH": "neither",
+    "AL": "neither",
+    "EN": "neither",
+    "RA": "neither",
+    "REMESH": "neither",
 }
 
 
@@ -150,7 +177,9 @@ def _charges(G):
         "H_sub": substrate_hamiltonian(p),
         "E_geo": geometric_sector_energy(p),
         "E_pot": potential_sector_energy(p),
-        "P_1": pol["p_1"], "P_2": pol["p_2"], "P_3": pol["p_3"],
+        "P_1": pol["p_1"],
+        "P_2": pol["p_2"],
+        "P_3": pol["p_3"],
     }
 
 
@@ -175,18 +204,24 @@ def experiment_1_breaking_map():
     print()
     G0 = _make_graph()
     c0 = _charges(G0)
-    print(f"  baseline: H_sub={c0['H_sub']:.2f} E_geo={c0['E_geo']:.2f} "
-          f"E_pot={c0['E_pot']:.3f}")
+    print(
+        f"  baseline: H_sub={c0['H_sub']:.2f} E_geo={c0['E_geo']:.2f} "
+        f"E_pot={c0['E_pot']:.3f}"
+    )
     print()
-    print(f"  {'op':>6} {'lever':>8} | {'dH':>6} {'dEgeo':>6} {'dEpot':>6} "
-          f"{'dP1':>6} {'dP2':>6} {'dP3':>6}")
+    print(
+        f"  {'op':>6} {'lever':>8} | {'dH':>6} {'dEgeo':>6} {'dEpot':>6} "
+        f"{'dP1':>6} {'dP2':>6} {'dP3':>6}"
+    )
     print("  " + "-" * 60)
     for glyph, cls in OPS:
         c1 = _apply_all(G0, cls)
         d = {k: abs(c1[k] - c0[k]) / (abs(c0[k]) + 1e-9) for k in c0}
-        print(f"  {glyph:>6} {LEVER[glyph]:>8} | {d['H_sub']:>6.2f} "
-              f"{d['E_geo']:>6.2f} {d['E_pot']:>6.2f} {d['P_1']:>6.2f} "
-              f"{d['P_2']:>6.2f} {d['P_3']:>6.2f}")
+        print(
+            f"  {glyph:>6} {LEVER[glyph]:>8} | {d['H_sub']:>6.2f} "
+            f"{d['E_geo']:>6.2f} {d['E_pot']:>6.2f} {d['P_1']:>6.2f} "
+            f"{d['P_2']:>6.2f} {d['P_3']:>6.2f}"
+        )
     print()
     print("  -> charge-changers: UM, IL, OZ, THOL, ZHIR, NAV, NUL.")
     print("     charge-preservers: AL, EN, RA, SHA, VAL, REMESH (the example-106")
@@ -207,8 +242,10 @@ def experiment_2_sector_map():
     c0 = _charges(G0)
     print(f"  baseline ABS: E_geo={c0['E_geo']:.2f} E_pot={c0['E_pot']:.3f}")
     print()
-    print(f"  {'op':>6} {'lever':>8} | {'|dE_geo|':>9} {'|dE_pot|':>9} "
-          f"{'sector broken':>14}")
+    print(
+        f"  {'op':>6} {'lever':>8} | {'|dE_geo|':>9} {'|dE_pot|':>9} "
+        f"{'sector broken':>14}"
+    )
     print("  " + "-" * 52)
     for glyph, cls in OPS:
         c1 = _apply_all(G0, cls)
@@ -220,8 +257,10 @@ def experiment_2_sector_map():
             sector = "GEOMETRIC"
         else:
             sector = "POTENTIAL"
-        print(f"  {glyph:>6} {LEVER[glyph]:>8} | {dgeo:>9.4f} {dpot:>9.4f} "
-              f"{sector:>14}")
+        print(
+            f"  {glyph:>6} {LEVER[glyph]:>8} | {dgeo:>9.4f} {dpot:>9.4f} "
+            f"{sector:>14}"
+        )
     print()
     print("  -> the PURE dNFR-lever operators (OZ, THOL, ZHIR, NAV) and NUL")
     print("     leave the geometric sector EXACTLY untouched (|dE_geo|=0.0000)")
@@ -248,17 +287,21 @@ def experiment_3_lever_grouping():
         "IL (coherence)": ["IL"],
         "dNFR destab. (OZ/THOL/ZHIR/NAV)": ["OZ", "THOL", "ZHIR", "NAV"],
         "NUL (contraction)": ["NUL"],
-        "preservers (AL/EN/RA/SHA/VAL/REMESH)":
-            ["AL", "EN", "RA", "SHA", "VAL", "REMESH"],
+        "preservers (AL/EN/RA/SHA/VAL/REMESH)": [
+            "AL",
+            "EN",
+            "RA",
+            "SHA",
+            "VAL",
+            "REMESH",
+        ],
     }
     by_glyph = {g: _apply_all(G0, cls) for g, cls in OPS}
     print(f"  {'class':38s} {'|dE_geo|':>9} {'|dE_pot|':>9} {'sector':>11}")
     print("  " + "-" * 70)
     for label, glyphs in classes.items():
-        mgeo = float(np.mean(
-            [abs(by_glyph[g]["E_geo"] - c0["E_geo"]) for g in glyphs]))
-        mpot = float(np.mean(
-            [abs(by_glyph[g]["E_pot"] - c0["E_pot"]) for g in glyphs]))
+        mgeo = float(np.mean([abs(by_glyph[g]["E_geo"] - c0["E_geo"]) for g in glyphs]))
+        mpot = float(np.mean([abs(by_glyph[g]["E_pot"] - c0["E_pot"]) for g in glyphs]))
         if mgeo < 1e-6 and mpot < 1e-6:
             sec = "preserve"
         elif mgeo > mpot:

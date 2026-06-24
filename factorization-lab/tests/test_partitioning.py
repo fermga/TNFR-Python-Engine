@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import networkx as nx
 import pytest
-
 from tnfr_factorization.partitioning import (  # type: ignore[import]
     PartitionPlannerConfig,
     aggregate_partition_metrics,
@@ -77,5 +76,7 @@ def test_partition_candidate_annotation_and_aggregation() -> None:
     )
     assert aggregation.candidate_total == 4
     assert aggregation.candidate_ratio == pytest.approx(1.0)
-    non_empty = [pid for pid, cands in aggregation.partition_candidates.items() if cands]
+    non_empty = [
+        pid for pid, cands in aggregation.partition_candidates.items() if cands
+    ]
     assert non_empty, "Expected at least one partition to receive candidates"

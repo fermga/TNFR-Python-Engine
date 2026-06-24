@@ -33,7 +33,9 @@ def main() -> None:
     print("=" * 72)
 
     print()
-    print("--- Resolution 1: n_nodes=24, warmup=16, (tau_l, tau_g)=(4, 8), events=8 ---")
+    print(
+        "--- Resolution 1: n_nodes=24, warmup=16, (tau_l, tau_g)=(4, 8), events=8 ---"
+    )
     cert1 = compute_remesh_window_type_signature(
         n_nodes=24,
         warmup_steps=16,
@@ -45,7 +47,9 @@ def main() -> None:
     print(cert1.summary())
 
     print()
-    print("--- Resolution 2: n_nodes=48, warmup=24, (tau_l, tau_g)=(6, 12), events=12 ---")
+    print(
+        "--- Resolution 2: n_nodes=48, warmup=24, (tau_l, tau_g)=(6, 12), events=12 ---"
+    )
     cert2 = compute_remesh_window_type_signature(
         n_nodes=48,
         warmup_steps=24,
@@ -59,11 +63,19 @@ def main() -> None:
     print()
     print("=" * 72)
     print("Interpretation (§13quadraginta-tertia.5-.6):")
-    print("  - INTEGER_WINDOW_ADEQUATE     : signature < 0.15 AND integer storage fraction == 1.0")
-    print("                                  -> integer-indexed (tau_l, tau_g) in N x N suffices")
+    print(
+        "  - INTEGER_WINDOW_ADEQUATE     : signature < 0.15 AND integer storage fraction == 1.0"
+    )
+    print(
+        "                                  -> integer-indexed (tau_l, tau_g) in N x N suffices"
+    )
     print("  - INDETERMINATE               : in between")
-    print("  - CONTINUOUS_KERNEL_NECESSARY : signature > 0.5 OR integer storage fraction < 1.0")
-    print("                                  -> continuous kernel K(t,s) may be required")
+    print(
+        "  - CONTINUOUS_KERNEL_NECESSARY : signature > 0.5 OR integer storage fraction < 1.0"
+    )
+    print(
+        "                                  -> continuous kernel K(t,s) may be required"
+    )
     print()
     print("Verdicts at the two resolutions:")
     print(f"  res 1 (24/16/4-8/8):  {cert1.verdict}")

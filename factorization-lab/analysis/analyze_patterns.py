@@ -1,4 +1,5 @@
 """Pattern analysis toolkit for TNFR certificate manifests."""
+
 from __future__ import annotations
 
 import argparse
@@ -57,7 +58,9 @@ def _normalize_manifest(doc: Dict[str, Any]) -> pd.DataFrame:
     manifest_entries = doc.get("manifest", [])
     frame = pd.DataFrame(manifest_entries)
     if frame.empty:
-        raise ValueError("Manifest contains no entries; run certificate_manifest.py first.")
+        raise ValueError(
+            "Manifest contains no entries; run certificate_manifest.py first."
+        )
     numeric_cols = [
         "n",
         "candidate_factor",
@@ -81,7 +84,9 @@ def _normalize_manifest(doc: Dict[str, Any]) -> pd.DataFrame:
     for column in numeric_cols:
         if column in frame.columns:
             frame[column] = pd.to_numeric(frame[column], errors="coerce")
-    frame["tnfr_verification_passed"] = frame["tnfr_verification_passed"].astype("float")
+    frame["tnfr_verification_passed"] = frame["tnfr_verification_passed"].astype(
+        "float"
+    )
     return frame
 
 
@@ -193,7 +198,9 @@ def _derive_signatures(
         return []
     combos = (
         patterns.groupby("certificate_path")["pattern_type"]
-        .apply(lambda values: tuple(sorted(set(v for v in values if v and v != "error"))))
+        .apply(
+            lambda values: tuple(sorted(set(v for v in values if v and v != "error")))
+        )
         .reset_index(name="combo")
     )
     combos = combos[combos["combo"].map(len) > 0]
@@ -230,9 +237,11 @@ def _derive_signatures(
                 "avg_candidate_partitions": float(stats["avg_candidate_partitions"]),
                 "avg_partition_count": float(stats["avg_partition_count"]),
                 "avg_modulus": float(stats["avg_modulus"]),
-                "tnfr_success_rate": float(stats["tnfr_success_rate"])
-                if not math.isnan(stats["tnfr_success_rate"])
-                else None,
+                "tnfr_success_rate": (
+                    float(stats["tnfr_success_rate"])
+                    if not math.isnan(stats["tnfr_success_rate"])
+                    else None
+                ),
                 "recommended_sequence": _recommend_sequence(combo_list),
             }
         )
@@ -254,12 +263,16 @@ def main(argv: List[str] | None = None) -> None:
         "detector_warnings": pattern_block.get("detector_warnings"),
     }
     manifest_df = _normalize_manifest(doc)
-    manifest_df["coherence_bucket"] = _bucket_coherence(manifest_df["coherence_ratio_max"])
+    manifest_df["coherence_bucket"] = _bucket_coherence(
+        manifest_df["coherence_ratio_max"]
+    )
 
     patterns_df = _expand_patterns(doc)
     if not patterns_df.empty:
         patterns_df = patterns_df.merge(
-            manifest_df[["certificate_path", "coherence_bucket", "tnfr_verification_passed"]],
+            manifest_df[
+                ["certificate_path", "coherence_bucket", "tnfr_verification_passed"]
+            ],
             on="certificate_path",
             how="left",
         )
@@ -288,7 +301,9 @@ def main(argv: List[str] | None = None) -> None:
         "timestamp": time.time(),
         "manifest_path": str(manifest_path.relative_to(_REPO_ROOT)),
         "entry_count": int(manifest_df.shape[0]),
-        "pattern_entry_count": int(patterns_df.shape[0] if not patterns_df.empty else 0),
+        "pattern_entry_count": int(
+            patterns_df.shape[0] if not patterns_df.empty else 0
+        ),
         "telemetry_summary": telemetry_summary,
         "pattern_counts": pattern_counts,
         "coherence_pattern_pivot": coherence_pivot,
@@ -371,40 +386,58 @@ def generate_optimization_manifest(
         cert_data = {
             "certificate_path": str(row["certificate_path"]),
             "modulus": int(row["modulus"]) if not pd.isna(row["modulus"]) else None,
-            "coherence_ratio_max": float(row["coherence_ratio_max"])
-            if not pd.isna(row["coherence_ratio_max"])
-            else None,
+            "coherence_ratio_max": (
+                float(row["coherence_ratio_max"])
+                if not pd.isna(row["coherence_ratio_max"])
+                else None
+            ),
             "phi_s": float(row["phi_s"]) if not pd.isna(row["phi_s"]) else None,
-            "phase_gradient": float(row["phase_gradient"])
-            if not pd.isna(row["phase_gradient"])
-            else None,
-            "phase_curvature": float(row["phase_curvature"])
-            if not pd.isna(row["phase_curvature"])
-            else None,
-            "coherence_length": float(row["coherence_length"])
-            if not pd.isna(row["coherence_length"])
-            else None,
-            "tnfr_verification_passed": bool(row["tnfr_verification_passed"])
-            if not pd.isna(row["tnfr_verification_passed"])
-            else None,
+            "phase_gradient": (
+                float(row["phase_gradient"])
+                if not pd.isna(row["phase_gradient"])
+                else None
+            ),
+            "phase_curvature": (
+                float(row["phase_curvature"])
+                if not pd.isna(row["phase_curvature"])
+                else None
+            ),
+            "coherence_length": (
+                float(row["coherence_length"])
+                if not pd.isna(row["coherence_length"])
+                else None
+            ),
+            "tnfr_verification_passed": (
+                bool(row["tnfr_verification_passed"])
+                if not pd.isna(row["tnfr_verification_passed"])
+                else None
+            ),
         }
         certificates_serialized.append(cert_data)
 
     # Compute aggregate telemetry
     aggregate_telemetry = {
         "certificate_count": len(certificates_serialized),
-        "avg_coherence_ratio_max": float(manifest_df["coherence_ratio_max"].mean())
-        if "coherence_ratio_max" in manifest_df.columns
-        else None,
-        "avg_phi_s": float(manifest_df["phi_s"].mean())
-        if "phi_s" in manifest_df.columns
-        else None,
-        "avg_phase_gradient": float(manifest_df["phase_gradient"].mean())
-        if "phase_gradient" in manifest_df.columns
-        else None,
-        "verification_success_rate": float(manifest_df["tnfr_verification_passed"].mean())
-        if "tnfr_verification_passed" in manifest_df.columns
-        else None,
+        "avg_coherence_ratio_max": (
+            float(manifest_df["coherence_ratio_max"].mean())
+            if "coherence_ratio_max" in manifest_df.columns
+            else None
+        ),
+        "avg_phi_s": (
+            float(manifest_df["phi_s"].mean())
+            if "phi_s" in manifest_df.columns
+            else None
+        ),
+        "avg_phase_gradient": (
+            float(manifest_df["phase_gradient"].mean())
+            if "phase_gradient" in manifest_df.columns
+            else None
+        ),
+        "verification_success_rate": (
+            float(manifest_df["tnfr_verification_passed"].mean())
+            if "tnfr_verification_passed" in manifest_df.columns
+            else None
+        ),
     }
 
     # Build manifest

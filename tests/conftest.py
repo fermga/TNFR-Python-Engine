@@ -185,7 +185,9 @@ def _reset_all_state() -> None:
     try:
         from tnfr import rng as rng_module
 
-        if hasattr(rng_module, "seed_hash") and hasattr(rng_module.seed_hash, "cache_clear"):
+        if hasattr(rng_module, "seed_hash") and hasattr(
+            rng_module.seed_hash, "cache_clear"
+        ):
             rng_module.seed_hash.cache_clear()
         # Reset RNG cache lock flag and cache
         rng_module._CACHE_LOCKED = False
@@ -356,7 +358,9 @@ def boundary_test_cases() -> dict[str, list[float]]:
     }
 
 
-def assert_epi_in_bounds(epi_value: float, tolerance: float = 1e-9, abs_tol: float = 1e-12) -> None:
+def assert_epi_in_bounds(
+    epi_value: float, tolerance: float = 1e-9, abs_tol: float = 1e-12
+) -> None:
     """Assert helper for verifying EPI within structural bounds with tolerance.
 
     This helper uses math.isclose to handle floating-point precision issues

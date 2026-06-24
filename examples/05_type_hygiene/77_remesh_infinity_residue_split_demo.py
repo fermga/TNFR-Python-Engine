@@ -54,14 +54,8 @@ def run(n_periods: int, n_primes: int, max_power: int) -> None:
 
 
 def main() -> None:
-    print(
-        "P50 — REMESH-infinity Residue Split"
-        " (function-space diagnostic)"
-    )
-    print(
-        "Honest scope: structural-compatibility test.  Does NOT "
-        "advance G4 = RH."
-    )
+    print("P50 — REMESH-infinity Residue Split" " (function-space diagnostic)")
+    print("Honest scope: structural-compatibility test.  Does NOT " "advance G4 = RH.")
     print(
         "Pre-registered prediction: RESIDUE_IN_KER_ONLY"
         " (Baker's theorem on log p incommensurability)."

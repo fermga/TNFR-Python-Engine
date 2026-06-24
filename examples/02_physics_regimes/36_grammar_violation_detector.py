@@ -29,27 +29,27 @@ Physics basis:
 from __future__ import annotations
 
 import math
-import sys
 import os
+import sys
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import PHI, GAMMA, PI
+from tnfr.constants.canonical import GAMMA, PHI, PI
 from tnfr.physics.conservation import (
-    capture_conservation_snapshot,
-    verify_conservation_balance,
-    detect_grammar_violations_from_conservation,
-    compute_noether_charge,
     ConservationTracker,
+    capture_conservation_snapshot,
+    compute_noether_charge,
+    detect_grammar_violations_from_conservation,
+    verify_conservation_balance,
 )
 from tnfr.physics.fields import (
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
 )
 
 
@@ -107,6 +107,7 @@ def _inject_u6_violation(G: nx.Graph) -> None:
 # 1. Baseline: grammar-compliant evolution
 # ---------------------------------------------------------------------------
 
+
 def demo_baseline() -> dict:
     """Measure conservation residuals under compliant evolution."""
     print("=" * 65)
@@ -146,6 +147,7 @@ def demo_baseline() -> dict:
 # 2. U2 violation: convergence failure
 # ---------------------------------------------------------------------------
 
+
 def demo_u2_violation(baseline: dict) -> None:
     """Detect U2 (convergence) violation from residuals."""
     print("\n" + "=" * 65)
@@ -167,14 +169,22 @@ def demo_u2_violation(baseline: dict) -> None:
     violations = detect_grammar_violations_from_conservation(balance)
 
     print(f"\n  Protocol: 5 compliant steps -> U2 breach -> 5 more steps")
-    print(f"    Conservation quality: {balance.conservation_quality:.4f}  "
-          f"(baseline: {baseline['quality']:.4f})")
-    print(f"    RMS residual:        {balance.rms_residual:.6f}  "
-          f"(baseline: {baseline['rms']:.6f})")
-    print(f"    Max residual:        {balance.max_residual:.6f}  "
-          f"(baseline: {baseline['max']:.6f})")
-    print(f"    Charge drift:        {balance.charge_drift:.6f}  "
-          f"(baseline: {baseline['drift']:.6f})")
+    print(
+        f"    Conservation quality: {balance.conservation_quality:.4f}  "
+        f"(baseline: {baseline['quality']:.4f})"
+    )
+    print(
+        f"    RMS residual:        {balance.rms_residual:.6f}  "
+        f"(baseline: {baseline['rms']:.6f})"
+    )
+    print(
+        f"    Max residual:        {balance.max_residual:.6f}  "
+        f"(baseline: {baseline['max']:.6f})"
+    )
+    print(
+        f"    Charge drift:        {balance.charge_drift:.6f}  "
+        f"(baseline: {baseline['drift']:.6f})"
+    )
     print(f"    GVI:                 {balance.grammar_violation_index:.6f}")
     print(f"    Violations detected: {violations['violations_detected']}")
     print(f"    Violation types:     {violations['violation_types']}")
@@ -189,6 +199,7 @@ def demo_u2_violation(baseline: dict) -> None:
 # ---------------------------------------------------------------------------
 # 3. U3 violation: phase incompatibility
 # ---------------------------------------------------------------------------
+
 
 def demo_u3_violation(baseline: dict) -> None:
     """Detect U3 (phase incompatibility) violation from residuals."""
@@ -210,14 +221,22 @@ def demo_u3_violation(baseline: dict) -> None:
     violations = detect_grammar_violations_from_conservation(balance)
 
     print(f"\n  Protocol: 5 compliant steps -> U3 breach -> 5 more steps")
-    print(f"    Conservation quality: {balance.conservation_quality:.4f}  "
-          f"(baseline: {baseline['quality']:.4f})")
-    print(f"    RMS residual:        {balance.rms_residual:.6f}  "
-          f"(baseline: {baseline['rms']:.6f})")
-    print(f"    Max residual:        {balance.max_residual:.6f}  "
-          f"(baseline: {baseline['max']:.6f})")
-    print(f"    Charge drift:        {balance.charge_drift:.6f}  "
-          f"(baseline: {baseline['drift']:.6f})")
+    print(
+        f"    Conservation quality: {balance.conservation_quality:.4f}  "
+        f"(baseline: {baseline['quality']:.4f})"
+    )
+    print(
+        f"    RMS residual:        {balance.rms_residual:.6f}  "
+        f"(baseline: {baseline['rms']:.6f})"
+    )
+    print(
+        f"    Max residual:        {balance.max_residual:.6f}  "
+        f"(baseline: {baseline['max']:.6f})"
+    )
+    print(
+        f"    Charge drift:        {balance.charge_drift:.6f}  "
+        f"(baseline: {baseline['drift']:.6f})"
+    )
     print(f"    GVI:                 {balance.grammar_violation_index:.6f}")
     print(f"    Violations detected: {violations['violations_detected']}")
     print(f"    Violation types:     {violations['violation_types']}")
@@ -232,6 +251,7 @@ def demo_u3_violation(baseline: dict) -> None:
 # ---------------------------------------------------------------------------
 # 4. U6 violation: confinement breach
 # ---------------------------------------------------------------------------
+
 
 def demo_u6_violation(baseline: dict) -> None:
     """Detect U6 (confinement) violation from charge drift."""
@@ -253,14 +273,22 @@ def demo_u6_violation(baseline: dict) -> None:
     violations = detect_grammar_violations_from_conservation(balance)
 
     print(f"\n  Protocol: 5 compliant steps -> U6 breach -> 5 more steps")
-    print(f"    Conservation quality: {balance.conservation_quality:.4f}  "
-          f"(baseline: {baseline['quality']:.4f})")
-    print(f"    RMS residual:        {balance.rms_residual:.6f}  "
-          f"(baseline: {baseline['rms']:.6f})")
-    print(f"    Max residual:        {balance.max_residual:.6f}  "
-          f"(baseline: {baseline['max']:.6f})")
-    print(f"    Charge drift:        {balance.charge_drift:.6f}  "
-          f"(baseline: {baseline['drift']:.6f})")
+    print(
+        f"    Conservation quality: {balance.conservation_quality:.4f}  "
+        f"(baseline: {baseline['quality']:.4f})"
+    )
+    print(
+        f"    RMS residual:        {balance.rms_residual:.6f}  "
+        f"(baseline: {baseline['rms']:.6f})"
+    )
+    print(
+        f"    Max residual:        {balance.max_residual:.6f}  "
+        f"(baseline: {baseline['max']:.6f})"
+    )
+    print(
+        f"    Charge drift:        {balance.charge_drift:.6f}  "
+        f"(baseline: {baseline['drift']:.6f})"
+    )
     print(f"    GVI:                 {balance.grammar_violation_index:.6f}")
     print(f"    Violations detected: {violations['violations_detected']}")
     print(f"    Violation types:     {violations['violation_types']}")
@@ -276,6 +304,7 @@ def demo_u6_violation(baseline: dict) -> None:
 # 5. Comparative severity analysis
 # ---------------------------------------------------------------------------
 
+
 def demo_severity_comparison() -> None:
     """Compare all violation types on the same graph configuration."""
     print("\n" + "=" * 65)
@@ -289,8 +318,10 @@ def demo_severity_comparison() -> None:
         ("U6 breach", _inject_u6_violation),
     ]
 
-    print(f"\n  {'Scenario':<14}  {'Quality':>10}  {'RMS':>10}  "
-          f"{'Max_res':>10}  {'Drift':>10}  {'GVI':>10}  {'Severity':>10}")
+    print(
+        f"\n  {'Scenario':<14}  {'Quality':>10}  {'RMS':>10}  "
+        f"{'Max_res':>10}  {'Drift':>10}  {'GVI':>10}  {'Severity':>10}"
+    )
     print("  " + "-" * 76)
 
     for name, inject_fn in scenarios:
@@ -308,12 +339,15 @@ def demo_severity_comparison() -> None:
         balance = verify_conservation_balance(snap_before, snap_after, dt=10 * 0.05)
         violations = detect_grammar_violations_from_conservation(balance)
 
-        print(f"  {name:<14}  {balance.conservation_quality:10.4f}  "
-              f"{balance.rms_residual:10.6f}  {balance.max_residual:10.6f}  "
-              f"{balance.charge_drift:10.6f}  {balance.grammar_violation_index:10.6f}  "
-              f"{violations['severity']:10.4f}")
+        print(
+            f"  {name:<14}  {balance.conservation_quality:10.4f}  "
+            f"{balance.rms_residual:10.6f}  {balance.max_residual:10.6f}  "
+            f"{balance.charge_drift:10.6f}  {balance.grammar_violation_index:10.6f}  "
+            f"{violations['severity']:10.4f}"
+        )
 
-    print(f"""
+    print(
+        f"""
   Violation signatures (from ss 12):
     U2 (convergence):  High RMS residual (global instability)
     U3 (phase):        High MAX residual (local incompatibility)
@@ -322,12 +356,14 @@ def demo_severity_comparison() -> None:
   The conservation law acts as a universal grammar violation detector:
     S_grammar = 0  <=>  Grammar U1-U6 satisfied
     S_grammar > 0  ==>  Violation type classifiable from residual pattern
-""")
+"""
+    )
 
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     print()
@@ -345,7 +381,8 @@ def main() -> None:
     print("=" * 65)
     print("  SUMMARY")
     print("=" * 65)
-    print(f"""
+    print(
+        f"""
   Grammar Violation Detection via Conservation Residuals (ss 12):
 
   Main result: S_grammar != 0  detects and classifies grammar violations.
@@ -358,7 +395,8 @@ def main() -> None:
   The conservation law provides a SINGLE diagnostic framework
   for ALL grammar violations — no separate checker needed per rule.
   This is the Noether-like consequence of grammar symmetry.
-""")
+"""
+    )
 
 
 if __name__ == "__main__":

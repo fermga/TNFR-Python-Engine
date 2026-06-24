@@ -63,22 +63,28 @@ def step_1_build_chi_3() -> None:
         chi, n_primes=20, max_power=8, coupling=0.0
     )
     H = bundle.hamiltonian
-    print(f"character             : {bundle.character_name} (mod {bundle.character_modulus})")
+    print(
+        f"character             : {bundle.character_name} (mod {bundle.character_modulus})"
+    )
     print(f"primes excluded (p|q) : {bundle.graph.graph['primes_excluded']}")
     print(f"primes active (p∤q)   : {bundle.spectrum.n_active}")
     print(f"max_power K           : {bundle.spectrum.max_power}")
     print(f"Hilbert dimension N   : {H.N}")
     print(f"coupling J_0          : {bundle.coupling}")
     print(f"W^(χ) dtype           : {bundle.weight_operator.dtype}")
-    print(f"W^(χ) Hermitian?      : "
-          f"{np.allclose(bundle.weight_operator, bundle.weight_operator.conj().T)}"
-          " (real χ ⇒ real-diagonal weight)")
+    print(
+        f"W^(χ) Hermitian?      : "
+        f"{np.allclose(bundle.weight_operator, bundle.weight_operator.conj().T)}"
+        " (real χ ⇒ real-diagonal weight)"
+    )
 
 
 def step_2_verify_all_characters() -> None:
     banner("Step 2 — Spectrum + χ-twisted trace reproduction (χ_3, χ_4, χ_5)")
-    print(f"{'character':<12} {'N':>5} {'n_active':>9} {'spec_err':>14} "
-          f"{'trace_rel_err':>16} {'ok':>4}")
+    print(
+        f"{'character':<12} {'N':>5} {'n_active':>9} {'spec_err':>14} "
+        f"{'trace_rel_err':>16} {'ok':>4}"
+    )
     print("-" * 78)
     s_values = (2.0, 3.0, 2.0 + 1.0j, 3.0 + 2.0j, 5.0, 10.0)
     for chi_factory in (
@@ -102,10 +108,12 @@ def step_2_verify_all_characters() -> None:
 
 
 def step_3_triple_agreement_chi_3() -> None:
-    banner("Step 3 — Triple agreement for χ_3 on Re(s) > 1:\n"
-           "         (a) P34 Hamiltonian trace\n"
-           "         (b) P32 χ-twisted prime-ladder trace\n"
-           "         (c) P33 high-precision continuation of -L'/L")
+    banner(
+        "Step 3 — Triple agreement for χ_3 on Re(s) > 1:\n"
+        "         (a) P34 Hamiltonian trace\n"
+        "         (b) P32 χ-twisted prime-ladder trace\n"
+        "         (c) P33 high-precision continuation of -L'/L"
+    )
     chi = real_character_mod_3()
     bundle = build_twisted_prime_ladder_hamiltonian(
         chi, n_primes=30, max_power=10, coupling=0.0
@@ -115,14 +123,18 @@ def step_3_triple_agreement_chi_3() -> None:
     spectrum = bundle.spectrum
 
     s_values = [2.0, 2.5, 3.0, 4.0, 2.0 + 1.0j, 3.0 + 2.0j]
-    print(f"{'s':<14} {'P34 Tr(W·e^-sH)':>26} {'P32 Z_TNFR(s,χ)':>26} "
-          f"{'P33 -L′/L (mpmath)':>26}")
+    print(
+        f"{'s':<14} {'P34 Tr(W·e^-sH)':>26} {'P32 Z_TNFR(s,χ)':>26} "
+        f"{'P33 -L′/L (mpmath)':>26}"
+    )
     print("-" * 96)
     for s in s_values:
         z_p34 = twisted_weighted_spectral_trace(H.H_int, W, complex(s))
         z_p32 = complex(tnfr_log_l_derivative(spectrum, complex(s)))
         z_p33 = complex(dirichlet_log_l_derivative_continued(chi, complex(s), dps=40))
-        s_str = f"{s.real:+.2f}{s.imag:+.2f}j" if isinstance(s, complex) else f"{s:+.2f}"
+        s_str = (
+            f"{s.real:+.2f}{s.imag:+.2f}j" if isinstance(s, complex) else f"{s:+.2f}"
+        )
         print(
             f"{s_str:<14} "
             f"{z_p34.real:+.6e}{z_p34.imag:+.3e}j   "

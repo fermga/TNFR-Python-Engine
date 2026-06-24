@@ -30,11 +30,13 @@ __all__ = [
     "compare_overhead",
 ]
 
+
 @dataclass(slots=True)
 class PerformanceRecord:
     label: str
     elapsed: float
     meta: dict[str, Any] | None = None
+
 
 @dataclass(slots=True)
 class PerformanceRegistry:
@@ -70,6 +72,7 @@ class PerformanceRegistry:
             "labels": sorted({r.label for r in self.records}),
         }
 
+
 def perf_guard(label: str, registry: PerformanceRegistry | None) -> Callable:
     """Decorator adding a single perf_counter measurement if registry provided.
 
@@ -87,11 +90,15 @@ def perf_guard(label: str, registry: PerformanceRegistry | None) -> Callable:
                 return fn(*args, **kwargs)
             start = perf_counter()
             result = fn(*args, **kwargs)
-            registry.record(label, perf_counter() - start, meta={
-                "fn": fn.__name__,
-                "arg_count": len(args),
-                "kw_count": len(kwargs),
-            })
+            registry.record(
+                label,
+                perf_counter() - start,
+                meta={
+                    "fn": fn.__name__,
+                    "arg_count": len(args),
+                    "kw_count": len(kwargs),
+                },
+            )
             return result
 
         wrapped.__name__ = fn.__name__  # preserve for introspection
@@ -99,6 +106,7 @@ def perf_guard(label: str, registry: PerformanceRegistry | None) -> Callable:
         return wrapped
 
     return decorator
+
 
 def compare_overhead(
     baseline_fn: Callable[[], Any],

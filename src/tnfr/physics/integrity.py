@@ -64,6 +64,7 @@ _compute_noether_charge = None
 _compute_energy_functional = None
 _compute_coherence = None
 
+
 def _ensure_imports() -> None:
     """Lazy-load conservation and metrics modules on first use."""
     global _conservation_loaded
@@ -75,15 +76,13 @@ def _ensure_imports() -> None:
     if _conservation_loaded:
         return
 
-    from .conservation import (
-        capture_conservation_snapshot as _css,
-        verify_conservation_balance as _vcb,
-        compute_lyapunov_derivative as _cld,
-        detect_grammar_violations_from_conservation as _dgv,
-        compute_noether_charge as _cnc,
-        compute_energy_functional as _cef,
-    )
     from ..metrics.common import compute_coherence as _cc
+    from .conservation import capture_conservation_snapshot as _css
+    from .conservation import compute_energy_functional as _cef
+    from .conservation import compute_lyapunov_derivative as _cld
+    from .conservation import compute_noether_charge as _cnc
+    from .conservation import detect_grammar_violations_from_conservation as _dgv
+    from .conservation import verify_conservation_balance as _vcb
 
     _capture_conservation_snapshot = _css
     _verify_conservation_balance = _vcb
@@ -94,9 +93,11 @@ def _ensure_imports() -> None:
     _compute_coherence = _cc
     _conservation_loaded = True
 
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Exceptions
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class StructuralIntegrityViolation(Exception):
     """Raised when an operator violates structural conservation laws.
@@ -111,8 +112,9 @@ class StructuralIntegrityViolation(Exception):
         Diagnostic data (residuals, dE/dt, etc.).
     """
 
-    def __init__(self, operator: str, violation_type: str,
-                 details: dict[str, Any]) -> None:
+    def __init__(
+        self, operator: str, violation_type: str, details: dict[str, Any]
+    ) -> None:
         self.operator = operator
         self.violation_type = violation_type
         self.details = details
@@ -121,15 +123,19 @@ class StructuralIntegrityViolation(Exception):
             f"{details.get('reason', 'see details')}"
         )
 
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Enums and data classes
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class MonitorMode(Enum):
     """Enforcement level for the integrity monitor."""
-    OFF = "off"            # No monitoring (backward compatible)
-    OBSERVE = "observe"    # Record violations, never raise
-    ENFORCE = "enforce"    # Raise StructuralIntegrityViolation
+
+    OFF = "off"  # No monitoring (backward compatible)
+    OBSERVE = "observe"  # Record violations, never raise
+    ENFORCE = "enforce"  # Raise StructuralIntegrityViolation
+
 
 @dataclass
 class IntegrityReport:
@@ -138,6 +144,7 @@ class IntegrityReport:
     Produced after every monitored operator application.  Consumed by the
     self-optimization engine for closed-loop feedback.
     """
+
     operator: str
     node: Any
     conservation_quality: float = 1.0
@@ -159,9 +166,11 @@ class IntegrityReport:
             and self.postcondition_ok
         )
 
+
 @dataclass
 class IntegritySummary:
     """Aggregated integrity report over a sequence of operator applications."""
+
     reports: list[IntegrityReport] = field(default_factory=list)
     total_operators: int = 0
     violations_count: int = 0
@@ -183,13 +192,17 @@ class IntegritySummary:
         ) / n
         self.total_charge_drift += abs(report.noether_charge_drift)
 
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Operator postcondition registry
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 def _postcond_coherence(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """IL: C(t) must not decrease; |ΔNFR| must not increase (stabiliser).
 
@@ -219,15 +232,15 @@ def _postcond_coherence(
         d_before = abs(before.get("dnfr", 0.0))
         d_after = abs(after.get("dnfr", 0.0))
     if d_after > d_before + 1e-6:
-        return (
-            f"|ΔNFR| increased during Coherence: "
-            f"{d_before:.6f} → {d_after:.6f}"
-        )
+        return f"|ΔNFR| increased during Coherence: " f"{d_before:.6f} → {d_after:.6f}"
     return None
 
+
 def _postcond_dissonance(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """OZ: |ΔNFR| must increase."""
     d_before = abs(before.get("dnfr", 0.0))
@@ -239,9 +252,12 @@ def _postcond_dissonance(
         )
     return None
 
+
 def _postcond_silence(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """SHA: EPI must remain unchanged; νf must not increase (freeze)."""
     e_before = before.get("epi", 0.0)
@@ -255,29 +271,31 @@ def _postcond_silence(
     vf_before = before.get("vf", 0.0)
     vf_after = after.get("vf", 0.0)
     if vf_after > vf_before + 1e-9:
-        return (
-            f"νf increased during Silence: "
-            f"{vf_before:.6f} → {vf_after:.6f}"
-        )
+        return f"νf increased during Silence: " f"{vf_before:.6f} → {vf_after:.6f}"
     return None
 
+
 def _postcond_reception(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """EN: C(t) must not decrease."""
     c_before = before.get("coherence", 0.0)
     c_after = after.get("coherence", 0.0)
     if c_after < c_before - 1e-9:
         return (
-            f"Coherence decreased during Reception: "
-            f"{c_before:.6f} → {c_after:.6f}"
+            f"Coherence decreased during Reception: " f"{c_before:.6f} → {c_after:.6f}"
         )
     return None
 
+
 def _postcond_resonance(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """RA: structural identity (EPI sign) preserved; νf must not decrease.
 
@@ -290,11 +308,7 @@ def _postcond_resonance(
     # Identity: EPI sign must be preserved during propagation.
     e_before = before.get("epi", 0.0)
     e_after = after.get("epi", 0.0)
-    if (
-        abs(e_before) > 1e-9
-        and abs(e_after) > 1e-9
-        and (e_before > 0) != (e_after > 0)
-    ):
+    if abs(e_before) > 1e-9 and abs(e_after) > 1e-9 and (e_before > 0) != (e_after > 0):
         return (
             f"EPI sign flipped during Resonance (identity not preserved): "
             f"{e_before:.6f} → {e_after:.6f}"
@@ -303,37 +317,34 @@ def _postcond_resonance(
     vf_before = before.get("vf", 0.0)
     vf_after = after.get("vf", 0.0)
     if vf_after < vf_before - 1e-9:
-        return (
-            f"νf decreased during Resonance: "
-            f"{vf_before:.6f} → {vf_after:.6f}"
-        )
+        return f"νf decreased during Resonance: " f"{vf_before:.6f} → {vf_after:.6f}"
     return None
 
+
 def _postcond_emission(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """AL: νf must not decrease; EPI must not decrease (∂EPI/∂t > 0)."""
     vf_before = before.get("vf", 0.0)
     vf_after = after.get("vf", 0.0)
     if vf_after < vf_before - 1e-9:
-        return (
-            f"νf decreased during Emission: "
-            f"{vf_before:.6f} → {vf_after:.6f}"
-        )
+        return f"νf decreased during Emission: " f"{vf_before:.6f} → {vf_after:.6f}"
     # EPI must not decrease (core glyph effect: +AL_boost)
     e_before = before.get("epi", 0.0)
     e_after = after.get("epi", 0.0)
     if e_after < e_before - 1e-6:
-        return (
-            f"EPI decreased during Emission: "
-            f"{e_before:.6f} → {e_after:.6f}"
-        )
+        return f"EPI decreased during Emission: " f"{e_before:.6f} → {e_after:.6f}"
     return None
 
+
 def _postcond_expansion(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """VAL: νf (reorganization capacity) must not decrease.
 
@@ -344,15 +355,15 @@ def _postcond_expansion(
     vf_before = before.get("vf", 0.0)
     vf_after = after.get("vf", 0.0)
     if vf_after < vf_before - 1e-9:
-        return (
-            f"νf decreased during Expansion: "
-            f"{vf_before:.6f} → {vf_after:.6f}"
-        )
+        return f"νf decreased during Expansion: " f"{vf_before:.6f} → {vf_after:.6f}"
     return None
 
+
 def _postcond_contraction(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """NUL: νf (reorganization capacity) must not increase.
 
@@ -363,15 +374,15 @@ def _postcond_contraction(
     vf_before = before.get("vf", 0.0)
     vf_after = after.get("vf", 0.0)
     if vf_after > vf_before + 1e-9:
-        return (
-            f"νf increased during Contraction: "
-            f"{vf_before:.6f} → {vf_after:.6f}"
-        )
+        return f"νf increased during Contraction: " f"{vf_before:.6f} → {vf_after:.6f}"
     return None
 
+
 def _postcond_mutation(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """ZHIR: Delegates to postconditions/mutation.py for rich verification.
 
@@ -380,10 +391,11 @@ def _postcond_mutation(
     """
     try:
         from ..operators.postconditions.mutation import (
-            verify_phase_transformed,
-            verify_identity_preserved,
             verify_bifurcation_handled,
+            verify_identity_preserved,
+            verify_phase_transformed,
         )
+
         verify_phase_transformed(G, node, before.get("theta", 0.0))
         epi_kind_before = G.nodes[node].get("_integrity_epi_kind_before")
         if epi_kind_before is not None:
@@ -393,23 +405,26 @@ def _postcond_mutation(
         return str(exc)
     return None
 
+
 def _postcond_coupling(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """UM: |ΔNFR| must not increase (coupling reduces structural pressure)."""
     d_before = abs(before.get("dnfr", 0.0))
     d_after = abs(after.get("dnfr", 0.0))
     if d_after > d_before + 1e-6:
-        return (
-            f"|ΔNFR| increased during Coupling: "
-            f"{d_before:.6f} → {d_after:.6f}"
-        )
+        return f"|ΔNFR| increased during Coupling: " f"{d_before:.6f} → {d_after:.6f}"
     return None
 
+
 def _postcond_self_organization(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """THOL: Global coherence must not catastrophically decrease.
 
@@ -427,45 +442,49 @@ def _postcond_self_organization(
         )
     return None
 
+
 def _postcond_transition(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """NAV: At least one state variable (νf, θ, ΔNFR) must change."""
     vf_changed = abs(after.get("vf", 0.0) - before.get("vf", 0.0)) > 1e-9
     theta_changed = abs(after.get("theta", 0.0) - before.get("theta", 0.0)) > 1e-9
     dnfr_changed = abs(after.get("dnfr", 0.0) - before.get("dnfr", 0.0)) > 1e-9
     if not (vf_changed or theta_changed or dnfr_changed):
-        return (
-            "No state change during Transition: "
-            "νf, θ, and ΔNFR all unchanged"
-        )
+        return "No state change during Transition: " "νf, θ, and ΔNFR all unchanged"
     return None
 
+
 def _postcond_recursivity(
-    G: TNFRGraph, node: Any,
-    before: dict[str, Any], after: dict[str, Any],
+    G: TNFRGraph,
+    node: Any,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> str | None:
     """REMESH: Advisory glyph — structural remesh is verified at network level."""
     return None
+
 
 # Mapping from canonical operator name → postcondition checker.
 # Returns None on success, or a string describing the violation.
 # All 13 canonical operators are covered.
 POSTCONDITIONS: dict[str, Callable[..., str | None]] = {
-    "coherence":          _postcond_coherence,
-    "dissonance":         _postcond_dissonance,
-    "silence":            _postcond_silence,
-    "reception":          _postcond_reception,
-    "resonance":          _postcond_resonance,
-    "emission":           _postcond_emission,
-    "expansion":          _postcond_expansion,
-    "contraction":        _postcond_contraction,
-    "mutation":           _postcond_mutation,
-    "coupling":           _postcond_coupling,
-    "self_organization":  _postcond_self_organization,
-    "transition":         _postcond_transition,
-    "recursivity":        _postcond_recursivity,
+    "coherence": _postcond_coherence,
+    "dissonance": _postcond_dissonance,
+    "silence": _postcond_silence,
+    "reception": _postcond_reception,
+    "resonance": _postcond_resonance,
+    "emission": _postcond_emission,
+    "expansion": _postcond_expansion,
+    "contraction": _postcond_contraction,
+    "mutation": _postcond_mutation,
+    "coupling": _postcond_coupling,
+    "self_organization": _postcond_self_organization,
+    "transition": _postcond_transition,
+    "recursivity": _postcond_recursivity,
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -482,6 +501,7 @@ _CORRECTIVE_MAP: dict[str, str] = {
 
 _NOETHER_CHARGE_DRIFT_ALERT = 0.5
 
+
 def _suggest_correction(report: IntegrityReport) -> str:
     """Derive a corrective operator suggestion from violation diagnostics."""
     suggestions: list[str] = []
@@ -494,9 +514,11 @@ def _suggest_correction(report: IntegrityReport) -> str:
         suggestions.append(_CORRECTIVE_MAP["charge_drift"])
     return "; ".join(suggestions) if suggestions else ""
 
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Capture helpers
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 def _capture_node_state(G: TNFRGraph, node: Any) -> dict[str, Any]:
     """Capture per-node scalar state for postcondition checking."""
@@ -513,9 +535,11 @@ def _capture_node_state(G: TNFRGraph, node: Any) -> dict[str, Any]:
         state["coherence"] = 0.0
     return state
 
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Main class
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class StructuralIntegrityMonitor:
     """Real-time conservation-law enforcement during operator execution.
@@ -630,9 +654,7 @@ class StructuralIntegrityMonitor:
                 report.conservation_quality = balance.conservation_quality
 
                 # 2. Lyapunov stability (dE/dt ≤ 0)
-                lyap = _compute_lyapunov_derivative(
-                    self._snapshot_before, snap_after
-                )
+                lyap = _compute_lyapunov_derivative(self._snapshot_before, snap_after)
                 report.energy_derivative = lyap.energy_derivative
                 report.is_lyapunov_stable = lyap.is_stable
 
@@ -643,9 +665,7 @@ class StructuralIntegrityMonitor:
 
                 # 4. Noether charge drift
                 charge_after = _compute_noether_charge(G)
-                report.noether_charge_drift = abs(
-                    charge_after - self._charge_before
-                )
+                report.noether_charge_drift = abs(charge_after - self._charge_before)
             except Exception as exc:
                 warnings.warn(
                     f"Integrity monitor conservation check failed: {exc}",
@@ -658,7 +678,8 @@ class StructuralIntegrityMonitor:
         if postcond_fn is not None:
             try:
                 violation_msg = postcond_fn(
-                    G, node,
+                    G,
+                    node,
                     self._node_state_before,
                     node_state_after,
                 )
@@ -741,9 +762,11 @@ class StructuralIntegrityMonitor:
             "violation_rate": s.violations_count / n,
         }
 
+
 # ═══════════════════════════════════════════════════════════════════════════
 # Module-level convenience
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 def enable_integrity_monitor(
     G: TNFRGraph,
@@ -927,18 +950,36 @@ def audit_operator_contracts(
 
     from ..dynamics import default_compute_delta_nfr
     from ..operators.definitions import (
-        Emission, Reception, Coherence, Dissonance, Coupling, Resonance,
-        Silence, Expansion, Contraction, SelfOrganization, Mutation,
-        Transition, Recursivity,
+        Coherence,
+        Contraction,
+        Coupling,
+        Dissonance,
+        Emission,
+        Expansion,
+        Mutation,
+        Reception,
+        Recursivity,
+        Resonance,
+        SelfOrganization,
+        Silence,
+        Transition,
     )
     from ..operators.operator_contracts import OPERATOR_CONTRACTS, iter_contracts
 
     _classes = {
-        "emission": Emission, "reception": Reception, "coherence": Coherence,
-        "dissonance": Dissonance, "coupling": Coupling, "resonance": Resonance,
-        "silence": Silence, "expansion": Expansion, "contraction": Contraction,
-        "self_organization": SelfOrganization, "mutation": Mutation,
-        "transition": Transition, "recursivity": Recursivity,
+        "emission": Emission,
+        "reception": Reception,
+        "coherence": Coherence,
+        "dissonance": Dissonance,
+        "coupling": Coupling,
+        "resonance": Resonance,
+        "silence": Silence,
+        "expansion": Expansion,
+        "contraction": Contraction,
+        "self_organization": SelfOrganization,
+        "mutation": Mutation,
+        "transition": Transition,
+        "recursivity": Recursivity,
     }
     # Catalog DERIVED from the canonical contract spec (single source of truth):
     # (glyph, name, class, context, postcondition) per operator.
@@ -975,7 +1016,8 @@ def audit_operator_contracts(
                     op(G, nd)
                 default_compute_delta_nfr(G)
                 preserved = sum(
-                    1 for n in G.nodes()
+                    1
+                    for n in G.nodes()
                     if float(np.sign(get_attr(G.nodes[n], ALIAS_EPI, 0.0)))
                     == signs_before[n]
                 )
@@ -991,15 +1033,15 @@ def audit_operator_contracts(
                     Dissonance()(G, nd)
                 default_compute_delta_nfr(G)
                 theta_before = {
-                    n: get_attr(G.nodes[n], ALIAS_THETA, 0.0)
-                    for n in G.nodes()
+                    n: get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in G.nodes()
                 }
                 for nd in list(G.nodes()):
                     op(G, nd)
                 changed = sum(
-                    1 for n in G.nodes()
-                    if abs(get_attr(G.nodes[n], ALIAS_THETA, 0.0)
-                           - theta_before[n]) > 1e-9
+                    1
+                    for n in G.nodes()
+                    if abs(get_attr(G.nodes[n], ALIAS_THETA, 0.0) - theta_before[n])
+                    > 1e-9
                 )
                 total = G.number_of_nodes()
                 satisfied = changed > 0
@@ -1008,21 +1050,18 @@ def audit_operator_contracts(
             elif context == "state":
                 before = _audit_metrics(G)
                 theta_before = {
-                    n: get_attr(G.nodes[n], ALIAS_THETA, 0.0)
-                    for n in G.nodes()
+                    n: get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in G.nodes()
                 }
                 for nd in list(G.nodes()):
                     op(G, nd)
                 default_compute_delta_nfr(G)
                 after = _audit_metrics(G)
                 theta_changed = any(
-                    abs(get_attr(G.nodes[n], ALIAS_THETA, 0.0)
-                        - theta_before[n]) > 1e-9
+                    abs(get_attr(G.nodes[n], ALIAS_THETA, 0.0) - theta_before[n]) > 1e-9
                     for n in G.nodes()
                 )
                 satisfied = theta_changed or any(
-                    abs(after[k] - before[k]) > tol
-                    for k in ("C", "epi", "dnfr", "vf")
+                    abs(after[k] - before[k]) > tol for k in ("C", "epi", "dnfr", "vf")
                 )
                 detail = "state changed" if satisfied else "no state change"
 
@@ -1070,8 +1109,7 @@ def audit_operator_contracts(
                     detail = f"νf {before['vf']:.4f}→{after['vf']:.4f}"
                 elif glyph == "THOL":
                     satisfied = (
-                        before["C"] <= tol
-                        or after["C"] >= before["C"] * 0.9 - tol
+                        before["C"] <= tol or after["C"] >= before["C"] * 0.9 - tol
                     )
                     detail = f"C(t) {before['C']:.4f}→{after['C']:.4f}"
                 else:

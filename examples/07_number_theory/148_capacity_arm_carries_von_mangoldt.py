@@ -99,12 +99,12 @@ References
 - AGENTS.md "REMESH-∞ Closure" (range/ker R∞, smooth vs oscillatory halves)
 """
 
-import os
-import sys
 import math
+import os
 import statistics
+import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import mpmath as mp
 import sympy as sp
@@ -147,12 +147,16 @@ def experiment_2_zeros_are_the_poles():
     mp.mp.dps = 25
     gamma1 = mp.zetazero(1).imag
     print(f"  first nontrivial zero: rho_1 = 0.5 + {float(gamma1):.4f} i")
-    print("  von Mangoldt Dirichlet series = -zeta'/zeta(s) = sum Lambda(n) n^-s (P12):")
+    print(
+        "  von Mangoldt Dirichlet series = -zeta'/zeta(s) = sum Lambda(n) n^-s (P12):"
+    )
     for eps in (0.1, 0.02, 0.004):
         s = mp.mpf("0.5") + eps + 1j * gamma1
         vm = -mp.zeta(s, derivative=1) / mp.zeta(s)
-        print(f"    s = rho_1 + {float(eps):.3f}:  |-zeta'/zeta(s)| = "
-              f"{float(abs(vm)):8.2f}   (~ 1/eps -> simple POLE, residue 1)")
+        print(
+            f"    s = rho_1 + {float(eps):.3f}:  |-zeta'/zeta(s)| = "
+            f"{float(abs(vm)):8.2f}   (~ 1/eps -> simple POLE, residue 1)"
+        )
     print("  -> the CAPACITY series has a simple pole at every zero of zeta.")
     print("  contrast: sum_n Omega(n) n^-s = zeta(s)*P(s) has zeta in the")
     print("  NUMERATOR, so a zero of zeta is a ZERO of the Omega series -- the")
@@ -167,7 +171,7 @@ def experiment_3_pressure_smooth_substrate_blind():
     print("=" * 72)
     limit = 100000
     spf = list(range(limit + 1))
-    for i in range(2, int(limit ** 0.5) + 1):
+    for i in range(2, int(limit**0.5) + 1):
         if spf[i] == i:
             for j in range(i * i, limit + 1, i):
                 if spf[j] == j:
@@ -184,8 +188,10 @@ def experiment_3_pressure_smooth_substrate_blind():
     spread = statistics.pstdev(zs)
     within2 = sum(1 for z in zs if abs(z) <= 2) / len(zs)
     print(f"  Omega via (Omega(n)-loglog n)/sqrt(loglog n) over [3,{limit}]:")
-    print(f"    spread {spread:.3f} (Gaussian N(0,1): 1.0), within 2-sigma "
-          f"{within2:.3f} (0.954)")
+    print(
+        f"    spread {spread:.3f} (Gaussian N(0,1): 1.0), within 2-sigma "
+        f"{within2:.3f} (0.954)"
+    )
     print("    (convergence is slow -- the scale loglog n is only ~2.4 -- but the")
     print("     law is a Gaussian CLT, NOT a zero-driven oscillation).")
     print("  SYNTHESIS: the per-node substrate encodes the PRESSURE arm")

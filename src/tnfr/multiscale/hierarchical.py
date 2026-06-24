@@ -11,13 +11,14 @@ from dataclasses import dataclass
 from typing import Any, Sequence
 
 import networkx as nx
-from ..mathematics.unified_numerical import np
 
+from ..dynamics import dnfr_epi_vf_mixed, set_delta_nfr_hook
+from ..mathematics.unified_numerical import np
 from ..types import DeltaNFR, NodeId, TNFRGraph
-from ..dynamics import set_delta_nfr_hook, dnfr_epi_vf_mixed
 from ..utils import get_logger
 
 logger = get_logger(__name__)
+
 
 @dataclass(frozen=True)
 class ScaleDefinition:
@@ -40,6 +41,7 @@ class ScaleDefinition:
     coupling_strength: float
     edge_probability: float = 0.1
 
+
 @dataclass
 class EvolutionResult:
     """Results from multi-scale evolution.
@@ -57,6 +59,7 @@ class EvolutionResult:
     scale_results: dict[str, Any]
     total_coherence: float = 0.0
     cross_scale_coupling: float = 0.0
+
 
 class HierarchicalTNFRNetwork:
     """Multi-scale TNFR network supporting operational fractality (§3.7).
@@ -178,7 +181,9 @@ class HierarchicalTNFRNetwork:
 
                 self.cross_scale_couplings[(scale_i, scale_j)] = coupling_strength
 
-    def set_cross_scale_coupling(self, from_scale: str, to_scale: str, strength: float) -> None:
+    def set_cross_scale_coupling(
+        self, from_scale: str, to_scale: str, strength: float
+    ) -> None:
         """set explicit cross-scale coupling strength.
 
         Parameters
@@ -238,7 +243,9 @@ class HierarchicalTNFRNetwork:
                 other_dnfr_values = [
                     other_G.nodes[n].get("delta_nfr", 0.0) for n in other_G.nodes()
                 ]
-                mean_other_dnfr = np.mean(other_dnfr_values) if other_dnfr_values else 0.0
+                mean_other_dnfr = (
+                    np.mean(other_dnfr_values) if other_dnfr_values else 0.0
+                )
                 cross_scale_contribution += coupling * mean_other_dnfr
 
         return base_dnfr + cross_scale_contribution
@@ -326,7 +333,9 @@ class HierarchicalTNFRNetwork:
                 # Compute neighbor phase difference contribution
                 neighbors = list(G.neighbors(node))
                 if neighbors:
-                    phase_diffs = [np.sin(phase - G.nodes[n]["phase"]) for n in neighbors]
+                    phase_diffs = [
+                        np.sin(phase - G.nodes[n]["phase"]) for n in neighbors
+                    ]
                     dnfr = np.mean(phase_diffs)
                 else:
                     dnfr = 0.0
@@ -357,7 +366,9 @@ class HierarchicalTNFRNetwork:
         # (ProcessPoolExecutor would require pickling networkx graphs)
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             futures = {
-                scale_name: executor.submit(self._evolve_single_scale, scale_name, dt, operators)
+                scale_name: executor.submit(
+                    self._evolve_single_scale, scale_name, dt, operators
+                )
                 for scale_name in self.networks_by_scale
             }
 
@@ -402,12 +413,15 @@ class HierarchicalTNFRNetwork:
                     if source_scale == target_scale:
                         continue
 
-                    coupling = self.cross_scale_couplings.get((target_scale, source_scale), 0.0)
+                    coupling = self.cross_scale_couplings.get(
+                        (target_scale, source_scale), 0.0
+                    )
 
                     if coupling > 0:
                         G_source = self.networks_by_scale[source_scale]
                         source_dnfr_values = [
-                            G_source.nodes[n].get("delta_nfr", 0.0) for n in G_source.nodes()
+                            G_source.nodes[n].get("delta_nfr", 0.0)
+                            for n in G_source.nodes()
                         ]
                         mean_source_dnfr = (
                             np.mean(source_dnfr_values) if source_dnfr_values else 0.0

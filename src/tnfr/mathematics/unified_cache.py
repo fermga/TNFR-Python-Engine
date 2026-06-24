@@ -5,13 +5,13 @@ Redirects to tnfr.utils.unified_cache.
 
 from ..utils.unified_cache import (
     CacheLevel,
-    cache_tnfr_computation,
+    CacheStats,
     TNFRUnifiedCacheSystem,
     UnifiedLRUCache,
-    CacheStats,
-    get_unified_cache_system,
+    cache_tnfr_computation,
+    clear_unified_caches,
     get_cache_region,
-    clear_unified_caches
+    get_unified_cache_system,
 )
 
 __all__ = [
@@ -22,5 +22,5 @@ __all__ = [
     "CacheStats",
     "get_unified_cache_system",
     "get_cache_region",
-    "clear_unified_caches"
+    "clear_unified_caches",
 ]

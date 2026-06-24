@@ -12,6 +12,7 @@ import warnings
 
 import pytest
 
+from tnfr.operators.grammar_types import FUNCTION_TO_GLYPH
 from tnfr.operators.operator_contracts import (
     OPERATOR_CONTRACTS,
     ContractContext,
@@ -26,7 +27,6 @@ from tnfr.operators.operator_contracts import (
     operators_in_channel,
     verify_contract_consistency,
 )
-from tnfr.operators.grammar_types import FUNCTION_TO_GLYPH
 
 
 class TestSpecSelfConsistency:
@@ -41,16 +41,22 @@ class TestSpecSelfConsistency:
 
     def test_channel_partition(self) -> None:
         assert set(operators_in_channel(StateChannel.EPI)) == {
-            "Emission", "Reception", "Resonance", "Recursivity"
+            "Emission",
+            "Reception",
+            "Resonance",
+            "Recursivity",
         }
         assert set(operators_in_channel(StateChannel.NU_F)) == {
-            "Silence", "Expansion", "Contraction"
+            "Silence",
+            "Expansion",
+            "Contraction",
         }
-        assert set(operators_in_channel(StateChannel.THETA)) == {
-            "Coupling", "Mutation"
-        }
+        assert set(operators_in_channel(StateChannel.THETA)) == {"Coupling", "Mutation"}
         assert set(operators_in_channel(StateChannel.DELTA_NFR)) == {
-            "Coherence", "Dissonance", "SelfOrganization", "Transition"
+            "Coherence",
+            "Dissonance",
+            "SelfOrganization",
+            "Transition",
         }
 
     def test_scale_partition_is_u5_fractality(self) -> None:

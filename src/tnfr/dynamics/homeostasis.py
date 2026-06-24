@@ -16,17 +16,12 @@ if TYPE_CHECKING:
     from ..types import TNFRGraph, NodeId
 
 from ..alias import get_attr
+from ..config.operator_names import COHERENCE, CONTRACTION, EMISSION, EXPANSION, SILENCE
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..operators.registry import get_operator_class
-from ..config.operator_names import (
-    COHERENCE,
-    CONTRACTION,
-    EMISSION,
-    EXPANSION,
-    SILENCE,
-)
 
 __all__ = ["StructuralHomeostasis"]
+
 
 class StructuralHomeostasis:
     """Maintains dynamic equilibrium in nodal parameters.

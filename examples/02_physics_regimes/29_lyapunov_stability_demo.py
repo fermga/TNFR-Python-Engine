@@ -22,27 +22,27 @@ from __future__ import annotations
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.constants import inject_defaults
+from tnfr.physics.life import (
+    compute_autopoietic_coefficient,
+    compute_self_generation,
+    compute_stability_margin,
+    detect_life_emergence,
+)
 from tnfr.physics.lyapunov import (
     OPERATOR_LYAPUNOV_BOUNDS,
     EnergyClass,
-    get_bound,
-    compute_operator_energy_bound,
-    prove_sequence_lyapunov,
-    analyze_spectral_gap,
     analyze_operator_convergence,
+    analyze_spectral_gap,
+    compute_operator_energy_bound,
+    get_bound,
+    prove_sequence_lyapunov,
     verify_operator_lyapunov,
-)
-from tnfr.physics.life import (
-    compute_self_generation,
-    compute_autopoietic_coefficient,
-    compute_stability_margin,
-    detect_life_emergence,
 )
 
 SEED = 42
@@ -52,22 +52,24 @@ SEED = 42
 # Helpers
 # ------------------------------------------------------------------
 
+
 def _build_graph(n: int = 20, seed: int = SEED) -> nx.Graph:
     """Build a Watts-Strogatz network with canonical TNFR attributes."""
     rng = np.random.default_rng(seed)
     G = nx.watts_strogatz_graph(n, 4, 0.3, seed=seed)
     inject_defaults(G)
     for node in G.nodes():
-        G.nodes[node]['EPI'] = float(rng.uniform(0.5, 2.0))
-        G.nodes[node]['nu_f'] = float(rng.uniform(0.5, 2.0))
-        G.nodes[node]['phase'] = float(rng.uniform(0, 2 * np.pi))
-        G.nodes[node]['delta_nfr'] = float(rng.uniform(-0.3, 0.3))
+        G.nodes[node]["EPI"] = float(rng.uniform(0.5, 2.0))
+        G.nodes[node]["nu_f"] = float(rng.uniform(0.5, 2.0))
+        G.nodes[node]["phase"] = float(rng.uniform(0, 2 * np.pi))
+        G.nodes[node]["delta_nfr"] = float(rng.uniform(-0.3, 0.3))
     return G
 
 
 # ------------------------------------------------------------------
 # 1. Per-operator Lyapunov bounds — the full registry
 # ------------------------------------------------------------------
+
 
 def demo_operator_bounds() -> None:
     """Display formal energy bounds for all 13 canonical operators."""
@@ -80,8 +82,12 @@ def demo_operator_bounds() -> None:
     for name, bound in OPERATOR_LYAPUNOV_BOUNDS.items():
         by_class[bound.energy_class].append(bound)
 
-    for cls in [EnergyClass.STABILISER, EnergyClass.DESTABILISER,
-                EnergyClass.NEUTRAL, EnergyClass.MIXED]:
+    for cls in [
+        EnergyClass.STABILISER,
+        EnergyClass.DESTABILISER,
+        EnergyClass.NEUTRAL,
+        EnergyClass.MIXED,
+    ]:
         ops = by_class[cls]
         if not ops:
             continue
@@ -95,14 +101,17 @@ def demo_operator_bounds() -> None:
                 EnergyClass.NEUTRAL: f"ε={b.contraction_rate:.4f}",
                 EnergyClass.MIXED: f"κ={b.contraction_rate:.4f}",
             }[cls]
-            print(f"  {b.operator_name:20s}  {b.glyph:6s}  {rate_label:>10s}  "
-                  f"{b.glyph_factor_name}={b.glyph_factor_value:.4f}")
+            print(
+                f"  {b.operator_name:20s}  {b.glyph:6s}  {rate_label:>10s}  "
+                f"{b.glyph_factor_name}={b.glyph_factor_value:.4f}"
+            )
     print()
 
 
 # ------------------------------------------------------------------
 # 2. Sequence Lyapunov proof — grammar-compliant vs non-compliant
 # ------------------------------------------------------------------
+
 
 def demo_sequence_proof() -> None:
     """Prove that grammar-compliant sequences are net-contractive."""
@@ -116,14 +125,22 @@ def demo_sequence_proof() -> None:
         "Stabilize (IL, SHA)": ["Coherence", "Silence"],
         "Propagate (RA, UM)": ["Resonance", "Coupling"],
         "Full cycle": [
-            "Emission", "Coupling", "Coherence",
-            "Dissonance", "Mutation", "Coherence",
-            "Resonance", "Coupling", "Coherence",
+            "Emission",
+            "Coupling",
+            "Coherence",
+            "Dissonance",
+            "Mutation",
+            "Coherence",
+            "Resonance",
+            "Coupling",
+            "Coherence",
             "Silence",
         ],
         "VIOLATION: OZ without IL": ["Dissonance", "Silence"],
         "VIOLATION: OZ, VAL, no stabilizer": [
-            "Dissonance", "Expansion", "Silence",
+            "Dissonance",
+            "Expansion",
+            "Silence",
         ],
     }
 
@@ -132,16 +149,21 @@ def demo_sequence_proof() -> None:
         status = "STABLE" if proof.is_net_contractive else "UNSTABLE"
         print(f"\n  {label}")
         print(f"    Operators:    {' → '.join(proof.operators)}")
-        print(f"    Multipliers:  {' × '.join(f'{m:.4f}' for m in proof.energy_multipliers)}")
+        print(
+            f"    Multipliers:  {' × '.join(f'{m:.4f}' for m in proof.energy_multipliers)}"
+        )
         print(f"    Product:      {proof.cumulative_product:.6f}")
-        print(f"    Contractive?  {status}  "
-              f"(net contraction = {proof.net_contraction:+.4f})")
+        print(
+            f"    Contractive?  {status}  "
+            f"(net contraction = {proof.net_contraction:+.4f})"
+        )
     print()
 
 
 # ------------------------------------------------------------------
 # 3. Spectral gap analysis
 # ------------------------------------------------------------------
+
 
 def demo_spectral_gap() -> None:
     """Compute spectral gap and derived time-scales for different topologies."""
@@ -151,13 +173,17 @@ def demo_spectral_gap() -> None:
 
     topologies = {
         "Ring (20)": nx.cycle_graph(20),
-        "Watts-Strogatz (20, k=4, p=0.3)": nx.watts_strogatz_graph(20, 4, 0.3, seed=SEED),
+        "Watts-Strogatz (20, k=4, p=0.3)": nx.watts_strogatz_graph(
+            20, 4, 0.3, seed=SEED
+        ),
         "Barabasi-Albert (20, m=2)": nx.barabasi_albert_graph(20, 2, seed=SEED),
         "Complete (10)": nx.complete_graph(10),
         "Star (20)": nx.star_graph(19),
     }
 
-    print(f"\n  {'Topology':40s} {'λ₁':>8s} {'τ_relax':>10s} {'t_mix':>10s} {'Ratio':>8s}")
+    print(
+        f"\n  {'Topology':40s} {'λ₁':>8s} {'τ_relax':>10s} {'t_mix':>10s} {'Ratio':>8s}"
+    )
     print(f"  {'─' * 40} {'─' * 8} {'─' * 10} {'─' * 10} {'─' * 8}")
 
     for label, G in topologies.items():
@@ -165,23 +191,28 @@ def demo_spectral_gap() -> None:
         inject_defaults(G)
         rng = np.random.default_rng(SEED)
         for node in G.nodes():
-            G.nodes[node]['EPI'] = float(rng.uniform(0.5, 2.0))
-            G.nodes[node]['nu_f'] = float(rng.uniform(0.5, 2.0))
-            G.nodes[node]['phase'] = float(rng.uniform(0, 2 * np.pi))
-            G.nodes[node]['delta_nfr'] = float(rng.uniform(-0.3, 0.3))
+            G.nodes[node]["EPI"] = float(rng.uniform(0.5, 2.0))
+            G.nodes[node]["nu_f"] = float(rng.uniform(0.5, 2.0))
+            G.nodes[node]["phase"] = float(rng.uniform(0, 2 * np.pi))
+            G.nodes[node]["delta_nfr"] = float(rng.uniform(-0.3, 0.3))
 
         spec = analyze_spectral_gap(G)
         tau_str = f"{spec.relaxation_time:.4f}" if spec.relaxation_time < 1e6 else "∞"
-        mix_str = f"{spec.mixing_time_bound:.4f}" if spec.mixing_time_bound < 1e6 else "∞"
+        mix_str = (
+            f"{spec.mixing_time_bound:.4f}" if spec.mixing_time_bound < 1e6 else "∞"
+        )
         ratio_str = f"{spec.spectral_ratio:.2f}" if spec.spectral_ratio < 1e6 else "∞"
 
-        print(f"  {label:40s} {spec.spectral_gap:8.4f} {tau_str:>10s} {mix_str:>10s} {ratio_str:>8s}")
+        print(
+            f"  {label:40s} {spec.spectral_gap:8.4f} {tau_str:>10s} {mix_str:>10s} {ratio_str:>8s}"
+        )
     print()
 
 
 # ------------------------------------------------------------------
 # 4. Operator convergence — Lyapunov + spectral combined
 # ------------------------------------------------------------------
+
 
 def demo_operator_convergence() -> None:
     """Show effective convergence rate combining operator and spectral gap."""
@@ -191,25 +222,39 @@ def demo_operator_convergence() -> None:
 
     G = _build_graph()
 
-    stabilisers = ["Coherence", "Reception", "Coupling", "SelfOrganization", "Transition"]
+    stabilisers = [
+        "Coherence",
+        "Reception",
+        "Coupling",
+        "SelfOrganization",
+        "Transition",
+    ]
 
-    print(f"\n  {'Operator':20s} {'ρ (Lyapunov)':>14s} {'λ₁ (spectral)':>14s} "
-          f"{'Effective':>10s} {'Steps to ½E':>12s}")
+    print(
+        f"\n  {'Operator':20s} {'ρ (Lyapunov)':>14s} {'λ₁ (spectral)':>14s} "
+        f"{'Effective':>10s} {'Steps to ½E':>12s}"
+    )
     print(f"  {'─' * 20} {'─' * 14} {'─' * 14} {'─' * 10} {'─' * 12}")
 
     for name in stabilisers:
         summary = analyze_operator_convergence(G, name)
-        steps_str = (f"{summary.steps_to_half_energy:.2f}"
-                     if summary.steps_to_half_energy < 1e6 else "∞")
-        print(f"  {name:20s} {summary.operator_bound.contraction_rate:14.4f} "
-              f"{summary.spectral.spectral_gap:14.4f} "
-              f"{summary.effective_convergence_rate:10.4f} {steps_str:>12s}")
+        steps_str = (
+            f"{summary.steps_to_half_energy:.2f}"
+            if summary.steps_to_half_energy < 1e6
+            else "∞"
+        )
+        print(
+            f"  {name:20s} {summary.operator_bound.contraction_rate:14.4f} "
+            f"{summary.spectral.spectral_gap:14.4f} "
+            f"{summary.effective_convergence_rate:10.4f} {steps_str:>12s}"
+        )
     print()
 
 
 # ------------------------------------------------------------------
 # 5. Empirical Lyapunov verification on a real graph
 # ------------------------------------------------------------------
+
 
 def demo_empirical_verification() -> None:
     """Verify operator energy bounds against actual E[G] measurements."""
@@ -219,9 +264,9 @@ def demo_empirical_verification() -> None:
 
     from tnfr.operators import apply_glyph
     from tnfr.physics.canonical import (
-        compute_structural_potential,
-        compute_phase_gradient,
         compute_phase_curvature,
+        compute_phase_gradient,
+        compute_structural_potential,
     )
 
     def _energy(G: nx.Graph) -> float:
@@ -230,14 +275,13 @@ def demo_empirical_verification() -> None:
         grad = compute_phase_gradient(G)
         k_phi = compute_phase_curvature(G)
         return sum(
-            0.5 * (phi_s[n] ** 2 + grad[n] ** 2 + k_phi[n] ** 2)
-            for n in G.nodes()
+            0.5 * (phi_s[n] ** 2 + grad[n] ** 2 + k_phi[n] ** 2) for n in G.nodes()
         )
 
     glyphs = [
-        ("Coherence (IL)",  "IL"),
+        ("Coherence (IL)", "IL"),
         ("Dissonance (OZ)", "OZ"),
-        ("Emission (AL)",   "AL"),
+        ("Emission (AL)", "AL"),
     ]
 
     for label, glyph in glyphs:
@@ -270,6 +314,7 @@ def demo_empirical_verification() -> None:
 # 6. Life emergence detection
 # ------------------------------------------------------------------
 
+
 def demo_life_emergence() -> None:
     """Detect autopoietic life-like behavior in a simulated TNFR trajectory."""
     print("=" * 72)
@@ -282,9 +327,9 @@ def demo_life_emergence() -> None:
     times = [i * dt for i in range(T)]
 
     # Simulate ‖EPI‖ trajectory with logistic-like growth
-    gamma = 0.5      # autopoietic strength
-    epi_max = 3.0    # carrying capacity
-    epsilon = 0.3    # self-feedback strength
+    gamma = 0.5  # autopoietic strength
+    epi_max = 3.0  # carrying capacity
+    epsilon = 0.3  # self-feedback strength
 
     epi = np.zeros(T)
     epi[0] = 0.1
@@ -322,13 +367,17 @@ def demo_life_emergence() -> None:
 
     # Show milestones
     milestones = [0, 10, 25, 50, 75, T - 1]
-    print(f"\n  {'Step':>6s}  {'t':>6s}  {'||EPI||':>8s}  {'A(t)':>8s}  {'Vi(t)':>8s}  {'M(t)':>8s}")
+    print(
+        f"\n  {'Step':>6s}  {'t':>6s}  {'||EPI||':>8s}  {'A(t)':>8s}  {'Vi(t)':>8s}  {'M(t)':>8s}"
+    )
     print(f"  {'─' * 6}  {'─' * 6}  {'─' * 8}  {'─' * 8}  {'─' * 8}  {'─' * 8}")
     for m in milestones:
-        print(f"  {m:6d}  {times[m]:6.2f}  {epi[m]:8.4f}  "
-              f"{float(telem.autopoietic_coefficient[m]):8.4f}  "
-              f"{float(telem.vitality_index[m]):8.4f}  "
-              f"{float(telem.stability_margin[m]):8.4f}")
+        print(
+            f"  {m:6d}  {times[m]:6.2f}  {epi[m]:8.4f}  "
+            f"{float(telem.autopoietic_coefficient[m]):8.4f}  "
+            f"{float(telem.vitality_index[m]):8.4f}  "
+            f"{float(telem.stability_margin[m]):8.4f}"
+        )
 
     # Stability margin interpretation
     M_final = float(telem.stability_margin[-1])
@@ -345,6 +394,7 @@ def demo_life_emergence() -> None:
 # ------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------
+
 
 def main() -> None:
     print()

@@ -18,12 +18,11 @@ from weakref import WeakKeyDictionary
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
 
-from .constants import DEFAULTS
 from .config.defaults_core import SELECTOR_THRESHOLD_DEFAULTS
-from .utils import clamp01
+from .constants import DEFAULTS
 from .metrics.common import compute_dnfr_accel_max
 from .types import SelectorNorms, SelectorThresholds, SelectorWeights
-from .utils import is_non_string_sequence
+from .utils import clamp01, is_non_string_sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from .types import TNFRGraph
@@ -49,6 +48,7 @@ _SELECTOR_THRESHOLD_CACHE: WeakKeyDictionary[
 ] = WeakKeyDictionary()
 _SELECTOR_THRESHOLD_CACHE_LOCK = threading.Lock()
 
+
 def _sorted_items(mapping: Mapping[str, float]) -> _SelectorThresholdItems:
     """Return mapping items sorted by key.
 
@@ -63,6 +63,7 @@ def _sorted_items(mapping: Mapping[str, float]) -> _SelectorThresholdItems:
         Key-sorted items providing a hashable representation for memoisation.
     """
     return tuple(sorted(mapping.items()))
+
 
 def _compute_selector_thresholds(
     thr_sel_items: _SelectorThresholdItems,
@@ -86,6 +87,7 @@ def _compute_selector_thresholds(
         val = thr_sel.get(key, default)
         out[key] = clamp01(float(val))
     return cast(SelectorThresholds, out)
+
 
 def _selector_thresholds(G: "nx.Graph") -> SelectorThresholds:
     """Return normalised thresholds for Si, ΔNFR and acceleration.
@@ -118,6 +120,7 @@ def _selector_thresholds(G: "nx.Graph") -> SelectorThresholds:
         _SELECTOR_THRESHOLD_CACHE[G] = (thr_sel_items, thresholds)
     return thresholds
 
+
 def _selector_norms(G: "nx.Graph") -> SelectorNorms:
     """Compute and cache selector norms for ΔNFR and acceleration.
 
@@ -136,7 +139,10 @@ def _selector_norms(G: "nx.Graph") -> SelectorNorms:
     G.graph["_sel_norms"] = norms
     return norms
 
-def _calc_selector_score(Si: float, dnfr: float, accel: float, weights: SelectorWeights) -> float:
+
+def _calc_selector_score(
+    Si: float, dnfr: float, accel: float, weights: SelectorWeights
+) -> float:
     """Compute weighted selector score.
 
     Parameters
@@ -156,8 +162,11 @@ def _calc_selector_score(Si: float, dnfr: float, accel: float, weights: Selector
         Final weighted score.
     """
     return (
-        weights["w_si"] * Si + weights["w_dnfr"] * (1.0 - dnfr) + weights["w_accel"] * (1.0 - accel)
+        weights["w_si"] * Si
+        + weights["w_dnfr"] * (1.0 - dnfr)
+        + weights["w_accel"] * (1.0 - accel)
     )
+
 
 def _apply_selector_hysteresis(
     nd: dict[str, Any],
@@ -211,6 +220,7 @@ def _apply_selector_hysteresis(
         if isinstance(prev, str) and prev in HYSTERESIS_GLYPHS:
             return prev
     return None
+
 
 def _selector_parallel_jobs(G: "TNFRGraph") -> int | None:
     """Return worker count for selector helpers when parallelism is enabled.

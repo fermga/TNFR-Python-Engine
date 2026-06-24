@@ -49,24 +49,17 @@ from dataclasses import dataclass
 from ..mathematics.unified_numerical import np
 from .admissible_family_sweep import DEFAULT_TEST_FAMILIES, FamilyFactory
 from .alpha_sweep import DEFAULT_GAUGES, GaugeFn
-from .dirichlet_l import DirichletCharacter
-from .nodeaware_gauge_sweep import (
-    DEFAULT_NODEAWARE_GAUGES,
-    NodeAwareGaugeFn,
-)
-from .twisted_admissible_family_sweep import (
-    sweep_twisted_admissible_family,
-)
-from .twisted_nodeaware_gauge_sweep import sweep_twisted_nodeaware_gauge
-from .twisted_prime_ladder_hamiltonian import (
-    TwistedPrimeLadderHamiltonian,
-)
 from .coercivity_uniform import (
     _max_abs_slope,
     _segmentwise_interval_lower_bound,
     _stratified_interval_lower_bound,
     _worst_segment_indices,
 )
+from .dirichlet_l import DirichletCharacter
+from .nodeaware_gauge_sweep import DEFAULT_NODEAWARE_GAUGES, NodeAwareGaugeFn
+from .twisted_admissible_family_sweep import sweep_twisted_admissible_family
+from .twisted_nodeaware_gauge_sweep import sweep_twisted_nodeaware_gauge
+from .twisted_prime_ladder_hamiltonian import TwistedPrimeLadderHamiltonian
 
 
 @dataclass(frozen=True)
@@ -193,23 +186,13 @@ def verify_twisted_uniform_coercivity_empirical(
     if n_sigma < 2:
         raise ValueError("n_sigma must be >= 2")
 
-    fam = (
-        dict(families)
-        if families is not None
-        else dict(DEFAULT_TEST_FAMILIES)
-    )
-    g_scalar = (
-        dict(gauges) if gauges is not None else dict(DEFAULT_GAUGES)
-    )
+    fam = dict(families) if families is not None else dict(DEFAULT_TEST_FAMILIES)
+    g_scalar = dict(gauges) if gauges is not None else dict(DEFAULT_GAUGES)
     g_node = (
-        dict(node_gauges)
-        if node_gauges is not None
-        else dict(DEFAULT_NODEAWARE_GAUGES)
+        dict(node_gauges) if node_gauges is not None else dict(DEFAULT_NODEAWARE_GAUGES)
     )
 
-    sigmas = np.logspace(
-        np.log10(sigma_min), np.log10(sigma_max), n_sigma
-    )
+    sigmas = np.logspace(np.log10(sigma_min), np.log10(sigma_max), n_sigma)
 
     cert_adm = sweep_twisted_admissible_family(
         chi,
@@ -240,16 +223,10 @@ def verify_twisted_uniform_coercivity_empirical(
     finite_a = alpha_a[np.isfinite(alpha_a)]
     finite_n = alpha_n[np.isfinite(alpha_n)]
     if finite_a.size == 0 or finite_n.size == 0:
-        raise ValueError(
-            "no finite alpha values available for coercivity check"
-        )
+        raise ValueError("no finite alpha values available for coercivity check")
 
-    sampled_alpha_min = float(
-        min(float(np.min(finite_a)), float(np.min(finite_n)))
-    )
-    sampled_alpha_max = float(
-        max(float(np.max(finite_a)), float(np.max(finite_n)))
-    )
+    sampled_alpha_min = float(min(float(np.min(finite_a)), float(np.min(finite_n))))
+    sampled_alpha_max = float(max(float(np.max(finite_a)), float(np.max(finite_n))))
 
     L_a = _max_abs_slope(alpha_a, sigmas)
     L_n = _max_abs_slope(alpha_n, sigmas)
@@ -293,16 +270,10 @@ def verify_twisted_uniform_coercivity_empirical(
         if not worst:
             break
         midpoints = [
-            0.5
-            * (
-                float(refined_sigmas[i])
-                + float(refined_sigmas[i + 1])
-            )
+            0.5 * (float(refined_sigmas[i]) + float(refined_sigmas[i + 1]))
             for i in worst
         ]
-        augmented = np.unique(
-            np.concatenate([refined_sigmas, np.asarray(midpoints)])
-        )
+        augmented = np.unique(np.concatenate([refined_sigmas, np.asarray(midpoints)]))
         if augmented.size == refined_sigmas.size:
             break
 
@@ -330,24 +301,14 @@ def verify_twisted_uniform_coercivity_empirical(
         )
 
         refined_sigmas = augmented
-        refined_alpha_a = np.asarray(
-            new_cert_adm.alpha_table, dtype=float
-        )
-        refined_alpha_n = np.asarray(
-            new_cert_node.alpha_table, dtype=float
-        )
+        refined_alpha_a = np.asarray(new_cert_adm.alpha_table, dtype=float)
+        refined_alpha_n = np.asarray(new_cert_node.alpha_table, dtype=float)
 
-        lb_a = _segmentwise_interval_lower_bound(
-            refined_alpha_a, refined_sigmas
-        )
-        lb_n = _segmentwise_interval_lower_bound(
-            refined_alpha_n, refined_sigmas
-        )
+        lb_a = _segmentwise_interval_lower_bound(refined_alpha_a, refined_sigmas)
+        lb_n = _segmentwise_interval_lower_bound(refined_alpha_n, refined_sigmas)
         interval_lb_local_refined = float(min(lb_a, lb_n))
 
-    interval_lb_local_refined_positive = bool(
-        interval_lb_local_refined > 0.0
-    )
+    interval_lb_local_refined_positive = bool(interval_lb_local_refined > 0.0)
 
     return TwistedUniformCoercivityCertificate(
         character_name=str(chi.name),
@@ -370,12 +331,8 @@ def verify_twisted_uniform_coercivity_empirical(
         nodeaware_ok=bool(cert_node.alpha_all_positive),
         n_refinement_rounds=rounds,
         n_sigma_refined=int(refined_sigmas.size),
-        interval_lower_bound_local_refined=float(
-            interval_lb_local_refined
-        ),
-        interval_lower_local_refined_positive=(
-            interval_lb_local_refined_positive
-        ),
+        interval_lower_bound_local_refined=float(interval_lb_local_refined),
+        interval_lower_local_refined_positive=(interval_lb_local_refined_positive),
     )
 
 

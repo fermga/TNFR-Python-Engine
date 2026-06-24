@@ -42,6 +42,7 @@ Run:
 
 Status: RESEARCH (composition-arithmetic falsifier).
 """
+
 from __future__ import annotations
 
 import networkx as nx
@@ -148,17 +149,21 @@ def test_addition():
     print("=" * 78)
     print("ADDITION emerges from the Cartesian product (Laplacian spectrum)")
     print("=" * 78)
-    cases = [("C4", nx.cycle_graph(4), "C5", nx.cycle_graph(5)),
-             ("K3", nx.complete_graph(3), "P3", nx.path_graph(3)),
-             ("K3", nx.complete_graph(3), "K3", nx.complete_graph(3))]
+    cases = [
+        ("C4", nx.cycle_graph(4), "C5", nx.cycle_graph(5)),
+        ("K3", nx.complete_graph(3), "P3", nx.path_graph(3)),
+        ("K3", nx.complete_graph(3), "K3", nx.complete_graph(3)),
+    ]
     all_ok = True
     for nG, G, nH, H in cases:
         ok, sG, sH = cartesian_addition_emerges(G, H)
         all_ok &= ok
         print(f"  {nG} [] {nH}: spec(L) == {{lambda_i + mu_j}} ? {ok}")
         print(f"      spec({nG}) = {np.round(sG, 3)}    spec({nH}) = {np.round(sH, 3)}")
-    print(f"  VERDICT: {'PASS' if all_ok else 'FAIL'} "
-          "-- '+' is read off the composite, not supplied")
+    print(
+        f"  VERDICT: {'PASS' if all_ok else 'FAIL'} "
+        "-- '+' is read off the composite, not supplied"
+    )
     return all_ok
 
 
@@ -167,17 +172,21 @@ def test_multiplication():
     print("=" * 78)
     print("MULTIPLICATION emerges from the tensor product (adjacency spectrum)")
     print("=" * 78)
-    cases = [("K3", nx.complete_graph(3), "K3", nx.complete_graph(3)),
-             ("K3", nx.complete_graph(3), "C5", nx.cycle_graph(5)),
-             ("K4", nx.complete_graph(4), "K3", nx.complete_graph(3))]
+    cases = [
+        ("K3", nx.complete_graph(3), "K3", nx.complete_graph(3)),
+        ("K3", nx.complete_graph(3), "C5", nx.cycle_graph(5)),
+        ("K4", nx.complete_graph(4), "K3", nx.complete_graph(3)),
+    ]
     all_ok = True
     for nG, G, nH, H in cases:
         ok, sG, sH = tensor_multiplication_emerges(G, H)
         all_ok &= ok
         print(f"  {nG} x {nH}: spec(A) == {{alpha_i * beta_j}} ? {ok}")
         print(f"      spec({nG}) = {np.round(sG, 3)}    spec({nH}) = {np.round(sH, 3)}")
-    print(f"  VERDICT: {'PASS' if all_ok else 'FAIL'} "
-          "-- 'x' is read off the composite, not supplied")
+    print(
+        f"  VERDICT: {'PASS' if all_ok else 'FAIL'} "
+        "-- 'x' is read off the composite, not supplied"
+    )
     return all_ok
 
 
@@ -188,21 +197,27 @@ def test_cardinals_multiply():
     print("=" * 78)
     # K3 has Laplacian spectrum {0, 3, 3}: the 3 is a 2D irrep of S3.
     G = nx.complete_graph(3)
-    print(f"  K3 Laplacian spectrum    = {np.round(lap_spectrum(G), 3)}  "
-          "(degeneracy 2 at lambda=3)")
+    print(
+        f"  K3 Laplacian spectrum    = {np.round(lap_spectrum(G), 3)}  "
+        "(degeneracy 2 at lambda=3)"
+    )
     prod = nx.cartesian_product(G, G)
     groups = eigenspaces(prod, list(prod.nodes()))
     print("  K3 [] K3 Laplacian levels:")
     for val, mult, _ in groups:
         tag = ""
         if abs(val - 6.0) < 1e-6:
-            tag = "  <- 6 = 3+3 : multiplicity 2*2 = 4 (PRODUCT of the two 2-fold modes)"
+            tag = (
+                "  <- 6 = 3+3 : multiplicity 2*2 = 4 (PRODUCT of the two 2-fold modes)"
+            )
         elif abs(val - 3.0) < 1e-6:
             tag = "  <- 3 = 0+3 & 3+0 : accidental sum, NOT a product"
         print(f"      lambda = {val:5.2f}   multiplicity = {mult}{tag}")
     has_4 = any(abs(v - 6.0) < 1e-6 and m == 4 for v, m, _ in groups)
-    print(f"  VERDICT: {'PASS' if has_4 else 'FAIL'} "
-          "-- 2 x 2 = 4 realised by coupling, no 'x' put in")
+    print(
+        f"  VERDICT: {'PASS' if has_4 else 'FAIL'} "
+        "-- 2 x 2 = 4 realised by coupling, no 'x' put in"
+    )
     return has_4
 
 
@@ -227,14 +242,18 @@ def test_irreducibility_is_not_primality():
             tag = "  <- dim 4 is COMPOSITE (2*2) yet IRREDUCIBLE (atomic mode)"
         print(f"      lambda = {val:5.2f}  mult = {mult}  <chi,chi> = {chi:4.1f}{tag}")
     print()
-    print("  Meanwhile (test above) K3 [] K3 produced a 4-fold mode at lambda = 6 = 3+3")
+    print(
+        "  Meanwhile (test above) K3 [] K3 produced a 4-fold mode at lambda = 6 = 3+3"
+    )
     print("  whose multiplicity is exactly 2*2 -- a 4 of COMPOSITIONAL origin.")
     print("  So the cardinal 4 is atomic in K5 (simple group S5) and compositional")
     print("  in K3 [] K3 (product group): whether it 'factorises' depends on the")
     print("  SYSTEM's symmetry, not on the integer. Arithmetic unique factorisation")
     print("  is a strictly stronger structure than representational composition.")
-    print(f"  VERDICT: {'PASS' if four_irreducible else 'FAIL'} "
-          "-- 'prime <=> irreducible' is correctly REFUTED")
+    print(
+        f"  VERDICT: {'PASS' if four_irreducible else 'FAIL'} "
+        "-- 'prime <=> irreducible' is correctly REFUTED"
+    )
     return four_irreducible
 
 

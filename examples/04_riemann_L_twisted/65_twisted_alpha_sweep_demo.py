@@ -131,8 +131,7 @@ def block_detailed_chi3() -> None:
     print("  " + "-" * (len(header) - 2))
     for i, g in enumerate(gauge_names):
         row_vals = "".join(
-            fmt_signed(cert.alpha_table[i, j], 13, 4)
-            for j in range(len(cert.sigmas))
+            fmt_signed(cert.alpha_table[i, j], 13, 4) for j in range(len(cert.sigmas))
         )
         print(f"  {g.ljust(name_w + 2)}{row_vals}")
     print()
@@ -172,9 +171,7 @@ def block_sweep_all_characters() -> None:
             coupling=COUPLING,
         )
         cert = sweep_twisted_alpha(chi, bundle, SIGMAS_SWEEP)
-        coords = (
-            f"({cert.alpha_min_sigma:.3f}, '{cert.alpha_min_gauge}')"
-        )
+        coords = f"({cert.alpha_min_sigma:.3f}, '{cert.alpha_min_gauge}')"
         print(
             f"  {cert.character_name:<8} {cert.character_modulus:>3d}  "
             f"{str(cert.weil_all_positive):>6} "

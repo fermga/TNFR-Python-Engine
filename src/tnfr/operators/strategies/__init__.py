@@ -1,5 +1,6 @@
 """Operator strategy scaffolding exports."""
 
+from .defaults import ensure_default_strategies_registered
 from .strategy import (
     BackendName,
     FailureRisk,
@@ -15,7 +16,6 @@ from .strategy import (
     StrategyRegistry,
     StructuralFields,
 )
-from .defaults import ensure_default_strategies_registered
 
 ensure_default_strategies_registered()
 

@@ -104,10 +104,10 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 from sympy import isprime
 
 from tnfr.alias import get_attr, set_attr
@@ -214,8 +214,10 @@ def experiment_2_double_dissociation():
     print("of the SAME out-degree. Both get the SAME random seed + canonical")
     print("nodal evolution. Spectrum = global; Phi_s std = per-node substrate.")
     print()
-    print(f"  {'n':>4} | {'Paley_dist':>10} {'rand_dist':>10} | "
-          f"{'Paley_phiStd':>12} {'rand_phiStd':>12}")
+    print(
+        f"  {'n':>4} | {'Paley_dist':>10} {'rand_dist':>10} | "
+        f"{'Paley_phiStd':>12} {'rand_phiStd':>12}"
+    )
     for n in [11, 19, 23, 31, 43, 47]:
         Gp = residue_digraph(n)
         outdeg = Gp.out_degree(0)
@@ -230,8 +232,10 @@ def experiment_2_double_dissociation():
             _seed_random(Gr, 0)
             _evolve(Gr)
             r_phis.append(_substrate_phi_std(Gr))
-        print(f"  {n:>4} | {p_dist:>10} {np.mean(r_dists):>10.1f} | "
-              f"{p_phi:>12.4f} {np.mean(r_phis):>12.4f}")
+        print(
+            f"  {n:>4} | {p_dist:>10} {np.mean(r_dists):>10.1f} | "
+            f"{p_phi:>12.4f} {np.mean(r_phis):>12.4f}"
+        )
     print()
     print("  -> SPECTRUM: Paley = 3 distinct (prime signature) vs random ~n")
     print("     distinct. The spectrum SEES the QR arithmetic.")
@@ -249,8 +253,10 @@ def experiment_3_substrate_tracks_size():
     print("vs per-node Phi_s std (local substrate). The substrate grows with n")
     print("(graph size), never separating primes from composites.")
     print()
-    print(f"  {'n':>4} {'prime':>6} {'spec_dist':>10} {'spec_prime?':>12} "
-          f"{'phiStd':>8}")
+    print(
+        f"  {'n':>4} {'prime':>6} {'spec_dist':>10} {'spec_prime?':>12} "
+        f"{'phiStd':>8}"
+    )
     n_correct = 0
     n_total = 0
     for n in range(7, 42):
@@ -266,8 +272,10 @@ def experiment_3_substrate_tracks_size():
         n_correct += int(ok)
         n_total += 1
         flag = "OK" if ok else "XX"
-        print(f"  {n:>4} {str(isprime(n)):>6} {dist:>10} "
-              f"{str(spec_prime):>12} {phi:>8.4f}  {flag}")
+        print(
+            f"  {n:>4} {str(isprime(n)):>6} {dist:>10} "
+            f"{str(spec_prime):>12} {phi:>8.4f}  {flag}"
+        )
     print()
     print(f"  -> spectral primality: {n_correct}/{n_total} correct.")
     print("     The per-node Phi_s std is a smooth function of n (size), not")

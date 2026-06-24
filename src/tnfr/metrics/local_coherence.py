@@ -15,7 +15,8 @@ from __future__ import annotations
 from typing import Any
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_DEPI
+from ..constants.aliases import ALIAS_DEPI, ALIAS_DNFR
+
 
 def compute_local_coherence_fallback(G: Any, node: Any) -> float:
     """Compute a local coherence proxy from the node's neighborhood.
@@ -42,8 +43,12 @@ def compute_local_coherence_fallback(G: Any, node: Any) -> float:
         except Exception:
             return float(default)
 
-    dnfr_vals = [abs(_as_float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0))) for n in neighbors]
-    depi_vals = [abs(_as_float(get_attr(G.nodes[n], ALIAS_DEPI, 0.0))) for n in neighbors]
+    dnfr_vals = [
+        abs(_as_float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0))) for n in neighbors
+    ]
+    depi_vals = [
+        abs(_as_float(get_attr(G.nodes[n], ALIAS_DEPI, 0.0))) for n in neighbors
+    ]
 
     dnfr_mean = sum(dnfr_vals) / len(dnfr_vals) if dnfr_vals else 0.0
     depi_mean = sum(depi_vals) / len(depi_vals) if depi_vals else 0.0

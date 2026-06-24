@@ -140,9 +140,7 @@ def test_baseline_formulas_documented_in_result() -> None:
 
 
 def test_run_benchmark_suite_wdbc(tmp_path: Path) -> None:
-    summary = MODULE.run_benchmark_suite(
-        ["wdbc"], k=8, seed=0, output_dir=tmp_path
-    )
+    summary = MODULE.run_benchmark_suite(["wdbc"], k=8, seed=0, output_dir=tmp_path)
     assert summary["suite"] == "structural_interface_benchmark"
     assert len(summary["proof_of_concept_targets"]) == 1
     entry = summary["proof_of_concept_targets"][0]
@@ -157,9 +155,7 @@ def test_run_benchmark_suite_wdbc(tmp_path: Path) -> None:
 
 
 def test_run_benchmark_suite_skips_unknown_dataset(tmp_path: Path) -> None:
-    summary = MODULE.run_benchmark_suite(
-        ["does_not_exist"], output_dir=tmp_path
-    )
+    summary = MODULE.run_benchmark_suite(["does_not_exist"], output_dir=tmp_path)
     assert summary["proof_of_concept_targets"] == []
     assert summary["skipped"] == [
         {"dataset": "does_not_exist", "reason": "unknown dataset"}

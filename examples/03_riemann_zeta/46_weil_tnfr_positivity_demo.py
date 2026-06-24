@@ -58,15 +58,10 @@ def main() -> None:
     print("-" * 72)
     sigma_solo = 2.0
     print(f"\nVerifying W[sigma={sigma_solo}] >= 0 ...")
-    cert = verify_weil_positivity(
-        bundle, sigma=sigma_solo, n_zeros=60, max_zeros=200
-    )
+    cert = verify_weil_positivity(bundle, sigma=sigma_solo, n_zeros=60, max_zeros=200)
     print("  " + cert.summary())
     print(f"  W (zero side)        = {cert.weil_functional_zero_side:+.10f}")
-    print(
-        f"  W (explicit formula) = "
-        f"{cert.weil_functional_explicit_formula:+.10f}"
-    )
+    print(f"  W (explicit formula) = " f"{cert.weil_functional_explicit_formula:+.10f}")
     print(f"  consistency residual = {cert.explicit_formula_residual:.3e}")
     print(f"  zeros used           = {cert.n_zeros_used}")
     print(f"  Weil positive?       = {cert.positive}")
@@ -78,12 +73,12 @@ def main() -> None:
     sigmas = [1.0, 1.5, 2.0, 3.0, 5.0, 8.0]
     print(f"\nGrid: sigmas = {sigmas}")
     print("Computing bridge certificate ...")
-    bridge = verify_weil_tnfr_bridge(
-        bundle, sigmas, n_zeros=60, max_zeros=200
-    )
+    bridge = verify_weil_tnfr_bridge(bundle, sigmas, n_zeros=60, max_zeros=200)
 
-    print("\n  sigma        W[sigma]          E_TNFR[sigma]       "
-          "alpha(sigma)   W>=0   alpha>0")
+    print(
+        "\n  sigma        W[sigma]          E_TNFR[sigma]       "
+        "alpha(sigma)   W>=0   alpha>0"
+    )
     print("  " + "-" * 78)
     for i, s in enumerate(bridge.sigmas):
         W = bridge.weil_functional[i]

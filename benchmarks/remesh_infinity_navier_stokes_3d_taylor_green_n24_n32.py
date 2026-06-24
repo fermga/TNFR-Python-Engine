@@ -113,7 +113,6 @@ from tnfr.navier_stokes.operator import (  # noqa: E402
     build_torus_graph_3d,
 )
 
-
 # ---------------------------------------------------------------------------
 # Locked configuration (§14.3, §14.5)
 # ---------------------------------------------------------------------------
@@ -121,9 +120,9 @@ N_SWEEP: list[int] = [24, 32]
 VISCOSITY = 0.01
 DT = 0.005
 T_FINAL = 1.0
-STEPS = int(round(T_FINAL / DT))           # 200
+STEPS = int(round(T_FINAL / DT))  # 200
 AMPLITUDE = 1.0
-ALPHA = 0.5                                # canonical REMESH_ALPHA default
+ALPHA = 0.5  # canonical REMESH_ALPHA default
 TAU_G_SWEEP: list[Any] = [0, 8, 32, 128, "inf"]
 SEED_LABEL = 20260526
 EPS = 1e-14
@@ -150,7 +149,9 @@ N12_PEAK_STRETCHING_BASELINE = 14.483747
 N12_PEAK_STRETCHING_TAU_INF = 0.077555
 N12_COLLAPSE_DROP_REL = (
     N12_PEAK_STRETCHING_BASELINE - N12_PEAK_STRETCHING_TAU_INF
-) / max(N12_PEAK_STRETCHING_BASELINE, EPS)  # 0.9946; sign = COLLAPSE
+) / max(
+    N12_PEAK_STRETCHING_BASELINE, EPS
+)  # 0.9946; sign = COLLAPSE
 
 
 # ---------------------------------------------------------------------------
@@ -230,9 +231,7 @@ def run_one_tau(
 
         time_axis[k] = op.time
         vort_sup[k] = op.vorticity_sup_norm()
-        bkm_int[k] = bkm_int[k - 1] + 0.5 * DT * (
-            vort_sup[k - 1] + vort_sup[k]
-        )
+        bkm_int[k] = bkm_int[k - 1] + 0.5 * DT * (vort_sup[k - 1] + vort_sup[k])
         enstrophy[k] = op.enstrophy_curl()
         kinetic[k] = op.kinetic_energy()
         dissipation[k] = op.dissipation_rate()
@@ -278,9 +277,7 @@ def evaluate_criteria_at_n(
     ref_run = run_one_tau(n, 0, initial_state=initial_state)
     bkm_baseline = float(baseline["bkm_integral"][-1])
     bkm_reference = float(ref_run["bkm_integral"][-1])
-    f1_rel_err = (
-        abs(bkm_baseline - bkm_reference) / max(abs(bkm_reference), EPS)
-    )
+    f1_rel_err = abs(bkm_baseline - bkm_reference) / max(abs(bkm_reference), EPS)
     f1_pass = f1_rel_err <= F1_TOL
 
     # All observables (full table for telemetry; F3 uses only included ones)
@@ -291,9 +288,7 @@ def evaluate_criteria_at_n(
             "BKM_T": float(run["bkm_integral"][-1]),
             "peak_enstrophy": _peak(run["enstrophy"]),
             "peak_stretching": _peak(run["stretching_production"]),
-            "peak_stretching_post_t1": _peak_post_t1(
-                run["stretching_production"]
-            ),
+            "peak_stretching_post_t1": _peak_post_t1(run["stretching_production"]),
             "peak_enstrophy_post_t1": _peak_post_t1(run["enstrophy"]),
         }
 
@@ -341,9 +336,7 @@ def evaluate_criteria_at_n(
     f4_pass = f4_max_excess <= F4_KE_INJECTION_TOL
 
     # F5: divergence control
-    f5_max_div = max(
-        float(np.max(run["divergence"])) for run in runs.values()
-    )
+    f5_max_div = max(float(np.max(run["divergence"])) for run in runs.values())
     f5_pass = f5_max_div <= F5_DIV_TOL
 
     # Verdict mapping (§14.7)
@@ -419,7 +412,11 @@ def cross_resolution_flag(
     n12_sign = "COLLAPSE"  # §13.4 reading at n=16
 
     sign_consistent = sign_n24 == n12_sign and sign_n32 == n12_sign
-    flag = "CROSS_RES_CONSISTENT" if (verdict_agree and sign_consistent) else "CROSS_RES_INCONSISTENT"
+    flag = (
+        "CROSS_RES_CONSISTENT"
+        if (verdict_agree and sign_consistent)
+        else "CROSS_RES_INCONSISTENT"
+    )
 
     return {
         "flag": flag,
@@ -439,8 +436,7 @@ def cross_resolution_flag(
 def main() -> dict[str, Any]:
     print("=" * 76)
     print(
-        "N13: REMESH-infinity resolution extension on 3D Taylor-Green "
-        "(refined F3)"
+        "N13: REMESH-infinity resolution extension on 3D Taylor-Green " "(refined F3)"
     )
     print("=" * 76)
     print(
@@ -460,9 +456,7 @@ def main() -> dict[str, Any]:
     for n in N_SWEEP:
         print(f"--- Resolution n = {n} (degrees of freedom: {3 * n**3}) ---")
         G0 = build_torus_graph_3d(n)
-        op0 = TNFRNavierStokesOperator(
-            graph=G0, viscosity=VISCOSITY, dimension=3
-        )
+        op0 = TNFRNavierStokesOperator(graph=G0, viscosity=VISCOSITY, dimension=3)
         op0.set_taylor_green(AMPLITUDE)
         initial_state = op0.phi.copy()
 
@@ -561,9 +555,7 @@ def main() -> dict[str, Any]:
 
     output = {
         "milestone": "N13",
-        "preregistration_section": (
-            "theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md §14"
-        ),
+        "preregistration_section": ("theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md §14"),
         "config": {
             "N_SWEEP": N_SWEEP,
             "viscosity": VISCOSITY,
@@ -577,18 +569,14 @@ def main() -> dict[str, Any]:
             "f3_refined_included": F3_REFINED_INCLUDED,
             "f3_refined_excluded": F3_REFINED_EXCLUDED,
         },
-        "per_resolution": {
-            str(n): _convert(evals_by_n[n]) for n in N_SWEEP
-        },
+        "per_resolution": {str(n): _convert(evals_by_n[n]) for n in N_SWEEP},
         "cross_resolution_flag": _convert(cross_flag),
         "timings_seconds": {str(n): timings_by_n[n] for n in N_SWEEP},
     }
 
     out_dir = _REPO_ROOT / "results" / "remesh_infinity"
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = (
-        out_dir / "remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.json"
-    )
+    out_path = out_dir / "remesh_infinity_navier_stokes_3d_taylor_green_n24_n32.json"
     out_path.write_text(json.dumps(output, indent=2), encoding="utf-8")
     print(f"Results JSON written to: {out_path}")
 

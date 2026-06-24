@@ -31,12 +31,13 @@ def _cycle_with_phases(phases: list[float]) -> nx.Graph:
     return G
 
 
-def _assert_prescription_sequences_are_grammar_valid(G: nx.Graph, prescriptions) -> None:
+def _assert_prescription_sequences_are_grammar_valid(
+    G: nx.Graph, prescriptions
+) -> None:
     fallback_node = next(iter(G.nodes()))
     for prescription in prescriptions:
         canonical = [
-            glyph_function_name(code, default=code)
-            for code in prescription.sequence
+            glyph_function_name(code, default=code) for code in prescription.sequence
         ]
         full_result = validate_sequence(
             canonical,
@@ -74,8 +75,14 @@ def test_phase_gate_api_distinguishes_local_scramble(tmp_path: Path):
     smooth_features = compare_against_global_baselines(smooth, gate=math.pi / 4.0)
     scrambled_features = compare_against_global_baselines(scrambled, gate=math.pi / 4.0)
 
-    assert abs(smooth_features["global_order_r"] - scrambled_features["global_order_r"]) < 1e-12
-    assert scrambled_features["tnfr_mean_phase_gradient"] > smooth_features["tnfr_mean_phase_gradient"]
+    assert (
+        abs(smooth_features["global_order_r"] - scrambled_features["global_order_r"])
+        < 1e-12
+    )
+    assert (
+        scrambled_features["tnfr_mean_phase_gradient"]
+        > smooth_features["tnfr_mean_phase_gradient"]
+    )
 
     hotspots = rank_phase_stress_hotspots(scrambled, gate=math.pi / 4.0, top_n=3)
     assert len(hotspots) == 3
@@ -89,8 +96,7 @@ def test_phase_gate_api_distinguishes_local_scramble(tmp_path: Path):
     assert report.operator_prescriptions
     assert report.operator_prescriptions[0].scope in {"network", "node"}
     assert any(
-        "IL" in prescription.sequence
-        for prescription in report.operator_prescriptions
+        "IL" in prescription.sequence for prescription in report.operator_prescriptions
     )
     _assert_prescription_sequences_are_grammar_valid(
         scrambled,
@@ -109,4 +115,6 @@ def test_phase_gate_api_distinguishes_local_scramble(tmp_path: Path):
     assert html_path.exists()
     assert "operator_prescriptions" in json_path.read_text(encoding="utf-8")
     assert "TNFR canonical operator prescription" in md_path.read_text(encoding="utf-8")
-    assert "TNFR canonical operator prescription" in html_path.read_text(encoding="utf-8")
+    assert "TNFR canonical operator prescription" in html_path.read_text(
+        encoding="utf-8"
+    )

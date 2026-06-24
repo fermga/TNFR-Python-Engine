@@ -52,32 +52,42 @@ References
 - AGENTS.md §"Emergent Symplectic Substrate" (polarization symmetry U(2))
 """
 
-import os
-import sys
-import math
 import copy
+import math
+import os
 import random
-import warnings
 import statistics
+import sys
+import warnings
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 from sympy import isprime
 
-from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.constants import inject_defaults
-from tnfr.physics.symplectic_substrate import (
-    extract_phase_space_point,
-    polarization_vector,
-    polarization_density,
-    evolve_substrate_flow,
-)
+from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Coupling, Resonance,
-    Silence, Expansion, Contraction, SelfOrganization, Mutation,
-    Transition, Recursivity,
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
+)
+from tnfr.physics.symplectic_substrate import (
+    evolve_substrate_flow,
+    extract_phase_space_point,
+    polarization_density,
+    polarization_vector,
 )
 
 
@@ -146,15 +156,20 @@ def experiment_1_intrinsic():
     idx = {n: i for i, n in enumerate(pt.nodes)}
     poincare = dens["poincare"]
     rng2 = np.random.default_rng(0)
-    neigh = [float(np.dot(poincare[:, idx[a]], poincare[:, idx[b]]))
-             for a, b in G.edges() if a in idx and b in idx]
+    neigh = [
+        float(np.dot(poincare[:, idx[a]], poincare[:, idx[b]]))
+        for a, b in G.edges()
+        if a in idx and b in idx
+    ]
     rand = []
     for _ in range(len(neigh)):
         a, b = rng2.choice(len(pt.nodes), 2, replace=False)
         rand.append(float(np.dot(poincare[:, a], poincare[:, b])))
     print("C. Polarization texture (neighbor Poincaré-vector alignment):")
-    print(f"   mean neighbor p·p = {np.mean(neigh):+.3f},  "
-          f"random = {np.mean(rand):+.3f}")
+    print(
+        f"   mean neighbor p·p = {np.mean(neigh):+.3f},  "
+        f"random = {np.mean(rand):+.3f}"
+    )
     print("   → no EXCESS neighbor alignment on a random graph (honest")
     print("     negative): a random phase field has no polarization ordering.")
     print()
@@ -182,11 +197,19 @@ def experiment_2_operators():
     print()
 
     ops = [
-        ("AL", Emission), ("EN", Reception), ("IL", Coherence),
-        ("OZ", Dissonance), ("UM", Coupling), ("RA", Resonance),
-        ("SHA", Silence), ("VAL", Expansion), ("NUL", Contraction),
-        ("THOL", SelfOrganization), ("ZHIR", Mutation),
-        ("NAV", Transition), ("REMESH", Recursivity),
+        ("AL", Emission),
+        ("EN", Reception),
+        ("IL", Coherence),
+        ("OZ", Dissonance),
+        ("UM", Coupling),
+        ("RA", Resonance),
+        ("SHA", Silence),
+        ("VAL", Expansion),
+        ("NUL", Contraction),
+        ("THOL", SelfOrganization),
+        ("ZHIR", Mutation),
+        ("NAV", Transition),
+        ("REMESH", Recursivity),
     ]
 
     seed = 42
@@ -219,8 +242,7 @@ def experiment_2_operators():
             for nd in list(G.nodes()):
                 op(G, nd)
             p1 = stokes_vec(G)
-            cos = np.dot(p0, p1) / (
-                np.linalg.norm(p0) * np.linalg.norm(p1) + 1e-30)
+            cos = np.dot(p0, p1) / (np.linalg.norm(p0) * np.linalg.norm(p1) + 1e-30)
             ang = math.degrees(math.acos(max(-1.0, min(1.0, cos))))
             print(f"  {glyph:>7} {ang:>22.2f}")
             (rotators if ang > 1.0 else preservers).append(glyph)
@@ -252,6 +274,7 @@ def experiment_3_networks():
 
     # P14 (Riemann) under the dynamics θ = ν_f·τ
     from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph
+
     Gp = build_prime_ladder_graph(10, max_power=4)
     for nd in Gp.nodes():
         Gp.nodes[nd]["phase"] = float(Gp.nodes[nd]["nu_f"])
@@ -259,17 +282,19 @@ def experiment_3_networks():
     idx = {n: i for i, n in enumerate(pt.nodes)}
     primes = sorted({p for (p, _k) in Gp.nodes()})
     by_p = {}
-    for (p, k) in Gp.nodes():
+    for p, k in Gp.nodes():
         by_p.setdefault(p, []).append(eg[idx[(p, k)]])
     mean_eg = [float(np.mean(by_p[p])) for p in primes]
     r = float(np.corrcoef(mean_eg, [math.log(p) for p in primes])[0, 1])
     print(f"  P14 (Riemann, dynamics): r(geo polariz. energy, log p) = {r:.3f}")
-    print("    → the polarization field carries the prime ladder {k·log p}"
-          " (Ex 103).")
+    print(
+        "    → the polarization field carries the prime ladder {k·log p}" " (Ex 103)."
+    )
     print()
 
     # Arithmetic number network
     from tnfr.mathematics.number_theory import ArithmeticTNFRNetwork
+
     net = ArithmeticTNFRNetwork(max_number=80)
     G = net.graph.to_undirected()
     for nd in G.nodes():
@@ -279,24 +304,30 @@ def experiment_3_networks():
     ia = {n: i for i, n in enumerate(pt.nodes)}
     egp = statistics.mean(eg[ia[n]] for n in G.nodes() if isprime(n))
     egc = statistics.mean(eg[ia[n]] for n in G.nodes() if not isprime(n))
-    print(f"  Arithmetic: geo polariz. energy  prime = {egp:.3f}, "
-          f"composite = {egc:.3f}")
+    print(
+        f"  Arithmetic: geo polariz. energy  prime = {egp:.3f}, "
+        f"composite = {egc:.3f}"
+    )
     print("    → primes carry lower polarization energy (the low-coupling")
     print("      periphery, Ex 101).")
     print()
 
     # Navier–Stokes
     from tnfr.navier_stokes.operator import (
-        build_torus_graph_3d, taylor_green_initial_condition_3d,
+        build_torus_graph_3d,
+        taylor_green_initial_condition_3d,
     )
+
     Gn = build_torus_graph_3d(8)
     u, _v, _w = taylor_green_initial_condition_3d(Gn, 1.0)
     for i, nd in enumerate(list(Gn.nodes)):
         Gn.nodes[nd]["phase"] = float(u[i])
         Gn.nodes[nd]["theta"] = float(u[i])
     pt, eg = _geo_polarization_energy(Gn)
-    print(f"  NS (3D Taylor–Green): total geo polariz. energy Σe_geo = "
-          f"{float(np.sum(eg)):.2f}")
+    print(
+        f"  NS (3D Taylor–Green): total geo polariz. energy Σe_geo = "
+        f"{float(np.sum(eg)):.2f}"
+    )
     print("    → the velocity field IS a geometric-sector polarization")
     print("      texture (K_φ = vorticity proxy; enstrophy-like, Ex 104).")
     print()

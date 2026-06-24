@@ -20,17 +20,35 @@ from __future__ import annotations
 from tnfr.operators import grammar_canon as gc
 from tnfr.operators import grammar_types as gt
 from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Coupling, Resonance,
-    Silence, Expansion, Contraction, SelfOrganization, Mutation,
-    Transition, Recursivity,
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
 )
 from tnfr.operators.grammar_validate import validate_grammar
 
 _INST = {
-    "AL": Emission(), "EN": Reception(), "IL": Coherence(),
-    "OZ": Dissonance(), "UM": Coupling(), "RA": Resonance(),
-    "SHA": Silence(), "VAL": Expansion(), "NUL": Contraction(),
-    "THOL": SelfOrganization(), "ZHIR": Mutation(), "NAV": Transition(),
+    "AL": Emission(),
+    "EN": Reception(),
+    "IL": Coherence(),
+    "OZ": Dissonance(),
+    "UM": Coupling(),
+    "RA": Resonance(),
+    "SHA": Silence(),
+    "VAL": Expansion(),
+    "NUL": Contraction(),
+    "THOL": SelfOrganization(),
+    "ZHIR": Mutation(),
+    "NAV": Transition(),
     "REMESH": Recursivity(),
 }
 
@@ -47,21 +65,22 @@ class TestRoleTableReproducesCanon:
 
     def test_generators(self) -> None:
         derived = {
-            op for op, g in gc.OPERATOR_ROLES.items()
-            if g.has(gc.GrammarRole.GENERATOR)
+            op for op, g in gc.OPERATOR_ROLES.items() if g.has(gc.GrammarRole.GENERATOR)
         }
         assert derived == set(gt.GENERATORS)
 
     def test_destabilizers(self) -> None:
         derived = {
-            op for op, g in gc.OPERATOR_ROLES.items()
+            op
+            for op, g in gc.OPERATOR_ROLES.items()
             if g.has(gc.GrammarRole.DESTABILIZER)
         }
         assert derived == set(gt.DESTABILIZERS)
 
     def test_transformers(self) -> None:
         derived = {
-            op for op, g in gc.OPERATOR_ROLES.items()
+            op
+            for op, g in gc.OPERATOR_ROLES.items()
             if g.has(gc.GrammarRole.TRANSFORMER)
         }
         assert derived == set(gt.TRANSFORMERS)
@@ -101,10 +120,7 @@ class TestCanonicalTypology:
         assert gc.STRUCTURAL_TYPOLOGY[T.LINEAR].chomsky_class == C.REGULAR
         assert gc.STRUCTURAL_TYPOLOGY[T.BIFURCATED].chomsky_class == C.REGULAR
         assert gc.STRUCTURAL_TYPOLOGY[T.FRACTAL].chomsky_class == C.REGULAR
-        assert (
-            gc.STRUCTURAL_TYPOLOGY[T.HIERARCHICAL].chomsky_class
-            == C.CONTEXT_FREE
-        )
+        assert gc.STRUCTURAL_TYPOLOGY[T.HIERARCHICAL].chomsky_class == C.CONTEXT_FREE
         assert gc.STRUCTURAL_TYPOLOGY[T.CYCLIC].chomsky_class == C.CONTEXT_FREE
 
 
@@ -125,9 +141,7 @@ class TestLegacyReductionIsTotal:
             gt.StructuralPattern.EDUCATIONAL,
             gt.StructuralPattern.CREATIVE,
         ):
-            assert (
-                gc.canonical_structural_type(p) == gc.StructuralType.UNKNOWN
-            )
+            assert gc.canonical_structural_type(p) == gc.StructuralType.UNKNOWN
 
 
 class TestGlyphicFunctionsCompose:
@@ -179,9 +193,7 @@ class TestRelatedInvariants:
     def test_every_rule_relates_to_grammar_compliance(self) -> None:
         # Grammar Compliance (#4) is in every grammar-rule's related set.
         for r in gc.GRAMMAR_RULES:
-            assert gc.GRAMMAR_COMPLIANCE_INVARIANT in gc.related_invariants(
-                r.rule_id
-            )
+            assert gc.GRAMMAR_COMPLIANCE_INVARIANT in gc.related_invariants(r.rule_id)
 
     def test_invariants_are_in_the_six_invariant_canon(self) -> None:
         # No stale references to the old 10-invariant numbering (7, 9, …).
@@ -198,13 +210,9 @@ class TestRelatedInvariants:
         from tnfr.operators import grammar_error_factory as gef
 
         for r in gc.GRAMMAR_RULES:
-            assert gef._RULE_INVARIANTS[r.rule_id] == gc.related_invariants(
-                r.rule_id
-            )
+            assert gef._RULE_INVARIANTS[r.rule_id] == gc.related_invariants(r.rule_id)
         # The U6 confinement alias maps to the canonical U6 rule.
-        assert gef._RULE_INVARIANTS["U6_CONFINEMENT"] == gc.related_invariants(
-            "U6"
-        )
+        assert gef._RULE_INVARIANTS["U6_CONFINEMENT"] == gc.related_invariants("U6")
 
 
 class TestOperatorMetadataRolesAreCanonical:
@@ -215,15 +223,13 @@ class TestOperatorMetadataRolesAreCanonical:
 
         for mnemonic, meta in OPERATOR_METADATA.items():
             expected = gc.u_rules_for_operator(mnemonic)
-            assert tuple(meta.grammar_roles) == expected, (
-                f"{mnemonic}: metadata {meta.grammar_roles} != canon {expected}"
-            )
+            assert (
+                tuple(meta.grammar_roles) == expected
+            ), f"{mnemonic}: metadata {meta.grammar_roles} != canon {expected}"
 
     def test_u_rules_accepts_function_name_and_glyph(self) -> None:
         # Same result whether queried by function name or glyph mnemonic.
-        assert gc.u_rules_for_operator("mutation") == gc.u_rules_for_operator(
-            "ZHIR"
-        )
+        assert gc.u_rules_for_operator("mutation") == gc.u_rules_for_operator("ZHIR")
         assert gc.u_rules_for_operator("ZHIR") == ("U2", "U4a", "U4b")
 
     def test_remesh_carries_the_recursive_rule(self) -> None:

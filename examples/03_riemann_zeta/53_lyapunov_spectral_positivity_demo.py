@@ -68,8 +68,10 @@ def main() -> None:
     print(cert0.summary())
     print()
     print(f"  dimension                : {cert0.dimension}")
-    print(f"  spectrum (min, max)      : "
-          f"({cert0.spectrum_min:.6e}, {cert0.spectrum_max:.6e})")
+    print(
+        f"  spectrum (min, max)      : "
+        f"({cert0.spectrum_min:.6e}, {cert0.spectrum_max:.6e})"
+    )
     print(f"  spectral gap             : {cert0.spectral_gap:.6e}")
     print(f"  all_positive             : {cert0.all_positive}")
     print(f"  ||R||_1 (shift c=1)      : {cert0.schatten_1_norm:.6e}")

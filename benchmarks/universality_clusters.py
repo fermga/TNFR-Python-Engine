@@ -33,8 +33,7 @@ import argparse
 import json
 import math
 import os
-from typing import Dict, List, Any
-
+from typing import Any, Dict, List
 
 FEATURE_KEYS = [
     "timing_phi_s",
@@ -90,9 +89,7 @@ def extract_feature_vectors(data: Dict[str, Any]) -> Dict[str, List[float]]:
     return vectors
 
 
-def deterministic_kmeans(
-    vectors: Dict[str, List[float]], k: int
-) -> Dict[str, Any]:
+def deterministic_kmeans(vectors: Dict[str, List[float]], k: int) -> Dict[str, Any]:
     topo_names = sorted(vectors.keys())
     if k <= 1:
         # Single cluster case
@@ -129,9 +126,7 @@ def deterministic_kmeans(
                 assignments[t] = best_cluster
                 changed = True
         # Recompute centroids
-        cluster_members: Dict[int, List[List[float]]] = {
-            cid: [] for cid in centroids
-        }
+        cluster_members: Dict[int, List[List[float]]] = {cid: [] for cid in centroids}
         for t, cid in assignments.items():
             cluster_members[cid].append(vectors[t])
         for cid, member_vecs in cluster_members.items():
@@ -179,9 +174,7 @@ def _nz(x: float) -> float:
     return 0.0 if math.isnan(x) else x
 
 
-def write_outputs(
-    result: Dict[str, Any], path_json: str, path_md: str
-) -> None:
+def write_outputs(result: Dict[str, Any], path_json: str, path_md: str) -> None:
     with open(path_json, "w", encoding="utf-8") as fh:
         json.dump(result, fh, indent=2)
     lines: List[str] = []
@@ -189,18 +182,12 @@ def write_outputs(
     lines.append("")
     lines.append(f"Iterations: {result['iterations']}")
     lines.append("")
-    lines.append(
-        "| Cluster | Members | Centroid (phi_s, grad, curv, xi_c, snap) |"
-    )
-    lines.append(
-        "|---------|---------|------------------------------------------|"
-    )
+    lines.append("| Cluster | Members | Centroid (phi_s, grad, curv, xi_c, snap) |")
+    lines.append("|---------|---------|------------------------------------------|")
     for cid, members in sorted(result["clusters"].items()):
         centroid = result["centroids"][cid]
         centroid_fmt = ", ".join(f"{v:.4g}" for v in centroid)
-        lines.append(
-            f"| {cid} | {', '.join(members)} | {centroid_fmt} |"
-        )
+        lines.append(f"| {cid} | {', '.join(members)} | {centroid_fmt} |")
     lines.append("")
     with open(path_md, "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines))

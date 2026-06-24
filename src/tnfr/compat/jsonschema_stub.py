@@ -10,6 +10,7 @@ from typing import Any
 
 __all__ = ["Draft7Validator", "exceptions"]
 
+
 class _NotInstalledError(RuntimeError):
     """Raised when trying to use jsonschema operations without jsonschema installed."""
 
@@ -19,17 +20,21 @@ class _NotInstalledError(RuntimeError):
             "Install it with: pip install jsonschema"
         )
 
+
 class SchemaError(Exception):
     """Stub for jsonschema.exceptions.SchemaError."""
 
+
 class ValidationError(Exception):
     """Stub for jsonschema.exceptions.ValidationError."""
+
 
 class _ExceptionsStub:
     """Stub for jsonschema.exceptions module."""
 
     SchemaError = SchemaError
     ValidationError = ValidationError
+
 
 class Draft7Validator:
     """Stub for jsonschema.Draft7Validator."""
@@ -46,6 +51,7 @@ class Draft7Validator:
 
     def iter_errors(self, instance: Any) -> Any:
         raise _NotInstalledError("Draft7Validator.iter_errors")
+
 
 # Module-level stubs
 exceptions = _ExceptionsStub()

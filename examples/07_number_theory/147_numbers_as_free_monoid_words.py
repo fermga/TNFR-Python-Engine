@@ -100,17 +100,17 @@ References
 - AGENTS.md "Operator-Tetrad Synergies" (dual-lever capacity νf vs pressure ΔNFR)
 """
 
+import math
 import os
 import sys
-import math
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import sympy as sp
 
 from tnfr.mathematics.number_theory import (
-    ArithmeticTNFRFormalism,
     ArithmeticStructuralTerms,
+    ArithmeticTNFRFormalism,
     ArithmeticTNFRParameters,
 )
 
@@ -147,34 +147,47 @@ def experiment_1_composition_law():
     print("=" * 72)
     print("M1: numbers are words; the coherence debt splits by composition law")
     print("=" * 72)
-    print(f"  constants: zeta={PARAMS.zeta:.4f}  eta={PARAMS.eta:.4f}  "
-          f"theta={PARAMS.theta:.4f}")
+    print(
+        f"  constants: zeta={PARAMS.zeta:.4f}  eta={PARAMS.eta:.4f}  "
+        f"theta={PARAMS.theta:.4f}"
+    )
     add_ok = mul_ok = 0
     coprime_pairs = 0
     for m, n in _PAIRS:
-        tm, tn, tmn = (arithmetic_terms(m), arithmetic_terms(n),
-                       arithmetic_terms(m * n))
-        omega_additive = (tmn.omega == tm.omega + tn.omega)
+        tm, tn, tmn = (
+            arithmetic_terms(m),
+            arithmetic_terms(n),
+            arithmetic_terms(m * n),
+        )
+        omega_additive = tmn.omega == tm.omega + tn.omega
         add_ok += int(omega_additive)
         if math.gcd(m, n) == 1:
             coprime_pairs += 1
-            if (tmn.tau == tm.tau * tn.tau
-                    and tmn.sigma == tm.sigma * tn.sigma):
+            if tmn.tau == tm.tau * tn.tau and tmn.sigma == tm.sigma * tn.sigma:
                 mul_ok += 1
     print(f"  Omega additive (free-monoid word length): {add_ok}/{len(_PAIRS)} pairs")
-    print(f"  tau & sigma multiplicative (divisor lattice): "
-          f"{mul_ok}/{coprime_pairs} coprime pairs")
+    print(
+        f"  tau & sigma multiplicative (divisor lattice): "
+        f"{mul_ok}/{coprime_pairs} coprime pairs"
+    )
     print("  factorization channel composes additively with one quantum zeta:")
     for m, n in [(3, 5), (6, 35), (4, 9)]:
-        tm, tn, tmn = (arithmetic_terms(m), arithmetic_terms(n),
-                       arithmetic_terms(m * n))
-        predicted = (factorization_pressure(tm) + factorization_pressure(tn)
-                     + PARAMS.zeta)
+        tm, tn, tmn = (
+            arithmetic_terms(m),
+            arithmetic_terms(n),
+            arithmetic_terms(m * n),
+        )
+        predicted = (
+            factorization_pressure(tm) + factorization_pressure(tn) + PARAMS.zeta
+        )
         resid_add = abs(factorization_pressure(tmn) - predicted)
-        resid_div = abs(divisor_pressure(tmn)
-                        - (divisor_pressure(tm) + divisor_pressure(tn)))
-        print(f"    {m}x{n}: P_Om(mn)=P_Om(m)+P_Om(n)+zeta residual={resid_add:.1e}"
-              f"   | divisor additive-residual={resid_div:.3f} (not additive)")
+        resid_div = abs(
+            divisor_pressure(tmn) - (divisor_pressure(tm) + divisor_pressure(tn))
+        )
+        print(
+            f"    {m}x{n}: P_Om(mn)=P_Om(m)+P_Om(n)+zeta residual={resid_add:.1e}"
+            f"   | divisor additive-residual={resid_div:.3f} (not additive)"
+        )
     print("  -> dNFR = one ADDITIVE channel (Omega) + two MULTIPLICATIVE (tau,sigma)")
 
 
@@ -191,10 +204,13 @@ def experiment_2_unit_destabilizer():
         t = arithmetic_terms(acc)
         d = F.delta_nfr_value(acc, t, PARAMS)
         c = F.local_coherence(d)
-        print(f"    x{p} -> n={acc:4d}  Omega={t.omega}  "
-              f"P_Om={factorization_pressure(t):.4f}  dNFR={d:7.4f}  C={c:.4f}")
+        print(
+            f"    x{p} -> n={acc:4d}  Omega={t.omega}  "
+            f"P_Om={factorization_pressure(t):.4f}  dNFR={d:7.4f}  C={c:.4f}"
+        )
     mism = sum(
-        1 for n in range(2, 81)
+        1
+        for n in range(2, 81)
         if (arithmetic_terms(n).omega == 1) != bool(sp.isprime(n))
     )
     print(f"  Omega(n)=1 <=> n prime: mismatches {mism}/79 (the additive channel")
@@ -211,15 +227,21 @@ def experiment_3_dual_lever_gradings():
     print("=" * 72)
     add_omega = add_log = 0
     for m, n in _PAIRS:
-        if (arithmetic_terms(m * n).omega
-                == arithmetic_terms(m).omega + arithmetic_terms(n).omega):
+        if (
+            arithmetic_terms(m * n).omega
+            == arithmetic_terms(m).omega + arithmetic_terms(n).omega
+        ):
             add_omega += 1
         if abs(math.log(m * n) - (math.log(m) + math.log(n))) <= 1e-9:
             add_log += 1
-    print(f"  COUNT grading  Omega  additive (-> dNFR pressure channel): "
-          f"{add_omega}/{len(_PAIRS)}")
-    print(f"  SIZE  grading  log    additive (-> nu_f capacity, ex 94):  "
-          f"{add_log}/{len(_PAIRS)}")
+    print(
+        f"  COUNT grading  Omega  additive (-> dNFR pressure channel): "
+        f"{add_omega}/{len(_PAIRS)}"
+    )
+    print(
+        f"  SIZE  grading  log    additive (-> nu_f capacity, ex 94):  "
+        f"{add_log}/{len(_PAIRS)}"
+    )
     print("  both are monoid homomorphisms (N,x) -> (R,+):")
     print("    Omega = how MANY prime letters  (the pressure arm of the lever)")
     print("    log   = how BIG the word is      (the capacity arm of the lever)")

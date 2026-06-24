@@ -25,10 +25,11 @@ from __future__ import annotations
 
 from typing import Any, MutableMapping
 
-from . import TNFRBackend
-from ..types import TNFRGraph
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..types import TNFRGraph
+from . import TNFRBackend
+
 
 class TorchBackend(TNFRBackend):
     """PyTorch GPU-accelerated implementation of TNFR kernels (Experimental).
@@ -70,7 +71,8 @@ class TorchBackend(TNFRBackend):
             self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         except ImportError as exc:
             raise RuntimeError(
-                "PyTorch backend requires torch to be installed. " "Install with: pip install torch"
+                "PyTorch backend requires torch to be installed. "
+                "Install with: pip install torch"
             ) from exc
 
     @property
@@ -125,6 +127,7 @@ class TorchBackend(TNFRBackend):
         overhead of tensor conversion and device transfer.
         """
         import time
+
         import numpy as np
 
         if profile is not None:
@@ -140,7 +143,9 @@ class TorchBackend(TNFRBackend):
                 profile["dnfr_path"] = "numpy_fallback"
             from ..dynamics.dnfr import default_compute_delta_nfr
 
-            default_compute_delta_nfr(graph, cache_size=cache_size, n_jobs=n_jobs, profile=profile)
+            default_compute_delta_nfr(
+                graph, cache_size=cache_size, n_jobs=n_jobs, profile=profile
+            )
             return
 
         if profile is not None:
@@ -153,13 +158,13 @@ class TorchBackend(TNFRBackend):
 
         # Get node attributes as numpy arrays first
         phase = np.array(
-            [
-                get_attr(graph.nodes[node], ALIAS_THETA, 0.0)
-                for node in node_list
-            ],
+            [get_attr(graph.nodes[node], ALIAS_THETA, 0.0) for node in node_list],
             dtype=np.float32,
         )
-        epi = np.array([get_attr(graph.nodes[node], ALIAS_EPI, 0.5) for node in node_list], dtype=np.float32)
+        epi = np.array(
+            [get_attr(graph.nodes[node], ALIAS_EPI, 0.5) for node in node_list],
+            dtype=np.float32,
+        )
         vf = np.array(
             [get_attr(graph.nodes[node], ALIAS_VF, 1.0) for node in node_list],
             dtype=np.float32,
@@ -194,11 +199,17 @@ class TorchBackend(TNFRBackend):
             t0 = time.perf_counter()
 
         # Convert to PyTorch tensors and move to device
-        phase_t = self._torch.tensor(phase, device=self._device, dtype=self._torch.float32)
+        phase_t = self._torch.tensor(
+            phase, device=self._device, dtype=self._torch.float32
+        )
         epi_t = self._torch.tensor(epi, device=self._device, dtype=self._torch.float32)
         vf_t = self._torch.tensor(vf, device=self._device, dtype=self._torch.float32)
-        edge_src_t = self._torch.tensor(edge_src, device=self._device, dtype=self._torch.int64)
-        edge_dst_t = self._torch.tensor(edge_dst, device=self._device, dtype=self._torch.int64)
+        edge_src_t = self._torch.tensor(
+            edge_src, device=self._device, dtype=self._torch.int64
+        )
+        edge_dst_t = self._torch.tensor(
+            edge_dst, device=self._device, dtype=self._torch.int64
+        )
 
         if profile is not None:
             profile["dnfr_to_device"] = time.perf_counter() - t0
@@ -279,9 +290,15 @@ class TorchBackend(TNFRBackend):
         torch = self._torch
 
         # Initialize accumulators
-        neighbor_cos_sum = torch.zeros(n_nodes, device=self._device, dtype=torch.float32)
-        neighbor_sin_sum = torch.zeros(n_nodes, device=self._device, dtype=torch.float32)
-        neighbor_epi_sum = torch.zeros(n_nodes, device=self._device, dtype=torch.float32)
+        neighbor_cos_sum = torch.zeros(
+            n_nodes, device=self._device, dtype=torch.float32
+        )
+        neighbor_sin_sum = torch.zeros(
+            n_nodes, device=self._device, dtype=torch.float32
+        )
+        neighbor_epi_sum = torch.zeros(
+            n_nodes, device=self._device, dtype=torch.float32
+        )
         neighbor_vf_sum = torch.zeros(n_nodes, device=self._device, dtype=torch.float32)
         neighbor_count = torch.zeros(n_nodes, device=self._device, dtype=torch.float32)
 
@@ -291,7 +308,9 @@ class TorchBackend(TNFRBackend):
         neighbor_sin_sum.scatter_add_(0, edge_dst, torch.sin(phase[edge_src]))
         neighbor_epi_sum.scatter_add_(0, edge_dst, epi[edge_src])
         neighbor_vf_sum.scatter_add_(0, edge_dst, vf[edge_src])
-        neighbor_count.scatter_add_(0, edge_dst, torch.ones_like(edge_dst, dtype=torch.float32))
+        neighbor_count.scatter_add_(
+            0, edge_dst, torch.ones_like(edge_dst, dtype=torch.float32)
+        )
 
         # For undirected graphs, also accumulate in reverse
         if not is_directed:
@@ -299,7 +318,9 @@ class TorchBackend(TNFRBackend):
             neighbor_sin_sum.scatter_add_(0, edge_src, torch.sin(phase[edge_dst]))
             neighbor_epi_sum.scatter_add_(0, edge_src, epi[edge_dst])
             neighbor_vf_sum.scatter_add_(0, edge_src, vf[edge_dst])
-            neighbor_count.scatter_add_(0, edge_src, torch.ones_like(edge_src, dtype=torch.float32))
+            neighbor_count.scatter_add_(
+                0, edge_src, torch.ones_like(edge_src, dtype=torch.float32)
+            )
 
         # Compute means
         has_neighbors = neighbor_count > 0
@@ -313,8 +334,12 @@ class TorchBackend(TNFRBackend):
         # Arithmetic means for EPI and vf
         epi_mean = torch.zeros(n_nodes, device=self._device, dtype=torch.float32)
         vf_mean = torch.zeros(n_nodes, device=self._device, dtype=torch.float32)
-        epi_mean[has_neighbors] = neighbor_epi_sum[has_neighbors] / neighbor_count[has_neighbors]
-        vf_mean[has_neighbors] = neighbor_vf_sum[has_neighbors] / neighbor_count[has_neighbors]
+        epi_mean[has_neighbors] = (
+            neighbor_epi_sum[has_neighbors] / neighbor_count[has_neighbors]
+        )
+        vf_mean[has_neighbors] = (
+            neighbor_vf_sum[has_neighbors] / neighbor_count[has_neighbors]
+        )
 
         # Compute gradients using TNFR canonical formula
         # Phase: angle_diff with wrapping to [-π, π]

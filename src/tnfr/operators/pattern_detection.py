@@ -59,6 +59,7 @@ __all__ = [
     "analyze_sequence",
 ]
 
+
 @dataclass
 class PatternMatch:
     """Detected pattern in operator sequence.
@@ -88,6 +89,7 @@ class PatternMatch:
     grammar_rule: str
     description: str
     structural_pattern: StructuralPattern | None = None
+
 
 class UnifiedPatternDetector:
     """Unified pattern detector aligned with grammar rules U1-U5.
@@ -318,7 +320,9 @@ class UnifiedPatternDetector:
 
         return patterns
 
-    def detect_convergence_patterns(self, sequence: Sequence[str]) -> list[PatternMatch]:
+    def detect_convergence_patterns(
+        self, sequence: Sequence[str]
+    ) -> list[PatternMatch]:
         """Detect U2-based convergence patterns.
 
         Patterns involving STABILIZERS and DESTABILIZERS to ensure bounded evolution.
@@ -370,7 +374,9 @@ class UnifiedPatternDetector:
             alternating = True
             for i in range(0, len(sequence) - 1, 2):
                 if i + 1 < len(sequence):
-                    if not (sequence[i] in DESTABILIZERS and sequence[i + 1] in STABILIZERS):
+                    if not (
+                        sequence[i] in DESTABILIZERS and sequence[i + 1] in STABILIZERS
+                    ):
                         alternating = False
                         break
             if alternating and has_destabilizers and has_stabilizers:
@@ -450,7 +456,9 @@ class UnifiedPatternDetector:
 
         return patterns
 
-    def detect_bifurcation_patterns(self, sequence: Sequence[str]) -> list[PatternMatch]:
+    def detect_bifurcation_patterns(
+        self, sequence: Sequence[str]
+    ) -> list[PatternMatch]:
         """Detect U4-based bifurcation patterns.
 
         Patterns involving TRANSFORMERS and BIFURCATION_TRIGGERS.
@@ -483,7 +491,10 @@ class UnifiedPatternDetector:
 
         # Managed bifurcation: trigger → handler (U4a)
         for i in range(len(sequence) - 1):
-            if sequence[i] in BIFURCATION_TRIGGERS and sequence[i + 1] in BIFURCATION_HANDLERS:
+            if (
+                sequence[i] in BIFURCATION_TRIGGERS
+                and sequence[i + 1] in BIFURCATION_HANDLERS
+            ):
                 patterns.append(
                     PatternMatch(
                         pattern_name="managed_bifurcation",
@@ -561,7 +572,9 @@ class UnifiedPatternDetector:
         """
         return self._pattern_grammar_map.get(pattern_name.lower())
 
-    def analyze_sequence_composition(self, sequence: Sequence[str]) -> Mapping[str, Any]:
+    def analyze_sequence_composition(
+        self, sequence: Sequence[str]
+    ) -> Mapping[str, Any]:
         """Perform comprehensive analysis of sequence structure.
 
         Delegates to AdvancedPatternDetector for detailed analysis.
@@ -578,7 +591,9 @@ class UnifiedPatternDetector:
         """
         return self._advanced_detector.analyze_sequence_composition(sequence)
 
+
 # Convenience functions for backward compatibility
+
 
 def detect_pattern(sequence: Sequence[str]) -> StructuralPattern:
     """Detect structural pattern in operator sequence.
@@ -602,6 +617,7 @@ def detect_pattern(sequence: Sequence[str]) -> StructuralPattern:
     """
     detector = UnifiedPatternDetector()
     return detector.detect_pattern(sequence)
+
 
 def analyze_sequence(sequence: Sequence[str]) -> Mapping[str, Any]:
     """Analyze operator sequence comprehensively.

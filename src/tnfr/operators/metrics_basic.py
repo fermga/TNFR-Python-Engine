@@ -4,16 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from .metrics_core import (
-    get_node_attr as _get_node_attr,
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-    HAS_EMISSION_TIMESTAMP_ALIAS as _HAS_EMISSION_TIMESTAMP_ALIAS,
-    EMISSION_TIMESTAMP_TUPLE as _ALIAS_EMISSION_TIMESTAMP_TUPLE,
-)
 from ..alias import get_attr_str
+from .metrics_core import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from .metrics_core import EMISSION_TIMESTAMP_TUPLE as _ALIAS_EMISSION_TIMESTAMP_TUPLE
+from .metrics_core import HAS_EMISSION_TIMESTAMP_ALIAS as _HAS_EMISSION_TIMESTAMP_ALIAS
+from .metrics_core import get_node_attr as _get_node_attr
+
 
 def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, Any]:
     """AL - Emission metrics with structural fidelity indicators.
@@ -75,6 +71,7 @@ def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, 
     emission_quality = "valid" if (delta_epi > 0 and delta_vf > 0) else "weak"
     # Import canonical constants
     from ..constants.canonical import GAMMA_PHI_RATIO
+
     latency_threshold = GAMMA_PHI_RATIO  # γ/φ ≈ 0.357 (golden-euler latency)
     activation_from_latency = epi_before < latency_threshold
     frequency_activation = delta_vf > 0
@@ -107,6 +104,7 @@ def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, 
         "emission_timestamp": emission_timestamp,
         "irreversibility_marker": irreversibility_marker,
     }
+
 
 def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
     """EN - Reception metrics: EPI integration, source tracking, integration efficiency.
@@ -172,7 +170,9 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
 
     # Average phase compatibility across all sources
     phase_compatibility_avg = (
-        sum(compat for _, compat, _ in sources) / num_sources if num_sources > 0 else 0.0
+        sum(compat for _, compat, _ in sources) / num_sources
+        if num_sources > 0
+        else 0.0
     )
 
     # Stabilization effectiveness (ΔNFR reduced?)
@@ -197,6 +197,7 @@ def reception_metrics(G, node, epi_before: float) -> dict[str, Any]:
         "coherence_received": delta_epi,
         "stabilization_effective": stabilization_effective,
     }
+
 
 def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
     """IL - Coherence metrics: ΔC(t), stability gain, ΔNFR reduction, phase alignment.
@@ -234,9 +235,9 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
         - epi_final, vf_final: Final structural state
     """
     # Import minimal dependencies (avoid unavailable symbols)
-    from ..metrics.phase_coherence import compute_phase_alignment
     from ..metrics.common import compute_coherence as _compute_global_coherence
     from ..metrics.local_coherence import compute_local_coherence_fallback
+    from ..metrics.phase_coherence import compute_phase_alignment
 
     dnfr_after = _get_node_attr(G, node, ALIAS_DNFR)
     epi = _get_node_attr(G, node, ALIAS_EPI)
@@ -244,7 +245,9 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
 
     # Compute reduction metrics
     dnfr_reduction = dnfr_before - dnfr_after
-    dnfr_reduction_pct = (dnfr_reduction / dnfr_before * 100.0) if dnfr_before > 0 else 0.0
+    dnfr_reduction_pct = (
+        (dnfr_reduction / dnfr_before * 100.0) if dnfr_before > 0 else 0.0
+    )
 
     # Compute global coherence using shared common implementation
     C_global = _compute_global_coherence(G)
@@ -275,6 +278,7 @@ def coherence_metrics(G, node, dnfr_before: float) -> dict[str, Any]:
         # canonical fixed point is |ΔNFR| <= 1e-3; see is_structural_equilibrium)
         "is_stabilized": abs(dnfr_after) < 0.1,
     }
+
 
 def dissonance_metrics(G, node, dnfr_before, theta_before):
     """OZ - Comprehensive dissonance and bifurcation metrics.
@@ -449,7 +453,9 @@ def dissonance_metrics(G, node, dnfr_before, theta_before):
     # 6. Recovery estimate (how many IL needed to resolve)
     # Assumes ~15% ΔNFR reduction per IL application
     il_reduction_rate = 0.15
-    recovery_estimate = int(abs(dnfr_after) / il_reduction_rate) + 1 if dnfr_after != 0 else 1
+    recovery_estimate = (
+        int(abs(dnfr_after) / il_reduction_rate) + 1 if dnfr_after != 0 else 1
+    )
 
     # 7. Propagation analysis (if propagation occurred)
     propagation_data = {}
@@ -508,7 +514,9 @@ def dissonance_metrics(G, node, dnfr_before, theta_before):
         # Network impact
         "neighbor_count": len(neighbors),
         "impacted_neighbors": impacted_neighbors,
-        "network_impact_radius": (impacted_neighbors / len(neighbors) if neighbors else 0.0),
+        "network_impact_radius": (
+            impacted_neighbors / len(neighbors) if neighbors else 0.0
+        ),
         # Recovery guidance
         "recovery_estimate_IL": recovery_estimate,
         "dissonance_level": abs(dnfr_after),
@@ -517,4 +525,3 @@ def dissonance_metrics(G, node, dnfr_before, theta_before):
         **propagation_data,
         **field_data,
     }
-

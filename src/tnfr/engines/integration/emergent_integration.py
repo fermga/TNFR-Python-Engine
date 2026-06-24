@@ -10,8 +10,8 @@ from ...dynamics.emergent_integration_engine import (
     IntegrationPattern,
     IntegrationResult,
     TNFREmergentIntegrationEngine,
-    get_emergent_integration_engine,
     discover_and_apply_integrations,
+    get_emergent_integration_engine,
 )
 
 __all__ = [

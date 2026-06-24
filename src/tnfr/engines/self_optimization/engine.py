@@ -6,14 +6,14 @@ This module re-exports the canonical implementation from
 """
 
 from ...dynamics.self_optimizing_engine import (
-    TNFRSelfOptimizingEngine,
-    OptimizationObjective,
     LearningStrategy,
     OptimizationExperience,
+    OptimizationObjective,
     OptimizationPolicy,
     SelfOptimizationResult,
-    create_self_optimizing_engine,
+    TNFRSelfOptimizingEngine,
     auto_optimize_tnfr_computation,
+    create_self_optimizing_engine,
 )
 
 __all__ = [

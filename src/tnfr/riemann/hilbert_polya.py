@@ -45,10 +45,9 @@ shape.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Tuple
-
-import math
 
 import numpy as np
 
@@ -63,7 +62,6 @@ from .weil_explicit_formula import (
     weil_pole_side,
     weil_prime_side_from_hamiltonian,
 )
-
 
 __all__ = [
     "HilbertPolyaCertificate",
@@ -108,9 +106,7 @@ def fetch_zero_imaginary_parts(n_zeros: int, *, dps: int = 30) -> np.ndarray:
             dtype=float,
         )
     if not np.all(gammas > 0):
-        raise RuntimeError(
-            "mpmath.zetazero returned a non-positive imaginary part"
-        )
+        raise RuntimeError("mpmath.zetazero returned a non-positive imaginary part")
     return gammas
 
 
@@ -361,9 +357,7 @@ def compute_hilbert_polya_certificate(
     gap = structural_gap_p14_vs_hp(bundle, gammas)
 
     scaffold_ok = bool(
-        self_adj["self_adjoint"]
-        and resolvent["trace_class"]
-        and weil_ok
+        self_adj["self_adjoint"] and resolvent["trace_class"] and weil_ok
     )
 
     notes: Tuple[str, ...] = (

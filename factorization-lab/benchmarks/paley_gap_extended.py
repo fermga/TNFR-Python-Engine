@@ -90,7 +90,11 @@ def run_benchmark(targets: Sequence[int]) -> List[ExtendedBenchmarkRecord]:
     return records
 
 
-def save_results(records: Sequence[ExtendedBenchmarkRecord], *, filename: str = "paley_gap_extended.json") -> Path:
+def save_results(
+    records: Sequence[ExtendedBenchmarkRecord],
+    *,
+    filename: str = "paley_gap_extended.json",
+) -> Path:
     payload = {
         "timestamp": time.time(),
         "targets": [record.n for record in records],

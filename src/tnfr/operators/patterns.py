@@ -24,29 +24,6 @@ from __future__ import annotations
 from collections import Counter
 from typing import Iterable, Mapping, Sequence
 
-from ..constants.canonical import (
-    PATTERN_BASE_WEIGHT_CANONICAL,
-    PATTERN_THERAPEUTIC_WEIGHT_CANONICAL,
-    PATTERN_EDUCATIONAL_WEIGHT_CANONICAL,
-    PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL,
-    PATTERN_CREATIVE_WEIGHT_CANONICAL,
-    PATTERN_REGENERATIVE_WEIGHT_CANONICAL,
-    PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,
-    PATTERN_EXPLORE_WEIGHT_CANONICAL,
-    PATTERN_STABILIZE_WEIGHT_CANONICAL,
-    PATTERN_COMPLEX_WEIGHT_CANONICAL,
-    PATTERN_COMPRESS_WEIGHT_CANONICAL,
-    PATTERN_LINEAR_WEIGHT_CANONICAL,
-    # PHASE 7B: Pattern scoring canonicalization
-    OPERATORS_PATTERN_UNIQUE_WEIGHT_CANONICAL,
-    OPERATORS_PATTERN_TRANSITION_WEIGHT_CANONICAL,
-    OPERATORS_PATTERN_DESTABILIZER_WEIGHT_CANONICAL,
-    OPERATORS_PATTERN_STABILIZER_WEIGHT_CANONICAL,
-    OPERATORS_THERAPEUTIC_HIGH_CANONICAL,
-    OPERATORS_EDUCATIONAL_HIGH_CANONICAL,
-    OPERATORS_CREATIVE_BASE_CANONICAL,
-    OPERATORS_ORGANIZATIONAL_CANONICAL,
-)
 from ..config.operator_names import (
     COHERENCE,
     CONTRACTION,
@@ -61,6 +38,28 @@ from ..config.operator_names import (
     SELF_ORGANIZATION,
     SILENCE,
     TRANSITION,
+)
+from ..constants.canonical import (  # PHASE 7B: Pattern scoring canonicalization
+    OPERATORS_CREATIVE_BASE_CANONICAL,
+    OPERATORS_EDUCATIONAL_HIGH_CANONICAL,
+    OPERATORS_ORGANIZATIONAL_CANONICAL,
+    OPERATORS_PATTERN_DESTABILIZER_WEIGHT_CANONICAL,
+    OPERATORS_PATTERN_STABILIZER_WEIGHT_CANONICAL,
+    OPERATORS_PATTERN_TRANSITION_WEIGHT_CANONICAL,
+    OPERATORS_PATTERN_UNIQUE_WEIGHT_CANONICAL,
+    OPERATORS_THERAPEUTIC_HIGH_CANONICAL,
+    PATTERN_BASE_WEIGHT_CANONICAL,
+    PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,
+    PATTERN_COMPLEX_WEIGHT_CANONICAL,
+    PATTERN_COMPRESS_WEIGHT_CANONICAL,
+    PATTERN_CREATIVE_WEIGHT_CANONICAL,
+    PATTERN_EDUCATIONAL_WEIGHT_CANONICAL,
+    PATTERN_EXPLORE_WEIGHT_CANONICAL,
+    PATTERN_LINEAR_WEIGHT_CANONICAL,
+    PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL,
+    PATTERN_REGENERATIVE_WEIGHT_CANONICAL,
+    PATTERN_STABILIZE_WEIGHT_CANONICAL,
+    PATTERN_THERAPEUTIC_WEIGHT_CANONICAL,
 )
 from .grammar import StructuralPattern
 
@@ -85,10 +84,8 @@ _CANONICAL_ORDER = (
 # Grammar classification sets — single source of truth (grammar_types, derived
 # from the nodal-equation predicates in config.physics_derivation).  Imported
 # rather than hardcoded so this heuristic detector cannot drift from the canon.
-from .grammar_types import (
-    STABILIZERS as _STABILIZERS,
-    DESTABILIZERS as _DESTABILIZERS,
-)
+from .grammar_types import DESTABILIZERS as _DESTABILIZERS
+from .grammar_types import STABILIZERS as _STABILIZERS
 
 # Heuristic-only set (NOT a grammar set): operators that read as "intermediate"
 # development steps for pattern detection (coupling/resonance are U3, dissonance
@@ -117,13 +114,16 @@ _COHERENCE_WEIGHTS = {
     StructuralPattern.EXPLORATORY_LEARNING: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Same as explore
     StructuralPattern.CONSOLIDATION_CYCLE: PATTERN_COMPRESS_WEIGHT_CANONICAL,  # Same as compression
     StructuralPattern.ADAPTIVE_MUTATION: PATTERN_BASE_WEIGHT_CANONICAL,  # 1.0 (canonical unit)
-    StructuralPattern.UNKNOWN: PATTERN_LINEAR_WEIGHT_CANONICAL * 0.5,  # Reduced structural minimum
+    StructuralPattern.UNKNOWN: PATTERN_LINEAR_WEIGHT_CANONICAL
+    * 0.5,  # Reduced structural minimum
 }
+
 
 def _canonicalise(sequence: Sequence[str]) -> list[str]:
     """Return canonical lower-case operator tokens."""
 
     return [str(token).lower() for token in sequence]
+
 
 class AdvancedPatternDetector:
     """Heuristic detector for high-level structural patterns.
@@ -197,14 +197,10 @@ class AdvancedPatternDetector:
     # Domain-specific detection (highest priority)
     # ------------------------------------------------------------------
 
-    def _detect_domain_pattern(
-        self, seq: Sequence[str]
-    ) -> StructuralPattern | None:
+    def _detect_domain_pattern(self, seq: Sequence[str]) -> StructuralPattern | None:
         # Defer to STABILIZE only for short (<7) or emission-led closures so
         # longer reception-led therapeutic sequences still classify correctly.
-        if self._is_stabilize(seq) and (
-            len(seq) <= 6 or (seq and seq[0] == EMISSION)
-        ):
+        if self._is_stabilize(seq) and (len(seq) <= 6 or (seq and seq[0] == EMISSION)):
             return None
         if self._is_therapeutic(seq):
             return StructuralPattern.THERAPEUTIC
@@ -219,9 +215,7 @@ class AdvancedPatternDetector:
             return StructuralPattern.REGENERATIVE
         return None
 
-    def _detect_learning_pattern(
-        self, seq: Sequence[str]
-    ) -> StructuralPattern | None:
+    def _detect_learning_pattern(self, seq: Sequence[str]) -> StructuralPattern | None:
         # Do not classify as BASIC/DEEP/EXPLORATORY learning when explicit
         # stabilization closure (IL→{SHA|RA}) is present; prefer STABILIZE.
         if self._is_basic_learning(seq):
@@ -236,9 +230,7 @@ class AdvancedPatternDetector:
             return StructuralPattern.ADAPTIVE_MUTATION
         return None
 
-    def _detect_meta_pattern(
-        self, seq: Sequence[str]
-    ) -> StructuralPattern | None:
+    def _detect_meta_pattern(self, seq: Sequence[str]) -> StructuralPattern | None:
         if self._is_bootstrap(seq):
             return StructuralPattern.BOOTSTRAP
         if self._is_stabilize(seq):
@@ -324,15 +316,12 @@ class AdvancedPatternDetector:
         )
 
     def _is_creative(self, seq: Sequence[str]) -> bool:
-        return (
-            SILENCE in seq
-            and self._contains(
-                seq,
-                EXPANSION,
-                MUTATION,
-                SELF_ORGANIZATION,
-                RESONANCE,
-            )
+        return SILENCE in seq and self._contains(
+            seq,
+            EXPANSION,
+            MUTATION,
+            SELF_ORGANIZATION,
+            RESONANCE,
         )
 
     def _is_regenerative(self, seq: Sequence[str]) -> bool:
@@ -391,17 +380,12 @@ class AdvancedPatternDetector:
     # Meta-pattern heuristics
 
     def _is_bootstrap(self, seq: Sequence[str]) -> bool:
-        return (
-            tuple(seq[:3]) == (EMISSION, COUPLING, COHERENCE)
-            and len(seq) <= 5
-        )
+        return tuple(seq[:3]) == (EMISSION, COUPLING, COHERENCE) and len(seq) <= 5
 
     def _is_explore(self, seq: Sequence[str]) -> bool:
         # Explore: at least two destabilizers without THOL dominance
         has_self_org = SELF_ORGANIZATION in seq
-        destabilizer_count = self._count(
-            seq, {DISSONANCE, EXPANSION, MUTATION}
-        )
+        destabilizer_count = self._count(seq, {DISSONANCE, EXPANSION, MUTATION})
         if has_self_org:
             return False
         if self._is_simple_bifurcation(seq):
@@ -411,9 +395,7 @@ class AdvancedPatternDetector:
     def _is_simple_bifurcation(self, seq: Sequence[str]) -> bool:
         """Check if sequence is a simple bifurcation pattern."""
         # Simple bifurcation: OZ with {ZHIR|NUL} and limited complexity
-        has_trigger = DISSONANCE in seq and (
-            MUTATION in seq or CONTRACTION in seq
-        )
+        has_trigger = DISSONANCE in seq and (MUTATION in seq or CONTRACTION in seq)
         return has_trigger and EXPANSION not in seq and len(seq) <= 7
 
     def _is_stabilize(self, seq: Sequence[str]) -> bool:
@@ -433,9 +415,7 @@ class AdvancedPatternDetector:
 
     def _is_bifurcated(self, seq: Sequence[str]) -> bool:
         # Bifurcation: OZ→{ZHIR|NUL} but not hierarchical (THOL primary)
-        has_bifurcation = DISSONANCE in seq and (
-            MUTATION in seq or CONTRACTION in seq
-        )
+        has_bifurcation = DISSONANCE in seq and (MUTATION in seq or CONTRACTION in seq)
         if not has_bifurcation:
             return False
         if SELF_ORGANIZATION in seq:
@@ -454,9 +434,7 @@ class AdvancedPatternDetector:
 
     def _is_cyclic(self, seq: Sequence[str]) -> bool:
         silence_cycle = (
-            SILENCE in seq
-            and EMISSION in seq
-            and seq.index(SILENCE) < len(seq) - 1
+            SILENCE in seq and EMISSION in seq and seq.index(SILENCE) < len(seq) - 1
         )
         nav_cycle = seq.count(TRANSITION) >= 2
         return silence_cycle or nav_cycle
@@ -486,7 +464,7 @@ class AdvancedPatternDetector:
 
     def _identify_components(self, seq: Sequence[str]) -> set[str]:
         components: set[str] = set()
-    # Identify bootstrap as a component when prefix matches
+        # Identify bootstrap as a component when prefix matches
         if len(seq) >= 3 and tuple(seq[:3]) == (EMISSION, COUPLING, COHERENCE):
             components.add("bootstrap")
         if self._is_explore(seq):
@@ -522,13 +500,18 @@ class AdvancedPatternDetector:
         if not seq:
             return 0.0
         unique = len(set(seq))
-        transitions = sum(
-            1 for i in range(len(seq) - 1) if seq[i] != seq[i + 1]
-        )
+        transitions = sum(1 for i in range(len(seq) - 1) if seq[i] != seq[i + 1])
         stabilisers = self._count(seq, _STABILIZERS)
         destabilisers = self._count(seq, _DESTABILIZERS)
-        raw_score = len(seq) + OPERATORS_PATTERN_UNIQUE_WEIGHT_CANONICAL * unique + OPERATORS_PATTERN_TRANSITION_WEIGHT_CANONICAL * transitions
-        raw_score += OPERATORS_PATTERN_DESTABILIZER_WEIGHT_CANONICAL * destabilisers + OPERATORS_PATTERN_STABILIZER_WEIGHT_CANONICAL * stabilisers
+        raw_score = (
+            len(seq)
+            + OPERATORS_PATTERN_UNIQUE_WEIGHT_CANONICAL * unique
+            + OPERATORS_PATTERN_TRANSITION_WEIGHT_CANONICAL * transitions
+        )
+        raw_score += (
+            OPERATORS_PATTERN_DESTABILIZER_WEIGHT_CANONICAL * destabilisers
+            + OPERATORS_PATTERN_STABILIZER_WEIGHT_CANONICAL * stabilisers
+        )
         return min(1.0, raw_score / 12.0)
 
     def _domain_suitability(self, seq: Sequence[str]) -> dict[str, float]:
@@ -544,7 +527,9 @@ class AdvancedPatternDetector:
         if self._is_educational(seq):
             scores["educational"] = OPERATORS_EDUCATIONAL_HIGH_CANONICAL
         if self._contains(seq, EXPANSION) and SELF_ORGANIZATION in seq:
-            scores["creative"] = max(scores["creative"], OPERATORS_CREATIVE_BASE_CANONICAL)
+            scores["creative"] = max(
+                scores["creative"], OPERATORS_CREATIVE_BASE_CANONICAL
+            )
         if self._is_organizational(seq):
             scores["organizational"] = OPERATORS_ORGANIZATIONAL_CANONICAL
         if self._is_regenerative(seq):
@@ -644,11 +629,16 @@ class AdvancedPatternDetector:
 
         # Ensure the detected primary pattern is represented
         if primary is not StructuralPattern.UNKNOWN:
-            baseline = 0.75 if primary in {
-                StructuralPattern.THERAPEUTIC,
-                StructuralPattern.REGENERATIVE,
-                StructuralPattern.EDUCATIONAL,
-            } else 0.6
+            baseline = (
+                0.75
+                if primary
+                in {
+                    StructuralPattern.THERAPEUTIC,
+                    StructuralPattern.REGENERATIVE,
+                    StructuralPattern.EDUCATIONAL,
+                }
+                else 0.6
+            )
             assign(primary, baseline)
         elif not scores:
             scores[StructuralPattern.UNKNOWN.value] = 0.2

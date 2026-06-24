@@ -88,10 +88,10 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.metrics.trig import neighbor_phase_mean_list
 from tnfr.utils import angle_diff
@@ -132,10 +132,13 @@ def experiment_1_transition():
     vec0 = wrap(np.angle((A @ np.exp(1j * th)))[0] - th[0])
     cm = {n: np.cos(th[i]) for i, n in enumerate(nodes)}
     sm = {n: np.sin(th[i]) for i, n in enumerate(nodes)}
-    canon = angle_diff(neighbor_phase_mean_list(list(G.neighbors(0)), cm, sm,
-                       fallback=th[0]), th[0])
-    print(f"  anchor: vectorized coupling = {vec0:+.6f}, canonical phase channel"
-          f" = {canon:+.6f} (|diff|={abs(vec0 - canon):.0e})")
+    canon = angle_diff(
+        neighbor_phase_mean_list(list(G.neighbors(0)), cm, sm, fallback=th[0]), th[0]
+    )
+    print(
+        f"  anchor: vectorized coupling = {vec0:+.6f}, canonical phase channel"
+        f" = {canon:+.6f} (|diff|={abs(vec0 - canon):.0e})"
+    )
     print("  -> the coupling IS the canonical neighbour-circular-mean pull.")
     print()
     N = 200
@@ -148,8 +151,7 @@ def experiment_1_transition():
         om -= om.mean()
         th = evolve(A, rng.uniform(0, 2 * np.pi, N), om, K)
         R = order_param(th)
-        tag = "incoherent" if R < 0.3 else ("critical" if R < 0.7
-                                            else "synchronized")
+        tag = "incoherent" if R < 0.3 else ("critical" if R < 0.7 else "synchronized")
         print(f"  {K:>6.2f} {R:>8.4f} {tag:>14}")
     print()
     print("  -> R rises from ~0 (incoherent drift) to ~1 (collective lock):")
@@ -175,8 +177,14 @@ def experiment_2_threshold_vs_dispersion():
             rng = np.random.default_rng(50 + s)
             om = rng.normal(0, sigma, N)
             om -= om.mean()
-            Rs = np.array([order_param(evolve(A, rng.uniform(0, 2 * np.pi, N),
-                          om, K, steps=250)) for K in Ks])
+            Rs = np.array(
+                [
+                    order_param(
+                        evolve(A, rng.uniform(0, 2 * np.pi, N), om, K, steps=250)
+                    )
+                    for K in Ks
+                ]
+            )
             Kcs.append(Ks[np.argmax(Rs > 0.5)] if Rs.max() > 0.5 else np.nan)
         Kc = float(np.nanmean(Kcs))
         print(f"  {sigma:>6.1f} {Kc:>8.3f} {Kc / sigma:>10.3f}")
@@ -207,8 +215,11 @@ def experiment_3_long_range_order():
         th = evolve(A, rng.uniform(0, 2 * np.pi, L * L), om, K)
         Cr = []
         for r in range(1, 7):
-            vals = [np.cos(th[idx[(x, y)]] - th[idx[((x + r) % L, y)]])
-                    for x in range(L) for y in range(L)]
+            vals = [
+                np.cos(th[idx[(x, y)]] - th[idx[((x + r) % L, y)]])
+                for x in range(L)
+                for y in range(L)
+            ]
             Cr.append(float(np.mean(vals)))
         print(f"  {K:>6.2f} {order_param(th):>7.3f}   {np.round(Cr, 3)}")
     print()

@@ -22,8 +22,8 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from ..types import TNFRGraph
     from ..operators.definitions import Operator
+    from ..types import TNFRGraph
 
 __all__ = (
     "DefaultValidationService",
@@ -31,6 +31,7 @@ __all__ = (
     "DefaultDynamicsEngine",
     "DefaultTelemetryCollector",
 )
+
 
 class DefaultValidationService:
     """Default implementation of ValidationService using tnfr.validation.
@@ -78,6 +79,7 @@ class DefaultValidationService:
         # run_validators raises on failure by default
         run_validators(graph)
 
+
 class DefaultOperatorRegistry:
     """Default implementation of OperatorRegistry using tnfr.operators.
 
@@ -120,6 +122,7 @@ class DefaultOperatorRegistry:
 
         # Register by operator name
         OPERATORS[operator.name] = operator.__class__
+
 
 class DefaultDynamicsEngine:
     """Default implementation of DynamicsEngine using tnfr.dynamics.
@@ -167,6 +170,7 @@ class DefaultDynamicsEngine:
 
         # Coordinate phase using default parameters
         coordinate_global_local_phase(graph)
+
 
 class DefaultTraceContext:
     """Default trace context for telemetry collection.
@@ -223,7 +227,9 @@ class DefaultTraceContext:
         return {
             "coherence": compute_coherence(graph),
             "node_count": graph.number_of_nodes(),
-            "edge_count": (graph.number_of_edges() if hasattr(graph, "number_of_edges") else 0),
+            "edge_count": (
+                graph.number_of_edges() if hasattr(graph, "number_of_edges") else 0
+            ),
         }
 
     def record_transition(
@@ -251,6 +257,7 @@ class DefaultTraceContext:
                 "delta_coherence": post_state["coherence"] - pre_state["coherence"],
             }
         )
+
 
 class DefaultTelemetryCollector:
     """Default implementation of TelemetryCollector using tnfr.metrics.

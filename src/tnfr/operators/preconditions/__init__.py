@@ -40,6 +40,7 @@ __all__ = [
     "diagnose_mutation_readiness",
 ]
 
+
 class OperatorPreconditionError(Exception):
     """Raised when an operator's preconditions are not met."""
 
@@ -57,7 +58,9 @@ class OperatorPreconditionError(Exception):
         self.reason = reason
         super().__init__(f"{operator}: {reason}")
 
+
 from ..metrics_core import get_node_attr as _get_node_attr
+
 
 def validate_emission(G: "TNFRGraph", node: "NodeId") -> None:
     """AL - Emission requires node in latent or low activation state.
@@ -83,6 +86,7 @@ def validate_emission(G: "TNFRGraph", node: "NodeId") -> None:
             "Emission", f"Node already active (EPI={epi:.3f} >= {max_epi:.3f})"
         )
 
+
 def validate_reception(G: "TNFRGraph", node: "NodeId") -> None:
     """EN - Reception requires node to have neighbors to receive from.
 
@@ -100,7 +104,10 @@ def validate_reception(G: "TNFRGraph", node: "NodeId") -> None:
     """
     neighbors = list(G.neighbors(node))
     if not neighbors:
-        raise OperatorPreconditionError("Reception", "Node has no neighbors to receive energy from")
+        raise OperatorPreconditionError(
+            "Reception", "Node has no neighbors to receive energy from"
+        )
+
 
 def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
     """IL - Coherence requires active EPI, νf, and manageable ΔNFR.
@@ -139,6 +146,7 @@ def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
 
     validate_coherence_strict(G, node)
 
+
 def diagnose_coherence_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
     """Diagnose node readiness for IL (Coherence) operator.
 
@@ -164,6 +172,7 @@ def diagnose_coherence_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
     from .coherence import diagnose_coherence_readiness as _diagnose
 
     return _diagnose(G, node)
+
 
 def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
     """OZ - Dissonance requires comprehensive structural preconditions.
@@ -249,6 +258,7 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
         # Clear flag if previously set
         G.nodes[node]["_bifurcation_ready"] = False
 
+
 def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     """UM - Coupling requires active nodes with compatible phases.
 
@@ -324,7 +334,9 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
 
     # Basic graph check - at least one other node required
     if G.number_of_nodes() <= 1:
-        raise OperatorPreconditionError("Coupling", "Graph has no other nodes to couple with")
+        raise OperatorPreconditionError(
+            "Coupling", "Graph has no other nodes to couple with"
+        )
 
     # Node must be active (non-zero EPI)
     epi = _get_node_attr(G, node, ALIAS_EPI)
@@ -369,6 +381,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
                     "Coupling",
                     f"No phase-compatible neighbors (all |Δθ| > {max_phase_diff:.3f})",
                 )
+
 
 def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:
     """RA - Resonance requires comprehensive canonical preconditions.
@@ -417,6 +430,7 @@ def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:
 
     validate_resonance_strict(G, node)
 
+
 def diagnose_resonance_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
     """Diagnose node readiness for RA (Resonance) operator.
 
@@ -443,6 +457,7 @@ def diagnose_resonance_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
 
     return _diagnose(G, node)
 
+
 def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:
     """SHA - Silence requires vf > 0 to reduce.
 
@@ -465,6 +480,7 @@ def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:
             "Silence",
             f"Structural frequency already minimal (νf={vf:.3f} < {min_vf:.3f})",
         )
+
 
 def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
     """VAL - Expansion requires comprehensive canonical preconditions.
@@ -579,6 +595,7 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
                 f"Cannot support further expansion. set VAL_CHECK_NETWORK_CAPACITY=False to disable.",
             )
 
+
 def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
     """NUL - Enhanced precondition validation with over-compression check.
 
@@ -681,6 +698,7 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
             f"Further contraction risks structural collapse. "
             f"Consider IL (Coherence) to stabilize or reduce ΔNFR first.",
         )
+
 
 def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
     """THOL - Enhanced validation: connectivity, metabolic context, acceleration.
@@ -862,6 +880,7 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
             f"Sub-EPI generation expected."
         )
 
+
 # Moved to mutation.py module for modularity
 # Import here for backward compatibility
 try:
@@ -878,6 +897,7 @@ except ImportError:
             "destabilizer_distance": None,
             "recent_history": [],
         }
+
 
 def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     """ZHIR - Mutation requires node to be in valid structural state.
@@ -956,7 +976,9 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
 
     # NEW: Threshold crossing validation (∂EPI/∂t > ξ)
     # Get EPI history - check both keys for compatibility
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get("_epi_history", [])
+    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
+        "_epi_history", []
+    )
 
     if len(epi_history) >= 2:
         # Compute ∂EPI/∂t (discrete approximation using last two points)
@@ -992,7 +1014,9 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     # U4b Part 1: IL Precedence Check (stable base for transformation)
     # Check if strict validation enabled
     strict_validation = bool(G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
-    require_il = strict_validation or bool(G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False))
+    require_il = strict_validation or bool(
+        G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False)
+    )
 
     if require_il:
         # Get glyph history
@@ -1015,7 +1039,9 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
                 f"Recent history: {history_names[-5:] if len(history_names) > 5 else history_names}",
             )
 
-        logger.debug(f"Node {node}: ZHIR IL precedence satisfied (prior Coherence found)")
+        logger.debug(
+            f"Node {node}: ZHIR IL precedence satisfied (prior Coherence found)"
+        )
 
     # U4b Part 2: Recent Destabilizer Check (threshold energy for bifurcation)
     # R4 Extended: Detect and record destabilizer type for telemetry
@@ -1038,6 +1064,7 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
                 f"Recent history: {recent_history}. "
                 "Apply Dissonance or Expansion to elevate ΔNFR first.",
             )
+
 
 def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
     """NAV - Comprehensive canonical preconditions for transition.
@@ -1172,6 +1199,7 @@ def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
                     stacklevel=2,
                 )
 
+
 def validate_recursivity(G: "TNFRGraph", node: "NodeId") -> None:
     """REMESH - Recursivity requires global network coherence threshold.
 
@@ -1194,6 +1222,7 @@ def validate_recursivity(G: "TNFRGraph", node: "NodeId") -> None:
             "Recursivity",
             f"Network too small for remesh (n={G.number_of_nodes()} < {min_nodes})",
         )
+
 
 # Import diagnostic functions from modular implementations
 from .mutation import diagnose_mutation_readiness  # noqa: E402

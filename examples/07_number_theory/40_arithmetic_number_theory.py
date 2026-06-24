@@ -33,16 +33,16 @@ References
 - AGENTS.md §"Canonical Invariants" → Invariant #1 Nodal Equation Integrity
 """
 
+import math
 import os
 import sys
-import math
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.mathematics.number_theory import (
-    ArithmeticTNFRParameters,
     ArithmeticStructuralTerms,
     ArithmeticTNFRFormalism,
+    ArithmeticTNFRParameters,
 )
 
 
@@ -93,8 +93,10 @@ def experiment_1_structural_triad():
 
     params = ArithmeticTNFRParameters()
 
-    print(f"{'n':>4}  {'Prime':>5}  {'Ω':>2}  {'τ':>3}  {'σ':>5}"
-          f"  {'EPI':>7}  {'νf':>7}  {'ΔNFR':>8}  {'C_loc':>6}")
+    print(
+        f"{'n':>4}  {'Prime':>5}  {'Ω':>2}  {'τ':>3}  {'σ':>5}"
+        f"  {'EPI':>7}  {'νf':>7}  {'ΔNFR':>8}  {'C_loc':>6}"
+    )
     print("-" * 72)
 
     primes_found = []
@@ -109,9 +111,11 @@ def experiment_1_structural_triad():
         is_prime = abs(dnfr) < 1e-10
 
         label = "YES" if is_prime else "no"
-        print(f"{n:>4}  {label:>5}  {terms.omega:>2}  {terms.tau:>3}  "
-              f"{terms.sigma:>5}  {epi:>7.3f}  {nuf:>7.4f}  "
-              f"{dnfr:>8.4f}  {cloc:>6.4f}")
+        print(
+            f"{n:>4}  {label:>5}  {terms.omega:>2}  {terms.tau:>3}  "
+            f"{terms.sigma:>5}  {epi:>7.3f}  {nuf:>7.4f}  "
+            f"{dnfr:>8.4f}  {cloc:>6.4f}"
+        )
 
         if is_prime:
             primes_found.append(n)
@@ -120,15 +124,14 @@ def experiment_1_structural_triad():
 
     print()
     print(f"Primes detected (ΔNFR = 0): {primes_found}")
-    print(f"Total: {len(primes_found)} primes, "
-          f"{len(composites_found)} composites")
+    print(f"Total: {len(primes_found)} primes, " f"{len(composites_found)} composites")
 
     # Validate against known primes ≤ 50
     known_primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47}
     detected = set(primes_found)
-    assert detected == known_primes, (
-        f"Mismatch: detected={detected}, expected={known_primes}"
-    )
+    assert (
+        detected == known_primes
+    ), f"Mismatch: detected={detected}, expected={known_primes}"
     print("VALIDATED: All 15 primes ≤ 50 correctly detected.")
     print()
 
@@ -155,17 +158,18 @@ def experiment_2_component_breakdown():
 
     # Selection of structurally interesting numbers
     test_numbers = [
-        (7,  "prime"),
+        (7, "prime"),
         (15, "semiprime 3×5"),
-        (8,  "prime power 2³"),
+        (8, "prime power 2³"),
         (30, "3 distinct factors 2×3×5"),
         (12, "2²×3"),
         (60, "highly composite 2²×3×5"),
         (64, "high prime power 2⁶"),
     ]
 
-    print(f"{'n':>4}  {'Type':<26}  {'P_Ω':>7}  {'P_τ':>7}  "
-          f"{'P_σ':>7}  {'ΔNFR':>8}")
+    print(
+        f"{'n':>4}  {'Type':<26}  {'P_Ω':>7}  {'P_τ':>7}  " f"{'P_σ':>7}  {'ΔNFR':>8}"
+    )
     print("-" * 72)
 
     for n, desc in test_numbers:
@@ -173,11 +177,13 @@ def experiment_2_component_breakdown():
         comps = ArithmeticTNFRFormalism.component_breakdown(n, terms, params)
         dnfr = ArithmeticTNFRFormalism.delta_nfr_value(n, terms, params)
 
-        print(f"{n:>4}  {desc:<26}  "
-              f"{comps['factorization_pressure']:>7.3f}  "
-              f"{comps['divisor_pressure']:>7.3f}  "
-              f"{comps['sigma_pressure']:>7.3f}  "
-              f"{dnfr:>8.3f}")
+        print(
+            f"{n:>4}  {desc:<26}  "
+            f"{comps['factorization_pressure']:>7.3f}  "
+            f"{comps['divisor_pressure']:>7.3f}  "
+            f"{comps['sigma_pressure']:>7.3f}  "
+            f"{dnfr:>8.3f}"
+        )
 
     # Verify: all components of a prime are exactly 0
     for p in [2, 3, 5, 7, 11, 13]:
@@ -209,12 +215,9 @@ def experiment_3_coefficient_independence():
     # Test with multiple coefficient sets — all must detect the same primes
     coefficient_sets = [
         ("Canonical (φ,γ,π,e)", ArithmeticTNFRParameters()),
-        ("Unit coefficients",
-         ArithmeticTNFRParameters(zeta=1.0, eta=1.0, theta=1.0)),
-        ("Scaled ×10",
-         ArithmeticTNFRParameters(zeta=9.34, eta=11.2, theta=6.18)),
-        ("Asymmetric",
-         ArithmeticTNFRParameters(zeta=0.1, eta=5.0, theta=0.001)),
+        ("Unit coefficients", ArithmeticTNFRParameters(zeta=1.0, eta=1.0, theta=1.0)),
+        ("Scaled ×10", ArithmeticTNFRParameters(zeta=9.34, eta=11.2, theta=6.18)),
+        ("Asymmetric", ArithmeticTNFRParameters(zeta=0.1, eta=5.0, theta=0.001)),
     ]
 
     all_pass = True
@@ -277,14 +280,15 @@ def experiment_4_coherence_landscape():
 
     # Find the composite with highest coherence (closest to prime)
     composites_sorted = sorted(
-        [(n, c) for n, c, is_p in coherence_data if not is_p],
-        key=lambda x: -x[1]
+        [(n, c) for n, c, is_p in coherence_data if not is_p], key=lambda x: -x[1]
     )
     print("Top-5 composites by coherence (closest to prime-like):")
     for n, c in composites_sorted[:5]:
         terms = _compute_terms(n)
-        print(f"  n={n:>3}  C_local={c:.4f}  "
-              f"Ω={terms.omega}  τ={terms.tau}  σ={terms.sigma}")
+        print(
+            f"  n={n:>3}  C_local={c:.4f}  "
+            f"Ω={terms.omega}  τ={terms.tau}  σ={terms.sigma}"
+        )
 
     # Validate all primes have C_local = 1.0
     for _, c, is_p in coherence_data:
@@ -299,7 +303,7 @@ def experiment_4_coherence_landscape():
 # ============================================================================
 # MAIN
 # ============================================================================
-if __name__ == '__main__':
+if __name__ == "__main__":
     print()
     print("TNFR Number Theory: Arithmetic Emergence from Structural Dynamics")
     print("=" * 72)

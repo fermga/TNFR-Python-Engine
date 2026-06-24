@@ -46,17 +46,17 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .operator import build_h_tnfr
-from .spectral_proof import compute_eigensystem
-
+from ..constants.canonical import PHI_S_VON_KOCH_THRESHOLD
 from ..constants.canonical import (
-    PHI_S_VON_KOCH_THRESHOLD,
     U6_STRUCTURAL_POTENTIAL_LIMIT as PHI_S_GOLDEN_THRESHOLD,
 )
+from .operator import build_h_tnfr
+from .spectral_proof import compute_eigensystem
 
 # ============================================================================
 # Data Structures
 # ============================================================================
+
 
 @dataclass
 class EigenmodeTetrad:
@@ -88,6 +88,7 @@ class EigenmodeTetrad:
     grad_phi: float
     k_phi: float
     xi_c: float
+
 
 @dataclass
 class EigenmodeFieldAnalysis:
@@ -128,6 +129,7 @@ class EigenmodeFieldAnalysis:
     mean_k_phi: float
     mean_xi_c: float
 
+
 # ============================================================================
 # Public API
 # ============================================================================
@@ -150,6 +152,7 @@ __all__ = [
 # ============================================================================
 # Core: Path Graph (Tridiagonal) -- O(k^2) via compute_eigensystem
 # ============================================================================
+
 
 def compute_eigenmode_tetrad(
     k: int,
@@ -182,7 +185,9 @@ def compute_eigenmode_tetrad(
         raise ValueError(f"k must be >= 2, got {k}")
 
     eigenvalues, eigenvectors = compute_eigensystem(
-        k, sigma, weight_by_log_gap=weight_by_log_gap,
+        k,
+        sigma,
+        weight_by_log_gap=weight_by_log_gap,
     )
 
     tetrads = []
@@ -194,20 +199,24 @@ def compute_eigenmode_tetrad(
         k_phi = _path_eigenvector_curvature(psi_j)
         xi_c = _eigenvector_coherence_length_path(psi_j)
 
-        tetrads.append(EigenmodeTetrad(
-            mode_index=j,
-            eigenvalue=float(eigenvalues[j]),
-            phi_s=phi_s,
-            grad_phi=grad_phi,
-            k_phi=k_phi,
-            xi_c=xi_c,
-        ))
+        tetrads.append(
+            EigenmodeTetrad(
+                mode_index=j,
+                eigenvalue=float(eigenvalues[j]),
+                phi_s=phi_s,
+                grad_phi=grad_phi,
+                k_phi=k_phi,
+                xi_c=xi_c,
+            )
+        )
 
     return _build_analysis(k, sigma, tetrads, u6_threshold)
+
 
 # ============================================================================
 # Core: General Graph -- dense eigensystem via scipy.linalg.eigh
 # ============================================================================
+
 
 def compute_eigenmode_fields_general(
     G,
@@ -255,9 +264,9 @@ def compute_eigenmode_fields_general(
 
     adjacency: list[list[int]] = []
     for node in nodes:
-        adjacency.append([
-            node_to_idx[n] for n in G.neighbors(node) if n in node_to_idx
-        ])
+        adjacency.append(
+            [node_to_idx[n] for n in G.neighbors(node) if n in node_to_idx]
+        )
 
     dist_matrix = _compute_distance_matrix(G, nodes, node_to_idx)
 
@@ -270,20 +279,24 @@ def compute_eigenmode_fields_general(
         k_phi = _general_eigenvector_curvature(psi_j, adjacency)
         xi_c = _eigenvector_coherence_length_general(psi_j, dist_matrix)
 
-        tetrads.append(EigenmodeTetrad(
-            mode_index=j,
-            eigenvalue=float(eigenvalues[j]),
-            phi_s=phi_s,
-            grad_phi=grad_phi,
-            k_phi=k_phi,
-            xi_c=xi_c,
-        ))
+        tetrads.append(
+            EigenmodeTetrad(
+                mode_index=j,
+                eigenvalue=float(eigenvalues[j]),
+                phi_s=phi_s,
+                grad_phi=grad_phi,
+                k_phi=k_phi,
+                xi_c=xi_c,
+            )
+        )
 
     return _build_analysis(k, sigma, tetrads, u6_threshold)
+
 
 # ============================================================================
 # Diagnostics
 # ============================================================================
+
 
 def check_u6_confinement(
     analysis: EigenmodeFieldAnalysis,
@@ -313,14 +326,13 @@ def check_u6_confinement(
         threshold : float -- threshold used.
     """
     effective = (
-        u6_threshold if u6_threshold is not None
-        else threshold if threshold is not None
-        else analysis.u6_threshold
+        u6_threshold
+        if u6_threshold is not None
+        else threshold if threshold is not None else analysis.u6_threshold
     )
     t = effective
     violations = [
-        tetrad.mode_index for tetrad in analysis.tetrads
-        if abs(tetrad.phi_s) >= t
+        tetrad.mode_index for tetrad in analysis.tetrads if abs(tetrad.phi_s) >= t
     ]
     phi_s_abs = [abs(tetrad.phi_s) for tetrad in analysis.tetrads]
 
@@ -332,6 +344,7 @@ def check_u6_confinement(
         "max_phi_s": max(phi_s_abs) if phi_s_abs else 0.0,
         "threshold": t,
     }
+
 
 def compare_confinement_at_sigma(
     k: int,
@@ -364,7 +377,8 @@ def compare_confinement_at_sigma(
     results: dict[float, dict] = {}
     for sigma in sigma_values:
         analysis = compute_eigenmode_tetrad(
-            k, sigma,
+            k,
+            sigma,
             u6_threshold=u6_threshold,
             weight_by_log_gap=weight_by_log_gap,
         )
@@ -377,9 +391,11 @@ def compare_confinement_at_sigma(
 
     return results
 
+
 # ============================================================================
 # Internal: Spectral Structural Potential Phi_s(j)
 # ============================================================================
+
 
 def _spectral_structural_potential(eigenvalues: np.ndarray, j: int) -> float:
     r"""Compute spectral structural potential for eigenmode j.
@@ -400,9 +416,11 @@ def _spectral_structural_potential(eigenvalues: np.ndarray, j: int) -> float:
 
     return float(np.sum(contributions))
 
+
 # ============================================================================
 # Internal: Path Graph Field Computations
 # ============================================================================
+
 
 def _path_eigenvector_gradient(psi: np.ndarray) -> float:
     r"""Compute mean eigenvector gradient |nabla psi| on path graph.
@@ -425,6 +443,7 @@ def _path_eigenvector_gradient(psi: np.ndarray) -> float:
         node_grads[1:-1] = 0.5 * (fwd[:-1] + fwd[1:])
 
     return float(np.mean(node_grads))
+
 
 def _path_eigenvector_curvature(psi: np.ndarray) -> float:
     r"""Compute mean eigenvector curvature K_phi on path graph.
@@ -449,6 +468,7 @@ def _path_eigenvector_curvature(psi: np.ndarray) -> float:
 
     return float(np.mean(curvatures))
 
+
 def _eigenvector_coherence_length_path(psi: np.ndarray) -> float:
     r"""Compute coherence length xi_C from |psi|^2 autocorrelation on path graph.
 
@@ -460,7 +480,7 @@ def _eigenvector_coherence_length_path(psi: np.ndarray) -> float:
     if k < 4:
         return float("nan")
 
-    rho = psi ** 2  # probability density (real eigenvectors)
+    rho = psi**2  # probability density (real eigenvectors)
     max_r = min(k - 1, k // 2)
 
     distances = []
@@ -487,9 +507,11 @@ def _eigenvector_coherence_length_path(psi: np.ndarray) -> float:
     except (np.linalg.LinAlgError, ValueError):
         return float("nan")
 
+
 # ============================================================================
 # Internal: General Graph Field Computations
 # ============================================================================
+
 
 def _general_eigenvector_gradient(
     psi: np.ndarray,
@@ -513,6 +535,7 @@ def _general_eigenvector_gradient(
 
     return total / k
 
+
 def _general_eigenvector_curvature(
     psi: np.ndarray,
     adjacency: list[list[int]],
@@ -535,6 +558,7 @@ def _general_eigenvector_curvature(
 
     return total / k
 
+
 def _eigenvector_coherence_length_general(
     psi: np.ndarray,
     dist_matrix: np.ndarray,
@@ -548,7 +572,7 @@ def _eigenvector_coherence_length_general(
     if k < 4:
         return float("nan")
 
-    rho = psi ** 2
+    rho = psi**2
     finite_mask = dist_matrix < np.inf
     np.fill_diagonal(finite_mask, False)
     max_dist = int(np.max(dist_matrix[finite_mask])) if np.any(finite_mask) else 0
@@ -582,6 +606,7 @@ def _eigenvector_coherence_length_general(
     except (np.linalg.LinAlgError, ValueError):
         return float("nan")
 
+
 def _compute_distance_matrix(G, nodes, node_to_idx) -> np.ndarray:
     """Compute all-pairs shortest path distance matrix."""
     import networkx as nx
@@ -599,9 +624,11 @@ def _compute_distance_matrix(G, nodes, node_to_idx) -> np.ndarray:
 
     return dist_matrix
 
+
 # ============================================================================
 # Internal: Analysis Builder
 # ============================================================================
+
 
 def _build_analysis(
     k: int,
@@ -610,9 +637,7 @@ def _build_analysis(
     u6_threshold: float,
 ) -> EigenmodeFieldAnalysis:
     """Construct EigenmodeFieldAnalysis from tetrad list."""
-    u6_violations = [
-        t.mode_index for t in tetrads if abs(t.phi_s) >= u6_threshold
-    ]
+    u6_violations = [t.mode_index for t in tetrads if abs(t.phi_s) >= u6_threshold]
     u6_fraction = 1.0 - len(u6_violations) / k if k > 0 else 1.0
 
     phi_s_vals = [abs(t.phi_s) for t in tetrads]

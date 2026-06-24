@@ -4,21 +4,20 @@ from __future__ import annotations
 
 import inspect
 import sys
-from copy import deepcopy
 from collections import deque
 from collections.abc import Iterable, Mapping, MutableMapping
+from copy import deepcopy
 from numbers import Real
 from typing import Any, cast
 
 from ..alias import get_attr
-from ..utils import CallbackEvent, callback_manager
 from ..constants import get_graph_param, get_param
 from ..glyph_history import ensure_history
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_remesh_if_globally_stable
 from ..telemetry import publish_graph_cache_metrics
 from ..types import HistoryState, NodeId, TNFRGraph
-from ..utils import normalize_optional_int
+from ..utils import CallbackEvent, callback_manager, normalize_optional_int
 from ..validation import apply_canonical_clamps
 from . import adaptation, coordination, integrators, selectors
 from .aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
@@ -31,11 +30,9 @@ except ImportError:  # pragma: no cover - optional dependency missing
 try:  # pragma: no cover - optional math extras
     from ..mathematics.dynamics import MathematicalDynamicsEngine
     from ..mathematics.projection import BasicStateProjector
-    from ..mathematics.runtime import (
-        coherence as runtime_coherence,
-        frequency_positive as runtime_frequency_positive,
-        normalized as runtime_normalized,
-    )
+    from ..mathematics.runtime import coherence as runtime_coherence
+    from ..mathematics.runtime import frequency_positive as runtime_frequency_positive
+    from ..mathematics.runtime import normalized as runtime_normalized
 except Exception:  # pragma: no cover - fallback when extras not available
     MathematicalDynamicsEngine = None  # type: ignore[assignment]
     BasicStateProjector = None  # type: ignore[assignment]
@@ -62,6 +59,7 @@ __all__ = (
     "step",
     "run",
 )
+
 
 def _normalize_job_overrides(
     job_overrides: Mapping[str, Any] | None,
@@ -105,6 +103,7 @@ def _normalize_job_overrides(
             key_str = key_str[: -len("_N_JOBS")]
         normalized[key_str] = value
     return normalized
+
 
 def _resolve_jobs_override(
     overrides: Mapping[str, Any],
@@ -163,7 +162,9 @@ def _resolve_jobs_override(
         sentinels=None,
     )
 
+
 _INTEGRATOR_CACHE_KEY = "_integrator_cache"
+
 
 def _call_integrator_factory(factory: Any, G: TNFRGraph) -> Any:
     """Invoke an integrator factory respecting optional graph injection."""
@@ -242,6 +243,7 @@ def _call_integrator_factory(factory: Any, G: TNFRGraph) -> Any:
         )
     return factory()
 
+
 def _resolve_integrator_instance(G: TNFRGraph) -> integrators.AbstractIntegrator:
     """Return an integrator instance configured on ``G`` or a default."""
 
@@ -257,7 +259,9 @@ def _resolve_integrator_instance(G: TNFRGraph) -> integrators.AbstractIntegrator
 
     if isinstance(candidate, integrators.AbstractIntegrator):
         instance = candidate
-    elif inspect.isclass(candidate) and issubclass(candidate, integrators.AbstractIntegrator):
+    elif inspect.isclass(candidate) and issubclass(
+        candidate, integrators.AbstractIntegrator
+    ):
         instance = candidate()
     elif callable(candidate):
         instance = cast(
@@ -279,6 +283,7 @@ def _resolve_integrator_instance(G: TNFRGraph) -> integrators.AbstractIntegrator
     G.graph[_INTEGRATOR_CACHE_KEY] = (candidate, instance)
     return instance
 
+
 def _run_before_callbacks(
     G: TNFRGraph,
     *,
@@ -299,6 +304,7 @@ def _run_before_callbacks(
             "apply_glyphs": apply_glyphs,
         },
     )
+
 
 def _prepare_dnfr(
     G: TNFRGraph,
@@ -353,11 +359,14 @@ def _prepare_dnfr(
         )
         dynamics_module = sys.modules.get("tnfr.dynamics")
         compute_si_fn = (
-            getattr(dynamics_module, "compute_Si", None) if dynamics_module is not None else None
+            getattr(dynamics_module, "compute_Si", None)
+            if dynamics_module is not None
+            else None
         )
         if compute_si_fn is None:
             compute_si_fn = compute_Si
         compute_si_fn(G, inplace=True, n_jobs=si_jobs)
+
 
 def _update_nodes(
     G: TNFRGraph,
@@ -410,6 +419,7 @@ def _update_nodes(
     )
     adaptation.adapt_vf_by_coherence(G, n_jobs=vf_jobs)
 
+
 def _update_epi_hist(G: TNFRGraph) -> None:
     """Maintain the rolling EPI history used by remeshing heuristics."""
 
@@ -423,10 +433,12 @@ def _update_epi_hist(G: TNFRGraph) -> None:
         G.graph["_epi_hist"] = epi_hist
     epi_hist.append({n: get_attr(nd, ALIAS_EPI, 0.0) for n, nd in G.nodes(data=True)})
 
+
 def _maybe_remesh(G: TNFRGraph) -> None:
     """Trigger remeshing when stability thresholds are satisfied."""
 
     apply_remesh_if_globally_stable(G)
+
 
 def _run_validators(G: TNFRGraph) -> None:
     """Execute registered validators ensuring canonical invariants hold."""
@@ -434,6 +446,7 @@ def _run_validators(G: TNFRGraph) -> None:
     from ..validation import run_validators
 
     run_validators(G)
+
 
 def _run_after_callbacks(G, *, step_idx: int) -> None:
     """Notify ``AFTER_STEP`` observers with the latest structural metrics."""
@@ -489,6 +502,7 @@ def _run_after_callbacks(G, *, step_idx: int) -> None:
             if isinstance(math_summary, MutableMapping):
                 math_summary["nu_f"] = dict(nu_f_summary)
 
+
 def _get_math_engine_config(G: TNFRGraph) -> MutableMapping[str, Any] | None:
     """Return the mutable math-engine configuration stored on ``G``."""
 
@@ -500,6 +514,7 @@ def _get_math_engine_config(G: TNFRGraph) -> MutableMapping[str, Any] | None:
     cfg_mutable: MutableMapping[str, Any] = dict(cfg_raw)
     G.graph["MATH_ENGINE"] = cfg_mutable
     return cfg_mutable
+
 
 def _initialise_math_state(
     G: TNFRGraph,
@@ -541,6 +556,7 @@ def _initialise_math_state(
     cfg.setdefault("_state_origin", "projected")
     return normalised
 
+
 def _advance_math_engine(
     G: TNFRGraph,
     *,
@@ -567,14 +583,20 @@ def _advance_math_engine(
     hilbert_space = cfg.get("hilbert_space")
     coherence_operator = cfg.get("coherence_operator")
     coherence_threshold = cfg.get("coherence_threshold")
-    if hilbert_space is None or coherence_operator is None or coherence_threshold is None:
+    if (
+        hilbert_space is None
+        or coherence_operator is None
+        or coherence_threshold is None
+    ):
         raise ValueError(
             "MATH_ENGINE requires 'hilbert_space', 'coherence_operator' and "
             "'coherence_threshold' entries."
         )
 
     if BasicStateProjector is None:  # pragma: no cover - guarded by import above
-        raise RuntimeError("Mathematical dynamics require the BasicStateProjector helper.")
+        raise RuntimeError(
+            "Mathematical dynamics require the BasicStateProjector helper."
+        )
 
     projector = cfg.get("state_projector")
     if not isinstance(projector, BasicStateProjector):
@@ -590,7 +612,9 @@ def _advance_math_engine(
                 "'generator_matrix'."
             )
         generator_matrix = np.asarray(generator, dtype=np.complex128)
-        engine = MathematicalDynamicsEngine(generator_matrix, hilbert_space=hilbert_space)
+        engine = MathematicalDynamicsEngine(
+            generator_matrix, hilbert_space=hilbert_space
+        )
         cfg["dynamics_engine"] = engine
 
     state_vector = cfg.get("_state_vector")
@@ -641,7 +665,9 @@ def _advance_math_engine(
     frequency_summary: dict[str, Any] | None = None
     if frequency_operator is not None:
         if runtime_frequency_positive is None:  # pragma: no cover - guarded above
-            raise RuntimeError("Frequency positivity checks require tnfr.mathematics extras.")
+            raise RuntimeError(
+                "Frequency positivity checks require tnfr.mathematics extras."
+            )
         freq_raw = runtime_frequency_positive(
             advanced,
             frequency_operator,
@@ -676,7 +702,9 @@ def _advance_math_engine(
     hist.setdefault("math_engine_norm", []).append(summary["norm"])
     hist.setdefault("math_engine_normalized", []).append(summary["normalized"])
     hist.setdefault("math_engine_coherence", []).append(summary["coherence"]["value"])
-    hist.setdefault("math_engine_coherence_passed", []).append(summary["coherence"]["passed"])
+    hist.setdefault("math_engine_coherence_passed", []).append(
+        summary["coherence"]["passed"]
+    )
 
     if frequency_summary is None:
         hist.setdefault("math_engine_frequency", []).append(None)
@@ -684,7 +712,9 @@ def _advance_math_engine(
         hist.setdefault("math_engine_frequency_projection_passed", []).append(None)
     else:
         hist.setdefault("math_engine_frequency", []).append(frequency_summary["value"])
-        hist.setdefault("math_engine_frequency_passed", []).append(frequency_summary["passed"])
+        hist.setdefault("math_engine_frequency_passed", []).append(
+            frequency_summary["passed"]
+        )
         hist.setdefault("math_engine_frequency_projection_passed", []).append(
             frequency_summary["projection_passed"]
         )
@@ -692,6 +722,7 @@ def _advance_math_engine(
     cfg["last_summary"] = summary
     telemetry = G.graph.setdefault("telemetry", {})
     telemetry["math_engine"] = deepcopy(summary)
+
 
 def step(
     G: TNFRGraph,
@@ -757,7 +788,9 @@ def step(
     job_overrides = _normalize_job_overrides(n_jobs)
     hist = ensure_history(G)
     step_idx = len(hist.setdefault("C_steps", []))
-    _run_before_callbacks(G, step_idx=step_idx, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
+    _run_before_callbacks(
+        G, step_idx=step_idx, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs
+    )
     _update_nodes(
         G,
         dt=dt,
@@ -779,6 +812,7 @@ def step(
     _run_validators(G)
     _run_after_callbacks(G, step_idx=step_idx)
     publish_graph_cache_metrics(G)
+
 
 def run(
     G: TNFRGraph,

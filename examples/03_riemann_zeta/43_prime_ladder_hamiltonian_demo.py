@@ -21,16 +21,16 @@ instead of any stale installed copy.
 
 from __future__ import annotations
 
-import sys
 import math
+import sys
 
 import numpy as np
 
 from tnfr.riemann import (
     build_prime_ladder_hamiltonian,
+    tnfr_log_zeta_derivative,
     verify_hamiltonian_reproduces_prime_ladder,
     weighted_spectral_trace,
-    tnfr_log_zeta_derivative,
 )
 
 
@@ -126,19 +126,15 @@ def main() -> int:
     print("    J0        |E_max_dev|   |trace_rel_dev| @ s=2")
     for j0 in (0.0, 1e-4, 1e-3, 1e-2, 5e-2):
         b = build_prime_ladder_hamiltonian(
-            n_primes, max_power=max_power, coupling=j0,
+            n_primes,
+            max_power=max_power,
+            coupling=j0,
         )
         ev, _ = b.hamiltonian.get_spectrum()
         spec_dev = float(
-            np.max(
-                np.abs(
-                    np.sort(np.real(ev)) - np.sort(b.spectrum.eigenvalues)
-                )
-            )
+            np.max(np.abs(np.sort(np.real(ev)) - np.sort(b.spectrum.eigenvalues)))
         )
-        z_ham = weighted_spectral_trace(
-            b.hamiltonian.H_int, b.weight_operator, 2.0
-        )
+        z_ham = weighted_spectral_trace(b.hamiltonian.H_int, b.weight_operator, 2.0)
         z_ref = float(tnfr_log_zeta_derivative(b.spectrum, 2.0))
         rel_dev = abs(z_ham - z_ref) / abs(z_ref)
         print(f"    {j0:9.1e}  {spec_dev:.3e}    {rel_dev:.3e}")

@@ -81,14 +81,14 @@ import os
 import sys
 import warnings
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-from tnfr.alias import set_attr, get_attr
+from tnfr.alias import get_attr, set_attr
 from tnfr.constants import inject_defaults
-from tnfr.constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
+from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.operators.remesh import apply_topological_remesh
 from tnfr.physics.structural_diffusion import structural_eigenmodes
@@ -160,8 +160,10 @@ def experiment_1_modes():
     print("Close the loop with each canonical mode; classify the asymptotic")
     print("regime and characterize the fixed point (H_sub, lambda_2).")
     print()
-    print(f"  {'mode':>10} {'regime':>14} {'H_sub*':>9} {'lambda_2*':>10} "
-          f"{'structure':>22}")
+    print(
+        f"  {'mode':>10} {'regime':>14} {'H_sub*':>9} {'lambda_2*':>10} "
+        f"{'structure':>22}"
+    )
     structure = {
         "mst": "spanning tree",
         "knn": "tree + kNN EPI edges",
@@ -177,8 +179,10 @@ def experiment_1_modes():
             regime = "CYCLE"
         else:
             regime = "near-fixed"
-        print(f"  {mode:>10} {regime:>14} {hsub[-1]:>9.2f} {lam2[-1]:>10.3f} "
-              f"{structure[mode]:>22}")
+        print(
+            f"  {mode:>10} {regime:>14} {hsub[-1]:>9.2f} {lam2[-1]:>10.3f} "
+            f"{structure[mode]:>22}"
+        )
     print()
     print("  -> all three modes reach a FIXED POINT, with mode-dependent")
     print("     structure: mst = tree (smallest gap), knn = tree + edges,")
@@ -194,34 +198,41 @@ def experiment_2_robustness():
     print("Sweep mst and knn across 12 seeds x 3 sizes (36 runs each); classify")
     print("every asymptotic regime.")
     print()
-    print(f"  {'mode':>6} {'fixed':>7} {'cycle':>6} {'diverge':>8} "
-          f"{'near-fixed':>11} {'mean iters':>11}")
+    print(
+        f"  {'mode':>6} {'fixed':>7} {'cycle':>6} {'diverge':>8} "
+        f"{'near-fixed':>11} {'mean iters':>11}"
+    )
     for mode in ["mst", "knn"]:
         n_fixed = n_cycle = n_div = n_near = 0
         iters = []
         for sd in range(12):
             for n in [10, 16, 22]:
                 edges, _, lam2 = _run_loop(mode, n=n, n_iter=40, seed=sd)
-                js = [_jaccard(edges[i], edges[i + 1])
-                      for i in range(len(edges) - 1)]
+                js = [_jaccard(edges[i], edges[i + 1]) for i in range(len(edges) - 1)]
                 tail = js[-8:]
                 diverged = any(math.isnan(x) for x in lam2[-3:])
                 if diverged:
                     n_div += 1
                 elif all(j > 0.999 for j in tail):
                     n_fixed += 1
-                    first = next((i for i in range(len(edges) - 1)
-                                  if all(edges[m] == edges[i]
-                                         for m in range(i, len(edges)))),
-                                 len(edges))
+                    first = next(
+                        (
+                            i
+                            for i in range(len(edges) - 1)
+                            if all(edges[m] == edges[i] for m in range(i, len(edges)))
+                        ),
+                        len(edges),
+                    )
                     iters.append(first)
                 elif max(tail) - min(tail) > 0.1:
                     n_cycle += 1
                 else:
                     n_near += 1
         mean_it = np.mean(iters) if iters else float("nan")
-        print(f"  {mode:>6} {n_fixed:>7} {n_cycle:>6} {n_div:>8} "
-              f"{n_near:>11} {mean_it:>11.1f}")
+        print(
+            f"  {mode:>6} {n_fixed:>7} {n_cycle:>6} {n_div:>8} "
+            f"{n_near:>11} {mean_it:>11.1f}"
+        )
     print()
     print("  -> zero cycles, zero divergences. The rare non-fixed case is a")
     print("     large-graph knn run with ONE edge oscillating near the fixed")

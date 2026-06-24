@@ -15,6 +15,7 @@ No existing test exercised these two functions, which is why the bug went
 undetected; hence these explicit sign-symmetry, scale-invariance and
 magnitude-normalization checks.
 """
+
 from __future__ import annotations
 
 import networkx as nx
@@ -22,10 +23,7 @@ import pytest
 
 from tnfr.alias import set_attr
 from tnfr.constants.aliases import ALIAS_DNFR
-from tnfr.metrics.coherence import (
-    compute_global_coherence,
-    compute_local_coherence,
-)
+from tnfr.metrics.coherence import compute_global_coherence, compute_local_coherence
 
 
 def _path_graph(values: list[float]) -> nx.Graph:
@@ -99,6 +97,4 @@ class TestDispersionCoherenceSignInvariance:
     def test_uniform_negative_field_is_perfectly_coherent(self) -> None:
         """A uniform *negative* field is equally coherent (sign-invariant)."""
         uniform_neg = _path_graph([-0.3, -0.3, -0.3, -0.3])
-        assert compute_global_coherence(uniform_neg) == pytest.approx(
-            1.0, abs=1e-12
-        )
+        assert compute_global_coherence(uniform_neg) == pytest.approx(1.0, abs=1e-12)

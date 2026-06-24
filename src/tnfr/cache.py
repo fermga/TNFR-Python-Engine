@@ -58,65 +58,56 @@ tnfr.metrics.cache_utils : Hot-path cache configuration helpers
 
 from __future__ import annotations
 
-# Core cache infrastructure from tnfr.utils.cache
-from .utils.cache import (
-    # Main classes
-    CacheManager,
-    CacheLayer,
-    MappingCacheLayer,
-    ShelveCacheLayer,
-    RedisCacheLayer,
-    InstrumentedLRUCache,
-    ManagedLRUCache,
-    EdgeCacheManager,
-    # Configuration and stats
-    CacheCapacityConfig,
-    CacheStatistics,
-    # Factory functions
-    build_cache_manager,
-    create_hmac_signer,
-    create_hmac_validator,
-    create_secure_shelve_layer,
-    create_secure_redis_layer,
-    # Graph-specific helpers
-    configure_graph_cache_limits,
-    configure_global_cache_layers,
-    reset_global_cache_manager,
-    edge_version_cache,
-    cached_node_list,
-    cached_nodes_and_A,
-    increment_edge_version,
-    edge_version_update,
-    # ΔNFR caching
-    DnfrCache,
-    DnfrPrepState,
-    new_dnfr_cache,
-    # Security
-    SecurityError,
-    SecurityWarning,
+# Hot-path cache configuration helpers
+from .metrics.cache_utils import (
+    CacheStats,
+    configure_hot_path_caches,
+    get_cache_config,
+    log_cache_metrics,
 )
 
 # Hierarchical cache with dependency tracking (now all in utils.cache)
-from .utils.cache import (
-    TNFRHierarchicalCache,
-    CacheLevel,
+# Core cache infrastructure from tnfr.utils.cache
+from .utils.cache import (  # Main classes; Configuration and stats; Factory functions; Graph-specific helpers; ΔNFR caching; Security
+    CacheCapacityConfig,
     CacheEntry,
-    cache_tnfr_computation,
-    invalidate_function_cache,
-    get_global_cache,
-    set_global_cache,
-    reset_global_cache,
+    CacheLayer,
+    CacheLevel,
+    CacheManager,
+    CacheStatistics,
+    DnfrCache,
+    DnfrPrepState,
+    EdgeCacheManager,
     GraphChangeTracker,
-    track_node_property_update,
+    InstrumentedLRUCache,
+    ManagedLRUCache,
+    MappingCacheLayer,
     PersistentTNFRCache,
-)
-
-# Hot-path cache configuration helpers
-from .metrics.cache_utils import (
-    get_cache_config,
-    configure_hot_path_caches,
-    log_cache_metrics,
-    CacheStats,
+    RedisCacheLayer,
+    SecurityError,
+    SecurityWarning,
+    ShelveCacheLayer,
+    TNFRHierarchicalCache,
+    build_cache_manager,
+    cache_tnfr_computation,
+    cached_node_list,
+    cached_nodes_and_A,
+    configure_global_cache_layers,
+    configure_graph_cache_limits,
+    create_hmac_signer,
+    create_hmac_validator,
+    create_secure_redis_layer,
+    create_secure_shelve_layer,
+    edge_version_cache,
+    edge_version_update,
+    get_global_cache,
+    increment_edge_version,
+    invalidate_function_cache,
+    new_dnfr_cache,
+    reset_global_cache,
+    reset_global_cache_manager,
+    set_global_cache,
+    track_node_property_update,
 )
 
 __all__ = [

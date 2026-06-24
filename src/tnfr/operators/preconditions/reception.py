@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
 __all__ = ["validate_reception_strict"]
 
+
 def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for EN (Reception) operator.
 
@@ -78,8 +79,8 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     tnfr.operators.definitions.Reception : Reception operator implementation
     """
     from ...alias import get_attr
-    from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI
     from ...config.thresholds import DNFR_RECEPTION_MAX, EPI_SATURATION_MAX
+    from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI
 
     # Get current node state
     epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))

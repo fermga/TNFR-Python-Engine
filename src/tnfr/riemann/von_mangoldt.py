@@ -81,7 +81,7 @@ Status: EXPERIMENTAL — Research prototype for TNFR-Riemann P12 program.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Sequence
 
 from ..mathematics.unified_numerical import np
@@ -109,6 +109,7 @@ __all__ = [
 # ============================================================================
 # Classical reference: Λ(n) and Σ Λ(n) n^{-s}
 # ============================================================================
+
 
 def mangoldt_lambda(n: int) -> float:
     r"""Classical von Mangoldt function :math:`\Lambda(n)`.
@@ -177,9 +178,7 @@ def classical_log_zeta_derivative(s: float, n_max: int) -> float:
     while p * p <= n_max:
         if sieve[p]:
             start = p * p
-            sieve[start : n_max + 1 : p] = b"\x00" * (
-                ((n_max - start) // p) + 1
-            )
+            sieve[start : n_max + 1 : p] = b"\x00" * (((n_max - start) // p) + 1)
         p += 1
 
     total = 0.0
@@ -233,6 +232,7 @@ def classical_log_zeta_derivative_matched(
 # ============================================================================
 # Prime-ladder spectrum
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class PrimeLadderSpectrum:
@@ -327,7 +327,7 @@ def build_prime_ladder_spectrum(
     k_arr = np.arange(1, max_power + 1, dtype=float)  # shape (max_power,)
 
     # eigenvalues[i, k-1] = k * log(p_i); weights[i, k-1] = log(p_i)
-    mu = np.outer(log_p, k_arr)              # (n_primes, max_power)
+    mu = np.outer(log_p, k_arr)  # (n_primes, max_power)
     w = np.broadcast_to(log_p[:, None], mu.shape).copy()
 
     return PrimeLadderSpectrum(
@@ -369,6 +369,7 @@ def tnfr_log_zeta_derivative(
 # ============================================================================
 # Verification: prime-ladder Z_TNFR vs classical Σ Λ(n) n^{-s}
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class VonMangoldtReproductionResult:

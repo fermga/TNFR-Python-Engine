@@ -131,13 +131,13 @@ def winding_number(G: nx.Graph, *, order: list | None = None) -> tuple[int, floa
 class EmergentParticle:
     """Structural classification of a coherent mode from intrinsic invariants."""
 
-    winding: int                 # integer topological charge W
-    raw_winding: float           # circulation / 2π (≈ W)
-    chirality: int               # sign(W): +1 matter-like, -1 antimatter-like, 0 neutral
-    energy_density: float        # mean canonical ℰ over the manifold
-    charge_density_mean: float   # mean canonical 𝒬 density (telemetry)
-    particle_class: str          # emergent label
-    is_quantized: bool           # |raw - W| small (topological integrality holds)
+    winding: int  # integer topological charge W
+    raw_winding: float  # circulation / 2π (≈ W)
+    chirality: int  # sign(W): +1 matter-like, -1 antimatter-like, 0 neutral
+    energy_density: float  # mean canonical ℰ over the manifold
+    charge_density_mean: float  # mean canonical 𝒬 density (telemetry)
+    particle_class: str  # emergent label
+    is_quantized: bool  # |raw - W| small (topological integrality holds)
 
     def as_dict(self) -> dict[str, object]:
         return {

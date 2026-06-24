@@ -39,7 +39,9 @@ __all__ = [
 # Below this threshold, structural form is too weak to contribute coherence
 # Import canonical constants
 from ...constants.canonical import E_OVER_PI_PLUS_E
+
 ACTIVE_EMISSION_THRESHOLD = E_OVER_PI_PLUS_E  # e/(π+e) ≈ 0.464 (exponential activation)
+
 
 def detect_emission_sources(
     G: TNFRGraph,
@@ -133,7 +135,7 @@ def detect_emission_sources(
     Reception : Operator that uses source detection
     """
     from ...alias import get_attr
-    from ...constants.aliases import ALIAS_THETA, ALIAS_EPI, ALIAS_VF
+    from ...constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
     # Get receiver phase
     receiver_theta = float(get_attr(G.nodes[receiver_node], ALIAS_THETA, 0.0))

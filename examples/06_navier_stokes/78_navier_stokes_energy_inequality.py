@@ -130,7 +130,7 @@ def main() -> int:
 
     # Tolerances. Strang splitting is O(dt^2) per step => O(dt) accumulated.
     # Round-off ~ machine eps * E(0) per step => O(steps * eps).
-    eps_split = 5.0 * dt ** 2 * steps  # generous bound on splitting drift
+    eps_split = 5.0 * dt**2 * steps  # generous bound on splitting drift
     eps_round = 1e-10
 
     # Sanity: with advection ON the effective decay differs from 4 nu.
@@ -144,12 +144,18 @@ def main() -> int:
 
     print("Diagnostics summary")
     print("-" * 72)
-    print(f"min cumulative budget B    : {min_budget:.3e}  (target >= {-eps_split:.2e})")
-    print(f"max energy jump dE         : {max_energy_jump:.3e}  (target <= {eps_round:.1e})")
+    print(
+        f"min cumulative budget B    : {min_budget:.3e}  (target >= {-eps_split:.2e})"
+    )
+    print(
+        f"max energy jump dE         : {max_energy_jump:.3e}  (target <= {eps_round:.1e})"
+    )
     print(f"linear 4 nu rate           : {linear_rate:.6f}")
     print(f"measured rate (advection)  : {measured_rate:.6f}")
     print(f"|measured - linear|        : {rate_diff:.3e}  (sanity: should be > 1e-4)")
-    print(f"max |divergence| (INFO)    : {max_div:.3e}  (no PASS/FAIL - INCOMP reserved)")
+    print(
+        f"max |divergence| (INFO)    : {max_div:.3e}  (no PASS/FAIL - INCOMP reserved)"
+    )
     print()
 
     pass1 = min_budget >= -eps_split

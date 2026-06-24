@@ -185,15 +185,17 @@ from typing import Any, Callable, Iterable, Iterator, Mapping, MutableMapping, c
 from ..alias import get_attr, set_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
 from ..errors import TNFRValueError
-from ..utils import angle_diff, angle_diff_array, clamp01
+from ..mathematics.unified_numerical import np
 from ..types import GraphLike, NodeAttrMap
 from ..utils import (
+    angle_diff,
+    angle_diff_array,
+    clamp01,
     edge_version_cache,
     normalize_weights,
     resolve_chunk_size,
     stable_json,
 )
-from ..mathematics.unified_numerical import np
 from .buffer_cache import ensure_numpy_buffers
 from .common import (
     _coerce_jobs,
@@ -206,8 +208,11 @@ from .trig_cache import get_trig_cache
 
 PHASE_DISPERSION_KEY = "dSi_dphase_disp"
 _SI_APPROX_BYTES_PER_NODE = 64
-_VALID_SENSITIVITY_KEYS = frozenset({"dSi_dvf_norm", PHASE_DISPERSION_KEY, "dSi_ddnfr_norm"})
+_VALID_SENSITIVITY_KEYS = frozenset(
+    {"dSi_dvf_norm", PHASE_DISPERSION_KEY, "dSi_ddnfr_norm"}
+)
 __all__ = ("get_Si_weights", "compute_Si_node", "compute_Si")
+
 
 class _SiStructuralCache:
     """Cache aligned ``νf`` and ``ΔNFR`` arrays for vectorised Si."""
@@ -274,6 +279,7 @@ class _SiStructuralCache:
 
         return self.vf_values, self.dnfr_values
 
+
 def _build_structural_cache(
     node_ids: Iterable[Any],
     node_data: Mapping[Any, NodeAttrMap],
@@ -281,6 +287,7 @@ def _build_structural_cache(
     cache = _SiStructuralCache(tuple(node_ids))
     cache.rebuild(node_ids, node_data)
     return cache
+
 
 def _ensure_structural_arrays(
     G: GraphLike,
@@ -294,6 +301,7 @@ def _ensure_structural_arrays(
 
     cache = edge_version_cache(G, ("_si_structural", node_key), builder)
     return cache.ensure_current(node_key, node_data)
+
 
 def _ensure_si_buffers(
     G: GraphLike,
@@ -310,7 +318,10 @@ def _ensure_si_buffers(
     These buffers are reused across computation steps to minimize allocation
     overhead in the hot path. Cache key: ``("_si_buffers", count, 3)``
     """
-    return ensure_numpy_buffers(G, key_prefix="_si_buffers", count=count, buffer_count=3)
+    return ensure_numpy_buffers(
+        G, key_prefix="_si_buffers", count=count, buffer_count=3
+    )
+
 
 def _ensure_chunk_workspace(
     G: GraphLike,
@@ -329,6 +340,7 @@ def _ensure_chunk_workspace(
     return ensure_numpy_buffers(
         G, key_prefix="_si_chunk_workspace", count=mask_count, buffer_count=2
     )
+
 
 def _ensure_neighbor_bulk_buffers(
     G: GraphLike,
@@ -350,6 +362,7 @@ def _ensure_neighbor_bulk_buffers(
     return ensure_numpy_buffers(
         G, key_prefix="_si_neighbor_buffers", count=count, buffer_count=5
     )
+
 
 def _normalise_si_sensitivity_mapping(
     mapping: Mapping[str, float], *, warn: bool
@@ -391,10 +404,12 @@ def _normalise_si_sensitivity_mapping(
         allowed = ", ".join(sorted(_VALID_SENSITIVITY_KEYS))
         received = ", ".join(unexpected)
         raise TNFRValueError(
-            "Si sensitivity mappings accept only {%s}; unexpected key(s): %s" % (allowed, received),
+            "Si sensitivity mappings accept only {%s}; unexpected key(s): %s"
+            % (allowed, received),
             context={"allowed": allowed, "received": received},
         )
     return normalised
+
 
 def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
     """Normalise and persist Si weights attached to the graph coherence.
@@ -448,6 +463,7 @@ def _cache_weights(G: GraphLike) -> tuple[float, float, float]:
 
     return edge_version_cache(G, ("_Si_weights", cfg_key), builder)
 
+
 def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     """Expose the normalised Si weights associated with ``G``.
 
@@ -470,6 +486,7 @@ def get_Si_weights(G: GraphLike) -> tuple[float, float, float]:
     """
 
     return _cache_weights(G)
+
 
 def compute_Si_node(
     n: Any,
@@ -560,6 +577,7 @@ def compute_Si_node(
         set_attr(nd, ALIAS_SI, Si)
     return Si
 
+
 def _compute_si_python_chunk(
     chunk: Iterable[tuple[Any, tuple[Any, ...], float, float, float]],
     *,
@@ -623,9 +641,14 @@ def _compute_si_python_chunk(
         phase_dispersion = abs(angle_diff(theta, th_bar)) / math.pi
         vf_norm = clamp01(abs(vf) / vfmax)
         dnfr_norm = clamp01(abs(dnfr) / dnfrmax)
-        Si = alpha * vf_norm + beta * (1.0 - phase_dispersion) + gamma * (1.0 - dnfr_norm)
+        Si = (
+            alpha * vf_norm
+            + beta * (1.0 - phase_dispersion)
+            + gamma * (1.0 - dnfr_norm)
+        )
         results[n] = clamp01(Si)
     return results
+
 
 def _iter_python_payload_chunks(
     nodes_data: Iterable[tuple[Any, NodeAttrMap]],
@@ -662,6 +685,7 @@ def _iter_python_payload_chunks(
 
     if buffer:
         yield tuple(buffer)
+
 
 def compute_Si(
     G: GraphLike,
@@ -967,7 +991,9 @@ def compute_Si(
             node_mapping,
         )
         raw_vfmax = float(np.max(np.abs(vf_arr))) if getattr(vf_arr, "size", 0) else 0.0
-        raw_dnfrmax = float(np.max(np.abs(dnfr_arr))) if getattr(dnfr_arr, "size", 0) else 0.0
+        raw_dnfrmax = (
+            float(np.max(np.abs(dnfr_arr))) if getattr(dnfr_arr, "size", 0) else 0.0
+        )
         G.graph["_vfmax"] = raw_vfmax
         G.graph["_dnfrmax"] = raw_dnfrmax
         vfmax = 1.0 if raw_vfmax == 0.0 else raw_vfmax
@@ -1134,9 +1160,9 @@ def compute_Si(
                     chunk_count += 1
                     out.update(chunk_result)
             if profile is not None:
-                profile["fallback_chunks"] = float(profile.get("fallback_chunks", 0.0)) + float(
-                    chunk_count
-                )
+                profile["fallback_chunks"] = float(
+                    profile.get("fallback_chunks", 0.0)
+                ) + float(chunk_count)
     else:
         for n, nd in nodes_data:
             theta = thetas.get(n, 0.0)

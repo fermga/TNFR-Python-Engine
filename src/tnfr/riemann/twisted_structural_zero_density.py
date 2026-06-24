@@ -93,7 +93,6 @@ from .hilbert_polya import wasserstein_1_distance
 from .twisted_hilbert_polya import fetch_chi_zero_imaginary_parts
 from .twisted_weil_explicit_formula import character_parity
 
-
 __all__ = [
     "twisted_theta",
     "twisted_smooth_zero_count",
@@ -138,9 +137,9 @@ def twisted_theta(
     q = int(chi.modulus)
     half_a = mpmath.mpf("0.5") * (mpmath.mpf("0.5") + mpmath.mpf(a))
     with mpmath.workdps(dps):
-        val = mpmath.im(
-            mpmath.loggamma(mpmath.mpc(half_a, T / 2.0))
-        ) + (T / 2.0) * mpmath.log(mpmath.mpf(q) / mpmath.pi)
+        val = mpmath.im(mpmath.loggamma(mpmath.mpc(half_a, T / 2.0))) + (
+            T / 2.0
+        ) * mpmath.log(mpmath.mpf(q) / mpmath.pi)
     return float(val)
 
 
@@ -324,19 +323,14 @@ class TwistedStructuralZeroDensityCertificate:
             f"  mean |r_n|                    : {self.mean_residual:.4e}",
             f"  rms r_n                       : {self.rms_residual:.4e}",
             "  --- Operator-level L-track gap ---",
-            f"  W_1(spec(P34|p!|q), T_HP^chi) : "
-            f"{self.w1_p34_vs_actual:.4e}",
+            f"  W_1(spec(P34|p!|q), T_HP^chi) : " f"{self.w1_p34_vs_actual:.4e}",
             f"  W_1(spec(t.T_HP^chi), T_HP^chi): "
             f"{self.w1_structural_vs_actual:.4e}",
-            f"  improvement ratio             : "
-            f"{self.improvement_ratio:.2f}x",
+            f"  improvement ratio             : " f"{self.improvement_ratio:.2f}x",
             "  --- Theoretical bound check ---",
-            f"  C * max(log gamma_n / N'_chi) : "
-            f"{self.bound_estimate:.4e}",
-            f"  bound satisfied (C <= 2)      : "
-            f"{self.bound_satisfied}",
-            f"  structurally derived          : "
-            f"{self.structurally_derived}",
+            f"  C * max(log gamma_n / N'_chi) : " f"{self.bound_estimate:.4e}",
+            f"  bound satisfied (C <= 2)      : " f"{self.bound_satisfied}",
+            f"  structurally derived          : " f"{self.structurally_derived}",
         ]
         if self.notes:
             lines.append("")
@@ -413,18 +407,14 @@ def compute_twisted_structural_zero_density_certificate(
         # Active sector: prime-ladder spectrum mu_{p,k} = k log p
         # over primes coprime to q (primes dividing q already excluded
         # at construction since chi(p) = 0 kills their weights).
-        spec = np.sort(
-            np.asarray(bundle.spectrum.eigenvalues, dtype=float)
-        )
+        spec = np.sort(np.asarray(bundle.spectrum.eigenvalues, dtype=float))
     else:
         spec = np.sort(np.asarray(p34_spectrum, dtype=float))
 
     if spec.size >= n_zeros:
         p34_top = spec[:n_zeros]
     else:
-        pad = np.full(
-            n_zeros - spec.size, spec[-1] if spec.size > 0 else 0.0
-        )
+        pad = np.full(n_zeros - spec.size, spec[-1] if spec.size > 0 else 0.0)
         p34_top = np.concatenate([spec, pad])
 
     w1_p34 = wasserstein_1_distance(p34_top, actual)
@@ -438,8 +428,8 @@ def compute_twisted_structural_zero_density_certificate(
         dtype=float,
     )
     log_gammas = np.log(actual)
-    bound_per_n = bound_constant * log_gammas / np.where(
-        densities > 0.0, densities, 1.0
+    bound_per_n = (
+        bound_constant * log_gammas / np.where(densities > 0.0, densities, 1.0)
     )
     bound_estimate = float(np.max(bound_per_n))
     bound_satisfied = bool(np.max(abs_res) <= bound_estimate)
@@ -449,8 +439,7 @@ def compute_twisted_structural_zero_density_certificate(
         "Im log Gamma((1/2+a)/2 + iT/2) + (T/2) log(q/pi).",
         "No find_dirichlet_l_zeros call on the DERIVATION side "
         "(only for benchmark).",
-        "Residuals r_n encode S_chi(gamma_n) = "
-        "(1/pi) arg L(1/2 + i gamma_n, chi).",
+        "Residuals r_n encode S_chi(gamma_n) = " "(1/pi) arg L(1/2 + i gamma_n, chi).",
         "Does NOT close GRH for L(s, chi) or G4 = RH: bounding "
         "S_chi(T) is the open arithmetic problem.  Closes the "
         "structural origin of the smooth chi-twisted density.",
@@ -466,7 +455,7 @@ def compute_twisted_structural_zero_density_certificate(
         residuals=tuple(float(x) for x in residuals),
         max_residual=float(np.max(abs_res)),
         mean_residual=float(np.mean(abs_res)),
-        rms_residual=float(math.sqrt(float(np.mean(residuals ** 2)))),
+        rms_residual=float(math.sqrt(float(np.mean(residuals**2)))),
         w1_structural_vs_actual=float(w1_struct),
         w1_p34_vs_actual=float(w1_p34),
         improvement_ratio=float(improvement),

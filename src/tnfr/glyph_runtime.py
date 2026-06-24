@@ -11,6 +11,7 @@ from typing import Any
 
 __all__ = ("last_glyph",)
 
+
 def last_glyph(nd: Mapping[str, Any]) -> str | None:
     """Return the most recent glyph for node or ``None``."""
 

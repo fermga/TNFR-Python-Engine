@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from ..types import Glyph, NodeId, TNFRGraph
-from ..node import NodeProtocol
-from ..validation import ValidationOutcome
-from _typeshed import Incomplete
 from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
+
+from _typeshed import Incomplete
+
+from ..node import NodeProtocol
+from ..types import Glyph, NodeId, TNFRGraph
+from ..validation import ValidationOutcome
 
 __all__ = [
     "GrammarContext",
@@ -34,7 +36,9 @@ __all__ = [
 GLYPH_TO_FUNCTION: dict[Glyph, str]
 FUNCTION_TO_GLYPH: dict[str, Glyph]
 
-def glyph_function_name(val: Glyph | str | None, *, default: str | None = None) -> str | None: ...
+def glyph_function_name(
+    val: Glyph | str | None, *, default: str | None = None
+) -> str | None: ...
 def function_name_to_glyph(
     val: str | Glyph | None, *, default: Glyph | None = None
 ) -> Glyph | None: ...

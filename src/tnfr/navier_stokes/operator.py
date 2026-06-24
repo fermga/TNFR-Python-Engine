@@ -54,7 +54,6 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import Callable
 
 import networkx as nx
 import numpy as np
@@ -82,7 +81,7 @@ def build_torus_graph(n: int) -> nx.Graph:
 
     G = nx.grid_2d_graph(n, n, periodic=True)
     h = 2.0 * math.pi / n
-    for (i, j) in G.nodes:
+    for i, j in G.nodes:
         G.nodes[(i, j)]["pos"] = (i * h, j * h)
     G.graph["spacing"] = h
     G.graph["resolution"] = n
@@ -148,7 +147,7 @@ def build_torus_graph_3d(n: int) -> nx.Graph:
 
     G = nx.grid_graph(dim=(n, n, n), periodic=True)
     h = 2.0 * math.pi / n
-    for (i, j, k) in G.nodes:
+    for i, j, k in G.nodes:
         G.nodes[(i, j, k)]["pos"] = (i * h, j * h, k * h)
     G.graph["spacing"] = h
     G.graph["resolution"] = n
@@ -240,9 +239,11 @@ class TNFRNavierStokesOperator:
             # (n <= 64 -> 4096 nodes). 3D uses an FFT-diagonalised viscous step
             # to avoid the O(n^9) cost of np.linalg.solve on a dense (n^3)x(n^3)
             # operator (n=16 -> 4096^2 = 16.7 M entries, n=32 -> 1.07 G entries).
-            self._laplacian = nx.laplacian_matrix(
-                self.graph, nodelist=self._nodes
-            ).toarray().astype(float)
+            self._laplacian = (
+                nx.laplacian_matrix(self.graph, nodelist=self._nodes)
+                .toarray()
+                .astype(float)
+            )
         else:
             # N6: 3D path skips the dense Laplacian. Viscous step uses FFT
             # diagonalisation on the periodic torus; dissipation_rate() likewise
@@ -267,9 +268,7 @@ class TNFRNavierStokesOperator:
             self.phi[0] = u
             self.phi[1] = v
         else:
-            u, v, w = taylor_green_initial_condition_3d(
-                self.graph, amplitude=amplitude
-            )
+            u, v, w = taylor_green_initial_condition_3d(self.graph, amplitude=amplitude)
             self.phi[0] = u
             self.phi[1] = v
             self.phi[2] = w
@@ -354,7 +353,7 @@ class TNFRNavierStokesOperator:
     def _viscous_substep(self, dt: float) -> None:
         """Single Crank-Nicolson viscous update (does not advance ``time``)."""
         if self.dimension == 2:
-            coeff = self.viscosity * dt / (2.0 * self._spacing ** 2)
+            coeff = self.viscosity * dt / (2.0 * self._spacing**2)
             n = self._laplacian.shape[0]
             identity = np.eye(n)
             lhs = identity + coeff * self._laplacian
@@ -377,14 +376,22 @@ class TNFRNavierStokesOperator:
         result = np.zeros_like(self.phi)
         for a in range(2):
             phi_grid = self._component_grid(a, n)
-            dphi_dx = (np.roll(phi_grid, -1, axis=0) - np.roll(phi_grid, 1, axis=0)) / (2.0 * h)
-            dphi_dy = (np.roll(phi_grid, -1, axis=1) - np.roll(phi_grid, 1, axis=1)) / (2.0 * h)
+            dphi_dx = (np.roll(phi_grid, -1, axis=0) - np.roll(phi_grid, 1, axis=0)) / (
+                2.0 * h
+            )
+            dphi_dy = (np.roll(phi_grid, -1, axis=1) - np.roll(phi_grid, 1, axis=1)) / (
+                2.0 * h
+            )
             conv = u_grid * dphi_dx + v_grid * dphi_dy
 
             ux_phi = u_grid * phi_grid
             vy_phi = v_grid * phi_grid
-            d_ux_phi = (np.roll(ux_phi, -1, axis=0) - np.roll(ux_phi, 1, axis=0)) / (2.0 * h)
-            d_vy_phi = (np.roll(vy_phi, -1, axis=1) - np.roll(vy_phi, 1, axis=1)) / (2.0 * h)
+            d_ux_phi = (np.roll(ux_phi, -1, axis=0) - np.roll(ux_phi, 1, axis=0)) / (
+                2.0 * h
+            )
+            d_vy_phi = (np.roll(vy_phi, -1, axis=1) - np.roll(vy_phi, 1, axis=1)) / (
+                2.0 * h
+            )
             div_form = d_ux_phi + d_vy_phi
 
             adv_grid = -0.5 * (conv + div_form)
@@ -476,9 +483,9 @@ class TNFRNavierStokesOperator:
         # and _advection_term_2d().
         m = np.arange(n)
         S1d = np.sin(2.0 * np.pi * m / n) / h
-        Sx = S1d[:, None]            # varies along axis 0 (x)
-        Sy = S1d[None, :]            # varies along axis 1 (y)
-        S2 = Sx ** 2 + Sy ** 2
+        Sx = S1d[:, None]  # varies along axis 0 (x)
+        Sy = S1d[None, :]  # varies along axis 1 (y)
+        S2 = Sx**2 + Sy**2
 
         # Discrete pressure in Fourier space; null modes (S2 == 0)
         # contribute 0 (left unchanged).
@@ -600,12 +607,11 @@ class TNFRNavierStokesOperator:
         # Trapezoidal integral of dissipation (continuous-time analogue).
         cumulative_dissipated = np.zeros(steps + 1, dtype=float)
         for k in range(1, steps + 1):
-            cumulative_dissipated[k] = cumulative_dissipated[k - 1] + 0.5 * (
-                dissipation_history[k] + dissipation_history[k - 1]
-            ) * dt
-        cumulative_budget = (
-            energy_history[0] - energy_history - cumulative_dissipated
-        )
+            cumulative_dissipated[k] = (
+                cumulative_dissipated[k - 1]
+                + 0.5 * (dissipation_history[k] + dissipation_history[k - 1]) * dt
+            )
+        cumulative_budget = energy_history[0] - energy_history - cumulative_dissipated
 
         return {
             "time": time_history,
@@ -621,8 +627,8 @@ class TNFRNavierStokesOperator:
     # ------------------------------------------------------------------
     def kinetic_energy(self) -> float:
         """Discrete kinetic energy (1/2) * sum_a sum_i phi^(a)_i^2 * h^d."""
-        h_d = self._spacing ** self.dimension
-        return 0.5 * float(np.sum(self.phi ** 2)) * h_d
+        h_d = self._spacing**self.dimension
+        return 0.5 * float(np.sum(self.phi**2)) * h_d
 
     def enstrophy(self) -> float:
         """Discrete enstrophy sum_a sum_i (L phi^(a))_i^2 / h^4 * h^d.
@@ -631,12 +637,12 @@ class TNFRNavierStokesOperator:
         the linear-viscous regime, where vorticity inherits the same decay
         rate as the velocity components for each Laplacian eigenmode.
         """
-        h_d = self._spacing ** self.dimension
-        h4 = self._spacing ** 4
+        h_d = self._spacing**self.dimension
+        h4 = self._spacing**4
         total = 0.0
         for a in range(self.dimension):
             laplaced = self._laplacian @ self.phi[a]
-            total += float(np.sum(laplaced ** 2))
+            total += float(np.sum(laplaced**2))
         return total * h_d / h4
 
     def divergence_residual(self) -> float:
@@ -664,7 +670,7 @@ class TNFRNavierStokesOperator:
             dv_dy = (np.roll(v, -1, axis=1) - np.roll(v, 1, axis=1)) / (2.0 * h)
             dw_dz = (np.roll(w, -1, axis=2) - np.roll(w, 1, axis=2)) / (2.0 * h)
             div = du_dx + dv_dy + dw_dz
-        return float(np.sqrt(np.mean(div ** 2)))
+        return float(np.sqrt(np.mean(div**2)))
 
     def _component_grid(self, a: int, n: int) -> np.ndarray:
         """Return phi^(a) reshaped onto the (n, n) Cartesian grid."""
@@ -685,9 +691,7 @@ class TNFRNavierStokesOperator:
         defined for ``self.dimension == 2``.
         """
         if self.dimension != 2:
-            raise NotImplementedError(
-                "vorticity_2d() requires self.dimension == 2"
-            )
+            raise NotImplementedError("vorticity_2d() requires self.dimension == 2")
         if "resolution" not in self.graph.graph:
             raise RuntimeError("operator graph lacks 'resolution' metadata")
         n = int(self.graph.graph["resolution"])
@@ -722,11 +726,11 @@ class TNFRNavierStokesOperator:
         """
         if self.dimension == 2:
             omega = self.vorticity_2d()
-            h2 = self._spacing ** 2
-            return 0.5 * float(np.sum(omega ** 2)) * h2
+            h2 = self._spacing**2
+            return 0.5 * float(np.sum(omega**2)) * h2
         omega = self.vorticity_3d()
         mag2 = omega[0] ** 2 + omega[1] ** 2 + omega[2] ** 2
-        h3 = self._spacing ** 3
+        h3 = self._spacing**3
         return 0.5 * float(np.sum(mag2)) * h3
 
     def bkm_budget(
@@ -786,7 +790,6 @@ class TNFRNavierStokesOperator:
             "divergence": div_hist,
         }
 
-
     # ------------------------------------------------------------------
     # Analytical reference
     # ------------------------------------------------------------------
@@ -807,7 +810,7 @@ class TNFRNavierStokesOperator:
             E(t) = (1/2) * (pi^2 + pi^2) * amplitude^2 * exp(-4 nu t)
                  = pi^2 * amplitude^2 * exp(-4 nu t).
         """
-        prefactor = (math.pi ** 2) * amplitude ** 2
+        prefactor = (math.pi**2) * amplitude**2
         return prefactor * np.exp(-4.0 * self.viscosity * np.asarray(times))
 
     # ==================================================================
@@ -843,7 +846,9 @@ class TNFRNavierStokesOperator:
             i, j, k = node
             self.phi[a, idx] = grid[i, j, k]
 
-    def _fft_symbols_3d(self, n: int) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def _fft_symbols_3d(
+        self, n: int
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """Return the discrete central-difference symbols ``S_x, S_y, S_z`` and ``|S|^2``.
 
         Matches the symbol used by :meth:`divergence_residual` and the
@@ -856,7 +861,7 @@ class TNFRNavierStokesOperator:
         Sx = S1d[:, None, None]
         Sy = S1d[None, :, None]
         Sz = S1d[None, None, :]
-        S2 = Sx ** 2 + Sy ** 2 + Sz ** 2
+        S2 = Sx**2 + Sy**2 + Sz**2
         return Sx, Sy, Sz, S2
 
     def _laplace_eigenvalues_3d(self, n: int) -> np.ndarray:
@@ -888,7 +893,7 @@ class TNFRNavierStokesOperator:
         ``1/h^2`` scale factor.
         """
         n = int(self.graph.graph["resolution"])
-        coeff = self.viscosity * dt / (2.0 * self._spacing ** 2)
+        coeff = self.viscosity * dt / (2.0 * self._spacing**2)
         lam = self._laplace_eigenvalues_3d(n)
         amp = (1.0 - coeff * lam) / (1.0 + coeff * lam)
         for a in range(self.dimension):
@@ -913,7 +918,7 @@ class TNFRNavierStokesOperator:
             grid = self._component_grid_3d(a, n)
             hat = np.fft.fftn(grid, axes=(0, 1, 2))
             # Parseval: sum |hat|^2 / n^3 = sum |grid|^2 ; weighted by lambda.
-            total += float(np.sum(lam * np.abs(hat) ** 2)) / (n ** 3)
+            total += float(np.sum(lam * np.abs(hat) ** 2)) / (n**3)
         return self.viscosity * total
 
     def _advection_term_3d(self) -> np.ndarray:
@@ -941,23 +946,17 @@ class TNFRNavierStokesOperator:
         comps = (u, v, w)
 
         def d_axis(arr: np.ndarray, axis: int) -> np.ndarray:
-            return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (2.0 * h)
+            return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (
+                2.0 * h
+            )
 
         result = np.empty_like(self.phi)
         for a in range(3):
             phi_a = comps[a]
             # Convective form: u_b * d_b phi_a
-            conv = (
-                u * d_axis(phi_a, 0)
-                + v * d_axis(phi_a, 1)
-                + w * d_axis(phi_a, 2)
-            )
+            conv = u * d_axis(phi_a, 0) + v * d_axis(phi_a, 1) + w * d_axis(phi_a, 2)
             # Divergence form: d_b (u_b * phi_a)
-            divf = (
-                d_axis(u * phi_a, 0)
-                + d_axis(v * phi_a, 1)
-                + d_axis(w * phi_a, 2)
-            )
+            divf = d_axis(u * phi_a, 0) + d_axis(v * phi_a, 1) + d_axis(w * phi_a, 2)
             adv_grid = -0.5 * (conv + divf)
             for idx, node in enumerate(self._nodes):
                 i, j, k = node
@@ -1036,7 +1035,9 @@ class TNFRNavierStokesOperator:
         w = self._component_grid_3d(2, n)
 
         def d_axis(arr: np.ndarray, axis: int) -> np.ndarray:
-            return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (2.0 * h)
+            return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (
+                2.0 * h
+            )
 
         omega = np.empty((3, n, n, n), dtype=float)
         omega[0] = d_axis(w, 1) - d_axis(v, 2)
@@ -1071,7 +1072,9 @@ class TNFRNavierStokesOperator:
         rates.
         """
         if self.dimension != 3:
-            raise NotImplementedError("vortex_stretching_field() requires self.dimension == 3")
+            raise NotImplementedError(
+                "vortex_stretching_field() requires self.dimension == 3"
+            )
         n = int(self.graph.graph["resolution"])
         h = self._spacing
         omega = self.vorticity_3d()
@@ -1082,7 +1085,9 @@ class TNFRNavierStokesOperator:
         )
 
         def d_axis(arr: np.ndarray, axis: int) -> np.ndarray:
-            return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (2.0 * h)
+            return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (
+                2.0 * h
+            )
 
         stretch = np.empty((3, n, n, n), dtype=float)
         for a in range(3):
@@ -1111,15 +1116,13 @@ class TNFRNavierStokesOperator:
         Clay open question NS-G5.
         """
         if self.dimension != 3:
-            raise NotImplementedError("stretching_production() requires self.dimension == 3")
+            raise NotImplementedError(
+                "stretching_production() requires self.dimension == 3"
+            )
         omega = self.vorticity_3d()
         stretch = self.vortex_stretching_field()
-        h3 = self._spacing ** 3
-        prod = (
-            omega[0] * stretch[0]
-            + omega[1] * stretch[1]
-            + omega[2] * stretch[2]
-        )
+        h3 = self._spacing**3
+        prod = omega[0] * stretch[0] + omega[1] * stretch[1] + omega[2] * stretch[2]
         return float(np.sum(prod)) * h3
 
 

@@ -26,6 +26,7 @@ __all__ = [
 # ---------------------------------------------------------------------------
 _HIGH_STRESS_THRESHOLD = 0.5
 
+
 class StructuralMetabolism:
     """Implements T'HOL-based structural metabolism cycles.
 
@@ -101,7 +102,7 @@ class StructuralMetabolism:
         The metabolic rate modulates the intensity of each operation.
         Lower tau increases likelihood of bifurcation during reorganization.
         """
-        from ..operators.definitions import Reception, SelfOrganization, Coherence
+        from ..operators.definitions import Coherence, Reception, SelfOrganization
 
         # 1. Receive external stimulus
         Reception()(self.G, self.node)
@@ -131,19 +132,16 @@ class StructuralMetabolism:
         This implements adaptive structural metabolism where the depth
         of reorganization scales with environmental pressure.
         """
-        from ..operators.definitions import (
-            Dissonance,
-            SelfOrganization,
-            Coherence,
-        )
+        from ..operators.definitions import Coherence, Dissonance, SelfOrganization
 
         if stress_level >= _HIGH_STRESS_THRESHOLD:
             # High stress: dissonance + deep reorganization
             # Apply operators individually to avoid grammar restrictions
             # Import canonical constants
             from ..constants.canonical import GAMMA_OVER_PI_PLUS_E
+
             tau_rapid = GAMMA_OVER_PI_PLUS_E  # γ/(π+e) ≈ 0.099
-            
+
             Dissonance()(self.G, self.node)  # Introduce controlled instability
             SelfOrganization()(
                 self.G, self.node, tau=tau_rapid
@@ -152,8 +150,9 @@ class StructuralMetabolism:
         else:
             # Moderate stress: gentle reorganization
             # Higher tau reduces bifurcation probability
-            # Import canonical constants  
+            # Import canonical constants
             from ..constants.canonical import PI_MINUS_E_OVER_PI
+
             tau_self_org = PI_MINUS_E_OVER_PI * 1.5  # ((π-e)/π) * 1.5 ≈ 0.202
             SelfOrganization()(self.G, self.node, tau=tau_self_org)
 
@@ -184,11 +183,17 @@ class StructuralMetabolism:
         for level in range(depth):
             # Decreasing threshold: deeper levels bifurcate more easily
             # Import canonical constants
-            from ..constants.canonical import HALF_INV_PI, EXP_HALF_NEG
-            base_tau = HALF_INV_PI * 0.32  # (1/(2π)) * 0.32 ≈ 0.051 (tiempo circular natural)
-            level_decay = EXP_HALF_NEG    # e^(-1/2) ≈ 0.607 (decaimiento exponencial fraccionario)
+            from ..constants.canonical import EXP_HALF_NEG, HALF_INV_PI
+
+            base_tau = (
+                HALF_INV_PI * 0.32
+            )  # (1/(2π)) * 0.32 ≈ 0.051 (tiempo circular natural)
+            level_decay = (
+                EXP_HALF_NEG  # e^(-1/2) ≈ 0.607 (decaimiento exponencial fraccionario)
+            )
             tau = base_tau * (level_decay**level)
             SelfOrganization()(self.G, self.node, tau=tau)
+
 
 def digest_stimulus(G: TNFRGraph, node: NodeId, tau: float = 0.08) -> None:
     """Functional interface for single metabolic cycle.
@@ -214,6 +219,7 @@ def digest_stimulus(G: TNFRGraph, node: NodeId, tau: float = 0.08) -> None:
     metabolism = StructuralMetabolism(G, node)
     metabolism.digest(tau)
 
+
 def adaptive_metabolism(G: TNFRGraph, node: NodeId, stress: float) -> None:
     """Functional interface for adaptive metabolic response.
 
@@ -237,6 +243,7 @@ def adaptive_metabolism(G: TNFRGraph, node: NodeId, stress: float) -> None:
     """
     metabolism = StructuralMetabolism(G, node)
     metabolism.adaptive_metabolism(stress)
+
 
 def cascading_reorganization(G: TNFRGraph, node: NodeId, depth: int = 3) -> None:
     """Functional interface for cascading reorganization.

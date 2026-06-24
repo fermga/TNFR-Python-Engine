@@ -90,16 +90,13 @@ from dataclasses import dataclass
 from ..mathematics.unified_numerical import np
 from .dirichlet_l import DirichletCharacter
 from .li_keiper import li_coefficients_from_zeros
-from .twisted_weil_explicit_formula import (
-    character_parity,
-    find_dirichlet_l_zeros,
-)
-
+from .twisted_weil_explicit_formula import character_parity, find_dirichlet_l_zeros
 
 # ---------------------------------------------------------------------------
 # Thin re-export so that callers do not need to import the P16 routine
 # directly.  The mathematics is identical (sum is L-function agnostic).
 # ---------------------------------------------------------------------------
+
 
 def twisted_li_coefficients(
     zeros_upper,
@@ -126,6 +123,7 @@ def twisted_li_coefficients(
 # ---------------------------------------------------------------------------
 # Certificate dataclass
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class TwistedLiKeiperCertificate:
@@ -185,8 +183,7 @@ class TwistedLiKeiperCertificate:
             f"  n_zeros_used        = {self.n_zeros_used}",
             f"  t_max (search)      = {self.t_max:.3f}",
             f"  lambda_1            = {lam[0]:+.6e}",
-            f"  lambda_{self.n_max}".ljust(22)
-            + f"= {lam[-1]:+.6e}",
+            f"  lambda_{self.n_max}".ljust(22) + f"= {lam[-1]:+.6e}",
             f"  min_n lambda_n      = {self.min_lambda:+.6e}",
             f"  positivity (GRH_chi)= {self.positivity}",
         ]
@@ -196,6 +193,7 @@ class TwistedLiKeiperCertificate:
 # ---------------------------------------------------------------------------
 # End-to-end verification
 # ---------------------------------------------------------------------------
+
 
 def verify_twisted_li_keiper_criterion(
     chi: DirichletCharacter,

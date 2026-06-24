@@ -46,11 +46,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Sequence
 
-from .definitions import get_operator_meta
-from .grammar_canon import (
-    GRAMMAR_RULES as _GRAMMAR_RULES,
-    related_invariants as _related_invariants,
-)
+from .grammar_canon import GRAMMAR_RULES as _GRAMMAR_RULES
+from .grammar_canon import related_invariants as _related_invariants
 from .grammar_core import GrammarValidator
 from .grammar_types import StructuralGrammarError
 
@@ -70,6 +67,7 @@ _RULE_INVARIANTS: dict[str, tuple[int, ...]] = {
     r.rule_id: _related_invariants(r.rule_id) for r in _GRAMMAR_RULES
 }
 _RULE_INVARIANTS["U6_CONFINEMENT"] = _related_invariants("U6")
+
 
 @dataclass(slots=True)
 class ExtendedGrammarError:
@@ -126,6 +124,7 @@ class ExtendedGrammarError:
             },
         )
 
+
 def make_grammar_error(
     *,
     rule: str,
@@ -135,6 +134,9 @@ def make_grammar_error(
     index: int | None = None,
 ) -> ExtendedGrammarError:
     """Create an ExtendedGrammarError with invariants + introspection."""
+    # Lazy import avoids a definitions <-> grammar_error_factory import cycle.
+    from .definitions import get_operator_meta
+
     invariants = _RULE_INVARIANTS.get(rule, ())
     op_meta: dict[str, Any] | None = None
     try:
@@ -158,6 +160,7 @@ def make_grammar_error(
         order=tuple(sequence),
         index=index,
     )
+
 
 def collect_grammar_errors(
     sequence: Sequence[Any],
@@ -188,7 +191,7 @@ def collect_grammar_errors(
         "NAV": "transition",
         "REMESH": "recursivity",
     }
-    
+
     class _OpStub:  # local minimal stub
         def __init__(self, glyph: str):
             canonical = GLYPH_TO_NAME.get(glyph.upper(), glyph.lower())
@@ -201,8 +204,7 @@ def collect_grammar_errors(
 
     # Canonical operator names for reporting
     canonical = [
-        getattr(op, "canonical_name", getattr(op, "name", "?"))
-        for op in normalized
+        getattr(op, "canonical_name", getattr(op, "name", "?")) for op in normalized
     ]
 
     # U1a
@@ -245,11 +247,7 @@ def collect_grammar_errors(
     if not ok:
         # Find first coupling/resonance candidate if available
         idx = next(
-            (
-                i
-                for i, c in enumerate(canonical)
-                if c in {"coupling", "resonance"}
-            ),
+            (i for i, c in enumerate(canonical) if c in {"coupling", "resonance"}),
             None,
         )
         cand = canonical[idx] if idx is not None else "sequence"

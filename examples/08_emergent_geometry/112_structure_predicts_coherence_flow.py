@@ -58,14 +58,14 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.physics.structural_diffusion import (
-    structural_diffusion_operator,
     degree_weighted_total,
+    structural_diffusion_operator,
 )
 
 
@@ -83,14 +83,14 @@ def structure_only_predictions(G):
     nodes, L = structural_diffusion_operator(G)
     degs = np.array([sum(1.0 for _ in G.neighbors(v)) for v in nodes])
     nu_f = float(np.mean([G.nodes[v]["nu_f"] for v in nodes]))
-    w, U = np.linalg.eig(L)                  # L_rw is non-symmetric
+    w, U = np.linalg.eig(L)  # L_rw is non-symmetric
     order = np.argsort(w.real)
     lam = w.real[order]
     U = U.real[:, order]
     lam2 = lam[1]
-    gap_ratio = lam[1] / lam[2] if lam[2] > 1e-12 else 0.0   # isolation of gap
+    gap_ratio = lam[1] / lam[2] if lam[2] > 1e-12 else 0.0  # isolation of gap
     u2 = U[:, 1] / np.linalg.norm(U[:, 1])
-    dest = degree_weighted_total(G) / degs.sum()             # degree-weighted mean
+    dest = degree_weighted_total(G) / degs.sum()  # degree-weighted mean
     return nodes, L, nu_f, lam2, u2, dest, gap_ratio
 
 
@@ -104,7 +104,7 @@ def integrate_flow(G, nodes, L, nu_f, dest, u2, lam2):
     while t < t_end:
         epi = epi - dt * nu_f * (L @ epi)
         t += dt
-        if t > 2.0 / (nu_f * lam2):          # asymptotic regime
+        if t > 2.0 / (nu_f * lam2):  # asymptotic regime
             resid = epi - dest
             nr = np.linalg.norm(resid)
             if nr > 1e-12:
@@ -149,8 +149,9 @@ def experiment_2_predict_decay_rate():
     print("The spectral gap lambda_2 (Fiedler value) sets the slowest decay.")
     print("Predicted late-time rate = nu_f*lambda_2; measured from the flow.")
     print()
-    print(f"  {'graph':>14} {'nu_f*lam2 (pred)':>16} {'measured':>10} "
-          f"{'rel err':>9}")
+    print(
+        f"  {'graph':>14} {'nu_f*lam2 (pred)':>16} {'measured':>10} " f"{'rel err':>9}"
+    )
     for seed in range(6):
         n = 30 + seed
         G = build_graph(seed, n)

@@ -11,11 +11,11 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
-from ..errors import TNFRValueError
 from ..config.operator_names import RECURSIVITY
+from ..errors import TNFRValueError
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
- 
+
 
 class Recursivity(Operator):
     """Propagate fractal echoes; enforce multi-scale identity retention.
@@ -48,6 +48,4 @@ class Recursivity(Operator):
         """Collect REMESH metrics (epi,vf before)."""
         from .metrics import recursivity_metrics
 
-        return recursivity_metrics(
-            G, node, state_before["epi"], state_before["vf"]
-        )
+        return recursivity_metrics(G, node, state_before["epi"], state_before["vf"])

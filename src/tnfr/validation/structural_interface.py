@@ -329,9 +329,7 @@ def score_structural_interfaces(
     _require_networkx()
 
     phase_keys = (phase_key, "theta")
-    hotspots = rank_phase_stress_hotspots(
-        G, gate, top_n=None, phase_keys=phase_keys
-    )
+    hotspots = rank_phase_stress_hotspots(G, gate, top_n=None, phase_keys=phase_keys)
     potential = compute_structural_potential(G)
     prescriptions = prescribe_phase_gate_operators(
         G,
@@ -366,9 +364,7 @@ def score_structural_interfaces(
                 structural_potential=float(potential.get(node, 0.0)),
                 incident_violation_count=hotspot.incident_violation_count,
                 incident_gate_pressure=hotspot.incident_excess,
-                prescription=tuple(
-                    node_prescription.get(node, default_prescription)
-                ),
+                prescription=tuple(node_prescription.get(node, default_prescription)),
             )
         )
     return scores
@@ -435,9 +431,7 @@ def full_baseline_score_maps(
 # ---------------------------------------------------------------------------
 
 
-def _binary_auc(
-    labels: Mapping[Any, bool], scores: Mapping[Any, float]
-) -> float:
+def _binary_auc(labels: Mapping[Any, bool], scores: Mapping[Any, float]) -> float:
     positives = [scores[node] for node, label in labels.items() if label]
     negatives = [scores[node] for node, label in labels.items() if not label]
     if not positives or not negatives:
@@ -480,9 +474,7 @@ def evaluate_interface_scores(
             {
                 "score": name,
                 "auc": _binary_auc(labels, scores),
-                "precision_at_review_count": _precision_at_review_count(
-                    labels, scores
-                ),
+                "precision_at_review_count": _precision_at_review_count(labels, scores),
             }
         )
     return {
@@ -532,54 +524,57 @@ def render_structural_interface_markdown(result: Mapping[str, Any]) -> str:
         ]
         for item in hotspots
     ]
-    return "\n\n".join(
-        [
-            "# TNFR Structural Interface Audit",
-            "## Dataset",
-            (
-                f"Name: {dataset.get('name', 'unknown')}  \n"
-                f"Sector: {dataset.get('sector', 'generic')}  \n"
-                f"Samples: {dataset.get('samples', graph.get('nodes', 0))}"
-            ),
-            "## Graph",
-            (
-                f"Construction: {graph.get('construction', 'k-NN graph')}  \n"
-                f"Nodes: {graph.get('nodes', 0)}  \n"
-                f"Edges: {graph.get('edges', 0)}"
-            ),
-            "## Review target",
-            (
-                f"Definition: {task.get('target_definition', 'unspecified')}  \n"
-                f"Circular with phase encoding: {task.get('is_circular_target', 'unknown')}  \n"
-                f"Review nodes: {evaluation.get('review_node_count', 0)}"
-            ),
-            "## Score comparison",
-            _markdown_table(
-                ["Score", "AUC", "Precision@review_count"], comparison_rows
-            ),
-            "## Top TNFR hotspots",
-            _markdown_table(
-                [
-                    "Node",
-                    "Stress",
-                    "grad φ",
-                    "|Kφ|",
-                    "Violations",
-                    "TNFR prescription",
-                ],
-                hotspot_rows,
-            ),
-            "## Honest interpretation",
-            str(
-                result.get(
-                    "honest_interpretation",
-                    "TNFR phase-stress localizes graph-local interfaces. When the "
-                    "review target equals local disagreement, high AUC is a "
-                    "localization sanity check, not external superiority.",
-                )
-            ),
-        ]
-    ) + "\n"
+    return (
+        "\n\n".join(
+            [
+                "# TNFR Structural Interface Audit",
+                "## Dataset",
+                (
+                    f"Name: {dataset.get('name', 'unknown')}  \n"
+                    f"Sector: {dataset.get('sector', 'generic')}  \n"
+                    f"Samples: {dataset.get('samples', graph.get('nodes', 0))}"
+                ),
+                "## Graph",
+                (
+                    f"Construction: {graph.get('construction', 'k-NN graph')}  \n"
+                    f"Nodes: {graph.get('nodes', 0)}  \n"
+                    f"Edges: {graph.get('edges', 0)}"
+                ),
+                "## Review target",
+                (
+                    f"Definition: {task.get('target_definition', 'unspecified')}  \n"
+                    f"Circular with phase encoding: {task.get('is_circular_target', 'unknown')}  \n"
+                    f"Review nodes: {evaluation.get('review_node_count', 0)}"
+                ),
+                "## Score comparison",
+                _markdown_table(
+                    ["Score", "AUC", "Precision@review_count"], comparison_rows
+                ),
+                "## Top TNFR hotspots",
+                _markdown_table(
+                    [
+                        "Node",
+                        "Stress",
+                        "grad φ",
+                        "|Kφ|",
+                        "Violations",
+                        "TNFR prescription",
+                    ],
+                    hotspot_rows,
+                ),
+                "## Honest interpretation",
+                str(
+                    result.get(
+                        "honest_interpretation",
+                        "TNFR phase-stress localizes graph-local interfaces. When the "
+                        "review target equals local disagreement, high AUC is a "
+                        "localization sanity check, not external superiority.",
+                    )
+                ),
+            ]
+        )
+        + "\n"
+    )
 
 
 def render_structural_interface_html(markdown: str) -> str:
@@ -637,7 +632,9 @@ th {{ background: #f3f5f7; }}
 {body}
 </body>
 </html>
-""".format(body="\n".join(body))
+""".format(
+        body="\n".join(body)
+    )
 
 
 def export_structural_interface_report(

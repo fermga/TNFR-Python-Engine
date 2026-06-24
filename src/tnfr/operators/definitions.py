@@ -24,31 +24,31 @@ compatibility.
 
 from __future__ import annotations
 
-from .definitions_base import Operator
-from .emission import Emission
-from .reception import Reception
 from .coherence import Coherence
-from .dissonance import Dissonance
-from .coupling import Coupling
-from .resonance import Resonance
-from .silence import Silence
-from .expansion import Expansion
 from .contraction import Contraction
-from .self_organization import SelfOrganization
-from .mutation import Mutation
-from .transition import Transition
-from .recursivity import Recursivity
-from .introspection import (
-    OperatorMeta,
-    OPERATOR_METADATA,
-    get_operator_meta,
-    iter_operator_meta,
-)
+from .coupling import Coupling
+from .definitions_base import Operator
+from .dissonance import Dissonance
+from .emission import Emission
+from .expansion import Expansion
 from .grammar_error_factory import (
     ExtendedGrammarError,
     collect_grammar_errors,
     make_grammar_error,
 )
+from .introspection import (
+    OPERATOR_METADATA,
+    OperatorMeta,
+    get_operator_meta,
+    iter_operator_meta,
+)
+from .mutation import Mutation
+from .reception import Reception
+from .recursivity import Recursivity
+from .resonance import Resonance
+from .self_organization import SelfOrganization
+from .silence import Silence
+from .transition import Transition
 
 __all__ = [
     "Operator",

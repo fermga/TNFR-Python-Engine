@@ -74,7 +74,6 @@ from tnfr.validation.structural_interface import (  # noqa: E402
     score_structural_interfaces,
 )
 
-
 # ---------------------------------------------------------------------------
 # Section A — static spatial interface scoring
 # ---------------------------------------------------------------------------
@@ -124,9 +123,7 @@ def run_static_spatial() -> None:
 
     scores = score_structural_interfaces(graph, state_key="label")
     tnfr_maps = {"tnfr_phase_stress": interface_score_maps(scores)}
-    baseline_maps = full_baseline_score_maps(
-        graph, state_key="label", feature_key="x"
-    )
+    baseline_maps = full_baseline_score_maps(graph, state_key="label", feature_key="x")
     score_maps = {**tnfr_maps, **baseline_maps}
 
     # Non-circular target: the planted boundary nodes (NOT raw disagreement).
@@ -138,9 +135,7 @@ def run_static_spatial() -> None:
         f"planted interface nodes: {evaluation['review_node_count']}"
     )
     print("\nRanking power (ROC-AUC) against planted boundary target:")
-    rows = sorted(
-        evaluation["score_comparison"], key=lambda r: r["auc"], reverse=True
-    )
+    rows = sorted(evaluation["score_comparison"], key=lambda r: r["auc"], reverse=True)
     for row in rows:
         print(f"  {row['score']:<28} AUC={row['auc']:.3f}")
 
@@ -186,9 +181,7 @@ def synthetic_regime_switch(
     )
 
     signals = np.concatenate([incoherent, coherent], axis=1)
-    labels = np.concatenate(
-        [np.zeros(block, dtype=int), np.ones(block, dtype=int)]
-    )
+    labels = np.concatenate([np.zeros(block, dtype=int), np.ones(block, dtype=int)])
     return signals, labels
 
 
@@ -222,9 +215,7 @@ def run_multichannel() -> None:
         f"  ξ_C:  {_fmt(data['xi_c'][0])} -> {_fmt(data['xi_c'][-1])}"
     )
 
-    discrimination = evaluate_synchrony_discrimination(
-        signals, labels, config=cfg
-    )
+    discrimination = evaluate_synchrony_discrimination(signals, labels, config=cfg)
     print("\n" + discrimination.summary())
     print(
         "\nNote: on this easy synthetic switch |∇φ| separates the regimes as\n"

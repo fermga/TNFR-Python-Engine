@@ -35,9 +35,7 @@ class TestU6ConfinementSweep:
         assert report.verdict == "EMPIRICAL_FINITE_GRAPH_ONLY"
         assert len(report.points) == 4
         assert report.summary["n_points"] == 4
-        assert report.summary["scope"] == (
-            "finite_graph_y2_empirical_not_clay_proof"
-        )
+        assert report.summary["scope"] == ("finite_graph_y2_empirical_not_clay_proof")
         assert report.summary["n_confined"] == 2
         assert report.summary["n_unconfined"] == 2
 
@@ -54,9 +52,7 @@ class TestU6ConfinementSweep:
             assert point.gauge_invariant
             assert point.gap >= 0.0
             assert point.lambda1 >= point.lambda0
-            assert point.metadata["finite_scope"] == (
-                "Y2_empirical_finite_graph_only"
-            )
+            assert point.metadata["finite_scope"] == ("Y2_empirical_finite_graph_only")
 
     def test_sweep_is_reproducible(self):
         first = _small_sweep()

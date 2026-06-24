@@ -66,20 +66,9 @@ from ..operators import apply_glyph
 from ..types import GlyphCode
 from . import canonical, coordination, dnfr, integrators, metabolism
 from .adaptation import adapt_vf_by_coherence
-from .bifurcation import get_bifurcation_paths, compute_bifurcation_score
-from .propagation import (
-    propagate_dissonance,
-    compute_network_dissonance_field,
-    detect_bifurcation_cascade,
-)
-from .aliases import (
-    ALIAS_D2EPI,
-    ALIAS_DNFR,
-    ALIAS_DSI,
-    ALIAS_EPI,
-    ALIAS_SI,
-    ALIAS_VF,
-)
+from .adaptive_sequences import AdaptiveSequenceSelector
+from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_EPI, ALIAS_SI, ALIAS_VF
+from .bifurcation import compute_bifurcation_score, get_bifurcation_paths
 from .canonical import (
     NodalEquationResult,
     compute_canonical_nodal_derivative,
@@ -99,11 +88,9 @@ from .dnfr import (
     dnfr_phase_only,
     set_delta_nfr_hook,
 )
-from .dynamic_limits import (
-    DynamicLimits,
-    DynamicLimitsConfig,
-    compute_dynamic_limits,
-)
+from .dynamic_limits import DynamicLimits, DynamicLimitsConfig, compute_dynamic_limits
+from .feedback import StructuralFeedbackLoop
+from .homeostasis import StructuralHomeostasis
 from .integrators import (
     AbstractIntegrator,
     DefaultIntegrator,
@@ -111,14 +98,10 @@ from .integrators import (
     update_epi_via_nodal_equation,
 )
 from .learning import AdaptiveLearningSystem
-from .feedback import StructuralFeedbackLoop
-from .adaptive_sequences import AdaptiveSequenceSelector
-from .homeostasis import StructuralHomeostasis
-from .structural_clip import (
-    structural_clip,
-    StructuralClipStats,
-    get_clip_stats,
-    reset_clip_stats,
+from .propagation import (
+    compute_network_dissonance_field,
+    detect_bifurcation_cascade,
+    propagate_dissonance,
 )
 from .runtime import (
     _maybe_remesh,
@@ -149,6 +132,12 @@ from .selectors import (
     _SelectorPreselection,
     default_glyph_selector,
     parametric_glyph_selector,
+)
+from .structural_clip import (
+    StructuralClipStats,
+    get_clip_stats,
+    reset_clip_stats,
+    structural_clip,
 )
 
 __all__ = (

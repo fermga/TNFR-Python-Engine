@@ -59,12 +59,11 @@ from tnfr.navier_stokes.operator import (
     build_torus_graph_3d,
 )
 
-
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-N_2D = 32                       # full 2D TG resolution
-N_3D = 12                       # 3D embedded + 3D TG resolution
+N_2D = 32  # full 2D TG resolution
+N_3D = 12  # 3D embedded + 3D TG resolution
 DT = 0.01
 T_FINAL = 0.5
 STEPS = int(round(T_FINAL / DT))  # 50
@@ -73,10 +72,10 @@ AMPLITUDE = 1.0
 RECORD_EVERY = 10
 
 # Pass-criterion thresholds
-ENSTROPHY_MONOTONE_TOL = 1e-12      # 2D: |max delta-Z (upward)| must be tiny
-STRETCHING_ZERO_TOL = 1e-10         # 3D-embedded: machine-eps band
-STRETCHING_3D_MIN = 0.1             # true 3D: must exceed this
-RATIO_MIN = 1e6                     # 3D / 2D-embedded must be huge
+ENSTROPHY_MONOTONE_TOL = 1e-12  # 2D: |max delta-Z (upward)| must be tiny
+STRETCHING_ZERO_TOL = 1e-10  # 3D-embedded: machine-eps band
+STRETCHING_3D_MIN = 0.1  # true 3D: must exceed this
+RATIO_MIN = 1e6  # 3D / 2D-embedded must be huge
 
 
 # ---------------------------------------------------------------------------
@@ -145,9 +144,7 @@ def run_3d(
         if k % RECORD_EVERY == 0 or k == STEPS:
             times.append(op.time)
             P.append(op.stretching_production())
-            omega_sup.append(
-                float(np.linalg.norm(op.vorticity_3d(), axis=0).max())
-            )
+            omega_sup.append(float(np.linalg.norm(op.vorticity_3d(), axis=0).max()))
     return {
         "times": np.array(times),
         "P": np.array(P),
@@ -171,16 +168,15 @@ def main() -> None:
 
     print("[1/3] Running 2D Taylor-Green (no stretching by algebra)...")
     res_2d = run_2d(N_2D)
-    print(f"      Done. Z(0) = {res_2d['Z'][0]:.4f}, "
-          f"Z(T) = {res_2d['Z'][-1]:.4f}.")
+    print(f"      Done. Z(0) = {res_2d['Z'][0]:.4f}, " f"Z(T) = {res_2d['Z'][-1]:.4f}.")
 
-    print("[2/3] Running 3D operator with 2D-embedded IC "
-          "(stretching must be zero)...")
+    print(
+        "[2/3] Running 3D operator with 2D-embedded IC " "(stretching must be zero)..."
+    )
     res_emb = run_3d(N_3D, embed_2d=True)
     print(f"      Done. max|P(t)| = {np.abs(res_emb['P']).max():.3e}.")
 
-    print("[3/3] Running 3D operator with true 3D TG "
-          "(stretching must be > 0)...")
+    print("[3/3] Running 3D operator with true 3D TG " "(stretching must be > 0)...")
     res_3d = run_3d(N_3D, embed_2d=False)
     print(f"      Done. max|P(t)| = {np.abs(res_3d['P']).max():.3e}.")
 
@@ -193,8 +189,7 @@ def main() -> None:
     print("-" * 76)
     print(f"{'t':>10} {'Z(t)':>16} {'||omega||_inf':>18}")
     for i, t in enumerate(res_2d["times"]):
-        print(f"{t:>10.4f} {res_2d['Z'][i]:>16.6e} "
-              f"{res_2d['omega_sup'][i]:>18.6f}")
+        print(f"{t:>10.4f} {res_2d['Z'][i]:>16.6e} " f"{res_2d['omega_sup'][i]:>18.6f}")
 
     print()
     print("-" * 76)
@@ -203,8 +198,9 @@ def main() -> None:
     print("-" * 76)
     print(f"{'t':>10} {'P(t)':>18} {'||omega||_inf':>18}")
     for i, t in enumerate(res_emb["times"]):
-        print(f"{t:>10.4f} {res_emb['P'][i]:>18.6e} "
-              f"{res_emb['omega_sup'][i]:>18.6f}")
+        print(
+            f"{t:>10.4f} {res_emb['P'][i]:>18.6e} " f"{res_emb['omega_sup'][i]:>18.6f}"
+        )
 
     print()
     print("-" * 76)
@@ -213,8 +209,7 @@ def main() -> None:
     print("-" * 76)
     print(f"{'t':>10} {'P(t)':>18} {'||omega||_inf':>18}")
     for i, t in enumerate(res_3d["times"]):
-        print(f"{t:>10.4f} {res_3d['P'][i]:>18.6e} "
-              f"{res_3d['omega_sup'][i]:>18.6f}")
+        print(f"{t:>10.4f} {res_3d['P'][i]:>18.6e} " f"{res_3d['omega_sup'][i]:>18.6f}")
 
     # ------------------------------------------------------------ criteria
     print()
@@ -226,23 +221,29 @@ def main() -> None:
     dZ = np.diff(res_2d["Z"])
     max_upward = float(dZ.max())  # most positive change
     c1 = max_upward <= ENSTROPHY_MONOTONE_TOL
-    print(f"C1 (2D no stretching source -> Z monotone decay): "
-          f"max upward dZ = {max_upward:+.3e} <= {ENSTROPHY_MONOTONE_TOL:.0e} "
-          f"-> {'PASS' if c1 else 'FAIL'}")
+    print(
+        f"C1 (2D no stretching source -> Z monotone decay): "
+        f"max upward dZ = {max_upward:+.3e} <= {ENSTROPHY_MONOTONE_TOL:.0e} "
+        f"-> {'PASS' if c1 else 'FAIL'}"
+    )
 
     # C2 — 3D embedded stretching ~ machine epsilon
     max_P_emb = float(np.abs(res_emb["P"]).max())
     c2 = max_P_emb <= STRETCHING_ZERO_TOL
-    print(f"C2 (3D operator on 2D-embedded data -> P == 0): "
-          f"max |P| = {max_P_emb:.3e} <= {STRETCHING_ZERO_TOL:.0e} "
-          f"-> {'PASS' if c2 else 'FAIL'}")
+    print(
+        f"C2 (3D operator on 2D-embedded data -> P == 0): "
+        f"max |P| = {max_P_emb:.3e} <= {STRETCHING_ZERO_TOL:.0e} "
+        f"-> {'PASS' if c2 else 'FAIL'}"
+    )
 
     # C3 — 3D true stretching is O(1)
     max_P_3d = float(np.abs(res_3d["P"]).max())
     c3 = max_P_3d >= STRETCHING_3D_MIN
-    print(f"C3 (3D operator on true 3D TG -> P > 0 and active): "
-          f"max |P| = {max_P_3d:.3e} >= {STRETCHING_3D_MIN:.0e} "
-          f"-> {'PASS' if c3 else 'FAIL'}")
+    print(
+        f"C3 (3D operator on true 3D TG -> P > 0 and active): "
+        f"max |P| = {max_P_3d:.3e} >= {STRETCHING_3D_MIN:.0e} "
+        f"-> {'PASS' if c3 else 'FAIL'}"
+    )
 
     # C4 — Ratio quantifies dimensional separation
     if max_P_emb > 0:
@@ -250,9 +251,11 @@ def main() -> None:
     else:
         ratio = math.inf
     c4 = ratio >= RATIO_MIN
-    print(f"C4 (dimensional separation ratio P_3D / P_embed >> 1): "
-          f"ratio = {ratio:.3e} >= {RATIO_MIN:.0e} "
-          f"-> {'PASS' if c4 else 'FAIL'}")
+    print(
+        f"C4 (dimensional separation ratio P_3D / P_embed >> 1): "
+        f"ratio = {ratio:.3e} >= {RATIO_MIN:.0e} "
+        f"-> {'PASS' if c4 else 'FAIL'}"
+    )
 
     print()
     n_pass = sum([c1, c2, c3, c4])

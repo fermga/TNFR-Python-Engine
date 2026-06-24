@@ -52,34 +52,34 @@ References
 - AGENTS.md §"Minimal Structural Degrees of Freedom"
 """
 
-import os
-import sys
 import math
+import os
 import random
+import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.physics.conservation import compute_energy_functional
 from tnfr.physics.symplectic_substrate import (
-    extract_phase_space_point,
-    verify_canonical_structure,
-    substrate_hamiltonian,
     background_potential,
     canonical_bracket_table,
+    extract_phase_space_point,
     liouville_divergence,
-    symplectic_form_matrix,
-    verify_noether_conservation,
     noether_charges,
+    substrate_hamiltonian,
+    symplectic_form_matrix,
+    verify_canonical_structure,
     verify_hermitian_structure,
     verify_integrability,
+    verify_noether_conservation,
     verify_poincare_cartan,
-    verify_symplectic_reduction,
     verify_polarization_symmetry,
     verify_substrate_geometry,
+    verify_symplectic_reduction,
 )
 
 
@@ -111,17 +111,23 @@ def experiment_1_emergent_substrate():
     G = _build_graph(30)
     cert = verify_canonical_structure(G)
 
-    print(f"  Network: N = {cert.n_nodes} nodes  →  phase space dim = "
-          f"{cert.dimension}")
+    print(
+        f"  Network: N = {cert.n_nodes} nodes  →  phase space dim = "
+        f"{cert.dimension}"
+    )
     print()
     print(f"  antisymmetric  ωᵀ = −ω        : {cert.is_antisymmetric}")
-    print(f"  non-degenerate det ω = {cert.determinant:.1f}     : "
-          f"{cert.is_nondegenerate}")
+    print(
+        f"  non-degenerate det ω = {cert.determinant:.1f}     : "
+        f"{cert.is_nondegenerate}"
+    )
     print(f"  closed         dω = 0         : {cert.is_closed}")
     print(f"  canonical Poisson brackets    : {cert.brackets_canonical}")
     print(f"  Jacobi identity               : {cert.jacobi_satisfied}")
-    print(f"  Liouville div(X_H) = {cert.liouville_divergence:.1e}    : "
-          f"{abs(cert.liouville_divergence) < 1e-9}")
+    print(
+        f"  Liouville div(X_H) = {cert.liouville_divergence:.1e}    : "
+        f"{abs(cert.liouville_divergence) < 1e-9}"
+    )
     print(f"  harmonic flow q̇=p, ṗ=−q       : {cert.flow_is_harmonic}")
     print()
     print(f"  VALID SYMPLECTIC MANIFOLD: {cert.is_valid_symplectic_manifold}")
@@ -149,8 +155,10 @@ def experiment_2_energy_consistency():
     print("H_sub + U should equal compute_energy_functional(G).")
     print()
 
-    print(f"{'N':>5}  {'H_sub':>10}  {'U_bg':>10}  {'H_sub+U':>10}"
-          f"  {'energy E':>10}  {'match':>6}")
+    print(
+        f"{'N':>5}  {'H_sub':>10}  {'U_bg':>10}  {'H_sub+U':>10}"
+        f"  {'energy E':>10}  {'match':>6}"
+    )
     print("-" * 60)
     for n in (10, 20, 30, 50):
         G = _build_graph(n, seed=n)
@@ -159,8 +167,10 @@ def experiment_2_energy_consistency():
         u_bg = background_potential(pt)
         energy = compute_energy_functional(G)
         match = abs((h_sub + u_bg) - energy) < 1e-9
-        print(f"{n:>5}  {h_sub:>10.4f}  {u_bg:>10.4f}  {h_sub + u_bg:>10.4f}"
-              f"  {energy:>10.4f}  {'OK' if match else 'FAIL':>6}")
+        print(
+            f"{n:>5}  {h_sub:>10.4f}  {u_bg:>10.4f}  {h_sub + u_bg:>10.4f}"
+            f"  {energy:>10.4f}  {'OK' if match else 'FAIL':>6}"
+        )
 
     print()
     print("VALIDATED: the substrate Hamiltonian reconstructs the canonical")
@@ -268,14 +278,11 @@ def experiment_5_hermitian_structure():
     print(f"  g = identity (pos. definite)  : {cert.metric_is_identity}")
     print(f"  J is g-orthogonal             : {cert.j_is_orthogonal}")
     print(f"  compatible ω(u,v) = g(Ju,v)    : {cert.compatible}")
-    print(f"  Ψ = ζ^A (geometric coordinate) : "
-          f"{cert.psi_is_geometric_coordinate}")
-    print(f"  H_sub = Kähler potential       : "
-          f"{cert.kahler_potential_matches}")
+    print(f"  Ψ = ζ^A (geometric coordinate) : " f"{cert.psi_is_geometric_coordinate}")
+    print(f"  H_sub = Kähler potential       : " f"{cert.kahler_potential_matches}")
     print(f"  complex dimension dim_ℂ        : {cert.complex_dimension}")
     print()
-    print(f"  VALID HERMITIAN STRUCTURE: "
-          f"{cert.is_valid_hermitian_structure}")
+    print(f"  VALID HERMITIAN STRUCTURE: " f"{cert.is_valid_hermitian_structure}")
     print()
     print("VALIDATED: Ψ = K_φ + i·J_φ of physics/gauge.py is NOT ad-hoc — it")
     print("is the complex coordinate ζ^A the substrate's complex structure J")
@@ -307,16 +314,23 @@ def experiment_6_integrability():
 
     print(f"  degrees of freedom (2N)        : {cert.degrees_of_freedom}")
     print(f"  independent action variables   : {cert.n_action_variables}")
-    print(f"  actions in involution {{I,J}}=0  : "
-          f"{cert.actions_in_involution} "
-          f"(max |bracket| {cert.max_involution_bracket:.1e})")
-    print(f"  actions conserved along flow   : {cert.actions_conserved} "
-          f"(max drift {cert.max_action_drift:.1e})")
-    print(f"  angles advance θ(t) = θ(0) − t : "
-          f"{cert.angles_advance_linearly} "
-          f"(max err {cert.max_angle_error:.1e})")
-    print(f"  Σ I^A = E_geo,  Σ I^B = E_pot   : "
-          f"{cert.sector_actions_match_charges}")
+    print(
+        f"  actions in involution {{I,J}}=0  : "
+        f"{cert.actions_in_involution} "
+        f"(max |bracket| {cert.max_involution_bracket:.1e})"
+    )
+    print(
+        f"  actions conserved along flow   : {cert.actions_conserved} "
+        f"(max drift {cert.max_action_drift:.1e})"
+    )
+    print(
+        f"  angles advance θ(t) = θ(0) − t : "
+        f"{cert.angles_advance_linearly} "
+        f"(max err {cert.max_angle_error:.1e})"
+    )
+    print(
+        f"  Σ I^A = E_geo,  Σ I^B = E_pot   : " f"{cert.sector_actions_match_charges}"
+    )
     print()
     print(f"  COMPLETELY INTEGRABLE: {cert.is_completely_integrable}")
     print()
@@ -348,18 +362,23 @@ def experiment_7_poincare_cartan():
     G = _build_graph(30)
     cert = verify_poincare_cartan(G)
 
-    print(f"  ω preserved (MᵀΩM = Ω)         : "
-          f"{cert.preserves_symplectic_form} "
-          f"(drift {cert.max_omega_drift:.1e})")
-    print(f"  palindromic char. polynomial   : "
-          f"{cert.char_poly_palindromic}")
+    print(
+        f"  ω preserved (MᵀΩM = Ω)         : "
+        f"{cert.preserves_symplectic_form} "
+        f"(drift {cert.max_omega_drift:.1e})"
+    )
+    print(f"  palindromic char. polynomial   : " f"{cert.char_poly_palindromic}")
     print(f"  Liouville volume (det M = 1)   : {cert.volume_preserved}")
-    print(f"  ∮ p dq constant under flow     : "
-          f"{cert.relative_invariant_preserved} "
-          f"(drift {cert.max_relative_drift:.1e})")
-    print(f"  Bohr–Sommerfeld |∮p dq| = 2πI  : "
-          f"{cert.bohr_sommerfeld_holds} "
-          f"(err {cert.max_bohr_error:.1e})")
+    print(
+        f"  ∮ p dq constant under flow     : "
+        f"{cert.relative_invariant_preserved} "
+        f"(drift {cert.max_relative_drift:.1e})"
+    )
+    print(
+        f"  Bohr–Sommerfeld |∮p dq| = 2πI  : "
+        f"{cert.bohr_sommerfeld_holds} "
+        f"(err {cert.max_bohr_error:.1e})"
+    )
     print()
     print(f"  ALL INVARIANTS HOLD: {cert.all_invariants_hold}")
     print()
@@ -390,20 +409,27 @@ def experiment_8_symplectic_reduction():
     G = _build_graph(30)
     cert = verify_symplectic_reduction(G)
 
-    print(f"  moment map J = Σ I_k = H_sub   : "
-          f"{cert.moment_map_is_hamiltonian} "
-          f"(J = {cert.moment_map_value:.4f})")
-    print(f"  J conserved (U(1) symmetry)    : "
-          f"{cert.moment_map_conserved} "
-          f"(drift {cert.max_moment_drift:.1e})")
-    print(f"  dim P → dim P//U(1)            : "
-          f"{cert.phase_space_dimension} → {cert.reduced_dimension}  "
-          f"(4N−2)")
-    print(f"  reduced ω non-degenerate       : "
-          f"{cert.reduced_form_nondegenerate} "
-          f"(det {cert.reduced_form_determinant:.3g})")
-    print(f"  relative phases φ_k invariant  : "
-          f"{cert.relative_phases_invariant}")
+    print(
+        f"  moment map J = Σ I_k = H_sub   : "
+        f"{cert.moment_map_is_hamiltonian} "
+        f"(J = {cert.moment_map_value:.4f})"
+    )
+    print(
+        f"  J conserved (U(1) symmetry)    : "
+        f"{cert.moment_map_conserved} "
+        f"(drift {cert.max_moment_drift:.1e})"
+    )
+    print(
+        f"  dim P → dim P//U(1)            : "
+        f"{cert.phase_space_dimension} → {cert.reduced_dimension}  "
+        f"(4N−2)"
+    )
+    print(
+        f"  reduced ω non-degenerate       : "
+        f"{cert.reduced_form_nondegenerate} "
+        f"(det {cert.reduced_form_determinant:.3g})"
+    )
+    print(f"  relative phases φ_k invariant  : " f"{cert.relative_phases_invariant}")
     print()
     print(f"  VALID REDUCTION: {cert.is_valid_reduction}")
     print()
@@ -440,16 +466,21 @@ def experiment_9_polarization():
     print(f"  P_2 = Σ(K_φ·J_ΔNFR − J_φ·Φ_s)  : {cert.p_2:.4f}  (NEW)")
     print(f"  P_3 = E_geo − E_pot            : {cert.p_3:.4f}")
     print(f"  squared magnitude |P|²         : {cert.magnitude_sq:.4f}")
-    print(f"  P_3 = E_geo − E_pot            : "
-          f"{cert.p3_equals_energy_difference}")
-    print(f"  su(2) closes {{P_a,P_b}}=2εP_c   : "
-          f"{cert.su2_algebra_closes} (res {cert.max_algebra_residual:.1e})")
+    print(f"  P_3 = E_geo − E_pot            : " f"{cert.p3_equals_energy_difference}")
+    print(
+        f"  su(2) closes {{P_a,P_b}}=2εP_c   : "
+        f"{cert.su2_algebra_closes} (res {cert.max_algebra_residual:.1e})"
+    )
     print(f"  SU(2) rotation symplectic      : {cert.rotation_is_symplectic}")
-    print(f"  charges conserved along flow   : "
-          f"{cert.charges_conserved} (drift {cert.max_charge_drift:.1e})")
-    print(f"  fully polarized |P_node|=e_node: "
-          f"{cert.full_polarization_holds} "
-          f"(res {cert.max_polarization_residual:.1e})")
+    print(
+        f"  charges conserved along flow   : "
+        f"{cert.charges_conserved} (drift {cert.max_charge_drift:.1e})"
+    )
+    print(
+        f"  fully polarized |P_node|=e_node: "
+        f"{cert.full_polarization_holds} "
+        f"(res {cert.max_polarization_residual:.1e})"
+    )
     print()
     print(f"  VALID POLARIZATION SYMMETRY: {cert.is_valid_polarization_symmetry}")
     print()

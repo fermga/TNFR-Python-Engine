@@ -12,25 +12,19 @@ import math
 import numpy as np
 import pytest
 
-from tnfr.riemann.spectral_conservation import (
-    # Data structures
-    EigenmodeConservation,
+from tnfr.riemann.spectral_conservation import (  # Data structures; Core; Sigma scan; Grammar compliance; Integration
     ConservationAtSigma,
     ConservationSigmaScan,
-    GrammarComplianceResult,
     CriticalConservationAnalysis,
-    # Core
-    compute_spectral_j_phi,
-    compute_spectral_j_dnfr,
+    EigenmodeConservation,
+    GrammarComplianceResult,
     compute_eigenmode_conservation,
-    # Sigma scan
-    scan_conservation_vs_sigma,
-    # Grammar compliance
-    test_grammar_conservation,
-    # Integration
+    compute_spectral_j_dnfr,
+    compute_spectral_j_phi,
     run_critical_conservation_analysis,
+    scan_conservation_vs_sigma,
+    test_grammar_conservation,
 )
-
 
 # ============================================================================
 # Fixtures
@@ -76,7 +70,7 @@ class TestComputeSpectralJPhi:
 
     def test_nonnegative_for_laplacian(self):
         """Graph Laplacian is positive semidefinite => J_phi >= 0."""
-        from tnfr.riemann.operator import build_prime_path_graph, build_h_tnfr
+        from tnfr.riemann.operator import build_h_tnfr, build_prime_path_graph
 
         G = build_prime_path_graph(10)
         H, V = build_h_tnfr(G, sigma=0.5)
@@ -88,7 +82,7 @@ class TestComputeSpectralJPhi:
 
     def test_varies_across_modes(self):
         """Different eigenmodes have different J_phi."""
-        from tnfr.riemann.operator import build_prime_path_graph, build_h_tnfr
+        from tnfr.riemann.operator import build_h_tnfr, build_prime_path_graph
 
         G = build_prime_path_graph(10)
         H, V = build_h_tnfr(G, sigma=0.5)
@@ -123,7 +117,7 @@ class TestComputeSpectralJDNFR:
 
     def test_positive(self):
         """All primes > 1 => log(p) > 0 => J_DNFR > 0."""
-        from tnfr.riemann.operator import build_prime_path_graph, build_h_tnfr
+        from tnfr.riemann.operator import build_h_tnfr, build_prime_path_graph
 
         G = build_prime_path_graph(8)
         H, V = build_h_tnfr(G, sigma=0.5)
@@ -135,7 +129,7 @@ class TestComputeSpectralJDNFR:
 
     def test_hellmann_feynman(self):
         """Verify J_DNFR ≈ numerical dλ/dσ via finite differences."""
-        from tnfr.riemann.operator import build_prime_path_graph, build_h_tnfr
+        from tnfr.riemann.operator import build_h_tnfr, build_prime_path_graph
 
         k = 8
         sigma = 0.5
@@ -198,8 +192,7 @@ class TestEigenmodeConservation:
         """Verify E(j) = Phi_s^2 + |grad_phi|^2 + K_phi^2 + J_phi^2 + J_DNFR^2."""
         for m in small_conservation.modes:
             expected = (
-                m.phi_s**2 + m.grad_phi**2 + m.k_phi**2
-                + m.j_phi**2 + m.j_dnfr**2
+                m.phi_s**2 + m.grad_phi**2 + m.k_phi**2 + m.j_phi**2 + m.j_dnfr**2
             )
             assert m.energy_density == pytest.approx(expected, rel=1e-12)
 
@@ -229,14 +222,16 @@ class TestEigenmodeConservation:
         """Total charge density = sum of per-mode charge densities."""
         expected = sum(m.charge_density for m in small_conservation.modes)
         assert small_conservation.total_charge_density == pytest.approx(
-            expected, rel=1e-12,
+            expected,
+            rel=1e-12,
         )
 
     def test_mean_energy_density(self, small_conservation):
         """Mean energy = total / k."""
         expected = small_conservation.total_energy / small_conservation.k
         assert small_conservation.mean_energy_density == pytest.approx(
-            expected, rel=1e-12,
+            expected,
+            rel=1e-12,
         )
 
     def test_k2_minimal(self):
@@ -292,7 +287,8 @@ class TestConservationSigmaScan:
     def test_basic_scan(self):
         """Sigma scan produces correct shapes."""
         scan = scan_conservation_vs_sigma(
-            8, np.linspace(0.2, 0.8, 7),
+            8,
+            np.linspace(0.2, 0.8, 7),
         )
         assert scan.k == 8
         assert len(scan.sigma_values) == 7
@@ -324,7 +320,8 @@ class TestConservationSigmaScan:
     def test_critical_conservation_present(self):
         """Sigma scan includes critical snapshot."""
         scan = scan_conservation_vs_sigma(
-            8, np.linspace(0.2, 0.8, 7),
+            8,
+            np.linspace(0.2, 0.8, 7),
         )
         assert scan.critical_conservation is not None
         assert scan.critical_conservation.k == 8
@@ -404,14 +401,19 @@ class TestGrammarComplianceConservation:
         results = test_grammar_conservation(6)
         names = {r.protocol for r in results}
         assert names == {
-            "smooth_forward", "smooth_backward",
-            "abrupt_forward", "abrupt_backward",
+            "smooth_forward",
+            "smooth_backward",
+            "abrupt_forward",
+            "abrupt_backward",
         }
 
     def test_sigma_endpoints(self):
         """Sigma endpoints are correct."""
         results = test_grammar_conservation(
-            6, sigma=0.5, delta_small=0.02, delta_large=0.3,
+            6,
+            sigma=0.5,
+            delta_small=0.02,
+            delta_large=0.3,
         )
         for r in results:
             assert r.sigma_start == pytest.approx(0.5, abs=1e-10)
@@ -541,7 +543,8 @@ class TestPhysicsValidation:
         S_grammar -> 0 at criticality.
         """
         scan = scan_conservation_vs_sigma(
-            12, np.linspace(0.2, 0.8, 25),
+            12,
+            np.linspace(0.2, 0.8, 25),
         )
         # Find gradient at sigma closest to 0.5
         idx_half = int(np.argmin(np.abs(scan.sigma_values - 0.5)))
@@ -552,7 +555,7 @@ class TestPhysicsValidation:
 
     def test_j_dnfr_hellmann_feynman_general(self):
         """J_DNFR matches numerical dλ/dσ for k=10 at sigma=0.3."""
-        from tnfr.riemann.operator import build_prime_path_graph, build_h_tnfr
+        from tnfr.riemann.operator import build_h_tnfr, build_prime_path_graph
 
         k, sigma, ds = 10, 0.3, 1e-5
         G = build_prime_path_graph(k)
@@ -610,7 +613,10 @@ class TestEdgeCases:
     def test_grammar_small_deltas(self):
         """Very small deltas for grammar test."""
         results = test_grammar_conservation(
-            6, sigma=0.5, delta_small=0.001, delta_large=0.01,
+            6,
+            sigma=0.5,
+            delta_small=0.001,
+            delta_large=0.01,
         )
         assert len(results) == 4
         for r in results:
@@ -650,5 +656,6 @@ class TestReproducibility:
         for a, b in zip(r1, r2):
             assert a.charge_drift == pytest.approx(b.charge_drift, rel=1e-14)
             assert a.conservation_quality == pytest.approx(
-                b.conservation_quality, rel=1e-14,
+                b.conservation_quality,
+                rel=1e-14,
             )

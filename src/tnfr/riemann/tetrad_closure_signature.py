@@ -151,13 +151,9 @@ def _build_canonical_demo_graph(n_nodes: int, seed: int) -> Any:
     rng = np.random.default_rng(int(seed))
     for node in list(G.nodes()):
         G.nodes[node]["EPI"] = float(0.5 + 0.05 * (rng.random() - 0.5))
-        G.nodes[node]["theta"] = float(
-            2.0 * math.pi * (rng.random() - 0.5)
-        )
+        G.nodes[node]["theta"] = float(2.0 * math.pi * (rng.random() - 0.5))
         current_vf = float(G.nodes[node].get("nu_f", 1.0))
-        G.nodes[node]["nu_f"] = max(
-            0.05, current_vf + 0.05 * (rng.random() - 0.5)
-        )
+        G.nodes[node]["nu_f"] = max(0.05, current_vf + 0.05 * (rng.random() - 0.5))
         # Canonical DeltaNFR scalar payload (Tier-1 B3 slot).
         G.nodes[node]["dnfr"] = float(0.1 * (rng.random() - 0.5))
     return G
@@ -187,9 +183,7 @@ def _inspect_input_scalar_closure(
 
     n_scalar = 0
     n_total = 0
-    per_key_nonscalar: dict[str, int] = {
-        k: 0 for k in _CANONICAL_PER_NODE_KEYS
-    }
+    per_key_nonscalar: dict[str, int] = {k: 0 for k in _CANONICAL_PER_NODE_KEYS}
     per_key_nonscalar["DeltaNFR"] = 0
     for node in G.nodes():
         for key in _CANONICAL_PER_NODE_KEYS:
@@ -231,9 +225,9 @@ def _inspect_output_scalar_closure(
         Number of non-scalar output values per tetrad field.
     """
     from ..physics.canonical import (
-        compute_structural_potential,
-        compute_phase_gradient,
         compute_phase_curvature,
+        compute_phase_gradient,
+        compute_structural_potential,
         estimate_coherence_length,
     )
 
@@ -341,9 +335,7 @@ class TetradClosureSignatureCertificate:
     diagnostics: dict[str, Any] = field(default_factory=dict)
 
     def summary(self) -> str:
-        per_key = ", ".join(
-            f"{k}={v}" for k, v in self.per_key_input_nonscalar.items()
-        )
+        per_key = ", ".join(f"{k}={v}" for k, v in self.per_key_input_nonscalar.items())
         per_field = ", ".join(
             f"{k}={v}" for k, v in self.per_field_output_nonscalar.items()
         )
@@ -418,18 +410,14 @@ def compute_tetrad_closure_signature(
     G = _build_canonical_demo_graph(int(n_nodes), int(seed))
 
     n_scalar_in, n_total_in, per_key_in = _inspect_input_scalar_closure(G)
-    n_scalar_out, n_total_out, per_field_out = (
-        _inspect_output_scalar_closure(G)
-    )
+    n_scalar_out, n_total_out, per_field_out = _inspect_output_scalar_closure(G)
     n_nonscalar_in = n_total_in - n_scalar_in
     n_nonscalar_out = n_total_out - n_scalar_out
     input_scalar_fraction = (
         float(n_scalar_in) / float(n_total_in) if n_total_in else 1.0
     )
     output_scalar_fraction = (
-        float(n_scalar_out) / float(n_total_out)
-        if n_total_out
-        else 1.0
+        float(n_scalar_out) / float(n_total_out) if n_total_out else 1.0
     )
     squashed, raw = _signature(
         n_nonscalar_in + n_nonscalar_out, n_total_in + n_total_out

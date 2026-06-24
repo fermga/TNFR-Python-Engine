@@ -115,6 +115,7 @@ __all__ = [
 # Pointwise gaps
 # ---------------------------------------------------------------------------
 
+
 def twisted_paley_gap_p32(
     spectrum: TwistedPrimeLadderSpectrum,
     chi: DirichletCharacter,
@@ -228,6 +229,7 @@ def twisted_paley_gap_cross(
 # ---------------------------------------------------------------------------
 # Sweep certificate
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class TwistedPaleyGapSweep:

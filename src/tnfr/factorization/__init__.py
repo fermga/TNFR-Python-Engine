@@ -12,10 +12,9 @@ is actually called without the dependency installed.
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import Any
-
-import sys
 
 __all__ = ["factorize", "SpectralAnalysisResult", "SpectralPaleyFactorizer"]
 
@@ -46,6 +45,7 @@ def _load_spectral_paley() -> tuple[Any, Any]:
             SpectralAnalysisResult,
             SpectralPaleyFactorizer,
         )
+
         return SpectralPaleyFactorizer, SpectralAnalysisResult
     except ModuleNotFoundError as exc:
         raise TNFRUserError(

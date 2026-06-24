@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from .epi import BEPIElement
-from .spaces import BanachSpaceEPI
 from dataclasses import dataclass
 from typing import Callable, Iterable, Mapping, Protocol, Sequence
+
+from .epi import BEPIElement
+from .spaces import BanachSpaceEPI
 
 __all__ = [
     "CoherenceMonotonicityReport",

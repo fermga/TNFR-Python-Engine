@@ -74,9 +74,7 @@ def main() -> None:
         "input_scalar = 1.0000, output_scalar = 1.0000, "
         "verdict = SCALAR_CLOSURE_ADEQUATE"
     )
-    print(
-        "Scope: necessary-condition diagnostic; does NOT advance G4 = RH."
-    )
+    print("Scope: necessary-condition diagnostic; does NOT advance G4 = RH.")
 
 
 if __name__ == "__main__":

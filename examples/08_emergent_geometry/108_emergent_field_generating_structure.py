@@ -100,27 +100,25 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import random
+
 import networkx as nx
 
-from tnfr.physics.canonical import (
-    compute_phase_gradient,
-    compute_phase_curvature,
-)
+from tnfr.physics.canonical import compute_phase_curvature, compute_phase_gradient
 from tnfr.physics.extended import compute_phase_current
-from tnfr.physics.unified import (
-    compute_chirality_field,
-    compute_topological_charge,
-    compute_symmetry_breaking_field,
-    compute_dnfr_flux,
-    compute_energy_density,
-    compute_coherence_coupling_field,
-    compute_action_density,
-)
 from tnfr.physics.fields import compute_structural_potential
 from tnfr.physics.gauge import compute_topological_norm
+from tnfr.physics.unified import (
+    compute_action_density,
+    compute_chirality_field,
+    compute_coherence_coupling_field,
+    compute_dnfr_flux,
+    compute_energy_density,
+    compute_symmetry_breaking_field,
+    compute_topological_charge,
+)
 
 
 def build_graph(seed, n):
@@ -179,19 +177,24 @@ def experiment_1_generating_structure():
             r["C"] = max(r["C"], abs(Cc[nd] - ps * abs(Psi)))
             r["S"] = max(r["S"], abs(S[nd] - (Om * Om - Psi * Psi).real))
             r["chi"] = max(r["chi"], abs(chi[nd] - (Psi * Om).real))
-            r["A"] = max(r["A"], abs(A[nd] - (ps * Om.real
-                                              + (Psi * Psi).imag / 2
-                                              + (Om * Om).imag / 2)))
+            r["A"] = max(
+                r["A"],
+                abs(A[nd] - (ps * Om.real + (Psi * Psi).imag / 2 + (Om * Om).imag / 2)),
+            )
             r["Q"] = max(r["Q"], abs(Q[nd] - (Psi * Om.conjugate()).imag))
         for k in worst:
             worst[k] = max(worst[k], r[k])
-        print(f"  ws(n={n},s={seed})  {r['E']:9.1e} {r['C']:9.1e} "
-              f"{r['S']:9.1e} {r['chi']:9.1e} {r['A']:9.1e} {r['Q']:9.1e}")
+        print(
+            f"  ws(n={n},s={seed})  {r['E']:9.1e} {r['C']:9.1e} "
+            f"{r['S']:9.1e} {r['chi']:9.1e} {r['A']:9.1e} {r['Q']:9.1e}"
+        )
 
     print()
-    print(f"  worst residual over all graphs: "
-          f"E={worst['E']:.1e} C={worst['C']:.1e} S={worst['S']:.1e} "
-          f"chi={worst['chi']:.1e} A={worst['A']:.1e} Q={worst['Q']:.1e}")
+    print(
+        f"  worst residual over all graphs: "
+        f"E={worst['E']:.1e} C={worst['C']:.1e} S={worst['S']:.1e} "
+        f"chi={worst['chi']:.1e} A={worst['A']:.1e} Q={worst['Q']:.1e}"
+    )
     print()
     print("VERDICT: the six downstream emergent fields carry NO information")
     print("beyond the scalar Phi_s and the two complex fields Psi and Omega.")
@@ -228,8 +231,8 @@ def experiment_2_oriented_area():
         for nd in G.nodes():
             psi = (kphi[nd], jphi[nd])
             om = (grad[nd], jdnfr[nd])
-            cross = om[0] * psi[1] - om[1] * psi[0]       # omega x psi
-            dot = psi[0] * om[0] + psi[1] * om[1]         # psi . omega
+            cross = om[0] * psi[1] - om[1] * psi[0]  # omega x psi
+            dot = psi[0] * om[0] + psi[1] * om[1]  # psi . omega
             e_cross = max(e_cross, abs(Q[nd] - cross))
             lagr = cross * cross + dot * dot
             tnorm = (psi[0] ** 2 + psi[1] ** 2) * (om[0] ** 2 + om[1] ** 2)

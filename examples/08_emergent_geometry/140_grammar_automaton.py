@@ -78,28 +78,50 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import itertools
 
 import numpy as np
 
-from tnfr.operators.grammar_types import (
-    GENERATORS, CLOSURES, STABILIZERS, DESTABILIZERS, TRANSFORMERS,
-)
 from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Coupling, Resonance,
-    Silence, Expansion, Contraction, SelfOrganization, Mutation,
-    Transition, Recursivity,
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
+)
+from tnfr.operators.grammar_types import (
+    CLOSURES,
+    DESTABILIZERS,
+    GENERATORS,
+    STABILIZERS,
+    TRANSFORMERS,
 )
 from tnfr.operators.grammar_validate import validate_grammar
 
 NAME2INST = {
-    "emission": Emission(), "reception": Reception(), "coherence": Coherence(),
-    "dissonance": Dissonance(), "coupling": Coupling(), "resonance": Resonance(),
-    "silence": Silence(), "expansion": Expansion(), "contraction": Contraction(),
-    "self_organization": SelfOrganization(), "mutation": Mutation(),
-    "transition": Transition(), "recursivity": Recursivity(),
+    "emission": Emission(),
+    "reception": Reception(),
+    "coherence": Coherence(),
+    "dissonance": Dissonance(),
+    "coupling": Coupling(),
+    "resonance": Resonance(),
+    "silence": Silence(),
+    "expansion": Expansion(),
+    "contraction": Contraction(),
+    "self_organization": SelfOrganization(),
+    "mutation": Mutation(),
+    "transition": Transition(),
+    "recursivity": Recursivity(),
 }
 ALPHA = list(NAME2INST.keys())
 START = ("START",)
@@ -127,7 +149,7 @@ def transition(state, x):
         if x not in GENERATORS:
             return None
         return ((tag(x),), x in DESTABILIZERS, x in STABILIZERS, x in CLOSURES)
-    if len(state) != 4:                       # DEAD
+    if len(state) != 4:  # DEAD
         return None
     win, has_d, has_s, _last_clo = state
     if x in TRANSFORMERS:
@@ -136,8 +158,12 @@ def transition(state, x):
         if x == "mutation" and "I" not in win:
             return None
     new_win = (win + (tag(x),))[-3:]
-    return (new_win, has_d or x in DESTABILIZERS,
-            has_s or x in STABILIZERS, x in CLOSURES)
+    return (
+        new_win,
+        has_d or x in DESTABILIZERS,
+        has_s or x in STABILIZERS,
+        x in CLOSURES,
+    )
 
 
 def is_accept(state):
@@ -173,7 +199,7 @@ def automaton_counts(edges, maxn):
     for _ in range(maxn):
         nxt: dict = {}
         for s, c in layer.items():
-            for (_x, ns) in edges.get(s, ()):
+            for _x, ns in edges.get(s, ()):
                 nxt[ns] = nxt.get(ns, 0) + c
         out.append(sum(c for st, c in nxt.items() if is_accept(st)))
         layer = nxt
@@ -186,15 +212,17 @@ def oracle_counts(maxn):
     out = []
     for n in range(1, maxn + 1):
         if n == 1:
-            out.append(sum(1 for x in ALPHA
-                           if validate_grammar([NAME2INST[x]], 0.0)))
+            out.append(sum(1 for x in ALPHA if validate_grammar([NAME2INST[x]], 0.0)))
             continue
         c = 0
         for first in GEN:
             for last in CLO:
                 for mid in itertools.product(ALPHA, repeat=n - 2):
-                    seq = ([NAME2INST[first]] + [NAME2INST[m] for m in mid]
-                           + [NAME2INST[last]])
+                    seq = (
+                        [NAME2INST[first]]
+                        + [NAME2INST[m] for m in mid]
+                        + [NAME2INST[last]]
+                    )
                     if validate_grammar(seq, 0.0):
                         c += 1
         out.append(c)
@@ -219,8 +247,9 @@ def experiment_1_automaton_reproduces_grammar(states, edges):
     orac = oracle_counts(maxn)
     print(f"  {'n':>3} {'automaton':>11} {'oracle N(n)':>12} {'match':>7}")
     for n in range(maxn):
-        print(f"  {n+1:>3} {auto[n]:>11} {orac[n]:>12} "
-              f"{str(auto[n] == orac[n]):>7}")
+        print(
+            f"  {n+1:>3} {auto[n]:>11} {orac[n]:>12} " f"{str(auto[n] == orac[n]):>7}"
+        )
     print()
     print("  -> the automaton (state = last-3 tags + U2 flags + closure bit)")
     print("     reproduces the canonical oracle exactly: it IS the grammar's")
@@ -240,13 +269,13 @@ def experiment_2_minimal_dfa(states, edges):
     for s in allstates:
         for x in ALPHA:
             ns = transition(s, x) if s != DEAD else None
-            delta[(sid[s], x)] = (sid[ns] if (ns is not None and ns in sid)
-                                  else sid[DEAD])
+            delta[(sid[s], x)] = (
+                sid[ns] if (ns is not None and ns in sid) else sid[DEAD]
+            )
     part = {sid[s]: (1 if is_accept(s) else 0) for s in allstates}
     while True:
         sig = {
-            sid[s]: (part[sid[s]],)
-            + tuple(part[delta[(sid[s], x)]] for x in ALPHA)
+            sid[s]: (part[sid[s]],) + tuple(part[delta[(sid[s], x)]] for x in ALPHA)
             for s in allstates
         }
         newlab: dict = {}
@@ -262,8 +291,9 @@ def experiment_2_minimal_dfa(states, edges):
         part = newpart
     nclasses = len(set(part.values()))
     print(f"  reachable states (raw) = {len(states)}")
-    print(f"  minimal DFA states (Myhill-Nerode index, incl dead sink) "
-          f"= {nclasses}")
+    print(
+        f"  minimal DFA states (Myhill-Nerode index, incl dead sink) " f"= {nclasses}"
+    )
     print()
     print(f"  -> a FINITE minimal automaton of {nclasses} states EXISTS and is")
     print("     exhibited: L is regular CONSTRUCTIVELY (example 139 argued it")
@@ -289,14 +319,16 @@ def experiment_3_exact_capacity(states, edges):
     idx = {s: i for i, s in enumerate(trim)}
     M = np.zeros((len(trim), len(trim)))
     for s in trim:
-        for (_x, ns) in edges.get(s, ()):
+        for _x, ns in edges.get(s, ()):
             if ns in idx:
                 M[idx[s], idx[ns]] += 1
     lam = float(np.max(np.abs(np.linalg.eigvals(M))))
     print(f"  trim states = {len(trim)}")
     print(f"  Perron-Frobenius eigenvalue lambda = {lam:.6f}")
-    print(f"  capacity log2(lambda) = {np.log2(lam):.4f} bits/operator "
-          f"(alphabet log2(13) = {np.log2(13):.4f})")
+    print(
+        f"  capacity log2(lambda) = {np.log2(lam):.4f} bits/operator "
+        f"(alphabet log2(13) = {np.log2(13):.4f})"
+    )
     print()
     print("  lambda is the connective constant = asymptotic branching factor of")
     print("  grammatically-allowed continuations.  The finite N(n)/N(n-1)")

@@ -25,8 +25,8 @@ theorem to the eigenvalue domain.
 from __future__ import annotations
 
 import math
-import sys
 import os
+import sys
 
 import networkx as nx
 import numpy as np
@@ -42,21 +42,21 @@ from tnfr.physics.conservation import (
 )
 from tnfr.physics.spectral_conservation import (
     SpectralConservationBalance,
-    SpectralWardIdentity,
     SpectralLyapunovResult,
     SpectralSectorDecomposition,
-    verify_spectral_conservation_balance,
-    compute_spectral_ward_identity,
-    compute_spectral_lyapunov,
-    decompose_spectral_sectors,
-    compute_spectral_energy_conservation,
+    SpectralWardIdentity,
     classify_spectral_modes,
+    compute_spectral_energy_conservation,
+    compute_spectral_lyapunov,
+    compute_spectral_ward_identity,
+    decompose_spectral_sectors,
+    verify_spectral_conservation_balance,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 def _make_tnfr_graph(
     n: int = 30,
@@ -90,6 +90,7 @@ def _make_tnfr_graph(
 def _perturb_graph(G: nx.Graph, seed: int = 99) -> nx.Graph:
     """Create a slightly perturbed copy for two-snapshot tests."""
     import copy
+
     G2 = copy.deepcopy(G)
     rng = np.random.default_rng(seed)
     for node in G2.nodes():
@@ -125,6 +126,7 @@ def two_snapshots(ws_graph):
 # ===========================================================================
 # Test: SpectralConservationBalance
 # ===========================================================================
+
 
 class TestSpectralConservationBalance:
     """Two-snapshot spectral continuity verification."""
@@ -223,6 +225,7 @@ class TestSpectralConservationBalance:
 # Test: Parseval identity
 # ===========================================================================
 
+
 class TestParsevalConservation:
     """Parseval: ‖ρ‖² = Σ|ρ̂_k|² must hold at each snapshot."""
 
@@ -231,7 +234,7 @@ class TestParsevalConservation:
         snap = capture_conservation_snapshot(ws_graph)
         nodes = sorted(snap.charge_density.keys())
         rho_vec = np.array([snap.charge_density[n] for n in nodes])
-        spatial_energy = float(np.sum(rho_vec ** 2))
+        spatial_energy = float(np.sum(rho_vec**2))
 
         result = verify_spectral_conservation_balance(snap, snap, ws_graph)
         assert abs(result.parseval_before - spatial_energy) < 1e-10
@@ -242,7 +245,7 @@ class TestParsevalConservation:
         snap = capture_conservation_snapshot(G2)
         nodes = sorted(snap.charge_density.keys())
         rho_vec = np.array([snap.charge_density[n] for n in nodes])
-        spatial_energy = float(np.sum(rho_vec ** 2))
+        spatial_energy = float(np.sum(rho_vec**2))
 
         result = verify_spectral_conservation_balance(snap, snap, G2)
         assert abs(result.parseval_before - spatial_energy) < 1e-10
@@ -251,6 +254,7 @@ class TestParsevalConservation:
 # ===========================================================================
 # Test: SpectralWardIdentity
 # ===========================================================================
+
 
 class TestSpectralWardIdentity:
     """Per-operator spectral conservation signature."""
@@ -300,6 +304,7 @@ class TestSpectralWardIdentity:
 # ===========================================================================
 # Test: SpectralLyapunovResult
 # ===========================================================================
+
 
 class TestSpectralLyapunov:
     """Mode-by-mode Lyapunov energy stability."""
@@ -355,6 +360,7 @@ class TestSpectralLyapunov:
 # ===========================================================================
 # Test: SpectralSectorDecomposition
 # ===========================================================================
+
 
 class TestSpectralSectorDecomposition:
     """Potential vs. geometric sector in spectral domain."""
@@ -416,6 +422,7 @@ class TestSpectralSectorDecomposition:
 # Test: Spectral energy conservation (Parseval per field)
 # ===========================================================================
 
+
 class TestSpectralEnergyConservation:
     """Parseval-based energy drift across all five canonical fields."""
 
@@ -423,17 +430,28 @@ class TestSpectralEnergyConservation:
         before, after, G = two_snapshots
         result = compute_spectral_energy_conservation(before, after, G)
         expected_keys = {
-            "phi_s_drift", "grad_phi_drift", "k_phi_drift",
-            "j_phi_drift", "j_dnfr_drift",
-            "total_energy_before", "total_energy_after", "total_drift",
+            "phi_s_drift",
+            "grad_phi_drift",
+            "k_phi_drift",
+            "j_phi_drift",
+            "j_dnfr_drift",
+            "total_energy_before",
+            "total_energy_after",
+            "total_drift",
         }
         assert set(result.keys()) == expected_keys
 
     def test_drifts_non_negative(self, two_snapshots):
         before, after, G = two_snapshots
         result = compute_spectral_energy_conservation(before, after, G)
-        for key in ("phi_s_drift", "grad_phi_drift", "k_phi_drift",
-                     "j_phi_drift", "j_dnfr_drift", "total_drift"):
+        for key in (
+            "phi_s_drift",
+            "grad_phi_drift",
+            "k_phi_drift",
+            "j_phi_drift",
+            "j_dnfr_drift",
+            "total_drift",
+        ):
             assert result[key] >= 0.0
 
     def test_energies_non_negative(self, two_snapshots):
@@ -445,8 +463,14 @@ class TestSpectralEnergyConservation:
     def test_identical_snapshots_zero_drift(self, ws_graph):
         snap = capture_conservation_snapshot(ws_graph)
         result = compute_spectral_energy_conservation(snap, snap, ws_graph)
-        for key in ("phi_s_drift", "grad_phi_drift", "k_phi_drift",
-                     "j_phi_drift", "j_dnfr_drift", "total_drift"):
+        for key in (
+            "phi_s_drift",
+            "grad_phi_drift",
+            "k_phi_drift",
+            "j_phi_drift",
+            "j_dnfr_drift",
+            "total_drift",
+        ):
             assert result[key] < 1e-12
 
     def test_total_drift_finite(self, two_snapshots):
@@ -459,14 +483,18 @@ class TestSpectralEnergyConservation:
 # Test: Mode classification
 # ===========================================================================
 
+
 class TestModeClassification:
     """Conserved / dissipative / accumulative mode labeling."""
 
     def test_returns_expected_keys(self, ws_graph):
         result = classify_spectral_modes(ws_graph)
         expected_keys = {
-            "mode_labels", "n_conserved", "n_dissipative",
-            "n_accumulative", "mode_transport_rates",
+            "mode_labels",
+            "n_conserved",
+            "n_dissipative",
+            "n_accumulative",
+            "mode_transport_rates",
         }
         assert set(result.keys()) == expected_keys
 
@@ -479,7 +507,9 @@ class TestModeClassification:
     def test_counts_sum_to_n(self, ws_graph):
         n = ws_graph.number_of_nodes()
         result = classify_spectral_modes(ws_graph)
-        total = result["n_conserved"] + result["n_dissipative"] + result["n_accumulative"]
+        total = (
+            result["n_conserved"] + result["n_dissipative"] + result["n_accumulative"]
+        )
         assert total == n
 
     def test_transport_rates_shape(self, ws_graph):
@@ -502,13 +532,16 @@ class TestModeClassification:
         G = _make_tnfr_graph(25, topo)
         result = classify_spectral_modes(G)
         n = G.number_of_nodes()
-        total = result["n_conserved"] + result["n_dissipative"] + result["n_accumulative"]
+        total = (
+            result["n_conserved"] + result["n_dissipative"] + result["n_accumulative"]
+        )
         assert total == n
 
 
 # ===========================================================================
 # Test: Cross-topology validation
 # ===========================================================================
+
 
 class TestCrossTopology:
     """Verify all spectral conservation functions across topologies."""
@@ -537,6 +570,7 @@ class TestCrossTopology:
 # ===========================================================================
 # Test: Reproducibility (Invariant #6)
 # ===========================================================================
+
 
 class TestReproducibility:
     """Same seed produces identical spectral conservation results."""
@@ -588,6 +622,7 @@ class TestReproducibility:
 def _tiny_perturb_graph(G: nx.Graph, scale: float = 1e-4, seed: int = 123) -> nx.Graph:
     """Create a near-identical copy with O(scale) perturbations."""
     import copy
+
     G2 = copy.deepcopy(G)
     rng = np.random.default_rng(seed)
     for node in G2.nodes():
@@ -614,9 +649,9 @@ class TestNearStaticSpectralContinuity:
         before = capture_conservation_snapshot(G)
         after = capture_conservation_snapshot(G2)
         result = verify_spectral_conservation_balance(before, after, G)
-        assert result.parseval_drift < 1e-4, (
-            f"Near-static Parseval drift {result.parseval_drift:.2e} too large"
-        )
+        assert (
+            result.parseval_drift < 1e-4
+        ), f"Near-static Parseval drift {result.parseval_drift:.2e} too large"
 
     def test_delta_rho_spectrum_scales_with_perturbation(self):
         """Δρ̂_k magnitude scales with perturbation scale."""
@@ -632,9 +667,9 @@ class TestNearStaticSpectralContinuity:
             norms.append(float(np.linalg.norm(delta)))
 
         # Δρ̂ norm must increase monotonically with perturbation scale
-        assert norms[0] < norms[1] < norms[2], (
-            f"Δρ̂ norm not monotone with scale: {norms}"
-        )
+        assert (
+            norms[0] < norms[1] < norms[2]
+        ), f"Δρ̂ norm not monotone with scale: {norms}"
 
     def test_low_band_quality_geq_high_band(self):
         """Low-frequency modes conserve better than high-frequency modes."""
@@ -644,9 +679,9 @@ class TestNearStaticSpectralContinuity:
         after = capture_conservation_snapshot(G2)
         result = verify_spectral_conservation_balance(before, after, G)
         bands = result.conservation_quality_by_band
-        assert bands["low"] >= bands["high"], (
-            f"Low band quality {bands['low']:.4f} < high band {bands['high']:.4f}"
-        )
+        assert (
+            bands["low"] >= bands["high"]
+        ), f"Low band quality {bands['low']:.4f} < high band {bands['high']:.4f}"
 
     @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
     def test_low_band_best_cross_topology(self, topo):
@@ -658,9 +693,9 @@ class TestNearStaticSpectralContinuity:
         after = capture_conservation_snapshot(G2)
         result = verify_spectral_conservation_balance(before, after, G)
         bands = result.conservation_quality_by_band
-        assert bands["low"] >= bands["high"], (
-            f"{topo}: low={bands['low']:.4f} < high={bands['high']:.4f}"
-        )
+        assert (
+            bands["low"] >= bands["high"]
+        ), f"{topo}: low={bands['low']:.4f} < high={bands['high']:.4f}"
 
 
 class TestParsevalDriftBounded:
@@ -684,9 +719,9 @@ class TestParsevalDriftBounded:
             drifts.append(result.parseval_drift)
 
         # Drift must be monotonically increasing with perturbation scale
-        assert drifts[0] < drifts[1] < drifts[2], (
-            f"Parseval drift not monotone with scale: {drifts}"
-        )
+        assert (
+            drifts[0] < drifts[1] < drifts[2]
+        ), f"Parseval drift not monotone with scale: {drifts}"
 
     def test_small_perturbation_small_drift(self):
         """Parseval drift < 0.01 for O(1e-4) perturbations."""
@@ -695,9 +730,9 @@ class TestParsevalDriftBounded:
         before = capture_conservation_snapshot(G)
         after = capture_conservation_snapshot(G2)
         result = verify_spectral_conservation_balance(before, after, G)
-        assert result.parseval_drift < 0.01, (
-            f"Parseval drift {result.parseval_drift:.6f} exceeds 0.01 for tiny perturbation"
-        )
+        assert (
+            result.parseval_drift < 0.01
+        ), f"Parseval drift {result.parseval_drift:.6f} exceeds 0.01 for tiny perturbation"
 
     def test_energy_conservation_drift_bounded(self):
         """Per-field spectral energy drifts are bounded for small perturbations."""
@@ -708,9 +743,7 @@ class TestParsevalDriftBounded:
         result = compute_spectral_energy_conservation(before, after, G)
         for field in ["phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"]:
             drift_val = result[f"{field}_drift"]
-            assert drift_val < 0.05, (
-                f"Field {field} drift {drift_val:.6f} exceeds 0.05"
-            )
+            assert drift_val < 0.05, f"Field {field} drift {drift_val:.6f} exceeds 0.05"
 
 
 class TestSpectralLyapunovMonotonicity:
@@ -727,6 +760,7 @@ class TestSpectralLyapunovMonotonicity:
     def _apply_coherence_to_all(self, G: nx.Graph) -> None:
         """Apply IL (Coherence) to every node — pure stabilizer sequence."""
         from tnfr.operators.definitions import Coherence
+
         coherence = Coherence()
         for node in G.nodes():
             try:
@@ -741,9 +775,9 @@ class TestSpectralLyapunovMonotonicity:
         self._apply_coherence_to_all(G)
         after = capture_conservation_snapshot(G)
         result = compute_spectral_lyapunov(before, after, G)
-        assert result.total_derivative <= 0.0 or result.is_spectrally_stable, (
-            f"Stabilizer increased spectral energy: dE/dt={result.total_derivative:.6f}"
-        )
+        assert (
+            result.total_derivative <= 0.0 or result.is_spectrally_stable
+        ), f"Stabilizer increased spectral energy: dE/dt={result.total_derivative:.6f}"
 
     def test_stabilizer_high_stable_fraction(self):
         """After IL, most modes should be stable (dE_k/dt ≤ 0)."""
@@ -752,9 +786,9 @@ class TestSpectralLyapunovMonotonicity:
         self._apply_coherence_to_all(G)
         after = capture_conservation_snapshot(G)
         result = compute_spectral_lyapunov(before, after, G)
-        assert result.stable_fraction >= 0.5, (
-            f"Stabilizer stable_fraction={result.stable_fraction:.3f}, expected ≥ 0.5"
-        )
+        assert (
+            result.stable_fraction >= 0.5
+        ), f"Stabilizer stable_fraction={result.stable_fraction:.3f}, expected ≥ 0.5"
 
 
 class TestOperatorSpectralSignatures:
@@ -773,6 +807,7 @@ class TestOperatorSpectralSignatures:
     def test_coherence_ward_has_valid_character(self):
         """IL should produce a valid spectral character classification."""
         from tnfr.operators.definitions import Coherence
+
         G = self._fresh_graph()
         before = capture_conservation_snapshot(G)
         Coherence()(G, list(G.nodes())[0])
@@ -781,7 +816,11 @@ class TestOperatorSpectralSignatures:
         # IL's primary contract is C(t) monotonicity, not spectral charge energy
         # monotonicity.  Phase redistribution can appear injective in ρ̂ even
         # as coherence increases.  We verify the Ward identity classifies correctly.
-        assert ward.spectral_character in ("dissipative", "conservative", "injective"), (
+        assert ward.spectral_character in (
+            "dissipative",
+            "conservative",
+            "injective",
+        ), (
             f"Coherence Ward identity: {ward.spectral_character}; "
             "expected a valid spectral character"
         )
@@ -791,6 +830,7 @@ class TestOperatorSpectralSignatures:
     def test_dissonance_ward_injective_or_conservative(self):
         """OZ should have injective or conservative spectral character."""
         from tnfr.operators.definitions import Dissonance
+
         G = self._fresh_graph()
         before = capture_conservation_snapshot(G)
         Dissonance()(G, list(G.nodes())[0])
@@ -805,6 +845,7 @@ class TestOperatorSpectralSignatures:
     def test_silence_ward_conservative(self):
         """SHA should have (near-)conservative spectral character."""
         from tnfr.operators.definitions import Silence
+
         G = self._fresh_graph()
         before = capture_conservation_snapshot(G)
         Silence()(G, list(G.nodes())[0])
@@ -819,6 +860,7 @@ class TestOperatorSpectralSignatures:
     def test_ward_operator_name_preserved(self):
         """Ward identity records the correct operator name."""
         from tnfr.operators.definitions import Emission
+
         G = self._fresh_graph()
         # Set node to vacuum for Emission
         node = list(G.nodes())[0]
@@ -853,9 +895,7 @@ class TestMultiStepSpectralTracking:
 
         # Quality must remain strictly positive (system not degenerate)
         for i, q in enumerate(qualities):
-            assert q > 0.0, (
-                f"Step {i}: spectral quality collapsed to {q:.4f}"
-            )
+            assert q > 0.0, f"Step {i}: spectral quality collapsed to {q:.4f}"
         # Low-band quality should stay above high-band across steps
         for step_seed in range(100, 105):
             G_tmp = _make_tnfr_graph(30, "watts_strogatz", seed=42)
@@ -864,9 +904,9 @@ class TestMultiStepSpectralTracking:
             after = capture_conservation_snapshot(G_tmp)
             result = verify_spectral_conservation_balance(before, after, G_tmp)
             bands = result.conservation_quality_by_band
-            assert bands["low"] >= bands["high"], (
-                f"Step {step_seed}: low={bands['low']:.4f} < high={bands['high']:.4f}"
-            )
+            assert (
+                bands["low"] >= bands["high"]
+            ), f"Step {step_seed}: low={bands['low']:.4f} < high={bands['high']:.4f}"
 
     def test_parseval_drift_bounded_across_steps(self):
         """Parseval drift stays bounded across multiple perturbation steps."""
@@ -881,9 +921,7 @@ class TestMultiStepSpectralTracking:
 
         # No single step should produce extreme Parseval drift
         for i, d in enumerate(drifts):
-            assert d < 1.0, (
-                f"Step {i}: Parseval drift {d:.4f} exceeds 1.0"
-            )
+            assert d < 1.0, f"Step {i}: Parseval drift {d:.4f} exceeds 1.0"
 
     def test_multi_step_lyapunov_energies_finite(self):
         """Spectral Lyapunov energies remain finite across steps."""
@@ -893,12 +931,12 @@ class TestMultiStepSpectralTracking:
             G = _perturb_graph(G, seed=step_seed)
             after = capture_conservation_snapshot(G)
             result = compute_spectral_lyapunov(before, after, G)
-            assert np.all(np.isfinite(result.mode_energies_after)), (
-                f"Step {step_seed}: non-finite spectral Lyapunov energies"
-            )
-            assert np.isfinite(result.total_derivative), (
-                f"Step {step_seed}: non-finite total Lyapunov derivative"
-            )
+            assert np.all(
+                np.isfinite(result.mode_energies_after)
+            ), f"Step {step_seed}: non-finite spectral Lyapunov energies"
+            assert np.isfinite(
+                result.total_derivative
+            ), f"Step {step_seed}: non-finite total Lyapunov derivative"
 
 
 class TestSpectralSpatialConsistency:
@@ -927,12 +965,12 @@ class TestSpectralSpatialConsistency:
             spectral_drifts.append(spectral.parseval_drift)
 
         # Both should increase monotonically with perturbation scale
-        assert spatial_drifts[0] < spatial_drifts[2], (
-            f"Spatial charge drift not increasing: {spatial_drifts}"
-        )
-        assert spectral_drifts[0] < spectral_drifts[2], (
-            f"Spectral Parseval drift not increasing: {spectral_drifts}"
-        )
+        assert (
+            spatial_drifts[0] < spatial_drifts[2]
+        ), f"Spatial charge drift not increasing: {spatial_drifts}"
+        assert (
+            spectral_drifts[0] < spectral_drifts[2]
+        ), f"Spectral Parseval drift not increasing: {spectral_drifts}"
 
     def test_large_perturbation_both_parseval_and_spatial_increase(self):
         """Large perturbation produces larger drift in both domains."""
@@ -971,9 +1009,9 @@ class TestSpectralSpatialConsistency:
             spectral_total_drifts.append(energy["total_drift"])
 
         # Both should increase with perturbation: smallest < largest
-        assert spatial_rms_vals[0] < spatial_rms_vals[2], (
-            f"Spatial RMS not increasing: {spatial_rms_vals}"
-        )
-        assert spectral_total_drifts[0] < spectral_total_drifts[2], (
-            f"Spectral total drift not increasing: {spectral_total_drifts}"
-        )
+        assert (
+            spatial_rms_vals[0] < spatial_rms_vals[2]
+        ), f"Spatial RMS not increasing: {spatial_rms_vals}"
+        assert (
+            spectral_total_drifts[0] < spectral_total_drifts[2]
+        ), f"Spectral total drift not increasing: {spectral_total_drifts}"

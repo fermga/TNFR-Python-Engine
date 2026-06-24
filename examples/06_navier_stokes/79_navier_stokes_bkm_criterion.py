@@ -100,7 +100,7 @@ def main() -> int:
     enstrophy0_numeric = operator.enstrophy_curl()
     # Analytical enstrophy: (1/2) integral [2 sin x sin y]^2 dA = (1/2) * 4 * (pi^2)
     # = 2 pi^2 ~ 19.7392 at t = 0
-    enstrophy0_analytical = 2.0 * (math.pi ** 2) * amplitude ** 2
+    enstrophy0_analytical = 2.0 * (math.pi**2) * amplitude**2
 
     print("Initial state")
     print("-" * 72)
@@ -170,13 +170,19 @@ def main() -> int:
     print(f"I_BKM(T) numerical          : {bkm_final:.6f}")
     print(f"I_BKM trivial upper bound   : {bkm_trivial_bound:.6f}  (omega0 * T)")
     print(f"I_BKM analytical (INCOMP)   : {bkm_analytical:.6f}  (INFO)")
-    print(f"|I_num - I_an|/I_an         : {bkm_rel_to_analytical:.3e}  (INFO; INCOMP reserved)")
-    print(f"max enstrophy jump dOmega   : {max_enstrophy_jump:.3e}  (target <= {eps_round:.1e})")
+    print(
+        f"|I_num - I_an|/I_an         : {bkm_rel_to_analytical:.3e}  (INFO; INCOMP reserved)"
+    )
+    print(
+        f"max enstrophy jump dOmega   : {max_enstrophy_jump:.3e}  (target <= {eps_round:.1e})"
+    )
     print(f"max ||omega||_inf in [0,T]  : {max_vort_sup:.6f}")
     print(f"||omega(0)||_inf * (1+eps)  : {vort_sup_bound:.6f}  (target upper bound)")
     print(f"fitted decay slope          : {slope:.6f}  (INFO)")
     print(f"analytical slope (-2 nu)    : {rate_target:.6f}  (INFO; INCOMP reserved)")
-    print(f"max |divergence| (INFO)     : {float(np.max(np.abs(div_hist))):.3e}  (no PASS/FAIL - INCOMP reserved)")
+    print(
+        f"max |divergence| (INFO)     : {float(np.max(np.abs(div_hist))):.3e}  (no PASS/FAIL - INCOMP reserved)"
+    )
     print()
 
     pass1 = bkm_final <= bkm_trivial_bound
@@ -185,9 +191,15 @@ def main() -> int:
 
     print("Success criteria (N4)")
     print("-" * 72)
-    print(f"  1. BKM integral finite (<= omega0 * T)      : {'PASS' if pass1 else 'FAIL'}")
-    print(f"  2. Enstrophy monotone non-increasing        : {'PASS' if pass2 else 'FAIL'}")
-    print(f"  3. ||omega||_inf <= ||omega(0)||_inf (+5%)  : {'PASS' if pass3 else 'FAIL'}")
+    print(
+        f"  1. BKM integral finite (<= omega0 * T)      : {'PASS' if pass1 else 'FAIL'}"
+    )
+    print(
+        f"  2. Enstrophy monotone non-increasing        : {'PASS' if pass2 else 'FAIL'}"
+    )
+    print(
+        f"  3. ||omega||_inf <= ||omega(0)||_inf (+5%)  : {'PASS' if pass3 else 'FAIL'}"
+    )
     print()
 
     all_pass = pass1 and pass2 and pass3

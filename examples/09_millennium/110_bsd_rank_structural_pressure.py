@@ -74,11 +74,11 @@ References
 - AGENTS.md section "TNFR-Riemann Program Overview"
 """
 
+import math
 import os
 import sys
-import math
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np
 
@@ -87,9 +87,9 @@ def sieve_primes(limit):
     """Primes < limit via a simple sieve (no optional dependency)."""
     s = bytearray([1]) * limit
     s[0:2] = b"\x00\x00"
-    for i in range(2, int(limit ** 0.5) + 1):
+    for i in range(2, int(limit**0.5) + 1):
         if s[i]:
-            s[i * i::i] = b"\x00" * len(s[i * i::i])
+            s[i * i :: i] = b"\x00" * len(s[i * i :: i])
     return [i for i in range(2, limit) if s[i]]
 
 
@@ -108,15 +108,15 @@ def point_count(coeffs, p):
         for x in range(2):
             for y in range(2):
                 lhs = (y * y + a1 * x * y + a3 * y) % 2
-                rhs = (x ** 3 + a2 * x * x + a4 * x + a6) % 2
+                rhs = (x**3 + a2 * x * x + a4 * x + a6) % 2
                 if lhs == rhs:
                     cnt += 1
         return cnt
     cnt = 1  # point at infinity
     for x in range(p):
         b = (a1 * x + a3) % p
-        c = (x ** 3 + a2 * x * x + a4 * x + a6) % p
-        disc = (b * b + 4 * c) % p   # y^2 + b y - c = 0
+        c = (x**3 + a2 * x * x + a4 * x + a6) % p
+        disc = (b * b + 4 * c) % p  # y^2 + b y - c = 0
         cnt += 1 + legendre(disc, p)
     return cnt
 
@@ -156,8 +156,7 @@ def experiment_1_rank_separation():
                 ys.append(logP)
         slope = float(np.polyfit(np.array(xs), np.array(ys), 1)[0])
         slopes.append((r_true, slope))
-        print(f"  {name:>16} {r_true:>7} {math.exp(ys[-1]):>10.3f} "
-              f"{slope:>12.3f}")
+        print(f"  {name:>16} {r_true:>7} {math.exp(ys[-1]):>10.3f} " f"{slope:>12.3f}")
     ordered = all(slopes[i][1] < slopes[i + 1][1] for i in range(len(slopes) - 1))
     print()
     print(f"  slopes strictly ordered by true rank: {ordered}")

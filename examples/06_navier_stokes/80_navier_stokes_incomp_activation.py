@@ -58,10 +58,7 @@ import math
 
 import numpy as np
 
-from tnfr.navier_stokes.operator import (
-    TNFRNavierStokesOperator,
-    build_torus_graph,
-)
+from tnfr.navier_stokes.operator import TNFRNavierStokesOperator, build_torus_graph
 
 
 def _format_pass(flag: bool) -> str:
@@ -77,9 +74,7 @@ def main() -> None:
     amplitude = 1.0
 
     graph = build_torus_graph(n)
-    op = TNFRNavierStokesOperator(
-        graph, viscosity=viscosity, dimension=2
-    )
+    op = TNFRNavierStokesOperator(graph, viscosity=viscosity, dimension=2)
     op.set_taylor_green(amplitude=amplitude)
 
     # Sanity: initial Taylor-Green is analytically divergence-free
@@ -99,7 +94,9 @@ def main() -> None:
     print("Initial state:")
     print(f"  E(0)            = {initial_energy:.6f}")
     print(f"  ||omega(0)||inf = {initial_vort_sup:.6f}  (analytical = 2.000)")
-    print(f"  Omega(0)        = {initial_enstrophy:.6f}  (analytical = 2*pi^2 = {2*math.pi**2:.6f})")
+    print(
+        f"  Omega(0)        = {initial_enstrophy:.6f}  (analytical = 2*pi^2 = {2*math.pi**2:.6f})"
+    )
     print(f"  ||div(0)||_2    = {initial_div:.3e}    (must be ~ round-off)")
     print()
 
@@ -109,13 +106,9 @@ def main() -> None:
     # the same INCOMP-on configuration. Two separate runs avoid coupling
     # the BKM and Leray accumulators, at the cost of doubling work for a
     # tiny example.
-    op2 = TNFRNavierStokesOperator(
-        graph, viscosity=viscosity, dimension=2
-    )
+    op2 = TNFRNavierStokesOperator(graph, viscosity=viscosity, dimension=2)
     op2.set_taylor_green(amplitude=amplitude)
-    leray = op2.leray_budget(
-        dt, steps, advection=True, incompressible=True
-    )
+    leray = op2.leray_budget(dt, steps, advection=True, incompressible=True)
 
     time = bkm["time"]
     vort_sup = bkm["vorticity_sup"]
@@ -135,12 +128,11 @@ def main() -> None:
     energy_analytical = initial_energy * np.exp(-4.0 * viscosity * time)
     vort_analytical = 2.0 * amplitude * np.exp(-2.0 * viscosity * time)
     enstrophy_analytical = (
-        2.0 * math.pi ** 2 * amplitude ** 2 * np.exp(-4.0 * viscosity * time)
+        2.0 * math.pi**2 * amplitude**2 * np.exp(-4.0 * viscosity * time)
     )
     T = time[-1]
     bkm_envelope = (
-        (2.0 * amplitude) / (2.0 * viscosity)
-        * (1.0 - math.exp(-2.0 * viscosity * T))
+        (2.0 * amplitude) / (2.0 * viscosity) * (1.0 - math.exp(-2.0 * viscosity * T))
     )
 
     # --- PASS criteria ---
@@ -192,9 +184,11 @@ def main() -> None:
     print()
     print(
         "Result: "
-        + ("ALL PASS - INCOMP activated, N3/N4 INFO gaps closed for 2D Taylor-Green"
-           if all_pass
-           else "FAILURE - INCOMP projection or analytics need review")
+        + (
+            "ALL PASS - INCOMP activated, N3/N4 INFO gaps closed for 2D Taylor-Green"
+            if all_pass
+            else "FAILURE - INCOMP projection or analytics need review"
+        )
     )
     print()
     print("Honest scope: this milestone (N5) validates the INCOMP operator on")

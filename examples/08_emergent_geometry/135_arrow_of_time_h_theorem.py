@@ -78,13 +78,14 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 try:
     import scipy.linalg as sla
+
     _HAVE_SCIPY = True
 except Exception:  # pragma: no cover
     _HAVE_SCIPY = False
@@ -92,9 +93,9 @@ except Exception:  # pragma: no cover
 from tnfr.alias import set_attr
 from tnfr.constants.aliases import ALIAS_EPI
 from tnfr.physics.structural_diffusion import (
-    structural_diffusion_operator,
-    structural_current,
     stationary_distribution,
+    structural_current,
+    structural_diffusion_operator,
 )
 
 
@@ -137,8 +138,10 @@ def experiment_1_h_theorem():
     F_canon = 0.5 * float(np.sum(Jc * Jc))
     F_direct = dirichlet_energy(A, epi0)
     print(f"  anchor: 1/2 sum J^2 (canonical) = {F_canon:.6f}")
-    print(f"          Dirichlet F (direct)    = {F_direct:.6f}  "
-          f"|diff|={abs(F_canon - F_direct):.1e}")
+    print(
+        f"          Dirichlet F (direct)    = {F_direct:.6f}  "
+        f"|diff|={abs(F_canon - F_direct):.1e}"
+    )
     print("  -> the H-functional IS the total squared structural Fick current.")
     print()
     print(f"  {'t':>6} {'F(t)':>12} {'monotone?':>10}")
@@ -153,8 +156,10 @@ def experiment_1_h_theorem():
     Fg = [dirichlet_energy(A, _expm(-tt * L) @ epi0) for tt in tg]
     dF = np.diff(Fg)
     print()
-    print(f"  fine grid (400 steps): max dF = {dF.max():.2e} "
-          f"(<=0 => monotone), all-monotone = {bool(np.all(dF <= 1e-9))}")
+    print(
+        f"  fine grid (400 steps): max dF = {dF.max():.2e} "
+        f"(<=0 => monotone), all-monotone = {bool(np.all(dF <= 1e-9))}"
+    )
     print("  -> F decays monotonically to 0 (equilibrium = no Fick currents):")
     print("     the structural H-theorem. F is a Lyapunov functional.")
 
@@ -185,8 +190,10 @@ def experiment_2_entropy():
     Greg = nx.cycle_graph(60)
     nr, lr = structural_diffusion_operator(Greg)
     Lr = np.asarray(lr)
-    print(f"  regular ring n=60: Shannon entropy S(p_t) increases to "
-          f"log n = {np.log(60):.3f}")
+    print(
+        f"  regular ring n=60: Shannon entropy S(p_t) increases to "
+        f"log n = {np.log(60):.3f}"
+    )
     print(f"    {'t':>7} {'S(p_t)':>9} {'monotone?':>10}")
     prevS = None
     smono = True
@@ -203,6 +210,7 @@ def experiment_2_entropy():
     print(f"     ring Shannon entropy increases monotonically: {smono}. The")
     print("     structural field forgets its initial condition (mixing).")
 
+
 def experiment_3_arrow_of_time():
     """M3: the arrow of time -- forward smooths, backward blows up."""
     print()
@@ -218,8 +226,9 @@ def experiment_3_arrow_of_time():
     Ar = adjacency_mask(Greg, nr)
     lam_max = float(np.linalg.eigvalsh(0.5 * (Lr + Lr.T))[-1])
     epi0 = np.random.default_rng(3).standard_normal(len(nr))
-    print(f"  ring lambda_max = {lam_max:.4f}; anti-diffusion F ~ "
-          f"e^(2 lambda_max t)")
+    print(
+        f"  ring lambda_max = {lam_max:.4f}; anti-diffusion F ~ " f"e^(2 lambda_max t)"
+    )
     print()
     print(f"  {'t':>6} {'F forward':>14} {'F backward':>18}")
     for t in [0.0, 0.5, 1.0, 2.0, 4.0]:

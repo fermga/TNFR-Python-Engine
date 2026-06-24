@@ -92,8 +92,8 @@ import math
 from dataclasses import dataclass, field
 from typing import Any, Sequence
 
+from ..constants.canonical import GAMMA, PHI, PI, E
 from ..mathematics.unified_numerical import np
-from ..constants.canonical import PHI, GAMMA, PI, E
 
 # ---------------------------------------------------------------------------
 # Critical point classification
@@ -107,22 +107,18 @@ except ImportError:  # pragma: no cover
     nx = None
 
 from .canonical import (
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
 )
-from .extended import (
-    compute_phase_current,
-    compute_dnfr_flux,
-)
-from .unified import (
-    compute_energy_density as _raw_energy_density,
-    compute_action_density as _action_density,
-)
+from .extended import compute_dnfr_flux, compute_phase_current
+from .unified import compute_action_density as _action_density
+from .unified import compute_energy_density as _raw_energy_density
 
 # ---------------------------------------------------------------------------
 #  Data structures
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class ConjugatePair:
@@ -141,6 +137,7 @@ class ConjugatePair:
     sector: str
     q: dict[Any, float]
     p: dict[Any, float]
+
 
 @dataclass(frozen=True)
 class LagrangianSnapshot:
@@ -184,6 +181,7 @@ class LagrangianSnapshot:
     conjugate_geometric: ConjugatePair
     conjugate_potential: ConjugatePair
 
+
 @dataclass(frozen=True)
 class EulerLagrangeResidual:
     r"""Residual of the Euler-Lagrange equations at each node.
@@ -216,6 +214,7 @@ class EulerLagrangeResidual:
     max_residual: float
     is_stationary: bool
     stationarity_quality: float
+
 
 @dataclass(frozen=True)
 class SymplecticCheck:
@@ -252,6 +251,7 @@ class SymplecticCheck:
     volume_ratio: float
     classification: str
 
+
 @dataclass(frozen=True)
 class GrammarStationarityAnalysis:
     r"""Analysis of grammar rules as stationarity / boundary conditions.
@@ -274,6 +274,7 @@ class GrammarStationarityAnalysis:
     variational_interpretation: str
     is_satisfied: bool
     diagnostic_value: float
+
 
 @dataclass(frozen=True)
 class CriticalPointAnalysis:
@@ -301,6 +302,7 @@ class CriticalPointAnalysis:
     is_critical: bool
     curvature_at_threshold: float
     critical_type: str
+
 
 @dataclass(frozen=True)
 class ThresholdDerivation:
@@ -391,6 +393,7 @@ class ThresholdDerivation:
             f"threshold={self.threshold_expression}"
         )
 
+
 @dataclass
 class VariationalTimeSeries:
     """Time-series of variational diagnostics across operator sequence.
@@ -421,9 +424,11 @@ class VariationalTimeSeries:
             return 0.0
         return float(np.mean(self.stationarity_quality))
 
+
 # ---------------------------------------------------------------------------
 #  Core Lagrangian computations
 # ---------------------------------------------------------------------------
+
 
 def compute_kinetic_density(G: Any) -> dict[Any, float]:
     r"""Compute transport kinetic energy density per node.
@@ -444,10 +449,8 @@ def compute_kinetic_density(G: Any) -> dict[Any, float]:
     """
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
-    return {
-        n: 0.5 * (j_phi[n] ** 2 + j_dnfr[n] ** 2)
-        for n in G.nodes()
-    }
+    return {n: 0.5 * (j_phi[n] ** 2 + j_dnfr[n] ** 2) for n in G.nodes()}
+
 
 def compute_potential_density(G: Any) -> dict[Any, float]:
     r"""Compute configuration potential energy density per node.
@@ -469,9 +472,9 @@ def compute_potential_density(G: Any) -> dict[Any, float]:
     grad_phi = compute_phase_gradient(G)
     k_phi = compute_phase_curvature(G)
     return {
-        n: 0.5 * (phi_s[n] ** 2 + grad_phi[n] ** 2 + k_phi[n] ** 2)
-        for n in G.nodes()
+        n: 0.5 * (phi_s[n] ** 2 + grad_phi[n] ** 2 + k_phi[n] ** 2) for n in G.nodes()
     }
+
 
 def compute_lagrangian_density(G: Any) -> dict[Any, float]:
     r"""Compute TNFR Lagrangian density per node.
@@ -498,6 +501,7 @@ def compute_lagrangian_density(G: Any) -> dict[Any, float]:
     V = compute_potential_density(G)
     return {n: T[n] - V[n] for n in G.nodes()}
 
+
 def compute_hamiltonian_density(G: Any) -> dict[Any, float]:
     r"""Compute TNFR Hamiltonian density per node.
 
@@ -521,6 +525,7 @@ def compute_hamiltonian_density(G: Any) -> dict[Any, float]:
     """
     raw = _raw_energy_density(G)
     return {n: 0.5 * raw[n] for n in raw}
+
 
 def compute_interaction_density(G: Any) -> dict[Any, float]:
     r"""Compute cross-sector interaction (bilinear coupling) per node.
@@ -546,9 +551,11 @@ def compute_interaction_density(G: Any) -> dict[Any, float]:
     """
     return _action_density(G)
 
+
 # ---------------------------------------------------------------------------
 #  Sector decomposition translation
 # ---------------------------------------------------------------------------
+
 
 def translate_sectors(G: Any) -> dict[str, Any]:
     r"""Translate between the variational and conservation sector decompositions.
@@ -605,21 +612,25 @@ def translate_sectors(G: Any) -> dict[str, Any]:
     psi = {n: complex(k_phi[n], j_phi[n]) for n in G.nodes()}
 
     # Consistency: T(i) + V(i) must equal ½·ℰ(i)
-    max_err = max(
-        abs((T[n] + V[n]) - 0.5 * raw[n]) for n in G.nodes()
-    ) if G.number_of_nodes() > 0 else 0.0
+    max_err = (
+        max(abs((T[n] + V[n]) - 0.5 * raw[n]) for n in G.nodes())
+        if G.number_of_nodes() > 0
+        else 0.0
+    )
 
     return {
-        'variational': {'T': T, 'V': V},
-        'conservation': {'rho': rho, 'J_phi': j_phi, 'J_dnfr': j_dnfr},
-        'unified_psi': psi,
-        'energy_density': raw,
-        'consistency_check': max_err,
+        "variational": {"T": T, "V": V},
+        "conservation": {"rho": rho, "J_phi": j_phi, "J_dnfr": j_dnfr},
+        "unified_psi": psi,
+        "energy_density": raw,
+        "consistency_check": max_err,
     }
+
 
 # ---------------------------------------------------------------------------
 #  Conjugate pairs and phase space
 # ---------------------------------------------------------------------------
+
 
 def identify_conjugate_pairs(G: Any) -> tuple[ConjugatePair, ConjugatePair]:
     r"""Identify the canonical conjugate pairs in the TNFR phase space.
@@ -649,9 +660,10 @@ def identify_conjugate_pairs(G: Any) -> tuple[ConjugatePair, ConjugatePair]:
     phi_s = compute_structural_potential(G)
     j_dnfr = compute_dnfr_flux(G)
 
-    geometric = ConjugatePair(sector='geometric', q=k_phi, p=j_phi)
-    potential = ConjugatePair(sector='potential', q=phi_s, p=j_dnfr)
+    geometric = ConjugatePair(sector="geometric", q=k_phi, p=j_phi)
+    potential = ConjugatePair(sector="potential", q=phi_s, p=j_dnfr)
     return geometric, potential
+
 
 def compute_phase_space_volume(pair: ConjugatePair) -> float:
     r"""Compute the phase-space volume occupied by a conjugate pair.
@@ -673,6 +685,7 @@ def compute_phase_space_volume(pair: ConjugatePair) -> float:
     if not nodes:
         return 0.0
     return float(sum(abs(pair.q[n] * pair.p[n]) for n in nodes))
+
 
 def compute_poisson_bracket_estimate(
     pair: ConjugatePair,
@@ -707,12 +720,14 @@ def compute_poisson_bracket_estimate(
     if var_q < 1e-30 or var_p < 1e-30:
         return 0.0
     cov_qp = float(np.cov(q_arr, p_arr)[0, 1])
-    det = var_q * var_p - cov_qp ** 2
+    det = var_q * var_p - cov_qp**2
     return float(np.sqrt(max(det, 0.0)))
+
 
 # ---------------------------------------------------------------------------
 #  Lagrangian snapshot (complete analysis at one instant)
 # ---------------------------------------------------------------------------
+
 
 def capture_lagrangian_snapshot(G: Any) -> LagrangianSnapshot:
     """Capture complete Lagrangian analysis of the current graph state.
@@ -752,9 +767,11 @@ def capture_lagrangian_snapshot(G: Any) -> LagrangianSnapshot:
         conjugate_potential=pot,
     )
 
+
 # ---------------------------------------------------------------------------
 #  Euler-Lagrange residual
 # ---------------------------------------------------------------------------
+
 
 def compute_euler_lagrange_residual(
     before: LagrangianSnapshot,
@@ -793,8 +810,10 @@ def compute_euler_lagrange_residual(
 
     for n in nodes:
         # Geometric sector: dp/dt = ΔJ_φ/Δt,  ∂V/∂q ≈ K_φ (from V = ½K_φ²)
-        dj_phi = (after.conjugate_geometric.p.get(n, 0.0)
-                  - before.conjugate_geometric.p.get(n, 0.0)) / dt
+        dj_phi = (
+            after.conjugate_geometric.p.get(n, 0.0)
+            - before.conjugate_geometric.p.get(n, 0.0)
+        ) / dt
         k_phi_avg = 0.5 * (
             before.conjugate_geometric.q.get(n, 0.0)
             + after.conjugate_geometric.q.get(n, 0.0)
@@ -802,8 +821,10 @@ def compute_euler_lagrange_residual(
         r_geo = dj_phi + k_phi_avg
 
         # Potential sector: dp/dt = ΔJ_ΔNFR/Δt,  ∂V/∂q ≈ Φ_s
-        dj_dnfr = (after.conjugate_potential.p.get(n, 0.0)
-                   - before.conjugate_potential.p.get(n, 0.0)) / dt
+        dj_dnfr = (
+            after.conjugate_potential.p.get(n, 0.0)
+            - before.conjugate_potential.p.get(n, 0.0)
+        ) / dt
         phi_s_avg = 0.5 * (
             before.conjugate_potential.q.get(n, 0.0)
             + after.conjugate_potential.q.get(n, 0.0)
@@ -811,11 +832,11 @@ def compute_euler_lagrange_residual(
         r_pot = dj_dnfr + phi_s_avg
 
         # Total residual per node (RMS of both sectors)
-        residual[n] = float(np.sqrt(r_geo ** 2 + r_pot ** 2))
+        residual[n] = float(np.sqrt(r_geo**2 + r_pot**2))
 
     res_arr = np.array(list(residual.values()))
     mean_r = float(np.mean(res_arr)) if len(res_arr) > 0 else 0.0
-    rms_r = float(np.sqrt(np.mean(res_arr ** 2))) if len(res_arr) > 0 else 0.0
+    rms_r = float(np.sqrt(np.mean(res_arr**2))) if len(res_arr) > 0 else 0.0
     max_r = float(np.max(res_arr)) if len(res_arr) > 0 else 0.0
 
     return EulerLagrangeResidual(
@@ -827,9 +848,11 @@ def compute_euler_lagrange_residual(
         stationarity_quality=1.0 / (1.0 + rms_r),
     )
 
+
 # ---------------------------------------------------------------------------
 #  Action functional
 # ---------------------------------------------------------------------------
+
 
 def compute_action_functional(
     snapshots: Sequence[LagrangianSnapshot],
@@ -854,9 +877,11 @@ def compute_action_functional(
     """
     return dt * sum(s.total_lagrangian for s in snapshots)
 
+
 # ---------------------------------------------------------------------------
 #  Symplectic structure and canonical transformation checks
 # ---------------------------------------------------------------------------
+
 
 def check_symplectic_preservation(
     before: LagrangianSnapshot,
@@ -890,7 +915,7 @@ def check_symplectic_preservation(
 
     def _ratio(a: float, b: float) -> float:
         if b < 1e-30:
-            return 1.0 if a < 1e-30 else float('inf')
+            return 1.0 if a < 1e-30 else float("inf")
         return a / b
 
     ratio_geo = _ratio(vol_geo_after, vol_geo_before)
@@ -906,13 +931,13 @@ def check_symplectic_preservation(
 
     # Classification based on volume change
     if is_canonical:
-        classification = 'canonical'
+        classification = "canonical"
     elif vol_ratio < 1.0 - tolerance:
-        classification = 'dissipative'
+        classification = "dissipative"
     elif vol_ratio > 1.0 + tolerance:
-        classification = 'expansive'
+        classification = "expansive"
     else:
-        classification = 'mixed'
+        classification = "mixed"
 
     return SymplecticCheck(
         operator_name=operator_name,
@@ -925,9 +950,11 @@ def check_symplectic_preservation(
         classification=classification,
     )
 
+
 # ---------------------------------------------------------------------------
 #  Grammar rules as variational/stationarity conditions
 # ---------------------------------------------------------------------------
+
 
 def analyze_grammar_stationarity(
     G: Any,
@@ -960,70 +987,82 @@ def analyze_grammar_stationarity(
     # Check: at least some nodes have non-trivial Lagrangian density.
     lag_vals = list(snap.lagrangian.values())
     has_nontrivial = any(abs(v) > 1e-12 for v in lag_vals)
-    results.append(GrammarStationarityAnalysis(
-        rule='U1a',
-        variational_interpretation=(
-            'Boundary condition: S requires well-defined initial data '
-            '(generator sets non-zero ℒ at t=0).'
-        ),
-        is_satisfied=has_nontrivial,
-        diagnostic_value=float(np.max(np.abs(lag_vals))) if lag_vals else 0.0,
-    ))
+    results.append(
+        GrammarStationarityAnalysis(
+            rule="U1a",
+            variational_interpretation=(
+                "Boundary condition: S requires well-defined initial data "
+                "(generator sets non-zero ℒ at t=0)."
+            ),
+            is_satisfied=has_nontrivial,
+            diagnostic_value=float(np.max(np.abs(lag_vals))) if lag_vals else 0.0,
+        )
+    )
 
     # --- U1b: Closure = boundary condition on S at t_f --------------------
     # The final state must be at a local extremum of V (attractor).
     # Check: potential energy dominates (ℒ < 0 means V > T → attractor).
     potential_dominant = snap.total_potential > snap.total_kinetic
-    results.append(GrammarStationarityAnalysis(
-        rule='U1b',
-        variational_interpretation=(
-            'Boundary condition: final state at action extremum '
-            '(V > T → attractor basin, ℒ < 0).'
-        ),
-        is_satisfied=potential_dominant,
-        diagnostic_value=snap.total_lagrangian,
-    ))
+    results.append(
+        GrammarStationarityAnalysis(
+            rule="U1b",
+            variational_interpretation=(
+                "Boundary condition: final state at action extremum "
+                "(V > T → attractor basin, ℒ < 0)."
+            ),
+            is_satisfied=potential_dominant,
+            diagnostic_value=snap.total_lagrangian,
+        )
+    )
 
     # --- U2: Convergence = finite action requirement -----------------------
     if snapshots and len(snapshots) >= 2:
         S = compute_action_functional(snapshots, dt=dt)
         is_finite = math.isfinite(S)
-        results.append(GrammarStationarityAnalysis(
-            rule='U2',
-            variational_interpretation=(
-                'Finite action: S = ∫ℒ dt < ∞ requires stabilisers to bound '
-                '∫ νf·ΔNFR dt (convergence of the action integral).'
-            ),
-            is_satisfied=is_finite,
-            diagnostic_value=S if is_finite else float('inf'),
-        ))
+        results.append(
+            GrammarStationarityAnalysis(
+                rule="U2",
+                variational_interpretation=(
+                    "Finite action: S = ∫ℒ dt < ∞ requires stabilisers to bound "
+                    "∫ νf·ΔNFR dt (convergence of the action integral)."
+                ),
+                is_satisfied=is_finite,
+                diagnostic_value=S if is_finite else float("inf"),
+            )
+        )
     else:
         # Instantaneous: check that Lagrangian density is bounded
         max_L = float(np.max(np.abs(lag_vals))) if lag_vals else 0.0
-        results.append(GrammarStationarityAnalysis(
-            rule='U2',
-            variational_interpretation=(
-                'Bounded Lagrangian density: |ℒ(i)| < ∞ at each node '
-                '(necessary for finite action integral).'
-            ),
-            is_satisfied=math.isfinite(max_L),
-            diagnostic_value=max_L,
-        ))
+        results.append(
+            GrammarStationarityAnalysis(
+                rule="U2",
+                variational_interpretation=(
+                    "Bounded Lagrangian density: |ℒ(i)| < ∞ at each node "
+                    "(necessary for finite action integral)."
+                ),
+                is_satisfied=math.isfinite(max_L),
+                diagnostic_value=max_L,
+            )
+        )
 
     # --- U3: Resonant coupling = regularity of coupling terms ------
     # Phase compatibility ensures interaction terms are non-singular.
     interaction_vals = list(snap.interaction.values())
-    max_interaction = float(np.max(np.abs(interaction_vals))) if interaction_vals else 0.0
+    max_interaction = (
+        float(np.max(np.abs(interaction_vals))) if interaction_vals else 0.0
+    )
     interaction_bounded = max_interaction < 10.0 * PHI  # generous bound
-    results.append(GrammarStationarityAnalysis(
-        rule='U3',
-        variational_interpretation=(
-            'Coupling regularity: interaction Lagrangian 𝒜 remains bounded '
-            'when |φ_i − φ_j| ≤ Δφ_max (no destructive interference).'
-        ),
-        is_satisfied=interaction_bounded,
-        diagnostic_value=max_interaction,
-    ))
+    results.append(
+        GrammarStationarityAnalysis(
+            rule="U3",
+            variational_interpretation=(
+                "Coupling regularity: interaction Lagrangian 𝒜 remains bounded "
+                "when |φ_i − φ_j| ≤ Δφ_max (no destructive interference)."
+            ),
+            is_satisfied=interaction_bounded,
+            diagnostic_value=max_interaction,
+        )
+    )
 
     # --- U4: Bifurcation = Morse-theory constraints at critical points ----
     # Near bifurcation, the Hessian of V changes signature.
@@ -1031,18 +1070,20 @@ def analyze_grammar_stationarity(
     if snap.total_potential > 1e-12:
         tv_ratio = snap.total_kinetic / snap.total_potential
     else:
-        tv_ratio = float('inf')
+        tv_ratio = float("inf")
     # Near bifurcation: T/V → 1 (equipartition at critical point)
     near_bifurcation = abs(tv_ratio - 1.0) < 0.5
-    results.append(GrammarStationarityAnalysis(
-        rule='U4',
-        variational_interpretation=(
-            'Morse condition: near bifurcation (T/V ≈ 1), handlers (IL/THOL) '
-            'required to select correct branch of V extremum.'
-        ),
-        is_satisfied=True,  # advisory
-        diagnostic_value=tv_ratio,
-    ))
+    results.append(
+        GrammarStationarityAnalysis(
+            rule="U4",
+            variational_interpretation=(
+                "Morse condition: near bifurcation (T/V ≈ 1), handlers (IL/THOL) "
+                "required to select correct branch of V extremum."
+            ),
+            is_satisfied=True,  # advisory
+            diagnostic_value=tv_ratio,
+        )
+    )
 
     # --- U5: Multi-scale coherence = hierarchical action factorisation ----
     # Check: energy is distributed across nodes (not concentrated).
@@ -1056,15 +1097,17 @@ def analyze_grammar_stationarity(
     else:
         cv = 0.0
         well_distributed = True
-    results.append(GrammarStationarityAnalysis(
-        rule='U5',
-        variational_interpretation=(
-            'Multi-scale factorisation: action decomposes coherently '
-            'across scales (energy CV < 2.0 → stabilisers at each level).'
-        ),
-        is_satisfied=well_distributed,
-        diagnostic_value=cv,
-    ))
+    results.append(
+        GrammarStationarityAnalysis(
+            rule="U5",
+            variational_interpretation=(
+                "Multi-scale factorisation: action decomposes coherently "
+                "across scales (energy CV < 2.0 → stabilisers at each level)."
+            ),
+            is_satisfied=well_distributed,
+            diagnostic_value=cv,
+        )
+    )
 
     # --- U6: Structural confinement = bounded potential sector ------------
     phi_s_vals = list(snap.conjugate_potential.q.values())
@@ -1074,21 +1117,25 @@ def analyze_grammar_stationarity(
     else:
         max_phi_s = 0.0
         confined = True
-    results.append(GrammarStationarityAnalysis(
-        rule='U6',
-        variational_interpretation=(
-            'Potential boundedness: |Φ_s| < φ ≈ 1.618 ensures V(Φ_s) '
-            'remains in a confining well (action bounded from below).'
-        ),
-        is_satisfied=confined,
-        diagnostic_value=max_phi_s,
-    ))
+    results.append(
+        GrammarStationarityAnalysis(
+            rule="U6",
+            variational_interpretation=(
+                "Potential boundedness: |Φ_s| < φ ≈ 1.618 ensures V(Φ_s) "
+                "remains in a confining well (action bounded from below)."
+            ),
+            is_satisfied=confined,
+            diagnostic_value=max_phi_s,
+        )
+    )
 
     return results
+
 
 # ---------------------------------------------------------------------------
 #  Threshold analysis — critical points of V
 # ---------------------------------------------------------------------------
+
 
 def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
     r"""Analyse TNFR thresholds as critical points of the potential V.
@@ -1131,9 +1178,9 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
     # γ/π for |∇φ| was an overlay, not a derived bound: the measured
     # sync-onset is ≈ 0.29 and σ-dependent.
     thresholds = [
-        ('Phi_s', PHI, phi_s),
-        ('grad_phi', 0.9 * PI, grad_phi),
-        ('K_phi', 0.9 * PI, k_phi),
+        ("Phi_s", PHI, phi_s),
+        ("grad_phi", 0.9 * PI, grad_phi),
+        ("K_phi", 0.9 * PI, k_phi),
     ]
 
     for name, threshold, field_vals in thresholds:
@@ -1142,7 +1189,9 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
             continue
 
         # Measure proximity of field values to the threshold
-        at_threshold = vals[np.abs(np.abs(vals) - threshold) < _THRESHOLD_PROXIMITY_FRACTION * threshold]
+        at_threshold = vals[
+            np.abs(np.abs(vals) - threshold) < _THRESHOLD_PROXIMITY_FRACTION * threshold
+        ]
 
         # For V = ½x², gradient = x, curvature = 1 (always minimum at 0)
         # But the effective potential with interactions adds nonlinear terms.
@@ -1158,7 +1207,7 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
         curvature = 1.0  # default (minimum of quadratic)
 
         if len(at_threshold) > 1:
-            curvature = float(1.0 - np.var(at_threshold) / (threshold ** 2 + 1e-12))
+            curvature = float(1.0 - np.var(at_threshold) / (threshold**2 + 1e-12))
 
         # The threshold IS a critical point of the full effective potential
         # (including grammar constraint terms as Lagrange multipliers).
@@ -1168,22 +1217,24 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
         is_critical_point = len(at_threshold) > 0
 
         if curvature > _CURVATURE_SIGN_THRESHOLD:
-            ctype = 'minimum'
+            ctype = "minimum"
         elif curvature < -_CURVATURE_SIGN_THRESHOLD:
-            ctype = 'maximum'
+            ctype = "maximum"
         elif is_critical_point:
-            ctype = 'saddle'
+            ctype = "saddle"
         else:
-            ctype = 'regular'
+            ctype = "regular"
 
-        results.append(CriticalPointAnalysis(
-            field_name=name,
-            threshold_value=threshold,
-            gradient_at_threshold=gradient_at_thresh,
-            is_critical=is_critical_point,
-            curvature_at_threshold=curvature,
-            critical_type=ctype,
-        ))
+        results.append(
+            CriticalPointAnalysis(
+                field_name=name,
+                threshold_value=threshold,
+                gradient_at_threshold=gradient_at_thresh,
+                is_critical=is_critical_point,
+                curvature_at_threshold=curvature,
+                critical_type=ctype,
+            )
+        )
 
     return results
 
@@ -1280,8 +1331,14 @@ def derive_tetrad_threshold_values(
 
     rows = [
         (
-            "Phi_s", "phi", "0th (global aggregation)", "inverse-square",
-            phi, PHI, "ΔΦ_s < φ (empirical)", "overlay",
+            "Phi_s",
+            "phi",
+            "0th (global aggregation)",
+            "inverse-square",
+            phi,
+            PHI,
+            "ΔΦ_s < φ (empirical)",
+            "overlay",
             "φ is the fixed point of inverse-square self-similar accumulation "
             "(s²−s−1=0), a true identity, and motivates the drift-confinement "
             "scale via the KAM most-irrational argument. But the per-node "
@@ -1290,8 +1347,14 @@ def derive_tetrad_threshold_values(
             "overlay, not a derived structural scale (audit 2026).",
         ),
         (
-            "grad_phi", "gamma", "1st (local derivative)", "harmonic",
-            gamma, GAMMA, "|∇φ| < 0.9·π (phase wrap)", "overlay",
+            "grad_phi",
+            "gamma",
+            "1st (local derivative)",
+            "harmonic",
+            gamma,
+            GAMMA,
+            "|∇φ| < 0.9·π (phase wrap)",
+            "overlay",
             "γ is recoverable as the harmonic-accumulation gap lim(H_n−ln n) "
             "(a true identity), but it is NOT the structural scale of |∇φ|. "
             "|∇φ| is a mean of WRAPPED phase angles, so |∇φ| ≤ π — the SAME "
@@ -1300,8 +1363,14 @@ def derive_tetrad_threshold_values(
             "≈ 0.29 and σ-dependent, not the constant γ/π.",
         ),
         (
-            "K_phi", "pi", "2nd (discrete Laplacian)", "circle (S¹)",
-            pi_val, PI, "|K_φ| < 0.9·π", "geometric",
+            "K_phi",
+            "pi",
+            "2nd (discrete Laplacian)",
+            "circle (S¹)",
+            pi_val,
+            PI,
+            "|K_φ| < 0.9·π",
+            "geometric",
             "π is the GENUINE structural scale (audit 2026): the maximum phase "
             "angle on S¹ (wrap_angle bound = arccos(−1)). It scales the WHOLE "
             "phase sector — both K_φ AND |∇φ| are wrapped angles ≤ π. K_φ is "
@@ -1309,8 +1378,14 @@ def derive_tetrad_threshold_values(
             "the smooth limit). The 0.9 factor is a 90 % safety margin.",
         ),
         (
-            "xi_C", "e", "correlation (non-local)", "exponential",
-            e_val, E, "ξ_C ∝ 1/√λ₂ (spectral gap)", "overlay",
+            "xi_C",
+            "e",
+            "correlation (non-local)",
+            "exponential",
+            e_val,
+            E,
+            "ξ_C ∝ 1/√λ₂ (spectral gap)",
+            "overlay",
             "e is recoverable as Σ 1/k! (a true identity) and is the base of "
             "ANY exponential decay C(r)=e^{−r/ξ_C} — which makes the e↔ξ_C "
             "link near-tautological. The structural scale of ξ_C is set by "
@@ -1320,24 +1395,34 @@ def derive_tetrad_threshold_values(
 
     out: list[ThresholdDerivation] = []
     for (
-        field_name, const_name, tower, law, derived, canonical,
-        expr, status, note,
+        field_name,
+        const_name,
+        tower,
+        law,
+        derived,
+        canonical,
+        expr,
+        status,
+        note,
     ) in rows:
         rel_err = abs(derived - canonical) / (abs(canonical) + 1e-300)
-        out.append(ThresholdDerivation(
-            field_name=field_name,
-            constant_name=const_name,
-            tower_order=tower,
-            accumulation_law=law,
-            derived_value=float(derived),
-            canonical_value=float(canonical),
-            relative_error=float(rel_err),
-            matches=bool(rel_err < tolerance),
-            threshold_expression=expr,
-            status=status,
-            note=note,
-        ))
+        out.append(
+            ThresholdDerivation(
+                field_name=field_name,
+                constant_name=const_name,
+                tower_order=tower,
+                accumulation_law=law,
+                derived_value=float(derived),
+                canonical_value=float(canonical),
+                relative_error=float(rel_err),
+                matches=bool(rel_err < tolerance),
+                threshold_expression=expr,
+                status=status,
+                note=note,
+            )
+        )
     return out
+
 
 # ---------------------------------------------------------------------------
 #  Operator canonical classification
@@ -1347,20 +1432,21 @@ def derive_tetrad_threshold_values(
 # Each operator has a type (canonical, dissipative, or expansive) and
 # its effect on Hamiltonian (energy).
 _OPERATOR_CANONICAL_MAP = {
-    'AL':     {'type': 'generating',   'dH': 'increase',  'symplectic': 'expansive'},
-    'EN':     {'type': 'canonical',    'dH': 'neutral',   'symplectic': 'canonical'},
-    'IL':     {'type': 'dissipative',  'dH': 'decrease',  'symplectic': 'dissipative'},
-    'OZ':     {'type': 'generating',   'dH': 'increase',  'symplectic': 'expansive'},
-    'UM':     {'type': 'canonical',    'dH': 'neutral',   'symplectic': 'canonical'},
-    'RA':     {'type': 'canonical',    'dH': 'neutral',   'symplectic': 'canonical'},
-    'SHA':    {'type': 'canonical',    'dH': 'neutral',   'symplectic': 'canonical'},
-    'VAL':    {'type': 'generating',   'dH': 'increase',  'symplectic': 'expansive'},
-    'NUL':    {'type': 'dissipative',  'dH': 'decrease',  'symplectic': 'dissipative'},
-    'THOL':   {'type': 'canonical',    'dH': 'neutral',   'symplectic': 'canonical'},
-    'ZHIR':   {'type': 'generating',   'dH': 'increase',  'symplectic': 'expansive'},
-    'NAV':    {'type': 'canonical',    'dH': 'neutral',   'symplectic': 'canonical'},
-    'REMESH': {'type': 'canonical',    'dH': 'neutral',   'symplectic': 'canonical'},
+    "AL": {"type": "generating", "dH": "increase", "symplectic": "expansive"},
+    "EN": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
+    "IL": {"type": "dissipative", "dH": "decrease", "symplectic": "dissipative"},
+    "OZ": {"type": "generating", "dH": "increase", "symplectic": "expansive"},
+    "UM": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
+    "RA": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
+    "SHA": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
+    "VAL": {"type": "generating", "dH": "increase", "symplectic": "expansive"},
+    "NUL": {"type": "dissipative", "dH": "decrease", "symplectic": "dissipative"},
+    "THOL": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
+    "ZHIR": {"type": "generating", "dH": "increase", "symplectic": "expansive"},
+    "NAV": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
+    "REMESH": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
 }
+
 
 def classify_operator_canonical(
     before: LagrangianSnapshot,
@@ -1403,34 +1489,36 @@ def classify_operator_canonical(
 
     # Energy classification
     if abs(dH) < tolerance * max(abs(before.total_hamiltonian), 1e-6):
-        energy_class = 'neutral'
+        energy_class = "neutral"
     elif dH > 0:
-        energy_class = 'generating'
+        energy_class = "generating"
     else:
-        energy_class = 'dissipative'
+        energy_class = "dissipative"
 
     # Look up theoretical expectation
     expected = _OPERATOR_CANONICAL_MAP.get(operator_name, {})
 
     return {
-        'operator': operator_name,
-        'symplectic_check': symp,
-        'energy_change': dH,
-        'kinetic_change': dT,
-        'potential_change': dV,
-        'energy_classification': energy_class,
-        'expected_type': expected.get('type', 'unknown'),
-        'expected_dH': expected.get('dH', 'unknown'),
-        'expected_symplectic': expected.get('symplectic', 'unknown'),
-        'consistent_with_theory': (
-            energy_class == expected.get('type', energy_class)
-            or energy_class == 'neutral'  # neutral is always acceptable
+        "operator": operator_name,
+        "symplectic_check": symp,
+        "energy_change": dH,
+        "kinetic_change": dT,
+        "potential_change": dV,
+        "energy_classification": energy_class,
+        "expected_type": expected.get("type", "unknown"),
+        "expected_dH": expected.get("dH", "unknown"),
+        "expected_symplectic": expected.get("symplectic", "unknown"),
+        "consistent_with_theory": (
+            energy_class == expected.get("type", energy_class)
+            or energy_class == "neutral"  # neutral is always acceptable
         ),
     }
+
 
 # ---------------------------------------------------------------------------
 #  Variational Tracker (time-series)
 # ---------------------------------------------------------------------------
+
 
 class VariationalTracker:
     """Track variational principle compliance across an operator sequence.
@@ -1513,9 +1601,11 @@ class VariationalTracker:
         """All recorded snapshots (for action computation)."""
         return [s for _, s in self._snapshots]
 
+
 # ---------------------------------------------------------------------------
 #  Comprehensive variational analysis
 # ---------------------------------------------------------------------------
+
 
 def compute_variational_suite(G: Any) -> dict[str, Any]:
     """Compute the complete variational analysis for a graph state.
@@ -1537,17 +1627,21 @@ def compute_variational_suite(G: Any) -> dict[str, Any]:
     pb_geo = compute_poisson_bracket_estimate(snap.conjugate_geometric)
     pb_pot = compute_poisson_bracket_estimate(snap.conjugate_potential)
 
-    virial = (snap.total_kinetic / snap.total_potential
-              if snap.total_potential > 1e-12 else float('inf'))
+    virial = (
+        snap.total_kinetic / snap.total_potential
+        if snap.total_potential > 1e-12
+        else float("inf")
+    )
 
     return {
-        'lagrangian_snapshot': snap,
-        'critical_points': crit,
-        'grammar_stationarity': grammar,
-        'poisson_bracket_geometric': pb_geo,
-        'poisson_bracket_potential': pb_pot,
-        'virial_ratio': virial,
+        "lagrangian_snapshot": snap,
+        "critical_points": crit,
+        "grammar_stationarity": grammar,
+        "poisson_bracket_geometric": pb_geo,
+        "poisson_bracket_potential": pb_pot,
+        "virial_ratio": virial,
     }
+
 
 # ---------------------------------------------------------------------------
 #  Public API

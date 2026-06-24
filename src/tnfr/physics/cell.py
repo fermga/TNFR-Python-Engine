@@ -38,11 +38,14 @@ See also:
 
 from dataclasses import dataclass
 from typing import Sequence
-from ..mathematics.unified_numerical import np
+
 import networkx as nx
-from ..metrics.common import compute_coherence
+
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR
+from ..mathematics.unified_numerical import np
+from ..metrics.common import compute_coherence
+
 
 @dataclass
 class CellTelemetry:
@@ -68,6 +71,7 @@ class CellTelemetry:
         First time t where all cellular criteria satisfied (C_boundary > 0.8,
         ρ_selectivity > 0.6, H_index > 0.5, I_compartment > 0.7), else None.
     """
+
     times: list[float]
     boundary_coherence: np.ndarray
     internal_coherence: np.ndarray
@@ -76,14 +80,13 @@ class CellTelemetry:
     membrane_integrity: np.ndarray
     cell_formation_time: float | None = None
 
+
 # Core computations
 
 # Centralised helper — single source of truth in _helpers.py
 
-def compute_boundary_coherence(
-    graph: nx.Graph,
-    boundary_nodes: Sequence[int]
-) -> float:
+
+def compute_boundary_coherence(graph: nx.Graph, boundary_nodes: Sequence[int]) -> float:
     """Compute coherence specifically at cellular boundary regions per TNFR coherence operator.
 
     From the TNFR coherence operator Ĉ, boundary coherence measures structural stability
@@ -104,20 +107,19 @@ def compute_boundary_coherence(
     """
     if not boundary_nodes:
         return 0.0
-        
+
     # Extract boundary subgraph
     boundary_subgraph = graph.subgraph(boundary_nodes).copy()
-    
+
     # Compute coherence on boundary only
     if len(boundary_subgraph.nodes()) == 0:
         return 0.0
-        
+
     return compute_coherence(boundary_subgraph)
 
+
 def compute_selectivity_index(
-    graph: nx.Graph,
-    internal_nodes: Sequence[int],
-    boundary_nodes: Sequence[int]
+    graph: nx.Graph, internal_nodes: Sequence[int], boundary_nodes: Sequence[int]
 ) -> float:
     """Compute cellular membrane selectivity from coupling topology preferentiality.
 
@@ -152,29 +154,29 @@ def compute_selectivity_index(
     internal_set = set(internal_nodes)
     boundary_set = set(boundary_nodes)
     cell_nodes = internal_set | boundary_set
-    
+
     # Count coupling types
     internal_coupling = 0  # Both nodes internal
     external_coupling = 0  # One internal, one external
-    
+
     for u, v in graph.edges():
         u_in_cell = u in cell_nodes
         v_in_cell = v in cell_nodes
-        
+
         if u_in_cell and v_in_cell:
             internal_coupling += 1
         elif u_in_cell or v_in_cell:  # Crossing boundary
             external_coupling += 1
-    
+
     total_coupling = internal_coupling + external_coupling
     if total_coupling == 0:
         return 0.0
-    
+
     return (internal_coupling - external_coupling) / total_coupling
 
+
 def compute_homeostatic_index(
-    delta_nfr_internal: np.ndarray,
-    epsilon: float = 1e-6
+    delta_nfr_internal: np.ndarray, epsilon: float = 1e-6
 ) -> float:
     """Compute cellular homeostatic regulation capacity from ΔNFR stability dynamics.
 
@@ -206,19 +208,17 @@ def compute_homeostatic_index(
     """
     if len(delta_nfr_internal) == 0:
         return 0.0
-    
+
     std_internal = np.std(delta_nfr_internal)
     mean_internal = np.abs(np.mean(delta_nfr_internal))
-    
+
     raw_index = 1.0 - std_internal / (mean_internal + epsilon)
-    
+
     # Clamp to [0, 1] range to ensure valid homeostatic index
     return max(0.0, min(1.0, raw_index))
 
-def compute_membrane_integrity(
-    flux_internal: float,
-    flux_external: float
-) -> float:
+
+def compute_membrane_integrity(flux_internal: float, flux_external: float) -> float:
     """Compute cellular membrane integrity from compartmentalization effectiveness.
 
     From membrane flux physics J_membrane = κ(φ_ext - φ_int), this function quantifies
@@ -250,9 +250,10 @@ def compute_membrane_integrity(
     total_flux = abs(flux_internal) + abs(flux_external)
     if total_flux == 0:
         return 1.0
-        
+
     leakage_rate = abs(flux_external) / total_flux
     return 1.0 - leakage_rate
+
 
 def detect_cell_formation(
     graph_sequence: Sequence[nx.Graph],
@@ -262,7 +263,7 @@ def detect_cell_formation(
     c_boundary_threshold: float = 0.8,
     selectivity_threshold: float = 0.6,
     homeostasis_threshold: float = 0.5,
-    integrity_threshold: float = 0.7
+    integrity_threshold: float = 0.7,
 ) -> CellTelemetry:
     """Detect cellular organization emergence from TNFR autopoietic dynamics per cellular extension.
 
@@ -272,7 +273,7 @@ def detect_cell_formation(
 
     Cellular criteria (all must be satisfied simultaneously):
     - Boundary coherence: C_boundary > c_boundary_threshold (default 0.8)
-    - Selectivity index: ρ_selectivity > selectivity_threshold (default 0.6)  
+    - Selectivity index: ρ_selectivity > selectivity_threshold (default 0.6)
     - Homeostatic capacity: H_index > homeostasis_threshold (default 0.5)
     - Membrane integrity: I_compartment > integrity_threshold (default 0.7)
 
@@ -309,31 +310,37 @@ def detect_cell_formation(
     """
     times = list(times)
     n_timesteps = len(graph_sequence)
-    
+
     # Initialize arrays
     boundary_coherence = np.zeros(n_timesteps)
     internal_coherence = np.zeros(n_timesteps)
     selectivity_index = np.zeros(n_timesteps)
     homeostatic_index = np.zeros(n_timesteps)
     membrane_integrity = np.zeros(n_timesteps)
-    
+
     # Track internal ΔNFR for homeostasis calculation
     internal_delta_nfr_history = []
-    
+
     for t_idx, graph in enumerate(graph_sequence):
         # Boundary coherence
         boundary_coherence[t_idx] = compute_boundary_coherence(graph, boundary_nodes)
-        
-        # Internal coherence  
+
+        # Internal coherence
         if internal_nodes:
             internal_subgraph = graph.subgraph(internal_nodes).copy()
-            internal_coherence[t_idx] = compute_coherence(internal_subgraph) if len(internal_subgraph.nodes()) > 0 else 0.0
+            internal_coherence[t_idx] = (
+                compute_coherence(internal_subgraph)
+                if len(internal_subgraph.nodes()) > 0
+                else 0.0
+            )
         else:
             internal_coherence[t_idx] = 0.0
-            
+
         # Selectivity index
-        selectivity_index[t_idx] = compute_selectivity_index(graph, internal_nodes, boundary_nodes)
-        
+        selectivity_index[t_idx] = compute_selectivity_index(
+            graph, internal_nodes, boundary_nodes
+        )
+
         # Collect internal ΔNFR values
         internal_dnfr = []
         for node in internal_nodes:
@@ -341,50 +348,55 @@ def detect_cell_formation(
                 dnfr_val = get_attr(graph.nodes[node], ALIAS_DNFR, None)
                 if dnfr_val is not None:
                     internal_dnfr.append(dnfr_val)
-        
+
         internal_delta_nfr_history.extend(internal_dnfr)
-        
+
         # Homeostatic index (computed from accumulated history)
         if len(internal_delta_nfr_history) > 1:
-            homeostatic_index[t_idx] = compute_homeostatic_index(np.array(internal_delta_nfr_history))
+            homeostatic_index[t_idx] = compute_homeostatic_index(
+                np.array(internal_delta_nfr_history)
+            )
         else:
             homeostatic_index[t_idx] = 0.0
-            
+
         # Membrane integrity (simplified: based on selectivity as proxy)
         # In a full implementation, this would use actual flux measurements
-        membrane_integrity[t_idx] = min(1.0, selectivity_index[t_idx] + 0.2)  # Heuristic
-    
+        membrane_integrity[t_idx] = min(
+            1.0, selectivity_index[t_idx] + 0.2
+        )  # Heuristic
+
     # Detect cell formation time
     cell_formation_time: float | None = None
-    
+
     for t_idx in range(n_timesteps):
         criteria_met = (
-            boundary_coherence[t_idx] > c_boundary_threshold and
-            selectivity_index[t_idx] > selectivity_threshold and  
-            homeostatic_index[t_idx] > homeostasis_threshold and
-            membrane_integrity[t_idx] > integrity_threshold
+            boundary_coherence[t_idx] > c_boundary_threshold
+            and selectivity_index[t_idx] > selectivity_threshold
+            and homeostatic_index[t_idx] > homeostasis_threshold
+            and membrane_integrity[t_idx] > integrity_threshold
         )
-        
+
         if criteria_met:
             cell_formation_time = times[t_idx]
             break
-    
+
     return CellTelemetry(
         times=times,
         boundary_coherence=boundary_coherence,
         internal_coherence=internal_coherence,
-        selectivity_index=selectivity_index, 
+        selectivity_index=selectivity_index,
         homeostatic_index=homeostatic_index,
         membrane_integrity=membrane_integrity,
-        cell_formation_time=cell_formation_time
+        cell_formation_time=cell_formation_time,
     )
+
 
 def apply_membrane_flux(
     graph: nx.Graph,
     internal_nodes: Sequence[int],
-    boundary_nodes: Sequence[int], 
+    boundary_nodes: Sequence[int],
     permeability: float = 0.1,
-    phase_threshold: float = np.pi / 3
+    phase_threshold: float = np.pi / 3,
 ) -> None:
     """Apply phase-selective membrane flux for cellular transport simulation.
 
@@ -416,29 +428,30 @@ def apply_membrane_flux(
     for boundary_node in boundary_nodes:
         if boundary_node not in graph.nodes():
             continue
-            
+
         # Get boundary node properties
-        boundary_phase = graph.nodes[boundary_node].get('theta', 0.0)
-        boundary_epi = graph.nodes[boundary_node].get('EPI', 0.0)
-        
+        boundary_phase = graph.nodes[boundary_node].get("theta", 0.0)
+        boundary_epi = graph.nodes[boundary_node].get("EPI", 0.0)
+
         # Check transport with neighboring nodes
         for neighbor in graph.neighbors(boundary_node):
-            neighbor_phase = graph.nodes[neighbor].get('theta', 0.0)
-            neighbor_epi = graph.nodes[neighbor].get('EPI', 0.0)
-            
+            neighbor_phase = graph.nodes[neighbor].get("theta", 0.0)
+            neighbor_epi = graph.nodes[neighbor].get("EPI", 0.0)
+
             # Phase compatibility check
             phase_diff = abs(boundary_phase - neighbor_phase)
             phase_diff = min(phase_diff, 2 * np.pi - phase_diff)  # Wrap around
-            
+
             if phase_diff <= phase_threshold:
                 # Calculate flux
                 epi_diff = neighbor_epi - boundary_epi
                 flux = permeability * epi_diff
-                
+
                 # Apply flux (modify EPI)
-                current_epi = graph.nodes[boundary_node].get('EPI', 0.0)
+                current_epi = graph.nodes[boundary_node].get("EPI", 0.0)
                 new_epi = current_epi + 0.01 * flux  # Small time step
-                graph.nodes[boundary_node]['EPI'] = max(0.0, new_epi)  # Keep positive
+                graph.nodes[boundary_node]["EPI"] = max(0.0, new_epi)  # Keep positive
+
 
 __all__ = [
     "CellTelemetry",
@@ -447,5 +460,5 @@ __all__ = [
     "compute_homeostatic_index",
     "compute_membrane_integrity",
     "detect_cell_formation",
-    "apply_membrane_flux"
+    "apply_membrane_flux",
 ]

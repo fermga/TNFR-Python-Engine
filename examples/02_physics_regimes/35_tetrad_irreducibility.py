@@ -36,27 +36,23 @@ Physics basis:
 from __future__ import annotations
 
 import math
-import sys
 import os
+import sys
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import (
-    PHI,
-    GAMMA,
-    PI,
-    PHI_S_VON_KOCH_THRESHOLD,        # 0.7711
-    GRAD_PHI_CANONICAL_THRESHOLD,     # gamma/pi ~ 0.1837
-    K_PHI_CANONICAL_THRESHOLD,        # 0.9*pi ~ 2.8274
-)
+from tnfr.constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD  # gamma/pi ~ 0.1837
+from tnfr.constants.canonical import K_PHI_CANONICAL_THRESHOLD  # 0.9*pi ~ 2.8274
+from tnfr.constants.canonical import PHI_S_VON_KOCH_THRESHOLD  # 0.7711
+from tnfr.constants.canonical import GAMMA, PHI, PI
 from tnfr.physics.fields import (
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
     estimate_coherence_length,
 )
 
@@ -113,8 +109,8 @@ def _report_fields(G: nx.Graph, skip: str = "") -> dict[str, dict]:
             "mean": float(xi_c),
             # xi_C is anomalous when it diverges beyond system diameter
             "threshold": float(nx.diameter(G)) if nx.is_connected(G) else 10.0,
-            "safe": float(xi_c) < (
-                float(nx.diameter(G)) if nx.is_connected(G) else 10.0),
+            "safe": float(xi_c)
+            < (float(nx.diameter(G)) if nx.is_connected(G) else 10.0),
         },
     }
     return fields
@@ -122,20 +118,25 @@ def _report_fields(G: nx.Graph, skip: str = "") -> dict[str, dict]:
 
 def _print_field_status(fields: dict, detecting_field: str) -> None:
     """Print status table highlighting which field detects the pathology."""
-    print(f"  {'Field':<14}  {'Max/Mean':>10}  {'Threshold':>10}  {'Safe?':>6}  {'Detecting?':>11}")
+    print(
+        f"  {'Field':<14}  {'Max/Mean':>10}  {'Threshold':>10}  {'Safe?':>6}  {'Detecting?':>11}"
+    )
     print("  " + "-" * 55)
     for name, info in fields.items():
         val = info.get("max_abs", info.get("mean", 0.0))
         thr = info["threshold"]
         safe = info["safe"]
         detecting = "<<<" if name == detecting_field and not safe else ""
-        print(f"  {name:<14}  {val:10.4f}  {thr:10.4f}  "
-              f"{'YES' if safe else 'NO':>6}  {detecting:>11}")
+        print(
+            f"  {name:<14}  {val:10.4f}  {thr:10.4f}  "
+            f"{'YES' if safe else 'NO':>6}  {detecting:>11}"
+        )
 
 
 # ---------------------------------------------------------------------------
 # Blind spot 1: Without Phi_s — hidden global accumulation
 # ---------------------------------------------------------------------------
+
 
 def demo_blind_spot_phi_s() -> None:
     """Construct a network where only Phi_s detects global pressure."""
@@ -162,10 +163,14 @@ def demo_blind_spot_phi_s() -> None:
 
     print(f"\n  Interpretation:")
     if not fields["Phi_s"]["safe"]:
-        print(f"    Phi_s DETECTS accumulation (max = {fields['Phi_s']['max_abs']:.4f})")
+        print(
+            f"    Phi_s DETECTS accumulation (max = {fields['Phi_s']['max_abs']:.4f})"
+        )
     else:
-        print(f"    Phi_s within threshold (max = {fields['Phi_s']['max_abs']:.4f}) — "
-              f"adjust DELTA_NFR amplitude for stronger accumulation")
+        print(
+            f"    Phi_s within threshold (max = {fields['Phi_s']['max_abs']:.4f}) — "
+            f"adjust DELTA_NFR amplitude for stronger accumulation"
+        )
     print(f"    Without Phi_s, this global pressure accumulation is INVISIBLE.")
     print(f"    C(t) alone misses catastrophic pressure.")
 
@@ -173,6 +178,7 @@ def demo_blind_spot_phi_s() -> None:
 # ---------------------------------------------------------------------------
 # Blind spot 2: Without |grad_phi| — hidden local fragmentation
 # ---------------------------------------------------------------------------
+
 
 def demo_blind_spot_grad_phi() -> None:
     """Construct a network where only |grad_phi| detects fragmentation."""
@@ -204,10 +210,14 @@ def demo_blind_spot_grad_phi() -> None:
 
     print(f"\n  Interpretation:")
     if not fields["|grad_phi|"]["safe"]:
-        print(f"    |grad_phi| DETECTS fragmentation "
-              f"(max = {fields['|grad_phi|']['max_abs']:.4f} > gamma/pi = {GRAD_PHI_CANONICAL_THRESHOLD:.4f})")
+        print(
+            f"    |grad_phi| DETECTS fragmentation "
+            f"(max = {fields['|grad_phi|']['max_abs']:.4f} > gamma/pi = {GRAD_PHI_CANONICAL_THRESHOLD:.4f})"
+        )
     else:
-        print(f"    |grad_phi| within threshold — {fields['|grad_phi|']['max_abs']:.4f}")
+        print(
+            f"    |grad_phi| within threshold — {fields['|grad_phi|']['max_abs']:.4f}"
+        )
     print(f"    C(t) is scaling-invariant: proportional DELTA_NFR has no effect.")
     print(f"    Without |grad_phi|, the local desynchronization is INVISIBLE.")
 
@@ -215,6 +225,7 @@ def demo_blind_spot_grad_phi() -> None:
 # ---------------------------------------------------------------------------
 # Blind spot 3: Without K_phi — hidden geometric singularities
 # ---------------------------------------------------------------------------
+
 
 def demo_blind_spot_k_phi() -> None:
     """Construct a network where only K_phi detects torsion/vortex."""
@@ -242,11 +253,15 @@ def demo_blind_spot_k_phi() -> None:
 
     print(f"\n  Interpretation:")
     if not fields["K_phi"]["safe"]:
-        print(f"    K_phi DETECTS vortex (max = {fields['K_phi']['max_abs']:.4f} "
-              f"> 0.9*pi = {K_PHI_CANONICAL_THRESHOLD:.4f})")
+        print(
+            f"    K_phi DETECTS vortex (max = {fields['K_phi']['max_abs']:.4f} "
+            f"> 0.9*pi = {K_PHI_CANONICAL_THRESHOLD:.4f})"
+        )
     else:
-        print(f"    K_phi within threshold ({fields['K_phi']['max_abs']:.4f}) — "
-              f"vortex too smooth for this topology")
+        print(
+            f"    K_phi within threshold ({fields['K_phi']['max_abs']:.4f}) — "
+            f"vortex too smooth for this topology"
+        )
     print(f"    |grad_phi| may also be elevated, but K_phi captures the")
     print(f"    *curvature* (2nd derivative) that |grad_phi| misses.")
     print(f"    Without K_phi, geometric singularities are INVISIBLE.")
@@ -255,6 +270,7 @@ def demo_blind_spot_k_phi() -> None:
 # ---------------------------------------------------------------------------
 # Blind spot 4: Without xi_C — hidden phase transition
 # ---------------------------------------------------------------------------
+
 
 def demo_blind_spot_xi_c() -> None:
     """Construct a network where only xi_C detects critical divergence."""
@@ -281,11 +297,15 @@ def demo_blind_spot_xi_c() -> None:
     xi_mean = fields["xi_C"]["mean"]
     xi_thr = fields["xi_C"]["threshold"]
     if not fields["xi_C"]["safe"]:
-        print(f"    xi_C DETECTS critical state (mean = {xi_mean:.4f} > "
-              f"diameter = {xi_thr:.1f})")
+        print(
+            f"    xi_C DETECTS critical state (mean = {xi_mean:.4f} > "
+            f"diameter = {xi_thr:.1f})"
+        )
     else:
-        print(f"    xi_C within threshold (mean = {xi_mean:.4f}, "
-              f"diameter = {xi_thr:.1f})")
+        print(
+            f"    xi_C within threshold (mean = {xi_mean:.4f}, "
+            f"diameter = {xi_thr:.1f})"
+        )
     print(f"    All pointwise fields (Phi_s, |grad_phi|, K_phi) are bounded.")
     print(f"    But the system is at criticality — long-range correlations")
     print(f"    dominate.  Without xi_C, this is INVISIBLE.")
@@ -295,6 +315,7 @@ def demo_blind_spot_xi_c() -> None:
 # Summary: completeness proof by structural blind spots
 # ---------------------------------------------------------------------------
 
+
 def demo_irreducibility_summary() -> None:
     """Summarize the four blind spots as an irreducibility argument."""
     print("\n" + "=" * 65)
@@ -302,22 +323,36 @@ def demo_irreducibility_summary() -> None:
     print("=" * 65)
 
     table = [
-        ("Phi_s",       "0th order (global)",      "Global pressure accumulation",
-         "C(t) alone"),
-        ("|grad_phi|",  "1st order (local)",       "Local desynchronization",
-         "C(t) is scaling-invariant"),
-        ("K_phi",       "2nd order (Laplacian)",   "Geometric singularity/vortex",
-         "|grad_phi| misses curvature"),
-        ("xi_C",        "Non-local (integral)",    "Phase transition/criticality",
-         "All pointwise fields bounded"),
+        ("Phi_s", "0th order (global)", "Global pressure accumulation", "C(t) alone"),
+        (
+            "|grad_phi|",
+            "1st order (local)",
+            "Local desynchronization",
+            "C(t) is scaling-invariant",
+        ),
+        (
+            "K_phi",
+            "2nd order (Laplacian)",
+            "Geometric singularity/vortex",
+            "|grad_phi| misses curvature",
+        ),
+        (
+            "xi_C",
+            "Non-local (integral)",
+            "Phase transition/criticality",
+            "All pointwise fields bounded",
+        ),
     ]
 
-    print(f"\n  {'Field':<14}  {'Order':<22}  {'Detects':<30}  {'Why others miss it':<30}")
+    print(
+        f"\n  {'Field':<14}  {'Order':<22}  {'Detects':<30}  {'Why others miss it':<30}"
+    )
     print("  " + "-" * 100)
     for field, order, detects, why in table:
         print(f"  {field:<14}  {order:<22}  {detects:<30}  {why:<30}")
 
-    print(f"""
+    print(
+        f"""
   The four fields exhaust the operator-derivative tower:
 
     DELTA_NFR -> Sum 1/d^2 -> Phi_s          [0th, global]
@@ -330,12 +365,14 @@ def demo_irreducibility_summary() -> None:
 
   Result: The tetrad (Phi_s, |grad_phi|, K_phi, xi_C) is MINIMAL
   and COMPLETE — removing any field creates an undetectable pathology.
-""")
+"""
+    )
 
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     print()

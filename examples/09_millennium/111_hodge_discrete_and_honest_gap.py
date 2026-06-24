@@ -85,11 +85,11 @@ References
 - AGENTS.md section "Transport Content of the Nodal Equation"
 """
 
+import itertools
 import os
 import sys
-import itertools
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np
 
@@ -99,7 +99,7 @@ def boundaries(verts, edges, tris):
     eidx = {e: k for k, e in enumerate(edges)}
     d1 = np.zeros((len(verts), len(edges)))
     for k, (a, b) in enumerate(edges):
-        d1[a, k] = -1.0   # d[a,b] = [b] - [a]
+        d1[a, k] = -1.0  # d[a,b] = [b] - [a]
         d1[b, k] = +1.0
     d2 = np.zeros((len(edges), len(tris)))
     for k, (a, b, c) in enumerate(tris):
@@ -122,6 +122,7 @@ def complex_from_triangles(triangles):
 def torus_triangles(n):
     def vid(i, j):
         return (i % n) * n + (j % n)
+
     tris = []
     for i in range(n):
         for j in range(n):
@@ -151,17 +152,21 @@ def experiment_1_eckmann_torus():
     print()
     V, E, T = complex_from_triangles(torus_triangles(5))
     d1, d2, dims = hodge_dims(V, E, T)
-    print(f"  torus complex: |V|={len(V)} |E|={len(E)} |T|={len(T)}  "
-          f"Euler={len(V) - len(E) + len(T)}")
+    print(
+        f"  torus complex: |V|={len(V)} |E|={len(E)} |T|={len(T)}  "
+        f"Euler={len(V) - len(E) + len(T)}"
+    )
     print(f"  (1) chain complex ||d1 d2|| = {np.abs(d1 @ d2).max():.2e}  (=0)")
     print(f"  (2) harmonic dims (ker L0, L1, L2) = {dims}  (Betti torus 1,2,1)")
     # harmonic 1-forms closed + co-closed
     L1 = d1.T @ d1 + d2 @ d2.T
     ev, U = np.linalg.eigh((L1 + L1.T) / 2)
     H = U[:, np.abs(ev) < 1e-9]
-    print(f"  (3) harmonic 1-form subspace dim = {H.shape[1]} "
-          f"(2 torus loops); closed |d1 h|={np.abs(d1 @ H).max():.1e}, "
-          f"co-closed |d2^T h|={np.abs(d2.T @ H).max():.1e}")
+    print(
+        f"  (3) harmonic 1-form subspace dim = {H.shape[1]} "
+        f"(2 torus loops); closed |d1 h|={np.abs(d1 @ H).max():.1e}, "
+        f"co-closed |d2^T h|={np.abs(d2.T @ H).max():.1e}"
+    )
     print()
     print("  Eckmann (1944): harmonic = homology, EXACT. The 2 harmonic")
     print("  1-forms are the 2 independent loops a TNFR phase field can wind")
@@ -174,18 +179,32 @@ def experiment_2_topology_tracking():
     print("HC-1 contrast: harmonic count tracks topology EXACTLY")
     print("=" * 72)
     print()
-    octa = [(0, 2, 4), (2, 1, 4), (1, 3, 4), (3, 0, 4),
-            (0, 2, 5), (2, 1, 5), (1, 3, 5), (3, 0, 5)]
+    octa = [
+        (0, 2, 4),
+        (2, 1, 4),
+        (1, 3, 4),
+        (3, 0, 4),
+        (0, 2, 5),
+        (2, 1, 5),
+        (1, 3, 5),
+        (3, 0, 5),
+    ]
     Vs, Es, Ts = complex_from_triangles(octa)
     _, _, ds = hodge_dims(Vs, Es, Ts)
     Vt, Et, Tt = complex_from_triangles(torus_triangles(5))
     _, _, dt = hodge_dims(Vt, Et, Tt)
-    print(f"  {'space':>22} {'|V|':>4} {'|E|':>4} {'|T|':>4} "
-          f"{'harmonic dims':>14} {'Betti':>9}")
-    print(f"  {'octahedron (sphere)':>22} {len(Vs):>4} {len(Es):>4} "
-          f"{len(Ts):>4} {str(ds):>14} {'(1,0,1)':>9}")
-    print(f"  {'torus (5x5)':>22} {len(Vt):>4} {len(Et):>4} "
-          f"{len(Tt):>4} {str(dt):>14} {'(1,2,1)':>9}")
+    print(
+        f"  {'space':>22} {'|V|':>4} {'|E|':>4} {'|T|':>4} "
+        f"{'harmonic dims':>14} {'Betti':>9}"
+    )
+    print(
+        f"  {'octahedron (sphere)':>22} {len(Vs):>4} {len(Es):>4} "
+        f"{len(Ts):>4} {str(ds):>14} {'(1,0,1)':>9}"
+    )
+    print(
+        f"  {'torus (5x5)':>22} {len(Vt):>4} {len(Et):>4} "
+        f"{len(Tt):>4} {str(dt):>14} {'(1,2,1)':>9}"
+    )
     print()
     print("  The sphere has NO 1-loops (harmonic_1 = 0); the torus has 2.")
     print("  The harmonic count is a faithful TOPOLOGICAL invariant -- and")

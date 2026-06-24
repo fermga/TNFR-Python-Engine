@@ -474,23 +474,13 @@ def compute_remesh_window_type_signature(
 
     # Advisory L2 distance: baseline vs (+1, +2) windows.
     baseline = epi_bracket[0]
-    l2_p1 = float(np.linalg.norm(epi_bracket[1] - baseline)) / max(
-        1, baseline.size
-    )
-    l2_p2 = float(np.linalg.norm(epi_bracket[2] - baseline)) / max(
-        1, baseline.size
-    )
+    l2_p1 = float(np.linalg.norm(epi_bracket[1] - baseline)) / max(1, baseline.size)
+    l2_p2 = float(np.linalg.norm(epi_bracket[2] - baseline)) / max(1, baseline.size)
     bracket_mean_l2 = 0.5 * (l2_p1 + l2_p2)
 
-    if (
-        signature < scalar_threshold
-        and integer_storage_fraction >= 1.0 - 1e-12
-    ):
+    if signature < scalar_threshold and integer_storage_fraction >= 1.0 - 1e-12:
         verdict = "INTEGER_WINDOW_ADEQUATE"
-    elif (
-        signature > continuous_threshold
-        or integer_storage_fraction < 1.0 - 1e-12
-    ):
+    elif signature > continuous_threshold or integer_storage_fraction < 1.0 - 1e-12:
         verdict = "CONTINUOUS_KERNEL_NECESSARY"
     else:
         verdict = "INDETERMINATE"

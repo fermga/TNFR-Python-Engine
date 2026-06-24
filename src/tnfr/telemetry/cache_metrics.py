@@ -5,12 +5,12 @@ from __future__ import annotations
 import logging
 import weakref
 from dataclasses import dataclass
-from typing import Any, MutableMapping, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, MutableMapping
 
 from ..utils import (
-    _graph_cache_manager,
     CacheManager,
     CacheStatistics,
+    _graph_cache_manager,
     get_logger,
     json_dumps,
 )
@@ -27,6 +27,7 @@ __all__ = (
     "publish_graph_cache_metrics",
 )
 
+
 @dataclass(frozen=True)
 class CacheMetricsSnapshot:
     """Structured cache metrics enriched with ratios and latency estimates."""
@@ -42,7 +43,9 @@ class CacheMetricsSnapshot:
     avg_latency: float | None
 
     @classmethod
-    def from_statistics(cls, name: str, stats: CacheStatistics) -> "CacheMetricsSnapshot":
+    def from_statistics(
+        cls, name: str, stats: CacheStatistics
+    ) -> "CacheMetricsSnapshot":
         """Build a snapshot computing ratios from :class:`CacheStatistics`."""
 
         hits = int(stats.hits)
@@ -81,6 +84,7 @@ class CacheMetricsSnapshot:
             "avg_latency": self.avg_latency,
         }
 
+
 class CacheTelemetryPublisher:
     """Metrics publisher broadcasting cache counters to observability channels."""
 
@@ -106,7 +110,9 @@ class CacheTelemetryPublisher:
 
         return self._logger
 
-    def attach_graph(self, graph: "TNFRGraph | Graph | MutableMapping[str, Any] | None") -> None:
+    def attach_graph(
+        self, graph: "TNFRGraph | Graph | MutableMapping[str, Any] | None"
+    ) -> None:
         """Attach ``graph`` so observability callbacks receive metrics."""
 
         if graph is None:
@@ -171,7 +177,9 @@ class CacheTelemetryPublisher:
             ctx = {"cache": name, "metrics": payload}
             callback_manager.invoke_callbacks(graph, CallbackEvent.CACHE_METRICS, ctx)
 
+
 _PUBLISHER_ATTR = "_tnfr_cache_metrics_publisher"
+
 
 def ensure_cache_metrics_publisher(
     manager: CacheManager,
@@ -197,6 +205,7 @@ def ensure_cache_metrics_publisher(
         if graph is not None:
             publisher.attach_graph(graph)
     return publisher
+
 
 def publish_graph_cache_metrics(
     graph: "TNFRGraph | Graph | MutableMapping[str, Any]",

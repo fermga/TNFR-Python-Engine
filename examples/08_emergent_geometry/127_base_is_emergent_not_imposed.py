@@ -91,15 +91,15 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-from tnfr.alias import set_attr, get_attr
-from tnfr.constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
+from tnfr.alias import get_attr, set_attr
+from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from tnfr.dynamics import default_compute_delta_nfr
-from tnfr.operators.remesh import _mst_edges_from_epi, _get_networkx_modules
+from tnfr.operators.remesh import _get_networkx_modules, _mst_edges_from_epi
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
 
@@ -149,8 +149,10 @@ def experiment_1_operator_is_canonical():
     print("canonical dNFR computes the neighbour-MEAN minus self = -L_rw*EPI")
     print("(degree-normalized). Direct test: which operator IS the dNFR channel?")
     print()
-    print(f"  {'graph':22s} {'res(dNFR, -L_rw*EPI)':>21} "
-          f"{'res(dNFR, -L_comb*EPI)':>23}")
+    print(
+        f"  {'graph':22s} {'res(dNFR, -L_rw*EPI)':>21} "
+        f"{'res(dNFR, -L_comb*EPI)':>23}"
+    )
     for name, G in _test_graphs():
         G = G.copy()
         G.graph["DNFR_WEIGHTS"] = {"epi": 1.0, "phase": 0, "vf": 0, "topo": 0}

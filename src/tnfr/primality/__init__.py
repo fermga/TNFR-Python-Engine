@@ -11,9 +11,9 @@ is actually called without the dependency installed.
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import Any
-import sys
 
 __all__ = [
     "is_prime",
@@ -46,11 +46,12 @@ def _load_core() -> tuple[Any, Any, Any, Any]:
     _bootstrap_primality_test()
     try:
         from tnfr_primality import (
-            tnfr_is_prime,
-            tnfr_delta_nfr,
             tnfr_component_breakdown,
+            tnfr_delta_nfr,
+            tnfr_is_prime,
             tnfr_structural_triad,
         )
+
         return (
             tnfr_is_prime,
             tnfr_delta_nfr,

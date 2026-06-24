@@ -15,12 +15,33 @@ from typing import TYPE_CHECKING, Any, Mapping, Sequence
 from ..constants.canonical import PHI  # Golden ratio for U6 escape threshold
 
 if TYPE_CHECKING:
-    from ..types import NodeId, TNFRGraph, Glyph
+    from ..types import Glyph, NodeId, TNFRGraph
 else:
     NodeId = Any
     TNFRGraph = Any
     from ..types import Glyph
 
+from ..config.physics_derivation import (
+    derive_bifurcation_handlers_from_physics as _derive_handlers,
+)
+from ..config.physics_derivation import (
+    derive_bifurcation_triggers_from_physics as _derive_triggers,
+)
+from ..config.physics_derivation import (
+    derive_destabilizers_from_physics as _derive_destabilizers,
+)
+from ..config.physics_derivation import (
+    derive_end_operators_from_physics as _derive_ends,
+)
+from ..config.physics_derivation import (
+    derive_stabilizers_from_physics as _derive_stabilizers,
+)
+from ..config.physics_derivation import (
+    derive_start_operators_from_physics as _derive_starts,
+)
+from ..config.physics_derivation import (
+    derive_transformers_from_physics as _derive_transformers,
+)
 from ..validation.base import ValidationOutcome
 
 # ============================================================================
@@ -35,15 +56,6 @@ from ..validation.base import ValidationOutcome
 # closure / stabilizer / destabilizer / transformer) lives in the predicate
 # docstrings of physics_derivation, grounded in ∂EPI/∂t = νf·ΔNFR.
 
-from ..config.physics_derivation import (
-    derive_start_operators_from_physics as _derive_starts,
-    derive_end_operators_from_physics as _derive_ends,
-    derive_stabilizers_from_physics as _derive_stabilizers,
-    derive_destabilizers_from_physics as _derive_destabilizers,
-    derive_transformers_from_physics as _derive_transformers,
-    derive_bifurcation_triggers_from_physics as _derive_triggers,
-    derive_bifurcation_handlers_from_physics as _derive_handlers,
-)
 
 # U1a: Generators - Create EPI from null/dormant states (AL, NAV, REMESH)
 GENERATORS = _derive_starts()
@@ -73,6 +85,7 @@ TRANSFORMERS = _derive_transformers()
 RECURSIVE_GENERATORS = frozenset({"recursivity"})
 SCALE_STABILIZERS = STABILIZERS
 
+
 class StructuralPattern(Enum):
     """Classification labels for TNFR operator sequences.
 
@@ -91,11 +104,11 @@ class StructuralPattern(Enum):
     """
 
     # --- CANONICAL structural typology (TNFR.pdf "Tabla comparativa") ---------
-    BIFURCATED = "bifurcated"        # Bifurcada — OZ → [ZHIR | NUL] (union)
-    LINEAR = "linear"                # Lineal — concatenation
-    HIERARCHICAL = "hierarchical"    # Jerárquica — nested THOL[...] (Dyck)
-    FRACTAL = "fractal"              # Fractal — self-similar repeat (star)
-    CYCLIC = "cyclic"                # Cíclica — close-and-reopen feedback cycle
+    BIFURCATED = "bifurcated"  # Bifurcada — OZ → [ZHIR | NUL] (union)
+    LINEAR = "linear"  # Lineal — concatenation
+    HIERARCHICAL = "hierarchical"  # Jerárquica — nested THOL[...] (Dyck)
+    FRACTAL = "fractal"  # Fractal — self-similar repeat (star)
+    CYCLIC = "cyclic"  # Cíclica — close-and-reopen feedback cycle
 
     # --- LEGACY heuristic labels (NON-canonical application metadata) ---------
     # Application domain axis (not a structural shape):
@@ -157,6 +170,7 @@ GLYPH_TO_FUNCTION = {
 # Reverse mapping from function name to Glyph
 FUNCTION_TO_GLYPH = {v: k for k, v in GLYPH_TO_FUNCTION.items()}
 
+
 def glyph_function_name(
     val: Any,
     *,
@@ -208,6 +222,7 @@ def glyph_function_name(
     # Unknown type: cannot map safely
     return default
 
+
 def function_name_to_glyph(
     val: Any,
     *,
@@ -232,6 +247,7 @@ def function_name_to_glyph(
     if isinstance(val, Glyph):
         return val
     return FUNCTION_TO_GLYPH.get(val, default)
+
 
 __all__ = [
     # Validation result types
@@ -267,6 +283,7 @@ __all__ = [
 # ============================================================================
 # Grammar Errors
 # ============================================================================
+
 
 class StructuralGrammarError(RuntimeError):
     """Base class for structural grammar violations.
@@ -343,17 +360,22 @@ class StructuralGrammarError(RuntimeError):
             "context": self.context,
         }
 
+
 class RepeatWindowError(StructuralGrammarError):
     """Error for repeated operator within window."""
+
 
 class MutationPreconditionError(StructuralGrammarError):
     """Error for mutation without proper preconditions."""
 
+
 class TholClosureError(StructuralGrammarError):
     """Error for THOL without proper closure."""
 
+
 class TransitionCompatibilityError(StructuralGrammarError):
     """Error for incompatible transition."""
+
 
 class StructuralPotentialConfinementError(StructuralGrammarError):
     """Error for structural potential drift exceeding escape threshold (U6).
@@ -363,7 +385,10 @@ class StructuralPotentialConfinementError(StructuralGrammarError):
     """
 
     def __init__(
-        self, delta_phi_s: float, threshold: float = PHI, sequence: list[str] | None = None
+        self,
+        delta_phi_s: float,
+        threshold: float = PHI,
+        sequence: list[str] | None = None,
     ):
         msg = (
             f"U6 STRUCTURAL POTENTIAL CONFINEMENT violated: "
@@ -379,6 +404,7 @@ class StructuralPotentialConfinementError(StructuralGrammarError):
             order=sequence,
             context={"delta_phi_s": delta_phi_s},
         )
+
 
 class SequenceSyntaxError(ValueError):
     """Error in sequence syntax.
@@ -399,9 +425,10 @@ class SequenceSyntaxError(ValueError):
         self.message = message
         super().__init__(f"At index {index}, token '{token}': {message}")
 
+
 class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
     """Validation outcome for operator sequences with rich metadata.
-    
+
     Attributes
     ----------
     tokens : tuple[str, ...]
@@ -434,11 +461,15 @@ class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
         canonical_tuple = tuple(canonical_tokens)
         metadata_map = dict(metadata or {})
 
-        summary_map = dict(summary) if summary is not None else {
-            "message": message,
-            "tokens": canonical_tuple,
-            "metadata": metadata_map,
-        }
+        summary_map = (
+            dict(summary)
+            if summary is not None
+            else {
+                "message": message,
+                "tokens": canonical_tuple,
+                "metadata": metadata_map,
+            }
+        )
         if error is not None and "error" not in summary_map:
             summary_map["error"] = {
                 "index": error.index,
@@ -446,10 +477,14 @@ class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
                 "message": error.message,
             }
 
-        artifacts_map = dict(artifacts) if artifacts is not None else {
-            "canonical_tokens": canonical_tuple,
-            "tokens": tokens_tuple,
-        }
+        artifacts_map = (
+            dict(artifacts)
+            if artifacts is not None
+            else {
+                "canonical_tokens": canonical_tuple,
+                "tokens": tokens_tuple,
+            }
+        )
 
         super().__init__(
             subject=canonical_tuple,
@@ -463,6 +498,7 @@ class SequenceValidationResult(ValidationOutcome[tuple[str, ...]]):
         self.message = message
         self.metadata = metadata_map
         self.error = error
+
 
 class GrammarConfigurationError(ValueError):
     """Error in grammar configuration.
@@ -489,6 +525,7 @@ class GrammarConfigurationError(ValueError):
         self.details = details or []
         msg = f"Configuration error in {section}: {'; '.join(messages)}"
         super().__init__(msg)
+
 
 def record_grammar_violation(
     G,  # TNFRGraph (runtime fallback)
@@ -518,4 +555,3 @@ def record_grammar_violation(
             "error": error.to_payload(),
         }
     )
-

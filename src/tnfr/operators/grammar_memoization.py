@@ -18,9 +18,11 @@ from typing import Any, NamedTuple
 
 from ..validation.compatibility import CompatibilityLevel, get_compatibility_level
 
+
 # Static sequence properties that can be safely memoized
 class SequenceSignature(NamedTuple):
     """Immutable signature for sequence memoization."""
+
     glyph_names: tuple[str, ...]
     compatibility_level: str
     epi_zero_start: bool
@@ -29,8 +31,10 @@ class SequenceSignature(NamedTuple):
         sep = ",".join(self.glyph_names)
         return f"Seq({sep}, {self.compatibility_level}, EPI0={self.epi_zero_start})"
 
+
 class StaticValidationResult(NamedTuple):
     """Static validation results that are safe to cache."""
+
     has_generators: bool
     has_closures: bool
     has_destabilizers: bool
@@ -44,16 +48,15 @@ class StaticValidationResult(NamedTuple):
     u4_needs_check: bool  # Needs dynamic U4 check
     static_errors: list[str]  # Only structural errors
 
+
 def create_sequence_signature(
     sequence: list[Any],
     epi_initial: float = 0.0,
-    compatibility_level: CompatibilityLevel | None = None
+    compatibility_level: CompatibilityLevel | None = None,
 ) -> SequenceSignature:
     """Create memoization signature from sequence parameters."""
     # Extract glyph names (assume operators have .name attribute)
-    glyph_names = tuple(
-        getattr(op, 'name', str(op)) for op in sequence
-    )
+    glyph_names = tuple(getattr(op, "name", str(op)) for op in sequence)
 
     # Get compatibility level
     if compatibility_level is None:
@@ -62,8 +65,9 @@ def create_sequence_signature(
     return SequenceSignature(
         glyph_names=glyph_names,
         compatibility_level=compatibility_level.name,
-        epi_zero_start=(abs(epi_initial) < 1e-9)
+        epi_zero_start=(abs(epi_initial) < 1e-9),
     )
+
 
 @lru_cache(maxsize=512)
 def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationResult:
@@ -74,12 +78,17 @@ def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationR
     network state or operator history.
     """
     from ..config.operator_names import (
-        VALID_START_OPERATORS, VALID_END_OPERATORS,
-        CANONICAL_OPERATOR_NAMES
+        CANONICAL_OPERATOR_NAMES,
+        VALID_END_OPERATORS,
+        VALID_START_OPERATORS,
     )
     from .grammar_types import (
-        GENERATORS, CLOSURES, STABILIZERS, DESTABILIZERS,
-        BIFURCATION_TRIGGERS, TRANSFORMERS
+        BIFURCATION_TRIGGERS,
+        CLOSURES,
+        DESTABILIZERS,
+        GENERATORS,
+        STABILIZERS,
+        TRANSFORMERS,
     )
 
     glyph_names = signature.glyph_names
@@ -88,12 +97,18 @@ def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationR
     if not glyph_names:
         errors.append("Empty sequence")
         return StaticValidationResult(
-            has_generators=False, has_closures=False,
-            has_destabilizers=False, has_stabilizers=False,
-            has_bifurcation_triggers=False, has_transformers=False,
-            u1a_compliant=False, u1b_compliant=False,
-            u2_needs_check=False, u3_needs_check=False, u4_needs_check=False,
-            static_errors=errors
+            has_generators=False,
+            has_closures=False,
+            has_destabilizers=False,
+            has_stabilizers=False,
+            has_bifurcation_triggers=False,
+            has_transformers=False,
+            u1a_compliant=False,
+            u1b_compliant=False,
+            u2_needs_check=False,
+            u3_needs_check=False,
+            u4_needs_check=False,
+            static_errors=errors,
         )
 
     # Check for unknown operators
@@ -124,7 +139,7 @@ def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationR
 
     # U2, U3, U4 require dynamic checking (not cached)
     u2_needs_check = has_destabilizers
-    u3_needs_check = any(g in ['UM', 'RA'] for g in glyph_names)  # Coupling/Resonance
+    u3_needs_check = any(g in ["UM", "RA"] for g in glyph_names)  # Coupling/Resonance
     u4_needs_check = has_bifurcation_triggers or has_transformers
 
     return StaticValidationResult(
@@ -139,8 +154,9 @@ def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationR
         u2_needs_check=u2_needs_check,
         u3_needs_check=u3_needs_check,
         u4_needs_check=u4_needs_check,
-        static_errors=errors
+        static_errors=errors,
     )
+
 
 def validate_sequence_optimized(
     sequence: list[Any],
@@ -194,28 +210,24 @@ def validate_sequence_optimized(
 
         # U4b: Transformers need context (dynamic - requires recent_destabilizers)
         if static_result.has_transformers:
-            if 'ZHIR' in glyph_names:  # Mutation
+            if "ZHIR" in glyph_names:  # Mutation
                 # Check for prior IL (can be static)
-                has_prior_il = any(g == 'IL' for g in glyph_names[:-1])
+                has_prior_il = any(g == "IL" for g in glyph_names[:-1])
                 if not has_prior_il:
                     is_valid = False
                     messages.append("U4b violation: ZHIR without prior IL")
 
                 # Check for recent destabilizer (dynamic)
                 if recent_destabilizers is None:
-                    msg = (
-                        "U4b warning: Cannot verify recent destabilizer for"
-                        " ZHIR"
-                    )
+                    msg = "U4b warning: Cannot verify recent destabilizer for" " ZHIR"
                     messages.append(msg)
                 elif not recent_destabilizers:
                     is_valid = False
-                    msg = (
-                        "U4b violation: ZHIR without recent destabilizer"
-                    )
+                    msg = "U4b violation: ZHIR without recent destabilizer"
                     messages.append(msg)
 
     return is_valid, messages
+
 
 def get_memoization_stats() -> dict[str, Any]:
     """Get cache statistics for monitoring."""
@@ -226,16 +238,15 @@ def get_memoization_stats() -> dict[str, Any]:
             "misses": cache_info.misses,
             "current_size": cache_info.currsize,
             "max_size": cache_info.maxsize,
-            "hit_rate": (
-                cache_info.hits
-                / max(1, cache_info.hits + cache_info.misses)
-            ),
+            "hit_rate": (cache_info.hits / max(1, cache_info.hits + cache_info.misses)),
         }
     }
+
 
 def clear_memoization_cache() -> None:
     """Clear all memoization caches."""
     _validate_sequence_static.cache_clear()
+
 
 __all__ = [
     "SequenceSignature",

@@ -144,10 +144,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ..mathematics.unified_numerical import np
 from numpy.typing import NDArray
 
 from ..constants.canonical import EPI_MAX_CANONICAL
+from ..mathematics.unified_numerical import np
 from ..structural import create_nfr
 from ..types import TNFRGraph
 
@@ -160,6 +160,7 @@ __all__ = (
     "gravitational_force",
     "compute_gravitational_dnfr",
 )
+
 
 def gravitational_potential(
     positions: NDArray[np.floating],
@@ -206,6 +207,7 @@ def gravitational_potential(
             U -= G * masses[i] * masses[j] / dist
 
     return U
+
 
 def gravitational_force(
     positions: NDArray[np.floating],
@@ -259,6 +261,7 @@ def gravitational_force(
 
     return forces
 
+
 def compute_gravitational_dnfr(
     positions: NDArray[np.floating],
     masses: NDArray[np.floating],
@@ -300,6 +303,7 @@ def compute_gravitational_dnfr(
     dnfr = forces / masses[:, np.newaxis]
 
     return dnfr
+
 
 class NBodySystem:
     """Classical N-body gravitational system in TNFR framework.
@@ -508,7 +512,9 @@ class NBodySystem:
         kinetic = 0.5 * np.sum(self.masses * v_squared)
 
         # Potential energy: U = -Σ_{i<j} G m_i m_j / r_ij
-        potential = gravitational_potential(self.positions, self.masses, self.G, self.softening)
+        potential = gravitational_potential(
+            self.positions, self.masses, self.G, self.softening
+        )
 
         total = kinetic + potential
 
@@ -568,7 +574,9 @@ class NBodySystem:
         ∂EPI/∂t = νf · ΔNFR with νf = 1/m and ΔNFR = acceleration.
         """
         # Compute acceleration at current time: a(t) = ΔNFR
-        accel_t = compute_gravitational_dnfr(self.positions, self.masses, self.G, self.softening)
+        accel_t = compute_gravitational_dnfr(
+            self.positions, self.masses, self.G, self.softening
+        )
 
         # Update positions: r(t+dt) = r(t) + v(t)*dt + (1/2)*a(t)*dt²
         self.positions += self.velocities * dt + 0.5 * accel_t * dt**2

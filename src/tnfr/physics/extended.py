@@ -14,9 +14,9 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from ..mathematics.unified_numerical import np
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR
+from ..mathematics.unified_numerical import np
 
 try:
     import networkx as nx
@@ -25,18 +25,15 @@ except ImportError:
 
 # Import canonical fields for interdependence
 try:
-    from .canonical import (
-        _get_phase, _get_dnfr, _wrap_angle,
-        compute_phase_gradient
-    )
+    from .canonical import _get_dnfr, _get_phase, _wrap_angle, compute_phase_gradient
     from .vectorized_ops import (
+        compute_dnfr_flux_vectorized,
         compute_phase_current_vectorized,
-        compute_dnfr_flux_vectorized
     )
 except ImportError:
     # Fallback definitions if canonical module not available
     def _get_phase(G: Any, node: Any) -> float:
-        return G.nodes[node].get('phase', G.nodes[node].get('theta', 0.0))
+        return G.nodes[node].get("phase", G.nodes[node].get("theta", 0.0))
 
     def _get_dnfr(G: Any, node: Any) -> float:
         return float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
@@ -44,8 +41,10 @@ except ImportError:
     def _wrap_angle(angle: float) -> float:
         return (angle + math.pi) % (2 * math.pi) - math.pi
 
+
 # Import TNFR cache system
-from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
+
 _CACHE_AVAILABLE = True
 
 # Import TNFR aliases
@@ -54,9 +53,10 @@ try:
 except ImportError:
     ALIAS_THETA = ["phase", "theta"]
 
+
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={'graph_topology', 'node_phase'},
+    dependencies={"graph_topology", "node_phase"},
 )
 def compute_phase_current(G: Any) -> dict[Any, float]:
     """Compute phase current J_φ for each locus [CANONICAL - PROMOTED Nov 12, 2025].
@@ -104,52 +104,54 @@ def compute_phase_current(G: Any) -> dict[Any, float]:
     nodes = list(G.nodes())
     if not nodes:
         return {}
-        
+
     # Check for vectorization support
     try:
         # Prepare data for vectorized op
         node_to_idx = {node: i for i, node in enumerate(nodes)}
         n = len(nodes)
-        
+
         # Phase array
         phases = np.array([_get_phase(G, node) for node in nodes], dtype=np.float64)
-        
+
         # Degree array
         # Note: G.degree returns (node, degree) or degree depending on input
         # G.degree[node] is safer
         degrees = np.array([G.degree[node] for node in nodes], dtype=np.float64)
-        
+
         # Edge lists
         # We need (neighbor, center) pairs
         edge_src_list = []
         edge_dst_list = []
-        
+
         is_directed = G.is_directed()
-        
+
         for u, v in G.edges():
             if u not in node_to_idx or v not in node_to_idx:
                 continue
-                
+
             u_idx = node_to_idx[u]
             v_idx = node_to_idx[v]
-            
+
             # If u is center, v is neighbor: src=v, dst=u
             edge_src_list.append(v_idx)
             edge_dst_list.append(u_idx)
-            
+
             if not is_directed:
                 # If v is center, u is neighbor: src=u, dst=v
                 edge_src_list.append(u_idx)
                 edge_dst_list.append(v_idx)
-                
+
         edge_src = np.array(edge_src_list, dtype=np.intp)
         edge_dst = np.array(edge_dst_list, dtype=np.intp)
-        
+
         # Vectorized computation
-        current_arr = compute_phase_current_vectorized(phases, edge_src, edge_dst, degrees)
-        
+        current_arr = compute_phase_current_vectorized(
+            phases, edge_src, edge_dst, degrees
+        )
+
         return {node: float(current_arr[i]) for i, node in enumerate(nodes)}
-        
+
     except Exception:
         # Fallback to loop if vectorization fails (e.g. memory issue)
         pass
@@ -176,9 +178,10 @@ def compute_phase_current(G: Any) -> dict[Any, float]:
 
     return current
 
+
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={'graph_topology', 'node_dnfr'},
+    dependencies={"graph_topology", "node_dnfr"},
 )
 def compute_dnfr_flux(G: Any) -> dict[Any, float]:
     """Compute ΔNFR flux J_ΔNFR for each locus [CANONICAL - PROMOTED Nov 12, 2025].
@@ -226,48 +229,48 @@ def compute_dnfr_flux(G: Any) -> dict[Any, float]:
     nodes = list(G.nodes())
     if not nodes:
         return {}
-        
+
     # Check for vectorization support
     try:
         # Prepare data for vectorized op
         node_to_idx = {node: i for i, node in enumerate(nodes)}
-        
+
         # ΔNFR array
         dnfr_arr = np.array([_get_dnfr(G, node) for node in nodes], dtype=np.float64)
-        
+
         # Degree array
         degrees = np.array([G.degree[node] for node in nodes], dtype=np.float64)
-        
+
         # Edge lists
         edge_src_list = []
         edge_dst_list = []
-        
+
         is_directed = G.is_directed()
-        
+
         for u, v in G.edges():
             if u not in node_to_idx or v not in node_to_idx:
                 continue
-                
+
             u_idx = node_to_idx[u]
             v_idx = node_to_idx[v]
-            
+
             # If u is center, v is neighbor: src=v, dst=u
             edge_src_list.append(v_idx)
             edge_dst_list.append(u_idx)
-            
+
             if not is_directed:
                 # If v is center, u is neighbor: src=u, dst=v
                 edge_src_list.append(u_idx)
                 edge_dst_list.append(v_idx)
-                
+
         edge_src = np.array(edge_src_list, dtype=np.intp)
         edge_dst = np.array(edge_dst_list, dtype=np.intp)
-        
+
         # Vectorized computation
         flux_arr = compute_dnfr_flux_vectorized(dnfr_arr, edge_src, edge_dst, degrees)
-        
+
         return {node: float(flux_arr[i]) for i, node in enumerate(nodes)}
-        
+
     except Exception:
         pass
 
@@ -290,6 +293,7 @@ def compute_dnfr_flux(G: Any) -> dict[Any, float]:
 
     return flux
 
+
 def compute_extended_canonical_suite(G: Any) -> dict[str, dict[Any, float]]:
     """Compute all extended canonical fields in optimized fashion.
 
@@ -300,14 +304,16 @@ def compute_extended_canonical_suite(G: Any) -> dict[str, dict[Any, float]]:
         the respective field values per node.
     """
     return {
-        'phase_current': compute_phase_current(G),
-        'dnfr_flux': compute_dnfr_flux(G)
+        "phase_current": compute_phase_current(G),
+        "dnfr_flux": compute_dnfr_flux(G),
     }
+
 
 # ============================================================================
 # RESEARCH-PHASE EXTENDED FIELDS (Not in canonical tetrad)
 # ============================================================================
 # Additional transport and deformation fields for advanced analysis.
+
 
 def compute_phase_strain(G, scale=1):
     """Compute spatial phase strain rate (research phase).
@@ -340,6 +346,7 @@ def compute_phase_strain(G, scale=1):
 
     return strain
 
+
 def compute_phase_vorticity(G):
     """Compute phase vorticity (rotational circulation).
 
@@ -365,7 +372,7 @@ def compute_phase_vorticity(G):
             phi_i = _get_phase(G, node)
             phi_j = _get_phase(G, neighbor)
             d_phi = _wrap_angle(phi_j - phi_i)
-            weight = G[node][neighbor].get('weight', 1.0)
+            weight = G[node][neighbor].get("weight", 1.0)
             dist_inv = 1.0 / weight
             total_curl += d_phi * dist_inv
             neighbor_count += 1
@@ -376,6 +383,7 @@ def compute_phase_vorticity(G):
             vorticity[node] = 0.0
 
     return vorticity
+
 
 def compute_reorganization_strain(G):
     """Compute ΔNFR-based reorganization strain.
@@ -410,6 +418,7 @@ def compute_reorganization_strain(G):
 
     return strain
 
+
 def compute_extended_dynamics_suite(G):
     """Compute all research-phase extended fields together.
 
@@ -421,10 +430,11 @@ def compute_extended_dynamics_suite(G):
         All extended field values keyed by field name
     """
     return {
-        'phase_strain': compute_phase_strain(G),
-        'phase_vorticity': compute_phase_vorticity(G),
-        'reorganization_strain': compute_reorganization_strain(G),
+        "phase_strain": compute_phase_strain(G),
+        "phase_vorticity": compute_phase_vorticity(G),
+        "reorganization_strain": compute_reorganization_strain(G),
     }
+
 
 __all__ = [
     "compute_phase_current",
@@ -433,5 +443,5 @@ __all__ = [
     "compute_phase_strain",
     "compute_phase_vorticity",
     "compute_reorganization_strain",
-    "compute_extended_dynamics_suite"
+    "compute_extended_dynamics_suite",
 ]

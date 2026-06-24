@@ -43,8 +43,10 @@ ALIASES: dict[str, tuple[str, ...]] = {
     "EMISSION_TIMESTAMP": ("emission_timestamp", "emission_t", "t_al"),
 }
 
+
 class TNFRConfigError(Exception):
     """Raised when TNFR configuration violates structural invariants."""
+
 
 class TNFRConfig:
     """Canonical TNFR configuration with structural invariant validation.
@@ -310,7 +312,9 @@ class TNFRConfig:
         # Validate DT (time step) is positive for temporal coherence
         dt = config.get("DT")
         if dt is not None and dt <= 0:
-            raise TNFRConfigError(f"DT (time step) must be > 0 for temporal coherence, got {dt}")
+            raise TNFRConfigError(
+                f"DT (time step) must be > 0 for temporal coherence, got {dt}"
+            )
 
         return True
 
@@ -379,7 +383,9 @@ class TNFRConfig:
         G.graph.setdefault("_tnfr_defaults_attached", False)
         for k, v in config_to_inject.items():
             if override or k not in G.graph:
-                G.graph[k] = v if _is_immutable(v) else cast(TNFRConfigValue, copy.deepcopy(v))
+                G.graph[k] = (
+                    v if _is_immutable(v) else cast(TNFRConfigValue, copy.deepcopy(v))
+                )
         G.graph["_tnfr_defaults_attached"] = True
 
         # Ensure node offset map if available
@@ -389,6 +395,7 @@ class TNFRConfig:
             ensure_node_offset_map(G)
         except ImportError:
             pass
+
 
 def get_aliases(key: str) -> tuple[str, ...]:
     """Return alias tuple for canonical TNFR variable ``key``.
@@ -410,6 +417,7 @@ def get_aliases(key: str) -> tuple[str, ...]:
     """
     return ALIASES[key]
 
+
 # Primary aliases for common TNFR variables
 VF_PRIMARY = get_aliases("VF")[0]  # νf
 THETA_PRIMARY = get_aliases("THETA")[0]  # theta
@@ -422,6 +430,7 @@ D2EPI_PRIMARY = get_aliases("D2EPI")[0]  # d2EPI_dt2
 dVF_PRIMARY = get_aliases("DVF")[0]  # dνf_dt
 D2VF_PRIMARY = get_aliases("D2VF")[0]  # d2νf_dt2
 dSI_PRIMARY = get_aliases("DSI")[0]  # δSi
+
 
 def normalise_state_token(token: str) -> str:
     """Return the canonical English token for node state.
@@ -457,7 +466,10 @@ def normalise_state_token(token: str) -> str:
     if lowered in CANONICAL_STATE_TOKENS:
         return lowered
 
-    raise ValueError("state token must be one of 'stable', 'transition', or 'dissonant'")
+    raise ValueError(
+        "state token must be one of 'stable', 'transition', or 'dissonant'"
+    )
+
 
 __all__ = (
     "TNFRConfig",

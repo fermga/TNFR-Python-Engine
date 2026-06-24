@@ -5,19 +5,23 @@ from __future__ import annotations
 from dataclasses import field
 from typing import TYPE_CHECKING, Any, Sequence
 
-from ..errors import TNFRValueError
 from ..compat.dataclass import dataclass
+from ..constants.canonical import MATH_COHERENCE_MIN_CANONICAL, MATH_TOLERANCE_CANONICAL
+from ..errors import TNFRValueError
 from .backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
 from .unified_numerical import np
-from ..constants.canonical import MATH_COHERENCE_MIN_CANONICAL, MATH_TOLERANCE_CANONICAL
 
 if TYPE_CHECKING:  # pragma: no cover - typing imports only
-    import numpy.typing as npt
     # We import numpy directly for typing to ensure mypy understands the types
     import numpy as _np_typing
-    
-    ComplexVector = npt.NDArray[_np_typing.complexfloating[_np_typing.float64, _np_typing.float64]]
-    ComplexMatrix = npt.NDArray[_np_typing.complexfloating[_np_typing.float64, _np_typing.float64]]
+    import numpy.typing as npt
+
+    ComplexVector = npt.NDArray[
+        _np_typing.complexfloating[_np_typing.float64, _np_typing.float64]
+    ]
+    ComplexMatrix = npt.NDArray[
+        _np_typing.complexfloating[_np_typing.float64, _np_typing.float64]
+    ]
 else:  # pragma: no cover - runtime alias
     ComplexVector = np.ndarray
     ComplexMatrix = np.ndarray
@@ -26,6 +30,7 @@ __all__ = ["CoherenceOperator", "FrequencyOperator"]
 
 DEFAULT_C_MIN: float = MATH_COHERENCE_MIN_CANONICAL
 _C_MIN_UNSET = object()
+
 
 def _as_complex_vector(
     vector: Sequence[complex] | np.ndarray | Any,
@@ -37,9 +42,10 @@ def _as_complex_vector(
         raise TNFRValueError(
             "Vector input must be one-dimensional.",
             context={"ndim": getattr(arr, "ndim", len(getattr(arr, "shape", ())))},
-            suggestion="Provide a 1D vector."
+            suggestion="Provide a 1D vector.",
         )
     return arr
+
 
 def _as_complex_matrix(
     matrix: Sequence[Sequence[complex]] | np.ndarray | Any,
@@ -52,14 +58,16 @@ def _as_complex_matrix(
         raise TNFRValueError(
             "Operator matrix must be square.",
             context={"shape": shape},
-            suggestion="Provide a square matrix."
+            suggestion="Provide a square matrix.",
         )
     return arr
+
 
 def _make_diagonal(values: Any, *, backend: MathematicsBackend) -> Any:
     dim = int(getattr(values, "shape")[0])
     identity = ensure_array(np.eye(dim, dtype=np.complex128), backend=backend)
     return backend.einsum("i,ij->ij", values, identity)
+
 
 @dataclass(slots=True)
 class CoherenceOperator:
@@ -107,7 +115,7 @@ class CoherenceOperator:
                     raise TNFRValueError(
                         "Hermitian operators require real eigenvalues.",
                         context={"max_imag": float(np.max(np.abs(imag))), "atol": atol},
-                        suggestion="Ensure eigenvalues are real."
+                        suggestion="Ensure eigenvalues are real.",
                     )
             matrix_backend = _make_diagonal(eigvals_backend, backend=resolved_backend)
             eigenvalues_backend = eigvals_backend
@@ -119,7 +127,7 @@ class CoherenceOperator:
                 raise TNFRValueError(
                     "Coherence operator must be Hermitian.",
                     context={"is_hermitian": False},
-                    suggestion="Ensure the operator matrix is Hermitian."
+                    suggestion="Ensure the operator matrix is Hermitian.",
                 )
             if ensure_hermitian:
                 eigenvalues_backend, _ = resolved_backend.eigh(matrix_backend)
@@ -150,7 +158,9 @@ class CoherenceOperator:
     def is_hermitian(self, *, atol: float = 1e-9) -> bool:
         """Return ``True`` when the operator matches its adjoint."""
 
-        return self._check_hermitian(self._matrix_backend, atol=atol, backend=self.backend)
+        return self._check_hermitian(
+            self._matrix_backend, atol=atol, backend=self.backend
+        )
 
     def is_positive_semidefinite(self, *, atol: float = 1e-9) -> bool:
         """Check that all eigenvalues are non-negative within ``atol``."""
@@ -186,9 +196,9 @@ class CoherenceOperator:
                 "State vector dimension mismatch with operator.",
                 context={
                     "operator_shape": self.matrix.shape,
-                    "vector_shape": vector_backend.shape
+                    "vector_shape": vector_backend.shape,
                 },
-                suggestion="Ensure vector dimension matches operator dimension."
+                suggestion="Ensure vector dimension matches operator dimension.",
             )
         working = vector_backend
         if normalise:
@@ -198,7 +208,7 @@ class CoherenceOperator:
                 raise TNFRValueError(
                     "Cannot normalise a null state vector.",
                     context={"norm": norm},
-                    suggestion="Provide a non-zero state vector."
+                    suggestion="Provide a non-zero state vector.",
                 )
             working = working / norm
         column = working[..., None]
@@ -211,18 +221,23 @@ class CoherenceOperator:
             raise TNFRValueError(
                 "Expectation value carries an imaginary component beyond tolerance.",
                 context={"imag": expectation_scalar.imag, "atol": atol},
-                suggestion="Check operator hermiticity or state vector validity."
+                suggestion="Check operator hermiticity or state vector validity.",
             )
         eps = np.finfo(float).eps
-        tol = max(MATH_TOLERANCE_CANONICAL, float(atol / eps)) if atol > 0 else MATH_TOLERANCE_CANONICAL
+        tol = (
+            max(MATH_TOLERANCE_CANONICAL, float(atol / eps))
+            if atol > 0
+            else MATH_TOLERANCE_CANONICAL
+        )
         real_expectation = np.real_if_close(expectation_scalar, tol=tol)
         if np.iscomplexobj(real_expectation):
             raise TNFRValueError(
                 "Expectation remained complex after coercion.",
                 context={"value": expectation_scalar},
-                suggestion="Ensure the expectation value is real."
+                suggestion="Ensure the expectation value is real.",
             )
         return float(real_expectation)
+
 
 class FrequencyOperator(CoherenceOperator):
     """Operator encoding the structural frequency distribution.

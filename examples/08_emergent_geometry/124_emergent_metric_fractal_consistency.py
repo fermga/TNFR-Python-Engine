@@ -91,10 +91,10 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.alias import set_attr
 from tnfr.constants.aliases import ALIAS_EPI
@@ -176,10 +176,16 @@ def experiment_1_emergent_metric():
     idx, R = _reff(Gr)
     n = R.shape[0]
     viol = sum(
-        1 for a in range(n) for b in range(n) for c in range(n)
-        if R[a, b] > R[a, c] + R[c, b] + 1e-9)
-    print(f"  triangle-inequality violations (random graph): {viol} "
-          f"(R_eff is a metric)")
+        1
+        for a in range(n)
+        for b in range(n)
+        for c in range(n)
+        if R[a, b] > R[a, c] + R[c, b] + 1e-9
+    )
+    print(
+        f"  triangle-inequality violations (random graph): {viol} "
+        f"(R_eff is a metric)"
+    )
 
 
 def experiment_2_composition_laws():
@@ -194,14 +200,18 @@ def experiment_2_composition_laws():
     for k in [2, 3, 4, 5]:
         P = nx.path_graph(k + 1)
         idx, R = _reff(P)
-        print(f"  path of {k} unit edges: R_eff(ends) = {R[idx[0], idx[k]]:.4f} "
-              f"(series: = {k})")
+        print(
+            f"  path of {k} unit edges: R_eff(ends) = {R[idx[0], idx[k]]:.4f} "
+            f"(series: = {k})"
+        )
     for k in [2, 3, 4]:
         G = nx.Graph()
         G.add_edge(0, 1, weight=float(k))  # k unit conductances in parallel
         idx, R = _reff(G)
-        print(f"  {k} parallel unit edges: R_eff = {R[idx[0], idx[1]]:.4f} "
-              f"(parallel: = 1/{k})")
+        print(
+            f"  {k} parallel unit edges: R_eff = {R[idx[0], idx[1]]:.4f} "
+            f"(parallel: = 1/{k})"
+        )
 
 
 def experiment_3_kron_consistency():
@@ -217,21 +227,26 @@ def experiment_3_kron_consistency():
     print()
     cases = [
         ("cycle C6, boundary {0,3}", nx.cycle_graph(6), [0, 3]),
-        ("3x3 grid, four corners", nx.grid_2d_graph(3, 3),
-         [(0, 0), (0, 2), (2, 0), (2, 2)]),
+        (
+            "3x3 grid, four corners",
+            nx.grid_2d_graph(3, 3),
+            [(0, 0), (0, 2), (2, 0), (2, 2)],
+        ),
     ]
     rng = nx.gnp_random_graph(10, 0.4, seed=5)
     if not nx.is_connected(rng):
         rng = rng.subgraph(max(nx.connected_components(rng), key=len)).copy()
-    cases.append(("random G(10,0.4), 3 boundary",
-                  rng, list(rng.nodes())[:3]))
+    cases.append(("random G(10,0.4), 3 boundary", rng, list(rng.nodes())[:3]))
     for name, G, boundary in cases:
         idxf, Rf = _reff(G)
         Gr = _kron_reduce(G, boundary)
         idxr, Rr = _reff(Gr)
         maxdiff = max(
             abs(Rf[idxf[a], idxf[b]] - Rr[idxr[a], idxr[b]])
-            for a in boundary for b in boundary if a != b)
+            for a in boundary
+            for b in boundary
+            if a != b
+        )
         print(f"  {name:30s} max|R_full - R_reduced| = {maxdiff:.2e}")
     print()
     print("  -> ~1e-15: the interior IS faithfully one effective node on its")
@@ -263,8 +278,10 @@ def experiment_4_thol_reality():
     print(f"  nodes before = {n_before}, after = {G.number_of_nodes()}")
     print(f"  sub-EPIs spawned on node 2: {sub_nodes}")
     for s in sub_nodes:
-        print(f"    sub-node {s!r}: degree = {G.degree(s)} "
-              f"(graph edges = {list(G.edges(s))})")
+        print(
+            f"    sub-node {s!r}: degree = {G.degree(s)} "
+            f"(graph edges = {list(G.edges(s))})"
+        )
     idx1, R1 = _reff(G)
     r_after = R1[idx1[0], idx1[4]]
     print(f"  R_eff(0,4) before THOL = {r_before:.6f}")

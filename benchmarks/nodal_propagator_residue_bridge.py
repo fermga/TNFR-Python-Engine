@@ -79,11 +79,11 @@ try:
         build_prime_ladder_hamiltonian,
         weighted_spectral_trace,
     )
-    from tnfr.riemann.von_mangoldt import build_prime_ladder_spectrum
     from tnfr.riemann.remesh_infinity_residue_split import (
         compute_residue_split_certificate,
         split_residue_by_remesh_infinity,
     )
+    from tnfr.riemann.von_mangoldt import build_prime_ladder_spectrum
 
     _HAVE_TNFR = True
 except Exception as exc:  # pragma: no cover - import guard
@@ -99,19 +99,19 @@ except Exception:  # pragma: no cover - optional dependency
 
 
 # --- canonical constants -------------------------------------------------
-TAU_L = 4            # local REMESH period
-TAU_G = 8            # global REMESH period; L = lcm(4, 8) = 8
-N_PRIMES = 100       # number of primes in the ladder
-MAX_POWER = 8        # REMESH echo cap K (matches P31)
-N_SAMPLES = 2048     # divisible by lcm(TAU_L, TAU_G) = 8
+TAU_L = 4  # local REMESH period
+TAU_G = 8  # global REMESH period; L = lcm(4, 8) = 8
+N_PRIMES = 100  # number of primes in the ladder
+MAX_POWER = 8  # REMESH echo cap K (matches P31)
+N_SAMPLES = 2048  # divisible by lcm(TAU_L, TAU_G) = 8
 T_MIN = 0.0
 T_MAX = 160.0
-THRESH = 0.05        # R-infinity 5% range/kernel decision threshold
-SEED = 12345         # prime-shuffle seed (T3)
+THRESH = 0.05  # R-infinity 5% range/kernel decision threshold
+SEED = 12345  # prime-shuffle seed (T3)
 
 # documented fallbacks (used only if mpmath is unavailable)
-_REF_LOG_ZETA_DERIV_2 = 0.5699664469153647   # -zeta'(2)/zeta(2)
-_CLASSICAL_S_FALLBACK = 0.5                   # conservative max|S(T)|
+_REF_LOG_ZETA_DERIV_2 = 0.5699664469153647  # -zeta'(2)/zeta(2)
+_CLASSICAL_S_FALLBACK = 0.5  # conservative max|S(T)|
 
 
 # --- canonical observable builders ---------------------------------------
@@ -190,9 +190,7 @@ def test_t1_propagator_reproduces_von_mangoldt() -> bool:
         bundle.hamiltonian.H_freq, bundle.weight_operator, 2.0
     )
     spec = bundle.spectrum
-    z_vec = float(
-        np.sum(spec.weights * np.exp(-2.0 * spec.eigenvalues))
-    )
+    z_vec = float(np.sum(spec.weights * np.exp(-2.0 * spec.eigenvalues)))
     ref = _ref_log_zeta_deriv_2()
     same = abs(float(np.real(z_fn)) - z_vec) < 1e-9
     close = abs(z_vec - ref) < 1e-2
@@ -212,9 +210,7 @@ def test_t2_oscillation_in_kernel() -> bool:
     t_grid = np.linspace(T_MIN, T_MAX, N_SAMPLES, endpoint=False)
     sig = _propagator_oscillation(spec.eigenvalues, spec.weights, t_grid)
     sig = sig - sig.mean()  # DC bin is trivially resonant
-    rng, ker = split_residue_by_remesh_infinity(
-        sig, tau_l=TAU_L, tau_g=TAU_G
-    )
+    rng, ker = split_residue_by_remesh_infinity(sig, tau_l=TAU_L, tau_g=TAU_G)
     e_total = float(np.dot(sig, sig))
     frac_range = float(np.dot(rng, rng)) / e_total
     frac_ker = float(np.dot(ker, ker)) / e_total
@@ -240,17 +236,11 @@ def test_t3_residue_is_sn_degenerate() -> bool:
         N_PRIMES, max_power=MAX_POWER, primes=shuffled.tolist()
     )
     sa = _propagator_oscillation(base.eigenvalues, base.weights, t_grid)
-    sb = _propagator_oscillation(
-        spec_b.eigenvalues, spec_b.weights, t_grid
-    )
+    sb = _propagator_oscillation(spec_b.eigenvalues, spec_b.weights, t_grid)
     sa = sa - sa.mean()
     sb = sb - sb.mean()
-    _, ker_a = split_residue_by_remesh_infinity(
-        sa, tau_l=TAU_L, tau_g=TAU_G
-    )
-    _, ker_b = split_residue_by_remesh_infinity(
-        sb, tau_l=TAU_L, tau_g=TAU_G
-    )
+    _, ker_a = split_residue_by_remesh_infinity(sa, tau_l=TAU_L, tau_g=TAU_G)
+    _, ker_b = split_residue_by_remesh_infinity(sb, tau_l=TAU_L, tau_g=TAU_G)
     max_sig_diff = float(np.max(np.abs(sa - sb)))
     max_ker_diff = float(np.max(np.abs(ker_a - ker_b)))
     ok = max_ker_diff < 1e-9
@@ -292,8 +282,10 @@ def test_t4_amplitude_scale_and_certificate() -> bool:
     print(f"       scale ratio  S(T)/S_TNFR         : {ratio:.2f}x")
     print(f"       same order of magnitude          : {same_scale}")
     print(f"       R-infinity certificate verdict   : {cert.verdict}")
-    print(f"       ratio_in_kernel={cert.ratio_in_kernel:.6f} "
-          f"ratio_in_range={cert.ratio_in_range:.6f}")
+    print(
+        f"       ratio_in_kernel={cert.ratio_in_kernel:.6f} "
+        f"ratio_in_range={cert.ratio_in_range:.6f}"
+    )
     print("       (amplitude scale matches; the obstruction is the")
     print("        S_n-degenerate phase structure of T3, which is why")
     print("        P31's local correction needs damping d ~ 3-5)")
@@ -310,10 +302,12 @@ def main() -> int:
         print(f"SKIP: TNFR canonical imports unavailable: {_IMPORT_ERROR}")
         return 0
     print(f"mpmath available: {_HAVE_MPMATH}")
-    print(f"L = lcm(tau_l={TAU_L}, tau_g={TAU_G}) = "
-          f"{math.lcm(TAU_L, TAU_G)}; "
-          f"N_PRIMES={N_PRIMES}, MAX_POWER={MAX_POWER}, "
-          f"N_SAMPLES={N_SAMPLES}")
+    print(
+        f"L = lcm(tau_l={TAU_L}, tau_g={TAU_G}) = "
+        f"{math.lcm(TAU_L, TAU_G)}; "
+        f"N_PRIMES={N_PRIMES}, MAX_POWER={MAX_POWER}, "
+        f"N_SAMPLES={N_SAMPLES}"
+    )
     print("-" * 70)
 
     results = [

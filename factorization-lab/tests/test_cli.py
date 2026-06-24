@@ -83,11 +83,15 @@ def test_cli_distributed_http_dispatcher(monkeypatch: pytest.MonkeyPatch) -> Non
 def test_cli_distributed_callable_dispatcher(monkeypatch: pytest.MonkeyPatch) -> None:
     captured: Dict[str, Any] = {}
 
-    def _fake_loader(spec: str, metadata: Mapping[str, Any] | None = None) -> Callable[[str, Dict[str, Any]], Any]:
+    def _fake_loader(
+        spec: str, metadata: Mapping[str, Any] | None = None
+    ) -> Callable[[str, Dict[str, Any]], Any]:
         captured["spec"] = spec
         captured["metadata"] = metadata
 
-        def _dispatch(action: str, payload: Dict[str, Any]) -> None:  # pragma: no cover - simple stub
+        def _dispatch(
+            action: str, payload: Dict[str, Any]
+        ) -> None:  # pragma: no cover - simple stub
             captured["last_action"] = action
             captured["last_payload"] = payload
 

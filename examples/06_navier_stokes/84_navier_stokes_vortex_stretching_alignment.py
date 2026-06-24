@@ -94,32 +94,31 @@ Reproducibility: deterministic flow, no RNG.
 from __future__ import annotations
 
 import time
+
 import numpy as np
 
-from tnfr.navier_stokes.operator import (
-    TNFRNavierStokesOperator,
-    build_torus_graph_3d,
-)
-
+from tnfr.navier_stokes.operator import TNFRNavierStokesOperator, build_torus_graph_3d
 
 # --- Configuration --------------------------------------------------------
 
 N = 16
 DT = 0.005
 T_FINAL = 1.0
-STEPS = int(round(T_FINAL / DT))   # = 200
+STEPS = int(round(T_FINAL / DT))  # = 200
 VISCOSITY = 0.05
 AMPLITUDE = 1.0
-RECORD_EVERY = 25                  # 200 / 25 = 8 snapshots + initial
-HIGH_VORT_QUANTILE = 0.75          # top 25% in |omega|
-ISOTROPIC_BASELINE = 1.0 / 3.0     # E[cos^2] under uniform direction
-EPS = 1e-14                        # singular-strain guard
+RECORD_EVERY = 25  # 200 / 25 = 8 snapshots + initial
+HIGH_VORT_QUANTILE = 0.75  # top 25% in |omega|
+ISOTROPIC_BASELINE = 1.0 / 3.0  # E[cos^2] under uniform direction
+EPS = 1e-14  # singular-strain guard
 
 
 # --- Helpers --------------------------------------------------------------
 
 
-def velocity_grids(op: TNFRNavierStokesOperator, n: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def velocity_grids(
+    op: TNFRNavierStokesOperator, n: int
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Extract the three (n,n,n) velocity-component grids."""
     return (
         op._component_grid_3d(0, n),
@@ -133,13 +132,14 @@ def strain_tensor(u: np.ndarray, v: np.ndarray, w: np.ndarray, h: float) -> np.n
 
     Central differences on the periodic torus.
     """
+
     def d(arr: np.ndarray, axis: int) -> np.ndarray:
         return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (2.0 * h)
 
     du = (d(u, 0), d(u, 1), d(u, 2))
     dv = (d(v, 0), d(v, 1), d(v, 2))
     dw = (d(w, 0), d(w, 1), d(w, 2))
-    grad = [du, dv, dw]   # grad[a][i] = d_i u_a
+    grad = [du, dv, dw]  # grad[a][i] = d_i u_a
 
     n0, n1, n2 = u.shape
     S = np.empty((n0, n1, n2, 3, 3), dtype=float)
@@ -158,16 +158,16 @@ def alignment_diagnostics(
     """
     # omega shape (3, n, n, n) -> (n, n, n, 3)
     om = np.moveaxis(omega, 0, -1)
-    mag = np.linalg.norm(om, axis=-1)               # (n,n,n)
+    mag = np.linalg.norm(om, axis=-1)  # (n,n,n)
 
     # Eigen-decompose S pointwise (symmetric => eigh; ascending order)
-    eigvals, eigvecs = np.linalg.eigh(S)            # (n,n,n,3), (n,n,n,3,3)
+    eigvals, eigvecs = np.linalg.eigh(S)  # (n,n,n,3), (n,n,n,3,3)
 
     # Sort DESCENDING so lambda_1 >= lambda_2 >= lambda_3
     order = np.argsort(eigvals, axis=-1)[..., ::-1]
     lam = np.take_along_axis(eigvals, order, axis=-1)
     # Reorder eigvecs columns according to `order`
-    idx = order[..., np.newaxis, :]                  # (n,n,n,1,3)
+    idx = order[..., np.newaxis, :]  # (n,n,n,1,3)
     vecs = np.take_along_axis(eigvecs, np.broadcast_to(idx, eigvecs.shape), axis=-1)
 
     # omega_hat (avoid division by zero by adding eps; mask via |omega|)
@@ -175,8 +175,8 @@ def alignment_diagnostics(
     om_hat = om / safe_mag[..., np.newaxis]
 
     # cos(alpha_k) = omega_hat . e_k (k = 1, 2, 3 columns of vecs)
-    cos = np.einsum("...i,...ij->...j", om_hat, vecs)   # (n,n,n,3)
-    cos2 = cos ** 2
+    cos = np.einsum("...i,...ij->...j", om_hat, vecs)  # (n,n,n,3)
+    cos2 = cos**2
 
     # sigma_eff(x) = sum_k lambda_k cos^2(alpha_k) = omega_hat^T S omega_hat
     sigma_eff = np.einsum("...k,...k->...", lam, cos2)
@@ -242,7 +242,7 @@ def main() -> None:
         # Composite scalars for C3/C4
         mag = np.linalg.norm(np.moveaxis(omega, 0, -1), axis=-1)
         omega_inf_series.append(float(np.max(mag)))
-        enstrophy_series.append(float(0.5 * np.sum(mag ** 2) * (h ** 3)))
+        enstrophy_series.append(float(0.5 * np.sum(mag**2) * (h**3)))
         production_series.append(op.stretching_production())
 
     record(0.0)
@@ -295,10 +295,14 @@ def main() -> None:
 
     print("Time-mean aggregates (across recorded snapshots)")
     print("-" * 78)
-    print(f"  <cos^2(omega_hat, e_lambda1)>_high : {mean_cos2_l1:.4f}  (baseline 1/3 = {ISOTROPIC_BASELINE:.4f})")
+    print(
+        f"  <cos^2(omega_hat, e_lambda1)>_high : {mean_cos2_l1:.4f}  (baseline 1/3 = {ISOTROPIC_BASELINE:.4f})"
+    )
     print(f"  <cos^2(omega_hat, e_lambda2)>_high : {mean_cos2_l2:.4f}")
     print(f"  <cos^2(omega_hat, e_lambda3)>_high : {mean_cos2_l3:.4f}")
-    print(f"  <D>_high (depletion ratio)         : {mean_dep:.4f}  (>0 ⇒ stretching < worst-case)")
+    print(
+        f"  <D>_high (depletion ratio)         : {mean_dep:.4f}  (>0 ⇒ stretching < worst-case)"
+    )
     print(f"  BKM integral int_0^T ||omega||_inf : {bkm_integral:.4f}")
     print(f"  max enstrophy / Z(0)               : {max_ens_rel:.4f}")
     print()
@@ -309,7 +313,7 @@ def main() -> None:
     c1_pass = mean_cos2_l1 < ISOTROPIC_BASELINE
     c2_pass = mean_dep > 0.0
     finite_bkm = np.isfinite(bkm_integral)
-    bounded_ens = max_ens_rel <= 1.10   # 10% slack on initial enstrophy
+    bounded_ens = max_ens_rel <= 1.10  # 10% slack on initial enstrophy
     c3_pass = finite_bkm and bounded_ens
     finite_all = (
         np.all(np.isfinite(cos2_l1))
@@ -336,9 +340,7 @@ def main() -> None:
         f"  C3 Enstrophy bounded BKM finite & Z(t)/Z(0)<=1.10   : {fmt(c3_pass)}  "
         f"(BKM={bkm_integral:.3f}, max Z/Z0={max_ens_rel:.3f})"
     )
-    print(
-        f"  C4 Observables       all snapshots finite           : {fmt(c4_pass)}"
-    )
+    print(f"  C4 Observables       all snapshots finite           : {fmt(c4_pass)}")
     print()
     print(f"  Result: {score}/4 PASS")
     print()

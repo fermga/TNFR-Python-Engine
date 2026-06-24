@@ -92,6 +92,7 @@ Run:
 
 Status: RESEARCH (missing-piece falsifier; Camino 12 of the unification map).
 """
+
 from __future__ import annotations
 
 import os
@@ -119,6 +120,7 @@ from composition_arithmetic import automorphism_matrices  # noqa: E402
 # Optional: the canonical engine's own non-Abelian derivability verdict.
 try:  # pragma: no cover - exercised only when the package is importable
     from tnfr.yang_mills import audit_nonabelian_derivability  # noqa: E402
+
     _HAVE_AUDIT = True
 except Exception:  # pragma: no cover
     _HAVE_AUDIT = False
@@ -139,8 +141,10 @@ def elementary_matrix(n, i, j):
 # --------------------------------------------------------------------------- #
 def test_escapes_not_identical():
     print("=" * 78)
-    print("TEST 1 -- NOT ONE OBJECT: D is Abelian-on-base, su(d) is "
-          "non-Abelian-on-fibre")
+    print(
+        "TEST 1 -- NOT ONE OBJECT: D is Abelian-on-base, su(d) is "
+        "non-Abelian-on-fibre"
+    )
     print("=" * 78)
     n = 5
     # RH escape: a node-distinct diagonal on the BASE V = C^n. Two such
@@ -164,9 +168,7 @@ def test_escapes_not_identical():
     t_shape = tx.shape
     different_spaces = d_shape != t_shape
     d_offdiag = float(np.linalg.norm(d1 - np.diag(np.diag(d1))))
-    t_offdiag = max(
-        float(np.linalg.norm(T - np.diag(np.diag(T)))) for T in (tx, ty)
-    )
+    t_offdiag = max(float(np.linalg.norm(T - np.diag(np.diag(T)))) for T in (tx, ty))
 
     ok = (
         d_abelian < TOL
@@ -176,15 +178,23 @@ def test_escapes_not_identical():
         and t_offdiag > _NONZERO
     )
     print(f"  RH escape D  : node-distinct DIAGONAL on BASE {d_shape}")
-    print(f"                 -- two such D commute, ||[D1, D2]|| = "
-          f"{d_abelian:.2e} (ABELIAN / Cartan); off-diag = {d_offdiag:.2e}")
-    print(f"  YM escape su : OFF-diagonal generators on FIBRE {t_shape} -- "
-          f"||[T_x, T_y]|| = {su_nonabelian:.3f} (NON-Abelian)")
-    print(f"  different spaces (base vs fibre): {different_spaces} ; "
-          f"D off-diag ~0: {d_offdiag < TOL} ; T off-diag > 0: "
-          f"{t_offdiag > _NONZERO}")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- a single matrix cannot "
-          "be both; the strong 'same object' reading is REFUTED")
+    print(
+        f"                 -- two such D commute, ||[D1, D2]|| = "
+        f"{d_abelian:.2e} (ABELIAN / Cartan); off-diag = {d_offdiag:.2e}"
+    )
+    print(
+        f"  YM escape su : OFF-diagonal generators on FIBRE {t_shape} -- "
+        f"||[T_x, T_y]|| = {su_nonabelian:.3f} (NON-Abelian)"
+    )
+    print(
+        f"  different spaces (base vs fibre): {different_spaces} ; "
+        f"D off-diag ~0: {d_offdiag < TOL} ; T off-diag > 0: "
+        f"{t_offdiag > _NONZERO}"
+    )
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- a single matrix cannot "
+        "be both; the strong 'same object' reading is REFUTED"
+    )
     print()
     return ok
 
@@ -195,11 +205,13 @@ def test_escapes_not_identical():
 # --------------------------------------------------------------------------- #
 def test_same_structural_recipe():
     print("=" * 78)
-    print("TEST 2 -- SAME RECIPE: adjoin a non-commuting traceless operator "
-          "(so(n) / su(d))")
+    print(
+        "TEST 2 -- SAME RECIPE: adjoin a non-commuting traceless operator "
+        "(so(n) / su(d))"
+    )
     print("=" * 78)
     n = 5
-    G = nx.complete_graph(n)            # prime-relabelling symmetry S_5
+    G = nx.complete_graph(n)  # prime-relabelling symmetry S_5
     nodes = list(G.nodes())
     mats = automorphism_matrices(G, nodes)
     A, _L = adjacency_laplacian(G, nodes)
@@ -216,7 +228,7 @@ def test_same_structural_recipe():
 
     # YM side: su(2) generators are TRACELESS, anti-Hermitian, non-commuting.
     tx, ty, tz = su2_generators()
-    ym_gen = 1j * tz                    # i.sigma_z/2 in su(2) (anti-Hermitian)
+    ym_gen = 1j * tz  # i.sigma_z/2 in su(2) (anti-Hermitian)
     ym_nonabelian = commutator_norm(tx, ty)
     ym_traceless = abs(complex(np.trace(ym_gen)))
     ym_antiherm = float(np.linalg.norm(ym_gen + ym_gen.conj().T))
@@ -230,16 +242,24 @@ def test_same_structural_recipe():
         and ym_traceless < TOL
         and ym_antiherm < TOL
     )
-    print(f"  RH (base)  : [D, P_s] != 0 (max = {rh_break:.2f}) breaks S_n ; "
-          f"[A, D] is so(n)")
-    print(f"               ||[A,D]|| = {rh_gen_norm:.2f}, anti-symmetry "
-          f"||[A,D]+[A,D]^T|| = {rh_antisym:.2e}, |tr| = {rh_traceless:.2e}")
-    print(f"  YM (fibre) : [T_x,T_y] != 0 (= {ym_nonabelian:.3f}) ; "
-          f"i.sigma_z/2 in su(2), |tr| = {ym_traceless:.2e}, "
-          f"anti-Herm = {ym_antiherm:.2e}")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- one recipe "
-          "(non-commuting traceless adjunction), two spaces: "
-          "so(n) base / su(d) fibre")
+    print(
+        f"  RH (base)  : [D, P_s] != 0 (max = {rh_break:.2f}) breaks S_n ; "
+        f"[A, D] is so(n)"
+    )
+    print(
+        f"               ||[A,D]|| = {rh_gen_norm:.2f}, anti-symmetry "
+        f"||[A,D]+[A,D]^T|| = {rh_antisym:.2e}, |tr| = {rh_traceless:.2e}"
+    )
+    print(
+        f"  YM (fibre) : [T_x,T_y] != 0 (= {ym_nonabelian:.3f}) ; "
+        f"i.sigma_z/2 in su(2), |tr| = {ym_traceless:.2e}, "
+        f"anti-Herm = {ym_antiherm:.2e}"
+    )
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- one recipe "
+        "(non-commuting traceless adjunction), two spaces: "
+        "so(n) base / su(d) fibre"
+    )
     print()
     return ok
 
@@ -250,8 +270,10 @@ def test_same_structural_recipe():
 # --------------------------------------------------------------------------- #
 def test_one_ingredient_two_complements():
     print("=" * 78)
-    print("TEST 3 -- ONE INGREDIENT, ONE SPACE: D unifies the base side, "
-          "cannot reach the fibre")
+    print(
+        "TEST 3 -- ONE INGREDIENT, ONE SPACE: D unifies the base side, "
+        "cannot reach the fibre"
+    )
     print("=" * 78)
     n = 5
     d = 2
@@ -279,19 +301,23 @@ def test_one_ingredient_two_complements():
         T_fibre = np.kron(eye, T)
         fibre_reach = max(fibre_reach, commutator_norm(D_base, T_fibre))
 
-    ok = (
-        leak > _NONZERO
-        and base_nonabelian > _NONZERO
-        and fibre_reach < TOL
+    ok = leak > _NONZERO and base_nonabelian > _NONZERO and fibre_reach < TOL
+    print(
+        f"  (a) base side: D opens Fix(S_n)^perp (leak = {leak:.2f}) AND "
+        f"[A,D] in so(n) (||[A,D]|| = {base_nonabelian:.2f})"
     )
-    print(f"  (a) base side: D opens Fix(S_n)^perp (leak = {leak:.2f}) AND "
-          f"[A,D] in so(n) (||[A,D]|| = {base_nonabelian:.2f})")
-    print(f"  (b) fibre side: D (x) I commutes with EVERY I (x) T_a "
-          f"(max ||[.,.]|| = {fibre_reach:.2e})")
-    print("      -> the base ingredient D cannot supply the fibre's "
-          "non-commuting generators")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- one ingredient unifies "
-          "the BASE; the FIBRE keeps an INDEPENDENT missing piece")
+    print(
+        f"  (b) fibre side: D (x) I commutes with EVERY I (x) T_a "
+        f"(max ||[.,.]|| = {fibre_reach:.2e})"
+    )
+    print(
+        "      -> the base ingredient D cannot supply the fibre's "
+        "non-commuting generators"
+    )
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- one ingredient unifies "
+        "the BASE; the FIBRE keeps an INDEPENDENT missing piece"
+    )
     print()
     return ok
 
@@ -301,8 +327,7 @@ def test_one_ingredient_two_complements():
 # --------------------------------------------------------------------------- #
 def test_shared_nonderivability():
     print("=" * 78)
-    print("TEST 4 -- HONEST OPEN: both ingredients absent for the SAME nodal "
-          "reason")
+    print("TEST 4 -- HONEST OPEN: both ingredients absent for the SAME nodal " "reason")
     print("=" * 78)
     n = 5
     G = nx.complete_graph(n)
@@ -320,40 +345,39 @@ def test_shared_nonderivability():
     tx, ty, _tz = su2_generators()
     ym_break = commutator_norm(tx, ty)
 
-    verdict_line = (
-        "OPEN_DERIVABILITY_GAP (canonical default; package not imported)"
-    )
+    verdict_line = "OPEN_DERIVABILITY_GAP (canonical default; package not imported)"
     canon_ok = True
     if _HAVE_AUDIT:
         try:
             report = audit_nonabelian_derivability()
-            any_noncomm = any(
-                c.has_noncommuting_generators for c in report.candidates
-            )
+            any_noncomm = any(c.has_noncommuting_generators for c in report.candidates)
             verdict_line = (
                 f"{report.verdict} ; gauge = {report.canonical_gauge_group} ; "
                 f"non-commuting generators on any route = {any_noncomm}"
             )
-            canon_ok = (
-                report.verdict == "OPEN_DERIVABILITY_GAP" and not any_noncomm
-            )
+            canon_ok = report.verdict == "OPEN_DERIVABILITY_GAP" and not any_noncomm
         except Exception as exc:  # pragma: no cover
             verdict_line = f"(canonical audit unavailable: {exc})"
 
-    ok = (
-        rh_break > _NONZERO and ym_break > _NONZERO and rh_imposed and canon_ok
-    )
+    ok = rh_break > _NONZERO and ym_break > _NONZERO and rh_imposed and canon_ok
     print(f"  RH ingredient : D = diag({d_label})")
-    print(f"                  breaks S_n (||[D,P_s]|| = {rh_break:.2f}) but "
-          "is IMPOSED input")
-    print("                  (no per-node slot in dEPI/dt = nu_f . dNFR; "
-          "B0*-beta P2).")
-    print(f"  YM ingredient : non-commuting [T_x,T_y] (= {ym_break:.3f}) "
-          "needed, but its")
+    print(
+        f"                  breaks S_n (||[D,P_s]|| = {rh_break:.2f}) but "
+        "is IMPOSED input"
+    )
+    print(
+        "                  (no per-node slot in dEPI/dt = nu_f . dNFR; " "B0*-beta P2)."
+    )
+    print(
+        f"  YM ingredient : non-commuting [T_x,T_y] (= {ym_break:.3f}) "
+        "needed, but its"
+    )
     print("                  derivation is the open Y3 gap. Canonical audit:")
     print(f"                  {verdict_line}")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- two ingredients, ONE "
-          "shared non-derivability root (no per-node / per-fibre slot)")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- two ingredients, ONE "
+        "shared non-derivability root (no per-node / per-fibre slot)"
+    )
     print()
     return ok
 
@@ -368,14 +392,22 @@ def main():
     print("=" * 78)
     print("SUMMARY")
     print("=" * 78)
-    print(f"  TEST 1 not one object (base/fibre, Abelian/non-Abelian) : "
-          f"{'PASS' if t1 else 'FAIL'}")
-    print(f"  TEST 2 same recipe (so(n) base / su(d) fibre)           : "
-          f"{'PASS' if t2 else 'FAIL'}")
-    print(f"  TEST 3 one ingredient unifies base only, not fibre      : "
-          f"{'PASS' if t3 else 'FAIL'}")
-    print(f"  TEST 4 shared non-derivability root                     : "
-          f"{'PASS' if t4 else 'FAIL'}")
+    print(
+        f"  TEST 1 not one object (base/fibre, Abelian/non-Abelian) : "
+        f"{'PASS' if t1 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 2 same recipe (so(n) base / su(d) fibre)           : "
+        f"{'PASS' if t2 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 3 one ingredient unifies base only, not fibre      : "
+        f"{'PASS' if t3 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 4 shared non-derivability root                     : "
+        f"{'PASS' if t4 else 'FAIL'}"
+    )
     structural = t1 and t2 and t3 and t4
     print()
     print(f"  STRUCTURAL CHECKS: {'ALL PASS' if structural else 'SOME FAIL'}")

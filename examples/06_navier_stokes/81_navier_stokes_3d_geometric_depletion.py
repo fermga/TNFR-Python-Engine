@@ -51,19 +51,16 @@ import math
 
 import numpy as np
 
-from tnfr.navier_stokes.operator import (
-    TNFRNavierStokesOperator,
-    build_torus_graph_3d,
-)
+from tnfr.navier_stokes.operator import TNFRNavierStokesOperator, build_torus_graph_3d
 
 # ---------------------------------------------------------------------------
 # Run parameters
 # ---------------------------------------------------------------------------
 
-N = 12                  # grid resolution per axis (12**3 = 1728 nodes)
+N = 12  # grid resolution per axis (12**3 = 1728 nodes)
 VISCOSITY = 0.05
 DT = 0.01
-STEPS = 100             # T = 1.0
+STEPS = 100  # T = 1.0
 AMPLITUDE = 1.0
 
 # Acceptance thresholds (honest, conservative, machine-relative)
@@ -77,7 +74,9 @@ def main() -> int:
     print("N6: 3D Navier-Stokes (Taylor-Green) + Constantin-Fefferman stretching")
     print("=" * 72)
     print(f"  Grid: {N}**3 = {N**3} nodes,  h = 2*pi/{N} = {2*math.pi/N:.4f}")
-    print(f"  Viscosity nu = {VISCOSITY},  dt = {DT},  steps = {STEPS},  T = {DT*STEPS}")
+    print(
+        f"  Viscosity nu = {VISCOSITY},  dt = {DT},  steps = {STEPS},  T = {DT*STEPS}"
+    )
     print()
 
     # ---- build operator -----------------------------------------------------
@@ -137,15 +136,23 @@ def main() -> int:
 
     print("Acceptance criteria (honest scope)")
     print("-" * 72)
-    print(f"  C1 INCOMP        max ||div|| <= {TOL_DIV:.0e}      : "
-          f"{'PASS' if c1 else 'FAIL'}  (got {divs.max():.3e})")
-    print(f"  C2 Monotone      E(T) <= E(0) and dZ/dt <= 0       : "
-          f"{'PASS' if c2 else 'FAIL'}  (E: {E0:.4f} -> {EN:.4f}; "
-          f"Z: {Z0:.4f} -> {ZN:.4f})")
-    print(f"  C3 BKM finite    int_0^T ||w||_inf dt finite        : "
-          f"{'PASS' if c3 else 'FAIL'}  (got {bkm[-1]:.4f})")
-    print(f"  C4 3D non-triv   |stretching production| > 0        : "
-          f"{'PASS' if c4 else 'FAIL'}  (got {stretch_final:.3e})")
+    print(
+        f"  C1 INCOMP        max ||div|| <= {TOL_DIV:.0e}      : "
+        f"{'PASS' if c1 else 'FAIL'}  (got {divs.max():.3e})"
+    )
+    print(
+        f"  C2 Monotone      E(T) <= E(0) and dZ/dt <= 0       : "
+        f"{'PASS' if c2 else 'FAIL'}  (E: {E0:.4f} -> {EN:.4f}; "
+        f"Z: {Z0:.4f} -> {ZN:.4f})"
+    )
+    print(
+        f"  C3 BKM finite    int_0^T ||w||_inf dt finite        : "
+        f"{'PASS' if c3 else 'FAIL'}  (got {bkm[-1]:.4f})"
+    )
+    print(
+        f"  C4 3D non-triv   |stretching production| > 0        : "
+        f"{'PASS' if c4 else 'FAIL'}  (got {stretch_final:.3e})"
+    )
 
     n_pass = sum(int(b) for b in (c1, c2, c3, c4))
     print()

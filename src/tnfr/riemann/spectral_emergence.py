@@ -90,7 +90,6 @@ from .prime_ladder_hamiltonian import (
     build_prime_ladder_hamiltonian,
 )
 
-
 __all__ = [
     "CANONICAL_COUPLING_LAWS",
     "InterPrimeCoupling",
@@ -111,9 +110,9 @@ __all__ = [
 # self-contained against constants.canonical refactors)
 # ----------------------------------------------------------------------
 
-_PHI = (1.0 + math.sqrt(5.0)) / 2.0          # 1.6180339887...
-_GAMMA = 0.5772156649015329                  # Euler-Mascheroni
-_PI = math.pi                                # 3.1415926535...
+_PHI = (1.0 + math.sqrt(5.0)) / 2.0  # 1.6180339887...
+_GAMMA = 0.5772156649015329  # Euler-Mascheroni
+_PI = math.pi  # 3.1415926535...
 
 CANONICAL_COUPLING_LAWS: tuple[str, ...] = (
     "kuramoto_u3",
@@ -163,8 +162,7 @@ def _coupling_value(
         # (does not happen for primes >= 2, but is defensive).
         return _GAMMA / math.log(1.0 + p * q)
     raise ValueError(
-        f"Unknown coupling law '{law}'. Expected one of "
-        f"{CANONICAL_COUPLING_LAWS}."
+        f"Unknown coupling law '{law}'. Expected one of " f"{CANONICAL_COUPLING_LAWS}."
     )
 
 
@@ -266,9 +264,7 @@ def unfold_spectrum(eigenvalues: np.ndarray) -> np.ndarray:
     eigs = np.sort(np.asarray(eigenvalues, dtype=float))
     n = eigs.size
     if n < 6:
-        raise ValueError(
-            f"Need at least 6 eigenvalues to unfold; got {n}."
-        )
+        raise ValueError(f"Need at least 6 eigenvalues to unfold; got {n}.")
     counts = np.arange(1, n + 1, dtype=float)
     coeffs = np.polyfit(eigs, counts, deg=5)
     unfolded = np.polyval(coeffs, eigs)
@@ -305,9 +301,9 @@ def wigner_surmise_gue_cdf(s: np.ndarray) -> np.ndarray:
         if x < 0.0:
             out[i] = 0.0
             continue
-        cdf = _erf(2.0 * x / math.sqrt(math.pi)) - (
-            4.0 * x / math.pi
-        ) * math.exp(-4.0 * x * x / math.pi)
+        cdf = _erf(2.0 * x / math.sqrt(math.pi)) - (4.0 * x / math.pi) * math.exp(
+            -4.0 * x * x / math.pi
+        )
         out[i] = max(0.0, min(1.0, cdf))
     return out
 
@@ -414,7 +410,7 @@ def sweep_coupling_strength(
         spacings = nearest_neighbour_spacings(unfolded)
         ks_gue[idx] = ks_distance_to_gue(spacings)
         ks_poi[idx] = ks_distance_to_poisson(spacings)
-        mean_s2[idx] = float(np.mean(spacings ** 2))
+        mean_s2[idx] = float(np.mean(spacings**2))
         frob[idx] = coupling.frobenius_norm
         eig_range[idx, 0] = float(eigvals.real.min())
         eig_range[idx, 1] = float(eigvals.real.max())

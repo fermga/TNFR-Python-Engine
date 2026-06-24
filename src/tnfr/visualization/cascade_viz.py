@@ -41,6 +41,7 @@ __all__ = [
 
 logger = get_logger(__name__)
 
+
 def plot_cascade_propagation(G: TNFRGraph, figsize: tuple[int, int] = (12, 8)):
     """Visualize THOL cascade propagation across network.
 
@@ -88,10 +89,7 @@ def plot_cascade_propagation(G: TNFRGraph, figsize: tuple[int, int] = (12, 8)):
         bifurcated_nodes.add(prop["source_node"])
 
     # Node colors: red = bifurcated, lightblue = normal
-    node_colors = [
-        "red" if n in bifurcated_nodes else "lightblue"
-        for n in G.nodes
-    ]
+    node_colors = ["red" if n in bifurcated_nodes else "lightblue" for n in G.nodes]
 
     # Node sizes based on EPI magnitude
     node_sizes = []
@@ -135,6 +133,7 @@ def plot_cascade_propagation(G: TNFRGraph, figsize: tuple[int, int] = (12, 8)):
     ax.axis("off")
     plt.tight_layout()
     return fig
+
 
 def plot_cascade_timeline(G: TNFRGraph, figsize: tuple[int, int] = (10, 5)):
     """Plot temporal evolution of cascade events.
@@ -190,6 +189,7 @@ def plot_cascade_timeline(G: TNFRGraph, figsize: tuple[int, int] = (10, 5)):
 
     plt.tight_layout()
     return fig
+
 
 def plot_cascade_metrics_summary(
     G: TNFRGraph,
@@ -277,10 +277,7 @@ def plot_cascade_metrics_summary(
     axes[1].grid(alpha=0.3)
 
     # Panel 3: Metabolic activity index
-    activities = [
-        m.get("metabolic_activity_index", 0)
-        for m in node_metrics.values()
-    ]
+    activities = [m.get("metabolic_activity_index", 0) for m in node_metrics.values()]
     axes[2].bar(
         range(len(node_ids)),
         activities,

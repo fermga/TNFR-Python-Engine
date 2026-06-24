@@ -7,45 +7,43 @@ from collections import Counter, defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from types import ModuleType
-from typing import (
-    Any,
-    Callable,
-    Mapping,
-    MutableMapping,
-    Sequence,
-    cast,
-)
+from typing import Any, Callable, Mapping, MutableMapping, Sequence, cast
 
 from ..alias import get_attr
 from ..config.constants import GLYPH_GROUPS, GLYPHS_CANONICAL
-from ..mathematics.unified_numerical import np
 from ..constants import get_param
 from ..constants.aliases import ALIAS_EPI
 from ..glyph_history import append_metric
 from ..glyph_runtime import last_glyph
-from ..utils import resolve_chunk_size
+from ..mathematics.unified_numerical import np
 from ..types import (
     GlyphCounts,
     GlyphMetricsHistory,
+    GlyphogramRow,
     GlyphTimingByNode,
     GlyphTimingTotals,
-    GlyphogramRow,
     GraphLike,
     MetricsListHistory,
     SigmaTrace,
 )
+from ..utils import resolve_chunk_size
 
 LATENT_GLYPH: str = "SHA"
 DEFAULT_EPI_SUPPORT_LIMIT = 0.05
+
 
 def _has_numpy_support(np_obj: object) -> bool:
     """Return ``True`` when ``np_obj`` exposes the required NumPy API."""
 
     return isinstance(np_obj, ModuleType) or (
-        np_obj is not None and hasattr(np_obj, "fromiter") and hasattr(np_obj, "bincount")
+        np_obj is not None
+        and hasattr(np_obj, "fromiter")
+        and hasattr(np_obj, "bincount")
     )
 
+
 _GLYPH_TO_INDEX = {glyph: idx for idx, glyph in enumerate(GLYPHS_CANONICAL)}
+
 
 def _coerce_float(value: Any) -> float:
     """Attempt to coerce ``value`` to ``float`` returning ``0.0`` on failure."""
@@ -55,12 +53,14 @@ def _coerce_float(value: Any) -> float:
     except (TypeError, ValueError):
         return 0.0
 
+
 @dataclass
 class GlyphTiming:
     """Mutable accumulator tracking the active glyph and its dwell time."""
 
     curr: str | None = None
     run: float = 0.0
+
 
 __all__ = [
     "LATENT_GLYPH",
@@ -84,6 +84,7 @@ __all__ = [
 # Internal utilities
 # ---------------------------------------------------------------------------
 
+
 def _count_glyphs_chunk(chunk: Sequence[str]) -> Counter[str]:
     """Count glyph occurrences within a chunk (multiprocessing helper)."""
 
@@ -91,6 +92,7 @@ def _count_glyphs_chunk(chunk: Sequence[str]) -> Counter[str]:
     for glyph in chunk:
         counter[glyph] += 1
     return counter
+
 
 def _epi_support_chunk(values: Sequence[float], threshold: float) -> tuple[float, int]:
     """Compute EPI support contribution for a chunk."""
@@ -103,10 +105,12 @@ def _epi_support_chunk(values: Sequence[float], threshold: float) -> tuple[float
             count += 1
     return total, count
 
+
 def _tg_state(nd: MutableMapping[str, Any]) -> GlyphTiming:
     """Expose per-node glyph timing state."""
 
     return nd.setdefault("_Tg", GlyphTiming())
+
 
 def for_each_glyph(fn: Callable[[str], None]) -> None:
     """Apply ``fn`` to each canonical structural operator."""
@@ -114,9 +118,11 @@ def for_each_glyph(fn: Callable[[str], None]) -> None:
     for g in GLYPHS_CANONICAL:
         fn(g)
 
+
 # ---------------------------------------------------------------------------
 # Glyph timing helpers
 # ---------------------------------------------------------------------------
+
 
 def _update_tg_node(
     n: Any,
@@ -145,6 +151,7 @@ def _update_tg_node(
         st.curr = g
         st.run = dt
     return g, g == LATENT_GLYPH
+
 
 def _update_tg(
     G: GraphLike,
@@ -217,6 +224,7 @@ def _update_tg(
 
     return counts, n_total, n_latent
 
+
 def _update_glyphogram(
     G: GraphLike,
     hist: GlyphMetricsHistory,
@@ -234,6 +242,7 @@ def _update_glyphogram(
         row[g] = (c / total) if normalize_series else c
     append_metric(cast(MetricsListHistory, hist), "glyphogram", row)
 
+
 def _update_latency_index(
     G: GraphLike,
     hist: GlyphMetricsHistory,
@@ -250,6 +259,7 @@ def _update_latency_index(
         {"t": t, "value": li},
     )
 
+
 def _update_epi_support(
     G: GraphLike,
     hist: GlyphMetricsHistory,
@@ -265,7 +275,10 @@ def _update_epi_support(
 
     if _has_numpy_support(np) and node_count:
         epi_values = np.fromiter(
-            (abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0))) for _, nd in G.nodes(data=True)),
+            (
+                abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0)))
+                for _, nd in G.nodes(data=True)
+            ),
             dtype=float,
             count=node_count,
         )
@@ -274,7 +287,10 @@ def _update_epi_support(
         if count:
             total = float(epi_values[mask].sum())
     elif n_jobs is not None and n_jobs > 1 and node_count > 1:
-        values = [abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0))) for _, nd in G.nodes(data=True)]
+        values = [
+            abs(_coerce_float(get_attr(nd, ALIAS_EPI, 0.0)))
+            for _, nd in G.nodes(data=True)
+        ]
         approx_chunk = math.ceil(len(values) / n_jobs) if n_jobs else None
         chunk_size = resolve_chunk_size(
             approx_chunk,
@@ -305,6 +321,7 @@ def _update_epi_support(
         {"t": t, "size": count, "epi_norm": float(epi_norm)},
     )
 
+
 def _update_morph_metrics(
     G: GraphLike,
     hist: GlyphMetricsHistory,
@@ -328,6 +345,7 @@ def _update_morph_metrics(
         "morph",
         {"t": t, "ID": id_val, "CM": cm_val, "NE": ne_val, "PP": pp_val},
     )
+
 
 def _compute_advanced_metrics(
     G: GraphLike,

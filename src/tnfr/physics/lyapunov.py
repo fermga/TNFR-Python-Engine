@@ -81,12 +81,15 @@ except ImportError:  # pragma: no cover
 # Lazy import to break circular dependencies
 _conservation = None
 
+
 def _get_conservation():
     global _conservation
     if _conservation is None:
         from tnfr.physics import conservation as _mod
+
         _conservation = _mod
     return _conservation
+
 
 # ---------------------------------------------------------------------------
 #  Canonical glyph factors (defaults from tnfr.config.defaults_core)
@@ -96,29 +99,29 @@ def _get_conservation():
 from tnfr.constants.canonical import (
     AL_BOOST_CANONICAL,
     EN_MIX_FACTOR,
-    PHI_GAMMA_NORMALIZED,
     NUL_DENSIFICATION_FACTOR,
-    UM_THETA_PUSH,
-    SHA_VF_FACTOR,
-    VAL_SCALE_FACTOR,
     NUL_SCALE_FACTOR,
+    PHI_GAMMA_NORMALIZED,
+    SHA_VF_FACTOR,
+    UM_THETA_PUSH,
+    VAL_SCALE_FACTOR,
 )
 
 # Values documented in AGENTS.md § The 13 Canonical Operators
 _GLYPH_DEFAULTS: dict[str, float] = {
-    "AL_boost": round(AL_BOOST_CANONICAL, 4),    # 1/(π×e) ≈ 0.1171
-    "EN_mix": EN_MIX_FACTOR,                     # 1/(π+1) ≈ 0.2415
+    "AL_boost": round(AL_BOOST_CANONICAL, 4),  # 1/(π×e) ≈ 0.1171
+    "EN_mix": EN_MIX_FACTOR,  # 1/(π+1) ≈ 0.2415
     "IL_dnfr_factor": round(PHI_GAMMA_NORMALIZED, 3),  # φ/(φ+γ) ≈ 0.737
     "OZ_dnfr_factor": round(NUL_DENSIFICATION_FACTOR, 3),  # φ/γ ≈ 2.803
-    "UM_theta_push": UM_THETA_PUSH,              # 1/(π+1) ≈ 0.2415
+    "UM_theta_push": UM_THETA_PUSH,  # 1/(π+1) ≈ 0.2415
     "UM_vf_sync": 0.10,
     "UM_dnfr_reduction": 0.15,
     "RA_epi_diff": 0.15,
     "RA_vf_amplification": 0.05,
     "RA_phase_coupling": 0.10,
-    "SHA_vf_factor": round(SHA_VF_FACTOR, 4),    # 1 - γ/(π+e) ≈ 0.9015
-    "VAL_scale": round(VAL_SCALE_FACTOR, 4),     # 1 + γ/(π×e) ≈ 1.0676
-    "NUL_scale": round(NUL_SCALE_FACTOR, 4),     # 1 - γ/(π+e) ≈ 0.9015
+    "SHA_vf_factor": round(SHA_VF_FACTOR, 4),  # 1 - γ/(π+e) ≈ 0.9015
+    "VAL_scale": round(VAL_SCALE_FACTOR, 4),  # 1 + γ/(π×e) ≈ 1.0676
+    "NUL_scale": round(NUL_SCALE_FACTOR, 4),  # 1 - γ/(π+e) ≈ 0.9015
     "NUL_densification_factor": round(NUL_DENSIFICATION_FACTOR, 4),  # φ/γ ≈ 2.8032
     "THOL_accel": 0.10,
     "ZHIR_theta_shift_factor": 0.3,
@@ -131,17 +134,20 @@ _GLYPH_DEFAULTS: dict[str, float] = {
 #  Energy class taxonomy
 # ---------------------------------------------------------------------------
 
+
 class EnergyClass(str, Enum):
     """Classification of an operator's effect on the energy functional."""
 
-    STABILISER = "stabiliser"          # dE/dt ≤ 0 (contractive)
-    DESTABILISER = "destabiliser"      # dE/dt > 0 (expansive, bounded)
-    NEUTRAL = "neutral"                # |dE/dt| ≈ 0 (quasi-isometric)
-    MIXED = "mixed"                    # sign depends on state
+    STABILISER = "stabiliser"  # dE/dt ≤ 0 (contractive)
+    DESTABILISER = "destabiliser"  # dE/dt > 0 (expansive, bounded)
+    NEUTRAL = "neutral"  # |dE/dt| ≈ 0 (quasi-isometric)
+    MIXED = "mixed"  # sign depends on state
+
 
 # ---------------------------------------------------------------------------
 #  Per-operator Lyapunov bound
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class OperatorLyapunovBound:
@@ -185,9 +191,11 @@ class OperatorLyapunovBound:
     glyph_factor_value: float
     derivation: str
 
+
 # ---------------------------------------------------------------------------
 #  Registry of formal bounds for all 13 operators
 # ---------------------------------------------------------------------------
+
 
 def _build_bounds() -> dict[str, OperatorLyapunovBound]:
     """Construct the canonical Lyapunov bounds dictionary.
@@ -219,11 +227,6 @@ def _build_bounds() -> dict[str, OperatorLyapunovBound]:
     #   otherwise                        → NEUTRAL  (acts on the EPI-form,
     #       νf-capacity, θ-phase or advisory channel that the coherence-pressure
     #       functional does not penalise by its grammatical role).
-    from ..config.physics_derivation import (
-        increases_structural_pressure,
-        provides_negative_feedback,
-    )
-    from ..operators.operator_contracts import contract_for
     from ..config.operator_names import (
         COHERENCE,
         CONTRACTION,
@@ -239,6 +242,11 @@ def _build_bounds() -> dict[str, OperatorLyapunovBound]:
         SILENCE,
         TRANSITION,
     )
+    from ..config.physics_derivation import (
+        increases_structural_pressure,
+        provides_negative_feedback,
+    )
+    from ..operators.operator_contracts import contract_for
 
     # (function name, dominant structural-pressure factor). The English name
     # and glyph are NOT duplicated here — they derive from the canonical
@@ -332,6 +340,7 @@ def _build_bounds() -> dict[str, OperatorLyapunovBound]:
 
     return bounds
 
+
 # Singleton registry
 OPERATOR_LYAPUNOV_BOUNDS: dict[str, OperatorLyapunovBound] = _build_bounds()
 
@@ -339,6 +348,7 @@ OPERATOR_LYAPUNOV_BOUNDS: dict[str, OperatorLyapunovBound] = _build_bounds()
 _GLYPH_TO_NAME: dict[str, str] = {
     b.glyph: b.operator_name for b in OPERATOR_LYAPUNOV_BOUNDS.values()
 }
+
 
 def get_bound(name_or_glyph: str) -> OperatorLyapunovBound:
     """Look up the formal Lyapunov bound by operator name or glyph.
@@ -367,9 +377,11 @@ def get_bound(name_or_glyph: str) -> OperatorLyapunovBound:
         f"Valid names: {sorted(OPERATOR_LYAPUNOV_BOUNDS)}"
     )
 
+
 # ---------------------------------------------------------------------------
 #  Per-operator energy bound computation
 # ---------------------------------------------------------------------------
+
 
 def compute_operator_energy_bound(
     name_or_glyph: str,
@@ -415,9 +427,11 @@ def compute_operator_energy_bound(
     # MIXED (NUL): worst-case as destabiliser
     return rate * energy_before
 
+
 # ---------------------------------------------------------------------------
 #  Sequence energy bound (grammar-compliant U2)
 # ---------------------------------------------------------------------------
+
 
 def compute_sequence_energy_bound(
     operator_names: Sequence[str],
@@ -452,9 +466,11 @@ def compute_sequence_energy_bound(
         e = max(0.0, e)
     return e
 
+
 # ---------------------------------------------------------------------------
 #  Operator Lyapunov verification (empirical check)
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class OperatorLyapunovVerification:
@@ -487,6 +503,7 @@ class OperatorLyapunovVerification:
     margin: float
     energy_class: EnergyClass
 
+
 def verify_operator_lyapunov(
     name_or_glyph: str,
     energy_before: float,
@@ -513,9 +530,7 @@ def verify_operator_lyapunov(
     """
     bound_info = get_bound(name_or_glyph)
     delta_e = energy_after - energy_before
-    theoretical = compute_operator_energy_bound(
-        name_or_glyph, energy_before, n_nodes
-    )
+    theoretical = compute_operator_energy_bound(name_or_glyph, energy_before, n_nodes)
     margin = theoretical - delta_e
 
     return OperatorLyapunovVerification(
@@ -530,9 +545,11 @@ def verify_operator_lyapunov(
         energy_class=bound_info.energy_class,
     )
 
+
 # ---------------------------------------------------------------------------
 #  Spectral gap analysis
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class SpectralGapAnalysis:
@@ -591,6 +608,7 @@ class SpectralGapAnalysis:
     spectral_ratio: float
     is_connected: bool
     eigenvalues: Any  # np.ndarray
+
 
 def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
     r"""Compute the spectral gap and derived quantities for a TNFR graph.
@@ -658,6 +676,7 @@ def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
     # Laplacian L_sym (shares the spectrum of the canonical diffusion operator
     # L_rw = I − D⁻¹W; built once in structural_diffusion).
     from .structural_diffusion import symmetric_normalized_laplacian
+
     _, L_sym = symmetric_normalized_laplacian(G)
     sym_eigs = np.sort(np.linalg.eigvalsh(L_sym))
     diffusion_gap = max(0.0, float(sym_eigs[1])) if n > 1 else 0.0
@@ -687,9 +706,11 @@ def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
         eigenvalues=eigvals,
     )
 
+
 # ---------------------------------------------------------------------------
 #  Combined Lyapunov + spectral convergence analysis
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class LyapunovSpectralSummary:
@@ -714,6 +735,7 @@ class LyapunovSpectralSummary:
     spectral: SpectralGapAnalysis
     effective_convergence_rate: float
     steps_to_half_energy: float
+
 
 def analyze_operator_convergence(
     G: Any,
@@ -758,9 +780,11 @@ def analyze_operator_convergence(
         steps_to_half_energy=steps,
     )
 
+
 # ---------------------------------------------------------------------------
 #  Grammar-compliant sequence analysis (U2 formal proof)
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class SequenceLyapunovProof:
@@ -790,6 +814,7 @@ class SequenceLyapunovProof:
     cumulative_product: float
     is_net_contractive: bool
     net_contraction: float
+
 
 def prove_sequence_lyapunov(
     operator_names: Sequence[str],
@@ -840,6 +865,7 @@ def prove_sequence_lyapunov(
         is_net_contractive=product <= 1.0,
         net_contraction=1.0 - product,
     )
+
 
 # ---------------------------------------------------------------------------
 #  Public API

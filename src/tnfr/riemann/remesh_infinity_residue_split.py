@@ -122,10 +122,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from .oscillatory_correction import prime_ladder_oscillatory_sum
-from .von_mangoldt import (
-    PrimeLadderSpectrum,
-    build_prime_ladder_spectrum,
-)
+from .von_mangoldt import PrimeLadderSpectrum, build_prime_ladder_spectrum
 
 __all__ = [
     "build_resonant_bin_mask",
@@ -228,9 +225,7 @@ def split_residue_by_remesh_infinity(
     sig = np.asarray(signal, dtype=float)
     if sig.ndim != 1:
         raise ValueError("signal must be 1-D")
-    mask = build_resonant_bin_mask(
-        sig.size, tau_l=tau_l, tau_g=tau_g
-    )
+    mask = build_resonant_bin_mask(sig.size, tau_l=tau_l, tau_g=tau_g)
     spectrum = np.fft.fft(sig)
     range_spectrum = np.where(mask, spectrum, 0.0 + 0.0j)
     kernel_spectrum = spectrum - range_spectrum
@@ -319,15 +314,12 @@ class ResidueSplitCertificate:
             f"  lcm period             : {self.lcm_period}",
             f"  n_primes               : {self.n_primes}",
             f"  max_power (K)          : {self.max_power}",
-            f"  T window               : "
-            f"[{self.t_min:.3f}, {self.t_max:.3f}]",
+            f"  T window               : " f"[{self.t_min:.3f}, {self.t_max:.3f}]",
             f"  ||S_TNFR||_2           : {self.norm_total:.4e}",
             f"  ||R_inf S_TNFR||_2     : {self.norm_in_range:.4e}",
             f"  ||(I-R_inf) S_TNFR||_2 : {self.norm_in_kernel:.4e}",
-            f"  range fraction         : "
-            f"{100.0 * self.ratio_in_range:7.4f} %",
-            f"  kernel fraction        : "
-            f"{100.0 * self.ratio_in_kernel:7.4f} %",
+            f"  range fraction         : " f"{100.0 * self.ratio_in_range:7.4f} %",
+            f"  kernel fraction        : " f"{100.0 * self.ratio_in_kernel:7.4f} %",
             "  controls (sanity):",
             f"    range[sin(omega_1 T)] : "
             f"{100.0 * self.range_control_resonant:7.4f} %  "
@@ -335,8 +327,7 @@ class ResidueSplitCertificate:
             f"    range[sin(gamma T)]   : "
             f"{100.0 * self.range_control_nonresonant:7.4f} %  "
             "(expect ~0)",
-            f"  threshold              : "
-            f"{100.0 * self.threshold:.2f} %",
+            f"  threshold              : " f"{100.0 * self.threshold:.2f} %",
             f"  verdict                : {self.verdict}",
             f"  notes                  : {self.notes}",
         ]
@@ -396,9 +387,7 @@ def compute_residue_split_certificate(
 
     t_grid = t_min + np.arange(n_samples, dtype=float)
     t_max = float(t_grid[-1])
-    signal = np.asarray(
-        prime_ladder_oscillatory_sum(t_grid, spectrum), dtype=float
-    )
+    signal = np.asarray(prime_ladder_oscillatory_sum(t_grid, spectrum), dtype=float)
 
     range_part, kernel_part = split_residue_by_remesh_infinity(
         signal, tau_l=tau_l, tau_g=tau_g
@@ -409,8 +398,7 @@ def compute_residue_split_certificate(
     norm_kernel = float(np.linalg.norm(kernel_part))
     if norm_total <= 0.0:
         raise RuntimeError(
-            "S_TNFR vanished on the diagnostic window; refusing to "
-            "normalise"
+            "S_TNFR vanished on the diagnostic window; refusing to " "normalise"
         )
     ratio_range = (norm_range / norm_total) ** 2
     ratio_kernel = (norm_kernel / norm_total) ** 2

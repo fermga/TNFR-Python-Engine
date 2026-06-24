@@ -187,15 +187,15 @@ def _evolve_and_collect(G: Any, n_steps: int) -> np.ndarray:
     inject_defaults(G)
 
     nodes = list(G.nodes())
-    snapshots: list[list[float]] = [[
-        _bepi_to_float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes
-    ]]
+    snapshots: list[list[float]] = [
+        [_bepi_to_float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes]
+    ]
     # step() falls back to default_compute_delta_nfr if no hook is set.
     for _ in range(int(n_steps)):
         step(G)
-        snapshots.append([
-            _bepi_to_float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes
-        ])
+        snapshots.append(
+            [_bepi_to_float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes]
+        )
     return np.asarray(snapshots, dtype=float).T
 
 
@@ -371,9 +371,9 @@ def compute_epi_type_signature(
     diagnostics: dict[str, Any] = {
         "per_node_spectral_entropy_nats": per_node_entropy.tolist(),
         "per_node_trajectory_variance": per_node_variance.tolist(),
-        "mean_trajectory_variance": float(np.mean(per_node_variance))
-        if actual_n_nodes > 0
-        else 0.0,
+        "mean_trajectory_variance": (
+            float(np.mean(per_node_variance)) if actual_n_nodes > 0 else 0.0
+        ),
         "max_entropy_nats_log_b": max_entropy,
         "scalar_threshold": float(scalar_threshold),
         "bepi_threshold": float(bepi_threshold),

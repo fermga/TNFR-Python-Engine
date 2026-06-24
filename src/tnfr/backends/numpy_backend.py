@@ -21,8 +21,9 @@ from __future__ import annotations
 
 from typing import Any, MutableMapping
 
-from . import TNFRBackend
 from ..types import TNFRGraph
+from . import TNFRBackend
+
 
 class NumPyBackend(TNFRBackend):
     """Vectorized NumPy implementation of TNFR computational kernels.

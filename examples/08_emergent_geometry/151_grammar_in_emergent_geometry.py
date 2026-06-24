@@ -85,37 +85,58 @@ References
 - AGENTS.md "Unified Grammar (U1-U6)" (U2/U6 derivations), "Emergent Symplectic Substrate"
 """
 
+import math
 import os
 import sys
-import math
 import warnings
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.constants import inject_defaults
 from tnfr.constants.canonical import PHI
-from tnfr.physics.fields import compute_structural_potential
+from tnfr.operators.definitions import (
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
+)
+from tnfr.operators.grammar_validate import validate_grammar
 from tnfr.physics.conservation import compute_energy_functional
+from tnfr.physics.fields import compute_structural_potential
 from tnfr.physics.symplectic_substrate import (
     extract_phase_space_point,
     substrate_hamiltonian,
     verify_substrate_geometry,
 )
-from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Coupling, Resonance, Silence,
-    Expansion, Contraction, SelfOrganization, Mutation, Transition, Recursivity,
-)
-from tnfr.operators.grammar_validate import validate_grammar
 
 # Operator instances keyed by canonical glyph mnemonic.
-INST = {"AL": Emission(), "EN": Reception(), "IL": Coherence(),
-        "OZ": Dissonance(), "UM": Coupling(), "RA": Resonance(),
-        "SHA": Silence(), "VAL": Expansion(), "NUL": Contraction(),
-        "THOL": SelfOrganization(), "ZHIR": Mutation(), "NAV": Transition(),
-        "REMESH": Recursivity()}
+INST = {
+    "AL": Emission(),
+    "EN": Reception(),
+    "IL": Coherence(),
+    "OZ": Dissonance(),
+    "UM": Coupling(),
+    "RA": Resonance(),
+    "SHA": Silence(),
+    "VAL": Expansion(),
+    "NUL": Contraction(),
+    "THOL": SelfOrganization(),
+    "ZHIR": Mutation(),
+    "NAV": Transition(),
+    "REMESH": Recursivity(),
+}
 
 SEED = 42
 
@@ -243,8 +264,12 @@ def experiment_2_rule_specificity():
     print(f"  U6 confinement = a literal tetrad-field bound (phi = {PHI:.4f}):")
     print(f"  {'word':30s} {'U1-U6':6s} {'Phi_s_max':>12s}  status")
     print("  " + "-" * 64)
-    for w in (["AL", "IL", "SHA"], ["AL", "OZ", "IL", "SHA"],
-              ["AL", "OZ", "OZ", "SHA"], ["AL", "OZ", "OZ", "OZ", "SHA"]):
+    for w in (
+        ["AL", "IL", "SHA"],
+        ["AL", "OZ", "IL", "SHA"],
+        ["AL", "OZ", "OZ", "SHA"],
+        ["AL", "OZ", "OZ", "OZ", "SHA"],
+    ):
         _, _, P = run_word(w, sweep=True)
         flag = "valid" if is_valid(w) else "FORBID"
         if P < PHI:
@@ -267,8 +292,11 @@ def experiment_3_substrate_is_canonical_home():
     print("  (all seven verify_substrate_geometry certificates); the U2-forbidden")
     print("  divergent word leaves it. Measured:")
     print()
-    valid_words = [["AL", "IL", "SHA"], ["AL", "UM", "IL", "SHA"],
-                   ["AL", "OZ", "IL", "SHA"]]
+    valid_words = [
+        ["AL", "IL", "SHA"],
+        ["AL", "UM", "IL", "SHA"],
+        ["AL", "OZ", "IL", "SHA"],
+    ]
     for w in valid_words:
         G = build_graph()
         with warnings.catch_warnings():
@@ -279,8 +307,10 @@ def experiment_3_substrate_is_canonical_home():
                 except Exception:
                     pass
         rep = verify_substrate_geometry(G)
-        print(f"  {str(w):34s} valid, gentle   manifold_valid = "
-              f"{rep.all_structures_valid}")
+        print(
+            f"  {str(w):34s} valid, gentle   manifold_valid = "
+            f"{rep.all_structures_valid}"
+        )
     # divergent forbidden word (sweep)
     wf = ["AL", "OZ", "OZ", "OZ", "SHA"]
     G = build_graph()
@@ -293,8 +323,10 @@ def experiment_3_substrate_is_canonical_home():
                 except Exception:
                     pass
     rep = verify_substrate_geometry(G)
-    print(f"  {str(wf):34s} FORBID, diverged manifold_valid = "
-          f"{rep.all_structures_valid}")
+    print(
+        f"  {str(wf):34s} FORBID, diverged manifold_valid = "
+        f"{rep.all_structures_valid}"
+    )
     print()
     print("  -> coherent (grammatical) trajectories live ON the canonical emergent")
     print("     geometry; the divergent forbidden trajectory leaves the manifold.")

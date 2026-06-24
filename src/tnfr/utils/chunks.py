@@ -15,6 +15,7 @@ from typing import Final
 DEFAULT_APPROX_BYTES_PER_ITEM: Final[int] = 64
 DEFAULT_CHUNK_CLAMP: Final[int] | None = 131_072
 
+
 def _estimate_available_memory() -> int | None:
     """Best-effort estimation of free memory available to the process."""
 
@@ -30,6 +31,7 @@ def _estimate_available_memory() -> int | None:
     if page_size <= 0 or avail_pages <= 0:
         return None
     return int(page_size) * int(avail_pages)
+
 
 def auto_chunk_size(
     total_items: int,
@@ -66,6 +68,7 @@ def auto_chunk_size(
     chunk = max(minimum, min(total_items, chunk))
     return chunk
 
+
 def resolve_chunk_size(
     chunk_size: int | None,
     total_items: int,
@@ -100,5 +103,6 @@ def resolve_chunk_size(
         )
 
     return max(minimum, min(total_items, resolved))
+
 
 __all__ = ["auto_chunk_size", "resolve_chunk_size"]

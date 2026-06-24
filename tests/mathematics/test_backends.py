@@ -8,7 +8,12 @@ import numpy as np
 import pytest
 
 from tnfr.mathematics import CoherenceOperator, HilbertSpace
-from tnfr.mathematics.backend import MathematicsBackend, ensure_array, ensure_numpy, get_backend
+from tnfr.mathematics.backend import (
+    MathematicsBackend,
+    ensure_array,
+    ensure_numpy,
+    get_backend,
+)
 from tnfr.mathematics.dynamics import (
     ContractiveDynamicsEngine,
     MathematicalDynamicsEngine,
@@ -31,6 +36,7 @@ def _adjust_tolerances_for_backend(
     if backend_name == "jax":
         try:
             import jax.numpy as jnp
+
             if jnp.array([1.0]).dtype == jnp.float32:
                 return {"rtol": 1e-5, "atol": 1e-6}
         except ImportError:
@@ -105,7 +111,9 @@ def test_mathematical_dynamics_matches_numpy(
     reference_backend = get_backend("numpy")
 
     hilbert = HilbertSpace(dimension=2)
-    generator = np.array([[1.0, 0.25 - 0.15j], [0.25 + 0.15j, -0.5]], dtype=np.complex128)
+    generator = np.array(
+        [[1.0, 0.25 - 0.15j], [0.25 + 0.15j, -0.5]], dtype=np.complex128
+    )
     state = np.array([0.8 + 0.1j, 0.3 - 0.2j], dtype=np.complex128)
 
     reference_engine = MathematicalDynamicsEngine(
@@ -186,7 +194,7 @@ def test_torch_backend_handles_numpy_complex_dtype() -> None:
     torch_module = getattr(backend, "_torch", None)
     if torch_module is None:
         pytest.skip("Torch backend unavailable for dtype inspection")
-    
+
     assert torch_module is not None
 
     matrix = np.array([[1 + 2j, 3 - 4j], [5 + 6j, 7 - 8j]], dtype=np.complex128)

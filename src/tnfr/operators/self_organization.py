@@ -14,12 +14,15 @@ from __future__ import annotations
 from typing import Any, ClassVar
 
 from ..config.operator_names import SELF_ORGANIZATION
-from ..types import Glyph, TNFRGraph
-from .definitions_base import Operator
+
 # Import canonical constants
 from ..constants.canonical import HALF_INV_PHI, THOL_MIN_COLLECTIVE_COHERENCE
+from ..types import Glyph, TNFRGraph
+from .definitions_base import Operator
+
 _THOL_SUB_EPI_SCALING = HALF_INV_PHI  # 1/(2φ) ≈ 0.309 (golden fractal scale)
 _THOL_EMERGENCE_CONTRIBUTION = 0.1  # parent epi increment fraction
+
 
 class SelfOrganization(Operator):
     """Spawn sub-EPIs on bifurcation; metabolic capture; update parent epi.
@@ -82,11 +85,8 @@ class SelfOrganization(Operator):
     ) -> None:
         """Create sub-EPI node; apply metabolic weights; update parent epi."""
         from ..alias import get_attr, set_attr
-        from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_THETA
-        from .metabolism import (
-            capture_network_signals,
-            metabolize_signals_into_subepi,
-        )
+        from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+        from .metabolism import capture_network_signals, metabolize_signals_into_subepi
 
         # Get current node state
         parent_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
@@ -102,12 +102,8 @@ class SelfOrganization(Operator):
             network_signals = capture_network_signals(G, node)
 
         # Get metabolic weights from graph config
-        gradient_weight = float(
-            G.graph.get("THOL_METABOLIC_GRADIENT_WEIGHT", 0.15)
-        )
-        complexity_weight = float(
-            G.graph.get("THOL_METABOLIC_COMPLEXITY_WEIGHT", 0.10)
-        )
+        gradient_weight = float(G.graph.get("THOL_METABOLIC_GRADIENT_WEIGHT", 0.15))
+        complexity_weight = float(G.graph.get("THOL_METABOLIC_COMPLEXITY_WEIGHT", 0.10))
 
         # CANONICAL METABOLISM: Digest signals into sub-EPI
         sub_epi_value = metabolize_signals_into_subepi(
@@ -194,12 +190,7 @@ class SelfOrganization(Operator):
         child_path: list,
     ) -> str:
         """Add sub-node with inherited state; record hierarchy metadata."""
-        from ..constants import (
-            EPI_PRIMARY,
-            VF_PRIMARY,
-            THETA_PRIMARY,
-            DNFR_PRIMARY,
-        )
+        from ..constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
 
         # Generate unique sub-node ID
         sub_nodes_list = G.nodes[parent_node].get("sub_nodes", [])
@@ -280,6 +271,7 @@ class SelfOrganization(Operator):
     def _validate_collective_coherence(self, G: TNFRGraph, node: Any) -> None:
         """Compute ensemble coherence; warn if below threshold."""
         import logging
+
         from .metabolism import compute_subepi_collective_coherence
 
         # Compute collective coherence

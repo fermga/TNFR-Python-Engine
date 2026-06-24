@@ -67,12 +67,8 @@ def main() -> int:
     ]
 
     print("=" * 78)
-    print(
-        "P48 -- chi-twisted admissible spectral-rescaling operator"
-    )
-    print(
-        "L-track operator-level lift of P46 (smooth half of T-HP^(chi))"
-    )
+    print("P48 -- chi-twisted admissible spectral-rescaling operator")
+    print("L-track operator-level lift of P46 (smooth half of T-HP^(chi))")
     print("=" * 78)
     print(
         f"Parameters: n_targets={n_targets}, "
@@ -84,9 +80,7 @@ def main() -> int:
 
     for chi in characters:
         print("-" * 78)
-        print(
-            f"Character: {chi.name} (modulus {chi.modulus})"
-        )
+        print(f"Character: {chi.name} (modulus {chi.modulus})")
         print("-" * 78)
         cert = compute_twisted_admissible_rescaling_certificate(
             chi,

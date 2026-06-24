@@ -51,27 +51,18 @@ def main() -> None:
     print(f"  n_sigma (base)        = {cert.n_sigma}")
     print(f"  n_sigma (refined)     = {cert.n_sigma_refined}")
     print(f"  refinement_rounds     = {cert.n_refinement_rounds}")
-    print(
-        "  interval lb (local)         = "
-        f"{cert.interval_lower_bound_local:+.4e}"
-    )
+    print("  interval lb (local)         = " f"{cert.interval_lower_bound_local:+.4e}")
     print(
         "  interval lb (local refined) = "
         f"{cert.interval_lower_bound_local_refined:+.4e}"
     )
-    print(
-        "  interval_lb_local+          = "
-        f"{cert.interval_lower_local_positive}"
-    )
+    print("  interval_lb_local+          = " f"{cert.interval_lower_local_positive}")
     print(
         "  interval_lb_local_refined+  = "
         f"{cert.interval_lower_local_refined_positive}"
     )
 
-    delta = (
-        cert.interval_lower_bound_local_refined
-        - cert.interval_lower_bound_local
-    )
+    delta = cert.interval_lower_bound_local_refined - cert.interval_lower_bound_local
     print(f"\n  improvement (refined - local) = {delta:+.4e}")
 
     print(

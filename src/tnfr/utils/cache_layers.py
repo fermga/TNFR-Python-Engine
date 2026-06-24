@@ -16,7 +16,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, MutableMapping
 from typing import Any
 
-from ..errors import TNFRValueError, TNFRSecurityError, TNFRSecurityWarning
+from ..errors import TNFRSecurityError, TNFRSecurityWarning, TNFRValueError
 from ..security.crypto import create_hmac_signer, create_hmac_validator
 
 __all__ = (
@@ -35,6 +35,7 @@ _SIGNATURE_HEADER_SIZE = len(_SIGNATURE_PREFIX) + 1 + 4
 
 # Environment variable to control security warnings for pickle deserialization
 _TNFR_ALLOW_UNSIGNED_PICKLE = "TNFR_ALLOW_UNSIGNED_PICKLE"
+
 
 def create_secure_shelve_layer(
     path: str,
@@ -89,7 +90,7 @@ def create_secure_shelve_layer(
             raise TNFRValueError(
                 "Secret required for secure cache layer.",
                 context={"env_var": "TNFR_CACHE_SECRET"},
-                suggestion="set TNFR_CACHE_SECRET environment variable or pass secret parameter."
+                suggestion="set TNFR_CACHE_SECRET environment variable or pass secret parameter.",
             )
 
     signer = create_hmac_signer(secret)
@@ -104,6 +105,7 @@ def create_secure_shelve_layer(
         validator=validator,
         require_signature=True,
     )
+
 
 def create_secure_redis_layer(
     client: Any | None = None,
@@ -157,7 +159,7 @@ def create_secure_redis_layer(
             raise TNFRValueError(
                 "Secret required for secure cache layer.",
                 context={"env_var": "TNFR_CACHE_SECRET"},
-                suggestion="set TNFR_CACHE_SECRET environment variable or pass secret parameter."
+                suggestion="set TNFR_CACHE_SECRET environment variable or pass secret parameter.",
             )
 
     signer = create_hmac_signer(secret)
@@ -172,12 +174,14 @@ def create_secure_redis_layer(
         protocol=protocol,
     )
 
+
 def _prepare_payload_bytes(value: Any, *, protocol: int) -> tuple[int, bytes]:
     """Return payload encoding mode and the bytes that should be signed."""
 
     if isinstance(value, (bytes, bytearray, memoryview)):
         return _SIGN_MODE_RAW, bytes(value)
     return _SIGN_MODE_PICKLE, pickle.dumps(value, protocol=protocol)
+
 
 def _pack_signed_envelope(mode: int, payload: bytes, signature: bytes) -> bytes:
     """Pack payload and signature into a self-describing binary envelope."""
@@ -186,14 +190,14 @@ def _pack_signed_envelope(mode: int, payload: bytes, signature: bytes) -> bytes:
         raise TNFRValueError(
             f"invalid payload mode: {mode}",
             context={"mode": mode},
-            suggestion="Mode must be between 0 and 255."
+            suggestion="Mode must be between 0 and 255.",
         )
     signature_length = len(signature)
     if signature_length >= 2**32:  # pragma: no cover - defensive guard
         raise TNFRValueError(
             "signature too large to encode",
             context={"signature_length": signature_length},
-            suggestion="Signature must be smaller than 4GB."
+            suggestion="Signature must be smaller than 4GB.",
         )
     header = (
         _SIGNATURE_PREFIX
@@ -202,10 +206,12 @@ def _pack_signed_envelope(mode: int, payload: bytes, signature: bytes) -> bytes:
     )
     return header + signature + payload
 
+
 def _is_signed_envelope(blob: bytes) -> bool:
     """Return ``True`` when *blob* represents a signed cache entry."""
 
     return blob.startswith(_SIGNATURE_PREFIX)
+
 
 def _unpack_signed_envelope(blob: bytes) -> tuple[int, bytes, bytes]:
     """Return the ``(mode, signature, payload)`` triple encoded in *blob*."""
@@ -224,6 +230,7 @@ def _unpack_signed_envelope(blob: bytes) -> tuple[int, bytes, bytes]:
     payload = blob[payload_start:]
     return mode, signature, payload
 
+
 def _decode_payload(mode: int, payload: bytes) -> Any:
     """Decode payload bytes depending on cache encoding *mode*."""
 
@@ -232,6 +239,7 @@ def _decode_payload(mode: int, payload: bytes) -> Any:
     if mode == _SIGN_MODE_PICKLE:
         return pickle.loads(payload)  # nosec B301 - validated via signature
     raise TNFRSecurityError(f"unknown payload encoding mode: {mode}")
+
 
 class CacheLayer(ABC):
     """Abstract interface implemented by storage backends orchestrated by :class:`CacheManager`."""
@@ -254,6 +262,7 @@ class CacheLayer(ABC):
 
     def close(self) -> None:  # pragma: no cover - optional hook
         """Release resources held by the backend."""
+
 
 class MappingCacheLayer(CacheLayer):
     """In-memory cache layer backed by a mutable mapping."""
@@ -285,6 +294,7 @@ class MappingCacheLayer(CacheLayer):
     def clear(self) -> None:
         with self._lock:
             self._storage.clear()
+
 
 class ShelveCacheLayer(CacheLayer):
     """Persistent cache layer backed by :mod:`shelve`.
@@ -322,7 +332,7 @@ class ShelveCacheLayer(CacheLayer):
         require_signature: bool = False,
     ) -> None:
         # Validate cache file path to prevent path traversal
-        from ..security import validate_file_path, PathTraversalError
+        from ..security import PathTraversalError, validate_file_path
 
         try:
             validated_path = validate_file_path(
@@ -421,10 +431,14 @@ class ShelveCacheLayer(CacheLayer):
                         valid = validator(payload, signature)
                     except Exception as exc:  # pragma: no cover - defensive
                         self.delete(name)
-                        raise TNFRSecurityError("signature validator raised an exception") from exc
+                        raise TNFRSecurityError(
+                            "signature validator raised an exception"
+                        ) from exc
                     if not valid:
                         self.delete(name)
-                        raise TNFRSecurityError(f"signature validation failed for cache entry {name!r}")
+                        raise TNFRSecurityError(
+                            f"signature validation failed for cache entry {name!r}"
+                        )
                 try:
                     return _decode_payload(mode, payload)
                 except Exception as exc:
@@ -438,6 +452,7 @@ class ShelveCacheLayer(CacheLayer):
             self.delete(name)
             raise TNFRSecurityError(f"unsigned cache entry rejected: {name}")
         return entry
+
 
 class RedisCacheLayer(CacheLayer):
     """Distributed cache layer backed by a Redis client.
@@ -477,7 +492,9 @@ class RedisCacheLayer(CacheLayer):
             try:  # pragma: no cover - import guarded for optional dependency
                 import redis  # type: ignore
             except Exception as exc:  # pragma: no cover - defensive import
-                raise RuntimeError("redis-py is required to initialise RedisCacheLayer") from exc
+                raise RuntimeError(
+                    "redis-py is required to initialise RedisCacheLayer"
+                ) from exc
             client = redis.Redis()
         self._client = client
         self._namespace = namespace.rstrip(":") or "tnfr:cache"
@@ -532,10 +549,14 @@ class RedisCacheLayer(CacheLayer):
                         valid = validator(payload, signature)
                     except Exception as exc:  # pragma: no cover - defensive
                         self.delete(name)
-                        raise TNFRSecurityError("signature validator raised an exception") from exc
+                        raise TNFRSecurityError(
+                            "signature validator raised an exception"
+                        ) from exc
                     if not valid:
                         self.delete(name)
-                        raise TNFRSecurityError(f"signature validation failed for cache entry {name!r}")
+                        raise TNFRSecurityError(
+                            f"signature validation failed for cache entry {name!r}"
+                        )
                 try:
                     return _decode_payload(mode, payload)
                 except Exception as exc:

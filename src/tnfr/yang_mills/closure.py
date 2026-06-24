@@ -17,10 +17,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping
 
-from .derivability import (
-    NonAbelianDerivabilityReport,
-    audit_nonabelian_derivability,
-)
+from .derivability import NonAbelianDerivabilityReport, audit_nonabelian_derivability
 from .scaling import FiniteScalingReport, run_finite_scaling_study
 
 
@@ -104,9 +101,7 @@ def classify_yang_mills_closure(
         "finite_mean_gap": scaling_report.summary.get("mean_gap"),
         "finite_group_count": scaling_report.summary.get("n_groups"),
         "all_self_adjoint": scaling_report.summary.get("all_self_adjoint"),
-        "all_gauge_invariant": scaling_report.summary.get(
-            "all_gauge_invariant"
-        ),
+        "all_gauge_invariant": scaling_report.summary.get("all_gauge_invariant"),
     }
     metadata = {
         "scope": "Y5_closure_obstruction_not_clay_proof",
@@ -191,9 +186,7 @@ def _established_results(
     if derivability_report.verdict == "OPEN_DERIVABILITY_GAP":
         results.append("Canonical gauge sector remains U(1) at this stage")
     if scaling_report.verdict == "GAP_COLLAPSE_OBSERVED":
-        results.append(
-            "At least one sampled finite family exhibits gap collapse"
-        )
+        results.append("At least one sampled finite family exhibits gap collapse")
     return tuple(results)
 
 

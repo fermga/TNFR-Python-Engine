@@ -140,22 +140,21 @@ from dataclasses import dataclass
 from typing import Any, MutableMapping, cast
 
 from .._compat import TypeAlias
-from ..errors import TNFRValueError
 from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
-from ..utils import CallbackEvent, callback_manager
 from ..constants import get_param
 from ..constants.aliases import (
     ALIAS_D2VF,
+    ALIAS_DEPI,
     ALIAS_DNFR,
     ALIAS_DSI,
     ALIAS_DVF,
-    ALIAS_DEPI,
     ALIAS_EPI,
     ALIAS_SI,
     ALIAS_VF,
 )
+from ..errors import TNFRValueError
 from ..glyph_history import append_metric, ensure_history
-from ..utils import clamp01
+from ..mathematics.unified_numerical import np
 from ..observers import (
     DEFAULT_GLYPH_LOAD_SPAN,
     DEFAULT_WBAR_SPAN,
@@ -176,18 +175,21 @@ from ..types import (
     TNFRGraph,
 )
 from ..utils import (
+    CallbackEvent,
+    callback_manager,
+    clamp01,
     ensure_node_index_map,
     get_logger,
     normalize_weights,
     resolve_chunk_size,
 )
-from ..mathematics.unified_numerical import np
 from .common import compute_coherence, min_max_range
 from .trig_cache import compute_theta_trig, get_trig_cache
 
 logger = get_logger(__name__)
 
 GLYPH_LOAD_STABILIZERS_KEY = "glyph_load_stabilizers"
+
 
 @dataclass
 class SimilarityInputs:
@@ -200,13 +202,18 @@ class SimilarityInputs:
     cos_vals: Sequence[float] | None = None
     sin_vals: Sequence[float] | None = None
 
+
 CoherenceMatrixDense = list[list[float]]
 CoherenceMatrixSparse = list[tuple[int, int, float]]
 CoherenceMatrixPayload = CoherenceMatrixDense | CoherenceMatrixSparse
-PhaseSyncWeights: TypeAlias = Sequence[float] | CoherenceMatrixSparse | CoherenceMatrixDense
+PhaseSyncWeights: TypeAlias = (
+    Sequence[float] | CoherenceMatrixSparse | CoherenceMatrixDense
+)
 
 SimilarityComponents = tuple[float, float, float, float]
-VectorizedComponents: TypeAlias = tuple[FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix]
+VectorizedComponents: TypeAlias = tuple[
+    FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix
+]
 ScalarOrArray: TypeAlias = float | FloatArray
 StabilityChunkArgs = tuple[
     Sequence[float],
@@ -234,6 +241,7 @@ MetricValue: TypeAlias = CoherenceMetric
 MetricProvider = Callable[[], MetricValue]
 MetricRecord: TypeAlias = tuple[MetricValue | MetricProvider, str]
 
+
 def _compute_wij_phase_epi_vf_si_vectorized(
     epi: FloatArray,
     vf: FloatArray,
@@ -252,11 +260,14 @@ def _compute_wij_phase_epi_vf_si_vectorized(
 
     epi_range = epi_range if epi_range > 0 else 1.0
     vf_range = vf_range if vf_range > 0 else 1.0
-    s_phase = 0.5 * (1.0 + cos_th[:, None] * cos_th[None, :] + sin_th[:, None] * sin_th[None, :])
+    s_phase = 0.5 * (
+        1.0 + cos_th[:, None] * cos_th[None, :] + sin_th[:, None] * sin_th[None, :]
+    )
     s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
     s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
     s_si = 1.0 - np.abs(si[:, None] - si[None, :])
     return s_phase, s_epi, s_vf, s_si
+
 
 def compute_wij_phase_epi_vf_si(
     inputs: SimilarityInputs,
@@ -482,6 +493,7 @@ def compute_wij_phase_epi_vf_si(
     s_si = 1.0 - abs(si_vals[i] - si_vals[j])
     return s_phase, s_epi, s_vf, s_si
 
+
 def _combine_similarity(
     s_phase: ScalarOrArray,
     s_epi: ScalarOrArray,
@@ -502,6 +514,7 @@ def _combine_similarity(
     if np is not None:
         return cast(FloatArray, np.clip(wij, 0.0, 1.0))
     return clamp01(wij)
+
 
 def _wij_components_weights(
     G: TNFRGraph,
@@ -544,6 +557,7 @@ def _wij_components_weights(
     si_w = wnorm["si"]
     return s_phase, s_epi, s_vf, s_si, phase_w, epi_w, vf_w, si_w
 
+
 def _wij_vectorized(
     G: TNFRGraph,
     nodes: Sequence[NodeId],
@@ -584,6 +598,7 @@ def _wij_vectorized(
         np.fill_diagonal(wij_matrix, 0.0)
     return wij_matrix
 
+
 def _compute_wij_value_raw(
     i: int,
     j: int,
@@ -610,13 +625,16 @@ def _compute_wij_value_raw(
     wij = phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
     return clamp01(wij)
 
+
 _PARALLEL_WIJ_DATA: ParallelWijPayload | None = None
+
 
 def _init_parallel_wij(data: ParallelWijPayload) -> None:
     """Store immutable state for parallel ``wij`` computation."""
 
     global _PARALLEL_WIJ_DATA
     _PARALLEL_WIJ_DATA = data
+
 
 def _parallel_wij_worker(
     pairs: Sequence[tuple[int, int]],
@@ -656,6 +674,7 @@ def _parallel_wij_worker(
         )
         for i, j in pairs
     ]
+
 
 def _wij_loops(
     G: TNFRGraph,
@@ -774,6 +793,7 @@ def _wij_loops(
                 wij[i][j] = wij[j][i] = value
     return wij
 
+
 def _compute_stats(
     values: Iterable[float] | Any,
     row_sum: Iterable[float] | Any,
@@ -817,6 +837,7 @@ def _compute_stats(
         Wi = [float(row_arr[i]) / denom for i in range(n)]
     return min_val, max_val, mean_val, Wi, count_val
 
+
 def _coherence_numpy(
     wij: Any,
     mode: str,
@@ -839,6 +860,7 @@ def _coherence_numpy(
         W = [(int(i), int(j), float(wij[i, j])) for i, j in zip(idx[0], idx[1])]
     return n, values, row_sum, W
 
+
 def _coherence_python_worker(
     args: tuple[Sequence[Sequence[float]], int, str, float],
 ) -> tuple[int, list[float], list[float], CoherenceMatrixSparse]:
@@ -860,6 +882,7 @@ def _coherence_python_worker(
         row_sum.append(total)
 
     return start, values, row_sum, sparse
+
 
 def _coherence_python(
     wij: Sequence[Sequence[float]],
@@ -922,7 +945,9 @@ def _coherence_python(
         results = [task.result() for task in tasks]
 
     results.sort(key=lambda item: item[0])
-    sparse_entries: list[tuple[int, int, float]] | None = [] if mode != "dense" else None
+    sparse_entries: list[tuple[int, int, float]] | None = (
+        [] if mode != "dense" else None
+    )
     for start, chunk_values, chunk_row_sum, chunk_sparse in results:
         values.extend(chunk_values)
         for offset, total in enumerate(chunk_row_sum):
@@ -933,8 +958,11 @@ def _coherence_python(
     if mode == "dense":
         W_dense: CoherenceMatrixDense = [list(row) for row in wij]
         return n, values, row_sum, W_dense
-    sparse_result: CoherenceMatrixSparse = sparse_entries if sparse_entries is not None else []
+    sparse_result: CoherenceMatrixSparse = (
+        sparse_entries if sparse_entries is not None else []
+    )
     return n, values, row_sum, sparse_result
+
 
 def _finalize_wij(
     G: TNFRGraph,
@@ -979,6 +1007,7 @@ def _finalize_wij(
     append_metric(hist, cfg.get("Wi_history_key", "W_i"), Wi)
     append_metric(hist, cfg.get("stats_history_key", "W_stats"), stats)
     return list(nodes), W
+
 
 def coherence_matrix(
     G: TNFRGraph,
@@ -1128,6 +1157,7 @@ def coherence_matrix(
         n_jobs=parallel_jobs if not use_np else 1,
     )
 
+
 def local_phase_sync_weighted(
     G: TNFRGraph,
     n: NodeId,
@@ -1142,7 +1172,9 @@ def local_phase_sync_weighted(
     sparse list of ``(i, j, w)`` tuples for the whole matrix.
     """
     if W_row is None or nodes_order is None:
-        raise TNFRValueError("nodes_order and W_row are required for weighted phase synchrony")
+        raise TNFRValueError(
+            "nodes_order and W_row are required for weighted phase synchrony"
+        )
 
     if node_to_index is None:
         node_to_index = ensure_node_index_map(G)
@@ -1232,6 +1264,7 @@ def local_phase_sync_weighted(
 
     return abs(num / den) if den else 0.0
 
+
 def local_phase_sync(G: TNFRGraph, n: NodeId) -> float:
     """Compute unweighted local phase synchronization for node ``n``."""
     nodes, W = coherence_matrix(G)
@@ -1239,12 +1272,14 @@ def local_phase_sync(G: TNFRGraph, n: NodeId) -> float:
         return 0.0
     return local_phase_sync_weighted(G, n, nodes_order=nodes, W_row=W)
 
+
 def _coherence_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
     del ctx
 
     if not get_param(G, "COHERENCE").get("enabled", True):
         return
     coherence_matrix(G)
+
 
 def register_coherence_callbacks(G: TNFRGraph) -> None:
     """Attach coherence matrix maintenance to the ``AFTER_STEP`` event."""
@@ -1256,9 +1291,11 @@ def register_coherence_callbacks(G: TNFRGraph) -> None:
         name="coherence_step",
     )
 
+
 # ---------------------------------------------------------------------------
 # Coherence and observer-related metric updates
 # ---------------------------------------------------------------------------
+
 
 def _record_metrics(
     hist: HistoryState,
@@ -1274,6 +1311,7 @@ def _record_metrics(
             append_metric(metrics, key, provider())
         else:
             append_metric(metrics, key, payload)
+
 
 def _update_coherence(G: TNFRGraph, hist: HistoryState) -> None:
     """Update network coherence and related means."""
@@ -1297,6 +1335,7 @@ def _update_coherence(G: TNFRGraph, hist: HistoryState) -> None:
         wbar = sum(cs[-w:]) / w
         _record_metrics(hist, (wbar, "W_bar"))
 
+
 def _update_phase_sync(G: TNFRGraph, hist: HistoryState) -> None:
     """Capture phase synchrony and Kuramoto order."""
 
@@ -1307,6 +1346,7 @@ def _update_phase_sync(G: TNFRGraph, hist: HistoryState) -> None:
         (ps, "phase_sync"),
         (ko, "kuramoto_R"),
     )
+
 
 def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
     """Record glyph load and associated Σ⃗ vector."""
@@ -1339,6 +1379,7 @@ def _update_sigma(G: TNFRGraph, hist: HistoryState) -> None:
         (sig.get("mag", 0.0), "sense_sigma_mag"),
         (sig.get("angle", 0.0), "sense_sigma_angle"),
     )
+
 
 def _stability_chunk_worker(args: StabilityChunkArgs) -> StabilityChunkResult:
     """Compute stability aggregates for a chunk of nodes."""
@@ -1383,7 +1424,10 @@ def _stability_chunk_worker(args: StabilityChunkArgs) -> StabilityChunkResult:
         B_vals.append(B)
         B_sum += B
 
-        if abs(float(dnfr_vals[idx])) <= eps_dnfr and abs(float(depi_vals[idx])) <= eps_depi:
+        if (
+            abs(float(dnfr_vals[idx])) <= eps_dnfr
+            and abs(float(depi_vals[idx])) <= eps_depi
+        ):
             stable += 1
 
     chunk_len = len(si_curr_vals)
@@ -1396,6 +1440,7 @@ def _stability_chunk_worker(args: StabilityChunkArgs) -> StabilityChunkResult:
         dvf_dt_vals,
         B_vals,
     )
+
 
 def _track_stability(
     G: TNFRGraph,
@@ -1541,7 +1586,9 @@ def _track_stability(
                     eps_dnfr,
                     eps_depi,
                 )
-                futures.append((start, executor.submit(_stability_chunk_worker, chunk_args)))
+                futures.append(
+                    (start, executor.submit(_stability_chunk_worker, chunk_args))
+                )
 
             for start, fut in futures:
                 chunk_results.append((start, fut.result()))
@@ -1604,7 +1651,10 @@ def _track_stability(
             B_vals_all.append(B_val)
             B_sum += B_val
 
-            if abs(float(dnfr_list[idx])) <= eps_dnfr and abs(float(depi_list[idx])) <= eps_depi:
+            if (
+                abs(float(dnfr_list[idx])) <= eps_dnfr
+                and abs(float(depi_list[idx])) <= eps_depi
+            ):
                 stable_total += 1
 
         total = len(delta_vals_all)
@@ -1631,6 +1681,7 @@ def _track_stability(
         set_attr(nd, ALIAS_DVF, dvf_dt_val)
         set_attr(nd, ALIAS_D2VF, float(B_vals_all[idx]))
 
+
 def _si_chunk_stats(
     values: Sequence[float], si_hi: float, si_lo: float
 ) -> tuple[float, int, int, int]:
@@ -1654,6 +1705,7 @@ def _si_chunk_stats(
         if s <= si_lo:
             lo_count += 1
     return total, count, hi_count, lo_count
+
 
 def _aggregate_si(
     G: TNFRGraph,
@@ -1716,7 +1768,9 @@ def _aggregate_si(
             with ProcessPoolExecutor(max_workers=n_jobs) as executor:
                 for idx in range(0, len(sis), chunk_size):
                     chunk = sis[idx : idx + chunk_size]
-                    futures.append(executor.submit(_si_chunk_stats, chunk, si_hi, si_lo))
+                    futures.append(
+                        executor.submit(_si_chunk_stats, chunk, si_hi, si_lo)
+                    )
             totals = [future.result() for future in futures]
             total = sum(part[0] for part in totals)
             count = sum(part[1] for part in totals)
@@ -1735,6 +1789,7 @@ def _aggregate_si(
             hist["Si_lo_frac"].append(0.0)
     except (KeyError, AttributeError, TypeError) as exc:
         logger.debug("Si aggregation failed: %s", exc)
+
 
 def compute_global_coherence(G: TNFRGraph) -> float:
     """Compute the dispersion-based auxiliary coherence (scale-invariant).
@@ -1812,7 +1867,9 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     True
     """
     # Collect all ΔNFR values
-    dnfr_values = [cast(float, get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()]
+    dnfr_values = [
+        cast(float, get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()
+    ]
 
     if not dnfr_values or all(v == 0 for v in dnfr_values):
         return 1.0  # Perfect coherence when no reorganization pressure
@@ -1839,6 +1896,7 @@ def compute_global_coherence(G: TNFRGraph) -> float:
     if np is not None:
         return float(np.clip(C_t, 0.0, 1.0))
     return max(0.0, min(1.0, C_t))
+
 
 def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
     """Compute local dispersion-based coherence for a node neighborhood.
@@ -1913,10 +1971,14 @@ def compute_local_coherence(G: TNFRGraph, node: Any, radius: int = 1) -> float:
     if radius == 1:
         neighbors = set(G.neighbors(node)) | {node}
     else:
-        neighbors = set(nx.single_source_shortest_path_length(G, node, cutoff=radius).keys())
+        neighbors = set(
+            nx.single_source_shortest_path_length(G, node, cutoff=radius).keys()
+        )
 
     # Collect ΔNFR for neighborhood
-    dnfr_values = [cast(float, get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in neighbors]
+    dnfr_values = [
+        cast(float, get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in neighbors
+    ]
 
     if not dnfr_values or all(v == 0 for v in dnfr_values):
         return 1.0

@@ -6,23 +6,16 @@ import logging
 import math
 from collections import deque
 from collections.abc import Collection, Iterable, Mapping, Sequence
-from numbers import Real
 from itertools import chain, islice
-from typing import (
-    Any,
-    Callable,
-    Iterable as TypingIterable,
-    Iterator,
-    Literal,
-    TypeVar,
-    cast,
-    overload,
-)
+from numbers import Real
+from typing import Any, Callable
+from typing import Iterable as TypingIterable
+from typing import Iterator, Literal, TypeVar, cast, overload
 
 from ..errors import TNFRValueError
-from .numeric import kahan_sum_nd
 from .init import get_logger
 from .init import warn_once as _warn_once_factory
+from .numeric import kahan_sum_nd
 
 T = TypeVar("T")
 
@@ -49,6 +42,7 @@ __all__ = (
     "normalize_counter",
     "mix_groups",
 )
+
 
 def convert_value(
     value: Any,
@@ -77,7 +71,7 @@ def convert_value(
             raise TNFRValueError(
                 f"Non-finite value {converted!r} for {target}",
                 context={"value": converted, "key": key},
-                suggestion="Ensure value is finite."
+                suggestion="Ensure value is finite.",
             )
         level = log_level if log_level is not None else logging.DEBUG
         if key is not None:
@@ -87,7 +81,9 @@ def convert_value(
         return False, None
     return True, converted
 
+
 _DEFAULT_SENTINELS = frozenset({"auto", "none", "null"})
+
 
 def normalize_optional_int(
     value: Any,
@@ -129,9 +125,10 @@ def normalize_optional_int(
         if not text:
             if strict:
                 raise TNFRValueError(
-                    error_message or "Empty value is not allowed for configuration options.",
+                    error_message
+                    or "Empty value is not allowed for configuration options.",
                     context={"value": value},
-                    suggestion="Provide a non-empty value."
+                    suggestion="Provide a non-empty value.",
                 )
             return None
         sentinel_set: set[str] | None = None
@@ -147,32 +144,38 @@ def normalize_optional_int(
                 raise TNFRValueError(
                     error_message or f"Invalid integer value: {value!r}",
                     context={"value": value, "original_error": str(exc)},
-                    suggestion="Provide a valid integer."
+                    suggestion="Provide a valid integer.",
                 ) from exc
             return None
 
     if not allow_non_positive and result <= 0:
         if strict:
             raise TNFRValueError(
-                error_message or "Non-positive values are not permitted for this option.",
+                error_message
+                or "Non-positive values are not permitted for this option.",
                 context={"value": result},
-                suggestion="Provide a positive integer."
+                suggestion="Provide a positive integer.",
             )
         return None
 
     return result
+
 
 def negative_weights_warn_once(
     *, maxsize: int = _MAX_NEGATIVE_WARN_ONCE
 ) -> Callable[[Mapping[str, float]], None]:
     """Return a ``WarnOnce`` callable for negative weight warnings."""
 
-    return _warn_once_factory(_collections_logger, NEGATIVE_WEIGHTS_MSG, maxsize=maxsize)
+    return _warn_once_factory(
+        _collections_logger, NEGATIVE_WEIGHTS_MSG, maxsize=maxsize
+    )
+
 
 def _log_negative_weights(negatives: Mapping[str, float]) -> None:
     """Log negative weight warnings without deduplicating keys."""
 
     _collections_logger.warning(NEGATIVE_WEIGHTS_MSG, negatives)
+
 
 def _resolve_negative_warn_handler(
     warn_once: bool | Callable[[Mapping[str, float]], None],
@@ -185,10 +188,12 @@ def _resolve_negative_warn_handler(
         return negative_weights_warn_once()
     return _log_negative_weights
 
+
 def is_non_string_sequence(obj: Any) -> bool:
     """Return ``True`` if ``obj`` is an ``Iterable`` but not string-like or a mapping."""
 
     return isinstance(obj, Iterable) and not isinstance(obj, (*STRING_TYPES, Mapping))
+
 
 def flatten_structure(
     obj: Any,
@@ -216,8 +221,10 @@ def flatten_structure(
         else:
             yield item
 
+
 MAX_MATERIALIZE_DEFAULT: int = 1000
 """Default materialization limit used by :func:`ensure_collection`."""
+
 
 def normalize_materialize_limit(max_materialize: int | None) -> int | None:
     """Normalize and validate ``max_materialize`` returning a usable limit."""
@@ -229,9 +236,10 @@ def normalize_materialize_limit(max_materialize: int | None) -> int | None:
         raise TNFRValueError(
             "'max_materialize' must be non-negative",
             context={"max_materialize": max_materialize},
-            suggestion="Provide a non-negative integer or None."
+            suggestion="Provide a non-negative integer or None.",
         )
     return limit
+
 
 @overload
 def ensure_collection(
@@ -242,6 +250,7 @@ def ensure_collection(
     return_view: Literal[False] = False,
 ) -> Collection[T]: ...
 
+
 @overload
 def ensure_collection(
     it: Iterable[T],
@@ -250,6 +259,7 @@ def ensure_collection(
     error_msg: str | None = None,
     return_view: Literal[True],
 ) -> tuple[Collection[T], TypingIterable[T]]: ...
+
 
 def ensure_collection(
     it: Iterable[T],
@@ -309,7 +319,7 @@ def ensure_collection(
             raise TNFRValueError(
                 msg,
                 context={"limit": limit, "count": len(preview), "examples": examples},
-                suggestion="Increase max_materialize or filter the iterable."
+                suggestion="Increase max_materialize or filter the iterable.",
             )
         if not preview:
             return (), iterator
@@ -329,9 +339,10 @@ def ensure_collection(
         raise TNFRValueError(
             msg,
             context={"limit": limit, "count": len(items), "examples": examples},
-            suggestion="Increase max_materialize or filter the iterable."
+            suggestion="Increase max_materialize or filter the iterable.",
         )
     return items
+
 
 def _convert_and_validate_weights(
     dict_like: Mapping[str, Any],
@@ -366,7 +377,7 @@ def _convert_and_validate_weights(
             raise TNFRValueError(
                 NEGATIVE_WEIGHTS_MSG % negatives,
                 context={"negative_weights": negatives},
-                suggestion="Ensure all weights are non-negative."
+                suggestion="Ensure all weights are non-negative.",
             )
         warn_negative = _resolve_negative_warn_handler(warn_once)
         warn_negative(negatives)
@@ -375,6 +386,7 @@ def _convert_and_validate_weights(
             total -= weight
 
     return weights, keys_list, total
+
 
 def normalize_weights(
     dict_like: Mapping[str, Any],
@@ -402,6 +414,7 @@ def normalize_weights(
         return {k: uniform for k in keys_list}
     return {k: w / total for k, w in weights.items()}
 
+
 def normalize_counter(
     counts: Mapping[str, float | int],
 ) -> tuple[dict[str, float], float]:
@@ -412,6 +425,7 @@ def normalize_counter(
         return {}, 0
     dist = {k: v / total for k, v in counts.items() if v}
     return dist, total
+
 
 def mix_groups(
     dist: Mapping[str, float],

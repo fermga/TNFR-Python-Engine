@@ -67,8 +67,8 @@ from typing import Any, Sequence
 from ..mathematics.unified_numerical import np
 
 try:
-    from ..mathematics.dynamics import ContractiveDynamicsEngine
     from ..mathematics.backend import ensure_numpy, get_backend
+    from ..mathematics.dynamics import ContractiveDynamicsEngine
 except ImportError:  # pragma: no cover
     ContractiveDynamicsEngine = None  # type: ignore[assignment,misc]
     ensure_numpy = None  # type: ignore[assignment]
@@ -84,6 +84,7 @@ _STRONG_DISSIPATION_THRESHOLD = 0.2
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class DissipativeSnapshot:
@@ -111,6 +112,7 @@ class DissipativeSnapshot:
     purity: float
     von_neumann_entropy: float
     eigenvalues: Any  # np.ndarray
+
 
 @dataclass(frozen=True)
 class DissipativeBalance:
@@ -162,6 +164,7 @@ class DissipativeBalance:
     contractivity_gap: float
     is_contractive: bool
 
+
 @dataclass
 class DissipativeTimeSeries:
     """Full time-series of dissipative conservation diagnostics.
@@ -200,9 +203,11 @@ class DissipativeTimeSeries:
             return 0.0
         return self.entropy[-1] - self.entropy[0]
 
+
 # ---------------------------------------------------------------------------
 # Core computations
 # ---------------------------------------------------------------------------
+
 
 def _steady_state_from_generator(generator: Any, dim: int) -> np.ndarray:
     """Extract the steady-state density operator from a Lindblad generator.
@@ -221,8 +226,10 @@ def _steady_state_from_generator(generator: Any, dim: int) -> np.ndarray:
         )
     return rho_ss / trace_val
 
+
 # Public alias
 steady_state_from_generator = _steady_state_from_generator
+
 
 def _safe_log(x: float) -> float:
     """Compute log(x) safely, returning 0 for x ≤ 0."""
@@ -230,9 +237,11 @@ def _safe_log(x: float) -> float:
         return 0.0
     return math.log(x)
 
+
 def _as_complex(matrix: Any) -> np.ndarray:
     """Coerce to complex128 ndarray (single conversion point)."""
     return np.asarray(matrix, dtype=np.complex128)
+
 
 def _collapse_norms_sq(collapse_operators: Sequence[Any]) -> float:
     """Sum of squared Frobenius norms: Σ_k ‖L_k‖_F²."""
@@ -240,6 +249,7 @@ def _collapse_norms_sq(collapse_operators: Sequence[Any]) -> float:
         float(np.linalg.norm(_as_complex(L), ord="fro") ** 2)
         for L in collapse_operators
     )
+
 
 def capture_dissipative_snapshot(density: Any) -> DissipativeSnapshot:
     """Capture structural invariants of a density operator.
@@ -261,9 +271,7 @@ def capture_dissipative_snapshot(density: Any) -> DissipativeSnapshot:
     eigenvalues = np.linalg.eigvalsh(rho)
     # Von Neumann entropy: S = -Σ λ_k ln(λ_k)
     entropy = -sum(
-        float(ev) * _safe_log(float(ev))
-        for ev in eigenvalues
-        if float(ev) > 0
+        float(ev) * _safe_log(float(ev)) for ev in eigenvalues if float(ev) > 0
     )
 
     return DissipativeSnapshot(
@@ -273,6 +281,7 @@ def capture_dissipative_snapshot(density: Any) -> DissipativeSnapshot:
         von_neumann_entropy=entropy,
         eigenvalues=eigenvalues,
     )
+
 
 def compute_dissipation_bound(
     collapse_operators: Sequence[Any],
@@ -303,6 +312,7 @@ def compute_dissipation_bound(
         Upper bound on |D[ρ]|.
     """
     return _collapse_norms_sq(collapse_operators) * max(0.0, 1.0 - purity)
+
 
 def compute_dissipator_action(
     density: Any,
@@ -335,6 +345,7 @@ def compute_dissipator_action(
         result -= 0.5 * (L_dag_L @ rho + rho @ L_dag_L)
 
     return result
+
 
 def compute_purity_decay_bound(
     collapse_operators: Sequence[Any],
@@ -369,11 +380,18 @@ def compute_purity_decay_bound(
     purity = float(np.trace(rho @ rho).real)
 
     # Bound on purity decay rate
-    return 2.0 * _collapse_norms_sq(collapse_operators) * purity * max(0.0, 1.0 - purity / dim)
+    return (
+        2.0
+        * _collapse_norms_sq(collapse_operators)
+        * purity
+        * max(0.0, 1.0 - purity / dim)
+    )
+
 
 # ---------------------------------------------------------------------------
 # Dissipative balance (two-snapshot comparison)
 # ---------------------------------------------------------------------------
+
 
 def verify_dissipative_balance(
     before: DissipativeSnapshot,
@@ -456,9 +474,11 @@ def verify_dissipative_balance(
         is_contractive=is_contr,
     )
 
+
 # ---------------------------------------------------------------------------
 # Dissipative conservation tracker
 # ---------------------------------------------------------------------------
+
 
 class DissipativeConservationTracker:
     """Track conservation law compliance throughout a Lindblad trajectory.
@@ -538,13 +558,17 @@ class DissipativeConservationTracker:
             t_prev, snap_prev = self._snapshots[-2]
             dt = t - t_prev if t != t_prev else 1.0
             bal = verify_dissipative_balance(
-                snap_prev, snap, dt=dt,
+                snap_prev,
+                snap,
+                dt=dt,
                 collapse_operators=self._collapse_operators or None,
                 steady_state=self._steady_state,
             )
             td, pdr, epr, db, cg = (
-                bal.trace_drift, bal.purity_decay_rate,
-                bal.entropy_production_rate, bal.dissipation_bound,
+                bal.trace_drift,
+                bal.purity_decay_rate,
+                bal.entropy_production_rate,
+                bal.dissipation_bound,
                 bal.contractivity_gap,
             )
         else:
@@ -614,14 +638,18 @@ class DissipativeConservationTracker:
         t_curr, snap_curr = self._snapshots[-1]
         dt = t_curr - t_prev if t_curr != t_prev else 1.0
         return verify_dissipative_balance(
-            snap_prev, snap_curr, dt=dt,
+            snap_prev,
+            snap_curr,
+            dt=dt,
             collapse_operators=self._collapse_operators or None,
             steady_state=self._steady_state,
         )
 
+
 # ---------------------------------------------------------------------------
 # Analytical predictions for specific models
 # ---------------------------------------------------------------------------
+
 
 def predict_amplitude_damping_purity(
     initial_purity: float,
@@ -662,6 +690,7 @@ def predict_amplitude_damping_purity(
     # P(t) ≈ 1 - (1 - P(0)) · e^{-γt} for weak mixing
     return 1.0 - (1.0 - initial_purity) * decay
 
+
 def predict_dephasing_purity(
     initial_density: Any,
     gamma: float,
@@ -695,14 +724,15 @@ def predict_dephasing_purity(
     decay = math.exp(-gamma * time)
     diag_purity = sum(float(abs(rho[i, i]) ** 2) for i in range(dim))
     offdiag_purity = sum(
-        float(abs(rho[i, j]) ** 2)
-        for i in range(dim) for j in range(dim) if i != j
+        float(abs(rho[i, j]) ** 2) for i in range(dim) for j in range(dim) if i != j
     )
     return diag_purity + offdiag_purity * decay
+
 
 # ---------------------------------------------------------------------------
 # Dissipation rate analysis
 # ---------------------------------------------------------------------------
+
 
 def analyze_dissipation_rates(
     generator: Any,
@@ -776,9 +806,11 @@ def analyze_dissipation_rates(
         "n_oscillating_modes": n_oscillating,
     }
 
+
 # ---------------------------------------------------------------------------
 # Connection to TNFR grammar
 # ---------------------------------------------------------------------------
+
 
 def classify_dissipative_regime(
     balance: DissipativeBalance,
@@ -805,9 +837,14 @@ def classify_dissipative_regime(
     purity_loss = max(0.0, balance.purity_before - balance.purity_after)
     entropy_gain = max(0.0, balance.entropy_after - balance.entropy_before)
 
-    if purity_loss < _WEAK_DISSIPATION_THRESHOLD and entropy_gain < _WEAK_DISSIPATION_THRESHOLD:
+    if (
+        purity_loss < _WEAK_DISSIPATION_THRESHOLD
+        and entropy_gain < _WEAK_DISSIPATION_THRESHOLD
+    ):
         regime = "weak_dissipation"
-        grammar = "U2 approximately satisfied — stabilizers nearly balance destabilizers"
+        grammar = (
+            "U2 approximately satisfied — stabilizers nearly balance destabilizers"
+        )
         interpretation = (
             "Near-conservative evolution; structural charge approximately conserved. "
             "Lindblad collapse operators are weak relative to Hamiltonian dynamics."
@@ -844,6 +881,7 @@ def classify_dissipative_regime(
         "conservation_quality": max(0.0, min(1.0, quality)),
         "structural_interpretation": interpretation,
     }
+
 
 # ---------------------------------------------------------------------------
 # Public API

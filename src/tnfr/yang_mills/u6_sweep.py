@@ -16,14 +16,8 @@ from typing import Any, Iterable
 from ..constants.canonical import PHI
 from ..mathematics.unified_numerical import np
 from ..physics.canonical import compute_structural_potential
-from ..physics.gauge import (
-    compute_gauge_curvature,
-    compute_yang_mills_equations,
-)
-from .structural_gap import (
-    build_structural_gauge_graph,
-    compute_structural_gauge_gap,
-)
+from ..physics.gauge import compute_gauge_curvature, compute_yang_mills_equations
+from .structural_gap import build_structural_gauge_graph, compute_structural_gauge_gap
 
 
 @dataclass(frozen=True)
@@ -113,14 +107,10 @@ def run_u6_confinement_sweep(
                     )
                     ym_eq = compute_yang_mills_equations(graph)
                     curvature = compute_gauge_curvature(graph)
-                    curv_abs = [
-                        abs(float(value)) for value in curvature.values()
-                    ]
+                    curv_abs = [abs(float(value)) for value in curvature.values()]
                     mean_abs_curv = _mean(curv_abs)
                     max_abs_curv = max(curv_abs, default=0.0)
-                    max_abs_phi_s = float(
-                        result.metadata.get("max_abs_phi_s", 0.0)
-                    )
+                    max_abs_phi_s = float(result.metadata.get("max_abs_phi_s", 0.0))
                     observed_ratio = max_abs_phi_s / PHI if PHI else 0.0
 
                     point_metadata = dict(result.metadata)
@@ -159,12 +149,8 @@ def run_u6_confinement_sweep(
                                     0.0,
                                 )
                             ),
-                            mean_yang_mills_residual=float(
-                                ym_eq.mean_residual
-                            ),
-                            max_yang_mills_residual=float(
-                                ym_eq.max_residual
-                            ),
+                            mean_yang_mills_residual=float(ym_eq.mean_residual),
+                            max_yang_mills_residual=float(ym_eq.max_residual),
                             mean_abs_curvature=float(mean_abs_curv),
                             max_abs_curvature=float(max_abs_curv),
                             curvature_active=bool(max_abs_curv > tolerance),
@@ -255,9 +241,7 @@ def _summarise_points(
     confined = tuple(point for point in points if point.u6_confined)
     unconfined = tuple(point for point in points if not point.u6_confined)
     positive = tuple(point for point in points if point.gap > eigen_tolerance)
-    curvature_active = tuple(
-        point for point in points if point.curvature_active
-    )
+    curvature_active = tuple(point for point in points if point.curvature_active)
 
     return {
         "n_points": len(points),

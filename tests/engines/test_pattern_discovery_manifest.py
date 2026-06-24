@@ -142,7 +142,9 @@ def test_sdk_wrapper_accepts_pattern_discovery_manifests(sample_network):
             # Expected if manifest format doesn't match CLI runner expectations
             # This is acceptable - the SDK wrapper correctly passed the parameters
             if "entries" in str(e):
-                pytest.skip("CLI runner expects 'entries' format - integration test requires format alignment")
+                pytest.skip(
+                    "CLI runner expects 'entries' format - integration test requires format alignment"
+                )
             else:
                 raise
 
@@ -167,7 +169,7 @@ def test_manifest_telemetry_includes_coherence(sample_network):
         # Check telemetry fields
         assert "telemetry" in manifest
         telemetry = manifest["telemetry"]
-        
+
         # Coherence and sense_index should be present (may be None if physics unavailable)
         assert "coherence" in telemetry
         assert "sense_index" in telemetry

@@ -13,7 +13,7 @@ Examples
 Crisis Intervention: Health 0.786
 """
 
-from .cookbook import TNFRCookbook, CookbookRecipe, RecipeVariation
+from .cookbook import CookbookRecipe, RecipeVariation, TNFRCookbook
 
 __all__ = [
     "TNFRCookbook",

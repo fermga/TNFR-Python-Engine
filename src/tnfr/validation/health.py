@@ -46,6 +46,7 @@ from .aggregator import run_structural_validation
 
 __all__ = ["compute_structural_health"]
 
+
 def compute_structural_health(
     G: Any,
     *,

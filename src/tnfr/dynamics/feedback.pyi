@@ -1,7 +1,8 @@
 """Type stubs for tnfr.dynamics.feedback module."""
 
 from typing import Any
-from ..types import TNFRGraph, NodeId
+
+from ..types import NodeId, TNFRGraph
 
 class StructuralFeedbackLoop:
     G: TNFRGraph

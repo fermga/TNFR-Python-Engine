@@ -160,12 +160,18 @@ def _assign_nu_f(
         vf = np.full(len(nodes), base, dtype=float)
     elif mode == "prime":
         vf = np.array(
-            [base + amp if int(labels[i]) in prime_labels else base for i in range(len(nodes))],
+            [
+                base + amp if int(labels[i]) in prime_labels else base
+                for i in range(len(nodes))
+            ],
             dtype=float,
         )
     elif mode == "prime-shuffled":
         raw = np.array(
-            [base + amp if int(labels[i]) in prime_labels else base for i in range(len(nodes))],
+            [
+                base + amp if int(labels[i]) in prime_labels else base
+                for i in range(len(nodes))
+            ],
             dtype=float,
         )
         rng = np.random.default_rng(seed)
@@ -221,9 +227,7 @@ def _carrier_vf(
     if kind == "uniform":
         vf = np.full(n, base, dtype=float)
     elif kind == "prime":
-        ind = np.array(
-            [int(labels[i]) in prime_labels for i in range(n)], dtype=float
-        )
+        ind = np.array([int(labels[i]) in prime_labels for i in range(n)], dtype=float)
         vf = base + amp * ind
     elif kind == "arbitrary":
         # a random subset of the SAME cardinality as the primes, with NO
@@ -338,8 +342,7 @@ def run_trial(n_nodes: int, seed: int) -> None:
         r_phi = _pearson(np.abs(obs["phi_s"]), contrast)
         r_jd = _pearson(np.abs(obs["j_dnfr"]), contrast)
         print(
-            f"  {kind:<11} {r_div:>9.4f} {r_cur:>10.4f} "
-            f"{r_phi:>8.4f} {r_jd:>8.4f}"
+            f"  {kind:<11} {r_div:>9.4f} {r_cur:>10.4f} " f"{r_phi:>8.4f} {r_jd:>8.4f}"
         )
     print()
 

@@ -10,15 +10,18 @@ consistent with TNFR semantics:
 Note: These are TNFR-native patterns, not SM postulates. They provide
 coherent-form prototypes to compare tetrad metrics and topological invariants.
 """
+
 from __future__ import annotations
 
 import math
 
-from ..constants.canonical import DELTA_PHI_MAX
-from ..mathematics.unified_numerical import np
 import networkx as nx
 
+from ..constants.canonical import DELTA_PHI_MAX
+from ..mathematics.unified_numerical import np
+
 _TWO_PI = 2.0 * math.pi
+
 
 def _wrap_2pi(x: float) -> float:
     # map real to [0, 2π)
@@ -26,6 +29,7 @@ def _wrap_2pi(x: float) -> float:
     if y < 0.0:
         y += _TWO_PI
     return float(y)
+
 
 def _set_baseline(G: nx.Graph, base_dnfr: float = 0.05) -> None:
     for n in G.nodes():
@@ -35,12 +39,14 @@ def _set_baseline(G: nx.Graph, base_dnfr: float = 0.05) -> None:
         G.nodes[n]["dnfr"] = float(base_dnfr)
         G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(base_dnfr))
 
+
 def reset_baseline(G: nx.Graph, base_dnfr: float = 0.05) -> nx.Graph:
     """Reset all per-node telemetry to a mild baseline.
     Returns the graph for chaining.
     """
     _set_baseline(G, base_dnfr=base_dnfr)
     return G
+
 
 def apply_plane_wave(G: nx.Graph, kx: float = 0.25, ky: float = 0.0) -> None:
     """Photon-like: coherent propagating phase front (Q≈0, K_φ≈0)."""
@@ -53,6 +59,7 @@ def apply_plane_wave(G: nx.Graph, kx: float = 0.25, ky: float = 0.0) -> None:
         phi = _wrap_2pi(kx * i + ky * j)
         G.nodes[n]["theta"] = float(phi)
         G.nodes[n]["phase"] = float(phi)
+
 
 def apply_vortex(
     G: nx.Graph,
@@ -87,6 +94,7 @@ def apply_vortex(
         G.nodes[n]["dnfr"] = float(dnfr)
         G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
     return (cx, cy)
+
 
 def apply_helical_packet(
     G: nx.Graph,
@@ -129,6 +137,7 @@ def apply_helical_packet(
         G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
     return (cx, cy)
 
+
 def apply_global_curvature(G: nx.Graph, a: float = 1e-3) -> None:
     """Graviton-like: very weak global curvature
     (small K_φ, large ξ_C).
@@ -141,6 +150,7 @@ def apply_global_curvature(G: nx.Graph, a: float = 1e-3) -> None:
         phi = _wrap_2pi(a * (i * i + j * j))
         G.nodes[n]["theta"] = float(phi)
         G.nodes[n]["phase"] = float(phi)
+
 
 def apply_scalar_bump(
     G: nx.Graph,
@@ -178,6 +188,7 @@ def apply_scalar_bump(
         G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
     return (cx, cy)
 
+
 def apply_quark_triplet_cluster(
     G: nx.Graph,
     centers: list[tuple[int, int]] | None = None,
@@ -204,6 +215,7 @@ def apply_quark_triplet_cluster(
         apply_vortex(G, center=c, dnfr_core=dnfr_core, decay=decay)
     return centers
 
+
 def apply_neutrino_like(G: nx.Graph, eps: float = 0.03) -> None:
     """Neutrino-like: faint mode (very low |∇φ|, Q≈0) with weak
     footprint in K_φ.
@@ -216,6 +228,7 @@ def apply_neutrino_like(G: nx.Graph, eps: float = 0.03) -> None:
         phi = _wrap_2pi(eps * (i + j))
         G.nodes[n]["theta"] = float(phi)
         G.nodes[n]["phase"] = float(phi)
+
 
 def apply_color_domain_lattice(
     G: nx.Graph,
@@ -245,6 +258,7 @@ def apply_color_domain_lattice(
         G.nodes[n]["dnfr"] = float(dnfr)
         G.nodes[n]["coherence"] = 1.0 / (1.0 + abs(dnfr))
 
+
 __all__ = [
     "reset_baseline",
     "apply_plane_wave",
@@ -258,6 +272,7 @@ __all__ = [
 ]
 
 # --- Element-like radial pattern (centralization) ---------------------------
+
 
 def build_element_radial_pattern(Z: int, *, seed: int = 42) -> nx.Graph:
     """Build a simple TNFR element-like radial graph for atomic number Z.
@@ -318,6 +333,7 @@ def build_element_radial_pattern(Z: int, *, seed: int = 42) -> nx.Graph:
 
     # Seeded attributes
     import random as _random
+
     rng = _random.Random(seed)
     for i in G.nodes():
         G.nodes[i]["phase"] = float(2.0 * math.pi * rng.random())
@@ -328,5 +344,6 @@ def build_element_radial_pattern(Z: int, *, seed: int = 42) -> nx.Graph:
         G.nodes[r]["role"] = "shell2"
 
     return G
+
 
 __all__.append("build_element_radial_pattern")

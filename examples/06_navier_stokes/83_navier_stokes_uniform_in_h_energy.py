@@ -53,12 +53,10 @@ remains OPEN.
 from __future__ import annotations
 
 import time
+
 import numpy as np
 
-from tnfr.navier_stokes import (
-    TNFRNavierStokesOperator,
-    build_torus_graph_3d,
-)
+from tnfr.navier_stokes import TNFRNavierStokesOperator, build_torus_graph_3d
 
 # ---------------------------------------------------------------------------
 # Configuration (kept aligned with N7 so the two studies share the same
@@ -97,9 +95,7 @@ def run_resolution(n: int) -> dict:
     scale = h ** (3 - 2)  # = h
 
     t0 = time.perf_counter()
-    budget = op.leray_budget(
-        dt=DT, steps=STEPS, advection=True, incompressible=True
-    )
+    budget = op.leray_budget(dt=DT, steps=STEPS, advection=True, incompressible=True)
     elapsed = time.perf_counter() - t0
 
     E0 = float(budget["energy"][0])
@@ -113,9 +109,9 @@ def run_resolution(n: int) -> dict:
     diss_phys = budget["dissipation"] * scale
     cum_diss_phys = np.zeros_like(diss_phys)
     for k in range(1, len(diss_phys)):
-        cum_diss_phys[k] = cum_diss_phys[k - 1] + 0.5 * (
-            diss_phys[k] + diss_phys[k - 1]
-        ) * DT
+        cum_diss_phys[k] = (
+            cum_diss_phys[k - 1] + 0.5 * (diss_phys[k] + diss_phys[k - 1]) * DT
+        )
     cum_budget_phys = E0 - budget["energy"] - cum_diss_phys
     min_budget_phys = float(np.min(cum_budget_phys))
     max_div = float(np.max(budget["divergence"]))
@@ -241,10 +237,14 @@ def main() -> None:
 
     # C4: every observable finite and non-negative where physical.
     c4_pass = all(
-        np.isfinite(r["E0"]) and r["E0"] >= 0
-        and np.isfinite(r["E_T"]) and r["E_T"] >= 0
-        and np.isfinite(r["sup_D_phys"]) and r["sup_D_phys"] >= 0
-        and np.isfinite(r["int_D_phys"]) and r["int_D_phys"] >= 0
+        np.isfinite(r["E0"])
+        and r["E0"] >= 0
+        and np.isfinite(r["E_T"])
+        and r["E_T"] >= 0
+        and np.isfinite(r["sup_D_phys"])
+        and r["sup_D_phys"] >= 0
+        and np.isfinite(r["int_D_phys"])
+        and r["int_D_phys"] >= 0
         for r in rows
     )
     print(

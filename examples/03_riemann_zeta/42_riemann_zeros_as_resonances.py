@@ -82,8 +82,10 @@ def main() -> None:
 
     section("2) Agreement on Re(s) > 1  (prime ladder vs continuation)")
     spectrum = build_prime_ladder_spectrum(n_primes=5000, max_power=15)
-    print(f"Built prime-ladder spectrum: {spectrum.n_primes} primes, "
-          f"max_power={spectrum.max_power}, size={spectrum.size}")
+    print(
+        f"Built prime-ladder spectrum: {spectrum.n_primes} primes, "
+        f"max_power={spectrum.max_power}, size={spectrum.size}"
+    )
     s_test = [2.0, 3.0, 4.0, complex(2.0, 1.0), complex(2.5, 5.0), complex(1.5, 3.0)]
     agree = verify_continuation_agreement(spectrum, s_test, dps=30)
     print(f"\n{'s':<25s}{'|Z_prime|':>15s}{'|Z_continued|':>18s}{'rel_diff':>12s}")
@@ -92,20 +94,30 @@ def main() -> None:
         agree.s_values, agree.z_prime_ladder, agree.z_continued, agree.rel_diff
     ):
         print(f"  s={str(s):<20s}{abs(z_pl):>15.6g}{abs(z_co):>18.6g}{rd:>12.3e}")
-    print(f"\nAgreement: {agree.agreement_quality}  "
-          f"(max_rel_diff = {agree.max_rel_diff:.3e}, "
-          f"max_abs_diff = {agree.max_abs_diff:.3e})")
+    print(
+        f"\nAgreement: {agree.agreement_quality}  "
+        f"(max_rel_diff = {agree.max_rel_diff:.3e}, "
+        f"max_abs_diff = {agree.max_abs_diff:.3e})"
+    )
 
     section("3) Resonance poles along Re(s) = 1/2  -- Riemann zeros detected")
     scan = scan_critical_line_for_poles(
-        t_min=10.0, t_max=80.0, n_samples=4001, dps=25,
-        peak_prominence=5.0, match_tolerance=0.05,
+        t_min=10.0,
+        t_max=80.0,
+        n_samples=4001,
+        dps=25,
+        peak_prominence=5.0,
+        match_tolerance=0.05,
     )
-    print(f"Sampled {scan.t_values.size} points along s = 1/2 + it, "
-          f"t in [{scan.t_values[0]:.1f}, {scan.t_values[-1]:.1f}]")
-    print(f"Detected {scan.detected_peaks.size} resonance peaks; "
-          f"matched {len(scan.matched_zeros)} known Riemann zeros "
-          f"(quality: {scan.detection_quality})")
+    print(
+        f"Sampled {scan.t_values.size} points along s = 1/2 + it, "
+        f"t in [{scan.t_values[0]:.1f}, {scan.t_values[-1]:.1f}]"
+    )
+    print(
+        f"Detected {scan.detected_peaks.size} resonance peaks; "
+        f"matched {len(scan.matched_zeros)} known Riemann zeros "
+        f"(quality: {scan.detection_quality})"
+    )
     print(f"\n{'t_detected':>14s}{'t_known':>14s}{'|delta|':>12s}")
     print("-" * 40)
     for t_det, t_known, delta in scan.matched_zeros:
@@ -121,11 +133,16 @@ def main() -> None:
             x_pts, n_zeros=n_use, zeros=zeros[:n_use]
         )
         print(f"  Using {n_use:>3d} zeros:")
-        print(f"    {'x':>6s}{'psi(x) exact':>16s}{'psi(x) explicit':>18s}"
-              f"{'abs_err':>12s}{'rel_err':>12s}")
+        print(
+            f"    {'x':>6s}{'psi(x) exact':>16s}{'psi(x) explicit':>18s}"
+            f"{'abs_err':>12s}{'rel_err':>12s}"
+        )
         for x, pc, pe, ae, re in zip(
-            res.x_values, res.psi_classical, res.psi_explicit,
-            res.abs_error, res.rel_error,
+            res.x_values,
+            res.psi_classical,
+            res.psi_explicit,
+            res.abs_error,
+            res.rel_error,
         ):
             print(f"    {x:>6.1f}{pc:>16.4f}{pe:>18.4f}{ae:>12.4f}{re:>12.4f}")
         print()

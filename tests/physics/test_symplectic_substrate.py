@@ -6,6 +6,7 @@ symplectic manifold: antisymmetric non-degenerate closed 2-form, canonical
 Poisson brackets, Jacobi identity, Liouville volume preservation, harmonic
 Hamiltonian flow, and consistency with the canonical energy functional.
 """
+
 from __future__ import annotations
 
 import math
@@ -17,23 +18,24 @@ import numpy as np
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.physics.conservation import compute_energy_functional
 from tnfr.physics.symplectic_substrate import (
-    BLOCK_SYMPLECTIC_FORM,
-    BLOCK_COMPLEX_STRUCTURE,
     BLOCK_COMPATIBLE_METRIC,
+    BLOCK_COMPLEX_STRUCTURE,
+    BLOCK_SYMPLECTIC_FORM,
     background_potential,
     canonical_bracket_table,
-    complex_structure_matrix,
     compatible_metric_matrix,
+    complex_structure_matrix,
+    diagonal_moment_map,
     evolve_substrate_flow,
     extract_phase_space_point,
     geometric_sector_energy,
     hamiltonian_vector_field,
-    polarization_vector,
-    polarization_density,
     kahler_potential,
     liouville_divergence,
     loop_action_integral,
     noether_charges,
+    polarization_density,
+    polarization_vector,
     potential_sector_energy,
     reduced_symplectic_form_matrix,
     substrate_flow_matrix,
@@ -41,16 +43,15 @@ from tnfr.physics.symplectic_substrate import (
     symplectic_form_matrix,
     to_action_angle,
     to_complex_coordinates,
+    verify_adiabatic_invariance,
     verify_canonical_structure,
     verify_hermitian_structure,
-    verify_polarization_symmetry,
     verify_integrability,
     verify_noether_conservation,
     verify_poincare_cartan,
+    verify_polarization_symmetry,
     verify_substrate_geometry,
     verify_symplectic_reduction,
-    verify_adiabatic_invariance,
-    diagonal_moment_map,
 )
 
 
@@ -147,9 +148,7 @@ class TestHamiltonianFlow:
         z = pt.to_vector().reshape(pt.n_nodes, 4)
         zdot = hamiltonian_vector_field(pt).reshape(pt.n_nodes, 4)
         # q_dot = p, p_dot = -q per sector.
-        expected = np.stack(
-            [z[:, 1], -z[:, 0], z[:, 3], -z[:, 2]], axis=1
-        )
+        expected = np.stack([z[:, 1], -z[:, 0], z[:, 3], -z[:, 2]], axis=1)
         assert np.allclose(zdot, expected)
 
     def test_liouville_divergence_zero(self) -> None:
@@ -245,9 +244,7 @@ class TestNoetherCharges:
         h0 = substrate_hamiltonian(pt)
         for t in (0.5, 1.3, 2.7, 10.0):
             evolved = evolve_substrate_flow(pt, t)
-            assert substrate_hamiltonian(evolved) == pytest.approx(
-                h0, abs=1e-9
-            )
+            assert substrate_hamiltonian(evolved) == pytest.approx(h0, abs=1e-9)
 
     def test_flow_at_zero_is_identity(self) -> None:
         G = _canonical_graph(15)
@@ -308,9 +305,7 @@ class TestHermitianStructure:
         point = extract_phase_space_point(G)
         coords = to_complex_coordinates(point)
         psi = compute_complex_geometric_field(G)
-        psi_arr = np.array(
-            [psi[n] for n in point.nodes], dtype=complex
-        )
+        psi_arr = np.array([psi[n] for n in point.nodes], dtype=complex)
         assert np.allclose(coords["geometric"], psi_arr)
 
     def test_kahler_potential_equals_hamiltonian(self) -> None:
@@ -535,9 +530,7 @@ class TestPolarizationSymmetry:
         G = _canonical_graph(24)
         point = extract_phase_space_point(G)
         ch = polarization_vector(point)
-        e_diff = (
-            geometric_sector_energy(point) - potential_sector_energy(point)
-        )
+        e_diff = geometric_sector_energy(point) - potential_sector_energy(point)
         assert ch["p_3"] == pytest.approx(e_diff)
 
     def test_magnitude_is_sum_of_squares(self) -> None:
@@ -651,12 +644,10 @@ class TestSubstrateIntegration:
     """The emergent substrate is exposed across SDK, telemetry, and API."""
 
     def test_physics_package_exports(self) -> None:
-        from tnfr.physics import (
-            extract_phase_space_point as _eps,
-            verify_canonical_structure as _vcs,
-            substrate_hamiltonian as _sh,
-            symplectic_form_matrix as _sfm,
-        )
+        from tnfr.physics import extract_phase_space_point as _eps
+        from tnfr.physics import substrate_hamiltonian as _sh
+        from tnfr.physics import symplectic_form_matrix as _sfm
+        from tnfr.physics import verify_canonical_structure as _vcs
 
         assert callable(_eps)
         assert callable(_vcs)
@@ -712,17 +703,13 @@ class TestAdiabaticInvariance:
         assert cert.fast_drift > 0.1
 
     def test_drift_series_trends_down(self) -> None:
-        cert = verify_adiabatic_invariance(
-            ramp_times=(1.0, 5.0, 20.0, 80.0)
-        )
+        cert = verify_adiabatic_invariance(ramp_times=(1.0, 5.0, 20.0, 80.0))
         drifts = cert.action_drifts
         # the slow end is far below the fast end (orders of magnitude)
         assert drifts[-1] < drifts[0] / 10.0
 
     def test_certificate_valid(self) -> None:
-        from tnfr.physics.symplectic_substrate import (
-            AdiabaticInvarianceCertificate,
-        )
+        from tnfr.physics.symplectic_substrate import AdiabaticInvarianceCertificate
 
         cert = verify_adiabatic_invariance()
         assert isinstance(cert, AdiabaticInvarianceCertificate)

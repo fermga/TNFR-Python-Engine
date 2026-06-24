@@ -107,18 +107,13 @@ try:
 except ImportError:  # pragma: no cover
     nx = None
 
-from ..constants.canonical import (
-    PI as PI_CONST,
-)
+from ..constants.canonical import PI as PI_CONST
 from .canonical import (
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
 )
-from .extended import (
-    compute_phase_current,
-    compute_dnfr_flux,
-)
+from .extended import compute_dnfr_flux, compute_phase_current
 from .unified import (
     compute_complex_geometric_field,
     compute_energy_density,
@@ -128,6 +123,7 @@ from .unified import (
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class GaugeSnapshot:
@@ -163,6 +159,7 @@ class GaugeSnapshot:
     energy_density: dict[Any, float]
     topological_norm: dict[Any, float]
     chirality_norm: dict[Any, float]
+
 
 @dataclass(frozen=True)
 class GaugeInvarianceResult:
@@ -200,9 +197,11 @@ class GaugeInvarianceResult:
     coherence_deviation: float
     details: dict[str, Any]
 
+
 # ---------------------------------------------------------------------------
 # Gauge transformation
 # ---------------------------------------------------------------------------
+
 
 def apply_gauge_transformation(
     G: Any,
@@ -265,12 +264,14 @@ def apply_gauge_transformation(
         "psi_phase": {n: float(np.angle(v)) for n, v in psi_prime.items()},
     }
 
+
 # ---------------------------------------------------------------------------
 # Gauge connection (1-form on edges)
 # ---------------------------------------------------------------------------
 
 # Import canonical wrap_angle from shared helpers (single source of truth)
 from ._helpers import wrap_angle as _wrap_angle
+
 
 def compute_gauge_connection(G: Any) -> dict[tuple, float]:
     r"""Compute the gauge connection A_ij on oriented edges.
@@ -319,9 +320,11 @@ def compute_gauge_connection(G: Any) -> dict[tuple, float]:
 
     return connection
 
+
 # ---------------------------------------------------------------------------
 # Gauge curvature (field strength on cycles)
 # ---------------------------------------------------------------------------
+
 
 def compute_gauge_curvature(
     G: Any,
@@ -414,9 +417,11 @@ def compute_gauge_curvature(
 
     return curvature
 
+
 # ---------------------------------------------------------------------------
 # Discrete covariant derivative
 # ---------------------------------------------------------------------------
+
 
 def compute_covariant_derivative(G: Any) -> dict[tuple, complex]:
     r"""Compute the discrete covariant derivative of Ψ on each edge.
@@ -472,6 +477,7 @@ def compute_covariant_derivative(G: Any) -> dict[tuple, complex]:
 
     return cov_deriv
 
+
 def compute_covariant_derivative_magnitude(G: Any) -> dict[tuple, float]:
     """Compute |D_ij Ψ| — gauge-invariant field variation per edge.
 
@@ -487,9 +493,11 @@ def compute_covariant_derivative_magnitude(G: Any) -> dict[tuple, float]:
     cov_deriv = compute_covariant_derivative(G)
     return {edge: abs(val) for edge, val in cov_deriv.items()}
 
+
 # ---------------------------------------------------------------------------
 # Gauge-invariant quantities
 # ---------------------------------------------------------------------------
+
 
 def compute_topological_norm(G: Any) -> dict[Any, float]:
     r"""Compute the gauge-invariant topological norm |𝒯(i)|² per node.
@@ -543,6 +551,7 @@ def compute_topological_norm(G: Any) -> dict[Any, float]:
 
     return result
 
+
 def compute_chirality_norm(G: Any) -> dict[Any, float]:
     r"""Compute the gauge-invariant chirality norm |𝒳(i)|² per node.
 
@@ -591,6 +600,7 @@ def compute_chirality_norm(G: Any) -> dict[Any, float]:
 
     return result
 
+
 def compute_dual_topological_charge(G: Any) -> dict[Any, float]:
     """Compute dual topological charge 𝒬̃ = K_φ·|∇φ| + J_φ·J_ΔNFR.
 
@@ -613,9 +623,10 @@ def compute_dual_topological_charge(G: Any) -> dict[Any, float]:
 
     return {
         n: k_phi.get(n, 0.0) * grad_phi.get(n, 0.0)
-           + j_phi.get(n, 0.0) * j_dnfr.get(n, 0.0)
+        + j_phi.get(n, 0.0) * j_dnfr.get(n, 0.0)
         for n in G.nodes()
     }
+
 
 def compute_dual_chirality(G: Any) -> dict[Any, float]:
     """Compute dual chirality χ̃ = |∇φ|·J_φ + K_φ·J_ΔNFR.
@@ -639,13 +650,15 @@ def compute_dual_chirality(G: Any) -> dict[Any, float]:
 
     return {
         n: grad_phi.get(n, 0.0) * j_phi.get(n, 0.0)
-           + k_phi.get(n, 0.0) * j_dnfr.get(n, 0.0)
+        + k_phi.get(n, 0.0) * j_dnfr.get(n, 0.0)
         for n in G.nodes()
     }
+
 
 # ---------------------------------------------------------------------------
 # Gauge invariance verification
 # ---------------------------------------------------------------------------
+
 
 def verify_gauge_invariance(
     G: Any,
@@ -708,6 +721,7 @@ def verify_gauge_invariance(
     # Coherence C(t) — depends on ΔNFR spread, not Ψ internal angle
     # We need to check that it does not change
     from ..metrics.coherence import compute_global_coherence
+
     c_before = compute_global_coherence(G)
 
     # --- Apply gauge transformation ---
@@ -732,7 +746,7 @@ def verify_gauge_invariance(
         jd = j_dnfr.get(n, 0.0)
 
         # Energy density (should be invariant)
-        energy_after[n] = ps ** 2 + gp ** 2 + kp ** 2 + jp ** 2 + jd ** 2
+        energy_after[n] = ps**2 + gp**2 + kp**2 + jp**2 + jd**2
 
         # Topological norm (should be invariant)
         q = gp * jp - kp * jd
@@ -745,7 +759,7 @@ def verify_gauge_invariance(
         chiral_norm_after[n] = chi * chi + chi_dual * chi_dual
 
         # Symmetry breaking (should be invariant: K_φ² + J_φ² = |Ψ|² unchanged)
-        symbreak_after[n] = (gp ** 2 - kp ** 2) + (jp ** 2 - jd ** 2)
+        symbreak_after[n] = (gp**2 - kp**2) + (jp**2 - jd**2)
 
     # Noether charge after (NOT expected invariant)
     q_after = sum(phi_s.get(n, 0.0) + k_phi_after.get(n, 0.0) for n in nodes)
@@ -791,9 +805,9 @@ def verify_gauge_invariance(
         "noether_charge_before": q_before,
         "noether_charge_after": q_after,
         "noether_charge_expected_variant": has_nontrivial_alpha,
-        "energy_rms_deviation": float(np.sqrt(np.mean(np.array(energy_devs) ** 2)))
-        if energy_devs
-        else 0.0,
+        "energy_rms_deviation": (
+            float(np.sqrt(np.mean(np.array(energy_devs) ** 2))) if energy_devs else 0.0
+        ),
     }
 
     return GaugeInvarianceResult(
@@ -808,9 +822,11 @@ def verify_gauge_invariance(
         details=details,
     )
 
+
 # ---------------------------------------------------------------------------
 # Comprehensive gauge snapshot
 # ---------------------------------------------------------------------------
+
 
 def capture_gauge_snapshot(G: Any) -> GaugeSnapshot:
     """Capture complete gauge-theoretic state of the network.
@@ -844,9 +860,11 @@ def capture_gauge_snapshot(G: Any) -> GaugeSnapshot:
         chirality_norm=chiral_norm,
     )
 
+
 # ---------------------------------------------------------------------------
 # Interaction regime classification
 # ---------------------------------------------------------------------------
+
 
 def classify_interaction_regime(
     G: Any,
@@ -898,12 +916,8 @@ def classify_interaction_regime(
     ps = abs(phi_s.get(node, 0.0))
 
     # Mean gauge curvature of plaquettes containing this node
-    adjacent_curvatures = [
-        abs(f) for cycle, f in curvature.items() if node in cycle
-    ]
-    mean_curv = (
-        float(np.mean(adjacent_curvatures)) if adjacent_curvatures else 0.0
-    )
+    adjacent_curvatures = [abs(f) for cycle, f in curvature.items() if node in cycle]
+    mean_curv = float(np.mean(adjacent_curvatures)) if adjacent_curvatures else 0.0
 
     # Regime scores (heuristic decomposition based on physics)
     total = ps + psi_mag + mean_curv + 1e-15
@@ -938,6 +952,7 @@ def classify_interaction_regime(
         "regime_scores": scores,
     }
 
+
 def classify_network_regimes(G: Any) -> dict[str, Any]:
     """Classify interaction regimes across the entire network.
 
@@ -955,7 +970,10 @@ def classify_network_regimes(G: Any) -> dict[str, Any]:
 
     # Distribution
     regime_counts: dict[str, int] = {
-        "em_like": 0, "weak_like": 0, "strong_like": 0, "gravity_like": 0,
+        "em_like": 0,
+        "weak_like": 0,
+        "strong_like": 0,
+        "gravity_like": 0,
     }
     for info in per_node.values():
         regime_counts[info["regime"]] = regime_counts.get(info["regime"], 0) + 1
@@ -966,7 +984,9 @@ def classify_network_regimes(G: Any) -> dict[str, Any]:
     curvature = compute_gauge_curvature(G)
     curv_values = [abs(f) for f in curvature.values()] if curvature else [0.0]
     mean_curv = float(np.mean(curv_values))
-    flat_fraction = float(np.mean([1.0 if c < math.pi / 10 else 0.0 for c in curv_values]))
+    flat_fraction = float(
+        np.mean([1.0 if c < math.pi / 10 else 0.0 for c in curv_values])
+    )
 
     return {
         "per_node": per_node,
@@ -976,9 +996,11 @@ def classify_network_regimes(G: Any) -> dict[str, Any]:
         "gauge_flatness": flat_fraction,
     }
 
+
 # ---------------------------------------------------------------------------
 # Yang-Mills-like action on graph
 # ---------------------------------------------------------------------------
+
 
 def compute_yang_mills_action(G: Any) -> float:
     r"""Compute the discrete Yang-Mills action of the gauge field.
@@ -1006,6 +1028,7 @@ def compute_yang_mills_action(G: Any) -> float:
     if not curvature:
         return 0.0
     return 0.5 * sum(f * f for f in curvature.values())
+
 
 def compute_gauge_energy_decomposition(G: Any) -> dict[str, float]:
     r"""Decompose the total structural energy into gauge-theoretic sectors.
@@ -1037,13 +1060,10 @@ def compute_gauge_energy_decomposition(G: Any) -> dict[str, float]:
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
 
-    e_potential = sum(v ** 2 for v in phi_s.values())
-    e_gradient = sum(v ** 2 for v in grad_phi.values())
-    e_gauge = sum(
-        k_phi.get(n, 0.0) ** 2 + j_phi.get(n, 0.0) ** 2
-        for n in G.nodes()
-    )
-    e_flux = sum(v ** 2 for v in j_dnfr.values())
+    e_potential = sum(v**2 for v in phi_s.values())
+    e_gradient = sum(v**2 for v in grad_phi.values())
+    e_gauge = sum(k_phi.get(n, 0.0) ** 2 + j_phi.get(n, 0.0) ** 2 for n in G.nodes())
+    e_flux = sum(v**2 for v in j_dnfr.values())
     e_ym = compute_yang_mills_action(G)
 
     total = e_potential + e_gradient + e_gauge + e_flux
@@ -1060,6 +1080,7 @@ def compute_gauge_energy_decomposition(G: Any) -> dict[str, float]:
         "gauge_fraction": float(e_gauge / (total + 1e-15)),
         "flux_fraction": float(e_flux / (total + 1e-15)),
     }
+
 
 # =========================================================================
 # FORMAL YANG-MILLS DERIVATION on TNFR Graphs
@@ -1107,6 +1128,7 @@ def compute_gauge_energy_decomposition(G: Any) -> dict[str, float]:
 # - TNFR.pdf § 2.1 (nodal equation), AGENTS.md § Mathematical Unification
 # =========================================================================
 
+
 @dataclass(frozen=True)
 class YangMillsFieldEquations:
     r"""Discrete Yang-Mills field equations on a TNFR graph.
@@ -1145,6 +1167,7 @@ class YangMillsFieldEquations:
     mean_residual: float
     max_residual: float
 
+
 @dataclass(frozen=True)
 class BianchiIdentityResult:
     r"""Verification of the discrete Bianchi identity dF = 0.
@@ -1170,6 +1193,7 @@ class BianchiIdentityResult:
     mean_residual: float
     num_coboundaries_tested: int
 
+
 # ---------------------------------------------------------------------------
 # Regime activity criterion — emergent equipartition (audit 2026 redesign)
 # ---------------------------------------------------------------------------
@@ -1188,6 +1212,7 @@ class BianchiIdentityResult:
 # justification). They are removed in favour of this parameter-free criterion.
 N_REGIMES = 4
 REGIME_ACTIVITY_SHARE = 1.0 / N_REGIMES  # equipartition reference = 0.25
+
 
 @dataclass(frozen=True)
 class InteractionRegimeMetrics:
@@ -1242,6 +1267,7 @@ class InteractionRegimeMetrics:
     above_threshold: dict[str, bool]
     mixing_angle: float
 
+
 @dataclass(frozen=True)
 class NetworkInteractionProfile:
     r"""Network-wide interaction regime analysis with reproducible metrics.
@@ -1282,9 +1308,11 @@ class NetworkInteractionProfile:
     mean_curvature: float
     gauge_flatness: float
 
+
 # ---------------------------------------------------------------------------
 # Matter current (gauge-covariant source)
 # ---------------------------------------------------------------------------
+
 
 def compute_matter_current(G: Any) -> dict[tuple, float]:
     r"""Compute the matter current J_matter(i,j) on each oriented edge.
@@ -1335,9 +1363,11 @@ def compute_matter_current(G: Any) -> dict[tuple, float]:
 
     return current
 
+
 # ---------------------------------------------------------------------------
 # Yang-Mills field equations
 # ---------------------------------------------------------------------------
+
 
 def compute_yang_mills_equations(
     G: Any,
@@ -1411,7 +1441,7 @@ def compute_yang_mills_equations(
     gauge_div: dict[tuple, float] = {}
     for edge in j_matter:
         divg = 0.0
-        for (cycle_key, epsilon) in edge_plaquettes.get(edge, []):
+        for cycle_key, epsilon in edge_plaquettes.get(edge, []):
             f_c = curvature.get(cycle_key, 0.0)
             divg += epsilon * math.sin(f_c)
         gauge_div[edge] = divg / g_sq
@@ -1438,9 +1468,11 @@ def compute_yang_mills_equations(
         max_residual=max_res,
     )
 
+
 # ---------------------------------------------------------------------------
 # Bianchi identity verification
 # ---------------------------------------------------------------------------
+
 
 def verify_bianchi_identity(
     G: Any,
@@ -1511,9 +1543,11 @@ def verify_bianchi_identity(
         num_coboundaries_tested=len(residuals),
     )
 
+
 # ---------------------------------------------------------------------------
 # Gauss law (discrete divergence constraint)
 # ---------------------------------------------------------------------------
+
 
 def compute_gauss_law_residual(G: Any) -> dict[Any, float]:
     r"""Compute the Gauss law residual at each node.
@@ -1551,9 +1585,11 @@ def compute_gauss_law_residual(G: Any) -> dict[Any, float]:
 
     return residuals
 
+
 # ---------------------------------------------------------------------------
 # Gauge coupling constant
 # ---------------------------------------------------------------------------
+
 
 def compute_gauge_coupling_constant(G: Any) -> float:
     r"""Compute the self-determined gauge coupling constant g².
@@ -1582,11 +1618,13 @@ def compute_gauge_coupling_constant(G: Any) -> float:
     if not curvature:
         return 0.0
     curv_arr = np.array(list(curvature.values()))
-    return float(np.mean(curv_arr ** 2))
+    return float(np.mean(curv_arr**2))
+
 
 # ---------------------------------------------------------------------------
 # Formal interaction regime classification with TNFR-derived thresholds
 # ---------------------------------------------------------------------------
+
 
 def classify_interaction_regime_formal(
     G: Any,
@@ -1686,6 +1724,7 @@ def classify_interaction_regime_formal(
         mixing_angle=float(psi_arg),
     )
 
+
 def compute_network_interaction_profile(G: Any) -> NetworkInteractionProfile:
     r"""Compute the full network interaction regime profile.
 
@@ -1705,7 +1744,10 @@ def compute_network_interaction_profile(G: Any) -> NetworkInteractionProfile:
 
     # Distribution
     regime_counts: dict[str, int] = {
-        "em_like": 0, "weak_like": 0, "strong_like": 0, "gravity_like": 0,
+        "em_like": 0,
+        "weak_like": 0,
+        "strong_like": 0,
+        "gravity_like": 0,
     }
     for m in per_node.values():
         regime_counts[m.dominant_regime] = regime_counts.get(m.dominant_regime, 0) + 1
@@ -1724,9 +1766,15 @@ def compute_network_interaction_profile(G: Any) -> NetworkInteractionProfile:
     # Mean order parameters
     mean_ops: dict[str, float] = {
         "em_like": float(np.mean([m.em_order_parameter for m in per_node.values()])),
-        "weak_like": float(np.mean([m.weak_order_parameter for m in per_node.values()])),
-        "strong_like": float(np.mean([m.strong_order_parameter for m in per_node.values()])),
-        "gravity_like": float(np.mean([m.gravity_order_parameter for m in per_node.values()])),
+        "weak_like": float(
+            np.mean([m.weak_order_parameter for m in per_node.values()])
+        ),
+        "strong_like": float(
+            np.mean([m.strong_order_parameter for m in per_node.values()])
+        ),
+        "gravity_like": float(
+            np.mean([m.gravity_order_parameter for m in per_node.values()])
+        ),
     }
 
     # Gauge coupling and curvature

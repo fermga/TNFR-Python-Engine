@@ -20,8 +20,8 @@ Tests verify:
 from __future__ import annotations
 
 import math
-import sys
 import os
+import sys
 
 import numpy as np
 import pytest
@@ -30,27 +30,27 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.physics.dissipative_conservation import (
-    DissipativeSnapshot,
     DissipativeBalance,
-    DissipativeTimeSeries,
     DissipativeConservationTracker,
+    DissipativeSnapshot,
+    DissipativeTimeSeries,
+    analyze_dissipation_rates,
     capture_dissipative_snapshot,
+    classify_dissipative_regime,
     compute_dissipation_bound,
     compute_dissipator_action,
     compute_purity_decay_bound,
-    verify_dissipative_balance,
     predict_amplitude_damping_purity,
     predict_dephasing_purity,
-    analyze_dissipation_rates,
-    classify_dissipative_regime,
+    verify_dissipative_balance,
 )
 
 # Try to import math backend for engine-based tests
 try:
+    from tnfr.mathematics.backend import ensure_numpy
     from tnfr.mathematics.dynamics import ContractiveDynamicsEngine
     from tnfr.mathematics.generators import build_lindblad_delta_nfr
     from tnfr.mathematics.spaces import HilbertSpace
-    from tnfr.mathematics.backend import ensure_numpy
 
     HAS_ENGINE = True
 except ImportError:
@@ -137,9 +137,7 @@ class TestSnapshotCapture:
 
     def test_mixed_qubit_snapshot(self):
         """Partially mixed qubit: intermediary purity."""
-        rho = np.array(
-            [[0.7, 0.1 + 0.05j], [0.1 - 0.05j, 0.3]], dtype=np.complex128
-        )
+        rho = np.array([[0.7, 0.1 + 0.05j], [0.1 - 0.05j, 0.3]], dtype=np.complex128)
         snap = capture_dissipative_snapshot(rho)
 
         assert abs(snap.trace - 1.0) < 1e-12
@@ -208,9 +206,7 @@ class TestDissipatorAction:
     def test_dissipator_hermitian(self):
         """D[ρ] is Hermitian when ρ is Hermitian."""
         ops = _dephasing_ops(0.5)
-        rho = np.array(
-            [[0.7, 0.2 - 0.1j], [0.2 + 0.1j, 0.3]], dtype=np.complex128
-        )
+        rho = np.array([[0.7, 0.2 - 0.1j], [0.2 + 0.1j, 0.3]], dtype=np.complex128)
         D = compute_dissipator_action(rho, ops)
         assert np.allclose(D, D.conj().T, atol=1e-12)
 
@@ -301,9 +297,7 @@ class TestDissipativeBalance:
 
         s1 = capture_dissipative_snapshot(rho_init)
         s2 = capture_dissipative_snapshot(rho_mid)
-        bal = verify_dissipative_balance(
-            s1, s2, dt=1.0, steady_state=rho_ss
-        )
+        bal = verify_dissipative_balance(s1, s2, dt=1.0, steady_state=rho_ss)
 
         assert bal.contractivity_gap <= 1.0 + 1e-9
         assert bal.is_contractive
@@ -350,9 +344,7 @@ class TestDissipativeConservationTracker:
         H = np.zeros((2, 2), dtype=np.complex128)
         ops = _amplitude_damping_ops(gamma)
         engine = _build_qubit_engine(H, ops, nu_f=1.0, scale=1.0)
-        tracker = DissipativeConservationTracker(
-            engine, collapse_operators=ops
-        )
+        tracker = DissipativeConservationTracker(engine, collapse_operators=ops)
         return engine, tracker
 
     def test_trace_preservation(self):
@@ -402,9 +394,7 @@ class TestDissipativeConservationTracker:
         for i, gap in enumerate(report.contractivity_gap):
             if i == 0:
                 continue  # First entry is default
-            assert (
-                gap <= 1.0 + 1e-6
-            ), f"Step {i}: contractivity gap = {gap:.6f} > 1"
+            assert gap <= 1.0 + 1e-6, f"Step {i}: contractivity gap = {gap:.6f} > 1"
 
     def test_steady_state_convergence(self):
         """After sufficient steps, state should be close to |0><0|."""
@@ -413,9 +403,7 @@ class TestDissipativeConservationTracker:
         report = tracker.evolve_and_track(rho_init, steps=100, dt=0.1)
 
         # Final purity should be close to 1 (steady state is pure)
-        assert report.purity[-1] > 0.95, (
-            f"Final purity {report.purity[-1]:.4f} too low"
-        )
+        assert report.purity[-1] > 0.95, f"Final purity {report.purity[-1]:.4f} too low"
 
     def test_dephasing_diagonal_preservation(self):
         """Pure dephasing: diagonal elements must not change."""
@@ -424,25 +412,21 @@ class TestDissipativeConservationTracker:
         engine = _build_qubit_engine(H, ops, nu_f=1.0, scale=1.0)
 
         # Start with a state with known diagonals
-        rho_init = np.array(
-            [[0.7, 0.3 + 0.1j], [0.3 - 0.1j, 0.3]], dtype=np.complex128
-        )
+        rho_init = np.array([[0.7, 0.3 + 0.1j], [0.3 - 0.1j, 0.3]], dtype=np.complex128)
 
-        tracker = DissipativeConservationTracker(
-            engine, collapse_operators=ops
-        )
+        tracker = DissipativeConservationTracker(engine, collapse_operators=ops)
         tracker.evolve_and_track(rho_init, steps=50, dt=0.1)
 
         # Check that diagonals are preserved
         _, last_snap = tracker._snapshots[-1]
         rho_final = np.asarray(last_snap.density)
 
-        assert abs(rho_final[0, 0] - 0.7) < 1e-6, (
-            f"Diagonal[0,0] drifted: {rho_final[0,0]:.6f}"
-        )
-        assert abs(rho_final[1, 1] - 0.3) < 1e-6, (
-            f"Diagonal[1,1] drifted: {rho_final[1,1]:.6f}"
-        )
+        assert (
+            abs(rho_final[0, 0] - 0.7) < 1e-6
+        ), f"Diagonal[0,0] drifted: {rho_final[0,0]:.6f}"
+        assert (
+            abs(rho_final[1, 1] - 0.3) < 1e-6
+        ), f"Diagonal[1,1] drifted: {rho_final[1,1]:.6f}"
 
         # Off-diagonals should have decayed
         assert abs(rho_final[0, 1]) < abs(rho_init[0, 1])
@@ -574,13 +558,11 @@ class TestComputeSteadyState:
         H = np.zeros((2, 2), dtype=np.complex128)
         ops = _amplitude_damping_ops(0.3)
         engine = _build_qubit_engine(H, ops, nu_f=1.0, scale=1.0)
-        tracker = DissipativeConservationTracker(
-            engine, collapse_operators=ops
-        )
+        tracker = DissipativeConservationTracker(engine, collapse_operators=ops)
 
         rho_ss = tracker.compute_steady_state()
         expected = _pure_state(2, 0)
 
-        assert np.allclose(rho_ss, expected, atol=1e-4), (
-            f"Steady state:\n{rho_ss}\nExpected:\n{expected}"
-        )
+        assert np.allclose(
+            rho_ss, expected, atol=1e-4
+        ), f"Steady state:\n{rho_ss}\nExpected:\n{expected}"

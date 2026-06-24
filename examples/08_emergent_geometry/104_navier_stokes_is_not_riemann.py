@@ -79,16 +79,16 @@ import os
 import sys
 import warnings
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np
 
-from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph
 from tnfr.navier_stokes.operator import (
     build_torus_graph_3d,
     taylor_green_initial_condition_3d,
 )
 from tnfr.physics.symplectic_substrate import extract_phase_space_point
+from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph
 
 
 def _substrate_geometric(G):
@@ -139,10 +139,14 @@ def experiment_1_blind_vs_populated():
     pt_n, psi_n = _substrate_geometric(G)
     print("  NAVIER–STOKES (velocity u_a IS the phase field φ^(a)):")
     print(f"    |Ψ| max = {psi_n.max():.3f}, mean = {psi_n.mean():.3f}")
-    print(f"    |∇φ| max = {np.abs(pt_n.grad_phi).max():.3f},  "
-          f"|K_φ| max = {np.abs(pt_n.k_phi).max():.3f}")
-    print(f"    -> substrate BLIND: {psi_n.max() < 1e-9}  "
-          f"(the velocity populates the geometric sector)")
+    print(
+        f"    |∇φ| max = {np.abs(pt_n.grad_phi).max():.3f},  "
+        f"|K_φ| max = {np.abs(pt_n.k_phi).max():.3f}"
+    )
+    print(
+        f"    -> substrate BLIND: {psi_n.max() < 1e-9}  "
+        f"(the velocity populates the geometric sector)"
+    )
     print()
     print("VERDICT: the same substrate is BLIND for Riemann (content in ν_f)")
     print("but POPULATED for Navier–Stokes (content in the phase = velocity).")
@@ -165,7 +169,7 @@ def experiment_2_physics_is_tetrad(pt_n):
     print("    ω   ↔ K_φ     (vorticity     = phase curvature)")
     print("    p   ↔ Φ_s     (pressure      = structural potential)")
     print()
-    z_tetrad = float(np.sum(pt_n.k_phi ** 2))
+    z_tetrad = float(np.sum(pt_n.k_phi**2))
     print(f"  enstrophy as a tetrad sum   Z ~ Σ K_φ² = {z_tetrad:.2f}")
     print("  (finite, non-zero: the NS observable IS a tetrad quantity)")
     print()

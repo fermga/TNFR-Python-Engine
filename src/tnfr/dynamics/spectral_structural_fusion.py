@@ -23,26 +23,27 @@ from typing import Any, Sequence
 
 try:  # Optional dependency for typing and validation only
     import networkx as nx  # noqa: F401
+
     HAS_NETWORKX = True
 except ImportError:  # pragma: no cover - optional at runtime
     HAS_NETWORKX = False
 
 try:
     from .fft_cache_coordinator import get_fft_cache_coordinator
+
     HAS_FFT_CACHE = True
 except ImportError:  # pragma: no cover
     HAS_FFT_CACHE = False
 
 try:
-    from .advanced_cache_optimizer import (
-        CacheOptimizationStrategy,
-        get_cache_optimizer,
-    )
+    from .advanced_cache_optimizer import CacheOptimizationStrategy, get_cache_optimizer
+
     HAS_CACHE_OPTIMIZER = True
 except ImportError:  # pragma: no cover
     HAS_CACHE_OPTIMIZER = False
 
 from .structural_cache import StructuralCacheEntry, get_structural_cache
+
 
 class TNFRSpectralStructuralFusionEngine:
     """Bridge FFT spectral caches with structural field caches."""
@@ -52,13 +53,17 @@ class TNFRSpectralStructuralFusionEngine:
         self.structural_cache = get_structural_cache()
         self.fft_cache = get_fft_cache_coordinator() if HAS_FFT_CACHE else None
         self.cache_optimizer = (
-            get_cache_optimizer() if (HAS_CACHE_OPTIMIZER and enable_cache_optimization) else None
+            get_cache_optimizer()
+            if (HAS_CACHE_OPTIMIZER and enable_cache_optimization)
+            else None
         )
 
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
-    def compute_structural_fields(self, G: Any, *, force_recompute: bool = False) -> StructuralCacheEntry:
+    def compute_structural_fields(
+        self, G: Any, *, force_recompute: bool = False
+    ) -> StructuralCacheEntry:
         """Return structural fields using shared spectral basis."""
         spectral_basis = self._ensure_spectral_basis(G, force_recompute=force_recompute)
         return self.structural_cache.get_structural_fields(
@@ -117,7 +122,9 @@ class TNFRSpectralStructuralFusionEngine:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
-    def _ensure_spectral_basis(self, G: Any, *, force_recompute: bool = False) -> Any | None:
+    def _ensure_spectral_basis(
+        self, G: Any, *, force_recompute: bool = False
+    ) -> Any | None:
         if self.fft_cache is None or G is None:
             return None
 
@@ -125,5 +132,6 @@ class TNFRSpectralStructuralFusionEngine:
             return self.fft_cache.get_spectral_basis(G, force_recompute=force_recompute)
         except Exception:
             return None
+
 
 __all__ = ["TNFRSpectralStructuralFusionEngine"]

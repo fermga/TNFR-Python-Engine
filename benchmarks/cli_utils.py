@@ -15,7 +15,7 @@ Usage:
         default_seeds=10
     )
     args = parser.parse_args()
-    
+
 Physics Invariance:
 - CLI flags control ONLY scale/sampling, NOT grammar or operators
 - Precision/telemetry modes from Phase 1-3 are read-only
@@ -36,7 +36,7 @@ def create_benchmark_parser(
     add_param_grid: bool = False,
 ) -> argparse.ArgumentParser:
     """Create standard argument parser for TNFR benchmarks.
-    
+
     Parameters
     ----------
     description : str
@@ -51,7 +51,7 @@ def create_benchmark_parser(
         Whether to add --precision and --telemetry flags
     add_param_grid : bool
         Whether to add --param-grid for fine parameter sweeps
-    
+
     Returns
     -------
     argparse.ArgumentParser
@@ -59,12 +59,12 @@ def create_benchmark_parser(
     """
     if default_topologies is None:
         default_topologies = ["ws", "scale_free"]
-    
+
     parser = argparse.ArgumentParser(
         description=description,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    
+
     # Network scale
     parser.add_argument(
         "--nodes",
@@ -72,14 +72,14 @@ def create_benchmark_parser(
         default=default_nodes,
         help="Number of nodes in network (scales experiment size)",
     )
-    
+
     parser.add_argument(
         "--nodes-list",
         type=int,
         nargs="+",
         help="Run experiment for multiple network sizes (overrides --nodes)",
     )
-    
+
     # Topology types
     parser.add_argument(
         "--topologies",
@@ -89,7 +89,7 @@ def create_benchmark_parser(
         choices=["ring", "ws", "scale_free", "grid", "er"],
         help="Topology types to test",
     )
-    
+
     # Random seeds
     parser.add_argument(
         "--seed",
@@ -97,21 +97,21 @@ def create_benchmark_parser(
         default=42,
         help="Base random seed for reproducibility",
     )
-    
+
     parser.add_argument(
         "--seed-count",
         type=int,
         default=default_seeds,
         help="Number of random seeds (runs per configuration)",
     )
-    
+
     parser.add_argument(
         "--seeds",
         type=int,
         nargs="+",
         help="Explicit list of seeds (overrides --seed-count)",
     )
-    
+
     # Output control
     parser.add_argument(
         "--output-dir",
@@ -119,7 +119,7 @@ def create_benchmark_parser(
         default="results",
         help="Directory for output files",
     )
-    
+
     parser.add_argument(
         "--output-format",
         type=str,
@@ -127,13 +127,13 @@ def create_benchmark_parser(
         default="json",
         help="Output file format",
     )
-    
+
     parser.add_argument(
         "--quiet",
         action="store_true",
         help="Suppress progress output (only show final results)",
     )
-    
+
     # Precision and telemetry (Phase 1-3 integration)
     if add_precision_flags:
         parser.add_argument(
@@ -143,7 +143,7 @@ def create_benchmark_parser(
             default="standard",
             help="Precision mode for numerical computations (Phase 1-2)",
         )
-        
+
         parser.add_argument(
             "--telemetry",
             type=str,
@@ -151,7 +151,7 @@ def create_benchmark_parser(
             default="low",
             help="Telemetry density for snapshot collection (Phase 3)",
         )
-    
+
     # Parameter grid support
     if add_param_grid:
         parser.add_argument(
@@ -161,7 +161,7 @@ def create_benchmark_parser(
             default="medium",
             help="Parameter grid resolution around critical points",
         )
-        
+
         parser.add_argument(
             "--param-range",
             type=float,
@@ -169,22 +169,22 @@ def create_benchmark_parser(
             metavar=("MIN", "MAX"),
             help="Custom parameter range (min max)",
         )
-    
+
     return parser
 
 
 def resolve_seeds(args: argparse.Namespace) -> List[int]:
     """Resolve seed list from CLI arguments.
-    
+
     Priority:
     1. Explicit --seeds list
     2. Generate from --seed-count starting at --seed
-    
+
     Parameters
     ----------
     args : argparse.Namespace
         Parsed arguments from create_benchmark_parser()
-    
+
     Returns
     -------
     list of int
@@ -192,25 +192,25 @@ def resolve_seeds(args: argparse.Namespace) -> List[int]:
     """
     if hasattr(args, "seeds") and args.seeds:
         return args.seeds
-    
+
     seed_count = args.seed_count if hasattr(args, "seed_count") else 10
     base_seed = args.seed if hasattr(args, "seed") else 42
-    
+
     return [base_seed + i for i in range(seed_count)]
 
 
 def resolve_node_sizes(args: argparse.Namespace) -> List[int]:
     """Resolve list of network sizes from CLI arguments.
-    
+
     Priority:
     1. Explicit --nodes-list
     2. Single --nodes value
-    
+
     Parameters
     ----------
     args : argparse.Namespace
         Parsed arguments from create_benchmark_parser()
-    
+
     Returns
     -------
     list of int
@@ -218,19 +218,19 @@ def resolve_node_sizes(args: argparse.Namespace) -> List[int]:
     """
     if hasattr(args, "nodes_list") and args.nodes_list:
         return args.nodes_list
-    
+
     nodes = args.nodes if hasattr(args, "nodes") else 50
     return [nodes]
 
 
 def setup_output_dir(args: argparse.Namespace) -> Path:
     """Create output directory if needed.
-    
+
     Parameters
     ----------
     args : argparse.Namespace
         Parsed arguments with output_dir attribute
-    
+
     Returns
     -------
     Path
@@ -243,9 +243,9 @@ def setup_output_dir(args: argparse.Namespace) -> Path:
 
 def apply_precision_config(args: argparse.Namespace) -> None:
     """Apply precision and telemetry modes from CLI args.
-    
+
     Uses Phase 1-3 configuration system.
-    
+
     Parameters
     ----------
     args : argparse.Namespace
@@ -253,19 +253,16 @@ def apply_precision_config(args: argparse.Namespace) -> None:
     """
     if not hasattr(args, "precision"):
         return
-    
+
     try:
-        from tnfr.config import (
-            set_precision_mode,
-            set_telemetry_density,
-        )
-        
+        from tnfr.config import set_precision_mode, set_telemetry_density
+
         if args.precision:
             set_precision_mode(args.precision)
-        
+
         if hasattr(args, "telemetry") and args.telemetry:
             set_telemetry_density(args.telemetry)
-            
+
     except ImportError:
         # Graceful degradation if config not available
         pass
@@ -277,7 +274,7 @@ def get_param_grid_points(
     param_range: Optional[tuple] = None,
 ) -> List[float]:
     """Generate parameter grid around critical point.
-    
+
     Parameters
     ----------
     resolution : str
@@ -286,33 +283,33 @@ def get_param_grid_points(
         Critical parameter value (e.g., I_c = 2.015)
     param_range : tuple of (min, max), optional
         Custom range. If None, uses critical_point ± 20%
-    
+
     Returns
     -------
     list of float
         Parameter values to sample
     """
     import numpy as np
-    
+
     if param_range:
         min_val, max_val = param_range
     else:
         # Default: ±20% around critical point
         min_val = critical_point * 0.8
         max_val = critical_point * 1.2
-    
+
     # Resolution determines number of points
     n_points = {
         "coarse": 10,
         "medium": 25,
         "fine": 50,
     }.get(resolution, 25)
-    
+
     # Denser sampling near critical point
     # Use log spacing on both sides
     below_points = np.linspace(min_val, critical_point, n_points // 2)
-    above_points = np.linspace(
-        critical_point, max_val, n_points // 2 + 1
-    )[1:]  # Avoid duplicate at critical_point
-    
+    above_points = np.linspace(critical_point, max_val, n_points // 2 + 1)[
+        1:
+    ]  # Avoid duplicate at critical_point
+
     return np.concatenate([below_points, above_points]).tolist()

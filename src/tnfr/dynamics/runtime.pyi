@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from ..types import HistoryState, TNFRGraph
-from .aliases import (
-    ALIAS_DNFR as ALIAS_DNFR,
-    ALIAS_EPI as ALIAS_EPI,
-    ALIAS_SI as ALIAS_SI,
-    ALIAS_VF as ALIAS_VF,
-)
 from collections.abc import Mapping
 from typing import Any
+
+from ..types import HistoryState, TNFRGraph
+from .aliases import ALIAS_DNFR as ALIAS_DNFR
+from .aliases import ALIAS_EPI as ALIAS_EPI
+from .aliases import ALIAS_SI as ALIAS_SI
+from .aliases import ALIAS_VF as ALIAS_VF
 
 __all__ = [
     "ALIAS_VF",

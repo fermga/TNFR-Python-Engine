@@ -60,26 +60,27 @@ try:
 except Exception:  # pragma: no cover
     nx = None  # type: ignore
 
+from ..constants.canonical import PHI  # Golden ratio for escape threshold
 from ..constants.canonical import (
-    PHI,  # Golden ratio for escape threshold
+    PHYSICS_CURVATURE_HOTSPOT_CANONICAL,
     PHYSICS_GRAD_THRESHOLD_CANONICAL,
-    PHYSICS_CURVATURE_HOTSPOT_CANONICAL, 
     PHYSICS_HOTSPOT_FRACTION_CANONICAL,
 )
 from ..operators.definitions import (
-    Coupling,
-    Resonance,
     Coherence,
+    Coupling,
     Dissonance,
     Mutation,
+    Resonance,
     SelfOrganization,
     Silence,
 )
 from .fields import (
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
     compute_structural_potential,
 )
+
 
 @dataclass
 class InteractionResult:
@@ -91,12 +92,12 @@ class InteractionResult:
     kphi_after_abs_mean: float | None = None
     phi_s_drift_mean: float | None = None
 
+
 def _mean(d: dict[Any, float]) -> float:
     return float(np.mean(list(d.values()))) if d else 0.0
 
-def _apply_to_nodes(
-    G: Any, nodes: Iterable[Any], ops: Iterable[Any]
-) -> list[str]:
+
+def _apply_to_nodes(G: Any, nodes: Iterable[Any], ops: Iterable[Any]) -> list[str]:
     """Apply operator instances to each node in order; return names applied."""
     applied: list[str] = []
     for node in nodes:
@@ -104,6 +105,7 @@ def _apply_to_nodes(
             op(G, node)
             applied.append(op.name)
     return applied
+
 
 def _telemetry_before_after(G: Any, *, compute_phi_s: bool = False) -> dict:
     grad_b = compute_phase_gradient(G)
@@ -115,9 +117,8 @@ def _telemetry_before_after(G: Any, *, compute_phi_s: bool = False) -> dict:
         "phi_b": phi_b,
     }
 
-def _telemetry_after(
-    G: Any, snap: dict, *, compute_phi_s: bool = False
-) -> dict:
+
+def _telemetry_after(G: Any, snap: dict, *, compute_phi_s: bool = False) -> dict:
     grad_a = compute_phase_gradient(G)
     kphi_a = compute_phase_curvature(G)
     phi_a = compute_structural_potential(G) if compute_phi_s else None
@@ -135,6 +136,7 @@ def _telemetry_after(
         "phi_a": phi_a,
         "phi_drift": drift,
     }
+
 
 def em_like(
     G: Any,
@@ -182,7 +184,7 @@ def em_like(
 
     aft = _telemetry_after(G, snap, compute_phi_s=compute_phi_s)
     grad_mean_b = _mean(snap["grad_b"])  # type: ignore[index]
-    grad_mean_a = _mean(aft["grad_a"])   # type: ignore[index]
+    grad_mean_a = _mean(aft["grad_a"])  # type: ignore[index]
     kphi_abs_b = _mean(
         {k: abs(v) for k, v in snap["kphi_b"].items()}
     )  # type: ignore[index]
@@ -214,10 +216,10 @@ def em_like(
         kphi_before_abs_mean=kphi_abs_b,
         kphi_after_abs_mean=kphi_abs_a,
         phi_s_drift_mean=(
-            float(aft["phi_drift"]) if aft.get("phi_drift") is not None
-            else None
+            float(aft["phi_drift"]) if aft.get("phi_drift") is not None else None
         ),
     )
+
 
 def weak_like(
     G: Any,
@@ -265,7 +267,7 @@ def weak_like(
 
     aft = _telemetry_after(G, snap, compute_phi_s=compute_phi_s)
     grad_mean_b = _mean(snap["grad_b"])  # type: ignore[index]
-    grad_mean_a = _mean(aft["grad_a"])   # type: ignore[index]
+    grad_mean_a = _mean(aft["grad_a"])  # type: ignore[index]
     kphi_abs_b = _mean(
         {k: abs(v) for k, v in snap["kphi_b"].items()}
     )  # type: ignore[index]
@@ -297,10 +299,10 @@ def weak_like(
         kphi_before_abs_mean=kphi_abs_b,
         kphi_after_abs_mean=kphi_abs_a,
         phi_s_drift_mean=(
-            float(aft["phi_drift"]) if aft.get("phi_drift") is not None
-            else None
+            float(aft["phi_drift"]) if aft.get("phi_drift") is not None else None
         ),
     )
+
 
 def strong_like(
     G: Any,
@@ -339,9 +341,7 @@ def strong_like(
     applied = _apply_to_nodes(G, nodes, ops)
 
     aft = _telemetry_after(G, snap, compute_phi_s=compute_phi_s)
-    kphi_abs_a = {
-        k: abs(v) for k, v in aft["kphi_a"].items()
-    }  # type: ignore[index]
+    kphi_abs_a = {k: abs(v) for k, v in aft["kphi_a"].items()}  # type: ignore[index]
     hotspot_frac = 0.0
     if kphi_abs_a:
         vals = list(kphi_abs_a.values())
@@ -369,16 +369,16 @@ def strong_like(
         applied=applied,
         warnings=warnings,
         grad_before_mean=_mean(snap["grad_b"]),  # type: ignore[index]
-        grad_after_mean=_mean(aft["grad_a"]),    # type: ignore[index]
+        grad_after_mean=_mean(aft["grad_a"]),  # type: ignore[index]
         kphi_before_abs_mean=_mean(
             {k: abs(v) for k, v in snap["kphi_b"].items()}
         ),  # type: ignore[index]
         kphi_after_abs_mean=_mean(kphi_abs_a),
         phi_s_drift_mean=(
-            float(aft["phi_drift"]) if aft.get("phi_drift") is not None
-            else None
+            float(aft["phi_drift"]) if aft.get("phi_drift") is not None else None
         ),
     )
+
 
 def gravity_like(
     G: Any,
@@ -433,7 +433,7 @@ def gravity_like(
         applied=applied,
         warnings=warnings,
         grad_before_mean=_mean(snap["grad_b"]),  # type: ignore[index]
-        grad_after_mean=_mean(aft["grad_a"]),    # type: ignore[index]
+        grad_after_mean=_mean(aft["grad_a"]),  # type: ignore[index]
         kphi_before_abs_mean=_mean(
             {k: abs(v) for k, v in snap["kphi_b"].items()}
         ),  # type: ignore[index]
@@ -441,10 +441,10 @@ def gravity_like(
             {k: abs(v) for k, v in aft["kphi_a"].items()}
         ),  # type: ignore[index]
         phi_s_drift_mean=(
-            float(aft["phi_drift"]) if aft.get("phi_drift") is not None
-            else None
+            float(aft["phi_drift"]) if aft.get("phi_drift") is not None else None
         ),
     )
+
 
 __all__ = [
     "InteractionResult",

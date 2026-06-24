@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_EPI, ALIAS_DNFR
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
 from ..operators.definitions import (
     Coherence,
     Dissonance,
@@ -27,6 +27,7 @@ from ..structural import run_sequence
 from ..types import TNFRGraph
 
 __all__ = ["AdaptiveLearningSystem"]
+
 
 class AdaptiveLearningSystem:
     """System for adaptive learning using TNFR operators.

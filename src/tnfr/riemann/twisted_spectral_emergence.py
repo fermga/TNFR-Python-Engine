@@ -92,7 +92,6 @@ from .twisted_prime_ladder_hamiltonian import (
 )
 from .twisted_weil_explicit_formula import character_parity
 
-
 __all__ = [
     "TWISTED_CANONICAL_COUPLING_LAWS",
     "TwistedInterPrimeCoupling",
@@ -139,9 +138,7 @@ class TwistedInterPrimeCoupling:
     frobenius_norm: float
 
 
-def _coupling_kernel(
-    law: str, p: int, k: int, q: int, m: int
-) -> float:
+def _coupling_kernel(law: str, p: int, k: int, q: int, m: int) -> float:
     """Untwisted canonical kernel (chi factor applied separately).
 
     ``m`` plays the role of the second ladder index ``l`` in the
@@ -231,9 +228,7 @@ def build_twisted_inter_prime_coupling(
                 strength
                 * chi_pi
                 * chi_pj
-                * _coupling_kernel(
-                    law, int(p_i), int(k_i), int(p_j), int(k_j)
-                )
+                * _coupling_kernel(law, int(p_i), int(k_i), int(p_j), int(k_j))
             )
             J[i, j] = val
             J[j, i] = val
@@ -353,7 +348,7 @@ def twisted_sweep_coupling_strength(
         spacings = nearest_neighbour_spacings(unfolded)
         ks_gue[idx] = ks_distance_to_gue(spacings)
         ks_poi[idx] = ks_distance_to_poisson(spacings)
-        mean_s2[idx] = float(np.mean(spacings ** 2))
+        mean_s2[idx] = float(np.mean(spacings**2))
         frob[idx] = coupling.frobenius_norm
         eig_range[idx, 0] = float(eigvals.real.min())
         eig_range[idx, 1] = float(eigvals.real.max())
@@ -362,8 +357,7 @@ def twisted_sweep_coupling_strength(
     baseline_idx = int(np.argmin(strengths_arr))
 
     notes = (
-        f"chi={chi.name} (q={chi.modulus}, "
-        f"a={int(character_parity(chi))})",
+        f"chi={chi.name} (q={chi.modulus}, " f"a={int(character_parity(chi))})",
         f"baseline (strength={strengths_arr[baseline_idx]:.3g}) "
         f"KS_GUE = {ks_gue[baseline_idx]:.4f}",
         f"best   (strength={strengths_arr[best_idx]:.3g}) "
@@ -400,7 +394,14 @@ def compute_twisted_spectral_emergence_report(
     max_power: int = 4,
     laws: Sequence[str] = TWISTED_CANONICAL_COUPLING_LAWS,
     strengths: Sequence[float] = (
-        0.0, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0,
+        0.0,
+        0.05,
+        0.1,
+        0.2,
+        0.5,
+        1.0,
+        2.0,
+        5.0,
     ),
 ) -> dict[str, TwistedSpectralEmergenceReport]:
     """Sweep every canonical chi-twisted law for ``chi`` and return reports.

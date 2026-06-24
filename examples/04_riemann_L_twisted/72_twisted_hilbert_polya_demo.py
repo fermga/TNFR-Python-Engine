@@ -33,9 +33,7 @@ from tnfr.riemann.dirichlet_l import (
     real_character_mod_4,
     real_character_mod_5,
 )
-from tnfr.riemann.twisted_hilbert_polya import (
-    compute_twisted_hilbert_polya_certificate,
-)
+from tnfr.riemann.twisted_hilbert_polya import compute_twisted_hilbert_polya_certificate
 
 
 def _ensure_utf8_stdout() -> None:
@@ -82,10 +80,7 @@ def _print_certificate(cert) -> None:
     print("  Operator-level structural gap spec(P34) vs spec(T_HP^(chi))")
     print(f"    n_compared        = {cert.spectral_gap_n_compared}")
     print(f"    Wasserstein-1     = {cert.spectral_gap_wasserstein_1:.4e}")
-    print(
-        f"    growth ratio      = "
-        f"{cert.spectral_gap_growth_ratio:.4e}"
-    )
+    print(f"    growth ratio      = " f"{cert.spectral_gap_growth_ratio:.4e}")
     print()
     print(f"  scaffold_consistent = {cert.scaffold_consistent}")
 
@@ -186,21 +181,11 @@ def main() -> int:
     for line in notes:
         print(f"  - {line}")
     print()
-    print(
-        "  Open structural piece: derive T_HP^(chi) on chi-twisted TNFR"
-    )
-    print(
-        "  Hilbert space from the nodal equation, conservation, and"
-    )
-    print(
-        "  grammar WITHOUT inputting the L-zeros.  P45 establishes the"
-    )
-    print(
-        "  operator-level slot such a derivation must fill; it does"
-    )
-    print(
-        "  not fill it.  P45 is the L-track structural mirror of P27."
-    )
+    print("  Open structural piece: derive T_HP^(chi) on chi-twisted TNFR")
+    print("  Hilbert space from the nodal equation, conservation, and")
+    print("  grammar WITHOUT inputting the L-zeros.  P45 establishes the")
+    print("  operator-level slot such a derivation must fill; it does")
+    print("  not fill it.  P45 is the L-track structural mirror of P27.")
     print()
 
     ok = all(c.scaffold_consistent for c in certs)

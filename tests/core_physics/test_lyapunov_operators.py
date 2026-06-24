@@ -13,6 +13,7 @@ must satisfy per-operator bounds derived from the glyph factors.
 
 TIER: CORE PHYSICS — Lyapunov stability is fundamental to coherence preservation.
 """
+
 from __future__ import annotations
 
 import math
@@ -23,23 +24,23 @@ import pytest
 
 from tnfr.constants import inject_defaults
 from tnfr.physics.lyapunov import (
+    OPERATOR_LYAPUNOV_BOUNDS,
     EnergyClass,
     OperatorLyapunovBound,
-    OPERATOR_LYAPUNOV_BOUNDS,
-    get_bound,
-    compute_operator_energy_bound,
-    verify_operator_lyapunov,
-    compute_sequence_energy_bound,
-    prove_sequence_lyapunov,
-    analyze_spectral_gap,
     analyze_operator_convergence,
+    analyze_spectral_gap,
+    compute_operator_energy_bound,
+    compute_sequence_energy_bound,
+    get_bound,
+    prove_sequence_lyapunov,
+    verify_operator_lyapunov,
 )
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 def _make_tnfr_graph(
     n: int = 20,
@@ -86,19 +87,40 @@ def complete_graph():
 # 1. Operator Lyapunov bounds registry
 # ===========================================================================
 
+
 class TestOperatorLyapunovBoundsRegistry:
     """All 13 operators must have registered bounds."""
 
     EXPECTED_OPERATORS = [
-        "Coherence", "Reception", "Coupling", "SelfOrganization",
-        "Transition", "Dissonance", "Expansion", "Emission",
-        "Resonance", "Silence", "Mutation", "Recursivity", "Contraction",
+        "Coherence",
+        "Reception",
+        "Coupling",
+        "SelfOrganization",
+        "Transition",
+        "Dissonance",
+        "Expansion",
+        "Emission",
+        "Resonance",
+        "Silence",
+        "Mutation",
+        "Recursivity",
+        "Contraction",
     ]
 
     EXPECTED_GLYPHS = [
-        "IL", "EN", "UM", "THOL", "NAV",
-        "OZ", "VAL", "AL", "RA",
-        "SHA", "ZHIR", "REMESH", "NUL",
+        "IL",
+        "EN",
+        "UM",
+        "THOL",
+        "NAV",
+        "OZ",
+        "VAL",
+        "AL",
+        "RA",
+        "SHA",
+        "ZHIR",
+        "REMESH",
+        "NUL",
     ]
 
     def test_registry_has_13_operators(self):
@@ -133,6 +155,7 @@ class TestOperatorLyapunovBoundsRegistry:
 # 2. Energy class taxonomy
 # ===========================================================================
 
+
 class TestEnergyClassTaxonomy:
     """Verify the operators are classified by the canonical grammar U2 role.
 
@@ -148,8 +171,16 @@ class TestEnergyClassTaxonomy:
 
     STABILISERS = ["Coherence", "SelfOrganization"]
     DESTABILISERS = ["Dissonance", "Expansion", "Mutation"]
-    NEUTRALS = ["Emission", "Reception", "Resonance", "Coupling",
-                "Silence", "Contraction", "Transition", "Recursivity"]
+    NEUTRALS = [
+        "Emission",
+        "Reception",
+        "Resonance",
+        "Coupling",
+        "Silence",
+        "Contraction",
+        "Transition",
+        "Recursivity",
+    ]
 
     @pytest.mark.parametrize("name", STABILISERS)
     def test_stabilisers(self, name):
@@ -169,14 +200,20 @@ class TestEnergyClassTaxonomy:
             increases_structural_pressure,
             provides_negative_feedback,
         )
+
         name_to_func = {
-            "Emission": "emission", "Reception": "reception",
-            "Coherence": "coherence", "Dissonance": "dissonance",
-            "Coupling": "coupling", "Resonance": "resonance",
-            "Silence": "silence", "Expansion": "expansion",
+            "Emission": "emission",
+            "Reception": "reception",
+            "Coherence": "coherence",
+            "Dissonance": "dissonance",
+            "Coupling": "coupling",
+            "Resonance": "resonance",
+            "Silence": "silence",
+            "Expansion": "expansion",
             "Contraction": "contraction",
             "SelfOrganization": "self_organization",
-            "Mutation": "mutation", "Transition": "transition",
+            "Mutation": "mutation",
+            "Transition": "transition",
             "Recursivity": "recursivity",
         }
         for name, func in name_to_func.items():
@@ -192,6 +229,7 @@ class TestEnergyClassTaxonomy:
 # ===========================================================================
 # 3. Per-operator contraction / expansion rates
 # ===========================================================================
+
 
 class TestContractionRates:
     """Verify contraction rates are physically sensible."""
@@ -241,6 +279,7 @@ class TestContractionRates:
 # 4. Energy bound computation
 # ===========================================================================
 
+
 class TestComputeOperatorEnergyBound:
     """Test compute_operator_energy_bound for each class."""
 
@@ -282,6 +321,7 @@ class TestComputeOperatorEnergyBound:
 # 5. Operator Lyapunov verification
 # ===========================================================================
 
+
 class TestVerifyOperatorLyapunov:
     """Test the verification function against synthetic energy data."""
 
@@ -322,6 +362,7 @@ class TestVerifyOperatorLyapunov:
 # 6. Sequence energy bound
 # ===========================================================================
 
+
 class TestSequenceEnergyBound:
     """Test cumulative energy bound across operator sequences."""
 
@@ -350,6 +391,7 @@ class TestSequenceEnergyBound:
 # ===========================================================================
 # 7. Sequence Lyapunov proof
 # ===========================================================================
+
 
 class TestSequenceLyapunovProof:
     """Test formal proof of net contractiveness for compliant sequences."""
@@ -397,6 +439,7 @@ class TestSequenceLyapunovProof:
 # ===========================================================================
 # 8. Spectral gap analysis
 # ===========================================================================
+
 
 class TestSpectralGapAnalysis:
     """Test spectral gap characterisation on various topologies."""
@@ -450,8 +493,9 @@ class TestSpectralGapAnalysis:
         assert result.relaxation_time == float("inf")
         assert result.is_connected
 
-    @pytest.mark.parametrize("topology", ["watts_strogatz", "barabasi_albert",
-                                          "complete"])
+    @pytest.mark.parametrize(
+        "topology", ["watts_strogatz", "barabasi_albert", "complete"]
+    )
     def test_positive_gap_across_topologies(self, topology):
         G = _make_tnfr_graph(15, topology, seed=7)
         result = analyze_spectral_gap(G)
@@ -488,10 +532,9 @@ class TestDiffusionHTheoremRate:
         # diffusion_gap == λ₂(L_sym), the canonical relaxation eigenvalue
         assert abs(sg.diffusion_gap - lam2) < 1e-9
         # it is the Fiedler eigenvalue of the canonical operator L_rw itself
-        assert (
-            np.linalg.norm(L_rw @ v2 - sg.diffusion_gap * v2)
-            < 1e-9 * np.linalg.norm(v2)
-        )
+        assert np.linalg.norm(
+            L_rw @ v2 - sg.diffusion_gap * v2
+        ) < 1e-9 * np.linalg.norm(v2)
         # and NOT the combinatorial gap on this irregular graph
         assert abs(sg.diffusion_gap - sg.spectral_gap) > 1e-3
 
@@ -507,6 +550,7 @@ class TestDiffusionHTheoremRate:
 # ===========================================================================
 # 9. Combined Lyapunov + spectral convergence
 # ===========================================================================
+
 
 class TestOperatorConvergence:
     """Test analyze_operator_convergence for combined analysis."""
@@ -545,6 +589,7 @@ class TestOperatorConvergence:
 # 10. Edge cases and robustness
 # ===========================================================================
 
+
 class TestEdgeCases:
     """Test edge cases and boundary conditions."""
 
@@ -562,9 +607,7 @@ class TestEdgeCases:
     def test_sequence_never_goes_negative(self):
         """Energy bound is clamped to >= 0."""
         # Many aggressive stabilisers on small energy
-        e = compute_sequence_energy_bound(
-            ["IL"] * 50, energy_initial=0.001, n_nodes=1
-        )
+        e = compute_sequence_energy_bound(["IL"] * 50, energy_initial=0.001, n_nodes=1)
         assert e >= 0.0
 
     def test_empty_sequence_returns_initial(self):

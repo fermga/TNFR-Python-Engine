@@ -12,10 +12,8 @@ from typing import Any, MutableMapping
 
 from ..types import GraphLike
 from ..utils import get_graph
-from ..utils.cache import (
-    CacheStatistics as CacheStats,
-    configure_graph_cache_limits,
-)
+from ..utils.cache import CacheStatistics as CacheStats
+from ..utils.cache import configure_graph_cache_limits
 
 __all__ = (
     "get_cache_config",
@@ -25,6 +23,7 @@ __all__ = (
 )
 
 logger = logging.getLogger(__name__)
+
 
 def get_cache_config(
     G: GraphLike,
@@ -59,6 +58,7 @@ def get_cache_config(
     if not isinstance(config, Mapping):
         return {}
     return dict(config)
+
 
 def configure_hot_path_caches(
     G: GraphLike,
@@ -123,16 +123,14 @@ def configure_hot_path_caches(
         # Use the maximum requested capacity for the shared edge cache
         # to satisfy the largest requirement
         max_capacity = max(edge_capacities)
-        configure_graph_cache_limits(
-            G,
-            overrides={"_edge_version_state": max_capacity}
-        )
+        configure_graph_cache_limits(G, overrides={"_edge_version_state": max_capacity})
 
     if si_chunk_size is not None:
         graph["SI_CHUNK_SIZE"] = int(si_chunk_size)
 
     if coherence_cache_size is not None:
         config["coherence_cache_size"] = int(coherence_cache_size)
+
 
 def log_cache_metrics(
     G: GraphLike,

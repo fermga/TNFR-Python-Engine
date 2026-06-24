@@ -83,20 +83,17 @@ References
 - theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md (N6–N14, NS-G roadmap)
 """
 
+import math
 import os
 import sys
-import math
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from tnfr.navier_stokes.operator import (
-    build_torus_graph_3d,
-    TNFRNavierStokesOperator,
-)
+from tnfr.navier_stokes.operator import TNFRNavierStokesOperator, build_torus_graph_3d
 
 NU = 0.01
 DT = 0.005
-STEPS = 120          # T = 0.6
+STEPS = 120  # T = 0.6
 AMP = 1.0
 RESOLUTIONS = (8, 12, 16, 24)
 
@@ -116,8 +113,12 @@ def _run(n):
         peak_z = max(peak_z, op.enstrophy_curl())
     zf = op.enstrophy_curl()
     return {
-        "n": n, "z0": z0, "zf": zf, "peak_z": peak_z,
-        "int_p": int_p, "int_d": int_d,
+        "n": n,
+        "z0": z0,
+        "zf": zf,
+        "peak_z": peak_z,
+        "int_p": int_p,
+        "int_d": int_d,
         "balance": int_p / int_d if int_d > 0 else 0.0,
     }
 
@@ -138,13 +139,17 @@ def experiment_1_budget():
     print()
 
     results = [_run(n) for n in RESOLUTIONS]
-    print(f"  {'n':>3} {'Z(T)/Z(0)':>10} {'peakZ/Z0':>9} "
-          f"{'∫P':>7} {'∫D':>7} {'∫P/∫D':>7}")
+    print(
+        f"  {'n':>3} {'Z(T)/Z(0)':>10} {'peakZ/Z0':>9} "
+        f"{'∫P':>7} {'∫D':>7} {'∫P/∫D':>7}"
+    )
     print("  " + "-" * 50)
     for r in results:
-        print(f"  {r['n']:>3} {r['zf'] / r['z0']:>10.3f} "
-              f"{r['peak_z'] / r['z0']:>9.3f} "
-              f"{r['int_p']:>7.2f} {r['int_d']:>7.2f} {r['balance']:>7.3f}")
+        print(
+            f"  {r['n']:>3} {r['zf'] / r['z0']:>10.3f} "
+            f"{r['peak_z'] / r['z0']:>9.3f} "
+            f"{r['int_p']:>7.2f} {r['int_d']:>7.2f} {r['balance']:>7.3f}"
+        )
     print()
     bounded = all(r["zf"] / r["z0"] <= 1.001 for r in results)
     no_peak = all(r["peak_z"] / r["z0"] <= 1.05 for r in results)
@@ -152,8 +157,10 @@ def experiment_1_budget():
     print(f"  net enstrophy bounded Z(T) ≤ Z(0) at every n: {bounded}")
     print(f"  peak enstrophy never exceeds IC by >5%:       {no_peak}")
     print(f"  integrated balance ∫P/∫D vs n: {[round(x, 3) for x in bal]}")
-    print(f"  -> balance DECREASES with resolution "
-          f"({bal[0]:.2f} → {bal[-1]:.2f}): native dissipation dominates")
+    print(
+        f"  -> balance DECREASES with resolution "
+        f"({bal[0]:.2f} → {bal[-1]:.2f}): native dissipation dominates"
+    )
     print("     more as finer scales are resolved.")
     print()
     return results
@@ -176,7 +183,7 @@ def experiment_2_native_damping():
     prev = None
     for n in RESOLUTIONS:
         h = 2.0 * math.pi / n
-        lam_max = 2.0 * 3.0 * (1.0 - math.cos(math.pi)) / h ** 2
+        lam_max = 2.0 * 3.0 * (1.0 - math.cos(math.pi)) / h**2
         d = NU * lam_max
         ratio = d / prev if prev else float("nan")
         tag = "" if prev is None else f"{ratio:>7.2f}"

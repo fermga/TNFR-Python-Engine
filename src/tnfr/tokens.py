@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from .compat.dataclass import dataclass
 from enum import Enum, auto
 from typing import Any, Iterable, Sequence
 
+from .compat.dataclass import dataclass
 from .types import Glyph, Node
+
 
 @dataclass(slots=True)
 class WAIT:
@@ -14,11 +15,13 @@ class WAIT:
 
     steps: int = 1
 
+
 @dataclass(slots=True)
 class TARGET:
     """Select the subset of nodes for subsequent glyphs."""
 
     nodes: Iterable[Node] | None = None  # ``None`` targets all nodes
+
 
 @dataclass(slots=True)
 class THOL:
@@ -28,10 +31,12 @@ class THOL:
     repeat: int = 1
     force_close: Glyph | None = None
 
+
 Token = Glyph | WAIT | TARGET | THOL | str
 
 # Sentinel used internally to mark the boundaries of a THOL block during flattening
 THOL_SENTINEL = object()
+
 
 class OpTag(Enum):
     """Operation tags emitted by the flattening step."""
@@ -40,6 +45,7 @@ class OpTag(Enum):
     WAIT = auto()
     GLYPH = auto()
     THOL = auto()
+
 
 __all__ = [
     "Node",

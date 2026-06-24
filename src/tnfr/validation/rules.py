@@ -12,7 +12,6 @@ from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Mapping
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_SI
 from ..config.operator_names import (
     CONTRACTION,
     DISSONANCE,
@@ -22,9 +21,10 @@ from ..config.operator_names import (
     canonical_operator_name,
     operator_display_name,
 )
-from ..utils import clamp01
+from ..constants.aliases import ALIAS_SI
 from ..metrics.common import normalize_dnfr
 from ..types import Glyph
+from ..utils import clamp01
 
 if TYPE_CHECKING:  # pragma: no cover - only for typing
     from ..operators.grammar import GrammarContext
@@ -41,6 +41,7 @@ __all__ = [
     "_check_compatibility",
 ]
 
+
 def coerce_glyph(val: Any) -> Glyph | Any:
     """Return ``val`` coerced to :class:`Glyph` when possible."""
 
@@ -55,6 +56,7 @@ def coerce_glyph(val: Any) -> Glyph | Any:
                 except ValueError:
                     pass  # Invalid glyph candidate, return as-is
         return val
+
 
 def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
     """Determine fallback glyph for ``cand_key``.
@@ -72,14 +74,17 @@ def glyph_fallback(cand_key: str, fallbacks: Mapping[str, Any]) -> Glyph | str:
     # No automatic fallback - let frequency validation handle compatibility
     return coerce_glyph(cand_key)
 
+
 # -------------------------
 # Normalisation helpers
 # -------------------------
+
 
 def get_norm(ctx: "GrammarContext", key: str) -> float:
     """Retrieve a global normalisation value from ``ctx.norms``."""
 
     return float(ctx.norms.get(key, 1.0)) or 1.0
+
 
 def _norm_attr(ctx: "GrammarContext", nd, attr_alias: str, norm_key: str) -> float:
     """Normalise ``attr_alias`` using the global maximum ``norm_key``."""
@@ -87,19 +92,23 @@ def _norm_attr(ctx: "GrammarContext", nd, attr_alias: str, norm_key: str) -> flo
     max_val = get_norm(ctx, norm_key)
     return clamp01(abs(get_attr(nd, attr_alias, 0.0)) / max_val)
 
+
 def _si(nd) -> float:
     """Return the structural sense index for ``nd`` clamped to ``[0, 1]``."""
 
     return clamp01(get_attr(nd, ALIAS_SI, 0.5))
+
 
 def normalized_dnfr(ctx: "GrammarContext", nd) -> float:
     """Normalise |ΔNFR| using the configured global maximum."""
 
     return normalize_dnfr(nd, get_norm(ctx, "dnfr_max"))
 
+
 # -------------------------
 # Translation helpers
 # -------------------------
+
 
 def _structural_label(value: object) -> str:
     """Return the canonical structural name for ``value`` when possible."""
@@ -117,9 +126,11 @@ def _structural_label(value: object) -> str:
         return "unknown"
     return canonical_operator_name(str(value))
 
+
 # -------------------------
 # Validation rules
 # -------------------------
+
 
 def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
     """Enforce OZ precedents before allowing ZHIR mutations.
@@ -150,6 +161,7 @@ def _check_oz_to_zhir(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | st
             # Maintains TNFR invariant: mutation requires prior dissonance (§3.4 operator closure)
             return dissonance_glyph
     return cand
+
 
 def _check_thol_closure(
     ctx: "GrammarContext", n, cand: Glyph | str, st: dict[str, Any]
@@ -187,7 +199,9 @@ def _check_thol_closure(
             if target_glyph is not None and cand_name in {CONTRACTION, SILENCE}:
                 return target_glyph
 
-            history = tuple(_structural_label(item) for item in nd.get("glyph_history", ()))
+            history = tuple(
+                _structural_label(item) for item in nd.get("glyph_history", ())
+            )
             cand_label = cand_name if cand_name is not None else _structural_label(cand)
             order = (*history[-st["thol_len"] :], cand_label)
             from ..operators import grammar as _grammar
@@ -211,6 +225,7 @@ def _check_thol_closure(
             )
     return cand
 
+
 def _check_compatibility(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph | str:
     """Verify canonical transition compatibility based on TNFR structural dynamics.
 
@@ -229,11 +244,13 @@ def _check_compatibility(ctx: "GrammarContext", n, cand: Glyph | str) -> Glyph |
     # All transitions allowed - validation at sequence level via U1-U5
     return cand
 
+
 @lru_cache(maxsize=1)
 def _functional_translators():
     from ..operators import grammar as _grammar
 
     return _grammar.glyph_function_name, _grammar.function_name_to_glyph
+
 
 # NOTE: Compatibility tables deprecated - grammar rules now emerge naturally
 # from TNFR structural dynamics (frequency transitions only)

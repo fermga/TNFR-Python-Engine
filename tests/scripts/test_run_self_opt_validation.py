@@ -37,7 +37,9 @@ def test_validation_status_classification(monkeypatch, tmp_path) -> None:
 
     calls: list[tuple[str, ...]] = []
 
-    def fake_run_pytest(tests: list[str], *, pytest_cmd: str | None, pytest_args: str) -> int:
+    def fake_run_pytest(
+        tests: list[str], *, pytest_cmd: str | None, pytest_args: str
+    ) -> int:
         calls.append(tuple(tests))
         return 0 if "tests/pass_suite.py" in tests else 1
 
@@ -52,16 +54,22 @@ def test_validation_status_classification(monkeypatch, tmp_path) -> None:
     assert len(calls) == 2
 
     report_payload = json.loads((tmp_path / "report.json").read_text(encoding="utf-8"))
-    statuses = {entry["operation_type"]: entry["status"] for entry in report_payload["results"]}
+    statuses = {
+        entry["operation_type"]: entry["status"] for entry in report_payload["results"]
+    }
     assert statuses["paley_partition"] == "validated"
     assert statuses["integration_pipeline"] == "regressed"
     assert statuses["orbitals_demo"] == "pending"
 
 
 def test_validation_fail_on_regression(monkeypatch, tmp_path) -> None:
-    monkeypatch.setattr(validator, "OPERATION_TESTS", {"paley_partition": ["tests/failure.py"]})
+    monkeypatch.setattr(
+        validator, "OPERATION_TESTS", {"paley_partition": ["tests/failure.py"]}
+    )
 
-    def fake_run_pytest(tests: list[str], *, pytest_cmd: str | None, pytest_args: str) -> int:  # noqa: ARG001
+    def fake_run_pytest(
+        tests: list[str], *, pytest_cmd: str | None, pytest_args: str
+    ) -> int:  # noqa: ARG001
         return 1
 
     monkeypatch.setattr(validator, "_run_pytest", fake_run_pytest)
@@ -69,4 +77,3 @@ def test_validation_fail_on_regression(monkeypatch, tmp_path) -> None:
     args = validator.parse_args(_build_args(tmp_path, extra=["--fail-on-regression"]))
     with pytest.raises(SystemExit):
         validator.run(args)
-

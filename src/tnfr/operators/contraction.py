@@ -16,6 +16,7 @@ from ..config.operator_names import CONTRACTION
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
+
 class Contraction(Operator):
     """Densify structure; amplify local delta NFR; prep for IL.
 
@@ -27,21 +28,22 @@ class Contraction(Operator):
     name: ClassVar[str] = CONTRACTION
     glyph: ClassVar[Glyph] = Glyph.NUL
 
-    def _validate_preconditions(
-        self, G: TNFRGraph, node: Any
-    ) -> None:
+    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         from .preconditions import validate_contraction
+
         validate_contraction(G, node)
 
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
     ) -> dict[str, Any]:
         from .metrics import contraction_metrics
+
         return contraction_metrics(
             G,
             node,
             state_before["vf"],
             state_before["epi"],
         )
+
 
 __all__ = ["Contraction"]

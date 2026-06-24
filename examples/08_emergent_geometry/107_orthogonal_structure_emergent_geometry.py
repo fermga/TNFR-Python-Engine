@@ -75,20 +75,17 @@ References
 - AGENTS.md §"Emergent Symplectic Substrate", §"Transport Content"
 """
 
+import math
 import os
 import sys
-import math
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-from tnfr.physics.emergent_particles import winding_ring, winding_number
-from tnfr.physics.canonical import (
-    compute_phase_gradient,
-    compute_phase_curvature,
-)
+from tnfr.physics.canonical import compute_phase_curvature, compute_phase_gradient
+from tnfr.physics.emergent_particles import winding_number, winding_ring
 from tnfr.physics.extended import compute_phase_current
 
 
@@ -108,6 +105,7 @@ def experiment_1_hodge():
     print()
 
     import random
+
     rng = random.Random(3)
     G = nx.watts_strogatz_graph(30, 4, 0.35, seed=3)
     for nd in G.nodes():
@@ -133,8 +131,10 @@ def experiment_1_hodge():
     grad_part = B @ (bpinv @ j_diff)
     cycle_part = j_diff - grad_part
     print("  TRANSPORT tower:  J_diff = grad(EPI) = B·EPI")
-    print(f"    ||J_diff|| = {np.linalg.norm(j_diff):.4f}, "
-          f"||cycle part|| = {np.linalg.norm(cycle_part):.1e}")
+    print(
+        f"    ||J_diff|| = {np.linalg.norm(j_diff):.4f}, "
+        f"||cycle part|| = {np.linalg.norm(cycle_part):.1e}"
+    )
     print("    → J_diff is IRROTATIONAL (curl-free): the gradient/cut")
     print("      subspace. Circulation around every cycle = 0 (telescoping).")
 
@@ -142,8 +142,11 @@ def experiment_1_hodge():
     max_circ = 0.0
     for cyc in cycles:
         k = len(cyc)
-        circ = sum(epi[idx[cyc[(i + 1) % k]]] - epi[idx[cyc[i]]]
-                   for i in range(k) if G.has_edge(cyc[i], cyc[(i + 1) % k]))
+        circ = sum(
+            epi[idx[cyc[(i + 1) % k]]] - epi[idx[cyc[i]]]
+            for i in range(k)
+            if G.has_edge(cyc[i], cyc[(i + 1) % k])
+        )
         max_circ = max(max_circ, abs(circ))
     print(f"    max circulation of J_diff over cycles = {max_circ:.1e}")
     print()
@@ -188,11 +191,13 @@ def experiment_2_winding_decoupling():
     print("(K_φ = J_φ = 0). Where does the topological charge live?")
     print()
 
-    print(f"  {'W':>3} {'n':>4} {'measW':>6} {'mean|∇φ|':>9} "
-          f"{'2πW/n':>7} {'|K_φ|':>7} {'|J_φ|':>7}")
+    print(
+        f"  {'W':>3} {'n':>4} {'measW':>6} {'mean|∇φ|':>9} "
+        f"{'2πW/n':>7} {'|K_φ|':>7} {'|J_φ|':>7}"
+    )
     rows = []
     for w in (1, 2, 3, 4, 5):
-        nn = 60 + w   # vary n per W → fresh topology → no tetrad-cache collision
+        nn = 60 + w  # vary n per W → fresh topology → no tetrad-cache collision
         G = winding_ring(nn, w)
         wm, _ = winding_number(G)
         grad = compute_phase_gradient(G)
@@ -202,8 +207,10 @@ def experiment_2_winding_decoupling():
         mk = float(np.mean(np.abs(list(kphi.values()))))
         mj = float(np.mean(np.abs(list(jphi.values()))))
         rows.append((w, mg))
-        print(f"  {w:>3} {nn:>4} {wm:>6} {mg:>9.4f} {2 * math.pi * w / nn:>7.4f} "
-              f"{mk:>7.4f} {mj:>7.4f}")
+        print(
+            f"  {w:>3} {nn:>4} {wm:>6} {mg:>9.4f} {2 * math.pi * w / nn:>7.4f} "
+            f"{mk:>7.4f} {mj:>7.4f}"
+        )
     ws = np.array([r[0] for r in rows], float)
     gs = np.array([r[1] for r in rows], float)
     r = float(np.corrcoef(ws, gs)[0, 1])

@@ -74,18 +74,18 @@ References
 - AGENTS.md §"TNFR-Riemann Program" branches B1/B2/B3 (B2 = new operator)
 """
 
+import math
 import os
 import sys
-import math
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from sympy import isprime, divisor_count, divisor_sigma, factorint
+from sympy import divisor_count, divisor_sigma, factorint, isprime
 
 from tnfr.mathematics.number_theory import (
-    ArithmeticTNFRParameters,
     ArithmeticStructuralTerms,
     ArithmeticTNFRFormalism,
+    ArithmeticTNFRParameters,
 )
 
 _PARAMS = ArithmeticTNFRParameters()
@@ -162,13 +162,18 @@ def experiment_2_coherence_phase_fails():
     def phi_coh(n: int) -> float:
         return math.pi * (1.0 - _local_coherence(n))
 
-    print(f"{'2n':>5}  {'prime pair':>14}  {'φ_p+φ_q':>8}  {'φ_2n':>7}"
-          f"  {'residual':>9}  {'match?':>7}")
+    print(
+        f"{'2n':>5}  {'prime pair':>14}  {'φ_p+φ_q':>8}  {'φ_2n':>7}"
+        f"  {'residual':>9}  {'match?':>7}"
+    )
     print("-" * 60)
     for two_n in [10, 28, 50, 100, 200]:
         pair = next(
-            ((a, two_n - a) for a in range(2, two_n // 2 + 1)
-             if isprime(a) and isprime(two_n - a)),
+            (
+                (a, two_n - a)
+                for a in range(2, two_n // 2 + 1)
+                if isprime(a) and isprime(two_n - a)
+            ),
             None,
         )
         if pair is None:
@@ -178,8 +183,10 @@ def experiment_2_coherence_phase_fails():
         t = phi_coh(two_n)
         res = _wrap(s - t)
         matched = res <= DELTA_PHI_MAX
-        print(f"{two_n:>5}  {str(pair):>14}  {s:>8.4f}  {t:>7.4f}"
-              f"  {res:>9.4f}  {'YES' if matched else 'NO':>7}")
+        print(
+            f"{two_n:>5}  {str(pair):>14}  {s:>8.4f}  {t:>7.4f}"
+            f"  {res:>9.4f}  {'YES' if matched else 'NO':>7}"
+        )
 
     print()
     print(f"All residuals ≫ Δφ_max = {DELTA_PHI_MAX}. Phase-matching FAILS")

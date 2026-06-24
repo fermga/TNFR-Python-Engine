@@ -83,17 +83,17 @@ References
 - theory/TNFR_RIEMANN_RESEARCH_NOTES.md §13septies (T-HP), §13vicies-novies (CCET)
 """
 
+import math
 import os
 import sys
-import math
 from collections import defaultdict
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np
 
-from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph
 from tnfr.physics.symplectic_substrate import extract_phase_space_point
+from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph
 
 N_PRIMES = 10
 K = 4
@@ -106,11 +106,11 @@ def _ks_vs_gue(spectrum):
     sp = np.diff(s)
     sp = sp[sp > 1e-12]
     if len(sp) < 3:
-        return float('nan')
+        return float("nan")
     sp = sp / sp.mean()
     xs = np.sort(sp)
     emp = np.arange(1, len(xs) + 1) / len(xs)
-    gue = 1.0 - np.exp(-(4.0 / np.pi) * xs ** 2)
+    gue = 1.0 - np.exp(-(4.0 / np.pi) * xs**2)
     return float(np.max(np.abs(emp - gue)))
 
 
@@ -159,13 +159,13 @@ def experiment_2_dynamics_carries_primes(G):
     nodes = list(G.nodes())
     tau = 1.0
     for n in nodes:
-        G.nodes[n]['phase'] = float(G.nodes[n]['nu_f'] * tau)
+        G.nodes[n]["phase"] = float(G.nodes[n]["nu_f"] * tau)
     pt = extract_phase_space_point(G)
     idx = {n: i for i, n in enumerate(pt.nodes)}
 
     primes = sorted({p for (p, _k) in nodes})
     by_prime = defaultdict(list)
-    for (p, k) in nodes:
+    for p, k in nodes:
         by_prime[p].append(abs(pt.grad_phi[idx[(p, k)]]))
     mean_gp = [float(np.mean(by_prime[p])) for p in primes]
     logp = [math.log(p) for p in primes]
@@ -198,9 +198,10 @@ def experiment_3_reexpresses_not_adds(G, pt):
     print()
 
     nodes = list(G.nodes())
-    bare = [G.nodes[n]['nu_f'] for n in nodes]               # {k·log p}
-    action = 0.5 * (pt.k_phi ** 2 + pt.j_phi ** 2
-                    + pt.phi_s ** 2 + pt.j_dnfr ** 2)         # substrate action
+    bare = [G.nodes[n]["nu_f"] for n in nodes]  # {k·log p}
+    action = 0.5 * (
+        pt.k_phi**2 + pt.j_phi**2 + pt.phi_s**2 + pt.j_dnfr**2
+    )  # substrate action
     d_bare = _ks_vs_gue(bare)
     d_sub = _ks_vs_gue(action)
 

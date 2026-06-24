@@ -26,8 +26,8 @@ from typing import (
     Mapping,
 )
 
-from ..errors import TNFRValueError
 from ..compat.dataclass import dataclass
+from ..errors import TNFRValueError
 
 if TYPE_CHECKING:
     from .cache import CacheManager
@@ -54,11 +54,13 @@ __all__ = (
 
 _LOGGING_CONFIGURED = False
 
+
 def _reset_logging_state() -> None:
     """Reset cached logging configuration state."""
 
     global _LOGGING_CONFIGURED
     _LOGGING_CONFIGURED = False
+
 
 def _configure_root() -> None:
     """Ensure the root logger has handlers and a default format."""
@@ -76,11 +78,13 @@ def _configure_root() -> None:
 
     _LOGGING_CONFIGURED = True
 
+
 def get_logger(name: str) -> logging.Logger:
     """Return a module-specific logger."""
 
     _configure_root()
     return logging.getLogger(name)
+
 
 class WarnOnce:
     """Log a warning only once for each unique key.
@@ -93,7 +97,9 @@ class WarnOnce:
     every invocation.
     """
 
-    def __init__(self, logger: logging.Logger, msg: str, *, maxsize: int = 1024) -> None:
+    def __init__(
+        self, logger: logging.Logger, msg: str, *, maxsize: int = 1024
+    ) -> None:
         self._logger = logger
         self._msg = msg
         self._maxsize = maxsize
@@ -150,6 +156,7 @@ class WarnOnce:
         with self._lock:
             self._seen.clear()
 
+
 def warn_once(
     logger: logging.Logger,
     msg: str,
@@ -160,14 +167,17 @@ def warn_once(
 
     return WarnOnce(logger, msg, maxsize=maxsize)
 
+
 _FAILED_IMPORT_LIMIT = 128
 _DEFAULT_CACHE_SIZE = 128
 
 _SUCCESS_CACHE_NAME = "import.success"
 _FAILURE_CACHE_NAME = "import.failure"
 
+
 def _import_key(module_name: str, attr: str | None) -> str:
     return module_name if attr is None else f"{module_name}.{attr}"
+
 
 @dataclass(slots=True)
 class ImportRegistry:
@@ -219,10 +229,12 @@ class ImportRegistry:
         with self.lock:
             return key in self.failed
 
+
 # Successful imports are cached so lazy proxies can resolve once and later
 # requests return the concrete object without recreating the proxy. The cache
 # stores weak references whenever possible so unused imports can be collected
 # after external references disappear.
+
 
 class _CacheEntry:
     """Container storing either a weak or strong reference to a value."""
@@ -253,8 +265,10 @@ class _CacheEntry:
     def matches(self, ref: weakref.ReferenceType[Any]) -> bool:
         return self._kind == "weak" and self._value is ref
 
+
 _IMPORT_CACHE_MANAGER: CacheManager | None = None
 _IMPORT_CACHE_MANAGER_LOCK = threading.Lock()
+
 
 def _get_import_cache_manager() -> CacheManager:
     """Lazily initialize and return the import cache manager.
@@ -288,16 +302,25 @@ def _get_import_cache_manager() -> CacheManager:
             if _IMPORT_CACHE_MANAGER is None:
                 from .cache import CacheManager
 
-                _IMPORT_CACHE_MANAGER = CacheManager(default_capacity=_DEFAULT_CACHE_SIZE)
-                _IMPORT_CACHE_MANAGER.register(_SUCCESS_CACHE_NAME, _success_cache_factory)
-                _IMPORT_CACHE_MANAGER.register(_FAILURE_CACHE_NAME, _failure_cache_factory)
+                _IMPORT_CACHE_MANAGER = CacheManager(
+                    default_capacity=_DEFAULT_CACHE_SIZE
+                )
+                _IMPORT_CACHE_MANAGER.register(
+                    _SUCCESS_CACHE_NAME, _success_cache_factory
+                )
+                _IMPORT_CACHE_MANAGER.register(
+                    _FAILURE_CACHE_NAME, _failure_cache_factory
+                )
     return _IMPORT_CACHE_MANAGER
+
 
 def _success_cache_factory() -> OrderedDict[str, _CacheEntry]:
     return OrderedDict()
 
+
 def _failure_cache_factory() -> OrderedDict[str, Exception]:
     return OrderedDict()
+
 
 def _remove_success_entry(key: str, ref: weakref.ReferenceType[Any]) -> None:
 
@@ -310,6 +333,7 @@ def _remove_success_entry(key: str, ref: weakref.ReferenceType[Any]) -> None:
 
     _get_import_cache_manager().update(_SUCCESS_CACHE_NAME, _cleanup)
 
+
 def _trim_cache(name: str, cache: OrderedDict[str, Any]) -> None:
     capacity = _get_import_cache_manager().get_capacity(name)
     if capacity is None:
@@ -317,6 +341,7 @@ def _trim_cache(name: str, cache: OrderedDict[str, Any]) -> None:
     while len(cache) > capacity:
         cache.popitem(last=False)
         _get_import_cache_manager().increment_eviction(name)
+
 
 def _get_success(key: str) -> Any | None:
     result: Any | None = None
@@ -348,6 +373,7 @@ def _get_success(key: str) -> Any | None:
         _get_import_cache_manager().increment_miss(_SUCCESS_CACHE_NAME)
         return None
 
+
 def _store_success(key: str, value: Any) -> None:
     entry = _CacheEntry(value, key=key, remover=_remove_success_entry)
 
@@ -366,6 +392,7 @@ def _store_success(key: str, value: Any) -> None:
 
     _get_import_cache_manager().update(_SUCCESS_CACHE_NAME, _store)
     _get_import_cache_manager().update(_FAILURE_CACHE_NAME, _purge_failure)
+
 
 def _get_failure(key: str) -> Exception | None:
     result: Exception | None = None
@@ -390,6 +417,7 @@ def _get_failure(key: str) -> Exception | None:
         _get_import_cache_manager().increment_miss(_FAILURE_CACHE_NAME)
         return None
 
+
 def _store_failure(key: str, exc: Exception) -> None:
 
     def _store(cache: OrderedDict[str, Exception]) -> OrderedDict[str, Exception]:
@@ -408,12 +436,15 @@ def _store_failure(key: str, exc: Exception) -> None:
     _get_import_cache_manager().update(_FAILURE_CACHE_NAME, _store)
     _get_import_cache_manager().update(_SUCCESS_CACHE_NAME, _purge_success)
 
+
 def _clear_import_cache() -> None:
     _get_import_cache_manager().clear()
+
 
 _IMPORT_STATE = ImportRegistry()
 # Public alias to ease direct introspection in tests and diagnostics.
 IMPORT_LOG = _IMPORT_STATE
+
 
 def _reset_import_state() -> None:
     """Reset cached import tracking structures."""
@@ -422,6 +453,7 @@ def _reset_import_state() -> None:
     _IMPORT_STATE = ImportRegistry()
     IMPORT_LOG = _IMPORT_STATE
     _clear_import_cache()
+
 
 def _import_cached(module_name: str, attr: str | None) -> tuple[bool, Any]:
     """Import ``module_name`` (and optional ``attr``) capturing failures."""
@@ -445,7 +477,9 @@ def _import_cached(module_name: str, attr: str | None) -> tuple[bool, Any]:
     _store_success(key, obj)
     return True, obj
 
+
 logger = get_logger(__name__)
+
 
 def _format_failure_message(module: str, attr: str | None, err: Exception) -> str:
     """Return a standardised failure message."""
@@ -456,11 +490,13 @@ def _format_failure_message(module: str, attr: str | None, err: Exception) -> st
         else f"Module '{module}' has no attribute '{attr}': {err}"
     )
 
+
 EMIT_MAP: dict[str, Callable[[str], None]] = {
     "warn": lambda msg: _emit(msg, "warn"),
     "log": lambda msg: _emit(msg, "log"),
     "both": lambda msg: _emit(msg, "both"),
 }
+
 
 def _emit(message: str, mode: Literal["warn", "log", "both"]) -> None:
     """Emit ``message`` via :mod:`warnings`, logger or both."""
@@ -469,6 +505,7 @@ def _emit(message: str, mode: Literal["warn", "log", "both"]) -> None:
         warnings.warn(message, RuntimeWarning, stacklevel=2)
     if mode in ("log", "both"):
         logger.warning(message)
+
 
 def _warn_failure(
     module: str,
@@ -484,6 +521,7 @@ def _warn_failure(
         EMIT_MAP[emit](msg)
     else:
         logger.debug(msg)
+
 
 class LazyImportProxy:
     """Descriptor that defers imports until first use."""
@@ -603,6 +641,7 @@ class LazyImportProxy:
 
         return iter(self._resolve())
 
+
 def _resolve_import(
     module_name: str,
     attr: str | None,
@@ -622,6 +661,7 @@ def _resolve_import(
     _warn_failure(module_name, attr, exc, emit=emit)
     _IMPORT_STATE.record_failure(key, module=module_name if include_module else None)
     return fallback
+
 
 def cached_import(
     module_name: str,
@@ -648,7 +688,9 @@ def cached_import(
 
     return _resolve_import(module_name, attr, emit, fallback)
 
+
 _ModuleSpec = str | tuple[str, str | None]
+
 
 def _normalise_warm_specs(
     module: _ModuleSpec | Iterable[_ModuleSpec],
@@ -660,10 +702,12 @@ def _normalise_warm_specs(
             raise TNFRValueError(
                 "'attr' can only be combined with a single module name",
                 context={"module": module, "extra": extra, "attr": attr},
-                suggestion="Remove extra module arguments or the 'attr' parameter."
+                suggestion="Remove extra module arguments or the 'attr' parameter.",
             )
         if not isinstance(module, str):
-            raise TypeError("'attr' requires the first argument to be a module name string")
+            raise TypeError(
+                "'attr' requires the first argument to be a module name string"
+            )
         return [(module, attr)]
 
     specs: list[_ModuleSpec]
@@ -680,7 +724,7 @@ def _normalise_warm_specs(
                 raise TNFRValueError(
                     "At least one module specification is required",
                     context={"module": module},
-                    suggestion="Provide a non-empty iterable of module specifications."
+                    suggestion="Provide a non-empty iterable of module specifications.",
                 )
         else:
             raise TypeError("Unsupported module specification for warm_cached_import")
@@ -698,9 +742,12 @@ def _normalise_warm_specs(
                 raise TypeError("Invalid module specification for warm_cached_import")
             normalised.append((module_name, module_attr))
             continue
-        raise TypeError("Module specifications must be strings or (module, attr) tuples")
+        raise TypeError(
+            "Module specifications must be strings or (module, attr) tuples"
+        )
 
     return normalised
+
 
 def warm_cached_import(
     module: _ModuleSpec | Iterable[_ModuleSpec],
@@ -722,7 +769,7 @@ def warm_cached_import(
         raise TNFRValueError(
             "'resolve' can only be used when 'lazy' is True",
             context={"resolve": resolve, "lazy": lazy},
-            suggestion="set lazy=True if you want to use resolve=True."
+            suggestion="set lazy=True if you want to use resolve=True.",
         )
 
     specs = _normalise_warm_specs(module, extra, attr)
@@ -743,15 +790,19 @@ def warm_cached_import(
         return next(iter(results.values()))
     return results
 
+
 def _clear_default_cache() -> None:
     _clear_import_cache()
 
+
 cached_import.cache_clear = _clear_default_cache  # type: ignore[attr-defined]
+
 
 def get_nodenx() -> type | None:
     """Return :class:`tnfr.node.NodeNX` using import caching."""
 
     return cached_import("tnfr.node", "NodeNX")
+
 
 def prune_failed_imports() -> None:
     """Clear the registry of recorded import failures and warnings."""

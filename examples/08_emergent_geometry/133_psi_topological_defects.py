@@ -84,11 +84,12 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
-import networkx as nx
 from collections import Counter
+
+import networkx as nx
+import numpy as np
 
 from tnfr.alias import set_attr
 from tnfr.constants import inject_defaults
@@ -125,17 +126,24 @@ def arg_psi(G):
 def faces(periodic=True):
     """Unit-square faces of the L x L grid (CCW); wraps if periodic."""
     if periodic:
-        return [[(x, y), ((x + 1) % L, y), ((x + 1) % L, (y + 1) % L),
-                 (x, (y + 1) % L)]
-                for x in range(L) for y in range(L)]
-    return [[(x, y), (x + 1, y), (x + 1, y + 1), (x, y + 1)]
-            for x in range(L - 1) for y in range(L - 1)]
+        return [
+            [(x, y), ((x + 1) % L, y), ((x + 1) % L, (y + 1) % L), (x, (y + 1) % L)]
+            for x in range(L)
+            for y in range(L)
+        ]
+    return [
+        [(x, y), (x + 1, y), (x + 1, y + 1), (x, y + 1)]
+        for x in range(L - 1)
+        for y in range(L - 1)
+    ]
 
 
 def face_winding(arg, face):
     """Integer winding number of arg around a closed face."""
-    s = sum(wrap_angle(arg[face[(a + 1) % len(face)]] - arg[face[a]])
-            for a in range(len(face)))
+    s = sum(
+        wrap_angle(arg[face[(a + 1) % len(face)]] - arg[face[a]])
+        for a in range(len(face))
+    )
     return s / (2.0 * np.pi)
 
 
@@ -159,8 +167,10 @@ def experiment_1_integer_winding():
     cs = [round(w) for w in ws]
     print(f"  faces = {len(ws)}, max|w - round(w)| = {max_dev:.1e}")
     print(f"  charge histogram: {dict(sorted(Counter(cs).items()))}")
-    print(f"  vortices(+1) = {cs.count(1)}, antivortices(-1) = {cs.count(-1)}, "
-          f"|charge|>1 = {sum(1 for c in cs if abs(c) > 1)}")
+    print(
+        f"  vortices(+1) = {cs.count(1)}, antivortices(-1) = {cs.count(-1)}, "
+        f"|charge|>1 = {sum(1 for c in cs if abs(c) > 1)}"
+    )
     print()
     print("  -> the canonical Psi field decomposes into integer-charge vortices,")
     print("     antivortices, and defect-free faces; windings exact to ~3e-16.")
@@ -175,8 +185,10 @@ def experiment_2_poincare_hopf():
     print("The periodic grid (torus) has no boundary, so the sum of all face")
     print("windings is exactly 0 (Euler characteristic 0). Defects come in pairs.")
     print()
-    print(f"  {'seed':>6} {'total charge':>13} {'#vortices':>11} "
-          f"{'#antivortices':>14}")
+    print(
+        f"  {'seed':>6} {'total charge':>13} {'#vortices':>11} "
+        f"{'#antivortices':>14}"
+    )
     n_zero = 0
     for s in range(4):
         G = seed_grid(np.random.default_rng(s))
@@ -200,8 +212,10 @@ def experiment_3_net_charge_conservation():
     print("Evolving with the canonical step(), the net charge stays exactly 0;")
     print("the defect COUNT changes only by vortex-antivortex pair events.")
     print()
-    print(f"  {'seed':>6} {'net t0->tN':>12} {'max|net|':>9} "
-          f"{'count t0->tN':>14} {'C(t)':>7}")
+    print(
+        f"  {'seed':>6} {'net t0->tN':>12} {'max|net|':>9} "
+        f"{'count t0->tN':>14} {'C(t)':>7}"
+    )
     n_conserved = 0
     for s in range(3):
         G = seed_grid(np.random.default_rng(40 + s))
@@ -219,9 +233,11 @@ def experiment_3_net_charge_conservation():
         max_net = max(abs(n) for n in nets)
         n_conserved += int(max_net == 0)
         C = compute_coherence(G)
-        print(f"  {s:>6} {(str(nets[0]) + '->' + str(nets[-1])):>12} "
-              f"{max_net:>9d} "
-              f"{(str(counts[0]) + '->' + str(counts[-1])):>14} {C:>7.3f}")
+        print(
+            f"  {s:>6} {(str(nets[0]) + '->' + str(nets[-1])):>12} "
+            f"{max_net:>9d} "
+            f"{(str(counts[0]) + '->' + str(counts[-1])):>14} {C:>7.3f}"
+        )
     print()
     print(f"  -> net charge stays exactly 0 for {n_conserved}/3 seeds throughout")
     print("     (topological conservation); the count changes only by pairs.")
@@ -239,8 +255,7 @@ def experiment_4_q_is_not_winding():
     print("CONTINUOUS bilinear density. It does NOT localize the integer-winding")
     print("defects -- mean |Q| is essentially equal on defect and regular faces.")
     print()
-    print(f"  {'topology':>12} {'|Q| defect':>11} {'|Q| regular':>12} "
-          f"{'ratio':>7}")
+    print(f"  {'topology':>12} {'|Q| defect':>11} {'|Q| regular':>12} " f"{'ratio':>7}")
     for label, periodic in [("torus", True), ("open grid", False)]:
         G = seed_grid(np.random.default_rng(0), periodic=periodic)
         arg = arg_psi(G)
@@ -251,8 +266,9 @@ def experiment_4_q_is_not_winding():
             m = np.mean([abs(Q[n]) for n in f])
             (d if abs(w) > 0.5 else r).append(m)
         ratio = np.mean(d) / np.mean(r)
-        print(f"  {label:>12} {np.mean(d):>11.4f} {np.mean(r):>12.4f} "
-              f"{ratio:>6.2f}x")
+        print(
+            f"  {label:>12} {np.mean(d):>11.4f} {np.mean(r):>12.4f} " f"{ratio:>6.2f}x"
+        )
     print()
     print("  -> the ratio is ~1.0 in both topologies (Q is essentially blind to")
     print("     the defects): Q does NOT track the integer winding. The genuine")

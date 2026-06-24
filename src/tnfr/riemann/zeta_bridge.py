@@ -34,15 +34,11 @@ import time
 from dataclasses import dataclass
 from typing import Sequence
 
-
 from ..constants.canonical import CRITICAL_EXPONENT
 from ..mathematics.unified_numerical import np
 from .operator import _first_primes, build_tridiagonal_h_tnfr
 from .spectral_proof import compute_eigensystem
-from .spectral_zeta import (
-    compute_heat_kernel_trace,
-    test_conjecture_10_1,
-)
+from .spectral_zeta import compute_heat_kernel_trace, test_conjecture_10_1
 
 # Regularisation buffer for the spectral zeta reflection. A small positive
 # shift that ensures (λ + a) > 0; its exact value is immaterial (any small
@@ -76,6 +72,7 @@ __all__ = [
 # Data Structures
 # ============================================================================
 
+
 @dataclass(frozen=True)
 class WeylAsymptotic:
     r"""Eigenvalue counting function N(λ) and its Weyl-law fit.
@@ -100,6 +97,7 @@ class WeylAsymptotic:
 
     r_squared: float
     """Goodness of log-log fit."""
+
 
 @dataclass(frozen=True)
 class HeatKernelReflection:
@@ -137,6 +135,7 @@ class HeatKernelReflection:
 
     tr_LV1_sq: float
     """tr(LV₁²) — coefficient of subleading correction."""
+
 
 @dataclass(frozen=True)
 class SpectralZetaReflection:
@@ -177,6 +176,7 @@ class SpectralZetaReflection:
     shift_canonical: bool = True
     """True when the regularisation buffer equals γ/π (canonical)."""
 
+
 @dataclass(frozen=True)
 class ScalingLaw:
     r"""Scaling of C(k) and δ(k) in ζ_H(1/2,u) ≈ C·ζ_R(u+δ).
@@ -197,6 +197,7 @@ class ScalingLaw:
 
     delta_limit_estimate: float
     """Extrapolated δ(k→∞)."""
+
 
 @dataclass(frozen=True)
 class PrimeEncoding:
@@ -224,6 +225,7 @@ class PrimeEncoding:
     identity_error: float
     """| Σ Λ_H(j) − θ(p_k) | — should be < 10⁻¹⁰."""
 
+
 @dataclass(frozen=True)
 class ZetaBridgeAnalysis:
     r"""Complete ζ_H ↔ ζ_R bridge analysis at given k values.
@@ -241,9 +243,11 @@ class ZetaBridgeAnalysis:
     summary: str
     computation_time_s: float
 
+
 # ============================================================================
 # Weyl Eigenvalue Counting
 # ============================================================================
+
 
 def compute_weyl_asymptotic(k: int) -> WeylAsymptotic:
     r"""Fit the Weyl eigenvalue counting function N(λ) ~ A·λ^α.
@@ -271,8 +275,11 @@ def compute_weyl_asymptotic(k: int) -> WeylAsymptotic:
 
     if n_pos < 3:
         return WeylAsymptotic(
-            k=k, eigenvalues=evals,
-            alpha=0.5, A_coeff=float(k), r_squared=0.0,
+            k=k,
+            eigenvalues=evals,
+            alpha=0.5,
+            A_coeff=float(k),
+            r_squared=0.0,
         )
 
     # N(λ_j) = j + 1 (counting from the first positive eigenvalue)
@@ -295,13 +302,18 @@ def compute_weyl_asymptotic(k: int) -> WeylAsymptotic:
     r_sq = 1.0 - ss_res / max(ss_tot, 1e-30)
 
     return WeylAsymptotic(
-        k=k, eigenvalues=evals,
-        alpha=alpha, A_coeff=A_coeff, r_squared=r_sq,
+        k=k,
+        eigenvalues=evals,
+        alpha=alpha,
+        A_coeff=A_coeff,
+        r_squared=r_sq,
     )
+
 
 # ============================================================================
 # Heat Kernel Functional Equation (Theorem A)
 # ============================================================================
+
 
 def _compute_trace_V1_sq_LV1_sq(k: int) -> tuple[float, float]:
     r"""Compute tr(V₁²) and tr(LV₁²) for the prime path graph.
@@ -314,13 +326,14 @@ def _compute_trace_V1_sq_LV1_sq(k: int) -> tuple[float, float]:
     """
     d, e, log_p = build_tridiagonal_h_tnfr(k, 0.5)
     # d is the Laplacian diagonal (degrees), e is sub-diagonal (= -weights)
-    log_p_sq = log_p ** 2
+    log_p_sq = log_p**2
 
     tr_V1_sq = float(np.sum(log_p_sq))
     # tr(LV₁²) = Σ_i L_{ii} · (log p_i)²  (L is tridiagonal, V₁² is diagonal)
     tr_LV1_sq = float(np.sum(d * log_p_sq))
 
     return tr_V1_sq, tr_LV1_sq
+
 
 def compute_heat_kernel_reflection(
     k: int,
@@ -367,10 +380,10 @@ def compute_heat_kernel_reflection(
 
     # Trace coefficients for the perturbative prediction
     tr_V1_sq, tr_LV1_sq = _compute_trace_V1_sq_LV1_sq(k)
-    delta_sq = delta ** 2
+    delta_sq = delta**2
 
     # Leading-order prediction: δ² · β² · tr(V₁²)
-    predicted = delta_sq * beta_values ** 2 * tr_V1_sq
+    predicted = delta_sq * beta_values**2 * tr_V1_sq
 
     # Relative error in the small-β regime (β < 1)
     small_beta_mask = beta_values < 1.0
@@ -397,9 +410,11 @@ def compute_heat_kernel_reflection(
         tr_LV1_sq=tr_LV1_sq,
     )
 
+
 # ============================================================================
 # Spectral Zeta Reflection (Theorem B)
 # ============================================================================
+
 
 def _compute_spectral_zeta_from_eigenvalues(
     eigenvalues: np.ndarray,
@@ -418,6 +433,7 @@ def _compute_spectral_zeta_from_eigenvalues(
     # Shape: (n_u, n_pos)
     zeta = np.sum(pos[None, :] ** (-u_values[:, None]), axis=1)
     return zeta
+
 
 def compute_spectral_zeta_reflection(
     k: int,
@@ -511,9 +527,11 @@ def compute_spectral_zeta_reflection(
         shift_canonical=True,
     )
 
+
 # ============================================================================
 # Scaling Law Extraction (Conjecture 10.1 Bridge)
 # ============================================================================
+
 
 def extract_scaling_law(
     k_values: Sequence[int],
@@ -549,8 +567,12 @@ def extract_scaling_law(
 
     if len(valid_k) == 0:
         return ScalingLaw(
-            k_values=[], C_values=[], delta_values=[],
-            correlations=[], C_limit_estimate=0.0, delta_limit_estimate=0.0,
+            k_values=[],
+            C_values=[],
+            delta_values=[],
+            correlations=[],
+            C_limit_estimate=0.0,
+            delta_limit_estimate=0.0,
         )
 
     # Estimate limits from last 3 values (or less)
@@ -567,9 +589,11 @@ def extract_scaling_law(
         delta_limit_estimate=d_limit,
     )
 
+
 # ============================================================================
 # Prime Encoding: Spectral von Mangoldt Function
 # ============================================================================
+
 
 def compute_prime_encoding(k: int) -> PrimeEncoding:
     r"""Spectral von Mangoldt function Λ_H(j) = ⟨ψ_j|V₁|ψ_j⟩.
@@ -600,7 +624,7 @@ def compute_prime_encoding(k: int) -> PrimeEncoding:
 
     # Λ_H(j) = Σ_i |ψ_j(i)|² · log(p_i)
     # evecs[:, j] is the j-th eigenvector
-    psi_sq = evecs ** 2  # shape (k, k)
+    psi_sq = evecs**2  # shape (k, k)
     lambda_H = psi_sq.T @ log_p  # shape (k,)
 
     total_spectral = float(np.sum(lambda_H))
@@ -615,9 +639,11 @@ def compute_prime_encoding(k: int) -> PrimeEncoding:
         identity_error=error,
     )
 
+
 # ============================================================================
 # Integration: Complete Zeta Bridge Analysis
 # ============================================================================
+
 
 def run_zeta_bridge_analysis(
     k_values: Sequence[int] | None = None,
@@ -690,12 +716,13 @@ def run_zeta_bridge_analysis(
 
     if scaling.k_values:
         for ki, ci, di, ri in zip(
-            scaling.k_values, scaling.C_values,
-            scaling.delta_values, scaling.correlations,
+            scaling.k_values,
+            scaling.C_values,
+            scaling.delta_values,
+            scaling.correlations,
         ):
             lines.append(
-                f"    k = {ki:5d}: C = {ci:.4f}, δ = {di:.4f}, "
-                f"r = {ri:.4f}"
+                f"    k = {ki:5d}: C = {ci:.4f}, δ = {di:.4f}, " f"r = {ri:.4f}"
             )
         lines.append(
             f"    Limit estimates: C → {scaling.C_limit_estimate:.4f}, "
@@ -704,15 +731,17 @@ def run_zeta_bridge_analysis(
     else:
         lines.append("    (no valid fits)")
 
-    lines.extend([
-        "",
-        "  Prime encoding (spectral von Mangoldt):",
-        f"    Σ Λ_H(j) = {pe.total_spectral:.6f}",
-        f"    θ(p_k)   = {pe.chebyshev_theta:.6f}",
-        f"    Identity error = {pe.identity_error:.2e}",
-        "",
-        "=" * 72,
-    ])
+    lines.extend(
+        [
+            "",
+            "  Prime encoding (spectral von Mangoldt):",
+            f"    Σ Λ_H(j) = {pe.total_spectral:.6f}",
+            f"    θ(p_k)   = {pe.chebyshev_theta:.6f}",
+            f"    Identity error = {pe.identity_error:.2e}",
+            "",
+            "=" * 72,
+        ]
+    )
 
     dt = time.perf_counter() - t0
 

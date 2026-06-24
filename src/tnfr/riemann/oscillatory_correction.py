@@ -84,18 +84,9 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .hilbert_polya import (
-    fetch_zero_imaginary_parts,
-    wasserstein_1_distance,
-)
-from .structural_zero_density import (
-    build_structural_t_hp,
-    smooth_zero_density,
-)
-from .von_mangoldt import (
-    PrimeLadderSpectrum,
-    build_prime_ladder_spectrum,
-)
+from .hilbert_polya import fetch_zero_imaginary_parts, wasserstein_1_distance
+from .structural_zero_density import build_structural_t_hp, smooth_zero_density
+from .von_mangoldt import PrimeLadderSpectrum, build_prime_ladder_spectrum
 
 __all__ = [
     "prime_ladder_oscillatory_sum",
@@ -206,22 +197,15 @@ def apply_oscillatory_correction(
     targets = np.asarray(smooth_targets, dtype=float)
     if targets.ndim != 1:
         raise ValueError("smooth_targets must be 1-D")
-    s_vals = np.asarray(
-        prime_ladder_oscillatory_sum(targets, spectrum), dtype=float
-    )
-    densities = np.array(
-        [smooth_zero_density(float(t)) for t in targets], dtype=float
-    )
+    s_vals = np.asarray(prime_ladder_oscillatory_sum(targets, spectrum), dtype=float)
+    densities = np.array([smooth_zero_density(float(t)) for t in targets], dtype=float)
     if np.any(densities <= 0.0):
-        raise RuntimeError(
-            "smooth density vanished at a target; refusing to divide"
-        )
+        raise RuntimeError("smooth density vanished at a target; refusing to divide")
     delta = -damping * s_vals / densities
     corrected = targets + delta
     if np.any(corrected <= 0.0):
         raise RuntimeError(
-            "oscillatory correction drove a target non-positive; "
-            "reduce damping"
+            "oscillatory correction drove a target non-positive; " "reduce damping"
         )
     return np.sort(corrected)
 
@@ -288,8 +272,7 @@ class OscillatoryCorrectionCertificate:
             f"  W_1 corrected vs true   : {self.w1_corrected_vs_true:.4e}",
             "  improvement over smooth : "
             f"{100.0 * self.improvement_over_smooth:+.2f} %",
-            "  max |S_TNFR(t_i)|       : "
-            f"{self.max_abs_s_at_targets:.4e}",
+            "  max |S_TNFR(t_i)|       : " f"{self.max_abs_s_at_targets:.4e}",
             f"  notes                   : {self.notes}",
         ]
         return "\n".join(lines)
@@ -335,9 +318,7 @@ def compute_oscillatory_correction_certificate(
     """
     if n_targets < 1:
         raise ValueError("n_targets must be >= 1")
-    spectrum = build_prime_ladder_spectrum(
-        n_primes, max_power=max_power
-    )
+    spectrum = build_prime_ladder_spectrum(n_primes, max_power=max_power)
     smooth_targets = build_structural_t_hp(n_targets, dps=dps)
     true_gammas = fetch_zero_imaginary_parts(n_targets, dps=dps)
 
@@ -367,9 +348,7 @@ def compute_oscillatory_correction_certificate(
             best_w1 = w1_d
             best_d = float(d)
 
-    improvement = (
-        (w1_smooth - best_w1) / w1_smooth if w1_smooth > 0 else 0.0
-    )
+    improvement = (w1_smooth - best_w1) / w1_smooth if w1_smooth > 0 else 0.0
 
     notes = (
         "Honest scope: positive improvement is branch B1 evidence — "

@@ -4,13 +4,14 @@ All factor recovery emerges from nodal dynamics: Laplacian spectrum -> tetrad pr
 partition nodal decoding -> structural verification. This wrapper exposes a stable
 entry-point without requiring direct interaction with the lower level factorizer.
 """
+
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
-from typing import Any, Dict, List, Optional
 import os
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List, Optional
 
-from .spectral_paley import SpectralPaleyFactorizer, SpectralAnalysisResult
+from .spectral_paley import SpectralAnalysisResult, SpectralPaleyFactorizer
 
 __all__ = ["FactorizationResult", "factorize"]
 
@@ -22,6 +23,7 @@ class FactorizationResult:
     Fields consolidate spectral + TNFR verification artifacts. Arithmetic checks are
     optional; in pure mode the candidate list is nodal / structural only.
     """
+
     n: int
     modulus: int
     candidate_factors: List[int]
@@ -86,7 +88,11 @@ def factorize(
             else:
                 os.environ["TNFR_PURE_MODE"] = previous
 
-    pure_mode_active = os.getenv("TNFR_PURE_MODE", "").lower() in {"1", "true", "yes", "on"} if pure is None else pure
+    pure_mode_active = (
+        os.getenv("TNFR_PURE_MODE", "").lower() in {"1", "true", "yes", "on"}
+        if pure is None
+        else pure
+    )
 
     telemetry: Dict[str, Any] = {
         # Structural Field Tetrad (§7, TNFR_NUMBER_THEORY.md)
@@ -104,10 +110,9 @@ def factorize(
         "pressure_components": analysis.arithmetic_components,
         # Conservation proxies (Noether charge Q = Φ_s + K_φ, Lyapunov E)
         "noether_charge_proxy": analysis.phi_s + analysis.phase_curvature,
-        "energy_proxy": 0.5 * (
-            analysis.phi_s ** 2
-            + analysis.phase_gradient ** 2
-            + analysis.phase_curvature ** 2
+        "energy_proxy": 0.5
+        * (
+            analysis.phi_s**2 + analysis.phase_gradient**2 + analysis.phase_curvature**2
         ),
         # Dual-lever analysis (§8)
         "dual_lever": analysis.dual_lever_analysis,

@@ -45,12 +45,12 @@ from dataclasses import dataclass
 from typing import Sequence
 
 from ..mathematics.unified_numerical import np
-from .operator import _first_primes
 from .analytical_convergence import (
-    compute_telescoping_trace,
     compute_convergence_rate_bound,
     compute_effective_constant,
+    compute_telescoping_trace,
 )
+from .operator import _first_primes
 from .spectral_proof import compute_analytic_sigma_star
 
 # ---------------------------------------------------------------------------
@@ -89,6 +89,7 @@ __all__ = [
 # Data Structures
 # ============================================================================
 
+
 @dataclass(frozen=True)
 class ProofStep:
     r"""A single machine-verified step in the formal proof chain.
@@ -117,6 +118,7 @@ class ProofStep:
     certificate: dict[str, float]
     """Numerical values certifying the step (key → value)."""
 
+
 @dataclass(frozen=True)
 class DusartVerification:
     r"""Verification of Dusart prime bounds for the first k primes.
@@ -143,6 +145,7 @@ class DusartVerification:
 
     worst_index_upper: int
     """n where upper bound is tightest."""
+
 
 @dataclass(frozen=True)
 class ExplicitBoundResult:
@@ -175,6 +178,7 @@ class ExplicitBoundResult:
     bound_holds_all: bool
     """True if |σ*-1/2| ≤ A/k verified for all k in [2, k_max_scanned]."""
 
+
 @dataclass(frozen=True)
 class CurvatureGrowthResult:
     r"""Verification that d²E/dσ² → ∞ as k → ∞.
@@ -194,6 +198,7 @@ class CurvatureGrowthResult:
 
     growth_unbounded: bool
     """True if curvatures are strictly increasing."""
+
 
 @dataclass(frozen=True)
 class CKAsymptoticFit:
@@ -218,6 +223,7 @@ class CKAsymptoticFit:
 
     max_residual: float
     r_squared: float
+
 
 @dataclass(frozen=True)
 class FormalConvergenceProof:
@@ -245,11 +251,13 @@ class FormalConvergenceProof:
 
     computation_time_s: float
 
+
 # ============================================================================
 # Dusart Prime Bounds
 # ============================================================================
 
 _EXACT_SMALL_PRIMES = [0, 2, 3, 5, 7, 11]  # index 0 unused, 1-based
+
 
 def dusart_lower_bound(n: int) -> float:
     r"""Rigorous lower bound on the n-th prime (1-based).
@@ -266,6 +274,7 @@ def dusart_lower_bound(n: int) -> float:
     ln_n = math.log(n)
     return n * (ln_n + math.log(ln_n) - 1.0)
 
+
 def dusart_upper_bound(n: int) -> float:
     r"""Rigorous upper bound on the n-th prime (1-based).
 
@@ -280,6 +289,7 @@ def dusart_upper_bound(n: int) -> float:
         return float(_EXACT_SMALL_PRIMES[n])
     ln_n = math.log(n)
     return n * (ln_n + math.log(ln_n))
+
 
 def verify_dusart_bounds(k: int) -> DusartVerification:
     r"""Verify Dusart bounds hold for all primes p_1, …, p_k.
@@ -326,9 +336,11 @@ def verify_dusart_bounds(k: int) -> DusartVerification:
         worst_index_upper=worst_upper,
     )
 
+
 # ============================================================================
 # Proof Steps (individual lemmas/theorems)
 # ============================================================================
+
 
 def prove_bilinear_decomposition(k: int) -> ProofStep:
     r"""Lemma 1: Bilinear decomposition of Frobenius energy.
@@ -361,10 +373,7 @@ def prove_bilinear_decomposition(k: int) -> ProofStep:
             "unique minimum at σ* = 1/2 − tr(LV₁)/tr(V₁²)"
         ),
         hypotheses="k ≥ 2, tr(V₁²) > 0",
-        conclusion=(
-            f"σ* = {sigma_star:.10f}, "
-            f"d²E/dσ² = {curvature:.6f} > 0"
-        ),
+        conclusion=(f"σ* = {sigma_star:.10f}, " f"d²E/dσ² = {curvature:.6f} > 0"),
         verified=is_minimum and curvature_positive,
         certificate={
             "sigma_star": sigma_star,
@@ -376,6 +385,7 @@ def prove_bilinear_decomposition(k: int) -> ProofStep:
             "E_minus": E_minus,
         },
     )
+
 
 def prove_telescoping(k: int) -> ProofStep:
     r"""Lemma 2: Telescoping identity for tr(L_k V₁).
@@ -406,6 +416,7 @@ def prove_telescoping(k: int) -> ProofStep:
         },
     )
 
+
 def prove_sum_lower_bound(k: int) -> ProofStep:
     r"""Lemma 3: Lower bound on tr(V₁²).
 
@@ -415,20 +426,18 @@ def prove_sum_lower_bound(k: int) -> ProofStep:
     """
     primes = _first_primes(k)
     log_p = [math.log(p) for p in primes]
-    exact_sum = sum(lp ** 2 for lp in log_p)
+    exact_sum = sum(lp**2 for lp in log_p)
 
     half_idx = (k + 1) // 2  # ⌈k/2⌉, 0-based → index half_idx-1
     floor_half = k // 2
     log_p_half = log_p[half_idx - 1]
-    lower = floor_half * log_p_half ** 2
+    lower = floor_half * log_p_half**2
 
     verified = exact_sum >= lower * (1 - 1e-12)
 
     return ProofStep(
         name="Lemma 3 (Sum Lower Bound)",
-        statement=(
-            "tr(V₁²) ≥ ⌊k/2⌋ · (log p_{⌈k/2⌉})²"
-        ),
+        statement=("tr(V₁²) ≥ ⌊k/2⌋ · (log p_{⌈k/2⌉})²"),
         hypotheses="k ≥ 2, monotonicity of log p_i",
         conclusion=(
             f"tr(V₁²) = {exact_sum:.4f} ≥ {lower:.4f} "
@@ -443,6 +452,7 @@ def prove_sum_lower_bound(k: int) -> ProofStep:
             "ratio": exact_sum / max(lower, 1e-15),
         },
     )
+
 
 def prove_convergence_rate(k: int) -> ProofStep:
     r"""Theorem 1: Convergence rate |σ* − 1/2| = O(1/k).
@@ -462,7 +472,7 @@ def prove_convergence_rate(k: int) -> ProofStep:
     half_idx = (k + 1) // 2
     floor_half = k // 2
     log_p_half = math.log(primes[half_idx - 1])
-    upper_bound = log_pk_sq / (floor_half * log_p_half ** 2)
+    upper_bound = log_pk_sq / (floor_half * log_p_half**2)
 
     verified = rate.deviation <= upper_bound * (1 + 1e-10)
 
@@ -487,6 +497,7 @@ def prove_convergence_rate(k: int) -> ProofStep:
         },
     )
 
+
 def prove_explicit_bound(k: int, A: float) -> ProofStep:
     r"""Theorem 2: Explicit bound |σ*(k) − 1/2| ≤ A/k for all k ≥ 2.
 
@@ -498,7 +509,7 @@ def prove_explicit_bound(k: int, A: float) -> ProofStep:
     return ProofStep(
         name=f"Theorem 2 (Explicit Bound, A = {A:.4f})",
         statement=f"|σ*(k) − 1/2| ≤ {A:.4f}/k for all k ≥ 2",
-        hypotheses=f"A = sup_{{k≥2}} C(k), verified by exhaustive scan",
+        hypotheses="A = sup_{k≥2} C(k), verified by exhaustive scan",
         conclusion=(
             f"C({k}) = {eff.effective_constant:.6f} ≤ {A:.4f}: "
             f"{'PASS' if verified else 'FAIL'}"
@@ -511,6 +522,7 @@ def prove_explicit_bound(k: int, A: float) -> ProofStep:
         },
     )
 
+
 def prove_curvature_divergence(k: int) -> ProofStep:
     r"""Theorem 3: Curvature d²E/dσ² = tr(V₁²)/k → ∞.
 
@@ -522,7 +534,7 @@ def prove_curvature_divergence(k: int) -> ProofStep:
     primes = _first_primes(k)
     half_idx = (k + 1) // 2
     log_p_half = math.log(primes[half_idx - 1])
-    lower = log_p_half ** 2 / 2.0
+    lower = log_p_half**2 / 2.0
 
     verified = curvature >= lower * (1 - 1e-10)
 
@@ -530,9 +542,7 @@ def prove_curvature_divergence(k: int) -> ProofStep:
         name="Theorem 3 (Curvature Divergence)",
         statement="d²E/dσ² = tr(V₁²)/k ≥ (log p_{⌈k/2⌉})²/2 → ∞",
         hypotheses="Lemma 3",
-        conclusion=(
-            f"d²E/dσ² = {curvature:.4f} ≥ {lower:.4f}"
-        ),
+        conclusion=(f"d²E/dσ² = {curvature:.4f} ≥ {lower:.4f}"),
         verified=verified,
         certificate={
             "curvature": curvature,
@@ -541,9 +551,11 @@ def prove_curvature_divergence(k: int) -> ProofStep:
         },
     )
 
+
 # ============================================================================
 # Explicit Bound Computation
 # ============================================================================
+
 
 def scan_effective_constant(k_max: int = 10000) -> tuple[np.ndarray, np.ndarray]:
     r"""Scan C(k) = k|σ*-1/2| for k = 2, …, k_max.
@@ -565,7 +577,7 @@ def scan_effective_constant(k_max: int = 10000) -> tuple[np.ndarray, np.ndarray]
     """
     primes = _first_primes(k_max)
     log_p = np.array([math.log(p) for p in primes])
-    log_p_sq = log_p ** 2
+    log_p_sq = log_p**2
     cumsum = np.cumsum(log_p_sq)
     log2_sq = log_p_sq[0]  # (log 2)²
 
@@ -578,6 +590,7 @@ def scan_effective_constant(k_max: int = 10000) -> tuple[np.ndarray, np.ndarray]
     C_values = k_arr * np.abs(numerators) / denominators
 
     return k_arr, C_values
+
 
 def compute_explicit_bound_constant(
     k_max: int = 10000,
@@ -633,9 +646,11 @@ def compute_explicit_bound_constant(
         bound_holds_all=bound_holds,
     )
 
+
 # ============================================================================
 # Curvature Divergence
 # ============================================================================
+
 
 def verify_curvature_divergence(
     k_values: Sequence[int],
@@ -656,7 +671,7 @@ def verify_curvature_divergence(
         primes = _first_primes(k)
         half_idx = (k + 1) // 2
         log_p_half = math.log(primes[half_idx - 1])
-        lower_bounds.append(log_p_half ** 2 / 2.0)
+        lower_bounds.append(log_p_half**2 / 2.0)
 
     all_exceed = all(c >= lb * (1 - 1e-10) for c, lb in zip(curvatures, lower_bounds))
     growth = all(curvatures[i] < curvatures[i + 1] for i in range(len(curvatures) - 1))
@@ -669,9 +684,11 @@ def verify_curvature_divergence(
         growth_unbounded=growth,
     )
 
+
 # ============================================================================
 # C(k) Second-Order Asymptotics
 # ============================================================================
+
 
 def fit_ck_asymptotics(
     k_values: Sequence[int],
@@ -702,13 +719,13 @@ def fit_ck_asymptotics(
     y = np.array(C_values) - 1.0
 
     # Least-squares: y = a₁·x + a₂·x²
-    X = np.column_stack([x, x ** 2])
+    X = np.column_stack([x, x**2])
     coeffs, residuals_arr, _, _ = np.linalg.lstsq(X, y, rcond=None)
     a1 = float(coeffs[0])
     a2 = float(coeffs[1])
 
     # Evaluate fit
-    y_fit = a1 * x + a2 * x ** 2
+    y_fit = a1 * x + a2 * x**2
     residuals = [float(c - 1.0 - yf) for c, yf in zip(C_values, y_fit)]
     max_res = max(abs(r) for r in residuals)
 
@@ -727,9 +744,11 @@ def fit_ck_asymptotics(
         r_squared=r_sq,
     )
 
+
 # ============================================================================
 # Integration: Complete Formal Proof
 # ============================================================================
+
 
 def run_formal_convergence_proof(
     k_values: Sequence[int] | None = None,
@@ -813,8 +832,7 @@ def run_formal_convergence_proof(
         statement="σ*(k) → 1/2 as k → ∞",
         hypotheses="Theorems 1–3",
         conclusion=(
-            f"PROVEN: σ*(k) → 1/2 with |σ*-1/2| ≤ {A:.4f}/k, "
-            f"curvature → ∞"
+            f"PROVEN: σ*(k) → 1/2 with |σ*-1/2| ≤ {A:.4f}/k, " f"curvature → ∞"
             if all_prev_ok
             else "INCOMPLETE: not all proof steps verified"
         ),
@@ -842,15 +860,17 @@ def run_formal_convergence_proof(
         lines.append(f"    {s.conclusion}")
 
     lines.append(f"\n  Explicit constant: A = {A:.6f}")
-    lines.append(f"  Bound |σ*-1/2| ≤ {A:.4f}/k holds for all k ∈ [2, {k_max_scan}]: "
-                 f"{'YES' if bound_result.bound_holds_all else 'NO'}")
+    lines.append(
+        f"  Bound |σ*-1/2| ≤ {A:.4f}/k holds for all k ∈ [2, {k_max_scan}]: "
+        f"{'YES' if bound_result.bound_holds_all else 'NO'}"
+    )
     lines.append(f"  Dusart bounds verified: {dusart.all_within_bounds}")
     lines.append(f"  Curvature diverges: {curv.growth_unbounded}")
-    lines.append(f"  C(k) asymptotics: C(k) ≈ 1 + {ck_fit.a1:.3f}/ln(k), "
-                 f"R² = {ck_fit.r_squared:.4f}")
     lines.append(
-        f"\n  PROOF STATUS: {'COMPLETE ✓' if all_ok else 'INCOMPLETE ✗'}"
+        f"  C(k) asymptotics: C(k) ≈ 1 + {ck_fit.a1:.3f}/ln(k), "
+        f"R² = {ck_fit.r_squared:.4f}"
     )
+    lines.append(f"\n  PROOF STATUS: {'COMPLETE ✓' if all_ok else 'INCOMPLETE ✗'}")
     lines.append("=" * 72)
 
     dt = time.perf_counter() - t0

@@ -14,7 +14,7 @@ No factorization beyond what is necessary to compute τ, σ, ω is used.
 from __future__ import annotations
 
 import argparse
-from typing import Tuple, List
+from typing import List, Tuple
 
 # Direct arithmetic helpers (trial-division based)
 
@@ -59,7 +59,7 @@ def prime_factor_count(n: int) -> int:
 
 def tnfr_delta_nfr(n: int, *, zeta=1.0, eta=0.8, theta=0.6) -> float:
     if n < 2:
-        return float('inf')
+        return float("inf")
     tau_n = divisor_count(n)
     sigma_n = divisor_sum(n)
     omega_n = prime_factor_count(n)
@@ -75,7 +75,9 @@ def tnfr_is_prime(n: int) -> Tuple[bool, float]:
 
 
 def main(argv: List[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="TNFR primality check using ΔNFR equations only")
+    parser = argparse.ArgumentParser(
+        description="TNFR primality check using ΔNFR equations only"
+    )
     parser.add_argument("numbers", nargs="+", type=int, help="Integers to check")
     args = parser.parse_args(argv)
 

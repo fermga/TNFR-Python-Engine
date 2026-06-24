@@ -34,9 +34,9 @@ def _print_probe(label: str) -> None:
     print("Per-probe results:")
     for name in cert.probes:
         print(f"  {name:48s} {cert.probe_results[name]}")
-    assert cert.verdict == "CATALOG_DISCIPLINE_ADEQUATE", (
-        f"Unexpected verdict: {cert.verdict}"
-    )
+    assert (
+        cert.verdict == "CATALOG_DISCIPLINE_ADEQUATE"
+    ), f"Unexpected verdict: {cert.verdict}"
     assert cert.S_OC == 0.0, f"Unexpected S_OC: {cert.S_OC}"
     assert cert.registry_size == 13
     assert cert.metadata_size == 13
@@ -47,9 +47,7 @@ def main() -> None:
     print("=" * 70)
     _print_probe("Invocation A (cold)")
     _print_probe("Invocation B (idempotent)")
-    print(
-        "\nBoth invocations: S_OC=0.000000, CATALOG_DISCIPLINE_ADEQUATE."
-    )
+    print("\nBoth invocations: S_OC=0.000000, CATALOG_DISCIPLINE_ADEQUATE.")
     print(
         "Witness: registry == 13 entries, metadata == 13 entries, "
         "definitions exports == 13 canonical class names. No callable "

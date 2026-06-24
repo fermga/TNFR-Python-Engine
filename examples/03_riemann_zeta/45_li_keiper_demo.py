@@ -30,10 +30,7 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from tnfr.riemann.li_keiper import (
-    LiKeiperCertificate,
-    verify_li_keiper_criterion,
-)
+from tnfr.riemann.li_keiper import LiKeiperCertificate, verify_li_keiper_criterion
 
 
 def _print_section(title: str) -> None:
@@ -45,9 +42,7 @@ def _print_section(title: str) -> None:
 
 def section_1_classical_reference() -> LiKeiperCertificate:
     _print_section("Section 1 - Classical Li-Keiper coefficients (n = 1..30)")
-    print(
-        "Computing lambda_n from 150 mpmath zetazero values at dps=40."
-    )
+    print("Computing lambda_n from 150 mpmath zetazero values at dps=40.")
     cert = verify_li_keiper_criterion(n_max=30, n_zeros=150, dps=40)
     print()
     print(cert.summary())
@@ -57,19 +52,14 @@ def section_1_classical_reference() -> LiKeiperCertificate:
         print(f"  lambda_{n:<2d} = {cert.lambda_classical[n - 1]:+.6e}")
     print()
     print(
-        "Positivity preserved for every n in [1, 30]: "
-        f"{cert.positivity_classical}"
+        "Positivity preserved for every n in [1, 30]: " f"{cert.positivity_classical}"
     )
     return cert
 
 
 def section_2_extended_range() -> LiKeiperCertificate:
-    _print_section(
-        "Section 2 - Extended range (n = 1..60) with deeper truncation"
-    )
-    print(
-        "Computing lambda_n from 250 mpmath zetazero values at dps=50."
-    )
+    _print_section("Section 2 - Extended range (n = 1..60) with deeper truncation")
+    print("Computing lambda_n from 250 mpmath zetazero values at dps=50.")
     cert = verify_li_keiper_criterion(n_max=60, n_zeros=250, dps=50)
     print()
     print(cert.summary())
@@ -84,16 +74,13 @@ def section_2_extended_range() -> LiKeiperCertificate:
     print()
     print(f"min_n lambda_n = {float(cert.lambda_classical.min()):+.6e}")
     print(
-        "All coefficients > 0 -> consistent with RH "
-        "(necessary but not sufficient)."
+        "All coefficients > 0 -> consistent with RH " "(necessary but not sufficient)."
     )
     return cert
 
 
 def section_3_tnfr_comparison() -> None:
-    _print_section(
-        "Section 3 - TNFR resonance peaks vs classical zeros (optional)"
-    )
+    _print_section("Section 3 - TNFR resonance peaks vs classical zeros (optional)")
     print(
         "Re-running with compare_tnfr=True: zeros are taken from the P13\n"
         "critical-line resonance-pole scan on t in [10, 80] and the\n"
@@ -122,16 +109,11 @@ def section_3_tnfr_comparison() -> None:
         for n in range(1, 11):
             cls = cert.lambda_classical[n - 1]
             tnf = cert.lambda_tnfr[n - 1]
-            print(
-                f"  {n:>3d}   {cls:+.6e}     {tnf:+.6e}   "
-                f"{abs(cls - tnf):.3e}"
-            )
+            print(f"  {n:>3d}   {cls:+.6e}     {tnf:+.6e}   " f"{abs(cls - tnf):.3e}")
 
 
 def section_4_interpretation() -> None:
-    _print_section(
-        "Section 4 - Operational interpretation"
-    )
+    _print_section("Section 4 - Operational interpretation")
     print(
         "What P16 establishes:\n"
         "  * Li's criterion is RH-equivalent: lambda_n > 0 for all n>=1\n"

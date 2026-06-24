@@ -134,13 +134,21 @@ def _discover_payloads(root: Path) -> List[RecommendationRecord]:
         metadata = data.get("metadata")
         if not isinstance(metadata, dict):
             continue
-        operation_type = str(metadata.get("operation_type") or data.get("operation_type") or "unknown")
+        operation_type = str(
+            metadata.get("operation_type") or data.get("operation_type") or "unknown"
+        )
         tests = list(OPERATION_TESTS.get(operation_type, []))
-        payloads.append(RecommendationRecord(path=path, metadata=metadata, operation_type=operation_type, tests=tests))
+        payloads.append(
+            RecommendationRecord(
+                path=path, metadata=metadata, operation_type=operation_type, tests=tests
+            )
+        )
     return payloads
 
 
-def _group_by_tests(records: Sequence[RecommendationRecord]) -> Dict[Tuple[str, ...], List[RecommendationRecord]]:
+def _group_by_tests(
+    records: Sequence[RecommendationRecord],
+) -> Dict[Tuple[str, ...], List[RecommendationRecord]]:
     grouped: Dict[Tuple[str, ...], List[RecommendationRecord]] = {}
     for record in records:
         key = tuple(record.tests)
@@ -154,7 +162,9 @@ def _run_pytest(
     pytest_cmd: Optional[str],
     pytest_args: str,
 ) -> int:
-    base_cmd = shlex.split(pytest_cmd) if pytest_cmd else [sys.executable, "-m", "pytest"]
+    base_cmd = (
+        shlex.split(pytest_cmd) if pytest_cmd else [sys.executable, "-m", "pytest"]
+    )
     extra_args = shlex.split(pytest_args) if pytest_args else []
     cmd = [*base_cmd, *extra_args, *tests]
     completed = subprocess.run(cmd, cwd=REPO_ROOT)

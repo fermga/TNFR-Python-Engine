@@ -1,6 +1,7 @@
 """Type stubs for TNFR SDK builders."""
 
 from typing import Dict, List, Optional
+
 from .fluent import NetworkResults
 
 class TNFRExperimentBuilder:

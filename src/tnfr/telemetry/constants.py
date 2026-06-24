@@ -12,18 +12,22 @@ consistent behavior and messaging.
 """
 
 from ..constants.canonical import (
-    PHI,
-    PI,
     PHASE_GRADIENT_THRESHOLD_CANONICAL,
+    PHI,
     PHI_GAMMA_NORMALIZED,
+    PI,
 )
 
 # CANONICAL mathematical constants using φ, γ, π, e (notational convention)
 # U6: Structural Potential Confinement (ΔΦ_s) - empirical golden-ratio escape
-STRUCTURAL_POTENTIAL_DELTA_THRESHOLD: float = float(PHI)  # φ ≈ 1.618 (empirical escape threshold)
+STRUCTURAL_POTENTIAL_DELTA_THRESHOLD: float = float(
+    PHI
+)  # φ ≈ 1.618 (empirical escape threshold)
 
 # |∇φ|: Phase gradient early-warning (heuristic, audit 2026: not derived; bound is π)
-PHASE_GRADIENT_THRESHOLD: float = float(PHASE_GRADIENT_THRESHOLD_CANONICAL)  # ≈ 0.1837 (heuristic)
+PHASE_GRADIENT_THRESHOLD: float = float(
+    PHASE_GRADIENT_THRESHOLD_CANONICAL
+)  # ≈ 0.1837 (heuristic)
 
 # |K_φ|: Phase curvature safety threshold. Audit 2026: |K_φ| ≤ π by phase wrap,
 # so the genuine threshold is 0.9π ≈ 2.827; the earlier φ×π ≈ 5.083 was

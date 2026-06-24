@@ -91,6 +91,7 @@ Run:
 
 Status: RESEARCH (primes-out-vs-in falsifier; Camino 11 of the unification map).
 """
+
 from __future__ import annotations
 
 import math
@@ -102,18 +103,22 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Robust fallback so the harness also runs without PYTHONPATH=src preset.
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")
+)
 from composition_arithmetic import (  # noqa: E402
     automorphism_matrices,
     character_norm,
     eigenspaces,
 )
+
 # Reading B reuses the canonical Paley machinery (Camino 9, Zenodo 17665853).
-from paley_bridge import is_prime, paley_gap, _GAP_EPS  # noqa: E402
+from paley_bridge import _GAP_EPS, is_prime, paley_gap  # noqa: E402
 
 # Optional: the canonical TNFR primality pressure dNFR(n) (Reading A).
 try:  # pragma: no cover - exercised only when the package is importable
     from tnfr_primality.core import tnfr_delta_nfr as _canon_delta_nfr  # noqa: E402
+
     _HAVE_PRIMALITY = True
 except Exception:  # pragma: no cover
     _HAVE_PRIMALITY = False
@@ -122,6 +127,7 @@ except Exception:  # pragma: no cover
 # that this Camino questions (and that the C5-C7 audit grounded as IMPOSED).
 try:  # pragma: no cover - exercised only when the package is importable
     from tnfr.dynamics.adelic import AdelicDynamics  # noqa: E402
+
     _HAVE_ADELIC = True
 except Exception:  # pragma: no cover
     _HAVE_ADELIC = False
@@ -130,20 +136,21 @@ except Exception:  # pragma: no cover
 # G4 / not a primality proof") -- the canonical home of Reading B.
 try:  # pragma: no cover
     from tnfr.riemann import paley_gap_coercivity as _canon_paley  # noqa: E402
+
     _HAVE_CANON_PALEY = True
 except Exception:  # pragma: no cover
     _HAVE_CANON_PALEY = False
 
 TOL = 1e-9
-_DNFR_EPS = 1e-9                  # dNFR below this counts as a zero-pressure prime
+_DNFR_EPS = 1e-9  # dNFR below this counts as a zero-pressure prime
 
 # Pressure coefficients (notational (phi,gamma,pi,e) combos; audit 2026: not derived).
 PHI = (1.0 + math.sqrt(5.0)) / 2.0
 GAMMA = 0.5772156649015329
 PI = math.pi
-ZETA = PHI * GAMMA               # factorization pressure  ~ 0.9340
-ETA = (GAMMA / PHI) * PI         # divisor pressure         ~ 1.1207
-THETA = 1.0 / PHI                # abundance pressure       ~ 0.6180
+ZETA = PHI * GAMMA  # factorization pressure  ~ 0.9340
+ETA = (GAMMA / PHI) * PI  # divisor pressure         ~ 1.1207
+THETA = 1.0 / PHI  # abundance pressure       ~ 0.6180
 
 
 # --------------------------------------------------------------------------- #
@@ -157,9 +164,9 @@ def factorization_with_opcount(n: int) -> tuple[int, int, int, int]:
     """
     if n <= 1:
         return 0, 0, 0, 0
-    omega = 0          # prime-factor count with multiplicity (big Omega)
-    tau = 0            # number of divisors
-    sigma = 0          # sum of divisors
+    omega = 0  # prime-factor count with multiplicity (big Omega)
+    tau = 0  # number of divisors
+    sigma = 0  # sum of divisors
     ops = 0
     # Omega via factor extraction.
     d = 2
@@ -200,9 +207,7 @@ def delta_nfr_pressure(n: int) -> tuple[float, int]:
     if _HAVE_PRIMALITY:
         return float(_canon_delta_nfr(n)), ops
     pressure = (
-        ZETA * (omega - 1)
-        + ETA * (tau - 2)
-        + THETA * (sigma / n - (1.0 + 1.0 / n))
+        ZETA * (omega - 1) + ETA * (tau - 2) + THETA * (sigma / n - (1.0 + 1.0 / n))
     )
     return float(pressure), ops
 
@@ -225,23 +230,27 @@ def test_reading_a_redescription(limit: int = 200) -> bool:
         if abs(pressure) <= _DNFR_EPS:
             zero_pressure.append(n)
 
-    extra = sorted(set(zero_pressure) - set(primes))    # composites called prime
-    miss = sorted(set(primes) - set(zero_pressure))     # primes missed
+    extra = sorted(set(zero_pressure) - set(primes))  # composites called prime
+    miss = sorted(set(primes) - set(zero_pressure))  # primes missed
     exact = (not extra) and (not miss)
 
     src = "canonical tnfr_primality.core" if _HAVE_PRIMALITY else "inline fallback"
     print(f"  pressure source : {src} (coeffs zeta=phi.gamma, eta=(gamma/phi).pi,")
     print("                    theta=1/phi -- notational, not derived)")
     print(f"  range           : n = 2..{limit}")
-    print(f"  dNFR(n) = 0 set == primes ?  exact = {exact} "
-          f"(extra = {extra}, missed = {miss})")
+    print(
+        f"  dNFR(n) = 0 set == primes ?  exact = {exact} "
+        f"(extra = {extra}, missed = {miss})"
+    )
     print(f"  trial divisions consumed to evaluate dNFR over the range: {total_ops}")
     print("  => EXACT structural meaning (prime = zero-pressure equilibrium), but")
     print("     dNFR is computed FROM Omega, tau, sigma, each obtained by n % d.")
     print("     As a derivation of primality this is CIRCULAR: primes go IN")
     print("     (consumed as divisibility) and come back out re-labelled as dNFR=0.")
-    print(f"  VERDICT: {'PASS' if exact else 'FAIL'} "
-          "-- faithful re-description, NOT a from-structure derivation")
+    print(
+        f"  VERDICT: {'PASS' if exact else 'FAIL'} "
+        "-- faithful re-description, NOT a from-structure derivation"
+    )
     return exact
 
 
@@ -265,8 +274,9 @@ def test_reading_b_emergence(limit: int = 200) -> bool:
 
     # The detector consumes only squares mod n (x*x % n), never n % k: it asks
     # for the SHAPE of n's residue spectrum, never whether a candidate divides n.
-    missed_classes = sorted({2} | {p for p in range(3, 40)
-                                   if is_prime(p) and p % 4 == 3})
+    missed_classes = sorted(
+        {2} | {p for p in range(3, 40) if is_prime(p) and p % 4 == 3}
+    )
     print("  detector        : g(n) = |lambda_2(residue circulant) - (n-sqrt n)/2|")
     print("                    built from quadratic residues x*x % n (mod the")
     print("                    candidate itself) -- it NEVER computes n % k.")
@@ -276,16 +286,20 @@ def test_reading_b_emergence(limit: int = 200) -> bool:
         p25 = "absent (reusing paley_bridge / Camino 9 machinery)"
     print(f"  canonical P25   : {p25}")
     print(f"  range           : n == 1 (mod 4), n = 5..{limit}")
-    print(f"  g(n) = 0 set == primes == 1 (mod 4) ?  exact = {exact} "
-          f"(extra = {extra}, missed = {miss})")
+    print(
+        f"  g(n) = 0 set == primes == 1 (mod 4) ?  exact = {exact} "
+        f"(extra = {extra}, missed = {miss})"
+    )
     print(f"  genuinely emergent (no n % k): True ; primes-OUT count = {len(zeros)}")
     print("  HONEST PARTIALITY: the detector is blind to 2 and to the == 3 (mod 4)")
     print(f"                    primes (e.g. {missed_classes[:8]}...) -- they live")
     print("                    outside the Paley == 1 (mod 4) class. And the residue")
     print("                    circulant is symmetric => REAL spectrum => scale")
     print("                    sector (Camino 8): reaches the support, not S(T).")
-    print(f"  VERDICT: {'PASS' if exact else 'FAIL'} "
-          "-- non-circular emergence, but PARTIAL and self-adjoint")
+    print(
+        f"  VERDICT: {'PASS' if exact else 'FAIL'} "
+        "-- non-circular emergence, but PARTIAL and self-adjoint"
+    )
     return exact
 
 
@@ -309,14 +323,18 @@ def test_frontier_irreducibility(verbose: bool = True) -> bool:
             chi = character_norm(P, mats5, order5)
             four_irreducible = abs(chi - 1.0) < 0.4
             if verbose:
-                print(f"  K5 (Aut = S5, |Aut| = {order5}): dim-4 mode <chi,chi> = "
-                      f"{chi:.2f} -> {'IRREDUCIBLE' if four_irreducible else '?'}")
+                print(
+                    f"  K5 (Aut = S5, |Aut| = {order5}): dim-4 mode <chi,chi> = "
+                    f"{chi:.2f} -> {'IRREDUCIBLE' if four_irreducible else '?'}"
+                )
     print("  yet 4 = 2 x 2 arithmetically: the same cardinal is atomic in K5 and")
     print("  compositional in K3 [] K3. So irreducibility (physics) != primality")
     print("  (arithmetic). Pure emergence via representation theory cannot, by")
     print("  itself, reproduce unique factorisation.")
-    print(f"  VERDICT: {'PASS' if four_irreducible else 'FAIL'} "
-          "-- 'prime <=> irreducible' correctly refuted")
+    print(
+        f"  VERDICT: {'PASS' if four_irreducible else 'FAIL'} "
+        "-- 'prime <=> irreducible' correctly refuted"
+    )
     return four_irreducible
 
 
@@ -339,8 +357,9 @@ def test_bridge_in_vs_out(limit: int = 60) -> bool:
         carrier_primes = [n for n in range(2, limit + 1) if is_prime(n)]
         src = "sieve fallback"
     # primes-OUT: the non-circular spectral emergence (== 1 (mod 4) only).
-    emergent = [m for m in range(5, limit + 1)
-                if m % 4 == 1 and paley_gap(m) <= _GAP_EPS]
+    emergent = [
+        m for m in range(5, limit + 1) if m % 4 == 1 and paley_gap(m) <= _GAP_EPS
+    ]
 
     residual = sorted(set(carrier_primes) - set(emergent))
     covered = sorted(set(carrier_primes) & set(emergent))
@@ -354,8 +373,10 @@ def test_bridge_in_vs_out(limit: int = 60) -> bool:
     print("     real/self-adjoint structure reaches the support, not the phase.")
     # Structural check: emergence is a strict, correct SUBSET of the carrier.
     is_subset = set(emergent).issubset(set(carrier_primes))
-    print(f"  VERDICT: {'PASS' if is_subset else 'FAIL'} -- emergence is a correct "
-          "(partial) subset of the carrier; full emergence stays OPEN")
+    print(
+        f"  VERDICT: {'PASS' if is_subset else 'FAIL'} -- emergence is a correct "
+        "(partial) subset of the carrier; full emergence stays OPEN"
+    )
     return is_subset
 
 
@@ -370,14 +391,22 @@ def main() -> int:
     print("=" * 78)
     print("SUMMARY")
     print("=" * 78)
-    print(f"  Reading A: dNFR = 0 exact (re-description, circular)  : "
-          f"{'PASS' if ra else 'FAIL'}")
-    print(f"  Reading B: g(n) = 0 emergent (non-circular, partial)  : "
-          f"{'PASS' if rb else 'FAIL'}")
-    print(f"  Frontier : irreducibility != primality                : "
-          f"{'PASS' if rf else 'FAIL'}")
-    print(f"  Bridge   : emergence subset of imposed carrier        : "
-          f"{'PASS' if rbr else 'FAIL'}")
+    print(
+        f"  Reading A: dNFR = 0 exact (re-description, circular)  : "
+        f"{'PASS' if ra else 'FAIL'}"
+    )
+    print(
+        f"  Reading B: g(n) = 0 emergent (non-circular, partial)  : "
+        f"{'PASS' if rb else 'FAIL'}"
+    )
+    print(
+        f"  Frontier : irreducibility != primality                : "
+        f"{'PASS' if rf else 'FAIL'}"
+    )
+    print(
+        f"  Bridge   : emergence subset of imposed carrier        : "
+        f"{'PASS' if rbr else 'FAIL'}"
+    )
     structural = all([ra, rb, rf, rbr])
     print(f"\n  STRUCTURAL CHECKS: {'ALL PASS' if structural else 'SOME FAILED'}")
     print("  THESIS VERDICT: PARTIAL / OPEN (by design)")

@@ -1,4 +1,5 @@
 """Batch runner that forces failure telemetry artifacts for inspection."""
+
 # pyright: reportMissingImports=false
 from __future__ import annotations
 
@@ -94,7 +95,9 @@ def _resolve_targets(args: argparse.Namespace) -> list[int]:
         return list(dict.fromkeys(explicit))
 
     if args.range_start is None or args.range_stop is None:
-        raise SystemExit("Provide --range-start/--range-stop or explicit numbers to analyze.")
+        raise SystemExit(
+            "Provide --range-start/--range-stop or explicit numbers to analyze."
+        )
     if args.range_start > args.range_stop:
         raise SystemExit("--range-start must be <= --range-stop")
 
@@ -133,12 +136,16 @@ def run_batch(
             continue
 
         if summary["tnfr_certified"]:
-            print(f"{prefix} n={n} certified factors {summary['tnfr_certified']} (telemetry skipped)")
+            print(
+                f"{prefix} n={n} certified factors {summary['tnfr_certified']} (telemetry skipped)"
+            )
         else:
             diag = summary["failure_diagnostics"] or {}
             stage = diag.get("failure_stage") if isinstance(diag, dict) else None
             reason = diag.get("failure_reason") if isinstance(diag, dict) else None
-            print(f"{prefix} n={n} failure telemetry captured: stage={stage} reason={reason}")
+            print(
+                f"{prefix} n={n} failure telemetry captured: stage={stage} reason={reason}"
+            )
 
     return summaries
 

@@ -50,9 +50,9 @@ if TYPE_CHECKING:
     from .definitions import Operator
 
 from ..constants.canonical import (
+    ALGEBRA_COMBINED_TOLERANCE_CANONICAL,
     ALGEBRA_EPI_TOLERANCE_CANONICAL,
     ALGEBRA_VF_TOLERANCE_CANONICAL,
-    ALGEBRA_COMBINED_TOLERANCE_CANONICAL,
 )
 
 __all__ = [
@@ -60,6 +60,7 @@ __all__ = [
     "validate_idempotence",
     "validate_commutativity_nul",
 ]
+
 
 def validate_identity_property(
     G: TNFRGraph,
@@ -119,8 +120,8 @@ def validate_identity_property(
     """
     from ..alias import get_attr
     from ..constants.aliases import ALIAS_EPI
-    from .definitions import Silence, Coherence, Dissonance
     from ..structural import run_sequence
+    from .definitions import Coherence, Dissonance, Silence
 
     # Path 1: operator → Coherence → Dissonance (without SHA)
     # Valid grammar: generator → stabilizer → terminator
@@ -137,6 +138,7 @@ def validate_identity_property(
     # SHA should preserve the structural result (EPI) from operator → coherence
     # Both terminators should leave structure intact after stabilization
     return abs(epi_without_sha - epi_with_sha) < tolerance
+
 
 def validate_idempotence(
     G: TNFRGraph,
@@ -188,8 +190,8 @@ def validate_idempotence(
     """
     from ..alias import get_attr
     from ..constants.aliases import ALIAS_VF
-    from .definitions import Silence, Emission, Coherence, Resonance
     from ..structural import run_sequence
+    from .definitions import Coherence, Emission, Resonance, Silence
 
     # Test 1: SHA after simple sequence
     G1 = G.copy()
@@ -205,6 +207,7 @@ def validate_idempotence(
     # Both νf values should be near-zero (SHA's characteristic effect)
     # Import canonical constants
     from ..constants.canonical import GAMMA_OVER_PI_PLUS_E
+
     vf_threshold = GAMMA_OVER_PI_PLUS_E  # γ/(π+e) ≈ 0.099 (silencio euleriano)
     both_minimal = (vf_context1 < vf_threshold) and (vf_context2 < vf_threshold)
 
@@ -212,6 +215,7 @@ def validate_idempotence(
     consistent = abs(vf_context1 - vf_context2) < tolerance
 
     return both_minimal and consistent
+
 
 def validate_commutativity_nul(
     G: TNFRGraph,
@@ -262,8 +266,8 @@ def validate_commutativity_nul(
     """
     from ..alias import get_attr
     from ..constants.aliases import ALIAS_EPI, ALIAS_VF
-    from .definitions import Silence, Contraction, Transition
     from ..structural import run_sequence
+    from .definitions import Contraction, Silence, Transition
 
     # Path 1: NAV → SHA → NUL (Transition then Silence then Contraction)
     G1 = G.copy()

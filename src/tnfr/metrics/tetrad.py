@@ -19,9 +19,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ..mathematics.unified_numerical import np
-
 from ..config import get_telemetry_density
+from ..mathematics.unified_numerical import np
 from ..physics.canonical import (
     compute_phase_curvature,
     compute_phase_gradient,
@@ -31,6 +30,7 @@ from ..physics.canonical import (
 
 if TYPE_CHECKING:
     import networkx as nx
+
 
 def collect_tetrad_snapshot(
     G: nx.Graph,
@@ -77,12 +77,8 @@ def collect_tetrad_snapshot(
     # Build snapshot
     snapshot: dict[str, Any] = {
         "phi_s": _field_statistics(phi_s_values, density, include_histograms),
-        "phase_grad": _field_statistics(
-            grad_values, density, include_histograms
-        ),
-        "phase_curv": _field_statistics(
-            curv_values, density, include_histograms
-        ),
+        "phase_grad": _field_statistics(grad_values, density, include_histograms),
+        "phase_curv": _field_statistics(curv_values, density, include_histograms),
         "xi_c": None,  # Filled below
         "metadata": {
             "telemetry_density": density,
@@ -98,6 +94,7 @@ def collect_tetrad_snapshot(
         snapshot["xi_c"] = None
 
     return snapshot
+
 
 def _field_statistics(
     values: dict[int, float],
@@ -158,6 +155,7 @@ def _field_statistics(
         }
 
     return stats
+
 
 def get_tetrad_sample_interval(base_dt: float = 1.0) -> float:
     """Compute snapshot interval based on telemetry_density.

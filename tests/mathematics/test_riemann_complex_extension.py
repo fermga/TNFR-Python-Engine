@@ -23,52 +23,39 @@ import math
 import numpy as np
 import pytest
 
+from tnfr.riemann.complex_extension import (  # Data structures; Constants; Core; Critical line; Pseudo-spectrum; Resolvent; Comparison; Integrated; Private helpers
+    KNOWN_RIEMANN_ZEROS,
+    ComplexEigenResult,
+    ComplexPlaneAnalysis,
+    CriticalLineScan,
+    PseudoSpectrumResult,
+    ResolventAnalysis,
+    _build_dense_from_tridiag,
+    _deduplicate_crossings,
+    _find_local_maxima,
+    _find_local_minima,
+    analyze_non_hermiticity,
+    analyze_resolvent_along_critical_line,
+    compare_with_riemann_zeros,
+    compute_complex_eigenspectrum,
+    compute_complex_eigensystem,
+    compute_pseudospectrum,
+    compute_resolvent_norm,
+    find_eigenvalue_zero_crossings,
+    run_complex_plane_analysis,
+    scan_critical_line,
+)
 from tnfr.riemann.operator import (
-    build_prime_path_graph,
+    _first_primes,
     build_h_tnfr,
     build_h_tnfr_complex,
+    build_prime_path_graph,
     build_tridiagonal_h_tnfr,
     build_tridiagonal_h_tnfr_complex,
     default_prime_potential,
     default_prime_potential_complex,
-    _first_primes,
 )
-from tnfr.riemann.complex_extension import (
-    # Data structures
-    ComplexEigenResult,
-    CriticalLineScan,
-    PseudoSpectrumResult,
-    ResolventAnalysis,
-    ComplexPlaneAnalysis,
-    # Constants
-    KNOWN_RIEMANN_ZEROS,
-    # Core
-    compute_complex_eigenspectrum,
-    compute_complex_eigensystem,
-    analyze_non_hermiticity,
-    # Critical line
-    scan_critical_line,
-    find_eigenvalue_zero_crossings,
-    # Pseudo-spectrum
-    compute_pseudospectrum,
-    compute_resolvent_norm,
-    # Resolvent
-    analyze_resolvent_along_critical_line,
-    # Comparison
-    compare_with_riemann_zeros,
-    # Integrated
-    run_complex_plane_analysis,
-    # Private helpers
-    _find_local_minima,
-    _find_local_maxima,
-    _deduplicate_crossings,
-    _build_dense_from_tridiag,
-)
-from tnfr.riemann.spectral_proof import (
-    compute_eigenspectrum,
-    compute_eigensystem,
-)
-
+from tnfr.riemann.spectral_proof import compute_eigenspectrum, compute_eigensystem
 
 # ============================================================================
 # 1. Operator Construction Tests
@@ -106,7 +93,9 @@ class TestComplexOperatorConstruction:
         _, V = build_h_tnfr_complex(G, s=0.5 + 3j)
         for i in range(5):
             assert abs(V[i, i].real) < 1e-14, "V diagonal should be purely imaginary"
-            assert abs(V[i, i].imag) > 0, "V diagonal should have nonzero imaginary part"
+            assert (
+                abs(V[i, i].imag) > 0
+            ), "V diagonal should have nonzero imaginary part"
         # Off-diagonal should be zero
         np.fill_diagonal(V, 0)
         assert np.allclose(V, 0)
@@ -172,6 +161,7 @@ class TestComplexOperatorConstruction:
     def test_missing_label_raises(self) -> None:
         """Missing node label must raise TNFRValueError."""
         import networkx as nx
+
         G = nx.Graph()
         G.add_node(0)  # no 'label' attribute
         with pytest.raises(Exception):  # TNFRValueError
@@ -331,8 +321,8 @@ class TestCriticalLineScan:
         result = scan_critical_line(10, t_max=20.0, n_points=50)
         # Compare first quarter vs last quarter averages
         n = len(result.non_hermiticity)
-        first_q = np.mean(result.non_hermiticity[:n // 4])
-        last_q = np.mean(result.non_hermiticity[3 * n // 4:])
+        first_q = np.mean(result.non_hermiticity[: n // 4])
+        last_q = np.mean(result.non_hermiticity[3 * n // 4 :])
         assert last_q > first_q
 
     def test_local_minima_detected(self) -> None:
@@ -391,8 +381,11 @@ class TestPseudoSpectrum:
         s = 0.5 + 0j  # Hermitian
         evals = compute_complex_eigenspectrum(k, s)
         result = compute_pseudospectrum(
-            k, s, z_center=complex(np.mean(evals.real), 0),
-            z_radius=3.0, n_grid=30,
+            k,
+            s,
+            z_center=complex(np.mean(evals.real), 0),
+            z_radius=3.0,
+            n_grid=30,
         )
         # For each grid point, sigma_min should ~ min distance to eigenvalues
         for i in range(result.sigma_min_grid.shape[0]):
@@ -400,9 +393,9 @@ class TestPseudoSpectrum:
                 z = complex(result.z_real[j], result.z_imag[i])
                 expected = float(np.min(np.abs(z - evals)))
                 actual = result.sigma_min_grid[i, j]
-                assert abs(actual - expected) < 0.1, (
-                    f"Hermitian pseudo-spectrum mismatch at z={z}"
-                )
+                assert (
+                    abs(actual - expected) < 0.1
+                ), f"Hermitian pseudo-spectrum mismatch at z={z}"
 
 
 # ============================================================================
@@ -432,7 +425,10 @@ class TestResolvent:
     def test_resolvent_analysis_shape(self) -> None:
         """Resolvent analysis returns correct structures."""
         result = analyze_resolvent_along_critical_line(
-            8, z_probe=0.0 + 0j, t_max=20.0, n_points=50,
+            8,
+            z_probe=0.0 + 0j,
+            t_max=20.0,
+            n_points=50,
         )
         assert result.k == 8
         assert len(result.t_values) == 50
@@ -442,7 +438,10 @@ class TestResolvent:
     def test_resolvent_analysis_peaks(self) -> None:
         """Resolvent analysis should detect peaks."""
         result = analyze_resolvent_along_critical_line(
-            10, z_probe=0.0 + 0j, t_max=30.0, n_points=200,
+            10,
+            z_probe=0.0 + 0j,
+            t_max=30.0,
+            n_points=200,
         )
         assert isinstance(result.peak_t_values, np.ndarray)
         assert isinstance(result.peak_norms, np.ndarray)
@@ -473,8 +472,11 @@ class TestRiemannComparison:
     def test_comparison_returns_tuples(self) -> None:
         """compare_with_riemann_zeros returns list of 3-tuples."""
         results = compare_with_riemann_zeros(
-            10, t_max=50.0, n_points=200,
-            n_zeros=5, threshold=5.0,
+            10,
+            t_max=50.0,
+            n_points=200,
+            n_zeros=5,
+            threshold=5.0,
         )
         assert isinstance(results, list)
         for item in results:
@@ -497,7 +499,9 @@ class TestIntegratedAnalysis:
     def test_analysis_fields(self) -> None:
         """Integrated analysis populates all fields."""
         result = run_complex_plane_analysis(
-            8, t_max=20.0, n_points=50,
+            8,
+            t_max=20.0,
+            n_points=50,
         )
         assert result.k == 8
         assert result.critical_line is not None
@@ -510,7 +514,9 @@ class TestIntegratedAnalysis:
     def test_analysis_hermitian_at_origin(self) -> None:
         """Non-Hermiticity at s = 1/2 should be small."""
         result = run_complex_plane_analysis(
-            10, t_max=10.0, n_points=30,
+            10,
+            t_max=10.0,
+            n_points=30,
         )
         assert result.non_hermiticity_at_half < 1e-10
 
@@ -618,7 +624,9 @@ class TestMathematicalProperties:
         evals_pos = compute_complex_eigenspectrum(k, 0.5 + t * 1j)
         evals_neg = compute_complex_eigenspectrum(k, 0.5 - t * 1j)
         # Sort conjugates for comparison
-        conj_pos = np.sort(np.conj(evals_pos).real + 1j * np.sort(np.conj(evals_pos).imag))
+        conj_pos = np.sort(
+            np.conj(evals_pos).real + 1j * np.sort(np.conj(evals_pos).imag)
+        )
         # Just check the sets match
         sorted_neg = np.sort(evals_neg.real + 1j * np.sort(evals_neg.imag))
         # More robust: compare sorted absolute values

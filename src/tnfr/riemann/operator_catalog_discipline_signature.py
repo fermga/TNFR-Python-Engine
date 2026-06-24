@@ -189,9 +189,7 @@ def _probe_metadata_fields_are_string_tuples() -> tuple[str, str]:
     for key, meta in OPERATOR_METADATA.items():
         roles = meta.grammar_roles
         contracts = meta.contracts
-        if not isinstance(roles, tuple) or not all(
-            isinstance(r, str) for r in roles
-        ):
+        if not isinstance(roles, tuple) or not all(isinstance(r, str) for r in roles):
             bad.append(f"{key}:grammar_roles")
         if not isinstance(contracts, tuple) or not all(
             isinstance(c, str) for c in contracts
@@ -231,18 +229,14 @@ def _probe_no_hidden_fourteenth_operator() -> tuple[str, str]:
     before = dict(OPERATORS)
     _ensure_loaded()
     after = dict(OPERATORS)
-    if (
-        len(after) == CANONICAL_CATALOG_SIZE
-        and set(after.keys()) == set(before.keys())
-    ):
+    if len(after) == CANONICAL_CATALOG_SIZE and set(after.keys()) == set(before.keys()):
         return "OK", "registry idempotent at size 13"
-    return "ANOMALY", (
-        f"registry expanded from {len(before)} to {len(after)}"
-    )
+    return "ANOMALY", (f"registry expanded from {len(before)} to {len(after)}")
 
 
-def compute_operator_catalog_discipline_signature(
-) -> OperatorCatalogDisciplineSignatureCertificate:
+def compute_operator_catalog_discipline_signature() -> (
+    OperatorCatalogDisciplineSignatureCertificate
+):
     """Run the OCD diagnostic over the canonical TNFR operator catalog.
 
     Returns
@@ -261,22 +255,24 @@ def compute_operator_catalog_discipline_signature(
 
     probes: tuple[tuple[str, Any], ...] = (
         ("registry_size", _probe_registry_size),
-        ("registry_entries_are_operator_subclasses",
-         _probe_registry_entries_are_operator_subclasses),
-        ("registry_keys_are_lowercase_strings",
-         _probe_registry_keys_are_lowercase_strings),
+        (
+            "registry_entries_are_operator_subclasses",
+            _probe_registry_entries_are_operator_subclasses,
+        ),
+        (
+            "registry_keys_are_lowercase_strings",
+            _probe_registry_keys_are_lowercase_strings,
+        ),
         ("registry_keys_unique", _probe_registry_keys_unique),
         ("metadata_size", _probe_metadata_size),
-        ("metadata_values_are_operator_meta",
-         _probe_metadata_values_are_operator_meta),
-        ("metadata_fields_are_string_tuples",
-         _probe_metadata_fields_are_string_tuples),
-        ("metadata_registry_alignment",
-         _probe_metadata_registry_alignment),
-        ("definitions_exports_cover_canonical_set",
-         _probe_definitions_exports_cover_canonical_set),
-        ("no_hidden_fourteenth_operator",
-         _probe_no_hidden_fourteenth_operator),
+        ("metadata_values_are_operator_meta", _probe_metadata_values_are_operator_meta),
+        ("metadata_fields_are_string_tuples", _probe_metadata_fields_are_string_tuples),
+        ("metadata_registry_alignment", _probe_metadata_registry_alignment),
+        (
+            "definitions_exports_cover_canonical_set",
+            _probe_definitions_exports_cover_canonical_set,
+        ),
+        ("no_hidden_fourteenth_operator", _probe_no_hidden_fourteenth_operator),
     )
 
     probe_ids: list[str] = []

@@ -21,8 +21,8 @@ if TYPE_CHECKING:
 
 from ..operators.grammar import validate_sequence_with_health
 from ..operators.health_analyzer import SequenceHealthAnalyzer
-from ..tools.sequence_generator import ContextualSequenceGenerator
 from ..tools.domain_templates import list_domains, list_objectives
+from ..tools.sequence_generator import ContextualSequenceGenerator
 
 __all__ = ["TNFRInteractiveValidator", "run_interactive_validator"]
 
@@ -32,6 +32,7 @@ __all__ = ["TNFRInteractiveValidator", "run_interactive_validator"]
 _HEALTH_EXCELLENT = 0.8
 _HEALTH_GOOD = 0.7
 _HEALTH_MODERATE = 0.6
+
 
 class TNFRInteractiveValidator:
     """Interactive validator for TNFR operator sequences.
@@ -141,7 +142,10 @@ class TNFRInteractiveValidator:
                 self._display_success(result, sequence)
 
                 # Suggest improvements if health is moderate
-                if result.health_metrics and result.health_metrics.overall_health < _HEALTH_EXCELLENT:
+                if (
+                    result.health_metrics
+                    and result.health_metrics.overall_health < _HEALTH_EXCELLENT
+                ):
                     self._suggest_improvements(sequence, result.health_metrics)
             else:
                 self._display_error(result)
@@ -262,7 +266,9 @@ class TNFRInteractiveValidator:
         # Generate
         print(f"\nGenerating {pattern} sequence...")
         try:
-            result = self.generator.generate_for_pattern(target_pattern=pattern, min_health=0.70)
+            result = self.generator.generate_for_pattern(
+                target_pattern=pattern, min_health=0.70
+            )
             self._display_generated_sequence(result)
 
         except Exception as e:
@@ -285,7 +291,9 @@ class TNFRInteractiveValidator:
 
         # Ask for target health
         try:
-            target_input = input("Target health score (0.0-1.0, or Enter for default): ").strip()
+            target_input = input(
+                "Target health score (0.0-1.0, or Enter for default): "
+            ).strip()
             target_health = float(target_input) if target_input else None
         except ValueError:
             print("⚠ Invalid health score. Using default.\n")
@@ -374,7 +382,9 @@ class TNFRInteractiveValidator:
         sequence_input = sequence_input.replace(",", " ")
         return [op.strip() for op in sequence_input.split() if op.strip()]
 
-    def _display_success(self, result: SequenceValidationResult, sequence: list[str]) -> None:
+    def _display_success(
+        self, result: SequenceValidationResult, sequence: list[str]
+    ) -> None:
         """Display successful validation with health metrics."""
         print()
         print("✓ VALID SEQUENCE")
@@ -391,7 +401,9 @@ class TNFRInteractiveValidator:
         icon = self._health_icon(health.overall_health)
         bar = self._health_bar(health.overall_health)
         status = self._health_status(health.overall_health)
-        print(f"│ Overall Health:      {bar} {health.overall_health:.2f} {icon} ({status})")
+        print(
+            f"│ Overall Health:      {bar} {health.overall_health:.2f} {icon} ({status})"
+        )
 
         # Individual metrics
         print(
@@ -445,7 +457,9 @@ class TNFRInteractiveValidator:
             print(f"type: {type(result.error).__name__}")
         print()
 
-    def _suggest_improvements(self, sequence: list[str], health: SequenceHealthMetrics) -> None:
+    def _suggest_improvements(
+        self, sequence: list[str], health: SequenceHealthMetrics
+    ) -> None:
         """Suggest improvements for moderate health sequences."""
         if not health.recommendations:
             return
@@ -476,7 +490,9 @@ class TNFRInteractiveValidator:
         print("✓ GENERATED SEQUENCE")
         print()
         print(f"Sequence:  {' → '.join(result.sequence)}")
-        print(f"Health:    {result.health_score:.2f} {self._health_icon(result.health_score)}")
+        print(
+            f"Health:    {result.health_score:.2f} {self._health_icon(result.health_score)}"
+        )
         print(f"Pattern:   {result.detected_pattern.upper()}")
 
         if result.domain:
@@ -584,6 +600,7 @@ class TNFRInteractiveValidator:
         response = input(f"{prompt} (y/n): ").strip().lower()
         return response in ("y", "yes")
 
+
 def run_interactive_validator(seed: int | None = None) -> int:
     """Run the interactive validator session.
 
@@ -604,6 +621,7 @@ def run_interactive_validator(seed: int | None = None) -> int:
     except Exception as e:
         print(f"\n✗ Fatal error: {e}", file=sys.stderr)
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(run_interactive_validator())

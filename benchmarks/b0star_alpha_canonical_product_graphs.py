@@ -250,7 +250,9 @@ def f7a_diagnostic(eigvals_real: np.ndarray, label: str) -> dict[str, Any]:
 
 # -- verdict logic (pre-registered) --------------------------------------
 def f7_verdict(
-    d_can: float | None, d_shuf: float | None, d_n5: float | None,
+    d_can: float | None,
+    d_shuf: float | None,
+    d_n5: float | None,
 ) -> tuple[str, bool, float | None]:
     if d_can is None or d_shuf is None:
         return "INDETERMINATE_INVALID_PROJECTION", False, None
@@ -260,9 +262,11 @@ def f7_verdict(
         return "INDETERMINATE_DEGENERATE_CONSTRUCTION", False, f8_delta
     if d_n5 is None:
         return "INDETERMINATE_OTHER", True, f8_delta
-    if (d_can < D_SUPPORTED_MAX
-            and d_can < d_shuf - D_SHUFFLE_MARGIN
-            and d_can < d_n5 - D_N5_MARGIN):
+    if (
+        d_can < D_SUPPORTED_MAX
+        and d_can < d_shuf - D_SHUFFLE_MARGIN
+        and d_can < d_n5 - D_N5_MARGIN
+    ):
         return "SUPPORTED", True, f8_delta
     if d_can > D_REFUTED_MIN or d_can >= d_shuf - D_SHUFFLE_MARGIN:
         return "REFUTED", True, f8_delta
@@ -310,7 +314,9 @@ def diagnose_candidate(
 
     # verdict
     verdict, f8_satisfied, f8_delta = f7_verdict(
-        diag_can["D_GUE"], diag_shuf["D_GUE"], diag_rand["D_GUE"],
+        diag_can["D_GUE"],
+        diag_shuf["D_GUE"],
+        diag_rand["D_GUE"],
     )
 
     return {
@@ -321,9 +327,7 @@ def diagnose_candidate(
             "N5_random_self_adjoint": diag_rand,
         },
         "diagonal_sn_audit": {
-            "spec_drift_under_diagonal_sn_max_abs": (
-                spec_drift_under_diagonal_sn
-            ),
+            "spec_drift_under_diagonal_sn_max_abs": (spec_drift_under_diagonal_sn),
             "interpretation": (
                 "expected ~machine epsilon if canonical product Hamiltonian "
                 "commutes with U_sigma = P_sigma (x) P_sigma; this is the "
@@ -343,9 +347,7 @@ def diagnose_candidate(
 
 
 def reference_riemann_d_gue(k_ref: int) -> dict[str, Any]:
-    gammas = np.array(
-        [float(mp.im(mp.zetazero(k))) for k in range(1, k_ref + 1)]
-    )
+    gammas = np.array([float(mp.im(mp.zetazero(k))) for k in range(1, k_ref + 1)])
     spacings = normalised_spacings(gammas)
     d_gue = ks_distance_vs_gue(spacings)
     return {
@@ -367,6 +369,7 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
 
     # shuffled-prime base H_P14_shuf (single permutation, reused across Q1, Q2)
     from sympy import primerange
+
     primes_canonical = list(primerange(2, 100))[:N_PRIMES]
     perm = rng.permutation(N_PRIMES)
     primes_shuffled = [primes_canonical[int(i)] for i in perm]
@@ -382,12 +385,20 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
         H_base_rand *= spectral_radius / current_radius
 
     q1 = diagnose_candidate(
-        "Q1_Cartesian", H_base, H_base_shuf, H_base_rand,
-        build_cartesian_product_hamiltonian, perm,
+        "Q1_Cartesian",
+        H_base,
+        H_base_shuf,
+        H_base_rand,
+        build_cartesian_product_hamiltonian,
+        perm,
     )
     q2 = diagnose_candidate(
-        "Q2_tensor", H_base, H_base_shuf, H_base_rand,
-        build_tensor_product_hamiltonian, perm,
+        "Q2_tensor",
+        H_base,
+        H_base_shuf,
+        H_base_rand,
+        build_tensor_product_hamiltonian,
+        perm,
     )
 
     riemann_ref = reference_riemann_d_gue(K_REF_RIEMANN)
@@ -401,9 +412,7 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
         if v == "REFUTED":
             return f"{cid}_B0_STAR_ALPHA_REFUTED"
         if v == "INDETERMINATE_DEGENERATE_CONSTRUCTION":
-            return (
-                f"{cid}_B0_STAR_ALPHA_CCET_EXTENDS_TO_CANONICAL_PRODUCT_GRAPH"
-            )
+            return f"{cid}_B0_STAR_ALPHA_CCET_EXTENDS_TO_CANONICAL_PRODUCT_GRAPH"
         return f"{cid}_B0_STAR_ALPHA_{v}"
 
     q1["milestone_verdict"] = _milestone_verdict(q1)
@@ -476,16 +485,20 @@ def _print_summary(report: dict[str, Any]) -> None:
     print("B0-star-alpha-Q12  Q1 = G_P14 [Cart] G_P14   Q2 = G_P14 [tensor] G_P14")
     print("=" * 72)
     print(f"Base graph: {cfg['graph_base']}")
-    print(f"  N_base = {cfg['N_base']}, "
-          f"H_base_spectral_radius = {cfg['H_base_spectral_radius']:.6f}")
+    print(
+        f"  N_base = {cfg['N_base']}, "
+        f"H_base_spectral_radius = {cfg['H_base_spectral_radius']:.6f}"
+    )
     print(f"  primes canonical = {cfg['primes_canonical']}")
     print(f"  primes shuffled  = {cfg['primes_shuffled']}")
     print(f"Q1 lift: {cfg['Q1_lift']}")
     print(f"Q2 lift: {cfg['Q2_lift']}")
     print()
     rr = report["riemann_reference"]
-    print(f"Riemann reference  : D_GUE = {rr['D_GUE']:.6f} "
-          f"({rr['n_spacings']} spacings)")
+    print(
+        f"Riemann reference  : D_GUE = {rr['D_GUE']:.6f} "
+        f"({rr['n_spacings']} spacings)"
+    )
     print()
     for cid in ("Q1", "Q2"):
         c = report["candidates"][cid]
@@ -494,18 +507,25 @@ def _print_summary(report: dict[str, Any]) -> None:
         rand = c["controls"]["N5_random_self_adjoint"]
         f8 = c["f8_structural_condition"]
         audit = c["diagonal_sn_audit"]
-        delta_str = ("N/A" if f8["delta_D_can_minus_shuf_abs"] is None
-                     else f"{f8['delta_D_can_minus_shuf_abs']:.6e}")
+        delta_str = (
+            "N/A"
+            if f8["delta_D_can_minus_shuf_abs"] is None
+            else f"{f8['delta_D_can_minus_shuf_abs']:.6e}"
+        )
         print("-" * 72)
         print(f"{c['candidate_id']}  dim = {can['dim']}")
         print(f"  D_canonical        = {can['D_GUE']:.6f}")
         print(f"  D_shuffled_prime   = {shuf['D_GUE']:.6f}")
         print(f"  D_N5_random_SA     = {rand['D_GUE']:.6f}")
-        print(f"  |D_can - D_shuf|   = {delta_str}  "
-              f"(floor = {F8_FLOOR})  "
-              f"F8 satisfied = {f8['satisfied']}")
-        print(f"  S_n similarity audit (spec drift max abs) = "
-              f"{audit['spec_drift_under_diagonal_sn_max_abs']:.3e}")
+        print(
+            f"  |D_can - D_shuf|   = {delta_str}  "
+            f"(floor = {F8_FLOOR})  "
+            f"F8 satisfied = {f8['satisfied']}"
+        )
+        print(
+            f"  S_n similarity audit (spec drift max abs) = "
+            f"{audit['spec_drift_under_diagonal_sn_max_abs']:.3e}"
+        )
         print(f"  F7 verdict          = {c['f7_verdict']}")
         print(f"  milestone verdict   = {c['milestone_verdict']}")
     print("=" * 72)
@@ -514,7 +534,8 @@ def _print_summary(report: dict[str, Any]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--out", type=Path,
+        "--out",
+        type=Path,
         default=REPO_ROOT / "results" / "b0star_alpha_canonical_product_graphs.json",
     )
     args = parser.parse_args()

@@ -91,22 +91,40 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from math import comb
 
 from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Coupling, Resonance,
-    Silence, Expansion, Contraction, SelfOrganization, Mutation,
-    Transition, Recursivity,
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
 )
 from tnfr.operators.grammar_validate import validate_grammar
 
 INST = {
-    "AL": Emission(), "EN": Reception(), "IL": Coherence(),
-    "OZ": Dissonance(), "UM": Coupling(), "RA": Resonance(),
-    "SHA": Silence(), "VAL": Expansion(), "NUL": Contraction(),
-    "THOL": SelfOrganization(), "ZHIR": Mutation(), "NAV": Transition(),
+    "AL": Emission(),
+    "EN": Reception(),
+    "IL": Coherence(),
+    "OZ": Dissonance(),
+    "UM": Coupling(),
+    "RA": Resonance(),
+    "SHA": Silence(),
+    "VAL": Expansion(),
+    "NUL": Contraction(),
+    "THOL": SelfOrganization(),
+    "ZHIR": Mutation(),
+    "NAV": Transition(),
     "REMESH": Recursivity(),
 }
 
@@ -146,8 +164,10 @@ def experiment_1_audit():
         ("Activacion simple      [AL,IL,RA]", ["AL", "IL", "RA"]),
         ("Estabiliz. mutacional  [OZ,ZHIR,IL]", ["OZ", "ZHIR", "IL"]),
         ("Ciclo regen.           [NAV,THOL,SHA]", ["NAV", "THOL", "SHA"]),
-        ("Interfaz adaptativa    [THOL,ZHIR,UM,NAV,RA]",
-         ["THOL", "ZHIR", "UM", "NAV", "RA"]),
+        (
+            "Interfaz adaptativa    [THOL,ZHIR,UM,NAV,RA]",
+            ["THOL", "ZHIR", "UM", "NAV", "RA"],
+        ),
         ("MACRO INIT             [AL,IL,UM]", ["AL", "IL", "UM"]),
         ("MOD ESTABILIZADOR      [OZ,ZHIR,IL]", ["OZ", "ZHIR", "IL"]),
         ("Secuencia base         [AL,IL,UM,RA]", ["AL", "IL", "UM", "RA"]),
@@ -207,22 +227,34 @@ def experiment_2_composition():
     cases = [
         ("Bootstrap  [AL,UM,IL]", ["AL", "UM", "IL"], ["AL", "UM", "IL", "SHA"]),
         ("Stabilize  [IL,SHA]", ["IL", "SHA"], ["AL", "IL", "SHA"]),
-        ("Explore    [OZ,ZHIR,IL]", ["OZ", "ZHIR", "IL"],
-         ["AL", "IL", "OZ", "ZHIR", "IL", "SHA"]),
-        ("MOD ESTAB. [OZ,ZHIR,IL]", ["OZ", "ZHIR", "IL"],
-         ["AL", "IL", "OZ", "ZHIR", "IL", "SHA"]),
+        (
+            "Explore    [OZ,ZHIR,IL]",
+            ["OZ", "ZHIR", "IL"],
+            ["AL", "IL", "OZ", "ZHIR", "IL", "SHA"],
+        ),
+        (
+            "MOD ESTAB. [OZ,ZHIR,IL]",
+            ["OZ", "ZHIR", "IL"],
+            ["AL", "IL", "OZ", "ZHIR", "IL", "SHA"],
+        ),
     ]
     for name, frag, word in cases:
-        print(f"    {name:24s} fragment={valid(frag)!s:5s} "
-              f"-> [{' '.join(word)}] = {valid(word)}")
+        print(
+            f"    {name:24s} fragment={valid(frag)!s:5s} "
+            f"-> [{' '.join(word)}] = {valid(word)}"
+        )
     print("\n  Macros compose into larger valid words (generator ... closure):")
     # MACRO INIT [AL,IL,UM] composed with Activacion-simple [.,IL,RA] + closure
     composed = ["AL", "IL", "UM", "IL", "RA", "SHA"]
-    print(f"    INIT[AL,IL,UM] (+) [IL,RA] (+) SHA = "
-          f"[{' '.join(composed)}] = {valid(composed)}")
+    print(
+        f"    INIT[AL,IL,UM] (+) [IL,RA] (+) SHA = "
+        f"[{' '.join(composed)}] = {valid(composed)}"
+    )
     composed2 = ["AL", "IL", "OZ", "ZHIR", "IL", "UM", "RA", "SHA"]
-    print(f"    INIT (+) MOD-ESTAB (+) propagate (+) SHA = "
-          f"[{' '.join(composed2)}] = {valid(composed2)}")
+    print(
+        f"    INIT (+) MOD-ESTAB (+) propagate (+) SHA = "
+        f"[{' '.join(composed2)}] = {valid(composed2)}"
+    )
     print("  -> the glyphic functions are the WORDS; composition (with grammar")
     print("     glue) is the higher grammar -- the PDF's 'compose into more")
     print("     complex structures', recovered exactly.")
@@ -238,9 +270,14 @@ def experiment_3_nesting():
     flat = flatten(nested)
     print("      AL IL OZ THOL[ IL OZ ZHIR UM ] IL SHA")
     print(f"      flattened: {' '.join(flat)}  -> valid={valid(flat)}")
-    deep = ["AL", "IL", "OZ",
-            ("THOL", ["IL", "OZ", ("THOL", ["IL", "OZ", "ZHIR"]), "IL"]),
-            "IL", "SHA"]
+    deep = [
+        "AL",
+        "IL",
+        "OZ",
+        ("THOL", ["IL", "OZ", ("THOL", ["IL", "OZ", "ZHIR"]), "IL"]),
+        "IL",
+        "SHA",
+    ]
     flatd = flatten(deep)
     print(f"      depth-2:   {' '.join(flatd)}  -> valid={valid(flatd)}")
     print("      -> the regular operator layer (ex 139-142) is preserved.")

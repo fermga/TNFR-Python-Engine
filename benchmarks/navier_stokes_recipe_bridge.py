@@ -159,15 +159,9 @@ def so3_generators():
     Antisymmetric, traceless, with [J_a, J_b] = eps_{abc} J_c. These are
     the algebraic carrier of the 3D vortex-stretching rotation Omega.
     """
-    j_x = np.array([[0.0, 0.0, 0.0],
-                    [0.0, 0.0, -1.0],
-                    [0.0, 1.0, 0.0]])
-    j_y = np.array([[0.0, 0.0, 1.0],
-                    [0.0, 0.0, 0.0],
-                    [-1.0, 0.0, 0.0]])
-    j_z = np.array([[0.0, -1.0, 0.0],
-                    [1.0, 0.0, 0.0],
-                    [0.0, 0.0, 0.0]])
+    j_x = np.array([[0.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]])
+    j_y = np.array([[0.0, 0.0, 1.0], [0.0, 0.0, 0.0], [-1.0, 0.0, 0.0]])
+    j_z = np.array([[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
     return [j_x, j_y, j_z]
 
 
@@ -254,7 +248,7 @@ def stretching_field_norm(n=8, three_d=True):
     for u_a in comps:
         s_a = o_x * dd(u_a, 0) + o_y * dd(u_a, 1) + o_z * dd(u_a, 2)
         stretch_sq += s_a * s_a
-    return float(np.sqrt(np.sum(stretch_sq) * h ** 3))
+    return float(np.sqrt(np.sum(stretch_sq) * h**3))
 
 
 # --------------------------------------------------------------------- #
@@ -278,32 +272,34 @@ def test_third_realisation():
     t_a = su2_generators()
     ym_comm = commutator_norm(t_a[0], t_a[1])
     ym_nonabelian = ym_comm > _NONZERO
-    print(f"  YM  fibre  su(2) on C^2: [T_x, T_y] norm = {ym_comm:.3f}"
-          " -> non-Abelian")
+    print(
+        f"  YM  fibre  su(2) on C^2: [T_x, T_y] norm = {ym_comm:.3f}" " -> non-Abelian"
+    )
 
     # NS escape: so(3) on the velocity-component FIBRE.
     j_a = so3_generators()
     ns_comm = commutator_norm(j_a[0], j_a[1])
     ns_nonabelian = ns_comm > _NONZERO
     # [J_x, J_y] = J_z exactly.
-    bracket_matches = np.linalg.norm(
-        j_a[0] @ j_a[1] - j_a[1] @ j_a[0] - j_a[2]
-    ) < TOL
+    bracket_matches = np.linalg.norm(j_a[0] @ j_a[1] - j_a[1] @ j_a[0] - j_a[2]) < TOL
     ns_traceless = abs(np.trace(j_a[0])) < TOL
-    print(f"  NS  fibre  so(3) on C^3: [J_x, J_y] norm = {ns_comm:.3f}"
-          " -> non-Abelian")
-    print(f"      [J_x, J_y] = J_z exactly: {bracket_matches};"
-          f" traceless: {ns_traceless}")
+    print(
+        f"  NS  fibre  so(3) on C^3: [J_x, J_y] norm = {ns_comm:.3f}" " -> non-Abelian"
+    )
+    print(
+        f"      [J_x, J_y] = J_z exactly: {bracket_matches};"
+        f" traceless: {ns_traceless}"
+    )
 
     # so(3) ~= su(2): same structure constants eps_abc (rank-1 algebra).
     # [J_x, J_y] = J_z (so(3)) and [T_x, T_y] = i T_z (su(2)) -- both
     # have |structure constant| = 1, independent of generator norm.
-    su2_bracket = np.linalg.norm(
-        t_a[0] @ t_a[1] - t_a[1] @ t_a[0] - 1j * t_a[2]
-    ) < TOL
+    su2_bracket = np.linalg.norm(t_a[0] @ t_a[1] - t_a[1] @ t_a[0] - 1j * t_a[2]) < TOL
     iso_a1 = bracket_matches and su2_bracket
-    print("  so(3) ~= su(2): [J_x,J_y]=J_z and [T_x,T_y]=i T_z"
-          f" (struct. const. 1): {iso_a1}")
+    print(
+        "  so(3) ~= su(2): [J_x,J_y]=J_z and [T_x,T_y]=i T_z"
+        f" (struct. const. 1): {iso_a1}"
+    )
 
     same_shape_as_ym = ns_nonabelian and ym_nonabelian
     distinct_from_rh = rh_abelian and ns_nonabelian
@@ -345,16 +341,16 @@ def test_same_recipe():
     div_u = float(np.trace(m))
     s_symmetric = np.linalg.norm(s - s.T) < 1e-6
     s_traceless = abs(np.trace(s)) < 1e-6
-    print(f"  velocity divergence  div u = tr M = {div_u:.2e}"
-          " (incompressible)")
-    print(f"  strain S symmetric: {s_symmetric};"
-          f" traceless: {s_traceless}")
+    print(f"  velocity divergence  div u = tr M = {div_u:.2e}" " (incompressible)")
+    print(f"  strain S symmetric: {s_symmetric};" f" traceless: {s_traceless}")
 
     # Rotation Omega: antisymmetric -> lives in so(3), traceless.
     omega_antisym = np.linalg.norm(omega + omega.T) < 1e-6
     omega_traceless = abs(np.trace(omega)) < 1e-6
-    print(f"  rotation Omega antisymmetric (in so(3)): {omega_antisym};"
-          f" traceless: {omega_traceless}")
+    print(
+        f"  rotation Omega antisymmetric (in so(3)): {omega_antisym};"
+        f" traceless: {omega_traceless}"
+    )
 
     # so(3) carrier is non-commuting (the recipe's defining property).
     j_a = so3_generators()
@@ -368,8 +364,10 @@ def test_same_recipe():
     rh_gen = a_mat @ d_rh - d_rh @ a_mat
     rh_gen_antisym = np.linalg.norm(rh_gen + rh_gen.T) < TOL
     rh_gen_traceless = abs(np.trace(rh_gen)) < TOL
-    print(f"  RH [A, D] in so(n): antisymmetric {rh_gen_antisym},"
-          f" traceless {rh_gen_traceless}")
+    print(
+        f"  RH [A, D] in so(n): antisymmetric {rh_gen_antisym},"
+        f" traceless {rh_gen_traceless}"
+    )
 
     # YM analogue: i * su(2) is traceless anti-Hermitian.
     ym_gen = 1j * su2_generators()[0]
@@ -406,21 +404,21 @@ def test_dimensional_gating():
 
     f_2d = stretching_field_norm(n=8, three_d=False)
     f_3d = stretching_field_norm(n=8, three_d=True)
-    print(f"  ||(omega.grad)u||  2D-embedded = {f_2d:.3e}"
-          " (so(2) Abelian)")
-    print(f"  ||(omega.grad)u||  genuine 3D  = {f_3d:.3e}"
-          " (so(3) non-Abelian)")
+    print(f"  ||(omega.grad)u||  2D-embedded = {f_2d:.3e}" " (so(2) Abelian)")
+    print(f"  ||(omega.grad)u||  genuine 3D  = {f_3d:.3e}" " (so(3) non-Abelian)")
 
-    gate_2d = abs(f_2d) < TOL          # exactly zero -> no wall
-    gate_3d = f_3d > _NONZERO          # nonzero -> wall present
+    gate_2d = abs(f_2d) < TOL  # exactly zero -> no wall
+    gate_3d = f_3d > _NONZERO  # nonzero -> wall present
 
     # so(2) is Abelian (single generator, [J, J] = 0); so(3) is not.
     j2 = so2_generator()
     so2_abelian = commutator_norm(j2, j2) < TOL
     j_a = so3_generators()
     so3_nonabelian = commutator_norm(j_a[0], j_a[1]) > _NONZERO
-    print(f"  so(2) Abelian [J,J]=0: {so2_abelian};"
-          f"  so(3) non-Abelian: {so3_nonabelian}")
+    print(
+        f"  so(2) Abelian [J,J]=0: {so2_abelian};"
+        f"  so(3) non-Abelian: {so3_nonabelian}"
+    )
 
     engine_ok = True
     if _HAVE_NS:
@@ -438,15 +436,16 @@ def test_dimensional_gating():
                 op2.phi[2, idx] = 0.0
             e_2d = float(np.linalg.norm(op2.vortex_stretching_field()))
             engine_ok = e_2d < TOL and e_3d > _NONZERO
-            print(f"  [engine cross-check] ||field|| 2D = {e_2d:.3e},"
-                  f" 3D = {e_3d:.3e} -> {engine_ok}")
+            print(
+                f"  [engine cross-check] ||field|| 2D = {e_2d:.3e},"
+                f" 3D = {e_3d:.3e} -> {engine_ok}"
+            )
         except Exception as exc:  # pragma: no cover
             print(f"  [engine cross-check skipped: {exc}]")
     else:
         print("  [engine cross-check skipped: NS operator unavailable]")
 
-    ok = gate_2d and gate_3d and so2_abelian and so3_nonabelian \
-        and engine_ok
+    ok = gate_2d and gate_3d and so2_abelian and so3_nonabelian and engine_ok
     print()
     print("  RESULT: the wall is EXACTLY absent in 2D (Abelian fibre,")
     print("  2D NS globally regular) and present in 3D (non-Abelian")
@@ -469,11 +468,8 @@ def test_shared_nonderivability():
     nodes = list(g.nodes)
     a_mat, l_mat = adjacency_laplacian(g, nodes)
     catalog = catalog_operators(a_mat, l_mat)
-    catalog_symmetric = all(
-        np.linalg.norm(op - op.T) < 1e-9 for op in catalog.values()
-    )
-    print(f"  catalog {{A, L, L^2, exp(-L/2)}} all symmetric:"
-          f" {catalog_symmetric}")
+    catalog_symmetric = all(np.linalg.norm(op - op.T) < 1e-9 for op in catalog.values())
+    print(f"  catalog {{A, L, L^2, exp(-L/2)}} all symmetric:" f" {catalog_symmetric}")
 
     # Each escape generator is anti-self-adjoint / traceless, hence
     # Frobenius-orthogonal to the self-adjoint catalog sector.
@@ -488,8 +484,9 @@ def test_shared_nonderivability():
     k_demo[0, 1] = 1.0
     k_demo[1, 0] = -1.0
     frob_orth = abs(float(np.sum(sym_demo * k_demo))) < TOL
-    print(f"  antisymmetric generator _|_ symmetric catalog (Frobenius):"
-          f" {frob_orth}")
+    print(
+        f"  antisymmetric generator _|_ symmetric catalog (Frobenius):" f" {frob_orth}"
+    )
     print(f"  NS so(3) generator antisymmetric: {ns_antisym}")
 
     # The three non-derivability roots (related, distinct slots).
@@ -500,6 +497,7 @@ def test_shared_nonderivability():
     ym_audit = "OPEN_DERIVABILITY_GAP (audited)"
     try:
         import tnfr.yang_mills as _ym  # noqa: F401
+
         ym_audit = "module present; non-Abelian multiplet not derived"
     except Exception:
         ym_audit = "OPEN_DERIVABILITY_GAP (no canonical su(d) slot)"
@@ -542,14 +540,18 @@ def main():
     print("=" * 68)
     print("SUMMARY")
     print("=" * 68)
-    print(f"  TEST 1  third realisation (so(3) fibre)  : "
-          f"{'PASS' if r1 else 'FAIL'}")
-    print(f"  TEST 2  same recipe (traceless gen.)     : "
-          f"{'PASS' if r2 else 'FAIL'}")
-    print(f"  TEST 3  dimensional gating (2D vs 3D)    : "
-          f"{'PASS' if r3 else 'FAIL'}")
-    print(f"  TEST 4  shared non-derivability root     : "
-          f"{'PASS' if r4 else 'FAIL'}")
+    print(
+        f"  TEST 1  third realisation (so(3) fibre)  : " f"{'PASS' if r1 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 2  same recipe (traceless gen.)     : " f"{'PASS' if r2 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 3  dimensional gating (2D vs 3D)    : " f"{'PASS' if r3 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 4  shared non-derivability root     : " f"{'PASS' if r4 else 'FAIL'}"
+    )
     print()
 
     all_pass = r1 and r2 and r3 and r4

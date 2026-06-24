@@ -28,17 +28,17 @@ import numpy as np
 from tnfr.constants import inject_defaults
 from tnfr.physics.conservation import (
     ConservationTracker,
+    analyze_sector_coupling,
     capture_conservation_snapshot,
     compute_charge_density,
     compute_conservation_scaling,
     compute_energy_functional,
+    compute_grammar_conservation_bounds,
     compute_lyapunov_derivative,
     compute_noether_charge,
     compute_spectral_conservation,
     compute_ward_identity,
-    analyze_sector_coupling,
     detect_grammar_violations_from_conservation,
-    compute_grammar_conservation_bounds,
     verify_conservation_balance,
     verify_sequence_ward_identity,
 )
@@ -68,9 +68,7 @@ def _evolve_step(G: nx.Graph, dt: float = 0.01) -> None:
         G.nodes[n]["theta"] = G.nodes[n]["phase"]
         nbrs = list(G.neighbors(n))
         if nbrs:
-            mean_dnfr = float(
-                np.mean([G.nodes[j].get("delta_nfr", 0.0) for j in nbrs])
-            )
+            mean_dnfr = float(np.mean([G.nodes[j].get("delta_nfr", 0.0) for j in nbrs]))
             G.nodes[n]["delta_nfr"] += dt * 0.1 * (mean_dnfr - dnfr)
 
 
@@ -106,7 +104,9 @@ def demo_conservation_tracking() -> None:
     print(f"  Final Q = {Q_final:.6f}  (drift = {abs(Q_final - Q0):.6f})")
     print(f"  Final E = {E_final:.6f}  (drift = {abs(E_final - E0):.6f})")
     print(f"  Mean conservation quality = {report.mean_quality:.4f}")
-    print(f"  Charge relative drift     = {abs(Q_final - Q0) / max(abs(Q0), 1e-15):.2e}")
+    print(
+        f"  Charge relative drift     = {abs(Q_final - Q0) / max(abs(Q0), 1e-15):.2e}"
+    )
     print()
 
 
@@ -147,8 +147,11 @@ def demo_ward_identities() -> None:
     identities = []
 
     step_labels = [
-        "diffusion_1", "diffusion_2", "diffusion_3",
-        "diffusion_4", "diffusion_5",
+        "diffusion_1",
+        "diffusion_2",
+        "diffusion_3",
+        "diffusion_4",
+        "diffusion_5",
     ]
 
     for label in step_labels:
@@ -222,7 +225,9 @@ def demo_spectral_conservation() -> None:
 
     print(f"Network: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
     print(f"Spectral gap (lambda_1): {spec.spectral_gap:.4f}")
-    print(f"Well-conserved modes: {spec.dominant_conservation_modes}/{len(spec.eigenvalues)}")
+    print(
+        f"Well-conserved modes: {spec.dominant_conservation_modes}/{len(spec.eigenvalues)}"
+    )
     print()
 
     # Show a few modes

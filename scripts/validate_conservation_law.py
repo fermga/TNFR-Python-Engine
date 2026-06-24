@@ -2,13 +2,17 @@
 
 Validates: dρ/dt + div(J) ≈ 0 under nodal equation dynamics.
 """
+
 import networkx as nx
 import numpy as np
+
 from tnfr.constants import inject_defaults
 from tnfr.physics.conservation import (
-    ConservationTracker, compute_noether_charge,
-    compute_energy_functional, analyze_sector_coupling,
+    ConservationTracker,
+    analyze_sector_coupling,
+    compute_energy_functional,
     compute_grammar_conservation_bounds,
+    compute_noether_charge,
 )
 
 rng = np.random.default_rng(42)
@@ -60,13 +64,19 @@ for step in range(20):
 
 report = tracker.report()
 print(f"=== After 20 steps (dt={dt}) ===")
-print(f"Final Noether charge Q = {charges[-1]:.6f}  (drift = {abs(charges[-1] - charges[0]):.6f})")
-print(f"Final energy E = {energies[-1]:.6f}  (drift = {abs(energies[-1] - energies[0]):.6f})")
+print(
+    f"Final Noether charge Q = {charges[-1]:.6f}  (drift = {abs(charges[-1] - charges[0]):.6f})"
+)
+print(
+    f"Final energy E = {energies[-1]:.6f}  (drift = {abs(energies[-1] - energies[0]):.6f})"
+)
 print(f"Mean conservation quality = {report.mean_quality:.4f}")
 print(f"Is conserved (quality>=0.9): {report.is_conserved}")
 print()
 q_range = max(charges) - min(charges)
-print(f"Charge variation: max={max(charges):.6f}, min={min(charges):.6f}, range={q_range:.6f}")
+print(
+    f"Charge variation: max={max(charges):.6f}, min={min(charges):.6f}, range={q_range:.6f}"
+)
 rel_drift = abs(charges[-1] - charges[0]) / max(abs(charges[0]), 1e-15)
 print(f"Relative charge drift: {rel_drift:.2e}")
 print()

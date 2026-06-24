@@ -41,8 +41,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from ..types import TNFRGraph
     from ..operators.definitions import Operator
+    from ..types import TNFRGraph
 
 __all__ = (
     "OperatorRegistry",
@@ -51,6 +51,7 @@ __all__ = (
     "TelemetryCollector",
     "TraceContext",
 )
+
 
 @runtime_checkable
 class OperatorRegistry(Protocol):
@@ -91,6 +92,7 @@ class OperatorRegistry(Protocol):
         """
         ...
 
+
 @runtime_checkable
 class ValidationService(Protocol):
     """Interface for validating sequences and graph states.
@@ -129,6 +131,7 @@ class ValidationService(Protocol):
             When node attributes violate canonical bounds or type constraints.
         """
         ...
+
 
 @runtime_checkable
 class DynamicsEngine(Protocol):
@@ -180,6 +183,7 @@ class DynamicsEngine(Protocol):
         """
         ...
 
+
 @runtime_checkable
 class TraceContext(Protocol):
     """Interface for trace context managers used by telemetry collectors."""
@@ -217,6 +221,7 @@ class TraceContext(Protocol):
             State after operator application.
         """
         ...
+
 
 @runtime_checkable
 class TelemetryCollector(Protocol):

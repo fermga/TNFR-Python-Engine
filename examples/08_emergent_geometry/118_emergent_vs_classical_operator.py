@@ -64,10 +64,10 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
@@ -95,7 +95,7 @@ def _ncut(G, nodes, part_sign):
     b = ~a
     cut = A[np.ix_(a, b)].sum()
     va, vb = deg[a].sum(), deg[b].sum()
-    return float('inf') if va == 0 or vb == 0 else float(cut * (1 / va + 1 / vb))
+    return float("inf") if va == 0 or vb == 0 else float(cut * (1 / va + 1 / vb))
 
 
 def _balance(part_sign, n):
@@ -147,8 +147,10 @@ def experiment_2_irregular_divergence():
     print("L_rw = Shi-Malik normalized cut (degree-aware); classical L = ratio")
     print("cut. Measure Fiedler-partition disagreement, Ncut, and balance.")
     print()
-    print(f"  {'family':>20} {'n':>4} {'agree':>7} {'Ncut_emrg':>10} "
-          f"{'Ncut_cls':>9} {'bal_emrg':>9} {'bal_cls':>8}")
+    print(
+        f"  {'family':>20} {'n':>4} {'agree':>7} {'Ncut_emrg':>10} "
+        f"{'Ncut_cls':>9} {'bal_emrg':>9} {'bal_cls':>8}"
+    )
     families = [
         ("BA m=3", lambda n, s: nx.barabasi_albert_graph(n, 3, seed=s)),
         ("powerlaw-cluster", lambda n, s: nx.powerlaw_cluster_graph(n, 3, 0.3, seed=s)),
@@ -160,9 +162,11 @@ def experiment_2_irregular_divergence():
             pe = _emergent_fiedler_sign(G, nodes)
             pc = _classical_fiedler_sign(G, nodes)
             agree = max((pe == pc).mean(), (pe == -pc).mean())
-            print(f"  {fam:>20} {n:>4} {agree:>7.2f} "
-                  f"{_ncut(G, nodes, pe):>10.4f} {_ncut(G, nodes, pc):>9.4f} "
-                  f"{_balance(pe, n):>9.2f} {_balance(pc, n):>8.2f}")
+            print(
+                f"  {fam:>20} {n:>4} {agree:>7.2f} "
+                f"{_ncut(G, nodes, pe):>10.4f} {_ncut(G, nodes, pc):>9.4f} "
+                f"{_balance(pe, n):>9.2f} {_balance(pc, n):>8.2f}"
+            )
     print()
     print("-> agree ~ 0.5: a genuinely DIFFERENT structural cut. The emergent")
     print("   (degree-normalized) partition is consistently more BALANCED; the")
@@ -198,8 +202,10 @@ def experiment_3_robustness():
                 tot += 1
                 eb.append(_balance(pe, n))
                 cb.append(_balance(pc, n))
-        print(f"  {fam:>20} {f'{wins}/{tot}':>10} {np.mean(eb):>9.2f} "
-              f"{np.mean(cb):>8.2f}")
+        print(
+            f"  {fam:>20} {f'{wins}/{tot}':>10} {np.mean(eb):>9.2f} "
+            f"{np.mean(cb):>8.2f}"
+        )
     print()
     print("-> emergent balance >= classical always; Ncut win is a majority.")
     print("   The STRUCTURAL difference (L_rw IS the degree-normalized cut) is")

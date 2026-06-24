@@ -1,13 +1,14 @@
 """Failure telemetry instrumentation for TNFR factorization attempts."""
+
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List
 import json
 import math
 import time
 import uuid
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, List
 
 if TYPE_CHECKING:  # pragma: no cover - import cycle guard
     from .spectral_paley import SpectralAnalysisResult
@@ -96,7 +97,9 @@ class FailureTelemetryManager:
 
         metrics = self._collect_metrics(result)
         convergence = self._build_convergence_profile(result, snapshot_analysis)
-        bottlenecks = self._detect_bottlenecks(metrics, result, failure_stage, failure_reason)
+        bottlenecks = self._detect_bottlenecks(
+            metrics, result, failure_stage, failure_reason
+        )
         recommendations = self._recommendations_for(bottlenecks, failure_reason)
 
         record = FailureTelemetryRecord(
@@ -150,7 +153,9 @@ class FailureTelemetryManager:
                 "partition_candidate_ratio": aggregation.get("candidate_ratio"),
                 "partition_coverage_ratio": aggregation.get("coverage_ratio"),
                 "boundary_fraction": aggregation.get("boundary_fraction"),
-                "empty_partition_count": len(aggregation.get("empty_partitions", []) or []),
+                "empty_partition_count": len(
+                    aggregation.get("empty_partitions", []) or []
+                ),
             }
         )
         return metrics
@@ -188,7 +193,9 @@ class FailureTelemetryManager:
             {
                 "stage": "verification",
                 "coherence": self._average_verification_coherence(verification),
-                "endorsement_rate": self._average_verification_endorsement(verification),
+                "endorsement_rate": self._average_verification_endorsement(
+                    verification
+                ),
             }
         )
 
@@ -219,7 +226,14 @@ class FailureTelemetryManager:
     ) -> List[BottleneckSignal]:
         signals: List[BottleneckSignal] = []
 
-        def add(code: str, severity: str, metric: str, value: float, threshold: float, description: str) -> None:
+        def add(
+            code: str,
+            severity: str,
+            metric: str,
+            value: float,
+            threshold: float,
+            description: str,
+        ) -> None:
             signals.append(
                 BottleneckSignal(
                     code=code,
@@ -234,39 +248,114 @@ class FailureTelemetryManager:
         coherence = metrics.get("coherence_score")
         if isinstance(coherence, (int, float)) and not math.isnan(coherence):
             if coherence < 0.55:
-                add("low_global_coherence", "high", "coherence_score", coherence, 0.65, "Parent state coherence collapsed below safe range")
+                add(
+                    "low_global_coherence",
+                    "high",
+                    "coherence_score",
+                    coherence,
+                    0.65,
+                    "Parent state coherence collapsed below safe range",
+                )
             elif coherence < 0.65:
-                add("low_global_coherence", "medium", "coherence_score", coherence, 0.65, "Parent state coherence trending low")
+                add(
+                    "low_global_coherence",
+                    "medium",
+                    "coherence_score",
+                    coherence,
+                    0.65,
+                    "Parent state coherence trending low",
+                )
 
         gradient = metrics.get("phase_gradient")
-        if isinstance(gradient, (int, float)) and not math.isnan(gradient) and gradient > 0.32:
+        if (
+            isinstance(gradient, (int, float))
+            and not math.isnan(gradient)
+            and gradient > 0.32
+        ):
             severity = "high" if gradient > 0.4 else "medium"
-            add("phase_gradient_instability", severity, "phase_gradient", gradient, 0.32, "Phase gradient exceeded harmonic stability band")
+            add(
+                "phase_gradient_instability",
+                severity,
+                "phase_gradient",
+                gradient,
+                0.32,
+                "Phase gradient exceeded harmonic stability band",
+            )
 
         curvature = metrics.get("phase_curvature")
-        if isinstance(curvature, (int, float)) and not math.isnan(curvature) and curvature > 2.9:
+        if (
+            isinstance(curvature, (int, float))
+            and not math.isnan(curvature)
+            and curvature > 2.9
+        ):
             severity = "high" if curvature > 3.2 else "medium"
-            add("phase_curvature_instability", severity, "phase_curvature", curvature, 2.9, "Phase curvature drift indicates torsion bottleneck")
+            add(
+                "phase_curvature_instability",
+                severity,
+                "phase_curvature",
+                curvature,
+                2.9,
+                "Phase curvature drift indicates torsion bottleneck",
+            )
 
         coherence_length = metrics.get("coherence_length")
-        if isinstance(coherence_length, (int, float)) and not math.isnan(coherence_length) and coherence_length < 1.0:
-            add("coherence_length_collapse", "medium", "coherence_length", coherence_length, 1.0, "Correlation length fell below single partition span")
+        if (
+            isinstance(coherence_length, (int, float))
+            and not math.isnan(coherence_length)
+            and coherence_length < 1.0
+        ):
+            add(
+                "coherence_length_collapse",
+                "medium",
+                "coherence_length",
+                coherence_length,
+                1.0,
+                "Correlation length fell below single partition span",
+            )
 
         delta_nfr = metrics.get("arithmetic_delta_nfr")
         if isinstance(delta_nfr, (int, float)) and abs(delta_nfr) < 1e-6:
-            add("delta_nfr_flat", "medium", "arithmetic_delta_nfr", delta_nfr, 1e-6, "Arithmetic ΔNFR pressure vanished, indicating weak structural drive")
+            add(
+                "delta_nfr_flat",
+                "medium",
+                "arithmetic_delta_nfr",
+                delta_nfr,
+                1e-6,
+                "Arithmetic ΔNFR pressure vanished, indicating weak structural drive",
+            )
 
         partition_coherence = metrics.get("partition_coherence_ratio")
         if isinstance(partition_coherence, (int, float)) and partition_coherence < 0.75:
-            add("partition_coherence_loss", "medium", "partition_coherence_ratio", partition_coherence, 0.75, "Partitions lost coherence relative to parent state")
+            add(
+                "partition_coherence_loss",
+                "medium",
+                "partition_coherence_ratio",
+                partition_coherence,
+                0.75,
+                "Partitions lost coherence relative to parent state",
+            )
 
         coverage_ratio = metrics.get("partition_coverage_ratio")
         if isinstance(coverage_ratio, (int, float)) and coverage_ratio < 0.65:
-            add("partition_coverage_gap", "medium", "partition_coverage_ratio", coverage_ratio, 0.65, "Partitions did not cover enough of the graph")
+            add(
+                "partition_coverage_gap",
+                "medium",
+                "partition_coverage_ratio",
+                coverage_ratio,
+                0.65,
+                "Partitions did not cover enough of the graph",
+            )
 
         candidate_ratio = metrics.get("partition_candidate_ratio")
         if isinstance(candidate_ratio, (int, float)) and candidate_ratio < 0.5:
-            add("candidate_signal_low", "medium", "partition_candidate_ratio", candidate_ratio, 0.5, "Too few partitions surfaced candidate factors")
+            add(
+                "candidate_signal_low",
+                "medium",
+                "partition_candidate_ratio",
+                candidate_ratio,
+                0.5,
+                "Too few partitions surfaced candidate factors",
+            )
 
         partition_count = metrics.get("partition_count") or 0
         empty_partition_count = metrics.get("empty_partition_count") or 0
@@ -282,7 +371,9 @@ class FailureTelemetryManager:
 
         verification = self._json_like(result.tnfr_verification) or {}
         per_factor_raw = verification.get("per_factor")
-        per_factor: Dict[str, Any] = per_factor_raw if isinstance(per_factor_raw, dict) else {}
+        per_factor: Dict[str, Any] = (
+            per_factor_raw if isinstance(per_factor_raw, dict) else {}
+        )
         certified = verification.get("certified") or []
         if per_factor and not certified:
             endorsement_rates = [
@@ -321,7 +412,14 @@ class FailureTelemetryManager:
             )
 
         if not signals:
-            add("unknown_failure", "low", "coherence_score", metrics.get("coherence_score", 0.0), 0.0, failure_reason)
+            add(
+                "unknown_failure",
+                "low",
+                "coherence_score",
+                metrics.get("coherence_score", 0.0),
+                0.0,
+                failure_reason,
+            )
         return signals
 
     def _recommendations_for(
@@ -352,9 +450,13 @@ class FailureTelemetryManager:
             recs.append(f"Review failure reason: {failure_reason}")
         return recs
 
-    def _average_verification_coherence(self, verification: Dict[str, Any]) -> float | None:
+    def _average_verification_coherence(
+        self, verification: Dict[str, Any]
+    ) -> float | None:
         per_factor_raw = verification.get("per_factor")
-        per_factor: Dict[str, Any] = per_factor_raw if isinstance(per_factor_raw, dict) else {}
+        per_factor: Dict[str, Any] = (
+            per_factor_raw if isinstance(per_factor_raw, dict) else {}
+        )
         samples: List[float] = []
         for block in per_factor.values():
             if not isinstance(block, dict):
@@ -366,9 +468,13 @@ class FailureTelemetryManager:
             return None
         return float(sum(samples) / len(samples))
 
-    def _average_verification_endorsement(self, verification: Dict[str, Any]) -> float | None:
+    def _average_verification_endorsement(
+        self, verification: Dict[str, Any]
+    ) -> float | None:
         per_factor_raw = verification.get("per_factor")
-        per_factor: Dict[str, Any] = per_factor_raw if isinstance(per_factor_raw, dict) else {}
+        per_factor: Dict[str, Any] = (
+            per_factor_raw if isinstance(per_factor_raw, dict) else {}
+        )
         ratios: List[float] = []
         for block in per_factor.values():
             if not isinstance(block, dict):

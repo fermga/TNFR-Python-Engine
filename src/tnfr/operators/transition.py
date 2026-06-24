@@ -24,7 +24,7 @@ _VF_LATENT_THRESHOLD = 0.05
 _EPI_RESONANT_THRESHOLD = 0.5
 _VF_RESONANT_THRESHOLD = 0.8
 _EPI_DRIFT_TOLERANCE = 0.01
- 
+
 
 class Transition(Operator):
     """Guide structural handoff; adjust θ, νf, ΔNFR per regime.
@@ -51,9 +51,8 @@ class Transition(Operator):
             self._handle_latency_transition(G, node)
 
         # 3. Validate preconditions (if enabled)
-        validate_preconditions = (
-            kw.get("validate_preconditions", True)
-            or G.graph.get("VALIDATE_PRECONDITIONS", False)
+        validate_preconditions = kw.get("validate_preconditions", True) or G.graph.get(
+            "VALIDATE_PRECONDITIONS", False
         )
         if validate_preconditions:
             self._validate_preconditions(G, node)
@@ -62,9 +61,8 @@ class Transition(Operator):
         collect_metrics = kw.get("collect_metrics", False) or G.graph.get(
             "COLLECT_OPERATOR_METRICS", False
         )
-        validate_equation = (
-            kw.get("validate_nodal_equation", False)
-            or G.graph.get("VALIDATE_NODAL_EQUATION", False)
+        validate_equation = kw.get("validate_nodal_equation", False) or G.graph.get(
+            "VALIDATE_NODAL_EQUATION", False
         )
 
         state_before = None

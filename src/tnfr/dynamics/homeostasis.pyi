@@ -1,7 +1,8 @@
 """Type stubs for tnfr.dynamics.homeostasis module."""
 
 from typing import Tuple
-from ..types import TNFRGraph, NodeId
+
+from ..types import NodeId, TNFRGraph
 
 class StructuralHomeostasis:
     G: TNFRGraph

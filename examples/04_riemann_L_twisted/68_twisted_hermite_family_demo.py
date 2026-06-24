@@ -94,10 +94,7 @@ def fmt_signed(x: float, width: int = 12, prec: int = 4) -> str:
 
 
 def block_detailed_chi3() -> None:
-    banner(
-        "BLOCK 1: detailed (eta, gauge) chart for chi_3 "
-        "across sigma grid"
-    )
+    banner("BLOCK 1: detailed (eta, gauge) chart for chi_3 " "across sigma grid")
     chi = real_character_mod_3()
     bundle = build_twisted_prime_ladder_hamiltonian(
         chi,
@@ -107,22 +104,23 @@ def block_detailed_chi3() -> None:
     )
     cert = sweep_twisted_hermite2_eta(chi, bundle, SIGMAS)
 
-    print(f"  character : {cert.character_name} "
-          f"(q={cert.character_modulus})")
+    print(f"  character : {cert.character_name} " f"(q={cert.character_modulus})")
     print(f"  n_sigma   : {len(cert.sigmas)}")
     print(f"  etas      : {cert.etas}")
     print(f"  gauges    : {cert.gauges}")
     print()
 
     print("  W_chi[sigma; eta] (gauge-independent):")
-    header = "    " + f"{'eta':>8}" + " ".join(
-        f"sigma={s:>5.2f}" for s in cert.sigmas
-    )
+    header = "    " + f"{'eta':>8}" + " ".join(f"sigma={s:>5.2f}" for s in cert.sigmas)
     print(header)
     for i, eta_val in enumerate(cert.etas):
-        row = "    " + f"{eta_val:>8.3f}" + " ".join(
-            fmt_signed(float(cert.weil_table[i, j]), width=11, prec=3)
-            for j in range(len(cert.sigmas))
+        row = (
+            "    "
+            + f"{eta_val:>8.3f}"
+            + " ".join(
+                fmt_signed(float(cert.weil_table[i, j]), width=11, prec=3)
+                for j in range(len(cert.sigmas))
+            )
         )
         print(row)
     print()
@@ -130,15 +128,20 @@ def block_detailed_chi3() -> None:
     j_target = len(cert.sigmas) // 2
     sigma_target = float(cert.sigmas[j_target])
     print(f"  alpha_chi(sigma={sigma_target:.3f}; eta, gauge):")
-    header = "    " + f"{'eta\\gauge':>10}" + " ".join(
-        f"{gn[:11]:>12}" for gn in cert.gauges
+    header = (
+        "    "
+        + f"{'eta\\gauge':>10}"
+        + " ".join(f"{gn[:11]:>12}" for gn in cert.gauges)
     )
     print(header)
     for i, eta_val in enumerate(cert.etas):
-        row = "    " + f"{eta_val:>10.3f}" + " ".join(
-            fmt_signed(float(cert.alpha_table[i, k, j_target]),
-                       width=12, prec=3)
-            for k in range(len(cert.gauges))
+        row = (
+            "    "
+            + f"{eta_val:>10.3f}"
+            + " ".join(
+                fmt_signed(float(cert.alpha_table[i, k, j_target]), width=12, prec=3)
+                for k in range(len(cert.gauges))
+            )
         )
         print(row)
     print()

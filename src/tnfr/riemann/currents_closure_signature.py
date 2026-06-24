@@ -86,9 +86,7 @@ __all__ = [
 # ``_get_dnfr``). Any non-scalar payload at any of these keys
 # would constitute a structural leakage into a richer intermediate
 # type.
-_CANONICAL_PER_NODE_KEYS: tuple[str, ...] = (
-    "theta",
-)
+_CANONICAL_PER_NODE_KEYS: tuple[str, ...] = ("theta",)
 
 
 def _is_scalar_payload(value: Any) -> bool:
@@ -119,13 +117,9 @@ def _build_canonical_demo_graph(n_nodes: int, seed: int) -> Any:
     rng = np.random.default_rng(int(seed))
     for node in list(G.nodes()):
         G.nodes[node]["EPI"] = float(0.5 + 0.05 * (rng.random() - 0.5))
-        G.nodes[node]["theta"] = float(
-            2.0 * math.pi * (rng.random() - 0.5)
-        )
+        G.nodes[node]["theta"] = float(2.0 * math.pi * (rng.random() - 0.5))
         current_vf = float(G.nodes[node].get("nu_f", 1.0))
-        G.nodes[node]["nu_f"] = max(
-            0.05, current_vf + 0.05 * (rng.random() - 0.5)
-        )
+        G.nodes[node]["nu_f"] = max(0.05, current_vf + 0.05 * (rng.random() - 0.5))
         G.nodes[node]["dnfr"] = float(0.1 * (rng.random() - 0.5))
     return G
 
@@ -138,9 +132,7 @@ def _inspect_input_scalar_closure(
 
     n_scalar = 0
     n_total = 0
-    per_key_nonscalar: dict[str, int] = {
-        k: 0 for k in _CANONICAL_PER_NODE_KEYS
-    }
+    per_key_nonscalar: dict[str, int] = {k: 0 for k in _CANONICAL_PER_NODE_KEYS}
     per_key_nonscalar["DeltaNFR"] = 0
     for node in G.nodes():
         for key in _CANONICAL_PER_NODE_KEYS:
@@ -167,11 +159,8 @@ def _inspect_output_scalar_closure(
     G: Any,
 ) -> tuple[int, int, dict[str, int]]:
     """Call the two current functions and the divergence; inspect outputs."""
-    from ..physics.extended import (
-        compute_phase_current,
-        compute_dnfr_flux,
-    )
     from ..physics.conservation import compute_current_divergence
+    from ..physics.extended import compute_dnfr_flux, compute_phase_current
 
     n_scalar = 0
     n_total = 0
@@ -264,9 +253,7 @@ class CurrentsClosureSignatureCertificate:
     diagnostics: dict[str, Any] = field(default_factory=dict)
 
     def summary(self) -> str:
-        per_key = ", ".join(
-            f"{k}={v}" for k, v in self.per_key_input_nonscalar.items()
-        )
+        per_key = ", ".join(f"{k}={v}" for k, v in self.per_key_input_nonscalar.items())
         per_field = ", ".join(
             f"{k}={v}" for k, v in self.per_field_output_nonscalar.items()
         )
@@ -335,9 +322,7 @@ def compute_currents_closure_signature(
     G = _build_canonical_demo_graph(int(n_nodes), int(seed))
 
     n_scalar_in, n_total_in, per_key_in = _inspect_input_scalar_closure(G)
-    n_scalar_out, n_total_out, per_field_out = (
-        _inspect_output_scalar_closure(G)
-    )
+    n_scalar_out, n_total_out, per_field_out = _inspect_output_scalar_closure(G)
     n_nonscalar_in = n_total_in - n_scalar_in
     n_nonscalar_out = n_total_out - n_scalar_out
     input_scalar_fraction = (
@@ -349,9 +334,7 @@ def compute_currents_closure_signature(
     signature, raw_fraction = _signature(
         n_nonscalar_in + n_nonscalar_out, n_total_in + n_total_out
     )
-    fractions_unit = (
-        input_scalar_fraction >= 1.0 and output_scalar_fraction >= 1.0
-    )
+    fractions_unit = input_scalar_fraction >= 1.0 and output_scalar_fraction >= 1.0
     if signature < float(closure_threshold) and fractions_unit:
         verdict = "SCALAR_CLOSURE_ADEQUATE"
     elif signature > float(divergent_threshold) or not fractions_unit:

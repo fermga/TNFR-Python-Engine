@@ -18,20 +18,13 @@ Y4 adds conditional finite graph-size scaling diagnostics.
 Y5 classifies the programme closure / obstruction state.
 """
 
-from .closure import (
-    YangMillsClosureReport,
-    classify_yang_mills_closure,
-)
+from .closure import YangMillsClosureReport, classify_yang_mills_closure
 from .derivability import (
     NonAbelianCandidateAudit,
     NonAbelianDerivabilityReport,
     audit_nonabelian_derivability,
 )
-from .scaling import (
-    FiniteScalingPoint,
-    FiniteScalingReport,
-    run_finite_scaling_study,
-)
+from .scaling import FiniteScalingPoint, FiniteScalingReport, run_finite_scaling_study
 from .structural_gap import (
     StructuralGaugeGapOperator,
     StructuralGaugeGapResult,

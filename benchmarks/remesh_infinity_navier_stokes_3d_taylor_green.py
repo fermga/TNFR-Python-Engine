@@ -137,7 +137,6 @@ from tnfr.navier_stokes.operator import (  # noqa: E402
     build_torus_graph_3d,
 )
 
-
 # ---------------------------------------------------------------------------
 # Locked configuration (§12.4)
 # ---------------------------------------------------------------------------
@@ -145,15 +144,15 @@ N = 16
 VISCOSITY = 0.01
 DT = 0.005
 T_FINAL = 1.0
-STEPS = int(round(T_FINAL / DT))           # 200
+STEPS = int(round(T_FINAL / DT))  # 200
 AMPLITUDE = 1.0
-ALPHA = 0.5                                # canonical REMESH_ALPHA default
+ALPHA = 0.5  # canonical REMESH_ALPHA default
 TAU_G_SWEEP: list[Any] = [0, 8, 32, 128, "inf"]
 SEED_LABEL = 20260526
 EPS = 1e-14
 
 # F-criteria thresholds
-F1_TOL = 0.01      # 1% baseline reproduction of N11 reference
+F1_TOL = 0.01  # 1% baseline reproduction of N11 reference
 F2_MIN_REL_CHANGE = 0.05  # 5% to count as measurable response
 F4_KE_INJECTION_TOL = 1e-10
 F5_DIV_TOL = 1e-8
@@ -228,7 +227,7 @@ def run_one_tau(
             # Finite tau_g: mix only when history window has filled
             assert history is not None
             if len(history) >= tau_g + 1:
-                phi_past = history[0]   # oldest entry = phi(t - tau_g)
+                phi_past = history[0]  # oldest entry = phi(t - tau_g)
                 op.phi = (1.0 - ALPHA) * op.phi + ALPHA * phi_past
                 mixed = True
             else:
@@ -242,9 +241,7 @@ def run_one_tau(
         # Telemetry
         time_axis[k] = op.time
         vort_sup[k] = op.vorticity_sup_norm()
-        bkm_int[k] = bkm_int[k - 1] + 0.5 * DT * (
-            vort_sup[k - 1] + vort_sup[k]
-        )
+        bkm_int[k] = bkm_int[k - 1] + 0.5 * DT * (vort_sup[k - 1] + vort_sup[k])
         enstrophy[k] = op.enstrophy_curl()
         kinetic[k] = op.kinetic_energy()
         dissipation[k] = op.dissipation_rate()
@@ -292,9 +289,7 @@ def evaluate_criteria(
     ref_run = run_one_tau(0, initial_state=initial_state)
     bkm_baseline = float(baseline["bkm_integral"][-1])
     bkm_reference = float(ref_run["bkm_integral"][-1])
-    f1_rel_err = (
-        abs(bkm_baseline - bkm_reference) / max(abs(bkm_reference), EPS)
-    )
+    f1_rel_err = abs(bkm_baseline - bkm_reference) / max(abs(bkm_reference), EPS)
     f1_pass = f1_rel_err <= F1_TOL
 
     # Peak observables per run
@@ -350,9 +345,7 @@ def evaluate_criteria(
     f4_pass = f4_max_excess <= F4_KE_INJECTION_TOL
 
     # F5: divergence control
-    f5_max_div = max(
-        float(np.max(run["divergence"])) for run in runs.values()
-    )
+    f5_max_div = max(float(np.max(run["divergence"])) for run in runs.values())
     f5_pass = f5_max_div <= F5_DIV_TOL
 
     # Verdict mapping (§12.7)
@@ -480,10 +473,11 @@ def main() -> dict[str, Any]:
     # Per-tau_g peak table
     print("Peak observables per tau_g")
     print("-" * 76)
-    headers = ["tau_g", "peak |omega|", "BKM(T)", "peak enstrophy",
-               "peak stretching"]
-    print(f"{headers[0]:<10}  {headers[1]:<12}  {headers[2]:<10}  "
-          f"{headers[3]:<16}  {headers[4]:<16}")
+    headers = ["tau_g", "peak |omega|", "BKM(T)", "peak enstrophy", "peak stretching"]
+    print(
+        f"{headers[0]:<10}  {headers[1]:<12}  {headers[2]:<10}  "
+        f"{headers[3]:<16}  {headers[4]:<16}"
+    )
     for label in [f"tau_g={tg}" for tg in TAU_G_SWEEP]:
         pk = eval_result["peak_table"][label]
         print(

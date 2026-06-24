@@ -49,8 +49,8 @@ def run_partition_self_optimization(
         return None
 
     try:
-        from scripts import run_self_optimization as self_opt_runner
         from scripts import run_self_opt_validation as self_opt_validator
+        from scripts import run_self_optimization as self_opt_runner
     except Exception:
         return None
 

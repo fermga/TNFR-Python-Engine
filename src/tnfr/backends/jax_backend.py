@@ -25,8 +25,9 @@ from __future__ import annotations
 
 from typing import Any, MutableMapping
 
-from . import TNFRBackend
 from ..types import TNFRGraph
+from . import TNFRBackend
+
 
 class JAXBackend(TNFRBackend):
     """JIT-compiled JAX implementation of TNFR kernels (Experimental).
@@ -67,7 +68,8 @@ class JAXBackend(TNFRBackend):
             self._jnp = jnp
         except ImportError as exc:
             raise RuntimeError(
-                "JAX backend requires jax to be installed. " "Install with: pip install jax jaxlib"
+                "JAX backend requires jax to be installed. "
+                "Install with: pip install jax jaxlib"
             ) from exc
 
     @property
@@ -158,7 +160,7 @@ class JAXBackend(TNFRBackend):
         dict[Any, float] or numpy.ndarray
             Node-to-Si mapping or array of Si values
         """
-        # JAX implementation planned for v2.0 - high-performance JIT compilation  
+        # JAX implementation planned for v2.0 - high-performance JIT compilation
         # Currently delegates to NumPy backend for compatibility
         from ..metrics.sense_index import compute_Si
 

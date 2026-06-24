@@ -45,8 +45,8 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-from . import init as _init
 from ..locking import get_lock
+from . import init as _init
 
 WarnOnce = _init.WarnOnce
 cached_import = _init.cached_import
@@ -65,55 +65,56 @@ _DEFAULT_CACHE_SIZE = _init._DEFAULT_CACHE_SIZE
 EMIT_MAP = _init.EMIT_MAP
 
 from .cache import (
+    _GRAPH_CACHE_LAYERS_KEY,
+    _GRAPH_CACHE_MANAGER_KEY,
+    DNFR_PREP_STATE_KEY,
+    NODE_SET_CHECKSUM_KEY,
     CacheCapacityConfig,
     CacheLayer,
     CacheManager,
     CacheStatistics,
+    DnfrCache,
+    DnfrPrepState,
+    EdgeCacheManager,
     InstrumentedLRUCache,
     ManagedLRUCache,
     MappingCacheLayer,
     RedisCacheLayer,
-    ShelveCacheLayer,
+    ScopedCounterCache,
     SecurityError,
     SecurityWarning,
-    create_hmac_signer,
-    create_hmac_validator,
-    create_secure_shelve_layer,
-    create_secure_redis_layer,
-    prune_lock_mapping,
-    DNFR_PREP_STATE_KEY,
-    DnfrPrepState,
-    DnfrCache,
-    NODE_SET_CHECKSUM_KEY,
-    ScopedCounterCache,
-    EdgeCacheManager,
+    ShelveCacheLayer,
+    _graph_cache_manager,
+    _SeedHashCache,
+    build_cache_manager,
     cached_node_list,
     cached_nodes_and_A,
     clear_node_repr_cache,
-    configure_graph_cache_limits,
     configure_global_cache_layers,
+    configure_graph_cache_limits,
+    create_hmac_signer,
+    create_hmac_validator,
+    create_secure_redis_layer,
+    create_secure_shelve_layer,
     edge_version_cache,
     edge_version_update,
     ensure_node_index_map,
     ensure_node_offset_map,
-    new_dnfr_cache,
-    _SeedHashCache,
-    _GRAPH_CACHE_MANAGER_KEY,
-    _graph_cache_manager,
-    build_cache_manager,
     get_graph_version,
     increment_edge_version,
     increment_graph_version,
+    new_dnfr_cache,
     node_set_checksum,
+    prune_lock_mapping,
     reset_global_cache_manager,
     stable_json,
-    _GRAPH_CACHE_LAYERS_KEY,
 )
+from .callbacks import CallbackEvent, CallbackManager, CallbackSpec, callback_manager
+from .chunks import auto_chunk_size, resolve_chunk_size
 from .data import (
     MAX_MATERIALIZE_DEFAULT,
     STRING_TYPES,
     convert_value,
-    normalize_optional_int,
     ensure_collection,
     flatten_structure,
     is_non_string_sequence,
@@ -121,14 +122,18 @@ from .data import (
     negative_weights_warn_once,
     normalize_counter,
     normalize_materialize_limit,
+    normalize_optional_int,
     normalize_weights,
 )
-from .chunks import auto_chunk_size, resolve_chunk_size
-from .graph import (
-    get_graph,
-    get_graph_mapping,
-    mark_dnfr_prep_dirty,
-    supports_add_edge,
+from .graph import get_graph, get_graph_mapping, mark_dnfr_prep_dirty, supports_add_edge
+from .io import (
+    DEFAULT_PARAMS,
+    JsonDumpsParams,
+    StructuredFileError,
+    clear_orjson_param_warnings,
+    json_dumps,
+    read_structured_file,
+    safe_write,
 )
 from .numeric import (
     angle_diff,
@@ -139,25 +144,10 @@ from .numeric import (
     similarity_abs,
     within_range,
 )
-from .io import (
-    DEFAULT_PARAMS,
-    JsonDumpsParams,
-    StructuredFileError,
-    clear_orjson_param_warnings,
-    json_dumps,
-    read_structured_file,
-    safe_write,
-)
-from .callbacks import (
-    CallbackEvent,
-    CallbackManager,
-    callback_manager,
-    CallbackSpec,
-)
 from .topology import (
+    compute_fiedler_value,
     compute_k_top_spectral,
     compute_laplacian_spectrum,
-    compute_fiedler_value,
 )
 
 __all__ = (
@@ -278,10 +268,12 @@ _DYNAMIC_EXPORT_TYPES: Final[dict[str, type[object]]] = {
 }
 _DYNAMIC_EXPORTS: Final[frozenset[str]] = frozenset(_DYNAMIC_EXPORT_TYPES)
 
+
 def __getattr__(name: str) -> Any:  # pragma: no cover - trivial delegation
     if name in _DYNAMIC_EXPORTS:
         return getattr(_init, name)
     raise AttributeError(name)
+
 
 def __dir__() -> list[str]:  # pragma: no cover - trivial delegation
     return sorted(set(globals()) | set(_DYNAMIC_EXPORTS))

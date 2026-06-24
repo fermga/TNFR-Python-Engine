@@ -15,28 +15,27 @@ import math
 import numpy as np
 import pytest
 
+from tnfr.riemann.spectral_proof import compute_eigenspectrum
 from tnfr.riemann.spectral_zeta import (
     RIEMANN_ZETA_KNOWN_VALUES,
-    SpectralZetaResult,
+    ConjectureTestResult,
     HeatKernelResult,
     MellinBridgeResult,
-    ConjectureTestResult,
     SpectralZetaAnalysis,
+    SpectralZetaResult,
+    _pearson,
+    compute_free_energy,
+    compute_heat_kernel_trace,
+    compute_partition_function,
     compute_positive_eigenvalues,
     compute_spectral_zeta,
     compute_spectral_zeta_derivative,
-    compute_heat_kernel_trace,
-    compute_partition_function,
-    compute_free_energy,
-    verify_mellin_bridge,
     riemann_zeta_approx,
+    run_spectral_zeta_analysis,
     test_conjecture_10_1,
     test_conjecture_10_1_sequence,
-    run_spectral_zeta_analysis,
-    _pearson,
+    verify_mellin_bridge,
 )
-from tnfr.riemann.spectral_proof import compute_eigenspectrum
-
 
 # ============================================================================
 # Test: Core Eigenvalue Extraction
@@ -223,9 +222,7 @@ class TestHeatKernel:
 
     def test_partition_function_equals_theta(self):
         result = compute_heat_kernel_trace(10, 0.5)
-        np.testing.assert_array_equal(
-            result.partition_function, result.theta_values
-        )
+        np.testing.assert_array_equal(result.partition_function, result.theta_values)
 
     def test_free_energy_finite(self):
         """Free energy should be finite for all beta > 0."""
@@ -269,8 +266,12 @@ class TestMellinBridge:
         is near zero (potential shift pushes them up).
         """
         result = verify_mellin_bridge(
-            10, 0.7, u_values=np.array([2.0, 3.0, 4.0]),
-            n_beta=2000, beta_max=500.0, tol=0.15,
+            10,
+            0.7,
+            u_values=np.array([2.0, 3.0, 4.0]),
+            n_beta=2000,
+            beta_max=500.0,
+            tol=0.15,
         )
         assert result.bridge_valid
 
@@ -305,9 +306,9 @@ class TestRiemannZeta:
         for u, expected in RIEMANN_ZETA_KNOWN_VALUES.items():
             if u >= 2.0:
                 approx = riemann_zeta_approx(u, n_terms=100_000)
-                assert abs(approx - expected) / abs(expected) < 1e-3, (
-                    f"zeta({u}): expected {expected}, got {approx}"
-                )
+                assert (
+                    abs(approx - expected) / abs(expected) < 1e-3
+                ), f"zeta({u}): expected {expected}, got {approx}"
 
     def test_near_pole_convergence(self):
         """Near u=1 the Dirichlet series converges slowly."""

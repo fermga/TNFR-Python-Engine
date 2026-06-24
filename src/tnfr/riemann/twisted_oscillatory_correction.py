@@ -169,9 +169,7 @@ def twisted_prime_ladder_oscillatory_sum(
     if mu.size == 0:
         raise ValueError("empty χ-twisted prime-ladder spectrum")
     if np.any(mu <= 0.0):
-        raise ValueError(
-            "χ-twisted prime-ladder eigenvalues must be positive"
-        )
+        raise ValueError("χ-twisted prime-ladder eigenvalues must be positive")
     # Restrict to the real part: canonical for primitive real χ, and
     # the imaginary part is forced to zero by construction in that
     # case.  We assert smallness as a safety guard.
@@ -280,8 +278,7 @@ def apply_twisted_oscillatory_correction(
     )
     if np.any(densities <= 0.0):
         raise RuntimeError(
-            "χ-twisted smooth density vanished at a target; "
-            "refusing to divide"
+            "χ-twisted smooth density vanished at a target; " "refusing to divide"
         )
     delta = -damping * s_vals / densities
     corrected = targets + delta
@@ -362,8 +359,7 @@ class TwistedOscillatoryCorrectionCertificate:
 
     def summary(self) -> str:
         lines = [
-            "P49 — χ-Twisted Prime-Ladder Oscillatory Correction "
-            "Certificate",
+            "P49 — χ-Twisted Prime-Ladder Oscillatory Correction " "Certificate",
             f"  character               : {self.character_name} "
             f"(mod {self.character_modulus})",
             f"  n_targets               : {self.n_targets}",
@@ -371,14 +367,11 @@ class TwistedOscillatoryCorrectionCertificate:
             f"{self.n_primes_requested} / {self.n_primes_active}",
             f"  max_power (K)           : {self.max_power}",
             f"  best damping            : {self.best_damping:.4f}",
-            "  W_1 smooth vs true      : "
-            f"{self.w1_smooth_vs_true:.4e}",
-            "  W_1 corrected vs true   : "
-            f"{self.w1_corrected_vs_true:.4e}",
+            "  W_1 smooth vs true      : " f"{self.w1_smooth_vs_true:.4e}",
+            "  W_1 corrected vs true   : " f"{self.w1_corrected_vs_true:.4e}",
             "  improvement over smooth : "
             f"{100.0 * self.improvement_over_smooth:+.2f} %",
-            "  max |S_chi_TNFR(t_i)|   : "
-            f"{self.max_abs_s_at_targets:.4e}",
+            "  max |S_chi_TNFR(t_i)|   : " f"{self.max_abs_s_at_targets:.4e}",
             f"  notes                   : {self.notes}",
         ]
         return "\n".join(lines)
@@ -431,15 +424,9 @@ def compute_twisted_oscillatory_correction_certificate(
     """
     if n_targets < 1:
         raise ValueError("n_targets must be >= 1")
-    spectrum = build_twisted_prime_ladder_spectrum(
-        chi, n_primes, max_power=max_power
-    )
-    smooth_targets = build_twisted_structural_t_hp(
-        n_targets, chi, dps=dps
-    )
-    true_gammas = fetch_chi_zero_imaginary_parts(
-        chi, n_targets, dps=dps
-    )
+    spectrum = build_twisted_prime_ladder_spectrum(chi, n_primes, max_power=max_power)
+    smooth_targets = build_twisted_structural_t_hp(n_targets, chi, dps=dps)
+    true_gammas = fetch_chi_zero_imaginary_parts(chi, n_targets, dps=dps)
 
     s_at_targets = np.asarray(
         twisted_prime_ladder_oscillatory_sum(smooth_targets, spectrum),
@@ -467,9 +454,7 @@ def compute_twisted_oscillatory_correction_certificate(
             best_w1 = w1_d
             best_d = float(d)
 
-    improvement = (
-        (w1_smooth - best_w1) / w1_smooth if w1_smooth > 0 else 0.0
-    )
+    improvement = (w1_smooth - best_w1) / w1_smooth if w1_smooth > 0 else 0.0
 
     notes = (
         "Honest scope (L-track): positive improvement is branch B1 "

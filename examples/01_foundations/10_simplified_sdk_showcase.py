@@ -12,7 +12,7 @@ import os
 import sys
 
 # Add src to path for development
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 print("🌊 TNFR SIMPLIFIED SDK - Quick Start Guide")
 print("=" * 50)
@@ -46,13 +46,13 @@ print()
 print("📋 2. READY-MADE TEMPLATES")
 print("-" * 30)
 
-molecule = TNFR.template('molecule')
+molecule = TNFR.template("molecule")
 print(f"Molecule template: {molecule.summary()}")
 
-small_world = TNFR.template('medium')  # 15 nodes, small-world-like
+small_world = TNFR.template("medium")  # 15 nodes, small-world-like
 print(f"Small world:       {small_world.summary()}")
 
-large_random = TNFR.template('large')  # 50 nodes, random
+large_random = TNFR.template("large")  # 50 nodes, random
 print(f"Large random:      {large_random.summary()}")
 
 print()
@@ -85,7 +85,7 @@ result = TNFR.create(20).random(0.3).evolve(3).auto_optimize().results()
 print(f"One-liner result: {result.summary()}")
 
 # Template + evolution + optimization
-optimized = TNFR.template('molecule').evolve(5).auto_optimize()
+optimized = TNFR.template("molecule").evolve(5).auto_optimize()
 print(f"Template pipeline: {optimized.summary()}")
 
 print()
@@ -96,21 +96,21 @@ print("-" * 30)
 
 # Create different topologies
 networks = {
-    'ring': TNFR.create(10).ring().evolve(3),
-    'star': TNFR.create(10).star().evolve(3),
-    'random': TNFR.create(10).random(0.4).evolve(3),
-    'complete': TNFR.create(10).complete().evolve(3)
+    "ring": TNFR.create(10).ring().evolve(3),
+    "star": TNFR.create(10).star().evolve(3),
+    "random": TNFR.create(10).random(0.4).evolve(3),
+    "complete": TNFR.create(10).complete().evolve(3),
 }
 
 # Compare them
 comparison = TNFR.compare(*networks.values())
 
 print("Topology comparison (by coherence):")
-for i, result in enumerate(comparison['ranking'], 1):
-    name = list(networks.keys())[result['index']]
-    coherence = result['coherence']
-    nodes = result['nodes']
-    edges = result['edges']
+for i, result in enumerate(comparison["ranking"], 1):
+    name = list(networks.keys())[result["index"]]
+    coherence = result["coherence"]
+    nodes = result["nodes"]
+    edges = result["edges"]
     print(f"  {i}. {name:8s}: C={coherence:.3f} (N={nodes}, E={edges})")
 
 print()
@@ -126,7 +126,7 @@ result = T.create(8).complete().results()
 print(f"Ultra-short (T): {result.summary()}")
 
 # Check coherence quickly
-net = T.template('star')
+net = T.template("star")
 if net.results().is_coherent():
     print("✅ Network is coherent!")
 else:
@@ -144,10 +144,10 @@ print("-" * 30)
 
 # Simulate different social network structures
 social_networks = {
-    'family_group': T.create(6).complete(),  # Everyone knows everyone
-    'friend_circle': T.create(12).ring().random(0.2),  # Ring + random connections
-    'hierarchical': T.create(15).star(),  # Central leader
-    'community': T.create(20).random(0.15)  # Sparse random connections
+    "family_group": T.create(6).complete(),  # Everyone knows everyone
+    "friend_circle": T.create(12).ring().random(0.2),  # Ring + random connections
+    "hierarchical": T.create(15).star(),  # Central leader
+    "community": T.create(20).random(0.15),  # Sparse random connections
 }
 
 print("Social network coherence analysis:")
@@ -155,7 +155,7 @@ for name, net in social_networks.items():
     # Evolve to see natural dynamics
     evolved = net.evolve(3)
     result = evolved.results()
-    
+
     status = "👍 Stable" if result.is_stable() else "⚠️  Needs attention"
     print(f"  {name:12s}: C={result.coherence:.3f}, {status}")
 
@@ -166,7 +166,7 @@ print("=" * 50)
 print()
 print("🚀 NEXT STEPS:")
 print("  • Try your own network topologies")
-print("  • Experiment with evolution parameters")  
+print("  • Experiment with evolution parameters")
 print("  • Compare different optimization strategies")
 print("  • Use templates as starting points")
 print("  • Explore the full TNFR theory in AGENTS.md")

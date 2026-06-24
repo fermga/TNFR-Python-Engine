@@ -68,6 +68,7 @@ Run:
 
 Status: RESEARCH (rational-emergence falsifier, gap 3 of the emergence map).
 """
+
 from __future__ import annotations
 
 import math
@@ -124,8 +125,8 @@ def stern_brocot_path(target: Fraction, max_steps: int = 10000):
     fractions visited. Each mediant is the resonance-combination (a+c)/(b+d) of
     its two Farey parents.
     """
-    left = (0, 1)            # 0/1
-    right = (1, 0)           # 1/0 (infinity sentinel)
+    left = (0, 1)  # 0/1
+    right = (1, 0)  # 1/0 (infinity sentinel)
     mediants: list[Fraction] = []
     for step in range(1, max_steps + 1):
         med = (left[0] + right[0], left[1] + right[1])  # mediant
@@ -179,15 +180,18 @@ def test_additive_inverse_from_bipartite_symmetry():
         spec = adj_spectrum(G)
         sym = is_pm_symmetric(spec)
         all_sym &= sym
-        print(f"  {name:<16} spec(A) +/- symmetric? {sym}    "
-              f"spec = {np.round(spec, 3)}")
+        print(
+            f"  {name:<16} spec(A) +/- symmetric? {sym}    "
+            f"spec = {np.round(spec, 3)}"
+        )
     none_sym = True
     for name, G in non_bipartite:
         spec = adj_spectrum(G)
         sym = is_pm_symmetric(spec)
         none_sym &= not sym
-        print(f"  {name:<16} spec(A) +/- symmetric? {sym}  (non-bipartite, "
-              "contrast)")
+        print(
+            f"  {name:<16} spec(A) +/- symmetric? {sym}  (non-bipartite, " "contrast)"
+        )
 
     # integral bipartite -> signed integers Z
     q3 = integer_spectrum(adj_spectrum(nx.hypercube_graph(3)))
@@ -195,8 +199,10 @@ def test_additive_inverse_from_bipartite_symmetry():
     print(f"  Q3 gives SIGNED INTEGERS: {signed}  -> N extends to Z")
 
     ok = all_sym and none_sym and (-min(signed) == max(signed))
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- -n is forced by the "
-          "coupling symmetry, not injected")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- -n is forced by the "
+        "coupling symmetry, not injected"
+    )
     return ok
 
 
@@ -215,11 +221,15 @@ def test_division_from_integral_eigenvalue_ratios():
         ratio = Fraction(a, b)
         ok = have and ratio == r
         all_ok &= ok
-        print(f"  {r}  realised by K_{{{a},{b}}}: eigenvalues {{a,b}}={{{a},{b}}} "
-              f"present? {have};  ratio = {ratio}  matches? {ratio == r}")
+        print(
+            f"  {r}  realised by K_{{{a},{b}}}: eigenvalues {{a,b}}={{{a},{b}}} "
+            f"present? {have};  ratio = {ratio}  matches? {ratio == r}"
+        )
     print("  any reduced p/q is the ratio of two emergent integer eigenvalues")
-    print(f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- division = ratio of "
-          "two resonant modes")
+    print(
+        f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- division = ratio of "
+        "two resonant modes"
+    )
     return all_ok
 
 
@@ -231,34 +241,36 @@ def test_field_closure_is_Q():
     # emergent integer eigenvalues taken from K_{2,3}: {2, 3, 5} and K_{2,4}:{2,4,6}
     print("  emergent integers from K_{2,3} -> {2,3,5}, from K_{2,4} -> {2,4,6}")
     a, b, c, d = 2, 3, 4, 6  # all emergent eigenvalues
-    r1 = Fraction(a, b)      # 2/3
-    r2 = Fraction(c, d)      # 4/6 = 2/3
+    r1 = Fraction(a, b)  # 2/3
+    r2 = Fraction(c, d)  # 4/6 = 2/3
     # use two genuinely different ratios
     r1 = Fraction(2, 3)
     r2 = Fraction(5, 2)
     a, b = r1.numerator, r1.denominator
     c, d = r2.numerator, r2.denominator
-    print(f"  r1 = {r1} (= {a}/{b}),  r2 = {r2} (= {c}/{d})  "
-          "[a,b,c,d all emergent eigenvalues]")
+    print(
+        f"  r1 = {r1} (= {a}/{b}),  r2 = {r2} (= {c}/{d})  "
+        "[a,b,c,d all emergent eigenvalues]"
+    )
 
     checks = []
 
     # x : numerator ac and denominator bd via the TENSOR product (spectra multiply)
-    num_mul = outer_prod([a], [c])[0]          # ac
-    den_mul = outer_prod([b], [d])[0]          # bd
+    num_mul = outer_prod([a], [c])[0]  # ac
+    den_mul = outer_prod([b], [d])[0]  # bd
     prod = Fraction(int(round(num_mul)), int(round(den_mul)))
     checks.append(("x", prod, r1 * r2))
 
     # + : ad, bc via x ; ad+bc via [] (outer_sum) ; bd via x
     ad = outer_prod([a], [d])[0]
     bc = outer_prod([b], [c])[0]
-    num_add = outer_sum([ad], [bc])[0]         # ad + bc
-    den_add = outer_prod([b], [d])[0]          # bd
+    num_add = outer_sum([ad], [bc])[0]  # ad + bc
+    den_add = outer_prod([b], [d])[0]  # bd
     summ = Fraction(int(round(num_add)), int(round(den_add)))
     checks.append(("+", summ, r1 + r2))
 
     # - : ad - bc via the bipartite additive inverse (outer_sum with -bc)
-    num_sub = outer_sum([ad], [-bc])[0]        # ad - bc
+    num_sub = outer_sum([ad], [-bc])[0]  # ad - bc
     diff = Fraction(int(round(num_sub)), int(round(den_add)))
     checks.append(("-", diff, r1 - r2))
 
@@ -270,12 +282,16 @@ def test_field_closure_is_Q():
     for op, got, expect in checks:
         ok = got == expect
         all_ok &= ok
-        print(f"  r1 {op} r2 = {got}   (exact {expect})   "
-              f"built from emergent integers? {ok}")
+        print(
+            f"  r1 {op} r2 = {got}   (exact {expect})   "
+            f"built from emergent integers? {ok}"
+        )
     print("  numerators/denominators all built with outer_sum / outer_prod")
     print("  => emergent integers with +,x,- and ratios form a FIELD = Frac(Z) = Q")
-    print(f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- the emergent set is "
-          "field-closed; it IS Q")
+    print(
+        f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- the emergent set is "
+        "field-closed; it IS Q"
+    )
     return all_ok
 
 
@@ -285,14 +301,18 @@ def test_resonance_generates_Q():
     print("(4) Physical mechanism: phase-locking + Stern-Brocot mediant generate Q+")
     print("=" * 78)
     # 4a) two-oscillator Kuramoto 1:1 lock -> rational rotation number 1
-    inside = kuramoto_two_rotation_number(1.0, 1.3, 0.5)   # |dw|=0.3 <= 2K=1.0
+    inside = kuramoto_two_rotation_number(1.0, 1.3, 0.5)  # |dw|=0.3 <= 2K=1.0
     outside = kuramoto_two_rotation_number(1.0, 3.0, 0.2)  # |dw|=2.0 >  2K=0.4
     locked = abs(inside - 1.0) < 1e-2
     unlocked = abs(outside - 1.0) > 5e-2
-    print(f"  Kuramoto 1:1 inside Arnold tongue:  rotation number = {inside:.4f} "
-          f"-> locked at 1 (rational)? {locked}")
-    print(f"  Kuramoto outside tongue:            rotation number = {outside:.4f} "
-          f"-> not 1 (drifting)?       {unlocked}")
+    print(
+        f"  Kuramoto 1:1 inside Arnold tongue:  rotation number = {inside:.4f} "
+        f"-> locked at 1 (rational)? {locked}"
+    )
+    print(
+        f"  Kuramoto outside tongue:            rotation number = {outside:.4f} "
+        f"-> not 1 (drifting)?       {unlocked}"
+    )
 
     # 4b) the Stern-Brocot mediant (resonance-combination) generates every p/q
     targets = [Fraction(3, 2), Fraction(5, 3), Fraction(22, 7), Fraction(1, 4)]
@@ -300,30 +320,39 @@ def test_resonance_generates_Q():
     for r in targets:
         steps, reached, _ = stern_brocot_path(r)
         gen_ok &= reached
-        print(f"  Stern-Brocot reaches {str(r):>5} in {steps:>3} mediants "
-              f"(resonance-combinations)?  {reached}")
+        print(
+            f"  Stern-Brocot reaches {str(r):>5} in {steps:>3} mediants "
+            f"(resonance-combinations)?  {reached}"
+        )
     # mediant IS the resonance combination of its two Farey parents
     med_demo = Fraction(1 + 1, 2 + 3)  # mediant of 1/2 and 1/3 = 2/5
     med_ok = med_demo == Fraction(2, 5)
-    print(f"  mediant(1/2, 1/3) = (1+1)/(2+3) = {med_demo}  "
-          f"(resonance lock between two ratios)?  {med_ok}")
+    print(
+        f"  mediant(1/2, 1/3) = (1+1)/(2+3) = {med_demo}  "
+        f"(resonance lock between two ratios)?  {med_ok}"
+    )
 
     ok = locked and unlocked and gen_ok and med_ok
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- Q+ is the natural attractor "
-          "lattice of resonant phase coupling")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- Q+ is the natural attractor "
+        "lattice of resonant phase coupling"
+    )
     return ok
 
 
 def main():
     print(__doc__)
     results = [
-        ("(1) additive inverse from bipartite symmetry (Z)",
-         test_additive_inverse_from_bipartite_symmetry()),
-        ("(2) division from integral eigenvalue ratios (Q)",
-         test_division_from_integral_eigenvalue_ratios()),
+        (
+            "(1) additive inverse from bipartite symmetry (Z)",
+            test_additive_inverse_from_bipartite_symmetry(),
+        ),
+        (
+            "(2) division from integral eigenvalue ratios (Q)",
+            test_division_from_integral_eigenvalue_ratios(),
+        ),
         ("(3) field closure = Frac(Z) = Q", test_field_closure_is_Q()),
-        ("(4) resonance / Stern-Brocot generate Q+",
-         test_resonance_generates_Q()),
+        ("(4) resonance / Stern-Brocot generate Q+", test_resonance_generates_Q()),
     ]
     print()
     print("=" * 78)

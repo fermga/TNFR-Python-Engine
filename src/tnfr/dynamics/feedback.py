@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING
 # TNFR Optimizations Integration
 try:
     from ..mathematics.backend import get_backend
+
     _HAS_OPTIMIZATIONS = True
 except ImportError:
     _HAS_OPTIMIZATIONS = False
@@ -23,17 +24,6 @@ if TYPE_CHECKING:
     from ..types import TNFRGraph, NodeId
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
-from ..constants.canonical import (
-    FEEDBACK_COHERENCE_TOL_LOW,
-    FEEDBACK_COHERENCE_TOL_HIGH,
-    FEEDBACK_DNFR_THRESHOLD,
-    FEEDBACK_EPI_THRESHOLD,
-    FEEDBACK_TARGET_COHERENCE,
-    FEEDBACK_TAU_ADAPTIVE,
-    FEEDBACK_LEARNING_RATE,
-)
-from ..operators.registry import get_operator_class
 from ..config.operator_names import (
     COHERENCE,
     DISSONANCE,
@@ -41,8 +31,20 @@ from ..config.operator_names import (
     SELF_ORGANIZATION,
     SILENCE,
 )
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI
+from ..constants.canonical import (
+    FEEDBACK_COHERENCE_TOL_HIGH,
+    FEEDBACK_COHERENCE_TOL_LOW,
+    FEEDBACK_DNFR_THRESHOLD,
+    FEEDBACK_EPI_THRESHOLD,
+    FEEDBACK_LEARNING_RATE,
+    FEEDBACK_TARGET_COHERENCE,
+    FEEDBACK_TAU_ADAPTIVE,
+)
+from ..operators.registry import get_operator_class
 
 __all__ = ["StructuralFeedbackLoop"]
+
 
 class StructuralFeedbackLoop:
     """Feedback loop that adapts nodal dynamics based on structural state.
@@ -112,18 +114,18 @@ class StructuralFeedbackLoop:
     """
 
     # Regulation thresholds (canonical constants from φ, γ, π, e)
-    COHERENCE_TOL_LOW = FEEDBACK_COHERENCE_TOL_LOW    # γ/(π+1) ≈ 0.139
+    COHERENCE_TOL_LOW = FEEDBACK_COHERENCE_TOL_LOW  # γ/(π+1) ≈ 0.139
     COHERENCE_TOL_HIGH = FEEDBACK_COHERENCE_TOL_HIGH  # γ/(π+e) ≈ 0.099
-    DNFR_THRESHOLD = FEEDBACK_DNFR_THRESHOLD          # √(tol_low × tol_high) ≈ 0.117
-    EPI_THRESHOLD = FEEDBACK_EPI_THRESHOLD             # Canonical combo ≈ 0.330
+    DNFR_THRESHOLD = FEEDBACK_DNFR_THRESHOLD  # √(tol_low × tol_high) ≈ 0.117
+    EPI_THRESHOLD = FEEDBACK_EPI_THRESHOLD  # Canonical combo ≈ 0.330
 
     def __init__(
         self,
         graph: TNFRGraph,
         node: NodeId,
-        target_coherence: float = FEEDBACK_TARGET_COHERENCE,   # φ/(φ+γ) ≈ 0.737
-        tau_adaptive: float = FEEDBACK_TAU_ADAPTIVE,             # γ/(π+γ) ≈ 0.155
-        learning_rate: float = FEEDBACK_LEARNING_RATE,           # e^(-π) ≈ 0.043
+        target_coherence: float = FEEDBACK_TARGET_COHERENCE,  # φ/(φ+γ) ≈ 0.737
+        tau_adaptive: float = FEEDBACK_TAU_ADAPTIVE,  # γ/(π+γ) ≈ 0.155
+        learning_rate: float = FEEDBACK_LEARNING_RATE,  # e^(-π) ≈ 0.043
         coherence_tolerance_low: float = COHERENCE_TOL_LOW,
         coherence_tolerance_high: float = COHERENCE_TOL_HIGH,
         dnfr_threshold: float = DNFR_THRESHOLD,
@@ -139,7 +141,7 @@ class StructuralFeedbackLoop:
         self.COHERENCE_TOL_HIGH = float(coherence_tolerance_high)
         self.DNFR_THRESHOLD = float(dnfr_threshold)
         self.EPI_THRESHOLD = float(epi_threshold)
-        
+
         # Initialize optimized backend for mathematical operations
         if _HAS_OPTIMIZATIONS:
             self.backend = get_backend()

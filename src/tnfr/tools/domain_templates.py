@@ -374,6 +374,7 @@ DOMAIN_TEMPLATES: dict[str, dict[str, dict[str, object]]] = {
 # UTILITY FUNCTIONS
 # =============================================================================
 
+
 def get_template(domain: str, objective: str | None = None) -> list[str]:
     """Retrieve a template sequence for a specific domain and objective.
 
@@ -402,7 +403,9 @@ def get_template(domain: str, objective: str | None = None) -> list[str]:
     ['emission', 'reception', 'coherence', 'resonance', 'silence']
     """
     if domain not in DOMAIN_TEMPLATES:
-        raise KeyError(f"Domain '{domain}' not found. Available: {list(DOMAIN_TEMPLATES.keys())}")
+        raise KeyError(
+            f"Domain '{domain}' not found. Available: {list(DOMAIN_TEMPLATES.keys())}"
+        )
 
     domain_dict = DOMAIN_TEMPLATES[domain]
 
@@ -419,6 +422,7 @@ def get_template(domain: str, objective: str | None = None) -> list[str]:
 
     return domain_dict[objective]["sequence"]  # type: ignore[return-value]
 
+
 def list_domains() -> list[str]:
     """list all available application domains.
 
@@ -434,6 +438,7 @@ def list_domains() -> list[str]:
     ['therapeutic', 'educational', 'organizational', 'creative']
     """
     return list(DOMAIN_TEMPLATES.keys())
+
 
 def list_objectives(domain: str) -> list[str]:
     """list all objectives available for a specific domain.
@@ -460,6 +465,8 @@ def list_objectives(domain: str) -> list[str]:
     ['crisis_intervention', 'process_therapy', 'healing_cycle', 'trauma_processing']
     """
     if domain not in DOMAIN_TEMPLATES:
-        raise KeyError(f"Domain '{domain}' not found. Available: {list(DOMAIN_TEMPLATES.keys())}")
+        raise KeyError(
+            f"Domain '{domain}' not found. Available: {list(DOMAIN_TEMPLATES.keys())}"
+        )
 
     return list(DOMAIN_TEMPLATES[domain].keys())

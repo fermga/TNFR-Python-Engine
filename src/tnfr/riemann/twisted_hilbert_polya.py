@@ -74,11 +74,7 @@ from .twisted_weil_explicit_formula import (
     twisted_weil_constant_term,
     twisted_weil_prime_side_from_hamiltonian,
 )
-from .weil_explicit_formula import (
-    GaussianTestFunction,
-    gaussian_test_function,
-)
-
+from .weil_explicit_formula import GaussianTestFunction, gaussian_test_function
 
 __all__ = [
     "TwistedHilbertPolyaCertificate",
@@ -166,9 +162,7 @@ def fetch_chi_zero_imaginary_parts(
         )
     gammas = np.array(zeros[:n_zeros], dtype=float)
     if not np.all(gammas > 0):
-        raise RuntimeError(
-            "Hardy-Z bisection returned a non-positive imaginary part"
-        )
+        raise RuntimeError("Hardy-Z bisection returned a non-positive imaginary part")
     return gammas
 
 
@@ -381,9 +375,7 @@ def compute_twisted_hilbert_polya_certificate(
     gap = twisted_structural_gap_p34_vs_hp(bundle, gammas)
 
     scaffold_ok = bool(
-        self_adj["self_adjoint"]
-        and resolvent["trace_class"]
-        and weil_ok
+        self_adj["self_adjoint"] and resolvent["trace_class"] and weil_ok
     )
 
     notes: Tuple[str, ...] = (

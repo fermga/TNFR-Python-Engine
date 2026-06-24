@@ -3,6 +3,7 @@
 Bug: NaN/Inf/negative sentinels in caller-supplied distance matrices were
 casted to negative ``intp`` values and crashed ``np.bincount``.
 """
+
 from __future__ import annotations
 
 import math

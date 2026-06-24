@@ -59,6 +59,7 @@ Run:
 
 Status: RESEARCH (operational-irreducibility falsifier, Camino 2).
 """
+
 from __future__ import annotations
 
 import itertools
@@ -71,9 +72,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from composition_arithmetic import character_norm  # noqa: E402
 
-from tnfr.riemann.prime_ladder_hamiltonian import (  # noqa: E402
-    build_prime_ladder_graph,
-)
+from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph  # noqa: E402
 
 TOL = 1e-9
 
@@ -170,7 +169,7 @@ def prime_relabel_matrices(nodes, primes):
     for perm in itertools.permutations(primes):
         relabel = dict(zip(primes, perm))
         P = np.zeros((n, n))
-        for (p, k) in nodes:
+        for p, k in nodes:
             P[idx[(relabel[p], k)], idx[(p, k)]] = 1.0
         mats.append(P)
     return mats
@@ -194,8 +193,10 @@ def test_composite5_splits_under_S4():
         return A_octa + t * A_match
 
     sym_ok = max(max_commutator(M(t), s4) for t in (0.8, 1.0, 1.2)) < TOL
-    print(f"  M(t) commutes with all of S4 (t=0.8,1.0,1.2)?  "
-          f"max||[M,P]|| < {TOL:.0e}: {sym_ok}")
+    print(
+        f"  M(t) commutes with all of S4 (t=0.8,1.0,1.2)?  "
+        f"max||[M,P]|| < {TOL:.0e}: {sym_ok}"
+    )
 
     for t in (0.8, 1.0, 1.2):
         levels = eig_levels(M(t))
@@ -207,21 +208,27 @@ def test_composite5_splits_under_S4():
     deg5 = [(v, m, P) for v, m, P in levels1 if m == 5]
     ok_deg = len(deg5) == 1
     chi5 = character_norm(deg5[0][2], s4, order) if ok_deg else float("nan")
-    print(f"  at t=1: single 5-fold level? {ok_deg};   "
-          f"<chi,chi> = {chi5:.3f}  (REDUCIBLE = standard(3) + E(2))")
+    print(
+        f"  at t=1: single 5-fold level? {ok_deg};   "
+        f"<chi,chi> = {chi5:.3f}  (REDUCIBLE = standard(3) + E(2))"
+    )
 
     # just off the crossing: an irreducible 3 and an irreducible 2
     off = eig_levels(M(0.8))
     pieces = sorted(m for _, m, _ in off if m in (2, 3))
     chis = {m: character_norm(P, s4, order) for _, m, P in off if m in (2, 3)}
     ok_split = pieces == [2, 3] and all(abs(chis[m] - 1.0) < 1e-6 for m in (2, 3))
-    print(f"  off-crossing (t=0.8): pieces = {pieces}, "
-          f"<chi,chi>: dim3={chis.get(3, float('nan')):.3f}, "
-          f"dim2={chis.get(2, float('nan')):.3f}  (both irreducible)")
+    print(
+        f"  off-crossing (t=0.8): pieces = {pieces}, "
+        f"<chi,chi>: dim3={chis.get(3, float('nan')):.3f}, "
+        f"dim2={chis.get(2, float('nan')):.3f}  (both irreducible)"
+    )
 
     ok = sym_ok and ok_deg and abs(chi5 - 2.0) < 1e-6 and ok_split
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- 5 (arithmetic PRIME) is "
-          "operationally COMPOSITE: a symmetry-preserving")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- 5 (arithmetic PRIME) is "
+        "operationally COMPOSITE: a symmetry-preserving"
+    )
     print("           perturbation splits it 3 + 2 (two different irreps crossing)")
     return ok
 
@@ -241,16 +248,20 @@ def test_prime5_does_not_split_under_S6():
 
     deg5 = [(v, m, P) for v, m, P in eig_levels(L) if m == 5][0]
     chi = character_norm(deg5[2], s6, order)
-    print(f"  L(K6): 5-fold level at lambda={deg5[0]:.1f};   "
-          f"<chi,chi> = {chi:.3f}  (IRREDUCIBLE standard rep of S6)")
+    print(
+        f"  L(K6): 5-fold level at lambda={deg5[0]:.1f};   "
+        f"<chi,chi> = {chi:.3f}  (IRREDUCIBLE standard rep of S6)"
+    )
 
     # symmetry-preserving perturbation = element of the commutant <I, J>
     P_sym = 0.7 * eye + 0.3 * ones  # any a*I + b*J commutes with S6
     sym_ok = max_commutator(P_sym, s6) < TOL
     lv_sym = eig_levels(L + P_sym)
     still5 = any(m == 5 for _, m, _ in lv_sym)
-    print(f"  + symmetry-preserving (a*I + b*J): commutes? {sym_ok};   "
-          f"still one 5-fold level? {still5}  -> CANNOT split")
+    print(
+        f"  + symmetry-preserving (a*I + b*J): commutes? {sym_ok};   "
+        f"still one 5-fold level? {still5}  -> CANNOT split"
+    )
 
     # generic (symmetry-BREAKING) perturbation does split it: proves the rigidity
     # comes from the symmetry, not from a numerical accident
@@ -260,12 +271,16 @@ def test_prime5_does_not_split_under_S6():
     breaks = max_commutator(R, s6) > 1e-3
     lv_bad = eig_levels(L + R)
     max_mult = max(m for _, m, _ in lv_bad)
-    print(f"  + generic symmetric noise: breaks S6? {breaks};   "
-          f"largest multiplicity now = {max_mult}  -> splits (symmetry gone)")
+    print(
+        f"  + generic symmetric noise: breaks S6? {breaks};   "
+        f"largest multiplicity now = {max_mult}  -> splits (symmetry gone)"
+    )
 
     ok = abs(chi - 1.0) < 1e-6 and sym_ok and still5 and breaks and max_mult < 5
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- 5 (arithmetic PRIME) is "
-          "operationally PRIME here: no symmetry-")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- 5 (arithmetic PRIME) is "
+        "operationally PRIME here: no symmetry-"
+    )
     print("           preserving perturbation can factor an irreducible mode (Schur)")
     return ok
 
@@ -283,8 +298,10 @@ def test_independence_of_primality_and_irreducibility():
     deg4 = [(v, m, P) for v, m, P in eig_levels(L) if m == 4][0]
     chi4 = character_norm(deg4[2], s5, len(s5))
     four_irreducible = abs(chi4 - 1.0) < 1e-6
-    print(f"  4 = 2 x 2 (composite) but K5/S5 dim-4 mode <chi,chi>={chi4:.3f}  "
-          f"-> IRREDUCIBLE: {four_irreducible}")
+    print(
+        f"  4 = 2 x 2 (composite) but K5/S5 dim-4 mode <chi,chi>={chi4:.3f}  "
+        f"-> IRREDUCIBLE: {four_irreducible}"
+    )
     print("  5 is prime          but octahedron/S4 dim-5 mode splits 3+2 -> COMPOSITE")
 
     print()
@@ -293,8 +310,10 @@ def test_independence_of_primality_and_irreducibility():
     print("      4    | composite  | PRIME / irreducible   (K5,  S5)")
     print("      5    | prime      | COMPOSITE  3 + 2      (octahedron, S4)")
     ok = four_irreducible
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the two notions are logically "
-          "independent; factorisation")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the two notions are logically "
+        "independent; factorisation"
+    )
     print("           is a property of the SYMMETRY, not of the integer")
     return ok
 
@@ -315,15 +334,21 @@ def test_prime_ladder_5_is_composite():
     chis = [character_norm(P, s5, order) for _, _, P in five]
     all_reducible = bool(five) and all(abs(c - 2.0) < 1e-6 for c in chis)
     print(f"  primes used = {primes}")
-    print(f"  every Laplacian level has multiplicity 5;  "
-          f"<chi,chi> over S5 = {np.round(chis, 3)}")
-    print("  <chi,chi> = 2 = trivial(1) + standard(4)  ->  5 = 1 + 4 "
-          "(operationally composite)")
+    print(
+        f"  every Laplacian level has multiplicity 5;  "
+        f"<chi,chi> over S5 = {np.round(chis, 3)}"
+    )
+    print(
+        "  <chi,chi> = 2 = trivial(1) + standard(4)  ->  5 = 1 + 4 "
+        "(operationally composite)"
+    )
     print("  same S_n machinery as bridge_primes_riemann.py: the graph never")
     print("  individuates the primes; the content k*log p stays diagonal input.")
     ok = all_reducible
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the prime ladder factors "
-          "5 as 1 + 4 under S5")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the prime ladder factors "
+        "5 as 1 + 4 under S5"
+    )
     return ok
 
 
@@ -332,8 +357,10 @@ def main():
     results = [
         ("(1) composite 5 splits 3+2 under S4", test_composite5_splits_under_S4()),
         ("(2) prime 5 rigid under S6", test_prime5_does_not_split_under_S6()),
-        ("(3) primality independent of irreducibility",
-         test_independence_of_primality_and_irreducibility()),
+        (
+            "(3) primality independent of irreducibility",
+            test_independence_of_primality_and_irreducibility(),
+        ),
         ("(4) prime ladder: 5 = 1+4 under S5", test_prime_ladder_5_is_composite()),
     ]
     print()

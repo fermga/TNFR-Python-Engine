@@ -98,14 +98,14 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np
 import sympy as sp
 
 from tnfr.mathematics.number_theory import (
-    ArithmeticTNFRFormalism,
     ArithmeticStructuralTerms,
+    ArithmeticTNFRFormalism,
     ArithmeticTNFRParameters,
     power_residue_rank,
     quadratic_residue_annotated_rank,
@@ -146,14 +146,16 @@ def experiment_1_two_arm_primality():
         s = residue_network_rank(m, "quadratic")
         prime = is_odd_prime(m)
         pressure_prime = abs(d) < 1e-9
-        spectral_prime = (s == 3)
+        spectral_prime = s == 3
         if not (pressure_prime == spectral_prime == prime):
             disagree += 1
         if s == quadratic_residue_annotated_rank(m):
             rank_matches += 1
         checked += 1
-    print(f"  agreement DeltaNFR=0 <=> s_QR=3 <=> prime: {checked - disagree}"
-          f"/{checked} (disagreements {disagree})")
+    print(
+        f"  agreement DeltaNFR=0 <=> s_QR=3 <=> prime: {checked - disagree}"
+        f"/{checked} (disagreements {disagree})"
+    )
     print(f"  s_QR(m) == multiplicative A(m): {rank_matches}/{checked}")
     # correlations over a wider range using the closed-form rank A(m)
     odd = np.array([m for m in range(3, 600, 2)])
@@ -181,8 +183,10 @@ def experiment_2_cyclotomy_law():
             if s != power_residue_rank(p, k):
                 fails += 1
     total = len(primes) * 5
-    print(f"  s_k(p) = gcd(k,p-1)+1 for k=2..6, p in {primes[0]}..{primes[-1]}:"
-          f" {total - fails}/{total} exact")
+    print(
+        f"  s_k(p) = gcd(k,p-1)+1 for k=2..6, p in {primes[0]}..{primes[-1]}:"
+        f" {total - fails}/{total} exact"
+    )
     print("  complete-splitting reading: s_k(p) = k+1  <=>  p = 1 (mod k)")
     split_mismatch = 0
     split_total = 0
@@ -192,14 +196,17 @@ def experiment_2_cyclotomy_law():
             if (s == k + 1) != (p % k == 1):
                 split_mismatch += 1
             split_total += 1
-    print(f"    s_k(p)=k+1 <=> p splits completely in Q(zeta_k): "
-          f"{split_total - split_mismatch}/{split_total} exact")
+    print(
+        f"    s_k(p)=k+1 <=> p splits completely in Q(zeta_k): "
+        f"{split_total - split_mismatch}/{split_total} exact"
+    )
     print("  sample (k=3 cubic, k=4 quartic):")
     for p in [7, 11, 13, 17, 19, 23]:
         s3 = residue_network_rank(p, "power", 3)
         s4 = residue_network_rank(p, "power", 4)
-        print(f"    p={p:>2}: s_3={s3} (p mod 3={p % 3}), "
-              f"s_4={s4} (p mod 4={p % 4})")
+        print(
+            f"    p={p:>2}: s_3={s3} (p mod 3={p % 3}), " f"s_4={s4} (p mod 4={p % 4})"
+        )
     print("  QR is the k=2 case: gcd(2,p-1)=2 -> uniform rank 3 for every odd p.")
 
 
@@ -215,20 +222,26 @@ def experiment_3_free_monoid_grading():
         w = arithmetic_terms(m).omega
         sqr = residue_network_rank(m, "quadratic")
         sun = residue_network_rank(m, "unitary")
-        print(f"  {m:>5} {w:>5} {sqr:>5} {3 ** w:>5} {sun:>7} {2 ** w:>5}"
-              f"   ({'OK' if sqr == 3 ** w and sun == 2 ** w else 'NO'})")
+        print(
+            f"  {m:>5} {w:>5} {sqr:>5} {3 ** w:>5} {sun:>7} {2 ** w:>5}"
+            f"   ({'OK' if sqr == 3 ** w and sun == 2 ** w else 'NO'})"
+        )
     # the EXACT multiplicative rank extends the pattern to all m (the scalar
     # spectral count is precision-limited for large dense graphs):
     big = 1155  # 3*5*7*11, omega = 4
-    print(f"  exact A({big}) = {quadratic_residue_annotated_rank(big)} = 3^4 "
-          f"(multiplicative rank, robust for every m)")
+    print(
+        f"  exact A({big}) = {quadratic_residue_annotated_rank(big)} = 3^4 "
+        f"(multiplicative rank, robust for every m)"
+    )
     print("  the base = connection-set per-prime association-scheme rank (QR=3,")
     print("  unitary=2). Pressure-arm counterpart is the LINEAR zeta*(omega-1):")
     for m in squarefree:
         w = arithmetic_terms(m).omega
         fact_press = PARAMS.zeta * (w - 1)
-        print(f"    m={m:>5}: spectral 3^omega={3 ** w:>4}  |  "
-              f"pressure zeta*(omega-1)={fact_press:.4f}")
+        print(
+            f"    m={m:>5}: spectral 3^omega={3 ** w:>4}  |  "
+            f"pressure zeta*(omega-1)={fact_press:.4f}"
+        )
     print("  same free-monoid word length omega (example 147), two gradings:")
     print("  spectral EXPONENTIAL (3^omega), pressure LINEAR (zeta*(omega-1)).")
 

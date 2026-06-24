@@ -126,9 +126,9 @@ def riemann_siegel_theta(T: float, *, dps: int = 30) -> float:
     if T <= 0.0:
         raise ValueError("T must be strictly positive")
     with mpmath.workdps(dps):
-        val = mpmath.im(
-            mpmath.loggamma(mpmath.mpc(0.25, T / 2.0))
-        ) - (T / 2.0) * mpmath.log(mpmath.pi)
+        val = mpmath.im(mpmath.loggamma(mpmath.mpc(0.25, T / 2.0))) - (
+            T / 2.0
+        ) * mpmath.log(mpmath.pi)
     return float(val)
 
 
@@ -290,19 +290,14 @@ class StructuralZeroDensityCertificate:
             f"  mean |r_n|                    : {self.mean_residual:.4e}",
             f"  rms r_n                       : {self.rms_residual:.4e}",
             "  --- Operator-level G4 gap ---",
-            f"  W_1(σ(P14),   σ(T_HP))         : "
-            f"{self.w1_p14_vs_actual:.4e}",
+            f"  W_1(σ(P14),   σ(T_HP))         : " f"{self.w1_p14_vs_actual:.4e}",
             f"  W_1(σ(T̃_HP), σ(T_HP))          : "
             f"{self.w1_structural_vs_actual:.4e}",
-            f"  improvement ratio             : "
-            f"{self.improvement_ratio:.2f}×",
+            f"  improvement ratio             : " f"{self.improvement_ratio:.2f}×",
             "  --- Theoretical bound check ---",
-            f"  C * max(log γ_n / N̄'(γ_n))     : "
-            f"{self.bound_estimate:.4e}",
-            f"  bound satisfied (C ≤ 2)       : "
-            f"{self.bound_satisfied}",
-            f"  structurally derived          : "
-            f"{self.structurally_derived}",
+            f"  C * max(log γ_n / N̄'(γ_n))     : " f"{self.bound_estimate:.4e}",
+            f"  bound satisfied (C ≤ 2)       : " f"{self.bound_satisfied}",
+            f"  structurally derived          : " f"{self.structurally_derived}",
         ]
         if self.notes:
             lines.append("")
@@ -381,12 +376,10 @@ def compute_structural_zero_density_certificate(
 
     # Empirical bound: |r_n| ≤ C log(γ_n) / N̄'(γ_n).
     # We compute max_n of the right-hand side and compare.
-    densities = np.array(
-        [smooth_zero_density(float(g)) for g in actual], dtype=float
-    )
+    densities = np.array([smooth_zero_density(float(g)) for g in actual], dtype=float)
     log_gammas = np.log(actual)
-    bound_per_n = bound_constant * log_gammas / np.where(
-        densities > 0.0, densities, 1.0
+    bound_per_n = (
+        bound_constant * log_gammas / np.where(densities > 0.0, densities, 1.0)
     )
     bound_estimate = float(np.max(bound_per_n))
     bound_satisfied = bool(np.max(abs_res) <= bound_estimate)

@@ -73,6 +73,7 @@ __all__ = [
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class EigenmodeConservation:
     """Conservation fields for a single eigenmode.
@@ -112,6 +113,7 @@ class EigenmodeConservation:
     topological_charge: float
     charge_density: float
 
+
 @dataclass
 class ConservationAtSigma:
     """Full conservation analysis at a given sigma.
@@ -144,6 +146,7 @@ class ConservationAtSigma:
     total_charge_density: float
     mean_energy_density: float
     mean_charge: float
+
 
 @dataclass
 class ConservationSigmaScan:
@@ -183,6 +186,7 @@ class ConservationSigmaScan:
     energy_minimum_sigma: float
     min_gradient_sigma: float
     critical_conservation: ConservationAtSigma
+
 
 @dataclass
 class GrammarComplianceResult:
@@ -229,6 +233,7 @@ class GrammarComplianceResult:
     energy_change: float
     conservation_quality: float
 
+
 @dataclass
 class CriticalConservationAnalysis:
     """Complete P7 conservation-at-criticality analysis.
@@ -265,9 +270,11 @@ class CriticalConservationAnalysis:
     violating_mean_quality: float
     quality_ratio: float
 
+
 # ---------------------------------------------------------------------------
 # Core: Spectral Transport Fields
 # ---------------------------------------------------------------------------
+
 
 def compute_spectral_j_phi(
     eigenvectors: np.ndarray,
@@ -302,6 +309,7 @@ def compute_spectral_j_phi(
     j_phi = np.einsum("ij,ij->j", eigenvectors, L_psi) / k
     return j_phi
 
+
 def compute_spectral_j_dnfr(
     eigenvectors: np.ndarray,
     log_primes: np.ndarray,
@@ -326,13 +334,15 @@ def compute_spectral_j_dnfr(
         J_DNFR(j) = dλ_j/dσ for each eigenmode j.
     """
     # |psi_j(i)|^2 weighted sum of log(p_i)
-    prob = eigenvectors ** 2  # (k, k): prob[i, j] = |psi_j(i)|^2
+    prob = eigenvectors**2  # (k, k): prob[i, j] = |psi_j(i)|^2
     j_dnfr = log_primes @ prob  # (k,): sum_i log(p_i) * |psi_j(i)|^2
     return j_dnfr
+
 
 # ---------------------------------------------------------------------------
 # Core: Eigenmode Conservation Fields
 # ---------------------------------------------------------------------------
+
 
 def _build_eigensystem(
     k: int,
@@ -360,12 +370,14 @@ def _build_eigensystem(
     -------
     (eigenvalues, eigenvectors, laplacian, log_primes)
     """
-    from .operator import build_prime_path_graph, build_h_tnfr
+    from .operator import build_h_tnfr, build_prime_path_graph
     from .spectral_proof import compute_eigensystem
 
     # Eigensystem via efficient tridiagonal decomposition
     eigenvalues, eigenvectors = compute_eigensystem(
-        k, sigma, weight_by_log_gap=weight_by_log_gap,
+        k,
+        sigma,
+        weight_by_log_gap=weight_by_log_gap,
     )
 
     # Build graph + dense H only to extract Laplacian and log-primes
@@ -377,6 +389,7 @@ def _build_eigensystem(
     log_primes = np.array([np.log(float(G.nodes[n]["label"])) for n in nodes])
 
     return eigenvalues, eigenvectors, L, log_primes
+
 
 def compute_eigenmode_conservation(
     k: int,
@@ -408,7 +421,9 @@ def compute_eigenmode_conservation(
         raise ValueError(f"k must be >= 2, got {k}")
 
     eigenvalues, eigenvectors, L, log_primes = _build_eigensystem(
-        k, sigma, weight_by_log_gap=weight_by_log_gap,
+        k,
+        sigma,
+        weight_by_log_gap=weight_by_log_gap,
     )
 
     # Spectral transport fields
@@ -417,9 +432,9 @@ def compute_eigenmode_conservation(
 
     # Per-eigenmode tetrad fields (reuse eigenmode_fields internals)
     from .eigenmode_fields import (
-        _spectral_structural_potential,
-        _path_eigenvector_gradient,
         _path_eigenvector_curvature,
+        _path_eigenvector_gradient,
+        _spectral_structural_potential,
     )
 
     modes: list[EigenmodeConservation] = []
@@ -436,18 +451,20 @@ def compute_eigenmode_conservation(
         charge = grad_phi * j_phi - k_phi * j_dnfr
         rho = phi_s + k_phi
 
-        modes.append(EigenmodeConservation(
-            mode_index=j,
-            eigenvalue=float(eigenvalues[j]),
-            phi_s=phi_s,
-            grad_phi=grad_phi,
-            k_phi=k_phi,
-            j_phi=j_phi,
-            j_dnfr=j_dnfr,
-            energy_density=energy,
-            topological_charge=charge,
-            charge_density=rho,
-        ))
+        modes.append(
+            EigenmodeConservation(
+                mode_index=j,
+                eigenvalue=float(eigenvalues[j]),
+                phi_s=phi_s,
+                grad_phi=grad_phi,
+                k_phi=k_phi,
+                j_phi=j_phi,
+                j_dnfr=j_dnfr,
+                energy_density=energy,
+                topological_charge=charge,
+                charge_density=rho,
+            )
+        )
 
     total_e = sum(m.energy_density for m in modes)
     total_q = sum(m.topological_charge for m in modes)
@@ -464,9 +481,11 @@ def compute_eigenmode_conservation(
         mean_charge=total_q / k,
     )
 
+
 # ---------------------------------------------------------------------------
 # Sigma Scan
 # ---------------------------------------------------------------------------
+
 
 def scan_conservation_vs_sigma(
     k: int,
@@ -507,7 +526,9 @@ def scan_conservation_vs_sigma(
 
     for i, sigma in enumerate(sigma_values):
         snap = compute_eigenmode_conservation(
-            k, sigma, weight_by_log_gap=weight_by_log_gap,
+            k,
+            sigma,
+            weight_by_log_gap=weight_by_log_gap,
         )
         energies[i] = snap.total_energy
         charges[i] = snap.total_charge
@@ -537,7 +558,9 @@ def scan_conservation_vs_sigma(
 
     if critical_snap is None:
         critical_snap = compute_eigenmode_conservation(
-            k, 0.5, weight_by_log_gap=weight_by_log_gap,
+            k,
+            0.5,
+            weight_by_log_gap=weight_by_log_gap,
         )
 
     return ConservationSigmaScan(
@@ -553,9 +576,11 @@ def scan_conservation_vs_sigma(
         critical_conservation=critical_snap,
     )
 
+
 # ---------------------------------------------------------------------------
 # Grammar Compliance Conservation Test
 # ---------------------------------------------------------------------------
+
 
 def _smooth_evolution(
     k: int,
@@ -572,10 +597,14 @@ def _smooth_evolution(
     sigmas = np.linspace(sigma_start, sigma_end, n_steps + 1)
 
     snap_start = compute_eigenmode_conservation(
-        k, float(sigmas[0]), weight_by_log_gap=weight_by_log_gap,
+        k,
+        float(sigmas[0]),
+        weight_by_log_gap=weight_by_log_gap,
     )
     snap_end = compute_eigenmode_conservation(
-        k, float(sigmas[-1]), weight_by_log_gap=weight_by_log_gap,
+        k,
+        float(sigmas[-1]),
+        weight_by_log_gap=weight_by_log_gap,
     )
 
     return (
@@ -584,6 +613,7 @@ def _smooth_evolution(
         snap_start.total_energy,
         snap_end.total_energy,
     )
+
 
 def _abrupt_jump(
     k: int,
@@ -597,10 +627,14 @@ def _abrupt_jump(
     Returns (Q_start, Q_end, E_start, E_end).
     """
     snap_start = compute_eigenmode_conservation(
-        k, sigma_start, weight_by_log_gap=weight_by_log_gap,
+        k,
+        sigma_start,
+        weight_by_log_gap=weight_by_log_gap,
     )
     snap_end = compute_eigenmode_conservation(
-        k, sigma_end, weight_by_log_gap=weight_by_log_gap,
+        k,
+        sigma_end,
+        weight_by_log_gap=weight_by_log_gap,
     )
 
     return (
@@ -609,6 +643,7 @@ def _abrupt_jump(
         snap_start.total_energy,
         snap_end.total_energy,
     )
+
 
 def _make_compliance_result(
     protocol: str,
@@ -639,6 +674,7 @@ def _make_compliance_result(
         energy_change=e_change,
         conservation_quality=quality,
     )
+
 
 def test_grammar_conservation(
     k: int,
@@ -687,41 +723,86 @@ def test_grammar_conservation(
 
     # Compliant: smooth forward
     q0, q1, e0, e1 = _smooth_evolution(
-        k, sigma, sigma + delta_small,
+        k,
+        sigma,
+        sigma + delta_small,
         weight_by_log_gap=weight_by_log_gap,
     )
-    results.append(_make_compliance_result(
-        "smooth_forward", True, sigma, sigma + delta_small, q0, q1, e0, e1,
-    ))
+    results.append(
+        _make_compliance_result(
+            "smooth_forward",
+            True,
+            sigma,
+            sigma + delta_small,
+            q0,
+            q1,
+            e0,
+            e1,
+        )
+    )
 
     # Compliant: smooth backward
     q0, q1, e0, e1 = _smooth_evolution(
-        k, sigma, sigma - delta_small,
+        k,
+        sigma,
+        sigma - delta_small,
         weight_by_log_gap=weight_by_log_gap,
     )
-    results.append(_make_compliance_result(
-        "smooth_backward", True, sigma, sigma - delta_small, q0, q1, e0, e1,
-    ))
+    results.append(
+        _make_compliance_result(
+            "smooth_backward",
+            True,
+            sigma,
+            sigma - delta_small,
+            q0,
+            q1,
+            e0,
+            e1,
+        )
+    )
 
     # Violating: abrupt forward
     q0, q1, e0, e1 = _abrupt_jump(
-        k, sigma, sigma + delta_large,
+        k,
+        sigma,
+        sigma + delta_large,
         weight_by_log_gap=weight_by_log_gap,
     )
-    results.append(_make_compliance_result(
-        "abrupt_forward", False, sigma, sigma + delta_large, q0, q1, e0, e1,
-    ))
+    results.append(
+        _make_compliance_result(
+            "abrupt_forward",
+            False,
+            sigma,
+            sigma + delta_large,
+            q0,
+            q1,
+            e0,
+            e1,
+        )
+    )
 
     # Violating: abrupt backward
     q0, q1, e0, e1 = _abrupt_jump(
-        k, sigma, sigma - delta_large,
+        k,
+        sigma,
+        sigma - delta_large,
         weight_by_log_gap=weight_by_log_gap,
     )
-    results.append(_make_compliance_result(
-        "abrupt_backward", False, sigma, sigma - delta_large, q0, q1, e0, e1,
-    ))
+    results.append(
+        _make_compliance_result(
+            "abrupt_backward",
+            False,
+            sigma,
+            sigma - delta_large,
+            q0,
+            q1,
+            e0,
+            e1,
+        )
+    )
 
     return results
+
 
 # Prevent pytest from collecting this function as a test
 test_grammar_conservation.__test__ = False  # type: ignore[attr-defined]
@@ -729,6 +810,7 @@ test_grammar_conservation.__test__ = False  # type: ignore[attr-defined]
 # ---------------------------------------------------------------------------
 # Integration: Full Analysis
 # ---------------------------------------------------------------------------
+
 
 def run_critical_conservation_analysis(
     k: int = 20,
@@ -769,7 +851,9 @@ def run_critical_conservation_analysis(
     """
     # 1. Sigma scan
     scan = scan_conservation_vs_sigma(
-        k, sigma_values, weight_by_log_gap=weight_by_log_gap,
+        k,
+        sigma_values,
+        weight_by_log_gap=weight_by_log_gap,
     )
 
     # 2. Critical snapshot (reuse from scan if sigma is 0.5)
@@ -777,12 +861,15 @@ def run_critical_conservation_analysis(
         critical = scan.critical_conservation
     else:
         critical = compute_eigenmode_conservation(
-            k, sigma, weight_by_log_gap=weight_by_log_gap,
+            k,
+            sigma,
+            weight_by_log_gap=weight_by_log_gap,
         )
 
     # 3. Grammar compliance
     grammar_tests = test_grammar_conservation(
-        k, sigma,
+        k,
+        sigma,
         delta_small=delta_small,
         delta_large=delta_large,
         weight_by_log_gap=weight_by_log_gap,
@@ -794,11 +881,13 @@ def run_critical_conservation_analysis(
 
     comp_mean = (
         sum(r.conservation_quality for r in compliant) / len(compliant)
-        if compliant else 0.0
+        if compliant
+        else 0.0
     )
     viol_mean = (
         sum(r.conservation_quality for r in violating) / len(violating)
-        if violating else 0.0
+        if violating
+        else 0.0
     )
     ratio = comp_mean / viol_mean if viol_mean > 1e-30 else float("inf")
 

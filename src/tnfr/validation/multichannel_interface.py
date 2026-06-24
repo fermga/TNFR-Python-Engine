@@ -487,9 +487,7 @@ def multichannel_window_series(
         phase, amplitude = phase_amplitude_matrices(
             seg, sampling_rate=cfg.sampling_rate, bandpass=cfg.bandpass
         )
-        graph = build_coupling_graph(
-            phase, amplitude, k_neighbours=cfg.k_neighbours
-        )
+        graph = build_coupling_graph(phase, amplitude, k_neighbours=cfg.k_neighbours)
         grad.append(_mean_abs_dict(compute_phase_gradient(graph)))
         kphi.append(_mean_abs_dict(compute_phase_curvature(graph)))
         xi.append(float(estimate_coherence_length(graph)))

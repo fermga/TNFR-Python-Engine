@@ -15,10 +15,7 @@ from typing import Any, Iterable
 from ..constants.canonical import PHI
 from ..mathematics.unified_numerical import np
 from ..physics.gauge import compute_yang_mills_equations
-from .structural_gap import (
-    build_structural_gauge_graph,
-    compute_structural_gauge_gap,
-)
+from .structural_gap import build_structural_gauge_graph, compute_structural_gauge_gap
 from .u6_sweep import _rescale_delta_nfr_to_u6_ratio
 
 
@@ -100,9 +97,7 @@ def run_finite_scaling_study(
                         confinement_weight=confinement_weight,
                     )
                     ym_eq = compute_yang_mills_equations(graph)
-                    max_abs_phi_s = float(
-                        result.metadata.get("max_abs_phi_s", 0.0)
-                    )
+                    max_abs_phi_s = float(result.metadata.get("max_abs_phi_s", 0.0))
                     observed_ratio = max_abs_phi_s / PHI if PHI else 0.0
                     metadata = dict(result.metadata)
                     metadata.update(
@@ -130,12 +125,8 @@ def run_finite_scaling_study(
                             gauge_spectral_deviation=float(
                                 result.gauge_spectral_deviation
                             ),
-                            mean_yang_mills_residual=float(
-                                ym_eq.mean_residual
-                            ),
-                            max_yang_mills_residual=float(
-                                ym_eq.max_residual
-                            ),
+                            mean_yang_mills_residual=float(ym_eq.mean_residual),
+                            max_yang_mills_residual=float(ym_eq.max_residual),
                             metadata=metadata,
                         )
                     )
@@ -180,9 +171,7 @@ def _group_scaling(
         lambda: defaultdict(list)
     )
     for point in points:
-        grouped[(point.topology, point.target_u6_ratio)][point.n].append(
-            point.gap
-        )
+        grouped[(point.topology, point.target_u6_ratio)][point.n].append(point.gap)
 
     result: dict[str, dict[str, Any]] = {}
     for (topology, target_ratio), by_n in grouped.items():
@@ -199,9 +188,7 @@ def _group_scaling(
             "min_mean_gap": float(min_gap),
             "loglog_slope": slope,
             "gap_decay_exponent": -slope if slope is not None else None,
-            "positive_at_all_sizes": bool(
-                mean_gaps and min_gap > eigen_tolerance
-            ),
+            "positive_at_all_sizes": bool(mean_gaps and min_gap > eigen_tolerance),
             "scope": "finite_group_scaling_not_continuum_limit",
         }
     return result

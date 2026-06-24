@@ -20,6 +20,7 @@ from .fft_workers import default_fft_worker
 
 Dispatcher = Callable[[str, dict[str, Any]], Any]
 
+
 @dataclass
 class HTTPFFTDispatcher:
     """Simple HTTP dispatcher that exchanges payloads via base64 pickles."""
@@ -49,13 +50,19 @@ class HTTPFFTDispatcher:
         if self.auth_token:
             headers["Authorization"] = f"Bearer {self.auth_token}"
         url = f"{self.base_url.rstrip('/')}/{action}"
-        response = self._session.post(url, data=json.dumps({"payload": encoded_payload}), headers=headers, timeout=self.timeout)
+        response = self._session.post(
+            url,
+            data=json.dumps({"payload": encoded_payload}),
+            headers=headers,
+            timeout=self.timeout,
+        )
         response.raise_for_status()
         data = response.json()
         encoded_result = data.get("payload")
         if encoded_result is None:
             return data
         return _decode_payload(encoded_result)
+
 
 @dataclass
 class LocalWorkerDispatcher:
@@ -69,10 +76,12 @@ class LocalWorkerDispatcher:
         worker = self.registry[action]
         return worker(action, payload)
 
+
 RequestEncoder = Callable[[dict[str, Any]], Any]
 RequestDecoder = Callable[[Any], dict[str, Any]]
 ResponseEncoder = Callable[[Any], Any]
 ResponseDecoder = Callable[[Any], Any]
+
 
 class ThreadedQueueDispatcher:
     """Dispatcher backed by one or more background worker threads and queues."""
@@ -91,7 +100,9 @@ class ThreadedQueueDispatcher:
     ) -> None:
         self._worker = worker or default_fft_worker
         self._timeout = timeout
-        self._requests: "queue.Queue[tuple[str, str, Any]]" = queue.Queue(maxsize=queue_maxsize)
+        self._requests: "queue.Queue[tuple[str, str, Any]]" = queue.Queue(
+            maxsize=queue_maxsize
+        )
         self._responses: dict[str, dict[str, Any]] = {}
         self._response_lock = threading.Lock()
         self._request_serializer = request_serializer or (lambda payload: payload)
@@ -118,7 +129,9 @@ class ThreadedQueueDispatcher:
         if not event.wait(self._timeout):
             with self._response_lock:
                 self._responses.pop(request_id, None)
-            raise TimeoutError(f"FFT dispatcher timed out waiting for action '{action}'")
+            raise TimeoutError(
+                f"FFT dispatcher timed out waiting for action '{action}'"
+            )
         with self._response_lock:
             envelope = self._responses.pop(request_id, None) or {}
         if "error" in envelope:
@@ -146,13 +159,16 @@ class ThreadedQueueDispatcher:
                 if isinstance(event, threading.Event):
                     event.set()
 
+
 def _encode_payload(payload: Mapping[str, Any]) -> str:
     blob = pickle.dumps(payload)
     return base64.b64encode(blob).decode("ascii")
 
+
 def _decode_payload(blob: str) -> Any:
     data = base64.b64decode(blob.encode("ascii"))
     return pickle.loads(data)
+
 
 __all__ = [
     "Dispatcher",

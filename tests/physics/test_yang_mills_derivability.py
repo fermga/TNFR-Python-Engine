@@ -50,9 +50,7 @@ class TestNonAbelianDerivabilityAudit:
         assert candidate.nodal_derivable
         assert not candidate.has_canonical_connection
         assert not candidate.has_noncommuting_generators
-        assert candidate.status == (
-            "OPEN_MULTIPLET_WITHOUT_CANONICAL_CONNECTION"
-        )
+        assert candidate.status == ("OPEN_MULTIPLET_WITHOUT_CANONICAL_CONNECTION")
         assert report.verdict == "OPEN_DERIVABILITY_GAP"
 
     def test_cycle_bundle_route_rejects_external_basis_selection(self):

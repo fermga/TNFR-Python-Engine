@@ -315,56 +315,59 @@ def render_markdown(summary: Mapping[str, Any]) -> str:
         ]
         for item in summary["top_hotspots"]
     ]
-    return "\n\n".join(
-        [
-            "# TNFR WDBC Biomedical Phase-Gate Audit",
-            "## Dataset",
-            (
-                f"Name: {summary['dataset']['name']}  \n"
-                f"Sector: {summary['dataset']['sector']}  \n"
-                f"Samples: {summary['dataset']['samples']}  \n"
-                f"Features: {summary['dataset']['features']}  \n"
-                f"Target counts: {summary['dataset']['target_counts']}"
-            ),
-            "## Graph and phase-gate state",
-            (
-                f"Graph: {summary['graph']['construction']}  \n"
-                f"Nodes: {summary['graph']['nodes']}  \n"
-                f"Edges: {summary['graph']['edges']}  \n"
-                f"Edge compliance: {summary['phase_gate']['edge_compliance']:.4f}  \n"
-                f"Violations: {summary['phase_gate']['violations']}  \n"
-                f"Global order R: {summary['phase_gate']['global_order_r']:.4f}  \n"
-                f"Recommendation: {summary['phase_gate']['recommendation']}"
-            ),
-            "## Node-level review task",
-            (
-                f"Definition: {summary['review_definition']['meaning']}  \n"
-                f"Threshold: {summary['review_definition']['threshold']}  \n"
-                f"Review nodes: {summary['review_definition']['review_node_count']}"
-            ),
-            "## Score comparison",
-            _markdown_table(
-                ["Score", "Basis", "AUC", "Precision@review_count"],
-                comparison_rows,
-            ),
-            "## Top TNFR hotspots",
-            _markdown_table(
-                [
-                    "Sample",
-                    "Diagnosis",
-                    "Conflicts",
-                    "Stress",
-                    "Mean radius",
-                    "Mean texture",
-                    "Mean concavity",
-                    "TNFR prescription",
-                ],
-                hotspot_rows,
-            ),
-            "## Honest interpretation",
-            str(summary["honest_interpretation"]),
-        ]
-    ) + "\n"
+    return (
+        "\n\n".join(
+            [
+                "# TNFR WDBC Biomedical Phase-Gate Audit",
+                "## Dataset",
+                (
+                    f"Name: {summary['dataset']['name']}  \n"
+                    f"Sector: {summary['dataset']['sector']}  \n"
+                    f"Samples: {summary['dataset']['samples']}  \n"
+                    f"Features: {summary['dataset']['features']}  \n"
+                    f"Target counts: {summary['dataset']['target_counts']}"
+                ),
+                "## Graph and phase-gate state",
+                (
+                    f"Graph: {summary['graph']['construction']}  \n"
+                    f"Nodes: {summary['graph']['nodes']}  \n"
+                    f"Edges: {summary['graph']['edges']}  \n"
+                    f"Edge compliance: {summary['phase_gate']['edge_compliance']:.4f}  \n"
+                    f"Violations: {summary['phase_gate']['violations']}  \n"
+                    f"Global order R: {summary['phase_gate']['global_order_r']:.4f}  \n"
+                    f"Recommendation: {summary['phase_gate']['recommendation']}"
+                ),
+                "## Node-level review task",
+                (
+                    f"Definition: {summary['review_definition']['meaning']}  \n"
+                    f"Threshold: {summary['review_definition']['threshold']}  \n"
+                    f"Review nodes: {summary['review_definition']['review_node_count']}"
+                ),
+                "## Score comparison",
+                _markdown_table(
+                    ["Score", "Basis", "AUC", "Precision@review_count"],
+                    comparison_rows,
+                ),
+                "## Top TNFR hotspots",
+                _markdown_table(
+                    [
+                        "Sample",
+                        "Diagnosis",
+                        "Conflicts",
+                        "Stress",
+                        "Mean radius",
+                        "Mean texture",
+                        "Mean concavity",
+                        "TNFR prescription",
+                    ],
+                    hotspot_rows,
+                ),
+                "## Honest interpretation",
+                str(summary["honest_interpretation"]),
+            ]
+        )
+        + "\n"
+    )
 
 
 def render_html(markdown: str) -> str:
@@ -422,7 +425,9 @@ th {{ background: #f3f5f7; }}
 {body}
 </body>
 </html>
-""".format(body="\n".join(body))
+""".format(
+        body="\n".join(body)
+    )
 
 
 def main() -> None:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+
 from .operators import CoherenceOperator, FrequencyOperator
 
 __all__ = ["make_coherence_operator", "make_frequency_operator"]

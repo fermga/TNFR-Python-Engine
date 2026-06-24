@@ -115,28 +115,65 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.operators.grammar_types import (
-    GENERATORS, CLOSURES, STABILIZERS, DESTABILIZERS, TRANSFORMERS,
+    CLOSURES,
+    DESTABILIZERS,
+    GENERATORS,
+    STABILIZERS,
+    TRANSFORMERS,
 )
 
-ALPHA = ["emission", "reception", "coherence", "dissonance", "coupling",
-         "resonance", "silence", "expansion", "contraction",
-         "self_organization", "mutation", "transition", "recursivity"]
-SHORT = {"emission": "AL", "reception": "EN", "coherence": "IL",
-         "dissonance": "OZ", "coupling": "UM", "resonance": "RA",
-         "silence": "SHA", "expansion": "VAL", "contraction": "NUL",
-         "self_organization": "THOL", "mutation": "ZHIR", "transition": "NAV",
-         "recursivity": "REMESH"}
+ALPHA = [
+    "emission",
+    "reception",
+    "coherence",
+    "dissonance",
+    "coupling",
+    "resonance",
+    "silence",
+    "expansion",
+    "contraction",
+    "self_organization",
+    "mutation",
+    "transition",
+    "recursivity",
+]
+SHORT = {
+    "emission": "AL",
+    "reception": "EN",
+    "coherence": "IL",
+    "dissonance": "OZ",
+    "coupling": "UM",
+    "resonance": "RA",
+    "silence": "SHA",
+    "expansion": "VAL",
+    "contraction": "NUL",
+    "self_organization": "THOL",
+    "mutation": "ZHIR",
+    "transition": "NAV",
+    "recursivity": "REMESH",
+}
 # Dual-lever classification (AGENTS.md "Operator-Tetrad Synergies", ex 37/130).
-LEVER = {"UM": "nu_f", "SHA": "nu_f", "VAL": "nu_f",
-         "IL": "dNFR", "OZ": "dNFR", "THOL": "dNFR", "ZHIR": "dNFR",
-         "NAV": "dNFR", "NUL": "both",
-         "AL": "neither", "EN": "neither", "RA": "neither", "REMESH": "neither"}
+LEVER = {
+    "UM": "nu_f",
+    "SHA": "nu_f",
+    "VAL": "nu_f",
+    "IL": "dNFR",
+    "OZ": "dNFR",
+    "THOL": "dNFR",
+    "ZHIR": "dNFR",
+    "NAV": "dNFR",
+    "NUL": "both",
+    "AL": "neither",
+    "EN": "neither",
+    "RA": "neither",
+    "REMESH": "neither",
+}
 START = ("START",)
 
 
@@ -161,8 +198,12 @@ def transition(state, x):
             return None
         if x == "mutation" and "I" not in win:
             return None
-    return ((win + (tag(x),))[-3:], has_d or x in DESTABILIZERS,
-            has_s or x in STABILIZERS, x in CLOSURES)
+    return (
+        (win + (tag(x),))[-3:],
+        has_d or x in DESTABILIZERS,
+        has_s or x in STABILIZERS,
+        x in CLOSURES,
+    )
 
 
 def is_accept(state):
@@ -188,15 +229,16 @@ def build_trim():
     while changed:
         changed = False
         for s in states:
-            if s not in co and any(transition(s, x) in co
-                                   for x in ALPHA if transition(s, x) is not None):
+            if s not in co and any(
+                transition(s, x) in co for x in ALPHA if transition(s, x) is not None
+            ):
                 co.add(s)
                 changed = True
     trim = [s for s in states if s in co]
     idx = {s: i for i, s in enumerate(trim)}
     n = len(trim)
     M = np.zeros((n, n))
-    ops = {}   # (i, j) -> list of operators on that edge
+    ops = {}  # (i, j) -> list of operators on that edge
     for s in trim:
         for x in ALPHA:
             ns = transition(s, x)
@@ -262,15 +304,21 @@ def experiment_1_parry_pattern(trim, idx, sub, Msub, P, pi):
         piU = piU / piU.sum()
 
     def h_rate(Q, p):
-        return -sum(p[i] * Q[i, j] * np.log(Q[i, j])
-                    for i in range(m) for j in range(m) if Q[i, j] > 1e-15)
+        return -sum(
+            p[i] * Q[i, j] * np.log(Q[i, j])
+            for i in range(m)
+            for j in range(m)
+            if Q[i, j] > 1e-15
+        )
 
     hP = h_rate(P, pi)
     hU = h_rate(U, np.abs(piU) / np.abs(piU).sum())
     print(f"  recurrent component: {m} states (the steady-state phase)")
     print(f"  Parry entropy rate  h_state = {hP:.6f} bits-nat (state channel)")
-    print(f"  uniform-edge rate   h_unif  = {hU:.6f}  ->  Parry is the maximum "
-          f"(+{hP-hU:.4f})")
+    print(
+        f"  uniform-edge rate   h_unif  = {hU:.6f}  ->  Parry is the maximum "
+        f"(+{hP-hU:.4f})"
+    )
 
     # emergent operator frequency: Parry edge prob spread over the operators
     # sharing each edge (each gets an equal share of the edge's word-probability).
@@ -305,8 +353,12 @@ def experiment_2_capacity_split(sub, Msub, P, pi, ops, idx, trim, lam):
     print("M2: the capacity splits EXACTLY into state + choice channels")
     print("=" * 72)
     m = len(sub)
-    h_state = -sum(pi[i] * P[i, j] * np.log(P[i, j])
-                   for i in range(m) for j in range(m) if P[i, j] > 1e-15)
+    h_state = -sum(
+        pi[i] * P[i, j] * np.log(P[i, j])
+        for i in range(m)
+        for j in range(m)
+        if P[i, j] > 1e-15
+    )
     # H_choice: each multi-edge (i,j) with mult>1 adds log(mult) of in-class choice
     h_choice = 0.0
     for i in range(m):
@@ -318,8 +370,10 @@ def experiment_2_capacity_split(sub, Msub, P, pi, ops, idx, trim, lam):
     print(f"  H_state  (which structural move)        = {h_state:.6f}")
     print(f"  H_choice (which operator in the class)  = {h_choice:.6f}")
     print(f"  H_state + H_choice = {h_state + h_choice:.6f}")
-    print(f"  log(lambda)        = {np.log(lam):.6f}  "
-          f"(residual {abs(h_state + h_choice - np.log(lam)):.1e})")
+    print(
+        f"  log(lambda)        = {np.log(lam):.6f}  "
+        f"(residual {abs(h_state + h_choice - np.log(lam)):.1e})"
+    )
     frac = h_state / (h_state + h_choice)
     print(f"  -> coherent generation is ~{100*frac:.0f}% structural state move,")
     print(f"     ~{100*(1-frac):.0f}% free choice among interchangeable operators")

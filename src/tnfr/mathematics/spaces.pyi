@@ -1,9 +1,12 @@
 from __future__ import annotations
 
-import numpy as np
-from .epi import BEPIElement as BEPIElement, _EPIValidators
 from dataclasses import dataclass
 from typing import Callable, Sequence
+
+import numpy as np
+
+from .epi import BEPIElement as BEPIElement
+from .epi import _EPIValidators
 
 @dataclass(frozen=True)
 class HilbertSpace:

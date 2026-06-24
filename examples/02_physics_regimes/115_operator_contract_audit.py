@@ -73,11 +73,14 @@ def experiment_1_measured_audit():
     print("-" * 72)
     for r in audit.results:
         mark = "OK" if r.satisfied else "XX"
-        print(f"{r.glyph:>7} {r.context:>9}  {r.contract:<40} "
-              f"{r.detail:<28} {mark}")
+        print(
+            f"{r.glyph:>7} {r.context:>9}  {r.contract:<40} " f"{r.detail:<28} {mark}"
+        )
     print()
-    print(f"-> {audit.n_satisfied}/{audit.n_operators} operators satisfy their "
-          f"canonical postcondition contract, MEASURED")
+    print(
+        f"-> {audit.n_satisfied}/{audit.n_operators} operators satisfy their "
+        f"canonical postcondition contract, MEASURED"
+    )
     print(f"   (not merely asserted). all_satisfied = {audit.all_satisfied}")
     print()
 
@@ -117,13 +120,17 @@ def experiment_3_sdk_audit():
     net = TNFR.create(16).random(0.3).evolve(2)
 
     audit = net.audit_operators()
-    print(f"  net.audit_operators(): all_satisfied={audit['all_satisfied']}, "
-          f"{audit['n_satisfied']}/{audit['n_operators']} operators")
+    print(
+        f"  net.audit_operators(): all_satisfied={audit['all_satisfied']}, "
+        f"{audit['n_satisfied']}/{audit['n_operators']} operators"
+    )
     print()
 
     check = net.integrity_check("IL")
-    print(f"  net.integrity_check('IL'): nodes_checked="
-          f"{check['nodes_checked']}, pass_rate={check['pass_rate']:.2f}")
+    print(
+        f"  net.integrity_check('IL'): nodes_checked="
+        f"{check['nodes_checked']}, pass_rate={check['pass_rate']:.2f}"
+    )
     print("  (was nodes_checked=0 before the .passed -> .is_healthy fix)")
     print()
 

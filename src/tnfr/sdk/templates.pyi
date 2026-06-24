@@ -1,6 +1,7 @@
 """Type stubs for TNFR SDK templates."""
 
 from typing import Optional
+
 from .fluent import NetworkResults
 
 class TNFRTemplates:

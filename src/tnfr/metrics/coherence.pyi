@@ -1,69 +1,55 @@
 from __future__ import annotations
 
-from .._compat import TypeAlias as TypeAlias
-from ..alias import (
-    collect_attr as collect_attr,
-    collect_theta_attr as collect_theta_attr,
-    get_attr as get_attr,
-    set_attr as set_attr,
-)
-from ..constants import get_param as get_param
-from ..constants.aliases import (
-    ALIAS_D2VF as ALIAS_D2VF,
-    ALIAS_DEPI as ALIAS_DEPI,
-    ALIAS_DNFR as ALIAS_DNFR,
-    ALIAS_DSI as ALIAS_DSI,
-    ALIAS_DVF as ALIAS_DVF,
-    ALIAS_EPI as ALIAS_EPI,
-    ALIAS_SI as ALIAS_SI,
-    ALIAS_VF as ALIAS_VF,
-)
-from ..glyph_history import (
-    append_metric as append_metric,
-    ensure_history as ensure_history,
-)
-from ..observers import (
-    DEFAULT_GLYPH_LOAD_SPAN as DEFAULT_GLYPH_LOAD_SPAN,
-    DEFAULT_WBAR_SPAN as DEFAULT_WBAR_SPAN,
-    glyph_load as glyph_load,
-    kuramoto_order as kuramoto_order,
-    phase_sync as phase_sync,
-)
-from ..sense import sigma_vector as sigma_vector
-from ..types import (
-    CoherenceMetric as CoherenceMetric,
-    FloatArray as FloatArray,
-    FloatMatrix as FloatMatrix,
-    GlyphLoadDistribution as GlyphLoadDistribution,
-    HistoryState as HistoryState,
-    NodeId as NodeId,
-    ParallelWijPayload as ParallelWijPayload,
-    SigmaVector as SigmaVector,
-    TNFRGraph as TNFRGraph,
-)
-from ..utils import (
-    CallbackEvent as CallbackEvent,
-    callback_manager as callback_manager,
-    clamp01 as clamp01,
-    ensure_node_index_map as ensure_node_index_map,
-    get_logger as get_logger,
-    get_numpy as get_numpy,
-    normalize_weights as normalize_weights,
-    resolve_chunk_size as resolve_chunk_size,
-)
-from .common import (
-    compute_coherence as compute_coherence,
-    min_max_range as min_max_range,
-)
-from .trig_cache import (
-    compute_theta_trig as compute_theta_trig,
-    get_trig_cache as get_trig_cache,
-)
-from _typeshed import Incomplete
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from types import ModuleType
 from typing import Any
+
+from _typeshed import Incomplete
+
+from .._compat import TypeAlias as TypeAlias
+from ..alias import collect_attr as collect_attr
+from ..alias import collect_theta_attr as collect_theta_attr
+from ..alias import get_attr as get_attr
+from ..alias import set_attr as set_attr
+from ..constants import get_param as get_param
+from ..constants.aliases import ALIAS_D2VF as ALIAS_D2VF
+from ..constants.aliases import ALIAS_DEPI as ALIAS_DEPI
+from ..constants.aliases import ALIAS_DNFR as ALIAS_DNFR
+from ..constants.aliases import ALIAS_DSI as ALIAS_DSI
+from ..constants.aliases import ALIAS_DVF as ALIAS_DVF
+from ..constants.aliases import ALIAS_EPI as ALIAS_EPI
+from ..constants.aliases import ALIAS_SI as ALIAS_SI
+from ..constants.aliases import ALIAS_VF as ALIAS_VF
+from ..glyph_history import append_metric as append_metric
+from ..glyph_history import ensure_history as ensure_history
+from ..observers import DEFAULT_GLYPH_LOAD_SPAN as DEFAULT_GLYPH_LOAD_SPAN
+from ..observers import DEFAULT_WBAR_SPAN as DEFAULT_WBAR_SPAN
+from ..observers import glyph_load as glyph_load
+from ..observers import kuramoto_order as kuramoto_order
+from ..observers import phase_sync as phase_sync
+from ..sense import sigma_vector as sigma_vector
+from ..types import CoherenceMetric as CoherenceMetric
+from ..types import FloatArray as FloatArray
+from ..types import FloatMatrix as FloatMatrix
+from ..types import GlyphLoadDistribution as GlyphLoadDistribution
+from ..types import HistoryState as HistoryState
+from ..types import NodeId as NodeId
+from ..types import ParallelWijPayload as ParallelWijPayload
+from ..types import SigmaVector as SigmaVector
+from ..types import TNFRGraph as TNFRGraph
+from ..utils import CallbackEvent as CallbackEvent
+from ..utils import callback_manager as callback_manager
+from ..utils import clamp01 as clamp01
+from ..utils import ensure_node_index_map as ensure_node_index_map
+from ..utils import get_logger as get_logger
+from ..utils import get_numpy as get_numpy
+from ..utils import normalize_weights as normalize_weights
+from ..utils import resolve_chunk_size as resolve_chunk_size
+from .common import compute_coherence as compute_coherence
+from .common import min_max_range as min_max_range
+from .trig_cache import compute_theta_trig as compute_theta_trig
+from .trig_cache import get_trig_cache as get_trig_cache
 
 logger: Incomplete
 GLYPH_LOAD_STABILIZERS_KEY: str
@@ -96,7 +82,9 @@ StabilityChunkArgs = tuple[
     float,
     float,
 ]
-StabilityChunkResult = tuple[int, int, float, float, list[float], list[float], list[float]]
+StabilityChunkResult = tuple[
+    int, int, float, float, list[float], list[float], list[float]
+]
 MetricValue: TypeAlias
 MetricProvider = Callable[[], MetricValue]
 MetricRecord: TypeAlias

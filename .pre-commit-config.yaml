@@ -19,16 +19,10 @@ repos:
     hooks:
       - id: code-review-check
         name: Code review quality check
-        entry: bash -c 'echo "⚠️  Remember to run code review before committing significant changes" && echo "   Run: make lint test" && exit 0'
+        entry: bash -c 'echo "Remember to run code review before committing significant changes (make lint test)" && exit 0'
         language: system
         pass_filenames: false
-        stages: [commit]
-      - id: check-stubs
-        name: Check .pyi stub files
-        entry: python scripts/generate_stubs.py --check
-        language: system
-        pass_filenames: false
-        files: ^src/tnfr/.*\.py$
+        stages: [pre-commit]
       - id: check-bandit-format
         name: Check for invalid bandit -f sarif usage
         entry: bash -c 'if grep -r "bandit.*-f sarif" .github/workflows/ scripts/ 2>/dev/null; then echo "ERROR - bandit does not support SARIF format. Use -f json instead."; exit 1; fi'

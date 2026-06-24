@@ -86,16 +86,16 @@ References
 """
 
 import os
-import sys
 import statistics
+import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import sympy as sp
 
 from tnfr.mathematics.number_theory import (
-    ArithmeticTNFRFormalism,
     ArithmeticStructuralTerms,
+    ArithmeticTNFRFormalism,
     ArithmeticTNFRParameters,
 )
 
@@ -106,7 +106,7 @@ F = ArithmeticTNFRFormalism
 def arithmetic_terms(n):
     """Canonical structural terms (Omega with multiplicity, tau, sigma)."""
     factorisation = sp.factorint(n)
-    big_omega = int(sum(factorisation.values()))   # prime factors w/ multiplicity
+    big_omega = int(sum(factorisation.values()))  # prime factors w/ multiplicity
     tau = int(sp.divisor_count(n))
     sigma = int(sp.divisor_sigma(n))
     return ArithmeticStructuralTerms(tau=tau, sigma=sigma, omega=big_omega)
@@ -131,10 +131,14 @@ def experiment_1_three_readings(limit=60):
         if abs(c - 1.0) <= 1e-12:
             max_coherence.append(n)
     print(f"  primes in [2,{limit}]:           {len(primes)}")
-    print(f"  zero-pressure nodes (dNFR=0):   {len(zero_pressure)}  "
-          f"== primes: {zero_pressure == primes}")
-    print(f"  maximal-coherence nodes (C=1):  {len(max_coherence)}  "
-          f"== primes: {max_coherence == primes}")
+    print(
+        f"  zero-pressure nodes (dNFR=0):   {len(zero_pressure)}  "
+        f"== primes: {zero_pressure == primes}"
+    )
+    print(
+        f"  maximal-coherence nodes (C=1):  {len(max_coherence)}  "
+        f"== primes: {max_coherence == primes}"
+    )
     print("  sample (n, dNFR, C):")
     for n in (2, 3, 4, 6, 7, 12, 13, 30):
         d = delta_nfr(n)
@@ -165,20 +169,26 @@ def experiment_2_capacity_lever(limit=40):
                 if abs(drift) <= 1e-12:
                     frozen += 1
             else:
-                predicted = steps * dt * nu_f * d   # (nu_f gain) x pressure
+                predicted = steps * dt * nu_f * d  # (nu_f gain) x pressure
                 if abs(drift - predicted) <= 1e-9:
                     factored += 1
-        print(f"  nu_f={nu_f}:  primes frozen {frozen}/{len(primes)};  "
-              f"composite drift = nu_f x pressure exactly {factored}/{len(composites)}")
+        print(
+            f"  nu_f={nu_f}:  primes frozen {frozen}/{len(primes)};  "
+            f"composite drift = nu_f x pressure exactly {factored}/{len(composites)}"
+        )
     # capacity is a pure scalar gain: doubling nu_f doubles the drift
     base = {n: steps * dt * 1.0 * delta_nfr(n) for n in range(2, limit + 1)}
     gain_ok = sum(
-        1 for n in composites
-        if base[n] != 0 and abs((steps * dt * 2.0 * delta_nfr(n)) / base[n] - 2.0) <= 1e-9
+        1
+        for n in composites
+        if base[n] != 0
+        and abs((steps * dt * 2.0 * delta_nfr(n)) / base[n] - 2.0) <= 1e-9
     )
     kernel = all(abs(base[n]) <= 1e-12 for n in primes)
-    print(f"  doubling nu_f doubles the composite drift exactly: "
-          f"{gain_ok}/{len(composites)}")
+    print(
+        f"  doubling nu_f doubles the composite drift exactly: "
+        f"{gain_ok}/{len(composites)}"
+    )
     print(f"  every prime is in the kernel (zero drift for all nu_f): {kernel}")
     print("  -> the capacity lever scales the RATE; it can never move a prime.")
 

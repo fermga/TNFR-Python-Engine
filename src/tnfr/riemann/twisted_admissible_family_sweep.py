@@ -232,9 +232,7 @@ def sweep_twisted_admissible_family(
     if not np.all(sigma_array > 0.0):
         raise ValueError("every sigma must be strictly positive")
 
-    family_map = (
-        dict(families) if families is not None else dict(DEFAULT_TEST_FAMILIES)
-    )
+    family_map = dict(families) if families is not None else dict(DEFAULT_TEST_FAMILIES)
     if len(family_map) == 0:
         raise ValueError("families must be non-empty")
 
@@ -256,9 +254,7 @@ def sweep_twisted_admissible_family(
         mk_test = family_map[fname]
         for j, sigma in enumerate(sigma_array):
             test = mk_test(float(sigma))
-            local_t_max = (
-                (12.0 * float(sigma)) if t_max is None else float(t_max)
-            )
+            local_t_max = (12.0 * float(sigma)) if t_max is None else float(t_max)
             w_total, _n_used, _zeros = twisted_weil_zero_side(
                 chi,
                 test,
@@ -270,9 +266,7 @@ def sweep_twisted_admissible_family(
             weil_table[i, j] = float(w_total)
             for k, gname in enumerate(gauge_names):
                 gfn = gauge_map[gname]
-                G = build_twisted_test_state_from_test_function(
-                    bundle, test, gfn
-                )
+                G = build_twisted_test_state_from_test_function(bundle, test, gfn)
                 E = float(compute_energy_functional(G))
                 energy_table[i, k, j] = E
                 W = weil_table[i, j]
@@ -293,9 +287,7 @@ def sweep_twisted_admissible_family(
         finite_vals = alpha_table[finite_mask]
         alpha_min = float(finite_vals.min())
         alpha_max = float(finite_vals.max())
-        idx_flat = int(
-            np.argmin(np.where(finite_mask, alpha_table, np.inf))
-        )
+        idx_flat = int(np.argmin(np.where(finite_mask, alpha_table, np.inf)))
         i_min, rem = divmod(idx_flat, n_g * n_s)
         k_min, j_min = divmod(rem, n_s)
         alpha_min_sigma = float(sigma_array[j_min])

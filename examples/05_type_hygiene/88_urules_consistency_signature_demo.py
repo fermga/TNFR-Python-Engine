@@ -19,16 +19,18 @@ def _print_probe(label: str, n_nodes: int, seed: int) -> None:
     cert = compute_urules_consistency_signature(n_nodes=n_nodes, seed=seed)
     print(f"\n=== {label} (n_nodes={n_nodes}, seed={seed}) ===")
     print(cert.summary())
-    print(f"leaking_inputs={cert.leaking_inputs}, "
-          f"leaking_outputs={cert.leaking_outputs}")
+    print(
+        f"leaking_inputs={cert.leaking_inputs}, "
+        f"leaking_outputs={cert.leaking_outputs}"
+    )
     print("Per-rule classifications:")
     for name in cert.rules_probed:
         ins = cert.input_classifications[name]
         out = cert.output_classifications[name]
         print(f"  {name:40s} inputs={ins} | output={out}")
-    assert cert.verdict == "TYPE_HYGIENE_ADEQUATE", (
-        f"Unexpected verdict: {cert.verdict}"
-    )
+    assert (
+        cert.verdict == "TYPE_HYGIENE_ADEQUATE"
+    ), f"Unexpected verdict: {cert.verdict}"
     assert cert.S_UR == 0.0, f"Unexpected S_UR: {cert.S_UR}"
 
 

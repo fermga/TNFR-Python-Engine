@@ -19,27 +19,29 @@ Usage (PowerShell):
         --telemetry results/riemann_program/telemetry/sigma_scan.jsonl \
         --summary results/riemann_program/sigma_summary.json
 """
+
 from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
-from typing import Any, Iterable, Sequence
 import math
+import sys as _sys
+
+# Ensure local src is importable ------------------------------------------------
+from pathlib import Path
+from pathlib import Path as _Path
+from typing import Any, Iterable, Sequence
 
 import numpy as np
 
-# Ensure local src is importable ------------------------------------------------
-from pathlib import Path as _Path
-import sys as _sys
 _ROOT = _Path(__file__).resolve().parents[1]
 _SRC = _ROOT / "src"
 if str(_SRC) not in _sys.path:
     _sys.path.insert(0, str(_SRC))
 
 from tnfr.riemann.operator import (  # type: ignore  # noqa: E402
-    build_prime_path_graph,
     build_h_tnfr,
+    build_prime_path_graph,
 )
 from tnfr.riemann.telemetry import (  # type: ignore  # noqa: E402
     RiemannTelemetryRecord,
@@ -47,10 +49,10 @@ from tnfr.riemann.telemetry import (  # type: ignore  # noqa: E402
     write_telemetry_records,
 )
 
-
 # -----------------------------------------------------------------------------
 # Helpers
 # -----------------------------------------------------------------------------
+
 
 def estimate_sigma_critical(sigmas: Sequence[float], mins: Sequence[float]) -> float:
     """Linear interpolation of the zero crossing for the min eigenvalue."""
@@ -122,6 +124,7 @@ def sweep_min_eigenvalues(
 # CLI
 # -----------------------------------------------------------------------------
 
+
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="TNFR–Riemann sigma-critical benchmark"
@@ -161,8 +164,8 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
 
 def main(argv: Iterable[str]) -> int:
     args = parse_args(argv)
-    graph_sizes = [int(x) for x in args.graph_sizes.split(',') if x.strip()]
-    sigma_grid = [float(x) for x in args.sigma_grid.split(',') if x.strip()]
+    graph_sizes = [int(x) for x in args.graph_sizes.split(",") if x.strip()]
+    sigma_grid = [float(x) for x in args.sigma_grid.split(",") if x.strip()]
 
     telemetry_records: list[RiemannTelemetryRecord] = []
     summary: list[dict[str, float | int | bool]] = []

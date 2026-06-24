@@ -125,9 +125,8 @@ as future work.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 import math
+from dataclasses import dataclass
 
 import mpmath
 from mpmath import mp
@@ -167,17 +166,14 @@ def character_parity(chi: DirichletCharacter) -> int:
     val = chi.values[(-1) % q]
     if abs(val.imag) > 1e-9:
         raise ValueError(
-            f"Character {chi.name} is not real-valued at -1 "
-            f"(chi(-1) = {val})."
+            f"Character {chi.name} is not real-valued at -1 " f"(chi(-1) = {val})."
         )
     re = float(val.real)
     if re > 0.5:
         return 0
     if re < -0.5:
         return 1
-    raise ValueError(
-        f"chi(-1) = {val} is not +/-1; chi may not be primitive."
-    )
+    raise ValueError(f"chi(-1) = {val} is not +/-1; chi may not be primitive.")
 
 
 # ----------------------------------------------------------------------
@@ -236,9 +232,7 @@ def twisted_weil_archimedean_integral(
     def integrand(t: float) -> float:
         return test.h(t) * _digamma_real_part_with_shift(t, a)
 
-    val, _err = integrate.quad(
-        integrand, -integration_limit, integration_limit, **kw
-    )
+    val, _err = integrate.quad(integrand, -integration_limit, integration_limit, **kw)
     return float(val / (2.0 * math.pi))
 
 
@@ -275,16 +269,16 @@ def twisted_weil_prime_side_from_hamiltonian(
     """
     eigvals, eigvecs = bundle.hamiltonian.get_spectrum()
     eigvals_real = np.real(eigvals)
-    g_values = np.array(
-        [test.g(float(e)) for e in eigvals_real], dtype=float
-    )
+    g_values = np.array([test.g(float(e)) for e in eigvals_real], dtype=float)
     half_decay = np.exp(-eigvals_real / 2.0)
     # W^(chi) is diagonal complex in the node basis
     weights_diag = np.diag(bundle.weight_operator)
     # Transform to eigenbasis: <e_i|W|e_i> = sum_n |<n|e_i>|^2 * W_nn
     W_diag_eig = np.einsum(
         "ni,n,ni->i",
-        np.conj(eigvecs), weights_diag, eigvecs,
+        np.conj(eigvecs),
+        weights_diag,
+        eigvecs,
     )
     contributions = np.real(W_diag_eig * half_decay * g_values)
     return float(-2.0 * np.sum(contributions))
@@ -321,10 +315,7 @@ def _hardy_z_chi(t, chi_list, q, a):
     The input ``t`` is an ``mp.mpf``; the result is a Python ``float``.
     """
     gamma_arg = mp.mpc(mp.mpf(1) / 4 + mp.mpf(a) / 2, t / 2)
-    log_phase = (
-        mp.mpc(0, t / 2) * mp.log(mp.mpf(q) / mp.pi)
-        + mp.loggamma(gamma_arg)
-    )
+    log_phase = mp.mpc(0, t / 2) * mp.log(mp.mpf(q) / mp.pi) + mp.loggamma(gamma_arg)
     theta = log_phase.imag
     phase = mp.exp(mp.mpc(0, theta))
     L_val = mp.dirichlet(mp.mpc(mp.mpf("0.5"), t), chi_list)

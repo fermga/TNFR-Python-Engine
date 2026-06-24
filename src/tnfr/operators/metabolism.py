@@ -54,6 +54,7 @@ __all__ = [
     "compute_metabolic_activity_index",
 ]
 
+
 def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None:
     """Capture external vibrational patterns from coupled neighbors.
 
@@ -141,6 +142,7 @@ def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None
         "mean_neighbor_epi": mean_neighbor_epi,
     }
 
+
 def metabolize_signals_into_subepi(
     parent_epi: float,
     signals: dict[str, Any] | None,
@@ -219,6 +221,7 @@ def metabolize_signals_into_subepi(
 
     # Structural bounds [0, 1]
     return float(np.clip(metabolized_epi, 0.0, 1.0))
+
 
 def propagate_subepi_to_network(
     G: TNFRGraph,
@@ -332,6 +335,7 @@ def propagate_subepi_to_network(
 
     return propagations
 
+
 def compute_cascade_depth(G: TNFRGraph, node: NodeId) -> int:
     """Compute maximum hierarchical depth of bifurcation cascade.
 
@@ -407,6 +411,7 @@ def compute_cascade_depth(G: TNFRGraph, node: NodeId) -> int:
 
     return max_depth
 
+
 def compute_hierarchical_depth(G: TNFRGraph, node: NodeId) -> int:
     """Compute maximum bifurcation depth from node using recursive traversal.
 
@@ -476,6 +481,7 @@ def compute_hierarchical_depth(G: TNFRGraph, node: NodeId) -> int:
 
     return max_level
 
+
 def compute_propagation_radius(G: TNFRGraph) -> int:
     """Count total unique nodes affected by THOL cascades.
 
@@ -514,6 +520,7 @@ def compute_propagation_radius(G: TNFRGraph) -> int:
             affected_nodes.add(target)
 
     return len(affected_nodes)
+
 
 def compute_subepi_collective_coherence(G: TNFRGraph, node: NodeId) -> float:
     """Calculate coherence of sub-EPI ensemble.
@@ -562,6 +569,7 @@ def compute_subepi_collective_coherence(G: TNFRGraph, node: NodeId) -> float:
     # Coherence: inverse relationship with variance
     coherence = 1.0 / (1.0 + variance)
     return coherence
+
 
 def compute_metabolic_activity_index(G: TNFRGraph, node: NodeId) -> float:
     """Measure proportion of sub-EPIs generated through network metabolism.

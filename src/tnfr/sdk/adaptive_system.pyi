@@ -1,11 +1,11 @@
 """Type stubs for tnfr.sdk.adaptive_system module."""
 
-from ..types import TNFRGraph, NodeId
-from ..dynamics.feedback import StructuralFeedbackLoop
 from ..dynamics.adaptive_sequences import AdaptiveSequenceSelector
+from ..dynamics.feedback import StructuralFeedbackLoop
 from ..dynamics.homeostasis import StructuralHomeostasis
 from ..dynamics.learning import AdaptiveLearningSystem
 from ..dynamics.metabolism import StructuralMetabolism
+from ..types import NodeId, TNFRGraph
 
 class TNFRAdaptiveSystem:
     G: TNFRGraph

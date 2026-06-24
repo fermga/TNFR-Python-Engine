@@ -37,25 +37,26 @@ dynamics, and research-grade telemetry.
 """
 
 from __future__ import annotations
-from typing import Any, Callable
-from dataclasses import dataclass, field
+
 import warnings
+from dataclasses import dataclass, field
+from typing import Any, Callable
+
 import networkx as nx
+
+from ..alias import get_attr, set_attr
+from ..constants import DEFAULTS
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..constants.canonical import MIN_BUSINESS_COHERENCE_CANONICAL as COHERENCE_STRONG
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
-
-# TNFR core imports
-from ..structural import create_nfr
 from ..metrics.coherence import compute_coherence
 from ..metrics.common import is_structural_equilibrium, structural_coherence
 from ..metrics.sense_index import compute_Si
-from ..alias import get_attr, set_attr
-from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR, ALIAS_THETA
-from ..constants import DEFAULTS
-from ..constants.canonical import (
-    MIN_BUSINESS_COHERENCE_CANONICAL as COHERENCE_STRONG,
-)
-from ..operators.nodal_equation import compute_expected_depi_dt, compute_d2epi_dt2
+from ..operators.nodal_equation import compute_d2epi_dt2, compute_expected_depi_dt
+
+# TNFR core imports
+from ..structural import create_nfr
 
 # Canonical telemetry marks (AGENTS.md §7) -- heuristic cuts, not fitted:
 #   C(t) > COHERENCE_STRONG ((e*phi)/(pi+e) ~ 0.7506) -> strong coherence
@@ -129,6 +130,7 @@ try:
     # Availability probe for the self-optimization engine (capability flag
     # only; auto_optimize uses the grammar-aware stabilizer path directly).
     import tnfr.dynamics.self_optimizing_engine  # noqa: F401
+
     _HAS_OPTIMIZATION = True
 except ImportError:
     _HAS_OPTIMIZATION = False
@@ -136,17 +138,18 @@ except ImportError:
 # Structural Field Tetrad (CANONICAL)
 try:
     from ..physics.fields import (
-        compute_structural_potential,
-        compute_phase_gradient,
-        compute_phase_curvature,
-        estimate_coherence_length,
-        compute_phase_current,
-        compute_dnfr_flux,
-        compute_unified_telemetry,
-        compute_tensor_invariants,
-        compute_emergent_fields,
         compute_complex_geometric_field_arrays,
+        compute_dnfr_flux,
+        compute_emergent_fields,
+        compute_phase_current,
+        compute_phase_curvature,
+        compute_phase_gradient,
+        compute_structural_potential,
+        compute_tensor_invariants,
+        compute_unified_telemetry,
+        estimate_coherence_length,
     )
+
     _HAS_FIELDS = True
 except ImportError:
     _HAS_FIELDS = False
@@ -154,13 +157,14 @@ except ImportError:
 # Conservation laws (Noether-like)
 try:
     from ..physics.conservation import (
-        compute_noether_charge,
+        ConservationTracker,
+        capture_conservation_snapshot,
         compute_energy_functional,
         compute_lyapunov_derivative,
-        capture_conservation_snapshot,
+        compute_noether_charge,
         verify_conservation_balance,
-        ConservationTracker,
     )
+
     _HAS_CONSERVATION = True
 except ImportError:
     _HAS_CONSERVATION = False
@@ -168,27 +172,28 @@ except ImportError:
 # Emergent symplectic substrate (geometry the nodal dynamics generates)
 try:
     from ..physics.symplectic_substrate import (
-        extract_phase_space_point,
-        verify_canonical_structure,
-        substrate_hamiltonian,
         background_potential,
+        extract_phase_space_point,
+        substrate_hamiltonian,
+        verify_canonical_structure,
     )
+
     _HAS_SUBSTRATE = True
 except ImportError:
     _HAS_SUBSTRATE = False
 
 # Structural Integrity Monitor
 try:
-    from ..physics.integrity import StructuralIntegrityMonitor, MonitorMode
+    from ..physics.integrity import MonitorMode, StructuralIntegrityMonitor
+
     _HAS_INTEGRITY = True
 except ImportError:
     _HAS_INTEGRITY = False
 
 # Grammar-aware dynamics
 try:
-    from ..operators.grammar_dynamics import (
-        filter_candidates,
-    )
+    from ..operators.grammar_dynamics import filter_candidates
+
     _HAS_GRAMMAR_DYNAMICS = True
 except ImportError:
     _HAS_GRAMMAR_DYNAMICS = False
@@ -197,6 +202,7 @@ except ImportError:
 # Canonical factorization bridge (optional dependency path)
 try:
     from ..factorization import factorize as canonical_factorize
+
     _HAS_FACTORIZATION = True
 except Exception:
     _HAS_FACTORIZATION = False
@@ -205,6 +211,7 @@ except Exception:
 # Canonical primality bridge (optional dependency path)
 try:
     from ..primality import analyze as canonical_primality_analyze
+
     _HAS_PRIMALITY = True
 except Exception:
     _HAS_PRIMALITY = False
@@ -232,10 +239,11 @@ class TetradSnapshot:
     j_dnfr : dict[Any, float]
         DNFR flux per node.
     """
+
     phi_s: dict[Any, float] = field(default_factory=dict)
     grad_phi: dict[Any, float] = field(default_factory=dict)
     k_phi: dict[Any, float] = field(default_factory=dict)
-    xi_c: float = float('nan')
+    xi_c: float = float("nan")
     j_phi: dict[Any, float] = field(default_factory=dict)
     j_dnfr: dict[Any, float] = field(default_factory=dict)
 
@@ -259,26 +267,33 @@ class TetradSnapshot:
         xi_c_safe, and overall.
         """
         from ..constants.canonical import (
-            PHI_S_VON_KOCH_THRESHOLD,
             GRAD_PHI_CANONICAL_THRESHOLD,
             K_PHI_CANONICAL_THRESHOLD,
+            PHI_S_VON_KOCH_THRESHOLD,
         )
-        phi_s_safe = all(
-            abs(v) < PHI_S_VON_KOCH_THRESHOLD for v in self.phi_s.values()
-        ) if self.phi_s else True
-        grad_safe = all(
-            v < GRAD_PHI_CANONICAL_THRESHOLD for v in self.grad_phi.values()
-        ) if self.grad_phi else True
-        k_safe = all(
-            abs(v) < K_PHI_CANONICAL_THRESHOLD for v in self.k_phi.values()
-        ) if self.k_phi else True
+
+        phi_s_safe = (
+            all(abs(v) < PHI_S_VON_KOCH_THRESHOLD for v in self.phi_s.values())
+            if self.phi_s
+            else True
+        )
+        grad_safe = (
+            all(v < GRAD_PHI_CANONICAL_THRESHOLD for v in self.grad_phi.values())
+            if self.grad_phi
+            else True
+        )
+        k_safe = (
+            all(abs(v) < K_PHI_CANONICAL_THRESHOLD for v in self.k_phi.values())
+            if self.k_phi
+            else True
+        )
         xi_safe = not np.isnan(self.xi_c) if np.isfinite(self.xi_c) else True
         return {
-            'phi_s_safe': phi_s_safe,
-            'grad_phi_safe': grad_safe,
-            'k_phi_safe': k_safe,
-            'xi_c_safe': xi_safe,
-            'overall': phi_s_safe and grad_safe and k_safe,
+            "phi_s_safe": phi_s_safe,
+            "grad_phi_safe": grad_safe,
+            "k_phi_safe": k_safe,
+            "xi_c_safe": xi_safe,
+            "overall": phi_s_safe and grad_safe and k_safe,
         }
 
 
@@ -289,6 +304,7 @@ class ConservationReport:
     Captures Noether charge Q, energy functional E, Lyapunov stability,
     and conservation quality metrics.
     """
+
     noether_charge: float = 0.0
     energy: float = 0.0
     lyapunov_stable: bool = True
@@ -314,6 +330,7 @@ class SymplecticReport:
     background U, the Liouville divergence (≈0), and whether the structure
     is a valid symplectic manifold.
     """
+
     phase_space_dimension: int = 0
     hamiltonian: float = 0.0
     background_potential: float = 0.0
@@ -364,20 +381,20 @@ class FactorizationReport:
     def to_dict(self) -> dict[str, Any]:
         """Serialize report to plain dict for JSON/reporting pipelines."""
         return {
-            'n': int(self.n),
-            'modulus': int(self.modulus),
-            'candidate_factors': list(self.candidate_factors),
-            'tnfr_certified_factors': list(self.tnfr_certified_factors),
-            'coherence_score': float(self.coherence_score),
-            'arithmetic_delta_nfr': float(self.arithmetic_delta_nfr),
-            'arithmetic_epi': float(self.arithmetic_epi),
-            'arithmetic_nu_f': float(self.arithmetic_nu_f),
-            'certificate_path': self.certificate_path,
-            'partition_manifest_path': self.partition_manifest_path,
-            'operator_strategy_plan': self.operator_strategy_plan,
-            'spectral': self.spectral,
-            'telemetry': self.telemetry,
-            'network_synergy': self.network_synergy,
+            "n": int(self.n),
+            "modulus": int(self.modulus),
+            "candidate_factors": list(self.candidate_factors),
+            "tnfr_certified_factors": list(self.tnfr_certified_factors),
+            "coherence_score": float(self.coherence_score),
+            "arithmetic_delta_nfr": float(self.arithmetic_delta_nfr),
+            "arithmetic_epi": float(self.arithmetic_epi),
+            "arithmetic_nu_f": float(self.arithmetic_nu_f),
+            "certificate_path": self.certificate_path,
+            "partition_manifest_path": self.partition_manifest_path,
+            "operator_strategy_plan": self.operator_strategy_plan,
+            "spectral": self.spectral,
+            "telemetry": self.telemetry,
+            "network_synergy": self.network_synergy,
         }
 
 
@@ -404,13 +421,13 @@ class PrimalityReport:
     def to_dict(self) -> dict[str, Any]:
         """Serialize report to plain dict for JSON/reporting pipelines."""
         return {
-            'n': int(self.n),
-            'is_prime': bool(self.is_prime),
-            'delta_nfr': float(self.delta_nfr),
-            'tolerance': float(self.tolerance),
-            'components': self.components,
-            'triad': self.triad,
-            'network_synergy': self.network_synergy,
+            "n": int(self.n),
+            "is_prime": bool(self.is_prime),
+            "delta_nfr": float(self.delta_nfr),
+            "tolerance": float(self.tolerance),
+            "components": self.components,
+            "triad": self.triad,
+            "network_synergy": self.network_synergy,
         }
 
 
@@ -441,18 +458,18 @@ class NodalStateReport:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            'node': self.node,
-            'epi': float(self.epi),
-            'nu_f': float(self.nu_f),
-            'delta_nfr': float(self.delta_nfr),
-            'coherence': float(self.coherence),
-            'phase': float(self.phase),
-            'expected_depi_dt': float(self.expected_depi_dt),
-            'd2epi_dt2': float(self.d2epi_dt2),
-            'degree': int(self.degree),
-            'equilibrium': bool(self.equilibrium),
-            'active': bool(self.active),
-            'near_bifurcation': bool(self.near_bifurcation),
+            "node": self.node,
+            "epi": float(self.epi),
+            "nu_f": float(self.nu_f),
+            "delta_nfr": float(self.delta_nfr),
+            "coherence": float(self.coherence),
+            "phase": float(self.phase),
+            "expected_depi_dt": float(self.expected_depi_dt),
+            "d2epi_dt2": float(self.d2epi_dt2),
+            "degree": int(self.degree),
+            "equilibrium": bool(self.equilibrium),
+            "active": bool(self.active),
+            "near_bifurcation": bool(self.near_bifurcation),
         }
 
 
@@ -481,8 +498,10 @@ class NodalDynamicsReport:
 
     def top_pressure_nodes(self, k: int = 5) -> list[NodalStateReport]:
         """Nodes with largest |∂EPI/∂t| (highest nodal drive)."""
-        ranked = sorted(self.nodes.values(), key=lambda s: abs(s.expected_depi_dt), reverse=True)
-        return ranked[:max(int(k), 0)]
+        ranked = sorted(
+            self.nodes.values(), key=lambda s: abs(s.expected_depi_dt), reverse=True
+        )
+        return ranked[: max(int(k), 0)]
 
     def near_equilibrium_nodes(self) -> list[NodalStateReport]:
         """Nodes with |ΔNFR| <= equilibrium tolerance."""
@@ -494,16 +513,18 @@ class NodalDynamicsReport:
         mean_abs_rate = sum(abs(s.expected_depi_dt) for s in values) / max(n, 1)
         max_abs_rate = max((abs(s.expected_depi_dt) for s in values), default=0.0)
         return {
-            'equilibrium_tolerance': float(self.equilibrium_tolerance),
-            'bifurcation_threshold': float(self.bifurcation_threshold),
-            'nodes': {str(node): report.to_dict() for node, report in self.nodes.items()},
-            'aggregate': {
-                'count': n,
-                'active_count': sum(1 for s in values if s.active),
-                'equilibrium_count': sum(1 for s in values if s.equilibrium),
-                'bifurcation_count': sum(1 for s in values if s.near_bifurcation),
-                'mean_abs_depi_dt': float(mean_abs_rate),
-                'max_abs_depi_dt': float(max_abs_rate),
+            "equilibrium_tolerance": float(self.equilibrium_tolerance),
+            "bifurcation_threshold": float(self.bifurcation_threshold),
+            "nodes": {
+                str(node): report.to_dict() for node, report in self.nodes.items()
+            },
+            "aggregate": {
+                "count": n,
+                "active_count": sum(1 for s in values if s.active),
+                "equilibrium_count": sum(1 for s in values if s.equilibrium),
+                "bifurcation_count": sum(1 for s in values if s.near_bifurcation),
+                "mean_abs_depi_dt": float(mean_abs_rate),
+                "max_abs_depi_dt": float(max_abs_rate),
             },
         }
 
@@ -513,32 +534,32 @@ def _build_factorization_report(
     network: "Network | None" = None,
 ) -> FactorizationReport:
     """Convert canonical factorization output into SDK-native report."""
-    candidate_factors = list(getattr(raw_result, 'candidate_factors', []) or [])
-    certified = list(getattr(raw_result, 'tnfr_certified_factors', []) or [])
-    coherence_score = float(getattr(raw_result, 'coherence_score', 0.0) or 0.0)
-    delta_nfr = float(getattr(raw_result, 'arithmetic_delta_nfr', 0.0) or 0.0)
-    arithmetic_epi = float(getattr(raw_result, 'arithmetic_epi', 0.0) or 0.0)
-    arithmetic_nu_f = float(getattr(raw_result, 'arithmetic_nu_f', 0.0) or 0.0)
-    n = int(getattr(raw_result, 'n', 0) or 0)
-    modulus = int(getattr(raw_result, 'modulus', 0) or 0)
+    candidate_factors = list(getattr(raw_result, "candidate_factors", []) or [])
+    certified = list(getattr(raw_result, "tnfr_certified_factors", []) or [])
+    coherence_score = float(getattr(raw_result, "coherence_score", 0.0) or 0.0)
+    delta_nfr = float(getattr(raw_result, "arithmetic_delta_nfr", 0.0) or 0.0)
+    arithmetic_epi = float(getattr(raw_result, "arithmetic_epi", 0.0) or 0.0)
+    arithmetic_nu_f = float(getattr(raw_result, "arithmetic_nu_f", 0.0) or 0.0)
+    n = int(getattr(raw_result, "n", 0) or 0)
+    modulus = int(getattr(raw_result, "modulus", 0) or 0)
 
     telemetry = {
-        'phi_s': float(getattr(raw_result, 'phi_s', 0.0) or 0.0),
-        'phase_gradient': float(getattr(raw_result, 'phase_gradient', 0.0) or 0.0),
-        'phase_curvature': float(getattr(raw_result, 'phase_curvature', 0.0) or 0.0),
-        'coherence_length': float(getattr(raw_result, 'coherence_length', 0.0) or 0.0),
-        'coherence_score': coherence_score,
-        'delta_nfr': delta_nfr,
-        'epi': arithmetic_epi,
-        'nu_f': arithmetic_nu_f,
+        "phi_s": float(getattr(raw_result, "phi_s", 0.0) or 0.0),
+        "phase_gradient": float(getattr(raw_result, "phase_gradient", 0.0) or 0.0),
+        "phase_curvature": float(getattr(raw_result, "phase_curvature", 0.0) or 0.0),
+        "coherence_length": float(getattr(raw_result, "coherence_length", 0.0) or 0.0),
+        "coherence_score": coherence_score,
+        "delta_nfr": delta_nfr,
+        "epi": arithmetic_epi,
+        "nu_f": arithmetic_nu_f,
     }
 
     spectral = {
-        'laplacian_gap': float(getattr(raw_result, 'laplacian_gap', 0.0) or 0.0),
-        'fft_backend': getattr(raw_result, 'fft_backend', None),
-        'node_count': int(getattr(raw_result, 'node_count', 0) or 0),
-        'edge_count': int(getattr(raw_result, 'edge_count', 0) or 0),
-        'notes': getattr(raw_result, 'notes', ''),
+        "laplacian_gap": float(getattr(raw_result, "laplacian_gap", 0.0) or 0.0),
+        "fft_backend": getattr(raw_result, "fft_backend", None),
+        "node_count": int(getattr(raw_result, "node_count", 0) or 0),
+        "edge_count": int(getattr(raw_result, "edge_count", 0) or 0),
+        "notes": getattr(raw_result, "notes", ""),
     }
 
     network_synergy: dict[str, Any] | None = None
@@ -553,18 +574,19 @@ def _build_factorization_report(
         # avoiding arbitrary weighting.
         synergy_index = (coherence_alignment + drive_score) / 2.0
         topology_resonance = [
-            int(f) for f in candidate_factors
+            int(f)
+            for f in candidate_factors
             if f > 1 and len(network.G.nodes()) % int(f) == 0
         ]
         network_synergy = {
-            'network_nodes': len(network.G.nodes()),
-            'network_coherence': net_coherence,
-            'network_sense_index': net_si,
-            'coherence_alignment': coherence_alignment,
-            'nodal_drive': nodal_drive,
-            'drive_score': drive_score,
-            'synergy_index': synergy_index,
-            'topology_resonance_factors': sorted(set(topology_resonance)),
+            "network_nodes": len(network.G.nodes()),
+            "network_coherence": net_coherence,
+            "network_sense_index": net_si,
+            "coherence_alignment": coherence_alignment,
+            "nodal_drive": nodal_drive,
+            "drive_score": drive_score,
+            "synergy_index": synergy_index,
+            "topology_resonance_factors": sorted(set(topology_resonance)),
         }
 
     return FactorizationReport(
@@ -576,9 +598,9 @@ def _build_factorization_report(
         arithmetic_delta_nfr=delta_nfr,
         arithmetic_epi=arithmetic_epi,
         arithmetic_nu_f=arithmetic_nu_f,
-        certificate_path=getattr(raw_result, 'certificate_path', None),
-        partition_manifest_path=getattr(raw_result, 'partition_manifest_path', None),
-        operator_strategy_plan=getattr(raw_result, 'operator_strategy_plan', None),
+        certificate_path=getattr(raw_result, "certificate_path", None),
+        partition_manifest_path=getattr(raw_result, "partition_manifest_path", None),
+        operator_strategy_plan=getattr(raw_result, "operator_strategy_plan", None),
         spectral=spectral,
         telemetry=telemetry,
         network_synergy=network_synergy,
@@ -593,16 +615,16 @@ def _build_primality_report(
     network: "Network | None" = None,
 ) -> PrimalityReport:
     """Convert canonical primality output into SDK-native report."""
-    is_prime = bool(raw_result.get('is_prime', False))
-    delta_nfr = float(raw_result.get('delta_nfr', float('inf')))
-    components = dict(raw_result.get('components', {}) or {})
-    triad = dict(raw_result.get('triad', {}) or {})
+    is_prime = bool(raw_result.get("is_prime", False))
+    delta_nfr = float(raw_result.get("delta_nfr", float("inf")))
+    components = dict(raw_result.get("components", {}) or {})
+    triad = dict(raw_result.get("triad", {}) or {})
 
     network_synergy: dict[str, Any] | None = None
     if network is not None:
         net_coherence = float(network.coherence())
         net_si = float(network.sense_index())
-        local_coherence = float(triad.get('local_coherence', 0.0) or 0.0)
+        local_coherence = float(triad.get("local_coherence", 0.0) or 0.0)
         coherence_alignment = max(0.0, 1.0 - abs(net_coherence - local_coherence))
         pressure_ratio = abs(delta_nfr) / max(float(tolerance), 1e-15)
         pressure_score = 1.0 / (1.0 + pressure_ratio)
@@ -613,19 +635,17 @@ def _build_primality_report(
         # Equal-weight aggregate of the canonical components (coherence
         # alignment, dNFR pressure score, Si-based prime resonance) --
         # equipartition, avoiding arbitrary weighting.
-        synergy_index = (
-            coherence_alignment + pressure_score + prime_resonance
-        ) / 3.0
+        synergy_index = (coherence_alignment + pressure_score + prime_resonance) / 3.0
         network_synergy = {
-            'network_nodes': len(network.G.nodes()),
-            'network_coherence': net_coherence,
-            'network_sense_index': net_si,
-            'local_coherence': local_coherence,
-            'coherence_alignment': coherence_alignment,
-            'pressure_ratio': pressure_ratio,
-            'pressure_score': pressure_score,
-            'prime_resonance': prime_resonance,
-            'synergy_index': synergy_index,
+            "network_nodes": len(network.G.nodes()),
+            "network_coherence": net_coherence,
+            "network_sense_index": net_si,
+            "local_coherence": local_coherence,
+            "coherence_alignment": coherence_alignment,
+            "pressure_ratio": pressure_ratio,
+            "pressure_score": pressure_score,
+            "prime_resonance": prime_resonance,
+            "synergy_index": synergy_index,
         }
 
     return PrimalityReport(
@@ -647,6 +667,7 @@ class Results:
     conservation diagnostics, and unified telemetry for research-grade
     analysis.
     """
+
     coherence: float
     sense_index: float
     nodes: int
@@ -659,12 +680,20 @@ class Results:
 
     def summary(self) -> str:
         """One-line summary of results."""
-        coherence = float(self.coherence) if hasattr(self.coherence, 'item') else self.coherence
-        sense_index = float(self.sense_index) if hasattr(self.sense_index, 'item') else self.sense_index
-        density = float(self.density) if hasattr(self.density, 'item') else self.density
+        coherence = (
+            float(self.coherence) if hasattr(self.coherence, "item") else self.coherence
+        )
+        sense_index = (
+            float(self.sense_index)
+            if hasattr(self.sense_index, "item")
+            else self.sense_index
+        )
+        density = float(self.density) if hasattr(self.density, "item") else self.density
 
-        return (f"C={coherence:.3f}, Si={sense_index:.3f}, "
-                f"N={self.nodes}, E={self.edges}, rho={density:.3f}")
+        return (
+            f"C={coherence:.3f}, Si={sense_index:.3f}, "
+            f"N={self.nodes}, E={self.edges}, rho={density:.3f}"
+        )
 
     def full_summary(self) -> str:
         """Multi-line summary including tetrad and conservation."""
@@ -672,12 +701,12 @@ class Results:
         if self.tetrad is not None:
             lines.append(f"  Tetrad: {self.tetrad.summary()}")
             safety = self.tetrad.is_safe()
-            if not safety['overall']:
-                unsafe = [k for k, v in safety.items() if k != 'overall' and not v]
+            if not safety["overall"]:
+                unsafe = [k for k, v in safety.items() if k != "overall" and not v]
                 lines.append(f"  WARNING: Unsafe fields: {', '.join(unsafe)}")
         if self.conservation is not None:
             lines.append(f"  Conservation: {self.conservation.summary()}")
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
     def is_coherent(self) -> bool:
         """Quick coherence check (C(t) > strong mark ~0.7506; AGENTS.md §7)."""
@@ -690,27 +719,30 @@ class Results:
     def to_dict(self) -> dict[str, Any]:
         """Serialize results to a plain dictionary."""
         d: dict[str, Any] = {
-            'coherence': float(self.coherence),
-            'sense_index': float(self.sense_index),
-            'nodes': self.nodes,
-            'edges': self.edges,
-            'density': float(self.density),
-            'avg_phase': float(self.avg_phase),
+            "coherence": float(self.coherence),
+            "sense_index": float(self.sense_index),
+            "nodes": self.nodes,
+            "edges": self.edges,
+            "density": float(self.density),
+            "avg_phase": float(self.avg_phase),
         }
         if self.tetrad is not None:
-            d['tetrad'] = {
-                'phi_s': {str(k): float(v) for k, v in self.tetrad.phi_s.items()},
-                'grad_phi': {str(k): float(v) for k, v in self.tetrad.grad_phi.items()},
-                'k_phi': {str(k): float(v) for k, v in self.tetrad.k_phi.items()},
-                'xi_c': float(self.tetrad.xi_c) if np.isfinite(self.tetrad.xi_c) else None,
+            d["tetrad"] = {
+                "phi_s": {str(k): float(v) for k, v in self.tetrad.phi_s.items()},
+                "grad_phi": {str(k): float(v) for k, v in self.tetrad.grad_phi.items()},
+                "k_phi": {str(k): float(v) for k, v in self.tetrad.k_phi.items()},
+                "xi_c": (
+                    float(self.tetrad.xi_c) if np.isfinite(self.tetrad.xi_c) else None
+                ),
             }
         if self.conservation is not None:
-            d['conservation'] = {
-                'noether_charge': float(self.conservation.noether_charge),
-                'energy': float(self.conservation.energy),
-                'lyapunov_stable': self.conservation.lyapunov_stable,
+            d["conservation"] = {
+                "noether_charge": float(self.conservation.noether_charge),
+                "energy": float(self.conservation.energy),
+                "lyapunov_stable": self.conservation.lyapunov_stable,
             }
         return d
+
 
 class Network:
     """Core TNFR Network — Essential Operations + Advanced Telemetry.
@@ -739,24 +771,24 @@ class Network:
         self._seed = seed
         self._tracker: Any = None  # ConservationTracker (lazy)
         self._monitor: Any = None  # StructuralIntegrityMonitor (lazy)
-    
+
     # === TOPOLOGY BUILDERS ===
-    
+
     def ring(self) -> Network:
         """Connect nodes in a ring (each node to its two neighbours)."""
         nodes = list(self.G.nodes())
-        edges = [(nodes[i], nodes[(i+1) % len(nodes)]) for i in range(len(nodes))]
+        edges = [(nodes[i], nodes[(i + 1) % len(nodes)]) for i in range(len(nodes))]
         self.G.add_edges_from(edges)
         return self
-    
+
     def complete(self) -> Network:
         """Connect every node to every other node (complete graph)."""
         nodes = list(self.G.nodes())
         for i, u in enumerate(nodes):
-            for v in nodes[i+1:]:
+            for v in nodes[i + 1 :]:
                 self.G.add_edge(u, v)
         return self
-    
+
     def random(self, probability: float = 0.3, seed: int | None = None) -> Network:
         """Add random edges with given probability (Erdos-Renyi).
 
@@ -768,23 +800,25 @@ class Network:
         rng = np.random.RandomState(s)
         nodes = list(self.G.nodes())
         for i, u in enumerate(nodes):
-            for v in nodes[i+1:]:
+            for v in nodes[i + 1 :]:
                 if rng.random_sample() < probability:
                     self.G.add_edge(u, v)
         return self
-    
+
     def star(self, center: int | None = None) -> Network:
         """Connect every node to a single central hub (star topology)."""
         nodes = list(self.G.nodes())
         if center is None:
             center = nodes[0]
-        
+
         for node in nodes:
             if node != center:
                 self.G.add_edge(center, node)
         return self
 
-    def small_world(self, k: int = 4, p: float = 0.3, seed: int | None = None) -> Network:
+    def small_world(
+        self, k: int = 4, p: float = 0.3, seed: int | None = None
+    ) -> Network:
         """Create Watts-Strogatz small-world topology.
 
         Parameters
@@ -823,7 +857,7 @@ class Network:
         """
         n = len(self.G.nodes())
         if rows is None:
-            rows = int(n ** 0.5)
+            rows = int(n**0.5)
         if cols is None:
             cols = rows
         g2d = nx.grid_2d_graph(rows, cols)
@@ -842,7 +876,7 @@ class Network:
         return self
 
     # === EVOLUTION ===
-    
+
     def evolve(self, steps: int = 5, sequence: str = "basic_activation") -> Network:
         """Evolve the network by applying a canonical operator sequence.
 
@@ -907,7 +941,7 @@ class Network:
             suppress_birth_warnings=True,
         )
         return self
-    
+
     def auto_optimize(self) -> Network:
         """Auto-optimize: drive the network toward coherence.
 
@@ -928,7 +962,7 @@ class Network:
         """
         return self.evolve_grammar_aware(
             steps=3,
-            candidates=['coherence', 'reception', 'resonance', 'coupling'],
+            candidates=["coherence", "reception", "resonance", "coupling"],
         )
 
     def trajectory(
@@ -998,7 +1032,7 @@ class Network:
         return history
 
     # === METRICS ===
-    
+
     def coherence(self) -> float:
         """Current network coherence C(t) in [0,1]."""
         result = compute_coherence(self.G)
@@ -1006,7 +1040,7 @@ class Network:
             return float(np.asarray(result).flat[0])
         except (IndexError, TypeError):
             return float(result)
-    
+
     def sense_index(self) -> float:
         """Current sense index Si in [0,1+]."""
         result = compute_Si(self.G)
@@ -1014,22 +1048,19 @@ class Network:
             return float(np.asarray(result).flat[0])
         except (IndexError, TypeError):
             return float(result)
-    
+
     def density(self) -> float:
         """Network density [0,1]."""
         n = len(self.G.nodes())
         if n < 2:
             return 0.0
         return 2 * len(self.G.edges()) / (n * (n - 1))
-    
+
     def avg_phase(self) -> float:
         """Average node phase [0, 2π]."""
         if not self.G.nodes():
             return 0.0
-        phases = [
-            get_attr(self.G.nodes[n], ALIAS_THETA, 0.0)
-            for n in self.G.nodes()
-        ]
+        phases = [get_attr(self.G.nodes[n], ALIAS_THETA, 0.0) for n in self.G.nodes()]
         result = np.mean(phases)
         try:
             return float(np.asarray(result).flat[0])
@@ -1072,7 +1103,7 @@ class Network:
         xi = float(
             bifurcation_threshold
             if bifurcation_threshold is not None
-            else self.G.graph.get('ZHIR_THRESHOLD_XI', _ZHIR_THRESHOLD_XI_DEFAULT)
+            else self.G.graph.get("ZHIR_THRESHOLD_XI", _ZHIR_THRESHOLD_XI_DEFAULT)
         )
 
         return NodalStateReport(
@@ -1117,7 +1148,7 @@ class Network:
         xi = float(
             bifurcation_threshold
             if bifurcation_threshold is not None
-            else self.G.graph.get('ZHIR_THRESHOLD_XI', _ZHIR_THRESHOLD_XI_DEFAULT)
+            else self.G.graph.get("ZHIR_THRESHOLD_XI", _ZHIR_THRESHOLD_XI_DEFAULT)
         )
         return NodalDynamicsReport(
             nodes=report_nodes,
@@ -1155,11 +1186,11 @@ class Network:
             conservation=cons,
             unified_fields=unified,
         )
-    
+
     def summary(self) -> str:
         """Quick network summary."""
         return self.results().summary()
-    
+
     # === STRUCTURAL FIELD TETRAD ===
 
     def tetrad(self) -> TetradSnapshot:
@@ -1202,12 +1233,12 @@ class Network:
         """
         snap = self.tetrad()
         return {
-            'phi_s': snap.phi_s,
-            'grad_phi': snap.grad_phi,
-            'k_phi': snap.k_phi,
-            'xi_c': snap.xi_c,
-            'j_phi': snap.j_phi,
-            'j_dnfr': snap.j_dnfr,
+            "phi_s": snap.phi_s,
+            "grad_phi": snap.grad_phi,
+            "k_phi": snap.k_phi,
+            "xi_c": snap.xi_c,
+            "j_phi": snap.j_phi,
+            "j_dnfr": snap.j_dnfr,
         }
 
     # === CONSERVATION LAWS ===
@@ -1373,7 +1404,7 @@ class Network:
             ``chirality_mean`` (<chi>), ``coherence_length`` (xi_C) and
             ``has_homochirality`` (bool).
         """
-        from ..physics.phase_transition import capture_phase_snapshot, Phase
+        from ..physics.phase_transition import Phase, capture_phase_snapshot
 
         snap = capture_phase_snapshot(self.G)
         return {
@@ -1474,21 +1505,25 @@ class Network:
         n = len(nodes)
         if n:
             dnfr = [
-                float(get_attr(self.G.nodes[k], ALIAS_DNFR, 0.0) or 0.0)
-                for k in nodes
+                float(get_attr(self.G.nodes[k], ALIAS_DNFR, 0.0) or 0.0) for k in nodes
             ]
             eq_frac = sum(1 for d in dnfr if is_structural_equilibrium(d)) / n
-            epi_mean = sum(
-                float(get_attr(self.G.nodes[k], ALIAS_EPI, 0.0) or 0.0)
-                for k in nodes
-            ) / n
-            vf_mean = sum(
-                float(get_attr(self.G.nodes[k], ALIAS_VF, 0.0) or 0.0)
-                for k in nodes
-            ) / n
+            epi_mean = (
+                sum(
+                    float(get_attr(self.G.nodes[k], ALIAS_EPI, 0.0) or 0.0)
+                    for k in nodes
+                )
+                / n
+            )
+            vf_mean = (
+                sum(
+                    float(get_attr(self.G.nodes[k], ALIAS_VF, 0.0) or 0.0)
+                    for k in nodes
+                )
+                / n
+            )
             thetas = [
-                float(get_attr(self.G.nodes[k], ALIAS_THETA, 0.0) or 0.0)
-                for k in nodes
+                float(get_attr(self.G.nodes[k], ALIAS_THETA, 0.0) or 0.0) for k in nodes
             ]
             if np is not None:
                 phase_sync = float(abs(np.mean(np.exp(1j * np.asarray(thetas)))))
@@ -1570,17 +1605,26 @@ class Network:
         dict with violations_detected, violation_types, severity, etc.
         """
         if not _HAS_CONSERVATION:
-            return {'violations_detected': False, 'violation_types': [], 'severity': 0.0}
+            return {
+                "violations_detected": False,
+                "violation_types": [],
+                "severity": 0.0,
+            }
         from ..physics.conservation import detect_grammar_violations_from_conservation
+
         snap_before = capture_conservation_snapshot(self.G)
         # Small stabilisation step for delta measurement
         for n in self.G.nodes():
             neighbors = list(self.G.neighbors(n))
             if neighbors:
-                mean_ph = float(np.mean([
-                    get_attr(self.G.nodes[nb], ALIAS_THETA, 0.0)
-                    for nb in neighbors
-                ]))
+                mean_ph = float(
+                    np.mean(
+                        [
+                            get_attr(self.G.nodes[nb], ALIAS_THETA, 0.0)
+                            for nb in neighbors
+                        ]
+                    )
+                )
                 cur = get_attr(self.G.nodes[n], ALIAS_THETA, 0.0)
                 set_attr(
                     self.G.nodes[n],
@@ -1622,13 +1666,18 @@ class Network:
             return self.evolve(steps)
         if candidates is None:
             candidates = [
-                'coherence', 'reception', 'resonance', 'dissonance', 'coupling'
+                "coherence",
+                "reception",
+                "resonance",
+                "dissonance",
+                "coupling",
             ]
         # Public API speaks operator NAMES; the grammar machinery
         # (filter_candidates/apply_glyph) operates on glyph codes. Translate
         # names -> glyphs here (legacy codes pass through unchanged).
-        from ..operators.grammar_types import function_name_to_glyph
         from ..operators import apply_glyph
+        from ..operators.grammar_types import function_name_to_glyph
+
         glyphs = [function_name_to_glyph(c, default=c) for c in candidates]
         for _step in range(steps):
             for node in self.G.nodes():
@@ -1666,24 +1715,26 @@ class Network:
         if self._monitor is None:
             self._monitor = StructuralIntegrityMonitor(mode=MonitorMode.OBSERVE)
         reports: list[dict[str, Any]] = []
-        for node in list(self.G.nodes())[:min(10, len(self.G.nodes()))]:
+        for node in list(self.G.nodes())[: min(10, len(self.G.nodes()))]:
             try:
                 report = self._monitor.after_operator(self.G, node, operator_name)
-                reports.append({
-                    'node': node,
-                    'passed': report.is_healthy,
-                    'details': str(report),
-                })
+                reports.append(
+                    {
+                        "node": node,
+                        "passed": report.is_healthy,
+                        "details": str(report),
+                    }
+                )
             except Exception:
                 continue
-        passed_count = sum(1 for r in reports if r.get('passed', False))
+        passed_count = sum(1 for r in reports if r.get("passed", False))
         return {
-            'operator': operator_name,
-            'nodes_checked': len(reports),
-            'passed': passed_count,
-            'failed': len(reports) - passed_count,
-            'pass_rate': passed_count / max(len(reports), 1),
-            'reports': reports,
+            "operator": operator_name,
+            "nodes_checked": len(reports),
+            "passed": passed_count,
+            "failed": len(reports) - passed_count,
+            "pass_rate": passed_count / max(len(reports), 1),
+            "reports": reports,
         }
 
     def audit_operators(self) -> dict[str, Any]:
@@ -1709,21 +1760,21 @@ class Network:
 
         audit = audit_operator_contracts()
         return {
-            'all_satisfied': audit.all_satisfied,
-            'n_operators': audit.n_operators,
-            'n_satisfied': audit.n_satisfied,
-            'operators': [
+            "all_satisfied": audit.all_satisfied,
+            "n_operators": audit.n_operators,
+            "n_satisfied": audit.n_satisfied,
+            "operators": [
                 {
-                    'glyph': r.glyph,
-                    'operator': r.operator,
-                    'contract': r.contract,
-                    'context': r.context,
-                    'satisfied': r.satisfied,
-                    'detail': r.detail,
+                    "glyph": r.glyph,
+                    "operator": r.operator,
+                    "contract": r.contract,
+                    "context": r.context,
+                    "satisfied": r.satisfied,
+                    "detail": r.detail,
                 }
                 for r in audit.results
             ],
-            'summary': audit.summary(),
+            "summary": audit.summary(),
         }
 
     # === ANALYSIS ===
@@ -1731,21 +1782,21 @@ class Network:
     def info(self) -> dict[str, Any]:
         """Detailed network information including feature availability."""
         return {
-            'name': self.name,
-            'nodes': len(self.G.nodes()),
-            'edges': len(self.G.edges()),
-            'density': self.density(),
-            'coherence': self.coherence(),
-            'sense_index': self.sense_index(),
-            'avg_phase': self.avg_phase(),
-            'is_connected': nx.is_connected(self.G),
-            'has_tnfr_props': all('EPI' in self.G.nodes[n] for n in self.G.nodes()),
-            'features': {
-                'fields': _HAS_FIELDS,
-                'conservation': _HAS_CONSERVATION,
-                'integrity': _HAS_INTEGRITY,
-                'grammar_dynamics': _HAS_GRAMMAR_DYNAMICS,
-                'optimization': _HAS_OPTIMIZATION,
+            "name": self.name,
+            "nodes": len(self.G.nodes()),
+            "edges": len(self.G.edges()),
+            "density": self.density(),
+            "coherence": self.coherence(),
+            "sense_index": self.sense_index(),
+            "avg_phase": self.avg_phase(),
+            "is_connected": nx.is_connected(self.G),
+            "has_tnfr_props": all("EPI" in self.G.nodes[n] for n in self.G.nodes()),
+            "features": {
+                "fields": _HAS_FIELDS,
+                "conservation": _HAS_CONSERVATION,
+                "integrity": _HAS_INTEGRITY,
+                "grammar_dynamics": _HAS_GRAMMAR_DYNAMICS,
+                "optimization": _HAS_OPTIMIZATION,
             },
         }
 
@@ -1790,15 +1841,16 @@ class Network:
         """Convenience boolean primality check fused with SDK bridge."""
         return self.primality(n, tolerance=tolerance).is_prime
 
+
 class TNFR:
     """Static factory for instant TNFR networks.
-    
+
     Main entry point for the simplified TNFR SDK.
     All methods are static for maximum convenience.
-    
+
     **PHILOSOPHY**: Start creating networks immediately with zero boilerplate.
     """
-    
+
     @staticmethod
     def create(
         num_nodes: int, name: str = "network", seed: int | None = None
@@ -1869,18 +1921,15 @@ class TNFR:
         >>> TNFR.operators("emission")["channel"]  # doctest: +SKIP
         'EPI'
         """
-        from ..operators.operator_contracts import (
-            iter_contracts,
-            contract_for,
-        )
         from ..operators.grammar_types import (
-            GENERATORS,
             CLOSURES,
-            STABILIZERS,
-            DESTABILIZERS,
-            TRANSFORMERS,
             COUPLING_RESONANCE,
+            DESTABILIZERS,
+            GENERATORS,
+            STABILIZERS,
+            TRANSFORMERS,
         )
+        from ..operators.operator_contracts import contract_for, iter_contracts
 
         def _roles(n: str) -> list[str]:
             roles: list[str] = []
@@ -1937,16 +1986,16 @@ class TNFR:
             ``ends_with_closure``, U2 flags ``has_destabilizer`` /
             ``has_stabilizer``, and a human-readable ``message``.
         """
-        from ..validation import validate_sequence
-        from ..operators.operator_contracts import contract_for
         from ..operators.grammar_types import (
-            GENERATORS,
             CLOSURES,
-            STABILIZERS,
-            DESTABILIZERS,
-            TRANSFORMERS,
             COUPLING_RESONANCE,
+            DESTABILIZERS,
+            GENERATORS,
+            STABILIZERS,
+            TRANSFORMERS,
         )
+        from ..operators.operator_contracts import contract_for
+        from ..validation import validate_sequence
 
         def _roles(n: str) -> list[str]:
             roles: list[str] = []
@@ -1989,96 +2038,96 @@ class TNFR:
             "has_stabilizer": any(n in STABILIZERS for n in names),
             "message": message,
         }
-    
+
     @staticmethod
     def template(template_name: str) -> Network:
         """Create network from pre-configured template.
-        
+
         Available templates:
         - 'small': 5 nodes, ring topology
-        - 'medium': 15 nodes, small-world topology  
+        - 'medium': 15 nodes, small-world topology
         - 'large': 50 nodes, random topology
         - 'molecule': 8 nodes, molecular-like structure
         - 'star': 10 nodes, star topology
         - 'complete': 6 nodes, complete graph
-        
+
         Args:
             template_name: Template to use
-            
+
         Returns:
             Pre-configured network ready to use
-            
+
         Example:
             >>> mol = TNFR.template('molecule')
         """
         templates = {
-            'small': lambda: TNFR.create(5).ring(),
-            'medium': lambda: TNFR.create(15).ring().random(0.1),  # Small-world-like
-            'large': lambda: TNFR.create(50).random(0.08),
-            'molecule': lambda: TNFR.create(8).ring().random(0.2),
-            'star': lambda: TNFR.create(10).star(),
-            'complete': lambda: TNFR.create(6).complete()
+            "small": lambda: TNFR.create(5).ring(),
+            "medium": lambda: TNFR.create(15).ring().random(0.1),  # Small-world-like
+            "large": lambda: TNFR.create(50).random(0.08),
+            "molecule": lambda: TNFR.create(8).ring().random(0.2),
+            "star": lambda: TNFR.create(10).star(),
+            "complete": lambda: TNFR.create(6).complete(),
         }
-        
+
         if template_name not in templates:
-            available = ', '.join(templates.keys())
+            available = ", ".join(templates.keys())
             raise TNFRValueError(
                 f"Unknown template '{template_name}'.",
                 context={
                     "requested": template_name,
-                    "available": list(templates.keys())
+                    "available": list(templates.keys()),
                 },
-                suggestion=f"Choose from: {available}"
+                suggestion=f"Choose from: {available}",
             )
-        
+
         return templates[template_name]()
-    
+
     @staticmethod
     def compare(*networks: Network) -> dict[str, Any]:
         """Compare multiple networks including tetrad and conservation.
-        
+
         Args:
             *networks: Networks to compare
-            
+
         Returns:
             Comparison results with rankings and structural field comparison.
-            
+
         Example:
             >>> comparison = TNFR.compare(net1, net2, net3)
             >>> print(comparison['ranking'])
         """
         if not networks:
             return {}
-        
+
         results = []
         for i, net in enumerate(networks):
             result = net.results()
             entry: dict[str, Any] = {
-                'name': net.name,
-                'index': i,
-                'coherence': result.coherence,
-                'sense_index': result.sense_index,
-                'nodes': result.nodes,
-                'edges': result.edges,
-                'density': result.density,
+                "name": net.name,
+                "index": i,
+                "coherence": result.coherence,
+                "sense_index": result.sense_index,
+                "nodes": result.nodes,
+                "edges": result.edges,
+                "density": result.density,
             }
             if result.conservation is not None:
-                entry['noether_charge'] = result.conservation.noether_charge
-                entry['energy'] = result.conservation.energy
-                entry['lyapunov_stable'] = result.conservation.lyapunov_stable
+                entry["noether_charge"] = result.conservation.noether_charge
+                entry["energy"] = result.conservation.energy
+                entry["lyapunov_stable"] = result.conservation.lyapunov_stable
             results.append(entry)
-        
+
         # Rank by coherence
-        ranking = sorted(results, key=lambda x: x['coherence'], reverse=True)
-        
+        ranking = sorted(results, key=lambda x: x["coherence"], reverse=True)
+
         return {
-            'results': results,
-            'ranking': ranking,
-            'best': ranking[0] if ranking else None,
-            'worst': ranking[-1] if ranking else None,
-            'count': len(networks),
+            "results": results,
+            "ranking": ranking,
+            "best": ranking[0] if ranking else None,
+            "worst": ranking[-1] if ranking else None,
+            "count": len(networks),
         }
-    
+
     @staticmethod
     def analyze(network: Network) -> dict[str, Any]:
         """One-shot comprehensive structural analysis.
@@ -2097,35 +2146,35 @@ class TNFR:
             >>> print(analysis['coherence'], analysis['tetrad'].summary())
         """
         result: dict[str, Any] = {
-            'coherence': network.coherence(),
-            'sense_index': network.sense_index(),
-            'nodes': len(network.G.nodes()),
-            'edges': len(network.G.edges()),
-            'density': network.density(),
-            'avg_phase': network.avg_phase(),
-            'nodal_dynamics': network.nodal_scan(),
+            "coherence": network.coherence(),
+            "sense_index": network.sense_index(),
+            "nodes": len(network.G.nodes()),
+            "edges": len(network.G.edges()),
+            "density": network.density(),
+            "avg_phase": network.avg_phase(),
+            "nodal_dynamics": network.nodal_scan(),
         }
         try:
-            result['nfr'] = network.nfr()
+            result["nfr"] = network.nfr()
         except Exception:
             pass
         if _HAS_FIELDS:
-            result['tetrad'] = network.tetrad()
-            result['tensor_invariants'] = network.tensor_invariants()
-            result['emergent_fields'] = network.emergent_fields()
+            result["tetrad"] = network.tetrad()
+            result["tensor_invariants"] = network.tensor_invariants()
+            result["emergent_fields"] = network.emergent_fields()
         if _HAS_CONSERVATION:
-            result['conservation'] = network.conservation()
+            result["conservation"] = network.conservation()
         if _HAS_SUBSTRATE:
-            result['symplectic_substrate'] = network.symplectic_substrate()
+            result["symplectic_substrate"] = network.symplectic_substrate()
         if _HAS_INTEGRITY:
-            result['integrity'] = network.integrity_check()
-        result['features'] = {
-            'fields': _HAS_FIELDS,
-            'conservation': _HAS_CONSERVATION,
-            'symplectic_substrate': _HAS_SUBSTRATE,
-            'integrity': _HAS_INTEGRITY,
-            'grammar_dynamics': _HAS_GRAMMAR_DYNAMICS,
-            'optimization': _HAS_OPTIMIZATION,
+            result["integrity"] = network.integrity_check()
+        result["features"] = {
+            "fields": _HAS_FIELDS,
+            "conservation": _HAS_CONSERVATION,
+            "symplectic_substrate": _HAS_SUBSTRATE,
+            "integrity": _HAS_INTEGRITY,
+            "grammar_dynamics": _HAS_GRAMMAR_DYNAMICS,
+            "optimization": _HAS_OPTIMIZATION,
         }
         return result
 
@@ -2176,12 +2225,13 @@ class TNFR:
             )
 
         kwargs: dict[str, Any] = {
-            'modulus': modulus,
-            'trace_certificates': trace_certificates,
+            "modulus": modulus,
+            "trace_certificates": trace_certificates,
         }
         if certificate_dir is not None:
             from pathlib import Path
-            kwargs['certificate_dir'] = Path(certificate_dir)
+
+            kwargs["certificate_dir"] = Path(certificate_dir)
 
         raw_result = canonical_factorize(n, **kwargs)
         return _build_factorization_report(raw_result, network=network)
@@ -2438,6 +2488,7 @@ class TNFR:
         print(text)
         return text
 
+
 # === CONVENIENT ALIASES ===
 
 # Short aliases for power users
@@ -2446,16 +2497,16 @@ Net = Network  # type alias
 
 # Export main API
 __all__ = [
-    'TNFR',
-    'Network',
-    'Results',
-    'TetradSnapshot',
-    'ConservationReport',
-    'SymplecticReport',
-    'FactorizationReport',
-    'PrimalityReport',
-    'NodalStateReport',
-    'NodalDynamicsReport',
-    'T',
-    'Net',
+    "TNFR",
+    "Network",
+    "Results",
+    "TetradSnapshot",
+    "ConservationReport",
+    "SymplecticReport",
+    "FactorizationReport",
+    "PrimalityReport",
+    "NodalStateReport",
+    "NodalDynamicsReport",
+    "T",
+    "Net",
 ]

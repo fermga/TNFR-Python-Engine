@@ -82,15 +82,31 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.operators.grammar_types import (
-    GENERATORS, CLOSURES, STABILIZERS, DESTABILIZERS, TRANSFORMERS,
+    CLOSURES,
+    DESTABILIZERS,
+    GENERATORS,
+    STABILIZERS,
+    TRANSFORMERS,
 )
 
-ALPHA = ["emission", "reception", "coherence", "dissonance", "coupling",
-         "resonance", "silence", "expansion", "contraction",
-         "self_organization", "mutation", "transition", "recursivity"]
+ALPHA = [
+    "emission",
+    "reception",
+    "coherence",
+    "dissonance",
+    "coupling",
+    "resonance",
+    "silence",
+    "expansion",
+    "contraction",
+    "self_organization",
+    "mutation",
+    "transition",
+    "recursivity",
+]
 START = ("START",)
 DEAD = ("DEAD",)
 
@@ -116,8 +132,12 @@ def transition(state, x):
             return None
         if x == "mutation" and "I" not in win:
             return None
-    return ((win + (tag(x),))[-3:], has_d or x in DESTABILIZERS,
-            has_s or x in STABILIZERS, x in CLOSURES)
+    return (
+        (win + (tag(x),))[-3:],
+        has_d or x in DESTABILIZERS,
+        has_s or x in STABILIZERS,
+        x in CLOSURES,
+    )
 
 
 def is_accept(state):
@@ -257,8 +277,10 @@ def experiment_2_aperiodic(monoid, compose):
 
     pn = stability_index(pmon, pcompose)
     print(f"    parity syntactic monoid: {len(pmon)} elements = Z/2 (a group);")
-    print(f"    a^2 = identity (period 2), so it is NOT aperiodic "
-          f"(stability index: {pn})")
+    print(
+        f"    a^2 = identity (period 2), so it is NOT aperiodic "
+        f"(stability index: {pn})"
+    )
     print("    -> parity is NOT star-free; our grammar L IS. The qualitative")
     print("       difference (group vs group-free) is the whole point.")
     return n

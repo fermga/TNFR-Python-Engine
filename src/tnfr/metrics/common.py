@@ -8,10 +8,15 @@ from typing import Any, Iterable, Mapping, Sequence
 from ..alias import collect_attr, get_attr, multi_recompute_abs_max
 from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_D2EPI, ALIAS_DEPI, ALIAS_DNFR, ALIAS_VF
-from ..utils import clamp01, kahan_sum_nd, normalize_optional_int
-from ..types import GraphLike, NodeAttrMap
-from ..utils import edge_version_cache, normalize_weights
 from ..mathematics.unified_numerical import np
+from ..types import GraphLike, NodeAttrMap
+from ..utils import (
+    clamp01,
+    edge_version_cache,
+    kahan_sum_nd,
+    normalize_optional_int,
+    normalize_weights,
+)
 
 __all__ = (
     "GraphLike",
@@ -34,6 +39,7 @@ __all__ = (
 # single source of truth for the equilibrium criterion.
 _EPS_DNFR_STABLE: float = float(DEFAULTS["EPS_DNFR_STABLE"])
 _EPS_DEPI_STABLE: float = float(DEFAULTS["EPS_DEPI_STABLE"])
+
 
 def structural_coherence(dnfr: float, depi: float = 0.0) -> float:
     r"""Per-node structural coherence ``C = 1/(1 + |ΔNFR| + |dEPI|)``.
@@ -60,6 +66,7 @@ def structural_coherence(dnfr: float, depi: float = 0.0) -> float:
         scalar fields that carry no explicit time derivative).
     """
     return 1.0 / (1.0 + abs(dnfr) + abs(depi))
+
 
 def is_structural_equilibrium(
     dnfr: float,
@@ -99,6 +106,7 @@ def is_structural_equilibrium(
         Equilibrium tolerances (default: the canonical ``EPS_*_STABLE``).
     """
     return abs(dnfr) <= eps_dnfr and abs(depi) <= eps_depi
+
 
 def compute_coherence(
     G: GraphLike, *, return_means: bool = False
@@ -145,6 +153,7 @@ def compute_coherence(
     coherence = structural_coherence(dnfr_mean, depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence
 
+
 def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:
     """Return cached neighbors list keyed by node as a read-only mapping."""
 
@@ -153,6 +162,7 @@ def ensure_neighbors_map(G: GraphLike) -> Mapping[Any, Sequence[Any]]:
 
     return edge_version_cache(G, "_neighbors", builder)
 
+
 def merge_graph_weights(G: GraphLike, key: str) -> dict[str, float]:
     """Merge default weights for ``key`` with any graph overrides."""
 
@@ -160,6 +170,7 @@ def merge_graph_weights(G: GraphLike, key: str) -> dict[str, float]:
     if overrides is None or not isinstance(overrides, Mapping):
         overrides = {}
     return {**DEFAULTS[key], **overrides}
+
 
 def merge_and_normalize_weights(
     G: GraphLike,
@@ -180,10 +191,14 @@ def merge_and_normalize_weights(
         warn_once=True,
     )
 
+
 def compute_dnfr_accel_max(G: GraphLike) -> dict[str, float]:
     """Compute absolute maxima of |ΔNFR| and |d²EPI/dt²|."""
 
-    return multi_recompute_abs_max(G, {"dnfr_max": ALIAS_DNFR, "accel_max": ALIAS_D2EPI})
+    return multi_recompute_abs_max(
+        G, {"dnfr_max": ALIAS_DNFR, "accel_max": ALIAS_D2EPI}
+    )
+
 
 def normalize_dnfr(nd: NodeAttrMap, max_val: float) -> float:
     """Normalise ``|ΔNFR|`` using ``max_val``."""
@@ -192,6 +207,7 @@ def normalize_dnfr(nd: NodeAttrMap, max_val: float) -> float:
         return 0.0
     val = abs(get_attr(nd, ALIAS_DNFR, 0.0))
     return clamp01(val / max_val)
+
 
 def min_max_range(
     values: Iterable[float], *, default: tuple[float, float] = (0.0, 0.0)
@@ -211,6 +227,7 @@ def min_max_range(
             max_val = val
     return min_val, max_val
 
+
 def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]:
     """Ensure and return absolute maxima for ``νf`` and ``ΔNFR``."""
 
@@ -227,6 +244,7 @@ def _get_vf_dnfr_max(G: GraphLike) -> tuple[float, float]:
     vfmax = 1.0 if vfmax == 0 else vfmax
     dnfrmax = 1.0 if dnfrmax == 0 else dnfrmax
     return float(vfmax), float(dnfrmax)
+
 
 def _coerce_jobs(raw_jobs: Any | None) -> int | None:
     """Normalise parallel job hints shared by metrics modules."""

@@ -1,19 +1,16 @@
 from __future__ import annotations
 
 import abc
-from ..selector import _selector_parallel_jobs as _selector_parallel_jobs
-from ..types import (
-    GlyphCode as GlyphCode,
-    GlyphSelector,
-    HistoryState,
-    NodeId,
-    TNFRGraph,
-)
-from _typeshed import Incomplete
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, MutableMapping, Sequence
 from dataclasses import dataclass
 from typing import Any
+
+from _typeshed import Incomplete
+
+from ..selector import _selector_parallel_jobs as _selector_parallel_jobs
+from ..types import GlyphCode as GlyphCode
+from ..types import GlyphSelector, HistoryState, NodeId, TNFRGraph
 
 __all__ = [
     "GlyphCode",
@@ -79,5 +76,7 @@ def _resolve_preselected_glyph(
     selector: GlyphSelector,
     preselection: _SelectorPreselection | None,
 ) -> GlyphCode: ...
-def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> None: ...
+def _apply_glyphs(
+    G: TNFRGraph, selector: GlyphSelector, hist: HistoryState
+) -> None: ...
 def _apply_selector(G: TNFRGraph) -> GlyphSelector: ...

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from ..types import Glyph, NodeId, TNFRGraph
 from typing import Any, ClassVar
+
+from ..types import Glyph, NodeId, TNFRGraph
 
 __all__ = [
     "Operator",

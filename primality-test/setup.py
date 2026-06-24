@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -25,7 +25,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10", 
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Topic :: Scientific/Engineering :: Mathematics",
@@ -39,7 +39,7 @@ setup(
     extras_require={
         "full": [
             # Full TNFR infrastructure (automatically detected)
-            "numpy>=1.20", 
+            "numpy>=1.20",
             "scipy>=1.8",
             "networkx>=2.8",
             "sympy>=1.10",
@@ -84,7 +84,7 @@ setup(
         "canonical operators",
         "prime certificates",
         "structural fields",
-        "resonant fractal dynamics"
+        "resonant fractal dynamics",
     ],
     include_package_data=True,
     zip_safe=False,

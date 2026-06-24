@@ -39,10 +39,7 @@ from typing import Any, NamedTuple, Protocol, cast
 from .constants import TRACE
 from .glyph_history import append_metric, count_glyphs, ensure_history
 from .metrics.sense_index import _normalise_si_sensitivity_mapping
-from .telemetry.verbosity import (
-    TELEMETRY_VERBOSITY_DEFAULT,
-    TelemetryVerbosity,
-)
+from .telemetry.verbosity import TELEMETRY_VERBOSITY_DEFAULT, TelemetryVerbosity
 from .types import (
     SigmaVector,
     TNFRGraph,
@@ -56,11 +53,14 @@ from .types import (
 from .utils import cached_import, get_graph_mapping, is_non_string_sequence
 from .utils.callbacks import CallbackSpec
 
+
 class _KuramotoFn(Protocol):
     def __call__(self, G: TNFRGraph) -> tuple[float, float]: ...
 
+
 class _SigmaVectorFn(Protocol):
     def __call__(self, G: TNFRGraph, weight_mode: str | None = None) -> SigmaVector: ...
+
 
 class TraceFieldSpec(NamedTuple):
     """Declarative specification for a trace field producer."""
@@ -70,6 +70,7 @@ class TraceFieldSpec(NamedTuple):
     producer: TraceFieldFn
     tiers: tuple[TelemetryVerbosity, ...]
 
+
 TRACE_VERBOSITY_DEFAULT = TELEMETRY_VERBOSITY_DEFAULT
 TRACE_VERBOSITY_PRESETS: dict[str, tuple[str, ...]] = {}
 _TRACE_CAPTURE_ALIASES: Mapping[str, str] = MappingProxyType(
@@ -77,6 +78,7 @@ _TRACE_CAPTURE_ALIASES: Mapping[str, str] = MappingProxyType(
         "glyphs": "glyph_counts",
     }
 )
+
 
 def _canonical_capture_name(name: str) -> str:
     """Return the canonical capture field name for ``name``."""
@@ -93,6 +95,7 @@ def _canonical_capture_name(name: str) -> str:
 
     return stripped
 
+
 def _normalise_capture_spec(raw: Any) -> set[str]:
     """Coerce custom capture payloads to a ``set`` of field names."""
 
@@ -105,6 +108,7 @@ def _normalise_capture_spec(raw: Any) -> set[str]:
     if isinstance(raw, Iterable):
         return {_canonical_capture_name(str(name)) for name in raw}
     return {_canonical_capture_name(str(raw))}
+
 
 def _resolve_trace_capture(cfg: Mapping[str, Any]) -> set[str]:
     """Return the capture set declared by ``cfg`` respecting verbosity."""
@@ -127,18 +131,22 @@ def _resolve_trace_capture(cfg: Mapping[str, Any]) -> set[str]:
         fields = TRACE_VERBOSITY_PRESETS[TRACE_VERBOSITY_DEFAULT]
     return set(fields)
 
+
 def _kuramoto_fallback(G: TNFRGraph) -> tuple[float, float]:
     return 0.0, 0.0
+
 
 kuramoto_R_psi: _KuramotoFn = cast(
     _KuramotoFn,
     cached_import("tnfr.gamma", "kuramoto_R_psi", fallback=_kuramoto_fallback),
 )
 
+
 def _sigma_fallback(G: TNFRGraph, _weight_mode: str | None = None) -> SigmaVector:
     """Return a null sigma vector regardless of ``_weight_mode``."""
 
     return {"x": 0.0, "y": 0.0, "mag": 0.0, "angle": 0.0, "n": 0}
+
 
 # Public exports for this module
 __all__ = (
@@ -156,6 +164,7 @@ __all__ = (
 # -------------------------
 # Helpers
 # -------------------------
+
 
 def _trace_setup(
     G: TNFRGraph,
@@ -182,6 +191,7 @@ def _trace_setup(
     key = cast(str | None, cfg.get("history_key", "trace_meta"))
     return cfg, capture, hist, key
 
+
 def _callback_names(
     callbacks: Mapping[str, CallbackSpec] | Iterable[CallbackSpec],
 ) -> list[str]:
@@ -193,18 +203,24 @@ def _callback_names(
         for cb in callbacks
     ]
 
+
 EMPTY_MAPPING: Mapping[str, Any] = MappingProxyType({})
+
 
 def mapping_field(G: TNFRGraph, graph_key: str, out_key: str) -> TraceMetadata:
     """Copy mappings from ``G.graph`` into trace output."""
-    mapping = get_graph_mapping(G, graph_key, f"G.graph[{graph_key!r}] is not a mapping; ignoring")
+    mapping = get_graph_mapping(
+        G, graph_key, f"G.graph[{graph_key!r}] is not a mapping; ignoring"
+    )
     if mapping is None:
         return {}
     return {out_key: mapping}
 
+
 # -------------------------
 # Builders
 # -------------------------
+
 
 def _new_trace_meta(
     G: TNFRGraph, phase: str
@@ -222,9 +238,11 @@ def _new_trace_meta(
     meta: TraceSnapshot = {"t": float(G.graph.get("_t", 0.0)), "phase": phase}
     return meta, capture, hist, key
 
+
 # -------------------------
 # Snapshots
 # -------------------------
+
 
 def _trace_capture(G: TNFRGraph, phase: str, fields: TraceFieldMap) -> None:
     """Capture ``fields`` for ``phase`` and store the snapshot.
@@ -248,40 +266,48 @@ def _trace_capture(G: TNFRGraph, phase: str, fields: TraceFieldMap) -> None:
         return
     append_metric(hist, key, meta)
 
+
 # -------------------------
 # Registry
 # -------------------------
 
 TRACE_FIELDS: TraceFieldRegistry = {}
 
+
 def register_trace_field(phase: str, name: str, func: TraceFieldFn) -> None:
     """Register ``func`` to populate trace field ``name`` during ``phase``."""
 
     TRACE_FIELDS.setdefault(phase, {})[name] = func
+
 
 def gamma_field(G: TNFRGraph) -> TraceMetadata:
     """Expose γ-field metadata stored under ``G.graph['GAMMA']``."""
 
     return mapping_field(G, "GAMMA", "gamma")
 
+
 def grammar_field(G: TNFRGraph) -> TraceMetadata:
     """Expose canonical grammar metadata for trace emission."""
 
     return mapping_field(G, "GRAMMAR_CANON", "grammar")
 
+
 def dnfr_weights_field(G: TNFRGraph) -> TraceMetadata:
     return mapping_field(G, "DNFR_WEIGHTS", "dnfr_weights")
+
 
 def selector_field(G: TNFRGraph) -> TraceMetadata:
     sel = G.graph.get("glyph_selector")
     selector_name = getattr(sel, "__name__", str(sel)) if sel else None
     return {"selector": selector_name}
 
+
 def _si_weights_field(G: TNFRGraph) -> TraceMetadata:
     weights = mapping_field(G, "_Si_weights", "si_weights")
     if weights:
         return weights
     return {"si_weights": EMPTY_MAPPING}
+
 
 def _si_sensitivity_field(G: TNFRGraph) -> TraceMetadata:
     mapping = get_graph_mapping(
@@ -299,12 +325,14 @@ def _si_sensitivity_field(G: TNFRGraph) -> TraceMetadata:
 
     return {"si_sensitivity": MappingProxyType(normalised)}
 
+
 def si_weights_field(G: TNFRGraph) -> TraceMetadata:
     """Return sense-plane weights and sensitivity."""
 
     weights = _si_weights_field(G)
     sensitivity = _si_sensitivity_field(G)
     return {**weights, **sensitivity}
+
 
 def callbacks_field(G: TNFRGraph) -> TraceMetadata:
     cb = G.graph.get("callbacks")
@@ -318,6 +346,7 @@ def callbacks_field(G: TNFRGraph) -> TraceMetadata:
             out[phase] = None
     return {"callbacks": out}
 
+
 def thol_state_field(G: TNFRGraph) -> TraceMetadata:
     th_open = 0
     for _, nd in G.nodes(data=True):
@@ -326,9 +355,11 @@ def thol_state_field(G: TNFRGraph) -> TraceMetadata:
             th_open += 1
     return {"thol_open_nodes": th_open}
 
+
 def kuramoto_field(G: TNFRGraph) -> TraceMetadata:
     R, psi = kuramoto_R_psi(G)
     return {"kuramoto": {"R": float(R), "psi": float(psi)}}
+
 
 def sigma_field(G: TNFRGraph) -> TraceMetadata:
     sigma_vector_from_graph: _SigmaVectorFn = cast(
@@ -349,6 +380,7 @@ def sigma_field(G: TNFRGraph) -> TraceMetadata:
         }
     }
 
+
 def glyph_counts_field(G: TNFRGraph) -> TraceMetadata:
     """Return structural operator application count snapshot.
 
@@ -359,6 +391,7 @@ def glyph_counts_field(G: TNFRGraph) -> TraceMetadata:
 
     cnt = count_glyphs(G, window=1)
     return {"glyphs": cnt}
+
 
 TRACE_FIELD_SPECS: tuple[TraceFieldSpec, ...] = (
     TraceFieldSpec(
@@ -462,6 +495,7 @@ for spec in TRACE_FIELD_SPECS:
 # -------------------------
 # API
 # -------------------------
+
 
 def register_trace(G: TNFRGraph) -> None:
     """Enable before/after-step snapshots and dump operational metadata to history.

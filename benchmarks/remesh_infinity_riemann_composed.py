@@ -145,8 +145,9 @@ def build_il_smoother(L: np.ndarray, eta: float) -> np.ndarray:
     return np.eye(n) - eta * L
 
 
-def build_composed_iteration_matrix(M: np.ndarray, L: np.ndarray,
-                                    eta: float) -> np.ndarray:
+def build_composed_iteration_matrix(
+    M: np.ndarray, L: np.ndarray, eta: float
+) -> np.ndarray:
     """T_composed = S_IL . M_REMESH in slot-major ordering.
 
     Index convention: index = slot * N + node. Then
@@ -163,7 +164,7 @@ def build_composed_iteration_matrix(M: np.ndarray, L: np.ndarray,
     # Build block-diagonal S_IL as a (dim_slot*N) x (dim_slot*N) matrix.
     S_IL = np.zeros((dim_slot * N, dim_slot * N), dtype=np.float64)
     for s, blk in enumerate(S_blocks):
-        S_IL[s * N:(s + 1) * N, s * N:(s + 1) * N] = blk
+        S_IL[s * N : (s + 1) * N, s * N : (s + 1) * N] = blk
     return S_IL @ M_REMESH
 
 
@@ -181,8 +182,9 @@ def gue_wigner_cdf(s: np.ndarray) -> np.ndarray:
     # Simpler: compute by quadrature with high resolution.
     grid = np.linspace(0.0, max(float(s.max()) + 1e-9, 1.0), 4001)
     pdf = gue_wigner_pdf(grid)
-    cdf_grid = np.concatenate([[0.0], np.cumsum(0.5 * (pdf[1:] + pdf[:-1])
-                                                * np.diff(grid))])
+    cdf_grid = np.concatenate(
+        [[0.0], np.cumsum(0.5 * (pdf[1:] + pdf[:-1]) * np.diff(grid))]
+    )
     cdf_grid = cdf_grid / cdf_grid[-1]  # normalise (handles truncation)
     return np.interp(s, grid, cdf_grid)
 
@@ -272,11 +274,13 @@ def control_shuffled_prime(M: np.ndarray, rng: np.random.Generator) -> dict[str,
     # relabelling. We permute the prime labels and rebuild from a permuted
     # explicit prime list to make the symmetry empirically explicit.
     from sympy import primerange
+
     primes = list(primerange(2, 100))[:N_PRIMES]
     perm = rng.permutation(N_PRIMES)
     primes_shuffled = [primes[i] for i in perm]
-    G_shuffled = build_prime_ladder_graph(N_PRIMES, max_power=MAX_POWER,
-                                          coupling=0.0, primes=primes_shuffled)
+    G_shuffled = build_prime_ladder_graph(
+        N_PRIMES, max_power=MAX_POWER, coupling=0.0, primes=primes_shuffled
+    )
     L_shuffled = laplacian_of_graph(G_shuffled)
     T_shuffled = build_composed_iteration_matrix(M, L_shuffled, ETA_IL)
     eigvals_shuffled, _ = eig(T_shuffled)
@@ -337,11 +341,9 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
     d_shuf = shuffled["D_GUE"]
     if d_can is None or d_shuf is None:
         f6a_verdict = "INDETERMINATE_INVALID_PROJECTION"
-    elif (d_can < D_SUPPORTED_MAX
-          and d_can < d_shuf - D_SHUFFLE_MARGIN):
+    elif d_can < D_SUPPORTED_MAX and d_can < d_shuf - D_SHUFFLE_MARGIN:
         f6a_verdict = "SUPPORTED"
-    elif (d_can > D_REFUTED_MIN
-          or d_can >= d_shuf - D_SHUFFLE_MARGIN):
+    elif d_can > D_REFUTED_MIN or d_can >= d_shuf - D_SHUFFLE_MARGIN:
         f6a_verdict = "REFUTED"
     else:
         f6a_verdict = "INDETERMINATE"
@@ -352,10 +354,9 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
     # P_4 components). Verify this empirically.
     eig_L = np.sort(eigvalsh(L))
     distinct_L = sorted({round(float(v), 6) for v in eig_L})
-    expected_L_distinct = sorted({0.0,
-                                  round(2.0 - np.sqrt(2.0), 6),
-                                  round(2.0, 6),
-                                  round(2.0 + np.sqrt(2.0), 6)})
+    expected_L_distinct = sorted(
+        {0.0, round(2.0 - np.sqrt(2.0), 6), round(2.0, 6), round(2.0 + np.sqrt(2.0), 6)}
+    )
     structural_check = {
         "L_G_distinct_eigenvalues_empirical": distinct_L,
         "L_G_distinct_eigenvalues_expected_P4": expected_L_distinct,
@@ -364,10 +365,12 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
             for v in distinct_L
         },
         "matches_10x_P4_prediction": (
-            len(distinct_L) == 4 and all(
+            len(distinct_L) == 4
+            and all(
                 np.isclose(distinct_L[i], expected_L_distinct[i], atol=1e-8)
                 for i in range(4)
-            ) and all(
+            )
+            and all(
                 int(np.sum(np.isclose(eig_L, v, atol=1e-8))) == N_PRIMES
                 for v in distinct_L
             )
@@ -378,9 +381,13 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
     if f6a_verdict == "REFUTED" and structural_check["matches_10x_P4_prediction"]:
         milestone_verdict = "B1_COMPOSED_REFUTED_FOR_REMESH_o_IL"
     elif f6a_verdict == "SUPPORTED":
-        milestone_verdict = "B1_COMPOSED_POTENTIALLY_OPEN_STRUCTURAL_PREDICTION_CHALLENGED"
+        milestone_verdict = (
+            "B1_COMPOSED_POTENTIALLY_OPEN_STRUCTURAL_PREDICTION_CHALLENGED"
+        )
     elif f6a_verdict == "REFUTED":
-        milestone_verdict = "B1_COMPOSED_REFUTED_BUT_STRUCTURAL_PREDICTION_NOT_CONFIRMED"
+        milestone_verdict = (
+            "B1_COMPOSED_REFUTED_BUT_STRUCTURAL_PREDICTION_NOT_CONFIRMED"
+        )
     else:
         milestone_verdict = f"B1_COMPOSED_{f6a_verdict}"
 
@@ -405,10 +412,14 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
             "statistic": "F6-A KS distance vs GUE Wigner surmise",
             "projection": "Im(lambda) upper-half-plane (fallback Re(lambda))",
             "thresholds": {
-                "SUPPORTED": (f"D_composed < {D_SUPPORTED_MAX} AND "
-                              f"D_composed < D_shuffled - {D_SHUFFLE_MARGIN}"),
-                "REFUTED": (f"D_composed > {D_REFUTED_MIN} OR "
-                            f"D_composed >= D_shuffled - {D_SHUFFLE_MARGIN}"),
+                "SUPPORTED": (
+                    f"D_composed < {D_SUPPORTED_MAX} AND "
+                    f"D_composed < D_shuffled - {D_SHUFFLE_MARGIN}"
+                ),
+                "REFUTED": (
+                    f"D_composed > {D_REFUTED_MIN} OR "
+                    f"D_composed >= D_shuffled - {D_SHUFFLE_MARGIN}"
+                ),
             },
         },
         "canonical": canonical,
@@ -434,31 +445,46 @@ def _print_summary(report: dict[str, Any]) -> None:
     print("=" * 72)
     print("R-inf-1a-composed  (T = S_IL . M_REMESH on P14 prime-ladder)")
     print("=" * 72)
-    print(f"Graph: {cfg['graph']}  N={cfg['N_nodes']} nodes, "
-          f"dim(joint)={cfg['dim_joint_state']}")
-    print(f"REMESH: alpha={cfg['alpha']}, tau_l={cfg['tau_l']}, "
-          f"tau_g={cfg['tau_g']}; IL: eta={cfg['eta_IL']}")
+    print(
+        f"Graph: {cfg['graph']}  N={cfg['N_nodes']} nodes, "
+        f"dim(joint)={cfg['dim_joint_state']}"
+    )
+    print(
+        f"REMESH: alpha={cfg['alpha']}, tau_l={cfg['tau_l']}, "
+        f"tau_g={cfg['tau_g']}; IL: eta={cfg['eta_IL']}"
+    )
     print()
     print("Structural prediction (P14 Laplacian = 10 disjoint P_4):")
     sc = report["structural_prediction_check"]
-    print(f"  empirical distinct eigenvalues of L_G  : {sc['L_G_distinct_eigenvalues_empirical']}")
-    print(f"  expected (4 values, 10x multiplicity)  : {sc['L_G_distinct_eigenvalues_expected_P4']}")
-    print(f"  multiplicity per distinct eigenvalue   : {sc['L_G_full_spectrum_multiplicity_per_distinct']}")
-    print(f"  matches 10 x P_4 prediction            : {sc['matches_10x_P4_prediction']}")
+    print(
+        f"  empirical distinct eigenvalues of L_G  : {sc['L_G_distinct_eigenvalues_empirical']}"
+    )
+    print(
+        f"  expected (4 values, 10x multiplicity)  : {sc['L_G_distinct_eigenvalues_expected_P4']}"
+    )
+    print(
+        f"  multiplicity per distinct eigenvalue   : {sc['L_G_full_spectrum_multiplicity_per_distinct']}"
+    )
+    print(
+        f"  matches 10 x P_4 prediction            : {sc['matches_10x_P4_prediction']}"
+    )
     print()
     print("F6-A KS distance vs GUE Wigner surmise:")
     print(f"  {'label':30s} {'kind':14s} {'#spacings':>10s} {'D_GUE':>10s}")
-    for diag in [report["canonical"],
-                 report["controls"]["N1_GOE"],
-                 report["controls"]["N2_Poisson"],
-                 report["controls"]["N3_shuffled_prime"],
-                 report["controls"]["N4_REMESH_isolated"],
-                 report["riemann_reference"]]:
-        d_str = ("N/A" if diag["D_GUE"] is None
-                 else f"{diag['D_GUE']:.4f}")
+    for diag in [
+        report["canonical"],
+        report["controls"]["N1_GOE"],
+        report["controls"]["N2_Poisson"],
+        report["controls"]["N3_shuffled_prime"],
+        report["controls"]["N4_REMESH_isolated"],
+        report["riemann_reference"],
+    ]:
+        d_str = "N/A" if diag["D_GUE"] is None else f"{diag['D_GUE']:.4f}"
         kind = diag.get("projection_kind", "iid_or_zeros")
-        print(f"  {diag['label']:30s} {kind:14s} "
-              f"{diag['n_spacings']:>10d} {d_str:>10s}")
+        print(
+            f"  {diag['label']:30s} {kind:14s} "
+            f"{diag['n_spacings']:>10d} {d_str:>10s}"
+        )
     print()
     print(f"F6-A verdict      : {report['f6a_verdict']}")
     print(f"Milestone verdict : {report['milestone_verdict']}")
@@ -468,9 +494,12 @@ def _print_summary(report: dict[str, Any]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--out", type=Path,
-        default=REPO_ROOT / "results" / "remesh_infinity"
-                / "remesh_infinity_riemann_composed.json",
+        "--out",
+        type=Path,
+        default=REPO_ROOT
+        / "results"
+        / "remesh_infinity"
+        / "remesh_infinity_riemann_composed.json",
     )
     args = parser.parse_args()
     report = run_milestone(args.out)

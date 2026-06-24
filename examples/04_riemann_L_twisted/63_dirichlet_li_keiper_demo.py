@@ -69,9 +69,7 @@ def step_1_chi_3_breakdown() -> None:
 
 
 def step_2_sweep_three_characters() -> None:
-    banner(
-        "Step 2 — Positivity sweep: χ_3, χ_4, χ_5 × n_max ∈ {20, 30, 50}"
-    )
+    banner("Step 2 — Positivity sweep: χ_3, χ_4, χ_5 × n_max ∈ {20, 30, 50}")
 
     characters = [
         ("chi_3", real_character_mod_3()),
@@ -105,9 +103,7 @@ def step_2_sweep_three_characters() -> None:
 
 
 def step_3_certificate_summaries() -> None:
-    banner(
-        "Step 3 — Certificate summaries at n_max = 30 across χ_3, χ_4, χ_5"
-    )
+    banner("Step 3 — Certificate summaries at n_max = 30 across χ_3, χ_4, χ_5")
     characters = [
         ("chi_3", real_character_mod_3()),
         ("chi_4", real_character_mod_4()),

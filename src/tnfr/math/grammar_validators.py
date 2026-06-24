@@ -14,7 +14,13 @@ underlying physics of the nodal equation.
 Physics basis: AGENTS.md § Unified Grammar (U1-U6)
 """
 
+from ..operators.grammar_types import BIFURCATION_HANDLERS as _HANDLER_NAMES
+from ..operators.grammar_types import BIFURCATION_TRIGGERS as _TRIGGER_NAMES
+from ..operators.grammar_types import DESTABILIZERS as _DESTABILIZER_NAMES
+from ..operators.grammar_types import STABILIZERS as _STABILIZER_NAMES
+from ..operators.grammar_types import function_name_to_glyph as _to_glyph
 from ..types import Glyph
+
 # from . import symbolic  # Not used directly, but is the conceptual basis
 
 # ============================================================================
@@ -26,13 +32,6 @@ from ..types import Glyph
 # source of truth, derived in config.physics_derivation).  This guarantees this
 # math-layer validator can never drift from the canonical U2/U4 grammar.
 
-from ..operators.grammar_types import (
-    DESTABILIZERS as _DESTABILIZER_NAMES,
-    STABILIZERS as _STABILIZER_NAMES,
-    BIFURCATION_TRIGGERS as _TRIGGER_NAMES,
-    BIFURCATION_HANDLERS as _HANDLER_NAMES,
-    function_name_to_glyph as _to_glyph,
-)
 
 # U2: Destabilizers increase |ΔNFR|, risking divergence  ({OZ, ZHIR, VAL})
 DESTABILIZERS = {_to_glyph(n) for n in _DESTABILIZER_NAMES}
@@ -49,6 +48,7 @@ BIFURCATION_HANDLERS = {_to_glyph(n) for n in _HANDLER_NAMES}
 # ============================================================================
 # U2: CONVERGENCE & BOUNDEDNESS VALIDATION
 # ============================================================================
+
 
 def verify_convergence_for_sequence(
     sequence: list[Glyph],
@@ -79,15 +79,15 @@ def verify_convergence_for_sequence(
     See: AGENTS.md § U2: CONVERGENCE & BOUNDEDNESS
     """
     current_growth_rate = initial_growth_rate
-    
+
     for glyph in sequence:
         if glyph in DESTABILIZERS:
             current_growth_rate += destabilizer_effect
         elif glyph in STABILIZERS:
             current_growth_rate += stabilizer_effect
-            
+
     converges = current_growth_rate <= 0
-    
+
     if converges:
         explanation = (
             f"✓ U2 SATISFIED: Sequence is net-stabilizing or neutral. "
@@ -98,12 +98,14 @@ def verify_convergence_for_sequence(
             f"⚠️ U2 VIOLATION: Sequence is net-destabilizing. "
             f"Final λ = {current_growth_rate:.2f} > 0. Needs more stabilizers."
         )
-        
+
     return converges, current_growth_rate, explanation
+
 
 # ============================================================================
 # U4: BIFURCATION DYNAMICS VALIDATION
 # ============================================================================
+
 
 def verify_bifurcation_risk_for_sequence(
     sequence: list[Glyph],
@@ -150,7 +152,7 @@ def verify_bifurcation_risk_for_sequence(
 
             if matched_trigger is not None:
                 pending_triggers.remove(matched_trigger)
-            
+
             risk_level += handler_effect
             risk_level = max(0.0, risk_level)
 
@@ -169,12 +171,11 @@ def verify_bifurcation_risk_for_sequence(
             f"monitor for sustained acceleration."
         )
     else:
-        explanation = (
-            f"✓ U4 SATISFIED: Bifurcation risk is low ({risk_level:.2f})."
-        )
+        explanation = f"✓ U4 SATISFIED: Bifurcation risk is low ({risk_level:.2f})."
 
     is_safe = not unhandled_triggers and not risk_is_high
     return is_safe, risk_level, explanation
+
 
 # ============================================================================
 # EXAMPLE USAGE
@@ -187,7 +188,7 @@ if __name__ == "__main__":
 
     # --- U2 Convergence Examples ---
     print("\n--- U2: CONVERGENCE & BOUNDEDNESS ---")
-    
+
     # Unsafe sequence: Destabilizer without stabilizer
     unsafe_seq_u2 = [Glyph.AL, Glyph.OZ, Glyph.RA]
     print(f"\nAnalyzing sequence: {[g.value for g in unsafe_seq_u2]}")
@@ -206,19 +207,15 @@ if __name__ == "__main__":
     # Unsafe sequence: Trigger without handler
     unsafe_seq_u4 = [Glyph.EN, Glyph.OZ, Glyph.UM]
     print(f"\nAnalyzing sequence: {[g.value for g in unsafe_seq_u4]}")
-    is_safe, risk, explanation = verify_bifurcation_risk_for_sequence(
-        unsafe_seq_u4
-    )
+    is_safe, risk, explanation = verify_bifurcation_risk_for_sequence(unsafe_seq_u4)
     print(explanation)
 
     # Safe sequence: Trigger followed by handler
     safe_seq_u4 = [Glyph.EN, Glyph.OZ, Glyph.THOL, Glyph.UM]
     print(f"\nAnalyzing sequence: {[g.value for g in safe_seq_u4]}")
-    is_safe, risk, explanation = verify_bifurcation_risk_for_sequence(
-        safe_seq_u4
-    )
+    is_safe, risk, explanation = verify_bifurcation_risk_for_sequence(safe_seq_u4)
     print(explanation)
-    
+
     print("\n" + "=" * 70)
     print("✓ Grammar validation examples completed.")
     print("=" * 70)

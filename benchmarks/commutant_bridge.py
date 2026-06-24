@@ -69,6 +69,7 @@ Run:
 
 Status: RESEARCH (commutant-bridge falsifier; Camino 7 of the unification map).
 """
+
 from __future__ import annotations
 
 import os
@@ -79,12 +80,15 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Robust fallback so the harness also runs without PYTHONPATH=src preset.
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")
+)
 from composition_arithmetic import automorphism_matrices  # noqa: E402
 
 # Optional: the canonical engine's own non-Abelian derivability verdict.
 try:  # pragma: no cover - exercised only when the package is importable
     from tnfr.yang_mills import audit_nonabelian_derivability  # noqa: E402
+
     _HAVE_AUDIT = True
 except Exception:  # pragma: no cover
     _HAVE_AUDIT = False
@@ -95,6 +99,7 @@ except Exception:  # pragma: no cover
 # of the yang_mills audit cross-check used on the YM side in TEST 4.
 try:  # pragma: no cover - exercised only when the package is importable
     from tnfr.dynamics.adelic import AdelicDynamics  # noqa: E402
+
     _HAVE_ADELIC = True
 except Exception:  # pragma: no cover
     _HAVE_ADELIC = False
@@ -231,7 +236,7 @@ def test_rh_commutant_wall():
     print("=" * 78)
     print("TEST 1 -- RIEMANN: the catalog is trapped in the S_n COMMUTANT")
     print("=" * 78)
-    G = nx.complete_graph(5)              # prime-relabelling symmetry S_5
+    G = nx.complete_graph(5)  # prime-relabelling symmetry S_5
     nodes = list(G.nodes())
     n = len(nodes)
     mats = automorphism_matrices(G, nodes)
@@ -245,19 +250,23 @@ def test_rh_commutant_wall():
     Pi = symmetric_projector(mats)
     fix_dim = int(round(np.trace(Pi)))
     perp_dim = n - fix_dim
-    v = Pi @ eye[:, 0]                    # symmetric (colour-singlet analogue) seed
+    v = Pi @ eye[:, 0]  # symmetric (colour-singlet analogue) seed
     leak = max(float(np.linalg.norm((eye - Pi) @ (M @ v))) for M in ops.values())
-    w = (eye - Pi) @ eye[:, 0]            # residue target in Fix(S_n)^perp
+    w = (eye - Pi) @ eye[:, 0]  # residue target in Fix(S_n)^perp
     overlap = max(abs(float(w @ (M @ v))) for M in ops.values())
 
     ok = e_worst < TOL and leak < TOL and overlap < TOL and perp_dim >= 1
     print(f"  (a) catalog in commutant : max ||[f(A,L), P_s]|| = {e_worst:.2e}")
-    print(f"  (b) V split              : dim Fix(S_n) = {fix_dim}, "
-          f"dim Fix(S_n)^perp = {perp_dim}")
+    print(
+        f"  (b) V split              : dim Fix(S_n) = {fix_dim}, "
+        f"dim Fix(S_n)^perp = {perp_dim}"
+    )
     print(f"      symmetric seed leak  : max ||(I-Pi) M v|| = {leak:.2e}")
     print(f"      residue overlap      : max |<w, M v>| = {overlap:.2e}")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- reachable = S_n commutant; "
-          "S(T) in Fix(S_n)^perp unreachable")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- reachable = S_n commutant; "
+        "S(T) in Fix(S_n)^perp unreachable"
+    )
     print()
     return ok
 
@@ -271,7 +280,7 @@ def test_ym_commutant_wall():
     print("TEST 2 -- YANG-MILLS: the colour-lifted catalog is trapped in the GAUGE")
     print("           COMMUTANT (colour-scalar); non-Abelian curvature is orthogonal")
     print("=" * 78)
-    d = 2                                 # SU(2) colour
+    d = 2  # SU(2) colour
     G = nx.cycle_graph(6)
     nodes = list(G.nodes())
     n = len(nodes)
@@ -284,8 +293,9 @@ def test_ym_commutant_wall():
     for _ in range(8):
         U = su2_element(rng.uniform(0.3, 1.2), rng.normal(size=3))
         Ug = gauge_transform(n, U)
-        g_worst = max(g_worst,
-                      max(commutator_norm(lift(M, d), Ug) for M in ops.values()))
+        g_worst = max(
+            g_worst, max(commutator_norm(lift(M, d), Ug) for M in ops.values())
+        )
     ab_ok = g_worst < TOL
 
     # (b) canonical U(1) gauge: scalar phases -> holonomies COMMUTE (Abelian)
@@ -297,28 +307,39 @@ def test_ym_commutant_wall():
     # (c) SU(2) gauge: non-Abelian -> holonomies DON'T commute, and the field-
     #     strength commutator [T_a, T_b] is TRACELESS -> zero colour-scalar part
     tx, ty, _tz = su2_generators()
-    f_na = tx @ ty - ty @ tx              # [A_mu, A_nu] non-Abelian curvature term
-    f_scalar = color_scalar_part(f_na)    # projection onto the reachable commutant
+    f_na = tx @ ty - ty @ tx  # [A_mu, A_nu] non-Abelian curvature term
+    f_scalar = color_scalar_part(f_na)  # projection onto the reachable commutant
     f_norm = float(np.linalg.norm(f_na))
     f_reach = float(np.linalg.norm(f_scalar))
-    su2_P = holonomy([su2_element(rng.uniform(0.3, 1.2), rng.normal(size=3))
-                      for _ in range(4)])
-    su2_Q = holonomy([su2_element(rng.uniform(0.3, 1.2), rng.normal(size=3))
-                      for _ in range(4)])
+    su2_P = holonomy(
+        [su2_element(rng.uniform(0.3, 1.2), rng.normal(size=3)) for _ in range(4)]
+    )
+    su2_Q = holonomy(
+        [su2_element(rng.uniform(0.3, 1.2), rng.normal(size=3)) for _ in range(4)]
+    )
     su2_comm = commutator_norm(su2_P, su2_Q)
     na_ok = su2_comm > 1e-3 and f_norm > 1e-3 and f_reach < TOL
 
     ok = ab_ok and u1_ok and na_ok
-    print(f"  (a) lifted catalog in gauge commutant : "
-          f"max ||[f(A,L)(x)I, I(x)U]|| = {g_worst:.2e}  (colour-blind, all U)")
-    print(f"  (b) canonical U(1) holonomies commute : "
-          f"||[H_P, H_Q]|| = {u1_comm:.2e}  (Abelian -- the canonical gauge)")
-    print(f"  (c) SU(2) holonomies do NOT commute   : "
-          f"||[H_P, H_Q]|| = {su2_comm:.3f}")
-    print(f"      non-Abelian curvature [T_a,T_b]   : ||F|| = {f_norm:.3f}, "
-          f"colour-scalar part ||P(F)|| = {f_reach:.2e}  (traceless -> unreachable)")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- reachable = colour-scalar "
-          "commutant; su(d) curvature orthogonal")
+    print(
+        f"  (a) lifted catalog in gauge commutant : "
+        f"max ||[f(A,L)(x)I, I(x)U]|| = {g_worst:.2e}  (colour-blind, all U)"
+    )
+    print(
+        f"  (b) canonical U(1) holonomies commute : "
+        f"||[H_P, H_Q]|| = {u1_comm:.2e}  (Abelian -- the canonical gauge)"
+    )
+    print(
+        f"  (c) SU(2) holonomies do NOT commute   : " f"||[H_P, H_Q]|| = {su2_comm:.3f}"
+    )
+    print(
+        f"      non-Abelian curvature [T_a,T_b]   : ||F|| = {f_norm:.3f}, "
+        f"colour-scalar part ||P(F)|| = {f_reach:.2e}  (traceless -> unreachable)"
+    )
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- reachable = colour-scalar "
+        "commutant; su(d) curvature orthogonal"
+    )
     print()
     return ok
 
@@ -338,29 +359,42 @@ def test_one_shape_two_groups():
     Pi = symmetric_projector(mats)
     rh_fix = int(round(np.trace(Pi)))
     rh_rest = n - rh_fix
-    rh_orth = float(np.linalg.norm(Pi @ (np.eye(n) - Pi)))   # blocks orthogonal
+    rh_orth = float(np.linalg.norm(Pi @ (np.eye(n) - Pi)))  # blocks orthogonal
 
     # Yang-Mills: C^(dxd) = C.I_d (+) su(d) under U(d) conjugation
     d = 2
     tx, ty, tz = su2_generators()
-    rest_basis = [tx, ty, tz]             # su(2): traceless, dim d^2 - 1 = 3
+    rest_basis = [tx, ty, tz]  # su(2): traceless, dim d^2 - 1 = 3
     i_d = np.eye(d, dtype=complex)
-    ym_fix = 1                            # dim C.I_d
-    ym_rest = d * d - ym_fix              # dim of the traceless colour part
+    ym_fix = 1  # dim C.I_d
+    ym_rest = d * d - ym_fix  # dim of the traceless colour part
     ym_orth = max(abs(complex(np.trace(i_d.conj().T @ T))) for T in rest_basis)
 
-    ok = (rh_rest >= 1 and ym_rest >= 1
-          and rh_orth < TOL and ym_orth < TOL and ym_rest == len(rest_basis))
+    ok = (
+        rh_rest >= 1
+        and ym_rest >= 1
+        and rh_orth < TOL
+        and ym_orth < TOL
+        and ym_rest == len(rest_basis)
+    )
     print("  Riemann   (G = S_n)  : V        = Fix(S_n) (+) Fix(S_n)^perp")
-    print(f"                         dims     = {rh_fix} (+) {rh_rest}   "
-          f"block orthogonality ||Pi(I-Pi)|| = {rh_orth:.2e}")
+    print(
+        f"                         dims     = {rh_fix} (+) {rh_rest}   "
+        f"block orthogonality ||Pi(I-Pi)|| = {rh_orth:.2e}"
+    )
     print("                         residue  = S(T) in Fix(S_n)^perp   [G4 = RH OPEN]")
     print("  Yang-Mills (G = U(d)): C^(dxd)  = C.I_d (+) su(d)")
-    print(f"                         dims     = {ym_fix} (+) {ym_rest}   "
-          f"block orthogonality max|<I_d, T_a>| = {ym_orth:.2e}")
-    print("                         curvature= [A_mu,A_nu] in su(d)     [mass gap OPEN]")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- same shape (trivial isotypic "
-          "(+) rest), two groups (S_n / U(d))")
+    print(
+        f"                         dims     = {ym_fix} (+) {ym_rest}   "
+        f"block orthogonality max|<I_d, T_a>| = {ym_orth:.2e}"
+    )
+    print(
+        "                         curvature= [A_mu,A_nu] in su(d)     [mass gap OPEN]"
+    )
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- same shape (trivial isotypic "
+        "(+) rest), two groups (S_n / U(d))"
+    )
     print()
     return ok
 
@@ -391,7 +425,7 @@ def test_nonderivable_escape_contrast():
     # YM escape: non-commuting generators break the colour-scalar commutant, but
     # Y3 audits them as not derivable from nodal data.
     tx, ty, _tz = su2_generators()
-    ym_break = commutator_norm(tx, ty)    # [T_x,T_y] != 0 -> leaves C.I_d
+    ym_break = commutator_norm(tx, ty)  # [T_x,T_y] != 0 -> leaves C.I_d
     ym_escapes = ym_break > 1e-3
 
     verdict_line = "OPEN_DERIVABILITY_GAP (canonical default; package not imported)"
@@ -399,28 +433,34 @@ def test_nonderivable_escape_contrast():
     if _HAVE_AUDIT:
         try:
             report = audit_nonabelian_derivability()
-            any_noncomm = any(c.has_noncommuting_generators
-                              for c in report.candidates)
-            verdict_line = (f"{report.verdict} ; gauge = "
-                            f"{report.canonical_gauge_group} ; "
-                            f"non-commuting generators on any route = {any_noncomm}")
-            canon_ok = (report.verdict == "OPEN_DERIVABILITY_GAP"
-                        and not any_noncomm)
+            any_noncomm = any(c.has_noncommuting_generators for c in report.candidates)
+            verdict_line = (
+                f"{report.verdict} ; gauge = "
+                f"{report.canonical_gauge_group} ; "
+                f"non-commuting generators on any route = {any_noncomm}"
+            )
+            canon_ok = report.verdict == "OPEN_DERIVABILITY_GAP" and not any_noncomm
         except Exception as exc:  # pragma: no cover
             verdict_line = f"(canonical audit unavailable: {exc})"
 
     ok = rh_escapes and ym_escapes and canon_ok
     print(f"  RH escape : P2 = diag({p2_label})")
-    print(f"              breaks S_n (||[P2,P_s]|| = {rh_break:.2f}, leak = "
-          f"{rh_leak:.2f}) -- but P2 is NOT nodal-derivable (B0*-beta, no per-node")
+    print(
+        f"              breaks S_n (||[P2,P_s]|| = {rh_break:.2f}, leak = "
+        f"{rh_leak:.2f}) -- but P2 is NOT nodal-derivable (B0*-beta, no per-node"
+    )
     print("              slot in dEPI/dt; the adelic engine reads nu_f = log p as")
     print("              IMPOSED input -- the RH mirror of the YM audit below).")
-    print("  YM escape : non-commuting generators [T_x,T_y] != 0 "
-          f"(||[T_x,T_y]|| = {ym_break:.3f}) leave the colour-scalar commutant")
+    print(
+        "  YM escape : non-commuting generators [T_x,T_y] != 0 "
+        f"(||[T_x,T_y]|| = {ym_break:.3f}) leave the colour-scalar commutant"
+    )
     print("              -- but their derivation from dEPI/dt = nu_f.dNFR is the")
     print(f"              open Y3 gap. Canonical audit: {verdict_line}")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- both escapes exist but neither "
-          "is nodal-equation-derivable")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- both escapes exist but neither "
+        "is nodal-equation-derivable"
+    )
     print()
     return ok
 

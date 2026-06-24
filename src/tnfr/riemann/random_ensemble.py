@@ -60,17 +60,14 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Sequence
+from typing import TYPE_CHECKING, Sequence
 
 from ..mathematics.unified_numerical import np
-from .operator import (
-    _first_primes,
-    build_h_tnfr,
-)
-from .spectral_proof import (
-    _unfold_eigenvalues,
-    compute_eigenvalue_spacings,
-)
+from .operator import _first_primes, build_h_tnfr
+from .spectral_proof import _unfold_eigenvalues, compute_eigenvalue_spacings
+
+if TYPE_CHECKING:
+    import networkx as nx
 
 # ---------------------------------------------------------------------------
 # Public API
@@ -120,6 +117,7 @@ POISSON_MEAN_RATIO = 2.0 * math.log(2.0) - 1.0  # ~0.3863
 # Data structures
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class EnsembleConfig:
     """Configuration for a random prime-graph ensemble.
@@ -153,6 +151,7 @@ class EnsembleConfig:
     seed: int = 42
     weight_by_log_gap: bool = True
 
+
 @dataclass
 class EnsembleSample:
     """Eigenvalue data for a single ensemble realisation.
@@ -167,6 +166,7 @@ class EnsembleSample:
 
     eigenvalues: np.ndarray
     spacings: np.ndarray
+
 
 @dataclass
 class SpacingStats:
@@ -194,6 +194,7 @@ class SpacingStats:
     histogram_edges: np.ndarray
     histogram_counts: np.ndarray
     n_spacings: int
+
 
 @dataclass
 class RMTComparison:
@@ -228,6 +229,7 @@ class RMTComparison:
     ratio_distance_poisson: float
     ratio_best_match: str
 
+
 @dataclass
 class EnsembleAnalysis:
     """Complete P6 ensemble analysis result.
@@ -261,9 +263,11 @@ class EnsembleAnalysis:
     spectral_rigidity: np.ndarray | None = None
     spectral_rigidity_L: np.ndarray | None = None
 
+
 # ---------------------------------------------------------------------------
 # RMT reference distributions
 # ---------------------------------------------------------------------------
+
 
 def goe_wigner_surmise(s: np.ndarray | float) -> np.ndarray:
     r"""GOE Wigner surmise for nearest-neighbour spacing.
@@ -285,7 +289,8 @@ def goe_wigner_surmise(s: np.ndarray | float) -> np.ndarray:
         Probability density at each s.
     """
     s = np.asarray(s, dtype=float)
-    return (math.pi / 2.0) * s * np.exp(-math.pi * s ** 2 / 4.0)
+    return (math.pi / 2.0) * s * np.exp(-math.pi * s**2 / 4.0)
+
 
 def gue_wigner_surmise(s: np.ndarray | float) -> np.ndarray:
     r"""GUE Wigner surmise for nearest-neighbour spacing.
@@ -307,7 +312,8 @@ def gue_wigner_surmise(s: np.ndarray | float) -> np.ndarray:
         Probability density at each s.
     """
     s = np.asarray(s, dtype=float)
-    return (32.0 / math.pi ** 2) * s ** 2 * np.exp(-4.0 * s ** 2 / math.pi)
+    return (32.0 / math.pi**2) * s**2 * np.exp(-4.0 * s**2 / math.pi)
+
 
 def poisson_spacing_pdf(s: np.ndarray | float) -> np.ndarray:
     r"""Poisson spacing distribution for uncorrelated levels.
@@ -331,9 +337,11 @@ def poisson_spacing_pdf(s: np.ndarray | float) -> np.ndarray:
     s = np.asarray(s, dtype=float)
     return np.exp(-s)
 
+
 # ---------------------------------------------------------------------------
 # Ensemble generation
 # ---------------------------------------------------------------------------
+
 
 def _build_er_graph_with_seed(
     k: int,
@@ -369,15 +377,14 @@ def _build_er_graph_with_seed(
             u = min(components[0])
             v = min(components[ci])
             if weight_by_log_gap:
-                w = abs(
-                    np.log(float(primes[v])) - np.log(float(primes[u]))
-                )
+                w = abs(np.log(float(primes[v])) - np.log(float(primes[u])))
             else:
                 w = 1.0
             G.add_edge(u, v, weight=float(w))
             components[0] = components[0] | components[ci]
 
     return G
+
 
 def generate_er_ensemble(
     k: int,
@@ -430,6 +437,7 @@ def generate_er_ensemble(
         samples.append(EnsembleSample(eigenvalues=evals, spacings=spacings))
 
     return samples
+
 
 def generate_wigner_ensemble(
     k: int,
@@ -500,9 +508,11 @@ def generate_wigner_ensemble(
 
     return samples
 
+
 # ---------------------------------------------------------------------------
 # Spacing statistics
 # ---------------------------------------------------------------------------
+
 
 def compute_ensemble_spacings(samples: Sequence[EnsembleSample]) -> np.ndarray:
     """Pool normalised spacings from all samples in an ensemble.
@@ -521,6 +531,7 @@ def compute_ensemble_spacings(samples: Sequence[EnsembleSample]) -> np.ndarray:
     if not all_sp:
         return np.array([])
     return np.concatenate(all_sp)
+
 
 def compute_spacing_ratio(spacings: np.ndarray) -> np.ndarray:
     r"""Compute consecutive spacing ratios r_i = min(s_i, s_{i+1}) / max(s_i, s_{i+1}).
@@ -550,6 +561,7 @@ def compute_spacing_ratio(spacings: np.ndarray) -> np.ndarray:
     ratios = np.where(mask, s_min / s_max, 0.0)
     return ratios
 
+
 def compute_mean_spacing_ratio(spacings: np.ndarray) -> float:
     r"""Compute ensemble-averaged spacing ratio <r>.
 
@@ -572,6 +584,7 @@ def compute_mean_spacing_ratio(spacings: np.ndarray) -> float:
     if len(ratios) == 0:
         return 0.0
     return float(np.mean(ratios))
+
 
 def compute_level_repulsion_exponent(
     spacings: np.ndarray,
@@ -622,9 +635,11 @@ def compute_level_repulsion_exponent(
     beta = float(coeffs[0])
     return beta
 
+
 # ---------------------------------------------------------------------------
 # Long-range spectral statistics
 # ---------------------------------------------------------------------------
+
 
 def compute_number_variance(
     unfolded_evals: np.ndarray,
@@ -676,12 +691,13 @@ def compute_number_variance(
             end = start + L
             if end > e_max + L * 0.1:
                 break
-            count = np.searchsorted(evals, end, side='left') - i
+            count = np.searchsorted(evals, end, side="left") - i
             variances.append((count - L) ** 2)
         if variances:
             sigma2[idx] = float(np.mean(variances))
 
     return L_values, sigma2
+
 
 def compute_spectral_rigidity(
     unfolded_evals: np.ndarray,
@@ -734,7 +750,7 @@ def compute_spectral_rigidity(
                 break
 
             # Eigenvalues in [start, start+L]
-            j_end = np.searchsorted(evals, end, side='right')
+            j_end = np.searchsorted(evals, end, side="right")
             window_evals = evals[i:j_end]
             if len(window_evals) < 2:
                 continue
@@ -762,9 +778,11 @@ def compute_spectral_rigidity(
 
     return L_values, delta3
 
+
 # ---------------------------------------------------------------------------
 # RMT comparison
 # ---------------------------------------------------------------------------
+
 
 def ks_test_vs_reference(
     spacings: np.ndarray,
@@ -825,6 +843,7 @@ def ks_test_vs_reference(
     ks = float(np.max(np.abs(ecdf - ref_cdf)))
     return ks
 
+
 def classify_ensemble(
     spacing_stats: SpacingStats,
 ) -> RMTComparison:
@@ -870,9 +889,11 @@ def classify_ensemble(
         ratio_best_match=best_rd,
     )
 
+
 # ---------------------------------------------------------------------------
 # Aggregation helpers
 # ---------------------------------------------------------------------------
+
 
 def _compute_spacing_stats(
     samples: Sequence[EnsembleSample],
@@ -900,9 +921,11 @@ def _compute_spacing_stats(
         n_spacings=len(all_sp),
     )
 
+
 # ---------------------------------------------------------------------------
 # Integration: run full RMT ensemble analysis
 # ---------------------------------------------------------------------------
+
 
 def run_rmt_ensemble_analysis(
     config: EnsembleConfig | None = None,
@@ -959,15 +982,21 @@ def run_rmt_ensemble_analysis(
     etype = ensemble_type.lower().replace("-", "_")
     if etype == "erdos_renyi":
         samples = generate_er_ensemble(
-            k, n_samples,
-            edge_prob=edge_prob, sigma=sigma,
-            seed=seed, weight_by_log_gap=weight_by_log_gap,
+            k,
+            n_samples,
+            edge_prob=edge_prob,
+            sigma=sigma,
+            seed=seed,
+            weight_by_log_gap=weight_by_log_gap,
         )
     elif etype == "wigner":
         samples = generate_wigner_ensemble(
-            k, n_samples,
-            wigner_scale=wigner_scale, sigma=sigma,
-            seed=seed, weight_by_log_gap=weight_by_log_gap,
+            k,
+            n_samples,
+            wigner_scale=wigner_scale,
+            sigma=sigma,
+            seed=seed,
+            weight_by_log_gap=weight_by_log_gap,
         )
     else:
         raise ValueError(
@@ -1029,6 +1058,7 @@ def run_rmt_ensemble_analysis(
         spectral_rigidity_L=sr_L,
     )
 
+
 def rmt_convergence_study(
     k_values: Sequence[int],
     n_samples: int = 100,
@@ -1077,7 +1107,8 @@ def rmt_convergence_study(
             weight_by_log_gap=weight_by_log_gap,
         )
         analysis = run_rmt_ensemble_analysis(
-            cfg, compute_long_range=False,
+            cfg,
+            compute_long_range=False,
         )
         results.append(analysis)
     return results

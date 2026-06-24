@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from ..types import NodeId, Phase, TNFRGraph
 from collections.abc import Mapping, Sequence
+
+from ..types import NodeId, Phase, TNFRGraph
 
 __all__ = ["coordinate_global_local_phase"]
 

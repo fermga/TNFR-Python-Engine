@@ -30,6 +30,7 @@ from typing import Any
 
 from ..errors import TNFRValueError
 
+
 def validate_structural_frequency(nu_f: float) -> float:
     """Validate structural frequency (νf) value.
 
@@ -81,6 +82,7 @@ def validate_structural_frequency(nu_f: float) -> float:
         )
 
     return float(nu_f)
+
 
 def validate_phase_value(phase: float, *, allow_wrap: bool = True) -> float:
     """Validate phase (φ) value.
@@ -144,6 +146,7 @@ def validate_phase_value(phase: float, *, allow_wrap: bool = True) -> float:
 
     return float(phase)
 
+
 def validate_coherence_value(coherence: float) -> float:
     """Validate coherence C(t) value.
 
@@ -196,6 +199,7 @@ def validate_coherence_value(coherence: float) -> float:
 
     return float(coherence)
 
+
 def validate_sense_index(si: float) -> float:
     """Validate sense index (Si) value.
 
@@ -232,31 +236,32 @@ def validate_sense_index(si: float) -> float:
         raise TNFRValueError(
             f"Sense index must be numeric, got {type(si).__name__}",
             context={"si_type": type(si).__name__, "si_value": str(si)},
-            suggestion="Ensure sense index is a float or int."
+            suggestion="Ensure sense index is a float or int.",
         )
 
     if math.isnan(si):
         raise TNFRValueError(
             "Sense index cannot be NaN",
             context={"si_value": "NaN"},
-            suggestion="Check calculation source for invalid operations."
+            suggestion="Check calculation source for invalid operations.",
         )
 
     if math.isinf(si):
         raise TNFRValueError(
             "Sense index cannot be infinite",
             context={"si_value": "inf"},
-            suggestion="Check for division by zero or overflow."
+            suggestion="Check for division by zero or overflow.",
         )
 
     if si < 0:
         raise TNFRValueError(
             f"Sense index must be non-negative, got {si}",
             context={"si_value": si},
-            suggestion="Sense index represents reorganization capacity and must be >= 0."
+            suggestion="Sense index represents reorganization capacity and must be >= 0.",
         )
 
     return float(si)
+
 
 def validate_nodal_input(data: dict[str, Any]) -> dict[str, Any]:
     """Validate a complete nodal data structure.
@@ -308,6 +313,7 @@ def validate_nodal_input(data: dict[str, Any]) -> dict[str, Any]:
             validated[key] = value
 
     return validated
+
 
 __all__ = (
     "validate_coherence_value",

@@ -20,13 +20,16 @@ See also:
 - docs/LIFE_EMERGENCE_THEORETICAL_FRAMEWORK.md
 - docs/LIFE_MATHEMATICAL_DERIVATION.md
 """
-from __future__ import annotations
-from dataclasses import dataclass
 
+from __future__ import annotations
+
+from dataclasses import dataclass
 from typing import Sequence
+
 from ..mathematics.unified_numerical import np
 
 # Public API dataclasses
+
 
 @dataclass
 class LifeTelemetry:
@@ -47,6 +50,7 @@ class LifeTelemetry:
     life_threshold_time: float | None
         First time t where A(t) > 1, else None.
     """
+
     times: Sequence[float]
     vitality_index: np.ndarray
     autopoietic_coefficient: np.ndarray
@@ -54,12 +58,16 @@ class LifeTelemetry:
     stability_margin: np.ndarray
     life_threshold_time: float | None
 
+
 # Core computations
 
 # Centralised helper — single source of truth in _helpers.py
-from ._helpers import safe_div as _safe_div              # noqa: E402
+from ._helpers import safe_div as _safe_div  # noqa: E402
 
-def compute_self_generation(epi_series: np.ndarray, gamma: float, epi_max: float) -> np.ndarray:
+
+def compute_self_generation(
+    epi_series: np.ndarray, gamma: float, epi_max: float
+) -> np.ndarray:
     """Compute G(EPI) per canonical logistic form G = γ‖EPI‖(1 - ‖EPI‖/EPI_max).
 
     Parameters
@@ -79,6 +87,7 @@ def compute_self_generation(epi_series: np.ndarray, gamma: float, epi_max: float
     epi = np.clip(np.asarray(epi_series, dtype=float), 0.0, np.inf)
     return gamma * epi * (1.0 - _safe_div(epi, epi_max))
 
+
 def compute_autopoietic_coefficient(
     G_epi: np.ndarray,
     dEPI_dt: np.ndarray,
@@ -93,6 +102,7 @@ def compute_autopoietic_coefficient(
     denominator = np.square(np.abs(dnfr_external))
     return _safe_div(numerator, denominator)
 
+
 def compute_self_org_index(
     epi_series: np.ndarray,
     epsilon: float,
@@ -101,17 +111,17 @@ def compute_self_org_index(
     d_dnfr_external_dt: np.ndarray,
     delta: float = 1e-9,
 ) -> np.ndarray:
-    """Compute S = ε·|∂G/∂‖EPI‖| / (|∂ΔNFR_ext/∂t| + δ).
-    """
+    """Compute S = ε·|∂G/∂‖EPI‖| / (|∂ΔNFR_ext/∂t| + δ)."""
     epi = np.clip(np.asarray(epi_series, dtype=float), 0.0, np.inf)
     dG_dEPI = gamma * (1.0 - 2.0 * _safe_div(epi, epi_max))
     return _safe_div(epsilon * np.abs(dG_dEPI), np.abs(d_dnfr_external_dt) + delta)
 
+
 def compute_stability_margin(epi_series: np.ndarray, epi_max: float) -> np.ndarray:
-    """Compute M = (‖EPI‖ - EPI_max/2)/EPI_max.
-    """
+    """Compute M = (‖EPI‖ - EPI_max/2)/EPI_max."""
     epi = np.asarray(epi_series, dtype=float)
     return (epi - 0.5 * epi_max) / epi_max
+
 
 def detect_life_emergence(
     times: Sequence[float],
@@ -163,11 +173,13 @@ def detect_life_emergence(
     # Vitality Index: Vi = (ΔNFR_internal / ΔNFR_total) × C(t)
     # We don't have C(t) here; provide structural ratio (0..1). Users can multiply by C(t).
     dnfr_internal_est = epsilon * G_epi
-    Vi = _safe_div(np.abs(dnfr_internal_est), np.abs(dnfr_internal_est) + np.abs(dnfr_ext))
+    Vi = _safe_div(
+        np.abs(dnfr_internal_est), np.abs(dnfr_internal_est) + np.abs(dnfr_ext)
+    )
 
     # Refined threshold detection: interpolate to find exact crossing at A = 1.0
     life_time: float | None = None
-    
+
     # Check if A ever exceeds 1.0
     if (A > 1.0).any():
         # Find crossings from ≤1 to >1
@@ -195,6 +207,7 @@ def detect_life_emergence(
         stability_margin=M,
         life_threshold_time=life_time,
     )
+
 
 __all__ = [
     "LifeTelemetry",

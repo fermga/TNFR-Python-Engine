@@ -17,13 +17,21 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
-from ..constants.canonical import PI, GAMMA, PHI, E, ZHIR_VF_THRESHOLD_CANONICAL, NUL_EPI_THRESHOLD_CANONICAL
+from ..constants.canonical import (
+    GAMMA,
+    NUL_EPI_THRESHOLD_CANONICAL,
+    PHI,
+    PI,
+    ZHIR_VF_THRESHOLD_CANONICAL,
+    E,
+)
 from ..types import Glyph
 
 __all__ = [
     "get_bifurcation_paths",
     "compute_bifurcation_score",
 ]
+
 
 def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     """Return viable structural paths after OZ-induced bifurcation.
@@ -87,12 +95,16 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     paths = []
 
     # ZHIR (Mutation) viable if sufficient νf for controlled transformation
-    zhir_threshold = float(G.graph.get("ZHIR_BIFURCATION_VF_THRESHOLD", ZHIR_VF_THRESHOLD_CANONICAL))  # φ/(e+γ) ≈ 0.489 (notational)
+    zhir_threshold = float(
+        G.graph.get("ZHIR_BIFURCATION_VF_THRESHOLD", ZHIR_VF_THRESHOLD_CANONICAL)
+    )  # φ/(e+γ) ≈ 0.489 (notational)
     if vf > zhir_threshold:
         paths.append(Glyph.ZHIR)
 
     # NUL (Contraction) viable if EPI low enough for safe collapse
-    nul_threshold = float(G.graph.get("NUL_BIFURCATION_EPI_THRESHOLD", NUL_EPI_THRESHOLD_CANONICAL))  # π/(π+e) ≈ 0.536 (notational)
+    nul_threshold = float(
+        G.graph.get("NUL_BIFURCATION_EPI_THRESHOLD", NUL_EPI_THRESHOLD_CANONICAL)
+    )  # π/(π+e) ≈ 0.536 (notational)
     if epi < nul_threshold:
         paths.append(Glyph.NUL)
 
@@ -105,6 +117,7 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
         paths.append(Glyph.THOL)
 
     return paths
+
 
 def compute_bifurcation_score(
     d2epi: float,
@@ -221,10 +234,14 @@ def compute_bifurcation_score(
 
     # Weighted combination (notational weights; percentages sum to 100%)
     w_accel = 2.0 / (E + PHI)  # ≈ 0.461 - acceleration weight (notational)
-    w_instab = GAMMA / (PHI + GAMMA)  # ≈ 0.263 - instability weight via golden-Euler balance
-    w_capac = GAMMA / (PI + 1.0)  # ≈ 0.139 - capacity weight via transcendental constraint
+    w_instab = GAMMA / (
+        PHI + GAMMA
+    )  # ≈ 0.263 - instability weight via golden-Euler balance
+    w_capac = GAMMA / (
+        PI + 1.0
+    )  # ≈ 0.139 - capacity weight via transcendental constraint
     w_substr = 1.0 - (w_accel + w_instab + w_capac)  # ≈ 0.151 - remainder for substrate
-    
+
     score = (
         w_accel * accel_factor  # notational primary
         + w_instab * instability_factor  # golden-Euler secondary

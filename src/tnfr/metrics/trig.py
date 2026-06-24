@@ -11,11 +11,10 @@ from collections.abc import Iterable, Iterator, Sequence
 from itertools import tee
 from typing import TYPE_CHECKING, Any, cast, overload
 
-from ..utils import kahan_sum_nd
-from ..types import NodeId, Phase, TNFRGraph
-from ..utils import cached_import
-from ..mathematics.unified_numerical import np
 from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import np
+from ..types import NodeId, Phase, TNFRGraph
+from ..utils import cached_import, kahan_sum_nd
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from ..node import NodeProtocol
@@ -29,6 +28,7 @@ __all__ = (
     "neighbor_phase_mean_list",
     "neighbor_phase_mean",
 )
+
 
 def accumulate_cos_sin(
     it: Iterable[tuple[float, float] | None],
@@ -68,7 +68,10 @@ def accumulate_cos_sin(
 
     return sum_cos, sum_sin, True
 
-def _phase_mean_from_iter(it: Iterable[tuple[float, float] | None], fallback: float) -> float:
+
+def _phase_mean_from_iter(
+    it: Iterable[tuple[float, float] | None], fallback: float
+) -> float:
     """Return circular mean from an iterator of cosine/sine pairs.
 
     ``it`` yields optional ``(cos, sin)`` tuples. ``fallback`` is returned if
@@ -79,6 +82,7 @@ def _phase_mean_from_iter(it: Iterable[tuple[float, float] | None], fallback: fl
     if not processed:
         return fallback
     return math.atan2(sum_sin, sum_cos)
+
 
 def _neighbor_phase_mean_core(
     neigh: Sequence[Any],
@@ -112,6 +116,7 @@ def _neighbor_phase_mean_core(
         return fallback
     return math.atan2(sum_sin, sum_cos)
 
+
 def _neighbor_phase_mean_generic(
     obj: "NodeProtocol" | Sequence[Any],
     cos_map: dict[Any, float] | None = None,
@@ -143,6 +148,7 @@ def _neighbor_phase_mean_generic(
 
     return _neighbor_phase_mean_core(neigh, cos_map, sin_map, fallback)
 
+
 def neighbor_phase_mean_list(
     neigh: Sequence[Any],
     cos_th: dict[Any, float],
@@ -158,6 +164,7 @@ def neighbor_phase_mean_list(
     return _neighbor_phase_mean_generic(
         neigh, cos_map=cos_th, sin_map=sin_th, fallback=fallback
     )
+
 
 def neighbor_phase_mean_bulk(
     edge_src: Any,
@@ -254,9 +261,15 @@ def neighbor_phase_mean_bulk(
         arr.fill(0.0)
         return arr, True
 
-    neighbor_cos_sum, has_cos_buffer = _coerce_buffer(neighbor_cos_sum, name="neighbor_cos_sum")
-    neighbor_sin_sum, has_sin_buffer = _coerce_buffer(neighbor_sin_sum, name="neighbor_sin_sum")
-    neighbor_counts, has_count_buffer = _coerce_buffer(neighbor_counts, name="neighbor_counts")
+    neighbor_cos_sum, has_cos_buffer = _coerce_buffer(
+        neighbor_cos_sum, name="neighbor_cos_sum"
+    )
+    neighbor_sin_sum, has_sin_buffer = _coerce_buffer(
+        neighbor_sin_sum, name="neighbor_sin_sum"
+    )
+    neighbor_counts, has_count_buffer = _coerce_buffer(
+        neighbor_counts, name="neighbor_counts"
+    )
 
     if edge_count:
         cos_bincount = np.bincount(
@@ -324,13 +337,18 @@ def neighbor_phase_mean_bulk(
     mean_theta = np.where(has_neighbors, np.arctan2(mean_sin, mean_cos), theta_arr)
     return mean_theta, has_neighbors
 
+
 @overload
 def neighbor_phase_mean(obj: "NodeProtocol", n: None = ...) -> Phase: ...
+
 
 @overload
 def neighbor_phase_mean(obj: TNFRGraph, n: NodeId) -> Phase: ...
 
-def neighbor_phase_mean(obj: "NodeProtocol" | TNFRGraph, n: NodeId | None = None) -> Phase:
+
+def neighbor_phase_mean(
+    obj: "NodeProtocol" | TNFRGraph, n: NodeId | None = None
+) -> Phase:
     """Circular mean of neighbour phases for ``obj``.
 
     Parameters
@@ -348,11 +366,15 @@ def neighbor_phase_mean(obj: "NodeProtocol" | TNFRGraph, n: NodeId | None = None
         raise ImportError("NodeNX is unavailable")
     if n is None:
         if hasattr(obj, "nodes"):
-            raise TypeError("neighbor_phase_mean requires a node identifier when passing a graph")
+            raise TypeError(
+                "neighbor_phase_mean requires a node identifier when passing a graph"
+            )
         node = obj
     else:
         if hasattr(obj, "nodes"):
             node = NodeNX(obj, n)
         else:
-            raise TypeError("neighbor_phase_mean received a node and an explicit identifier")
+            raise TypeError(
+                "neighbor_phase_mean received a node and an explicit identifier"
+            )
     return _neighbor_phase_mean_generic(node)

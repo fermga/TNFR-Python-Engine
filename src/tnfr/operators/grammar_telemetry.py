@@ -11,9 +11,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..mathematics.unified_numerical import np
-from ..config.defaults_core import K_PHI_CURVATURE_THRESHOLD  # 0.9×π ≈ 2.827 canonical threshold
+from ..config.defaults_core import (  # 0.9×π ≈ 2.827 canonical threshold
+    K_PHI_CURVATURE_THRESHOLD,
+)
 from ..constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD  # heuristic ≈ 0.1837
+from ..mathematics.unified_numerical import np
+
 
 def warn_phase_gradient_telemetry(
     G: Any,
@@ -38,15 +41,21 @@ def warn_phase_gradient_telemetry(
         from ..physics.fields import compute_phase_gradient
     except Exception:  # pragma: no cover
         # If dependencies missing, be conservative but non-blocking
-        return True, {"max": 0.0, "mean": 0.0, "frac_over": 0.0}, (
-            "U6 (|∇φ|): telemetry unavailable (skipping)"
-        ), []
+        return (
+            True,
+            {"max": 0.0, "mean": 0.0, "frac_over": 0.0},
+            ("U6 (|∇φ|): telemetry unavailable (skipping)"),
+            [],
+        )
 
     grad = compute_phase_gradient(G)
     if not grad:
-        return True, {"max": 0.0, "mean": 0.0, "frac_over": 0.0}, (
-            "U6 (|∇φ|): no nodes (trivial)"
-        ), []
+        return (
+            True,
+            {"max": 0.0, "mean": 0.0, "frac_over": 0.0},
+            ("U6 (|∇φ|): no nodes (trivial)"),
+            [],
+        )
 
     vals = np.array(list(grad.values()), dtype=float)
     max_v = float(np.max(vals))
@@ -69,6 +78,7 @@ def warn_phase_gradient_telemetry(
     stats = {"max": max_v, "mean": mean_v, "frac_over": frac_over}
     return safe, stats, msg, flagged
 
+
 def warn_phase_curvature_telemetry(
     G: Any,
     *,
@@ -88,20 +98,23 @@ def warn_phase_curvature_telemetry(
     Safe if no local hotspots and multiscale safety passes. Non-blocking.
     """
     try:
-        from ..physics.fields import (
-            compute_phase_curvature,
-            k_phi_multiscale_safety,
-        )
+        from ..physics.fields import compute_phase_curvature, k_phi_multiscale_safety
     except Exception:  # pragma: no cover
-        return True, {"hotspots": 0, "max_abs": 0.0, "multiscale_safe": True}, (
-            "U6 (K_φ): telemetry unavailable (skipping)"
-        ), []
+        return (
+            True,
+            {"hotspots": 0, "max_abs": 0.0, "multiscale_safe": True},
+            ("U6 (K_φ): telemetry unavailable (skipping)"),
+            [],
+        )
 
     kphi = compute_phase_curvature(G)
     if not kphi:
-        return True, {"hotspots": 0, "max_abs": 0.0, "multiscale_safe": True}, (
-            "U6 (K_φ): no nodes (trivial)"
-        ), []
+        return (
+            True,
+            {"hotspots": 0, "max_abs": 0.0, "multiscale_safe": True},
+            ("U6 (K_φ): no nodes (trivial)"),
+            [],
+        )
 
     vals = [abs(float(v)) for v in kphi.values()]
     max_abs = float(max(vals)) if vals else 0.0
@@ -145,6 +158,7 @@ def warn_phase_curvature_telemetry(
 
     return safe, stats, msg, hotspots
 
+
 def warn_coherence_length_telemetry(
     G: Any,
     *,
@@ -161,11 +175,14 @@ def warn_coherence_length_telemetry(
     Returns (safe, stats, message). Always non-blocking.
     """
     try:
-        from ..physics.fields import estimate_coherence_length
         import networkx as nx  # type: ignore
+
+        from ..physics.fields import estimate_coherence_length
     except Exception:  # pragma: no cover
-        return True, {"xi_c": 0.0, "severity": "unknown"}, (
-            "U6 (ξ_C): telemetry unavailable (skipping)"
+        return (
+            True,
+            {"xi_c": 0.0, "severity": "unknown"},
+            ("U6 (ξ_C): telemetry unavailable (skipping)"),
         )
 
     xi_c = float(estimate_coherence_length(G))
@@ -252,6 +269,10 @@ def warn_coherence_length_telemetry(
             f"Critical approach: system-wide reorganization imminent."
         )
 
-    stats = {"xi_c": xi_c, "mean_path_length": mpl, "diameter": diam, "severity": severity}
+    stats = {
+        "xi_c": xi_c,
+        "mean_path_length": mpl,
+        "diameter": diam,
+        "severity": severity,
+    }
     return safe, stats, msg
-

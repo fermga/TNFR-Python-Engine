@@ -64,7 +64,7 @@ from functools import lru_cache
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from ..types import NodeId, TNFRGraph, Glyph
+    from ..types import Glyph, NodeId, TNFRGraph
     from .definitions import Operator  # noqa: F401
 else:
     # Runtime fallbacks to avoid type expression errors in string annotations
@@ -90,32 +90,28 @@ from ..validation.compatibility import (  # noqa: F401
     get_compatibility_level,
 )
 
-# Re-export all grammar components (backward compatibility)
-from .grammar_types import (
-    StructuralPattern,
-    StructuralGrammarError,
-    RepeatWindowError,
-    MutationPreconditionError,
-    TholClosureError,
-    TransitionCompatibilityError,
-    StructuralPotentialConfinementError,
-    SequenceSyntaxError,
-    SequenceValidationResult,
-    GrammarConfigurationError,
-    record_grammar_violation,
-    glyph_function_name,
-    function_name_to_glyph,
-    # Operator sets
-    GENERATORS,
-    CLOSURES,
-    STABILIZERS,
-    DESTABILIZERS,
-    COUPLING_RESONANCE,
-    BIFURCATION_TRIGGERS,
-    BIFURCATION_HANDLERS,
-    TRANSFORMERS,
-    RECURSIVE_GENERATORS,
-    SCALE_STABILIZERS,
+# Operator registry & glyph mappings (backward compatibility)
+from .definitions import (
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
+)
+
+# Application
+from .grammar_application import (
+    apply_glyph_with_grammar,
+    enforce_canonical_grammar,
+    on_applied_glyph,
 )
 
 # Context
@@ -124,68 +120,72 @@ from .grammar_context import GrammarContext
 # Core validator
 from .grammar_core import GrammarValidator
 
-# U6 validation
-from .grammar_u6 import validate_structural_potential_confinement
-
-# Main validation entry point
-from .grammar_validate import validate_grammar
-
-# Telemetry
-from .grammar_telemetry import (
-    warn_phase_gradient_telemetry,
-    warn_phase_curvature_telemetry,
-    warn_coherence_length_telemetry,
-)
-
-# Application
-from .grammar_application import (
-    apply_glyph_with_grammar,
-    on_applied_glyph,
-    enforce_canonical_grammar,
-)
-
 # Grammar-Aware Dynamics (proactive incremental U1-U6 enforcement)
 from .grammar_dynamics import (
-    GrammarViolation,
     CandidateResult,
-    validate_candidate,
+    GrammarViolation,
+    enforce_grammar_on_glyph,
     filter_candidates,
     suggest_alternative,
-    enforce_grammar_on_glyph,
+    validate_candidate,
     validate_sequence_incremental,
 )
 
 # Pattern recognition
 from .grammar_patterns import (
-    validate_sequence,
-    parse_sequence,
-    SequenceValidationResultWithHealth,
-    validate_sequence_with_health,
-    recognize_il_sequences,
-    optimize_il_sequence,
-    suggest_il_sequence,
     CANONICAL_IL_SEQUENCES,
     IL_ANTIPATTERNS,
+    SequenceValidationResultWithHealth,
+    optimize_il_sequence,
+    parse_sequence,
+    recognize_il_sequences,
+    suggest_il_sequence,
+    validate_sequence,
+    validate_sequence_with_health,
 )
 
-# Operator registry & glyph mappings (backward compatibility)
-from .definitions import (
-    Emission,
-    Reception,
-    Coherence,
-    Dissonance,
-    Coupling,
-    Resonance,
-    Silence,
-    Expansion,
-    Contraction,
-    SelfOrganization,
-    Mutation,
-    Transition,
-    Recursivity,
+# Telemetry
+from .grammar_telemetry import (
+    warn_coherence_length_telemetry,
+    warn_phase_curvature_telemetry,
+    warn_phase_gradient_telemetry,
 )
-from .registry import discover_operators, OPERATORS
-from .grammar_types import GLYPH_TO_FUNCTION, FUNCTION_TO_GLYPH
+
+# Re-export all grammar components (backward compatibility)
+from .grammar_types import (  # Operator sets
+    BIFURCATION_HANDLERS,
+    BIFURCATION_TRIGGERS,
+    CLOSURES,
+    COUPLING_RESONANCE,
+    DESTABILIZERS,
+    FUNCTION_TO_GLYPH,
+    GENERATORS,
+    GLYPH_TO_FUNCTION,
+    RECURSIVE_GENERATORS,
+    SCALE_STABILIZERS,
+    STABILIZERS,
+    TRANSFORMERS,
+    GrammarConfigurationError,
+    MutationPreconditionError,
+    RepeatWindowError,
+    SequenceSyntaxError,
+    SequenceValidationResult,
+    StructuralGrammarError,
+    StructuralPattern,
+    StructuralPotentialConfinementError,
+    TholClosureError,
+    TransitionCompatibilityError,
+    function_name_to_glyph,
+    glyph_function_name,
+    record_grammar_violation,
+)
+
+# U6 validation
+from .grammar_u6 import validate_structural_potential_confinement
+
+# Main validation entry point
+from .grammar_validate import validate_grammar
+from .registry import OPERATORS, discover_operators
 
 # Ensure registry populated for tests expecting direct name lookups
 discover_operators()
@@ -211,6 +211,7 @@ _BACKWARD_COMPAT_OPERATORS = (
     Recursivity,
 )
 
+
 def get_grammar_cache_stats() -> dict[str, dict[str, int]]:
     """Return cache statistics for grammar-level cached functions.
 
@@ -221,6 +222,7 @@ def get_grammar_cache_stats() -> dict[str, dict[str, int]]:
     """
     stats: dict[str, dict[str, int]] = {}
     import inspect
+
     for name, obj in list(globals().items()):
         if inspect.isfunction(obj) and hasattr(obj, "cache_info"):
             try:  # pragma: no cover - defensive
@@ -235,6 +237,7 @@ def get_grammar_cache_stats() -> dict[str, dict[str, int]]:
             except Exception:  # pragma: no cover
                 pass
     return stats
+
 
 __all__ = [
     # Types
@@ -318,6 +321,7 @@ _validation_cache: dict[str, tuple[bool, str]] = {}
 _cache_hits = 0
 _cache_misses = 0
 
+
 def _sequence_hash(sequence: list[Glyph], graph_state: str | None = None) -> str:
     """Generate hash key for operator sequence caching."""
     # Create deterministic hash from sequence and relevant graph state
@@ -326,37 +330,39 @@ def _sequence_hash(sequence: list[Glyph], graph_state: str | None = None) -> str
         content = f"{sequence_str}:{graph_state}"
     else:
         content = sequence_str
-    
+
     return hashlib.md5(content.encode(), usedforsecurity=False).hexdigest()
 
+
 @lru_cache(maxsize=1000)
-def _validate_grammar_rules_cached(sequence_tuple: tuple[Glyph, ...]) -> tuple[bool, str]:
+def _validate_grammar_rules_cached(
+    sequence_tuple: tuple[Glyph, ...],
+) -> tuple[bool, str]:
     """Cached grammar rule validation for operator sequences.
-    
+
     This optimized version caches validation results to avoid redundant
     computation for repeated sequences following TNFR principles.
     """
     sequence = list(sequence_tuple)
-    
+
     # Delegate to existing validation logic
     from .grammar_validate import validate_grammar
-    
+
     try:
         is_valid = validate_grammar(sequence)
         return is_valid, "Valid sequence" if is_valid else "Grammar violation detected"
     except Exception as e:
         return False, f"Validation error: {e}"
 
+
 def validate_sequence_cached(
-    sequence: list[Glyph],
-    graph: TNFRGraph | None = None,
-    use_cache: bool = True
+    sequence: list[Glyph], graph: TNFRGraph | None = None, use_cache: bool = True
 ) -> tuple[bool, str]:
     """Optimized sequence validation with intelligent caching.
-    
+
     PERFORMANCE ENHANCEMENT: Caches validation results to eliminate
     redundant computation while maintaining TNFR theoretical consistency.
-    
+
     Parameters
     ----------
     sequence : list[Glyph]
@@ -365,23 +371,23 @@ def validate_sequence_cached(
         Graph for context-aware validation
     use_cache : bool, default=True
         Enable validation caching
-        
+
     Returns
     -------
     tuple[bool, str]
         (is_valid, error_message)
-        
+
     Notes
     -----
     Cache key includes sequence operators and relevant graph state
     to ensure correctness while maximizing cache hit rate.
     """
     global _cache_hits, _cache_misses
-    
+
     if not use_cache:
         # Direct validation without caching
         return _validate_grammar_rules_cached(tuple(sequence))
-    
+
     # Generate cache key
     graph_state = None
     if graph is not None:
@@ -389,23 +395,24 @@ def validate_sequence_cached(
         n_nodes = len(graph.nodes())
         n_edges = len(graph.edges())
         graph_state = f"n{n_nodes}_e{n_edges}"
-    
+
     cache_key = _sequence_hash(sequence, graph_state)
-    
+
     # Check cache
     if cache_key in _validation_cache:
         _cache_hits += 1
         return _validation_cache[cache_key]
-    
+
     # Cache miss - perform validation
     _cache_misses += 1
     is_valid, message = _validate_grammar_rules_cached(tuple(sequence))
-    
+
     # Store in cache (with size limit)
     if len(_validation_cache) < 10000:  # Prevent unbounded growth
         _validation_cache[cache_key] = (is_valid, message)
-    
+
     return is_valid, message
+
 
 def clear_validation_cache() -> None:
     """Clear validation cache to free memory."""
@@ -415,11 +422,12 @@ def clear_validation_cache() -> None:
     _cache_hits = 0
     _cache_misses = 0
 
+
 def get_validation_cache_stats() -> dict[str, Any]:
     """Get validation cache performance statistics."""
     total_requests = _cache_hits + _cache_misses
     hit_rate = (_cache_hits / total_requests * 100.0) if total_requests > 0 else 0.0
-    
+
     return {
         "cache_hits": _cache_hits,
         "cache_misses": _cache_misses,

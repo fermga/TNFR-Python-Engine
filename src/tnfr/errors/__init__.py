@@ -31,13 +31,13 @@ __all__ = [
 ]
 
 from .contextual import (
-    TNFRUserError,
-    OperatorSequenceError,
-    NetworkConfigError,
-    PhaseError,
     CoherenceError,
     FrequencyError,
-    TNFRValueError,
+    NetworkConfigError,
+    OperatorSequenceError,
+    PhaseError,
     TNFRSecurityError,
     TNFRSecurityWarning,
+    TNFRUserError,
+    TNFRValueError,
 )

@@ -11,6 +11,7 @@ from typing import Any
 
 from .partitioner import FractalPartitioner
 
+
 class TNFRParallelEngine:
     """Parallel computation engine for TNFR networks.
 
@@ -66,13 +67,9 @@ class TNFRParallelEngine:
         self.max_workers = max_workers
         self.execution_mode = execution_mode
         self.cache_aware = cache_aware
-        self.partitioner = FractalPartitioner(
-            max_partition_size=partition_size
-        )
+        self.partitioner = FractalPartitioner(max_partition_size=partition_size)
 
-    def _distribute_work_cache_aware(
-        self, partitions: list, num_workers: int
-    ) -> list:
+    def _distribute_work_cache_aware(self, partitions: list, num_workers: int) -> list:
         """Distribute work across workers in a cache-aware manner.
 
         Groups related partitions together to improve cache locality
@@ -110,8 +107,7 @@ class TNFRParallelEngine:
                 from ..constants.aliases import ALIAS_VF
 
                 vf_sum = sum(
-                    float(get_attr(subgraph.nodes[n], ALIAS_VF, 1.0))
-                    for n in node_set
+                    float(get_attr(subgraph.nodes[n], ALIAS_VF, 1.0)) for n in node_set
                 )
                 return vf_sum / len(node_set)
             except (ZeroDivisionError, AttributeError, KeyError, TypeError):
@@ -135,9 +131,7 @@ class TNFRParallelEngine:
 
         return chunks
 
-    def compute_delta_nfr_parallel(
-        self, graph: Any, **kwargs: Any
-    ) -> dict[Any, float]:
+    def compute_delta_nfr_parallel(self, graph: Any, **kwargs: Any) -> dict[Any, float]:
         """Compute ΔNFR in parallel using fractal partitioning.
 
         Delegates to existing default_compute_delta_nfr with n_jobs parameter.
@@ -162,9 +156,9 @@ class TNFRParallelEngine:
         n_jobs for parallelization. Future enhancements could use explicit
         partitioning strategies.
         """
-        from ..dynamics.dnfr import default_compute_delta_nfr
-        from ..constants.aliases import ALIAS_DNFR
         from ..alias import get_attr
+        from ..constants.aliases import ALIAS_DNFR
+        from ..dynamics.dnfr import default_compute_delta_nfr
 
         # Use existing parallel infrastructure
         kwargs.setdefault("n_jobs", self.max_workers)
@@ -172,15 +166,11 @@ class TNFRParallelEngine:
 
         # Extract results
         return {
-            node_id: float(
-                get_attr(graph.nodes[node_id], ALIAS_DNFR, 0.0) or 0.0
-            )
+            node_id: float(get_attr(graph.nodes[node_id], ALIAS_DNFR, 0.0) or 0.0)
             for node_id in graph.nodes()
         }
 
-    def compute_si_parallel(
-        self, graph: Any, **kwargs: Any
-    ) -> dict[Any, float]:
+    def compute_si_parallel(self, graph: Any, **kwargs: Any) -> dict[Any, float]:
         """Compute sense index in parallel.
 
         Delegates to existing compute_Si with n_jobs parameter.

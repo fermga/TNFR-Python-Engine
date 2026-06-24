@@ -62,9 +62,7 @@ def main() -> None:
         "\nExpected (structural): S_W = 0.000000, "
         "scalar_storage = 1.0000, verdict = SCALAR_WEIGHTS_ADEQUATE"
     )
-    print(
-        "Scope: necessary-condition diagnostic; does NOT advance G4 = RH."
-    )
+    print("Scope: necessary-condition diagnostic; does NOT advance G4 = RH.")
 
 
 if __name__ == "__main__":

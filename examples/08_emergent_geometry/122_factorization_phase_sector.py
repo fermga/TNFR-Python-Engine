@@ -79,10 +79,10 @@ import math
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
@@ -168,9 +168,18 @@ def _recover_smallest_factor(n, eigvecs):
     return 0, 0.0
 
 
-SEMIPRIMES = [(21, 3, 7), (33, 3, 11), (51, 3, 17), (57, 3, 19),
-              (69, 3, 23), (85, 5, 17), (91, 7, 13), (93, 3, 31),
-              (95, 5, 19), (115, 5, 23)]
+SEMIPRIMES = [
+    (21, 3, 7),
+    (33, 3, 11),
+    (51, 3, 17),
+    (57, 3, 19),
+    (69, 3, 23),
+    (85, 5, 17),
+    (91, 7, 13),
+    (93, 3, 31),
+    (95, 5, 19),
+    (115, 5, 23),
+]
 
 
 def experiment_1_shared_eigenvector():
@@ -182,8 +191,10 @@ def experiment_1_shared_eigenvector():
     print("p), so it is an EXACT eigenvector of the emergent operator on BOTH")
     print("the undirected and directed residue graph (CRT / circulant).")
     print()
-    print(f"  {'n':>4} {'p':>3} {'q':>3} | {'undirected resid':>17} "
-          f"{'directed resid':>16}")
+    print(
+        f"  {'n':>4} {'p':>3} {'q':>3} | {'undirected resid':>17} "
+        f"{'directed resid':>16}"
+    )
     for n, p, q in SEMIPRIMES[:6]:
         _, Lu = structural_diffusion_operator(residue_graph_undirected(n))
         _, Ld = structural_diffusion_operator(residue_digraph(n))
@@ -194,8 +205,10 @@ def experiment_1_shared_eigenvector():
             lam = (f.conj() @ (L @ f)) / (f.conj() @ f)
             return float(np.linalg.norm(L @ f - lam * f))
 
-        print(f"  {n:>4} {p:>3} {q:>3} | {resid(Lu, fm):>17.2e} "
-              f"{resid(Ld, fm):>16.2e}")
+        print(
+            f"  {n:>4} {p:>3} {q:>3} | {resid(Lu, fm):>17.2e} "
+            f"{resid(Ld, fm):>16.2e}"
+        )
     print()
     print("  -> ~1e-14: the factor coset is CRT structure in both spectra.")
 
@@ -210,24 +223,29 @@ def experiment_2_complex_completes():
     print("emergent-eta^2 mode exceeds 0.9 is the recovered factor. Real")
     print("(undirected) vs complex (directed) emergent spectrum.")
     print()
-    print(f"  {'n':>4} {'true p':>7} | {'real d':>7} {'ok?':>5} | "
-          f"{'cplx d':>7} {'ok?':>5}")
+    print(
+        f"  {'n':>4} {'true p':>7} | {'real d':>7} {'ok?':>5} | "
+        f"{'cplx d':>7} {'ok?':>5}"
+    )
     rec_r = rec_c = 0
     for n, p, q in SEMIPRIMES:
-        dr, _ = _recover_smallest_factor(n, _emergent_eigvecs(
-            residue_graph_undirected(n)))
-        dc, _ = _recover_smallest_factor(n, _emergent_eigvecs(
-            residue_digraph(n)))
+        dr, _ = _recover_smallest_factor(
+            n, _emergent_eigvecs(residue_graph_undirected(n))
+        )
+        dc, _ = _recover_smallest_factor(n, _emergent_eigvecs(residue_digraph(n)))
         okr, okc = (dr == p), (dc == p)
         rec_r += int(okr)
         rec_c += int(okc)
-        print(f"  {n:>4} {p:>7} | {dr:>7} {str(okr):>5} | "
-              f"{dc:>7} {str(okc):>5}")
+        print(f"  {n:>4} {p:>7} | {dr:>7} {str(okr):>5} | " f"{dc:>7} {str(okc):>5}")
     print()
-    print(f"  -> real undirected sector:  {rec_r}/{len(SEMIPRIMES)} "
-          f"(misses 51, 91 -- the example-117 caveat)")
-    print(f"  -> complex directed sector: {rec_c}/{len(SEMIPRIMES)} "
-          f"(COMPLETE: recovers 51 and 91 via the phase)")
+    print(
+        f"  -> real undirected sector:  {rec_r}/{len(SEMIPRIMES)} "
+        f"(misses 51, 91 -- the example-117 caveat)"
+    )
+    print(
+        f"  -> complex directed sector: {rec_c}/{len(SEMIPRIMES)} "
+        f"(COMPLETE: recovers 51 and 91 via the phase)"
+    )
 
 
 def experiment_3_shuffle_control():

@@ -45,6 +45,7 @@ Run:
 
 Status: RESEARCH (A<->B bridge falsifier; shared obstruction = S_n).
 """
+
 from __future__ import annotations
 
 import itertools
@@ -64,9 +65,7 @@ from composition_arithmetic import (  # noqa: E402
     lap_spectrum,
 )
 
-from tnfr.riemann.prime_ladder_hamiltonian import (  # noqa: E402
-    build_prime_ladder_graph,
-)
+from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph  # noqa: E402
 
 
 # --------------------------------------------------------------------------- #
@@ -145,10 +144,14 @@ def test_graph_is_sn_symmetric():
 
     ok = max_comm < 1e-9 and spectra_match
     print(f"  primes = {primes}, ladder length K = {K}  ->  {len(nodes)} nodes")
-    print(f"  max ||[L, P_sigma]|| over S_{len(primes)} = {max_comm:.2e}  (0 => L is S_n-invariant)")
+    print(
+        f"  max ||[L, P_sigma]|| over S_{len(primes)} = {max_comm:.2e}  (0 => L is S_n-invariant)"
+    )
     print(f"  spec(L_G) == spec(L_P{K}) replicated {len(primes)}x ? {spectra_match}")
     print(f"      spec(L_P{K})  = {np.round(spec_PK, 3)}")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the GRAPH cannot tell primes apart")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the GRAPH cannot tell primes apart"
+    )
     print()
     return ok
 
@@ -172,8 +175,10 @@ def test_degeneracies_are_cardinals():
         all_n &= mult == n
         print(f"      lambda = {val:6.3f}   multiplicity = {mult}  {flag}")
     print(f"  every Laplacian level has multiplicity exactly n = {n}")
-    print(f"  VERDICT: {'PASS' if all_n else 'FAIL'} -- the cardinal n is read off, "
-          "not supplied")
+    print(
+        f"  VERDICT: {'PASS' if all_n else 'FAIL'} -- the cardinal n is read off, "
+        "not supplied"
+    )
     print()
     return all_n
 
@@ -204,8 +209,10 @@ def test_prime_degeneracy_is_reducible():
     print("  <chi,chi> = 1 (IRREDUCIBLE). Here every prime level gives 2: the part")
     print("  that would distinguish individual primes (the standard irrep) is present")
     print("  but COUPLED to the trivial mode -- nothing in the GRAPH separates them.")
-    print(f"  VERDICT: {'PASS' if all_reducible else 'FAIL'} -- primes are not "
-          "individuated by the dynamics")
+    print(
+        f"  VERDICT: {'PASS' if all_reducible else 'FAIL'} -- primes are not "
+        "individuated by the dynamics"
+    )
     print()
     return all_reducible
 
@@ -227,14 +234,20 @@ def test_prime_content_is_diagonal_input():
     max_comm_L = max(commutator_norm(L, M) for M in mats)
     max_comm_D = max(commutator_norm(D, M) for M in mats)
     ok = max_comm_L < 1e-9 and max_comm_D > 1e-3
-    print(f"  max ||[L, P_sigma]||         = {max_comm_L:.2e}   (graph commutes with S_n)")
-    print(f"  max ||[diag(nu_f), P_sigma]|| = {max_comm_D:.2e}   (label BREAKS S_n by hand)")
+    print(
+        f"  max ||[L, P_sigma]||         = {max_comm_L:.2e}   (graph commutes with S_n)"
+    )
+    print(
+        f"  max ||[diag(nu_f), P_sigma]|| = {max_comm_D:.2e}   (label BREAKS S_n by hand)"
+    )
     print("  The values {k*log p} -- the entire Euler-product / von Mangoldt content")
     print("  that P14 feeds into -zeta'/zeta -- sit in the diagonal label, CONSUMED as")
     print("  input. The S_n-invariant graph dynamics carries none of it. This is")
     print("  exactly the Euler-Orthogonality Lemma (13vicies-novies.11).")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- prime structure is consumed, "
-          "not generated")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- prime structure is consumed, "
+        "not generated"
+    )
     print()
     return ok
 
@@ -275,8 +288,10 @@ def test_product_multiplies_but_preserves_symmetry():
     print("  B0*-alpha) yet commutes with prime relabelling on BOTH factors -- the")
     print("  Canonical Product Equivariance Lemma. So the product route still cannot")
     print("  break S_n, hence cannot reach the fine prime distribution / S(T).")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- operation emerges, obstruction "
-          "persists")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- operation emerges, obstruction "
+        "persists"
+    )
     print()
     return ok
 
@@ -293,11 +308,21 @@ def main():
     print("=" * 78)
     print("SUMMARY")
     print("=" * 78)
-    print(f"  (1) prime-ladder graph is S_n-symmetric        : {'PASS' if r1 else 'FAIL'}")
-    print(f"  (2) degeneracies are cardinals (= n_primes)    : {'PASS' if r2 else 'FAIL'}")
-    print(f"  (3) prime degeneracy reducible under S_n       : {'PASS' if r3 else 'FAIL'}")
-    print(f"  (4) prime content is diagonal von Mangoldt input: {'PASS' if r4 else 'FAIL'}")
-    print(f"  (5) products multiply yet keep S_n x S_n        : {'PASS' if r5 else 'FAIL'}")
+    print(
+        f"  (1) prime-ladder graph is S_n-symmetric        : {'PASS' if r1 else 'FAIL'}"
+    )
+    print(
+        f"  (2) degeneracies are cardinals (= n_primes)    : {'PASS' if r2 else 'FAIL'}"
+    )
+    print(
+        f"  (3) prime degeneracy reducible under S_n       : {'PASS' if r3 else 'FAIL'}"
+    )
+    print(
+        f"  (4) prime content is diagonal von Mangoldt input: {'PASS' if r4 else 'FAIL'}"
+    )
+    print(
+        f"  (5) products multiply yet keep S_n x S_n        : {'PASS' if r5 else 'FAIL'}"
+    )
     overall = all([r1, r2, r3, r4, r5])
     print()
     print(f"  OVERALL: {'ALL PASS' if overall else 'SOME FAILED'}")

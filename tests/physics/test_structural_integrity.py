@@ -21,33 +21,33 @@ Tests verify:
 from __future__ import annotations
 
 import math
-import sys
 import os
+import sys
 
-import numpy as np
 import networkx as nx
+import numpy as np
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from tnfr.physics.integrity import (
-    StructuralIntegrityMonitor,
-    StructuralIntegrityViolation,
-    MonitorMode,
-    IntegrityReport,
-    IntegritySummary,
-    enable_integrity_monitor,
-    audit_operator_contracts,
-    OperatorContractAudit,
-    OperatorContractResult,
-)
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-
+from tnfr.physics.integrity import (
+    IntegrityReport,
+    IntegritySummary,
+    MonitorMode,
+    OperatorContractAudit,
+    OperatorContractResult,
+    StructuralIntegrityMonitor,
+    StructuralIntegrityViolation,
+    audit_operator_contracts,
+    enable_integrity_monitor,
+)
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Helpers
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 def _make_graph(num_nodes: int = 5, connected: bool = True) -> nx.Graph:
     """Build a small TNFR graph with proper node attributes."""
@@ -69,6 +69,7 @@ def _make_graph(num_nodes: int = 5, connected: bool = True) -> nx.Graph:
 # ═══════════════════════════════════════════════════════════════════════════
 # Monitor creation and attachment
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestMonitorCreation:
     """Test StructuralIntegrityMonitor instantiation and attachment."""
@@ -113,6 +114,7 @@ class TestMonitorCreation:
 # ═══════════════════════════════════════════════════════════════════════════
 # Before/After Operator cycle
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestBeforeAfterCycle:
     """Test the before_operator/after_operator cycle."""
@@ -172,6 +174,7 @@ class TestBeforeAfterCycle:
 # ═══════════════════════════════════════════════════════════════════════════
 # Postcondition evaluation
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestPostconditions:
     """Test that operator-specific postconditions are checked."""
@@ -463,11 +466,21 @@ class TestPostconditions:
     def test_all_13_operators_have_postconditions(self) -> None:
         """Verify POSTCONDITIONS dict covers all 13 canonical operators."""
         from tnfr.physics.integrity import POSTCONDITIONS
+
         expected = {
-            "coherence", "dissonance", "silence", "reception",
-            "resonance", "emission", "expansion", "contraction",
-            "mutation", "coupling", "self_organization",
-            "transition", "recursivity",
+            "coherence",
+            "dissonance",
+            "silence",
+            "reception",
+            "resonance",
+            "emission",
+            "expansion",
+            "contraction",
+            "mutation",
+            "coupling",
+            "self_organization",
+            "transition",
+            "recursivity",
         }
         assert set(POSTCONDITIONS.keys()) == expected
 
@@ -475,6 +488,7 @@ class TestPostconditions:
 # ═══════════════════════════════════════════════════════════════════════════
 # IntegritySummary accumulation
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestIntegritySummary:
     """Test running statistics accumulation."""
@@ -512,6 +526,7 @@ class TestIntegritySummary:
 # IntegrityReport health check
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestIntegrityReportHealth:
     """Test the is_healthy property of IntegrityReport."""
 
@@ -540,6 +555,7 @@ class TestIntegrityReportHealth:
 # Corrective suggestions
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestCorrectiveSuggestions:
     """Test that corrective suggestions are generated for violations."""
 
@@ -549,7 +565,10 @@ class TestCorrectiveSuggestions:
         monitor.before_operator(G, 0)
         report = monitor.after_operator(G, 0, "Coherence")
         if report.is_healthy:
-            assert report.corrective_suggestion is None or report.corrective_suggestion == ""
+            assert (
+                report.corrective_suggestion is None
+                or report.corrective_suggestion == ""
+            )
 
     def test_suggestion_for_postcondition_failure(self) -> None:
         G = _make_graph()
@@ -566,6 +585,7 @@ class TestCorrectiveSuggestions:
 # feedback_vector for self-optimization
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestFeedbackVector:
     """Test feedback_vector() produces correct structure for optimization engine."""
 
@@ -575,7 +595,12 @@ class TestFeedbackVector:
         monitor.before_operator(G, 0)
         monitor.after_operator(G, 0, "Coherence")
         fv = monitor.feedback_vector()
-        expected_keys = {"conservation_quality", "energy_derivative", "charge_drift", "violation_rate"}
+        expected_keys = {
+            "conservation_quality",
+            "energy_derivative",
+            "charge_drift",
+            "violation_rate",
+        }
         assert set(fv.keys()) == expected_keys
 
     def test_feedback_vector_types(self) -> None:
@@ -585,7 +610,9 @@ class TestFeedbackVector:
         monitor.after_operator(G, 0, "Coherence")
         fv = monitor.feedback_vector()
         for key, value in fv.items():
-            assert isinstance(value, float), f"feedback_vector['{key}'] should be float, got {type(value)}"
+            assert isinstance(
+                value, float
+            ), f"feedback_vector['{key}'] should be float, got {type(value)}"
 
     def test_feedback_vector_conservation_quality_bounded(self) -> None:
         G = _make_graph()
@@ -615,6 +642,7 @@ class TestFeedbackVector:
 # Backward compatibility
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestBackwardCompatibility:
     """Ensure zero overhead when monitor is not attached."""
 
@@ -627,6 +655,7 @@ class TestBackwardCompatibility:
         """Operators should work normally without monitor."""
         try:
             from tnfr.operators.definitions import Coherence
+
             G = _make_graph()
             op = Coherence()
             op(G, 0)
@@ -637,6 +666,7 @@ class TestBackwardCompatibility:
         """Operators should work normally with monitor in OBSERVE mode."""
         try:
             from tnfr.operators.definitions import Coherence
+
             G = _make_graph()
             enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
             op = Coherence()
@@ -651,6 +681,7 @@ class TestBackwardCompatibility:
         """NAV operator (custom __call__) must trigger integrity monitor hooks."""
         try:
             from tnfr.operators.definitions import Transition
+
             G = _make_graph()
             enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
             op = Transition()
@@ -658,9 +689,7 @@ class TestBackwardCompatibility:
             monitor = StructuralIntegrityMonitor.get(G)
             assert monitor.summary.total_operators >= 1
             # Verify "transition" was the recorded operator name
-            assert any(
-                r.operator == "transition" for r in monitor._summary.reports
-            )
+            assert any(r.operator == "transition" for r in monitor._summary.reports)
         except ImportError:
             pytest.skip("Operator definitions not available")
 
@@ -668,6 +697,7 @@ class TestBackwardCompatibility:
 # ═══════════════════════════════════════════════════════════════════════════
 # StructuralIntegrityViolation exception
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestStructuralIntegrityViolation:
     """Test the violation exception."""
@@ -705,6 +735,7 @@ class TestStructuralIntegrityViolation:
 # Multi-operator sequence tracking
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestMultiOperatorSequence:
     """Test monitoring across sequences of operators."""
 
@@ -737,9 +768,7 @@ class TestOperatorContractAudit:
         audit = audit_operator_contracts()
         assert isinstance(audit, OperatorContractAudit)
         assert audit.n_operators == 13
-        assert all(
-            isinstance(r, OperatorContractResult) for r in audit.results
-        )
+        assert all(isinstance(r, OperatorContractResult) for r in audit.results)
 
     def test_all_thirteen_contracts_satisfied(self) -> None:
         # every canonical operator satisfies its postcondition contract
@@ -753,8 +782,19 @@ class TestOperatorContractAudit:
         audit = audit_operator_contracts()
         glyphs = {r.glyph for r in audit.results}
         assert glyphs == {
-            "AL", "EN", "IL", "OZ", "UM", "RA", "SHA", "VAL",
-            "NUL", "THOL", "ZHIR", "NAV", "REMESH",
+            "AL",
+            "EN",
+            "IL",
+            "OZ",
+            "UM",
+            "RA",
+            "SHA",
+            "VAL",
+            "NUL",
+            "THOL",
+            "ZHIR",
+            "NAV",
+            "REMESH",
         }
 
     def test_stabiliser_il_reduces_dnfr(self) -> None:
@@ -785,10 +825,7 @@ class TestOperatorContractAudit:
     def test_audit_is_reproducible(self) -> None:
         a1 = audit_operator_contracts(seed=7)
         a2 = audit_operator_contracts(seed=7)
-        assert (
-            [r.satisfied for r in a1.results]
-            == [r.satisfied for r in a2.results]
-        )
+        assert [r.satisfied for r in a1.results] == [r.satisfied for r in a2.results]
 
     def test_summary_contains_verdict(self) -> None:
         audit = audit_operator_contracts()

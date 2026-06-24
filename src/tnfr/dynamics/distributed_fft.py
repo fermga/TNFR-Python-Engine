@@ -5,12 +5,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable, Mapping
 
-from .advanced_fft_arithmetic import FFTArithmeticResult, SpectralState, TNFRAdvancedFFTEngine
+from .advanced_fft_arithmetic import (
+    FFTArithmeticResult,
+    SpectralState,
+    TNFRAdvancedFFTEngine,
+)
 from .fft_backend import FFTBackend, FFTBackendCapabilities
 
 Dispatcher = Callable[[str, dict[str, Any]], Any]
 
 DISPATCHER_METADATA_ATTR = "__tnfr_dispatcher_metadata__"
+
 
 def annotate_dispatcher(dispatcher: Dispatcher, metadata: Mapping[str, Any]) -> None:
     payload = dict(metadata)
@@ -27,7 +32,10 @@ def annotate_dispatcher(dispatcher: Dispatcher, metadata: Mapping[str, Any]) -> 
         except AttributeError:
             return
 
-def _get_dispatcher_metadata(dispatcher: Dispatcher | None, fallback: Mapping[str, Any] | None = None) -> dict[str, Any] | None:
+
+def _get_dispatcher_metadata(
+    dispatcher: Dispatcher | None, fallback: Mapping[str, Any] | None = None
+) -> dict[str, Any] | None:
     if dispatcher is None:
         return dict(fallback) if fallback is not None else None
     metadata = getattr(dispatcher, DISPATCHER_METADATA_ATTR, None)
@@ -37,6 +45,7 @@ def _get_dispatcher_metadata(dispatcher: Dispatcher | None, fallback: Mapping[st
         return {str(k): metadata[k] for k in metadata}
     return None
 
+
 @dataclass
 class DistributedFFTConfig:
     """Configuration for the distributed FFT dispatcher."""
@@ -44,6 +53,7 @@ class DistributedFFTConfig:
     description: str = ""
     endpoint: str | None = None
     auth_token: str | None = None
+
 
 class DistributedFFTEngine(FFTBackend):
     """Prototype FFT backend that delegates to remote workers when available."""
@@ -88,7 +98,9 @@ class DistributedFFTEngine(FFTBackend):
             return None
         return dict(self._dispatcher_metadata)
 
-    def get_spectral_state(self, G: Any, force_recompute: bool = False) -> SpectralState:
+    def get_spectral_state(
+        self, G: Any, force_recompute: bool = False
+    ) -> SpectralState:
         if self._dispatcher is not None:
             try:
                 response = self._dispatch(

@@ -115,6 +115,7 @@ __all__ = [
 # Graph construction
 # ---------------------------------------------------------------------------
 
+
 def build_prime_ladder_graph(
     n_primes: int,
     *,
@@ -246,6 +247,7 @@ def build_prime_ladder_weight_operator(G: nx.Graph) -> np.ndarray:
 # Hamiltonian wrapper
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class PrimeLadderHamiltonian:
     r"""Bundled prime-ladder Hamiltonian, weight operator, and spectral data.
@@ -331,6 +333,7 @@ def build_prime_ladder_hamiltonian(
 # Spectral observables
 # ---------------------------------------------------------------------------
 
+
 def weighted_spectral_trace(
     H_freq: np.ndarray,
     W: np.ndarray,
@@ -379,6 +382,7 @@ def weighted_spectral_trace(
 # ---------------------------------------------------------------------------
 # Certificate: Hamiltonian reproduces the prime-ladder data
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class PrimeLadderHamiltonianCertificate:

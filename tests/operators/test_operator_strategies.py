@@ -5,13 +5,13 @@ from collections.abc import Iterator
 import pytest
 
 from tnfr.operators.strategies import (
-    ensure_default_strategies_registered,
     OperationResult,
     ResourceEstimate,
     StrategyContext,
     StrategyRegistrationError,
     StrategyRegistry,
     StructuralFields,
+    ensure_default_strategies_registered,
 )
 
 
@@ -62,7 +62,9 @@ class _DummyStrategy:
         return f"prepared:{block}:{ctx.partition_id}"
 
     def apply(self, prepared: str) -> OperationResult:
-        return OperationResult(block=prepared, telemetry={"prepared": prepared}, proof_hash="hash")
+        return OperationResult(
+            block=prepared, telemetry={"prepared": prepared}, proof_hash="hash"
+        )
 
     def cleanup(self, prepared: str) -> None:  # pragma: no cover - no side effects
         return None

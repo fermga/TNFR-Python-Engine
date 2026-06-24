@@ -22,6 +22,7 @@ except ImportError:
 _PARALLELIZATION_EFFICIENCY_ALERT = 0.5
 _MEMORY_EFFICIENCY_CRITICAL = 0.1
 
+
 @dataclass
 class PerformanceMetrics:
     """Performance metrics for parallel TNFR execution.
@@ -63,6 +64,7 @@ class PerformanceMetrics:
     coherence_improvement: float
     parallelization_efficiency: float
     memory_efficiency: float
+
 
 class ParallelExecutionMonitor:
     """Real-time monitoring for parallel TNFR execution.
@@ -120,7 +122,9 @@ class ParallelExecutionMonitor:
         if self._process:
             try:
                 mem_info = self._process.memory_info()
-                self._current_metrics["memory_samples"].append(mem_info.rss / 1024 / 1024)
+                self._current_metrics["memory_samples"].append(
+                    mem_info.rss / 1024 / 1024
+                )
                 self._current_metrics["cpu_samples"].append(self._process.cpu_percent())
             except Exception:
                 pass
@@ -152,7 +156,9 @@ class ParallelExecutionMonitor:
         if self._process:
             try:
                 mem_info = self._process.memory_info()
-                self._current_metrics["memory_samples"].append(mem_info.rss / 1024 / 1024)
+                self._current_metrics["memory_samples"].append(
+                    mem_info.rss / 1024 / 1024
+                )
                 self._current_metrics["cpu_samples"].append(self._process.cpu_percent())
             except Exception:
                 pass
@@ -179,7 +185,9 @@ class ParallelExecutionMonitor:
         expected_cpu = workers * 100.0
         actual_speedup = (avg_cpu / 100.0) if expected_cpu > 0 else 1.0
         parallelization_eff = (
-            min(1.0, actual_speedup / theoretical_speedup) if theoretical_speedup > 0 else 0.0
+            min(1.0, actual_speedup / theoretical_speedup)
+            if theoretical_speedup > 0
+            else 0.0
         )
 
         # Memory efficiency: nodes per MB
@@ -226,7 +234,8 @@ class ParallelExecutionMonitor:
 
         if latest.memory_efficiency < _MEMORY_EFFICIENCY_CRITICAL:
             suggestions.append(
-                "💾 High memory usage - consider distributed execution " "or memory optimization"
+                "💾 High memory usage - consider distributed execution "
+                "or memory optimization"
             )
 
         if latest.operations_per_second < 100:

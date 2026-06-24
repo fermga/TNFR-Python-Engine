@@ -42,9 +42,8 @@ from typing import (
 )
 
 from ..errors import TNFRValueError
-from .unified_numerical import np
-
 from .epi import BEPIElement
+from .unified_numerical import np
 
 if TYPE_CHECKING:
     from .spaces import BanachSpaceEPI
@@ -59,6 +58,7 @@ __all__ = [
     "validate_norm_preservation",
     "ensure_coherence_monotonicity",
 ]
+
 
 @runtime_checkable
 class IsometryFactory(Protocol):
@@ -79,6 +79,7 @@ class IsometryFactory(Protocol):
         enforce_phase: bool = True,
     ) -> Callable[[Sequence[complex]], Sequence[complex]]:
         """Return an isometric transform for the provided basis."""
+
 
 def build_isometry_factory(
     *,
@@ -112,6 +113,7 @@ def build_isometry_factory(
         "current stage only documents the expected contract."
     )
 
+
 def validate_norm_preservation(
     transform: Callable[[Sequence[complex]], Sequence[complex]],
     *,
@@ -133,6 +135,7 @@ def validate_norm_preservation(
         "should ensure transform(metric(state)) == metric(state) within atol."
     )
 
+
 @dataclass(frozen=True)
 class CoherenceViolation:
     """Details about a monotonicity violation detected in a coherence trace."""
@@ -143,6 +146,7 @@ class CoherenceViolation:
     tolerated_drop: float
     drop: float
     kind: str
+
 
 @dataclass(frozen=True)
 class CoherenceMonotonicityReport:
@@ -160,6 +164,7 @@ class CoherenceMonotonicityReport:
 
         return not self.violations
 
+
 def _as_coherence_values(
     coherence_series: Sequence[float | BEPIElement],
     *,
@@ -170,7 +175,7 @@ def _as_coherence_values(
         raise TNFRValueError(
             "coherence_series must contain at least one entry.",
             context={"series_length": 0},
-            suggestion="Provide a non-empty sequence of coherence values."
+            suggestion="Provide a non-empty sequence of coherence values.",
         )
 
     first = coherence_series[0]
@@ -204,10 +209,11 @@ def _as_coherence_values(
             raise TNFRValueError(
                 "Coherence values must be finite numbers.",
                 context={"value": numeric},
-                suggestion="Check for NaN or Inf values in the coherence series."
+                suggestion="Check for NaN or Inf values in the coherence series.",
             )
         values.append(numeric)
     return tuple(values)
+
 
 def ensure_coherence_monotonicity(
     coherence_series: Sequence[float | BEPIElement],
@@ -246,19 +252,21 @@ def ensure_coherence_monotonicity(
         raise TNFRValueError(
             "tolerated_drop must be non-negative.",
             context={"tolerated_drop": tolerated_drop},
-            suggestion="Provide a non-negative value for tolerated_drop."
+            suggestion="Provide a non-negative value for tolerated_drop.",
         )
     if atol < 0:
         raise TNFRValueError(
             "atol must be non-negative.",
             context={"atol": atol},
-            suggestion="Provide a non-negative value for atol."
+            suggestion="Provide a non-negative value for atol.",
         )
 
     if norm_kwargs is None:
         norm_kwargs = {}
 
-    values = _as_coherence_values(coherence_series, space=space, norm_kwargs=norm_kwargs)
+    values = _as_coherence_values(
+        coherence_series, space=space, norm_kwargs=norm_kwargs
+    )
 
     violations: list[CoherenceViolation] = []
 

@@ -112,16 +112,16 @@ except Exception:  # pragma: no cover
     _HAVE_NX = False
 
 PHI = float(_CANON_PHI)
-PHI_INV = PHI - 1.0                # 1/phi = (sqrt5 - 1)/2 = 0.6180339887...
+PHI_INV = PHI - 1.0  # 1/phi = (sqrt5 - 1)/2 = 0.6180339887...
 
 TOL = 1e-9
-_RHO_ITERS = 20000                 # iterations for a precise rotation number
-_RHO_TRANS = 2000                  # transient discarded before averaging
-_SWEEP_ITERS = 6000                # cheaper iters for grid/slope sweeps
-_LOCK_TOL = 2e-3                   # |rho - p/q| below this counts as locked
-_PLATEAU_DELTA = 5e-4             # Omega offset for the flat-plateau check
-K_CRIT = 1.0                       # critical coupling: complete staircase
-K_SUB = 0.5                        # sub-critical: incomplete, phi un-locked
+_RHO_ITERS = 20000  # iterations for a precise rotation number
+_RHO_TRANS = 2000  # transient discarded before averaging
+_SWEEP_ITERS = 6000  # cheaper iters for grid/slope sweeps
+_LOCK_TOL = 2e-3  # |rho - p/q| below this counts as locked
+_PLATEAU_DELTA = 5e-4  # Omega offset for the flat-plateau check
+K_CRIT = 1.0  # critical coupling: complete staircase
+K_SUB = 0.5  # sub-critical: incomplete, phi un-locked
 
 
 # --------------------------------------------------------------------------- #
@@ -146,7 +146,9 @@ def circle_map_rho(
 
 
 def sweep_rho(
-    omegas: np.ndarray, k: float, iters: int = _SWEEP_ITERS,
+    omegas: np.ndarray,
+    k: float,
+    iters: int = _SWEEP_ITERS,
     trans: int = _RHO_TRANS,
 ) -> np.ndarray:
     """Vectorised rotation number over a grid of detunings ``omegas``."""
@@ -175,11 +177,15 @@ def is_plateau(omega: float, k: float, target: float) -> bool:
 
 
 def tongue_width(
-    p: int, q: int, k: float, n: int = 400, iters: int = _SWEEP_ITERS,
+    p: int,
+    q: int,
+    k: float,
+    n: int = 400,
+    iters: int = _SWEEP_ITERS,
 ) -> float:
     """Omega-width of the p/q Arnold tongue (the locked plateau)."""
     center = p / q
-    half = min(0.12, 0.6 / (q * q))           # tongues shrink fast with q
+    half = min(0.12, 0.6 / (q * q))  # tongues shrink fast with q
     om = np.linspace(center - half, center + half, n)
     rho = sweep_rho(om, k, iters=iters)
     locked = np.abs(rho - p / q) < _LOCK_TOL
@@ -188,14 +194,16 @@ def tongue_width(
 
 
 def locked_measure(
-    k: float, n_grid: int = 800, iters: int = _SWEEP_ITERS,
+    k: float,
+    n_grid: int = 800,
+    iters: int = _SWEEP_ITERS,
 ) -> float:
     """Fraction of Omega in [0, 1] that sits on a rational plateau."""
     om = np.linspace(0.0, 1.0, n_grid)
     rho = sweep_rho(om, k, iters=iters)
     d_om = om[1] - om[0]
     slope = np.abs(np.diff(rho)) / d_om
-    return float(np.mean(slope < 0.1))        # slope ~0 locked, ~1 drifting
+    return float(np.mean(slope < 0.1))  # slope ~0 locked, ~1 drifting
 
 
 def invert_rho(target: float, k: float, n_bis: int = 60) -> float:
@@ -211,8 +219,11 @@ def invert_rho(target: float, k: float, n_bis: int = 60) -> float:
 
 
 def harvest_plateaus(
-    omegas: np.ndarray, rho: np.ndarray, slope_thr: float = 0.05,
-    min_len: int = 4, max_den: int = 32,
+    omegas: np.ndarray,
+    rho: np.ndarray,
+    slope_thr: float = 0.05,
+    min_len: int = 4,
+    max_den: int = 32,
 ) -> dict[Fraction, float]:
     """Harvest locked plateaus from a sweep and recover their rationals.
 
@@ -235,7 +246,7 @@ def harvest_plateaus(
         while j < n and flat[j]:
             j += 1
         if j - i + 1 >= min_len:
-            val = float(np.median(rho[i:j + 1]))
+            val = float(np.median(rho[i : j + 1]))
             fr, err = identify_rational(val, max_den=max_den)
             if err < _LOCK_TOL:
                 recovered[fr] = max(recovered.get(fr, 0.0), err)
@@ -256,8 +267,7 @@ def farey_mediant(f1: Fraction, f2: Fraction) -> Fraction:
 
 def is_farey_neighbour(f1: Fraction, f2: Fraction) -> bool:
     """True iff |p1 q2 - p2 q1| = 1 (adjacent in some Farey sequence)."""
-    return abs(f1.numerator * f2.denominator
-               - f2.numerator * f1.denominator) == 1
+    return abs(f1.numerator * f2.denominator - f2.numerator * f1.denominator) == 1
 
 
 def lowest_denom_between(f1: Fraction, f2: Fraction) -> Fraction:
@@ -268,7 +278,7 @@ def lowest_denom_between(f1: Fraction, f2: Fraction) -> Fraction:
         a = math.floor(lo * b) + 1
         fr = Fraction(a, b)
         if lo < fr < hi:
-            return fr                         # first (smallest) b wins
+            return fr  # first (smallest) b wins
     return farey_mediant(f1, f2)
 
 
@@ -325,21 +335,32 @@ def test_rationals_emerge_as_lockings() -> bool:
 
     # The robustly wide tongues at K = 1 (must all be harvested blind).
     majors = [
-        Fraction(0, 1), Fraction(1, 3), Fraction(1, 2),
-        Fraction(2, 3), Fraction(1, 1),
+        Fraction(0, 1),
+        Fraction(1, 3),
+        Fraction(1, 2),
+        Fraction(2, 3),
+        Fraction(1, 1),
     ]
     covered = [m for m in majors if m in recovered]
     worst_err = max((recovered[m] for m in covered), default=1.0)
     cover_ok = len(covered) == len(majors)
 
     print(f"  distinct rationals harvested  : {len(recovered)}")
-    print(f"  major tongues covered         : "
-          f"{len(covered)}/{len(majors)} "
-          f"{[str(m) for m in covered]}")
+    print(
+        f"  major tongues covered         : "
+        f"{len(covered)}/{len(majors)} "
+        f"{[str(m) for m in covered]}"
+    )
     print(f"  worst |rho - p/q| on majors   : {worst_err:.2e}")
     ok = cover_ok and len(recovered) >= 8 and worst_err < _LOCK_TOL
-    msg = ("the rationals emerge blind as locked plateaus and are recovered "
-           "from rho alone") if ok else "too few lockings harvested"
+    msg = (
+        (
+            "the rationals emerge blind as locked plateaus and are recovered "
+            "from rho alone"
+        )
+        if ok
+        else "too few lockings harvested"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -379,16 +400,24 @@ def test_farey_mediant_organises_tongues() -> bool:
     print("  (a) mediant = unique lowest-denominator in-between fraction:")
     for f1, f2 in pairs:
         med = farey_mediant(f1, f2)
-        print(f"      {f1} , {f2}  ->  mediant {med}  "
-              f"(neighbour={is_farey_neighbour(f1, f2)})")
+        print(
+            f"      {f1} , {f2}  ->  mediant {med}  "
+            f"(neighbour={is_farey_neighbour(f1, f2)})"
+        )
     print(f"      Stern-Brocot mediant law holds : {mediant_ok}")
     print("  (b) Arnold tongue widths along the path to phi:")
     for (p, q), w in zip(path, widths):
         print(f"      {p}/{q:<2d} width = {w:.4f}")
     print(f"      strictly shrinking             : {shrinking}")
     ok = mediant_ok and shrinking
-    msg = ("the dynamics reproduces the Farey/Stern-Brocot tree; tongues "
-           "vanish toward phi") if ok else "mediant/width law broken"
+    msg = (
+        (
+            "the dynamics reproduces the Farey/Stern-Brocot tree; tongues "
+            "vanish toward phi"
+        )
+        if ok
+        else "mediant/width law broken"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -410,7 +439,7 @@ def test_phi_emerges_as_most_irrational() -> bool:
 
     # continued fraction of 1/phi is all 1s after the leading 0
     cf = continued_fraction(PHI_INV, 18)
-    cf_all_ones = (cf[0] == 0 and all(a == 1 for a in cf[1:]))
+    cf_all_ones = cf[0] == 0 and all(a == 1 for a in cf[1:])
 
     # Hurwitz saturation: sqrt5 * F_{n+1}^2 * |F_n/F_{n+1} - 1/phi| -> 1
     sqrt5 = math.sqrt(5.0)
@@ -426,14 +455,18 @@ def test_phi_emerges_as_most_irrational() -> bool:
     print(f"  F_n/F_{{n+1}} last ratio        : {ratios[-1]:.15f}")
     print(f"  1/phi (canonical PHI - 1)     : {PHI_INV:.15f}")
     print(f"  |F_n/F_{{n+1}} - 1/phi|         : {conv_err:.2e}")
-    print(f"  continued fraction [0;1,1,..] : {cf[:8]} ... all ones="
-          f"{cf_all_ones}")
+    print(f"  continued fraction [0;1,1,..] : {cf[:8]} ... all ones=" f"{cf_all_ones}")
     print(f"  Hurwitz sqrt5*q^2*err -> 1     : {c_vals[-1]:.6f}")
-    print(f"  canonical PHI source          : "
-          f"{'tnfr.constants.canonical' if _HAVE_CANON_PHI else 'fallback'}")
-    ok = (conv_err < 1e-10 and cf_all_ones and hurwitz_ok and canon_ok)
-    msg = ("phi emerges as the canonical, maximally irrational "
-           "Fibonacci-Farey limit") if ok else "phi limit not clean"
+    print(
+        f"  canonical PHI source          : "
+        f"{'tnfr.constants.canonical' if _HAVE_CANON_PHI else 'fallback'}"
+    )
+    ok = conv_err < 1e-10 and cf_all_ones and hurwitz_ok and canon_ok
+    msg = (
+        ("phi emerges as the canonical, maximally irrational " "Fibonacci-Farey limit")
+        if ok
+        else "phi limit not clean"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -456,7 +489,7 @@ def test_phi_never_locks_wall() -> bool:
     lo = circle_map_rho(om_phi - _PLATEAU_DELTA, K_SUB)
     hi = circle_map_rho(om_phi + _PLATEAU_DELTA, K_SUB)
     phi_slope = abs(hi - lo) / (2.0 * _PLATEAU_DELTA)
-    phi_unlocked = phi_slope > 0.5            # drifting, not flat
+    phi_unlocked = phi_slope > 0.5  # drifting, not flat
     phi_hit = abs(rho_phi - PHI_INV) < 1e-3
 
     # a rational (1/2) at the same K_SUB DOES lock (flat plateau)
@@ -472,8 +505,9 @@ def test_phi_never_locks_wall() -> bool:
     #     a commensurate detuning < K locks (phase difference bounded,
     #     winding W -> 0), the golden detuning > K winds (W != 0). The
     #     canonical order parameter confirms the locked pair is coherent.
-    def adler_pair(d_omega: float, k: float,
-                   steps: int = 20000, dt: float = 0.01) -> tuple:
+    def adler_pair(
+        d_omega: float, k: float, steps: int = 20000, dt: float = 0.01
+    ) -> tuple:
         th1 = th2 = 0.0
         for _ in range(steps):
             s = math.sin(th2 - th1)
@@ -483,37 +517,44 @@ def test_phi_never_locks_wall() -> bool:
 
     n_steps, dt = 20000, 0.01
     span = n_steps * dt
-    t1c, t2c = adler_pair(0.30, K_SUB, n_steps, dt)        # 0.30 < 0.5: lock
-    t1g, t2g = adler_pair(PHI_INV, K_SUB, n_steps, dt)     # 0.618 > 0.5: wind
-    w_comm = abs(t2c - t1c) / span        # bounded -> ~0 for a locked pair
-    w_gold = abs(t2g - t1g) / span        # grows -> winding rate for golden
+    t1c, t2c = adler_pair(0.30, K_SUB, n_steps, dt)  # 0.30 < 0.5: lock
+    t1g, t2g = adler_pair(PHI_INV, K_SUB, n_steps, dt)  # 0.618 > 0.5: wind
+    w_comm = abs(t2c - t1c) / span  # bounded -> ~0 for a locked pair
+    w_gold = abs(t2g - t1g) / span  # grows -> winding rate for golden
     comm_locked = w_comm < 1e-2
     gold_winds = w_gold > 0.1
     two_pi = 2.0 * math.pi
     pair_turns = np.array([t1c, t2c]) / two_pi
     r_pair, _ = kuramoto_order_parameter(pair_turns)
-    r_src = ("tnfr.gamma.kuramoto_R_psi (CANONICAL)"
-             if (_HAVE_KURAMOTO and _HAVE_NX) else "numpy fallback")
+    r_src = (
+        "tnfr.gamma.kuramoto_R_psi (CANONICAL)"
+        if (_HAVE_KURAMOTO and _HAVE_NX)
+        else "numpy fallback"
+    )
     r_ok = comm_locked and gold_winds and r_pair > 0.5
 
     print(f"  Omega* with rho=1/phi (K={K_SUB}) : {om_phi:.6f}")
-    print(f"  rho at Omega* (~1/phi)        : {rho_phi:.6f} "
-          f"(hit={phi_hit})")
-    print(f"  slope d(rho)/d(Omega) at phi  : {phi_slope:.3f}  "
-          f"(unlocked={phi_unlocked})")
+    print(f"  rho at Omega* (~1/phi)        : {rho_phi:.6f} " f"(hit={phi_hit})")
+    print(
+        f"  slope d(rho)/d(Omega) at phi  : {phi_slope:.3f}  "
+        f"(unlocked={phi_unlocked})"
+    )
     print(f"  rational 1/2 locks at K={K_SUB}    : {rational_locked}")
     print(f"  locked measure  K={K_SUB}         : {m_sub:.3f}  (< 1)")
     print(f"  locked measure  K={K_CRIT}         : {m_crit:.3f}")
-    print(f"  Adler winding W (commensurate): {w_comm:.4f}  "
-          f"(locked={comm_locked})")
-    print(f"  Adler winding W (golden)      : {w_gold:.4f}  "
-          f"(winds={gold_winds})")
+    print(f"  Adler winding W (commensurate): {w_comm:.4f}  " f"(locked={comm_locked})")
+    print(f"  Adler winding W (golden)      : {w_gold:.4f}  " f"(winds={gold_winds})")
     print(f"  R(locked commensurate pair)   : {r_pair:.4f}")
     print(f"  order-parameter source        : {r_src}")
-    ok = (phi_hit and phi_unlocked and rational_locked
-          and incomplete and r_ok)
-    msg = ("phi is the un-lockable residue (soft: a limit of rationals); "
-           "staircase incomplete; nothing closed") if ok else "phi locked?!"
+    ok = phi_hit and phi_unlocked and rational_locked and incomplete and r_ok
+    msg = (
+        (
+            "phi is the un-lockable residue (soft: a limit of rationals); "
+            "staircase incomplete; nothing closed"
+        )
+        if ok
+        else "phi locked?!"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -529,14 +570,22 @@ def main() -> int:
     print("=" * 78)
     print("SUMMARY")
     print("=" * 78)
-    print(f"  TEST 1 rationals emerge as lockings (number-OUT): "
-          f"{'PASS' if r1 else 'FAIL'}")
-    print(f"  TEST 2 Farey/Stern-Brocot organises the tongues : "
-          f"{'PASS' if r2 else 'FAIL'}")
-    print(f"  TEST 3 phi = canonical most-irrational limit    : "
-          f"{'PASS' if r3 else 'FAIL'}")
-    print(f"  TEST 4 phi never locks; staircase incomplete    : "
-          f"{'PASS' if r4 else 'FAIL'}")
+    print(
+        f"  TEST 1 rationals emerge as lockings (number-OUT): "
+        f"{'PASS' if r1 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 2 Farey/Stern-Brocot organises the tongues : "
+        f"{'PASS' if r2 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 3 phi = canonical most-irrational limit    : "
+        f"{'PASS' if r3 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 4 phi never locks; staircase incomplete    : "
+        f"{'PASS' if r4 else 'FAIL'}"
+    )
     structural = r1 and r2 and r3 and r4
     print()
     label = "ALL PASS" if structural else "SOME FAILED"

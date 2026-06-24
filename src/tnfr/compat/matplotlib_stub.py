@@ -10,6 +10,7 @@ from typing import Any
 
 __all__ = ["pyplot", "axes", "figure"]
 
+
 class _NotInstalledError(RuntimeError):
     """Raised when trying to use matplotlib operations without matplotlib installed."""
 
@@ -19,17 +20,20 @@ class _NotInstalledError(RuntimeError):
             "Install it with: pip install tnfr[viz] or pip install matplotlib"
         )
 
+
 class Axes:
     """Stub for matplotlib.axes.Axes."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         raise _NotInstalledError("Axes creation")
 
+
 class Figure:
     """Stub for matplotlib.figure.Figure."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         raise _NotInstalledError("Figure creation")
+
 
 class _PyPlotStub:
     """Stub for matplotlib.pyplot module."""
@@ -50,15 +54,18 @@ class _PyPlotStub:
     def figure(*args: Any, **kwargs: Any) -> Figure:
         raise _NotInstalledError("pyplot.figure")
 
+
 class _AxesStub:
     """Stub for matplotlib.axes module."""
 
     Axes = Axes
 
+
 class _FigureStub:
     """Stub for matplotlib.figure module."""
 
     Figure = Figure
+
 
 # Module-level stubs
 pyplot = _PyPlotStub()

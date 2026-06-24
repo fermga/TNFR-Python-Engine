@@ -7,7 +7,6 @@ from urllib.error import URLError
 
 import pytest
 
-
 pytest.importorskip("sklearn")
 
 

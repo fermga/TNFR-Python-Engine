@@ -23,8 +23,10 @@ __all__ = ["Operator"]
 # T'HOL canonical bifurcation constants
 # Import canonical constants
 from ..constants.canonical import HALF_INV_PHI
+
 _THOL_SUB_EPI_SCALING = HALF_INV_PHI  # 1/(2φ) ≈ 0.309 (golden fractal scale, sub-EPI)
 _THOL_EMERGENCE_CONTRIBUTION = 0.1  # Parent EPI +10% of sub-EPI
+
 
 class Operator(metaclass=OperatorMetaAuto):
     """Base class for TNFR structural operators.
@@ -110,6 +112,7 @@ class Operator(metaclass=OperatorMetaAuto):
         # Optional nodal equation validation (∂EPI/∂t = νf · ΔNFR(t))
         if validate_equation and state_before is not None:
             from .nodal_equation import validate_nodal_equation
+
             dt = float(kw.get("dt", 1.0))  # discrete time step
             strict = G.graph.get("NODAL_EQUATION_STRICT", False)
             epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
@@ -206,4 +209,3 @@ class Operator(metaclass=OperatorMetaAuto):
             "delta_theta": float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
             - state_before["theta"],
         }
-

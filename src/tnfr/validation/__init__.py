@@ -38,75 +38,15 @@ from __future__ import annotations
 
 from typing import Any
 
-from .base import SubjectT, ValidationOutcome, Validator  # noqa: F401
 from ..operators import grammar as _grammar
 from ..types import Glyph
-from .config import ValidationConfig, configure_validation, validation_config  # noqa: F401
+from .base import SubjectT, ValidationOutcome, Validator  # noqa: F401
+from .config import (  # noqa: F401
+    ValidationConfig,
+    configure_validation,
+    validation_config,
+)
 from .graph import GRAPH_VALIDATORS, run_validators  # noqa: F401
-from .unified_validation_system import (  # noqa: F401,F811
-    ValidationError,
-    get_unified_validation_system,
-)
-# Legacy exports mapped to unified system where possible
-# validate_dnfr_value, validate_epi_value etc are deprecated
-
-from .invariants import (  # noqa: F401
-    Invariant10_DomainNeutrality,
-    Invariant1_EPIOnlyThroughOperators,
-    Invariant2_VfInHzStr,
-    Invariant3_DNFRSemantics,
-    Invariant4_OperatorClosure,
-    Invariant5_ExplicitPhaseChecks,
-    Invariant6_NodeBirthCollapse,
-    Invariant7_OperationalFractality,
-    Invariant8_ControlledDeterminism,
-    Invariant9_StructuralMetrics,
-    InvariantSeverity,
-    InvariantViolation,
-    TNFRInvariant,
-)
-from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr  # noqa: F401
-from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon  # noqa: F401
-from .sequence_validator import SequenceSemanticValidator  # noqa: F401
-from .soft_filters import (  # noqa: F401
-    acceleration_norm,
-    check_repeats,
-    maybe_force,
-    soft_grammar_filters,
-)
-from .validator import TNFRValidationError, TNFRValidator  # noqa: F401
-from .window import validate_window  # noqa: F401
-from .phase_gate import (  # noqa: F401
-    DEFAULT_MIN_COMPLIANCE,
-    DEFAULT_PHASE_GATE,
-    PhaseGateCompliance,
-    PhaseGateOperatorPrescription,
-    PhaseGateReport,
-    PhaseGateViolation,
-    PhaseStressHotspot,
-    analyze_phase_gate,
-    compare_against_global_baselines,
-    compute_edge_gate_compliance,
-    detect_phase_gate_violations,
-    export_phase_gate_report,
-    prescribe_phase_gate_operators,
-    rank_phase_stress_hotspots,
-)
-from .structural_interface import (  # noqa: F401
-    StructuralInterfaceProblem,
-    StructuralInterfaceScore,
-    baseline_score_maps,
-    build_knn_graph,
-    encode_phase_from_binary_state,
-    evaluate_interface_scores,
-    export_structural_interface_report,
-    full_baseline_score_maps,
-    interface_score_maps,
-    local_state_disagreement,
-    render_structural_interface_html,
-    render_structural_interface_markdown,
-    score_structural_interfaces,
-)
 from .interface_baselines import (  # noqa: F401
     BASELINE_FORMULAS,
     compute_all_baselines,
@@ -121,19 +61,20 @@ from .interface_baselines import (  # noqa: F401
     mean_neighbour_distance,
     random_baseline,
 )
-from .temporal_interface import (  # noqa: F401
-    EarlyWarningComparison,
-    TemporalInterfaceConfig,
-    WindowTetradSeries,
-    build_temporal_proximity_graph,
-    delay_embedding,
-    evaluate_early_warning,
-    hilbert_instantaneous_phase,
-    kendall_tau,
-    local_structural_pressure,
-    rolling_lag1_autocorrelation,
-    rolling_variance,
-    window_tetrad_series,
+from .invariants import (  # noqa: F401
+    Invariant1_EPIOnlyThroughOperators,
+    Invariant2_VfInHzStr,
+    Invariant3_DNFRSemantics,
+    Invariant4_OperatorClosure,
+    Invariant5_ExplicitPhaseChecks,
+    Invariant6_NodeBirthCollapse,
+    Invariant7_OperationalFractality,
+    Invariant8_ControlledDeterminism,
+    Invariant9_StructuralMetrics,
+    Invariant10_DomainNeutrality,
+    InvariantSeverity,
+    InvariantViolation,
+    TNFRInvariant,
 )
 from .multichannel_interface import (  # noqa: F401
     MultichannelConfig,
@@ -151,20 +92,85 @@ from .multichannel_interface import (  # noqa: F401
     phase_locking_matrix,
     phase_offsets,
 )
+from .phase_gate import (  # noqa: F401
+    DEFAULT_MIN_COMPLIANCE,
+    DEFAULT_PHASE_GATE,
+    PhaseGateCompliance,
+    PhaseGateOperatorPrescription,
+    PhaseGateReport,
+    PhaseGateViolation,
+    PhaseStressHotspot,
+    analyze_phase_gate,
+    compare_against_global_baselines,
+    compute_edge_gate_compliance,
+    detect_phase_gate_violations,
+    export_phase_gate_report,
+    prescribe_phase_gate_operators,
+    rank_phase_stress_hotspots,
+)
+from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr  # noqa: F401
+from .runtime import (  # noqa: F401
+    GraphCanonicalValidator,
+    apply_canonical_clamps,
+    validate_canon,
+)
+from .sequence_validator import SequenceSemanticValidator  # noqa: F401
+from .soft_filters import (  # noqa: F401
+    acceleration_norm,
+    check_repeats,
+    maybe_force,
+    soft_grammar_filters,
+)
+from .structural_interface import (  # noqa: F401
+    StructuralInterfaceProblem,
+    StructuralInterfaceScore,
+    baseline_score_maps,
+    build_knn_graph,
+    encode_phase_from_binary_state,
+    evaluate_interface_scores,
+    export_structural_interface_report,
+    full_baseline_score_maps,
+    interface_score_maps,
+    local_state_disagreement,
+    render_structural_interface_html,
+    render_structural_interface_markdown,
+    score_structural_interfaces,
+)
+from .temporal_interface import (  # noqa: F401
+    EarlyWarningComparison,
+    TemporalInterfaceConfig,
+    WindowTetradSeries,
+    build_temporal_proximity_graph,
+    delay_embedding,
+    evaluate_early_warning,
+    hilbert_instantaneous_phase,
+    kendall_tau,
+    local_structural_pressure,
+    rolling_lag1_autocorrelation,
+    rolling_variance,
+    window_tetrad_series,
+)
 
 # Unified validation system exports
 from .unified_validation_system import (  # noqa: F401,F811
+    TNFRSecurityError,
     TNFRUnifiedValidationSystem,
     ValidationConfig,
+    ValidationError,
     ValidationResult,
-    TNFRSecurityError,
-    get_unified_validation_system,
-    validate_structural_frequency,
-    validate_phase_value,
-    validate_coherence,
-    validate_string_input,
     get_unified_validation_stats,
+    get_unified_validation_system,
+    validate_coherence,
+    validate_phase_value,
+    validate_string_input,
+    validate_structural_frequency,
 )
+from .validator import TNFRValidationError, TNFRValidator  # noqa: F401
+from .window import validate_window  # noqa: F401
+
+# Legacy exports mapped to unified system where possible
+# validate_dnfr_value, validate_epi_value etc are deprecated
+
 
 # NOTE: Compatibility module deprecated - grammar emerges from TNFR structural dynamics
 # Legacy exports kept for backward compatibility but will be removed in future versions
@@ -172,8 +178,8 @@ try:
     from .compatibility import (
         CANON_COMPAT,
         CANON_FALLBACK,
-        CompatibilityLevel,
         GRADUATED_COMPATIBILITY,
+        CompatibilityLevel,
         get_compatibility_level,
     )
 
@@ -204,6 +210,7 @@ except ImportError:
             stacklevel=2,
         )
         return "good"
+
 
 _GRAMMAR_EXPORTS = tuple(getattr(_grammar, "__all__", ()))
 

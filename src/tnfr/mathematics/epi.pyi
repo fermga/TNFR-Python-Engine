@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import numpy as np
 from dataclasses import dataclass
 from typing import Callable, Mapping, Sequence
+
+import numpy as np
 
 __all__ = ["BEPIElement", "CoherenceEvaluation", "evaluate_coherence_transform"]
 

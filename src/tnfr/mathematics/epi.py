@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable, Mapping, Sequence
 
-from .unified_numerical import np, TNFRValueError
+from .unified_numerical import TNFRValueError, np
 
 if TYPE_CHECKING:
     from .spaces import BanachSpaceEPI
@@ -16,54 +16,59 @@ __all__ = [
     "evaluate_coherence_transform",
 ]
 
+
 class _EPIValidators:
     """Shared validation helpers for EPI Banach constructions."""
 
     _complex_dtype = np.complex128
 
     @staticmethod
-    def _as_array(values: Sequence[complex] | np.ndarray, *, dtype: np.dtype) -> np.ndarray:
+    def _as_array(
+        values: Sequence[complex] | np.ndarray, *, dtype: np.dtype
+    ) -> np.ndarray:
         array = np.asarray(values, dtype=dtype)
         if array.ndim != 1:
             raise TNFRValueError(
                 "Inputs must be one-dimensional arrays.",
                 context={"ndim": array.ndim},
-                suggestion="Provide a 1D array."
+                suggestion="Provide a 1D array.",
             )
         if not np.all(np.isfinite(array)):
             raise TNFRValueError(
                 "Inputs must not contain NaNs or infinities.",
                 context={"finite": False},
-                suggestion="Check input data for validity."
+                suggestion="Check input data for validity.",
             )
         return array
 
     @classmethod
-    def _validate_grid(cls, grid: Sequence[float] | np.ndarray, expected_size: int) -> np.ndarray:
+    def _validate_grid(
+        cls, grid: Sequence[float] | np.ndarray, expected_size: int
+    ) -> np.ndarray:
         array = np.asarray(grid, dtype=float)
         if array.ndim != 1:
             raise TNFRValueError(
                 "x_grid must be one-dimensional.",
                 context={"ndim": array.ndim},
-                suggestion="Provide a 1D grid."
+                suggestion="Provide a 1D grid.",
             )
         if array.size != expected_size:
             raise TNFRValueError(
                 "x_grid length must match continuous component.",
                 context={"grid_size": array.size, "expected_size": expected_size},
-                suggestion="Ensure grid size matches data size."
+                suggestion="Ensure grid size matches data size.",
             )
         if array.size < 2:
             raise TNFRValueError(
                 "x_grid must contain at least two points.",
                 context={"grid_size": array.size},
-                suggestion="Provide a grid with at least 2 points."
+                suggestion="Provide a grid with at least 2 points.",
             )
         if not np.all(np.isfinite(array)):
             raise TNFRValueError(
                 "x_grid must not contain NaNs or infinities.",
                 context={"finite": False},
-                suggestion="Check grid data for validity."
+                suggestion="Check grid data for validity.",
             )
 
         spacings = np.diff(array)
@@ -71,13 +76,13 @@ class _EPIValidators:
             raise TNFRValueError(
                 "x_grid must be strictly increasing.",
                 context={"monotonic": False},
-                suggestion="Ensure grid points are sorted and unique."
+                suggestion="Ensure grid points are sorted and unique.",
             )
         if not np.allclose(spacings, spacings[0], rtol=1e-9, atol=1e-12):
             raise TNFRValueError(
                 "x_grid must be uniform for finite-difference stability.",
                 context={"uniform": False},
-                suggestion="Provide a uniformly spaced grid."
+                suggestion="Provide a uniformly spaced grid.",
             )
         return array
 
@@ -99,6 +104,7 @@ class _EPIValidators:
         grid_array = cls._validate_grid(x_grid, f_array.size)
         return f_array, a_array, grid_array
 
+
 @dataclass(frozen=True)
 class BEPIElement(_EPIValidators):
     r"""Concrete :math:`C^0([0,1]) \oplus \ell^2` element with TNFR operations."""
@@ -115,7 +121,7 @@ class BEPIElement(_EPIValidators):
             raise TNFRValueError(
                 "x_grid is mandatory for BEPIElement instances.",
                 context={"grid": None},
-                suggestion="Provide a valid x_grid."
+                suggestion="Provide a valid x_grid.",
             )
         object.__setattr__(self, "f_continuous", f_array)
         object.__setattr__(self, "a_discrete", a_array)
@@ -127,24 +133,24 @@ class BEPIElement(_EPIValidators):
                 "Continuous components must share shape for direct sums.",
                 context={
                     "self_shape": self.f_continuous.shape,
-                    "other_shape": other.f_continuous.shape
+                    "other_shape": other.f_continuous.shape,
                 },
-                suggestion="Ensure continuous components have matching shapes."
+                suggestion="Ensure continuous components have matching shapes.",
             )
         if self.a_discrete.shape != other.a_discrete.shape:
             raise TNFRValueError(
                 "Discrete tails must share shape for direct sums.",
                 context={
                     "self_shape": self.a_discrete.shape,
-                    "other_shape": other.a_discrete.shape
+                    "other_shape": other.a_discrete.shape,
                 },
-                suggestion="Ensure discrete components have matching shapes."
+                suggestion="Ensure discrete components have matching shapes.",
             )
         if not np.allclose(self.x_grid, other.x_grid, rtol=1e-12, atol=1e-12):
             raise TNFRValueError(
                 "x_grid must match to combine EPI elements.",
                 context={"grid_match": False},
-                suggestion="Ensure both elements share the same grid."
+                suggestion="Ensure both elements share the same grid.",
             )
 
     def direct_sum(self, other: BEPIElement) -> BEPIElement:
@@ -178,17 +184,14 @@ class BEPIElement(_EPIValidators):
         if result.shape != values.shape:
             raise TNFRValueError(
                 "Transforms must preserve the element shape.",
-                context={
-                    "input_shape": values.shape,
-                    "output_shape": result.shape
-                },
-                suggestion="Ensure transform preserves shape."
+                context={"input_shape": values.shape, "output_shape": result.shape},
+                suggestion="Ensure transform preserves shape.",
             )
         if not np.all(np.isfinite(result)):
             raise TNFRValueError(
                 "Transforms must return finite values.",
                 context={"finite": False},
-                suggestion="Check transform for singularities."
+                suggestion="Check transform for singularities.",
             )
         return result
 
@@ -236,7 +239,9 @@ class BEPIElement(_EPIValidators):
             "grid": tuple(grid),
         }
 
-    def __setstate__(self, state: dict[str, tuple[complex, ...] | tuple[float, ...]]) -> None:
+    def __setstate__(
+        self, state: dict[str, tuple[complex, ...] | tuple[float, ...]]
+    ) -> None:
         """Deserialize BEPIElement from a dict representation.
 
         Restores the structural integrity by validating and converting back to numpy arrays.
@@ -248,7 +253,7 @@ class BEPIElement(_EPIValidators):
             raise TNFRValueError(
                 "x_grid is mandatory for BEPIElement instances.",
                 context={"grid": None},
-                suggestion="Provide a valid x_grid."
+                suggestion="Provide a valid x_grid.",
             )
         object.__setattr__(self, "f_continuous", f_array)
         object.__setattr__(self, "a_discrete", a_array)
@@ -259,7 +264,9 @@ class BEPIElement(_EPIValidators):
         if isinstance(other, (int, float)):
             # Scalar addition: broadcast to all components
             scalar = complex(other)
-            return BEPIElement(self.f_continuous + scalar, self.a_discrete + scalar, self.x_grid)
+            return BEPIElement(
+                self.f_continuous + scalar, self.a_discrete + scalar, self.x_grid
+            )
         elif isinstance(other, BEPIElement):
             # Element addition: use direct_sum
             return self.direct_sum(other)
@@ -273,7 +280,9 @@ class BEPIElement(_EPIValidators):
         """Subtract a scalar or another BEPIElement from this element."""
         if isinstance(other, (int, float)):
             scalar = complex(other)
-            return BEPIElement(self.f_continuous - scalar, self.a_discrete - scalar, self.x_grid)
+            return BEPIElement(
+                self.f_continuous - scalar, self.a_discrete - scalar, self.x_grid
+            )
         elif isinstance(other, BEPIElement):
             self._assert_compatible(other)
             return BEPIElement(
@@ -287,14 +296,18 @@ class BEPIElement(_EPIValidators):
         """Support reversed subtraction (scalar - BEPIElement)."""
         if isinstance(other, (int, float)):
             scalar = complex(other)
-            return BEPIElement(scalar - self.f_continuous, scalar - self.a_discrete, self.x_grid)
+            return BEPIElement(
+                scalar - self.f_continuous, scalar - self.a_discrete, self.x_grid
+            )
         return NotImplemented
 
     def __mul__(self, other: float | int) -> BEPIElement:
         """Multiply this element by a scalar."""
         if isinstance(other, (int, float)):
             scalar = complex(other)
-            return BEPIElement(self.f_continuous * scalar, self.a_discrete * scalar, self.x_grid)
+            return BEPIElement(
+                self.f_continuous * scalar, self.a_discrete * scalar, self.x_grid
+            )
         return NotImplemented
 
     def __rmul__(self, other: float | int) -> BEPIElement:
@@ -307,7 +320,9 @@ class BEPIElement(_EPIValidators):
             scalar = complex(other)
             if scalar == 0:
                 raise ZeroDivisionError("Cannot divide BEPIElement by zero")
-            return BEPIElement(self.f_continuous / scalar, self.a_discrete / scalar, self.x_grid)
+            return BEPIElement(
+                self.f_continuous / scalar, self.a_discrete / scalar, self.x_grid
+            )
         return NotImplemented
 
     def __eq__(self, other: object) -> bool:
@@ -317,8 +332,12 @@ class BEPIElement(_EPIValidators):
         """
         if isinstance(other, BEPIElement):
             return (
-                np.allclose(self.f_continuous, other.f_continuous, rtol=1e-12, atol=1e-12)
-                and np.allclose(self.a_discrete, other.a_discrete, rtol=1e-12, atol=1e-12)
+                np.allclose(
+                    self.f_continuous, other.f_continuous, rtol=1e-12, atol=1e-12
+                )
+                and np.allclose(
+                    self.a_discrete, other.a_discrete, rtol=1e-12, atol=1e-12
+                )
                 and np.allclose(self.x_grid, other.x_grid, rtol=1e-12, atol=1e-12)
             )
         elif isinstance(other, (int, float)):
@@ -326,6 +345,7 @@ class BEPIElement(_EPIValidators):
             # Use consistent tolerance with element comparisons
             return abs(self._max_magnitude() - float(other)) < 1e-12
         return NotImplemented
+
 
 @dataclass(frozen=True)
 class CoherenceEvaluation:
@@ -341,6 +361,7 @@ class CoherenceEvaluation:
     required: float
     deficit: float
     ratio: float
+
 
 def evaluate_coherence_transform(
     element: BEPIElement,
@@ -385,13 +406,13 @@ def evaluate_coherence_transform(
         raise TNFRValueError(
             "kappa must be non-negative.",
             context={"kappa": kappa},
-            suggestion="Provide a non-negative kappa."
+            suggestion="Provide a non-negative kappa.",
         )
     if tolerance < 0:
         raise TNFRValueError(
             "tolerance must be non-negative.",
             context={"tolerance": tolerance},
-            suggestion="Provide a non-negative tolerance."
+            suggestion="Provide a non-negative tolerance.",
         )
 
     if norm_kwargs is None:

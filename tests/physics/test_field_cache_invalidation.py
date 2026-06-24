@@ -14,6 +14,7 @@ The fix resolves dependencies through the canonical alias tuples
 (:func:`tnfr.utils.cache._dependency_alias_keys`).  These tests fail on the old
 code and pass on the fixed code.
 """
+
 from __future__ import annotations
 
 import math
@@ -49,7 +50,11 @@ def test_dependency_hash_reflects_dnfr_change():
     deps = {"graph_topology", "node_dnfr"}
     h1 = _compute_dependency_hash(G, deps)
     for nd in G.nodes():
-        set_attr(G.nodes[nd], ALIAS_DNFR, float(get_attr(G.nodes[nd], ALIAS_DNFR, 0.0)) * 5.0 + 1.0)
+        set_attr(
+            G.nodes[nd],
+            ALIAS_DNFR,
+            float(get_attr(G.nodes[nd], ALIAS_DNFR, 0.0)) * 5.0 + 1.0,
+        )
     h2 = _compute_dependency_hash(G, deps)
     assert h1 != "", "dependency hash should be non-empty when fields present"
     assert h1 != h2, "node_dnfr dependency hash must change when ΔNFR changes"
@@ -72,7 +77,9 @@ def test_dependency_hash_reflects_epi_change():
     deps = {"graph_topology", "node_epi"}
     h1 = _compute_dependency_hash(G, deps)
     for nd in G.nodes():
-        set_attr(G.nodes[nd], ALIAS_EPI, float(get_attr(G.nodes[nd], ALIAS_EPI, 0.0)) + 2.0)
+        set_attr(
+            G.nodes[nd], ALIAS_EPI, float(get_attr(G.nodes[nd], ALIAS_EPI, 0.0)) + 2.0
+        )
     h2 = _compute_dependency_hash(G, deps)
     assert h1 != h2, "node_epi dependency hash must change when EPI changes"
 
@@ -82,11 +89,15 @@ def test_structural_potential_responds_to_dnfr_change():
     G = _build()
     v1 = np.array([compute_structural_potential(G)[k] for k in sorted(G.nodes())])
     for nd in G.nodes():
-        set_attr(G.nodes[nd], ALIAS_DNFR, float(get_attr(G.nodes[nd], ALIAS_DNFR, 0.0)) * 5.0 + 1.0)
+        set_attr(
+            G.nodes[nd],
+            ALIAS_DNFR,
+            float(get_attr(G.nodes[nd], ALIAS_DNFR, 0.0)) * 5.0 + 1.0,
+        )
     v2 = np.array([compute_structural_potential(G)[k] for k in sorted(G.nodes())])
-    assert float(np.max(np.abs(v2 - v1))) > 1e-6, (
-        "Φ_s returned a stale cached value after ΔNFR changed"
-    )
+    assert (
+        float(np.max(np.abs(v2 - v1))) > 1e-6
+    ), "Φ_s returned a stale cached value after ΔNFR changed"
 
 
 def test_structural_potential_no_collision_same_topology():
@@ -101,16 +112,20 @@ def test_structural_potential_no_collision_same_topology():
             set_attr(H.nodes[nd], ALIAS_VF, 1.0)
         default_compute_delta_nfr(H)
         for nd in H.nodes():
-            set_attr(H.nodes[nd], ALIAS_DNFR, float(get_attr(H.nodes[nd], ALIAS_DNFR, 0.0)) * scale)
+            set_attr(
+                H.nodes[nd],
+                ALIAS_DNFR,
+                float(get_attr(H.nodes[nd], ALIAS_DNFR, 0.0)) * scale,
+            )
         return H
 
     a = mk(1.0)
     b = mk(3.0)
     pa = np.array([compute_structural_potential(a)[k] for k in sorted(a.nodes())])
     pb = np.array([compute_structural_potential(b)[k] for k in sorted(b.nodes())])
-    assert float(np.max(np.abs(pa - pb))) > 1e-6, (
-        "Φ_s collided across two same-topology graphs with different ΔNFR"
-    )
+    assert (
+        float(np.max(np.abs(pa - pb))) > 1e-6
+    ), "Φ_s collided across two same-topology graphs with different ΔNFR"
 
 
 def test_coherence_length_responds_to_dnfr_change():
@@ -118,9 +133,15 @@ def test_coherence_length_responds_to_dnfr_change():
     G = _build()
     xi1 = estimate_coherence_length(G)
     for nd in G.nodes():
-        set_attr(G.nodes[nd], ALIAS_DNFR, float(get_attr(G.nodes[nd], ALIAS_DNFR, 0.0)) * 7.0 - 2.0)
+        set_attr(
+            G.nodes[nd],
+            ALIAS_DNFR,
+            float(get_attr(G.nodes[nd], ALIAS_DNFR, 0.0)) * 7.0 - 2.0,
+        )
     xi2 = estimate_coherence_length(G)
     # Either the value changes, or both are non-finite/degenerate; the bug
     # produced bit-identical finite values regardless of ΔNFR.
     if math.isfinite(xi1) and math.isfinite(xi2):
-        assert abs(xi2 - xi1) > 1e-9, "ξ_C returned a stale cached value after ΔNFR changed"
+        assert (
+            abs(xi2 - xi1) > 1e-9
+        ), "ξ_C returned a stale cached value after ΔNFR changed"

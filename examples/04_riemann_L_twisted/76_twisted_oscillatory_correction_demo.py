@@ -93,10 +93,7 @@ def main() -> int:
         "P49 -- chi-twisted prime-ladder oscillatory correction"
         " (L-track lift of P31)"
     )
-    print(
-        "Honest scope: experimental research diagnostic at the"
-        " L-track level."
-    )
+    print("Honest scope: experimental research diagnostic at the" " L-track level.")
     print(
         "Positive improvement => branch B1 evidence (L-track)."
         "  Negative => branch B2 corroboration."
@@ -114,8 +111,7 @@ def main() -> int:
         real_character_mod_4(),
         real_character_mod_5(),
     ):
-        run(chi, n_targets=n_targets, n_primes=n_primes,
-            max_power=max_power)
+        run(chi, n_targets=n_targets, n_primes=n_primes, max_power=max_power)
 
     return 0
 

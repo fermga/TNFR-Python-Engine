@@ -224,9 +224,7 @@ def hilbert_instantaneous_phase(signal: Sequence[float]) -> "np.ndarray":
     return np.angle(analytic)
 
 
-def delay_embedding(
-    signal: Sequence[float], *, dim: int, tau: int
-) -> "np.ndarray":
+def delay_embedding(signal: Sequence[float], *, dim: int, tau: int) -> "np.ndarray":
     """Takens delay embedding of a scalar series.
 
     Row ``i`` is ``[x[i], x[i+tau], ..., x[i+(dim-1)*tau]]``.  The most-recent

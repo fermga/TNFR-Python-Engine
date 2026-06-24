@@ -69,6 +69,7 @@ Run:
 
 Status: RESEARCH (phase-wall falsifier; Camino 8 of the unification map).
 """
+
 from __future__ import annotations
 
 import os
@@ -79,12 +80,15 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Robust fallback so the harness also runs without PYTHONPATH=src preset.
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")
+)
 from composition_arithmetic import adj_spectrum  # noqa: E402
 
 # Optional: real Riemann zeta for the residue phase S(T).
 try:  # pragma: no cover - exercised only when mpmath is installed
     import mpmath  # noqa: E402
+
     _HAVE_MPMATH = True
 except Exception:  # pragma: no cover
     _HAVE_MPMATH = False
@@ -92,6 +96,7 @@ except Exception:  # pragma: no cover
 # Optional: the canonical adelic engine (nu_f = log p phase carrier).
 try:  # pragma: no cover - exercised only when the package is importable
     from tnfr.dynamics.adelic import AdelicDynamics  # noqa: E402
+
     _HAVE_ADELIC = True
 except Exception:  # pragma: no cover
     _HAVE_ADELIC = False
@@ -100,19 +105,20 @@ except Exception:  # pragma: no cover
 # mirror -- the same U(1) = e-pi circle is the canonical gauge).
 try:  # pragma: no cover
     from tnfr.yang_mills import audit_nonabelian_derivability  # noqa: E402
+
     _HAVE_AUDIT = True
 except Exception:  # pragma: no cover
     _HAVE_AUDIT = False
 
 TOL = 1e-9
-_ZERO_EIG = 1e-6                     # eigenvalues below this have undefined phase
-_REAL_AXIS = np.array([0.0, np.pi, -np.pi])   # arg of a real number
+_ZERO_EIG = 1e-6  # eigenvalues below this have undefined phase
+_REAL_AXIS = np.array([0.0, np.pi, -np.pi])  # arg of a real number
 
 # The four tetrad-associated constants (audit 2026: only pi is a genuine scale).
-PHI = (1.0 + np.sqrt(5.0)) / 2.0    # golden ratio        <-> Phi_s   (global)
-GAMMA = 0.5772156649015329          # Euler-Mascheroni    <-> |grad phi| (local)
-PI = np.pi                          # pi                  <-> K_phi   (curvature)
-E = np.e                            # Napier              <-> xi_C    (correlation)
+PHI = (1.0 + np.sqrt(5.0)) / 2.0  # golden ratio        <-> Phi_s   (global)
+GAMMA = 0.5772156649015329  # Euler-Mascheroni    <-> |grad phi| (local)
+PI = np.pi  # pi                  <-> K_phi   (curvature)
+E = np.e  # Napier              <-> xi_C    (correlation)
 
 # First few Riemann non-trivial zero heights (ground truth for sampling S(T)).
 _KNOWN_ZEROS = (14.1347, 21.0220, 25.0109, 30.4249, 32.9351, 37.5862)
@@ -213,11 +219,13 @@ def riemann_s_phase(T, nu_f, primes):
 # --------------------------------------------------------------------------- #
 def test_catalog_is_real_axis():
     print("=" * 78)
-    print("TEST 1 -- THE REAL WALL: the catalog f(A, L) is self-adjoint => arg "
-          "in {0, pi}")
+    print(
+        "TEST 1 -- THE REAL WALL: the catalog f(A, L) is self-adjoint => arg "
+        "in {0, pi}"
+    )
     print("=" * 78)
     # Prime-ladder path graph on the first primes (the Riemann-relevant topology).
-    primes = _sieve(20)                      # [2,3,5,7,11,13,17,19]
+    primes = _sieve(20)  # [2,3,5,7,11,13,17,19]
     G = nx.path_graph(len(primes))
     nodes = list(G.nodes())
     A, L = adjacency_laplacian(G, nodes)
@@ -229,16 +237,20 @@ def test_catalog_is_real_axis():
         ph = eigen_phases(M)
         d = distance_from_real_axis(ph)
         phase_worst = max(phase_worst, d)
-        print(f"  {name:<10}: self-adjoint dist = {is_self_adjoint(M):.2e}, "
-              f"max arg-dist from {{0,pi}} = {d:.2e}")
+        print(
+            f"  {name:<10}: self-adjoint dist = {is_self_adjoint(M):.2e}, "
+            f"max arg-dist from {{0,pi}} = {d:.2e}"
+        )
     # cross-check via the shared spectrum helper: A's spectrum is real
     a_imag = float(np.max(np.abs(np.imag(adj_spectrum(G, nodes)))))
 
     ok = herm_worst < TOL and phase_worst < 1e-6 and a_imag < TOL
     print(f"  worst self-adjoint distance        : {herm_worst:.2e}")
     print(f"  worst eigen-phase distance to axis : {phase_worst:.2e}")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- catalog spectrum is REAL; "
-          "eigen-phase locked to {0, pi} (a sign, no continuous phase)")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- catalog spectrum is REAL; "
+        "eigen-phase locked to {0, pi} (a sign, no continuous phase)"
+    )
     print()
     return ok
 
@@ -248,8 +260,10 @@ def test_catalog_is_real_axis():
 # --------------------------------------------------------------------------- #
 def test_residue_is_continuous_phase():
     print("=" * 78)
-    print("TEST 2 -- THE RESIDUE: S(T) = (1/pi) arg zeta(1/2 + iT) is a CONTINUOUS "
-          "phase")
+    print(
+        "TEST 2 -- THE RESIDUE: S(T) = (1/pi) arg zeta(1/2 + iT) is a CONTINUOUS "
+        "phase"
+    )
     print("=" * 78)
     nu_f, primes = canonical_prime_frequencies(60)
     source = "mpmath zeta(1/2+iT)" if _HAVE_MPMATH else "adelic trace phase"
@@ -260,10 +274,11 @@ def test_residue_is_continuous_phase():
             T = z + off
             s = riemann_s_phase(T, nu_f, primes)
             samples.append((T, s))
-    arg_vals = np.array([np.pi * s for _, s in samples])      # back to radians
+    arg_vals = np.array([np.pi * s for _, s in samples])  # back to radians
     dist_axis = distance_from_real_axis(arg_vals)
-    n_off_axis = int(np.sum(
-        np.min(np.abs(arg_vals[:, None] - _REAL_AXIS[None, :]), axis=1) > 0.2))
+    n_off_axis = int(
+        np.sum(np.min(np.abs(arg_vals[:, None] - _REAL_AXIS[None, :]), axis=1) > 0.2)
+    )
     spread = float(np.max(arg_vals) - np.min(arg_vals))
 
     print(f"  source                : {source}")
@@ -276,8 +291,10 @@ def test_residue_is_continuous_phase():
     # The residue is continuous (large spread, far from the real axis), so it can
     # NEVER equal a catalog eigen-phase, which lives in {0, pi}.
     ok = dist_axis > 0.3 and spread > 0.5 and n_off_axis >= len(samples) // 2
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- residue lives on the circle, "
-          "disjoint from the real-axis catalog spectrum")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- residue lives on the circle, "
+        "disjoint from the real-axis catalog spectrum"
+    )
     print()
     return ok
 
@@ -288,8 +305,10 @@ def test_residue_is_continuous_phase():
 # --------------------------------------------------------------------------- #
 def test_canonical_carrier_content_is_imposed():
     print("=" * 78)
-    print("TEST 3 -- THE CARRIER: adelic U(t) = diag(exp(i t nu_f)) reaches the "
-          "circle,")
+    print(
+        "TEST 3 -- THE CARRIER: adelic U(t) = diag(exp(i t nu_f)) reaches the "
+        "circle,"
+    )
     print("           but is non-self-adjoint and nu_f = log p is IMPOSED")
     print("=" * 78)
     nu_f, primes = canonical_prime_frequencies(30)
@@ -312,15 +331,23 @@ def test_canonical_carrier_content_is_imposed():
 
     ok = reaches and distinct_class and imposed
     print(f"  nu_f source                 : {origin}")
-    print(f"  (a) carrier reaches circle  : max arg-dist from {{0,pi}} = "
-          f"{u_dist:.3f}  (continuous phase)")
-    print(f"  (b) non-self-adjoint        : ||U - U^dag|| = {non_herm:.3f}, "
-          f"unitary err = {unit_err:.2e}, max|Im spec| = {spec_imag:.3f}")
+    print(
+        f"  (a) carrier reaches circle  : max arg-dist from {{0,pi}} = "
+        f"{u_dist:.3f}  (continuous phase)"
+    )
+    print(
+        f"  (b) non-self-adjoint        : ||U - U^dag|| = {non_herm:.3f}, "
+        f"unitary err = {unit_err:.2e}, max|Im spec| = {spec_imag:.3f}"
+    )
     print("      => U is unitary on S^1, NOT a real-symmetric f(A, L)")
-    print(f"  (c) content imposed         : nu_f == log(primes)? {imposed}  "
-          "(arithmetic input, not nodal-derived)")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the carrier exists (U(1) "
-          "phase) but its arithmetic content is FORWARD_INDEPENDENT_OF_BACKWARD")
+    print(
+        f"  (c) content imposed         : nu_f == log(primes)? {imposed}  "
+        "(arithmetic input, not nodal-derived)"
+    )
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the carrier exists (U(1) "
+        "phase) but its arithmetic content is FORWARD_INDEPENDENT_OF_BACKWARD"
+    )
     print()
     return ok
 
@@ -330,8 +357,10 @@ def test_canonical_carrier_content_is_imposed():
 # --------------------------------------------------------------------------- #
 def test_e_pi_is_the_only_phase_channel():
     print("=" * 78)
-    print("TEST 4 -- THE e-pi CHANNEL: real constants stay on the axis; only "
-          "exp(i .) escapes")
+    print(
+        "TEST 4 -- THE e-pi CHANNEL: real constants stay on the axis; only "
+        "exp(i .) escapes"
+    )
     print("=" * 78)
     primes = _sieve(20)
     G = nx.path_graph(len(primes))
@@ -349,7 +378,7 @@ def test_e_pi_is_the_only_phase_channel():
     w = np.linalg.eigvalsh(M)
     circ_phases = np.angle(np.exp(1j * w))
     circ_dist = distance_from_real_axis(circ_phases)
-    escapes = circ_dist > 0.3        # complexification reaches continuous phase
+    escapes = circ_dist > 0.3  # complexification reaches continuous phase
 
     # (c) Yang-Mills mirror: the canonical gauge is U(1) (the SAME e-pi circle, a
     #     scalar phase exp(i phi)); the non-derivable ingredient is the open gap.
@@ -358,26 +387,35 @@ def test_e_pi_is_the_only_phase_channel():
     if _HAVE_AUDIT:
         try:
             report = audit_nonabelian_derivability()
-            any_noncomm = any(c.has_noncommuting_generators
-                              for c in report.candidates)
-            verdict_line = (f"{report.verdict} ; gauge = "
-                            f"{report.canonical_gauge_group} ; "
-                            f"non-commuting generators on any route = {any_noncomm}")
-            canon_ok = (report.verdict == "OPEN_DERIVABILITY_GAP"
-                        and report.canonical_gauge_group == "U(1)"
-                        and not any_noncomm)
+            any_noncomm = any(c.has_noncommuting_generators for c in report.candidates)
+            verdict_line = (
+                f"{report.verdict} ; gauge = "
+                f"{report.canonical_gauge_group} ; "
+                f"non-commuting generators on any route = {any_noncomm}"
+            )
+            canon_ok = (
+                report.verdict == "OPEN_DERIVABILITY_GAP"
+                and report.canonical_gauge_group == "U(1)"
+                and not any_noncomm
+            )
         except Exception as exc:  # pragma: no cover
             verdict_line = f"(canonical audit unavailable: {exc})"
 
     ok = real_axis and escapes and canon_ok
-    print(f"  (a) phi.A + gamma.L + pi.L^2 + e.exp(-L/2) real-symmetric : "
-          f"herm = {m_herm:.2e}, arg-dist = {m_dist:.2e}  (stays on axis)")
-    print(f"  (b) exp(i .) sends spectrum onto the circle               : "
-          f"max arg-dist = {circ_dist:.3f}  (the e-pi escape)")
+    print(
+        f"  (a) phi.A + gamma.L + pi.L^2 + e.exp(-L/2) real-symmetric : "
+        f"herm = {m_herm:.2e}, arg-dist = {m_dist:.2e}  (stays on axis)"
+    )
+    print(
+        f"  (b) exp(i .) sends spectrum onto the circle               : "
+        f"max arg-dist = {circ_dist:.3f}  (the e-pi escape)"
+    )
     print("  (c) the e-pi circle IS the canonical U(1) gauge of Camino 7;")
     print(f"      canonical YM audit: {verdict_line}")
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- four REAL constants never "
-          "leave {0,pi}; the phase needs exp(i .), whose content is non-derivable")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- four REAL constants never "
+        "leave {0,pi}; the phase needs exp(i .), whose content is non-derivable"
+    )
     print()
     return ok
 
@@ -392,9 +430,13 @@ def main():
     print("=" * 78)
     print("SUMMARY")
     print("=" * 78)
-    print(f"  TEST 1 real wall: catalog arg in {{0,pi}}     : {'PASS' if t1 else 'FAIL'}")
+    print(
+        f"  TEST 1 real wall: catalog arg in {{0,pi}}     : {'PASS' if t1 else 'FAIL'}"
+    )
     print(f"  TEST 2 residue S(T) is continuous phase     : {'PASS' if t2 else 'FAIL'}")
-    print(f"  TEST 3 carrier reaches circle, content imposed: {'PASS' if t3 else 'FAIL'}")
+    print(
+        f"  TEST 3 carrier reaches circle, content imposed: {'PASS' if t3 else 'FAIL'}"
+    )
     print(f"  TEST 4 e-pi is the only phase channel       : {'PASS' if t4 else 'FAIL'}")
     structural = t1 and t2 and t3 and t4
     print()

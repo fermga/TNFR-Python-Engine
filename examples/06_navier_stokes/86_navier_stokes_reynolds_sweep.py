@@ -98,11 +98,7 @@ from typing import Any
 
 import numpy as np
 
-from tnfr.navier_stokes.operator import (
-    TNFRNavierStokesOperator,
-    build_torus_graph_3d,
-)
-
+from tnfr.navier_stokes.operator import TNFRNavierStokesOperator, build_torus_graph_3d
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -110,16 +106,16 @@ from tnfr.navier_stokes.operator import (
 N = 24
 DT = 0.005
 T_FINAL = 1.0
-STEPS = int(round(T_FINAL / DT))         # 200
+STEPS = int(round(T_FINAL / DT))  # 200
 AMPLITUDE = 1.0
 VISCOSITY_SWEEP = [0.05, 0.02, 0.01, 0.005]
-RECORD_EVERY = 40                        # 5 snapshots per run
+RECORD_EVERY = 40  # 5 snapshots per run
 HIGH_VORT_QUANTILE = 0.75
 ISOTROPIC_BASELINE = 1.0 / 3.0
 EPS = 1e-14
 
 INCOMP_TOL = 1e-8
-DIVERGENCE_PROBE_EVERY = 50              # cheap sanity sample
+DIVERGENCE_PROBE_EVERY = 50  # cheap sanity sample
 
 
 # ---------------------------------------------------------------------------
@@ -135,18 +131,14 @@ def velocity_grids(
     )
 
 
-def strain_tensor(
-    u: np.ndarray, v: np.ndarray, w: np.ndarray, h: float
-) -> np.ndarray:
+def strain_tensor(u: np.ndarray, v: np.ndarray, w: np.ndarray, h: float) -> np.ndarray:
     def d(arr: np.ndarray, axis: int) -> np.ndarray:
-        return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (
-            2.0 * h
-        )
+        return (np.roll(arr, -1, axis=axis) - np.roll(arr, 1, axis=axis)) / (2.0 * h)
 
     du = (d(u, 0), d(u, 1), d(u, 2))
     dv = (d(v, 0), d(v, 1), d(v, 2))
     dw = (d(w, 0), d(w, 1), d(w, 2))
-    grad = [du, dv, dw]   # grad[a][i] = d_i u_a
+    grad = [du, dv, dw]  # grad[a][i] = d_i u_a
 
     n0, n1, n2 = u.shape
     S = np.empty((n0, n1, n2, 3, 3), dtype=float)
@@ -169,15 +161,13 @@ def alignment_diagnostics(
     order = np.argsort(eigvals, axis=-1)[..., ::-1]
     lam = np.take_along_axis(eigvals, order, axis=-1)
     idx = order[..., np.newaxis, :]
-    vecs = np.take_along_axis(
-        eigvecs, np.broadcast_to(idx, eigvecs.shape), axis=-1
-    )
+    vecs = np.take_along_axis(eigvecs, np.broadcast_to(idx, eigvecs.shape), axis=-1)
 
     safe_mag = np.where(mag > EPS, mag, 1.0)
     om_hat = om / safe_mag[..., np.newaxis]
 
     cos = np.einsum("...i,...ij->...j", om_hat, vecs)
-    cos2 = cos ** 2
+    cos2 = cos**2
 
     sigma_eff = np.einsum("...k,...k->...", lam, cos2)
     lam_max_abs = np.maximum(np.abs(lam[..., 0]), EPS)
@@ -223,14 +213,14 @@ def run_at_viscosity(nu: float) -> dict[str, Any]:
         times.append(t)
         mag = np.linalg.norm(np.moveaxis(omega, 0, -1), axis=-1)
         omega_inf_series.append(float(mag.max()))
-        Z_series.append(float(0.5 * (mag ** 2).sum() * (h ** 3)))
+        Z_series.append(float(0.5 * (mag**2).sum() * (h**3)))
         P_series.append(op.stretching_production())
 
     record(0.0)
     for k in range(1, STEPS + 1):
         op.step(DT, advection=True, incompressible=True)
         if k % DIVERGENCE_PROBE_EVERY == 0:
-            div = float(op.divergence_residual())   # already L2 norm
+            div = float(op.divergence_residual())  # already L2 norm
             if div > max_div_observed:
                 max_div_observed = div
         if k % RECORD_EVERY == 0:
@@ -368,9 +358,7 @@ def main() -> None:
     # C3: time-mean P monotonically increasing as nu decreases
     # (P-series sorted by viscosity descending corresponds to indices
     #  in tmean_P given VISCOSITY_SWEEP is already descending)
-    p_monotone = all(
-        tmean_P[i] < tmean_P[i + 1] for i in range(len(tmean_P) - 1)
-    )
+    p_monotone = all(tmean_P[i] < tmean_P[i + 1] for i in range(len(tmean_P) - 1))
     c3_pass = p_monotone
     print(
         f"C3 (P monotonic with Re): <P> = "
@@ -394,8 +382,7 @@ def main() -> None:
         f"l3={'MONO' if mono_l3 else 'no'}"
     )
     print(
-        f"C4 (alignment responds to Re): {flags} -> "
-        f"{'PASS' if c4_pass else 'FAIL'}"
+        f"C4 (alignment responds to Re): {flags} -> " f"{'PASS' if c4_pass else 'FAIL'}"
     )
 
     print()

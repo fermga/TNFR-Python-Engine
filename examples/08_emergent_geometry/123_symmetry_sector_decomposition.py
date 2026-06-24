@@ -104,10 +104,10 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 from networkx.algorithms.isomorphism import GraphMatcher
 
 from tnfr.alias import set_attr
@@ -176,8 +176,7 @@ def _test_graphs():
         ("complete K6 (S6)", nx.complete_graph(6)),
         ("star K1,5 (S5)", nx.star_graph(5)),
         ("path P6 (Z2)", nx.path_graph(6)),
-        ("torus C3xC3", nx.cartesian_product(
-            nx.cycle_graph(3), nx.cycle_graph(3))),
+        ("torus C3xC3", nx.cartesian_product(nx.cycle_graph(3), nx.cycle_graph(3))),
     ]
 
 
@@ -189,23 +188,29 @@ def experiment_1_equivariance_orbits():
     print("L_rw commutes with every automorphism (Schur); the trivial projector")
     print("P_triv = mean of P_sigma has rank = #vertex orbits = dim Fix(G).")
     print()
-    print(f"  {'graph':22s} {'|Aut|':>6} {'n':>3} {'orbits':>7} "
-          f"{'rank':>5} {'equiv':>8} {'preserve':>9}")
+    print(
+        f"  {'graph':22s} {'|Aut|':>6} {'n':>3} {'orbits':>7} "
+        f"{'rank':>5} {'equiv':>8} {'preserve':>9}"
+    )
     out = {}
     for name, G in _test_graphs():
         nodes, L = structural_diffusion_operator(G)
         auts = _automorphisms(G)
         max_comm = max(
-            float(np.linalg.norm(
-                _perm_matrix(m, nodes) @ L - L @ _perm_matrix(m, nodes)))
-            for m in auts)
+            float(
+                np.linalg.norm(_perm_matrix(m, nodes) @ L - L @ _perm_matrix(m, nodes))
+            )
+            for m in auts
+        )
         P_triv = _trivial_projector(auts, nodes)
         rank = int(np.linalg.matrix_rank(P_triv, tol=1e-9))
         orbits = _orbit_count(auts, nodes)
         pres = float(np.linalg.norm(L @ P_triv - P_triv @ L))
         out[name] = (nodes, L, P_triv, orbits)
-        print(f"  {name:22s} {len(auts):>6} {len(nodes):>3} {orbits:>7} "
-              f"{rank:>5} {max_comm:>8.1e} {pres:>9.1e}")
+        print(
+            f"  {name:22s} {len(auts):>6} {len(nodes):>3} {orbits:>7} "
+            f"{rank:>5} {max_comm:>8.1e} {pres:>9.1e}"
+        )
     print()
     print("  -> equiv=0 (commutes with all Aut); rank=orbits (dim Fix(G));")
     print("     preserve~0 (block-diagonal: Fix(G) (+) Fix(G)^perp).")
@@ -222,8 +227,9 @@ def experiment_2_substrate_in_fix(results):
     print("P_triv v = v (orbit-constant). Vertex-transitive -> 1 orbit ->")
     print("Fix(G)=constants -> sigma(Phi_s)=0 (the example-120 blindness).")
     print()
-    print(f"  {'graph':22s} {'orbits':>7} {'||v-P_triv v||':>15} "
-          f"{'sigma(Phi_s)':>13}")
+    print(
+        f"  {'graph':22s} {'orbits':>7} {'||v-P_triv v||':>15} " f"{'sigma(Phi_s)':>13}"
+    )
     for name, G in _test_graphs():
         nodes, L, P_triv, orbits = results[name]
         _seed_symmetric(G)
@@ -244,12 +250,16 @@ def experiment_3_orbit_resolution():
     print("Per-node degree (a canonical Aut-invariant) takes one value per")
     print("orbit-class: it tells orbit from orbit, never node from node within.")
     print()
-    for name, G in [("star K1,5 (S5)", nx.star_graph(5)),
-                    ("path P6 (Z2)", nx.path_graph(6)),
-                    ("complete K6 (S6)", nx.complete_graph(6))]:
+    for name, G in [
+        ("star K1,5 (S5)", nx.star_graph(5)),
+        ("path P6 (Z2)", nx.path_graph(6)),
+        ("complete K6 (S6)", nx.complete_graph(6)),
+    ]:
         degs = sorted({d for _, d in G.degree()})
-        print(f"  {name:22s} distinct per-node degrees = {degs} "
-              f"({len(degs)} class(es))")
+        print(
+            f"  {name:22s} distinct per-node degrees = {degs} "
+            f"({len(degs)} class(es))"
+        )
     print()
     print("  -> star: center vs leaves (2 classes); path: ends/near/middle")
     print("     collapse to 2 degree values but 3 orbits; complete: 1 class.")

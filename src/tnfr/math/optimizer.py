@@ -22,8 +22,8 @@ from typing import Callable
 
 from ..types import Glyph
 from .grammar_validators import (
-    verify_convergence_for_sequence,
     verify_bifurcation_risk_for_sequence,
+    verify_convergence_for_sequence,
 )
 
 # type alias for a sequence of Glyphs
@@ -32,10 +32,11 @@ Sequence = list[Glyph]
 # type alias for an objective function that scores a sequence
 ObjectiveFunction = Callable[[Sequence], float]
 
+
 def sample_objective_function(sequence: Sequence) -> float:
     """
     A sample objective function that rewards longer, stable sequences.
-    
+
     - Higher score is better.
     - Penalizes sequences that fail grammar checks.
     """
@@ -50,11 +51,12 @@ def sample_objective_function(sequence: Sequence) -> float:
     score = len(sequence) + len(set(sequence))
     return float(score)
 
+
 def find_optimal_sequence_greedy(
     initial_sequence: Sequence,
     possible_glyphs: list[Glyph],
     objective_fn: ObjectiveFunction,
-    max_iterations: int = 100
+    max_iterations: int = 100,
 ) -> tuple[Sequence, float]:
     """
     Finds an optimal sequence using a simple greedy best-first search.
@@ -86,7 +88,7 @@ def find_optimal_sequence_greedy(
             if score > best_next_score:
                 best_next_score = score
                 best_next_candidate = candidate
-        
+
         # If the best move found improves the score, commit to it.
         # Otherwise, we have reached a local optimum and should stop.
         if best_next_candidate:
@@ -94,5 +96,5 @@ def find_optimal_sequence_greedy(
             current_score = best_next_score
         else:
             break
-            
+
     return current_sequence, current_score

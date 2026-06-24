@@ -36,9 +36,7 @@ class TestFiniteScalingStudy:
         assert len(report.points) == 4
         assert report.summary["n_points"] == 4
         assert report.summary["n_groups"] == 2
-        assert report.summary["scope"] == (
-            "finite_scaling_diagnostic_not_clay_proof"
-        )
+        assert report.summary["scope"] == ("finite_scaling_diagnostic_not_clay_proof")
         assert report.summary["all_self_adjoint"]
         assert report.summary["all_gauge_invariant"]
 

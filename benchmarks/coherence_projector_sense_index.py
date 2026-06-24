@@ -90,9 +90,7 @@ try:
     import networkx as nx
 
     from tnfr.metrics.sense_index import compute_Si
-    from tnfr.riemann.remesh_infinity_residue_split import (
-        build_resonant_bin_mask,
-    )
+    from tnfr.riemann.remesh_infinity_residue_split import build_resonant_bin_mask
     from tnfr.riemann.von_mangoldt import build_prime_ladder_spectrum
 
     _HAVE_TNFR = True
@@ -102,18 +100,18 @@ except Exception as exc:  # pragma: no cover - import guard
 
 
 # --- canonical constants -------------------------------------------------
-TAU_L = 4              # local REMESH period
-TAU_G = 8              # global REMESH period; L = lcm(4, 8) = 8
-N_MATRIX = 64          # window for the explicit projector matrix
+TAU_L = 4  # local REMESH period
+TAU_G = 8  # global REMESH period; L = lcm(4, 8) = 8
+N_MATRIX = 64  # window for the explicit projector matrix
 DIM_SWEEP = (64, 128, 256, 512, 1024, 2048)
-N_PRIMES = 50          # primes on the complete graph (T4)
-SEED = 12345           # prime-relabelling seed (T4)
+N_PRIMES = 50  # primes on the complete graph (T4)
+SEED = 12345  # prime-relabelling seed (T4)
 # Canonical engine SI weights (config/defaults_core.py SI_WEIGHTS):
 # alpha = phi/(phi+gamma) ~ 0.737, beta = gamma/(pi+gamma) ~ 0.155,
 # gamma = gamma/(phi*pi) ~ 0.114.  Uniform across nodes, so the T3/T4
 # dispersion and S_n-invariance arguments are weight-agnostic.
 SI_WEIGHTS = {"alpha": 0.737, "beta": 0.155, "gamma": 0.114}
-DISP_SWEEP = (0.0, 0.25, 0.5, 0.75, 1.0)   # phase-dispersion factors
+DISP_SWEEP = (0.0, 0.25, 0.5, 0.75, 1.0)  # phase-dispersion factors
 
 
 # --- canonical helpers ---------------------------------------------------
@@ -144,9 +142,7 @@ def _ring_phase_dispersion_si(n: int, spread: float) -> float:
     G.graph["SI_WEIGHTS"] = dict(SI_WEIGHTS)
     for i, node in enumerate(G.nodes()):
         theta = (i % 2) * spread * math.pi
-        G.nodes[node].update(
-            {"nu_f": 1.0, "delta_nfr": 0.1, "phase": float(theta)}
-        )
+        G.nodes[node].update({"nu_f": 1.0, "delta_nfr": 0.1, "phase": float(theta)})
     si = compute_Si(G, inplace=False)
     return float(np.mean(list(si.values())))
 
@@ -162,18 +158,20 @@ def _complete_prime_graph_si(order: np.ndarray) -> np.ndarray:
     spec = build_prime_ladder_spectrum(N_PRIMES, max_power=1)
     primes = np.asarray(spec.primes, dtype=float)
     logp = np.log(primes)
-    nuf = logp / logp.max()             # normalised structural freq
-    phase = primes % (2.0 * math.pi)    # bounded, prime-specific
-    dnfr = 1.0 / primes                 # bounded, prime-specific
+    nuf = logp / logp.max()  # normalised structural freq
+    phase = primes % (2.0 * math.pi)  # bounded, prime-specific
+    dnfr = 1.0 / primes  # bounded, prime-specific
     G = nx.complete_graph(N_PRIMES)
     G.graph["SI_WEIGHTS"] = dict(SI_WEIGHTS)
     for i, node in enumerate(G.nodes()):
         j = int(order[i])
-        G.nodes[node].update({
-            "nu_f": float(nuf[j]),
-            "delta_nfr": float(dnfr[j]),
-            "phase": float(phase[j]),
-        })
+        G.nodes[node].update(
+            {
+                "nu_f": float(nuf[j]),
+                "delta_nfr": float(dnfr[j]),
+                "phase": float(phase[j]),
+            }
+        )
     si = compute_Si(G, inplace=False)
     return np.array(sorted(si.values()))
 
@@ -191,11 +189,9 @@ def test_t1_coherence_is_orthogonal_projection() -> bool:
     # Parseval / orthogonality on a deterministic signal
     rng = np.random.default_rng(0)
     f = rng.standard_normal(n)
-    pf = np.real(p @ f)            # coherent part (range)
-    qf = f - pf                    # closed-room part (kernel)
-    parseval = abs(
-        (np.dot(pf, pf) + np.dot(qf, qf)) - np.dot(f, f)
-    )
+    pf = np.real(p @ f)  # coherent part (range)
+    qf = f - pf  # closed-room part (kernel)
+    parseval = abs((np.dot(pf, pf) + np.dot(qf, qf)) - np.dot(f, f))
     ortho = abs(float(np.dot(pf, qf)))
     ok = (
         idem < 1e-10
@@ -235,8 +231,9 @@ def test_t2_closed_room_is_vast() -> bool:
     print("       N      dim(range)  dim(ker)   coherent frac L/N")
     for n, dr, dk, fr in rows:
         print(f"       {n:<6} {dr:<11} {dk:<10} {fr:.6f}")
-    print(f"       dim(range) constant = L = {lcm}: "
-          f"{all(r[1] == lcm for r in rows)}")
+    print(
+        f"       dim(range) constant = L = {lcm}: " f"{all(r[1] == lcm for r in rows)}"
+    )
     print("       coherent fraction -> 0: the coherent/resonant")
     print("       subspace is finite; the closed room fills the rest")
     print(f"       -> {'PASS' if ok else 'FAIL'}")
@@ -249,10 +246,7 @@ def test_t3_sense_index_is_coherence_functional() -> bool:
     n = 60
     si_vals = [_ring_phase_dispersion_si(n, s) for s in DISP_SWEEP]
     # monotone non-increasing (tiny tolerance for round-off)
-    monotone = all(
-        si_vals[i + 1] <= si_vals[i] + 1e-9
-        for i in range(len(si_vals) - 1)
-    )
+    monotone = all(si_vals[i + 1] <= si_vals[i] + 1e-9 for i in range(len(si_vals) - 1))
     margin = si_vals[0] - si_vals[-1]
     ok = monotone and (margin > 0.2)
     print("  [T3] Sense Index as a coherence-capacity functional")
@@ -279,8 +273,10 @@ def test_t4_sense_index_is_sn_degenerate() -> bool:
     spread = float(si_a.max() - si_a.min())
     ok = (max_diff < 1e-9) and (spread > 0.1)
     print("  [T4] S_n-degeneracy of the Sense Index on K_n")
-    print(f"       sorted Si range : [{si_a.min():.4f}, "
-          f"{si_a.max():.4f}] (non-trivial: {spread > 0.1})")
+    print(
+        f"       sorted Si range : [{si_a.min():.4f}, "
+        f"{si_a.max():.4f}] (non-trivial: {spread > 0.1})"
+    )
     print(f"       max|sorted Si_canonical - Si_shuffled| : {max_diff:.2e}")
     print("       (machine-precision zero == Si is a symmetric")
     print("        functional of the prime attributes: Si in Fix(S_n),")
@@ -298,9 +294,11 @@ def main() -> int:
     if not _HAVE_TNFR:
         print(f"SKIP: TNFR canonical imports unavailable: {_IMPORT_ERROR}")
         return 0
-    print(f"L = lcm(tau_l={TAU_L}, tau_g={TAU_G}) = "
-          f"{math.lcm(TAU_L, TAU_G)}; "
-          f"N_MATRIX={N_MATRIX}, N_PRIMES={N_PRIMES}")
+    print(
+        f"L = lcm(tau_l={TAU_L}, tau_g={TAU_G}) = "
+        f"{math.lcm(TAU_L, TAU_G)}; "
+        f"N_MATRIX={N_MATRIX}, N_PRIMES={N_PRIMES}"
+    )
     print("-" * 70)
 
     results = [

@@ -60,9 +60,7 @@ _SRC = _ROOT / "src"
 if str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
-from tnfr.validation.interface_baselines import (  # noqa: E402
-    BASELINE_FORMULAS,
-)
+from tnfr.validation.interface_baselines import BASELINE_FORMULAS  # noqa: E402
 from tnfr.validation.structural_interface import (  # noqa: E402
     StructuralInterfaceProblem,
     build_knn_graph,
@@ -165,9 +163,7 @@ def _build_wine_bundle(
 ) -> DatasetBundle:
     """Build a wine-quality bundle from a semicolon-delimited UCI CSV."""
     rows = list(
-        csv.DictReader(
-            csv_path.read_text(encoding="utf-8").splitlines(), delimiter=";"
-        )
+        csv.DictReader(csv_path.read_text(encoding="utf-8").splitlines(), delimiter=";")
     )
     feature_keys = [key for key in rows[0] if key != "quality"]
     feature_label = "alcohol"
@@ -258,9 +254,7 @@ def load_iris_dataset() -> DatasetBundle:
             name: float(value) for name, value in zip(feature_names, row)
         }
         record["species"] = species
-        record["species_band"] = (
-            "virginica" if species == "virginica" else "other"
-        )
+        record["species_band"] = "virginica" if species == "virginica" else "other"
         record["feature_value"] = float(row[feature_index])
         records.append(record)
 
@@ -351,9 +345,7 @@ def attach_incident_conflict_pressure(G: Any, state_key: str) -> None:
         G.nodes[node]["coherence"] = 1.0 / (1.0 + conflict_rate)
 
 
-def circular_review_labels(
-    G: Any, *, conflict_threshold: int
-) -> dict[Any, bool]:
+def circular_review_labels(G: Any, *, conflict_threshold: int) -> dict[Any, bool]:
     """Circular review target: nodes with enough opposite-state neighbours.
 
     Declared circular because the TNFR phase stress also consumes these
@@ -902,9 +894,7 @@ def run_benchmark_suite(
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
         summary_path = output_dir / "structural_interface_benchmark_summary.json"
-        summary_path.write_text(
-            json.dumps(summary, indent=2) + "\n", encoding="utf-8"
-        )
+        summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
         summary["summary_path"] = str(summary_path)
 
     return summary

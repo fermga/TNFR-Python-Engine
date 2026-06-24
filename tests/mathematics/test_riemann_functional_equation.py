@@ -16,33 +16,25 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from tnfr.riemann.functional_equation import (
-    # Data structures
-    SpectralReflection,
-    TraceFormulaResult,
+from tnfr.riemann.functional_equation import (  # Data structures; Core — reflection; Core — trace; Core — xi; Conjectures; Large-k; Integration
     CompletedXiFunction,
     Conjecture12_1Result,
     Conjecture12_2Result,
-    LargeKConvergence,
     FunctionalEquationAnalysis,
-    # Core — reflection
-    verify_spectral_reflection,
-    verify_reflection_sequence,
-    # Core — trace
-    compute_trace_formulas,
-    verify_trace_formula_pnt,
-    # Core — xi
+    LargeKConvergence,
+    SpectralReflection,
+    TraceFormulaResult,
     compute_completed_xi,
-    verify_xi_functional_equation,
-    # Conjectures
+    compute_trace_formulas,
+    run_functional_equation_analysis,
     test_conjecture_12_1,
     test_conjecture_12_2,
-    # Large-k
     verify_large_k_convergence,
-    # Integration
-    run_functional_equation_analysis,
+    verify_reflection_sequence,
+    verify_spectral_reflection,
+    verify_trace_formula_pnt,
+    verify_xi_functional_equation,
 )
-
 
 # ============================================================================
 # 1. Spectral Reflection Identity: H(σ) + H(1-σ) = 2L
@@ -135,6 +127,7 @@ class TestTraceFormulas:
     def test_pnt_mean_log_prime(self) -> None:
         """Mean log prime should be close to log(k) for large k."""
         import math
+
         tf = compute_trace_formulas(500, 0.3)
         # PNT: (1/k)Σlog(p_i) ≈ log(k) for large k
         assert abs(tf.pnt_mean_log_prime - math.log(500)) < 1.0

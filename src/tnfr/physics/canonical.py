@@ -68,12 +68,13 @@ except ImportError:
 from ..config import get_precision_mode
 
 # Import TNFR cache system
-from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
+
 _CACHE_AVAILABLE = True
 
 # Import TNFR aliases
 try:
-    from ..constants.aliases import ALIAS_THETA, ALIAS_DNFR
+    from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
 except ImportError:
     ALIAS_THETA = ["phase", "theta"]
     ALIAS_DNFR = ["delta_nfr", "dnfr"]
@@ -81,11 +82,12 @@ except ImportError:
 # Import vectorized operations
 try:
     from .vectorized_ops import (
+        compute_coherence_length_vectorized,
+        compute_phase_gradient_and_curvature_vectorized,
         compute_phi_s_exact_vectorized,
         compute_phi_s_landmarks_vectorized,
-        compute_phase_gradient_and_curvature_vectorized,
-        compute_coherence_length_vectorized
     )
+
     _VECTORIZATION_AVAILABLE = True
 except ImportError:
     _VECTORIZATION_AVAILABLE = False
@@ -93,81 +95,85 @@ except ImportError:
 # Import GPU-aware mathematics backend
 try:
     from ..mathematics.backend import get_backend
+
     _GPU_BACKENDS_AVAILABLE = True
 except ImportError:
     _GPU_BACKENDS_AVAILABLE = False
 
+
 def _use_gpu_acceleration(n_nodes: int) -> bool:
     """Determine if GPU acceleration should be used based on problem size.
-    
+
     Args:
         n_nodes: Number of nodes in the graph
-        
+
     Returns:
         True if GPU acceleration is beneficial and available
     """
     if not _GPU_BACKENDS_AVAILABLE or n_nodes < 200:
         return False
-    
+
     try:
         backend = get_backend()
         return backend.supports_autodiff
     except Exception:
         return False
 
+
 def _gpu_distance_matrix(positions: np.ndarray, alpha: float = 2.0) -> np.ndarray:
     """Compute distance matrix on GPU for large graphs.
-    
+
     Args:
         positions: Node positions array (N, d)
         alpha: Distance exponent
-        
+
     Returns:
         Distance matrix with 1/d^alpha entries
     """
     if not _GPU_BACKENDS_AVAILABLE:
         raise RuntimeError("GPU backends not available")
-    
+
     backend = get_backend()
-    
+
     # Convert to backend tensors
     pos_tensor = backend.as_array(positions)
-    
+
     # Compute pairwise distances: ||x_i - x_j||^2
     # Using broadcasting: (N,1,d) - (1,N,d) -> (N,N,d)
     pos_i = pos_tensor[:, None, :]  # (N, 1, d)
     pos_j = pos_tensor[None, :, :]  # (1, N, d)
     diff = pos_i - pos_j  # (N, N, d)
-    
+
     # Squared distances
-    dist_sq = backend.einsum('ijd,ijd->ij', diff, diff)
-    
+    dist_sq = backend.einsum("ijd,ijd->ij", diff, diff)
+
     # Add small epsilon to avoid division by zero
     epsilon = 1e-12
     dist_sq = dist_sq + epsilon
-    
+
     # Compute 1/d^alpha
     if alpha == 2.0:
         inv_dist = 1.0 / dist_sq
     else:
-        dist = backend.einsum('ij->ij', dist_sq ** 0.5)  # sqrt for distance
-        inv_dist = 1.0 / (dist ** alpha)
-    
+        dist = backend.einsum("ij->ij", dist_sq**0.5)  # sqrt for distance
+        inv_dist = 1.0 / (dist**alpha)
+
     # set diagonal to zero (self-distances)
     n = positions.shape[0]
     eye = backend.as_array(np.eye(n))
     inv_dist = inv_dist * (1 - eye)
-    
+
     return backend.to_numpy(inv_dist)
+
 
 def _get_precision_dtype() -> type:
     """Return numpy dtype based on current precision mode.
-    
+
     Returns
     -------
     type
         np.float64 (standard/high) or np.longdouble (research)
-    
+
     Notes
     -----
     Physics invariant: dtype affects numeric accuracy, never semantics.
@@ -182,12 +188,14 @@ def _get_precision_dtype() -> type:
         # High mode uses refined algorithms, not different dtype
         return np.float64
 
+
 # Centralised helpers — single source of truth in _helpers.py
-from ._helpers import wrap_angle as _wrap_angle          # noqa: E402
-from ._helpers import get_phase as _get_phase            # noqa: E402
-from ._helpers import get_dnfr as _get_dnfr              # noqa: E402
+from ._helpers import get_dnfr as _get_dnfr  # noqa: E402
+from ._helpers import get_phase as _get_phase  # noqa: E402
+from ._helpers import wrap_angle as _wrap_angle  # noqa: E402
 
 _PHI_S_DISTANCE_CACHE: dict[tuple, dict[Any, dict[Any, float]]] = {}
+
 
 def _graph_topology_hash(G: Any) -> int:
     """Return lightweight topology hash (nodes, edges, degree multiset).
@@ -200,9 +208,10 @@ def _graph_topology_hash(G: Any) -> int:
     degrees = sorted([d for _, d in G.degree()])
     return hash((num_nodes, num_edges, tuple(degrees)))
 
+
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={'graph_topology', 'node_dnfr'},
+    dependencies={"graph_topology", "node_dnfr"},
 )
 def compute_structural_potential(
     G: Any,
@@ -250,9 +259,7 @@ def compute_structural_potential(
       changes (phase does not affect shortest-path distances).
     """
     if nx is None:
-        raise RuntimeError(
-            "networkx required for structural potential computation"
-        )
+        raise RuntimeError("networkx required for structural potential computation")
 
     nodes = list(G.nodes())
     num_nodes = len(nodes)
@@ -320,8 +327,13 @@ def compute_structural_potential(
         if _VECTORIZATION_AVAILABLE:
             landmarks = list(landmark_distances.keys())
             return compute_phi_s_landmarks_vectorized(
-                G, nodes, delta_nfr, alpha, landmarks, landmark_distances,
-                dtype=_get_precision_dtype()
+                G,
+                nodes,
+                delta_nfr,
+                alpha,
+                landmarks,
+                landmark_distances,
+                dtype=_get_precision_dtype(),
             )
 
         # Approximate potentials (Python fallback)
@@ -342,12 +354,8 @@ def compute_structural_potential(
                     continue
                 min_approx_dist = math.inf
                 for landmark in landmarks:
-                    d_land_src = landmark_distances[landmark].get(
-                        src, math.inf
-                    )
-                    d_land_dst = landmark_distances[landmark].get(
-                        dst, math.inf
-                    )
+                    d_land_src = landmark_distances[landmark].get(src, math.inf)
+                    d_land_dst = landmark_distances[landmark].get(dst, math.inf)
                     if math.isfinite(d_land_src) and math.isfinite(d_land_dst):
                         approx_dist = abs(d_land_src - d_land_dst)
                         if approx_dist <= 0.0:
@@ -365,19 +373,14 @@ def compute_structural_potential(
     if validate and num_nodes >= 100:
         # Sample subset for exact computation
         import random as _r
-        subset = (
-            nodes
-            if len(nodes) <= sample_size
-            else _r.sample(nodes, sample_size)
-        )
+
+        subset = nodes if len(nodes) <= sample_size else _r.sample(nodes, sample_size)
         exact_subset: dict[Any, float] = {}
         dtype = _get_precision_dtype()
         mode = get_precision_mode()
         for src in subset:
             if G.number_of_edges() > 0:
-                lengths = nx.single_source_dijkstra_path_length(
-                    G, src, weight="weight"
-                )
+                lengths = nx.single_source_dijkstra_path_length(G, src, weight="weight")
             else:
                 lengths = {src: 0.0}
             total = dtype(0.0)
@@ -388,9 +391,8 @@ def compute_structural_potential(
                 if not math.isfinite(d) or d <= 0.0:
                     continue
                 if mode in ("high", "research"):
-                    log_contrib = (
-                        np.log(abs(delta_nfr[dst]) + 1e-100)
-                        - alpha * np.log(d)
+                    log_contrib = np.log(abs(delta_nfr[dst]) + 1e-100) - alpha * np.log(
+                        d
                     )
                     contrib = dtype(np.exp(log_contrib))
                     if delta_nfr[dst] < 0:
@@ -422,25 +424,21 @@ def compute_structural_potential(
                 exact_vals.append(abs(e_val))
                 abs_errors.append(abs(e_val - a_val))
             denom = (sum(exact_vals) / len(exact_vals)) if exact_vals else 1.0
-            rmae = (
-                (sum(abs_errors) / len(abs_errors)) / denom if denom else 0.0
-            )
+            rmae = (sum(abs_errors) / len(abs_errors)) / denom if denom else 0.0
             refinements += 1
         # (Optional) embed metadata for downstream telemetry introspection
         # Embed approximation metadata (prefixed with __)
-        potential['__phi_s_landmark_ratio__'] = current_ratio  # type: ignore[index]
-        potential['__phi_s_rmae__'] = rmae  # type: ignore[index]
+        potential["__phi_s_landmark_ratio__"] = current_ratio  # type: ignore[index]
+        potential["__phi_s_rmae__"] = rmae  # type: ignore[index]
 
     return potential
 
+
 def _compute_phi_s_exact(
-    G: Any,
-    nodes: list[Any],
-    delta_nfr: dict[Any, float],
-    alpha: float
+    G: Any, nodes: list[Any], delta_nfr: dict[Any, float], alpha: float
 ) -> dict[Any, float]:
     """Exact Φ_s computation using all-pairs shortest paths.
-    
+
     Precision-aware: uses dtype from get_precision_mode().
     """
     # Use vectorized implementation if available and appropriate
@@ -468,37 +466,32 @@ def _compute_phi_s_exact(
             d = lengths.get(dst, math.inf)
             if not math.isfinite(d) or d <= 0.0:
                 continue
-            
+
             # High/research modes: use more stable exponentiation
             if mode in ("high", "research"):
                 # log-space computation for better numerical stability
-                log_contrib = (
-                    np.log(abs(delta_nfr[dst]) + 1e-100)
-                    - alpha * np.log(d)
-                )
+                log_contrib = np.log(abs(delta_nfr[dst]) + 1e-100) - alpha * np.log(d)
                 contrib = dtype(np.exp(log_contrib))
                 if delta_nfr[dst] < 0:
                     contrib = -contrib
             else:
                 # Standard mode: direct computation
                 contrib = dtype(delta_nfr[dst] / (d**alpha))
-            
+
             total += contrib
         potential[src] = float(total)
 
     return potential
 
+
 def _compute_phi_s_optimized(
-    G: Any,
-    nodes: list[Any],
-    delta_nfr: dict[Any, float],
-    alpha: float
+    G: Any, nodes: list[Any], delta_nfr: dict[Any, float], alpha: float
 ) -> dict[Any, float]:
     """Optimized Φ_s computation using BFS for unweighted graphs."""
     potential: dict[Any, float] = {}
 
     # Check if graph is unweighted
-    has_weights = any('weight' in G[u][v] for u, v in G.edges())
+    has_weights = any("weight" in G[u][v] for u, v in G.edges())
 
     if not has_weights:
         # Use BFS for unweighted graphs (more efficient)
@@ -525,12 +518,13 @@ def _compute_phi_s_optimized(
 
     return potential
 
+
 def _compute_phi_s_landmarks(
     G: Any,
     nodes: list[Any],
     delta_nfr: dict[Any, float],
     alpha: float,
-    landmark_ratio: float = 0.1
+    landmark_ratio: float = 0.1,
 ) -> dict[Any, float]:
     """Approximate Φ_s computation using landmark sampling."""
     import random
@@ -547,10 +541,8 @@ def _compute_phi_s_landmarks(
 
     # Select top nodes by score, with some randomization
     node_scores.sort(reverse=True)
-    top_candidates = [node for _, node in node_scores[:num_landmarks * 2]]
-    landmarks = random.sample(
-        top_candidates, min(num_landmarks, len(top_candidates))
-    )
+    top_candidates = [node for _, node in node_scores[: num_landmarks * 2]]
+    landmarks = random.sample(top_candidates, min(num_landmarks, len(top_candidates)))
 
     # Compute exact distances from landmarks
     landmark_distances = {}
@@ -586,17 +578,10 @@ def _compute_phi_s_landmarks(
             # Find nearest landmark to dst and approximate distance
             min_approx_dist = math.inf
             for landmark in landmarks:
-                d_landmark_src = landmark_distances[landmark].get(
-                    src, math.inf
-                )
-                d_landmark_dst = landmark_distances[landmark].get(
-                    dst, math.inf
-                )
+                d_landmark_src = landmark_distances[landmark].get(src, math.inf)
+                d_landmark_dst = landmark_distances[landmark].get(dst, math.inf)
 
-                if (
-                    math.isfinite(d_landmark_src)
-                    and math.isfinite(d_landmark_dst)
-                ):
+                if math.isfinite(d_landmark_src) and math.isfinite(d_landmark_dst):
                     # Triangle approximation
                     approx_dist = abs(d_landmark_src - d_landmark_dst)
                     approx_dist = max(approx_dist, 1.0)  # Avoid zero distance
@@ -609,6 +594,7 @@ def _compute_phi_s_landmarks(
         potential[src] = total
 
     return potential
+
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
@@ -646,6 +632,7 @@ def compute_phase_gradient(G: Any) -> dict[Any, float]:
     grad, _ = _compute_phase_gradient_and_curvature(G)
     return grad
 
+
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
     dependencies={"graph_topology", "node_phase"},
@@ -655,11 +642,12 @@ def compute_phase_curvature(G: Any) -> dict[Any, float]:
     _, curvature = _compute_phase_gradient_and_curvature(G)
     return curvature
 
+
 def _compute_phase_gradient_and_curvature(
     G: Any,
 ) -> tuple[dict[Any, float], dict[Any, float]]:
     """Compute |∇φ| and K_φ in a single neighborhood pass.
-    
+
     Precision-aware: uses dtype from get_precision_mode().
     """
     dtype = _get_precision_dtype()
@@ -672,46 +660,46 @@ def _compute_phase_gradient_and_curvature(
     if _VECTORIZATION_AVAILABLE:
         try:
             node_to_idx = {node: i for i, node in enumerate(nodes)}
-            
+
             # Phase array
             phases = np.array([_get_phase(G, node) for node in nodes], dtype=np.float64)
-            
+
             # Degree array
             degrees = np.array([G.degree[node] for node in nodes], dtype=np.float64)
-            
+
             # Edge lists
             edge_src_list = []
             edge_dst_list = []
-            
+
             is_directed = G.is_directed()
-            
+
             for u, v in G.edges():
                 if u not in node_to_idx or v not in node_to_idx:
                     continue
-                    
+
                 u_idx = node_to_idx[u]
                 v_idx = node_to_idx[v]
-                
+
                 # If u is center, v is neighbor: src=v, dst=u
                 edge_src_list.append(v_idx)
                 edge_dst_list.append(u_idx)
-                
+
                 if not is_directed:
                     # If v is center, u is neighbor: src=u, dst=v
                     edge_src_list.append(u_idx)
                     edge_dst_list.append(v_idx)
-                    
+
             edge_src = np.array(edge_src_list, dtype=np.intp)
             edge_dst = np.array(edge_dst_list, dtype=np.intp)
-            
+
             grad_arr, curv_arr = compute_phase_gradient_and_curvature_vectorized(
                 phases, edge_src, edge_dst, degrees, dtype=dtype
             )
-            
+
             grad = {node: float(grad_arr[i]) for i, node in enumerate(nodes)}
             curvature = {node: float(curv_arr[i]) for i, node in enumerate(nodes)}
             return grad, curvature
-            
+
         except Exception:
             # Fallback
             pass
@@ -729,9 +717,7 @@ def _compute_phase_gradient_and_curvature(
             continue
 
         phi_i = dtype(phases[i])
-        neigh_phases = np.array(
-            [phases[j] for j in neighbors], dtype=dtype
-        )
+        neigh_phases = np.array([phases[j] for j in neighbors], dtype=dtype)
 
         if neigh_phases.size == 0:
             grad[i] = 0.0
@@ -741,9 +727,7 @@ def _compute_phase_gradient_and_curvature(
         # Gradient: mean absolute wrapped difference
         diffs = phi_i - neigh_phases
         pi_typed = dtype(np.pi)
-        wrapped_diffs = (
-            (diffs + pi_typed) % (2 * pi_typed) - pi_typed
-        )
+        wrapped_diffs = (diffs + pi_typed) % (2 * pi_typed) - pi_typed
         grad[i] = float(np.mean(np.abs(wrapped_diffs)))
 
         # Curvature: deviation from circular mean of neighbor phases
@@ -762,19 +746,20 @@ def _compute_phase_gradient_and_curvature(
 
     return grad, curvature
 
+
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={'graph_topology', 'node_dnfr'},
+    dependencies={"graph_topology", "node_dnfr"},
 )
 def estimate_coherence_length(G: Any) -> float:
     """Estimate coherence length ξ_C from spatial autocorrelation [CANONICAL].
-    
+
     Precision-aware: uses dtype from get_precision_mode().
     High/research modes use more distance samples for better fit.
     """
     dtype = _get_precision_dtype()
     mode = get_precision_mode()
-    
+
     # Adjust sampling based on precision mode
     if mode == "research":
         sample_threshold = 100  # More samples for research
@@ -785,23 +770,25 @@ def estimate_coherence_length(G: Any) -> float:
     else:  # standard
         sample_threshold = 50
         min_samples = 20
-    
+
     nodes = list(G.nodes())
     if len(nodes) < 3:
-        return float('nan')
+        return float("nan")
 
     # Vectorized path
     if _VECTORIZATION_AVAILABLE:
         try:
             # Collect ΔNFR map
             dnfr_map = {node: _get_dnfr(G, node) for node in nodes}
-            
+
             # Use vectorized implementation
             # Note: This uses full distance matrix, so it's O(N^3) or O(N^2) depending on algo.
             # For very large graphs, we might want to stick to the sampling approach below.
             # Let's use a heuristic: if N < 1000, use vectorized.
             if len(nodes) < 1000:
-                return compute_coherence_length_vectorized(G, nodes, dnfr_map, dtype=dtype)
+                return compute_coherence_length_vectorized(
+                    G, nodes, dnfr_map, dtype=dtype
+                )
         except Exception:
             # Fallback to Python implementation
             pass
@@ -819,11 +806,9 @@ def estimate_coherence_length(G: Any) -> float:
         # Sample approach for large graphs
         distances = {}
         num_samples = max(min_samples, len(nodes) // 20)
-        sample_nodes = nodes[::max(1, len(nodes) // num_samples)]
+        sample_nodes = nodes[:: max(1, len(nodes) // num_samples)]
         for node in sample_nodes:
-            distances[node] = dict(
-                nx.single_source_shortest_path_length(G, node)
-            )
+            distances[node] = dict(nx.single_source_shortest_path_length(G, node))
 
     # Build distance-coherence correlation pairs
     corr_pairs = []
@@ -834,7 +819,7 @@ def estimate_coherence_length(G: Any) -> float:
                 corr_pairs.append((dist, corr))
 
     if len(corr_pairs) < 10:
-        return float('nan')
+        return float("nan")
 
     # Group by distance and compute mean correlation
     distance_bins: dict[int, list[float]] = {}
@@ -844,12 +829,11 @@ def estimate_coherence_length(G: Any) -> float:
         distance_bins[dist].append(corr)
 
     dist_corr_pairs = [
-        (d, np.mean(corrs)) for d, corrs in distance_bins.items()
-        if len(corrs) >= 2
+        (d, np.mean(corrs)) for d, corrs in distance_bins.items() if len(corrs) >= 2
     ]
 
     if len(dist_corr_pairs) < 3:
-        return float('nan')
+        return float("nan")
 
     # Fit exponential decay: C(r) ~ exp(-r/ξ_C)
     dist_corr_pairs.sort()
@@ -859,7 +843,7 @@ def estimate_coherence_length(G: Any) -> float:
     # Avoid log of negative/zero values
     positive_corrs = corrs_arr > 1e-9
     if np.sum(positive_corrs) < 3:
-        return float('nan')
+        return float("nan")
 
     distances_fit = distances_arr[positive_corrs]
     log_corrs_fit = np.log(corrs_arr[positive_corrs])
@@ -868,15 +852,16 @@ def estimate_coherence_length(G: Any) -> float:
     try:
         slope, _ = np.polyfit(distances_fit, log_corrs_fit, 1)
         if slope >= 0:  # Should be negative for decay
-            return float('nan')
+            return float("nan")
         xi_c = -1.0 / slope
-        return float(xi_c) if xi_c > 0 else float('nan')
+        return float(xi_c) if xi_c > 0 else float("nan")
     except np.linalg.LinAlgError:
-        return float('nan')
+        return float("nan")
+
 
 __all__ = [
     "compute_structural_potential",
     "compute_phase_gradient",
     "compute_phase_curvature",
-    "estimate_coherence_length"
+    "estimate_coherence_length",
 ]

@@ -38,16 +38,16 @@ import numpy as np
 def main() -> None:
     """Run P5 spectral zeta demonstration."""
     from tnfr.riemann.spectral_zeta import (
+        RIEMANN_ZETA_KNOWN_VALUES,
+        compute_heat_kernel_trace,
         compute_positive_eigenvalues,
         compute_spectral_zeta,
         compute_spectral_zeta_derivative,
-        compute_heat_kernel_trace,
-        verify_mellin_bridge,
         riemann_zeta_approx,
+        run_spectral_zeta_analysis,
         test_conjecture_10_1,
         test_conjecture_10_1_sequence,
-        run_spectral_zeta_analysis,
-        RIEMANN_ZETA_KNOWN_VALUES,
+        verify_mellin_bridge,
     )
 
     print("=" * 72)
@@ -92,8 +92,10 @@ def main() -> None:
     for u, z in zip(result.u_values, result.zeta_values):
         print(f"  {u:6.1f}  {z:14.6f}")
 
-    print(f"\n  Check: zeta(0) = {result.zeta_values[0]:.1f} "
-          f"(expected {result.n_positive})")
+    print(
+        f"\n  Check: zeta(0) = {result.zeta_values[0]:.1f} "
+        f"(expected {result.n_positive})"
+    )
 
     # ------------------------------------------------------------------
     # 3. Spectral zeta derivative
@@ -131,8 +133,9 @@ def main() -> None:
         )
 
     print(f"\n  Theta(beta->0) = {hk.theta_values[0]:.2f} (expected ~{k})")
-    print(f"  Theta(beta->inf) = {hk.theta_values[-1]:.6f} "
-          f"(expected ~1 at sigma=1/2)")
+    print(
+        f"  Theta(beta->inf) = {hk.theta_values[-1]:.6f} " f"(expected ~1 at sigma=1/2)"
+    )
 
     # ------------------------------------------------------------------
     # 5. Mellin bridge verification
@@ -145,9 +148,7 @@ def main() -> None:
     u_bridge = np.array([1.5, 2.0, 3.0, 4.0, 5.0])
     mb = verify_mellin_bridge(k, 0.5, u_values=u_bridge)
     print(f"\n  k = {k}, sigma = 0.5")
-    print(
-        f"  {'u':>5s}  {'direct':>12s}  {'Mellin':>12s}  {'rel_err':>12s}"
-    )
+    print(f"  {'u':>5s}  {'direct':>12s}  {'Mellin':>12s}  {'rel_err':>12s}")
     print("  " + "-" * 46)
     for i, u in enumerate(mb.u_values):
         print(
@@ -224,14 +225,18 @@ def main() -> None:
     print()
     print("  Spectral zeta:     zeta_H(sigma, u) computed and validated")
     print("  Heat kernel:       Theta, Z, F, S computed across beta range")
-    print(f"  Mellin bridge:     {'VERIFIED' if mb.bridge_valid else 'NEEDS REVIEW'}"
-          f" (max err = {mb.max_relative_error:.2e})")
+    print(
+        f"  Mellin bridge:     {'VERIFIED' if mb.bridge_valid else 'NEEDS REVIEW'}"
+        f" (max err = {mb.max_relative_error:.2e})"
+    )
     print(f"  Conjecture 10.1:   Tested for k in {k_vals}")
     if results:
         best = max(results, key=lambda r: r.correlation)
-        print(f"    Best fit at k={best.k}: "
-              f"C={best.C_fit:.4e}, delta={best.delta_fit:.4f}, "
-              f"r={best.correlation:.4f}")
+        print(
+            f"    Best fit at k={best.k}: "
+            f"C={best.C_fit:.4e}, delta={best.delta_fit:.4f}, "
+            f"r={best.correlation:.4f}"
+        )
     print()
     print("TNFR-Riemann P5 demonstration complete.")
     print("=" * 72)

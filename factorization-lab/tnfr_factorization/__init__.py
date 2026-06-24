@@ -5,8 +5,8 @@ Public API:
     - factorize / FactorizationResult (high-level nodal factorization)
 """
 
-from .spectral_paley import SpectralPaleyFactorizer, SpectralAnalysisResult
-from .api import factorize, FactorizationResult
+from .api import FactorizationResult, factorize
+from .spectral_paley import SpectralAnalysisResult, SpectralPaleyFactorizer
 
 __all__ = [
     "SpectralPaleyFactorizer",

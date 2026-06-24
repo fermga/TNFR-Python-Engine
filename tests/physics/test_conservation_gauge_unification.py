@@ -39,26 +39,25 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-
 from tnfr.physics.conservation_gauge_unification import (
-    GrammarSymmetryMapping,
     ActionEnergyConsistency,
-    NoetherGaugeDecomposition,
-    GaugeConservationCoupling,
-    SymplecticGaugeCompatibility,
     ConservationGaugeUnification,
-    compute_grammar_symmetry_mapping,
-    verify_action_energy_consistency,
-    compute_noether_gauge_decomposition,
+    GaugeConservationCoupling,
+    GrammarSymmetryMapping,
+    NoetherGaugeDecomposition,
+    SymplecticGaugeCompatibility,
     compute_gauge_conservation_coupling,
-    verify_symplectic_gauge_compatibility,
+    compute_grammar_symmetry_mapping,
+    compute_noether_gauge_decomposition,
     run_conservation_gauge_unification,
+    verify_action_energy_consistency,
+    verify_symplectic_gauge_compatibility,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 def _make_tnfr_graph(
     n: int = 30,
@@ -108,6 +107,7 @@ def grid_graph():
 # 1. Grammar Symmetry Mapping
 # ---------------------------------------------------------------------------
 
+
 class TestGrammarSymmetryMapping:
     """Grammar rules U1-U6 map to symmetries and conservation laws."""
 
@@ -133,8 +133,14 @@ class TestGrammarSymmetryMapping:
         """Each grammar rule maps to a different symmetry type."""
         mappings = compute_grammar_symmetry_mapping(ws_graph)
         types = [m.symmetry_type for m in mappings]
-        expected = {"boundary", "stability", "gauge", "topological",
-                    "hierarchical", "confinement"}
+        expected = {
+            "boundary",
+            "stability",
+            "gauge",
+            "topological",
+            "hierarchical",
+            "confinement",
+        }
         assert set(types) == expected
 
     def test_u1_boundary_satisfied(self, ws_graph):
@@ -167,6 +173,7 @@ class TestGrammarSymmetryMapping:
 # ---------------------------------------------------------------------------
 # 2. Action-Energy Consistency: H_var ≡ E_cons
 # ---------------------------------------------------------------------------
+
 
 class TestActionEnergyConsistency:
     """The variational Hamiltonian equals the conservation energy functional."""
@@ -215,6 +222,7 @@ class TestActionEnergyConsistency:
 # ---------------------------------------------------------------------------
 # 3. Noether-Gauge Decomposition
 # ---------------------------------------------------------------------------
+
 
 class TestNoetherGaugeDecomposition:
     """Symmetry decomposes into external (Noether) and internal (gauge) sectors."""
@@ -270,6 +278,7 @@ class TestNoetherGaugeDecomposition:
 # ---------------------------------------------------------------------------
 # 4. Gauge-Conservation Coupling
 # ---------------------------------------------------------------------------
+
 
 class TestGaugeConservationCoupling:
     """Quantifies the K_φ-mediated coupling between gauge and conservation."""
@@ -335,6 +344,7 @@ class TestGaugeConservationCoupling:
 # 5. Symplectic-Gauge Compatibility
 # ---------------------------------------------------------------------------
 
+
 class TestSymplecticGaugeCompatibility:
     """Symplectic form ω is preserved under gauge rotations (det R = 1)."""
 
@@ -357,8 +367,13 @@ class TestSymplecticGaugeCompatibility:
     def test_total_is_sum(self, ws_graph):
         """Ω = Ω_geo + Ω_pot."""
         result = verify_symplectic_gauge_compatibility(ws_graph)
-        assert abs(result.total_volume -
-                   (result.geometric_volume + result.potential_volume)) < 1e-12
+        assert (
+            abs(
+                result.total_volume
+                - (result.geometric_volume + result.potential_volume)
+            )
+            < 1e-12
+        )
 
     def test_poisson_brackets_finite(self, ws_graph):
         """Poisson bracket estimates are finite."""
@@ -382,6 +397,7 @@ class TestSymplecticGaugeCompatibility:
 # ---------------------------------------------------------------------------
 # 6. Full Unification
 # ---------------------------------------------------------------------------
+
 
 class TestConservationGaugeUnification:
     """Complete pipeline: Grammar → Symmetry → Conservation → Gauge."""
@@ -463,8 +479,10 @@ class TestConservationGaugeUnification:
         r2 = run_conservation_gauge_unification(ws_graph, gauge_seed=99)
         assert r1.unification_quality == r2.unification_quality
         assert r1.is_unified == r2.is_unified
-        assert (r1.action_consistency.hamiltonian_variational ==
-                r2.action_consistency.hamiltonian_variational)
+        assert (
+            r1.action_consistency.hamiltonian_variational
+            == r2.action_consistency.hamiltonian_variational
+        )
 
     def test_multi_topology(self, ws_graph, ba_graph, grid_graph):
         """Full pipeline succeeds on all standard topologies."""
@@ -478,6 +496,7 @@ class TestConservationGaugeUnification:
 # ---------------------------------------------------------------------------
 # 7. Coherent Phase Graph (Phase-aligned — should give full unification)
 # ---------------------------------------------------------------------------
+
 
 class TestCoherentGraph:
     """A graph with aligned phases should pass all checks including U3."""
@@ -502,7 +521,9 @@ class TestCoherentGraph:
         """Coherent graph should satisfy all grammar rules."""
         mappings = compute_grammar_symmetry_mapping(coherent_graph)
         for m in mappings:
-            assert m.is_satisfied, f"Rule {m.rule} not satisfied: diag={m.diagnostic_value}"
+            assert (
+                m.is_satisfied
+            ), f"Rule {m.rule} not satisfied: diag={m.diagnostic_value}"
 
     def test_full_unification(self, coherent_graph):
         """Coherent graph should achieve full unification."""
@@ -525,27 +546,30 @@ class TestCoherentGraph:
 # 8. Import via physics.__init__
 # ---------------------------------------------------------------------------
 
+
 class TestPhysicsImport:
     """Verify exports are accessible from tnfr.physics."""
 
     def test_import_dataclasses(self):
         from tnfr.physics import (
-            GrammarSymmetryMapping,
             ActionEnergyConsistency,
-            NoetherGaugeDecomposition,
-            GaugeConservationCoupling,
-            SymplecticGaugeCompatibility,
             ConservationGaugeUnification,
+            GaugeConservationCoupling,
+            GrammarSymmetryMapping,
+            NoetherGaugeDecomposition,
+            SymplecticGaugeCompatibility,
         )
+
         assert GrammarSymmetryMapping is not None
 
     def test_import_functions(self):
         from tnfr.physics import (
-            compute_grammar_symmetry_mapping,
-            verify_action_energy_consistency,
-            compute_noether_gauge_decomposition,
             compute_gauge_conservation_coupling,
-            verify_symplectic_gauge_compatibility,
+            compute_grammar_symmetry_mapping,
+            compute_noether_gauge_decomposition,
             run_conservation_gauge_unification,
+            verify_action_energy_consistency,
+            verify_symplectic_gauge_compatibility,
         )
+
         assert callable(run_conservation_gauge_unification)

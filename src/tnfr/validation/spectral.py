@@ -2,23 +2,21 @@
 
 from __future__ import annotations
 
-from ..compat.dataclass import dataclass
 from typing import Any, Mapping, Sequence
 
+from ..compat.dataclass import dataclass
 from ..errors import TNFRValueError
-from ..mathematics.unified_numerical import np
-
 from ..mathematics.operators import CoherenceOperator, FrequencyOperator
+from ..mathematics.runtime import coherence as runtime_coherence
+from ..mathematics.runtime import frequency_positive as runtime_frequency_positive
+from ..mathematics.runtime import normalized as runtime_normalized
+from ..mathematics.runtime import stable_unitary as runtime_stable_unitary
 from ..mathematics.spaces import HilbertSpace
-from ..mathematics.runtime import (
-    coherence as runtime_coherence,
-    frequency_positive as runtime_frequency_positive,
-    normalized as runtime_normalized,
-    stable_unitary as runtime_stable_unitary,
-)
+from ..mathematics.unified_numerical import np
 from .base import ValidationOutcome, Validator
 
 __all__ = ("NFRValidator",)
+
 
 @dataclass(slots=True)
 class NFRValidator(Validator[np.ndarray]):
@@ -105,7 +103,9 @@ class NFRValidator(Validator[np.ndarray]):
             },
         }
 
-        overall = bool(normalized_passed and coherence_passed and freq_ok and unitary_passed)
+        overall = bool(
+            normalized_passed and coherence_passed and freq_ok and unitary_passed
+        )
         return overall, summary, normalised_vector
 
     def validate(
@@ -154,7 +154,9 @@ class NFRValidator(Validator[np.ndarray]):
             failed_checks.append("coherence threshold")
 
         frequency_summary = summary.get("frequency")
-        if isinstance(frequency_summary, Mapping) and not frequency_summary.get("passed", False):
+        if isinstance(frequency_summary, Mapping) and not frequency_summary.get(
+            "passed", False
+        ):
             failed_checks.append("frequency positivity")
 
         unitary_summary = summary.get("unitary_stability", {})

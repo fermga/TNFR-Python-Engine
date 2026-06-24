@@ -377,6 +377,7 @@ def _matrix_exponential_skew(H_sym: np.ndarray, factor: float) -> np.ndarray:
 # Certificate dataclass + driver
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class LyapunovSpectralCertificate:
     r"""Certificate of self-adjointness + positivity + trace-class +

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-import numpy as np
-from .backend import MathematicsBackend
-from .spaces import HilbertSpace
 from dataclasses import dataclass, field
 from typing import Any, NamedTuple, Sequence
+
+import numpy as np
+
+from .backend import MathematicsBackend
+from .spaces import HilbertSpace
 
 __all__ = ["MathematicalDynamicsEngine", "ContractiveDynamicsEngine"]
 

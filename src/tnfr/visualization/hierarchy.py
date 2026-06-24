@@ -35,6 +35,7 @@ __all__ = [
     "get_hierarchy_info",
 ]
 
+
 def print_bifurcation_hierarchy(
     G: TNFRGraph,
     node: NodeId,
@@ -137,9 +138,7 @@ def print_bifurcation_hierarchy(
             # Check if sub-EPI has further nesting
             sub_node_id = sub_epi.get("node_id")
             if sub_node_id and sub_node_id in G.nodes:
-                sub_has_children = bool(
-                    G.nodes[sub_node_id].get("sub_epis", [])
-                )
+                sub_has_children = bool(G.nodes[sub_node_id].get("sub_epis", []))
                 if sub_has_children:
                     truncated = " [...]"
 
@@ -187,6 +186,7 @@ def print_bifurcation_hierarchy(
                             stream=output,
                         )
 
+
 def _print_sub_hierarchy(
     G: TNFRGraph,
     node: NodeId,
@@ -223,9 +223,7 @@ def _print_sub_hierarchy(
         if max_depth is not None and indent + 1 >= max_depth:
             sub_node_id = sub_epi.get("node_id")
             if sub_node_id and sub_node_id in G.nodes:
-                sub_has_children = bool(
-                    G.nodes[sub_node_id].get("sub_epis", [])
-                )
+                sub_has_children = bool(G.nodes[sub_node_id].get("sub_epis", []))
                 if sub_has_children:
                     truncated = " [...]"
 
@@ -251,10 +249,12 @@ def _print_sub_hierarchy(
                         stream=stream,
                     )
 
+
 def _write_line(stream: TextIO, message: str) -> None:
     """Write a message with newline to the provided stream."""
 
     stream.write(f"{message}\n")
+
 
 def get_bifurcation_hierarchy_text(
     G: TNFRGraph,
@@ -296,6 +296,7 @@ def get_bifurcation_hierarchy_text(
     buffer = StringIO()
     print_bifurcation_hierarchy(G, node, max_depth=max_depth, stream=buffer)
     return buffer.getvalue()
+
 
 def get_hierarchy_info(G: TNFRGraph, node: NodeId) -> dict:
     """Get hierarchical bifurcation information for a node.

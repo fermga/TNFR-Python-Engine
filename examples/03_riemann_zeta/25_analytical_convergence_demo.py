@@ -30,16 +30,16 @@ from __future__ import annotations
 
 import math
 
+from tnfr.mathematics.unified_numerical import np
 from tnfr.riemann.analytical_convergence import (
-    compute_telescoping_trace,
-    verify_telescoping_identity,
-    pnt_prime_estimate,
-    pnt_sum_log_squared,
     compute_convergence_rate_bound,
     compute_effective_constant,
+    compute_telescoping_trace,
+    pnt_prime_estimate,
+    pnt_sum_log_squared,
     run_analytical_convergence_proof,
+    verify_telescoping_identity,
 )
-from tnfr.mathematics.unified_numerical import np
 
 
 def section(title: str) -> None:
@@ -77,7 +77,9 @@ def main() -> None:
     print("  Σ(log p_i)² ≈ k(log k)² − 2k log k + 2k")
     print()
 
-    print(f"  {'k':>5}  {'Exact':>12}  {'PNT Est':>12}  {'Leading':>12}  {'PNT Err':>10}")
+    print(
+        f"  {'k':>5}  {'Exact':>12}  {'PNT Est':>12}  {'Leading':>12}  {'PNT Err':>10}"
+    )
     print(f"  {'─' * 5}  {'─' * 12}  {'─' * 12}  {'─' * 12}  {'─' * 10}")
     for k in k_values:
         pnt = pnt_sum_log_squared(k)
@@ -94,7 +96,9 @@ def main() -> None:
     print("  σ* = 1/2 − tr(L V_1) / tr(V_1²)")
     print()
 
-    print(f"  {'k':>5}  {'σ*':>10}  {'|σ*−½|':>12}  {'1/k':>10}  {'C(k)':>8}  {'Curvature':>10}")
+    print(
+        f"  {'k':>5}  {'σ*':>10}  {'|σ*−½|':>12}  {'1/k':>10}  {'C(k)':>8}  {'Curvature':>10}"
+    )
     print(f"  {'─' * 5}  {'─' * 10}  {'─' * 12}  {'─' * 10}  {'─' * 8}  {'─' * 10}")
     for k in k_values:
         cr = compute_convergence_rate_bound(k)
@@ -143,7 +147,9 @@ def main() -> None:
     print(f"  Graph sizes:              {proof.k_values}")
     print(f"  Telescoping max error:    {proof.telescoping_max_error:.2e}")
     print(f"  PNT max relative error:   {proof.pnt_max_error:.4f}")
-    print(f"  Final C(k) at k={proof.k_values[-1]}:     {proof.final_effective_constant:.6f}")
+    print(
+        f"  Final C(k) at k={proof.k_values[-1]}:     {proof.final_effective_constant:.6f}"
+    )
     print(f"  Monotone decrease:        {proof.monotone_decrease}")
 
     print()
@@ -154,11 +160,15 @@ def main() -> None:
     print("  3. |σ* − 1/2| = O(1/k) confirmed")
     print(f"  4. Effective constant C(k) → {proof.final_effective_constant:.4f} ≈ 1")
     print()
-    status = "PASS" if (
-        proof.telescoping_max_error < 1e-10
-        and proof.monotone_decrease
-        and 0.5 < proof.final_effective_constant < 2.0
-    ) else "FAIL"
+    status = (
+        "PASS"
+        if (
+            proof.telescoping_max_error < 1e-10
+            and proof.monotone_decrease
+            and 0.5 < proof.final_effective_constant < 2.0
+        )
+        else "FAIL"
+    )
     print(f"  Overall status: {status}")
 
 

@@ -31,15 +31,15 @@ Usage:
 
 from __future__ import annotations
 
+from tnfr.mathematics.unified_numerical import np
 from tnfr.riemann.spectral_conservation import (
-    compute_spectral_j_phi,
-    compute_spectral_j_dnfr,
     compute_eigenmode_conservation,
+    compute_spectral_j_dnfr,
+    compute_spectral_j_phi,
+    run_critical_conservation_analysis,
     scan_conservation_vs_sigma,
     test_grammar_conservation,
-    run_critical_conservation_analysis,
 )
-from tnfr.mathematics.unified_numerical import np
 
 
 def section(title: str) -> None:
@@ -70,8 +70,10 @@ def main() -> None:
     # 2. Per-eigenmode conservation table
     # ------------------------------------------------------------------
     section("2. Per-Eigenmode Conservation Fields (first 8 modes)")
-    print("  j   lambda_j    Phi_s    |grad|    K_phi    J_phi   J_DNFR"
-          "      E(j)      Q(j)")
+    print(
+        "  j   lambda_j    Phi_s    |grad|    K_phi    J_phi   J_DNFR"
+        "      E(j)      Q(j)"
+    )
     print("  " + "-" * 78)
 
     for m in snap.modes[:8]:
@@ -137,21 +139,19 @@ def main() -> None:
     )
 
     print(f"  Graph size k = {analysis.k}")
-    print(f"  Energy minimum near sigma=0.5: "
-          f"{analysis.sigma_half_is_energy_min}")
-    print(f"  Minimal residual near sigma=0.5: "
-          f"{analysis.sigma_half_has_min_residual}")
-    print(f"  Compliant mean quality: "
-          f"{analysis.compliant_mean_quality:.6f}")
-    print(f"  Violating mean quality: "
-          f"{analysis.violating_mean_quality:.6f}")
+    print(f"  Energy minimum near sigma=0.5: " f"{analysis.sigma_half_is_energy_min}")
+    print(
+        f"  Minimal residual near sigma=0.5: " f"{analysis.sigma_half_has_min_residual}"
+    )
+    print(f"  Compliant mean quality: " f"{analysis.compliant_mean_quality:.6f}")
+    print(f"  Violating mean quality: " f"{analysis.violating_mean_quality:.6f}")
     print(f"  Quality ratio: {analysis.quality_ratio:.4f}")
 
     # ------------------------------------------------------------------
     # 6. Hellmann-Feynman verification
     # ------------------------------------------------------------------
     section("6. Hellmann-Feynman Verification (k=10)")
-    from tnfr.riemann.operator import build_prime_path_graph, build_h_tnfr
+    from tnfr.riemann.operator import build_h_tnfr, build_prime_path_graph
 
     k = 10
     sigma, ds = 0.5, 1e-5
@@ -174,11 +174,11 @@ def main() -> None:
     print("  " + "-" * 48)
     for j in range(k):
         rel = abs(analytic[j] - numerical[j]) / max(abs(numerical[j]), 1e-30)
-        print(f"  {j:2d}  {numerical[j]:12.6f}   {analytic[j]:12.6f}   "
-              f"{rel:10.2e}")
+        print(f"  {j:2d}  {numerical[j]:12.6f}   {analytic[j]:12.6f}   " f"{rel:10.2e}")
 
-    max_err = float(np.max(np.abs(analytic - numerical)
-                           / np.maximum(np.abs(numerical), 1e-30)))
+    max_err = float(
+        np.max(np.abs(analytic - numerical) / np.maximum(np.abs(numerical), 1e-30))
+    )
     print(f"\n  Max relative error: {max_err:.2e}")
     print(f"  Hellmann-Feynman verified: {max_err < 1e-3}")
 

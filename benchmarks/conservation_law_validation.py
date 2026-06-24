@@ -31,20 +31,20 @@ import networkx as nx  # noqa: E402
 from tnfr.constants import inject_defaults  # noqa: E402
 from tnfr.physics.conservation import (  # noqa: E402
     ConservationTracker,
+    analyze_sector_coupling,
     capture_conservation_snapshot,
     compute_conservation_scaling,
     compute_energy_functional,
     compute_lyapunov_derivative,
     compute_noether_charge,
     compute_spectral_conservation,
-    analyze_sector_coupling,
     verify_conservation_balance,
 )
-
 
 # ---------------------------------------------------------------------------
 # Utilities
 # ---------------------------------------------------------------------------
+
 
 def _build_graph(n: int, topology: str, seed: int) -> nx.Graph:
     """Build a TNFR graph with specified topology."""
@@ -93,6 +93,7 @@ def _evolve(G: nx.Graph, dt: float, n_steps: int) -> None:
 # Benchmark 1: Topology sweep
 # ---------------------------------------------------------------------------
 
+
 def benchmark_topology_sweep() -> None:
     """Measure conservation across topologies at fixed size."""
     print("=" * 65)
@@ -104,8 +105,10 @@ def benchmark_topology_sweep() -> None:
     dt = 0.01
     n_steps = 20
 
-    print(f"{'Topology':<12} {'Q_drift':>10} {'Rel_drift':>12} "
-          f"{'Quality':>10} {'E_decay':>10} {'kappa':>8}")
+    print(
+        f"{'Topology':<12} {'Q_drift':>10} {'Rel_drift':>12} "
+        f"{'Quality':>10} {'E_decay':>10} {'kappa':>8}"
+    )
     print("-" * 62)
 
     for topo, n in zip(topologies, sizes):
@@ -125,9 +128,7 @@ def benchmark_topology_sweep() -> None:
 
         # Sector coupling from last pair
         snaps = tracker._snapshots
-        coupling = analyze_sector_coupling(
-            snaps[-2][1], snaps[-1][1], dt=dt
-        )
+        coupling = analyze_sector_coupling(snaps[-2][1], snaps[-1][1], dt=dt)
         kappa = coupling["cross_coupling_strength"]
 
         q_drift = abs(Q_final - Q0)
@@ -146,6 +147,7 @@ def benchmark_topology_sweep() -> None:
 # Benchmark 2: Lyapunov stability check
 # ---------------------------------------------------------------------------
 
+
 def benchmark_lyapunov_stability() -> None:
     """Verify dE/dt <= 0 across many steps and topologies."""
     print("=" * 65)
@@ -153,14 +155,18 @@ def benchmark_lyapunov_stability() -> None:
     print("=" * 65)
 
     configs = [
-        ("ws", 30, 50), ("ba", 30, 50),
-        ("grid", 25, 50), ("complete", 20, 50),
+        ("ws", 30, 50),
+        ("ba", 30, 50),
+        ("grid", 25, 50),
+        ("complete", 20, 50),
     ]
 
     dt = 0.01
 
-    print(f"{'Topology':<12} {'Steps':>6} {'Stable':>8} {'Pct':>8} "
-          f"{'Mean_dE/dt':>12} {'Max_dE/dt':>12}")
+    print(
+        f"{'Topology':<12} {'Steps':>6} {'Stable':>8} {'Pct':>8} "
+        f"{'Mean_dE/dt':>12} {'Max_dE/dt':>12}"
+    )
     print("-" * 58)
 
     for topo, n, n_steps in configs:
@@ -192,6 +198,7 @@ def benchmark_lyapunov_stability() -> None:
 # Benchmark 3: Spectral analysis
 # ---------------------------------------------------------------------------
 
+
 def benchmark_spectral_analysis() -> None:
     """Analyse conservation in the graph Laplacian eigenbasis."""
     print("=" * 65)
@@ -220,6 +227,7 @@ def benchmark_spectral_analysis() -> None:
 # Benchmark 4: Scaling behaviour  q(N) ~ 1 - C/sqrt(N)
 # ---------------------------------------------------------------------------
 
+
 def benchmark_scaling() -> None:
     """Verify conservation quality scaling with network size."""
     print("=" * 65)
@@ -235,14 +243,11 @@ def benchmark_scaling() -> None:
         G = _build_graph(n, "ws", seed=seed)
         topologies.append((G, f"WS({n})"))
 
-    result = compute_conservation_scaling(
-        topologies, dt=0.01, n_steps=15, seed=seed
-    )
+    result = compute_conservation_scaling(topologies, dt=0.01, n_steps=15, seed=seed)
 
     print(f"{'Label':<12} {'N':>6} {'Quality':>10}")
     print("-" * 28)
-    for label, n, q in zip(result["labels"], result["sizes"],
-                           result["qualities"]):
+    for label, n, q in zip(result["labels"], result["sizes"], result["qualities"]):
         print(f"{label:<12} {n:>6} {q:>10.4f}")
 
     print()
@@ -258,6 +263,7 @@ def benchmark_scaling() -> None:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     print()

@@ -78,19 +78,19 @@ References
 """
 
 import os
-import sys
 import statistics
+import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
-from sympy import isprime, factorint
+import numpy as np
+from sympy import factorint, isprime
 
 from tnfr.mathematics.number_theory import ArithmeticTNFRNetwork
 from tnfr.physics.structural_diffusion import (
-    stationary_distribution,
     effective_resistance,
+    stationary_distribution,
 )
 
 N = 160
@@ -103,7 +103,7 @@ def _build():
     nodes = sorted(G.nodes())
     props = {n: net.get_tnfr_properties(n) for n in nodes}
     omega = {n: sum(factorint(n).values()) for n in nodes}
-    dnfr = {n: abs(props[n]['DELTA_NFR']) for n in nodes}
+    dnfr = {n: abs(props[n]["DELTA_NFR"]) for n in nodes}
     return net, G, nodes, props, omega, dnfr
 
 
@@ -124,10 +124,14 @@ def experiment_1_network(G, nodes):
     degs = np.array([deg[n] for n in nodes], float)
     cv = degs.std() / degs.mean()
     top = sorted(nodes, key=lambda n: -deg[n])[:5]
-    print(f"  nodes = {len(nodes)}, edges = {G.number_of_edges()}, "
-          f"density = {nx.density(G):.3f}")
-    print(f"  degree: mean {degs.mean():.1f}, max {int(degs.max())}, "
-          f"CV = {cv:.2f}  ->  CV < 1: NOT scale-free (degree ceiling)")
+    print(
+        f"  nodes = {len(nodes)}, edges = {G.number_of_edges()}, "
+        f"density = {nx.density(G):.3f}"
+    )
+    print(
+        f"  degree: mean {degs.mean():.1f}, max {int(degs.max())}, "
+        f"CV = {cv:.2f}  ->  CV < 1: NOT scale-free (degree ceiling)"
+    )
     print(f"  top hubs: {[(n, deg[n]) for n in top]}")
     print("    (all multiples of 2·3·5 = 30 -> the small primes are the")
     print("     coupling backbone, not a power-law tail)")
@@ -151,12 +155,18 @@ def experiment_2_correlation_triangle(G, nodes, omega, dnfr):
     om = np.array([omega[n] for n in nodes], float)
     dg = np.array([deg[n] for n in nodes], float)
     dn = np.array([dnfr[n] for n in nodes], float)
-    print(f"  r(Ω,    ΔNFR)   = {np.corrcoef(om, dn)[0, 1]:.3f}   "
-          f"(Ω drives arithmetic pressure)")
-    print(f"  r(Ω,    degree) = {np.corrcoef(om, dg)[0, 1]:.3f}   "
-          f"(Ω drives network centrality)")
-    print(f"  r(ΔNFR, degree) = {np.corrcoef(dn, dg)[0, 1]:.3f}   "
-          f"(so the two pictures are LINKED)")
+    print(
+        f"  r(Ω,    ΔNFR)   = {np.corrcoef(om, dn)[0, 1]:.3f}   "
+        f"(Ω drives arithmetic pressure)"
+    )
+    print(
+        f"  r(Ω,    degree) = {np.corrcoef(om, dg)[0, 1]:.3f}   "
+        f"(Ω drives network centrality)"
+    )
+    print(
+        f"  r(ΔNFR, degree) = {np.corrcoef(dn, dg)[0, 1]:.3f}   "
+        f"(so the two pictures are LINKED)"
+    )
     print()
     print("VERDICT: the factorization (via Ω) is the common coordinate. A")
     print("number's arithmetic pressure and its coupling position are two")
@@ -217,8 +227,9 @@ def experiment_4_prime_periphery(G, nodes):
     pc = statistics.mean(pi[c] for c in comps)
     print("  diffusion stationary mass π = deg/Σdeg:")
     print(f"    mean π(prime)     = {pp:.5f}")
-    print(f"    mean π(composite) = {pc:.5f}   -> primes {pp / pc:.2f}× "
-          f"(periphery)")
+    print(
+        f"    mean π(composite) = {pc:.5f}   -> primes {pp / pc:.2f}× " f"(periphery)"
+    )
 
     # effective resistance on the giant component (isolated primes excluded)
     giant = G.subgraph(max(nx.connected_components(G), key=len)).copy()
@@ -231,8 +242,7 @@ def experiment_4_prime_periphery(G, nodes):
     rc = statistics.mean(periph[n] for n in gc)
     print("  mean effective resistance to the rest of the network:")
     print(f"    prime     = {rp:.4f}")
-    print(f"    composite = {rc:.4f}   -> primes {rp / rc:.2f}× "
-          f"(harder to reach)")
+    print(f"    composite = {rc:.4f}   -> primes {rp / rc:.2f}× " f"(harder to reach)")
 
     # isolation of large primes
     iso = [n for n in nodes if deg[n] == 0]

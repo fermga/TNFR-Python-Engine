@@ -56,7 +56,6 @@ from ..operators.definitions import (
 from ..operators.grammar_core import GrammarValidator
 from ..operators.grammar_u6 import validate_structural_potential_confinement
 
-
 __all__ = [
     "URulesConsistencySignatureCertificate",
     "compute_urules_consistency_signature",
@@ -183,15 +182,15 @@ def _make_canonical_sequence() -> list[Any]:
     -> transformer -> recursivity -> closure. Touches every U-rule branch.
     """
     return [
-        Emission(),       # U1a generator
-        Coupling(),       # U3 coupling/resonance trigger
-        Resonance(),      # U3 trigger
-        Dissonance(),     # U2/U4a destabilizer + bifurcation trigger
-        Coherence(),      # U2 stabilizer
-        Mutation(),       # U4b transformer
+        Emission(),  # U1a generator
+        Coupling(),  # U3 coupling/resonance trigger
+        Resonance(),  # U3 trigger
+        Dissonance(),  # U2/U4a destabilizer + bifurcation trigger
+        Coherence(),  # U2 stabilizer
+        Mutation(),  # U4b transformer
         SelfOrganization(),  # U4a handler + U4b transformer
-        Recursivity(),    # U1a generator + U2-REMESH amplifier
-        Silence(),        # U1b closure
+        Recursivity(),  # U1a generator + U2-REMESH amplifier
+        Silence(),  # U1b closure
     ]
 
 
@@ -338,30 +337,20 @@ def compute_urules_consistency_signature(
         output_classifications[name] = out_cls
         total_inputs += len(in_cls)
         total_outputs += 1
-        leaking_inputs += sum(
-            1 for c in in_cls if c not in admissible_inputs
-        )
+        leaking_inputs += sum(1 for c in in_cls if c not in admissible_inputs)
         leaking_outputs += 0 if out_cls in admissible_outputs else 1
 
     input_scalar_fraction = (
-        (total_inputs - leaking_inputs) / total_inputs
-        if total_inputs > 0
-        else 1.0
+        (total_inputs - leaking_inputs) / total_inputs if total_inputs > 0 else 1.0
     )
     output_scalar_fraction = (
-        (total_outputs - leaking_outputs) / total_outputs
-        if total_outputs > 0
-        else 1.0
+        (total_outputs - leaking_outputs) / total_outputs if total_outputs > 0 else 1.0
     )
     total_probes = total_inputs + total_outputs
     S_UR = (
-        (leaking_inputs + leaking_outputs) / total_probes
-        if total_probes > 0
-        else 0.0
+        (leaking_inputs + leaking_outputs) / total_probes if total_probes > 0 else 0.0
     )
-    verdict = (
-        "TYPE_HYGIENE_ADEQUATE" if S_UR == 0.0 else "TYPE_HYGIENE_VIOLATION"
-    )
+    verdict = "TYPE_HYGIENE_ADEQUATE" if S_UR == 0.0 else "TYPE_HYGIENE_VIOLATION"
 
     notes = (
         f"B10 URC Phase a: probed {len(probes)} U-rule checkers (U1a/U1b/U2/"

@@ -93,14 +93,10 @@ try:
 except ImportError:  # pragma: no cover
     nx = None
 
+from .canonical import estimate_coherence_length
+
 # Delegate to authoritative field computations (single source of truth)
-from .unified import (
-    compute_symmetry_breaking_field,
-    compute_chirality_field,
-)
-from .canonical import (
-    estimate_coherence_length,
-)
+from .unified import compute_chirality_field, compute_symmetry_breaking_field
 
 # ============================================================================
 # EMERGENT CLASSIFICATION — sampling-noise z-scores (NO magic constant)
@@ -134,15 +130,19 @@ def symmetry_zscore(mean_abs: float, variance: float, n: int) -> float:
         return 0.0 if mean_abs == 0.0 else math.inf
     return mean_abs / se
 
+
 # ============================================================================
 # DATA STRUCTURES
 # ============================================================================
 
+
 class Phase(Enum):
     """Structural phase classification from symmetry breaking analysis."""
-    NON_LIFE = "non_life"       # Symmetric: ⟨𝒮⟩ ≈ 0, |⟨χ⟩| ≈ 0
-    CRITICAL = "critical"       # Near transition: ⟨𝒮⟩ small, ξ_C large
-    LIFE = "life"               # Broken symmetry: ⟨𝒮⟩ ≠ 0, |⟨χ⟩| > 0
+
+    NON_LIFE = "non_life"  # Symmetric: ⟨𝒮⟩ ≈ 0, |⟨χ⟩| ≈ 0
+    CRITICAL = "critical"  # Near transition: ⟨𝒮⟩ small, ξ_C large
+    LIFE = "life"  # Broken symmetry: ⟨𝒮⟩ ≠ 0, |⟨χ⟩| > 0
+
 
 @dataclass
 class PhaseTransitionTelemetry:
@@ -189,6 +189,7 @@ class PhaseTransitionTelemetry:
     exponent_fit_r_squared : float | None
         Coefficient of determination R² for the power-law fit.
     """
+
     times: list[float]
     order_parameter: np.ndarray
     order_parameter_abs: np.ndarray
@@ -202,6 +203,7 @@ class PhaseTransitionTelemetry:
     measured_exponent: float | None = None
     exponent_fit_r_squared: float | None = None
 
+
 @dataclass
 class PhaseSnapshot:
     """Instantaneous phase transition diagnostics for a single graph state.
@@ -209,18 +211,21 @@ class PhaseSnapshot:
     Lighter-weight alternative to :class:`PhaseTransitionTelemetry` for
     point-in-time analysis without a time series.
     """
-    order_parameter: float          # ⟨𝒮⟩
-    order_parameter_abs: float      # |⟨𝒮⟩|
-    chirality_mean: float           # ⟨χ⟩
-    chirality_abs_mean: float       # ⟨|χ|⟩
-    susceptibility: float           # N · Var(𝒮)
-    coherence_length: float         # ξ_C
-    phase: Phase                    # Classified phase
-    has_homochirality: bool         # |⟨χ⟩| > threshold
+
+    order_parameter: float  # ⟨𝒮⟩
+    order_parameter_abs: float  # |⟨𝒮⟩|
+    chirality_mean: float  # ⟨χ⟩
+    chirality_abs_mean: float  # ⟨|χ|⟩
+    susceptibility: float  # N · Var(𝒮)
+    coherence_length: float  # ξ_C
+    phase: Phase  # Classified phase
+    has_homochirality: bool  # |⟨χ⟩| > threshold
+
 
 # ============================================================================
 # CORE COMPUTATIONS
 # ============================================================================
+
 
 def compute_order_parameter(G: Any) -> dict[str, float]:
     r"""Compute the phase transition order parameter from symmetry breaking.
@@ -248,19 +253,25 @@ def compute_order_parameter(G: Any) -> dict[str, float]:
     N = len(values)
     if N == 0:
         return {
-            'mean': 0.0, 'abs_mean': 0.0, 'variance': 0.0,
-            'susceptibility': 0.0, 'max': 0.0, 'min': 0.0, 'n_nodes': 0,
+            "mean": 0.0,
+            "abs_mean": 0.0,
+            "variance": 0.0,
+            "susceptibility": 0.0,
+            "max": 0.0,
+            "min": 0.0,
+            "n_nodes": 0,
         }
     mean = float(np.mean(values))
     return {
-        'mean': mean,
-        'abs_mean': float(np.mean(np.abs(values))),
-        'variance': float(np.var(values)),
-        'susceptibility': float(N * np.var(values)),
-        'max': float(np.max(values)),
-        'min': float(np.min(values)),
-        'n_nodes': N,
+        "mean": mean,
+        "abs_mean": float(np.mean(np.abs(values))),
+        "variance": float(np.var(values)),
+        "susceptibility": float(N * np.var(values)),
+        "max": float(np.max(values)),
+        "min": float(np.min(values)),
+        "n_nodes": N,
     }
+
 
 def compute_chirality_statistics(G: Any) -> dict[str, float]:
     r"""Compute chirality field statistics for homochirality detection.
@@ -281,15 +292,21 @@ def compute_chirality_statistics(G: Any) -> dict[str, float]:
     values = np.array(list(chi_field.values()))
     N = len(values)
     if N == 0:
-        return {'mean': 0.0, 'abs_mean': 0.0, 'variance': 0.0,
-                'max_abs': 0.0, 'n_nodes': 0}
+        return {
+            "mean": 0.0,
+            "abs_mean": 0.0,
+            "variance": 0.0,
+            "max_abs": 0.0,
+            "n_nodes": 0,
+        }
     return {
-        'mean': float(np.mean(values)),
-        'abs_mean': float(np.mean(np.abs(values))),
-        'variance': float(np.var(values)),
-        'max_abs': float(np.max(np.abs(values))),
-        'n_nodes': N,
+        "mean": float(np.mean(values)),
+        "abs_mean": float(np.mean(np.abs(values))),
+        "variance": float(np.var(values)),
+        "max_abs": float(np.max(np.abs(values))),
+        "n_nodes": N,
     }
+
 
 def classify_phase(
     order_z: float,
@@ -327,6 +344,7 @@ def classify_phase(
         return Phase.LIFE
     return Phase.CRITICAL
 
+
 def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
     """Capture instantaneous phase transition diagnostics.
 
@@ -346,25 +364,27 @@ def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
     if math.isnan(xi):
         xi = 0.0
 
-    n_nodes = op['n_nodes']
-    order_z = symmetry_zscore(op['abs_mean'], op['variance'], n_nodes)
-    chirality_z = symmetry_zscore(chi['abs_mean'], chi['variance'], n_nodes)
+    n_nodes = op["n_nodes"]
+    order_z = symmetry_zscore(op["abs_mean"], op["variance"], n_nodes)
+    chirality_z = symmetry_zscore(chi["abs_mean"], chi["variance"], n_nodes)
     phase = classify_phase(order_z, chirality_z)
 
     return PhaseSnapshot(
-        order_parameter=op['mean'],
-        order_parameter_abs=op['abs_mean'],
-        chirality_mean=chi['mean'],
-        chirality_abs_mean=chi['abs_mean'],
-        susceptibility=op['susceptibility'],
+        order_parameter=op["mean"],
+        order_parameter_abs=op["abs_mean"],
+        chirality_mean=chi["mean"],
+        chirality_abs_mean=chi["abs_mean"],
+        susceptibility=op["susceptibility"],
         coherence_length=xi,
         phase=phase,
         has_homochirality=chirality_z > Z_SIGNIFICANCE,
     )
 
+
 # ============================================================================
 # TIME-SERIES ANALYSIS — PHASE TRANSITION DETECTION
 # ============================================================================
+
 
 def detect_phase_transition(
     graph_sequence: Sequence[Any],
@@ -412,16 +432,16 @@ def detect_phase_transition(
         if math.isnan(xi):
             xi = 0.0
 
-        order_param[i] = op['mean']
-        order_param_abs[i] = op['abs_mean']
-        chi_mean[i] = chi['mean']
-        chi_abs_mean[i] = chi['abs_mean']
-        suscept[i] = op['susceptibility']
+        order_param[i] = op["mean"]
+        order_param_abs[i] = op["abs_mean"]
+        chi_mean[i] = chi["mean"]
+        chi_abs_mean[i] = chi["abs_mean"]
+        suscept[i] = op["susceptibility"]
         xi_c[i] = xi
 
-        n_nodes = op['n_nodes']
-        order_z = symmetry_zscore(op['abs_mean'], op['variance'], n_nodes)
-        chirality_z = symmetry_zscore(chi['abs_mean'], chi['variance'], n_nodes)
+        n_nodes = op["n_nodes"]
+        order_z = symmetry_zscore(op["abs_mean"], op["variance"], n_nodes)
+        chirality_z = symmetry_zscore(chi["abs_mean"], chi["variance"], n_nodes)
         order_z_series[i] = order_z
 
         phase = classify_phase(order_z, chirality_z)
@@ -429,9 +449,7 @@ def detect_phase_transition(
 
     # --- Transition time: interpolate where the symmetry-breaking z-score ---
     # --- crosses the significance cut (z = 1), the emergent noise scale.   ---
-    transition_time = _find_crossing_time(
-        times, order_z_series, Z_SIGNIFICANCE
-    )
+    transition_time = _find_crossing_time(times, order_z_series, Z_SIGNIFICANCE)
 
     # --- Critical time: peak susceptibility ---
     critical_time: float | None = None
@@ -459,9 +477,11 @@ def detect_phase_transition(
         exponent_fit_r_squared=r_squared,
     )
 
+
 # ============================================================================
 # CRITICAL EXPONENT MEASUREMENT
 # ============================================================================
+
 
 def fit_critical_exponent(
     times: Sequence[float],
@@ -497,13 +517,15 @@ def fit_critical_exponent(
         list(times), order_parameter_abs, critical_time
     )
     return {
-        'exponent': exponent,
-        'r_squared': r_sq,
+        "exponent": exponent,
+        "r_squared": r_sq,
     }
+
 
 # ============================================================================
 # INTERNAL HELPERS
 # ============================================================================
+
 
 def _find_crossing_time(
     times: list[float],
@@ -532,6 +554,7 @@ def _find_crossing_time(
         return times[0]
 
     return None
+
 
 def _fit_critical_exponent(
     times: list[float],
@@ -576,6 +599,7 @@ def _fit_critical_exponent(
         return exponent, r_squared
     except (np.linalg.LinAlgError, ValueError):
         return None, None
+
 
 # ============================================================================
 # PUBLIC API

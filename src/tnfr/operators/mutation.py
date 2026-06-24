@@ -17,6 +17,7 @@ from ..config.operator_names import MUTATION
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
+
 class Mutation(Operator):
     """Controlled phase transform; regime shift with identity preserved.
 
@@ -34,10 +35,9 @@ class Mutation(Operator):
     def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Apply ZHIR; detect bifurcation; optional post checks."""
         # Capture state before mutation for postcondition verification
-        validate_postconditions = (
-            kw.get("validate_postconditions", False)
-            or G.graph.get("VALIDATE_OPERATOR_POSTCONDITIONS", False)
-        )
+        validate_postconditions = kw.get(
+            "validate_postconditions", False
+        ) or G.graph.get("VALIDATE_OPERATOR_POSTCONDITIONS", False)
 
         state_before = None
         if validate_postconditions:
@@ -131,9 +131,9 @@ class Mutation(Operator):
     ) -> None:
         """Verify phase shift, identity preserved, bifurcation handled."""
         from .postconditions.mutation import (
-            verify_phase_transformed,
-            verify_identity_preserved,
             verify_bifurcation_handled,
+            verify_identity_preserved,
+            verify_phase_transformed,
         )
 
         # Verify phase transformation

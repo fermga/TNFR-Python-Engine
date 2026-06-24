@@ -65,17 +65,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Sequence
 
-from ..mathematics.unified_numerical import np
 from ..mathematics.spectral import get_laplacian_spectrum, gft
-
-from .conservation import (
-    ConservationSnapshot,
-    capture_conservation_snapshot,
-)
+from ..mathematics.unified_numerical import np
+from .conservation import ConservationSnapshot, capture_conservation_snapshot
 
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class SpectralConservationBalance:
@@ -135,6 +132,7 @@ class SpectralConservationBalance:
     conservation_quality_by_band: dict[str, float]
     overall_spectral_quality: float
 
+
 @dataclass(frozen=True)
 class SpectralWardIdentity:
     r"""Per-operator spectral conservation signature.
@@ -166,6 +164,7 @@ class SpectralWardIdentity:
     total_spectral_energy_change: float
     affected_band: str
     spectral_character: str
+
 
 @dataclass(frozen=True)
 class SpectralLyapunovResult:
@@ -199,6 +198,7 @@ class SpectralLyapunovResult:
     n_unstable_modes: int
     stable_fraction: float
     is_spectrally_stable: bool
+
 
 @dataclass(frozen=True)
 class SpectralSectorDecomposition:
@@ -237,12 +237,14 @@ class SpectralSectorDecomposition:
     dominant_sector: str
     sector_ratio: float
 
+
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
 
 # Canonical 5 conservation fields used for Lyapunov energy computation
 _LYAPUNOV_FIELDS: list[str] = ["phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"]
+
 
 def _snapshot_to_vectors(
     snapshot: ConservationSnapshot,
@@ -259,6 +261,7 @@ def _snapshot_to_vectors(
         "grad_phi": np.array([snapshot.grad_phi[n] for n in nodes]),
     }
 
+
 def _gft_fields(
     eigvecs: np.ndarray,
     fields: dict[str, np.ndarray],
@@ -269,6 +272,7 @@ def _gft_fields(
     GPU acceleration for large matrices.
     """
     return {name: gft(signal, eigvecs) for name, signal in fields.items()}
+
 
 def _compute_spectral_field_energies(
     vecs_before: dict[str, np.ndarray],
@@ -295,8 +299,8 @@ def _compute_spectral_field_energies(
     for field in fields:
         hat_0 = gft(vecs_before[field], eigvecs)
         hat_1 = gft(vecs_after[field], eigvecs)
-        e0_sq = hat_0 ** 2
-        e1_sq = hat_1 ** 2
+        e0_sq = hat_0**2
+        e1_sq = hat_1**2
         energy_before += e0_sq
         energy_after += e1_sq
         per_field[field] = (float(np.sum(e0_sq)), float(np.sum(e1_sq)))
@@ -304,6 +308,7 @@ def _compute_spectral_field_energies(
     energy_before *= 0.5
     energy_after *= 0.5
     return energy_before, energy_after, per_field
+
 
 def _classify_band(k: int, n: int) -> str:
     """Classify eigenmode index into frequency band."""
@@ -316,6 +321,7 @@ def _classify_band(k: int, n: int) -> str:
         return "mid"
     else:
         return "high"
+
 
 def _band_quality(residuals: np.ndarray, n: int) -> dict[str, float]:
     """Compute conservation quality per frequency band.
@@ -335,9 +341,11 @@ def _band_quality(residuals: np.ndarray, n: int) -> dict[str, float]:
             result[name] = 1.0
     return result
 
+
 # ---------------------------------------------------------------------------
 # Core: Spectral conservation balance (two-snapshot)
 # ---------------------------------------------------------------------------
+
 
 def verify_spectral_conservation_balance(
     before: ConservationSnapshot,
@@ -403,8 +411,8 @@ def verify_spectral_conservation_balance(
     mode_residuals = np.abs(mode_sources)
 
     # Parseval identity: ‖ρ‖² = Σ|ρ̂_k|²
-    parseval_0 = float(np.sum(rho_hat_0 ** 2))
-    parseval_1 = float(np.sum(rho_hat_1 ** 2))
+    parseval_0 = float(np.sum(rho_hat_0**2))
+    parseval_1 = float(np.sum(rho_hat_1**2))
     denom = max(parseval_0, 1e-15)
     parseval_drift = abs(parseval_1 - parseval_0) / denom
 
@@ -418,7 +426,7 @@ def verify_spectral_conservation_balance(
     band_quality = _band_quality(mode_residuals, n)
 
     # Overall quality: 1/(1 + RMS residual)
-    rms = float(np.sqrt(np.mean(mode_residuals ** 2))) if n > 0 else 0.0
+    rms = float(np.sqrt(np.mean(mode_residuals**2))) if n > 0 else 0.0
     overall_quality = 1.0 / (1.0 + rms)
 
     return SpectralConservationBalance(
@@ -438,9 +446,11 @@ def verify_spectral_conservation_balance(
         overall_spectral_quality=overall_quality,
     )
 
+
 # ---------------------------------------------------------------------------
 # Spectral Ward identity (per-operator)
 # ---------------------------------------------------------------------------
+
 
 def compute_spectral_ward_identity(
     before: ConservationSnapshot,
@@ -492,8 +502,8 @@ def compute_spectral_ward_identity(
     delta_rho = rho_hat_1 - rho_hat_0
 
     # Per-mode energy change: Δ(|ρ̂_k|²) = |ρ̂_k_after|² - |ρ̂_k_before|²
-    energy_before = rho_hat_0 ** 2
-    energy_after = rho_hat_1 ** 2
+    energy_before = rho_hat_0**2
+    energy_after = rho_hat_1**2
     mode_energy_change = energy_after - energy_before
 
     total_change = float(np.sum(mode_energy_change))
@@ -524,9 +534,11 @@ def compute_spectral_ward_identity(
         spectral_character=spectral_character,
     )
 
+
 # ---------------------------------------------------------------------------
 # Spectral Lyapunov stability
 # ---------------------------------------------------------------------------
+
 
 def compute_spectral_lyapunov(
     before: ConservationSnapshot,
@@ -569,7 +581,10 @@ def compute_spectral_lyapunov(
 
     # Per-mode Lyapunov energy via unified helper
     energy_before, energy_after, _ = _compute_spectral_field_energies(
-        vecs_before, vecs_after, eigvecs, _LYAPUNOV_FIELDS,
+        vecs_before,
+        vecs_after,
+        eigvecs,
+        _LYAPUNOV_FIELDS,
     )
 
     derivatives = (energy_after - energy_before) / dt
@@ -588,9 +603,11 @@ def compute_spectral_lyapunov(
         is_spectrally_stable=total_derivative <= stability_threshold,
     )
 
+
 # ---------------------------------------------------------------------------
 # Spectral sector decomposition
 # ---------------------------------------------------------------------------
+
 
 def decompose_spectral_sectors(
     G: Any,
@@ -628,8 +645,8 @@ def decompose_spectral_sectors(
     phi_s_hat = gft(vecs["phi_s"], eigvecs)
     k_phi_hat = gft(vecs["k_phi"], eigvecs)
 
-    pot_energy = float(np.sum(phi_s_hat ** 2))
-    geo_energy = float(np.sum(k_phi_hat ** 2))
+    pot_energy = float(np.sum(phi_s_hat**2))
+    geo_energy = float(np.sum(k_phi_hat**2))
 
     # Pearson correlation between spectra
     if n > 1:
@@ -662,9 +679,11 @@ def decompose_spectral_sectors(
         sector_ratio=ratio,
     )
 
+
 # ---------------------------------------------------------------------------
 # Spectral energy conservation (Parseval-based)
 # ---------------------------------------------------------------------------
+
 
 def compute_spectral_energy_conservation(
     before: ConservationSnapshot,
@@ -702,7 +721,10 @@ def compute_spectral_energy_conservation(
 
     # Unified energy computation for all five canonical fields
     _, _, per_field = _compute_spectral_field_energies(
-        vecs_before, vecs_after, eigvecs, _LYAPUNOV_FIELDS,
+        vecs_before,
+        vecs_after,
+        eigvecs,
+        _LYAPUNOV_FIELDS,
     )
 
     result: dict[str, float] = {}
@@ -723,9 +745,11 @@ def compute_spectral_energy_conservation(
 
     return result
 
+
 # ---------------------------------------------------------------------------
 # Mode classification
 # ---------------------------------------------------------------------------
+
 
 def classify_spectral_modes(
     G: Any,
@@ -795,6 +819,7 @@ def classify_spectral_modes(
         "n_accumulative": n_acc,
         "mode_transport_rates": transport_rates,
     }
+
 
 # ---------------------------------------------------------------------------
 # Public API

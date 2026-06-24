@@ -23,11 +23,12 @@ All engines maintain TNFR invariants:
 
 from __future__ import annotations
 
+from .auto_scaler import TNFRAutoScaler
+from .engine import TNFRParallelEngine
+from .monitoring import ParallelExecutionMonitor, PerformanceMetrics
+
 # Import all core components
 from .partitioner import FractalPartitioner
-from .engine import TNFRParallelEngine
-from .auto_scaler import TNFRAutoScaler
-from .monitoring import ParallelExecutionMonitor, PerformanceMetrics
 
 __all__ = (
     "FractalPartitioner",

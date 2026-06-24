@@ -4,6 +4,7 @@ Verifies that the EPI channel of ΔNFR is the random-walk graph Laplacian
 (the discrete diffusion operator), so the nodal equation
 ∂EPI/∂t = νf·ΔNFR is structurally a diffusion equation.
 """
+
 from __future__ import annotations
 
 import math
@@ -12,43 +13,43 @@ import random
 import networkx as nx
 import numpy as np
 
-from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI
+from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.physics.structural_diffusion import (
-    StructuralDiffusionCertificate,
-    OverdampedRegimeCertificate,
-    OverdampedProjectionCertificate,
-    UndampedLimitCertificate,
     DiscreteModeCertificate,
-    StructuralStabilityCertificate,
+    OverdampedProjectionCertificate,
+    OverdampedRegimeCertificate,
     RandomWalkCertificate,
+    StructuralDiffusionCertificate,
     StructuralFlowCertificate,
-    structural_diffusion_operator,
-    structural_field,
-    structural_diffusivity,
-    relaxation_spectrum,
-    degree_weighted_total,
-    structural_eigenmodes,
-    nodal_domain_count,
-    dispersion_relation,
-    instability_threshold,
-    fiedler_partition,
-    random_walk_matrix,
-    stationary_distribution,
-    effective_resistance,
+    StructuralStabilityCertificate,
+    UndampedLimitCertificate,
     commute_time,
-    structural_current,
     current_divergence,
-    verify_structural_diffusion,
-    verify_overdamped_regime,
     damped_wave_rates,
-    verify_overdamped_projection,
-    verify_undamped_limit,
+    degree_weighted_total,
+    dispersion_relation,
+    effective_resistance,
+    fiedler_partition,
+    instability_threshold,
+    nodal_domain_count,
+    random_walk_matrix,
+    relaxation_spectrum,
+    stationary_distribution,
+    structural_current,
+    structural_diffusion_operator,
+    structural_diffusivity,
+    structural_eigenmodes,
+    structural_field,
     verify_discrete_modes,
-    verify_structural_stability,
-    verify_structural_random_walk,
+    verify_overdamped_projection,
+    verify_overdamped_regime,
+    verify_structural_diffusion,
     verify_structural_flow,
+    verify_structural_random_walk,
+    verify_structural_stability,
+    verify_undamped_limit,
 )
 
 
@@ -104,13 +105,9 @@ class TestNodalEquationIsDiffusion:
                 nu_f=float(get_attr(G.nodes[node], ALIAS_VF, 0.0)),
             )
         g2.add_edges_from(G.edges())
-        g2.graph["DNFR_WEIGHTS"] = {
-            "phase": 0.0, "epi": 1.0, "vf": 0.0, "topo": 0.0
-        }
+        g2.graph["DNFR_WEIGHTS"] = {"phase": 0.0, "epi": 1.0, "vf": 0.0, "topo": 0.0}
         default_compute_delta_nfr(g2)
-        dnfr = np.array(
-            [float(get_attr(g2.nodes[n], ALIAS_DNFR, 0.0)) for n in nodes]
-        )
+        dnfr = np.array([float(get_attr(g2.nodes[n], ALIAS_DNFR, 0.0)) for n in nodes])
         assert np.allclose(dnfr, -(lap @ epi), atol=1e-12)
 
     def test_certificate_confirms_laplacian(self) -> None:
@@ -164,9 +161,7 @@ class TestDiffusionRelaxation:
         G = _canonical_graph(40)
         nodes, _ = structural_diffusion_operator(G)
         vf = [float(get_attr(G.nodes[n], ALIAS_VF, 0.0)) for n in nodes]
-        assert structural_diffusivity(G) == pytest.approx(
-            float(np.mean(vf)), rel=1e-6
-        )
+        assert structural_diffusivity(G) == pytest.approx(float(np.mean(vf)), rel=1e-6)
 
 
 class TestDiffusionCertificate:
@@ -184,12 +179,10 @@ class TestDiffusionCertificate:
     def test_graph_not_mutated(self) -> None:
         # verify runs the ΔNFR check on a replica; caller's graph is untouched.
         G = _canonical_graph(40)
-        before = {n: float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0))
-                  for n in G.nodes()}
+        before = {n: float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()}
         weights_before = G.graph.get("DNFR_WEIGHTS")
         verify_structural_diffusion(G)
-        after = {n: float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0))
-                 for n in G.nodes()}
+        after = {n: float(get_attr(G.nodes[n], ALIAS_DNFR, 0.0)) for n in G.nodes()}
         assert before == after
         assert G.graph.get("DNFR_WEIGHTS") == weights_before
 
@@ -248,9 +241,7 @@ class TestOverdampedProjection:
         lambdas, s_slow, s_fast = damped_wave_rates(G, gamma)
         # s^2 + gamma s + lambda = 0  =>  s_slow + s_fast = -gamma,
         # s_slow * s_fast = lambda (Vieta).
-        assert s_slow + s_fast == pytest.approx(
-            -gamma * np.ones_like(lambdas)
-        )
+        assert s_slow + s_fast == pytest.approx(-gamma * np.ones_like(lambdas))
         assert s_slow * s_fast == pytest.approx(lambdas)
 
     def test_slow_root_converges_to_diffusion_rate(self) -> None:
@@ -270,9 +261,7 @@ class TestOverdampedProjection:
         err1 = abs(c1.rate_error_times_gamma_sq - c1.lambda_max)
         err2 = abs(c2.rate_error_times_gamma_sq - c2.lambda_max)
         assert err2 <= err1 + 1e-9
-        assert c2.rate_error_times_gamma_sq == pytest.approx(
-            c2.lambda_max, rel=0.05
-        )
+        assert c2.rate_error_times_gamma_sq == pytest.approx(c2.lambda_max, rel=0.05)
 
     def test_nu_f_is_inverse_damping(self) -> None:
         import pytest
@@ -327,10 +316,10 @@ class TestUndampedLimit:
         c1 = verify_undamped_limit(G, gamma=1e-2)
         c2 = verify_undamped_limit(G, gamma=1e-3)
         # the constant stabilises: the two normalised values agree closely
-        assert abs(
-            c2.freq_error_times_inv_gamma_sq
-            - c1.freq_error_times_inv_gamma_sq
-        ) < 0.05 * c1.freq_error_times_inv_gamma_sq
+        assert (
+            abs(c2.freq_error_times_inv_gamma_sq - c1.freq_error_times_inv_gamma_sq)
+            < 0.05 * c1.freq_error_times_inv_gamma_sq
+        )
 
     def test_frequencies_match_eigenmode_sqrt(self) -> None:
         import pytest
@@ -410,9 +399,7 @@ class TestDiscreteModes:
         eigvals, _ = structural_eigenmodes(G)
         cert = verify_discrete_modes(G)
         for k, f in enumerate(cert.standing_wave_frequencies):
-            assert f == __import__("pytest").approx(
-                float(np.sqrt(eigvals[k]))
-            )
+            assert f == __import__("pytest").approx(float(np.sqrt(eigvals[k])))
 
     def test_certificate_valid_across_topologies(self) -> None:
         for G in (
@@ -454,9 +441,7 @@ class TestStructuralStability:
         G = self._graph(lambda: nx.watts_strogatz_graph(50, 6, 0.2, seed=7))
         eigvals, _ = structural_eigenmodes(G)
         nu = structural_diffusivity(G)
-        assert instability_threshold(G) == pytest.approx(
-            float(nu * eigvals[1])
-        )
+        assert instability_threshold(G) == pytest.approx(float(nu * eigvals[1]))
 
     def test_below_threshold_only_uniform_grows(self) -> None:
         G = self._graph(lambda: nx.cycle_graph(40))
@@ -520,11 +505,11 @@ class TestStructuralRandomWalk:
     def test_effective_resistance_is_metric(self) -> None:
         G = nx.watts_strogatz_graph(40, 6, 0.2, seed=7)
         _, r = effective_resistance(G)
-        assert np.allclose(r, r.T)             # symmetric
-        assert np.all(r >= -1e-9)              # non-negative
-        assert np.allclose(np.diag(r), 0.0)    # zero self-resistance
+        assert np.allclose(r, r.T)  # symmetric
+        assert np.all(r >= -1e-9)  # non-negative
+        assert np.allclose(np.diag(r), 0.0)  # zero self-resistance
         # triangle inequality on a sample
-        for (i, j, k) in [(0, 10, 20), (5, 15, 25), (1, 30, 8)]:
+        for i, j, k in [(0, 10, 20), (5, 15, 25), (1, 30, 8)]:
             assert r[i, k] <= r[i, j] + r[j, k] + 1e-7
 
     def test_commute_time_is_2m_resistance(self) -> None:

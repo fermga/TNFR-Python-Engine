@@ -7,7 +7,7 @@ Each engine implements specific mathematical capabilities based on TNFR physics.
 Engines Available
 -----------------
 1. **Self-Optimization**: Automatic network optimization using TNFR operators
-2. **Pattern Discovery**: Mathematical pattern detection and emergence analysis  
+2. **Pattern Discovery**: Mathematical pattern detection and emergence analysis
 3. **Computation**: High-performance computing backends (GPU, FFT, etc.)
 4. **Integration**: Emergent integration and multi-scale analysis
 
@@ -43,24 +43,28 @@ Documentation
 # Import all engines for convenient access
 try:
     from .self_optimization.engine import TNFRSelfOptimizingEngine
+
     __all__ = ["TNFRSelfOptimizingEngine"]
 except ImportError:
     __all__ = []
 
 try:
     from .pattern_discovery.mathematical_patterns import TNFREmergentPatternEngine
+
     __all__.append("TNFREmergentPatternEngine")
 except ImportError:
     pass
 
 try:
     from .computation.fft_engine import FFTDynamicsEngine
+
     __all__.append("FFTDynamicsEngine")
 except ImportError:
     pass
 
 try:
     from .integration.emergent_integration import TNFREmergentIntegrationEngine
+
     __all__.append("TNFREmergentIntegrationEngine")
 except ImportError:
     pass

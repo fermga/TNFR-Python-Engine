@@ -13,7 +13,6 @@ from statistics import StatisticsError, fmean
 from typing import Any, Callable, Iterable, cast
 
 from ..alias import get_attr
-from ..utils import CallbackEvent, callback_manager
 from ..constants import (
     STATE_DISSONANT,
     STATE_STABLE,
@@ -24,7 +23,7 @@ from ..constants import (
 )
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_VF
 from ..glyph_history import append_metric, ensure_history
-from ..utils import clamp01, resolve_chunk_size, similarity_abs
+from ..mathematics.unified_numerical import np
 from ..types import (
     DiagnosisNodeData,
     DiagnosisPayload,
@@ -35,14 +34,15 @@ from ..types import (
     NodeId,
     TNFRGraph,
 )
-from ..mathematics.unified_numerical import np
-from .coherence import CoherenceMatrixPayload, coherence_matrix, local_phase_sync
-from .common import (
-    _coerce_jobs,
-    compute_dnfr_accel_max,
-    min_max_range,
-    normalize_dnfr,
+from ..utils import (
+    CallbackEvent,
+    callback_manager,
+    clamp01,
+    resolve_chunk_size,
+    similarity_abs,
 )
+from .coherence import CoherenceMatrixPayload, coherence_matrix, local_phase_sync
+from .common import _coerce_jobs, compute_dnfr_accel_max, min_max_range, normalize_dnfr
 from .trig_cache import compute_theta_trig, get_trig_cache
 
 # ---------------------------------------------------------------------------
@@ -55,6 +55,7 @@ _DISSONANCE_END_PHASE_SYNC = 0.7
 
 CoherenceSeries = Sequence[CoherenceMatrixPayload | None]
 CoherenceHistory = Mapping[str, CoherenceSeries]
+
 
 def _coherence_matrix_to_numpy(
     weight_matrix: Any,
@@ -94,6 +95,7 @@ def _coherence_matrix_to_numpy(
     np.fill_diagonal(matrix, 0.0)
     return matrix
 
+
 def _weighted_phase_sync_vectorized(
     matrix: Any,
     cos_vals: Any,
@@ -109,6 +111,7 @@ def _weighted_phase_sync_vectorized(
     magnitude = np.hypot(real, imag)
     safe_denom = np.where(denom == 0.0, 1.0, denom)
     return magnitude / safe_denom
+
 
 def _unweighted_phase_sync_vectorized(
     nodes: Sequence[Any],
@@ -140,6 +143,7 @@ def _unweighted_phase_sync_vectorized(
             results.append(float(np.hypot(real, imag) / denom))
     return results
 
+
 def _neighbor_means_vectorized(
     nodes: Sequence[Any],
     neighbors_map: Mapping[Any, tuple[Any, ...]],
@@ -162,6 +166,7 @@ def _neighbor_means_vectorized(
         results.append(float(np.mean(values)))
     return results
 
+
 @dataclass(frozen=True)
 class RLocalWorkerArgs:
     """Typed payload passed to :func:`_rlocal_worker`."""
@@ -174,6 +179,7 @@ class RLocalWorkerArgs:
     cos_map: Mapping[Any, float]
     sin_map: Mapping[Any, float]
 
+
 @dataclass(frozen=True)
 class NeighborMeanWorkerArgs:
     """Typed payload passed to :func:`_neighbor_mean_worker`."""
@@ -181,6 +187,7 @@ class NeighborMeanWorkerArgs:
     chunk: Sequence[Any]
     neighbors_map: Mapping[Any, tuple[Any, ...]]
     epi_map: Mapping[Any, float]
+
 
 def _rlocal_worker(args: RLocalWorkerArgs) -> list[float]:
     """Worker used to compute ``R_local`` in Python fallbacks."""
@@ -209,6 +216,7 @@ def _rlocal_worker(args: RLocalWorkerArgs) -> list[float]:
         results.append(float(rloc))
     return results
 
+
 def _neighbor_mean_worker(args: NeighborMeanWorkerArgs) -> list[float | None]:
     """Worker used to compute neighbour EPI means in Python mode."""
 
@@ -223,6 +231,7 @@ def _neighbor_mean_worker(args: NeighborMeanWorkerArgs) -> list[float | None]:
         except StatisticsError:
             results.append(None)
     return results
+
 
 def _weighted_phase_sync_from_matrix(
     node_index: int,
@@ -273,6 +282,7 @@ def _weighted_phase_sync_from_matrix(
 
     return abs(num / den) if den else 0.0
 
+
 def _local_phase_sync_unweighted(
     neighbors: Iterable[Any],
     cos_map: Mapping[Any, float],
@@ -290,6 +300,7 @@ def _local_phase_sync_unweighted(
         num += complex(cos_j, sin_j)
         den += 1.0
     return abs(num / den) if den else 0.0
+
 
 def _state_from_thresholds(
     Rloc: float,
@@ -315,10 +326,12 @@ def _state_from_thresholds(
 
     return STATE_TRANSITION
 
+
 def _recommendation(state: str, cfg: Mapping[str, Any]) -> list[Any]:
     adv = cfg.get("advice", {})
     canonical_state = normalise_state_token(state)
     return list(adv.get(canonical_state, []))
+
 
 def _get_last_weights(
     G: TNFRGraph,
@@ -333,6 +346,7 @@ def _get_last_weights(
     Wi_last = Wi_series[-1] if Wi_series else None
     Wm_last = Wm_series[-1] if Wm_series else None
     return Wi_last, Wm_last
+
 
 def _node_diagnostics(
     node_data: DiagnosisNodeData,
@@ -354,7 +368,9 @@ def _node_diagnostics(
 
     if compute_symmetry:
         epi_bar = node_data.get("neighbor_epi_mean")
-        symm = 1.0 if epi_bar is None else similarity_abs(EPI, epi_bar, epi_min, epi_max)
+        symm = (
+            1.0 if epi_bar is None else similarity_abs(EPI, epi_bar, epi_min, epi_max)
+        )
     else:
         symm = None
 
@@ -383,6 +399,7 @@ def _node_diagnostics(
 
     return node, payload
 
+
 def _diagnosis_worker_chunk(
     chunk: DiagnosisPayloadChunk,
     shared: DiagnosisSharedState,
@@ -390,6 +407,7 @@ def _diagnosis_worker_chunk(
     """Evaluate diagnostics for a chunk of nodes."""
 
     return [_node_diagnostics(item, shared) for item in chunk]
+
 
 def _diagnosis_step(
     G: TNFRGraph,
@@ -509,7 +527,10 @@ def _diagnosis_step(
         if dnfr_max > 0:
             dnfr_arr = np.clip(
                 np.fromiter(
-                    (abs(cast(float, get_attr(nd, ALIAS_DNFR, 0.0))) for _, nd in nodes_data),
+                    (
+                        abs(cast(float, get_attr(nd, ALIAS_DNFR, 0.0)))
+                        for _, nd in nodes_data
+                    ),
                     dtype=float,
                     count=len(nodes_data),
                 )
@@ -525,7 +546,10 @@ def _diagnosis_step(
         epi_min, epi_max = min_max_range(epi_vals, default=(0.0, 1.0))
         si_vals = [clamp01(get_attr(nd, ALIAS_SI, 0.0)) for _, nd in nodes_data]
         vf_vals = [cast(float, get_attr(nd, ALIAS_VF, 0.0)) for _, nd in nodes_data]
-        dnfr_norms = [normalize_dnfr(nd, dnfr_max) if dnfr_max > 0 else 0.0 for _, nd in nodes_data]
+        dnfr_norms = [
+            normalize_dnfr(nd, dnfr_max) if dnfr_max > 0 else 0.0
+            for _, nd in nodes_data
+        ]
 
     epi_map = {node: epi_vals[idx] for idx, node in enumerate(nodes)}
 
@@ -571,7 +595,9 @@ def _diagnosis_step(
                 cos_weight,
                 sin_weight,
             )
-            rloc_map = {coherence_nodes[idx]: float(weighted_sync[idx]) for idx in range(size)}
+            rloc_map = {
+                coherence_nodes[idx]: float(weighted_sync[idx]) for idx in range(size)
+            }
         else:
             rloc_map = {}
 
@@ -637,7 +663,9 @@ def _diagnosis_step(
             )
 
     if isinstance(Wi_last, (list, tuple)) and Wi_last:
-        wi_values = [Wi_last[i] if i < len(Wi_last) else None for i in range(len(nodes))]
+        wi_values = [
+            Wi_last[i] if i < len(Wi_last) else None for i in range(len(nodes))
+        ]
     else:
         wi_values = [None] * len(nodes)
 
@@ -741,9 +769,12 @@ def _diagnosis_step(
         diag_pairs = [_node_diagnostics(item, shared) for item in node_payload]
 
     diag_map = dict(diag_pairs)
-    diag: dict[NodeId, DiagnosisPayload] = {node: diag_map.get(node, {}) for node in nodes}
+    diag: dict[NodeId, DiagnosisPayload] = {
+        node: diag_map.get(node, {}) for node in nodes
+    }
 
     append_metric(hist, key, diag)
+
 
 def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> None:
     """Emit per-node structural dissonance start/end events.
@@ -764,7 +795,11 @@ def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> 
         dn = normalize_dnfr(nd, dnfr_max)
         Rloc = local_phase_sync(G, n)
         st = bool(nd.get("_disr_state", False))
-        if (not st) and dn >= _DISSONANCE_START_DNFR and Rloc <= _DISSONANCE_START_PHASE_SYNC:
+        if (
+            (not st)
+            and dn >= _DISSONANCE_START_DNFR
+            and Rloc <= _DISSONANCE_START_PHASE_SYNC
+        ):
             nd["_disr_state"] = True
             append_metric(
                 hist,
@@ -778,6 +813,7 @@ def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> 
                 "events",
                 ("dissonance_end", {"node": n, "step": step_idx}),
             )
+
 
 def register_diagnosis_callbacks(G: TNFRGraph) -> None:
     """Attach diagnosis observers (Si/dissonance tracking) to ``G``."""

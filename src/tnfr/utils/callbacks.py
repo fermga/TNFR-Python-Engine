@@ -18,18 +18,20 @@ from typing import Any, NamedTuple
 
 import networkx as nx
 
-from ..errors import TNFRValueError
 from ..constants import DEFAULTS
+from ..errors import TNFRValueError
 from ..locking import get_lock
-from .init import get_logger
-from .data import is_non_string_sequence
 from ..types import CallbackError
+from .data import is_non_string_sequence
+from .init import get_logger
+
 
 class CallbackSpec(NamedTuple):
     """Specification for a registered callback."""
 
     name: str | None
     func: Callable[..., Any]
+
 
 __all__ = (
     "CallbackEvent",
@@ -41,6 +43,7 @@ __all__ = (
 
 logger = get_logger(__name__)
 
+
 class CallbackEvent(str, Enum):
     """Supported callback events."""
 
@@ -48,6 +51,7 @@ class CallbackEvent(str, Enum):
     AFTER_STEP = "after_step"
     ON_REMESH = "on_remesh"
     CACHE_METRICS = "cache_metrics"
+
 
 class CallbackManager:
     """Centralised registry and error tracking for callbacks."""
@@ -72,7 +76,7 @@ class CallbackManager:
             raise TNFRValueError(
                 "limit must be positive",
                 context={"limit": limit},
-                suggestion="Provide a positive integer limit."
+                suggestion="Provide a positive integer limit.",
             )
         with self._error_limit_lock:
             previous = self._error_limit
@@ -95,7 +99,9 @@ class CallbackManager:
 
         logger.exception("callback %r failed for %s: %s", spec.name, event, err)
         limit = self._error_limit_cache
-        err_list = G.graph.setdefault("_callback_errors", deque[CallbackError](maxlen=limit))
+        err_list = G.graph.setdefault(
+            "_callback_errors", deque[CallbackError](maxlen=limit)
+        )
         if err_list.maxlen != limit:
             err_list = deque[CallbackError](err_list, maxlen=limit)
             G.graph["_callback_errors"] = err_list
@@ -183,8 +189,10 @@ class CallbackManager:
                 )
                 raise
 
+
 Callback = Callable[["nx.Graph", dict[str, Any]], None]
 CallbackRegistry = dict[str, dict[str, "CallbackSpec"]]
+
 
 def _func_id(fn: Callable[..., Any]) -> str:
     """Return a deterministic identifier for ``fn``.
@@ -199,6 +207,7 @@ def _func_id(fn: Callable[..., Any]) -> str:
         getattr(fn, "__name__", fn.__class__.__qualname__),
     )
     return f"{module}.{qualname}"
+
 
 def _validate_registry(G: "nx.Graph", cbs: Any, dirty: set[str]) -> CallbackRegistry:
     """Validate and normalise the callback registry.
@@ -232,11 +241,14 @@ def _validate_registry(G: "nx.Graph", cbs: Any, dirty: set[str]) -> CallbackRegi
     G.graph["callbacks"] = cbs
     return cbs
 
+
 def _normalize_callbacks(entries: Any) -> dict[str, CallbackSpec]:
     """Return ``entries`` normalised into a callback mapping."""
     if isinstance(entries, Mapping):
         entries_iter = entries.values()
-    elif isinstance(entries, Iterable) and not isinstance(entries, (str, bytes, bytearray)):
+    elif isinstance(entries, Iterable) and not isinstance(
+        entries, (str, bytes, bytearray)
+    ):
         entries_iter = entries
     else:
         return {}
@@ -250,9 +262,11 @@ def _normalize_callbacks(entries: Any) -> dict[str, CallbackSpec]:
         new_map[key] = spec
     return new_map
 
+
 def _normalize_event(event: CallbackEvent | str) -> str:
     """Return ``event`` as a string."""
     return event.value if isinstance(event, CallbackEvent) else str(event)
+
 
 def _is_known_event(event: str) -> bool:
     """Return ``True`` when ``event`` matches a declared :class:`CallbackEvent`."""
@@ -264,6 +278,7 @@ def _is_known_event(event: str) -> bool:
     else:
         return True
 
+
 def _ensure_known_event(event: str) -> None:
     """Raise :class:`ValueError` when ``event`` is not a known callback."""
 
@@ -273,8 +288,9 @@ def _ensure_known_event(event: str) -> None:
         raise TNFRValueError(
             f"Unknown event: {event}",
             context={"event": event, "known_events": [e.value for e in CallbackEvent]},
-            suggestion="Use a valid CallbackEvent."
+            suggestion="Use a valid CallbackEvent.",
         ) from exc
+
 
 def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
     """Normalize a callback specification.
@@ -310,6 +326,7 @@ def _normalize_callback_entry(entry: Any) -> "CallbackSpec | None":
         return CallbackSpec(name, entry)
     else:
         return None
+
 
 def _reconcile_callback(
     event: str,
@@ -350,7 +367,7 @@ def _reconcile_callback(
                 raise TNFRValueError(
                     msg,
                     context={"name": spec.name, "event": event},
-                    suggestion="Use a unique name or set strict=False."
+                    suggestion="Use a unique name or set strict=False.",
                 )
             logger.warning(msg)
 
@@ -362,6 +379,7 @@ def _reconcile_callback(
         existing_map.pop(fn_key, None)
 
     return key
+
 
 # ---------------------------------------------------------------------------
 # Default manager instance and convenience wrappers

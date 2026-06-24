@@ -55,6 +55,7 @@ Run:
 
 Status: RESEARCH (equivariance-wall falsifier; Camino 5 of the unification map).
 """
+
 from __future__ import annotations
 
 import os
@@ -65,7 +66,9 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Robust fallback so the harness also runs without PYTHONPATH=src preset.
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")
+)
 from composition_arithmetic import (  # noqa: E402
     automorphism_matrices,
     character_norm,
@@ -78,6 +81,7 @@ from composition_arithmetic import (  # noqa: E402
 # boundary_vibration.py (derive the carrier, never derive the wall-breaking input).
 try:  # pragma: no cover - exercised only when the package is importable
     from tnfr.dynamics.adelic import AdelicDynamics  # noqa: E402
+
     _HAVE_ADELIC = True
 except Exception:  # pragma: no cover
     _HAVE_ADELIC = False
@@ -183,9 +187,11 @@ def run_wall(name, G, group_label, programme):
     # (E) every catalog operator commutes with every group element
     e_worst = max(commutator_norm(M, P) for M in ops.values() for P in mats)
     e_ok = e_worst < TOL
-    print(f"  (E) equivariance  : |Aut| = {order:4d} ; "
-          f"max ||[M, P_g]|| over catalog = {e_worst:.2e}  "
-          f"-> {'OK' if e_ok else 'FAIL'}")
+    print(
+        f"  (E) equivariance  : |Aut| = {order:4d} ; "
+        f"max ||[M, P_g]|| over catalog = {e_worst:.2e}  "
+        f"-> {'OK' if e_ok else 'FAIL'}"
+    )
 
     # (I) Laplacian eigenspaces are G-invariant and realise irreps
     groups = eigenspaces(G, nodes)
@@ -194,39 +200,54 @@ def run_wall(name, G, group_label, programme):
     for val, mult, P in groups:
         i_worst = max(i_worst, max(commutator_norm(P, M) for M in mats))
         chars.append((val, mult, character_norm(P, mats, order)))
-    chi_int = all(abs(c - round(c)) < CHAR_TOL and round(c) >= 1
-                  for _, _, c in chars)
+    chi_int = all(abs(c - round(c)) < CHAR_TOL and round(c) >= 1 for _, _, c in chars)
     i_ok = i_worst < TOL and chi_int
-    print(f"  (I) isotypic      : max ||[P_eig, P_g]|| = {i_worst:.2e} ; "
-          f"eigenspaces realise irreps (<chi,chi> integer)? {chi_int}  "
-          f"-> {'OK' if i_ok else 'FAIL'}")
+    print(
+        f"  (I) isotypic      : max ||[P_eig, P_g]|| = {i_worst:.2e} ; "
+        f"eigenspaces realise irreps (<chi,chi> integer)? {chi_int}  "
+        f"-> {'OK' if i_ok else 'FAIL'}"
+    )
     for val, mult, chi in chars:
-        print(f"        lambda = {val:6.3f}   degeneracy = {mult}   "
-              f"<chi,chi> = {chi:4.1f}")
+        print(
+            f"        lambda = {val:6.3f}   degeneracy = {mult}   "
+            f"<chi,chi> = {chi:4.1f}"
+        )
 
     # (W) the wall: Pi onto Fix(G); the catalog cannot reach Fix(G)^perp
     Pi = symmetric_projector(mats)
     fix_dim = int(round(np.trace(Pi)))
     perp_dim = n - fix_dim
-    w_comm = max(commutator_norm(M, Pi) for M in ops.values())        # [M, Pi] = 0
-    v = Pi @ eye[:, 0]                                                # symmetric seed
-    leak = max(float(np.linalg.norm((eye - Pi) @ (M @ v)))
-               for M in ops.values())
-    w_break = (eye - Pi) @ eye[:, 0]                                  # residue target
+    w_comm = max(commutator_norm(M, Pi) for M in ops.values())  # [M, Pi] = 0
+    v = Pi @ eye[:, 0]  # symmetric seed
+    leak = max(float(np.linalg.norm((eye - Pi) @ (M @ v))) for M in ops.values())
+    w_break = (eye - Pi) @ eye[:, 0]  # residue target
     w_norm = float(np.linalg.norm(w_break))
     overlap = max(abs(float(w_break @ (M @ v))) for M in ops.values())
-    w_ok = (w_comm < TOL and leak < TOL and overlap < TOL
-            and perp_dim >= 1 and w_norm > 1e-6)
-    print(f"  (W) the wall      : dim Fix(G) = {fix_dim}, "
-          f"dim Fix(G)^perp = {perp_dim} ; max ||[M, Pi]|| = {w_comm:.2e}")
-    print(f"        symmetric seed v in Fix(G): max leak ||(I-Pi) M v|| = "
-          f"{leak:.2e}  (catalog never enters Fix(G)^perp)")
-    print(f"        residue w in Fix(G)^perp (||w|| = {w_norm:.3f}): "
-          f"max |<w, M v>| = {overlap:.2e}  -> {'OK' if w_ok else 'FAIL'}")
+    w_ok = (
+        w_comm < TOL
+        and leak < TOL
+        and overlap < TOL
+        and perp_dim >= 1
+        and w_norm > 1e-6
+    )
+    print(
+        f"  (W) the wall      : dim Fix(G) = {fix_dim}, "
+        f"dim Fix(G)^perp = {perp_dim} ; max ||[M, Pi]|| = {w_comm:.2e}"
+    )
+    print(
+        f"        symmetric seed v in Fix(G): max leak ||(I-Pi) M v|| = "
+        f"{leak:.2e}  (catalog never enters Fix(G)^perp)"
+    )
+    print(
+        f"        residue w in Fix(G)^perp (||w|| = {w_norm:.3f}): "
+        f"max |<w, M v>| = {overlap:.2e}  -> {'OK' if w_ok else 'FAIL'}"
+    )
 
     ok = e_ok and i_ok and w_ok
-    print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the catalog is "
-          "G-equivariant; the Fix(G)^perp residue is unreachable")
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the catalog is "
+        "G-equivariant; the Fix(G)^perp residue is unreachable"
+    )
     print()
     return ok
 
@@ -237,8 +258,10 @@ def run_wall(name, G, group_label, programme):
 def test_negative_control():
     print("=" * 78)
     print("NEGATIVE CONTROL: the wall is REAL, not vacuous -- symmetry IS breakable,")
-    print("but only by a NON-canonical per-node diagonal "
-          "(P2 = NodeIndexedCouplingWeights)")
+    print(
+        "but only by a NON-canonical per-node diagonal "
+        "(P2 = NodeIndexedCouplingWeights)"
+    )
     print("=" * 78)
     G = nx.complete_graph(5)
     nodes = list(G.nodes())
@@ -252,7 +275,7 @@ def test_negative_control():
     # the nodal equation reads as IMPOSED input -- NOT a function of A, L.
     N, n_label = canonical_per_node_diagonal(n)
     comm = max(commutator_norm(N, P) for P in mats)
-    v = Pi @ eye[:, 0]                                # symmetric seed (constant)
+    v = Pi @ eye[:, 0]  # symmetric seed (constant)
     leak = float(np.linalg.norm((eye - Pi) @ (N @ v)))
 
     breaks = comm > 1e-3 and leak > 1e-3
@@ -266,8 +289,10 @@ def test_negative_control():
     print("     this P2 = NodeIndexedCouplingWeights is NOT derivable from")
     print("     dEPI/dt = nu_f . dNFR (no per-node slot). So the wall is a property")
     print("     of the CATALOG: equivariant operators CANNOT, the imposed nu_f CAN.")
-    print(f"  VERDICT: {'PASS' if breaks else 'FAIL'} -- control breaks the wall "
-          "as expected")
+    print(
+        f"  VERDICT: {'PASS' if breaks else 'FAIL'} -- control breaks the wall "
+        "as expected"
+    )
     print()
     return breaks
 
@@ -275,12 +300,24 @@ def test_negative_control():
 def main():
     print(__doc__)
     cases = [
-        ("K5", nx.complete_graph(5), "S_5 (prime relabelling)",
-         "Riemann G4=RH : residue S(T)=(1/pi)arg zeta(1/2+iT) in Fix(S_n)^perp [OPEN]"),
-        ("C6", nx.cycle_graph(6), "D_6 (dihedral: rotations + reflections)",
-         "Chemistry : (2l+1)-style degeneracy ; aufbau lifts it (Fix(D_n)^perp)"),
-        ("P5", nx.path_graph(5), "Z_2 (mirror reflection)",
-         "simplest reflection ; even/odd split ; bridges to chiral Z_2 (Camino 6)"),
+        (
+            "K5",
+            nx.complete_graph(5),
+            "S_5 (prime relabelling)",
+            "Riemann G4=RH : residue S(T)=(1/pi)arg zeta(1/2+iT) in Fix(S_n)^perp [OPEN]",
+        ),
+        (
+            "C6",
+            nx.cycle_graph(6),
+            "D_6 (dihedral: rotations + reflections)",
+            "Chemistry : (2l+1)-style degeneracy ; aufbau lifts it (Fix(D_n)^perp)",
+        ),
+        (
+            "P5",
+            nx.path_graph(5),
+            "Z_2 (mirror reflection)",
+            "simplest reflection ; even/odd split ; bridges to chiral Z_2 (Camino 6)",
+        ),
     ]
     wall_results = [(name, run_wall(name, G, gl, pr)) for name, G, gl, pr in cases]
     control = test_negative_control()
@@ -306,7 +343,9 @@ def main():
     print("  graph representation theory (Schur + Reynolds projector); it UNIFIES the")
     print("  obstruction (one algebraic shape behind all three walls) but does NOT")
     print("  remove it. It does not prove RH, Navier-Stokes, or Yang-Mills; R and the")
-    print("  constants phi,gamma,pi,e stay assumed substrate; nothing here closes G4=RH.")
+    print(
+        "  constants phi,gamma,pi,e stay assumed substrate; nothing here closes G4=RH."
+    )
     return 0 if overall else 1
 
 

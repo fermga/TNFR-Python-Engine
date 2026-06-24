@@ -34,38 +34,46 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Sequence
 
+from ..types import Glyph
 from .grammar_types import (
+    BIFURCATION_HANDLERS,
+    BIFURCATION_TRIGGERS,
     CLOSURES,
     COUPLING_RESONANCE,
     DESTABILIZERS,
     GENERATORS,
-    STABILIZERS,
-    BIFURCATION_TRIGGERS,
-    BIFURCATION_HANDLERS,
-    TRANSFORMERS,
     GLYPH_TO_FUNCTION,
+    STABILIZERS,
+    TRANSFORMERS,
 )
-from ..types import Glyph
 
 # ── glyph code ↔ canonical function name helpers ──────────────────────────
 
 # Build fast lookup from glyph code string ("IL") → canonical name ("coherence")
-_CODE_TO_NAME: dict[str, str] = {
-    g.value: name for g, name in GLYPH_TO_FUNCTION.items()
-}
+_CODE_TO_NAME: dict[str, str] = {g.value: name for g, name in GLYPH_TO_FUNCTION.items()}
 # Reverse: canonical name → glyph code string
-_NAME_TO_CODE: dict[str, str] = {
-    name: g.value for g, name in GLYPH_TO_FUNCTION.items()
-}
+_NAME_TO_CODE: dict[str, str] = {name: g.value for g, name in GLYPH_TO_FUNCTION.items()}
 
 # Sets of *glyph codes* (uppercase) for fast membership tests
-_DESTABILIZER_CODES = frozenset(_NAME_TO_CODE[n] for n in DESTABILIZERS if n in _NAME_TO_CODE)
-_STABILIZER_CODES = frozenset(_NAME_TO_CODE[n] for n in STABILIZERS if n in _NAME_TO_CODE)
-_COUPLING_CODES = frozenset(_NAME_TO_CODE[n] for n in COUPLING_RESONANCE if n in _NAME_TO_CODE)
+_DESTABILIZER_CODES = frozenset(
+    _NAME_TO_CODE[n] for n in DESTABILIZERS if n in _NAME_TO_CODE
+)
+_STABILIZER_CODES = frozenset(
+    _NAME_TO_CODE[n] for n in STABILIZERS if n in _NAME_TO_CODE
+)
+_COUPLING_CODES = frozenset(
+    _NAME_TO_CODE[n] for n in COUPLING_RESONANCE if n in _NAME_TO_CODE
+)
 _GENERATOR_CODES = frozenset(_NAME_TO_CODE[n] for n in GENERATORS if n in _NAME_TO_CODE)
-_BIFURCATION_TRIGGER_CODES = frozenset(_NAME_TO_CODE[n] for n in BIFURCATION_TRIGGERS if n in _NAME_TO_CODE)
-_HANDLER_CODES = frozenset(_NAME_TO_CODE[n] for n in BIFURCATION_HANDLERS if n in _NAME_TO_CODE)
-_TRANSFORMER_CODES = frozenset(_NAME_TO_CODE[n] for n in TRANSFORMERS if n in _NAME_TO_CODE)
+_BIFURCATION_TRIGGER_CODES = frozenset(
+    _NAME_TO_CODE[n] for n in BIFURCATION_TRIGGERS if n in _NAME_TO_CODE
+)
+_HANDLER_CODES = frozenset(
+    _NAME_TO_CODE[n] for n in BIFURCATION_HANDLERS if n in _NAME_TO_CODE
+)
+_TRANSFORMER_CODES = frozenset(
+    _NAME_TO_CODE[n] for n in TRANSFORMERS if n in _NAME_TO_CODE
+)
 _CLOSURE_CODES = frozenset(_NAME_TO_CODE[n] for n in CLOSURES if n in _NAME_TO_CODE)
 
 # Canonical fallback when all else fails — IL (Coherence) is always safe
@@ -76,22 +84,28 @@ _DEFAULT_WINDOW = 6
 
 # ── data structures ───────────────────────────────────────────────────────
 
+
 @dataclass(slots=True)
 class GrammarViolation:
     """A single incremental grammar rule violation."""
-    rule: str          # e.g. "U2", "U4b"
-    message: str       # human-readable explanation
-    severity: str      # "error" (must fix) or "warning" (advisory)
+
+    rule: str  # e.g. "U2", "U4b"
+    message: str  # human-readable explanation
+    severity: str  # "error" (must fix) or "warning" (advisory)
+
 
 @dataclass(slots=True)
 class CandidateResult:
     """Result of validating a single candidate glyph against recent history."""
+
     candidate: str
     allowed: bool
     violations: list[GrammarViolation] = field(default_factory=list)
     suggested_alternative: str | None = None
 
+
 # ── core incremental checks ──────────────────────────────────────────────
+
 
 def _to_code(glyph: Any) -> str:
     """Normalize a glyph to its uppercase code string (e.g. 'IL')."""
@@ -110,6 +124,7 @@ def _to_code(glyph: Any) -> str:
         return _NAME_TO_CODE[lower]
     return upper  # best effort
 
+
 def _recent_codes(G: Any, node: Any, window: int = _DEFAULT_WINDOW) -> list[str]:
     """Extract the last *window* glyph codes from the node's history."""
     nd = G.nodes[node]
@@ -118,6 +133,7 @@ def _recent_codes(G: Any, node: Any, window: int = _DEFAULT_WINDOW) -> list[str]
         return []
     items = list(raw)[-window:]
     return [_to_code(g) for g in items]
+
 
 def _check_u1a(
     candidate: str,
@@ -137,6 +153,7 @@ def _check_u1a(
             severity="error",
         )
     return None
+
 
 def _check_u2(
     candidate: str,
@@ -164,6 +181,7 @@ def _check_u2(
         )
     return None
 
+
 def _check_u3(
     candidate: str,
     G: Any,
@@ -176,6 +194,7 @@ def _check_u3(
         from ..alias import get_attr
         from ..constants.aliases import ALIAS_THETA
         from ..constants.canonical import DELTA_PHI_MAX
+
         theta_i = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
         delta_phi_max = float(G.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))
         for nb in G.neighbors(node):
@@ -183,6 +202,7 @@ def _check_u3(
             diff = abs(theta_i - theta_j)
             # Wrap to [0, π]
             import math
+
             diff = min(diff, 2 * math.pi - diff)
             if diff <= delta_phi_max:
                 return None  # at least one compatible neighbour
@@ -196,6 +216,7 @@ def _check_u3(
         )
     except Exception:
         return None  # graceful degradation
+
 
 def _check_u4a(
     candidate: str,
@@ -217,6 +238,7 @@ def _check_u4a(
             severity="error",
         )
     return None
+
 
 def _check_u4b(
     candidate: str,
@@ -254,7 +276,9 @@ def _check_u4b(
             )
     return None
 
+
 # ── public API ────────────────────────────────────────────────────────────
+
 
 def _check_violations(
     G: Any,
@@ -269,6 +293,7 @@ def _check_violations(
     try:
         from ..alias import get_attr
         from ..constants.aliases import ALIAS_EPI
+
         epi = float(get_attr(G.nodes[node], ALIAS_EPI, 1.0))
     except Exception:
         epi = 1.0  # assume initialized
@@ -287,6 +312,7 @@ def _check_violations(
     errors = [v for v in violations if v.severity == "error"]
     allowed = len(errors) == 0
     return allowed, violations
+
 
 def validate_candidate(
     G: Any,
@@ -330,6 +356,7 @@ def validate_candidate(
         suggested_alternative=alt,
     )
 
+
 def filter_candidates(
     G: Any,
     node: Any,
@@ -362,8 +389,10 @@ def filter_candidates(
             result.append(cr.candidate)
     return result
 
+
 _PRIORITY_ORDER = ["IL", "THOL", "EN", "SHA", "RA", "NAV", "AL"]
 """Fallback priority: stabilizers first, then neutral, then generators."""
+
 
 def suggest_alternative(
     G: Any,
@@ -401,6 +430,7 @@ def suggest_alternative(
             return alt
     return _FALLBACK_CODE
 
+
 def enforce_grammar_on_glyph(
     G: Any,
     node: Any,
@@ -434,6 +464,7 @@ def enforce_grammar_on_glyph(
     if cr.allowed:
         return cr.candidate
     return cr.suggested_alternative or _FALLBACK_CODE
+
 
 def validate_sequence_incremental(
     G: Any,
@@ -491,6 +522,7 @@ def validate_sequence_incremental(
         shadow.append(code)
 
     return results
+
 
 __all__ = [
     "GrammarViolation",

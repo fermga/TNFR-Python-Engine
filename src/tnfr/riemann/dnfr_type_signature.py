@@ -161,9 +161,7 @@ def _is_scalar_payload(value: Any) -> bool:
     return False
 
 
-def _collect_neighbour_gradient_triples(
-    G: Any, nodes: list[Any]
-) -> np.ndarray:
+def _collect_neighbour_gradient_triples(G: Any, nodes: list[Any]) -> np.ndarray:
     """For each node, compute the mean-neighbour gradient triple.
 
     Returns a ``(n_nodes, 3)`` array whose row ``i`` is
@@ -437,10 +435,14 @@ def compute_dnfr_type_signature(
     per_node_entropy, per_node_sv = _per_node_rank_entropy(component_history)
     mean_entropy = float(np.mean(per_node_entropy)) if actual_n_nodes > 0 else 0.0
     mean_sv = (
-        float(np.mean(per_node_sv[:, 0])),
-        float(np.mean(per_node_sv[:, 1])),
-        float(np.mean(per_node_sv[:, 2])),
-    ) if actual_n_nodes > 0 else (0.0, 0.0, 0.0)
+        (
+            float(np.mean(per_node_sv[:, 0])),
+            float(np.mean(per_node_sv[:, 1])),
+            float(np.mean(per_node_sv[:, 2])),
+        )
+        if actual_n_nodes > 0
+        else (0.0, 0.0, 0.0)
+    )
 
     max_entropy = math.log(3.0)
     signature = mean_entropy / max_entropy if max_entropy > 0.0 else 0.0

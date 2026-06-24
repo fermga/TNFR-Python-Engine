@@ -29,24 +29,24 @@ import os
 import sys
 import time
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.constants import inject_defaults
-from tnfr.operators import apply_glyph
-from tnfr.metrics.common import compute_coherence
-from tnfr.metrics.sense_index import compute_Si
 from tnfr.dynamics.self_optimizing_engine import (
-    TNFRSelfOptimizingEngine,
-    OptimizationObjective,
     LearningStrategy,
     OptimizationExperience,
+    OptimizationObjective,
     SelfOptimizationResult,
-    create_self_optimizing_engine,
+    TNFRSelfOptimizingEngine,
     auto_optimize_tnfr_computation,
+    create_self_optimizing_engine,
 )
+from tnfr.metrics.common import compute_coherence
+from tnfr.metrics.sense_index import compute_Si
+from tnfr.operators import apply_glyph
 
 SEED = 42
 np.random.seed(SEED)
@@ -54,6 +54,7 @@ np.random.seed(SEED)
 # ── helpers ──────────────────────────────────────────────────────────
 HEADER = "=" * 72
 SECTION = "-" * 60
+
 
 def banner(title: str) -> None:
     print(f"\n{HEADER}")
@@ -67,9 +68,9 @@ def build_network(n: int = 20, p: float = 0.3, seed: int = SEED) -> nx.Graph:
     inject_defaults(G)
     # Bootstrap a few nodes so the graph has non-trivial EPI / ΔNFR
     for node in list(G.nodes())[:5]:
-        apply_glyph(G, node, "AL")   # Emission
+        apply_glyph(G, node, "AL")  # Emission
     for node in list(G.nodes())[:5]:
-        apply_glyph(G, node, "IL")   # Coherence
+        apply_glyph(G, node, "IL")  # Coherence
     return G
 
 
@@ -188,8 +189,8 @@ for i in range(15):
 
     # Bootstrap
     for node in list(G_exp.nodes())[:3]:
-        apply_glyph(G_exp, node, "AL")   # Emission
-        apply_glyph(G_exp, node, "IL")   # Coherence
+        apply_glyph(G_exp, node, "AL")  # Emission
+        apply_glyph(G_exp, node, "IL")  # Coherence
 
     num_nodes = len(G_exp.nodes())
     num_edges = len(G_exp.edges())
@@ -203,14 +204,19 @@ for i in range(15):
         operation_type="general",
         strategy_used=strategy,
         parameters={"topology": topo_name},
-        performance_metrics={"speedup_factor": float(speedup), "execution_time": 0.01 * n},
+        performance_metrics={
+            "speedup_factor": float(speedup),
+            "execution_time": 0.01 * n,
+        },
         timestamp=time.time(),
         success=speedup > 1.05,
     )
     engine.learn_from_experience(exp)
 
 print(f"  Experiences recorded: {len(engine.experience_history)}")
-print(f"  Successful:           {engine.successful_optimizations} / {engine.optimization_attempts}")
+print(
+    f"  Successful:           {engine.successful_optimizations} / {engine.optimization_attempts}"
+)
 print(f"  Learned policies:     {len(engine.learned_policies)}")
 
 for p in engine.learned_policies[:5]:
@@ -244,7 +250,11 @@ banner("§ 5  Dry-Run Automatic Optimisation")
 G2 = build_network(n=30, p=0.25, seed=SEED + 100)
 C_before = compute_coherence(G2)
 si_result = compute_Si(G2)
-Si_mean = float(np.mean(list(si_result.values()))) if isinstance(si_result, dict) else float(np.mean(si_result))
+Si_mean = (
+    float(np.mean(list(si_result.values())))
+    if isinstance(si_result, dict)
+    else float(np.mean(si_result))
+)
 
 print(f"\n  Pre-optimisation telemetry:")
 print(f"    C(t)  = {C_before:.6f}")
@@ -252,7 +262,10 @@ print(f"    Si    = {Si_mean:.6f}")
 print(f"    Nodes = {len(G2.nodes())}  |  Edges = {len(G2.edges())}")
 
 dry_result = engine.optimize_automatically(
-    G2, operation_type="general", dry_run=True, seed=SEED,
+    G2,
+    operation_type="general",
+    dry_run=True,
+    seed=SEED,
 )
 
 print(f"\n  Dry-run mode: {dry_result.get('dry_run', False)}")
@@ -294,7 +307,8 @@ else:
 
 # ── Summary ──────────────────────────────────────────────────────────
 banner("Summary")
-print("""
+print(
+    """
   Self-optimisation in TNFR is gradient descent on the structural manifold.
   The engine:
     1. Analyses the mathematical landscape (unified fields, conservation,
@@ -311,4 +325,5 @@ print("""
   feedback loop.
 
   See: AGENTS.md § Self-Optimizing Dynamics
-""")
+"""
+)

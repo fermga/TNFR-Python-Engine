@@ -43,10 +43,7 @@ from tnfr.riemann import compute_aggregates_closure_signature
 
 def main() -> None:
     print("=" * 72)
-    print(
-        "Aggregates-Closure Signature demo "
-        "(B9a, Sec 13quinquaginta-sexta)"
-    )
+    print("Aggregates-Closure Signature demo " "(B9a, Sec 13quinquaginta-sexta)")
     print("=" * 72)
 
     print("\n--- Canonical small probe (n_nodes=24) ---")
@@ -81,9 +78,7 @@ def main() -> None:
         "input_scalar = 1.0000, output_scalar = 1.0000, "
         "verdict = SCALAR_CLOSURE_ADEQUATE"
     )
-    print(
-        "Scope: necessary-condition diagnostic; does NOT advance G4 = RH."
-    )
+    print("Scope: necessary-condition diagnostic; does NOT advance G4 = RH.")
 
 
 if __name__ == "__main__":

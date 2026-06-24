@@ -21,24 +21,24 @@ from __future__ import annotations
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.constants import inject_defaults
 from tnfr.operators import apply_glyph
 from tnfr.physics.variational import (
-    capture_lagrangian_snapshot,
-    compute_euler_lagrange_residual,
-    compute_action_functional,
-    check_symplectic_preservation,
     analyze_grammar_stationarity,
-    translate_sectors,
-    identify_conjugate_pairs,
-    compute_phase_space_volume,
     analyze_potential_critical_points,
+    capture_lagrangian_snapshot,
+    check_symplectic_preservation,
+    compute_action_functional,
+    compute_euler_lagrange_residual,
+    compute_phase_space_volume,
     derive_tetrad_threshold_values,
+    identify_conjugate_pairs,
+    translate_sectors,
 )
 
 SEED = 42
@@ -48,16 +48,17 @@ SEED = 42
 # Helpers
 # ------------------------------------------------------------------
 
+
 def _build_graph(n: int = 20, seed: int = SEED) -> nx.Graph:
     """Build a Watts-Strogatz network with canonical TNFR attributes."""
     rng = np.random.default_rng(seed)
     G = nx.watts_strogatz_graph(n, 4, 0.3, seed=seed)
     inject_defaults(G)
     for node in G.nodes():
-        G.nodes[node]['EPI'] = float(rng.uniform(0.5, 2.0))
-        G.nodes[node]['nu_f'] = float(rng.uniform(0.5, 2.0))
-        G.nodes[node]['phase'] = float(rng.uniform(0, 2 * np.pi))
-        G.nodes[node]['delta_nfr'] = float(rng.uniform(-0.3, 0.3))
+        G.nodes[node]["EPI"] = float(rng.uniform(0.5, 2.0))
+        G.nodes[node]["nu_f"] = float(rng.uniform(0.5, 2.0))
+        G.nodes[node]["phase"] = float(rng.uniform(0, 2 * np.pi))
+        G.nodes[node]["delta_nfr"] = float(rng.uniform(-0.3, 0.3))
     return G
 
 
@@ -70,6 +71,7 @@ def _evolve_step(G: nx.Graph) -> None:
 def _evolve(G: nx.Graph, steps: int = 5, dt: float = 0.05) -> list[nx.Graph]:
     """Evolve the network and return snapshots at each step."""
     import copy
+
     snapshots = [copy.deepcopy(G)]
     for _ in range(steps):
         _evolve_step(G)
@@ -80,6 +82,7 @@ def _evolve(G: nx.Graph, steps: int = 5, dt: float = 0.05) -> list[nx.Graph]:
 # ------------------------------------------------------------------
 # 1. Lagrangian snapshot — T, V, ℒ, H at a single instant
 # ------------------------------------------------------------------
+
 
 def demo_lagrangian_snapshot() -> None:
     """Decompose the structural energy into kinetic and potential sectors."""
@@ -109,6 +112,7 @@ def demo_lagrangian_snapshot() -> None:
 # 2. Canonical conjugate pairs — (K_φ, J_φ) and (Φ_s, J_ΔNFR)
 # ------------------------------------------------------------------
 
+
 def demo_conjugate_pairs() -> None:
     """Identify the two canonical conjugate sectors of TNFR phase space."""
     print("=" * 60)
@@ -134,6 +138,7 @@ def demo_conjugate_pairs() -> None:
 # ------------------------------------------------------------------
 # 3. Euler-Lagrange residual — stationarity test
 # ------------------------------------------------------------------
+
 
 def demo_euler_lagrange() -> None:
     """Check whether the field configuration is stationary (R ≈ 0)."""
@@ -176,6 +181,7 @@ def demo_euler_lagrange() -> None:
 # 4. Action functional along an evolution path
 # ------------------------------------------------------------------
 
+
 def demo_action_functional() -> None:
     """Compute the total action S = ∫ dt Σ_i ℒ(i) along a trajectory."""
     print("=" * 60)
@@ -200,6 +206,7 @@ def demo_action_functional() -> None:
 # 5. Symplectic preservation — operator classification
 # ------------------------------------------------------------------
 
+
 def demo_symplectic() -> None:
     """Classify operators as canonical, dissipative, or expansive."""
     print("=" * 60)
@@ -207,12 +214,12 @@ def demo_symplectic() -> None:
     print("=" * 60)
 
     glyphs = [
-        ("Coherence (IL)",  "IL"),
+        ("Coherence (IL)", "IL"),
         ("Dissonance (OZ)", "OZ"),
-        ("Coupling (UM)",   "UM"),
-        ("Resonance (RA)",  "RA"),
-        ("Silence (SHA)",   "SHA"),
-        ("Emission (AL)",   "AL"),
+        ("Coupling (UM)", "UM"),
+        ("Resonance (RA)", "RA"),
+        ("Silence (SHA)", "SHA"),
+        ("Emission (AL)", "AL"),
     ]
 
     for label, glyph in glyphs:
@@ -223,10 +230,14 @@ def demo_symplectic() -> None:
                 apply_glyph(G, node, glyph)
             snap_after = capture_lagrangian_snapshot(G)
             check = check_symplectic_preservation(
-                snap_before, snap_after, operator_name=glyph,
+                snap_before,
+                snap_after,
+                operator_name=glyph,
             )
-            print(f"  {label:25s}  class={check.classification:12s}  "
-                  f"vol_ratio={check.volume_ratio:.4f}  canonical={check.is_canonical}")
+            print(
+                f"  {label:25s}  class={check.classification:12s}  "
+                f"vol_ratio={check.volume_ratio:.4f}  canonical={check.is_canonical}"
+            )
         except Exception as e:
             print(f"  {label:25s}  error: {e}")
     print()
@@ -235,6 +246,7 @@ def demo_symplectic() -> None:
 # ------------------------------------------------------------------
 # 6. Grammar as stationarity — U1-U6 mapped to action conditions
 # ------------------------------------------------------------------
+
 
 def demo_grammar_stationarity() -> None:
     """Show how each grammar rule maps to a stationarity condition on S."""
@@ -257,6 +269,7 @@ def demo_grammar_stationarity() -> None:
 # 7. Sector translation — three decompositions of the same 6 fields
 # ------------------------------------------------------------------
 
+
 def demo_sector_translation() -> None:
     """Show the three equivalent decompositions: T/V, ρ/J, Ψ."""
     print("=" * 60)
@@ -267,15 +280,15 @@ def demo_sector_translation() -> None:
     sectors = translate_sectors(G)
 
     # Variational
-    T_total = sum(sectors['variational']['T'].values())
-    V_total = sum(sectors['variational']['V'].values())
+    T_total = sum(sectors["variational"]["T"].values())
+    V_total = sum(sectors["variational"]["V"].values())
 
     # Conservation
-    rho_total = sum(sectors['conservation']['rho'].values())
-    j_phi_mean = np.mean(list(sectors['conservation']['J_phi'].values()))
+    rho_total = sum(sectors["conservation"]["rho"].values())
+    j_phi_mean = np.mean(list(sectors["conservation"]["J_phi"].values()))
 
     # Unified
-    psi_vals = list(sectors['unified_psi'].values())
+    psi_vals = list(sectors["unified_psi"].values())
     psi_mean_mag = np.mean([abs(p) for p in psi_vals])
 
     print(f"  Variational:   T = {T_total:.6f},  V = {V_total:.6f}")
@@ -289,6 +302,7 @@ def demo_sector_translation() -> None:
 # 8. Critical points of the structural potential
 # ------------------------------------------------------------------
 
+
 def demo_critical_points() -> None:
     """Analyze critical points of V where the restoring force vanishes."""
     print("=" * 60)
@@ -301,9 +315,11 @@ def demo_critical_points() -> None:
     for cp in cps:
         grad_str = f"{cp.gradient_at_threshold:+.4f}"
         curv_str = f"{cp.curvature_at_threshold:+.4f}"
-        print(f"  {cp.field_name:12s}  threshold={cp.threshold_value:.4f}  "
-              f"∂V/∂x={grad_str}  ∂²V/∂x²={curv_str}  "
-              f"type={cp.critical_type:8s}  critical={cp.is_critical}")
+        print(
+            f"  {cp.field_name:12s}  threshold={cp.threshold_value:.4f}  "
+            f"∂V/∂x={grad_str}  ∂²V/∂x²={curv_str}  "
+            f"type={cp.critical_type:8s}  critical={cp.is_critical}"
+        )
     print()
 
 
@@ -318,10 +334,12 @@ def demo_threshold_derivation() -> None:
     print()
 
     for r in derive_tetrad_threshold_values():
-        print(f"  {r.constant_name:5s} <- {r.field_name:8s} "
-              f"({r.accumulation_law:14s})  "
-              f"derived={r.derived_value:.10f}  "
-              f"rel_err={r.relative_error:.1e}  [{r.status}]")
+        print(
+            f"  {r.constant_name:5s} <- {r.field_name:8s} "
+            f"({r.accumulation_law:14s})  "
+            f"derived={r.derived_value:.10f}  "
+            f"rel_err={r.relative_error:.1e}  [{r.status}]"
+        )
     print()
     print("DERIVED: phi (inverse-square fixed point s^2-s-1=0), gamma")
     print("(harmonic gap lim H_n-ln n), e (memoryless decay sum 1/k!).")
@@ -334,6 +352,7 @@ def demo_threshold_derivation() -> None:
 # ------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------
+
 
 def main() -> None:
     print()

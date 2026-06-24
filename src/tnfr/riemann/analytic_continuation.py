@@ -92,11 +92,7 @@ import mpmath as mp
 
 from ..mathematics.unified_numerical import np
 from .complex_extension import KNOWN_RIEMANN_ZEROS
-from .von_mangoldt import (
-    PrimeLadderSpectrum,
-    mangoldt_lambda,
-    tnfr_log_zeta_derivative,
-)
+from .von_mangoldt import PrimeLadderSpectrum, mangoldt_lambda, tnfr_log_zeta_derivative
 
 __all__ = [
     # Continuation evaluator
@@ -118,6 +114,7 @@ __all__ = [
 # ============================================================================
 # Section 1 -- High-precision continuation evaluator
 # ============================================================================
+
 
 def von_mangoldt_zeta_continued(
     s: complex | float,
@@ -153,9 +150,7 @@ def von_mangoldt_zeta_continued(
         s_mp = mp.mpc(s)
         zeta_val = mp.zeta(s_mp)
         if zeta_val == 0:
-            raise ValueError(
-                f"s={s} hits a zeta zero (pole of -zeta'/zeta)"
-            )
+            raise ValueError(f"s={s} hits a zeta zero (pole of -zeta'/zeta)")
         zeta_deriv = mp.zeta(s_mp, derivative=1)
         result = -zeta_deriv / zeta_val
     return complex(result)
@@ -164,6 +159,7 @@ def von_mangoldt_zeta_continued(
 # ============================================================================
 # Section 2 -- Agreement certificate on the convergent half-plane
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class ContinuationAgreement:
@@ -269,6 +265,7 @@ def verify_continuation_agreement(
 # ============================================================================
 # Section 3 -- Resonance poles along the critical line
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class CriticalLinePoleScan:
@@ -409,6 +406,7 @@ def scan_critical_line_for_poles(
 # ============================================================================
 # Section 4 -- Explicit formula reconstruction of psi(x)
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class ExplicitFormulaResult:
@@ -551,7 +549,7 @@ def reconstruct_psi_via_explicit_formula(
         # keeps the running sum real.
         osc = 0.0
         for r in rho:
-            term = (x ** r) / r  # complex
+            term = (x**r) / r  # complex
             osc += 2.0 * float(term.real)
         smooth = x - log_2pi
         if include_trivial:

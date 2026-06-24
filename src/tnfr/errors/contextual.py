@@ -36,6 +36,7 @@ __all__ = [
     "TNFRSecurityWarning",
 ]
 
+
 class TNFRUserError(Exception):
     """Base class for user-facing TNFR errors with helpful context.
 
@@ -96,6 +97,7 @@ class TNFRUserError(Exception):
         full_message += f"{'='*70}\n"
 
         super().__init__(full_message)
+
 
 class OperatorSequenceError(TNFRUserError):
     """Error raised when operator sequence violates TNFR grammar.
@@ -187,7 +189,9 @@ class OperatorSequenceError(TNFRUserError):
 
         context = {
             "invalid_operator": invalid_operator,
-            "sequence_so_far": (" → ".join(sequence_so_far) if sequence_so_far else "empty"),
+            "sequence_so_far": (
+                " → ".join(sequence_so_far) if sequence_so_far else "empty"
+            ),
             "operator_count": len(sequence_so_far),
         }
 
@@ -197,6 +201,7 @@ class OperatorSequenceError(TNFRUserError):
             docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/docs/source/api/operators.md",
             context=context,
         )
+
 
 class NetworkConfigError(TNFRUserError):
     """Error raised when network configuration violates TNFR constraints.
@@ -286,7 +291,9 @@ class NetworkConfigError(TNFRUserError):
         suggestion_parts = []
         if valid_range:
             min_val, max_val = valid_range
-            suggestion_parts.append(f"'{parameter}' must be in range [{min_val}, {max_val}]")
+            suggestion_parts.append(
+                f"'{parameter}' must be in range [{min_val}, {max_val}]"
+            )
 
         if constraint_info:
             suggestion_parts.append(f"Unit: {constraint_info['unit']}")
@@ -297,7 +304,9 @@ class NetworkConfigError(TNFRUserError):
         context = {
             "parameter": parameter,
             "provided_value": value,
-            "valid_range": (f"[{valid_range[0]}, {valid_range[1]}]" if valid_range else "see docs"),
+            "valid_range": (
+                f"[{valid_range[0]}, {valid_range[1]}]" if valid_range else "see docs"
+            ),
         }
 
         super().__init__(
@@ -306,6 +315,7 @@ class NetworkConfigError(TNFRUserError):
             docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/docs/source/api/overview.md",
             context=context,
         )
+
 
 class PhaseError(TNFRUserError):
     """Error raised when phase synchrony is violated.
@@ -364,6 +374,7 @@ class PhaseError(TNFRUserError):
             docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/GLOSSARY.md#phase",
             context=context,
         )
+
 
 class CoherenceError(TNFRUserError):
     """Error raised when coherence operations violate monotonicity.
@@ -424,6 +435,7 @@ class CoherenceError(TNFRUserError):
             context=context,
         )
 
+
 class FrequencyError(TNFRUserError):
     """Error raised when structural frequency νf is invalid.
 
@@ -453,7 +465,7 @@ class FrequencyError(TNFRUserError):
         operation: str | None = None,
     ):
         node_msg = f" for node '{node_id}'" if node_id else ""
-        
+
         if vf <= 0:
             suggestion = (
                 f"Structural frequency νf must be positive (Hz_str units). "
@@ -485,6 +497,7 @@ class FrequencyError(TNFRUserError):
             docs_url="https://github.com/fermga/Teoria-de-la-naturaleza-fractal-resonante-TNFR-/blob/main/GLOSSARY.md#structural-frequency",
             context=context,
         )
+
 
 class TNFRValueError(TNFRUserError, ValueError):
     """Error raised when an operation receives an argument with inappropriate value.
@@ -527,28 +540,25 @@ class TNFRValueError(TNFRUserError, ValueError):
             context=context,
         )
 
+
 class TNFRSecurityError(TNFRValueError):
     """Security validation error for input sanitization or integrity failures.
-    
+
     Raised when:
     - Input contains forbidden patterns (injection attempts)
     - Cache signatures are invalid (tampering detected)
     - Path traversal attempts are detected
     """
-    
-    def __init__(
-        self, 
-        message: str, 
-        suspicious_input: str | None = None, 
-        **kwargs
-    ):
+
+    def __init__(self, message: str, suspicious_input: str | None = None, **kwargs):
         context = kwargs.get("context", {})
         if suspicious_input:
             context["suspicious_input"] = suspicious_input
         kwargs["context"] = context
-        
+
         super().__init__(message, **kwargs)
         self.suspicious_input = suspicious_input
+
 
 class TNFRSecurityWarning(UserWarning):
     """Issued when potentially unsafe serialization is used without signing."""

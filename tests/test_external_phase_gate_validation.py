@@ -8,7 +8,9 @@ from pathlib import Path
 def _load_benchmark_module():
     root = Path(__file__).resolve().parents[1]
     path = root / "benchmarks" / "external_phase_gate_validation.py"
-    spec = importlib.util.spec_from_file_location("external_phase_gate_validation", path)
+    spec = importlib.util.spec_from_file_location(
+        "external_phase_gate_validation", path
+    )
     assert spec is not None
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)

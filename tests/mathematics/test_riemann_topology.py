@@ -19,29 +19,28 @@ from __future__ import annotations
 
 import math
 
+import networkx as nx
 import numpy as np
 import pytest
-import networkx as nx
 
 from tnfr.riemann.operator import (
     _first_primes,
-    build_prime_path_graph,
-    build_prime_cycle_graph,
-    build_prime_star_graph,
-    build_prime_complete_graph,
-    build_prime_tree_graph,
-    build_prime_random_graph,
     build_h_tnfr,
+    build_prime_complete_graph,
+    build_prime_cycle_graph,
+    build_prime_path_graph,
+    build_prime_random_graph,
+    build_prime_star_graph,
+    build_prime_tree_graph,
 )
 from tnfr.riemann.topology import (
-    TopologyResult,
-    TopologyConvergenceResult,
     TOPOLOGY_BUILDERS,
+    TopologyConvergenceResult,
+    TopologyResult,
     analyze_graph_topology,
     compare_topologies,
     topology_convergence_study,
 )
-
 
 # ============================================================================
 # Graph Builder Tests
@@ -217,9 +216,9 @@ class TestEquilibriumUniversality:
         else:
             G = builder(20)
         result = analyze_graph_topology(G, topology_name)
-        assert abs(result.lambda_min) < 1e-10, (
-            f"{topology_name}: lambda_min = {result.lambda_min}"
-        )
+        assert (
+            abs(result.lambda_min) < 1e-10
+        ), f"{topology_name}: lambda_min = {result.lambda_min}"
 
     def test_positive_spectral_gap(self, topology_name: str) -> None:
         """Spectral gap > 0 for all connected topologies."""
@@ -229,9 +228,9 @@ class TestEquilibriumUniversality:
         else:
             G = builder(20)
         result = analyze_graph_topology(G, topology_name)
-        assert result.spectral_gap > 1e-10, (
-            f"{topology_name}: gap = {result.spectral_gap}"
-        )
+        assert (
+            result.spectral_gap > 1e-10
+        ), f"{topology_name}: gap = {result.spectral_gap}"
 
 
 class TestEquilibriumMultipleK:
@@ -251,9 +250,9 @@ class TestEquilibriumMultipleK:
             else:
                 G = builder(k)
             result = analyze_graph_topology(G, topology_name)
-            assert abs(result.lambda_min) < 1e-10, (
-                f"{topology_name} k={k}: lambda_min = {result.lambda_min}"
-            )
+            assert (
+                abs(result.lambda_min) < 1e-10
+            ), f"{topology_name} k={k}: lambda_min = {result.lambda_min}"
 
 
 # ============================================================================
@@ -283,9 +282,7 @@ class TestAnalyzeTopology:
             norms.append(r.potential_norm)
         # All should be identical (same set of primes)
         for n in norms:
-            assert abs(n - norms[0]) < 1e-12, (
-                f"potential_norm varies: {norms}"
-            )
+            assert abs(n - norms[0]) < 1e-12, f"potential_norm varies: {norms}"
 
     def test_curvature_topology_independent(self) -> None:
         """d^2E/dsigma^2 = (1/k) tr(V_1^2) is the same for all topologies."""
@@ -297,9 +294,7 @@ class TestAnalyzeTopology:
             r = analyze_graph_topology(G, name)
             curvatures.append(r.curvature)
         for c in curvatures:
-            assert abs(c - curvatures[0]) < 1e-12, (
-                f"curvature varies: {curvatures}"
-            )
+            assert abs(c - curvatures[0]) < 1e-12, f"curvature varies: {curvatures}"
 
     def test_cross_term_varies(self) -> None:
         """tr(L V_1) should differ across topologies (topology-dependent)."""
@@ -312,9 +307,9 @@ class TestAnalyzeTopology:
             cross_terms[name] = r.cross_term
         # At least some should be different
         values = list(cross_terms.values())
-        assert max(values) - min(values) > 1e-6, (
-            "All cross terms identical -- topologies have no effect?"
-        )
+        assert (
+            max(values) - min(values) > 1e-6
+        ), "All cross terms identical -- topologies have no effect?"
 
 
 # ============================================================================
@@ -337,9 +332,7 @@ class TestCompareTopologies:
         """All topologies have lambda_min ~ 0 at the same k."""
         results = compare_topologies(30)
         for name, r in results.items():
-            assert abs(r.lambda_min) < 1e-10, (
-                f"{name}: lambda_min = {r.lambda_min}"
-            )
+            assert abs(r.lambda_min) < 1e-10, f"{name}: lambda_min = {r.lambda_min}"
 
     def test_spectral_gap_ordering(self) -> None:
         """Complete graph should have largest spectral gap, star smallest."""
@@ -391,9 +384,7 @@ class TestConvergenceStudy:
         for name in ["path", "cycle", "tree"]:
             devs = [r.deviation for r in result.results[name]]
             # Last deviation should be smaller than first
-            assert devs[-1] < devs[0], (
-                f"{name}: deviation not decreasing: {devs}"
-            )
+            assert devs[-1] < devs[0], f"{name}: deviation not decreasing: {devs}"
 
     def test_summary_nonempty(self) -> None:
         result = topology_convergence_study(
@@ -420,9 +411,9 @@ class TestEigenvalueFlowTopologies:
         builder = TOPOLOGY_BUILDERS[topology_name]
         G = builder(20, seed=42) if topology_name == "random" else builder(20)
         r = analyze_graph_topology(G, topology_name)
-        assert r.all_velocities_positive, (
-            f"{topology_name}: min velocity = {r.min_velocity}"
-        )
+        assert (
+            r.all_velocities_positive
+        ), f"{topology_name}: min velocity = {r.min_velocity}"
 
     def test_velocity_range(self, topology_name: str) -> None:
         """Velocities bounded by min/max of log(primes)."""

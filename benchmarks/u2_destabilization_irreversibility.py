@@ -67,6 +67,7 @@ it is a standard surrogate-data test) and (ii) a clean pre-registered negative t
 prevents overclaiming. EQ-magnitude suppression and streamflow amplification are genuine
 but are known seismology / hydrology, not TNFR.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -95,7 +96,7 @@ def overload_drop(c, L=3, W=4):
     if m < W:
         return 0
     cs = np.cumsum(d)
-    wsum = cs[W - 1:] - np.concatenate([[0], cs[:m - W]])
+    wsum = cs[W - 1 :] - np.concatenate([[0], cs[: m - W]])
     return int(np.sum(wsum >= L))
 
 
@@ -107,10 +108,13 @@ def iaaft_test(signals, L=3, W=4, n_sur=500, seed=0, iters=40):
     for i in range(n_sur):
         null[i] = sum(overload_drop(iaaft(c, rng, iters), L, W) for c in signals)
     mu, sd = float(null.mean()), float(null.std())
-    return {"real": int(real), "null_mean": round(mu, 1),
-            "z": round((real - mu) / (sd + 1e-12), 2),
-            "p_lower": round(float(np.mean(null <= real)), 4),
-            "p_upper": round(float(np.mean(null >= real)), 4)}
+    return {
+        "real": int(real),
+        "null_mean": round(mu, 1),
+        "z": round((real - mu) / (sd + 1e-12), 2),
+        "p_lower": round(float(np.mean(null <= real)), 4),
+        "p_upper": round(float(np.mean(null >= real)), 4),
+    }
 
 
 # --------------------------------------------------------------------- generators
@@ -118,7 +122,10 @@ def _ar(rng, n, coeffs, sd):
     x = rng.standard_normal(n)
     p = len(coeffs)
     for t in range(p, n):
-        x[t] = sum(c * x[t - 1 - j] for j, c in enumerate(coeffs)) + sd * rng.standard_normal()
+        x[t] = (
+            sum(c * x[t - 1 - j] for j, c in enumerate(coeffs))
+            + sd * rng.standard_normal()
+        )
     return x
 
 
@@ -166,7 +173,9 @@ def power(rho, n=4000, reps=20, n_sur=150, phi=0.9, alpha=0.05, n_sig=6, iters=1
     for r in range(reps):
         rng = np.random.default_rng(1000 + r)
         sigs = [gen_u2(n, rng, phi=phi, rho=rho) for _ in range(n_sig)]
-        hits += iaaft_test(sigs, 3, 4, n_sur, seed=7000 + r, iters=iters)["p_lower"] < alpha
+        hits += (
+            iaaft_test(sigs, 3, 4, n_sur, seed=7000 + r, iters=iters)["p_lower"] < alpha
+        )
     return hits / reps
 
 

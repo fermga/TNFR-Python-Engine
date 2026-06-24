@@ -15,9 +15,10 @@ from typing import Any, ClassVar
 from ..alias import get_attr
 from ..config.operator_names import COHERENCE
 from ..constants.aliases import ALIAS_DNFR
-from ..types import Glyph, TNFRGraph
 from ..mathematics.unified_numerical import np
+from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
+
 
 class Coherence(Operator):
     """Stabilize alignment; compress delta NFR; boost coherence.
@@ -203,8 +204,7 @@ class Coherence(Operator):
             return  # No neighbors, no phase locking
 
         theta_neighbors = [
-            float(get_attr(G.nodes[n], ALIAS_THETA, 0.0))
-            for n in neighbors
+            float(get_attr(G.nodes[n], ALIAS_THETA, 0.0)) for n in neighbors
         ]
 
         # Compute mean phase using circular mean (angles wrap around 2π)
@@ -241,17 +241,11 @@ class Coherence(Operator):
             import math
 
             # Convert phases to complex exponentials
-            complex_phases = [
-                cmath.exp(1j * theta) for theta in theta_neighbors
-            ]
+            complex_phases = [cmath.exp(1j * theta) for theta in theta_neighbors]
 
             # Compute mean complex phasor
-            mean_real = sum(z.real for z in complex_phases) / len(
-                complex_phases
-            )
-            mean_imag = sum(z.imag for z in complex_phases) / len(
-                complex_phases
-            )
+            mean_real = sum(z.real for z in complex_phases) / len(complex_phases)
+            mean_imag = sum(z.imag for z in complex_phases) / len(complex_phases)
             mean_complex = complex(mean_real, mean_imag)
 
             # Extract angle (in [-π, π])
@@ -290,7 +284,6 @@ class Coherence(Operator):
                 "theta_after": theta_new,
                 "theta_network": theta_network,
                 "delta_theta": delta_theta,
-                "alignment_achieved": abs(delta_theta)
-                * (1 - locking_coefficient),
+                "alignment_achieved": abs(delta_theta) * (1 - locking_coefficient),
             }
         )

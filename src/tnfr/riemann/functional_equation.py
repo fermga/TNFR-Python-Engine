@@ -73,15 +73,12 @@ from typing import Sequence
 from scipy.linalg import eigh_tridiagonal
 
 from ..mathematics.unified_numerical import np
-from .operator import (
-    _first_primes,
-    build_tridiagonal_h_tnfr,
-)
+from .operator import _first_primes, build_tridiagonal_h_tnfr
 from .spectral_proof import (
     _compute_lv1_traces,
     compute_analytic_sigma_star,
-    compute_eigensystem,
     compute_eigenspectrum,
+    compute_eigensystem,
 )
 
 # ---------------------------------------------------------------------------
@@ -122,6 +119,7 @@ __all__ = [
 # Data Structures
 # ============================================================================
 
+
 @dataclass(frozen=True)
 class SpectralReflection:
     r"""Verification of the exact matrix identity H(σ) + H(1-σ) = 2L.
@@ -158,6 +156,7 @@ class SpectralReflection:
 
     eigenvalue_reflection_error: float
     """max_j |λ_j(σ) + λ_j(1-σ) - 2λ_j(L)|; quantifies eigenvector rotation."""
+
 
 @dataclass(frozen=True)
 class TraceFormulaResult:
@@ -206,6 +205,7 @@ class TraceFormulaResult:
     pnt_mean_log_prime: float
     """(1/k) Σ log p_i ≈ log k by PNT."""
 
+
 @dataclass(frozen=True)
 class CompletedXiFunction:
     r"""Completed spectral xi function and functional equation test.
@@ -235,6 +235,7 @@ class CompletedXiFunction:
 
     max_log_asymmetry: float
     mean_log_asymmetry: float
+
 
 @dataclass(frozen=True)
 class Conjecture12_1Result:
@@ -268,6 +269,7 @@ class Conjecture12_1Result:
     is_approximately_conserved: bool
     """True if |combined_derivative| < threshold."""
 
+
 @dataclass(frozen=True)
 class Conjecture12_2Result:
     r"""Numerical test of Conjecture 12.2 (Multiscale Minimization).
@@ -298,6 +300,7 @@ class Conjecture12_2Result:
 
     is_minimized_at_half: bool
     """True if σ_min is within tolerance of 1/2."""
+
 
 @dataclass(frozen=True)
 class LargeKConvergence:
@@ -331,6 +334,7 @@ class LargeKConvergence:
     spectral_gap: float
     computation_time_s: float
 
+
 @dataclass
 class FunctionalEquationAnalysis:
     r"""Integrated P9 functional equation analysis.
@@ -358,9 +362,11 @@ class FunctionalEquationAnalysis:
 
     summary: str = ""
 
+
 # ============================================================================
 # Core: Spectral Reflection Symmetry
 # ============================================================================
+
 
 def verify_spectral_reflection(
     k: int,
@@ -410,13 +416,13 @@ def verify_spectral_reflection(
     evals_refl = np.sort(eigh_tridiagonal(d_refl, e_L, eigvals_only=True))
     evals_L = np.sort(eigh_tridiagonal(d_L, e_L, eigvals_only=True))
 
-    e_sigma = float(np.sum(evals_sigma ** 2) / (2.0 * k))
-    e_refl = float(np.sum(evals_refl ** 2) / (2.0 * k))
-    e_L_val = float(np.sum(evals_L ** 2) / (2.0 * k))
-    tr_V1_sq = float(np.sum(log_p ** 2))
+    e_sigma = float(np.sum(evals_sigma**2) / (2.0 * k))
+    e_refl = float(np.sum(evals_refl**2) / (2.0 * k))
+    e_L_val = float(np.sum(evals_L**2) / (2.0 * k))
+    tr_V1_sq = float(np.sum(log_p**2))
 
     energy_sum = e_sigma + e_refl
-    energy_predicted = 2.0 * e_L_val + delta ** 2 * tr_V1_sq / k
+    energy_predicted = 2.0 * e_L_val + delta**2 * tr_V1_sq / k
     energy_error = abs(energy_sum - energy_predicted)
 
     # Eigenvalue reflection: λ_j(σ) + λ_j(1-σ) ≈ 2λ_j(L)
@@ -437,6 +443,7 @@ def verify_spectral_reflection(
         eigenvalue_reflection_error=eig_error,
     )
 
+
 def verify_reflection_sequence(
     k_values: Sequence[int],
     sigma: float = 0.3,
@@ -450,9 +457,11 @@ def verify_reflection_sequence(
         if k >= 3
     ]
 
+
 # ============================================================================
 # Core: Trace Formula Identities
 # ============================================================================
+
 
 def compute_trace_formulas(
     k: int,
@@ -474,9 +483,7 @@ def compute_trace_formulas(
     d_L, e_L, log_p = build_tridiagonal_h_tnfr(
         k, 0.5, weight_by_log_gap=weight_by_log_gap
     )
-    tr_LV1, tr_V1_sq, _ = _compute_lv1_traces(
-        k, weight_by_log_gap=weight_by_log_gap
-    )
+    tr_LV1, tr_V1_sq, _ = _compute_lv1_traces(k, weight_by_log_gap=weight_by_log_gap)
 
     # Eigenvalues at σ, 1-σ, and 1/2
     d_sigma = d_L + delta * log_p
@@ -492,13 +499,13 @@ def compute_trace_formulas(
     trace_n1_error = abs((tr_sigma + tr_refl) - tr_2L)
 
     # n=2: Frobenius energy
-    e_sigma = float(np.sum(evals_sigma ** 2) / (2.0 * k))
-    e_refl = float(np.sum(evals_refl ** 2) / (2.0 * k))
+    e_sigma = float(np.sum(evals_sigma**2) / (2.0 * k))
+    e_refl = float(np.sum(evals_refl**2) / (2.0 * k))
 
     # Symmetric part: E(σ) + E(1-σ) = 2E_L + δ²/k·tr(V₁²)
     evals_L = eigh_tridiagonal(d_L, e_L, eigvals_only=True)
-    e_L_val = float(np.sum(evals_L ** 2) / (2.0 * k))
-    energy_sum_predicted = 2.0 * e_L_val + delta ** 2 * tr_V1_sq / k
+    e_L_val = float(np.sum(evals_L**2) / (2.0 * k))
+    energy_sum_predicted = 2.0 * e_L_val + delta**2 * tr_V1_sq / k
     energy_n2_sym_err = abs((e_sigma + e_refl) - energy_sum_predicted)
 
     # Antisymmetric part: E(σ) - E(1-σ) = (2δ/k)·tr(LV₁)
@@ -531,6 +538,7 @@ def compute_trace_formulas(
         pnt_mean_log_prime=pnt_mean,
     )
 
+
 def verify_trace_formula_pnt(
     k_values: Sequence[int],
     sigma: float = 0.3,
@@ -544,9 +552,11 @@ def verify_trace_formula_pnt(
         if k >= 3
     ]
 
+
 # ============================================================================
 # Core: Completed Spectral Xi Function
 # ============================================================================
+
 
 def compute_completed_xi(
     k: int,
@@ -609,7 +619,7 @@ def compute_completed_xi(
         evals_sig = np.sort(eigh_tridiagonal(d_sig, e_L, eigvals_only=True))
 
         # Take the n_pos largest eigenvalues for ratio
-        evals_pos = evals_sig[len(evals_sig) - n_pos:]
+        evals_pos = evals_sig[len(evals_sig) - n_pos :]
         evals_pos = np.maximum(evals_pos, 1e-300)
 
         log_ratio = float(np.sum(np.log(np.abs(evals_pos)) - log_lambda_L))
@@ -619,11 +629,9 @@ def compute_completed_xi(
         # Reflected: σ' = 1 - σ, δ' = -δ
         d_refl = d_L - delta * log_p
         evals_refl = np.sort(eigh_tridiagonal(d_refl, e_L, eigvals_only=True))
-        evals_refl_pos = evals_refl[len(evals_refl) - n_pos:]
+        evals_refl_pos = evals_refl[len(evals_refl) - n_pos :]
         evals_refl_pos = np.maximum(evals_refl_pos, 1e-300)
-        log_ratio_refl = float(
-            np.sum(np.log(np.abs(evals_refl_pos)) - log_lambda_L)
-        )
+        log_ratio_refl = float(np.sum(np.log(np.abs(evals_refl_pos)) - log_lambda_L))
         # (δ')² = δ², so log-prefactor is the same
         log_xi_refl[i] = 2.0 * math.log(abs(delta)) + log_ratio_refl
 
@@ -639,8 +647,11 @@ def compute_completed_xi(
         log_xi_reflected=log_xi_refl,
         log_asymmetry=log_asym,
         max_log_asymmetry=float(np.max(log_asym)),
-        mean_log_asymmetry=float(np.mean(log_asym[finite_mask])) if np.any(finite_mask) else 0.0,
+        mean_log_asymmetry=(
+            float(np.mean(log_asym[finite_mask])) if np.any(finite_mask) else 0.0
+        ),
     )
+
 
 def verify_xi_functional_equation(
     k_values: Sequence[int],
@@ -661,9 +672,11 @@ def verify_xi_functional_equation(
         if k >= 3
     ]
 
+
 # ============================================================================
 # Conjecture 12.1: Riemann Invariant Conservation
 # ============================================================================
+
 
 def test_conjecture_12_1(
     k: int,
@@ -697,9 +710,9 @@ def test_conjecture_12_1(
         k, sigma_0 - dsigma, weight_by_log_gap=weight_by_log_gap
     )
 
-    eps_0 = float(np.mean(evals_0 ** 2))
-    eps_p = float(np.mean(evals_p ** 2))
-    eps_m = float(np.mean(evals_m ** 2))
+    eps_0 = float(np.mean(evals_0**2))
+    eps_p = float(np.mean(evals_p**2))
+    eps_m = float(np.mean(evals_m**2))
     deps = (eps_p - eps_m) / (2.0 * dsigma)
 
     # Topological charge proxy via eigenvalue-velocity cross-correlation
@@ -746,12 +759,14 @@ def test_conjecture_12_1(
         is_approximately_conserved=abs(combined) < threshold,
     )
 
+
 # Prevent pytest from collecting
 test_conjecture_12_1.__test__ = False  # type: ignore[attr-defined]
 
 # ============================================================================
 # Conjecture 12.2: Multiscale Minimization Principle
 # ============================================================================
+
 
 def test_conjecture_12_2(
     k: int,
@@ -797,7 +812,7 @@ def test_conjecture_12_2(
         d_sig = d_L + delta * log_p if abs(delta) > 0 else d_L.copy()
         evals = eigh_tridiagonal(d_sig, e_L, eigvals_only=True)
         # Frobenius energy E(σ) = (1/2k) tr(H²) = (1/2k) Σ λ_j²
-        coherence[i] = float(np.sum(evals ** 2) / (2.0 * k))
+        coherence[i] = float(np.sum(evals**2) / (2.0 * k))
 
     idx_min = int(np.argmin(coherence))
     sigma_min = float(sigmas[idx_min])
@@ -818,12 +833,14 @@ def test_conjecture_12_2(
         is_minimized_at_half=abs(sigma_min - 0.5) < tolerance,
     )
 
+
 # Prevent pytest from collecting
 test_conjecture_12_2.__test__ = False  # type: ignore[attr-defined]
 
 # ============================================================================
 # Large-k Verification
 # ============================================================================
+
 
 def verify_large_k_convergence(
     k: int,
@@ -856,10 +873,7 @@ def verify_large_k_convergence(
 
     # 3. Hellmann-Feynman velocities
     log_p = np.array([np.log(float(p)) for p in _first_primes(k)])
-    velocities = np.array([
-        float(np.sum(evecs[:, j] ** 2 * log_p))
-        for j in range(k)
-    ])
+    velocities = np.array([float(np.sum(evecs[:, j] ** 2 * log_p)) for j in range(k)])
     all_pos = bool(np.all(velocities > 0))
     v_min = float(np.min(velocities))
 
@@ -877,9 +891,11 @@ def verify_large_k_convergence(
         computation_time_s=dt,
     )
 
+
 # ============================================================================
 # Integration
 # ============================================================================
+
 
 def run_functional_equation_analysis(
     k_values: Sequence[int] | None = None,
@@ -913,8 +929,7 @@ def run_functional_equation_analysis(
         k_values, 0.3, weight_by_log_gap=weight_by_log_gap
     )
     analysis.reflection_exact = all(
-        r.trace_error < 1e-10 and r.energy_error < 1e-8
-        for r in analysis.reflections
+        r.trace_error < 1e-10 and r.energy_error < 1e-8 for r in analysis.reflections
     )
 
     # 2. Trace formulas
@@ -930,8 +945,7 @@ def run_functional_equation_analysis(
 
     # 4. Conjecture 12.1
     analysis.conjecture_12_1 = [
-        test_conjecture_12_1(k, weight_by_log_gap=weight_by_log_gap)
-        for k in k_values
+        test_conjecture_12_1(k, weight_by_log_gap=weight_by_log_gap) for k in k_values
     ]
 
     # 5. Conjecture 12.2 (use moderate k)

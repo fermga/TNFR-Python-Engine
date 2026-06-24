@@ -9,6 +9,7 @@ caller passed bare weight keys (``phase``/``epi``/``vf``/``topo``) while
 passes ``isfinite``/``isinstance`` assertions — hence these explicit
 magnitude and cross-path parity checks.
 """
+
 from __future__ import annotations
 
 import random
@@ -72,8 +73,6 @@ class TestDeltaNFRComputationPaths:
         dnfr_fallback = _dnfr_vector(G_fallback)
 
         assert dnfr_vec.shape == dnfr_fallback.shape
-        np.testing.assert_allclose(
-            dnfr_vec, dnfr_fallback, rtol=1e-9, atol=1e-12
-        )
+        np.testing.assert_allclose(dnfr_vec, dnfr_fallback, rtol=1e-9, atol=1e-12)
         # Both paths must be meaningfully non-zero (not trivially equal at 0).
         assert float(np.mean(np.abs(dnfr_fallback))) > 1e-6

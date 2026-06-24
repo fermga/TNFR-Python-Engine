@@ -98,48 +98,78 @@ References
 - AGENTS.md "The 13 Canonical Operators", "Operator-Tetrad Synergies", U5
 """
 
+import math
 import os
 import sys
-import math
 import warnings
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from collections import deque
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-from tnfr.constants import inject_defaults
 from tnfr.alias import get_attr
-from tnfr.constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_THETA, ALIAS_DNFR
+from tnfr.constants import inject_defaults
+from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from tnfr.operators.definitions import (
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
+)
 from tnfr.operators.operator_contracts import (
     OPERATOR_CONTRACTS,
-    StateChannel,
     OperatorScale,
-    operators_in_channel,
+    StateChannel,
     operators_at_scale,
-)
-from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Coupling, Resonance, Silence,
-    Expansion, Contraction, SelfOrganization, Mutation, Transition, Recursivity,
+    operators_in_channel,
 )
 from tnfr.operators.remesh import apply_network_remesh, apply_topological_remesh
 
 CLASSES = {
-    "emission": Emission, "reception": Reception, "coherence": Coherence,
-    "dissonance": Dissonance, "coupling": Coupling, "resonance": Resonance,
-    "silence": Silence, "expansion": Expansion, "contraction": Contraction,
-    "self_organization": SelfOrganization, "mutation": Mutation,
-    "transition": Transition, "recursivity": Recursivity,
+    "emission": Emission,
+    "reception": Reception,
+    "coherence": Coherence,
+    "dissonance": Dissonance,
+    "coupling": Coupling,
+    "resonance": Resonance,
+    "silence": Silence,
+    "expansion": Expansion,
+    "contraction": Contraction,
+    "self_organization": SelfOrganization,
+    "mutation": Mutation,
+    "transition": Transition,
+    "recursivity": Recursivity,
 }
 
 # Dual-lever classification (examples 37/130, a MEASURED result, independent of
 # the contract spec — used here to cross-check the channel partition).
-LEVER = {"UM": "nu_f", "SHA": "nu_f", "VAL": "nu_f",
-         "IL": "dNFR", "OZ": "dNFR", "THOL": "dNFR", "ZHIR": "dNFR",
-         "NAV": "dNFR", "NUL": "both",
-         "AL": "neither", "EN": "neither", "RA": "neither", "REMESH": "neither"}
+LEVER = {
+    "UM": "nu_f",
+    "SHA": "nu_f",
+    "VAL": "nu_f",
+    "IL": "dNFR",
+    "OZ": "dNFR",
+    "THOL": "dNFR",
+    "ZHIR": "dNFR",
+    "NAV": "dNFR",
+    "NUL": "both",
+    "AL": "neither",
+    "EN": "neither",
+    "RA": "neither",
+    "REMESH": "neither",
+}
 
 SEED = 7
 
@@ -189,25 +219,35 @@ def experiment_1_channel_partition():
     # Cross-check: the channel partition REFINES the dual-lever. They agree on
     # the operators whose primary channel IS their lever, and differ on the
     # phase operators (θ primary, downstream lever) and the dual-channel NUL.
-    nu_f_ops = {OPERATOR_CONTRACTS[c.name].glyph
-                for c in OPERATOR_CONTRACTS.values()
-                if c.primary_channel is StateChannel.NU_F}
-    dnfr_ops = {OPERATOR_CONTRACTS[c.name].glyph
-                for c in OPERATOR_CONTRACTS.values()
-                if c.primary_channel is StateChannel.DELTA_NFR}
-    theta_ops = {OPERATOR_CONTRACTS[c.name].glyph
-                 for c in OPERATOR_CONTRACTS.values()
-                 if c.primary_channel is StateChannel.THETA}
+    nu_f_ops = {
+        OPERATOR_CONTRACTS[c.name].glyph
+        for c in OPERATOR_CONTRACTS.values()
+        if c.primary_channel is StateChannel.NU_F
+    }
+    dnfr_ops = {
+        OPERATOR_CONTRACTS[c.name].glyph
+        for c in OPERATOR_CONTRACTS.values()
+        if c.primary_channel is StateChannel.DELTA_NFR
+    }
+    theta_ops = {
+        OPERATOR_CONTRACTS[c.name].glyph
+        for c in OPERATOR_CONTRACTS.values()
+        if c.primary_channel is StateChannel.THETA
+    }
     lever_capacity = {g for g, lv in LEVER.items() if lv == "nu_f"}
     lever_pressure = {g for g, lv in LEVER.items() if lv == "dNFR"}
     # Pure-lever operators: primary channel == lever pulled.
-    pure_capacity = nu_f_ops - {"NUL"}           # SHA, VAL
-    pure_pressure = dnfr_ops - theta_ops          # IL, OZ, THOL, NAV
+    pure_capacity = nu_f_ops - {"NUL"}  # SHA, VAL
+    pure_pressure = dnfr_ops - theta_ops  # IL, OZ, THOL, NAV
     print("  AGREE (primary channel == lever):")
-    print(f"    capacity: channel-nu_f {sorted(pure_capacity)} in lever-nu_f "
-          f"{sorted(lever_capacity)}: {pure_capacity <= lever_capacity}")
-    print(f"    pressure: channel-dNFR {sorted(pure_pressure)} in lever-dNFR "
-          f"{sorted(lever_pressure)}: {pure_pressure <= lever_pressure}")
+    print(
+        f"    capacity: channel-nu_f {sorted(pure_capacity)} in lever-nu_f "
+        f"{sorted(lever_capacity)}: {pure_capacity <= lever_capacity}"
+    )
+    print(
+        f"    pressure: channel-dNFR {sorted(pure_pressure)} in lever-dNFR "
+        f"{sorted(lever_pressure)}: {pure_pressure <= lever_pressure}"
+    )
     print("  REFINE (channel splits what the binary lever collapses):")
     print(f"    theta channel {sorted(theta_ops)}: UM lever is nu_f (sync),")
     print("      ZHIR lever is dNFR (|grad phi| jump) -- but their PRIMARY")
@@ -234,8 +274,10 @@ def experiment_2_scale_axis():
     print("  REMESH call leaves every node unchanged (records an advisory):")
     print()
     # A node-scale operator (Coherence) vs the network-scale REMESH at node level.
-    for label, cls in (("Coherence (node-scale)", Coherence),
-                       ("Recursivity (network-scale)", Recursivity)):
+    for label, cls in (
+        ("Coherence (node-scale)", Coherence),
+        ("Recursivity (network-scale)", Recursivity),
+    ):
         G = build()
         node = list(G.nodes())[0]
         before = node_state(G, node)
@@ -264,8 +306,9 @@ def experiment_3_remesh_scales():
     hist = deque(maxlen=40)
     base = {n: get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()}
     for s in range(25):
-        hist.append({n: base[n] + 0.1 * math.cos(0.3 * s + i)
-                     for i, n in enumerate(G.nodes())})
+        hist.append(
+            {n: base[n] + 0.1 * math.cos(0.3 * s + i) for i, n in enumerate(G.nodes())}
+        )
     G.graph["_epi_hist"] = hist
     before = {n: get_attr(G.nodes[n], ALIAS_EPI, 0.0) for n in G.nodes()}
     with warnings.catch_warnings():
@@ -276,8 +319,10 @@ def experiment_3_remesh_scales():
     beta, gamma, delta = (1 - alpha) ** 2, alpha * (1 - alpha), alpha
     print("  GLOBAL temporal (apply_network_remesh): mixes EPI with history")
     print(f"    nodes with EPI changed: {n_changed}/{G.number_of_nodes()}")
-    print(f"    convex recurrence (beta,gamma,delta)=({beta},{gamma},{delta}) "
-          f"sum={beta + gamma + delta} (probability-preserving)")
+    print(
+        f"    convex recurrence (beta,gamma,delta)=({beta},{gamma},{delta}) "
+        f"sum={beta + gamma + delta} (probability-preserving)"
+    )
     print()
     # GLOBAL topological: regenerate base from fiber.
     print("  GLOBAL topological (apply_topological_remesh): base from fiber")
@@ -289,8 +334,10 @@ def experiment_3_remesh_scales():
             apply_topological_remesh(G, mode=mode, seed=SEED)
         e_after = set(map(frozenset, G.edges()))
         kept = len(e_before & e_after) / max(len(e_before), 1)
-        print(f"    mode={mode:4s}: edges {len(e_before)}->{len(e_after)} "
-              f"(kept {kept:.0%}) — topology regenerated from the EPI field")
+        print(
+            f"    mode={mode:4s}: edges {len(e_before)}->{len(e_after)} "
+            f"(kept {kept:.0%}) — topology regenerated from the EPI field"
+        )
     print()
     print("  ASYMPTOTIC (tau_g -> inf): the R_inf projection onto the time-mean")
     print("    proven analytically in N15 (REMESH_INFINITY_DERIVATION.md): a")

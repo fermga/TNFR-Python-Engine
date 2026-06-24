@@ -96,7 +96,9 @@ def _compute_energy_drift(history: Dict[str, Any]) -> float:
     return float(abs(energy[-1] - energy[0]) / max(abs(energy[0]), 1e-12) * 100.0)
 
 
-def _annotate_delta_nfr(graph: TNFRGraph, node_ids: List[str], values: np.ndarray) -> None:
+def _annotate_delta_nfr(
+    graph: TNFRGraph, node_ids: List[str], values: np.ndarray
+) -> None:
     """Store scalar ΔNFR telemetry on each node for later field analysis."""
     flat_values = np.asarray(values, dtype=float).reshape(len(node_ids), -1)
     magnitudes = np.linalg.norm(flat_values, axis=1)
@@ -107,8 +109,12 @@ def _annotate_delta_nfr(graph: TNFRGraph, node_ids: List[str], values: np.ndarra
 def _capture_telemetry(graph: TNFRGraph) -> tuple[Dict[str, Any], Dict[str, float]]:
     telemetry = compute_structural_telemetry(graph)
     phi_vals = np.array(list(telemetry.get("phi_s", {}).values()) or [0.0], dtype=float)
-    grad_vals = np.array(list(telemetry.get("grad_phi", {}).values()) or [0.0], dtype=float)
-    curv_vals = np.array(list(telemetry.get("curv_phi", {}).values()) or [0.0], dtype=float)
+    grad_vals = np.array(
+        list(telemetry.get("grad_phi", {}).values()) or [0.0], dtype=float
+    )
+    curv_vals = np.array(
+        list(telemetry.get("curv_phi", {}).values()) or [0.0], dtype=float
+    )
 
     summary = {
         "phi_s_mean": float(np.mean(phi_vals)),
@@ -198,7 +204,9 @@ def _estimate_density(mass: float, radius: float) -> float:
     return float(mass / volume)
 
 
-def _derive_body_attributes(graph: TNFRGraph, telemetry: Dict[str, Any]) -> List[BodyAttributes]:
+def _derive_body_attributes(
+    graph: TNFRGraph, telemetry: Dict[str, Any]
+) -> List[BodyAttributes]:
     phi_map = telemetry.get("phi_s", {})
     xi_c = _sanitize_coherence_length(float(telemetry.get("xi_c", 1.0)))
     attributes: List[BodyAttributes] = []
@@ -263,7 +271,9 @@ def _format_body_block(title: str, attributes: List[BodyAttributes]) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--t-final", type=float, default=15.0, help="Total structural time to simulate")
+    parser.add_argument(
+        "--t-final", type=float, default=15.0, help="Total structural time to simulate"
+    )
     parser.add_argument("--dt", type=float, default=0.01, help="Integration time step")
     args = parser.parse_args()
 
@@ -274,8 +284,12 @@ def main() -> None:
     print(format_result(classical_result))
     print(format_result(tnfr_result))
 
-    classical_attrs = _derive_body_attributes(classical_result.graph, classical_result.telemetry_fields)
-    tnfr_attrs = _derive_body_attributes(tnfr_result.graph, tnfr_result.telemetry_fields)
+    classical_attrs = _derive_body_attributes(
+        classical_result.graph, classical_result.telemetry_fields
+    )
+    tnfr_attrs = _derive_body_attributes(
+        tnfr_result.graph, tnfr_result.telemetry_fields
+    )
 
     print(_format_body_block("Classical", classical_attrs))
     print()

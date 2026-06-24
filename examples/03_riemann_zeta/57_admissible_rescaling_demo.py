@@ -45,9 +45,7 @@ only. It does NOT close:
 
 from __future__ import annotations
 
-from tnfr.riemann.admissible_rescaling import (
-    compute_admissible_rescaling_certificate,
-)
+from tnfr.riemann.admissible_rescaling import compute_admissible_rescaling_certificate
 
 
 def _run(label: str, n_targets: int) -> None:

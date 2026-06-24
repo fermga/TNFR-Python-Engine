@@ -18,49 +18,41 @@ import numpy as np
 import pytest
 
 from tnfr.riemann.operator import (
-    build_prime_path_graph,
+    _first_primes,
     build_h_tnfr,
+    build_prime_path_graph,
     build_tridiagonal_h_tnfr,
     default_prime_potential,
-    _first_primes,
 )
-from tnfr.riemann.spectral_proof import (
-    # Data structures
-    EquilibriumResult,
-    ThermodynamicResult,
+from tnfr.riemann.spectral_proof import (  # Data structures; Core; Line 1; Line 2; Line 3; Line 4; Integration; Private helpers used in tests
     EigenvalueFlowResult,
+    EquilibriumResult,
     SpectralMomentResult,
+    ThermodynamicResult,
     TNFRRiemannAssessment,
-    # Core
-    compute_eigenspectrum,
-    compute_eigensystem,
-    # Line 1
-    verify_equilibrium,
-    verify_equilibrium_sequence,
-    # Line 2
-    compute_analytic_sigma_star,
-    compute_frobenius_energy,
-    compute_thermodynamic_landscape,
-    verify_thermodynamic_convergence,
-    # Line 3
-    compute_eigenvalue_velocities,
-    analyze_eigenvalue_flow,
-    # Line 4
-    compute_eigenvalue_spacings,
-    compute_spectral_moments,
-    # Integration
-    run_tnfr_riemann_analysis,
-    # Private helpers used in tests
-    _unfold_eigenvalues,
-    _get_log_primes,
     _compute_lv1_traces,
     _fit_power_law,
+    _get_log_primes,
+    _unfold_eigenvalues,
+    analyze_eigenvalue_flow,
+    compute_analytic_sigma_star,
+    compute_eigenspectrum,
+    compute_eigensystem,
+    compute_eigenvalue_spacings,
+    compute_eigenvalue_velocities,
+    compute_frobenius_energy,
+    compute_spectral_moments,
+    compute_thermodynamic_landscape,
+    run_tnfr_riemann_analysis,
+    verify_equilibrium,
+    verify_equilibrium_sequence,
+    verify_thermodynamic_convergence,
 )
-
 
 # ============================================================================
 # Operator sanity checks (unchanged from v1)
 # ============================================================================
+
 
 class TestPrimePath:
     """Tests for the prime path graph construction."""
@@ -123,6 +115,7 @@ class TestHOperator:
 # Core spectral computation
 # ============================================================================
 
+
 class TestCoreSpectral:
     """Tests for eigenspectrum and eigensystem computation."""
 
@@ -146,6 +139,7 @@ class TestCoreSpectral:
 # LINE 1: Structural Equilibrium Theorem
 # ============================================================================
 
+
 class TestStructuralEquilibrium:
     """Tests for the structural equilibrium theorem.
 
@@ -157,9 +151,9 @@ class TestStructuralEquilibrium:
         """lambda_min(H(1/2)) = 0 to machine precision."""
         for k in [5, 10, 20, 50]:
             result = verify_equilibrium(k)
-            assert abs(result.lambda_min) < 1e-12, (
-                f"k={k}: lambda_min = {result.lambda_min}"
-            )
+            assert (
+                abs(result.lambda_min) < 1e-12
+            ), f"k={k}: lambda_min = {result.lambda_min}"
 
     def test_spectral_gap_positive(self) -> None:
         """Spectral gap lambda_2 - lambda_1 > 0 (connected graph)."""
@@ -199,6 +193,7 @@ class TestStructuralEquilibrium:
 # LINE 2: Thermodynamic Attractor Analysis
 # ============================================================================
 
+
 class TestThermodynamicAttractor:
     """Tests for the thermodynamic attractor sigma* -> 1/2.
 
@@ -210,9 +205,7 @@ class TestThermodynamicAttractor:
         """sigma* should approach 1/2 for large k."""
         for k, tol in [(10, 0.3), (50, 0.1), (100, 0.05)]:
             sigma_star, _, _ = compute_analytic_sigma_star(k)
-            assert abs(sigma_star - 0.5) < tol, (
-                f"k={k}: sigma* = {sigma_star}"
-            )
+            assert abs(sigma_star - 0.5) < tol, f"k={k}: sigma* = {sigma_star}"
 
     def test_cross_term_finite(self) -> None:
         """tr(L V_1) should be finite and well-defined."""
@@ -277,6 +270,7 @@ class TestThermodynamicAttractor:
 # LINE 3: Eigenvalue Flow Analysis
 # ============================================================================
 
+
 class TestEigenvalueFlow:
     """Tests for Hellmann-Feynman eigenvalue flow analysis.
 
@@ -289,9 +283,7 @@ class TestEigenvalueFlow:
         for k in [5, 10, 20, 50]:
             velocities = compute_eigenvalue_velocities(k, 0.5)
             assert len(velocities) == k
-            assert np.all(velocities > 0), (
-                f"k={k}: min velocity = {np.min(velocities)}"
-            )
+            assert np.all(velocities > 0), f"k={k}: min velocity = {np.min(velocities)}"
 
     def test_velocity_count_matches_k(self) -> None:
         velocities = compute_eigenvalue_velocities(10, 0.5)
@@ -332,14 +324,13 @@ class TestEigenvalueFlow:
         for j in range(10):
             traj = result.eigenvalue_trajectories[:, j]
             diffs = np.diff(traj)
-            assert np.all(diffs >= -1e-10), (
-                f"Eigenvalue {j} not monotone"
-            )
+            assert np.all(diffs >= -1e-10), f"Eigenvalue {j} not monotone"
 
 
 # ============================================================================
 # LINE 4: Spectral Moments & Spacings
 # ============================================================================
+
 
 class TestSpectralMoments:
     """Tests for spectral moment and spacing analysis."""
@@ -389,6 +380,7 @@ class TestSpectralMoments:
 # Power Law Fit
 # ============================================================================
 
+
 class TestPowerLawFit:
     """Tests for the power law fitting utility."""
 
@@ -396,7 +388,7 @@ class TestPowerLawFit:
         """Fit should recover y = A / x^beta."""
         x = [10.0, 50.0, 100.0, 500.0]
         A_true, beta_true = 2.0, 1.0
-        y = [A_true / xi ** beta_true for xi in x]
+        y = [A_true / xi**beta_true for xi in x]
         A_fit, beta_fit = _fit_power_law(x, y)
         assert abs(A_fit - A_true) < 0.1
         assert abs(beta_fit - beta_true) < 0.1
@@ -418,6 +410,7 @@ class TestPowerLawFit:
 # ============================================================================
 # Integration: Full TNFR-Riemann Assessment
 # ============================================================================
+
 
 class TestIntegratedAssessment:
     """Tests for the complete integrated analysis."""
@@ -467,6 +460,7 @@ class TestIntegratedAssessment:
 # Tridiagonal Solver: Correctness and Performance
 # ============================================================================
 
+
 class TestTridiagonalBuilder:
     """Tests for the tridiagonal H_TNFR representation.
 
@@ -499,8 +493,7 @@ class TestTridiagonalBuilder:
                 evals_tri = np.sort(eigh_tridiagonal(d, e, eigvals_only=True))
 
                 np.testing.assert_allclose(
-                    evals_tri, evals_dense, atol=1e-10,
-                    err_msg=f"k={k}, sigma={sigma}"
+                    evals_tri, evals_dense, atol=1e-10, err_msg=f"k={k}, sigma={sigma}"
                 )
 
     def test_eigenvectors_match_dense(self) -> None:

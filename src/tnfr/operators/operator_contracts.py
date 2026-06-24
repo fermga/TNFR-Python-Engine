@@ -126,9 +126,9 @@ class StateChannel(Enum):
     one of these four channels.
     """
 
-    EPI = "EPI"            # the form itself
-    NU_F = "nu_f"          # structural frequency / mobility (capacity lever)
-    THETA = "theta"        # phase → |∇φ| (1st order), K_φ (2nd order)
+    EPI = "EPI"  # the form itself
+    NU_F = "nu_f"  # structural frequency / mobility (capacity lever)
+    THETA = "theta"  # phase → |∇φ| (1st order), K_φ (2nd order)
     DELTA_NFR = "delta_nfr"  # structural pressure → Φ_s (0th order)
 
 
@@ -140,18 +140,18 @@ class OperatorScale(Enum):
     is multi-scale rather than node-local.
     """
 
-    NODE = "node"        # mutates one node's state channel (acts on the fiber)
+    NODE = "node"  # mutates one node's state channel (acts on the fiber)
     NETWORK = "network"  # multi-scale echo (REMESH): temporal + topological
 
 
 class EffectDirection(Enum):
     """The canonical direction of an operator's primary channel effect."""
 
-    INCREASE = "increase"        # channel magnitude rises (∂ > 0)
-    DECREASE = "decrease"        # channel magnitude falls (∂ < 0)
-    PRESERVE = "preserve"        # channel held (∂ ≈ 0, e.g. freeze)
-    REORGANIZE = "reorganize"    # channel reshaped toward a target (mix/sync)
-    TRANSFORM = "transform"      # channel crosses a threshold (θ → θ')
+    INCREASE = "increase"  # channel magnitude rises (∂ > 0)
+    DECREASE = "decrease"  # channel magnitude falls (∂ < 0)
+    PRESERVE = "preserve"  # channel held (∂ ≈ 0, e.g. freeze)
+    REORGANIZE = "reorganize"  # channel reshaped toward a target (mix/sync)
+    TRANSFORM = "transform"  # channel crosses a threshold (θ → θ')
 
 
 class ContractContext(Enum):
@@ -162,12 +162,12 @@ class ContractContext(Enum):
     fidelity audit, example 115).
     """
 
-    NETWORK = "network"      # emergent field (recompute ΔNFR / C(t) after)
-    NODE = "node"            # node-local channel (e.g. local OZ pressure)
-    IDENTITY = "identity"    # structural identity (EPI sign/kind preserved)
-    PHASE = "phase"          # phase channel (θ transformed)
-    STATE = "state"          # any state variable changed (regime shift)
-    ADVISORY = "advisory"    # verified at network scale elsewhere
+    NETWORK = "network"  # emergent field (recompute ΔNFR / C(t) after)
+    NODE = "node"  # node-local channel (e.g. local OZ pressure)
+    IDENTITY = "identity"  # structural identity (EPI sign/kind preserved)
+    PHASE = "phase"  # phase channel (θ transformed)
+    STATE = "state"  # any state variable changed (regime shift)
+    ADVISORY = "advisory"  # verified at network scale elsewhere
 
 
 # Tetrad field each channel drives (synergy with the structural-field tetrad).
@@ -415,15 +415,15 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         english_name="Recursivity",
         glyph="REMESH",
         purpose="Echoes the form (EPI) across time and scale (operational "
-                "fractality, U5).",
+        "fractality, U5).",
         primary_channel=StateChannel.EPI,
         primary_direction=EffectDirection.REORGANIZE,
         scale=OperatorScale.NETWORK,
         postcondition="node-level advisory; network effect = EPI mixed toward "
-                      "temporal/multi-scale history",
+        "temporal/multi-scale history",
         context=ContractContext.ADVISORY,
         nodal_expression="RE'MESH ⇒ EPI_new = (1-α)²·EPI(t) + α(1-α)·EPI(t-τ_l) "
-                         "+ α·EPI(t-τ_g)",
+        "+ α·EPI(t-τ_g)",
         pdf_reference="TNFR.pdf §2.2.1 RE'MESH — Recursividad",
     ),
 }
@@ -432,6 +432,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
 # ════════════════════════════════════════════════════════════════════════════
 # Public accessors (English-name first)
 # ════════════════════════════════════════════════════════════════════════════
+
 
 def contract_for(identifier: str) -> OperatorContract:
     """Return the contract for a function name, English name, or glyph code.
@@ -456,7 +457,8 @@ def iter_contracts() -> tuple[OperatorContract, ...]:
 def operators_in_channel(channel: StateChannel) -> tuple[str, ...]:
     """English names of the operators whose primary channel is ``channel``."""
     return tuple(
-        c.english_name for c in OPERATOR_CONTRACTS.values()
+        c.english_name
+        for c in OPERATOR_CONTRACTS.values()
         if c.primary_channel is channel
     )
 
@@ -464,8 +466,7 @@ def operators_in_channel(channel: StateChannel) -> tuple[str, ...]:
 def operators_at_scale(scale: OperatorScale) -> tuple[str, ...]:
     """English names of the operators that act at ``scale`` (U5 fractality axis)."""
     return tuple(
-        c.english_name for c in OPERATOR_CONTRACTS.values()
-        if c.scale is scale
+        c.english_name for c in OPERATOR_CONTRACTS.values() if c.scale is scale
     )
 
 
@@ -477,6 +478,7 @@ def english_name(identifier: str) -> str:
 # ════════════════════════════════════════════════════════════════════════════
 # Self-consistency
 # ════════════════════════════════════════════════════════════════════════════
+
 
 def verify_contract_consistency() -> None:
     """Assert the contracts agree with the canonical glyph↔name mapping and the
@@ -492,19 +494,25 @@ def verify_contract_consistency() -> None:
     # 2. glyph code matches the canonical grammar_types mapping.
     for name, contract in OPERATOR_CONTRACTS.items():
         canonical_glyph = FUNCTION_TO_GLYPH[name].value
-        assert contract.glyph == canonical_glyph, (
-            f"{name}: glyph drift {contract.glyph} != {canonical_glyph}"
-        )
+        assert (
+            contract.glyph == canonical_glyph
+        ), f"{name}: glyph drift {contract.glyph} != {canonical_glyph}"
     # 3. The primary-channel partition is exactly the canonical nodal-channel
     #    grouping (= the dual-lever / tetrad-driver / number-theory grading).
     by_channel = {ch: set(operators_in_channel(ch)) for ch in StateChannel}
     assert by_channel[StateChannel.EPI] == {
-        "Emission", "Reception", "Resonance", "Recursivity"
+        "Emission",
+        "Reception",
+        "Resonance",
+        "Recursivity",
     }
     assert by_channel[StateChannel.NU_F] == {"Silence", "Expansion", "Contraction"}
     assert by_channel[StateChannel.THETA] == {"Coupling", "Mutation"}
     assert by_channel[StateChannel.DELTA_NFR] == {
-        "Coherence", "Dissonance", "SelfOrganization", "Transition"
+        "Coherence",
+        "Dissonance",
+        "SelfOrganization",
+        "Transition",
     }
     # 4. The scale partition (U5 fractality): exactly one NETWORK-scale operator
     #    (REMESH), and NETWORK scale ⟺ advisory node-level context.

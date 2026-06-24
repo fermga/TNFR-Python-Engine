@@ -27,10 +27,10 @@ Physics Foundation:
 
 from __future__ import annotations
 
-from ..mathematics.unified_numerical import np
 from typing import Any
 
 from ..constants.canonical import PHI  # noqa: F401 — used by fallback stubs
+from ..mathematics.unified_numerical import np
 
 try:
     import networkx as nx
@@ -39,18 +39,16 @@ except ImportError:
 
 # Import canonical fields (Layer 1)
 from .canonical import (
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
 )
-from .extended import (
-    compute_phase_current,
-    compute_dnfr_flux,
-)
+from .extended import compute_dnfr_flux, compute_phase_current
 
 # ============================================================================
 # COMPLEX GEOMETRIC FIELD  Ψ = K_φ + i·J_φ
 # ============================================================================
+
 
 def compute_complex_geometric_field(G: Any) -> dict[Any, complex]:
     """Compute unified complex geometric field Ψ = K_φ + i·J_φ.
@@ -78,17 +76,21 @@ def compute_complex_geometric_field(G: Any) -> dict[Any, complex]:
     j_phi = compute_phase_current(G)
     return {node: complex(k_phi[node], j_phi[node]) for node in G.nodes()}
 
+
 def compute_field_magnitude(complex_field: dict[Any, complex]) -> dict[Any, float]:
     """Compute magnitude |Ψ| of complex field."""
     return {node: abs(value) for node, value in complex_field.items()}
+
 
 def compute_field_phase(complex_field: dict[Any, complex]) -> dict[Any, float]:
     """Compute phase angle arg(Ψ) of complex field."""
     return {node: float(np.angle(value)) for node, value in complex_field.items()}
 
+
 # ============================================================================
 # EMERGENT FIELDS
 # ============================================================================
+
 
 def compute_chirality_field(G: Any) -> dict[Any, float]:
     """Compute chirality field χ = |∇φ|·K_φ − J_φ·J_ΔNFR.
@@ -99,10 +101,8 @@ def compute_chirality_field(G: Any) -> dict[Any, float]:
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
-    return {
-        n: grad_phi[n] * k_phi[n] - j_phi[n] * j_dnfr[n]
-        for n in G.nodes()
-    }
+    return {n: grad_phi[n] * k_phi[n] - j_phi[n] * j_dnfr[n] for n in G.nodes()}
+
 
 def compute_symmetry_breaking_field(G: Any) -> dict[Any, float]:
     """Compute symmetry breaking field 𝒮 = (|∇φ|² − K_φ²) + (J_φ² − J_ΔNFR²).
@@ -119,6 +119,7 @@ def compute_symmetry_breaking_field(G: Any) -> dict[Any, float]:
         for n in G.nodes()
     }
 
+
 def compute_coherence_coupling_field(G: Any) -> dict[Any, float]:
     """Compute coherence coupling field 𝒞 = Φ_s · |Ψ|.
 
@@ -129,9 +130,11 @@ def compute_coherence_coupling_field(G: Any) -> dict[Any, float]:
     psi = compute_complex_geometric_field(G)
     return {n: phi_s[n] * abs(psi[n]) for n in G.nodes()}
 
+
 # ============================================================================
 # TENSOR INVARIANTS
 # ============================================================================
+
 
 def compute_energy_density(G: Any) -> dict[Any, float]:
     r"""Compute the raw quadratic energy density per node (CANONICAL SOURCE).
@@ -169,10 +172,16 @@ def compute_energy_density(G: Any) -> dict[Any, float]:
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
     return {
-        n: (phi_s[n] ** 2 + grad_phi[n] ** 2 + k_phi[n] ** 2
-            + j_phi[n] ** 2 + j_dnfr[n] ** 2)
+        n: (
+            phi_s[n] ** 2
+            + grad_phi[n] ** 2
+            + k_phi[n] ** 2
+            + j_phi[n] ** 2
+            + j_dnfr[n] ** 2
+        )
         for n in G.nodes()
     }
+
 
 def compute_action_density(G: Any) -> dict[Any, float]:
     r"""Compute action density (bilinear coupling) per node (CANONICAL SOURCE).
@@ -200,11 +209,10 @@ def compute_action_density(G: Any) -> dict[Any, float]:
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
     return {
-        n: (phi_s[n] * grad_phi[n]
-            + k_phi[n] * j_phi[n]
-            + grad_phi[n] * j_dnfr[n])
+        n: (phi_s[n] * grad_phi[n] + k_phi[n] * j_phi[n] + grad_phi[n] * j_dnfr[n])
         for n in G.nodes()
     }
+
 
 def compute_topological_charge(G: Any) -> dict[Any, float]:
     """Compute topological charge 𝒬 = |∇φ|·J_φ − K_φ·J_ΔNFR.
@@ -216,14 +224,13 @@ def compute_topological_charge(G: Any) -> dict[Any, float]:
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
-    return {
-        n: grad_phi[n] * j_phi[n] - k_phi[n] * j_dnfr[n]
-        for n in G.nodes()
-    }
+    return {n: grad_phi[n] * j_phi[n] - k_phi[n] * j_dnfr[n] for n in G.nodes()}
+
 
 # ============================================================================
 # COMPREHENSIVE UNIFIED ANALYSIS
 # ============================================================================
+
 
 def compute_unified_field_suite(G: Any) -> dict[str, Any]:
     """Compute complete unified field analysis.
@@ -241,47 +248,46 @@ def compute_unified_field_suite(G: Any) -> dict[str, Any]:
         - ``charge_density``, ``current_j_phi``, ``current_j_dnfr``
         - ``conservation_metrics``: {noether_charge, structural_energy}
     """
-    from .conservation import (
-        compute_charge_density as _rho,
-        compute_noether_charge,
-        compute_energy_functional,
-    )
+    from .conservation import compute_charge_density as _rho
+    from .conservation import compute_energy_functional, compute_noether_charge
 
     results: dict[str, Any] = {}
 
     # Complex geometric field
     psi = compute_complex_geometric_field(G)
-    results['psi_magnitude'] = compute_field_magnitude(psi)
-    results['psi_phase'] = compute_field_phase(psi)
+    results["psi_magnitude"] = compute_field_magnitude(psi)
+    results["psi_phase"] = compute_field_phase(psi)
 
     # Emergent fields
-    results['chirality'] = compute_chirality_field(G)
-    results['symmetry_breaking'] = compute_symmetry_breaking_field(G)
-    results['coherence_coupling'] = compute_coherence_coupling_field(G)
+    results["chirality"] = compute_chirality_field(G)
+    results["symmetry_breaking"] = compute_symmetry_breaking_field(G)
+    results["coherence_coupling"] = compute_coherence_coupling_field(G)
 
     # Tensor invariants
-    results['energy_density'] = compute_energy_density(G)
-    results['action_density'] = compute_action_density(G)
-    results['topological_charge'] = compute_topological_charge(G)
+    results["energy_density"] = compute_energy_density(G)
+    results["action_density"] = compute_action_density(G)
+    results["topological_charge"] = compute_topological_charge(G)
 
     # Conservation quantities (canonical source)
-    results['charge_density'] = _rho(G)
+    results["charge_density"] = _rho(G)
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
-    results['current_j_phi'] = j_phi
-    results['current_j_dnfr'] = j_dnfr
+    results["current_j_phi"] = j_phi
+    results["current_j_dnfr"] = j_dnfr
 
     # Scalar conservation diagnostics
-    results['conservation_metrics'] = {
-        'noether_charge': compute_noether_charge(G),
-        'structural_energy': compute_energy_functional(G),
+    results["conservation_metrics"] = {
+        "noether_charge": compute_noether_charge(G),
+        "structural_energy": compute_energy_functional(G),
     }
 
     return results
 
+
 # ============================================================================
 # ANALYSIS UTILITIES
 # ============================================================================
+
 
 def analyze_field_correlations(
     results: dict[str, dict[Any, float]],
@@ -292,9 +298,7 @@ def analyze_field_correlations(
     anticorrelation).
     """
     fields: dict[str, Any] = {}
-    first_field = next(
-        (v for v in results.values() if isinstance(v, dict)), None
-    )
+    first_field = next((v for v in results.values() if isinstance(v, dict)), None)
     if first_field is None:
         return {}
     sample_nodes = list(first_field.keys())
@@ -309,8 +313,9 @@ def analyze_field_correlations(
         for j, n2 in enumerate(names):
             if i < j:
                 r = np.corrcoef(fields[n1], fields[n2])[0, 1]
-                correlations[f'{n1}_vs_{n2}'] = float(r) if not np.isnan(r) else 0.0
+                correlations[f"{n1}_vs_{n2}"] = float(r) if not np.isnan(r) else 0.0
     return correlations
+
 
 def summary_statistics(
     results: dict[str, dict[Any, float]],
@@ -323,10 +328,10 @@ def summary_statistics(
             if vals:
                 arr = np.array(vals)
                 stats[name] = {
-                    'mean': float(np.mean(arr)),
-                    'std': float(np.std(arr)),
-                    'min': float(np.min(arr)),
-                    'max': float(np.max(arr)),
-                    'range': float(np.max(arr) - np.min(arr)),
+                    "mean": float(np.mean(arr)),
+                    "std": float(np.std(arr)),
+                    "min": float(np.min(arr)),
+                    "max": float(np.max(arr)),
+                    "range": float(np.max(arr) - np.min(arr)),
                 }
     return stats

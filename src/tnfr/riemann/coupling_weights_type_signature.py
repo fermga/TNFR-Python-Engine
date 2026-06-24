@@ -189,13 +189,9 @@ def _build_canonical_demo_graph(n_nodes: int, seed: int) -> Any:
     rng = np.random.default_rng(int(seed))
     for node in list(G.nodes()):
         G.nodes[node]["EPI"] = float(0.5 + 0.05 * (rng.random() - 0.5))
-        G.nodes[node]["theta"] = float(
-            2.0 * math.pi * (rng.random() - 0.5)
-        )
+        G.nodes[node]["theta"] = float(2.0 * math.pi * (rng.random() - 0.5))
         current_vf = float(G.nodes[node].get("nu_f", 1.0))
-        G.nodes[node]["nu_f"] = max(
-            0.05, current_vf + 0.05 * (rng.random() - 0.5)
-        )
+        G.nodes[node]["nu_f"] = max(0.05, current_vf + 0.05 * (rng.random() - 0.5))
     return G
 
 
@@ -278,9 +274,7 @@ def _node_permutation_bracket(
         # compute the sorted vector explicitly for robustness.
         sums = np.zeros(len(node_list), dtype=float)
         for i, node in enumerate(node_list):
-            sums[int(perm[i])] = _canonical_weighted_sum(
-                weights, g_per_node[node]
-            )
+            sums[int(perm[i])] = _canonical_weighted_sum(weights, g_per_node[node])
         return np.sort(sums)
 
     identity = np.arange(len(node_list), dtype=int)
@@ -365,8 +359,7 @@ class CouplingWeightsTypeSignatureCertificate:
 
     def summary(self) -> str:
         per_slot = ", ".join(
-            f"{slot}={count}"
-            for slot, count in self.per_slot_nonscalar.items()
+            f"{slot}={count}" for slot, count in self.per_slot_nonscalar.items()
         )
         lines = [
             "Coupling-Weights-Type Signature certificate (diagnostic only - Sec 13quadraginta-nona.5)",
@@ -425,13 +418,9 @@ def compute_coupling_weights_type_signature(
     ``"SCALAR_WEIGHTS_ADEQUATE"``.
     """
     G = _build_canonical_demo_graph(int(n_nodes), int(seed))
-    n_scalar, n_total_storage, per_slot_nonscalar = _inspect_weight_storage(
-        G
-    )
+    n_scalar, n_total_storage, per_slot_nonscalar = _inspect_weight_storage(G)
     scalar_storage_fraction = (
-        float(n_scalar) / float(n_total_storage)
-        if n_total_storage > 0
-        else 0.0
+        float(n_scalar) / float(n_total_storage) if n_total_storage > 0 else 0.0
     )
     nonscalar_storage_count = int(n_total_storage - n_scalar)
 
@@ -442,15 +431,9 @@ def compute_coupling_weights_type_signature(
     )
     signature, raw_div = _signature(n_divergent, n_total_perms)
 
-    if (
-        signature < perm_threshold
-        and scalar_storage_fraction >= 1.0 - 1e-12
-    ):
+    if signature < perm_threshold and scalar_storage_fraction >= 1.0 - 1e-12:
         verdict = "SCALAR_WEIGHTS_ADEQUATE"
-    elif (
-        signature > divergent_threshold
-        or scalar_storage_fraction < 1.0 - 1e-12
-    ):
+    elif signature > divergent_threshold or scalar_storage_fraction < 1.0 - 1e-12:
         verdict = "NODE_INDEXED_WEIGHTS_NECESSARY"
     else:
         verdict = "INDETERMINATE"

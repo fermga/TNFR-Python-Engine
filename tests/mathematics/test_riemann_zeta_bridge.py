@@ -19,23 +19,20 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from tnfr.riemann.zeta_bridge import (
-    # Data structures
-    WeylAsymptotic,
+from tnfr.riemann.zeta_bridge import (  # Data structures; Functions
     HeatKernelReflection,
-    SpectralZetaReflection,
-    ScalingLaw,
     PrimeEncoding,
+    ScalingLaw,
+    SpectralZetaReflection,
+    WeylAsymptotic,
     ZetaBridgeAnalysis,
-    # Functions
-    compute_weyl_asymptotic,
     compute_heat_kernel_reflection,
-    compute_spectral_zeta_reflection,
-    extract_scaling_law,
     compute_prime_encoding,
+    compute_spectral_zeta_reflection,
+    compute_weyl_asymptotic,
+    extract_scaling_law,
     run_zeta_bridge_analysis,
 )
-
 
 # ============================================================================
 # 1. Weyl Eigenvalue Counting: N(λ) ~ A·λ^α

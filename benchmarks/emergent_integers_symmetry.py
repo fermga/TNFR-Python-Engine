@@ -56,7 +56,9 @@ import networkx as nx
 import numpy as np
 
 
-def laplacian_multiplicities(G: nx.Graph, *, tol: float = 1e-6) -> list[tuple[float, int]]:
+def laplacian_multiplicities(
+    G: nx.Graph, *, tol: float = 1e-6
+) -> list[tuple[float, int]]:
     """Return (eigenvalue, multiplicity) pairs of L = D - A, ascending.
 
     Multiplicities are the EMERGENT integers. Clustering is gap-based so that
@@ -79,10 +81,10 @@ def laplacian_multiplicities(G: nx.Graph, *, tol: float = 1e-6) -> list[tuple[fl
 @dataclass(frozen=True)
 class SymmetryCase:
     name: str
-    builder: object              # callable -> nx.Graph
+    builder: object  # callable -> nx.Graph
     group: str
     allowed_irrep_dims: set[int]  # rep-theory ground truth
-    signature: int                # the largest irrep dim that must appear
+    signature: int  # the largest irrep dim that must appear
 
 
 def _fibonacci_sphere(n_points: int = 400, k_neighbors: int = 6) -> nx.Graph:
@@ -103,12 +105,20 @@ def _fibonacci_sphere(n_points: int = 400, k_neighbors: int = 6) -> nx.Graph:
 
 
 CASES = [
-    SymmetryCase("Cyclic ring C_8", lambda: nx.cycle_graph(8), "C_8 (cyclic)", {1, 2}, 2),
-    SymmetryCase("Tetrahedron", nx.tetrahedral_graph, "T_d (tetrahedral)", {1, 2, 3}, 3),
+    SymmetryCase(
+        "Cyclic ring C_8", lambda: nx.cycle_graph(8), "C_8 (cyclic)", {1, 2}, 2
+    ),
+    SymmetryCase(
+        "Tetrahedron", nx.tetrahedral_graph, "T_d (tetrahedral)", {1, 2, 3}, 3
+    ),
     SymmetryCase("Octahedron", nx.octahedral_graph, "O_h (octahedral)", {1, 2, 3}, 3),
     SymmetryCase("Cube", nx.cubical_graph, "O_h (octahedral)", {1, 2, 3}, 3),
-    SymmetryCase("Icosahedron", nx.icosahedral_graph, "I_h (icosahedral)", {1, 3, 4, 5}, 5),
-    SymmetryCase("Dodecahedron", nx.dodecahedral_graph, "I_h (icosahedral)", {1, 3, 4, 5}, 5),
+    SymmetryCase(
+        "Icosahedron", nx.icosahedral_graph, "I_h (icosahedral)", {1, 3, 4, 5}, 5
+    ),
+    SymmetryCase(
+        "Dodecahedron", nx.dodecahedral_graph, "I_h (icosahedral)", {1, 3, 4, 5}, 5
+    ),
 ]
 
 
@@ -140,17 +150,23 @@ def main() -> None:
         allowed = "{" + ",".join(str(d) for d in sorted(case.allowed_irrep_dims)) + "}"
         verdict = "PASS" if ok else "FAIL"
         sig = f" (signature {case.signature}{'✓' if signature_ok else '✗'})"
-        print(f"{case.name:<16}{case.group:<20}{str(emergent_seq):<22}{allowed:<14}{verdict}{sig}")
+        print(
+            f"{case.name:<16}{case.group:<20}{str(emergent_seq):<22}{allowed:<14}{verdict}{sig}"
+        )
 
     # Continuum limit: the sphere (SO(3)) — every odd integer 2l+1 emerges.
     print("-" * 78)
     sphere = _fibonacci_sphere(400, 6)
     sphere_mults = [m for _ev, m in laplacian_multiplicities(sphere, tol=0.02)][:5]
-    print(f"{'Sphere S² (n=400)':<16}{'SO(3) (continuum)':<20}{str(sphere_mults):<22}"
-          f"{'{1,3,5,7,…}':<14}{'odd 2l+1 ✓' if sphere_mults[:4] == [1, 3, 5, 7] else 'check'}")
+    print(
+        f"{'Sphere S² (n=400)':<16}{'SO(3) (continuum)':<20}{str(sphere_mults):<22}"
+        f"{'{1,3,5,7,…}':<14}{'odd 2l+1 ✓' if sphere_mults[:4] == [1, 3, 5, 7] else 'check'}"
+    )
 
     print("=" * 78)
-    print(f"OVERALL: {'ALL PASS — emergent integers match rep-theory prediction' if all_pass else 'MISMATCH'}")
+    print(
+        f"OVERALL: {'ALL PASS — emergent integers match rep-theory prediction' if all_pass else 'MISMATCH'}"
+    )
     print("=" * 78)
     print("\nInterpretation (honest scope):")
     print("  • The integers 1,2,3,4,5,7 are OUTPUTS — eigenvalue multiplicities of the")

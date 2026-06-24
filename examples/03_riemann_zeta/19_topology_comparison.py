@@ -57,12 +57,16 @@ def main() -> None:
 
     results = compare_topologies(50)
 
-    print(f"  {'Topology':>10}  {'edges':>6}  {'|lambda_min|':>12}  "
-          f"{'gap':>10}  {'|sigma*-1/2|':>12}  "
-          f"{'v_min':>8}  {'v>0':>4}")
-    print(f"  {'─' * 10}  {'─' * 6}  {'─' * 12}  "
-          f"{'─' * 10}  {'─' * 12}  "
-          f"{'─' * 8}  {'─' * 4}")
+    print(
+        f"  {'Topology':>10}  {'edges':>6}  {'|lambda_min|':>12}  "
+        f"{'gap':>10}  {'|sigma*-1/2|':>12}  "
+        f"{'v_min':>8}  {'v>0':>4}"
+    )
+    print(
+        f"  {'─' * 10}  {'─' * 6}  {'─' * 12}  "
+        f"{'─' * 10}  {'─' * 12}  "
+        f"{'─' * 8}  {'─' * 4}"
+    )
 
     for name in TOPOLOGY_BUILDERS:
         r = results[name]
@@ -88,8 +92,10 @@ def main() -> None:
     # curvature independence
     curvatures = [r.curvature for r in results.values()]
     spread = max(curvatures) - min(curvatures)
-    print(f"  Curvature spread:            {spread:.2e} "
-          f"({'TOPOLOGY-INDEPENDENT' if spread < 1e-10 else 'VARIES'})")
+    print(
+        f"  Curvature spread:            {spread:.2e} "
+        f"({'TOPOLOGY-INDEPENDENT' if spread < 1e-10 else 'VARIES'})"
+    )
 
     # Cross term varies
     cross_terms = {name: r.cross_term for name, r in results.items()}
@@ -107,8 +113,10 @@ def main() -> None:
     for k in [5, 10, 20, 50, 100, 200]:
         results_k = compare_topologies(k)
         max_lam = max(abs(r.lambda_min) for r in results_k.values())
-        print(f"  k = {k:4d}:  max |lambda_min| = {max_lam:.2e}  "
-              f"{'OK' if max_lam < 1e-10 else 'WARN'}")
+        print(
+            f"  k = {k:4d}:  max |lambda_min| = {max_lam:.2e}  "
+            f"{'OK' if max_lam < 1e-10 else 'WARN'}"
+        )
 
     print()
     print("  --> Structural equilibrium lambda_min(H(1/2)) = 0 confirmed")
@@ -162,8 +170,10 @@ def main() -> None:
     print("  degree = k-1).  This causes tr(L V_1) to grow with k in")
     print("  a way that prevents sigma* -> 1/2 convergence.")
     print()
-    print(f"  {'k':>6}  {'star |dev|':>12}  {'path |dev|':>12}  "
-          f"{'star cross':>12}  {'path cross':>12}")
+    print(
+        f"  {'k':>6}  {'star |dev|':>12}  {'path |dev|':>12}  "
+        f"{'star cross':>12}  {'path cross':>12}"
+    )
     print(f"  {'─' * 6}  {'─' * 12}  {'─' * 12}  {'─' * 12}  {'─' * 12}")
 
     for sr, pr in zip(star_results, path_results):

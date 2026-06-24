@@ -44,11 +44,17 @@ def main() -> None:
     print()
     print("=" * 72)
     print("Interpretation (§13quadraginta.5–.6):")
-    print("  - SCALAR_DNFR_ADEQUATE   : signature < 0.15 AND zero tensor storage fraction")
+    print(
+        "  - SCALAR_DNFR_ADEQUATE   : signature < 0.15 AND zero tensor storage fraction"
+    )
     print("                             -> rank-1 scalar DeltaNFR suffices")
     print("  - INDETERMINATE          : in between")
-    print("  - TENSOR_LIFT_NECESSARY  : signature > 0.5 OR non-zero tensor storage fraction")
-    print("                             -> rank-1 scalar DeltaNFR loses canonical content")
+    print(
+        "  - TENSOR_LIFT_NECESSARY  : signature > 0.5 OR non-zero tensor storage fraction"
+    )
+    print(
+        "                             -> rank-1 scalar DeltaNFR loses canonical content"
+    )
     print()
     print("Verdicts at the two resolutions:")
     print(f"  res 1 (24/64): {cert1.verdict}")

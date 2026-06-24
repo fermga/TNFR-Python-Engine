@@ -16,40 +16,31 @@ import math
 import numpy as np
 import pytest
 
-from tnfr.riemann.random_ensemble import (
-    # Data structures
-    EnsembleConfig,
-    EnsembleSample,
-    SpacingStats,
-    RMTComparison,
-    EnsembleAnalysis,
-    # Constants
+from tnfr.riemann.random_ensemble import (  # Data structures; Constants; Reference distributions; Ensemble generation; Spacing statistics; Long-range statistics; RMT comparison; Integration
     GOE_MEAN_RATIO,
     GUE_MEAN_RATIO,
     POISSON_MEAN_RATIO,
-    # Reference distributions
-    goe_wigner_surmise,
-    gue_wigner_surmise,
-    poisson_spacing_pdf,
-    # Ensemble generation
+    EnsembleAnalysis,
+    EnsembleConfig,
+    EnsembleSample,
+    RMTComparison,
+    SpacingStats,
+    classify_ensemble,
+    compute_ensemble_spacings,
+    compute_level_repulsion_exponent,
+    compute_mean_spacing_ratio,
+    compute_number_variance,
+    compute_spacing_ratio,
+    compute_spectral_rigidity,
     generate_er_ensemble,
     generate_wigner_ensemble,
-    # Spacing statistics
-    compute_ensemble_spacings,
-    compute_spacing_ratio,
-    compute_mean_spacing_ratio,
-    compute_level_repulsion_exponent,
-    # Long-range statistics
-    compute_number_variance,
-    compute_spectral_rigidity,
-    # RMT comparison
+    goe_wigner_surmise,
+    gue_wigner_surmise,
     ks_test_vs_reference,
-    classify_ensemble,
-    # Integration
-    run_rmt_ensemble_analysis,
+    poisson_spacing_pdf,
     rmt_convergence_study,
+    run_rmt_ensemble_analysis,
 )
-
 
 # ============================================================================
 # Constants
@@ -224,8 +215,7 @@ class TestERensemble:
         s2 = generate_er_ensemble(10, 5, seed=2)
         # At least one sample should differ
         any_diff = any(
-            not np.allclose(a.eigenvalues, b.eigenvalues)
-            for a, b in zip(s1, s2)
+            not np.allclose(a.eigenvalues, b.eigenvalues) for a, b in zip(s1, s2)
         )
         assert any_diff
 
@@ -235,8 +225,7 @@ class TestERensemble:
         s_one = generate_er_ensemble(8, 3, sigma=1.0, seed=42)
         # Eigenvalues should differ when sigma != 0.5
         any_diff = any(
-            not np.allclose(a.eigenvalues, b.eigenvalues)
-            for a, b in zip(s_half, s_one)
+            not np.allclose(a.eigenvalues, b.eigenvalues) for a, b in zip(s_half, s_one)
         )
         assert any_diff
 
@@ -442,7 +431,9 @@ class TestKSTest:
         spacings = []
         while len(spacings) < 5000:
             s = rng.rayleigh(0.8)
-            if s < 6 and rng.random() < goe_wigner_surmise(s) / (2.0 * s * np.exp(-s * s / 2)):
+            if s < 6 and rng.random() < goe_wigner_surmise(s) / (
+                2.0 * s * np.exp(-s * s / 2)
+            ):
                 spacings.append(s)
         spacings = np.array(spacings[:5000])
         # Normalise to mean 1
@@ -511,8 +502,12 @@ class TestRunRMTEnsembleAnalysis:
 
     def test_er_basic(self):
         analysis = run_rmt_ensemble_analysis(
-            k=8, n_samples=10, ensemble_type="erdos_renyi",
-            edge_prob=0.4, seed=42, compute_long_range=False,
+            k=8,
+            n_samples=10,
+            ensemble_type="erdos_renyi",
+            edge_prob=0.4,
+            seed=42,
+            compute_long_range=False,
         )
         assert isinstance(analysis, EnsembleAnalysis)
         assert len(analysis.samples) == 10
@@ -522,8 +517,12 @@ class TestRunRMTEnsembleAnalysis:
 
     def test_wigner_basic(self):
         analysis = run_rmt_ensemble_analysis(
-            k=8, n_samples=10, ensemble_type="wigner",
-            wigner_scale=0.5, seed=42, compute_long_range=False,
+            k=8,
+            n_samples=10,
+            ensemble_type="wigner",
+            wigner_scale=0.5,
+            seed=42,
+            compute_long_range=False,
         )
         assert isinstance(analysis, EnsembleAnalysis)
         assert len(analysis.samples) == 10
@@ -536,7 +535,10 @@ class TestRunRMTEnsembleAnalysis:
 
     def test_long_range_statistics(self):
         analysis = run_rmt_ensemble_analysis(
-            k=10, n_samples=10, seed=42, compute_long_range=True,
+            k=10,
+            n_samples=10,
+            seed=42,
+            compute_long_range=True,
         )
         assert analysis.number_variance is not None
         assert analysis.number_variance_L is not None
@@ -551,8 +553,12 @@ class TestRunRMTEnsembleAnalysis:
 
     def test_reproducibility(self):
         """Same config => identical analysis (Invariant #6)."""
-        a1 = run_rmt_ensemble_analysis(k=8, n_samples=5, seed=42, compute_long_range=False)
-        a2 = run_rmt_ensemble_analysis(k=8, n_samples=5, seed=42, compute_long_range=False)
+        a1 = run_rmt_ensemble_analysis(
+            k=8, n_samples=5, seed=42, compute_long_range=False
+        )
+        a2 = run_rmt_ensemble_analysis(
+            k=8, n_samples=5, seed=42, compute_long_range=False
+        )
         np.testing.assert_array_equal(
             a1.spacing_stats.all_spacings,
             a2.spacing_stats.all_spacings,
@@ -564,7 +570,9 @@ class TestRMTConvergenceStudy:
 
     def test_basic(self):
         results = rmt_convergence_study(
-            [6, 8, 10], n_samples=5, seed=42,
+            [6, 8, 10],
+            n_samples=5,
+            seed=42,
         )
         assert len(results) == 3
         assert results[0].config.k == 6
@@ -574,7 +582,9 @@ class TestRMTConvergenceStudy:
     def test_spacing_count_grows(self):
         """More primes => more spacings per sample."""
         results = rmt_convergence_study(
-            [6, 12], n_samples=10, seed=42,
+            [6, 12],
+            n_samples=10,
+            seed=42,
         )
         n_sp_small = results[0].spacing_stats.n_spacings
         n_sp_large = results[1].spacing_stats.n_spacings
@@ -616,7 +626,9 @@ class TestEdgeCases:
         # All samples should be identical (complete graph)
         for i in range(1, len(samples)):
             np.testing.assert_allclose(
-                samples[0].eigenvalues, samples[i].eigenvalues, atol=1e-10,
+                samples[0].eigenvalues,
+                samples[i].eigenvalues,
+                atol=1e-10,
             )
 
     def test_low_edge_prob(self):
@@ -660,8 +672,12 @@ class TestPhysicsValidation:
     def test_wigner_goe_tendency(self):
         """Wigner perturbation should push statistics towards GOE."""
         analysis = run_rmt_ensemble_analysis(
-            k=20, n_samples=50, ensemble_type="wigner",
-            wigner_scale=1.0, seed=42, compute_long_range=False,
+            k=20,
+            n_samples=50,
+            ensemble_type="wigner",
+            wigner_scale=1.0,
+            seed=42,
+            compute_long_range=False,
         )
         rmt = analysis.rmt_comparison
         # KS vs GOE or GUE should be reasonably small

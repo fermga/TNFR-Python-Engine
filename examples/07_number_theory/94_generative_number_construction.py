@@ -62,19 +62,14 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.mathematics.number_theory import (
-    ArithmeticTNFRParameters,
     ArithmeticStructuralTerms,
     ArithmeticTNFRFormalism,
+    ArithmeticTNFRParameters,
 )
-from tnfr.operators.definitions import (
-    Emission,
-    Coupling,
-    Recursivity,
-    Silence,
-)
+from tnfr.operators.definitions import Coupling, Emission, Recursivity, Silence
 from tnfr.operators.grammar_validate import validate_grammar
 
 
@@ -105,7 +100,7 @@ def tau_from_factors(factors: dict[int, int]) -> int:
     """τ(n) = ∏ (aᵢ + 1) — multiplicative divisor count."""
     product = 1
     for a in factors.values():
-        product *= (a + 1)
+        product *= a + 1
     return product
 
 
@@ -121,7 +116,7 @@ def reassemble(factors: dict[int, int]) -> int:
     """Rebuild n = ∏ pᵢ^aᵢ from its structural atoms."""
     n = 1
     for p, a in factors.items():
-        n *= p ** a
+        n *= p**a
     return n
 
 
@@ -192,14 +187,18 @@ def experiment_1_prime_alphabet():
     params = ArithmeticTNFRParameters()
     alphabet = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
 
-    print(f"{'prime':>6}  {'Ω':>2}  {'τ':>2}  {'σ':>4}"
-          f"  {'EPI':>7}  {'νf':>7}  {'ΔNFR':>8}")
+    print(
+        f"{'prime':>6}  {'Ω':>2}  {'τ':>2}  {'σ':>4}"
+        f"  {'EPI':>7}  {'νf':>7}  {'ΔNFR':>8}"
+    )
     print("-" * 60)
     for p in alphabet:
         factors = {p: 1}
         n, terms, epi, nuf, dnfr = signature_from_atoms(factors, params)
-        print(f"{p:>6}  {terms.omega:>2}  {terms.tau:>2}  {terms.sigma:>4}"
-              f"  {epi:>7.4f}  {nuf:>7.4f}  {dnfr:>8.4f}")
+        print(
+            f"{p:>6}  {terms.omega:>2}  {terms.tau:>2}  {terms.sigma:>4}"
+            f"  {epi:>7.4f}  {nuf:>7.4f}  {dnfr:>8.4f}"
+        )
         assert abs(dnfr) < 1e-12, f"atom {p} must have ΔNFR = 0"
 
     print()
@@ -226,14 +225,14 @@ def experiment_2_generative_reconstruction():
     params = ArithmeticTNFRParameters()
     targets = [3, 5, 8, 30, 234, 360, 1024]
 
-    print(f"{'n':>5}  {'factorization':>14}  {'Ω':>2}  {'τ':>3}  {'σ':>5}"
-          f"  {'ΔNFR':>9}  {'match':>5}")
+    print(
+        f"{'n':>5}  {'factorization':>14}  {'Ω':>2}  {'τ':>3}  {'σ':>5}"
+        f"  {'ΔNFR':>9}  {'match':>5}"
+    )
     print("-" * 72)
     for n in targets:
         factors = factorize(n)
-        n_rebuilt, terms_atoms, epi, nuf, dnfr = signature_from_atoms(
-            factors, params
-        )
+        n_rebuilt, terms_atoms, epi, nuf, dnfr = signature_from_atoms(factors, params)
         terms_ref = _terms_by_enumeration(n)
 
         assert n_rebuilt == n, f"reassembly failed: {n_rebuilt} != {n}"
@@ -244,9 +243,11 @@ def experiment_2_generative_reconstruction():
         )
         assert match, f"reconstruction mismatch for n={n}"
 
-        print(f"{n:>5}  {_fmt_factors(factors):>14}  {terms_atoms.omega:>2}"
-              f"  {terms_atoms.tau:>3}  {terms_atoms.sigma:>5}"
-              f"  {dnfr:>9.4f}  {'OK' if match else 'FAIL':>5}")
+        print(
+            f"{n:>5}  {_fmt_factors(factors):>14}  {terms_atoms.omega:>2}"
+            f"  {terms_atoms.tau:>3}  {terms_atoms.sigma:>5}"
+            f"  {dnfr:>9.4f}  {'OK' if match else 'FAIL':>5}"
+        )
 
     print()
     print("VALIDATED: (Ω, τ, σ) — and hence EPI, νf, ΔNFR — reconstruct")
@@ -274,35 +275,39 @@ def experiment_3_homomorphism_laws():
 
     coprime_pairs = [(2, 3), (4, 9), (8, 13), (9, 26), (2, 117)]
 
-    print(f"{'m':>5}  {'n':>5}  {'gcd':>3}  {'Ω law':>16}"
-          f"  {'τ law':>14}  {'σ law':>16}")
+    print(
+        f"{'m':>5}  {'n':>5}  {'gcd':>3}  {'Ω law':>16}"
+        f"  {'τ law':>14}  {'σ law':>16}"
+    )
     print("-" * 72)
     for m, n in coprime_pairs:
         fm, fn, fmn = factorize(m), factorize(n), factorize(m * n)
         assert math.gcd(m, n) == 1, f"{m},{n} not coprime"
 
-        om_add = (
-            omega_from_factors(fmn)
-            == omega_from_factors(fm) + omega_from_factors(fn)
+        om_add = omega_from_factors(fmn) == omega_from_factors(fm) + omega_from_factors(
+            fn
         )
-        tau_mul = (
-            tau_from_factors(fmn)
-            == tau_from_factors(fm) * tau_from_factors(fn)
-        )
-        sig_mul = (
-            sigma_from_factors(fmn)
-            == sigma_from_factors(fm) * sigma_from_factors(fn)
-        )
+        tau_mul = tau_from_factors(fmn) == tau_from_factors(fm) * tau_from_factors(fn)
+        sig_mul = sigma_from_factors(fmn) == sigma_from_factors(
+            fm
+        ) * sigma_from_factors(fn)
         assert om_add and tau_mul and sig_mul, f"law broke at {m},{n}"
 
-        om_s = (f"{omega_from_factors(fm)}+{omega_from_factors(fn)}"
-                f"={omega_from_factors(fmn)}")
-        tau_s = (f"{tau_from_factors(fm)}*{tau_from_factors(fn)}"
-                 f"={tau_from_factors(fmn)}")
-        sig_s = (f"{sigma_from_factors(fm)}*{sigma_from_factors(fn)}"
-                 f"={sigma_from_factors(fmn)}")
-        print(f"{m:>5}  {n:>5}  {math.gcd(m, n):>3}  {om_s:>16}"
-              f"  {tau_s:>14}  {sig_s:>16}")
+        om_s = (
+            f"{omega_from_factors(fm)}+{omega_from_factors(fn)}"
+            f"={omega_from_factors(fmn)}"
+        )
+        tau_s = (
+            f"{tau_from_factors(fm)}*{tau_from_factors(fn)}" f"={tau_from_factors(fmn)}"
+        )
+        sig_s = (
+            f"{sigma_from_factors(fm)}*{sigma_from_factors(fn)}"
+            f"={sigma_from_factors(fmn)}"
+        )
+        print(
+            f"{m:>5}  {n:>5}  {math.gcd(m, n):>3}  {om_s:>16}"
+            f"  {tau_s:>14}  {sig_s:>16}"
+        )
 
     print()
     print("VALIDATED: the homomorphism laws hold exactly — these ARE the")
@@ -323,12 +328,12 @@ def _build_operator_sequence(factors: dict[int, int]):
     seq = []
     primes = sorted(factors)
     for idx, p in enumerate(primes):
-        seq.append(Emission())          # AL: emit the prime atom
+        seq.append(Emission())  # AL: emit the prime atom
         if factors[p] > 1:
-            seq.append(Recursivity())   # REMESH: recursive power pᵢ^aᵢ
+            seq.append(Recursivity())  # REMESH: recursive power pᵢ^aᵢ
         if idx > 0:
-            seq.append(Coupling())      # UM: bind atom into the composite
-    seq.append(Silence())               # SHA: structural closure (U1b)
+            seq.append(Coupling())  # UM: bind atom into the composite
+    seq.append(Silence())  # SHA: structural closure (U1b)
     return seq
 
 
@@ -345,20 +350,25 @@ def experiment_4_grammar_certification():
 
     targets = [3, 8, 30, 234, 360]
     op_short = {
-        "Emission": "AL", "Recursivity": "REMESH",
-        "Coupling": "UM", "Silence": "SHA",
+        "Emission": "AL",
+        "Recursivity": "REMESH",
+        "Coupling": "UM",
+        "Silence": "SHA",
     }
 
-    print(f"{'n':>5}  {'factorization':>14}  {'operator sequence':<34}"
-          f"  {'U1-U6':>6}")
+    print(
+        f"{'n':>5}  {'factorization':>14}  {'operator sequence':<34}" f"  {'U1-U6':>6}"
+    )
     print("-" * 72)
     for n in targets:
         factors = factorize(n)
         seq = _build_operator_sequence(factors)
         valid = validate_grammar(seq, epi_initial=0.0)
         seq_str = "-".join(op_short[type(op).__name__] for op in seq)
-        print(f"{n:>5}  {_fmt_factors(factors):>14}  {seq_str:<34}"
-              f"  {'PASS' if valid else 'FAIL':>6}")
+        print(
+            f"{n:>5}  {_fmt_factors(factors):>14}  {seq_str:<34}"
+            f"  {'PASS' if valid else 'FAIL':>6}"
+        )
         assert valid, f"construction sequence for n={n} violates grammar"
 
     print()

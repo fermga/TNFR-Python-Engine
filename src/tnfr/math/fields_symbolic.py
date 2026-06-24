@@ -16,7 +16,8 @@ Physics basis: AGENTS.md § Structural Fields, U6: STRUCTURAL POTENTIAL
 """
 
 import sympy as sp
-from sympy import symbols, Function, Sum, IndexedBase, Eq, Derivative
+from sympy import Derivative, Eq, Function, IndexedBase, Sum, symbols
+
 from .symbolic import latex_export, pretty_print
 
 # ============================================================================
@@ -24,19 +25,20 @@ from .symbolic import latex_export, pretty_print
 # ============================================================================
 
 # Indices for nodes
-i, j, n = symbols('i j n', integer=True)
+i, j, n = symbols("i j n", integer=True)
 
 # Nodal gradient and distance
-DELTA_NFR = IndexedBase('DELTA_NFR')
-d = Function('d')
+DELTA_NFR = IndexedBase("DELTA_NFR")
+d = Function("d")
 
 # Phase
-phi = IndexedBase('phi')
-x, y = symbols('x y', real=True) # For spatial gradients
+phi = IndexedBase("phi")
+x, y = symbols("x y", real=True)  # For spatial gradients
 
 # ============================================================================
 # U6: STRUCTURAL POTENTIAL (Φ_s) - CANONICAL
 # ============================================================================
+
 
 def get_structural_potential_field_symbolic() -> tuple[Eq, str]:
     """
@@ -59,15 +61,15 @@ def get_structural_potential_field_symbolic() -> tuple[Eq, str]:
 
     See: AGENTS.md § U6: STRUCTURAL POTENTIAL CONFINEMENT
     """
-    alpha_sym = symbols('alpha', real=True, positive=True)
-    Phi_s = Function('Phi_s')
+    alpha_sym = symbols("alpha", real=True, positive=True)
+    Phi_s = Function("Phi_s")
 
     # Define the summation purely symbolically
     summation = Sum(
-        DELTA_NFR[j] / (d(i, j)**alpha_sym),
-        (j, 1, n)  # Sum over all nodes j from 1 to n
+        DELTA_NFR[j] / (d(i, j) ** alpha_sym),
+        (j, 1, n),  # Sum over all nodes j from 1 to n
     )
-    
+
     # Create the equation
     equation = Eq(Phi_s(i), summation)
 
@@ -77,12 +79,14 @@ def get_structural_potential_field_symbolic() -> tuple[Eq, str]:
         "pressure (ΔNFR_j), weighted by the inverse of the distance d(i,j) "
         "to the power of a symbolic α."
     )
-    
+
     return equation, interpretation
+
 
 # ============================================================================
 # RESEARCH-PHASE FIELDS
 # ============================================================================
+
 
 def get_phase_gradient_symbolic() -> tuple[Eq, str]:
     """
@@ -93,8 +97,8 @@ def get_phase_gradient_symbolic() -> tuple[Eq, str]:
     Returns:
         (sympy_equation, physics_interpretation)
     """
-    Nabla_phi = symbols('Nabla_phi')  # Use a symbol for the LHS
-    phi_func = Function('phi')(x, y)
+    Nabla_phi = symbols("Nabla_phi")  # Use a symbol for the LHS
+    phi_func = Function("phi")(x, y)
 
     # Partial derivatives
     dphi_dx = Derivative(phi_func, x)
@@ -102,7 +106,7 @@ def get_phase_gradient_symbolic() -> tuple[Eq, str]:
 
     # Magnitude of the gradient
     gradient_magnitude = sp.sqrt(dphi_dx**2 + dphi_dy**2)
-    
+
     equation = Eq(Nabla_phi, gradient_magnitude)
 
     interpretation = (
@@ -110,8 +114,9 @@ def get_phase_gradient_symbolic() -> tuple[Eq, str]:
         "rate of phase change across spatial dimensions (x, y). High values "
         "suggest rapid phase shifts, analogous to field strength in EM."
     )
-    
+
     return equation, interpretation
+
 
 def get_phase_curvature_symbolic() -> tuple[Eq, str]:
     """
@@ -130,24 +135,26 @@ def get_phase_curvature_symbolic() -> tuple[Eq, str]:
 
     See: AGENTS.md § RESEARCH-PHASE Fields
     """
-    phi_func = Function('phi')(x, y)
-    
+    phi_func = Function("phi")(x, y)
+
     # First derivatives
     dphi_dx = Derivative(phi_func, x)
     dphi_dy = Derivative(phi_func, y)
-    
+
     # Second derivatives
     d2phi_dx2 = Derivative(dphi_dx, x)
     d2phi_dy2 = Derivative(dphi_dy, y)
-    
+
     # Mean curvature formula for a surface z = φ(x,y)
-    numerator = d2phi_dx2 * (1 + dphi_dy**2) - \
-                2 * dphi_dx * dphi_dy * Derivative(dphi_dx, y) + \
-                d2phi_dy2 * (1 + dphi_dx**2)
-    
-    denominator = (1 + dphi_dx**2 + dphi_dy**2)**(sp.S(3)/2)
-    
-    K_phi = symbols('K_phi')
+    numerator = (
+        d2phi_dx2 * (1 + dphi_dy**2)
+        - 2 * dphi_dx * dphi_dy * Derivative(dphi_dx, y)
+        + d2phi_dy2 * (1 + dphi_dx**2)
+    )
+
+    denominator = (1 + dphi_dx**2 + dphi_dy**2) ** (sp.S(3) / 2)
+
+    K_phi = symbols("K_phi")
     equation = Eq(K_phi, numerator / denominator)
 
     interpretation = (
@@ -155,8 +162,9 @@ def get_phase_curvature_symbolic() -> tuple[Eq, str]:
         "curvature indicates sharp 'bends' or 'folds' in the phase field, "
         "potentially acting as a local confinement force."
     )
-    
+
     return equation, interpretation
+
 
 # ============================================================================
 # EXAMPLE USAGE

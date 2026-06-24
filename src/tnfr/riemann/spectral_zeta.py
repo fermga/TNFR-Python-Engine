@@ -56,9 +56,7 @@ import scipy.special
 from scipy.linalg import eigh_tridiagonal
 
 from ..mathematics.unified_numerical import np
-from .operator import (
-    build_tridiagonal_h_tnfr,
-)
+from .operator import build_tridiagonal_h_tnfr
 
 # ---------------------------------------------------------------------------
 # Public API
@@ -98,12 +96,12 @@ __all__ = [
 
 RIEMANN_ZETA_KNOWN_VALUES: dict[float, float] = {
     # zeta(u) for u > 1 (convergent region)
-    2.0: math.pi**2 / 6,                   # 1.6449...
-    3.0: 1.2020569031595942,                # Apery's constant
-    4.0: math.pi**4 / 90,                   # 1.0823...
+    2.0: math.pi**2 / 6,  # 1.6449...
+    3.0: 1.2020569031595942,  # Apery's constant
+    4.0: math.pi**4 / 90,  # 1.0823...
     5.0: 1.0369277551433699,
-    6.0: math.pi**6 / 945,                  # 1.0173...
-    8.0: math.pi**8 / 9450,                 # 1.00408...
+    6.0: math.pi**6 / 945,  # 1.0173...
+    8.0: math.pi**8 / 9450,  # 1.00408...
     10.0: 1.0009945751278181,
     # Negative integers (via analytic continuation / Bernoulli)
     0.0: -0.5,
@@ -116,6 +114,7 @@ RIEMANN_ZETA_KNOWN_VALUES: dict[float, float] = {
 # ============================================================================
 # Data Structures
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class SpectralZetaResult:
@@ -145,6 +144,7 @@ class SpectralZetaResult:
     zeta_values: np.ndarray
     n_positive: int
     eigenvalues_positive: np.ndarray
+
 
 @dataclass(frozen=True)
 class HeatKernelResult:
@@ -181,6 +181,7 @@ class HeatKernelResult:
     entropy: np.ndarray
     eigenvalues: np.ndarray
 
+
 @dataclass(frozen=True)
 class MellinBridgeResult:
     r"""Verification of the Mellin transform relation.
@@ -215,6 +216,7 @@ class MellinBridgeResult:
     relative_error: np.ndarray
     max_relative_error: float
     bridge_valid: bool
+
 
 @dataclass(frozen=True)
 class ConjectureTestResult:
@@ -251,6 +253,7 @@ class ConjectureTestResult:
     residual: float
     correlation: float
 
+
 @dataclass(frozen=True)
 class SpectralZetaAnalysis:
     r"""Integrated P5 analysis combining all components.
@@ -278,9 +281,11 @@ class SpectralZetaAnalysis:
     conjecture: ConjectureTestResult
     summary: str
 
+
 # ============================================================================
 # Core Eigenvalue Computation
 # ============================================================================
+
 
 def compute_positive_eigenvalues(
     k: int,
@@ -315,9 +320,11 @@ def compute_positive_eigenvalues(
         evals = np.sort(eigh_tridiagonal(d, e, eigvals_only=True))
     return evals[evals > tol]
 
+
 # ============================================================================
 # Spectral Zeta Function
 # ============================================================================
+
 
 def compute_spectral_zeta(
     k: int,
@@ -369,6 +376,7 @@ def compute_spectral_zeta(
         eigenvalues_positive=evals_pos,
     )
 
+
 def compute_spectral_zeta_derivative(
     k: int,
     sigma: float = 0.5,
@@ -398,9 +406,11 @@ def compute_spectral_zeta_derivative(
     )
     return deriv
 
+
 # ============================================================================
 # Heat Kernel and Thermodynamics
 # ============================================================================
+
 
 def compute_heat_kernel_trace(
     k: int,
@@ -471,6 +481,7 @@ def compute_heat_kernel_trace(
         eigenvalues=evals,
     )
 
+
 def compute_partition_function(
     k: int,
     sigma: float = 0.5,
@@ -481,6 +492,7 @@ def compute_partition_function(
     result = compute_heat_kernel_trace(k, sigma, beta_values=beta_values)
     return result.beta_values, result.partition_function
 
+
 def compute_free_energy(
     k: int,
     sigma: float = 0.5,
@@ -490,6 +502,7 @@ def compute_free_energy(
     """Convenience: return (beta_values, F(beta)) only."""
     result = compute_heat_kernel_trace(k, sigma, beta_values=beta_values)
     return result.beta_values, result.free_energy
+
 
 # ============================================================================
 # Mellin Transform Bridge
@@ -508,6 +521,7 @@ def compute_free_energy(
 #
 # We verify this numerically by computing both sides independently.
 # ============================================================================
+
 
 def verify_mellin_bridge(
     k: int,
@@ -590,9 +604,11 @@ def verify_mellin_bridge(
         bridge_valid=max_err < tol,
     )
 
+
 # ============================================================================
 # Riemann Zeta Approximation
 # ============================================================================
+
 
 def riemann_zeta_approx(u: float, *, n_terms: int = 10_000) -> float:
     r"""Compute zeta_R(u) via truncated Dirichlet series for u > 1.
@@ -618,6 +634,7 @@ def riemann_zeta_approx(u: float, *, n_terms: int = 10_000) -> float:
     ns = np.arange(1, n_terms + 1, dtype=float)
     return float(np.sum(ns ** (-u)))
 
+
 # ============================================================================
 # Conjecture 10.1
 # ============================================================================
@@ -630,6 +647,7 @@ def riemann_zeta_approx(u: float, *, n_terms: int = 10_000) -> float:
 #   || zeta_spectral(u) - C * zeta_R(u + delta) ||^2
 # over a set of u values in the convergent region u > 1.
 # ============================================================================
+
 
 def test_conjecture_10_1(
     k: int,
@@ -738,16 +756,15 @@ def test_conjecture_10_1(
         correlation=corr,
     )
 
+
 def test_conjecture_10_1_sequence(
     k_values: Sequence[int],
     *,
     u_values: np.ndarray | None = None,
 ) -> list[ConjectureTestResult]:
     """Test Conjecture 10.1 for a sequence of k values."""
-    return [
-        test_conjecture_10_1(k, u_values=u_values)
-        for k in k_values
-    ]
+    return [test_conjecture_10_1(k, u_values=u_values) for k in k_values]
+
 
 # Prevent pytest from collecting API functions as test cases
 test_conjecture_10_1.__test__ = False  # type: ignore[attr-defined]
@@ -756,6 +773,7 @@ test_conjecture_10_1_sequence.__test__ = False  # type: ignore[attr-defined]
 # ============================================================================
 # Integrated Analysis
 # ============================================================================
+
 
 def run_spectral_zeta_analysis(
     k: int,
@@ -819,9 +837,11 @@ def run_spectral_zeta_analysis(
         summary=summary,
     )
 
+
 # ============================================================================
 # Private Helpers
 # ============================================================================
+
 
 def _pearson(x: np.ndarray, y: np.ndarray) -> float:
     """Pearson correlation coefficient, returns 0.0 on degenerate input."""

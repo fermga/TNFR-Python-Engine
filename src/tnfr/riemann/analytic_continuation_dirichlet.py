@@ -96,8 +96,11 @@ from typing import Sequence
 import mpmath as mp
 
 from ..mathematics.unified_numerical import np
-from .dirichlet_l import DirichletCharacter, TwistedPrimeLadderSpectrum, tnfr_log_l_derivative
-
+from .dirichlet_l import (
+    DirichletCharacter,
+    TwistedPrimeLadderSpectrum,
+    tnfr_log_l_derivative,
+)
 
 __all__ = [
     # Continuation evaluators
@@ -209,9 +212,7 @@ def dirichlet_log_l_derivative_continued(
         s_mp = mp.mpc(s)
         l_val = mp.dirichlet(s_mp, chi_list, 0)
         if abs(l_val) < mp.mpf(10) ** (-dps + 5):
-            raise ValueError(
-                f"s={s} hits an L(s, chi) zero (pole of -L'/L)"
-            )
+            raise ValueError(f"s={s} hits an L(s, chi) zero (pole of -L'/L)")
         l_deriv = mp.dirichlet(s_mp, chi_list, 1)
         result = -l_deriv / l_val
     return complex(result)
@@ -306,9 +307,7 @@ def verify_twisted_continuation_agreement(
                 f"got s={s} with Re(s)={s.real}"
             )
         z_pl[idx] = tnfr_log_l_derivative(spectrum, complex(s))
-        z_co[idx] = dirichlet_log_l_derivative_continued(
-            chi, complex(s), dps=dps
-        )
+        z_co[idx] = dirichlet_log_l_derivative_continued(chi, complex(s), dps=dps)
 
     abs_diff = np.abs(z_pl - z_co)
     denom = np.maximum(np.abs(z_co), 1e-300)

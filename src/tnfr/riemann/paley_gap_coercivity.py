@@ -88,10 +88,7 @@ from typing import Sequence
 
 import numpy as np
 
-from .prime_ladder_hamiltonian import (
-    PrimeLadderHamiltonian,
-    weighted_spectral_trace,
-)
+from .prime_ladder_hamiltonian import PrimeLadderHamiltonian, weighted_spectral_trace
 from .von_mangoldt import (
     PrimeLadderSpectrum,
     classical_log_zeta_derivative,
@@ -110,6 +107,7 @@ __all__ = [
 # ---------------------------------------------------------------------------
 # Pointwise gaps
 # ---------------------------------------------------------------------------
+
 
 def paley_gap_p12(
     spectrum: PrimeLadderSpectrum,
@@ -217,6 +215,7 @@ def paley_gap_cross(
 # Sweep certificate
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class PaleyGapSweep:
     r"""Paley-gap sweep over a real :math:`\sigma`-interval.
@@ -316,8 +315,7 @@ def sweep_paley_gap(
 
     # Cache the classical reference once per sigma.
     z_cls = np.array(
-        [classical_log_zeta_derivative(float(s), int(n_max_classical))
-         for s in s_arr],
+        [classical_log_zeta_derivative(float(s), int(n_max_classical)) for s in s_arr],
         dtype=float,
     )
 

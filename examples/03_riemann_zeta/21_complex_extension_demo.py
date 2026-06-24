@@ -35,13 +35,13 @@ def main() -> None:
     from tnfr.riemann.complex_extension import (
         KNOWN_RIEMANN_ZEROS,
         analyze_non_hermiticity,
-        compute_complex_eigenspectrum,
-        scan_critical_line,
-        find_eigenvalue_zero_crossings,
-        compute_pseudospectrum,
         analyze_resolvent_along_critical_line,
         compare_with_riemann_zeros,
+        compute_complex_eigenspectrum,
+        compute_pseudospectrum,
+        find_eigenvalue_zero_crossings,
         run_complex_plane_analysis,
+        scan_critical_line,
     )
 
     print("=" * 72)
@@ -86,14 +86,14 @@ def main() -> None:
         t0 = time.perf_counter()
         scan = scan_critical_line(k_scan, t_max=50.0, n_points=300)
         elapsed = time.perf_counter() - t0
-        print(f"\n  k = {k_scan}: scanned t in [0, 50], {len(scan.t_values)} points"
-              f" ({elapsed:.2f}s)")
+        print(
+            f"\n  k = {k_scan}: scanned t in [0, 50], {len(scan.t_values)} points"
+            f" ({elapsed:.2f}s)"
+        )
         print(f"    Local minima in min|λ|: {len(scan.local_minima_t)}")
         if len(scan.local_minima_t) > 0:
             print(f"    {'t':>10s}  {'min|λ|':>10s}")
-            for t_m, v_m in zip(
-                scan.local_minima_t[:8], scan.local_minima_val[:8]
-            ):
+            for t_m, v_m in zip(scan.local_minima_t[:8], scan.local_minima_val[:8]):
                 print(f"    {t_m:10.4f}  {v_m:10.6f}")
 
     # ------------------------------------------------------------------
@@ -111,11 +111,16 @@ def main() -> None:
     for k_cmp in [10, 20, 50]:
         print(f"\n  k = {k_cmp}:")
         comparison = compare_with_riemann_zeros(
-            k_cmp, t_max=55.0, n_points=400,
-            n_zeros=10, threshold=2.0,
+            k_cmp,
+            t_max=55.0,
+            n_points=400,
+            n_zeros=10,
+            threshold=2.0,
         )
         if comparison:
-            print(f"    {'t_candidate':>12s}  {'nearest ζ zero':>14s}  {'distance':>10s}")
+            print(
+                f"    {'t_candidate':>12s}  {'nearest ζ zero':>14s}  {'distance':>10s}"
+            )
             for t_c, t_r, dist in comparison[:8]:
                 print(f"    {t_c:12.4f}  {t_r:14.6f}  {dist:10.4f}")
         else:
@@ -132,7 +137,10 @@ def main() -> None:
     k_ps = 10
     for s_val in [0.5 + 0j, 0.5 + 14.13j, 0.5 + 21.02j]:
         ps = compute_pseudospectrum(
-            k_ps, s_val, z_radius=4.0, n_grid=30,
+            k_ps,
+            s_val,
+            z_radius=4.0,
+            n_grid=30,
         )
         sigma_min_floor = float(np.min(ps.sigma_min_grid))
         sigma_min_max = float(np.max(ps.sigma_min_grid))
@@ -141,8 +149,10 @@ def main() -> None:
         spread_im = float(np.ptp(evals.imag))
         print(f"\n  s = {s_val}:")
         print(f"    σ_min range: [{sigma_min_floor:.6f}, {sigma_min_max:.4f}]")
-        print(f"    Eigenvalue spread: Re [{evals.real.min():.3f}, {evals.real.max():.3f}]"
-              f"  Im [{evals.imag.min():.3f}, {evals.imag.max():.3f}]")
+        print(
+            f"    Eigenvalue spread: Re [{evals.real.min():.3f}, {evals.real.max():.3f}]"
+            f"  Im [{evals.imag.min():.3f}, {evals.imag.max():.3f}]"
+        )
 
     # ------------------------------------------------------------------
     # 5. Resolvent analysis
@@ -155,7 +165,10 @@ def main() -> None:
     k_res = 15
     for z_probe in [0.0 + 0j, 0.5 + 0j]:
         res = analyze_resolvent_along_critical_line(
-            k_res, z_probe=z_probe, t_max=50.0, n_points=300,
+            k_res,
+            z_probe=z_probe,
+            t_max=50.0,
+            n_points=300,
         )
         print(f"\n  z_probe = {z_probe}, k = {k_res}:")
         print(f"    Resolvent peaks: {len(res.peak_t_values)}")
@@ -176,7 +189,9 @@ def main() -> None:
 
     for k_int in [10, 30]:
         analysis = run_complex_plane_analysis(
-            k_int, t_max=50.0, n_points=300,
+            k_int,
+            t_max=50.0,
+            n_points=300,
         )
         print(f"\n{analysis.summary}")
 
@@ -187,7 +202,8 @@ def main() -> None:
     print("=" * 72)
     print("P4 SUMMARY")
     print("=" * 72)
-    print("""
+    print(
+        """
 Key findings from the non-Hermitian extension:
 
 1. H(s) transitions smoothly from Hermitian (Im(s)=0) to non-Hermitian.
@@ -208,7 +224,8 @@ TNFR physics interpretation:
    structural equilibrium (P1), while the imaginary part drives quantum-
    like oscillations whose spectral structure encodes prime distribution
    information — the core of the TNFR-Riemann connection.
-""")
+"""
+    )
 
 
 if __name__ == "__main__":

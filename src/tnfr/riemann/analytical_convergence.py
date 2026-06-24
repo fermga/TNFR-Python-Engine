@@ -101,6 +101,7 @@ __all__ = [
 # Data Structures
 # ============================================================================
 
+
 @dataclass(frozen=True)
 class TelescopingIdentity:
     r"""Result of the exact telescoping identity for tr(L_k V_1).
@@ -130,6 +131,7 @@ class TelescopingIdentity:
 
     relative_error: float
     """|(telescoping − numerical) / numerical|."""
+
 
 @dataclass(frozen=True)
 class PNTAsymptoticBound:
@@ -174,6 +176,7 @@ class PNTAsymptoticBound:
     scaling_ratio: float
     """exact / (k · (log k)²) — should approach a constant > 1."""
 
+
 @dataclass(frozen=True)
 class ConvergenceRateBound:
     r"""Analytical bound on |σ* − 1/2| = O(1/k).
@@ -205,6 +208,7 @@ class ConvergenceRateBound:
     curvature: float
     """d²E/dσ² = (1/k) tr(V_1²) — thermodynamic curvature."""
 
+
 @dataclass(frozen=True)
 class EffectiveConstantResult:
     r"""Effective constant C(k) = k · |σ* − 1/2| tracking convergence to 1.
@@ -226,6 +230,7 @@ class EffectiveConstantResult:
 
     deviation_from_unity: float
     """|C(k) − 1| — measures distance from asymptotic limit."""
+
 
 @dataclass(frozen=True)
 class AnalyticalConvergenceProof:
@@ -265,9 +270,11 @@ class AnalyticalConvergenceProof:
     monotone_decrease: bool
     """Whether |σ* − 1/2| decreases monotonically with k."""
 
+
 # ============================================================================
 # Theorem 1: Telescoping Identity
 # ============================================================================
+
 
 def compute_telescoping_trace(k: int) -> TelescopingIdentity:
     r"""Compute tr(L_k V_1) via the exact telescoping identity.
@@ -305,8 +312,8 @@ def compute_telescoping_trace(k: int) -> TelescopingIdentity:
     log_pk = math.log(primes[-1])
     log_p1 = math.log(primes[0])  # log(2)
 
-    log_pk_sq = log_pk ** 2
-    log_p1_sq = log_p1 ** 2
+    log_pk_sq = log_pk**2
+    log_p1_sq = log_p1**2
     telescoping = log_pk_sq - log_p1_sq
 
     # Numerical verification via existing infrastructure
@@ -322,6 +329,7 @@ def compute_telescoping_trace(k: int) -> TelescopingIdentity:
         numerical_value=tr_LV1,
         relative_error=rel_err,
     )
+
 
 def verify_telescoping_identity(
     k_values: Sequence[int],
@@ -340,9 +348,11 @@ def verify_telescoping_identity(
     """
     return [compute_telescoping_trace(k) for k in k_values]
 
+
 # ============================================================================
 # Theorem 2: PNT Asymptotic for tr(V_1²)
 # ============================================================================
+
 
 def pnt_prime_estimate(n: int) -> float:
     r"""Estimate the n-th prime using PNT: p_n ≈ n(ln n + ln ln n).
@@ -368,6 +378,7 @@ def pnt_prime_estimate(n: int) -> float:
     ln_ln_n = math.log(ln_n)
     return n * (ln_n + ln_ln_n)
 
+
 def euler_maclaurin_log_squared_sum(k: int) -> float:
     r"""Compute Σ_{n=2}^{k} (ln n)² via Euler–Maclaurin approximation.
 
@@ -391,7 +402,8 @@ def euler_maclaurin_log_squared_sum(k: int) -> float:
     if k < 2:
         return 0.0
     ln_k = math.log(k)
-    return k * ln_k ** 2 - 2 * k * ln_k + 2 * k
+    return k * ln_k**2 - 2 * k * ln_k + 2 * k
+
 
 def pnt_sum_log_squared(k: int) -> PNTAsymptoticBound:
     r"""Compute and bound tr(V_1²) = Σ_{i=1}^{k} (log p_i)².
@@ -427,7 +439,7 @@ def pnt_sum_log_squared(k: int) -> PNTAsymptoticBound:
     # Exact computation from actual primes
     primes = _first_primes(k)
     log_p = np.array([math.log(p) for p in primes])
-    exact = float(np.sum(log_p ** 2))
+    exact = float(np.sum(log_p**2))
 
     # PNT-based estimate using p_n ≈ n(ln n + ln ln n) for n ≥ 6.
     # For n < 6, use exact primes (PNT unreliable there).
@@ -442,7 +454,7 @@ def pnt_sum_log_squared(k: int) -> PNTAsymptoticBound:
 
     # Leading-order scaling: k(log k)²
     ln_k = math.log(k)
-    leading = k * ln_k ** 2
+    leading = k * ln_k**2
 
     # Upper bound: k · (log p_k)²
     upper = k * float(log_p[-1]) ** 2
@@ -465,9 +477,11 @@ def pnt_sum_log_squared(k: int) -> PNTAsymptoticBound:
         scaling_ratio=scaling_ratio,
     )
 
+
 # ============================================================================
 # Theorem 3: Main Convergence Rate
 # ============================================================================
+
 
 def compute_convergence_rate_bound(k: int) -> ConvergenceRateBound:
     r"""Compute the exact convergence rate |σ* − 1/2|.
@@ -512,6 +526,7 @@ def compute_convergence_rate_bound(k: int) -> ConvergenceRateBound:
         curvature=curvature,
     )
 
+
 def compute_effective_constant(k: int) -> EffectiveConstantResult:
     r"""Compute the effective constant C(k) = k · |σ* − 1/2|.
 
@@ -540,6 +555,7 @@ def compute_effective_constant(k: int) -> EffectiveConstantResult:
         deviation_from_unity=abs(c_k - 1.0),
     )
 
+
 def analyze_convergence_sequence(
     k_values: Sequence[int],
 ) -> list[ConvergenceRateBound]:
@@ -557,9 +573,11 @@ def analyze_convergence_sequence(
     """
     return [compute_convergence_rate_bound(k) for k in k_values]
 
+
 # ============================================================================
 # Integration: Full Analytical Proof
 # ============================================================================
+
 
 def run_analytical_convergence_proof(
     k_values: Sequence[int] | None = None,

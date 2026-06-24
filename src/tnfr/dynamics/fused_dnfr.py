@@ -40,6 +40,7 @@ try:
 except ImportError:
     logger.debug("Numba not available, using pure NumPy implementation")
 
+
 def _compute_canonical_gradients_jit_kernel(
     edge_src,
     edge_dst,
@@ -70,21 +71,21 @@ def _compute_canonical_gradients_jit_kernel(
     epi_sum = np.zeros(n_nodes, dtype=np.float64)
     vf_sum = np.zeros(n_nodes, dtype=np.float64)
     count = np.zeros(n_nodes, dtype=np.float64)
-    
+
     n_edges = edge_src.shape[0]
-    
+
     # Pass 1: Accumulate neighbor statistics
     for i in range(n_edges):
         u = edge_src[i]
         v = edge_dst[i]
-        
+
         # u -> v (v receives from u)
         cos_sum[v] += math.cos(phase[u])
         sin_sum[v] += math.sin(phase[u])
         epi_sum[v] += epi[u]
         vf_sum[v] += vf[u]
         count[v] += 1.0
-        
+
         if symmetric:
             # v -> u (u receives from v)
             cos_sum[u] += math.cos(phase[v])
@@ -92,42 +93,43 @@ def _compute_canonical_gradients_jit_kernel(
             epi_sum[u] += epi[v]
             vf_sum[u] += vf[v]
             count[u] += 1.0
-            
+
     # Pass 2: Compute gradients
     for i in range(n_nodes):
         if count[i] > 0:
             # Phase: g = (theta_mean - theta_node) / pi
             # theta_mean = atan2(sum_sin, sum_cos)
             theta_mean = math.atan2(sin_sum[i], cos_sum[i])
-            
+
             # angle_diff(a, b) = (a - b + pi) % 2pi - pi
             # We want (theta_mean - phase[i])
             diff = (theta_mean - phase[i] + math.pi) % (2 * math.pi) - math.pi
             g_phase = diff / math.pi
-            
+
             # EPI/VF: g = mean - value
             g_epi = (epi_sum[i] / count[i]) - epi[i]
             g_vf = (vf_sum[i] / count[i]) - vf[i]
-            
+
             delta_nfr[i] = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf
-            
+
     # Pass 3: Topology (if needed)
     if w_topo != 0.0:
         deg_sum = np.zeros(n_nodes, dtype=np.float64)
         for i in range(n_edges):
             u = edge_src[i]
             v = edge_dst[i]
-            
+
             # Accumulate neighbor degrees (degree = count)
             deg_sum[v] += count[u]
             if symmetric:
                 deg_sum[u] += count[v]
-                
+
         for i in range(n_nodes):
             if count[i] > 0:
                 deg_mean = deg_sum[i] / count[i]
                 g_topo = deg_mean - count[i]
                 delta_nfr[i] += w_topo * g_topo
+
 
 # Create JIT-compiled version if Numba is available
 if _NUMBA_AVAILABLE:
@@ -144,6 +146,7 @@ if _NUMBA_AVAILABLE:
         _compute_canonical_gradients_jit = _compute_canonical_gradients_jit_kernel
 else:
     _compute_canonical_gradients_jit = _compute_canonical_gradients_jit_kernel
+
 
 def compute_fused_gradients(
     *,
@@ -195,6 +198,7 @@ def compute_fused_gradients(
         accumulate_both_directions=False,
         use_jit=use_jit,
     )
+
 
 def compute_fused_gradients_symmetric(
     *,
@@ -255,9 +259,18 @@ def compute_fused_gradients_symmetric(
     # JIT Path
     if use_jit and _NUMBA_AVAILABLE and n_edges > 100:
         _compute_canonical_gradients_jit(
-            edge_src, edge_dst, phase, epi, vf,
-            w_phase, w_epi, w_vf, w_topo,
-            n_nodes, accumulate_both_directions, delta_nfr
+            edge_src,
+            edge_dst,
+            phase,
+            epi,
+            vf,
+            w_phase,
+            w_epi,
+            w_vf,
+            w_topo,
+            n_nodes,
+            accumulate_both_directions,
+            delta_nfr,
         )
         return delta_nfr
 
@@ -307,8 +320,12 @@ def compute_fused_gradients_symmetric(
     # Compute arithmetic means for EPI and νf
     epi_mean = np.zeros(n_nodes, dtype=float)
     vf_mean = np.zeros(n_nodes, dtype=float)
-    epi_mean[has_neighbors] = neighbor_epi_sum[has_neighbors] / neighbor_count[has_neighbors]
-    vf_mean[has_neighbors] = neighbor_vf_sum[has_neighbors] / neighbor_count[has_neighbors]
+    epi_mean[has_neighbors] = (
+        neighbor_epi_sum[has_neighbors] / neighbor_count[has_neighbors]
+    )
+    vf_mean[has_neighbors] = (
+        neighbor_vf_sum[has_neighbors] / neighbor_count[has_neighbors]
+    )
 
     # Compute gradients using TNFR canonical formula
     # Phase: g_phase = -angle_diff(θ_node, θ_mean) / π
@@ -340,7 +357,9 @@ def compute_fused_gradients_symmetric(
             np.add.at(neighbor_deg_sum, edge_src, deg_dst_vals)
 
         deg_mean = np.zeros(n_nodes, dtype=float)
-        deg_mean[has_neighbors] = neighbor_deg_sum[has_neighbors] / neighbor_count[has_neighbors]
+        deg_mean[has_neighbors] = (
+            neighbor_deg_sum[has_neighbors] / neighbor_count[has_neighbors]
+        )
 
         g_topo = deg_mean - degrees
         g_topo[~has_neighbors] = 0.0
@@ -354,6 +373,7 @@ def compute_fused_gradients_symmetric(
     delta_nfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + g_topo
 
     return delta_nfr
+
 
 def apply_vf_scaling(
     *,
@@ -391,6 +411,7 @@ def apply_vf_scaling(
     array([0.5, 2. , 4.5])
     """
     np.multiply(delta_nfr, vf, out=delta_nfr)
+
 
 __all__ = [
     "compute_fused_gradients",

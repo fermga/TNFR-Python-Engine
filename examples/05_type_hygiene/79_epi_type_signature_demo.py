@@ -31,16 +31,12 @@ def main() -> None:
 
     print()
     print("--- Resolution 1: n_nodes=24, n_steps=64, n_bins=32 ---")
-    cert1 = compute_epi_type_signature(
-        n_nodes=24, n_steps=64, n_bins=32, seed=13
-    )
+    cert1 = compute_epi_type_signature(n_nodes=24, n_steps=64, n_bins=32, seed=13)
     print(cert1.summary())
 
     print()
     print("--- Resolution 2: n_nodes=48, n_steps=128, n_bins=64 ---")
-    cert2 = compute_epi_type_signature(
-        n_nodes=48, n_steps=128, n_bins=64, seed=29
-    )
+    cert2 = compute_epi_type_signature(n_nodes=48, n_steps=128, n_bins=64, seed=29)
     print(cert2.summary())
 
     print()
@@ -53,10 +49,14 @@ def main() -> None:
     print("                            → scalar EPI loses canonical content")
     print()
     print("Verdicts at the two resolutions:")
-    print(f"  resolution 1: {cert1.verdict}  (S_EPI = {cert1.signature:.4f},"
-          f" BEPI fraction = {cert1.storage_bepi_fraction:.4f})")
-    print(f"  resolution 2: {cert2.verdict}  (S_EPI = {cert2.signature:.4f},"
-          f" BEPI fraction = {cert2.storage_bepi_fraction:.4f})")
+    print(
+        f"  resolution 1: {cert1.verdict}  (S_EPI = {cert1.signature:.4f},"
+        f" BEPI fraction = {cert1.storage_bepi_fraction:.4f})"
+    )
+    print(
+        f"  resolution 2: {cert2.verdict}  (S_EPI = {cert2.signature:.4f},"
+        f" BEPI fraction = {cert2.storage_bepi_fraction:.4f})"
+    )
     print()
     print("Necessary-condition check, NOT proof of the T-EPI Conjecture.")
     print("Honest scope: does NOT advance G4 = RH; does NOT promote any operator.")

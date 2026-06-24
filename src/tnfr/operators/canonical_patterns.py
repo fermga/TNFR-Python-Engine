@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from ..types import Glyph
 from .grammar import StructuralPattern
 
+
 @dataclass(frozen=True)
 class CanonicalSequence:
     name: str
@@ -22,6 +23,7 @@ class CanonicalSequence:
     use_cases: list[str]
     domain: str
     references: list[str]
+
 
 # Define six archetypal sequences (all include OZ by test contract)
 BIFURCATED_BASE = CanonicalSequence(

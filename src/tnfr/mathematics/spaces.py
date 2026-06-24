@@ -6,9 +6,9 @@ from dataclasses import dataclass
 from typing import Callable, Sequence
 
 from ..errors import TNFRValueError
+from .epi import BEPIElement, _EPIValidators
 from .unified_numerical import np, trapezoid
 
-from .epi import BEPIElement, _EPIValidators
 
 @dataclass(frozen=True)
 class HilbertSpace:
@@ -29,7 +29,7 @@ class HilbertSpace:
             raise TNFRValueError(
                 "Hilbert spaces require a positive dimension.",
                 context={"dimension": self.dimension},
-                suggestion="Provide a positive integer for dimension."
+                suggestion="Provide a positive integer for dimension.",
             )
 
     @property
@@ -43,8 +43,11 @@ class HilbertSpace:
         if vector.shape != (self.dimension,):
             raise TNFRValueError(
                 f"Vector must have shape ({self.dimension},), got {vector.shape!r}.",
-                context={"expected_shape": (self.dimension,), "actual_shape": vector.shape},
-                suggestion="Ensure the vector shape matches the Hilbert space dimension."
+                context={
+                    "expected_shape": (self.dimension,),
+                    "actual_shape": vector.shape,
+                },
+                suggestion="Ensure the vector shape matches the Hilbert space dimension.",
             )
         return vector
 
@@ -66,18 +69,22 @@ class HilbertSpace:
         magnitude = max(value.real, 0.0)
         return float(np.sqrt(magnitude))
 
-    def is_normalized(self, vector: Sequence[complex] | np.ndarray, *, atol: float = 1e-9) -> bool:
+    def is_normalized(
+        self, vector: Sequence[complex] | np.ndarray, *, atol: float = 1e-9
+    ) -> bool:
         """Check whether a vector has unit norm within a tolerance."""
 
         return np.isclose(self.norm(vector), 1.0, atol=atol)
 
-    def _validate_basis(self, basis: Sequence[Sequence[complex] | np.ndarray]) -> np.ndarray:
+    def _validate_basis(
+        self, basis: Sequence[Sequence[complex] | np.ndarray]
+    ) -> np.ndarray:
         basis_list = list(basis)
         if len(basis_list) == 0:
             raise TNFRValueError(
                 "An orthonormal basis must contain at least one vector.",
                 context={"basis_length": 0},
-                suggestion="Provide a non-empty basis."
+                suggestion="Provide a non-empty basis.",
             )
 
         basis_vectors = [self._as_vector(vector) for vector in basis_list]
@@ -88,7 +95,7 @@ class HilbertSpace:
             raise TNFRValueError(
                 "Provided basis is not orthonormal within tolerance.",
                 context={"tolerance": 1e-10},
-                suggestion="Ensure the basis vectors are orthonormal."
+                suggestion="Ensure the basis vectors are orthonormal.",
             )
         return matrix
 
@@ -106,6 +113,7 @@ class HilbertSpace:
         basis_matrix = self._validate_basis(basis)
         coefficients = basis_matrix.conj() @ vec
         return coefficients.astype(self.dtype, copy=False)
+
 
 class BanachSpaceEPI(_EPIValidators):
     r"""Banach space for :math:`C^0([0, 1],\mathbb{C}) \oplus \ell^2(\mathbb{N})`.
@@ -142,7 +150,7 @@ class BanachSpaceEPI(_EPIValidators):
             raise TNFRValueError(
                 "continuous_size must be at least two samples.",
                 context={"continuous_size": continuous_size},
-                suggestion="Provide a continuous_size of at least 2."
+                suggestion="Provide a continuous_size of at least 2.",
             )
         grid = (
             np.asarray(x_grid, dtype=float)
@@ -168,19 +176,25 @@ class BanachSpaceEPI(_EPIValidators):
             raise TNFRValueError(
                 "continuous_size must be at least two samples.",
                 context={"continuous_size": continuous_size},
-                suggestion="Provide a continuous_size of at least 2."
+                suggestion="Provide a continuous_size of at least 2.",
             )
         if not (0 <= continuous_index < continuous_size):
             raise TNFRValueError(
                 "continuous_index out of range.",
-                context={"continuous_index": continuous_index, "continuous_size": continuous_size},
-                suggestion="Ensure continuous_index is within [0, continuous_size)."
+                context={
+                    "continuous_index": continuous_index,
+                    "continuous_size": continuous_size,
+                },
+                suggestion="Ensure continuous_index is within [0, continuous_size).",
             )
         if not (0 <= discrete_index < discrete_size):
             raise TNFRValueError(
                 "discrete_index out of range.",
-                context={"discrete_index": discrete_index, "discrete_size": discrete_size},
-                suggestion="Ensure discrete_index is within [0, discrete_size)."
+                context={
+                    "discrete_index": discrete_index,
+                    "discrete_size": discrete_size,
+                },
+                suggestion="Ensure discrete_index is within [0, discrete_size).",
             )
 
         grid = (
@@ -225,7 +239,9 @@ class BanachSpaceEPI(_EPIValidators):
         """Compute the tensor product against a :class:`HilbertSpace` vector."""
 
         raw_vector = hilbert_space.basis[0] if vector is None else vector
-        hilbert_vector = hilbert_space._as_vector(raw_vector)  # pylint: disable=protected-access
+        hilbert_vector = hilbert_space._as_vector(
+            raw_vector
+        )  # pylint: disable=protected-access
         return element.tensor(hilbert_vector)
 
     def compute_coherence_functional(
@@ -242,7 +258,7 @@ class BanachSpaceEPI(_EPIValidators):
             raise TNFRValueError(
                 "x_grid must be provided for coherence evaluations.",
                 context={"x_grid": x_grid},
-                suggestion="Provide a valid x_grid."
+                suggestion="Provide a valid x_grid.",
             )
 
         derivative = np.gradient(
@@ -256,7 +272,7 @@ class BanachSpaceEPI(_EPIValidators):
             raise TNFRValueError(
                 "Denominator of coherence functional must be positive.",
                 context={"denominator": denominator},
-                suggestion="Check the input function for validity."
+                suggestion="Check the input function for validity.",
             )
         return float(np.real_if_close(numerator / denominator))
 
@@ -276,7 +292,7 @@ class BanachSpaceEPI(_EPIValidators):
             raise TNFRValueError(
                 "alpha, beta and gamma must be strictly positive.",
                 context={"alpha": alpha, "beta": beta, "gamma": gamma},
-                suggestion="Provide strictly positive weights."
+                suggestion="Provide strictly positive weights.",
             )
 
         f_array, a_array, grid = self.validate_domain(f_continuous, a_discrete, x_grid)
@@ -284,7 +300,7 @@ class BanachSpaceEPI(_EPIValidators):
             raise TNFRValueError(
                 "x_grid must be supplied when evaluating the norm.",
                 context={"x_grid": x_grid},
-                suggestion="Provide a valid x_grid."
+                suggestion="Provide a valid x_grid.",
             )
 
         sup_norm = float(np.max(np.abs(f_array))) if f_array.size else 0.0

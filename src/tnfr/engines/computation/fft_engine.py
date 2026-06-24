@@ -6,8 +6,8 @@ This module re-exports the canonical implementation from
 """
 
 from ...dynamics.fft_engine import (
-    FFTDynamicsState,
     FFTDynamicsEngine,
+    FFTDynamicsState,
     create_fft_engine,
     run_fft_optimized_simulation,
 )

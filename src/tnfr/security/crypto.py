@@ -15,6 +15,7 @@ __all__ = [
     "create_hmac_validator",
 ]
 
+
 def create_hmac_signer(secret: bytes | str) -> Callable[[bytes], bytes]:
     """Create an HMAC-SHA256 signer for data integrity validation.
 
@@ -34,6 +35,7 @@ def create_hmac_signer(secret: bytes | str) -> Callable[[bytes], bytes]:
         return hmac.new(secret_bytes, payload, hashlib.sha256).digest()
 
     return signer
+
 
 def create_hmac_validator(secret: bytes | str) -> Callable[[bytes, bytes], bool]:
     """Create an HMAC-SHA256 validator for data integrity validation.

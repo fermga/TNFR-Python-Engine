@@ -26,16 +26,23 @@ Dual-lever interpretation (experimental discovery, March 2026):
 - Composites carry positive pressure proportional to factorization complexity
 - Φ_s responds linearly to ΔNFR perturbations (|r| = 1.000)
 """
+
 from __future__ import annotations
 
 import math
-from typing import Tuple, Dict
 from functools import lru_cache
+from typing import Dict, Tuple
 
 from .constants import (
-    ZETA_CANONICAL, ETA_CANONICAL, THETA_CANONICAL,
-    ALPHA_EPI, BETA_EPI, GAMMA_EPI,
-    NU_0, DELTA_FREQ, EPSILON_FREQ,
+    ALPHA_EPI,
+    BETA_EPI,
+    DELTA_FREQ,
+    EPSILON_FREQ,
+    ETA_CANONICAL,
+    GAMMA_EPI,
+    NU_0,
+    THETA_CANONICAL,
+    ZETA_CANONICAL,
 )
 
 
@@ -148,11 +155,11 @@ def tnfr_delta_nfr(
         - Abundance pressure: θ·(σ(n)/n − (1+1/n))
     """
     if n < 2:
-        return float('inf')  # Invalid input
+        return float("inf")  # Invalid input
 
     # Calculate arithmetic functions
-    tau_n = _divisor_count(n)         # τ(n)
-    sigma_n = _divisor_sum(n)         # σ(n)
+    tau_n = _divisor_count(n)  # τ(n)
+    sigma_n = _divisor_sum(n)  # σ(n)
     omega_n = _prime_factor_count(n)  # Ω(n) — with multiplicity
 
     # TNFR pressure components (pressure lever of nodal equation)
@@ -213,11 +220,13 @@ def tnfr_component_breakdown(
     """
     if n < 2:
         return {
-            'factorization_pressure': float('inf'),
-            'divisor_pressure': float('inf'),
-            'abundance_pressure': float('inf'),
-            'delta_nfr': float('inf'),
-            'omega': 0, 'tau': 0, 'sigma': 0,
+            "factorization_pressure": float("inf"),
+            "divisor_pressure": float("inf"),
+            "abundance_pressure": float("inf"),
+            "delta_nfr": float("inf"),
+            "omega": 0,
+            "tau": 0,
+            "sigma": 0,
         }
 
     tau_n = _divisor_count(n)
@@ -229,13 +238,13 @@ def tnfr_component_breakdown(
     ap = theta * (sigma_n / n - (1 + 1 / n))
 
     return {
-        'factorization_pressure': fp,
-        'divisor_pressure': dp,
-        'abundance_pressure': ap,
-        'delta_nfr': fp + dp + ap,
-        'omega': omega_n,
-        'tau': tau_n,
-        'sigma': sigma_n,
+        "factorization_pressure": fp,
+        "divisor_pressure": dp,
+        "abundance_pressure": ap,
+        "delta_nfr": fp + dp + ap,
+        "omega": omega_n,
+        "tau": tau_n,
+        "sigma": sigma_n,
     }
 
 
@@ -262,8 +271,11 @@ def tnfr_structural_triad(
     """
     if n < 2:
         return {
-            'EPI': 0.0, 'vf': 0.0, 'delta_nfr': float('inf'),
-            'local_coherence': 0.0, 'components': {},
+            "EPI": 0.0,
+            "vf": 0.0,
+            "delta_nfr": float("inf"),
+            "local_coherence": 0.0,
+            "components": {},
         }
 
     tau_n = _divisor_count(n)
@@ -272,7 +284,12 @@ def tnfr_structural_triad(
     log_n = math.log(max(n, 2))
 
     # EPI: structural form  (α·Ω + β·ln(τ) + γ·(σ/n − 1))
-    epi = 1.0 + ALPHA_EPI * omega_n + BETA_EPI * math.log(max(tau_n, 1)) + GAMMA_EPI * (sigma_n / n - 1)
+    epi = (
+        1.0
+        + ALPHA_EPI * omega_n
+        + BETA_EPI * math.log(max(tau_n, 1))
+        + GAMMA_EPI * (sigma_n / n - 1)
+    )
 
     # νf: structural frequency  (ν₀ · (1 + δ·τ/n + ε·Ω/ln(n)))
     vf = NU_0 * (1 + DELTA_FREQ * tau_n / n + EPSILON_FREQ * omega_n / log_n)
@@ -287,14 +304,14 @@ def tnfr_structural_triad(
     local_coherence = 1.0 / (1.0 + abs(delta_nfr))
 
     return {
-        'EPI': epi,
-        'vf': vf,
-        'delta_nfr': delta_nfr,
-        'local_coherence': local_coherence,
-        'components': {
-            'factorization_pressure': fp,
-            'divisor_pressure': dp,
-            'abundance_pressure': ap,
+        "EPI": epi,
+        "vf": vf,
+        "delta_nfr": delta_nfr,
+        "local_coherence": local_coherence,
+        "components": {
+            "factorization_pressure": fp,
+            "divisor_pressure": dp,
+            "abundance_pressure": ap,
         },
     }
 
@@ -308,7 +325,7 @@ def _divisor_count_cached(n: int) -> int:
 
 @lru_cache(maxsize=10000)
 def _divisor_sum_cached(n: int) -> int:
-    """Cached version of divisor sum.""" 
+    """Cached version of divisor sum."""
     return _divisor_sum(n)
 
 
@@ -332,7 +349,7 @@ def tnfr_delta_nfr_cached(
     for previously analyzed numbers.
     """
     if n < 2:
-        return float('inf')
+        return float("inf")
 
     tau_n = _divisor_count_cached(n)
     sigma_n = _divisor_sum_cached(n)
@@ -360,16 +377,17 @@ def tnfr_is_prime_cached(n: int, *, tolerance: float = 1e-10) -> Tuple[bool, flo
 def validate_tnfr_theory(test_range: int = 1000) -> dict:
     """
     Validate TNFR primality theory against known results.
-    
+
     This function tests the TNFR primality criterion against all numbers
     in a given range and compares with traditional primality testing.
-    
+
     Args:
         test_range: Test numbers from 2 to test_range
-        
+
     Returns:
         Dictionary with validation statistics
     """
+
     def is_prime_traditional(n):
         """Traditional primality test for comparison."""
         if n < 2:
@@ -382,16 +400,16 @@ def validate_tnfr_theory(test_range: int = 1000) -> dict:
             if n % i == 0:
                 return False
         return True
-    
+
     correct = 0
     false_positives = 0
     false_negatives = 0
     tested = 0
-    
+
     for n in range(2, test_range + 1):
         tnfr_result, _ = tnfr_is_prime(n)
         traditional_result = is_prime_traditional(n)
-        
+
         tested += 1
         if tnfr_result == traditional_result:
             correct += 1
@@ -399,12 +417,12 @@ def validate_tnfr_theory(test_range: int = 1000) -> dict:
             false_positives += 1
         elif not tnfr_result and traditional_result:
             false_negatives += 1
-    
+
     return {
-        'tested': tested,
-        'correct': correct,
-        'accuracy': correct / tested if tested > 0 else 0,
-        'false_positives': false_positives,
-        'false_negatives': false_negatives,
-        'error_rate': (false_positives + false_negatives) / tested if tested > 0 else 0
+        "tested": tested,
+        "correct": correct,
+        "accuracy": correct / tested if tested > 0 else 0,
+        "false_positives": false_positives,
+        "false_negatives": false_negatives,
+        "error_rate": (false_positives + false_negatives) / tested if tested > 0 else 0,
     }

@@ -5,14 +5,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict
 
-import scripts.run_self_opt_validation as validator_mod
-import scripts.run_self_optimization as runner_mod
 import pytest
-
 from tnfr_factorization.self_opt_support import (  # type: ignore[import]
     attach_self_opt_sequences,
     run_partition_self_optimization,
 )
+
+import scripts.run_self_opt_validation as validator_mod
+import scripts.run_self_optimization as runner_mod
 
 
 def _fake_runner_summary() -> Dict[str, Any]:
@@ -48,7 +48,9 @@ def _fake_validation_summary() -> Dict[str, Any]:
     }
 
 
-def test_run_partition_self_optimization_invokes_clis(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_run_partition_self_optimization_invokes_clis(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     manifest = tmp_path / "_manifest.json"
     manifest.write_text("{}", encoding="utf-8")
     summary = tmp_path / "_manifest_summary.json"

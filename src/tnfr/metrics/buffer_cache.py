@@ -28,11 +28,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..mathematics.unified_numerical import np as _unified_np
 from ..types import GraphLike
 from ..utils import edge_version_cache
-from ..mathematics.unified_numerical import np as _unified_np
 
 __all__ = ("ensure_numpy_buffers",)
+
 
 def ensure_numpy_buffers(
     G: GraphLike,

@@ -69,16 +69,16 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-from tnfr.physics.structural_diffusion import structural_eigenmodes
-from tnfr.physics.symplectic_substrate import extract_phase_space_point
-from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.alias import get_attr, set_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from tnfr.dynamics import default_compute_delta_nfr
+from tnfr.physics.structural_diffusion import structural_eigenmodes
+from tnfr.physics.symplectic_substrate import extract_phase_space_point
 
 
 def quadratic_residues(n: int) -> set[int]:
@@ -118,7 +118,8 @@ def coset_eta2(vec: np.ndarray, n: int, p: int) -> float:
         return 0.0
     between = sum(
         (labels == c).sum() * (v[labels == c].mean() - grand) ** 2
-        for c in range(p) if (labels == c).sum()
+        for c in range(p)
+        if (labels == c).sum()
     )
     return float(between / total)
 
@@ -126,12 +127,17 @@ def coset_eta2(vec: np.ndarray, n: int, p: int) -> float:
 def best_coset_eta2(eigvecs: np.ndarray, n: int, p: int, k: int = 8) -> float:
     """Max coset localization over the k lowest non-trivial emergent modes."""
     return max(
-        (coset_eta2(eigvecs[:, j], n, p) for j in range(1, min(k + 1, eigvecs.shape[1]))),
+        (
+            coset_eta2(eigvecs[:, j], n, p)
+            for j in range(1, min(k + 1, eigvecs.shape[1]))
+        ),
         default=0.0,
     )
 
 
-def _seed_and_evolve(G: nx.Graph, steps: int = 12, dt: float = 0.05, seed: int = 1) -> None:
+def _seed_and_evolve(
+    G: nx.Graph, steps: int = 12, dt: float = 0.05, seed: int = 1
+) -> None:
     """Populate the emergent substrate by running the nodal equation."""
     rng = np.random.default_rng(seed)
     for nd in G.nodes():
@@ -159,8 +165,17 @@ def experiment_1_primality_rigidity():
     print("Strongly-regular Paley primes (n = 1 mod 4) -> 3 distinct eigenvalues.")
     print()
     print(f"  {'n':>4} {'class':>9} {'n_distinct':>11} {'rigid?':>7}")
-    cases = [(13, "prime"), (29, "prime"), (37, "prime"), (53, "prime"),
-             (21, "3*7"), (33, "3*11"), (65, "5*13"), (25, "5^2"), (49, "7^2")]
+    cases = [
+        (13, "prime"),
+        (29, "prime"),
+        (37, "prime"),
+        (53, "prime"),
+        (21, "3*7"),
+        (33, "3*11"),
+        (65, "5*13"),
+        (25, "5^2"),
+        (49, "7^2"),
+    ]
     for n, cls in cases:
         ev, _ = structural_eigenmodes(residue_graph(n))
         distinct = len(np.unique(np.round(ev, 6)))
@@ -182,11 +197,21 @@ def experiment_2_factor_cosets():
     print("For n=p*q, does a low emergent eigenvector localize on cosets mod p?")
     print("eta^2 ~ 1 => the factor is read off the eigenvector (no n%k, no gcd).")
     print()
-    print(f"  {'n=p*q':>9} {'p':>3} {'eta2(mod p)':>12} {'baseline':>9} "
-          f"{'shuffled':>9} {'verdict':>8}")
+    print(
+        f"  {'n=p*q':>9} {'p':>3} {'eta2(mod p)':>12} {'baseline':>9} "
+        f"{'shuffled':>9} {'verdict':>8}"
+    )
     rng = np.random.default_rng(0)
-    cases = [(21, 3, 7), (33, 3, 11), (65, 5, 13), (85, 5, 17), (77, 7, 11),
-             (57, 3, 19), (51, 3, 17), (91, 7, 13)]
+    cases = [
+        (21, 3, 7),
+        (33, 3, 11),
+        (65, 5, 13),
+        (85, 5, 17),
+        (77, 7, 11),
+        (57, 3, 19),
+        (51, 3, 17),
+        (91, 7, 13),
+    ]
     for n, p, q in cases:
         _, vecs = structural_eigenmodes(residue_graph(n))
         eta = best_coset_eta2(vecs, n, p)
@@ -195,8 +220,10 @@ def experiment_2_factor_cosets():
         # the shuffle control is the real test: strong localization that the
         # label permutation destroys.
         verdict = "SIGNAL" if (eta > 0.5 and eta > 4 * eta_shuf) else "miss"
-        print(f"  {f'{n}={p}*{q}':>9} {p:>3} {eta:>12.4f} {base:>9.4f} "
-              f"{eta_shuf:>9.4f} {verdict:>8}")
+        print(
+            f"  {f'{n}={p}*{q}':>9} {p:>3} {eta:>12.4f} {base:>9.4f} "
+            f"{eta_shuf:>9.4f} {verdict:>8}"
+        )
     print()
     print("-> the factor p appears as an EXACT coset mode (eta^2=1) for most")
     print("   n=1 mod4 semiprimes, collapsing under shuffle. PARTIAL: when the")
@@ -215,15 +242,19 @@ def experiment_3_doctrine_check():
     for n in (21, 65, 85):
         degs = [d for _, d in residue_graph(n).degree()]
         tag = "REGULAR" if max(degs) == min(degs) else "irregular"
-        print(f"    n={n:>3}: degree {min(degs)}..{max(degs)} "
-              f"(spread {max(degs) - min(degs)}) -> {tag}")
+        print(
+            f"    n={n:>3}: degree {min(degs)}..{max(degs)} "
+            f"(spread {max(degs) - min(degs)}) -> {tag}"
+        )
     print()
     print("    -> the coset signal is the CRT structure of the residue graph")
     print("       re-expressed; the emergent framing does not add it.")
     print()
     print("(b) Symplectic substrate (dynamics-populated) coset localization:")
-    print(f"    {'n=p*q':>9} {'p':>3} {'eta2(diff)':>11} {'eta2(Phi_s)':>12} "
-          f"{'eta2(K_phi)':>12} {'eta2(J_dnfr)':>13}")
+    print(
+        f"    {'n=p*q':>9} {'p':>3} {'eta2(diff)':>11} {'eta2(Phi_s)':>12} "
+        f"{'eta2(K_phi)':>12} {'eta2(J_dnfr)':>13}"
+    )
     for n, p, q in [(21, 3, 7), (65, 5, 13), (85, 5, 17)]:
         G = residue_graph(n)
         _, vecs = structural_eigenmodes(G)
@@ -234,9 +265,11 @@ def experiment_3_doctrine_check():
         phis = np.array([pt.phi_s[idx[i]] for i in range(n)])
         kphi = np.array([pt.k_phi[idx[i]] for i in range(n)])
         jd = np.array([pt.j_dnfr[idx[i]] for i in range(n)])
-        print(f"    {f'{n}={p}*{q}':>9} {p:>3} {eta_diff:>11.4f} "
-              f"{coset_eta2(phis, n, p):>12.4f} {coset_eta2(kphi, n, p):>12.4f} "
-              f"{coset_eta2(jd, n, p):>13.4f}")
+        print(
+            f"    {f'{n}={p}*{q}':>9} {p:>3} {eta_diff:>11.4f} "
+            f"{coset_eta2(phis, n, p):>12.4f} {coset_eta2(kphi, n, p):>12.4f} "
+            f"{coset_eta2(jd, n, p):>13.4f}"
+        )
     print()
     print("    -> diffusion eigenvectors carry the factor (eta2~1); the emergent")
     print("       per-node substrate fields are BLIND (eta2~0). The substrate")

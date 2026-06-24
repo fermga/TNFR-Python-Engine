@@ -203,7 +203,8 @@ def build_spectral_il_smoother(H: np.ndarray, eta: float) -> np.ndarray:
 
 
 def build_spectral_iteration_matrix(
-    M: np.ndarray, S_N: np.ndarray,
+    M: np.ndarray,
+    S_N: np.ndarray,
 ) -> np.ndarray:
     """T_spec = S_IL^spec . M_REMESH in slot-major ordering.
 
@@ -309,7 +310,8 @@ def control_poisson(n_points: int, rng: np.random.Generator) -> dict[str, Any]:
 
 
 def control_shuffled_prime(
-    M: np.ndarray, rng: np.random.Generator,
+    M: np.ndarray,
+    rng: np.random.Generator,
 ) -> dict[str, Any]:
     """N3: rebuild H_P14 with primes permuted across the 10 ladders.
 
@@ -318,6 +320,7 @@ def control_shuffled_prime(
     k * log p_i; this is the *primary discriminator* for F8).
     """
     from sympy import primerange
+
     primes = list(primerange(2, 100))[:N_PRIMES]
     perm = rng.permutation(N_PRIMES)
     primes_shuffled = [primes[int(i)] for i in perm]
@@ -338,7 +341,9 @@ def control_remesh_isolated(M: np.ndarray) -> dict[str, Any]:
 
 
 def control_random_self_adjoint(
-    M: np.ndarray, target_radius: float, rng: np.random.Generator,
+    M: np.ndarray,
+    target_radius: float,
+    rng: np.random.Generator,
 ) -> dict[str, Any]:
     """N5: replace H_P14 with a random symmetric matrix of matching
     spectral radius.
@@ -419,29 +424,26 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
         f7a_verdict = "INDETERMINATE_INVALID_PROJECTION"
     elif not f8_satisfied:
         f7a_verdict = "INDETERMINATE_DEGENERATE_CONSTRUCTION"
-    elif (d_can < D_SUPPORTED_MAX
-          and d_can < d_shuf - D_SHUFFLE_MARGIN
-          and d_can < d_n5 - D_N5_MARGIN):
+    elif (
+        d_can < D_SUPPORTED_MAX
+        and d_can < d_shuf - D_SHUFFLE_MARGIN
+        and d_can < d_n5 - D_N5_MARGIN
+    ):
         f7a_verdict = "SUPPORTED"
-    elif (d_can > D_REFUTED_MIN
-          or d_can >= d_shuf - D_SHUFFLE_MARGIN):
+    elif d_can > D_REFUTED_MIN or d_can >= d_shuf - D_SHUFFLE_MARGIN:
         f7a_verdict = "REFUTED"
     else:
         f7a_verdict = "INDETERMINATE_OTHER"
 
     # -- pre-registered milestone verdict
     if f7a_verdict == "SUPPORTED":
-        milestone_verdict = (
-            "B1_SPECTRAL_BASIS_POTENTIALLY_OPEN_REQUIRES_REPLICATION"
-        )
+        milestone_verdict = "B1_SPECTRAL_BASIS_POTENTIALLY_OPEN_REQUIRES_REPLICATION"
     elif f7a_verdict == "REFUTED":
         milestone_verdict = (
             "B1_SPECTRAL_BASIS_REFUTED_FOR_CANONICAL_TENSOR_PRODUCT_LIFT"
         )
     elif f7a_verdict == "INDETERMINATE_DEGENERATE_CONSTRUCTION":
-        milestone_verdict = (
-            "B1_SPECTRAL_BASIS_INDETERMINATE_EULER_ORTHOGONALITY_EXTENDS_TO_SPECTRAL_CHANNEL"
-        )
+        milestone_verdict = "B1_SPECTRAL_BASIS_INDETERMINATE_EULER_ORTHOGONALITY_EXTENDS_TO_SPECTRAL_CHANNEL"
     else:
         milestone_verdict = f"B1_SPECTRAL_BASIS_{f7a_verdict}"
 
@@ -526,35 +528,51 @@ def _print_summary(report: dict[str, Any]) -> None:
     print("=" * 72)
     print(f"Graph: {cfg['graph']}")
     print(f"Hamiltonian: {cfg['hamiltonian']}")
-    print(f"  N_basis={cfg.get('N_basis', '?')}, "
-          f"dim(joint)={cfg.get('dim_joint_state', '?')}")
+    print(
+        f"  N_basis={cfg.get('N_basis', '?')}, "
+        f"dim(joint)={cfg.get('dim_joint_state', '?')}"
+    )
     print(f"  H_spectral_radius = {cfg['H_spectral_radius']:.6f}")
-    print(f"REMESH: alpha={cfg.get('alpha', ALPHA)}, "
-          f"tau_l={cfg.get('tau_l', TAU_LOCAL)}, "
-          f"tau_g={cfg.get('tau_g', TAU_GLOBAL)}; "
-          f"spectral IL: eta={cfg.get('eta_IL_spec', ETA_IL)}")
+    print(
+        f"REMESH: alpha={cfg.get('alpha', ALPHA)}, "
+        f"tau_l={cfg.get('tau_l', TAU_LOCAL)}, "
+        f"tau_g={cfg.get('tau_g', TAU_GLOBAL)}; "
+        f"spectral IL: eta={cfg.get('eta_IL_spec', ETA_IL)}"
+    )
     print()
     f8 = report.get("f8_structural_condition")
     if f8 is not None:
-        d_str = ("N/A" if f8["delta_D_can_minus_shuf_abs"] is None
-                 else f"{f8['delta_D_can_minus_shuf_abs']:.4e}")
+        d_str = (
+            "N/A"
+            if f8["delta_D_can_minus_shuf_abs"] is None
+            else f"{f8['delta_D_can_minus_shuf_abs']:.4e}"
+        )
         print(f"F8 structural condition (|D_can - D_shuf| >= {f8['floor']}):")
         print(f"  |Delta D|  = {d_str}   satisfied = {f8['satisfied']}")
         print()
     print("F7-A KS distance vs GUE Wigner surmise:")
     print(f"  {'label':36s} {'kind':14s} {'#spacings':>10s} {'D_GUE':>10s}")
     diags = [report["canonical"]]
-    diags.extend([report["controls"][k] for k in (
-        "N1_GOE", "N2_Poisson", "N3_shuffled_prime",
-        "N4_REMESH_isolated", "N5_random_self_adjoint",
-    )])
+    diags.extend(
+        [
+            report["controls"][k]
+            for k in (
+                "N1_GOE",
+                "N2_Poisson",
+                "N3_shuffled_prime",
+                "N4_REMESH_isolated",
+                "N5_random_self_adjoint",
+            )
+        ]
+    )
     diags.append(report["riemann_reference"])
     for diag in diags:
-        d_str = ("N/A" if diag["D_GUE"] is None
-                 else f"{diag['D_GUE']:.4f}")
+        d_str = "N/A" if diag["D_GUE"] is None else f"{diag['D_GUE']:.4f}"
         kind = diag.get("projection_kind", "iid_or_zeros")
-        print(f"  {diag['label']:36s} {kind:14s} "
-              f"{diag['n_spacings']:>10d} {d_str:>10s}")
+        print(
+            f"  {diag['label']:36s} {kind:14s} "
+            f"{diag['n_spacings']:>10d} {d_str:>10s}"
+        )
     print()
     print(f"F7-A verdict      : {report['f7a_verdict']}")
     print(f"Milestone verdict : {report['milestone_verdict']}")
@@ -564,9 +582,12 @@ def _print_summary(report: dict[str, Any]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--out", type=Path,
-        default=REPO_ROOT / "results" / "remesh_infinity"
-                / "remesh_infinity_riemann_spectral_basis.json",
+        "--out",
+        type=Path,
+        default=REPO_ROOT
+        / "results"
+        / "remesh_infinity"
+        / "remesh_infinity_riemann_spectral_basis.json",
     )
     args = parser.parse_args()
     report = run_milestone(args.out)

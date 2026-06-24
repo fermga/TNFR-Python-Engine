@@ -26,34 +26,31 @@ Physics basis:
 from __future__ import annotations
 
 import math
-import sys
 import os
+import sys
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from tnfr.constants.canonical import PHI, GAMMA, PI, E
 from tnfr.constants import inject_defaults
+from tnfr.constants.canonical import GAMMA, PHI, PI, E
+from tnfr.physics.extended import compute_dnfr_flux, compute_phase_current
 from tnfr.physics.fields import (
-    compute_structural_potential,
-    compute_phase_gradient,
-    compute_phase_curvature,
-    estimate_coherence_length,
     compute_complex_geometric_field_arrays,
     compute_emergent_fields,
+    compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
     compute_tensor_invariants,
-)
-from tnfr.physics.extended import (
-    compute_phase_current,
-    compute_dnfr_flux,
+    estimate_coherence_length,
 )
 from tnfr.physics.unified import (
+    compute_chirality_field,
     compute_complex_geometric_field,
     compute_field_magnitude,
     compute_field_phase,
-    compute_chirality_field,
     compute_symmetry_breaking_field,
 )
 
@@ -102,6 +99,7 @@ def _evolve_step(G: nx.Graph, dt: float = 0.05) -> None:
 # 1. K_phi - J_phi anticorrelation
 # ---------------------------------------------------------------------------
 
+
 def demo_anticorrelation() -> None:
     """Verify strong anticorrelation between K_phi and J_phi."""
     print("=" * 65)
@@ -117,7 +115,9 @@ def demo_anticorrelation() -> None:
     ]
 
     print(f"\n  Expected: r(K_phi, J_phi) in [-0.997, -0.854]")
-    print(f"\n  {'Topology':<20}  {'r(K_phi, J_phi)':>16}  {'Mean |Psi|':>10}  {'Verdict':>10}")
+    print(
+        f"\n  {'Topology':<20}  {'r(K_phi, J_phi)':>16}  {'Mean |Psi|':>10}  {'Verdict':>10}"
+    )
     print("  " + "-" * 62)
 
     for name, topo, n in topologies:
@@ -153,6 +153,7 @@ def demo_anticorrelation() -> None:
 # 2. Complex field Psi decomposition
 # ---------------------------------------------------------------------------
 
+
 def demo_complex_field() -> None:
     """Show Psi = K_phi + i*J_phi decomposition."""
     print("\n" + "=" * 65)
@@ -170,15 +171,19 @@ def demo_complex_field() -> None:
     nodes = sorted(G.nodes())[:10]  # show first 10
 
     print(f"\n  Node decomposition (first 10 nodes, WS N=30):")
-    print(f"  {'Node':>6}  {'K_phi':>8}  {'J_phi':>8}  {'|Psi|':>8}  {'arg(Psi)':>10}  {'Psi':>20}")
+    print(
+        f"  {'Node':>6}  {'K_phi':>8}  {'J_phi':>8}  {'|Psi|':>8}  {'arg(Psi)':>10}  {'Psi':>20}"
+    )
     print("  " + "-" * 68)
 
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
 
     for n in nodes:
-        print(f"  {n:6d}  {k_phi[n]:8.4f}  {j_phi[n]:8.4f}  {magnitudes[n]:8.4f}  "
-              f"{math.degrees(phases[n]):10.2f} deg  {psi[n].real:+.4f}{psi[n].imag:+.4f}j")
+        print(
+            f"  {n:6d}  {k_phi[n]:8.4f}  {j_phi[n]:8.4f}  {magnitudes[n]:8.4f}  "
+            f"{math.degrees(phases[n]):10.2f} deg  {psi[n].real:+.4f}{psi[n].imag:+.4f}j"
+        )
 
     # Array version
     arrays = compute_complex_geometric_field_arrays(G)
@@ -192,6 +197,7 @@ def demo_complex_field() -> None:
 # ---------------------------------------------------------------------------
 # 3. Emergent derived fields
 # ---------------------------------------------------------------------------
+
 
 def demo_emergent_fields() -> None:
     """Compute and interpret chirality, symmetry breaking, coherence coupling."""
@@ -216,7 +222,9 @@ def demo_emergent_fields() -> None:
     print(f"     Std:  {np.std(chi_arr):.6f}")
     print(f"     |chi| > 0 signals asymmetry between local and transport sectors")
 
-    print(f"\n  b) Symmetry Breaking  S = (|grad_phi|^2 - K_phi^2) + (J_phi^2 - J_DELTA_NFR^2)")
+    print(
+        f"\n  b) Symmetry Breaking  S = (|grad_phi|^2 - K_phi^2) + (J_phi^2 - J_DELTA_NFR^2)"
+    )
     print(f"     Order parameter for phase transitions")
     print(f"     Mean: {np.mean(sb_arr):.6f}  (S ~ 0 = balanced, |S| >> 0 = broken)")
     print(f"     Std:  {np.std(sb_arr):.6f}")
@@ -247,6 +255,7 @@ def demo_emergent_fields() -> None:
 # 4. Tensor invariants
 # ---------------------------------------------------------------------------
 
+
 def demo_tensor_invariants() -> None:
     """Compute energy density, topological charge, and charge density."""
     print("\n" + "=" * 65)
@@ -259,8 +268,10 @@ def demo_tensor_invariants() -> None:
         ("Grid (6x6)", "Grid", 36),
     ]
 
-    print(f"\n  {'Topology':<16}  {'Mean E':>10}  {'Std E':>8}  "
-          f"{'Mean Q':>10}  {'Mean rho':>10}")
+    print(
+        f"\n  {'Topology':<16}  {'Mean E':>10}  {'Std E':>8}  "
+        f"{'Mean Q':>10}  {'Mean rho':>10}"
+    )
     print("  " + "-" * 60)
 
     for name, topo, n in topologies:
@@ -274,8 +285,10 @@ def demo_tensor_invariants() -> None:
         q_arr = np.array(inv.get("topological_charge", [0.0]))
         rho_arr = np.array(inv.get("charge_density", [0.0]))
 
-        print(f"  {name:<16}  {np.mean(e_arr):10.4f}  {np.std(e_arr):8.4f}  "
-              f"{np.mean(q_arr):10.6f}  {np.mean(rho_arr):10.4f}")
+        print(
+            f"  {name:<16}  {np.mean(e_arr):10.4f}  {np.std(e_arr):8.4f}  "
+            f"{np.mean(q_arr):10.6f}  {np.mean(rho_arr):10.4f}"
+        )
 
     # Detailed breakdown for one topology
     G = _build_graph(40, "WS")
@@ -296,8 +309,8 @@ def demo_tensor_invariants() -> None:
     jd = np.array([j_dnfr[n] for n in nodes_sorted])
 
     # Energy decomposition: E = T + V
-    T = 0.5 * np.sum(jp ** 2 + jd ** 2)  # kinetic (transport)
-    V = 0.5 * np.sum(ps ** 2 + gp ** 2 + kp ** 2)  # potential (geometric)
+    T = 0.5 * np.sum(jp**2 + jd**2)  # kinetic (transport)
+    V = 0.5 * np.sum(ps**2 + gp**2 + kp**2)  # potential (geometric)
     E_total = T + V
     print(f"\n  Energy decomposition (WS N=40):")
     print(f"    E_total = {E_total:.4f}")
@@ -306,7 +319,9 @@ def demo_tensor_invariants() -> None:
 
     # Action density
     action = ps * gp + kp * jp + gp * jd
-    print(f"\n  Action density A = Phi_s*|grad_phi| + K_phi*J_phi + |grad_phi|*J_DELTA_NFR:")
+    print(
+        f"\n  Action density A = Phi_s*|grad_phi| + K_phi*J_phi + |grad_phi|*J_DELTA_NFR:"
+    )
     print(f"    Mean A: {np.mean(action):.6f}")
     print(f"    Sum A:  {np.sum(action):.4f}")
 
@@ -321,6 +336,7 @@ def demo_tensor_invariants() -> None:
 # 5. Evolution tracking of unified fields
 # ---------------------------------------------------------------------------
 
+
 def demo_evolution_tracking() -> None:
     """Track Psi magnitude and emergent fields during evolution."""
     print("\n" + "=" * 65)
@@ -331,8 +347,10 @@ def demo_evolution_tracking() -> None:
     n_steps = 30
 
     print(f"\n  Tracking WS (N=40) over {n_steps} diffusion steps:")
-    print(f"  {'Step':>6}  {'Mean|Psi|':>10}  {'Mean|chi|':>10}  "
-          f"{'Mean|S|':>10}  {'E_total':>10}  {'Q_total':>10}")
+    print(
+        f"  {'Step':>6}  {'Mean|Psi|':>10}  {'Mean|chi|':>10}  "
+        f"{'Mean|S|':>10}  {'E_total':>10}  {'Q_total':>10}"
+    )
     print("  " + "-" * 62)
 
     for step in range(n_steps + 1):
@@ -349,8 +367,10 @@ def demo_evolution_tracking() -> None:
             e_total = np.sum(inv.get("energy_density", [0.0]))
             q_total = np.sum(inv.get("topological_charge", [0.0]))
 
-            print(f"  {step:6d}  {mean_psi:10.4f}  {mean_chi:10.6f}  "
-                  f"{mean_sym:10.6f}  {e_total:10.4f}  {q_total:10.6f}")
+            print(
+                f"  {step:6d}  {mean_psi:10.4f}  {mean_chi:10.6f}  "
+                f"{mean_sym:10.6f}  {e_total:10.4f}  {q_total:10.6f}"
+            )
 
         _evolve_step(G, dt=0.1)
 
@@ -365,6 +385,7 @@ def demo_evolution_tracking() -> None:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     print()
@@ -383,7 +404,8 @@ def main() -> None:
     print("\n" + "=" * 65)
     print("  SUMMARY")
     print("=" * 65)
-    print(f"""
+    print(
+        f"""
   Complex Geometric Field Psi = K_phi + i * J_phi unifies:
     Real part (K_phi):  Static geometric confinement
     Imaginary part (J_phi):  Dynamic transport flow
@@ -406,7 +428,8 @@ def main() -> None:
   the scalar Phi_s and two complex fields Psi = K_phi + i*J_phi and
   Omega = |grad phi| + i*J_DNFR -- i.e. 6 downstream fields = 5 reals,
   no information loss.
-""")
+"""
+    )
 
 
 if __name__ == "__main__":

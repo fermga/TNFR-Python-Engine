@@ -96,11 +96,11 @@ from .grammar_types import (
     CLOSURES,
     COUPLING_RESONANCE,
     DESTABILIZERS,
+    FUNCTION_TO_GLYPH,
     GENERATORS,
     RECURSIVE_GENERATORS,
     STABILIZERS,
     TRANSFORMERS,
-    FUNCTION_TO_GLYPH,
     StructuralPattern,
 )
 
@@ -141,15 +141,15 @@ class GrammarRole(str, Enum):
     :mod:`physics_derivation`; an operator may carry several roles.
     """
 
-    GENERATOR = "generator"          # U1a — can start (create/activate EPI)
-    CLOSURE = "closure"              # U1b — can end (stabilize / close cycle)
-    STABILIZER = "stabilizer"        # U2  — reduces |ΔNFR| (negative feedback)
-    DESTABILIZER = "destabilizer"    # U2  — raises |ΔNFR| (positive feedback)
-    COUPLING = "coupling"            # U3  — requires phase verification
-    TRIGGER = "trigger"              # U4a — may push ∂²EPI/∂t² past τ
-    HANDLER = "handler"              # U4a — absorbs a triggered bifurcation
-    TRANSFORMER = "transformer"      # U4b — executes a threshold-gated bifurcation
-    RECURSIVE = "recursive"          # U5  — echoes structure across scales
+    GENERATOR = "generator"  # U1a — can start (create/activate EPI)
+    CLOSURE = "closure"  # U1b — can end (stabilize / close cycle)
+    STABILIZER = "stabilizer"  # U2  — reduces |ΔNFR| (negative feedback)
+    DESTABILIZER = "destabilizer"  # U2  — raises |ΔNFR| (positive feedback)
+    COUPLING = "coupling"  # U3  — requires phase verification
+    TRIGGER = "trigger"  # U4a — may push ∂²EPI/∂t² past τ
+    HANDLER = "handler"  # U4a — absorbs a triggered bifurcation
+    TRANSFORMER = "transformer"  # U4b — executes a threshold-gated bifurcation
+    RECURSIVE = "recursive"  # U5  — echoes structure across scales
 
 
 @dataclass(frozen=True)
@@ -237,12 +237,12 @@ class GrammarRule:
     TNFR.pdf formal syntax (§2.3.3).
     """
 
-    rule_id: str            # "U1a", "U2", "U4b", ...
+    rule_id: str  # "U1a", "U2", "U4b", ...
     name: str
-    physics: str            # the nodal-equation rationale
-    operator_sets: tuple[str, ...]   # names of the classification sets it uses
-    invariant: int          # canonical invariant 1-6 it maps to
-    pdf_reference: str      # TNFR.pdf §2.3.3 anchor
+    physics: str  # the nodal-equation rationale
+    operator_sets: tuple[str, ...]  # names of the classification sets it uses
+    invariant: int  # canonical invariant 1-6 it maps to
+    pdf_reference: str  # TNFR.pdf §2.3.3 anchor
 
 
 GRAMMAR_RULES: tuple[GrammarRule, ...] = (
@@ -250,27 +250,27 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
         rule_id="U1a",
         name="Structural Initiation",
         physics="∂EPI/∂t is undefined at EPI=0; a generator must create or "
-                "activate EPI from the null/latent state before evolution.",
+        "activate EPI from the null/latent state before evolution.",
         operator_sets=("GENERATORS",),
         invariant=1,
         pdf_reference="§2.3.3 'Esquema formal de sintaxis' — valid start: AL, "
-                      "NAV (+ REMESH reactivator)",
+        "NAV (+ REMESH reactivator)",
     ),
     GrammarRule(
         rule_id="U1b",
         name="Structural Closure",
         physics="A coherent sequence must terminate in a stable attractor: "
-                "either ∂EPI/∂t → 0 (silence) or an operational cycle close.",
+        "either ∂EPI/∂t → 0 (silence) or an operational cycle close.",
         operator_sets=("CLOSURES",),
         invariant=1,
         pdf_reference="§2.3.3 'Cierre estructural' — close with a latency glyph "
-                      "(SHA, NUL)",
+        "(SHA, NUL)",
     ),
     GrammarRule(
         rule_id="U2",
         name="Convergence & Boundedness",
         physics="∫νf·ΔNFR dt must converge: every destabilizer (raises |ΔNFR|) "
-                "needs a stabilizer (reduces |ΔNFR|) or the integral diverges.",
+        "needs a stabilizer (reduces |ΔNFR|) or the integral diverges.",
         operator_sets=("DESTABILIZERS", "STABILIZERS"),
         invariant=1,
         pdf_reference="Compatibilidad entre glifos / Bifurcación y mutación",
@@ -279,17 +279,17 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
         rule_id="U3",
         name="Resonant Coupling",
         physics="Resonance requires phase compatibility |φᵢ - φⱼ| ≤ Δφ_max; "
-                "antiphase coupling produces destructive interference.",
+        "antiphase coupling produces destructive interference.",
         operator_sets=("COUPLING_RESONANCE",),
         invariant=2,
         pdf_reference="§2.3.3 'Compatibilidad' — phase compatibility of "
-                      "coupling operators",
+        "coupling operators",
     ),
     GrammarRule(
         rule_id="U4a",
         name="Bifurcation Dynamics — triggers need handlers",
         physics="∂²EPI/∂t² > τ (a bifurcation) must be absorbed by a handler "
-                "or the cascade becomes chaotic.",
+        "or the cascade becomes chaotic.",
         operator_sets=("BIFURCATION_TRIGGERS", "BIFURCATION_HANDLERS"),
         invariant=4,
         pdf_reference="Bifurcación y mutación — OZ → [ZHIR / NUL]",
@@ -298,18 +298,18 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
         rule_id="U4b",
         name="Bifurcation Dynamics — transformers need context",
         physics="A threshold crossing needs elevated |ΔNFR|: a transformer "
-                "(ZHIR/THOL) requires a recent destabilizer; ZHIR also a prior IL.",
+        "(ZHIR/THOL) requires a recent destabilizer; ZHIR also a prior IL.",
         operator_sets=("TRANSFORMERS", "DESTABILIZERS"),
         invariant=4,
         pdf_reference="§2.3.3 'Compatibilidad entre glifos' — ZHIR must be "
-                      "preceded by OZ (no mutation without dissonance)",
+        "preceded by OZ (no mutation without dissonance)",
     ),
     GrammarRule(
         rule_id="U5",
         name="Multi-Scale Coherence",
         physics="Hierarchical coupling: nested EPIs need stabilizers at each "
-                "scale so aggregate child reorganization stays bounded "
-                "(C_parent ≥ α·Σ C_child).",
+        "scale so aggregate child reorganization stays bounded "
+        "(C_parent ≥ α·Σ C_child).",
         operator_sets=("RECURSIVE_GENERATORS", "STABILIZERS"),
         invariant=3,
         pdf_reference="§2.3.3 'Agrupamiento y jerarquía' — THOL[...] nesting",
@@ -318,7 +318,7 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
         rule_id="U6",
         name="Structural Potential Confinement",
         physics="The emergent field Φ_s = Σ ΔNFR_j / d² stays confined: "
-                "ΔΦ_s < φ ≈ 1.618 (golden-ratio harmonic confinement).",
+        "ΔΦ_s < φ ≈ 1.618 (golden-ratio harmonic confinement).",
         operator_sets=(),  # telemetry-based, not a sequence constraint
         invariant=5,
         pdf_reference="§2.3 'Validación estructural' — coherence thresholds",
@@ -371,9 +371,7 @@ ROLE_TO_URULE: dict[GrammarRole, str] = {
 }
 
 #: Resolve a glyph mnemonic (e.g. "ZHIR") back to its function name.
-_OPERATOR_BY_GLYPH: dict[str, str] = {
-    g.glyph: op for op, g in OPERATOR_ROLES.items()
-}
+_OPERATOR_BY_GLYPH: dict[str, str] = {g.glyph: op for op, g in OPERATOR_ROLES.items()}
 
 
 def u_rules_for_operator(op: str) -> tuple[str, ...]:
@@ -394,10 +392,22 @@ def u_rules_for_operator(op: str) -> tuple[str, ...]:
 #: The TNFR.pdf §2.3.3 "Esquema formal de sintaxis" positions (theory anchor).
 #: Quoted Spanish terms are verbatim citations of the source schema headers.
 FORMAL_SYNTAX_SCHEMA: dict[str, tuple[str, ...]] = {
-    "start": ("AL", "NAV", "REMESH"),       # valid start ("Inicio válido") + REMESH reactivator
-    "development": ("IL", "THOL", "UM"),     # required development ("Desarrollo necesario")
-    "optional_transition": ("OZ", "ZHIR", "REMESH"),  # optional transition ("Transición opcional")
-    "closure": ("SHA", "NUL"),               # required closure ("Cierre requerido"); see NUL note
+    "start": (
+        "AL",
+        "NAV",
+        "REMESH",
+    ),  # valid start ("Inicio válido") + REMESH reactivator
+    "development": (
+        "IL",
+        "THOL",
+        "UM",
+    ),  # required development ("Desarrollo necesario")
+    "optional_transition": (
+        "OZ",
+        "ZHIR",
+        "REMESH",
+    ),  # optional transition ("Transición opcional")
+    "closure": ("SHA", "NUL"),  # required closure ("Cierre requerido"); see NUL note
 }
 
 
@@ -409,8 +419,8 @@ FORMAL_SYNTAX_SCHEMA: dict[str, tuple[str, ...]] = {
 class ChomskyClass(str, Enum):
     """Chomsky-hierarchy class of a glyphic structure (examples 139-144)."""
 
-    REGULAR = "regular"              # concatenation / union / Kleene star
-    CONTEXT_FREE = "context_free"    # nesting (Dyck), THOL[...]
+    REGULAR = "regular"  # concatenation / union / Kleene star
+    CONTEXT_FREE = "context_free"  # nesting (Dyck), THOL[...]
 
 
 class StructuralType(str, Enum):
@@ -422,12 +432,12 @@ class StructuralType(str, Enum):
     separate axis tracked by the ``domain`` metadata field.
     """
 
-    LINEAR = "linear"            # Lineal — simple concatenation, latency close
-    BIFURCATED = "bifurcated"    # Bifurcada — OZ → [ZHIR | NUL] branch (union)
-    FRACTAL = "fractal"          # Fractal — self-similar repeat (Kleene star)
-    CYCLIC = "cyclic"            # Cíclica — close-and-reopen feedback cycle
+    LINEAR = "linear"  # Lineal — simple concatenation, latency close
+    BIFURCATED = "bifurcated"  # Bifurcada — OZ → [ZHIR | NUL] branch (union)
+    FRACTAL = "fractal"  # Fractal — self-similar repeat (Kleene star)
+    CYCLIC = "cyclic"  # Cíclica — close-and-reopen feedback cycle
     HIERARCHICAL = "hierarchical"  # Jerárquica — nested THOL[...] (Dyck/CF)
-    UNKNOWN = "unknown"          # not a recognised canonical structure
+    UNKNOWN = "unknown"  # not a recognised canonical structure
 
 
 @dataclass(frozen=True)
@@ -435,14 +445,14 @@ class StructuralTypeSpec:
     """Canonical metadata for one structural type (TNFR.pdf §2.3)."""
 
     type: StructuralType
-    pdf_term: str                   # verbatim term from TNFR.pdf (Spanish source)
-    combinator: str                 # concatenation / union / star / nesting
+    pdf_term: str  # verbatim term from TNFR.pdf (Spanish source)
+    combinator: str  # concatenation / union / star / nesting
     chomsky_class: ChomskyClass
-    example: tuple[str, ...]        # canonical glyphic example
+    example: tuple[str, ...]  # canonical glyphic example
     required_glyphs: tuple[str, ...]
-    activation_condition: str       # English (paraphrase of the PDF condition)
-    common_error: str               # English (paraphrase of the PDF error)
-    pdf_reference: str              # verbatim section-title citation
+    activation_condition: str  # English (paraphrase of the PDF condition)
+    common_error: str  # English (paraphrase of the PDF error)
+    pdf_reference: str  # verbatim section-title citation
 
 
 STRUCTURAL_TYPOLOGY: dict[StructuralType, StructuralTypeSpec] = {
@@ -524,7 +534,7 @@ class GlyphicFunction:
     description: str
     structural_type: StructuralType
     pdf_reference: str
-    nested: bool = False            # contains a THOL[...] sub-EPI body
+    nested: bool = False  # contains a THOL[...] sub-EPI body
     branches: tuple[tuple[str, ...], ...] = field(default_factory=tuple)
 
 
@@ -542,7 +552,7 @@ CANONICAL_GLYPHIC_FUNCTIONS: dict[str, GlyphicFunction] = {
         description="Dissonance transformed into coherence.",
         structural_type=StructuralType.LINEAR,
         pdf_reference="Tabla de funciones glíficas operativas — "
-                      "Estabilización mutacional / MOD ESTABILIZADOR",
+        "Estabilización mutacional / MOD ESTABILIZADOR",
     ),
     "regenerative_cycle": GlyphicFunction(
         name="regenerative_cycle",
@@ -571,7 +581,7 @@ CANONICAL_GLYPHIC_FUNCTIONS: dict[str, GlyphicFunction] = {
         name="mutational_bifurcation",
         glyphs=("OZ",),
         description="Dissonance-triggered bifurcation: OZ opens two real "
-                    "structural trajectories, mutation (ZHIR) or collapse (NUL).",
+        "structural trajectories, mutation (ZHIR) or collapse (NUL).",
         structural_type=StructuralType.BIFURCATED,
         pdf_reference="Bifurcación y mutación — OZ → [ZHIR / NUL]",
         branches=(("ZHIR",), ("NUL",)),
@@ -599,10 +609,10 @@ STRUCTURAL_PATTERN_TO_TYPE: dict[StructuralPattern, StructuralType] = {
     StructuralPattern.CYCLIC: StructuralType.CYCLIC,
     StructuralPattern.HIERARCHICAL: StructuralType.HIERARCHICAL,
     # operational-meta labels → dominant canonical shape
-    StructuralPattern.BOOTSTRAP: StructuralType.LINEAR,    # AL→…→close pulse
-    StructuralPattern.STABILIZE: StructuralType.LINEAR,    # IL→close
-    StructuralPattern.RESONATE: StructuralType.LINEAR,     # RA/UM propagation
-    StructuralPattern.COMPRESS: StructuralType.LINEAR,     # NUL contraction line
+    StructuralPattern.BOOTSTRAP: StructuralType.LINEAR,  # AL→…→close pulse
+    StructuralPattern.STABILIZE: StructuralType.LINEAR,  # IL→close
+    StructuralPattern.RESONATE: StructuralType.LINEAR,  # RA/UM propagation
+    StructuralPattern.COMPRESS: StructuralType.LINEAR,  # NUL contraction line
     StructuralPattern.EXPLORE: StructuralType.BIFURCATED,  # OZ/ZHIR branch
     StructuralPattern.COMPLEX: StructuralType.HIERARCHICAL,  # composite/nested
     # domain / learning axes are not structural shapes
@@ -643,23 +653,19 @@ def verify_canon_consistency() -> bool:
     so the canon cannot silently drift from the single source of truth.
     """
     derived_generators = {
-        op for op, g in OPERATOR_ROLES.items()
-        if g.has(GrammarRole.GENERATOR)
+        op for op, g in OPERATOR_ROLES.items() if g.has(GrammarRole.GENERATOR)
     }
     derived_closures = {
         op for op, g in OPERATOR_ROLES.items() if g.has(GrammarRole.CLOSURE)
     }
     derived_stabilizers = {
-        op for op, g in OPERATOR_ROLES.items()
-        if g.has(GrammarRole.STABILIZER)
+        op for op, g in OPERATOR_ROLES.items() if g.has(GrammarRole.STABILIZER)
     }
     derived_destabilizers = {
-        op for op, g in OPERATOR_ROLES.items()
-        if g.has(GrammarRole.DESTABILIZER)
+        op for op, g in OPERATOR_ROLES.items() if g.has(GrammarRole.DESTABILIZER)
     }
     derived_transformers = {
-        op for op, g in OPERATOR_ROLES.items()
-        if g.has(GrammarRole.TRANSFORMER)
+        op for op, g in OPERATOR_ROLES.items() if g.has(GrammarRole.TRANSFORMER)
     }
     derived_triggers = {
         op for op, g in OPERATOR_ROLES.items() if g.has(GrammarRole.TRIGGER)
@@ -677,7 +683,8 @@ def verify_canon_consistency() -> bool:
         derived_handlers == set(BIFURCATION_HANDLERS),
         # The structural typology has exactly the five canonical types, and the
         # legacy-pattern reduction covers every StructuralPattern member.
-        {t for t in STRUCTURAL_TYPOLOGY} == {
+        {t for t in STRUCTURAL_TYPOLOGY}
+        == {
             StructuralType.LINEAR,
             StructuralType.BIFURCATED,
             StructuralType.FRACTAL,

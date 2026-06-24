@@ -47,6 +47,7 @@ __all__ = [
     "iter_operator_meta",
 ]
 
+
 @dataclass(frozen=True, slots=True)
 class OperatorMeta:
     name: str
@@ -55,6 +56,7 @@ class OperatorMeta:
     grammar_roles: tuple[str, ...]
     contracts: tuple[str, ...]
     doc: str
+
 
 OPERATOR_METADATA: Mapping[str, OperatorMeta] = {
     # Generators ---------------------------------------------------------
@@ -208,6 +210,7 @@ def _centralize_contracts(
 
 OPERATOR_METADATA = _centralize_contracts(OPERATOR_METADATA)
 
+
 def get_operator_meta(identifier: str) -> OperatorMeta:
     """Return metadata for glyph mnemonic or class name.
 
@@ -226,6 +229,7 @@ def get_operator_meta(identifier: str) -> OperatorMeta:
         if m.name == identifier:
             return m
     raise KeyError(identifier)
+
 
 def iter_operator_meta() -> Iterator[OperatorMeta]:
     """Iterate all operator metadata objects."""

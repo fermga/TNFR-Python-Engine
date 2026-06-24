@@ -30,10 +30,7 @@ from tnfr.riemann.hilbert_polya import (
     fetch_zero_imaginary_parts,
     structural_gap_p14_vs_hp,
 )
-from tnfr.riemann.prime_ladder_hamiltonian import (
-    build_prime_ladder_hamiltonian,
-)
-
+from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_hamiltonian
 
 # Force UTF-8 on Windows consoles
 if isinstance(sys.stdout, io.TextIOWrapper):
@@ -51,8 +48,10 @@ def _print_header(title: str) -> None:
 
 
 def _print_certificate(cert: HilbertPolyaCertificate) -> None:
-    print(f"  Truncation:                  n_zeros = {cert.n_zeros}, "
-          f"n_primes = {cert.n_primes}, K = {cert.max_power}")
+    print(
+        f"  Truncation:                  n_zeros = {cert.n_zeros}, "
+        f"n_primes = {cert.n_primes}, K = {cert.max_power}"
+    )
     print()
     print("  Self-adjointness:")
     print(f"    asymmetry (Frobenius)       = {cert.asymmetry_frobenius:.3e}")
@@ -76,18 +75,16 @@ def _print_certificate(cert: HilbertPolyaCertificate) -> None:
     print()
     print("  Operator-level gap G4:")
     print(f"    n_compared                  = {cert.spectral_gap_n_compared}")
-    print(f"    Wasserstein-1(P14, T_HP)    = "
-          f"{cert.spectral_gap_wasserstein_1:.6e}")
-    print(f"    asymptotic growth ratio     = "
-          f"{cert.spectral_gap_growth_ratio:.6e}")
+    print(
+        f"    Wasserstein-1(P14, T_HP)    = " f"{cert.spectral_gap_wasserstein_1:.6e}"
+    )
+    print(f"    asymptotic growth ratio     = " f"{cert.spectral_gap_growth_ratio:.6e}")
     print()
     print(f"  scaffold_consistent           = {cert.scaffold_consistent}")
 
 
 def main() -> None:
-    _print_header(
-        "Section 1: Hilbert-Polya scaffold certificate (default parameters)"
-    )
+    _print_header("Section 1: Hilbert-Polya scaffold certificate (default parameters)")
     cert = compute_hilbert_polya_certificate(
         n_primes=50,
         max_power=8,
@@ -105,18 +102,14 @@ def main() -> None:
         "Section 2: spec(P14) vs spec(T_HP) growth diagnostic "
         "(operator-level gap G4)"
     )
-    bundle = build_prime_ladder_hamiltonian(
-        n_primes=50, max_power=8, coupling=0.0
-    )
+    bundle = build_prime_ladder_hamiltonian(n_primes=50, max_power=8, coupling=0.0)
     gammas = fetch_zero_imaginary_parts(80, dps=30)
     gap = structural_gap_p14_vs_hp(bundle, gammas)
     print(f"  n_compared        = {gap['n_compared']}")
     print(f"  spec(P14):  min   = {gap['p14_min']:.6e}")
-    print(f"              max   = {gap['p14_max']:.6e}   "
-          f"(grows like log n)")
+    print(f"              max   = {gap['p14_max']:.6e}   " f"(grows like log n)")
     print(f"  spec(T_HP): min   = {gap['hp_min']:.6e}")
-    print(f"              max   = {gap['hp_max']:.6e}   "
-          f"(grows like 2*pi*n/log n)")
+    print(f"              max   = {gap['hp_max']:.6e}   " f"(grows like 2*pi*n/log n)")
     print(f"  Wasserstein-1     = {gap['wasserstein_1']:.6e}")
     print(f"  growth ratio      = {gap['asymptotic_growth_ratio']:.6e}")
     print()
@@ -126,8 +119,7 @@ def main() -> None:
     print("  Side-by-side (first 8 entries, sorted ascending):")
     print("    n    spec(P14) = k*log(p)     spec(T_HP) = gamma_n")
     for i in range(n_show):
-        print(f"    {i + 1:2d}   {p14_pos[i]:.10f}             "
-              f"{gammas[i]:.10f}")
+        print(f"    {i + 1:2d}   {p14_pos[i]:.10f}             " f"{gammas[i]:.10f}")
 
     _print_header("Section 3: Honest scope (per AGENTS.md sec. 13.2)")
     print(

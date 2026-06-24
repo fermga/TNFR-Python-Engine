@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-from ..types import (
-    GlyphCounts,
-    GlyphMetricsHistory,
-    GlyphTimingByNode as GlyphTimingByNode,
-    GlyphTimingTotals as GlyphTimingTotals,
-    GlyphogramRow as GlyphogramRow,
-    GraphLike,
-    SigmaTrace as SigmaTrace,
-)
 from collections import Counter
 from dataclasses import dataclass
 from typing import Any, Callable, Mapping, MutableMapping
+
+from ..types import GlyphCounts, GlyphMetricsHistory
+from ..types import GlyphogramRow as GlyphogramRow
+from ..types import GlyphTimingByNode as GlyphTimingByNode
+from ..types import GlyphTimingTotals as GlyphTimingTotals
+from ..types import GraphLike
+from ..types import SigmaTrace as SigmaTrace
 
 __all__ = [
     "LATENT_GLYPH",

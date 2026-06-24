@@ -13,29 +13,23 @@ import math
 import numpy as np
 import pytest
 
-from tnfr.riemann.analytical_convergence import (
-    # Data structures
-    TelescopingIdentity,
-    PNTAsymptoticBound,
+from tnfr.riemann.analytical_convergence import (  # Data structures; Theorem 1; Theorem 2; Theorem 3; Integration
+    AnalyticalConvergenceProof,
     ConvergenceRateBound,
     EffectiveConstantResult,
-    AnalyticalConvergenceProof,
-    # Theorem 1
-    compute_telescoping_trace,
-    verify_telescoping_identity,
-    # Theorem 2
-    pnt_prime_estimate,
-    euler_maclaurin_log_squared_sum,
-    pnt_sum_log_squared,
-    # Theorem 3
+    PNTAsymptoticBound,
+    TelescopingIdentity,
+    analyze_convergence_sequence,
     compute_convergence_rate_bound,
     compute_effective_constant,
-    analyze_convergence_sequence,
-    # Integration
+    compute_telescoping_trace,
+    euler_maclaurin_log_squared_sum,
+    pnt_prime_estimate,
+    pnt_sum_log_squared,
     run_analytical_convergence_proof,
+    verify_telescoping_identity,
 )
 from tnfr.riemann.spectral_proof import compute_analytic_sigma_star
-
 
 # ============================================================================
 # Fixtures
@@ -96,9 +90,9 @@ class TestTelescopingIdentity:
     def test_exact_match_numerical(self, small_k):
         """Telescoping identity must match numerical tr(L V_1) to machine precision."""
         result = compute_telescoping_trace(small_k)
-        assert result.relative_error < 1e-12, (
-            f"k={small_k}: rel_error={result.relative_error:.2e}"
-        )
+        assert (
+            result.relative_error < 1e-12
+        ), f"k={small_k}: rel_error={result.relative_error:.2e}"
 
     def test_exact_match_k5(self):
         result = compute_telescoping_trace(5)
@@ -365,7 +359,10 @@ class TestEffectiveConstant:
 
     def test_deviation_from_unity_field(self, medium_k):
         result = compute_effective_constant(medium_k)
-        assert abs(result.deviation_from_unity - abs(result.effective_constant - 1.0)) < 1e-14
+        assert (
+            abs(result.deviation_from_unity - abs(result.effective_constant - 1.0))
+            < 1e-14
+        )
 
     def test_invalid_k(self):
         with pytest.raises(ValueError, match="k >= 2"):

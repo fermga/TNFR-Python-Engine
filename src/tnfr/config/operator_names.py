@@ -133,15 +133,18 @@ BIFURCATION_WINDOWS = {
     "weak": 1,  # (vestigial: no weak destabilizers in the canonical set)
 }
 
+
 def canonical_operator_name(name: str) -> str:
     """Return the canonical operator token for ``name``."""
 
     return name
 
+
 def operator_display_name(name: str) -> str:
     """Return the display label for ``name`` (currently the canonical token)."""
 
     return canonical_operator_name(name)
+
 
 __all__ = [
     "EMISSION",
@@ -177,6 +180,7 @@ __all__ = [
     "validate_physics_derivation",
 ]
 
+
 def validate_physics_derivation() -> dict[str, Any]:
     """Validate that operator sets are consistent with TNFR physics derivation.
 
@@ -206,8 +210,8 @@ def validate_physics_derivation() -> dict[str, Any]:
     exceptions, allowing for intentional overrides with clear audit trail.
     """
     from .physics_derivation import (
-        derive_start_operators_from_physics,
         derive_end_operators_from_physics,
+        derive_start_operators_from_physics,
     )
 
     expected_starts = derive_start_operators_from_physics()
@@ -224,7 +228,9 @@ def validate_physics_derivation() -> dict[str, Any]:
                 f"VALID_START_OPERATORS missing physics-derived operators: {missing}"
             )
         if extra:
-            discrepancies.append(f"VALID_START_OPERATORS contains non-physics operators: {extra}")
+            discrepancies.append(
+                f"VALID_START_OPERATORS contains non-physics operators: {extra}"
+            )
 
     end_valid = VALID_END_OPERATORS == expected_ends
     if not end_valid:
@@ -235,7 +241,9 @@ def validate_physics_derivation() -> dict[str, Any]:
                 f"VALID_END_OPERATORS missing physics-derived operators: {missing}"
             )
         if extra:
-            discrepancies.append(f"VALID_END_OPERATORS contains non-physics operators: {extra}")
+            discrepancies.append(
+                f"VALID_END_OPERATORS contains non-physics operators: {extra}"
+            )
 
     return {
         "start_operators_valid": start_valid,
@@ -246,6 +254,7 @@ def validate_physics_derivation() -> dict[str, Any]:
         "end_operators_actual": VALID_END_OPERATORS,
         "discrepancies": discrepancies,
     }
+
 
 def __getattr__(name: str) -> Any:
     """Provide a consistent ``AttributeError`` when names are missing."""

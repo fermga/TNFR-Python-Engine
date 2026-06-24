@@ -12,7 +12,9 @@ import tnfr.factorization as factorization_module
 from tnfr.factorization import factorize
 
 
-def test_factorize_returns_spectral_result(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_factorize_returns_spectral_result(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     partition_root = tmp_path / "partition_outputs"
     monkeypatch.setenv("TNFR_PARTITION_OUTPUT_DIR", str(partition_root))
 
@@ -54,14 +56,18 @@ def test_factorize_returns_spectral_result(tmp_path: Path, monkeypatch: pytest.M
     assert result.partition_file_archive_path is None
 
 
-def test_factorize_emits_manifest_for_multiple_partitions(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_factorize_emits_manifest_for_multiple_partitions(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.setenv("TNFR_PARTITION_TARGET_SIZE", "5")
     monkeypatch.setenv("TNFR_PARTITION_OVERLAP", "0")
     partition_root = tmp_path / "partition_outputs"
     monkeypatch.setenv("TNFR_PARTITION_OUTPUT_DIR", str(partition_root))
     factorization_module._DEFAULT_FACTORIZER = None
 
-    result = factorization_module.factorize(299, trace_certificates=True, certificate_dir=tmp_path)
+    result = factorization_module.factorize(
+        299, trace_certificates=True, certificate_dir=tmp_path
+    )
 
     assert result.partition_artifact_dir
     assert result.partition_manifest_path
@@ -102,7 +108,9 @@ def test_factorize_emits_compressed_partition_file_index_when_threshold_small(
     monkeypatch.setenv("TNFR_PARTITION_OUTPUT_DIR", str(partition_root))
     factorization_module._DEFAULT_FACTORIZER = None
 
-    result = factorization_module.factorize(299, trace_certificates=True, certificate_dir=tmp_path)
+    result = factorization_module.factorize(
+        299, trace_certificates=True, certificate_dir=tmp_path
+    )
 
     assert result.partition_file_archive_path
     archive_path = Path(result.partition_file_archive_path)

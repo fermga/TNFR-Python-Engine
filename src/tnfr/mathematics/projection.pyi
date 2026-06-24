@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import numpy as np
 from dataclasses import dataclass
 from typing import Protocol
+
+import numpy as np
 import numpy.typing as npt
 
 __all__ = ["StateProjector", "BasicStateProjector"]

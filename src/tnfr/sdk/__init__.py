@@ -94,20 +94,23 @@ def __getattr__(name: str) -> Any:
     ):
         from .simple import (
             TNFR,
-            Network,
-            Results,
-            TetradSnapshot,
             ConservationReport,
-            SymplecticReport,
             FactorizationReport,
-            PrimalityReport,
-            NodalStateReport,
+            Network,
             NodalDynamicsReport,
+            NodalStateReport,
+            PrimalityReport,
+            Results,
+            SymplecticReport,
+            TetradSnapshot,
         )
 
         mapping = {
-            "TNFR": TNFR, "Network": Network, "Results": Results,
-            "TetradSnapshot": TetradSnapshot, "ConservationReport": ConservationReport,
+            "TNFR": TNFR,
+            "Network": Network,
+            "Results": Results,
+            "TetradSnapshot": TetradSnapshot,
+            "ConservationReport": ConservationReport,
             "SymplecticReport": SymplecticReport,
             "FactorizationReport": FactorizationReport,
             "PrimalityReport": PrimalityReport,
@@ -116,7 +119,7 @@ def __getattr__(name: str) -> Any:
         }
         return mapping[name]
     elif name == "TNFRNetwork" or name == "NetworkConfig" or name == "NetworkResults":
-        from .fluent import TNFRNetwork, NetworkConfig, NetworkResults
+        from .fluent import NetworkConfig, NetworkResults, TNFRNetwork
 
         if name == "TNFRNetwork":
             return TNFRNetwork
@@ -148,8 +151,8 @@ def __getattr__(name: str) -> Any:
             compare_networks,
             compute_network_statistics,
             export_to_json,
-            import_from_json,
             format_comparison_table,
+            import_from_json,
             suggest_sequence_for_goal,
         )
 

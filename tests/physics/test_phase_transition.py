@@ -40,29 +40,28 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-
 from tnfr.physics.phase_transition import (
-    Phase,
-    PhaseTransitionTelemetry,
-    PhaseSnapshot,
     Z_SIGNIFICANCE,
-    symmetry_zscore,
-    compute_order_parameter,
-    compute_chirality_statistics,
-    classify_phase,
+    Phase,
+    PhaseSnapshot,
+    PhaseTransitionTelemetry,
     capture_phase_snapshot,
+    classify_phase,
+    compute_chirality_statistics,
+    compute_order_parameter,
     detect_phase_transition,
     fit_critical_exponent,
+    symmetry_zscore,
 )
 from tnfr.physics.unified import (
-    compute_symmetry_breaking_field,
     compute_chirality_field,
+    compute_symmetry_breaking_field,
 )
-
 
 # ============================================================================
 # Fixtures — build TNFR graphs in controlled structural regimes
 # ============================================================================
+
 
 @pytest.fixture
 def uniform_graph() -> nx.Graph:
@@ -127,6 +126,7 @@ def _build_transition_sequence(n_steps: int = 20, seed: int = 42) -> tuple:
 # Test 1: Constants consistency with canonical module
 # ============================================================================
 
+
 class TestEmergentClassification:
     """The classification scale is the emergent sampling-noise z-score.
 
@@ -162,20 +162,21 @@ class TestEmergentClassification:
 # Test 2: Symmetric phase (non-life)
 # ============================================================================
 
+
 class TestSymmetricPhase:
     """Uniform equilibrium graphs must be classified as NON_LIFE."""
 
     def test_uniform_graph_order_parameter_zero(self, uniform_graph):
         """⟨𝒮⟩ = 0 for uniform phases and ΔNFR."""
         op = compute_order_parameter(uniform_graph)
-        assert op['mean'] == pytest.approx(0.0, abs=1e-10)
-        assert op['abs_mean'] == pytest.approx(0.0, abs=1e-10)
+        assert op["mean"] == pytest.approx(0.0, abs=1e-10)
+        assert op["abs_mean"] == pytest.approx(0.0, abs=1e-10)
 
     def test_uniform_graph_chirality_zero(self, uniform_graph):
         """⟨χ⟩ = 0 for uniform phases."""
         chi = compute_chirality_statistics(uniform_graph)
-        assert chi['mean'] == pytest.approx(0.0, abs=1e-10)
-        assert chi['abs_mean'] == pytest.approx(0.0, abs=1e-10)
+        assert chi["mean"] == pytest.approx(0.0, abs=1e-10)
+        assert chi["abs_mean"] == pytest.approx(0.0, abs=1e-10)
 
     def test_uniform_graph_classified_non_life(self, uniform_graph):
         """Uniform graph → Phase.NON_LIFE."""
@@ -190,12 +191,13 @@ class TestSymmetricPhase:
     def test_susceptibility_zero_uniform(self, uniform_graph):
         """χ_𝒮 = 0 when all 𝒮(i) = 0."""
         op = compute_order_parameter(uniform_graph)
-        assert op['susceptibility'] == pytest.approx(0.0, abs=1e-10)
+        assert op["susceptibility"] == pytest.approx(0.0, abs=1e-10)
 
 
 # ============================================================================
 # Test 3: Broken symmetry (life phase)
 # ============================================================================
+
 
 class TestBrokenSymmetry:
     """Heterogeneous graphs must show broken symmetry → LIFE."""
@@ -203,12 +205,12 @@ class TestBrokenSymmetry:
     def test_heterogeneous_nonzero_order_parameter(self, heterogeneous_graph):
         """⟨|𝒮|⟩ > 0 for diverse phases and ΔNFR."""
         op = compute_order_parameter(heterogeneous_graph)
-        assert op['abs_mean'] > 0
+        assert op["abs_mean"] > 0
 
     def test_heterogeneous_nonzero_chirality(self, heterogeneous_graph):
         """⟨|χ|⟩ > 0 for diverse phases (broken mirror symmetry)."""
         chi = compute_chirality_statistics(heterogeneous_graph)
-        assert chi['abs_mean'] > 0
+        assert chi["abs_mean"] > 0
 
     def test_heterogeneous_classified_life(self, heterogeneous_graph):
         """Diverse phases with strong ΔNFR → Phase.LIFE."""
@@ -223,12 +225,13 @@ class TestBrokenSymmetry:
     def test_positive_susceptibility(self, heterogeneous_graph):
         """χ_𝒮 > 0 in the broken phase (finite fluctuations)."""
         op = compute_order_parameter(heterogeneous_graph)
-        assert op['susceptibility'] > 0
+        assert op["susceptibility"] > 0
 
 
 # ============================================================================
 # Test 4: Chirality and homochirality
 # ============================================================================
+
 
 class TestChirality:
     """Verify chirality field behaviour and homochirality detection."""
@@ -237,30 +240,33 @@ class TestChirality:
         """⟨χ⟩ has a definite sign → preferred handedness."""
         chi = compute_chirality_statistics(heterogeneous_graph)
         # Should be non-zero for heterogeneous network
-        assert abs(chi['mean']) > 0
+        assert abs(chi["mean"]) > 0
 
     def test_chirality_abs_mean_geq_abs_mean(self, heterogeneous_graph):
         """⟨|χ|⟩ ≥ |⟨χ⟩| by Jensen's inequality."""
         chi = compute_chirality_statistics(heterogeneous_graph)
-        assert chi['abs_mean'] >= abs(chi['mean']) - 1e-12
+        assert chi["abs_mean"] >= abs(chi["mean"]) - 1e-12
 
     def test_chirality_variance_positive(self, heterogeneous_graph):
         """Chirality variance > 0 in heterogeneous phase."""
         chi = compute_chirality_statistics(heterogeneous_graph)
-        assert chi['variance'] > 0
+        assert chi["variance"] > 0
 
     def test_chirality_per_node_consistency(self, heterogeneous_graph):
         """compute_chirality_statistics consistent with unified.compute_chirality_field."""
         field = compute_chirality_field(heterogeneous_graph)
         stats = compute_chirality_statistics(heterogeneous_graph)
         values = np.array(list(field.values()))
-        assert stats['mean'] == pytest.approx(float(np.mean(values)), rel=1e-10)
-        assert stats['abs_mean'] == pytest.approx(float(np.mean(np.abs(values))), rel=1e-10)
+        assert stats["mean"] == pytest.approx(float(np.mean(values)), rel=1e-10)
+        assert stats["abs_mean"] == pytest.approx(
+            float(np.mean(np.abs(values))), rel=1e-10
+        )
 
 
 # ============================================================================
 # Test 5: Phase classification logic
 # ============================================================================
+
 
 class TestPhaseClassification:
     """Verify classify_phase() z-score logic (emergent, no magic constant)."""
@@ -300,20 +306,21 @@ class TestPhaseClassification:
 # Test 6: PhaseSnapshot capture
 # ============================================================================
 
+
 class TestPhaseSnapshot:
     """Verify PhaseSnapshot dataclass integrity."""
 
     def test_snapshot_has_all_fields(self, uniform_graph):
         """Snapshot exposes all required structural diagnostics."""
         snap = capture_phase_snapshot(uniform_graph)
-        assert hasattr(snap, 'order_parameter')
-        assert hasattr(snap, 'order_parameter_abs')
-        assert hasattr(snap, 'chirality_mean')
-        assert hasattr(snap, 'chirality_abs_mean')
-        assert hasattr(snap, 'susceptibility')
-        assert hasattr(snap, 'coherence_length')
-        assert hasattr(snap, 'phase')
-        assert hasattr(snap, 'has_homochirality')
+        assert hasattr(snap, "order_parameter")
+        assert hasattr(snap, "order_parameter_abs")
+        assert hasattr(snap, "chirality_mean")
+        assert hasattr(snap, "chirality_abs_mean")
+        assert hasattr(snap, "susceptibility")
+        assert hasattr(snap, "coherence_length")
+        assert hasattr(snap, "phase")
+        assert hasattr(snap, "has_homochirality")
 
     def test_snapshot_order_parameter_abs_nonneg(self, heterogeneous_graph):
         """|⟨𝒮⟩| ≥ 0 always."""
@@ -334,6 +341,7 @@ class TestPhaseSnapshot:
 # ============================================================================
 # Test 7: Time-series phase transition detection
 # ============================================================================
+
 
 class TestPhaseTransitionDetection:
     """Verify detect_phase_transition() on evolving graph sequences."""
@@ -392,8 +400,8 @@ class TestPhaseTransitionDetection:
         """
         graphs, times = _build_transition_sequence(n_steps=20, seed=42)
         tel = detect_phase_transition(graphs, times)
-        assert hasattr(tel, 'measured_exponent')
-        assert not hasattr(tel, 'theoretical_exponent')
+        assert hasattr(tel, "measured_exponent")
+        assert not hasattr(tel, "theoretical_exponent")
 
     def test_telemetry_arrays_correct_length(self):
         """All arrays have matching length."""
@@ -411,6 +419,7 @@ class TestPhaseTransitionDetection:
 # ============================================================================
 # Test 8: Susceptibility behaviour near transition
 # ============================================================================
+
 
 class TestSusceptibility:
     """Susceptibility χ_𝒮 = N·Var(𝒮) should peak near the critical point."""
@@ -435,6 +444,7 @@ class TestSusceptibility:
 # Test 9: Critical exponent fitting
 # ============================================================================
 
+
 class TestCriticalExponentFit:
     """Verify critical exponent estimation and theoretical comparison."""
 
@@ -445,8 +455,8 @@ class TestCriticalExponentFit:
         result = fit_critical_exponent(
             times, tel.order_parameter_abs, tel.critical_time
         )
-        assert 'exponent' in result
-        assert 'r_squared' in result
+        assert "exponent" in result
+        assert "r_squared" in result
 
     def test_fit_result_has_no_theoretical(self):
         """The fit returns only measured observables (no derived 'theoretical').
@@ -454,14 +464,14 @@ class TestCriticalExponentFit:
         Audit 2026: there is no universal γ/π exponent to compare against.
         """
         result = fit_critical_exponent([0, 1, 2], np.array([0.0, 0.1, 0.5]), None)
-        assert 'theoretical' not in result
-        assert 'exponent' in result and 'r_squared' in result
+        assert "theoretical" not in result
+        assert "exponent" in result and "r_squared" in result
 
     def test_fit_with_insufficient_data_returns_none(self):
         """Too few data points → exponent is None."""
         result = fit_critical_exponent([0, 1], np.array([0.0, 0.1]), 0.5)
-        assert result['exponent'] is None
-        assert result['r_squared'] is None
+        assert result["exponent"] is None
+        assert result["r_squared"] is None
 
     def test_measured_exponent_positive(self):
         """Fitted exponent should be positive for an increasing order parameter."""
@@ -476,15 +486,20 @@ class TestCriticalExponentFit:
 # Test 10: Multi-topology validation
 # ============================================================================
 
+
 class TestMultiTopology:
     """Phase classification must work across different network topologies."""
 
-    @pytest.mark.parametrize("graph_fn,seed", [
-        (lambda s: nx.watts_strogatz_graph(20, 4, 0.3, seed=s), 42),
-        (lambda s: nx.barabasi_albert_graph(20, 2, seed=s), 42),
-        (lambda s: nx.grid_2d_graph(5, 4), 42),
-        (lambda s: nx.erdos_renyi_graph(20, 0.3, seed=s), 42),
-    ], ids=["watts_strogatz", "barabasi_albert", "grid_2d", "erdos_renyi"])
+    @pytest.mark.parametrize(
+        "graph_fn,seed",
+        [
+            (lambda s: nx.watts_strogatz_graph(20, 4, 0.3, seed=s), 42),
+            (lambda s: nx.barabasi_albert_graph(20, 2, seed=s), 42),
+            (lambda s: nx.grid_2d_graph(5, 4), 42),
+            (lambda s: nx.erdos_renyi_graph(20, 0.3, seed=s), 42),
+        ],
+        ids=["watts_strogatz", "barabasi_albert", "grid_2d", "erdos_renyi"],
+    )
     def test_uniform_is_non_life(self, graph_fn, seed):
         """Uniform initialization → NON_LIFE across topologies."""
         G = graph_fn(seed)
@@ -492,11 +507,15 @@ class TestMultiTopology:
         snap = capture_phase_snapshot(G)
         assert snap.phase == Phase.NON_LIFE
 
-    @pytest.mark.parametrize("graph_fn,seed", [
-        (lambda s: nx.watts_strogatz_graph(30, 4, 0.3, seed=s), 42),
-        (lambda s: nx.barabasi_albert_graph(30, 2, seed=s), 42),
-        (lambda s: nx.erdos_renyi_graph(30, 0.3, seed=s), 42),
-    ], ids=["watts_strogatz", "barabasi_albert", "erdos_renyi"])
+    @pytest.mark.parametrize(
+        "graph_fn,seed",
+        [
+            (lambda s: nx.watts_strogatz_graph(30, 4, 0.3, seed=s), 42),
+            (lambda s: nx.barabasi_albert_graph(30, 2, seed=s), 42),
+            (lambda s: nx.erdos_renyi_graph(30, 0.3, seed=s), 42),
+        ],
+        ids=["watts_strogatz", "barabasi_albert", "erdos_renyi"],
+    )
     def test_heterogeneous_is_life(self, graph_fn, seed):
         """Heterogeneous phases + ΔNFR → LIFE across topologies."""
         rng = np.random.default_rng(seed)
@@ -515,6 +534,7 @@ class TestMultiTopology:
 # Test 11: Consistency with unified.py field computations
 # ============================================================================
 
+
 class TestUnifiedConsistency:
     """Order parameter and chirality must match unified.py single source of truth."""
 
@@ -523,20 +543,21 @@ class TestUnifiedConsistency:
         S_field = compute_symmetry_breaking_field(heterogeneous_graph)
         values = np.array(list(S_field.values()))
         op = compute_order_parameter(heterogeneous_graph)
-        assert op['mean'] == pytest.approx(float(np.mean(values)), rel=1e-10)
-        assert op['variance'] == pytest.approx(float(np.var(values)), rel=1e-10)
+        assert op["mean"] == pytest.approx(float(np.mean(values)), rel=1e-10)
+        assert op["variance"] == pytest.approx(float(np.var(values)), rel=1e-10)
 
     def test_chirality_matches_chirality_field(self, heterogeneous_graph):
         """compute_chirality_statistics delegates to unified.compute_chirality_field."""
         chi_field = compute_chirality_field(heterogeneous_graph)
         values = np.array(list(chi_field.values()))
         chi = compute_chirality_statistics(heterogeneous_graph)
-        assert chi['mean'] == pytest.approx(float(np.mean(values)), rel=1e-10)
+        assert chi["mean"] == pytest.approx(float(np.mean(values)), rel=1e-10)
 
 
 # ============================================================================
 # Test 12: Reproducibility under seed control
 # ============================================================================
+
 
 class TestReproducibility:
     """Identical seeds must produce identical phase transition telemetry."""
@@ -563,15 +584,14 @@ class TestReproducibility:
         g2, t2 = _build_transition_sequence(n_steps=10, seed=77)
         tel1 = detect_phase_transition(g1, t1)
         tel2 = detect_phase_transition(g2, t2)
-        np.testing.assert_array_almost_equal(
-            tel1.order_parameter, tel2.order_parameter
-        )
+        np.testing.assert_array_almost_equal(tel1.order_parameter, tel2.order_parameter)
         assert tel1.transition_time == tel2.transition_time
 
 
 # ============================================================================
 # Test 13: Coherence length behaviour
 # ============================================================================
+
 
 class TestCoherenceLength:
     """ξ_C should grow as the system approaches the critical regime."""
@@ -586,6 +606,7 @@ class TestCoherenceLength:
 # ============================================================================
 # Test 14: Edge cases
 # ============================================================================
+
 
 class TestEdgeCases:
     """Handle degenerate inputs gracefully."""
@@ -624,26 +645,27 @@ class TestEdgeCases:
 # Test 15: Order parameter statistics correctness
 # ============================================================================
 
+
 class TestOrderParameterStatistics:
     """Verify mathematical correctness of order parameter statistics."""
 
     def test_n_nodes_correct(self, heterogeneous_graph):
         """n_nodes matches graph size."""
         op = compute_order_parameter(heterogeneous_graph)
-        assert op['n_nodes'] == heterogeneous_graph.number_of_nodes()
+        assert op["n_nodes"] == heterogeneous_graph.number_of_nodes()
 
     def test_abs_mean_geq_abs_of_mean(self, heterogeneous_graph):
         """⟨|𝒮|⟩ ≥ |⟨𝒮⟩| by Jensen's inequality."""
         op = compute_order_parameter(heterogeneous_graph)
-        assert op['abs_mean'] >= abs(op['mean']) - 1e-12
+        assert op["abs_mean"] >= abs(op["mean"]) - 1e-12
 
     def test_variance_nonneg(self, heterogeneous_graph):
         """Var(𝒮) ≥ 0."""
         op = compute_order_parameter(heterogeneous_graph)
-        assert op['variance'] >= -1e-12
+        assert op["variance"] >= -1e-12
 
     def test_susceptibility_equals_n_times_var(self, heterogeneous_graph):
         """χ_𝒮 = N · Var(𝒮)."""
         op = compute_order_parameter(heterogeneous_graph)
-        expected = op['n_nodes'] * op['variance']
-        assert op['susceptibility'] == pytest.approx(expected, rel=1e-10)
+        expected = op["n_nodes"] * op["variance"]
+        assert op["susceptibility"] == pytest.approx(expected, rel=1e-10)

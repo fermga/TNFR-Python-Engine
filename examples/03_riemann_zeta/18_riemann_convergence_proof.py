@@ -31,15 +31,15 @@ import time
 import numpy as np
 
 from tnfr.riemann.spectral_proof import (
+    analyze_eigenvalue_flow,
+    compute_analytic_sigma_star,
+    compute_eigenvalue_velocities,
+    compute_spectral_moments,
+    compute_thermodynamic_landscape,
+    run_tnfr_riemann_analysis,
     verify_equilibrium,
     verify_equilibrium_sequence,
-    compute_analytic_sigma_star,
-    compute_thermodynamic_landscape,
     verify_thermodynamic_convergence,
-    compute_eigenvalue_velocities,
-    analyze_eigenvalue_flow,
-    compute_spectral_moments,
-    run_tnfr_riemann_analysis,
 )
 
 
@@ -66,12 +66,16 @@ def section_1_equilibrium() -> None:
     k_values = [5, 10, 20, 50, 100, 200, 500, 1000]
     results = verify_equilibrium_sequence(k_values)
 
-    print(f"  {'k':>6}  {'lambda_min':>12}  {'gap':>10}  "
-          f"{'v_ground':>10}  {'mean(logp)':>10}")
+    print(
+        f"  {'k':>6}  {'lambda_min':>12}  {'gap':>10}  "
+        f"{'v_ground':>10}  {'mean(logp)':>10}"
+    )
     print(f"  {'─'*6}  {'─'*12}  {'─'*10}  {'─'*10}  {'─'*10}")
     for r in results:
-        print(f"  {r.k:6d}  {r.lambda_min:12.2e}  {r.spectral_gap:10.6f}  "
-              f"{r.ground_velocity:10.4f}  {r.mean_log_prime:10.4f}")
+        print(
+            f"  {r.k:6d}  {r.lambda_min:12.2e}  {r.spectral_gap:10.6f}  "
+            f"{r.ground_velocity:10.4f}  {r.mean_log_prime:10.4f}"
+        )
 
     print()
     print("  lambda_min = 0 to machine precision for all k (EXACT).")
@@ -95,13 +99,17 @@ def section_2_thermodynamic() -> None:
     k_values = [5, 10, 20, 50, 100, 200, 500, 1000]
     results = verify_thermodynamic_convergence(k_values)
 
-    print(f"  {'k':>6}  {'sigma*_a':>12}  {'sigma*_n':>12}  "
-          f"{'|dev|':>10}  {'d2E/dsig2':>10}")
+    print(
+        f"  {'k':>6}  {'sigma*_a':>12}  {'sigma*_n':>12}  "
+        f"{'|dev|':>10}  {'d2E/dsig2':>10}"
+    )
     print(f"  {'─'*6}  {'─'*12}  {'─'*12}  {'─'*10}  {'─'*10}")
     for r in results:
-        print(f"  {r.k:6d}  {r.sigma_star_analytic:12.8f}  "
-              f"{r.sigma_star_numerical:12.8f}  "
-              f"{r.deviation:10.6f}  {r.curvature:10.4f}")
+        print(
+            f"  {r.k:6d}  {r.sigma_star_analytic:12.8f}  "
+            f"{r.sigma_star_numerical:12.8f}  "
+            f"{r.deviation:10.6f}  {r.curvature:10.4f}"
+        )
 
     print()
 
@@ -123,8 +131,10 @@ def section_2_thermodynamic() -> None:
     if results:
         first_curv = results[0].curvature
         last_curv = results[-1].curvature
-        print(f"  Curvature d^2E/dsigma^2 : {first_curv:.2f} (k={results[0].k})"
-              f" -> {last_curv:.2f} (k={results[-1].k})")
+        print(
+            f"  Curvature d^2E/dsigma^2 : {first_curv:.2f} (k={results[0].k})"
+            f" -> {last_curv:.2f} (k={results[-1].k})"
+        )
         print(f"  Basin sharpens by {last_curv / max(first_curv, 1e-15):.1f}x")
         print("  sigma = 1/2 is an increasingly sharp attractor.")
 
@@ -143,15 +153,16 @@ def section_3_flow() -> None:
 
     k_values = [10, 50, 100, 200, 500]
 
-    print(f"  {'k':>6}  {'v_min':>10}  {'v_max':>10}  "
-          f"{'ratio':>8}  {'all>0':>6}")
+    print(f"  {'k':>6}  {'v_min':>10}  {'v_max':>10}  " f"{'ratio':>8}  {'all>0':>6}")
     print(f"  {'─'*6}  {'─'*10}  {'─'*10}  {'─'*8}  {'─'*6}")
 
     for k in k_values:
         flow = analyze_eigenvalue_flow(k, n_scan=40)
-        print(f"  {k:6d}  {flow.min_velocity:10.4f}  {flow.max_velocity:10.4f}  "
-              f"{flow.velocity_ratio:8.2f}  "
-              f"{'YES' if flow.all_positive else 'NO':>6}")
+        print(
+            f"  {k:6d}  {flow.min_velocity:10.4f}  {flow.max_velocity:10.4f}  "
+            f"{flow.velocity_ratio:8.2f}  "
+            f"{'YES' if flow.all_positive else 'NO':>6}"
+        )
 
     print()
     print("  Velocity ratio = max/min measures spectral asymmetry:")
@@ -171,15 +182,19 @@ def section_4_moments() -> None:
 
     k_values = [10, 50, 100, 200, 500]
 
-    print(f"  {'k':>6}  {'mu_1':>10}  {'mu_2':>10}  {'mu_3':>10}  "
-          f"{'gap':>10}  {'<s>':>8}")
+    print(
+        f"  {'k':>6}  {'mu_1':>10}  {'mu_2':>10}  {'mu_3':>10}  "
+        f"{'gap':>10}  {'<s>':>8}"
+    )
     print(f"  {'─'*6}  {'─'*10}  {'─'*10}  {'─'*10}  {'─'*10}  {'─'*8}")
 
     for k in k_values:
         result = compute_spectral_moments(k, max_n=4)
         m = result.moments
-        print(f"  {k:6d}  {m[0]:10.6f}  {m[1]:10.6f}  {m[2]:10.6f}  "
-              f"{result.spectral_gap:10.6f}  {result.mean_spacing:8.5f}")
+        print(
+            f"  {k:6d}  {m[0]:10.6f}  {m[1]:10.6f}  {m[2]:10.6f}  "
+            f"{result.spectral_gap:10.6f}  {result.mean_spacing:8.5f}"
+        )
 
     print()
     print("  mu_1 = (1/k) tr(L) = 2/k * sum(edge weights)")
@@ -249,10 +264,11 @@ def section_6_large_scale() -> None:
 
     k_values = [1000, 2000, 5000, 10000]
 
-    print(f"  {'k':>6}  {'lambda_min':>12}  {'|sigma*-1/2|':>14}  "
-          f"{'d2E/dsig2':>10}  {'v_min':>8}  {'v_max':>8}  {'time(s)':>8}")
-    print(f"  {'─'*6}  {'─'*12}  {'─'*14}  "
-          f"{'─'*10}  {'─'*8}  {'─'*8}  {'─'*8}")
+    print(
+        f"  {'k':>6}  {'lambda_min':>12}  {'|sigma*-1/2|':>14}  "
+        f"{'d2E/dsig2':>10}  {'v_min':>8}  {'v_max':>8}  {'time(s)':>8}"
+    )
+    print(f"  {'─'*6}  {'─'*12}  {'─'*14}  " f"{'─'*10}  {'─'*8}  {'─'*8}  {'─'*8}")
 
     for k in k_values:
         t0 = time.perf_counter()
@@ -264,9 +280,11 @@ def section_6_large_scale() -> None:
 
         elapsed = time.perf_counter() - t0
 
-        print(f"  {k:6d}  {eq.lambda_min:12.2e}  {abs(ss - 0.5):14.8f}  "
-              f"{curvature:10.2f}  {vel.min():8.3f}  {vel.max():8.3f}  "
-              f"{elapsed:8.2f}")
+        print(
+            f"  {k:6d}  {eq.lambda_min:12.2e}  {abs(ss - 0.5):14.8f}  "
+            f"{curvature:10.2f}  {vel.min():8.3f}  {vel.max():8.3f}  "
+            f"{elapsed:8.2f}"
+        )
 
     print()
     print("  At k = 10,000:")

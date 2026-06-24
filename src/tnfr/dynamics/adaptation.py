@@ -8,16 +8,15 @@ from typing import Any, cast
 
 from ..alias import collect_attr, set_vf
 from ..constants import get_graph_param
-from ..constants.canonical import (
-    DYNAMICS_SI_HI_THRESHOLD_CANONICAL,
-)
-from ..utils import clamp, resolve_chunk_size
+from ..constants.canonical import DYNAMICS_SI_HI_THRESHOLD_CANONICAL
+from ..mathematics.unified_numerical import np
 from ..metrics.common import ensure_neighbors_map
 from ..types import CoherenceMetric, DeltaNFR, TNFRGraph
-from ..mathematics.unified_numerical import np
+from ..utils import clamp, resolve_chunk_size
 from .aliases import ALIAS_DNFR, ALIAS_SI, ALIAS_VF
 
 __all__ = ("adapt_vf_by_coherence",)
+
 
 def _vf_adapt_chunk(
     args: tuple[list[tuple[Any, int, tuple[int, ...]]], tuple[float, ...], float],
@@ -34,6 +33,7 @@ def _vf_adapt_chunk(
             mean = vf
         updates.append((node, vf + mu * (mean - vf)))
     return updates
+
 
 def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
     """Synchronise νf to the neighbour mean once ΔNFR and Si stay coherent.
@@ -109,7 +109,9 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
     thr_def = get_graph_param(G, "GLYPH_THRESHOLDS", dict)
     si_hi = cast(
         CoherenceMetric,
-        float(thr_sel.get("si_hi", thr_def.get("hi", DYNAMICS_SI_HI_THRESHOLD_CANONICAL))),
+        float(
+            thr_sel.get("si_hi", thr_def.get("hi", DYNAMICS_SI_HI_THRESHOLD_CANONICAL))
+        ),
     )
     vf_min = float(get_graph_param(G, "VF_MIN"))
     vf_max = float(get_graph_param(G, "VF_MAX"))
@@ -202,8 +204,12 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
     vf_list = [float(val) for val in vf_values]
 
     prev_counts = [int(G.nodes[node].get("stable_count", 0)) for node in nodes]
-    stable_flags = [si >= si_hi and dnfr <= eps_dnfr for si, dnfr in zip(si_list, dnfr_list)]
-    new_counts = [prev + 1 if flag else 0 for prev, flag in zip(prev_counts, stable_flags)]
+    stable_flags = [
+        si >= si_hi and dnfr <= eps_dnfr for si, dnfr in zip(si_list, dnfr_list)
+    ]
+    new_counts = [
+        prev + 1 if flag else 0 for prev, flag in zip(prev_counts, stable_flags)
+    ]
 
     for node, count in zip(nodes, new_counts):
         G.nodes[node]["stable_count"] = int(count)
@@ -216,7 +222,9 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
         for node in eligible_nodes:
             idx = node_index[node]
             neigh_indices = [
-                node_index[nbr] for nbr in neighbors_map.get(node, ()) if nbr in node_index
+                node_index[nbr]
+                for nbr in neighbors_map.get(node, ())
+                if nbr in node_index
             ]
             if neigh_indices:
                 total = math.fsum(vf_list[i] for i in neigh_indices)
@@ -241,7 +249,9 @@ def adapt_vf_by_coherence(G: TNFRGraph, n_jobs: int | None = None) -> None:
         len(work_items),
         minimum=1,
     )
-    chunks = [work_items[i : i + chunk_size] for i in range(0, len(work_items), chunk_size)]
+    chunks = [
+        work_items[i : i + chunk_size] for i in range(0, len(work_items), chunk_size)
+    ]
     vf_tuple = tuple(vf_list)
     updates: dict[Any, float] = {}
     with ProcessPoolExecutor(max_workers=jobs) as executor:

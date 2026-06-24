@@ -6,25 +6,24 @@ including flow diagrams, health dashboards, pattern analysis, and frequency time
 
 from __future__ import annotations
 
+import math as _math
 from typing import TYPE_CHECKING
 
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import math as _math
-from ..mathematics.unified_numerical import np
-from ..constants.canonical import (
-    E as _E,
-    PHI as _PHI,
-    INV_PHI as _INV_PHI,
-    CRITICAL_EXPONENT as _CRIT_EXP,
-    GAMMA_PI_RATIO as _GAMMA_PI,
-    UM_COMPAT_THRESHOLD as _UM_COMPAT,
-    NODAL_OPT_COUPLING_CANONICAL as _NODAL_COUPLING,
-    EMERGENT_STABILITY_THRESHOLD_CANONICAL as _STAB_THRESH,
-    FEEDBACK_LEARNING_RATE as _EXP_NEG_PI,
-)
-from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+
+from ..constants.canonical import CRITICAL_EXPONENT as _CRIT_EXP
+from ..constants.canonical import EMERGENT_STABILITY_THRESHOLD_CANONICAL as _STAB_THRESH
+from ..constants.canonical import FEEDBACK_LEARNING_RATE as _EXP_NEG_PI
+from ..constants.canonical import GAMMA_PI_RATIO as _GAMMA_PI
+from ..constants.canonical import INV_PHI as _INV_PHI
+from ..constants.canonical import NODAL_OPT_COUPLING_CANONICAL as _NODAL_COUPLING
+from ..constants.canonical import PHI as _PHI
+from ..constants.canonical import UM_COMPAT_THRESHOLD as _UM_COMPAT
+from ..constants.canonical import E as _E
+from ..mathematics.unified_numerical import np
 
 if TYPE_CHECKING:
     from ..operators.health_analyzer import SequenceHealthMetrics
@@ -71,6 +70,7 @@ OPERATOR_CATEGORY_COLORS = {
     "organizer": "#1abc9c",  # Teal
 }
 
+
 def _get_operator_category(operator: str) -> str:
     """Determine the structural category of an operator."""
     if operator == EMISSION:
@@ -85,6 +85,7 @@ def _get_operator_category(operator: str) -> str:
         return "organizer"
     else:
         return "stabilizer"  # Default for other operators
+
 
 class SequenceVisualizer:
     """Advanced visualizer for TNFR operator sequences.
@@ -174,9 +175,13 @@ class SequenceVisualizer:
         else:
             # Arrange in a flowing pattern
             for i, op in enumerate(normalized):
-                x = _GAMMA_PI + (i / (n_ops - 1)) * _UM_COMPAT  # γ/(π+γ) base + φ/(φ+γ) range
+                x = (
+                    _GAMMA_PI + (i / (n_ops - 1)) * _UM_COMPAT
+                )  # γ/(π+γ) base + φ/(φ+γ) range
                 # Add slight vertical variation for visual interest
-                y = _INV_PHI + _NODAL_COUPLING * np.sin(i * np.pi / 3)  # 1/φ center + γ/(π+e) amplitude
+                y = _INV_PHI + _NODAL_COUPLING * np.sin(
+                    i * np.pi / 3
+                )  # 1/φ center + γ/(π+e) amplitude
                 positions[i] = (x, y)
 
         # Draw transitions with compatibility coloring
@@ -217,7 +222,9 @@ class SequenceVisualizer:
             border_width = 2
 
             # Draw node
-            circle = plt.Circle(pos, 0.04, color=node_color, ec="black", lw=border_width, zorder=10)
+            circle = plt.Circle(
+                pos, 0.04, color=node_color, ec="black", lw=border_width, zorder=10
+            )
             ax.add_patch(circle)
 
             # Add operator label
@@ -275,7 +282,9 @@ class SequenceVisualizer:
                 fontsize=9,
                 va="top",
                 ha="left",
-                bbox=dict(boxstyle="round", facecolor="wheat", alpha=_INV_PHI),  # 1/φ - golden transparency
+                bbox=dict(
+                    boxstyle="round", facecolor="wheat", alpha=_INV_PHI
+                ),  # 1/φ - golden transparency
             )
 
         ax.set_xlim(0, 1)
@@ -322,7 +331,9 @@ class SequenceVisualizer:
         >>> fig, axes = visualizer.plot_health_dashboard(result.health_metrics)
         """
         fig = plt.figure(figsize=(14, 10), dpi=self.dpi)
-        gs = fig.add_gridspec(2, 2, hspace=_CRIT_EXP, wspace=_CRIT_EXP)  # γ/π - grid spacing
+        gs = fig.add_gridspec(
+            2, 2, hspace=_CRIT_EXP, wspace=_CRIT_EXP
+        )  # γ/π - grid spacing
 
         # Create subplots
         ax_radar = fig.add_subplot(gs[0, 0], projection="polar")
@@ -359,7 +370,9 @@ class SequenceVisualizer:
 
         # Plot radar chart
         ax_radar.plot(angles, metrics_values_plot, "o-", linewidth=2, color="#3498db")
-        ax_radar.fill(angles, metrics_values_plot, alpha=_CRIT_EXP, color="#3498db")  # γ/π - radar transparency
+        ax_radar.fill(
+            angles, metrics_values_plot, alpha=_CRIT_EXP, color="#3498db"
+        )  # γ/π - radar transparency
         ax_radar.set_xticks(angles[:-1])
         ax_radar.set_xticklabels(metrics_labels, size=9)
         ax_radar.set_ylim(0, 1)
@@ -443,14 +456,20 @@ class SequenceVisualizer:
             status = "NEEDS IMPROVEMENT"
 
         # Draw gauge background
-        ax_gauge.barh(0, 1, height=_CRIT_EXP, color="#ecf0f1", left=0)  # γ/π - gauge height
+        ax_gauge.barh(
+            0, 1, height=_CRIT_EXP, color="#ecf0f1", left=0
+        )  # γ/π - gauge height
         # Draw gauge fill
-        ax_gauge.barh(0, overall, height=_CRIT_EXP, color=gauge_color, left=0)  # γ/π - gauge height
+        ax_gauge.barh(
+            0, overall, height=_CRIT_EXP, color=gauge_color, left=0
+        )  # γ/π - gauge height
 
         # Add markers
         for i in range(0, 11):
             val = i / 10
-            ax_gauge.axvline(val, color="gray", linestyle="--", alpha=_CRIT_EXP, linewidth=_INV_PHI)  # γ/π alpha, 1/φ width
+            ax_gauge.axvline(
+                val, color="gray", linestyle="--", alpha=_CRIT_EXP, linewidth=_INV_PHI
+            )  # γ/π alpha, 1/φ width
 
         ax_gauge.set_xlim(0, 1)
         ax_gauge.set_ylim(-0.5, 0.5)
@@ -494,15 +513,21 @@ class SequenceVisualizer:
             ha="left",
             va="top",
             fontsize=9,
-            bbox=dict(boxstyle="round", facecolor="wheat", alpha=_INV_PHI),  # 1/φ - metadata transparency
+            bbox=dict(
+                boxstyle="round", facecolor="wheat", alpha=_INV_PHI
+            ),  # 1/φ - metadata transparency
         )
 
-        ax_gauge.set_title("Overall Structural Health", fontsize=14, weight="bold", pad=20)
+        ax_gauge.set_title(
+            "Overall Structural Health", fontsize=14, weight="bold", pad=20
+        )
         ax_gauge.spines["top"].set_visible(False)
         ax_gauge.spines["right"].set_visible(False)
         ax_gauge.spines["left"].set_visible(False)
 
-        fig.suptitle("TNFR Sequence Health Dashboard", fontsize=16, weight="bold", y=0.98)
+        fig.suptitle(
+            "TNFR Sequence Health Dashboard", fontsize=16, weight="bold", y=0.98
+        )
 
         plt.tight_layout(rect=[0, 0, 1, 0.96])
 
@@ -617,11 +642,21 @@ class SequenceVisualizer:
 
         # Add legend for categories
         legend_elements = [
-            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["initiator"], label="Initiator"),
-            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["stabilizer"], label="Stabilizer"),
-            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["transformer"], label="Transformer"),
-            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["amplifier"], label="Amplifier"),
-            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["organizer"], label="Organizer"),
+            mpatches.Patch(
+                color=OPERATOR_CATEGORY_COLORS["initiator"], label="Initiator"
+            ),
+            mpatches.Patch(
+                color=OPERATOR_CATEGORY_COLORS["stabilizer"], label="Stabilizer"
+            ),
+            mpatches.Patch(
+                color=OPERATOR_CATEGORY_COLORS["transformer"], label="Transformer"
+            ),
+            mpatches.Patch(
+                color=OPERATOR_CATEGORY_COLORS["amplifier"], label="Amplifier"
+            ),
+            mpatches.Patch(
+                color=OPERATOR_CATEGORY_COLORS["organizer"], label="Organizer"
+            ),
         ]
         ax.legend(handles=legend_elements, loc="lower right", fontsize=9, ncol=5)
 
@@ -629,7 +664,9 @@ class SequenceVisualizer:
         ax.set_ylim(0, 1)
         ax.set_aspect("equal")
         ax.axis("off")
-        ax.set_title("TNFR Pattern Component Analysis", fontsize=14, weight="bold", pad=20)
+        ax.set_title(
+            "TNFR Pattern Component Analysis", fontsize=14, weight="bold", pad=20
+        )
 
         plt.tight_layout()
 
@@ -696,7 +733,9 @@ class SequenceVisualizer:
         # Annotate operators with category colors
         for i, (op, cat) in enumerate(zip(normalized, categories)):
             display_name = operator_display_name(op) or op
-            y_offset = _CRIT_EXP if i % 2 == 0 else -_CRIT_EXP  # ±γ/π - annotation offset
+            y_offset = (
+                _CRIT_EXP if i % 2 == 0 else -_CRIT_EXP
+            )  # ±γ/π - annotation offset
 
             cat_color = OPERATOR_CATEGORY_COLORS.get(cat, "#95a5a6")
             ax.annotate(
@@ -724,16 +763,26 @@ class SequenceVisualizer:
         ax.set_xticklabels([f"Step {i+1}" for i in range(len(normalized))], fontsize=9)
         ax.set_ylabel("Operator Intensity", fontsize=12, weight="bold")
         ax.set_xlabel("Sequence Position", fontsize=12, weight="bold")
-        ax.set_title("TNFR Operator Sequence Timeline", fontsize=14, weight="bold", pad=20)
+        ax.set_title(
+            "TNFR Operator Sequence Timeline", fontsize=14, weight="bold", pad=20
+        )
         ax.grid(axis="y", alpha=_CRIT_EXP, linestyle="--")  # γ/π - timeline grid alpha
         ax.set_ylim(0.5, 3.5)
 
         # Add category legend
         legend_elements = [
-            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["generator"], label="Generator"),
-            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["stabilizer"], label="Stabilizer"),
-            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["transformer"], label="Transformer"),
-            mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["connector"], label="Connector"),
+            mpatches.Patch(
+                color=OPERATOR_CATEGORY_COLORS["generator"], label="Generator"
+            ),
+            mpatches.Patch(
+                color=OPERATOR_CATEGORY_COLORS["stabilizer"], label="Stabilizer"
+            ),
+            mpatches.Patch(
+                color=OPERATOR_CATEGORY_COLORS["transformer"], label="Transformer"
+            ),
+            mpatches.Patch(
+                color=OPERATOR_CATEGORY_COLORS["connector"], label="Connector"
+            ),
             mpatches.Patch(color=OPERATOR_CATEGORY_COLORS["closure"], label="Closure"),
         ]
         ax.legend(handles=legend_elements, loc="upper right", fontsize=9, ncol=2)

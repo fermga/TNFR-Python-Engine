@@ -54,7 +54,6 @@ from tnfr.validation.phase_gate import (  # noqa: E402
     wrap_angle,
 )
 
-
 TAU = 2.0 * math.pi
 DEFAULT_PATTERNS: tuple[str, ...] = (
     "coherent",
@@ -289,7 +288,9 @@ def generate_records(
     return records
 
 
-def split_records(records: Sequence[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def split_records(
+    records: Sequence[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Deterministically split records by run seed parity."""
     train: list[dict[str, Any]] = []
     test: list[dict[str, Any]] = []
@@ -357,7 +358,9 @@ def threshold_candidates(values: Sequence[float]) -> list[float]:
     return sorted(set(candidates))
 
 
-def predict_with_rule(rule: ScalarRule, records: Sequence[dict[str, Any]]) -> list[bool]:
+def predict_with_rule(
+    rule: ScalarRule, records: Sequence[dict[str, Any]]
+) -> list[bool]:
     """Apply a fitted scalar threshold rule."""
     predictions: list[bool] = []
     for record in records:
@@ -493,15 +496,23 @@ def paired_wave_checks(records: Sequence[dict[str, Any]]) -> dict[str, Any]:
         if bool(smooth_record["label"]) != bool(scrambled_record["label"]):
             label_flips += 1
         for feature in deltas:
-            deltas[feature].append(abs(float(smooth_record[feature]) - float(scrambled_record[feature])))
+            deltas[feature].append(
+                abs(float(smooth_record[feature]) - float(scrambled_record[feature]))
+            )
 
     return {
         "pair_count": pair_count,
         "label_flips": label_flips,
         "median_abs_delta_global_order_r": median(deltas["global_order_r"]),
-        "median_abs_delta_phase_histogram_entropy": median(deltas["phase_histogram_entropy"]),
-        "median_abs_delta_tnfr_mean_phase_gradient": median(deltas["tnfr_mean_phase_gradient"]),
-        "median_abs_delta_tnfr_mean_abs_curvature": median(deltas["tnfr_mean_abs_curvature"]),
+        "median_abs_delta_phase_histogram_entropy": median(
+            deltas["phase_histogram_entropy"]
+        ),
+        "median_abs_delta_tnfr_mean_phase_gradient": median(
+            deltas["tnfr_mean_phase_gradient"]
+        ),
+        "median_abs_delta_tnfr_mean_abs_curvature": median(
+            deltas["tnfr_mean_abs_curvature"]
+        ),
     }
 
 
@@ -633,73 +644,76 @@ def render_markdown(summary: dict[str, Any]) -> str:
         for row in summary["pattern_summary"]
     ]
     paired = summary["paired_wave_checks"]
-    return "\n\n".join(
-        [
-            "# TNFR External Phase-Gate Validation",
-            (
-                "This report tests whether graph-local TNFR phase telemetry "
-                "adds predictive information for edge-local coupling "
-                "compatibility beyond topology-only and global phase-order "
-                "baselines."
-            ),
-            "## Scope",
-            (
-                f"Nodes: {meta['nodes']}  \n"
-                f"Runs: {meta['runs']}  \n"
-                f"Gate: {meta['gate_radians']:.6f} rad  \n"
-                f"Minimum edge compliance for a positive label: "
-                f"{meta['min_edge_compliance']:.2f}  \n"
-                f"Train records: {meta['train_records']}  \n"
-                f"Test records: {meta['test_records']}"
-            ),
-            "## Model comparison",
-            markdown_table(
-                [
-                    "Model",
-                    "Feature",
-                    "Positive when",
-                    "Threshold",
-                    "Test balanced acc.",
-                    "Test acc.",
-                    "Test MCC",
-                ],
-                model_rows,
-            ),
-            "## Matched smooth/scrambled wave check",
-            (
-                f"Pairs: {paired['pair_count']}  \n"
-                f"Label flips: {paired['label_flips']}  \n"
-                f"Median |Δ global R|: "
-                f"{paired['median_abs_delta_global_order_r']:.6e}  \n"
-                f"Median |Δ phase histogram entropy|: "
-                f"{paired['median_abs_delta_phase_histogram_entropy']:.6e}  \n"
-                f"Median |Δ TNFR mean |∇φ||: "
-                f"{paired['median_abs_delta_tnfr_mean_phase_gradient']:.6f}  \n"
-                f"Median |Δ TNFR mean |Kφ||: "
-                f"{paired['median_abs_delta_tnfr_mean_abs_curvature']:.6f}"
-            ),
-            "## Pattern summary",
-            markdown_table(
-                [
-                    "Pattern",
-                    "N",
-                    "Positive rate",
-                    "Mean compliance",
-                    "Mean TNFR grad_phi",
-                    "Mean global R",
-                ],
-                pattern_rows,
-            ),
-            "## Honest interpretation",
-            (
-                "A strong TNFR result here means that graph-local phase "
-                "telemetry distinguishes locally compatible phase states that "
-                "global phase-order and topology-only baselines cannot separate. "
-                "It does not establish broad TNFR validity; it demonstrates a "
-                "specific operational advantage on a controlled coupling task."
-            ),
-        ]
-    ) + "\n"
+    return (
+        "\n\n".join(
+            [
+                "# TNFR External Phase-Gate Validation",
+                (
+                    "This report tests whether graph-local TNFR phase telemetry "
+                    "adds predictive information for edge-local coupling "
+                    "compatibility beyond topology-only and global phase-order "
+                    "baselines."
+                ),
+                "## Scope",
+                (
+                    f"Nodes: {meta['nodes']}  \n"
+                    f"Runs: {meta['runs']}  \n"
+                    f"Gate: {meta['gate_radians']:.6f} rad  \n"
+                    f"Minimum edge compliance for a positive label: "
+                    f"{meta['min_edge_compliance']:.2f}  \n"
+                    f"Train records: {meta['train_records']}  \n"
+                    f"Test records: {meta['test_records']}"
+                ),
+                "## Model comparison",
+                markdown_table(
+                    [
+                        "Model",
+                        "Feature",
+                        "Positive when",
+                        "Threshold",
+                        "Test balanced acc.",
+                        "Test acc.",
+                        "Test MCC",
+                    ],
+                    model_rows,
+                ),
+                "## Matched smooth/scrambled wave check",
+                (
+                    f"Pairs: {paired['pair_count']}  \n"
+                    f"Label flips: {paired['label_flips']}  \n"
+                    f"Median |Δ global R|: "
+                    f"{paired['median_abs_delta_global_order_r']:.6e}  \n"
+                    f"Median |Δ phase histogram entropy|: "
+                    f"{paired['median_abs_delta_phase_histogram_entropy']:.6e}  \n"
+                    f"Median |Δ TNFR mean |∇φ||: "
+                    f"{paired['median_abs_delta_tnfr_mean_phase_gradient']:.6f}  \n"
+                    f"Median |Δ TNFR mean |Kφ||: "
+                    f"{paired['median_abs_delta_tnfr_mean_abs_curvature']:.6f}"
+                ),
+                "## Pattern summary",
+                markdown_table(
+                    [
+                        "Pattern",
+                        "N",
+                        "Positive rate",
+                        "Mean compliance",
+                        "Mean TNFR grad_phi",
+                        "Mean global R",
+                    ],
+                    pattern_rows,
+                ),
+                "## Honest interpretation",
+                (
+                    "A strong TNFR result here means that graph-local phase "
+                    "telemetry distinguishes locally compatible phase states that "
+                    "global phase-order and topology-only baselines cannot separate. "
+                    "It does not establish broad TNFR validity; it demonstrates a "
+                    "specific operational advantage on a controlled coupling task."
+                ),
+            ]
+        )
+        + "\n"
+    )
 
 
 def render_html(summary: dict[str, Any]) -> str:
@@ -721,7 +735,9 @@ def render_html(summary: dict[str, Any]) -> str:
             cells = [cell.strip() for cell in raw.strip("|").split("|")]
             tag = "th" if index == 0 else "td"
             body.append(
-                "<tr>" + "".join(f"<{tag}>{html.escape(cell)}</{tag}>" for cell in cells) + "</tr>"
+                "<tr>"
+                + "".join(f"<{tag}>{html.escape(cell)}</{tag}>" for cell in cells)
+                + "</tr>"
             )
         body.append("</table>")
         in_table = False
@@ -756,7 +772,9 @@ th {{ background: #f3f5f7; }}
 {body}
 </body>
 </html>
-""".format(body="\n".join(body))
+""".format(
+        body="\n".join(body)
+    )
 
 
 def print_console_summary(summary: dict[str, Any]) -> None:
@@ -790,7 +808,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--output-json",
         type=Path,
-        default=REPO_ROOT / "results" / "external_validation" / "phase_gate_validation.json",
+        default=REPO_ROOT
+        / "results"
+        / "external_validation"
+        / "phase_gate_validation.json",
     )
     parser.add_argument(
         "--output-markdown",
@@ -800,7 +821,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--output-html",
         type=Path,
-        default=REPO_ROOT / "results" / "reports" / "external_phase_gate_validation.html",
+        default=REPO_ROOT
+        / "results"
+        / "reports"
+        / "external_phase_gate_validation.html",
     )
     parser.add_argument("--quiet", action="store_true")
     return parser.parse_args(argv)

@@ -17,6 +17,7 @@ from .grammar_types import GrammarConfigurationError
 # Grammar Context
 # ============================================================================
 
+
 class GrammarContext:
     """Context object for grammar validation.
 
@@ -59,50 +60,51 @@ class GrammarContext:
         -------
         GrammarContext
             New context instance with defaults copied
-            
+
         Raises
         ------
         GrammarConfigurationError
             If TNFR_GRAMMAR_VALIDATE=1 and configuration is invalid
         """
-        from ..constants import DEFAULTS
         import copy
         import os
+
+        from ..constants import DEFAULTS
 
         # Extract configs from graph if present, otherwise use defaults
         cfg_soft = G.graph.get("GRAMMAR", {})
         cfg_canon = G.graph.get("GRAMMAR_CANON", {})
-        
+
         # If empty or missing configs, use defaults
         if not cfg_soft:
             cfg_soft = copy.deepcopy(DEFAULTS.get("GRAMMAR", {}))
         if not cfg_canon:
             cfg_canon = copy.deepcopy(DEFAULTS.get("GRAMMAR_CANON", {}))
-            
+
         # Validate configurations if validation is enabled
         if os.getenv("TNFR_GRAMMAR_VALIDATE") == "1":
             cls._validate_configs(cfg_soft, cfg_canon)
-            
+
         return cls(G, cfg_soft=cfg_soft, cfg_canon=cfg_canon)
-        
+
     @staticmethod
     def _validate_configs(cfg_soft, cfg_canon):
         """Validate configuration dictionaries.
-        
+
         Parameters
         ----------
         cfg_soft : dict
             Soft configuration parameters
-        cfg_canon : dict  
+        cfg_canon : dict
             Canonical configuration parameters
-            
+
         Raises
         ------
         GrammarConfigurationError
             If configuration is invalid
         """
         errors = []
-        
+
         # Validate cfg_soft
         if not isinstance(cfg_soft, dict):
             errors.append("cfg_soft must be a mapping/dictionary")
@@ -112,34 +114,30 @@ class GrammarContext:
                 window = cfg_soft["window"]
                 if not isinstance(window, int) or window < 0:
                     errors.append("cfg_soft.window must be a non-negative integer")
-        
-        # Validate cfg_canon  
+
+        # Validate cfg_canon
         if not isinstance(cfg_canon, dict):
             errors.append("cfg_canon must be a mapping/dictionary")
         else:
             # Validate thol length constraints
-            if ("thol_min_len" in cfg_canon and 
-                "thol_max_len" in cfg_canon):
+            if "thol_min_len" in cfg_canon and "thol_max_len" in cfg_canon:
                 min_len = cfg_canon["thol_min_len"]
                 max_len = cfg_canon["thol_max_len"]
-                if (isinstance(min_len, (int, float)) and 
-                    isinstance(max_len, (int, float)) and
-                    min_len > max_len):
-                    errors.append(
-                        "cfg_canon.thol_min_len must not exceed thol_max_len"
-                    )
-            
+                if (
+                    isinstance(min_len, (int, float))
+                    and isinstance(max_len, (int, float))
+                    and min_len > max_len
+                ):
+                    errors.append("cfg_canon.thol_min_len must not exceed thol_max_len")
+
         if errors:
             # Determine section based on error content
             if any("cfg_soft" in err for err in errors):
                 section = "cfg_soft"
             elif any("cfg_canon" in err for err in errors):
-                section = "cfg_canon" 
+                section = "cfg_canon"
             else:
                 section = "configuration"
             raise GrammarConfigurationError(
-                section=section,
-                messages=errors,
-                details=[]
+                section=section, messages=errors, details=[]
             )
-

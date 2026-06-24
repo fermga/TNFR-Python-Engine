@@ -2,21 +2,24 @@
 
 from __future__ import annotations
 
-from ..errors import TNFRValueError
-from ..compat.dataclass import dataclass
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
+from ..compat.dataclass import dataclass
+from ..errors import TNFRValueError
 from .unified_numerical import np
 
 if TYPE_CHECKING:  # pragma: no cover - typing hook when numpy.typing is available
-    import numpy.typing as npt
     import numpy as _np_typing
+    import numpy.typing as npt
 
-    ComplexVector = npt.NDArray[_np_typing.complexfloating[_np_typing.float64, _np_typing.float64]]
+    ComplexVector = npt.NDArray[
+        _np_typing.complexfloating[_np_typing.float64, _np_typing.float64]
+    ]
 else:  # pragma: no cover - runtime fallback without numpy.typing
     ComplexVector = np.ndarray  # type: ignore[assignment]
 
 __all__ = ["StateProjector", "BasicStateProjector"]
+
 
 @runtime_checkable
 class StateProjector(Protocol):
@@ -38,6 +41,7 @@ class StateProjector(Protocol):
     ) -> ComplexVector:
         """Return a normalised TNFR state vector for the provided parameters."""
 
+
 @dataclass(slots=True)
 class BasicStateProjector:
     """Canonical projector building deterministic TNFR state vectors.
@@ -51,7 +55,9 @@ class BasicStateProjector:
     dissonance while preserving determinism when a seed is provided.
     """
 
-    dtype: np.dtype[np.complexfloating[np.float64, np.float64]] = np.dtype(np.complex128)
+    dtype: np.dtype[np.complexfloating[np.float64, np.float64]] = np.dtype(
+        np.complex128
+    )
     atol: float = 1e-12
 
     def __call__(
@@ -66,7 +72,7 @@ class BasicStateProjector:
             raise TNFRValueError(
                 "State dimension must be a positive integer.",
                 context={"dimension": dim},
-                suggestion="Provide a positive integer for dimension."
+                suggestion="Provide a positive integer for dimension.",
             )
 
         indices = np.arange(1, dim + 1, dtype=float)
@@ -86,7 +92,7 @@ class BasicStateProjector:
             raise TNFRValueError(
                 "Cannot normalise a null state vector.",
                 context={"norm": norm, "atol": self.atol},
-                suggestion="Ensure the state vector is non-zero."
+                suggestion="Ensure the state vector is non-zero.",
             )
 
         normalised = base_vector / norm

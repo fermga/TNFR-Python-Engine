@@ -6,12 +6,13 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from ..utils import read_structured_file
+from ..utils.io import read_structured_file
 
 if TYPE_CHECKING:  # pragma: no cover - only for type checkers
     import networkx as nx
 
 __all__ = ("load_config", "apply_config")
+
 
 def load_config(
     path: str | Path,
@@ -47,6 +48,7 @@ def load_config(
     if not isinstance(data, Mapping):
         raise ValueError("Configuration file must contain an object")
     return data
+
 
 def apply_config(
     G: "nx.Graph",

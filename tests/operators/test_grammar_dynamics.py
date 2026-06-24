@@ -13,8 +13,6 @@ import networkx as nx
 import pytest
 
 from tnfr.operators.grammar_dynamics import (
-    CandidateResult,
-    GrammarViolation,
     _CLOSURE_CODES,
     _COUPLING_CODES,
     _DESTABILIZER_CODES,
@@ -22,6 +20,8 @@ from tnfr.operators.grammar_dynamics import (
     _GENERATOR_CODES,
     _HANDLER_CODES,
     _STABILIZER_CODES,
+    CandidateResult,
+    GrammarViolation,
     _to_code,
     enforce_grammar_on_glyph,
     filter_candidates,
@@ -30,8 +30,8 @@ from tnfr.operators.grammar_dynamics import (
 )
 from tnfr.types import Glyph
 
-
 # ── test helpers ──────────────────────────────────────────────────────────
+
 
 def _make_graph(
     num_nodes: int = 5,
@@ -49,6 +49,7 @@ def _make_graph(
         G.nodes[n]["phase"] = float(n) * 0.3
     if history is not None:
         from collections import deque
+
         G.nodes[0]["glyph_history"] = deque(history, maxlen=20)
     return G, 0
 
@@ -56,6 +57,7 @@ def _make_graph(
 # ═══════════════════════════════════════════════════════════════════════════
 #  Code normalization
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestToCode:
     """Verify _to_code normalizes glyphs to uppercase codes."""
@@ -80,6 +82,7 @@ class TestToCode:
 # ═══════════════════════════════════════════════════════════════════════════
 #  Set membership sanity
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestCodeSets:
     """Verify code-level sets match the canonical grammar_types definitions."""
@@ -110,6 +113,7 @@ class TestCodeSets:
 #  U1a: Structural Initiation
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestU1a:
     """U1a: EPI=0 + empty history ⟹ must start with generator."""
 
@@ -138,6 +142,7 @@ class TestU1a:
 # ═══════════════════════════════════════════════════════════════════════════
 #  U2: Convergence & Boundedness
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestU2:
     """U2: Destabilizer debt must not exceed threshold."""
@@ -171,6 +176,7 @@ class TestU2:
 # ═══════════════════════════════════════════════════════════════════════════
 #  U3: Resonant Coupling
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestU3:
     """U3: Coupling/resonance requires phase-compatible neighbours."""
@@ -207,6 +213,7 @@ class TestU3:
 #  U4a: Bifurcation triggers need handlers
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestU4a:
     """U4a: OZ/ZHIR require a handler (IL/THOL) in context."""
 
@@ -225,6 +232,7 @@ class TestU4a:
 # ═══════════════════════════════════════════════════════════════════════════
 #  U4b: Transformer context
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestU4b:
     """U4b: ZHIR/THOL need recent destabilizer; ZHIR also needs prior IL."""
@@ -263,6 +271,7 @@ class TestU4b:
 #  Combined: Multiple rules
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestMultipleViolations:
     """If candidate triggers more than one rule, all are reported."""
 
@@ -279,6 +288,7 @@ class TestMultipleViolations:
 # ═══════════════════════════════════════════════════════════════════════════
 #  filter_candidates
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestFilterCandidates:
     """filter_candidates returns only valid options."""
@@ -305,6 +315,7 @@ class TestFilterCandidates:
 #  suggest_alternative
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestSuggestAlternative:
     """suggest_alternative finds a grammar-safe fallback."""
 
@@ -326,6 +337,7 @@ class TestSuggestAlternative:
 # ═══════════════════════════════════════════════════════════════════════════
 #  enforce_grammar_on_glyph
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestEnforceGrammarOnGlyph:
     """enforce_grammar_on_glyph is the main entry point for dynamics wiring."""
@@ -352,17 +364,20 @@ class TestEnforceGrammarOnGlyph:
 #  Integration: enforce_canonical_grammar
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestEnforceCanonicalGrammarIntegration:
     """enforce_canonical_grammar now delegates to grammar_dynamics."""
 
     def test_valid_candidate_untouched(self) -> None:
         from tnfr.operators.grammar_application import enforce_canonical_grammar
+
         G, node = _make_graph(history=["IL"])
         result = enforce_canonical_grammar(G, node, "RA")
         assert result == "RA"
 
     def test_invalid_candidate_replaced(self) -> None:
         from tnfr.operators.grammar_application import enforce_canonical_grammar
+
         G, node = _make_graph(epi=0.0)
         result = enforce_canonical_grammar(G, node, "IL")
         assert result in _GENERATOR_CODES
@@ -372,11 +387,13 @@ class TestEnforceCanonicalGrammarIntegration:
 #  Integration: selectors use grammar-aware prefilter
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestSelectorsIntegration:
     """_soft_grammar_prefilter applies soft heuristic filters only."""
 
     def test_prefilter_available(self) -> None:
         from tnfr.dynamics.selectors import _soft_grammar_prefilter
+
         G, node = _make_graph(history=["IL", "RA"])
         # Should not raise
         result = _soft_grammar_prefilter(G, node, "OZ")
@@ -385,6 +402,7 @@ class TestSelectorsIntegration:
     def test_prefilter_does_not_duplicate_grammar(self) -> None:
         """Prefilter should NOT run enforce_grammar_on_glyph (DRY)."""
         from tnfr.dynamics.selectors import _soft_grammar_prefilter
+
         # EPI=0, no history → grammar would replace a non-generator.
         # But the prefilter is now soft-only: it should pass through
         # the candidate (grammar enforcement happens at the apply stage).
@@ -400,11 +418,13 @@ class TestSelectorsIntegration:
 #  Integration: apply_glyph_with_grammar pre-validates (GAP #3)
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestApplyGlyphWithGrammarPrevalidation:
     """apply_glyph_with_grammar enforces grammar BEFORE applying."""
 
     def test_valid_glyph_applied(self) -> None:
         from tnfr.operators.grammar_application import apply_glyph_with_grammar
+
         G, node = _make_graph(history=["IL"], epi=1.0)
         # RA on a node with history and EPI>0 → valid, should not raise
         apply_glyph_with_grammar(G, [node], "RA")
@@ -412,6 +432,7 @@ class TestApplyGlyphWithGrammarPrevalidation:
     def test_grammar_enforcement_runs(self) -> None:
         """Glyph should be validated (and potentially replaced) before apply."""
         from tnfr.operators.grammar_application import enforce_canonical_grammar
+
         # A non-generator at EPI=0 with no history → should be replaced
         G, node = _make_graph(epi=0.0)
         result = enforce_canonical_grammar(G, node, "IL")
@@ -422,17 +443,20 @@ class TestApplyGlyphWithGrammarPrevalidation:
 #  validate_sequence_incremental (GAP #4)
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 class TestValidateSequenceIncremental:
     """Per-step incremental validation against a node's live history."""
 
     def test_valid_sequence(self) -> None:
         from tnfr.operators.grammar_dynamics import validate_sequence_incremental
+
         G, node = _make_graph(history=["IL"], epi=1.0)
         results = validate_sequence_incremental(G, node, ["RA", "IL", "OZ", "IL"])
         assert all(r.allowed for r in results)
 
     def test_detects_per_step_violation(self) -> None:
         from tnfr.operators.grammar_dynamics import validate_sequence_incremental
+
         # Start from EPI=0, no history → first step must be generator
         G, node = _make_graph(epi=0.0)
         results = validate_sequence_incremental(G, node, ["IL", "OZ"])
@@ -442,6 +466,7 @@ class TestValidateSequenceIncremental:
 
     def test_shadow_history_accumulates(self) -> None:
         from tnfr.operators.grammar_dynamics import validate_sequence_incremental
+
         G, node = _make_graph(epi=1.0)
         # OZ, OZ, OZ → destabilizer debt should trigger U2 by step 3
         results = validate_sequence_incremental(G, node, ["OZ", "OZ", "OZ"])
@@ -451,6 +476,7 @@ class TestValidateSequenceIncremental:
 
     def test_preserves_original_history(self) -> None:
         from tnfr.operators.grammar_dynamics import validate_sequence_incremental
+
         G, node = _make_graph(history=["IL", "RA"], epi=1.0)
         original = list(G.nodes[node]["glyph_history"])
         validate_sequence_incremental(G, node, ["OZ", "IL"])
@@ -459,18 +485,21 @@ class TestValidateSequenceIncremental:
 
     def test_empty_sequence(self) -> None:
         from tnfr.operators.grammar_dynamics import validate_sequence_incremental
+
         G, node = _make_graph(epi=1.0)
         results = validate_sequence_incremental(G, node, [])
         assert results == []
 
     def test_available_via_grammar_reexport(self) -> None:
         from tnfr.operators.grammar import validate_sequence_incremental
+
         assert callable(validate_sequence_incremental)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 #  Edge cases
 # ═══════════════════════════════════════════════════════════════════════════
+
 
 class TestEdgeCases:
     """Boundary conditions and edge cases."""
@@ -483,8 +512,9 @@ class TestEdgeCases:
 
     def test_isolated_node(self) -> None:
         G = nx.Graph()
-        G.add_node(0, EPI=1.0, nu_f=1.0, DNFR=0.05, theta=0.0,
-                   delta_nfr=0.05, phase=0.0)
+        G.add_node(
+            0, EPI=1.0, nu_f=1.0, DNFR=0.05, theta=0.0, delta_nfr=0.05, phase=0.0
+        )
         # UM on isolated node → U3 warning (no neighbours)
         cr = validate_candidate(G, 0, "UM")
         assert any(v.rule == "U3" for v in cr.violations)

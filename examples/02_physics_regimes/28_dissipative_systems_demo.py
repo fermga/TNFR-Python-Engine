@@ -23,20 +23,20 @@ from __future__ import annotations
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np
 
 from tnfr.physics.dissipative_conservation import (
+    DissipativeTimeSeries,
     capture_dissipative_snapshot,
+    classify_dissipative_regime,
     compute_dissipation_bound,
     compute_dissipator_action,
     compute_purity_decay_bound,
-    verify_dissipative_balance,
     predict_amplitude_damping_purity,
     predict_dephasing_purity,
-    classify_dissipative_regime,
-    DissipativeTimeSeries,
+    verify_dissipative_balance,
 )
 
 SEED = 42
@@ -45,6 +45,7 @@ SEED = 42
 # ------------------------------------------------------------------
 # Helpers
 # ------------------------------------------------------------------
+
 
 def _make_pure_state(dim: int = 4) -> np.ndarray:
     """Create a random pure-state density operator |psi><psi|."""
@@ -117,6 +118,7 @@ def _lindblad_step(
 # 1. Density operator snapshots
 # ------------------------------------------------------------------
 
+
 def demo_snapshots() -> None:
     """Capture and compare structural invariants of pure vs mixed states."""
     print("=" * 60)
@@ -129,19 +131,27 @@ def demo_snapshots() -> None:
     mixed = _make_mixed_state(dim, purity_target=0.4)
     maximally_mixed = np.eye(dim, dtype=np.complex128) / dim
 
-    for label, rho in [("Pure state", pure), ("Mixed (P~0.4)", mixed),
-                        ("Maximally mixed", maximally_mixed)]:
+    for label, rho in [
+        ("Pure state", pure),
+        ("Mixed (P~0.4)", mixed),
+        ("Maximally mixed", maximally_mixed),
+    ]:
         snap = capture_dissipative_snapshot(rho)
         print(f"\n  {label}:")
         print(f"    Trace   = {snap.trace:.6f}  (should be 1)")
-        print(f"    Purity  = {snap.purity:.6f}  (1=pure, 1/{dim}={1/dim:.4f}=max mixed)")
-        print(f"    Entropy = {snap.von_neumann_entropy:.6f}  (0=pure, ln({dim})={np.log(dim):.4f}=max)")
+        print(
+            f"    Purity  = {snap.purity:.6f}  (1=pure, 1/{dim}={1/dim:.4f}=max mixed)"
+        )
+        print(
+            f"    Entropy = {snap.von_neumann_entropy:.6f}  (0=pure, ln({dim})={np.log(dim):.4f}=max)"
+        )
     print()
 
 
 # ------------------------------------------------------------------
 # 2. Dissipation bound
 # ------------------------------------------------------------------
+
 
 def demo_dissipation_bound() -> None:
     """Verify the theoretical bound |D[rho]| <= Sum ||L_k||^2 * (1 - P)."""
@@ -152,13 +162,15 @@ def demo_dissipation_bound() -> None:
     dim = 4
     collapse_ops = _make_collapse_operators(dim, strength=0.1)
 
-    for label, rho in [("Pure", _make_pure_state(dim)),
-                        ("Mixed", _make_mixed_state(dim, 0.5)),
-                        ("Max mixed", np.eye(dim, dtype=np.complex128) / dim)]:
+    for label, rho in [
+        ("Pure", _make_pure_state(dim)),
+        ("Mixed", _make_mixed_state(dim, 0.5)),
+        ("Max mixed", np.eye(dim, dtype=np.complex128) / dim),
+    ]:
         snap = capture_dissipative_snapshot(rho)
         bound = compute_dissipation_bound(collapse_ops, snap.purity)
         D_action = compute_dissipator_action(rho, collapse_ops)
-        actual = float(np.linalg.norm(D_action, ord='fro'))
+        actual = float(np.linalg.norm(D_action, ord="fro"))
         satisfied = actual <= bound + 1e-10
 
         print(f"\n  {label}:")
@@ -172,6 +184,7 @@ def demo_dissipation_bound() -> None:
 # ------------------------------------------------------------------
 # 3. Purity decay and entropy production tracking
 # ------------------------------------------------------------------
+
 
 def demo_purity_tracking() -> None:
     """Track purity decay and entropy growth under Lindblad evolution."""
@@ -198,10 +211,14 @@ def demo_purity_tracking() -> None:
             current = _lindblad_step(current, collapse_ops, dt=dt)
 
     print(f"\n  Evolution: {steps} steps, dt = {dt}")
-    print(f"  Purity:  {series.purity[0]:.4f} → {series.purity[-1]:.4f}  "
-          f"(change: {series.purity[-1] - series.purity[0]:+.4f})")
-    print(f"  Entropy: {series.entropy[0]:.4f} → {series.entropy[-1]:.4f}  "
-          f"(change: {series.entropy[-1] - series.entropy[0]:+.4f})")
+    print(
+        f"  Purity:  {series.purity[0]:.4f} → {series.purity[-1]:.4f}  "
+        f"(change: {series.purity[-1] - series.purity[0]:+.4f})"
+    )
+    print(
+        f"  Entropy: {series.entropy[0]:.4f} → {series.entropy[-1]:.4f}  "
+        f"(change: {series.entropy[-1] - series.entropy[0]:+.4f})"
+    )
     print(f"  Total entropy produced: {series.entropy[-1] - series.entropy[0]:.4f}")
 
     # Show a few milestones
@@ -210,13 +227,16 @@ def demo_purity_tracking() -> None:
     print("  ------|-------|----------|----------")
     for m in milestones:
         if m <= steps:
-            print(f"  {m:4d}  | {series.times[m]:5.2f} | {series.purity[m]:.4f}   | {series.entropy[m]:.4f}")
+            print(
+                f"  {m:4d}  | {series.times[m]:5.2f} | {series.purity[m]:.4f}   | {series.entropy[m]:.4f}"
+            )
     print()
 
 
 # ------------------------------------------------------------------
 # 4. Dissipative balance verification
 # ------------------------------------------------------------------
+
 
 def demo_dissipative_balance() -> None:
     """Verify the dissipative continuity equation between snapshots."""
@@ -234,14 +254,19 @@ def demo_dissipative_balance() -> None:
     snap_after = capture_dissipative_snapshot(rho_after)
 
     balance = verify_dissipative_balance(
-        snap_before, snap_after,
+        snap_before,
+        snap_after,
         dt=dt,
         collapse_operators=collapse_ops,
     )
 
     print(f"\n  Purity:  {balance.purity_before:.6f} → {balance.purity_after:.6f}")
-    print(f"  Purity decay rate:       {balance.purity_decay_rate:.6f} (should be <= 0)")
-    print(f"  Entropy production rate: {balance.entropy_production_rate:.6f} (should be >= 0)")
+    print(
+        f"  Purity decay rate:       {balance.purity_decay_rate:.6f} (should be <= 0)"
+    )
+    print(
+        f"  Entropy production rate: {balance.entropy_production_rate:.6f} (should be >= 0)"
+    )
     print(f"  Trace drift:             {balance.trace_drift:.2e}")
     print(f"  Dissipation bound:       {balance.dissipation_bound:.6f}")
     print(f"  Actual dissipation:      {balance.actual_dissipation:.6f}")
@@ -254,6 +279,7 @@ def demo_dissipative_balance() -> None:
 # ------------------------------------------------------------------
 # 5. Regime classification
 # ------------------------------------------------------------------
+
 
 def demo_regime_classification() -> None:
     """Classify dissipative strength into TNFR grammar tiers."""
@@ -273,8 +299,9 @@ def demo_regime_classification() -> None:
         rho_after = _lindblad_step(rho, collapse_ops, dt=dt)
         snap_after = capture_dissipative_snapshot(rho_after)
 
-        balance = verify_dissipative_balance(snap_before, snap_after, dt=dt,
-                                              collapse_operators=collapse_ops)
+        balance = verify_dissipative_balance(
+            snap_before, snap_after, dt=dt, collapse_operators=collapse_ops
+        )
         classification = classify_dissipative_regime(balance)
 
         print(f"\n  Collapse strength = {strength}")
@@ -288,6 +315,7 @@ def demo_regime_classification() -> None:
 # 6. Grammar violations as collapse operators
 # ------------------------------------------------------------------
 
+
 def demo_grammar_violations() -> None:
     """Show how grammar U2 violation magnitude maps to dissipation."""
     print("=" * 60)
@@ -300,10 +328,12 @@ def demo_grammar_violations() -> None:
     print("\n  U2 compliance level  |  After 20 steps")
     print("  --------------------|-------------------")
 
-    for label, strength in [("Full compliance (weak)", 0.001),
-                             ("Partial violation (moderate)", 0.03),
-                             ("Strong violation", 0.15),
-                             ("No stabilizers (critical)", 0.5)]:
+    for label, strength in [
+        ("Full compliance (weak)", 0.001),
+        ("Partial violation (moderate)", 0.03),
+        ("Strong violation", 0.15),
+        ("No stabilizers (critical)", 0.5),
+    ]:
         collapse_ops = _make_collapse_operators(dim, strength=strength)
         current = rho.copy()
         for _ in range(20):
@@ -321,6 +351,7 @@ def demo_grammar_violations() -> None:
 # ------------------------------------------------------------------
 # 7. Analytical predictions
 # ------------------------------------------------------------------
+
 
 def demo_analytical_predictions() -> None:
     """Compare Lindblad evolution with analytical predictions."""
@@ -384,6 +415,7 @@ def demo_analytical_predictions() -> None:
 # ------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------
+
 
 def main() -> None:
     print()

@@ -8,6 +8,7 @@ telemetry and do not mutate EPI.
 
 Development focus: Au (gold-like) emergence from TNFR nodal equation dynamics.
 """
+
 from __future__ import annotations
 
 import math
@@ -21,84 +22,97 @@ except ImportError:
 # TNFR Optimizations Integration
 try:
     from ..mathematics.spectral import gft
-    from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+    from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
+
     _HAS_SPECTRAL_OPTIMIZATIONS = True
 except ImportError:
     _HAS_SPECTRAL_OPTIMIZATIONS = False
 
 from ..alias import get_attr, set_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
-from .fields import (
-    compute_structural_potential,
-    compute_phase_gradient,
-    compute_phase_curvature,
-    estimate_coherence_length,
-)
 from ..constants.canonical import (
-    GRAD_PHI_CANONICAL_THRESHOLD,
-    K_PHI_CANONICAL_THRESHOLD,
     AU_CURVATURE_PERMISSIVE_THRESHOLD,
     CRITICAL_EXPONENT,
     EMERGENT_STABILITY_THRESHOLD_CANONICAL,
-    PHI, GAMMA, PI,
+    GAMMA,
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
+    PHI,
+    PI,
+)
+from .fields import (
+    compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
+    estimate_coherence_length,
 )
 
 # Spectral-optimized element detection cache
 if _HAS_SPECTRAL_OPTIMIZATIONS:
+
     @cache_tnfr_computation(level=CacheLevel.DERIVED_METRICS, dependencies=set())
-    def _detect_element_patterns_spectral(phase_data: tuple, dnfr_data: tuple, n_nodes: int) -> dict[str, float]:
+    def _detect_element_patterns_spectral(
+        phase_data: tuple, dnfr_data: tuple, n_nodes: int
+    ) -> dict[str, float]:
         """FFT-optimized element pattern detection.
-        
+
         Uses Graph Fourier Transform for O(N log N) pattern recognition
         instead of O(N²) spatial analysis.
         """
         from ..mathematics.unified_numerical import np
-        
+
         # Convert to arrays for spectral analysis
         phases = np.array(phase_data)
         dnfr_values = np.array(dnfr_data)
-        
+
         # Create synthetic Laplacian for spectral analysis
         # (In real implementation, would use actual graph Laplacian)
         identity_eigenvals = np.ones(n_nodes) * 0.5  # Simplified for demo
-        
+
         try:
             # Transform to spectral domain
             phase_spectrum = gft(phases, identity_eigenvals)
             dnfr_spectrum = gft(dnfr_values, identity_eigenvals)
-            
+
             # Analyze spectral signatures for element-like patterns
-            phase_energy = np.sum(np.abs(phase_spectrum)**2)
-            dnfr_energy = np.sum(np.abs(dnfr_spectrum)**2)
-            
+            phase_energy = np.sum(np.abs(phase_spectrum) ** 2)
+            dnfr_energy = np.sum(np.abs(dnfr_spectrum) ** 2)
+
             # Element detection via spectral coherence
             spectral_coherence = phase_energy / (1.0 + dnfr_energy)
-            
+
             return {
-                'spectral_coherence': float(spectral_coherence),
-                'phase_spectral_energy': float(phase_energy),
-                'dnfr_spectral_energy': float(dnfr_energy),
+                "spectral_coherence": float(spectral_coherence),
+                "phase_spectral_energy": float(phase_energy),
+                "dnfr_spectral_energy": float(dnfr_energy),
             }
-            
+
         except Exception:
             # Fallback to basic analysis
             return {
-                'spectral_coherence': 0.5,
-                'phase_spectral_energy': 1.0,
-                'dnfr_spectral_energy': 1.0,
+                "spectral_coherence": 0.5,
+                "phase_spectral_energy": 1.0,
+                "dnfr_spectral_energy": 1.0,
             }
+
 else:
-    def _detect_element_patterns_spectral(phase_data: tuple, dnfr_data: tuple, n_nodes: int) -> dict[str, float]:
+
+    def _detect_element_patterns_spectral(
+        phase_data: tuple, dnfr_data: tuple, n_nodes: int
+    ) -> dict[str, float]:
         """Fallback without spectral optimization."""
         return {
-            'spectral_coherence': 0.5,
-            'phase_spectral_energy': 1.0,
-            'dnfr_spectral_energy': 1.0,
+            "spectral_coherence": 0.5,
+            "phase_spectral_energy": 1.0,
+            "dnfr_spectral_energy": 1.0,
         }
 
-def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) -> dict[str, Any]:
+
+def compute_element_signature(
+    G: "nx.Graph", apply_synthetic_step: bool = True
+) -> dict[str, Any]:
     """Compute the Structural Field Tetrad signature for an element-like pattern.
-    
+
     OPTIMIZED: Uses FFT-based spectral analysis for O(N log N) pattern detection.
 
     Parameters
@@ -130,7 +144,7 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
         - curvature_hotspots_ok: bool, max |K_φ| < 0.9×π ≈ 2.8274 (canonical threshold)
         - coherence_length_category: str in {localized, medium, extended}
         - signature_class: str, one of {stable, marginal, unstable}
-        
+
     Notes
     -----
     For Au (Z≈79) patterns, expect:
@@ -154,12 +168,16 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
 
     curv_dict = compute_phase_curvature(G)
     curv_abs_values = [abs(v) for v in curv_dict.values()]
-    mean_curv_abs = float(sum(curv_abs_values) / len(curv_abs_values)) if curv_abs_values else 0.0
+    mean_curv_abs = (
+        float(sum(curv_abs_values) / len(curv_abs_values)) if curv_abs_values else 0.0
+    )
     max_curv_abs = float(max(curv_abs_values)) if curv_abs_values else 0.0
 
     # Structural potential before and after synthetic step (for drift)
     phi_s_before = compute_structural_potential(G)
-    phi_s_before_mean = sum(phi_s_before.values()) / len(phi_s_before) if phi_s_before else 0.0
+    phi_s_before_mean = (
+        sum(phi_s_before.values()) / len(phi_s_before) if phi_s_before else 0.0
+    )
 
     phi_s_after_mean = phi_s_before_mean  # default: no change
     phi_s_drift = 0.0
@@ -172,37 +190,47 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
             )
         except ImportError:
             apply_synthetic_activation_sequence = None
-        
+
         # Save original state (shallow copy of phase/delta_nfr)
         original_state = {}
         for n in G.nodes():
             original_state[n] = {
-                'phase': get_attr(G.nodes[n], ALIAS_THETA, 0.0),
-                'delta_nfr': get_attr(G.nodes[n], ALIAS_DNFR, 0.05),
+                "phase": get_attr(G.nodes[n], ALIAS_THETA, 0.0),
+                "delta_nfr": get_attr(G.nodes[n], ALIAS_DNFR, 0.05),
             }
-        
+
         # Apply the synthetic step only if the helper is available; otherwise
         # the defaults hold (phi_s_drift = 0, phi_s_after_mean = phi_s_before_mean).
         if apply_synthetic_activation_sequence is not None:
-            apply_synthetic_activation_sequence(G, alpha=CRITICAL_EXPONENT, dnfr_factor=EMERGENT_STABILITY_THRESHOLD_CANONICAL)  # γ/π, (φ+γ)/(π+γ)
+            apply_synthetic_activation_sequence(
+                G,
+                alpha=CRITICAL_EXPONENT,
+                dnfr_factor=EMERGENT_STABILITY_THRESHOLD_CANONICAL,
+            )  # γ/π, (φ+γ)/(π+γ)
             phi_s_after = compute_structural_potential(G)
-            phi_s_after_mean = sum(phi_s_after.values()) / len(phi_s_after) if phi_s_after else 0.0
+            phi_s_after_mean = (
+                sum(phi_s_after.values()) / len(phi_s_after) if phi_s_after else 0.0
+            )
             phi_s_drift = abs(phi_s_after_mean - phi_s_before_mean)
-        
+
         # Restore original state to keep function side-effect free
         for n in G.nodes():
-            set_attr(G.nodes[n], ALIAS_THETA, original_state[n]['phase'])
-            set_attr(G.nodes[n], ALIAS_DNFR, original_state[n]['delta_nfr'])
+            set_attr(G.nodes[n], ALIAS_THETA, original_state[n]["phase"])
+            set_attr(G.nodes[n], ALIAS_DNFR, original_state[n]["delta_nfr"])
 
     # Threshold checks (audit 2026: |∇φ| γ/π is a heuristic early-warning, not
     # derived; the genuine bound is the π phase-wrap shared by |∇φ| and K_φ)
-    phase_grad_ok = mean_grad < GRAD_PHI_CANONICAL_THRESHOLD  # heuristic ≈ 0.1837 (kinematic bound is π)
-    curv_hotspots_ok = max_curv_abs < K_PHI_CANONICAL_THRESHOLD  # 0.9×π ≈ 2.8274 (phase wrap — genuine)
+    phase_grad_ok = (
+        mean_grad < GRAD_PHI_CANONICAL_THRESHOLD
+    )  # heuristic ≈ 0.1837 (kinematic bound is π)
+    curv_hotspots_ok = (
+        max_curv_abs < K_PHI_CANONICAL_THRESHOLD
+    )  # 0.9×π ≈ 2.8274 (phase wrap — genuine)
 
     # Coherence length categorization (empirical heuristic)
     n_nodes = len(G.nodes())
     typical_diameter = math.sqrt(n_nodes) if n_nodes > 0 else 1.0
-    
+
     # More lenient criteria for molecular chemistry
     if xi_c < typical_diameter * 0.3:
         xi_c_category = "localized"
@@ -233,30 +261,37 @@ def compute_element_signature(G: "nx.Graph", apply_synthetic_step: bool = True) 
         "signature_class": signature_class,
     }
 
+
 def compute_au_like_signature(G: "nx.Graph") -> dict[str, Any]:
     """Compute signature specifically for Au-like (Z≈79) coherent attractors.
-    
+
     This is a specialized version of compute_element_signature with Au-specific
     interpretation. Au-like patterns exhibit:
     - Extended coherence length (ξ_C >> typical diameter)
     - Low phase gradients (synchronized phases)
     - Stable under synthetic evolution (low ΔΦ_s drift)
     - Moderate curvature without hotspots
-    
+
     Returns the standard element signature with an additional boolean field
     'is_au_like' indicating whether the pattern matches Au characteristics.
     """
     signature = compute_element_signature(G, apply_synthetic_step=True)
-    
+
     # Au-specific criteria (heuristic) - more permissive for current implementation
     is_extended_or_complex = (
         signature["coherence_length_category"] in ["medium", "extended"]
         or len(G.nodes()) > 50  # Complex topology indicates Au-like
     )
-    is_phase_synchronized = signature["mean_phase_gradient"] < PI / 2  # π/2 - permissive for current patterns
-    is_evolution_stable = signature["phi_s_drift"] < PHI + GAMMA  # (φ+γ) - moderate drift tolerance
-    is_curvature_mild = signature["max_phase_curvature_abs"] < AU_CURVATURE_PERMISSIVE_THRESHOLD  # (φ+1)×π/e ≈ 3.0257
-    
+    is_phase_synchronized = (
+        signature["mean_phase_gradient"] < PI / 2
+    )  # π/2 - permissive for current patterns
+    is_evolution_stable = (
+        signature["phi_s_drift"] < PHI + GAMMA
+    )  # (φ+γ) - moderate drift tolerance
+    is_curvature_mild = (
+        signature["max_phase_curvature_abs"] < AU_CURVATURE_PERMISSIVE_THRESHOLD
+    )  # (φ+1)×π/e ≈ 3.0257
+
     signature["is_au_like"] = (
         is_extended_or_complex
         and is_phase_synchronized
@@ -265,8 +300,9 @@ def compute_au_like_signature(G: "nx.Graph") -> dict[str, Any]:
         # Note: Au-like patterns may be "unstable" by standard criteria
         # but still exhibit metallic properties through complex topology
     )
-    
+
     return signature
+
 
 __all__ = [
     "compute_element_signature",

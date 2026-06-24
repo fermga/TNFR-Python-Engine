@@ -24,6 +24,7 @@ __all__ = [
 # Default tolerance for structural frequency validation
 MIN_STRUCTURAL_FREQUENCY = 0.0
 
+
 class HzStr:
     """Structural frequency in Hz_str (structural hertz) units.
 
@@ -184,8 +185,10 @@ class HzStr:
         """Hash for use in sets/dicts."""
         return hash((self.value, self.unit))
 
+
 # Alias for clarity in type hints
 StructuralFrequency = HzStr
+
 
 def ensure_hz_str(value: float | HzStr) -> HzStr:
     """Ensure value is in Hz_str units.
@@ -210,6 +213,7 @@ def ensure_hz_str(value: float | HzStr) -> HzStr:
     if isinstance(value, HzStr):
         return value
     return HzStr(float(value))
+
 
 def hz_to_hz_str(
     hz_value: float,

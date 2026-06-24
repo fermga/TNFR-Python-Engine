@@ -33,40 +33,40 @@ References:
 - AGENTS.md §"Foundational Physics"
 """
 
-import os
-import sys
 import math
+import os
 import random
+import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_DNFR
+from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.observers import kuramoto_order
 from tnfr.physics.structural_diffusion import (
-    verify_structural_diffusion,
-    verify_overdamped_regime,
-    verify_discrete_modes,
-    verify_structural_stability,
-    verify_structural_random_walk,
-    verify_structural_flow,
-    structural_diffusion_operator,
-    structural_field,
-    structural_eigenmodes,
-    nodal_domain_count,
-    dispersion_relation,
-    instability_threshold,
-    fiedler_partition,
-    effective_resistance,
     commute_time,
-    structural_current,
     current_divergence,
-    relaxation_spectrum,
     degree_weighted_total,
+    dispersion_relation,
+    effective_resistance,
+    fiedler_partition,
+    instability_threshold,
+    nodal_domain_count,
+    relaxation_spectrum,
+    structural_current,
+    structural_diffusion_operator,
+    structural_eigenmodes,
+    structural_field,
+    verify_discrete_modes,
+    verify_overdamped_regime,
+    verify_structural_diffusion,
+    verify_structural_flow,
+    verify_structural_random_walk,
+    verify_structural_stability,
 )
 
 
@@ -98,6 +98,7 @@ def experiment_1_nodal_is_diffusion():
 
     # isolate the EPI channel on a clean replica
     from tnfr.constants.aliases import ALIAS_EPI
+
     g2 = nx.Graph()
     for nd in nodes:
         g2.add_node(
@@ -107,13 +108,9 @@ def experiment_1_nodal_is_diffusion():
             nu_f=1.0,
         )
     g2.add_edges_from(G.edges())
-    g2.graph["DNFR_WEIGHTS"] = {
-        "phase": 0.0, "epi": 1.0, "vf": 0.0, "topo": 0.0
-    }
+    g2.graph["DNFR_WEIGHTS"] = {"phase": 0.0, "epi": 1.0, "vf": 0.0, "topo": 0.0}
     default_compute_delta_nfr(g2)
-    dnfr = np.array(
-        [float(get_attr(g2.nodes[nd], ALIAS_DNFR, 0.0)) for nd in nodes]
-    )
+    dnfr = np.array([float(get_attr(g2.nodes[nd], ALIAS_DNFR, 0.0)) for nd in nodes])
     residual = float(np.max(np.abs(dnfr - (-(lap @ epi)))))
     print(f"  max |ΔNFR_epi − (−L_rw·EPI)| = {residual:.2e}")
     print(f"  -> the EPI channel of the nodal equation IS graph diffusion")
@@ -132,11 +129,15 @@ def experiment_2_diffusion_signatures():
     print(cert.summary())
     print()
     spec = relaxation_spectrum(G)
-    print(f"  relaxation spectrum νf·λ_k (first 6): "
-          f"{[round(float(x), 4) for x in spec[:6]]}")
+    print(
+        f"  relaxation spectrum νf·λ_k (first 6): "
+        f"{[round(float(x), 4) for x in spec[:6]]}"
+    )
     print(f"  λ₁ = 0 is the conserved uniform mode; λ₂ (spectral gap) sets")
-    print(f"  the slowest relaxation. Conserved total Σ deg·EPI = "
-          f"{degree_weighted_total(G):.4f}")
+    print(
+        f"  the slowest relaxation. Conserved total Σ deg·EPI = "
+        f"{degree_weighted_total(G):.4f}"
+    )
     print()
     print("VALIDATED: the structural form diffuses to a uniform equilibrium,")
     print("conserving the degree-weighted total — the same mathematics as")
@@ -156,9 +157,7 @@ def experiment_3_synchronization():
     print()
 
     G = _build(60, seed=3)
-    G.graph["DNFR_WEIGHTS"] = {
-        "phase": 1.0, "epi": 0.0, "vf": 0.0, "topo": 0.0
-    }
+    G.graph["DNFR_WEIGHTS"] = {"phase": 1.0, "epi": 0.0, "vf": 0.0, "topo": 0.0}
     nodes = list(G.nodes())
     r0 = kuramoto_order(G)
     for _ in range(300):
@@ -315,10 +314,14 @@ def experiment_8_structural_flow():
     print()
     nodes, j = structural_current(G)
     _, div = current_divergence(G)
-    print(f"  current is antisymmetric (J = −Jᵀ): max|J+Jᵀ| "
-          f"= {float(np.max(np.abs(j + j.T))):.1e}")
-    print(f"  Kirchhoff continuity Σ div(J) = 0 (closed network): "
-          f"{float(div.sum()):.1e}")
+    print(
+        f"  current is antisymmetric (J = −Jᵀ): max|J+Jᵀ| "
+        f"= {float(np.max(np.abs(j + j.T))):.1e}"
+    )
+    print(
+        f"  Kirchhoff continuity Σ div(J) = 0 (closed network): "
+        f"{float(div.sum()):.1e}"
+    )
     print()
     print("VALIDATED: the structural flow is the diffusion current. Its edge")
     print("current is Fick's law; Kirchhoff's current law IS the continuity")

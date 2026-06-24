@@ -4,14 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from .metrics_core import (
-    get_node_attr as _get_node_attr,
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
 from ..mathematics.unified_numerical import np
+from .metrics_core import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from .metrics_core import get_node_attr as _get_node_attr
 
 __all__ = [
     "coupling_metrics",
@@ -31,6 +26,7 @@ _VF_ACTIVE_THRESHOLD = 0.1
 _VF_RECOVERABLE_CAP = 0.5
 _EPI_COHERENT_CAP = 0.3
 _EXPECTED_ACTIVE_NEIGHBORS = 3.0
+
 
 def coupling_metrics(
     G,
@@ -235,6 +231,7 @@ def coupling_metrics(
 
     return metrics
 
+
 def resonance_metrics(
     G,
     node,
@@ -310,7 +307,8 @@ def resonance_metrics(
         "neighbor_count": neighbor_count,
         "neighbor_epi_mean": neighbor_epi_mean,
         "resonance_strength": resonance_strength,
-        "propagation_successful": neighbor_count > 0 and abs(epi_after - neighbor_epi_mean) < 0.5,
+        "propagation_successful": neighbor_count > 0
+        and abs(epi_after - neighbor_epi_mean) < 0.5,
         # Canonical TNFR effects
         "vf_amplification": vf_amplification,  # Canonical: νf increases through resonance
         "vf_before": vf_before if vf_before is not None else vf_after,
@@ -318,6 +316,7 @@ def resonance_metrics(
         "phase_alignment": phase_alignment,  # Canonical: phase strengthens
         "identity_preserved": identity_preserved,  # Canonical: EPI identity maintained
     }
+
 
 def _compute_epi_variance(G: Any, node: Any) -> float:
     """Compute EPI variance during silence period.
@@ -341,6 +340,7 @@ def _compute_epi_variance(G: Any, node: Any) -> float:
     if len(epi_history) < 2:
         return 0.0
     return float(np.std(epi_history))
+
 
 def _compute_preservation_integrity(preserved_epi: float, epi_after: float) -> float:
     """Compute preservation integrity ratio.
@@ -370,6 +370,7 @@ def _compute_preservation_integrity(preserved_epi: float, epi_after: float) -> f
 
     integrity = 1.0 - abs(epi_after - preserved_epi) / abs(preserved_epi)
     return max(0.0, integrity)
+
 
 def _compute_reactivation_readiness(G: Any, node: Any) -> float:
     """Compute readiness score for reactivation from silence.
@@ -412,9 +413,12 @@ def _compute_reactivation_readiness(G: Any, node: Any) -> float:
     vf_score = min(vf / _VF_RECOVERABLE_CAP, 1.0)  # νf recoverable
     epi_score = min(epi / _EPI_COHERENT_CAP, 1.0)  # EPI coherent
     duration_score = 1.0 / (1.0 + duration * 0.1)  # Penalize long silence
-    network_score = min(active_neighbors / _EXPECTED_ACTIVE_NEIGHBORS, 1.0)  # Network support
+    network_score = min(
+        active_neighbors / _EXPECTED_ACTIVE_NEIGHBORS, 1.0
+    )  # Network support
 
     return (vf_score + epi_score + duration_score + network_score) / 4.0
+
 
 def _estimate_time_to_collapse(G: Any, node: Any) -> float:
     """Estimate time until nodal collapse during silence.
@@ -451,7 +455,10 @@ def _estimate_time_to_collapse(G: Any, node: Any) -> float:
     # Estimate time until EPI reaches zero
     return abs(preserved_epi / drift_rate)
 
-def silence_metrics(G: Any, node: Any, vf_before: float, epi_before: float) -> dict[str, float]:
+
+def silence_metrics(
+    G: Any, node: Any, vf_before: float, epi_before: float
+) -> dict[str, float]:
     """SHA - Silence metrics: νf reduction, EPI preservation, duration tracking.
 
     Extended metrics for deep analysis of structural preservation effectiveness.
@@ -543,4 +550,3 @@ def silence_metrics(G: Any, node: Any, vf_before: float, epi_before: float) -> d
     }
 
     return {**core, **extended}
-

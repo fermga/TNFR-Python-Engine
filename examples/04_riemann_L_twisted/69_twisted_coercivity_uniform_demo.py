@@ -98,10 +98,7 @@ def fmt_signed(x: float, width: int = 12, prec: int = 4) -> str:
 
 
 def block_sigma_window() -> list:
-    banner(
-        "BLOCK 1: chi-twisted uniform-coercivity certificate "
-        "(no refinement)"
-    )
+    banner("BLOCK 1: chi-twisted uniform-coercivity certificate " "(no refinement)")
     print(
         f"  sigma window : [{SIGMA_MIN:.3f}, {SIGMA_MAX:.3f}]  "
         f"n_sigma = {N_SIGMA}  (log-spaced)"
@@ -157,21 +154,13 @@ def block_sigma_window() -> list:
 
 
 def block_adaptive_refinement(certs: list) -> None:
-    banner(
-        "BLOCK 2: adaptive refinement on worst-margin character "
-        "(P24-style)"
-    )
-    name, worst_cert = min(
-        certs, key=lambda nc: nc[1].interval_lower_bound_local
-    )
+    banner("BLOCK 2: adaptive refinement on worst-margin character " "(P24-style)")
+    name, worst_cert = min(certs, key=lambda nc: nc[1].interval_lower_bound_local)
     print(
         f"  worst character     : {worst_cert.character_name} "
         f"(q={worst_cert.character_modulus})"
     )
-    print(
-        f"  pre-refinement lb   : "
-        f"{worst_cert.interval_lower_bound_local:+.4e}"
-    )
+    print(f"  pre-refinement lb   : " f"{worst_cert.interval_lower_bound_local:+.4e}")
     print(f"  pre-refinement n_sigma : {worst_cert.n_sigma}")
     print()
 
@@ -192,23 +181,14 @@ def block_adaptive_refinement(certs: list) -> None:
         refinement_rounds=1,
         refinement_per_round=2,
     )
+    print(f"  refinement_rounds   : {refined.n_refinement_rounds}")
+    print(f"  refined n_sigma     : {refined.n_sigma_refined}")
+    print(f"  pre-refinement lb   : " f"{refined.interval_lower_bound_local:+.4e}")
     print(
-        f"  refinement_rounds   : {refined.n_refinement_rounds}"
+        f"  refined lb (local)  : " f"{refined.interval_lower_bound_local_refined:+.4e}"
     )
     print(
-        f"  refined n_sigma     : {refined.n_sigma_refined}"
-    )
-    print(
-        f"  pre-refinement lb   : "
-        f"{refined.interval_lower_bound_local:+.4e}"
-    )
-    print(
-        f"  refined lb (local)  : "
-        f"{refined.interval_lower_bound_local_refined:+.4e}"
-    )
-    print(
-        f"  refined lb positive : "
-        f"{refined.interval_lower_local_refined_positive}"
+        f"  refined lb positive : " f"{refined.interval_lower_local_refined_positive}"
     )
     print()
 

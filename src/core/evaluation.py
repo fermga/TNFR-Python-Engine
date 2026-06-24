@@ -14,12 +14,12 @@ Wrappers StructuralEvaluator and TelemetryView delegate to this orchestrator.
 
 from __future__ import annotations
 
+from dataclasses import asdict, dataclass
+from typing import Any, Dict
+
 import chess
-from dataclasses import dataclass, asdict
-from typing import Dict, Any
 
 from tetrad_evaluator import TetradEvaluator, TetradFields
-
 
 ColorKey = str  # "white" | "black"
 
@@ -27,9 +27,9 @@ ColorKey = str  # "white" | "black"
 @dataclass
 class GraphMetrics:
     coherence: float = 0.0  # how connected/focused this side is
-    pressure: float = 0.0   # material pressure proxy
-    trend: float = 0.0      # initiative proxy (center control / king pressure)
-    mobility: float = 0.0   # normalized legal move count
+    pressure: float = 0.0  # material pressure proxy
+    trend: float = 0.0  # initiative proxy (center control / king pressure)
+    mobility: float = 0.0  # normalized legal move count
 
     def to_dict(self) -> Dict[str, float]:
         return asdict(self)
@@ -109,11 +109,17 @@ class ChessTNFRGraphBuilder:
         for color_key in ("white", "black"):
             gm = metrics[color_key]
             gm.pressure = pressure[color_key]
-            gm.mobility = (mobility_white if color_key == "white" else mobility_black) / max(1, len(legal_moves))
-            gm.trend = (center_control[color_key] + king_pressure[color_key]) / max(1, counts[color_key])
+            gm.mobility = (
+                mobility_white if color_key == "white" else mobility_black
+            ) / max(1, len(legal_moves))
+            gm.trend = (center_control[color_key] + king_pressure[color_key]) / max(
+                1, counts[color_key]
+            )
 
         total = max(1, counts["white"] + counts["black"])
-        metrics["white"].coherence = 1.0 - abs(counts["white"] - counts["black"]) / total
+        metrics["white"].coherence = (
+            1.0 - abs(counts["white"] - counts["black"]) / total
+        )
         metrics["black"].coherence = metrics["white"].coherence
 
         return metrics
@@ -136,7 +142,9 @@ class NodalDynamicsEngine:
 
         u2_ok = tetrad.is_safe
         u3_ok = all(g.mobility > 0.05 for g in graph.values())
-        u4_ok = not (tetrad.coherence < 0.2 and max(g.pressure for g in graph.values()) > 20.0)
+        u4_ok = not (
+            tetrad.coherence < 0.2 and max(g.pressure for g in graph.values()) > 20.0
+        )
 
         return PositionSnapshot(
             tetrad=tetrad,

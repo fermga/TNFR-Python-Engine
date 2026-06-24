@@ -37,9 +37,8 @@ from __future__ import annotations
 
 from typing import Any, Sequence
 
-from .unified_numerical import np, TNFRValueError
-
 from .backend import ensure_array, ensure_numpy, get_backend
+from .unified_numerical import TNFRValueError, np
 
 __all__ = [
     "compute_liouvillian_spectrum",
@@ -47,6 +46,7 @@ __all__ = [
     "get_liouvillian_spectrum",
     "get_slow_relaxation_mode",
 ]
+
 
 def compute_liouvillian_spectrum(
     liouvillian: np.ndarray | Sequence[Sequence[complex]],
@@ -119,7 +119,9 @@ def compute_liouvillian_spectrum(
     build_lindblad_delta_nfr : Construct Liouvillian from Hamiltonian and collapse ops
     """
     backend = get_backend()
-    liouv_array = ensure_array(np.asarray(liouvillian, dtype=np.complex128), backend=backend)
+    liouv_array = ensure_array(
+        np.asarray(liouvillian, dtype=np.complex128), backend=backend
+    )
 
     # Compute eigenvalues using backend-specific solver
     eigenvalues_backend, _ = backend.eig(liouv_array)
@@ -131,7 +133,7 @@ def compute_liouvillian_spectrum(
             raise TNFRValueError(
                 "Liouvillian spectrum violates contractivity.",
                 context={"max_real_eigenvalue": max_real, "tolerance": atol},
-                suggestion="Ensure the Liouvillian represents a valid dissipative process."
+                suggestion="Ensure the Liouvillian represents a valid dissipative process.",
             )
 
     if sort:
@@ -139,6 +141,7 @@ def compute_liouvillian_spectrum(
         eigenvalues = eigenvalues[np.argsort(eigenvalues.real)]
 
     return eigenvalues
+
 
 def store_liouvillian_spectrum(
     G: Any,
@@ -173,6 +176,7 @@ def store_liouvillian_spectrum(
     compatibility. Complex numbers are preserved.
     """
     G.graph[key] = [complex(z) for z in eigenvalues]
+
 
 def get_liouvillian_spectrum(
     G: Any,
@@ -210,6 +214,7 @@ def get_liouvillian_spectrum(
     if cached is None:
         return default
     return np.asarray(cached, dtype=np.complex128)
+
 
 def get_slow_relaxation_mode(
     eigenvalues: np.ndarray | Sequence[complex],

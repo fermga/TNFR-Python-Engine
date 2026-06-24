@@ -12,12 +12,14 @@ FailureRisk = Literal["low", "medium", "high"]
 PartitionBlock = Any
 PreparedBlock = Any
 
+
 @dataclass(frozen=True)
 class StructuralFields:
     phi_s: float
     phase_gradient: float
     phase_curvature: float
     coherence_length: float
+
 
 @dataclass(frozen=True)
 class StrategyContext:
@@ -30,6 +32,7 @@ class StrategyContext:
     boundary_overlap: int
     seed: int
 
+
 @dataclass(frozen=True)
 class ResourceEstimate:
     memory_bytes: int
@@ -38,6 +41,7 @@ class ResourceEstimate:
     phi_s_drift: float
     failure_risk: FailureRisk
 
+
 @dataclass
 class OperationResult:
     block: PartitionBlock
@@ -45,28 +49,27 @@ class OperationResult:
     warnings: list[str] = field(default_factory=list)
     proof_hash: str = ""
 
+
 class OperatorStrategy(Protocol):
     operator: OperatorName
 
-    def supports(self, ctx: StrategyContext) -> bool:
-        ...
+    def supports(self, ctx: StrategyContext) -> bool: ...
 
-    def resource_estimate(self, ctx: StrategyContext) -> ResourceEstimate:
-        ...
+    def resource_estimate(self, ctx: StrategyContext) -> ResourceEstimate: ...
 
-    def prepare(self, ctx: StrategyContext, block: PartitionBlock) -> PreparedBlock:
-        ...
+    def prepare(self, ctx: StrategyContext, block: PartitionBlock) -> PreparedBlock: ...
 
-    def apply(self, prepared: PreparedBlock) -> OperationResult:
-        ...
+    def apply(self, prepared: PreparedBlock) -> OperationResult: ...
 
-    def cleanup(self, prepared: PreparedBlock) -> None:
-        ...
+    def cleanup(self, prepared: PreparedBlock) -> None: ...
+
 
 StrategyFactory = Callable[[], OperatorStrategy]
 
+
 class StrategyRegistrationError(RuntimeError):
     """Raised when invalid or duplicate strategy registrations occur."""
+
 
 class StrategyRegistry:
     """In-memory registry for operator strategies."""
@@ -79,7 +82,9 @@ class StrategyRegistry:
     }
 
     @classmethod
-    def register(cls, *, operator: OperatorName, name: str, factory: StrategyFactory) -> None:
+    def register(
+        cls, *, operator: OperatorName, name: str, factory: StrategyFactory
+    ) -> None:
         name = name.strip()
         if not name:
             raise StrategyRegistrationError("Strategy name cannot be empty")
@@ -87,7 +92,9 @@ class StrategyRegistry:
             raise StrategyRegistrationError(f"Unsupported operator '{operator}'")
         bucket = cls._registry[operator]
         if name in bucket:
-            raise StrategyRegistrationError(f"Strategy '{name}' already registered for {operator}")
+            raise StrategyRegistrationError(
+                f"Strategy '{name}' already registered for {operator}"
+            )
         bucket[name] = factory
 
     @classmethod

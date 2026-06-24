@@ -82,24 +82,24 @@ _ISING_2D_EXPONENT_TOLERANCE = 0.15
 
 # Canonical Structural Triad (Φ_s, |∇φ|, K_φ) + ξ_C experimental
 from .canonical import (
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
     estimate_coherence_length,
 )
 
 # Backward-compatible alias (used by pattern_discovery and parallel modules)
 compute_structural_potential_field = compute_structural_potential
 
-# Unified Telemetry (Optimized Pass)
-from .telemetry import compute_structural_telemetry
-
 # Extended canonical fields (J_φ, J_ΔNFR) - Promoted Nov 12, 2025
 from .extended import (
-    compute_phase_current,
     compute_dnfr_flux,
     compute_extended_canonical_suite,
+    compute_phase_current,
 )
+
+# Unified Telemetry (Optimized Pass)
+from .telemetry import compute_structural_telemetry
 
 # Unified field functions are defined in this module below
 
@@ -108,14 +108,18 @@ _CACHE_AVAILABLE = True
 
 # Import TNFR aliases
 try:
-    from ..constants.aliases import ALIAS_THETA, ALIAS_DNFR
+    from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
 except ImportError:
     ALIAS_THETA = ["phase", "theta"]
     ALIAS_DNFR = ["delta_nfr", "dnfr"]
 
 # Import self-optimizing engine for mathematical analysis
 try:
-    from ..dynamics.self_optimizing_engine import TNFRSelfOptimizingEngine, OptimizationObjective
+    from ..dynamics.self_optimizing_engine import (
+        OptimizationObjective,
+        TNFRSelfOptimizingEngine,
+    )
+
     _SELF_OPTIMIZING_AVAILABLE = True
 except ImportError:
     _SELF_OPTIMIZING_AVAILABLE = False
@@ -159,13 +163,11 @@ __all__ = [
 # ============================================================================
 
 # Centralised helpers — single source of truth in _helpers.py
-from ._helpers import get_phase as _get_phase            # noqa: E402
-from ._helpers import wrap_angle as _wrap_angle          # noqa: E402
+from ._helpers import get_phase as _get_phase  # noqa: E402
+from ._helpers import wrap_angle as _wrap_angle  # noqa: E402
 
 
-def path_integrated_gradient(
-    G: Any, source: Any, target: Any
-) -> float:
+def path_integrated_gradient(G: Any, source: Any, target: Any) -> float:
     """Compute path-integrated phase gradient along a shortest path.
 
     **Status**: RESEARCH (telemetry support for custom analyses)
@@ -327,7 +329,7 @@ def compute_phase_winding(G: Any, cycle_nodes: list[Any]) -> int:
 # calibration cuts, NOT physical constants.
 _NFR_TOPOLOGY_ANNULAR_CONC_MAX = 1.10  # max/mean centrality below this = no
 #   distinguished center (ring/complete ~1.00; center-bearing forms >= 1.17).
-_NFR_TOPOLOGY_CENTER_TIER = 0.85       # centrality >= tier*max = a "center"
+_NFR_TOPOLOGY_CENTER_TIER = 0.85  # centrality >= tier*max = a "center"
 #   (radial -> exactly 1 center; multinodal -> >= 2).
 
 
@@ -366,9 +368,7 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
         ``n_nodes``.
     """
     if nx is None:
-        raise RuntimeError(
-            "networkx is required for nodal-topology classification"
-        )
+        raise RuntimeError("networkx is required for nodal-topology classification")
     nodes = list(G.nodes())
     n = len(nodes)
     if n == 0:
@@ -407,8 +407,7 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
         centers: list[Any] = []
     else:
         centers = [
-            i for i in nodes
-            if centrality[i] >= _NFR_TOPOLOGY_CENTER_TIER * vmax
+            i for i in nodes if centrality[i] >= _NFR_TOPOLOGY_CENTER_TIER * vmax
         ]
         topology = "radial" if len(centers) == 1 else "multinodal"
     return {
@@ -495,7 +494,8 @@ def compute_k_phi_multiscale_variance(
 
 
 def fit_k_phi_asymptotic_alpha(
-    variance_by_scale: dict[int, float], alpha_hint: float = defaults.K_PHI_ASYMPTOTIC_ALPHA
+    variance_by_scale: dict[int, float],
+    alpha_hint: float = defaults.K_PHI_ASYMPTOTIC_ALPHA,
 ) -> dict[str, Any]:
     """Fit power-law exponent α for multiscale K_φ variance decay.
 
@@ -610,21 +610,18 @@ def k_phi_multiscale_safety(
     violations = [
         r
         for r, var in variance_by_scale.items()
-        if var > defaults.K_PHI_CURVATURE_THRESHOLD ** 2
+        if var > defaults.K_PHI_CURVATURE_THRESHOLD**2
     ]  # Phase-wrap threshold: K_φ ≤ π (audit 2026: π is the genuine scale)
 
     # Assess safety
     safe_by_fit = (
-        fit.get("alpha", 0.0) > 0.0
-        and fit.get("r_squared", 0.0) >= fit_min_r2
+        fit.get("alpha", 0.0) > 0.0 and fit.get("r_squared", 0.0) >= fit_min_r2
     )
     safe_by_tolerance = (alpha_hint is not None) and (len(violations) == 0)
     safe = bool(safe_by_fit or safe_by_tolerance)
 
     return {
-        "variance_by_scale": {
-            int(k): float(v) for k, v in variance_by_scale.items()
-        },
+        "variance_by_scale": {int(k): float(v) for k, v in variance_by_scale.items()},
         "fit": fit,
         "violations": violations,
         "safe": safe,
@@ -690,14 +687,8 @@ def fit_correlation_length_exponent(
     }
 
     # Split data at critical point
-    below_mask = (
-        (intensities < I_c)
-        & (np.abs(intensities - I_c) > min_distance)
-    )
-    above_mask = (
-        (intensities > I_c)
-        & (np.abs(intensities - I_c) > min_distance)
-    )
+    below_mask = (intensities < I_c) & (np.abs(intensities - I_c) > min_distance)
+    above_mask = (intensities > I_c) & (np.abs(intensities - I_c) > min_distance)
 
     # Fit below I_c
     if np.sum(below_mask) >= 3:
@@ -760,28 +751,28 @@ def fit_correlation_length_exponent(
 
 def _extract_field_values(field_dict_list, G):
     """Extract aligned arrays from field dictionaries.
-    
+
     Helper function to convert field dictionaries to aligned numpy arrays.
     """
     if not field_dict_list:
         return []
-    
+
     # Find common keys across all field dictionaries
     common_keys = set(field_dict_list[0].keys())
     for field_dict in field_dict_list[1:]:
         common_keys &= set(field_dict.keys())
-    
+
     if not common_keys:
         return []
-    
+
     # Sort keys for consistent ordering
     sorted_keys = sorted(common_keys)
-    
+
     # Extract aligned arrays
     aligned_arrays = []
     for field_dict in field_dict_list:
         aligned_arrays.append(np.array([field_dict[key] for key in sorted_keys]))
-    
+
     return aligned_arrays
 
 
@@ -801,9 +792,12 @@ def compute_complex_geometric_field_arrays(G: Any) -> dict[str, Any]:
     psi = _psi_dict(G)
     if not psi:
         return {
-            "psi_real": np.array([]), "psi_imag": np.array([]),
-            "psi_magnitude": np.array([]), "psi_phase": np.array([]),
-            "correlation": 0.0, "num_nodes": 0,
+            "psi_real": np.array([]),
+            "psi_imag": np.array([]),
+            "psi_magnitude": np.array([]),
+            "psi_phase": np.array([]),
+            "correlation": 0.0,
+            "num_nodes": 0,
         }
 
     nodes = sorted(psi.keys())
@@ -842,11 +836,9 @@ def compute_emergent_fields(G: Any) -> dict[str, Any]:
         dict with keys: chirality, symmetry_breaking, coherence_coupling,
         num_nodes.
     """
-    from .unified import (
-        compute_chirality_field as _chi,
-        compute_symmetry_breaking_field as _sb,
-        compute_coherence_coupling_field as _cc,
-    )
+    from .unified import compute_chirality_field as _chi
+    from .unified import compute_coherence_coupling_field as _cc
+    from .unified import compute_symmetry_breaking_field as _sb
 
     chi = _chi(G)
     sb = _sb(G)
@@ -880,11 +872,9 @@ def compute_tensor_invariants(G: Any) -> dict[str, Any]:
         dict with keys: energy_density, topological_charge,
         conservation_density, conservation_quality, num_nodes.
     """
-    from .unified import (
-        compute_energy_density as _ed,
-        compute_topological_charge as _tc,
-    )
     from .conservation import compute_charge_density as _rho
+    from .unified import compute_energy_density as _ed
+    from .unified import compute_topological_charge as _tc
 
     ed = _ed(G)
     tc = _tc(G)
@@ -918,35 +908,35 @@ def compute_tensor_invariants(G: Any) -> dict[str, Any]:
 
 def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     """Compute complete unified field telemetry suite.
-    
+
     Provides comprehensive telemetry combining:
     - Canonical Structural Triad (Φ_s, |∇φ|, K_φ) + ξ_C correlation analysis
     - Extended canonical (J_φ, J_ΔNFR)
     - Unified complex field (Ψ = K_φ + i·J_φ)
     - Emergent fields (χ, S, C)
     - Tensor invariants (ε, Q, conservation)
-    
+
     Args:
         G: TNFR network with complete state data
-        
+
     Returns:
         dict containing all unified field metrics for production telemetry
-        
+
     Usage:
         telemetry = compute_unified_telemetry(G)
         correlation = telemetry["complex_field"]["correlation"]  # K_φ ↔ J_φ
         energy = np.mean(telemetry["tensor_invariants"]["energy_density"])
-        
+
     References:
         - Complete mathematical framework in MATHEMATICAL_UNIFICATION_EXECUTIVE_SUMMARY.md
         - Production integration roadmap in COMPREHENSIVE_AUDIT_COMPLETION_2025.md
     """
     # Canonical Structural Triad telemetry (validated post-recalibration)
     canonical_telemetry = compute_structural_telemetry(G)
-    
+
     # Extended canonical fields
     extended_suite = compute_extended_canonical_suite(G)
-    
+
     # Unified field computations (delegate to unified.py via array wrappers)
     complex_field = compute_complex_geometric_field_arrays(G)
     emergent_fields = compute_emergent_fields(G)
@@ -954,10 +944,8 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
 
     # Conservation telemetry (canonical source: conservation.py)
     try:
-        from .conservation import (
-            compute_noether_charge,
-            compute_energy_functional,
-        )
+        from .conservation import compute_energy_functional, compute_noether_charge
+
         conservation = {
             "noether_charge": compute_noether_charge(G),
             "structural_energy": compute_energy_functional(G),
@@ -969,11 +957,12 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     # canonical source: symplectic_substrate.py)
     try:
         from .symplectic_substrate import (
-            extract_phase_space_point,
-            substrate_hamiltonian,
             background_potential,
+            extract_phase_space_point,
             liouville_divergence,
+            substrate_hamiltonian,
         )
+
         _pt = extract_phase_space_point(G)
         symplectic_substrate = {
             "phase_space_dimension": _pt.dimension,
@@ -995,6 +984,7 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
         "unified_field_version": "1.0.0",  # Track implementation version
     }
 
+
 # ============================================================================
 # SELF-OPTIMIZING MATHEMATICAL ANALYSIS (NEW - Nov 28, 2025)
 # ============================================================================
@@ -1003,10 +993,10 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
 def analyze_optimization_potential(G: Any) -> dict[str, Any]:
     """
     Analyze mathematical optimization potential using unified field analysis.
-    
+
     Combines unified field telemetry with mathematical structure analysis
     to identify optimization opportunities automatically.
-    
+
     Returns:
         dict containing:
         - field_analysis: Unified field characteristics
@@ -1020,70 +1010,91 @@ def analyze_optimization_potential(G: Any) -> dict[str, Any]:
             "field_analysis": {},
             "mathematical_insights": {},
             "optimization_recommendations": [],
-            "predicted_improvements": {}
+            "predicted_improvements": {},
         }
-    
+
     # Get unified field telemetry
     unified_telemetry = compute_unified_telemetry(G)
-    
+
     # Create self-optimizing engine
     engine = TNFRSelfOptimizingEngine(
         optimization_objective=OptimizationObjective.BALANCE_ALL
     )
-    
+
     # Analyze mathematical landscape
-    mathematical_insights = engine.analyze_mathematical_optimization_landscape(G, "field_computation")
-    
+    mathematical_insights = engine.analyze_mathematical_optimization_landscape(
+        G, "field_computation"
+    )
+
     # Extract field-specific optimization hints
     field_optimization_hints = []
-    
+
     # Complex field analysis
     complex_field = unified_telemetry.get("complex_field", {})
     correlation = complex_field.get("correlation", 0.0)
-    
+
     if abs(correlation) > defaults.HIGH_CORRELATION_THRESHOLD:
         field_optimization_hints.append("use_complex_field_unification")
     if abs(correlation) > defaults.VERY_HIGH_CORRELATION_THRESHOLD:
         field_optimization_hints.append("use_extreme_correlation_optimization")
-    
+
     # Emergent field analysis
     emergent_fields = unified_telemetry.get("emergent_fields", {})
     chirality_magnitude = emergent_fields.get("chirality_magnitude", 0.0)
-    
+
     if chirality_magnitude > defaults.CHIRALITY_THRESHOLD:
         field_optimization_hints.append("use_chirality_optimization")
-    
+
     # Tensor invariant analysis
     tensor_invariants = unified_telemetry.get("tensor_invariants", {})
     energy_density = tensor_invariants.get("energy_density", [])
-    
+
     if len(energy_density) > 0:
         avg_energy = np.mean(energy_density)
         if avg_energy > defaults.HIGH_ENERGY_THRESHOLD:
             field_optimization_hints.append("use_high_energy_optimization")
         elif avg_energy < defaults.LOW_ENERGY_THRESHOLD:
             field_optimization_hints.append("use_low_energy_optimization")
-    
+
     return {
         "field_analysis": unified_telemetry,
         "mathematical_insights": mathematical_insights,
         "optimization_recommendations": field_optimization_hints,
         "predicted_improvements": {
-            "field_correlation_speedup": abs(correlation) * defaults.CORRELATION_SPEEDUP_FACTOR if abs(correlation) > defaults.MODERATE_CORRELATION_THRESHOLD else defaults.BASELINE_FACTOR,
-            "chirality_memory_reduction": min(chirality_magnitude * defaults.CHIRALITY_MEMORY_FACTOR, defaults.MAX_MEMORY_REDUCTION),
-            "energy_computation_factor": max(defaults.MIN_ENERGY_FACTOR, min(avg_energy * defaults.ENERGY_SCALING_FACTOR, defaults.MAX_ENERGY_FACTOR)) if len(energy_density) > 0 else defaults.BASELINE_FACTOR
-        }
+            "field_correlation_speedup": (
+                abs(correlation) * defaults.CORRELATION_SPEEDUP_FACTOR
+                if abs(correlation) > defaults.MODERATE_CORRELATION_THRESHOLD
+                else defaults.BASELINE_FACTOR
+            ),
+            "chirality_memory_reduction": min(
+                chirality_magnitude * defaults.CHIRALITY_MEMORY_FACTOR,
+                defaults.MAX_MEMORY_REDUCTION,
+            ),
+            "energy_computation_factor": (
+                max(
+                    defaults.MIN_ENERGY_FACTOR,
+                    min(
+                        avg_energy * defaults.ENERGY_SCALING_FACTOR,
+                        defaults.MAX_ENERGY_FACTOR,
+                    ),
+                )
+                if len(energy_density) > 0
+                else defaults.BASELINE_FACTOR
+            ),
+        },
     }
 
 
-def recommend_field_optimization_strategy(G: Any, operation_type: str = "unified_telemetry") -> dict[str, Any]:
+def recommend_field_optimization_strategy(
+    G: Any, operation_type: str = "unified_telemetry"
+) -> dict[str, Any]:
     """
     Recommend optimization strategy based on unified field analysis.
-    
+
     Args:
         G: TNFR network graph
         operation_type: type of field operation to optimize
-        
+
     Returns:
         Optimization strategy recommendations with mathematical justification
     """
@@ -1091,51 +1102,58 @@ def recommend_field_optimization_strategy(G: Any, operation_type: str = "unified
         return {
             "error": "Self-optimizing engine not available",
             "recommendations": [],
-            "strategy": "fallback_standard"
+            "strategy": "fallback_standard",
         }
-    
+
     # Analyze optimization potential
     analysis = analyze_optimization_potential(G)
-    
+
     # Create engine and get recommendations
     engine = TNFRSelfOptimizingEngine()
     recommendations = engine.recommend_optimization_strategy(G, operation_type)
-    
+
     # Combine field analysis with general recommendations
     field_specific_strategies = []
-    
+
     # Field-specific optimization strategies
     field_analysis = analysis.get("field_analysis", {})
     complex_field = field_analysis.get("complex_field", {})
-    
+
     if complex_field.get("magnitude", 0.0) > defaults.COMPLEX_FIELD_THRESHOLD:
         field_specific_strategies.append("prioritize_complex_field_computation")
-    
+
     emergent_fields = field_analysis.get("emergent_fields", {})
-    if emergent_fields.get("symmetry_breaking", 0.0) > defaults.SYMMETRY_BREAKING_THRESHOLD:
+    if (
+        emergent_fields.get("symmetry_breaking", 0.0)
+        > defaults.SYMMETRY_BREAKING_THRESHOLD
+    ):
         field_specific_strategies.append("use_symmetry_breaking_acceleration")
-    
+
     return {
         "unified_field_analysis": field_analysis,
         "mathematical_recommendations": recommendations.recommended_strategies,
         "field_specific_strategies": field_specific_strategies,
         "predicted_speedups": recommendations.predicted_speedups,
         "optimization_insights": recommendations.mathematical_insights,
-        "recommended_strategy": field_specific_strategies[0] if field_specific_strategies else "standard_computation"
+        "recommended_strategy": (
+            field_specific_strategies[0]
+            if field_specific_strategies
+            else "standard_computation"
+        ),
     }
 
 
 def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
     """
     Automatically optimize field computation using learned strategies.
-    
+
     This function applies the self-optimizing engine to field computations,
     learning from experience and automatically selecting the best strategy.
-    
+
     Args:
         G: TNFR network graph
         **kwargs: Additional parameters for optimization
-        
+
     Returns:
         Results of optimized field computation with performance metrics
     """
@@ -1146,38 +1164,44 @@ def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
             "optimization_applied": False,
             "strategy_used": "fallback_standard",
             "performance_improvement": 1.0,
-            "error": "Self-optimizing engine not available"
+            "error": "Self-optimizing engine not available",
         }
-    
+
     start_time = time.perf_counter()
-    
+
     # Create and configure engine
     engine = TNFRSelfOptimizingEngine(
         optimization_objective=OptimizationObjective.BALANCE_ALL
     )
-    
+
     try:
         # Get optimization recommendations
         recommendations = recommend_field_optimization_strategy(G, "unified_telemetry")
-        
+
         # Record baseline performance
         baseline_start = time.perf_counter()
         baseline_result = compute_unified_telemetry(G)  # noqa: F841
         baseline_time = time.perf_counter() - baseline_start
-        
+
         # Apply automatic optimization
-        optimization_result = engine.optimize_automatically(G, "unified_field_computation", **kwargs)
-        
+        optimization_result = engine.optimize_automatically(
+            G, "unified_field_computation", **kwargs
+        )
+
         # Compute optimized result
         optimized_start = time.perf_counter()
-        optimized_result = compute_unified_telemetry(G)  # This would be optimized in practice
+        optimized_result = compute_unified_telemetry(
+            G
+        )  # This would be optimized in practice
         optimized_time = time.perf_counter() - optimized_start
-        
+
         # Calculate performance metrics
-        speedup_factor = baseline_time / max(optimized_time, 0.001)  # Avoid division by zero
-        
+        speedup_factor = baseline_time / max(
+            optimized_time, 0.001
+        )  # Avoid division by zero
+
         total_time = time.perf_counter() - start_time
-        
+
         return {
             "result": optimized_result,
             "optimization_applied": True,
@@ -1187,9 +1211,9 @@ def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
             "optimized_time": optimized_time,
             "total_time": total_time,
             "recommendations": recommendations,
-            "optimization_details": optimization_result
+            "optimization_details": optimization_result,
         }
-        
+
     except Exception as e:
         # Fallback with error information
         fallback_result = compute_unified_telemetry(G)
@@ -1199,8 +1223,9 @@ def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
             "strategy_used": "fallback_error",
             "performance_improvement": 1.0,
             "error": str(e),
-            "total_time": time.perf_counter() - start_time
+            "total_time": time.perf_counter() - start_time,
         }
+
 
 # Import extended canonical fields (NEWLY PROMOTED Nov 12, 2025)
 # as fallback for development/testing environments
@@ -1213,4 +1238,3 @@ def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
 # RESEARCH fields (e.g., PIG) are telemetry-only.
 # UNIFIED fields (Ψ, χ, S, C, ε, Q) provide mathematical unification
 # discovered in Nov 28, 2025 comprehensive audit.
-

@@ -25,6 +25,7 @@ _cache_stats = {
     "hard_invalidations": 0,
 }
 
+
 def _ensure_loaded() -> None:
     """Populate OPERATORS lazily to avoid circular imports.
 
@@ -34,20 +35,21 @@ def _ensure_loaded() -> None:
     if OPERATORS:
         return
     from .definitions import (
-        Emission,
-        Reception,
         Coherence,
-        Dissonance,
-        Coupling,
-        Resonance,
-        Silence,
-        Expansion,
         Contraction,
-        SelfOrganization,
+        Coupling,
+        Dissonance,
+        Emission,
+        Expansion,
         Mutation,
-        Transition,
+        Reception,
         Recursivity,
+        Resonance,
+        SelfOrganization,
+        Silence,
+        Transition,
     )
+
     OPERATORS.update(
         {
             Emission.name: Emission,
@@ -66,6 +68,7 @@ def _ensure_loaded() -> None:
         }
     )
 
+
 def register_operator(
     cls: type["Operator"],
 ) -> type["Operator"]:  # pragma: no cover
@@ -81,6 +84,7 @@ def register_operator(
         _cache_stats["registrations"] += 1
     return cls
 
+
 def get_operator_class(name: str) -> type["Operator"]:
     """Return canonical operator class for ``name``.
 
@@ -89,20 +93,24 @@ def get_operator_class(name: str) -> type["Operator"]:
     _ensure_loaded()
     return OPERATORS[name]
 
+
 def discover_operators() -> None:  # pragma: no cover
     """No-op retained for backward compatibility."""
     return
+
 
 __all__ = (
     "OPERATORS",
     "get_operator_class",
     "discover_operators",  # backward compatibility
-    "register_operator",   # always raises
+    "register_operator",  # always raises
 )
+
 
 def structural_operator(cls):  # pragma: no cover
     """Disabled decorator retained for import compatibility."""
     return cls
+
 
 def invalidate_operator_cache(hard: bool = False):  # pragma: no cover
     """Invalidate operator cache (legacy telemetry only).
@@ -117,6 +125,7 @@ def invalidate_operator_cache(hard: bool = False):  # pragma: no cover
         _cache_stats["soft_invalidations"] += 1
     return {"count": len(OPERATORS), "cleared": 0}
 
+
 def get_operator_cache_stats():  # pragma: no cover
     """Return cache stats including registration/invalidation counters."""
     _ensure_loaded()
@@ -126,6 +135,7 @@ def get_operator_cache_stats():  # pragma: no cover
         "soft_invalidations": _cache_stats["soft_invalidations"],
         "hard_invalidations": _cache_stats["hard_invalidations"],
     }
+
 
 class OperatorMetaAuto(type):  # pragma: no cover
     """Metaclass providing backward-compatible auto-registration.
@@ -143,4 +153,3 @@ class OperatorMetaAuto(type):  # pragma: no cover
                 register_operator(cls)
             except Exception:  # pragma: no cover - do not break tests
                 pass
-

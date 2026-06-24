@@ -95,7 +95,9 @@ def _relative_path(path: str | None) -> str | None:
         return target.as_posix()
 
 
-def _load_certificate_payload(certificate_path: str | None) -> MutableMapping[str, object]:
+def _load_certificate_payload(
+    certificate_path: str | None,
+) -> MutableMapping[str, object]:
     if not certificate_path:
         return {}
     candidate = Path(certificate_path)
@@ -132,19 +134,30 @@ def _load_partition_traces(certificate_path: str | None) -> List[PartitionTrace]
                 dnfr_after=_safe_float(after.get("dnfr_after")),
                 coherence_ratio=_safe_float(after.get("coherence_ratio")),
                 inferred_factor=_safe_int(after.get("inferred_factor")),
-                candidate_factors=list(candidate_factors) if isinstance(candidate_factors, Iterable) else [],
+                candidate_factors=(
+                    list(candidate_factors)
+                    if isinstance(candidate_factors, Iterable)
+                    else []
+                ),
             )
         )
     return traces
 
 
-def _build_category_summary(records: Sequence[FullSpectrumRecord]) -> Dict[str, Dict[str, float]]:
+def _build_category_summary(
+    records: Sequence[FullSpectrumRecord],
+) -> Dict[str, Dict[str, float]]:
     summary: Dict[str, Dict[str, float]] = {}
     buckets: Dict[str, Dict[str, List[float]]] = {}
     for record in records:
         bucket = buckets.setdefault(
             record.category,
-            {"phi_s": [], "phase_gradient": [], "phase_curvature": [], "coherence_length": []},
+            {
+                "phi_s": [],
+                "phase_gradient": [],
+                "phase_curvature": [],
+                "coherence_length": [],
+            },
         )
         bucket["phi_s"].append(record.phi_s)
         bucket["phase_gradient"].append(record.phase_gradient)
@@ -156,9 +169,12 @@ def _build_category_summary(records: Sequence[FullSpectrumRecord]) -> Dict[str, 
             continue
         summary[category] = {
             "avg_phi_s": sum(bucket["phi_s"]) / len(bucket["phi_s"]),
-            "avg_phase_gradient": sum(bucket["phase_gradient"]) / len(bucket["phase_gradient"]),
-            "avg_phase_curvature": sum(bucket["phase_curvature"]) / len(bucket["phase_curvature"]),
-            "avg_coherence_length": sum(bucket["coherence_length"]) / len(bucket["coherence_length"]),
+            "avg_phase_gradient": sum(bucket["phase_gradient"])
+            / len(bucket["phase_gradient"]),
+            "avg_phase_curvature": sum(bucket["phase_curvature"])
+            / len(bucket["phase_curvature"]),
+            "avg_coherence_length": sum(bucket["coherence_length"])
+            / len(bucket["coherence_length"]),
             "sample_count": float(len(bucket["phi_s"])),
         }
     return summary
@@ -187,7 +203,9 @@ def run_full_spectrum(
                 phase_curvature=result.phase_curvature,
                 coherence_length=result.coherence_length,
                 candidate_factors=list(result.candidate_factors),
-                dynamic_factors=list((result.nodal_decoding or {}).get("dynamic_factors", [])),
+                dynamic_factors=list(
+                    (result.nodal_decoding or {}).get("dynamic_factors", [])
+                ),
                 tnfr_certified_factors=list(result.tnfr_certified_factors or []),
                 certificate_path=_relative_path(result.certificate_path),
                 strategy_plan=result.operator_strategy_plan or {},
@@ -218,7 +236,9 @@ def save_results(
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="TNFR full-spectrum factorization benchmark")
+    parser = argparse.ArgumentParser(
+        description="TNFR full-spectrum factorization benchmark"
+    )
     parser.add_argument(
         "--output",
         default="full_spectrum_factorization.json",
@@ -251,7 +271,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 def main(argv: Sequence[str] | None = None) -> None:  # pragma: no cover - CLI wrapper
     args = parse_args(argv)
-    targets: Dict[str, Sequence[int]] = {name: tuple(values) for name, values in FULL_SPECTRUM_TARGETS.items()}
+    targets: Dict[str, Sequence[int]] = {
+        name: tuple(values) for name, values in FULL_SPECTRUM_TARGETS.items()
+    }
     if args.numbers:
         targets["custom"] = tuple(args.numbers)
     if args.range_start is not None and args.range_stop is not None:

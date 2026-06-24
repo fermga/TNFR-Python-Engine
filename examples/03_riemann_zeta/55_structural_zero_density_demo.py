@@ -66,9 +66,7 @@ def main() -> None:
         )
 
     section("P28 — Section 2: Smooth zero positions (Newton inversion)")
-    print(
-        "For each n, Newton-solve bar N(T) = n.  Compare to true gamma_n.\n"
-    )
+    print("For each n, Newton-solve bar N(T) = n.  Compare to true gamma_n.\n")
     actual_30 = fetch_zero_imaginary_parts(15)
     print(
         f"  {'n':>3} | {'tilde gamma_n':>14} | {'gamma_n':>14} | "
@@ -79,10 +77,7 @@ def main() -> None:
         smooth = derive_smooth_zero_position(n)
         actual = float(actual_30[n - 1])
         residual = actual - smooth
-        print(
-            f"  {n:>3} | {smooth:>14.6f} | {actual:>14.6f} | "
-            f"{residual:>+30.6f}"
-        )
+        print(f"  {n:>3} | {smooth:>14.6f} | {actual:>14.6f} | " f"{residual:>+30.6f}")
 
     section("P28 — Section 3: Operator-level comparison vs P27")
     print(
@@ -96,16 +91,16 @@ def main() -> None:
             n_zeros=n_zeros, p14_n_primes=50, p14_max_power=8
         )
         print(f"\n  >>> n_zeros = {n_zeros}")
-        print(f"  W_1(spec(P14),         spec(T_HP)) = "
-              f"{cert.w1_p14_vs_actual:.4e}")
-        print(f"  W_1(spec(tilde T_HP),  spec(T_HP)) = "
-              f"{cert.w1_structural_vs_actual:.4e}")
-        print(f"  improvement ratio                  = "
-              f"{cert.improvement_ratio:.2f}x")
-        print(f"  max |r_n|                          = "
-              f"{cert.max_residual:.4e}")
-        print(f"  bound (C=2) satisfied              = "
-              f"{cert.bound_satisfied}")
+        print(f"  W_1(spec(P14),         spec(T_HP)) = " f"{cert.w1_p14_vs_actual:.4e}")
+        print(
+            f"  W_1(spec(tilde T_HP),  spec(T_HP)) = "
+            f"{cert.w1_structural_vs_actual:.4e}"
+        )
+        print(
+            f"  improvement ratio                  = " f"{cert.improvement_ratio:.2f}x"
+        )
+        print(f"  max |r_n|                          = " f"{cert.max_residual:.4e}")
+        print(f"  bound (C=2) satisfied              = " f"{cert.bound_satisfied}")
 
     section("P28 — Section 4: Full certificate (N=80)")
     cert = compute_structural_zero_density_certificate(n_zeros=80)

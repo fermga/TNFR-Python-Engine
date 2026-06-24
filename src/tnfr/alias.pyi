@@ -43,7 +43,6 @@ def collect_attr(
     aliases: Iterable[str],
     default: float = ...,
 ) -> FloatArray | list[float]: ...
-
 def collect_theta_attr(
     G: "nx.Graph",
     nodes: Iterable[NodeId],

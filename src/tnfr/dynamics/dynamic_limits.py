@@ -53,16 +53,17 @@ from typing import TYPE_CHECKING
 # TNFR Optimizations Integration
 try:
     from ..mathematics.backend import get_backend
+
     _HAS_OPTIMIZATIONS = True
 except ImportError:
     _HAS_OPTIMIZATIONS = False
-    
+
 from ..alias import collect_attr
 from ..constants.aliases import ALIAS_SI
 from ..constants.canonical import GAMMA, INV_PHI, PI
+from ..mathematics.unified_numerical import np
 from ..metrics.common import compute_coherence
 from ..observers import kuramoto_order
-from ..mathematics.unified_numerical import np
 
 if TYPE_CHECKING:
     from ..types import TNFRGraph
@@ -77,6 +78,7 @@ __all__ = (
 # Default fallback value for sense index when nodes have no Si attribute
 # This represents a "neutral" sense index - neither high stability nor instability
 DEFAULT_SI_FALLBACK = INV_PHI  # 1/φ - neutral golden ratio balance
+
 
 @dataclass(frozen=True)
 class DynamicLimitsConfig:
@@ -97,6 +99,7 @@ class DynamicLimitsConfig:
     beta: float = GAMMA / (PI + 1)  # γ/(π+1) - frequency expansion coefficient
     max_expansion_factor: float = math.pi  # π - natural expansion limit
     enabled: bool = True
+
 
 @dataclass(frozen=True)
 class DynamicLimits:
@@ -119,6 +122,7 @@ class DynamicLimits:
     kuramoto_r: float
     coherence_factor: float
     config: DynamicLimitsConfig
+
 
 def compute_dynamic_limits(
     G: TNFRGraph,
@@ -206,7 +210,9 @@ def compute_dynamic_limits(
         if np is not None:
             Si_avg = float(np.mean(si_values))
         else:
-            Si_avg = sum(si_values) / len(si_values) if si_values else DEFAULT_SI_FALLBACK
+            Si_avg = (
+                sum(si_values) / len(si_values) if si_values else DEFAULT_SI_FALLBACK
+            )
 
     # Compute Kuramoto order parameter
     R_kuramoto = kuramoto_order(G)

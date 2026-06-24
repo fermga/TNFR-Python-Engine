@@ -27,12 +27,13 @@ from __future__ import annotations
 
 from typing import Any, MutableMapping
 
-from . import TNFRBackend
+from ..mathematics.unified_numerical import np
 from ..types import TNFRGraph
 from ..utils import get_logger
-from ..mathematics.unified_numerical import np
+from . import TNFRBackend
 
 logger = get_logger(__name__)
+
 
 class OptimizedNumPyBackend(TNFRBackend):
     """Optimized NumPy backend with fused operations.
@@ -295,13 +296,14 @@ class OptimizedNumPyBackend(TNFRBackend):
             Profiling metrics dictionary
         """
         from time import perf_counter
-        from ..dynamics.fused_dnfr import (
-            compute_fused_gradients,
-            compute_fused_gradients_symmetric,
-            apply_vf_scaling,
-        )
+
         from ..alias import get_attr, set_dnfr
         from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+        from ..dynamics.fused_dnfr import (
+            apply_vf_scaling,
+            compute_fused_gradients,
+            compute_fused_gradients_symmetric,
+        )
         from ..metrics.common import merge_and_normalize_weights
 
         if profile is not None:
@@ -332,9 +334,7 @@ class OptimizedNumPyBackend(TNFRBackend):
         vf = self._np.zeros(n_nodes, dtype=float)
 
         for idx, node in enumerate(nodes):
-            phase[idx] = float(
-                get_attr(graph.nodes[node], ALIAS_THETA, 0.0)
-            )
+            phase[idx] = float(get_attr(graph.nodes[node], ALIAS_THETA, 0.0))
             epi[idx] = float(get_attr(graph.nodes[node], ALIAS_EPI, 0.5))
             vf[idx] = float(get_attr(graph.nodes[node], ALIAS_VF, 1.0))
 

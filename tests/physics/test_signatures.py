@@ -7,14 +7,12 @@ hard import of the removed ``examples_utils`` helper). These tests ensure the
 module imports and both signature functions run, so the cascade cannot silently
 reappear.
 """
+
 from __future__ import annotations
 
 import networkx as nx
 
-from tnfr.physics.signatures import (
-    compute_au_like_signature,
-    compute_element_signature,
-)
+from tnfr.physics.signatures import compute_au_like_signature, compute_element_signature
 
 
 def _ring(n: int = 10) -> nx.Graph:

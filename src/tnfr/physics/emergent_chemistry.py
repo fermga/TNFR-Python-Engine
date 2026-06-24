@@ -160,9 +160,7 @@ def structural_eigenmodes(
     for i, ev in enumerate(evals[1:]):
         if gaps[i] > threshold:
             mult = len(group)
-            shells.append(
-                EigenmodeShell(mult, float(np.mean(group)), (mult - 1) // 2)
-            )
+            shells.append(EigenmodeShell(mult, float(np.mean(group)), (mult - 1) // 2))
             group = [float(ev)]
         else:
             group.append(float(ev))
@@ -314,9 +312,7 @@ def classify_element(
 
     closed = is_structural_equilibrium(dnfr, eps_dnfr=1e-12)
     magic = Z in emergent_magic_numbers(max_n=max_n)
-    label = " ".join(
-        f"{n}{_SUBSHELL_LABEL[l]}{o}" for n, l, o in config
-    )
+    label = " ".join(f"{n}{_SUBSHELL_LABEL[l]}{o}" for n, l, o in config)
     return EmergentElement(
         Z=Z,
         configuration=tuple(config),

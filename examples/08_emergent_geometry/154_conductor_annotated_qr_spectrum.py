@@ -91,7 +91,6 @@ from tnfr.mathematics.number_theory import (
     residue_network_rank,
 )
 
-
 COUNTEREXAMPLE_FACTORS = [(3, 7), (5, 2), (41, 2)]
 
 
@@ -124,7 +123,9 @@ def conductor_annotated_count(modulus: int) -> int:
     )
 
 
-def local_values(prime: int, exponent: int) -> list[tuple[str, tuple[Fraction, Fraction]]]:
+def local_values(
+    prime: int, exponent: int
+) -> list[tuple[str, tuple[Fraction, Fraction]]]:
     """Return exact local values as a + b*sqrt(epsilon*p)."""
     active_layers = [
         layer for layer in range(1, exponent + 1) if layer % 2 == exponent % 2
@@ -177,10 +178,20 @@ def local_value_items(
         if valuation_depth + 1 in active_layers:
             rational_part = rational_base - Fraction(prime**valuation_depth, 2)
             sqrt_part = Fraction(prime**valuation_depth, 2)
-            items.append((f"b{valuation_depth}+", (rational_part, sqrt_part), valuation_depth))
-            items.append((f"b{valuation_depth}-", (rational_part, -sqrt_part), valuation_depth))
+            items.append(
+                (f"b{valuation_depth}+", (rational_part, sqrt_part), valuation_depth)
+            )
+            items.append(
+                (f"b{valuation_depth}-", (rational_part, -sqrt_part), valuation_depth)
+            )
         else:
-            items.append((f"b{valuation_depth}", (rational_base, Fraction(0, 1)), valuation_depth))
+            items.append(
+                (
+                    f"b{valuation_depth}",
+                    (rational_base, Fraction(0, 1)),
+                    valuation_depth,
+                )
+            )
 
     zero_character_value = Fraction(1, 1) + sum(
         Fraction((prime - 1) * prime ** (layer - 1), 2) for layer in active_layers
@@ -223,7 +234,9 @@ def multiply_by_local_value(
 
 def exact_scalar_product_count(
     factors: list[tuple[int, int]],
-) -> tuple[int, list[tuple[tuple[tuple[int, Fraction], ...], list[tuple], list[tuple]]]]:
+) -> tuple[
+    int, list[tuple[tuple[tuple[int, Fraction], ...], list[tuple], list[tuple]]]
+]:
     """Count distinct global scalar products exactly."""
     radicands = [prime if prime % 4 == 1 else -prime for prime, _ in factors]
     local_value_sets = [local_values(prime, exponent) for prime, exponent in factors]
@@ -233,9 +246,11 @@ def exact_scalar_product_count(
     for local_choice in product(*local_value_sets):
         element = {0: Fraction(1, 1)}
         diagnostic_label = []
-        for factor_index, ((label, local_value), (prime, exponent), radicand) in enumerate(
-            zip(local_choice, factors, radicands)
-        ):
+        for factor_index, (
+            (label, local_value),
+            (prime, exponent),
+            radicand,
+        ) in enumerate(zip(local_choice, factors, radicands)):
             element = multiply_by_local_value(
                 element, local_value, factor_index, radicand
             )
@@ -293,8 +308,10 @@ def experiment_phase_prime_signature() -> None:
         if residue_network_rank(modulus, "quadratic") != scalar_spectrum_count(modulus)
     ]
 
-    print(f"  odd m in [5,119]: scalar_count(m)=3 iff prime: "
-          f"{58 - len(prime_signature_mismatches)}/58")
+    print(
+        f"  odd m in [5,119]: scalar_count(m)=3 iff prime: "
+        f"{58 - len(prime_signature_mismatches)}/58"
+    )
     print("  canonical operator sample check:")
     print(f"    {'m':>4} {'factorization':>16} {'FFT count':>10} {'TNFR count':>10}")
     for modulus in canonical_samples:
@@ -323,8 +340,10 @@ def experiment_annotated_product() -> None:
         if conductor_annotated_count(modulus)
         != quadratic_residue_annotated_rank(modulus)
     ]
-    print(f"  odd m in [3,119]: annotated_count(m)=A(m): "
-          f"{59 - len(annotated_mismatches)}/59")
+    print(
+        f"  odd m in [3,119]: annotated_count(m)=A(m): "
+        f"{59 - len(annotated_mismatches)}/59"
+    )
     print("  local ladder for m=3^e:")
     print(f"    {'e':>2} {'m':>5} {'scalar':>8} {'annotated':>10} {'A(m)':>8}")
     for exponent in range(1, 8):
@@ -360,7 +379,12 @@ def experiment_scalar_wall() -> None:
     print("    the scalar value collides, but the gcd/conductor depths differ")
     print()
 
-    if predicted != 192 or exact_scalar != 191 or exact_annotated != 192 or not collisions:
+    if (
+        predicted != 192
+        or exact_scalar != 191
+        or exact_annotated != 192
+        or not collisions
+    ):
         raise AssertionError("Unexpected scalar-wall counterexample result")
 
 

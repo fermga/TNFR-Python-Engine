@@ -52,27 +52,27 @@ emitter in subsequent Phase 3 steps.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
-from datetime import datetime, UTC
-from pathlib import Path
-from typing import Any, Iterable, Mapping, MutableMapping
 import json
 import time
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any, Iterable, Mapping, MutableMapping
 
 from ..mathematics.unified_numerical import np
 
 try:  # Physics field computations (canonical tetrad + extended suite)
-    from ..physics.fields import (
-        compute_extended_canonical_suite,  # returns dict
-        compute_structural_potential,
-        compute_phase_gradient,
-        compute_phase_curvature,
-        estimate_coherence_length,
-        # Unified field framework + auto-optimization (NEW Nov 28, 2025)
-        compute_unified_telemetry,
+    from ..physics.fields import compute_extended_canonical_suite  # returns dict
+    from ..physics.fields import (  # Unified field framework + auto-optimization (NEW Nov 28, 2025)
         analyze_optimization_potential,
+        compute_phase_curvature,
+        compute_phase_gradient,
+        compute_structural_potential,
+        compute_unified_telemetry,
+        estimate_coherence_length,
         recommend_field_optimization_strategy,
     )
+
     _UNIFIED_FIELDS_AVAILABLE = True
 except Exception:  # pragma: no cover - graceful degradation
     compute_extended_canonical_suite = None  # type: ignore
@@ -96,6 +96,7 @@ except Exception:  # pragma: no cover
     compute_coherence = None  # type: ignore
 
 __all__ = ["TelemetryEmitter", "TelemetryEvent"]
+
 
 @dataclass(frozen=True, slots=True)
 class TelemetryEvent:
@@ -123,6 +124,7 @@ class TelemetryEvent:
     operator: str | None
     metrics: Mapping[str, Any]
     extra: Mapping[str, Any] | None = None
+
 
 class TelemetryEmitter:
     """Unified telemetry collector for TNFR simulations.
@@ -166,10 +168,8 @@ class TelemetryEmitter:
         self.enable_optimization_analysis = bool(enable_optimization_analysis)
         self._buffer: list[TelemetryEvent] = []
         self._start_time = time.perf_counter()
-        self._human_path = (
-            self.path.with_suffix(".log") if self.human_mirror else None
-        )
-        
+        self._human_path = self.path.with_suffix(".log") if self.human_mirror else None
+
         # Optimization tracking
         self._optimization_recommendations: list[dict[str, Any]] = []
         self._performance_baseline: dict[str, float] = {}
@@ -230,10 +230,7 @@ class TelemetryEmitter:
                         raise
 
             # Canonical field tetrad (plus extended suite if available)
-            if (
-                self.include_extended
-                and compute_extended_canonical_suite is not None
-            ):
+            if self.include_extended and compute_extended_canonical_suite is not None:
                 try:
                     suite = compute_extended_canonical_suite(G)
                     if isinstance(suite, Mapping):
@@ -242,37 +239,58 @@ class TelemetryEmitter:
                 except Exception:
                     if not self.safe:
                         raise
-            
+
             # Unified field telemetry (Nov 28, 2025 - comprehensive audit integration)
             try:
                 from ..physics.fields import compute_unified_telemetry
+
                 unified_data = compute_unified_telemetry(G)
-                
+
                 # Extract key unified metrics for top-level telemetry
                 if "complex_field" in unified_data:
                     cf = unified_data["complex_field"]
                     if "correlation" in cf:
                         metrics["k_phi_j_phi_correlation"] = float(cf["correlation"])
-                    if "psi_magnitude" in cf and len(cf["psi_magnitude"]) > 0 and np is not None:
-                        metrics["psi_magnitude_mean"] = float(np.mean(cf["psi_magnitude"]))
-                        
+                    if (
+                        "psi_magnitude" in cf
+                        and len(cf["psi_magnitude"]) > 0
+                        and np is not None
+                    ):
+                        metrics["psi_magnitude_mean"] = float(
+                            np.mean(cf["psi_magnitude"])
+                        )
+
                 if "emergent_fields" in unified_data and np is not None:
                     ef = unified_data["emergent_fields"]
-                    for field_name in ["chirality", "symmetry_breaking", "coherence_coupling"]:
+                    for field_name in [
+                        "chirality",
+                        "symmetry_breaking",
+                        "coherence_coupling",
+                    ]:
                         if field_name in ef and len(ef[field_name]) > 0:
-                            metrics[f"{field_name}_mean"] = float(np.mean(ef[field_name]))
+                            metrics[f"{field_name}_mean"] = float(
+                                np.mean(ef[field_name])
+                            )
                             metrics[f"{field_name}_std"] = float(np.std(ef[field_name]))
-                            
+
                 if "tensor_invariants" in unified_data:
                     ti = unified_data["tensor_invariants"]
                     if "conservation_quality" in ti:
-                        metrics["conservation_quality"] = float(ti["conservation_quality"])
-                    if "energy_density" in ti and len(ti["energy_density"]) > 0 and np is not None:
-                        metrics["energy_density_total"] = float(np.sum(ti["energy_density"]))
-                        
+                        metrics["conservation_quality"] = float(
+                            ti["conservation_quality"]
+                        )
+                    if (
+                        "energy_density" in ti
+                        and len(ti["energy_density"]) > 0
+                        and np is not None
+                    ):
+                        metrics["energy_density_total"] = float(
+                            np.sum(ti["energy_density"])
+                        )
+
                 # Store complete unified data for detailed analysis
                 metrics["unified_fields"] = unified_data
-                
+
             except (ImportError, Exception):
                 # Graceful degradation if unified fields not available
                 if not self.safe:
@@ -340,9 +358,8 @@ class TelemetryEmitter:
                 for ev in self._buffer:
                     coh = ev.metrics.get("coherence_total")
                     si = ev.metrics.get("sense_index")
-                    phi = (
-                        ev.metrics.get("phi_s")
-                        or ev.metrics.get("structural_potential")
+                    phi = ev.metrics.get("phi_s") or ev.metrics.get(
+                        "structural_potential"
                     )
                     hf.write(
                         (
@@ -355,11 +372,11 @@ class TelemetryEmitter:
     # ------------------------------------------------------------------
     # Auto-optimization analysis (NEW - Nov 28, 2025)
     # ------------------------------------------------------------------
-    
+
     def analyze_performance_potential(self, G: Any) -> dict[str, Any]:
         """
         Analyze optimization potential for current network state.
-        
+
         Returns optimization recommendations based on unified field analysis
         and mathematical structure inspection.
         """
@@ -367,44 +384,43 @@ class TelemetryEmitter:
             return {
                 "optimization_enabled": False,
                 "analysis": {},
-                "recommendations": []
+                "recommendations": [],
             }
-        
+
         try:
             # Perform optimization analysis
             optimization_analysis = analyze_optimization_potential(G)
-            
+
             # Store for tracking
-            self._optimization_recommendations.append({
-                "timestamp": time.time(),
-                "analysis": optimization_analysis
-            })
-            
+            self._optimization_recommendations.append(
+                {"timestamp": time.time(), "analysis": optimization_analysis}
+            )
+
             # Keep only last 10 analyses for memory efficiency
             if len(self._optimization_recommendations) > 10:
-                self._optimization_recommendations = self._optimization_recommendations[-10:]
-            
+                self._optimization_recommendations = self._optimization_recommendations[
+                    -10:
+                ]
+
             return {
                 "optimization_enabled": True,
                 "analysis": optimization_analysis,
-                "recommendations": optimization_analysis.get("optimization_recommendations", []),
-                "predicted_improvements": optimization_analysis.get("predicted_improvements", {})
+                "recommendations": optimization_analysis.get(
+                    "optimization_recommendations", []
+                ),
+                "predicted_improvements": optimization_analysis.get(
+                    "predicted_improvements", {}
+                ),
             }
-            
+
         except Exception as e:
             if self.safe:
-                return {
-                    "optimization_enabled": False,
-                    "error": str(e),
-                    "analysis": {}
-                }
+                return {"optimization_enabled": False, "error": str(e), "analysis": {}}
             else:
                 raise
-    
+
     def get_optimization_strategy_recommendation(
-        self, 
-        G: Any, 
-        operation_type: str = "telemetry_collection"
+        self, G: Any, operation_type: str = "telemetry_collection"
     ) -> dict[str, Any]:
         """
         Get optimization strategy recommendation for specific operation.
@@ -413,28 +429,28 @@ class TelemetryEmitter:
             return {
                 "optimization_enabled": False,
                 "strategy": "standard",
-                "recommendations": []
+                "recommendations": [],
             }
-        
+
         try:
             strategy_rec = recommend_field_optimization_strategy(G, operation_type)
             return {
                 "optimization_enabled": True,
                 "strategy": strategy_rec.get("recommended_strategy", "standard"),
                 "recommendations": strategy_rec,
-                "mathematical_insights": strategy_rec.get("optimization_insights", {})
+                "mathematical_insights": strategy_rec.get("optimization_insights", {}),
             }
-            
+
         except Exception as e:
             if self.safe:
                 return {
                     "optimization_enabled": False,
                     "error": str(e),
-                    "strategy": "standard"
+                    "strategy": "standard",
                 }
             else:
                 raise
-    
+
     def record_with_optimization_analysis(
         self,
         G: Any,
@@ -445,7 +461,7 @@ class TelemetryEmitter:
     ) -> tuple[TelemetryEvent, dict[str, Any]]:
         """
         Record telemetry event with integrated optimization analysis.
-        
+
         Returns:
             tuple of (telemetry_event, optimization_analysis)
         """
@@ -453,25 +469,32 @@ class TelemetryEmitter:
         start_time = time.perf_counter()
         telemetry_event = self.record(G, step=step, operator=operator, extra=extra)
         telemetry_time = time.perf_counter() - start_time
-        
+
         # Perform optimization analysis if enabled
         optimization_analysis = {}
         if self.enable_optimization_analysis:
             opt_start = time.perf_counter()
             optimization_analysis = self.analyze_performance_potential(G)
             optimization_time = time.perf_counter() - opt_start
-            
+
             # Update performance baseline
-            self._performance_baseline.update({
-                "last_telemetry_time": telemetry_time,
-                "last_optimization_time": optimization_time,
-                "total_time": telemetry_time + optimization_time,
-                "optimization_overhead_pct": (optimization_time / max(telemetry_time, 0.001)) * 100
-            })
-            
+            self._performance_baseline.update(
+                {
+                    "last_telemetry_time": telemetry_time,
+                    "last_optimization_time": optimization_time,
+                    "total_time": telemetry_time + optimization_time,
+                    "optimization_overhead_pct": (
+                        optimization_time / max(telemetry_time, 0.001)
+                    )
+                    * 100,
+                }
+            )
+
             # Add timing to analysis
-            optimization_analysis["performance_timing"] = dict(self._performance_baseline)
-        
+            optimization_analysis["performance_timing"] = dict(
+                self._performance_baseline
+            )
+
         return telemetry_event, optimization_analysis
 
     # ------------------------------------------------------------------
@@ -486,19 +509,24 @@ class TelemetryEmitter:
             "uptime_sec": time.perf_counter() - self._start_time,
             "path": str(self.path),
         }
-        
+
         # Add optimization statistics if enabled
         if self.enable_optimization_analysis:
-            stats_data.update({
-                "optimization_analysis_enabled": True,
-                "optimization_recommendations_count": len(self._optimization_recommendations),
-                "performance_baseline": dict(self._performance_baseline),
-                "optimization_available": _UNIFIED_FIELDS_AVAILABLE
-            })
+            stats_data.update(
+                {
+                    "optimization_analysis_enabled": True,
+                    "optimization_recommendations_count": len(
+                        self._optimization_recommendations
+                    ),
+                    "performance_baseline": dict(self._performance_baseline),
+                    "optimization_available": _UNIFIED_FIELDS_AVAILABLE,
+                }
+            )
         else:
             stats_data["optimization_analysis_enabled"] = False
-            
+
         return stats_data
+
 
 # Convenience helper -------------------------------------------------------
 def stream_telemetry(
@@ -526,9 +554,7 @@ def stream_telemetry(
     """
 
     events: list[TelemetryEvent] = []
-    ops_iter = (
-        iter(operator_sequence) if operator_sequence is not None else None
-    )
+    ops_iter = iter(operator_sequence) if operator_sequence is not None else None
     for s in steps:
         op_name = next(ops_iter) if ops_iter is not None else None
         events.append(emitter.record(G, step=s, operator=op_name, extra=extra))

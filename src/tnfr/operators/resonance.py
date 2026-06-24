@@ -17,6 +17,7 @@ from ..config.operator_names import RESONANCE
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
+
 class Resonance(Operator):
     """Propagate coherence across coupled nodes; amplify network alignment.
 

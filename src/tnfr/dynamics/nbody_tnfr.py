@@ -87,14 +87,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ..errors.contextual import NetworkConfigError
-from ..mathematics.unified_numerical import np
 from numpy.typing import NDArray
 
 from ..constants.canonical import EPI_MAX_CANONICAL
+from ..errors.contextual import NetworkConfigError
+from ..mathematics.unified_numerical import np
+from ..operators.hamiltonian import InternalHamiltonian
 from ..structural import create_nfr
 from ..types import TNFRGraph
-from ..operators.hamiltonian import InternalHamiltonian
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
@@ -104,6 +104,7 @@ __all__ = (
     "compute_tnfr_coherence_potential",
     "compute_tnfr_delta_nfr",
 )
+
 
 def compute_tnfr_coherence_potential(
     G: TNFRGraph,
@@ -152,6 +153,7 @@ def compute_tnfr_coherence_potential(
 
     return U
 
+
 def compute_tnfr_delta_nfr(
     G: TNFRGraph,
     node_ids: list[str],
@@ -192,6 +194,7 @@ def compute_tnfr_delta_nfr(
         dnfr[i] = ham.compute_node_delta_nfr(node_id)
 
     return dnfr
+
 
 class TNFRNBodySystem:
     """N-body system using pure TNFR physics (no classical assumptions).
@@ -269,7 +272,7 @@ class TNFRNBodySystem:
             raise NetworkConfigError(
                 parameter="n_bodies",
                 value=n_bodies,
-                reason="Must have at least one body"
+                reason="Must have at least one body",
             )
 
         self.n_bodies = n_bodies
@@ -279,14 +282,14 @@ class TNFRNBodySystem:
             raise NetworkConfigError(
                 parameter="masses",
                 value=len(self.masses),
-                reason=f"Masses length must match n_bodies ({n_bodies})"
+                reason=f"Masses length must match n_bodies ({n_bodies})",
             )
 
         if np.any(self.masses <= 0):
             raise NetworkConfigError(
                 parameter="masses",
                 value="[contains non-positive]",
-                reason="All masses must be positive"
+                reason="All masses must be positive",
             )
 
         # State vectors
@@ -304,19 +307,19 @@ class TNFRNBodySystem:
             raise NetworkConfigError(
                 parameter="positions",
                 value=str(self.positions.shape),
-                reason=f"Shape mismatch, expected {expected_shape}"
+                reason=f"Shape mismatch, expected {expected_shape}",
             )
         if self.velocities.shape != expected_shape:
             raise NetworkConfigError(
                 parameter="velocities",
                 value=str(self.velocities.shape),
-                reason=f"Shape mismatch, expected {expected_shape}"
+                reason=f"Shape mismatch, expected {expected_shape}",
             )
         if self.phases.shape != (n_bodies,):
             raise NetworkConfigError(
                 parameter="phases",
                 value=str(self.phases.shape),
-                reason=f"Shape mismatch, expected ({n_bodies},)"
+                reason=f"Shape mismatch, expected ({n_bodies},)",
             )
 
         self.time = 0.0
@@ -409,7 +412,9 @@ class TNFRNBodySystem:
 
         # Coherence potential from TNFR Hamiltonian
         # This is the key difference: NO assumption about gravity
-        potential = compute_tnfr_coherence_potential(self.graph, self.positions, self.hbar_str)
+        potential = compute_tnfr_coherence_potential(
+            self.graph, self.positions, self.hbar_str
+        )
 
         total = kinetic + potential
 
@@ -615,7 +620,7 @@ class TNFRNBodySystem:
             raise NetworkConfigError(
                 parameter="t_final",
                 value=t_final,
-                reason=f"Must be greater than current time {self.time}"
+                reason=f"Must be greater than current time {self.time}",
             )
 
         # Pre-allocate storage
@@ -708,7 +713,8 @@ class TNFRNBodySystem:
             import matplotlib.pyplot as plt
         except ImportError as exc:
             raise ImportError(
-                "matplotlib required for plotting. " "Install with: pip install 'tnfr[viz-basic]'"
+                "matplotlib required for plotting. "
+                "Install with: pip install 'tnfr[viz-basic]'"
             ) from exc
 
         n_plots = 1 + int(show_energy) + int(show_phases)
@@ -733,8 +739,12 @@ class TNFRNBodySystem:
                 label=f"Body {i + 1} (m={self.masses[i]:.2f})",
                 alpha=0.7,
             )
-            ax_3d.scatter(traj[0, 0], traj[0, 1], traj[0, 2], color=colors[i], s=100, marker="o")
-            ax_3d.scatter(traj[-1, 0], traj[-1, 1], traj[-1, 2], color=colors[i], s=50, marker="x")
+            ax_3d.scatter(
+                traj[0, 0], traj[0, 1], traj[0, 2], color=colors[i], s=100, marker="o"
+            )
+            ax_3d.scatter(
+                traj[-1, 0], traj[-1, 1], traj[-1, 2], color=colors[i], s=50, marker="x"
+            )
 
         ax_3d.set_xlabel("X")
         ax_3d.set_ylabel("Y")

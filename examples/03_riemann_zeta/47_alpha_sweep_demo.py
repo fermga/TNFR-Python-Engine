@@ -28,10 +28,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 import numpy as np
 
-from tnfr.riemann import (
-    build_prime_ladder_hamiltonian,
-    sweep_alpha,
-)
+from tnfr.riemann import build_prime_ladder_hamiltonian, sweep_alpha
 
 
 def main() -> None:
@@ -62,9 +59,7 @@ def main() -> None:
         f"\nProbing {n_sigma} sigma values across the default gauge "
         "family (6 gauges) ..."
     )
-    cert = sweep_alpha(
-        bundle, sigmas, n_zeros=50, max_zeros=180
-    )
+    cert = sweep_alpha(bundle, sigmas, n_zeros=50, max_zeros=180)
 
     # ---- Summary line -------------------------------------------------
     print("\n" + cert.summary())

@@ -90,8 +90,8 @@ for _p in (_HERE, _SRC):
 
 # Sibling Camino-15 harness: the circle-map dynamics (always present).
 from kuramoto_farey_bridge import (  # noqa: E402
-    PHI_INV,
     K_SUB,
+    PHI_INV,
     circle_map_rho,
     invert_rho,
     sweep_rho,
@@ -100,9 +100,10 @@ from kuramoto_farey_bridge import (  # noqa: E402
 # Canonical N15 R_infinity projector (the subject of this harness).
 try:
     from tnfr.riemann import (
-        split_residue_by_remesh_infinity,
         compute_residue_split_certificate,
+        split_residue_by_remesh_infinity,
     )
+
     _HAVE_RINF = True
 except Exception:  # pragma: no cover - canonical engine optional
     _HAVE_RINF = False
@@ -111,22 +112,25 @@ except Exception:  # pragma: no cover - canonical engine optional
 # --------------------------------------------------------------------------- #
 # Constants
 # --------------------------------------------------------------------------- #
-TAU_L, TAU_G = 4, 8                 # documented canonical REMESH pair
-LCM_L = math.lcm(TAU_L, TAU_G)      # L = 8: resonant lattice 2*pi*m / L
+TAU_L, TAU_G = 4, 8  # documented canonical REMESH pair
+LCM_L = math.lcm(TAU_L, TAU_G)  # L = 8: resonant lattice 2*pi*m / L
 # 960 = 24 * 40: multiple of L = 8 (mask) AND of lcm(2,3,4) = 12 (clean
 # periods for the period-2/3/4 locked orbits, no spectral leakage).
 N_SAMPLES = 960
-_TRANSIENT = 6000                   # discard before sampling the orbit
-K_LOCK = 0.9                        # near-critical: wide, clean tongues
-THRESH = 0.05                       # P50 certificate decision threshold
-_GAMMA_EM = 0.5772156649015329      # Euler-Mascheroni (non-resonant ctrl)
+_TRANSIENT = 6000  # discard before sampling the orbit
+K_LOCK = 0.9  # near-critical: wide, clean tongues
+THRESH = 0.05  # P50 certificate decision threshold
+_GAMMA_EM = 0.5772156649015329  # Euler-Mascheroni (non-resonant ctrl)
 
 
 # --------------------------------------------------------------------------- #
 # Helpers
 # --------------------------------------------------------------------------- #
 def circle_map_orbit(
-    omega: float, k: float, n: int = N_SAMPLES, trans: int = _TRANSIENT,
+    omega: float,
+    k: float,
+    n: int = N_SAMPLES,
+    trans: int = _TRANSIENT,
 ) -> np.ndarray:
     """Demeaned ``cos(2*pi*theta_n)`` signal of the lifted circle map.
 
@@ -149,19 +153,24 @@ def circle_map_orbit(
 
 
 def orbit_period(
-    sig: np.ndarray, max_q: int = 16, tol: float = 1e-6,
+    sig: np.ndarray,
+    max_q: int = 16,
+    tol: float = 1e-6,
 ) -> int:
     """Smallest period ``q <= max_q`` of ``sig`` (0 if quasi-periodic)."""
     m = min(256, sig.size // 2)
     head = sig[:m]
     for q in range(1, max_q + 1):
-        if np.max(np.abs(sig[q:q + m] - head)) < tol:
+        if np.max(np.abs(sig[q : q + m] - head)) < tol:
             return q
     return 0
 
 
 def tongue_centre(
-    target: float, k: float, span: float = 0.05, n: int = 4001,
+    target: float,
+    k: float,
+    span: float = 0.05,
+    n: int = 4001,
     lock_tol: float = 2e-3,
 ) -> float:
     """Centre of the Arnold tongue holding ``rho = target`` at coupling k.
@@ -190,9 +199,7 @@ def range_kernel_fractions(sig: np.ndarray) -> tuple[float, float, str]:
     construction. Fractions are squared-norm (Parseval) and sum to 1.
     """
     if _HAVE_RINF:
-        rng, ker = split_residue_by_remesh_infinity(
-            sig, tau_l=TAU_L, tau_g=TAU_G
-        )
+        rng, ker = split_residue_by_remesh_infinity(sig, tau_l=TAU_L, tau_g=TAU_G)
         src = "tnfr.riemann.split_residue_by_remesh_infinity (CANONICAL)"
     else:
         period = math.lcm(TAU_L, TAU_G)
@@ -228,7 +235,7 @@ def test_golden_orbit_in_kernel() -> bool:
     r_frac, k_frac, src = range_kernel_fractions(sig)
 
     hit = abs(rho - PHI_INV) < 1e-3
-    quasi = (q == 0)                     # no small period = quasi-periodic
+    quasi = q == 0  # no small period = quasi-periodic
     in_kernel = r_frac < THRESH
 
     print(f"  Omega* (rho = 1/phi, K={K_SUB})  : {om:.6f}")
@@ -238,8 +245,11 @@ def test_golden_orbit_in_kernel() -> bool:
     print(f"  ker(R_inf)   fraction         : {100.0 * k_frac:7.4f} %")
     print(f"  projector source              : {src}")
     ok = hit and quasi and in_kernel
-    msg = ("the golden orbit is in ker(R_inf), the dynamical twin of "
-           "P50's S_TNFR") if ok else "golden orbit not cleanly in kernel"
+    msg = (
+        ("the golden orbit is in ker(R_inf), the dynamical twin of " "P50's S_TNFR")
+        if ok
+        else "golden orbit not cleanly in kernel"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -255,7 +265,7 @@ def test_commensurate_lockings_in_range() -> bool:
     print("          sits on the resonant lattice")
     print("=" * 78)
 
-    cases = [(1, 2), (1, 4)]             # periods 2 and 4, both | 8
+    cases = [(1, 2), (1, 4)]  # periods 2 and 4, both | 8
     all_ok = True
     for p, qd in cases:
         target = p / qd
@@ -263,15 +273,20 @@ def test_commensurate_lockings_in_range() -> bool:
         sig = circle_map_orbit(om, K_LOCK)
         q = orbit_period(sig)
         r_frac, k_frac, _ = range_kernel_fractions(sig)
-        locked = (q == qd)
+        locked = q == qd
         in_range = r_frac > (1.0 - THRESH)
         ok = locked and in_range
         all_ok = all_ok and ok
-        print(f"  rho = {p}/{qd}: Omega*={om:.5f} period={q} "
-              f"range={100.0 * r_frac:6.2f}% ker={100.0 * k_frac:6.2f}% "
-              f"-> {'range' if in_range else 'NOT range'}")
-    msg = ("commensurate lockings (period | 8) land in range(R_inf)"
-           if all_ok else "a commensurate locking missed range")
+        print(
+            f"  rho = {p}/{qd}: Omega*={om:.5f} period={q} "
+            f"range={100.0 * r_frac:6.2f}% ker={100.0 * k_frac:6.2f}% "
+            f"-> {'range' if in_range else 'NOT range'}"
+        )
+    msg = (
+        "commensurate lockings (period | 8) land in range(R_inf)"
+        if all_ok
+        else "a commensurate locking missed range"
+    )
     print(f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- {msg}")
     print()
     return all_ok
@@ -295,19 +310,24 @@ def test_lattice_coarser_than_lockings() -> bool:
     q = orbit_period(sig)
     r_frac, k_frac, _ = range_kernel_fractions(sig)
 
-    genuinely_locked = (q == 3)
+    genuinely_locked = q == 3
     in_kernel = r_frac < THRESH
 
     print(f"  rho = 1/3: Omega*             : {om:.6f}")
-    print(f"  detected period               : {q}  "
-          f"(locked={genuinely_locked})")
+    print(f"  detected period               : {q}  " f"(locked={genuinely_locked})")
     print(f"  range(R_inf) fraction         : {100.0 * r_frac:7.4f} %")
     print(f"  ker(R_inf)   fraction         : {100.0 * k_frac:7.4f} %")
     print("  => LOCKED in the dynamics, yet in ker(R_inf): the lock/")
     print("     no-lock split does NOT equal the range/ker split.")
     ok = genuinely_locked and in_kernel
-    msg = ("locked-but-incommensurate orbit is in ker: R_inf lattice "
-           "coarser than lockings") if ok else "1/3 did not behave"
+    msg = (
+        (
+            "locked-but-incommensurate orbit is in ker: R_inf lattice "
+            "coarser than lockings"
+        )
+        if ok
+        else "1/3 did not behave"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -335,10 +355,14 @@ def test_canonical_crosscheck_and_scope() -> bool:
     res_ok = r_res > (1.0 - THRESH)
     non_ok = k_non > (1.0 - THRESH)
 
-    print(f"  control sin(2*pi*T/{LCM_L}) range : "
-          f"{100.0 * r_res:7.4f} %  (expect ~100, ok={res_ok})")
-    print(f"  control sin(gamma*T)   ker    : "
-          f"{100.0 * k_non:7.4f} %  (expect ~100, ok={non_ok})")
+    print(
+        f"  control sin(2*pi*T/{LCM_L}) range : "
+        f"{100.0 * r_res:7.4f} %  (expect ~100, ok={res_ok})"
+    )
+    print(
+        f"  control sin(gamma*T)   ker    : "
+        f"{100.0 * k_non:7.4f} %  (expect ~100, ok={non_ok})"
+    )
     print(f"  projector source              : {src}")
 
     # P50 reconciliation: the canonical prime-ladder S_TNFR in ker.
@@ -348,8 +372,10 @@ def test_canonical_crosscheck_and_scope() -> bool:
             n_primes=200, max_power=8, n_periods=64
         )
         p50_ok = cert.verdict == "RESIDUE_IN_KER_ONLY"
-        print(f"  P50 prime-ladder S_TNFR       : {cert.verdict} "
-              f"(ker={100.0 * cert.ratio_in_kernel:.2f}%)")
+        print(
+            f"  P50 prime-ladder S_TNFR       : {cert.verdict} "
+            f"(ker={100.0 * cert.ratio_in_kernel:.2f}%)"
+        )
         print("  => SAME kernel as the golden orbit (Test 1): log p")
         print("     (Baker) and 1/phi are two incommensurate carriers of")
         print("     the ONE residue subspace ker(R_inf).")
@@ -357,8 +383,14 @@ def test_canonical_crosscheck_and_scope() -> bool:
         print("  P50 certificate              : skipped (engine absent)")
 
     ok = res_ok and non_ok and p50_ok
-    msg = ("canonical R_inf confirmed; residue LOCATED in ker, NOT "
-           "closed (G4 = RH OPEN)") if ok else "canonical control failed"
+    msg = (
+        (
+            "canonical R_inf confirmed; residue LOCATED in ker, NOT "
+            "closed (G4 = RH OPEN)"
+        )
+        if ok
+        else "canonical control failed"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -374,18 +406,21 @@ def main() -> int:
     print("=" * 78)
     print("SUMMARY")
     print("=" * 78)
-    print(f"  TEST 1 golden orbit in ker(R_inf)        : "
-          f"{'PASS' if r1 else 'FAIL'}")
-    print(f"  TEST 2 commensurate lockings in range    : "
-          f"{'PASS' if r2 else 'FAIL'}")
-    print(f"  TEST 3 HONEST LIMIT: lattice coarser     : "
-          f"{'PASS' if r3 else 'FAIL'}")
-    print(f"  TEST 4 canonical R_inf + P50 + scope     : "
-          f"{'PASS' if r4 else 'FAIL'}")
+    print(
+        f"  TEST 1 golden orbit in ker(R_inf)        : " f"{'PASS' if r1 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 2 commensurate lockings in range    : " f"{'PASS' if r2 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 3 HONEST LIMIT: lattice coarser     : " f"{'PASS' if r3 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 4 canonical R_inf + P50 + scope     : " f"{'PASS' if r4 else 'FAIL'}"
+    )
     print()
     all_ok = r1 and r2 and r3 and r4
-    print("  STRUCTURAL CHECKS: "
-          f"{'ALL PASS' if all_ok else 'SOME FAILED'}")
+    print("  STRUCTURAL CHECKS: " f"{'ALL PASS' if all_ok else 'SOME FAILED'}")
     print()
     print("  THESIS VERDICT: OPEN, by design (it CONNECTS, it")
     print("  does not close). Camino 15 made the rationals + phi")

@@ -27,19 +27,18 @@ from __future__ import annotations
 
 import numpy as np
 
-from tnfr.riemann.dirichlet_l import (
-    real_character_mod_3,
-    real_character_mod_4,
-    real_character_mod_5,
-    build_twisted_prime_ladder_spectrum,
-)
 from tnfr.riemann.analytic_continuation_dirichlet import (
     dirichlet_l_continued,
     dirichlet_log_l_derivative_continued,
-    verify_twisted_continuation_agreement,
     scan_critical_line_for_l_poles,
+    verify_twisted_continuation_agreement,
 )
-
+from tnfr.riemann.dirichlet_l import (
+    build_twisted_prime_ladder_spectrum,
+    real_character_mod_3,
+    real_character_mod_4,
+    real_character_mod_5,
+)
 
 # LMFDB-tabulated first imaginary parts of non-trivial zeros, used as
 # a manual cross-check for the critical-line scan.  Only the
@@ -101,11 +100,13 @@ def _print_pole_scan_report(scan, reference: list[float]) -> None:
             f"   |dt| = {diff:.4f}   [{marker}]"
         )
     if len(detected) > len(reference):
-        for extra in detected[len(reference):]:
+        for extra in detected[len(reference) :]:
             print(f"    extra peak t = {extra:>8.4f}   (beyond LMFDB shortlist)")
     if len(reference) > len(detected):
-        for missing in reference[len(detected):]:
-            print(f"    missing peak t = {missing:>8.4f}   (not detected in scan range)")
+        for missing in reference[len(detected) :]:
+            print(
+                f"    missing peak t = {missing:>8.4f}   (not detected in scan range)"
+            )
 
 
 def main() -> None:
@@ -148,12 +149,8 @@ def main() -> None:
     print("-" * 78)
     s_check = [2 + 0j, 2 + 1j, 3 + 0j, 3 + 2j, 5 + 0j]
     for label, chi in characters:
-        spec = build_twisted_prime_ladder_spectrum(
-            chi, n_primes=400, max_power=14
-        )
-        agreement = verify_twisted_continuation_agreement(
-            spec, chi, s_check, dps=30
-        )
+        spec = build_twisted_prime_ladder_spectrum(chi, n_primes=400, max_power=14)
+        agreement = verify_twisted_continuation_agreement(spec, chi, s_check, dps=30)
         print(f"  {label}")
         _print_agreement_report(label, agreement)
         print()

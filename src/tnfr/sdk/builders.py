@@ -24,24 +24,25 @@ Compare different network topologies:
 
 from __future__ import annotations
 
-from ..mathematics.unified_numerical import np
-from .fluent import TNFRNetwork, NetworkResults
 from ..constants.canonical import (
-    SDK_REWIRING_PROB_DEFAULT,
-    SDK_COUPLING_STRENGTH_WEAK,
-    SDK_COUPLING_STRENGTH_MODERATE,
-    SDK_VF_RANGE_LOW_MIN,
-    SDK_VF_RANGE_LOW_MAX,
-    SDK_VF_RANGE_MODERATE_MIN,
-    SDK_VF_RANGE_MODERATE_MAX,
-    SDK_CONNECTIVITY_DEFAULT,
     GAMMA,
-    PI,
     INV_PHI,
     NODAL_OPT_COUPLING_CANONICAL,
+    PI,
+    SDK_CONNECTIVITY_DEFAULT,
+    SDK_COUPLING_STRENGTH_MODERATE,
+    SDK_COUPLING_STRENGTH_WEAK,
+    SDK_REWIRING_PROB_DEFAULT,
+    SDK_VF_RANGE_LOW_MAX,
+    SDK_VF_RANGE_LOW_MIN,
+    SDK_VF_RANGE_MODERATE_MAX,
+    SDK_VF_RANGE_MODERATE_MIN,
 )
+from ..mathematics.unified_numerical import np
+from .fluent import NetworkResults, TNFRNetwork
 
 __all__ = ["TNFRExperimentBuilder"]
+
 
 class TNFRExperimentBuilder:
     """Builder pattern for standard TNFR experiments.
@@ -143,7 +144,9 @@ class TNFRExperimentBuilder:
             network._config.random_seed = random_seed
 
         # Similar frequencies promote synchronization (within bounds: 0.6-0.9)
-        network.add_nodes(nodes, vf_range=(SDK_VF_RANGE_MODERATE_MIN, SDK_VF_RANGE_MODERATE_MAX))  # Canonical moderate range
+        network.add_nodes(
+            nodes, vf_range=(SDK_VF_RANGE_MODERATE_MIN, SDK_VF_RANGE_MODERATE_MAX)
+        )  # Canonical moderate range
         network.connect_nodes(coupling_strength, "random")
 
         # Multi-phase synchronization protocol. Phase boundaries scale with
@@ -262,7 +265,9 @@ class TNFRExperimentBuilder:
                 network._config.random_seed = random_seed
 
             network.add_nodes(node_count)
-            network.connect_nodes(SDK_COUPLING_STRENGTH_WEAK, topology)  # Canonical weak coupling
+            network.connect_nodes(
+                SDK_COUPLING_STRENGTH_WEAK, topology
+            )  # Canonical weak coupling
             network.apply_sequence("basic_activation", repeat=steps)
 
             results[topology] = network.measure()
@@ -374,7 +379,9 @@ class TNFRExperimentBuilder:
 
         # Phase 1: Establish stable network
         network.add_nodes(nodes)
-        network.connect_nodes(SDK_COUPLING_STRENGTH_WEAK, "small_world")  # Canonical weak coupling
+        network.connect_nodes(
+            SDK_COUPLING_STRENGTH_WEAK, "small_world"
+        )  # Canonical weak coupling
         network.apply_sequence("stabilization", repeat=initial_steps)
         results["initial"] = network.measure()
 

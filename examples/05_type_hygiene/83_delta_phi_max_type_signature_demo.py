@@ -58,11 +58,19 @@ def main() -> None:
     print()
     print("=" * 72)
     print("Interpretation (§13quadraginta-sexta.5-.6):")
-    print("  - SCALAR_THRESHOLD_ADEQUATE          : signature < 0.05 AND scalar storage fraction == 1.0")
-    print("                                         -> scalar Delta_phi_max in [0, pi] suffices")
+    print(
+        "  - SCALAR_THRESHOLD_ADEQUATE          : signature < 0.05 AND scalar storage fraction == 1.0"
+    )
+    print(
+        "                                         -> scalar Delta_phi_max in [0, pi] suffices"
+    )
     print("  - INDETERMINATE                      : in between")
-    print("  - EDGE_DEPENDENT_THRESHOLD_NECESSARY : signature > 0.25 OR scalar storage fraction < 1.0")
-    print("                                         -> edge-dependent matrix or angle-of-attack lift may be required")
+    print(
+        "  - EDGE_DEPENDENT_THRESHOLD_NECESSARY : signature > 0.25 OR scalar storage fraction < 1.0"
+    )
+    print(
+        "                                         -> edge-dependent matrix or angle-of-attack lift may be required"
+    )
     print()
     print("Verdicts at the two resolutions:")
     print(f"  res 1 (24/9/8/19):   {cert1.verdict}")

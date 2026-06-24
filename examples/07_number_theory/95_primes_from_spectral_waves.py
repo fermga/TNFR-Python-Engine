@@ -67,15 +67,15 @@ References
 - AGENTS.md §"TNFR-Riemann Program Overview" (status, open G4)
 """
 
+import math
 import os
 import sys
-import math
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.riemann.analytic_continuation import (
-    reconstruct_psi_via_explicit_formula,
     fetch_riemann_zeros,
+    reconstruct_psi_via_explicit_formula,
 )
 
 
@@ -94,16 +94,20 @@ def experiment_1_staircase_synthesis():
 
     xs = [10.5, 12.5, 16.5, 18.5, 22.5, 28.5]
     zeros80 = fetch_riemann_zeros(80)
-    res = {n: reconstruct_psi_via_explicit_formula(xs, zeros=list(zeros80[:n]))
-           for n in (5, 20, 80)}
+    res = {
+        n: reconstruct_psi_via_explicit_formula(xs, zeros=list(zeros80[:n]))
+        for n in (5, 20, 80)
+    }
 
     print(f"{'x':>6}  {'ψ_true':>9}  {'N=5':>8}  {'N=20':>8}  {'N=80':>8}")
     print("-" * 50)
     for i, x in enumerate(xs):
-        print(f"{x:>6.1f}  {res[80].psi_classical[i]:>9.3f}  "
-              f"{res[5].psi_explicit[i]:>8.3f}  "
-              f"{res[20].psi_explicit[i]:>8.3f}  "
-              f"{res[80].psi_explicit[i]:>8.3f}")
+        print(
+            f"{x:>6.1f}  {res[80].psi_classical[i]:>9.3f}  "
+            f"{res[5].psi_explicit[i]:>8.3f}  "
+            f"{res[20].psi_explicit[i]:>8.3f}  "
+            f"{res[80].psi_explicit[i]:>8.3f}"
+        )
 
     print()
     for n in (5, 20, 80):
@@ -136,16 +140,20 @@ def experiment_2_wave_decomposition():
 
     print(f"At x = {x}:  √x = {sqrt_x:.3f},  log x = {log_x:.4f}")
     print()
-    print(f"{'n':>3}  {'γ_n':>9}  {'|ρ_n|':>8}  {'amplitude':>10}"
-          f"  {'phase γ·logx':>12}")
+    print(
+        f"{'n':>3}  {'γ_n':>9}  {'|ρ_n|':>8}  {'amplitude':>10}"
+        f"  {'phase γ·logx':>12}"
+    )
     print("-" * 54)
     for n, rho in enumerate(zeros, start=1):
         gamma = float(rho.imag)
         mod = abs(complex(0.5, gamma))
-        amplitude = 2.0 * sqrt_x / mod   # factor 2 from ρ + conjugate
+        amplitude = 2.0 * sqrt_x / mod  # factor 2 from ρ + conjugate
         phase = (gamma * log_x) % (2 * math.pi)
-        print(f"{n:>3}  {gamma:>9.4f}  {mod:>8.4f}  {amplitude:>10.4f}"
-              f"  {phase:>12.4f}")
+        print(
+            f"{n:>3}  {gamma:>9.4f}  {mod:>8.4f}  {amplitude:>10.4f}"
+            f"  {phase:>12.4f}"
+        )
 
     print()
     print("Every amplitude scales as √x (NOT faster) because Re(ρ) = ½.")
@@ -174,19 +182,25 @@ def experiment_3_coherence_is_rh():
     off_zeros = [complex(0.7, r.imag) for r in zeros]
     off = reconstruct_psi_via_explicit_formula(xs, zeros=off_zeros)
 
-    print(f"{'x':>7}  {'ψ_true':>9}  {'err ON (Re=½)':>13}"
-          f"  {'err OFF (Re=.7)':>15}  {'√x':>7}  {'x^0.7':>8}")
+    print(
+        f"{'x':>7}  {'ψ_true':>9}  {'err ON (Re=½)':>13}"
+        f"  {'err OFF (Re=.7)':>15}  {'√x':>7}  {'x^0.7':>8}"
+    )
     print("-" * 72)
     for i, x in enumerate(xs):
-        print(f"{x:>7.1f}  {on.psi_classical[i]:>9.2f}  "
-              f"{on.abs_error[i]:>13.3f}  {off.abs_error[i]:>15.3f}  "
-              f"{x ** 0.5:>7.2f}  {x ** 0.7:>8.2f}")
+        print(
+            f"{x:>7.1f}  {on.psi_classical[i]:>9.2f}  "
+            f"{on.abs_error[i]:>13.3f}  {off.abs_error[i]:>15.3f}  "
+            f"{x ** 0.5:>7.2f}  {x ** 0.7:>8.2f}"
+        )
 
     on_ratio = on.abs_error[-1] / on.abs_error[0]
     off_ratio = off.abs_error[-1] / off.abs_error[0]
     print()
-    print(f"  Error growth (x: 20→200):  ON-line ×{on_ratio:.1f}"
-          f"  vs  OFF-line ×{off_ratio:.1f}")
+    print(
+        f"  Error growth (x: 20→200):  ON-line ×{on_ratio:.1f}"
+        f"  vs  OFF-line ×{off_ratio:.1f}"
+    )
     print()
     print("On-line error tracks √x (coherent). Off-line error tracks x^{0.7}")
     print("(incoherent — diverges faster). RH ⟺ the spectral geometry is")

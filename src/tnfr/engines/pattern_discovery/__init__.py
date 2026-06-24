@@ -17,12 +17,14 @@ patterns = pattern_engine.discover_patterns(network)
 
 try:
     from .mathematical_patterns import TNFREmergentPatternEngine
+
     __all__ = ["TNFREmergentPatternEngine"]
 except ImportError:
     __all__ = []
 
 try:
     from ...operators.pattern_detection import UnifiedPatternDetector
+
     __all__.append("UnifiedPatternDetector")
 except ImportError:
     pass

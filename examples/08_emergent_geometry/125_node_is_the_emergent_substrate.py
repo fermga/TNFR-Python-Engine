@@ -91,10 +91,10 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.alias import set_attr
 from tnfr.constants.aliases import ALIAS_EPI, ALIAS_VF
@@ -134,13 +134,17 @@ def experiment_1_node_is_substrate():
     p = extract_phase_space_point(G)
     dens = polarization_density(p)
     poincare = dens["poincare"]
-    print(f"  {'node':>4} {'K_phi':>8} {'J_phi':>8} {'Phi_s':>8} {'J_dNFR':>8} "
-          f"{'energy':>8} {'|Poincare|':>10}")
+    print(
+        f"  {'node':>4} {'K_phi':>8} {'J_phi':>8} {'Phi_s':>8} {'J_dNFR':>8} "
+        f"{'energy':>8} {'|Poincare|':>10}"
+    )
     for i in range(5):
         pc = float(np.linalg.norm(poincare[:, i]))
-        print(f"  {i:>4} {p.k_phi[i]:>8.3f} {p.j_phi[i]:>8.3f} "
-              f"{p.phi_s[i]:>8.3f} {p.j_dnfr[i]:>8.3f} "
-              f"{dens['energy'][i]:>8.3f} {pc:>10.4f}")
+        print(
+            f"  {i:>4} {p.k_phi[i]:>8.3f} {p.j_phi[i]:>8.3f} "
+            f"{p.phi_s[i]:>8.3f} {p.j_dnfr[i]:>8.3f} "
+            f"{dens['energy'][i]:>8.3f} {pc:>10.4f}"
+        )
     print()
     print("  -> each node = 4 real DOF + a UNIT Poincare vector (|.|=1, fully")
     print("     polarized): a complete symplectic universe, not a vertex.")
@@ -157,8 +161,10 @@ def experiment_2_graph_is_blind():
     print("The graph picture does not move; the substrate does.")
     print()
     G = nx.cycle_graph(10)
-    print(f"  {'seed':>5} {'Laplacian spec[1]':>18} {'R_eff(0,5)':>12} "
-          f"{'|polarization|':>15} {'H_sub':>9}")
+    print(
+        f"  {'seed':>5} {'Laplacian spec[1]':>18} {'R_eff(0,5)':>12} "
+        f"{'|polarization|':>15} {'H_sub':>9}"
+    )
     for s in range(4):
         _seed(G, np.random.default_rng(s))
         _, L = structural_diffusion_operator(G)
@@ -166,9 +172,11 @@ def experiment_2_graph_is_blind():
         _, R = effective_resistance(G)
         p = extract_phase_space_point(G)
         pol = polarization_vector(p)
-        print(f"  {s:>5} {spec[1]:>18.6f} {R[0, 5]:>12.6f} "
-              f"{np.sqrt(pol['magnitude_sq']):>15.4f} "
-              f"{substrate_hamiltonian(p):>9.4f}")
+        print(
+            f"  {s:>5} {spec[1]:>18.6f} {R[0, 5]:>12.6f} "
+            f"{np.sqrt(pol['magnitude_sq']):>15.4f} "
+            f"{substrate_hamiltonian(p):>9.4f}"
+        )
     print()
     print("  -> spec[1] and R_eff IDENTICAL across seeds (graph fixed by")
     print("     topology); polarization and H_sub CHANGE. The node-as-graph")
@@ -194,11 +202,15 @@ def experiment_3_same_kind_of_object():
     sum_energy = float(np.sum(dens["energy"]))
     sum_p3 = float(np.sum(dens["p_3"]))
     print(f"  network H_sub        = {H:.6f}")
-    print(f"  sum per-node energy  = {sum_energy:.6f}  "
-          f"(|diff| = {abs(H - sum_energy):.1e})")
+    print(
+        f"  sum per-node energy  = {sum_energy:.6f}  "
+        f"(|diff| = {abs(H - sum_energy):.1e})"
+    )
     print(f"  global Stokes P_3    = {glob['p_3']:.6f}")
-    print(f"  sum per-node P_3     = {sum_p3:.6f}  "
-          f"(|diff| = {abs(glob['p_3'] - sum_p3):.1e})")
+    print(
+        f"  sum per-node P_3     = {sum_p3:.6f}  "
+        f"(|diff| = {abs(glob['p_3'] - sum_p3):.1e})"
+    )
     print()
     print("  -> exact: the network substrate is the symplectic sum of the")
     print("     per-node substrates. SAME geometric tower at both scales ->")

@@ -43,9 +43,7 @@ from tnfr.validation.temporal_interface import (
 def _load_benchmark_module():
     root = Path(__file__).resolve().parents[1]
     path = root / "benchmarks" / "temporal_interface_benchmark.py"
-    spec = importlib.util.spec_from_file_location(
-        "temporal_interface_benchmark", path
-    )
+    spec = importlib.util.spec_from_file_location("temporal_interface_benchmark", path)
     assert spec is not None
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)
@@ -131,7 +129,14 @@ def test_window_tetrad_series_structure():
     # window_end must be strictly increasing.
     assert np.all(np.diff(out.window_end) > 0)
     n = out.window_end.size
-    for arr in (out.grad_phi, out.k_phi, out.xi_c, out.phi_s, out.variance, out.lag1_autocorr):
+    for arr in (
+        out.grad_phi,
+        out.k_phi,
+        out.xi_c,
+        out.phi_s,
+        out.variance,
+        out.lag1_autocorr,
+    ):
         assert arr.shape == (n,)
 
 
@@ -182,9 +187,7 @@ def test_kendall_tau_handles_nan_and_short():
 def test_evaluate_early_warning_reports_comparison():
     series = BENCH.synthetic_fold_transition(n=2400, transition_at=1800, seed=6)
     config = TemporalInterfaceConfig(window=240, step=30)
-    result = evaluate_early_warning(
-        series, transition_index=1800, config=config
-    )
+    result = evaluate_early_warning(series, transition_index=1800, config=config)
     assert isinstance(result, EarlyWarningComparison)
     assert set(result.tnfr_indicators).issubset(set(result.trends))
     assert set(result.baseline_indicators).issubset(set(result.trends))
@@ -271,9 +274,7 @@ def test_download_grid_frequency_graceful_skip(monkeypatch, tmp_path):
         raise OSError("no network in test environment")
 
     monkeypatch.setattr(BENCH, "urlopen", _boom)
-    result = BENCH.download_grid_frequency_month(
-        2020, 1, cache_path=tmp_path / "x.zip"
-    )
+    result = BENCH.download_grid_frequency_month(2020, 1, cache_path=tmp_path / "x.zip")
     assert result is None
 
 
@@ -293,9 +294,7 @@ def test_run_temporal_benchmark_synthetic_ok():
 
 
 def test_run_temporal_benchmark_grid_graceful_skip(monkeypatch):
-    monkeypatch.setattr(
-        BENCH, "download_grid_frequency_month", lambda *a, **k: None
-    )
+    monkeypatch.setattr(BENCH, "download_grid_frequency_month", lambda *a, **k: None)
     config = TemporalInterfaceConfig(window=240, step=30)
     report = BENCH.run_temporal_benchmark(
         source="grid",

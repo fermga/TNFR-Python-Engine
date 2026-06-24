@@ -77,16 +77,12 @@ from typing import Any
 import mpmath
 
 from ..mathematics.unified_numerical import np
-
-from .analytic_continuation import (
-    fetch_riemann_zeros,
-    scan_critical_line_for_poles,
-)
-
+from .analytic_continuation import fetch_riemann_zeros, scan_critical_line_for_poles
 
 # ---------------------------------------------------------------------------
 # Core: Li coefficients from a list of upper-half-plane zeros
 # ---------------------------------------------------------------------------
+
 
 def li_coefficients_from_zeros(
     zeros_upper: Sequence[complex],
@@ -134,9 +130,7 @@ def li_coefficients_from_zeros(
     out = np.zeros(n_max, dtype=float)
     with mpmath.workdps(dps):
         # Convert each zero to mpmath complex once and reuse.
-        mp_zeros = [
-            mpmath.mpc(float(z.real), float(z.imag)) for z in zeros_upper
-        ]
+        mp_zeros = [mpmath.mpc(float(z.real), float(z.imag)) for z in zeros_upper]
         # Pre-compute base = 1 - 1/rho for each zero.
         bases = [mpmath.mpc(1) - mpmath.mpc(1) / r for r in mp_zeros]
 
@@ -144,7 +138,7 @@ def li_coefficients_from_zeros(
             total = mpmath.mpf(0)
             for b in bases:
                 # 2 * Re[1 - b^n] handles the rho/conj(rho) pairing
-                total += 2 * (mpmath.mpf(1) - (b ** n_idx).real)
+                total += 2 * (mpmath.mpf(1) - (b**n_idx).real)
             out[n_idx - 1] = float(total)
     return out
 
@@ -152,6 +146,7 @@ def li_coefficients_from_zeros(
 # ---------------------------------------------------------------------------
 # Certificate dataclass
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class LiKeiperCertificate:
@@ -199,8 +194,7 @@ class LiKeiperCertificate:
             f"  n_max               = {self.n_max}",
             f"  n_zeros (classical) = {self.n_zeros_classical}",
             f"  lambda_1            = {lam[0]:+.6e}",
-            f"  lambda_{self.n_max}".ljust(22)
-            + f"= {lam[-1]:+.6e}",
+            f"  lambda_{self.n_max}".ljust(22) + f"= {lam[-1]:+.6e}",
             f"  min_n lambda_n      = {float(lam.min()):+.6e}",
             f"  positivity (cls.)   = {self.positivity_classical}",
         ]
@@ -208,8 +202,7 @@ class LiKeiperCertificate:
             lines.extend(
                 [
                     f"  positivity (TNFR)   = {self.positivity_tnfr}",
-                    f"  max |Δλ|            = "
-                    f"{self.max_abs_difference:.3e}",
+                    f"  max |Δλ|            = " f"{self.max_abs_difference:.3e}",
                 ]
             )
         if self.notes:
@@ -222,6 +215,7 @@ class LiKeiperCertificate:
 # ---------------------------------------------------------------------------
 # End-to-end verification
 # ---------------------------------------------------------------------------
+
 
 def verify_li_keiper_criterion(
     *,
@@ -267,7 +261,9 @@ def verify_li_keiper_criterion(
     # --- Step 1+2: classical Li coefficients --------------------------------
     classical_zeros = fetch_riemann_zeros(n_zeros, dps=dps)
     lambda_classical = li_coefficients_from_zeros(
-        classical_zeros, n_max, dps=dps,
+        classical_zeros,
+        n_max,
+        dps=dps,
     )
 
     # --- Step 3: positivity check ------------------------------------------
@@ -294,12 +290,12 @@ def verify_li_keiper_criterion(
                 dtype=complex,
             )
             lambda_tnfr = li_coefficients_from_zeros(
-                tnfr_zeros, n_max, dps=dps,
+                tnfr_zeros,
+                n_max,
+                dps=dps,
             )
             pos_tnfr = bool(np.all(lambda_tnfr > 0))
-            max_abs_diff = float(
-                np.max(np.abs(lambda_classical - lambda_tnfr))
-            )
+            max_abs_diff = float(np.max(np.abs(lambda_classical - lambda_tnfr)))
             notes["tnfr_n_peaks"] = int(scan.detected_peaks.size)
             notes["tnfr_detection_quality"] = scan.detection_quality
             notes["tnfr_t_window"] = (tnfr_t_min, tnfr_t_max)

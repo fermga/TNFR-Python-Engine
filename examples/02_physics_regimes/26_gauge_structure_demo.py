@@ -49,9 +49,9 @@ from tnfr.physics.gauge import (
     apply_gauge_transformation,
     capture_gauge_snapshot,
     classify_network_regimes,
+    compute_covariant_derivative_magnitude,
     compute_gauge_connection,
     compute_gauge_curvature,
-    compute_covariant_derivative_magnitude,
     compute_gauge_energy_decomposition,
     compute_yang_mills_action,
     verify_gauge_invariance,
@@ -172,8 +172,7 @@ def main() -> None:
     # ------------------------------------------------------------------
     section("5. Gauge Energy Decomposition (4 Sectors)")
     decomp = compute_gauge_energy_decomposition(G)
-    for key in ["potential_sector", "gradient_sector",
-                "gauge_sector", "flux_sector"]:
+    for key in ["potential_sector", "gradient_sector", "gauge_sector", "flux_sector"]:
         frac_key = key.replace("_sector", "_fraction")
         frac = decomp.get(frac_key, 0.0)
         total = decomp.get(key, 0.0)

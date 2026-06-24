@@ -30,31 +30,34 @@ Physics basis:
 from __future__ import annotations
 
 import math
-import sys
 import os
+import sys
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
+from tnfr.constants import inject_defaults
 from tnfr.constants.canonical import (
-    PHI, GAMMA, PI, E, LN_2,
-    PHI_S_VON_KOCH_THRESHOLD,
+    GAMMA,
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
+    LN_2,
+    PHI,
+    PHI_S_VON_KOCH_THRESHOLD,
+    PI,
+    E,
 )
-from tnfr.constants import inject_defaults
 from tnfr.physics.fields import (
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
     estimate_coherence_length,
 )
 
-
 # Canonical spiral constant
-B_GOLDEN = 2.0 * math.log(PHI) / PI   # ~ 0.3063
+B_GOLDEN = 2.0 * math.log(PHI) / PI  # ~ 0.3063
 ALPHA_EQUIANGULAR = math.degrees(math.atan(1.0 / B_GOLDEN))  # ~ 72.97 deg
 
 
@@ -62,13 +65,15 @@ ALPHA_EQUIANGULAR = math.degrees(math.atan(1.0 / B_GOLDEN))  # ~ 72.97 deg
 # 1. Golden spiral derivation
 # ---------------------------------------------------------------------------
 
+
 def demo_golden_spiral_derivation() -> None:
     """Derive the golden spiral growth parameter from nodal equation."""
     print("=" * 65)
     print("  1. GOLDEN SPIRAL DERIVATION from Nodal Equation")
     print("=" * 65)
 
-    print(f"""
+    print(
+        f"""
   The nodal equation  dEPI/dt = nu_f * DELTA_NFR(t)  under:
     Condition 1: d(theta)/dt = omega   (constant phase rotation)
     Condition 2: DELTA_NFR = k * A     (amplitude-proportional pressure)
@@ -94,7 +99,8 @@ def demo_golden_spiral_derivation() -> None:
 
   This is close to the regular pentagon interior angle (72 deg),
   connecting phi's geometric origin (pentagonal symmetry).
-""")
+"""
+    )
 
     # Verify: exp(b * pi/2) = phi
     check = math.exp(B_GOLDEN * PI / 2)
@@ -106,6 +112,7 @@ def demo_golden_spiral_derivation() -> None:
 # ---------------------------------------------------------------------------
 # 2. Spiral trajectory simulation
 # ---------------------------------------------------------------------------
+
 
 def demo_spiral_trajectory() -> None:
     """Simulate a golden spiral trajectory and sample structural fields."""
@@ -162,23 +169,31 @@ def demo_spiral_trajectory() -> None:
         theta1 = thetas[idx1]
         theta2 = thetas[idx2]
         if abs(theta2 - theta1 - PI / 2) < dt * omega * 1.5:
-            print(f"    theta = {theta1:.2f} -> {theta2:.2f}:  "
-                  f"A ratio = {ratio:.6f}")
+            print(
+                f"    theta = {theta1:.2f} -> {theta2:.2f}:  " f"A ratio = {ratio:.6f}"
+            )
             printed += 1
 
     # Structural field table at sampled points
     print(f"\n  Expected field signatures along golden spiral:")
     print(f"  {'Field':<12}  {'Behavior':<30}  {'Governing constant'}")
     print("  " + "-" * 60)
-    print(f"  {'Phi_s':<12}  {'Monotonic increase ~ e^(b*theta)':<30}  {'e (exponential)'}")
-    print(f"  {'|grad_phi|':<12}  {'Approx constant (steady rot.)':<30}  {'gamma (threshold < gamma/pi)'}")
-    print(f"  {'K_phi':<12}  {'Small, bounded (smooth accel.)':<30}  {'pi (|K_phi| <= pi)'}")
+    print(
+        f"  {'Phi_s':<12}  {'Monotonic increase ~ e^(b*theta)':<30}  {'e (exponential)'}"
+    )
+    print(
+        f"  {'|grad_phi|':<12}  {'Approx constant (steady rot.)':<30}  {'gamma (threshold < gamma/pi)'}"
+    )
+    print(
+        f"  {'K_phi':<12}  {'Small, bounded (smooth accel.)':<30}  {'pi (|K_phi| <= pi)'}"
+    )
     print(f"  {'xi_C':<12}  {'Scales ~ 2*pi*b*r':<30}  {'e (exponential decay)'}")
 
 
 # ---------------------------------------------------------------------------
 # 3. U6 confinement and saturation
 # ---------------------------------------------------------------------------
+
 
 def demo_u6_confinement() -> None:
     """Show how U6 confinement forces spiral saturation."""
@@ -199,7 +214,9 @@ def demo_u6_confinement() -> None:
 
     # Simulate with and without U6 clamping
     print(f"\n  Evolution comparison (with vs without U6 confinement):")
-    print(f"  {'Step':>6}  {'t':>6}  {'A_free':>10}  {'A_confined':>12}  {'Confined?':>10}")
+    print(
+        f"  {'Step':>6}  {'t':>6}  {'A_free':>10}  {'A_confined':>12}  {'Confined?':>10}"
+    )
     print("  " + "-" * 50)
 
     A_free = A_0
@@ -213,8 +230,10 @@ def demo_u6_confinement() -> None:
         A_confined += growth * headroom  # Coherence operator (IL) dampens growth
         is_confined = headroom < 0.5
         if step % 5 == 0 or step <= 3:
-            print(f"  {step:6d}  {t:6.2f}  {A_free:10.4f}  {A_confined:12.4f}  "
-                  f"{'YES' if is_confined else 'no':>10}")
+            print(
+                f"  {step:6d}  {t:6.2f}  {A_free:10.4f}  {A_confined:12.4f}  "
+                f"{'YES' if is_confined else 'no':>10}"
+            )
 
     print(f"\n  U6 confinement (Delta Phi_s < phi = {PHI:.4f}) forces:")
     print(f"    - Stabilization via Coherence operator (IL)")
@@ -225,6 +244,7 @@ def demo_u6_confinement() -> None:
 # ---------------------------------------------------------------------------
 # 4. Perturbation resilience (KAM theory connection)
 # ---------------------------------------------------------------------------
+
 
 def demo_perturbation_resilience() -> None:
     """Show golden spiral has maximal resilience to perturbation."""
@@ -283,6 +303,7 @@ def demo_perturbation_resilience() -> None:
 # 5. Golden ratio attractor test (ss 6.3)
 # ---------------------------------------------------------------------------
 
+
 def demo_golden_ratio_attractor() -> None:
     """Test whether observable ratios at adjacent scales cluster near phi."""
     print("\n" + "=" * 65)
@@ -296,7 +317,9 @@ def demo_golden_ratio_attractor() -> None:
         "Complete (N=15)": nx.complete_graph(15),
     }
 
-    print(f"\n  Hypothesis: Phi_s ratios at adjacent scales cluster near phi = {PHI:.4f}")
+    print(
+        f"\n  Hypothesis: Phi_s ratios at adjacent scales cluster near phi = {PHI:.4f}"
+    )
     print(f"\n  Procedure:")
     print(f"    1. Evolve grammar-compliant network")
     print(f"    2. Measure Phi_s at multiple coarsening scales")
@@ -322,7 +345,9 @@ def demo_golden_ratio_attractor() -> None:
                     G.nodes[n]["phase"] += 0.1 * (mean_phase - G.nodes[n]["phase"])
                     G.nodes[n]["theta"] = G.nodes[n]["phase"]
                     mean_dnfr = np.mean([G.nodes[nb]["delta_nfr"] for nb in neighbors])
-                    G.nodes[n]["delta_nfr"] += 0.05 * (mean_dnfr - G.nodes[n]["delta_nfr"])
+                    G.nodes[n]["delta_nfr"] += 0.05 * (
+                        mean_dnfr - G.nodes[n]["delta_nfr"]
+                    )
 
         # Multi-scale Phi_s via hierarchical coarsening
         phi_s_scales = []
@@ -369,8 +394,10 @@ def demo_golden_ratio_attractor() -> None:
         if ratios:
             print(f"    Scale ratios: {[f'{r:.4f}' for r in ratios]}")
             mean_ratio = np.mean(ratios)
-            print(f"    Mean ratio: {mean_ratio:.4f}  (phi = {PHI:.4f}, "
-                  f"deviation = {abs(mean_ratio - PHI):.4f})")
+            print(
+                f"    Mean ratio: {mean_ratio:.4f}  (phi = {PHI:.4f}, "
+                f"deviation = {abs(mean_ratio - PHI):.4f})"
+            )
         else:
             print(f"    (insufficient scales for ratio computation)")
         print()
@@ -383,6 +410,7 @@ def demo_golden_ratio_attractor() -> None:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     print()
@@ -400,7 +428,8 @@ def main() -> None:
     print("\n" + "=" * 65)
     print("  SUMMARY")
     print("=" * 65)
-    print(f"""
+    print(
+        f"""
   Golden spiral growth parameter:
     b = 2 * ln(phi) / pi = {B_GOLDEN:.10f}
 
@@ -412,7 +441,8 @@ def main() -> None:
     2. U6 confinement (Delta Phi_s < phi) forces saturation
     3. KAM theory: golden ratio = most resilient frequency
     4. Multi-scale Phi_s ratios cluster near phi (attractor test)
-""")
+"""
+    )
 
 
 if __name__ == "__main__":

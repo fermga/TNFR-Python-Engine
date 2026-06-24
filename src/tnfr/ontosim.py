@@ -5,20 +5,20 @@ from __future__ import annotations
 from collections import deque
 from typing import TYPE_CHECKING
 
-from .utils import CallbackEvent
 from .constants import METRIC_DEFAULTS, get_param, inject_defaults
 from .dynamics import default_compute_delta_nfr
 from .dynamics import run as _run
 from .dynamics import step as _step
 from .glyph_history import append_metric
 from .initialization import init_node_attrs
-from .utils import cached_import
+from .utils import CallbackEvent, cached_import
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx as nx
 
 # High-level API exports
 __all__ = ("prepare_network", "step", "run")
+
 
 def prepare_network(
     G: "nx.Graph",
@@ -45,7 +45,9 @@ def prepare_network(
 
         merge_overrides(G, **overrides)
     # Initialize history buffers
-    ph_len = int(G.graph.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"]))
+    ph_len = int(
+        G.graph.get("PHASE_HISTORY_MAXLEN", METRIC_DEFAULTS["PHASE_HISTORY_MAXLEN"])
+    )
     hist_keys = [
         "C_steps",
         "stable_frac",
@@ -115,6 +117,7 @@ def prepare_network(
         init_node_attrs(G, override=True)
     return G
 
+
 def step(
     G: "nx.Graph",
     *,
@@ -125,6 +128,7 @@ def step(
     """Advance the ontosim runtime by a single step."""
 
     _step(G, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs)
+
 
 def run(
     G: "nx.Graph",

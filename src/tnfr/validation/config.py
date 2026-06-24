@@ -18,6 +18,7 @@ __all__ = [
     "configure_validation",
 ]
 
+
 @dataclass
 class ValidationConfig:
     """TNFR validation system configuration."""
@@ -40,8 +41,10 @@ class ValidationConfig:
     cache_validation_results: bool = False  # Future optimization
     max_validation_time_ms: float = 1000.0  # Timeout (not implemented yet)
 
+
 # Global configuration
 validation_config = ValidationConfig()
+
 
 def configure_validation(**kwargs: object) -> None:
     """Updates global validation configuration.
@@ -69,6 +72,9 @@ def configure_validation(**kwargs: object) -> None:
         else:
             raise TNFRValueError(
                 f"Unknown validation config key: {key}",
-                context={"key": key, "available": list(validation_config.__dict__.keys())},
+                context={
+                    "key": key,
+                    "available": list(validation_config.__dict__.keys()),
+                },
                 suggestion="Use a valid configuration key from ValidationConfig.",
             )

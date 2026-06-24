@@ -230,9 +230,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from ..mathematics.unified_numerical import np
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from ..mathematics.unified_numerical import np
 
 __all__ = [
     "StructuralDiffusionCertificate",
@@ -305,9 +305,7 @@ def structural_diffusion_operator(G: Any) -> tuple[list, Any]:
         if not neigh:
             continue
         # weighted degree (weight defaults to 1.0 when absent)
-        weights = [
-            float(G[node][m].get("weight", 1.0)) for m in neigh
-        ]
+        weights = [float(G[node][m].get("weight", 1.0)) for m in neigh]
         deg = sum(weights)
         if deg <= 0.0:
             continue
@@ -620,10 +618,7 @@ def verify_structural_diffusion(
     # degree vector for the conserved weighted total
     deg = np.array(
         [
-            sum(
-                float(G[node][m].get("weight", 1.0))
-                for m in G.neighbors(node)
-            )
+            sum(float(G[node][m].get("weight", 1.0)) for m in G.neighbors(node))
             for node in nodes
         ],
         dtype=float,
@@ -789,10 +784,9 @@ def verify_overdamped_regime(
     t = np.arange(steps, dtype=float) * dt
     slope, _ = np.polyfit(t, pos, 1)
     quad = np.polyfit(t, pos, 2)[0]  # leading quadratic coefficient ≈ 0
-    pos_linear = (
-        abs(float(slope) - drift) < max(tolerance, 1e-6 * abs(drift))
-        and abs(float(quad)) < max(tolerance, 1e-6 * abs(drift) + 1e-9)
-    )
+    pos_linear = abs(float(slope) - drift) < max(tolerance, 1e-6 * abs(drift)) and abs(
+        float(quad)
+    ) < max(tolerance, 1e-6 * abs(drift) + 1e-9)
 
     # mobility law: v ∝ νf (v/νf constant across νf)
     ratios_nu = [
@@ -1139,8 +1133,8 @@ def verify_undamped_limit(
     disc = gamma * gamma - 4.0 * lambdas + 0j
     root = np.sqrt(disc)
     s_plus = (-gamma + root) / 2.0
-    decay = np.abs(s_plus.real)   # envelope decay = gamma/2 (underdamped)
-    freq = np.abs(s_plus.imag)    # oscillation frequency
+    decay = np.abs(s_plus.real)  # envelope decay = gamma/2 (underdamped)
+    freq = np.abs(s_plus.imag)  # oscillation frequency
 
     mask = lambdas > 1e-9
     if np.any(mask):
@@ -1791,12 +1785,10 @@ def verify_structural_random_walk(
 
     # P row-stochastic (rows of connected nodes sum to 1)
     row_sums = p.sum(axis=1)
-    deg_nonzero = np.array(
-        [sum(1 for _ in G.neighbors(nd)) > 0 for nd in nodes]
+    deg_nonzero = np.array([sum(1 for _ in G.neighbors(nd)) > 0 for nd in nodes])
+    row_stochastic = (
+        bool(np.all(np.abs(row_sums[deg_nonzero] - 1.0) < tolerance)) if n else True
     )
-    row_stochastic = bool(
-        np.all(np.abs(row_sums[deg_nonzero] - 1.0) < tolerance)
-    ) if n else True
 
     # stationary distribution π = degree, π·P = π
     _, pi = stationary_distribution(G)
@@ -1992,24 +1984,18 @@ def verify_structural_flow(
         dtype=float,
     )
     net_out = j.sum(axis=1)
-    kirchhoff_res = (
-        float(np.max(np.abs(net_out - lap @ epi))) if n else 0.0
-    )
+    kirchhoff_res = float(np.max(np.abs(net_out - lap @ epi))) if n else 0.0
     kirchhoff_ok = kirchhoff_res < max(tolerance, 1e-9)
 
     # total flux balances (L has zero column sums) — closed network
     total_balances = (
-        bool(abs(float(net_out.sum())) < max(tolerance, 1e-9))
-        if n
-        else True
+        bool(abs(float(net_out.sum())) < max(tolerance, 1e-9)) if n else True
     )
 
     # equilibrium: a uniform EPI field carries zero current
     uniform = np.ones(n)
     j_uniform = (uniform[:, None] - uniform[None, :]) * (adj != 0.0)
-    equilibrium_ok = (
-        bool(np.allclose(j_uniform, 0.0, atol=tolerance)) if n else True
-    )
+    equilibrium_ok = bool(np.allclose(j_uniform, 0.0, atol=tolerance)) if n else True
 
     # Ohm's law: injected unit current s→t induces drop V_s − V_t = R_eff
     ohm_ok = True

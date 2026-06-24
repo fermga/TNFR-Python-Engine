@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-import numpy as np
-from .backend import MathematicsBackend
 from dataclasses import dataclass, field
 from typing import Any, Sequence
+
+import numpy as np
 import numpy.typing as npt
+
+from .backend import MathematicsBackend
 
 __all__ = ["CoherenceOperator", "FrequencyOperator"]
 

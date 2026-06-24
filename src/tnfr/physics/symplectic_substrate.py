@@ -155,14 +155,11 @@ from typing import Any
 
 from ..mathematics.unified_numerical import np
 from .canonical import (
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
 )
-from .extended import (
-    compute_phase_current,
-    compute_dnfr_flux,
-)
+from .extended import compute_dnfr_flux, compute_phase_current
 
 __all__ = [
     "BLOCK_SYMPLECTIC_FORM",
@@ -237,8 +234,8 @@ BLOCK_COMPATIBLE_METRIC = BLOCK_SYMPLECTIC_FORM @ BLOCK_COMPLEX_STRUCTURE
 
 # Conjugate pair labels (position, momentum) per sector.
 CONJUGATE_PAIR_LABELS = (
-    ("K_phi", "J_phi"),       # geometric sector
-    ("Phi_s", "J_dnfr"),      # potential sector
+    ("K_phi", "J_phi"),  # geometric sector
+    ("Phi_s", "J_dnfr"),  # potential sector
 )
 
 
@@ -577,11 +574,7 @@ class IntegrabilityCertificate:
 
     def summary(self) -> str:
         """Human-readable one-line verdict."""
-        ok = (
-            "INTEGRABLE"
-            if self.is_completely_integrable
-            else "NOT-INTEGRABLE"
-        )
+        ok = "INTEGRABLE" if self.is_completely_integrable else "NOT-INTEGRABLE"
         return (
             f"Liouville–Arnold [{ok}]: "
             f"{self.n_action_variables} actions for "
@@ -1019,7 +1012,7 @@ def symplectic_form_matrix(n_nodes: int) -> Any:
     omega = np.zeros((dim, dim), dtype=float)
     for i in range(n_nodes):
         s = 4 * i
-        omega[s:s + 4, s:s + 4] = BLOCK_SYMPLECTIC_FORM
+        omega[s : s + 4, s : s + 4] = BLOCK_SYMPLECTIC_FORM
     return omega
 
 
@@ -1220,9 +1213,7 @@ def verify_canonical_structure(G: Any) -> CanonicalStructureCertificate:
         zr = z.reshape(n, 4)
         zdr = zdot.reshape(n, 4)
         # Expect (q̇A,ṗA,q̇B,ṗB) = (pA,−qA,pB,−qB).
-        expected = np.stack(
-            [zr[:, 1], -zr[:, 0], zr[:, 3], -zr[:, 2]], axis=1
-        )
+        expected = np.stack([zr[:, 1], -zr[:, 0], zr[:, 3], -zr[:, 2]], axis=1)
         flow_ok = bool(np.allclose(zdr, expected))
     else:
         div = 0.0
@@ -1368,17 +1359,11 @@ def verify_noether_conservation(
     for t in flow_times:
         evolved = evolve_substrate_flow(point, t)
         h_drift = max(h_drift, abs(substrate_hamiltonian(evolved) - h0))
-        geo_drift = max(
-            geo_drift, abs(geometric_sector_energy(evolved) - e_geo0)
-        )
-        pot_drift = max(
-            pot_drift, abs(potential_sector_energy(evolved) - e_pot0)
-        )
+        geo_drift = max(geo_drift, abs(geometric_sector_energy(evolved) - e_geo0))
+        pot_drift = max(pot_drift, abs(potential_sector_energy(evolved) - e_pot0))
 
     is_conserved = (
-        h_drift < tolerance
-        and geo_drift < tolerance
-        and pot_drift < tolerance
+        h_drift < tolerance and geo_drift < tolerance and pot_drift < tolerance
     )
     splits_exactly = abs(h0 - (e_geo0 + e_pot0)) < 1e-12
 
@@ -1419,7 +1404,7 @@ def complex_structure_matrix(n_nodes: int) -> Any:
     out = np.zeros((dim, dim), dtype=float)
     for i in range(n_nodes):
         s = 4 * i
-        out[s:s + 4, s:s + 4] = BLOCK_COMPLEX_STRUCTURE
+        out[s : s + 4, s : s + 4] = BLOCK_COMPLEX_STRUCTURE
     return out
 
 
@@ -1444,7 +1429,7 @@ def compatible_metric_matrix(n_nodes: int) -> Any:
     out = np.zeros((dim, dim), dtype=float)
     for i in range(n_nodes):
         s = 4 * i
-        out[s:s + 4, s:s + 4] = BLOCK_COMPATIBLE_METRIC
+        out[s : s + 4, s : s + 4] = BLOCK_COMPATIBLE_METRIC
     return out
 
 
@@ -1497,9 +1482,7 @@ def kahler_potential(point: PhaseSpacePoint) -> float:
     z = to_complex_coordinates(point)
     za = z["geometric"]
     zb = z["potential"]
-    return 0.5 * float(
-        np.sum(np.abs(za) ** 2) + np.sum(np.abs(zb) ** 2)
-    )
+    return 0.5 * float(np.sum(np.abs(za) ** 2) + np.sum(np.abs(zb) ** 2))
 
 
 def verify_hermitian_structure(G: Any) -> HermitianStructureCertificate:
@@ -1535,9 +1518,7 @@ def verify_hermitian_structure(G: Any) -> HermitianStructureCertificate:
         point = extract_phase_space_point(G)
         coords = to_complex_coordinates(point)
         psi = compute_complex_geometric_field(G)
-        psi_arr = np.array(
-            [psi.get(n, 0.0) for n in point.nodes], dtype=complex
-        )
+        psi_arr = np.array([psi.get(n, 0.0) for n in point.nodes], dtype=complex)
         psi_is_coord = bool(np.allclose(coords["geometric"], psi_arr))
     except Exception:
         point = extract_phase_space_point(G)
@@ -1618,9 +1599,9 @@ def _max_action_involution(point: PhaseSpacePoint) -> float:
         g_b = np.array([0.0, 0.0, ps[i], jd[i]])
         worst = max(
             worst,
-            abs(float(g_a @ block @ g_b)),   # {I^A_i, I^B_i}
-            abs(float(g_a @ block @ g_a)),   # {I^A_i, I^A_i}
-            abs(float(g_b @ block @ g_b)),   # {I^B_i, I^B_i}
+            abs(float(g_a @ block @ g_b)),  # {I^A_i, I^B_i}
+            abs(float(g_a @ block @ g_a)),  # {I^A_i, I^A_i}
+            abs(float(g_b @ block @ g_b)),  # {I^B_i, I^B_i}
         )
     return worst
 
@@ -1686,8 +1667,7 @@ def verify_integrability(
 
     sector_match = (
         abs(float(np.sum(ia0)) - geometric_sector_energy(point)) < tolerance
-        and abs(float(np.sum(ib0)) - potential_sector_energy(point))
-        < tolerance
+        and abs(float(np.sum(ib0)) - potential_sector_energy(point)) < tolerance
     )
 
     return IntegrabilityCertificate(
@@ -1743,8 +1723,8 @@ def substrate_flow_matrix(n_nodes: int, t: float) -> Any:
     out = np.zeros((dim, dim), dtype=float)
     for i in range(n_nodes):
         b = 4 * i
-        out[b:b + 2, b:b + 2] = rot       # geometric pair (q^A, p^A)
-        out[b + 2:b + 4, b + 2:b + 4] = rot  # potential pair (q^B, p^B)
+        out[b : b + 2, b : b + 2] = rot  # geometric pair (q^A, p^A)
+        out[b + 2 : b + 4, b + 2 : b + 4] = rot  # potential pair (q^B, p^B)
     return out
 
 
@@ -1819,22 +1799,16 @@ def verify_poincare_cartan(
     volume_ok = True
     for t in flow_times:
         m = substrate_flow_matrix(n, t)
-        omega_drift = max(
-            omega_drift, float(np.max(np.abs(m.T @ omega @ m - omega)))
-        )
+        omega_drift = max(omega_drift, float(np.max(np.abs(m.T @ omega @ m - omega))))
         det_err = abs(float(np.linalg.det(m)) - 1.0)
         volume_ok = volume_ok and det_err < tolerance
         coeffs = np.poly(m)
-        palindromic = palindromic and bool(
-            np.allclose(coeffs, coeffs[::-1], atol=1e-9)
-        )
+        palindromic = palindromic and bool(np.allclose(coeffs, coeffs[::-1], atol=1e-9))
     preserves_omega = omega_drift < tolerance
 
     # --- relative invariant ∮ p dq on an action-torus loop, under the flow ---
     aa = to_action_angle(point)
-    actions = np.concatenate(
-        [aa["action_geometric"], aa["action_potential"]]
-    )
+    actions = np.concatenate([aa["action_geometric"], aa["action_potential"]])
     # Use the largest-action pair as the representative torus loop.
     i_star = int(np.argmax(actions)) if actions.size else 0
     action_star = float(actions[i_star]) if actions.size else 0.0
@@ -1894,9 +1868,7 @@ def diagonal_moment_map(point: PhaseSpacePoint) -> float:
     float
     """
     aa = to_action_angle(point)
-    return float(
-        np.sum(aa["action_geometric"]) + np.sum(aa["action_potential"])
-    )
+    return float(np.sum(aa["action_geometric"]) + np.sum(aa["action_potential"]))
 
 
 def reduced_symplectic_form_matrix(n_nodes: int) -> Any:
@@ -1935,12 +1907,12 @@ def reduced_symplectic_form_matrix(n_nodes: int) -> Any:
     for k in range(1, m):
         a = np.zeros(2 * m)
         a[k] = 1.0
-        a[0] = -1.0          # dI_k − dI_0 (lives on the level set)
+        a[0] = -1.0  # dI_k − dI_0 (lives on the level set)
         cols.append(a)
     for k in range(1, m):
         b = np.zeros(2 * m)
         b[m + k] = 1.0
-        b[m + 0] = -1.0      # dθ_k − dθ_0 (transverse to ξ)
+        b[m + 0] = -1.0  # dθ_k − dθ_0 (transverse to ξ)
         cols.append(b)
     basis = np.array(cols).T  # (2m) × (2(m-1))
     return basis.T @ omega_full @ basis
@@ -1987,9 +1959,7 @@ def verify_symplectic_reduction(
     phases_ok = True
     for t in flow_times:
         evolved = evolve_substrate_flow(point, t)
-        moment_drift = max(
-            moment_drift, abs(diagonal_moment_map(evolved) - j0)
-        )
+        moment_drift = max(moment_drift, abs(diagonal_moment_map(evolved) - j0))
         aa = to_action_angle(evolved)
         th = np.concatenate([aa["angle_geometric"], aa["angle_potential"]])
         rel = np.angle(np.exp(1j * (th - th[0])))
@@ -2052,8 +2022,8 @@ def polarization_vector(point: PhaseSpacePoint) -> dict[str, float]:
     ps = np.asarray(point.phi_s, dtype=float)
     jd = np.asarray(point.j_dnfr, dtype=float)
     # ζ^A = k + i·jp,  ζ^B = ps + i·jd ;  ζ̄^A ζ^B = (k − i·jp)(ps + i·jd)
-    p_1 = float(np.sum(k * ps + jp * jd))      # Re(ζ̄^A ζ^B)
-    p_2 = float(np.sum(k * jd - jp * ps))      # Im(ζ̄^A ζ^B)
+    p_1 = float(np.sum(k * ps + jp * jd))  # Re(ζ̄^A ζ^B)
+    p_2 = float(np.sum(k * jd - jp * ps))  # Im(ζ̄^A ζ^B)
     p_3 = 0.5 * float(np.sum(k * k + jp * jp - ps * ps - jd * jd))
     return {
         "p_1": p_1,
@@ -2096,8 +2066,8 @@ def polarization_density(point: PhaseSpacePoint) -> dict[str, Any]:
     jp = np.asarray(point.j_phi, dtype=float)
     ps = np.asarray(point.phi_s, dtype=float)
     jd = np.asarray(point.j_dnfr, dtype=float)
-    p_1 = k * ps + jp * jd            # Re(ζ̄^A ζ^B) per node
-    p_2 = k * jd - jp * ps            # Im(ζ̄^A ζ^B) per node
+    p_1 = k * ps + jp * jd  # Re(ζ̄^A ζ^B) per node
+    p_2 = k * jd - jp * ps  # Im(ζ̄^A ζ^B) per node
     p_3 = 0.5 * (k * k + jp * jp - ps * ps - jd * jd)
     radius = np.sqrt(p_1 * p_1 + p_2 * p_2 + p_3 * p_3)
     energy = 0.5 * (k * k + jp * jp + ps * ps + jd * jd)
@@ -2125,9 +2095,9 @@ def _polarization_gradients(point: PhaseSpacePoint) -> tuple[Any, Any, Any]:
     for i in range(n):
         b = 4 * i
         # basis (q^A, p^A, q^B, p^B) = (K_φ, J_φ, Φ_s, J_ΔNFR)
-        g1[b:b + 4] = [ps[i], jd[i], k[i], jp[i]]        # ∇P_1
-        g2[b:b + 4] = [jd[i], -ps[i], -jp[i], k[i]]      # ∇P_2
-        g3[b:b + 4] = [k[i], jp[i], -ps[i], -jd[i]]      # ∇P_3
+        g1[b : b + 4] = [ps[i], jd[i], k[i], jp[i]]  # ∇P_1
+        g2[b : b + 4] = [jd[i], -ps[i], -jp[i], k[i]]  # ∇P_2
+        g3[b : b + 4] = [k[i], jp[i], -ps[i], -jd[i]]  # ∇P_3
     return g1, g2, g3
 
 
@@ -2200,10 +2170,8 @@ def verify_polarization_symmetry(
     m_rot = np.zeros((4 * n, 4 * n))
     for i in range(n):
         b = 4 * i
-        m_rot[b:b + 4, b:b + 4] = rot4
-    rotation_symplectic = bool(
-        np.allclose(m_rot.T @ omega @ m_rot, omega)
-    )
+        m_rot[b : b + 4, b : b + 4] = rot4
+    rotation_symplectic = bool(np.allclose(m_rot.T @ omega @ m_rot, omega))
 
     # Conservation along the substrate flow.
     charge_drift = 0.0
@@ -2222,9 +2190,7 @@ def verify_polarization_symmetry(
 
     # Full polarization: per node |P_node| = e_node (the Poincaré sphere).
     density = polarization_density(point)
-    pol_residual = float(
-        np.max(np.abs(density["radius"] - density["energy"]))
-    )
+    pol_residual = float(np.max(np.abs(density["radius"] - density["energy"])))
     pol_holds = pol_residual < max(
         tolerance, 1e-9 * float(np.max(density["energy"]) + 1e-300)
     )
@@ -2386,8 +2352,7 @@ def verify_adiabatic_invariance(
     AdiabaticInvarianceCertificate
     """
     drifts = tuple(
-        _action_drift_under_ramp(omega_start, omega_end, t)
-        for t in ramp_times
+        _action_drift_under_ramp(omega_start, omega_end, t) for t in ramp_times
     )
     fast_drift = drifts[0]
     slow_drift = drifts[-1]

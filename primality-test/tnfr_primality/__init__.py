@@ -14,9 +14,9 @@ Year: 2025
 """
 
 from .core import (
-    tnfr_is_prime,
-    tnfr_delta_nfr,
     tnfr_component_breakdown,
+    tnfr_delta_nfr,
+    tnfr_is_prime,
     tnfr_structural_triad,
 )
 from .optimized import OptimizedTNFRPrimality

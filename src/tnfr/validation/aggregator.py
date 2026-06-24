@@ -51,7 +51,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable, Sequence
 
-from ..constants.canonical import PHI, K_PHI_CANONICAL_THRESHOLD  # Golden ratio + 0.9×π
+from ..constants.canonical import K_PHI_CANONICAL_THRESHOLD, PHI  # Golden ratio + 0.9×π
 
 try:  # Graph dependency (NetworkX-like interface)
     import networkx as nx  # type: ignore
@@ -59,21 +59,22 @@ except ImportError:  # pragma: no cover
     nx = None  # type: ignore
 
 from ..operators.grammar_error_factory import (
-    collect_grammar_errors,
     ExtendedGrammarError,
-)
-from ..physics.fields import (
-    compute_structural_potential,
-    compute_phase_gradient,
-    compute_phase_curvature,
-    estimate_coherence_length,
+    collect_grammar_errors,
 )
 from ..performance.guardrails import PerformanceRegistry
+from ..physics.fields import (
+    compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
+    estimate_coherence_length,
+)
 
 __all__ = [
     "ValidationReport",
     "run_structural_validation",
 ]
+
 
 @dataclass(slots=True)
 class ValidationReport:
@@ -116,9 +117,11 @@ class ValidationReport:
             "notes": self.notes,
         }
 
+
 def _mean(values: Iterable[float]) -> float:
     vals = list(values)
     return sum(vals) / max(len(vals), 1)
+
 
 def run_structural_validation(
     G: Any,
@@ -178,6 +181,7 @@ def run_structural_validation(
     if perf_registry is not None:
         try:
             import time as _t
+
             start_time = _t.perf_counter()
         except Exception:  # pragma: no cover
             start_time = None
@@ -198,11 +202,7 @@ def run_structural_validation(
     mean_phi_s = _mean(phi_s_map.values())
     mean_grad = _mean(grad_map.values())
     max_grad = max(grad_map.values()) if grad_map else 0.0
-    max_k_phi = (
-        max(abs(v) for v in curvature_map.values())
-        if curvature_map
-        else 0.0
-    )
+    max_k_phi = max(abs(v) for v in curvature_map.values()) if curvature_map else 0.0
 
     # Drift (optional baseline)
     delta_phi_s = None
@@ -224,6 +224,7 @@ def run_structural_validation(
                     approximate_diameter_2sweep,
                     compute_eccentricity_cached,
                 )
+
                 system_diameter = approximate_diameter_2sweep(G)
             except (ImportError, Exception):
                 # Fallback to exact (slow) diameter
@@ -283,12 +284,10 @@ def run_structural_validation(
 
     # Coherence length critical / watch thresholds
     xi_c_critical = (
-        system_diameter > 0
-        and xi_c > system_diameter * xi_c_critical_multiplier
+        system_diameter > 0 and xi_c > system_diameter * xi_c_critical_multiplier
     )
     xi_c_watch = (
-        mean_node_distance > 0
-        and xi_c > mean_node_distance * xi_c_watch_multiplier
+        mean_node_distance > 0 and xi_c > mean_node_distance * xi_c_watch_multiplier
     )
     thresholds_exceeded["xi_c_critical"] = bool(xi_c_critical)
     thresholds_exceeded["xi_c_watch"] = bool(xi_c_watch)
@@ -312,9 +311,8 @@ def run_structural_validation(
         risk_level = "critical"
         notes.append("Grammar invalid (U1-U4).")
     else:
-        if (
-            thresholds_exceeded.get("xi_c_critical")
-            or thresholds_exceeded.get("delta_phi_s")
+        if thresholds_exceeded.get("xi_c_critical") or thresholds_exceeded.get(
+            "delta_phi_s"
         ):
             risk_level = "critical"
         elif (
@@ -353,23 +351,18 @@ def run_structural_validation(
     if perf_registry is not None and start_time is not None:
         try:
             import time as _t
+
             perf_registry.record(
                 "validation",
                 _t.perf_counter() - start_time,
                 meta={
                     "nodes": (
-                        G.number_of_nodes()
-                        if hasattr(G, "number_of_nodes")
-                        else None
+                        G.number_of_nodes() if hasattr(G, "number_of_nodes") else None
                     ),
                     "edges": (
-                        G.number_of_edges()
-                        if hasattr(G, "number_of_edges")
-                        else None
+                        G.number_of_edges() if hasattr(G, "number_of_edges") else None
                     ),
-                    "sequence_len": (
-                        len(sequence) if sequence is not None else 0
-                    ),
+                    "sequence_len": (len(sequence) if sequence is not None else 0),
                     "status": status,
                 },
             )

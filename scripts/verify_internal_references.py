@@ -33,6 +33,75 @@ def is_external_or_anchor(link_path: str) -> bool:
     return link_path.startswith(("http://", "https://", "mailto:", "#"))
 
 
+# Directory names that are not part of the checked source tree (build outputs,
+# virtual environments, caches, installed packages). Markdown found under these
+# would produce false positives (e.g. .venv site-packages copies of LICENSE.md).
+EXCLUDE_DIR_PARTS = frozenset(
+    {
+        ".git",
+        ".venv",
+        "venv",
+        "env",
+        ".env",
+        "site-packages",
+        "build",
+        "dist",
+        "node_modules",
+        "__pycache__",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".tox",
+        ".eggs",
+        ".ruff_cache",
+        "publish",
+    }
+)
+
+# Extensions that identify a genuine internal file reference.
+_FILE_REF_EXTS = (
+    ".md",
+    ".py",
+    ".pyi",
+    ".ipynb",
+    ".json",
+    ".txt",
+    ".yml",
+    ".yaml",
+    ".cff",
+    ".toml",
+    ".cfg",
+    ".ini",
+    ".rst",
+    ".png",
+    ".svg",
+    ".html",
+    ".pdf",
+    ".sh",
+    ".csv",
+    ".bib",
+)
+
+
+def is_excluded_path(rel_posix: str) -> bool:
+    """True if a markdown file lives outside the checked source tree."""
+    if set(rel_posix.split("/")) & EXCLUDE_DIR_PARTS:
+        return True
+    # .github/agents/my-agent.md is a verbatim mirror of AGENTS.md and uses
+    # repo-root-relative links; it is validated through AGENTS.md at the root.
+    return rel_posix.startswith(".github/agents/")
+
+
+def looks_like_file_reference(clean_path: str) -> bool:
+    """Heuristic: real internal refs have a path separator or a file extension.
+
+    Skips inline-math / bracket artifacts the markdown-link regex catches
+    (e.g. ``[k](tau_g)``), which are not file references.
+    """
+    if "/" in clean_path or "\\" in clean_path:
+        return True
+    return clean_path.lower().endswith(_FILE_REF_EXTS)
+
+
 def verify_references(
     base_dir: Path, search_dirs: List[str], verbose: bool = False
 ) -> Tuple[List[dict], List[dict]]:
@@ -57,6 +126,9 @@ def verify_references(
             continue
 
         for md_file in dir_path.rglob("*.md"):
+            rel_posix = md_file.relative_to(base_dir).as_posix()
+            if is_excluded_path(rel_posix):
+                continue
             try:
                 content = md_file.read_text(encoding="utf-8")
             except Exception as e:
@@ -73,6 +145,9 @@ def verify_references(
                 # Handle anchor in local files (e.g., file.md#section)
                 clean_path = link_path.split("#")[0] if "#" in link_path else link_path
                 if not clean_path:  # Just an anchor
+                    continue
+
+                if not looks_like_file_reference(clean_path):
                     continue
 
                 # Resolve relative path

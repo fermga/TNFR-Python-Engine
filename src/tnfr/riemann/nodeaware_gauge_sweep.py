@@ -23,7 +23,6 @@ from .admissible_family_sweep import (
 from .prime_ladder_hamiltonian import PrimeLadderHamiltonian
 from .weil_explicit_formula import weil_zero_side
 
-
 NodeAwareGaugeFn = Callable[[float, float, float], tuple[float, float, float]]
 
 
@@ -82,12 +81,10 @@ def _normalized_node_channels(
 ) -> tuple[dict[tuple[int, int], float], dict[tuple[int, int], float]]:
     """Return normalized nu_f and node-weight channels in [0, 1]."""
     nodes = list(bundle.graph.nodes())
-    nu_vals = np.array([
-        float(bundle.graph.nodes[n].get("nu_f", 0.0)) for n in nodes
-    ], dtype=float)
-    w_vals = np.array([
-        math.log(float(n[0])) for n in nodes
-    ], dtype=float)
+    nu_vals = np.array(
+        [float(bundle.graph.nodes[n].get("nu_f", 0.0)) for n in nodes], dtype=float
+    )
+    w_vals = np.array([math.log(float(n[0])) for n in nodes], dtype=float)
 
     nu_min = float(nu_vals.min())
     nu_max = float(nu_vals.max())
@@ -189,16 +186,12 @@ def sweep_alpha_nodeaware(
     if not np.all(sigma_array > 0.0):
         raise ValueError("every sigma must be strictly positive")
 
-    family_map = (
-        dict(families) if families is not None else dict(DEFAULT_TEST_FAMILIES)
-    )
+    family_map = dict(families) if families is not None else dict(DEFAULT_TEST_FAMILIES)
     if len(family_map) == 0:
         raise ValueError("families must be non-empty")
 
     node_gauge_map = (
-        dict(node_gauges)
-        if node_gauges is not None
-        else dict(DEFAULT_NODEAWARE_GAUGES)
+        dict(node_gauges) if node_gauges is not None else dict(DEFAULT_NODEAWARE_GAUGES)
     )
     if len(node_gauge_map) == 0:
         raise ValueError("node_gauges must be non-empty")

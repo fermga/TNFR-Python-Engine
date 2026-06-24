@@ -12,8 +12,8 @@ from __future__ import annotations
 
 from ..constants.canonical import (
     CONFIG_EPI_LATENT_MAX_CANONICAL,
-    CONFIG_VF_BASAL_CANONICAL,
     CONFIG_EPSILON_MIN_CANONICAL,
+    CONFIG_VF_BASAL_CANONICAL,
 )
 
 __all__ = [

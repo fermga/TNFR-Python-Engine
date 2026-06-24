@@ -44,9 +44,7 @@ def main() -> None:
         "P31 — Prime-Ladder Oscillatory Correction"
         " (canonical TNFR retry of branch B1)"
     )
-    print(
-        "Honest scope: this is an experimental research diagnostic."
-    )
+    print("Honest scope: this is an experimental research diagnostic.")
     print(
         "Positive improvement => branch B1 evidence."
         "  Negative => branch B2 corroboration."

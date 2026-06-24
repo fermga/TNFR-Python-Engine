@@ -3,11 +3,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any, Generic, Protocol, TypeVar
 
-from ..types import Glyph, TNFRGraph
-from .compatibility import (
-    CANON_COMPAT as CANON_COMPAT,
-    CANON_FALLBACK as CANON_FALLBACK,
-)
 from ..operators.grammar import (
     GrammarContext,
     MutationPreconditionError,
@@ -23,17 +18,20 @@ from ..operators.grammar import (
     record_grammar_violation,
     validate_sequence,
 )
+from ..types import Glyph, TNFRGraph
+from .compatibility import CANON_COMPAT as CANON_COMPAT
+from .compatibility import CANON_FALLBACK as CANON_FALLBACK
 from .graph import GRAPH_VALIDATORS, run_validators
-from .window import validate_window
 from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
+from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
 from .soft_filters import (
     acceleration_norm,
     check_repeats,
     maybe_force,
     soft_grammar_filters,
 )
-from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
 from .spectral import NFRValidator
+from .window import validate_window
 
 SubjectT = TypeVar("SubjectT")
 
@@ -44,7 +42,9 @@ class ValidationOutcome(Generic[SubjectT]):
     artifacts: Mapping[str, Any] | None
 
 class Validator(Protocol[SubjectT]):
-    def validate(self, subject: SubjectT, /, **kwargs: Any) -> ValidationOutcome[SubjectT]: ...
+    def validate(
+        self, subject: SubjectT, /, **kwargs: Any
+    ) -> ValidationOutcome[SubjectT]: ...
     def report(self, outcome: ValidationOutcome[SubjectT]) -> str: ...
 
 __all__ = (

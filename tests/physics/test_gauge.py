@@ -41,59 +41,52 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-
+from tnfr.physics.canonical import compute_phase_curvature, compute_phase_gradient
+from tnfr.physics.extended import compute_dnfr_flux, compute_phase_current
 from tnfr.physics.gauge import (
-    GaugeSnapshot,
-    GaugeInvarianceResult,
-    YangMillsFieldEquations,
+    N_REGIMES,
+    REGIME_ACTIVITY_SHARE,
     BianchiIdentityResult,
+    GaugeInvarianceResult,
+    GaugeSnapshot,
     InteractionRegimeMetrics,
     NetworkInteractionProfile,
-    REGIME_ACTIVITY_SHARE,
-    N_REGIMES,
+    YangMillsFieldEquations,
     apply_gauge_transformation,
-    compute_gauge_connection,
-    compute_gauge_curvature,
-    compute_covariant_derivative,
-    compute_covariant_derivative_magnitude,
-    compute_topological_norm,
-    compute_chirality_norm,
-    compute_dual_topological_charge,
-    compute_dual_chirality,
-    verify_gauge_invariance,
     capture_gauge_snapshot,
     classify_interaction_regime,
+    classify_interaction_regime_formal,
     classify_network_regimes,
-    compute_yang_mills_action,
+    compute_chirality_norm,
+    compute_covariant_derivative,
+    compute_covariant_derivative_magnitude,
+    compute_dual_chirality,
+    compute_dual_topological_charge,
+    compute_gauge_connection,
+    compute_gauge_coupling_constant,
+    compute_gauge_curvature,
     compute_gauge_energy_decomposition,
+    compute_gauss_law_residual,
     compute_matter_current,
+    compute_network_interaction_profile,
+    compute_topological_norm,
+    compute_yang_mills_action,
     compute_yang_mills_equations,
     verify_bianchi_identity,
-    compute_gauss_law_residual,
-    compute_gauge_coupling_constant,
-    classify_interaction_regime_formal,
-    compute_network_interaction_profile,
+    verify_gauge_invariance,
 )
 from tnfr.physics.unified import (
+    compute_chirality_field,
     compute_complex_geometric_field,
     compute_energy_density,
-    compute_topological_charge,
-    compute_chirality_field,
     compute_symmetry_breaking_field,
+    compute_topological_charge,
 )
-from tnfr.physics.canonical import (
-    compute_phase_gradient,
-    compute_phase_curvature,
-)
-from tnfr.physics.extended import (
-    compute_phase_current,
-    compute_dnfr_flux,
-)
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 def _make_tnfr_graph(
     n: int = 30,
@@ -155,6 +148,7 @@ def constant_alpha(ws_graph):
 # ===================================================================
 # 1. Gauge Transformation Mechanics
 # ===================================================================
+
 
 class TestGaugeTransformation:
     """Validate the rotation Ψ → e^{iα}Ψ produces correct K_φ'/J_φ'."""
@@ -231,6 +225,7 @@ class TestGaugeTransformation:
 # 2. Gauge Invariance of Physical Quantities
 # ===================================================================
 
+
 class TestGaugeInvariance:
     """Validate that ℰ, |Ψ|, |𝒯|², |𝒳|², 𝒮 are gauge-invariant."""
 
@@ -262,9 +257,9 @@ class TestGaugeInvariance:
         deviation must be non-zero.
         """
         result = verify_gauge_invariance(ws_graph, random_alpha)
-        assert result.symmetry_breaking_max_deviation > 1e-6, (
-            "Expected 𝒮 to change under gauge transform"
-        )
+        assert (
+            result.symmetry_breaking_max_deviation > 1e-6
+        ), "Expected 𝒮 to change under gauge transform"
 
     def test_coherence_invariant(self, ws_graph, random_alpha):
         """C(t) invariant (external to Ψ internal rotation)."""
@@ -276,9 +271,9 @@ class TestGaugeInvariance:
         result = verify_gauge_invariance(ws_graph, random_alpha)
         assert result.details["has_nontrivial_alpha"]
         # Q should change, but all *true* gauge-invariant quantities hold
-        assert result.noether_charge_deviation > 1e-6, (
-            "Expected Q to change under gauge transform"
-        )
+        assert (
+            result.noether_charge_deviation > 1e-6
+        ), "Expected Q to change under gauge transform"
         assert result.is_invariant
 
     def test_verify_returns_true(self, ws_graph, random_alpha):
@@ -307,14 +302,15 @@ class TestGaugeInvariance:
             psi_sq = abs(psi[n]) ** 2
             omega_sq = grad_phi.get(n, 0.0) ** 2 + j_dnfr.get(n, 0.0) ** 2
             expected = psi_sq * omega_sq
-            assert abs(topo_norm[n] - expected) < 1e-10, (
-                f"Node {n}: |𝒯|²={topo_norm[n]:.6e} ≠ |Ψ|²·|Ω|²={expected:.6e}"
-            )
+            assert (
+                abs(topo_norm[n] - expected) < 1e-10
+            ), f"Node {n}: |𝒯|²={topo_norm[n]:.6e} ≠ |Ψ|²·|Ω|²={expected:.6e}"
 
 
 # ===================================================================
 # 3. Multi-Topology Validation
 # ===================================================================
+
 
 class TestMultiTopology:
     """Gauge invariance holds across different network topologies."""
@@ -333,6 +329,7 @@ class TestMultiTopology:
 # 4. Gauge Connection
 # ===================================================================
 
+
 class TestGaugeConnection:
     """Validate gauge connection A_ij = arg(Ψ_j) − arg(Ψ_i)."""
 
@@ -348,9 +345,9 @@ class TestGaugeConnection:
         """Connection values lie in [−π, π)."""
         conn = compute_gauge_connection(ws_graph)
         for edge, val in conn.items():
-            assert -math.pi - 1e-9 <= val < math.pi + 1e-9, (
-                f"A{edge} = {val} outside [−π, π)"
-            )
+            assert (
+                -math.pi - 1e-9 <= val < math.pi + 1e-9
+            ), f"A{edge} = {val} outside [−π, π)"
 
     def test_connection_zero_for_uniform_psi(self):
         """If Ψ has the same phase everywhere, A_ij = 0."""
@@ -371,6 +368,7 @@ class TestGaugeConnection:
 # ===================================================================
 # 5. Covariant Derivative
 # ===================================================================
+
 
 class TestCovariantDerivative:
     """Validate D_ij Ψ = Ψ(j) − e^{iA_ij}Ψ(i)."""
@@ -421,6 +419,7 @@ class TestCovariantDerivative:
 # ===================================================================
 # 6. Gauge Curvature (Field Strength)
 # ===================================================================
+
 
 class TestGaugeCurvature:
     """Validate F_C = Σ_C A_ij (holonomy on cycles)."""
@@ -478,6 +477,7 @@ class TestGaugeCurvature:
 # 7. Dual Charges
 # ===================================================================
 
+
 class TestDualCharges:
     """Validate dual topological charge 𝒬̃ and dual chirality χ̃."""
 
@@ -491,10 +491,9 @@ class TestDualCharges:
         q_dual = compute_dual_topological_charge(ws_graph)
 
         for n in ws_graph.nodes():
-            expected = (
-                k_phi.get(n, 0.0) * grad_phi.get(n, 0.0)
-                + j_phi.get(n, 0.0) * j_dnfr.get(n, 0.0)
-            )
+            expected = k_phi.get(n, 0.0) * grad_phi.get(n, 0.0) + j_phi.get(
+                n, 0.0
+            ) * j_dnfr.get(n, 0.0)
             assert abs(q_dual[n] - expected) < 1e-12
 
     def test_dual_chirality_definition(self, ws_graph):
@@ -507,10 +506,9 @@ class TestDualCharges:
         chi_dual = compute_dual_chirality(ws_graph)
 
         for n in ws_graph.nodes():
-            expected = (
-                grad_phi.get(n, 0.0) * j_phi.get(n, 0.0)
-                + k_phi.get(n, 0.0) * j_dnfr.get(n, 0.0)
-            )
+            expected = grad_phi.get(n, 0.0) * j_phi.get(n, 0.0) + k_phi.get(
+                n, 0.0
+            ) * j_dnfr.get(n, 0.0)
             assert abs(chi_dual[n] - expected) < 1e-12
 
     def test_topological_norm_from_q_and_q_dual(self, ws_graph):
@@ -538,6 +536,7 @@ class TestDualCharges:
 # 8. Gauge Snapshot
 # ===================================================================
 
+
 class TestGaugeSnapshot:
     """Validate the GaugeSnapshot capture."""
 
@@ -562,6 +561,7 @@ class TestGaugeSnapshot:
 # ===================================================================
 # 9. Energy Decomposition
 # ===================================================================
+
 
 class TestEnergyDecomposition:
     """Validate gauge-theoretic energy sector decomposition."""
@@ -597,6 +597,7 @@ class TestEnergyDecomposition:
 # ===================================================================
 # 10. Interaction Regime Classification
 # ===================================================================
+
 
 class TestInteractionRegimes:
     """Validate gauge-based interaction regime classification."""
@@ -637,6 +638,7 @@ class TestInteractionRegimes:
 # 11. Reproducibility
 # ===================================================================
 
+
 class TestReproducibility:
     """Verify deterministic results under fixed seeds (Invariant #6)."""
 
@@ -666,6 +668,7 @@ class TestReproducibility:
 # ===================================================================
 # 12. Edge Cases
 # ===================================================================
+
 
 class TestEdgeCases:
     """Test behaviour on minimal and degenerate graphs."""
@@ -737,9 +740,9 @@ class TestMatterCurrent:
         apply_gauge_transformation(G2, random_alpha)
         j_after = compute_matter_current(G2)
         for edge in j_before:
-            assert abs(j_before[edge] - j_after[edge]) < 1e-10, (
-                f"Matter current not gauge-invariant at edge {edge}"
-            )
+            assert (
+                abs(j_before[edge] - j_after[edge]) < 1e-10
+            ), f"Matter current not gauge-invariant at edge {edge}"
 
     def test_uniform_psi_zero_current(self):
         """Spatially uniform Ψ → zero matter current."""
@@ -910,7 +913,7 @@ class TestGaugeCouplingConstant:
     def test_upper_bound(self, ws_graph):
         """g² ≤ π² (maximum possible curvature squared)."""
         g_sq = compute_gauge_coupling_constant(ws_graph)
-        assert g_sq <= math.pi ** 2 + 1e-10
+        assert g_sq <= math.pi**2 + 1e-10
 
 
 class TestRegimeActivityCriterion:
@@ -955,7 +958,7 @@ class TestFormalInteractionRegimes:
         """Dominant regime has the highest score."""
         for node in list(ws_graph.nodes())[:5]:
             m = classify_interaction_regime_formal(ws_graph, node)
-            max_regime = max(m.regime_scores, key=m.regime_scores.get)    # type: ignore
+            max_regime = max(m.regime_scores, key=m.regime_scores.get)  # type: ignore
             assert m.dominant_regime == max_regime
 
     def test_valid_regime_names(self, ws_graph):
@@ -1017,7 +1020,10 @@ class TestNetworkInteractionProfile:
         """Dominant regime is one of the four canonical names."""
         profile = compute_network_interaction_profile(ws_graph)
         assert profile.dominant_regime in {
-            "em_like", "weak_like", "strong_like", "gravity_like",
+            "em_like",
+            "weak_like",
+            "strong_like",
+            "gravity_like",
         }
 
     def test_per_node_coverage(self, ws_graph):

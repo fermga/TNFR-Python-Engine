@@ -89,11 +89,11 @@ References
 - AGENTS.md "Operator-Tetrad Synergies" (dual-lever), "REMESH-∞ Closure" (range/ker R∞)
 """
 
+import math
 import os
 import sys
-import math
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import networkx as nx
 
@@ -122,8 +122,10 @@ def experiment_1_p14_is_capacity():
             ok_nu += 1
         if abs(data.get("dnfr", data.get("delta_nfr", 1.0))) <= 1e-12:
             ok_dnfr += 1
-    print(f"  prime ladders for primes {sorted({p for p, k in G.nodes()})}, "
-          f"echo depth K=4 -> {total} nodes")
+    print(
+        f"  prime ladders for primes {sorted({p for p, k in G.nodes()})}, "
+        f"echo depth K=4 -> {total} nodes"
+    )
     print(f"  nodes with nu_f = k log p (CAPACITY arm):  {ok_nu}/{total}")
     print(f"  nodes with dNFR = 0 (PRESSURE arm neutral): {ok_dnfr}/{total}")
     print("  sample (p,k) -> nu_f = k log p:")
@@ -144,10 +146,14 @@ def experiment_2_orthogonality_is_free_monoid(bundle):
     primes = sorted({p for p, k in G.nodes()})
     each_single = all(len({p for p, k in comp}) == 1 for comp in components)
     print(f"  primes: {primes}")
-    print(f"  connected components (independent prime ladders): {len(components)}"
-          f"  == n_primes {len(primes)}: {len(components) == len(primes)}")
-    print(f"  each component is ONE prime's ladder (orthogonal subspace): "
-          f"{each_single}")
+    print(
+        f"  connected components (independent prime ladders): {len(components)}"
+        f"  == n_primes {len(primes)}: {len(components) == len(primes)}"
+    )
+    print(
+        f"  each component is ONE prime's ladder (orthogonal subspace): "
+        f"{each_single}"
+    )
     print("  -> distinct primes = independent invariant subspaces of P14 = the")
     print("     Euler product at the operator level = the free-monoid generators")
     print("     (ex 147). The prime 'letters' do not couple.")
@@ -164,10 +170,14 @@ def experiment_3_capacity_reproduces_von_mangoldt(bundle):
         z = tnfr_log_zeta_derivative(spectrum, s)
         print(f"    s={s}: Z_vM = {z:.6f}")
     cert = verify_hamiltonian_reproduces_prime_ladder(bundle)
-    print(f"  certificate: spectrum reproduced {cert.spectrum_reproduced} "
-          f"(max abs error {cert.spectrum_max_abs_error:.1e})")
-    print(f"               trace reproduced    {cert.trace_reproduced} "
-          f"(max rel error {cert.trace_max_rel_error:.1e})")
+    print(
+        f"  certificate: spectrum reproduced {cert.spectrum_reproduced} "
+        f"(max abs error {cert.spectrum_max_abs_error:.1e})"
+    )
+    print(
+        f"               trace reproduced    {cert.trace_reproduced} "
+        f"(max rel error {cert.trace_max_rel_error:.1e})"
+    )
     print(f"               overall_ok = {cert.overall_ok}")
     print("  -> the capacity-arm operator's weighted trace IS von Mangoldt; the")
     print("     Riemann zeros are its poles (ex 148 M2). P14 reaches the")

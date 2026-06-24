@@ -178,7 +178,7 @@ def canonical_delta_coh(G) -> float:
 def canonical_inter_prime_weight(nu_i: float, nu_j: float, delta_coh: float) -> float:
     """Kuramoto-U3 inter-prime weight, canonical Gaussian decay."""
     dnu = nu_i - nu_j
-    return KAPPA * math.exp(- (dnu * dnu) / (2.0 * delta_coh * delta_coh))
+    return KAPPA * math.exp(-(dnu * dnu) / (2.0 * delta_coh * delta_coh))
 
 
 def augment_with_canonical_inter_prime_edges(
@@ -238,7 +238,9 @@ def build_il_smoother(L: np.ndarray, eta: float) -> np.ndarray:
 
 
 def build_composed_iteration_matrix(
-    M: np.ndarray, L: np.ndarray, eta: float,
+    M: np.ndarray,
+    L: np.ndarray,
+    eta: float,
 ) -> np.ndarray:
     """T_aug = S_IL^aug . M_REMESH in slot-major ordering.
 
@@ -253,7 +255,7 @@ def build_composed_iteration_matrix(
     S_blocks[0] = build_il_smoother(L, eta)
     S_IL = np.zeros((dim_slot * N, dim_slot * N), dtype=np.float64)
     for s, blk in enumerate(S_blocks):
-        S_IL[s * N:(s + 1) * N, s * N:(s + 1) * N] = blk
+        S_IL[s * N : (s + 1) * N, s * N : (s + 1) * N] = blk
     return S_IL @ M_REMESH
 
 
@@ -344,7 +346,8 @@ def control_poisson(n_points: int, rng: np.random.Generator) -> dict[str, Any]:
 
 
 def control_shuffled_prime(
-    M: np.ndarray, rng: np.random.Generator,
+    M: np.ndarray,
+    rng: np.random.Generator,
 ) -> tuple[dict[str, Any], int]:
     """N3: rebuild G_P14^aug with primes permuted across the 10 ladders.
 
@@ -353,15 +356,20 @@ def control_shuffled_prime(
     primary discriminator for F8).
     """
     from sympy import primerange
+
     primes = list(primerange(2, 100))[:N_PRIMES]
     perm = rng.permutation(N_PRIMES)
     primes_shuffled = [primes[i] for i in perm]
     G_shuffled = build_prime_ladder_graph(
-        N_PRIMES, max_power=MAX_POWER, coupling=0.0, primes=primes_shuffled,
+        N_PRIMES,
+        max_power=MAX_POWER,
+        coupling=0.0,
+        primes=primes_shuffled,
     )
     delta_coh_shuffled = canonical_delta_coh(G_shuffled)
     n_inter_shuffled, _ = augment_with_canonical_inter_prime_edges(
-        G_shuffled, delta_coh_shuffled,
+        G_shuffled,
+        delta_coh_shuffled,
     )
     L_shuffled = weighted_laplacian(G_shuffled)
     T_shuffled = build_composed_iteration_matrix(M, L_shuffled, ETA_IL)
@@ -380,7 +388,9 @@ def control_remesh_isolated(M: np.ndarray) -> dict[str, Any]:
 
 
 def control_random_augmentation(
-    M: np.ndarray, n_inter_target: int, rng: np.random.Generator,
+    M: np.ndarray,
+    n_inter_target: int,
+    rng: np.random.Generator,
 ) -> dict[str, Any]:
     """N5: rebuild G_P14 with an Erdos-Renyi random inter-prime edge set
     of the same edge count as the canonical augmentation, all weights set
@@ -440,16 +450,19 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
             "milestone": "R-inf-1c",
             "section_ref": "TNFR_RIEMANN_RESEARCH_NOTES.md §13vicies-novies.12",
             "canonical_config": {
-                "n_primes": N_PRIMES, "max_power": MAX_POWER,
+                "n_primes": N_PRIMES,
+                "max_power": MAX_POWER,
                 "delta_coh": float(delta_coh),
                 "n_inter_prime_edges_canonical": int(n_inter),
             },
             "seed": PERM_SEED,
             "f7a_verdict": "INDETERMINATE_DEGENERATE_CONSTRUCTION",
             "milestone_verdict": "INDETERMINATE_DEGENERATE_CONSTRUCTION",
-            "reason": ("canonical delta_coh = (gamma/pi) * max nu_f "
-                       "yielded fewer than 2 inter-prime edges; "
-                       "Euler-orthogonality not broken; amendment required."),
+            "reason": (
+                "canonical delta_coh = (gamma/pi) * max nu_f "
+                "yielded fewer than 2 inter-prime edges; "
+                "Euler-orthogonality not broken; amendment required."
+            ),
         }
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(json.dumps(report, indent=2))
@@ -493,21 +506,20 @@ def run_milestone(out_path: Path) -> dict[str, Any]:
         f7a_verdict = "INDETERMINATE_INVALID_PROJECTION"
     elif not f8_satisfied:
         f7a_verdict = "INDETERMINATE_DEGENERATE_CONSTRUCTION"
-    elif (d_can < D_SUPPORTED_MAX
-          and d_can < d_shuf - D_SHUFFLE_MARGIN
-          and d_can < d_rand - D_RANDOM_MARGIN):
+    elif (
+        d_can < D_SUPPORTED_MAX
+        and d_can < d_shuf - D_SHUFFLE_MARGIN
+        and d_can < d_rand - D_RANDOM_MARGIN
+    ):
         f7a_verdict = "SUPPORTED"
-    elif (d_can > D_REFUTED_MIN
-          or d_can >= d_shuf - D_SHUFFLE_MARGIN):
+    elif d_can > D_REFUTED_MIN or d_can >= d_shuf - D_SHUFFLE_MARGIN:
         f7a_verdict = "REFUTED"
     else:
         f7a_verdict = "INDETERMINATE_OTHER"
 
     # -- pre-registered milestone verdict
     if f7a_verdict == "SUPPORTED":
-        milestone_verdict = (
-            "B1_MODIFIED_GRAPH_POTENTIALLY_OPEN_REQUIRES_REPLICATION"
-        )
+        milestone_verdict = "B1_MODIFIED_GRAPH_POTENTIALLY_OPEN_REQUIRES_REPLICATION"
     elif f7a_verdict == "REFUTED":
         milestone_verdict = (
             "B1_MODIFIED_GRAPH_REFUTED_FOR_CANONICAL_INTER_PRIME_COUPLING"
@@ -588,38 +600,55 @@ def _print_summary(report: dict[str, Any]) -> None:
     print("R-inf-1c  (T_aug = S_IL^aug . M_REMESH on G_P14 + canonical Kuramoto-U3)")
     print("=" * 72)
     print(f"Graph: {cfg['graph']}")
-    print(f"  N={cfg.get('N_nodes', '?')} nodes, "
-          f"dim(joint)={cfg.get('dim_joint_state', '?')}")
-    print(f"  delta_coh = {cfg['delta_coh']:.6f}  "
-          f"({cfg['delta_coh_derivation']})")
-    print(f"  inter-prime edges: canonical={cfg['n_inter_prime_edges_canonical']}, "
-          f"shuffled={cfg.get('n_inter_prime_edges_shuffled', '?')}")
-    print(f"REMESH: alpha={cfg.get('alpha', ALPHA)}, "
-          f"tau_l={cfg.get('tau_l', TAU_LOCAL)}, "
-          f"tau_g={cfg.get('tau_g', TAU_GLOBAL)}; "
-          f"IL: eta={cfg.get('eta_IL', ETA_IL)}")
+    print(
+        f"  N={cfg.get('N_nodes', '?')} nodes, "
+        f"dim(joint)={cfg.get('dim_joint_state', '?')}"
+    )
+    print(f"  delta_coh = {cfg['delta_coh']:.6f}  " f"({cfg['delta_coh_derivation']})")
+    print(
+        f"  inter-prime edges: canonical={cfg['n_inter_prime_edges_canonical']}, "
+        f"shuffled={cfg.get('n_inter_prime_edges_shuffled', '?')}"
+    )
+    print(
+        f"REMESH: alpha={cfg.get('alpha', ALPHA)}, "
+        f"tau_l={cfg.get('tau_l', TAU_LOCAL)}, "
+        f"tau_g={cfg.get('tau_g', TAU_GLOBAL)}; "
+        f"IL: eta={cfg.get('eta_IL', ETA_IL)}"
+    )
     print()
     f8 = report.get("f8_structural_condition")
     if f8 is not None:
-        d_str = ("N/A" if f8["delta_D_can_minus_shuf_abs"] is None
-                 else f"{f8['delta_D_can_minus_shuf_abs']:.4f}")
+        d_str = (
+            "N/A"
+            if f8["delta_D_can_minus_shuf_abs"] is None
+            else f"{f8['delta_D_can_minus_shuf_abs']:.4f}"
+        )
         print(f"F8 structural condition (|D_can - D_shuf| >= {f8['floor']}):")
         print(f"  |Delta D|  = {d_str}   satisfied = {f8['satisfied']}")
         print()
     print("F7-A KS distance vs GUE Wigner surmise:")
     print(f"  {'label':32s} {'kind':14s} {'#spacings':>10s} {'D_GUE':>10s}")
     diags = [report["canonical"]]
-    diags.extend([report["controls"][k] for k in (
-        "N1_GOE", "N2_Poisson", "N3_shuffled_prime",
-        "N4_REMESH_isolated", "N5_random_augmentation",
-    )])
+    diags.extend(
+        [
+            report["controls"][k]
+            for k in (
+                "N1_GOE",
+                "N2_Poisson",
+                "N3_shuffled_prime",
+                "N4_REMESH_isolated",
+                "N5_random_augmentation",
+            )
+        ]
+    )
     diags.append(report["riemann_reference"])
     for diag in diags:
-        d_str = ("N/A" if diag["D_GUE"] is None
-                 else f"{diag['D_GUE']:.4f}")
+        d_str = "N/A" if diag["D_GUE"] is None else f"{diag['D_GUE']:.4f}"
         kind = diag.get("projection_kind", "iid_or_zeros")
-        print(f"  {diag['label']:32s} {kind:14s} "
-              f"{diag['n_spacings']:>10d} {d_str:>10s}")
+        print(
+            f"  {diag['label']:32s} {kind:14s} "
+            f"{diag['n_spacings']:>10d} {d_str:>10s}"
+        )
     print()
     print(f"F7-A verdict      : {report['f7a_verdict']}")
     print(f"Milestone verdict : {report['milestone_verdict']}")
@@ -629,9 +658,12 @@ def _print_summary(report: dict[str, Any]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--out", type=Path,
-        default=REPO_ROOT / "results" / "remesh_infinity"
-                / "remesh_infinity_riemann_modified_graph.json",
+        "--out",
+        type=Path,
+        default=REPO_ROOT
+        / "results"
+        / "remesh_infinity"
+        / "remesh_infinity_riemann_modified_graph.json",
     )
     args = parser.parse_args()
     report = run_milestone(args.out)

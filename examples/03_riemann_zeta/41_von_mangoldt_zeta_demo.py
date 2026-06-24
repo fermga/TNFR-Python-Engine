@@ -53,7 +53,6 @@ from tnfr.riemann import (  # noqa: E402
     verify_von_mangoldt_reproduction,
 )
 
-
 # High-precision reference values of -ζ'(s)/ζ(s), computed from
 # the Euler product   Σ_p log(p) · p^{-s} / (1 - p^{-s})
 # truncated at primes ≤ 10^7.  These are the limits the
@@ -117,9 +116,7 @@ def main() -> None:
     section("3. Comparison to known analytic values")
     spec_big = build_prime_ladder_spectrum(2000, max_power=30)
     print(f"Spectrum: {spec_big.n_primes} primes, K={spec_big.max_power}\n")
-    print(
-        f"  {'s':>6} {'Z_TNFR':>18} {'known -zeta(s)/zeta(s)':>24} {'abs err':>12}"
-    )
+    print(f"  {'s':>6} {'Z_TNFR':>18} {'known -zeta(s)/zeta(s)':>24} {'abs err':>12}")
     for s, ref in sorted(KNOWN_VALUES.items()):
         z_t = tnfr_log_zeta_derivative(spec_big, s)
         print(f"  {s:>6.2f} {z_t:>18.10f} {ref:>22.10f} {abs(z_t - ref):>12.3e}")

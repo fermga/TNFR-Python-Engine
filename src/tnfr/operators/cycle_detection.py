@@ -14,15 +14,6 @@ if TYPE_CHECKING:
     pass
 
 from ..compat.dataclass import dataclass
-from ..constants.canonical import (
-    PI, GAMMA, PHI, E,
-    CYCLE_OPTIMAL_BALANCE_CANONICAL,
-    CYCLE_BALANCE_RANGE_LOW_CANONICAL,
-    CYCLE_BALANCE_RANGE_HIGH_CANONICAL,
-    CYCLE_BALANCE_MULTIPLIER_CANONICAL,
-    CYCLE_FALLBACK_SCORE_CANONICAL,
-    CYCLE_MIN_HEALTH_CANONICAL,
-)
 from ..config.operator_names import (
     COHERENCE,
     COUPLING,
@@ -33,10 +24,23 @@ from ..config.operator_names import (
     SILENCE,
     TRANSITION,
 )
+from ..constants.canonical import (
+    CYCLE_BALANCE_MULTIPLIER_CANONICAL,
+    CYCLE_BALANCE_RANGE_HIGH_CANONICAL,
+    CYCLE_BALANCE_RANGE_LOW_CANONICAL,
+    CYCLE_FALLBACK_SCORE_CANONICAL,
+    CYCLE_MIN_HEALTH_CANONICAL,
+    CYCLE_OPTIMAL_BALANCE_CANONICAL,
+    GAMMA,
+    PHI,
+    PI,
+    E,
+)
 
 # Import canonical stabilizer set from grammar_types (single source of truth)
 # Extended with silence, resonance, coupling for cycle detection context
 from .grammar_types import STABILIZERS as _GRAMMAR_STABILIZERS
+
 _STABILIZERS_SET = _GRAMMAR_STABILIZERS | frozenset([SILENCE, RESONANCE, COUPLING])
 
 __all__ = [
@@ -55,6 +59,7 @@ REGENERATORS = [TRANSITION, RECURSIVITY, SILENCE]  # NAV, REMESH, SHA
 MIN_CYCLE_LENGTH = 5  # Minimum operators for meaningful cyclic behavior
 MAX_CYCLE_LENGTH = 13  # Maximum = all canonical operators once
 
+
 class CycleType(Enum):
     """Types of regenerative cycles based on dominant regenerator."""
 
@@ -63,6 +68,7 @@ class CycleType(Enum):
     RECURSIVE = "recursive"  # REMESH-driven (fractal regeneration)
     MEDITATIVE = "meditative"  # SHA-driven (paused renewal)
     TRANSFORMATIVE = "transformative"  # NAV-driven (phase transition)
+
 
 @dataclass(slots=True)
 class CycleAnalysis:
@@ -79,6 +85,7 @@ class CycleAnalysis:
     diversity_score: float = 0.0
     coherence_score: float = 0.0
 
+
 class CycleDetector:
     """Detects and validates regenerative cycles in TNFR sequences.
 
@@ -94,7 +101,9 @@ class CycleDetector:
     """
 
     # Minimum health score for valid regenerative cycle
-    MIN_HEALTH_SCORE = CYCLE_MIN_HEALTH_CANONICAL  # φ/(e+γ) ≈ 0.4910 (notational health threshold)
+    MIN_HEALTH_SCORE = (
+        CYCLE_MIN_HEALTH_CANONICAL  # φ/(e+γ) ≈ 0.4910 (notational health threshold)
+    )
 
     def analyze_potential_cycle(
         self, sequence: Sequence[str], regenerator_index: int
@@ -212,7 +221,9 @@ class CycleDetector:
             )
 
         # Find all regenerators in sequence
-        regenerator_positions = [i for i, op in enumerate(sequence) if op in REGENERATORS]
+        regenerator_positions = [
+            i for i, op in enumerate(sequence) if op in REGENERATORS
+        ]
 
         if not regenerator_positions:
             return CycleAnalysis(
@@ -266,12 +277,25 @@ class CycleDetector:
 
         # Normalize using canonical constants: optimal balance from TNFR theory
         # Convert to 0-1 score where CYCLE_OPTIMAL_BALANCE_CANONICAL is optimal
-        if CYCLE_BALANCE_RANGE_LOW_CANONICAL <= balance_raw <= CYCLE_BALANCE_RANGE_HIGH_CANONICAL:
+        if (
+            CYCLE_BALANCE_RANGE_LOW_CANONICAL
+            <= balance_raw
+            <= CYCLE_BALANCE_RANGE_HIGH_CANONICAL
+        ):
             # Good range: 1.0 at optimal, declining linearly
-            score = 1.0 - abs(balance_raw - CYCLE_OPTIMAL_BALANCE_CANONICAL) * CYCLE_BALANCE_MULTIPLIER_CANONICAL
+            score = (
+                1.0
+                - abs(balance_raw - CYCLE_OPTIMAL_BALANCE_CANONICAL)
+                * CYCLE_BALANCE_MULTIPLIER_CANONICAL
+            )
         else:
             # Outside good range
-            score = max(0.0, CYCLE_FALLBACK_SCORE_CANONICAL - abs(balance_raw - CYCLE_OPTIMAL_BALANCE_CANONICAL) * CYCLE_FALLBACK_SCORE_CANONICAL)
+            score = max(
+                0.0,
+                CYCLE_FALLBACK_SCORE_CANONICAL
+                - abs(balance_raw - CYCLE_OPTIMAL_BALANCE_CANONICAL)
+                * CYCLE_FALLBACK_SCORE_CANONICAL,
+            )
 
         return max(0.0, min(1.0, score))
 
@@ -314,28 +338,40 @@ class CycleDetector:
 
         # 1. Good start (emission or reception)
         if sequence[0] in {EMISSION, RECEPTION, COHERENCE}:
-            score += round(1.0 / (PI + 1.0), 3)  # 1/(π+1) ≈ 0.242 (notational: initiation bonus)
+            score += round(
+                1.0 / (PI + 1.0), 3
+            )  # 1/(π+1) ≈ 0.242 (notational: initiation bonus)
 
         # 2. Good ending (check has_closure from health metrics)
         if health_metrics.get("has_closure", False):
-            score += round(1.0 / (PI + 1.0), 3)  # 1/(π+1) ≈ 0.242 (notational: closure bonus)
+            score += round(
+                1.0 / (PI + 1.0), 3
+            )  # 1/(π+1) ≈ 0.242 (notational: closure bonus)
 
         # 3. Contains coupling (network integration)
         if COUPLING in sequence:
-            score += round(GAMMA / (PI + E), 3)  # γ/(π+e) ≈ 0.154 (notational: coupling bonus)
+            score += round(
+                GAMMA / (PI + E), 3
+            )  # γ/(π+e) ≈ 0.154 (notational: coupling bonus)
 
         # 4. Contains resonance (amplification)
         if RESONANCE in sequence:
-            score += round(GAMMA / (PI + E), 3)  # γ/(π+e) ≈ 0.154 (notational: resonance bonus)
+            score += round(
+                GAMMA / (PI + E), 3
+            )  # γ/(π+e) ≈ 0.154 (notational: resonance bonus)
 
         # 5. Has emission or reception (information flow)
         if EMISSION in sequence or RECEPTION in sequence:
-            score += round(1.0 / (E + PHI * 2), 3)  # 1/(e+2φ) ≈ 0.103 (notational: flow bonus)
+            score += round(
+                1.0 / (E + PHI * 2), 3
+            )  # 1/(e+2φ) ≈ 0.103 (notational: flow bonus)
 
         # 6. Bonus for cyclic closure (starts and ends with stabilizers)
         if len(sequence) >= 2:
             if sequence[0] in _STABILIZERS_SET and sequence[-1] in _STABILIZERS_SET:
-                score += round(1.0 / (E + PHI * 2), 3)  # 1/(e+2φ) ≈ 0.103 (notational: closure bonus)
+                score += round(
+                    1.0 / (E + PHI * 2), 3
+                )  # 1/(e+2φ) ≈ 0.103 (notational: closure bonus)
 
         return min(1.0, score)
 

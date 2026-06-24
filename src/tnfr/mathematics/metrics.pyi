@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-import numpy as np
-from .operators import CoherenceOperator
 from typing import Sequence
+
+import numpy as np
+
+from .operators import CoherenceOperator
 
 __all__ = ["dcoh"]
 

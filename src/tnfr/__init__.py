@@ -164,6 +164,7 @@ except PackageNotFoundError:  # pragma: no cover - fallback tested explicitly
 
     __version__ = _fallback_version
 
+
 def _is_internal_import_error(exc: ImportError) -> bool:
     missing_name = getattr(exc, "name", None) or ""
     if missing_name.startswith("tnfr"):
@@ -189,6 +190,7 @@ def _is_internal_import_error(exc: ImportError) -> bool:
 
     return False
 
+
 def _missing_dependency(
     name: str, exc: ImportError, *, module: str | None = None
 ) -> Callable[..., NoReturn]:
@@ -208,10 +210,13 @@ def _missing_dependency(
     }
     return _stub
 
+
 _MISSING_EXPORTS: dict[str, dict[str, Any]] = {}
+
 
 class ExportDependencyError(RuntimeError):
     """Raised when the export dependency manifest is inconsistent."""
+
 
 def _validate_export_dependencies() -> None:
     """Ensure exported helpers and their manifest entries stay in sync."""
@@ -246,7 +251,9 @@ def _validate_export_dependencies() -> None:
                     f"helper '{export_name}' is missing '{key}' dependencies in EXPORT_DEPENDENCIES"
                 )
 
-    missing_exports = manifest_names.difference(export_names).difference(_MISSING_EXPORTS)
+    missing_exports = manifest_names.difference(export_names).difference(
+        _MISSING_EXPORTS
+    )
     for manifest_only in sorted(missing_exports):
         entry = manifest[manifest_only]
         if not isinstance(entry, dict):
@@ -271,6 +278,7 @@ def _validate_export_dependencies() -> None:
             "Invalid TNFR export dependency manifest:\n- " + "\n- ".join(issues)
         )
 
+
 def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
     try:  # pragma: no cover - exercised in import tests
         mod = import_module(f".{module}", __name__)
@@ -280,12 +288,15 @@ def _assign_exports(module: str, names: tuple[str, ...]) -> bool:
         for export_name in names:
             stub = _missing_dependency(export_name, exc, module=module)
             globals()[export_name] = stub
-            _MISSING_EXPORTS[export_name] = getattr(stub, "__tnfr_missing_dependency__", {})
+            _MISSING_EXPORTS[export_name] = getattr(
+                stub, "__tnfr_missing_dependency__", {}
+            )
         return False
     else:
         for export_name in names:
             globals()[export_name] = getattr(mod, export_name)
         return True
+
 
 def __getattr__(name: str) -> Any:
     """Lazy load SDK components and handle missing dependencies."""
@@ -329,6 +340,7 @@ def __getattr__(name: str) -> Any:
 
     raise AttributeError(f"module 'tnfr' has no attribute '{name}'")
 
+
 _assign_exports("dynamics", ("step", "run"))
 
 _HAS_PREPARE_NETWORK = _assign_exports("ontosim", ("prepare_network",))
@@ -354,6 +366,7 @@ _assign_exports(
     ),
 )
 
+
 def _emit_missing_dependency_warning() -> None:
     if not _MISSING_EXPORTS:
         return
@@ -366,6 +379,7 @@ def _emit_missing_dependency_warning() -> None:
         ImportWarning,
         stacklevel=2,
     )
+
 
 _emit_missing_dependency_warning()
 

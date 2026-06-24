@@ -28,6 +28,7 @@ __all__ = [
     "OperatorContractViolation",
 ]
 
+
 class OperatorContractViolation(StructuralIntegrityViolation):
     """Raised when an operator's postconditions are violated.
 

@@ -32,9 +32,11 @@ from __future__ import annotations
 
 from typing import Callable
 
+import networkx as nx
+
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
-import networkx as nx
+
 
 def _first_primes(count: int) -> list[int]:
     """Return the first ``count`` prime numbers.
@@ -60,6 +62,7 @@ def _first_primes(count: int) -> list[int]:
             primes.append(n)
         n += 1
     return primes
+
 
 def build_prime_path_graph(
     count: int,
@@ -101,6 +104,7 @@ def build_prime_path_graph(
 
     return G
 
+
 def default_prime_potential(label: int, sigma: float = 0.5) -> float:
     """Very simple structural potential on a prime label.
 
@@ -112,6 +116,7 @@ def default_prime_potential(label: int, sigma: float = 0.5) -> float:
     """
 
     return float((sigma - 0.5) * np.log(float(label)))
+
 
 def build_h_tnfr(
     G: nx.Graph,
@@ -169,13 +174,14 @@ def build_h_tnfr(
             raise TNFRValueError(
                 "All nodes must have an integer 'label' attribute",
                 context={"node": node},
-                suggestion="Assign integer labels to all nodes."
+                suggestion="Assign integer labels to all nodes.",
             )
         v_val = float(potential_fn(int(label), sigma))
         diag_V[i, i] = v_val
 
     H = L + diag_V
     return H, diag_V
+
 
 def build_prime_cycle_graph(
     count: int,
@@ -203,6 +209,7 @@ def build_prime_cycle_graph(
             w = 1.0
         G.add_edge(0, count - 1, weight=float(w))
     return G
+
 
 def build_prime_star_graph(
     count: int,
@@ -232,6 +239,7 @@ def build_prime_star_graph(
             w = 1.0
         G.add_edge(0, idx, weight=float(w))
     return G
+
 
 def build_prime_complete_graph(
     count: int,
@@ -263,6 +271,7 @@ def build_prime_complete_graph(
             G.add_edge(i, j, weight=float(w))
     return G
 
+
 def build_prime_tree_graph(
     count: int,
     *,
@@ -292,12 +301,12 @@ def build_prime_tree_graph(
         for child in (left, right):
             if child < len(primes):
                 if weight_by_log_gap:
-                    w = abs(np.log(float(primes[child]))
-                            - np.log(float(primes[i])))
+                    w = abs(np.log(float(primes[child])) - np.log(float(primes[i])))
                 else:
                     w = 1.0
                 G.add_edge(i, child, weight=float(w))
     return G
+
 
 def build_prime_random_graph(
     count: int,
@@ -335,8 +344,7 @@ def build_prime_random_graph(
         for j in range(i + 1, len(primes)):
             if rng.random() < edge_prob:
                 if weight_by_log_gap:
-                    w = abs(np.log(float(primes[j]))
-                            - np.log(float(primes[i])))
+                    w = abs(np.log(float(primes[j])) - np.log(float(primes[i])))
                 else:
                     w = 1.0
                 G.add_edge(i, j, weight=float(w))
@@ -349,14 +357,14 @@ def build_prime_random_graph(
             u = min(components[0])
             v = min(components[ci])
             if weight_by_log_gap:
-                w = abs(np.log(float(primes[v]))
-                        - np.log(float(primes[u])))
+                w = abs(np.log(float(primes[v])) - np.log(float(primes[u])))
             else:
                 w = 1.0
             G.add_edge(u, v, weight=float(w))
             components[0] = components[0] | components[ci]
 
     return G
+
 
 def build_tridiagonal_h_tnfr(
     count: int,
@@ -424,9 +432,11 @@ def build_tridiagonal_h_tnfr(
 
     return d, e, log_p
 
+
 # ---------------------------------------------------------------------------
 # Complex-s extension (P4): Non-Hermitian operator for s in C
 # ---------------------------------------------------------------------------
+
 
 def default_prime_potential_complex(label: int, s: complex = 0.5 + 0j) -> complex:
     r"""Complex structural potential on a prime label.
@@ -443,6 +453,7 @@ def default_prime_potential_complex(label: int, s: complex = 0.5 + 0j) -> comple
     oscillatory regimes in the nodal equation dEPI/dt = nu_f * DELTA_NFR.
     """
     return complex(s - 0.5) * np.log(float(label))
+
 
 def build_h_tnfr_complex(
     G: nx.Graph,
@@ -510,6 +521,7 @@ def build_h_tnfr_complex(
 
     H = L + diag_V
     return H, diag_V
+
 
 def build_tridiagonal_h_tnfr_complex(
     count: int,

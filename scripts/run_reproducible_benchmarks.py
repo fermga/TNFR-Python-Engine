@@ -27,7 +27,6 @@ if str(_REPO_ROOT / "src") not in sys.path:
 
 from tnfr.security import run_command_safely, validate_path_safe
 
-
 # Default global seed for all benchmarks
 DEFAULT_SEED = 42
 

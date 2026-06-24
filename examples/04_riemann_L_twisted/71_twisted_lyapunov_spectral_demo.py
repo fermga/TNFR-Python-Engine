@@ -65,9 +65,7 @@ def main() -> None:
     max_power = 5
     seed = 20260423
 
-    banner(
-        "HONEST SCOPE -- P44 chi-twisted Lyapunov-spectral positivity"
-    )
+    banner("HONEST SCOPE -- P44 chi-twisted Lyapunov-spectral positivity")
     print(
         "  This certificate establishes self-adjointness, strict positivity\n"
         "  with explicit Kato-Rellich envelope, trace-class resolvent, and\n"
@@ -98,13 +96,16 @@ def main() -> None:
         )
         print(cert0.summary())
         print()
-        print(f"  character                : {cert0.character_name} "
-              f"(q={cert0.character_modulus})")
-        print(f"  active primes / max_pow  : {cert0.n_primes} / "
-              f"{cert0.max_power}")
+        print(
+            f"  character                : {cert0.character_name} "
+            f"(q={cert0.character_modulus})"
+        )
+        print(f"  active primes / max_pow  : {cert0.n_primes} / " f"{cert0.max_power}")
         print(f"  dimension                : {cert0.dimension}")
-        print(f"  spectrum (min, max)      : "
-              f"({cert0.spectrum_min:.6e}, {cert0.spectrum_max:.6e})")
+        print(
+            f"  spectrum (min, max)      : "
+            f"({cert0.spectrum_min:.6e}, {cert0.spectrum_max:.6e})"
+        )
         print(f"  spectral gap             : {cert0.spectral_gap:.6e}")
         print(f"  all_positive             : {cert0.all_positive}")
         print(f"  ||R||_1 (shift c=1)      : {cert0.schatten_1_norm:.6e}")
@@ -127,9 +128,7 @@ def main() -> None:
     # ------------------------------------------------------------------
     # 2. Compact per-character summary at J0 in {0, 0.01}
     # ------------------------------------------------------------------
-    banner(
-        "P44 :: Per-character summary at coupling in {0.0, 0.01}"
-    )
+    banner("P44 :: Per-character summary at coupling in {0.0, 0.01}")
     print(
         f"  {'character':>15s} | {'J_0':>6s} | {'min(lambda)':>14s} | "
         f"{'guaranteed_gap':>16s} | {'pert_safe':>10s} | "

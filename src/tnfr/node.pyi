@@ -1,6 +1,20 @@
 from __future__ import annotations
 
+from collections.abc import Hashable
+from dataclasses import dataclass
+from typing import (
+    Any,
+    Callable,
+    Iterable,
+    MutableMapping,
+    Protocol,
+    Sequence,
+    SupportsFloat,
+    TypeVar,
+)
+
 import numpy as np
+
 from .mathematics import (
     CoherenceOperator,
     FrequencyOperator,
@@ -18,18 +32,6 @@ from .types import (
     SenseIndex,
     StructuralFrequency,
     TNFRGraph,
-)
-from collections.abc import Hashable
-from dataclasses import dataclass
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    MutableMapping,
-    Protocol,
-    Sequence,
-    SupportsFloat,
-    TypeVar,
 )
 
 __all__ = ["NodeNX", "NodeProtocol", "add_edge"]

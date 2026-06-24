@@ -47,44 +47,62 @@ References:
 - AGENTS.md §"Emergent Symplectic Substrate (CANONICAL)"
 """
 
-import os
-import sys
 import math
+import os
 import random
+import sys
 import warnings
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.dynamics import default_compute_delta_nfr
-from tnfr.physics.symplectic_substrate import (
-    extract_phase_space_point,
-    evolve_substrate_flow,
-    substrate_hamiltonian,
-    substrate_flow_matrix,
-    symplectic_form_matrix,
-    to_action_angle,
-    geometric_sector_energy,
-    potential_sector_energy,
-    verify_adiabatic_invariance,
+from tnfr.operators.definitions import (
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
 )
 from tnfr.physics.structural_diffusion import (
-    verify_undamped_limit,
     verify_overdamped_projection,
+    verify_undamped_limit,
 )
-from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Coupling, Resonance,
-    Silence, Expansion, Contraction, SelfOrganization, Mutation,
-    Transition, Recursivity,
+from tnfr.physics.symplectic_substrate import (
+    evolve_substrate_flow,
+    extract_phase_space_point,
+    geometric_sector_energy,
+    potential_sector_energy,
+    substrate_flow_matrix,
+    substrate_hamiltonian,
+    symplectic_form_matrix,
+    to_action_angle,
+    verify_adiabatic_invariance,
 )
 
 ALL_OPS = [
-    ("AL", Emission), ("EN", Reception), ("IL", Coherence),
-    ("OZ", Dissonance), ("UM", Coupling), ("RA", Resonance),
-    ("SHA", Silence), ("VAL", Expansion), ("NUL", Contraction),
-    ("THOL", SelfOrganization), ("ZHIR", Mutation), ("NAV", Transition),
+    ("AL", Emission),
+    ("EN", Reception),
+    ("IL", Coherence),
+    ("OZ", Dissonance),
+    ("UM", Coupling),
+    ("RA", Resonance),
+    ("SHA", Silence),
+    ("VAL", Expansion),
+    ("NUL", Contraction),
+    ("THOL", SelfOrganization),
+    ("ZHIR", Mutation),
+    ("NAV", Transition),
     ("REMESH", Recursivity),
 ]
 
@@ -149,8 +167,11 @@ def experiment_a_symplectomorphism():
             hr = substrate_hamiltonian(p1) / H0
             egr = geometric_sector_energy(p1) / Eg0
             epr = potential_sector_energy(p1) / Ep0
-            effect = "preserves H_sub" if abs(hr - 1) < 0.05 else (
-                "collapses E_geo" if egr < 0.5 else "redistributes")
+            effect = (
+                "preserves H_sub"
+                if abs(hr - 1) < 0.05
+                else ("collapses E_geo" if egr < 0.5 else "redistributes")
+            )
             print(f"  {name:>7} {hr:>8.4f} {egr:>8.4f} {epr:>8.4f}  {effect}")
     print()
     print("-> the FLOW is an exact symplectomorphism (preserves omega, H_sub,")
@@ -171,7 +192,8 @@ def experiment_b_adiabatic():
     print()
 
     cert = verify_adiabatic_invariance(
-        omega_start=1.0, omega_end=3.0,
+        omega_start=1.0,
+        omega_end=3.0,
         ramp_times=(1.0, 5.0, 20.0, 80.0, 320.0),
     )
     print(f"  {'T_ramp':>8} {'eps~1/T':>9} {'rel_action_drift':>17}")
@@ -197,23 +219,31 @@ def experiment_c_gamma_dial():
 
     G = _build(24)
     print("gamma->0 end (this example): damped wave -> standing waves")
-    print(f"  {'gamma':>8} {'max|Re s|':>11} {'freq_err':>11} {'/gamma^2':>9} "
-          f"{'matches':>8}")
+    print(
+        f"  {'gamma':>8} {'max|Re s|':>11} {'freq_err':>11} {'/gamma^2':>9} "
+        f"{'matches':>8}"
+    )
     for gamma in (0.5, 0.1, 0.01, 0.001):
         cert = verify_undamped_limit(G, gamma=gamma)
-        print(f"  {gamma:>8.3f} {cert.max_decay_rate:>11.3e} "
-              f"{cert.max_freq_rel_error:>11.3e} "
-              f"{cert.freq_error_times_inv_gamma_sq:>9.3f} "
-              f"{str(cert.matches_discrete_modes):>8}")
+        print(
+            f"  {gamma:>8.3f} {cert.max_decay_rate:>11.3e} "
+            f"{cert.max_freq_rel_error:>11.3e} "
+            f"{cert.freq_error_times_inv_gamma_sq:>9.3f} "
+            f"{str(cert.matches_discrete_modes):>8}"
+        )
     cert0 = verify_undamped_limit(G, gamma=1e-3)
-    print(f"  standing-wave frequencies omega_k=sqrt(lambda_k): "
-          f"{[round(f, 4) for f in cert0.standing_wave_frequencies]}")
+    print(
+        f"  standing-wave frequencies omega_k=sqrt(lambda_k): "
+        f"{[round(f, 4) for f in cert0.standing_wave_frequencies]}"
+    )
     print()
     print("gamma->inf end (example 113): damped wave -> structural diffusion")
     proj = verify_overdamped_projection(G, gamma=100.0)
-    print(f"  nu_f=1/gamma={proj.nu_f_effective:.4f}, rate error "
-          f"{proj.max_rate_rel_error:.2e}, trajectory error "
-          f"{proj.trajectory_max_rel_error:.2e}")
+    print(
+        f"  nu_f=1/gamma={proj.nu_f_effective:.4f}, rate error "
+        f"{proj.max_rate_rel_error:.2e}, trajectory error "
+        f"{proj.trajectory_max_rel_error:.2e}"
+    )
     print()
     print("-> ONE dial gamma: gamma->0 conservative standing waves (Re s->0,")
     print("   Im s->sqrt(lambda_k)); gamma->inf dissipative diffusion. The")

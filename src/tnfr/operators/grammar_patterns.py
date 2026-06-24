@@ -32,30 +32,34 @@ from __future__ import annotations
 
 from typing import Any, Mapping, Sequence
 
-from ..types import Glyph
-from .grammar_types import SequenceValidationResult, SequenceSyntaxError, StructuralPattern
 from ..config.operator_names import (
-    VALID_START_OPERATORS,
-    VALID_END_OPERATORS,
+    BIFURCATION_WINDOWS,
     CANONICAL_OPERATOR_NAMES,
-    INTERMEDIATE_OPERATORS,
     COHERENCE,
+    DESTABILIZERS,
+    DESTABILIZERS_MODERATE,
+    DESTABILIZERS_STRONG,
+    DESTABILIZERS_WEAK,
+    INTERMEDIATE_OPERATORS,
     SELF_ORGANIZATION,
     SELF_ORGANIZATION_CLOSURES,
-    DESTABILIZERS,
-    DESTABILIZERS_STRONG,
-    DESTABILIZERS_MODERATE,
-    DESTABILIZERS_WEAK,
     TRANSFORMERS,
-    BIFURCATION_WINDOWS,
+    VALID_END_OPERATORS,
+    VALID_START_OPERATORS,
 )
-from ..validation.compatibility import get_compatibility_level, CompatibilityLevel
+from ..types import Glyph
+from ..validation.compatibility import CompatibilityLevel, get_compatibility_level
+from .grammar_types import (
+    SequenceSyntaxError,
+    SequenceValidationResult,
+    StructuralPattern,
+)
 
 # --- State classification thresholds for IL sequence suggestion ---
-_INACTIVE_EPI_THRESHOLD = 0.1        # EPI below this → node inactive
-_HIGH_DNFR_THRESHOLD = 0.8           # ΔNFR above this → high pressure
-_MODERATE_DNFR_LOW = 0.3             # lower bound of moderate ΔNFR range
-_MODERATE_DNFR_HIGH = 0.7            # upper bound of moderate ΔNFR range
+_INACTIVE_EPI_THRESHOLD = 0.1  # EPI below this → node inactive
+_HIGH_DNFR_THRESHOLD = 0.8  # ΔNFR above this → high pressure
+_MODERATE_DNFR_LOW = 0.3  # lower bound of moderate ΔNFR range
+_MODERATE_DNFR_HIGH = 0.7  # upper bound of moderate ΔNFR range
 
 __all__ = [
     "validate_sequence",
@@ -65,6 +69,7 @@ __all__ = [
 ]
 
 # ============================================================================
+
 
 def _canonicalize_tokens(names: Sequence[str]) -> tuple[list[str], list[int]]:
     canonical: list[str] = []
@@ -77,6 +82,7 @@ def _canonicalize_tokens(names: Sequence[str]) -> tuple[list[str], list[int]]:
             canonical.append(tok)
     return canonical, non_str_indices
 
+
 def _compute_metadata(tokens: list[str]) -> dict[str, object]:
     from .pattern_detection import detect_pattern
 
@@ -88,15 +94,14 @@ def _compute_metadata(tokens: list[str]) -> dict[str, object]:
     meta["has_reception"] = "reception" in tokens
     meta["has_coherence"] = "coherence" in tokens
     meta["has_dissonance"] = "dissonance" in tokens
-    meta["has_stabilizer"] = any(
-        t in {COHERENCE, SELF_ORGANIZATION} for t in tokens
-    )
+    meta["has_stabilizer"] = any(t in {COHERENCE, SELF_ORGANIZATION} for t in tokens)
     try:
         pattern = detect_pattern(tokens)
         meta["detected_pattern"] = getattr(pattern, "value", str(pattern))
     except Exception:
         meta["detected_pattern"] = StructuralPattern.UNKNOWN.value
     return meta
+
 
 def _check_start_rule(
     tokens: list[str], *, context: Mapping[str, Any] | None = None
@@ -129,6 +134,7 @@ def _check_start_rule(
             ),
         )
     return True, None
+
 
 def _check_end_rule(
     tokens: list[str], *, context: Mapping[str, Any] | None = None
@@ -171,19 +177,15 @@ def _check_end_rule(
         )
     return True, None
 
+
 def _check_thol_closure(tokens: list[str]) -> tuple[bool, str | None]:
-    if (
-        SELF_ORGANIZATION in tokens
-        and tokens[-1] not in SELF_ORGANIZATION_CLOSURES
-    ):
+    if SELF_ORGANIZATION in tokens and tokens[-1] not in SELF_ORGANIZATION_CLOSURES:
         return (
             False,
-            (
-                "self_organization requires terminal closure "
-                "(silence or contraction)"
-            ),
+            ("self_organization requires terminal closure " "(silence or contraction)"),
         )
     return True, None
+
 
 def _check_adjacent_compatibility(
     tokens: list[str],
@@ -191,7 +193,7 @@ def _check_adjacent_compatibility(
     # Check for therapeutic patterns overriding compatibility rules
     if _is_canonical_therapeutic_pattern(tokens):
         return True, None, None
-    
+
     prev = tokens[0]
     for i in range(1, len(tokens)):
         cur = tokens[i]
@@ -220,26 +222,25 @@ def _check_adjacent_compatibility(
         prev = cur
     return True, None, None
 
+
 def _is_canonical_therapeutic_pattern(tokens: list[str]) -> bool:
     """Check if sequence matches a known canonical therapeutic pattern.
-    
+
     Therapeutic patterns may override standard compatibility rules for
     crisis containment scenarios (e.g., OZ → SHA direct transition).
     """
     # CONTAINED_CRISIS: emission,reception,coherence,dissonance,silence
-    if (
-        len(tokens) == 5
-        and tokens == [
-            "emission",
-            "reception",
-            "coherence",
-            "dissonance",
-            "silence",
-        ]
-    ):
+    if len(tokens) == 5 and tokens == [
+        "emission",
+        "reception",
+        "coherence",
+        "dissonance",
+        "silence",
+    ]:
         return True
-    
+
     return False
+
 
 def _check_transformer_windows(
     tokens: list[str],
@@ -284,6 +285,7 @@ def _check_transformer_windows(
 
     return True, None, None
 
+
 def _build_result(
     *,
     names: Sequence[str],
@@ -303,13 +305,17 @@ def _build_result(
             "message": message,
             "tokens": tuple(canonical),
             "metadata": dict(metadata),
-            **({
-                "error": {
-                    "index": error.index,
-                    "token": error.token,
-                    "message": error.message,
+            **(
+                {
+                    "error": {
+                        "index": error.index,
+                        "token": error.token,
+                        "message": error.message,
+                    }
                 }
-            } if error is not None else {}),
+                if error is not None
+                else {}
+            ),
         },
         artifacts={
             "tokens": tuple(names),
@@ -317,6 +323,7 @@ def _build_result(
         },
         error=error,
     )
+
 
 def validate_sequence(
     names: Any, *, context: Mapping[str, Any] | None = None, **kwargs: Any
@@ -413,12 +420,10 @@ def validate_sequence(
     # (contraction) is NOT a U2 destabilizer (dual-lever 'both', U2-neutral).
     has_destabilizer = any(t in DESTABILIZERS for t in tokens)
     has_stabilizer = any(t in {COHERENCE, SELF_ORGANIZATION} for t in tokens)
-    
+
     if has_destabilizer and not has_stabilizer:
         diag = bool(context.get("diagnostic", False)) if context else False
-        if not (
-            diag and len(tokens) == 2 and tokens == ["dissonance", "mutation"]
-        ):
+        if not (diag and len(tokens) == 2 and tokens == ["dissonance", "mutation"]):
             return _build_result(
                 names=names,  # type: ignore[arg-type]
                 canonical=tokens,
@@ -469,6 +474,7 @@ def validate_sequence(
         message="ok",
         metadata=meta,
     )
+
 
 def parse_sequence(names: Sequence[str]) -> SequenceValidationResult:
     """Parse and validate sequence; raise on structural errors."""
@@ -546,46 +552,48 @@ def parse_sequence(names: Sequence[str]) -> SequenceValidationResult:
         metadata=meta,
     )
 
+
 class SequenceValidationResultWithHealth:
     """Validation result wrapper that includes health metrics."""
-    
+
     def __init__(self, validation_result, health_metrics=None):
         self._validation_result = validation_result
         self.health_metrics = health_metrics
-    
+
     def __getattr__(self, name):
         """Delegate attribute access to the underlying validation result."""
         return getattr(self._validation_result, name)
-    
+
     @property
     def passed(self):
         """Whether validation passed."""
         return self._validation_result.passed
-    
+
     @property
     def tokens(self):
         """Original tokens."""
         return self._validation_result.tokens
-    
+
     @property
     def canonical_tokens(self):
         """Canonical tokens."""
         return self._validation_result.canonical_tokens
-    
+
     @property
     def message(self):
         """Validation message."""
         return self._validation_result.message
-    
+
     @property
     def metadata(self):
         """Validation metadata."""
         return self._validation_result.metadata
-    
+
     @property
     def error(self):
         """Validation error."""
         return self._validation_result.error
+
 
 def validate_sequence_with_health(sequence):
     """Validate sequence and compute health metrics.
@@ -622,8 +630,9 @@ def validate_sequence_with_health(sequence):
         except Exception:
             # If health analysis fails, set to None
             health_metrics = None
-    
+
     return SequenceValidationResultWithHealth(result, health_metrics)
+
 
 # Compatibility: Canonical IL sequences and helpers
 
@@ -712,6 +721,7 @@ _OPERATOR_NAME_TO_GLYPH: dict[str, Glyph] = {
     "recursivity": Glyph.REMESH,
 }
 
+
 def recognize_il_sequences(
     glyphs: Sequence[Glyph],
 ) -> list[Mapping[str, object]]:
@@ -735,13 +745,12 @@ def recognize_il_sequences(
             processed_glyphs.append(_OPERATOR_NAME_TO_GLYPH.get(g.lower(), g))
         else:
             processed_glyphs.append(g)
-    
+
     # Build quick lookup of patterns by glyph tuple
     pattern_by_glyphs = {
-        tuple(v["glyphs"]): v["name"]
-        for v in CANONICAL_IL_SEQUENCES.values()
+        tuple(v["glyphs"]): v["name"] for v in CANONICAL_IL_SEQUENCES.values()
     }
-    
+
     results: list[Mapping[str, object]] = []
     for i in range(len(processed_glyphs) - 1):
         pair = (processed_glyphs[i], processed_glyphs[i + 1])
@@ -796,21 +805,22 @@ def recognize_il_sequences(
             )
     return results
 
+
 def optimize_il_sequence(
     pattern: Sequence[Glyph], allow_fusion: bool = True
 ) -> Sequence[Glyph]:
     """Return optimization hint for a 2-step pattern."""
     if not allow_fusion:
         return pattern
-    
+
     lookup = {
-        tuple(v["glyphs"]): v["optimization"]
-        for v in CANONICAL_IL_SEQUENCES.values()
+        tuple(v["glyphs"]): v["optimization"] for v in CANONICAL_IL_SEQUENCES.values()
     }
     opt = lookup.get(tuple(pattern), "preserve")
     if opt == "preserve":
         return pattern
     return pattern  # For now just return original
+
 
 def suggest_il_sequence(
     current: Mapping[str, float], goal: Mapping[str, object] = None
@@ -818,39 +828,40 @@ def suggest_il_sequence(
     """Suggest canonical 2-step IL sequence for a starting state."""
     if goal is None:
         goal = {}
-    
+
     epi = current.get("epi", 0.0)
     dnfr = current.get("dnfr", 0.0)
-    
+
     # Inactive node needs activation (low EPI but functioning vf)
     if epi < _INACTIVE_EPI_THRESHOLD:
         if goal.get("reactivate", False) or goal.get("consolidate", False):
             return ["emission", "coherence"]
-    
+
     # High ΔNFR needs reduction
     if dnfr > _HIGH_DNFR_THRESHOLD:
         if goal.get("dnfr_target") == "low":
             return ["dissonance", "coherence"]
-    
+
     # Moderate ΔNFR, direct coherence
     if _MODERATE_DNFR_LOW < dnfr < _MODERATE_DNFR_HIGH:
         if goal.get("dnfr_target") == "low":
             return ["coherence"]
-    
+
     # Phase transformation goal
     if goal.get("phase_change", False):
         return ["coherence", "mutation"]
-    
+
     # Consolidation goal
     if goal.get("consolidate", False):
         return ["coherence"]
-    
+
     # Default fallback - but need to match test case logic
     if epi < _INACTIVE_EPI_THRESHOLD and goal.get("consolidate", False):
         # For very low EPI with consolidate goal, suggest activation first
         return ["emission", "coherence"]
-    
+
     return ["emission", "coherence"]
+
 
 # Duplicate functions removed - main implementations above
 

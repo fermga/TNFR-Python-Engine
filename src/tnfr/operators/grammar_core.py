@@ -19,23 +19,27 @@ else:
     TNFRGraph = Any
     from .definitions import Operator
 
-from .grammar_types import (
-    GENERATORS,
-    CLOSURES,
-    STABILIZERS,
-    DESTABILIZERS,
-    COUPLING_RESONANCE,
-    BIFURCATION_TRIGGERS,
-    BIFURCATION_HANDLERS,
-    TRANSFORMERS,
-    SCALE_STABILIZERS,
+from ..constants.canonical import (
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
 )
-from ..constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD, K_PHI_CANONICAL_THRESHOLD
 from .grammar_telemetry import (
-    warn_phase_gradient_telemetry,
-    warn_phase_curvature_telemetry,
     warn_coherence_length_telemetry,
+    warn_phase_curvature_telemetry,
+    warn_phase_gradient_telemetry,
 )
+from .grammar_types import (
+    BIFURCATION_HANDLERS,
+    BIFURCATION_TRIGGERS,
+    CLOSURES,
+    COUPLING_RESONANCE,
+    DESTABILIZERS,
+    GENERATORS,
+    SCALE_STABILIZERS,
+    STABILIZERS,
+    TRANSFORMERS,
+)
+
 
 class GrammarValidator:
     """Validates sequences using canonical TNFR grammar constraints.
@@ -237,46 +241,44 @@ class GrammarValidator:
     ) -> tuple[bool, str]:
         """Validate U3: Resonant coupling.
 
-        Physical basis: AGENTS.md Invariant #2 states "no coupling is valid
-        without explicit phase verification (synchrony)".
+            Physical basis: AGENTS.md Invariant #2 states "no coupling is valid
+            without explicit phase verification (synchrony)".
 
-        Resonance physics requires phase compatibility:
-            |φᵢ - φⱼ| ≤ Δφ_max
+            Resonance physics requires phase compatibility:
+                |φᵢ - φⱼ| ≤ Δφ_max
 
-        Without phase verification:
-            Nodes with incompatible phases (antiphase) could attempt coupling
-            → Destructive interference → Violates resonance physics
+            Without phase verification:
+                Nodes with incompatible phases (antiphase) could attempt coupling
+                → Destructive interference → Violates resonance physics
 
-        With phase verification:
-            Only synchronous nodes couple → Constructive interference
+            With phase verification:
+                Only synchronous nodes couple → Constructive interference
 
-        Parameters
-        ----------
-        sequence : list[Operator]
-            Sequence of operators to validate
+            Parameters
+            ----------
+            sequence : list[Operator]
+                Sequence of operators to validate
 
-        Returns
-        -------
-        tuple[bool, str]
-            (is_valid, message)
+            Returns
+            -------
+            tuple[bool, str]
+                (is_valid, message)
 
-        Notes
-        -----
-    U3 is a META-rule: it requires that when UM (Coupling) or
-    RA (Resonance)
-        operators are used, the implementation MUST verify phase compatibility.
-        The actual phase check happens in operator preconditions.
+            Notes
+            -----
+        U3 is a META-rule: it requires that when UM (Coupling) or
+        RA (Resonance)
+            operators are used, the implementation MUST verify phase compatibility.
+            The actual phase check happens in operator preconditions.
 
-        This grammar rule documents the requirement and ensures awareness
-        that phase checks are MANDATORY (Invariant #2), not optional.
+            This grammar rule documents the requirement and ensures awareness
+            that phase checks are MANDATORY (Invariant #2), not optional.
         """
         # Check if sequence contains coupling/resonance operators
         coupling_ops = [
             getattr(op, "canonical_name", op.name.lower())
             for op in sequence
-            if getattr(op, "canonical_name", op.name.lower()) in (
-                COUPLING_RESONANCE
-            )
+            if getattr(op, "canonical_name", op.name.lower()) in (COUPLING_RESONANCE)
         ]
 
         if not coupling_ops:
@@ -324,9 +326,7 @@ class GrammarValidator:
         trigger_ops = [
             getattr(op, "canonical_name", op.name.lower())
             for op in sequence
-            if getattr(op, "canonical_name", op.name.lower()) in (
-                BIFURCATION_TRIGGERS
-            )
+            if getattr(op, "canonical_name", op.name.lower()) in (BIFURCATION_TRIGGERS)
         ]
 
         if not trigger_ops:
@@ -337,9 +337,7 @@ class GrammarValidator:
         handler_ops = [
             getattr(op, "canonical_name", op.name.lower())
             for op in sequence
-            if getattr(op, "canonical_name", op.name.lower()) in (
-                BIFURCATION_HANDLERS
-            )
+            if getattr(op, "canonical_name", op.name.lower()) in (BIFURCATION_HANDLERS)
         ]
 
         if not handler_ops:
@@ -459,59 +457,58 @@ class GrammarValidator:
     ) -> tuple[bool, str]:
         """Validate U2-REMESH: Recursive amplification control.
 
-        Physical basis: REMESH implements temporal coupling EPI(t) ↔ EPI(t-τ)
-        which creates feedback that amplifies structural changes. When combined
-        with destabilizers, this can cause unbounded growth.
+            Physical basis: REMESH implements temporal coupling EPI(t) ↔ EPI(t-τ)
+            which creates feedback that amplifies structural changes. When combined
+            with destabilizers, this can cause unbounded growth.
 
-        From integrated nodal equation:
-            EPI(t_f) = EPI(t_0) + ∫_{t_0}^{t_f} νf·ΔNFR dτ
+            From integrated nodal equation:
+                EPI(t_f) = EPI(t_0) + ∫_{t_0}^{t_f} νf·ΔNFR dτ
 
-        REMESH temporal mixing:
-            EPI_mixed = (1-α)·EPI_now + α·EPI_past
+            REMESH temporal mixing:
+                EPI_mixed = (1-α)·EPI_now + α·EPI_past
 
-        Without stabilizers:
-            REMESH + destabilizers → recursive amplification
-            → ∫ νf·ΔNFR dt → ∞ (feedback loop)
-            → System fragments
+            Without stabilizers:
+                REMESH + destabilizers → recursive amplification
+                → ∫ νf·ΔNFR dt → ∞ (feedback loop)
+                → System fragments
 
-        With stabilizers:
-            IL or THOL provides negative feedback
-            → Bounded recursive evolution
-            → ∫ νf·ΔNFR dt < ∞
+            With stabilizers:
+                IL or THOL provides negative feedback
+                → Bounded recursive evolution
+                → ∫ νf·ΔNFR dt < ∞
 
-        Specific combinations requiring stabilizers:
-            - REMESH + VAL: Recursive expansion needs coherence stabilization
-                        - REMESH + OZ: Recursive bifurcation needs self-organization
-                            handlers
-            - REMESH + ZHIR: Replicative mutation needs coherence consolidation
+            Specific combinations requiring stabilizers:
+                - REMESH + VAL: Recursive expansion needs coherence stabilization
+                            - REMESH + OZ: Recursive bifurcation needs self-organization
+                                handlers
+                - REMESH + ZHIR: Replicative mutation needs coherence consolidation
 
-        Parameters
-        ----------
-        sequence : list[Operator]
-            Sequence of operators to validate
+            Parameters
+            ----------
+            sequence : list[Operator]
+                Sequence of operators to validate
 
-        Returns
-        -------
-        tuple[bool, str]
-            (is_valid, message)
+            Returns
+            -------
+            tuple[bool, str]
+                (is_valid, message)
 
-        Notes
-        -----
-        This rule is DISTINCT from general U2 (convergence). While U2 checks
-        for destabilizers needing stabilizers, U2-REMESH specifically addresses
-    REMESH's amplification property: it multiplies the effect of
-    destabilizers
-        through recursive feedback across temporal/spatial scales.
+            Notes
+            -----
+            This rule is DISTINCT from general U2 (convergence). While U2 checks
+            for destabilizers needing stabilizers, U2-REMESH specifically addresses
+        REMESH's amplification property: it multiplies the effect of
+        destabilizers
+            through recursive feedback across temporal/spatial scales.
 
-        Physical derivation: See src/tnfr/operators/remesh.py module docstring,
-    section "Grammar Implications from Physical Analysis" →
-    U2: CONVERGENCE.
+            Physical derivation: See src/tnfr/operators/remesh.py module docstring,
+        section "Grammar Implications from Physical Analysis" →
+        U2: CONVERGENCE.
         """
         # Check if sequence contains REMESH
         has_remesh = any(
             (
-                getattr(op, "canonical_name", op.name.lower())
-                == "recursivity"
+                getattr(op, "canonical_name", op.name.lower()) == "recursivity"
                 for op in sequence
             )
         )
@@ -556,82 +553,82 @@ class GrammarValidator:
     def validate_multiscale_coherence(sequence: list[Operator]) -> tuple[bool, str]:
         """Validate U5: Multi-scale coherence preservation.
 
-        Physical basis: Multi-scale hierarchical structures created by REMESH
-        with depth>1 require coherence conservation across scales. This emerges
-        inevitably from the nodal equation applied to hierarchical systems.
+            Physical basis: Multi-scale hierarchical structures created by REMESH
+            with depth>1 require coherence conservation across scales. This emerges
+            inevitably from the nodal equation applied to hierarchical systems.
 
-        From the nodal equation at each hierarchical level:
-            ∂EPI_parent/∂t = νf_parent · ΔNFR_parent(t)
-            ∂EPI_child_i/∂t = νf_child_i · ΔNFR_child_i(t)  for each child i
+            From the nodal equation at each hierarchical level:
+                ∂EPI_parent/∂t = νf_parent · ΔNFR_parent(t)
+                ∂EPI_child_i/∂t = νf_child_i · ΔNFR_child_i(t)  for each child i
 
-        For hierarchical systems with N children:
-            EPI_parent = f(EPI_child_1, ..., EPI_child_N)  (structural coupling)
+            For hierarchical systems with N children:
+                EPI_parent = f(EPI_child_1, ..., EPI_child_N)  (structural coupling)
 
-        Taking time derivative and applying chain rule:
-            ∂EPI_parent/∂t = Σ (∂f/∂EPI_child_i) · ∂EPI_child_i/∂t
-                           = Σ w_i · νf_child_i · ΔNFR_child_i(t)
+            Taking time derivative and applying chain rule:
+                ∂EPI_parent/∂t = Σ (∂f/∂EPI_child_i) · ∂EPI_child_i/∂t
+                               = Σ w_i · νf_child_i · ΔNFR_child_i(t)
 
-        where w_i = ∂f/∂EPI_child_i are coupling weights.
+            where w_i = ∂f/∂EPI_child_i are coupling weights.
 
-        Equating with nodal equation for parent:
-            νf_parent · ΔNFR_parent = Σ w_i · νf_child_i · ΔNFR_child_i
+            Equating with nodal equation for parent:
+                νf_parent · ΔNFR_parent = Σ w_i · νf_child_i · ΔNFR_child_i
 
-        For coherence C(t) = measure of structural stability:
-            C_parent ~ 1/|ΔNFR_parent|  (lower pressure = higher coherence)
-            C_child_i ~ 1/|ΔNFR_child_i|
+            For coherence C(t) = measure of structural stability:
+                C_parent ~ 1/|ΔNFR_parent|  (lower pressure = higher coherence)
+                C_child_i ~ 1/|ΔNFR_child_i|
 
-        This gives the conservation inequality:
-            C_parent ≥ α · Σ C_child_i
+            This gives the conservation inequality:
+                C_parent ≥ α · Σ C_child_i
 
-        Where α = (1/√N) · η_phase(N) · η_coupling(N) captures:
-        - 1/√N: Scale factor from coupling weight distribution
-        - η_phase: Phase synchronization efficiency (U3 requirement)
-        - η_coupling: Structural coupling efficiency losses
-        - Typical range: α ∈ [0.1, 0.4]
+            Where α = (1/√N) · η_phase(N) · η_coupling(N) captures:
+            - 1/√N: Scale factor from coupling weight distribution
+            - η_phase: Phase synchronization efficiency (U3 requirement)
+            - η_coupling: Structural coupling efficiency losses
+            - Typical range: α ∈ [0.1, 0.4]
 
-        Without stabilizers:
-            Deep REMESH (depth>1) creates nested EPIs
-            → ΔNFR_parent grows from uncoupled child fluctuations
-            → C_parent decreases below α·ΣC_child
-            → Violation of conservation → System fragments
+            Without stabilizers:
+                Deep REMESH (depth>1) creates nested EPIs
+                → ΔNFR_parent grows from uncoupled child fluctuations
+                → C_parent decreases below α·ΣC_child
+                → Violation of conservation → System fragments
 
-        With stabilizers (IL or THOL):
-            IL/THOL reduce |ΔNFR| at each level (direct from operator contracts)
-            → Maintains C_parent ≥ α·ΣC_child at all hierarchical levels
-            → Conservation preserved → Bounded multi-scale evolution
+            With stabilizers (IL or THOL):
+                IL/THOL reduce |ΔNFR| at each level (direct from operator contracts)
+                → Maintains C_parent ≥ α·ΣC_child at all hierarchical levels
+                → Conservation preserved → Bounded multi-scale evolution
 
-        Parameters
-        ----------
-        sequence : list[Operator]
-            Sequence of operators to validate
+            Parameters
+            ----------
+            sequence : list[Operator]
+                Sequence of operators to validate
 
-        Returns
-        -------
-        tuple[bool, str]
-            (is_valid, message)
+            Returns
+            -------
+            tuple[bool, str]
+                (is_valid, message)
 
-        Notes
-        -----
-        U5 is INDEPENDENT of U2+U4b:
-        - U2/U4b: TEMPORAL dimension (operator sequences in time)
-        - U5: SPATIAL dimension (hierarchical nesting in structure)
+            Notes
+            -----
+            U5 is INDEPENDENT of U2+U4b:
+            - U2/U4b: TEMPORAL dimension (operator sequences in time)
+            - U5: SPATIAL dimension (hierarchical nesting in structure)
 
-        Decision test case that passes U2+U4b but fails U5:
-            [AL, REMESH(depth=3), SHA]
-            - U2: ✓ No destabilizers (trivially convergent)
-            - U4b: ✓ REMESH not a transformer (U4b doesn't apply)
-            - U5: ✗ Deep recursivity without stabilization → fragmentation
+            Decision test case that passes U2+U4b but fails U5:
+                [AL, REMESH(depth=3), SHA]
+                - U2: ✓ No destabilizers (trivially convergent)
+                - U4b: ✓ REMESH not a transformer (U4b doesn't apply)
+                - U5: ✗ Deep recursivity without stabilization → fragmentation
 
-        Physical derivation: See UNIFIED_GRAMMAR_RULES.md § U5
-        Canonicity: STRONG (derived from nodal equation + structural coupling)
+            Physical derivation: See UNIFIED_GRAMMAR_RULES.md § U5
+            Canonicity: STRONG (derived from nodal equation + structural coupling)
 
-        References
-        ----------
-        - TNFR.pdf § 2.1: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
-    - Problem statement: "The Pulse That Traverses Us.pdf"
-        - AGENTS.md: Invariant #3 (Multi-Scale Fractality)
-        - Contract IL: Reduces |ΔNFR| at all scales
-        - Contract THOL: Autopoietic closure across hierarchical levels
+            References
+            ----------
+            - TNFR.pdf § 2.1: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
+        - Problem statement: "The Pulse That Traverses Us.pdf"
+            - AGENTS.md: Invariant #3 (Multi-Scale Fractality)
+            - Contract IL: Reduces |ΔNFR| at all scales
+            - Contract THOL: Autopoietic closure across hierarchical levels
         """
         # KNOWN LIMITATION (B3): No operator currently exposes a 'depth'
         # attribute; getattr(op, 'depth', 1) always returns the default 1.
@@ -668,7 +665,9 @@ class GrammarValidator:
             stabilizers_in_window = []
 
             for j in range(window_start, window_end):
-                op_name = getattr(sequence[j], "canonical_name", sequence[j].name.lower())
+                op_name = getattr(
+                    sequence[j], "canonical_name", sequence[j].name.lower()
+                )
                 if op_name in SCALE_STABILIZERS:
                     has_stabilizer = True
                     stabilizers_in_window.append((j, op_name))
@@ -977,4 +976,3 @@ class GrammarValidator:
             messages.append(f"U6 (ξ_C): telemetry error: {e}")
 
         return messages
-

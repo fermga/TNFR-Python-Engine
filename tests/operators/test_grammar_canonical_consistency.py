@@ -20,18 +20,22 @@ from __future__ import annotations
 from tnfr.config import physics_derivation as pd
 from tnfr.operators import grammar_types as gt
 
-
 # ---------------------------------------------------------------------------
 # Canonical values (the absolute truth, derived from the nodal equation)
 # ---------------------------------------------------------------------------
 
-CANONICAL_GENERATORS = {"emission", "transition", "recursivity"}        # AL,NAV,REMESH
-CANONICAL_CLOSURES = {"silence", "transition", "recursivity", "dissonance"}  # SHA,NAV,REMESH,OZ
-CANONICAL_STABILIZERS = {"coherence", "self_organization"}              # IL, THOL
-CANONICAL_DESTABILIZERS = {"dissonance", "mutation", "expansion"}       # OZ, ZHIR, VAL
-CANONICAL_TRANSFORMERS = {"mutation", "self_organization"}              # ZHIR, THOL
-CANONICAL_TRIGGERS = {"dissonance", "mutation"}                         # OZ, ZHIR
-CANONICAL_HANDLERS = {"self_organization", "coherence"}                 # THOL, IL
+CANONICAL_GENERATORS = {"emission", "transition", "recursivity"}  # AL,NAV,REMESH
+CANONICAL_CLOSURES = {
+    "silence",
+    "transition",
+    "recursivity",
+    "dissonance",
+}  # SHA,NAV,REMESH,OZ
+CANONICAL_STABILIZERS = {"coherence", "self_organization"}  # IL, THOL
+CANONICAL_DESTABILIZERS = {"dissonance", "mutation", "expansion"}  # OZ, ZHIR, VAL
+CANONICAL_TRANSFORMERS = {"mutation", "self_organization"}  # ZHIR, THOL
+CANONICAL_TRIGGERS = {"dissonance", "mutation"}  # OZ, ZHIR
+CANONICAL_HANDLERS = {"self_organization", "coherence"}  # THOL, IL
 
 
 class TestPhysicsDerivationIsTheSource:
@@ -91,8 +95,8 @@ class TestNoDivergentModule:
         assert set(on.DESTABILIZERS) == CANONICAL_DESTABILIZERS
         # graduated split union == canonical (no NAV, no EN)
         assert set(on.DESTABILIZERS_ALL) == CANONICAL_DESTABILIZERS
-        assert "transition" not in on.DESTABILIZERS_ALL   # NAV is NOT a destabilizer
-        assert "reception" not in on.DESTABILIZERS_ALL    # EN is NOT a destabilizer
+        assert "transition" not in on.DESTABILIZERS_ALL  # NAV is NOT a destabilizer
+        assert "reception" not in on.DESTABILIZERS_ALL  # EN is NOT a destabilizer
         assert set(on.TRANSFORMERS) == CANONICAL_TRANSFORMERS
 
     def test_math_grammar_validators_match(self) -> None:
@@ -119,7 +123,11 @@ class TestStaticRuntimeU4bAgree:
 
     def test_nav_not_a_destabilizer_context(self) -> None:
         from tnfr.operators.definitions import (
-            Emission, Coherence, Transition, Mutation, Silence,
+            Coherence,
+            Emission,
+            Mutation,
+            Silence,
+            Transition,
         )
         from tnfr.operators.grammar_validate import validate_grammar
 
@@ -130,7 +138,11 @@ class TestStaticRuntimeU4bAgree:
 
     def test_oz_provides_destabilizer_context(self) -> None:
         from tnfr.operators.definitions import (
-            Emission, Coherence, Dissonance, Mutation, Silence,
+            Coherence,
+            Dissonance,
+            Emission,
+            Mutation,
+            Silence,
         )
         from tnfr.operators.grammar_validate import validate_grammar
 
@@ -186,13 +198,10 @@ class TestSecondaryValidatorReadsCanonicalSets:
 
     def test_secondary_agrees_with_canonical_on_valid_words(self) -> None:
         # A canonical valid word passes BOTH validators.
-        from tnfr.operators.definitions import (
-            Emission, Coupling, Coherence, Silence,
-        )
+        from tnfr.operators.definitions import Coherence, Coupling, Emission, Silence
         from tnfr.operators.grammar_validate import validate_grammar
 
         names = ["emission", "coupling", "coherence", "silence"]
         ops = [Emission(), Coupling(), Coherence(), Silence()]
         assert self._passes(names) is True
         assert validate_grammar(ops, epi_initial=0.0) is True
-

@@ -14,9 +14,10 @@ from typing import Any, ClassVar
 from ..alias import get_attr
 from ..config.operator_names import EMISSION
 from ..constants.aliases import ALIAS_EPI
+from ..dynamics.feedback import StructuralFeedbackLoop
 from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
-from ..dynamics.feedback import StructuralFeedbackLoop
+
 
 class Emission(Operator):
     """Emission structural operator (AL).
@@ -204,7 +205,9 @@ class Emission(Operator):
 
                 if should_warn:
                     # Different message based on node type
-                    node_type = "initial" if abs(preserved_epi) < 1e-6 else "established"
+                    node_type = (
+                        "initial" if abs(preserved_epi) < 1e-6 else "established"
+                    )
                     warnings.warn(
                         f"Node {node} ({node_type}) EPI drifted during silence "
                         f"(preserved: {preserved_epi:.3f}, "
@@ -266,9 +269,7 @@ class Emission(Operator):
             emission_timestamp = datetime.now(timezone.utc).isoformat()
 
             # set canonical timestamp using alias system (string values)
-            set_attr_str(
-                G.nodes[node], ALIAS_EMISSION_TIMESTAMP, emission_timestamp
-            )
+            set_attr_str(G.nodes[node], ALIAS_EMISSION_TIMESTAMP, emission_timestamp)
 
             # set persistent activation flag (immutable marker)
             G.nodes[node]["_emission_activated"] = True

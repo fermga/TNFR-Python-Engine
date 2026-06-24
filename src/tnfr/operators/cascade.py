@@ -42,9 +42,10 @@ __all__ = [
 ]
 
 # Import cache utilities for performance optimization
-from ..mathematics.unified_cache import cache_tnfr_computation, CacheLevel
+from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
 
 _CACHING_AVAILABLE = True
+
 
 def _estimate_cascade_cost(G: TNFRGraph) -> float:
     """Estimate computational cost for cascade detection.
@@ -55,6 +56,7 @@ def _estimate_cascade_cost(G: TNFRGraph) -> float:
     propagations = G.graph.get("thol_propagations", [])
     # Base cost + cost per propagation event
     return 1.0 + len(propagations) * 0.1
+
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS,
@@ -155,16 +157,17 @@ def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
         "cascade_coherence": _compute_cascade_coherence(G, affected_nodes),
     }
 
+
 def _compute_cascade_coherence(G: TNFRGraph, affected_nodes: list[NodeId]) -> float:
     """Compute cascade coherence from coupling strengths.
-    
+
     Parameters
     ----------
     G : TNFRGraph
         Graph with edge weights representing coupling strengths
-    affected_nodes : list[NodeId] 
+    affected_nodes : list[NodeId]
         Nodes involved in the cascade
-        
+
     Returns
     -------
     float
@@ -172,22 +175,23 @@ def _compute_cascade_coherence(G: TNFRGraph, affected_nodes: list[NodeId]) -> fl
     """
     if len(affected_nodes) < 2:
         return 0.0
-    
+
     try:
         # Calculate coherence based on edge weights between affected nodes
         total_coupling = 0.0
         edge_count = 0
-        
+
         for i, node1 in enumerate(affected_nodes):
-            for node2 in affected_nodes[i+1:]:
+            for node2 in affected_nodes[i + 1 :]:
                 if G.has_edge(node1, node2):
-                    weight = G.edges[node1, node2].get('weight', 1.0)
+                    weight = G.edges[node1, node2].get("weight", 1.0)
                     total_coupling += abs(weight)
                     edge_count += 1
-        
+
         return total_coupling / max(edge_count, 1) if edge_count > 0 else 0.0
     except Exception:
         return 0.0
+
 
 def measure_cascade_radius(G: TNFRGraph, source_node: NodeId) -> int:
     """Measure propagation radius from bifurcation source.
@@ -242,6 +246,7 @@ def measure_cascade_radius(G: TNFRGraph, source_node: NodeId) -> int:
                 queue.append((tgt, dist + 1))
 
     return max_distance
+
 
 def invalidate_cascade_cache() -> int:
     """Invalidate cached cascade detection results across all graphs.

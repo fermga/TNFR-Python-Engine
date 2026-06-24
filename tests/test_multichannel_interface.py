@@ -132,10 +132,7 @@ def test_kuramoto_order_parameter_in_phase_vs_random():
     # Scattered phase offsets -> lower R.
     rng = np.random.default_rng(1)
     scattered = np.asarray(
-        [
-            np.sin(2.0 * np.pi * 10.0 * t + rng.uniform(-np.pi, np.pi))
-            for _ in range(8)
-        ]
+        [np.sin(2.0 * np.pi * 10.0 * t + rng.uniform(-np.pi, np.pi)) for _ in range(8)]
     )
     phase_sc, _ = phase_amplitude_matrices(scattered, sampling_rate=128.0)
     assert kuramoto_order_parameter(phase_sc) < kuramoto_order_parameter(phase_in)
@@ -337,9 +334,7 @@ def test_kuramoto_order_rises_with_coupling():
     strong = BENCH.kuramoto_simulate(20, 3.0, 3000, seed=1)
     phase_weak, _ = phase_amplitude_matrices(weak)
     phase_strong, _ = phase_amplitude_matrices(strong)
-    assert kuramoto_order_parameter(phase_strong) > kuramoto_order_parameter(
-        phase_weak
-    )
+    assert kuramoto_order_parameter(phase_strong) > kuramoto_order_parameter(phase_weak)
 
 
 def test_download_eeg_graceful_skip(monkeypatch, tmp_path):
@@ -373,9 +368,7 @@ def test_download_eeg_writes_full_payload(monkeypatch, tmp_path):
             chunk, self._buf = self._buf[:n], self._buf[n:]
             return chunk
 
-    monkeypatch.setattr(
-        BENCH, "urlopen", lambda *a, **k: _FakeResponse(payload)
-    )
+    monkeypatch.setattr(BENCH, "urlopen", lambda *a, **k: _FakeResponse(payload))
     cache = tmp_path / "eeg.raw"
     result = BENCH.download_eeg_eye_state(cache_path=cache)
     assert result == cache

@@ -15,7 +15,7 @@ import random
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from ..types import TNFRGraph, NodeId
+    from ..types import NodeId, TNFRGraph
 
 try:
     from ..mathematics.unified_numerical import np
@@ -34,6 +34,7 @@ from ..config.operator_names import (
 )
 
 __all__ = ["AdaptiveSequenceSelector"]
+
 
 class AdaptiveSequenceSelector:
     """Learns and selects optimal operator sequences based on context.
@@ -91,7 +92,9 @@ class AdaptiveSequenceSelector:
         }
 
         # Performance history: sequence_name -> [coherence_gains]
-        self.performance: dict[str, list[float]] = {k: [] for k in self.sequences.keys()}
+        self.performance: dict[str, list[float]] = {
+            k: [] for k in self.sequences.keys()
+        }
 
     def select_sequence(self, context: dict[str, Any]) -> list[str]:
         """Select optimal sequence based on context and historical performance.

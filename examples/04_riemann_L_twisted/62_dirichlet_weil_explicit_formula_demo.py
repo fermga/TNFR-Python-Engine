@@ -84,15 +84,17 @@ def step_1_chi_3_breakdown() -> None:
     print(f"n zeros used     : {cert.n_zeros_used}")
     print(f"zeros γ          : {[round(g, 4) for g in cert.zeros]}")
     print(f"")
-    print(f"constant term    : {cert.constant_term:+.10f}"
-          " = g(0) log(q/π)")
-    print(f"archimedean side : {cert.archimedean_side:+.10f}"
-          " = (1/2π) ∫ h(t) Re ψ(1/4 + a/2 + it/2) dt")
-    print(f"prime side       : {cert.prime_side:+.10f}"
-          " = -2 Re Σ χ(n)Λ(n)/√n · g(log n)")
+    print(f"constant term    : {cert.constant_term:+.10f}" " = g(0) log(q/π)")
+    print(
+        f"archimedean side : {cert.archimedean_side:+.10f}"
+        " = (1/2π) ∫ h(t) Re ψ(1/4 + a/2 + it/2) dt"
+    )
+    print(
+        f"prime side       : {cert.prime_side:+.10f}"
+        " = -2 Re Σ χ(n)Λ(n)/√n · g(log n)"
+    )
     print(f"rhs total        : {cert.rhs_total:+.10f}")
-    print(f"zero side        : {cert.zero_side:+.10f}"
-          " = Σ_γ h(γ)")
+    print(f"zero side        : {cert.zero_side:+.10f}" " = Σ_γ h(γ)")
     print(f"residual         : {cert.residual:+.3e}")
     print(f"relative residual: {cert.relative_residual:.3e}")
     print(f"tolerance        : {cert.tolerance:.3e}")
@@ -117,9 +119,7 @@ def step_2_sweep_characters() -> None:
             chi, n_primes=25, max_power=10, coupling=0.0
         )
         for sigma in (2.0, 2.5, 3.0):
-            cert = verify_twisted_weil_explicit_formula(
-                chi, bundle, sigma=sigma
-            )
+            cert = verify_twisted_weil_explicit_formula(chi, bundle, sigma=sigma)
             print(
                 f"{name:<10} {cert.character_modulus:>3d} "
                 f"{cert.character_parity:>3d} {sigma:>5.2f} "
@@ -142,9 +142,7 @@ def step_3_certificate_summaries() -> None:
         bundle = build_twisted_prime_ladder_hamiltonian(
             chi, n_primes=25, max_power=10, coupling=0.0
         )
-        cert = verify_twisted_weil_explicit_formula(
-            chi, bundle, sigma=2.5
-        )
+        cert = verify_twisted_weil_explicit_formula(chi, bundle, sigma=2.5)
         print(cert.summary())
 
 

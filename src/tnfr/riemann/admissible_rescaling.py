@@ -77,18 +77,12 @@ from typing import Sequence
 
 import numpy as np
 
-from ..constants.canonical import (
-    E as NAPIER_E,
-    GAMMA as EULER_GAMMA,
-    PHI as GOLDEN_RATIO,
-)
-from .hilbert_polya import (
-    fetch_zero_imaginary_parts,
-    wasserstein_1_distance,
-)
+from ..constants.canonical import GAMMA as EULER_GAMMA
+from ..constants.canonical import PHI as GOLDEN_RATIO
+from ..constants.canonical import E as NAPIER_E
+from .hilbert_polya import fetch_zero_imaginary_parts, wasserstein_1_distance
 from .prime_ladder_hamiltonian import build_prime_ladder_hamiltonian
 from .structural_zero_density import build_structural_t_hp
-
 
 __all__ = [
     "extract_positive_spectrum",
@@ -121,9 +115,7 @@ def extract_positive_spectrum(
     eigvals = np.asarray(eigvals, dtype=float)
     eigvecs = np.asarray(eigvecs)
     if eigvals.shape[0] != eigvecs.shape[1]:
-        raise ValueError(
-            "eigvals length must match eigvecs column count"
-        )
+        raise ValueError("eigvals length must match eigvecs column count")
     mask = eigvals > 0.0
     pos_eig = eigvals[mask]
     pos_vec = eigvecs[:, mask]
@@ -274,7 +266,7 @@ def verify_spectrum_match(
             f"H_tilde has {pos_eigs.size} positive eigenvalues; "
             f"need {targets.size} to match targets"
         )
-    pos_eigs = pos_eigs[-targets.size:]
+    pos_eigs = pos_eigs[-targets.size :]
     diff = np.abs(pos_eigs - targets)
     max_diff = float(np.max(diff))
     rel_diff = float(np.max(diff / np.maximum(targets, 1e-12)))
@@ -351,9 +343,7 @@ def oscillatory_correction_canonical(
         delta = amplitude * np.sin(GOLDEN_RATIO * np.log(targets))
         out = targets * (1.0 + delta)
     elif mode == "gamma_e":
-        delta = amplitude * np.cos(
-            EULER_GAMMA * targets / NAPIER_E
-        )
+        delta = amplitude * np.cos(EULER_GAMMA * targets / NAPIER_E)
         out = targets * (1.0 + delta)
     elif mode == "pi_density":
         n = targets.size
@@ -366,9 +356,7 @@ def oscillatory_correction_canonical(
     else:
         raise ValueError(f"unknown oscillatory mode: {mode!r}")
     if np.any(out <= 0.0):
-        raise ValueError(
-            "perturbation drove a target non-positive; reduce amplitude"
-        )
+        raise ValueError("perturbation drove a target non-positive; reduce amplitude")
     return np.sort(out)
 
 
@@ -444,31 +432,24 @@ class AdmissibleRescalingCertificate:
             "=======================================",
             f"  n_targets                       : {self.n_targets}",
             "  --- Smooth half of F_cand (operator-level lift of P28) ---",
-            f"  self-adjoint after conjugation  : "
-            f"{self.smooth_self_adjoint}",
+            f"  self-adjoint after conjugation  : " f"{self.smooth_self_adjoint}",
             f"  spectrum matches smooth targets : "
             f"{self.smooth_spectrum_matches_targets}",
-            f"  max |spec − ñ_i|                : "
-            f"{self.smooth_max_spec_diff:.4e}",
+            f"  max |spec − ñ_i|                : " f"{self.smooth_max_spec_diff:.4e}",
             "  --- W_1 gaps to true Riemann zeros ---",
-            f"  W_1(σ(P14),     {{γ_i}})         : "
-            f"{self.w1_p14_vs_true:.4e}",
-            f"  W_1({{ñ_i}},     {{γ_i}}) (smooth) : "
-            f"{self.w1_smooth_vs_true:.4e}",
+            f"  W_1(σ(P14),     {{γ_i}})         : " f"{self.w1_p14_vs_true:.4e}",
+            f"  W_1({{ñ_i}},     {{γ_i}}) (smooth) : " f"{self.w1_smooth_vs_true:.4e}",
             f"  smooth improvement ratio        : "
             f"{self.smooth_improvement_ratio:.2f}×",
             "  --- Canonical oscillatory enrichment ---",
-            f"  mode                            : "
-            f"{self.oscillatory_mode}",
-            f"  best amplitude                  : "
-            f"{self.oscillatory_amplitude:.4e}",
+            f"  mode                            : " f"{self.oscillatory_mode}",
+            f"  best amplitude                  : " f"{self.oscillatory_amplitude:.4e}",
             f"  W_1(osc, {{γ_i}})                : "
             f"{self.w1_oscillatory_vs_true:.4e}",
             f"  rel improvement over smooth     : "
             f"{self.oscillatory_improvement_over_smooth*100:+.2f} %",
             "",
-            f"  structurally derived            : "
-            f"{self.structurally_derived}",
+            f"  structurally derived            : " f"{self.structurally_derived}",
         ]
         if self.notes:
             lines.append("")
@@ -519,7 +500,12 @@ def compute_admissible_rescaling_certificate(
         raise ValueError("n_targets must be >= 4")
     if oscillatory_amplitudes is None:
         oscillatory_amplitudes = (
-            0.0, 1e-3, 5e-3, 1e-2, 5e-2, 1e-1,
+            0.0,
+            1e-3,
+            5e-3,
+            1e-2,
+            5e-2,
+            1e-1,
         )
 
     # 1. P14 spectrum & eigenvectors via canonical API
@@ -529,9 +515,7 @@ def compute_admissible_rescaling_certificate(
     eigvals_all, eigvecs_all = bundle.hamiltonian.get_spectrum()
     eigvals_all = np.real(np.asarray(eigvals_all, dtype=float))
     eigvecs_all = np.asarray(eigvecs_all)
-    lambdas, U_kept = extract_positive_spectrum(
-        eigvals_all, eigvecs_all, n_targets
-    )
+    lambdas, U_kept = extract_positive_spectrum(eigvals_all, eigvecs_all, n_targets)
 
     # 2. Canonical targets (P28 smooth zero positions)
     smooth_targets = build_structural_t_hp(n_targets, dps=dps)
@@ -542,9 +526,7 @@ def compute_admissible_rescaling_certificate(
     # in the kept eigenbasis where H_sub = diag(lambdas) and
     # F_sub = diag(sqrt(mu_i/lambda_i)). The conjugation is exact
     # by construction (verified below at machine precision).
-    _F_smooth_ambient = build_smooth_rescaling_operator(
-        lambdas, U_kept, smooth_targets
-    )
+    _F_smooth_ambient = build_smooth_rescaling_operator(lambdas, U_kept, smooth_targets)
     _ = _F_smooth_ambient  # exposed via build_smooth_rescaling_operator
     H_sub = np.diag(lambdas)
     F_sub = np.diag(np.sqrt(smooth_targets / lambdas))
@@ -575,9 +557,7 @@ def compute_admissible_rescaling_certificate(
             best_w1 = w1_p
             best_amp = float(amp)
 
-    rel_improvement_osc = (
-        (w1_smooth - best_w1) / w1_smooth if w1_smooth > 0.0 else 0.0
-    )
+    rel_improvement_osc = (w1_smooth - best_w1) / w1_smooth if w1_smooth > 0.0 else 0.0
 
     notes = (
         "F_smooth is constructed ONLY from P14 eigendata and P28 "

@@ -11,12 +11,13 @@ Validates the ~70% speedup claim across 6 optimization tracks:
 Measures latency vs graph size (50 - 5000 nodes) and computes speedup ratios.
 """
 
-import time
-import json
 import csv
+import json
 import sys
+import time
 from pathlib import Path
-from typing import Dict, List, Tuple, Any, Callable
+from typing import Any, Callable, Dict, List, Tuple
+
 import numpy as np
 
 # Fix import path
@@ -29,22 +30,20 @@ except ImportError:
 
 # Attempt to import TNFR modules
 try:
+    from tnfr.config import get_precision_mode, set_precision_mode
+    from tnfr.operators.grammar_memoization import (
+        clear_memoization_cache,
+        validate_sequence_optimized,
+    )
     from tnfr.physics.canonical import (
-        compute_structural_potential,
-        compute_phase_gradient,
         compute_phase_curvature,
+        compute_phase_gradient,
+        compute_structural_potential,
         estimate_coherence_length,
     )
-    from tnfr.physics.extended import (
-        compute_phase_current,
-        compute_dnfr_flux,
-    )
-    from tnfr.operators.grammar_memoization import (
-        validate_sequence_optimized,
-        clear_memoization_cache,
-    )
+    from tnfr.physics.extended import compute_dnfr_flux, compute_phase_current
     from tnfr.telemetry import get_unified_telemetry_system
-    from tnfr.config import get_precision_mode, set_precision_mode
+
     TNFR_AVAILABLE = True
 except ImportError as e:
     TNFR_AVAILABLE = False
@@ -118,10 +117,7 @@ class OptimizationBenchmark:
     def _max_abs_diff_dict(a: Dict[Any, float], b: Dict[Any, float]) -> float:
         """Compute max absolute difference between two node->value maps."""
         keys = set(a.keys()) | set(b.keys())
-        diffs = [
-            abs(float(a.get(k, 0.0)) - float(b.get(k, 0.0)))
-            for k in keys
-        ]
+        diffs = [abs(float(a.get(k, 0.0)) - float(b.get(k, 0.0))) for k in keys]
         return float(max(diffs)) if diffs else 0.0
 
     def benchmark_precision_modes(self) -> Dict[str, List[Dict[str, Any]]]:
@@ -178,20 +174,14 @@ class OptimizationBenchmark:
                 high_ms = float(np.mean(high_times))
 
                 # Drift metrics
-                drift_phi = self._max_abs_diff_dict(
-                    std_out["phi_s"], high_out["phi_s"]
-                )
-                drift_grad = self._max_abs_diff_dict(
-                    std_out["grad"], high_out["grad"]
-                )
-                drift_curv = self._max_abs_diff_dict(
-                    std_out["curv"], high_out["curv"]
-                )
+                drift_phi = self._max_abs_diff_dict(std_out["phi_s"], high_out["phi_s"])
+                drift_grad = self._max_abs_diff_dict(std_out["grad"], high_out["grad"])
+                drift_curv = self._max_abs_diff_dict(std_out["curv"], high_out["curv"])
                 drift_xic = (
                     abs(float(std_out["xi_c"]) - float(high_out["xi_c"]))
                     if not (
-                        np.isnan(std_out["xi_c"]) or
-                        np.isnan(high_out["xi_c"])  # type: ignore[arg-type]
+                        np.isnan(std_out["xi_c"])
+                        or np.isnan(high_out["xi_c"])  # type: ignore[arg-type]
                     )
                     else float("nan")
                 )
@@ -261,12 +251,8 @@ class OptimizationBenchmark:
 
             speedup = baseline_avg / (optimized_avg + 1e-9)
 
-            results["baseline"].append(
-                {"size": size, "time_ms": baseline_avg}
-            )
-            results["optimized"].append(
-                {"size": size, "time_ms": optimized_avg}
-            )
+            results["baseline"].append({"size": size, "time_ms": baseline_avg})
+            results["optimized"].append({"size": size, "time_ms": optimized_avg})
             results["speedup"].append({"size": size, "ratio": speedup})
 
         return results
@@ -344,12 +330,8 @@ class OptimizationBenchmark:
 
             speedup = first_avg / (cached_avg + 1e-9)
 
-            results["first_call"].append(
-                {"size": size, "time_ms": first_avg}
-            )
-            results["cached_call"].append(
-                {"size": size, "time_ms": cached_avg}
-            )
+            results["first_call"].append({"size": size, "time_ms": first_avg})
+            results["cached_call"].append({"size": size, "time_ms": cached_avg})
             results["speedup"].append({"size": size, "ratio": speedup})
             results["hit_rate"].append({"size": size, "rate": 0.85})
 
@@ -455,7 +437,7 @@ class OptimizationBenchmark:
                             phi_s=0.6,
                             phase_gradient=0.1,
                             phase_curvature=0.05,
-                            coherence_length=10.0
+                            coherence_length=10.0,
                         )
                         telemetry.flush()
                     except Exception:
@@ -465,12 +447,8 @@ class OptimizationBenchmark:
 
             total_avg = field_avg + emit_avg
 
-            results["fields_computation"].append(
-                {"size": size, "time_ms": field_avg}
-            )
-            results["telemetry_emit"].append(
-                {"size": size, "time_ms": emit_avg}
-            )
+            results["fields_computation"].append({"size": size, "time_ms": field_avg})
+            results["telemetry_emit"].append({"size": size, "time_ms": emit_avg})
             results["total"].append({"size": size, "time_ms": total_avg})
 
         return results
@@ -489,9 +467,7 @@ class OptimizationBenchmark:
         print("   ✅ Complete")
 
         print("🔄 Benchmarking Grammar Memoization...")
-        all_results["grammar_memoization"] = (
-            self.benchmark_grammar_memoization()
-        )
+        all_results["grammar_memoization"] = self.benchmark_grammar_memoization()
         print("   ✅ Complete")
 
         print("🔄 Benchmarking Φ_s Optimization...")
@@ -530,9 +506,7 @@ class BenchmarkReporter:
         print()
 
         for track_name, track_results in all_results.items():
-            avg_speedup = BenchmarkReporter.calculate_average_speedup(
-                track_results
-            )
+            avg_speedup = BenchmarkReporter.calculate_average_speedup(track_results)
             print(f"Track: {track_name}")
             print(f"  Average Speedup: {avg_speedup:.2f}x")
             print()

@@ -62,26 +62,19 @@ from collections import defaultdict
 from collections.abc import Iterable, Mapping, MutableMapping, Sized
 from functools import lru_cache, partial
 from threading import Lock
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Generic,
-    Hashable,
-    TypeVar,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Callable, Generic, Hashable, TypeVar, cast
 
 from .compat.dataclass import dataclass
 from .constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
+from .mathematics.unified_numerical import np
 from .types import FloatArray, NodeId
 from .utils import convert_value
-from .mathematics.unified_numerical import np
 
 if TYPE_CHECKING:  # pragma: no cover
     import networkx
 
 T = TypeVar("T")
+
 
 def _bepi_to_float(value: Any) -> float:
     """Extract scalar from BEPIElement dict or convert value to float.
@@ -108,6 +101,7 @@ def _bepi_to_float(value: Any) -> float:
         return float(abs(cont))
     return float(value)
 
+
 @lru_cache(maxsize=128)
 def _alias_cache(alias_tuple: tuple[str, ...]) -> tuple[str, ...]:
     """Validate and cache alias tuples.
@@ -122,6 +116,7 @@ def _alias_cache(alias_tuple: tuple[str, ...]) -> tuple[str, ...]:
         raise TypeError("'aliases' elements must be strings")
     return alias_tuple
 
+
 class AliasAccessor(Generic[T]):
     """Helper providing ``get`` and ``set`` for alias-based attributes.
 
@@ -130,7 +125,9 @@ class AliasAccessor(Generic[T]):
     :func:`set_attr` delegate to a module-level instance of this class.
     """
 
-    def __init__(self, conv: Callable[[Any], T] | None = None, default: T | None = None) -> None:
+    def __init__(
+        self, conv: Callable[[Any], T] | None = None, default: T | None = None
+    ) -> None:
         self._conv = conv
         self._default = default
         # expose cache for testing and manual control
@@ -205,12 +202,16 @@ class AliasAccessor(Generic[T]):
         aliases, conv, default = self._prepare(aliases, conv, default)
         cache_key, key = self._resolve_cache_key(d, aliases)
         if key is not None:
-            ok, value = convert_value(d[key], conv, strict=strict, key=key, log_level=log_level)
+            ok, value = convert_value(
+                d[key], conv, strict=strict, key=key, log_level=log_level
+            )
             if ok:
                 return value
         for key in aliases:
             if key in d:
-                ok, value = convert_value(d[key], conv, strict=strict, key=key, log_level=log_level)
+                ok, value = convert_value(
+                    d[key], conv, strict=strict, key=key, log_level=log_level
+                )
                 if ok:
                     with self._lock:
                         self._key_cache[cache_key] = (key, len(d))
@@ -248,7 +249,9 @@ class AliasAccessor(Generic[T]):
             self._key_cache[cache_key] = (key, len(d))
         return val
 
+
 _generic_accessor: AliasAccessor[Any] = AliasAccessor()
+
 
 def get_theta_attr(
     d: Mapping[str, Any],
@@ -267,6 +270,7 @@ def get_theta_attr(
         log_level=log_level,
         conv=conv,
     )
+
 
 def get_attr(
     d: dict[str, Any],
@@ -295,6 +299,7 @@ def get_attr(
         log_level=log_level,
         conv=conv,
     )
+
 
 def collect_attr(
     G: "networkx.Graph",
@@ -336,9 +341,12 @@ def collect_attr(
         return float(val) if val is not None else default
 
     if np is not None:
-        values: FloatArray = np.fromiter((_value(n) for n in nodes_iter), float, count=size)
+        values: FloatArray = np.fromiter(
+            (_value(n) for n in nodes_iter), float, count=size
+        )
         return values
     return [_value(n) for n in nodes_iter]
+
 
 def collect_theta_attr(
     G: "networkx.Graph",
@@ -361,10 +369,13 @@ def collect_theta_attr(
         return cast(float, get_theta_attr(G.nodes[node], default))
 
     if np is not None:
-        values: FloatArray = np.fromiter((_value(n) for n in nodes_iter), float, count=size)
+        values: FloatArray = np.fromiter(
+            (_value(n) for n in nodes_iter), float, count=size
+        )
         return values
 
     return [_value(n) for n in nodes_iter]
+
 
 def set_attr_generic(
     d: dict[str, Any],
@@ -387,10 +398,12 @@ def set_attr_generic(
 
     return _generic_accessor.set(d, aliases, value, conv=conv)
 
+
 set_attr = partial(set_attr_generic, conv=float)
 
 get_attr_str = partial(get_attr, conv=str)
 set_attr_str = partial(set_attr_generic, conv=str)
+
 
 def set_theta_attr(d: MutableMapping[str, Any], value: Any) -> float:
     """Assign ``theta``/``phase`` using the English attribute names."""
@@ -399,9 +412,11 @@ def set_theta_attr(d: MutableMapping[str, Any], value: Any) -> float:
     d["phase"] = result
     return result
 
+
 # -------------------------
 # Cached global maxima
 # -------------------------
+
 
 @dataclass(slots=True)
 @dataclass
@@ -410,6 +425,7 @@ class AbsMaxResult:
 
     max_value: float
     node: Hashable | None
+
 
 def _coerce_abs_value(value: Any) -> float:
     """Return ``value`` as ``float`` treating ``None`` as ``0.0``."""
@@ -420,6 +436,7 @@ def _coerce_abs_value(value: Any) -> float:
         return _bepi_to_float(value)
     except (TypeError, ValueError):
         return 0.0
+
 
 def _compute_abs_max_result(
     G: "networkx.Graph",
@@ -454,7 +471,10 @@ def _compute_abs_max_result(
         max_val = abs(float(value))
     else:
         node, max_val = max(
-            ((n, abs(cast(float, get_attr(G.nodes[n], aliases, 0.0)))) for n in G.nodes()),
+            (
+                (n, abs(cast(float, get_attr(G.nodes[n], aliases, 0.0))))
+                for n in G.nodes()
+            ),
             key=lambda item: item[1],
             default=(None, 0.0),
         )
@@ -465,6 +485,7 @@ def _compute_abs_max_result(
         G.graph[f"{key}_node"] = node
 
     return AbsMaxResult(max_value=max_val, node=node)
+
 
 def multi_recompute_abs_max(
     G: "networkx.Graph", alias_map: dict[str, tuple[str, ...]]
@@ -481,9 +502,13 @@ def multi_recompute_abs_max(
     items = list(alias_map.items())
     for _, nd in G.nodes(data=True):
         maxima.update(
-            {key: max(maxima[key], abs(cast(float, get_attr(nd, aliases, 0.0)))) for key, aliases in items}
+            {
+                key: max(maxima[key], abs(cast(float, get_attr(nd, aliases, 0.0))))
+                for key, aliases in items
+            }
         )
     return {k: float(v) for k, v in maxima.items()}
+
 
 def _update_cached_abs_max(
     G: "networkx.Graph",
@@ -512,6 +537,7 @@ def _update_cached_abs_max(
         return _compute_abs_max_result(G, aliases, key=key)
     return AbsMaxResult(max_value=cur, node=cur_node)
 
+
 def set_attr_and_cache(
     G: "networkx.Graph",
     n: Hashable,
@@ -538,6 +564,7 @@ def set_attr_and_cache(
         extra(G, n, val)
     return result
 
+
 def set_attr_with_max(
     G: "networkx.Graph",
     n: Hashable,
@@ -554,6 +581,7 @@ def set_attr_with_max(
         AbsMaxResult,
         set_attr_and_cache(G, n, aliases, value, cache=cache),
     )
+
 
 def set_scalar(
     G: "networkx.Graph",
@@ -574,10 +602,12 @@ def set_scalar(
 
     return set_attr_and_cache(G, n, alias, value, cache=cache, extra=extra)
 
+
 def _increment_trig_version(G: "networkx.Graph", _: Hashable, __: float) -> None:
     """Increment cached trig version to invalidate trig caches."""
     g = G.graph
     g["_trig_version"] = int(g.get("_trig_version", 0)) + 1
+
 
 SCALAR_SETTERS: dict[str, dict[str, Any]] = {
     "vf": {
@@ -598,7 +628,10 @@ SCALAR_SETTERS: dict[str, dict[str, Any]] = {
     },
 }
 
-def _make_scalar_setter(name: str, spec: dict[str, Any]) -> Callable[..., AbsMaxResult | None]:
+
+def _make_scalar_setter(
+    name: str, spec: dict[str, Any]
+) -> Callable[..., AbsMaxResult | None]:
     alias = spec["alias"]
     cache = spec.get("cache")
     extra = spec.get("extra")
@@ -619,13 +652,16 @@ def _make_scalar_setter(name: str, spec: dict[str, Any]) -> Callable[..., AbsMax
 
     else:
 
-        def setter(G: "networkx.Graph", n: Hashable, value: float) -> AbsMaxResult | None:
+        def setter(
+            G: "networkx.Graph", n: Hashable, value: float
+        ) -> AbsMaxResult | None:
             return set_scalar(G, n, alias, value, cache=cache, extra=extra)
 
     setter.__name__ = f"set_{name}"
     setter.__qualname__ = f"set_{name}"
     setter.__doc__ = doc
     return setter
+
 
 for _name, _spec in SCALAR_SETTERS.items():
     globals()[f"set_{_name}"] = _make_scalar_setter(_name, _spec)
@@ -637,7 +673,10 @@ _set_theta_impl = cast(
     globals()["set_theta"],
 )
 
-def _set_theta_with_compat(G: "networkx.Graph", n: Hashable, value: float) -> AbsMaxResult | None:
+
+def _set_theta_with_compat(
+    G: "networkx.Graph", n: Hashable, value: float
+) -> AbsMaxResult | None:
     nd = cast(MutableMapping[str, Any], G.nodes[n])
     result = _set_theta_impl(G, n, value)
     theta_val = get_theta_attr(nd, value)
@@ -646,6 +685,7 @@ def _set_theta_with_compat(G: "networkx.Graph", n: Hashable, value: float) -> Ab
         nd["theta"] = float_theta
         nd["phase"] = float_theta
     return result
+
 
 _set_theta_with_compat.__name__ = "set_theta"
 _set_theta_with_compat.__qualname__ = "set_theta"

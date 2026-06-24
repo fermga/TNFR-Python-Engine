@@ -81,14 +81,14 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from sympy import factorint, divisor_count, divisor_sigma
+from sympy import divisor_count, divisor_sigma, factorint
 
 from tnfr.mathematics.number_theory import (
-    ArithmeticTNFRParameters,
     ArithmeticStructuralTerms,
     ArithmeticTNFRFormalism,
+    ArithmeticTNFRParameters,
 )
 
 _PARAMS = ArithmeticTNFRParameters()
@@ -145,11 +145,14 @@ def experiment_1_fixed_point_set():
     Z = zero_pressure_set(N)
     # verify the theorem on this substrate: zero pressure <=> prime
     from sympy import isprime
+
     mismatches = [n for n in range(2, N) if is_zero_pressure(n) != bool(isprime(n))]
     print(f"  |Z| below {N} = {len(Z)} fixed points; first 10: {Z[:10]}")
     print(f"  theorem check: zero-pressure <=> prime mismatches = {len(mismatches)}")
-    print(f"  sample pressures: DeltaNFR(97)={delta_nfr(97):.1e} (prime), "
-          f"DeltaNFR(98)={delta_nfr(98):.3f} (=2·7², composite)")
+    print(
+        f"  sample pressures: DeltaNFR(97)={delta_nfr(97):.1e} (prime), "
+        f"DeltaNFR(98)={delta_nfr(98):.3f} (=2·7², composite)"
+    )
     print()
     print("VERDICT: Z is exactly the primes — the substrate on which every")
     print("prime family is carved out by an arithmetic map.")
@@ -180,10 +183,13 @@ def experiment_2_additive_gap_levelsets(Z):
     print("  Witness signature for TWIN pairs (the even p+1 between them):")
     twins = [(p, p + 2) for p in Z if (p + 2) in Zset and p > 3]
     div6 = sum(1 for p, _ in twins if (p + 1) % 6 == 0)
-    mean_div_p = sum(pressure_components(p + 1)["divisor_pressure"]
-                     for p, _ in twins) / len(twins)
-    print(f"    p+1 divisible by 6: {div6}/{len(twins)} pairs (p>3) -> "
-          f"{'ALL' if div6 == len(twins) else 'NOT all'}")
+    mean_div_p = sum(
+        pressure_components(p + 1)["divisor_pressure"] for p, _ in twins
+    ) / len(twins)
+    print(
+        f"    p+1 divisible by 6: {div6}/{len(twins)} pairs (p>3) -> "
+        f"{'ALL' if div6 == len(twins) else 'NOT all'}"
+    )
     print(f"    mean divisor-pressure of p+1 = {mean_div_p:.2f} (rich lattice)")
     print()
     print("HONEST: 'p+1 always 6|p+1' is the CLASSICAL twin fact, here read")
@@ -210,8 +216,10 @@ def experiment_3_affine_orbits(Z):
     sg = [p for p in Z if is_zero_pressure(2 * p + 1)]
     safe = [p for p in Z if (p - 1) % 2 == 0 and is_zero_pressure((p - 1) // 2)]
     print(f"  Sophie Germain (T(p) in Z): {len(sg)} primes; first 8: {sg[:8]}")
-    print(f"    -> matches OEIS A005384 head [2,3,5,11,23,29,41,53]: "
-          f"{sg[:8] == [2, 3, 5, 11, 23, 29, 41, 53]}")
+    print(
+        f"    -> matches OEIS A005384 head [2,3,5,11,23,29,41,53]: "
+        f"{sg[:8] == [2, 3, 5, 11, 23, 29, 41, 53]}"
+    )
     print(f"  safe primes (T^-1(p) in Z):  {len(safe)} primes; first 8: {safe[:8]}")
     print()
 
@@ -247,17 +255,21 @@ def experiment_4_exponential_images(Z):
     print("(classical large-Mersenne needs Lucas-Lehmer, not a TNFR fact).")
     print()
 
-    mers = [p for p in Z if p <= 31 and is_zero_pressure(2 ** p - 1)]
+    mers = [p for p in Z if p <= 31 and is_zero_pressure(2**p - 1)]
     print(f"  Mersenne exponents p<=31 (2^p−1 in Z): {mers}")
-    print(f"    -> matches known M-exponents [2,3,5,7,13,17,19,31]: "
-          f"{mers == [2, 3, 5, 7, 13, 17, 19, 31]}")
+    print(
+        f"    -> matches known M-exponents [2,3,5,7,13,17,19,31]: "
+        f"{mers == [2, 3, 5, 7, 13, 17, 19, 31]}"
+    )
     print()
     # show a near miss: 2^11-1 = 23*89 composite (11 is prime but not Mersenne)
-    m11 = 2 ** 11 - 1
+    m11 = 2**11 - 1
     comp = pressure_components(m11)
     print(f"  near miss: 2^11−1 = {m11} = 23·89, ΔNFR = {delta_nfr(m11):.3f} > 0")
-    print(f"    (factorization-pressure {comp['factorization_pressure']:.3f}: "
-          f"Ω=2 ⟹ image left Z)")
+    print(
+        f"    (factorization-pressure {comp['factorization_pressure']:.3f}: "
+        f"Ω=2 ⟹ image left Z)"
+    )
     print()
     print("VERDICT: the exponential generator M maps only a sparse subset of")
     print("Z back into Z. TNFR detects membership exactly in range; it does")

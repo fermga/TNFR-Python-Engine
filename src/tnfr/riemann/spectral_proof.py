@@ -70,10 +70,7 @@ from typing import Sequence
 from scipy.linalg import eigh_tridiagonal
 
 from ..mathematics.unified_numerical import np
-from .operator import (
-    build_tridiagonal_h_tnfr,
-    _first_primes,
-)
+from .operator import _first_primes, build_tridiagonal_h_tnfr
 
 # ---------------------------------------------------------------------------
 # Public API
@@ -111,6 +108,7 @@ __all__ = [
 # Data Structures
 # ============================================================================
 
+
 @dataclass(frozen=True)
 class EquilibriumResult:
     r"""Structural equilibrium verification for graph size k.
@@ -142,6 +140,7 @@ class EquilibriumResult:
     spectral_width: float
     ground_velocity: float
     mean_log_prime: float
+
 
 @dataclass(frozen=True)
 class ThermodynamicResult:
@@ -187,6 +186,7 @@ class ThermodynamicResult:
     energy_at_half: float
     energy_at_star: float
 
+
 @dataclass(frozen=True)
 class EigenvalueFlowResult:
     r"""Eigenvalue flow analysis via Hellmann-Feynman theorem.
@@ -227,6 +227,7 @@ class EigenvalueFlowResult:
     eigenvalue_trajectories: np.ndarray
     sigma_scan: np.ndarray
 
+
 @dataclass(frozen=True)
 class SpectralMomentResult:
     r"""Spectral moment and trace analysis.
@@ -255,6 +256,7 @@ class SpectralMomentResult:
     mean_spacing: float
     spacing_distribution: np.ndarray
     spectral_gap: float
+
 
 @dataclass
 class TNFRRiemannAssessment:
@@ -310,9 +312,11 @@ class TNFRRiemannAssessment:
     overall_confidence: float = 0.0
     summary: str = ""
 
+
 # ============================================================================
 # Core Spectral Computation
 # ============================================================================
+
 
 def compute_eigenspectrum(
     k: int,
@@ -344,6 +348,7 @@ def compute_eigenspectrum(
         return np.sort(d)
     return np.sort(eigh_tridiagonal(d, e, eigvals_only=True))
 
+
 def compute_eigensystem(
     k: int,
     sigma: float = 0.5,
@@ -366,6 +371,7 @@ def compute_eigensystem(
         return np.array(d), np.eye(len(d))
     eigenvalues, eigenvectors = eigh_tridiagonal(d, e)
     return eigenvalues, eigenvectors
+
 
 # ============================================================================
 # LINE 1: Structural Equilibrium Theorem
@@ -391,10 +397,12 @@ def compute_eigensystem(
 #   sigma = 1/2 is the unique structural equilibrium of H_TNFR.
 # ============================================================================
 
+
 def _get_log_primes(k: int, *, weight_by_log_gap: bool = True) -> np.ndarray:
     """Return log(p_i) for the first k primes."""
     primes = _first_primes(k)
     return np.array([np.log(float(p)) for p in primes])
+
 
 def verify_equilibrium(
     k: int,
@@ -411,8 +419,9 @@ def verify_equilibrium(
     The ground state velocity equals <1|V_1|1>/k = mean(log p_i),
     which by PNT approaches log(k) as k -> infinity.
     """
-    eigenvalues, eigenvectors = compute_eigensystem(k, 0.5,
-                                                     weight_by_log_gap=weight_by_log_gap)
+    eigenvalues, eigenvectors = compute_eigensystem(
+        k, 0.5, weight_by_log_gap=weight_by_log_gap
+    )
 
     log_p = _get_log_primes(k, weight_by_log_gap=weight_by_log_gap)
     mean_log_p = float(np.mean(log_p))
@@ -423,7 +432,7 @@ def verify_equilibrium(
 
     # Hellmann-Feynman: d(lambda_j)/dsigma = <psi_j|V_1|psi_j>
     psi_0 = eigenvectors[:, 0]
-    ground_velocity = float(np.sum(psi_0 ** 2 * log_p))
+    ground_velocity = float(np.sum(psi_0**2 * log_p))
 
     return EquilibriumResult(
         k=k,
@@ -433,6 +442,7 @@ def verify_equilibrium(
         ground_velocity=ground_velocity,
         mean_log_prime=mean_log_p,
     )
+
 
 def verify_equilibrium_sequence(
     k_values: Sequence[int],
@@ -445,6 +455,7 @@ def verify_equilibrium_sequence(
         for k in k_values
         if k >= 3
     ]
+
 
 # ============================================================================
 # LINE 2: Thermodynamic Attractor Analysis
@@ -482,6 +493,7 @@ def verify_equilibrium_sequence(
 #   identifies the thermodynamic ground state of the TNFR operator.
 # ============================================================================
 
+
 def _compute_lv1_traces(
     k: int,
     *,
@@ -501,8 +513,9 @@ def _compute_lv1_traces(
         k, 0.5, weight_by_log_gap=weight_by_log_gap
     )
     tr_LV1 = float(np.dot(d_L, log_p))
-    tr_V1_sq = float(np.sum(log_p ** 2))
+    tr_V1_sq = float(np.sum(log_p**2))
     return tr_LV1, tr_V1_sq, log_p
+
 
 def compute_analytic_sigma_star(
     k: int,
@@ -533,6 +546,7 @@ def compute_analytic_sigma_star(
     sigma_star = 0.5 - tr_LV1 / tr_V1_sq
     return sigma_star, tr_LV1, tr_V1_sq
 
+
 def compute_frobenius_energy(
     k: int,
     sigma: float,
@@ -545,7 +559,8 @@ def compute_frobenius_energy(
     operator, corresponding to (1/2k) sum lambda_j(sigma)^2.
     """
     eigenvalues = compute_eigenspectrum(k, sigma, weight_by_log_gap=weight_by_log_gap)
-    return float(np.sum(eigenvalues ** 2) / (2.0 * k))
+    return float(np.sum(eigenvalues**2) / (2.0 * k))
+
 
 def compute_thermodynamic_landscape(
     k: int,
@@ -562,7 +577,9 @@ def compute_thermodynamic_landscape(
     - Cross-term and curvature analysis
     """
     # Analytic result
-    tr_LV1, tr_V1_sq, log_p = _compute_lv1_traces(k, weight_by_log_gap=weight_by_log_gap)
+    tr_LV1, tr_V1_sq, log_p = _compute_lv1_traces(
+        k, weight_by_log_gap=weight_by_log_gap
+    )
     sigma_star_a = 0.5 - tr_LV1 / max(tr_V1_sq, 1e-15)
 
     # Curvature: d^2E/dsigma^2 = (1/k) tr(V_1^2)
@@ -570,12 +587,10 @@ def compute_thermodynamic_landscape(
 
     # Energy at sigma = 1/2
     evals_half = compute_eigenspectrum(k, 0.5, weight_by_log_gap=weight_by_log_gap)
-    energy_half = float(np.sum(evals_half ** 2) / (2.0 * k))
+    energy_half = float(np.sum(evals_half**2) / (2.0 * k))
 
     # Numerical verification: scan E(sigma) using cached tridiagonal base
-    d_L, e_L, _ = build_tridiagonal_h_tnfr(
-        k, 0.5, weight_by_log_gap=weight_by_log_gap
-    )
+    d_L, e_L, _ = build_tridiagonal_h_tnfr(k, 0.5, weight_by_log_gap=weight_by_log_gap)
     sigmas = np.linspace(sigma_range[0], sigma_range[1], n_points)
     energies = np.zeros(n_points)
 
@@ -583,14 +598,15 @@ def compute_thermodynamic_landscape(
         delta = sig - 0.5
         d_sigma = d_L + delta * log_p if abs(delta) > 0 else d_L
         evals = eigh_tridiagonal(d_sigma, e_L, eigvals_only=True)
-        energies[i] = float(np.sum(evals ** 2) / (2.0 * k))
+        energies[i] = float(np.sum(evals**2) / (2.0 * k))
 
     idx_min = int(np.argmin(energies))
     sigma_star_n = float(sigmas[idx_min])
 
     # Energy at analytic minimum
-    energy_star = compute_frobenius_energy(k, sigma_star_a,
-                                           weight_by_log_gap=weight_by_log_gap)
+    energy_star = compute_frobenius_energy(
+        k, sigma_star_a, weight_by_log_gap=weight_by_log_gap
+    )
 
     deviation = abs(sigma_star_a - 0.5)
 
@@ -605,6 +621,7 @@ def compute_thermodynamic_landscape(
         energy_at_half=energy_half,
         energy_at_star=energy_star,
     )
+
 
 def verify_thermodynamic_convergence(
     k_values: Sequence[int],
@@ -623,6 +640,7 @@ def verify_thermodynamic_convergence(
         for k in k_values
         if k >= 3
     ]
+
 
 # ============================================================================
 # LINE 3: Eigenvalue Flow Analysis
@@ -648,6 +666,7 @@ def verify_thermodynamic_convergence(
 #   minimum eigenvalue crosses zero exactly once, at sigma = 1/2.
 # ============================================================================
 
+
 def compute_eigenvalue_velocities(
     k: int,
     sigma: float = 0.5,
@@ -659,17 +678,18 @@ def compute_eigenvalue_velocities(
     Returns array of velocities v_j = <psi_j|V_1|psi_j> for j=0,...,k-1,
     sorted in the same order as the eigenvalues.
     """
-    eigenvalues, eigenvectors = compute_eigensystem(k, sigma,
-                                                     weight_by_log_gap=weight_by_log_gap)
+    eigenvalues, eigenvectors = compute_eigensystem(
+        k, sigma, weight_by_log_gap=weight_by_log_gap
+    )
     log_p = _get_log_primes(k, weight_by_log_gap=weight_by_log_gap)
 
     # v_j = sum_i |psi_j(i)|^2 log(p_i)
-    velocities = np.array([
-        float(np.sum(eigenvectors[:, j] ** 2 * log_p))
-        for j in range(k)
-    ])
+    velocities = np.array(
+        [float(np.sum(eigenvectors[:, j] ** 2 * log_p)) for j in range(k)]
+    )
 
     return velocities
+
 
 def analyze_eigenvalue_flow(
     k: int,
@@ -695,8 +715,9 @@ def analyze_eigenvalue_flow(
         evals = np.sort(eigh_tridiagonal(d_sigma, e_L, eigvals_only=True))
         trajectories[i, :] = evals
 
-    velocities = compute_eigenvalue_velocities(k, 0.5,
-                                                weight_by_log_gap=weight_by_log_gap)
+    velocities = compute_eigenvalue_velocities(
+        k, 0.5, weight_by_log_gap=weight_by_log_gap
+    )
 
     all_pos = bool(np.all(velocities > 0))
     v_min = float(np.min(velocities))
@@ -713,6 +734,7 @@ def analyze_eigenvalue_flow(
         eigenvalue_trajectories=trajectories,
         sigma_scan=sigmas,
     )
+
 
 # ============================================================================
 # LINE 4: Spectral Moment & Spacing Analysis
@@ -735,6 +757,7 @@ def analyze_eigenvalue_flow(
 # the prime-gap edge weights.
 # ============================================================================
 
+
 def _unfold_eigenvalues(eigenvalues: np.ndarray) -> np.ndarray:
     r"""Unfold eigenvalues to unit mean spacing.
 
@@ -753,6 +776,7 @@ def _unfold_eigenvalues(eigenvalues: np.ndarray) -> np.ndarray:
     unfolded = np.polyval(coeffs, sorted_evals) * n
     return unfolded
 
+
 def compute_eigenvalue_spacings(eigenvalues: np.ndarray) -> np.ndarray:
     """Compute normalised nearest-neighbour spacings after unfolding."""
     unfolded = _unfold_eigenvalues(eigenvalues)
@@ -762,6 +786,7 @@ def compute_eigenvalue_spacings(eigenvalues: np.ndarray) -> np.ndarray:
     if mean_sp > 1e-15:
         spacings = spacings / mean_sp
     return spacings
+
 
 def compute_spectral_moments(
     k: int,
@@ -789,7 +814,7 @@ def compute_spectral_moments(
     """
     evals = compute_eigenspectrum(k, sigma, weight_by_log_gap=weight_by_log_gap)
 
-    moments = np.array([float(np.mean(evals ** n)) for n in range(1, max_n + 1)])
+    moments = np.array([float(np.mean(evals**n)) for n in range(1, max_n + 1)])
 
     spacings = compute_eigenvalue_spacings(evals) if k >= 4 else np.array([])
 
@@ -804,9 +829,11 @@ def compute_spectral_moments(
         spectral_gap=gap,
     )
 
+
 # ============================================================================
 # Integration: Combined TNFR-Riemann Assessment
 # ============================================================================
+
 
 def _fit_power_law(
     x_values: Sequence[float],
@@ -816,10 +843,7 @@ def _fit_power_law(
 
     Returns (A, beta).
     """
-    valid = [
-        (x, y) for x, y in zip(x_values, y_values)
-        if x > 0 and y > 0
-    ]
+    valid = [(x, y) for x, y in zip(x_values, y_values) if x > 0 and y > 0]
 
     if len(valid) < 2:
         return (0.0, 1.0)
@@ -833,6 +857,7 @@ def _fit_power_law(
     log_A, beta = float(result[0]), float(result[1])
 
     return (math.exp(log_A), beta)
+
 
 def run_tnfr_riemann_analysis(
     k_values: Sequence[int] | None = None,
@@ -886,7 +911,8 @@ def run_tnfr_riemann_analysis(
         if k >= 3:
             result.flows.append(
                 analyze_eigenvalue_flow(
-                    k, n_scan=flow_n_scan,
+                    k,
+                    n_scan=flow_n_scan,
                     weight_by_log_gap=weight_by_log_gap,
                 )
             )
@@ -896,7 +922,8 @@ def run_tnfr_riemann_analysis(
         if k >= 3:
             result.moments.append(
                 compute_spectral_moments(
-                    k, max_n=moment_max_n,
+                    k,
+                    max_n=moment_max_n,
                     weight_by_log_gap=weight_by_log_gap,
                 )
             )
@@ -919,8 +946,7 @@ def run_tnfr_riemann_analysis(
 
         # Check monotone decrease
         result.thermodynamic_convergent = all(
-            devs[i] >= devs[i + 1] - 1e-14
-            for i in range(len(devs) - 1)
+            devs[i] >= devs[i + 1] - 1e-14 for i in range(len(devs) - 1)
         )
 
         # Fit power law
@@ -928,9 +954,7 @@ def run_tnfr_riemann_analysis(
         if len(valid_pairs) >= 2:
             fit_k = [p[0] for p in valid_pairs]
             fit_d = [p[1] for p in valid_pairs]
-            result.convergence_A, result.convergence_beta = _fit_power_law(
-                fit_k, fit_d
-            )
+            result.convergence_A, result.convergence_beta = _fit_power_law(fit_k, fit_d)
 
     # Curvature growing?
     if len(result.thermodynamics) >= 2:
@@ -943,7 +967,9 @@ def run_tnfr_riemann_analysis(
     # Spectral gap scaling
     if len(result.equilibria) >= 2:
         gap_ks = [float(eq.k) for eq in result.equilibria if eq.spectral_gap > 1e-15]
-        gap_vals = [eq.spectral_gap for eq in result.equilibria if eq.spectral_gap > 1e-15]
+        gap_vals = [
+            eq.spectral_gap for eq in result.equilibria if eq.spectral_gap > 1e-15
+        ]
         if len(gap_ks) >= 2:
             _, result.gap_scaling_exponent = _fit_power_law(gap_ks, gap_vals)
 
@@ -980,37 +1006,50 @@ def run_tnfr_riemann_analysis(
     lines.append("TNFR-Riemann Spectral Analysis Summary")
     lines.append("=" * 42)
     lines.append("")
-    lines.append(f"Operator: H^(k)(sigma) = L_k + (sigma - 1/2) V_1")
+    lines.append("Operator: H^(k)(sigma) = L_k + (sigma - 1/2) V_1")
     lines.append(f"Tested k values: {result.k_values}")
     lines.append("")
 
     lines.append("Line 1 (Structural Equilibrium):")
-    lines.append(f"  lambda_min(H(1/2)) = 0: "
-                 f"{'EXACT' if result.equilibrium_exact else 'FAILED'}")
+    lines.append(
+        f"  lambda_min(H(1/2)) = 0: "
+        f"{'EXACT' if result.equilibrium_exact else 'FAILED'}"
+    )
     if result.equilibria:
-        lines.append(f"  max |lambda_min| = "
-                     f"{max(abs(eq.lambda_min) for eq in result.equilibria):.2e}")
-        lines.append(f"  Spectral gap scaling exponent: "
-                     f"{result.gap_scaling_exponent:.3f}")
+        lines.append(
+            f"  max |lambda_min| = "
+            f"{max(abs(eq.lambda_min) for eq in result.equilibria):.2e}"
+        )
+        lines.append(
+            f"  Spectral gap scaling exponent: " f"{result.gap_scaling_exponent:.3f}"
+        )
 
     lines.append("")
     lines.append("Line 2 (Thermodynamic Attractor):")
     if result.thermodynamics:
-        lines.append(f"  sigma* convergence: "
-                     f"{'YES' if result.thermodynamic_convergent else 'NO'}")
-        lines.append(f"  Fitted: |sigma* - 1/2| ~ {result.convergence_A:.4f} "
-                     f"/ k^{result.convergence_beta:.3f}")
-        lines.append(f"  Curvature growing: "
-                     f"{'YES' if result.curvature_growing else 'NO'}")
+        lines.append(
+            f"  sigma* convergence: "
+            f"{'YES' if result.thermodynamic_convergent else 'NO'}"
+        )
+        lines.append(
+            f"  Fitted: |sigma* - 1/2| ~ {result.convergence_A:.4f} "
+            f"/ k^{result.convergence_beta:.3f}"
+        )
+        lines.append(
+            f"  Curvature growing: " f"{'YES' if result.curvature_growing else 'NO'}"
+        )
 
     lines.append("")
     lines.append("Line 3 (Eigenvalue Flow):")
-    lines.append(f"  All velocities positive: "
-                 f"{'YES' if result.flow_monotone else 'NO'}")
+    lines.append(
+        f"  All velocities positive: " f"{'YES' if result.flow_monotone else 'NO'}"
+    )
     if result.flows:
         last_flow = result.flows[-1]
-        lines.append(f"  Velocity range (k={last_flow.k}): "
-                     f"[{last_flow.min_velocity:.4f}, {last_flow.max_velocity:.4f}]")
+        lines.append(
+            f"  Velocity range (k={last_flow.k}): "
+            f"[{last_flow.min_velocity:.4f}, {last_flow.max_velocity:.4f}]"
+        )
 
     lines.append("")
     lines.append(f"Overall confidence: {result.overall_confidence:.4f}")

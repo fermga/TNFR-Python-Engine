@@ -125,6 +125,7 @@ __all__ = [
 # Dirichlet character infrastructure
 # ============================================================================
 
+
 @dataclass(frozen=True)
 class DirichletCharacter:
     r"""Completely multiplicative arithmetic character :math:`\chi` mod :math:`q`.
@@ -172,8 +173,7 @@ class DirichletCharacter:
             raise ValueError("modulus must be >= 1")
         if len(self.values) != self.modulus:
             raise ValueError(
-                f"values must have length {self.modulus} "
-                f"(got {len(self.values)})"
+                f"values must have length {self.modulus} " f"(got {len(self.values)})"
             )
 
     def __call__(self, n: int) -> complex:
@@ -220,8 +220,7 @@ def principal_character(modulus: int) -> DirichletCharacter:
     if modulus < 1:
         raise ValueError("modulus must be >= 1")
     vals = tuple(
-        (1.0 + 0j) if math.gcd(r, modulus) == 1 else (0.0 + 0j)
-        for r in range(modulus)
+        (1.0 + 0j) if math.gcd(r, modulus) == 1 else (0.0 + 0j) for r in range(modulus)
     )
     return DirichletCharacter(
         modulus=modulus,
@@ -286,6 +285,7 @@ def real_character_mod_5() -> DirichletCharacter:
 # ============================================================================
 # Twisted prime-ladder spectrum
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class TwistedPrimeLadderSpectrum:
@@ -404,19 +404,19 @@ def build_twisted_prime_ladder_spectrum(
         )
 
     p_arr = np.asarray(active, dtype=float)
-    log_p = np.log(p_arr)                                   # (n_active,)
-    chi_arr = np.asarray(chi_active, dtype=complex)         # (n_active,)
-    k_arr = np.arange(1, max_power + 1, dtype=float)        # (max_power,)
+    log_p = np.log(p_arr)  # (n_active,)
+    chi_arr = np.asarray(chi_active, dtype=complex)  # (n_active,)
+    k_arr = np.arange(1, max_power + 1, dtype=float)  # (max_power,)
 
     # μ_{p,k} = k log p
-    mu = np.outer(log_p, k_arr)                             # (n_active, K)
+    mu = np.outer(log_p, k_arr)  # (n_active, K)
 
     # χ(p)^k for k=1..K → broadcast to (n_active, K)
     # use complex powers for full generality
-    chi_pow = chi_arr[:, None] ** k_arr[None, :]            # (n_active, K)
+    chi_pow = chi_arr[:, None] ** k_arr[None, :]  # (n_active, K)
 
     # w_{p,k} = χ(p)^k log p
-    w = chi_pow * log_p[:, None]                            # (n_active, K)
+    w = chi_pow * log_p[:, None]  # (n_active, K)
 
     return TwistedPrimeLadderSpectrum(
         primes_active=np.asarray(active, dtype=int),
@@ -463,6 +463,7 @@ def tnfr_log_l_derivative(
 # Classical reference: Σ χ(n) Λ(n) n^{-s}
 # ============================================================================
 
+
 def classical_log_l_derivative(
     chi: DirichletCharacter,
     s: complex,
@@ -492,9 +493,7 @@ def classical_log_l_derivative(
     while p * p <= n_max:
         if sieve[p]:
             start = p * p
-            sieve[start : n_max + 1 : p] = b"\x00" * (
-                ((n_max - start) // p) + 1
-            )
+            sieve[start : n_max + 1 : p] = b"\x00" * (((n_max - start) // p) + 1)
         p += 1
 
     total: complex = 0.0 + 0j
@@ -552,6 +551,7 @@ def classical_log_l_derivative_matched(
 # ============================================================================
 # Verification
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class DirichletLReproductionResult:
@@ -636,9 +636,7 @@ def verify_dirichlet_l_reproduction(
     -------
     DirichletLReproductionResult
     """
-    spectrum = build_twisted_prime_ladder_spectrum(
-        chi, n_primes, max_power=max_power
-    )
+    spectrum = build_twisted_prime_ladder_spectrum(chi, n_primes, max_power=max_power)
 
     s_arr = np.asarray(list(s_values), dtype=complex)
     z_tnfr = np.array(

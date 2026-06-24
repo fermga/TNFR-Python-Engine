@@ -14,6 +14,7 @@ _T = TypeVar("_T")
 # Check if slots parameter is supported (Python 3.10+)
 _SLOTS_SUPPORTED = sys.version_info >= (3, 10)
 
+
 @overload
 def dataclass(
     cls: type[_T],
@@ -30,6 +31,7 @@ def dataclass(
     slots: bool = False,
 ) -> type[_T]: ...
 
+
 @overload
 def dataclass(
     cls: None = None,
@@ -45,6 +47,7 @@ def dataclass(
     kw_only: bool = False,
     slots: bool = False,
 ) -> type[_T]: ...
+
 
 def dataclass(
     cls=None,

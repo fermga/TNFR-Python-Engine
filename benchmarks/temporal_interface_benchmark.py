@@ -71,8 +71,7 @@ from tnfr.validation.temporal_interface import (  # noqa: E402
 # documented on Zenodo (record 15784548); the lighter per-month source is the
 # TransnetBW webservice.  Replace year/month in the URL to fetch another month.
 TRANSNETBW_FREQUENCY_URL_TEMPLATE = (
-    "https://webservices.transnetbw.de/files/bis/netzfrequenz/"
-    "{yyyymm}_Frequenz.zip"
+    "https://webservices.transnetbw.de/files/bis/netzfrequenz/" "{yyyymm}_Frequenz.zip"
 )
 
 DEFAULT_MAX_BYTES = 80_000_000  # bounded download guard (~80 MB)
@@ -152,7 +151,12 @@ def _parse_frequency_csv(text: str) -> np.ndarray:
         token = fields[-1]
         # German decimal comma reconstruction for comma-delimited rows that
         # split a value like "50,012" into ["50", "012"].
-        if delimiter == "," and len(fields) >= 3 and fields[-2].isdigit() and token.isdigit():
+        if (
+            delimiter == ","
+            and len(fields) >= 3
+            and fields[-2].isdigit()
+            and token.isdigit()
+        ):
             token = f"{fields[-2]}.{token}"
         else:
             token = token.replace(",", ".")
@@ -195,9 +199,7 @@ def load_grid_frequency_series(
     series = _parse_frequency_csv(text)
     series = series[np.isfinite(series)]
     if series.size < 512:
-        print(
-            f"  [skip] parsed only {series.size} usable samples", file=sys.stderr
-        )
+        print(f"  [skip] parsed only {series.size} usable samples", file=sys.stderr)
         return None
     if series.size > max_points:
         stride = int(math.ceil(series.size / max_points))
@@ -234,9 +236,7 @@ def synthetic_fold_transition(
     return x
 
 
-def detect_excursion_event(
-    series: np.ndarray, *, margin: float = 0.1
-) -> int | None:
+def detect_excursion_event(series: np.ndarray, *, margin: float = 0.1) -> int | None:
     """Locate the largest frequency excursion as an exploratory event index.
 
     Restricts the search to the interior ``[margin, 1 - margin]`` of the record
@@ -278,9 +278,7 @@ def run_temporal_benchmark(
     }
 
     if source == "grid":
-        zip_path = download_grid_frequency_month(
-            year, month, max_bytes=max_bytes
-        )
+        zip_path = download_grid_frequency_month(year, month, max_bytes=max_bytes)
         if zip_path is None:
             report["status"] = "skipped"
             report["reason"] = (
@@ -405,9 +403,7 @@ def main(argv: list[str] | None = None) -> int:
         output_dir = (Path.cwd() / output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     suffix = (
-        f"{args.year:04d}{args.month:02d}"
-        if args.source == "grid"
-        else "synthetic"
+        f"{args.year:04d}{args.month:02d}" if args.source == "grid" else "synthetic"
     )
     out_path = output_dir / f"temporal_interface_{args.source}_{suffix}.json"
     out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")

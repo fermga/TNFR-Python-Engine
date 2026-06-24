@@ -22,6 +22,7 @@ Usage (PowerShell):
 The script writes JSONL lines, one per measurement/event, with a `task`
 field indicating the task type. It avoids side effects on the codebase.
 """
+
 # flake8: noqa
 from __future__ import annotations
 
@@ -29,15 +30,16 @@ import argparse
 import json
 import math
 import random
-from pathlib import Path
-from typing import Any, Dict, Iterable, List
-
-import numpy as np
-import networkx as nx
+import sys as _sys
 
 # Ensure local src is importable when running from repo root
+from pathlib import Path
 from pathlib import Path as _Path
-import sys as _sys
+from typing import Any, Dict, Iterable, List
+
+import networkx as nx
+import numpy as np
+
 _ROOT = _Path(__file__).resolve().parents[1]
 _SRC = _ROOT / "src"
 if str(_SRC) not in _sys.path:
@@ -45,9 +47,9 @@ if str(_SRC) not in _sys.path:
 
 # Import canonical field computations
 from tnfr.physics.fields import (  # type: ignore  # noqa: E402
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
     estimate_coherence_length,
 )
 
@@ -58,25 +60,26 @@ from tnfr.physics.fields import (  # type: ignore  # noqa: E402
 
 def make_graph(topology: str, n: int, seed: int) -> nx.Graph:
     random.seed(seed)
-    if topology == 'ring':
+    if topology == "ring":
         return nx.cycle_graph(n)
-    if topology == 'ws':
-        return nx.watts_strogatz_graph(n, k=min(4, n-1), p=0.3, seed=seed)
-    if topology == 'scale_free':
+    if topology == "ws":
+        return nx.watts_strogatz_graph(n, k=min(4, n - 1), p=0.3, seed=seed)
+    if topology == "scale_free":
         return nx.scale_free_graph(n, seed=seed).to_undirected()
-    if topology == 'grid':
+    if topology == "grid":
         import math as _m
+
         side = max(2, int(_m.sqrt(n)))
         G = nx.grid_2d_graph(side, side)
         mapping = {node: i for i, node in enumerate(G.nodes())}
         return nx.relabel_nodes(G, mapping)
-    if topology == 'tree':
+    if topology == "tree":
         G = nx.balanced_tree(r=2, h=max(1, int(math.log2(n))))
         if G.number_of_nodes() > n:
             nodes_to_remove = list(G.nodes())[n:]
             G.remove_nodes_from(nodes_to_remove)
         return G
-    if topology == 'star':
+    if topology == "star":
         return nx.star_graph(n - 1)
     raise ValueError(f"Unknown topology: {topology}")
 
@@ -84,14 +87,14 @@ def make_graph(topology: str, n: int, seed: int) -> nx.Graph:
 def set_initial_state(G: nx.Graph, nu_f: float, seed: int) -> None:
     random.seed(seed)
     for node in G.nodes:
-        G.nodes[node]['nu_f'] = float(nu_f)
-        G.nodes[node]['dnfr'] = random.uniform(0.01, 0.05)
-        G.nodes[node]['delta_nfr'] = random.uniform(0.01, 0.05)
-        G.nodes[node]['EPI'] = random.uniform(0.4, 0.7)
-        G.nodes[node]['phase'] = random.uniform(0.0, 2 * math.pi)
-        G.nodes[node]['theta'] = G.nodes[node]['phase']
+        G.nodes[node]["nu_f"] = float(nu_f)
+        G.nodes[node]["dnfr"] = random.uniform(0.01, 0.05)
+        G.nodes[node]["delta_nfr"] = random.uniform(0.01, 0.05)
+        G.nodes[node]["EPI"] = random.uniform(0.4, 0.7)
+        G.nodes[node]["phase"] = random.uniform(0.0, 2 * math.pi)
+        G.nodes[node]["theta"] = G.nodes[node]["phase"]
         # Coherence surrogate for ξ_C estimation
-        G.nodes[node]['coherence'] = random.uniform(0.5, 0.9)
+        G.nodes[node]["coherence"] = random.uniform(0.5, 0.9)
 
 
 def apply_operator_like(
@@ -105,43 +108,43 @@ def apply_operator_like(
     consistent with telemetry expectations.
     """
     random.seed(seed)
-    if op == 'emission':
+    if op == "emission":
         for n in G.nodes:
-            G.nodes[n]['EPI'] += random.uniform(0.05, 0.12) * intensity
-            G.nodes[n]['nu_f'] = max(
-                G.nodes[n]['nu_f'],
+            G.nodes[n]["EPI"] += random.uniform(0.05, 0.12) * intensity
+            G.nodes[n]["nu_f"] = max(
+                G.nodes[n]["nu_f"],
                 random.uniform(0.8, 1.2) * intensity,
             )
-    elif op == 'coherence':
+    elif op == "coherence":
         for n in G.nodes:
-            G.nodes[n]['dnfr'] *= (0.7 / max(intensity, 1e-6))
-            G.nodes[n]['delta_nfr'] *= (0.7 / max(intensity, 1e-6))
-    elif op == 'dissonance':
+            G.nodes[n]["dnfr"] *= 0.7 / max(intensity, 1e-6)
+            G.nodes[n]["delta_nfr"] *= 0.7 / max(intensity, 1e-6)
+    elif op == "dissonance":
         for n in G.nodes:
-            G.nodes[n]['dnfr'] += random.uniform(0.2, 0.4) * intensity
-            G.nodes[n]['delta_nfr'] += random.uniform(0.2, 0.4) * intensity
-            G.nodes[n]['phase'] = (
-                G.nodes[n]['phase'] + random.uniform(-0.5, 0.5) * intensity
+            G.nodes[n]["dnfr"] += random.uniform(0.2, 0.4) * intensity
+            G.nodes[n]["delta_nfr"] += random.uniform(0.2, 0.4) * intensity
+            G.nodes[n]["phase"] = (
+                G.nodes[n]["phase"] + random.uniform(-0.5, 0.5) * intensity
             ) % (2 * math.pi)
-            G.nodes[n]['theta'] = G.nodes[n]['phase']
-    elif op == 'mutation':
+            G.nodes[n]["theta"] = G.nodes[n]["phase"]
+    elif op == "mutation":
         for n in G.nodes:
-            G.nodes[n]['dnfr'] += random.uniform(0.25, 0.5) * intensity
-            G.nodes[n]['delta_nfr'] += random.uniform(0.25, 0.5) * intensity
-            G.nodes[n]['phase'] = (
-                G.nodes[n]['phase']
+            G.nodes[n]["dnfr"] += random.uniform(0.25, 0.5) * intensity
+            G.nodes[n]["delta_nfr"] += random.uniform(0.25, 0.5) * intensity
+            G.nodes[n]["phase"] = (
+                G.nodes[n]["phase"]
                 + random.uniform(-math.pi / 2, math.pi / 2) * intensity
             ) % (2 * math.pi)
-            G.nodes[n]['theta'] = G.nodes[n]['phase']
-    elif op == 'expansion':
+            G.nodes[n]["theta"] = G.nodes[n]["phase"]
+    elif op == "expansion":
         for n in G.nodes:
-            G.nodes[n]['dnfr'] += random.uniform(0.15, 0.3) * intensity
-            G.nodes[n]['delta_nfr'] += random.uniform(0.15, 0.3) * intensity
-    elif op == 'silence':
+            G.nodes[n]["dnfr"] += random.uniform(0.15, 0.3) * intensity
+            G.nodes[n]["delta_nfr"] += random.uniform(0.15, 0.3) * intensity
+    elif op == "silence":
         for n in G.nodes:
-            G.nodes[n]['nu_f'] *= (0.95 / max(intensity, 1e-6))
-            G.nodes[n]['dnfr'] *= (0.85 / max(intensity, 1e-6))
-            G.nodes[n]['delta_nfr'] *= (0.85 / max(intensity, 1e-6))
+            G.nodes[n]["nu_f"] *= 0.95 / max(intensity, 1e-6)
+            G.nodes[n]["dnfr"] *= 0.85 / max(intensity, 1e-6)
+            G.nodes[n]["delta_nfr"] *= 0.85 / max(intensity, 1e-6)
     else:
         raise ValueError(f"Unknown operator: {op}")
 
@@ -150,23 +153,26 @@ def apply_operator_like(
 # Task 1: Field Interaction Matrix
 # ---------------------------------------------------------------------------
 
+
 def field_interaction_matrix(G: nx.Graph) -> Dict[str, Any]:
     phi_s = compute_structural_potential(G)  # Dict[node, float]
     grad = compute_phase_gradient(G)
     curv = compute_phase_curvature(G)
-    dnfr = {n: float(G.nodes[n].get('delta_nfr', 0.0)) for n in G.nodes()}
+    dnfr = {n: float(G.nodes[n].get("delta_nfr", 0.0)) for n in G.nodes()}
     # local coherence proxy used by ξ_C
     coh_local = {n: 1.0 / (1.0 + abs(dnfr[n])) for n in G.nodes()}
 
     # Align vectors
     nodes = list(G.nodes())
-    X = np.vstack([
-        np.array([phi_s[n] for n in nodes], dtype=float),
-        np.array([grad[n] for n in nodes], dtype=float),
-        np.array([abs(curv[n]) for n in nodes], dtype=float),
-        np.array([coh_local[n] for n in nodes], dtype=float),
-        np.array([dnfr[n] for n in nodes], dtype=float),
-    ])  # shape (5, N)
+    X = np.vstack(
+        [
+            np.array([phi_s[n] for n in nodes], dtype=float),
+            np.array([grad[n] for n in nodes], dtype=float),
+            np.array([abs(curv[n]) for n in nodes], dtype=float),
+            np.array([coh_local[n] for n in nodes], dtype=float),
+            np.array([dnfr[n] for n in nodes], dtype=float),
+        ]
+    )  # shape (5, N)
 
     labels = ["phi_s", "grad_phi", "abs_k_phi", "coh_local", "dnfr"]
 
@@ -202,6 +208,7 @@ def field_interaction_matrix(G: nx.Graph) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 # Task 2: Composite Field Metrics
 # ---------------------------------------------------------------------------
+
 
 def composite_field_metrics(G: nx.Graph) -> Dict[str, Any]:
     phi_s = compute_structural_potential(G)
@@ -240,9 +247,7 @@ def composite_field_metrics(G: nx.Graph) -> Dict[str, Any]:
             + max(
                 (
                     nx.diameter(CC)
-                    for CC in (
-                        G.subgraph(c).copy() for c in nx.connected_components(G)
-                    )
+                    for CC in (G.subgraph(c).copy() for c in nx.connected_components(G))
                 ),
                 default=1,
             )
@@ -268,6 +273,7 @@ def composite_field_metrics(G: nx.Graph) -> Dict[str, Any]:
 # Task 3: Force Regime Phase Diagram (Intensity sweep)
 # ---------------------------------------------------------------------------
 
+
 def classify_regime(G: nx.Graph) -> str:
     # Thresholds per canonical docs
     grad = compute_phase_gradient(G)
@@ -286,9 +292,7 @@ def classify_regime(G: nx.Graph) -> str:
             + max(
                 (
                     nx.diameter(CC)
-                    for CC in (
-                        G.subgraph(c).copy() for c in nx.connected_components(G)
-                    )
+                    for CC in (G.subgraph(c).copy() for c in nx.connected_components(G))
                 ),
                 default=1,
             )
@@ -319,7 +323,7 @@ def force_regime_phase_diagram(
         G = make_graph(topology, n, seed + int(intensity_val * 1000))
         set_initial_state(G, nu_f=1.0, seed=seed + 7)
         # Apply a small sequence influenced by intensity
-        ops = ['emission', 'dissonance', 'coherence', 'expansion', 'silence']
+        ops = ["emission", "dissonance", "coherence", "expansion", "silence"]
         for step, op in enumerate(ops):
             apply_operator_like(
                 G,
@@ -335,7 +339,7 @@ def force_regime_phase_diagram(
             "n": n,
             "intensity": float(intensity_val),
             "regime": regime,
-            **{k: v for k, v in comp.items() if k != 'task'},
+            **{k: v for k, v in comp.items() if k != "task"},
         }
         results.append(out)
     return results
@@ -345,16 +349,17 @@ def force_regime_phase_diagram(
 # Task 4: Temporal Orchestration Analysis (lead/lag)
 # ---------------------------------------------------------------------------
 
+
 def temporal_orchestration_series(
     G: nx.Graph, seed: int, intensity: float = 1.0
 ) -> Dict[str, Any]:
     ops = [
-        'emission',
-        'dissonance',
-        'coherence',
-        'expansion',
-        'coherence',
-        'silence',
+        "emission",
+        "dissonance",
+        "coherence",
+        "expansion",
+        "coherence",
+        "silence",
     ]
     series = {
         "phi_s_mean": [],
@@ -414,9 +419,19 @@ def temporal_orchestration_series(
 # Task 5: Operator-Field Coupling Analysis
 # ---------------------------------------------------------------------------
 
-def operator_field_coupling(topology: str, n: int, seed: int, repeats: int = 10, intensity: float = 1.0) -> List[Dict[str, Any]]:
+
+def operator_field_coupling(
+    topology: str, n: int, seed: int, repeats: int = 10, intensity: float = 1.0
+) -> List[Dict[str, Any]]:
     results: List[Dict[str, Any]] = []
-    op_names = ['emission', 'coherence', 'dissonance', 'mutation', 'expansion', 'silence']
+    op_names = [
+        "emission",
+        "coherence",
+        "dissonance",
+        "mutation",
+        "expansion",
+        "silence",
+    ]
     for op in op_names:
         deltas: List[Dict[str, float]] = []
         for r in range(repeats):
@@ -435,11 +450,24 @@ def operator_field_coupling(topology: str, n: int, seed: int, repeats: int = 10,
             k_a = compute_phase_curvature(G)
             xi_a = float(estimate_coherence_length(G))
 
-            d_phi = float(np.mean(list(phi_a.values()))) - float(np.mean(list(phi_b.values())))
-            d_g = float(np.mean(list(g_a.values()))) - float(np.mean(list(g_b.values())))
-            d_k = float(np.max(np.abs(list(k_a.values())))) - float(np.max(np.abs(list(k_b.values()))))
+            d_phi = float(np.mean(list(phi_a.values()))) - float(
+                np.mean(list(phi_b.values()))
+            )
+            d_g = float(np.mean(list(g_a.values()))) - float(
+                np.mean(list(g_b.values()))
+            )
+            d_k = float(np.max(np.abs(list(k_a.values())))) - float(
+                np.max(np.abs(list(k_b.values())))
+            )
             d_xi = float(xi_a - xi_b)
-            deltas.append({"d_phi_s": d_phi, "d_grad_phi": d_g, "d_abs_k_phi_max": d_k, "d_xi_c": d_xi})
+            deltas.append(
+                {
+                    "d_phi_s": d_phi,
+                    "d_grad_phi": d_g,
+                    "d_abs_k_phi_max": d_k,
+                    "d_xi_c": d_xi,
+                }
+            )
 
         # Aggregate
         agg = {
@@ -448,8 +476,16 @@ def operator_field_coupling(topology: str, n: int, seed: int, repeats: int = 10,
             "n": n,
             "operator": op,
             "intensity": float(intensity),
-            "mean_deltas": {k: float(np.mean([d[k] for d in deltas])) for k in deltas[0].keys()} if deltas else {},
-            "std_deltas": {k: float(np.std([d[k] for d in deltas])) for k in deltas[0].keys()} if deltas else {},
+            "mean_deltas": (
+                {k: float(np.mean([d[k] for d in deltas])) for k in deltas[0].keys()}
+                if deltas
+                else {}
+            ),
+            "std_deltas": (
+                {k: float(np.std([d[k] for d in deltas])) for k in deltas[0].keys()}
+                if deltas
+                else {}
+            ),
         }
         results.append(agg)
     return results
@@ -459,7 +495,10 @@ def operator_field_coupling(topology: str, n: int, seed: int, repeats: int = 10,
 # Task 6: Cross-Domain Unification Test
 # ---------------------------------------------------------------------------
 
-def cross_domain_unification(topologies: List[str], n: int, seed: int) -> Dict[str, Any]:
+
+def cross_domain_unification(
+    topologies: List[str], n: int, seed: int
+) -> Dict[str, Any]:
     signatures: Dict[str, Dict[str, float]] = {}
     for topo in topologies:
         G = make_graph(topo, n, seed + hash(topo) % 1000)
@@ -477,10 +516,17 @@ def cross_domain_unification(topologies: List[str], n: int, seed: int) -> Dict[s
         signatures[topo] = sig
     # Measure spread (max deviation across topologies) to assess unification
     keys = list(next(iter(signatures.values())).keys()) if signatures else []
-    spread = {
-        k: float(max(signatures[t][k] for t in topologies) - min(signatures[t][k] for t in topologies))
-        for k in keys
-    } if signatures else {}
+    spread = (
+        {
+            k: float(
+                max(signatures[t][k] for t in topologies)
+                - min(signatures[t][k] for t in topologies)
+            )
+            for k in keys
+        }
+        if signatures
+        else {}
+    )
 
     return {
         "task": "cross_domain_unification",
@@ -495,16 +541,19 @@ def cross_domain_unification(topologies: List[str], n: int, seed: int) -> Dict[s
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Integrated Force Regime Orchestration Study")
-    p.add_argument('--topologies', type=str, default='ring,ws,scale_free,grid')
-    p.add_argument('--sizes', type=str, default='30')
-    p.add_argument('--runs', type=int, default=3)
-    p.add_argument('--seed', type=int, default=42)
-    p.add_argument('--export', type=str, default='integrated_force_study.jsonl')
-    p.add_argument('--intensity-sweep', type=str, default='0.5,0.8,1.0,1.2,1.5,2.0')
-    p.add_argument('--op-intensity', type=float, default=1.0)
-    p.add_argument('--coupling-repeats', type=int, default=10)
+    p = argparse.ArgumentParser(
+        description="Integrated Force Regime Orchestration Study"
+    )
+    p.add_argument("--topologies", type=str, default="ring,ws,scale_free,grid")
+    p.add_argument("--sizes", type=str, default="30")
+    p.add_argument("--runs", type=int, default=3)
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--export", type=str, default="integrated_force_study.jsonl")
+    p.add_argument("--intensity-sweep", type=str, default="0.5,0.8,1.0,1.2,1.5,2.0")
+    p.add_argument("--op-intensity", type=float, default=1.0)
+    p.add_argument("--coupling-repeats", type=int, default=10)
     return p.parse_args(list(argv))
 
 
@@ -512,14 +561,14 @@ def main(argv: Iterable[str]) -> int:
     args = parse_args(argv)
     random.seed(args.seed)
 
-    topologies = [t.strip() for t in args.topologies.split(',') if t.strip()]
-    sizes = [int(s) for s in args.sizes.split(',') if s.strip()]
-    intensities = [float(x) for x in args.intensity_sweep.split(',') if x.strip()]
+    topologies = [t.strip() for t in args.topologies.split(",") if t.strip()]
+    sizes = [int(s) for s in args.sizes.split(",") if s.strip()]
+    intensities = [float(x) for x in args.intensity_sweep.split(",") if x.strip()]
 
     out_path = Path(args.export)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with out_path.open('w', encoding='utf-8') as f_out:
+    with out_path.open("w", encoding="utf-8") as f_out:
         for topo in topologies:
             for n in sizes:
                 for run in range(args.runs):
@@ -530,7 +579,9 @@ def main(argv: Iterable[str]) -> int:
 
                     # Task 1
                     rec1 = field_interaction_matrix(G)
-                    rec1.update({"topology": topo, "task": "field_interaction_matrix", "n": n})
+                    rec1.update(
+                        {"topology": topo, "task": "field_interaction_matrix", "n": n}
+                    )
                     f_out.write(json.dumps(rec1) + "\n")
 
                     # Task 2
@@ -545,12 +596,20 @@ def main(argv: Iterable[str]) -> int:
                     # Task 4 (temporal orchestration)
                     G_t = make_graph(topo, n, seed + 99)
                     set_initial_state(G_t, nu_f=1.0, seed=seed + 123)
-                    rec4 = temporal_orchestration_series(G_t, seed=seed + 777, intensity=args.op_intensity)
+                    rec4 = temporal_orchestration_series(
+                        G_t, seed=seed + 777, intensity=args.op_intensity
+                    )
                     rec4.update({"topology": topo, "n": n})
                     f_out.write(json.dumps(rec4) + "\n")
 
                     # Task 5 (operator-field coupling)
-                    for rec5 in operator_field_coupling(topo, n, seed, repeats=args.coupling_repeats, intensity=args.op_intensity):
+                    for rec5 in operator_field_coupling(
+                        topo,
+                        n,
+                        seed,
+                        repeats=args.coupling_repeats,
+                        intensity=args.op_intensity,
+                    ):
                         f_out.write(json.dumps(rec5) + "\n")
 
                 # Task 6 (cross-domain unification done once per size)
@@ -561,6 +620,7 @@ def main(argv: Iterable[str]) -> int:
     return 0
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
     import sys
+
     raise SystemExit(main(sys.argv[1:]))

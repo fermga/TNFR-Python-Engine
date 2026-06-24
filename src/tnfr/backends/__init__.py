@@ -50,6 +50,7 @@ __all__ = [
 
 logger = get_logger(__name__)
 
+
 class TNFRBackend(ABC):
     """Base class for TNFR computation backends.
 
@@ -164,11 +165,13 @@ class TNFRBackend(ABC):
         """
         ...
 
+
 # Backend registry
 _BACKEND_REGISTRY: MutableMapping[str, type[TNFRBackend]] = {}
 _BACKEND_CACHE: MutableMapping[str, TNFRBackend] = {}
 _DEFAULT_BACKEND: str = "numpy"
 _CURRENT_BACKEND: str | None = None
+
 
 def register_backend(name: str, backend_class: type[TNFRBackend]) -> None:
     """Register a TNFR backend implementation.
@@ -195,10 +198,13 @@ def register_backend(name: str, backend_class: type[TNFRBackend]) -> None:
         raise ValueError(f"Backend '{name}' is already registered")
 
     if not issubclass(backend_class, TNFRBackend):
-        raise TypeError(f"Backend class must inherit from TNFRBackend, got {backend_class}")
+        raise TypeError(
+            f"Backend class must inherit from TNFRBackend, got {backend_class}"
+        )
 
     _BACKEND_REGISTRY[name_lower] = backend_class
     logger.debug("Registered TNFR backend: %s", name)
+
 
 def get_backend(name: str | None = None) -> TNFRBackend:
     """Get a TNFR backend instance by name.
@@ -266,6 +272,7 @@ def get_backend(name: str | None = None) -> TNFRBackend:
     except Exception as exc:
         raise RuntimeError(f"Failed to initialize backend '{name}': {exc}") from exc
 
+
 def set_backend(name: str) -> None:
     """set the default TNFR backend for subsequent operations.
 
@@ -295,6 +302,7 @@ def set_backend(name: str) -> None:
     _CURRENT_BACKEND = name_lower
     logger.info("set default TNFR backend to: %s", name_lower)
 
+
 def available_backends() -> Mapping[str, type[TNFRBackend]]:
     """Return mapping of registered backend names to their classes.
 
@@ -310,6 +318,7 @@ def available_backends() -> Mapping[str, type[TNFRBackend]]:
     True
     """
     return dict(_BACKEND_REGISTRY)
+
 
 # Import and register backends
 # This is done at module level to ensure backends are available immediately

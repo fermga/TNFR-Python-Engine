@@ -84,38 +84,82 @@ References
 - AGENTS.md "Unified Grammar (U1-U6)" (U3 is a runtime phase check, not static)
 """
 
+import itertools
 import os
 import sys
-import itertools
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import numpy as np
 
-from tnfr.operators.grammar_types import (
-    GENERATORS, CLOSURES, STABILIZERS, DESTABILIZERS, TRANSFORMERS,
-)
 from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Coupling, Resonance,
-    Silence, Expansion, Contraction, SelfOrganization, Mutation,
-    Transition, Recursivity,
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
+)
+from tnfr.operators.grammar_types import (
+    CLOSURES,
+    DESTABILIZERS,
+    GENERATORS,
+    STABILIZERS,
+    TRANSFORMERS,
 )
 from tnfr.operators.grammar_validate import validate_grammar
 
-ALPHA = ["emission", "reception", "coherence", "dissonance", "coupling",
-         "resonance", "silence", "expansion", "contraction",
-         "self_organization", "mutation", "transition", "recursivity"]
-SHORT = {"emission": "AL", "reception": "EN", "coherence": "IL",
-         "dissonance": "OZ", "coupling": "UM", "resonance": "RA",
-         "silence": "SHA", "expansion": "VAL", "contraction": "NUL",
-         "self_organization": "THOL", "mutation": "ZHIR", "transition": "NAV",
-         "recursivity": "REMESH"}
+ALPHA = [
+    "emission",
+    "reception",
+    "coherence",
+    "dissonance",
+    "coupling",
+    "resonance",
+    "silence",
+    "expansion",
+    "contraction",
+    "self_organization",
+    "mutation",
+    "transition",
+    "recursivity",
+]
+SHORT = {
+    "emission": "AL",
+    "reception": "EN",
+    "coherence": "IL",
+    "dissonance": "OZ",
+    "coupling": "UM",
+    "resonance": "RA",
+    "silence": "SHA",
+    "expansion": "VAL",
+    "contraction": "NUL",
+    "self_organization": "THOL",
+    "mutation": "ZHIR",
+    "transition": "NAV",
+    "recursivity": "REMESH",
+}
 NAME2INST = {
-    "emission": Emission(), "reception": Reception(), "coherence": Coherence(),
-    "dissonance": Dissonance(), "coupling": Coupling(), "resonance": Resonance(),
-    "silence": Silence(), "expansion": Expansion(), "contraction": Contraction(),
-    "self_organization": SelfOrganization(), "mutation": Mutation(),
-    "transition": Transition(), "recursivity": Recursivity(),
+    "emission": Emission(),
+    "reception": Reception(),
+    "coherence": Coherence(),
+    "dissonance": Dissonance(),
+    "coupling": Coupling(),
+    "resonance": Resonance(),
+    "silence": Silence(),
+    "expansion": Expansion(),
+    "contraction": Contraction(),
+    "self_organization": SelfOrganization(),
+    "mutation": Mutation(),
+    "transition": Transition(),
+    "recursivity": Recursivity(),
 }
 START = ("START",)
 
@@ -141,8 +185,12 @@ def transition(state, x):
             return None
         if x == "mutation" and "I" not in win:
             return None
-    return ((win + (tag(x),))[-3:], has_d or x in DESTABILIZERS,
-            has_s or x in STABILIZERS, x in CLOSURES)
+    return (
+        (win + (tag(x),))[-3:],
+        has_d or x in DESTABILIZERS,
+        has_s or x in STABILIZERS,
+        x in CLOSURES,
+    )
 
 
 def is_accept(state):
@@ -232,8 +280,10 @@ def experiment_1_classes(states):
     print("E1: the grammatical equivalence classes (exact symbol quotient)")
     print("=" * 72)
     classes = equivalence_classes(states)
-    print(f"  {len(ALPHA)} operators -> {len(classes)} grammatical classes "
-          f"(the static grammar's resolution)")
+    print(
+        f"  {len(ALPHA)} operators -> {len(classes)} grammatical classes "
+        f"(the static grammar's resolution)"
+    )
     print()
     for cls in sorted(classes, key=lambda c: (-len(c), SHORT[c[0]])):
         members = ", ".join(SHORT[x] for x in cls)
@@ -275,8 +325,10 @@ def experiment_2_substitution(classes):
                 checked += 1
                 if not validate_grammar([NAME2INST[x] for x in seq2], 0.0):
                     broken += 1
-    print(f"  in-class substitutions: checked {checked}, broken {broken}  "
-          f"-> classes exact: {broken == 0}")
+    print(
+        f"  in-class substitutions: checked {checked}, broken {broken}  "
+        f"-> classes exact: {broken == 0}"
+    )
 
     print("  cross-class substitutions that BREAK validity (classes distinct):")
     shown = 0
@@ -293,8 +345,10 @@ def experiment_2_substitution(classes):
                 seq2[i] = b
                 if not validate_grammar([NAME2INST[x] for x in seq2], 0.0):
                     label = " ".join(SHORT[x] for x in seq)
-                    print(f"    [{label}]  swap {SHORT[a]}->{SHORT[b]} @ pos {i}"
-                          f"  -> invalid")
+                    print(
+                        f"    [{label}]  swap {SHORT[a]}->{SHORT[b]} @ pos {i}"
+                        f"  -> invalid"
+                    )
                     done = True
                     shown += 1
                     break
@@ -312,16 +366,22 @@ def experiment_3_redundancy(classes, states):
     free = max(classes, key=len)
     reps = [x for x in ALPHA if x == free[0] or x not in free]
     lam_cls = capacity(reps, states)
-    print(f"  symbol-counting capacity (13 symbols)  lambda_sym = {lam_sym:.6f}"
-          f"  = {np.log2(lam_sym):.3f} bits/op")
-    print(f"  role-counting capacity   ( 9 classes)  lambda_cls = {lam_cls:.6f}"
-          f"  = {np.log2(lam_cls):.3f} bits/role")
+    print(
+        f"  symbol-counting capacity (13 symbols)  lambda_sym = {lam_sym:.6f}"
+        f"  = {np.log2(lam_sym):.3f} bits/op"
+    )
+    print(
+        f"  role-counting capacity   ( 9 classes)  lambda_cls = {lam_cls:.6f}"
+        f"  = {np.log2(lam_cls):.3f} bits/role"
+    )
     gap = np.log2(lam_sym) - np.log2(lam_cls)
     print(f"  redundancy gap = {gap:.3f} bits/op")
     print("  -> the static grammar constrains operators up to their role")
     print("     (3.13 bits/role); the remaining 0.40 bits/op is free choice")
-    print(f"     among interchangeable operators, almost all inside "
-          f"{{{', '.join(SHORT[x] for x in free)}}}.")
+    print(
+        f"     among interchangeable operators, almost all inside "
+        f"{{{', '.join(SHORT[x] for x in free)}}}."
+    )
 
 
 def main():

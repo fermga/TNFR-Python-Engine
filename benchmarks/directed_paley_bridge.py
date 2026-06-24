@@ -104,8 +104,8 @@ except Exception:  # pragma: no cover
     _HAVE_MPMATH = False
 
 TOL = 1e-9
-_GAP_EPS = 1e-9        # h(n) below this counts as a tournament zero
-_REAL_AXIS = np.array([0.0, np.pi, -np.pi])    # arg of a real number
+_GAP_EPS = 1e-9  # h(n) below this counts as a tournament zero
+_REAL_AXIS = np.array([0.0, np.pi, -np.pi])  # arg of a real number
 
 # First few Riemann non-trivial zero heights (the continuous-phase witness).
 _KNOWN_ORDINATES = (14.1347, 21.0220, 25.0109, 30.4249, 32.9351, 37.5862)
@@ -169,7 +169,7 @@ def tournament_gap(n: int) -> float:
     if n % 4 != 3:
         return float("inf")
     eig = directed_residue_eigenvalues(n)
-    secondary = eig[1:]                       # drop DC (row-sum) eigenvalue
+    secondary = eig[1:]  # drop DC (row-sum) eigenvalue
     target_im = 0.5 * math.sqrt(n)
     dev_re = float(np.max(np.abs(secondary.real + 0.5)))
     dev_im = float(np.max(np.abs(np.abs(secondary.imag) - target_im)))
@@ -187,10 +187,10 @@ def test_mod4_split_is_real_phase_split() -> bool:
     print("          (= the real/phase boundary of the wall)")
     print("=" * 78)
 
-    real_class = (13, 17, 29, 37)             # p == 1 (mod 4): -1 is a QR
-    phase_class = (3, 7, 11, 19, 23, 31)      # p == 3 (mod 4): -1 is NOT a QR
+    real_class = (13, 17, 29, 37)  # p == 1 (mod 4): -1 is a QR
+    phase_class = (3, 7, 11, 19, 23, 31)  # p == 3 (mod 4): -1 is NOT a QR
 
-    worst_real_imag = 0.0                     # == 1 class should be real
+    worst_real_imag = 0.0  # == 1 class should be real
     worst_real_asym = 0.0
     for p in real_class:
         R = quadratic_residues(p)
@@ -223,10 +223,20 @@ def test_mod4_split_is_real_phase_split() -> bool:
     print("  p == 3 (mod 4)  (-1 NOT a QR => Paley TOURNAMENT):")
     print(f"    max ||A+A^T-(J-I)||  : {worst_phase_tourn:.2e}  (tournament)")
     print(f"    max ||Im|-sqrt(p)/2| : {worst_phase_gap:.2e}  (IMAG)")
-    ok = (worst_real_imag < TOL and worst_real_asym < TOL
-          and worst_phase_tourn < 1e-8 and worst_phase_gap < 1e-8)
-    msg = ("mod-4 prime split == real/phase wall split "
-           "(the arithmetic of -1 being a QR)") if ok else "split not aligned"
+    ok = (
+        worst_real_imag < TOL
+        and worst_real_asym < TOL
+        and worst_phase_tourn < 1e-8
+        and worst_phase_gap < 1e-8
+    )
+    msg = (
+        (
+            "mod-4 prime split == real/phase wall split "
+            "(the arithmetic of -1 being a QR)"
+        )
+        if ok
+        else "split not aligned"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -246,8 +256,8 @@ def test_imag_gap_produces_primes(limit: int = 200) -> bool:
     primes34 = [m for m in candidates if is_prime(m)]
     zeros = [m for m in candidates if tournament_gap(m) <= _GAP_EPS]
 
-    extra = sorted(set(zeros) - set(primes34))     # composites flagged prime
-    miss = sorted(set(primes34) - set(zeros))      # primes missed
+    extra = sorted(set(zeros) - set(primes34))  # composites flagged prime
+    miss = sorted(set(primes34) - set(zeros))  # primes missed
     exact = (not extra) and (not miss)
 
     print(f"  tested n == 3 (mod 4) up to {limit}")
@@ -257,8 +267,14 @@ def test_imag_gap_produces_primes(limit: int = 200) -> bool:
     print(f"  primes missed                : {miss if miss else 'none'}")
     print(f"  first zeros                  : {zeros[:8]}")
     ok = exact
-    msg = ("h(n)=0 IS primality (== 3 mod 4) via the imaginary "
-           "Gauss-sum identity (squares only)") if ok else "mismatch"
+    msg = (
+        (
+            "h(n)=0 IS primality (== 3 mod 4) via the imaginary "
+            "Gauss-sum identity (squares only)"
+        )
+        if ok
+        else "mismatch"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -274,10 +290,12 @@ def test_real_plus_imag_covers_odd_primes(limit: int = 200) -> bool:
     print("          primes (the only residual is the even prime 2)")
     print("=" * 78)
 
-    real_primes = [m for m in range(5, limit + 1)
-                   if m % 4 == 1 and paley_gap(m) <= _GAP_EPS]
-    imag_primes = [m for m in range(3, limit + 1)
-                   if m % 4 == 3 and tournament_gap(m) <= _GAP_EPS]
+    real_primes = [
+        m for m in range(5, limit + 1) if m % 4 == 1 and paley_gap(m) <= _GAP_EPS
+    ]
+    imag_primes = [
+        m for m in range(3, limit + 1) if m % 4 == 3 and tournament_gap(m) <= _GAP_EPS
+    ]
     emerged = sorted(set(real_primes) | set(imag_primes))
 
     odd_primes = [m for m in range(3, limit + 1) if is_prime(m)]
@@ -295,17 +313,26 @@ def test_real_plus_imag_covers_odd_primes(limit: int = 200) -> bool:
         carrier_ok = carrier_odd == emerged
         src = "tnfr.dynamics.adelic (CANONICAL)"
 
-    print(f"  real primes  (== 1 mod 4)    : {len(real_primes)}  "
-          f"e.g. {real_primes[:5]}")
-    print(f"  imag primes  (== 3 mod 4)    : {len(imag_primes)}  "
-          f"e.g. {imag_primes[:5]}")
-    print(f"  union = odd primes <= {limit}    : {cover_ok} "
-          f"({len(emerged)} vs {len(odd_primes)})")
+    print(
+        f"  real primes  (== 1 mod 4)    : {len(real_primes)}  "
+        f"e.g. {real_primes[:5]}"
+    )
+    print(
+        f"  imag primes  (== 3 mod 4)    : {len(imag_primes)}  "
+        f"e.g. {imag_primes[:5]}"
+    )
+    print(
+        f"  union = odd primes <= {limit}    : {cover_ok} "
+        f"({len(emerged)} vs {len(odd_primes)})"
+    )
     print(f"  residual prime(s)            : {residual}  (the even prime 2)")
     print(f"  carrier cross-check ({src}) : {carrier_ok}")
     ok = cover_ok and residual == [2] and carrier_ok
-    msg = ("real (+) imaginary = every odd prime; only 2 sits "
-           "outside both sectors") if ok else "coverage gap"
+    msg = (
+        ("real (+) imaginary = every odd prime; only 2 sits " "outside both sectors")
+        if ok
+        else "coverage gap"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -335,8 +362,9 @@ def test_does_not_reach_the_phase(limit: int = 200) -> bool:
         worst_re = max(worst_re, float(np.max(np.abs(sec.real + 0.5))))
 
     # (b) S(T) is a CONTINUOUS phase off the {0, pi} axis near the ordinates.
-    imag_primes = [m for m in range(3, limit + 1)
-                   if m % 4 == 3 and tournament_gap(m) <= _GAP_EPS]
+    imag_primes = [
+        m for m in range(3, limit + 1) if m % 4 == 3 and tournament_gap(m) <= _GAP_EPS
+    ]
     primes_arr = np.array(imag_primes, dtype=float)
     nu_f = np.log(primes_arr)
     samples = []
@@ -344,30 +372,47 @@ def test_does_not_reach_the_phase(limit: int = 200) -> bool:
         for off in (-0.7, 0.0, 0.9):
             samples.append(riemann_s_phase(g + off, nu_f, primes_arr))
     phases = np.array(samples) * np.pi
-    off_axis = int(np.sum(
-        np.min(np.abs(phases[:, None] % (2 * np.pi) - _REAL_AXIS[None, :]),
-               axis=1) > 0.3))
+    off_axis = int(
+        np.sum(
+            np.min(np.abs(phases[:, None] % (2 * np.pi) - _REAL_AXIS[None, :]), axis=1)
+            > 0.3
+        )
+    )
     s_src = "mpmath zeta(1/2+iT)" if _HAVE_MPMATH else "prime-oscillator"
 
     # (c) the prime 2 is == 2 (mod 4): in neither the real nor the imaginary
     #     class -- the characteristic-2 exception.
-    two_in_real = (2 % 4 == 1)
-    two_in_imag = (2 % 4 == 3)
+    two_in_real = 2 % 4 == 1
+    two_in_imag = 2 % 4 == 3
     two_residual = (not two_in_real) and (not two_in_imag)
 
     print(f"  max ||A A^T - A^T A||        : {worst_normal:.2e}  (NORMAL)")
     print(f"  max |Re(secondary) + 1/2|    : {worst_re:.2e}  (vertical line)")
     print("  => spectrum is a DISCRETE point set (i * real), not a continuum")
     print(f"  S(T) source                  : {s_src}")
-    print(f"  S(T) samples off {{0,pi}}      : {off_axis} / {len(samples)} "
-          f"(continuous phase)")
-    print(f"  prime 2 in real|imag class   : {two_in_real}|{two_in_imag}  "
-          f"(residual = {two_residual})")
-    ok = (worst_normal < TOL and worst_re < 1e-8
-          and off_axis >= len(_KNOWN_ORDINATES) and two_residual)
-    msg = ("real (+) imaginary cover the odd primes via "
-           "NORMAL/discrete identities; S(T) and 2 stay out -- "
-           "wall unchanged") if ok else "phase reached?!"
+    print(
+        f"  S(T) samples off {{0,pi}}      : {off_axis} / {len(samples)} "
+        f"(continuous phase)"
+    )
+    print(
+        f"  prime 2 in real|imag class   : {two_in_real}|{two_in_imag}  "
+        f"(residual = {two_residual})"
+    )
+    ok = (
+        worst_normal < TOL
+        and worst_re < 1e-8
+        and off_axis >= len(_KNOWN_ORDINATES)
+        and two_residual
+    )
+    msg = (
+        (
+            "real (+) imaginary cover the odd primes via "
+            "NORMAL/discrete identities; S(T) and 2 stay out -- "
+            "wall unchanged"
+        )
+        if ok
+        else "phase reached?!"
+    )
     print(f"  VERDICT: {'PASS' if ok else 'FAIL'} -- {msg}")
     print()
     return ok
@@ -383,14 +428,22 @@ def main() -> int:
     print("=" * 78)
     print("SUMMARY")
     print("=" * 78)
-    print(f"  TEST 1 mod-4 split == real/phase wall split   : "
-          f"{'PASS' if r1 else 'FAIL'}")
-    print(f"  TEST 2 imaginary gap produces == 3 mod 4 primes: "
-          f"{'PASS' if r2 else 'FAIL'}")
-    print(f"  TEST 3 real (+) imaginary = all odd primes     : "
-          f"{'PASS' if r3 else 'FAIL'}")
-    print(f"  TEST 4 discrete/normal sectors do NOT reach S(T): "
-          f"{'PASS' if r4 else 'FAIL'}")
+    print(
+        f"  TEST 1 mod-4 split == real/phase wall split   : "
+        f"{'PASS' if r1 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 2 imaginary gap produces == 3 mod 4 primes: "
+        f"{'PASS' if r2 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 3 real (+) imaginary = all odd primes     : "
+        f"{'PASS' if r3 else 'FAIL'}"
+    )
+    print(
+        f"  TEST 4 discrete/normal sectors do NOT reach S(T): "
+        f"{'PASS' if r4 else 'FAIL'}"
+    )
     structural = r1 and r2 and r3 and r4
     print()
     label = "ALL PASS" if structural else "SOME FAILED"

@@ -140,16 +140,13 @@ def block_detailed_chi3() -> None:
 def block_sweep() -> None:
     banner("P37 Block 2: chi-twisted Weil-TNFR bridge sweep")
     print(
-        f"Gaussian widths sigma in {tuple(SIGMAS_SWEEP)}  "
-        f"(n={len(SIGMAS_SWEEP)})"
+        f"Gaussian widths sigma in {tuple(SIGMAS_SWEEP)}  " f"(n={len(SIGMAS_SWEEP)})"
     )
     print()
     summaries = []
     for label, q, builder in CHARACTERS:
         chi, bundle = _build(builder)
-        cert = verify_twisted_weil_tnfr_bridge(
-            chi, bundle, SIGMAS_SWEEP
-        )
+        cert = verify_twisted_weil_tnfr_bridge(chi, bundle, SIGMAS_SWEEP)
         summaries.append((label, q, cert))
         print(f"--- {label}  (q={q}, a={cert.character_parity}) ---")
         print(cert.summary())

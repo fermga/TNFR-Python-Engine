@@ -242,8 +242,7 @@ class PhaseGateReport:
             "min_compliance": self.min_compliance,
             "recommendation": self.recommendation,
             "operator_prescriptions": [
-                prescription.as_dict()
-                for prescription in self.operator_prescriptions
+                prescription.as_dict() for prescription in self.operator_prescriptions
             ],
         }
 
@@ -267,10 +266,7 @@ def edge_phase_differences(
     phase_keys: Sequence[str] = ("phase", "theta"),
 ) -> list[float]:
     """Return absolute wrapped phase differences over graph edges."""
-    return [
-        edge_phase_difference(G, u, v, phase_keys=phase_keys)
-        for u, v in G.edges()
-    ]
+    return [edge_phase_difference(G, u, v, phase_keys=phase_keys) for u, v in G.edges()]
 
 
 def detect_phase_gate_violations(
@@ -358,8 +354,12 @@ def rank_phase_stress_hotspots(
         ):
             incident_counts[violation.u] = incident_counts.get(violation.u, 0) + 1
             incident_counts[violation.v] = incident_counts.get(violation.v, 0) + 1
-            incident_excess[violation.u] = incident_excess.get(violation.u, 0.0) + violation.excess
-            incident_excess[violation.v] = incident_excess.get(violation.v, 0.0) + violation.excess
+            incident_excess[violation.u] = (
+                incident_excess.get(violation.u, 0.0) + violation.excess
+            )
+            incident_excess[violation.v] = (
+                incident_excess.get(violation.v, 0.0) + violation.excess
+            )
 
     hotspots: list[PhaseStressHotspot] = []
     for node in G.nodes():
@@ -473,10 +473,20 @@ def prescribe_phase_gate_operators(
         )
 
     for hotspot in hotspots:
-        if hotspot.incident_violation_count <= 0 and hotspot.stress_score <= float(gate):
+        if hotspot.incident_violation_count <= 0 and hotspot.stress_score <= float(
+            gate
+        ):
             continue
-        sequence = ("IL", "OZ", "THOL", "SHA") if hotspot.incident_violation_count else ("IL", "SHA")
-        basis = ("U2", "U4", "U5", "U1b") if hotspot.incident_violation_count else ("U1b", "structural metrology")
+        sequence = (
+            ("IL", "OZ", "THOL", "SHA")
+            if hotspot.incident_violation_count
+            else ("IL", "SHA")
+        )
+        basis = (
+            ("U2", "U4", "U5", "U1b")
+            if hotspot.incident_violation_count
+            else ("U1b", "structural metrology")
+        )
         prescriptions.append(
             PhaseGateOperatorPrescription(
                 scope="node",
@@ -501,9 +511,7 @@ def _topology_baselines(G: Any) -> dict[str, float]:
     _require_networkx()
     node_count = int(G.number_of_nodes())
     edge_count = int(G.number_of_edges())
-    avg_degree = (
-        sum(dict(G.degree()).values()) / node_count if node_count else 0.0
-    )
+    avg_degree = sum(dict(G.degree()).values()) / node_count if node_count else 0.0
     clustering = float(nx.average_clustering(G)) if node_count else 0.0
     if node_count <= 1:
         diameter = 0.0
@@ -561,9 +569,7 @@ def compare_against_global_baselines(
         "tnfr_phi_s_abs_mean": _mean(phi_values),
         "global_order_r": order_r,
         "circular_variance": 1.0 - order_r,
-        "phase_histogram_entropy": phase_histogram_entropy(
-            phases, bins=histogram_bins
-        ),
+        "phase_histogram_entropy": phase_histogram_entropy(phases, bins=histogram_bins),
         **topology,
     }
 
@@ -580,9 +586,7 @@ def analyze_phase_gate(
     """Build a full phase-gate diagnostic report for a graph state."""
     compliance = compute_edge_gate_compliance(G, gate, phase_keys=phase_keys)
     hotspots = tuple(
-        rank_phase_stress_hotspots(
-            G, gate, top_n=top_n, phase_keys=phase_keys
-        )
+        rank_phase_stress_hotspots(G, gate, top_n=top_n, phase_keys=phase_keys)
     )
     baseline_summary = compare_against_global_baselines(
         G,
@@ -664,57 +668,60 @@ def render_phase_gate_markdown(
         ]
         for item in report.operator_prescriptions
     ]
-    return "\n\n".join(
-        [
-            f"# {title}",
-            "## Coupling decision",
-            (
-                f"Recommendation: **{report.recommendation}**  \n"
-                f"Gate: {comp.gate:.6f} rad  \n"
-                f"Minimum compliance: {report.min_compliance:.2f}  \n"
-                f"Compliance: {comp.compliance_ratio:.4f} "
-                f"({comp.gated_edges}/{comp.edge_count} edges)  \n"
-                f"Violations: {comp.violation_count}  \n"
-                f"Mean edge Δφ: {comp.mean_difference:.6f} rad  \n"
-                f"Max edge Δφ: {comp.max_difference:.6f} rad"
-            ),
-            "## Baseline comparison",
-            _markdown_table(["Metric", "Value"], baseline_rows),
-            "## Phase-stress hotspots",
-            _markdown_table(
-                [
-                    "Node",
-                    "grad_phi",
-                    "abs K_phi",
-                    "Violations",
-                    "Incident excess",
-                    "Stress score",
-                ],
-                hotspot_rows,
-            ),
-            "## TNFR canonical operator prescription",
-            _markdown_table(
-                [
-                    "Scope",
-                    "Target",
-                    "Sequence",
-                    "Priority",
-                    "Grammar basis",
-                    "Expected effect",
-                ],
-                prescription_rows,
-            ),
-            "## Interpretation",
-            (
-                "Use this report as a local coupling diagnostic.  High global "
-                "order does not guarantee edge-local compatibility; TNFR phase "
-                "gradient and curvature identify where the graph signal is "
-                "locally misaligned with the coupling topology.  The operator "
-                "prescription is TNFR-specific read-only guidance: it maps the "
-                "observed U3 state to canonical stabilization/coupling sequences."
-            ),
-        ]
-    ) + "\n"
+    return (
+        "\n\n".join(
+            [
+                f"# {title}",
+                "## Coupling decision",
+                (
+                    f"Recommendation: **{report.recommendation}**  \n"
+                    f"Gate: {comp.gate:.6f} rad  \n"
+                    f"Minimum compliance: {report.min_compliance:.2f}  \n"
+                    f"Compliance: {comp.compliance_ratio:.4f} "
+                    f"({comp.gated_edges}/{comp.edge_count} edges)  \n"
+                    f"Violations: {comp.violation_count}  \n"
+                    f"Mean edge Δφ: {comp.mean_difference:.6f} rad  \n"
+                    f"Max edge Δφ: {comp.max_difference:.6f} rad"
+                ),
+                "## Baseline comparison",
+                _markdown_table(["Metric", "Value"], baseline_rows),
+                "## Phase-stress hotspots",
+                _markdown_table(
+                    [
+                        "Node",
+                        "grad_phi",
+                        "abs K_phi",
+                        "Violations",
+                        "Incident excess",
+                        "Stress score",
+                    ],
+                    hotspot_rows,
+                ),
+                "## TNFR canonical operator prescription",
+                _markdown_table(
+                    [
+                        "Scope",
+                        "Target",
+                        "Sequence",
+                        "Priority",
+                        "Grammar basis",
+                        "Expected effect",
+                    ],
+                    prescription_rows,
+                ),
+                "## Interpretation",
+                (
+                    "Use this report as a local coupling diagnostic.  High global "
+                    "order does not guarantee edge-local compatibility; TNFR phase "
+                    "gradient and curvature identify where the graph signal is "
+                    "locally misaligned with the coupling topology.  The operator "
+                    "prescription is TNFR-specific read-only guidance: it maps the "
+                    "observed U3 state to canonical stabilization/coupling sequences."
+                ),
+            ]
+        )
+        + "\n"
+    )
 
 
 def render_phase_gate_html(
@@ -777,7 +784,9 @@ th {{ background: #f3f5f7; }}
 {body}
 </body>
 </html>
-""".format(title=html.escape(title), body="\n".join(body))
+""".format(
+        title=html.escape(title), body="\n".join(body)
+    )
 
 
 def export_phase_gate_report(
@@ -808,7 +817,9 @@ def export_phase_gate_report(
     if format_name == "json":
         path.write_text(json.dumps(report.as_dict(), indent=2) + "\n", encoding="utf-8")
     elif format_name in {"md", "markdown"}:
-        path.write_text(render_phase_gate_markdown(report, title=title), encoding="utf-8")
+        path.write_text(
+            render_phase_gate_markdown(report, title=title), encoding="utf-8"
+        )
     elif format_name == "html":
         path.write_text(render_phase_gate_html(report, title=title), encoding="utf-8")
     else:

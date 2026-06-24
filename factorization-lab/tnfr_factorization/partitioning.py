@@ -12,6 +12,7 @@ import numpy as np
 try:
     from tnfr.metrics.common import compute_coherence
     from tnfr.metrics.sense_index import compute_Si
+
     HAS_PARTITION_METRICS = True
 except ImportError:  # pragma: no cover - optional dependency in minimal installs
     HAS_PARTITION_METRICS = False
@@ -48,7 +49,9 @@ def _mean_from_iter(values: Iterable[float]) -> float:
         return float(sum(data) / len(data))
 
 
-def _measure_partition_health(graph: nx.Graph, nodes: Sequence[int]) -> Tuple[float, float]:
+def _measure_partition_health(
+    graph: nx.Graph, nodes: Sequence[int]
+) -> Tuple[float, float]:
     if not nodes or graph is None or not HAS_PARTITION_METRICS:
         return 0.0, 0.0
     subgraph = graph.subgraph(nodes).copy()
@@ -127,7 +130,9 @@ class PartitionedPaleyGraph:
         }
 
     @classmethod
-    def single_partition(cls, modulus: int, graph: nx.Graph | None = None) -> PartitionedPaleyGraph:
+    def single_partition(
+        cls, modulus: int, graph: nx.Graph | None = None
+    ) -> PartitionedPaleyGraph:
         """Convenience helper that models the entire graph as one partition."""
 
         nodes = list(graph.nodes()) if graph is not None else []
@@ -320,13 +325,21 @@ def aggregate_partition_metrics(
             empty_partitions.append(part.partition_id)
 
     phi_ratio = (phi_sum / parent_phi_s) if parent_phi_s else 0.0
-    coherence_ratio = (coherence_sum / parent_coherence_length) if parent_coherence_length else 0.0
-    gradient_ratio = (gradient_max / parent_phase_gradient) if parent_phase_gradient else 0.0
-    curvature_ratio = (curvature_max / parent_phase_curvature) if parent_phase_curvature else 0.0
+    coherence_ratio = (
+        (coherence_sum / parent_coherence_length) if parent_coherence_length else 0.0
+    )
+    gradient_ratio = (
+        (gradient_max / parent_phase_gradient) if parent_phase_gradient else 0.0
+    )
+    curvature_ratio = (
+        (curvature_max / parent_phase_curvature) if parent_phase_curvature else 0.0
+    )
 
     coverage_ratio = unique_nodes / partitioned.modulus if partitioned.modulus else 0.0
     boundary_fraction = (len(boundary_nodes) / unique_nodes) if unique_nodes else 0.0
-    candidate_ratio = (candidate_total / total_candidate_count) if total_candidate_count else 0.0
+    candidate_ratio = (
+        (candidate_total / total_candidate_count) if total_candidate_count else 0.0
+    )
 
     return PartitionAggregation(
         partition_count=len(partitions),

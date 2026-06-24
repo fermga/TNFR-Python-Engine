@@ -73,16 +73,14 @@ from collections import deque
 from pathlib import Path
 from typing import Any
 
+import mpmath as mp
 import numpy as np
 
-from tnfr.constants.aliases import ALIAS_EPI
 from tnfr.alias import get_attr, set_attr
+from tnfr.constants.aliases import ALIAS_EPI
 from tnfr.operators.remesh import apply_network_remesh
 from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph
 from tnfr.riemann.structural_zero_density import derive_smooth_zero_position
-
-import mpmath as mp
-
 
 # ---------------------------------------------------------------------------
 # Configuration (kept identical to R∞-1a for cross-comparison)
@@ -101,6 +99,7 @@ MPMATH_DPS: int = 30
 # ---------------------------------------------------------------------------
 # Helpers (mirror R∞-1a)
 # ---------------------------------------------------------------------------
+
 
 def synthetic_epi_snapshot(G, t: float) -> dict:
     out: dict = {}
@@ -139,6 +138,7 @@ def vec(d: dict, nodes: list) -> np.ndarray:
 # Correlation utilities (pure NumPy / scipy-free)
 # ---------------------------------------------------------------------------
 
+
 def pearson(x: np.ndarray, y: np.ndarray) -> float:
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
@@ -152,17 +152,20 @@ def pearson(x: np.ndarray, y: np.ndarray) -> float:
 
 def spearman_rank(x: np.ndarray, y: np.ndarray) -> float:
     """Spearman rank correlation via Pearson on ranks (no ties handling)."""
+
     def _rank(a: np.ndarray) -> np.ndarray:
         order = np.argsort(a)
         ranks = np.empty_like(order, dtype=float)
         ranks[order] = np.arange(len(a), dtype=float)
         return ranks
+
     return pearson(_rank(x), _rank(y))
 
 
 # ---------------------------------------------------------------------------
 # Iterate REMESH^N to obtain the fixed point (replicates R∞-1a Track B)
 # ---------------------------------------------------------------------------
+
 
 def compute_fixed_point(G, baseline_epi: dict, n_iter: int) -> dict:
     G.graph["REMESH_TAU_LOCAL"] = TAU_LOCAL
@@ -187,21 +190,25 @@ def compute_fixed_point(G, baseline_epi: dict, n_iter: int) -> dict:
 # Riemann data
 # ---------------------------------------------------------------------------
 
+
 def fetch_riemann_zeros(n: int, dps: int = MPMATH_DPS) -> np.ndarray:
     mp.mp.dps = dps
-    return np.asarray([float(mp.im(mp.zetazero(k))) for k in range(1, n + 1)],
-                      dtype=float)
+    return np.asarray(
+        [float(mp.im(mp.zetazero(k))) for k in range(1, n + 1)], dtype=float
+    )
 
 
 def fetch_smooth_targets(n: int) -> np.ndarray:
     """First n smooth Riemann-Siegel zero approximations via P28 API."""
-    return np.asarray([derive_smooth_zero_position(k) for k in range(1, n + 1)],
-                      dtype=float)
+    return np.asarray(
+        [derive_smooth_zero_position(k) for k in range(1, n + 1)], dtype=float
+    )
 
 
 # ---------------------------------------------------------------------------
 # Main protocol
 # ---------------------------------------------------------------------------
+
 
 def run() -> dict[str, Any]:
     G = build_prime_ladder_graph(n_primes=N_PRIMES, max_power=MAX_POWER)
@@ -252,9 +259,7 @@ def run() -> dict[str, Any]:
     r_aux_zero_pow = pearson(P, gamma[:M])
     r_aux_node_residual = pearson(s_ordered, r_residual[:n_nodes])
 
-    max_pre_registered = max(
-        abs(r_alpha), abs(r_beta), abs(r_gamma), abs(r_delta)
-    )
+    max_pre_registered = max(abs(r_alpha), abs(r_beta), abs(r_gamma), abs(r_delta))
     F3_refuted = max_pre_registered < 0.2
     F3_supported = max_pre_registered > 0.5
 
@@ -309,9 +314,9 @@ def run() -> dict[str, Any]:
             "F3_refuted": F3_refuted,
             "F3_supported": F3_supported,
             "verdict": (
-                "REFUTED" if F3_refuted else
-                "SUPPORTED" if F3_supported else
-                "INDETERMINATE"
+                "REFUTED"
+                if F3_refuted
+                else "SUPPORTED" if F3_supported else "INDETERMINATE"
             ),
         },
     }
@@ -323,10 +328,14 @@ def print_report(summary: dict[str, Any]) -> None:
     print("R∞-1a-spectral — Spectral projection onto Riemann basis")
     print("=" * 78)
     cfg = summary["config"]
-    print(f"Prime-ladder n_primes={cfg['n_primes']}, max_power={cfg['max_power']}, "
-          f"n_nodes={cfg['n_nodes']}, M={cfg['spectral_M']}")
-    print(f"α={cfg['alpha']}, τ_l={cfg['tau_local']}, τ_g={cfg['tau_global']}, "
-          f"N_iter={cfg['n_iter']}")
+    print(
+        f"Prime-ladder n_primes={cfg['n_primes']}, max_power={cfg['max_power']}, "
+        f"n_nodes={cfg['n_nodes']}, M={cfg['spectral_M']}"
+    )
+    print(
+        f"α={cfg['alpha']}, τ_l={cfg['tau_local']}, τ_g={cfg['tau_global']}, "
+        f"N_iter={cfg['n_iter']}"
+    )
     print()
     print("--- Riemann reference (mpmath, first 10) ---")
     rie = summary["riemann"]
@@ -334,23 +343,35 @@ def print_report(summary: dict[str, Any]) -> None:
         zip(rie["gamma_first10"], rie["gamma_tilde_first10"], rie["residual_first10"])
     ):
         print(f"  n={i+1:>2}  γ={g:>10.6f}  γ̃={gt:>10.6f}  r={r:>+10.6f}")
-    print(f"  Σ-stats:  |r|_mean={rie['residual_abs_mean']:.4f}  "
-          f"|r|_max={rie['residual_abs_max']:.4f}")
+    print(
+        f"  Σ-stats:  |r|_mean={rie['residual_abs_mean']:.4f}  "
+        f"|r|_max={rie['residual_abs_max']:.4f}"
+    )
     print()
     print("--- Fixed point ---")
     fp = summary["fixed_point"]
     print(f"  ‖EPI*‖_L2 (node order) = {fp['node_order_l2']:.6f}")
     print(f"  mean(EPI*) = {fp['node_order_mean']:+.6e}")
     print(f"  spectral total power = {fp['spectral_total_power']:.4f}")
-    print(f"  top-3 bins (1..M) = {fp['spectral_top3_bins']}  "
-          f"fractions = {[f'{x:.3f}' for x in fp['spectral_top3_power_fraction']]}")
+    print(
+        f"  top-3 bins (1..M) = {fp['spectral_top3_bins']}  "
+        f"fractions = {[f'{x:.3f}' for x in fp['spectral_top3_power_fraction']]}"
+    )
     print()
     print("--- Pre-registered correlation tests ---")
     pr = summary["pre_registered_tests"]
-    print(f"  r_α  (power[1..M] vs |r_n|[1..M], index-aligned)  = {pr['r_alpha_pearson_power_vs_residual_index_aligned']:+.4f}")
-    print(f"  r_β  (sort(power, desc) vs sort(|r_n|, desc))      = {pr['r_beta_pearson_sorted_power_vs_sorted_residual']:+.4f}")
-    print(f"  r_γ  (EPI*[νf-ordered] vs γ̃_n[1..N])              = {pr['r_gamma_pearson_nodefield_vs_smooth_targets']:+.4f}")
-    print(f"  r_δ  (Spearman power vs |r_n|)                     = {pr['r_delta_spearman_power_vs_residual']:+.4f}")
+    print(
+        f"  r_α  (power[1..M] vs |r_n|[1..M], index-aligned)  = {pr['r_alpha_pearson_power_vs_residual_index_aligned']:+.4f}"
+    )
+    print(
+        f"  r_β  (sort(power, desc) vs sort(|r_n|, desc))      = {pr['r_beta_pearson_sorted_power_vs_sorted_residual']:+.4f}"
+    )
+    print(
+        f"  r_γ  (EPI*[νf-ordered] vs γ̃_n[1..N])              = {pr['r_gamma_pearson_nodefield_vs_smooth_targets']:+.4f}"
+    )
+    print(
+        f"  r_δ  (Spearman power vs |r_n|)                     = {pr['r_delta_spearman_power_vs_residual']:+.4f}"
+    )
     print(f"  max |·| = {pr['max_abs_pre_registered']:.4f}")
     print()
     print("--- Auxiliary controls (NOT in F3) ---")

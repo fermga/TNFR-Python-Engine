@@ -35,10 +35,10 @@ import math
 from dataclasses import dataclass, field
 from typing import Callable, Sequence
 
+import networkx as nx
 import scipy.linalg
 
 from ..mathematics.unified_numerical import np
-import networkx as nx
 
 # ---------------------------------------------------------------------------
 # Convergence exponent classification
@@ -47,12 +47,12 @@ _CONVERGENCE_SPREAD_NARROW = 0.3
 
 from .operator import (
     build_h_tnfr,
-    build_prime_path_graph,
-    build_prime_cycle_graph,
-    build_prime_star_graph,
     build_prime_complete_graph,
-    build_prime_tree_graph,
+    build_prime_cycle_graph,
+    build_prime_path_graph,
     build_prime_random_graph,
+    build_prime_star_graph,
+    build_prime_tree_graph,
 )
 
 # ============================================================================
@@ -91,6 +91,7 @@ TOPOLOGY_BUILDERS: dict[str, GraphBuilder] = {
 # ============================================================================
 # Data Structures
 # ============================================================================
+
 
 @dataclass(frozen=True)
 class TopologyResult:
@@ -143,6 +144,7 @@ class TopologyResult:
     min_velocity: float
     max_velocity: float
 
+
 @dataclass
 class TopologyConvergenceResult:
     r"""Convergence comparison across topologies and k values.
@@ -170,9 +172,11 @@ class TopologyConvergenceResult:
     gap_exponents: dict[str, float] = field(default_factory=dict)
     summary: str = ""
 
+
 # ============================================================================
 # Core Analysis: Works with Any Connected Graph
 # ============================================================================
+
 
 def _build_graph(
     name: str,
@@ -186,6 +190,7 @@ def _build_graph(
     if name == "random":
         return builder(k, seed=seed, weight_by_log_gap=weight_by_log_gap)
     return builder(k, weight_by_log_gap=weight_by_log_gap)
+
 
 def analyze_graph_topology(
     G: nx.Graph,
@@ -233,7 +238,7 @@ def analyze_graph_topology(
     # tr(L V_1) = sum_i L_ii * log(p_i) where L_ii = weighted degree
     diag_L = np.diag(H_half)  # At sigma=1/2, H = L
     tr_LV1 = float(np.dot(diag_L, log_p))
-    tr_V1_sq = float(np.sum(log_p ** 2))
+    tr_V1_sq = float(np.sum(log_p**2))
 
     if tr_V1_sq > 1e-15:
         sigma_star = 0.5 - tr_LV1 / tr_V1_sq
@@ -245,10 +250,9 @@ def analyze_graph_topology(
 
     # Line 3: Eigenvalue flow (Hellmann-Feynman)
     # v_j = <psi_j|V_1|psi_j> = sum_i |psi_j(i)|^2 log(p_i)
-    velocities = np.array([
-        float(np.sum(eigenvectors[:, j] ** 2 * log_p))
-        for j in range(k)
-    ])
+    velocities = np.array(
+        [float(np.sum(eigenvectors[:, j] ** 2 * log_p)) for j in range(k)]
+    )
     all_pos = bool(np.all(velocities > 0))
     v_min = float(np.min(velocities))
     v_max = float(np.max(velocities))
@@ -269,6 +273,7 @@ def analyze_graph_topology(
         min_velocity=v_min,
         max_velocity=v_max,
     )
+
 
 def compare_topologies(
     k: int,
@@ -305,6 +310,7 @@ def compare_topologies(
         )
     return results
 
+
 def _fit_power_law(
     x_values: Sequence[float],
     y_values: Sequence[float],
@@ -319,6 +325,7 @@ def _fit_power_law(
     A_mat = np.column_stack([np.ones_like(log_x), -log_x])
     result, _, _, _ = np.linalg.lstsq(A_mat, log_y, rcond=None)
     return (math.exp(float(result[0])), float(result[1]))
+
 
 def topology_convergence_study(
     k_values: Sequence[int] | None = None,
@@ -368,12 +375,8 @@ def topology_convergence_study(
         for k in k_values:
             if k < 3:
                 continue
-            G = _build_graph(
-                name, k, weight_by_log_gap=weight_by_log_gap, seed=seed
-            )
-            tr = analyze_graph_topology(
-                G, name, weight_by_log_gap=weight_by_log_gap
-            )
+            G = _build_graph(name, k, weight_by_log_gap=weight_by_log_gap, seed=seed)
+            tr = analyze_graph_topology(G, name, weight_by_log_gap=weight_by_log_gap)
             topo_results.append(tr)
         result.results[name] = topo_results
 
@@ -404,18 +407,20 @@ def topology_convergence_study(
 
     # Convergence rate table
     lines.append("Convergence: |sigma* - 1/2| ~ A / k^beta")
-    lines.append(f"  {'Topology':>10}  {'A':>8}  {'beta':>8}  "
-                 f"{'gap_exp':>8}  {'universal?':>10}")
-    lines.append(f"  {'─' * 10}  {'─' * 8}  {'─' * 8}  "
-                 f"{'─' * 8}  {'─' * 10}")
+    lines.append(
+        f"  {'Topology':>10}  {'A':>8}  {'beta':>8}  "
+        f"{'gap_exp':>8}  {'universal?':>10}"
+    )
+    lines.append(f"  {'─' * 10}  {'─' * 8}  {'─' * 8}  " f"{'─' * 8}  {'─' * 10}")
 
     for name in topologies:
         A, beta = result.convergence_rates.get(name, (0.0, 0.0))
         alpha = result.gap_exponents.get(name, 0.0)
         # beta ~ 1 indicates universal O(1/k) convergence
         universal = "YES" if 0.7 < beta < 1.5 else "NO"
-        lines.append(f"  {name:>10}  {A:8.3f}  {beta:8.3f}  "
-                     f"{alpha:8.3f}  {universal:>10}")
+        lines.append(
+            f"  {name:>10}  {A:8.3f}  {beta:8.3f}  " f"{alpha:8.3f}  {universal:>10}"
+        )
 
     lines.append("")
 
@@ -429,12 +434,16 @@ def topology_convergence_study(
         if largest_k_results:
             k_max = next(iter(largest_k_results.values())).k
             lines.append(f"Detail at k = {k_max}:")
-            lines.append(f"  {'Topology':>10}  {'edges':>6}  {'|lambda_min|':>12}  "
-                         f"{'gap':>10}  {'|dev|':>10}  "
-                         f"{'v_min':>8}  {'v_max':>8}  {'v>0':>4}")
-            lines.append(f"  {'─' * 10}  {'─' * 6}  {'─' * 12}  "
-                         f"{'─' * 10}  {'─' * 10}  "
-                         f"{'─' * 8}  {'─' * 8}  {'─' * 4}")
+            lines.append(
+                f"  {'Topology':>10}  {'edges':>6}  {'|lambda_min|':>12}  "
+                f"{'gap':>10}  {'|dev|':>10}  "
+                f"{'v_min':>8}  {'v_max':>8}  {'v>0':>4}"
+            )
+            lines.append(
+                f"  {'─' * 10}  {'─' * 6}  {'─' * 12}  "
+                f"{'─' * 10}  {'─' * 10}  "
+                f"{'─' * 8}  {'─' * 8}  {'─' * 4}"
+            )
             for name in topologies:
                 r = largest_k_results.get(name)
                 if r:

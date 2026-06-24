@@ -21,21 +21,6 @@ emit_structural_telemetry(coherence=0.85, phi_s=0.6)
 ```
 """
 
-# Unified telemetry system (primary interface)
-from .unified_telemetry_system import (
-    TNFRUnifiedTelemetrySystem,
-    TelemetryConfiguration,
-    StructuralTelemetryEvent,
-    PerformanceTelemetryEvent,
-    FailureTelemetryEvent,
-    get_unified_telemetry_system,
-    emit_structural_telemetry,
-    emit_performance_telemetry,
-    emit_failure_telemetry,
-    flush_unified_telemetry,
-    get_unified_telemetry_stats
-)
-
 # Legacy telemetry components (for compatibility)
 from .cache_metrics import (
     CacheMetricsSnapshot,
@@ -49,6 +34,21 @@ from .nu_f import (
     NuFWindow,
     ensure_nu_f_telemetry,
     record_nu_f_window,
+)
+
+# Unified telemetry system (primary interface)
+from .unified_telemetry_system import (
+    FailureTelemetryEvent,
+    PerformanceTelemetryEvent,
+    StructuralTelemetryEvent,
+    TelemetryConfiguration,
+    TNFRUnifiedTelemetrySystem,
+    emit_failure_telemetry,
+    emit_performance_telemetry,
+    emit_structural_telemetry,
+    flush_unified_telemetry,
+    get_unified_telemetry_stats,
+    get_unified_telemetry_system,
 )
 from .verbosity import (
     TELEMETRY_VERBOSITY_DEFAULT,

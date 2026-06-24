@@ -24,26 +24,25 @@ import numpy as np
 import pytest
 
 from tnfr.riemann.eigenmode_fields import (
-    EigenmodeFieldAnalysis,
-    EigenmodeTetrad,
     PHI_S_GOLDEN_THRESHOLD,
     PHI_S_VON_KOCH_THRESHOLD,
-    compare_confinement_at_sigma,
-    compute_eigenmode_fields_general,
-    compute_eigenmode_tetrad,
-    check_u6_confinement,
+    EigenmodeFieldAnalysis,
+    EigenmodeTetrad,
     _eigenvector_coherence_length_path,
     _path_eigenvector_curvature,
     _path_eigenvector_gradient,
     _spectral_structural_potential,
+    check_u6_confinement,
+    compare_confinement_at_sigma,
+    compute_eigenmode_fields_general,
+    compute_eigenmode_tetrad,
+)
+from tnfr.riemann.operator import (
+    build_prime_complete_graph,
+    build_prime_cycle_graph,
+    build_prime_path_graph,
 )
 from tnfr.riemann.spectral_proof import compute_eigensystem
-from tnfr.riemann.operator import (
-    build_prime_path_graph,
-    build_prime_cycle_graph,
-    build_prime_complete_graph,
-)
-
 
 # ============================================================================
 # Section 1: Construction & Data Structure Integrity
@@ -460,7 +459,8 @@ class TestU6Confinement:
         so fewer modes should violate confinement.
         """
         results = compare_confinement_at_sigma(
-            30, sigma_values=[0.2, 0.35, 0.5, 0.65, 0.8],
+            30,
+            sigma_values=[0.2, 0.35, 0.5, 0.65, 0.8],
         )
         fraction_at_half = results[0.5]["fraction"]
         fraction_at_02 = results[0.2]["fraction"]
@@ -507,17 +507,15 @@ class TestGeneralTopology:
             )
 
             # Phi_s depends only on eigenvalues, should be very close
-            assert abs(t_tri.phi_s - t_gen.phi_s) < 0.1, (
-                f"Mode {j}: Phi_s mismatch {t_tri.phi_s} vs {t_gen.phi_s}"
-            )
+            assert (
+                abs(t_tri.phi_s - t_gen.phi_s) < 0.1
+            ), f"Mode {j}: Phi_s mismatch {t_tri.phi_s} vs {t_gen.phi_s}"
 
             # Gradient and curvature should be close
-            assert abs(t_tri.grad_phi - t_gen.grad_phi) < 0.05, (
-                f"Mode {j}: grad_phi mismatch"
-            )
-            assert abs(t_tri.k_phi - t_gen.k_phi) < 0.05, (
-                f"Mode {j}: k_phi mismatch"
-            )
+            assert (
+                abs(t_tri.grad_phi - t_gen.grad_phi) < 0.05
+            ), f"Mode {j}: grad_phi mismatch"
+            assert abs(t_tri.k_phi - t_gen.k_phi) < 0.05, f"Mode {j}: k_phi mismatch"
 
     def test_general_cycle_graph(self):
         """Can compute tetrad for cycle topology."""
@@ -669,6 +667,7 @@ class TestEdgeCases:
     def test_general_graph_too_small_raises(self):
         """General graph with < 2 nodes raises ValueError."""
         import networkx as nx
+
         G = nx.Graph()
         G.add_node(2, prime=2)
         with pytest.raises(ValueError, match="Graph must have >= 2 nodes"):

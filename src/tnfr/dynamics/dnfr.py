@@ -10,19 +10,18 @@ allocations.
 
 from __future__ import annotations
 
-from ..mathematics.unified_numerical import np
 import math
 import sys
 from collections.abc import Callable, Iterator, Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
+from time import perf_counter
 from types import ModuleType
 from typing import Any, cast
-
-from time import perf_counter
 
 from ..alias import get_attr, get_theta_attr, set_dnfr
 from ..constants import DEFAULTS, get_param
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF
+from ..mathematics.unified_numerical import np
 from ..metrics.common import merge_and_normalize_weights
 from ..metrics.trig import neighbor_phase_mean_list
 from ..metrics.trig_cache import compute_theta_trig
@@ -36,23 +35,24 @@ from ..types import (
 )
 from ..utils import (
     DNFR_PREP_STATE_KEY,
-    DnfrPrepState,
-    DnfrCache,
     CacheManager,
+    DnfrCache,
+    DnfrPrepState,
     _graph_cache_manager,
     angle_diff,
     angle_diff_array,
     cached_node_list,
     cached_nodes_and_A,
+    new_dnfr_cache,
     normalize_weights,
     resolve_chunk_size,
-    new_dnfr_cache,
 )
 from .fused_dnfr import compute_fused_gradients_symmetric
 
 _MEAN_VECTOR_EPS = 1e-12
 _SPARSE_DENSITY_THRESHOLD = 0.25
 _DNFR_APPROX_BYTES_PER_EDGE = 48
+
 
 def _should_vectorize(G: TNFRGraph, np_module: ModuleType | None) -> bool:
     """Return ``True`` when NumPy is available unless the graph disables it."""
@@ -63,6 +63,7 @@ def _should_vectorize(G: TNFRGraph, np_module: ModuleType | None) -> bool:
     if flag is None:
         return True
     return bool(flag)
+
 
 _NUMPY_CACHE_ATTRS = (
     "theta_np",
@@ -89,6 +90,7 @@ _NUMPY_CACHE_ATTRS = (
     "dense_degree_np",
 )
 
+
 def _profile_start_stop(
     profile: MutableMapping[str, Any] | None,
     *,
@@ -111,10 +113,13 @@ def _profile_start_stop(
         def _start() -> float:
             return 0.0
 
-        def _stop(metric: str, start: float) -> None:  # noqa: ARG001 - uniform signature
+        def _stop(
+            metric: str, start: float
+        ) -> None:  # noqa: ARG001 - uniform signature
             return None
 
     return _start, _stop
+
 
 def _iter_chunk_offsets(total: int, jobs: int) -> Iterator[tuple[int, int]]:
     """Yield ``(start, end)`` offsets splitting ``total`` items across ``jobs``."""
@@ -132,6 +137,7 @@ def _iter_chunk_offsets(total: int, jobs: int) -> Iterator[tuple[int, int]]:
         end = start + size
         yield start, end
         start = end
+
 
 def _neighbor_sums_worker(
     start: int,
@@ -210,6 +216,7 @@ def _neighbor_sums_worker(
         chunk_deg,
     )
 
+
 def _dnfr_gradients_worker(
     start: int,
     end: int,
@@ -246,6 +253,7 @@ def _dnfr_gradients_worker(
         chunk.append(w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + w_topo * g_topo)
     return start, chunk
 
+
 def _resolve_parallel_jobs(n_jobs: int | None, total: int) -> int | None:
     """Return an effective worker count for ``total`` items or ``None``."""
 
@@ -259,10 +267,17 @@ def _resolve_parallel_jobs(n_jobs: int | None, total: int) -> int | None:
         return None
     return max(1, min(jobs, total))
 
-def _is_numpy_like(obj) -> bool:
-    return getattr(obj, "dtype", None) is not None and getattr(obj, "shape", None) is not None
 
-def _has_cached_numpy_buffers(data: MutableMapping[str, Any], cache: DnfrCache | None) -> bool:
+def _is_numpy_like(obj) -> bool:
+    return (
+        getattr(obj, "dtype", None) is not None
+        and getattr(obj, "shape", None) is not None
+    )
+
+
+def _has_cached_numpy_buffers(
+    data: MutableMapping[str, Any], cache: DnfrCache | None
+) -> bool:
     for attr in _NUMPY_CACHE_ATTRS:
         arr = data.get(attr)
         if _is_numpy_like(arr):
@@ -277,6 +292,7 @@ def _has_cached_numpy_buffers(data: MutableMapping[str, Any], cache: DnfrCache |
         return True
     return False
 
+
 __all__ = (
     "default_compute_delta_nfr",
     "set_delta_nfr_hook",
@@ -286,7 +302,10 @@ __all__ = (
     "compute_delta_nfr_hamiltonian",
 )
 
-def _write_dnfr_metadata(G, *, weights: Mapping[str, float], hook_name: str, note: str | None = None) -> None:
+
+def _write_dnfr_metadata(
+    G, *, weights: Mapping[str, float], hook_name: str, note: str | None = None
+) -> None:
     """Write a ``_DNFR_META`` block in ``G.graph`` with the mix and hook name.
 
     ``weights`` may include arbitrary components (phase/epi/vf/topo/etc.).
@@ -304,6 +323,7 @@ def _write_dnfr_metadata(G, *, weights: Mapping[str, float], hook_name: str, not
     G.graph["_DNFR_META"] = meta
     G.graph["_dnfr_hook_name"] = hook_name  # string friendly
 
+
 def _configure_dnfr_weights(G) -> dict:
     """Normalise and store ΔNFR weights in ``G.graph['_dnfr_weights']``.
 
@@ -316,6 +336,7 @@ def _configure_dnfr_weights(G) -> dict:
     )
     G.graph["_dnfr_weights"] = weights
     return weights
+
 
 def _init_dnfr_cache(
     G: TNFRGraph,
@@ -452,6 +473,7 @@ def _init_dnfr_cache(
         True,
     )
 
+
 def _ensure_numpy_vectors(cache: DnfrCache) -> DnfrCacheVectors:
     """Ensure NumPy copies of cached vectors are initialised and up to date."""
 
@@ -482,6 +504,7 @@ def _ensure_numpy_vectors(cache: DnfrCache) -> DnfrCacheVectors:
         setattr(cache, attr_np, arr)
         arrays.append(arr)
     return tuple(arrays)
+
 
 def _ensure_numpy_degrees(
     cache: DnfrCache,
@@ -528,6 +551,7 @@ def _ensure_numpy_degrees(
     cache.deg_array = arr
     return arr
 
+
 def _resolve_numpy_degree_array(
     data: MutableMapping[str, Any],
     count: np.ndarray | None,
@@ -550,6 +574,7 @@ def _resolve_numpy_degree_array(
         return deg_array
     return count
 
+
 def _ensure_cached_array(
     cache: DnfrCache | None,
     attr: str,
@@ -565,6 +590,7 @@ def _ensure_cached_array(
         if cache is not None:
             setattr(cache, attr, arr)
     return arr
+
 
 def _ensure_numpy_state_vectors(data: MutableMapping[str, Any]) -> DnfrVectorMap:
     """Synchronise list-based state vectors with their NumPy counterparts."""
@@ -609,6 +635,7 @@ def _ensure_numpy_state_vectors(data: MutableMapping[str, Any]) -> DnfrVectorMap
 
     return result
 
+
 def _build_edge_index_arrays(
     G: TNFRGraph,
     nodes: Sequence[NodeId],
@@ -644,7 +671,10 @@ def _build_edge_index_arrays(
     edge_dst = np.asarray(dst, dtype=np.intp)
     return edge_src, edge_dst
 
-def _refresh_dnfr_vectors(G: TNFRGraph, nodes: Sequence[NodeId], cache: DnfrCache) -> None:
+
+def _refresh_dnfr_vectors(
+    G: TNFRGraph, nodes: Sequence[NodeId], cache: DnfrCache
+) -> None:
     """Update cached angle and state vectors for ΔNFR."""
     np_module = np
     trig = compute_theta_trig(((n, G.nodes[n]) for n in nodes))
@@ -729,6 +759,7 @@ def _refresh_dnfr_vectors(G: TNFRGraph, nodes: Sequence[NodeId], cache: DnfrCach
             cache.vf_np = None
             cache.cos_theta_np = None
             cache.sin_theta_np = None
+
 
 def _prepare_dnfr_data(
     G: TNFRGraph,
@@ -985,9 +1016,13 @@ def _prepare_dnfr_data(
         result["epi"] = epi_np
     if vf_np is not None and getattr(vf_np, "shape", None) == (len(nodes),):
         result["vf"] = vf_np
-    if cos_theta_np is not None and getattr(cos_theta_np, "shape", None) == (len(nodes),):
+    if cos_theta_np is not None and getattr(cos_theta_np, "shape", None) == (
+        len(nodes),
+    ):
         result["cos_theta"] = cos_theta_np
-    if sin_theta_np is not None and getattr(sin_theta_np, "shape", None) == (len(nodes),):
+    if sin_theta_np is not None and getattr(sin_theta_np, "shape", None) == (
+        len(nodes),
+    ):
         result["sin_theta"] = sin_theta_np
     result["deg_array"] = deg_array
     result["edge_src"] = edge_src
@@ -1000,6 +1035,7 @@ def _prepare_dnfr_data(
     result.setdefault("neighbor_accum_signature", None)
 
     return result
+
 
 def _apply_dnfr_gradients(
     G: TNFRGraph,
@@ -1171,6 +1207,7 @@ def _apply_dnfr_gradients(
         set_dnfr(G, n, float(dnfr_values[i]))
     stop_timer("dnfr_inplace_write", write_timer)
 
+
 def _init_bar_arrays(
     data: MutableMapping[str, Any],
     *,
@@ -1244,7 +1281,11 @@ def _init_bar_arrays(
             th_bar = np.array(theta, dtype=float)
             epi_bar = np.array(epi, dtype=float)
             vf_bar = np.array(vf, dtype=float)
-            deg_bar = np.array(degs, dtype=float) if w_topo != 0.0 and degs is not None else None
+            deg_bar = (
+                np.array(degs, dtype=float)
+                if w_topo != 0.0 and degs is not None
+                else None
+            )
     else:
         size = len(theta)
         if cache is not None:
@@ -1291,6 +1332,7 @@ def _init_bar_arrays(
             deg_bar = list(degs) if w_topo != 0.0 and degs is not None else None
     return th_bar, epi_bar, vf_bar, deg_bar
 
+
 def _compute_neighbor_means(
     G: TNFRGraph,
     data: MutableMapping[str, Any],
@@ -1310,9 +1352,7 @@ def _compute_neighbor_means(
     theta = data["theta"]
     cache: DnfrCache | None = data.get("cache")
     is_numpy = np is not None and isinstance(count, np.ndarray)
-    th_bar, epi_bar, vf_bar, deg_bar = _init_bar_arrays(
-        data, degs=degs
-    )
+    th_bar, epi_bar, vf_bar, deg_bar = _init_bar_arrays(data, degs=degs)
 
     if is_numpy:
         n = count.shape[0]
@@ -1369,6 +1409,7 @@ def _compute_neighbor_means(
             deg_bar[i] = deg_sum[i] * inv
     return th_bar, epi_bar, vf_bar, deg_bar
 
+
 def _compute_dnfr_common(
     G: TNFRGraph,
     data: MutableMapping[str, Any],
@@ -1423,16 +1464,22 @@ def _compute_dnfr_common(
         profile=profile,
     )
 
+
 def _reset_numpy_buffer(
     buffer: Any | None,
     size: int,
 ) -> Any:
     from ..mathematics.unified_numerical import np
 
-    if buffer is None or getattr(buffer, "shape", None) is None or buffer.shape[0] != size:
+    if (
+        buffer is None
+        or getattr(buffer, "shape", None) is None
+        or buffer.shape[0] != size
+    ):
         return np.zeros(size, dtype=float)
     buffer.fill(0.0)
     return buffer
+
 
 def _init_neighbor_sums(
     data: MutableMapping[str, Any],
@@ -1522,6 +1569,7 @@ def _init_neighbor_sums(
             degs = None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
 
+
 def _prefer_sparse_accumulation(n: int, edge_count: int | None) -> bool:
     """Return ``True`` when neighbour sums should use edge accumulation."""
 
@@ -1532,6 +1580,7 @@ def _prefer_sparse_accumulation(n: int, edge_count: int | None) -> bool:
         return False
     density = edge_count / possible_edges
     return density <= _SPARSE_DENSITY_THRESHOLD
+
 
 def _accumulate_neighbors_dense(
     G: TNFRGraph,
@@ -1613,6 +1662,7 @@ def _accumulate_neighbors_dense(
             degs = deg_array
 
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
 
 def _accumulate_neighbors_broadcasted(
     *,
@@ -1737,7 +1787,9 @@ def _accumulate_neighbors_broadcasted(
             else (resolved_chunk if use_chunks else component_rows)
         )
         workspace = (
-            np.empty((component_rows, workspace_length), dtype=float) if workspace_length else None
+            np.empty((component_rows, workspace_length), dtype=float)
+            if workspace_length
+            else None
         )
 
     if edge_count:
@@ -1871,7 +1923,9 @@ def _accumulate_neighbors_broadcasted(
                         _apply_full_bincount(count_row, unit_weight=True)
 
                     if deg_row is not None and deg_array is not None:
-                        np.take(deg_array, edge_dst_int, out=workspace[deg_row, :edge_count])
+                        np.take(
+                            deg_array, edge_dst_int, out=workspace[deg_row, :edge_count]
+                        )
                         _apply_full_bincount(deg_row, workspace[deg_row, :edge_count])
                 else:
                     # Workspace doesn't have enough rows, fall back to temporary arrays
@@ -1978,6 +2032,7 @@ def _accumulate_neighbors_broadcasted(
         "edge_values": workspace,
     }
 
+
 def _build_neighbor_sums_common(
     G: TNFRGraph,
     data: MutableMapping[str, Any],
@@ -1999,7 +2054,11 @@ def _build_neighbor_sums_common(
     if use_numpy and np_module is None and has_numpy_buffers:
         candidate = sys.modules.get("numpy")
         # Validate the candidate module has required NumPy attributes
-        if candidate is not None and hasattr(candidate, "ndarray") and hasattr(candidate, "empty"):
+        if (
+            candidate is not None
+            and hasattr(candidate, "ndarray")
+            and hasattr(candidate, "empty")
+        ):
             np_module = candidate
 
     if np_module is not None:
@@ -2014,7 +2073,9 @@ def _build_neighbor_sums_common(
         prefer_sparse = data.get("prefer_sparse")
         if prefer_sparse is None:
             # Fallback: recompute if not set (defensive, should be rare)
-            prefer_sparse = _prefer_sparse_accumulation(len(nodes), data.get("edge_count"))
+            prefer_sparse = _prefer_sparse_accumulation(
+                len(nodes), data.get("edge_count")
+            )
             data["prefer_sparse"] = prefer_sparse
 
         use_dense = False
@@ -2143,6 +2204,7 @@ def _build_neighbor_sums_common(
             deg_sum[i] = deg_acc
     return x, y, epi_sum, vf_sum, count, deg_sum, degs_list
 
+
 def _accumulate_neighbors_numpy(
     G: TNFRGraph,
     data: MutableMapping[str, Any],
@@ -2263,6 +2325,7 @@ def _accumulate_neighbors_numpy(
         count = cached_deg_array
     degs = deg_array if deg_sum is not None and deg_array is not None else None
     return x, y, epi_sum, vf_sum, count, deg_sum, degs
+
 
 def _compute_dnfr(
     G: TNFRGraph,
@@ -2396,6 +2459,7 @@ def _compute_dnfr(
         profile=profile,
     )
 
+
 def default_compute_delta_nfr(
     G: TNFRGraph,
     *,
@@ -2468,6 +2532,7 @@ def default_compute_delta_nfr(
                 setattr(cache, attr, None)
             cache.neighbor_accum_signature = None
 
+
 def set_delta_nfr_hook(
     G: TNFRGraph,
     func: DeltaNFRHook,
@@ -2509,6 +2574,7 @@ def set_delta_nfr_hook(
         meta["note"] = str(note)
         G.graph["_DNFR_META"] = meta
 
+
 def _dnfr_hook_chunk_worker(
     G: TNFRGraph,
     node_ids: Sequence[NodeId],
@@ -2534,6 +2600,7 @@ def _dnfr_hook_chunk_worker(
                 total += w * float(func(G, node, nd))
         results.append((node, total))
     return results
+
 
 def _apply_dnfr_hook(
     G: TNFRGraph,
@@ -2639,7 +2706,9 @@ def _apply_dnfr_hook(
 
     _write_dnfr_metadata(G, weights=weights, hook_name=hook_name, note=note)
 
+
 # --- Example hooks (optional) ---
+
 
 class _PhaseGradient:
     """Callable computing the phase contribution using cached trig values."""
@@ -2673,6 +2742,7 @@ class _PhaseGradient:
         else:
             th_bar = th_i
         return -angle_diff(th_i, th_bar) / math.pi
+
 
 class _NeighborAverageGradient:
     """Callable computing neighbour averages for scalar attributes."""
@@ -2709,6 +2779,7 @@ class _NeighborAverageGradient:
             total += neigh_val
         return total / len(neighbors) - val
 
+
 def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     """Compute ΔNFR from phase only (Kuramoto-like).
 
@@ -2732,6 +2803,7 @@ def dnfr_phase_only(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         n_jobs=n_jobs,
     )
 
+
 def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     """Compute ΔNFR without phase, mixing EPI and νf.
 
@@ -2744,7 +2816,9 @@ def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         serial execution.
     """
 
-    epi_values = {n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)}
+    epi_values = {
+        n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)
+    }
     vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
     grads = {
         "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
@@ -2758,6 +2832,7 @@ def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         note="Example hook.",
         n_jobs=n_jobs,
     )
+
 
 def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     """Explicit topological gradient using Laplacian over EPI and νf.
@@ -2775,7 +2850,9 @@ def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
     wE = float(weights_cfg.get("epi", DEFAULTS["DNFR_WEIGHTS"]["epi"]))
     wV = float(weights_cfg.get("vf", DEFAULTS["DNFR_WEIGHTS"]["vf"]))
 
-    epi_values = {n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)}
+    epi_values = {
+        n: float(get_attr(nd, ALIAS_EPI, 0.0)) for n, nd in G.nodes(data=True)
+    }
     vf_values = {n: float(get_attr(nd, ALIAS_VF, 0.0)) for n, nd in G.nodes(data=True)}
     grads = {
         "epi": _NeighborAverageGradient(ALIAS_EPI, epi_values),
@@ -2789,6 +2866,7 @@ def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = None) -> None:
         note="Topological gradient",
         n_jobs=n_jobs,
     )
+
 
 def compute_delta_nfr_hamiltonian(
     G: TNFRGraph,

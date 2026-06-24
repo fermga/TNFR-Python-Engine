@@ -241,8 +241,7 @@ def label_propagation_residual(
             else:
                 propagated = list(seed[node])
             updated[node] = [
-                (1.0 - alpha) * seed[node][c] + alpha * propagated[c]
-                for c in range(k)
+                (1.0 - alpha) * seed[node][c] + alpha * propagated[c] for c in range(k)
             ]
         f = updated
 

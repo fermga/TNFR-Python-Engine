@@ -151,7 +151,7 @@ class Hermite2GaussianTestFunction:
     def g(self, u: float) -> float:
         r"""Closed-form Fourier-side profile under the P15 convention."""
         s = self.sigma
-        base = (s / math.sqrt(2.0 * math.pi))
+        base = s / math.sqrt(2.0 * math.pi)
         env = math.exp(-(s * s) * u * u / 2.0)
         poly = 1.0 + self.eta * (1.0 - (s * s) * u * u)
         return base * env * poly
@@ -259,9 +259,7 @@ def sweep_alpha_admissible_family(
     if not np.all(sigma_array > 0.0):
         raise ValueError("every sigma must be strictly positive")
 
-    family_map = (
-        dict(families) if families is not None else dict(DEFAULT_TEST_FAMILIES)
-    )
+    family_map = dict(families) if families is not None else dict(DEFAULT_TEST_FAMILIES)
     if len(family_map) == 0:
         raise ValueError("families must be non-empty")
 

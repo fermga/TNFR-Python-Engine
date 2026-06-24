@@ -46,10 +46,7 @@ from .admissible_family_sweep import (
     FamilyFactory,
 )
 from .dirichlet_l import DirichletCharacter
-from .nodeaware_gauge_sweep import (
-    DEFAULT_NODEAWARE_GAUGES,
-    NodeAwareGaugeFn,
-)
+from .nodeaware_gauge_sweep import DEFAULT_NODEAWARE_GAUGES, NodeAwareGaugeFn
 from .twisted_prime_ladder_hamiltonian import TwistedPrimeLadderHamiltonian
 from .twisted_weil_explicit_formula import twisted_weil_zero_side
 
@@ -211,16 +208,12 @@ def sweep_twisted_nodeaware_gauge(
     if not np.all(sigma_array > 0.0):
         raise ValueError("every sigma must be strictly positive")
 
-    family_map = (
-        dict(families) if families is not None
-        else dict(DEFAULT_TEST_FAMILIES)
-    )
+    family_map = dict(families) if families is not None else dict(DEFAULT_TEST_FAMILIES)
     if len(family_map) == 0:
         raise ValueError("families must be non-empty")
 
     node_gauge_map = (
-        dict(node_gauges) if node_gauges is not None
-        else dict(DEFAULT_NODEAWARE_GAUGES)
+        dict(node_gauges) if node_gauges is not None else dict(DEFAULT_NODEAWARE_GAUGES)
     )
     if len(node_gauge_map) == 0:
         raise ValueError("node_gauges must be non-empty")
@@ -240,10 +233,7 @@ def sweep_twisted_nodeaware_gauge(
         mk_test = family_map[family_name]
         for j, sigma in enumerate(sigma_array):
             test = mk_test(float(sigma))
-            local_t_max = (
-                float(t_max) if t_max is not None
-                else 12.0 * float(sigma)
-            )
+            local_t_max = float(t_max) if t_max is not None else 12.0 * float(sigma)
             w_total, _n_used, _zeros = twisted_weil_zero_side(
                 chi,
                 test,
@@ -276,9 +266,7 @@ def sweep_twisted_nodeaware_gauge(
         finite_vals = alpha_table[finite_mask]
         alpha_min = float(finite_vals.min())
         alpha_max = float(finite_vals.max())
-        idx_flat = int(np.argmin(
-            np.where(finite_mask, alpha_table, np.inf)
-        ))
+        idx_flat = int(np.argmin(np.where(finite_mask, alpha_table, np.inf)))
         i_min, rem = divmod(idx_flat, n_g * n_s)
         k_min, j_min = divmod(rem, n_s)
         alpha_min_sigma = float(sigma_array[j_min])

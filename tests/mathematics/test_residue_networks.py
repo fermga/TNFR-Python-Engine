@@ -14,7 +14,6 @@ import numpy as np
 import pytest
 
 from tnfr.errors import TNFRValueError
-from tnfr.physics.structural_diffusion import structural_frequency_rank
 from tnfr.mathematics.number_theory import (
     _prime_factorization,
     arithmetic_cayley_digraph,
@@ -25,6 +24,7 @@ from tnfr.mathematics.number_theory import (
     residue_network_rank,
     unitary_residue_set,
 )
+from tnfr.physics.structural_diffusion import structural_frequency_rank
 
 
 def _is_prime(n: int) -> bool:
@@ -32,6 +32,7 @@ def _is_prime(n: int) -> bool:
 
 
 # --- structural_frequency_rank (general spectral diagnostic) ---
+
 
 @pytest.mark.parametrize("n", [4, 5, 6, 7])
 def test_structural_frequency_rank_complete_graph_is_two(n):
@@ -46,6 +47,7 @@ def test_structural_frequency_rank_matches_residue_network():
 
 
 # --- connection sets ---
+
 
 def test_quadratic_residue_set_prime():
     assert quadratic_residue_set(7) == {1, 2, 4}
@@ -71,6 +73,7 @@ def test_residue_network_rank_unknown_kind_raises():
 
 # --- the quadratic-residue prime signature ---
 
+
 @pytest.mark.parametrize("m", list(range(3, 50, 2)))
 def test_qr_rank_three_iff_odd_prime(m):
     assert (residue_network_rank(m, "quadratic") == 3) == _is_prime(m)
@@ -83,6 +86,7 @@ def test_qr_scalar_rank_equals_annotated_for_odd(m):
 
 
 # --- the cyclotomy law ---
+
 
 @pytest.mark.parametrize("p", [5, 7, 11, 13, 17, 19, 23, 29, 31])
 @pytest.mark.parametrize("k", [2, 3, 4, 5, 6])
@@ -100,6 +104,7 @@ def test_complete_splitting_reading(p, k):
 
 # --- unitary (Ramanujan) rank ---
 
+
 @pytest.mark.parametrize("p", [5, 7, 11, 13, 17])
 def test_unitary_rank_two_for_primes(p):
     assert residue_network_rank(p, "unitary") == 2
@@ -107,22 +112,22 @@ def test_unitary_rank_two_for_primes(p):
 
 # --- annotated multiplicative rank A(m) ---
 
+
 def test_annotated_rank_prime_power():
-    assert quadratic_residue_annotated_rank(9) == 4   # 3^2 -> floor(3*3/2)
+    assert quadratic_residue_annotated_rank(9) == 4  # 3^2 -> floor(3*3/2)
     assert quadratic_residue_annotated_rank(27) == 6  # 3^3 -> floor(3*4/2)
 
 
 @pytest.mark.parametrize("m,omega", [(3, 1), (15, 2), (105, 3), (1155, 4)])
 def test_annotated_rank_is_three_to_omega_on_squarefree(m, omega):
-    assert quadratic_residue_annotated_rank(m) == 3 ** omega
+    assert quadratic_residue_annotated_rank(m) == 3**omega
 
 
 def test_annotated_rank_multiplicative_on_coprime():
     a, b = 9, 35  # coprime
-    assert (
-        quadratic_residue_annotated_rank(a * b)
-        == quadratic_residue_annotated_rank(a) * quadratic_residue_annotated_rank(b)
-    )
+    assert quadratic_residue_annotated_rank(a * b) == quadratic_residue_annotated_rank(
+        a
+    ) * quadratic_residue_annotated_rank(b)
 
 
 def test_annotated_rank_at_least_tau():
@@ -141,6 +146,7 @@ def test_mathematics_package_reexports():
 
 # --- the cyclotomy law, proved for all k (theory/TNFR_NUMBER_THEORY.md 9.11) ---
 
+
 def test_cyclotomy_law_large_k():
     """s_k(p) = gcd(k, p-1) + 1 for all k (Gauss-period proof, verified k<=40)."""
     from sympy import isprime
@@ -158,8 +164,9 @@ def _conductor_annotated_count(m, decimals=8):
     for residue in squares:
         column[residue] = 1.0
     spectrum = np.fft.fft(column)
-    spectrum = (np.round(spectrum.real, decimals)
-                + 1j * np.round(spectrum.imag, decimals))
+    spectrum = np.round(spectrum.real, decimals) + 1j * np.round(
+        spectrum.imag, decimals
+    )
     return len({(spectrum[t], math.gcd(t, m)) for t in range(m)})
 
 
@@ -172,5 +179,5 @@ def test_even_boundary_odd_prime_powers_match(m):
 @pytest.mark.parametrize("e", [1, 3, 4, 5])
 def test_even_boundary_2adic_diverges(e):
     # 2^e: degenerate at e=1, non-cyclic units for e>=3 -> spectral != A(2^e).
-    m = 2 ** e
+    m = 2**e
     assert _conductor_annotated_count(m) != quadratic_residue_annotated_rank(m)

@@ -14,6 +14,7 @@ from typing import Any
 from ..types import Glyph
 from .grammar_patterns import recognize_il_sequences
 
+
 def apply_glyph_with_grammar(
     G,  # TNFRGraph
     nodes: Any,
@@ -72,14 +73,14 @@ def apply_glyph_with_grammar(
                 # Check last two glyphs for canonical patterns
                 # Convert to list to support slicing
                 history_list = list(history)
-                
+
                 # Convert string names to Glyphs for recognition
                 glyph_history = []
                 for item in history_list[-2:]:
                     if isinstance(item, str):
-                        if item.startswith('Glyph.'):
+                        if item.startswith("Glyph."):
                             # Handle 'Glyph.AL' format
-                            glyph_name = item.split('.')[1]
+                            glyph_name = item.split(".")[1]
                             try:
                                 glyph_history.append(Glyph[glyph_name])
                             except KeyError:
@@ -92,39 +93,35 @@ def apply_glyph_with_grammar(
                                 glyph_history.append(item)
                     else:
                         glyph_history.append(item)
-                        
+
                 recognized = recognize_il_sequences(glyph_history)
-                
+
                 if recognized:
                     # Initialize graph-level pattern tracking if needed
                     if "recognized_coherence_patterns" not in G.graph:
                         G.graph["recognized_coherence_patterns"] = []
-                    
+
                     # Add recognized patterns to graph tracking
                     for pattern in recognized:
                         pattern_info = {
                             "node": node,
                             "pattern_name": pattern["pattern_name"],
                             "position": len(history) - 2 + pattern["position"],
-                            "is_antipattern": pattern.get(
-                                "is_antipattern", False
-                            ),
+                            "is_antipattern": pattern.get("is_antipattern", False),
                         }
-                        G.graph["recognized_coherence_patterns"].append(
-                            pattern_info
-                        )
-                        
+                        G.graph["recognized_coherence_patterns"].append(pattern_info)
+
                         # Emit warnings for antipatterns if not already done
                         is_antipattern = pattern.get("is_antipattern", False)
                         severity = pattern.get("severity", "")
-                        if (is_antipattern
-                                and severity in ("warning", "error")):
+                        if is_antipattern and severity in ("warning", "error"):
                             import warnings
+
                             pattern_name = pattern["pattern_name"]
                             warnings.warn(
-                                f"Anti-pattern detected: {pattern_name}",
-                                UserWarning
+                                f"Anti-pattern detected: {pattern_name}", UserWarning
                             )
+
 
 def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
     """Record glyph application in node history.
@@ -144,6 +141,7 @@ def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
     if "glyph_history" not in G.nodes[n]:
         G.nodes[n]["glyph_history"] = []
     G.nodes[n]["glyph_history"].append(applied)
+
 
 def enforce_canonical_grammar(
     G,  # TNFRGraph
@@ -176,4 +174,3 @@ def enforce_canonical_grammar(
     from .grammar_dynamics import enforce_grammar_on_glyph
 
     return enforce_grammar_on_glyph(G, n, cand)
-

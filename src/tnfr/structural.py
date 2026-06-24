@@ -55,12 +55,14 @@ from typing import Any, Iterable, Mapping, Sequence, cast
 
 import networkx as nx
 
-from .errors import TNFRValueError
+from tnfr.config.operator_names import VALID_START_OPERATORS
+from tnfr.validation import InvariantSeverity, NFRValidator, SequenceSemanticValidator
+from tnfr.validation import TNFRValidator as InvariantValidator
+from tnfr.validation import validate_sequence, validation_config
+
 from .constants import EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
-from .dynamics import (
-    dnfr_epi_vf_mixed,
-    set_delta_nfr_hook,
-)
+from .dynamics import dnfr_epi_vf_mixed, set_delta_nfr_hook
+from .errors import TNFRValueError
 from .mathematics import (
     BasicStateProjector,
     CoherenceOperator,
@@ -70,15 +72,7 @@ from .mathematics import (
     make_coherence_operator,
     make_frequency_operator,
 )
-from tnfr.validation import (
-    NFRValidator,
-    validate_sequence,
-    TNFRValidator as InvariantValidator,
-    SequenceSemanticValidator,
-    InvariantSeverity,
-    validation_config,
-)
-from tnfr.config.operator_names import VALID_START_OPERATORS
+from .mathematics.unified_numerical import np
 from .operators.definitions import (
     Coherence,
     Contraction,
@@ -99,13 +93,12 @@ from .operators.registry import OPERATORS
 from .types import DeltaNFRHook, NodeId, TNFRGraph
 from .utils import get_logger
 
-from .mathematics.unified_numerical import np
-
 logger = get_logger(__name__)
 
 # ---------------------------------------------------------------------------
 # 1) NFR factory
 # ---------------------------------------------------------------------------
+
 
 def create_nfr(
     name: str,
@@ -226,6 +219,7 @@ def create_nfr(
     set_delta_nfr_hook(G, dnfr_hook)
     return G, name
 
+
 def _resolve_dimension(
     G: TNFRGraph,
     *,
@@ -262,6 +256,7 @@ def _resolve_dimension(
         )
     return resolved
 
+
 def _ensure_coherence_operator(
     *,
     operator: CoherenceOperator | None,
@@ -284,6 +279,7 @@ def _ensure_coherence_operator(
     if c_min is not None:
         kwargs["c_min"] = float(c_min)
     return make_coherence_operator(dimension, **kwargs)
+
 
 def _ensure_frequency_operator(
     *,
@@ -311,6 +307,7 @@ def _ensure_frequency_operator(
         matrix = np.diag(diag_array)
     return make_frequency_operator(np.asarray(matrix, dtype=np.complex128))
 
+
 def _ensure_generator_matrix(
     *,
     dimension: int,
@@ -330,6 +327,7 @@ def _ensure_generator_matrix(
             context={"size": diag_array.shape[0], "dimension": dimension},
         )
     return np.diag(diag_array)
+
 
 def create_math_nfr(
     name: str,
@@ -408,7 +406,9 @@ def create_math_nfr(
     """
 
     if np is None:
-        raise ImportError("create_math_nfr requires NumPy; install the 'tnfr[math]' extras.")
+        raise ImportError(
+            "create_math_nfr requires NumPy; install the 'tnfr[math]' extras."
+        )
 
     G, node = create_nfr(
         name,
@@ -442,7 +442,9 @@ def create_math_nfr(
         spectrum=coherence_spectrum,
         c_min=coherence_c_min,
     )
-    threshold = float(coherence_threshold if coherence_threshold is not None else coherence.c_min)
+    threshold = float(
+        coherence_threshold if coherence_threshold is not None else coherence.c_min
+    )
 
     frequency = _ensure_frequency_operator(
         operator=frequency_operator,
@@ -516,10 +518,13 @@ def create_math_nfr(
         ),
         "frequency_spectrum_min": (
             float(frequency_summary.get("spectrum_min", 0.0))
-            if isinstance(frequency_summary, Mapping) and "spectrum_min" in frequency_summary
+            if isinstance(frequency_summary, Mapping)
+            and "spectrum_min" in frequency_summary
             else None
         ),
-        "unitary_passed": bool(summary.get("unitary_stability", {}).get("passed", False)),
+        "unitary_passed": bool(
+            summary.get("unitary_stability", {}).get("passed", False)
+        ),
     }
 
     node_context = {
@@ -554,6 +559,7 @@ def create_math_nfr(
 
     return G, node
 
+
 __all__ = (
     "create_nfr",
     "create_math_nfr",
@@ -575,6 +581,7 @@ __all__ = (
     "validate_sequence",
     "run_sequence",
 )
+
 
 def run_sequence(
     G: TNFRGraph,
@@ -665,9 +672,9 @@ def run_sequence(
         # Birth context detection: if node already has non-zero EPI and
         # sequence begins with a non-generator we allow context override.
         epi_val = G.nodes[node].get(EPI_PRIMARY, 0.0)
-        
+
         validation_context = context.copy() if context else {}
-        
+
         if names[0] not in VALID_START_OPERATORS and epi_val:
             logger.info(
                 "U1a override (EPI≠0) node=%s; start=%s",
@@ -675,7 +682,7 @@ def run_sequence(
                 names[0],
             )
             validation_context["initial_epi_nonzero"] = True
-            
+
         outcome = validate_sequence(names, context=validation_context)
         if not outcome.passed:
             summary_message = outcome.summary.get("message", "validation failed")
@@ -696,7 +703,9 @@ def run_sequence(
                     or v.severity == InvariantSeverity.CRITICAL
                 ]
                 warning_violations = [
-                    v for v in semantic_violations if v.severity == InvariantSeverity.WARNING
+                    v
+                    for v in semantic_violations
+                    if v.severity == InvariantSeverity.WARNING
                 ]
 
                 # Always raise on errors
@@ -713,9 +722,7 @@ def run_sequence(
                         InvariantValidator,
                         run_sequence._invariant_validator,
                     )
-                    report = invariant_validator.generate_report(
-                        warning_violations
-                    )
+                    report = invariant_validator.generate_report(warning_violations)
                     logger.warning(
                         "⚠️  Semantic sequence warnings:\n%s",
                         report,
@@ -743,7 +750,10 @@ def run_sequence(
             compute(G)
 
         # Per-step validation (expensive, only if configured)
-        if validation_config.validate_each_step and validation_config.validate_invariants:
+        if (
+            validation_config.validate_each_step
+            and validation_config.validate_invariants
+        ):
             violations = run_sequence._invariant_validator.validate_graph(  # type: ignore[attr-defined]
                 G, InvariantSeverity.ERROR
             )

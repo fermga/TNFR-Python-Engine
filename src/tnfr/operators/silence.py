@@ -13,11 +13,12 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
-from ..config.operator_names import SILENCE
-from ..types import Glyph, TNFRGraph
 from ..alias import get_attr
+from ..config.operator_names import SILENCE
 from ..constants.aliases import ALIAS_EPI
+from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
+
 
 class Silence(Operator):
     """Lower vf; hold epi invariant; set latency tracking attributes.
@@ -41,20 +42,18 @@ class Silence(Operator):
 
     def _mark_latency_state(self, G: TNFRGraph, node: Any) -> None:
         """set latent flag, timestamp, preserved epi, duration=0.0.
-        
+
         Enhanced for initial nodes: respects TNFR nodal dynamics while
         providing appropriate EPI preservation tracking.
         """
         from datetime import datetime, timezone
 
         G.nodes[node]["latent"] = True
-        G.nodes[node]["latency_start_time"] = (
-            datetime.now(timezone.utc).isoformat()
-        )
+        G.nodes[node]["latency_start_time"] = datetime.now(timezone.utc).isoformat()
         epi_value = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
         G.nodes[node]["preserved_epi"] = epi_value
         G.nodes[node]["silence_duration"] = 0.0
-        
+
         # Mark initial node status for enhanced tolerance
         G.nodes[node]["was_initial_on_silence"] = abs(epi_value) < 1e-6
 

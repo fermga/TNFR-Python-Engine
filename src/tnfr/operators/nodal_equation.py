@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
 from ..alias import set_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_VF, ALIAS_D2EPI
+from ..constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_VF
 
 __all__ = [
     "NodalEquationViolation",
@@ -30,6 +30,7 @@ __all__ = [
 # Default tolerance for nodal equation validation
 DEFAULT_NODAL_EQUATION_TOLERANCE = 1e-3
 DEFAULT_NODAL_EQUATION_CLIP_AWARE = True
+
 
 class NodalEquationViolation(Exception):
     """Raised when operator application violates the nodal equation.
@@ -76,7 +77,9 @@ class NodalEquationViolation(Exception):
             f"  Expected: {expected_depi_dt:.6f}"
         )
 
+
 from .metrics_core import get_node_attr as _get_node_attr
+
 
 def compute_expected_depi_dt(G: TNFRGraph, node: NodeId) -> float:
     """Compute expected ∂EPI/∂t from current νf and ΔNFR values.
@@ -105,6 +108,7 @@ def compute_expected_depi_dt(G: TNFRGraph, node: NodeId) -> float:
     vf = _get_node_attr(G, node, ALIAS_VF)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
     return vf * dnfr
+
 
 def validate_nodal_equation(
     G: TNFRGraph,
@@ -193,11 +197,15 @@ def validate_nodal_equation(
     """
     if tolerance is None:
         # Try graph configuration first, then use default constant
-        tolerance = float(G.graph.get("NODAL_EQUATION_TOLERANCE", DEFAULT_NODAL_EQUATION_TOLERANCE))
+        tolerance = float(
+            G.graph.get("NODAL_EQUATION_TOLERANCE", DEFAULT_NODAL_EQUATION_TOLERANCE)
+        )
 
     if clip_aware is None:
         # Try graph configuration first, then use default
-        clip_aware = G.graph.get("NODAL_EQUATION_CLIP_AWARE", DEFAULT_NODAL_EQUATION_CLIP_AWARE)
+        clip_aware = G.graph.get(
+            "NODAL_EQUATION_CLIP_AWARE", DEFAULT_NODAL_EQUATION_CLIP_AWARE
+        )
 
     # Measured rate of EPI change
     measured_depi_dt = (epi_after - epi_before) / dt if dt > 0 else 0.0
@@ -280,6 +288,7 @@ def validate_nodal_equation(
             )
 
     return is_valid
+
 
 def compute_d2epi_dt2(G: "TNFRGraph", node: "NodeId") -> float:
     """Compute ∂²EPI/∂t² (structural acceleration).

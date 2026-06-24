@@ -74,17 +74,17 @@ References
 """
 
 import os
-import sys
 import statistics
+import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
-from sympy import isprime, factorint
+import numpy as np
+from sympy import factorint, isprime
 
-from tnfr.mathematics.number_theory import ArithmeticTNFRNetwork
 from tnfr.dynamics.canonical import compute_canonical_nodal_derivative
+from tnfr.mathematics.number_theory import ArithmeticTNFRNetwork
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
 N = 140
@@ -96,9 +96,9 @@ def _build():
     G = net.graph.to_undirected()
     nodes = sorted(G.nodes())
     props = {n: net.get_tnfr_properties(n) for n in nodes}
-    epi0 = {n: float(props[n]['EPI']) for n in nodes}
-    vf = {n: float(props[n]['nu_f']) for n in nodes}
-    dnfr = {n: float(props[n]['DELTA_NFR']) for n in nodes}
+    epi0 = {n: float(props[n]["EPI"]) for n in nodes}
+    vf = {n: float(props[n]["nu_f"]) for n in nodes}
+    dnfr = {n: float(props[n]["DELTA_NFR"]) for n in nodes}
     omega = {n: sum(factorint(n).values()) for n in nodes}
     return net, G, nodes, epi0, vf, dnfr, omega
 
@@ -124,7 +124,8 @@ def experiment_1_arithmetic_flow(nodes, epi0, vf, dnfr, omega):
     for _ in range(40):
         for n in nodes:
             d = compute_canonical_nodal_derivative(
-                vf[n], dnfr[n], validate_units=False).derivative
+                vf[n], dnfr[n], validate_units=False
+            ).derivative
             epi[n] += dt * d
     p1 = statistics.mean(abs(dnfr[n]) for n in nodes)
     drift = {n: abs(epi[n] - epi0[n]) for n in nodes}
@@ -132,13 +133,19 @@ def experiment_1_arithmetic_flow(nodes, epi0, vf, dnfr, omega):
     om = np.array([omega[n] for n in nodes], float)
     dr = np.array([drift[n] for n in nodes], float)
 
-    print(f"  mean|ΔNFR|:  t=0 {p0:.4f}  ->  t=end {p1:.4f}   "
-          f"(CONSTANT: a fixed forcing, no relaxation)")
+    print(
+        f"  mean|ΔNFR|:  t=0 {p0:.4f}  ->  t=end {p1:.4f}   "
+        f"(CONSTANT: a fixed forcing, no relaxation)"
+    )
     print(f"  primes FROZEN (drift < 1e-12): {frozen}/{len(primes)}")
-    print(f"  mean EPI drift:  primes {statistics.mean(drift[p] for p in primes):.4f}"
-          f"   composites {statistics.mean(drift[c] for c in comps):.4f}")
-    print(f"  r(drift, Ω) = {np.corrcoef(dr, om)[0, 1]:.3f}  "
-          f"(composite drift is Ω-graded)")
+    print(
+        f"  mean EPI drift:  primes {statistics.mean(drift[p] for p in primes):.4f}"
+        f"   composites {statistics.mean(drift[c] for c in comps):.4f}"
+    )
+    print(
+        f"  r(drift, Ω) = {np.corrcoef(dr, om)[0, 1]:.3f}  "
+        f"(composite drift is Ω-graded)"
+    )
     print()
     print("VERDICT: primes are EXACTLY the zero-velocity rest points — the §4")
     print("theorem in motion (ΔNFR=0 ⟺ ∂EPI/∂t=0 ⟺ prime). Composites drift")
@@ -163,7 +170,8 @@ def experiment_2_marginal_stability(net, nodes, vf, dnfr):
     p = primes[3]
     # perturb EPI of a prime; its ΔNFR (and hence velocity) is unchanged
     base_v = compute_canonical_nodal_derivative(
-        vf[p], dnfr[p], validate_units=False).derivative
+        vf[p], dnfr[p], validate_units=False
+    ).derivative
     print(f"  prime {p}: ΔNFR_arith = {dnfr[p]:.2e}  ->  ∂EPI/∂t = {base_v:.2e}")
     print(f"  perturbing EPI({p}) by any amount leaves ΔNFR (and velocity) at 0")
     print("  -> no restoring force, no basin: a continuum of rest states")
@@ -212,8 +220,9 @@ def experiment_3_diffusion_flow(G, nodes, epi0, vf):
     print(f"  mean EPI prime:     t0 {mp0:.3f}  ->  t_end {mp1:.3f}")
     print(f"  mean EPI composite: t0 {mc0:.3f}  ->  t_end {mc1:.3f}")
     print(f"  degree-weighted equilibrium (the attractor) = {eq:.3f}")
-    print(f"  isolated large primes (frozen at seed, never participate): "
-          f"{len(iso)}")
+    print(
+        f"  isolated large primes (frozen at seed, never participate): " f"{len(iso)}"
+    )
     print()
     print("  -> primes are pulled UP toward the composite bulk (the high-")
     print("     degree attractor), the OPPOSITE of §7.1's 'primes attract")

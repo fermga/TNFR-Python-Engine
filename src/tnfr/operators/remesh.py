@@ -210,11 +210,11 @@ from types import ModuleType
 from typing import Any, cast
 
 from .._compat import TypeAlias
-from ..errors import TNFRValueError
 from ..alias import get_attr, set_attr
 from ..constants import DEFAULTS, REMESH_DEFAULTS, get_param
-from ..constants.aliases import ALIAS_EPI, ALIAS_VF, ALIAS_DNFR
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..constants.canonical import REMESH_SIMILARITY_THRESHOLD_CANONICAL
+from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
 from ..rng import make_rng
 from ..types import RemeshMeta
@@ -235,6 +235,7 @@ _VF_FROZEN_THRESHOLD = 0.05
 # ==============================================================================
 # Phase 1: Structural Memory & Pattern Recognition
 # ==============================================================================
+
 
 @dataclass
 class StructuralIdentity:
@@ -294,7 +295,9 @@ class StructuralIdentity:
     lineage: list[str] = field(default_factory=list)
     tolerance: float = 0.1
 
-    def matches(self, node_data: Mapping[str, Any], *, tolerance: float | None = None) -> bool:
+    def matches(
+        self, node_data: Mapping[str, Any], *, tolerance: float | None = None
+    ) -> bool:
         """Check if a node maintains this structural identity.
 
         Parameters
@@ -450,6 +453,7 @@ class StructuralIdentity:
 
         return identity
 
+
 def structural_similarity(
     epi1: float | Sequence[float],
     epi2: float | Sequence[float],
@@ -490,7 +494,8 @@ def structural_similarity(
         # Fallback: scalar comparison only
         if isinstance(epi1, (list, tuple)) or isinstance(epi2, (list, tuple)):
             raise ImportError(
-                "NumPy required for vector EPI comparison. " "Install numpy: pip install numpy"
+                "NumPy required for vector EPI comparison. "
+                "Install numpy: pip install numpy"
             )
         # Simple scalar distance -> similarity
         distance = abs(float(epi1) - float(epi2))
@@ -552,6 +557,7 @@ def structural_similarity(
             suggestion="Choose from: euclidean, cosine, correlation",
         )
 
+
 def structural_memory_match(
     G: CommunityGraph,
     source_node: Hashable,
@@ -605,6 +611,7 @@ def structural_memory_match(
     # Sort by similarity descending
     matches.sort(key=lambda x: x[1], reverse=True)
     return matches
+
 
 def compute_structural_signature(
     G: CommunityGraph,
@@ -703,6 +710,7 @@ def compute_structural_signature(
         if norm > 1e-10:
             features = [f / norm for f in features]
         return tuple(features)
+
 
 def detect_recursive_patterns(
     G: CommunityGraph,
@@ -805,7 +813,9 @@ def detect_recursive_patterns(
                     similarities[(i, j)] = 1.0
                 elif i < j:
                     # Use existing structural_similarity function
-                    sim = structural_similarity(signatures[node1], signatures[node2], metric=metric)
+                    sim = structural_similarity(
+                        signatures[node1], signatures[node2], metric=metric
+                    )
                     similarities[(i, j)] = sim
                     similarities[(j, i)] = sim
 
@@ -840,6 +850,7 @@ def detect_recursive_patterns(
             clusters.append(cluster)
 
     return clusters
+
 
 def identify_pattern_origin(
     G: CommunityGraph,
@@ -900,6 +911,7 @@ def identify_pattern_origin(
     # Return node with maximum strength
     scores.sort(reverse=True)
     return scores[0][1]
+
 
 def propagate_structural_identity(
     G: CommunityGraph,
@@ -981,8 +993,12 @@ def propagate_structural_identity(
         target_theta = _as_float(get_attr(G.nodes[target], ALIAS_THETA, 0.0))
 
         # Interpolate toward origin pattern
-        new_epi = (1.0 - propagation_strength) * target_epi + propagation_strength * origin_epi
-        new_vf = (1.0 - propagation_strength) * target_vf + propagation_strength * origin_vf
+        new_epi = (
+            1.0 - propagation_strength
+        ) * target_epi + propagation_strength * origin_epi
+        new_vf = (
+            1.0 - propagation_strength
+        ) * target_vf + propagation_strength * origin_vf
         new_theta = (
             1.0 - propagation_strength
         ) * target_theta + propagation_strength * origin_theta
@@ -1016,9 +1032,11 @@ def propagate_structural_identity(
             }
         )
 
+
 # ==============================================================================
 # Phase 2: Coherence Preservation & Fidelity Validation
 # ==============================================================================
+
 
 class RemeshCoherenceLossError(Exception):
     """Raised when REMESH reorganization loses structural coherence.
@@ -1028,7 +1046,12 @@ class RemeshCoherenceLossError(Exception):
     TNFR's requirement that "coherence propagates structurally, not imposed."
     """
 
-    def __init__(self, fidelity: float, min_fidelity: float, details: dict[str, Any] | None = None):
+    def __init__(
+        self,
+        fidelity: float,
+        min_fidelity: float,
+        details: dict[str, Any] | None = None,
+    ):
         """Initialize coherence loss error.
 
         Parameters
@@ -1049,6 +1072,7 @@ class RemeshCoherenceLossError(Exception):
             f"< minimum {min_fidelity:.2%}\n"
             f"  Details: {details}"
         )
+
 
 def validate_coherence_preservation(
     G_before: CommunityGraph,
@@ -1119,9 +1143,11 @@ def validate_coherence_preservation(
 
     return structural_fidelity
 
+
 # ==============================================================================
 # Original Helper Functions
 # ==============================================================================
+
 
 def _as_float(value: Any, default: float = 0.0) -> float:
     """Best-effort conversion to ``float`` returning ``default`` on failure."""
@@ -1133,12 +1159,15 @@ def _as_float(value: Any, default: float = 0.0) -> float:
     except (TypeError, ValueError):
         return default
 
+
 def _ordered_edge(u: Hashable, v: Hashable) -> RemeshEdge:
     """Return a deterministic ordering for an undirected edge."""
 
     return (u, v) if repr(u) <= repr(v) else (v, u)
 
+
 COOLDOWN_KEY = "REMESH_COOLDOWN_WINDOW"
+
 
 @cache
 def _get_networkx_modules() -> NetworkxModules:
@@ -1155,6 +1184,7 @@ def _get_networkx_modules() -> NetworkxModules:
             "operations; install 'networkx' to enable this feature"
         )
     return cast(NetworkxModule, nx), cast(CommunityModule, nx_comm)
+
 
 def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
     """Return ``(alpha, source)`` with explicit precedence."""
@@ -1174,6 +1204,7 @@ def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
         "REMESH_DEFAULTS.REMESH_ALPHA",
     )
 
+
 def _snapshot_topology(G: CommunityGraph, nx: NetworkxModule) -> str | None:
     """Return a hash representing the current graph topology."""
     try:
@@ -1184,6 +1215,7 @@ def _snapshot_topology(G: CommunityGraph, nx: NetworkxModule) -> str | None:
         return hashlib.blake2b(topo_str.encode(), digest_size=6).hexdigest()
     except (AttributeError, TypeError, nx.NetworkXError):
         return None
+
 
 def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
     """Return ``(mean, checksum)`` of the node EPI values."""
@@ -1198,10 +1230,11 @@ def _snapshot_epi(G: CommunityGraph) -> tuple[float, str]:
     checksum = hashlib.blake2b(buf.getvalue().encode(), digest_size=6).hexdigest()
     return float(mean_val), checksum
 
+
 def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
     """Store remesh metadata and optionally log and trigger callbacks."""
-    from ..utils import CallbackEvent, callback_manager
     from ..glyph_history import append_metric
+    from ..utils import CallbackEvent, callback_manager
 
     G.graph["_REMESH_META"] = meta
     if G.graph.get("REMESH_LOG_EVENTS", REMESH_DEFAULTS["REMESH_LOG_EVENTS"]):
@@ -1209,10 +1242,11 @@ def _log_remesh_event(G: CommunityGraph, meta: RemeshMeta) -> None:
         append_metric(hist, "remesh_events", dict(meta))
     callback_manager.invoke_callbacks(G, CallbackEvent.ON_REMESH.value, dict(meta))
 
+
 def apply_network_remesh(G: CommunityGraph) -> None:
     """Network-scale REMESH using ``_epi_hist`` with multi-scale memory."""
-    from ..glyph_history import current_step_idx, ensure_history
     from ..dynamics.structural_clip import structural_clip
+    from ..glyph_history import current_step_idx, ensure_history
 
     nx, _ = _get_networkx_modules()
     tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
@@ -1240,8 +1274,12 @@ def apply_network_remesh(G: CommunityGraph) -> None:
 
     for n, nd in G.nodes(data=True):
         epi_now = _as_float(get_attr(nd, ALIAS_EPI, 0.0))
-        epi_old_l = _as_float(past_l.get(n) if isinstance(past_l, Mapping) else None, epi_now)
-        epi_old_g = _as_float(past_g.get(n) if isinstance(past_g, Mapping) else None, epi_now)
+        epi_old_l = _as_float(
+            past_l.get(n) if isinstance(past_l, Mapping) else None, epi_now
+        )
+        epi_old_g = _as_float(
+            past_g.get(n) if isinstance(past_g, Mapping) else None, epi_now
+        )
         mixed = (1 - alpha) * epi_now + alpha * epi_old_l
         mixed = (1 - alpha) * mixed + alpha * epi_old_g
 
@@ -1275,6 +1313,7 @@ def apply_network_remesh(G: CommunityGraph) -> None:
             meta["glyph_disr_last"] = h["glyph_load_disr"][-1]
 
     _log_remesh_event(G, meta)
+
 
 def apply_network_remesh_with_memory(
     G: CommunityGraph,
@@ -1424,10 +1463,12 @@ def apply_network_remesh_with_memory(
         import warnings
 
         warnings.warn(
-            f"Structural memory activation failed: {e}. " "Standard REMESH applied successfully.",
+            f"Structural memory activation failed: {e}. "
+            "Standard REMESH applied successfully.",
             RuntimeWarning,
             stacklevel=2,
         )
+
 
 def _mst_edges_from_epi(
     nx: NetworkxModule,
@@ -1437,8 +1478,11 @@ def _mst_edges_from_epi(
     """Return MST edges based on absolute EPI distance."""
     H = nx.Graph()
     H.add_nodes_from(nodes)
-    H.add_weighted_edges_from((u, v, abs(epi[u] - epi[v])) for u, v in combinations(nodes, 2))
+    H.add_weighted_edges_from(
+        (u, v, abs(epi[u] - epi[v])) for u, v in combinations(nodes, 2)
+    )
     return {_ordered_edge(u, v) for u, v in nx.minimum_spanning_edges(H, data=False)}
+
 
 def _knn_edges(
     nodes: Sequence[Hashable],
@@ -1467,6 +1511,7 @@ def _knn_edges(
             new_edges.add(_ordered_edge(u, v))
     return new_edges
 
+
 def _community_graph(
     comms: Iterable[Iterable[Hashable]],
     epi: Mapping[Hashable, float],
@@ -1490,6 +1535,7 @@ def _community_graph(
         )
         C.add_edge(i, j, weight=w)
     return cast(CommunityGraph, C)
+
 
 def _community_k_neighbor_edges(
     C: CommunityGraph,
@@ -1517,7 +1563,9 @@ def _community_k_neighbor_edges(
                 v = ordered[left]
                 left -= 1
             else:
-                if abs(epi_u - epi_vals[ordered[left]]) <= abs(epi_vals[ordered[right]] - epi_u):
+                if abs(epi_u - epi_vals[ordered[left]]) <= abs(
+                    epi_vals[ordered[right]] - epi_u
+                ):
                     v = ordered[left]
                     left -= 1
                 else:
@@ -1536,6 +1584,7 @@ def _community_k_neighbor_edges(
                 rewired.append((u, original_v, v))
             added += 1
     return new_edges, attempts, rewired
+
 
 def _community_remesh(
     G: CommunityGraph,
@@ -1560,7 +1609,9 @@ def _community_remesh(
     C = _community_graph(comms, epi, nx)
     mst_c = nx.minimum_spanning_tree(C, weight="weight")
     new_edges: set[RemeshEdge] = {_ordered_edge(u, v) for u, v in mst_c.edges()}
-    extra_edges, attempts, rewired_edges = _community_k_neighbor_edges(C, k_val, p_rewire, rnd)
+    extra_edges, attempts, rewired_edges = _community_k_neighbor_edges(
+        C, k_val, p_rewire, rnd
+    )
     new_edges |= extra_edges
 
     extra_degrees = {idx: 0 for idx in C.nodes()}
@@ -1599,6 +1650,7 @@ def _community_remesh(
             },
         )
 
+
 def apply_topological_remesh(
     G: CommunityGraph,
     mode: str | None = None,
@@ -1623,12 +1675,16 @@ def apply_topological_remesh(
     rnd = make_rng(base_seed, -2, G)
 
     if mode is None:
-        mode = str(G.graph.get("REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn")))
+        mode = str(
+            G.graph.get("REMESH_MODE", REMESH_DEFAULTS.get("REMESH_MODE", "knn"))
+        )
     mode = str(mode)
     nx, nx_comm = _get_networkx_modules()
     epi = {n: _as_float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes}
     mst_edges = _mst_edges_from_epi(nx, nodes, epi)
-    default_k = int(G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2)))
+    default_k = int(
+        G.graph.get("REMESH_COMMUNITY_K", REMESH_DEFAULTS.get("REMESH_COMMUNITY_K", 2))
+    )
     k_val = max(1, int(k) if k is not None else default_k)
 
     if mode == "community":
@@ -1653,6 +1709,7 @@ def apply_topological_remesh(
         G.clear_edges()
         G.add_edges_from(new_edges)
 
+
 def _extra_gating_ok(
     hist: MutableMapping[str, Sequence[float]],
     cfg: Mapping[str, RemeshConfigValue],
@@ -1676,6 +1733,7 @@ def _extra_gating_ok(
                 return False
     return True
 
+
 def apply_remesh_if_globally_stable(
     G: CommunityGraph,
     stable_step_window: int | None = None,
@@ -1688,7 +1746,8 @@ def apply_remesh_if_globally_stable(
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
         raise TypeError(
-            "apply_remesh_if_globally_stable() got unexpected keyword argument(s): " f"{unexpected}"
+            "apply_remesh_if_globally_stable() got unexpected keyword argument(s): "
+            f"{unexpected}"
         )
 
     params = [
@@ -1735,7 +1794,9 @@ def apply_remesh_if_globally_stable(
         cfg[key] = conv(get_param(G, key))
     frac_req = _as_float(get_param(G, "FRACTION_STABLE_REMESH"))
     w_estab = (
-        stable_step_window if stable_step_window is not None else cfg["REMESH_STABILITY_WINDOW"]
+        stable_step_window
+        if stable_step_window is not None
+        else cfg["REMESH_STABILITY_WINDOW"]
     )
 
     hist = ensure_history(G)
@@ -1760,6 +1821,7 @@ def apply_remesh_if_globally_stable(
     apply_network_remesh(G)
     G.graph["_last_remesh_step"] = step_idx
     G.graph["_last_remesh_ts"] = t_now
+
 
 __all__ = [
     # Core remesh functions (existing API)

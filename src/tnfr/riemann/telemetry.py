@@ -6,6 +6,7 @@ source of truth makes it easier to satisfy invariants #5 (Structural
 Metrology) and #6 (Reproducible Dynamics) while preserving the academic
 memo tone outlined in `theory/TNFR_RIEMANN_RESEARCH_NOTES.md`.
 """
+
 from __future__ import annotations
 
 import json
@@ -28,6 +29,7 @@ __all__ = [
     "compute_field_aggregates",
     "write_telemetry_records",
 ]
+
 
 @dataclass
 class RiemannTelemetryRecord:
@@ -56,6 +58,7 @@ class RiemannTelemetryRecord:
         rec["eigenvalues"] = list(self.eigenvalues)
         return rec
 
+
 def _aggregate(values: dict[Any, float]) -> tuple[float | None, float | None]:
     if not values:
         return None, None
@@ -63,6 +66,7 @@ def _aggregate(values: dict[Any, float]) -> tuple[float | None, float | None]:
     if not abs_values:
         return None, None
     return float(fmean(abs_values)), float(max(abs_values, key=abs))
+
 
 def compute_field_aggregates(G: Any) -> dict[str, float | None]:
     """Compute Φ_s, |∇φ|, K_φ, ξ_C aggregates for a TNFR graph."""
@@ -87,6 +91,7 @@ def compute_field_aggregates(G: Any) -> dict[str, float | None]:
         "phase_curvature_max": curv_max,
         "coherence_length": coherence_clean,
     }
+
 
 def write_telemetry_records(
     records: Iterable[RiemannTelemetryRecord],

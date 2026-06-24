@@ -25,11 +25,14 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
 from urllib.parse import urlparse, urlunparse
 
+
 class ConfigurationError(Exception):
     """Raised when configuration is invalid or missing required values."""
 
+
 class SecurityAuditWarning(UserWarning):
     """Warning for security audit findings that don't stop execution."""
+
 
 def get_env_variable(
     name: str,
@@ -98,6 +101,7 @@ def get_env_variable(
 
     return value
 
+
 def load_pypi_credentials() -> dict[str, str | None]:
     """Load PyPI publishing credentials from environment.
 
@@ -142,6 +146,7 @@ def load_pypi_credentials() -> dict[str, str | None]:
         "repository": repository,
     }
 
+
 def load_github_credentials() -> dict[str, str | None]:
     """Load GitHub API credentials from environment.
 
@@ -172,6 +177,7 @@ def load_github_credentials() -> dict[str, str | None]:
         "token": token,
         "repository": repository,
     }
+
 
 def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
     """Load Redis connection configuration from environment.
@@ -268,6 +274,7 @@ def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
         "ssl": use_tls,
     }
 
+
 def get_cache_secret() -> bytes | None:
     """Get the cache signing secret from environment.
 
@@ -301,7 +308,10 @@ def get_cache_secret() -> bytes | None:
     try:
         return bytes.fromhex(secret_hex)
     except ValueError as exc:
-        raise ConfigurationError(f"TNFR_CACHE_SECRET must be a hex-encoded string: {exc}")
+        raise ConfigurationError(
+            f"TNFR_CACHE_SECRET must be a hex-encoded string: {exc}"
+        )
+
 
 def validate_no_hardcoded_secrets(value: str) -> bool:
     """Validate that a string doesn't look like a hardcoded secret.
@@ -372,6 +382,7 @@ def validate_no_hardcoded_secrets(value: str) -> bool:
             )
 
     return True
+
 
 class SecureCredentialValidator:
     """Robust credential and configuration validator.
@@ -534,6 +545,7 @@ class SecureCredentialValidator:
 
         return True
 
+
 class SecureSecretManager:
     """Secure secret management with automatic memory cleanup.
 
@@ -618,6 +630,7 @@ class SecureSecretManager:
     def __del__(self) -> None:
         """Cleanup on destruction."""
         self.clear_all()
+
 
 class CredentialRotationManager:
     """Manages credential rotation with TTL support.
@@ -742,6 +755,7 @@ class CredentialRotationManager:
             return None
         return datetime.now(timezone.utc) - last
 
+
 class SecurityAuditor:
     """Security auditor for configuration and environment.
 
@@ -792,16 +806,22 @@ class SecurityAuditor:
             var_value = os.environ[var_name]
 
             # Check if this is a sensitive variable
-            is_sensitive = any(pattern in var_name_lower for pattern in self.SENSITIVE_PATTERNS)
+            is_sensitive = any(
+                pattern in var_name_lower for pattern in self.SENSITIVE_PATTERNS
+            )
 
             if is_sensitive:
                 # Check for weak values
                 if var_value.lower() in self.WEAK_VALUES:
-                    issues.append(f"Weak/default value in sensitive variable: {var_name}")
+                    issues.append(
+                        f"Weak/default value in sensitive variable: {var_name}"
+                    )
 
                 # Check for too short secrets
                 if len(var_value) < 8:
-                    issues.append(f"Secret too short ({len(var_value)} chars) in: {var_name}")
+                    issues.append(
+                        f"Secret too short ({len(var_value)} chars) in: {var_name}"
+                    )
 
                 # Check if secret looks like a placeholder
                 if var_value in ["your-secret", "your-token", "changeme", "..."]:
@@ -872,9 +892,11 @@ class SecurityAuditor:
             "cache_secret": self.check_cache_secret_security(),
         }
 
+
 # Global instances for convenience
 _global_secret_manager: SecureSecretManager | None = None
 _global_rotation_manager: CredentialRotationManager | None = None
+
 
 def get_secret_manager() -> SecureSecretManager:
     """Get global secret manager instance.
@@ -888,6 +910,7 @@ def get_secret_manager() -> SecureSecretManager:
     if _global_secret_manager is None:
         _global_secret_manager = SecureSecretManager()
     return _global_secret_manager
+
 
 def get_rotation_manager() -> CredentialRotationManager:
     """Get global rotation manager instance.

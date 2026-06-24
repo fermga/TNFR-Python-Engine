@@ -81,31 +81,49 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 import itertools
 import math
 from collections import Counter
 
 from tnfr.operators.definitions import (
-    Emission, Reception, Coherence, Dissonance, Coupling, Resonance,
-    Silence, Expansion, Contraction, SelfOrganization, Mutation,
-    Transition, Recursivity,
+    Coherence,
+    Contraction,
+    Coupling,
+    Dissonance,
+    Emission,
+    Expansion,
+    Mutation,
+    Reception,
+    Recursivity,
+    Resonance,
+    SelfOrganization,
+    Silence,
+    Transition,
 )
 from tnfr.operators.grammar_validate import validate_grammar
 
 OPS = [
-    ("AL", Emission()), ("EN", Reception()), ("IL", Coherence()),
-    ("OZ", Dissonance()), ("UM", Coupling()), ("RA", Resonance()),
-    ("SHA", Silence()), ("VAL", Expansion()), ("NUL", Contraction()),
-    ("THOL", SelfOrganization()), ("ZHIR", Mutation()),
-    ("NAV", Transition()), ("REMESH", Recursivity()),
+    ("AL", Emission()),
+    ("EN", Reception()),
+    ("IL", Coherence()),
+    ("OZ", Dissonance()),
+    ("UM", Coupling()),
+    ("RA", Resonance()),
+    ("SHA", Silence()),
+    ("VAL", Expansion()),
+    ("NUL", Contraction()),
+    ("THOL", SelfOrganization()),
+    ("ZHIR", Mutation()),
+    ("NAV", Transition()),
+    ("REMESH", Recursivity()),
 ]
 NAMES = [n for n, _ in OPS]
 INST = [o for _, o in OPS]
 A = len(OPS)
-GENERATORS = [0, 11, 12]        # AL, NAV, REMESH  (U1a)
-CLOSURES = [6, 11, 12, 3]       # SHA, NAV, REMESH, OZ  (U1b)
+GENERATORS = [0, 11, 12]  # AL, NAV, REMESH  (U1a)
+CLOSURES = [6, 11, 12, 3]  # SHA, NAV, REMESH, OZ  (U1b)
 
 
 def valid_sequences(n):
@@ -161,8 +179,10 @@ def experiment_2_capacity():
     print("=" * 70)
     print(f"  unconstrained capacity = log2(13) = {math.log2(A):.3f} bits/operator")
     print()
-    print(f"  {'n':>3} {'N(n)':>9} {'lambda_n':>9} {'log2 lambda':>12} "
-          f"{'cap/symbol':>11}")
+    print(
+        f"  {'n':>3} {'N(n)':>9} {'lambda_n':>9} {'log2 lambda':>12} "
+        f"{'cap/symbol':>11}"
+    )
     prev = None
     for n in range(1, 7):
         N = len(_CACHE[n])
@@ -171,8 +191,10 @@ def experiment_2_capacity():
             print(f"  {n:>3} {N:>9} {'--':>9} {'--':>12} {cap_sym:>11.3f}")
         else:
             lam = N / prev
-            print(f"  {n:>3} {N:>9} {lam:>9.3f} {math.log2(lam):>12.3f} "
-                  f"{cap_sym:>11.3f}")
+            print(
+                f"  {n:>3} {N:>9} {lam:>9.3f} {math.log2(lam):>12.3f} "
+                f"{cap_sym:>11.3f}"
+            )
         prev = N
     print()
     print("  -> lambda_n climbs toward the alphabet size 13 and log2(lambda_n)")
@@ -204,10 +226,14 @@ def experiment_3_frequency_hierarchy():
     print()
     start = Counter(combo[0] for combo in v)
     end = Counter(combo[-1] for combo in v)
-    print(f"  START set = {{{', '.join(NAMES[i] for i in sorted(start))}}} "
-          f"(= U1a generators)")
-    print(f"  END set   = {{{', '.join(NAMES[i] for i in sorted(end))}}} "
-          f"(= U1b closures)")
+    print(
+        f"  START set = {{{', '.join(NAMES[i] for i in sorted(start))}}} "
+        f"(= U1a generators)"
+    )
+    print(
+        f"  END set   = {{{', '.join(NAMES[i] for i in sorted(end))}}} "
+        f"(= U1b closures)"
+    )
     print()
     print("  -> capacity is near-maximal (M2), yet the operator DISTRIBUTION is")
     print("     far from uniform: NAV/REMESH dominate (generators+closures),")

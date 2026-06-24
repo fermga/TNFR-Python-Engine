@@ -74,11 +74,11 @@ except ImportError:  # pragma: no cover
 
 from ..constants.canonical import K_PHI_CANONICAL_THRESHOLD, PHI, PI
 from .canonical import (
-    compute_structural_potential,
-    compute_phase_gradient,
     compute_phase_curvature,
+    compute_phase_gradient,
+    compute_structural_potential,
 )
-from .extended import compute_phase_current, compute_dnfr_flux
+from .extended import compute_dnfr_flux, compute_phase_current
 from .unified import compute_energy_density as _raw_energy_density
 
 # ---------------------------------------------------------------------------
@@ -90,6 +90,7 @@ _SECTOR_IMBALANCE_RATIO = 1.5
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class ConservationSnapshot:
@@ -121,6 +122,7 @@ class ConservationSnapshot:
     grad_phi: dict[Any, float]
     divergence: dict[Any, float]
 
+
 @dataclass
 class ConservationBalance:
     """Result of the continuity equation verification across two snapshots.
@@ -147,6 +149,7 @@ class ConservationBalance:
     total_charge_before: float
     total_charge_after: float
     charge_drift: float
+
 
 @dataclass
 class ConservationTimeSeries:
@@ -177,9 +180,11 @@ class ConservationTimeSeries:
             return 0.0
         return float(np.mean(self.conservation_quality))
 
+
 # ---------------------------------------------------------------------------
 # Core computation: structural charge density and divergence
 # ---------------------------------------------------------------------------
+
 
 def compute_charge_density(G: Any) -> dict[Any, float]:
     r"""Compute structural charge density ρ(i) = Φ_s(i) + K_φ(i).
@@ -205,6 +210,7 @@ def compute_charge_density(G: Any) -> dict[Any, float]:
     k_phi = compute_phase_curvature(G)
     nodes = list(G.nodes())
     return {n: phi_s.get(n, 0.0) + k_phi.get(n, 0.0) for n in nodes}
+
 
 def compute_current_divergence(G: Any) -> dict[Any, float]:
     r"""Compute discrete divergence of structural current div J(i).
@@ -242,17 +248,19 @@ def compute_current_divergence(G: Any) -> dict[Any, float]:
 
         deg = len(neighbors)
         # Divergence = mean outward flux of both current components
-        div_j_phi = sum(j_phi.get(j, 0.0) - j_phi.get(i, 0.0)
-                        for j in neighbors) / deg
-        div_j_dnfr = sum(j_dnfr.get(j, 0.0) - j_dnfr.get(i, 0.0)
-                         for j in neighbors) / deg
+        div_j_phi = sum(j_phi.get(j, 0.0) - j_phi.get(i, 0.0) for j in neighbors) / deg
+        div_j_dnfr = (
+            sum(j_dnfr.get(j, 0.0) - j_dnfr.get(i, 0.0) for j in neighbors) / deg
+        )
         divergence[i] = div_j_phi + div_j_dnfr
 
     return divergence
 
+
 # ---------------------------------------------------------------------------
 # Snapshot capture
 # ---------------------------------------------------------------------------
+
 
 def capture_conservation_snapshot(G: Any) -> ConservationSnapshot:
     """Capture all conserved quantities at the current instant.
@@ -288,9 +296,11 @@ def capture_conservation_snapshot(G: Any) -> ConservationSnapshot:
         divergence=div_j,
     )
 
+
 # ---------------------------------------------------------------------------
 # Conservation balance (two-snapshot comparison)
 # ---------------------------------------------------------------------------
+
 
 def verify_conservation_balance(
     before: ConservationSnapshot,
@@ -335,9 +345,7 @@ def verify_conservation_balance(
         delta_rho[n] = d_rho
 
         # Crank-Nicolson: trapezoidal average of divergence at both endpoints
-        div_j = 0.5 * (
-            before.divergence.get(n, 0.0) + after.divergence.get(n, 0.0)
-        )
+        div_j = 0.5 * (before.divergence.get(n, 0.0) + after.divergence.get(n, 0.0))
         # Continuity: ∂ρ/∂t + div J = S  →  residual = ∂ρ/∂t + div J
         residual[n] = d_rho + div_j
 
@@ -346,7 +354,9 @@ def verify_conservation_balance(
     mean_res = float(np.mean(residual_vals)) if len(residual_vals) > 0 else 0.0
     std_res = float(np.std(residual_vals)) if len(residual_vals) > 0 else 0.0
     max_res = float(np.max(np.abs(residual_vals))) if len(residual_vals) > 0 else 0.0
-    rms_res = float(np.sqrt(np.mean(residual_vals ** 2))) if len(residual_vals) > 0 else 0.0
+    rms_res = (
+        float(np.sqrt(np.mean(residual_vals**2))) if len(residual_vals) > 0 else 0.0
+    )
 
     # Conservation quality: 1/(1 + RMS) maps [0, ∞) → (0, 1]
     quality = 1.0 / (1.0 + rms_res)
@@ -362,9 +372,10 @@ def verify_conservation_balance(
     return ConservationBalance(
         residual=residual,
         delta_rho=delta_rho,
-        divergence_after={n: 0.5 * (before.divergence.get(n, 0.0)
-                              + after.divergence.get(n, 0.0))
-                        for n in nodes},
+        divergence_after={
+            n: 0.5 * (before.divergence.get(n, 0.0) + after.divergence.get(n, 0.0))
+            for n in nodes
+        },
         mean_residual=mean_res,
         std_residual=std_res,
         max_residual=max_res,
@@ -376,9 +387,11 @@ def verify_conservation_balance(
         charge_drift=charge_drift,
     )
 
+
 # ---------------------------------------------------------------------------
 # Conservation tracker (multi-step)
 # ---------------------------------------------------------------------------
+
 
 class ConservationTracker:
     """Track conservation law compliance across a full operator sequence.
@@ -425,12 +438,8 @@ class ConservationTracker:
             self._series.total_charge.append(balance.total_charge_after)
             self._series.mean_residuals.append(balance.mean_residual)
             self._series.rms_residuals.append(balance.rms_residual)
-            self._series.conservation_quality.append(
-                balance.conservation_quality
-            )
-            self._series.grammar_violation_index.append(
-                balance.grammar_violation_index
-            )
+            self._series.conservation_quality.append(balance.conservation_quality)
+            self._series.grammar_violation_index.append(balance.grammar_violation_index)
             self._series.charge_drift.append(balance.charge_drift)
         else:
             # First snapshot — record initial charge only
@@ -459,9 +468,11 @@ class ConservationTracker:
         dt = t_curr - t_prev if t_curr != t_prev else 1.0
         return verify_conservation_balance(snap_prev, snap_curr, dt=dt)
 
+
 # ---------------------------------------------------------------------------
 # Decomposed analysis: which field component contributes most to residual
 # ---------------------------------------------------------------------------
+
 
 def decompose_conservation_residual(
     before: ConservationSnapshot,
@@ -508,16 +519,10 @@ def decompose_conservation_residual(
         k_phi_drift[n] = d_k_phi
 
         # Crank-Nicolson: trapezoidal average of divergence
-        div_j = 0.5 * (
-            before.divergence.get(n, 0.0) + after.divergence.get(n, 0.0)
-        )
+        div_j = 0.5 * (before.divergence.get(n, 0.0) + after.divergence.get(n, 0.0))
         # Approximate split: use field magnitudes as proxy (averaged)
-        j_phi_n = 0.5 * (
-            before.j_phi.get(n, 0.0) + after.j_phi.get(n, 0.0)
-        )
-        j_dnfr_n = 0.5 * (
-            before.j_dnfr.get(n, 0.0) + after.j_dnfr.get(n, 0.0)
-        )
+        j_phi_n = 0.5 * (before.j_phi.get(n, 0.0) + after.j_phi.get(n, 0.0))
+        j_dnfr_n = 0.5 * (before.j_dnfr.get(n, 0.0) + after.j_dnfr.get(n, 0.0))
         total_j = abs(j_phi_n) + abs(j_dnfr_n) + 1e-15
         j_phi_fraction = abs(j_phi_n) / total_j
         j_dnfr_fraction = abs(j_dnfr_n) / total_j
@@ -532,17 +537,19 @@ def decompose_conservation_residual(
         geometric_residual[n] = d_k_phi + j_phi_div[n]
 
     return {
-        'phi_s_drift': phi_s_drift,
-        'k_phi_drift': k_phi_drift,
-        'j_phi_div': j_phi_div,
-        'j_dnfr_div': j_dnfr_div,
-        'potential_residual': potential_residual,
-        'geometric_residual': geometric_residual,
+        "phi_s_drift": phi_s_drift,
+        "k_phi_drift": k_phi_drift,
+        "j_phi_div": j_phi_div,
+        "j_dnfr_div": j_dnfr_div,
+        "potential_residual": potential_residual,
+        "geometric_residual": geometric_residual,
     }
+
 
 # ---------------------------------------------------------------------------
 # Theoretical bounds from grammar constraints
 # ---------------------------------------------------------------------------
+
 
 def compute_grammar_conservation_bounds(G: Any) -> dict[str, float]:
     r"""Compute theoretical upper bounds on conservation residual.
@@ -584,7 +591,7 @@ def compute_grammar_conservation_bounds(G: Any) -> dict[str, float]:
     j_dnfr_bound = 2.0 * phi_s_bound  # worst case: ±Φ_s
 
     # Maximum current magnitude
-    max_current = math.sqrt(j_phi_bound ** 2 + j_dnfr_bound ** 2)
+    max_current = math.sqrt(j_phi_bound**2 + j_dnfr_bound**2)
 
     # Maximum divergence scales with max_current / connectivity
     avg_degree = 2.0 * G.number_of_edges() / max(n_nodes, 1)
@@ -594,17 +601,19 @@ def compute_grammar_conservation_bounds(G: Any) -> dict[str, float]:
     max_residual = max_charge + max_div
 
     return {
-        'max_charge_density': max_charge,
-        'max_current_magnitude': max_current,
-        'max_allowed_residual': max_residual,
-        'phi_s_confinement': phi_s_bound,
-        'k_phi_hotspot': K_PHI_CANONICAL_THRESHOLD,  # 0.9×π ≈ 2.8274 (canonical curvature hotspot threshold)
-        'average_degree': avg_degree,
+        "max_charge_density": max_charge,
+        "max_current_magnitude": max_current,
+        "max_allowed_residual": max_residual,
+        "phi_s_confinement": phi_s_bound,
+        "k_phi_hotspot": K_PHI_CANONICAL_THRESHOLD,  # 0.9×π ≈ 2.8274 (canonical curvature hotspot threshold)
+        "average_degree": avg_degree,
     }
+
 
 # ---------------------------------------------------------------------------
 # Grammar violation detection via conservation analysis
 # ---------------------------------------------------------------------------
+
 
 def detect_grammar_violations_from_conservation(
     balance: ConservationBalance,
@@ -634,7 +643,7 @@ def detect_grammar_violations_from_conservation(
     """
     threshold = PHI  # Golden ratio as natural threshold (from U6)
     if bounds is not None:
-        threshold = bounds.get('max_allowed_residual', PHI)
+        threshold = bounds.get("max_allowed_residual", PHI)
 
     violation_types: list[str] = []
     nodes_violating: list[Any] = []
@@ -656,16 +665,18 @@ def detect_grammar_violations_from_conservation(
     severity = min(1.0, balance.rms_residual / max(threshold, 1e-10))
 
     return {
-        'violations_detected': len(violation_types) > 0,
-        'violation_count': len(violation_types),
-        'violation_types': violation_types,
-        'severity': severity,
-        'nodes_violating': nodes_violating,
+        "violations_detected": len(violation_types) > 0,
+        "violation_count": len(violation_types),
+        "violation_types": violation_types,
+        "severity": severity,
+        "nodes_violating": nodes_violating,
     }
+
 
 # ---------------------------------------------------------------------------
 # Noether charge: total conserved quantity
 # ---------------------------------------------------------------------------
+
 
 def compute_noether_charge(G: Any) -> float:
     r"""Compute the total Noether charge Q = Σ_i ρ(i) = Σ_i [Φ_s(i) + K_φ(i)].
@@ -695,6 +706,7 @@ def compute_noether_charge(G: Any) -> float:
     """
     charge = compute_charge_density(G)
     return sum(charge.values())
+
 
 def compute_energy_functional(G: Any) -> float:
     r"""Compute the TNFR structural energy functional.
@@ -733,6 +745,7 @@ def compute_energy_functional(G: Any) -> float:
     raw = _raw_energy_density(G)
     return 0.5 * sum(raw.values())
 
+
 def _energy_from_snapshot(snapshot: ConservationSnapshot) -> float:
     r"""E = ½ Σ_i (Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) from a captured snapshot.
 
@@ -749,9 +762,11 @@ def _energy_from_snapshot(snapshot: ConservationSnapshot) -> float:
         for n in snapshot.phi_s
     )
 
+
 # ---------------------------------------------------------------------------
 # Sector coupling analysis (the deep physics insight)
 # ---------------------------------------------------------------------------
+
 
 def analyze_sector_coupling(
     before: ConservationSnapshot,
@@ -795,13 +810,13 @@ def analyze_sector_coupling(
         'sector_asymmetry' : Ratio of dominant to subdominant residual
     """
     decomp = decompose_conservation_residual(before, after, dt=dt)
-    nodes = list(decomp['potential_residual'].keys())
+    nodes = list(decomp["potential_residual"].keys())
 
-    pot_res = np.array([decomp['potential_residual'][n] for n in nodes])
-    geo_res = np.array([decomp['geometric_residual'][n] for n in nodes])
+    pot_res = np.array([decomp["potential_residual"][n] for n in nodes])
+    geo_res = np.array([decomp["geometric_residual"][n] for n in nodes])
 
-    rms_pot = float(np.sqrt(np.mean(pot_res ** 2)))
-    rms_geo = float(np.sqrt(np.mean(geo_res ** 2)))
+    rms_pot = float(np.sqrt(np.mean(pot_res**2)))
+    rms_geo = float(np.sqrt(np.mean(geo_res**2)))
 
     # Cross-coupling: correlation between sector residuals
     if len(nodes) > 2 and np.std(pot_res) > 1e-15 and np.std(geo_res) > 1e-15:
@@ -811,25 +826,27 @@ def analyze_sector_coupling(
 
     # Determine dominant sector
     if rms_pot > _SECTOR_IMBALANCE_RATIO * rms_geo:
-        dominant = 'potential'
+        dominant = "potential"
     elif rms_geo > _SECTOR_IMBALANCE_RATIO * rms_pot:
-        dominant = 'geometric'
+        dominant = "geometric"
     else:
-        dominant = 'balanced'
+        dominant = "balanced"
 
     asymmetry = max(rms_pot, rms_geo) / (min(rms_pot, rms_geo) + 1e-15)
 
     return {
-        'potential_sector_residual': rms_pot,
-        'geometric_sector_residual': rms_geo,
-        'cross_coupling_strength': cross_corr,
-        'dominant_sector': dominant,
-        'sector_asymmetry': asymmetry,
+        "potential_sector_residual": rms_pot,
+        "geometric_sector_residual": rms_geo,
+        "cross_coupling_strength": cross_corr,
+        "dominant_sector": dominant,
+        "sector_asymmetry": asymmetry,
     }
+
 
 # ---------------------------------------------------------------------------
 # Ward identities: per-operator conservation signatures
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class WardIdentity:
@@ -866,6 +883,7 @@ class WardIdentity:
     conservation_quality: float
     charge_character: str
     energy_character: str
+
 
 def compute_ward_identity(
     before: ConservationSnapshot,
@@ -942,6 +960,7 @@ def compute_ward_identity(
         energy_character=energy_char,
     )
 
+
 def verify_sequence_ward_identity(
     identities: Sequence[WardIdentity],
 ) -> dict[str, Any]:
@@ -983,9 +1002,11 @@ def verify_sequence_ward_identity(
         "operator_summary": summary,
     }
 
+
 # ---------------------------------------------------------------------------
 # Lyapunov stability analysis
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class LyapunovResult:
@@ -1016,6 +1037,7 @@ class LyapunovResult:
     dissipation: float
     is_stable: bool
     is_strongly_stable: bool
+
 
 def compute_lyapunov_derivative(
     before: ConservationSnapshot,
@@ -1061,9 +1083,11 @@ def compute_lyapunov_derivative(
         is_strongly_stable=de_dt < -stability_threshold,
     )
 
+
 # ---------------------------------------------------------------------------
 # Spectral conservation analysis (graph Laplacian decomposition)
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class SpectralConservation:
@@ -1104,6 +1128,7 @@ class SpectralConservation:
     dominant_conservation_modes: int
     spectral_gap: float
 
+
 def compute_spectral_conservation(
     G: Any,
     snapshot: ConservationSnapshot | None = None,
@@ -1142,6 +1167,7 @@ def compute_spectral_conservation(
     # L_rw = I − D⁻¹W (the EPI channel; see ``structural_diffusion``).  This is
     # consistent with the §9.1 normalized divergence (∇·J = L_rw·J).
     from .structural_diffusion import symmetric_normalized_laplacian
+
     _, L = symmetric_normalized_laplacian(G)
 
     # Eigendecomposition (orthonormal eigenbasis of L_sym)
@@ -1175,9 +1201,11 @@ def compute_spectral_conservation(
         spectral_gap=spectral_gap,
     )
 
+
 # ---------------------------------------------------------------------------
 # Conservation scaling: q(N) ~ 1 - C/√N  verification
 # ---------------------------------------------------------------------------
+
 
 def compute_conservation_scaling(
     topologies: Sequence[tuple[Any, str]],
@@ -1241,9 +1269,9 @@ def compute_conservation_scaling(
                 G.nodes[nd]["phase"] += dt * nu_f * dnfr * 0.1
                 nbrs = list(G.neighbors(nd))
                 if nbrs:
-                    mean_dnfr = float(np.mean([
-                        G.nodes[j].get("delta_nfr", 0.0) for j in nbrs
-                    ]))
+                    mean_dnfr = float(
+                        np.mean([G.nodes[j].get("delta_nfr", 0.0) for j in nbrs])
+                    )
                     G.nodes[nd]["delta_nfr"] += dt * 0.1 * (mean_dnfr - dnfr)
             tracker.record(t=(step + 1) * dt)
 
@@ -1275,6 +1303,7 @@ def compute_conservation_scaling(
         "fit_C": fit_C,
         "fit_R2": fit_R2,
     }
+
 
 # ---------------------------------------------------------------------------
 #  Public API

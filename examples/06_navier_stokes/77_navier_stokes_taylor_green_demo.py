@@ -30,10 +30,7 @@ import sys
 
 import numpy as np
 
-from tnfr.navier_stokes import (
-    TNFRNavierStokesOperator,
-    build_torus_graph,
-)
+from tnfr.navier_stokes import TNFRNavierStokesOperator, build_torus_graph
 
 
 def _fit_decay_rate(times: np.ndarray, energy: np.ndarray) -> float:
@@ -67,14 +64,16 @@ def main() -> int:
 
     div_initial = op.divergence_residual()
     e0_measured = op.kinetic_energy()
-    e0_analytic = (math.pi ** 2) * amplitude ** 2
+    e0_analytic = (math.pi**2) * amplitude**2
 
     print("Initial diagnostics")
     print("-" * 72)
     print(f"Discrete divergence (L2)   : {div_initial:.3e}")
     print(f"Discrete E(0)              : {e0_measured:.6f}")
     print(f"Analytical E(0) = pi^2 U^2 : {e0_analytic:.6f}")
-    print(f"Relative error             : {abs(e0_measured - e0_analytic) / e0_analytic:.3e}")
+    print(
+        f"Relative error             : {abs(e0_measured - e0_analytic) / e0_analytic:.3e}"
+    )
     print()
 
     history = op.run(dt=dt, steps=steps)
@@ -108,7 +107,9 @@ def main() -> int:
     print("Success criteria (N2)")
     print("-" * 72)
     print(f"  divergence(t=0) < 1e-10          : {'PASS' if ok_div else 'FAIL'}")
-    print(f"  |E_discrete(0) - E_analytic(0)|  : {'PASS' if ok_initial_energy else 'FAIL'}")
+    print(
+        f"  |E_discrete(0) - E_analytic(0)|  : {'PASS' if ok_initial_energy else 'FAIL'}"
+    )
     print(f"  |lambda_meas - 4 nu| / (4 nu)    : {'PASS' if ok_rate else 'FAIL'}")
     print()
 

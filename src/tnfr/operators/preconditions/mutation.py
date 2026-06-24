@@ -33,6 +33,7 @@ __all__ = [
     "diagnose_mutation_readiness",
 ]
 
+
 def validate_mutation_strict(G: TNFRGraph, node: NodeId) -> None:
     """Comprehensive canonical validation for ZHIR.
 
@@ -93,6 +94,7 @@ def validate_mutation_strict(G: TNFRGraph, node: NodeId) -> None:
     # 4. History length validation
     _validate_history_length(G, node)
 
+
 def _validate_minimum_vf(G: TNFRGraph, node: NodeId) -> None:
     """Validate minimum structural frequency for phase transformation."""
     vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
@@ -104,9 +106,12 @@ def _validate_minimum_vf(G: TNFRGraph, node: NodeId) -> None:
             f"Structural frequency too low for mutation (νf={vf:.3f} < {min_vf:.3f})",
         )
 
+
 def _validate_history_length(G: TNFRGraph, node: NodeId) -> None:
     """Validate sufficient EPI history for velocity calculation."""
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get("_epi_history", [])
+    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
+        "_epi_history", []
+    )
     min_length = int(G.graph.get("ZHIR_MIN_HISTORY_LENGTH", 2))
 
     if len(epi_history) < min_length:
@@ -118,6 +123,7 @@ def _validate_history_length(G: TNFRGraph, node: NodeId) -> None:
             f"(need ≥{min_length} points, have {len(epi_history)}). "
             f"Threshold verification may be inaccurate."
         )
+
 
 def validate_threshold_crossing(
     G: TNFRGraph, node: NodeId, logger: logging.Logger | None = None
@@ -160,7 +166,9 @@ def validate_threshold_crossing(
         logger = logging.getLogger(__name__)
 
     # Get EPI history - check both keys for compatibility
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get("_epi_history", [])
+    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
+        "_epi_history", []
+    )
 
     if len(epi_history) < 2:
         # Insufficient history - cannot verify threshold
@@ -202,7 +210,10 @@ def validate_threshold_crossing(
         )
         G.nodes[node]["_zhir_threshold_met"] = True
 
-def validate_grammar_u4b(G: TNFRGraph, node: NodeId, logger: logging.Logger | None = None) -> None:
+
+def validate_grammar_u4b(
+    G: TNFRGraph, node: NodeId, logger: logging.Logger | None = None
+) -> None:
     """Validate U4b: IL precedence + recent destabilizer.
 
     Grammar rule U4b (BIFURCATION DYNAMICS - Transformers Need Context) requires:
@@ -254,7 +265,9 @@ def validate_grammar_u4b(G: TNFRGraph, node: NodeId, logger: logging.Logger | No
     glyph_history = G.nodes[node].get("glyph_history", [])
     if not glyph_history:
         # No history - cannot validate U4b
-        logger.warning(f"Node {node}: No glyph history available. Cannot verify U4b compliance.")
+        logger.warning(
+            f"Node {node}: No glyph history available. Cannot verify U4b compliance."
+        )
         return
 
     # Import glyph_function_name to convert glyphs to operator names
@@ -276,7 +289,9 @@ def validate_grammar_u4b(G: TNFRGraph, node: NodeId, logger: logging.Logger | No
         )
 
     if il_found:
-        logger.debug(f"Node {node}: ZHIR IL precedence satisfied (prior Coherence found)")
+        logger.debug(
+            f"Node {node}: ZHIR IL precedence satisfied (prior Coherence found)"
+        )
 
     # Part 2: Check for recent destabilizer
     # This also records destabilizer context for telemetry
@@ -293,6 +308,7 @@ def validate_grammar_u4b(G: TNFRGraph, node: NodeId, logger: logging.Logger | No
             f"Recent history: {recent_history}. "
             "Apply Dissonance or Expansion to elevate ΔNFR first.",
         )
+
 
 def record_destabilizer_context(
     G: TNFRGraph, node: NodeId, logger: logging.Logger | None = None
@@ -379,14 +395,20 @@ def record_destabilizer_context(
         distance = i + 1  # Distance from mutation (1 = immediate predecessor)
 
         # Check strong destabilizers (window = 4)
-        if op_name in DESTABILIZERS_STRONG and distance <= BIFURCATION_WINDOWS["strong"]:
+        if (
+            op_name in DESTABILIZERS_STRONG
+            and distance <= BIFURCATION_WINDOWS["strong"]
+        ):
             destabilizer_found = op_name
             destabilizer_type = "strong"
             destabilizer_distance = distance
             break
 
         # Check moderate destabilizers (window = 2)
-        if op_name in DESTABILIZERS_MODERATE and distance <= BIFURCATION_WINDOWS["moderate"]:
+        if (
+            op_name in DESTABILIZERS_MODERATE
+            and distance <= BIFURCATION_WINDOWS["moderate"]
+        ):
             destabilizer_found = op_name
             destabilizer_type = "moderate"
             destabilizer_distance = distance
@@ -421,6 +443,7 @@ def record_destabilizer_context(
         )
 
     return context
+
 
 def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
     """Comprehensive diagnostic for ZHIR readiness.
@@ -484,7 +507,9 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
         )
 
     # Check 2: Threshold crossing
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get("_epi_history", [])
+    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
+        "_epi_history", []
+    )
     xi_threshold = float(G.graph.get("ZHIR_THRESHOLD_XI", 0.1))
 
     if len(epi_history) >= 2:
@@ -528,7 +553,9 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
         "found": il_found,
     }
     if not il_found:
-        recommendations.append("Apply IL (Coherence) for stable transformation base (U4b Part 1).")
+        recommendations.append(
+            "Apply IL (Coherence) for stable transformation base (U4b Part 1)."
+        )
 
     # Check 4: Recent destabilizer
     logger = logging.getLogger(__name__)

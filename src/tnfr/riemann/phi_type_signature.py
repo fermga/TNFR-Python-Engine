@@ -214,14 +214,10 @@ def _evolve_and_collect(G: Any, n_steps: int) -> np.ndarray:
     inject_defaults(G)
 
     nodes = list(G.nodes())
-    snapshots: list[list[float]] = [[
-        _wrap_to_pi(get_phase(G, n)) for n in nodes
-    ]]
+    snapshots: list[list[float]] = [[_wrap_to_pi(get_phase(G, n)) for n in nodes]]
     for _ in range(int(n_steps)):
         step(G)
-        snapshots.append([
-            _wrap_to_pi(get_phase(G, n)) for n in nodes
-        ])
+        snapshots.append([_wrap_to_pi(get_phase(G, n)) for n in nodes])
     return np.asarray(snapshots, dtype=float).T
 
 
@@ -389,14 +385,14 @@ def compute_phi_type_signature(
     )
     if actual_traj_len >= 2:
         unwrapped = np.unwrap(phase_trajectories, axis=1)
-        max_unwrap = float(
-            np.max(np.abs(unwrapped[:, -1] - unwrapped[:, 0]))
-        ) if actual_n_nodes > 0 else 0.0
+        max_unwrap = (
+            float(np.max(np.abs(unwrapped[:, -1] - unwrapped[:, 0])))
+            if actual_n_nodes > 0
+            else 0.0
+        )
     else:
         max_unwrap = 0.0
-    mean_winding_count = (
-        float(np.mean(windings)) if windings.size > 0 else 0.0
-    )
+    mean_winding_count = float(np.mean(windings)) if windings.size > 0 else 0.0
 
     # Lift-spectral axis: phase-velocity (wrapped finite differences).
     per_node_entropy = np.zeros(actual_n_nodes, dtype=float)
@@ -409,14 +405,10 @@ def compute_phi_type_signature(
             continue
         # Phase velocity via canonical wrap of finite differences.
         raw_diff = np.diff(traj)
-        velocity = np.asarray(
-            [_wrap_to_pi(float(d)) for d in raw_diff], dtype=float
-        )
+        velocity = np.asarray([_wrap_to_pi(float(d)) for d in raw_diff], dtype=float)
         p = _binned_psd_distribution(velocity, int(n_bins))
         per_node_entropy[i] = _shannon_entropy(p)
-    mean_entropy = (
-        float(np.mean(per_node_entropy)) if actual_n_nodes > 0 else 0.0
-    )
+    mean_entropy = float(np.mean(per_node_entropy)) if actual_n_nodes > 0 else 0.0
 
     max_entropy = math.log(float(n_bins))
     signature = mean_entropy / max_entropy if max_entropy > 0.0 else 0.0

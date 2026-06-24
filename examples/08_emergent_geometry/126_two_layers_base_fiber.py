@@ -104,10 +104,10 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 from tnfr.alias import set_attr
 from tnfr.constants.aliases import ALIAS_EPI, ALIAS_VF
@@ -143,15 +143,19 @@ def experiment_1_base_state_independent():
     print("does not move.")
     print()
     G = nx.cycle_graph(10)
-    print(f"  {'seed':>5} {'lambda_2':>10} {'spec[2]':>10} {'R_eff(0,5)':>12} "
-          f"{'trace(L)':>10}")
+    print(
+        f"  {'seed':>5} {'lambda_2':>10} {'spec[2]':>10} {'R_eff(0,5)':>12} "
+        f"{'trace(L)':>10}"
+    )
     for s in range(4):
         _seed(G, np.random.default_rng(s))
         _, L = structural_diffusion_operator(G)
         ev = np.sort(np.linalg.eigvals(L).real)
         _, R = effective_resistance(G)
-        print(f"  {s:>5} {ev[1]:>10.6f} {ev[2]:>10.6f} {R[0, 5]:>12.6f} "
-              f"{np.trace(L):>10.4f}")
+        print(
+            f"  {s:>5} {ev[1]:>10.6f} {ev[2]:>10.6f} {R[0, 5]:>12.6f} "
+            f"{np.trace(L):>10.4f}"
+        )
     print()
     print("  -> identical across seeds: the BASE is pure topology.")
 
@@ -171,8 +175,10 @@ def experiment_2_fiber_state_dependent():
         _seed(G, np.random.default_rng(s))
         p = extract_phase_space_point(G)
         pol = polarization_vector(p)
-        print(f"  {s:>5} {substrate_hamiltonian(p):>10.4f} "
-              f"{np.sqrt(pol['magnitude_sq']):>15.4f} {pol['p_3']:>10.4f}")
+        print(
+            f"  {s:>5} {substrate_hamiltonian(p):>10.4f} "
+            f"{np.sqrt(pol['magnitude_sq']):>15.4f} {pol['p_3']:>10.4f}"
+        )
     print()
     print("  -> moves with state: the FIBER carries the state.")
 
@@ -187,8 +193,10 @@ def experiment_3_coupling_exact():
     print("verify certifies dNFR_epi = -L_rw * EPI to machine precision, with")
     print("slowest linear rate nu_f * lambda_2.")
     print()
-    print(f"  {'graph':18s} {'dNFR=-L_rw*EPI':>15} {'residual':>10} "
-          f"{'lambda_2':>9} {'nu_f*lambda_2':>13}")
+    print(
+        f"  {'graph':18s} {'dNFR=-L_rw*EPI':>15} {'residual':>10} "
+        f"{'lambda_2':>9} {'nu_f*lambda_2':>13}"
+    )
     cases = [
         ("path P12", nx.path_graph(12)),
         ("cycle C10", nx.cycle_graph(10)),
@@ -199,9 +207,11 @@ def experiment_3_coupling_exact():
             G = G.subgraph(max(nx.connected_components(G), key=len)).copy()
         _seed(G, np.random.default_rng(0))
         cert = verify_structural_diffusion(G)
-        print(f"  {name:18s} {str(cert.dnfr_is_graph_laplacian):>15} "
-              f"{cert.max_laplacian_residual:>10.1e} {cert.spectral_gap:>9.4f} "
-              f"{cert.slowest_relaxation_rate:>13.4f}")
+        print(
+            f"  {name:18s} {str(cert.dnfr_is_graph_laplacian):>15} "
+            f"{cert.max_laplacian_residual:>10.1e} {cert.spectral_gap:>9.4f} "
+            f"{cert.slowest_relaxation_rate:>13.4f}"
+        )
     print()
     print("  -> residual ~0: the SAME base operator L_rw generates the force")
     print("     that drives the fiber. lambda_2 is the slowest LINEAR rate")

@@ -7,18 +7,23 @@ only π (phase wrap) and ξ_C ∝ 1/√λ₂ are genuine structural scales. This
 checks internal consistency of the constant values, not a "mathematical purity"
 or constant↔field correspondence claim.
 """
+
 from __future__ import annotations
 
 import math
+
 import pytest
 
 from tnfr.constants.canonical import (
-    PHI, GAMMA, PI, E,
-    PHI_GAMMA_NORMALIZED,
-    GAMMA_PHI_RATIO,
-    INV_PHI,
-    HALF_INV_PHI,
+    GAMMA,
     GAMMA_OVER_PI_PLUS_E,
+    GAMMA_PHI_RATIO,
+    HALF_INV_PHI,
+    INV_PHI,
+    PHI,
+    PHI_GAMMA_NORMALIZED,
+    PI,
+    E,
 )
 
 
@@ -89,7 +94,7 @@ class TestZeroEmpiricalFitting:
         """All constants derive mathematically, no hardcoded decimals."""
         # Test that key constants are NOT hardcoded magic numbers
         # These should all be exact derivations
-        
+
         # φ/(φ+γ) should not be hardcoded as 0.737
         phi_gamma_norm = PHI / (PHI + GAMMA)
         assert phi_gamma_norm != 0.737  # Not exact decimal
@@ -104,7 +109,7 @@ class TestZeroEmpiricalFitting:
         """Test fundamental mathematical relationships."""
         # φ² = φ + 1 (golden ratio property)
         assert abs(PHI * PHI - (PHI + 1.0)) < 1e-14
-        
+
         # 1/φ = φ - 1 (golden ratio property)
         assert abs(INV_PHI - (PHI - 1.0)) < 1e-14
 
@@ -123,30 +128,33 @@ class TestCanonicalParameterIntegrity:
     def test_canonical_constants_module_completeness(self):
         """All constants in canonical module are derived, not fitted."""
         from tnfr.constants import canonical
-        
+
         # Get all constants that look like mathematical values
-        constants = [name for name in dir(canonical) 
-                    if name.isupper() and not name.startswith('_')]
-        
+        constants = [
+            name
+            for name in dir(canonical)
+            if name.isupper() and not name.startswith("_")
+        ]
+
         # Should have the four universal constants
-        assert 'PHI' in constants
-        assert 'GAMMA' in constants  
-        assert 'PI' in constants
-        assert 'E' in constants
-        
+        assert "PHI" in constants
+        assert "GAMMA" in constants
+        assert "PI" in constants
+        assert "E" in constants
+
         # Should have substantial number of derived constants
         assert len(constants) > 100  # 497+ constants achieved
 
     def test_no_floating_point_magic_numbers(self):
         """Verify no naked floating point constants in derivations."""
         # This would catch things like threshold = 0.618 instead of INV_PHI
-        
+
         # All thresholds should be expressible in terms of φ, γ, π, e
         test_cases = [
-            (INV_PHI, 1.0/PHI),
-            (GAMMA_PHI_RATIO, GAMMA/PHI), 
-            (PHI_GAMMA_NORMALIZED, PHI/(PHI + GAMMA))
+            (INV_PHI, 1.0 / PHI),
+            (GAMMA_PHI_RATIO, GAMMA / PHI),
+            (PHI_GAMMA_NORMALIZED, PHI / (PHI + GAMMA)),
         ]
-        
+
         for actual, expected in test_cases:
             assert abs(actual - expected) < 1e-15

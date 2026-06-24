@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-import networkx as nx
-from ..types import CallbackError as CallbackError
-from _typeshed import Incomplete
 from collections.abc import Callable
 from enum import Enum
 from typing import Any, NamedTuple
+
+import networkx as nx
+from _typeshed import Incomplete
+
+from ..types import CallbackError as CallbackError
 
 __all__ = [
     "CallbackEvent",

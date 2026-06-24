@@ -11,21 +11,28 @@ from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Sequence
 from statistics import fmean
+from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 import networkx as nx
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 FACTOR_LAB_ROOT = REPO_ROOT / "factorization-lab"
-if FACTOR_LAB_ROOT.exists():  # Ensure tnfr_factorization is importable without installation
+if (
+    FACTOR_LAB_ROOT.exists()
+):  # Ensure tnfr_factorization is importable without installation
     sys.path.insert(0, str(FACTOR_LAB_ROOT))
 
-from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine  # noqa: E402
+from tnfr_factorization.spectral_paley import (  # type: ignore  # noqa: E402
+    _annotate_graph_for_fft,
+    _build_paley_graph,
+)
+
 import tnfr.dynamics.self_optimizing_engine as _engine_module  # noqa: E402
-from tnfr_factorization.spectral_paley import _annotate_graph_for_fft, _build_paley_graph  # type: ignore  # noqa: E402
+from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine  # noqa: E402
 
 if not hasattr(_engine_module.datetime, "UTC"):
+
     class _DateTimeCompat(datetime):
         UTC = timezone.utc
 
@@ -63,8 +70,12 @@ class PaleyGraphCache:
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--manifest", required=True, type=Path, help="Path to partition _manifest.json")
-    parser.add_argument("--manifest-summary", type=Path, help="Optional manifest summary path")
+    parser.add_argument(
+        "--manifest", required=True, type=Path, help="Path to partition _manifest.json"
+    )
+    parser.add_argument(
+        "--manifest-summary", type=Path, help="Optional manifest summary path"
+    )
     parser.add_argument(
         "--partition-dir",
         type=Path,
@@ -75,8 +86,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
         nargs="*",
         help="Optional list of partition IDs to process (default processes all entries)",
     )
-    parser.add_argument("--max-partitions", type=int, help="Maximum number of partitions to process")
-    parser.add_argument("--seed", type=int, help="Base random seed; partition index offsets are added")
+    parser.add_argument(
+        "--max-partitions", type=int, help="Maximum number of partitions to process"
+    )
+    parser.add_argument(
+        "--seed", type=int, help="Base random seed; partition index offsets are added"
+    )
     parser.add_argument(
         "--output-dir",
         type=Path,
@@ -94,7 +109,11 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
         default=DEFAULT_MAX_WORKERS,
         help="Maximum worker threads for partition processing",
     )
-    parser.add_argument("--apply", action="store_true", help="Apply optimization instead of dry-run mode")
+    parser.add_argument(
+        "--apply",
+        action="store_true",
+        help="Apply optimization instead of dry-run mode",
+    )
     parser.add_argument(
         "--capture-snapshots",
         action="store_true",
@@ -116,7 +135,9 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 def run(args: argparse.Namespace) -> Dict[str, Any]:
     start = time.perf_counter()
     manifest = _load_json(args.manifest)
-    manifest_summary = _load_json(args.manifest_summary) if args.manifest_summary else None
+    manifest_summary = (
+        _load_json(args.manifest_summary) if args.manifest_summary else None
+    )
     items = _collect_partition_entries(manifest, args.manifest, args.partition_dir)
 
     if args.partitions:
@@ -183,7 +204,9 @@ class PartitionProcessor:
                 results.append((index, result))
         else:
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                future_map: Dict[Future[Dict[str, Any]], tuple[int, PartitionWorkItem]] = {}
+                future_map: Dict[
+                    Future[Dict[str, Any]], tuple[int, PartitionWorkItem]
+                ] = {}
                 for index, item in enumerate(items):
                     future = executor.submit(self._process_single, index, item)
                     future_map[future] = (index, item)
@@ -191,7 +214,9 @@ class PartitionProcessor:
                     index, _ = future_map[future]
                     try:
                         result = future.result()
-                    except Exception as exc:  # pragma: no cover - logged via _process_single
+                    except (
+                        Exception
+                    ) as exc:  # pragma: no cover - logged via _process_single
                         result = {
                             "partition_id": future_map[future][1].partition_id,
                             "error": str(exc),
@@ -234,7 +259,9 @@ class PartitionProcessor:
             )
             for key, value in telemetry_deltas.items():
                 telemetry.setdefault(key, value)
-            engine_payload = {k: v for k, v in result.items() if k not in {"telemetry_snapshots"}}
+            engine_payload = {
+                k: v for k, v in result.items() if k not in {"telemetry_snapshots"}
+            }
             summary = {
                 "partition_id": item.partition_id,
                 "path": str(item.path),
@@ -309,7 +336,9 @@ def _collect_partition_entries(
     if not entries:
         raise ValueError("Manifest JSON is missing 'entries'")
     manifest_dir = manifest_path.parent
-    partition_dir = override_partition_dir or manifest_dir / manifest.get("partition_directory", "")
+    partition_dir = override_partition_dir or manifest_dir / manifest.get(
+        "partition_directory", ""
+    )
     resolved_items: List[PartitionWorkItem] = []
     for entry in entries:
         partition_id = entry.get("partition_id") or entry.get("id")
@@ -328,7 +357,11 @@ def _collect_partition_entries(
                 f"Unable to resolve partition file for {partition_id}; tried: "
                 + ", ".join(str(path) for path in candidate_paths)
             )
-        resolved_items.append(PartitionWorkItem(partition_id=partition_id, path=partition_path, manifest_entry=entry))
+        resolved_items.append(
+            PartitionWorkItem(
+                partition_id=partition_id, path=partition_path, manifest_entry=entry
+            )
+        )
     return resolved_items
 
 
@@ -499,7 +532,11 @@ def _aggregate_telemetry(results: Sequence[Dict[str, Any]]) -> Dict[str, float]:
     fields = ["phi_s", "phase_gradient", "phase_curvature", "coherence_length"]
     aggregates: Dict[str, float] = {}
     for field in fields:
-        values = [res.get("telemetry", {}).get(field) for res in results if res.get("telemetry", {}).get(field) is not None]
+        values = [
+            res.get("telemetry", {}).get(field)
+            for res in results
+            if res.get("telemetry", {}).get(field) is not None
+        ]
         if values:
             aggregates[f"{field}_mean"] = sum(values) / len(values)
             aggregates[f"{field}_min"] = min(values)
@@ -519,7 +556,9 @@ def _build_summary(
     failure_count = len(results) - success_count
     summary = {
         "manifest": str(args.manifest),
-        "manifest_summary": str(args.manifest_summary) if args.manifest_summary else None,
+        "manifest_summary": (
+            str(args.manifest_summary) if args.manifest_summary else None
+        ),
         "operation_type": args.operation_type or DEFAULT_OPERATION,
         "dry_run": not bool(args.apply),
         "apply": bool(args.apply),

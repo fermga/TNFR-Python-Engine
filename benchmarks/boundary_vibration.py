@@ -49,22 +49,26 @@ Run:
 
 Status: RESEARCH (boundary-vibration falsifier; Camino 10 of the unification map).
 """
+
 from __future__ import annotations
 
 import math
 import os
 import sys
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Robust fallback so the harness also runs without PYTHONPATH=src preset.
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src")
+)
 
 # Optional: real Riemann zeta, only to confirm the target ordinates ARE zeros.
 try:  # pragma: no cover - exercised only when mpmath is installed
     import mpmath  # noqa: E402
+
     _HAVE_MPMATH = True
 except Exception:  # pragma: no cover
     _HAVE_MPMATH = False
@@ -73,9 +77,10 @@ except Exception:  # pragma: no cover
 try:  # pragma: no cover
     from tnfr.riemann.von_mangoldt import (  # noqa: E402
         build_prime_ladder_spectrum,
-        tnfr_log_zeta_derivative,
         classical_log_zeta_derivative,
+        tnfr_log_zeta_derivative,
     )
+
     _HAVE_P12 = True
 except Exception:  # pragma: no cover
     _HAVE_P12 = False
@@ -85,6 +90,7 @@ try:  # pragma: no cover
     from tnfr.riemann.prime_ladder_hamiltonian import (  # noqa: E402
         build_prime_ladder_hamiltonian,
     )
+
     _HAVE_P14 = True
 except Exception:  # pragma: no cover
     _HAVE_P14 = False
@@ -92,11 +98,12 @@ except Exception:  # pragma: no cover
 # Optional: P27 Hilbert-Polya scaffold (gamma_n imported, NOT derived).
 try:  # pragma: no cover
     from tnfr.riemann.hilbert_polya import (  # noqa: E402
-        fetch_zero_imaginary_parts,
         build_hp_operator,
-        verify_hp_self_adjoint,
+        fetch_zero_imaginary_parts,
         structural_gap_p14_vs_hp,
+        verify_hp_self_adjoint,
     )
+
     _HAVE_P27 = True
 except Exception:  # pragma: no cover
     _HAVE_P27 = False
@@ -104,15 +111,16 @@ except Exception:  # pragma: no cover
 # Optional: the canonical adelic engine (nu_f = log p nodal-equation carrier).
 try:  # pragma: no cover
     from tnfr.dynamics.adelic import AdelicDynamics  # noqa: E402
+
     _HAVE_ADELIC = True
 except Exception:  # pragma: no cover
     _HAVE_ADELIC = False
 
 TOL = 1e-9
-_SELF_ADJOINT_TOL = 1e-9            # Frobenius asymmetry / imaginary tolerance
-_PARITY_TOL = 1e-8                  # |R v -/+ v| tolerance for definite parity
-_DRIFT_MARGIN = 3.0                 # barrier_drift must exceed stable_drift by this
-_CLASSICAL_REL_TOL = 5e-2          # TNFR Z vs classical -zeta'/zeta agreement
+_SELF_ADJOINT_TOL = 1e-9  # Frobenius asymmetry / imaginary tolerance
+_PARITY_TOL = 1e-8  # |R v -/+ v| tolerance for definite parity
+_DRIFT_MARGIN = 3.0  # barrier_drift must exceed stable_drift by this
+_CLASSICAL_REL_TOL = 5e-2  # TNFR Z vs classical -zeta'/zeta agreement
 
 # The four tetrad-associated constants (audit 2026: only pi is a genuine scale).
 PHI = (1.0 + np.sqrt(5.0)) / 2.0
@@ -122,10 +130,20 @@ E = np.e
 
 # First non-trivial Riemann zero ordinates -- the TARGET the vibration reveals,
 # imported as Ground Truth exactly as src/tnfr/dynamics/adelic.py does.
-_KNOWN_ORDINATES = np.array([
-    14.134725, 21.022040, 25.010858, 30.424876, 32.935062,
-    37.586178, 40.918719, 43.327073, 48.005151, 49.773832,
-])
+_KNOWN_ORDINATES = np.array(
+    [
+        14.134725,
+        21.022040,
+        25.010858,
+        30.424876,
+        32.935062,
+        37.586178,
+        40.918719,
+        43.327073,
+        48.005151,
+        49.773832,
+    ]
+)
 
 
 def _local_geometric_trace(primes: np.ndarray, t: float) -> float:
@@ -158,8 +176,8 @@ def test_convergence_barrier() -> dict:
     spec_small = build_prime_ladder_spectrum(n_primes=15, max_power=4)
     spec_big = build_prime_ladder_spectrum(n_primes=40, max_power=8)
 
-    s_stable = 2.0          # Re(s) > 1: inside the half-plane of convergence
-    s_barrier = 0.5         # Re(s) = 1/2: where the zeros live (divergent series)
+    s_stable = 2.0  # Re(s) > 1: inside the half-plane of convergence
+    s_barrier = 0.5  # Re(s) = 1/2: where the zeros live (divergent series)
 
     z_small_stable = float(np.real(tnfr_log_zeta_derivative(spec_small, s_stable)))
     z_big_stable = float(np.real(tnfr_log_zeta_derivative(spec_big, s_stable)))
@@ -172,17 +190,23 @@ def test_convergence_barrier() -> dict:
     classical = float(np.real(classical_log_zeta_derivative(s_stable, 400)))
     rel_err = abs(z_big_stable - classical) / max(abs(classical), TOL)
 
-    print(f"  Re(s)=2.0 : Z_15x4={z_small_stable:.6f}  Z_40x8={z_big_stable:.6f}"
-          f"  drift={stable_drift:.3e}  (classical -zeta'/zeta={classical:.6f},"
-          f" rel_err={rel_err:.2e})")
-    print(f"  Re(s)=0.5 : Z_15x4={z_small_barrier:.4f}  Z_40x8={z_big_barrier:.4f}"
-          f"  drift={barrier_drift:.3e}")
+    print(
+        f"  Re(s)=2.0 : Z_15x4={z_small_stable:.6f}  Z_40x8={z_big_stable:.6f}"
+        f"  drift={stable_drift:.3e}  (classical -zeta'/zeta={classical:.6f},"
+        f" rel_err={rel_err:.2e})"
+    )
+    print(
+        f"  Re(s)=0.5 : Z_15x4={z_small_barrier:.4f}  Z_40x8={z_big_barrier:.4f}"
+        f"  drift={barrier_drift:.3e}"
+    )
 
     converges_above = stable_drift < 0.5 and rel_err < _CLASSICAL_REL_TOL
     diverges_at_half = barrier_drift > _DRIFT_MARGIN * max(stable_drift, TOL)
     passed = bool(converges_above and diverges_at_half)
-    detail = ("stabilises for Re>1 (matches classical) and fails to stabilise "
-              "at Re=1/2 -> G4 lives in the continuation across Re=1")
+    detail = (
+        "stabilises for Re>1 (matches classical) and fails to stabilise "
+        "at Re=1/2 -> G4 lives in the continuation across Re=1"
+    )
     print(f"  VERDICT: {'PASS' if passed else 'FAIL'} -- {detail}")
     return {"name": "convergence_barrier", "status": "PASS" if passed else "FAIL"}
 
@@ -208,10 +232,14 @@ def test_p14_self_adjoint_origin() -> dict:
     n = min(len(spec), len(ref))
     match = float(np.max(np.abs(spec[:n] - ref[:n]))) if n else float("nan")
 
-    print(f"  dim={len(eigs)}  max|Im(eig)|={max_imag:.3e}"
-          f"  max|spec - {{k log p}}|={match:.3e}")
-    print(f"  smallest eigenvalues: {np.round(spec[:4], 6).tolist()}"
-          f"  (log 2 = {math.log(2):.6f})")
+    print(
+        f"  dim={len(eigs)}  max|Im(eig)|={max_imag:.3e}"
+        f"  max|spec - {{k log p}}|={match:.3e}"
+    )
+    print(
+        f"  smallest eigenvalues: {np.round(spec[:4], 6).tolist()}"
+        f"  (log 2 = {math.log(2):.6f})"
+    )
 
     self_adjoint = max_imag < _SELF_ADJOINT_TOL
     reproduces = match < 1e-9
@@ -249,22 +277,30 @@ def test_adelic_boundary_vibration() -> dict:
         # Local stand-in for Delta(NFR) = -grad V against the imported target.
         off_idx = int(np.argmin(np.abs(10.0 - _KNOWN_ORDINATES)))
         grad_off = abs(10.0 - float(_KNOWN_ORDINATES[off_idx]))
-        grad_on = 0.0   # distance from gamma_1 to its nearest ordinate is itself
+        grad_on = 0.0  # distance from gamma_1 to its nearest ordinate is itself
         target = _KNOWN_ORDINATES
         src = "local nu_f=log p carrier (adelic fallback)"
 
     print(f"  carrier source: {src}")
-    print(f"  Tr_geo(t) at t={sample_t}: {[round(x, 4) for x in trace]}"
-          f"  (built from nu_f=log p only)")
-    print(f"  |Delta(NFR)| off-target (t=10) = {grad_off:.4f}"
-          f"   on-target (t=gamma_1) = {grad_on:.3e}")
-    print(f"  target ordinates (Ground Truth, not derived): {np.round(target[:5], 4).tolist()}")
+    print(
+        f"  Tr_geo(t) at t={sample_t}: {[round(x, 4) for x in trace]}"
+        f"  (built from nu_f=log p only)"
+    )
+    print(
+        f"  |Delta(NFR)| off-target (t=10) = {grad_off:.4f}"
+        f"   on-target (t=gamma_1) = {grad_on:.3e}"
+    )
+    print(
+        f"  target ordinates (Ground Truth, not derived): {np.round(target[:5], 4).tolist()}"
+    )
 
     carrier_derived = all(math.isfinite(x) for x in trace)
     resonance_at_target = grad_on < TOL < grad_off
     passed = bool(carrier_derived and resonance_at_target)
-    detail = ("carrier is pure nu_f=log p; nodal pressure vanishes at the "
-              "imported target -> zeros are the resonance spectrum, not derived")
+    detail = (
+        "carrier is pure nu_f=log p; nodal pressure vanishes at the "
+        "imported target -> zeros are the resonance spectrum, not derived"
+    )
     print(f"  VERDICT: {'PASS' if passed else 'FAIL'} -- {detail}")
     return {"name": "adelic_vibration", "status": "PASS" if passed else "FAIL"}
 
@@ -284,13 +320,13 @@ def test_self_adjoint_reflection() -> dict:
     n = 8
     G = nx.path_graph(n)
     L = nx.laplacian_matrix(G).toarray().astype(float)
-    R = np.fliplr(np.eye(n))                       # the Z_2 mirror involution
+    R = np.fliplr(np.eye(n))  # the Z_2 mirror involution
 
     involution = float(np.max(np.abs(R @ R - np.eye(n))))
     symmetric = float(np.max(np.abs(R - R.T)))
     commutator = float(np.max(np.abs(L @ R - R @ L)))
 
-    eigvals, eigvecs = np.linalg.eigh(L)           # eigh => guaranteed real
+    eigvals, eigvecs = np.linalg.eigh(L)  # eigh => guaranteed real
     max_imag = float(np.max(np.abs(np.imag(eigvals))))
 
     parities = []
@@ -306,17 +342,26 @@ def test_self_adjoint_reflection() -> dict:
     definite = all(p != 0 for p in parities)
     n_fixed = sum(1 for p in parities if p == +1)
 
-    print(f"  R^2=I residual={involution:.2e}  R symmetric residual={symmetric:.2e}"
-          f"  [L,R] residual={commutator:.2e}")
-    print(f"  eigenvalues real (max|Im|={max_imag:.2e}); parity split ="
-          f" {parities}  (fixed-axis dim = {n_fixed})")
+    print(
+        f"  R^2=I residual={involution:.2e}  R symmetric residual={symmetric:.2e}"
+        f"  [L,R] residual={commutator:.2e}"
+    )
+    print(
+        f"  eigenvalues real (max|Im|={max_imag:.2e}); parity split ="
+        f" {parities}  (fixed-axis dim = {n_fixed})"
+    )
 
     passed = bool(
-        involution < TOL and symmetric < TOL and commutator < TOL
-        and max_imag < TOL and definite
+        involution < TOL
+        and symmetric < TOL
+        and commutator < TOL
+        and max_imag < TOL
+        and definite
     )
-    detail = ("self-adjoint => real; commuting with the Z_2 mirror => spectrum "
-              "sits on definite-parity sectors (HP intuition TRUE as algebra)")
+    detail = (
+        "self-adjoint => real; commuting with the Z_2 mirror => spectrum "
+        "sits on definite-parity sectors (HP intuition TRUE as algebra)"
+    )
     print(f"  VERDICT: {'PASS' if passed else 'FAIL'} -- {detail}")
     return {"name": "self_adjoint_reflection", "status": "PASS" if passed else "FAIL"}
 
@@ -333,8 +378,10 @@ def test_honest_gap() -> dict:
 
     if _HAVE_MPMATH:
         z_at_zero = abs(complex(mpmath.zeta(mpmath.mpc(0.5, _KNOWN_ORDINATES[0]))))
-        print(f"  mpmath sanity: |zeta(1/2 + i*{_KNOWN_ORDINATES[0]})| = {z_at_zero:.2e}"
-              f"  (target ordinates are genuine zeros, not invented)")
+        print(
+            f"  mpmath sanity: |zeta(1/2 + i*{_KNOWN_ORDINATES[0]})| = {z_at_zero:.2e}"
+            f"  (target ordinates are genuine zeros, not invented)"
+        )
 
     if _HAVE_P14 and _HAVE_P27:
         bundle = build_prime_ladder_hamiltonian(n_primes=50, max_power=8, coupling=0.0)
@@ -342,12 +389,18 @@ def test_honest_gap() -> dict:
         t_hp = build_hp_operator(gammas)
         sa = verify_hp_self_adjoint(t_hp)
         gap = structural_gap_p14_vs_hp(bundle, gammas)
-        print(f"  T_HP = diag(gamma_n) self-adjoint={sa['self_adjoint']}"
-              f"  (gamma_n are INPUT from mpmath, NOT derived)")
-        print(f"  compared {gap['n_compared']} levels: "
-              f"P14_max={gap['p14_max']:.3f}  gamma_max={gap['hp_max']:.3f}")
-        print(f"  Wasserstein_1(P14, T_HP) = {gap['wasserstein_1']:.4f}"
-              f"  asymptotic growth ratio = {gap['asymptotic_growth_ratio']:.2f}")
+        print(
+            f"  T_HP = diag(gamma_n) self-adjoint={sa['self_adjoint']}"
+            f"  (gamma_n are INPUT from mpmath, NOT derived)"
+        )
+        print(
+            f"  compared {gap['n_compared']} levels: "
+            f"P14_max={gap['p14_max']:.3f}  gamma_max={gap['hp_max']:.3f}"
+        )
+        print(
+            f"  Wasserstein_1(P14, T_HP) = {gap['wasserstein_1']:.4f}"
+            f"  asymptotic growth ratio = {gap['asymptotic_growth_ratio']:.2f}"
+        )
         exhibited = gap["asymptotic_growth_ratio"] > 2.0
     else:
         # Fallback: compare {k log p} to the imported ordinates directly.
@@ -355,16 +408,23 @@ def test_honest_gap() -> dict:
         ladder = np.sort([k * math.log(p) for p in primes for k in range(1, 9)])
         n = min(len(ladder), len(_KNOWN_ORDINATES))
         ratio = float(_KNOWN_ORDINATES[n - 1] / ladder[n - 1])
-        print(f"  P14_max={ladder[n - 1]:.3f}  gamma_max={_KNOWN_ORDINATES[n - 1]:.3f}"
-              f"  growth ratio = {ratio:.2f}")
+        print(
+            f"  P14_max={ladder[n - 1]:.3f}  gamma_max={_KNOWN_ORDINATES[n - 1]:.3f}"
+            f"  growth ratio = {ratio:.2f}"
+        )
         exhibited = ratio > 2.0
 
     print("  scope: P27 'does not prove RH'; P13 -- the canonical analytic")
     print("         continuation across Re=1 is the missing piece (= gap G4).")
-    detail = ("growth mismatch (log n vs 2 pi n / log n) is exhibited -> G4 is "
-              "OPEN; the map {k log p} -> {gamma_n} is not a smooth structural map")
-    print(f"  VERDICT: G4 EXHIBITED (OPEN) -- {detail}"
-          if exhibited else f"  VERDICT: inconclusive -- {detail}")
+    detail = (
+        "growth mismatch (log n vs 2 pi n / log n) is exhibited -> G4 is "
+        "OPEN; the map {k log p} -> {gamma_n} is not a smooth structural map"
+    )
+    print(
+        f"  VERDICT: G4 EXHIBITED (OPEN) -- {detail}"
+        if exhibited
+        else f"  VERDICT: inconclusive -- {detail}"
+    )
     return {"name": "honest_gap", "status": "DIAGNOSTIC"}
 
 

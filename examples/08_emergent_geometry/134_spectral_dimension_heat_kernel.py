@@ -78,20 +78,21 @@ References
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-import numpy as np
 import networkx as nx
+import numpy as np
 
 try:
     import scipy.linalg as sla
+
     _HAVE_SCIPY = True
 except Exception:  # pragma: no cover
     _HAVE_SCIPY = False
 
 from tnfr.physics.structural_diffusion import (
-    structural_eigenmodes,
     structural_diffusion_operator,
+    structural_eigenmodes,
 )
 
 
@@ -198,8 +199,7 @@ def experiment_3_emergent_dimension():
         ("ring 1D", nx.cycle_graph(400), "1D"),
         ("2D torus", nx.grid_2d_graph(28, 28, periodic=True), "2D"),
         ("small-world WS", Gws, "ring + shortcuts"),
-        ("scale-free BA", nx.barabasi_albert_graph(400, 2, seed=2),
-         "hub-dominated"),
+        ("scale-free BA", nx.barabasi_albert_graph(400, 2, seed=2), "hub-dominated"),
         ("complete K100", nx.complete_graph(100), "mean-field"),
     ]
     for label, G, reading in cases:
@@ -207,8 +207,7 @@ def experiment_3_emergent_dimension():
             G = G.subgraph(max(nx.connected_components(G), key=len)).copy()
         ds = spectral_dimension(G)
         ds_str = f"{ds:.3f}" if ds is not None else "none"
-        print(f"  {label:>18} {G.number_of_nodes():>6} {ds_str:>10} "
-              f"{reading:>20}")
+        print(f"  {label:>18} {G.number_of_nodes():>6} {ds_str:>10} " f"{reading:>20}")
     print()
     print("  Shortcuts raise d_s (Watts-Strogatz rewiring of a 1D ring, k=6):")
     print(f"    {'p_rewire':>9} {'d_s':>8}")

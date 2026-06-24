@@ -32,7 +32,6 @@ from tnfr.validation.structural_interface import (
     score_structural_interfaces,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fixtures / helpers
 # ---------------------------------------------------------------------------
@@ -56,15 +55,12 @@ def _assert_prescription_grammar_valid(G, node, sequence) -> None:
     reads live node state (EPI defaults to initialized, history empty).
     """
     function_names = [glyph_function_name(code) for code in sequence]
-    whole = validate_sequence(
-        function_names, context={"initial_epi_nonzero": True}
-    )
+    whole = validate_sequence(function_names, context={"initial_epi_nonzero": True})
     assert whole.passed, (sequence, getattr(whole, "message", ""))
 
     steps = validate_sequence_incremental(G, node, list(sequence))
     assert all(step.allowed for step in steps), [
-        (step.candidate, [v.message for v in step.violations])
-        for step in steps
+        (step.candidate, [v.message for v in step.violations]) for step in steps
     ]
 
 
@@ -185,9 +181,7 @@ def test_score_structural_interfaces_problem_object() -> None:
         _two_cluster_records(), ["f1", "f2"], k=3, node_attributes=["state"]
     )
     encode_phase_from_binary_state(G, "state", positive_value="high")
-    problem = StructuralInterfaceProblem(
-        graph=G, state_key="state", domain="unit-test"
-    )
+    problem = StructuralInterfaceProblem(graph=G, state_key="state", domain="unit-test")
     scores = score_structural_interfaces(problem)
     assert len(scores) == G.number_of_nodes()
 
@@ -289,7 +283,11 @@ def _build_result_payload(G) -> dict[str, object]:
     )
     top = sorted(scores, key=lambda s: s.tnfr_stress, reverse=True)[:5]
     return {
-        "dataset": {"name": "unit-test", "sector": "generic", "samples": G.number_of_nodes()},
+        "dataset": {
+            "name": "unit-test",
+            "sector": "generic",
+            "samples": G.number_of_nodes(),
+        },
         "graph": {
             "construction": "k-NN graph",
             "nodes": G.number_of_nodes(),

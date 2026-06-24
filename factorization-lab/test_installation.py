@@ -31,7 +31,8 @@ def main() -> None:
     factorizer = SpectralPaleyFactorizer()
     result = factorizer.analyze(target)
     print(
-        "API check: n=%d modulus=%d laplacian_gap=%.6f ΔNFR=%.3e" % (
+        "API check: n=%d modulus=%d laplacian_gap=%.6f ΔNFR=%.3e"
+        % (
             result.n,
             result.modulus,
             result.laplacian_gap,
@@ -42,7 +43,8 @@ def main() -> None:
     payload = _run_cli([str(target)])
     first = payload[0]
     print(
-        "CLI check: n=%d node_count=%s coherence_score=%.4f" % (
+        "CLI check: n=%d node_count=%s coherence_score=%.4f"
+        % (
             first["n"],
             first["node_count"],
             first["coherence_score"],

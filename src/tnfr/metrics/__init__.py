@@ -14,16 +14,9 @@ from .coherence import (
     local_phase_sync_weighted,
     register_coherence_callbacks,
 )
-from .common import (
-    compute_coherence,
-    is_structural_equilibrium,
-    structural_coherence,
-)
+from .common import compute_coherence, is_structural_equilibrium, structural_coherence
 from .core import register_metrics_callbacks
-from .diagnosis import (
-    dissonance_events,
-    register_diagnosis_callbacks,
-)
+from .diagnosis import dissonance_events, register_diagnosis_callbacks
 from .emergence import (
     compute_bifurcation_rate,
     compute_emergence_index,
@@ -50,14 +43,8 @@ from .reporting import (
     glyphogram_series,
     latency_series,
 )
-from .telemetry import (
-    TelemetryEmitter,
-    TelemetryEvent,
-)
-from .tetrad import (
-    collect_tetrad_snapshot,
-    get_tetrad_sample_interval,
-)
+from .telemetry import TelemetryEmitter, TelemetryEvent
+from .tetrad import collect_tetrad_snapshot, get_tetrad_sample_interval
 
 __all__ = (
     "register_metrics_callbacks",

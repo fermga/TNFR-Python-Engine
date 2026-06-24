@@ -18,15 +18,17 @@ Examples
 from __future__ import annotations
 
 from typing import Any
+
 from ..compat.dataclass import dataclass
-from ..operators.health_analyzer import SequenceHealthMetrics, SequenceHealthAnalyzer
 from ..operators.grammar import validate_sequence_with_health
+from ..operators.health_analyzer import SequenceHealthAnalyzer, SequenceHealthMetrics
 
 __all__ = [
     "CookbookRecipe",
     "RecipeVariation",
     "TNFRCookbook",
 ]
+
 
 @dataclass
 class RecipeVariation:
@@ -51,6 +53,7 @@ class RecipeVariation:
     sequence: list[str]
     health_impact: float
     context: str
+
 
 @dataclass
 class CookbookRecipe:
@@ -91,6 +94,7 @@ class CookbookRecipe:
     variations: list[RecipeVariation]
     pattern_type: str
 
+
 class TNFRCookbook:
     """Library of validated TNFR operator sequence recipes.
 
@@ -126,23 +130,27 @@ class TNFRCookbook:
         """Load all recipes from domain pattern modules."""
         # Import domain patterns
         try:
-            from examples.domain_applications import therapeutic_patterns
-            from examples.domain_applications import educational_patterns
-            from examples.domain_applications import organizational_patterns
-            from examples.domain_applications import creative_patterns
+            from examples.domain_applications import (
+                creative_patterns,
+                educational_patterns,
+                organizational_patterns,
+                therapeutic_patterns,
+            )
         except ImportError:
             # Fallback for when examples are not in path
             import sys
             from pathlib import Path
 
             examples_path = (
-                Path(__file__).parent.parent.parent.parent / "examples" / "domain_applications"
+                Path(__file__).parent.parent.parent.parent
+                / "examples"
+                / "domain_applications"
             )
             sys.path.insert(0, str(examples_path))
-            import therapeutic_patterns
+            import creative_patterns
             import educational_patterns
             import organizational_patterns
-            import creative_patterns
+            import therapeutic_patterns
 
         # Load therapeutic recipes
         self._load_domain_recipes(
@@ -409,7 +417,9 @@ class TNFRCookbook:
             ],
         )
 
-    def _load_domain_recipes(self, domain: str, module: Any, recipe_specs: list[tuple]) -> None:
+    def _load_domain_recipes(
+        self, domain: str, module: Any, recipe_specs: list[tuple]
+    ) -> None:
         """Load recipes for a specific domain.
 
         Parameters
@@ -484,7 +494,9 @@ class TNFRCookbook:
         Crisis Intervention
         """
         if domain not in self._recipes:
-            raise KeyError(f"Domain '{domain}' not found. Available: {list(self._recipes.keys())}")
+            raise KeyError(
+                f"Domain '{domain}' not found. Available: {list(self._recipes.keys())}"
+            )
 
         if use_case not in self._recipes[domain]:
             raise KeyError(
@@ -594,7 +606,9 @@ class TNFRCookbook:
                     continue
 
         # Sort by relevance then health
-        results.sort(key=lambda x: (x[1], x[0].health_metrics.overall_health), reverse=True)
+        results.sort(
+            key=lambda x: (x[1], x[0].health_metrics.overall_health), reverse=True
+        )
 
         return [r[0] for r in results]
 

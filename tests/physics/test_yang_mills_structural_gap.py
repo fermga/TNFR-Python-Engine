@@ -67,10 +67,7 @@ class TestStructuralGaugeGapOperator:
         graph = build_structural_gauge_graph(10, topology="cycle", seed=42)
         op = build_structural_gauge_gap_operator(graph)
         assert op.metadata["operator"] == "H_YM_TNFR = L_A + V_F + V_U6"
-        assert (
-            op.metadata["scope"]
-            == "finite_graph_y1_diagnostic_not_clay_proof"
-        )
+        assert op.metadata["scope"] == "finite_graph_y1_diagnostic_not_clay_proof"
         assert op.metadata["n_nodes"] == graph.number_of_nodes()
         assert op.metadata["yang_mills_action"] >= 0.0
         assert op.metadata["gauge_coupling_constant"] >= 0.0
@@ -132,14 +129,10 @@ class TestStructuralGaugeGapDiagnostic:
     def test_diagnostic_does_not_mutate_epi(self):
         graph = build_structural_gauge_graph(10, topology="complete", seed=91)
         epi_before = {node: graph.nodes[node]["EPI"] for node in graph.nodes()}
-        phase_before = {
-            node: graph.nodes[node]["phase"] for node in graph.nodes()
-        }
+        phase_before = {node: graph.nodes[node]["phase"] for node in graph.nodes()}
         _ = compute_structural_gauge_gap(graph, gauge_seed=91)
         epi_after = {node: graph.nodes[node]["EPI"] for node in graph.nodes()}
-        phase_after = {
-            node: graph.nodes[node]["phase"] for node in graph.nodes()
-        }
+        phase_after = {node: graph.nodes[node]["phase"] for node in graph.nodes()}
         assert epi_after == epi_before
         assert phase_after == phase_before
 

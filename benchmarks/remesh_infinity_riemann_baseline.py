@@ -75,11 +75,10 @@ from typing import Any
 
 import numpy as np
 
-from tnfr.constants.aliases import ALIAS_EPI
 from tnfr.alias import get_attr, set_attr
+from tnfr.constants.aliases import ALIAS_EPI
 from tnfr.operators.remesh import apply_network_remesh
 from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph
-
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -96,6 +95,7 @@ TAU_GLOBAL_SWEEP: tuple[int, ...] = (4, 8, 16, 32, 64, 128, 256, 512)
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def synthetic_epi_snapshot(G, t: float) -> dict:
     """Stationary oscillatory EPI field at time ``t``.
@@ -163,6 +163,7 @@ def vec(d: dict, nodes: list) -> np.ndarray:
 # Main protocol
 # ---------------------------------------------------------------------------
 
+
 def run_track_A_single_application(
     G,
     nodes,
@@ -191,14 +192,16 @@ def run_track_A_single_application(
         dist_to_avg = float(np.linalg.norm(post_vec - avg_vec))
         relative_to_avg = dist_to_avg / (baseline_to_avg + 1e-12)
         delta = post_vec - baseline_vec
-        results.append({
-            "tau_g": tau_g,
-            "dist_to_time_average": dist_to_avg,
-            "relative_to_baseline_avg_distance": relative_to_avg,
-            "delta_l2": float(np.linalg.norm(delta)),
-            "delta_max": float(np.max(np.abs(delta))),
-            "delta_var": float(np.var(delta)),
-        })
+        results.append(
+            {
+                "tau_g": tau_g,
+                "dist_to_time_average": dist_to_avg,
+                "relative_to_baseline_avg_distance": relative_to_avg,
+                "delta_l2": float(np.linalg.norm(delta)),
+                "delta_max": float(np.max(np.abs(delta))),
+                "delta_var": float(np.var(delta)),
+            }
+        )
     return results
 
 
@@ -230,8 +233,9 @@ def run_track_B_iterated(
     G.graph["REMESH_TAU_GLOBAL"] = tau_g_fixed
     G.graph["REMESH_ALPHA"] = ALPHA
 
-    hist_backup = deque(copy.deepcopy(list(G.graph["_epi_hist"])),
-                         maxlen=G.graph["_epi_hist"].maxlen)
+    hist_backup = deque(
+        copy.deepcopy(list(G.graph["_epi_hist"])), maxlen=G.graph["_epi_hist"].maxlen
+    )
     restore_epi(G, baseline_epi)
 
     iter_log: list[dict[str, Any]] = []
@@ -248,13 +252,15 @@ def run_track_B_iterated(
         step_delta = float(np.linalg.norm(post_vec - prev_vec))
         dist_to_avg = float(np.linalg.norm(post_vec - avg_vec))
         relative_to_avg = dist_to_avg / (baseline_to_avg + 1e-12)
-        iter_log.append({
-            "n_iter": n_iter,
-            "step_delta_l2": step_delta,
-            "dist_to_time_average": dist_to_avg,
-            "relative_to_baseline_avg_distance": relative_to_avg,
-            "norm": float(np.linalg.norm(post_vec)),
-        })
+        iter_log.append(
+            {
+                "n_iter": n_iter,
+                "step_delta_l2": step_delta,
+                "dist_to_time_average": dist_to_avg,
+                "relative_to_baseline_avg_distance": relative_to_avg,
+                "norm": float(np.linalg.norm(post_vec)),
+            }
+        )
         prev_vec = post_vec
 
     # Restore history & EPI so subsequent tracks see clean state.
@@ -292,8 +298,13 @@ def run() -> dict[str, Any]:
     # Track B: iterated REMESH at fixed τ_g (canonical Banach iteration)
     # -----------------------------------------------------------------
     track_B = run_track_B_iterated(
-        G, nodes, baseline_epi, avg_vec, baseline_to_avg,
-        tau_g_fixed=16, n_iter_max=512,
+        G,
+        nodes,
+        baseline_epi,
+        avg_vec,
+        baseline_to_avg,
+        tau_g_fixed=16,
+        n_iter_max=512,
     )
 
     # -----------------------------------------------------------------
@@ -305,8 +316,10 @@ def run() -> dict[str, Any]:
     # power spectrum of the late state (ordered by νf = k·log(p))
     # should show non-trivial peaks beyond the DC component.
     import copy
-    hist_backup = deque(copy.deepcopy(list(G.graph["_epi_hist"])),
-                         maxlen=G.graph["_epi_hist"].maxlen)
+
+    hist_backup = deque(
+        copy.deepcopy(list(G.graph["_epi_hist"])), maxlen=G.graph["_epi_hist"].maxlen
+    )
     G.graph["REMESH_TAU_GLOBAL"] = 16
     restore_epi(G, baseline_epi)
     for _ in range(256):
@@ -349,7 +362,9 @@ def run() -> dict[str, Any]:
     # Falsification check (F1) — Track A
     # ---------------------------------------------------------------
     rel_seq = [r["relative_to_baseline_avg_distance"] for r in results]
-    monotone_decreasing = all(rel_seq[i] >= rel_seq[i + 1] for i in range(len(rel_seq) - 1))
+    monotone_decreasing = all(
+        rel_seq[i] >= rel_seq[i + 1] for i in range(len(rel_seq) - 1)
+    )
     final_rel = rel_seq[-1]
     F1_triggered = monotone_decreasing and final_rel < 0.1
 
@@ -365,7 +380,8 @@ def run() -> dict[str, Any]:
     initial_step_delta = track_B[0]["step_delta_l2"]
     step_decay_ratio = (
         final_step_delta / initial_step_delta
-        if initial_step_delta > 1e-12 else float("nan")
+        if initial_step_delta > 1e-12
+        else float("nan")
     )
     F2_triggered = final_step_delta < 1e-6 or step_decay_ratio < 0.01
     track_B_final_rel = track_B[-1]["relative_to_baseline_avg_distance"]
@@ -408,11 +424,10 @@ def run() -> dict[str, Any]:
             "F2_triggered": F2_triggered,
             "F2_track_B_final_rel_to_avg": track_B_final_rel,
             "F2_interpretation": (
-                "Iterated REMESH has well-defined fixed point — "
-                "examine its content"
+                "Iterated REMESH has well-defined fixed point — " "examine its content"
                 if F2_triggered
                 else "Iterated REMESH does NOT converge to fixed point "
-                     "within tested horizon"
+                "within tested horizon"
             ),
         },
     }
@@ -424,64 +439,94 @@ def print_table(summary: dict[str, Any]) -> None:
     print("R∞-1a — REMESH global asymptotic baseline (Riemann side)")
     print("=" * 78)
     cfg = summary["config"]
-    print(f"Prime-ladder: n_primes={cfg['n_primes']}, max_power={cfg['max_power']}, "
-          f"n_nodes={cfg['n_nodes']}")
+    print(
+        f"Prime-ladder: n_primes={cfg['n_primes']}, max_power={cfg['max_power']}, "
+        f"n_nodes={cfg['n_nodes']}"
+    )
     print(f"α = {cfg['alpha']}, τ_l = {cfg['tau_local']}, dt = {cfg['dt']}")
-    print(f"Baseline-to-time-average distance: "
-          f"{summary['baseline_to_time_average_distance']:.6e}")
+    print(
+        f"Baseline-to-time-average distance: "
+        f"{summary['baseline_to_time_average_distance']:.6e}"
+    )
     print()
     print("--- Track A: single application, τ_g sweep ---")
-    print(f"{'τ_g':>6} {'dist→avg':>14} {'rel→avg':>10} "
-          f"{'δ_L2':>12} {'δ_max':>12} {'δ_var':>12}")
+    print(
+        f"{'τ_g':>6} {'dist→avg':>14} {'rel→avg':>10} "
+        f"{'δ_L2':>12} {'δ_max':>12} {'δ_var':>12}"
+    )
     print("-" * 78)
     for row in summary["track_A_single_application"]:
-        print(f"{row['tau_g']:>6} "
-              f"{row['dist_to_time_average']:>14.6e} "
-              f"{row['relative_to_baseline_avg_distance']:>10.4f} "
-              f"{row['delta_l2']:>12.6e} "
-              f"{row['delta_max']:>12.6e} "
-              f"{row['delta_var']:>12.6e}")
+        print(
+            f"{row['tau_g']:>6} "
+            f"{row['dist_to_time_average']:>14.6e} "
+            f"{row['relative_to_baseline_avg_distance']:>10.4f} "
+            f"{row['delta_l2']:>12.6e} "
+            f"{row['delta_max']:>12.6e} "
+            f"{row['delta_var']:>12.6e}"
+        )
     print()
     print(f"--- Track B: iterated REMESH at τ_g={cfg['track_B_tau_global_fixed']} ---")
-    print(f"{'N':>4} {'step_delta':>14} {'dist→avg':>14} {'rel→avg':>10} "
-          f"{'‖EPI‖':>12}")
+    print(
+        f"{'N':>4} {'step_delta':>14} {'dist→avg':>14} {'rel→avg':>10} "
+        f"{'‖EPI‖':>12}"
+    )
     print("-" * 78)
     # Print first 5, every 8th, and last 3 to keep output readable
     rows = summary["track_B_iterated"]
-    indices = sorted(set(list(range(5)) + list(range(7, len(rows), 8)) + list(range(len(rows) - 3, len(rows)))))
+    indices = sorted(
+        set(
+            list(range(5))
+            + list(range(7, len(rows), 8))
+            + list(range(len(rows) - 3, len(rows)))
+        )
+    )
     for i in indices:
         if 0 <= i < len(rows):
             row = rows[i]
-            print(f"{row['n_iter']:>4} "
-                  f"{row['step_delta_l2']:>14.6e} "
-                  f"{row['dist_to_time_average']:>14.6e} "
-                  f"{row['relative_to_baseline_avg_distance']:>10.4f} "
-                  f"{row['norm']:>12.6e}")
+            print(
+                f"{row['n_iter']:>4} "
+                f"{row['step_delta_l2']:>14.6e} "
+                f"{row['dist_to_time_average']:>14.6e} "
+                f"{row['relative_to_baseline_avg_distance']:>10.4f} "
+                f"{row['norm']:>12.6e}"
+            )
     print()
     fals = summary["falsification"]
     print("--- Falsification summary ---")
-    print(f"F1 (single-application Cesàro): triggered={fals['F1_triggered']} | "
-          f"monotone={fals['F1_monotone_decreasing']} | "
-          f"final_rel={fals['F1_final_relative_distance']:.4f}")
+    print(
+        f"F1 (single-application Cesàro): triggered={fals['F1_triggered']} | "
+        f"monotone={fals['F1_monotone_decreasing']} | "
+        f"final_rel={fals['F1_final_relative_distance']:.4f}"
+    )
     print(f"  → {fals['F1_interpretation']}")
-    print(f"F2 (iterated fixed point):      triggered={fals['F2_triggered']} | "
-          f"step_decay={fals['F2_step_decay_ratio']:.4e} | "
-          f"final_step_delta={fals['F2_final_step_delta']:.4e}")
+    print(
+        f"F2 (iterated fixed point):      triggered={fals['F2_triggered']} | "
+        f"step_decay={fals['F2_step_decay_ratio']:.4e} | "
+        f"final_step_delta={fals['F2_final_step_delta']:.4e}"
+    )
     print(f"  → {fals['F2_interpretation']}")
     print(f"  Track B final rel→avg: {fals['F2_track_B_final_rel_to_avg']:.4f}")
 
     spec = summary["track_C_spectral"]
     print()
     print("--- Track C: spectral diagnostic of late-iterated state ---")
-    print(f"After {spec['iterations']} iterations at τ_g={spec['tau_g_fixed']}, "
-          f"late state ordered by νf = k·log(p):")
-    print(f"  ‖late_state‖_L2 = {spec['late_state_l2_norm']:.4e}, "
-          f"mean = {spec['late_state_mean']:.4e}")
-    print(f"  Total oscillatory power (post-demean): {spec['total_oscillatory_power']:.4e}")
+    print(
+        f"After {spec['iterations']} iterations at τ_g={spec['tau_g_fixed']}, "
+        f"late state ordered by νf = k·log(p):"
+    )
+    print(
+        f"  ‖late_state‖_L2 = {spec['late_state_l2_norm']:.4e}, "
+        f"mean = {spec['late_state_mean']:.4e}"
+    )
+    print(
+        f"  Total oscillatory power (post-demean): {spec['total_oscillatory_power']:.4e}"
+    )
     print(f"  DC fraction post-demean: {spec['dc_fraction_post_demean']:.4e}")
     print(f"  Top-3 freq bins: {spec['top3_freq_bins']}")
-    print(f"  Top-3 power fractions: "
-          f"{[f'{f:.4f}' for f in spec['top3_power_fraction']]}")
+    print(
+        f"  Top-3 power fractions: "
+        f"{[f'{f:.4f}' for f in spec['top3_power_fraction']]}"
+    )
     print("=" * 78)
 
 

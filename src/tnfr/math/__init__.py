@@ -16,20 +16,20 @@ Cross-compatibility:
 
 __version__ = "0.1.0"
 
+# Re-export helper modules for discoverability
+from . import fields_symbolic, grammar_validators, optimizer, symbolic
+
 # Import main symbolic functions for easy access
 from .symbolic import (
-    get_nodal_equation,
-    solve_nodal_equation_constant_params,
-    integrated_evolution_symbolic,
     check_convergence_exponential,
     compute_second_derivative_symbolic,
     evaluate_bifurcation_risk,
+    get_nodal_equation,
+    integrated_evolution_symbolic,
     latex_export,
     pretty_print,
+    solve_nodal_equation_constant_params,
 )
-
-# Re-export helper modules for discoverability
-from . import grammar_validators, fields_symbolic, optimizer, symbolic
 
 __all__: list[str] = [
     # Symbolic calculus

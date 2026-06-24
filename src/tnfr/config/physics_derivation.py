@@ -49,6 +49,7 @@ __all__ = [
     "handles_bifurcation",
 ]
 
+
 def can_generate_epi_from_null(operator: str) -> bool:
     """Check if operator can generate EPI from null/zero state.
 
@@ -85,6 +86,7 @@ def can_generate_epi_from_null(operator: str) -> bool:
     # Physical generators: create EPI via field emission
     return operator == "emission"
 
+
 def can_activate_latent_epi(operator: str) -> bool:
     """Check if operator can activate pre-existing latent EPI.
 
@@ -117,6 +119,7 @@ def can_activate_latent_epi(operator: str) -> bool:
     - Requires EPI > 0 in target phase
     """
     return operator in {"recursivity", "transition"}
+
 
 def can_stabilize_reorganization(operator: str) -> bool:
     """Check if operator can reduce ∂EPI/∂t → 0 (stabilize evolution).
@@ -151,6 +154,7 @@ def can_stabilize_reorganization(operator: str) -> bool:
     - Best as intermediate, not terminal
     """
     return operator == "silence"
+
 
 def achieves_operational_closure(operator: str) -> bool:
     """Check if operator provides operational closure (completes cycle).
@@ -198,6 +202,7 @@ def achieves_operational_closure(operator: str) -> bool:
     questionable = {"dissonance"}
 
     return operator in closures or operator in questionable
+
 
 def derive_start_operators_from_physics() -> frozenset[str]:
     """Derive valid start operators from TNFR physical principles.
@@ -258,11 +263,7 @@ def derive_start_operators_from_physics() -> frozenset[str]:
     can_activate_latent_epi : Check activation capacity
     """
     # Import here to avoid circular dependency
-    from .operator_names import (
-        EMISSION,
-        RECURSIVITY,
-        TRANSITION,
-    )
+    from .operator_names import EMISSION, RECURSIVITY, TRANSITION
 
     generators = {EMISSION}  # Can create EPI from null
     activators = {RECURSIVITY, TRANSITION}  # Can activate latent EPI
@@ -271,6 +272,7 @@ def derive_start_operators_from_physics() -> frozenset[str]:
     valid_starts = generators | activators
 
     return frozenset(valid_starts)
+
 
 def derive_end_operators_from_physics() -> frozenset[str]:
     """Derive valid end operators from TNFR physical principles.
@@ -337,12 +339,7 @@ def derive_end_operators_from_physics() -> frozenset[str]:
     achieves_operational_closure : Check closure capacity
     """
     # Import here to avoid circular dependency
-    from .operator_names import (
-        SILENCE,
-        TRANSITION,
-        RECURSIVITY,
-        DISSONANCE,
-    )
+    from .operator_names import DISSONANCE, RECURSIVITY, SILENCE, TRANSITION
 
     stabilizers = {SILENCE}  # Forces ∂EPI/∂t → 0
     closures = {TRANSITION, RECURSIVITY}  # Completes operational cycles
@@ -467,15 +464,15 @@ def _all_canonical_operator_names() -> frozenset[str]:
 def derive_stabilizers_from_physics() -> frozenset[str]:
     """Derive the U2 stabilizer set: operators that reduce |ΔNFR|."""
     return frozenset(
-        op for op in _all_canonical_operator_names()
-        if provides_negative_feedback(op)
+        op for op in _all_canonical_operator_names() if provides_negative_feedback(op)
     )
 
 
 def derive_destabilizers_from_physics() -> frozenset[str]:
     """Derive the U2 destabilizer set: operators that increase |ΔNFR|."""
     return frozenset(
-        op for op in _all_canonical_operator_names()
+        op
+        for op in _all_canonical_operator_names()
         if increases_structural_pressure(op)
     )
 
@@ -483,22 +480,19 @@ def derive_destabilizers_from_physics() -> frozenset[str]:
 def derive_transformers_from_physics() -> frozenset[str]:
     """Derive the U4b transformer set: operators that execute bifurcations."""
     return frozenset(
-        op for op in _all_canonical_operator_names()
-        if executes_bifurcation(op)
+        op for op in _all_canonical_operator_names() if executes_bifurcation(op)
     )
 
 
 def derive_bifurcation_triggers_from_physics() -> frozenset[str]:
     """Derive the U4a bifurcation-trigger set."""
     return frozenset(
-        op for op in _all_canonical_operator_names()
-        if triggers_bifurcation(op)
+        op for op in _all_canonical_operator_names() if triggers_bifurcation(op)
     )
 
 
 def derive_bifurcation_handlers_from_physics() -> frozenset[str]:
     """Derive the U4a bifurcation-handler set."""
     return frozenset(
-        op for op in _all_canonical_operator_names()
-        if handles_bifurcation(op)
+        op for op in _all_canonical_operator_names() if handles_bifurcation(op)
     )

@@ -15,19 +15,17 @@ from itertools import islice
 from statistics import StatisticsError, fmean
 from typing import TYPE_CHECKING, Any
 
-from ..errors import TNFRValueError
-
 from tnfr import glyph_history
 
 from ..alias import get_attr
 from ..constants import DEFAULTS, get_param
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF
 from ..constants.canonical import UM_COMPAT_THRESHOLD as _UM_COMPAT_CANONICAL
-from ..utils import angle_diff
+from ..errors import TNFRValueError
 from ..metrics.trig import neighbor_phase_mean
 from ..rng import make_rng
 from ..types import EPIValue, Glyph, NodeId, TNFRGraph
-from ..utils import get_nodenx
+from ..utils import angle_diff, get_nodenx
 from . import definitions as _definitions
 from .jitter import (
     JitterCache,
@@ -69,18 +67,18 @@ GlyphFactors = dict[str, Any]
 GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
 from .grammar import apply_glyph_with_grammar  # noqa: E402
-from .health_analyzer import SequenceHealthAnalyzer, SequenceHealthMetrics  # noqa: E402
-from .hamiltonian import (
+from .hamiltonian import (  # noqa: E402
     InternalHamiltonian,
     build_H_coherence,
-    build_H_frequency,
     build_H_coupling,
-)  # noqa: E402
+    build_H_frequency,
+)
+from .health_analyzer import SequenceHealthAnalyzer, SequenceHealthMetrics  # noqa: E402
 from .pattern_detection import (  # noqa: E402
     PatternMatch,
     UnifiedPatternDetector,
-    detect_pattern,
     analyze_sequence,
+    detect_pattern,
 )
 
 __all__ = [
@@ -116,6 +114,7 @@ __all__ = [
 
 __all__.extend(_DEFINITION_EXPORTS.keys())
 
+
 def get_glyph_factors(node: NodeProtocol) -> GlyphFactors:
     """Fetch glyph tuning factors for a node.
 
@@ -150,6 +149,7 @@ def get_glyph_factors(node: NodeProtocol) -> GlyphFactors:
     0.25
     """
     return node.graph.get("GLYPH_FACTORS", DEFAULTS["GLYPH_FACTORS"].copy())
+
 
 def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
     """Return a glyph factor as ``float`` with a default fallback.
@@ -196,9 +196,11 @@ def get_factor(gf: GlyphFactors, key: str, default: float) -> float:
         return default
     return value
 
+
 # -------------------------
 # Glyphs (local operators)
 # -------------------------
+
 
 def get_neighbor_epi(node: NodeProtocol) -> tuple[list[NodeProtocol], EPIValue]:
     """Collect neighbour nodes and their mean EPI.
@@ -269,7 +271,9 @@ def get_neighbor_epi(node: NodeProtocol) -> tuple[list[NodeProtocol], EPIValue]:
             NodeNX = get_nodenx()
             if NodeNX is None:
                 raise ImportError("NodeNX is unavailable")
-            neigh = [v if hasattr(v, "EPI") else NodeNX.from_graph(node.G, v) for v in neigh]
+            neigh = [
+                v if hasattr(v, "EPI") else NodeNX.from_graph(node.G, v) for v in neigh
+            ]
     else:
         try:
             epi_bar = fmean(v.EPI for v in neigh)
@@ -278,7 +282,10 @@ def get_neighbor_epi(node: NodeProtocol) -> tuple[list[NodeProtocol], EPIValue]:
 
     return neigh, epi_bar
 
-def _determine_dominant(neigh: list[NodeProtocol], default_kind: str) -> tuple[str, float]:
+
+def _determine_dominant(
+    neigh: list[NodeProtocol], default_kind: str
+) -> tuple[str, float]:
     """Resolve the dominant ``epi_kind`` across neighbours.
 
     The dominant kind guides glyphs that synchronise EPI, ensuring that
@@ -318,6 +325,7 @@ def _determine_dominant(neigh: list[NodeProtocol], default_kind: str) -> tuple[s
     if not best_kind:
         return default_kind, 0.0
     return best_kind, best_abs
+
 
 def _mix_epi_with_neighbors(
     node: NodeProtocol, mix: float, default_glyph: Glyph | str
@@ -360,7 +368,9 @@ def _mix_epi_with_neighbors(
     >>> round(node.EPI, 2), kind
     (0.5, 'wave')
     """
-    default_kind = default_glyph.value if isinstance(default_glyph, Glyph) else str(default_glyph)
+    default_kind = (
+        default_glyph.value if isinstance(default_glyph, Glyph) else str(default_glyph)
+    )
     epi = node.EPI
     neigh, epi_bar = get_neighbor_epi(node)
 
@@ -376,6 +386,7 @@ def _mix_epi_with_neighbors(
         final = default_kind
     node.epi_kind = final
     return epi_bar, final
+
 
 def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emission
     """Amplify the node EPI via the Emission glyph.
@@ -405,6 +416,7 @@ def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emission
     f = get_factor(gf, "AL_boost", 0.05)
     new_epi = node.EPI + f
     _set_epi_with_boundary_check(node, new_epi)
+
 
 def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Reception
     """Mix the node EPI with the neighbour field via Reception.
@@ -438,6 +450,7 @@ def _op_EN(node: NodeProtocol, gf: GlyphFactors) -> None:  # EN — Reception
     mix = get_factor(gf, "EN_mix", 0.25)
     _mix_epi_with_neighbors(node, mix, Glyph.EN)
 
+
 def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
     """Dampen ΔNFR magnitudes through the Coherence glyph.
 
@@ -464,6 +477,7 @@ def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
     """
     factor = get_factor(gf, "IL_dnfr_factor", 0.7)
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
+
 
 def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
     """Excite ΔNFR through the Dissonance glyph.
@@ -501,6 +515,7 @@ def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
     else:
         node.dnfr = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
 
+
 def _um_candidate_iter(node: NodeProtocol) -> Iterator[NodeProtocol]:
     sample_ids = node.graph.get("_node_sample")
     if sample_ids is not None and hasattr(node, "G"):
@@ -516,6 +531,7 @@ def _um_candidate_iter(node: NodeProtocol) -> Iterator[NodeProtocol]:
             continue
         yield j
 
+
 def _um_select_candidates(
     node: NodeProtocol,
     candidates: Iterator[NodeProtocol],
@@ -530,7 +546,9 @@ def _um_select_candidates(
         return list(candidates)
 
     if mode == "proximity":
-        return heapq.nsmallest(limit, candidates, key=lambda j: abs(angle_diff(j.theta, th)))
+        return heapq.nsmallest(
+            limit, candidates, key=lambda j: abs(angle_diff(j.theta, th))
+        )
 
     reservoir = list(islice(candidates, limit))
     for i, cand in enumerate(candidates, start=limit):
@@ -542,6 +560,7 @@ def _um_select_candidates(
         rng.shuffle(reservoir)
 
     return reservoir
+
 
 def compute_consensus_phase(phases: list[float]) -> float:
     """Compute circular mean (consensus phase) from a list of phase angles.
@@ -580,6 +599,7 @@ def compute_consensus_phase(phases: list[float]) -> float:
     cos_sum = sum(math.cos(ph) for ph in phases)
     sin_sum = sum(math.sin(ph) for ph in phases)
     return math.atan2(sin_sum, cos_sum)
+
 
 def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     """Align node phase and frequency with neighbours and optionally create links.
@@ -695,7 +715,9 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
         if neighbor_ids and hasattr(node, "G"):
             # Canonical access to vf through alias system
             vf_i = node.vf
-            vf_neighbors = [get_attr(node.G.nodes[nid], ALIAS_VF, 0.0) for nid in neighbor_ids]
+            vf_neighbors = [
+                get_attr(node.G.nodes[nid], ALIAS_VF, 0.0) for nid in neighbor_ids
+            ]
 
             if vf_neighbors:
                 vf_mean = sum(vf_neighbors) / len(vf_neighbors)
@@ -721,10 +743,14 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
                 # Compute phase alignments with each neighbor
                 phase_alignments = []
                 # Compute phase alignment using canonical formula
-                from ..metrics.phase_compatibility import compute_phase_coupling_strength
+                from ..metrics.phase_compatibility import (
+                    compute_phase_coupling_strength,
+                )
 
                 for neighbor in neighbors:
-                    alignment = compute_phase_coupling_strength(node.theta, neighbor.theta)
+                    alignment = compute_phase_coupling_strength(
+                        node.theta, neighbor.theta
+                    )
                     phase_alignments.append(alignment)
 
                 # Mean alignment represents coupling strength
@@ -747,7 +773,9 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
 
         limit = int(node.graph.get("UM_CANDIDATE_COUNT", 0))
         mode = str(node.graph.get("UM_CANDIDATE_MODE", "sample")).lower()
-        candidates = _um_select_candidates(node, _um_candidate_iter(node), limit, mode, th_i)
+        candidates = _um_select_candidates(
+            node, _um_candidate_iter(node), limit, mode, th_i
+        )
 
         # Use canonical phase coupling strength formula
         from ..metrics.phase_compatibility import compute_phase_coupling_strength
@@ -763,6 +791,7 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
             compat = phase_coupling * 0.5 + 0.25 * epi_sim + 0.25 * si_sim
             if compat >= thr:
                 node.add_edge(j, compat)
+
 
 def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     """Propagate coherence through resonance with νf amplification.
@@ -833,7 +862,9 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     # Get configuration factors
     diff = get_factor(gf, "RA_epi_diff", 0.15)
     vf_boost = get_factor(gf, "RA_vf_amplification", 0.05)
-    phase_coupling = get_factor(gf, "RA_phase_coupling", 0.10)  # Canonical phase strengthening
+    phase_coupling = get_factor(
+        gf, "RA_phase_coupling", 0.10
+    )  # Canonical phase strengthening
 
     # Track network C(t) before RA if enabled (optional telemetry)
     track_coherence = bool(node.graph.get("TRACK_NETWORK_COHERENCE", False))
@@ -871,10 +902,11 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     if len(neigh) > 0 and hasattr(node, "theta") and hasattr(node, "G"):
         try:
             # Use existing phase locking utility from IL operator
-            from ..alias import get_attr
-            from ..constants.aliases import ALIAS_THETA
             import cmath
             import math
+
+            from ..alias import get_attr
+            from ..constants.aliases import ALIAS_THETA
 
             # Get neighbor phases using existing utilities
             neighbor_phases = []
@@ -915,7 +947,9 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
             pass  # Phase alignment not possible in this context
 
     # Track identity preservation (canonical validation)
-    identity_preserved = (kind_result == kind_before or kind_result == Glyph.RA.value) and (
+    identity_preserved = (
+        kind_result == kind_before or kind_result == Glyph.RA.value
+    ) and (
         float(epi_before) * float(node.EPI) >= 0
     )  # Sign preserved
 
@@ -957,6 +991,7 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
         except ImportError:
             pass
 
+
 def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     """Reduce νf while preserving EPI, ΔNFR, and phase.
 
@@ -994,9 +1029,11 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     # This implements: νf → νf_min ≈ 0 ⇒ ∂EPI/∂t → 0 (structural preservation)
     node.vf = factor * node.vf
 
+
 factor_val = 1.0676  # 1 + γ/(π×e) canonical expansion rate
 factor_nul = 0.9015  # 1 - γ/(π+e) canonical contraction factor
 _SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
+
 
 def _set_epi_with_boundary_check(
     node: NodeProtocol, new_epi: float, *, apply_clip: bool = True
@@ -1068,6 +1105,7 @@ def _set_epi_with_boundary_check(
 
     node.EPI = clipped_epi
 
+
 def _compute_val_edge_aware_scale(
     epi_current: float, scale: float, epi_max: float, epsilon: float
 ) -> float:
@@ -1121,6 +1159,7 @@ def _compute_val_edge_aware_scale(
     # Return the minimum of desired scale and safe scale
     return min(scale, max_safe_scale)
 
+
 def _compute_nul_edge_aware_scale(
     epi_current: float, scale: float, epi_min: float, epsilon: float
 ) -> float:
@@ -1172,6 +1211,7 @@ def _compute_nul_edge_aware_scale(
     # No adaptation needed in typical case
     return scale
 
+
 def _op_scale(node: NodeProtocol, factor: float) -> None:
     """Scale νf with the provided factor.
 
@@ -1183,6 +1223,7 @@ def _op_scale(node: NodeProtocol, factor: float) -> None:
         Multiplicative change applied to νf.
     """
     node.vf *= factor
+
 
 def _make_scale_op(glyph: Glyph) -> GlyphOperation:
     def _op(node: NodeProtocol, gf: GlyphFactors) -> None:
@@ -1207,7 +1248,9 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
             # nonlinear structural effects at smaller scales.
             densification_key = "NUL_densification_factor"
             densification_default = 1.35  # Canonical default: moderate amplification
-            densification_factor = get_factor(gf, densification_key, densification_default)
+            densification_factor = get_factor(
+                gf, densification_key, densification_default
+            )
 
             # Apply densification to ΔNFR (use lowercase dnfr for NodeProtocol)
             current_dnfr = node.dnfr
@@ -1226,12 +1269,16 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
 
         # Edge-aware EPI scaling (new behavior) if enabled
         edge_aware_enabled = bool(
-            node.graph.get("EDGE_AWARE_ENABLED", DEFAULTS.get("EDGE_AWARE_ENABLED", True))
+            node.graph.get(
+                "EDGE_AWARE_ENABLED", DEFAULTS.get("EDGE_AWARE_ENABLED", True)
+            )
         )
 
         if edge_aware_enabled:
             epsilon = float(
-                node.graph.get("EDGE_AWARE_EPSILON", DEFAULTS.get("EDGE_AWARE_EPSILON", 1e-12))
+                node.graph.get(
+                    "EDGE_AWARE_EPSILON", DEFAULTS.get("EDGE_AWARE_EPSILON", 1e-12)
+                )
             )
             epi_min = float(node.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
             epi_max = float(node.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
@@ -1240,9 +1287,13 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
 
             # Compute edge-aware scale factor
             if glyph is Glyph.VAL:
-                scale_eff = _compute_val_edge_aware_scale(epi_current, factor, epi_max, epsilon)
+                scale_eff = _compute_val_edge_aware_scale(
+                    epi_current, factor, epi_max, epsilon
+                )
             else:  # Glyph.NUL
-                scale_eff = _compute_nul_edge_aware_scale(epi_current, factor, epi_min, epsilon)
+                scale_eff = _compute_nul_edge_aware_scale(
+                    epi_current, factor, epi_min, epsilon
+                )
 
             # Apply edge-aware EPI scaling with boundary check
             # Edge-aware already computed safe scale, but use unified function
@@ -1257,7 +1308,9 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
                     {
                         "glyph": glyph.name if hasattr(glyph, "name") else str(glyph),
                         "epi_before": epi_current,
-                        "epi_after": float(node.EPI),  # Get actual value after boundary check
+                        "epi_after": float(
+                            node.EPI
+                        ),  # Get actual value after boundary check
                         "scale_requested": factor,
                         "scale_effective": scale_eff,
                         "adapted": True,
@@ -1304,6 +1357,7 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
     )
     return _op
 
+
 def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-organization
     """Inject curvature from ``d2EPI`` into ΔNFR to trigger self-organization.
 
@@ -1330,6 +1384,7 @@ def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-org
     """
     a = get_factor(gf, "THOL_accel", 0.10)
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
+
 
 def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     """Apply canonical phase transformation θ → θ' based on structural dynamics.
@@ -1422,6 +1477,7 @@ def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     storage["_zhir_regime_after"] = regime_after
     storage["_zhir_fixed_mode"] = False
 
+
 def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
     """Rebalance ΔNFR towards νf while permitting jitter.
 
@@ -1465,7 +1521,10 @@ def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
         jitter = j * (1 if base >= 0 else -1)
     node.dnfr = base + jitter
 
-def _op_REMESH(node: NodeProtocol, gf: GlyphFactors | None = None) -> None:  # REMESH — advisory
+
+def _op_REMESH(
+    node: NodeProtocol, gf: GlyphFactors | None = None
+) -> None:  # REMESH — advisory
     """Record an advisory requesting network-scale remeshing.
 
     REMESH does not change node-level EPI, νf, ΔNFR, or phase. Instead it
@@ -1505,6 +1564,7 @@ def _op_REMESH(node: NodeProtocol, gf: GlyphFactors | None = None) -> None:  # R
         node.graph["_remesh_warn_step"] = step_idx
     return
 
+
 # -------------------------
 # Dispatcher
 # -------------------------
@@ -1525,17 +1585,24 @@ GLYPH_OPERATIONS: dict[Glyph, GlyphOperation] = {
     Glyph.REMESH: _op_REMESH,
 }
 
-def apply_glyph_obj(node: NodeProtocol, glyph: Glyph | str, *, window: int | None = None) -> None:
+
+def apply_glyph_obj(
+    node: NodeProtocol, glyph: Glyph | str, *, window: int | None = None
+) -> None:
     """Apply ``glyph`` to an object satisfying :class:`NodeProtocol`."""
 
-    from .grammar import function_name_to_glyph
     from ..validation.input_validation import ValidationError, validate_glyph
+    from .grammar import function_name_to_glyph
 
     # Validate glyph parameter
     try:
         if not isinstance(glyph, Glyph):
             validated_glyph = validate_glyph(glyph)
-            glyph = validated_glyph.value if isinstance(validated_glyph, Glyph) else str(glyph)
+            glyph = (
+                validated_glyph.value
+                if isinstance(validated_glyph, Glyph)
+                else str(glyph)
+            )
         else:
             glyph = glyph.value
     except ValidationError as e:
@@ -1580,7 +1647,9 @@ def apply_glyph_obj(node: NodeProtocol, glyph: Glyph | str, *, window: int | Non
 
     op = GLYPH_OPERATIONS.get(g)
     if op is None:
-        raise TNFRValueError(f"glyph has no registered operator: {g}", context={"glyph": g})
+        raise TNFRValueError(
+            f"glyph has no registered operator: {g}", context={"glyph": g}
+        )
     if window is None:
         window = int(get_param(node, "GLYPH_HYSTERESIS_WINDOW"))
     gf = get_glyph_factors(node)
@@ -1588,7 +1657,10 @@ def apply_glyph_obj(node: NodeProtocol, glyph: Glyph | str, *, window: int | Non
     glyph_history.push_glyph(node._glyph_storage(), g.value, window)
     node.epi_kind = g.value
 
-def apply_glyph(G: TNFRGraph, n: NodeId, glyph: Glyph | str, *, window: int | None = None) -> None:
+
+def apply_glyph(
+    G: TNFRGraph, n: NodeId, glyph: Glyph | str, *, window: int | None = None
+) -> None:
     """Adapter to operate on ``networkx`` graphs."""
     from ..validation.input_validation import (
         ValidationError,
@@ -1601,7 +1673,9 @@ def apply_glyph(G: TNFRGraph, n: NodeId, glyph: Glyph | str, *, window: int | No
         validate_tnfr_graph(G)
         validate_node_id(n)
     except ValidationError as e:
-        raise TNFRValueError(f"Invalid parameters for apply_glyph: {e}", context={"error": str(e)}) from e
+        raise TNFRValueError(
+            f"Invalid parameters for apply_glyph: {e}", context={"error": str(e)}
+        ) from e
 
     NodeNX = get_nodenx()
     if NodeNX is None:

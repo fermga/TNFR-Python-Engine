@@ -46,8 +46,8 @@ from .precision_modes import (
     set_telemetry_density,
 )
 from .thresholds import (
-    EPSILON_MIN_EMISSION,
     EPI_LATENT_MAX,
+    EPSILON_MIN_EMISSION,
     MIN_NETWORK_DEGREE_COUPLING,
     VF_BASAL_THRESHOLD,
 )
@@ -66,10 +66,10 @@ from .tnfr_config import (
     STATE_TRANSITION,
     THETA_KEY,
     THETA_PRIMARY,
-    TNFRConfig,
-    TNFRConfigError,
     VF_KEY,
     VF_PRIMARY,
+    TNFRConfig,
+    TNFRConfigError,
     dEPI_PRIMARY,
     dSI_PRIMARY,
     dVF_PRIMARY,
@@ -88,12 +88,14 @@ ensure_node_offset_map = _ensure_node_offset_map
 
 _GLOBAL_CONFIG = None
 
+
 def get_config() -> TNFRConfig:
     """Get the global TNFR configuration singleton."""
     global _GLOBAL_CONFIG
     if _GLOBAL_CONFIG is None:
         _GLOBAL_CONFIG = TNFRConfig()
     return _GLOBAL_CONFIG
+
 
 # Legacy function wrappers that use TNFRConfig internally
 def inject_defaults(G, defaults=None, override=False):
@@ -103,6 +105,7 @@ def inject_defaults(G, defaults=None, override=False):
     """
     config = TNFRConfig(defaults=defaults or DEFAULTS, validate_invariants=True)
     config.inject_defaults(G, defaults=defaults or DEFAULTS, override=override)
+
 
 def merge_overrides(G, **overrides):
     """Apply specific overrides to graph configuration.
@@ -120,16 +123,20 @@ def merge_overrides(G, **overrides):
         If any parameter name is not present in DEFAULTS.
     """
     import copy
+    from typing import cast
+
     from ..immutable import _is_immutable
     from ..types import TNFRConfigValue
-    from typing import cast
 
     for key, value in overrides.items():
         if key not in DEFAULTS:
             raise KeyError(f"Unknown parameter: '{key}'")
         G.graph[key] = (
-            value if _is_immutable(value) else cast(TNFRConfigValue, copy.deepcopy(value))
+            value
+            if _is_immutable(value)
+            else cast(TNFRConfigValue, copy.deepcopy(value))
         )
+
 
 def get_param(G, key: str):
     """Retrieve parameter from graph or defaults.
@@ -157,6 +164,7 @@ def get_param(G, key: str):
         raise KeyError(f"Unknown parameter: '{key}'")
     return DEFAULTS[key]
 
+
 def get_graph_param(G, key: str, cast_fn=float):
     """Return parameter from graph applying cast function.
 
@@ -176,6 +184,7 @@ def get_graph_param(G, key: str, cast_fn=float):
     """
     val = get_param(G, key)
     return None if val is None else cast_fn(val)
+
 
 __all__ = (
     # Main configuration class

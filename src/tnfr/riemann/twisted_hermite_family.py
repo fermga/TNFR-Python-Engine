@@ -68,9 +68,7 @@ from ..physics.conservation import compute_energy_functional
 from .admissible_family_sweep import Hermite2GaussianTestFunction
 from .alpha_sweep import DEFAULT_GAUGES, GaugeFn
 from .dirichlet_l import DirichletCharacter
-from .twisted_admissible_family_sweep import (
-    build_twisted_test_state_from_test_function,
-)
+from .twisted_admissible_family_sweep import build_twisted_test_state_from_test_function
 from .twisted_prime_ladder_hamiltonian import TwistedPrimeLadderHamiltonian
 from .twisted_weil_explicit_formula import twisted_weil_zero_side
 
@@ -118,9 +116,9 @@ class TwistedHermite2EtaSweepCertificate:
     sigmas: object
     etas: tuple[float, ...]
     gauges: tuple[str, ...]
-    weil_table: object       # shape (n_eta, n_sigma)
-    energy_table: object     # shape (n_eta, n_gauge, n_sigma)
-    alpha_table: object      # shape (n_eta, n_gauge, n_sigma)
+    weil_table: object  # shape (n_eta, n_sigma)
+    energy_table: object  # shape (n_eta, n_gauge, n_sigma)
+    alpha_table: object  # shape (n_eta, n_gauge, n_sigma)
     weil_all_positive: bool
     alpha_all_positive: bool
     alpha_min: float
@@ -218,9 +216,7 @@ def sweep_twisted_hermite2_eta(
         raise ValueError("every sigma must be strictly positive")
 
     eta_tuple = (
-        tuple(float(e) for e in etas)
-        if etas is not None
-        else DEFAULT_HERMITE2_ETAS
+        tuple(float(e) for e in etas) if etas is not None else DEFAULT_HERMITE2_ETAS
     )
     if len(eta_tuple) == 0:
         raise ValueError("etas must be non-empty")
@@ -242,12 +238,8 @@ def sweep_twisted_hermite2_eta(
 
     for i, eta_val in enumerate(eta_tuple):
         for j, sigma in enumerate(sigma_array):
-            test = Hermite2GaussianTestFunction(
-                sigma=float(sigma), eta=float(eta_val)
-            )
-            local_t_max = (
-                (12.0 * float(sigma)) if t_max is None else float(t_max)
-            )
+            test = Hermite2GaussianTestFunction(sigma=float(sigma), eta=float(eta_val))
+            local_t_max = (12.0 * float(sigma)) if t_max is None else float(t_max)
             w_total, _n_used, _zeros = twisted_weil_zero_side(
                 chi,
                 test,
@@ -259,9 +251,7 @@ def sweep_twisted_hermite2_eta(
             weil_table[i, j] = float(w_total)
             for k, gname in enumerate(gauge_names):
                 gfn = gauge_map[gname]
-                G = build_twisted_test_state_from_test_function(
-                    bundle, test, gfn
-                )
+                G = build_twisted_test_state_from_test_function(bundle, test, gfn)
                 E = float(compute_energy_functional(G))
                 energy_table[i, k, j] = E
                 W = weil_table[i, j]
@@ -282,9 +272,7 @@ def sweep_twisted_hermite2_eta(
         finite_vals = alpha_table[finite_mask]
         alpha_min = float(finite_vals.min())
         alpha_max = float(finite_vals.max())
-        idx_flat = int(
-            np.argmin(np.where(finite_mask, alpha_table, np.inf))
-        )
+        idx_flat = int(np.argmin(np.where(finite_mask, alpha_table, np.inf)))
         i_min, rem = divmod(idx_flat, n_g * n_s)
         k_min, j_min = divmod(rem, n_s)
         alpha_min_sigma = float(sigma_array[j_min])

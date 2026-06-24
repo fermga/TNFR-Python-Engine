@@ -170,15 +170,11 @@ def _build_canonical_demo_graph(n_nodes: int, seed: int) -> Any:
             float(2.0 * math.pi * (rng.random() - 0.5))
         )
         current_vf = float(G.nodes[node].get("nu_f", 1.0))
-        G.nodes[node]["nu_f"] = max(
-            0.05, current_vf + 0.05 * (rng.random() - 0.5)
-        )
+        G.nodes[node]["nu_f"] = max(0.05, current_vf + 0.05 * (rng.random() - 0.5))
     return G
 
 
-def _u3_scalar_verdict(
-    theta_i: float, theta_j: float, delta_phi_max: float
-) -> bool:
+def _u3_scalar_verdict(theta_i: float, theta_j: float, delta_phi_max: float) -> bool:
     """Canonical U3 verdict: ``True`` iff coupling is phase-compatible.
 
     Mirrors the canonical check at
@@ -226,9 +222,7 @@ def _angle_of_attack_bracket(
     # Anchor wrapped diffs deterministically spaced on [0, π],
     # interleaved with the canonical threshold so both sides are
     # represented.
-    anchors_base = np.linspace(
-        0.0, math.pi, num=int(n_pair_anchors), endpoint=True
-    )
+    anchors_base = np.linspace(0.0, math.pi, num=int(n_pair_anchors), endpoint=True)
     # Inject the canonical threshold and tiny perturbations around
     # it (verdict-flip locus) deterministically.
     anchors = np.array(anchors_base, dtype=float)
@@ -236,9 +230,7 @@ def _angle_of_attack_bracket(
     n_offsets = int(n_offsets_per_anchor)
     verdict = np.zeros((n_anchors, n_offsets), dtype=bool)
     # Deterministic rotation offsets per anchor row.
-    offsets = np.linspace(
-        0.0, 2.0 * math.pi, num=n_offsets, endpoint=False
-    )
+    offsets = np.linspace(0.0, 2.0 * math.pi, num=n_offsets, endpoint=False)
     n_divergent = 0
     n_total = n_anchors * n_offsets
     for a in range(n_anchors):
@@ -263,9 +255,7 @@ def _angle_of_attack_bracket(
     return verdict, n_divergent, n_total
 
 
-def _angle_of_attack_signature(
-    n_divergent: int, n_total: int
-) -> tuple[float, float]:
+def _angle_of_attack_signature(n_divergent: int, n_total: int) -> tuple[float, float]:
     """Return ``(squashed_signature, raw_fraction)``.
 
     Raw fraction is ``n_divergent / n_total``; squashed signature is
@@ -460,9 +450,7 @@ def compute_delta_phi_max_type_signature(
     n_scalar, n_total_storage = _inspect_delta_phi_max_storage(G)
     delta_phi_max = float(G.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))
     scalar_storage_fraction = (
-        float(n_scalar) / float(n_total_storage)
-        if n_total_storage > 0
-        else 0.0
+        float(n_scalar) / float(n_total_storage) if n_total_storage > 0 else 0.0
     )
     nonscalar_storage_count = int(n_total_storage - n_scalar)
 
@@ -474,15 +462,9 @@ def compute_delta_phi_max_type_signature(
     )
     signature, raw_div = _angle_of_attack_signature(n_divergent, n_configs)
 
-    if (
-        signature < angle_threshold
-        and scalar_storage_fraction >= 1.0 - 1e-12
-    ):
+    if signature < angle_threshold and scalar_storage_fraction >= 1.0 - 1e-12:
         verdict = "SCALAR_THRESHOLD_ADEQUATE"
-    elif (
-        signature > divergent_threshold
-        or scalar_storage_fraction < 1.0 - 1e-12
-    ):
+    elif signature > divergent_threshold or scalar_storage_fraction < 1.0 - 1e-12:
         verdict = "EDGE_DEPENDENT_THRESHOLD_NECESSARY"
     else:
         verdict = "INDETERMINATE"

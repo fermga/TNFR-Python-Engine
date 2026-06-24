@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
 __all__ = ["validate_emission_strict"]
 
+
 def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     """Validate strict canonical preconditions for AL (Emission) operator.
 
@@ -77,12 +78,12 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     tnfr.operators.definitions.Emission : Emission operator implementation
     """
     from ...alias import get_attr
-    from ...constants.aliases import ALIAS_EPI, ALIAS_VF
     from ...config.thresholds import (
         EPI_LATENT_MAX,
         MIN_NETWORK_DEGREE_COUPLING,
         VF_BASAL_THRESHOLD,
     )
+    from ...constants.aliases import ALIAS_EPI, ALIAS_VF
 
     # Get current node state
     epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
@@ -91,7 +92,9 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     # Get configurable thresholds (allow override via graph metadata)
     epi_threshold = float(G.graph.get("EPI_LATENT_MAX", EPI_LATENT_MAX))
     vf_threshold = float(G.graph.get("VF_BASAL_THRESHOLD", VF_BASAL_THRESHOLD))
-    min_degree = int(G.graph.get("MIN_NETWORK_DEGREE_COUPLING", MIN_NETWORK_DEGREE_COUPLING))
+    min_degree = int(
+        G.graph.get("MIN_NETWORK_DEGREE_COUPLING", MIN_NETWORK_DEGREE_COUPLING)
+    )
 
     # Precondition 1: EPI must be below latent threshold (node in latent state)
     # Emission is for activating nascent/latent structures, not boosting active ones
