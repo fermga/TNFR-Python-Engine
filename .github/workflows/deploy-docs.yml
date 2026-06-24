@@ -1,20 +1,11 @@
 name: Deploy Documentation to GitHub Pages (DISABLED)
 
-# DISABLED: Documentation now built locally only
-# To re-enable, remove this comment and uncomment the 'on' section below
-
-# on:
-#   push:
-#     branches:
-#       - main
-#     paths:
-#       - 'docs/**'
-#       - 'mkdocs.yml'
-#       - '.github/workflows/deploy-docs.yml'
-#       - 'README.md'
-#       - 'src/**/README.md'
-#       - '*.md'
-# workflow_dispatch:
+# DISABLED: Documentation is now built locally only. This workflow stays valid
+# but only runs on manual dispatch (a workflow with no 'on:' trigger is invalid
+# and reports a startup failure on every push). To re-enable automatic deploys,
+# add the push triggers under 'on:' below.
+on:
+  workflow_dispatch: {}
 
 permissions:
   contents: write
