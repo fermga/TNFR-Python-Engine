@@ -290,6 +290,7 @@ exclude = [
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+testpaths = ["tests"]
 addopts = "-m 'not slow'"
 markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",

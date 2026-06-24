@@ -55,7 +55,7 @@ from __future__ import annotations
 import json
 import time
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, MutableMapping
 
@@ -333,7 +333,7 @@ class TelemetryEmitter:
 
         # Use timezone-aware UTC to avoid deprecation of datetime.utcnow()
         event = TelemetryEvent(
-            t_iso=datetime.now(UTC).isoformat(timespec="seconds"),
+            t_iso=datetime.now(timezone.utc).isoformat(timespec="seconds"),
             t_epoch=time.time(),
             step=step,
             operator=operator,
