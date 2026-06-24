@@ -76,6 +76,10 @@ cache/
 data/
 logs/
 
+# Committed test fixtures live under tests/data/ (override the data/ rule above)
+!tests/data/
+!tests/data/**
+
 # Type checking cache
 .mypy_cache/
 

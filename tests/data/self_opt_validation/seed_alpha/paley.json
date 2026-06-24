@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "operation_type": "paley_partition",
+    "node": "p0",
+    "seed": "alpha",
+    "timestamp": "2025-12-01T00:00:00Z",
+    "dry_run": true
+  },
+  "recommendations": {
+    "recommended_strategies": [
+      "enhance_coherence_coupling"
+    ]
+  }
+}

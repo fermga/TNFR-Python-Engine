@@ -1,0 +1,48 @@
+{
+  "modulus": 21,
+  "n": 21,
+  "timestamp": 1760000000,
+  "partition_directory": "partitioned/test_run",
+  "partition_files": [
+    "partitioned/test_run/test_run_p0.json",
+    "partitioned/test_run/test_run_p1.json"
+  ],
+  "entries": [
+    {
+      "partition_id": "p0",
+      "relative_path": "partitioned/test_run/test_run_p0.json",
+      "size": 6,
+      "candidate_factors": [3, 7],
+      "telemetry": {
+        "phi_s": 0.12,
+        "phase_gradient": 0.08,
+        "phase_curvature": 0.19,
+        "coherence_length": 3.5,
+        "coherence": 0.52,
+        "sense_index": 0.61
+      }
+    },
+    {
+      "partition_id": "p1",
+      "relative_path": "partitioned/test_run/test_run_p1.json",
+      "size": 6,
+      "candidate_factors": [3, 7],
+      "telemetry": {
+        "phi_s": 0.15,
+        "phase_gradient": 0.09,
+        "phase_curvature": 0.24,
+        "coherence_length": 3.1,
+        "coherence": 0.55,
+        "sense_index": 0.64
+      }
+    }
+  ],
+  "aggregation": {
+    "candidate_factors": [3, 7],
+    "partition_count": 2,
+    "phi_s_mean": 0.135,
+    "phase_gradient_mean": 0.085,
+    "phase_curvature_mean": 0.215,
+    "coherence_length_mean": 3.3
+  }
+}

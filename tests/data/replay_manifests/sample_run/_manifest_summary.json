@@ -1,0 +1,33 @@
+{
+  "n": 299,
+  "modulus": 1764526545,
+  "timestamp": 1732960000.0,
+  "partition_count": 2,
+  "candidate_stats": {
+    "min": 8,
+    "max": 12,
+    "avg": 10.0
+  },
+  "node_stats": {
+    "min": 512,
+    "max": 640,
+    "avg": 576.0
+  },
+  "boundary_stats": {
+    "min": 24,
+    "max": 32,
+    "avg": 28.0
+  },
+  "telemetry_keys": [
+    "phi_s",
+    "phase_gradient",
+    "phase_curvature",
+    "coherence_length"
+  ],
+  "file_index": {
+    "inline": false,
+    "threshold": 1,
+    "archive": "_partition_files.txt.gz",
+    "manifest": "_manifest.json"
+  }
+}
