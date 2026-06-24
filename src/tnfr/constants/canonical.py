@@ -51,7 +51,7 @@ import math
 import mpmath as mp
 
 # set high precision for canonical derivations
-mp.dps = 35
+mp.mp.dps = 35
 
 # ============================================================================
 # FUNDAMENTAL TNFR CONSTANTS (Canonical - Never Change)

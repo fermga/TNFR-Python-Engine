@@ -31,7 +31,7 @@ jobs:
       - name: Check for invalid bandit -f sarif usage
         run: |
           # Search for bandit commands with -f sarif which is not supported
-          if grep -r "bandit.*-f sarif" .github/workflows/ scripts/ 2>/dev/null; then
+          if grep -r "bandit.*-f sarif" .github/workflows/ scripts/ --exclude=lint-workflows.yml 2>/dev/null; then
             echo "ERROR: Found 'bandit -f sarif' usage. Bandit does not support SARIF format."
             echo "Supported formats: csv, custom, html, json, screen, txt, xml, yaml"
             echo "Use 'bandit -f json' and convert to SARIF with tools/bandit_to_sarif.py"

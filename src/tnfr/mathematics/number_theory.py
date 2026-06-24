@@ -55,7 +55,7 @@ except ImportError:
     try:
         import mpmath as mp
 
-        mp.dps = 35
+        mp.mp.dps = 35
         PHI = float(mp.phi)
         GAMMA = float(mp.euler)
         PI = float(mp.pi)

@@ -47,7 +47,7 @@ except ImportError:
 
 # Default precision
 if HAS_MPMATH:
-    mp.dps = 25
+    mp.mp.dps = 25
 
 
 def _ensure_complex(s: Any) -> Any:

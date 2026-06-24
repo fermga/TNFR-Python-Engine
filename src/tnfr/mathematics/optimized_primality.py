@@ -55,7 +55,7 @@ except ImportError:
 try:
     import mpmath as mp
 
-    mp.dps = 50  # High precision for theoretical constants
+    mp.mp.dps = 50  # High precision for theoretical constants
     HAS_MPMATH = True
 except ImportError:
     HAS_MPMATH = False
