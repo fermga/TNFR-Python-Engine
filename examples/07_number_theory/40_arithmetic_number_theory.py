@@ -14,8 +14,9 @@ The arithmetic ΔNFR equation
     ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
 
 vanishes if and only if n is prime (Theorem 4.1, TNFR_NUMBER_THEORY.md).
-Each coefficient (ζ, η, θ) is WRITTEN as a (φ, γ, π, e) combination chosen to
-approximate the original empirical values (audit 2026: notational, NOT derived).
+The coefficients (ζ, η, θ) are canonically UNITY: by the §4.2 coefficient-
+independence theorem the criterion holds for any positive weights, and only π
+is a genuine structural scale (φ, γ, e are not), so no overlay is introduced.
 
 Experiments
 -----------
@@ -150,10 +151,10 @@ def experiment_2_component_breakdown():
     print()
 
     params = ArithmeticTNFRParameters()
-    print(f"Pressure coefficients (notational (phi,gamma,pi,e) combos, not derived):")
-    print(f"  ζ = φ×γ     = {params.zeta:.4f}")
-    print(f"  η = (γ/φ)×π = {params.eta:.4f}")
-    print(f"  θ = 1/φ     = {params.theta:.4f}")
+    print("Pressure coefficients (canonical unit weights, §4.2 — only π is structural):")
+    print(f"  ζ = {params.zeta:.4f}")
+    print(f"  η = {params.eta:.4f}")
+    print(f"  θ = {params.theta:.4f}")
     print()
 
     # Selection of structurally interesting numbers
@@ -214,10 +215,13 @@ def experiment_3_coefficient_independence():
 
     # Test with multiple coefficient sets — all must detect the same primes
     coefficient_sets = [
-        ("Canonical (φ,γ,π,e)", ArithmeticTNFRParameters()),
-        ("Unit coefficients", ArithmeticTNFRParameters(zeta=1.0, eta=1.0, theta=1.0)),
+        ("Canonical (unit)", ArithmeticTNFRParameters()),
         ("Scaled ×10", ArithmeticTNFRParameters(zeta=9.34, eta=11.2, theta=6.18)),
         ("Asymmetric", ArithmeticTNFRParameters(zeta=0.1, eta=5.0, theta=0.001)),
+        (
+            "Legacy φγe overlay",
+            ArithmeticTNFRParameters(zeta=0.934, eta=1.121, theta=0.618),
+        ),
     ]
 
     all_pass = True

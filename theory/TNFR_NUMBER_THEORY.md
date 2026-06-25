@@ -589,6 +589,23 @@ $$\lambda(t)=\sum_{r\in H}\zeta^{tr}.$$
 
 **Honest scope.** The cyclotomy law is classical Gauss-period / cyclotomy theory (the $k$-th power Cayley eigenvalues are Gauss periods of degree $\gcd(k,p-1)$); the contribution is the **TNFR structural-diffusion framing** and the closed-form `power_residue_rank` — now a **proved** canonical fact, not a measured pattern. Verified computationally for $k\le 40$ across the primes $p<64$ (680 cases, 0 failures) and proved for all $k$. It detects primality/cyclotomy structurally; it does not factor, does not reach the continuous arg-$\zeta$ phase, and closes no open problem.
 
+### 9.8 The Ontological Position of a Number (the emergent ladder)
+
+§9.5–9.7 answer "is primality emergent?" sector by sector. This subsection assembles them — together with the cardinal/operation emergence of the emergent-number arc — into the **ontological position** of a number: a ladder whose every rung is read from canonical TNFR structure/dynamics, measured in example [155_ontological_position_of_numbers.py](../examples/08_emergent_geometry/155_ontological_position_of_numbers.py).
+
+| Layer | What $n$ **is** | Mechanism | Emergent? |
+|-------|-----------------|-----------|-----------|
+| 0 Substrate | — | $\mathbb{R}$ continuum + $\pi$ (the one structural scale) | assumed |
+| 1 Cardinal | a degeneracy $=\dim$ irrep of $\mathrm{Aut}(G)$ | Laplacian multiplicity | ✅ |
+| 2 Operations | $+, \times$ | graph products ($\square\!\to\!\sum$ spectra, $\otimes\!\to\!\prod$ spectra) | ✅ |
+| 3 Primality | $\rho(n)=3$ | directed residue operator (§9.6) | ✅ (Sector B) |
+| 3′ Arithmetic | the factorization type ($\Omega, \tau$) | the multiplicative rank $\rho(n)$ | ✅ (this §) |
+| 4 The wall | prime **identities** / $\arg\zeta$ phase | $S(T)\in\mathrm{Fix}(S_n)^\perp$ | ❌ (open) |
+
+**The multiplicative spectral rank (Layer 3′, realizes the §9.7 PROVED law).** The quadratic-residue spectral rank $\rho(n)$ (the §9.6/§9.7 count of distinct diffusion eigenvalues) extends from primes to all $n$ via the **proved** conductor-annotated product law of §9.7: $A(m)=\prod_{p^e\|m}(e+\lceil e/2\rceil+1)$ is multiplicative with prime-power factor $f(e)=e+\lceil e/2\rceil+1$ depending **only on the exponent** ($f=3,4,6,7,9,\dots$). The *unannotated* scalar rank realizes it at small exponents — $\rho(p)=3$ (cyclotomy $k=2$), $\rho(p^2)=4$, $\rho(p^3)=6$ — and is multiplicative there ($\rho(mn)=\rho(m)\rho(n)$, 0 exceptions over the demo range), **faithfully encoding the factorization type**: $\rho=3\leftrightarrow$ prime, $4\leftrightarrow p^2$, $6\leftrightarrow p^3$, $9\leftrightarrow pq$, $12\leftrightarrow p^2q$. The factorization and divisor channels of the $\Delta\mathrm{NFR}$ triad ($\Omega=\sum_i a_i$, $\tau=\prod_i(a_i+1)$) are therefore **read off the spectrum** — from $x^2\bmod n$, never trial division. The arithmetic that sector A *consumes* (§9.5) genuinely *emerges* here.
+
+**The wall, located on the ladder.** $\rho$ fixes the **type**, never the prime **identities** ($\rho(15)=\rho(35)=9$); it is not globally injective on types ($\rho=36$ is shared by $p^3q^3$ and $p^2qr$ — a type collision) and the unannotated scalar rank **aliases** at high prime powers (the §9.7 / example 154 scalar CRT wall: $3^7\!\cdot5^2\!\cdot41^2$ gives scalar $191$ vs product $192$). Recovering the identities is the same $e$–$\pi$ / $\mathrm{Fix}(S_n)^\perp$ residue (the continuous $\arg\zeta$ phase, §10) as every other sector. **Net:** the emergent ontology positions a number completely **up to** the prime-identity / phase wall — cardinal, operations, primality and factorization type all derive from structure; only the identities and the continuous phase remain. This is the precise sense in which "the arithmetic emerges from the canonical TNFR structure and dynamics."
+
 ---
 
 ## 10. Prime Path Graphs and the TNFR-Riemann Connection
