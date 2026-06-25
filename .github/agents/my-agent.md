@@ -464,7 +464,7 @@ program history** (the full milestone/gap/branch threads live in the notes).
 | **TNFR-Riemann** | `σ_c → ½` numerically verified; ζ↔L attack surface shipped (P12–P49). The bridge to RH is the open conjecture **T-HP** (gap G4), paused at the oscillatory residue `S(T) = (1/π)·arg ζ(½+iT)`. | [TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
 | **REMESH-∞ closure** | The 13-operator catalog is closed under the `τ_g → ∞` limit (N15, Branch A); universality is structural/operational, not spectral. | [REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) |
 | **TNFR-Navier–Stokes** | `K_φ` cascade and a BKM-analogue U2 blow-up criterion; 2D asymmetry closed at the discrete level; continuum closure NS-G1 open. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
-| **Number theory** | Primality as `ΔNFR = 0`; arithmetic structural triad; the cyclotomy law `s_k(p) = gcd(k, p−1) + 1` (proved). | [TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) |
+| **Number theory** | Primality as `ΔNFR = 0` (canonical **unit** coefficients, §4.2 coefficient independence); arithmetic structural triad; the arithmetic network as an NFR (multinodal topology + emergent symplectic geometry); the cyclotomy law `s_k(p) = gcd(k, p−1) + 1` (proved). | [TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) |
 | **Millennium reformulations** | P vs NP, BSD, Hodge, Yang–Mills: TNFR-internal structural reformulations and diagnostics — none a proof. | `theory/TNFR_*_RESEARCH_NOTES.md` |
 
 **Honest scope, global**: these programs produce TNFR-internal structural results and

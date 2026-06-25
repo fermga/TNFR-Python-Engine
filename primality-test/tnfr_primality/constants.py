@@ -1,22 +1,20 @@
 """
 Constants for TNFR Primality Testing
 
-The three ΔNFR pressure coefficients are WRITTEN as (φ, γ, π, e) combinations
-for notational consistency, but (audit 2026) this is NOT a first-principles
-derivation: the combos were chosen to APPROXIMATE the original empirical
-values (ζ=1.0, η=0.8, θ=0.6). Only π is a genuine structural scale; here
-(φ, γ, π, e) are a notational/calibration overlay.
+The arithmetic structural triad uses canonical UNIT coefficients. Per AGENTS.md
+§3 only π is a genuine structural scale; φ, γ and e are not. By the Coefficient
+Independence theorem (TNFR_NUMBER_THEORY.md §4.2) the primality criterion
+ΔNFR(n) = 0 holds for any positive coefficients, so the canonical choice is
+unity — the structural content lives entirely in the arithmetic invariants
+(Ω, τ, σ, n), with no fitted/numerological scale.
 
-Source: TNFR-Python-Engine canonical.py (CanonicalArithmeticParameters)
+Source: TNFR-Python-Engine number_theory.py (ArithmeticTNFRParameters)
 
 Mathematical Foundation:
     The ΔNFR arithmetic pressure equation uses three coefficients:
         ΔNFR(n) = ζ·(Ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
 
-    Where ζ, η, θ are derived from (φ, γ, π, e):
-        ζ = φ×γ  (zeta coupling strength)
-        η = (γ/φ)×π  (phase coupling × geometric factor)
-        θ = 1/φ  (coherence scaling)
+    Canonically ζ = η = θ = 1 (unit weights, §4.2 coefficient independence).
 
     Ω(n) = prime factor count WITH multiplicity (big Omega)
     τ(n) = divisor count
@@ -25,8 +23,10 @@ Mathematical Foundation:
 Changelog:
     v1.0: Original empirical constants (ζ=1.0, η=0.8, θ=0.6)
     v2.0: Rewritten as (φ, γ, π, e) combinations approximating those values
-          (notational; audit 2026: NOT a derivation — the values barely moved:
-          ζ 1.0→0.934, η 0.8→1.121, θ 0.6→0.618)
+          (notational; audit 2026: NOT a derivation — values barely moved).
+    v3.0: Canonicalized to UNIT coefficients (ζ=η=θ=1, EPI/νf weights to unity).
+          Removes the φ/γ/e overlay; only π remains an admissible structural
+          scale. Primality preserved exactly (§4.2 theorem).
 """
 
 from __future__ import annotations
@@ -39,15 +39,13 @@ GAMMA = 0.5772156649015329  # γ (Euler-Mascheroni constant)
 PI = math.pi  # π ≈ 3.141592653589793
 E = math.e  # e ≈ 2.718281828459045
 
-# --- Derived TNFR canonical coefficients ---
-# Factorization pressure coefficient: ζ = φ × γ
-ZETA_CANONICAL = PHI * GAMMA  # ≈ 0.9340
-
-# Divisor pressure coefficient: η = (γ/φ) × π
-ETA_CANONICAL = (GAMMA / PHI) * PI  # ≈ 1.1207
-
-# Abundance pressure coefficient: θ = 1/φ
-THETA_CANONICAL = 1.0 / PHI  # ≈ 0.6180
+# --- Canonical ΔNFR pressure coefficients (unit weights, §4.2) ---
+# Only π is a genuine structural scale (AGENTS.md §3); by the coefficient-
+# independence theorem the primality criterion ΔNFR=0 is invariant to any
+# positive rescaling, so the canonical weights are unity.
+ZETA_CANONICAL = 1.0  # factorization pressure (Ω − 1)
+ETA_CANONICAL = 1.0  # divisor pressure (τ − 2)
+THETA_CANONICAL = 1.0  # abundance pressure (σ/n − (1 + 1/n))
 
 # --- Detection thresholds ---
 # Structural significance threshold: γ/(e×π)
@@ -59,16 +57,16 @@ DELTA_NFR_THRESHOLD = GAMMA / (E * PI)  # ≈ 0.0676
 # for floating-point comparisons (not a physics threshold).
 PRIMALITY_TOLERANCE = 1e-10
 
-# --- Structural triad constants ---
-# EPI parameters (form characterization)
-ALPHA_EPI = 1.0 / PHI  # α = 1/φ ≈ 0.618
-BETA_EPI = GAMMA / (PI + GAMMA)  # β = γ/(π+γ) ≈ 0.155
-GAMMA_EPI = GAMMA / PI  # γ_epi = γ/π ≈ 0.1837
+# --- Structural triad constants (canonical unit weights) ---
+# EPI parameters: EPI = 1 + α·Ω + β·ln τ + γ·(σ/n − 1)
+ALPHA_EPI = 1.0  # factorization-complexity weight (Ω)
+BETA_EPI = 1.0  # divisor-complexity weight (ln τ)
+GAMMA_EPI = 1.0  # abundance-deviation weight (σ/n − 1)
 
-# Frequency parameters (νf characterization)
-NU_0 = (PHI / GAMMA) / PI  # ν₀ = (φ/γ)/π ≈ 0.8925
-DELTA_FREQ = GAMMA / (PHI * PI)  # δ = γ/(φ×π) ≈ 0.1137
-EPSILON_FREQ = math.exp(-PI)  # ε = e^(-π) ≈ 0.0432
+# Frequency parameters: νf = ν₀·(1 + δ·τ/n + ε·Ω/ln n)
+NU_0 = 1.0  # base structural frequency
+DELTA_FREQ = 1.0  # divisor-density modulation (τ/n)
+EPSILON_FREQ = 1.0  # factorization modulation (Ω/ln n)
 
 # --- Tetrad field thresholds (for arithmetic networks) ---
 PHI_S_THRESHOLD = 0.7711  # von Koch fractal bound

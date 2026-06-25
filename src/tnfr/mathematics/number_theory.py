@@ -7,7 +7,9 @@ Implementation of the theoretical framework for detecting structural primality
 Theoretical foundation: theory/TNFR_NUMBER_THEORY.md (Canonical)
   - Primality as structural equilibrium (ΔNFR = 0)
   - Arithmetic structural triad (EPI, νf, ΔNFR)
-  - Canonical constants derived from φ, γ, π, e
+  - Canonical unit coefficients (per AGENTS.md §3 only π is a genuine
+    structural scale; by the §4.2 coefficient-independence theorem the triad
+    weights are canonically unity — no φ/γ/e overlay)
   - Spectral factorization via Paley-Jacobi decoding
 
 Ontological status (theory/TNFR_NUMBER_THEORY.md §9.5): the same nodal-equation
@@ -47,26 +49,12 @@ from .unified_numerical import np
 
 logger = logging.getLogger(__name__)
 
-# TNFR canonical constants (derived from theory - no empirical fitting)
-try:
-    from ..constants.canonical import GAMMA, INV_PHI, PHI, PI, E
-except ImportError:
-    # Fallback to mpmath / math module (e.g. standalone usage)
-    try:
-        import mpmath as mp
-
-        mp.mp.dps = 35
-        PHI = float(mp.phi)
-        GAMMA = float(mp.euler)
-        PI = float(mp.pi)
-        E = float(mp.e)
-        INV_PHI = 1.0 / PHI
-    except ImportError:
-        PHI = (1 + math.sqrt(5)) / 2
-        GAMMA = 0.5772156649015329
-        PI = math.pi
-        E = math.e
-        INV_PHI = 1.0 / PHI
+# The arithmetic triad uses canonical UNIT coefficients. Per AGENTS.md §3 only π
+# is a genuine structural scale; φ, γ and e are not. By the coefficient-
+# independence theorem (theory/TNFR_NUMBER_THEORY.md §4.2) the primality criterion
+# ΔNFR = 0 is invariant to any positive rescaling, so the canonical weights are
+# unity and the structural content lives entirely in the arithmetic invariants
+# (Ω, τ, σ, n). See ArithmeticTNFRParameters.
 
 # Centralized TNFR cache infrastructure (robust, shared across repo)
 from .unified_cache import CacheLevel, cache_tnfr_computation
@@ -104,26 +92,36 @@ except ImportError:
 
 @dataclass
 class ArithmeticTNFRParameters:
-    """Canonical parameters for arithmetic TNFR system (derived from theory)."""
+    """Canonical weights for the arithmetic TNFR triad (EPI, νf, ΔNFR).
 
-    # EPI parameters (derived from golden ratio optimality)
-    alpha: float = INV_PHI  # 1/φ ≈ 0.6180 (factorization complexity - CANONICAL)
-    beta: float = GAMMA / (
-        PI + GAMMA
-    )  # γ/(π+γ) ≈ 0.1552 (divisor complexity - CANONICAL)
-    gamma: float = GAMMA / PI  # γ/π ≈ 0.1837 (divisor excess - CANONICAL)
+    All weights are **unity**. Per AGENTS.md §3 the only genuine structural
+    constant is π; φ, γ and e are not structural scales. The earlier
+    ``(φ, γ, π, e)`` weights were a post-hoc *notational* overlay fitted to
+    approximate empirical values (ζ=1.0, η=0.8, θ=0.6), not a derivation. By the
+    Coefficient Independence theorem (theory/TNFR_NUMBER_THEORY.md §4.2) the
+    primality criterion ``ΔNFR = 0`` holds for *any* positive coefficients, so
+    the canonical choice is unity: the structural content lives entirely in the
+    arithmetic invariants (Ω, τ, σ, n), with no fitted/numerological scale.
 
-    # Frequency parameters (from νf theory)
-    nu_0: float = (PHI / GAMMA) / PI  # (φ/γ)/π ≈ 0.8923 (base frequency - CANONICAL)
-    delta: float = GAMMA / (PHI * PI)  # γ/(φ×π) ≈ 0.1136 (divisor density - CANONICAL)
-    epsilon: float = math.exp(
-        -PI
-    )  # e^(-π) ≈ 0.0432 (factorization complexity - CANONICAL)
+    The fields remain configurable so callers can explore the (off-equilibrium)
+    pressure landscape; only the canonical *defaults* are fixed at 1.0.
+    """
 
-    # Pressure parameters (from ΔNFR theory)
-    zeta: float = PHI * GAMMA  # φ×γ ≈ 0.9340 (factorization pressure - CANONICAL)
-    eta: float = (GAMMA / PHI) * PI  # (γ/φ)×π ≈ 1.1207 (divisor pressure - CANONICAL)
-    theta: float = INV_PHI  # 1/φ ≈ 0.6180 (sigma pressure - CANONICAL)
+    # EPI weights (structural form): EPI = 1 + α·Ω + β·lnτ + γ·(σ/n − 1)
+    alpha: float = 1.0  # factorization-complexity weight (Ω)
+    beta: float = 1.0  # divisor-complexity weight (ln τ)
+    gamma: float = 1.0  # abundance-deviation weight (σ/n − 1)
+
+    # νf weights (structural frequency): νf = ν₀·(1 + δ·τ/n + ε·Ω/ln n)
+    nu_0: float = 1.0  # base structural frequency
+    delta: float = 1.0  # divisor-density modulation (τ/n)
+    epsilon: float = 1.0  # factorization modulation (Ω/ln n)
+
+    # ΔNFR weights (structural pressure, §4.2 coefficient-independent):
+    # ΔNFR = ζ·(Ω−1) + η·(τ−2) + θ·(σ/n − (1 + 1/n))
+    zeta: float = 1.0  # factorization pressure (Ω − 1)
+    eta: float = 1.0  # divisor pressure (τ − 2)
+    theta: float = 1.0  # abundance pressure (σ/n − (1 + 1/n))
 
 
 @dataclass(frozen=True)
@@ -1334,6 +1332,172 @@ class ArithmeticTNFRNetwork:
             "kphi_multiscale": kphi_multiscale,
             "phase_current": j_phi,
             "dnfr_flux": j_dnfr,
+        }
+
+    # ====================================================================
+    # FRACTAL-RESONANT NODE (NFR) + EMERGENT GEOMETRY
+    # ====================================================================
+
+    def nfr(self) -> dict[str, object]:
+        """Characterize the arithmetic network as a Fractal-Resonant Node (NFR).
+
+        Per TNFR.pdf §1.4.1 an NFR is "a region of structural coherence coupled
+        to a network", defined by the triad (EPI, νf, phase) with a nodal
+        topology and the multiescalar (fractal) + autopoietic properties. This
+        surfaces the arithmetic network as the joint read-out of its three
+        emergent facets, each from canonical quantities:
+
+        - RESONANT: proximity to the ΔNFR = 0 coherence attractor
+          (:func:`~tnfr.metrics.common.is_structural_equilibrium`). The
+          **canonical payoff**: by the §4.1 primality theorem the equilibrium
+          set ``{n : ΔNFR(n) = 0}`` is *exactly* the primes, so the resonant-
+          coherence attractors of the arithmetic NFR are the prime numbers.
+        - GEOMETRIC: the nodal topology radial / annular / multinodal
+          (:func:`~tnfr.physics.fields.classify_nodal_topology`), read from the
+          structural-potential geometry of the divisibility/GCD coupling.
+        - FRACTAL: the multi-scale coherence range ξ_C (region size).
+
+        Phase synchrony is reported only if a phase field has been computed
+        (e.g. via :meth:`compute_phase`); otherwise it is NaN. Most informative
+        once the structural fields are populated.
+
+        Returns
+        -------
+        dict
+            ``topology``, ``centers``, ``concentration`` (geometry);
+            ``coherence``, ``equilibrium_fraction``, ``equilibrium_is_primes``
+            (resonance); ``coherence_length`` (ξ_C); ``triad`` (mean EPI, νf and
+            the Kuramoto phase synchrony); ``n_nodes``.
+        """
+        from ..metrics.common import (
+            is_structural_equilibrium,
+            structural_coherence,
+        )
+        from ..physics.fields import classify_nodal_topology
+
+        und = self._get_undirected_graph()
+        topo = classify_nodal_topology(und)
+        nodes = list(self.graph.nodes())
+        n = len(nodes)
+        if n:
+            dnfr = [float(self.graph.nodes[k]["delta_nfr"]) for k in nodes]
+            eq_nodes = [k for k, d in zip(nodes, dnfr) if is_structural_equilibrium(d)]
+            eq_frac = len(eq_nodes) / n
+            coherence = sum(structural_coherence(d) for d in dnfr) / n
+            epi_mean = sum(float(self.graph.nodes[k]["EPI"]) for k in nodes) / n
+            vf_mean = sum(float(self.graph.nodes[k]["nu_f"]) for k in nodes) / n
+            primes = [k for k in nodes if self.graph.nodes[k]["is_prime"]]
+            eq_is_primes = sorted(eq_nodes) == sorted(primes)
+            phis = [self.graph.nodes[k].get("phi") for k in nodes]
+            if all(p is not None for p in phis):
+                phase_sync = float(
+                    abs(np.mean(np.exp(1j * np.asarray(phis, dtype=float))))
+                )
+            else:
+                phase_sync = float("nan")
+        else:
+            eq_frac = coherence = epi_mean = vf_mean = 0.0
+            phase_sync = float("nan")
+            eq_is_primes = True
+        try:
+            xi_c_val = self.estimate_coherence_length().get("xi_c")
+            xi_c = float(xi_c_val) if xi_c_val is not None else float("nan")
+        except Exception:
+            xi_c = float("nan")
+        return {
+            "topology": topo["topology"],
+            "centers": topo["centers"],
+            "concentration": topo["concentration"],
+            "coherence": coherence,
+            "equilibrium_fraction": eq_frac,
+            "equilibrium_is_primes": eq_is_primes,
+            "coherence_length": xi_c,
+            "triad": {
+                "epi_mean": epi_mean,
+                "vf_mean": vf_mean,
+                "phase_sync": phase_sync,
+            },
+            "n_nodes": n,
+        }
+
+    def _geometry_graph(self, phase_method: str = "logn") -> nx.Graph:
+        """Undirected arithmetic graph prepared for the canonical emergent-
+        geometry functions.
+
+        The structural phase is written under the canonical ``phase``/``theta``
+        keys (the divisibility-driven ΔNFR already lives under ``delta_nfr``),
+        so the canonical field functions read both sectors of the substrate.
+        The default ``logn`` phase ``φ(n) ∝ log n`` is the arithmetic *size /
+        capacity grading* (the monoid homomorphism ``(ℕ,×) → (ℝ,+)``); unlike
+        the spectral layout it is non-degenerate on the dense divisibility
+        graph, so the geometric sector (|∇φ|, K_φ, J_φ) is populated.
+        """
+        phi = self.compute_phase(method=phase_method, store=True)
+        G = self.graph.to_undirected()
+        for i in G.nodes():
+            ph = float(phi.get(i, 0.0))
+            G.nodes[i]["phase"] = ph
+            G.nodes[i]["theta"] = ph
+        return G
+
+    def conservation(self, *, phase_method: str = "logn") -> dict[str, float]:
+        """Emergent-geometry conservation diagnostics for the arithmetic NFR.
+
+        Delegates to the canonical Structural Conservation Theorem machinery
+        (AGENTS.md §4): the Noether charge ``Q = Σ_i (Φ_s(i) + K_φ(i))`` and the
+        structural energy functional
+        ``E = ½ Σ_i (Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²)``. The arithmetic
+        ΔNFR (sourced by Ω, τ, σ) drives the structural-potential sector Φ_s;
+        the structural phase drives the geometric sector. Single source of
+        truth: the same functions the SDK ``Network.conservation`` uses.
+        """
+        from ..physics.conservation import (
+            compute_energy_functional,
+            compute_noether_charge,
+        )
+
+        G = self._geometry_graph(phase_method=phase_method)
+        return {
+            "noether_charge": float(compute_noether_charge(G)),
+            "energy": float(compute_energy_functional(G)),
+            "n_nodes": float(G.number_of_nodes()),
+        }
+
+    def symplectic_substrate(
+        self, *, phase_method: str = "logn"
+    ) -> dict[str, object]:
+        """Diagnose the emergent symplectic substrate of the arithmetic NFR.
+
+        The TNFR nodal dynamics generates its own geometry (AGENTS.md §4): a
+        symplectic phase space ``P = ℝ^{4N}`` with canonical conjugate pairs
+        ``(K_φ, J_φ)`` and ``(Φ_s, J_ΔNFR)``, on which the energy functional is
+        the Hamiltonian and the flow is volume-preserving (Liouville).
+        Delegates to the canonical substrate machinery applied to the
+        arithmetic coupling network.
+
+        Returns
+        -------
+        dict
+            ``phase_space_dimension`` (= 4N), ``is_valid_manifold``,
+            ``hamiltonian`` H_sub, ``background_potential`` U
+            (H_sub + U = energy functional) and ``liouville_divergence``.
+        """
+        from ..physics.symplectic_substrate import (
+            background_potential,
+            extract_phase_space_point,
+            substrate_hamiltonian,
+            verify_canonical_structure,
+        )
+
+        G = self._geometry_graph(phase_method=phase_method)
+        cert = verify_canonical_structure(G)
+        pt = extract_phase_space_point(G)
+        return {
+            "phase_space_dimension": cert.dimension,
+            "is_valid_manifold": cert.is_valid_symplectic_manifold,
+            "hamiltonian": float(substrate_hamiltonian(pt)),
+            "background_potential": float(background_potential(pt)),
+            "liouville_divergence": float(cert.liouville_divergence),
         }
 
     # ====================================================================

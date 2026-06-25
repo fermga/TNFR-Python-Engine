@@ -93,9 +93,9 @@ The Primary Information Structure of a natural number measures its overall arith
 $$\mathrm{EPI}(n) = 1 + \alpha \cdot \Omega(n) + \beta \cdot \ln(\tau(n)) + \gamma_{\mathrm{epi}} \cdot \left(\frac{\sigma(n)}{n} - 1\right)$$
 
 where:
-- $\alpha = 1/\varphi \approx 0.6180$ — factorization complexity weight
-- $\beta = \gamma/(\pi + \gamma) \approx 0.1552$ — divisor complexity weight
-- $\gamma_{\mathrm{epi}} = \gamma/\pi \approx 0.1837$ — abundance deviation weight
+- $\alpha = 1$ — factorization complexity weight (canonical unit, §5)
+- $\beta = 1$ — divisor complexity weight (canonical unit, §5)
+- $\gamma_{\mathrm{epi}} = 1$ — abundance deviation weight (canonical unit, §5)
 
 **Physical interpretation**: EPI(n) is the structural form of the number, analogous to the configuration of an oscillator. Primes have the simplest forms; highly composite numbers have the richest.
 
@@ -106,9 +106,9 @@ The reorganization capacity of a number measures how rapidly its structural form
 $$\nu_f(n) = \nu_0 \cdot \left(1 + \delta \cdot \frac{\tau(n)}{n} + \varepsilon \cdot \frac{\Omega(n)}{\ln(n)}\right)$$
 
 where:
-- $\nu_0 = (\varphi/\gamma)/\pi \approx 0.8923$ — base frequency
-- $\delta = \gamma/(\varphi \cdot \pi) \approx 0.1136$ — divisor density modulation
-- $\varepsilon = e^{-\pi} \approx 0.0432$ — factorization complexity modulation
+- $\nu_0 = 1$ — base frequency (canonical unit, §5)
+- $\delta = 1$ — divisor density modulation (canonical unit, §5)
+- $\varepsilon = 1$ — factorization complexity modulation (canonical unit, §5)
 
 **Physical interpretation**: $\nu_f$ is the capacity lever in the nodal equation. Numbers with rich divisor structures have slightly higher reorganization capacity, but this is irrelevant for primes because the pressure lever vanishes.
 
@@ -118,7 +118,7 @@ The structural pressure equation is the central result of arithmetic TNFR:
 
 $$\boxed{\Delta\mathrm{NFR}(n) = \zeta \cdot (\Omega(n) - 1) + \eta \cdot (\tau(n) - 2) + \theta \cdot \left(\frac{\sigma(n)}{n} - \left(1 + \frac{1}{n}\right)\right)}$$
 
-where $\Omega(n)$ is the prime factor count with multiplicity, $\tau(n)$ the divisor count, and $\sigma(n)$ the divisor sum. The coefficients $(\zeta, \eta, \theta)$ are derived in §5.
+where $\Omega(n)$ is the prime factor count with multiplicity, $\tau(n)$ the divisor count, and $\sigma(n)$ the divisor sum. The coefficients are canonically $\zeta = \eta = \theta = 1$ (unit weights; see §5).
 
 **Physical interpretation**: $\Delta\mathrm{NFR}(n)$ is the pressure lever — how much reorganization the arithmetic structure of $n$ demands. It quantifies the structural distance from primality.
 
@@ -171,48 +171,33 @@ The primality criterion $\Delta\mathrm{NFR}(n) = 0$ is **independent of the coef
 
 ## 5. Canonical Arithmetic Constants
 
-### 5.1 Notational Constant Combinations
+### 5.1 Canonical Coefficients Are Unity
 
-The arithmetic TNFR constants are written as notational $(\varphi, \gamma, \pi, e)$ combinations (only $\pi$ is a genuine structural scale):
+Per AGENTS.md §3 the only genuine structural constant is $\pi$; $\varphi$, $\gamma$ and $e$ are not structural scales. Earlier versions wrote the triad weights as $(\varphi, \gamma, \pi, e)$ combinations, but that was a *post-hoc notational overlay* fitted to approximate empirical values ($\zeta = 1.0$, $\eta = 0.8$, $\theta = 0.6$) — not a derivation.
 
-| Constant | Value | Mathematical Role |
-|----------|-------|-------------------|
-| $\varphi$ (Golden Ratio) | $1.618034\ldots$ | Harmonic proportion |
-| $\gamma$ (Euler-Mascheroni) | $0.577216\ldots$ | Harmonic growth rate |
-| $\pi$ | $3.141593\ldots$ | Geometric relations |
-| $e$ (Euler number) | $2.718282\ldots$ | Exponential base |
+By the Coefficient Independence theorem (§4.2) the primality criterion $\Delta\mathrm{NFR}(n) = 0$ holds for **any** positive coefficients. The arithmetic pressures carry no phase/geometric content, so even $\pi$ has no role; the canonical choice therefore introduces **no constant at all** — all weights are **unity**, and the structural content lives entirely in the arithmetic invariants $(\Omega, \tau, \sigma, n)$.
 
 ### 5.2 Pressure Coefficients
 
-The three coefficients in the $\Delta\mathrm{NFR}$ equation are:
+$$\boxed{\zeta = \eta = \theta = 1}$$
 
-$$\zeta = \varphi \times \gamma \approx 0.9340$$
-
-**Notational rationale**: Links the golden ratio (optimal harmonic proportion in self-similar structures) with the Euler constant (growth rate of harmonic series $H_n \sim \ln n + \gamma$). Since $\Omega(n)$ counts prime factors — an additive function that grows like $\ln \ln n$ on average by the Erdős-Kac theorem — the combination weights the factorization term.
-
-$$\eta = \frac{\gamma}{\varphi} \times \pi \approx 1.1207$$
-
-**Notational rationale**: The ratio $\gamma/\varphi \approx 0.3567$ (a notational combination), multiplied by $\pi$, gives the weight for divisor count $\tau(n)$, which measures the geometric complexity of the divisor lattice.
-
-$$\theta = \frac{1}{\varphi} = \varphi - 1 \approx 0.6180$$
-
-**Notational rationale**: The reciprocal of the golden ratio is the unique positive number satisfying $\theta^2 + \theta = 1$, the recursive self-similarity equation. This weights the abundance ratio $\sigma(n)/n$, which measures how the divisor sum scales relative to the number itself — a ratio whose deviation from the prime value $(1 + 1/n)$ captures the self-similar structure of the divisor lattice.
+The three pressure channels weigh equally: the factorization excess $\Omega - 1$, the divisor excess $\tau - 2$ and the abundance excess $\sigma/n - (1 + 1/n)$ each contribute on the same unit scale. This is the canonical, parameter-free form — every coefficient is forced by the §4.2 coefficient-independence theorem rather than fitted.
 
 ### 5.3 EPI Parameters
 
-| Parameter | Expression | Value | Physical meaning |
-|-----------|------------|-------|-----------------|
-| $\alpha$ | $1/\varphi$ | $\approx 0.6180$ | Factorization complexity weight |
-| $\beta$ | $\gamma/(\pi+\gamma)$ | $\approx 0.1552$ | Divisor logarithmic weight |
-| $\gamma_{\mathrm{epi}}$ | $\gamma/\pi$ | $\approx 0.1837$ | Abundance deviation weight |
+| Parameter | Value | Physical meaning |
+|-----------|-------|-----------------|
+| $\alpha$ | $1$ | Factorization complexity weight |
+| $\beta$ | $1$ | Divisor logarithmic weight |
+| $\gamma_{\mathrm{epi}}$ | $1$ | Abundance deviation weight |
 
 ### 5.4 Frequency Parameters
 
-| Parameter | Expression | Value | Physical meaning |
-|-----------|------------|-------|-----------------|
-| $\nu_0$ | $(\varphi/\gamma)/\pi$ | $\approx 0.8923$ | Base structural frequency |
-| $\delta$ | $\gamma/(\varphi\pi)$ | $\approx 0.1136$ | Divisor density modulation |
-| $\varepsilon$ | $e^{-\pi}$ | $\approx 0.0432$ | Factorization modulation |
+| Parameter | Value | Physical meaning |
+|-----------|-------|-----------------|
+| $\nu_0$ | $1$ | Base structural frequency |
+| $\delta$ | $1$ | Divisor density modulation |
+| $\varepsilon$ | $1$ | Factorization modulation |
 
 ### 5.5 Detection Thresholds
 
@@ -241,10 +226,10 @@ Measures the **total prime factor count with multiplicity**. This is the most di
 | $n$ | Factorization | $\Omega(n)$ | $P_\Omega$ |
 |-----|---------------|-------------|------------|
 | 7 (prime) | $7$ | 1 | 0 |
-| 15 | $3 \times 5$ | 2 | 0.934 |
-| 8 | $2^3$ | 3 | 1.868 |
-| 30 | $2 \times 3 \times 5$ | 3 | 1.868 |
-| 360 | $2^3 \times 3^2 \times 5$ | 6 | 4.670 |
+| 15 | $3 \times 5$ | 2 | 1 |
+| 8 | $2^3$ | 3 | 2 |
+| 30 | $2 \times 3 \times 5$ | 3 | 2 |
+| 360 | $2^3 \times 3^2 \times 5$ | 6 | 5 |
 
 #### Divisor Pressure: $P_{\tau} = \eta \cdot (\tau(n) - 2)$
 
@@ -253,10 +238,10 @@ Measures the **richness of the divisor lattice**. Primes have exactly 2 divisors
 | $n$ | $\tau(n)$ | $P_\tau$ |
 |-----|-----------|---------|
 | 7 (prime) | 2 | 0 |
-| 15 | 4 | 2.241 |
-| 8 | 4 | 2.241 |
-| 30 | 8 | 6.724 |
-| 360 | 24 | 24.656 |
+| 15 | 4 | 2 |
+| 8 | 4 | 2 |
+| 30 | 8 | 6 |
+| 360 | 24 | 22 |
 
 #### Abundance Pressure: $P_{\sigma} = \theta \cdot (\sigma(n)/n - (1+1/n))$
 
@@ -265,9 +250,9 @@ Measures the **deviation of the divisor sum ratio from the prime pattern**. This
 | $n$ | $\sigma(n)/n$ | $1+1/n$ | $P_\sigma$ |
 |-----|---------------|---------|-----------|
 | 7 (prime) | $8/7 \approx 1.143$ | $8/7$ | 0 |
-| 15 | $24/15 = 1.600$ | $16/15 \approx 1.067$ | 0.330 |
-| 8 | $15/8 = 1.875$ | $9/8 = 1.125$ | 0.464 |
-| 30 | $72/30 = 2.400$ | $31/30 \approx 1.033$ | 0.844 |
+| 15 | $24/15 = 1.600$ | $16/15 \approx 1.067$ | 0.533 |
+| 8 | $15/8 = 1.875$ | $9/8 = 1.125$ | 0.750 |
+| 30 | $72/30 = 2.400$ | $31/30 \approx 1.033$ | 1.367 |
 
 ### 6.2 Component Independence
 
@@ -277,7 +262,7 @@ The three pressure channels are algebraically independent — no linear combinat
 
 As $n$ grows, the expected pressure for a "random" composite scales as:
 
-$$\mathbb{E}[\Delta\mathrm{NFR}(n)] \sim \zeta \cdot \ln\ln n + \eta \cdot (\ln n)^{\ln 2} + \theta \cdot \text{(abundance deviation)}$$
+$$\mathbb{E}[\Delta\mathrm{NFR}(n)] \sim \ln\ln n + (\ln n)^{\ln 2} + \text{(abundance deviation)}$$
 
 by the Erdős-Kac theorem ($\Omega(n) \sim \ln\ln n$) and divisor function asymptotics. Primes remain at exactly zero regardless of magnitude.
 
@@ -327,6 +312,44 @@ The arithmetic network has distinct topology from general TNFR networks (divisib
 | $|\nabla\phi|$ | 0.1837 | 0.2591 | `GRAD_PHI_THRESHOLD` |
 | $K_\phi$ | 2.8274 | 3.2275 | `K_PHI_THRESHOLD` |
 | $\xi_C$ | (topology-dependent) | (topology-dependent) | Computed per network |
+
+### 7.6 The Arithmetic NFR and its Emergent Geometry
+
+The arithmetic network is itself a **Fractal-Resonant Node** (NFR; TNFR.pdf
+§1.4.1) — a region of structural coherence coupled by divisibility/GCD.
+`ArithmeticTNFRNetwork.nfr()` surfaces the joint read-out of its three emergent
+facets:
+
+- **Resonant.** By the §4.1 primality theorem the equilibrium set
+  $\{n : \Delta\mathrm{NFR}(n) = 0\}$ is *exactly* the primes, so the resonant-
+  coherence attractors of the arithmetic NFR are the prime numbers;
+  `equilibrium_fraction` is the prime density and the mean per-node coherence
+  $C = 1/(1+|\Delta\mathrm{NFR}|)$ measures distance from this attractor.
+- **Geometric.** The nodal topology (radial / annular / multinodal), read by
+  `classify_nodal_topology` from the structural-potential geometry, is
+  **multinodal** — its centers are the highly-composite / abundant numbers
+  (6, 12, 24, 30, 36, …), the hubs of the divisibility lattice.
+- **Fractal.** The coherence length $\xi_C$ sets the region scale.
+
+The same nodal dynamics generates an **emergent geometry** (AGENTS.md §4),
+exposed by `conservation()` and `symplectic_substrate()`, which delegate to the
+canonical Structural Conservation Theorem and symplectic-substrate machinery
+applied to the divisibility network:
+
+- a conserved **Noether charge** $Q = \sum_i (\Phi_s(i) + K_\phi(i))$ and the
+  structural **energy functional**
+  $E = \tfrac12 \sum_i (\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 +
+  J_{\Delta\mathrm{NFR}}^2)$, with the potential sector $\Phi_s$ sourced by the
+  arithmetic $\Delta\mathrm{NFR}$ (the genuine invariants $\Omega, \tau, \sigma$);
+- a valid **symplectic substrate** of dimension $4N$ with conjugate pairs
+  $(K_\phi, J_\phi)$ and $(\Phi_s, J_{\Delta\mathrm{NFR}})$. The geometric sector
+  is populated by the *size / capacity* phase $\phi(n) \propto \log n$ (the monoid
+  homomorphism $(\mathbb{N},\times) \to (\mathbb{R},+)$), which is non-degenerate
+  on the dense divisibility graph.
+
+The emergent geometry is thus **potential-dominated**: the arithmetic structure
+(factorization pressure) drives the structural-potential geometry, while phase is
+the secondary size grading.
 
 ---
 
@@ -624,9 +647,9 @@ These tetrad fields on the prime path link the arithmetic distribution of primes
 
 $$\Omega(17) = 1, \quad \tau(17) = 2, \quad \sigma(17) = 18$$
 
-$$\Delta\mathrm{NFR}(17) = 0.9340 \times (1-1) + 1.1207 \times (2-2) + 0.6180 \times \left(\frac{18}{17} - \frac{18}{17}\right) = 0$$
+$$\Delta\mathrm{NFR}(17) = 1 \times (1-1) + 1 \times (2-2) + 1 \times \left(\frac{18}{17} - \frac{18}{17}\right) = 0$$
 
-Structural triad: $\mathrm{EPI}(17) \approx 1.73$, $\nu_f(17) \approx 0.90$, $C_{\text{local}} = 1.0$.
+Structural triad: $\mathrm{EPI}(17) \approx 2.75$, $\nu_f(17) \approx 1.47$, $C_{\text{local}} = 1.0$.
 
 **Interpretation**: Zero pressure, perfect coherence, structural fixed point.
 
@@ -636,12 +659,12 @@ $$\Omega(15) = 2, \quad \tau(15) = 4, \quad \sigma(15) = 24$$
 
 | Component | Calculation | Value |
 |-----------|------------|-------|
-| Factorization | $0.9340 \times (2-1)$ | 0.934 |
-| Divisor | $1.1207 \times (4-2)$ | 2.241 |
-| Abundance | $0.6180 \times (24/15 - 16/15)$ | 0.330 |
-| **Total** | | **3.505** |
+| Factorization | $1 \times (2-1)$ | 1 |
+| Divisor | $1 \times (4-2)$ | 2 |
+| Abundance | $1 \times (24/15 - 16/15)$ | 0.533 |
+| **Total** | | **3.533** |
 
-$C_{\text{local}} = 1/(1+3.505) \approx 0.222$.
+$C_{\text{local}} = 1/(1+3.533) \approx 0.221$.
 
 ### 11.3 Prime Power: $n = 8 = 2^3$
 
@@ -649,10 +672,10 @@ $$\Omega(8) = 3, \quad \tau(8) = 4, \quad \sigma(8) = 15$$
 
 | Component | Calculation | Value |
 |-----------|------------|-------|
-| Factorization | $0.9340 \times (3-1)$ | 1.868 |
-| Divisor | $1.1207 \times (4-2)$ | 2.241 |
-| Abundance | $0.6180 \times (15/8 - 9/8)$ | 0.464 |
-| **Total** | | **4.573** |
+| Factorization | $1 \times (3-1)$ | 2 |
+| Divisor | $1 \times (4-2)$ | 2 |
+| Abundance | $1 \times (15/8 - 9/8)$ | 0.750 |
+| **Total** | | **4.750** |
 
 Using $\Omega$ (with multiplicity) rather than $\omega$ (distinct primes) gives prime powers a strong pressure signal: $2^3$ registers $\Omega = 3$, not $\omega = 1$.
 
@@ -662,12 +685,12 @@ $$\Omega(30) = 3, \quad \tau(30) = 8, \quad \sigma(30) = 72$$
 
 | Component | Calculation | Value |
 |-----------|------------|-------|
-| Factorization | $0.9340 \times (3-1)$ | 1.868 |
-| Divisor | $1.1207 \times (8-2)$ | 6.724 |
-| Abundance | $0.6180 \times (72/30 - 31/30)$ | 0.845 |
-| **Total** | | **9.437** |
+| Factorization | $1 \times (3-1)$ | 2 |
+| Divisor | $1 \times (8-2)$ | 6 |
+| Abundance | $1 \times (72/30 - 31/30)$ | 1.367 |
+| **Total** | | **9.367** |
 
-Structural triad: $\mathrm{EPI}(30) \approx 3.43$, $\nu_f(30) \approx 0.95$, $C_{\text{local}} \approx 0.096$.
+Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_{\text{local}} \approx 0.097$.
 
 ---
 
