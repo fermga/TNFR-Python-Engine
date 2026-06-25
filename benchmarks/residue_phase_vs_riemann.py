@@ -9,10 +9,11 @@ prime-ladder P14, walled by the Euler-Orthogonality Lemma (everything commutes
 with the S_n prime-relabelling -> spectrum in Fix(S_n), blind to
 S(T) = (1/pi) arg zeta(1/2+iT) in Fix(S_n)^perp). The number-theory reframe
 (§9.6) supplies a DIFFERENT object: the directed quadratic-residue diffusion
-operator L_rw on the Paley tournament (n = 3 mod 4), which is NON-NORMAL, has a
-COMPLEX spectrum, and carries the arithmetic in the PHASE (imaginary part) -- and
-whose symmetry is the affine group of Z/n, NOT S_n. Does this non-normal phase
-operator carry the Riemann zeros {gamma_n}, or only Gauss-sum / sqrt(p) content?
+operator L_rw on the Paley tournament (n = 3 mod 4), which is NON-SELF-ADJOINT
+(a non-symmetric circulant, hence still NORMAL), has a COMPLEX spectrum that
+carries the arithmetic in the PHASE (imaginary part) -- and whose symmetry is the
+affine group of Z/n, NOT S_n. Does this non-self-adjoint phase operator carry the
+Riemann zeros {gamma_n}, or only Gauss-sum / sqrt(p) content?
 
 CONSTRUCTION (deterministic; only arithmetic input is x^2 mod p).
   For primes p = 3 (mod 4): G = arithmetic_cayley_digraph(p, QR(p));
@@ -35,7 +36,7 @@ PRE-REGISTERED VERDICT LOGIC.
   INDETERMINATE                   : otherwise.
 
 HONEST PREDICTION (declared in advance): GAUSS_CONFIRMED_RIEMANN_REFUTED. The
-non-normal phase operator reaches arithmetic in the phase -- a genuine advance
+non-self-adjoint phase operator reaches arithmetic in the phase -- a genuine advance
 over the self-adjoint mod-4 restriction, and it EVADES the Euler-Orthogonality
 Lemma -- but the phase content is sqrt(p) Gauss sums, not {gamma_n}. The
 residue-phase -> zeta-zeros bridge is the SAME e-pi / Fix(S_n)^perp wall
@@ -138,7 +139,7 @@ def main() -> None:
         verdict = "INDETERMINATE"
     print(f"VERDICT  : {verdict}")
     print()
-    print("Reading: the non-normal phase operator EVADES the Euler-Orthogonality")
+    print("Reading: the non-self-adjoint phase operator EVADES the Euler-Orthogonality")
     print("wall (affine symmetry, not S_n) and reaches arithmetic in the phase --")
     print("but the content is sqrt(p) Gauss sums (decreasing ~1/sqrt(p)), NOT the")
     print("zeta zeros (increasing). The residue-phase -> zeta-zeros bridge is the")

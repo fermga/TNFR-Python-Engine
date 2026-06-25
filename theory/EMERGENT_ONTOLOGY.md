@@ -64,9 +64,10 @@ the wall. The arithmetic `ΔNFR` coefficients are themselves canonically **unity
 genuine structural scale, and by the [§4.2](TNFR_NUMBER_THEORY.md) coefficient-independence theorem
 the weights are forced to `1` (no `φ/γ/e` overlay) — so Sector A's "circular re-expression" is the
 *consumed* read-out of a fixed point whose *emergent* read-out (Sector B) genuinely derives the
-arithmetic **up to that wall**. The wall is located on the **non-normal directed residue operator**
-([§10.5](TNFR_NUMBER_THEORY.md), `benchmarks/residue_phase_vs_riemann.py`): it carries arithmetic in
-the **phase** (`√p` Gauss sums), structurally distinct from the `ζ` zeros — the obstruction is
+arithmetic **up to that wall**. The wall is located on the **non-self-adjoint directed residue operator**
+([§10.5](TNFR_NUMBER_THEORY.md), `benchmarks/residue_phase_vs_riemann.py`) — a non-symmetric circulant
+(hence *normal*), diagonalized by the `Z/n` characters: it carries arithmetic in the **phase**
+(`√p` Gauss sums = Fourier coefficients of the residue set), structurally distinct from the `ζ` zeros — the obstruction is
 **sharpened and relocated, not dissolved**. This cross-domain refinement is a structural read-out
 catalog (one fixed point, many emergence sectors); it closes no open problem.
 

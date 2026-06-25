@@ -16,7 +16,8 @@ SYMMETRIC: the canonical diffusion operator L_rw = I − D⁻¹W is self-adjoint
 its spectrum is REAL — the support/scale sector. For n ≡ 3 (mod 4), −1 is NOT a
 residue, so the residue digraph is a **Paley tournament**: every pair has
 exactly one directed edge. The canonical operator on this DIRECTED graph is
-non-normal and its spectrum is COMPLEX — the arithmetic content lives in the
+non-self-adjoint (a non-symmetric circulant, hence normal) and its spectrum is
+COMPLEX — the arithmetic content lives in the
 PHASE (the imaginary part), which the real spectrum of example 117 discards.
 
 Doctrine compliance (the emergent operator, unchanged)

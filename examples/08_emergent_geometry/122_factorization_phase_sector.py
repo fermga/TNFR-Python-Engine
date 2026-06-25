@@ -28,7 +28,8 @@ The undirected residue operator is SYMMETRIC: its eigenvalues come in
 degenerate pairs (λ_k = λ_{n−k}). When the factor-coset frequency lands in a
 degenerate eigenspace, the eigensolver returns an arbitrary real combination
 that SCRAMBLES the coset structure, so the η² test fails (51, 91). The directed
-operator is NON-NORMAL: its eigenvalues are complex Gauss sums, which are LESS
+operator is NON-SYMMETRIC (a non-self-adjoint circulant): its eigenvalues are
+complex Gauss sums, which are LESS
 degenerate and ISOLATE the factor-coset mode — so the complex spectrum exposes
 the very modes the real sector loses.
 

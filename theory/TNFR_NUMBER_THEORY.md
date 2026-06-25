@@ -457,7 +457,7 @@ The factorization machinery (§9.1–9.4), the arithmetic primality criterion (�
 
 The "partial" limitation of sector B (only $n\equiv 1\pmod 4$, §9.5) is **not** a wall of TNFR — it is an artefact of restricting to the *real/self-adjoint* spectrum. Example [119_phase_sector_directed_residue.py](../examples/08_emergent_geometry/119_phase_sector_directed_residue.py) crosses it using the **same canonical emergent operator** on the **directed** residue graph.
 
-**The structural reason for the mod-4 split.** For $n\equiv 1\pmod 4$, $-1$ is a quadratic residue, so the residue graph is **symmetric**: the canonical operator $L_{rw}=I-D^{-1}W$ is self-adjoint and its spectrum is **real**. For $n\equiv 3\pmod 4$, $-1$ is **not** a residue, so the residue digraph is a **Paley tournament** (one directed edge per pair); the canonical operator is non-normal and its spectrum is **complex** — the arithmetic content lives in the **phase** (the imaginary part), which the real spectrum discards.
+**The structural reason for the mod-4 split.** For $n\equiv 1\pmod 4$, $-1$ is a quadratic residue, so the residue graph is **symmetric**: the canonical operator $L_{rw}=I-D^{-1}W$ is self-adjoint and its spectrum is **real**. For $n\equiv 3\pmod 4$, $-1$ is **not** a residue, so the residue digraph is a **Paley tournament** (one directed edge per pair); the canonical operator is **non-self-adjoint** (a non-symmetric circulant, hence still *normal*) and its spectrum is **complex** — the arithmetic content lives in the **phase** (the imaginary part), which the real spectrum discards.
 
 **Doctrine compliance.** This is the *same* `structural_diffusion_operator` (the literal ΔNFR EPI channel) applied directly to a `networkx.DiGraph` — verified identical to a hand-built operator ($\max|\Delta|=0$). Nothing ad-hoc; the complex spectrum **is** the canonical emergent geometry on a directed graph. Only arithmetic input: $x^2\bmod n$.
 
@@ -521,7 +521,7 @@ Across odd $n$ the spectral test "$3$ distinct $\iff$ prime" is **18/18 correct*
 
 **The structural fact (CRT, present in both sectors).** For $n=p\cdot q$ the factor coset $(i\bmod p)$ corresponds to the Fourier frequencies $k=$ multiples of the cofactor $q$. A pure Fourier mode $\exp(2\pi i k j/n)$ with $k$ a multiple of $q$ is **constant within each coset** $(i\bmod p)$, hence an **exact eigenvector** of the emergent operator (a circulant / Cayley digraph) — verified to machine precision (eigenvector residual $\sim 10^{-14}$) for BOTH the undirected (real) and directed (complex) residue operator. The factor coset is CRT/circulant structure ($\mathbb{Z}_n\cong\mathbb{Z}_p\times\mathbb{Z}_q$), present in both spectra.
 
-**Why the real sector misses 51 and 91.** The undirected residue operator is **symmetric**: its eigenvalues come in degenerate pairs ($\lambda_k=\lambda_{n-k}$). When the factor-coset frequency lands in a degenerate eigenspace, the eigensolver returns an arbitrary real combination that **scrambles** the coset structure, so the $\eta^2$ test fails (51, 91). The directed operator is **non-normal**: its eigenvalues are complex Gauss sums, which are **less degenerate** and **isolate** the factor-coset mode — so the complex spectrum exposes precisely the modes the real sector loses.
+**Why the real sector misses 51 and 91.** The undirected residue operator is **symmetric**: its eigenvalues come in degenerate pairs ($\lambda_k=\lambda_{n-k}$). When the factor-coset frequency lands in a degenerate eigenspace, the eigensolver returns an arbitrary real combination that **scrambles** the coset structure, so the $\eta^2$ test fails (51, 91). The directed operator is **non-symmetric** (a non-self-adjoint circulant): its eigenvalues are complex Gauss sums, which are **less degenerate** and **isolate** the factor-coset mode — so the complex spectrum exposes precisely the modes the real sector loses.
 
 **Measured (the correct complex-mean $\eta^2$).** *(One must use complex means: a Fourier mode has flat magnitude, so a magnitude-$\eta^2$ is blind to the coset.)*
 
@@ -656,16 +656,16 @@ $$C_j(r) \approx A_j \cdot e^{-r/\xi_C^{(j)}}$$
 
 These tetrad fields on the prime path link the arithmetic distribution of primes to the structural field theory.
 
-### 10.5 Refactoring the Riemann Attack — From the Self-Adjoint Prime-Ladder to the Non-Normal Phase Operator (MEASURED)
+### 10.5 Refactoring the Riemann Attack — From the Self-Adjoint Prime-Ladder to the Non-Self-Adjoint Phase Operator (MEASURED)
 
 The TNFR-Riemann program is paused at the **Tetrad-Hilbert-Pólya (T-HP)** conjecture on the **self-adjoint** prime-ladder operator P14 (`src/tnfr/riemann/prime_ladder_hamiltonian.py`). That route is walled by the **Euler-Orthogonality Lemma** (TNFR_RIEMANN_RESEARCH_NOTES §13vicies-novies.11): on the prime-ladder graph every canonical operator **commutes with the $S_n$ prime-relabelling**, so the spectrum lives in $\mathrm{Fix}(S_n)$ and is structurally blind to the Riemann residue $S(T)=\tfrac1\pi\arg\zeta(\tfrac12+iT)\in\mathrm{Fix}(S_n)^\perp$.
 
 The number-theory reframe (§9.6, §9.8) supplies a **structurally different object** for the same residue: the **directed quadratic-residue diffusion operator** $L_{rw}=I-D^{-1}W$ on the Paley tournament ($n\equiv 3\pmod 4$). It is
 
-- **non-normal** → its spectrum is **complex**, carrying the arithmetic in the **phase** (imaginary part) — structurally aligned with the fact that the Riemann zeros are **imaginary parts** $\{\gamma_n\}$, whereas the self-adjoint Hilbert-Pólya framing seeks a **real** spectrum; and
+- **non-self-adjoint** (a non-symmetric circulant — hence *normal*; its complex spectrum is the $\mathbb{Z}/n$ character / Gauss-sum eigenbasis) → its spectrum is **complex**, carrying the arithmetic in the **phase** (imaginary part) — structurally aligned with the fact that the Riemann zeros are **imaginary parts** $\{\gamma_n\}$, whereas the self-adjoint Hilbert-Pólya framing seeks a **real** spectrum; and
 - symmetric only under the **affine group of $\mathbb{Z}/n$**, **not** the $S_n$ prime-relabelling — so it is **not subject to the Euler-Orthogonality Lemma**, and it already reaches **all odd primes** (§9.6), past the self-adjoint mod-4 restriction.
 
-So the natural question is whether the attack should pivot from "build a *self-adjoint* operator with spectrum $\{\gamma_n\}$" to "read the residue off the *non-normal* phase operator".
+So the natural question is whether the attack should pivot from "build a *self-adjoint* operator with spectrum $\{\gamma_n\}$" to "read the residue off the *non-self-adjoint* phase operator".
 
 **The pre-registered falsifier (MEASURED).** `benchmarks/residue_phase_vs_riemann.py` tests it on primes $p\equiv 3\pmod 4$:
 
@@ -673,7 +673,7 @@ So the natural question is whether the attack should pivot from "build a *self-a
 - **F-ALIGN** — $\mathrm{Pearson}\big(\max|\mathrm{Im}|(p_n),\,\gamma_n\big)=\mathbf{-0.9068}$: the residue phase content **decreases** like $1/\sqrt p$ while the zeros $\gamma_n$ **increase** — opposite trends.
 - **Verdict:** `GAUSS_CONFIRMED_RIEMANN_REFUTED`.
 
-**Honest net.** The non-normal phase operator **does** evade the Euler-Orthogonality wall and reaches arithmetic in the phase — a genuine structural advance and a more natural arena than the self-adjoint prime-ladder — but its phase content is $\sqrt p$ **Gauss sums**, not $\{\gamma_n\}$. This is the §9.5 "**both walls coincide**" statement made operator-explicit: the residue-phase $\to$ $\zeta$-zeros bridge is the **same** $e$–$\pi$ / $\mathrm{Fix}(S_n)^\perp$ residue. The reframe **relocates and sharpens** the obstruction — from "find a self-adjoint $F$ with $\mathrm{spec}=\{\gamma_n\}$" to "connect the non-normal Gauss-sum phase ($\sqrt p$) to the $\zeta$-zero phase ($S(T)$)" — but **does not dissolve it**. The program stays paused at T-HP; **G4 = RH remains OPEN**; this closes no open problem.
+**Honest net.** The non-self-adjoint phase operator **does** evade the Euler-Orthogonality wall and reaches arithmetic in the phase — a genuine structural advance and a more natural arena than the self-adjoint prime-ladder — but its phase content is $\sqrt p$ **Gauss sums**, not $\{\gamma_n\}$. This is the §9.5 "**both walls coincide**" statement made operator-explicit: the residue-phase $\to$ $\zeta$-zeros bridge is the **same** $e$–$\pi$ / $\mathrm{Fix}(S_n)^\perp$ residue. The reframe **relocates and sharpens** the obstruction — from "find a self-adjoint $F$ with $\mathrm{spec}=\{\gamma_n\}$" to "connect the non-self-adjoint Gauss-sum phase ($\sqrt p$) to the $\zeta$-zero phase ($S(T)$)" — but **does not dissolve it**. The program stays paused at T-HP; **G4 = RH remains OPEN**; this closes no open problem.
 
 ---
 
