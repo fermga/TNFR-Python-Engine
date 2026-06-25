@@ -656,6 +656,25 @@ $$C_j(r) \approx A_j \cdot e^{-r/\xi_C^{(j)}}$$
 
 These tetrad fields on the prime path link the arithmetic distribution of primes to the structural field theory.
 
+### 10.5 Refactoring the Riemann Attack — From the Self-Adjoint Prime-Ladder to the Non-Normal Phase Operator (MEASURED)
+
+The TNFR-Riemann program is paused at the **Tetrad-Hilbert-Pólya (T-HP)** conjecture on the **self-adjoint** prime-ladder operator P14 (`src/tnfr/riemann/prime_ladder_hamiltonian.py`). That route is walled by the **Euler-Orthogonality Lemma** (TNFR_RIEMANN_RESEARCH_NOTES §13vicies-novies.11): on the prime-ladder graph every canonical operator **commutes with the $S_n$ prime-relabelling**, so the spectrum lives in $\mathrm{Fix}(S_n)$ and is structurally blind to the Riemann residue $S(T)=\tfrac1\pi\arg\zeta(\tfrac12+iT)\in\mathrm{Fix}(S_n)^\perp$.
+
+The number-theory reframe (§9.6, §9.8) supplies a **structurally different object** for the same residue: the **directed quadratic-residue diffusion operator** $L_{rw}=I-D^{-1}W$ on the Paley tournament ($n\equiv 3\pmod 4$). It is
+
+- **non-normal** → its spectrum is **complex**, carrying the arithmetic in the **phase** (imaginary part) — structurally aligned with the fact that the Riemann zeros are **imaginary parts** $\{\gamma_n\}$, whereas the self-adjoint Hilbert-Pólya framing seeks a **real** spectrum; and
+- symmetric only under the **affine group of $\mathbb{Z}/n$**, **not** the $S_n$ prime-relabelling — so it is **not subject to the Euler-Orthogonality Lemma**, and it already reaches **all odd primes** (§9.6), past the self-adjoint mod-4 restriction.
+
+So the natural question is whether the attack should pivot from "build a *self-adjoint* operator with spectrum $\{\gamma_n\}$" to "read the residue off the *non-normal* phase operator".
+
+**The pre-registered falsifier (MEASURED).** `benchmarks/residue_phase_vs_riemann.py` tests it on primes $p\equiv 3\pmod 4$:
+
+- **F-GAUSS** — $\max|\mathrm{Im}(\lambda)|(p)=\sqrt p/(p-1)$ **exactly** (ratio $1.000000$, 15/15 primes): the phase content is the **Paley Gauss-sum eigenvalue**, a classical fact.
+- **F-ALIGN** — $\mathrm{Pearson}\big(\max|\mathrm{Im}|(p_n),\,\gamma_n\big)=\mathbf{-0.9068}$: the residue phase content **decreases** like $1/\sqrt p$ while the zeros $\gamma_n$ **increase** — opposite trends.
+- **Verdict:** `GAUSS_CONFIRMED_RIEMANN_REFUTED`.
+
+**Honest net.** The non-normal phase operator **does** evade the Euler-Orthogonality wall and reaches arithmetic in the phase — a genuine structural advance and a more natural arena than the self-adjoint prime-ladder — but its phase content is $\sqrt p$ **Gauss sums**, not $\{\gamma_n\}$. This is the §9.5 "**both walls coincide**" statement made operator-explicit: the residue-phase $\to$ $\zeta$-zeros bridge is the **same** $e$–$\pi$ / $\mathrm{Fix}(S_n)^\perp$ residue. The reframe **relocates and sharpens** the obstruction — from "find a self-adjoint $F$ with $\mathrm{spec}=\{\gamma_n\}$" to "connect the non-normal Gauss-sum phase ($\sqrt p$) to the $\zeta$-zero phase ($S(T)$)" — but **does not dissolve it**. The program stays paused at T-HP; **G4 = RH remains OPEN**; this closes no open problem.
+
 ---
 
 ## 11. Worked Examples
