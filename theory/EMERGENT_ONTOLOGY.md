@@ -54,6 +54,22 @@ that consumes divisibility; chemistry *mixed*) — is the three-sector trichotom
 [TNFR_NUMBER_THEORY.md §9.5](TNFR_NUMBER_THEORY.md) and the two-layer ontology of
 [GLOSSARY.md](GLOSSARY.md). Together: one fixed point, many read-outs.
 
+For numbers, that cross-domain axis is now assembled into an explicit **ontological
+position ladder** ([TNFR_NUMBER_THEORY.md §9.8](TNFR_NUMBER_THEORY.md), example
+[155](../examples/08_emergent_geometry/155_ontological_position_of_numbers.py)): a number is a
+**cardinal** (a degeneracy = `dim` irrep of `Aut(G)`), carries emergent **+, ×** (graph products),
+has its **primality** and **factorization type** (`Ω, τ` → the `ΔNFR` triad) read off the residue
+spectrum (Sector B), and only the prime **identities** and the continuous `arg ζ` phase remain at
+the wall. The arithmetic `ΔNFR` coefficients are themselves canonically **unity** — only `π` is a
+genuine structural scale, and by the [§4.2](TNFR_NUMBER_THEORY.md) coefficient-independence theorem
+the weights are forced to `1` (no `φ/γ/e` overlay) — so Sector A's "circular re-expression" is the
+*consumed* read-out of a fixed point whose *emergent* read-out (Sector B) genuinely derives the
+arithmetic **up to that wall**. The wall is located on the **non-normal directed residue operator**
+([§10.5](TNFR_NUMBER_THEORY.md), `benchmarks/residue_phase_vs_riemann.py`): it carries arithmetic in
+the **phase** (`√p` Gauss sums), structurally distinct from the `ζ` zeros — the obstruction is
+**sharpened and relocated, not dissolved**. This cross-domain refinement is a structural read-out
+catalog (one fixed point, many emergence sectors); it closes no open problem.
+
 ---
 
 ## 1. First principles
