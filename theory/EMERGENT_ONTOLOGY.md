@@ -194,6 +194,50 @@ Some emergents appear only at the **intersection** of others — capabilities no
   discretizes the matter stage, §7.1a, and binds composites, §7.4). → the structural form of an
   effective mass from confinement (not a derived particle mass).
 
+### 2.3 The emergence-directness law — structural level × symmetry sector — **DERIVED (pieces); unifying correspondence**
+
+The §2.1–§2.2 pivots thread the *within-graph* towers; one more pivot threads the **orthogonal
+cross-domain axis** of §0 — *why* the domains order by directness (particle winding *directly*, the
+number-theory spectral sector *partially*, the arithmetic `ΔNFR` *circularly*). The order is fixed
+by two choices: **which level** of the three-level structure (§7.1 stage → occupant → process)
+carries a domain's canonical read-out, and **which `Aut(G)` representation sector** (Schur:
+`Fix(G) ⊕ Fix(G)^⊥`, [ex 123](../examples/08_emergent_geometry/123_symmetry_sector_decomposition.py))
+that read-out lives in.
+
+| Level / read-out | `Aut(G)` sector | Directness |
+|---|---|---|
+| **occupant** — winding `W` | `Fix(G)` (invariant) | **DIRECT** (particles) |
+| **stage** — spectral rank `ρ` | `Fix(G)^⊥` (non-trivial irreps) | **PARTIAL** — the wall (numbers) |
+| **process** — `ΔNFR(Ω,τ,σ)` | — (consumes its input) | **CIRCULAR** (arithmetic) |
+
+**The law (measured, [ex 156](../examples/08_emergent_geometry/156_emergence_directness_law.py)).** A
+topological (occupant) read-out is *direct* because it is a `Fix(G)` invariant — the winding `|W|`
+is unchanged by **every** automorphism (24/24 on `C₁₂`); a spectral (stage) read-out is *partial*
+because it is trapped in `Fix(G)^⊥` — on a vertex-transitive graph every per-node quantity is
+orbit-constant (`Fix`, blind), so the arithmetic discriminator `ρ` (`ρ=3 ⟺ prime`) must live in the
+non-trivial irreps ([ex 120](../examples/08_emergent_geometry/120_symmetry_wall_substrate_vs_spectrum.py));
+a process read-out is *circular* because it consumes the divisibility it reports.
+
+**One symmetry, many jobs.** This is the cross-domain face of the *same* representation theory that
+fixes the **secondary synergies** — each algebraic relation an operator has with the coupling `A`
+produces a distinct emergent (each measured):
+
+| Relation to `A` | Signature | Emergent it produces |
+|---|---|---|
+| commuting automorphism | `[A,P]=0` | the **wall** (`Fix(G)^⊥` confinement) |
+| anticommuting chiral `Γ` | `{A,Γ}=0` | the additive inverse `−n` = the antiparticle `−W` ([chiral_involution.py](../benchmarks/chiral_involution.py)) |
+| non-symmetric circulant | `A≠Aᵀ`, `[A,Aᵀ]=0` | the **Gauss-sum phase** (`ℤ/n` Fourier eigenbasis, §10.5 / [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md)) |
+| graph product (Cartesian/tensor) | spectrum adds / multiplies | `+` / `×` — but **not** unique factorisation ([composition_arithmetic.py](../benchmarks/composition_arithmetic.py)) |
+
+The same `Z₂` distinction separates **parity** `P` (an orientation-reversing automorphism,
+*commuting*) from **charge conjugation** `C` (phase conjugation `φ → −φ`, the *anticommuting* chiral
+`Γ`): both send `W → −W`, but only `C` is the additive inverse of `ℤ`.
+
+**Honest scope.** Every piece is DERIVED/measured; the law itself is a **unifying re-expression**
+(one fixed point, many read-outs), not a new theorem. It closes **no** open problem — the wall
+persists (the prime identities / continuous `arg ζ` phase stay `Fix(S_n)^⊥`-confined; G4 = RH
+remains OPEN).
+
 ---
 
 ## 3. The shared geometry (regime-independent)
