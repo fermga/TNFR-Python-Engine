@@ -617,13 +617,12 @@ class TestConstants:
     """Tests for physical constants."""
 
     def test_von_koch_threshold(self):
-        """Von Koch threshold is the canonical 0.7711 value."""
-        assert abs(PHI_S_VON_KOCH_THRESHOLD - 0.7711) < 1e-6
+        """Per-node Φ_s confinement bound is π/4 (quarter phase-wrap)."""
+        assert abs(PHI_S_VON_KOCH_THRESHOLD - (3.141592653589793 / 4)) < 1e-6
 
     def test_golden_threshold(self):
-        """Golden ratio threshold matches phi."""
-        phi = (1 + 5**0.5) / 2
-        assert abs(PHI_S_GOLDEN_THRESHOLD - phi) < 0.001
+        """Φ_s drift bound (U6) is π/2 (half phase-wrap)."""
+        assert abs(PHI_S_GOLDEN_THRESHOLD - (3.141592653589793 / 2)) < 0.001
 
 
 # ============================================================================

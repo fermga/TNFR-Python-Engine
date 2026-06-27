@@ -35,7 +35,7 @@ except ImportError:  # pragma: no cover
     nx = None
 
 from ..constants import inject_defaults
-from ..constants.canonical import DELTA_PHI_MAX, PHI, PI
+from ..constants.canonical import DELTA_PHI_MAX, PI, U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..mathematics.unified_numerical import np
 from ..physics._helpers import wrap_angle
 from ..physics.canonical import compute_structural_potential
@@ -63,7 +63,7 @@ class StructuralGaugeGapOperator:
     curvature_potential : dict[Any, float]
         Per-node curvature contribution, normalised by π².
     confinement_potential : dict[Any, float]
-        Per-node U6 structural-potential contribution, normalised by φ².
+        Per-node U6 structural-potential contribution, normalised by (π/2)².
     metadata : dict[str, Any]
         Reproducibility and structural telemetry metadata.
     """
@@ -221,7 +221,7 @@ def build_structural_gauge_gap_operator(
     ``V_F``
         Gauge-curvature potential from cycle holonomies ``F_C² / π²``.
     ``V_U6``
-        Structural-potential confinement contribution ``Φ_s² / φ²``.
+        Structural-potential confinement contribution ``Φ_s² / (π/2)²``.
 
     The construction is read-only: it does not mutate EPI or any graph
     attribute.
@@ -267,7 +267,9 @@ def build_structural_gauge_gap_operator(
 
     phi_s = compute_structural_potential(G)
     confinement_potential = {
-        node: (abs(float(phi_s.get(node, 0.0))) / PHI) ** 2 if PHI else 0.0
+        node: (abs(float(phi_s.get(node, 0.0))) / U6_STRUCTURAL_POTENTIAL_LIMIT) ** 2
+        if U6_STRUCTURAL_POTENTIAL_LIMIT
+        else 0.0
         for node in nodes
     }
 
@@ -303,8 +305,8 @@ def build_structural_gauge_gap_operator(
         "yang_mills_action": float(compute_yang_mills_action(G)),
         "gauge_coupling_constant": float(compute_gauge_coupling_constant(G)),
         "max_abs_phi_s": float(max_abs_phi_s),
-        "u6_threshold_phi": float(PHI),
-        "u6_confined": bool(max_abs_phi_s < PHI),
+        "u6_threshold_phi": float(U6_STRUCTURAL_POTENTIAL_LIMIT),
+        "u6_confined": bool(max_abs_phi_s < U6_STRUCTURAL_POTENTIAL_LIMIT),
         "grammar_rules_satisfied": grammar_rules_satisfied,
         "grammar_rules_total": grammar_rules_total,
         "grammar_error": grammar_error,

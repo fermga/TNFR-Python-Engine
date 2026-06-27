@@ -59,7 +59,7 @@ a coherent region a macro-NFR.
 **Code:** `G.nodes[n]['dnfr']`, `ALIAS_DNFR`  
 **Symbol:** \(\Delta\text{NFR}\)  
 **What:** Structural reorganization **pressure** — the gradient driving evolution.  
-**Four gradient channels:** \(\Delta\text{NFR} = w_\phi\,\partial\phi + w_E\,\partial\text{EPI} + w_{\nu}\,\partial\nu_f + w_\tau\,\partial\text{topo}\) (phase desync, EPI gradient, νf gradient, topology). Canonical default weights `DNFR_WEIGHTS = {phase ≈ 0.737, epi ≈ 0.155, vf ≈ 0.090, topo = 0.0}` in [config/defaults_core.py](../src/tnfr/config/defaults_core.py); normalized and applied by `_configure_dnfr_weights` in [dynamics/dnfr.py](../src/tnfr/dynamics/dnfr.py).  
+**Four gradient channels:** \(\Delta\text{NFR} = w_\phi\,\partial\phi + w_E\,\partial\text{EPI} + w_{\nu}\,\partial\nu_f + w_\tau\,\partial\text{topo}\) (phase desync, EPI gradient, νf gradient, topology). Operational default weights (tunable, free parameters) `DNFR_WEIGHTS = {phase ≈ 0.737, epi ≈ 0.155, vf ≈ 0.090, topo = 0.0}` in [config/defaults_core.py](../src/tnfr/config/defaults_core.py); normalized and applied by `_configure_dnfr_weights` in [dynamics/dnfr.py](../src/tnfr/dynamics/dnfr.py).  
 **EPI channel = graph diffusion (KEY):** the EPI channel is exactly the random-walk graph Laplacian, \(\Delta\text{NFR}_\text{epi}(i) = \overline{\text{EPI}}_{\mathcal{N}(i)} - \text{EPI}(i) = -(L_\text{rw}\,\text{EPI})(i)\), so \(\partial\text{EPI}/\partial t = -\nu_f L_\text{rw}\,\text{EPI}\) is the **discrete diffusion (heat) equation** with diffusivity νf — eigenmode decay \(e^{-\nu_f \lambda_k t}\), conserved degree-weighted total, equilibrium ⟺ uniform field.  
 **Sign:** positive = expansion, negative = contraction.  
 **Compute:** `default_compute_delta_nfr` hook, automatic in `step()`.  
@@ -82,7 +82,7 @@ a coherent region a macro-NFR.
 **Formula:** \(C(t) = 1/(1 + \overline{|\Delta\text{NFR}|} + \overline{|d\text{EPI}|})\) (canonical; derived from the nodal equation — equilibrium \(\Delta\text{NFR}\to 0 \wedge d\text{EPI}\to 0 \Rightarrow C\to 1\))  
 **Range:** \([0, 1]\) where 1 = perfect coherence, 0 = total fragmentation  
 **What:** Global stability measure (recorded in `history['C_steps']`). **Dual status:** beyond a telemetry read-out, its per-node kernel `structural_coherence` (= \(1/(1+|\Delta\text{NFR}|+|d\text{EPI}|)\)) is the **single constitutive coherence map** every domain reads (graph, arithmetic, chemical) — an NFR *is* a region of structural coherence, so \(C\) measures the coherence that **defines** NFR-hood. `compute_coherence` delegates to this kernel.  
-**Thresholds:** strong \(C > 0.7506\); fragmentation risk \(C < 0.2415\) (heuristic telemetry cuts, not derived).  
+**Thresholds:** strong \(C > \pi/(\pi+1) \approx 0.7585\); fragmentation risk \(C < 1/(\pi+1) \approx 0.2415\) (the coherence band; π the sole structural scale).  
 **Code:** [src/tnfr/metrics/common.py](../src/tnfr/metrics/common.py) (`compute_coherence`, `structural_coherence`)  
 **Math:** [FUNDAMENTAL_THEORY.md §5.1](FUNDAMENTAL_THEORY.md), [AGENTS.md §7](../AGENTS.md)
 
@@ -109,7 +109,7 @@ a coherent region a macro-NFR.
 **Formula:** \(\text{Si} = \alpha \cdot \nu_{f,\text{norm}} + \beta \cdot (1 - \text{disp}_\theta) + \gamma \cdot (1 - |\Delta\text{NFR}|_{\text{norm}})\)  
 **Range:** \([0, 1^+]\) typically, higher = more stable reorganization  
 **What:** Reorganization-capacity predictor. Unlike `C(t)`, Si is a **heuristic composite** (weighted νf, phase sync, \(|\Delta\text{NFR}|\)) — predictive/diagnostic, **not** constitutive of NFR-hood. `Si > 0.8` excellent; `Si < 0.4` bifurcation-prone.  
-**Weights:** canonical defaults \(\alpha = \varphi/(\varphi+\gamma) \approx 0.737\), \(\beta = \gamma/(\pi+\gamma) \approx 0.155\), \(\gamma_w = \gamma/(\varphi\pi) \approx 0.114\) (`SI_WEIGHTS` in `config/defaults_core.py`; sum \(\approx 1\))  
+**Weights:** operational defaults \(\alpha \approx 0.737\), \(\beta \approx 0.155\), \(\gamma_w \approx 0.114\) (`SI_WEIGHTS` in `config/defaults_core.py`; free parameters, sum \(\approx 1\))  
 **Math:** [Mathematical Foundations - Metrics](MATHEMATICAL_DYNAMICS_BASIS.md)
 
 ### Phase Gradient (|∇φ|) - CANONICAL
@@ -120,7 +120,7 @@ a coherent region a macro-NFR.
 **What:** Local phase desynchronization / stress proxy field  
 **Status:** **CANONICAL** (Nov 2025)  
 **Physics:** Captures dynamics C(t) misses due to scaling invariance  
-**Threshold:** Kinematic bound |∇φ| ≤ π (phase wrap — same as K_φ); γ/π ≈ 0.1837 is only a heuristic early-warning level, NOT a derived bound (measured sync-onset ≈ 0.29, σ-dependent)  
+**Threshold:** Kinematic bound |∇φ| ≤ π (phase wrap — same as K_φ); ≈ 0.18 is only a heuristic early-warning level, NOT a derived bound (measured sync-onset ≈ 0.29, σ-dependent)  
 **API:** `tnfr.physics.fields.compute_phase_gradient()`  
 **Usage:** Stress detection, local instability prediction  
 **Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
@@ -165,18 +165,18 @@ a coherent region a macro-NFR.
 **Status:** **CANONICAL** (Nov 2025)  
 **Validation:** 2,041 tests across 5 topologies  
 **Physics:** Passive equilibrium confinement landscape  
-**Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < φ ≈ 1.618 canonical confinement; ceiling 2.0 binary escape)  
+**Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < π/2 ≈ 1.571 confinement bound, half phase-wrap; ceiling 2.0 binary escape)  
 **API:** `tnfr.physics.fields.compute_structural_potential()`  
-**Threshold:** Per-node bound |Φ_s| < 0.7711 (empirically validated; no closed-form derivation — the "von Koch / Γ(4/3)/Γ(1/3)" derivation is incorrect, that ratio = 1/3)  
+**Threshold:** Per-node bound |Φ_s| < π/4 ≈ 0.785 (quarter phase-wrap; π-derived, tied to the one genuine structural scale π)  
 **Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
 - [src/tnfr/physics/fields.py](../src/tnfr/physics/fields.py) - Implementation
 
 **Interpretation:**
 - Φ_s minima = passive equilibrium states
-- Δ Φ_s < φ ≈ 1.618 = canonical confinement (safe regime)
+- Δ Φ_s < π/2 ≈ 1.571 = confinement (safe regime, half phase-wrap)
 - Δ Φ_s ≥ 2.0 = binary escape threshold (fragmentation risk)
-- Valid sequences: Δ Φ_s ≈ 0.6 (37% of φ threshold)
-- Violations: Δ Φ_s ≈ 3.9 (240% of φ threshold)
+- Valid sequences: Δ Φ_s ≈ 0.6 (≈ 38% of the π/2 bound)
+- Violations: Δ Φ_s ≈ 3.9 (≈ 248% of the π/2 bound)
 
 **Mechanism:** Grammar U1-U5 acts as passive confinement (NOT active attractor). Reduces escape drift by 85%.
 
@@ -247,11 +247,12 @@ The quantities that govern TNFR dynamics, with their canonical status.
 | Equilibrium tolerance | eps_dnfr / eps_depi | EPS_DNFR_STABLE = 1e-3 | `is_structural_equilibrium` cut (1e-12 for exact arithmetic) | numerical scale |
 | Spectral gap | λ₂ | graph-dependent | slowest relaxation; ξ_C ∝ 1/√λ₂; r_c = νf·λ₂ | structural |
 | Phase scale | π | exact | the **one genuine structural constant**: bounds \|∇φ\| and \|K_φ\| | genuine |
-| Overlay constants | φ, γ, e | notational | label parameters; the thresholds they name are empirical/heuristic, not derived | notational |
+| Non-structural parameters | — | free / derived | operator gains, clamps, dt, coupling rates — derived from the dynamics or free operational parameters | operational |
 
-**Only π is a genuine structural constant** (the phase-wrap bound). φ, γ, e are notational
-overlays — the thresholds they label (φ≈1.618 for ΔΦ_s, γ/π≈0.184 heuristic early-warning
-for |∇φ|) are empirical/heuristic, **not** derived from the nodal equation.
+**Only π is a genuine structural constant** (the phase-wrap bound). φ, γ, e are **not**
+structural scales and no longer appear in the engine; every parameter other than π is
+derived from the nodal dynamics / spectral gap (e.g. ξ_C ∝ 1/√λ₂, the π-derived ΔΦ_s
+bound π/2) or is a free operational parameter (e.g. the ≈ 0.18 |∇φ| early-warning level).
 
 ---
 
@@ -449,7 +450,7 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 | **U3** | RESONANT COUPLING | Phase compatibility required for resonance | If coupling {UM, RA}, verify \|φᵢ - φⱼ\| ≤ Δφ_max | ABSOLUTE |
 | **U4** | BIFURCATION DYNAMICS | ZHIR mutates θ when dEPI/dt > ξ; bifurcations need control | Triggers {OZ, ZHIR} need handlers {THOL, IL}; Transformers need a recent destabilizer (ZHIR also a prior IL) | STRONG |
 | **U5** | MULTI-SCALE COHERENCE | Hierarchical coupling + chain rule | Nested EPIs require stabilizers {IL, THOL} at each level | ABSOLUTE |
-| **U6** | STRUCTURAL POTENTIAL CONFINEMENT | Emergent Φ_s field: Φ_s(i) = Σ ΔNFR_j/d(i,j)² | Monitor Δ Φ_s < φ ≈ 1.618 (canonical confinement); ceiling 2.0 | STRONG |
+| **U6** | STRUCTURAL POTENTIAL CONFINEMENT | Emergent Φ_s field: Φ_s(i) = Σ ΔNFR_j/d(i,j)² | Monitor Δ Φ_s < π/2 ≈ 1.571 (half phase-wrap); ceiling 2.0 | STRONG |
 
 **Canonicity Levels:**
 - **ABSOLUTE**: Mathematical necessity (direct consequence of nodal equation)
@@ -549,15 +550,15 @@ Operators that require phase verification for valid coupling.
 
 ## The Structural-Field Tetrad
 
-**Theory:** The four structural fields are the minimal derivative tower (DERIVED). They are *associated* with four constants as a notational label; only π is a genuine structural scale (the phase-wrap bound shared by |∇φ| and K_φ).
+**Theory:** The four structural fields are the minimal derivative tower (DERIVED). Only π is a genuine structural scale (the phase-wrap bound shared by |∇φ| and K_φ).
 
-### The constants
+### The one structural scale
 
-The engine uses four mathematical constants (φ, γ, π, e) as notational labels for parameters. Only **π** is a genuine structural scale — it bounds the phase sector (|∇φ| ≤ π and |K_φ| ≤ π). φ, γ, e are notational; the bounds they label are empirical or heuristic, not derived from the nodal equation.
+Only **π** is a genuine structural scale — it bounds the phase sector (|∇φ| ≤ π and |K_φ| ≤ π). φ, γ, e are **not** structural scales and no longer appear in the engine; the coherence length is set by the spectral gap (ξ_C ∝ 1/√λ₂) and the Φ_s confinement bound is π-derived. Every other parameter is derived from the nodal dynamics or is a free operational parameter.
 
 ### Structural Fields and their bounds
 
-1. **Φ_s** (0th order): empirical confinement Δ Φ_s < φ ≈ 1.618 (no closed form; φ is motivation only)
+1. **Φ_s** (0th order): π-derived confinement Δ Φ_s < π/2 ≈ 1.571 (half phase-wrap; per-node |Φ_s| < π/4 ≈ 0.785)
 2. **|∇φ|** (1st order): bound |∇φ| ≤ π (phase wrap); γ/π ≈ 0.184 is a heuristic early-warning only
 3. **K_φ** (2nd order): bound |K_φ| < 0.9×π ≈ 2.827 (phase wrap — GENUINE); K_φ = L_rw·φ
 4. **ξ_C** (correlation): scale set by the spectral gap, ξ_C ∝ 1/√λ₂ (not base e)
@@ -877,14 +878,14 @@ Tetrad fields are diagnostic outputs, not independent dynamical variables. They 
 
 ---
 
-## Von Koch Threshold
+## Per-Node Φ_s Threshold
 
-**Value:** PHI_S_VON_KOCH_THRESHOLD = 0.7711  
+**Value:** PHI_S_VON_KOCH_THRESHOLD = π/4 ≈ 0.785  
 **What:** Per-node safety threshold for structural potential |Φ_s|.  
-**Derivation:** Empirically validated, confirmed across 5 topologies. **No closed-form first-principles derivation is currently established** (open problem). The constant name retains "VON_KOCH" for code-compatibility, but the previously claimed identity Γ(4/3)/Γ(1/3) ≈ 0.7711 is **incorrect**: Γ(4/3)/Γ(1/3) = 1/3, not 0.7711.  
-**Usage:** |Φ_s(i)| < 0.7711 indicates safe per-node structural potential.  
+**Derivation:** π-derived — a quarter phase-wrap, tying the bound to the one genuine structural scale (π). The constant name retains "VON_KOCH" for code-compatibility only; there is no golden-ratio or von-Koch content (the earlier empirical 0.7711 / Γ(4/3)/Γ(1/3) framing is superseded).  
+**Usage:** |Φ_s(i)| < π/4 ≈ 0.785 indicates safe per-node structural potential.  
 **API:** `tnfr.constants.canonical.PHI_S_VON_KOCH_THRESHOLD`  
-**Relation to U6:** Part of three-tier Φ_s monitoring: 0.7711 (per-node) → φ ≈ 1.618 (drift confinement) → 2.0 (escape ceiling).
+**Relation to U6:** Part of three-tier Φ_s monitoring: π/4 ≈ 0.785 (per-node) → π/2 ≈ 1.571 (drift confinement, half phase-wrap) → 2.0 (escape ceiling).
 
 ---
 
@@ -930,12 +931,12 @@ Quick reference for canonical threshold values from `src/tnfr/constants/canonica
 
 | Threshold | Value | Derivation | Usage |
 |-----------|-------|------------|-------|
-| PHI_S_VON_KOCH_THRESHOLD | 0.7711 | Empirical (no closed-form derivation; Γ(4/3)/Γ(1/3)=1/3, not 0.7711) | Per-node Φ_s safety |
-| PHASE_GRADIENT_THRESHOLD | γ/π ≈ 0.1837 | Heuristic early-warning (not derived; bound is π) | \|∇φ\| stability |
+| PHI_S_VON_KOCH_THRESHOLD | π/4 ≈ 0.785 | π-derived (quarter phase-wrap) | Per-node Φ_s safety |
+| PHASE_GRADIENT_THRESHOLD | ≈ 0.18 | Heuristic early-warning, operational (not derived; bound is π) | \|∇φ\| stability |
 | K_PHI_CANONICAL_THRESHOLD | 0.9×π ≈ 2.8274 | 90% of wrap_angle π bound (genuine) | K_φ fault zone detection |
-| U6 canonical confinement | φ ≈ 1.618 | Empirical/notational (φ is motivation, no closed form) | ΔΦ_s drift safety |
+| U6 canonical confinement | π/2 ≈ 1.571 | π-derived (half phase-wrap) | ΔΦ_s drift safety |
 | STRUCTURAL_ESCAPE_THRESHOLD | e^ln(2) = 2.0 | Binary escape theory | ΔΦ_s absolute ceiling |
-| MIN_BUSINESS_COHERENCE | (e×φ)/(π+e) ≈ 0.7506 | Notational combination | Strong coherence threshold |
+| MIN_BUSINESS_COHERENCE | ≈ 0.75 | Operational (free parameter) | Business-health cut (the canonical strong-coherence gate is the emergent π/(π+1) ≈ 0.7585) |
 | THOL_MIN_COLLECTIVE_COHERENCE | 1/(π+1) ≈ 0.2415 | Geometric series bound | Fragmentation risk threshold |
 
 ---

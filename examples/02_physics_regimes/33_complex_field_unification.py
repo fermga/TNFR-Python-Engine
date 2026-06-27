@@ -35,7 +35,6 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import GAMMA, PHI, PI, E
 from tnfr.physics.extended import compute_dnfr_flux, compute_phase_current
 from tnfr.physics.fields import (
     compute_complex_geometric_field_arrays,

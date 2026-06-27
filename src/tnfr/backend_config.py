@@ -60,11 +60,11 @@ class TNFRConfig:
     cache_validation_results: bool = True
     max_validation_time_ms: float = 1000.0
 
-    # Structural Field Tetrad Parameters (audit 2026: π genuine; γ/e/φ overlay)
+    # Structural Field Tetrad Parameters (audit 2026: only π genuine)
     structural_potential_threshold: float = (
-        STRUCTURAL_ESCAPE_THRESHOLD_THEORETICAL  # e^ln(2) = 2.0
+        STRUCTURAL_ESCAPE_THRESHOLD_THEORETICAL  # 2.0
     )
-    phase_gradient_threshold: float = PHASE_GRADIENT_THRESHOLD_CANONICAL  # γ/π ≈ 0.1837
+    phase_gradient_threshold: float = PHASE_GRADIENT_THRESHOLD_CANONICAL  # ≈ 0.196 (π/16)
     phase_curvature_threshold: float = (
         PHYSICS_CURVATURE_HOTSPOT_CANONICAL  # 0.9×π ≈ 2.8274
     )

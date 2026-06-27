@@ -191,7 +191,7 @@ Element-specific structural signatures are constructed from the field tetrad and
 |-----------|-------|-----------|
 | $|\nabla\phi|$ bound | $\le \pi$ (phase wrap) | Wrapped-angle bound (γ/π ≈ 0.1837 is heuristic only, not derived) |
 | $K_\phi$ canonical | $0.9\pi \approx 2.827$ | 90% of wrap-angle maximum |
-| Permissive curvature (Au) | $(\varphi + 1)\pi/e \approx 3.025$ | Golden-ratio adjusted |
+| Permissive curvature (Au) | $0.95\pi \approx 2.985$ | 95% of the π phase-wrap (operational margin) |
 
 **Implementation**: `src/tnfr/physics/signatures.py` — `compute_element_signature()`, spectral coherence metrics.
 

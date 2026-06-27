@@ -59,7 +59,7 @@ HONEST SCOPE:
   theorem, the physical existence of antimatter, or the Standard Model -- those
   carry analytic and field-theoretic content far beyond a sublattice sign flip.
   It also does not make arithmetic primality emergent (that is Camino 1/2). R
-  (continuum) and the constants phi, gamma, pi, e remain assumed substrate; this
+  (continuum) and pi remain assumed substrate; this
   is Z, not R. Nothing here touches G4 = RH, Navier-Stokes, or Yang-Mills.
 
 Run:
@@ -420,7 +420,7 @@ def main():
     print("  equivariance wall -- two different Z_2 on the same graph. HONEST SCOPE:")
     print("  exact finite Z_2 group actions on a graph; a precise structural")
     print("  analogy, NOT a derivation of CPT, antimatter, or the Standard Model.")
-    print("  R and phi,gamma,pi,e remain assumed substrate; this is Z, not R;")
+    print("  R and pi remain assumed substrate; this is Z, not R;")
     print("  nothing here touches G4 = RH, Navier-Stokes, or Yang-Mills.")
     return 0 if overall else 1
 

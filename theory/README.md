@@ -13,7 +13,6 @@ Every theory document maps to executable examples and SDK entry points:
 | [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) | [01](../examples/01_foundations/01_hello_world.py)–[03](../examples/01_foundations/03_network_formation.py), [05](../examples/01_foundations/05_coherence_evolution.py), [06](../examples/01_foundations/06_network_topologies.py), [08](../examples/01_foundations/08_emergent_phenomena.py), [09](../examples/01_foundations/09_visualization_suite.py), [37](../examples/02_physics_regimes/37_operator_tetrad_synergy.py), [39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py) | `TNFR.create()`, `.evolve()`, `.tetrad()`, `.telemetry()` |
 | [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) | [05](../examples/01_foundations/05_coherence_evolution.py), [10](../examples/01_foundations/10_simplified_sdk_showcase.py), [35](../examples/02_physics_regimes/35_tetrad_irreducibility.py), [39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py) | `.tetrad()`, `.fields()`, `.conservation()` |
 | [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | [05](../examples/01_foundations/05_coherence_evolution.py), [10](../examples/01_foundations/10_simplified_sdk_showcase.py), [31](../examples/02_physics_regimes/31_mathematical_constants_basis.py) | `.tetrad()`, `.fields()` |
-| [SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md](SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md) | [08](../examples/01_foundations/08_emergent_phenomena.py), [10](../examples/01_foundations/10_simplified_sdk_showcase.py), [32](../examples/02_physics_regimes/32_spiral_attractors_demo.py) | `.evolve()`, `.tetrad()` |
 | [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) | [04](../examples/01_foundations/04_operator_sequences.py), [07](../examples/01_foundations/07_phase_transitions.py), [36](../examples/02_physics_regimes/36_grammar_violation_detector.py), [38](../examples/02_physics_regimes/38_grammar_energy_landscape.py) | `.evolve_grammar_aware()`, `GrammarAwareDynamics` |
 | [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) | [17](../examples/02_physics_regimes/17_conservation_law_demo.py), [24](../examples/03_riemann_zeta/24_spectral_conservation_demo.py), [34](../examples/02_physics_regimes/34_conservation_protocol_suite.py), [36](../examples/02_physics_regimes/36_grammar_violation_detector.py), [37](../examples/02_physics_regimes/37_operator_tetrad_synergy.py), [38](../examples/02_physics_regimes/38_grammar_energy_landscape.py) | `.conservation()`, `ConservationReport` |
 | [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | [27](../examples/02_physics_regimes/27_variational_principle_demo.py) | `tnfr.physics.variational` |
@@ -77,8 +76,7 @@ Every theory document maps to executable examples and SDK entry points:
 | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Extended fields (J_φ, J_ΔNFR), complex geometric field Ψ, derived invariants (χ, 𝒮, 𝒞, ℰ, 𝒬), energy decomposition |
 | [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Lindblad dissipator, dissipative continuity equation, purity decay, entropy production, dissipation tiers |
 | [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Lyapunov per-operator bounds, phase transitions, life/autopoiesis, node lifecycle, Hamiltonian, integrity monitor |
-| [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | The structural-field tetrad as the minimal basis; the notational constants and their mathematical character; genuine vs notational scales |
-| [SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md](SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md) | Logarithmic spiral from nodal equation; golden spiral condition; tetrad signatures; φ as structural attractor; anti-resonance property |
+| [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) | The structural-field tetrad as the minimal derivative-tower basis; why only π is a genuine structural scale |
 | [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) | Complete specification of 13 canonical operators: physics, transformations, constants, energy bounds, postconditions, compositions |
 | [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md) | Arithmetic TNFR: primality as ΔNFR = 0, canonical constants, pressure components, dual-lever decomposition, spectral factorization, Riemann connection |
 | [NUCLEUS_A_PRIME_LADDER_ATLAS.md](NUCLEUS_A_PRIME_LADDER_ATLAS.md) | Canonical prime-ladder construction atlas: P12–P15 pipeline, self-adjoint Hamiltonian, Weil–Guinand verification |
@@ -118,14 +116,14 @@ $$
 
 ### Structural-Field Tetrad
 
-The four fields are the four orders of the discrete derivative tower (this basis is DERIVED). Each is *associated* with a constant as a notational label; only **π** is a genuine structural scale (the phase-wrap bound of the phase sector).
+The four fields are the four orders of the discrete derivative tower (this basis is DERIVED). Only **π** is a genuine structural scale (the phase-wrap bound of the phase sector); the coherence length is set by the spectral gap (ξ_C ∝ 1/√λ₂) and the Φ_s bound is π-derived.
 
 | Field | Tower order | Structural bound |
 |-------|-------------|-------------------------------|
-| $\Phi_s$ (Structural Potential) | 0th (aggregation) | $\|\Phi_s\| < 0.7711$ empirical (no closed form; $\varphi$ is motivation only) |
-| $\|\nabla\phi\|$ (Phase Gradient) | 1st (local) | $\|\nabla\phi\| \le \pi$ (phase wrap; $\gamma/\pi$ is heuristic, not a bound) |
+| $\Phi_s$ (Structural Potential) | 0th (aggregation) | $\|\Phi_s\| < \pi/4 \approx 0.785$ (π-derived, quarter phase-wrap) |
+| $\|\nabla\phi\|$ (Phase Gradient) | 1st (local) | $\|\nabla\phi\| \le \pi$ (phase wrap; the $\approx 0.18$ early-warning level is heuristic, not a bound) |
 | $K_\phi$ (Phase Curvature) | 2nd (local) | $\|K_\phi\| < 0.9\pi \approx 2.827$ (phase wrap); $K_\phi = L_{rw}\phi$ |
-| $\xi_C$ (Coherence Length) | correlation | $\xi_C \propto 1/\sqrt{\lambda_2}$ (spectral gap; not base $e$) |
+| $\xi_C$ (Coherence Length) | correlation | $\xi_C \propto 1/\sqrt{\lambda_2}$ (spectral gap) |
 
 ### 13 Canonical Operators
 
@@ -156,7 +154,7 @@ AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH
 1. [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Why exactly four structural fields
 2. [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) — Full specification of the 13 canonical operators
 3. [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 derivations with canonicity proofs
-4. [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The four constants (φ, γ, π, e) as minimal basis
+4. [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad as the minimal derivative-tower basis (only π is a genuine structural scale)
 5. **Try**: [01_foundations/04_operator_sequences.py](../examples/01_foundations/04_operator_sequences.py), [02_physics_regimes/37_operator_tetrad_synergy.py](../examples/02_physics_regimes/37_operator_tetrad_synergy.py)
 
 ### Advanced (physics & conservation)

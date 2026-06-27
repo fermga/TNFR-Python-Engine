@@ -315,7 +315,7 @@ class AdelicDynamics:
         # Apply a small constant drift to keep scanning if gradient is small
         # (Exploration term)
         drift = (
-            DYNAMICS_ADELIC_DRIFT_CANONICAL  # γ/(e+π) ≈ 0.0985 (canonical adelic drift)
+            DYNAMICS_ADELIC_DRIFT_CANONICAL  # = 0.1 (adelic drift)
         )
 
         time_step = (flow_rate + drift) * dt

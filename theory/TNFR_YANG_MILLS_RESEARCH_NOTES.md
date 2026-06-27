@@ -120,7 +120,7 @@ where:
 - `V_F` is a curvature potential derived from cycle holonomies `F_C`;
 - `V_U6` is a confinement barrier derived from the structural potential channel `Φ_s` and the U6 threshold.
 
-No term may depend on external labels, empirical tuning, or non-canonical per-node parameters.  Any coefficient must be traceable to the canonical constants `(φ, γ, π, e)` or to graph-level normalisation.
+No term may depend on external labels, empirical tuning, or non-canonical per-node parameters.  Any coefficient must be traceable to the canonical structural scale `π`, the nodal dynamics, or to graph-level normalisation.
 
 ---
 
@@ -158,7 +158,7 @@ $$
 H_{\mathrm{YM}}^{\mathrm{TNFR}} = L_A + V_F + V_{\mathrm{U6}},
 $$
 
-where `L_A` is the gauge-covariant graph Laplacian assembled from `A_ij`, `V_F` is the cycle-curvature potential normalised by `π²`, and `V_U6` is the structural-potential confinement term normalised by `φ²`.  The diagnostic reports `(λ0, λ1, Δ)`, self-adjointness, seeded local-U(1) spectral invariance, U6 metadata, Yang–Mills action, gauge coupling, and grammar-rule counts.  It is read-only with respect to EPI and phase attributes.
+where `L_A` is the gauge-covariant graph Laplacian assembled from `A_ij`, `V_F` is the cycle-curvature potential normalised by `π²`, and `V_U6` is the structural-potential confinement term normalised by `(π/2)²` (the U6 drift bound `U6_STRUCTURAL_POTENTIAL_LIMIT = π/2`).  The diagnostic reports `(λ0, λ1, Δ)`, self-adjointness, seeded local-U(1) spectral invariance, U6 metadata, Yang–Mills action, gauge coupling, and grammar-rule counts.  It is read-only with respect to EPI and phase attributes.
 
 Implement a finite-graph diagnostic that:
 
@@ -182,7 +182,7 @@ Implemented in:
 The Y2 sweep wraps the Y1 operator across finite graph families and target ratios
 
 $$
-\rho_{\mathrm{U6}} = \frac{\max_i |\Phi_s(i)|}{\varphi},
+\rho_{\mathrm{U6}} = \frac{\max_i |\Phi_s(i)|}{\pi/2},
 $$
 
 where `ρ_U6 < 1` is U6-confined and `ρ_U6 ≥ 1` intentionally probes unconfined structural-potential regimes.  The sweep records gap statistics, U6 confinement status, Yang–Mills equation residuals, curvature activity, grammar-rule counts, self-adjointness, and seeded local-U(1) spectral invariance.  The ratios are sampling targets only; the canonical threshold remains `ρ_U6 = 1`.
@@ -293,7 +293,7 @@ Any claimed TNFR–Yang–Mills result must satisfy:
 2. **Operator discipline** — no EPI mutation outside the 13 canonical operators.
 3. **Grammar compliance** — U1–U6 constraints are checked or explicitly scoped.
 4. **Gauge invariance** — reported gap must be invariant under local `Ψ → e^{iα}Ψ` transformations, or any gauge dependence must be classified as a diagnostic failure.
-5. **No empirical constants** — parameters derive from `(φ, γ, π, e)` or graph-level normalisation.
+5. **No empirical constants** — parameters derive from the nodal dynamics, the structural scale `π`, or graph-level normalisation.
 6. **Reproducibility** — graph family, seed, spectra, thresholds, and residuals are recorded.
 7. **Scope honesty** — finite TNFR gap results are not called a Clay proof unless non-Abelian existence and continuum scaling are addressed rigorously.
 

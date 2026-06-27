@@ -21,9 +21,6 @@ if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-from ..constants.canonical import (  # φ×π ≈ 5.083 for mutation threshold
-    MAX_STRUCTURAL_FREQUENCY,
-)
 
 __all__ = [
     "LifecycleState",
@@ -113,7 +110,7 @@ def get_lifecycle_state(
         - stabilization_dnfr: Max |ΔNFR| for stabilization (default: 1.0)
         - stabilization_coherence: Min coherence for stabilization (default: 0.8)
         - propagation_coupling: Min phase coupling for propagation (default: 0.7)
-        - mutation_dnfr: Min |ΔNFR| for mutation state (default: φ×π ≈ 5.083)
+        - mutation_dnfr: Min |ΔNFR| for mutation state (default ≈ 5.083)
 
     Returns
     -------
@@ -148,7 +145,7 @@ def get_lifecycle_state(
     stabilization_dnfr = _get_threshold("stabilization_dnfr", 1.0)
     stabilization_coherence = _get_threshold("stabilization_coherence", 0.8)
     propagation_coupling = _get_threshold("propagation_coupling", 0.7)
-    mutation_dnfr = _get_threshold("mutation_dnfr", MAX_STRUCTURAL_FREQUENCY)
+    mutation_dnfr = _get_threshold("mutation_dnfr", 5.0)  # high-dissonance ΔNFR (½ collapse)
 
     # Get node structural parameters
     vf = _get_node_attr(G, node, ALIAS_VF)

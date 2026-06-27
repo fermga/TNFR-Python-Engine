@@ -56,9 +56,9 @@ try:
 except ImportError:
     HAS_FFT_CACHE = False
 
-# Import PHASE 6 FINAL Canonical Constants for magic number elimination
-from ..constants.canonical import (
-    FFT_ENGINE_COUPLING_CANONICAL,  # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+# Operational engine-tuning knob (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
+    FFT_ENGINE_COUPLING_CANONICAL,
 )
 
 
@@ -244,7 +244,7 @@ class FFTDynamicsEngine:
         # Add coupling effects (simplified Kuramoto dynamics)
         if HAS_NETWORKX and G is not None:
             coupling_strength = (
-                FFT_ENGINE_COUPLING_CANONICAL  # γ/(π+e) ≈ 0.0985 → canonical
+                FFT_ENGINE_COUPLING_CANONICAL  # = 0.1 (operational)
             )
             nodes = list(G.nodes())
 

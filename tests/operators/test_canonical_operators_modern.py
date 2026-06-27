@@ -128,6 +128,9 @@ class TestCanonicalOperatorPhysics:
 
     def test_expansion_changes_structure(self) -> None:
         """Test VAL (Expansion) changes structural configuration."""
+        # Use a sub-maximal EPI: a node already at the unit form bound cannot
+        # expand further (edge-aware scaling caps at EPI_MAX = 1.0).
+        set_attr(self.G.nodes[1], ALIAS_EPI, 0.5)
         epi_before = get_attr(self.G.nodes[1], ALIAS_EPI)
 
         expansion = Expansion()

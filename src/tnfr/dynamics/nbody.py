@@ -407,7 +407,7 @@ class NBodySystem:
         self.graph: TNFRGraph = nx.Graph()
         self.graph.graph["name"] = "nbody_system"
 
-        # Canonical EPI seed stays below validation bound (φ/e ≈ 0.5952).
+        # Canonical EPI seed stays below the EPI_MAX = 1.0 validation bound.
         epi_seed = min(0.5, EPI_MAX_CANONICAL * 0.95)
 
         # Add nodes with TNFR attributes

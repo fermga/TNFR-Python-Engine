@@ -169,8 +169,10 @@ characteristic scale:
   and σ-dependent (a dynamical transition, not a derived threshold).
 - **ξ_C — spectral gap.** The correlation length is set by the **spectral gap**:
   `ξ_C ∝ 1/√λ₂` (verified).
-- **Φ_s — empirical confinement.** `Δ Φ_s < 1.618`, per-node `|Φ_s| < 0.7711`, an
-  empirically validated source-distribution bound with **no closed form**.
+- **Φ_s — π-derived confinement.** `Δ Φ_s < π/2 ≈ 1.571` (half phase-wrap, the U6
+  drift bound) and per-node `|Φ_s| < π/4 ≈ 0.785` (quarter phase-wrap). The phase
+  sector — scaled by the sole structural constant π — confines Φ_s; both are
+  π-fractions, **not** empirical.
 
 **Structure (verified).** `K_φ` **is** the central operator applied to phase
 (`K_φ = L_rw·φ` in the smooth limit, corr = 1.000) — the phase image of the one operator that
@@ -345,8 +347,8 @@ derivations [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md).
   prior IL (stable base).
 - **U5 — Multi-scale coherence.** Nested EPIs require stabilizers at each level;
   `C_parent ≥ α · Σ C_child`.
-- **U6 — Structural potential confinement.** Telemetry safety: monitor `Δ Φ_s < 1.618`
-  (`Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²`). Read-only check, not a sequence constraint.
+- **U6 — Structural potential confinement.** Telemetry safety: monitor `Δ Φ_s < π/2 ≈ 1.571`
+  (half phase-wrap; `Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²`). Read-only check, not a sequence constraint.
 
 **Single source of truth.** The operator-classification sets (generators, closures,
 stabilizers `{IL, THOL}`, destabilizers `{OZ, ZHIR, VAL}`, transformers `{ZHIR, THOL}`)
@@ -364,9 +366,11 @@ in [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.
 
 - **C(t) — total coherence** `[0,1]`, the primary stability indicator:
   `C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|)`, derived from the nodal equation
-  (equilibrium → `C → 1`). Strong coherence `C > 0.7506`; fragmentation
-  risk `C < 0.2415`. The two threshold *values* are heuristic telemetry cuts
-  (not derived from the dynamics, nor fitted to data). **Dual status**: beyond a
+  (equilibrium → `C → 1`). Strong coherence `C > π/(π+1) ≈ 0.7585`; fragmentation
+  risk `C < 1/(π+1) ≈ 0.2415`. The two cuts are the coherence band
+  `[1/(π+1), π/(π+1)]` — the single structural quantity `1/(π+1)` and its complement
+  (π the sole structural scale); using this π-band as the C(t) interpretation is a
+  telemetry convention. **Dual status**: beyond a
   read-out, its per-node kernel `structural_coherence`
   ([src/tnfr/metrics/common.py](src/tnfr/metrics/common.py)) is the single
   *constitutive* coherence map — an NFR is canonically a region of structural
@@ -379,8 +383,9 @@ in [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.
   composite** (weighted νf, phase sync, |ΔNFR|) — predictive/diagnostic, **not**
   constitutive of NFR-hood.
 - **Tetrad safety** (telemetry; see §3): only `|K_φ| < 0.9·π ≈ 2.827` is a genuine
-  geometric bound (phase wrap). `Δ Φ_s < 1.618` / `|Φ_s| < 0.7711` are empirical; the `|∇φ|`
-  sync onset is `≈ 0.29` (σ-dependent, not a fixed constant); `ξ_C` is set by the spectral
+  geometric bound (phase wrap). `Δ Φ_s < π/2 ≈ 1.571` / `|Φ_s| < π/4 ≈ 0.785` are π-derived
+  (phase-wrap fractions); the `|∇φ|` sync onset is `≈ 0.29` (σ-dependent, not a fixed
+  constant); `ξ_C` is set by the spectral
   gap `λ₂` (`ξ_C ∝ 1/√λ₂`).
 
 Required telemetry must stay in TNFR-coherent terms (C(t), Si, phase, νf, and the

@@ -90,8 +90,8 @@ from tnfr.mathematics.number_theory import (
 
 _PARAMS = ArithmeticTNFRParameters()
 
-# Canonical phase-gradient threshold Δφ_max = γ/π ≈ 0.1837 (tetrad edge).
-DELTA_PHI_MAX = 0.1837
+# Phase-matching residual threshold (a small |∇φ|-scale cut for the demo).
+PHASE_MATCH_THRESHOLD = 0.2
 
 
 def _local_coherence(n: int) -> float:
@@ -182,14 +182,14 @@ def experiment_2_coherence_phase_fails():
         s = phi_coh(a) + phi_coh(b)
         t = phi_coh(two_n)
         res = _wrap(s - t)
-        matched = res <= DELTA_PHI_MAX
+        matched = res <= PHASE_MATCH_THRESHOLD
         print(
             f"{two_n:>5}  {str(pair):>14}  {s:>8.4f}  {t:>7.4f}"
             f"  {res:>9.4f}  {'YES' if matched else 'NO':>7}"
         )
 
     print()
-    print(f"All residuals ≫ Δφ_max = {DELTA_PHI_MAX}. Phase-matching FAILS")
+    print(f"All residuals ≫ {PHASE_MATCH_THRESHOLD}. Phase-matching FAILS")
     print("for exactly the prime pairs Goldbach requires. The additive")
     print("target (2n, composite) is orthogonal to its coherent summands.")
     print()

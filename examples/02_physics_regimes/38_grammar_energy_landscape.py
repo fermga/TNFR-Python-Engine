@@ -42,7 +42,7 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import GAMMA, PHI, PI
+from tnfr.constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from tnfr.operators.definitions import (
     Coherence,
     Contraction,
@@ -383,7 +383,7 @@ def experiment_grammar_energy_mapping():
     U3 (Resonant Coupling)  -> Coupling preserves or reduces energy
     U4 (Bifurcation)        -> Excursions controlled by handlers
     U5 (Multi-Scale)        -> Hierarchical energy decomposition
-    U6 (Confinement)        -> Phi_s bounded by phi ~ 1.618
+    U6 (Confinement)        -> Phi_s bounded by the U6 limit pi/2 ~ 1.571
     """
     print("\n" + "=" * 72)
     print("  EXPERIMENT 4: Grammar Rule -> Energy Constraint Mapping")
@@ -436,7 +436,10 @@ def experiment_grammar_energy_mapping():
     print("  U3 (Coupling):    Phase-gated; conserves or mildly changes energy")
     print("  U4 (Bifurcation): Temporary energy excursion within handler bounds")
     print("  U5 (Multi-Scale): Sub-EPI energy additive; parent E >= sum(child E)")
-    print(f"  U6 (Confinement): |Phi_s| < {PHI:.3f} bounds max energy density")
+    print(
+        f"  U6 (Confinement): |Phi_s| < {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f} "
+        f"bounds max energy density"
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -486,7 +489,7 @@ def main():
        U3 -> coupling energy conservation
        U4 -> controlled excursion within handler bounds
        U5 -> hierarchical energy additivity
-       U6 -> maximum energy density confinement (phi bound)
+       U6 -> maximum energy density confinement (pi/2 bound)
 
      This completes the causal chain:
        Nodal Equation -> Grammar Rules -> Energy Bounds -> Tetrad Safety

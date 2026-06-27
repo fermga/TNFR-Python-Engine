@@ -104,7 +104,7 @@ Each grammar rule U1–U6 maps to a condition on the action functional $S_{\math
 | **U3** | Coupling regularity: interaction $\mathcal{A}$ bounded | Phase compatibility prevents singular coupling |
 | **U4** | Morse condition at bifurcation: Hessian sign | Handlers select correct branch near $T/V \approx 1$ |
 | **U5** | Hierarchical factorisation: $S$ decomposes across scales | Stabilisers at each level prevent concentration |
-| **U6** | Potential boundedness: $|\Phi_s| < \varphi$ | $V(\Phi_s)$ remains in confining well |
+| **U6** | Potential boundedness: $|\Phi_s| < \pi/2$ | $V(\Phi_s)$ remains in confining well |
 
 ---
 
@@ -148,8 +148,8 @@ The TNFR potential $V(i) = \tfrac{1}{2}[x_1^2 + x_2^2 + x_3^2]$ is quadratic in 
 
 | Field | Threshold | Source | Interpretation |
 |-------|-----------|--------|---------------|
-| $\Phi_s$ | $\varphi \approx 1.618$ | U6 / Golden ratio | Confining well boundary |
-| $|\nabla\varphi|$ | $\gamma/\pi \approx 0.184$ | Kuramoto coupling | Synchronisation barrier |
+| $\Phi_s$ | $\pi/2 \approx 1.571$ | U6 / π-derived (half phase-wrap) | Confining well boundary |
+| $|\nabla\varphi|$ | $\approx \pi/16 \approx 0.196$ | heuristic early-warning (bound is π) | Synchronisation barrier |
 | $K_\varphi$ | $0.9\pi \approx 2.827$ | Geometric confinement | Torsion limit |
 
 At these values, the restoring force $-\partial V/\partial x = -x$ reaches the threshold intensity, and beyond them grammatically non-compliant dynamics sets in.

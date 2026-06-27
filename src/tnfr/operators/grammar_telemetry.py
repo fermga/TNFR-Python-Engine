@@ -14,7 +14,7 @@ from typing import Any
 from ..config.defaults_core import (  # 0.9×π ≈ 2.827 canonical threshold
     K_PHI_CURVATURE_THRESHOLD,
 )
-from ..constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD  # heuristic ≈ 0.1837
+from ..constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD  # heuristic ≈ 0.196 (π/16)
 from ..mathematics.unified_numerical import np
 
 

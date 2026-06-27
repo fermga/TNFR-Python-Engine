@@ -41,7 +41,7 @@ HONEST SCOPE
     exhibiting THE self-adjoint operator whose spectrum is {gamma_n} from TNFR
     structure alone.  Following src/tnfr/dynamics/adelic.py, every carrier here
     is derived from nu_f = log p; mpmath, where present, only draws the target
-    -- it never derives it.  R (continuum) and phi, gamma, pi, e remain assumed
+    -- it never derives it.  R (continuum) and pi remain assumed
     substrate.
 
 Run:
@@ -122,11 +122,8 @@ _PARITY_TOL = 1e-8  # |R v -/+ v| tolerance for definite parity
 _DRIFT_MARGIN = 3.0  # barrier_drift must exceed stable_drift by this
 _CLASSICAL_REL_TOL = 5e-2  # TNFR Z vs classical -zeta'/zeta agreement
 
-# The four tetrad-associated constants (audit 2026: only pi is a genuine scale).
-PHI = (1.0 + np.sqrt(5.0)) / 2.0
-GAMMA = 0.5772156649015329
+# Only pi is a genuine structural scale (audit 2026); phi/gamma/e removed (unused).
 PI = np.pi
-E = np.e
 
 # First non-trivial Riemann zero ordinates -- the TARGET the vibration reveals,
 # imported as Ground Truth exactly as src/tnfr/dynamics/adelic.py does.
@@ -460,7 +457,7 @@ def main() -> int:
     print("  G4 = the canonical continuation across Re=1 / the map {k log p} ->")
     print("  {gamma_n} remains OPEN: TEST 1 shows the prime carrier cannot even be")
     print("  evaluated at Re=1/2, so mpmath is inevitable -- it draws the target,")
-    print("  never derives it.  R and phi,gamma,pi,e remain assumed substrate.")
+    print("  never derives it.  R and pi remain assumed substrate.")
 
     if failed:
         print(f"\nstructural leg(s) FAILED: {[r['name'] for r in failed]}")

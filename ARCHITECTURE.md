@@ -10,24 +10,24 @@ This guide details the TNFR Python Engine architecture. The engine provides a co
 
 **Core Principle**: Physics derives from the nodal equation; structural state is read through the tetrad of fields.
 
-> **On the constants.** The four fields are the four orders of the discrete derivative tower (the tetrad), derived from the nodal equation. Of the associated constants, only **π** is a genuine structural scale — the phase-wrap bound shared by |∇φ| and K_φ. The others are a **notational convention** (anti-magic-number): φ, γ, e label parameters but are not the structural scales of their fields, and ξ_C is set by the spectral gap (ξ_C ∝ 1/√λ₂). Parameters written as (φ,γ,π,e) combinations are notation, not derivations. (γ/π is not the |∇φ| scale — the measured sync onset is ≈ 0.29 and σ-dependent.)
+> **On the constants.** The four fields are the four orders of the discrete derivative tower (the tetrad), derived from the nodal equation. Only **π** is a genuine structural scale — the phase-wrap bound shared by |∇φ| and K_φ. The coherence length is set by the spectral gap (ξ_C ∝ 1/√λ₂) and the Φ_s confinement bound is π-derived; φ, γ, e are not structural scales. Every parameter other than π is either derived from the nodal dynamics / spectral gap or is a free operational parameter — not a derived structural constant. (γ/π is not the |∇φ| scale — the measured sync onset is ≈ 0.29 and σ-dependent.)
 
 The TNFR Engine is built on four pillars:
 
-1. **Nodal Foundation**: Physics derives from ∂EPI/∂t = νf·ΔNFR(t); structural quantities are the four orders of the derivative tower (the tetrad). Constants (φ,γ,π,e) are a notational convention for parameters, not a derivation.
+1. **Nodal Foundation**: Physics derives from ∂EPI/∂t = νf·ΔNFR(t); structural quantities are the four orders of the derivative tower (the tetrad). Only π is a genuine structural scale; every other parameter is derived from the nodal dynamics or is a free operational parameter, not a structural constant.
 2. **Structural Operators**: Exactly 13 canonical operators implement all possible coherent transformations  
 3. **Grammar Physics**: U1-U6 rules emerge inevitably from the nodal equation ∂EPI/∂t = νf·ΔNFR(t)
 4. **Tetrad Telemetry**: Four unified fields (Φ_s, |∇φ|, Ψ=K_φ+i·J_φ, ξ_C) provide complete system observability
 
 ## Modular Architecture
 
-TNFR Engine features a mature, production-grade architecture with mathematical purity, self-optimization capabilities, and complete domain extensibility.
+TNFR Engine features a mature, production-grade architecture grounded in the nodal equation, with self-optimization capabilities and complete domain extensibility.
 
 ### Core Module Organization
 
 ```
 src/tnfr/                          # ~346 files, ~104k LOC
-├── constants/canonical.py          # 497+ notational constants (φ,γ,π,e combinations; only π genuine)
+├── constants/canonical.py          # structural + operational constants (only π is a genuine structural scale)
 ├── operators/                      # 13 Canonical operators + U1-U6 grammar
 │   ├── grammar.py                  # Unified grammar validation
 │   ├── grammar_dynamics.py         # Grammar-aware dynamic selection
@@ -52,7 +52,7 @@ The engine is structured around mathematically grounded interfaces that enforce 
 
 | **Interface** | **Responsibility** | **Mathematical Basis** | **Implementation** |
 |---------------|-------------------|----------------------|--------------------|
-| **Canonical Constants** | Notational parameter convention | Nodal equation + field tetrad (π genuine scale; γ/e/φ notational) | `constants/canonical.py` |
+| **Canonical Constants** | Structural + operational parameters | Nodal equation + field tetrad (π is the one genuine structural scale) | `constants/canonical.py` |
 | **Operator Registry** | 13 canonical transformations | Nodal equation completeness | `operators/definitions.py` |
 | **Grammar Validation** | U1-U6 sequence rules | Physics-derived constraints | `operators/grammar.py` |
 | **Grammar Dynamics** | Grammar-aware operator selection | Incremental U1-U6 checks | `operators/grammar_dynamics.py` |
@@ -74,8 +74,8 @@ from tnfr.constants.canonical import *
 # Self-optimizing engine with canonical parameters
 engine = TNFRSelfOptimizingEngine(
     G, 
-    optimization_threshold=SELF_OPT_THRESHOLD,  # heuristic ≈ 0.092 (γ/(2π); notational, not derived)
-    max_iterations=SELF_OPT_MAX_ITER           # heuristic 16 (⌊φ×10⌋; notational, not derived)
+    optimization_threshold=SELF_OPT_THRESHOLD,  # ≈ 0.092 (operational)
+    max_iterations=SELF_OPT_MAX_ITER           # 16 (operational)
 )
 
 # Auto-optimization using unified fields (Φ_s, |∇φ|, Ψ, ξ_C)
@@ -93,7 +93,7 @@ result = (TNFRNetwork(G)
 
 ### Parameter Usage
 
-Validation uses the tetrad fields and a few telemetry thresholds. Thresholds expressed as (φ,γ,π,e) combinations are a notational convention, not derivations — only the π phase-wrap bounds and ξ_C ∝ 1/√λ₂ are genuine structural scales.
+Validation uses the tetrad fields and a few telemetry thresholds. Only the π phase-wrap bounds and ξ_C ∝ 1/√λ₂ are genuine structural scales; the other thresholds are π-derived or free operational parameters, not derived structural constants.
 
 ```python
 from tnfr.constants.canonical import *
@@ -106,8 +106,8 @@ class CanonicalValidator:
         # Grammar validation with canonical tolerances
         return validate_u1_through_u6(
             sequence, 
-            phase_tolerance=PHASE_SYNC_TOLERANCE,      # heuristic ≈ 0.184 (γ/π; not derived)
-            coherence_minimum=MIN_BUSINESS_COHERENCE   # notational (e×φ)/(π+e) ≈ 0.7506
+            phase_tolerance=PHASE_SYNC_TOLERANCE,      # heuristic ≈ 0.18 (operational early-warning; bound is π)
+            coherence_minimum=HIGH_COHERENCE_THRESHOLD  # π/(π+1) ≈ 0.7585 (emergent gate)
         )
     
     def validate_graph_state(self, graph):
@@ -125,7 +125,7 @@ class CanonicalValidator:
 
 ### Parameter Convention Benefits
 
-1. **Traceability**: parameters are written as (φ,γ,π,e) combinations for notational consistency (anti-magic-number), NOT claimed as derivations (only π phase-wrap and ξ_C ∝ 1/√λ₂ are genuine structural scales).
+1. **Traceability**: only π phase-wrap and ξ_C ∝ 1/√λ₂ are genuine structural scales; every other parameter is derived from the nodal dynamics or is a free operational parameter, explicitly labelled as such (never claimed as a derived structural constant).
 2. **Predictable Behavior**: Deterministic system response via fixed parameters
 3. **Cross-Domain Consistency**: Same nodal-equation foundation across physics, chemistry, and network science
 4. **Self-Optimization**: Automated capability to improve its own structure
@@ -204,7 +204,7 @@ The TNFR grammar derives from the nodal equation; structural state is read throu
 ### Architecture Principles
 
 - **Nodal Foundation**: Every grammar rule traces to the nodal equation (U1–U6).  
-- **Honest tiering**: structural bounds derive from the dynamics where genuine (π phase-wrap; ξ_C ∝ 1/√λ₂); other parameters are calibrated or notational (φ,γ,π,e) combinations, NOT derived.  
+- **Honest tiering**: structural bounds derive from the dynamics where genuine (π phase-wrap; ξ_C ∝ 1/√λ₂; the π-derived Φ_s bound); other parameters are free operational calibrations, NOT derived structural constants.  
 - **Single Source Implementation**: `src/tnfr/operators/grammar.py` canonical authority  
 - **Complete Physics Traceability**: Theory → Math → Code → Tests chain maintained  
 - **Self-Validation**: Grammar rules verify their own mathematical consistency
@@ -215,7 +215,7 @@ The TNFR grammar derives from the nodal equation; structural state is read throu
 
 | **Layer** | **Canonical Modules** | **Mathematical Foundation** | **TNFR Invariants** |
 |-----------|----------------------|----------------------------|---------------------|
-| **Constants Foundation** | `constants/canonical.py` | Notational (φ,γ,π,e) convention (not derivations) | Anti-magic-number parameters; π phase-wrap genuine |
+| **Constants Foundation** | `constants/canonical.py` | Structural + operational parameters (only π genuine) | π phase-wrap is the one genuine structural scale |
 | **Operator Engine** | `operators/definitions.py`, `operators/grammar.py` | 13 canonical transformations + U1-U6 physics | Structural completeness - all coherent dynamics covered |
 | **Grammar Dynamics** | `operators/grammar_dynamics.py`, `operators/grammar_application.py` | Incremental U1-U6 validation + pre-filtered selection | Grammar-aware operator application at all code paths |
 | **Physics Core** | `physics/fields.py`, `physics/conservation.py`, `physics/integrity.py` | Unified Field Tetrad + Conservation Theorem + 13/13 postconditions | Field universality + structural conservation + operator contracts |
@@ -519,7 +519,7 @@ well-documented location.
 
 TNFR Engine is a complex-systems framework grounded in the nodal equation:
 
-- **Notational constants**: parameters are written as (φ,γ,π,e) combinations for consistency — a convention, NOT derivations.  
+- **Constants**: only π is a genuine structural scale; every other parameter is derived from the nodal dynamics / spectral gap or is a free operational parameter — NOT a derived structural constant.  
 - **Field tetrad**: Φ_s, |∇φ|, K_φ, ξ_C — the four orders of the derivative tower; only π is a genuine structural scale, ξ_C ∝ 1/√λ₂.  
 - **Self-Optimization**: Engine automatically improves its own structure  
 - **Cross-Domain Framework**: Physics, chemistry, network science — unified nodal-equation base  
@@ -539,7 +539,7 @@ TNFR Engine is a complex-systems framework grounded in the nodal equation:
 
 ### Architectural Principles (Canonical)
 
-1. **Nodal Foundation First**: architecture decisions trace to the nodal equation; parameters use (φ,γ,π,e) notation as a convention, not a derivation
+1. **Nodal Foundation First**: architecture decisions trace to the nodal equation; only π is a genuine structural scale, every other parameter is derived from the dynamics or is a free operational parameter
 2. **Physics-Derived Design**: structural bounds trace to the dynamics where genuine (π phase-wrap, ξ_C ∝ 1/√λ₂)
 3. **Complete Observability**: Unified field tetrad provides full system insight
 4. **Self-Optimization**: Automated optimization built into core architecture
@@ -549,7 +549,7 @@ TNFR Engine is a complex-systems framework grounded in the nodal equation:
 ### Essential Architecture References
 
 - **[AGENTS.md](AGENTS.md)**: Complete theory + canonical invariants  
-- **[src/tnfr/constants/canonical.py](src/tnfr/constants/canonical.py)**: 497+ universal constants  
+- **[src/tnfr/constants/canonical.py](src/tnfr/constants/canonical.py)**: structural + operational constants (only π is a genuine structural scale)  
 - **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: U1-U6 implementation  
 - **[src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.py)**: Grammar-aware dynamic selection
 - **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)**: Unified field tetrad  

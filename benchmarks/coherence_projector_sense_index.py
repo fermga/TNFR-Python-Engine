@@ -57,7 +57,7 @@ Tests (all PASS by *characterising the room*, not by entering floor 2):
 HONEST SCOPE (non-negotiable)
 -----------------------------
 This harness closes NOTHING.  G4 = RH stays OPEN.  R+ and
-(phi, gamma, pi, e) remain the assumed substrate.  Characterising the
+pi remain the assumed substrate.  Characterising the
 closed room and showing Si is symmetric LOCATES the obstruction; it
 gives no route into floor 2.  The kernel is infinite-dimensional and
 its antisymmetric floor is non-empty -- membership facts, not a proof
@@ -106,11 +106,11 @@ N_MATRIX = 64  # window for the explicit projector matrix
 DIM_SWEEP = (64, 128, 256, 512, 1024, 2048)
 N_PRIMES = 50  # primes on the complete graph (T4)
 SEED = 12345  # prime-relabelling seed (T4)
-# Canonical engine SI weights (config/defaults_core.py SI_WEIGHTS):
-# alpha = phi/(phi+gamma) ~ 0.737, beta = gamma/(pi+gamma) ~ 0.155,
-# gamma = gamma/(phi*pi) ~ 0.114.  Uniform across nodes, so the T3/T4
+# Canonical engine SI weights (config/defaults_core.py SI_WEIGHTS) — the
+# π-derived coherence-band hierarchy: alpha = π/(π+1), beta = π/(π+1)²,
+# gamma = 1/(π+1)² (sums to 1 exactly).  Uniform across nodes, so the T3/T4
 # dispersion and S_n-invariance arguments are weight-agnostic.
-SI_WEIGHTS = {"alpha": 0.737, "beta": 0.155, "gamma": 0.114}
+SI_WEIGHTS = {"alpha": 0.7585, "beta": 0.1832, "gamma": 0.0583}
 DISP_SWEEP = (0.0, 0.25, 0.5, 0.75, 1.0)  # phase-dispersion factors
 
 
@@ -327,7 +327,7 @@ def main() -> int:
     print("    floor ker(R_infinity) cap Fix(S_n)^perp where S(T) sits.")
     print("")
     print("THESIS VERDICT: OPEN, by design. This closes nothing.")
-    print("  G4 = RH OPEN. R+ and (phi, gamma, pi, e) remain assumed.")
+    print("  G4 = RH OPEN. R+ and pi remain assumed.")
     print("  Characterising the closed room and showing Si is symmetric")
     print("  LOCATES the obstruction (branch-B2 evidence); it gives no")
     print("  route into floor 2. It does NOT prove B2/B3/RH.")

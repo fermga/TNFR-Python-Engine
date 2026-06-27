@@ -12,7 +12,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Iterable
 
-from ..constants.canonical import PHI
+from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..mathematics.unified_numerical import np
 from ..physics.gauge import compute_yang_mills_equations
 from .structural_gap import build_structural_gauge_graph, compute_structural_gauge_gap
@@ -98,7 +98,11 @@ def run_finite_scaling_study(
                     )
                     ym_eq = compute_yang_mills_equations(graph)
                     max_abs_phi_s = float(result.metadata.get("max_abs_phi_s", 0.0))
-                    observed_ratio = max_abs_phi_s / PHI if PHI else 0.0
+                    observed_ratio = (
+                        max_abs_phi_s / U6_STRUCTURAL_POTENTIAL_LIMIT
+                        if U6_STRUCTURAL_POTENTIAL_LIMIT
+                        else 0.0
+                    )
                     metadata = dict(result.metadata)
                     metadata.update(
                         {

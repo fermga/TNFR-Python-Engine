@@ -71,7 +71,7 @@ result = TNFR.create(100).evolve(10).auto_optimize().results()
 
 All engines implement TNFR principles:
 - **Nodal equation**: ∂EPI/∂t = νf · ΔNFR(t)
-- **Structural-field tetrad**: Φ_s, |∇φ|, K_φ, ξ_C (associated with φ,γ,π,e notationally; only π genuine)
+- **Structural-field tetrad**: Φ_s, |∇φ|, K_φ, ξ_C (only π is a genuine structural scale)
 - **Unified grammar**: U1-U6 operator constraints
 - **Canonical invariants**: 6 fundamental preservation laws
 - **Structural field tetrad**: Complete multi-scale characterization

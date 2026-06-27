@@ -12,11 +12,11 @@ All four fields below are CANONICAL (November 2025) and read-only:
 1) Structural Potential (Φ_s)
    - Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α (α=2, inverse-square)
    - Validation: 2,400+ experiments; corr(ΔΦ_s, ΔC) = -0.822; CV = 0.1%
-   - Drift scale (U6): Δ Φ_s < φ ≈ 1.618 — a conservative bound just inside
+   - Drift scale (U6): Δ Φ_s < π/2 ≈ 1.571 — a conservative bound just inside
      the ζ(2) = π²/6 ≈ 1.6449 saturation of inverse-square accumulation
-   - Per-node safety: |Φ_s| < 0.7711 — EMPIRICAL threshold (no closed form;
-     lies within the O(1) ζ(4)=π⁴/90 variance band of inverse-square
-     pressure). The earlier "ψ(x) − x bounds" rationale was fabricated and is
+   - Per-node safety: |Φ_s| < π/4 ≈ 0.785 — π-derived quarter phase-wrap (lies
+     within the O(1) ζ(4)=π⁴/90 variance band of inverse-square
+     pressure). The earlier empirical 0.7711 / "ψ(x) − x bounds" rationale was
      withdrawn; see theory/MINIMAL_STRUCTURAL_DEGREES.md §4.1.
 
 2) Phase Gradient (|∇φ|)
@@ -55,7 +55,7 @@ cell : Cell formation from compartmentalized TNFR life patterns
 phase_transition : Life/non-life phase transition as universal symmetry breaking
     - Order parameter 𝒮, chirality χ, susceptibility, coherence length
     - Critical exponent measured as an observable (audit 2026: NOT the
-      universal γ/π; the fitted exponent is protocol-dependent)
+      universal closed-form scale; the fitted exponent is protocol-dependent)
     - Second-order transition with divergent ξ_C at criticality
 
 See Also
@@ -91,7 +91,7 @@ Examples
 >>> drift = sum(
 ...     abs(phi_after[n] - phi_before[n]) for n in G.nodes()
 ... ) / G.number_of_nodes()
->>> assert drift < 1.618, "Escape threshold exceeded (φ)"
+>>> assert drift < 1.571, "Escape threshold exceeded (π/2)"
 
 """
 
@@ -355,7 +355,6 @@ from .variational import (
     GrammarStationarityAnalysis,
     LagrangianSnapshot,
     SymplecticCheck,
-    ThresholdDerivation,
     VariationalTimeSeries,
     VariationalTracker,
     analyze_grammar_stationarity,
@@ -373,7 +372,6 @@ from .variational import (
     compute_poisson_bracket_estimate,
     compute_potential_density,
     compute_variational_suite,
-    derive_tetrad_threshold_values,
     identify_conjugate_pairs,
     translate_sectors,
 )
@@ -483,7 +481,6 @@ __all__ = [
     "SymplecticCheck",
     "GrammarStationarityAnalysis",
     "CriticalPointAnalysis",
-    "ThresholdDerivation",
     "VariationalTimeSeries",
     "VariationalTracker",
     "compute_kinetic_density",
@@ -502,7 +499,6 @@ __all__ = [
     "classify_operator_canonical",
     "analyze_grammar_stationarity",
     "analyze_potential_critical_points",
-    "derive_tetrad_threshold_values",
     "compute_variational_suite",
     # --- Emergent Symplectic Substrate (geometry the dynamics generates) ---
     "PhaseSpacePoint",

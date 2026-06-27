@@ -62,7 +62,7 @@ HONEST SCOPE -- this is the deepest path and its THESIS verdict is OPEN, not PAS
   gap still needs non-Abelian generators whose derivation from dEPI/dt = nu_f.dNFR
   is exactly the open Y3 gap. This harness is finite toy-graph + su(2) linear
   algebra; it proves the obstructions COINCIDE in shape, not that TNFR proves
-  Yang-Mills or RH. R (continuum) and phi, gamma, pi, e remain assumed substrate.
+  Yang-Mills or RH. R (continuum) and pi remain assumed substrate.
 
 Run:
     python benchmarks/commutant_bridge.py
@@ -492,7 +492,7 @@ def main():
     print("  case -- the per-node diagonal P2 (RH) and non-commuting generators")
     print("  (YM) -- is exactly the ingredient that is NOT derivable from the nodal")
     print("  equation. HONEST SCOPE: finite toy-graph + su(2) algebra; nothing here")
-    print("  proves RH, the Yang-Mills mass gap, or closes G4. R and phi,gamma,pi,e")
+    print("  proves RH, the Yang-Mills mass gap, or closes G4. R and pi")
     print("  remain assumed substrate.")
     return 0 if structural else 1
 

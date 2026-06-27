@@ -47,7 +47,7 @@ import networkx as nx
 from ..alias import get_attr, set_attr
 from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-from ..constants.canonical import MIN_BUSINESS_COHERENCE_CANONICAL as COHERENCE_STRONG
+from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as COHERENCE_STRONG
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
 from ..metrics.coherence import compute_coherence
@@ -59,7 +59,7 @@ from ..operators.nodal_equation import compute_d2epi_dt2, compute_expected_depi_
 from ..structural import create_nfr
 
 # Canonical telemetry marks (AGENTS.md §7) -- heuristic cuts, not fitted:
-#   C(t) > COHERENCE_STRONG ((e*phi)/(pi+e) ~ 0.7506) -> strong coherence
+#   C(t) > COHERENCE_STRONG (π/(π+1) ~0.7585, emergent gate) -> strong coherence
 #   Si   > SENSE_INDEX_EXCELLENT (~0.8)               -> excellent sense index
 SENSE_INDEX_EXCELLENT = 0.8
 
@@ -709,7 +709,7 @@ class Results:
         return "\n".join(lines)
 
     def is_coherent(self) -> bool:
-        """Quick coherence check (C(t) > strong mark ~0.7506; AGENTS.md §7)."""
+        """Quick coherence check (C(t) > strong mark ~0.75; AGENTS.md §7)."""
         return self.coherence > COHERENCE_STRONG
 
     def is_stable(self) -> bool:
@@ -2469,7 +2469,7 @@ class TNFR:
             "TNFR.analyze(net)              APPLIED_STRUCTURAL_ANALYSIS.md                 10",
             "",
             "New theory-experiment links (v0.0.3.2):",
-            "  31 — Mathematical constants basis (phi, gamma, pi, e)",
+            "  31 — Structural scale basis (π)",
             "  32 — Spiral attractors (golden spiral, KAM)",
             "  33 — Complex field unification (Psi = K_phi + i*J_phi)",
             "  34 — Conservation protocol suite (Noether, Lyapunov)",

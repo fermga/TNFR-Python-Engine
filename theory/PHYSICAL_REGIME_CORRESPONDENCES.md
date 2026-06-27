@@ -285,7 +285,7 @@ All regimes emerge from the same nodal equation as limiting cases under differen
 - Phase (φ/θ) → Canonical phase (action-angle coordinates)
 
 **Field Tetrad ↔ Energetics**:
-- Φ_s → potential wells; $\Delta\Phi_s < \varphi$ mirrors bounded energy basins
+- Φ_s → potential wells; $\Delta\Phi_s < \pi/2$ mirrors bounded energy basins
 - |∇φ| → velocity potential gradient (fluid mechanics analog)
 - K_φ → curvature-induced forces (centripetal/Coriolis terms)
 - ξ_C → interaction range; large ξ_C produces long-range coupling analogous to gravitational/electromagnetic interactions, small ξ_C mimics contact forces

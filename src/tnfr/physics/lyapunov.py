@@ -96,33 +96,24 @@ def _get_conservation():
 # ---------------------------------------------------------------------------
 
 # Import canonical constants for single-source-of-truth
-from tnfr.constants.canonical import (
-    AL_BOOST_CANONICAL,
-    EN_MIX_FACTOR,
-    NUL_DENSIFICATION_FACTOR,
-    NUL_SCALE_FACTOR,
-    PHI_GAMMA_NORMALIZED,
-    SHA_VF_FACTOR,
-    UM_THETA_PUSH,
-    VAL_SCALE_FACTOR,
-)
+from tnfr.constants.canonical import AL_BOOST_CANONICAL, EN_MIX_FACTOR, NUL_DENSIFICATION_FACTOR, NUL_SCALE_FACTOR, SHA_VF_FACTOR, UM_THETA_PUSH, VAL_SCALE_FACTOR
 
 # Values documented in AGENTS.md § The 13 Canonical Operators
 _GLYPH_DEFAULTS: dict[str, float] = {
-    "AL_boost": round(AL_BOOST_CANONICAL, 4),  # 1/(π×e) ≈ 0.1171
+    "AL_boost": 0.10,  # Emission EPI increment (free gain; energy-neutral)
     "EN_mix": EN_MIX_FACTOR,  # 1/(π+1) ≈ 0.2415
-    "IL_dnfr_factor": round(PHI_GAMMA_NORMALIZED, 3),  # φ/(φ+γ) ≈ 0.737
-    "OZ_dnfr_factor": round(NUL_DENSIFICATION_FACTOR, 3),  # φ/γ ≈ 2.803
+    "IL_dnfr_factor": 0.75,  # Coherence |ΔNFR| retention (stabiliser)
+    "OZ_dnfr_factor": 2.0,  # Dissonance |ΔNFR| amplification (destabiliser)
     "UM_theta_push": UM_THETA_PUSH,  # 1/(π+1) ≈ 0.2415
     "UM_vf_sync": 0.10,
     "UM_dnfr_reduction": 0.15,
     "RA_epi_diff": 0.15,
     "RA_vf_amplification": 0.05,
     "RA_phase_coupling": 0.10,
-    "SHA_vf_factor": round(SHA_VF_FACTOR, 4),  # 1 - γ/(π+e) ≈ 0.9015
-    "VAL_scale": round(VAL_SCALE_FACTOR, 4),  # 1 + γ/(π×e) ≈ 1.0676
-    "NUL_scale": round(NUL_SCALE_FACTOR, 4),  # 1 - γ/(π+e) ≈ 0.9015
-    "NUL_densification_factor": round(NUL_DENSIFICATION_FACTOR, 4),  # φ/γ ≈ 2.8032
+    "SHA_vf_factor": round(SHA_VF_FACTOR, 4),  # 0.9 (ν_f freeze step)
+    "VAL_scale": round(VAL_SCALE_FACTOR, 4),  # 1.05 (ν_f expansion step)
+    "NUL_scale": round(NUL_SCALE_FACTOR, 4),  # 0.9 (ν_f contraction step)
+    "NUL_densification_factor": round(NUL_DENSIFICATION_FACTOR, 4),  # 1/λ ≈ 1.111
     "THOL_accel": 0.10,
     "ZHIR_theta_shift_factor": 0.3,
     "NAV_eta": 0.5,

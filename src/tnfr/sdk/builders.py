@@ -24,22 +24,20 @@ Compare different network topologies:
 
 from __future__ import annotations
 
-from ..constants.canonical import (
-    GAMMA,
-    INV_PHI,
-    NODAL_OPT_COUPLING_CANONICAL,
-    PI,
-    SDK_CONNECTIVITY_DEFAULT,
-    SDK_COUPLING_STRENGTH_MODERATE,
-    SDK_COUPLING_STRENGTH_WEAK,
-    SDK_REWIRING_PROB_DEFAULT,
-    SDK_VF_RANGE_LOW_MAX,
-    SDK_VF_RANGE_LOW_MIN,
-    SDK_VF_RANGE_MODERATE_MAX,
-    SDK_VF_RANGE_MODERATE_MIN,
-)
+from ..constants.operational import NODAL_OPT_COUPLING_CANONICAL
 from ..mathematics.unified_numerical import np
 from .fluent import NetworkResults, TNFRNetwork
+
+# SDK network-builder parameters (operational defaults for example/demo
+# networks; not TNFR structural physics).
+SDK_REWIRING_PROB_DEFAULT = 0.16
+SDK_COUPLING_STRENGTH_WEAK = 0.36
+SDK_COUPLING_STRENGTH_MODERATE = 0.62
+SDK_CONNECTIVITY_DEFAULT = 0.16
+SDK_VF_RANGE_LOW_MIN = 0.16
+SDK_VF_RANGE_LOW_MAX = 0.89
+SDK_VF_RANGE_MODERATE_MIN = 0.62
+SDK_VF_RANGE_MODERATE_MAX = 0.95
 
 __all__ = ["TNFRExperimentBuilder"]
 
@@ -58,7 +56,7 @@ class TNFRExperimentBuilder:
     @staticmethod
     def small_world_study(
         nodes: int = 50,
-        rewiring_prob: float = SDK_REWIRING_PROB_DEFAULT,  # γ/(π+γ) ≈ 0.1552 (canonical rewiring)
+        rewiring_prob: float = SDK_REWIRING_PROB_DEFAULT,  # 0.16 (operational default)
         steps: int = 10,
         random_seed: int | None = None,
     ) -> NetworkResults:
@@ -105,7 +103,7 @@ class TNFRExperimentBuilder:
     @staticmethod
     def synchronization_study(
         nodes: int = 30,
-        coupling_strength: float = SDK_COUPLING_STRENGTH_MODERATE,  # 1/φ - golden moderate coupling
+        coupling_strength: float = SDK_COUPLING_STRENGTH_MODERATE,  # moderate coupling
         steps: int = 20,
         random_seed: int | None = None,
     ) -> NetworkResults:
@@ -170,7 +168,7 @@ class TNFRExperimentBuilder:
     @staticmethod
     def creativity_emergence(
         nodes: int = 20,
-        mutation_intensity: float = GAMMA / (PI + 1),  # γ/(π+1) - controlled mutation
+        mutation_intensity: float = 0.13937,  # controlled mutation
         steps: int = 15,
         random_seed: int | None = None,
     ) -> NetworkResults:
@@ -277,8 +275,8 @@ class TNFRExperimentBuilder:
     @staticmethod
     def phase_transition_study(
         nodes: int = 50,
-        initial_coupling: float = NODAL_OPT_COUPLING_CANONICAL,  # γ/(π+e) ≈ 0.099
-        final_coupling: float = 1 - INV_PHI,  # 1-1/φ - harmonic maximum canonical
+        initial_coupling: float = NODAL_OPT_COUPLING_CANONICAL,  # ≈ 0.099
+        final_coupling: float = 1 - 0.5,  # harmonic maximum canonical
         steps_per_level: int = 5,
         coupling_levels: int = 5,
         random_seed: int | None = None,

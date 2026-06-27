@@ -1813,8 +1813,8 @@ $\mathcal{H}_{\mathrm{tet}}$ such that
 1. $\mathcal{F}$ is constructed exclusively from the tetrad fields
    $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$ and their canonical
    differential invariants (gradients, the discrete Laplacian, the
-   complex field $\Psi$, the conserved current $\mathbf{J}$), with
-   structural constants drawn from $(\varphi, \gamma, \pi, e)$ only;
+   complex field $\Psi$, the conserved current $\mathbf{J}$), with the
+   structural scale $\pi$ as the only structural constant;
 2. $\mathcal{F}$ is admissible under U1–U6 — in particular, the
    continuity equation $\partial(\mathcal{F}\rho)/\partial t +
    \nabla\!\cdot\!(\mathcal{F}\mathbf{J}) = \mathcal{S}_{\mathrm{grammar}}$
@@ -1950,7 +1950,7 @@ audit.
 | L5 | Weil–Guinand identity: prime side equals the P14 spectral trace at machine precision | P15 [weil_explicit_formula.py](../src/tnfr/riemann/weil_explicit_formula.py); §11 above | **CLOSED** |
 | L6 | Lyapunov-spectral positivity for $H_{P14}$: Kato–Rellich gap $\log 2$, trace-class resolvent, unitary flow | P26 [lyapunov_spectral_positivity.py](../src/tnfr/riemann/lyapunov_spectral_positivity.py); §13quater | **CLOSED** on finite-dim prime-ladder |
 | L7 | Smooth half of spectral rescaling map $\mathcal{F}$: $\widetilde\gamma_n = \overline N^{-1}(n)$ derived from the same archimedean kernel as P15 | P28 [structural_zero_density.py](../src/tnfr/riemann/structural_zero_density.py); §13sexies | **CLOSED** (smooth half; W₁ gap drops ~97× vs P27) |
-| L8 | Existence + canonicity of admissible $\mathcal{F}$ from tetrad + $(\varphi,\gamma,\pi,e)$ + U1–U6 such that $\mathcal{F}\,H_{P14}\,\mathcal{F}^{*}$ has spectrum $\{\gamma_n\}$ | NONE — Conjecture T-HP, §13septies.4 | **OPEN** ← BREAK-POINT |
+| L8 | Existence + canonicity of admissible $\mathcal{F}$ from tetrad + $\pi$ + U1–U6 such that $\mathcal{F}\,H_{P14}\,\mathcal{F}^{*}$ has spectrum $\{\gamma_n\}$ | NONE — Conjecture T-HP, §13septies.4 | **OPEN** ← BREAK-POINT |
 
 L1–L7 are TNFR-canonical and operationally closed (the proof-sketch
 caveat at L3 is inherited from AGENTS.md and is independent of the
@@ -1959,8 +1959,8 @@ Riemann programme). L8 is the entire residual content of G4.
 ### 13octies.3 Structural negative knowledge from P29
 
 P29 ([spectral_emergence.py](../src/tnfr/riemann/spectral_emergence.py))
-swept the three canonical inter-prime coupling laws derivable in
-closed form from $(\varphi,\gamma,\pi,e)$:
+swept three inter-prime coupling laws expressible in
+closed form from ad-hoc mathematical constants:
 
 * Kuramoto-U3 (UM + U3 gating): best $\mathrm{KS}_{\mathrm{GUE}} = 0.122$ ($-36\,\%$ vs baseline)
 * φ-multiscale (THOL + REMESH): marginal ($-14\,\%$)
@@ -2040,7 +2040,7 @@ has been rewritten to reflect this audit.
 
 ### §13nonies.1 Motivation
 
-Conjecture T-HP (§13septies) asks for the existence of an admissible operator `F` built **only** from the canonical TNFR ingredients (tetrad fields, canonical constants φ, γ, π, e, grammar U1–U6) such that `F · H_P14 · F* ` has spectrum equal to the Riemann zeros {γ_n}. §13septies.7 decomposes T-HP into three sub-problems:
+Conjecture T-HP (§13septies) asks for the existence of an admissible operator `F` built **only** from the canonical TNFR ingredients (tetrad fields, the structural scale π, grammar U1–U6) such that `F · H_P14 · F* ` has spectrum equal to the Riemann zeros {γ_n}. §13septies.7 decomposes T-HP into three sub-problems:
 
 1. **Existence** of any admissible `F`,
 2. **Canonicity** of `F` from the nodal equation,
@@ -2060,7 +2060,7 @@ Lines\mathcal{F}_{\text{smooth}} \, H_{P14} \, \mathcal{F}_{\text{smooth}}^{*} =
 
 so the conjugated spectrum equals `{ñ_i}` **exactly** (verified at machine precision).
 
-**Canonicity check (partial)**: `F_smooth` uses ONLY P14 eigendata (canonical, derived from the canonical TNFR `InternalHamiltonian` on the prime ladder), P28 smooth targets (canonical archimedean kernel), and canonical constants (φ, γ, π, e). No `mpmath.zetazero` enters the construction. `F_smooth` is therefore **structurally derived** in the sense of §13septies; whether it is the **unique** canonical lift remains open (sub-problem (2)).
+**Canonicity check (partial)**: `F_smooth` uses ONLY P14 eigendata (canonical, derived from the canonical TNFR `InternalHamiltonian` on the prime ladder), P28 smooth targets (canonical archimedean kernel), and the canonical structural scale π. No `mpmath.zetazero` enters the construction. `F_smooth` is therefore **structurally derived** in the sense of §13septies; whether it is the **unique** canonical lift remains open (sub-problem (2)).
 
 ### §13nonies.3 Empirical Results
 
@@ -2083,7 +2083,7 @@ Three canonical multiplicative perturbations of the smooth targets were tested:
 | `gamma_e`  | 1 × 10⁻²       | 1.617      | +0.03 %                 |
 | `pi_density`| 0             | 1.668      | +0.00 %                 |
 
-**Interpretation**: Canonical oscillatory perturbations built from (φ, γ, π, e) and the smooth targets alone fail to recover the residual S(T) term. This is **structural evidence for §13octies branch B2**: the oscillatory half of T-HP, if reachable canonically at all, requires a **new canonical operator** not expressible as a simple multiplicative dressing of the smooth ladder. Equivalently, the existing canonical operator catalog (13 operators + tetrad + constants) does **not** suffice for the oscillatory half via this construction route.
+**Interpretation**: Canonical oscillatory perturbations built from the canonical TNFR ingredients (tetrad, π, grammar) and the smooth targets alone fail to recover the residual S(T) term. This is **structural evidence for §13octies branch B2**: the oscillatory half of T-HP, if reachable canonically at all, requires a **new canonical operator** not expressible as a simple multiplicative dressing of the smooth ladder. Equivalently, the existing canonical operator catalog (13 operators + tetrad + constants) does **not** suffice for the oscillatory half via this construction route.
 
 ### §13nonies.5 What P30 Closes / Does Not Close
 
@@ -2118,7 +2118,7 @@ Three canonical multiplicative perturbations of the smooth targets were tested:
 
 ### §13decies Branch B1 Retry — Prime-Ladder Oscillatory Correction (P31)
 
-**Motivation.** §13nonies.4 tested three canonical *multiplicative* enrichments of the smooth rescaling operator built from single-frequency dressings of the canonical constants $(\varphi, \gamma, \pi, e)$. All three returned $\approx 0\%$ Wasserstein-$1$ improvement against the true Riemann zeros. The structural lesson was: $S(T) = \pi^{-1} \arg \zeta(\tfrac{1}{2} + iT)$ is a **prime-indexed multi-frequency arithmetic sum**, not a single-frequency canonical dressing. The natural canonical frequencies for $S(T)$ are $\{k \log p\}$ — exactly the data already carried by the P12 prime-ladder spectrum and the P14 prime-ladder Hamiltonian.
+**Motivation.** §13nonies.4 tested three *multiplicative* enrichments of the smooth rescaling operator built from single-frequency dressings of ad-hoc mathematical constants (φ, γ, e). All three returned $\approx 0\%$ Wasserstein-$1$ improvement against the true Riemann zeros. The structural lesson was: $S(T) = \pi^{-1} \arg \zeta(\tfrac{1}{2} + iT)$ is a **prime-indexed multi-frequency arithmetic sum**, not a single-frequency dressing. The natural canonical frequencies for $S(T)$ are $\{k \log p\}$ — exactly the data already carried by the P12 prime-ladder spectrum and the P14 prime-ladder Hamiltonian.
 
 **Construction (canonical).** P31 implements the canonical TNFR partial reconstruction of $S(T)$ obtained by reading off the Riemann–von Mangoldt template through the prime-ladder spectrum $\Sigma_{N,K} = \{(\mu = k \log p,\, w = \log p)\}$:
 
@@ -3294,7 +3294,7 @@ $$
 J^{(\chi)}_{(p,k),(q,m)} \;=\; \chi(p) \,\chi(q) \cdot \kappa_{\text{law}}(p,k,q,m), \qquad p \neq q,\quad p,q \nmid q_{\text{mod}},
 $$
 
-with the three canonical TNFR kernels
+with three exploratory inter-prime coupling kernels (not canonical; see note below)
 
 | Law | $\kappa_{\text{law}}(p,k,q,m)$ |
 |---|---|
@@ -3302,7 +3302,7 @@ with the three canonical TNFR kernels
 | `phi_multiscale` | $\varphi^{-(k+m)} / \sqrt{p\,q}$ |
 | `pnt_logarithmic` | $\gamma / \log(1 + p\,q)$ |
 
-All kernel constants $(\varphi, \gamma, \pi)$ are canonical TNFR tetrad constants (AGENTS.md §Universal Tetrahedral Correspondence). The coupled Hamiltonian is $H^{(\chi)}(s) = H^{(\chi)}_0 + s\,J^{(\chi)}$ for $s \in \{0, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0\}$. Eigenvalues are computed via `np.linalg.eigvalsh`, **unfolded** by the degree-5 polynomial fit of the empirical staircase (identical to P29), and the empirical CDF of nearest-neighbour spacings $\hat F$ is compared to the GUE Wigner surmise CDF $F_{\text{GUE}}$ and the Poisson CDF $F_{\text{Poisson}}$ via $\mathrm{KS} = \sup_x |\hat F(x) - F(x)|$.
+These three kernels are *exploratory* inter-prime coupling laws, **not** canonical: per AGENTS.md §3 the only genuine structural constant is $\pi$; $\varphi$ and $\gamma$ are not structural scales, so `phi_multiscale` and the $\gamma/\pi$ prefactor are empirical comparison kernels (consistent with the P47 finding that `phi_multiscale` is the weakest emergence kernel), not derived couplings. The coupled Hamiltonian is $H^{(\chi)}(s) = H^{(\chi)}_0 + s\,J^{(\chi)}$ for $s \in \{0, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0\}$. Eigenvalues are computed via `np.linalg.eigvalsh`, **unfolded** by the degree-5 polynomial fit of the empirical staircase (identical to P29), and the empirical CDF of nearest-neighbour spacings $\hat F$ is compared to the GUE Wigner surmise CDF $F_{\text{GUE}}$ and the Poisson CDF $F_{\text{Poisson}}$ via $\mathrm{KS} = \sup_x |\hat F(x) - F(x)|$.
 
 ### §13vicies-sexto.3 Empirical Verification
 
@@ -3353,7 +3353,7 @@ P47 promotes P29's ζ-only spectral-emergence diagnostic to the **full primitive
 
 ### §13vicies-septimo.1 Motivation
 
-P30 (`admissible_rescaling.py`, §13nonies on ζ) lifts P28's density-level closure of the smooth half of T-HP to the **operator level**: it constructs the canonical diagonal rescaling $\mathcal{F}_{\text{smooth}} = U_{P14}\,\mathrm{diag}(\sqrt{\tilde\gamma_i / \lambda_i})\,U_{P14}^{*}$ such that $\mathcal{F}_{\text{smooth}}\,H_{P14}\,\mathcal{F}_{\text{smooth}}^{*}$ has spectrum exactly equal to the P28 smooth zero targets, and verifies (negative-knowledge) that no canonical oscillatory enrichment built from $(\varphi, \gamma, \pi, e)$ closes the residual gap to true Riemann zeros. P48 is the **L-track analogue** of P30 on every primitive real Dirichlet character $\chi \in \{\chi_3, \chi_4, \chi_5\}$ via the P34 χ-twisted prime-ladder Hamiltonian and the P46 χ-twisted smooth zero density.
+P30 (`admissible_rescaling.py`, §13nonies on ζ) lifts P28's density-level closure of the smooth half of T-HP to the **operator level**: it constructs the canonical diagonal rescaling $\mathcal{F}_{\text{smooth}} = U_{P14}\,\mathrm{diag}(\sqrt{\tilde\gamma_i / \lambda_i})\,U_{P14}^{*}$ such that $\mathcal{F}_{\text{smooth}}\,H_{P14}\,\mathcal{F}_{\text{smooth}}^{*}$ has spectrum exactly equal to the P28 smooth zero targets, and verifies (negative-knowledge) that no oscillatory enrichment built from ad-hoc mathematical-constant frequencies closes the residual gap to true Riemann zeros. P48 is the **L-track analogue** of P30 on every primitive real Dirichlet character $\chi \in \{\chi_3, \chi_4, \chi_5\}$ via the P34 χ-twisted prime-ladder Hamiltonian and the P46 χ-twisted smooth zero density.
 
 ### §13vicies-septimo.2 Construction
 
@@ -3389,14 +3389,14 @@ P48 promotes the §13nonies operator-level lift of the smooth half of T-HP from 
 * **G4 = RH on ζ**: untouched. P48 operates entirely on L(s,χ), not ζ.
 * **GRH$_\chi$ (G4 for $L(s,\chi)$)**: NOT closed. The residual W$_1$ gap of $\approx 1.1$–$1.2$ after the best canonical oscillatory enrichment encodes the χ-twisted oscillatory term $S_\chi(T) = (1/\pi)\arg L(\tfrac12 + iT, \chi)$, which is GRH$_\chi$-equivalent.
 * **Sub-problems (2)–(3) of T-HP$^\chi$**: canonicity of $\mathcal{F}^{(\chi)}$ and positivity coincidence with the chi-twisted Weil form (P40) remain open.
-* **Canonical oscillatory closure**: the three canonical families tested (`phi_log`, `gamma_e`, `pi_density`) cap out at $\le 18\%$ improvement over the smooth baseline for every character. This **negative-knowledge** result mirrors §13nonies branch B2 at the L-track level: no closed-form oscillatory enrichment built from $(\varphi, \gamma, \pi, e)$ alone closes $S_\chi(T)$.
+* **Canonical oscillatory closure**: the three canonical families tested (`phi_log`, `gamma_e`, `pi_density`) cap out at $\le 18\%$ improvement over the smooth baseline for every character. This **negative-knowledge** result mirrors §13nonies branch B2 at the L-track level: no closed-form oscillatory enrichment built from ad-hoc mathematical-constant frequencies alone closes $S_\chi(T)$.
 
 ### §13vicies-septimo.6 Cross-References
 
 * **ζ-track template**: §13nonies (P30 `admissible_rescaling.py`) is the construction P48 specialises to each character without modification of atomic primitives.
 * **L-track prerequisites**: §13nonecimo (P34 `twisted_prime_ladder_hamiltonian.py`) for the source Hamiltonian; §13vicies-quinto (P46 `twisted_structural_zero_density.py`) for the smooth targets; §13nonecimo-quinto (P45 `twisted_hilbert_polya.py`) for true χ-zero fetching and Wasserstein evaluation.
 * **L-track smooth-side ladder**: §13vicies-quinto closes the smooth half of T-HP$^\chi$ at the **density** level; P48 (this section) closes it at the **operator** level.
-* **Branch B2 evidence**: at every track (ζ in §13nonies, $\chi$ in §13vicies-septimo) canonical oscillatory enrichments built only from $(\varphi, \gamma, \pi, e)$ are insufficient. The accumulating structural evidence supports §13octies branch B2 (a genuinely new canonical operator is required) over branches B1 (in-catalog closure) or B3 (no canonical closure exists at all).
+* **Branch B2 evidence**: at every track (ζ in §13nonies, $\chi$ in §13vicies-septimo) oscillatory enrichments built only from ad-hoc mathematical-constant frequencies are insufficient. The accumulating structural evidence supports §13octies branch B2 (a genuinely new canonical operator is required) over branches B1 (in-catalog closure) or B3 (no canonical closure exists at all).
 
 ### §13vicies-septimo.7 Gap Balance
 
@@ -4064,7 +4064,7 @@ piecewise status notes.
 | **P44** Dirichlet L χ-twisted Lyapunov-spectral positivity certificate | `twisted_lyapunov_spectral_positivity.py` | `71_twisted_lyapunov_spectral_demo.py` | §13vicies-tertio | Structural extension of P26 (`lyapunov_spectral_positivity.py`) to primitive real $L(s, \chi)$: certifies self-adjointness, strict positivity with explicit Kato–Rellich envelope $\lambda_{\min}(\hat H^{(\chi)}) \ge \Delta_0^{(\chi)} - \lvert J_0 \rvert \lVert \hat H^{(\chi)}_{\mathrm{coupling}} \rVert_{\mathrm{op}}$ where $\Delta_0^{(\chi)} = \log(\min\{p \text{ prime} : p \nmid q\})$ (character-dependent: $\log 2$ for $\chi_3, \chi_5$; $\log 3$ for $\chi_4$), trace-class resolvent (Schatten-1/2 norms), and unitary flow conservation of $U(t) = e^{-it \hat H^{(\chi)}}$ on the finite-dimensional χ-twisted prime-ladder Hilbert space (P34 bundle); reuses `_matrix_exponential_skew` and `resolvent_schatten_norms` atomically from P26; verified on $(n_{\mathrm{primes}}, k_{\max}) = (18, 5)$ for $\chi_3, \chi_4, \chi_5$ at $J_0 \in \{0, 10^{-2}\}$: at $J_0 = 0$ empirical $\min(\lambda)$ matches $\Delta_0^{(\chi)}$ to machine precision (asserted in demo); at $J_0 = 10^{-2}$ `perturbation_safe = True` for every character with guaranteed gap $\in \{6.76 \times 10^{-1}, 1.08, 6.76 \times 10^{-1}\}$; unitary drifts $\sim 2 \times 10^{-16}$ throughout; `structural_positivity = True` for all 6 cells; **does NOT prove GRH (finite-dimensional positivity is necessary but not sufficient; the character enters only via the active-prime restriction, not via $W^{(\chi)}$) and does NOT advance G4** |
 | **P45** Dirichlet L χ-twisted Hilbert–Pólya scaffold | `twisted_hilbert_polya.py` | `72_twisted_hilbert_polya_demo.py` | §13vicies-quarto | Structural extension of P27 (`hilbert_polya.py`) to primitive real $L(s, \chi)$: builds the reference operator $T_{\mathrm{HP}}^{(\chi)} = \operatorname{diag}(\gamma_1^{(\chi)}, \dots, \gamma_N^{(\chi)})$ on $\ell^2_N(\mathbb{N})$ where $\gamma_n^{(\chi)}$ are positive imaginary parts of zeros of $L(s, \chi)$ located by Hardy–Z bisection (`find_dirichlet_l_zeros`, the same enumerator used by P36); reuses `build_hp_operator`, `verify_hp_self_adjoint`, `hp_resolvent_schatten_norms`, `wasserstein_1_distance` atomically from P27; certifies (i) self-adjointness (real diagonal, exact, Frobenius asymmetry $= 0$), (ii) trace-class shifted resolvent $(T_{\mathrm{HP}}^{(\chi)2} + s^2 I)^{-1/2}$ with explicit Schatten-1/2/op norms, (iii) χ-twisted Weil–Guinand consistency $2 \sum h_\sigma(\gamma_n^{(\chi)}) = g(0) \log(q/\pi) +$ archimedean $+ \sum_{p \nmid q, k} \chi(p)^k \log(p) p^{-k/2} g(k \log p)$ (parity-shifted digamma, character-dependent constant term replaces $\zeta$-pole $-g(0) \log \pi$), and (iv) Wasserstein-1 spectral gap against $\operatorname{spec}(\hat H^{(\chi)} \mid p \nmid q)$; verified on $(n_{\mathrm{primes}}, k_{\max}, n_{\mathrm{zeros}}, \sigma, s, \mathrm{tol}) = (18, 5, 25, 2.0, 1.0, 10^{-2})$ for $\chi_3, \chi_4, \chi_5$: Weil residuals $\{5.19 \times 10^{-16}, 9.07 \times 10^{-15}, 1.72 \times 10^{-15}\}$ at machine precision; $W_1 \in \{35.5, 31.8, 30.3\}$ with growth ratios $\sim 12$ quantifying the L-track operator-level structural gap (mirror of P30 negative-enrichment for $\zeta$); `scaffold_consistent = True` for all 3 characters; **does NOT prove GRH ($T_{\mathrm{HP}}^{(\chi)}$ is populated by *inputting* Hardy–Z bisection of classical $L(s, \chi)$; the operator is not derived from TNFR first principles) and does NOT advance G4** |
 | **P46** Dirichlet L χ-twisted structural zero density | `twisted_structural_zero_density.py` | `73_twisted_structural_zero_density_demo.py` | §13vicies-quinto | L-track analogue of P28 (`structural_zero_density.py`): derives the smooth chi-twisted zero positions $\tilde{\gamma}_n^{(\chi)}$ from the chi-twisted Riemann–Siegel theta $\theta_\chi(T) = \operatorname{Im} \log \Gamma((1/2+a)/2 + iT/2) + (T/2) \log(q/\pi)$ via Newton iteration on $\bar{N}_\chi(\tilde{\gamma}_n^{(\chi)}) = n - 1/2$ — no `find_dirichlet_l_zeros` call on the derivation side (only used for benchmark); builds $\tilde{T}_{\mathrm{HP}}^{(\chi)} = \operatorname{diag}(\tilde{\gamma}_1^{(\chi)}, \dots, \tilde{\gamma}_N^{(\chi)})$ and certifies (i) per-zero residuals $r_n^{(\chi)} = \gamma_n^{(\chi)} - \tilde{\gamma}_n^{(\chi)}$ encoding $S_\chi(T) = \tfrac{1}{\pi} \arg L(\tfrac12 + iT, \chi)$, (ii) operator-level Wasserstein-1 reduction $W_1(\operatorname{spec}(\tilde{T}_{\mathrm{HP}}^{(\chi)}), T_{\mathrm{HP}}^{(\chi)}) \ll W_1(\operatorname{spec}(P34\vert_{p\nmid q}), T_{\mathrm{HP}}^{(\chi)})$, (iii) theoretical bound $\max\lvert r_n^{(\chi)}\rvert \le C \cdot \max(\log \gamma_n^{(\chi)} / \bar{N}_\chi'(\gamma_n^{(\chi)}))$ with $C \le 2$; verified on $(n_{\mathrm{zeros}}, p34\_n\_primes, p34\_max\_power) = (18, 30, 6)$ for $\chi_3, \chi_4, \chi_5$: $\max\lvert r_n^{(\chi)}\rvert \in \{3.21, 2.65, 2.53\}$; $W_1$ reductions $\{28.4 \to 1.32, 25.2 \to 1.23, 24.1 \to 1.17\}$, improvement ratios $\{21.6\times, 20.4\times, 20.6\times\}$; bound satisfied across all 3 characters; closes the **smooth half** of the L-track structural derivation gap (mirror of P28 for ζ); **does NOT prove GRH for any $L(s, \chi)$** (oscillatory residual encoding $S_\chi$ is the open arithmetic problem, equivalent to GRH$_\chi$) **and does NOT advance G4 = RH** |
-| **P47** Dirichlet L χ-twisted spectral emergence under canonical coupling | `twisted_spectral_emergence.py` | `74_twisted_spectral_emergence_demo.py` | §13vicies-sexto | L-track analogue of P29 (`spectral_emergence.py`): sweeps the three canonical TNFR inter-prime coupling laws (`kuramoto_u3`: $(\gamma/\pi)\exp(-\lvert k\log p - m\log q\rvert)$; `phi_multiscale`: $\varphi^{-(k+m)}/\sqrt{pq}$; `pnt_logarithmic`: $\gamma/\log(1+pq)$) on the P34 χ-twisted prime-ladder Hamiltonian with explicit $\chi(p)\chi(q)$ multiplicative twist on every off-diagonal entry; computes the Kolmogorov–Smirnov distance of the unfolded nearest-neighbour spacing distribution to the GUE Wigner surmise (conjectural universality class of zeros of $L(s,\chi)$) and to the Poisson reference; verified on $(n_{\mathrm{primes}}, k_{\max}) = (20, 3)$ for $\chi_3, \chi_4, \chi_5$ over strengths $s \in \{0, 0.05, 0.1, 0.2, 0.5, 1, 2\}$: `pnt_logarithmic` uniformly strongest emergence kernel with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.097, 0.116, 0.135\}$ at $s^* = 2$ ($33$–$49\%$ reduction vs baseline); `kuramoto_u3` second with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.120, 0.150, 0.135\}$ at $s^* = 1$ ($25$–$36\%$ reduction); `phi_multiscale` weak ($0$–$6\%$ reduction); attests the L-track spacing-universality diagnostic for every primitive real Dirichlet character; **does NOT prove GRH for any $L(s, \chi)$** (KS-GUE residual at finite $K$ is consistent with finite-size effects, not evidence against GRH) **and does NOT advance G4 = RH** |
+| **P47** Dirichlet L χ-twisted spectral emergence under canonical coupling | `twisted_spectral_emergence.py` | `74_twisted_spectral_emergence_demo.py` | §13vicies-sexto | L-track analogue of P29 (`spectral_emergence.py`): sweeps three exploratory (non-canonical) inter-prime coupling laws (`kuramoto_u3`: $(\gamma/\pi)\exp(-\lvert k\log p - m\log q\rvert)$; `phi_multiscale`: $\varphi^{-(k+m)}/\sqrt{pq}$; `pnt_logarithmic`: $\gamma/\log(1+pq)$) on the P34 χ-twisted prime-ladder Hamiltonian with explicit $\chi(p)\chi(q)$ multiplicative twist on every off-diagonal entry; computes the Kolmogorov–Smirnov distance of the unfolded nearest-neighbour spacing distribution to the GUE Wigner surmise (conjectural universality class of zeros of $L(s,\chi)$) and to the Poisson reference; verified on $(n_{\mathrm{primes}}, k_{\max}) = (20, 3)$ for $\chi_3, \chi_4, \chi_5$ over strengths $s \in \{0, 0.05, 0.1, 0.2, 0.5, 1, 2\}$: `pnt_logarithmic` uniformly strongest emergence kernel with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.097, 0.116, 0.135\}$ at $s^* = 2$ ($33$–$49\%$ reduction vs baseline); `kuramoto_u3` second with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.120, 0.150, 0.135\}$ at $s^* = 1$ ($25$–$36\%$ reduction); `phi_multiscale` weak ($0$–$6\%$ reduction); attests the L-track spacing-universality diagnostic for every primitive real Dirichlet character; **does NOT prove GRH for any $L(s, \chi)$** (KS-GUE residual at finite $K$ is consistent with finite-size effects, not evidence against GRH) **and does NOT advance G4 = RH** |
 | **P49** Dirichlet L χ-twisted prime-ladder oscillatory correction | `twisted_oscillatory_correction.py` | `76_twisted_oscillatory_correction_demo.py` | §13vicies-octavo | L-track analogue of P31 (`oscillatory_correction.py`): reconstructs $S_\chi(T) = \pi^{-1}\arg L(\tfrac12 + iT, \chi)$ from the canonical P34 χ-twisted prime-ladder spectrum $\{(k\log p,\,\chi(p)^k\log p)\}$ via the χ-twisted Riemann–von Mangoldt template $\pi S_\chi^{\mathrm{TNFR}}(T) = -\sum_{(\mu,w)}(w/\mu)\sin(T\mu)\exp(-\mu/2)$, then applies the Newton step $\gamma_n^{(\chi),\,\text{corr}} = \tilde\gamma_n^{(\chi)} - d\,S_\chi^{\mathrm{TNFR}}(\tilde\gamma_n^{(\chi)}) / \bar N'_\chi(\tilde\gamma_n^{(\chi)})$ on the canonical P46 χ-twisted smooth targets with $\bar N'_\chi(T) = (2\pi)^{-1}\log(qT/(2\pi))$; restricted to **primitive real** characters so the von Mangoldt-style sum is real-valued (validates $\max\lvert\Im w\rvert \le 10^{-10}$); damping sweep $d \in \{0, 0.25, 0.5, 0.75, 1, 1.25, 1.5\}$; **closes the final ζ↔L attack-surface parity item**: with P49, every canonical ζ-track operator P12–P31 has a matching χ-twisted L-track counterpart (P32–P49); verified on $(N, N_{\mathrm{primes}}, K) = (10, 80, 5)$ for $\chi_3, \chi_4, \chi_5$: mixed empirical regime — $\chi_4$ shows **+6.02%** branch-B1 canonical improvement at $d^* = 1.5$ ($W_1$: $1.4185 \to 1.3331$); $\chi_3$ and $\chi_5$ show **0% improvement** ($d^* = 0$) corroborating §13octies branch B2 at the L-track level (a genuinely new canonical operator required); honest split (1/3 B1, 2/3 B2) further attests the canonical-only oscillatory cap visible across both tracks; **does NOT prove GRH$_\chi$ for any $L(s, \chi)$** (residual $W_1 \approx 1.3$–$1.6$ encodes the chi-twisted oscillatory remainder), **does NOT advance G4 = RH**, **does NOT address sub-problems (2) canonicity from the nodal equation and (3) positivity coincidence with the χ-twisted Weil form**; positive structural-parity milestone plus L-track structural-compatibility diagnostic |
 | **P48** Dirichlet L χ-twisted admissible spectral-rescaling operator | `twisted_admissible_rescaling.py` | `75_twisted_admissible_rescaling_demo.py` | §13vicies-septimo | L-track analogue of P30 (`admissible_rescaling.py`): lifts the §13vicies-quinto density-level closure of the smooth half of T-HP$^{(\chi)}$ to the operator level by constructing the canonical diagonal rescaling $F^{(\chi)}_{\text{smooth}} = U_{P34}\,\operatorname{diag}(\sqrt{\tilde{\gamma}_i^{(\chi)} / \lambda_i})\,U_{P34}^{*}$ on each primitive real Dirichlet character; reuses `extract_positive_spectrum`, `build_smooth_rescaling_operator`, `apply_rescaling`, `verify_self_adjointness_preserved`, `verify_spectrum_match`, `oscillatory_correction_canonical` atomically from `admissible_rescaling.py`; certifies (i) self-adjointness preservation under conjugation, (ii) exact spectrum match $\operatorname{spec}(F^{(\chi)}_{\text{smooth}}\,H_{P34}^{(\chi)}\,(F^{(\chi)}_{\text{smooth}})^{*}) = \{\tilde{\gamma}_i^{(\chi)}\}$ to machine precision $\le 7.1\times10^{-15}$, (iii) Wasserstein-1 gap closure $W_1(\sigma(H_{P34}^{(\chi)}), \{\gamma_n^{(\chi)}\}) \to W_1(\{\tilde{\gamma}_n^{(\chi)}\}, \{\gamma_n^{(\chi)}\})$, (iv) honest sweep of the three canonical oscillatory enrichments (`phi_log`, `gamma_e`, `pi_density`) at amplitudes $\{0, 10^{-3}, 5\!\cdot\!10^{-3}, 10^{-2}, 5\!\cdot\!10^{-2}, 10^{-1}\}$ with per-mode breakdown; verified on $(n_{\mathrm{targets}}, p34\_n\_primes, p34\_max\_power) = (12, 25, 5)$ for $\chi_3, \chi_4, \chi_5$: smooth-half W$_1$ ratios $\{14.86\times, 13.85\times, 14.44\times\}$ (baseline $\{21.9, 19.0, 18.4\} \to$ smooth $\{1.47, 1.38, 1.27\}$); best canonical oscillation `pi_density` at amplitude $10^{-3}$ for every character with extra improvement $\{+17.85\%, +13.22\%, +12.68\%\}$ over smooth baseline; per-mode ranking uniform: `pi_density` > `gamma_e` > `phi_log`; closes sub-problem (1) of Conjecture T-HP$^{(\chi)}$ for the smooth half at the operator level (L-track mirror of P30 §13nonies); negative-knowledge oscillatory cap ($\le 18\%$ canonical improvement) constitutes structural evidence for §13octies branch B2 at the L-track level; **does NOT prove GRH$_\chi$ for any $L(s, \chi)$** (residual W$_1 \approx 1.1$–$1.2$ encodes $S_\chi(T) = (1/\pi)\arg L(\tfrac12+iT, \chi)$, GRH$_\chi$-equivalent) **and does NOT advance G4 = RH** |
 | **P50** REMESH-∞ residue split of P31 oscillatory correction | `remesh_infinity_residue_split.py` | `77_remesh_infinity_residue_split_demo.py` | §13triginta | Function-space lift of the N15 REMESH-∞ closure (`theory/REMESH_INFINITY_DERIVATION.md`) into the TNFR-Riemann program: splits the canonical P31 prime-ladder reconstruction $S_{\mathrm{TNFR}}(T) = -(1/\pi)\sum_{(\mu,w)}(w/\mu)\sin(T\mu)\exp(-\mu/2)$ into its projections on $\mathrm{range}(\mathcal{R}_\infty)$ and $\ker(\mathcal{R}_\infty)$ via the DFT-bin mask selecting the N15-resonant rational-multiple-of-$\pi$ lattice $\{2\pi k / \mathrm{lcm}(\tau_l, \tau_g)\}$ at the canonical pair $(\tau_l, \tau_g) = (4, 8)$; pre-registered structural prediction: the prime-ladder Fourier support $\{k\log p\}$ is disjoint from the N15-resonant lattice by Baker's theorem on linear independence of logarithms of algebraic numbers, hence the canonical reconstruction lies asymptotically in $\ker(\mathcal{R}_\infty)$; verdicts: `RESIDUE_IN_KER_ONLY` (branch B2 evidence at function-space level), `RESIDUE_IN_RANGE_ONLY` (would refute P31), `RESIDUE_MIXED` (gauge leak or boundary artefact); verified at canonical defaults $(\tau_l, \tau_g) = (4, 8)$, $n_{\mathrm{periods}} \in \{64, 256\}$, $n_{\mathrm{primes}} \in \{200, 400\}$, $K = 8$: verdict `RESIDUE_IN_KER_ONLY` at both resolutions; range fraction decays $1.7647\% \to 0.0162\%$ as $n_{\mathrm{samples}}: 512 \to 2048$ (clean asymptotic incommensurability); two sanity controls pass at machine precision (resonant $\sin(2\pi T/\mathrm{lcm})$ projects to $100\%$ range; transcendental $\sin(\gamma_{\mathrm{em}} T)$ projects to $\le 7 \times 10^{-4}\%$ range); complementary to §13vicies-novies graph-iteration-matrix tests (which act on EPI-history state vectors): P50 acts on a function in $H^2(T\text{-axis})$, a mathematically distinct object; corroborates the §13septies / §13nonies structural identification of the T-HP residual obstruction with the oscillatory half $S(T) = (1/\pi)\arg\zeta(\tfrac12+iT) = \ker(\mathcal{R}_\infty)$ component; **does NOT advance G4 = RH**, **does NOT close T-HP**, **does NOT promote any new canonical operator beyond the 13-operator catalog**; positive structural-compatibility milestone connecting the N15 REMESH-∞ closure to the T-HP residual gap at the function-space level |
@@ -4984,9 +4984,7 @@ augmented with inter-prime edges, where:
   $\{(p_i,k) \leftrightarrow (p_j,k') : p_i \ne p_j,\
   |k \log p_i - k' \log p_j| \le \delta_{\mathrm{coh}}\}$.
 
-**Canonical coherence threshold $\delta_{\mathrm{coh}}$.** Derived from
-the Universal Tetrahedral Correspondence (AGENTS.md): the phase-gradient
-threshold $|\nabla \phi| < \gamma/\pi$ applied to the structural
+**Exploratory coherence threshold $\delta_{\mathrm{coh}}$** (heuristic, not canonically derived). This benchmark uses the historically-chosen $|\nabla \phi|$ prefactor $\gamma/\pi \approx 0.184$ (an exploratory scale; the canonical $|\nabla\phi|$ early-warning is the heuristic $\pi/16 \approx 0.196$, kinematic bound $\pi$) applied to the structural
 frequency $\nu_f$ on its native log-energy scale:
 $$
 \delta_{\mathrm{coh}} \;=\; \frac{\gamma}{\pi}\, \cdot \,
@@ -6572,12 +6570,13 @@ extraneous structure):
 3. **Grammar U1–U6**, all derivable from invariant #1 and the bounded
    evolution constraint $\int \nu_f \, \Delta \mathrm{NFR} \, dt < \infty$
    (U2).
-4. **Universal Tetrahedral Correspondence**:
-   $\varphi \leftrightarrow \Phi_s$,
-   $\gamma \leftrightarrow |\nabla \phi|$,
-   $\pi \leftrightarrow K_\phi$,
-   $e \leftrightarrow \xi_C$
-   (AGENTS.md "Universal Tetrahedral Correspondence").
+4. **Structural-field tetrad** $(\Phi_s, |\nabla \phi|, K_\phi, \xi_C)$:
+   the minimal derivative-tower basis derived from a scalar phase field
+   $\phi$ and a scalar pressure field $\Delta\mathrm{NFR}$; only $\pi$ is a
+   genuine structural scale (it bounds the phase sector $|\nabla \phi|, |K_\phi| \le \pi$).
+   The earlier $(\varphi,\gamma,\pi,e)$ "tetrahedral correspondence" overlay
+   was refuted by the 2026 audit and removed
+   (AGENTS.md §3, "Structural tetrad").
 5. **Structural Conservation Theorem**
    (`src/tnfr/physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`):
    two canonical conjugate-pair sectors,
@@ -6611,9 +6610,9 @@ catalog:
   vanish.  This is verified operationally by
   `check_symplectic_preservation`.
 
-- **(L2) The phase carrier is an LCAG.**  By the Universal Tetrahedral
-  Correspondence $\pi \leftrightarrow K_\phi$ and the `wrap_angle`
-  constraint $|K_\phi| \leq \pi$ (AGENTS.md, "Structural Field Tetrad"),
+- **(L2) The phase carrier is an LCAG.**  By the `wrap_angle`
+  constraint $|K_\phi| \leq \pi$ (the phase sector is $\pi$-scaled;
+  AGENTS.md §3, "Structural tetrad"),
   the phase $\phi \in S^1$ takes values in a locally compact abelian
   group.  $S^1$ is canonical, not chosen.
 
@@ -6669,7 +6668,7 @@ The candidates available inside the canonical catalog are:
 | (F7) U2 boundedness: $\int \nu_f \Delta \mathrm{NFR} \, dt < \infty$ | Catalog | **No** — integrable scalar $\nu_f$ satisfies U2. |
 | (F8) Conservation Theorem: $Q$ and $E$ exact | Catalog | **No** — implemented with real-valued $J_\phi$. |
 | (F9) REMESH (operator #13) periodic echoes | Catalog | **Indirect** — REMESH generates a *discrete spectrum* of echoes $\{k\tau\}_{k\geq 1}$, so the *time* domain carries discrete structure.  But this is structure of EPI dynamics, not a forced upgrade of the momentum carrier. |
-| (F10) U6: $\Delta \Phi_s < \varphi$ confinement | Catalog | **No** — a telemetry threshold on the potential sector. |
+| (F10) U6: $\Delta \Phi_s < \pi/2$ confinement | Catalog | **No** — a telemetry threshold on the potential sector. |
 
 **Result.** No canonical constraint in {F1,...,F10} forces the
 Pontryagin upgrade of $J_\phi$.  All ten admit consistent realisation
@@ -7445,10 +7444,11 @@ extraneous structure):
 3. **Grammar U1–U6**, all derivable from invariant #1 and the bounded
    evolution constraint $\int \nu_f \, \Delta \mathrm{NFR} \, dt < \infty$
    (U2).
-4. **Universal Tetrahedral Correspondence** and the Structural Field
-   Tetrad $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$, all derived from a
+4. **Structural Field Tetrad** $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$,
+   the minimal derivative-tower basis, all derived from a
    *scalar* phase field $\phi$ and a *scalar* pressure field
-   $\Delta\mathrm{NFR}$ (AGENTS.md §"Minimal Structural Degrees of
+   $\Delta\mathrm{NFR}$; only $\pi$ is a genuine structural scale
+   (AGENTS.md §"Minimal Structural Degrees of
    Freedom").
 5. **Structural Conservation Theorem**
    (`src/tnfr/physics/conservation.py`,
@@ -7763,7 +7763,7 @@ selected the NEGATIVE branch.
 > The Banach-EPI carrier principle (P-BEPI-Carrier) is **not canonical**.
 > It does not follow from the canonical six invariants, nor from the
 > nodal equation, nor from any subset of grammar U1–U6, nor from the
-> Universal Tetrahedral Correspondence, nor from the Structural
+> structural-field tetrad, nor from the Structural
 > Conservation Theorem, nor from the Variational Principle, nor from
 > REMESH temporal aggregation.  Its derivation requires the additional
 > axiom (P-EPI-Bijectivity), which is itself independent of the
@@ -8356,8 +8356,8 @@ forcing-axiom reduction phase (B2b) of the T-φ program
 carrier principle for the canonical phase field
 (P-φ-Cover-Carrier) from the canonical six invariants + nodal
 equation + Structural Conservation Theorem + Variational
-Principle + REMESH operator + Universal Tetrahedral
-Correspondence, *or* to identify and isolate the actual residual
+Principle + REMESH operator + the structural-field
+tetrad, *or* to identify and isolate the actual residual
 axiom that the derivation requires beyond the catalog.
 
 The honest verdict (executed in §13triginta-decima) is
@@ -8402,10 +8402,9 @@ extraneous structure):
    Reproducible Dynamics.
 3. **Grammar U1–U6**, in particular **U3 (RESONANT COUPLING)** which
    gates UM/RA on :math:`|\phi_i - \phi_j| \le \Delta\phi_{\max}`.
-4. **Universal Tetrahedral Correspondence**: φ ↔ S¹ on the
-   *geometric* edge (γ-π edge in the tetrahedral architecture) and
+4. **Structural-field tetrad**: the phase φ ∈ S¹ and
    the structural fields :math:`|\nabla\phi|, K_\phi` constructed
-   from wrapped phase differences.
+   from wrapped phase differences (the phase sector is π-scaled; only π is structural).
 5. **Structural Conservation Theorem**
    (`src/tnfr/physics/conservation.py`): per-node charge density
    :math:`\rho_i` and current vector :math:`\mathbf{J}_i \in \mathbb{R}^2`
@@ -8790,8 +8789,8 @@ Principle (PWDP) and the F1–F10 reduction.
 > stored under ``ALIAS_THETA``).  The covering-space lift principle
 > (P-φ-Cover-Carrier) is **not canonical**.  It does not follow
 > from the canonical six invariants, nor from the nodal equation,
-> nor from any subset of grammar U1–U6, nor from the Universal
-> Tetrahedral Correspondence, nor from the Structural Conservation
+> nor from any subset of grammar U1–U6, nor from the
+> structural-field tetrad, nor from the Structural Conservation
 > Theorem, nor from the Variational Principle, nor from REMESH
 > temporal aggregation.  Its derivation requires the additional
 > axiom (P-φ-Homotopy-Retention), which is itself independent of
@@ -9395,8 +9394,8 @@ forcing-axiom reduction phase (B3b) of the T-ΔNFR program
 principle for the canonical nodal-gradient field
 (P-ΔNFR-Tensor-Carrier) from the canonical six invariants +
 nodal equation + Structural Conservation Theorem + Variational
-Principle + REMESH operator + Universal Tetrahedral
-Correspondence, *or* to identify and isolate the actual residual
+Principle + REMESH operator + the structural-field
+tetrad, *or* to identify and isolate the actual residual
 axiom that the derivation requires beyond the catalog.
 
 The honest verdict (executed in §13quadraginta-secunda) is
@@ -9444,10 +9443,10 @@ extraneous structure):
 3. **Grammar U1–U6**, in particular **U2 (CONVERGENCE &
    BOUNDEDNESS)** which bounds :math:`\int \nu_f \cdot
    \Delta\mathrm{NFR}\, dt < \infty` as a scalar Lebesgue integral.
-4. **Universal Tetrahedral Correspondence**: ΔNFR enters the
+4. **Structural-field tetrad**: ΔNFR enters the
    canonical pressure field :math:`\Phi_s(i) = \sum_{j \neq i}
-   \Delta\mathrm{NFR}_j / d(i,j)^2` as a *scalar* per-node value
-   (φ ↔ Φ_s edge); all four tetrad fields :math:`(\Phi_s,
+   \Delta\mathrm{NFR}_j / d(i,j)^2` as a *scalar* per-node value;
+   all four tetrad fields :math:`(\Phi_s,
    |\nabla\phi|, K_\phi, \xi_C)` are scalar-valued.
 5. **Structural Conservation Theorem**
    (`src/tnfr/physics/conservation.py`): per-node charge density
@@ -9891,8 +9890,8 @@ forcing-axiom reduction.
 > The tensor-/operator-valued upgrade principle
 > (P-ΔNFR-Tensor-Carrier) is **not canonical**.  It does not follow
 > from the canonical six invariants, nor from the nodal equation,
-> nor from any subset of grammar U1–U6, nor from the Universal
-> Tetrahedral Correspondence, nor from the Structural Conservation
+> nor from any subset of grammar U1–U6, nor from the
+> structural-field tetrad, nor from the Structural Conservation
 > Theorem, nor from the Variational Principle, nor from REMESH
 > temporal aggregation, nor from the scalar Lebesgue boundedness
 > condition of U2.  Its derivation requires the additional axiom
@@ -11150,8 +11149,8 @@ programme.
 > invariants, nor from the nodal equation (which has no
 > memory-window term), nor from any subset of grammar U1–U6
 > (which evaluates U2 boundedness as a discrete Riemann sum at
-> integer time indices), nor from the Universal Tetrahedral
-> Correspondence (all four tetrad fields scalar-valued and
+> integer time indices), nor from the structural-field
+> tetrad (all four tetrad fields scalar-valued and
 > integer-time-indexed), nor from the Structural Conservation
 > Theorem (closes on the per-step state at integer time indices),
 > nor from the Variational Principle (Lagrangian / Hamiltonian
@@ -11528,7 +11527,7 @@ DELTA_PHI_MAX = PI / 2  # π/2 ≈ 1.5708 rad (90° maximum phase mismatch for U
 
 No per-edge lookup pattern was observed; no angle-of-attack dependence (verdict is uniformly `|wrap(φ_i − φ_j)| ≤ delta_phi_max`); no callable / matrix / dict payload pattern.
 
-**CATALOG correction (recorded inline, no separate bookkeeping commit per the rules of §13quadraginta-quinta.4)**: [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 B5 spec previously stated "canonical default derived from γ/π (Kuramoto critical coupling)". This is **incorrect for Δφ_max**: the canonical scalar `DELTA_PHI_MAX = PI / 2` represents the *maximum phase mismatch tolerated by U3 coupling* (90°), not the Kuramoto critical coupling threshold. Per [`AGENTS.md`](../AGENTS.md) U3 specification, γ/π ≈ 0.184 is the **safety threshold for the |∇φ| field** (Universal Tetrahedral Correspondence γ ↔ |∇φ|), distinct from the U3 *coupling* threshold Δφ_max. The CATALOG anchor is corrected concurrently in the B5a commit.
+**CATALOG correction (recorded inline, no separate bookkeeping commit per the rules of §13quadraginta-quinta.4)**: [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 B5 spec previously stated "canonical default derived from γ/π (Kuramoto critical coupling)". This is **incorrect for Δφ_max**: the canonical scalar `DELTA_PHI_MAX = PI / 2` represents the *maximum phase mismatch tolerated by U3 coupling* (90°), not the Kuramoto critical coupling threshold. Per [`AGENTS.md`](../AGENTS.md) U3 specification, the **|∇φ| field early-warning level** is ≈ π/16 ≈ 0.196 (heuristic, σ-dependent, not a derived constant; the kinematic bound is π), distinct from the U3 *coupling* threshold Δφ_max = π/2. The CATALOG anchor is corrected concurrently in the B5a commit.
 
 ### §13quadraginta-sexta.3 — Diagnostic axes
 
@@ -11606,7 +11605,7 @@ Per the standard B-sub-question methodology (§13triginta-tertia.4, §13triginta
 ### §13quadraginta-sexta.8 — Cross-references
 
 - [`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`](CATALOG_TYPE_HYGIENE_PROGRAMME.md) §3 row B5 (status block; canonical anchor correction); §4 row B5 (tabulated progress).
-- [`AGENTS.md`](../AGENTS.md) Unified Grammar U3 (resonant coupling); Universal Tetrahedral Correspondence γ ↔ |∇φ| (distinct threshold; see §13quadraginta-sexta.2 anchor correction).
+- [`AGENTS.md`](../AGENTS.md) Unified Grammar U3 (resonant coupling); |∇φ| field early-warning ≈ π/16 heuristic (distinct from the U3 coupling threshold; see §13quadraginta-sexta.2 anchor correction).
 - [`theory/UNIFIED_GRAMMAR_RULES.md`](UNIFIED_GRAMMAR_RULES.md) §U3 (resonant coupling derivation).
 - §13quadraginta-secunda.13 (L3* promotion to stable working heuristic).
 - §13quadraginta-quarta.8 and §13quadraginta-quinta.5 (first Tier-2 confirmation of L3* at B4).
@@ -11624,7 +11623,7 @@ Per the standard B-sub-question methodology (§13triginta-tertia.4, §13triginta
 
 ### §13quadraginta-septima.1 Available Canonical Tools
 
-The TNFR canonical catalog (13 operators, U1–U6 unified grammar, tetrad fields, Universal Tetrahedral Correspondence) provides exactly the following machinery relevant to the U3 resonant-coupling check:
+The TNFR canonical catalog (13 operators, U1–U6 unified grammar, tetrad fields) provides exactly the following machinery relevant to the U3 resonant-coupling check:
 
 - **U3 (Resonant Coupling)** (`AGENTS.md`, [`theory/UNIFIED_GRAMMAR_RULES.md`](UNIFIED_GRAMMAR_RULES.md) §U3): a phase-compatibility constraint of the form $|\mathrm{wrap}(\phi_i - \phi_j)| \le \Delta\phi_{\max}$ required for any operator that couples nodes $i, j$ (coupling operators UM, RA; transport-level OZ check).
 - **Canonical default** ([`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py)): `DELTA_PHI_MAX = PI / 2`, a single scalar `float` exported globally.
@@ -11873,9 +11872,9 @@ The candidate envelope is **E7 = NodeIndexedCouplingWeights**, the simplest stru
 ### §13quadraginta-nona.2 Canonical Anchor and Consumer Sites (Identification, Not Modification)
 
 **Canonical anchors** (read-only; never modified):
-- `src/tnfr/config/defaults_core.py:57` — `DNFR_WEIGHTS: dict[str, float] = {"phase": ≈0.737, "epi": ≈0.155, "vf": ≈0.089, "topo": 0.0}` (φ/γ/π/e-derived).
-- `src/tnfr/config/defaults_core.py:65` — `SI_WEIGHTS: dict[str, float] = {"alpha": ≈0.737, "beta": ≈0.155, "gamma": ≈0.113}` (φ/γ/π/e-derived).
-- `src/tnfr/config/defaults_core.py:150` — `SELECTOR_WEIGHTS: dict[str, float] = {"w_si": π/(π+e), "w_dnfr": 1/(π+1), "w_accel": γ/(π+1)}` (tetrahedral).
+- `src/tnfr/config/defaults_core.py:85` — `DNFR_WEIGHTS: dict[str, float] = {"phase": 0.737, "epi": 0.155, "vf": 0.09, "topo": 0.0}` (operational tunable weights; free parameters, not φ/γ/π/e-derived).
+- `src/tnfr/config/defaults_core.py:93` — `SI_WEIGHTS: dict[str, float] = {"alpha": 0.737, "beta": 0.155, "gamma": 0.114}` (operational tunable weights; free parameters, not φ/γ/π/e-derived).
+- `src/tnfr/config/defaults_core.py:186` — `SELECTOR_WEIGHTS: dict[str, float] = {"w_si": 0.536, "w_dnfr": 1/(π+1) ≈ 0.241, "w_accel": 0.139}` (operational tunable weights; only the π-fraction 1/(π+1) is π-derived).
 
 **Canonical consumer sites** (read-only; never modified; uniform scalar-coercion pattern):
 1. `src/tnfr/dynamics/dnfr.py:307` — `_configure_dnfr_weights(G)` via `merge_and_normalize_weights(G, "DNFR_WEIGHTS", ("phase", "epi", "vf", "topo"), default=0.0)`.
@@ -11959,12 +11958,12 @@ If Phase b confirms that SWD refutes the residual axiom, L3* will be validated u
 
 ### §13quinquaginta.1 Available Canonical Tools
 
-The TNFR canonical catalog (13 operators, U1-U6 unified grammar, tetrad fields, Universal Tetrahedral Correspondence) provides exactly the following machinery relevant to the canonical coupling-weight slots:
+The TNFR canonical catalog (13 operators, U1-U6 unified grammar, tetrad fields) provides exactly the following machinery relevant to the canonical coupling-weight slots:
 
 - **Canonical anchors** ([`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py)):
   - `DNFR_WEIGHTS = {phase: 0.737, epi: 0.155, vf: 0.089, topo: 0.0}` — four-component scalar mixer for the ΔNFR functional.
   - `SI_WEIGHTS = {alpha: 0.737, beta: 0.155, gamma: 0.113}` — three-component scalar mixer for the Sense Index aggregation.
-  - `SELECTOR_WEIGHTS = {w_si: π/(π+e), w_dnfr: 1/(π+1), w_accel: γ/(π+1)}` — three-component scalar mixer for canonical operator selection.
+  - `SELECTOR_WEIGHTS = {w_si: 0.536, w_dnfr: 1/(π+1) ≈ 0.241, w_accel: 0.139}` — three-component scalar mixer for canonical operator selection (operational tunable weights).
 - **Consolidated access**: `DEFAULTS` mapping at [`src/tnfr/config/defaults.py:37`](../src/tnfr/config/defaults.py) (`MappingProxyType(CORE_DEFAULTS | INIT_DEFAULTS | REMESH_DEFAULTS | METRIC_DEFAULTS)`).
 - **Canonical merge helper** ([`src/tnfr/dynamics/dnfr.py:307-317`](../src/tnfr/dynamics/dnfr.py), [`src/tnfr/dynamics/selectors.py:136-141`](../src/tnfr/dynamics/selectors.py), [`src/tnfr/backends/optimized_numpy.py:313`](../src/tnfr/backends/optimized_numpy.py)): every canonical consumer reads `weights = merge_and_normalize_weights(G, "<KEY>", (component_tuple,))` and coerces each component via `float(weights.get(c, default))`.
 - **Storage slots**: `G.graph["DNFR_WEIGHTS"]`, `G.graph["SI_WEIGHTS"]`, `G.graph["SELECTOR_WEIGHTS"]` (NetworkX graph-level scalar-dict attributes), backed by `G.graph["_dnfr_weights"]` / `G.graph["_selector_weights"]` after normalisation.
@@ -12984,7 +12983,7 @@ The twelve envelopes inventoried in §13sexagesima-secunda.1 are not equally rel
 For any B0★ closure attempt to be admissible at the canonical layer, the following five acceptance criteria must be met (mirroring the canonicity criteria of Conjecture T-HP §13septies.4 items 1–3, with item 0 added for B0★ specifically):
 
 * **C0 — No catalog modification.** The candidate adds no entry to `OPERATORS`, `OPERATOR_METADATA`, or `definitions.__all__`. (Verifiable by `git diff src/tnfr/operators/registry.py introspection.py definitions.py`.)
-* **C1 — Nodal-equation derivation.** The promoted envelope (B0★-β) or the extracted consequence (B0★-α) is *derived* from $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$ together with the canonical invariants 1–6 and structural constants $(\varphi, \gamma, \pi, e)$ only. A successful fit, post-hoc rationalisation, or external-axiom adoption fails C1.
+* **C1 — Nodal-equation derivation.** The promoted envelope (B0★-β) or the extracted consequence (B0★-α) is *derived* from $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$ together with the canonical invariants 1–6 and the structural scale $\pi$ only. A successful fit, post-hoc rationalisation, or external-axiom adoption fails C1.
 * **C2 — U1–U6 admissibility.** The enriched dynamics (B0★-β) or the extracted consequence (B0★-α) preserves the unified grammar U1–U6, including the continuity equation $\partial \rho / \partial t + \nabla \cdot \mathbf{J} = \mathcal{S}_{\mathrm{grammar}}$ with uniformly-bounded source term.
 * **C3 — Twelve-CDM consistency.** The candidate does not contradict any of the twelve B0–B11 Phase c traces in their literal source-code statements; in particular, it does not introduce a callable kernel, measure, operator-valued intermediate, matrix lift, or Banach-derivative apparatus at any of the twelve surfaces *as a forced canonical contract* (re-classification from research-only to canonical is permitted; introduction of a new forcing axiom is not).
 * **C4 — T-HP discharge.** The candidate, when composed with the existing canonical catalog and the smooth half of $\mathcal{F}$ closed by P28/P30, produces an operator on $\mathcal{H}_{\mathrm{tet}}$ whose spectrum coincides with $\{\gamma_n\}_{n \ge 1}$ (Conjecture T-HP item 3).
@@ -13270,7 +13269,7 @@ Therefore, even if (P-νf-Bijectivity) were accepted as an admissibility axiom (
 
 $$ \frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t) $$
 
-shows that it has **no per-node coupling-weight slot**: the two factors are (a) the structural-frequency scalar $\nu_f$ (whose canonical type was decided at §13triginta-tertia.6) and (b) the nodal-pressure scalar $\Delta\mathrm{NFR}(t)$. Coupling weights enter only **downstream**, inside the implementation of `compute_delta_nfr` (`src/tnfr/dynamics/dnfr.py` and surrounding modules), via the global-scalar dictionaries `DNFR_WEIGHTS`, `SI_WEIGHTS`, `SELECTOR_WEIGHTS` (`src/tnfr/config/defaults_core.py`). The choice of *where* per-node weights would enter `compute_delta_nfr` is therefore a **downstream-implementation choice**, not a consequence of the bare nodal equation. No derivation pathway from `∂EPI/∂t = νf · ΔNFR(t)` together with Invariants #1–#6 and the structural constants $(\varphi, \gamma, \pi, e)$ produces a per-node weight law without an additional external axiom selecting the entry point and the rule. The §13quinquaginta-prima SWD trace records exactly this structural fact under its forcing-axiom F1–F10 enumeration: no canonical constraint forces per-node weights.
+shows that it has **no per-node coupling-weight slot**: the two factors are (a) the structural-frequency scalar $\nu_f$ (whose canonical type was decided at §13triginta-tertia.6) and (b) the nodal-pressure scalar $\Delta\mathrm{NFR}(t)$. Coupling weights enter only **downstream**, inside the implementation of `compute_delta_nfr` (`src/tnfr/dynamics/dnfr.py` and surrounding modules), via the global-scalar dictionaries `DNFR_WEIGHTS`, `SI_WEIGHTS`, `SELECTOR_WEIGHTS` (`src/tnfr/config/defaults_core.py`). The choice of *where* per-node weights would enter `compute_delta_nfr` is therefore a **downstream-implementation choice**, not a consequence of the bare nodal equation. No derivation pathway from `∂EPI/∂t = νf · ΔNFR(t)` together with Invariants #1–#6 and the structural scale $\pi$ produces a per-node weight law without an additional external axiom selecting the entry point and the rule. The §13quinquaginta-prima SWD trace records exactly this structural fact under its forcing-axiom F1–F10 enumeration: no canonical constraint forces per-node weights.
 
 **Reading the residual admissibility window.** §13sexagesima-tertia.3's HIGH-priority justification for P2 was conditional: per-node weights "would mechanically dissolve Fact A and reopen the spectral-non-trivial sub-region of CCC constructions, **if** the per-node weight rule can be canonically derived from $\nu_f$ values via a construction that breaks the symmetric-function-of-scalars constraint." The conditional **if** is precisely the C1 gap. A canonical derivation from $\nu_f$ to per-node weights would itself require a non-symmetric rule (else the rule reduces to a symmetric function of $\nu_f$ values, which gives back parameter-uniform weights and Fact A holds — closing CCET-G_P14 as before). No such non-symmetric rule is derivable from the catalog: the canonical operators (Invariant #4) act through grammar U1–U6 on operator sequences, not on per-node parameter laws (cf. F4 in §13triginta-secunda.4).
 

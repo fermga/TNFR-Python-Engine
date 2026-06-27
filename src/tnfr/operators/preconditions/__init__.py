@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     import logging
 
 from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-from ...constants.canonical import DELTA_PHI_MAX
+from ...constants.canonical import DELTA_PHI_MAX, VAL_MIN_EPI
 
 __all__ = [
     "OperatorPreconditionError",
@@ -522,7 +522,7 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
         Maximum structural frequency threshold
     VAL_MIN_DNFR : float, default 1e-6
         Minimum ΔNFR for expansion (must be positive, very low to minimize breaking changes)
-    VAL_MIN_EPI : float, default 0.2
+    VAL_MIN_EPI : float, default 1/(2π) ≈ 0.159
         Minimum EPI for coherent expansion
     VAL_CHECK_NETWORK_CAPACITY : bool, default False
         Enable network capacity validation
@@ -575,7 +575,7 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
 
     # 3. EPI minimum check (NEW - IMPORTANT)
     epi = _get_node_attr(G, node, ALIAS_EPI)
-    min_epi = float(G.graph.get("VAL_MIN_EPI", 0.2))
+    min_epi = float(G.graph.get("VAL_MIN_EPI", VAL_MIN_EPI))
     if epi < min_epi:
         raise OperatorPreconditionError(
             "Expansion",

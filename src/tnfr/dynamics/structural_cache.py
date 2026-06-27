@@ -22,11 +22,9 @@ from typing import Any
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-from ..constants.canonical import (
-    STRUCT_CACHE_EVICTION_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (0.8 → canonical)
-)
-from ..constants.canonical import (
-    STRUCT_CACHE_INTERPOLATE_CANONICAL,  # PHASE 6 FINAL Canonical Constants for magic number elimination; γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+from ..constants.operational import (
+    STRUCT_CACHE_EVICTION_CANONICAL,
+    STRUCT_CACHE_INTERPOLATE_CANONICAL,
 )
 from ..mathematics.unified_numerical import np
 
@@ -141,7 +139,7 @@ class StructuralCoherenceCache:
         self,
         G: Any,
         force_recompute: bool = False,
-        interpolate_threshold: float = STRUCT_CACHE_INTERPOLATE_CANONICAL,  # γ/(π+e) ≈ 0.0985 → canonical
+        interpolate_threshold: float = STRUCT_CACHE_INTERPOLATE_CANONICAL,  # = 0.1 (operational)
         spectral_basis: Any | None = None,
     ) -> StructuralCacheEntry:
         """
@@ -395,7 +393,7 @@ class StructuralCoherenceCache:
             # Remove 20% of oldest entries
             to_remove = len(self._structural_cache) - int(
                 STRUCT_CACHE_EVICTION_CANONICAL * self.max_entries
-            )  # φ/(φ+γ) ≈ 0.7371 → canonical
+            )  # = 0.74 (operational)
             keys_to_remove = list(self._structural_cache.keys())[:to_remove]
             for k in keys_to_remove:
                 del self._structural_cache[k]

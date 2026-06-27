@@ -16,12 +16,10 @@ from typing import Literal
 
 from ..config.defaults_core import CoreDefaults
 
-# PHASE 6 EXTENDED: Canonical constants for structural clipping
-from ..constants.canonical import (
-    NODAL_OPT_COUPLING_CANONICAL,  # γ/(π+e) ≈ 0.0985 (0.1 → canonical margin)
-)
-from ..constants.canonical import (
-    OPT_ORCH_FFT_SPEEDUP_CANONICAL,  # e-γ ≈ 2.1411 (2.0 → canonical normalization)
+# Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
+    NODAL_OPT_COUPLING_CANONICAL,
+    OPT_ORCH_FFT_SPEEDUP_CANONICAL,
 )
 
 __all__ = [
@@ -184,7 +182,7 @@ def structural_clip(
         # Map [lo, hi] to working range
         margin = (
             hi - lo
-        ) * NODAL_OPT_COUPLING_CANONICAL  # γ/(π+e) ≈ 0.0985 margin for smooth transition
+        ) * NODAL_OPT_COUPLING_CANONICAL  # = 0.1 margin for smooth transition
         working_lo = lo - margin
         working_hi = hi + margin
 

@@ -39,7 +39,7 @@ from ..config.operator_names import (
     SILENCE,
     TRANSITION,
 )
-from ..constants.canonical import (  # PHASE 7B: Pattern scoring canonicalization
+from ..constants.operational import (  # operational pattern-scoring weights (not TNFR physics)
     OPERATORS_CREATIVE_BASE_CANONICAL,
     OPERATORS_EDUCATIONAL_HIGH_CANONICAL,
     OPERATORS_ORGANIZATIONAL_CANONICAL,
@@ -93,22 +93,22 @@ from .grammar_types import STABILIZERS as _STABILIZERS
 _INTERMEDIATE = {COUPLING, RESONANCE, DISSONANCE}
 
 _COHERENCE_WEIGHTS = {
-    StructuralPattern.THERAPEUTIC: PATTERN_THERAPEUTIC_WEIGHT_CANONICAL,  # φ/γ ≈ 2.8032 (therapeutic boost)
-    StructuralPattern.EDUCATIONAL: PATTERN_EDUCATIONAL_WEIGHT_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (educational boost)
-    StructuralPattern.ORGANIZATIONAL: PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL,  # γ/(π+γ) ≈ 0.1552 (organizational boost)
-    StructuralPattern.CREATIVE: PATTERN_CREATIVE_WEIGHT_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (same as educational)
-    StructuralPattern.REGENERATIVE: PATTERN_REGENERATIVE_WEIGHT_CANONICAL,  # φ/e ≈ 0.5952 (regenerative boost)
-    StructuralPattern.BOOTSTRAP: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # 1+γ/(π×e) ≈ 1.0676 (minimum boost)
+    StructuralPattern.THERAPEUTIC: PATTERN_THERAPEUTIC_WEIGHT_CANONICAL,  # = 2.8 (therapeutic boost)
+    StructuralPattern.EDUCATIONAL: PATTERN_EDUCATIONAL_WEIGHT_CANONICAL,  # = 0.74 (educational boost)
+    StructuralPattern.ORGANIZATIONAL: PATTERN_ORGANIZATIONAL_WEIGHT_CANONICAL,  # = 0.16 (organizational boost)
+    StructuralPattern.CREATIVE: PATTERN_CREATIVE_WEIGHT_CANONICAL,  # = 0.74 (same as educational)
+    StructuralPattern.REGENERATIVE: PATTERN_REGENERATIVE_WEIGHT_CANONICAL,  # = 0.6 (regenerative boost)
+    StructuralPattern.BOOTSTRAP: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # = 1.07 (minimum boost)
     StructuralPattern.EXPLORE: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Same as bootstrap
-    StructuralPattern.STABILIZE: PATTERN_STABILIZE_WEIGHT_CANONICAL,  # φ/(φ+1) ≈ 0.6180 (stabilization)
+    StructuralPattern.STABILIZE: PATTERN_STABILIZE_WEIGHT_CANONICAL,  # = 0.62 (stabilization)
     StructuralPattern.BIFURCATED: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Same as bootstrap
     StructuralPattern.FRACTAL: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Same as explore
     StructuralPattern.HIERARCHICAL: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Same as bootstrap
     StructuralPattern.CYCLIC: PATTERN_BASE_WEIGHT_CANONICAL,  # 1.0 (canonical unit)
     StructuralPattern.COMPLEX: PATTERN_COMPLEX_WEIGHT_CANONICAL,  # Same as stabilize
-    StructuralPattern.COMPRESS: PATTERN_COMPRESS_WEIGHT_CANONICAL,  # 1-γ/(π×e) ≈ 0.9324 (compression)
+    StructuralPattern.COMPRESS: PATTERN_COMPRESS_WEIGHT_CANONICAL,  # ≈ 0.9324 (compression)
     StructuralPattern.RESONATE: PATTERN_BOOTSTRAP_WEIGHT_CANONICAL,  # Same as bootstrap
-    StructuralPattern.LINEAR: PATTERN_LINEAR_WEIGHT_CANONICAL,  # γ/π ≈ 0.1837 (linear minimum)
+    StructuralPattern.LINEAR: PATTERN_LINEAR_WEIGHT_CANONICAL,  # = 0.18 (linear minimum)
     StructuralPattern.BASIC_LEARNING: PATTERN_BASE_WEIGHT_CANONICAL,  # 1.0 (canonical unit)
     StructuralPattern.DEEP_LEARNING: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Same as explore
     StructuralPattern.EXPLORATORY_LEARNING: PATTERN_EXPLORE_WEIGHT_CANONICAL,  # Same as explore

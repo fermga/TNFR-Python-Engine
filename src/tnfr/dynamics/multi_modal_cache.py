@@ -45,15 +45,11 @@ try:
 except ImportError:
     _CACHE_AVAILABLE = False
 
-# Import PHASE 6 FINAL Canonical Constants for magic number elimination
-from ..constants.canonical import (
-    MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL,  # π/e ≈ 1.1557 (2.0 → canonical)
-)
-from ..constants.canonical import (
-    MULTIMODAL_CACHE_TARGET_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (0.8 → canonical)
-)
-from ..constants.canonical import (
-    MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL,  # π ≈ 3.1416 (3.0 → canonical)
+# Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
+    MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL,
+    MULTIMODAL_CACHE_TARGET_CANONICAL,
+    MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL,
 )
 
 
@@ -326,7 +322,7 @@ class TNFRUnifiedMultiModalCache:
         # Evict until we're under 80% of max size
         target_size = (
             self.max_size_mb * MULTIMODAL_CACHE_TARGET_CANONICAL
-        )  # φ/(φ+γ) ≈ 0.7371 → canonical
+        )  # = 0.74 (operational)
 
         for score, key, entry in eviction_candidates:
             if self.stats.total_size_mb <= target_size:
@@ -493,7 +489,7 @@ def cache_unified_computation(
     Decorator for caching unified computations.
 
     Usage:
-    @cache_unified_computation(CacheEntryType.SPECTRAL_DECOMPOSITION, importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL)  # π/e ≈ 1.1557 → canonical
+    @cache_unified_computation(CacheEntryType.SPECTRAL_DECOMPOSITION, importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL)  # = 1.16 (operational)
     def compute_spectrum(G):
         # computation here
         return eigenvalues, eigenvectors
@@ -548,7 +544,7 @@ def cache_structural_fields(
         G,
         parameters=field_params,
         computation_func=computation_func,
-        mathematical_importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL,  # π/e ≈ 1.1557 → canonical
+        mathematical_importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL,  # = 1.16 (operational)
     )
 
 

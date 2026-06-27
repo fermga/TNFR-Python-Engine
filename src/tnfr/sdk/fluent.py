@@ -34,7 +34,7 @@ import networkx as nx
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
-from ..constants.canonical import MIN_BUSINESS_COHERENCE_CANONICAL as COHERENCE_STRONG
+from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as COHERENCE_STRONG
 from ..constants.canonical import PI as _PI
 from ..constants.canonical import (
     THOL_MIN_COLLECTIVE_COHERENCE as COHERENCE_FRAGMENTATION,
@@ -52,7 +52,7 @@ from ..validation import validate_sequence
 # These are the C(t) telemetry marks from AGENTS.md §7, reused from the
 # canonical constants as a single source of truth (heuristic cuts -- not magic
 # numbers, not fitted to data):
-#   - COHERENCE_STRONG        ((e*phi)/(pi+e) ~ 0.7506): C(t) at/above -> strong
+#   - COHERENCE_STRONG        (π/(π+1) ~0.7585, emergent): C(t) at/above -> strong
 #   - COHERENCE_FRAGMENTATION (1/(pi+1)       ~ 0.2415): C(t) below   -> fragmenting
 # Adaptive selection keys on these: below fragmentation the network is
 # breaking up (heal); below the strong/target mark it consolidates
@@ -761,7 +761,7 @@ class TNFRNetwork:
           up -> ``"healing"``.
         - ``COHERENCE_FRAGMENTATION <= C < target_coherence``: it consolidates
           -> ``"stabilization"``.
-        - ``C >= target_coherence`` (default ``COHERENCE_STRONG`` ~0.7506):
+        - ``C >= target_coherence`` (default ``COHERENCE_STRONG`` ~0.75):
           strong enough to explore -> ``"optimization"`` (>5 nodes) or
           ``"innovation"``.
 

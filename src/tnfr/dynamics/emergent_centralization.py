@@ -55,30 +55,16 @@ try:
 except ImportError:
     HAS_SPECTRAL = False
 
-# PHASE 6 EXTENDED: Canonical constants for emergent centralization
-from ..constants.canonical import (
-    EMERGENT_CENTRALITY_THRESHOLD_CANONICAL,  # φ/(φ+γ) ≈ 0.7371 (centrality)
-)
-from ..constants.canonical import (
-    EMERGENT_COORDINATION_BOOST_CANONICAL,  # 2·φ/π ≈ 1.0309 (2.0 → canonical)
-)
-from ..constants.canonical import (
-    EMERGENT_COORDINATION_THRESHOLD_CANONICAL,  # 1/(φ+γ/π) ≈ 0.5550 (coordination)
-)
-from ..constants.canonical import (
-    EMERGENT_COUPLING_STRENGTH_CANONICAL,  # φ/(π+γ) ≈ 0.7320 (0.7 → canonical)
-)
-from ..constants.canonical import (
-    EMERGENT_EFFICIENCY_GAIN_CANONICAL,  # γ/π ≈ 0.1837 (0.2 → canonical)
-)
-from ..constants.canonical import (
-    EMERGENT_FREQ_BALANCE_CANONICAL,  # e/(π+e) ≈ 0.4638 (0.5 → canonical)
-)
-from ..constants.canonical import (
-    EMERGENT_STABILITY_THRESHOLD_CANONICAL,  # (φ+γ)/(π+γ) ≈ 0.5903 (stability)
-)
-from ..constants.canonical import (
-    NODAL_OPT_COUPLING_CANONICAL,  # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+# Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
+    EMERGENT_CENTRALITY_THRESHOLD_CANONICAL,
+    EMERGENT_COORDINATION_BOOST_CANONICAL,
+    EMERGENT_COORDINATION_THRESHOLD_CANONICAL,
+    EMERGENT_COUPLING_STRENGTH_CANONICAL,
+    EMERGENT_EFFICIENCY_GAIN_CANONICAL,
+    EMERGENT_FREQ_BALANCE_CANONICAL,
+    EMERGENT_STABILITY_THRESHOLD_CANONICAL,
+    NODAL_OPT_COUPLING_CANONICAL,
 )
 
 try:
@@ -155,15 +141,15 @@ class TNFREmergentCentralizationEngine:
         self.current_coordination_nodes = {}
         self.performance_history = []
 
-        # Mathematical thresholds (canonical derivations from φ, γ, π, e)
+        # Operational thresholds (engine tuning, not TNFR physics)
         self.centrality_threshold = (
-            EMERGENT_CENTRALITY_THRESHOLD_CANONICAL  # φ/(φ+γ) ≈ 0.7371
+            EMERGENT_CENTRALITY_THRESHOLD_CANONICAL  # = 0.74 (operational)
         )
         self.coordination_threshold = (
-            EMERGENT_COORDINATION_THRESHOLD_CANONICAL  # 1/(φ+γ/π) ≈ 0.5550
+            EMERGENT_COORDINATION_THRESHOLD_CANONICAL  # ≈ 0.5550
         )
         self.stability_threshold = (
-            EMERGENT_STABILITY_THRESHOLD_CANONICAL  # (φ+γ)/(π+γ) ≈ 0.5903
+            EMERGENT_STABILITY_THRESHOLD_CANONICAL  # ≈ 0.5903
         )
 
         # Performance tracking
@@ -290,7 +276,7 @@ class TNFREmergentCentralizationEngine:
                 # High EPI concentration indicates coordination potential
                 if (
                     epi_fraction > NODAL_OPT_COUPLING_CANONICAL
-                ):  # γ/(π+e) ≈ 0.099 - Significant EPI concentration
+                ):  # ≈ 0.099 - Significant EPI concentration
                     # Analyze information flow capacity
                     neighbors = list(G.neighbors(node))
                     neighbor_epi = [abs(epi_values.get(n, 0.0)) for n in neighbors]
@@ -360,7 +346,7 @@ class TNFREmergentCentralizationEngine:
 
             if (
                 relative_frequency > EMERGENT_STABILITY_THRESHOLD_CANONICAL
-            ):  # (φ+γ)/(π+γ) ≈ 0.590 - Top frequency nodes
+            ):  # ≈ 0.590 - Top frequency nodes
                 # Calculate coordination capacity based on frequency advantage
                 neighbors = list(G.neighbors(node))
                 neighbor_vf = [vf_values.get(n, 1.0) for n in neighbors]
@@ -448,7 +434,7 @@ class TNFREmergentCentralizationEngine:
                 if (
                     phase_coherence > EMERGENT_CENTRALITY_THRESHOLD_CANONICAL
                     and coordination_capacity > self.coordination_threshold
-                ):  # φ/(φ+γ) ≈ 0.737
+                ):  # ≈ 0.737
                     signature = {
                         "phase_coherence": phase_coherence,
                         "average_phase_difference": avg_phase_diff,

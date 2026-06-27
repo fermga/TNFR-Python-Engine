@@ -52,7 +52,7 @@ HONEST SCOPE (this closes NOTHING)
    unreachable.
 2. The prime 2 (== 2 mod 4) belongs to NEITHER class: it is the even,
    characteristic-2 exception, outside both the real and the imaginary sector.
-3. R and phi, gamma, pi, e remain assumed substrate. G4 = RH stays OPEN.
+3. R and pi remain assumed substrate. G4 = RH stays OPEN.
 
 So Camino 14 LOCATES and EXTENDS the emergence-of-numbers line (all odd primes
 now emerge structurally, split exactly by the real/phase wall) and CONNECTS the
@@ -464,7 +464,7 @@ def main() -> int:
     print("  and unreachable; and the prime 2 sits outside both classes.")
     print("  So the emergence-of-numbers line is EXTENDED to all odd")
     print("  primes and CONNECTED to the wall, but the wall is not moved.")
-    print("  G4 = RH stays OPEN; R and phi, gamma, pi, e remain assumed")
+    print("  G4 = RH stays OPEN; R and pi remain assumed")
     print("  substrate.")
     return 0 if structural else 1
 

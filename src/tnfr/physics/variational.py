@@ -50,13 +50,13 @@ DERIVATION
    - U3 → Regularity of coupling terms (phase compatibility)
    - U4 → Morse-theory constraints at bifurcation critical points
    - U5 → Hierarchical factorisation of S across scales
-   - U6 → Boundedness of potential sector (Φ_s < φ)
+   - U6 → Boundedness of potential sector (Φ_s < π/2)
 
 6. **13 operators as canonical transformations**: Each operator preserves
    the symplectic 2-form ω = Σ_i dK_φ(i) ∧ dJ_φ(i) + dΦ_s(i) ∧ dJ_ΔNFR(i).
 
 7. **Thresholds as critical points of V**: The canonical thresholds
-   (φ, γ/π, 0.9π) correspond to saddle points or extrema of V.
+   (π/2 for Φ_s, 0.9π for |∇φ| and K_φ) correspond to saddle points or extrema of V.
 
 CONSISTENCY WITH EXISTING MODULES
 ==================================
@@ -92,7 +92,7 @@ import math
 from dataclasses import dataclass, field
 from typing import Any, Sequence
 
-from ..constants.canonical import GAMMA, PHI, PI, E
+from ..constants.canonical import PI, U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..mathematics.unified_numerical import np
 
 # ---------------------------------------------------------------------------
@@ -302,96 +302,6 @@ class CriticalPointAnalysis:
     is_critical: bool
     curvature_at_threshold: float
     critical_type: str
-
-
-@dataclass(frozen=True)
-class ThresholdDerivation:
-    r"""Derivation of a tetrad-threshold *value* from its accumulation law.
-
-    :func:`analyze_potential_critical_points` *identifies* the tetrad
-    thresholds as boundaries of the confining well ½x². This dataclass
-    records the complementary mathematical fact: each canonical constant is
-    recoverable non-circularly as the fixed point / limit / series of the
-    accumulation law of its tetrad-field order.
-
-    The four tetrad FIELDS are the four orders of the structural derivative
-    tower (AGENTS.md §"Minimal Structural Degrees of Freedom") — this basis
-    is DERIVED. Each order has an accumulation law from which a constant is
-    recoverable; BUT (audit 2026) only **π** is a genuine STRUCTURAL scale,
-    the others are an organizing overlay:
-
-    ======== ============== ==================== ========== ==========
-    field    tower order    accumulation law     constant   status
-    ======== ============== ==================== ========== ==========
-    Φ_s      0th (global)   inverse-square       φ          overlay
-    |∇φ|     1st            harmonic             γ          overlay
-    K_φ      2nd            circle (S¹)          π          structural
-    ξ_C      correlation    exponential          e          overlay
-    ======== ============== ==================== ========== ==========
-
-    - **φ** is the fixed point of x = 1 + 1/x (inverse-square self-similar
-      accumulation, s²−s−1=0) — a true identity — but the Φ_s bound 0.7711
-      is empirical (no closed form), so φ↔Φ_s is an overlay.
-    - **γ** is the harmonic gap lim(H_n − ln n) — a true identity — but it is
-      NOT the scale of |∇φ|: |∇φ| ≤ π (phase wrap), the same bound as K_φ.
-    - **π** is the GENUINE structural scale: the maximum phase angle on S¹
-      (wrap_angle = arccos(−1)). It scales the WHOLE phase sector (both |∇φ|
-      and K_φ), and K_φ = L_rw·φ is the central operator applied to phase.
-    - **e** is Σ 1/k! — a true identity — but the e↔ξ_C link is near-
-      tautological (any exponential decay has base e); the structural scale
-      of ξ_C is the spectral gap, ξ_C ∝ 1/√λ₂.
-
-    Attributes
-    ----------
-    field_name : str
-        Tetrad field ('Phi_s', 'grad_phi', 'K_phi', 'xi_C').
-    constant_name : str
-        Canonical constant ('phi', 'gamma', 'pi', 'e').
-    tower_order : str
-        Derivative-tower order of the field.
-    accumulation_law : str
-        The structural accumulation law of that order.
-    derived_value : float
-        Value recovered non-circularly from the accumulation law.
-    canonical_value : float
-        Value used in the engine (from ``constants.canonical``).
-    relative_error : float
-        |derived − canonical| / |canonical|.
-    matches : bool
-        True when ``relative_error`` is below tolerance.
-    threshold_expression : str
-        How the engine threshold is built from the constant.
-    status : str
-        ``'derived'`` (accumulation fixed point / defining limit),
-        ``'geometric'`` (geometric primitive), or ``'calibrated'``
-        (involves a safety-margin / normalisation choice).
-    note : str
-        Honest scope note for this threshold.
-    """
-
-    field_name: str
-    constant_name: str
-    tower_order: str
-    accumulation_law: str
-    derived_value: float
-    canonical_value: float
-    relative_error: float
-    matches: bool
-    threshold_expression: str
-    status: str
-    note: str
-
-    def summary(self) -> str:
-        """Human-readable one-line verdict."""
-        ok = "OK" if self.matches else "MISMATCH"
-        return (
-            f"{self.constant_name} ↔ {self.field_name} "
-            f"({self.accumulation_law}) [{ok}, {self.status}]: "
-            f"derived={self.derived_value:.10f}, "
-            f"canonical={self.canonical_value:.10f}, "
-            f"rel_err={self.relative_error:.1e}; "
-            f"threshold={self.threshold_expression}"
-        )
 
 
 @dataclass
@@ -1051,7 +961,7 @@ def analyze_grammar_stationarity(
     max_interaction = (
         float(np.max(np.abs(interaction_vals))) if interaction_vals else 0.0
     )
-    interaction_bounded = max_interaction < 10.0 * PHI  # generous bound
+    interaction_bounded = max_interaction < 16.0  # generous operational bound
     results.append(
         GrammarStationarityAnalysis(
             rule="U3",
@@ -1113,7 +1023,7 @@ def analyze_grammar_stationarity(
     phi_s_vals = list(snap.conjugate_potential.q.values())
     if phi_s_vals:
         max_phi_s = float(np.max(np.abs(phi_s_vals)))
-        confined = max_phi_s < PHI
+        confined = max_phi_s < U6_STRUCTURAL_POTENTIAL_LIMIT
     else:
         max_phi_s = 0.0
         confined = True
@@ -1121,7 +1031,7 @@ def analyze_grammar_stationarity(
         GrammarStationarityAnalysis(
             rule="U6",
             variational_interpretation=(
-                "Potential boundedness: |Φ_s| < φ ≈ 1.618 ensures V(Φ_s) "
+                "Potential boundedness: |Φ_s| < π/2 ensures V(Φ_s) "
                 "remains in a confining well (action bounded from below)."
             ),
             is_satisfied=confined,
@@ -1146,11 +1056,11 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
     For each field, V has the form ½x² so ∂V/∂x = x (zero at x=0).
     The canonical thresholds mark boundaries of the confining well:
 
-    - Φ_s threshold at φ ≈ 1.618: golden-ratio drift-confinement scale
-      (EMPIRICAL; per-node bound 0.7711 has no closed form — audit 2026)
+    - Φ_s threshold at π/2 ≈ 1.571: half phase-wrap confinement bound
+      (the per-node Φ_s bound is empirical, no closed form)
     - |∇φ| threshold at 0.9π ≈ 2.827: phase-wrap confinement limit. |∇φ| is
       a mean of WRAPPED angles, so |∇φ| ≤ π — the SAME bound as K_φ (audit
-      2026: π scales the whole phase sector). The earlier γ/π was an overlay,
+      2026: π scales the whole phase sector). The earlier |∇φ| early-warning level was an overlay,
       not a derived bound (measured sync-onset ≈ 0.29, σ-dependent).
     - K_φ threshold at 0.9π ≈ 2.827: phase-wrap confinement limit (same bound)
 
@@ -1174,11 +1084,11 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
     # Canonical thresholds. Both phase derivatives (|∇φ|, K_φ) are means of
     # WRAPPED angles bounded by π (audit 2026: π scales the whole phase
     # sector), so they share the SAME 0.9π wrap-margin threshold. Φ_s uses the
-    # empirical golden-ratio confinement scale (no closed form). The earlier
-    # γ/π for |∇φ| was an overlay, not a derived bound: the measured
-    # sync-onset is ≈ 0.29 and σ-dependent.
+    # U6 confinement bound (π/2; the per-node Φ_s bound is empirical, no closed
+    # form). The earlier |∇φ| early-warning level was an overlay, not a derived
+    # bound: the measured sync-onset is ≈ 0.29 and σ-dependent.
     thresholds = [
-        ("Phi_s", PHI, phi_s),
+        ("Phi_s", U6_STRUCTURAL_POTENTIAL_LIMIT, phi_s),
         ("grad_phi", 0.9 * PI, grad_phi),
         ("K_phi", 0.9 * PI, k_phi),
     ]
@@ -1237,191 +1147,6 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
         )
 
     return results
-
-
-def _derive_phi_fixed_point(iterations: int = 200) -> float:
-    r"""Recover φ as the fixed point of x = 1 + 1/x (non-circular).
-
-    This is the self-consistency condition of inverse-square self-similar
-    accumulation: Σ_k s^{−2k} = 1/(1 − s^{−2}) equals the scaling factor s
-    iff s² − s − 1 = 0.  Iterating x ← 1 + 1/x converges to that positive
-    root without referencing the canonical ``PHI``.
-    """
-    x = 1.0
-    for _ in range(iterations):
-        x = 1.0 + 1.0 / x
-    return x
-
-
-def _derive_gamma_harmonic_gap(n: int = 100_000) -> float:
-    r"""Recover γ as the harmonic-accumulation gap lim(H_n − ln n).
-
-    Uses the Euler–Maclaurin asymptotic of the harmonic number
-    H_n = ln n + γ + 1/(2n) − 1/(12n²) + O(n^{−4}) to converge quickly,
-    without referencing the canonical ``GAMMA``.
-    """
-    k = np.arange(1, n + 1, dtype=float)
-    h_n = float(np.sum(1.0 / k))
-    return h_n - math.log(n) - 1.0 / (2.0 * n) + 1.0 / (12.0 * n * n)
-
-
-def _derive_e_factorial_series(terms: int = 25) -> float:
-    r"""Recover e as Σ 1/k! (non-circular).
-
-    e is the unique base of scale-invariant memoryless (Markov) decay
-    C(r) = e^{−r/ξ_C}; its defining series Σ 1/k! recovers the value without
-    referencing the canonical ``E``.
-    """
-    total = 0.0
-    factorial = 1.0
-    for k in range(terms):
-        if k > 0:
-            factorial *= k
-        total += 1.0 / factorial
-    return total
-
-
-def derive_tetrad_threshold_values(
-    *, tolerance: float = 1e-6
-) -> list[ThresholdDerivation]:
-    r"""Derive the tetrad-threshold *values* from their accumulation laws.
-
-    Complements :func:`analyze_potential_critical_points` (which identifies
-    the thresholds as confining-well boundaries) by recovering each
-    canonical constant non-circularly from the accumulation law of its
-    tetrad field — the four orders of the structural derivative tower.
-
-    ======== ============== ================ ========= =====================
-    field    accumulation   constant         status    structural threshold
-    ======== ============== ================ ========= =====================
-    Φ_s      inverse-square φ                overlay   Δφ_s < φ (empirical)
-    |∇φ|     harmonic       γ                overlay   |∇φ| < 0.9π (wrap)
-    K_φ      circle (S¹)    π                geometric |K_φ| < 0.9π (wrap)
-    ξ_C      exponential    e                overlay   ξ_C ∝ 1/√λ₂ (spectral)
-    ======== ============== ================ ========= =====================
-
-    Honest scope (audit 2026):
-
-    - **φ**, **γ**, **e** are recovered as the fixed point / limit / defining
-      series of their accumulation laws — these are TRUE mathematical
-      identities. But they are NOT the structural scales of their tetrad
-      fields: only **π** is. ``status='overlay'`` flags this.
-    - **π** is the GENUINE structural scale: the maximum phase angle on S¹
-      (wrap bound), and it scales the WHOLE phase sector — BOTH |∇φ| and K_φ
-      are wrapped angles ≤ π (so both share the 0.9π threshold).
-    - The genuine structural relations are: |∇φ|, K_φ ≤ π (phase wrap),
-      K_φ = L_rw·φ (the central operator on phase), and ξ_C ∝ 1/√λ₂ (the
-      spectral gap). The φ↔Φ_s, γ↔|∇φ|, e↔ξ_C links are an organizing
-      overlay / parametrisation convention, not derived structural scales.
-
-    Parameters
-    ----------
-    tolerance : float, optional
-        Maximum relative error for ``matches``.
-
-    Returns
-    -------
-    list[ThresholdDerivation]
-        One derivation per tetrad field.
-    """
-    phi = _derive_phi_fixed_point()
-    gamma = _derive_gamma_harmonic_gap()
-    pi_val = math.acos(-1.0)  # maximum phase angle on S¹ (wrap_angle bound)
-    e_val = _derive_e_factorial_series()
-
-    rows = [
-        (
-            "Phi_s",
-            "phi",
-            "0th (global aggregation)",
-            "inverse-square",
-            phi,
-            PHI,
-            "ΔΦ_s < φ (empirical)",
-            "overlay",
-            "φ is the fixed point of inverse-square self-similar accumulation "
-            "(s²−s−1=0), a true identity, and motivates the drift-confinement "
-            "scale via the KAM most-irrational argument. But the per-node "
-            "bound 0.7711 is EMPIRICAL (no closed form; the Γ(4/3)/Γ(1/3) "
-            "identity is wrong, that ratio = 1/3), so φ↔Φ_s is an organizing "
-            "overlay, not a derived structural scale (audit 2026).",
-        ),
-        (
-            "grad_phi",
-            "gamma",
-            "1st (local derivative)",
-            "harmonic",
-            gamma,
-            GAMMA,
-            "|∇φ| < 0.9·π (phase wrap)",
-            "overlay",
-            "γ is recoverable as the harmonic-accumulation gap lim(H_n−ln n) "
-            "(a true identity), but it is NOT the structural scale of |∇φ|. "
-            "|∇φ| is a mean of WRAPPED phase angles, so |∇φ| ≤ π — the SAME "
-            "bound as K_φ (audit 2026: π scales the whole phase sector). The "
-            "earlier γ/π threshold was an overlay; the measured sync-onset is "
-            "≈ 0.29 and σ-dependent, not the constant γ/π.",
-        ),
-        (
-            "K_phi",
-            "pi",
-            "2nd (discrete Laplacian)",
-            "circle (S¹)",
-            pi_val,
-            PI,
-            "|K_φ| < 0.9·π",
-            "geometric",
-            "π is the GENUINE structural scale (audit 2026): the maximum phase "
-            "angle on S¹ (wrap_angle bound = arccos(−1)). It scales the WHOLE "
-            "phase sector — both K_φ AND |∇φ| are wrapped angles ≤ π. K_φ is "
-            "moreover the central operator applied to phase (K_φ = L_rw·φ in "
-            "the smooth limit). The 0.9 factor is a 90 % safety margin.",
-        ),
-        (
-            "xi_C",
-            "e",
-            "correlation (non-local)",
-            "exponential",
-            e_val,
-            E,
-            "ξ_C ∝ 1/√λ₂ (spectral gap)",
-            "overlay",
-            "e is recoverable as Σ 1/k! (a true identity) and is the base of "
-            "ANY exponential decay C(r)=e^{−r/ξ_C} — which makes the e↔ξ_C "
-            "link near-tautological. The structural scale of ξ_C is set by "
-            "the spectral gap: ξ_C ∝ 1/√λ₂ (audit 2026), not by e.",
-        ),
-    ]
-
-    out: list[ThresholdDerivation] = []
-    for (
-        field_name,
-        const_name,
-        tower,
-        law,
-        derived,
-        canonical,
-        expr,
-        status,
-        note,
-    ) in rows:
-        rel_err = abs(derived - canonical) / (abs(canonical) + 1e-300)
-        out.append(
-            ThresholdDerivation(
-                field_name=field_name,
-                constant_name=const_name,
-                tower_order=tower,
-                accumulation_law=law,
-                derived_value=float(derived),
-                canonical_value=float(canonical),
-                relative_error=float(rel_err),
-                matches=bool(rel_err < tolerance),
-                threshold_expression=expr,
-                status=status,
-                note=note,
-            )
-        )
-    return out
 
 
 # ---------------------------------------------------------------------------
@@ -1648,7 +1373,7 @@ def compute_variational_suite(G: Any) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 __all__ = [
-    # Data structures
+    #  Data structures
     "ConjugatePair",
     "LagrangianSnapshot",
     "EulerLagrangeResidual",

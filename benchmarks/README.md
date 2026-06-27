@@ -213,8 +213,8 @@ and `primes_as_consequence.py` additionally cross-checks
 `tnfr_primality.core` (the canonical `ΔNFR(n)` pressure) and
 `tnfr.riemann.paley_gap_coercivity` (the canonical P25 scope), and
 `kuramoto_farey_bridge.py` cross-checks the canonical order parameter
-`tnfr.gamma.kuramoto_R_psi` (the Adler 2-oscillator lock) and the canonical
-golden ratio `tnfr.constants.canonical.PHI`, and
+`tnfr.gamma.kuramoto_R_psi` (the Adler 2-oscillator lock) and the emergent
+golden-ratio limit `(1+√5)/2` (the last-to-lock rotation number), and
 `golden_residue_remesh_bridge.py` projects its circle-map orbits with the
 canonical N15 projector `tnfr.riemann.split_residue_by_remesh_infinity` and
 reconciles against the P50 prime-ladder certificate
@@ -254,10 +254,10 @@ PYTHONPATH=src python benchmarks/<script>.py
 | `missing_piece_bridge.py` | Are the two B2 escapes — RH's `S_n`-breaking diagonal and YM's non-commuting generators — ONE missing canonical piece, or two? | `gl(n)=h⊕n` Cartan/root split; commutator of two real symmetric matrices is real anti-symmetric ⇒ `[A,D]∈so(n)` traceless; tensor factorisation `(D⊗I)(I⊗T)=(I⊗T)(D⊗I)`; `tnfr.yang_mills` audit. | **Strong reading REFUTED, weaker unification SURVIVES (honest OPEN)**: no single object `X` breaks both walls — the escapes act on different tensor factors (base `V=ℂⁿ` for RH, fibre `ℂ^d` for YM), `D` is Abelian-on-base (diagonal/Cartan) while `su(d)` is non-Abelian-on-fibre, and `D⊗I` commutes with `I⊗T_a` so the base ingredient cannot supply the fibre's generators. What survives: both gaps are the **same recipe** (adjoin a non-commuting traceless operator ⇒ `so(n)` base / `su(d)` fibre) sharing **one** non-derivability root (no per-node / per-fibre slot in `∂EPI/∂t=νf·ΔNFR`). Reduces *two mysteries* to *one recipe, two realisations*, **not** *one piece*; sharpens, closes nothing. |
 | `navier_stokes_recipe_bridge.py` | Does the one recipe that unifies RH and Yang–Mills extend to a THIRD Millennium programme, 3D Navier–Stokes? | Helmholtz split `∂_i u_j = S_ij + Ω_ij`; strain `S` symmetric traceless (`tr S = ∇·u = 0`, incompressibility); rotation `Ω ∈ so(3) ≅ su(2)`; coupling `(ω·∇)u ≡ 0` in 2D vs `≠ 0` in 3D; `tnfr.navier_stokes.operator` vortex stretching. | **One recipe, THREE realisations (honest OPEN)**: the NS escape is the **same shape** as YM — a non-Abelian traceless generator (`so(3) ≅ su(2)`, both rank-1, struct. const. `1`) — but on a **third** tensor factor, the velocity-component fibre `ℂ³` (distinct from RH's prime base `ℂⁿ` and YM's colour fibre `ℂ^d`). Gated by non-Abelianity: `‖(ω·∇)u‖ = 0` exactly in 2D (Abelian `so(2)`, 2D NS globally regular) and `≠ 0` in 3D (non-Abelian `so(3)`) — same threshold as RH (`n ≥ 2` primes) / YM (`d ≥ 2` colours). Shared non-derivability root: NS's residue is the Cascade Development Condition, which `N17-A` records as *“the structural analogue of `S(T) = (1/π) arg ζ(½+iT)`”*. Extends *one recipe, two realisations* to **three**; closes nothing (`NS-G5`, RH `G4`, YM mass gap all OPEN). |
 | `directed_paley_bridge.py` | Do the `≡ 3 (mod 4)` primes emerge too, completing Camino 9's Reading B beyond `≡ 1 (mod 4)`? | Directed (non-symmetrised) quadratic-residue circulant; for prime `q ≡ 3 (mod 4)`, `−1` is a NON-residue ⇒ Paley *tournament* `A+Aᵀ=J−I` with eigenvalues `{(q−1)/2, (−1±i√q)/2}`; the Gauss sum `g=i√q` makes the secondary part PURELY IMAGINARY `±√q/2`, so `h(n)=‖dev from {(n−1)/2,(−1±i√n)/2}‖=0 ⇔ n` prime `≡3 (mod 4)`. | **Real/phase split = mod-4 split (honest OPEN)**: the SAME residue-QR construction is symmetric/REAL for `≡1 (mod 4)` (`−1` a QR, Camino 9 scale sector) and skew/IMAGINARY for `≡3 (mod 4)` (`−1` not a QR, phase sector) — the mod-4 prime classes split *exactly* along the wall's real-vs-phase boundary (the arithmetic of `−1` being a QR). `h(n)=0` reads the `≡3 (mod 4)` primes OUT from squares alone (`24/24` up to 200, primes-out), so `≡1` real ⊕ `≡3` imaginary = ALL odd primes (canonical adelic cross-check ✓); the only residual prime is `2`. But both sectors are NORMAL operators with DISCRETE spectra — "`i` times self-adjoint" is still not the continuous phase `S(T)`, which stays RH-equivalent and unreachable. Extends Reading B to all odd primes and connects the mod-4 split to the wall; closes nothing (`2` and `S(T)` remain, `G4 = RH` OPEN). |
-| `kuramoto_farey_bridge.py` | Do the rationals (and φ) emerge from the TIME DYNAMICS, not just the static spectrum? | Sine circle map `θ_{n+1}=θ_n+Ω−(K/2π)sin(2πθ_n)` = single-node Kuramoto reduction of `∂EPI/∂t=νf·ΔNFR` (`Ω=νf`, `−(K/2π)sin=ΔNFR`); rotation number `ρ=lim(θ_N−θ_0)/N`; mode-locking ⇒ Arnold tongues / devil's staircase; Farey neighbours `\|p₁q₂−p₂q₁\|=1` ⇒ widest in-between plateau at the mediant `(p₁+p₂)/(q₁+q₂)` (Stern-Brocot); `F_n/F_{n+1}→1/φ=[0;1,1,1,…]` saturates Hurwitz `√5·q²·err→1`; Adler `\|Δω\|≤K` lock criterion. | **Lock/no-lock split = wall residue split (honest OPEN)**: the rationals emerge BLIND as the staircase plateaus (`41` harvested, `ρ→p/q` recovered by `limit_denominator` alone, the dynamical twin of Camino 9/14's primes-OUT spectral emergence); the Farey/Stern-Brocot tree organises the tongues (mediant law + widths strictly shrinking `1/2,2/3,3/5,5/8→0`); φ emerges as the canonical, most-irrational, LAST-to-lock limit (Hurwitz `0.9999`, `tnfr.constants.canonical.PHI` ✓). At sub-critical `K` φ does NOT lock (staircase incomplete, locked measure `0.184<1`) — locked rationals = the reachable half (`range R∞`), the un-locked irrationals (φ foremost) play the residue role (`ker R∞ = Fix(G)^⊥`), the dynamical analogue of `S(T)=(1/π)arg ζ(½+iT)` (Adler winding `W` confirms the split, canonical `kuramoto_R_psi` confirms the locked pair coheres `R=0.95`). But φ is only the un-lockable LIMIT of reachable rationals (a SOFT residue), not the hard orthogonal `S(T)`; the dynamics yields discrete rationals + one φ, not the continuum. Extends emergence to the dynamical side and connects the split to the wall; closes nothing (`G4 = RH` OPEN; `ℝ` and `φ,γ,π,e` assumed substrate). |
-| `golden_residue_remesh_bridge.py` | Does the soft φ-residue of Camino 15 actually sit in `ker(R∞)` of the N15 theorem — and do the lockings sit in `range(R∞)`? | N15 REMESH-∞ Branch A: `R∞` is a self-adjoint ORTHOGONAL PROJECTION onto the resonant DFT lattice `{2πm/L}`, `L=lcm(4,8)=8` (canonical `tnfr.riemann.split_residue_by_remesh_infinity`); Parseval squared-norm energy fractions; a period-`q` circle-map orbit `cos(2πθ_n)` is range-supported ⇔ `q \| L`. | **Golden∈ker confirmed, map PARTIAL (honest OPEN)**: the golden quasi-periodic orbit `ρ=1/φ` lands in `ker(R∞)` (range `0.15%` — the dynamical twin of P50's prime-ladder `S_TNFR∈ker`); REMESH-commensurate lockings `ρ=1/2,1/4` (periods `2,4 \| 8`) land in `range(R∞)` (`100%`). But a genuinely locked `ρ=1/3` (period `3 ∤ 8`) ALSO lands in `ker` (`100%`) — so Camino 15's lock/no-lock split does NOT map 1-1 onto `range/ker`: `R∞`'s lattice is COARSER than the Farey set (`range R∞` = the period-divides-`L` sub-lattice only). Canonical controls reproduce (`sin(2πT/8)→range 100%`, `sin(γT)→ker 99.99%`); the SAME kernel holds the arithmetic carrier `log p` (Baker, P50 `RESIDUE_IN_KER_ONLY`) and the golden orbit — two incommensurate carriers of ONE residue subspace. Membership LOCATES the residue; it is NOT a route to RH. Sharpens AND limits the C15 analogy; closes nothing (`G4 = RH` OPEN; `ℝ` and `φ,γ,π,e` substrate). |
-| `nodal_propagator_residue_bridge.py` | Can the oscillatory residue `S(T)` be **generated** by the canonical nodal propagator itself (not read off Riemann's template, the P31 gap) — and where does it land? | Canonical structural propagator `e^{−s H_P14}` via weighted spectral trace `Z(s)=Tr(W e^{−sH_freq})=Σ log(p) e^{−s k log p}` (P14/P12); on `Re(s)=½`, `Im Z(½+iT)=−Σ log(p) p^{−k/2} sin(T k log p)` is the von Mangoldt oscillation EMITTED by the propagator; N15 `R∞` projector + CCET `S_n`-equivariance. | **Propagator-generated, doubly-walled (honest OPEN)**: the observable is now produced BY the nodal time-evolution `e^{−iTH}` (T1: `weighted_spectral_trace` reproduces `−ζ'/ζ(2)` to truncation, machine-identical to the vectorised sum), not injected from Riemann–Siegel (the P31 methodological gap, CLOSED). It lands in `ker(R∞)` (`range 0.01%`, T2, the dynamical twin of P50/C16) AND its kernel residue is `S_n`-degenerate to machine precision (`max\|ker_can−ker_shuf\|≈6e-14`, T3 = CCET dynamical: shuffling prime labels leaves the residue invariant), so it sits in `ker(R∞) ∩ Fix(S_n)` while true `S(T)` needs `Fix(S_n)^⊥`. Global amplitude SCALE matches `S(T)` (`0.84×`, T4) — the obstruction is the missing phase/correlation structure, not magnitude (the structural reason P31 needed damping `d∼3–5`). Replaces P31's template read-off with a genuine nodal derivation and sharpens the wall to `ker(R∞)∩Fix(S_n)`; closes nothing (`G4=RH` OPEN; `ℝ` and `φ,γ,π,e` substrate; strengthens branch-B2). |
-| `coherence_projector_sense_index.py` | What is the "closed room" *exactly*, and where does TNFR's own coherence metric `Si` sit relative to it? | N15 REMESH-∞ Branch A: `R∞` is a bounded self-adjoint ORTHOGONAL projection on `L²` (idempotent + self-adjoint ⇒ `L² = range ⊕ ker`, canonical resonant lattice `tnfr.riemann.build_resonant_bin_mask`, `L=lcm(4,8)=8`); the Sense Index `Si = α·νf + β(1−disp_θ) + γ(1−\|ΔNFR\|)` (canonical `tnfr.metrics.sense_index.compute_Si`); `S_n`-invariance of the complete prime graph `K_n`. | **Coherence = projection, room = its complement, `Si` symmetric (honest OPEN)**: `R∞` is an exact orthogonal projection (T1: `‖P²−P‖,‖P−Pᴴ‖≈1e-17`, `rank=trace(P)=L=8`, Parseval exact, `⟨range,ker⟩≈0`), so the closed room is *literally* the residue of coherence `ker(R∞)=range(I−P)`; it is vast (T2: `dim(range)=L=8` constant, `dim(ker)=N−8→∞`, coherent fraction `L/N→0`). `Si` is a coherence-capacity functional (T3: mean `Si` `0.70→0.40` monotone in phase dispersion, peaks at full synchrony) and `S_n`-degenerate (T4: sorted `Si` invariant under prime relabelling `≈2e-16`), so `Si ∈ Fix(S_n)` like `C(t)`/spectral trace — blind to `ker(R∞)∩Fix(S_n)^⊥` where `S(T)` lives. Characterises the room directly and unifies `Si` with the symmetric diagnostics; closes nothing (`G4=RH` OPEN; `ℝ` and `φ,γ,π,e` substrate; branch-B2). |
+| `kuramoto_farey_bridge.py` | Do the rationals (and φ) emerge from the TIME DYNAMICS, not just the static spectrum? | Sine circle map `θ_{n+1}=θ_n+Ω−(K/2π)sin(2πθ_n)` = single-node Kuramoto reduction of `∂EPI/∂t=νf·ΔNFR` (`Ω=νf`, `−(K/2π)sin=ΔNFR`); rotation number `ρ=lim(θ_N−θ_0)/N`; mode-locking ⇒ Arnold tongues / devil's staircase; Farey neighbours `\|p₁q₂−p₂q₁\|=1` ⇒ widest in-between plateau at the mediant `(p₁+p₂)/(q₁+q₂)` (Stern-Brocot); `F_n/F_{n+1}→1/φ=[0;1,1,1,…]` saturates Hurwitz `√5·q²·err→1`; Adler `\|Δω\|≤K` lock criterion. | **Lock/no-lock split = wall residue split (honest OPEN)**: the rationals emerge BLIND as the staircase plateaus (`41` harvested, `ρ→p/q` recovered by `limit_denominator` alone, the dynamical twin of Camino 9/14's primes-OUT spectral emergence); the Farey/Stern-Brocot tree organises the tongues (mediant law + widths strictly shrinking `1/2,2/3,3/5,5/8→0`); φ emerges as the most-irrational, LAST-to-lock limit (Hurwitz `0.9999`; the golden ratio `(1+√5)/2` recovered numerically ✓). At sub-critical `K` φ does NOT lock (staircase incomplete, locked measure `0.184<1`) — locked rationals = the reachable half (`range R∞`), the un-locked irrationals (φ foremost) play the residue role (`ker R∞ = Fix(G)^⊥`), the dynamical analogue of `S(T)=(1/π)arg ζ(½+iT)` (Adler winding `W` confirms the split, canonical `kuramoto_R_psi` confirms the locked pair coheres `R=0.95`). But φ is only the un-lockable LIMIT of reachable rationals (a SOFT residue), not the hard orthogonal `S(T)`; the dynamics yields discrete rationals + one φ, not the continuum. Extends emergence to the dynamical side and connects the split to the wall; closes nothing (`G4 = RH` OPEN; `ℝ` is the assumed continuum and **π** the one assumed structural scale). |
+| `golden_residue_remesh_bridge.py` | Does the soft φ-residue of Camino 15 actually sit in `ker(R∞)` of the N15 theorem — and do the lockings sit in `range(R∞)`? | N15 REMESH-∞ Branch A: `R∞` is a self-adjoint ORTHOGONAL PROJECTION onto the resonant DFT lattice `{2πm/L}`, `L=lcm(4,8)=8` (canonical `tnfr.riemann.split_residue_by_remesh_infinity`); Parseval squared-norm energy fractions; a period-`q` circle-map orbit `cos(2πθ_n)` is range-supported ⇔ `q \| L`. | **Golden∈ker confirmed, map PARTIAL (honest OPEN)**: the golden quasi-periodic orbit `ρ=1/φ` lands in `ker(R∞)` (range `0.15%` — the dynamical twin of P50's prime-ladder `S_TNFR∈ker`); REMESH-commensurate lockings `ρ=1/2,1/4` (periods `2,4 \| 8`) land in `range(R∞)` (`100%`). But a genuinely locked `ρ=1/3` (period `3 ∤ 8`) ALSO lands in `ker` (`100%`) — so Camino 15's lock/no-lock split does NOT map 1-1 onto `range/ker`: `R∞`'s lattice is COARSER than the Farey set (`range R∞` = the period-divides-`L` sub-lattice only). Canonical controls reproduce (`sin(2πT/8)→range 100%`, `sin(γT)→ker 99.99%`); the SAME kernel holds the arithmetic carrier `log p` (Baker, P50 `RESIDUE_IN_KER_ONLY`) and the golden orbit — two incommensurate carriers of ONE residue subspace. Membership LOCATES the residue; it is NOT a route to RH. Sharpens AND limits the C15 analogy; closes nothing (`G4 = RH` OPEN; `ℝ` is the assumed continuum and **π** the one assumed structural scale). |
+| `nodal_propagator_residue_bridge.py` | Can the oscillatory residue `S(T)` be **generated** by the canonical nodal propagator itself (not read off Riemann's template, the P31 gap) — and where does it land? | Canonical structural propagator `e^{−s H_P14}` via weighted spectral trace `Z(s)=Tr(W e^{−sH_freq})=Σ log(p) e^{−s k log p}` (P14/P12); on `Re(s)=½`, `Im Z(½+iT)=−Σ log(p) p^{−k/2} sin(T k log p)` is the von Mangoldt oscillation EMITTED by the propagator; N15 `R∞` projector + CCET `S_n`-equivariance. | **Propagator-generated, doubly-walled (honest OPEN)**: the observable is now produced BY the nodal time-evolution `e^{−iTH}` (T1: `weighted_spectral_trace` reproduces `−ζ'/ζ(2)` to truncation, machine-identical to the vectorised sum), not injected from Riemann–Siegel (the P31 methodological gap, CLOSED). It lands in `ker(R∞)` (`range 0.01%`, T2, the dynamical twin of P50/C16) AND its kernel residue is `S_n`-degenerate to machine precision (`max\|ker_can−ker_shuf\|≈6e-14`, T3 = CCET dynamical: shuffling prime labels leaves the residue invariant), so it sits in `ker(R∞) ∩ Fix(S_n)` while true `S(T)` needs `Fix(S_n)^⊥`. Global amplitude SCALE matches `S(T)` (`0.84×`, T4) — the obstruction is the missing phase/correlation structure, not magnitude (the structural reason P31 needed damping `d∼3–5`). Replaces P31's template read-off with a genuine nodal derivation and sharpens the wall to `ker(R∞)∩Fix(S_n)`; closes nothing (`G4=RH` OPEN; `ℝ` is the assumed continuum and **π** the one assumed structural scale; strengthens branch-B2). |
+| `coherence_projector_sense_index.py` | What is the "closed room" *exactly*, and where does TNFR's own coherence metric `Si` sit relative to it? | N15 REMESH-∞ Branch A: `R∞` is a bounded self-adjoint ORTHOGONAL projection on `L²` (idempotent + self-adjoint ⇒ `L² = range ⊕ ker`, canonical resonant lattice `tnfr.riemann.build_resonant_bin_mask`, `L=lcm(4,8)=8`); the Sense Index `Si = α·νf + β(1−disp_θ) + γ(1−\|ΔNFR\|)` (canonical `tnfr.metrics.sense_index.compute_Si`); `S_n`-invariance of the complete prime graph `K_n`. | **Coherence = projection, room = its complement, `Si` symmetric (honest OPEN)**: `R∞` is an exact orthogonal projection (T1: `‖P²−P‖,‖P−Pᴴ‖≈1e-17`, `rank=trace(P)=L=8`, Parseval exact, `⟨range,ker⟩≈0`), so the closed room is *literally* the residue of coherence `ker(R∞)=range(I−P)`; it is vast (T2: `dim(range)=L=8` constant, `dim(ker)=N−8→∞`, coherent fraction `L/N→0`). `Si` is a coherence-capacity functional (T3: mean `Si` `0.70→0.40` monotone in phase dispersion, peaks at full synchrony) and `S_n`-degenerate (T4: sorted `Si` invariant under prime relabelling `≈2e-16`), so `Si ∈ Fix(S_n)` like `C(t)`/spectral trace — blind to `ker(R∞)∩Fix(S_n)^⊥` where `S(T)` lives. Characterises the room directly and unifies `Si` with the symmetric diagnostics; closes nothing (`G4=RH` OPEN; `ℝ` is the assumed continuum and **π** the one assumed structural scale; branch-B2). |
 
 The harnesses build on one another: `composition_arithmetic.py` exports the
 shared spectral helpers (`lap_spectrum`, `adj_spectrum`, `outer_sum`,
@@ -311,7 +311,7 @@ support.
 `kuramoto_farey_bridge.py` is self-contained on the dynamics side (it iterates
 the sine circle map and harvests the devil's-staircase plateaus with NumPy and
 `fractions.Fraction` only), but cross-checks the canonical engine end-to-end:
-the canonical golden ratio `tnfr.constants.canonical.PHI` (the Fibonacci-Farey
+the emergent golden-ratio limit `(1+√5)/2` (the Fibonacci-Farey
 limit) and the canonical Kuramoto order parameter `tnfr.gamma.kuramoto_R_psi`
 (the Adler 2-oscillator lock that confirms a commensurate detuning coheres while
 the golden detuning winds), turning Camino 9/14's *static-spectrum* emergence of
@@ -338,8 +338,9 @@ move: the additive inverse `−n` of ℤ and the antiparticle are one chiral `�
 (the *anticommuting* `Γ A Γ = −A`, distinct from the *commuting* Camino-5
 automorphism wall), with `n+(−n)=0` and the `|W|=0` vacuum as the same neutral
 element — a precise structural analogy, **not** a derivation of CPT, antimatter,
-or the Standard Model. The real continuum ℝ and the canonical constants
-`φ, γ, π, e` remain the **assumed substrate**. Nothing here advances or closes
+or the Standard Model. The real continuum ℝ is the assumed continuum substrate,
+and **π** is the one assumed structural scale; everything else emerges from the
+nodal dynamics. Nothing here advances or closes
 `G4 = RH`, Navier–Stokes regularity, or the Yang–Mills mass gap.
 
 `commutant_bridge.py` is the deepest path and its thesis verdict is, by design,
@@ -363,8 +364,8 @@ shape*, never that TNFR proves Yang–Mills, RH, or a mass gap.
 `phase_wall.py` is the e–π companion to that deepest path and its thesis verdict
 is likewise, by design, **OPEN**. It asks *why* the open target is a phase. The
 four fields of the tetrad are the four orders of the derivative tower over the
-graph (associated with `φ, γ, π, e` notationally; only π is a
-genuine scale), and the catalog is
+graph (only **π** is a genuine structural scale — the phase-wrap bound; the other
+field scales are heuristic or set by the spectral gap, `ξ_C ∝ 1/√λ₂`), and the catalog is
 built from the symmetric coupling `A = Aᵀ` and the self-adjoint `L = D − A`. Its
 structural checks pass at machine precision: every `f(A,L)` is self-adjoint, so its
 spectrum is real and its eigen-phases are locked to `arg ∈ {0, π}` (a sign), while
@@ -433,8 +434,8 @@ map carries the source to the target. This **locates `G4 = RH`** precisely as th
 canonical analytic continuation of `Z_vM` across `Re = 1` / the map `{k log p} →
 {γₙ}`; `mpmath` (P13/P27) only marks that barrier — it draws the target, it never
 derives it. Exhibiting *the* self-adjoint operator whose spectrum is `{γₙ}` from
-TNFR structure alone is the open piece. `ℝ` and `φ, γ, π, e` remain assumed
-substrate; nothing here closes `G4`.
+TNFR structure alone is the open piece. `ℝ` is the assumed continuum and **π** the
+one assumed structural scale; nothing here closes `G4`.
 
 `primes_as_consequence.py` is the thirteenth harness and returns to the very first
 question of the map — *do the primes themselves emerge, or are they fed in?* — now
@@ -445,8 +446,8 @@ and `paley_bridge.py`'s `is_prime`/`paley_gap`, and cross-checks the canonical
 `tnfr_primality.core` pressure, `tnfr.dynamics.adelic`, and
 `tnfr.riemann.paley_gap_coercivity`. It separates two readings of the canonical
 theorem *“n prime ⟺ ΔNFR(n) = 0”* (`theory/TNFR_NUMBER_THEORY.md` §4): **Reading A**
-evaluates `ΔNFR(n) = ζ(Ω−1) + η(τ−2) + θ(σ/n − (1+1/n))` (coefficients `ζ = φγ`,
-`η = (γ/φ)π`, `θ = 1/φ` — notational combos approximating empirical values; not derived) and
+evaluates `ΔNFR(n) = ζ(Ω−1) + η(τ−2) + θ(σ/n − (1+1/n))` (the structural-pressure coefficients are canonical units; the
+prime ⟺ ΔNFR = 0 criterion is coefficient-independent, theory §4.2) and
 reproduces the primes `n ≤ 200` *exactly*, but it **consumes the factorization** —
 `Ω, τ, σ` are obtained by `n % d`, so as a *derivation* it is circular (`3026` trial
 divisions consumed; primes go IN and come back re-labelled `ΔNFR = 0`). **Reading B**
@@ -462,7 +463,7 @@ primality* — representation theory alone cannot reproduce unique factorisation
 **same real-vs-phase wall** as Caminos 8–10. So the optic-shift is **real and
 clarifying** — a TNFR prime *is* a zero-pressure structural equilibrium, partially
 spectrally emergent — but it **locates** the residual; it does not close `G4 = RH`.
-`ℝ` and `φ, γ, π, e` remain assumed substrate.
+`ℝ` is the assumed continuum and **π** the one assumed structural scale.
 
 `missing_piece_bridge.py` is the fourteenth harness and closes the conceptual arc
 of Caminos 5–11 by asking the sharpest cross-program question directly: *are the
@@ -479,8 +480,9 @@ the **same recipe** (break a commutant by adjoining a non-commuting, traceless
 operator — `so(n)` on the base, `su(d)` on the fibre) sharing **one**
 non-derivability root (no per-node / per-fibre slot in `∂EPI/∂t = νf · ΔNFR`). It
 reduces *two mysteries* to *one recipe with two independent realisations*, **not**
-to *one piece*; it sharpens the conjecture and **closes nothing**. `ℝ` and
-`φ, γ, π, e` remain assumed substrate; nothing here proves RH or the Yang–Mills
+to *one piece*; it sharpens the conjecture and **closes nothing**. `ℝ` is the assumed continuum
+and **π** the one assumed structural scale; nothing here proves RH or the
+Yang–Mills
 mass gap.
 
 `navier_stokes_recipe_bridge.py` is the fifteenth harness and asks whether the
@@ -516,8 +518,8 @@ U3, U5, or the nodal equation … the structural analogue of
 recipe, three realisations* (`so(n)` prime base / `su(d)` colour fibre / `so(3)`
 velocity fibre) — and **closes nothing**: `NS-G5`, the Clay 3D Navier–Stokes
 problem, RH (`G4`), and the Yang–Mills mass gap all remain **OPEN**. The recipe
-unifies the obstructions; it does not remove them. `ℝ` and `φ, γ, π, e` remain the
-assumed substrate.
+unifies the obstructions; it does not remove them. `ℝ` is the assumed continuum and
+**π** the one assumed structural scale.
 
 `directed_paley_bridge.py` is the sixteenth harness and returns to the
 emergence-of-numbers thread (Caminos 1–9) to settle Camino 9's one explicit
@@ -541,7 +543,7 @@ RH-equivalent and unreachable, and the even prime `2` (`≡ 2 mod 4`) sits outsi
 both classes. So the harness **extends** the emergence-of-numbers line to all
 odd primes and **connects** the mod-4 prime split to the wall — but it **closes
 nothing**: `2`, the continuous phase `S(T)`, and `G4 = RH` all remain **OPEN**.
-`ℝ` and `φ, γ, π, e` remain the assumed substrate.
+`ℝ` is the assumed continuum and **π** the one assumed structural scale.
 
 `kuramoto_farey_bridge.py` is the seventeenth harness and supplies the
 *dynamical* half of the emergence-of-numbers thread (Caminos 1–9, 14): where
@@ -561,7 +563,7 @@ tongues: between Farey neighbours the widest plateau is the mediant, and tongue
 width strictly shrinks along the Fibonacci path `1/2, 2/3, 3/5, 5/8 → 0`.
 **(3)** φ emerges as the canonical, *most-irrational* number: the Fibonacci
 ratios `F_n/F_{n+1} → 1/φ = [0; 1, 1, 1, …]` saturate the Hurwitz bound
-(`√5·q²·err → 0.9999`) and the limit is `tnfr.constants.canonical.PHI` to `6e-13`.
+(`√5·q²·err → 0.9999`) and the limit is the golden ratio `(1+√5)/2`, recovered numerically to `6e-13`.
 **(4)** At sub-critical coupling φ does **not** lock (the staircase is incomplete,
 locked measure `0.184 < 1`): the locked rationals are the *reachable* half
 (`range R∞`), while the un-locked irrationals — φ foremost, the LAST to lock —
@@ -574,8 +576,8 @@ the hard orthogonal residue `S(T)`; the dynamics yields a discrete set of
 rationals plus one distinguished φ, never the continuum. So the harness
 **extends** the emergence-of-numbers line from the spectral to the dynamical
 side and **connects** the lock/no-lock split to the wall — but it **closes
-nothing**: `G4 = RH` remains **OPEN**, and `ℝ` and `φ, γ, π, e` remain the
-assumed substrate.
+nothing**: `G4 = RH` remains **OPEN**, and `ℝ` is the assumed continuum and **π**
+the one assumed structural scale.
 
 `golden_residue_remesh_bridge.py` is the eighteenth harness and is the capstone
 of the dynamical thread: it ties Camino 15 to the ONE canonical proven object of
@@ -604,7 +606,74 @@ resonant lattice, is measure-zero among all frequencies). Membership in
 `ker(R∞)` **LOCATES** the residue; it is **not** a route to RH. The harness
 **sharpens** the Camino-15 analogy (golden ∈ ker, now precise) and **limits** it
 (not all lockings reach range) at once — and **closes nothing**: `G4 = RH`
-remains **OPEN**, and `ℝ` and `φ, γ, π, e` remain the assumed substrate.
+remains **OPEN**, and `ℝ` is the assumed continuum and **π** the one assumed structural scale.
+
+## Structural-emergence benchmarks — chemistry, geometry & dimension
+
+A second structural-emergence arc applies the same *let-it-emerge* discipline to
+**shell structure, symmetry cardinals and spatial dimension**, under one
+canonical gate: *everything must emerge from TNFR structure and dynamics — no
+imported quantum mechanics, no Coulomb law, no postulated geometry*. Each harness
+models a system as a pure structural manifold (or reads the substrate's own
+emergent symplectic geometry), lets the structure/dynamics produce what it
+produces, and only then identifies the emergent ontology against observed
+phenomena. As with the numbers thread, the comparison framework (Laplace–Beltrami
+`(2l+1)` degeneracies, the representation theory of the dynamical-symmetry groups
+SO(3)/SO(4)/U(3), the `K_m`-simplex Laplacian spectra, the spectral dimension
+estimator) is **standard external mathematics**; the TNFR contribution is the
+emergent reading and the **honest boundary** where a pure single-coherence
+manifold stops and a two-body / imported-geometry ingredient would be required.
+All seven are dependency-light (NetworkX + NumPy), deterministic (no RNG — the
+sphere/ball graphs are Fibonacci-deterministic), and lint-clean. Several reuse the
+canonical `tnfr.physics.emergent_chemistry` primitives (`fibonacci_sphere_graph`,
+`structural_eigenmodes`), the canonical nodal-topology read-out
+`tnfr.physics.fields.classify_nodal_topology` (the radial/annular/multinodal
+emergent geometry), the substrate certificate
+`tnfr.physics.symplectic_substrate.verify_polarization_symmetry` (the U(2)
+polarization symmetry), and the shared fixed-point kernel
+`tnfr.metrics.common.is_structural_equilibrium` (closed shell = prime = relaxed
+node = one `ΔNFR = 0` predicate). Run any of them directly:
+
+```bash
+PYTHONPATH=src python benchmarks/<script>.py
+```
+
+| Script | Question | Engine (independent ground truth) | Verdict |
+| --- | --- | --- | --- |
+| `emergent_shell_ordering.py` | Does atomic shell structure emerge from a pure TNFR structural manifold (no Coulomb, no QM)? | Sphere `□` radial-path Cartesian product; Laplace–Beltrami `(2l+1)` degeneracy; `classify_nodal_topology`; infinite-spherical-well closures. | The independent-particle **SKELETON** emerges: `(2l+1)` angular degeneracy, the canonical `+` sum-ordering of radial⊕angular modes, an **emergent radial nucleus** (the bounded ball's geometric centre), and spherical-well closures `2,8,18,20`. aufbau `(n+l)` does **not** emerge — it encodes the missing many-body screening, so its postulate in `emergent_chemistry` is **justified**, not a defect. |
+| `emergent_screening.py` | Does electron screening emerge from a self-consistent `Φ_s` back-reaction among co-resident sub-EPIs? | SCF loop: occupied sub-EPIs (U5) → canonical `Φ_s` field `Σ ρ/d²` (U6) → shift operator → re-diagonalise; **no** Hartree–Coulomb injected. | A screening-**like** degeneracy-lifting reorganisation genuinely emerges — but it is **repulsive** (the emergent nucleus is a `Φ_s` **maximum**, not an attractive sink), so no coupling reproduces the atomic table. Both atomic ingredients (an attractive nucleus **and** correctly-signed screening) are measured **non-emergent** from one relaxing manifold (`ΔNFR → uniform` forbids a sustained sink). |
+| `emergent_shell_cardinals.py` | Are the magic numbers spatial counts or dynamical-symmetry **irrep cardinals**? | Cumulative `2×(irrep dim)` of a dynamical-symmetry chain: SO(3) `(2l+1)` → `[2,8,18,32]`; SO(4) `n²` → `[2,10,28,60]`; U(3) `(N+1)(N+2)/2` → `[2,8,20,40]`. | Magic numbers are **symmetry cardinals**, not spatial counts: the atomic "10" is the **SO(4) Coulomb cardinal** (the `n=2` shell, `2s+2p` degenerate). The spatial ball **broke** SO(4)→SO(3) (split `2s` from `2p`) → `2,8` not `2,10`. Lesson: map a TNFR layer to the cardinals of its emergent dynamical symmetry, **not** to an imported spatial box. |
+| `emergent_substrate_symmetry.py` | What is the substrate's **own** emergent symmetry, with nothing imported? | `verify_polarization_symmetry` (su(2) closes, charges conserved); the two conjugate sectors `K_φ+iJ_φ`, `Φ_s+iJ_ΔNFR`; U(2) isotropic-oscillator cardinals `2(N+1)`. | The substrate is **structurally locked** to U(2) / 2 sectors (`CONJUGATE_PAIR_LABELS` = 2, `BLOCK_SYMPLECTIC_FORM` is 4×4, the 13 operators are symplectomorphisms ⇒ **no third sector possible**). Its cardinals `[2,6,12,20]` = the observed **2D quantum-dot** magic numbers (Tarucha 1996) — derived with nothing imported. The substrate fibre is intrinsically 2D. |
+| `emergent_base_dimension.py` | Does the network's spatial/spectral dimension emerge, or is it a free input? | Spectral dimension `N(λ) ~ λ^{d_s/2}` (calibrated: ring `1.05` < grid2D `1.85` < grid3D `2.62`). | The base spectral dimension is a **FREE topology input**: THOL tree `d_s ≈ 1.6`, U3 resonant coupling `d_s` tunable by the phase gate (`π/2 → 6.95`, `π/6 → 2.48`). No TNFR structure-builder pins it to 3. REMESH/RA both **preserve topology** (temporal recursion / propagation), so neither adds a spatial dimension — the `(2+1)` enrichment is temporal, not a third spatial sector. |
+| `emergent_simplex_dimension.py` | Is the emergent **integer** the same thing as a **dimension**? | `L(K_{n+1})` spectrum `{0, (n+1)^{×n}}`; the multiplicity `n` = standard-irrep dim of `S_{n+1}` = the `n`-simplex dimension. | **number = dimension = SIMPLEX GRADE** of a coupled-NFR form (EPI): edge `K_2` → `1` (1D), triangle `K_3` → `2` (2D), tetrahedron `K_4` → `3` (3D). The **fractal-resonant lift** (one apex resonantly coupled to all, the cone `K_3 → K_4`) raises grade `2 → 3` = 2D → 3D. EPI form-complexity **is** the dimension; this unifies the emergent-integers and emergent-dimension threads. |
+| `emergent_dimension_dynamics.py` | Does the **dynamics** build these coherent simplices, climbing grade/dimension by itself? | The U3 resonance gate `\|φ_i − φ_j\| ≤ Δφ_max` makes a mutually-compatible cluster a clique = `K_k` = a coherent simplex; max-clique grade = dimension. | **Yes, coherence-gated**: Emission (AL) + U3 Coupling/Resonance (UM/RA) accretes coherent NFRs, lifting the grade one step (point → edge → triangle → tetra = 0D → 1D → 2D → 3D); an **incoherent** emission does **not** lift it (only resonant degrees count); synchronisation grows the simplex. Dimension is **dynamically generated** by resonant coherence, one fractal-resonant degree at a time — **not pinned at 3**. |
+
+The rigorous emergent facts are pinned as engine tests in
+[`tests/physics/test_emergent_chemistry.py`](../tests/physics/test_emergent_chemistry.py)
+(14 tests: the `(2l+1)` angular degeneracy, the emergent radial nucleus, the
+`2,8,18` spherical-well closures, the `ΔNFR = 0` closed-shell predicate, and the
+non-spectral boundary of the aufbau `(n+l)` postulate).
+
+**Honest synthesis.** Pure single-manifold TNFR structure reproduces the
+**independent-particle (mean-field) skeleton** that atoms and nuclei *share* —
+the `(2l+1)` multiplets, the central-field shells, the independent-particle magic
+`2, 8, 20` — and the substrate's own emergent symmetry is **U(2)** (2D
+quantum-dot cardinals), structurally locked. The domain-specific corrections are
+the known **two-body** physics that a single coherence manifold cannot carry:
+**screening** (→ atomic `2,10,18,…`) and **spin-orbit** (→ nuclear `28,50,82`).
+So spatial dimensionality and 3D rotational symmetry are **inputs**, not
+predictions — TNFR's emergent geometric substrate is intrinsically a **2D
+resonant theory** (the U(2) fibre). The deeper resolution of the dimension
+question is that the dimension which truly emerges from a *form* is its **simplex
+grade** (= the cardinal it carries): the coherent coupled-NFR cluster (EPI) is an
+`n`-simplex of dimension `n`, the dynamics **builds** it by resonant coherent
+accretion gated by U3, and that form-grade dimension is **unbounded and
+dynamically generated** — a notion distinct from the locked U(2) fibre symmetry.
+Closed shell = prime = relaxed node is one `ΔNFR = 0` fixed point across all three
+domains. **Honest scope**: these are emergent-ontology falsifiers, not derivations
+of the periodic table, the nuclear shell model, or 3D space; the standard
+representation theory and spectral geometry are the comparison framework, and
+`ℝ` is the assumed continuum and **π** the one assumed structural scale.
 
 ## Retired scripts
 

@@ -54,7 +54,7 @@ The operator count is not arbitrary. The 13 operators arise from exhaustive enum
 Throughout this document:
 - Glyph codes (AL, EN, IL, ...) reference the structural symbols.
 - English names (Emission, Reception, Coherence, ...) are the public API identifiers.
-- Operator constants derive from $(\varphi, \gamma, \pi, e)$ where canonically defined; the engine-configuration tier in `canonical.py` is calibrated, not derived (see its two-tier docstring).
+- Operator gain magnitudes are operational parameters (only $\pi$ is a genuine structural scale); the engine-configuration tier in `canonical.py` is calibrated, not derived.
 - Grammar roles reference rules U1–U6 from [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
 - Energy bounds reference the Lyapunov analysis from [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md).
 
@@ -130,14 +130,14 @@ $$
 
 where $b = 1/(\pi \cdot e) \approx 0.117$ is the canonical emission amplitude.
 
-**Activation threshold**: $\text{EPI} < \text{EPI}_{\text{threshold}}$ where $\text{EPI}_{\text{threshold}} = \frac{1}{\varphi + \gamma/\pi} \cdot \frac{\varphi}{e} \approx 0.330$.
+**Activation threshold**: $\text{EPI} < \text{EPI}_{\text{threshold}}$ where $\text{EPI}_{\text{threshold}} \approx 0.33$ (operational free magnitude — the AL contract fixes the channel and sign, not this threshold).
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
 | Emission amplitude $b$ | $1/(\pi e) \approx 0.117$ | Transcendental base |
-| Activation threshold | $\approx 0.330$ | $\varphi/(e(\varphi + \gamma/\pi))$ |
+| Activation threshold | $\approx 0.33$ | operational (free) |
 
 **Properties**:
 - **Irreversible**: Sets an immutable activation flag. Re-emission increments an activation counter but preserves the original timestamp.
@@ -283,8 +283,8 @@ where $\lambda \approx 0.3$ is the phase locking coefficient and $\bar{\theta}_{
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| ΔNFR reduction factor | $\approx 0.7$ | $\varphi/(\varphi + \gamma) \approx 0.737$ (glyph factor) |
-| Contraction rate $\rho$ | $1 - f^2 \approx 0.457$ | Energy contraction from glyph factor |
+| ΔNFR reduction factor | $0.75$ | operational glyph factor (IL stabiliser; free magnitude) |
+| Contraction rate $\rho$ | $1 - f^2 \approx 0.438$ | Energy contraction from glyph factor ($f = 0.75$) |
 | Phase locking $\lambda$ | $\approx 0.3$ | Configurable coupling strength |
 
 **Properties**:
@@ -313,16 +313,16 @@ When $|\partial^2\text{EPI}/\partial t^2| > \tau$ (bifurcation threshold), sub-E
 **Sub-EPI creation**:
 
 $$
-\text{EPI}_{\text{sub}} = \text{EPI}_{\text{parent}} \cdot \frac{1}{2\varphi} + \text{contribution}_{\text{metabolic}}
+\text{EPI}_{\text{sub}} = \text{EPI}_{\text{parent}} \cdot 0.3 + \text{contribution}_{\text{metabolic}}
 $$
 
-where $1/(2\varphi) \approx 0.309$ is the golden fractal scaling factor. The parent EPI receives a 10% emergence contribution: $\text{EPI}_{\text{parent}}' = \text{EPI}_{\text{parent}} + 0.1 \cdot \text{EPI}_{\text{sub}}$.
+where $0.3$ is the operational fractal scaling factor (a free parameter). The parent EPI receives a 10% emergence contribution: $\text{EPI}_{\text{parent}}' = \text{EPI}_{\text{parent}} + 0.1 \cdot \text{EPI}_{\text{sub}}$.
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| Fractal scale | $1/(2\varphi) \approx 0.309$ | Golden ratio fractal nesting |
+| Fractal scale | $\approx 0.3$ | Operational fractal nesting (free parameter) |
 | Emergence contribution | $0.10$ | Parent EPI increment fraction |
 | Collective coherence min | $1/(\pi + 1) \approx 0.2413$ | U5 requirement |
 | Sub-$\nu_f$ damping | $0.95$ | Child inherits 95% of parent frequency |
@@ -356,7 +356,7 @@ $$
 \Delta\text{NFR}' = f \cdot \Delta\text{NFR}
 $$
 
-where $f = \varphi/\gamma \approx 2.803$ is the structural frequency base (golden-Euler ratio).
+where $f = 2.0$ is the operational amplification factor (OZ destabiliser; free magnitude — the contract fixes only the sign $f > 1$).
 
 **Bifurcation trigger**: When $\partial^2\text{EPI}/\partial t^2 > \tau$, the system enters a bifurcation-active state requiring a handler (IL or THOL per U4a).
 
@@ -364,8 +364,8 @@ where $f = \varphi/\gamma \approx 2.803$ is the structural frequency base (golde
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| Amplification factor $f$ | $\varphi/\gamma \approx 2.803$ | Golden-Euler structural frequency base |
-| Expansion rate $\kappa$ | $f^2 - 1 \approx 6.857$ | Energy expansion from glyph factor |
+| Amplification factor $f$ | $2.0$ | operational (OZ destabiliser; free) |
+| Expansion rate $\kappa$ | $f^2 - 1 = 3.0$ | Energy expansion from glyph factor ($f = 2.0$) |
 
 **Properties**:
 - **Network propagation**: Optional cascading to neighbors via phase-weighted, uniform, or frequency-weighted modes.
@@ -385,16 +385,16 @@ where $f = \varphi/\gamma \approx 2.803$ is the structural frequency base (golde
 **Transformation**:
 
 $$
-\text{EPI}' = f_{\text{VAL}} \cdot \text{EPI}, \qquad f_{\text{VAL}} = 1 + \frac{\gamma}{\pi \cdot e} \approx 1.0673
+\text{EPI}' = f_{\text{VAL}} \cdot \text{EPI}, \qquad f_{\text{VAL}} = \text{VAL\_scale} = 1.05
 $$
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| Scale factor $f_{\text{VAL}}$ | $1 + \gamma/(\pi e) \approx 1.067$ | Natural expansion rate |
+| Scale factor $f_{\text{VAL}}$ | $1.05$ | operational (VAL expansion; free) |
 | Expansion rate $\kappa$ | $f^2 - 1 \approx 0.139$ | Energy scaling |
-| Min EPI | $\gamma/(\pi + \gamma) \approx 0.155$ | Minimum structural base |
+| Min EPI | $1/(2\pi) \approx 0.159$ | minimum structural base (π-fraction, tunable) |
 | Min coherence | $\sin(\pi/3) \approx 0.866$ | 60° harmonic coherence |
 | Bifurcation threshold | $1/(\pi + 1) \approx 0.2413$ | Detection threshold |
 
@@ -420,13 +420,13 @@ $$
 \phi_i' \to \phi_j', \qquad |\phi_i - \phi_j| \leq \Delta\phi_{\max}
 $$
 
-**Compatibility threshold**: $\varphi/(\varphi + \gamma) \approx 0.7371$ (golden-Euler compatibility measure).
+**Compatibility threshold**: $\pi/(\pi+1) \approx 0.7585$ (the high-coherence gate, complement of the fragmentation threshold $1/(\pi+1)$).
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| Compatibility threshold | $\varphi/(\varphi + \gamma) \approx 0.737$ | Golden-Euler ratio |
+| Compatibility threshold | $\pi/(\pi+1) \approx 0.7585$ | high-coherence gate |
 | Phase push | $1/(\pi + 1) \approx 0.241$ | Same physics as EN mixing |
 | $\Delta\text{NFR}$ reduction | $0.15$ | Phase sync pressure relief |
 
@@ -451,7 +451,7 @@ $$
 \nu_f' = (1 + a) \cdot \nu_f, \qquad a = 0.05 \text{ (amplification factor)}
 $$
 
-EPI is propagated without identity change. The resonance threshold for detection is $\exp(-\varphi) \approx 0.1983$.
+EPI is propagated without identity change. The resonance threshold for detection is $\approx 0.198$ (operational; free detection sensitivity).
 
 **Key constants**:
 
@@ -459,7 +459,7 @@ EPI is propagated without identity change. The resonance threshold for detection
 |----------|-------|------------|
 | Amplification factor $a$ | $0.05$ | Moderate amplification |
 | Expansion rate $\kappa$ | $(1+a)^2 - 1 \approx 0.103$ | Energy amplification bound |
-| Resonance threshold | $e^{-\varphi} \approx 0.198$ | Detection threshold |
+| Resonance threshold | $\approx 0.198$ | Detection threshold (operational, free) |
 
 **Properties**:
 - **Identity preservation**: EPI is circulated without alteration — the defining contract of resonance.
@@ -496,7 +496,7 @@ The mutation is threshold-gated: it only activates when the system has accumulat
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| $\nu_f$ viability threshold | $\varphi/(e + \gamma) \approx 0.489$ | Mutation viability condition |
+| $\nu_f$ viability threshold | $\approx 0.489$ | Mutation viability condition (operational, free) |
 | Phase shift coefficient | $0.3$ | ΔNFR-proportional phase shift |
 | Energy bound $|\Delta E|$ | $\leq 0.056$ per node | Quasi-isometric |
 
@@ -517,7 +517,7 @@ The mutation is threshold-gated: it only activates when the system has accumulat
 **Transformation**:
 
 $$
-\nu_f' = \nu_f \cdot \left(1 - \frac{\gamma}{\pi + e}\right) \approx 0.9015 \cdot \nu_f \to 0
+\nu_f' = \nu_f \cdot f_{\text{SHA}} \approx 0.9 \cdot \nu_f \to 0, \qquad f_{\text{SHA}} = \text{SHA\_VF\_FACTOR} = 0.9
 $$
 
 EPI is preserved via latency snapshot.
@@ -526,7 +526,7 @@ EPI is preserved via latency snapshot.
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| $\nu_f$ suppression factor | $1 - \gamma/(\pi + e) \approx 0.901$ | Structural continuity |
+| $\nu_f$ suppression factor | $0.9$ | Structural continuity (operational, SHA\_VF\_FACTOR) |
 | Energy bound $|\Delta E|$ | $\leq 0.187$ | Near-isometric |
 
 **Properties**:
@@ -547,21 +547,21 @@ EPI is preserved via latency snapshot.
 **Transformation**:
 
 $$
-\nu_f' = f_{\text{NUL}} \cdot \nu_f, \qquad f_{\text{NUL}} = 1 - \frac{\gamma}{\pi + e} \approx 0.9015
+\nu_f' = f_{\text{NUL}} \cdot \nu_f, \qquad f_{\text{NUL}} = \text{NUL\_scale} = 0.9
 $$
 
 Local $\Delta\text{NFR}$ density increases due to compression:
 
 $$
-\Delta\text{NFR}_{\text{density}}' = \frac{\varphi}{\gamma} \cdot \Delta\text{NFR}_{\text{density}} \approx 2.803 \cdot \Delta\text{NFR}_{\text{density}}
+\Delta\text{NFR}_{\text{density}}' = \frac{1}{\lambda} \cdot \Delta\text{NFR}_{\text{density}} \approx 1.111 \cdot \Delta\text{NFR}_{\text{density}}, \qquad \lambda = \text{NUL\_scale} = 0.9
 $$
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| Scale factor | $1 - \gamma/(\pi + e) \approx 0.902$ | Same physics as SHA confinement |
-| Densification factor | $\varphi/\gamma \approx 2.803$ | Golden-Euler structural frequency base |
+| Scale factor | $0.9$ | Same operational ν_f step as SHA (NUL\_scale) |
+| Densification factor | $1/\lambda \approx 1.111$ | Geometric volume ratio (1/NUL\_scale) |
 
 **Grammar**: Simplifier (no active grammar role; supports VAL reversals).
 
@@ -625,9 +625,9 @@ The structural energy functional $E = \frac{1}{2}\sum_i \left[\Phi_s^2 + |\nabla
 
 | Operator | Class | Pressure factor | Rate |
 |----------|-------|-----------------|------|
-| IL | Stabiliser | $\varphi/(\varphi + \gamma) \approx 0.737$ | $\rho = 1 - f \approx 0.263$ |
+| IL | Stabiliser | $f = 0.75$ (operational) | $\rho = 1 - f = 0.25$ |
 | THOL | Stabiliser | accel $= 0.10$ | $\rho \approx 0.100$ |
-| OZ | Destabiliser | $\varphi/\gamma \approx 2.803$ | $\kappa = f - 1 \approx 1.803$ |
+| OZ | Destabiliser | $f = 2.0$ (operational) | $\kappa = f - 1 = 1.0$ |
 | ZHIR | Destabiliser | $\theta$-shift $= 0.30$ | $\kappa \approx 0.300$ |
 | VAL | Destabiliser | $\nu_f$-scale $\approx 1.068$ | $\kappa \approx 0.068$ |
 | AL, EN, RA, REMESH | Neutral | — (write EPI, the LHS) | $0$ |
@@ -673,48 +673,45 @@ Every operator has a postcondition contract anchored to the **direct effect on n
 
 ## 14. Operator Constants Reference
 
-All operator constants are written as notational combinations of $(\varphi, \gamma, \pi, e)$ — a parametrisation convention (anti-magic-number), not derivations from the nodal equation; only $\pi$ is a genuine structural scale. (The engine-configuration tier in `canonical.py` — cache, FFT, optimization, and performance constants — is calibrated to operational targets, not derived; see its two-tier docstring.)
+Operator gain magnitudes are **free operational parameters**: each operator's contract fixes its channel and sign (the canonical content), not its numeric magnitude, so the values below are operational calibrations. Only **$\pi$** is a genuine structural scale; $\varphi, \gamma, e$ are not structural scales and no longer appear in the engine. The authoritative, current values live in [`src/tnfr/constants/canonical.py`](../src/tnfr/constants/canonical.py) and the contracts in [`operators/operator_contracts.py`](../src/tnfr/operators/operator_contracts.py); the engine-configuration tier (cache, FFT, optimization, performance) is calibrated to operational targets, not derived.
 
-### 14.1 Fundamental Constants
+### 14.1 The structural scale
 
-| Symbol | Name | Value |
-|--------|------|-------|
-| $\varphi$ | Golden Ratio | $1.618033988749895$ |
-| $\gamma$ | Euler Constant | $0.5772156649015329$ |
-| $\pi$ | Pi | $3.141592653589793$ |
-| $e$ | Euler Number | $2.718281828459045$ |
+| Symbol | Name | Value | Role |
+|--------|------|-------|------|
+| $\pi$ | Pi | $3.141592653589793$ | the one genuine structural scale: bounds the phase sector ($|\nabla\phi| \le \pi$, $|K_\phi| \le \pi$) |
 
-### 14.2 Operator Constants (notational combinations)
+### 14.2 Operator gain magnitudes (operational)
 
-| Constant | Expression | Value | Used by |
-|----------|-----------|-------|---------|
-| Structural frequency base | $\varphi/\gamma$ | $\approx 2.803$ | OZ amplification, NUL densification |
-| EN mixing fraction | $1/(\pi + 1)$ | $\approx 0.241$ | EN, UM phase push, THOL/VAL threshold |
-| IL glyph factor | $\varphi/(\varphi + \gamma)$ | $\approx 0.737$ | IL reduction, UM compatibility |
-| VAL scale factor | $1 + \gamma/(\pi e)$ | $\approx 1.067$ | VAL expansion |
-| VAL min EPI | $\gamma/(\pi + \gamma)$ | $\approx 0.155$ | VAL threshold |
-| SHA/NUL frequency factor | $1 - \gamma/(\pi + e)$ | $\approx 0.901$ | SHA suppression, NUL compression |
-| ZHIR viability | $\varphi/(e + \gamma)$ | $\approx 0.491$ | ZHIR min $\nu_f$ |
-| Emission amplitude | $1/(\pi e)$ | $\approx 0.117$ | AL creation |
-| THOL fractal scale | $1/(2\varphi)$ | $\approx 0.309$ | Sub-EPI scaling |
-| Resonance threshold | $e^{-\varphi}$ | $\approx 0.198$ | RA detection |
+Free operational parameters (the contract fixes channel + sign, not magnitude). Representative current values:
+
+| Constant | Value | Used by |
+|----------|-------|---------|
+| EN / THOL collective-coherence fraction | $1/(\pi + 1) \approx 0.241$ | EN mixing, UM phase push, THOL/VAL threshold (π-derived) |
+| SHA / NUL frequency factor | $0.9$ | SHA suppression, NUL compression ($\nu_f \to 0.9\,\nu_f$) |
+| NUL densification factor | $1/0.9 \approx 1.111$ | NUL ($1/\lambda$ geometric volume-ratio) |
+| VAL scale factor | $1.05$ | VAL expansion ($\nu_f \to 1.05\,\nu_f$) |
+| AL emission boost | $0.10$ | AL creation |
+| THOL fractal scale | $0.3$ | Sub-EPI scaling |
+
+The complete, authoritative set lives in `src/tnfr/constants/canonical.py`; among them the only genuine structural scale is the phase scale $\pi$ (the $1/(\pi+1)$ entry above is the one π-derived value).
 
 ### 14.3 Constant-Operator-Grammar Traceability
 
-Every constant connects to a specific operator and grammar rule:
+The canonical content of each operator is its **channel and sign** (its contract), not its gain magnitude. The gains above are free operational parameters; the channel / grammar mapping is:
 
 ```
-φ/γ ≈ 2.803  →  OZ (amplification)  →  U2 (destabilizer)
-φ/(φ+γ) ≈ 0.737  →  IL (reduction)  →  U2 (stabilizer), U4a (handler)
-1/(π+1) ≈ 0.241  →  EN (mixing)  →  integrator
-γ/(πe) ≈ 0.068  →  VAL (expansion rate)  →  U2 (destabilizer)
-1-γ/(π+e) ≈ 0.902  →  SHA (suppression)  →  U1b (closure)
-φ/(e+γ) ≈ 0.489  →  ZHIR (viability)  →  U4b (transformer)
-1/(2φ) ≈ 0.309  →  THOL (fractal scale)  →  U2 (stabilizer), U4b (transformer)
-1/(πe) ≈ 0.117  →  AL (amplitude)  →  U1a (generator)
+OZ   (ΔNFR ↑, amplification)   →  U2 (destabilizer)
+IL   (ΔNFR ↓, reduction)       →  U2 (stabilizer), U4a (handler)
+EN   (EPI, mixing)             →  integrator
+VAL  (νf ↑, expansion)         →  U2 (destabilizer)
+SHA  (νf → 0, suppression)     →  U1b (closure)
+ZHIR (θ, mutation)             →  U4b (transformer)
+THOL (sub-EPI, self-org)       →  U2 (stabilizer), U4b (transformer)
+AL   (EPI from vacuum)         →  U1a (generator)
 ```
 
-**Source**: `src/tnfr/constants/canonical.py` (two tiers: physics-derived constants + calibrated engine-configuration constants; see its docstring).
+**Source**: `src/tnfr/constants/canonical.py` and `src/tnfr/operators/operator_contracts.py` (the contract source of truth: channel, sign, scale, postcondition).
 
 ---
 
@@ -801,7 +798,7 @@ The 13 canonical TNFR operators form a complete, irreducible algebra for structu
 1. **Completeness**: The operators span all independent transformations of the structural triad $(\text{EPI}, \nu_f, \phi)$ compatible with the nodal equation.
 2. **Irreducibility**: No operator decomposes into a composition of others without loss of physical semantics.
 3. **Grammar closure**: The operator set satisfies all grammar roles required by U1–U6.
-4. **First-principles constants**: Operator constants defined in `canonical.py` derive from $(\varphi, \gamma, \pi, e)$; the engine-configuration tier is calibrated, not derived (see its two-tier docstring).
+4. **Constants**: Operator gain magnitudes in `canonical.py` are operational parameters (only $\pi$ is a genuine structural scale); the engine-configuration tier is calibrated, not derived.
 5. **Lyapunov stability**: Grammar-compliant sequences reduce structural energy ($\sum \Delta E \leq 0$).
 6. **Runtime verification**: 13/13 postcondition contracts enforced by the structural integrity monitor.
 7. **Canonical compositions**: Standard patterns (Bootstrap, Stabilize, Explore, Propagate) encode common structural workflows.

@@ -65,7 +65,7 @@ THESIS (all four checks pass; closes NOTHING)
 HONEST SCOPE
 ------------
 This closes NOTHING. It makes the Camino-15 / N15 connection precise and
-exposes its limit. ``G4 = RH`` stays OPEN; ``R`` and ``phi, gamma, pi, e``
+exposes its limit. ``G4 = RH`` stays OPEN; ``R`` and ``pi``
 remain the assumed substrate. The whole construction lives inside the
 13-operator catalog (R_infinity is derivable from REMESH, N15 Branch A);
 no new operator is introduced.
@@ -438,7 +438,7 @@ def main() -> int:
     print("  is large and holds BOTH the arithmetic residue carrier")
     print("  (log p, Baker) and the golden orbit; ker membership")
     print("  LOCATES the residue, it is NOT a route to RH. G4 = RH")
-    print("  stays OPEN; R and phi, gamma, pi, e remain substrate.")
+    print("  stays OPEN; R and pi remain substrate.")
     return 0 if all_ok else 1
 
 

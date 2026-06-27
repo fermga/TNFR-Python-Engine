@@ -21,6 +21,19 @@ from ..alias import get_attr
 from ..constants import DEFAULTS, get_param
 from ..constants.aliases import ALIAS_EPI, ALIAS_VF
 from ..constants.canonical import UM_COMPAT_THRESHOLD as _UM_COMPAT_CANONICAL
+from ..constants.canonical import (
+    COHERENCE_RETENTION,
+    COUPLING_FINE,
+    COUPLING_GENTLE,
+    COUPLING_MODERATE,
+    DISSONANCE_AMPLIFICATION,
+    EN_MIX_FACTOR,
+    INV_PI,
+    NUL_DENSIFICATION_FACTOR,
+    NUL_SCALE_FACTOR,
+    SHA_VF_FACTOR,
+    VAL_SCALE_FACTOR,
+)
 from ..errors import TNFRValueError
 from ..metrics.trig import neighbor_phase_mean
 from ..rng import make_rng
@@ -413,7 +426,7 @@ def _op_AL(node: NodeProtocol, gf: GlyphFactors) -> None:  # AL — Emission
     >>> node.EPI <= 1.0  # Bounded by structural_clip
     True
     """
-    f = get_factor(gf, "AL_boost", 0.05)
+    f = get_factor(gf, "AL_boost", COUPLING_GENTLE)
     new_epi = node.EPI + f
     _set_epi_with_boundary_check(node, new_epi)
 
@@ -475,7 +488,7 @@ def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
     >>> node.dnfr
     0.1
     """
-    factor = get_factor(gf, "IL_dnfr_factor", 0.7)
+    factor = get_factor(gf, "IL_dnfr_factor", COHERENCE_RETENTION)
     node.dnfr = factor * getattr(node, "dnfr", 0.0)
 
 
@@ -504,7 +517,7 @@ def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
     >>> node.dnfr
     0.4
     """
-    factor = get_factor(gf, "OZ_dnfr_factor", 1.3)
+    factor = get_factor(gf, "OZ_dnfr_factor", DISSONANCE_AMPLIFICATION)
     dnfr = getattr(node, "dnfr", 0.0)
     if bool(node.graph.get("OZ_NOISE_MODE", False)):
         sigma = float(node.graph.get("OZ_SIGMA", 0.1))
@@ -668,8 +681,8 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     >>> round(node.theta, 2)
     0.79
     """
-    k = get_factor(gf, "UM_theta_push", 0.25)
-    k_vf = get_factor(gf, "UM_vf_sync", 0.10)
+    k = get_factor(gf, "UM_theta_push", EN_MIX_FACTOR)
+    k_vf = get_factor(gf, "UM_vf_sync", COUPLING_GENTLE)
     th_i = node.theta
 
     # Check if bidirectional synchronization is enabled (default: True)
@@ -730,7 +743,7 @@ def _op_UM(node: NodeProtocol, gf: GlyphFactors) -> None:  # UM — Coupling
     stabilize_dnfr = bool(node.graph.get("UM_STABILIZE_DNFR", True))
 
     if stabilize_dnfr:
-        k_dnfr = get_factor(gf, "UM_dnfr_reduction", 0.15)
+        k_dnfr = get_factor(gf, "UM_dnfr_reduction", COUPLING_MODERATE)
 
         # Calculate compatibility with neighbors based on phase alignment
         neighbor_ids = list(node.neighbors())
@@ -860,8 +873,8 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
     1.05
     """
     # Get configuration factors
-    diff = get_factor(gf, "RA_epi_diff", 0.15)
-    vf_boost = get_factor(gf, "RA_vf_amplification", 0.05)
+    diff = get_factor(gf, "RA_epi_diff", COUPLING_MODERATE)
+    vf_boost = get_factor(gf, "RA_vf_amplification", COUPLING_FINE)
     phase_coupling = get_factor(
         gf, "RA_phase_coupling", 0.10
     )  # Canonical phase strengthening
@@ -1012,7 +1025,7 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     node : NodeProtocol
         Node whose νf is being attenuated.
     gf : GlyphFactors
-        Provides ``SHA_vf_factor`` to scale νf (default ≈ 0.9015, canonical 1-γ/(π+e)).
+        Provides ``SHA_vf_factor`` to scale νf (default = SHA_VF_FACTOR, 0.9).
 
     Examples
     --------
@@ -1024,14 +1037,14 @@ def _op_SHA(node: NodeProtocol, gf: GlyphFactors) -> None:  # SHA — Silence
     >>> node.vf
     0.5
     """
-    factor = get_factor(gf, "SHA_vf_factor", 0.9015)  # 1 - γ/(π+e) canonical
+    factor = get_factor(gf, "SHA_vf_factor", SHA_VF_FACTOR)  # canonical ν_f↓ gain
     # Canonical SHA effect: reduce structural frequency toward zero
     # This implements: νf → νf_min ≈ 0 ⇒ ∂EPI/∂t → 0 (structural preservation)
     node.vf = factor * node.vf
 
 
-factor_val = 1.0676  # 1 + γ/(π×e) canonical expansion rate
-factor_nul = 0.9015  # 1 - γ/(π+e) canonical contraction factor
+factor_val = VAL_SCALE_FACTOR  # canonical Expansion ν_f↑ gain
+factor_nul = NUL_SCALE_FACTOR  # canonical Contraction ν_f↓ gain
 _SCALE_FACTORS = {Glyph.VAL: factor_val, Glyph.NUL: factor_nul}
 
 
@@ -1172,7 +1185,7 @@ def _compute_nul_edge_aware_scale(
     epi_current : float
         Current EPI value
     scale : float
-        Desired contraction scale factor (e.g., NUL_scale ≈ 0.9015)
+        Desired contraction scale factor (e.g., NUL_scale = 0.9)
     epi_min : float
         Lower EPI boundary (typically -1.0)
     epsilon : float
@@ -1193,7 +1206,7 @@ def _compute_nul_edge_aware_scale(
     or negative. Edge-awareness is only needed if scale could somehow push
     EPI beyond boundaries.
 
-    In practice, with NUL_scale ≈ 0.9015 < 1.0:
+    In practice, with NUL_scale = 0.9 < 1.0:
     - Positive EPI contracts toward zero: safe
     - Negative EPI contracts toward zero: safe
 
@@ -1202,10 +1215,10 @@ def _compute_nul_edge_aware_scale(
     Examples
     --------
     >>> # Normal contraction (always safe with scale < 1.0)
-    >>> _compute_nul_edge_aware_scale(0.5, 0.9015, -1.0, 1e-12)
-    0.9015
-    >>> _compute_nul_edge_aware_scale(-0.5, 0.9015, -1.0, 1e-12)
-    0.9015
+    >>> _compute_nul_edge_aware_scale(0.5, 0.9, -1.0, 1e-12)
+    0.9
+    >>> _compute_nul_edge_aware_scale(-0.5, 0.9, -1.0, 1e-12)
+    0.9
     """
     # With NUL_scale < 1.0, contraction moves toward zero (always safe)
     # No adaptation needed in typical case
@@ -1240,14 +1253,13 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
             # Density increase: ρ_ΔNFR = ΔNFR / V' = ΔNFR / (V · scale_factor)
             # Result: ΔNFR' = ΔNFR · densification_factor
             #
-            # Physics: When volume contracts by factor λ < 1, structural pressure
-            # concentrates by factor 1/λ > 1. For NUL_scale ≈ 0.9015, densification ≈ 1.109
-            #
-            # Default densification_factor from config (typically 1.3-1.5) provides
-            # additional canonical amplification beyond geometric 1/λ to account for
-            # nonlinear structural effects at smaller scales.
+            # Physics: when ν_f contracts by factor λ < 1, structural pressure
+            # concentrates by 1/λ > 1 so the nodal-equation product νf·ΔNFR (the
+            # EPI change rate) is conserved. For NUL_scale = 0.9, densification =
+            # 1/0.9 ≈ 1.111. This is DERIVED from the contraction factor, not a
+            # free magnitude (canonical NUL_DENSIFICATION_FACTOR).
             densification_key = "NUL_densification_factor"
-            densification_default = 1.35  # Canonical default: moderate amplification
+            densification_default = NUL_DENSIFICATION_FACTOR  # = 1/λ (canonical)
             densification_factor = get_factor(
                 gf, densification_key, densification_default
             )
@@ -1382,21 +1394,26 @@ def _op_THOL(node: NodeProtocol, gf: GlyphFactors) -> None:  # THOL — Self-org
     >>> node.dnfr
     0.2
     """
-    a = get_factor(gf, "THOL_accel", 0.10)
+    a = get_factor(gf, "THOL_accel", COUPLING_GENTLE)
     node.dnfr = node.dnfr + a * getattr(node, "d2EPI", 0.0)
 
 
 def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     """Apply canonical phase transformation θ → θ' based on structural dynamics.
 
-    ZHIR (Mutation) implements the canonical TNFR phase transformation that depends on
-    the node's reorganization state (ΔNFR). Unlike a fixed rotation, the transformation
-    magnitude and direction are determined by structural pressure, implementing the
-    physics: θ → θ' when ΔEPI/Δt > ξ (AGENTS.md §11, TNFR.pdf §2.2.11).
+    ZHIR (Mutation) implements the canonical TNFR phase transformation whose
+    DIRECTION and firing are governed by the node's reorganization state (ΔNFR),
+    implementing the physics: θ → θ' when ΔEPI/Δt > ξ (AGENTS.md §11,
+    TNFR.pdf §2.2.11). Per the operator contract, ZHIR acts on the θ (phase)
+    channel; ΔNFR enters only through its SIGN (rotation direction) and the
+    bifurcation threshold (whether ZHIR fires, U4b). The shift MAGNITUDE is a
+    calibration constant, not a function of |ΔNFR| — only channel and direction
+    are canonical (the shift magnitude is an operational calibration value;
+    only π is a genuine structural scale).
 
     **Canonical Behavior**:
     - Direction: Based on ΔNFR sign (positive → forward phase, negative → backward)
-    - Magnitude: Proportional to theta_shift_factor and |ΔNFR|
+    - Magnitude: Calibrated constant theta_shift_factor · (π/4); independent of |ΔNFR|
     - Regime detection: Identifies quadrant crossings (π/2 boundaries)
     - Deterministic: Same seed produces same transformation
 
@@ -1450,11 +1467,11 @@ def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     dnfr = node.dnfr
 
     # Transformation magnitude controlled by factor
-    theta_shift_factor = get_factor(gf, "ZHIR_theta_shift_factor", 0.3)
+    theta_shift_factor = get_factor(gf, "ZHIR_theta_shift_factor", INV_PI)
 
     # Direction based on ΔNFR sign (coherent with structural pressure)
-    # Magnitude based on |ΔNFR| (stronger pressure → larger shift)
-    # Base shift is π/4, scaled by factor and ΔNFR
+    # Magnitude is a calibration constant (theta_shift_factor · π/4); ΔNFR enters
+    # only via its SIGN (direction) and the U4b firing threshold, NOT as |ΔNFR|.
     base_shift = math.pi / 4
     shift = theta_shift_factor * math.copysign(1.0, dnfr) * base_shift
 
@@ -1514,7 +1531,7 @@ def _op_NAV(node: NodeProtocol, gf: GlyphFactors) -> None:  # NAV — Transition
         sign = 1.0 if dnfr >= 0 else -1.0
         target = sign * vf
         base = (1.0 - eta) * dnfr + eta * target
-    j = get_factor(gf, "NAV_jitter", 0.05)
+    j = get_factor(gf, "NAV_jitter", COUPLING_FINE)
     if bool(node.graph.get("NAV_RANDOM", True)):
         jitter = random_jitter(node, j)
     else:

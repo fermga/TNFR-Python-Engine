@@ -18,6 +18,14 @@ The logarithmic spiral $r(\theta) = a \, e^{b\theta}$ is the unique plane curve 
 
 This document derives spiral trajectories from the TNFR nodal equation and characterizes their structural field signatures.
 
+> **Canonicity note (audit 2026).** Only **π** is a genuine TNFR structural scale
+> (the phase-wrap bound). The golden ratio φ, Euler–Mascheroni γ, and Napier e appear
+> in this note as parameters of the *logarithmic-spiral geometry* and as exploratory
+> mathematical correspondences — **not** as derived TNFR structural constants. The U6
+> confinement bound is the π-derived `Δ Φ_s < π/2` (half phase-wrap); the §6–§7
+> "golden-ratio attractor" / "fourth constant γ" material is speculative
+> correspondence, not canonical structural law.
+
 ---
 
 ## 2. Mathematical Setup
@@ -115,11 +123,11 @@ For a network evolving along a logarithmic spiral trajectory, the structural fie
 The spiral trajectory remains grammar-compliant (U2: convergence and boundedness) as long as:
 
 1. **Growth bounded**: The amplitude growth ν_f k must be finite (nodal equation must converge).
-2. **Phase gradient bounded**: |∇φ| < γ/π during rotation.
+2. **Phase gradient bounded**: |∇φ| < π/16 ≈ 0.196 (heuristic early-warning; the kinematic bound is |∇φ| ≤ π) during rotation.
 3. **Curvature bounded**: |K_φ| < 0.9π along the trajectory.
-4. **Structural potential confined**: Δ Φ_s < φ (U6 confinement) limits how fast the spiral can grow.
+4. **Structural potential confined**: Δ Φ_s < π/2 (U6 confinement) limits how fast the spiral can grow.
 
-The U6 confinement threshold Δ Φ_s < φ introduces a **natural saturation**: spirals cannot grow without bound because the structural potential exceeds the golden-ratio confinement limit. This forces either:
+The U6 confinement threshold Δ Φ_s < π/2 introduces a **natural saturation**: spirals cannot grow without bound because the structural potential exceeds the π/2 phase-wrap confinement limit. This forces either:
 - **Stabilization** (spiral converges to finite amplitude via IL operator)
 - **Bifurcation** (spiral geometry breaks into nested sub-spirals via THOL operator)
 
@@ -166,7 +174,7 @@ In TNFR structural dynamics, this convergence appears when the structural potent
 
 The golden ratio has the slowest rational approximation of any irrational number. In KAM theory (Kolmogorov–Arnold–Moser), frequency ratios near φ produce the **most robust invariant tori** — these orbits survive perturbation longer than any other.
 
-**TNFR-consistent observation**: Networks whose internal structural ratios approach φ should exhibit maximum perturbation resilience. This is consistent with (but not derived from) the U6 confinement threshold Δ Φ_s < φ.
+**TNFR-consistent observation**: Networks whose internal structural ratios approach φ should exhibit maximum perturbation resilience. This is a speculative correspondence (φ is **not** a TNFR structural scale; only π is) — it is consistent with, but not derived from, the U6 confinement threshold Δ Φ_s < π/2.
 
 ### 6.3 Testable Prediction
 
@@ -203,7 +211,7 @@ Thus γ governs the **fidelity** of discrete spiral dynamics: it quantifies how 
 
 4. **The structural field tetrad** provides complete diagnostics of spiral evolution: Φ_s tracks growth, |∇φ| monitors rotation stability, K_φ constrains curvature, ξ_C measures arm coherence (§4).
 
-5. **U6 confinement** (Δ Φ_s < φ) prevents unbounded spiral growth, forcing either stabilization or multi-scale bifurcation (§4.2).
+5. **U6 confinement** (Δ Φ_s < π/2) prevents unbounded spiral growth, forcing either stabilization or multi-scale bifurcation (§4.2).
 
 6. **The golden ratio as attractor** follows from fixed-point dynamics and the anti-resonance property of maximal irrationality (§6).
 
@@ -215,7 +223,7 @@ Thus γ governs the **fidelity** of discrete spiral dynamics: it quantifies how 
 
 ## 9. References
 
-- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad and the notational constants
+- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad and the one structural scale (π)
 - [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — Nodal equation and structural triad (§3)
 - [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Tetrad irreducibility and edge relations
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U2 (convergence), U5 (multi-scale), U6 (confinement)

@@ -138,9 +138,8 @@ class StructuralMetabolism:
             # High stress: dissonance + deep reorganization
             # Apply operators individually to avoid grammar restrictions
             # Import canonical constants
-            from ..constants.canonical import GAMMA_OVER_PI_PLUS_E
 
-            tau_rapid = GAMMA_OVER_PI_PLUS_E  # γ/(π+e) ≈ 0.099
+            tau_rapid = 0.1  # ≈ 0.099
 
             Dissonance()(self.G, self.node)  # Introduce controlled instability
             SelfOrganization()(
@@ -151,9 +150,8 @@ class StructuralMetabolism:
             # Moderate stress: gentle reorganization
             # Higher tau reduces bifurcation probability
             # Import canonical constants
-            from ..constants.canonical import PI_MINUS_E_OVER_PI
 
-            tau_self_org = PI_MINUS_E_OVER_PI * 1.5  # ((π-e)/π) * 1.5 ≈ 0.202
+            tau_self_org = 0.135 * 1.5  # ≈ 0.202 (operational)
             SelfOrganization()(self.G, self.node, tau=tau_self_org)
 
     def cascading_reorganization(self, depth: int = 3) -> None:
@@ -183,13 +181,13 @@ class StructuralMetabolism:
         for level in range(depth):
             # Decreasing threshold: deeper levels bifurcate more easily
             # Import canonical constants
-            from ..constants.canonical import EXP_HALF_NEG, HALF_INV_PI
+            from ..constants.canonical import HALF_INV_PI
 
             base_tau = (
                 HALF_INV_PI * 0.32
-            )  # (1/(2π)) * 0.32 ≈ 0.051 (tiempo circular natural)
+            )  # (1/(2π)) * 0.32 ≈ 0.051 (natural circular time scale)
             level_decay = (
-                EXP_HALF_NEG  # e^(-1/2) ≈ 0.607 (decaimiento exponencial fraccionario)
+                0.6  # ≈ 0.607 (operational decay factor)
             )
             tau = base_tau * (level_decay**level)
             SelfOrganization()(self.G, self.node, tau=tau)

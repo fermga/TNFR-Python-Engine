@@ -85,7 +85,7 @@ HONEST SCOPE -- structural CHECKS pass; the THESIS verdict is OPEN (by design):
   "two mysteries" to "one recipe with two independent realisations", NOT to
   "one piece". It SHARPENS the conjecture; it closes nothing. Finite toy-graph
   + su(2) linear algebra; nothing here proves RH, the Yang-Mills mass gap, or
-  closes G4. R (continuum) and phi, gamma, pi, e remain assumed substrate.
+  closes G4. R (continuum) and pi remain assumed substrate.
 
 Run:
     python benchmarks/missing_piece_bridge.py
@@ -425,7 +425,7 @@ def main():
     print("  per-node / per-fibre slot in dEPI/dt = nu_f . dNFR). The")
     print("  synthesis reduces 'two mysteries' to 'one recipe with two")
     print("  independent realisations', NOT to 'one piece'. It SHARPENS the")
-    print("  conjecture; it closes nothing. R and phi,gamma,pi,e remain")
+    print("  conjecture; it closes nothing. R and pi remain")
     print("  assumed substrate; nothing here proves RH or the YM mass gap.")
     return 0 if structural else 1
 

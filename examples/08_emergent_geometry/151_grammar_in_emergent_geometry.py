@@ -22,7 +22,7 @@ What the grammar rules MEAN geometrically (already derived in AGENTS.md)
 - U2 (convergence/boundedness) is DERIVED from the requirement that the integral
   ∫ νf·ΔNFR dt converges — i.e. the substrate energy stays bounded. Destabilizers
   {OZ, ZHIR, VAL} without stabilizers {IL, THOL} drive the integral to diverge.
-- U6 (structural-potential confinement) monitors Φ_s < φ ≈ 1.618 — a literal bound
+- U6 (structural-potential confinement) monitors Φ_s < π/2 ≈ 1.5708 — a literal bound
   on a tetrad field of the emergent geometry.
 - U1 (initiation/closure) is a TRAJECTORY-ENDPOINT rule: a generator supplies the
   start from EPI=0, a closure leaves a coherent attractor. It is NOT an energy rule.
@@ -96,7 +96,7 @@ import networkx as nx
 import numpy as np
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import PHI
+from tnfr.constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from tnfr.operators.definitions import (
     Coherence,
     Contraction,
@@ -261,7 +261,10 @@ def experiment_2_rule_specificity():
     print("     U1 maps to the trajectory's endpoints. Each rule = a distinct")
     print("     geometric condition, measured on the canonical substrate.")
     print()
-    print(f"  U6 confinement = a literal tetrad-field bound (phi = {PHI:.4f}):")
+    print(
+        f"  U6 confinement = a literal tetrad-field bound "
+        f"(pi/2 = {U6_STRUCTURAL_POTENTIAL_LIMIT:.4f}):"
+    )
     print(f"  {'word':30s} {'U1-U6':6s} {'Phi_s_max':>12s}  status")
     print("  " + "-" * 64)
     for w in (
@@ -272,10 +275,10 @@ def experiment_2_rule_specificity():
     ):
         _, _, P = run_word(w, sweep=True)
         flag = "valid" if is_valid(w) else "FORBID"
-        if P < PHI:
-            status = "CONFINED (< phi)"
+        if P < U6_STRUCTURAL_POTENTIAL_LIMIT:
+            status = "CONFINED (< pi/2)"
         elif P < 2.0:
-            status = "past phi"
+            status = "past pi/2"
         else:
             status = "ESCAPED (>> 2.0 ceiling)"
         print(f"  {str(w):30s} {flag:6s} {P:12.2f}  {status}")

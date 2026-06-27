@@ -94,7 +94,7 @@ except ImportError:  # pragma: no cover
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA
-from ..constants.canonical import DELTA_PHI_MAX, PHI, PI
+from ..constants.canonical import DELTA_PHI_MAX, PI, U6_STRUCTURAL_POTENTIAL_LIMIT
 
 # Canonical fields
 from .canonical import (
@@ -428,7 +428,7 @@ def compute_grammar_symmetry_mapping(G: Any) -> list[GrammarSymmetryMapping]:
 
     # U6: structural potential confinement
     max_phi_s = float(np.max(np.abs(phi_s_vals))) if len(phi_s_vals) > 0 else 0.0
-    phi_s_confined = max_phi_s < PHI
+    phi_s_confined = max_phi_s < U6_STRUCTURAL_POTENTIAL_LIMIT
 
     mappings = []
 
@@ -507,15 +507,15 @@ def compute_grammar_symmetry_mapping(G: Any) -> list[GrammarSymmetryMapping]:
 
     # U6: STRUCTURAL POTENTIAL CONFINEMENT
     # Symmetry: Bounded potential sector
-    # Conservation: Potential energy confinement V < ½φ²·N
+    # Conservation: Potential energy confinement V < ½(π/2)·N
     mappings.append(
         GrammarSymmetryMapping(
             rule="U6",
             symmetry_type="confinement",
-            conservation_law="Potential energy confinement — V bounded by φ",
-            variational_role="V(i) < ½φ² at each node (bounded potential well)",
+            conservation_law="Potential energy confinement — V bounded by π/2",
+            variational_role="V(i) < ½(π/2)² at each node (bounded potential well)",
             is_satisfied=phi_s_confined,
-            diagnostic_value=max(0.0, max_phi_s - PHI),
+            diagnostic_value=max(0.0, max_phi_s - U6_STRUCTURAL_POTENTIAL_LIMIT),
         )
     )
 

@@ -192,8 +192,8 @@ class Emission(Operator):
                 # For initial nodes (preserved_epi ≈ 0), use absolute threshold
                 # For established nodes, use relative threshold
                 if abs(preserved_epi) < 1e-6:  # Initial node
-                    # Tolerance written as a (φ, γ, π, e) combination (notational, not derived)
-                    # EPI_THRESHOLD = (1/(φ + γ/π)) * φ/e ≈ 0.330
+                    # Tolerance is an operational value (not derived)
+                    # EPI_THRESHOLD ≈ 0.330 (operational tolerance)
                     # This respects TNFR nodal dynamics: ∂EPI/∂t = νf · ΔNFR
                     # Initial nodes can evolve according to canonical limits
                     tolerance = StructuralFeedbackLoop.EPI_THRESHOLD  # ≈ 0.330

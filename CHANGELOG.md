@@ -4,6 +4,181 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed (emergent derivation — every channel weight & operator gain from π)
+
+- **Replaced the residual magic numbers on the nodal-physics paths with values
+  derived from π** (the sole structural scale), per `EMERGENT_DERIVATION_PLAN.md`.
+  The φ/γ/e purge had left two load-bearing weight sets **frozen at their literal
+  φ/γ decimals** (`DNFR_WEIGHTS`/`SI_WEIGHTS` = `{0.737, 0.155, 0.09}` where
+  `0.737 = φ/(φ+γ)`) and had replaced the operator gains with arbitrary
+  "operational" decimals (`IL=0.75, OZ=2.0, SHA/NUL=0.9, VAL=1.05`). These are
+  used *numerically* in every ΔNFR and Sense-Index evaluation, hence in every
+  recorded result. They are now emergent:
+  - **Channel-mixing weights → the coherence-band hierarchy.** Each
+    structurally-active channel takes the high-coherence share `π/(π+1)` of the
+    remainder: `(π/(π+1), π/(π+1)², 1/(π+1)²)` — which **normalises to exactly 1**
+    (`π/(π+1) + π/(π+1)² + 1/(π+1)² = (π+1)²/(π+1)² = 1`). Ordering by structural
+    primacy (phase ≻ EPI ≻ νf; topo inactive). `SI_WEIGHTS` takes the same hierarchy.
+  - **Operator gains → the coherence band and the π-fraction ladder.** Pressure
+    lever (ΔNFR): `IL = π/(π+1)`, `OZ = (π+1)/π` (a balanced `IL∘OZ` is **exactly
+    isometric**). Capacity lever (νf, slow): the gentle π-step `δ = 1/(4π)` —
+    `SHA/NUL = 1−δ`, `VAL = 1+δ`, `NUL_densification = 1/(1−δ)` (volume
+    conservation). Secondary couplings on the π-fraction ladder (`1/(4π), 1/(2π),
+    1/(8π)`); ZHIR θ-shift `1/π`; `NAV_eta`/`REMESH_alpha` = the unit midpoint `0.5`.
+  - **Selection, feedback & adaptation → π/band (no more operational decimals on
+    the coherence paths).** `SELECTOR_WEIGHTS` takes the same coherence-band
+    hierarchy; the coherence triggers are the high-coherence gate `π/(π+1)`, the
+    new rectified-mean level `2/π`, and the unit midpoint/quarter `0.5`/`0.25`;
+    `AU_CURVATURE` is the exact midpoint `(0.9π+π)/2` of the strict K_φ gate and the
+    π wrap; the phase couplings, `FEEDBACK` tolerances/rates, `OZ` noise and `THOL`
+    metabolic weights are π-fractions (`1/(2π), 1/(4π), 1/(8π)`); the `get_factor`
+    safety fallbacks reference the emergent constants. The selector *magnitude*
+    thresholds (`dnfr_hi/lo`, `accel_hi/lo`) are honestly left **operational**
+    (|ΔNFR|/∂²EPI scale, not coherence — π-flavouring them would repeat the φ/γ/e
+    naming-convention error).
+  - New single-source constants in `constants/canonical.py`:
+    `CHANNEL_WEIGHT_PRIMARY/SECONDARY/TERTIARY`, `COHERENCE_RETENTION`,
+    `DISSONANCE_AMPLIFICATION`, `COUPLING_GENTLE/MODERATE/FINE`,
+    `MID_COHERENCE_THRESHOLD`. Full suite green (`2201 passed`) after each stage;
+    the dynamics stay bounded (U2). **Recorded research results computed with the
+    old constants still require recomputation (planned Stage 5).**
+  - **Benchmark/example φ/γ/e input purge.** Fixed a broken example
+    (`examples/02_physics_regimes/37_operator_tetrad_synergy.py` imported the purged
+    `GAMMA`/`PHI` from `constants/canonical` → `ImportError`; examples aren't in the
+    test suite so it had slipped through) — it now runs. Updated the
+    `coherence_projector_sense_index` benchmark `SI_WEIGHTS` to the band hierarchy,
+    removed dead `PHI/GAMMA/E` constants from `boundary_vibration`, de-refuted the
+    `phase_wall` correspondence comments (its TEST-4 obstruction result — building
+    `φA+γL+πL²+eK` to *prove* the four constants are insufficient — is kept), and
+    replaced ~27 stale "(φ,γ,π,e) remain the assumed substrate" claims with "π"
+    across 14 benchmark files. The legitimate emergent-*object* studies are kept
+    (the Kuramoto φ-as-Fibonacci-limit, the golden-angle sphere sampling, Euler
+    products, the Γ chirality matrix, tetrahedral symmetry groups).
+  - **Recomputation & robustness (the canonical-emergence proof).** Re-running the
+    paradigm results under the emergent engine changed **no headline verdict** —
+    because each is *structural*, not an artifact of the magic numbers: primality
+    (`ΔNFR=0`), Riemann σ_c/GUE and exact S_n equivariance (`‖[L, P_σ⊗P_τ]‖ = 0`),
+    Navier–Stokes (a **pseudo-spectral** solver that never reads the operator
+    gains), conservation, the tetrad relations (`K_φ = L_rw·φ`, `ξ_C ∝ 1/√λ₂`), and
+    Yang–Mills U6 confinement all derive from the graph Laplacian, the spectral gap,
+    S_n symmetry, or unit arithmetic. Only the dynamic *trajectories* (C(t)/Si
+    curves, network-optimization outcomes) shift, with their qualitative attractors
+    invariant. The φ/γ/e and arbitrary operational decimals were therefore **never
+    load-bearing**: the refactor both cleans the foundation and *proves* the results
+    are genuinely emergent. See `EMERGENT_DERIVATION_PLAN.md` §7.
+
+### Changed (documentation aligned to emergent π-derived canonicity)
+
+- **Promoted the documented thresholds to their genuinely-emergent π-derived
+  values** across `AGENTS.md` (+ the `.github/agents/my-agent.md` mirror),
+  `ARCHITECTURE.md`, `CONTRIBUTING.md`, `theory/`, `docs/grammar/`, examples, and
+  code docstrings: the Φ_s confinement bound is **π-derived** — drift
+  `Δ Φ_s < π/2 ≈ 1.571` (half phase-wrap) and per-node `|Φ_s| < π/4 ≈ 0.785`
+  (quarter phase-wrap) — replacing the old φ ≈ 1.618 / empirical 0.7711 framing;
+  the strong-coherence cut is the emergent band gate `π/(π+1) ≈ 0.7585`
+  (replacing the frozen `(e·φ)/(π+e) ≈ 0.7506`). Corrected a propagated arithmetic
+  error: `π/(π+1)` is **0.7585**, not 0.7616 (it must complement `1/(π+1)=0.2415`).
+  The SDK `COHERENCE_STRONG` now aliases the emergent `HIGH_COHERENCE_THRESHOLD`
+  (π/(π+1)); `MIN_BUSINESS_COHERENCE` (0.75) stays the separate operational
+  business-health knob.
+- **Removed `theory/SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md` and its demo
+  (`examples/02_physics_regimes/32_spiral_attractors_demo.py`)** — a false
+  φ/γ/e-era claim ("golden ratio as dynamical attractor", "fourth constant γ").
+  The demo imported the purged φ/γ/e constants (so it could not run, making the
+  document's "Validated" status false) and the golden-attractor check was circular
+  (it set `b = 2·ln(φ)/π` by hand, then "verified" quarter-turn ratios = φ). Only
+  the trivial, non-distinctive kernel (log spirals appear in a rotation + growth
+  regime, with a free `b = νf·k/ω`) was true; φ is not selected by the dynamics.
+  References cleaned from `theory/README.md`, `FUNDAMENTAL_THEORY.md`, and
+  `examples/README.md`.
+- **Completed a full `theory/` document audit** (every `theory/*.md`) for residual
+  φ/γ/e false claims, with **no further deletions needed** — SPIRAL_ATTRACTORS was
+  the only doc with a false *thesis*; the rest are genuinely emergent and carried
+  only scattered stale refs (now fixed). The most significant correction purges the
+  refuted **"Universal Tetrahedral Correspondence"** (the φ↔Φ_s, γ↔|∇φ|, π↔K_φ,
+  e↔ξ_C mapping) from `TNFR_RIEMANN_RESEARCH_NOTES.md` (20 references) — the explicit
+  mapping becomes the minimal **structural-field tetrad** (only π is structural), the
+  three inter-prime coupling kernels are relabeled *exploratory, not canonical*, and
+  the stale `DNFR_/SI_/SELECTOR_WEIGHTS` derivation claims/anchors are corrected to
+  the operational `defaults_core.py` values. Operator-gain tables across
+  `STRUCTURAL_OPERATORS`, `STRUCTURAL_CONSERVATION_THEOREM`,
+  `STRUCTURAL_STABILITY_AND_DYNAMICS`, `TNFR_VARIATIONAL_PRINCIPLE`,
+  `TNFR_YANG_MILLS_RESEARCH_NOTES` (+ 2 `yang_mills/structural_gap.py` docstrings),
+  `CATALOG_TYPE_HYGIENE_PROGRAMME`, and `TNFR_NUMBER_THEORY` were updated from frozen
+  φ/γ/e formulas (e.g. IL `φ/(φ+γ)≈0.737`→`0.75`, OZ `φ/γ≈2.803`→`2.0`, NUL
+  densification `2.803`→`1/λ≈1.111`, U6 `Δ Φ_s < φ`→`π/2`, `|∇φ|` heuristic
+  `γ/π`→`π/16`) to the operational engine values. No engine code changed (the code
+  was already purged; only doc text and 2 cosmetic docstrings).
+
+### Changed (operational-knob relocation — `canonical.py` is now pure physics)
+
+- **Split the ~150 operational engine-tuning knobs out of
+  `constants/canonical.py` into a new dedicated module
+  `constants/operational.py`** (explicitly *engine tuning, NOT TNFR physics*).
+  `canonical.py` now holds **89 numeric constants**, all genuine structural /
+  physics quantities (π phase-wrap bounds, spectral-gap ξ_C, the coherence band,
+  operator gains, tetrad / phase / νf / EPI / KL / DT scales); the **150** moved
+  knobs (caches, FFT tuning, optimization speedup/performance estimates,
+  pattern-discovery confidence, integration baselines, operator scoring weights)
+  live in `operational.py`. The new module imports only `PI` from canonical
+  (one-way dependency; canonical never imports operational), and a parallel
+  `engines/constants/operational.py` star-shim mirrors the existing `canonical`
+  shim. The `canonical ∪ operational` union reproduces the pre-split constant set
+  **exactly** (verified name→value, 0 leaks / 0 drift). 26 consumer modules were
+  redirected; mixed importers were split to preserve their structural imports.
+
+### Removed (φ/γ/e purge — only π remains a genuine structural scale)
+
+- **Removed the obsolete constants φ (golden ratio), γ (Euler–Mascheroni), and
+  e (Napier) from the engine.** They are no longer canonical constants, appear in
+  no calculation, weight, threshold, or comment, and the "(φ,γ,π,e) notational
+  vertex / four-constants / assumed-substrate" framing is retired. **Only π is a
+  genuine structural scale** (the phase-wrap bound of the phase sector:
+  `|∇φ| ≤ π`, `|K_φ| < 0.9·π`); the coherence length is set by the spectral gap
+  (`ξ_C ∝ 1/√λ₂`); every other parameter is derived from the nodal dynamics or is
+  a free operational parameter.
+- **Φ_s confinement bound is now π-derived**: per-node
+  `PHI_S_VON_KOCH_THRESHOLD = π/4 ≈ 0.785` (quarter phase-wrap) and drift
+  `U6_STRUCTURAL_POTENTIAL_LIMIT = π/2 ≈ 1.571` (half phase-wrap), replacing the
+  empirical `0.7711` / golden-ratio (`φ ≈ 1.618`) framing.
+- **Removed `derive_tetrad_threshold_values`** and the `φ/γ/e` accumulation-law
+  threshold-derivation machinery (`ThresholdDerivation`). Operator gain magnitudes
+  are now plain operational parameters — the theory fixes each operator's channel
+  and sign via its contract, not its magnitude.
+- **Re-derived the live physics constants** from π / nodal / spectral quantities,
+  de-dressed the engine-configuration tier (cache, FFT, optimization, performance
+  knobs) to plain operational values, and purged the `φ/γ/e` references from
+  source comments, docstrings, and the documentation set (`ARCHITECTURE.md`,
+  `README.md`, `CHANGELOG.md`, `.zenodo.json`, `CONTRIBUTING.md`,
+  `benchmarks/README.md`, and the `theory/` + `docs/` notes).
+
+### Changed (emergent-canon consolidation — frozen φ/γ/e values re-derived)
+
+- **Audited every constant** for emergent grounding (see `EMERGENT_CANON_AUDIT.md`).
+  The purge had left the numeric *values* frozen (e.g. `K_TOP_FALLBACK` still held
+  `2.803171 = φ/γ`); those magic numbers are now re-derived or eliminated so the
+  canonical base is genuinely emergent.
+- **Genuine emergent derivation** — the prime-detection threshold
+  `MATH_DELTA_NFR_THRESHOLD = 0.5` is the unit-gap midpoint: with unit arithmetic
+  ΔNFR coefficients, `prime ⟺ ΔNFR = 0` exactly and every composite has
+  `ΔNFR > 1`, so any cut in `(0, 1)` separates them.
+- **π-derived**: `MAX_STRUCTURAL_FREQUENCY = 2π`, `MIN_STRUCTURAL_FREQUENCY = 1/(2π)`,
+  `AU_CURVATURE_PERMISSIVE = 0.96·π`, `CRITICAL_EXPONENT = GRAD_PHI_CANONICAL_THRESHOLD = π/16`,
+  `DYNAMICS_SI_HI = π/(π+1)`, the `K_TOP` clamp `1/(8π) … 1.0` and fallback `π`.
+- **Removed the non-physical / vestigial** arithmetic-recalibrated trio
+  (`PHI_S_THRESHOLD`, `GRAD_PHI_THRESHOLD`, and `K_PHI_THRESHOLD = 3.2275`, which
+  *exceeded* the π phase-wrap bound and was therefore an unreachable no-op check).
+- **Eliminated the dead domain constants** (`MEDICAL_*`, `BUSINESS_*`, `EXAMPLE_*`,
+  `VIZ_*`, `CLI_*`, `THERAP_*`, `SCRIPT_*`, `TOOL_*`, `UTILS_*`) and the dead
+  `CANONICAL_CONSTANTS` registry; relocated the SDK builder defaults into
+  `sdk/builders.py`. The remaining ~180 operational engine knobs were rounded to
+  plain ≤2-decimal values (dropping the false φ/γ/e precision). `constants/canonical.py`
+  shrank from ~770 to ~565 lines.
+- Reconciled inline operator gains (`operators/__init__.py`) to the canonical
+  `SHA_VF_FACTOR` / `NUL_SCALE_FACTOR` / `VAL_SCALE_FACTOR`, and removed residual
+  inline artifacts (`10·φ`, `e`, `4/(e+φ)`) in `bifurcation.py`, `variational.py`,
+  `cycle_detection.py`, and `signatures.py`.
+
 ## [0.0.3.5] - 2026-06-24 — Tetrad correspondence audit & emergent redesign
 
 A computational audit of the "Universal Tetrahedral Correspondence" found that
@@ -572,7 +747,7 @@ Millennium Problem.
 
 ### Major Theoretical Enhancements
 
-- **Universal Tetrahedral Correspondence**: Complete mathematical framework establishing exact mapping between four universal constants (φ, γ, π, e) and four structural fields (Φ_s, |∇φ|, K_φ, ξ_C)
+- **Universal Tetrahedral Correspondence**: Complete mathematical framework establishing exact mapping between four universal constants (φ, γ, π, e) and four structural fields (Φ_s, |∇φ|, K_φ, ξ_C) *(later superseded — see the φ/γ/e purge under [Unreleased]: only π is a genuine structural scale)*
 - **Unified Field Framework**: Mathematical unification discovering complex geometric field Ψ = K_φ + i·J_φ with emergent invariants
 - **Self-Optimizing Engine**: Self-optimization capabilities with unified field telemetry for automated structural optimization
 - **Complete Academic Documentation**: Comprehensive conversion to formal academic tone across entire documentation ecosystem

@@ -11,9 +11,9 @@ This document provides guidelines for contributing to the TNFR (Resonant Fractal
 
 All contributions must maintain theoretical consistency. Requirements:
 
-- **Physics-derived where it counts**: structural bounds must trace to the nodal equation / dynamics (e.g. π phase-wrap, ξ_C ∝ 1/√λ₂, sampling-noise z-score scales). Other parameters MAY be expressed as (φ,γ,π,e) combinations as a notational anti-magic-number convention, but must NOT be presented as derived/canonical.  
-- **No magic, no fake derivation**: prefer a quantity measured from the system over a fixed combination of constants; never present a notational combination as a derivation.  
-- **Canonical Constants**: Use `from tnfr.constants.canonical import *` for the notational constants.  
+- **Physics-derived where it counts**: structural bounds must trace to the nodal equation / dynamics (e.g. π phase-wrap, ξ_C ∝ 1/√λ₂, the π-derived Φ_s confinement bound, sampling-noise z-score scales). Only **π** is a genuine structural scale; every other parameter is either derived from the nodal dynamics / spectral gap or is a free operational parameter, and must NOT be presented as a derived structural constant.  
+- **No magic, no fake derivation**: prefer a quantity measured from the system over a fixed numeric constant; never present a free operational parameter as a structural derivation.  
+- **Canonical Constants**: Use `from tnfr.constants.canonical import *` for the structural and operational constants (only π is a genuine structural scale).  
 - **Grammar Compliance**: Operator sequences must satisfy U1-U6 rules
 
 ## Table of Contents
@@ -77,7 +77,7 @@ cd TNFR-Python-Engine
 pip install -e .[dev]
 
 # Verify installation
-python -c "from tnfr.constants.canonical import *; print(f'φ={PHI:.6f}, γ={GAMMA:.6f}')"
+python -c "from tnfr.constants.canonical import PI, U6_STRUCTURAL_POTENTIAL_LIMIT; print(f'π={PI:.6f}, U6 Φ_s bound={U6_STRUCTURAL_POTENTIAL_LIMIT:.6f}')"
 ```
 
 ### Canonical Constants Framework
@@ -88,7 +88,7 @@ All development must utilize theoretically derived canonical constants:
 from tnfr.constants.canonical import *
 
 # Correct: Use canonical constants
-threshold = MIN_BUSINESS_COHERENCE  # (e×φ)/(π+e) ≈ 0.7506
+threshold = HIGH_COHERENCE_THRESHOLD  # π/(π+1) ≈ 0.7585 (emergent high-coherence gate)
 
 # Incorrect: Arbitrary numerical values
 threshold = 0.75  # Lacks theoretical foundation

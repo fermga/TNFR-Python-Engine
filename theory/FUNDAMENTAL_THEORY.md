@@ -123,16 +123,16 @@ From the tetrad, the following tensor invariants emerge:
 
 ### 4.1 Statement
 
-The four structural fields are the four orders of the discrete derivative tower (the tetrad — this basis is DERIVED and minimal). Each is *associated* with a mathematical constant as a notational label; only **π** is a genuine structural scale (the phase-wrap bound shared by $|\nabla\phi|$ and $K_\phi$). γ, e, φ are recoverable as identities but are not the structural scales of their fields. The thresholds below are telemetry guidance; only the π phase-wrap bounds and $\xi_C \propto 1/\sqrt{\lambda_2}$ are genuine structural scales.
+The four structural fields are the four orders of the discrete derivative tower (the tetrad — this basis is DERIVED and minimal). Only **π** is a genuine structural scale (the phase-wrap bound shared by $|\nabla\phi|$ and $K_\phi$); the coherence length is set by the spectral gap ($\xi_C \propto 1/\sqrt{\lambda_2}$) and the $\Phi_s$ confinement bound is π-derived. φ, γ, e are **not** structural scales and no longer appear in the engine.
 
 | Field | Symbol | Operational limit | Structural scale |
 |-------|--------|-------------------|------------------|
-| Structural potential | $\Phi_s$ | $\Delta\Phi_s < 1.618$ | Empirical confinement (no closed form) |
+| Structural potential | $\Phi_s$ | $\Delta\Phi_s < \pi/2 \approx 1.571$ | π-derived confinement (half phase-wrap) |
 | Phase gradient | $|\nabla\phi|$ | $|\nabla\phi| \le \pi$ (phase wrap) | $\pi$ (phase-wrap bound), same as $K_\phi$ |
 | Phase curvature | $K_\phi$ | $|K_\phi| < 0.9\pi \approx 2.827$ | $\pi$ (phase-wrap bound); $K_\phi = L_{rw}\phi$ |
 | Coherence length | $\xi_C$ | $C(r) \sim \exp(-r/\xi_C)$ | Spectral gap, $\xi_C \propto 1/\sqrt{\lambda_2}$ |
 
-Only the $\pi$ phase-wrap bounds and the spectral-gap scaling $\xi_C \propto 1/\sqrt{\lambda_2}$ are genuine structural scales; the $\Phi_s$ bound is empirical. The mathematical dynamics each constant represents are catalogued in [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md), and [SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md](SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md) covers logarithmic spiral trajectories — but these constants are notational labels, not the structural scales of the fields.
+Only the $\pi$ phase-wrap bounds and the spectral-gap scaling $\xi_C \propto 1/\sqrt{\lambda_2}$ are genuine structural scales; the $\Phi_s$ bound is π-derived (quarter / half phase-wrap).
 
 ### 4.2 The four fields
 
@@ -154,9 +154,9 @@ derivative tower:
 
 ### 4.3 Derivation Outline
 
-1. **$\Phi_s$ (0th order)**: The confinement scale for aggregated inverse-square potentials; $\Phi_s$ exceeding $\varphi$ correlates with runaway accumulation of $\Delta\mathrm{NFR}$. **Grounding (upgraded 2026-06)**: the one-sided inverse-square accumulation on a 1D resonant chain saturates to $\zeta(2)=\pi^2/6\approx1.6449$ (Basel), a genuine closed-form property of the kernel; $\varphi\approx1.6180$ is *adopted* as the U6 drift threshold because it is the nearest tetrad vertex sitting $1.64\%$ *inside* that saturation, with the most-irrational/KAM resonance-robustness argument as motivation (not a closed-form identity, since $\varphi\neq\pi^2/6$). The earlier $x=1+1/x$ fixed-point rationale is **superseded**. Per-node safety: $|\Phi_s| < 0.7711$, an **empirically validated** threshold (5 topologies) lying within the $\mathrm{O}(1)$ band set by the $\zeta(4)=\pi^4/90$ variance of inverse-square pressure; it has **no closed form** in $(\varphi,\gamma,\pi,e)$. Both anchors require $\alpha=2$; see `benchmarks/phi_s_confinement_investigation.py`.
+1. **$\Phi_s$ (0th order)**: The confinement scale for aggregated inverse-square potentials; $\Phi_s$ exceeding the drift bound correlates with runaway accumulation of $\Delta\mathrm{NFR}$. The engine ties the confinement bound to the one genuine structural scale π: drift $\Delta\Phi_s < \pi/2 \approx 1.571$ (half phase-wrap) and per-node $|\Phi_s| < \pi/4 \approx 0.785$ (quarter phase-wrap), superseding the earlier empirical $0.7711$ / golden-ratio ($\varphi$) framing. These are O(1) bounds, consistent with the inverse-square fluctuation scale of the kernel: the one-sided accumulation on a 1D resonant chain saturates to $\zeta(2)=\pi^2/6\approx1.6449$ (Basel) and the per-node variance to $\zeta(4)=\pi^4/90$, both O(1). The exponent $\alpha=2$ is required (at $\alpha\neq2$ the saturation structure is lost); see `benchmarks/phi_s_confinement_investigation.py`.
 
-2. **$|\nabla\phi|$ (1st order)**: $|\nabla\phi|$ is a mean of WRAPPED phase angles, so its genuine bound is $|\nabla\phi| \le \pi$ — the SAME phase-wrap bound as $K_\phi$ ($\pi$ scales the whole phase sector). $\gamma/\pi \approx 0.184$ is a heuristic early-warning level, not a derived bound: the measured synchronization onset is $\approx 0.29$ and $\sigma$-dependent. $\gamma$ is recoverable as the harmonic-accumulation gap but is NOT the structural scale of $|\nabla\phi|$. This field captures local phase stress that the *global aggregate* coherence $C(t) = 1/(1 + \overline{|\Delta\mathrm{NFR}|} + \overline{|d\mathrm{EPI}|})$ averages away; the scale-invariant dispersion variant $1 - (\sigma_{\Delta\mathrm{NFR}}/\Delta\mathrm{NFR}_{\max})$ makes the blind spot explicit, being invariant under proportional scaling of $\Delta\mathrm{NFR}$.
+2. **$|\nabla\phi|$ (1st order)**: $|\nabla\phi|$ is a mean of WRAPPED phase angles, so its genuine bound is $|\nabla\phi| \le \pi$ — the SAME phase-wrap bound as $K_\phi$ ($\pi$ scales the whole phase sector). A fixed $\approx 0.18$ level is a heuristic early-warning level, not a derived bound: the measured synchronization onset is $\approx 0.29$ and $\sigma$-dependent, so there is no structural constant for the $|\nabla\phi|$ onset — only the $\pi$ phase-wrap is genuine. This field captures local phase stress that the *global aggregate* coherence $C(t) = 1/(1 + \overline{|\Delta\mathrm{NFR}|} + \overline{|d\mathrm{EPI}|})$ averages away; the scale-invariant dispersion variant $1 - (\sigma_{\Delta\mathrm{NFR}}/\Delta\mathrm{NFR}_{\max})$ makes the blind spot explicit, being invariant under proportional scaling of $\Delta\mathrm{NFR}$.
 
 3. **$K_\phi$ (2nd order)**: Phase curvature must remain below $\pi$ (the theoretical maximum from wrap_angle bounds). The operational threshold uses a 90% safety margin: $0.9\pi \approx 2.8274$.
 
@@ -173,7 +173,7 @@ Each grammar clause references at least one structural field:
 | U3 (Resonant Coupling) | $|\nabla\phi|$ | Phase alignment verified before UM/RA |
 | U4 (Bifurcation Control) | $K_\phi$, $\xi_C$ | Imminent regime changes detected |
 | U5 (Multi-scale Coherence) | $\xi_C$ | Fractal nesting maintained |
-| U6 (Structural Confinement) | $\Phi_s$ | $\Delta\Phi_s < \varphi$ enforced |
+| U6 (Structural Confinement) | $\Phi_s$ | $\Delta\Phi_s < \pi/2 \approx 1.571$ enforced |
 
 ---
 
@@ -183,7 +183,7 @@ Each grammar clause references at least one structural field:
 
 Global network stability indicator in $[0, 1]$.
 
-- $C(t) > (e \cdot \varphi)/(\pi + e) \approx 0.7506$: strong coherence.
+- $C(t) > \pi/(\pi+1) \approx 0.7585$: strong coherence.
 - $C(t) < 1/(\pi + 1) \approx 0.2415$: fragmentation risk.
 
 ### 5.2 Sense Index $Si$
@@ -191,7 +191,7 @@ Global network stability indicator in $[0, 1]$.
 Capacity for stable reorganization in $[0, 1+]$.
 
 - $Si > 0.8$: excellent stability.
-- $Si < 1.5/(\pi + \gamma) \approx 0.4$: bifurcation risk.
+- $Si < 0.4$: bifurcation risk.
 
 ---
 
@@ -221,8 +221,8 @@ Verified regime reductions (with implementation, benchmarks, and/or test coverag
 
 Every domain study must quantify the four structural fields:
 
-- **$\Phi_s$**: Report distributions and gradients; compare against $\varphi$ threshold.
-- **$|\nabla\phi|$**: Monitor threshold violations ($\gamma/\pi \approx 0.1837$).
+- **$\Phi_s$**: Report distributions and gradients; compare against the $\pi/2 \approx 1.571$ drift bound (half phase-wrap).
+- **$|\nabla\phi|$**: Monitor the heuristic early-warning level ($\approx \pi/16 \approx 0.196$; not derived — the kinematic bound is $\pi$).
 - **$K_\phi$**: Flag mutation-prone regions ($|K_\phi| \geq 2.8274$).
 - **$\xi_C$**: Track multi-scale integration; check critical scaling ratios.
 
@@ -282,7 +282,7 @@ Key observations:
 1. Telemetry violations coincide with coherence loss within two operator steps.
 2. Correlation between predicted thresholds and observed failure events exceeds 0.8 in all datasets.
 3. Identical thresholds function without retuning across classical mechanics, molecular network, and TNFR-Riemann case studies.
-4. Of the tetrad bounds, the $\pi$ phase-wrap bounds ($|\nabla\phi| \le \pi$, $|K_\phi| < 0.9\pi$) are genuine and exact, and $\xi_C \propto 1/\sqrt{\lambda_2}$ follows from the spectral gap; the per-node $\Phi_s$ threshold (0.7711) and the $\gamma/\pi \approx 0.184$ early-warning level are empirical/heuristic, not closed-form derivations (see §4.3).
+4. Of the tetrad bounds, the $\pi$ phase-wrap bounds ($|\nabla\phi| \le \pi$, $|K_\phi| < 0.9\pi$) are genuine and exact, $\xi_C \propto 1/\sqrt{\lambda_2}$ follows from the spectral gap, and the $\Phi_s$ bounds (per-node $\pi/4$, drift $\pi/2$) are π-derived; the $\approx 0.18$ $|\nabla\phi|$ early-warning level is heuristic, not a derived bound (see §4.3).
 
 ---
 
@@ -290,7 +290,7 @@ Key observations:
 
 1. **Monitoring**: Export $\Phi_s$, $|\nabla\phi|$, $K_\phi$, $\xi_C$ after every operator batch; treat threshold crossings as actionable events.
 2. **Operator design**: When introducing new operators, specify their expected effect on each field to maintain grammar compliance.
-3. **Model calibration**: Prefer dimensionless ratios ($\Phi_s/\varphi$, $|\nabla\phi| \cdot \pi/\gamma$, $|K_\phi|/(0.9\pi)$) to compare scenarios across scales.
+3. **Model calibration**: Prefer dimensionless ratios ($\Phi_s/(\pi/2)$, $|\nabla\phi|/\pi$, $|K_\phi|/(0.9\pi)$) to compare scenarios across scales.
 4. **Critical diagnostics**: Prolonged $\xi_C$ near the network diameter indicates a critical regime; add coherence operations before running exploratory destabilizers.
 
 ---
@@ -349,8 +349,7 @@ analysis = TNFR.analyze(net)               # Comprehensive analysis
 
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 derivations
 - [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Why exactly four structural fields (minimality + completeness proof)
-- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — Four constants as minimal basis of mathematical dynamics
-- [SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md](SPIRAL_ATTRACTORS_AND_LOGARITHMIC_DYNAMICS.md) — Spiral trajectories from the nodal equation
+- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad as the minimal derivative-tower basis (only π is a genuine structural scale)
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Noether-like conservation laws
 - [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) — Lagrangian formulation
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions

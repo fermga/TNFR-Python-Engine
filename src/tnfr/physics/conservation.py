@@ -18,7 +18,7 @@ Then the **discrete structural continuity equation** holds:
 
 where S(i) is a *source term* that is bounded and small when:
   (a) Grammar U2 is satisfied (convergence: stabilizers balance destabilizers)
-  (b) Grammar U6 is satisfied (confinement: |Φ_s| < φ)
+  (b) Grammar U6 is satisfied (confinement: |Φ_s| < π/2)
 
 The bound ||S||_{ℓ²} ≤ C/√N (§4.5 of the theory document) implies
   S → 0 in the continuum limit N → ∞.  On finite graphs S is empirically
@@ -72,7 +72,7 @@ try:
 except ImportError:  # pragma: no cover
     nx = None
 
-from ..constants.canonical import K_PHI_CANONICAL_THRESHOLD, PHI, PI
+from ..constants.canonical import K_PHI_CANONICAL_THRESHOLD, PI, U6_STRUCTURAL_POTENTIAL_LIMIT
 from .canonical import (
     compute_phase_curvature,
     compute_phase_gradient,
@@ -557,7 +557,7 @@ def compute_grammar_conservation_bounds(G: Any) -> dict[str, float]:
     From TNFR grammar constraints:
 
     - U2 (convergence): ∫|νf·ΔNFR| dt < ∞  ⟹  |ΔΦ_s/Δt| bounded
-    - U6 (confinement): |Φ_s| < φ ≈ 1.618   ⟹  |ρ| < φ + π ≈ 4.76
+    - U6 (confinement): |Φ_s| < π/2   ⟹  |ρ| < π/2 + π ≈ 4.71
     - U3 (coupling):    |Δθ| < Δθ_max        ⟹  |J_φ| ≤ 1
 
     These bounds predict the maximum allowed residual for a grammar-
@@ -569,13 +569,13 @@ def compute_grammar_conservation_bounds(G: Any) -> dict[str, float]:
         'max_charge_density'  : theoretical upper bound on |ρ|
         'max_current_magnitude' : theoretical upper bound on |J|
         'max_allowed_residual' : theoretical bound on |Δρ/Δt + div J|
-        'phi_s_confinement'   : φ (golden ratio, U6 escape threshold)
+        'phi_s_confinement'   : π/2 (the U6 confinement bound)
         'k_phi_hotspot'       : 0.9×π ≈ 2.8274 (curvature hotspot threshold)
     """
     n_nodes = G.number_of_nodes()
 
-    # U6: |Φ_s| < φ
-    phi_s_bound = PHI
+    # U6: |Φ_s| < π/2
+    phi_s_bound = U6_STRUCTURAL_POTENTIAL_LIMIT
 
     # K_φ is bounded by π (wrapped angle difference)
     k_phi_bound = PI
@@ -641,9 +641,9 @@ def detect_grammar_violations_from_conservation(
         'severity' : float  (0 = none, 1 = extreme)
         'nodes_violating' : list  (nodes with |residual| above threshold)
     """
-    threshold = PHI  # Golden ratio as natural threshold (from U6)
+    threshold = U6_STRUCTURAL_POTENTIAL_LIMIT  # U6 structural-potential bound (π/2)
     if bounds is not None:
-        threshold = bounds.get("max_allowed_residual", PHI)
+        threshold = bounds.get("max_allowed_residual", U6_STRUCTURAL_POTENTIAL_LIMIT)
 
     violation_types: list[str] = []
     nodes_violating: list[Any] = []
@@ -653,7 +653,7 @@ def detect_grammar_violations_from_conservation(
             nodes_violating.append(node)
 
     # Classify violation types
-    if balance.charge_drift > PHI:
+    if balance.charge_drift > U6_STRUCTURAL_POTENTIAL_LIMIT:
         violation_types.append("U6_confinement_breach")
 
     if balance.rms_residual > _BALANCE_RMS_ALERT:
@@ -781,7 +781,7 @@ def analyze_sector_coupling(
         ∂Φ_s/∂t + div(J_ΔNFR) ≈ 0
         - Conserves when ΔNFR redistributes without creation/destruction
         - Violated by unconstrained destabilizers (grammar U2)
-        - Monitored by grammar U6 (|Φ_s| < φ)
+        - Monitored by grammar U6 (|Φ_s| < π/2)
 
     **Geometric sector** (local, phase-driven):
         ∂K_φ/∂t + div(J_φ) ≈ 0
@@ -992,7 +992,7 @@ def verify_sequence_ward_identity(
         summary[w.charge_character] = summary.get(w.charge_character, 0) + 1
 
     n_steps = max(len(identities), 1)
-    threshold = PHI / n_steps  # Scale threshold with sequence length
+    threshold = U6_STRUCTURAL_POTENTIAL_LIMIT / n_steps  # Scale threshold with sequence length
 
     return {
         "total_source": total_source,

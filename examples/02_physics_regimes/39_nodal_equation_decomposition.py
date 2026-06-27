@@ -42,7 +42,6 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import GAMMA, PHI, PI
 from tnfr.operators.definitions import (
     Coherence,
     Contraction,

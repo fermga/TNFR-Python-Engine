@@ -46,7 +46,7 @@ Definition (α = 2 by default):
 \[\Phi_s(i) = \sum_{j\neq i} \frac{\Delta NFR_j}{d(i,j)^\alpha}\]
 
 - Long-range, global potential derived from ΔNFR distribution
-- Safety criterion (telemetry-based, EMPIRICAL): per-node |Φ_s| < 0.7711 and drift ΔΦ_s < φ ≈ 1.618. These have **no closed form** (φ is motivation via the KAM most-irrational argument, not a derivation).
+- Safety criterion (telemetry-based): per-node |Φ_s| < π/4 ≈ 0.785 (quarter phase-wrap) and drift ΔΦ_s < π/2 ≈ 1.571 (half phase-wrap). These are **π-derived**, tying the confinement bound to the one genuine structural scale (π).
 - Implementation: `compute_structural_potential(G, alpha=2.0)`
 
 **Linear response**: Perturbation analysis confirms |r| = 1.000 (Pearson correlation) between DNFR changes and Phi_s response, validating its 0th-order position in the operator-derivative tower. See [example 39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py).

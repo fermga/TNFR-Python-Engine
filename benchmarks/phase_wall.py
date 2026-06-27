@@ -62,7 +62,7 @@ HONEST SCOPE -- structural CHECKS pass; the THESIS verdict is OPEN, not PASS:
   real catalog, and that step is the non-derivable Pontryagin promotion -- the
   mirror of the YM Y3 gap (cross-checked against the canonical audit). This LOCATES
   the obstruction as a real-vs-phase wall; it does NOT close it. Reaching S(T) is
-  RH-equivalent. R (continuum) and phi, gamma, pi, e remain assumed substrate.
+  RH-equivalent. R (continuum) and pi remain assumed substrate.
 
 Run:
     python benchmarks/phase_wall.py
@@ -114,11 +114,13 @@ TOL = 1e-9
 _ZERO_EIG = 1e-6  # eigenvalues below this have undefined phase
 _REAL_AXIS = np.array([0.0, np.pi, -np.pi])  # arg of a real number
 
-# The four tetrad-associated constants (audit 2026: only pi is a genuine scale).
-PHI = (1.0 + np.sqrt(5.0)) / 2.0  # golden ratio        <-> Phi_s   (global)
-GAMMA = 0.5772156649015329  # Euler-Mascheroni    <-> |grad phi| (local)
-PI = np.pi  # pi                  <-> K_phi   (curvature)
-E = np.e  # Napier              <-> xi_C    (correlation)
+# Candidate "famous constants" for TEST 4's obstruction (audit 2026: only pi is a
+# genuine structural scale; the φ/γ/e ↔ tetrad correspondence is refuted overlay —
+# TEST 4 below shows exactly that any REAL combination of these stays on the axis).
+PHI = (1.0 + np.sqrt(5.0)) / 2.0  # golden ratio (candidate coefficient; NOT structural)
+GAMMA = 0.5772156649015329  # Euler-Mascheroni (candidate coefficient; NOT structural)
+PI = np.pi  # the one genuine structural scale
+E = np.e  # Napier (candidate coefficient; NOT structural)
 
 # First few Riemann non-trivial zero heights (ground truth for sampling S(T)).
 _KNOWN_ZEROS = (14.1347, 21.0220, 25.0109, 30.4249, 32.9351, 37.5862)
@@ -453,7 +455,7 @@ def main():
     print("  nodal-derived (FORWARD_INDEPENDENT_OF_BACKWARD). This is the e-pi mirror")
     print("  of the Yang-Mills U(1) gap (same circle, same OPEN verdict). It LOCATES")
     print("  the obstruction as a real-vs-phase wall; reaching S(T) is RH-equivalent")
-    print("  and stays OPEN. R and phi, gamma, pi, e remain assumed substrate.")
+    print("  and stays OPEN. R and pi remain assumed substrate.")
     return 0 if structural else 1
 
 

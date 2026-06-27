@@ -272,7 +272,7 @@ def compute_k_top_spectral(
             suggestion="Use 'fiedler_inverse', 'spectral_gap', or 'diameter_scaled'.",
         )
 
-    # Clamp to canonical range (notational (φ,γ,π,e) bounds)
+    # Clamp to canonical range (operational bounds)
     from ..constants.canonical import K_TOP_MAX_CANONICAL, K_TOP_MIN_CANONICAL
 
     k_top = np.clip(k_top, K_TOP_MIN_CANONICAL, K_TOP_MAX_CANONICAL)

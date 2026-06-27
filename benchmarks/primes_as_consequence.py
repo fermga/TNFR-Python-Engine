@@ -84,7 +84,7 @@ HONEST SCOPE -- structural CHECKS pass; the THESIS verdict is OPEN (by design):
   (C) irreducibility != primality. So the optic-shift converts the IMPOSED adelic
   carrier into a PARTIALLY EMERGENT one and pins the residual at the phase /
   the == 3 (mod 4) class. It SHARPENS the picture; it does not close G4 / RH.
-  R (continuum) and phi, gamma, pi, e remain assumed substrate.
+  R (continuum) and pi remain assumed substrate.
 
 Run:
     python benchmarks/primes_as_consequence.py
@@ -420,7 +420,7 @@ def main() -> int:
     print("  reading (B) is partial and scale-sector, and reaching every prime")
     print("  through the continuous phase S(T) remains the G4/RH-equivalent")
     print("  obstruction of Caminos 5-10. It LOCATES the residual; it does not")
-    print("  close it. R and phi, gamma, pi, e remain assumed substrate.")
+    print("  close it. R and pi remain assumed substrate.")
     return 0 if structural else 1
 
 

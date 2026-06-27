@@ -653,7 +653,7 @@ def fit_correlation_length_exponent(
     xi_c_values : np.ndarray
         Corresponding coherence lengths xi_C
     I_c : float, default=CRITICAL_INFORMATION_DENSITY
-        Critical intensity (calibrated TIER-2 scale (e×φ)/π ≈ 2.015)
+        Critical intensity (calibrated operational scale ≈ 2.015)
     min_distance : float, default=MIN_DISTANCE_THRESHOLD
         Minimum |I - I_c| to avoid divergence noise
 

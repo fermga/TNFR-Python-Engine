@@ -33,13 +33,11 @@ from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
 from ..constants.canonical import (
     AU_CURVATURE_PERMISSIVE_THRESHOLD,
     CRITICAL_EXPONENT,
-    EMERGENT_STABILITY_THRESHOLD_CANONICAL,
-    GAMMA,
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
-    PHI,
     PI,
 )
+from ..constants.operational import EMERGENT_STABILITY_THRESHOLD_CANONICAL
 from .fields import (
     compute_phase_curvature,
     compute_phase_gradient,
@@ -140,7 +138,7 @@ def compute_element_signature(
         - phi_s_before: structural potential before synthetic step
         - phi_s_after: structural potential after synthetic step (if applied)
         - phi_s_drift: |Δ Φ_s| between before/after (if applied)
-        - phase_gradient_ok: bool, |∇φ| < γ/π ≈ 0.1837 (canonical threshold)
+        - phase_gradient_ok: bool, |∇φ| < 0.196 (π/16 threshold)
         - curvature_hotspots_ok: bool, max |K_φ| < 0.9×π ≈ 2.8274 (canonical threshold)
         - coherence_length_category: str in {localized, medium, extended}
         - signature_class: str, one of {stable, marginal, unstable}
@@ -206,7 +204,7 @@ def compute_element_signature(
                 G,
                 alpha=CRITICAL_EXPONENT,
                 dnfr_factor=EMERGENT_STABILITY_THRESHOLD_CANONICAL,
-            )  # γ/π, (φ+γ)/(π+γ)
+            )  # operational thresholds
             phi_s_after = compute_structural_potential(G)
             phi_s_after_mean = (
                 sum(phi_s_after.values()) / len(phi_s_after) if phi_s_after else 0.0
@@ -218,11 +216,11 @@ def compute_element_signature(
             set_attr(G.nodes[n], ALIAS_THETA, original_state[n]["phase"])
             set_attr(G.nodes[n], ALIAS_DNFR, original_state[n]["delta_nfr"])
 
-    # Threshold checks (audit 2026: |∇φ| γ/π is a heuristic early-warning, not
-    # derived; the genuine bound is the π phase-wrap shared by |∇φ| and K_φ)
+    # Threshold checks (audit 2026: the |∇φ| early-warning level is a heuristic,
+    # not derived; the genuine bound is the π phase-wrap shared by |∇φ| and K_φ)
     phase_grad_ok = (
         mean_grad < GRAD_PHI_CANONICAL_THRESHOLD
-    )  # heuristic ≈ 0.1837 (kinematic bound is π)
+    )  # heuristic ≈ 0.196 (π/16; kinematic bound is π)
     curv_hotspots_ok = (
         max_curv_abs < K_PHI_CANONICAL_THRESHOLD
     )  # 0.9×π ≈ 2.8274 (phase wrap — genuine)
@@ -286,11 +284,11 @@ def compute_au_like_signature(G: "nx.Graph") -> dict[str, Any]:
         signature["mean_phase_gradient"] < PI / 2
     )  # π/2 - permissive for current patterns
     is_evolution_stable = (
-        signature["phi_s_drift"] < PHI + GAMMA
-    )  # (φ+γ) - moderate drift tolerance
+        signature["phi_s_drift"] < 0.7 * PI
+    )  # 0.7·π ≈ 2.2 (moderate Φ_s drift tolerance)
     is_curvature_mild = (
         signature["max_phase_curvature_abs"] < AU_CURVATURE_PERMISSIVE_THRESHOLD
-    )  # (φ+1)×π/e ≈ 3.0257
+    )  # 0.95·π ≈ 2.985 (permissive |K_φ|)
 
     signature["is_au_like"] = (
         is_extended_or_complex

@@ -1203,13 +1203,13 @@ class BianchiIdentityResult:
 # sector is "active" when it captures MORE than its fair quarter of the
 # four-channel budget. This boundary is derived purely from the NUMBER of
 # gauge sectors (the four structural channels of the tetrad), with NO
-# (φ,γ,π,e) overlay constant.
+# obsolete overlay constant.
 #
-# The earlier per-sector thresholds (1/φ for em/weak/gravity, γ/π for strong)
-# were calibrated overlay values whose "derived" status was refuted by the
-# 2026 tetrad audit (only π is a genuine structural scale, and the γ/π strong
-# boundary in particular carried the refuted "Kuramoto critical coupling"
-# justification). They are removed in favour of this parameter-free criterion.
+# The earlier per-sector overlay thresholds were calibrated values whose
+# "derived" status was refuted by the 2026 tetrad audit (only π is a genuine
+# structural scale; the strong-sector boundary in particular carried the
+# refuted "Kuramoto critical coupling" justification). They are removed in
+# favour of this parameter-free criterion.
 N_REGIMES = 4
 REGIME_ACTIVITY_SHARE = 1.0 / N_REGIMES  # equipartition reference = 0.25
 
@@ -1223,7 +1223,7 @@ class InteractionRegimeMetrics:
     energy budget. Sector "activity" uses the parameter-free equipartition
     criterion (audit 2026 redesign): a sector is active when its normalised
     score exceeds 1/N_REGIMES = 0.25, the maximum-entropy reference. No
-    (φ,γ,π,e) overlay constant enters the classification.
+    obsolete overlay constant enters the classification.
 
     O_em  = |cos(arg Ψ)| — geometric (K_φ) dominance fraction
     O_wk  = |sin(arg Ψ)| — transport (J_φ) dominance fraction
@@ -1603,7 +1603,7 @@ def compute_gauge_coupling_constant(G: Any) -> float:
     Physical interpretation:
     - g² ≈ 0: weak coupling (nearly flat gauge field, em-like)
     - g² ≈ π²: strong coupling (maximal curvature, confinement)
-    - g² ≈ γ²: critical coupling (Euler constant marks phase transition)
+    - intermediate g²: transitional coupling (no derived critical constant; audit 2026)
 
     Parameters
     ----------
@@ -1636,7 +1636,7 @@ def classify_interaction_regime_formal(
     interaction character.  Unlike the heuristic ``classify_interaction_regime``,
     this function also reports per-sector ``above_threshold`` activity using the
     parameter-free equipartition criterion (audit 2026 redesign): a sector is
-    active when its normalised score exceeds 1/N_REGIMES = 0.25. No (φ, γ, π, e)
+    active when its normalised score exceeds 1/N_REGIMES = 0.25. No obsolete
     overlay constant enters the classification.
 
     **Order parameters**:

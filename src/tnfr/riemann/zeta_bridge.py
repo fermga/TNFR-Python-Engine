@@ -42,9 +42,8 @@ from .spectral_zeta import compute_heat_kernel_trace, test_conjecture_10_1
 
 # Regularisation buffer for the spectral zeta reflection. A small positive
 # shift that ensures (λ + a) > 0; its exact value is immaterial (any small
-# positive buffer works). It is written as γ/π ≈ 0.1837 for notational
-# consistency, but (audit 2026) this is NOT a first-principles constant —
-# γ/π is a heuristic, not derived from the nodal equation.
+# positive buffer works). Its value ≈ 0.196 (π/16) is a heuristic (audit 2026: NOT
+# a first-principles constant, not derived from the nodal equation).
 _SPECTRAL_ZETA_SHIFT_BUFFER = CRITICAL_EXPONENT
 
 # ---------------------------------------------------------------------------
@@ -167,14 +166,14 @@ class SpectralZetaReflection:
     shift_value: float = 0.0
     """Regularisation shift a applied to all spectra: ζ(u;a)=Σ(λ+a)^(-u).
 
-    Composed as a = max(0, -min_eigenvalue) + γ/π, where the buffer γ/π =
-    CRITICAL_EXPONENT is a small positive shift written for notational
-    consistency. Its exact value is immaterial (any small positive buffer
-    works); audit 2026: γ/π is a heuristic, NOT a first-principles constant.
+    Composed as a = max(0, -min_eigenvalue) + CRITICAL_EXPONENT, a small
+    positive shift (≈ 0.196). Its exact value is immaterial (any small
+    positive buffer works); audit 2026: a heuristic, NOT a first-principles
+    constant.
     """
 
     shift_canonical: bool = True
-    """True when the regularisation buffer equals γ/π (canonical)."""
+    """True when the regularisation buffer equals CRITICAL_EXPONENT (canonical)."""
 
 
 @dataclass(frozen=True)
@@ -475,7 +474,7 @@ def compute_spectral_zeta_reflection(
     evals_L, _ = compute_eigensystem(k, 0.5)
 
     # Regularisation shift: ensure all (λ + a) > 0 for ALL spectra.
-    # The buffer is γ/π (a small positive shift, notational; audit 2026: not
+    # The buffer is CRITICAL_EXPONENT (a small positive shift; audit 2026: not
     # derived — its exact value is immaterial, any small positive buffer works).
     all_min = min(evals_s.min(), evals_r.min(), evals_L.min())
     shift = max(0.0, -all_min) + _SPECTRAL_ZETA_SHIFT_BUFFER

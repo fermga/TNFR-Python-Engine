@@ -1,30 +1,41 @@
-"""Example 31: Mathematical Constants as Irreducible Dynamics Basis.
+"""Example 31: The π Structural Scale and the Derivative-Tower Tetrad.
 
-Demonstrates that the four fundamental constants (phi, gamma, pi, e)
-constitute the minimal and complete basis for TNFR structural dynamics.
-Each constant governs an irreducible class of mathematical behavior:
+Demonstrates the single genuine structural scale of TNFR — π — and how the
+four structural fields emerge as the four orders of the discrete
+structural-derivative tower. Nothing here is assumed beyond π and the
+continuum ℝ; every other quantity emerges from the nodal dynamics
+∂EPI/∂t = νf · ΔNFR(t).
 
-  phi (Golden Ratio) -> Proportion / Self-similarity
-  gamma (Euler-Mascheroni) -> Logarithmic accumulation / Growth rate
-  pi (Pi) -> Periodicity / Geometric curvature
-  e (Euler's Number) -> Exponential propagation / Decay
+Only π is a genuine structural scale: it bounds the WHOLE phase sector,
+since both phase derivatives are wrapped angles —
+
+    |∇φ| ≤ π   and   |K_φ| ≤ π .
+
+The four tetrad fields are the four orders of the derivative tower:
+
+    Φ_s   (0th order, global aggregation)   ΔNFR_j → Σ 1/d²
+    |∇φ|  (1st order, local derivative)      φ_i   → ∇
+    K_φ   (2nd order, local Laplacian)       φ_i   → ∇²   (K_φ = L_rw·φ)
+    ξ_C   (correlation, non-local)           correlation range
+
+The coherence length is set by the spectral gap (Fiedler value λ₂):
+
+    ξ_C ∝ 1/√λ₂ .
 
 Key results shown:
-  1. Fixed-point convergence: Fibonacci ratios -> phi
-  2. Harmonic accumulation: H_n - ln(n) -> gamma
-  3. Phase curvature confinement: wrap_angle bounds |K_phi| <= pi
-  4. Exponential correlation decay: C(r) ~ exp(-r/xi_C) with base e
-  5. Constant-combination relations from canonical.py (notational, not derived)
-  6. Coherence threshold C_crit = phi*e/(pi+e) (notational combo, not derived)
-  7. Cross-topology verification of canonical thresholds
+  1. π bounds the whole phase sector: both |∇φ| ≤ π and |K_φ| ≤ π.
+  2. The derivative-tower tetrad (Φ_s, |∇φ|, K_φ, ξ_C) on a network.
+  3. ξ_C tracks the spectral gap (ξ_C ∝ 1/√λ₂) across topologies.
+  4. Cross-topology confinement: the π phase-wrap bounds and the π-derived
+     Φ_s confinement bounds (drift < π/2, per-node < π/4) hold everywhere.
 
 Physics basis:
-  The nodal equation dEPI/dt = nu_f * DELTA_NFR(t) generates structural
-  dynamics whose diagnostics require exactly four irreducible channels:
-  global aggregation (Phi_s <-> phi), first derivative (|grad_phi| <-> gamma),
-  second derivative (K_phi <-> pi), and correlation range (xi_C <-> e).
+  The nodal equation generates a transport layer whose structural diagnostics
+  require exactly four irreducible channels (the orders of the derivative
+  tower). π is the one genuine structural scale (the phase-wrap bound); φ, γ,
+  e play no role and are intentionally absent.
   See: theory/MATHEMATICAL_DYNAMICS_BASIS.md
-  See: theory/MINIMAL_STRUCTURAL_DEGREES.md ss 4-5
+  See: theory/MINIMAL_STRUCTURAL_DEGREES.md §§ 4-5
 """
 
 from __future__ import annotations
@@ -41,17 +52,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
 from tnfr.constants.canonical import (
-    CRITICAL_EXPONENT,
-    GAMMA,
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
-    MIN_BUSINESS_COHERENCE_CANONICAL,
-    PHI,
     PHI_S_VON_KOCH_THRESHOLD,
     PI,
-    STRUCTURAL_FREQUENCY_BASE,
-    ZETA_COUPLING_STRENGTH,
-    E,
+    U6_STRUCTURAL_POTENTIAL_LIMIT,
 )
 from tnfr.physics.fields import (
     compute_phase_curvature,
@@ -60,430 +65,182 @@ from tnfr.physics.fields import (
     estimate_coherence_length,
 )
 
+
+def _seed_network(G: "nx.Graph", *, seed: int = 42, correlated: bool = False) -> None:
+    """Inject canonical defaults and seed phase / ΔNFR on every node."""
+    inject_defaults(G)
+    rng = np.random.default_rng(seed)
+    prev = 0.0
+    for i, n in enumerate(G.nodes()):
+        if correlated and i > 0:
+            phase = prev + rng.normal(0, 0.3)
+        else:
+            phase = rng.uniform(0, 2 * math.pi)
+        prev = phase
+        G.nodes[n]["phase"] = phase
+        G.nodes[n]["theta"] = phase
+        G.nodes[n]["delta_nfr"] = rng.uniform(-0.5, 0.5)
+
+
+def _algebraic_connectivity(G: "nx.Graph") -> float:
+    """Fiedler value λ₂ (second-smallest Laplacian eigenvalue)."""
+    laplacian = nx.laplacian_matrix(G).toarray().astype(float)
+    eigvals = np.linalg.eigvalsh(laplacian)
+    return float(eigvals[1]) if len(eigvals) > 1 else 0.0
+
+
 # ---------------------------------------------------------------------------
-# 1. Golden Ratio (phi): Self-similar proportion
+# 1. π bounds the whole phase sector
 # ---------------------------------------------------------------------------
 
 
-def demo_phi_convergence() -> None:
-    """Show phi emerges as the unique fixed point of x = 1 + 1/x."""
+def demo_pi_phase_sector() -> None:
+    """π bounds BOTH phase derivatives: |∇φ| ≤ π and |K_φ| ≤ π."""
     print("=" * 65)
-    print("  1. GOLDEN RATIO (phi) — Self-Similar Proportion")
-    print("=" * 65)
-
-    # Fibonacci ratio convergence
-    a, b = 1, 1
-    print("\n  Fibonacci ratio F(n+1)/F(n) convergence to phi:")
-    print(f"  {'n':>4}  {'F(n)':>12}  {'F(n+1)/F(n)':>14}  {'|error|':>12}")
-    print("  " + "-" * 48)
-    for n in range(2, 22):
-        a, b = b, a + b
-        ratio = b / a
-        error = abs(ratio - PHI)
-        if n <= 8 or n >= 18:
-            print(f"  {n:4d}  {a:12d}  {ratio:14.10f}  {error:12.2e}")
-        elif n == 9:
-            print("  " + " " * 4 + "  " + "..." * 4)
-
-    # Fixed point iteration: x_{n+1} = 1 + 1/x_n
-    print(f"\n  Fixed point x = 1 + 1/x:")
-    x = 2.0  # arbitrary start
-    for i in range(10):
-        x = 1.0 + 1.0 / x
-    print(f"    After 10 iterations: x = {x:.10f}")
-    print(f"    phi                     = {PHI:.10f}")
-    print(f"    Difference              = {abs(x - PHI):.2e}")
-
-    # Continued fraction [1; 1, 1, 1, ...]
-    # phi has the slowest-converging continued fraction (all 1s)
-    print(f"\n  Continued fraction [1; 1, 1, 1, ...] = phi")
-    print(f"    phi = {PHI:.10f}")
-    print(f"    phi^2 = phi + 1 = {PHI**2:.10f} vs {PHI + 1:.10f}")
-
-    # TNFR connection: Phi_s confinement
-    print(f"\n  TNFR connection:")
-    print(
-        f"    Structural potential threshold: |Phi_s| < {PHI_S_VON_KOCH_THRESHOLD:.4f}"
-    )
-    print(f"    U6 confinement: Delta Phi_s < phi = {PHI:.4f}")
-    print(f"    Physics: Global harmonic confinement (phi <-> Phi_s)")
-
-
-# ---------------------------------------------------------------------------
-# 2. Euler-Mascheroni (gamma): Logarithmic accumulation
-# ---------------------------------------------------------------------------
-
-
-def demo_gamma_accumulation() -> None:
-    """Show gamma governs the gap between harmonic sums and log growth."""
-    print("\n" + "=" * 65)
-    print("  2. EULER-MASCHERONI (gamma) — Logarithmic Accumulation")
+    print("  1. π — THE GENUINE STRUCTURAL SCALE (whole phase sector)")
     print("=" * 65)
 
-    # H_n - ln(n) -> gamma
-    print(f"\n  Harmonic number H_n - ln(n) convergence to gamma:")
-    print(f"  {'n':>8}  {'H_n':>14}  {'H_n - ln(n)':>14}  {'|error|':>12}")
-    print("  " + "-" * 54)
-    h_n = 0.0
-    for n in range(1, 10001):
-        h_n += 1.0 / n
-        if n in (1, 2, 5, 10, 50, 100, 500, 1000, 5000, 10000):
-            diff = h_n - math.log(n)
-            error = abs(diff - GAMMA)
-            print(f"  {n:8d}  {h_n:14.10f}  {diff:14.10f}  {error:12.2e}")
-
-    # gamma/pi heuristic early-warning level (audit 2026: NOT a derived bound;
-    # the |grad phi| bound is the pi phase-wrap, the same as K_phi)
-    print(f"\n  Phase-gradient early-warning level (heuristic, not derived):")
-    print(f"    gamma/pi = {GAMMA/PI:.10f}")
-    print(f"    CRITICAL_EXPONENT = {CRITICAL_EXPONENT:.10f}")
-    print(
-        f"    In canonical.py: GRAD_PHI_CANONICAL_THRESHOLD = {GRAD_PHI_CANONICAL_THRESHOLD:.10f}"
-    )
-    print(f"    Match: {abs(CRITICAL_EXPONENT - GRAD_PHI_CANONICAL_THRESHOLD) < 1e-10}")
-
-    # Mertens theorem: product over primes
-    print(f"\n  Mertens' theorem: e^gamma ~ product of 1/(1-1/p):")
-    print(f"    e^gamma = {math.exp(GAMMA):.10f}")
-    # Compute partial product over first 1000 primes
-    primes = _sieve(7920)  # first 1000 primes
-    product = 1.0
-    for p in primes[:1000]:
-        product *= 1.0 / (1.0 - 1.0 / p)
-    mertens_ratio = product * math.log(primes[999])
-    print(f"    Product(1/(1-1/p)) * ln(p_1000)  = {mertens_ratio:.6f}")
-    print(
-        f"    Relative error from e^gamma       = {abs(mertens_ratio - math.exp(GAMMA))/math.exp(GAMMA)*100:.4f}%"
-    )
-
-    print(f"\n  TNFR connection:")
-    print(f"    Phase gradient threshold: |grad_phi| < gamma/pi = {GAMMA/PI:.4f}")
-    print(f"    Physics: Local desynchronization bounded by harmonic growth rate")
-
-
-# ---------------------------------------------------------------------------
-# 3. Pi: Periodicity and curvature confinement
-# ---------------------------------------------------------------------------
-
-
-def demo_pi_curvature() -> None:
-    """Show pi governs angular periodicity and curvature bounds."""
-    print("\n" + "=" * 65)
-    print("  3. PI — Periodicity and Curvature Confinement")
-    print("=" * 65)
-
-    # wrap_angle constrains |K_phi| <= pi
-    print(f"\n  wrap_angle function constrains phase curvature:")
-    test_angles = [-4.5, -3.5, -math.pi, -1.0, 0.0, 1.0, math.pi, 3.5, 4.5, 7.0]
-    print(f"  {'Input':>10}  {'Wrapped':>12}  {'|Wrapped| <= pi':>16}")
+    print("\n  Phase is an angle on S¹, so its derivatives are wrapped angles:")
+    print("  wrap_angle(x) = atan2(sin x, cos x) ∈ [-π, π]")
+    test_angles = [-4.5, -math.pi, -1.0, 0.0, 1.0, math.pi, 3.5, 7.0]
+    print(f"  {'input':>10}  {'wrapped':>12}  {'|wrapped| ≤ π':>16}")
     print("  " + "-" * 42)
     for angle in test_angles:
         wrapped = math.atan2(math.sin(angle), math.cos(angle))
-        print(f"  {angle:10.4f}  {wrapped:12.4f}  {abs(wrapped) <= math.pi!s:>16}")
+        print(f"  {angle:10.4f}  {wrapped:12.4f}  {abs(wrapped) <= math.pi + 1e-12!s:>16}")
 
-    # Safety margin: 0.9 * pi
-    print(f"\n  Canonical safety threshold:")
-    print(f"    K_PHI_CANONICAL_THRESHOLD = 0.9 * pi = {K_PHI_CANONICAL_THRESHOLD:.4f}")
-    print(f"    Theoretical maximum: pi = {PI:.4f}")
-    print(f"    Safety margin: 90% of maximum (10% buffer for singularity approach)")
+    print("\n  Canonical safety thresholds (90% of the π wrap bound):")
+    print(f"    |∇φ| early-warning  GRAD_PHI_CANONICAL_THRESHOLD = {GRAD_PHI_CANONICAL_THRESHOLD:.4f}")
+    print(f"    |K_φ| safety        K_PHI_CANONICAL_THRESHOLD    = {K_PHI_CANONICAL_THRESHOLD:.4f}")
+    print(f"    Phase-wrap maximum  π                            = {PI:.4f}")
 
-    # TNFR connection: verify on a network
-    print(f"\n  Verification on Watts-Strogatz network (N=30, k=4, p=0.3):")
-    rng = np.random.default_rng(42)
+    print("\n  Verification on a Watts-Strogatz network (N=30, k=4, p=0.3):")
     G = nx.watts_strogatz_graph(30, 4, 0.3, seed=42)
-    inject_defaults(G)
-    for n in G.nodes():
-        G.nodes[n]["phase"] = rng.uniform(0, 2 * math.pi)
-        G.nodes[n]["theta"] = G.nodes[n]["phase"]
-        G.nodes[n]["delta_nfr"] = rng.uniform(-0.5, 0.5)
-    k_phi = compute_phase_curvature(G)
-    k_arr = np.array(list(k_phi.values()))
-    print(
-        f"    max |K_phi| = {np.max(np.abs(k_arr)):.4f}  (threshold = {K_PHI_CANONICAL_THRESHOLD:.4f})"
-    )
-    print(f"    All |K_phi| <= pi? {np.all(np.abs(k_arr) <= PI)}")
-    print(
-        f"    Nodes beyond 0.9*pi: {np.sum(np.abs(k_arr) >= K_PHI_CANONICAL_THRESHOLD)} / {len(k_arr)}"
-    )
+    _seed_network(G)
+    grad = np.array(list(compute_phase_gradient(G).values()))
+    k_phi = np.array(list(compute_phase_curvature(G).values()))
+    print(f"    max |∇φ| = {np.max(np.abs(grad)):.4f}   (≤ π? {bool(np.all(np.abs(grad) <= PI + 1e-9))})")
+    print(f"    max |K_φ| = {np.max(np.abs(k_phi)):.4f}   (≤ π? {bool(np.all(np.abs(k_phi) <= PI + 1e-9))})")
+    print("    Both phase derivatives share the SAME bound — π scales the whole sector.")
 
 
 # ---------------------------------------------------------------------------
-# 4. Euler's Number (e): Exponential propagation
+# 2. The derivative-tower tetrad
 # ---------------------------------------------------------------------------
 
 
-def demo_e_propagation() -> None:
-    """Show e governs exponential correlation decay C(r) ~ exp(-r/xi_C)."""
+def demo_derivative_tower_tetrad() -> None:
+    """The four tetrad fields are the four orders of the derivative tower."""
     print("\n" + "=" * 65)
-    print("  4. EULER'S NUMBER (e) — Exponential Propagation")
+    print("  2. THE DERIVATIVE-TOWER TETRAD (Φ_s, |∇φ|, K_φ, ξ_C)")
     print("=" * 65)
 
-    # Scale invariance of exponential
-    print(f"\n  Scale invariance of exp(-r/xi_C):")
-    print(f"    C(r) = A * exp(-r/xi_C) is the UNIQUE function satisfying:")
-    print(f"    - Normalization: C(0) = A")
-    print(f"    - Memoryless: C(r+s) = C(r)*C(s)/A")
-    print(f"    - Scale rescaling: r -> alpha*r  =>  xi_C -> alpha*xi_C")
+    G = nx.watts_strogatz_graph(40, 4, 0.3, seed=7)
+    _seed_network(G, seed=7, correlated=True)
 
-    # Numerical demonstration: fit correlation decay on a network
-    print(f"\n  Correlation decay measurement on ring network (N=50):")
-    N = 50
-    rng = np.random.default_rng(42)
-    G = nx.cycle_graph(N)
-    inject_defaults(G)
-    for n in G.nodes():
-        phase = rng.uniform(0, 2 * math.pi)
-        G.nodes[n]["phase"] = phase
-        G.nodes[n]["theta"] = phase
-        # Correlated phases: nearby nodes have similar phase
-        if n > 0:
-            prev_phase = G.nodes[n - 1]["phase"]
-            G.nodes[n]["phase"] = prev_phase + rng.normal(0, 0.3)
-            G.nodes[n]["theta"] = G.nodes[n]["phase"]
-        G.nodes[n]["delta_nfr"] = rng.uniform(-0.3, 0.3)
+    phi_s = np.array(list(compute_structural_potential(G).values()))
+    grad = np.array(list(compute_phase_gradient(G).values()))
+    k_phi = np.array(list(compute_phase_curvature(G).values()))
+    xi_c = estimate_coherence_length(G)
 
-    # Compute pairwise phase correlation vs distance
-    phases = np.array([G.nodes[n]["phase"] for n in range(N)])
-    distances = list(range(1, N // 2 + 1))
-    correlations = []
-    for d in distances:
-        cos_diffs = []
-        for i in range(N):
-            j = (i + d) % N
-            cos_diffs.append(math.cos(phases[i] - phases[j]))
-        correlations.append(np.mean(cos_diffs))
-
-    # Fit exponential: C(d) ~ A * exp(-d / xi_C)
-    correlations_arr = np.array(correlations)
-    positive_mask = correlations_arr > 0.01
-    if np.sum(positive_mask) > 2:
-        d_fit = np.array(distances)[positive_mask]
-        c_fit = correlations_arr[positive_mask]
-        log_c = np.log(c_fit)
-        # Linear fit: log(C) = log(A) - d/xi_C
-        coeffs = np.polyfit(d_fit, log_c, 1)
-        xi_c_fit = -1.0 / coeffs[0] if coeffs[0] < 0 else float("inf")
-        A_fit = math.exp(coeffs[1])
-        print(f"    Fitted xi_C = {xi_c_fit:.4f}")
-        print(f"    Fitted A    = {A_fit:.4f}")
-        r_squared = 1.0 - np.var(log_c - np.polyval(coeffs, d_fit)) / np.var(log_c)
-        print(f"    R^2 (exponential fit) = {r_squared:.4f}")
-    else:
-        xi_c_fit = float("nan")
-        print(f"    (Not enough positive correlations for fit)")
-
-    # SDK coherence length
-    xi_c_sdk = estimate_coherence_length(G)
-    print(f"    SDK estimate_coherence_length = {xi_c_sdk:.4f}")
-    print(f"\n  TNFR connection:")
-    print(f"    Correlation decay is inherently exponential (Markov process)")
-    print(f"    Base e ensures scale invariance under graph rescaling")
-    print(f"    (e<->xi_C is near-tautological; the xi_C scale is 1/sqrt(lambda_2))")
+    print(f"\n  {'field':<8}  {'tower order':<26}  {'magnitude':>12}")
+    print("  " + "-" * 52)
+    print(f"  {'Φ_s':<8}  {'0th (global aggregation)':<26}  {np.max(np.abs(phi_s)):12.4f}")
+    print(f"  {'|∇φ|':<8}  {'1st (local derivative)':<26}  {np.max(np.abs(grad)):12.4f}")
+    print(f"  {'K_φ':<8}  {'2nd (discrete Laplacian)':<26}  {np.max(np.abs(k_phi)):12.4f}")
+    print(f"  {'ξ_C':<8}  {'correlation (non-local)':<26}  {xi_c:12.4f}")
+    print("\n  These four orders are the minimal, complete structural basis:")
+    print("  higher graph derivatives decompose into products of lower ones,")
+    print("  so no fifth independent channel exists.")
 
 
 # ---------------------------------------------------------------------------
-# 5. Tetrahedral edge relations
+# 3. ξ_C is set by the spectral gap
 # ---------------------------------------------------------------------------
 
 
-def demo_tetrahedral_edges() -> None:
-    """Show all 6 edge and 4 face combinations from the tetrahedron."""
+def demo_spectral_coherence_length() -> None:
+    """ξ_C tracks the spectral gap: ξ_C ∝ 1/√λ₂."""
     print("\n" + "=" * 65)
-    print("  5. CONSTANT-COMBINATION RELATIONS (notational, not derived)")
+    print("  3. COHERENCE LENGTH FROM THE SPECTRAL GAP (ξ_C ∝ 1/√λ₂)")
     print("=" * 65)
 
-    edges = [
-        (
-            "phi-gamma",
-            "phi/gamma",
-            PHI / GAMMA,
-            "Structural frequency base (nu_f scaling)",
-        ),
-        ("phi-pi", "phi/(phi+pi)", PHI / (PHI + PI), "Optimization penalty factor"),
-        ("phi-e", "phi/e", PHI / E, "EPI maximum canonical bound"),
-        (
-            "gamma-pi",
-            "gamma/pi",
-            GAMMA / PI,
-            "Phase gradient early-warning (heuristic, not derived)",
-        ),
-        ("gamma-e", "gamma/(e+gamma)", GAMMA / (E + GAMMA), "Temporal evolution rate"),
-        ("pi-e", "pi/e", PI / E, "Spectral speedup factor"),
+    topologies = [
+        ("ring (N=40)", nx.cycle_graph(40)),
+        ("WS (N=40,k=4)", nx.watts_strogatz_graph(40, 4, 0.2, seed=3)),
+        ("WS (N=40,k=8)", nx.watts_strogatz_graph(40, 8, 0.3, seed=3)),
+        ("complete (N=20)", nx.complete_graph(20)),
     ]
 
-    print(f"\n  6 Tetrahedral Edges (each pair of constants):")
-    print(f"  {'Edge':<12}  {'Expression':<18}  {'Value':>10}  {'TNFR Role'}")
-    print("  " + "-" * 72)
-    for name, expr, val, role in edges:
-        print(f"  {name:<12}  {expr:<18}  {val:10.6f}  {role}")
+    print(f"\n  {'topology':<16}  {'λ₂ (Fiedler)':>14}  {'1/√λ₂':>10}  {'ξ_C (SDK)':>10}")
+    print("  " + "-" * 56)
+    for name, G in topologies:
+        _seed_network(G, seed=11, correlated=True)
+        lam2 = _algebraic_connectivity(G)
+        inv_sqrt = 1.0 / math.sqrt(lam2) if lam2 > 1e-12 else float("inf")
+        xi_c = estimate_coherence_length(G)
+        print(f"  {name:<16}  {lam2:14.6f}  {inv_sqrt:10.4f}  {xi_c:10.4f}")
 
-    # Verify against canonical.py
-    print(f"\n  Verification against canonical.py:")
-    print(
-        f"    STRUCTURAL_FREQUENCY_BASE = phi/gamma = {STRUCTURAL_FREQUENCY_BASE:.6f} (expected {PHI/GAMMA:.6f})"
-    )
-    print(
-        f"    CRITICAL_EXPONENT = gamma/pi = {CRITICAL_EXPONENT:.6f} (expected {GAMMA/PI:.6f})"
-    )
-    print(
-        f"    ZETA_COUPLING_STRENGTH = phi*gamma = {ZETA_COUPLING_STRENGTH:.6f} (expected {PHI*GAMMA:.6f})"
-    )
-
-    # 4 Faces (triples of constants)
-    faces = [
-        (
-            "phi-gamma-pi",
-            "phi*gamma/pi",
-            PHI * GAMMA / PI,
-            "Resonance-curvature coupling",
-        ),
-        ("phi-gamma-e", "phi*gamma/e", PHI * GAMMA / E, "Growth-accumulation coupling"),
-        ("phi-pi-e", "phi*e/(pi+e)", PHI * E / (PI + E), "Coherence threshold C_crit"),
-        ("gamma-pi-e", "gamma*e/pi", GAMMA * E / PI, "Critical amplitude"),
-    ]
-
-    print(f"\n  4 Tetrahedral Faces (each triple of constants):")
-    print(f"  {'Face':<15}  {'Expression':<18}  {'Value':>10}  {'TNFR Role'}")
-    print("  " + "-" * 72)
-    for name, expr, val, role in faces:
-        print(f"  {name:<15}  {expr:<18}  {val:10.6f}  {role}")
-
-    print(f"\n  Critical result: C_crit = phi*e/(pi+e) = {PHI*E/(PI+E):.10f}")
-    print(
-        f"  MIN_BUSINESS_COHERENCE_CANONICAL     = {MIN_BUSINESS_COHERENCE_CANONICAL:.10f}"
-    )
-    print(f"  Match: {abs(PHI*E/(PI+E) - MIN_BUSINESS_COHERENCE_CANONICAL) < 1e-10}")
+    print("\n  Smaller spectral gap λ₂ → longer coherence length: ξ_C ∝ 1/√λ₂.")
+    print("  The scale of ξ_C is the spectral gap, not any assumed constant.")
 
 
 # ---------------------------------------------------------------------------
-# 6. Cross-topology verification
+# 4. Cross-topology confinement
 # ---------------------------------------------------------------------------
 
 
-def demo_cross_topology_verification() -> None:
-    """Verify canonical thresholds hold across 6 network topologies."""
+def demo_cross_topology_confinement() -> None:
+    """The π phase-wrap and π-derived Φ_s bounds hold across topologies."""
     print("\n" + "=" * 65)
-    print("  6. CROSS-TOPOLOGY VERIFICATION — Universal Thresholds")
+    print("  4. CROSS-TOPOLOGY CONFINEMENT (π phase-wrap + π/2, π/4 Φ_s bounds)")
     print("=" * 65)
 
-    topologies = {
-        "Ring (N=30)": lambda: nx.cycle_graph(30),
-        "Complete (N=15)": lambda: nx.complete_graph(15),
-        "Star (N=20)": lambda: nx.star_graph(19),
-        "Grid (5x6)": lambda: nx.grid_2d_graph(5, 6),
-        "WS (N=30)": lambda: nx.watts_strogatz_graph(30, 4, 0.3, seed=42),
-        "BA (N=30)": lambda: nx.barabasi_albert_graph(30, 2, seed=42),
-    }
+    print(f"\n  Φ_s drift bound      U6_STRUCTURAL_POTENTIAL_LIMIT = π/2 = {U6_STRUCTURAL_POTENTIAL_LIMIT:.4f}")
+    print(f"  Φ_s per-node bound   PHI_S_VON_KOCH_THRESHOLD      = π/4 = {PHI_S_VON_KOCH_THRESHOLD:.4f}")
 
-    print(
-        f"\n  Threshold: |Phi_s| < {PHI_S_VON_KOCH_THRESHOLD:.4f}, "
-        f"|grad_phi| < {GRAD_PHI_CANONICAL_THRESHOLD:.4f}, "
-        f"|K_phi| < {K_PHI_CANONICAL_THRESHOLD:.4f}"
-    )
-    print()
-    print(
-        f"  {'Topology':<18}  {'max|Phi_s|':>10}  {'max|grad_phi|':>14}  "
-        f"{'max|K_phi|':>10}  {'All safe':>8}"
-    )
-    print("  " + "-" * 68)
+    topologies = [
+        ("ring (N=30)", nx.cycle_graph(30)),
+        ("WS (N=30,k=4)", nx.watts_strogatz_graph(30, 4, 0.3, seed=5)),
+        ("grid 6x6", nx.grid_2d_graph(6, 6)),
+        ("complete (N=15)", nx.complete_graph(15)),
+    ]
 
-    rng = np.random.default_rng(42)
-    for name, builder in topologies.items():
-        G = builder()
-        # Relabel for grid graphs (tuples -> ints)
-        if isinstance(list(G.nodes())[0], tuple):
-            mapping = {n: i for i, n in enumerate(G.nodes())}
-            G = nx.relabel_nodes(G, mapping)
-        inject_defaults(G)
-        for n in G.nodes():
-            G.nodes[n]["phase"] = rng.uniform(0, 2 * math.pi)
-            G.nodes[n]["theta"] = G.nodes[n]["phase"]
-            G.nodes[n]["delta_nfr"] = rng.uniform(-0.3, 0.3)
+    print(f"\n  {'topology':<16}  {'max|∇φ|≤π':>10}  {'max|K_φ|≤π':>11}  {'max|Φ_s|':>10}")
+    print("  " + "-" * 54)
+    for name, G in topologies:
+        G = nx.convert_node_labels_to_integers(G)
+        _seed_network(G, seed=23)
+        grad = np.array(list(compute_phase_gradient(G).values()))
+        k_phi = np.array(list(compute_phase_curvature(G).values()))
+        phi_s = np.array(list(compute_structural_potential(G).values()))
+        grad_ok = bool(np.all(np.abs(grad) <= PI + 1e-9))
+        kphi_ok = bool(np.all(np.abs(k_phi) <= PI + 1e-9))
+        max_phi_s = float(np.max(np.abs(phi_s))) if phi_s.size else 0.0
+        print(f"  {name:<16}  {grad_ok!s:>10}  {kphi_ok!s:>11}  {max_phi_s:10.4f}")
 
-        phi_s = compute_structural_potential(G)
-        grad_phi = compute_phase_gradient(G)
-        k_phi = compute_phase_curvature(G)
-
-        max_phi_s = max(abs(v) for v in phi_s.values())
-        max_grad = max(abs(v) for v in grad_phi.values())
-        max_k = max(abs(v) for v in k_phi.values())
-        safe = (
-            max_phi_s < PHI_S_VON_KOCH_THRESHOLD
-            and max_grad < GRAD_PHI_CANONICAL_THRESHOLD
-            and max_k < K_PHI_CANONICAL_THRESHOLD
-        )
-        print(
-            f"  {name:<18}  {max_phi_s:10.4f}  {max_grad:14.4f}  "
-            f"{max_k:10.4f}  {'SAFE' if safe else 'WARN':>8}"
-        )
-
-    print("\n  Three of four tetrad thresholds derive from " "(phi, gamma, pi, e);")
-    print("  the per-node Phi_s threshold (0.7711) is empirically " "validated")
-    print("  without a closed-form derivation (see FUNDAMENTAL_THEORY " "section 4.3).")
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-def _sieve(limit: int) -> list[int]:
-    """Return list of primes up to limit via sieve of Eratosthenes."""
-    is_prime = [True] * (limit + 1)
-    is_prime[0] = is_prime[1] = False
-    for i in range(2, int(limit**0.5) + 1):
-        if is_prime[i]:
-            for j in range(i * i, limit + 1, i):
-                is_prime[j] = False
-    return [i for i, flag in enumerate(is_prime) if flag]
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
+    print("\n  The π phase-wrap bounds hold on every topology — a genuine")
+    print("  structural bound, not a calibrated value.")
 
 
 def main() -> None:
     print()
-    print("*" * 65)
-    print("  TNFR Example 31: Mathematical Constants as Dynamics Basis")
-    print("  Theory: MATHEMATICAL_DYNAMICS_BASIS.md")
-    print("  See also: MINIMAL_STRUCTURAL_DEGREES.md ss 4-5")
-    print("*" * 65)
+    print("TNFR — THE π STRUCTURAL SCALE AND THE DERIVATIVE-TOWER TETRAD")
+    print("Only π is assumed as a genuine structural scale; ℝ is the assumed")
+    print("continuum. Everything else emerges from ∂EPI/∂t = νf · ΔNFR(t).")
+    print()
 
-    demo_phi_convergence()
-    demo_gamma_accumulation()
-    demo_pi_curvature()
-    demo_e_propagation()
-    demo_tetrahedral_edges()
-    demo_cross_topology_verification()
+    demo_pi_phase_sector()
+    demo_derivative_tower_tetrad()
+    demo_spectral_coherence_length()
+    demo_cross_topology_confinement()
 
     print("\n" + "=" * 65)
-    print("  SUMMARY")
+    print("CONCLUSION: π is the one genuine structural scale (the phase-wrap")
+    print("bound of the whole phase sector). The tetrad is the four orders of")
+    print("the derivative tower; ξ_C is set by the spectral gap (ξ_C ∝ 1/√λ₂).")
+    print("No φ, γ, or e is assumed or used — the structure emerges.")
     print("=" * 65)
-    print(
-        f"""
-  The four constants (phi, gamma, pi, e) are NOT an arbitrary choice.
-  They are the UNIQUE mathematical constants that:
-
-    phi   = fixed point of x = 1+1/x   -> proportion / self-similarity
-    gamma = lim(H_n - ln n)            -> logarithmic accumulation
-    pi    = semicircle periodicity       -> angular curvature confinement
-    e     = exponential base             -> scale-invariant decay
-
-  Each governs one irreducible class of structural dynamics:
-    phi <-> Phi_s  (0th order: global aggregation)
-    gamma <-> |grad_phi| (1st order: local derivative)
-    pi <-> K_phi  (2nd order: curvature / Laplacian)
-    e <-> xi_C   (non-local: correlation range)
-
-  The physics-tier constants in canonical.py (tetrad, grammar,
-  operators) are algebraic combinations of these four. The
-  engine-configuration tier (cache, FFT, optimization) is
-  calibrated to operational targets, not derived; the per-node
-  Phi_s threshold (0.7711) is empirically validated.
-"""
-    )
 
 
 if __name__ == "__main__":

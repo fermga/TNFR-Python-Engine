@@ -85,7 +85,7 @@ The evolution is restricted to operator sequences satisfying U1–U6:
 
 - **U2** (Convergence): $\int_0^T |\nu_f \cdot \Delta\text{NFR}| \, dt < \infty$
 - **U3** (Coupling): $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$ for interactions
-- **U6** (Confinement): $|\Phi_s| < \varphi \approx 1.618$
+- **U6** (Confinement): $|\Phi_s| < \pi/2 \approx 1.571$
 
 These constraints define the **grammar manifold** $\mathcal{M}_G$ — the space
 of all allowed evolutions.
@@ -214,8 +214,8 @@ with network size.
 Each canonical operator modifies $\Delta\text{NFR}_i$ by a bounded multiplicative
 factor. In the implementation:
 
-- **Stabilizers** (IL): $\Delta\text{NFR}_i \mapsto \rho_{\text{IL}} \cdot \Delta\text{NFR}_i$, where $\rho_{\text{IL}} = \varphi/(\varphi+\gamma) \approx 0.737 < 1$.
-- **Destabilizers** (OZ): $\Delta\text{NFR}_i \mapsto \rho_{\text{OZ}} \cdot \Delta\text{NFR}_i$, where $\rho_{\text{OZ}} = \varphi/\gamma \approx 2.803 > 1$.
+- **Stabilizers** (IL): $\Delta\text{NFR}_i \mapsto \rho_{\text{IL}} \cdot \Delta\text{NFR}_i$, where $\rho_{\text{IL}} = 0.75 < 1$ (operational stabiliser gain; the contract fixes the sign $\rho < 1$, not the magnitude).
+- **Destabilizers** (OZ): $\Delta\text{NFR}_i \mapsto \rho_{\text{OZ}} \cdot \Delta\text{NFR}_i$, where $\rho_{\text{OZ}} = 2.0 > 1$ (operational destabiliser gain; the contract fixes the sign $\rho > 1$).
 
 For a sequence of $n_+$ destabilizers and $n_-$ stabilizers applied over
 interval $[0, T]$, the cumulative gain is:
@@ -225,7 +225,7 @@ $$\prod_{k=1}^{n_+ + n_-} \rho_k = \rho_{\text{OZ}}^{n_+} \cdot \rho_{\text{IL}}
 U2 requires $n_- \geq 1$ whenever $n_+ \geq 1$. In the minimal case
 $n_- = n_+$, the net factor per destabilizer–stabilizer pair is:
 
-$$\rho_{\text{OZ}} \cdot \rho_{\text{IL}} = \frac{\varphi}{\gamma} \cdot \frac{\varphi}{\varphi + \gamma} = \frac{\varphi^2}{\gamma(\varphi + \gamma)} \approx 2.066$$
+$$\rho_{\text{OZ}} \cdot \rho_{\text{IL}} = 2.0 \cdot 0.75 = 1.5$$
 
 This product exceeds 1, so a single OZ–IL pair is expansive. However, in
 practice stabilizers often appear in greater number than destabilizers
@@ -234,7 +234,7 @@ that each pair contracts, but that the *integral* converges:
 
 $$\int_0^T |\nu_f \cdot \Delta\text{NFR}(\tau)| \, d\tau < \infty \quad \text{(U2 convergence)}$$
 
-This holds because U6 independently confines $|\Phi_s| < \varphi$, which
+This holds because U6 independently confines $|\Phi_s| < \pi/2$, which
 bounds the aggregate $\sum_j |\Delta\text{NFR}_j|$ (since $\Phi_s$ is a
 weighted sum of $\Delta\text{NFR}_j$ values). Therefore:
 
@@ -346,7 +346,7 @@ When a grammar rule is violated, the corresponding bound fails:
 |---|---|---|
 | U2 (no stabilizer after OZ) | $M_{\text{U2}} \to \infty$, $R_{\text{pot}}$ diverges | $\|\mathcal{S}_{\text{pot}}\| > \Phi_s^{\text{thresh}}$ |
 | U3 (coupling without phase check) | $\Delta\phi \to \pi$, $R_{\text{geo}} \sim \mathcal{O}(1)$ | $\|\mathcal{S}_{\text{geo}}\| > K_\phi^{\text{thresh}}$ |
-| U6 ($\Phi_s$ escapes confinement) | $\Phi_s > \varphi$, charge accumulates | $|\Delta Q| > Q^{\text{thresh}}$ |
+| U6 ($\Phi_s$ escapes confinement) | $\Phi_s > \pi/2$, charge accumulates | $|\Delta Q| > Q^{\text{thresh}}$ |
 
 Thus $\mathcal{S} \neq 0$ is a **computable diagnostic** that identifies
 which grammar rule was broken. $\square$
@@ -370,7 +370,7 @@ $$\frac{\partial \Phi_s}{\partial t} + \nabla \cdot J_{\Delta\text{NFR}} = \math
 - **Physics**: Global ΔNFR landscape evolves via operator-driven redistribution
 - **Grammar coupling**: U2 (convergence) bounds $\mathcal{S}_{\text{pot}}$;
   U6 (confinement) prevents escape
-- **Monitoring**: Track via $|\Delta\Phi_s| < \varphi$ per U6
+- **Monitoring**: Track via $|\Delta\Phi_s| < \pi/2$ per U6
 
 ### 5.2 Geometric Sector
 
@@ -564,19 +564,19 @@ from its glyph factor.  Operators are classified into four energy classes:
 
 | Operator | Glyph | Class | Rate | Glyph Factor | Derivation |
 |----------|-------|-------|------|--------------|-----------|
-| Coherence | IL | Stabiliser | $\rho = 0.457$ | IL_DNFR = 0.737 | $\rho = 1 - f^2$; IL multiplies $\Delta$NFR by $f$ → energy component scales as $f^2$ |
+| Coherence | IL | Stabiliser | $\rho = 0.438$ | IL_DNFR = 0.75 | $\rho = 1 - f^2$; IL multiplies $\Delta$NFR by $f$ → energy component scales as $f^2$ |
 | Reception | EN | Stabiliser | $\rho = 0.183$ | EN_MIX = 0.2413 | Jensen inequality on convex combination: $E_{\text{mix}} \leq (1-m)\,E$ |
 | Coupling | UM | Stabiliser | $\rho = 0.150$ | UM_DNFR = 0.15 | Phase-synchronisation reduces $\Delta$NFR by factor $(1-f)$ |
 | Self-organisation | THOL | Stabiliser | $\rho = 0.100$ | THOL_ACCEL = 0.10 | Autopoietic redistribution: global form preserved, local energy absorbed |
 | Transition | NAV | Stabiliser | $\rho = 0.499$ | NAV_ETA = 0.5 | Regime shift mixes EPI with target at ratio $\eta$ → contraction by $1 - \eta^2$ |
-| Dissonance | OZ | Destabiliser | $\kappa = 6.857$ | OZ_DNFR = 2.803 | Multiplicative amplification: $\Delta E \leq (f^2 - 1)\,E$ |
-| Expansion | VAL | Destabiliser | $\kappa = 0.139$ | VAL_SCALE = 1.0673 | Scaling $f > 1$: $\Delta E \leq (f^2 - 1)\,E$ |
-| Emission | AL | Destabiliser | $\kappa = 0.014/\text{node}$ | AL_BOOST = 0.1171 | Additive: $\Delta E \leq f^2\,N$ |
+| Dissonance | OZ | Destabiliser | $\kappa = 3.0$ | OZ_DNFR = 2.0 | Multiplicative amplification: $\Delta E \leq (f^2 - 1)\,E$ |
+| Expansion | VAL | Destabiliser | $\kappa = 0.103$ | VAL_SCALE = 1.05 | Scaling $f > 1$: $\Delta E \leq (f^2 - 1)\,E$ |
+| Emission | AL | Destabiliser | $\kappa = 0.010/\text{node}$ | AL_BOOST = 0.10 | Additive: $\Delta E \leq f^2\,N$ |
 | Resonance | RA | Destabiliser | $\kappa = 0.103$ | RA_VF = 0.05 | Amplification $(1+f)^2 - 1$ on frequency component |
-| Silence | SHA | Neutral | $\varepsilon = 0.187$ | SHA_VF = 0.9015 | Near-isometric: $|\Delta E| \leq (1 - f^2)\,N$ |
+| Silence | SHA | Neutral | $\varepsilon = 0.190$ | SHA_VF = 0.9 | Near-isometric: $|\Delta E| \leq (1 - f^2)\,N$ |
 | Mutation | ZHIR | Neutral | $\varepsilon = 0.056/\text{node}$ | ZHIR_SHIFT = 0.3 | Phase shift: $|\Delta E| \leq (\Delta\theta)^2\,N$ where $\Delta\theta = f \cdot \pi/N$ |
 | Recursivity | REMESH | Neutral | $\varepsilon = 0$ | REMESH_ALPHA = 0.5 | Advisory operator: no field modification → exact isometry |
-| Contraction | NUL | Mixed | $\kappa = 6.854$ | NUL_DENS = 2.8025 | EPI shrinks ($f_s = 0.9015$) but $\Delta$NFR densifies ($f_d = 2.8025$) |
+| Contraction | NUL | Mixed | $\kappa = 0.234$ | NUL_DENS = 1.111 | EPI shrinks ($f_s = 0.9$) but $\Delta$NFR densifies ($f_d = 1.111$) |
 
 **U2 Grammar Consequence (Sequence Contractiveness)**
 
@@ -595,7 +595,7 @@ The cumulative product $\Pi = \prod_{i=1}^{n} m_i$ satisfies:
 - $\Pi \geq 1$ → **non-contractive** (U2 may be violated)
 
 *Example*: OZ followed by 4×IL:
-$(1 + 6.857) \times (1 - 0.457)^4 = 7.857 \times 0.087 \approx 0.68 < 1$ ✓
+$(1 + 3.0) \times (1 - 0.438)^4 = 4.0 \times 0.0997 \approx 0.40 < 1$ ✓
 
 ### 8.5 Spectral Gap Characterisation
 

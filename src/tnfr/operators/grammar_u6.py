@@ -1,6 +1,6 @@
 """TNFR Grammar: U6 Structural Potential Validation
 
-U6: STRUCTURAL POTENTIAL CONFINEMENT - Validate Δ Φ_s < φ (drift threshold).
+U6: STRUCTURAL POTENTIAL CONFINEMENT - Validate Δ Φ_s < π/2 (drift threshold).
 
 Terminology (TNFR semantics):
 - "node" == resonant locus (structural coherence site); kept for NetworkX compatibility
@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..constants.canonical import PHI  # φ ≈ 1.618 (golden ratio)
+from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..mathematics.unified_numerical import np
 from .grammar_types import StructuralPotentialConfinementError
 
@@ -24,7 +24,7 @@ def validate_structural_potential_confinement(
     G: Any,
     phi_s_before: dict[Any, float],
     phi_s_after: dict[Any, float],
-    threshold: float = PHI,  # φ (golden ratio) - canonical escape threshold
+    threshold: float = U6_STRUCTURAL_POTENTIAL_LIMIT,  # Δ Φ_s < π/2 (half phase-wrap)
     strict: bool = True,
 ) -> tuple[bool, float, str]:
     """Validate U6: STRUCTURAL POTENTIAL CONFINEMENT.
@@ -46,7 +46,7 @@ def validate_structural_potential_confinement(
     phi_s_after : dict[NodeId, float]
         Structural potential after sequence application
     threshold : float, default=1.618
-        Canonical threshold for Δ Φ_s (drift). Above φ (golden ratio), fragmentation risk.
+        Canonical threshold for Δ Φ_s (drift). Above π/2 (the U6 confinement bound), fragmentation risk.
         Rigorously derived from canonical TNFR constants (φ escape threshold).
     strict : bool, default=True
         If True, raises StructuralPotentialConfinementError on violation.
@@ -79,8 +79,8 @@ def validate_structural_potential_confinement(
     Safety Criteria (Classical)
     --------------------------
     This function validates **drift** Δ Φ_s = mean(|Φ_s_after - Φ_s_before|):
-    - Δ Φ_s < φ ≈ 1.618: Confined (U6 satisfied)
-    - Δ Φ_s ≥ φ ≈ 1.618: Escape risk (U6 violated)
+    - Δ Φ_s < π/2: Confined (U6 satisfied)
+    - Δ Φ_s ≥ π/2: Escape risk (U6 violated)
     - Valid sequences: Δ Φ_s ≈ 0.6 (37% of φ threshold)
     - Violations: Δ Φ_s ≈ 3.9 (240% of φ threshold)
 

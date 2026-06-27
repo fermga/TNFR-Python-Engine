@@ -189,7 +189,7 @@ Each grammar rule protects a specific conservation law:
 | **U3** (Resonant Coupling) | Gauge connection | $A_{ij}$ regularity (smooth connection) |
 | **U4** (Bifurcation) | Topological charge | Quantisation of $\mathcal{Q}$ |
 | **U5** (Multi-Scale) | Hierarchical action | Action factorisation across scales |
-| **U6** (Confinement) | Potential energy | $V < \frac{1}{2}\varphi^2 \cdot N$ (boundedness) |
+| **U6** (Confinement) | Potential energy | $V < \frac{1}{2}(\pi/2)^2 \cdot N$ (boundedness) |
 
 ### 5.5 Symplectic Structure
 

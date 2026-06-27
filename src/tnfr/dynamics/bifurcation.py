@@ -18,12 +18,8 @@ if TYPE_CHECKING:
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..constants.canonical import (
-    GAMMA,
     NUL_EPI_THRESHOLD_CANONICAL,
-    PHI,
-    PI,
     ZHIR_VF_THRESHOLD_CANONICAL,
-    E,
 )
 from ..types import Glyph
 
@@ -97,14 +93,14 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     # ZHIR (Mutation) viable if sufficient νf for controlled transformation
     zhir_threshold = float(
         G.graph.get("ZHIR_BIFURCATION_VF_THRESHOLD", ZHIR_VF_THRESHOLD_CANONICAL)
-    )  # φ/(e+γ) ≈ 0.489 (notational)
+    )  # ≈ 0.489 (operational)
     if vf > zhir_threshold:
         paths.append(Glyph.ZHIR)
 
     # NUL (Contraction) viable if EPI low enough for safe collapse
     nul_threshold = float(
         G.graph.get("NUL_BIFURCATION_EPI_THRESHOLD", NUL_EPI_THRESHOLD_CANONICAL)
-    )  # π/(π+e) ≈ 0.536 (notational)
+    )  # ≈ 0.536 (operational)
     if epi < nul_threshold:
         paths.append(Glyph.NUL)
 
@@ -124,7 +120,7 @@ def compute_bifurcation_score(
     dnfr: float,
     vf: float,
     epi: float,
-    tau: float = NUL_EPI_THRESHOLD_CANONICAL,  # π/(π+e) ≈ 0.536 (notational)
+    tau: float = NUL_EPI_THRESHOLD_CANONICAL,  # ≈ 0.536 (operational)
 ) -> float:
     """Compute quantitative bifurcation potential [0,1].
 
@@ -148,10 +144,10 @@ def compute_bifurcation_score(
     epi : float
         Primary Information Structure. Provides structural substrate for
         bifurcation. Higher EPI indicates more material to reorganize.
-    tau : float, default π/(π+e) ≈ 0.536
+    tau : float, default ≈ 0.536
         Bifurcation acceleration threshold. When |d2epi| > tau, bifurcation
-        becomes active. Default π/(π+e) ≈ 0.536 is a notational TNFR threshold
-        (audit 2026: a (φ,γ,π,e) combination, not derived).
+        becomes active. Default ≈ 0.536 is an operational TNFR threshold
+        (audit 2026: not derived).
 
     Returns
     -------
@@ -165,25 +161,25 @@ def compute_bifurcation_score(
     -----
     The bifurcation score is a weighted combination of four factors:
 
-    1. **Acceleration factor** (40%): |∂²EPI/∂t²| / τ
+    1. **Acceleration factor** (46%): |∂²EPI/∂t²| / τ
        Primary indicator. Measures how close the system is to or beyond
        the bifurcation threshold.
 
-    2. **Instability factor** (~26.3%): |ΔNFR|
+    2. **Instability factor** (26%): |ΔNFR|
        Secondary indicator. Measures reorganization pressure that drives
-       bifurcation exploration. Weight γ/(φ+γ) via golden-Euler balance.
+       bifurcation exploration. Weight = 0.26 (operational).
 
-    3. **Capacity factor** (~13.9%): νf / e
+    3. **Capacity factor** (14%): νf / 2.0
        Measures structural reorganization capacity. Higher νf enables faster
-       response to bifurcation opportunities. Weight γ/(π+1) via transcendental constraint.
+       response to bifurcation opportunities. Weight = 0.14 (operational).
 
-    4. **Substrate factor** (~15.1%): EPI / (4/(e+φ))
+    4. **Substrate factor** (14%): EPI / 0.9 (operational substrate scale)
        Measures available structural material. Higher EPI provides more
        degrees of freedom for bifurcation paths. Weight computed as remainder.
 
-    Formula (notational weights):
+    Formula (operational weights):
         score = w_accel * accel + w_instab * instability + w_capac * capacity + w_substr * substrate
-        where weights are (φ, γ, π, e) combinations (audit 2026: notational, not derived)
+        where weights are operational values (audit 2026: not derived)
 
     All factors are normalized to [0, 1] and clipped before combination.
 
@@ -225,27 +221,23 @@ def compute_bifurcation_score(
     instability_factor = min(abs(dnfr), 1.0)
 
     # 3. Capacity factor (reorganization capability)
-    # Normalize by e (natural exponential base for structural frequency scaling)
-    capacity_factor = min(vf / E, 1.0) if vf >= 0 else 0.0
+    # Normalize νf by a plain capacity scale (operational tuning, not TNFR physics)
+    capacity_factor = min(vf / 2.0, 1.0) if vf >= 0 else 0.0
 
     # 4. Substrate factor (structural material available)
-    # Normalize by 4/(e+φ) ≈ 0.798 (notational EPI normalization)
-    substrate_factor = min(epi / (4.0 / (E + PHI)), 1.0) if epi >= 0 else 0.0
+    # Normalize EPI by a plain substrate scale (operational tuning)
+    substrate_factor = min(epi / 0.9, 1.0) if epi >= 0 else 0.0
 
-    # Weighted combination (notational weights; percentages sum to 100%)
-    w_accel = 2.0 / (E + PHI)  # ≈ 0.461 - acceleration weight (notational)
-    w_instab = GAMMA / (
-        PHI + GAMMA
-    )  # ≈ 0.263 - instability weight via golden-Euler balance
-    w_capac = GAMMA / (
-        PI + 1.0
-    )  # ≈ 0.139 - capacity weight via transcendental constraint
-    w_substr = 1.0 - (w_accel + w_instab + w_capac)  # ≈ 0.151 - remainder for substrate
+    # Weighted combination (operational weights; sum to 1.0)
+    w_accel = 0.46  # acceleration weight (operational)
+    w_instab = 0.26  # instability weight (operational)
+    w_capac = 0.14  # capacity weight (operational)
+    w_substr = 1.0 - (w_accel + w_instab + w_capac)  # 0.14 remainder for substrate
 
     score = (
-        w_accel * accel_factor  # notational primary
-        + w_instab * instability_factor  # golden-Euler secondary
-        + w_capac * capacity_factor  # transcendental capability
+        w_accel * accel_factor  # operational primary
+        + w_instab * instability_factor  # operational secondary
+        + w_capac * capacity_factor  # operational capacity
         + w_substr * substrate_factor  # remainder material
     )
 

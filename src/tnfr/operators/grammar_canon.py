@@ -318,7 +318,7 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
         rule_id="U6",
         name="Structural Potential Confinement",
         physics="The emergent field Φ_s = Σ ΔNFR_j / d² stays confined: "
-        "ΔΦ_s < φ ≈ 1.618 (golden-ratio harmonic confinement).",
+        "ΔΦ_s < π/2 (structural-potential confinement).",
         operator_sets=(),  # telemetry-based, not a sequence constraint
         invariant=5,
         pdf_reference="§2.3 'Validación estructural' — coherence thresholds",

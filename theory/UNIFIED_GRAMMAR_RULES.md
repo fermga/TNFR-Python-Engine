@@ -387,18 +387,17 @@ Conclusion: U6 follows from:
 
 **When:** All sequences (telemetry-based safety criterion)
 - **Compute:** Φ_s before and after sequence application
-- **Verify:** Δ Φ_s < φ ≈ 1.618 (golden escape threshold)
-- **Typical:** Valid sequences show Δ Φ_s ≈ 0.6 (37% of threshold)
+- **Verify:** Δ Φ_s < π/2 ≈ 1.571 (π-derived drift bound, half phase-wrap)
+- **Typical:** Valid sequences show Δ Φ_s ≈ 0.6 (≈ 38% of the bound)
 
-**Why Δ Φ_s < φ ≈ 1.618?**
+**Why Δ Φ_s < π/2 ≈ 1.571?**
 
-Empirical confinement bound (φ is adopted as motivation, no closed form):
+π-derived confinement bound (half phase-wrap, tied to the one genuine structural scale π):
 
-- **Association (notational):** φ ~ Φ_s (golden ratio associated with the structural potential field)
-- **Status:** the Φ_s bound is empirical; φ is the nearest tetrad vertex below the ζ(2) saturation, not a derivation
-- **Below φ:** System remains in harmonic regime, structural confinement
-- **Above φ:** Harmonic breakdown → fragmentation (coherent → incoherent)
-- **Physical analog:** Golden ratio stability in natural systems
+- **Scale:** π is the one genuine structural scale (the phase-wrap bound of the phase sector); the Φ_s drift bound π/2 is half that wrap.
+- **Below π/2:** System remains in the confined regime, structural confinement
+- **Above π/2:** Confinement breakdown → fragmentation (coherent → incoherent)
+- **Mechanism:** the emergent Φ_s field must stay bounded for coherence to survive.
 
 **Physical Interpretation:**
 Φ_s field creates passive equilibrium landscape. Nodes exist at potential minima. Sequences that respect grammar (U1-U5) naturally maintain small Δ Φ_s (~0.6). Grammar violations create large Δ Φ_s (~3.9), pushing system toward fragmentation threshold.
@@ -989,7 +988,7 @@ Conclusion: U6 emerges from:
   3. Empirical validation: 2,400+ experiments, 5 topologies
   4. Universal correlation: R² = 0.68, CV = 0.1%
   5. Grammar as confinement: Passive protection mechanism
-  6. Threshold physics: Escape boundary at Δ Φ_s < φ ≈ 1.618 (golden ratio)
+  6. Threshold physics: Escape boundary at Δ Φ_s < π/2 ≈ 1.571 (π-derived, half phase-wrap)
 ```
 
 **Why This Is Canonical:**

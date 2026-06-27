@@ -28,14 +28,14 @@ Consequently each operator's Lyapunov role **is its canonical grammar U2 role**,
 
 | Operator | Pressure factor | Contraction rate $\rho$ |
 |----------|-----------------|-------------------------|
-| **IL** (Coherence) | $f = \varphi/(\varphi + \gamma) \approx 0.737$ | $\rho = 1 - f \approx 0.263$ |
+| **IL** (Coherence) | $f = 0.75$ (operational) | $\rho = 1 - f = 0.25$ |
 | **THOL** (Self-organization) | accel $= 0.10$ | $\rho \approx 0.100$ |
 
 #### Destabilisers ($\Delta E \le \kappa \cdot E$ — raise $|\Delta\mathrm{NFR}|$)
 
 | Operator | Pressure factor | Expansion rate $\kappa$ |
 |----------|-----------------|-------------------------|
-| **OZ** (Dissonance) | $f = \varphi/\gamma \approx 2.803$ | $\kappa = f - 1 \approx 1.803$ |
+| **OZ** (Dissonance) | $f = 2.0$ (operational) | $\kappa = f - 1 = 1.0$ |
 | **ZHIR** (Mutation) | $\theta$-shift $= 0.30$ | $\kappa \approx 0.300$ |
 | **VAL** (Expansion) | $\nu_f$-scale $\approx 1.068$ | $\kappa \approx 0.068$ |
 
@@ -120,9 +120,9 @@ The exponent $\beta$ is an **observable to be measured** (`fit_critical_exponent
 
 | Constant | Value | Status |
 |----------|-------|--------|
-| Reference scale $\gamma_c$ | $\gamma/\pi \approx 0.1837$ | Calibrated TIER-2 (not a derived universal exponent) |
-| Noise floor | $\gamma_c^2 \approx 0.0337$ | Calibrated detection threshold |
-| Chirality threshold | $\gamma/(\pi + \gamma) \approx 0.155$ | Calibrated TIER-2 reference |
+| Reference scale | $\approx \pi/16 \approx 0.196$ | Heuristic early-warning (operational, not a derived universal exponent) |
+| Noise floor | $\approx 0.034$ | Calibrated detection threshold (operational) |
+| Chirality threshold | $\approx 0.155$ | Calibrated TIER-2 reference (operational) |
 
 ### 2.5 Susceptibility
 
@@ -219,7 +219,7 @@ Four canonical collapse reasons, checked in priority order:
 | Stabilization $\Delta\mathrm{NFR}$ | $1.0$ | Operational |
 | Stabilization coherence | $0.8$ | Operational |
 | Propagation coupling | $0.7$ | Operational |
-| Mutation $\Delta\mathrm{NFR}$ | $\varphi \times \pi \approx 5.083$ | Canonical |
+| Mutation $\Delta\mathrm{NFR}$ | $5.0$ | Operational (ZHIR threshold, free parameter) |
 
 **Implementation**: `src/tnfr/operators/lifecycle.py` — `LifecycleState`, `CollapseReason`, `get_lifecycle_state()`, `check_collapse_conditions()`.
 

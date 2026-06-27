@@ -71,23 +71,23 @@ where f(x) is a local structural observable (e.g., coherence). The exponential f
 
 ## 4. The Field Scales
 
-Each field has a characteristic scale, read directly from the graph and the nodal equation. Only **π** is a genuine structural constant (it bounds the phase sector); the Φ_s bound is empirical, ξ_C is set by the spectral gap, and the γ/π level for |∇φ| is a heuristic early-warning, not a derived bound. Implementation: `src/tnfr/constants/canonical.py`.
+Each field has a characteristic scale, read directly from the graph and the nodal equation. Only **π** is a genuine structural constant (it bounds the phase sector); the Φ_s bound is π-derived (per-node π/4, drift π/2), ξ_C is set by the spectral gap, and the ≈ 0.18 level for |∇φ| is a heuristic early-warning, not a derived bound. Implementation: `src/tnfr/constants/canonical.py`.
 
-**Scope caveat (added 2026-06)**: that module also hosts a tier of *engine-configuration* constants (cache sizes, FFT and optimization tuning, performance estimates) that are *written* as combinations of (φ, γ, π, e) for notational consistency but were calibrated to operational targets rather than derived from the nodal equation. Those carry no nodal-physics meaning and must not be read as first-principles results. The "zero empirical fitting" characterization applies to the physics tier only; the per-node Φ_s threshold (0.7711, §4.1) is the one physics-tier constant that is empirically validated without a closed-form derivation.
+**Scope caveat**: that module also hosts a tier of *engine-configuration* constants (cache sizes, FFT and optimization tuning, performance estimates) calibrated to operational targets rather than derived from the nodal equation. Those carry no nodal-physics meaning and must not be read as first-principles results. Only π is a genuine structural scale; every other parameter is derived from the nodal dynamics / spectral gap or is a free operational parameter.
 
-### 4.1 Φ_s — empirical confinement
+### 4.1 Φ_s — π-derived confinement
 
-**Derivation chain** (spectral saturation of the inverse-square kernel; see status note for what is derived vs. adopted):
+**Bound** (tied to the one structural scale π; the inverse-square kernel sets the O(1) fluctuation band):
 
 1. Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)² is the inverse-square accumulation kernel (α = 2).
-2. **Drift scale (φ) — Basel saturation.** On a 1D resonant chain, the one-sided accumulation of unit pressure saturates to the Basel value Σ_{d≥1} 1/d² = ζ(2) = π²/6 ≈ 1.6449. This is a genuine closed-form saturation of the kernel itself. The U6 drift-confinement scale φ ≈ 1.6180 sits **1.64% below** this hard saturation. φ is *adopted* (not equated) as the operational threshold on two independent grounds: (a) it is the nearest tetrad vertex to the true ζ(2) saturation; (b) φ is the most-irrational number (Hurwitz's theorem; golden-mean KAM tori are the last to break under resonant perturbation), so a confinement bound placed at φ is the resonance-robustness-optimal *conservative* threshold sitting just inside the ζ(2) divergence point.
-3. **Per-node scale (0.7711) — ζ(4) variance band.** Under signed unit-variance ΔNFR, the per-node fluctuation obeys Var(Φ_s(i)) = Σ_{j≠i} 1/d(i,j)⁴, which on a chain saturates to 2·ζ(4) = π⁴/45 ≈ 2.165 (std ≈ 1.47, median |Φ_s| ≈ 0.99 — confirmed empirically: 1.01 on P₂₀₀/C₂₀₀). The per-node threshold 0.7711 lies inside this O(1) ζ(4)-governed band. Its exact value has **no closed form** in (φ, γ, π, e) — a high-precision search returns only density-artifact matches (best: √2/(2·Catalan) within 0.11%, structurally meaningless). It stands on **empirical validation**.
+2. **Drift bound — π/2 (half phase-wrap).** The confinement bound ΔΦ_s < π/2 ≈ 1.571 ties the drift to the one genuine structural scale, π. It is an O(1) bound, consistent with the kernel's saturation: the one-sided accumulation of unit pressure on a 1D resonant chain saturates to the Basel value Σ_{d≥1} 1/d² = ζ(2) = π²/6 ≈ 1.6449, also O(1).
+3. **Per-node bound — π/4 (quarter phase-wrap).** The per-node bound |Φ_s| < π/4 ≈ 0.785 is likewise π-derived. Empirically the per-node fluctuation sits in an O(1) band: under signed unit-variance ΔNFR, Var(Φ_s(i)) = Σ_{j≠i} 1/d(i,j)⁴ saturates on a chain to 2·ζ(4) = π⁴/45 ≈ 2.165 (std ≈ 1.47, median |Φ_s| ≈ 0.99 — confirmed empirically: 1.01 on P₂₀₀/C₂₀₀).
 
-**Both groundings require α = 2.** At α = φ the chain saturation is ζ(φ) ≈ 2.27 (no match to φ) and the variance is ζ(2φ) ≈ ζ(3.24); only the inverse-square kernel produces the ζ(2)≈φ and ζ(4)-band structure. This pins α = 2 as the canonical exponent (cf. the α = φ inconsistency flagged in §4.3 / `benchmarks/phi_s_confinement_investigation.py`).
+**Both anchors require α = 2.** At α ≠ 2 the chain saturation and variance lose the ζ(2)/ζ(4) structure; only the inverse-square kernel produces the O(1) band. This pins α = 2 as the canonical exponent (cf. `benchmarks/phi_s_confinement_investigation.py`).
 
-**Status of this correspondence (upgraded 2026-06)**: φ ↔ Φ_s was previously the weakest link, justified only by the heuristic fixed-point relation x = 1 + 1/x. That relation is **superseded**: it is not derivable from the inverse-square kernel and is replaced by the two spectral-saturation anchors above (ζ(2) for the drift scale, ζ(4) for the per-node band), which *are* genuine properties of the kernel Σ 1/dᵅ. What remains *adopted rather than derived*: (i) the choice of φ over ζ(2)=π²/6 itself (a 1.64% conservative offset, motivated by the KAM most-irrational argument — labeled motivation, not a closed-form identity since φ ≠ π²/6); (ii) the exact per-node value 0.7711, which has no closed form and stands on empirical validation. The previously stated identity Γ(4/3)/Γ(1/3) ≈ 0.7711 remains **incorrect**: by Γ(z+1) = z·Γ(z), Γ(4/3)/Γ(1/3) = 1/3 ≈ 0.333, **not** 0.7711 (cf. the honest treatment of approximate identities in [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) §4).
+**Status (2026)**: the earlier empirical 0.7711 (per-node) and golden-ratio φ ≈ 1.618 (drift) framing is **superseded** by the π-derived bounds π/4 and π/2, tying the confinement bound to the one genuine structural scale. The earlier x = 1 + 1/x fixed-point and Γ(4/3)/Γ(1/3) rationales were already incorrect (Γ(4/3)/Γ(1/3) = 1/3, not 0.7711) and are dropped.
 
-**Grammar integration**: U6 structural confinement — Δ Φ_s < φ ≈ 1.618 (a conservative bound just inside the ζ(2) = π²/6 saturation of inverse-square accumulation).
+**Grammar integration**: U6 structural confinement — Δ Φ_s < π/2 ≈ 1.571 (half phase-wrap, tied to the one structural scale π).
 
 ### 4.2 |∇φ| — phase-wrap bound
 
@@ -121,9 +121,9 @@ Each field has a characteristic scale, read directly from the graph and the noda
 
 ---
 
-## 5. Notational parameters
+## 5. Operational parameters
 
-Some engine parameters are *written* as algebraic combinations of (φ, γ, π, e) for notational consistency (an anti-magic-number convention). Except for the π phase-wrap bounds and ξ_C ∝ 1/√λ₂, these combinations are heuristic or empirical telemetry values, not derivations from the nodal equation.
+Beyond the one structural scale π, the engine uses operational parameters (operator gains, numerical clamps, dt, coupling rates, telemetry thresholds). Except for the π phase-wrap bounds, the π-derived Φ_s bound, and ξ_C ∝ 1/√λ₂, these are free operational values, not derivations from the nodal equation.
 
 ---
 
@@ -255,44 +255,22 @@ This recurrence reflects a general structural principle: complete characterizati
 
 ---
 
-## 10. Classification of Mathematical Dynamics
+## 10. The one structural scale
 
-The four constants (φ, γ, π, e) are not merely useful numerical values — each governs a distinct and irreducible class of mathematical behaviour:
+Only **π** is a genuine structural scale in TNFR — the phase-wrap bound of the phase sector (both |∇φ| and K_φ are means of wrapped angles, so each is ≤ π; π is the half-period of exp(ix), the angular closure that bounds them). The four tetrad fields are the four orders of the discrete derivative tower (§3), **not** four constants:
 
-| Constant | Class | Algebraic characterization |
-|----------|-------|---------------------------|
-| φ | Self-similar proportion | Fixed point of x = 1 + 1/x (recursive self-reference) |
-| γ | Discrete accumulation | Regularization of Σ 1/k − ∫ 1/x dx (discrete–continuous gap) |
-| π | Circular geometry | Half-period of exp(ix) (angular closure) |
-| e | Exponential dynamics | Eigenfunction of d/dx (rate proportional to state) |
+- **Φ_s** (0th order, global aggregation) — π-derived confinement bound (per-node π/4, drift π/2).
+- **|∇φ|** (1st order, local) — π phase-wrap bound; the ≈ 0.18 onset level is heuristic.
+- **K_φ** (2nd order, local) — π phase-wrap bound; K_φ = L_rw·φ.
+- **ξ_C** (non-local correlation) — set by the spectral gap, ξ_C ∝ 1/√λ₂.
 
-These four classes are **mutually irreducible**: no constant can be expressed as a simple algebraic combination of the other three. Other important mathematical constants (ln 2, √2, Catalan's G, Apéry's ζ(3)) are either algebraic or derived from these four via standard analytic operations.
-
-The TNFR tetrad operationalizes this classification:
-- Φ_s requires proportionality across scales → **φ**
-- |∇φ| requires summation of discrete fluctuations → **γ**
-- K_φ requires angular confinement → **π**
-- ξ_C requires exponential correlation decay → **e**
-
-**Full treatment**: [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) §2–4.
+φ, γ, e are **not** structural scales and no longer appear in the engine; everything other than π is derived from the nodal dynamics / spectral gap or is a free operational parameter. **Full treatment**: [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md).
 
 ---
 
-## 11. Cross-Constant Relations and Approximate Identities
+## 11. Operational parameters and the engine-configuration tier
 
-The six edges and four faces of the mathematical tetrahedron produce operational constants used throughout TNFR. Two approximate numerical relations between the constants merit documentation:
-
-**Relation 1**: e^γ ≈ √π (relative error: 0.49%)
-- Mathematical context: Connected to Mertens's theorem on prime products and the Gaussian integral.
-- Status: Approximate, not an exact identity.
-
-**Relation 2**: π/e + 1/φ ≈ √π (relative error: 0.074%)
-- Mathematical context: Combines geometry (π/e), dynamics, and proportion (1/φ). The quantity √π universally appears in diffusion processes.
-- Status: Approximate, not an exact identity. Error is 20× smaller than Relation 1.
-
-**Important**: These are numerical observations, not theorems. Their significance lies in suggesting structural connections between the four dynamics classes, not in establishing identities. Converting them into rigorous results is part of the TNFR research programme ([MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md)).
-
-The face value φe/(π+e) ≈ 0.7506 is *not* an approximation — it is the algebraically exact coherence threshold implemented as `MIN_BUSINESS_COHERENCE_CANONICAL` in `canonical.py`.
+Beyond the one structural scale π, every numeric parameter in the engine is either derived from the nodal dynamics / spectral gap or is a **free operational parameter**: operator gain magnitudes (the theory fixes each operator's channel and sign via its contract, not its magnitude), numerical clamps, dt, coupling rates, and the engine-configuration tier (cache, FFT, optimization, performance). The operational business-health cut `MIN_BUSINESS_COHERENCE` (≈ 0.75) is one such operational parameter (the canonical strong-coherence gate is the emergent π/(π+1) ≈ 0.7585). The authoritative current values live in [`src/tnfr/constants/canonical.py`](../src/tnfr/constants/canonical.py); only π is a genuine structural scale.
 
 ---
 
@@ -317,12 +295,11 @@ On the specific prime-ladder graph $G_{P14}$ used in the TNFR-Riemann program, w
 | Claim | Verification method | Status |
 |-------|---------------------|--------|
 | Exactly four independent channels | Discrete differential geometry on graphs | Proved (§3) |
-| Physics-tier constants derive from first principles | Tetrad/grammar/operator constants from (φ, γ, π, e); engine-config tier is calibrated, not derived (§4 scope caveat) | Verified (physics tier) |
+| Only π is a genuine structural scale | π phase-wrap (\|∇φ\|, K_φ); ξ_C ∝ 1/√λ₂; π-derived Φ_s bound; other params operational | Verified |
 | Irreducibility (no field removable) | Blind-spot construction for each removal | Verified across 5 topologies |
 | Variational structure well-posed | Lagrangian/Hamiltonian with conjugate pairs | Proved (§7) |
 | Conservation from grammar symmetry | Noether charge drift < 0.03% | 62 tests passing |
 | Lyapunov stability dE/dt ≤ 0 | Energy functional under grammar-compliant evolution | Validated |
-| Four dynamics classes mutually irreducible | Algebraic independence argument | Proved (§10) |
 
 ---
 
@@ -330,11 +307,11 @@ On the specific prime-ladder graph $G_{P14}$ used in the TNFR-Riemann program, w
 
 - [AGENTS.md](../AGENTS.md) — Primary repository reference (minimality summary)
 - [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) — the structural-field tetrad (§4)
-- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — Deep analysis of the four constants
+- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad and the one structural scale (π)
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 grammar derivations
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Noether-like conservation laws
 - [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) — Lagrangian/Hamiltonian formulation
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions
-- `src/tnfr/constants/canonical.py` — Canonical constants (two tiers: physics-derived + engine-config; see §4)
+- `src/tnfr/constants/canonical.py` — Canonical constants (only π is a genuine structural scale; the rest are derived or operational)
 - `src/tnfr/physics/fields.py` — Tetrad computation implementation
 - `src/tnfr/physics/conservation.py` — Conservation theorem implementation

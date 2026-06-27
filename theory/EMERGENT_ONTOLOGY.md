@@ -263,34 +263,30 @@ The **spectral dimension** `d_s` from the heat-trace return probability `p(t)=Z(
 `3.36` (3D torus) — toward 1/2/3 with finite-size bias (ex.134). Dimension is *measured from the
 dynamics*, not declared.
 
-### 3.3 The tetrad — the minimal-complete structural basis — **DERIVED (basis); MIXED (constants)**
+### 3.3 The tetrad — the minimal-complete structural basis — **DERIVED**
 
 Four structural fields `(Φ_s, |∇φ|, K_φ, ξ_C)` form the minimal and complete basis (the discrete
 derivative tower; [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md)) — **minimality is
-DERIVED**. The repository further claims a **Universal Tetrahedral Correspondence** to four constants
-`(φ, γ, π, e)`; a deep audit of the *threshold* claims finds these are **not four equal universal
-constants** but two different kinds of bound:
+DERIVED**. Only **π** is a genuine structural scale; the field bounds are of two different kinds:
 
 - **Kinematic (geometric) — exact.** Both `|∇φ|` and `K_φ` are **wrapped angles**
   (`|∇φ| = mean|wrap Δφ| ∈ [0,π]`, `K_φ = wrap(φ − circmean) ∈ (−π,π]`), so `|∇φ| ≤ π` and
-  `|K_φ| ≤ π` hold for *any* configuration, parameter-independently. The `π ↔ K_φ` threshold
-  `|K_φ| < 0.9π ≈ 2.83` sits **at this wrap bound** — a genuine **geometric** constant (verified:
+  `|K_φ| ≤ π` hold for *any* configuration, parameter-independently. The K_φ threshold
+  `|K_φ| < 0.9π ≈ 2.83` sits **at this wrap bound** — the genuine **geometric** scale π (verified:
   arbitrary configs respect it).
-- **Dynamical / empirical — not constants.** The `γ ↔ |∇φ|` threshold `|∇φ| < γ/π ≈ 0.1837` sits
-  **far below** the wrap bound: it is a claimed *sync-transition* value, and a fair test finds
-  `|∇φ|` at the onset is **≈ 0.29 and varies with the disorder `σ`** — **not** the constant `γ/π`.
-  The `φ ↔ Φ_s` bound (per-node `|Φ_s| < 0.7711`) is **empirical** ("no closed form", AGENTS.md); and
-  `e ↔ ξ_C` is near-**tautological** (any exponential decay has base `e`; the real relation is
-  `ξ_C ∝ 1/√λ₂` — the correlation length is set by the **spectral gap**, verified).
+- **The other bounds are not structural constants.** The `|∇φ|` early-warning level (`≈ 0.18`) sits
+  **far below** the wrap bound: it is a heuristic, and a fair test finds `|∇φ|` at the sync onset is
+  **≈ 0.29 and varies with the disorder `σ`** — not a fixed constant. The `Φ_s` bound is
+  **π-derived** (per-node `π/4 ≈ 0.785`, drift `π/2 ≈ 1.571` — quarter / half phase-wrap); and the
+  coherence length is set by the **spectral gap** (`ξ_C ∝ 1/√λ₂`, verified).
 
-> **Honest boundary.** Only the **kinematic** `π ↔ K_φ` bound is an exact universal constant (phase
-> wrapping). The other three correspondences are an *organizing / numerological overlay*: a
-> dynamical transition value (`γ`), an empirical bound (`φ`), and a tautology (`e`). The tetrad as a
-> **minimal basis** is DERIVED; the **four-constants** claim is **not** — tested fairly it does not
-> deliver four exact thresholds. (The `γ/π` claim in [canonical.py](../src/tnfr/physics/canonical.py)
-> and AGENTS.md is now caveated to match.)
+> **Honest boundary.** Only **π** is a genuine structural scale (the phase-wrap bound of the phase
+> sector). The other field scales are not structural constants: the `|∇φ|` onset is a σ-dependent
+> dynamical transition (≈ 0.29), the `Φ_s` bound is π-derived (quarter / half phase-wrap), and the
+> coherence length is set by the spectral gap (`ξ_C ∝ 1/√λ₂`). The tetrad as a **minimal basis** is
+> DERIVED; φ, γ, e are not structural scales and no longer appear in the engine.
 
-**Genuine relationships (verified, replacing the overlay).** A fresh study found the real structure
+**Genuine relationships (verified).** A fresh study found the real structure
 behind the four fields: `K_φ` **is** the central operator applied to phase (`K_φ = L_rw·φ` in the
 smooth limit, **corr = 1.000**) — the phase image of the *one operator* of §2.1; `ξ_C ∝ 1/√λ₂` (the
 correlation length is set by the spectral gap, §6.2); and the real organizing axis is **local**

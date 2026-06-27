@@ -60,7 +60,7 @@ HONEST SCOPE:
   nothing". What it shows is that (a) the integers and their +,x,- are emergent
   (not injected), (b) division has a physical TNFR realisation (mode ratio /
   phase-locking), and (c) the emergent set is field-closed = Q. The real
-  continuum R and the canonical constants (phi, gamma, pi, e) remain the assumed
+  continuum R and pi remain the assumed
   substrate; this is Q, not R. Nothing here touches G4 = RH.
 
 Run:
@@ -374,8 +374,8 @@ def main():
     print("  Brocot mediant -- the resonance-combination of two locked ratios --")
     print("  generates every positive rational. HONEST SCOPE: Frac(Z)=Q is a known")
     print("  theorem; what is shown is that the integers, their +,x,- and division")
-    print("  are all emergent/physical, not injected. R (continuum) and the")
-    print("  constants phi,gamma,pi,e remain assumed substrate; this is Q, not R;")
+    print("  are all emergent/physical, not injected. R (continuum) and pi")
+    print("  remain assumed substrate; this is Q, not R;")
     print("  nothing here touches G4 = RH.")
     return 0 if overall else 1
 

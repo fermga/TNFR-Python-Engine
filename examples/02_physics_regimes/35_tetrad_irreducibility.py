@@ -15,7 +15,7 @@ Protocol (theory/MINIMAL_STRUCTURAL_DEGREES.md ss 6):
 
 Expected blind spots:
   - Without Phi_s:  Global pressure accumulation invisible; all local
-                    fields look safe, but Phi_s exceeds 0.7711
+                    fields look safe, but Phi_s exceeds 0.785 (π/4)
   - Without |grad_phi|:  Local fragmentation masked by high C(t)
                     because C(t) is scaling-invariant; |grad_phi| shows
                     gradient exceeding its heuristic early-warning (gamma/pi)
@@ -45,10 +45,9 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD  # gamma/pi ~ 0.1837
+from tnfr.constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD  # heuristic ≈ 0.1837 (|∇φ| early-warning)
 from tnfr.constants.canonical import K_PHI_CANONICAL_THRESHOLD  # 0.9*pi ~ 2.8274
-from tnfr.constants.canonical import PHI_S_VON_KOCH_THRESHOLD  # 0.7711
-from tnfr.constants.canonical import GAMMA, PHI, PI
+from tnfr.constants.canonical import PHI_S_VON_KOCH_THRESHOLD  # π/4 ≈ 0.785
 from tnfr.physics.fields import (
     compute_phase_curvature,
     compute_phase_gradient,

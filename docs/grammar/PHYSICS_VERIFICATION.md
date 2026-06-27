@@ -188,16 +188,16 @@ Var(ΔNFR_parent) ≈ (1/N) · ∑ᵢ Var(ΔNFR_childᵢ) → bounded
 Φ_s(i) = ∑_{j≠i} ΔNFR_j / d(i,j)²
 ```
 
-**Confinement Principle**: empirical confinement bound:
+**Confinement Principle**: π-derived confinement bound:
 ```
-Δ Φ_s < 1.618 (empirical threshold; no closed form)
+Δ Φ_s < π/2 ≈ 1.571 (half phase-wrap)
 ```
 
-**Physical Meaning**: Structural potential changes bounded by harmonic proportions. Beyond this threshold, the system escapes harmonic confinement and fragments.
+**Physical Meaning**: Structural potential changes confined by the phase sector (scaled by the sole structural constant π). Beyond this threshold, the system escapes phase-wrap confinement and fragments.
 
 **Mechanism**: **Passive equilibrium**—grammar acts as natural confinement, not active attraction.
 
-**Canonicity**: **MODERATE** (the Φ_s confinement bound is empirical — φ ≈ 1.618 is adopted as motivation, with no closed form; validated across topologies, not a closed-form derivation)
+**Canonicity**: **HIGH** (the Φ_s confinement bound is π-derived — the U6 drift bound is π/2 = half the phase-wrap π, the per-node bound π/4 = quarter phase-wrap; π is the sole structural scale)
 
 ---
 

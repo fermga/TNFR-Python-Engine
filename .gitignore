@@ -70,6 +70,7 @@ benchmarks/results/*_5000_*.jsonl
 debug_scratch/
 *.tmp
 *.temp
+tmp/
 
 # Runtime data and caches (generated, not needed in repo)
 cache/

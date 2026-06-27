@@ -105,8 +105,8 @@ problem, RH (G4), and the Yang-Mills mass gap all remain OPEN.  The
 recipe unifies the *obstructions* (three programs, one algebraic shape
 on three tensor factors); it does not remove them.
 
-Substrate assumption: the reals plus (phi, gamma, pi, e) as the TNFR
-canonical constants; external numerical facts enter only as labelled
+Substrate assumption: the reals plus pi as the TNFR
+canonical constant; external numerical facts enter only as labelled
 ground-truth.  No claim here proves or disproves any Millennium Problem.
 """
 

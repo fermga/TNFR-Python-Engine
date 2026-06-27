@@ -29,7 +29,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..constants.canonical import PHI  # noqa: F401 — used by fallback stubs
 from ..mathematics.unified_numerical import np
 
 try:

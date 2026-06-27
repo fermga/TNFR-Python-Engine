@@ -39,7 +39,7 @@ THESIS
    F_n / F_{n+1} -> 1/phi = (sqrt5 - 1)/2 are the convergents of the continued
    fraction [0; 1, 1, 1, ...] (all 1s, the slowest to converge, so phi
    saturates the Hurwitz bound: sqrt5 * F_{n+1}^2 * |F_n/F_{n+1} - 1/phi|
-   -> 1). The limit IS the canonical TNFR golden ratio (phi <-> Phi_s, U6).
+   -> 1). The limit IS the golden ratio (1+sqrt5)/2.
 
 WALL CONNECTION
 ---------------
@@ -59,7 +59,8 @@ HONEST SCOPE (this closes NOTHING)
 2. The dynamics yields a DISCRETE set of rationals plus ONE distinguished
    irrational phi; it does not yield the continuum and proves nothing about
    the zeta zeros. G4 = RH stays OPEN.
-3. R and phi, gamma, pi, e remain the assumed substrate.
+3. R remains the assumed continuum and pi the one assumed structural scale;
+   phi here EMERGES from the dynamics, it is not an assumed constant.
 
 So Camino 15 EXTENDS the emergence-of-numbers line from the spectral side to
 the dynamical side (rationals + phi out of time evolution) and CONNECTS the
@@ -67,7 +68,7 @@ lock/no-lock split to the wall -- but it does not move the wall.
 
 Cross-checks the order parameter against the canonical
 ``tnfr.gamma.kuramoto_R_psi`` and the golden ratio against
-``tnfr.constants.canonical.PHI`` when available.
+the golden-ratio limit (1+√5)/2.
 
 Run:
     python benchmarks/kuramoto_farey_bridge.py
@@ -89,13 +90,9 @@ _SRC = os.path.abspath(os.path.join(_HERE, "..", "src"))
 if _SRC not in sys.path:
     sys.path.insert(0, _SRC)
 
-try:  # golden ratio (phi, a notational tetrad vertex; audit 2026: overlay, not a derived scale)
-    from tnfr.constants.canonical import PHI as _CANON_PHI  # noqa: E402
-
-    _HAVE_CANON_PHI = True
-except Exception:  # pragma: no cover
-    _CANON_PHI = (1.0 + math.sqrt(5.0)) / 2.0
-    _HAVE_CANON_PHI = False
+# golden ratio (1+√5)/2 — the emergent last-to-lock limit, NOT a TNFR structural constant
+_CANON_PHI = (1.0 + 5.0 ** 0.5) / 2.0
+_HAVE_CANON_PHI = False
 
 try:  # canonical Kuramoto order parameter R = |mean exp(i theta)|
     from tnfr.gamma import kuramoto_R_psi  # noqa: E402
@@ -607,7 +604,7 @@ def main() -> int:
     print("  the un-lockable LIMIT of reachable rationals (a soft residue),")
     print("  not the hard orthogonal residue S(T); the dynamics yields")
     print("  discrete rationals plus one phi, not the continuum. G4 = RH")
-    print("  stays OPEN; R and phi, gamma, pi, e remain assumed substrate.")
+    print("  stays OPEN; R and pi remain the assumed substrate; phi EMERGES.")
     return 0 if structural else 1
 
 

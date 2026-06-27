@@ -41,12 +41,12 @@ from typing import Any, Mapping, Sequence
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_VF
 
-# Import canonical constants for Phase 6 magic number elimination
-from ..constants.canonical import (
-    NODAL_OPT_COUPLING_CANONICAL,  # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+# Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
+    NODAL_OPT_COUPLING_CANONICAL,
 )
-from ..constants.canonical import PI  # π ≈ 3.1416 (3.0 → canonical)
-from ..constants.canonical import (  # PHASE 6 EXTENDED: Additional constants for remaining magic numbers
+from ..constants.canonical import PI  # π ≈ 3.1416 (structural scale)
+from ..constants.operational import (
     SELF_OPT_CACHE_CONTRACTION_CANONICAL,
     SELF_OPT_CACHE_EXPANSION_CANONICAL,
     SELF_OPT_CACHE_HIGH_FRACTION_CANONICAL,

@@ -49,7 +49,7 @@ from typing import Any, Callable
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-from ..constants.canonical import PHI  # φ ≈ 1.618
+from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..types import TNFRGraph
 
 # ---------------------------------------------------------------------------
@@ -349,7 +349,7 @@ def _postcond_expansion(
     """VAL: νf (reorganization capacity) must not decrease.
 
     Canonical ground truth (``_make_scale_op``): Expansion scales νf up
-    (νf *= 1.0676), adding reorganization capacity — it acts on the νf
+    (νf *= 1.05), adding reorganization capacity — it acts on the νf
     channel, not on |EPI|.
     """
     vf_before = before.get("vf", 0.0)
@@ -368,7 +368,7 @@ def _postcond_contraction(
     """NUL: νf (reorganization capacity) must not increase.
 
     Canonical ground truth (``_make_scale_op``): Contraction scales νf down
-    (νf *= 0.9015) and densifies ΔNFR — it removes capacity on the νf
+    (νf *= 0.9) and densifies ΔNFR — it removes capacity on the νf
     channel, not |EPI|.
     """
     vf_before = before.get("vf", 0.0)
@@ -558,7 +558,7 @@ class StructuralIntegrityMonitor:
     lyapunov_tolerance : float
         Maximum allowed dE/dt before flagging instability (default 0.1).
     charge_drift_threshold : float
-        Maximum |ΔQ| per step (default φ ≈ 1.618, from U6).
+        Maximum |ΔQ| per step (default π/2, the U6 confinement bound).
     """
 
     def __init__(
@@ -566,7 +566,7 @@ class StructuralIntegrityMonitor:
         mode: MonitorMode = MonitorMode.OBSERVE,
         conservation_threshold: float = 0.5,
         lyapunov_tolerance: float = 0.1,
-        charge_drift_threshold: float = PHI,
+        charge_drift_threshold: float = U6_STRUCTURAL_POTENTIAL_LIMIT,
     ) -> None:
         self.mode = mode
         self.conservation_threshold = conservation_threshold

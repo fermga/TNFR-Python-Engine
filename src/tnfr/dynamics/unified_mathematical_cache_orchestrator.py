@@ -54,9 +54,9 @@ except ImportError:
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
-# Import PHASE 6 FINAL Canonical Constants for magic number elimination
-from ..constants.canonical import (
-    UNIFIED_CACHE_MIN_COHERENCE_CANONICAL,  # φ/(φ+1) ≈ 0.6180 (0.5 → canonical)
+# Operational engine-tuning knob (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
+    UNIFIED_CACHE_MIN_COHERENCE_CANONICAL,
 )
 
 # Import mathematical engines
@@ -431,7 +431,7 @@ class TNFRUnifiedMathematicalCacheOrchestrator:
             mathematical_dependencies=dependencies,
             coherence_requirements={
                 "min_coherence": UNIFIED_CACHE_MIN_COHERENCE_CANONICAL
-            },  # φ/(φ+1) ≈ 0.6180 → canonical (Default requirement)
+            },  # = 0.62 (operational; default requirement)
         )
 
         self._cache_signatures[signature] = entry

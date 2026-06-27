@@ -23,7 +23,7 @@ Operator–Grammar Mapping (informative):
 Telemetry (read-only):
 - |∇φ|: phase gradient; early stress indicator (threshold ≈ 0.38)
 - K_φ: phase curvature (part of unified Ψ); confinement hotspots (|K_φ| ≥ 2.8274)
-- Φ_s: structural potential; mean absolute drift as passive safety (ΔΦ_s < φ ≈ 1.618)
+- Φ_s: structural potential; mean absolute drift as passive safety (ΔΦ_s < π/2)
 
 Contracts (summary):
 - EM-like: [UM → RA → IL]. Preserve identity; phase-verified coupling (U3).
@@ -60,7 +60,7 @@ try:
 except Exception:  # pragma: no cover
     nx = None  # type: ignore
 
-from ..constants.canonical import PHI  # Golden ratio for escape threshold
+from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..constants.canonical import (
     PHYSICS_CURVATURE_HOTSPOT_CANONICAL,
     PHYSICS_GRAD_THRESHOLD_CANONICAL,
@@ -168,7 +168,7 @@ def em_like(
     compute_phi_s : bool, default False
         If True, compute Φ_s before/after and report mean drift.
     grad_threshold : float, default PHYSICS_GRAD_THRESHOLD_CANONICAL
-        Heuristic early-warning threshold for mean |∇φ| (γ/π ≈ 0.1837;
+        Heuristic early-warning threshold for mean |∇φ| (≈ 0.196, π/16;
         calibrated, audit 2026: NOT a derived bound — the kinematic bound is
         |∇φ| ≤ π and the sync-onset is σ-dependent ≈ 0.29).
 
@@ -200,11 +200,11 @@ def em_like(
                 f"{grad_mean_a:.3f} ≥ {grad_threshold}"
             )
         )
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= PHI:
+    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ {PHI:.3f}"
+                f"{float(aft['phi_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
             )
         )
 
@@ -248,7 +248,7 @@ def weak_like(
     ensure_stable_base : bool, default True
         Insert IL before OZ→ZHIR to satisfy U4b stable base requirement.
     grad_threshold : float, default PHYSICS_GRAD_THRESHOLD_CANONICAL
-        Heuristic early-warning threshold for mean |∇φ| (γ/π ≈ 0.1837;
+        Heuristic early-warning threshold for mean |∇φ| (≈ 0.196, π/16;
         calibrated, audit 2026: NOT a derived bound — the kinematic bound is
         |∇φ| ≤ π and the sync-onset is σ-dependent ≈ 0.29).
 
@@ -283,11 +283,11 @@ def weak_like(
                 f"{grad_mean_a:.3f} ≥ {grad_threshold}"
             )
         )
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= PHI:
+    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ {PHI:.3f}"
+                f"{float(aft['phi_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
             )
         )
 
@@ -357,11 +357,11 @@ def strong_like(
                 f"{hotspot_frac * 100:.1f}% ≥ {PHYSICS_HOTSPOT_FRACTION_CANONICAL * 100:.1f}%"
             )
         )
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= PHI:
+    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ {PHI:.3f}"
+                f"{float(aft['phi_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
             )
         )
 
@@ -421,11 +421,11 @@ def gravity_like(
 
     aft = _telemetry_after(G, snap, compute_phi_s=compute_phi_s)
     warnings: list[str] = []
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= PHI:
+    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ {PHI:.3f}"
+                f"{float(aft['phi_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
             )
         )
 

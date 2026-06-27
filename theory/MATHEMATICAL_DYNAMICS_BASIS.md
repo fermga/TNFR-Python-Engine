@@ -1,7 +1,7 @@
 # The Structural-Field Tetrad as the Minimal Basis
 
-**Status**: Canonical — the tetrad of *fields* is the DERIVED minimal basis (the
-constants are notational labels, only π is a genuine structural scale)
+**Status**: Canonical — the tetrad of *fields* is the DERIVED minimal basis; only
+π is a genuine structural scale
 **Foundation**: the nodal equation ∂EPI/∂t = νf·ΔNFR(t)
 **Prerequisites**: [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md), [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4
 
@@ -17,60 +17,53 @@ The minimality is **derived** (see [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUC
 
 | Field | Symbol | Tower order | Genuine structural scale |
 |-------|--------|-------------|--------------------------|
-| Structural potential | Φ_s | 0th — global aggregation | Empirical confinement (no closed form) |
+| Structural potential | Φ_s | 0th — global aggregation | π-derived confinement (π/4 per-node, π/2 drift) |
 | Phase gradient | \|∇φ\| | 1st — local derivative | π (phase-wrap bound) |
 | Phase curvature | K_φ | 2nd — discrete Laplacian | π (phase-wrap bound); K_φ = L_rw·φ |
 | Coherence length | ξ_C | non-local — correlation | Spectral gap, ξ_C ∝ 1/√λ₂ |
 
 The one genuine structural constant is **π**: both phase derivatives are wrapped
 angles, so |∇φ| ≤ π and |K_φ| ≤ π for any configuration. The Φ_s confinement
-bound is empirical, and the coherence length is set by the spectral gap λ₂
-(ξ_C ∝ 1/√λ₂). The constants φ, γ, e are **notational labels**, not the
-structural scales of their fields.
+bound is π-derived (per-node π/4 ≈ 0.785, drift π/2 ≈ 1.571 — quarter / half
+phase-wrap), and the coherence length is set by the spectral gap λ₂
+(ξ_C ∝ 1/√λ₂). φ, γ, e are **not** structural scales and no longer appear in the
+engine; everything other than π is derived from the nodal dynamics or is a free
+operational parameter.
 
 ---
 
-## 2. The mathematical character of the notational constants
+## 2. The one structural scale: π
 
-The engine writes some parameters as combinations of four mathematical constants
-(φ, γ, π, e) for notational consistency (an anti-magic-number convention). Each
-constant represents a distinct, well-known class of mathematical dynamics. This
-is a property of the *constants themselves*; it does **not** make them the
-structural scales of the tetrad fields.
+Within TNFR only **π** carries a genuine structural role — it is the phase-wrap
+bound of the phase sector. Both |∇φ| and K_φ are means of wrapped angles, so each
+is ≤ π; π is the period of e^{ix} (angular closure), and that geometric closure is
+exactly what bounds the two phase derivatives.
 
-| Constant | Class of dynamics | Defining property |
-|----------|-------------------|-------------------|
-| φ (golden ratio) | Self-similar proportion | Fixed point of x = 1 + 1/x; the "most irrational" number |
-| γ (Euler–Mascheroni) | Discrete accumulation | Gap between Σ 1/k and ∫ dx/x |
-| π (Archimedes) | Circular geometry | Period of e^{ix}; **the phase-wrap scale** |
-| e (Napier) | Exponential growth/decay | Eigenfunction of d/dx (rate = state) |
-
-As *mathematical* objects these four classes are mutually irreducible. But within
-TNFR only **π** carries a genuine structural role (the phase-wrap bound of the
-phase sector); the combinations built from φ, γ, e are heuristic or empirical
-telemetry values, not derivations from the nodal equation.
+φ, γ, e are **not** structural scales of the tetrad fields and no longer appear in
+the engine: every parameter other than π is either derived from the nodal dynamics
+/ spectral gap or is a free operational parameter. In particular the coherence
+length is set by the spectral gap (ξ_C ∝ 1/√λ₂) and the Φ_s confinement bound is
+π-derived (quarter / half phase-wrap).
 
 ---
 
-## 3. Genuine vs notational scales
+## 3. The field scales
 
 - **π — genuine (geometric, exact).** |∇φ| ≤ π and |K_φ| ≤ π for any
   configuration; |K_φ| < 0.9·π ≈ 2.827 is the operational safety bound. π is the
   one constant that scales the whole phase sector.
-- **ξ_C — genuine (spectral gap).** The correlation length is set by the Fiedler
-  value: ξ_C ∝ 1/√λ₂. Exponential decay has base e tautologically; the structural
-  content is the spectral gap, not e.
-- **Φ_s — empirical.** ΔΦ_s < 1.618 and per-node |Φ_s| < 0.7711 are validated
-  across topologies, with no closed form in (φ, γ, π, e).
+- **ξ_C — set by the spectral gap.** The correlation length is set by the Fiedler
+  value: ξ_C ∝ 1/√λ₂. The structural content is the spectral gap.
+- **Φ_s — π-derived.** The confinement bounds are tied to the π phase scale:
+  per-node |Φ_s| < π/4 ≈ 0.785 (quarter phase-wrap) and drift ΔΦ_s < π/2 ≈ 1.571
+  (half phase-wrap).
 - **|∇φ| onset — heuristic.** The synchronization onset is a measured ≈ 0.29 and
-  σ-dependent; the value γ/π ≈ 0.1837 is retained only as a heuristic
-  early-warning level, not a derived bound.
+  σ-dependent; a fixed ≈ 0.18 level is retained only as a heuristic early-warning
+  level, not a derived bound.
 
 The field computations themselves (`compute_structural_potential`,
 `compute_phase_gradient`, `compute_phase_curvature`, `estimate_coherence_length`)
-read these scales directly from the graph and the nodal equation — they do not
-use the φ/γ/e combinations. Those combinations appear only as downstream
-telemetry thresholds.
+read these scales directly from the graph and the nodal equation.
 
 ---
 

@@ -48,9 +48,9 @@ The Sense Index is defined as a weighted combination:
 
 **Structural weights**:
 
-- :math:`\alpha`: Frequency weight (default: φ/(φ+γ) ≈ 0.737) - emphasizes reorganization capacity
-- :math:`\beta`: Phase weight (default: γ/(π+γ) ≈ 0.155) - emphasizes network synchrony
-- :math:`\gamma`: ΔNFR weight (default: γ/(φπ) ≈ 0.114) - emphasizes pressure damping
+- :math:`\alpha`: Frequency weight (default ≈ 0.737) - emphasizes reorganization capacity
+- :math:`\beta`: Phase weight (default ≈ 0.155) - emphasizes network synchrony
+- :math:`\gamma`: ΔNFR weight (default ≈ 0.114) - emphasizes pressure damping
 - Constraint: weights are normalized so :math:`\alpha + \beta + \gamma = 1`
 
 **Final clamping**: :math:`\text{Si}_{\text{final}} = \max(0, \min(1, \text{Si}))`

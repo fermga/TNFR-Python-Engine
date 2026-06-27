@@ -32,7 +32,7 @@ from typing import Any, Dict, List
 import numpy as np
 
 from tnfr.constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
-from tnfr.constants.canonical import PHI
+from tnfr.constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from tnfr.dynamics.nbody import NBodySystem, compute_gravitational_dnfr
 from tnfr.dynamics.nbody_tnfr import TNFRNBodySystem, compute_tnfr_delta_nfr
 from tnfr.physics.fields import compute_structural_telemetry
@@ -195,7 +195,9 @@ def _sanitize_coherence_length(value: float) -> float:
 def _estimate_body_size(phi_value: float, xi_c: float) -> float:
     """Translate Φ_s confinement into a coherence radius."""
     base_radius = _sanitize_coherence_length(xi_c)
-    confinement = 1.0 / (1.0 + abs(phi_value) / max(PHI, 1e-9))
+    confinement = 1.0 / (
+        1.0 + abs(phi_value) / max(U6_STRUCTURAL_POTENTIAL_LIMIT, 1e-9)
+    )
     return float(max(1e-6, base_radius * confinement))
 
 

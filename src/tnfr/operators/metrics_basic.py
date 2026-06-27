@@ -70,9 +70,8 @@ def emission_metrics(G, node, epi_before: float, vf_before: float) -> dict[str, 
     # AL-specific quality indicators
     emission_quality = "valid" if (delta_epi > 0 and delta_vf > 0) else "weak"
     # Import canonical constants
-    from ..constants.canonical import GAMMA_PHI_RATIO
 
-    latency_threshold = GAMMA_PHI_RATIO  # γ/φ ≈ 0.357 (golden-euler latency)
+    latency_threshold = 0.35  # ≈ 0.357 (latency)
     activation_from_latency = epi_before < latency_threshold
     frequency_activation = delta_vf > 0
     reorganization_positive = dnfr > 0

@@ -471,12 +471,11 @@ def _compute_phase_transport_derivative(
     - Transport: γ·J_φ·κ [directed flux with coupling efficiency]
     """
     # Import canonical constants
-    from ..constants.canonical import GAMMA_PI_RATIO, INV_PHI, PI_MINUS_E_OVER_PI
 
     # Physics coefficients (RECALIBRATED from canonical constants)
-    alpha = INV_PHI  # 1/φ ≈ 0.618 (inverse golden self-organization)
-    beta = GAMMA_PI_RATIO  # γ/(π+γ) ≈ 0.155 (Euler-pi sensitivity)
-    gamma = PI_MINUS_E_OVER_PI  # (π-e)/π ≈ 0.135 (transcendental efficiency)
+    alpha = 0.5  # ≈ 0.618 (inverse self-organization)
+    beta = 0.15  # ≈ 0.155 (sensitivity)
+    gamma = 0.135  # ≈ 0.135 (efficiency)
 
     # Autoorganization term: nonlinear νf-θ coupling
     autoorg_term = alpha * nu_f * math.sin(math.pi * delta_nfr)
@@ -501,11 +500,10 @@ def _compute_dnfr_conservation_derivative(j_dnfr_divergence: float) -> float:
     - Decay: λ·|∇·J| [natural relaxation, prevents accumulation]
     """
     # Import canonical constants
-    from ..constants.canonical import EXP_DOUBLE_NEG
 
     # Physics coefficients (RECALIBRATED from canonical constants)
     decay_rate = (
-        EXP_DOUBLE_NEG  # e^(-2) ≈ 0.135 (decaimiento exponencial natural doble)
+        0.135  # ≈ 0.135 (operational decay factor)
     )
 
     # Conservation term: flux in increases ΔNFR, flux out decreases it

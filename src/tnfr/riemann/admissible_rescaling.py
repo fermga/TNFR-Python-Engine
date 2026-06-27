@@ -77,12 +77,18 @@ from typing import Sequence
 
 import numpy as np
 
-from ..constants.canonical import GAMMA as EULER_GAMMA
-from ..constants.canonical import PHI as GOLDEN_RATIO
-from ..constants.canonical import E as NAPIER_E
 from .hilbert_polya import fetch_zero_imaginary_parts, wasserstein_1_distance
 from .prime_ladder_hamiltonian import build_prime_ladder_hamiltonian
 from .structural_zero_density import build_structural_t_hp
+
+# Riemann-program perturbation frequencies (probe basis for rescaling-
+# invariance tests). These are arbitrary fixed irrational frequencies — NOT
+# TNFR structural scales. Only π is a genuine structural scale in TNFR; the
+# golden ratio and the Euler–Mascheroni / Napier values appear here purely as
+# numerical probe frequencies for the admissible-rescaling family.
+GOLDEN_RATIO = (1.0 + math.sqrt(5.0)) / 2.0  # ≈ 1.6180339887
+EULER_GAMMA = 0.5772156649015329  # Euler–Mascheroni constant
+NAPIER_E = math.e
 
 __all__ = [
     "extract_positive_spectrum",

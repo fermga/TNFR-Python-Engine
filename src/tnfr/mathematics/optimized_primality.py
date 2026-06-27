@@ -23,7 +23,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from ..backends.optimized_numpy import OptimizedNumpyBackend
-from ..constants.canonical import GAMMA, PHI, PI, E
 from ..metrics.coherence import compute_coherence
 from ..physics.fields import compute_structural_potential
 
@@ -52,35 +51,18 @@ try:
 except ImportError:
     HAS_NUMBA = False
 
-try:
-    import mpmath as mp
-
-    mp.mp.dps = 50  # High precision for theoretical constants
-    HAS_MPMATH = True
-except ImportError:
-    HAS_MPMATH = False
-
 logger = logging.getLogger(__name__)
 
-# Optimized constants with high precision
-if HAS_MPMATH:
-    PHI_HP = float(mp.phi)
-    GAMMA_HP = float(mp.euler)
-    PI_HP = float(mp.pi)
-    E_HP = float(mp.e)
-else:
-    PHI_HP = PHI
-    GAMMA_HP = GAMMA
-    PI_HP = PI
-    E_HP = E
-
-# TNFR canonical parameters (high precision)
+# TNFR primality parameters: ΔNFR pressure coefficients.
+# Prime ⟺ ΔNFR = 0 with canonical unit-scale coefficients (TNFR_NUMBER_THEORY).
 ZETA_CANONICAL = 1.0  # Factorization pressure coefficient
 ETA_CANONICAL = 0.8  # Divisor pressure coefficient
 THETA_CANONICAL = 0.6  # Sigma pressure coefficient
 
-# Optimized thresholds (notational (φ,γ,π,e) combos; audit 2026: not derived)
-PRIME_THRESHOLD_HP = GAMMA_HP / (E_HP * PI_HP)  # ≈ 0.0676
+# Primality decision cut on |ΔNFR|: primes give ΔNFR = 0 exactly while
+# composites give |ΔNFR| ≳ 2 with the coefficients above, so any threshold in
+# (0, 2) is robust. 0.5 is the plain canonical separator.
+PRIME_THRESHOLD_HP = 0.5
 
 
 @dataclass

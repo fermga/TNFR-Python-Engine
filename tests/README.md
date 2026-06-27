@@ -1,6 +1,6 @@
 # TNFR Test Suite
 
-This document describes the TNFR test suite. Parameters written as (φ,γ,π,e) combinations are a notational convention, NOT derivations; only π (phase wrap) and ξ_C ∝ 1/√λ₂ are genuine structural scales. Tests validate the nodal equation, structural fields, grammar U1-U6, and the 13 operators.
+This document describes the TNFR test suite. Only π (phase wrap) and ξ_C ∝ 1/√λ₂ are genuine structural scales; every other parameter is derived from the nodal dynamics or is a free operational parameter. Tests validate the nodal equation, structural fields, grammar U1-U6, and the 13 operators.
 
 ## Test Organization
 

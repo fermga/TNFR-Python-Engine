@@ -36,11 +36,11 @@ except ImportError:
     HAS_NETWORKX = False
     nx = None
 
-# Import canonical constants for Phase 6 magic number elimination
-from ..constants.canonical import (
-    NODAL_OPT_COUPLING_CANONICAL,  # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
+# Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
+    NODAL_OPT_COUPLING_CANONICAL,
 )
-from ..constants.canonical import (  # PHASE 6 EXTENDED: Additional canonical constant
+from ..constants.operational import (
     CACHE_OPT_COMPRESSION_BASE_CANONICAL,
     CACHE_OPT_COMPRESSION_MAX_CANONICAL,
     CACHE_OPT_COMPRESSION_SCALE_CANONICAL,

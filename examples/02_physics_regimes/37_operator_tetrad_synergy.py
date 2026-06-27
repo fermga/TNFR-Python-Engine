@@ -45,10 +45,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
 from tnfr.constants.canonical import (
-    GAMMA,
     GRAD_PHI_CANONICAL_THRESHOLD,
     K_PHI_CANONICAL_THRESHOLD,
-    PHI,
     PHI_S_VON_KOCH_THRESHOLD,
     PI,
 )
@@ -293,8 +291,8 @@ def experiment_tetrad_safety():
     """Verify that grammar-compliant sequences keep tetrad within safety.
 
     Tetrad safety bounds (audit 2026: only the pi phase-wrap is genuine):
-        Phi_s :  |Phi_s| < 0.7711 (empirical, no closed form)
-        |grad_phi|:  |grad_phi| <= pi (phase wrap); gamma/pi ~ 0.1837 is a
+        Phi_s :  |Phi_s| < 0.785 (π/4, quarter phase-wrap)
+        |grad_phi|:  |grad_phi| <= pi (phase wrap); pi/16 ~ 0.196 is a
                      heuristic early-warning only, not a derived bound
         K_phi :  |K_phi| < 2.8274 (0.9*pi, phase wrap -- genuine)
 
@@ -364,15 +362,15 @@ def experiment_tetrad_safety():
         )
 
     print(f'\n  Safety envelope maintained: {"YES" if all_safe else "NO"}')
-    print("  Tetrad fields stay within their safety bounds (audit 2026):")
-    print(f"    phi <-> Phi_s  threshold = {PHI_S_VON_KOCH_THRESHOLD:.4f}")
+    print("  Tetrad fields stay within their safety bounds (audit 2026: only pi is structural):")
+    print(f"    Phi_s      threshold = {PHI_S_VON_KOCH_THRESHOLD:.4f}  (pi/4, quarter phase-wrap)")
     print(
-        f"    gamma <-> |grad_phi| threshold = {GRAD_PHI_CANONICAL_THRESHOLD:.4f}"
-        f" (gamma/pi = {GAMMA / PI:.4f})"
+        f"    |grad_phi| threshold = {GRAD_PHI_CANONICAL_THRESHOLD:.4f}"
+        f"  (pi/16, heuristic early-warning; kinematic bound is pi)"
     )
     print(
-        f"    pi <-> K_phi   threshold = {K_PHI_CANONICAL_THRESHOLD:.4f}"
-        f" (0.9*pi = {0.9 * PI:.4f})"
+        f"    K_phi      threshold = {K_PHI_CANONICAL_THRESHOLD:.4f}"
+        f"  (0.9*pi = {0.9 * PI:.4f})"
     )
 
 

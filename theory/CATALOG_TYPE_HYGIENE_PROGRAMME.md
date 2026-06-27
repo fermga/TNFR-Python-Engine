@@ -207,7 +207,7 @@ modulate canonical dynamics.
 
 #### B5 — T-Δφ_max (Type of resonant-coupling threshold)
 
-- **Anchor (verified at B5a)**: `Δφ_max` as scalar in $[0, \pi]$; **canonical default `DELTA_PHI_MAX = PI / 2 ≈ 1.5708`** at `src/tnfr/constants/canonical.py:506` (90° maximum phase mismatch for U3 coupling). **CATALOG correction recorded at B5a**: this row previously stated "canonical default derived from γ/π (Kuramoto critical coupling)" — that is *incorrect for Δφ_max*. Per `AGENTS.md` U3, γ/π ≈ 0.184 is the safety threshold for the |∇φ| field (Universal Tetrahedral Correspondence γ ↔ |∇φ|), distinct from the U3 coupling threshold Δφ_max = π/2.
+- **Anchor (verified at B5a)**: `Δφ_max` as scalar in $[0, \pi]$; **canonical default `DELTA_PHI_MAX = PI / 2 ≈ 1.5708`** at `src/tnfr/constants/canonical.py:289` (90° maximum phase mismatch for U3 coupling). **CATALOG correction recorded at B5a**: this row previously stated "canonical default derived from γ/π (Kuramoto critical coupling)" — that is *incorrect for Δφ_max*. Per `AGENTS.md` U3, the |∇φ| field early-warning level is ≈ π/16 ≈ 0.196 (heuristic, σ-dependent, not a derived constant; the kinematic bound is π), distinct from the U3 coupling threshold Δφ_max = π/2.
 - **Suspected non-canonical envelope**: edge-dependent threshold
   $\Delta\phi_{\max}^{(i,j)}$ (matrix-valued); or angle-of-attack-dependent
   threshold $\Delta\phi_{\max}(\phi_i, \phi_j)$.
@@ -500,7 +500,7 @@ It **does**:
 - `theory/MINIMAL_STRUCTURAL_DEGREES.md` — background on the four-field tetrad
   (relevant to B7).
 - `theory/UNIFIED_GRAMMAR_RULES.md` — U1–U6 derivations (B10).
-- `theory/FUNDAMENTAL_THEORY.md` — Universal Tetrahedral Correspondence.
+- `theory/FUNDAMENTAL_THEORY.md` — structural-field tetrad (minimal derivative-tower basis; only π is a genuine structural scale).
 - `docs/OPERATOR_COMPLETENESS.md` — operator catalog completeness (B11).
 - `src/tnfr/riemann/nuf_type_signature.py` — B0 diagnostic.
 - `src/tnfr/riemann/epi_type_signature.py` — B1 diagnostic.

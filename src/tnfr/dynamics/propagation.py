@@ -27,7 +27,8 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
-from ..constants.canonical import DELTA_PHI_MAX, EMERGENT_FREQ_BALANCE_CANONICAL
+from ..constants.canonical import DELTA_PHI_MAX
+from ..constants.operational import EMERGENT_FREQ_BALANCE_CANONICAL
 
 __all__ = [
     "propagate_dissonance",

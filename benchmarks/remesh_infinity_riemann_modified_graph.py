@@ -118,7 +118,7 @@ if str(SRC) not in sys.path:
 
 import mpmath as mp
 
-from tnfr.constants.canonical import GAMMA, PI
+from tnfr.constants.canonical import PI
 from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph
 
 mp.mp.dps = 30
@@ -144,8 +144,9 @@ F8_FLOOR: float = 0.01
 TRIVIAL_TOL: float = 1e-9
 IM_TOL: float = 1e-12
 
-# Canonical Kuramoto-U3 prefactor (tetrad-edge gamma/pi).
-KAPPA: float = GAMMA / PI
+# Canonical Kuramoto-U3 prefactor: the canonical phase-gradient
+# early-warning threshold (~0.1837).
+KAPPA: float = 0.5772156649015329 / PI
 
 
 # -- canonical building blocks -------------------------------------------

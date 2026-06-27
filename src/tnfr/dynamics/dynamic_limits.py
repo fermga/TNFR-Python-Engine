@@ -60,7 +60,7 @@ except ImportError:
 
 from ..alias import collect_attr
 from ..constants.aliases import ALIAS_SI
-from ..constants.canonical import GAMMA, INV_PHI, PI
+from ..constants.canonical import PI
 from ..mathematics.unified_numerical import np
 from ..metrics.common import compute_coherence
 from ..observers import kuramoto_order
@@ -77,7 +77,7 @@ __all__ = (
 
 # Default fallback value for sense index when nodes have no Si attribute
 # This represents a "neutral" sense index - neither high stability nor instability
-DEFAULT_SI_FALLBACK = INV_PHI  # 1/φ - neutral golden ratio balance
+DEFAULT_SI_FALLBACK = 0.5  # neutral balance
 
 
 @dataclass(frozen=True)
@@ -95,8 +95,8 @@ class DynamicLimitsConfig:
 
     base_epi_max: float = 1.0
     base_vf_max: float = 10.0
-    alpha: float = INV_PHI  # 1/φ - golden ratio inverse expansion
-    beta: float = GAMMA / (PI + 1)  # γ/(π+1) - frequency expansion coefficient
+    alpha: float = 0.5  # inverse expansion
+    beta: float = 0.13937  # frequency expansion coefficient
     max_expansion_factor: float = math.pi  # π - natural expansion limit
     enabled: bool = True
 

@@ -49,7 +49,7 @@ if TYPE_CHECKING:
     from ..types import TNFRGraph, NodeId
     from .definitions import Operator
 
-from ..constants.canonical import (
+from ..constants.operational import (
     ALGEBRA_COMBINED_TOLERANCE_CANONICAL,
     ALGEBRA_EPI_TOLERANCE_CANONICAL,
     ALGEBRA_VF_TOLERANCE_CANONICAL,
@@ -206,9 +206,8 @@ def validate_idempotence(
     # Idempotence property: SHA behavior is consistent
     # Both νf values should be near-zero (SHA's characteristic effect)
     # Import canonical constants
-    from ..constants.canonical import GAMMA_OVER_PI_PLUS_E
 
-    vf_threshold = GAMMA_OVER_PI_PLUS_E  # γ/(π+e) ≈ 0.099 (silencio euleriano)
+    vf_threshold = 0.1  # ≈ 0.099 (silence threshold)
     both_minimal = (vf_context1 < vf_threshold) and (vf_context2 < vf_threshold)
 
     # Both should be similar (consistent behavior)

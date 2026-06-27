@@ -235,7 +235,7 @@ class TestContractionRates:
     """Verify contraction rates are physically sensible."""
 
     def test_coherence_rate_approx_046(self):
-        """IL: pressure contraction ρ = 1 - 0.737 ≈ 0.263 (|ΔNFR| linear)."""
+        """IL: pressure contraction ρ = 1 − π/(π+1) = 1/(π+1) ≈ 0.2415 (|ΔNFR| linear)."""
         bound = get_bound("IL")
         assert 0.20 < bound.contraction_rate < 0.32
 
@@ -337,16 +337,16 @@ class TestVerifyOperatorLyapunov:
         assert result.margin > 0.0
 
     def test_dissonance_within_bound(self):
-        """OZ: energy increases but within κ·E (κ = f-1)."""
+        """OZ: energy increases but within κ·E (κ = f-1 = 1.0)."""
         e0 = 1.0
-        # Moderate increase within the pressure-expansion bound.
-        result = verify_operator_lyapunov("OZ", e0, 2.5, n_nodes=20)
+        # Moderate increase within the pressure-expansion bound (κ·E = 1.0).
+        result = verify_operator_lyapunov("OZ", e0, 1.8, n_nodes=20)
         assert result.within_bound
 
     def test_dissonance_out_of_bound(self):
         """OZ: energy increases beyond κ·E → out of bound."""
         e0 = 1.0
-        # Extreme increase beyond κ·E ≈ 6.857
+        # Extreme increase beyond κ·E = 1.0
         result = verify_operator_lyapunov("OZ", e0, 100.0, n_nodes=20)
         assert not result.within_bound
 

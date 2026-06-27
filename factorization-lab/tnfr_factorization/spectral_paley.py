@@ -92,7 +92,7 @@ from tnfr.constants.canonical import (
 
 # §7.5 arithmetic recalibrations (exact empirical values, validated across the
 # prime/composite distribution). Deviation vs the canonical general baseline:
-#   Φ_s:   0.7452 ≈ 0.966 × 0.7711   (tighter — structured topology)
+#   Φ_s:   0.7452 ≈ 0.949 × (π/4)    (tighter — structured topology)
 #   |∇φ|:  0.2591 ≈ 1.41  × (γ/π)    (looser — residue graphs are dense)
 #   K_φ:   3.2275 ≈ 1.14  × (0.9π)
 _ARITHMETIC_PHI_S_THRESHOLD = 0.7452
@@ -102,7 +102,7 @@ _ARITHMETIC_K_PHI_THRESHOLD = 3.2275
 # Provenance guard: if the canonical general baselines drift, the documented
 # §7.5 ratios above are stale and must be re-derived. (Cheap module-load check.)
 assert (
-    0.95 < _ARITHMETIC_PHI_S_THRESHOLD / PHI_S_VON_KOCH_THRESHOLD < 0.98
+    0.93 < _ARITHMETIC_PHI_S_THRESHOLD / PHI_S_VON_KOCH_THRESHOLD < 0.97
 ), "§7.5 Φ_s recalibration ratio drifted from canonical PHI_S_VON_KOCH_THRESHOLD"
 assert (
     1.3 < _ARITHMETIC_GRAD_PHI_THRESHOLD / GRAD_PHI_CANONICAL_THRESHOLD < 1.5

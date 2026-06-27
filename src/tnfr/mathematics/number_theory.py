@@ -9,7 +9,7 @@ Theoretical foundation: theory/TNFR_NUMBER_THEORY.md (Canonical)
   - Arithmetic structural triad (EPI, νf, ΔNFR)
   - Canonical unit coefficients (per AGENTS.md §3 only π is a genuine
     structural scale; by the §4.2 coefficient-independence theorem the triad
-    weights are canonically unity — no φ/γ/e overlay)
+    weights are canonically unity — no fitted overlay)
   - Spectral factorization via Paley-Jacobi decoding
 
 Ontological status (theory/TNFR_NUMBER_THEORY.md §9.5): the same nodal-equation
@@ -95,9 +95,9 @@ class ArithmeticTNFRParameters:
     """Canonical weights for the arithmetic TNFR triad (EPI, νf, ΔNFR).
 
     All weights are **unity**. Per AGENTS.md §3 the only genuine structural
-    constant is π; φ, γ and e are not structural scales. The earlier
-    ``(φ, γ, π, e)`` weights were a post-hoc *notational* overlay fitted to
-    approximate empirical values (ζ=1.0, η=0.8, θ=0.6), not a derivation. By the
+    constant is π. The earlier weight overlay was a post-hoc *operational*
+    convention fitted to approximate empirical values (ζ=1.0, η=0.8, θ=0.6),
+    not a derivation. By the
     Coefficient Independence theorem (theory/TNFR_NUMBER_THEORY.md §4.2) the
     primality criterion ``ΔNFR = 0`` holds for *any* positive coefficients, so
     the canonical choice is unity: the structural content lives entirely in the
@@ -543,7 +543,7 @@ class ArithmeticTNFRNetwork:
 
     def detect_prime_candidates(
         self,
-        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_CANONICAL,  # γ/(e×π) ≈ 0.0676 (notational prime detection threshold)
+        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_CANONICAL,  # ≈ 0.0676 (operational prime detection threshold)
         *,
         tolerance: float = 1e-12,
         return_certificates: bool = False,
@@ -1696,7 +1696,7 @@ class ArithmeticTNFRNetwork:
         self,
         path: str,
         *,
-        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL,  # 2γ/(e×π) ≈ 0.1352 (notational higher threshold for emergent patterns)
+        delta_nfr_threshold: float = MATH_DELTA_NFR_THRESHOLD_2X_CANONICAL,  # ≈ 0.1352 (operational higher threshold for emergent patterns)
         fmt: str = "jsonl",
         include_components: bool = True,
     ) -> int:
@@ -1870,7 +1870,7 @@ def run_basic_validation(max_number: int = 50) -> None:
     logger.info("Testing prime detection...")
     validation = network.validate_prime_detection(
         delta_nfr_threshold=MATH_DELTA_NFR_THRESHOLD_CANONICAL
-    )  # notational threshold
+    )  # operational threshold
     logger.info(f"  Precision: {validation['precision']:.3f}")
     logger.info(f"  Recall: {validation['recall']:.3f}")
     logger.info(f"  F1-score: {validation['f1_score']:.3f}")

@@ -31,9 +31,9 @@ valence pressure ΔNFR_chem(Z) is the INTEGER structural distance of the outer
 shell to a closed configuration — the chemical analogue of the primality
 criterion ΔNFR(n) = 0, in natural units (one subshell step = 1). The (n+l)
 filling order is a pure integer excitation-count rule (total radial+angular
-quanta), not a constant correspondence. The earlier γ/π "excitation scale" and
-the 1/φ valence weight were overlay/notational factors (refuted 2026: only π is
-a genuine structural scale) and are removed. The atomic number Z is an
+quanta), not a constant correspondence. The earlier excitation-scale and
+valence-weight overlay factors (refuted 2026: only π is a genuine structural
+scale) are removed. The atomic number Z is an
 *emergent count of filled structural eigenmodes*, not an imported constant.
 
 Honest scope:

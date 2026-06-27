@@ -50,14 +50,12 @@ try:
 except ImportError:  # pragma: no cover - cache infra optional in some builds
     _CORE_CACHE_AVAILABLE = False
 
-# PHASE 6 EXTENDED: Canonical constants for FFT cache coordination
-from ..constants.canonical import (
-    FFT_OPT_SEQUENTIAL_IMPROVEMENT_CANONICAL,  # φ·γ/(π·e) ≈ 0.1095 (mathematical importance scaling)
+# Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
+    FFT_OPT_SEQUENTIAL_IMPROVEMENT_CANONICAL,
+    OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,
 )
-from ..constants.canonical import (
-    OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,  # e·φ/π ≈ 1.4048 (1.5 → canonical)
-)
-from ..constants.canonical import PI  # π ≈ 3.1416 (3.0 → canonical)
+from ..constants.canonical import PI  # π ≈ 3.1416 (structural scale)
 
 try:
     from .multi_modal_cache import CacheEntryType, get_unified_cache

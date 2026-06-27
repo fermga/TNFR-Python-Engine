@@ -44,10 +44,10 @@ from ...mathematics.unified_numerical import np
 
 # Import canonical constants for Phase 6 magic number elimination
 # Import PHASE 6 EXTENDED Canonical Constants for magic number elimination
-from ..constants.canonical import (
-    OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,  # γ/(2π+e) ≈ 0.0625 (2.5 → canonical)
+from ..constants.operational import (
+    OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,
 )
-from ..constants.canonical import (
+from ..constants.operational import (
     PATTERNS_COMPRESSION_OSCILLATORY_CANONICAL,
     PATTERNS_COMPRESSION_RATIO_CANONICAL,
     PATTERNS_COMPRESSION_SIGNIFICANT_CANONICAL,
@@ -1247,7 +1247,7 @@ def create_emergent_pattern_engine(**kwargs) -> TNFREmergentPatternEngine:
 @(
     cache_unified_computation(
         CacheEntryType.NODAL_STATE,
-        # γ/(2π+e) ≈ 0.0625 → canonical
+        # ≈ 0.0625 → canonical
         mathematical_importance=OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,
     )
     if HAS_UNIFIED_CACHE

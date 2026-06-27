@@ -41,8 +41,8 @@ post-N15 structural results:
 
 HONEST SCOPE (non-negotiable)
 -----------------------------
-This harness closes NOTHING.  G4 = RH stays OPEN.  R+ and (phi, gamma,
-pi, e) remain the assumed substrate.  The result is a *sharper, more
+This harness closes NOTHING.  G4 = RH stays OPEN.  R+ and pi remain
+the assumed substrate.  The result is a *sharper, more
 canonical NEGATIVE result*: it exhibits, dynamically, WHY the canonical
 13-operator machinery cannot reach S(T) = (1/pi) arg zeta(1/2 + iT) --
 the propagator output sits in ker(R-infinity) AND in Fix(S_n), while
@@ -336,7 +336,7 @@ def main() -> int:
     print("    deficit -- the global amplitude scale matches.")
     print("")
     print("THESIS VERDICT: OPEN, by design. This closes nothing.")
-    print("  G4 = RH OPEN. R+ and (phi, gamma, pi, e) remain assumed.")
+    print("  G4 = RH OPEN. R+ and pi remain assumed.")
     print("  Result strengthens branch-B2 evidence (a new canonical")
     print("  operator, not derivable from the present catalog, would")
     print("  be required to reach S(T)). It does NOT prove B2/B3/RH.")

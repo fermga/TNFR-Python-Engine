@@ -37,7 +37,7 @@ is applied to a network whose nodes are natural numbers and whose edges encode a
 - **Composites carry structural pressure**: $\Delta\mathrm{NFR}(n) > 0$ whenever $n$ is composite, with magnitude proportional to factorization complexity.
 - **Factorization as spectral decoding**: discovering the factors of a composite can be framed as resolving the coherent sub-modes of its structural pressure field.
 
-This document formalizes these observations, expresses the arithmetic constants as notational $(\varphi, \gamma, \pi, e)$ combinations, and maps the theory to its implementations in the repository.
+This document formalizes these observations, expresses the arithmetic constants as canonical units (only $\pi$ is a genuine structural scale), and maps the theory to its implementations in the repository.
 
 ### Scope
 
@@ -209,7 +209,7 @@ The three pressure channels weigh equally: the factorization excess $\Omega - 1$
 
 ### 5.6 Derivation Status
 
-The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are written as notational $(\varphi, \gamma, \pi, e)$ combinations applied to arithmetic functions. The 3 arithmetic **thresholds** are *empirically recalibrated* values (e.g. $\Phi_s < 0.7452$ vs the general 0.7711), not closed-form derivations — the general per-node $\Phi_s$ threshold on which they are based is itself empirically validated without a derivation (see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4.3). The "zero empirical fitting" characterization applies to the dynamical parameters, not to the thresholds.
+The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are positive operational weights applied to arithmetic functions (canonical units; the prime ⟺ ΔNFR = 0 criterion is coefficient-independent, §4.2). The 3 arithmetic **thresholds** are *empirically recalibrated* values (e.g. $\Phi_s < 0.7452$ vs the general $\pi/4 \approx 0.785$), not closed-form derivations — the general per-node $\Phi_s$ threshold on which they are based is π-derived (quarter phase-wrap; see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4). The arithmetic recalibration is the one empirically-tuned piece, not the dynamical parameters.
 
 ---
 
@@ -278,7 +278,7 @@ $$\Phi_s(n) = \sum_{m \neq n} \frac{\Delta\mathrm{NFR}(m)}{d(n, m)^2}$$
 
 where $d(n, m)$ is the graph distance in the arithmetic network. Primes, being zero-pressure nodes, act as **sinks** in the potential field — they attract nearby composites toward equilibrium.
 
-**Threshold**: $|\Phi_s| < 0.7711$ (empirically validated; no closed-form derivation — see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4.3) in the general tetrad; arithmetic-specific recalibration gives $\Phi_s < 0.7452$.
+**Threshold**: $|\Phi_s| < \pi/4 \approx 0.785$ (π-derived, quarter phase-wrap — see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4) in the general tetrad; arithmetic-specific recalibration gives $\Phi_s < 0.7452$.
 
 ### 7.2 Phase Gradient: $|\nabla\phi|$
 
@@ -286,7 +286,7 @@ $$|\nabla\phi|(n) = \frac{1}{|\mathcal{N}(n)|} \sum_{m \in \mathcal{N}(n)} |\phi
 
 where $\mathcal{N}(n)$ are the neighbors of $n$ in the arithmetic network. High phase gradient indicates local desynchronization — composites with many diverse factors show elevated gradients.
 
-**Threshold**: $|\nabla\phi| < \gamma/\pi \approx 0.1837$ for stable operation; arithmetic recalibration gives $0.2591$.
+**Threshold**: $|\nabla\phi| \lesssim \pi/16 \approx 0.196$ (heuristic early-warning, kinematic bound $\pi$) for stable operation; arithmetic recalibration gives $0.2591$.
 
 ### 7.3 Phase Curvature: $K_\phi$
 
@@ -302,16 +302,24 @@ $$C(r) \approx A \cdot e^{-r/\xi_C}$$
 
 The coherence length measures how far structural correlations propagate through the arithmetic network. Near critical points (e.g., twin primes, prime gaps), $\xi_C$ diverges — a signature of long-range correlation in the prime distribution.
 
-### 7.5 Arithmetic Recalibration
+### 7.5 Tetrad thresholds on the arithmetic network
 
-The arithmetic network has distinct topology from general TNFR networks (divisibility graphs are highly structured, not random). Arithmetic-specific tetrad thresholds are derived from validated experiments:
+The arithmetic network uses the same canonical, π-derived structural-field
+tetrad thresholds as any TNFR network — only π is a genuine structural scale:
 
-| Field | General threshold | Arithmetic threshold | Source |
-|-------|-------------------|---------------------|--------|
-| $\Phi_s$ | 0.7711 | 0.7452 | `PHI_S_THRESHOLD` |
-| $|\nabla\phi|$ | 0.1837 | 0.2591 | `GRAD_PHI_THRESHOLD` |
-| $K_\phi$ | 2.8274 | 3.2275 | `K_PHI_THRESHOLD` |
-| $\xi_C$ | (topology-dependent) | (topology-dependent) | Computed per network |
+| Field | Threshold | Source |
+|-------|-----------|--------|
+| $\Phi_s$ | π/4 ≈ 0.785 (per-node), π/2 ≈ 1.571 (drift) | `PHI_S_VON_KOCH_THRESHOLD`, `U6_STRUCTURAL_POTENTIAL_LIMIT` |
+| $|\nabla\phi|$ | ≤ π (phase wrap); π/16 ≈ 0.196 heuristic early-warning | `GRAD_PHI_CANONICAL_THRESHOLD` |
+| $K_\phi$ | < 0.9·π ≈ 2.827 (phase-wrap safety) | `K_PHI_CANONICAL_THRESHOLD` |
+| $\xi_C$ | spectral gap (ξ_C ∝ 1/√λ₂) | Computed per network |
+
+An earlier "arithmetic recalibration" introduced topology-specific thresholds
+expressed as φ/γ/e combinations (e.g. a $K_\phi$ threshold of 3.2275 that
+*exceeded* the π phase-wrap bound and was therefore unreachable). Those values
+were not structural scales and have been removed (audit 2026): the arithmetic
+network is governed by the same π-bounded phase sector as every other TNFR
+network.
 
 ### 7.6 The Arithmetic NFR and its Emergent Geometry
 
@@ -422,7 +430,7 @@ A factor candidate is TNFR-certified when $\geq 4$ of 8 criteria hold and $\geq 
 |-----------|-----------|---------------|
 | $\Delta\mathrm{NFR}$ gain | $\geq 0.15$ drop | Nodal equation convergence |
 | Coherence ratio | $0.72 \leq r \leq 1.38$ | Structural similarity |
-| $\Phi_s$ delta | $\leq 0.35$ | Tetrahedral confinement (U6) |
+| $\Phi_s$ delta | $\leq 0.35$ | U6 structural-potential confinement |
 | Gradient delta | $\leq 0.40$ | Phase desynchronization limit |
 | Curvature delta | $\leq 0.45$ | Geometric stability |
 | Periodicity confidence | $\geq 0.55$ | Structural mode certainty |
@@ -738,7 +746,7 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 |--------|------|-------|
 | **Arithmetic network** | `src/tnfr/mathematics/number_theory.py` | `ArithmeticTNFRNetwork`, `ArithmeticTNFRFormalism`, `PrimeCertificate` |
 | **Primality testing** | `primality-test/tnfr_primality/core.py` | Standalone ΔNFR computation, validation |
-| **Canonical constants** | `primality-test/tnfr_primality/constants.py` | All (φ,γ,π,e)-derived coefficients |
+| **Canonical constants** | `primality-test/tnfr_primality/constants.py` | Arithmetic pressure coefficients (separate subproject) |
 | **Advanced integration** | `primality-test/tnfr_primality/advanced_core.py` | Full repo infrastructure bridge |
 | **Optimized batch** | `primality-test/tnfr_primality/optimized.py` | Caching, benchmarking, batch processing |
 | **Spectral factorization** | `factorization-lab/tnfr_factorization/spectral_paley.py` | Paley-Jacobi spectral decoder |
@@ -758,7 +766,7 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 | [22_spectral_zeta_demo.py](../examples/03_riemann_zeta/22_spectral_zeta_demo.py) | Spectral zeta and Mellin bridge |
 | [23_random_ensemble_rmt_demo.py](../examples/03_riemann_zeta/23_random_ensemble_rmt_demo.py) | Random matrix theory on prime graphs |
 | [25_analytical_convergence_demo.py](../examples/03_riemann_zeta/25_analytical_convergence_demo.py) | PNT-based analytical bounds |
-| [31_mathematical_constants_basis.py](../examples/02_physics_regimes/31_mathematical_constants_basis.py) | Role of φ, γ, π, e |
+| [31_mathematical_constants_basis.py](../examples/02_physics_regimes/31_mathematical_constants_basis.py) | The structural scale π and the mathematical-constant basis |
 | [40_arithmetic_number_theory.py](../examples/07_number_theory/40_arithmetic_number_theory.py) | Primality, triad, component analysis |
 | [94_generative_number_construction.py](../examples/07_number_theory/94_generative_number_construction.py) | Compositional generation from prime atoms; U5 fractality; grammar certification |
 | [95_primes_from_spectral_waves.py](../examples/07_number_theory/95_primes_from_spectral_waves.py) | Prime staircase ψ(x) as spectral-wave superposition; spectral coherence ⟺ RH (honest scope) |
@@ -822,7 +830,7 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws
 - [APPLIED_STRUCTURAL_ANALYSIS.md](APPLIED_STRUCTURAL_ANALYSIS.md) — Spectral factorization verification
 - [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) — TNFR-Riemann program (18 sections + 11 appendices)
-- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad; the notational constants
+- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad; the one structural scale (π)
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions
 
 ### External

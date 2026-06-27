@@ -209,10 +209,10 @@ HONEST SCOPE
   gap λ₂ (which governs relaxation, stability, and the instability
   threshold) is a purely spectral/topological quantity — determined by N,
   degree, and connectivity (e.g. ring λ₂ = 1 − cos(2π/N), complete-graph
-  λ₂ = n/(n−1)).  The canonical constants (φ, γ, π, e) are *threshold
-  scales of the tetrad fields* and do **not** enter the Laplacian
-  spectrum; any numerical proximity is coincidental (the 2π/N in a ring is
-  a geometric polygon angle, not the tetrad constant π).  Measured
+  λ₂ = n/(n−1)).  The overlay threshold scales of the tetrad fields do
+  **not** enter the Laplacian spectrum; any numerical proximity is
+  coincidental (the 2π/N in a ring is a geometric polygon angle, not a
+  structural scale).  Measured
   negative result — do not assert a λ₂ ↔ constant relation.
 - This characterises the transport content of the nodal dynamics; it does
   not, by itself, resolve any open program (Riemann G4, Navier–Stokes).

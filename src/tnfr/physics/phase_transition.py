@@ -28,7 +28,7 @@ constant correspondence is an overlay, only π is a genuine scale):
    a power law |⟨𝒮⟩| ~ |p − p_c|^{β}. The exponent is an OBSERVABLE to be
    MEASURED (``fit_critical_exponent``); it is NOT a derived universal
    constant — a measurement across sweep protocols gives protocol-dependent
-   values (audit 2026), so the reference scale γ/π ≈ 0.1837 used below is a
+   values (audit 2026), so the reference scale ≈ 0.196 (π/16) used below is a
    calibrated TIER-2 parameter, not a prediction.
 
 4. **Divergent correlation length**: ξ_C → ∞ at the critical point,
@@ -54,8 +54,8 @@ sector, breaking the conjugate symmetry: ⟨𝒮⟩ ≠ 0.
 **Step 4**: Near the critical point p_c, the order parameter scales as
 |⟨𝒮⟩| ~ |p − p_c|^{β}. The exponent β is MEASURED, not derived: a sweep
 across protocols gives protocol-dependent values (audit 2026), so there is
-no universal closed-form exponent. The constant γ/π ≈ 0.1837 is retained
-only as a calibrated reference / noise-floor scale (TIER-2), not a
+no universal closed-form exponent. The reference scale ≈ 0.196 (π/16) is retained
+only as a calibrated noise-floor scale (TIER-2), not a
 prediction of the nodal equation.
 
 **Step 5**: The coherence length ξ_C diverges at p_c via standard
@@ -66,7 +66,7 @@ Physics Foundation
 ------------------
 - Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 - Unified fields: 𝒮 and χ from unified.py (single source of truth)
-- Phase-gradient reference scale: γ/π ≈ 0.1837 (calibrated TIER-2; audit
+- Phase-gradient reference scale: ≈ 0.196 (π/16; calibrated TIER-2; audit
   2026: NOT a derived universal exponent — the measured exponent is
   protocol-dependent)
 - Coherence length: ξ_C from canonical.py
@@ -105,7 +105,7 @@ from .unified import compute_chirality_field, compute_symmetry_breaking_field
 # finite-N deviation is sampling noise with standard error SE = √(Var/N). The
 # phase is decided by the z-score |⟨𝒮⟩|/SE — the statistical significance of
 # the symmetry breaking, MEASURED from the system itself. The previous magic
-# scales ((γ/π)², γ/(π+γ)) were verified INERT (they sat in a two-order-of-
+# scales were verified INERT (they sat in a two-order-of-
 # magnitude gap; sweeping them changed no classification) and were removed.
 # The only cut is z = 1 (one sampling sigma) — the noise scale itself, not a
 # free parameter.

@@ -113,9 +113,9 @@ class StructuralFeedbackLoop:
     >>> loop.homeostatic_cycle(num_steps=5)
     """
 
-    # Regulation thresholds (canonical constants from φ, γ, π, e)
-    COHERENCE_TOL_LOW = FEEDBACK_COHERENCE_TOL_LOW  # γ/(π+1) ≈ 0.139
-    COHERENCE_TOL_HIGH = FEEDBACK_COHERENCE_TOL_HIGH  # γ/(π+e) ≈ 0.099
+    # Regulation thresholds (operational constants)
+    COHERENCE_TOL_LOW = FEEDBACK_COHERENCE_TOL_LOW  # ≈ 0.139
+    COHERENCE_TOL_HIGH = FEEDBACK_COHERENCE_TOL_HIGH  # ≈ 0.099
     DNFR_THRESHOLD = FEEDBACK_DNFR_THRESHOLD  # √(tol_low × tol_high) ≈ 0.117
     EPI_THRESHOLD = FEEDBACK_EPI_THRESHOLD  # Canonical combo ≈ 0.330
 
@@ -123,9 +123,9 @@ class StructuralFeedbackLoop:
         self,
         graph: TNFRGraph,
         node: NodeId,
-        target_coherence: float = FEEDBACK_TARGET_COHERENCE,  # φ/(φ+γ) ≈ 0.737
-        tau_adaptive: float = FEEDBACK_TAU_ADAPTIVE,  # γ/(π+γ) ≈ 0.155
-        learning_rate: float = FEEDBACK_LEARNING_RATE,  # e^(-π) ≈ 0.043
+        target_coherence: float = FEEDBACK_TARGET_COHERENCE,  # ≈ 0.737
+        tau_adaptive: float = FEEDBACK_TAU_ADAPTIVE,  # ≈ 0.155
+        learning_rate: float = FEEDBACK_LEARNING_RATE,  # ≈ 0.043 (operational)
         coherence_tolerance_low: float = COHERENCE_TOL_LOW,
         coherence_tolerance_high: float = COHERENCE_TOL_HIGH,
         dnfr_threshold: float = DNFR_THRESHOLD,

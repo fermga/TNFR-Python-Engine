@@ -17,7 +17,7 @@ import numpy as np
 import pytest
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import PHI, PI
+from tnfr.constants.canonical import PI
 from tnfr.physics.conservation import (
     ConservationBalance,
     ConservationSnapshot,
@@ -282,7 +282,8 @@ class TestGrammarBounds:
 
     def test_bounds_contain_phi_confinement(self, ws_graph):
         bounds = compute_grammar_conservation_bounds(ws_graph)
-        assert bounds["phi_s_confinement"] == pytest.approx(PHI, rel=1e-10)
+        # U6 Φ_s confinement bound is π-derived (U6_STRUCTURAL_POTENTIAL_LIMIT = π/2)
+        assert bounds["phi_s_confinement"] == pytest.approx(PI / 2, rel=1e-10)
 
     def test_bounds_are_positive(self, ws_graph):
         bounds = compute_grammar_conservation_bounds(ws_graph)
@@ -291,7 +292,8 @@ class TestGrammarBounds:
 
     def test_max_charge_equals_phi_plus_pi(self, ws_graph):
         bounds = compute_grammar_conservation_bounds(ws_graph)
-        expected = PHI + PI
+        # max|ρ| = Φ_s confinement (π/2) + K_φ bound (π) = 3π/2
+        expected = PI / 2 + PI
         assert bounds["max_charge_density"] == pytest.approx(expected, rel=1e-10)
 
 

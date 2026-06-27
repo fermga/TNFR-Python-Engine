@@ -6,12 +6,12 @@ constants across TNFR codebase under a single coherent interface.
 Theoretical Foundation:
 Grounded in the nodal equation ∂EPI/∂t = νf · ΔNFR(t). The four structural
 fields (Φ_s, |∇φ|, K_φ, ξ_C) are the orders of the derivative tower. Note
-(audit 2026): the four constants (φ, γ, π, e) are a notational convention for
-parameters, NOT four derived structural scales — only π (phase wrap) is genuine.
+(audit 2026): only π (phase wrap) is a genuine structural scale — the other
+threshold parameters are an operational convention, NOT derived scales.
 
 Unified Architecture:
 - Standardized NumPy imports with consistent aliasing (np)
-- Centralized mathematical constants (φ, γ, π, e, TNFR-derived)
+- Centralized mathematical constants (π and TNFR-derived values)
 - Unified numerical operations with fallback mechanisms
 - Consistent random number generation with seed management
 - Optimized array operations for TNFR structural computations
@@ -34,16 +34,6 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Sequence
 
 from ..errors import TNFRValueError
-
-# Import canonical constants from single source of truth
-try:
-    from ..constants.canonical import GAMMA, PHI, PI, E
-except ImportError:
-    # Fallback if constants module not available (e.g. during bootstrap)
-    PHI = 1.618033988749895
-    GAMMA = 0.5772156649015329
-    PI = math.pi
-    E = math.e
 
 # UNIFIED NUMPY IMPORT - Single point of import for entire TNFR codebase
 try:
@@ -76,42 +66,28 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 # ============================================================================
-# MATHEMATICAL CONSTANTS - notational parameter vertices (audit 2026)
+# NUMERICAL PARAMETERS — only π is a genuine structural scale
 # ============================================================================
 
 
 @dataclass(frozen=True)
 class TNFRConstants:
-    """Mathematical constants used as notational parameter vertices.
+    """Numerical parameters for the unified numerical utilities.
 
-    AUDIT 2026: an earlier framing claimed an "exact mapping" between the four
-    constants and the four structural fields. Only π is a genuine structural
-    scale (the phase-wrap bound shared by |∇φ| and K_φ); γ, e, φ are an
-    organizing overlay (recoverable identities, not the fields' scales), and
-    ξ_C is set by the spectral gap (ξ_C ∝ 1/√λ₂), not e.
-
-    Field association (overlay, for reference only):
-    1. φ ~ Φ_s (empirical confinement; no closed form)
-    2. γ ~ |∇φ| (overlay; bound is the π phase-wrap)
-    3. π ↔ K_φ (GENUINE; phase-wrap bound; K_φ = L_rw·φ)
-    4. e ~ ξ_C (near-tautological; scale is 1/√λ₂)
+    Of the constants that appear in TNFR, only π is a genuine structural
+    scale — the phase-wrap bound shared by |∇φ| and K_φ (K_φ = L_rw·φ). The
+    coherence-length scale is set by the spectral gap (ξ_C ∝ 1/√λ₂). Every
+    other value below is a plain operational parameter or telemetry cut, not
+    a derived structural scale.
     """
 
-    # NOTATIONAL CONSTANT VERTICES (audit 2026: not field scales except π)
-    PHI: float = PHI  # Golden ratio φ - Global harmony
-    GAMMA: float = GAMMA  # Euler-Mascheroni constant γ - Local dynamics
-    PI: float = PI  # π - Geometric relations
-    E: float = E  # Euler's number e - Correlational decay
+    PI: float = math.pi  # π — genuine phase-wrap scale
 
-    # TNFR-DERIVED STRUCTURAL CONSTANTS
-
-    # Coherence thresholds (notational (φ,γ,π,e) combinations, not derived)
-    MIN_BUSINESS_COHERENCE: float = float(
-        E * PHI / (PI + E)
-    )  # (e×φ)/(π+e) ≈ 0.7506 (notational)
+    # Coherence telemetry cuts (heuristic; not derived from the dynamics)
+    MIN_BUSINESS_COHERENCE: float = 0.75  # strong-coherence cut (operational heuristic)
     THOL_MIN_COLLECTIVE_COHERENCE: float = float(
-        1.0 / (PI + 1)
-    )  # 1/(π+1) ≈ 0.2415 (notational)
+        1.0 / (math.pi + 1)
+    )  # fragmentation-risk cut C < 0.2415
     HIGH_CORRELATION_THRESHOLD: float = 0.8  # Excellent stability threshold
 
     # Phase and frequency bounds
@@ -120,11 +96,11 @@ class TNFRConstants:
     MAX_STRUCTURAL_FREQUENCY: float = 1000.0  # Hz_str practical maximum
 
     # Structural field bounds (audit 2026: only the π phase-wrap bounds are
-    # genuine; γ/π is a heuristic early-warning level, not a derived bound).
+    # genuine; the |∇φ| early-warning level is a heuristic, not a derived bound).
     STRUCTURAL_POTENTIAL_ESCAPE_THRESHOLD: float = 2.0  # Δ Φ_s < 2.0 (empirical)
     PHASE_GRADIENT_STABILITY_THRESHOLD: float = float(
-        GAMMA / PI
-    )  # heuristic early-warning ≈ 0.1837 (kinematic bound is |∇φ| ≤ π)
+        math.pi / 16
+    )  # heuristic early-warning ≈ 0.196 (π/16; kinematic bound is |∇φ| ≤ π)
     PHASE_CURVATURE_CONFINEMENT_THRESHOLD: float = float(
         0.9 * PI
     )  # |K_φ| < 0.9×π ≈ 2.8274 (phase wrap — genuine)
@@ -546,11 +522,8 @@ def reset_global_seed(seed: int) -> None:
 # LEGACY COMPATIBILITY - Gradual migration support
 # ============================================================================
 
-# Export constants for backward compatibility
-PHI = CONSTANTS.PHI
-GAMMA = CONSTANTS.GAMMA
+# Export π for backward compatibility (only genuine structural scale)
 PI = CONSTANTS.PI
-E = CONSTANTS.E
 
 # Export NumPy for backward compatibility
 __all__ = [
@@ -576,9 +549,6 @@ __all__ = [
     "NUMPY_AVAILABLE",
     "ArrayLike",
     "ComplexArray",
-    # Legacy constants
-    "PHI",
-    "GAMMA",
+    # Legacy constant (only genuine structural scale)
     "PI",
-    "E",
 ]

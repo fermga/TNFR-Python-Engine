@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable
 
-from ..constants.canonical import PHI
+from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..mathematics.unified_numerical import np
 from ..physics.canonical import compute_structural_potential
 from ..physics.gauge import compute_gauge_curvature, compute_yang_mills_equations
@@ -111,7 +111,11 @@ def run_u6_confinement_sweep(
                     mean_abs_curv = _mean(curv_abs)
                     max_abs_curv = max(curv_abs, default=0.0)
                     max_abs_phi_s = float(result.metadata.get("max_abs_phi_s", 0.0))
-                    observed_ratio = max_abs_phi_s / PHI if PHI else 0.0
+                    observed_ratio = (
+                        max_abs_phi_s / U6_STRUCTURAL_POTENTIAL_LIMIT
+                        if U6_STRUCTURAL_POTENTIAL_LIMIT
+                        else 0.0
+                    )
 
                     point_metadata = dict(result.metadata)
                     point_metadata.update(
@@ -195,8 +199,8 @@ def _validate_sweep_inputs(
 
 
 def _rescale_delta_nfr_to_u6_ratio(G: Any, target_ratio: float) -> None:
-    """Scale ``ΔNFR`` so ``max|Φ_s| / φ`` matches ``target_ratio``."""
-    target_abs_phi_s = float(target_ratio) * PHI
+    """Scale ``ΔNFR`` so ``max|Φ_s| / (π/2)`` matches ``target_ratio``."""
+    target_abs_phi_s = float(target_ratio) * U6_STRUCTURAL_POTENTIAL_LIMIT
     if target_abs_phi_s == 0.0:
         for node in G.nodes():
             G.nodes[node]["delta_nfr"] = 0.0

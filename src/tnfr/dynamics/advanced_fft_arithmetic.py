@@ -55,21 +55,13 @@ try:
 except ImportError:
     HAS_MATH_BACKENDS = False
 
-# Import PHASE 6 FINAL Canonical Constants for magic number elimination
-from ..constants.canonical import (
-    FFT_ARITHMETIC_IMPORTANCE_CANONICAL,  # π ≈ 3.1416 (3.0 → canonical)
-)
-from ..constants.canonical import (
-    FFT_BANDWIDTH_CANONICAL,  # γ/(π+e) ≈ 0.0985 (0.1 → canonical)
-)
-from ..constants.canonical import (
-    FFT_COHERENT_THRESHOLD_CANONICAL,  # φ/(φ+1) ≈ 0.6180 (0.5 → canonical)
-)
-from ..constants.canonical import (
-    FFT_HIGH_CUTOFF_CANONICAL,  # φ/e ≈ 0.5952 (1.5 → canonical)
-)
-from ..constants.canonical import (
-    FFT_LOW_CUTOFF_CANONICAL,  # φ/(φ+π) ≈ 0.3399 (0.5 → canonical)
+# Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
+    FFT_ARITHMETIC_IMPORTANCE_CANONICAL,
+    FFT_BANDWIDTH_CANONICAL,
+    FFT_COHERENT_THRESHOLD_CANONICAL,
+    FFT_HIGH_CUTOFF_CANONICAL,
+    FFT_LOW_CUTOFF_CANONICAL,
 )
 
 # Import spectral analysis
@@ -633,10 +625,10 @@ class TNFRAdvancedFFTEngine:
         elif filter_type == "bandpass":
             low_cutoff = (
                 safe_cutoff * FFT_LOW_CUTOFF_CANONICAL
-            )  # φ/(φ+π) ≈ 0.3399 → canonical
+            )  # = 0.34 (operational)
             high_cutoff = (
                 safe_cutoff * FFT_HIGH_CUTOFF_CANONICAL
-            )  # φ/e ≈ 0.5952 → canonical
+            )  # = 0.6 (operational)
             response = np.exp(
                 -np.maximum(low_cutoff - frequencies, 0.0) * filter_order / safe_cutoff
             )
@@ -646,7 +638,7 @@ class TNFRAdvancedFFTEngine:
         elif filter_type == "notch":
             bandwidth = (
                 safe_cutoff * FFT_BANDWIDTH_CANONICAL
-            )  # γ/(π+e) ≈ 0.0985 → canonical
+            )  # = 0.1 (operational)
             distance = np.abs(frequencies - safe_cutoff)
             response = 1.0 - np.exp(
                 -(bandwidth - distance).clip(min=0.0) * filter_order / safe_cutoff
@@ -715,7 +707,7 @@ class TNFRAdvancedFFTEngine:
         max_coherence = np.max(coherence)
         coherent_bandwidth = np.sum(coherence > FFT_COHERENT_THRESHOLD_CANONICAL) / len(
             coherence
-        )  # φ/(φ+1) ≈ 0.6180 → canonical (Fraction above threshold)
+        )  # = 0.62 (operational; fraction above threshold)
 
         execution_time = time.perf_counter() - start_time
 

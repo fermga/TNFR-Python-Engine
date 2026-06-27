@@ -9,7 +9,7 @@ the structural conservation law produces non-zero source terms:
 This detector uses conservation residuals to classify violations:
   - U2 breach (convergence failure): elevated RMS residuals
   - U3 breach (phase incompatibility): localized max residual spikes
-  - U6 breach (confinement): charge drift exceeds phi ~ 1.618
+  - U6 breach (confinement): charge drift exceeds the U6 Phi_s bound (~1.571)
 
 Protocol (theory/STRUCTURAL_CONSERVATION_THEOREM.md ss 12):
   1. Run grammar-compliant sequence -> measure baseline residuals
@@ -38,7 +38,6 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import GAMMA, PHI, PI
 from tnfr.physics.conservation import (
     ConservationTracker,
     capture_conservation_snapshot,
@@ -297,7 +296,7 @@ def demo_u6_violation(baseline: dict) -> None:
 
     drift_ratio = balance.charge_drift / max(baseline["drift"], 1e-10)
     print(f"\n  Diagnostic: Charge drift ratio = {drift_ratio:.1f}x")
-    print(f"  Signature: CHARGE DRIFT > phi (1.618) = confinement breach (U6)")
+    print(f"  Signature: CHARGE DRIFT > U6 Phi_s bound (~1.571) = breach (U6)")
 
 
 # ---------------------------------------------------------------------------
@@ -390,7 +389,7 @@ def main() -> None:
   Detected violation types:
     U2 — Convergence failure:    RMS residual elevated globally
     U3 — Phase incompatibility:  Max residual spikes at boundary nodes
-    U6 — Confinement breach:     Charge drift exceeds phi ~ 1.618
+    U6 — Confinement breach:     Charge drift exceeds the U6 Phi_s bound (~1.571)
 
   The conservation law provides a SINGLE diagnostic framework
   for ALL grammar violations — no separate checker needed per rule.

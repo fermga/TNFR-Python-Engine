@@ -72,7 +72,7 @@ PARTIAL CONCESSION:
   says "reproducible; not a primality proof"; the canonical P25 module says it "does
   not close G4". So the Paley gap grounds the SUPPORT (real "where"), not the PHASE
   residue (continuous, RH-equivalent). It SHARPENS the Camino-8 wall; it does not
-  breach it. R (continuum) and phi, gamma, pi, e remain assumed substrate.
+  breach it. R (continuum) and pi remain assumed substrate.
 
 Run:
     python benchmarks/paley_bridge.py
@@ -482,7 +482,7 @@ def main() -> int:
     print("  not close G4'. So the Paley gap SHARPENS the real-vs-phase wall: it")
     print("  shows the real sector reaches even the prime SUPPORT, while the phase")
     print("  residue stays unreachable. Reaching S(T) remains RH-equivalent. R and")
-    print("  phi, gamma, pi, e remain assumed substrate.")
+    print("  pi remain assumed substrate.")
     return 0 if structural else 1
 
 

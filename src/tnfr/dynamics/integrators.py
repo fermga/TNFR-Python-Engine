@@ -203,9 +203,8 @@ def prepare_integration_params(
     """
     if dt is None:
         # Import canonical time step from constants
-        from ..constants.canonical import INV_FOUR_PHI_SQ
 
-        dt_canonical = INV_FOUR_PHI_SQ  # 1/(4φ²) ≈ 0.095 (natural structural time step)
+        dt_canonical = 0.1  # 1/(4φ²) ≈ 0.095 (natural structural time step)
         dt = float(G.graph.get("DT", DEFAULTS.get("DT", dt_canonical)))
     else:
         if not isinstance(dt, (int, float)):
@@ -1231,9 +1230,8 @@ def _estimate_local_coupling_strength(G: TNFRGraph, node: NodeId) -> float:
     # Sigmoid coupling: stronger for well-connected nodes
     normalized_degree = min(degree / 10.0, 1.0)  # Saturation at degree 10
     # Import canonical coupling factor
-    from ..constants.canonical import PI_PLUS_E_HALF
 
-    coupling_factor = PI_PLUS_E_HALF  # π + e/2 ≈ 4.501 (transcendental sensitivity)
+    coupling_factor = 4.5  # π + e/2 ≈ 4.501 (sensitivity)
     coupling = 1.0 / (
         1.0
         + math.exp(

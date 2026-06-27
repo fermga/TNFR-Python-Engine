@@ -73,21 +73,13 @@ try:
 except ImportError:
     HAS_SPECTRAL = False
 
-# PHASE 6 EXTENDED: Canonical constants for cache-aware FFT operations
-from ..constants.canonical import (
-    ARITHMETIC_FFT_ENHANCEMENT_CANONICAL,  # 4·φ²/π² ≈ 1.0610 (4.0 → canonical scaling)
-)
-from ..constants.canonical import (
-    EMERGENT_COORDINATION_BOOST_CANONICAL,  # 2·φ/π ≈ 1.0309 (2.0 → canonical)
-)
-from ..constants.canonical import (
-    EMERGENT_COUPLING_STRENGTH_CANONICAL,  # φ/(π+γ) ≈ 0.4351 (0.7 → canonical)
-)
-from ..constants.canonical import (
-    EMERGENT_EFFICIENCY_GAIN_CANONICAL,  # γ/π ≈ 0.1837 (0.25 → canonical)
-)
-from ..constants.canonical import (
-    EMERGENT_FREQ_BALANCE_CANONICAL,  # e/(π+e) ≈ 0.4638 (0.5 → canonical)
+# Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
+    ARITHMETIC_FFT_ENHANCEMENT_CANONICAL,
+    EMERGENT_COORDINATION_BOOST_CANONICAL,
+    EMERGENT_COUPLING_STRENGTH_CANONICAL,
+    EMERGENT_EFFICIENCY_GAIN_CANONICAL,
+    EMERGENT_FREQ_BALANCE_CANONICAL,
 )
 
 

@@ -23,7 +23,7 @@ $$\frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t)$$
 
 Structural changes occur exclusively through **13 canonical operators** (AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH) governed by **unified grammar rules U1-U6**. Each operator carries a canonical contract: it acts on exactly one channel of the nodal equation — the form EPI, the capacity νf, the phase θ, or the pressure ΔNFR — at node or network scale.
 
-System state is characterized by four **structural fields** — the four orders of the discrete structural-derivative tower (the tetrad). Each is *associated* with a constant as a notational label; only **π** is a genuine structural scale (the phase-wrap bound of the phase sector). γ, e, φ are notational, not derived structural scales.
+System state is characterized by four **structural fields** — the four orders of the discrete structural-derivative tower (the tetrad). Only **π** is a genuine structural scale (the phase-wrap bound of the phase sector); the coherence length is set by the spectral gap (ξ_C ∝ 1/√λ₂) and the Φ_s confinement bound is π-derived. φ, γ, e are not structural scales — everything other than π emerges from the nodal dynamics.
 
 | Field | Tower order | Meaning & bound |
 |-------|-------------|------------------------------|

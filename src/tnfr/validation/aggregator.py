@@ -51,7 +51,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable, Sequence
 
-from ..constants.canonical import K_PHI_CANONICAL_THRESHOLD, PHI  # Golden ratio + 0.9×π
+from ..constants.canonical import K_PHI_CANONICAL_THRESHOLD
 
 try:  # Graph dependency (NetworkX-like interface)
     import networkx as nx  # type: ignore

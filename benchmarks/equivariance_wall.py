@@ -47,8 +47,8 @@ HONEST SCOPE:
   non-derivable per-node diagonal. It does NOT prove RH, Navier-Stokes regularity, or
   the Yang-Mills mass gap: the real programmes add analytic content (continuum limits,
   cascade development, non-Abelian existence) on top of this shape. The achievement is
-  UNIFICATION OF THE OBSTRUCTION, not its removal. R (continuum) and the constants
-  phi, gamma, pi, e remain assumed substrate. Nothing here closes G4 = RH.
+  UNIFICATION OF THE OBSTRUCTION, not its removal. R (continuum) and pi remain
+  assumed substrate. Nothing here closes G4 = RH.
 
 Run:
     python benchmarks/equivariance_wall.py
@@ -342,9 +342,9 @@ def main():
     print("  is not nodal-equation-derivable (P2). HONEST SCOPE: this is exact toy-")
     print("  graph representation theory (Schur + Reynolds projector); it UNIFIES the")
     print("  obstruction (one algebraic shape behind all three walls) but does NOT")
-    print("  remove it. It does not prove RH, Navier-Stokes, or Yang-Mills; R and the")
+    print("  remove it. It does not prove RH, Navier-Stokes, or Yang-Mills; R and pi")
     print(
-        "  constants phi,gamma,pi,e stay assumed substrate; nothing here closes G4=RH."
+        "  stay assumed substrate; nothing here closes G4=RH."
     )
     return 0 if overall else 1
 

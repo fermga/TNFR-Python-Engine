@@ -50,8 +50,8 @@ except ImportError:
     HAS_NETWORKX = False
     nx = None
 
-# Import canonical constants for Phase 6 magic number elimination
-from ..constants.canonical import (
+# Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
+from ..constants.operational import (
     INTEGRATION_ACCESS_TIME_CANONICAL,
     INTEGRATION_CACHE_EFF_CANONICAL,
     INTEGRATION_CACHE_EFFICIENCY_CANONICAL,

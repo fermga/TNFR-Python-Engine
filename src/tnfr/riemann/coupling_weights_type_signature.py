@@ -6,9 +6,8 @@ quantifies on canonical TNFR mixing-weight reads whether the
 canonical scalar-dict typing
 :math:`\\{w_{c} \\in \\mathbb{R} : c \\in C\\}_{\\text{global}}`
 (one global scalar per component name :math:`c`; canonical defaults
-at ``src/tnfr/config/defaults_core.py:57`` for ``DNFR_WEIGHTS``,
-``defaults_core.py:65`` for ``SI_WEIGHTS``, and
-``defaults_core.py:150`` for ``SELECTOR_WEIGHTS``) admits an
+``DNFR_WEIGHTS``, ``SI_WEIGHTS``, and ``SELECTOR_WEIGHTS`` in
+``src/tnfr/config/defaults_core.py``) admits an
 *irreducible* node-indexed enrichment
 :math:`\\{w_{c}^{(i)}\\}_{i \\in V}`, edge-indexed enrichment
 :math:`\\{w_{c}^{(i,j)}\\}_{(i,j) \\in E}`, matrix lift
@@ -77,9 +76,7 @@ References
 ----------
 - ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md`` §13quadraginta-nona
 - ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §4 row B6
-- ``src/tnfr/config/defaults_core.py:57`` (``DNFR_WEIGHTS`` default)
-- ``src/tnfr/config/defaults_core.py:65`` (``SI_WEIGHTS`` default)
-- ``src/tnfr/config/defaults_core.py:150`` (``SELECTOR_WEIGHTS`` default)
+- ``src/tnfr/config/defaults_core.py`` (``DNFR_WEIGHTS``, ``SI_WEIGHTS``, ``SELECTOR_WEIGHTS`` defaults — the π-derived coherence-band hierarchy)
 - ``src/tnfr/dynamics/dnfr.py:2762-2764`` (canonical scalar read)
 - ``src/tnfr/metrics/sense_index.py:425-448`` (canonical scalar read)
 - ``src/tnfr/backends/torch_backend.py:172-176`` (canonical scalar read)
