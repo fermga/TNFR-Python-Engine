@@ -500,12 +500,9 @@ def _compute_dnfr_conservation_derivative(j_dnfr_divergence: float) -> float:
     - Conservation: -∇·J_ΔNFR [flow continuity]
     - Decay: λ·|∇·J| [natural relaxation, prevents accumulation]
     """
-    # Import canonical constants
-
-    # Physics coefficients (RECALIBRATED from canonical constants)
-    decay_rate = (
-        0.135  # ≈ 0.135 (operational decay factor)
-    )
+    # Operational decay factor for the ΔNFR conservation relaxation (gentle
+    # magnitude on the flux-divergence scale, not a coherence level).
+    decay_rate = 0.135
 
     # Conservation term: flux in increases ΔNFR, flux out decreases it
     conservation_term = -j_dnfr_divergence

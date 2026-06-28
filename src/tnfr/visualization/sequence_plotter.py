@@ -15,6 +15,8 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from ..constants.canonical import CRITICAL_EXPONENT as _CRIT_EXP
+from ..constants.canonical import FRAGMENTATION_THRESHOLD as _COH_LO
+from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as _COH_HI
 from ..constants.operational import EMERGENT_STABILITY_THRESHOLD_CANONICAL as _STAB_THRESH
 from ..constants.canonical import FEEDBACK_LEARNING_RATE as _FEEDBACK_LR
 from ..constants.operational import NODAL_OPT_COUPLING_CANONICAL as _NODAL_COUPLING
@@ -22,11 +24,12 @@ from ..constants.canonical import UM_COMPAT_THRESHOLD as _UM_COMPAT
 from ..mathematics.unified_numerical import np
 
 # Cosmetic dashboard layout values (matplotlib rendering only — NOT TNFR
-# physics; no structural meaning). Plain literals.
-_INV_PHI = 0.618  # alpha / balance / gauge level
-_GAMMA_PI = 0.184  # vertical-position base
-_PHI = 1.618  # annotation border width
-_E = 2.718  # default line width
+# physics; no structural meaning). Plain display literals.
+_LAYOUT_LEVEL = 0.6  # mid layout level (alpha / y-centre / reference line)
+_LAYOUT_BASE = 0.18  # vertical-position base
+_BORDER_WIDTH = 1.5  # annotation border width
+_LINE_WIDTH = 2.5  # default line width
+_BAR_WIDTH = 0.35  # default bar / annotation-padding width
 
 if TYPE_CHECKING:
     from ..operators.health_analyzer import SequenceHealthMetrics
@@ -179,10 +182,10 @@ class SequenceVisualizer:
             # Arrange in a flowing pattern
             for i, op in enumerate(normalized):
                 x = (
-                    _GAMMA_PI + (i / (n_ops - 1)) * _UM_COMPAT
+                    _LAYOUT_BASE + (i / (n_ops - 1)) * _UM_COMPAT
                 )  # base + range (operational)
                 # Add slight vertical variation for visual interest
-                y = _INV_PHI + _NODAL_COUPLING * np.sin(
+                y = _LAYOUT_LEVEL + _NODAL_COUPLING * np.sin(
                     i * np.pi / 3
                 )  # center + amplitude (operational)
                 positions[i] = (x, y)
@@ -207,7 +210,7 @@ class SequenceVisualizer:
                 arrowprops=dict(
                     arrowstyle="->",
                     color=color,
-                    lw=_E,  # e - natural line width
+                    lw=_LINE_WIDTH,  # default line width
                     connectionstyle=f"arc3,rad={_NODAL_COUPLING}",  # arc radius
                 ),
             )
@@ -286,7 +289,7 @@ class SequenceVisualizer:
                 va="top",
                 ha="left",
                 bbox=dict(
-                    boxstyle="round", facecolor="wheat", alpha=_INV_PHI
+                    boxstyle="round", facecolor="wheat", alpha=_LAYOUT_LEVEL
                 ),  # transparency
             )
 
@@ -387,9 +390,9 @@ class SequenceVisualizer:
         # Define benchmark values for ideal sequences
         # These represent canonical TNFR targets for well-formed sequences
         BENCHMARK_COHERENCE = _UM_COMPAT  # canonical coherence target
-        BENCHMARK_BALANCE = _INV_PHI  # inverse balance
+        BENCHMARK_BALANCE = _LAYOUT_LEVEL  # reference balance level
         BENCHMARK_SUSTAINABILITY = _UM_COMPAT  # sustainability target
-        BENCHMARK_EFFICIENCY = _INV_PHI  # efficiency standard
+        BENCHMARK_EFFICIENCY = _LAYOUT_LEVEL  # reference efficiency level
         BENCHMARK_FREQUENCY = _STAB_THRESH  # frequency threshold
         BENCHMARK_COMPLETENESS = _UM_COMPAT  # completeness standard
         BENCHMARK_SMOOTHNESS = _math.sqrt(3) / 2  # √3/2 - harmonic smoothness
@@ -404,7 +407,7 @@ class SequenceVisualizer:
             BENCHMARK_SMOOTHNESS,
         ]
         x_pos = np.arange(num_vars)
-        width = 1.0 / _E  # 1/e - natural bar width
+        width = _BAR_WIDTH  # default bar width
 
         bars1 = ax_bars.bar(
             x_pos - width / 2, metrics_values, width, label="Current", color="#3498db"
@@ -415,7 +418,7 @@ class SequenceVisualizer:
             width,
             label="Benchmark",
             color="#95a5a6",
-            alpha=_INV_PHI,  # benchmark transparency
+            alpha=_LAYOUT_LEVEL,  # benchmark transparency
         )
 
         ax_bars.set_ylabel("Score", fontsize=10)
@@ -445,13 +448,13 @@ class SequenceVisualizer:
         overall = health_metrics.overall_health
 
         # Determine color based on health
-        if overall >= _INV_PHI:  # ≈ 0.618 - excellent threshold
+        if overall >= _COH_HI:  # high-coherence gate (excellent)
             gauge_color = "#2ecc71"  # Excellent
             status = "EXCELLENT"
-        elif overall >= _STAB_THRESH:  # ≈ 0.590 - good threshold
+        elif overall >= _STAB_THRESH:  # stability threshold (good)
             gauge_color = "#3498db"  # Good
             status = "GOOD"
-        elif overall >= 1.0 / _E:  # 1/e - fair threshold
+        elif overall >= _COH_LO:  # fragmentation gate (fair)
             gauge_color = "#f39c12"  # Fair
             status = "FAIR"
         else:
@@ -471,7 +474,11 @@ class SequenceVisualizer:
         for i in range(0, 11):
             val = i / 10
             ax_gauge.axvline(
-                val, color="gray", linestyle="--", alpha=_CRIT_EXP, linewidth=_INV_PHI
+                val,
+                color="gray",
+                linestyle="--",
+                alpha=_CRIT_EXP,
+                linewidth=_LAYOUT_LEVEL,
             )  # alpha, width (operational)
 
         ax_gauge.set_xlim(0, 1)
@@ -517,7 +524,7 @@ class SequenceVisualizer:
             va="top",
             fontsize=9,
             bbox=dict(
-                boxstyle="round", facecolor="wheat", alpha=_INV_PHI
+                boxstyle="round", facecolor="wheat", alpha=_LAYOUT_LEVEL
             ),  # metadata transparency
         )
 
@@ -578,7 +585,7 @@ class SequenceVisualizer:
 
         # Create horizontal layout
         x_positions = np.linspace(0.1, 0.9, n_ops)
-        y_base = _INV_PHI  # vertical center
+        y_base = _LAYOUT_LEVEL  # vertical center
 
         # Draw operators with category-based coloring
         for i, op in enumerate(normalized):
@@ -727,7 +734,7 @@ class SequenceVisualizer:
             y_values,
             marker="o",
             markersize=12,
-            linewidth=_E,  # e - natural line width
+            linewidth=_LINE_WIDTH,  # default line width
             color="#3498db",
             label="Operator flow",
             zorder=2,
@@ -750,11 +757,11 @@ class SequenceVisualizer:
                 fontsize=10,
                 weight="bold",
                 bbox=dict(
-                    boxstyle=f"round,pad={1.0 / _E}",  # 1/e - annotation padding
+                    boxstyle=f"round,pad={_BAR_WIDTH}",  # annotation padding
                     facecolor=cat_color,
                     alpha=_STAB_THRESH,  # annotation alpha
                     edgecolor="black",
-                    linewidth=_PHI,  # annotation border
+                    linewidth=_BORDER_WIDTH,  # annotation border
                 ),
                 zorder=3,
             )
