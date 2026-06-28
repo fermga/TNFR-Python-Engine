@@ -614,6 +614,54 @@ $$\lambda(t)=\sum_{r\in H}\zeta^{tr}.$$
 
 **The wall, located on the ladder.** $\rho$ fixes the **type**, never the prime **identities** ($\rho(15)=\rho(35)=9$); it is not globally injective on types ($\rho=36$ is shared by $p^3q^3$ and $p^2qr$ — a type collision) and the unannotated scalar rank **aliases** at high prime powers (the §9.7 / example 154 scalar CRT wall: $3^7\!\cdot5^2\!\cdot41^2$ gives scalar $191$ vs product $192$). Recovering the identities is the same $e$–$\pi$ / $\mathrm{Fix}(S_n)^\perp$ residue (the continuous $\arg\zeta$ phase, §10) as every other sector. **Net:** the emergent ontology positions a number completely **up to** the prime-identity / phase wall — cardinal, operations, primality and factorization type all derive from structure; only the identities and the continuous phase remain. This is the precise sense in which "the arithmetic emerges from the canonical TNFR structure and dynamics."
 
+### 9.12 The Arithmetic Pulse — the Cyclotomy Law as the Prime's Chord (MEASURED)
+
+The *pulse* read-out (the **conservative** face of the nodal dynamics,
+[EMERGENT_ONTOLOGY.md §5.5](EMERGENT_ONTOLOGY.md)) reads the resonant spectrum
+$\omega_k=\sqrt{\lambda_k}$ of the canonical $L_{rw}$. Applied to the arithmetic
+NFR — the residue Cayley network $\mathrm{Cay}(\mathbb{Z}/n,R_k)$ — its **tone
+structure is exactly the PROVED cyclotomy law** of §9.11.
+[benchmarks/emergent_arithmetic_pulse.py](../benchmarks/emergent_arithmetic_pulse.py)
+measures it.
+
+**The pulse tone-count is the cyclotomy law.** The number of *distinct* resonant
+tones of the residue-NFR pulse is `structural_frequency_rank` (the distinct
+eigenvalues of $L_{rw}$), and on a prime this is
+
+$$\#\{\text{distinct tones}\} = s_k(p) = \gcd(k,p-1)+1 \quad (\text{§9.11, PROVED}).$$
+
+Measured exactly for $k=2,3,4,5$ across the primes (0 mismatches): the **arithmetic
+pulse IS the cyclotomy law** — the harmonic structure of a number's vibration is
+its cyclotomy degree.
+
+**A prime is the most degenerate chord.** For $p\equiv1\pmod4$ the real Paley-NFR
+pulse is the **silent mode** ($\lambda=0$) plus exactly **two resonant tones**
+$(\omega_-,\omega_+)$, each with multiplicity $(p-1)/2$ — the pulse's own
+`spectral_multiplicity` field reads $(p-1)/2$ exactly. A prime vibrates in the
+simplest chord the arithmetic NFR allows, at any size; **composites split the
+chord into more tones, multiplicatively** ($15\to9=3\times3$, $45\to12=4\times3$),
+so the tone-count encodes the **factorization type** — the multiplicative spectral
+rank of the §9.8 ladder, now read as the chord size.
+
+**The pulse splits across the symmetry wall.** The two scales of the pulse land on
+the two sides of the §9.7/§9.10 $\mathrm{Fix}(G)\oplus\mathrm{Fix}(G)^\perp$ split:
+the **per-NFR** pulse is **blind** (the residue graph is vertex-transitive, so the
+per-node substrate is in $\mathrm{Fix}(G)$), while the **collective** pulse — the
+spectrum — carries the cyclotomy ($\mathrm{Fix}(G)^\perp$). The real/phase split of
+§9.6 is inherited: the *real* conservative pulse reads the cyclotomy on the
+symmetric NFR ($p\equiv1\pmod4$); the *complex* directed pulse extends it to all
+odd primes.
+
+**Honest scope.** The tone-count *is* `structural_frequency_rank` (already the
+documented cyclotomy diagnostic), and $s_k(p)=\gcd(k,p-1)+1$ is the PROVED
+classical Gauss-period fact of §9.11. The contribution is the conservative-**pulse**
+reading — those distinct eigenvalues are the distinct resonant **tones** of the
+arithmetic vibration, so a prime is a maximally-degenerate chord and the
+factorization type is the chord size. It detects primality / factorization
+**type** structurally; it does **not** factor, does **not** reach the prime
+**identities** or the continuous $\arg\zeta$ phase (the same $\mathrm{Fix}(S_n)^\perp$
+wall, §10), and closes no open problem.
+
 ---
 
 ## 10. Prime Path Graphs and the TNFR-Riemann Connection

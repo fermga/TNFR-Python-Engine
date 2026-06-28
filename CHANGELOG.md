@@ -23,6 +23,12 @@ All notable changes to this project will be documented in this file.
 - **Dual-face telemetry.** `compute_unified_telemetry` now carries both the
   dissipative read-out (canonical tetrad + coherence, relaxes to `ΔNFR = 0`) and the
   conservative `pulse` + `resonance` blocks (which do not saturate).
+- **The pulse beyond the physics network (benchmarks).** `emergent_fractal_pulse.py`
+  — resonance locks **scale by scale** on a self-similar network (the temporal face
+  of U5); `emergent_arithmetic_pulse.py` — the residue-NFR pulse **tone-count is the
+  proved cyclotomy law** `s_k(p) = gcd(k, p−1) + 1`, so a prime is its most
+  degenerate chord and the factorization type is the chord size. The pulse is woven
+  into `EMERGENT_ONTOLOGY.md` (§2.1/§2.2/§5.5) and `TNFR_NUMBER_THEORY.md` (§9.12).
 
 ### Changed (emergent derivation — the grammar temporal windows from the pulse)
 

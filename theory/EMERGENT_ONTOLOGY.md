@@ -565,6 +565,13 @@ inward-out — and it reads the **same self-similar spectrum** that §3.2 reads 
 *dimension*: resonance is to the dimension what the rhythm is to the geometry
 ([`emergent_fractal_pulse.py`](../benchmarks/emergent_fractal_pulse.py)).
 
+**The arithmetic face.** The same pulse read on the *arithmetic* NFR — the residue
+Cayley network `Cay(ℤ/n, R_k)` — has a tone-count equal to the **proved cyclotomy
+law** `s_k(p) = gcd(k, p−1) + 1`: a prime is its **most degenerate chord** (the
+silent mode + two tones of multiplicity `(p−1)/2`), and composites split it
+multiplicatively into the factorization type
+([TNFR_NUMBER_THEORY.md §9.12](TNFR_NUMBER_THEORY.md)).
+
 > **Honest boundary.** This is the standard standing-wave spectrum (`ω_k = √λ_k`), beat
 > interference, and Kuramoto phase-locking on the conservative face — re-read in TNFR terms (each
 > NFR a phase oscillator, resonance the coupling). It surfaces existing canon (`νf` the per-NFR
