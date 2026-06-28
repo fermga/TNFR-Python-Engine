@@ -71,6 +71,10 @@ arithmetic **up to that wall**. The wall is located on the **non-self-adjoint di
 **sharpened and relocated, not dissolved**. This cross-domain refinement is a structural read-out
 catalog (one fixed point, many emergence sectors); it closes no open problem.
 
+**The single-statement synthesis** — one operator `L`, read at three depths (*form → dimension →
+dynamics*), across every domain (physics, networks, number, music), hitting one wall (`Fix(G)^⊥`) —
+is **§2.4**; the rest of the document (§3–§9) fills it in.
+
 ---
 
 ## 1. First principles
@@ -249,6 +253,30 @@ The same `Z₂` distinction separates **parity** `P` (an orientation-reversing a
 (one fixed point, many read-outs), not a new theorem. It closes **no** open problem — the wall
 persists (the prime identities / continuous `arg ζ` phase stay `Fix(S_n)^⊥`-confined; G4 = RH
 remains OPEN).
+
+### 2.4 The one structure, read in every domain — **the synthesis**
+
+The pivots above assemble into the single statement of the emergent ontology: **there is one object
+— the canonical operator `L` (the `ΔNFR` EPI channel of the nodal equation) — and every domain is a
+reading of it.** Each domain reads `L` at the same **three depths** (§2.1: *form* `L` itself →
+*dimension* `d_s` / grade, the spectral scaling → *dynamics* `ω_k = √λ_k`, the spectral values) and
+splits along the same **symmetry sectors** (§2.3: `Fix(G) ⊕ Fix(G)^⊥`). The reachable part — the
+**type / symmetry**, resolved by the spectrum — *emerges*; the one unreachable residue — the
+**identity** in `Fix(G)^⊥` — is the **same wall** in every domain.
+
+| Domain | Form (the coupling) | Dimension (grade / `d_s`) | Dynamics (the spectrum) | The shared wall (`Fix(G)^⊥`) |
+|--------|--------------------|---------------------------|-------------------------|------------------------------|
+| **Physics** | the graph / field | spatial `d_s` (§3.2) | the tetrad, the pulse `ω_k=√λ_k`, thermodynamics, gauge (§3–§9) | the non-spectral residue — no genuine particle / quantum closure (§9, OPEN) |
+| **Networks** | the network | `d_s`, the metric `R_eff` (§3.1) | transport, relaxation, synchronization (§4, §6) | **isospectral graphs** — Kac: the shape is not heard from the spectrum |
+| **Number theory** | the residue Cayley net | the integer = cardinal = simplex grade ([NT §9.8](TNFR_NUMBER_THEORY.md)) | prime = `ΔNFR=0`; the cyclotomy rank `s_k(p)=gcd(k,p−1)+1` = the **arithmetic pulse** ([NT §9.12](TNFR_NUMBER_THEORY.md)) | the prime **identities** / `arg ζ` phase = `S(T) ∈ Fix(S_n)^⊥` |
+| **Music** | the resonator's shape | the dimension sets the regime (§5.5) | pitch `ω_k=√λ_k`, chord, timbre; consonance = phase; **1D harmonic, 2D+ inharmonic** | **Kac again** — you cannot hear the shape of the drum: the type, not the identity |
+
+So the emergent ontology is **one operator, read at three depths, across many domains, hitting one
+wall**. A **number**, a **dimension**, a **geometry** and a **musical regime** are not analogies —
+they are the *same* spectrum of `L` read differently; and the prime's **identity**, the drum's
+**shape**, the `ζ` residue `S(T)`, and the particle / quantum closure are the *same* unreachable
+`Fix(G)^⊥`. This is a **unifying re-expression** (one fixed point, many read-outs); it closes no
+open problem — it is the single picture the catalog (§3–§9) fills in.
 
 ---
 
