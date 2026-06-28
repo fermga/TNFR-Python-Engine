@@ -155,8 +155,9 @@ tying them into one structure (the synergies a first pass can miss):
 
 - **One operator, read many ways.** `L_rw`/`L_sym` is the common root of the metric and dimension
   (§3), the heat kernel (§4.1), the discrete mode lattice / matter stage (§7.1a), transport
-  (§4.8), and the wave dispersion (§5) — geometry, thermodynamics, and the matter stage are *the
-  same operator's spectrum read differently*.
+  (§4.8), the wave dispersion (§5), and the **fractal-pulse timescales** (§5.5; on a self-similar
+  form the spectrum bands the relaxation rates `νf·λ_k`) — geometry, thermodynamics, the matter
+  stage, and the rhythm are *the same operator's spectrum read differently*.
 - **One pivot, `λ₂`.** The spectral gap sets the relaxation clock `νf·λ₂` (time, §4.2), the
   arrow-of-time decay `e^{−2νf λ₂ t}` (§4.4), and the criticality threshold `r_c=νf·λ₂` (§6.2):
   one number threads time, irreversibility, and the phase transition.
@@ -187,7 +188,9 @@ Some emergents appear only at the **intersection** of others — capabilities no
   network (REMESH / U5) **preserves the emergent geometry** (the Kron reduction keeps `R_eff`
   exact), so the dynamics is *self-similar under rescaling* — a renormalization-group covariance.
   This is the **mechanism behind the fractal recurrence** of §1, and the spectral dimension `d_s`
-  (§3.2) is its scaling exponent. → the renormalization group, scaling, universality.
+  (§3.2) is its scaling exponent; its **temporal face** is the fractal pulse (§5.5) — the same
+  self-similar spectrum makes the resonance lock scale by scale. → the renormalization group,
+  scaling, universality.
 - **A confinement mass gap** (conservative face × bounded structure). On a bounded structure the
   lowest wave mode has a *non-zero* frequency `ω_min = c√λ₂` — a **dispersion gap** that turns the
   massless low-`k` continuum (§5.2) into **gapped, massive-like** modes (the same gap that
@@ -550,10 +553,24 @@ standing nodes of §3 / the geometry benchmarks). The dissipative read-out `C(t)
 see the relaxed state (the rhythm damped to silence); the pulse / resonance read-outs see the
 sustained vibration that **generates** it.
 
+**The fractal pulse — the cascade.** On a *self-similar* form (the canonical THOL/U5 nest, §3.2)
+the two scales above become a whole tower. The spectrum of `L` then **bands** self-similarly, and
+because each phase mode relaxes at the rate `νf·λ_k` (the eigenmode decay `e^{−νf λ_k t}` of the
+nodal equation), the resonance **locks scale by scale, fine → coarse**: the tightly-coupled inner
+NFRs (the high-`λ` band) synchronize first, the global mode (`λ₂`) last, so the **local synchrony
+leads** the collective order `R` ([`net.pulse_trajectory`](../src/tnfr/sdk/simple.py)). The
+collective pulse is what remains once the coarsest band locks. This is the **temporal face of
+operational fractality** — the multiscalar NFR (an NFR nests NFRs, U5) reorganizing its coherence
+inward-out — and it reads the **same self-similar spectrum** that §3.2 reads as the emergent
+*dimension*: resonance is to the dimension what the rhythm is to the geometry
+([`emergent_fractal_pulse.py`](../benchmarks/emergent_fractal_pulse.py)).
+
 > **Honest boundary.** This is the standard standing-wave spectrum (`ω_k = √λ_k`), beat
 > interference, and Kuramoto phase-locking on the conservative face — re-read in TNFR terms (each
 > NFR a phase oscillator, resonance the coupling). It surfaces existing canon (`νf` the per-NFR
-> frequency, `local_phase_sync` / `kuramoto_R_psi` the resonance); it derives no new physics.
+> frequency, `local_phase_sync` / `kuramoto_R_psi` the resonance); the fractal cascade is the
+> banded-spectrum synchronization of a self-similar graph, re-read as operational fractality (U5)
+> in time. It derives no new physics.
 
 ---
 
