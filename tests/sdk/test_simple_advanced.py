@@ -666,3 +666,75 @@ class TestFractalResonantNode:
         micro = sum(1 for r in scan.nodes.values() if r.equilibrium) / len(scan.nodes)
         assert micro == net.nfr()["equilibrium_fraction"]
         assert scan.equilibrium_tolerance == pytest.approx(1e-3)
+
+    def test_pulse_trajectory_records_rhythm_in_motion(self):
+        """The pulse in motion: the rhythm forms as the NFR pulses resonate.
+
+        Snapshots are time-blind; from a perturbed state the trajectory
+        records the synchronization R(t) and the local-before-global cascade,
+        and the collective pulse is computed once (evolution-invariant)."""
+        import random
+
+        from tnfr.alias import set_attr
+        from tnfr.constants.aliases import ALIAS_THETA, ALIAS_VF
+
+        net = TNFR.create(24, seed=0).ring()
+        rng = random.Random(0)
+        for n in net.G.nodes():
+            set_attr(net.G.nodes[n], ALIAS_VF, rng.uniform(0.6, 1.4))
+            set_attr(net.G.nodes[n], ALIAS_THETA, rng.uniform(0.0, 6.283))
+        traj = net.pulse_trajectory(steps=8)
+        assert traj["steps"] == 8
+        for key in ("phase_coherence", "coherence", "local_resonance"):
+            assert len(traj[key]) == 8
+        assert all(0.0 <= r <= 1.0 for r in traj["phase_coherence"])
+        assert all(0.0 <= x <= 1.0 for x in traj["local_resonance"])
+        # the per-NFR pulses synchronize over the run (R rises)
+        assert traj["synchronizing"] is True
+        assert traj["delta_R"] > 0.0
+        # local-before-global: per-NFR pulses lock with neighbours first, so
+        # local resonance leads the global rhythm (robust margin)
+        assert traj["local_resonance"][-1] > traj["phase_coherence"][-1]
+        assert traj["local_leads_global"] is True
+        assert isinstance(traj["collective_pulse"]["fundamental"], float)
+
+    def test_pulse_trajectory_is_non_destructive(self):
+        """The trajectory evolves a copy; the caller's network is untouched."""
+        net = TNFR.create(12, seed=1).ring().evolve(2)
+        before = net.coherence()
+        first = net.pulse_trajectory(steps=4)
+        second = net.pulse_trajectory(steps=4)
+        # identical first sample => the network was not advanced in place
+        assert first["phase_coherence"][0] == pytest.approx(
+            second["phase_coherence"][0]
+        )
+        assert net.coherence() == pytest.approx(before)
+
+    def test_evolve_record_populates_rhythm_history(self):
+        """evolve(record=True) records the canonical pulse-in-motion series.
+
+        The engine's own metrics step samples kuramoto_R / C_steps after each
+        cycle, surfaced by history() -- the resonance forming, not a snapshot.
+        """
+        import random
+
+        from tnfr.alias import set_attr
+        from tnfr.constants.aliases import ALIAS_THETA, ALIAS_VF
+
+        net = TNFR.create(24, seed=0).ring()
+        rng = random.Random(0)
+        for n in net.G.nodes():
+            set_attr(net.G.nodes[n], ALIAS_VF, rng.uniform(0.6, 1.4))
+            set_attr(net.G.nodes[n], ALIAS_THETA, rng.uniform(0.0, 6.283))
+        net.evolve(5, record=True)
+        hist = net.history()
+        assert len(hist["kuramoto_R"]) == 5
+        assert len(hist["C_steps"]) == 5
+        assert all(0.0 <= r <= 1.0 for r in hist["kuramoto_R"])
+        # the per-NFR pulses synchronize over the run (the rhythm forms)
+        assert hist["kuramoto_R"][-1] > hist["kuramoto_R"][0]
+
+    def test_evolve_without_record_keeps_fast_path(self):
+        """The default path records no per-step rhythm series."""
+        net = TNFR.create(8, seed=1).ring().evolve(3)
+        assert net.history()["kuramoto_R"] == []

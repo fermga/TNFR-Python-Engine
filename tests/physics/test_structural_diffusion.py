@@ -26,6 +26,8 @@ from tnfr.physics.structural_diffusion import (
     StructuralStabilityCertificate,
     UndampedLimitCertificate,
     commute_time,
+    compute_emergent_pulse,
+    compute_nodal_pulse,
     current_divergence,
     damped_wave_rates,
     degree_weighted_total,
@@ -646,3 +648,104 @@ class TestStructuralFlow:
             assert cert.equilibrium_zero_current
             assert cert.ohm_law_holds
             assert "VALID" in cert.summary()
+
+
+class TestEmergentPulse:
+    """The emergent pulse read-out: the resonant rhythm the substrate plays."""
+
+    def test_fundamental_is_slowest_nonuniform_resonance(self) -> None:
+        import pytest
+
+        # ring C_24: the slowest resonance is omega_2 = sqrt(1 - cos(2 pi/24))
+        G = nx.cycle_graph(24)
+        pulse = compute_emergent_pulse(G)
+        expected = math.sqrt(1.0 - math.cos(2.0 * math.pi / 24))
+        assert pulse["fundamental"] == pytest.approx(expected, rel=1e-6)
+
+    def test_excludes_uniform_mode(self) -> None:
+        # the lambda ~ 0 uniform mode is not a resonance
+        G = nx.cycle_graph(24)
+        pulse = compute_emergent_pulse(G)
+        assert pulse["n_modes"] == 23
+        assert all(w > 1e-9 for w in pulse["resonant_spectrum"])
+
+    def test_vibration_energy_is_half_sum_lambda(self) -> None:
+        import pytest
+
+        G = nx.cycle_graph(24)
+        eigvals, _ = structural_eigenmodes(G)
+        pulse = compute_emergent_pulse(G)
+        assert pulse["vibration_energy"] == pytest.approx(
+            0.5 * float(np.sum(eigvals)), rel=1e-9
+        )
+
+    def test_fractal_signature_counts_degeneracy(self) -> None:
+        # K_6: L_sym eigenvalue 6/5 has multiplicity 5 (the standard irrep
+        # of S_6) -> the self-similar / fractal degeneracy signature
+        G = nx.complete_graph(6)
+        pulse = compute_emergent_pulse(G)
+        assert pulse["spectral_multiplicity"] == 5
+        assert pulse["dominant_beat"] >= 0.0
+
+
+class TestNodalPulse:
+    """The per-NFR pulse: each NFR oscillates; resonance couples the pulses."""
+
+    @staticmethod
+    def _pulsing_ring(n, vf, phases):
+        G = nx.cycle_graph(n)
+        for i, k in enumerate(G.nodes()):
+            G.nodes[k].update(
+                nu_f=float(vf[i]), theta=float(phases[i]), EPI=0.0
+            )
+        return G
+
+    def test_phase_locked_pulses_have_unit_coherence(self) -> None:
+        import pytest
+
+        # all NFRs share one phase -> collective + local resonance = 1
+        G = self._pulsing_ring(12, [1.0] * 12, [0.0] * 12)
+        pulse = compute_nodal_pulse(G)
+        assert pulse["phase_coherence"] == pytest.approx(1.0, abs=1e-9)
+        assert pulse["mean_local_resonance"] == pytest.approx(1.0, abs=1e-9)
+
+    def test_evenly_spread_pulses_unlock_collective_resonance(self) -> None:
+        # phases evenly around the circle -> collective R = 0, yet each NFR
+        # still locally resonates with its two neighbours at cos(2 pi / n)
+        import pytest
+
+        n = 8
+        phases = [2.0 * math.pi * i / n for i in range(n)]
+        G = self._pulsing_ring(n, [1.0] * n, phases)
+        pulse = compute_nodal_pulse(G)
+        assert pulse["phase_coherence"] == pytest.approx(0.0, abs=1e-9)
+        assert pulse["mean_local_resonance"] == pytest.approx(
+            math.cos(2.0 * math.pi / n), abs=1e-9
+        )
+
+    def test_frequency_stats_are_per_nfr_pulse_rates(self) -> None:
+        import pytest
+
+        vf = [0.5, 1.0, 1.5, 2.0]
+        G = self._pulsing_ring(4, vf, [0.0] * 4)
+        pulse = compute_nodal_pulse(G)
+        assert pulse["mean_frequency"] == pytest.approx(1.25)
+        assert pulse["frequency_spread"] == pytest.approx(float(np.std(vf)))
+        assert pulse["n_pulsing"] == 4
+        assert pulse["n_nodes"] == 4
+
+    def test_resonance_gate_is_canonical_u3_bound(self) -> None:
+        import pytest
+
+        from tnfr.constants.canonical import DELTA_PHI_MAX
+
+        G = self._pulsing_ring(6, [1.0] * 6, [0.0] * 6)
+        pulse = compute_nodal_pulse(G)
+        assert pulse["resonance_gate"] == pytest.approx(float(DELTA_PHI_MAX))
+
+    def test_inactive_nfr_not_pulsing(self) -> None:
+        # nu_f = 0 -> the node cannot reorganize -> not a live pulse
+        G = self._pulsing_ring(4, [1.0, 0.0, 1.0, 0.0], [0.0] * 4)
+        pulse = compute_nodal_pulse(G)
+        assert pulse["n_pulsing"] == 2
+        assert pulse["n_nodes"] == 4

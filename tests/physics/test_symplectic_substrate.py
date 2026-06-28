@@ -664,6 +664,32 @@ class TestSubstrateIntegration:
         assert sub["phase_space_dimension"] == 80
         assert abs(sub["liouville_divergence"]) < 1e-9
 
+    def test_unified_telemetry_includes_pulse(self) -> None:
+        # dual-face telemetry: the conservative pulse (the resonant rhythm)
+        # alongside the dissipative canonical coherence read-out
+        from tnfr.physics.fields import compute_unified_telemetry
+
+        G = _canonical_graph(20)
+        telemetry = compute_unified_telemetry(G)
+        assert "pulse" in telemetry
+        pulse = telemetry["pulse"]
+        assert pulse["n_modes"] >= 1
+        assert pulse["fundamental"] > 0.0
+        assert pulse["vibration_energy"] > 0.0
+
+    def test_unified_telemetry_includes_resonance(self) -> None:
+        # the per-NFR pulse / resonance face (the source the collective
+        # rhythm emerges from) alongside the collective pulse
+        from tnfr.physics.fields import compute_unified_telemetry
+
+        G = _canonical_graph(20)
+        telemetry = compute_unified_telemetry(G)
+        assert "resonance" in telemetry
+        res = telemetry["resonance"]
+        assert 0.0 <= res["phase_coherence"] <= 1.0
+        assert 0.0 <= res["mean_local_resonance"] <= 1.0
+        assert res["n_nodes"] == 20
+
     def test_sdk_symplectic_substrate_method(self) -> None:
         from tnfr.sdk import TNFR, SymplecticReport
 

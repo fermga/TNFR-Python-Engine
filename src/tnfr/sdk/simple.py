@@ -877,7 +877,12 @@ class Network:
 
     # === EVOLUTION ===
 
-    def evolve(self, steps: int = 5, sequence: str = "basic_activation") -> Network:
+    def evolve(
+        self,
+        steps: int = 5,
+        sequence: str = "basic_activation",
+        record: bool = False,
+    ) -> Network:
         """Evolve the network by applying a canonical operator sequence.
 
         The named *sequence* is resolved to canonical structural operators
@@ -904,6 +909,12 @@ class Network:
             :data:`tnfr.sdk.fluent.NAMED_SEQUENCES`). Defaults to
             ``"basic_activation"`` =
             ``[Emission, Reception, Coherence, Resonance, Silence]``.
+        record : bool
+            When True, sample the canonical metrics step after each cycle so
+            the per-step rhythm series (the pulse in motion: ``kuramoto_R``,
+            ``C_steps``, ``phase_sync``, ``Si_mean``) are recorded into the
+            graph history, readable via :meth:`history`. Default False (the
+            fast path, no recording overhead).
 
         Returns
         -------
@@ -934,12 +945,26 @@ class Network:
         # sub-threshold birth phase (neighbour EPI < ACTIVE_EMISSION_THRESHOLD
         # ~ 0.464) makes Reception correctly find no sources; that transient
         # warning is silenced on the high-level SDK surface.
-        _run_network_sequence(
-            self.G,
-            operator_names,
-            cycles=steps,
-            suppress_birth_warnings=True,
-        )
+        if record:
+            # cycle-by-cycle so the canonical metrics step samples the rhythm
+            # (kuramoto_R, C_steps, ...) after each cycle: the pulse in motion
+            from ..metrics.core import _metrics_step
+
+            for _ in range(int(steps)):
+                _run_network_sequence(
+                    self.G,
+                    operator_names,
+                    cycles=1,
+                    suppress_birth_warnings=True,
+                )
+                _metrics_step(self.G)
+        else:
+            _run_network_sequence(
+                self.G,
+                operator_names,
+                cycles=steps,
+                suppress_birth_warnings=True,
+            )
         return self
 
     def auto_optimize(self) -> Network:
@@ -1030,6 +1055,28 @@ class Network:
             on_step=_record,
         )
         return history
+
+    def history(self) -> dict[str, list[float]]:
+        """The recorded pulse in motion: the canonical per-step rhythm series.
+
+        After :meth:`evolve` with ``record=True`` the engine's metrics step
+        records the canonical temporal series in the graph history. This
+        surfaces the rhythm ones -- the collective resonance ``kuramoto_R``,
+        the coherence ``C_steps``, the phase synchrony ``phase_sync`` and the
+        mean sense index ``Si_mean`` -- as the engine actually recorded them
+        over the run (the resonance forming, not a snapshot). Empty lists if
+        the network was not evolved with ``record=True``.
+
+        Returns
+        -------
+        dict[str, list[float]]
+            ``kuramoto_R``, ``C_steps``, ``phase_sync``, ``Si_mean``.
+        """
+        hist = self.G.graph.get("history", {})
+        keys = ("kuramoto_R", "C_steps", "phase_sync", "Si_mean")
+        return {
+            k: [float(x) for x in hist.get(k, [])] for k in keys
+        }
 
     # === METRICS ===
 
@@ -1551,6 +1598,132 @@ class Network:
                 "phase_sync": phase_sync,
             },
             "n_nodes": n,
+        }
+
+    def rhythm(self) -> dict[str, Any]:
+        """The emergent pulse: the resonant rhythm the substrate plays.
+
+        TNFR is a substrate that *vibrates and keeps a rhythm* -- the
+        conservative face of the nodal dynamics. Every structural mode
+        oscillates at omega_k = sqrt(lambda_k), and the equilibria (the
+        dNFR = 0 coherence states) are the BEATS the vibration passes through.
+        Where :meth:`nfr` is the dissipative read-out (the relaxed state),
+        this is its conservative twin -- the resonant spectrum, the dominant
+        beat and the self-similar (fractal) signature -- closed-form from the
+        structural spectrum (no time integration).
+
+        Returns
+        -------
+        dict
+            ``resonant_spectrum`` (leading omega_k), ``fundamental``,
+            ``dominant_beat``, ``spectral_multiplicity`` (fractal signature),
+            ``vibration_energy``, ``n_modes``.
+        """
+        from ..physics.structural_diffusion import compute_emergent_pulse
+
+        return compute_emergent_pulse(self.G)
+
+    def resonance(self) -> dict[str, Any]:
+        """The per-NFR pulse and the resonance that couples the NFRs.
+
+        Where :meth:`rhythm` is the collective network pulse, this is its
+        *source*: each NFR is itself a phase oscillator (the single-node
+        reduction of the nodal equation) pulsing at its own structural
+        frequency nu_f with phase phi. Resonance -- the local phase synchrony
+        per NFR and the global Kuramoto order R -- couples those pulses, and
+        the collective rhythm emerges as they lock (R -> 1). The local face
+        of the rhythm, from canonical per-node quantities. Most informative
+        after :meth:`evolve`.
+
+        Returns
+        -------
+        dict
+            ``mean_frequency``, ``frequency_spread`` (the per-NFR pulse
+            rates nu_f), ``phase_coherence`` (collective Kuramoto R),
+            ``mean_local_resonance`` (mean per-NFR resonance),
+            ``resonance_gate`` (Delta phi_max), ``n_pulsing``, ``n_nodes``.
+        """
+        from ..physics.structural_diffusion import compute_nodal_pulse
+
+        return compute_nodal_pulse(self.G)
+
+    def pulse_trajectory(
+        self, steps: int = 8, sequence: str = "basic_activation"
+    ) -> dict[str, Any]:
+        """The pulse IN MOTION: the rhythm forming as the NFR pulses resonate.
+
+        The snapshot read-outs (:meth:`rhythm`, :meth:`resonance`) see a single
+        instant; the interesting structure appears only when the dynamics
+        *runs*. This evolves a **copy** of the network ``steps`` times (so the
+        caller's network is untouched) and records the canonical rhythm
+        trajectory at each step -- the collective resonance ``R(t)`` (Kuramoto
+        order), the coherence ``C(t)``, and the mean per-NFR local resonance --
+        then reports how the collective rhythm emerges from the resonating
+        per-NFR pulses.
+
+        Two grounded facts shape it: (1) the collective topological pulse
+        ``omega_k = sqrt(lambda_k)`` is **invariant** under evolution on a fixed
+        graph, so it is computed once (not per step); (2) the per-NFR pulses
+        typically lock with their neighbours (local resonance) **before** the
+        global rhythm forms -- ``local_leads_global`` records that cascade
+        (clusters lock, then merge). Most informative from a perturbed /
+        off-equilibrium state.
+
+        Returns
+        -------
+        dict
+            ``phase_coherence`` (R(t)), ``coherence`` (C(t)),
+            ``local_resonance`` (mean per-NFR local resonance per step);
+            ``synchronizing`` (bool, R rises overall), ``delta_R`` (net change),
+            ``asymptotic_R`` (final R), ``local_leads_global`` (bool: local
+            crosses 0.9 before R crosses 0.5); ``collective_pulse`` (the
+            invariant fundamental + dominant beat), ``steps``.
+        """
+        from ..gamma import kuramoto_R_psi
+        from ..physics.structural_diffusion import (
+            compute_emergent_pulse,
+            compute_nodal_pulse,
+        )
+
+        probe = Network(self.G.copy(), name=f"{self.name}:pulse")
+        r_t: list[float] = []
+        c_t: list[float] = []
+        local_t: list[float] = []
+        t_local: int | None = None
+        t_global: int | None = None
+        for step in range(max(1, steps)):
+            if step:
+                probe.evolve(1, sequence=sequence)
+            r = float(kuramoto_R_psi(probe.G)[0])
+            c = float(probe.coherence())
+            local = float(compute_nodal_pulse(probe.G)["mean_local_resonance"])
+            r_t.append(r)
+            c_t.append(c)
+            local_t.append(local)
+            if t_local is None and local >= 0.9:
+                t_local = step
+            if t_global is None and r >= 0.5:
+                t_global = step
+        # the collective topological pulse is invariant under evolution on a
+        # fixed graph -> compute it once, not per step
+        pulse = compute_emergent_pulse(self.G)
+        delta_r = r_t[-1] - r_t[0]
+        local_leads = t_local is not None and (
+            t_global is None or t_local < t_global
+        )
+        return {
+            "phase_coherence": r_t,
+            "coherence": c_t,
+            "local_resonance": local_t,
+            "synchronizing": delta_r > 0.0,
+            "delta_R": delta_r,
+            "asymptotic_R": r_t[-1],
+            "local_leads_global": local_leads,
+            "collective_pulse": {
+                "fundamental": pulse["fundamental"],
+                "dominant_beat": pulse["dominant_beat"],
+            },
+            "steps": len(r_t),
         }
 
     # === COMPLEX FIELD & EXTENDED ACCESS ===

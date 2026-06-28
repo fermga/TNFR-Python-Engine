@@ -252,6 +252,8 @@ __all__ = [
     "degree_weighted_total",
     "structural_eigenmodes",
     "nodal_domain_count",
+    "compute_emergent_pulse",
+    "compute_nodal_pulse",
     "dispersion_relation",
     "instability_threshold",
     "fiedler_partition",
@@ -418,9 +420,9 @@ def relaxation_spectrum(G: Any) -> Any:
     np.ndarray
         The rates νf·λ_k sorted ascending (real parts).
     """
-    _, lap = structural_diffusion_operator(G)
-    eig = np.linalg.eigvals(lap).real
-    eig.sort()
+    # L_sym and L_rw share the spectrum; reuse the cached symmetric
+    # eigendecomposition (ascending, clipped >= 0). The rates are nu_f*lambda_k.
+    eig, _ = _cached_eigh(G)
     return structural_diffusivity(G) * eig
 
 
@@ -1182,10 +1184,59 @@ def _symmetric_normalized_laplacian(G: Any) -> tuple[list, Any]:
             w = float(G[node][m].get("weight", 1.0))
             adj[i, index[m]] = w
             deg[i] += w
-    dinv = np.where(deg > 0.0, 1.0 / np.sqrt(deg), 0.0)
+    # Compute D^{-1/2} only on connected nodes; isolated nodes (deg = 0) keep
+    # dinv = 0 (no division by zero -- the np.where form still evaluates
+    # 1/sqrt(0) for every entry before selecting, emitting a spurious warning).
+    dinv = np.zeros(n, dtype=float)
+    positive = deg > 0.0
+    dinv[positive] = 1.0 / np.sqrt(deg[positive])
     lap = np.eye(n) - (dinv[:, None] * adj * dinv[None, :])
     lap = 0.5 * (lap + lap.T)  # symmetrise residual numerical asymmetry
     return nodes, lap
+
+
+def _topology_signature(G: Any) -> tuple:
+    """A hashable signature of the graph topology (nodes + weighted edges).
+
+    The diffusion Laplacian depends only on the node set and the weighted edge
+    set -- never on node state (EPI, nu_f, theta). When this signature is
+    unchanged the spectrum is unchanged, so the eigendecomposition can be
+    reused across evolution steps and across read-outs.
+    """
+    nodes = _ordered_nodes(G)
+    idx = {nd: i for i, nd in enumerate(nodes)}
+    edges = tuple(
+        sorted(
+            (idx[u], idx[v], float(d.get("weight", 1.0)))
+            for u, v, d in G.edges(data=True)
+        )
+    )
+    return (len(nodes), tuple(nodes), edges)
+
+
+def _cached_eigh(G: Any) -> tuple[Any, Any]:
+    """Eigendecomposition of L_sym, memoized on the topology signature.
+
+    Returns ``(eigenvalues, eigenvectors)`` ascending and clipped ``>= 0``.
+    The decomposition is invariant under evolution on a fixed graph, so the
+    O(N^3) ``eigh`` runs once per topology; the cache lives in ``G.graph`` and
+    self-invalidates when the signature changes. ``structural_eigenmodes`` (the
+    rhythm path) and ``relaxation_spectrum`` (the spectrum / NFR path) share
+    this one decomposition -- L_sym and L_rw have the same spectrum.
+    """
+    sig = _topology_signature(G)
+    cache = G.graph.get("_tnfr_spectrum_cache")
+    if isinstance(cache, dict) and cache.get("sig") == sig:
+        return cache["vals"], cache["vecs"]
+    _, lap = _symmetric_normalized_laplacian(G)
+    eigvals, eigvecs = np.linalg.eigh(lap)
+    eigvals = np.clip(eigvals, 0.0, None)
+    G.graph["_tnfr_spectrum_cache"] = {
+        "sig": sig,
+        "vals": eigvals,
+        "vecs": eigvecs,
+    }
+    return eigvals, eigvecs
 
 
 def structural_eigenmodes(G: Any) -> tuple[Any, Any]:
@@ -1207,10 +1258,7 @@ def structural_eigenmodes(G: Any) -> tuple[Any, Any]:
         ``eigenvalues`` shape ``(N,)`` ascending; ``eigenvectors`` shape
         ``(N, N)`` with column ``k`` the k-th standing-wave mode shape.
     """
-    _, lap = _symmetric_normalized_laplacian(G)
-    eigvals, eigvecs = np.linalg.eigh(lap)
-    eigvals = np.clip(eigvals, 0.0, None)
-    return eigvals, eigvecs
+    return _cached_eigh(G)
 
 
 def nodal_domain_count(mode: Any) -> int:
@@ -1235,6 +1283,147 @@ def nodal_domain_count(mode: Any) -> int:
     if sig.size < 2:
         return 0
     return int(np.sum(np.abs(np.diff(sig)) > 0))
+
+
+def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
+    r"""The emergent pulse: the rhythm the substrate plays [CANONICAL].
+
+    The conservative face of the nodal dynamics is a *sustained vibration*:
+    every structural mode oscillates at the standing-wave frequency
+    :math:`\omega_k = \sqrt{\lambda_k}` (the discrete modes of
+    :func:`verify_undamped_limit` / :func:`structural_eigenmodes`).  The rhythm
+    is the interference of those resonances -- beats at the differences
+    :math:`\omega_j - \omega_k` -- and the equilibria (the ``dNFR = 0``
+    coherence states) are the beats the vibration passes through.  This unifies
+    the scattered conservative machinery (the spectrum, the standing-wave
+    frequencies, the self-similar decimation) into one *pulse* read-out,
+    computed closed-form from the structural spectrum (no time integration) --
+    the conservative twin of the dissipative coherence read-out.
+
+    Parameters
+    ----------
+    G : TNFRGraph
+    n_modes : int
+        Number of leading resonant frequencies to report.
+
+    Returns
+    -------
+    dict
+        ``resonant_spectrum`` (leading :math:`\omega_k = \sqrt{\lambda_k}`),
+        ``fundamental`` (the slowest non-uniform resonance), ``dominant_beat``
+        (the slowest beat = smallest positive :math:`\omega_j - \omega_k`),
+        ``spectral_multiplicity`` (the largest eigenvalue multiplicity = the
+        self-similar / fractal signature), ``vibration_energy``
+        (:math:`\tfrac12\sum\lambda_k`, the conserved structural-pressure
+        energy of the vibration), ``n_modes``.
+    """
+    eigvals, _ = structural_eigenmodes(G)
+    eigvals = np.asarray(eigvals, dtype=float)
+    omega = np.sqrt(np.clip(eigvals, 0.0, None))
+    nz = np.sort(omega[eigvals > 1e-9])  # exclude the uniform (lambda~0) mode
+    beats = np.diff(nz) if nz.size > 1 else np.asarray([])
+    pos = beats[beats > 1e-9] if beats.size else beats
+    _, counts = np.unique(np.round(eigvals, 9), return_counts=True)
+    return {
+        "resonant_spectrum": [float(x) for x in nz[:n_modes]],
+        "fundamental": float(nz[0]) if nz.size else 0.0,
+        "dominant_beat": float(pos.min()) if pos.size else 0.0,
+        "spectral_multiplicity": int(counts.max()),
+        "vibration_energy": float(0.5 * np.sum(eigvals)),
+        "n_modes": int(nz.size),
+    }
+
+
+def compute_nodal_pulse(G: Any) -> dict[str, Any]:
+    r"""The per-NFR pulse and its resonance [CANONICAL].
+
+    The collective rhythm (:func:`compute_emergent_pulse`) is what the NFR
+    *bricks* produce: every NFR is itself a phase oscillator -- the
+    single-node reduction of the nodal equation
+    :math:`\partial\mathrm{EPI}_i/\partial t=\nu_{f,i}\,\Delta\mathrm{NFR}_i`
+    -- pulsing at its own structural frequency :math:`\nu_{f,i}` with phase
+    :math:`\varphi_i`.  *Resonance* couples those pulses: the local
+    phase-synchrony (:func:`~tnfr.metrics.coherence.local_phase_sync`)
+    measures how phase-locked each NFR is with its neighbours, the global
+    Kuramoto order ``R`` (:func:`~tnfr.gamma.kuramoto_R_psi`) the collective
+    locking, and the U3 gate :data:`~tnfr.constants.canonical.DELTA_PHI_MAX`
+    sets admissibility.  The collective pulse emerges as these per-NFR pulses
+    resonate (``R -> 1``).  This is the *local* face of the rhythm -- the
+    pulsing NFRs that generate the network rhythm -- read from canonical
+    per-node quantities (no time integration).
+
+    Parameters
+    ----------
+    G : TNFRGraph
+
+    Returns
+    -------
+    dict
+        ``mean_frequency`` / ``frequency_spread`` (the per-NFR pulse rates
+        nu_f: mean and std in Hz_str), ``phase_coherence`` (the collective
+        Kuramoto ``R`` in ``[0, 1]`` -- how locked the pulses are),
+        ``mean_local_resonance`` (mean per-NFR local phase synchrony in
+        ``[0, 1]``), ``resonance_gate`` (the U3 admissibility bound
+        Delta phi_max), ``n_pulsing`` (NFRs with nu_f > 0), ``n_nodes``.
+    """
+    from ..constants.canonical import DELTA_PHI_MAX
+
+    nodes = list(G.nodes())
+    n = len(nodes)
+    gate = float(DELTA_PHI_MAX)
+    if not n:
+        return {
+            "mean_frequency": 0.0,
+            "frequency_spread": 0.0,
+            "phase_coherence": 0.0,
+            "mean_local_resonance": 0.0,
+            "resonance_gate": gate,
+            "n_pulsing": 0,
+            "n_nodes": 0,
+        }
+    vf = np.asarray(
+        [float(get_attr(G.nodes[k], ALIAS_VF, 0.0) or 0.0) for k in nodes],
+        dtype=float,
+    )
+    # collective resonance of the per-NFR pulses (Kuramoto order parameter)
+    try:
+        from ..gamma import kuramoto_R_psi
+
+        phase_coherence = float(kuramoto_R_psi(G)[0])
+    except Exception:
+        phase_coherence = 0.0
+    # per-NFR resonance: mean local phase synchrony (one shared matrix build)
+    try:
+        from ..metrics.coherence import (
+            coherence_matrix,
+            local_phase_sync_weighted,
+        )
+
+        order, W = coherence_matrix(G)
+        if order is None:
+            mean_local = 0.0
+        else:
+            mean_local = float(
+                np.mean(
+                    [
+                        local_phase_sync_weighted(
+                            G, k, nodes_order=order, W_row=W
+                        )
+                        for k in order
+                    ]
+                )
+            )
+    except Exception:
+        mean_local = 0.0
+    return {
+        "mean_frequency": float(np.mean(vf)),
+        "frequency_spread": float(np.std(vf)),
+        "phase_coherence": phase_coherence,
+        "mean_local_resonance": mean_local,
+        "resonance_gate": gate,
+        "n_pulsing": int(np.sum(vf > 1e-9)),
+        "n_nodes": n,
+    }
 
 
 @dataclass(frozen=True)

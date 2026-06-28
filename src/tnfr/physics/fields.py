@@ -915,6 +915,13 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     - Unified complex field (Ψ = K_φ + i·J_φ)
     - Emergent fields (χ, S, C)
     - Tensor invariants (ε, Q, conservation)
+    - Emergent pulse (conservative rhythm: ω_k = √λ_k, beats, vibration energy)
+
+    The telemetry is *dual-face*: the canonical/extended blocks are the
+    dissipative read-out (the tetrad and coherence that relax to the
+    ΔNFR = 0 attractor), while the ``pulse`` block is the conservative twin
+    -- the resonant spectrum the substrate vibrates at, which does not
+    saturate.
 
     Args:
         G: TNFR network with complete state data
@@ -973,6 +980,29 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     except Exception:
         symplectic_substrate = {}
 
+    # Emergent pulse -- the conservative-face rhythm read-out (the resonant
+    # spectrum omega_k = sqrt(lambda_k), the dominant beat and the
+    # self-similar signature). The dissipative coherence telemetry saturates
+    # at the dNFR = 0 attractor; the pulse is its conservative twin, computed
+    # closed-form from the structural spectrum (structural_diffusion.py).
+    try:
+        from .structural_diffusion import compute_emergent_pulse
+
+        pulse = compute_emergent_pulse(G)
+    except Exception:
+        pulse = {}
+
+    # Per-NFR resonance -- the local face of the pulse: each NFR oscillates
+    # (nu_f, phi) and resonance (local phase synchrony + the collective
+    # Kuramoto R) couples the pulses; the collective pulse emerges as they
+    # lock. The source the network rhythm is built from (structural_diffusion).
+    try:
+        from .structural_diffusion import compute_nodal_pulse
+
+        resonance = compute_nodal_pulse(G)
+    except Exception:
+        resonance = {}
+
     return {
         "canonical": canonical_telemetry,
         "extended_canonical": extended_suite,
@@ -981,6 +1011,8 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
         "tensor_invariants": tensor_invariants,
         "conservation": conservation,
         "symplectic_substrate": symplectic_substrate,
+        "pulse": pulse,
+        "resonance": resonance,
         "unified_field_version": "1.0.0",  # Track implementation version
     }
 
