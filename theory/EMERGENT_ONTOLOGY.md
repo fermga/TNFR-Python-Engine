@@ -572,12 +572,28 @@ silent mode + two tones of multiplicity `(p−1)/2`), and composites split it
 multiplicatively into the factorization type
 ([TNFR_NUMBER_THEORY.md §9.12](TNFR_NUMBER_THEORY.md)).
 
+**The music of the NFR.** Read as sound, the pulse is a whole musical structure —
+pitch (`ω_k = √λ_k`), chord (the distinct tones), timbre (the eigenvalue
+multiplicities), beats (`ω_j − ω_k`), and the standing **nodes** (the `ΔNFR = 0`
+NFRs, §3). It is **percussion**: the graph spectrum is generally *inharmonic* (a
+Chladni plate / drum), harmonic only for a 1D chain (a string), so **consonance**
+is not a frequency ratio but **phase coherence** — the U3 gate `Δφ_max = π/2` is the
+consonance boundary (`R = cos(Δφ/2)`). Distinct primes are the **independent
+voices** of the polyphony (the Euler product, decoupled ladders). And the music has
+the **same wall**: you cannot *hear the shape of the drum* (Kac) — isospectral NFRs
+share the pulse, and `ρ(pq)` is one chord for every semiprime — so the pulse hears
+the **type / symmetry**, never the **identity** (the `Fix(G)^⊥` wall, §7.1;
+[`emergent_musical_nfr.py`](../benchmarks/emergent_musical_nfr.py)).
+
 > **Honest boundary.** This is the standard standing-wave spectrum (`ω_k = √λ_k`), beat
 > interference, and Kuramoto phase-locking on the conservative face — re-read in TNFR terms (each
 > NFR a phase oscillator, resonance the coupling). It surfaces existing canon (`νf` the per-NFR
 > frequency, `local_phase_sync` / `kuramoto_R_psi` the resonance); the fractal cascade is the
 > banded-spectrum synchronization of a self-similar graph, re-read as operational fractality (U5)
-> in time. It derives no new physics.
+> in time; the *musical* reading is the same spectrum heard as sound (consonance = the U3 phase
+> gate, the Kac wall = the inverse spectral problem) — temperament, scales and the literal
+> harmonic series are **not** emergent (the spectrum is inharmonic) and are rejected. It derives
+> no new physics.
 
 ---
 

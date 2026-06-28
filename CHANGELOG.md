@@ -29,6 +29,14 @@ All notable changes to this project will be documented in this file.
   proved cyclotomy law** `s_k(p) = gcd(k, p−1) + 1`, so a prime is its most
   degenerate chord and the factorization type is the chord size. The pulse is woven
   into `EMERGENT_ONTOLOGY.md` (§2.1/§2.2/§5.5) and `TNFR_NUMBER_THEORY.md` (§9.12).
+- **The music of the NFR.** `emergent_musical_nfr.py` measures which musical
+  mechanisms emerge from the pulse: pitch/chord/timbre/beats/nodes are the
+  standing-wave spectrum; the spectrum is **inharmonic** (a Chladni drum, harmonic
+  only for a 1D string); **consonance = phase** (the U3 gate `Δφ_max = π/2`, not a
+  frequency ratio); **polyphony = primes** (the Euler product); and the **Kac wall**
+  — isospectral NFRs sound the same, so the pulse hears the *type*, not the identity
+  (`Fix(G)^⊥`). Woven into `EMERGENT_ONTOLOGY.md` §5.5 ("the music of the NFR").
+  Temperament / scales / the literal harmonic series are rejected as imposed.
 
 ### Changed (emergent derivation — the grammar temporal windows from the pulse)
 
