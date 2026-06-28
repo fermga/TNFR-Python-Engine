@@ -222,7 +222,18 @@ are governed by the spectrum of the graph Laplacian. These are the factors that 
 | Fiedler partition | — | the first *structural* pattern to emerge (the network's natural 2-cut) | `fiedler_partition(G)` |
 | Structural rank | — | number of distinct relaxation frequencies | `structural_frequency_rank(G)` |
 | Conserved EPI total | Σ deg·EPI | the EPI-channel invariant (L_rw left-null vector = degree vector) | `degree_weighted_total(G)` |
+| Pulse resonance | ω_k = √λ_k | the conservative-face standing-wave frequencies — the rhythm the substrate plays (collective) | `compute_emergent_pulse(G)` / `net.rhythm()` |
+| Per-NFR pulse | (νf_i, φ_i) | each NFR a phase oscillator; resonance (`local_phase_sync`, Kuramoto `R`) couples them into the collective rhythm | `compute_nodal_pulse(G)` / `net.resonance()` |
+| Relaxation window | min{n : qⁿ < 1/(π+1)} | discrete steps for a \|ΔNFR\| perturbation to relax into the coherence band — the **derived U4b / repeat-avoidance window** = 3 | `derive_bifurcation_window_from_physics()` |
+| Debt capacity | ⌊1/(1−q)⌋ | geometric relaxation-absorption of sustained destabilization — the **derived U2 debt threshold** = 2 | `derive_u2_debt_capacity_from_physics()` |
 
+- **The conservative pulse.** The substrate vibrates at ω_k = √λ_k; the ΔNFR = 0
+  equilibria are the **beats**. The grammar **temporal windows are derived from this
+  relaxation**: with `q = 1 − νf·dt·ρ` (`ρ = trace(L_rw)/N = 1`, exact), the U4b /
+  repeat window (= 3) is the relaxation *time* to the band `1/(π+1)` and the U2 debt
+  (= 2) is the relaxation *absorption capacity* `⌊1/(1−q)⌋` — a time and a capacity
+  from the same `q`. No `e` (the canonical relaxation is the *discrete* geometric
+  decay `qⁿ`, not the continuous exponential).
 - **λ₁ = 0** is the conserved uniform mode; the **degree-weighted total Σ deg·EPI is
   invariant** (`degree_weighted_total`). This EPI-channel conservation is **distinct** from
   the tetrad Noether charge Q = Σ(Φ_s + K_φ) (`compute_noether_charge`) — TNFR carries
@@ -625,7 +636,7 @@ Operators that manage structural reorganization during bifurcations.
 
 ### Transformer Operator
 
-Operators that perform graduated destabilization for phase transitions.
+Operators that perform threshold-crossing structural phase transitions.
 
 **Set:** TRANSFORMERS = {mutation, self_organization}
 
@@ -780,7 +791,7 @@ read-out of the nodal fixed point. A **closed shell** is `ΔNFR_chem(Z) = 0`
 **Conservation Law:** ∂ρ/∂t + ∇·𝐉 = S_grammar where S_grammar → 0 under U1-U6  
 **API:** `compute_tensor_invariants(G)`
 
-**Unified Telemetry:** `compute_unified_telemetry(G)` - Complete field suite
+**Unified Telemetry:** `compute_unified_telemetry(G)` - Complete dual-face field suite: the dissipative read-out (canonical tetrad + coherence, relaxes to the ΔNFR=0 attractor) plus the conservative `pulse` (the resonant rhythm ω_k=√λ_k, dominant beat, vibration energy; does not saturate)
 
 ---
 

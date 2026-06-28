@@ -108,6 +108,15 @@ Only operators with strong negative-feedback physics:
 **Physical Interpretation:**
 Stabilizers are "structural gravity" preventing fragmentation. Like gravity preventing cosmic dispersal, they ensure bounded evolution.
 
+**Quantitative bound (derived from the pulse relaxation):**
+The maximum uncompensated-destabilizer **debt** the relaxation can absorb is the
+geometric steady state `⌊1/(1−q)⌋ = ⌊1/(νf·dt·ρ)⌋`, where `q = 1 − νf·dt·ρ` is
+the discrete per-step decay of a |ΔNFR| perturbation and `ρ = trace(L_rw)/N = 1`
+(the mean structural relaxation rate, exact). For the canonical `νf=1, dt=0.5` this
+is **2** — the canonical U2 debt threshold, **derived** (not assumed) by
+`derive_u2_debt_capacity_from_physics`. The same `q` sets the U4b window: the window
+is the relaxation *time*, the debt is the relaxation *absorption capacity*.
+
 **Consolidates:** C2 (BOUNDEDNESS) = RC2 (Convergence)
 
 ---
@@ -179,10 +188,14 @@ THOL (Self-organization) requirements:
 - **Must include:** {THOL (Self-organization), IL (Coherence)}
 - **Why:** Manage structural reorganization when ∂²EPI/∂t² > τ
 
-**U4b: Transformations Need Context (Graduated Destabilization)**
+**U4b: Transformations Need Context**
 - **When:** Sequence contains {ZHIR (Mutation), THOL (Self-organization)}
-- **Must have:** Recent destabilizer (within ~3 operators)
-- **Why:** Insufficient |ΔNFR| → bifurcation fails
+- **Must have:** A recent destabilizer within the **structural-relaxation window** —
+  derived from the pulse: the discrete steps for a |ΔNFR| perturbation to relax into
+  the coherence band `1/(π+1)` (canonically **3 ops**, the **same for every
+  destabilizer**; `derive_bifurcation_window_from_physics`). The earlier graduated
+  4/2 reach split was a heuristic the dynamics does not support and has been dropped.
+- **Why:** Insufficient |ΔNFR| → bifurcation fails (the structure must stay plastic)
 - **Additional for ZHIR:** Prior IL for stable transformation base
 
 **Physical Interpretation:**
@@ -277,8 +290,10 @@ Conclusion: U5 follows from:
 
 **When:** Sequence contains deep REMESH (depth > 1)
 - **Deep recursion:** REMESH with depth > 1 creates hierarchical nesting
-- **Must include:** {IL (Coherence), THOL (Self-organization)} within ±3 operators
-- **Window:** Stabilizer must be within ~3 operators before or after REMESH
+- **Must include:** {IL (Coherence), THOL (Self-organization)} within the
+  structural-relaxation window
+- **Window:** Stabilizer must be within the **structural-relaxation window**
+  (`BIFURCATION_WINDOW`, derived = 3 ops) before or after REMESH
 
 **Why IL or THOL?**
 From operator contracts, only these provide multi-scale stabilization:
@@ -735,7 +750,7 @@ Without handlers, bifurcations are uncontrolled → fragmentation.
 
 ---
 
-### U4b: Transformers Need Context (Graduated Destabilization) - Canonicity
+### U4b: Transformers Need Context - Canonicity
 
 **Derivation from Threshold Physics:**
 
@@ -753,7 +768,7 @@ Without recent destabilizer:
   → Insufficient energy for phase transition
   → Transformation fails or produces unstable state
 
-With recent destabilizer (~3 ops):
+With recent destabilizer (within the relaxation window):
   |ΔNFR| still elevated (energy available)
   → Sufficient gradient for threshold crossing
   → Physical phase transition succeeds
@@ -768,10 +783,12 @@ Additional for ZHIR (Mutation):
 - **Chemical kinetics**: Reaction rate depends on "fresh" reactants
 - **Phase transitions**: Need proper energy timing (not stale conditions)
 
-**Timing Constraint (~3 operators):**
-- Based on typical ΔNFR decay time
-- Ensures gradient hasn't dissipated below threshold
-- Like half-life in nuclear physics
+**Timing Constraint — the structural-relaxation window (derived = 3):**
+- The discrete steps for the |ΔNFR| perturbation to relax into the coherence
+  band `1/(π+1)`, with per-step decay `q = 1 − νf·dt·ρ` (`ρ = trace(L_rw)/N = 1`,
+  exact): `derive_bifurcation_window_from_physics`. The same for every destabilizer.
+- Ensures the gradient hasn't dissipated below threshold (the structure is still plastic)
+- Discrete geometric decay `qⁿ` — no continuous exponential, no `e`
 
 **Canonicity Level**: **STRONG** - Physical requirement from threshold/timing physics.
 

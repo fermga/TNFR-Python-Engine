@@ -57,7 +57,7 @@ that consumes divisibility; chemistry *mixed*) — is the three-sector trichotom
 For numbers, that cross-domain axis is now assembled into an explicit **ontological
 position ladder** ([TNFR_NUMBER_THEORY.md §9.8](TNFR_NUMBER_THEORY.md), example
 [155](../examples/08_emergent_geometry/155_ontological_position_of_numbers.py)): a number is a
-**cardinal** (a degeneracy = `dim` irrep of `Aut(G)`), carries emergent **+, ×** (graph products),
+**cardinal** (a degeneracy = `dim` irrep of `Aut(G)`, equivalently its **simplex grade / dimension**, §3.2), carries emergent **+, ×** (graph products),
 has its **primality** and **factorization type** (`Ω, τ` → the `ΔNFR` triad) read off the residue
 spectrum (Sector B), and only the prime **identities** and the continuous `arg ζ` phase remain at
 the wall. The arithmetic `ΔNFR` coefficients are themselves canonically **unity** — only `π` is a
@@ -258,10 +258,55 @@ coincides with the imposed hop count only when the path is unique.
 
 ### 3.2 Emergent dimension — **DERIVED**
 
-The **spectral dimension** `d_s` from the heat-trace return probability `p(t)=Z(t)/n ~ t^{−d_s/2}`
-(`Z=Σ e^{−λ_k t}`) emerges from the spectrum: measured `d_s ≈ 1.01` (ring), `2.22` (2D torus),
-`3.36` (3D torus) — toward 1/2/3 with finite-size bias (ex.134). Dimension is *measured from the
-dynamics*, not declared.
+There are **two** dimension read-outs of the one operator, and the recent work reconciles them.
+
+**(a) The ambient spectral dimension `d_s`** — the dimension an *arbitrary* network *carries*.
+From the heat-trace return probability `p(t)=Z(t)/n ~ t^{−d_s/2}` (`Z=Σ e^{−λ_k t}`) it emerges
+from the spectrum: measured `d_s ≈ 1.01` (ring), `2.22` (2D torus), `3.36` (3D torus) — toward
+1/2/3 with finite-size bias (ex.134). It is *measured from the dynamics, not declared* — but for a
+generic graph it is a **free input** (a THOL tree gives `≈ 1.6`, resonant coupling tunes it,
+[emergent_base_dimension.py](../benchmarks/emergent_base_dimension.py)): no bare network singles
+out `d = 3`.
+
+**(b) The form dimension = the simplex grade** — the dimension a *coherent EPI form* **is**. A
+maximally-coupled cluster of `k+1` mutually-resonant NFRs is the 1-skeleton `K_{k+1}` of the
+`k`-simplex; its Laplacian multiplicity `k` is the standard-irrep dim of `S_{k+1}` = the emergent
+**cardinal** (§0) = the simplex **dimension**
+([emergent_simplex_dimension.py](../benchmarks/emergent_simplex_dimension.py)). So **number =
+cardinal = dimension = simplex grade** are *one* quantity, and the canonical AL + U3 dynamics
+*builds* the simplex, climbing one grade at a time
+([emergent_dimension_dynamics.py](../benchmarks/emergent_dimension_dynamics.py)).
+
+**Reconciliation — THOL pins the free `d_s`.** The ambient `d_s` of (a) becomes **definite**
+exactly when the form is **self-similar**: recursing the simplex into corner-glued copies of
+itself — the canonical THOL/U5 lift (the Kron/Schur node=subgraph fractal-consistency that
+preserves `R_eff`, §3.1) = the Sierpinski gasket of `K_m` — has an exact similarity dimension
+`log(m)/log 2` set by the grade, and its spectral `d_s` converges to that self-similar value (no
+longer free)
+([emergent_fractal_simplex_dimension.py](../benchmarks/emergent_fractal_simplex_dimension.py)). The
+grade-3 tetrahedron nests to dimension exactly `2` = the locked `U(2)` substrate fibre
+([emergent_substrate_symmetry.py](../benchmarks/emergent_substrate_symmetry.py)). The **form
+grade** (b) thus *fixes* the otherwise-free ambient `d_s` (a).
+
+**The shell read-out (the atom).** A *multi-shell* coherent form (a THOL nest) inherits the grade
+as its **shell degeneracy**: every shell has degeneracy = the simplex grade = the emergent
+dimension ([emergent_atomic_shells.py](../benchmarks/emergent_atomic_shells.py), exact), so the
+*atom's* shell structure is a read-out of the form's dimension — not of an imported spatial ball.
+The cumulative shell closures **co-occur** with the `U(grade)` isotropic-oscillator magic numbers
+(grade 2 → the 2D quantum-dot tower `2,6,12,20`, matching the substrate's own locked `U(2)`; grade
+3 → the 3D-oscillator / nuclear `2,8,20,40`).
+
+> **Honest boundary.** The *exact* result is **shell degeneracy = simplex grade = emergent
+> dimension**; the `U(grade)` magic-number tower is a **co-occurrence** (the Sierpinski localized
+> modes take the largest closures), **not** a clean emergence. This reaches only the
+> **independent-particle** skeleton. The full **chemical** periodic table
+> (`2,10,18,36,54,86` = SO(4,2)/Madelung) needs the two-body screening correction — which is **the
+> same `Fix(G)^⊥` wall** (§7.1) that traps the prime fine structure and `S(T)`: the *atom* and the
+> *integer* share one structure (reachable **cardinals** ⊕ an unreachable **fine-structure
+> residue**). The fixed point `ΔNFR = 0` is shared at the **predicate** level only — a prime (an
+> irreducible *generator*) and a noble gas (a saturated *closure*) are *both* zero-pressure fixed
+> points of their respective `ΔNFR` encodings, but land on *different* integers (noble-gas `Z` are
+> composite): one predicate, many read-outs, **not** one number.
 
 ### 3.3 The tetrad — the minimal-complete structural basis — **DERIVED**
 
@@ -477,6 +522,38 @@ Maps to observables: **refraction**, the **refractive index**, **Snell's law**, 
 > optics / acoustics) on the conservative face — the refractive index *is* the wave-speed ratio.
 > It is the optical face of the conservative regime, **not** a derivation of Maxwell's equations
 > or QED.
+
+---
+
+### 5.5 The pulse — the network rhythm and the per-NFR pulses — **DERIVED (within TNFR)**
+
+The conservative face is, most simply, a **sustained vibration**: every structural eigenmode
+oscillates at `ω_k = √λ_k`, so the substrate *keeps a rhythm*. This rhythm has **two scales**, both
+read closed-form from the spectrum and the node state — no time integration.
+
+- **The collective pulse (the network rhythm).** The leading resonances `ω_k = √λ_k`, the
+  fundamental (the slowest non-uniform resonance), the dominant **beat** (the slowest
+  `ω_j − ω_k`), the self-similar (fractal) spectral multiplicity, and the vibration energy
+  `½Σλ_k`. This is the rhythm the *whole network* plays
+  ([`compute_emergent_pulse`](../src/tnfr/physics/structural_diffusion.py); SDK `net.rhythm()`).
+- **The per-NFR pulse (the bricks).** Every NFR is itself a phase oscillator — the single-node
+  reduction of the nodal equation `∂EPIᵢ/∂t = νfᵢ·ΔNFRᵢ` — pulsing at its **own** structural
+  frequency `νfᵢ` with phase `φᵢ`. *Resonance* couples those pulses: the **local** phase synchrony
+  per NFR (`local_phase_sync`), the **collective** Kuramoto order `R` (`kuramoto_R_psi`), and the
+  U3 admissibility gate `Δφ_max = π/2`. The collective pulse **emerges** as the per-NFR pulses lock
+  (`R → 1`) ([`compute_nodal_pulse`](../src/tnfr/physics/structural_diffusion.py); SDK
+  `net.resonance()`).
+
+So the equilibria are **not** a separate class of node: every node is a pulsing NFR, and the
+`ΔNFR = 0` coherence states are the **beats** the resonating pulses pass through (the Chladni
+standing nodes of §3 / the geometry benchmarks). The dissipative read-out `C(t)` and `net.nfr()`
+see the relaxed state (the rhythm damped to silence); the pulse / resonance read-outs see the
+sustained vibration that **generates** it.
+
+> **Honest boundary.** This is the standard standing-wave spectrum (`ω_k = √λ_k`), beat
+> interference, and Kuramoto phase-locking on the conservative face — re-read in TNFR terms (each
+> NFR a phase oscillator, resonance the coupling). It surfaces existing canon (`νf` the per-NFR
+> frequency, `local_phase_sync` / `kuramoto_R_psi` the resonance); it derives no new physics.
 
 ---
 

@@ -4,6 +4,51 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — the emergent pulse read-outs (the rhythm the substrate plays)
+
+- **The pulse, surfaced at both scales.** The conservative face of the nodal
+  dynamics is a *sustained vibration*; it is now a first-class read-out.
+  `compute_emergent_pulse` / SDK `net.rhythm()` give the **collective** network
+  pulse (resonances `ω_k = √λ_k`, fundamental, dominant beat, vibration energy);
+  `compute_nodal_pulse` / SDK `net.resonance()` give the **per-NFR** pulse — every
+  NFR a phase oscillator at its own `νf` and phase `φ`, coupled by *resonance*
+  (`local_phase_sync` per NFR, the Kuramoto order `R`, gate `Δφ_max = π/2`). The
+  collective pulse emerges as the per-NFR pulses lock (`R → 1`).
+- **The pulse in motion.** `net.pulse_trajectory(steps)` evolves a copy and records
+  the rhythm forming over time — `R(t)`, `C(t)`, the per-NFR local resonance —
+  surfacing the **local-before-global** synchronization cascade (clusters lock
+  before the global rhythm). `net.evolve(record=True)` + `net.history()` surface the
+  engine's own canonical per-step series (`kuramoto_R`, `C_steps`, `phase_sync`,
+  `Si_mean`).
+- **Dual-face telemetry.** `compute_unified_telemetry` now carries both the
+  dissipative read-out (canonical tetrad + coherence, relaxes to `ΔNFR = 0`) and the
+  conservative `pulse` + `resonance` blocks (which do not saturate).
+
+### Changed (emergent derivation — the grammar temporal windows from the pulse)
+
+- **The U4b/U2 grammar windows are now derived, not assumed.** A destabilizer's
+  `|ΔNFR|` perturbation relaxes geometrically under the discrete nodal step
+  (`q = 1 − νf·dt·ρ`, with `ρ = trace(L_rw)/N = 1`, exact). Read two ways from the
+  same `q`: the **relaxation time** to the coherence band `1/(π+1)` is the **U4b
+  recency window** (and the `GRAMMAR` repeat-avoidance window) = **3**; the
+  **geometric absorption capacity** `⌊1/(1−q)⌋` is the **U2 debt threshold** = **2**.
+  New `derive_bifurcation_window_from_physics` / `derive_u2_debt_capacity_from_physics`
+  (`config/physics_derivation.py`) replace the literal `3`/`2` — with **no `e`** (the
+  canonical relaxation is the *discrete* geometric decay `qⁿ`, not the continuous
+  exponential `e^{−νf λ t}`, which is only the `dt → 0` limit the engine never takes).
+  The earlier **graduated destabilizer split** (strong = 4 / moderate = 2) was a
+  heuristic the dynamics does not support and has been **dropped** — one emergent
+  window for every destabilizer (the relaxation rate `ρ = trace/N = 1` is
+  topology-independent, so the window is a topology-independent constant).
+
+### Performance
+
+- **Topology-keyed spectral cache.** `structural_eigenmodes` and `relaxation_spectrum`
+  now share one memoized eigendecomposition of the symmetric normalized Laplacian,
+  keyed on the graph topology (self-invalidating when nodes/edges/weights change).
+  The spectrum is invariant under evolution on a fixed graph, so the O(N³) `eigh`
+  runs once per topology instead of once per pulse/spectrum read-out.
+
 ### Changed (emergent derivation — every channel weight & operator gain from π)
 
 - **Replaced the residual magic numbers on the nodal-physics paths with values

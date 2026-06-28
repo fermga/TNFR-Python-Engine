@@ -264,6 +264,14 @@ The single nodal dynamics produces two empirically-anchored regimes (external la
   a discrete spectrum of orthonormal standing-wave eigenmodes (vibrating-string /
   Chladni analogue), with nodal-domain ordering (Courant).
 
+The conservative regime is a **sustained vibration — the pulse**, read at two scales: the
+**collective** network rhythm (resonances `ω_k = √λ_k`, the fundamental, the dominant beat
+`ω_j − ω_k`, vibration energy; `compute_emergent_pulse`, SDK `net.rhythm()`) and the **per-NFR**
+pulse — every NFR a phase oscillator pulsing at its own `νf` with phase `φ`, coupled by
+**resonance** (`local_phase_sync` per NFR, the Kuramoto order `R`, gate `Δφ_max = π/2`;
+`compute_nodal_pulse`, SDK `net.resonance()`). The collective pulse emerges as the per-NFR pulses
+lock (`R → 1`); the `ΔNFR = 0` equilibria are the **beats** the vibration passes through.
+
 See [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py)
 and [examples/02_physics_regimes/](examples/README.md).
 
@@ -337,14 +345,20 @@ derivations [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md).
   must start with a generator `{AL, NAV, REMESH}` (U1a) and end in a coherent attractor
   `{SHA, NAV, REMESH, OZ}` (U1b).
 - **U2 — Convergence & boundedness.** Because `∫νf·ΔNFR dt` must converge, any
-  destabilizer `{OZ, ZHIR, VAL}` requires a stabilizer `{IL, THOL}`. Specialized
+  destabilizer `{OZ, ZHIR, VAL}` requires a stabilizer `{IL, THOL}`. The max
+  uncompensated-destabilizer debt is the **relaxation absorption capacity**
+  `⌊1/(νf·dt·ρ)⌋ = 2` (the same pulse relaxation as the U4b window, read as a
+  capacity not a time; `derive_u2_debt_capacity_from_physics`). Specialized
   sub-rule: REMESH combined with a destabilizer also requires `{IL, THOL}` (recursive
   amplification control).
 - **U3 — Resonant coupling.** Coupling/resonance `{UM, RA}` require phase compatibility
   `|φᵢ − φⱼ| ≤ Δφ_max` (antiphase is destructive).
 - **U4 — Bifurcation dynamics.** (a) Triggers `{OZ, ZHIR}` need handlers `{THOL, IL}`.
-  (b) Transformers `{ZHIR, THOL}` need a recent destabilizer (~3 ops); ZHIR also needs a
-  prior IL (stable base).
+  (b) Transformers `{ZHIR, THOL}` need a recent destabilizer within the **structural-relaxation
+  window** — derived from the pulse (the discrete steps for a `ΔNFR` perturbation to relax into
+  the coherence band `1/(π+1)`; canonically 3 ops, **one window for every destabilizer** —
+  `derive_bifurcation_window_from_physics`, no `e`, no magic constant); ZHIR also needs a prior
+  IL (stable base).
 - **U5 — Multi-scale coherence.** Nested EPIs require stabilizers at each level;
   `C_parent ≥ α · Σ C_child`.
 - **U6 — Structural potential confinement.** Telemetry safety: monitor `Δ Φ_s < π/2 ≈ 1.571`
@@ -550,7 +564,10 @@ net = TNFR.create(20).ring().evolve(5)
 net.tetrad()                 # TetradSnapshot (Φ_s, |∇φ|, K_φ, ξ_C) + is_safe()
 net.conservation()           # Noether charge, Lyapunov stability
 net.symplectic_substrate()   # the emergent geometry
-net.telemetry()              # C(t), Si, phase_sync, tetrad
+net.rhythm()                 # the collective pulse (ω_k=√λ_k, beats, energy)
+net.resonance()              # the per-NFR pulses (νf_i, φ_i) + resonance (R)
+net.pulse_trajectory(8)      # the pulse in motion: R(t), C(t), local→global lock
+net.telemetry()              # C(t), Si, phase_sync, tetrad, pulse, resonance
 net.audit_operators()        # 13/13 operator-contract audit
 analysis = TNFR.analyze(net) # one-shot comprehensive report
 ```
