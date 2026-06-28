@@ -21,8 +21,6 @@ from ..operators.grammar_types import STABILIZERS as _STABILIZER_NAMES
 from ..operators.grammar_types import function_name_to_glyph as _to_glyph
 from ..types import Glyph
 
-# from . import symbolic  # Not used directly, but is the conceptual basis
-
 # ============================================================================
 # GLYPH CLASSIFICATION — derived from the canonical single source
 # ============================================================================

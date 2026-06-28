@@ -193,8 +193,7 @@ THOL (Self-organization) requirements:
 - **Must have:** A recent destabilizer within the **structural-relaxation window** —
   derived from the pulse: the discrete steps for a |ΔNFR| perturbation to relax into
   the coherence band `1/(π+1)` (canonically **3 ops**, the **same for every
-  destabilizer**; `derive_bifurcation_window_from_physics`). The earlier graduated
-  4/2 reach split was a heuristic the dynamics does not support and has been dropped.
+  destabilizer**; `derive_bifurcation_window_from_physics`).
 - **Why:** Insufficient |ΔNFR| → bifurcation fails (the structure must stay plastic)
 - **Additional for ZHIR:** Prior IL for stable transformation base
 

@@ -201,15 +201,17 @@ The three pressure channels weigh equally: the factorization excess $\Omega - 1$
 
 ### 5.5 Detection Thresholds
 
-| Threshold | Expression | Value | Purpose |
-|-----------|------------|-------|---------|
-| Structural significance | $\gamma/(e\pi)$ | $\approx 0.0676$ | Minimum $\Delta\mathrm{NFR}$ for structural relevance |
-| Primality tolerance | $10^{-10}$ | $10^{-10}$ | Floating-point zero detection |
-| 2× structural | $2\gamma/(e\pi)$ | $\approx 0.1352$ | Extended significance band |
+Primality is detected by the **exact** criterion $\Delta\mathrm{NFR}(n) = 0$ (§4.1); the only threshold is the floating-point zero tolerance.
+
+| Threshold | Value | Purpose |
+|-----------|-------|---------|
+| Primality tolerance | $10^{-10}$ | Floating-point zero detection of $\Delta\mathrm{NFR} = 0$ |
+
+Any wider "significance band" is an operational convenience, not a structural constant — only $\pi$ is a genuine structural scale (§5.1).
 
 ### 5.6 Derivation Status
 
-The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are positive operational weights applied to arithmetic functions (canonical units; the prime ⟺ ΔNFR = 0 criterion is coefficient-independent, §4.2). The 3 arithmetic **thresholds** are *empirically recalibrated* values (e.g. $\Phi_s < 0.7452$ vs the general $\pi/4 \approx 0.785$), not closed-form derivations — the general per-node $\Phi_s$ threshold on which they are based is π-derived (quarter phase-wrap; see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4). The arithmetic recalibration is the one empirically-tuned piece, not the dynamical parameters.
+The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are positive operational weights applied to arithmetic functions (canonical units; the prime ⟺ ΔNFR = 0 criterion is coefficient-independent, §4.2). The structural-field thresholds are the **same canonical π-derived bounds as any TNFR network** — only π is a genuine structural scale (per-node $|\Phi_s| < \pi/4$, drift $\Delta\Phi_s < \pi/2$; see §7.5 and [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4). An earlier φ/γ/e "arithmetic recalibration" was removed (audit 2026); no domain-specific tuning remains.
 
 ---
 
@@ -278,7 +280,7 @@ $$\Phi_s(n) = \sum_{m \neq n} \frac{\Delta\mathrm{NFR}(m)}{d(n, m)^2}$$
 
 where $d(n, m)$ is the graph distance in the arithmetic network. Primes, being zero-pressure nodes, act as **sinks** in the potential field — they attract nearby composites toward equilibrium.
 
-**Threshold**: $|\Phi_s| < \pi/4 \approx 0.785$ (π-derived, quarter phase-wrap — see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4) in the general tetrad; arithmetic-specific recalibration gives $\Phi_s < 0.7452$.
+**Threshold**: $|\Phi_s| < \pi/4 \approx 0.785$ (π-derived, quarter phase-wrap — see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4); the arithmetic network uses this same canonical π-derived bound (§7.5).
 
 ### 7.2 Phase Gradient: $|\nabla\phi|$
 
