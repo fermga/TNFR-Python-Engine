@@ -1356,3 +1356,116 @@ N17-A (CDC not satisfied → K41 not reached) and with N14 (CF transition not ob
 
 **Status:** PRE-REGISTERED.  Deferred until `energy_spectrum_3d()` is implemented and
 a dedicated benchmark run is scheduled.
+
+## §21  U2-Compliance and Structural Time (Reformulation Memo, June 2026)
+
+*Post-hoc, measure-first study — NOT a pre-registered N-milestone. Reproduced
+deterministically by `benchmarks/u2_compliance_navier_stokes_structural_time.py`.*
+
+### §21.1  Headline
+
+Asking whether the 3D NS vorticity dynamics maps to a U1–U6 operator sequence with
+a **bounded destabilizer debt** yields a *faithful* re-expression of the Clay
+regularity question — faithful meaning it **relocates the wall without lowering it**.
+The decisive correction in this memo is temporal: the relevant clock is **structural
+time** `τ_str = ν_f·t`, not wall-clock `t`. In structural time, every fixed-Re run is
+U2-compliant (the enstrophy peaks and decays — the Lyapunov closes), and the **peak
+U2 debt grows with Re**. Whether it stays bounded as Re→∞ is exactly Clay; **this memo
+closes nothing.**
+
+### §21.2  The faithful operator mapping
+
+The vorticity equation `∂_t ω + (u·∇)ω = (ω·∇)u + ν Δω` maps term-by-term to the
+canonical operators:
+
+| NS term | Operator | Grammar role | Enstrophy budget |
+|---|---|---|---|
+| `ν Δω` (viscosity) | **IL** (Coherence) | stabilizer (U2) | `−D_ens` = the nodal-equation graph diffusion (exact) |
+| `(ω·∇)u` (stretching) | **VAL** (Expansion) | **destabilizer** (U2) | `+P` (raises `K_φ²`) |
+| `(u·∇)ω` (advection) | **NAV** (Transition) | not a destabilizer | `0` (skew) |
+| `−∇p`, `∇·u=0` (pressure) | **UM** (Coupling) | constraint | `0` (absent under the curl) |
+
+The neutrality of NAV and UM is **analytic**, not fitted: the pressure gradient
+vanishes when the curl is taken (the vorticity equation has no pressure term), and the
+advective transport is skew, `∫ ω·(u·∇)ω = −½∫(∇·u)|ω|² = 0` by incompressibility.
+Discrete zero-production for the 2D-embedded initial condition is independently
+confirmed in §19 / N10. Hence **only VAL (`P`) and IL (`D_ens`) drive the enstrophy
+budget** `dΩ/dt = P − D_ens`.
+
+### §21.3  The U2 debt is the enstrophy budget
+
+Integrating the budget, the **uncompensated-destabilizer (U2) debt** is
+
+$$D(t) \;=\; \int_0^t \big(P - D_{\text{ens}}\big)\,dt' \;=\; \Omega(t) - \Omega(0),$$
+
+i.e. exactly the enstrophy change. Therefore **U2-compliance ⟺ bounded enstrophy ⟺
+classical regularity** — the grammar reproduces the Clay criterion faithfully (it is
+*not* a weaker surrogate). This is the same identity as the classical Leray/Hopf
+enstrophy budget, read through the operator dictionary.
+
+### §21.4  Structural time and the two-clock mechanism
+
+TNFR time is `τ_str = ν_f·t` — the eigenmode-decay clock `e^{−ν_f λ_k t}` of the nodal
+equation (`AGENTS.md` §2), and the U2 capacity `⌊1/(ν_f·dt·ρ)⌋` is already written in
+`ν_f·dt` units. In NS, `ν_f ↔ ν`, so `τ_str = ν·t` (the viscous time). The budget runs
+on **two operator clocks**:
+
+- **IL** (dissipation) on the **structural** clock `τ_str = ν_f·t` (the universal
+  eigenmode decay);
+- **VAL** (stretching) on the **advective** eddy clock `τ_eddy ~ 1/|ω|`, which is
+  **ν-independent**.
+
+Their ratio is the Reynolds number: `Re = τ_str-scale / τ_eddy = ` VAL firings per IL
+relaxation `= ` the U2 debt rate. The Clay question, in TNFR time: the U2 capacity is a
+fixed number of structural firings, but VAL fires on the ν-independent advective clock,
+so per unit structural time it fires `~Re` times. **`Re → ∞` ⟹ firings-per-relaxation
+→ ∞ ⟹ capacity exceeded** — the same wall, now phrased in `τ_str`.
+
+### §21.5  Measured results
+
+3D Taylor–Green, `n = 32`, `dt = 0.0125`, all runs to `τ_str = 0.20`
+(`benchmarks/u2_compliance_navier_stokes_structural_time.py`):
+
+| Re | peak debt `Ω/Ω₀` | `τ_str` @ peak | `k_max·η` @ peak | resolved | saturates |
+|---|---|---|---|---|---|
+| 314 | 1.000 | 0.000 | 2.44 | yes | yes |
+| 628 | 1.496 | 0.046 | 1.56 | yes | yes |
+| 1257 | 2.419 | 0.033 | 0.98 | **no** | yes |
+
+- **F1 (saturation) PASS at every Re** — the enstrophy peaks early in structural time
+  and decays to `~0.04–0.24·Ω₀`. The IL stabilizer absorbs the VAL debt: U2-compliant
+  at fixed Re, the Lyapunov closes (this is the known finite-Re regularity, re-expressed).
+- **F2 (peak-debt trend) RECORDED** — the peak debt **rises with Re** (1.0 → 1.5 → 2.4).
+  The Re~1257 point is under-resolved (`k_max·η = 0.98 < 1`).
+- **Resolution caveat (separate `n = 48` run, `k_max·η = 1.40` at the peak):** the
+  resolved Re~1257 peak debt is **2.885**, *higher* than the under-resolved 2.419
+  (+20%). Resolving the grid **raises** the debt — the coarse grid under-resolves the
+  vortex-stretching **production** more than the dissipation, so coarse TNFR-NS
+  diagnostics *under-state* the debt. The `n=32→48` change is not converged, so 2.885
+  is a lower bound; a clean asymptotic point needs `n ≥ 64`.
+
+### §21.6  Honest scope
+
+- **Closes nothing.** The faithful U2 reformulation **relocates** Clay to *"is the peak
+  structural-time U2 debt uniformly bounded in Re?"* — it does **not lower** the wall.
+- **No uniform-in-Re bound** is produced. Fixed-Re U2-compliance is the known finite-Re
+  regularity re-expressed. The peak debt is measured to grow (and to grow faster once
+  resolved) over the accessible range; the asymptotic `Re → ∞` behaviour — and hence
+  Clay — is **undecided**. No TG blow-up has ever been observed (enstrophy always peaks
+  and decays), strongly suggesting boundedness, but TG regularity at all Re is itself
+  part of Clay and cannot be leaned on.
+- The one TNFR tool that might supply a uniform bound — the conservation-theorem
+  Lyapunov `E` (`dE/dt ≤ 0`) — requires **grammar-compliant** (U1–U6) evolution; raw NS
+  advection is not grammar-compliant, and the geometric U(1) charge `E_geo` is measured
+  to **grow** in lockstep with the enstrophy under raw NS. So the machinery does **not**
+  supply a bound NS lacks.
+- Genuinely new (and modest, internal to TNFR): the **two-clock** restatement
+  (IL structural vs VAL advective; `Re` = their ratio = the U2 debt rate). It locates
+  the wall precisely; it does not break it.
+
+### §21.7  Reproducibility
+
+`benchmarks/u2_compliance_navier_stokes_structural_time.py` (deterministic; TG IC, no
+RNG). Verdict `FAITHFUL_U2_MAPPING__COMPLIANT_AT_FIXED_RE__ASYMPTOTIC_UNDECIDED`; JSON
+at `results/u2_compliance/u2_compliance_navier_stokes_structural_time.json`. Override
+`N = 48` to reproduce the resolved Re~1257 point (peak debt ~2.89).

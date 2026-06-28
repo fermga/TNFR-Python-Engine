@@ -40,6 +40,27 @@ All notable changes to this project will be documented in this file.
   **equal temperament** / the chosen scale are imposed. Woven into
   `EMERGENT_ONTOLOGY.md` §5.5 + the `form → dimension → dynamics` synthesis (§2.1).
 
+### Added — NS U2-compliance read in structural time (Navier–Stokes reformulation)
+
+- **3D Navier–Stokes mapped to a faithful U2 budget, read in TNFR structural time.**
+  `benchmarks/u2_compliance_navier_stokes_structural_time.py` + theory §21. The
+  vorticity dynamics maps term-by-term to operators — `(ω·∇)u` = **VAL** (destabilizer,
+  production `P`), `ν Δω` = **IL** (stabilizer, the nodal-equation diffusion `D_ens`),
+  advection = **NAV** and pressure = **UM** (both enstrophy-neutral *analytically*:
+  pressure vanishes under the curl, transport is skew). So the **U2 debt**
+  `∫(P − D_ens)dt = Ω(t) − Ω(0)` is exactly the enstrophy budget, and U2-compliance ⟺
+  bounded enstrophy ⟺ classical regularity (a faithful re-expression, not a surrogate).
+- **Structural time `τ_str = νf·t` is the correct clock** (the eigenmode-decay clock of
+  the nodal equation). Two operator clocks — IL (dissipation) on `τ_str`, VAL (stretching)
+  on the ν-independent advective eddy clock — with `Re` = their ratio = the U2 debt rate.
+  Measured (TG, `n=32`): every fixed-Re run **saturates** (enstrophy peaks & decays →
+  U2-compliant, the Lyapunov closes), and the **peak debt grows with Re** (1.0 → 1.5 →
+  2.4; resolving at `n=48` *raises* the Re~1257 point to 2.89 — coarse grids under-state
+  the production).
+- **HONEST SCOPE:** closes nothing. The faithful reformulation **relocates** Clay to
+  *"is the peak structural-time U2 debt uniformly bounded in Re?"* — it does not lower the
+  wall; no uniform-in-Re bound is produced. Clay open.
+
 ### Changed (emergent derivation — the grammar temporal windows from the pulse)
 
 - **The U4b/U2 grammar windows are now derived, not assumed.** A destabilizer's
