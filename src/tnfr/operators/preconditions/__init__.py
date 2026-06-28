@@ -711,8 +711,8 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
     5. EPI history for acceleration computation (≥3 points)
     6. **NEW**: Bifurcation threshold check (∂²EPI/∂t² vs τ) with telemetry
 
-    Also detects and records the destabilizer type that enabled this self-organization
-    for telemetry and structural tracing purposes.
+    Also detects and records the destabilizer that enabled this
+    self-organization for telemetry and structural tracing purposes.
 
     **Bifurcation Threshold Validation (∂²EPI/∂t² > τ):**
 
@@ -741,7 +741,7 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
     Notes
     -----
     This function implements R4 Extended telemetry by analyzing the glyph_history
-    to determine which destabilizer (strong/moderate/weak) enabled the self-organization.
+    to determine which destabilizer enabled the self-organization.
 
     Configuration Parameters
     ------------------------
@@ -892,7 +892,6 @@ except ImportError:
     ) -> None:
         """Fallback implementation - see mutation.py for canonical version."""
         G.nodes[node]["_mutation_context"] = {
-            "destabilizer_type": None,
             "destabilizer_operator": None,
             "destabilizer_distance": None,
             "recent_history": [],
@@ -909,7 +908,7 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     3. **U4b Part 1: Prior IL (Coherence) for stable transformation base**
     4. **U4b Part 2: Recent destabilizer (~3 ops) for threshold energy**
 
-    Also detects and records the destabilizer type that enabled this mutation
+    Also detects and records the destabilizer that enabled this mutation
     for telemetry and structural tracing purposes.
 
     Parameters

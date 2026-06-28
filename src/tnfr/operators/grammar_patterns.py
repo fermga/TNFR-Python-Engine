@@ -33,13 +33,10 @@ from __future__ import annotations
 from typing import Any, Mapping, Sequence
 
 from ..config.operator_names import (
-    BIFURCATION_WINDOWS,
+    BIFURCATION_WINDOW,
     CANONICAL_OPERATOR_NAMES,
     COHERENCE,
     DESTABILIZERS,
-    DESTABILIZERS_MODERATE,
-    DESTABILIZERS_STRONG,
-    DESTABILIZERS_WEAK,
     INTERMEDIATE_OPERATORS,
     SELF_ORGANIZATION,
     SELF_ORGANIZATION_CLOSURES,
@@ -252,34 +249,22 @@ def _check_transformer_windows(
             continue
 
         found = False
-        # Search back with graduated windows
+        # U4b: any destabilizer (DESTABILIZERS = {OZ, ZHIR, VAL}) within the
+        # single structural-relaxation window. The window is topology-
+        # independent (mean L_rw eigenvalue = trace/N = 1), so there is no
+        # graduated reach -- every destabilizer shares BIFURCATION_WINDOW.
         for j in range(i - 1, -1, -1):
-            distance = i - j
-            prev = tokens[j]
-            if (
-                prev in DESTABILIZERS_STRONG
-                and distance <= BIFURCATION_WINDOWS["strong"]
-            ):
+            if i - j > BIFURCATION_WINDOW:
+                break  # past the relaxation window
+            if tokens[j] in DESTABILIZERS:
                 found = True
-                break
-            if (
-                prev in DESTABILIZERS_MODERATE
-                and distance <= BIFURCATION_WINDOWS["moderate"]
-            ):
-                found = True
-                break
-            if prev in DESTABILIZERS_WEAK and distance == 1:
-                # Weak (EN) requires immediate and prior IL base
-                if j - 1 >= 0 and tokens[j - 1] == "coherence":
-                    found = True
                 break
 
         if not found:
             msg = (
-                f"{tok} requires destabilizer context: "
-                "strong (dissonance) within 4, moderate (transition/exp.) "
-                "within 2, or weak (reception) immediately with prior "
-                "coherence"
+                f"{tok} requires a recent destabilizer "
+                f"(OZ/ZHIR/VAL) within the structural-relaxation "
+                f"window = {BIFURCATION_WINDOW} ops"
             )
             return False, i, msg
 

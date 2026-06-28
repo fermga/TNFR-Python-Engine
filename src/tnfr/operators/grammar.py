@@ -73,11 +73,7 @@ else:
     from ..types import Glyph  # noqa: F401
 
 from ..config.operator_names import (  # noqa: F401
-    BIFURCATION_WINDOWS,
     CANONICAL_OPERATOR_NAMES,
-    DESTABILIZERS_MODERATE,
-    DESTABILIZERS_STRONG,
-    DESTABILIZERS_WEAK,
     INTERMEDIATE_OPERATORS,
     SELF_ORGANIZATION,
     SELF_ORGANIZATION_CLOSURES,

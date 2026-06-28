@@ -38,6 +38,8 @@ __all__ = [
     "derive_transformers_from_physics",
     "derive_bifurcation_triggers_from_physics",
     "derive_bifurcation_handlers_from_physics",
+    "derive_bifurcation_window_from_physics",
+    "derive_u2_debt_capacity_from_physics",
     "can_generate_epi_from_null",
     "can_activate_latent_epi",
     "can_stabilize_reorganization",
@@ -48,6 +50,106 @@ __all__ = [
     "triggers_bifurcation",
     "handles_bifurcation",
 ]
+
+
+def derive_bifurcation_window_from_physics(
+    nu_f: float = 1.0, dt: float | None = None
+) -> int:
+    r"""Derive the U4b destabilizer-recency window from the pulse relaxation.
+
+    A destabilizer (``{OZ, ZHIR, VAL}``) raises the structural pressure
+    ``|ΔNFR|``, leaving the structure plastic.  Under the canonical *discrete*
+    nodal step ``EPI += dt·νf·ΔNFR`` it decays **geometrically**: each step
+    multiplies it by ``q = 1 − νf·dt·ρ``, where ``ρ`` is the mean
+    structural relaxation rate = the mean eigenvalue of the random-walk
+    Laplacian ``L_rw`` = ``trace(L_rw) / N = 1`` (exact — every connected node
+    has ``L_rw[i, i] = 1``).  A transformer (``{ZHIR, THOL}``) can still act on
+    the destabilised structure until that perturbation relaxes back into the
+    coherence band, i.e. below the canonical fraction ``1/(π + 1)`` (π the sole
+    structural scale).  The U4b window is that discrete step count.
+
+    This replaces the hardcoded ``~3 ops`` with a derivation grounded in the
+    nodal equation: **no** ``e`` (the canonical relaxation is the *discrete*
+    geometric decay ``q^n``, not the continuous exponential ``e^{−νf λ t}``,
+    which is only the ``dt → 0`` limit the engine never takes), and no magic
+    constant — only ``π`` (the coherence band), ``νf`` and ``dt``.  For the
+    canonical ``νf = 1`` and ``dt = 0.5`` it evaluates to **3**, the canonical
+    U4b window.  The rate ``ρ = 1`` is topology-independent, so the same window
+    applies to every destabiliser (no graduated split).
+
+    Parameters
+    ----------
+    nu_f : float
+        Structural frequency (reorganisation capacity).  Default ``1.0``.
+    dt : float, optional
+        Integration step.  Defaults to the canonical ``DT_CANONICAL`` (0.5).
+
+    Returns
+    -------
+    int
+        Discrete steps for a structural-pressure perturbation to relax into the
+        coherence band ``1/(π + 1)`` — the U4b recency window.
+    """
+    import math
+
+    if dt is None:
+        from ..constants.canonical import DT_CANONICAL
+
+        dt = DT_CANONICAL
+    rho = 1.0  # mean eigenvalue of L_rw = trace/N (exact, parameter-free)
+    q = 1.0 - float(nu_f) * float(dt) * rho  # discrete per-step decay factor
+    if q <= 0.0:
+        return 1  # overdamped: the perturbation is removed in a single step
+    band = 1.0 / (math.pi + 1.0)  # the coherence-band fraction (π only)
+    n = 1
+    while q ** n >= band and n < 64:
+        n += 1
+    return n
+
+
+def derive_u2_debt_capacity_from_physics(
+    nu_f: float = 1.0, dt: float | None = None
+) -> int:
+    r"""Derive the U2 convergence debt capacity from the pulse relaxation.
+
+    U2 (convergence / boundedness) requires the integral ``∫νf·ΔNFR dt`` to stay
+    finite: a destabiliser raises ``|ΔNFR|``, a stabiliser relaxes it.  Under
+    the canonical discrete nodal step the perturbation decays by
+    ``q = 1 − νf·dt·ρ`` per step (``ρ`` = mean ``L_rw`` eigenvalue = ``trace/N =
+    1``, exact).  A **sustained** unit-destabilisation debt accumulates to the
+    geometric steady state ``Σ q^k = 1/(1 − q) = 1/(νf·dt·ρ)`` — the maximum
+    standing debt of uncompensated destabilisers the relaxation can absorb
+    before the integral diverges and the structure fragments (a U2 violation).
+    The same ``q`` that sets the U4b *time* window
+    (:func:`derive_bifurcation_window_from_physics`) sets this *capacity*: the
+    window is the relaxation time, the debt is the relaxation absorption.  For
+    the canonical ``νf = 1`` and ``dt = 0.5`` this is **2** — the canonical U2
+    debt threshold, now DERIVED (no magic constant).
+
+    Parameters
+    ----------
+    nu_f : float
+        Structural frequency (reorganisation capacity).  Default ``1.0``.
+    dt : float, optional
+        Integration step.  Defaults to the canonical ``DT_CANONICAL`` (0.5).
+
+    Returns
+    -------
+    int
+        The maximum sustainable uncompensated-destabiliser debt
+        ``⌊1/(νf·dt·ρ)⌋`` — the U2 convergence threshold.
+    """
+    import math
+
+    if dt is None:
+        from ..constants.canonical import DT_CANONICAL
+
+        dt = DT_CANONICAL
+    rho = 1.0  # mean eigenvalue of L_rw = trace/N (exact, parameter-free)
+    relax = float(nu_f) * float(dt) * rho  # = 1 - q (the per-step relaxation)
+    if relax <= 0.0:
+        return 0
+    return int(math.floor(1.0 / relax))
 
 
 def can_generate_epi_from_null(operator: str) -> bool:

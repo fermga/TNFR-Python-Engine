@@ -70,6 +70,77 @@ class TestPhysicsDerivationIsTheSource:
         assert gt.BIFURCATION_HANDLERS == CANONICAL_HANDLERS
 
 
+class TestBifurcationWindowEmergent:
+    """The U4b window is DERIVED from the pulse relaxation (not a magic 3)."""
+
+    def test_canonical_window_is_three(self) -> None:
+        # the derivation evaluates to the canonical U4b window (nu_f=1, dt=0.5)
+        from tnfr.config.operator_names import BIFURCATION_WINDOW
+
+        assert pd.derive_bifurcation_window_from_physics() == 3
+        assert BIFURCATION_WINDOW == 3
+
+    def test_window_is_pi_band_relaxation(self) -> None:
+        # window = steps for the discrete perturbation q^n to relax below the
+        # coherence-band fraction 1/(pi+1); q = 1 - nu_f*dt*rho, rho = 1
+        import math
+
+        nu_f, dt, rho = 1.0, 0.5, 1.0
+        q = 1.0 - nu_f * dt * rho
+        band = 1.0 / (math.pi + 1.0)
+        n = 1
+        while q ** n >= band:
+            n += 1
+        assert pd.derive_bifurcation_window_from_physics(nu_f, dt) == n
+
+    def test_window_adapts_to_dt(self) -> None:
+        # a smaller step => slower per-step relaxation => a larger window
+        assert (
+            pd.derive_bifurcation_window_from_physics(dt=0.25)
+            > pd.derive_bifurcation_window_from_physics(dt=0.5)
+        )
+
+    def test_single_emergent_window_for_all_destabilizers(self) -> None:
+        # the graduated split is dropped: every destabilizer shares the SINGLE
+        # emergent window (topology-independent relaxation, rho = trace/N = 1).
+        # The strong/moderate/weak partition and BIFURCATION_WINDOWS dict are
+        # removed -- DESTABILIZERS + BIFURCATION_WINDOW are the single sources.
+        from tnfr.config import operator_names as on
+
+        assert not hasattr(on, "BIFURCATION_WINDOWS")
+        assert not hasattr(on, "DESTABILIZERS_STRONG")
+        assert not hasattr(on, "DESTABILIZERS_MODERATE")
+        assert not hasattr(on, "DESTABILIZERS_ALL")
+        assert on.BIFURCATION_WINDOW == 3
+
+    def test_u2_debt_capacity_is_two(self) -> None:
+        # the U2 debt threshold is the geometric relaxation absorption 1/(1-q),
+        # the SAME q (= 1 - nu_f*dt*rho) that sets the window -- read as a
+        # capacity instead of a time
+        from tnfr.config.operator_names import U2_DEBT_CAPACITY
+
+        assert pd.derive_u2_debt_capacity_from_physics() == 2
+        assert U2_DEBT_CAPACITY == 2
+
+    def test_u2_debt_is_geometric_absorption(self) -> None:
+        # capacity = floor(1/(nu_f*dt*rho)) = floor(1/(1-q)), rho = 1
+        nu_f, dt, rho = 1.0, 0.5, 1.0
+        relax = nu_f * dt * rho
+        assert pd.derive_u2_debt_capacity_from_physics(nu_f, dt) == int(
+            1.0 / relax
+        )
+
+    def test_grammar_repeat_window_is_the_relaxation_window(self) -> None:
+        # the GRAMMAR repeat-avoidance window (don't re-fire a destabilizer
+        # before its perturbation relaxes) = the same derived relaxation window
+        from tnfr.config.defaults_core import CoreDefaults
+
+        assert (
+            CoreDefaults().GRAMMAR["window"]
+            == pd.derive_bifurcation_window_from_physics()
+        )
+
+
 class TestPredicateGrounding:
     """The per-operator predicates encode the canonical membership."""
 
@@ -93,10 +164,9 @@ class TestNoDivergentModule:
         from tnfr.config import operator_names as on
 
         assert set(on.DESTABILIZERS) == CANONICAL_DESTABILIZERS
-        # graduated split union == canonical (no NAV, no EN)
-        assert set(on.DESTABILIZERS_ALL) == CANONICAL_DESTABILIZERS
-        assert "transition" not in on.DESTABILIZERS_ALL  # NAV is NOT a destabilizer
-        assert "reception" not in on.DESTABILIZERS_ALL  # EN is NOT a destabilizer
+        # DESTABILIZERS is the single membership source (no NAV, no EN)
+        assert "transition" not in on.DESTABILIZERS  # NAV is NOT a destabilizer
+        assert "reception" not in on.DESTABILIZERS  # EN is NOT a destabilizer
         assert set(on.TRANSFORMERS) == CANONICAL_TRANSFORMERS
 
     def test_math_grammar_validators_match(self) -> None:

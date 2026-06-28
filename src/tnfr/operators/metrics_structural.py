@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..config.operator_names import BIFURCATION_WINDOW
 from .metrics_core import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from .metrics_core import get_node_attr as _get_node_attr
 
@@ -603,10 +604,9 @@ def mutation_metrics(
 
         **Destabilizer context (NEW - R4 Extended):**
 
-        - destabilizer_type: "strong"/"moderate"/"weak"/None
         - destabilizer_operator: Glyph that enabled mutation
         - destabilizer_distance: Operators since destabilizer
-        - recent_history: Last 4 operators
+        - recent_history: Last N operators
 
         **Grammar validation (NEW):**
 
@@ -756,7 +756,6 @@ def mutation_metrics(
 
     # === DESTABILIZER CONTEXT (R4 Extended) ===
     mutation_context = G.nodes[node].get("_mutation_context", {})
-    destabilizer_type = mutation_context.get("destabilizer_type")
     destabilizer_operator = mutation_context.get("destabilizer_operator")
     destabilizer_distance = mutation_context.get("destabilizer_distance")
     recent_history = mutation_context.get("recent_history", [])
@@ -768,9 +767,10 @@ def mutation_metrics(
     # Look for IL in history
     il_precedence_found = any("IL" in str(g) for g in glyph_history)
 
-    # Check if destabilizer is recent (within ~3 operators)
+    # Check if destabilizer is recent (within the relaxation window)
     destabilizer_recent = (
-        destabilizer_distance is not None and destabilizer_distance <= 3
+        destabilizer_distance is not None
+        and destabilizer_distance <= BIFURCATION_WINDOW
     )
 
     grammar_u4b_satisfied = il_precedence_found and destabilizer_recent
@@ -838,7 +838,6 @@ def mutation_metrics(
         ),
         "phase_coherence_neighbors": phase_coherence,
         # === DESTABILIZER CONTEXT (NEW - R4 Extended) ===
-        "destabilizer_type": destabilizer_type,
         "destabilizer_operator": destabilizer_operator,
         "destabilizer_distance": destabilizer_distance,
         "recent_history": recent_history,

@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 from ..compat.dataclass import dataclass
 from ..config.operator_names import (
+    BIFURCATION_WINDOW,
     COHERENCE,
     DESTABILIZERS,
     DISSONANCE,
@@ -625,7 +626,10 @@ class SequenceHealthAnalyzer:
             Count of unresolved dissonant operators
         """
         unresolved = 0
-        window = 3  # Look ahead up to 3 operators
+        # The destabilizer-resolution reach is the structural-relaxation window
+        # BIFURCATION_WINDOW (topology-independent; a destabilizer not
+        # compensated within it has either relaxed or diverged per U2).
+        window = BIFURCATION_WINDOW
 
         for i, op in enumerate(sequence):
             if op in DESTABILIZERS:

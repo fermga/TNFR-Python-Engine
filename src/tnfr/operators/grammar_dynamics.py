@@ -46,6 +46,7 @@ from .grammar_types import (
     STABILIZERS,
     TRANSFORMERS,
 )
+from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
 
 # ── glyph code ↔ canonical function name helpers ──────────────────────────
 
@@ -169,7 +170,7 @@ def _check_u2(
     destab = sum(1 for g in full if g in _DESTABILIZER_CODES)
     stab = sum(1 for g in full if g in _STABILIZER_CODES)
     debt = destab - stab
-    if debt > 2:
+    if debt > U2_DEBT_CAPACITY:
         return GrammarViolation(
             rule="U2",
             message=(
@@ -250,15 +251,18 @@ def _check_u4b(
     """
     if candidate not in _TRANSFORMER_CODES:
         return None
-    # Look for a destabilizer in the last 3 operations
-    recent = history[-3:] if len(history) >= 3 else history
+    # Look for a destabilizer within the emergent relaxation window: the
+    # structure stays plastic until the |ΔNFR| perturbation relaxes into the
+    # coherence band (BIFURCATION_WINDOW, derived from the pulse, = 3).
+    w = BIFURCATION_WINDOW
+    recent = history[-w:] if len(history) >= w else history
     has_destab = any(g in _DESTABILIZER_CODES for g in recent)
     if not has_destab:
         return GrammarViolation(
             rule="U4b",
             message=(
                 f"Transformer '{candidate}' requires a recent destabilizer "
-                f"(within ~3 ops). Recent: {recent}."
+                f"(within ~{w} ops). Recent: {recent}."
             ),
             severity="error",
         )

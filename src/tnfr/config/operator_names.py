@@ -57,6 +57,11 @@ from __future__ import annotations
 
 from typing import Any
 
+from .physics_derivation import (
+    derive_bifurcation_window_from_physics,
+    derive_u2_debt_capacity_from_physics,
+)
+
 # Canonical operator identifiers (English tokens)
 EMISSION = "emission"
 RECEPTION = "reception"
@@ -111,27 +116,27 @@ SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 # and are therefore NOT destabilizers — see validate_physics_derivation().
 DESTABILIZERS = frozenset({DISSONANCE, MUTATION, EXPANSION})  # OZ, ZHIR, VAL
 TRANSFORMERS = frozenset({MUTATION, SELF_ORGANIZATION})  # ZHIR, THOL
-BIFURCATION_WINDOW = 3  # Canonical U4b window (~3 ops, AGENTS.md U4b)
+# Canonical U4b window: DERIVED from the pulse relaxation, not assumed. A
+# destabilizer's |ΔNFR| perturbation relaxes geometrically under the discrete
+# nodal step EPI += dt·νf·ΔNFR; the window is the number of steps for it to
+# relax into the coherence band 1/(π+1) (π the sole structural scale -- no 'e',
+# no magic 3). For the canonical νf=1, dt=0.5 this evaluates to 3.
+BIFURCATION_WINDOW = derive_bifurcation_window_from_physics()
+# U2 convergence debt capacity: the SAME relaxation read as a capacity instead
+# of a time -- the geometric absorption 1/(1−q) = 1/(νf·dt·ρ) of sustained
+# destabilization (max uncompensated destabilizers before the bounded-integral
+# convergence fails). For the canonical νf=1, dt=0.5 this evaluates to 2.
+U2_DEBT_CAPACITY = derive_u2_debt_capacity_from_physics()
 
-# R4 Extended: Graduated destabilizer split (a window refinement of the flat
-# AGENTS.md U4b model).  The UNION DESTABILIZERS_ALL must equal the canonical
-# DESTABILIZERS = {OZ, ZHIR, VAL}; the split only ranks how far each destabilizer
-# can reach a transformer.  OZ (explicit dissonance) is the strong destabilizer;
-# VAL (added DOF) and ZHIR (phase jump) are the indirect ones.
-DESTABILIZERS_STRONG = frozenset({DISSONANCE})  # OZ: explicit dissonance
-DESTABILIZERS_MODERATE = frozenset({EXPANSION, MUTATION})  # VAL, ZHIR: indirect
-DESTABILIZERS_WEAK = frozenset()  # (none: EN/reception is NOT a destabilizer)
-
-# All destabilizers (union of all levels) == canonical {OZ, ZHIR, VAL}
-DESTABILIZERS_ALL = DESTABILIZERS_STRONG | DESTABILIZERS_MODERATE | DESTABILIZERS_WEAK
-
-# R4 Extended: Bifurcation windows by destabilizer reach (canonical base = 3).
-# These define how many operators can separate a destabilizer from a transformer.
-BIFURCATION_WINDOWS = {
-    "strong": 4,  # OZ permits ZHIR/THOL within 4 operators
-    "moderate": 2,  # VAL/ZHIR permit ZHIR/THOL within 2 operators
-    "weak": 1,  # (vestigial: no weak destabilizers in the canonical set)
-}
+# Every destabilizer in DESTABILIZERS = {OZ, ZHIR, VAL} shares the SINGLE
+# emergent window BIFURCATION_WINDOW. The earlier graduated reach split
+# (strong=4 / moderate=2) was a heuristic the dynamics does NOT support: the
+# structural-pressure relaxation time is topology-independent (the mean L_rw
+# eigenvalue is exactly trace/N = 1), so there is no graduated reach (measured:
+# OZ's direct ΔNFR injection and VAL/ZHIR's field perturbations do not order as
+# 4 > 2). DESTABILIZERS is the single membership source; the strong/moderate/
+# weak partition, its DESTABILIZERS_ALL union, and the BIFURCATION_WINDOWS dict
+# are removed in favour of DESTABILIZERS + BIFURCATION_WINDOW.
 
 
 def canonical_operator_name(name: str) -> str:
@@ -170,11 +175,7 @@ __all__ = [
     "DESTABILIZERS",
     "TRANSFORMERS",
     "BIFURCATION_WINDOW",
-    "DESTABILIZERS_STRONG",
-    "DESTABILIZERS_MODERATE",
-    "DESTABILIZERS_WEAK",
-    "DESTABILIZERS_ALL",
-    "BIFURCATION_WINDOWS",
+    "U2_DEBT_CAPACITY",
     "canonical_operator_name",
     "operator_display_name",
     "validate_physics_derivation",

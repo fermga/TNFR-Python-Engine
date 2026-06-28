@@ -28,6 +28,7 @@ from .grammar_telemetry import (
     warn_phase_curvature_telemetry,
     warn_phase_gradient_telemetry,
 )
+from ..config.operator_names import BIFURCATION_WINDOW
 from .grammar_types import (
     BIFURCATION_HANDLERS,
     BIFURCATION_TRIGGERS,
@@ -376,7 +377,8 @@ class GrammarValidator:
         THOL (Self-organization) requirements:
             1. Recent destabilizer: Disorder to self-organize
 
-        "Recent" = within ~3 operators (ΔNFR decays via structural relaxation)
+        "Recent" = within BIFURCATION_WINDOW operators (ΔNFR decays via
+        structural relaxation; the window is the emergent relaxation time)
 
         Parameters
         ----------
@@ -390,9 +392,10 @@ class GrammarValidator:
 
         Notes
         -----
-        This implements "graduated destabilization" - transformers need
-        sufficient ΔNFR context. The ~3 operator window captures when
-        |ΔNFR| remains above bifurcation threshold.
+        Transformers need sufficient ΔNFR context. The single
+        BIFURCATION_WINDOW captures when |ΔNFR| remains above the
+        bifurcation threshold (the structural-relaxation reach; there is no
+        graduated strong/moderate/weak split).
         """
         # Check if sequence contains transformers
         transformer_ops = []
@@ -407,14 +410,14 @@ class GrammarValidator:
         # For each transformer, check context
         violations = []
         for idx, transformer_name in transformer_ops:
-            # Check for recent destabilizer within a fixed window of 3 operators.
-            # KNOWN LIMITATION (B5): window_start = max(0, idx - 3) is a fixed
-            # heuristic.  For sequences longer than ~7 operators a destabilizer
-            # near position 0 will not be "recent" for a transformer at position
-            # 4+, which may produce false positives.  The window should scale
-            # with sequence length or structural relaxation time.  Correct for
-            # the current canonical K=5 sequences; revisit when K > 7.  See B5.
-            window_start = max(0, idx - 3)
+            # "Recent" = within the structural-relaxation window
+            # BIFURCATION_WINDOW (derived from the nodal equation: the discrete
+            # steps for a ΔNFR perturbation to relax into the coherence band).
+            # The window is topology-independent (mean L_rw eigenvalue =
+            # trace/N = 1), so a destabilizer beyond it HAS relaxed and is
+            # correctly no longer "recent" -- it does not scale with sequence
+            # length. Single source: config.operator_names.BIFURCATION_WINDOW.
+            window_start = max(0, idx - BIFURCATION_WINDOW)
             recent_destabilizers = []
             prior_il = False
 
@@ -657,9 +660,11 @@ class GrammarValidator:
         # For each deep REMESH, check for stabilizers in window
         violations = []
         for idx, depth in deep_remesh_indices:
-            # Check window of ±3 operators for scale stabilizers
-            window_start = max(0, idx - 3)
-            window_end = min(len(sequence), idx + 4)
+            # Scale stabilizers must fall within the structural-relaxation reach
+            # BIFURCATION_WINDOW on either side (the same topology-independent
+            # window as U4b; the +1 on window_end is the inclusive upper bound).
+            window_start = max(0, idx - BIFURCATION_WINDOW)
+            window_end = min(len(sequence), idx + BIFURCATION_WINDOW + 1)
 
             has_stabilizer = False
             stabilizers_in_window = []

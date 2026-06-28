@@ -16,6 +16,7 @@ from typing import Any, Mapping
 
 from ..compat.dataclass import dataclass
 from ..constants.operational import MIN_BUSINESS_COHERENCE_CANONICAL
+from .physics_derivation import derive_bifurcation_window_from_physics
 from ..constants.canonical import (
     CHANNEL_WEIGHT_PRIMARY,
     CHANNEL_WEIGHT_SECONDARY,
@@ -185,7 +186,10 @@ class CoreDefaults:
     OZ_SIGMA: float = COUPLING_GENTLE  # 1/(4π) ≈ 0.0796 (OZ stochastic-mode noise width)
     GRAMMAR: dict[str, Any] = field(
         default_factory=lambda: {
-            "window": 3,
+            # repeat-avoidance window = the structural relaxation window: do not
+            # re-fire a destabilizer/transformer before its |ΔNFR| perturbation
+            # relaxes into the coherence band (derived; = 3 for νf=1, dt=0.5).
+            "window": derive_bifurcation_window_from_physics(),
             "avoid_repeats": ["ZHIR", "OZ", "THOL"],
             "force_dnfr": MID_COHERENCE_THRESHOLD,  # 2/π ≈ 0.6366 (force threshold)
             "force_accel": MID_COHERENCE_THRESHOLD,  # 2/π ≈ 0.6366 (acceleration force threshold)

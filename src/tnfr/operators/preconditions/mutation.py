@@ -17,10 +17,8 @@ if TYPE_CHECKING:
 
 from ...alias import get_attr
 from ...config.operator_names import (
-    BIFURCATION_WINDOWS,
-    DESTABILIZERS_MODERATE,
-    DESTABILIZERS_STRONG,
-    DESTABILIZERS_WEAK,
+    BIFURCATION_WINDOW,
+    DESTABILIZERS,
 )
 from ...constants.aliases import ALIAS_VF
 from . import OperatorPreconditionError
@@ -316,8 +314,8 @@ def record_destabilizer_context(
     """Detect and record which destabilizer enabled the current mutation.
 
     This implements R4 Extended telemetry by analyzing the glyph_history
-    to determine which destabilizer type (strong/moderate/weak) is within
-    its appropriate bifurcation window.
+    to find the most recent destabilizer (DESTABILIZERS = {OZ, ZHIR, VAL})
+    within the single structural-relaxation window BIFURCATION_WINDOW.
 
     Parameters
     ----------
@@ -332,9 +330,8 @@ def record_destabilizer_context(
     -------
     dict
         Destabilizer context with keys:
-        - destabilizer_type: "strong"/"moderate"/"weak"/None
-        - destabilizer_operator: Name of destabilizer glyph
-        - destabilizer_distance: Operations since destabilizer
+        - destabilizer_operator: Name of destabilizer glyph (or None)
+        - destabilizer_distance: Operations since destabilizer (or None)
         - recent_history: Last N operator names
 
     Notes
@@ -343,20 +340,18 @@ def record_destabilizer_context(
     structural tracing and post-hoc analysis. This enables understanding
     of bifurcation pathways without breaking TNFR structural invariants.
 
-    **Bifurcation Windows (from BIFURCATION_WINDOWS)**:
-    - Strong destabilizers (OZ, VAL): window = 4 operations
-    - Moderate destabilizers: window = 2 operations
-    - Weak destabilizers: window = 1 operation (immediate only)
+    The reach is a SINGLE emergent window (BIFURCATION_WINDOW): the
+    structural-pressure relaxation time is topology-independent (the mean
+    L_rw eigenvalue is exactly trace/N = 1), so the earlier graduated
+    strong/moderate/weak split does not survive the dynamics.
 
     Examples
     --------
     >>> from tnfr.structural import create_nfr
     >>> from tnfr.operators import Dissonance
     >>> G, node = create_nfr("test", epi=0.5, vf=1.0)
-    >>> Dissonance()(G, node)  # Apply OZ (strong destabilizer)
+    >>> Dissonance()(G, node)  # Apply OZ (a destabilizer)
     >>> context = record_destabilizer_context(G, node)
-    >>> context["destabilizer_type"]  # doctest: +SKIP
-    'strong'
     >>> context["destabilizer_operator"]  # doctest: +SKIP
     'dissonance'
     """
@@ -370,7 +365,6 @@ def record_destabilizer_context(
     if not history:
         # No history available, mutation enabled by external factors
         context = {
-            "destabilizer_type": None,
             "destabilizer_operator": None,
             "destabilizer_distance": None,
             "recent_history": [],
@@ -381,49 +375,27 @@ def record_destabilizer_context(
     # Import glyph_function_name to convert glyphs to operator names
     from ..grammar import glyph_function_name
 
-    # Get recent history (up to max window size)
-    max_window = BIFURCATION_WINDOWS["strong"]
-    recent = list(history)[-max_window:] if len(history) > max_window else list(history)
+    # Get recent history within the single structural-relaxation window
+    recent = (
+        list(history)[-BIFURCATION_WINDOW:]
+        if len(history) > BIFURCATION_WINDOW
+        else list(history)
+    )
     recent_names = [glyph_function_name(g) for g in recent]
 
-    # Search backwards for destabilizers, checking window constraints
+    # Search backwards for any destabilizer ({OZ, ZHIR, VAL}) within the window
     destabilizer_found = None
-    destabilizer_type = None
     destabilizer_distance = None
 
     for i, op_name in enumerate(reversed(recent_names)):
         distance = i + 1  # Distance from mutation (1 = immediate predecessor)
-
-        # Check strong destabilizers (window = 4)
-        if (
-            op_name in DESTABILIZERS_STRONG
-            and distance <= BIFURCATION_WINDOWS["strong"]
-        ):
+        if op_name in DESTABILIZERS and distance <= BIFURCATION_WINDOW:
             destabilizer_found = op_name
-            destabilizer_type = "strong"
-            destabilizer_distance = distance
-            break
-
-        # Check moderate destabilizers (window = 2)
-        if (
-            op_name in DESTABILIZERS_MODERATE
-            and distance <= BIFURCATION_WINDOWS["moderate"]
-        ):
-            destabilizer_found = op_name
-            destabilizer_type = "moderate"
-            destabilizer_distance = distance
-            break
-
-        # Check weak destabilizers (window = 1, immediate only)
-        if op_name in DESTABILIZERS_WEAK and distance == 1:
-            destabilizer_found = op_name
-            destabilizer_type = "weak"
             destabilizer_distance = distance
             break
 
     # Store context in node metadata for telemetry
     context = {
-        "destabilizer_type": destabilizer_type,
         "destabilizer_operator": destabilizer_found,
         "destabilizer_distance": destabilizer_distance,
         "recent_history": recent_names,
@@ -433,7 +405,7 @@ def record_destabilizer_context(
     # Log telemetry for structural tracing
     if destabilizer_found:
         logger.info(
-            f"Node {node}: ZHIR enabled by {destabilizer_type} destabilizer "
+            f"Node {node}: ZHIR enabled by destabilizer "
             f"({destabilizer_found}) at distance {destabilizer_distance}"
         )
     else:
@@ -470,7 +442,7 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
                 "minimum_vf": {"passed": bool, "value": float, "threshold": float},
                 "threshold_crossing": {"passed": bool, "depi_dt": float, "xi": float},
                 "il_precedence": {"passed": bool, "found": bool},
-                "recent_destabilizer": {"passed": bool, "type": str|None, "distance": int|None},
+                "recent_destabilizer": {"passed": bool, "operator": str|None, "distance": int|None},
                 "history_length": {"passed": bool, "length": int, "required": int},
             },
             "recommendations": [str, ...]
@@ -564,7 +536,6 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
 
     checks["recent_destabilizer"] = {
         "passed": destabilizer_found,
-        "type": context.get("destabilizer_type"),
         "distance": context.get("destabilizer_distance"),
         "operator": context.get("destabilizer_operator"),
     }
