@@ -8162,6 +8162,31 @@ Categories are open — add new ones as discoveries warrant.
   P17/P37), not a new operator dimension.  Live sub-question: does
   `λ_n ≥ 0` (Li–Keiper) **emerge** as phase-coherence of the prime
   pulse rather than being imposed?
+- **D-OQ-5** (Riemann §0; this session): *The correct nodal mapping and the
+  REMESH / Euler resolution.*  **(a) `ζ` is a nodal-pulse superposition
+  (exact):** `ζ(½+iT) = Σ_n n^{−½}·e^{−iφ_n(T)}` with `φ_n(τ)=νf_n·τ` the
+  canonical nodal phase; zeros = total destructive interference (measured dips
+  at `T = 14.12, 21.04, 25.02` = `γ_{1,2,3}`), `S(T)=(1/π)·arg`.  Composites
+  couple primes: `νf(p·q)=νf(p)+νf(q)` (multiplication = `νf` addition).  ⇒
+  **there is no local non-`S_n` generator to find** — the nodal ontology already
+  produces `ζ` exactly; the oscillatory `S(T)` is a *global analytic* property,
+  not a local term (which is why every local attack, D-MP-4, re-confronts the
+  wall).  **(b) global ⇒ REMESH (confirmed):** REMESH is the only network-scale
+  operator (D-CC-5); the prime powers `pᵏ` are its echoes (the P14 k-ladder),
+  and **the REMESH echo-sum within a prime is exactly the Euler factor**,
+  `Σ_k p^{−k/2}e^{−ikνf_pτ} = (1−p^{−s})^{−1}` (measured `|Δ| ≤ 4e-10`); the
+  global REMESH product = the Euler product = `ζ`.  This *is* the
+  §13vicies-novies REMESH Global Reframe (smooth half = finite-τ REMESH; `S(T)` =
+  `τ→∞` REMESH), reached independently.  **(c) the honest wall (N15 confirmed
+  concretely):** the finite REMESH / Euler product does **not** vanish at the
+  zeros (measured `|Π_{p≤500}| ≈ 0.07–0.11` while `|ζ| ≈ 0`) — the zeros / `S(T)`
+  are the **analytic continuation** of the global product, NOT reached by the
+  structural REMESH aggregation.  REMESH builds the Euler-product *structure*;
+  the spectral residue is the continuation = N15 "structural-not-spectral".
+  **Net:** closes the local-generator search (supersedes the D-OQ-4
+  affine-vs-deeper question — *neither*; the object is global), and pins the
+  wall to the global coherence / continuation of the canonical nodal-pulse
+  superposition.  Does **NOT** advance G4 = RH.
 
 ### §13triginta-septima.6 Maintenance Notes
 
