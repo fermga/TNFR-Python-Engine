@@ -158,6 +158,15 @@ tying them into one structure (the synergies a first pass can miss):
   (§4.8), the wave dispersion (§5), and the **fractal-pulse timescales** (§5.5; on a self-similar
   form the spectrum bands the relaxation rates `νf·λ_k`) — geometry, thermodynamics, the matter
   stage, and the rhythm are *the same operator's spectrum read differently*.
+- **One form, three depths — `form → dimension → dynamics`.** That same operator is read at
+  increasing resolution: the **form** is `L` itself (the coupling structure / the EPI); the
+  **dimension** is the *scaling* of its spectrum (`d_s` = the simplex grade, §3.2 — how the
+  eigenvalues accumulate, the coarse read-out); the **dynamics** is the *values* of the spectrum
+  (`ω_k = √λ_k`, §5.5 — the fine read-out). The form fixes the dimension (when coherent /
+  self-similar) and the dimension fixes the dynamical regime — `0D` one tone (a bell) → `1D`
+  harmonic (a string, pitched) → `2D+` inharmonic (a drum, unpitched). So a **number** (cardinal,
+  [TNFR_NUMBER_THEORY.md §9.8](TNFR_NUMBER_THEORY.md)), a **dimension** (§3.2) and a **dynamical
+  regime** (§5.5) are one quantity read at three depths of the form.
 - **One pivot, `λ₂`.** The spectral gap sets the relaxation clock `νf·λ₂` (time, §4.2), the
   arrow-of-time decay `e^{−2νf λ₂ t}` (§4.4), and the criticality threshold `r_c=νf·λ₂` (§6.2):
   one number threads time, irreversibility, and the phase transition.
@@ -572,28 +581,36 @@ silent mode + two tones of multiplicity `(p−1)/2`), and composites split it
 multiplicatively into the factorization type
 ([TNFR_NUMBER_THEORY.md §9.12](TNFR_NUMBER_THEORY.md)).
 
-**The music of the NFR.** Read as sound, the pulse is a whole musical structure —
-pitch (`ω_k = √λ_k`), chord (the distinct tones), timbre (the eigenvalue
+**The music of the NFR — music as a lens on structural frequency.** Music is used
+here as an *epistemic lens*, not as audio: the frequencies are **structural**
+(`νf`, `ω_k = √λ_k`, in `Hz_str`), and the point is to read what happens
+*structurally*, not to make sound. Through that lens the pulse is a whole musical
+structure — pitch (`ω_k`), chord (the distinct tones), timbre (the eigenvalue
 multiplicities), beats (`ω_j − ω_k`), and the standing **nodes** (the `ΔNFR = 0`
-NFRs, §3). It is **percussion**: the graph spectrum is generally *inharmonic* (a
-Chladni plate / drum), harmonic only for a 1D chain (a string), so **consonance**
-is not a frequency ratio but **phase coherence** — the U3 gate `Δφ_max = π/2` is the
-consonance boundary (`R = cos(Δφ/2)`). Distinct primes are the **independent
-voices** of the polyphony (the Euler product, decoupled ladders). And the music has
-the **same wall**: you cannot *hear the shape of the drum* (Kac) — isospectral NFRs
-share the pulse, and `ρ(pq)` is one chord for every semiprime — so the pulse hears
-the **type / symmetry**, never the **identity** (the `Fix(G)^⊥` wall, §7.1;
-[`emergent_musical_nfr.py`](../benchmarks/emergent_musical_nfr.py)).
+NFRs, §3). **The dynamical regime follows the dimension** (§3.2): a **1D coherent
+thread** (a chain) is *harmonic* — its structural-frequency ratios are the just
+consonances (octave `2:1`, fifth `3:2`, fourth `4:3`, measured to <0.5 %), a
+**pitched** regime, so the **harmonic series itself is emergent**; a **2D+** form (a
+membrane / Chladni plate) is *inharmonic*, an **unpitched** regime where consonance
+is no longer a frequency ratio but **phase coherence** (the U3 gate `Δφ_max = π/2`,
+`R = cos(Δφ/2)`); the `0D` clique is one rigid tone (a bell). Only the **tempered
+scale** (equal temperament) is an imposed human convention. Distinct primes are the
+**independent voices** of the polyphony (the Euler product, decoupled ladders). And
+the lens reaches the **same wall**: you cannot *hear the shape of the drum* (Kac) —
+isospectral NFRs share the pulse, and `ρ(pq)` is one chord for every semiprime — so
+the pulse hears the **type / symmetry**, never the **identity** (the `Fix(G)^⊥`
+wall, §7.1; [`emergent_musical_nfr.py`](../benchmarks/emergent_musical_nfr.py)).
 
 > **Honest boundary.** This is the standard standing-wave spectrum (`ω_k = √λ_k`), beat
 > interference, and Kuramoto phase-locking on the conservative face — re-read in TNFR terms (each
 > NFR a phase oscillator, resonance the coupling). It surfaces existing canon (`νf` the per-NFR
 > frequency, `local_phase_sync` / `kuramoto_R_psi` the resonance); the fractal cascade is the
 > banded-spectrum synchronization of a self-similar graph, re-read as operational fractality (U5)
-> in time; the *musical* reading is the same spectrum heard as sound (consonance = the U3 phase
-> gate, the Kac wall = the inverse spectral problem) — temperament, scales and the literal
-> harmonic series are **not** emergent (the spectrum is inharmonic) and are rejected. It derives
-> no new physics.
+> in time; the *musical* reading is the same **structural-frequency** spectrum used as a lens
+> (not audio) — the harmonic series and the just consonances (octave/fifth/fourth) **are**
+> emergent on a 1D coherent thread, while only **equal temperament** and the chosen scale are
+> imposed conventions; a 2D+ form is inharmonic (unpitched), where consonance is the U3 phase
+> gate and the Kac wall is the inverse spectral problem. It derives no new physics.
 
 ---
 

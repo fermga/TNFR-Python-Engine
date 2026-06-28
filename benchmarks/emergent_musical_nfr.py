@@ -1,31 +1,32 @@
-"""Emergent Musical NFR: the nodal equation is the music of a vibrating drum.
+"""Emergent Musical NFR: music as a lens on the structural-frequency spectrum.
 
-THE PARADIGM (user, theory creator): the music analogy keeps making more sense.
-It is not decorative -- the conservative face of the nodal equation IS a
-vibrating system (every mode at omega_k = sqrt(lambda_k); "nodal" is the
-wave-node of Chladni). This benchmark measures which MUSICAL mechanisms
-genuinely emerge, and -- the honest centerpiece -- where the music STOPS: the
-same Fix(G)^perp wall as everything else.
+THE PARADIGM (user, theory creator): music is used as a LENS, not as audio --
+everything is STRUCTURAL FREQUENCY (nu_f, omega_k = sqrt(lambda_k), in Hz_str);
+the goal is to read what happens STRUCTURALLY in TNFR, not to make sound. The
+conservative face of the nodal equation IS a vibrating system ("nodal" = the
+Chladni wave-node), so musical knowledge reads its spectrum. This benchmark
+measures which musical mechanisms genuinely emerge, and -- honestly -- where
+they STOP: the same Fix(G)^perp wall as everything else.
 
 THE STRUCTURAL FACTS (all from L's spectrum + the canonical operators):
   - pitch = omega_k = sqrt(lambda_k); chord = the distinct tones; timbre = the
     eigenvalue multiplicities; beats = omega_j - omega_k; nodes = the dNFR=0
     NFRs;
-  - the graph Laplacian spectrum is generally INHARMONIC (a drum / Chladni
-    plate), harmonic only for 1D chains (a string) -- so frequency-ratio
-    consonance does NOT emerge; consonance is PHASE (the U3 gate Dphi <= pi/2);
+  - the dynamical regime FOLLOWS the dimension: a 1D chain (a string) is
+    HARMONIC -- the just consonances (octave/fifth/fourth) emerge in its Hz_str
+    ratios; a 2D+ form (a drum / Chladni plate) is INHARMONIC -- there
+    consonance is PHASE coherence (the U3 gate Dphi <= pi/2), not a freq ratio;
   - the pulse hears the symmetry TYPE (it can even predict unseen tones,
     inverse_spectrum_to_symmetry.py) but NOT the IDENTITY: isospectral NFRs
     sound the same (Kac) -- the wall.
 
 WHAT EMERGES (measured):
-  - M1 DRUM, NOT STRING: omega_k/omega_1 is ~integer (harmonic) only for the 1D
-    path (a string); the 2D grid (a drum) and the ring are INHARMONIC; K_n is
-    one rigid tone (a bell). TNFR is percussion / Chladni music.
-  - M2 CONSONANCE = PHASE: the Kuramoto order R = cos(Dphi/2) of two coupled
-    NFRs is high (consonant) inside the U3 gate Dphi <= pi/2 and collapses to
-    destructive antiphase beyond it -- consonance is phase, not a frequency
-    ratio.
+  - M1 REGIME FOLLOWS DIMENSION: omega_k/omega_1 is ~integer (harmonic) for the
+    1D path (a string -- the just consonances emerge); the 2D grid (a drum) and
+    the ring are INHARMONIC; K_n is one rigid tone (a bell).
+  - M2 CONSONANCE HAS TWO FACES: the frequency-ratio consonances are the 1D
+    harmonic face (M1); the other face is PHASE -- R = cos(Dphi/2) is consonant
+    inside the U3 gate Dphi <= pi/2, destructive antiphase beyond.
   - M3 POLYPHONY = PRIMES: the decoupled prime-ladder splits into exactly one
     component per prime -- distinct primes are INDEPENDENT VOICES (the Euler
     product at the operator level), a polyphony that never interferes.
@@ -37,12 +38,13 @@ WHAT EMERGES (measured):
 So the music of the NFR is real AND it closes on the same wall: you hear the
 type / symmetry (pitch, chord, timbre, polyphony), never the full identity.
 
-HONEST SCOPE: pitch/timbre/beats/nodes are the standing-wave spectrum re-read
-in TNFR terms; consonance=phase is the U3 gate; polyphony=primes is the Euler
-product (ex 147/148); the Kac wall is the inverse spectral problem = the
-Fix(G)^perp residue (theory 9.7/9.10). Rejected as IMPOSED (not measured):
-temperament, scales, and the literal harmonic series / octave (the spectrum is
-inharmonic). Derives no new physics; closes no open problem. R and pi assumed.
+HONEST SCOPE: all frequencies are STRUCTURAL (Hz_str) -- this reads TNFR
+through music, NOT audio. pitch/timbre/beats/nodes are the standing-wave
+spectrum re-read; polyphony=primes is the Euler product (ex 147/148); the Kac
+wall is the inverse spectral problem = Fix(G)^perp. The harmonic series and the
+just consonances ARE emergent (on a 1D thread, M1); only EQUAL TEMPERAMENT and
+the chosen scale are imposed. Derives no new physics; closes no open problem.
+R and pi assumed.
 
 Run:
     python benchmarks/emergent_musical_nfr.py
@@ -101,11 +103,11 @@ def find_isospectral_pair(max_nodes=7):
 
 def main() -> None:
     print("=" * 72)
-    print("EMERGENT MUSICAL NFR -- the nodal equation is the music of a drum")
+    print("EMERGENT MUSICAL NFR -- music as a lens on structural frequency")
     print("=" * 72)
 
     # M1 -- inharmonic: drum (2D) vs string (1D path) vs bell (complete)
-    print("\nM1 -- drum, not string: omega_k/omega_1 (harmonic = integers):")
+    print("\nM1 -- regime follows dimension: omega_k/omega_1 (Hz_str ratios):")
     cases = [
         ("path P16 (1D string)", nx.path_graph(16)),
         ("ring C16 (1D loop)", nx.cycle_graph(16)),
@@ -117,10 +119,16 @@ def main() -> None:
         if spec and spec[0] > 1e-9:
             ratios = [round(x / spec[0], 3) for x in spec]
             print(f"   {name:>22}: {ratios}")
-    print("   => only the 1D string is ~harmonic; 2D+ is inharmonic (Chladni)")
+    # the just consonances DO emerge on the 1D string (structural frequency)
+    pw = compute_emergent_pulse(nx.path_graph(64), n_modes=4)
+    w = pw["resonant_spectrum"]
+    print(f"   string consonances: octave {w[1]/w[0]:.4f} (2.000), "
+          f"fifth {w[2]/w[1]:.4f} (1.500), fourth {w[3]/w[2]:.4f} (1.333)")
+    print("   => 1D harmonic (just consonances emerge); 2D+ inharmonic")
 
-    # M2 -- consonance = phase (the U3 gate), not a frequency ratio
-    print("\nM2 -- consonance = phase coherence R, the U3 gate "
+    # M2 -- the phase face of consonance (the U3 gate); the frequency-ratio
+    # face is the 1D harmonic regime (M1)
+    print("\nM2 -- phase consonance R, the U3 gate "
           f"Dphi <= {DELTA_PHI_MAX:.3f}:")
     for dphi in [0.0, np.pi / 6, np.pi / 3, np.pi / 2, 2 * np.pi / 3, np.pi]:
         r = abs(np.mean([1.0, np.exp(1j * dphi)]))
