@@ -8113,6 +8113,15 @@ Categories are open — add new ones as discoveries warrant.
   candidate type upgrade is matched by an existing canonical
   aggregation mechanism, the upgrade is non-canonical regardless of
   internal consistency.  See §13triginta-sexta.5.
+- **D-MP-4** (Riemann §0, commit `e847d6fa`): Symmetry-wall dynamics
+  test.  For a `G`-equivariant operator `L` (here `[L, P] = 0`, the
+  `S_n` prime-relabelling), `[L, P] = 0 ⟹ [f(L), P] = 0` for *every*
+  function `f` — so the conservative propagator `exp(itL)`, the position
+  `cos(√L·t)`, and the momentum `√L·sin(√L·t)` are all `Fix(G)`-bound
+  (measured `‖[f(L), P]‖ = 0.00e+00` on the prime-ladder).  Corollary:
+  *activating the symplectic momenta cannot escape a symmetry wall*;
+  escape requires a genuinely non-`G`-equivariant generator.  Applies to
+  every Millennium problem via the §0 re-mapping.
 
 ### §13triginta-septima.4 Operational Conveniences (Repo-Specific)
 
@@ -8135,6 +8144,24 @@ Categories are open — add new ones as discoveries warrant.
   pending; tracker in `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §4.
 - **D-OQ-3.**  Whether the cross-conjecture pattern L3 holds for all
   of B2 – B11 (provisional; only tested on B0 ∧ B1 so far).
+- **D-OQ-4** (Riemann §0, commit `e847d6fa`): The nodal-ontology
+  re-mapping reframes G4 as a *fixed-point → dynamics shadow* (the nodal
+  equation is the overdamped projection of the symplectic flow,
+  AGENTS.md §4).  Two measured constraints on the search: (i) the
+  conservative dynamics + momenta of the symmetric prime-ladder are
+  exactly `S_n`-equivariant (D-MP-4) ⇒ they *re-express* `{k log p}`,
+  they do not *add* (consistent with the ex.103 Poisson result);
+  (ii) the affine Gauss phase is **monotone** (`√p/(p−1)`) whereas
+  `S(T) = (1/π)·arg ζ(½+iT)` is **oscillatory mean-zero** (measured
+  mean `−0.003`, std `0.356`, 64 sign-changes over `T ∈ [10,200]`) ⇒ the
+  affine phase is the smooth / root-number half *complexified*, **not**
+  the `S(T)` residue (sharpens `benchmarks/residue_phase_vs_riemann.py`).
+  Relocation (open): the missing structure is the **positivity /
+  phase-coherence** of the prime-pulse superposition `{k log p}`
+  (explicit formula P15; RH ⟺ Li–Keiper P16 / Weil positivity
+  P17/P37), not a new operator dimension.  Live sub-question: does
+  `λ_n ≥ 0` (Li–Keiper) **emerge** as phase-coherence of the prime
+  pulse rather than being imposed?
 
 ### §13triginta-septima.6 Maintenance Notes
 
