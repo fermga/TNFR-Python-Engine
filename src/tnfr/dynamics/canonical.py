@@ -470,12 +470,13 @@ def _compute_phase_transport_derivative(
     - Pressure response: β·ΔNFR [linear response to reorganization]
     - Transport: γ·J_φ·κ [directed flux with coupling efficiency]
     """
-    # Import canonical constants
-
-    # Physics coefficients (RECALIBRATED from canonical constants)
-    alpha = 0.5  # ≈ 0.618 (inverse self-organization)
-    beta = 0.15  # ≈ 0.155 (sensitivity)
-    gamma = 0.135  # ≈ 0.135 (efficiency)
+    # Extended-equation coefficients (optional J_φ-transport path). The term
+    # contracts fix each channel and sign; these set the magnitudes: alpha is the
+    # unit midpoint; beta/gamma are gentle operational sensitivities on the
+    # |ΔNFR| / transport magnitude scale (not coherence levels).
+    alpha = 0.5  # unit midpoint (autoorganization νf-θ coupling)
+    beta = 0.15  # gentle pressure-response sensitivity (operational)
+    gamma = 0.135  # gentle transport efficiency (operational)
 
     # Autoorganization term: nonlinear νf-θ coupling
     autoorg_term = alpha * nu_f * math.sin(math.pi * delta_nfr)

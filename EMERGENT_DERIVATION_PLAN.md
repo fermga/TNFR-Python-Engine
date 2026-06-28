@@ -1,7 +1,9 @@
 # Emergent Derivation Plan — every numeric constant from the nodal equation
 
-**Status**: IN PROGRESS · **Started**: 2026-06-27 · **Supersedes the "operational
-free value" escape hatch left by `EMERGENT_CANON_AUDIT.md` Stages 0–9.**
+**Status**: COMPLETE — Stages 0–5 done; the constitution is now enforced by a
+regression guard · **Started**: 2026-06-27 · **Completed**: 2026-06-28 ·
+**Supersedes the "operational free value" escape hatch left by
+`EMERGENT_CANON_AUDIT.md` Stages 0–9.**
 
 ## 0. Why this exists (the deeper point)
 
@@ -107,10 +109,12 @@ fragmentation share `1/(π+1)` of their channel's unit span, or a π-fraction (S
 
 ## 4. Staged plan (from the paradigm foundations upward)
 
-- [~] **Stage 0 — Constitution.** §1 (seven sources + reclassification rule)
+- [x] **Stage 0 — Constitution.** §1 (seven sources + reclassification rule)
   recorded in this plan; the `canonical.py` header already states "only π is a
-  genuine structural scale". *(A guard test asserting no physics constant equals a
-  known frozen φ/γ/e decimal is still pending.)*
+  genuine structural scale". **DONE (2026-06-28):** the guard test
+  `tests/core_physics/test_emergent_constants_guard.py` pins the channel weights,
+  operator gains and the coupling ladder to their exact π-formulas and asserts that
+  no nodal-physics constant equals a removed frozen φ/γ/e decimal.
 - [x] **Stage 1 — Channel weights** (`DNFR_WEIGHTS`, `SI_WEIGHTS`) → §2.1
   coherence-band hierarchy. **DONE, suite green 2201/0.** Highest blast radius
   (every ΔNFR/Si); normalised ratios shifted modestly (phase 0.750→0.7585,
@@ -240,3 +244,16 @@ move are the dynamic trajectories, whose **qualitative attractors are invariant*
   Made the `coupling_weights_type_signature` docstring refs drift-proof (dropped the
   twice-stale line numbers). **The magic numbers were never load-bearing — the
   paradigm's claims are structural and genuinely emergent.**
+- **2026-06-28** — **Stage 0 COMPLETE (constitution guarded) + last straggler.**
+  Added `tests/core_physics/test_emergent_constants_guard.py`: positive π-formula
+  assertions for the band edges, the channel-weight hierarchy (exact-normalising),
+  the IL∘OZ band-reciprocal pair (exactly isometric), the `1/(4π), 1/(2π), 1/(8π)`
+  coupling ladder and `2/π`; plus a parametrized guard that **no** curated
+  nodal-physics constant lies within `1e-5` of any removed frozen φ/γ/e decimal.
+  Also cleaned the final φ/γ/e *comment* straggler the Stage-4 input purge missed in
+  `src/`: `_compute_phase_transport_derivative` (`dynamics/canonical.py`, the
+  extended nodal system) no longer cites the dead `≈ 0.618 = 1/φ` / `0.155` / `0.135`
+  origins (values unchanged — honest operational magnitudes on the optional
+  J_φ-transport path; the false "RECALIBRATED from canonical constants" and dead
+  "Import canonical constants" comments removed). 239 core-physics tests green.
+  **The plan is complete.**

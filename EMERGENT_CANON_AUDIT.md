@@ -1,6 +1,9 @@
 # Emergent Canon Audit — consolidating the post-φ/γ/e TNFR base
 
-**Status**: IN PROGRESS · **Started**: 2026-06-27 · **Owner**: TNFR refactor
+**Status**: COMPLETE — superseded by `EMERGENT_DERIVATION_PLAN.md`, which carried
+the φ/γ/e re-derivation through Stages 0–5 and now enforces it with a regression
+guard (`tests/core_physics/test_emergent_constants_guard.py`) · **Started**:
+2026-06-27 · **Completed**: 2026-06-28 · **Owner**: TNFR refactor
 
 ## 0. Why this exists
 

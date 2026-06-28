@@ -127,6 +127,17 @@ All notable changes to this project will be documented in this file.
     invariant. The φ/γ/e and arbitrary operational decimals were therefore **never
     load-bearing**: the refactor both cleans the foundation and *proves* the results
     are genuinely emergent. See `EMERGENT_DERIVATION_PLAN.md` §7.
+  - **Constitution guard (Stage 0) + the last comment straggler.** A new regression
+    guard (`tests/core_physics/test_emergent_constants_guard.py`) pins the channel
+    weights, operator gains and coupling ladder to their exact π-formulas and
+    asserts that **no nodal-physics constant equals a removed frozen φ/γ/e decimal**
+    — so the obsolete constants cannot creep back. Cleaned the final φ/γ/e *comment*
+    straggler the input purge had missed in `src/`: the extended nodal system's
+    `_compute_phase_transport_derivative` (`dynamics/canonical.py`) no longer cites
+    the dead `≈ 0.618 = 1/φ` / `0.155` / `0.135` origins, nor the false "RECALIBRATED
+    from canonical constants" / dead "Import canonical constants" comments (values
+    unchanged — honest operational magnitudes on the optional J_φ-transport path).
+    `EMERGENT_DERIVATION_PLAN.md` Stage 0 is now complete.
 
 ### Changed (documentation aligned to emergent π-derived canonicity)
 
