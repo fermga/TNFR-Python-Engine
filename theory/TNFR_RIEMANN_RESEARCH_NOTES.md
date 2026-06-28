@@ -8,6 +8,123 @@
 
 This memo defines the minimum structure required to evaluate TNFR claims about the Riemann Hypothesis (RH). It scopes the computational program, prescribes telemetry, and records open work items so contributors can extend the investigation without rewriting the physics or the SDK contracts. All historical notes remain in the appendix for context.
 
+> **Read first:** the conceptual foundation is **the nodal-ontology re-mapping**
+> directly below (2026-06); it supersedes the pre-pulse / pre-single-constant
+> framing of P12–P49 (the certificates stand; only *what they measure* is re-read).
+
+---
+
+## The nodal-ontology re-mapping — fixed points are the shadow (2026-06)
+
+**Foundational re-framing.** This section re-maps the program onto the *current*
+emergent nodal ontology — the single structural constant **π**, the emergent
+**pulse** `ω_k = √λ_k`, the **symplectic substrate**, and the `Fix(S_n)^⊥` wall of
+[`EMERGENT_ONTOLOGY.md`](EMERGENT_ONTOLOGY.md) §2.4. It **supersedes the conceptual
+framing** of P12–P49 (built in a pre-pulse, pre-single-constant era); the
+computational certificates (which are *gain-independent*) are unchanged — only
+*what they measure* is re-read.
+
+### What was obsolete in the old mapping
+
+1. **Pre-"single constant".** `γ/π ≈ 0.18373` was treated as a canonical
+   "Universal Tetrahedral Correspondence" scale (the spectral-zeta buffer
+   `CRITICAL_EXPONENT`, the coherence threshold `δ_coh`, the Kuramoto-U3 weight),
+   and the T-HP conjecture (§13septies) invoked "`(φ, γ, π, e)`". Post-purge **only
+   π is a structural scale**; `γ/π` is a heuristic coupling, not canonical.
+2. **Pre-pulse.** The zeros `{γ_n}` and the Weil–Guinand explicit formula were
+   framed as "the spectrum of a sought self-adjoint operator", never as the
+   **pulse / rhythm of the arithmetic NFR**.
+3. **Pre-§2.4.** The Euler-Orthogonality wall (every canonical operator commutes
+   with the `S_n` prime-relabelling, so it is blind to `S(T) ∈ Fix(S_n)^⊥`) is
+   **literally** the `Fix(G)^⊥` wall of the emergent-ontology synthesis (§2.4),
+   described here in isolation.
+
+### The reframe — the fixed-point program is the overdamped projection
+
+Canonically, the nodal equation `∂EPI/∂t = νf·ΔNFR` is the **overdamped
+projection** of the symplectic Hamiltonian flow (AGENTS.md §4;
+`symplectic_substrate.py`), and that projection discards the conjugate momenta
+`(J_φ, J_ΔNFR)`. The whole fixed-point program — *seek a self-adjoint operator
+whose static real spectrum equals `{γ_n}`* — therefore lives in the **position
+shadow** of a richer dynamical object. The zeros and `S(T)` are projections of
+that object onto the **numeration** (the prime / integer basis).
+
+### The three nested layers (measured)
+
+A direct measurement on the prime-ladder NFR (swap primes `2↔3`, the `S_n`
+element `P`; symmetric operator `L_sym`) settles where the arithmetic can and
+cannot live:
+
+| Layer | Object | Symmetry | `‖[·, P]‖` | Reach |
+|---|---|---|---|---|
+| **Positions** | real spectrum `{k log p}` | `S_n`-symmetric (the numeration) | `0` | smooth half (reachable) |
+| **Momenta** | `J_φ = √L·sin(√L·t)`, any `f(L)` | **still `S_n`-symmetric** | `0.00e+00` (machine) | re-expresses, adds nothing |
+| **Phase** | complex spectrum of the directed / affine operator | **`S_n`-broken** (affine group of `Z/n`) | `≠ 0` | the genuine emergent dimension |
+
+The decisive datum: **every function of the symmetric `L` — the propagator
+`exp(itL)`, the conservative position `cos(√L·t)`, and the momentum
+`√L·sin(√L·t)` — commutes with `P` to machine precision (`0.00e+00`).** Since
+`[L,P]=0 ⟹ [f(L),P]=0`, the conservative dynamics and its momenta are *exactly*
+as `S_n`-equivariant as the static spectrum. **Activating the momenta cannot
+leave `Fix(S_n)`** — it re-expresses the same prime data (consistent with the
+ex.103 result: the `θ=νf·τ` dynamics stayed Poisson, not Riemann).
+
+The escape needs a **non-`S_n` generator**. The directed quadratic-residue
+operator (affine symmetry of `Z/n`, not `S_n`) is non-self-adjoint with a
+**complex spectrum** `(−1 ± i√q)/2` — the arithmetic moves into the **phase**
+(the Gauss sum `√q` in the imaginary part). Since `S(T) = (1/π)·arg ζ(½+iT)` **is
+a phase**, the missing structure lives in the emergent complex / phase dimension,
+not in the real spectrum nor in the conservative momenta.
+
+### The honest wall (the two walls coincide)
+
+The directed operator's phase is the Gauss sum `√q`, **not** the ζ-zero phase
+`S(T)`. Measured (`benchmarks/residue_phase_vs_riemann.py`): `√q` exact (15/15),
+but alignment with `{γ_n}` **refuted** (residue content `~1/√p` decreasing, `γ_n`
+increasing — opposite). The reframe **locates** the missing structure (the phase
+dimension) and **forbids** the two cheaper layers, but does not yet reach `S(T)`.
+
+### G4 = RH, re-stated dynamics-first
+
+*The zeros are the configuration-shadow of the arithmetic NFR's symplectic
+dynamics; the smooth half (π-scaled archimedean, `S_n`-symmetric) is the reachable
+mean pulse; `S(T)` is the transverse phase-shadow at `Fix(S_n)^⊥`.* The wall is
+reclassified from "obstruction" to **kernel of the position-only (numeration)
+projection** — provably unreachable from the two `S_n`-symmetric layers, with the
+phase layer the only structurally-permitted route (currently landing on Gauss
+sums, not `{γ_n}`).
+
+### The same shape across the Millennium problems
+
+This is the **dynamics extension of the §2.4 synthesis** (one operator `L`, read
+in every domain, hitting one wall `Fix(G)^⊥`). Each problem = a reachable
+symmetric / fixed-point projection + a transverse residue that is the shadow of
+the emergent-dimensional dynamics the projection discards:
+
+- **Navier–Stokes**: the blow-up is not a fixed point but the `K_φ`
+  phase-curvature **cascade** (dynamics); the BKM-analogue (U2) lives in the
+  dynamics, not an equilibrium.
+- **Yang–Mills (mass gap)**: the gap = confinement `Φ_s²/(π/2)²` = the
+  **non-Abelian** (non-commuting = transverse) residue; the gap lives in the
+  symmetry-broken phase.
+- **P vs NP / BSD / Hodge**: each = a symmetric reachable sector + the
+  `Fix(G)^⊥` residue.
+
+**Unified, honest statement.** Every Millennium problem re-reads as *"is the
+transverse residue `Fix(G)^⊥` — the shadow of the emergent-dimensional dynamics —
+reachable from the symmetric sector?"* The measured answer so far: **not from
+functions of the symmetric operator** (positions and momenta); only in principle
+from the **phase of the symmetry-broken generator**. This relocates all of them to
+one place; **it closes none.**
+
+### Honest scope
+
+A re-framing, not a result. It closes no gap; **G4 = RH remains open** (the single
+open milestone, §19.2); the P12–P49 certificates stand. The **live open
+question**: whether the correct emergent dimension is the affine Gauss phase or a
+deeper structure (the functional-equation root number / the Euler-product
+cyclotomic tower) — pursued in the living-discoveries log (§13triginta-septima).
+
 ---
 
 ## 0. Navigation Index
