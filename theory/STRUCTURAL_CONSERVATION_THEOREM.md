@@ -973,7 +973,6 @@ print(cons.summary())                # Q, E, dE/dt, stability
 | Example | Concept from this document |
 |---------|---------------------------|
 | [17_conservation_law_demo.py](../examples/02_physics_regimes/17_conservation_law_demo.py) | Noether charge, energy functional, Lyapunov stability, Ward identities |
-| [24_spectral_conservation_demo.py](../examples/03_riemann_zeta/24_spectral_conservation_demo.py) | Spectral conservation + grammar compliance at σ = 1/2 |
 | [34_conservation_protocol_suite.py](../examples/02_physics_regimes/34_conservation_protocol_suite.py) | Multi-topology conservation protocol: charge drift, q(N) scaling, sector decomposition (§10) |
 | [36_grammar_violation_detector.py](../examples/02_physics_regimes/36_grammar_violation_detector.py) | Grammar violation detection via conservation residuals (§12.1), violation classification |
 

@@ -46,8 +46,11 @@ ENGINE (known theorems -- the independent ground truth, all pre-TNFR):
     C : phi -> -phi  =>  W -> -W (definitional: circulation reverses sign).
   - Gamma^2 = I and C^2 = id: each generates a Z_2.
 
-TNFR reading (AGENTS.md): L = D - A is the discrete dNFR / phase-curvature
-operator; A is the coupling matrix. The additive inverse from bipartite coupling
+TNFR reading: the canonical discrete dNFR / phase-curvature operator is the
+emergent random-walk Laplacian L_rw = I - D^-1 W (symmetric twin L_sym); A is the
+coupling matrix and D - A its imposed combinatorial cousin. The chirality here is
+carried by A's bipartite sublattice sign flip (operator-independent). The
+additive inverse from bipartite coupling
 is emergent_rationals.py piece (1); sign(W) = chirality / matter-vs-antimatter is
 the emergent_particles classification. This harness shows they coincide: one
 chiral Z_2.

@@ -40,26 +40,37 @@ All notable changes to this project will be documented in this file.
   **equal temperament** / the chosen scale are imposed. Woven into
   `EMERGENT_ONTOLOGY.md` §5.5 + the `form → dimension → dynamics` synthesis (§2.1).
 
-### Added — NS U2-compliance read in structural time (Navier–Stokes reformulation)
+### Changed — TNFR–Navier–Stokes re-founded on the two-face reading
 
-- **3D Navier–Stokes mapped to a faithful U2 budget, read in TNFR structural time.**
-  `benchmarks/u2_compliance_navier_stokes_structural_time.py` + theory §21. The
-  vorticity dynamics maps term-by-term to operators — `(ω·∇)u` = **VAL** (destabilizer,
-  production `P`), `ν Δω` = **IL** (stabilizer, the nodal-equation diffusion `D_ens`),
-  advection = **NAV** and pressure = **UM** (both enstrophy-neutral *analytically*:
-  pressure vanishes under the curl, transport is skew). So the **U2 debt**
-  `∫(P − D_ens)dt = Ω(t) − Ω(0)` is exactly the enstrophy budget, and U2-compliance ⟺
-  bounded enstrophy ⟺ classical regularity (a faithful re-expression, not a surrogate).
-- **Structural time `τ_str = νf·t` is the correct clock** (the eigenmode-decay clock of
-  the nodal equation). Two operator clocks — IL (dissipation) on `τ_str`, VAL (stretching)
-  on the ν-independent advective eddy clock — with `Re` = their ratio = the U2 debt rate.
-  Measured (TG, `n=32`): every fixed-Re run **saturates** (enstrophy peaks & decays →
-  U2-compliant, the Lyapunov closes), and the **peak debt grows with Re** (1.0 → 1.5 →
-  2.4; resolving at `n=48` *raises* the Re~1257 point to 2.89 — coarse grids under-state
-  the production).
-- **HONEST SCOPE:** closes nothing. The faithful reformulation **relocates** Clay to
-  *"is the peak structural-time U2 debt uniformly bounded in Re?"* — it does not lower the
-  wall; no uniform-in-Re bound is produced. Clay open.
+- **The NS program was re-founded on the current paradigm.** The previous
+  diffusive-face enstrophy-budget program — the `u2_compliance` structural-time
+  benchmark, the N1–N14 milestone examples (77–86, 104, 105) and the old
+  `operator.py` — was retired. New foundation `src/tnfr/navier_stokes/`: a faithful
+  lean pseudo-spectral 3D integrator (`TNFRNavierStokes`, rotational form, exact
+  Leray projection, integrating-factor RK2) + `conservative_face.py`
+  (`verify_diffusive_face`, `face_of_flow`, `vorticity_modal_spectrum`,
+  `measure_cascade_frontier`).
+- **The honest two-face reading.** Incompressible NS is first order, so its *linear*
+  part is the **diffusive (over-damped) projection** of the substrate wave
+  (`ν_f = ν`; `verify_diffusive_face` VALID for every physical viscosity, recovering
+  `ν_f = ν`). Blow-up is therefore a purely **nonlinear `K_φ` cascade** (the
+  vortex-stretching VAL source), not a linear resonance — unlike oscillatory data
+  (EEG), which sits on the under-damped conservative face.
+- **The blow-up frontier, measured** (`measure_cascade_frontier`, example 158): at
+  matched structural time `τ_str = ν·t` every run saturates at fixed Re (the
+  diffusive face regularises) and the peak enstrophy debt grows with Re
+  (1.00 → 1.04 → 1.68 at Re 126/314/628). The `Re → ∞` cascade bound = Clay, **open**.
+- **HONEST SCOPE:** closes nothing; global 3D NS regularity stays open.
+
+### Added — the empirical-confrontation pipeline (TNFR-IA → engine)
+
+- **`examples/10_applications/159_empirical_confrontation_pipeline.py`** packages the
+  empirical arm's workflow with engine primitives: map a multichannel signal onto the
+  emergent phase-locking graph, read the canonical magnitudes (the pulse, the tetrad,
+  `ξ_C`, Kuramoto `R`), and **diagnose its face** with the engine's own
+  `verify_overdamped_projection` — making the theory falsifiable against data (the face
+  is *measured*, not assumed). Cross-program face map: oscillatory data → conservative
+  face; linear NS → diffusive face.
 
 ### Changed (emergent derivation — the grammar temporal windows from the pulse)
 

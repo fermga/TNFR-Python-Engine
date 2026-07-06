@@ -8,8 +8,10 @@ invariant — rather than merely *use* integers as external tags?
 This harness tests the strongest defensible form of that claim:
 
     The integers that emerge from the nodal dynamics are the eigenvalue
-    multiplicities of the structural Laplacian L = D - A (the discrete ΔNFR /
-    phase-curvature operator), and WHICH integers emerge is dictated entirely by
+    multiplicities of the canonical emergent operator L_rw = I - D^-1 W (the
+    discrete ΔNFR / phase-curvature operator; on a vertex-transitive manifold it
+    shares the eigenspaces of the imposed D - A, so the multiplicities are
+    operator-invariant), and WHICH integers emerge is dictated entirely by
     the symmetry group of the manifold.
 
 WHY THIS IS RIGOROUS (and falsifiable):
@@ -38,14 +40,16 @@ WHAT THIS DOES *NOT* CLAIM (the honest boundary):
   nodal equation. The number-theory layer still *uses* integers as inputs and
   characterizes their primality; it does not derive their existence. The
   multiplicity-as-irrep-dimension fact is the structural reading of a known
-  theorem (L commutes with Aut(G)), not new mathematics — TNFR supplies the
-  physical interpretation (L = discrete ΔNFR), not the theorem.
+  theorem (any Aut(G)-equivariant operator commutes with Aut(G)), not new
+  mathematics — TNFR supplies the physical interpretation (the emergent
+  L_rw = I - D^-1 W is the discrete ΔNFR; its multiplicities are
+  operator-invariant), not the theorem.
 
 Run:
     python benchmarks/emergent_integers_symmetry.py
 
-Theoretical anchor: AGENTS.md (nodal equation; discrete-mode regime; structural
-Laplacian as discrete ΔNFR/phase curvature). Status: RESEARCH (falsifier).
+Theoretical anchor: AGENTS.md (nodal equation; discrete-mode regime; the emergent
+L_rw = I - D^-1 W as discrete ΔNFR/phase curvature). Status: RESEARCH (falsifier).
 """
 
 from __future__ import annotations
@@ -169,8 +173,9 @@ def main() -> None:
     )
     print("=" * 78)
     print("\nInterpretation (honest scope):")
-    print("  • The integers 1,2,3,4,5,7 are OUTPUTS — eigenvalue multiplicities of the")
-    print("    structural Laplacian (discrete ΔNFR). They were not supplied.")
+    print("  • The integers 1,2,3,4,5,7 are OUTPUTS — eigenvalue multiplicities of")
+    print("    the emergent operator L_rw (discrete ΔNFR); operator-invariant, so")
+    print("    equal to D - A's on these vertex-transitive graphs. Not supplied.")
     print("  • WHICH integers appear is fixed by the symmetry group's irreducible")
     print("    representations: 3 first appears at tetrahedral symmetry, 5 requires")
     print("    icosahedral symmetry, the sphere yields every odd 2l+1.")

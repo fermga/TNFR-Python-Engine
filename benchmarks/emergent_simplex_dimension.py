@@ -73,8 +73,14 @@ def simplex_cardinal(n_vertices: int) -> int:
     nonzero Laplacian eigenvalue of K_V = standard-irrep dim of S_V = the
     simplex dimension V - 1.
     """
-    L = nx.laplacian_matrix(nx.complete_graph(n_vertices)).toarray()
-    ev = np.sort(np.linalg.eigvalsh(L.astype(float)))
+    # The nonzero-eigenvalue multiplicity is an irrep dimension of S_V, shared by
+    # every Aut(K_V)-equivariant operator, so it is operator-invariant. Computed
+    # on the canonical EMERGENT operator L_sym (self-adjoint twin of the ΔNFR
+    # random-walk L_rw); K_V is vertex-transitive so the count equals D - A's.
+    from tnfr.physics.structural_diffusion import symmetric_normalized_laplacian
+
+    _, L = symmetric_normalized_laplacian(nx.complete_graph(n_vertices))
+    ev = np.sort(np.linalg.eigvalsh(L))
     return int(np.sum(ev > 1e-9))
 
 

@@ -12,6 +12,83 @@ This memo defines the minimum structure required to evaluate TNFR claims about t
 > directly below (2026-06); it supersedes the pre-pulse / pre-single-constant
 > framing of P12–P49 (the certificates stand; only *what they measure* is re-read).
 
+> **Re-founding (2026-07):** the obsolete combinatorial-Laplacian track
+> `H(σ) = L_k + V_σ` (P1–P11: `operator`, `spectral_proof`, `convergence_proof`,
+> `analytical_convergence`, `spectral_zeta`, `complex_extension`, `topology`,
+> `random_ensemble`, `spectral_conservation`, `functional_equation`, `zeta_bridge`,
+> `eigenmode_fields`) and its demos/benchmark were **eliminated**. The attack is
+> re-founded on the emergent prime-NFR **nodal pulse**
+> (`src/tnfr/riemann/nodal_pulse.py`): each integer `n` is an NFR with structural
+> frequency `νf = log n`, `ζ(1/2+iT) = Σ n^{-1/2} e^{-i(log n)T}`, and the zeros
+> are the heights where the integer-NFR pulses destructively interfere. The
+> emergent operator on prime graphs is the random-walk Laplacian `L_rw`, never
+> the combinatorial `D − A`. Sections 1–3 below describe the eliminated
+> combinatorial construction and are retained only as historical record.
+
+---
+
+## The nodal-pulse phase attack surface (re-founded, 2026-07)
+
+With the combinatorial track eliminated, the program's live attack surface is the
+**collective phase of the integer-NFR nodal pulse**. Measured
+(`examples/03_riemann_zeta/157_nodal_pulse_phase_attack.py`):
+
+- **M1 — `S(T)` is the pulse phase.** `S(T) = (1/π) arg ζ(1/2+iT) = arg(P(T))/π`
+  to `|Δ| < 0.015` on the truncated pulse `P(T) = Σ n^{-1/2} e^{-i(log n)T}`.
+- **M2 — the phase counts the zeros.** `N(T) = θ(T)/π + 1 + S(T)` (Riemann–von
+  Mangoldt) reproduces the exact zero count from the pulse phase alone.
+- **M3 — the pulse accesses the arithmetic.** Permuting the prime structural
+  frequencies (`log 2 ↔ log 3`) changes `P` (`|P|: 0.247→0.460`, `arg: −0.286→
+  −0.837`). The pulse is sensitive to the *specific* prime values — the
+  `Fix(S_n)^⊥` content the `S_n`-invariant self-adjoint spectrum of the eliminated
+  operator was provably **blind** to (the Euler-Orthogonality wall that paused the
+  old program). The re-founded vantage is not blind to it.
+- **M4 — the critical line is the coherence axis.** The rectified pulse
+  `Z = e^{iθ}P` is most nearly real on `Re(s)=1/2` (`|Im Z|/|Z|`: `0.12` at `σ=½`
+  < `0.19` at `σ=0.7`) — the functional-equation reflection axis read as the
+  `ΔNFR=0` coherence axis.
+
+**Frontier.** RH is the statement that `S(T)` never lets a zero leave the
+coherence axis. The re-founding relocates that question from the (blind)
+self-adjoint spectrum to the collective **phase / coherence** of the integer-NFR
+pulse — an arithmetic-accessing, reflection-native arena. This surface is mapped,
+not settled; `G4 = RH` remains open. The distinction from the paused T-HP program
+is structural: T-HP sought an `S_n`-invariant operator whose spectrum is `{γ_n}`
+(blind to `Fix(S_n)^⊥`); the pulse phase *carries* `Fix(S_n)^⊥` directly.
+
+**Advance (2026-07): tooling + obstruction localization.** The surface is now
+canonical tooling in `src/tnfr/riemann/pulse_coherence.py`:
+`argument_fluctuation` (`S(T)` from the pulse phase), `zero_count`
+(`N(T) = θ/π + 1 + S(T)`), `coherence_defect` (exact `Z = e^{iθ}ζ`, `~1e-16` on
+`σ=½`, growing off-axis) and `verify_pulse_coherence`. Measured **localization**:
+the prime-side series `S(T) = (1/π) Σ_{p,k}(1/k)p^{-k/2} sin(kT log p)` does *not*
+converge on the line -- its abscissa of convergence is `Re(s)=1`, so adding prime
+NFRs makes it worse (err `0.40→0.47` at `T=41`), not better. The RH content is
+exactly this boundary non-convergence: `S(T)` is **accessible** (the integer
+pulse phase) but not **summable from the primes** on the axis. That is the sharp
+form of the obstruction in the emergent framing -- and it is a genuine step, not
+a verdict on where the surface leads.
+
+**Coherence-budget measurement (2026-07): the U2 budget is real at the RMS
+level, not the sup level.** With `S(T)` now accessible, the natural TNFR attack
+is the U2 reading — RH ⟺ the prime-pulse NFR stays coherent (U2-bounded) — so we
+*measured* how tightly the pulse phase auto-bounds, using exact `ζ` (continuous
+`arg` descent in `σ`, no RH input; validated by `θ/π + 1 + S = ` integer
+zero-count). Over two decades in `T` (30→3000): `mean(S) ≈ 0` (centred, no
+drift); `RMS(S)` grows only `0.32→0.39` — the glacial `√(log log T)` of Selberg
+(fit `RMS² ≈ 0.066·log log T`, same order as `1/(2π²)=0.051`); the measured peaks
+`max|S| ≈ 1` sit at `~¼` of the unconditional `O(log T)` envelope (`≈4`). So the
+pulse phase **does not run away** — the U2 coherence budget is confirmed
+numerically, at the **RMS/typical** level. But `√(log log T)` tightness *is*
+Selberg's theorem: classical, unconditional, consistent with RH yet not implying
+it. RH lives in the **extremes** (peaks are `Ω(√(log T/log log T))`
+unconditionally — unbounded, very slowly), so no finite measurement excludes a
+large excursion at astronomical height. Net: the measurement **relocates the wall
+sharply** from "control `S(T)`" to "**lift the coherence budget from the RMS
+level to the supremum**" (control the peaks), and confirms the RMS level is as
+tight as Selberg says. Driver: `benchmarks/pulse_phase_coherence_budget.py`.
+Closes nothing; `G4 = RH` stays open.
+
 ---
 
 ## The nodal-ontology re-mapping — fixed points are the shadow (2026-06)
@@ -1471,7 +1548,8 @@ deformation eventually dominates the truncation error.
 ### 13ter.5 Next Steps
 
 1. Extend the cross gap to a **functional-equation Paley-gap**
-   using [`src/tnfr/riemann/functional_equation.py`](../src/tnfr/riemann/functional_equation.py),
+   (the combinatorial `functional_equation` module was eliminated; use the
+   nodal-pulse reflection at the coherence axis instead),
    tabulating $|Z(\sigma) - Z(1 - \sigma)|$ along the critical
    strip. A Paley-style identity there would directly engage
    $\operatorname{Re}(s) = 1/2$.

@@ -108,7 +108,7 @@ from .dirichlet_l import (
     build_twisted_prime_ladder_spectrum,
     tnfr_log_l_derivative,
 )
-from .operator import _first_primes
+from .nodal_pulse import first_primes as _first_primes
 
 __all__ = [
     "build_twisted_prime_ladder_graph",

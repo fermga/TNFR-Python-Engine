@@ -124,8 +124,11 @@ when iterating on `_accumulate_neighbors_broadcasted` or related kernels.
 These scripts are **not** performance microbenchmarks. They are falsifiable
 research harnesses that probe a single question of the TNFR programme: *which
 numbers and arithmetic operations **emerge** from nodal/structural dynamics
-(`∂EPI/∂t = νf · ΔNFR(t)`, with `L = D − A` read as the discrete ΔNFR /
-phase-curvature operator) rather than being injected by hand?* Each harness pins
+(`∂EPI/∂t = νf · ΔNFR(t)`, whose canonical discrete ΔNFR / phase-curvature
+operator is the emergent random-walk Laplacian `L_rw = I − D⁻¹W`; the
+combinatorial `L = D − A` some harnesses use is its imposed cousin, sharing its
+eigenspaces on vertex-transitive graphs and giving the additive product spectra)
+rather than being injected by hand?* Each harness pins
 its claim to an independent, classical ground-truth theorem (graph-product
 spectra, the representation theory of `Aut(G)`, the field-of-fractions theorem,
 Schur's lemma) so the TNFR reading can be checked against mathematics that does
@@ -204,7 +207,7 @@ touches the Riemann programme cross-checks the canonical `tnfr` engine when pres
 `commutant_bridge.py`, `missing_piece_bridge.py` and
 `navier_stokes_recipe_bridge.py` also use `tnfr.yang_mills`;
 `navier_stokes_recipe_bridge.py` additionally cross-checks the canonical 3D engine
-`tnfr.navier_stokes.operator` (the vortex-stretching field); `phase_wall.py`,
+`tnfr.navier_stokes` (the vortex-stretching production); `phase_wall.py`,
 `paley_bridge.py`, `boundary_vibration.py`, `primes_as_consequence.py` and
 `directed_paley_bridge.py` use `tnfr.dynamics.adelic` (the last reuses
 `paley_bridge.py`'s `is_prime`/`paley_gap`/`quadratic_residues`/`riemann_s_phase`

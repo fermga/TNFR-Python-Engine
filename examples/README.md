@@ -46,15 +46,17 @@ and operator–tetrad synergies.
 - `37` operator–tetrad synergy · `38` grammar-energy landscape · `39` nodal decomposition
 - `115` operator-contract fidelity audit (measured, not asserted)
 
-## 03_riemann_zeta — TNFR–Riemann ζ-track (P1–P31)
+## 03_riemann_zeta — TNFR–Riemann ζ-track
 
-Discrete prime-path operators, von Mangoldt prime ladder, Weil formula,
-Li–Keiper, and the ζ-track attack surface. Program **open** (paused at T-HP).
+The integer-NFR **nodal pulse** reading of ζ: von Mangoldt prime ladder, Weil
+formula, Li–Keiper, and the pulse-phase attack surface (`S(T)` as the pulse
+phase, the critical line as its coherence axis). Program **open** (Riemann
+Hypothesis).
 
-- `16, 18–25` — operator, convergence, topology, eigenmodes, spectral zeta, RMT
-- `41–58` — von Mangoldt → oscillatory correction (P12–P31)
+- `41–58` — von Mangoldt → oscillatory correction
+- `157` — the nodal-pulse phase attack surface
 
-## 04_riemann_L_twisted — TNFR–Riemann χ-twisted L-track (P32–P49)
+## 04_riemann_L_twisted — TNFR–Riemann χ-twisted L-track
 
 Dirichlet L-functions and the χ-twisted parity layer (GL(1)).
 
@@ -68,12 +70,14 @@ REMESH-∞ residue split + the twelve type-signature / closure-discipline demos.
 - `77_remesh_infinity_residue_split_demo.py`
 - `78–89` — νf / EPI / φ / ΔNFR / REMESH-window / Δφ_max / coupling / tetrad / currents / aggregates / U-rules / catalog signatures
 
-## 06_navier_stokes — TNFR–Navier–Stokes programme (N1–N17)
+## 06_navier_stokes — TNFR–Navier–Stokes programme
 
-3D Taylor–Green, Leray/BKM, incompressibility, geometric depletion, Reynolds
-sweeps. NS-G5 closed at the discrete level; Clay **open**.
+The two-face reading: linear NS is the diffusive (over-damped) projection of the
+substrate wave (`ν_f = ν`), so blow-up is a purely **nonlinear `K_φ` cascade**
+(vortex stretching), not a linear resonance. Faithful pseudo-spectral
+Taylor–Green + the nonlinear cascade frontier vs Reynolds. Clay **open**.
 
-- `77–86` — Taylor–Green → Reynolds sweep
+- `158` — two-face reading + nonlinear `K_φ` cascade frontier
 
 ## 07_number_theory — primality and arithmetic as structural equilibrium
 

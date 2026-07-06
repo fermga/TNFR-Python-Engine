@@ -63,7 +63,8 @@ Run:
     python benchmarks/emergent_atomic_shells.py
 
 Theoretical anchor: AGENTS.md (THOL self-organization, U5 multi-scale
-fractality; L = discrete DeltaNFR); benchmarks/emergent_fractal_simplex_
+fractality; the emergent L_rw = I - D^-1 W as discrete DeltaNFR, with D - A its
+combinatorial cousin for the additive product spectrum); benchmarks/emergent_fractal_simplex_
 dimension.py (THOL pins the dimension), emergent_simplex_dimension.py
 (dimension = grade), emergent_shell_cardinals.py (U(d) magic numbers),
 emergent_substrate_symmetry.py (substrate U(2) = 2D dots).
@@ -122,7 +123,9 @@ def sierpinski_simplex(m: int, levels: int):
     return H, corners
 
 
-# --- shells = degenerate levels of the structural Laplacian L = D - A ---
+# --- shells = degenerate levels of the combinatorial L = D - A (used for its
+# additive Cartesian-product spectrum; the canonical emergent operator is
+# L_rw = I - D^-1 W) ---
 def shells(G, tol: int = 6):
     """(eigenvalues, multiplicities) ascending; multiplicity = shell
     degeneracy = irrep cardinal of Aut(G) (the emergent-integers reading)."""

@@ -1,37 +1,27 @@
 """TNFR-Riemann spectral analysis module.
 
-Provides the discrete TNFR-Riemann operator H^(k)(sigma) = L_k + V_sigma,
-spectral proof framework, alternative graph topologies, per-eigenmode
-structural field tetrad, complex-s non-Hermitian extension, and discrete
-spectral zeta / trace formula analysis.
+Re-founded on the canonical EMERGENT nodal dynamics: the obsolete
+combinatorial-Laplacian Schrödinger operator ``H(σ) = L_k + V_σ`` (the P1–P11
+track) has been eliminated. The attack is now anchored on the prime-NFR
+**nodal pulse** — each integer ``n`` is an NFR with canonical structural
+frequency ``νf = log n``, and
+
+    ζ(1/2 + iT) = Σ_n n^{-1/2} e^{-i (log n) T}
+
+is the superposition of the integer-NFR nodal pulses; the non-trivial zeros are
+the heights at which they destructively interfere (see :mod:`nodal_pulse`). The
+emergent structural operator on the prime graph is the random-walk Laplacian
+``L_rw = I − D⁻¹W`` (:mod:`tnfr.physics.structural_diffusion`), never the imposed
+combinatorial ``D − A``.
 See theory/TNFR_RIEMANN_RESEARCH_NOTES.md for the full theoretical background.
 
 Sub-modules
 -----------
-operator
-    Graph builders and discrete operator construction.
-spectral_proof
-    Four-line spectral analysis and integrated assessment.
-topology
-    Alternative graph topologies and convergence studies.
-eigenmode_fields
-    Per-eigenmode structural field tetrad (Phi_s, |grad_phi|, K_phi, xi_C).
-complex_extension
-    P4 complex-s extension: non-Hermitian operator H(s) for s in C.
-spectral_zeta
-    P5 discrete spectral zeta, heat kernel trace, and Conjecture 10.1.
-random_ensemble
-    P6 random prime-graph ensembles and RMT universality analysis.
-spectral_conservation
-    P7 conservation laws and grammar compliance at criticality.
-analytical_convergence
-    P8 analytical proof of σ* → 1/2 rate via PNT.
-functional_equation
-    P9 functional equation analog and spectral reflection symmetry.
-convergence_proof
-    P10 formal machine-verified proof that σ*(k) → 1/2.
-zeta_bridge
-    P11 explicit bridge between spectral ζ_H(k) and Riemann ζ_R.
+nodal_pulse
+    Canonical foundation: the prime-NFR nodal-pulse superposition, zero
+    detection by destructive interference, prime structural frequencies
+    ``νf = log p``, the emergent prime-NFR graph (``L_rw``), and the reference
+    Riemann ordinates.
 von_mangoldt
     P12 TNFR prime-ladder construction reproducing the von Mangoldt
     series  -ζ'(s)/ζ(s) = Σ_n Λ(n) n^{-s}.
@@ -483,64 +473,9 @@ from .analytic_continuation_dirichlet import (  # P33: Analytic continuation of 
     scan_critical_line_for_l_poles,
     verify_twisted_continuation_agreement,
 )
-from .analytical_convergence import (  # Data structures; Telescoping identity (Theorem 1); PNT asymptotics (Theorem 2); Convergence rate (Theorem 3); Integration
-    AnalyticalConvergenceProof,
-    ConvergenceRateBound,
-    EffectiveConstantResult,
-    PNTAsymptoticBound,
-    TelescopingIdentity,
-    analyze_convergence_sequence,
-    compute_convergence_rate_bound,
-    compute_effective_constant,
-    compute_telescoping_trace,
-    euler_maclaurin_log_squared_sum,
-    pnt_prime_estimate,
-    pnt_sum_log_squared,
-    run_analytical_convergence_proof,
-    verify_telescoping_identity,
-)
 from .coercivity_uniform import (  # P22: empirical interval-level coercivity certificate
     UniformCoercivityCertificate,
     verify_uniform_coercivity_empirical,
-)
-from .complex_extension import (  # Data structures; Constants; Core; Critical line; Pseudo-spectrum & resolvent; Riemann zero comparison; Integration
-    KNOWN_RIEMANN_ZEROS,
-    ComplexEigenResult,
-    ComplexPlaneAnalysis,
-    CriticalLineScan,
-    PseudoSpectrumResult,
-    ResolventAnalysis,
-    analyze_non_hermiticity,
-    analyze_resolvent_along_critical_line,
-    compare_with_riemann_zeros,
-    compute_complex_eigenspectrum,
-    compute_complex_eigensystem,
-    compute_pseudospectrum,
-    compute_resolvent_norm,
-    find_eigenvalue_zero_crossings,
-    run_complex_plane_analysis,
-    scan_critical_line,
-)
-from .convergence_proof import (  # Data structures; Dusart bounds; Proof steps; Explicit bound; C(k) asymptotics; Integration
-    CKAsymptoticFit,
-    CurvatureGrowthResult,
-    DusartVerification,
-    ExplicitBoundResult,
-    FormalConvergenceProof,
-    ProofStep,
-    compute_explicit_bound_constant,
-    dusart_lower_bound,
-    dusart_upper_bound,
-    fit_ck_asymptotics,
-    prove_bilinear_decomposition,
-    prove_convergence_rate,
-    prove_curvature_divergence,
-    prove_explicit_bound,
-    prove_sum_lower_bound,
-    prove_telescoping,
-    run_formal_convergence_proof,
-    scan_effective_constant,
-    verify_dusart_bounds,
 )
 from .coupling_weights_type_signature import (  # §13quadraginta-nona: Coupling-Weights-Type Signature diagnostic (B6a)
     CouplingWeightsTypeSignatureCertificate,
@@ -572,38 +507,9 @@ from .dnfr_type_signature import (  # §13quadraginta: DeltaNFR-Type Signature d
     DnfrTypeSignatureCertificate,
     compute_dnfr_type_signature,
 )
-from .eigenmode_fields import (  # Data structures; Constants; Core; Diagnostics
-    PHI_S_GOLDEN_THRESHOLD,
-    PHI_S_VON_KOCH_THRESHOLD,
-    EigenmodeFieldAnalysis,
-    EigenmodeTetrad,
-    check_u6_confinement,
-    compare_confinement_at_sigma,
-    compute_eigenmode_fields_general,
-    compute_eigenmode_tetrad,
-)
 from .epi_type_signature import (  # §13triginta-quarta: EPI-Type Signature diagnostic (foundational sub-question)
     EpiTypeSignatureCertificate,
     compute_epi_type_signature,
-)
-from .functional_equation import (  # Data structures; Core — reflection symmetry; Core — trace formulas; Core — completed xi; Conjectures; Large-k verification; Integration
-    CompletedXiFunction,
-    Conjecture12_1Result,
-    Conjecture12_2Result,
-    FunctionalEquationAnalysis,
-    LargeKConvergence,
-    SpectralReflection,
-    TraceFormulaResult,
-    compute_completed_xi,
-    compute_trace_formulas,
-    run_functional_equation_analysis,
-    test_conjecture_12_1,
-    test_conjecture_12_2,
-    verify_large_k_convergence,
-    verify_reflection_sequence,
-    verify_spectral_reflection,
-    verify_trace_formula_pnt,
-    verify_xi_functional_equation,
 )
 from .hilbert_polya import (  # P27: Hilbert-Polya scaffold
     HilbertPolyaCertificate,
@@ -637,23 +543,30 @@ from .nodeaware_gauge_sweep import (  # P20: node-aware gauge sweep (nu_f + node
     build_test_state_nodeaware,
     sweep_alpha_nodeaware,
 )
+from .nodal_pulse import (  # Canonical foundation: prime-NFR nodal pulse (re-founded)
+    KNOWN_RIEMANN_ZEROS,
+    NodalPulseCertificate,
+    build_prime_nfr_graph,
+    detect_zeros_by_interference,
+    first_primes,
+    nodal_pulse,
+    nodal_pulse_magnitude,
+    prime_structural_frequencies,
+    verify_nodal_pulse,
+)
+from .pulse_coherence import (  # Pulse-phase / coherence attack-surface tooling
+    PulseCoherenceCertificate,
+    argument_fluctuation,
+    coherence_defect,
+    generalized_pulse,
+    prime_side_fluctuation,
+    rectified_pulse,
+    verify_pulse_coherence,
+    zero_count,
+)
 from .nuf_type_signature import (  # §13triginta-prima: νf-Type Signature diagnostic (foundational sub-question)
     NufTypeSignatureCertificate,
     compute_nuf_type_signature,
-)
-from .operator import (
-    build_h_tnfr,
-    build_h_tnfr_complex,
-    build_prime_complete_graph,
-    build_prime_cycle_graph,
-    build_prime_path_graph,
-    build_prime_random_graph,
-    build_prime_star_graph,
-    build_prime_tree_graph,
-    build_tridiagonal_h_tnfr,
-    build_tridiagonal_h_tnfr_complex,
-    default_prime_potential,
-    default_prime_potential_complex,
 )
 from .operator_catalog_discipline_signature import (  # §13sexagesima: Operator-Catalog Discipline Signature diagnostic (B11a)
     CANONICAL_CATALOG_SIZE,
@@ -686,28 +599,6 @@ from .prime_ladder_hamiltonian import (  # Graph + weight operator (P14); Hamilt
     verify_hamiltonian_reproduces_prime_ladder,
     weighted_spectral_trace,
 )
-from .random_ensemble import (  # Data structures; Reference distributions; Ensemble generation; Spacing statistics; Long-range statistics; RMT comparison; Integration
-    EnsembleAnalysis,
-    EnsembleConfig,
-    EnsembleSample,
-    RMTComparison,
-    SpacingStats,
-    classify_ensemble,
-    compute_ensemble_spacings,
-    compute_level_repulsion_exponent,
-    compute_mean_spacing_ratio,
-    compute_number_variance,
-    compute_spacing_ratio,
-    compute_spectral_rigidity,
-    generate_er_ensemble,
-    generate_wigner_ensemble,
-    goe_wigner_surmise,
-    gue_wigner_surmise,
-    ks_test_vs_reference,
-    poisson_spacing_pdf,
-    rmt_convergence_study,
-    run_rmt_ensemble_analysis,
-)
 from .remesh_infinity_residue_split import (  # P50: R_infinity residue split of the P31 oscillatory correction
     ResidueSplitCertificate,
     build_resonant_bin_mask,
@@ -717,19 +608,6 @@ from .remesh_infinity_residue_split import (  # P50: R_infinity residue split of
 from .remesh_window_type_signature import (  # §13quadraginta-tertia: REMESH-window-Type Signature diagnostic (foundational sub-question)
     RemeshWindowTypeSignatureCertificate,
     compute_remesh_window_type_signature,
-)
-from .spectral_conservation import (  # Data structures; Core eigenmode conservation; Sigma scan; Grammar compliance; Integration
-    ConservationAtSigma,
-    ConservationSigmaScan,
-    CriticalConservationAnalysis,
-    EigenmodeConservation,
-    GrammarComplianceResult,
-    compute_eigenmode_conservation,
-    compute_spectral_j_dnfr,
-    compute_spectral_j_phi,
-    run_critical_conservation_analysis,
-    scan_conservation_vs_sigma,
-    test_grammar_conservation,
 )
 from .spectral_emergence import (  # P29: Spectral universality emergence under canonical UM+RA coupling
     CANONICAL_COUPLING_LAWS,
@@ -744,45 +622,6 @@ from .spectral_emergence import (  # P29: Spectral universality emergence under 
     unfold_spectrum,
     wigner_surmise_gue_cdf,
 )
-from .spectral_proof import (  # Data structures; Core; Line 1 - Structural Equilibrium; Line 2 - Thermodynamic Attractor; Line 3 - Eigenvalue Flow; Line 4 - Spectral Moments; Integration
-    EigenvalueFlowResult,
-    EquilibriumResult,
-    SpectralMomentResult,
-    ThermodynamicResult,
-    TNFRRiemannAssessment,
-    analyze_eigenvalue_flow,
-    compute_analytic_sigma_star,
-    compute_eigenspectrum,
-    compute_eigensystem,
-    compute_eigenvalue_spacings,
-    compute_eigenvalue_velocities,
-    compute_frobenius_energy,
-    compute_spectral_moments,
-    compute_thermodynamic_landscape,
-    run_tnfr_riemann_analysis,
-    verify_equilibrium,
-    verify_equilibrium_sequence,
-    verify_thermodynamic_convergence,
-)
-from .spectral_zeta import (  # Data structures; Constants; Core computation; Heat kernel; Mellin bridge; Conjecture 10.1; Integration
-    RIEMANN_ZETA_KNOWN_VALUES,
-    ConjectureTestResult,
-    HeatKernelResult,
-    MellinBridgeResult,
-    SpectralZetaAnalysis,
-    SpectralZetaResult,
-    compute_free_energy,
-    compute_heat_kernel_trace,
-    compute_partition_function,
-    compute_positive_eigenvalues,
-    compute_spectral_zeta,
-    compute_spectral_zeta_derivative,
-    riemann_zeta_approx,
-    run_spectral_zeta_analysis,
-    test_conjecture_10_1,
-    test_conjecture_10_1_sequence,
-    verify_mellin_bridge,
-)
 from .structural_zero_density import (  # P28: Structural smooth zero density
     StructuralZeroDensityCertificate,
     build_structural_t_hp,
@@ -795,14 +634,6 @@ from .structural_zero_density import (  # P28: Structural smooth zero density
 from .tetrad_closure_signature import (  # §13quinquaginta-secunda: Tetrad-Closure Signature diagnostic (B7a)
     TetradClosureSignatureCertificate,
     compute_tetrad_closure_signature,
-)
-from .topology import (  # Data structures; Registry; Analysis
-    TOPOLOGY_BUILDERS,
-    TopologyConvergenceResult,
-    TopologyResult,
-    analyze_graph_topology,
-    compare_topologies,
-    topology_convergence_study,
 )
 from .twisted_admissible_family_sweep import (  # P39: chi-twisted admissible-family + gauge sweep (diagnostic)
     TwistedAdmissibleFamilySweepCertificate,
@@ -941,210 +772,27 @@ from .weil_positivity import (  # P17: Weil-TNFR positivity bridge
     verify_weil_positivity,
     verify_weil_tnfr_bridge,
 )
-from .zeta_bridge import (  # Data structures; Functions
-    HeatKernelReflection,
-    PrimeEncoding,
-    ScalingLaw,
-    SpectralZetaReflection,
-    WeylAsymptotic,
-    ZetaBridgeAnalysis,
-    compute_heat_kernel_reflection,
-    compute_prime_encoding,
-    compute_spectral_zeta_reflection,
-    compute_weyl_asymptotic,
-    extract_scaling_law,
-    run_zeta_bridge_analysis,
-)
 
 __all__ = [
-    # Graph builders
-    "build_prime_path_graph",
-    "build_prime_cycle_graph",
-    "build_prime_star_graph",
-    "build_prime_complete_graph",
-    "build_prime_tree_graph",
-    "build_prime_random_graph",
-    "build_h_tnfr",
-    "build_tridiagonal_h_tnfr",
-    "default_prime_potential",
-    # Topology comparison (P2)
-    "TopologyResult",
-    "TopologyConvergenceResult",
-    "TOPOLOGY_BUILDERS",
-    "analyze_graph_topology",
-    "compare_topologies",
-    "topology_convergence_study",
-    # Data structures
-    "EquilibriumResult",
-    "ThermodynamicResult",
-    "EigenvalueFlowResult",
-    "SpectralMomentResult",
-    "TNFRRiemannAssessment",
-    # Core
-    "compute_eigenspectrum",
-    "compute_eigensystem",
-    # Line 1 - Structural Equilibrium
-    "verify_equilibrium",
-    "verify_equilibrium_sequence",
-    # Line 2 - Thermodynamic Attractor
-    "compute_analytic_sigma_star",
-    "compute_frobenius_energy",
-    "compute_thermodynamic_landscape",
-    "verify_thermodynamic_convergence",
-    # Line 3 - Eigenvalue Flow
-    "compute_eigenvalue_velocities",
-    "analyze_eigenvalue_flow",
-    # Line 4 - Spectral Moments
-    "compute_eigenvalue_spacings",
-    "compute_spectral_moments",
-    # Integration
-    "run_tnfr_riemann_analysis",
-    # Per-eigenmode tetrad (P3)
-    "EigenmodeTetrad",
-    "EigenmodeFieldAnalysis",
-    "PHI_S_VON_KOCH_THRESHOLD",
-    "PHI_S_GOLDEN_THRESHOLD",
-    "compute_eigenmode_tetrad",
-    "compute_eigenmode_fields_general",
-    "check_u6_confinement",
-    "compare_confinement_at_sigma",
-    # Complex-s extension (P4)
-    "ComplexEigenResult",
-    "CriticalLineScan",
-    "PseudoSpectrumResult",
-    "ResolventAnalysis",
-    "ComplexPlaneAnalysis",
+    # === Canonical nodal-pulse foundation (re-founded 2026-07) ===
     "KNOWN_RIEMANN_ZEROS",
-    "build_h_tnfr_complex",
-    "build_tridiagonal_h_tnfr_complex",
-    "default_prime_potential_complex",
-    "compute_complex_eigenspectrum",
-    "compute_complex_eigensystem",
-    "analyze_non_hermiticity",
-    "scan_critical_line",
-    "find_eigenvalue_zero_crossings",
-    "compute_pseudospectrum",
-    "compute_resolvent_norm",
-    "analyze_resolvent_along_critical_line",
-    "compare_with_riemann_zeros",
-    "run_complex_plane_analysis",
-    # Spectral zeta & trace formula (P5)
-    "SpectralZetaResult",
-    "HeatKernelResult",
-    "MellinBridgeResult",
-    "ConjectureTestResult",
-    "SpectralZetaAnalysis",
-    "RIEMANN_ZETA_KNOWN_VALUES",
-    "compute_positive_eigenvalues",
-    "compute_spectral_zeta",
-    "compute_spectral_zeta_derivative",
-    "compute_heat_kernel_trace",
-    "compute_partition_function",
-    "compute_free_energy",
-    "verify_mellin_bridge",
-    "riemann_zeta_approx",
-    "test_conjecture_10_1",
-    "test_conjecture_10_1_sequence",
-    "run_spectral_zeta_analysis",
-    # Random ensemble RMT (P6)
-    "EnsembleConfig",
-    "EnsembleSample",
-    "SpacingStats",
-    "RMTComparison",
-    "EnsembleAnalysis",
-    "goe_wigner_surmise",
-    "gue_wigner_surmise",
-    "poisson_spacing_pdf",
-    "generate_er_ensemble",
-    "generate_wigner_ensemble",
-    "compute_ensemble_spacings",
-    "compute_spacing_ratio",
-    "compute_mean_spacing_ratio",
-    "compute_level_repulsion_exponent",
-    "compute_number_variance",
-    "compute_spectral_rigidity",
-    "ks_test_vs_reference",
-    "classify_ensemble",
-    "run_rmt_ensemble_analysis",
-    "rmt_convergence_study",
-    # Spectral conservation at criticality (P7)
-    "EigenmodeConservation",
-    "ConservationAtSigma",
-    "ConservationSigmaScan",
-    "GrammarComplianceResult",
-    "CriticalConservationAnalysis",
-    "compute_spectral_j_phi",
-    "compute_spectral_j_dnfr",
-    "compute_eigenmode_conservation",
-    "scan_conservation_vs_sigma",
-    "test_grammar_conservation",
-    "run_critical_conservation_analysis",
-    # Analytical convergence proof (P8)
-    "TelescopingIdentity",
-    "PNTAsymptoticBound",
-    "ConvergenceRateBound",
-    "EffectiveConstantResult",
-    "AnalyticalConvergenceProof",
-    "compute_telescoping_trace",
-    "verify_telescoping_identity",
-    "pnt_prime_estimate",
-    "euler_maclaurin_log_squared_sum",
-    "pnt_sum_log_squared",
-    "compute_convergence_rate_bound",
-    "compute_effective_constant",
-    "analyze_convergence_sequence",
-    "run_analytical_convergence_proof",
-    # Functional equation & reflection symmetry (P9)
-    "SpectralReflection",
-    "TraceFormulaResult",
-    "CompletedXiFunction",
-    "Conjecture12_1Result",
-    "Conjecture12_2Result",
-    "LargeKConvergence",
-    "FunctionalEquationAnalysis",
-    "verify_spectral_reflection",
-    "verify_reflection_sequence",
-    "compute_trace_formulas",
-    "verify_trace_formula_pnt",
-    "compute_completed_xi",
-    "verify_xi_functional_equation",
-    "test_conjecture_12_1",
-    "test_conjecture_12_2",
-    "verify_large_k_convergence",
-    "run_functional_equation_analysis",
-    # Formal convergence proof (P10)
-    "ProofStep",
-    "DusartVerification",
-    "ExplicitBoundResult",
-    "CurvatureGrowthResult",
-    "CKAsymptoticFit",
-    "FormalConvergenceProof",
-    "dusart_lower_bound",
-    "dusart_upper_bound",
-    "verify_dusart_bounds",
-    "prove_bilinear_decomposition",
-    "prove_telescoping",
-    "prove_sum_lower_bound",
-    "prove_convergence_rate",
-    "prove_explicit_bound",
-    "prove_curvature_divergence",
-    "scan_effective_constant",
-    "compute_explicit_bound_constant",
-    "fit_ck_asymptotics",
-    "run_formal_convergence_proof",
-    # Zeta bridge (P11)
-    "WeylAsymptotic",
-    "HeatKernelReflection",
-    "SpectralZetaReflection",
-    "ScalingLaw",
-    "PrimeEncoding",
-    "ZetaBridgeAnalysis",
-    "compute_weyl_asymptotic",
-    "compute_heat_kernel_reflection",
-    "compute_spectral_zeta_reflection",
-    "extract_scaling_law",
-    "compute_prime_encoding",
-    "run_zeta_bridge_analysis",
+    "first_primes",
+    "prime_structural_frequencies",
+    "nodal_pulse",
+    "nodal_pulse_magnitude",
+    "detect_zeros_by_interference",
+    "build_prime_nfr_graph",
+    "NodalPulseCertificate",
+    "verify_nodal_pulse",
+    # Pulse-phase / coherence attack surface (re-founded)
+    "argument_fluctuation",
+    "zero_count",
+    "generalized_pulse",
+    "rectified_pulse",
+    "coherence_defect",
+    "prime_side_fluctuation",
+    "PulseCoherenceCertificate",
+    "verify_pulse_coherence",
     # Von Mangoldt construction (P12)
     "mangoldt_lambda",
     "classical_log_zeta_derivative",

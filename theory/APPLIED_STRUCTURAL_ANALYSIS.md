@@ -135,19 +135,18 @@ Key verified properties:
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [16_riemann_operator_demo.py](../examples/03_riemann_zeta/16_riemann_operator_demo.py) | Discrete TNFR-Riemann eigenvalues, critical parameter |
-| [18_riemann_convergence_proof.py](../examples/03_riemann_zeta/18_riemann_convergence_proof.py) | Spectral convergence σ_c → 1/2 |
-| [19_topology_comparison.py](../examples/03_riemann_zeta/19_topology_comparison.py) | Cross-topology universality |
-| [21_complex_extension_demo.py](../examples/03_riemann_zeta/21_complex_extension_demo.py) | Non-Hermitian operator, complex s |
-| [22_spectral_zeta_demo.py](../examples/03_riemann_zeta/22_spectral_zeta_demo.py) | Spectral zeta, heat kernel, Mellin bridge |
-| [23_random_ensemble_rmt_demo.py](../examples/03_riemann_zeta/23_random_ensemble_rmt_demo.py) | Random matrix ensembles on prime graphs |
-| [25_analytical_convergence_demo.py](../examples/03_riemann_zeta/25_analytical_convergence_demo.py) | Analytical proof via PNT + telescoping identity |
+| [41_von_mangoldt_zeta_demo.py](../examples/03_riemann_zeta/41_von_mangoldt_zeta_demo.py) | Prime-ladder von Mangoldt series (P12) |
+| [42_riemann_zeros_as_resonances.py](../examples/03_riemann_zeta/42_riemann_zeros_as_resonances.py) | Riemann zeros as resonance poles (P13) |
+| [43_prime_ladder_hamiltonian_demo.py](../examples/03_riemann_zeta/43_prime_ladder_hamiltonian_demo.py) | Canonical νf prime-ladder Hamiltonian (P14) |
 
 ### Key Source Modules
 
-- `src/tnfr/riemann/operator.py` — Discrete TNFR-Riemann operators
-- `src/tnfr/riemann/spectral_proof.py` — Spectral convergence proofs
-- `src/tnfr/riemann/topology.py` — Topology comparison analysis
+Note: the attack uses the emergent prime-NFR nodal pulse (`νf = log n`; zeros as
+destructive interference).
+
+- `src/tnfr/riemann/nodal_pulse.py` — canonical nodal-pulse foundation (νf = log n; zeros as destructive interference)
+- `src/tnfr/riemann/prime_ladder_hamiltonian.py` — canonical νf prime-ladder Hamiltonian (P14)
+- `src/tnfr/riemann/von_mangoldt.py` — prime-ladder von Mangoldt reproduction (P12)
 
 ---
 

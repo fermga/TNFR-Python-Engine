@@ -801,21 +801,17 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 | **Optimized batch** | `primality-test/tnfr_primality/optimized.py` | Caching, benchmarking, batch processing |
 | **Spectral factorization** | `factorization-lab/tnfr_factorization/spectral_paley.py` | Paley-Jacobi spectral decoder |
 | **Factorization API** | `factorization-lab/tnfr_factorization/api.py` | High-level `factorize()` function |
-| **Riemann operators** | `src/tnfr/riemann/operator.py` | Discrete TNFR-Riemann spectral operators |
-| **Spectral convergence** | `src/tnfr/riemann/spectral_proof.py` | $\sigma_c \to 1/2$ convergence proofs |
+| **Nodal-pulse foundation** | `src/tnfr/riemann/nodal_pulse.py` | Emergent prime-NFR nodal pulse ($\nu_f = \log n$; zeros as destructive interference) |
+| **Prime-ladder Hamiltonian** | `src/tnfr/riemann/prime_ladder_hamiltonian.py` | Canonical $\nu_f$ prime-ladder (P14) |
 | **Canonical constants (repo)** | `src/tnfr/constants/canonical.py` | Repository-wide canonical constant definitions |
 
 ### 12.2 Executable Demonstrations
 
 | Example | Concept |
 |---------|---------|
-| [16_riemann_operator_demo.py](../examples/03_riemann_zeta/16_riemann_operator_demo.py) | Critical parameter eigenvalue analysis |
-| [18_riemann_convergence_proof.py](../examples/03_riemann_zeta/18_riemann_convergence_proof.py) | Spectral convergence $\sigma_c \to 1/2$ |
-| [19_topology_comparison.py](../examples/03_riemann_zeta/19_topology_comparison.py) | Cross-topology universality |
-| [21_complex_extension_demo.py](../examples/03_riemann_zeta/21_complex_extension_demo.py) | Complex plane extensions |
-| [22_spectral_zeta_demo.py](../examples/03_riemann_zeta/22_spectral_zeta_demo.py) | Spectral zeta and Mellin bridge |
-| [23_random_ensemble_rmt_demo.py](../examples/03_riemann_zeta/23_random_ensemble_rmt_demo.py) | Random matrix theory on prime graphs |
-| [25_analytical_convergence_demo.py](../examples/03_riemann_zeta/25_analytical_convergence_demo.py) | PNT-based analytical bounds |
+| [41_von_mangoldt_zeta_demo.py](../examples/03_riemann_zeta/41_von_mangoldt_zeta_demo.py) | Prime-ladder von Mangoldt series (P12) |
+| [42_riemann_zeros_as_resonances.py](../examples/03_riemann_zeta/42_riemann_zeros_as_resonances.py) | Riemann zeros as resonance poles (P13) |
+| [43_prime_ladder_hamiltonian_demo.py](../examples/03_riemann_zeta/43_prime_ladder_hamiltonian_demo.py) | Canonical νf prime-ladder Hamiltonian (P14) |
 | [31_mathematical_constants_basis.py](../examples/02_physics_regimes/31_mathematical_constants_basis.py) | The structural scale π and the mathematical-constant basis |
 | [40_arithmetic_number_theory.py](../examples/07_number_theory/40_arithmetic_number_theory.py) | Primality, triad, component analysis |
 | [94_generative_number_construction.py](../examples/07_number_theory/94_generative_number_construction.py) | Compositional generation from prime atoms; U5 fractality; grammar certification |

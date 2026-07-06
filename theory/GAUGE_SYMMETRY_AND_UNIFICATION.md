@@ -272,7 +272,7 @@ The gauge-conservation unification implies that the TNFR-Riemann operator $H^{(k
 - **Gauge**: U(1)-symmetric spectrum at $\sigma = 1/2$ (self-dual point)
 - **Together**: Critical parameter $\sigma_c^{(k)} \to 1/2$ as $k \to \infty$
 
-This provides the structural basis for the convergence proved in `src/tnfr/riemann/convergence_proof.py`.
+This provides the structural basis for the coherence axis $\mathrm{Re}(s) = 1/2$ read from the emergent prime-NFR nodal pulse (`src/tnfr/riemann/nodal_pulse.py`).
 
 ---
 

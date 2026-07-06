@@ -42,8 +42,10 @@ CONSTRUCTION:
     S6-commutant is <I, J>, which acts as a scalar on the 5-space: NO
     symmetry-preserving perturbation can split it.
 
-TNFR reading (AGENTS.md): L = D - A is the discrete ΔNFR / phase-curvature
-operator. "Factorising a degeneracy" is a structural act of the coupled system,
+TNFR reading: the canonical discrete ΔNFR / phase-curvature operator is the
+emergent L_rw = I - D^-1 W (D - A shares its eigenspaces on the vertex-transitive
+graphs here, so the degeneracy structure is operator-invariant). "Factorising a
+degeneracy" is a structural act of the coupled system,
 and whether the cardinal 5 factors is decided by the system's symmetry, not by the
 integer. This is the same S_n machinery as bridge_primes_riemann.py: test (4)
 shows the n=5 prime ladder makes 5 operationally composite (1 + 4) under prime

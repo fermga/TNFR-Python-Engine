@@ -67,6 +67,10 @@ def spectral_dimension(
     G: nx.Graph, frac: float = 0.15, kmin: int = 8
 ) -> float:
     """d_s from N(lambda)~lambda^(d_s/2): slope of log-count vs log-eig."""
+    # Spectral dimension reads the low-eigenvalue SCALING EXPONENT, invariant
+    # under the uniform rescaling L_rw = (D - A)/deg on regular graphs; the
+    # canonical emergent operator is L_rw = I - D^-1 W (D - A used here for the
+    # bare combinatorial spectrum).
     L = nx.laplacian_matrix(G).toarray().astype(float)
     ev = np.sort(np.linalg.eigvalsh(L))
     ev = ev[ev > 1e-9]

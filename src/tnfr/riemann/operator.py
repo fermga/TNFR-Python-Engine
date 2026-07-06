@@ -20,8 +20,13 @@ potential function ``V(n)`` defined on node labels ``n``, we form
 
     H_TNFR = L + diag(V),
 
-where ``L`` is the combinatorial Laplacian of ``G``.  Eigenvalues of
-``H_TNFR`` can then be inspected numerically.
+where ``L`` is the combinatorial Laplacian of ``G`` -- used here as the
+self-adjoint Schrödinger kinetic term (a real spectrum for the Hilbert-Pólya
+framing), NOT the canonical emergent structural operator L_rw = I - D⁻¹W of the
+nodal equation (which is non-self-adjoint).  This module is a non-canonical
+prototype; the canonical Riemann construction (P14, ``prime_ladder_hamiltonian``)
+puts the prime content in the emergent structural frequency νf = k·log p.
+Eigenvalues of ``H_TNFR`` can then be inspected numerically.
 
 For convenience and reproducibility we provide a minimal constructor
 ``build_prime_path_graph`` that creates a path graph on the first ``k``

@@ -163,7 +163,7 @@ a coherent region a macro-NFR.
 **Formula:** \(\Phi_s(i) = \sum_{j \neq i} \frac{\Delta\text{NFR}_j}{d(i,j)^\alpha}\) where \(\alpha = 2\)  
 **What:** Global structural potential field from ΔNFR distribution  
 **Status:** **CANONICAL** (Nov 2025)  
-**Validation:** 2,041 tests across 5 topologies  
+**Validation:** 1,599 tests across 5 topologies  
 **Physics:** Passive equilibrium confinement landscape  
 **Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < π/2 ≈ 1.571 confinement bound, half phase-wrap; ceiling 2.0 binary escape)  
 **API:** `tnfr.physics.fields.compute_structural_potential()`  
@@ -465,7 +465,7 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 
 **Canonicity Levels:**
 - **ABSOLUTE**: Mathematical necessity (direct consequence of nodal equation)
-- **STRONG**: Strong empirical/theoretical support (2,041 tests for U6)
+- **STRONG**: Strong empirical/theoretical support (1,599 tests for U6)
 
 **Recent Updates:**
 - U5 added 2025-11-10 (hierarchical REMESH stabilization)

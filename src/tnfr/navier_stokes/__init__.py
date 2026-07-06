@@ -1,102 +1,46 @@
-"""TNFR-Navier-Stokes program.
+"""TNFR-Navier-Stokes program — re-founded on the current paradigm (2026-07).
 
-Attacks the Clay Millennium Problem on existence and smoothness of solutions
-to the 3D incompressible Navier-Stokes equations through the TNFR structural
-translation documented in ``theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md``.
+The 3D incompressible Navier-Stokes equations read canonically: the vorticity
+is the phase-curvature field ``K_phi``, the viscous term is the nodal-equation
+graph diffusion (the IL coherence stabiliser, ``nu_f <-> nu``), and the
+nonlinear vortex stretching is the VAL destabiliser.  Because NS vorticity is
+first order in time, its *linear* part sits on the **diffusive (over-damped)
+face**; its conservative/inertial content -- where any blow-up lives -- is the
+**nonlinear** stretching cascade.  The Clay question becomes: does the nonlinear
+``K_phi`` cascade keep the modal enstrophy bounded as ``nu -> 0`` (Re -> inf)?
 
-Field dictionary (canonical):
-
-    velocity component u_a       <->  per-component phase field phi^(a)
-    vorticity omega = curl u     <->  K_phi per component
-    pressure p                   <->  Phi_s (Lagrange multiplier)
-    kinematic viscosity nu       <->  U2 stabiliser strength
-    incompressibility div u = 0  <->  sum_a grad_a phi^(a) = 0 (INCOMP, reserved)
-    kinetic energy ||u||^2 / 2   <->  tetrad energy density E
-    enstrophy ||omega||^2        <->  sum K_phi^2
-    helicity int u . omega       <->  topological charge Q
-
-Sub-modules
------------
-operator
-    N2: discrete TNFR-NS operator on periodic grid graphs (linear viscous
-    baseline, no advection). Validates exponential decay of the Taylor-Green
-    vortex against the analytical rate E(t) = E(0) * exp(-4 nu t) for the
-    fundamental mode.
-
-    N3: skew-symmetric advection ``-(u . grad) u`` added via Strang splitting
-    + dissipation rate / Leray budget diagnostics. Verifies the discrete
-    analogue of the Leray energy inequality
-    E(t) + nu * int_0^t ||grad u||^2 dtau <= E(0) for E = (1/2) ||u||_L2^2.
-    Pressure (INCOMP) remains held in reserve; divergence drift is tracked
-    explicitly and documented as the cost of deferring NS-G2.
-
-    N4: discrete Beale-Kato-Majda criterion via ``vorticity_2d()``,
-    ``vorticity_sup_norm()``, ``enstrophy_curl()`` and ``bkm_budget()``.
-    Tracks the BKM integral ``int_0^T ||omega||_{L^inf} dtau`` along the
-    discrete flow. In 2D this integral stays bounded (no vortex
-    stretching), consistent with the classical 2D global-regularity
-    result. The same infrastructure will lift to 3D where the open Clay
-    question (NS-G5) is whether the integral can diverge in finite time.
-
-    N5: INCOMP operator (Leray-Helmholtz projection) via
-    ``project_incompressible()`` and ``pressure_field()``, plus an
-    ``incompressible=True`` keyword on ``step()``, ``leray_budget()`` and
-    ``bkm_budget()``. Uses pseudo-spectral projection with the *exact*
-    central-difference symbol ``S_a = sin(2*pi*m_a/n)/h`` (not the
-    spectral ``i k``), so the divergence operator probed by
-    ``divergence_residual()`` drops to round-off after every projection.
-    Activation on the 2D Taylor-Green benchmark (see ``examples/80_*``)
-    closes the N3/N4 INFO caveats: max ||div(t)||_2 ~ 1e-16, energy
-    matches ``E(0) exp(-4 nu t)`` within 0.13%, BKM integral matches its
-    analytical envelope within 0.61%, vorticity log-slope matches
-    ``-2 nu`` within 0.32%. Canonicity status: INCOMP is a *global,
-    non-local* projection and cannot be decomposed into nearest-neighbour
-    TNFR operators; whether it is the 14th canonical operator or a
-    derived projection bound to the incompressibility constraint is held
-    as an OPEN structural question, mirroring how the Riemann program
-    kept its catalog frozen at 13.
-
-    N6: 3D extension activating the genuine Clay regime. Adds
-    ``build_torus_graph_3d``, ``taylor_green_initial_condition_3d``,
-    an FFT-diagonalised Crank-Nicolson viscous half-step
-    (``_viscous_substep_fft_3d``, O(n^3 log n) per step), a 3D
-    skew-symmetric advection term, a 3D Leray-Helmholtz projection
-    using the same discrete central-difference symbol as in 2D, and
-    the Constantin-Fefferman vortex-stretching diagnostics
-    ``vorticity_3d()``, ``vortex_stretching_field()`` and the
-    production integral ``stretching_production()``. The dense
-    ``(n^d) x (n^d)`` Laplacian materialisation is skipped in 3D so
-    that resolutions up to ``n ~ 32`` (32^3 = 32768 nodes) fit in
-    memory; for n=12 a full T=1 Taylor-Green run gives
-    max ||div(t)||_2 ~ 1e-16, monotone energy 31.0 -> 23.0, monotone
-    enstrophy 84.8 -> 65.0, finite BKM integral ~1.71, and a
-    non-trivial final stretching production of ~7.1 (vs. zero in 2D).
-    Honest scope: this validates the discrete 3D infrastructure and
-    exposes the geometric-depletion mechanism for empirical study;
-    it does *not* close NS-G5. Global regularity of 3D incompressible
-    Navier-Stokes (Clay Millennium Problem) remains OPEN.
-
-Honest scope
-------------
-This module does NOT claim a proof or disproof of the Clay statement. Both
-directions (global smoothness vs finite-time blow-up) remain OPEN. The program
-follows the gap-audit methodology established by the now-paused Riemann
-program; see NS-G1 (continuum limit) and NS-G3 (discrete <-> continuum BKM
-transfer) in the research notes for the documented obstructions.
+This package provides a faithful pseudo-spectral integrator (``operator``) and
+the honest two-face reading + blow-up-frontier measurement
+(``conservative_face``).  It closes NOTHING; global regularity of 3D NS remains
+OPEN.  See ``theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md``.
 """
 
+from .conservative_face import (
+    CascadeFrontierCertificate,
+    cascade_moment_hierarchy,
+    face_of_flow,
+    flow_coherence,
+    measure_cascade_frontier,
+    moment_ladder_closure,
+    verify_diffusive_face,
+    vorticity_modal_spectrum,
+)
 from .operator import (
-    TNFRNavierStokesOperator,
-    build_torus_graph,
+    TNFRNavierStokes,
     build_torus_graph_3d,
-    taylor_green_initial_condition,
     taylor_green_initial_condition_3d,
 )
 
 __all__ = [
-    "TNFRNavierStokesOperator",
-    "build_torus_graph",
+    "TNFRNavierStokes",
     "build_torus_graph_3d",
-    "taylor_green_initial_condition",
     "taylor_green_initial_condition_3d",
+    "vorticity_modal_spectrum",
+    "cascade_moment_hierarchy",
+    "moment_ladder_closure",
+    "flow_coherence",
+    "face_of_flow",
+    "verify_diffusive_face",
+    "measure_cascade_frontier",
+    "CascadeFrontierCertificate",
 ]

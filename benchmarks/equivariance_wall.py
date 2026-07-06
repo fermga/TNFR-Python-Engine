@@ -121,10 +121,15 @@ def canonical_per_node_diagonal(n):
 
 
 # --------------------------------------------------------------------------- #
-# Operators (L = D - A is the discrete dNFR / phase-curvature operator)
+# Operators. The canonical discrete dNFR / phase-curvature operator is the
+# emergent random-walk Laplacian L_rw = I - D^-1 W (symmetric twin L_sym); the
+# combinatorial L = D - A below shares L_rw's eigenspaces (hence the same
+# equivariance) on the vertex-transitive graphs here (L_rw = (D - A)/deg).
 # --------------------------------------------------------------------------- #
 def adjacency_laplacian(G, nodes):
-    """Return (A, L) with L = D - A the discrete dNFR / phase-curvature operator."""
+    """Return (A, L) with L = D - A the combinatorial Laplacian; on the
+    vertex-transitive graphs here it shares the emergent L_rw eigenspaces, so its
+    equivariance under Aut(G) is operator-invariant."""
     A = nx.to_numpy_array(G, nodelist=nodes)
     L = np.diag(A.sum(axis=1)) - A
     return A, L

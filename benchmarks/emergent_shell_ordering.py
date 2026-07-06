@@ -19,9 +19,12 @@ no Coulomb potential injected):
 
          atom_manifold  =  S^2_graph  []  P_M   (sphere times radial path)
 
-  2. Take its resonant eigenmodes. The structural Laplacian L = D - A is the
-     discrete DeltaNFR / phase-curvature operator; on a bounded manifold its
-     spectrum is the discrete set of standing-wave modes (AGENTS.md section 4,
+  2. Take its resonant eigenmodes. The canonical emergent operator is L_rw =
+     I - D^-1 W (the discrete DeltaNFR); the Cartesian-product construction below
+     uses the COMBINATORIAL L = D - A because product-spectrum additivity
+     spec(G [] H) = {lambda_i + mu_j} is a theorem of D - A specifically (L_rw
+     lacks it). On a bounded manifold the spectrum
+     is the discrete set of standing-wave modes (AGENTS.md section 4,
      discrete-mode regime; Chladni / vibrating-string analogue).
 
   3. Let the modes order themselves by structural excitation (eigenvalue) and
@@ -45,6 +48,15 @@ exactly the SUM of an angular mode lambda_ang(l) (degeneracy 2l+1, the rigorous
 Laplace-Beltrami part) and a radial mode lambda_rad(nu). The emergent ordering
 is therefore the ordering of lambda_ang(l) + lambda_rad(nu) -- a fully
 determined structural fact, independent of any chemistry input.
+
+LAPLACIAN CORRECTION (emergent-geometry audit): the Cartesian-product additivity
+spec(G [] H) = {lambda_i + mu_j} that underpins this construction is a theorem of
+the imposed COMBINATORIAL Laplacian D - A ONLY; the canonical EMERGENT operator
+L_rw = I - D^-1 W does NOT have product additivity (MEASURED additive=False). So
+this additive shell-ordering is a property of the imposed graph connectivity, not
+of the emergent nodal dynamics. The canonical EMERGENT atomic shells are derived
+in src/tnfr/physics/emergent_chemistry.py on L_sym read in the standing-wave
+frequency omega=sqrt(lambda) (the emergent pulse), NOT via product additivity.
 
 THE HONEST EXPECTED CRACK (angular weighting): Madelung's primary order is
 itself near-linear -- by (n_r + 2l), i.e. angular weight 2. The free graph

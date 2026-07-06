@@ -91,7 +91,7 @@ from typing import Sequence
 import mpmath as mp
 
 from ..mathematics.unified_numerical import np
-from .complex_extension import KNOWN_RIEMANN_ZEROS
+from .nodal_pulse import KNOWN_RIEMANN_ZEROS
 from .von_mangoldt import PrimeLadderSpectrum, mangoldt_lambda, tnfr_log_zeta_derivative
 
 __all__ = [

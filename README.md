@@ -52,18 +52,18 @@ TNFR is more than dynamics on a graph. The graph is only the substrate; the noda
 
 Two clearly-separated layers:
 
-**Solid and verified.** The engine, the tetrad, grammar U1–U6, conservation laws, and the emergent transport + symplectic geometry are implemented, anchored to experimentally-established phenomena, and covered by 2,041 tests.
+**Solid and verified.** The engine, the tetrad, grammar U1–U6, conservation laws, and the emergent transport + symplectic geometry are implemented, anchored to experimentally-established phenomena, and covered by 1,599 tests.
 
 **Open research programs.** TNFR is also used to probe famous open problems. These are honest, in-progress programs that **do not claim proofs**:
 
-| Program | Done | Open |
-|---------|------|------|
-| TNFR–Riemann (P1–P49) | discrete operator σ_c → 1/2; ζ↔L attack surface | Riemann Hypothesis (gap G4) — **paused at T-HP** |
-| TNFR–Navier–Stokes (N1–N17) | NS-G5 closed at discrete-operator level | continuum limit / Clay (NS-G1..G4) — **open** |
-| TNFR–Yang–Mills (Y1–Y5) | finite U(1) structural diagnostics | non-Abelian mass gap — **open** (Branch B) |
-| TNFR–P vs NP (PNP-1) | coherence verification O(\|E\|) vs synthesis trapping | worst-case separation — **open** (Branch B) |
-| TNFR–BSD (BSD-1) | rank separation via structural-pressure accumulation | rank ↔ order of vanishing — **open** (Branch B) |
-| TNFR–Hodge (HC-1) | discrete Hodge = homology exactly (Eckmann) | (p,p) bigrading + algebraicity — **structurally blind** (Branch B3-leaning) |
+| Program | What it does | Status |
+|---------|--------------|--------|
+| TNFR–Riemann | reads ζ as the integer-NFR **nodal pulse**; `S(T)` is the pulse phase and the critical line is its coherence axis | Riemann Hypothesis — **open** |
+| TNFR–Navier–Stokes | the **two-face reading**: linear NS is the diffusive (over-damped) projection, so blow-up is the nonlinear `K_φ` cascade, read through the emergent coherence attractor | 3D global regularity (Clay) — **open** |
+| TNFR–Yang–Mills | structural gap diagnostics on the gauge sector | non-Abelian mass gap — **open** |
+| TNFR–P vs NP | coherence verification O(\|E\|) vs synthesis trapping | worst-case separation — **open** |
+| TNFR–BSD | rank via structural-pressure accumulation | rank ↔ order of vanishing — **open** |
+| TNFR–Hodge | discrete Hodge = homology exactly (Eckmann) | (p,p) bigrading + algebraicity — **open** (structurally blind) |
 
 See [AGENTS.md](AGENTS.md) and the `theory/` research notes for the full, audited status.
 
@@ -152,21 +152,21 @@ src/tnfr/
 ├── physics/           # Tetrad, conservation, emergent symplectic substrate, structural diffusion (29 modules)
 ├── engines/           # Self-optimization, pattern discovery, GPU/FFT (8 modules across 5 subpackages)
 ├── dynamics/           # Nodal equation integration
-├── riemann/           # TNFR–Riemann program (61 modules, P1–P49; paused at T-HP, RH open)
-├── navier_stokes/     # TNFR–Navier–Stokes program (N1–N17; NS-G5 closed at discrete level, Clay open)
-├── yang_mills/        # TNFR–Yang–Mills diagnostics (Y1–Y5; Branch B, mass gap open)
+├── riemann/           # TNFR–Riemann program (52 modules; nodal-pulse foundation, RH open)
+├── navier_stokes/     # TNFR–Navier–Stokes program (conservative two-face reading, Clay open)
+├── yang_mills/        # TNFR–Yang–Mills diagnostics (mass gap open)
 ├── sdk/               # Simplified & Fluent API (7 modules)
 │   └── simple.py      # Tetrad, conservation, symplectic substrate, grammar-aware dynamics
 ├── mathematics/       # Number theory, backends
 ├── constants/         # Canonical constants (mpmath 35-digit precision)
 ├── metrics/           # Coherence, Si, phase sync, telemetry
-├── validation/        # Structural health monitoring
+├── validation/        # Structural health monitoring + empirical-arm signal confrontation
 └── factorization/     # Spectral factorization workflow
 
-examples/              # 162 examples in 10 thematic subfolders (see examples/README.md)
-tests/                 # 2,041 tests
+examples/              # 150 examples in 10 thematic subfolders (see examples/README.md)
+tests/                 # 1,599 tests
 theory/                # Theoretical derivations
-benchmarks/            # 50 performance & structural-validation scripts
+benchmarks/            # performance & structural-validation scripts
 ```
 
 ---
@@ -180,12 +180,13 @@ benchmarks/            # 50 performance & structural-validation scripts
 | [theory/FUNDAMENTAL_THEORY.md](theory/FUNDAMENTAL_THEORY.md) | Structural-field tetrad & field scales |
 | [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) | Field implementation specifications |
 | [docs/STRUCTURAL_INTERFACE_THEORY.md](docs/STRUCTURAL_INTERFACE_THEORY.md) | Structural-interface programme: pipelines, fair benchmarks, validated results, limitations |
+| [docs/EMPIRICAL_CONFRONTATION_EEG.md](docs/EMPIRICAL_CONFRONTATION_EEG.md) | Empirical confrontation of canonical magnitudes with real signals (the falsifiable arm) |
 | [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | TNFR-Riemann program |
 | [theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) | TNFR-Navier–Stokes program |
-| [theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md](theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md) | TNFR–Yang–Mills structural gap programme (Y1–Y5; Branch B classified) |
-| [theory/TNFR_P_VS_NP_RESEARCH_NOTES.md](theory/TNFR_P_VS_NP_RESEARCH_NOTES.md) | TNFR–P vs NP synthesis-vs-verification programme (PNP-1; Branch B, not a proof) |
-| [theory/TNFR_BSD_RESEARCH_NOTES.md](theory/TNFR_BSD_RESEARCH_NOTES.md) | TNFR–Birch–Swinnerton-Dyer structural-pressure programme (BSD-1; Branch B, not a proof) |
-| [theory/TNFR_HODGE_RESEARCH_NOTES.md](theory/TNFR_HODGE_RESEARCH_NOTES.md) | TNFR–Hodge discrete cochain programme (HC-1; Branch B3-leaning strong negative, not a proof) |
+| [theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md](theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md) | TNFR–Yang–Mills structural gap programme (mass gap open, not a proof) |
+| [theory/TNFR_P_VS_NP_RESEARCH_NOTES.md](theory/TNFR_P_VS_NP_RESEARCH_NOTES.md) | TNFR–P vs NP synthesis-vs-verification programme (not a proof) |
+| [theory/TNFR_BSD_RESEARCH_NOTES.md](theory/TNFR_BSD_RESEARCH_NOTES.md) | TNFR–Birch–Swinnerton-Dyer structural-pressure programme (not a proof) |
+| [theory/TNFR_HODGE_RESEARCH_NOTES.md](theory/TNFR_HODGE_RESEARCH_NOTES.md) | TNFR–Hodge discrete cochain programme (structurally blind, not a proof) |
 | [theory/GLOSSARY.md](theory/GLOSSARY.md) | Terminology and definitions |
 | [examples/](examples/) | Sequential tutorials |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System design |
@@ -196,7 +197,7 @@ benchmarks/            # 50 performance & structural-validation scripts
 ## Testing
 
 ```bash
-pytest                             # all tests (2,041 under tests/)
+pytest                             # all tests (1,599 under tests/)
 pytest tests/sdk/                  # SDK tests (tetrad, conservation, grammar)
 pytest tests/unit/                 # unit tests
 .\make.cmd smoke-tests             # smoke tests (Windows)

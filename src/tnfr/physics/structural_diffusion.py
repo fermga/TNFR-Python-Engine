@@ -348,7 +348,12 @@ def symmetric_normalized_laplacian(
         deg[index[node]] = sum(
             float(G[node][m].get("weight", 1.0)) for m in G.neighbors(node)
         )
-    d_inv_sqrt = np.where(deg > 0.0, 1.0 / np.sqrt(deg), 0.0)
+    # Compute D^{-1/2} only on connected nodes; isolated nodes (deg = 0) keep
+    # d_inv_sqrt = 0. Masked assignment avoids evaluating 1/sqrt(0) (which the
+    # np.where form does for every entry before selecting, emitting a warning).
+    d_inv_sqrt = np.zeros(n, dtype=float)
+    positive = deg > 0.0
+    d_inv_sqrt[positive] = 1.0 / np.sqrt(deg[positive])
     lap = np.zeros((n, n), dtype=float)
     for node in nodes:
         i = index[node]
@@ -987,9 +992,13 @@ def verify_overdamped_projection(
         max_rate_rel = float(np.max(rel))
     else:
         max_rate_rel = 0.0
-    # Fiedler (slowest) mode
+    # Fiedler (slowest) mode.  Complex-safe: an under-damped gamma (gamma^2 <
+    # 4*lam2, reachable when a caller fits gamma from oscillatory data) yields
+    # a complex root whose real part -gamma/2 is the envelope decay rate.
     if lam2 > 0.0:
-        s_gap = (-gamma + np.sqrt(gamma * gamma - 4.0 * lam2)) / 2.0
+        s_gap = (
+            (-gamma + np.sqrt(gamma * gamma - 4.0 * lam2 + 0j)) / 2.0
+        ).real
         slow_gap = float(-s_gap)
     else:
         slow_gap = 0.0

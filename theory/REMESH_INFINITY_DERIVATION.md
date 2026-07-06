@@ -658,7 +658,10 @@ Re-reading §12: P-W2-1 predicts the **temporal decay rate** of the K_φ cascade
 
 **Refined prediction P-W3-1**: The temporal saturation floor of K_φ in N12–N13 should be *non-zero* (resonant component) but its *spatial* spectrum will follow whatever the Navier–Stokes dynamics produce intrinsically (K41 if present, anomalous otherwise) — $\mathcal{R}_\infty$ does not bias the spatial structure.
 
-This is testable against `benchmarks/remesh_infinity_navier_stokes_3d_taylor_green_*.py` already in repo.
+This was tested against the N12–N13 REMESH-∞-on-NS benchmarks (retired in the
+2026-07 NS re-founding); on the re-founded foundation the spatial $K_\phi$ spectrum
+is read by `tnfr.navier_stokes.vorticity_modal_spectrum` (the nonlinear cascade),
+independent of any $\mathcal{R}_\infty$ projection.
 
 ## §19. Comparison Against Random Matrix Theory
 

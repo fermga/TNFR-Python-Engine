@@ -256,7 +256,7 @@ emergent = net.emergent_fields()        # chirality, symmetry_breaking, coherenc
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [20_eigenmode_tetrad.py](../examples/03_riemann_zeta/20_eigenmode_tetrad.py) | Per-eigenmode structural field tetrad |
+
 | [33_complex_field_unification.py](../examples/02_physics_regimes/33_complex_field_unification.py) | Ψ = K_φ + i·J_φ anticorrelation, emergent fields χ/𝒮/𝒞, energy decomposition |
 | [unified_fields_showcase.py](../examples/08_emergent_geometry/unified_fields_showcase.py) | Ψ = K_φ + i·J_φ, emergent fields χ/𝒮/𝒰, tensor invariants |
 

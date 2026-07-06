@@ -23,12 +23,17 @@ a ladder, each rung measured from canonical TNFR structure/dynamics:
 
 Physics
 -------
-- Layer 1: the graph Laplacian L = D - A commutes with Aut(G), so its eigenvalue
-  multiplicities are dimensions of irreps of Aut(G). The integer is a *count of
-  structural modes* (emergent_integers_symmetry.py).
-- Layer 2: Cartesian product G [] H has Laplacian spectrum {lambda_i + mu_j}
-  (ADDITION); tensor product has adjacency spectrum {alpha_i . beta_j}
-  (MULTIPLICATION) -- the operations emerge, they are not injected.
+- Layer 1: the emergent structural operator L_rw = I - D^{-1} W (like every
+  Aut(G)-equivariant operator) commutes with Aut(G), so its eigenvalue
+  multiplicities are dimensions of irreps of Aut(G) -- operator-invariant, a
+  *count of structural modes*, not a property of the imposed D - A
+  (emergent_integers_symmetry.py).
+- Layer 2: the COMBINATORIAL graph Laplacian's Cartesian product G [] H has
+  spectrum {lambda_i + mu_j} (ADDITION); the tensor product has adjacency
+  spectrum {alpha_i . beta_j} (MULTIPLICATION). Additivity is a theorem of the
+  combinatorial Laplacian (the graph's connectivity), so here it is the genuine
+  object -- distinct from the emergent dynamics operator L_rw of Layers 1/3 --
+  and the operations emerge from structure, not injected.
 - Layer 3/3': the quadratic-residue Cayley digraph of n (built from x^2 mod n,
   never n % k) carries the canonical structural-diffusion operator
   L_rw = I - D^{-1} W (the literal dNFR EPI channel). Its number of distinct
@@ -79,10 +84,15 @@ _BLOCK_TO_EXP = {v: k for k, v in _RHO_PRIME_POWER.items()}
 
 
 def _laplacian_degeneracies(G: nx.Graph) -> set[int]:
-    """The integers that emerge as Laplacian eigenvalue multiplicities."""
-    L = nx.laplacian_matrix(G).toarray().astype(float)
-    eig = np.linalg.eigvalsh(L)
-    _, counts = np.unique(np.round(eig, 6), return_counts=True)
+    """Integers that emerge as eigenvalue multiplicities of the canonical
+    emergent structural operator L_rw = I - D^{-1} W (read via its symmetric
+    twin L_sym). On a vertex-transitive manifold every Aut(G)-equivariant
+    operator shares these eigenspaces, so the multiplicities (irrep dimensions)
+    are operator-invariant -- NOT a property of the imposed D - A."""
+    from tnfr.mathematics.spectral import get_laplacian_spectrum
+
+    eig, _ = get_laplacian_spectrum(G, operator="symmetric")
+    _, counts = np.unique(np.round(np.real(eig), 6), return_counts=True)
     return {int(c) for c in counts}
 
 
@@ -113,9 +123,9 @@ def experiment_1_cardinals():
     print("EXPERIMENT 1: Layer 1 -- cardinals emerge from symmetry")
     print("=" * 72)
     print()
-    print("The Laplacian L=D-A commutes with Aut(G); its eigenvalue")
-    print("multiplicities are dimensions of irreps of Aut(G). The integer is")
-    print("a count of structural modes -- emergent, not injected.")
+    print("The emergent operator L_rw = I - D^-1 W commutes with Aut(G); its")
+    print("eigenvalue multiplicities are dimensions of irreps of Aut(G)")
+    print("(operator-invariant) -- a count of structural modes, not injected.")
     print()
     cases = [
         ("triangle K3", nx.complete_graph(3), 2),
@@ -145,6 +155,10 @@ def experiment_2_operations():
     A, B = nx.complete_graph(3), nx.path_graph(3)
 
     def lap_spec(G):
+        # Cartesian-product additivity {lambda_i + mu_j} is a theorem of the
+        # COMBINATORIAL graph Laplacian specifically (it fails for the
+        # normalized operator), so this layer legitimately uses D - A -- the
+        # graph-connectivity object, not a claim about the emergent ΔNFR L_rw.
         return np.round(
             np.linalg.eigvalsh(nx.laplacian_matrix(G).toarray().astype(float)), 3
         )

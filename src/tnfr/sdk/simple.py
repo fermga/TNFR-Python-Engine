@@ -2557,43 +2557,6 @@ class TNFR:
         return classify_element(int(Z), max_n=int(max_n)).as_dict()
 
     @staticmethod
-    def weyl_spectrum(k: int = 1) -> dict[str, Any]:
-        """Weyl spectral asymptotics of the k-th TNFR-Riemann operator.
-
-        Research diagnostic for the TNFR-Riemann program (theory/
-        TNFR_RIEMANN_RESEARCH_NOTES.md): the eigenvalue counting function
-        N(lambda) = #{lambda_j <= lambda} ~ A * lambda^alpha of the
-        prime-weighted structural Laplacian. The exponent alpha encodes the
-        spectral dimension (alpha = 1/2 for a uniform 1D chain; prime-gap
-        weights modify it). The operator *consumes* the prime support (``νf``
-        weighted by the primes) as input, so this is a symbolic-layer probe of
-        the equilibrium structure -- a NUMERICAL diagnostic of the
-        sigma_c -> 1/2 program, NOT a direct emergence and NOT a proof of the
-        Riemann Hypothesis.
-
-        Parameters
-        ----------
-        k : int
-            Operator index in the TNFR-Riemann spectral family.
-
-        Returns
-        -------
-        dict
-            ``k``, ``alpha`` (Weyl exponent), ``A_coeff`` (prefactor),
-            ``r_squared`` (log-log fit quality) and ``n_eigenvalues``.
-        """
-        from ..riemann.zeta_bridge import compute_weyl_asymptotic
-
-        w = compute_weyl_asymptotic(int(k))
-        return {
-            "k": int(w.k),
-            "alpha": float(w.alpha),
-            "A_coeff": float(w.A_coeff),
-            "r_squared": float(w.r_squared),
-            "n_eigenvalues": int(len(w.eigenvalues)),
-        }
-
-    @staticmethod
     def guide() -> str:
         """Print and return a theory-to-code discovery map.
 

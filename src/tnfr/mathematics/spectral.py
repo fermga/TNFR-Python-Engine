@@ -17,7 +17,7 @@ Key Features:
 
 from __future__ import annotations
 
-from typing import Any, Callable
+from typing import Any, Callable, Literal
 
 import scipy.linalg
 import scipy.sparse.linalg
@@ -41,19 +41,74 @@ except ImportError:
 from .unified_cache import CacheLevel, cache_tnfr_computation
 
 
+def _build_structural_laplacian(
+    G: Any, operator: str, weight: str | None
+) -> np.ndarray:
+    """Build the dense structural Laplacian for the requested operator.
+
+    ``"symmetric"`` and ``"random_walk"`` reuse the canonical builders in
+    :mod:`tnfr.physics.structural_diffusion` (the single source of truth for
+    L_sym / L_rw); ``"combinatorial"`` returns the generic ``D − A``.
+    """
+    if operator in ("symmetric", "random_walk"):
+        # Lazy import: structural_diffusion is a physics module; importing it at
+        # module load would risk an import cycle in this widely-imported utility.
+        from ..physics.structural_diffusion import (
+            structural_diffusion_operator,
+            symmetric_normalized_laplacian,
+        )
+
+        if operator == "symmetric":
+            _, lap = symmetric_normalized_laplacian(G)
+        else:
+            _, lap = structural_diffusion_operator(G)
+        return np.asarray(lap, dtype=float)
+    if operator == "combinatorial":
+        return nx.laplacian_matrix(G, weight=weight).toarray().astype(float)
+    raise TNFRValueError(
+        f"Unknown Laplacian operator: {operator!r}",
+        context={"operator": operator},
+        suggestion=(
+            "Use 'symmetric' (canonical L_sym), 'random_walk' (canonical L_rw), "
+            "or 'combinatorial' (generic D - A)."
+        ),
+    )
+
+
 @cache_tnfr_computation(
     level=CacheLevel.GRAPH_STRUCTURE, dependencies={"graph_topology"}
 )
 def get_laplacian_spectrum(
-    G: Any, weight: str | None = "weight", k: int | None = None
+    G: Any,
+    weight: str | None = "weight",
+    k: int | None = None,
+    operator: Literal["symmetric", "random_walk", "combinatorial"] = "symmetric",
+    normalized: bool | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Compute and cache the Laplacian spectrum of the graph.
+    """Compute and cache the structural Laplacian spectrum of the graph.
+
+    TNFR's canonical structural operator is the random-walk Laplacian
+    ``L_rw = I - D^{-1} W`` (:mod:`tnfr.physics.structural_diffusion`): the EPI
+    channel of the nodal equation is exactly ``dEPI/dt = -vf * L_rw * EPI``, the
+    coherence length is ``xi_C ~ 1/sqrt(lambda_2)`` of ``L_rw`` and the emergent
+    pulse is ``omega_k = sqrt(lambda_k)`` of ``L_rw``.  Its symmetric twin
+    ``L_sym = I - D^{-1/2} W D^{-1/2}`` shares that spectrum but has an
+    orthonormal eigenbasis -- which the Graph Fourier Transform requires -- so it
+    is the default.  The combinatorial Laplacian ``D - A`` is a *different*
+    operator with a *different* spectrum (generic graph signal processing); it is
+    exposed only for explicitly non-structural uses.
 
     Args:
         G: The graph (NetworkX or compatible).
-        weight: Edge attribute to use as weight.
+        weight: Edge attribute to use as weight (``"combinatorial"`` operator only).
         k: Number of eigenvalues/vectors to compute (for sparse/large graphs).
            If None, computes full spectrum.
+        operator: Which structural operator to diagonalise -- ``"symmetric"``
+           (default, canonical L_sym), ``"random_walk"`` (canonical L_rw;
+           non-symmetric) or ``"combinatorial"`` (generic ``D - A``).
+        normalized: Backward-compatible convenience alias. ``True`` selects the
+           canonical ``"symmetric"`` operator, ``False`` selects
+           ``"combinatorial"``; ``None`` (default) defers to ``operator``.
 
     Returns:
         tuple (eigenvalues, eigenvectors).
@@ -63,18 +118,18 @@ def get_laplacian_spectrum(
     if nx is None:
         raise ImportError("NetworkX is required for spectral analysis.")
 
-    # Get Laplacian Matrix
-    # normalized=True is often better for spectral clustering, but for
-    # physical diffusion (heat equation), the combinatorial or random-walk
-    # Laplacian is often used. TNFR usually assumes standard Laplacian L = D - A.
-    L = nx.laplacian_matrix(G, weight=weight)
+    if normalized is not None:
+        operator = "symmetric" if normalized else "combinatorial"
 
-    # Convert to dense if small enough or if full spectrum requested
-    N = L.shape[0]
+    # Build the canonical structural Laplacian (dense) for the chosen operator.
+    L_dense = _build_structural_laplacian(G, operator, weight)
+    N = L_dense.shape[0]
+    # L_rw is non-symmetric, and any directed graph yields a non-symmetric
+    # matrix -> use the general (non-Hermitian) eigensolver in those cases.
+    use_general_eig = bool(nx.is_directed(G)) or operator == "random_walk"
 
     if k is None or k >= N - 1:
         # Full diagonalization with GPU backend support
-        L_dense = L.toarray()
 
         # Use GPU backend if available and beneficial
         if HAS_GPU_BACKENDS and N > 100:  # GPU beneficial for larger matrices
@@ -84,8 +139,8 @@ def get_laplacian_spectrum(
                     # Convert to backend format
                     L_tensor = backend.as_array(L_dense)
 
-                    if nx.is_directed(G):
-                        # Use general eigenvalue solver for directed graphs
+                    if use_general_eig:
+                        # Use general eigenvalue solver for non-symmetric operators
                         evals_tensor, evecs_tensor = backend.eig(L_tensor)
                         # Convert back to numpy and sort
                         evals = backend.to_numpy(evals_tensor)
@@ -94,7 +149,7 @@ def get_laplacian_spectrum(
                         evals = evals[idx]
                         evecs = evecs[:, idx]
                     else:
-                        # Use Hermitian solver for undirected graphs
+                        # Use Hermitian solver for symmetric operators
                         evals_tensor, evecs_tensor = backend.eigh(L_tensor)
                         evals = backend.to_numpy(evals_tensor)
                         evecs = backend.to_numpy(evecs_tensor)
@@ -106,7 +161,7 @@ def get_laplacian_spectrum(
                     )
             except Exception:
                 # Fallback to CPU implementation
-                if nx.is_directed(G):
+                if use_general_eig:
                     evals, evecs = scipy.linalg.eig(L_dense)
                     idx = np.argsort(np.real(evals))
                     evals = evals[idx]
@@ -115,7 +170,7 @@ def get_laplacian_spectrum(
                     evals, evecs = scipy.linalg.eigh(L_dense)
         else:
             # CPU implementation
-            if nx.is_directed(G):
+            if use_general_eig:
                 evals, evecs = scipy.linalg.eig(L_dense)
                 idx = np.argsort(np.real(evals))
                 evals = evals[idx]
@@ -123,11 +178,9 @@ def get_laplacian_spectrum(
             else:
                 evals, evecs = scipy.linalg.eigh(L_dense)
     else:
-        # Sparse partial diagonalization
-        # 'SM' = Smallest Magnitude (eigenvalues near 0)
-        # Note: eigsh finds largest by default, so we use 'SA' (Smallest Algebraic)
-        # or shift-invert mode.
-        evals, evecs = scipy.sparse.linalg.eigsh(L, k=k, which="SM")
+        # Sparse partial diagonalization (symmetric operators only).
+        # 'SM' = Smallest Magnitude (eigenvalues near 0).
+        evals, evecs = scipy.sparse.linalg.eigsh(L_dense, k=k, which="SM")
 
     return evals, evecs
 

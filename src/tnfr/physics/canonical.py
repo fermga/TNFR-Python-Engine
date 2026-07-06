@@ -751,11 +751,14 @@ def _compute_phase_gradient_and_curvature(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
     dependencies={"graph_topology", "node_dnfr"},
 )
-def estimate_coherence_length(G: Any) -> float:
-    """Estimate coherence length ξ_C from spatial autocorrelation [CANONICAL].
+def _estimate_coherence_length_autocorr(G: Any) -> float:
+    """Coherence length ξ_C from the spatial-autocorrelation exp-decay fit.
 
-    Precision-aware: uses dtype from get_precision_mode().
-    High/research modes use more distance samples for better fit.
+    Precision-aware: uses dtype from get_precision_mode().  Returns ``nan`` when
+    the fit degenerates -- a uniform/coherent field (all per-node ``C ≈ 1`` ⇒
+    flat correlation ⇒ non-negative slope) or a graph too small for the fit;
+    the public :func:`estimate_coherence_length` then falls back to the emergent
+    spectral gap.
     """
     dtype = _get_precision_dtype()
     mode = get_precision_mode()
@@ -857,6 +860,48 @@ def estimate_coherence_length(G: Any) -> float:
         return float(xi_c) if xi_c > 0 else float("nan")
     except np.linalg.LinAlgError:
         return float("nan")
+
+
+def _spectral_gap_coherence_length(G: Any) -> float:
+    """Emergent-geometry coherence length ``1/√λ₂`` (the Fiedler gap of L_rw).
+
+    The robust canonical ``ξ_C``: the second-smallest eigenvalue of the
+    random-walk Laplacian (the emergent structural operator) is always well
+    defined, so this holds where the autocorrelation fit degenerates (a
+    uniformly coherent / near-equilibrium field, a small graph).  Same
+    spectral-gap form used by ``Network.nfr()``.
+    """
+    from .structural_diffusion import (  # local import: avoid module cycle
+        structural_eigenmodes,
+    )
+
+    try:
+        eigvals, _ = structural_eigenmodes(G)
+        nonzero = [float(v) for v in np.asarray(eigvals) if float(v) > 1e-9]
+        if not nonzero:
+            return float("nan")
+        lam2 = min(nonzero)
+        return float(1.0 / np.sqrt(lam2)) if lam2 > 0.0 else float("nan")
+    except Exception:  # pragma: no cover - degenerate graph guard
+        return float("nan")
+
+
+def estimate_coherence_length(G: Any) -> float:
+    """Coherence length ξ_C [CANONICAL] -- emergent-geometry robust.
+
+    Primary: the exponential-decay fit ``C(r) ~ exp(-r/ξ_C)`` of the coherence
+    autocorrelation vs graph distance (:func:`_estimate_coherence_length_autocorr`).
+    When that fit degenerates -- a uniformly coherent / near-equilibrium field
+    (all per-node ``C ≈ 1`` ⇒ flat correlation ⇒ non-negative slope) or a graph
+    too small -- fall back to the **emergent-geometry** coherence length
+    ``1/√λ₂`` (the Fiedler spectral gap of ``L_rw``), which is always well
+    defined.  So ξ_C reads the emergent geometry throughout and is never ``nan``
+    on a valid connected graph.
+    """
+    xi = _estimate_coherence_length_autocorr(G)
+    if xi == xi and xi > 0.0:  # finite (not nan) and positive
+        return float(xi)
+    return _spectral_gap_coherence_length(G)
 
 
 __all__ = [

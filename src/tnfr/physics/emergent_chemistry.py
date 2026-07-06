@@ -13,10 +13,15 @@ structural manifold supports only *discrete resonant eigenmodes*. We use that
 already-emergent fact as the foundation:
 
   1. EIGENMODES EMERGE. The resonant modes of a closed structural manifold are
-     the eigenvalues of the structural Laplacian L = D - A (the discrete ΔNFR /
-     phase-curvature operator). On a 2-sphere manifold the spectrum clusters
-     into degenerate groups of multiplicity (2l+1) = 1, 3, 5, 7, ... — the
-     angular eigenmodes. This is computed numerically, not postulated.
+     the standing waves of the canonical EMERGENT operator -- the random-walk
+     diffusion operator L_rw = I - D^-1 W that the canonical ΔNFR realises
+     (``tnfr.physics.structural_diffusion``), read through its symmetric twin
+     L_sym = I - D^{-1/2} W D^{-1/2} (same spectrum). Read at the canonical
+     standing-wave frequency ω_k = √λ_k (the emergent pulse), a 2-sphere
+     manifold's modes cluster into degenerate groups of multiplicity
+     (2l+1) = 1, 3, 5, 7, ... — the angular eigenmodes. This is computed
+     numerically from the emergent geometry, not postulated, and not the
+     imposed combinatorial graph Laplacian D - A.
 
   2. SHELLS EMERGE. Grouping subshell capacities 2*(2l+1) and ordering them by
      total structural excitation νf ∝ (n + l) (the structural reading of the
@@ -135,22 +140,43 @@ class EigenmodeShell:
 def structural_eigenmodes(
     G: nx.Graph, *, max_modes: int = 16, gap_factor: float = 6.0
 ) -> list[EigenmodeShell]:
-    """Compute the resonant eigenmodes of the structural manifold and group
-    them into degenerate shells.
+    """Compute the resonant eigenmodes of the emergent structural manifold and
+    group them into degenerate shells.
 
-    The structural Laplacian L = D - A is the discrete phase-curvature / ΔNFR
-    operator. Its low-lying eigenvalues cluster into groups whose sizes are the
-    angular multiplicities (2l+1) = 1, 3, 5, 7, ...
+    The canonical structural geometry is the EMERGENT one: the resonant modes
+    are the standing waves of the random-walk diffusion operator L_rw = I - D^-1 W
+    that the canonical ΔNFR realises (``tnfr.physics.structural_diffusion``),
+    read through its symmetric twin L_sym = I - D^{-1/2} W D^{-1/2} (same
+    spectrum, orthonormal eigenbasis). This is NOT the imposed combinatorial
+    graph Laplacian D - A -- the geometry must emerge from the nodal dynamics.
 
-    Degenerate groups are separated by gaps in the spectrum: a shell boundary
-    occurs where a consecutive eigenvalue gap exceeds ``gap_factor`` times the
-    typical (median) intra-shell spacing.
+    The degenerate shells are read in the canonical STANDING-WAVE FREQUENCY
+    ω_k = √λ_k (the emergent pulse; see
+    ``structural_diffusion.compute_emergent_pulse``): a bounded manifold
+    vibrates at ω_k = √λ_k and degenerate modes share a frequency. On a 2-sphere
+    the diffusion eigenvalues are λ_l ∝ l(l+1), so the frequencies
+    ω_l ∝ √(l(l+1)) ≈ l + ½ are uniformly spaced and the shells (multiplicity
+    2l+1 = 1, 3, 5, 7, …) separate cleanly, whereas the quadratic λ_l themselves
+    crowd the low-l gaps. Reading the degeneracy in the canonical frequency is
+    therefore what lets (2l+1) emerge from the structural geometry.
 
-    Returns the detected shells (degenerate groups) in ascending energy order.
+    Degenerate groups are separated by gaps in the frequency spectrum: a shell
+    boundary occurs where a consecutive frequency gap exceeds ``gap_factor``
+    times the typical (median) intra-shell frequency spacing.
+
+    Returns the detected shells (degenerate groups) in ascending frequency order.
     """
-    L = nx.laplacian_matrix(G).toarray().astype(float)
-    evals = np.sort(np.linalg.eigvalsh(L))[:max_modes]
-    gaps = np.diff(evals)
+    # Canonical emergent operator: the symmetric normalized Laplacian L_sym
+    # (single source of truth in structural_diffusion; shares the L_rw spectrum).
+    from .structural_diffusion import symmetric_normalized_laplacian
+
+    _, L = symmetric_normalized_laplacian(G)
+    evals = np.sort(np.clip(np.linalg.eigvalsh(L), 0.0, None))[:max_modes]
+    # Canonical standing-wave frequencies of the emergent geometry (ω_k = √λ_k).
+    # Degeneracy is read here, not in raw λ: on a sphere λ_l ∝ l(l+1) crowds the
+    # low-l gaps, while ω_l ∝ √(l(l+1)) ≈ l+½ spaces the shells uniformly.
+    freqs = np.sqrt(evals)
+    gaps = np.diff(freqs)
     positive = gaps[gaps > 1e-9]
     typical = float(np.median(positive)) if positive.size else 1e-9
     threshold = gap_factor * typical

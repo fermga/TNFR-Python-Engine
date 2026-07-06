@@ -135,10 +135,11 @@ class NodalEquationOptimizer:
         ):
             return self._optimization_states[graph_id]
 
-        # Compute spectral decomposition
-        eigenvals, eigenvecs = get_laplacian_spectrum(
-            G, normalized=True, cache_key=f"nodal_opt_{topology_hash}"
-        )
+        # Compute spectral decomposition on the canonical structural operator
+        # (L_sym; shares the spectrum of the random-walk diffusion operator
+        # L_rw = I - D^-1 W). Caching is handled by get_laplacian_spectrum's
+        # topology-keyed decorator, so no explicit cache key is needed.
+        eigenvals, eigenvecs = get_laplacian_spectrum(G, operator="symmetric")
 
         # Extract νf values in node order
         nodes = list(G.nodes())

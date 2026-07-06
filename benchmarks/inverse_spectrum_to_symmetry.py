@@ -56,8 +56,10 @@ IRREDUCIBLE vs COMPOSITE DEGENERACY (the deeper finding):
   icosahedron and the dodecahedron.
 
 HONEST SCOPE:
-  The predictive engine is L = D - A commuting with Aut(G) (a known theorem); TNFR
-  supplies the physical reading L = discrete ΔNFR / phase curvature. We predict
+  The predictive engine is any Aut(G)-equivariant operator commuting with Aut(G)
+  (a known theorem); TNFR supplies the physical reading: the emergent
+  L_rw = I - D^-1 W is the discrete ΔNFR / phase curvature (D - A shares its
+  eigenspaces on these vertex-transitive graphs). We predict
   CARDINALS (degeneracies), not the arithmetic ring. This does not derive (+, ×)
   or primality. It does demonstrate that the emergent integers carry, and let us
   predict, structural facts we did not put in.
@@ -65,8 +67,8 @@ HONEST SCOPE:
 Run:
     python benchmarks/inverse_spectrum_to_symmetry.py
 
-Theoretical anchor: AGENTS.md (nodal equation; discrete-mode regime; structural
-Laplacian as discrete ΔNFR). Status: RESEARCH (inverse falsifier).
+Theoretical anchor: AGENTS.md (nodal equation; discrete-mode regime; the emergent
+L_rw = I - D^-1 W as discrete ΔNFR). Status: RESEARCH (inverse falsifier).
 """
 
 from __future__ import annotations
@@ -77,18 +79,25 @@ import networkx as nx
 import numpy as np
 
 # ---------------------------------------------------------------------------
-# Emergent integers: multiplicities of the structural Laplacian L = D - A
+# Emergent integers: eigenvalue multiplicities of the canonical emergent operator
+# L_rw = I - D^-1 W (the discrete ΔNFR); on vertex-transitive graphs these equal
+# the multiplicities of the imposed D - A used below (operator-invariant).
 # ---------------------------------------------------------------------------
 
 
 def laplacian_multiplicities(
     G: nx.Graph, *, tol: float = 1e-6
 ) -> list[tuple[float, int]]:
-    """Return (eigenvalue, multiplicity) pairs of L = D - A, ascending."""
+    """Return (eigenvalue, multiplicity) pairs of the canonical EMERGENT operator
+    L_sym (self-adjoint twin of the ΔNFR random-walk L_rw), ascending. On
+    vertex-transitive graphs L_sym shares D - A's eigenspaces, so the
+    multiplicities (the emergent integers) are operator-invariant; the geometry
+    read is now emergent, not imposed."""
+    from tnfr.physics.structural_diffusion import symmetric_normalized_laplacian
+
     G = nx.Graph(G)
-    A = nx.to_numpy_array(G, nodelist=sorted(G.nodes()))
-    D = np.diag(A.sum(axis=1))
-    evals = np.sort(np.linalg.eigvalsh(D - A))
+    _, L_sym = symmetric_normalized_laplacian(G)
+    evals = np.sort(np.linalg.eigvalsh(L_sym))
     groups: list[list[float]] = [[float(evals[0])]]
     for ev in evals[1:]:
         if abs(ev - groups[-1][-1]) <= tol:
@@ -373,8 +382,8 @@ def main() -> None:
     print("\n  Reading: the inverse map (partial spectrum -> group -> unseen integer)")
     print("  succeeds, and the emergent degeneracies carry an irreducible/composite")
     print("  structure: protected integers are irreducible reps, accidental ones are")
-    print("  sums. This is the structural reading of 'L commutes with Aut(G)' — TNFR")
-    print("  supplies L = discrete ΔNFR. It yields cardinals and their irreducibility,")
+    print("  sums. This is the structural reading of Aut(G)-equivariance; the emergent")
+    print("  L_rw = discrete ΔNFR yields cardinals and their irreducibility,")
     print("  NOT the arithmetic ring; (+, ×, primality) of integers stay open.")
 
 

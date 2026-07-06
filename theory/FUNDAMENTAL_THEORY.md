@@ -307,7 +307,7 @@ Key observations:
 | SDK access (tetrad, conservation) | `src/tnfr/sdk/simple.py` |
 | Emergent symplectic substrate | `src/tnfr/physics/symplectic_substrate.py` |
 | Structural diffusion (transport) | `src/tnfr/physics/structural_diffusion.py` |
-| Test suite | `tests/` (2,041 passing) |
+| Test suite | `tests/` (1,599 passing) |
 
 ---
 

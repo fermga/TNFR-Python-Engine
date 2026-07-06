@@ -85,7 +85,7 @@ from dataclasses import dataclass
 from typing import Sequence
 
 from ..mathematics.unified_numerical import np
-from .operator import _first_primes
+from .nodal_pulse import first_primes as _first_primes
 
 # ---------------------------------------------------------------------------
 # Public API

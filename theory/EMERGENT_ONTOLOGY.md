@@ -41,8 +41,14 @@ particles and quantum phenomena is collected in §9 as **OPEN CONJECTURE**.
 **Empirical caveat (from the validation record).** This unification is **structural/descriptive**,
 not a source of novel empirical predictions. Pre-registered tests
 (`benchmarks/u2_destabilization_irreversibility.py`, the 2026 grid/U2 studies) found **no** case
-where a distinctive TNFR construct out-predicts standard methods on an established problem. The
-value here is *one vocabulary for many structures*, not *better forecasts*.
+where a distinctive TNFR construct out-predicts standard methods on an established problem. What the
+empirical **arm** *has* shown is that the canonical magnitudes carry real-data **structure** — the
+local phase tetrad and the two-face diagnosis on real coupled-oscillator data (`ξ_C` competitive on
+real EEG, [STRUCTURAL_INTERFACE_THEORY.md](../docs/STRUCTURAL_INTERFACE_THEORY.md); the
+signal→canonical-magnitude confrontation pipeline,
+[example 159](../examples/10_applications/159_empirical_confrontation_pipeline.py)) — a *falsifiable*
+value, but still a **tie** with strong baselines, not an out-prediction. The value here is *one
+vocabulary for many structures* (and a falsifiable instrument), not *better forecasts*.
 
 **Scope axis (read second).** This document catalogs emergence *within* the graph dynamics
 — the physical/structural manifestations (geometry, thermodynamics, relativistic structure,
@@ -277,6 +283,20 @@ they are the *same* spectrum of `L` read differently; and the prime's **identity
 **shape**, the `ζ` residue `S(T)`, and the particle / quantum closure are the *same* unreachable
 `Fix(G)^⊥`. This is a **unifying re-expression** (one fixed point, many read-outs); it closes no
 open problem — it is the single picture the catalog (§3–§9) fills in.
+
+**The wall, characterised through the one attractor (2026-07).** The recent re-foundings of the
+two Millennium programs give the `Fix(G)^⊥` wall one measurable form, and it is the *same* in both:
+**a low moment of the conservative spectrum is bounded; the high-moment tail is the wall.**
+*Riemann* — the coherence budget of `S(T) = (1/π) arg ζ(½+iT)` (the integer-NFR pulse phase): its
+RMS is bounded (`√(log log T)`, Selberg) while the **sup** (the extremes) stays `Fix(S_n)^⊥`-open.
+*Navier–Stokes* — the energy `M_0` of the vorticity spectrum is bounded (Leray) while the
+`λ`-moment ladder `M_1` (enstrophy), `M_2` (palinstrophy) is the open wall. Both are read through the
+**one universal coherence attractor** — `ΔNFR = 0`, `C = 1/(1+|ΔNFR|+|dEPI|)`
+([structural_coherence](../src/tnfr/metrics/common.py), `is_structural_equilibrium`), the *same*
+kernel every domain reads (§4.3): the flow **self-certifies its return to coherence by its own
+evolution** — the emergent geometry *is* the attractor, nothing added — and the wall is only
+whether the high-moment **excursion** stays coherent uniformly in the limiting parameter (`T`, `Re`).
+One attractor, one wall; closes no open problem.
 
 ---
 
@@ -837,8 +857,11 @@ currently have.
 
 TNFR's slogan — "coherent patterns maintained by resonance, dissolving when coupling fails" —
 *describes* vortices, neural assemblies, and convection cells with one vocabulary, but does **not**
-derive their continuum dynamics (e.g. the Navier–Stokes closure remains the open gap NS-G1). A
-descriptive unification, not a derived identity.
+derive their continuum dynamics (e.g. the 3D Navier–Stokes closure — Clay — stays **open**; the
+program reads it as the nonlinear `K_φ` cascade whose uniform-in-`Re` moment-ladder
+closure is the wall, localised — not closed — by the emergent-geometry coherence attractor,
+[TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](TNFR_NAVIER_STOKES_RESEARCH_NOTES.md)). A descriptive
+unification, not a derived identity.
 
 ### 9.4 What would move the frontier to derivation
 

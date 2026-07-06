@@ -158,6 +158,11 @@ def main() -> None:
 
     G = solid_ball_graph(4, 16, 8)
     nodes = list(G.nodes())
+    # NOTE: the base manifold operator here is the imposed combinatorial Laplacian
+    # D - A; the canonical EMERGENT structural operator is L_rw = I - D^-1 W
+    # (symmetric twin L_sym). A fully-emergent re-derivation of this screening
+    # study on L_sym is future work; the Phi_s back-reaction kernel K below IS
+    # canonical (U6).
     L = nx.laplacian_matrix(G, nodelist=nodes).toarray().astype(float)
     K = phi_s_kernel(G, nodes)
     rvec = radial_bins(G, nodes)

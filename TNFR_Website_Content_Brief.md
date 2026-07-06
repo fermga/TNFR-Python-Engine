@@ -45,9 +45,9 @@ therefore out of scope for Kaniz. The deliverable is the website source code
 The repository moved forward between the two briefs. The website content must
 reflect the **current** state. Concrete corrections (old → corrected):
 
-1. **Home, "Verify" card.** "~2,195 tests" → **2,041 tests** (README).
+1. **Home, "Verify" card.** "~2,195 tests" → **1,599 tests** (README).
 2. **`/learn/tutorials`.** A flat list "`01_hello_world.py` … `10_simplified_sdk_showcase.py`"
-   → **162 examples across 10 thematic subfolders** (`examples/01_foundations` …
+   → **150 examples across 10 thematic subfolders** (`examples/01_foundations` …
    `examples/10_applications`).
 3. **`/theory/tetrad` equations.** The `|∇φ|` formula was a duplicate of the `K_φ`
    formula → `|∇φ|` is the **1st-order** mean of wrapped neighbour differences,
@@ -63,8 +63,8 @@ reflect the **current** state. Concrete corrections (old → corrected):
    imprecise |ΔNFR| arrow is replaced by the canonical **primary nodal channel**
    (EPI / νf / θ / ΔNFR), which is how the engine documents operators. See § 3.2.3.
 6. **`/research` open programs.** 3 programs (Riemann, Navier–Stokes, Yang–Mills) →
-   **6 programs** (add **P vs NP, BSD, Hodge**), with updated statuses (Riemann paused
-   at T-HP; Navier–Stokes N1–N17, NS-G5 closed at the discrete level). See § 3.5.6.
+   **6 programs** (add **P vs NP, BSD, Hodge**), all currently **open** (Riemann
+   nodal-pulse foundation; Navier–Stokes two-face reading). See § 3.5.6.
 7. **`/research` theory documents.** 12 files → add the new canonical docs and the 3
    new research notes. See § 3.5.3.
 8. **`/software/sdk`.** TetradSnapshot + ConservationReport → also add
@@ -240,7 +240,7 @@ Render as three short side-by-side cards:
 
 | Read | Compute | Verify |
 |------|---------|--------|
-| The complete theory, derived from the nodal equation and 13 operators, with KaTeX-rendered equations. | Install the Python SDK (`pip install tnfr`) and run reproducible network simulations. | Inspect **2,041 tests**, 50 benchmark scripts, and the open-source code on GitHub. |
+| The complete theory, derived from the nodal equation and 13 operators, with KaTeX-rendered equations. | Install the Python SDK (`pip install tnfr`) and run reproducible network simulations. | Inspect **1,599 tests**, benchmark scripts, and the open-source code on GitHub. |
 
 #### Block 3 — Quick start code
 
@@ -821,14 +821,14 @@ now **six** programs. Use the wording below.
 
 **Closing status table** (render at the end of this sub-section):
 
-| Program | Latest milestone | Status | Notes |
-|---------|------------------|--------|-------|
-| Riemann | P1–P49 (ζ↔L attack surface) | OPEN — G4 = RH not closed; **paused at T-HP** | σ_c → 1/2 verified |
-| Navier–Stokes | N1–N17 (NS-G5 closed at discrete level) | OPEN — global regularity / Clay not resolved | K_φ cascade diagnostics |
-| Yang–Mills | Y1–Y5 (finite U(1) diagnostics) | OPEN — non-Abelian mass gap (Branch B) | research notes |
-| P vs NP | PNP-1 | OPEN — worst-case separation (Branch B) | verification O(\|E\|) vs synthesis trapping |
-| BSD | BSD-1 | OPEN — rank ↔ order of vanishing (Branch B) | structural-pressure accumulation |
-| Hodge | HC-1 | OPEN — structurally blind (Branch B3-leaning) | discrete Hodge = homology (Eckmann) |
+| Program | What it does | Status |
+|---------|--------------|--------|
+| Riemann | ζ as the integer-NFR nodal pulse; S(T) the pulse phase | OPEN — RH not closed |
+| Navier–Stokes | two-face reading; blow-up is the nonlinear K_φ cascade | OPEN — global regularity / Clay not resolved |
+| Yang–Mills | structural gap diagnostics on the gauge sector | OPEN — non-Abelian mass gap |
+| P vs NP | verification O(\|E\|) vs synthesis trapping | OPEN — worst-case separation |
+| BSD | structural-pressure accumulation | OPEN — rank ↔ order of vanishing |
+| Hodge | discrete Hodge = homology (Eckmann) | OPEN — structurally blind |
 
 ---
 

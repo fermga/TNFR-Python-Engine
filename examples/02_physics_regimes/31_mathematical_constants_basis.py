@@ -82,10 +82,16 @@ def _seed_network(G: "nx.Graph", *, seed: int = 42, correlated: bool = False) ->
         G.nodes[n]["delta_nfr"] = rng.uniform(-0.5, 0.5)
 
 
-def _algebraic_connectivity(G: "nx.Graph") -> float:
-    """Fiedler value λ₂ (second-smallest Laplacian eigenvalue)."""
-    laplacian = nx.laplacian_matrix(G).toarray().astype(float)
-    eigvals = np.linalg.eigvalsh(laplacian)
+def _structural_spectral_gap(G: "nx.Graph") -> float:
+    """Emergent structural spectral gap λ₂ — the second-smallest eigenvalue of
+    the canonical symmetric normalized Laplacian L_sym (same spectrum as the
+    random-walk diffusion operator L_rw = I − D⁻¹W that the ΔNFR realises).
+    This is the EMERGENT gap that sets ξ_C ∝ 1/√λ₂, not the imposed
+    combinatorial λ₂(D − A)."""
+    from tnfr.physics.structural_diffusion import symmetric_normalized_laplacian
+
+    _, l_sym = symmetric_normalized_laplacian(G)
+    eigvals = np.sort(np.clip(np.linalg.eigvalsh(l_sym), 0.0, None))
     return float(eigvals[1]) if len(eigvals) > 1 else 0.0
 
 
@@ -172,11 +178,11 @@ def demo_spectral_coherence_length() -> None:
         ("complete (N=20)", nx.complete_graph(20)),
     ]
 
-    print(f"\n  {'topology':<16}  {'λ₂ (Fiedler)':>14}  {'1/√λ₂':>10}  {'ξ_C (SDK)':>10}")
+    print(f"\n  {'topology':<16}  {'λ₂ (L_sym gap)':>14}  {'1/√λ₂':>10}  {'ξ_C (SDK)':>10}")
     print("  " + "-" * 56)
     for name, G in topologies:
         _seed_network(G, seed=11, correlated=True)
-        lam2 = _algebraic_connectivity(G)
+        lam2 = _structural_spectral_gap(G)
         inv_sqrt = 1.0 / math.sqrt(lam2) if lam2 > 1e-12 else float("inf")
         xi_c = estimate_coherence_length(G)
         print(f"  {name:<16}  {lam2:14.6f}  {inv_sqrt:10.4f}  {xi_c:10.4f}")

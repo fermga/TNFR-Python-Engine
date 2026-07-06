@@ -359,7 +359,8 @@ def demo_irreducibility_summary() -> None:
               -> Laplacian -> K_phi           [2nd, local]
               -> corr      -> xi_C            [integral, non-local]
 
-  Tower terminates at 2nd order (combinatorial Laplacian L = D - A).
+  Tower terminates at 2nd order (K_phi = L_rw . phi, the emergent
+  random-walk Laplacian -- NOT the imposed combinatorial D - A).
   xi_C captures information missed by all pointwise operators.
 
   Result: The tetrad (Phi_s, |grad_phi|, K_phi, xi_C) is MINIMAL

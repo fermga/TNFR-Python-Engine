@@ -42,7 +42,10 @@ src/tnfr/                          # ~346 files, ~104k LOC
 ├── metrics/                        # Coherence, Si, phase sync
 ├── telemetry/                      # Unified field monitoring
 ├── sdk/                            # Fluent API + Simple SDK + builders
-├── riemann/                        # TNFR-Riemann operator implementation
+├── validation/                      # Structural health + empirical-arm signal confrontation
+├── riemann/                         # TNFR-Riemann program (nodal-pulse foundation)
+├── navier_stokes/                   # TNFR-Navier-Stokes program (conservative two-face reading)
+├── yang_mills/                      # TNFR-Yang-Mills gap diagnostics
 └── factorization/                  # Spectral factorization workflow
 ```
 
@@ -535,7 +538,7 @@ TNFR Engine is a complex-systems framework grounded in the nodal equation:
 | **Self-Optimization** | COMPLETE | Autonomous structural improvement |
 | **Telemetry** | COMPLETE | Complete system observability |
 | **Developer Experience** | COMPLETE | Fluent API + Simple SDK (tetrad, conservation, telemetry) |
-| **Production Readiness** | COMPLETE | 1,655 tests passing + benchmarks + validation |
+| **Production Readiness** | COMPLETE | 1,599 tests passing + benchmarks + validation |
 
 ### Architectural Principles (Canonical)
 

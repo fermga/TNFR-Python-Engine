@@ -21,7 +21,11 @@ ENGINE (known theorems — the independent ground truth):
   - Aut(G) × Aut(H) acts on the product; product irreps are tensor products,
     dim(ρ ⊗ σ) = dim ρ · dim σ                                       -> CARDINALS multiply
 
-TNFR reading (AGENTS.md): L = D − A is the discrete ΔNFR / phase-curvature operator.
+TNFR reading: the canonical discrete ΔNFR / phase-curvature operator is the
+emergent random-walk Laplacian L_rw = I − D⁻¹W. The Cartesian/tensor product
+spectral additivity/multiplicativity used here is a theorem of the COMBINATORIAL
+graph Laplacian L = D − A specifically (the emergent L_rw lacks clean product
+additivity), so this layer reads the imposed connectivity's product structure.
 Coupling two coherent systems is a physical act, and the spectrum of the composite
 realises + and × with no arithmetic supplied externally. This connects to the
 B0★-α canonical graph-product programme (Q1 = G □ G, Q2 = G × G) in AGENTS.md.
@@ -37,6 +41,16 @@ HONEST SCOPE:
   property of the SYSTEM's symmetry, not of the integer — in contrast with the
   unique-factorisation theorem. The frontier is mapped, not erased.
 
+  LAPLACIAN CORRECTION (emergent-geometry audit): the product-spectrum
+  additivity {λ_i+μ_j} / multiplicativity {α_i·β_j} demonstrated here holds ONLY
+  for the imposed COMBINATORIAL Laplacian D - A. The canonical EMERGENT operator
+  L_rw = I - D^-1 W (and its self-adjoint twin L_sym) does NOT exhibit product
+  additivity (MEASURED: on K3 □ P3 and K3 □ K3, additive=False for both). So the
+  + / × emergence shown is a property of the imposed graph CONNECTIVITY, not of
+  the emergent nodal dynamics. The genuine emergent arithmetic in TNFR is in the
+  STRUCTURAL-FREQUENCY channel -- νf(p·q) = νf(p) + νf(q) (log-additivity,
+  νf = log p; the number-theory program) -- a DIFFERENT mechanism.
+
 Run:
     python benchmarks/composition_arithmetic.py
 
@@ -51,10 +65,12 @@ from networkx.algorithms.isomorphism import GraphMatcher
 
 
 # --------------------------------------------------------------------------- #
-# Spectra (L = D - A is the discrete ΔNFR operator; A is the coupling matrix)
+# Spectra. L = D - A is the COMBINATORIAL graph Laplacian, whose product spectra
+# are additive/multiplicative (a combinatorial theorem); the canonical emergent
+# ΔNFR operator is L_rw = I - D^-1 W. A is the coupling matrix.
 # --------------------------------------------------------------------------- #
 def lap_spectrum(G, nodes=None):
-    """Sorted eigenvalues of the Laplacian L = D - A."""
+    """Sorted eigenvalues of the combinatorial Laplacian L = D - A."""
     A = nx.to_numpy_array(G, nodelist=nodes if nodes else list(G.nodes()))
     L = np.diag(A.sum(axis=1)) - A
     return np.sort(np.linalg.eigvalsh(L))

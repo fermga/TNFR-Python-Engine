@@ -93,7 +93,7 @@ import networkx as nx
 
 from ..mathematics.unified_numerical import np
 from ..operators.hamiltonian import InternalHamiltonian
-from .operator import _first_primes
+from .nodal_pulse import first_primes as _first_primes
 from .von_mangoldt import (
     PrimeLadderSpectrum,
     build_prime_ladder_spectrum,

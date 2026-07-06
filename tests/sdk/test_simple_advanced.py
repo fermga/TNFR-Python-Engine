@@ -522,11 +522,6 @@ class TestEmergentOntologyAndNumberTheory:
         assert len(s["relaxation_rates"]) >= 1
         assert s["structural_rank"] >= 1
 
-    def test_weyl_spectrum_k1(self):
-        w = TNFR.weyl_spectrum(1)
-        assert abs(w["alpha"] - 0.5) < 0.2
-        assert w["n_eigenvalues"] > 0
-
     def test_symbolic_layer_reads_canonical_fixed_point(self):
         """Chemistry ΔNFR is read through the SAME equilibrium predicate."""
         from tnfr.metrics.common import is_structural_equilibrium

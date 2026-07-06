@@ -92,6 +92,14 @@ from .multichannel_interface import (  # noqa: F401
     phase_locking_matrix,
     phase_offsets,
 )
+from .signal_confrontation import (  # noqa: F401
+    NodalPredictionSkill,
+    SignalConfrontation,
+    confront_signal,
+    emergent_wave_fraction,
+    estimate_quality_factor,
+    nodal_prediction_skill,
+)
 from .phase_gate import (  # noqa: F401
     DEFAULT_MIN_COMPLIANCE,
     DEFAULT_PHASE_GATE,
@@ -330,6 +338,12 @@ _RUNTIME_EXPORTS = (
     "build_coupling_graph",
     "multichannel_window_series",
     "evaluate_synchrony_discrimination",
+    "SignalConfrontation",
+    "confront_signal",
+    "estimate_quality_factor",
+    "emergent_wave_fraction",
+    "NodalPredictionSkill",
+    "nodal_prediction_skill",
 )
 
 __all__ = _GRAMMAR_EXPORTS + _RUNTIME_EXPORTS

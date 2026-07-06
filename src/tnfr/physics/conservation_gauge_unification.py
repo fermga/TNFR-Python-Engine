@@ -74,7 +74,7 @@ References
 - Action functional: src/tnfr/physics/variational.py
 - Conservation laws: src/tnfr/physics/conservation.py
 - Gauge structure: src/tnfr/physics/gauge.py
-- Convergence proof: src/tnfr/riemann/convergence_proof.py
+- Nodal-pulse foundation: src/tnfr/riemann/nodal_pulse.py
 - Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)  [TNFR.pdf §2.1]
 - Grammar: theory/UNIFIED_GRAMMAR_RULES.md (U1-U6)
 """

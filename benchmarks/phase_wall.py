@@ -127,7 +127,10 @@ _KNOWN_ZEROS = (14.1347, 21.0220, 25.0109, 30.4249, 32.9351, 37.5862)
 
 
 # --------------------------------------------------------------------------- #
-# Graph operators (L = D - A is the self-adjoint discrete dNFR operator)
+# Graph operators. The canonical discrete dNFR operator is the emergent
+# L_rw = I - D^-1 W; the self-adjoint combinatorial L = D - A below shares its
+# eigenspaces on the vertex-transitive graphs here (its real spectrum is the
+# structural content this harness reads).
 # --------------------------------------------------------------------------- #
 def adjacency_laplacian(G, nodes):
     """Return (A, L) with A = A^T (mutual coupling) and L = D - A self-adjoint."""

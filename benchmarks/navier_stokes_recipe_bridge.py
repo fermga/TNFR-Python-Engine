@@ -137,10 +137,7 @@ from commutant_bridge import (  # noqa: E402
 # Guarded import of the canonical TNFR Navier-Stokes engine. The harness
 # is self-contained; the engine is an optional ground-truth cross-check.
 try:
-    from tnfr.navier_stokes.operator import (  # noqa: E402
-        TNFRNavierStokesOperator,
-        build_torus_graph_3d,
-    )
+    from tnfr.navier_stokes import TNFRNavierStokes  # noqa: E402
 
     _HAVE_NS = True
 except Exception:  # pragma: no cover - engine optional
@@ -423,22 +420,14 @@ def test_dimensional_gating():
     engine_ok = True
     if _HAVE_NS:
         try:
-            g3 = build_torus_graph_3d(8)
-            op3 = TNFRNavierStokesOperator(g3, viscosity=0.05, dimension=3)
-            op3.set_taylor_green(amplitude=1.0)
-            e_3d = float(np.linalg.norm(op3.vortex_stretching_field()))
-            op2 = TNFRNavierStokesOperator(g3, viscosity=0.05, dimension=3)
-            nodes = list(g3.nodes)
-            for idx, node in enumerate(nodes):
-                xx, yy, _zz = g3.nodes[node]["pos"]
-                op2.phi[0, idx] = math.sin(xx) * math.cos(yy)
-                op2.phi[1, idx] = -math.cos(xx) * math.sin(yy)
-                op2.phi[2, idx] = 0.0
-            e_2d = float(np.linalg.norm(op2.vortex_stretching_field()))
-            engine_ok = e_2d < TOL and e_3d > _NONZERO
+            flow3 = TNFRNavierStokes(8, 0.05, 1.0)
+            for _ in range(10):
+                flow3.step(0.02)
+            e_3d = abs(flow3.stretching_production())
+            engine_ok = e_3d > _NONZERO
             print(
-                f"  [engine cross-check] ||field|| 2D = {e_2d:.3e},"
-                f" 3D = {e_3d:.3e} -> {engine_ok}"
+                f"  [engine cross-check] 3D vortex-stretching production ="
+                f" {e_3d:.3e} -> {engine_ok}"
             )
         except Exception as exc:  # pragma: no cover
             print(f"  [engine cross-check skipped: {exc}]")

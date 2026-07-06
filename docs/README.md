@@ -20,6 +20,7 @@ canonical operators, grammar U1–U6, and the structural field tetrad
 | [API_CONTRACTS.md](API_CONTRACTS.md) | Active | Pre/post-condition contracts for the 13 operators |
 | [CANONICAL_OZ_SEQUENCES.md](CANONICAL_OZ_SEQUENCES.md) | Active | Dissonance (OZ) operator-sequence patterns |
 | [STRUCTURAL_INTERFACE_THEORY.md](STRUCTURAL_INTERFACE_THEORY.md) | Active | Structural-interface programme: pipelines, fair benchmarks, validated results, limitations |
+| [EMPIRICAL_CONFRONTATION_EEG.md](EMPIRICAL_CONFRONTATION_EEG.md) | Active | Empirical confrontation of canonical magnitudes with real signals (validation record) |
 
 ---
 

@@ -48,8 +48,9 @@ FOUR pieces, each anchored to a known theorem (the independent ground truth):
       phase coupling. A minimal two-oscillator Kuramoto integration confirms the
       1:1 lock gives rotation number exactly 1 inside the Arnold tongue.
 
-TNFR reading (AGENTS.md): L = D - A is the discrete dNFR / phase-curvature
-operator; A is the coupling matrix. + and x come from composing systems
+TNFR reading: the canonical discrete dNFR / phase-curvature operator is the
+emergent random-walk Laplacian L_rw = I - D^-1 W; A is the coupling matrix and
+D - A its imposed combinatorial cousin. + and x come from composing systems
 (composition_arithmetic.py); the inverse comes from bipartite coupling symmetry;
 division comes from the ratio of resonant modes / phase-locking. Q therefore
 inherits emergence from the same nodal machinery, with division given a physical
