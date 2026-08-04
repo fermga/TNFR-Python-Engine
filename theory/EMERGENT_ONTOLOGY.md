@@ -1,7 +1,7 @@
 # Emergent Ontology from the Nodal Equation
 
 **Status**: WORKING DRAFT — EXPLORATORY (not canonical)
-**Date**: 2026-06-20
+**Date**: 2026-08-04 (reorganized around the emergent structural history, §2.5, as the temporal spine)
 **Prerequisite**: [AGENTS.md](../AGENTS.md), [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md), [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md)
 
 ---
@@ -23,20 +23,29 @@ tower of physical structure emerges, level by level. Every entry carries exactly
 | **OPEN CONJECTURE** | A research target that is **not** established; the document states what a derivation would require. |
 
 **What this document claims.** That *one* structural law — the nodal equation in **Hz_str**, a
-level not modelled before — **manifests across scales** as a connected chain of structures:
-diffusion (heat), an arrow of time, conservation laws, an emergent geometry (a metric, a
-dimension, a causal light cone, an approximate Lorentz invariance), all of synchronization, and an
-electromagnetic charge/gauge sector. The shared **mathematical form** with each is exact and
-**DERIVED**; the reading that the structural level is *primary* and each physical law is its
-*scale-manifestation* is a **POSIT** (§1) whose only testable content is **fractal recurrence**.
-Either way the result is a genuine **structural unification** — many apparently separate structures
-are one law in different channels and regimes.
+level not modelled before — run from the vacuum over emergent structural time, unfolds a
+self-contained **emergent structural history** (a purely-TNFR "structural cosmology", §2.5): a
+genesis from the vacuum (§7.5), an emergent time with an irreversible **arrow** (§4.2, §4.4),
+**structure formation** by coarsening, a growing **causal horizon** (§5.1), and a regime-dependent
+**fate** (§4.3 / §6.3). Read as cross-sections of this one history, the same law **manifests across
+scales** as a connected chain of structures: diffusion (heat), conservation laws, an emergent
+geometry (a metric, a dimension, a causal light cone, an approximate Lorentz invariance), all of
+synchronization, and an electromagnetic charge/gauge sector. The shared **mathematical form** with
+each is exact and **DERIVED**; the reading that the structural level is *primary* and each physical
+law is its *scale-manifestation* is a **POSIT** (§1) whose only testable content is **fractal
+recurrence**. Either way the result is a genuine **structural unification** — many apparently
+separate structures are one law in different channels and regimes, and one **history** in time.
 
 **What this document does NOT claim.** It does **not** derive the Standard Model (particle masses,
 spins, the full quantum-number spectrum) or quantum mechanics (a complex Hilbert space, the Born
 rule, genuine entanglement), and it is **not** "a theory of everything". The emergent substrate is
 **classical** (a symplectic flow with classical wave polarization; §5.3). The reach to genuine
-particles and quantum phenomena is collected in §9 as **OPEN CONJECTURE**.
+particles and quantum phenomena is collected in §9 as **OPEN CONJECTURE**. The emergent structural
+history (§2.5) is TNFR's **own** — a structural "cosmology" by **analogy of scale**: the network's
+emergent macro-history (a genesis §7.5, an emergent time with an arrow, structure formation,
+composite assembly §7.4 / §9.1, a causal horizon), each stage carrying its own DERIVED/ANALOGY
+label. It is a structural re-expression, not offered as a model of the physical universe's measured
+cosmology (general relativity and observational cosmology are empirically ironclad and out of scope).
 
 **Empirical caveat (from the validation record).** This unification is **structural/descriptive**,
 not a source of novel empirical predictions. Pre-registered tests
@@ -297,6 +306,43 @@ kernel every domain reads (§4.3): the flow **self-certifies its return to coher
 evolution** — the emergent geometry *is* the attractor, nothing added — and the wall is only
 whether the high-moment **excursion** stays coherent uniformly in the limiting parameter (`T`, `Re`).
 One attractor, one wall; closes no open problem.
+
+### 2.5 The one history — the emergent structural cosmology (the temporal spine)
+
+§2.4 read the one operator across **domains** (a *spatial* synthesis). Run in **time** from the
+vacuum, the *same* one dynamics unfolds a single self-contained **emergent structural history** — a
+purely-TNFR "structural cosmology" that is the **temporal spine** of everything below. Its stages,
+each derived where noted:
+
+1. **The vacuum & the genesis.** `EPI = 0` is inert; grammar U1 forces a generator (Emission), the
+   coherence flow builds a coherent vacuum, and a symmetry-breaking bifurcation crystallizes the
+   first topological charge — the Kibble-like genesis (§7.5).
+2. **Emergent time with an arrow.** Time *is* the relaxation clock `τ = 1/(νf·λ₂)` (§4.2); along it
+   the Dirichlet energy falls monotonically (the structural H-theorem, §4.4) — an irreversible
+   arrow.
+3. **Structure formation (coarsening).** From an inhomogeneous early field the coherent domains
+   **merge** over structural time — the coherent scale grows, an emergent structure-formation
+   history.
+4. **A growing causal horizon.** On the conservative face a perturbation spreads at a finite
+   emergent speed, so the causally-connected region grows ~linearly — an emergent expanding causal
+   horizon (§5.1), the nearest TNFR-native analogue of an "expansion" (on a *fixed* emergent metric).
+5. **A regime-dependent fate.** The passive diffusive face relaxes to the uniform field (§4.3) — an
+   emergent equilibration ("heat-death"); a continuous drive carrying the U2 balance (§6.3) instead
+   **sustains** structure — a non-relaxing history.
+
+**Everything else in this document is a reading of this one history at a scale or regime.** §3 is
+the **geometry it unfolds on**; §4 its **thermodynamic arrow**; §5 its **causal cone / horizon**;
+§6 its **critical transitions and fate**; §7 and §9 the **matter and particles that form within
+it**. The static synthesis (§2.4 — one object read across domains) and this temporal one (§2.5 —
+one history from genesis to fate) are the two axes, space-like and time-like, of the *same* one
+dynamics ([emergent_structural_cosmology.py](../benchmarks/emergent_structural_cosmology.py),
+[emergent_structural_genesis.py](../benchmarks/emergent_structural_genesis.py)).
+
+> **Honest boundary — ANALOGY of scale.** This is the network's *own* emergent macro-history: the
+> heat-semigroup H-theorem (§4.4), curvature/Ising coarsening, and a lattice light cone (§5.1),
+> re-read as one structural history. "Cosmology" here is an **analogy of scale** — a structural
+> re-expression of the abstract network's large-scale evolution, carrying the same DERIVED/ANALOGY
+> labels as the rest of the document.
 
 ---
 
@@ -747,6 +793,19 @@ What plays the role of "matter": localized excitations carrying **conserved char
   **interact**: opposite charges attract and **annihilate to vacuum**, like charges **repel**, the
   **total charge is conserved at every step**. One process reproduces *pair annihilation*,
   *like-charge repulsion*, *charge conservation*, and *particle/antiparticle* (`sign W`).
+- **(d) The wave-particle correspondence — the stage's own mode index is the occupant's charge.**
+  On a ring, the `k`-th stage eigenmode of `L_sym`, read as the complex order parameter
+  `Ψ = e^{iθ}` (§5.3), *is* the winding-`k` occupant: an exact eigenvector (residual `~10⁻¹⁵`) at
+  the canonical eigenvalue `λ_k = 1 − cos(2πk/n)`, whose topological winding is *exactly* `k` — the
+  wave's own dispersion label (`ω_k = √λ_k`) and the particle's charge are the *same* integer. A
+  real narrow-band ripple built from a few low-`k` modes stays at winding `0` for every amplitude
+  tested (up to 20 rad) — a generic wave excitation of the vacuum is topologically trivial; only
+  the specific complex mode carries charge. This is the classical topology of maps `S¹→S¹`
+  underlying the textbook "particle on a ring" angular-momentum quantization, re-expressed on the
+  canonical operator ([emergent_wave_particle_correspondence.py](../benchmarks/emergent_wave_particle_correspondence.py)).
+  The genuinely quantum content of wave-particle duality — a probability amplitude, the Born rule,
+  single-particle interference statistics, a physical `ħ` — is the classical-substrate frontier of
+  §9.2 (OPEN).
 
 ### 7.2 The electromagnetic gauge/charge sector — **DERIVED (skeleton)**
 
@@ -792,6 +851,31 @@ structure**.
 > or QFT; the genuine quantum particle (second quantization) needs ingredients the classical
 > substrate lacks (§9).
 
+### 7.5 The structural genesis — from the vacuum to the first charge — **DERIVED (sequence) / ANALOGY (Kibble, not cosmology)**
+
+The matter sector has a canonical **origin sequence** — a grammar-forced path from the structural
+vacuum to the first coherent charge — **stage 1 of the structural history (§2.5)**
+([emergent_structural_genesis.py](../benchmarks/emergent_structural_genesis.py)):
+
+1. **The vacuum.** `EPI = 0`; the nodal equation `∂EPI/∂t = νf·ΔNFR` is undefined (nothing to
+   reorganize), so the vacuum is **inert** — grammar **U1a** requires a generator `{AL, NAV, REMESH}`
+   to open any sequence (§1). "Something rather than nothing" is a structural necessity here, not a
+   spontaneous event.
+2. **Emission — the first form.** `AL` sources `EPI` from the vacuum (`∂EPI/∂t > 0`, `νf` activates):
+   measured, `EPI` rises monotonically from `0` (`0 → 0.09 → … → 0.50`) — form where there was none.
+3. **The coherent vacuum.** The coherence flow drives `C → 1` at winding `W = 0` — a smooth,
+   symmetric, coherent field with **no** topological defect (the ordered "false vacuum").
+4. **The first particle.** A symmetry-breaking bifurcation (a destabilizer with a stabilizer, U2/U4)
+   crystallizes the first quantized topological charge `W = 1` — the `|W| = 1` fundamental unit
+   charge (§9.1), a defect of the coherent phase field.
+
+> **Honest boundary — DERIVED sequence, Kibble analogy.** Each step is canonical TNFR (U1
+> initiation, Emission, the coherence flow, a symmetry-breaking bifurcation), and the last is the
+> **Kibble mechanism** — topological-defect formation at a symmetry-breaking transition. The genesis
+> unfolds on TNFR's *own* emergent **space** (§3) and **time** (§4.2, §5.1): a **structural** origin
+> sequence yielding the first *form* — the `|W| = 1` unit charge (§9.1) — read as an **analogy** of
+> "the first particle", a structural re-expression carrying its own DERIVED/ANALOGY labels.
+
 ---
 
 ## 8. Emergent information and computation
@@ -832,26 +916,112 @@ Maps to observables: **formal languages** (the Chomsky hierarchy), the **Shannon
 
 ---
 
-## 9. The conjectural frontier (OPEN CONJECTURE — NOT DERIVED)
+## 9. The particle / quantum frontier — forms derived, values & QM open
 
-The reach from the §7 skeleton toward genuine particles and quantum mechanics — **not** established.
+The reach from the §7 skeleton toward genuine particles and quantum mechanics. Unlike §3–§8 this is
+a **mixed** status: §9.1 records what a focused arc **does** derive (the structural *forms* of the
+particle sector, plus a dynamical scale) and what it does **not** (the numerical *values*);
+§9.2–§9.3 remain **OPEN CONJECTURE / ANALOGY**.
 
-### 9.1 Particles as structural equilibrium phases — **OPEN CONJECTURE**
+### 9.1 The particle sector — structural FORMS derived, numerical VALUES open — **DERIVED (forms) / OPEN (values)**
 
-*Conjecture.* Particles would be distinct **stable attractors** of the nodal dynamics,
-distinguished by their conserved structural charges, tetrad signature, and phase. *What a
-derivation needs:* a classification whose conserved charges *match measured* particle quantum
-numbers and mass ratios — none of which TNFR has done. The repository's "emergent particles" /
-"fundamental particles atlas" studies are **structural re-expressions** (ANALOGY / exploration),
-an organizing program, not a result.
+Particles are, in TNFR, not distinct objects but **coherent patterns of coherence** — stable
+resonant configurations of the nodal dynamics, labelled by their conserved structural invariants
+(AGENTS.md "model coherence, not objects"). A focused arc sharpens the older "nothing done" status
+into a precise **form-vs-values split**: TNFR **derives the structural forms** of the particle
+sector, and a universal dynamical **scale**, but **not** the numerical **values** (the measured
+masses and their ratios), which remain open — and are unexplained in *all* of physics.
 
-### 9.2 Quantum mechanics — **OPEN CONJECTURE (classical substrate)**
+| Layer | Question | Status |
+|-------|----------|--------|
+| **1** | does *a* particle exist? | **DERIVED** — an exact integer topological winding `W ∈ ℤ`, conserved |
+| **2** | *which* species (the catalog)? | **DERIVED** (selection principles below) |
+| **3 · form** | the *structure* of the properties | **DERIVED** — a `Z₃` phase-triple on a circle; a self-similar fractal tower |
+| **3 · scale** | the overall scale | **DERIVED (dynamic)** — `νf` relaxes to a universal value |
+| **3 · values** | the *numbers* (masses, ratios) | **OPEN** — not derived; open in all physics |
+
+**Layer 2 — the catalog is structured, not arbitrary (DERIVED).**
+(a) The charge lattice is exactly **ℤ** (the winding is an integer topological invariant, §7.1b).
+(b) The energy of a charge-`W` structure scales as `E ∝ W²` (exact on the ring: the excitation
+energy above vacuum is the integer squares `1,4,9,16,25`), so `|W|=2` costs more than two `|W|=1`
+and **fissions** — shown directly on a 2D manifold (a `|W|=2` core has higher self-energy than two
+separated `|W|=1`, and like charges repel). **`|W|=1` is the unique fundamental unit charge**;
+`|W|≥2` are composites.
+([emergent_particle_catalog.py](../benchmarks/emergent_particle_catalog.py),
+[emergent_mass_charge_spectrum.py](../benchmarks/emergent_mass_charge_spectrum.py)).
+(c) A localised coherent core — the maximally-coupled simplex `K_{g+1}` (§3.2) — binds only
+**finitely** many internal states, so the generation tower is **truncated**: the **generation count
+= the simplex grade = the cardinal** = the standard-irrep dimension of `S_{g+1}`, so graph theory
+(spectral counting) and number theory (the cardinal, §3.2) are *one* count. **Grade 3** is the grade
+whose THOL/Sierpinski nesting dimension `log 4 / log 2 = 2` matches the substrate's own **U(2)
+fibre** (§3.2) — a self-consistency selection (the U(2)↔2 convergence is a *noted* convergence,
+§3.2, not a derived identity).
+([emergent_generation_count.py](../benchmarks/emergent_generation_count.py)).
+(d) The species carries a **form-channel** internal mode index `n` (the standing-mode frequency
+`ω_n = √λ_n`) that is **exactly decoupled** from the phase-channel charge `W` (they live in
+different dual-lever channels), so `mass = m(W, n)` admits a **same-charge mass tower** — correcting
+the naive "mass = f(charge)".
+([emergent_internal_quantum_numbers.py](../benchmarks/emergent_internal_quantum_numbers.py)).
+
+**Layer 3 · form — the generation geometry (DERIVED).**
+The three generations are the standard irrep of `S₄` (the tetrahedron's 3-fold internal level); a
+`C₃` axis acts on them with eigenvalues the **cube roots of unity** — three points at **exactly
+120° on a circle**. They are a **cyclic phase-triple** (a pulse-phase structure, not three fixed
+objects), which is *exactly* the geometry of the empirical **Koide relation** (`Q = 2/3`; the real
+charged leptons sit at 120° on a circle, Foot 1994). Across families the *same* motif recurs
+**self-similarly**: one fractal coherent core (the nested tetrahedron) carries a tower in which
+**every** excited mode is a generation-triplet (multiplicity a multiple of 3) at **every** scale,
+with new family-bands appearing log-periodically — the inter-family "spiral".
+([emergent_generation_phase_circle.py](../benchmarks/emergent_generation_phase_circle.py),
+[emergent_resonant_pattern_tower.py](../benchmarks/emergent_resonant_pattern_tower.py)).
+
+**Layer 3 · scale — a universal `νf` (DERIVED, dynamic).**
+Under the canonical nodal evolution the structural frequency `νf` relaxes to a **universal** value,
+independent of initial conditions and of the graph geometry in the tests run — a dynamical fixed
+point that fixes the overall **scale** but carries no ratio information. So a "value" factorises as
+`νf` (dynamic, universal scale) × `√λ_n` (structural-form ratios): the dynamics supplies the scale,
+the structure supplies the ratios.
+
+> **Honest boundary — the values are open.** What is **not** derived is the numerical **ratios**.
+> The real lepton masses (`1 : 207 : 3477`) satisfy Koide with a *specific* circle: amplitude `√2`
+> — equivalently the √-mass vector at **exactly 45°** to the democratic axis `(1,1,1)`, the maximal
+> equal-split — and a phase `δ`. **Tested:** *no* natural TNFR breaking of the tetrahedron selects
+> the 45°/`√2` condition; every natural breaking sits near the democratic axis (`Q ≈ 1/3`,
+> near-degenerate), the **opposite** extreme from the leptons' 45° (`Q = 2/3`)
+> ([emergent_generation_phase_circle.py](../benchmarks/emergent_generation_phase_circle.py) M4).
+> Because the `νf` scale is universal, the ratios live in the structural **forms** and are **not**
+> additionally fixed by the dynamics. Claiming the numbers "emerge" would be **numerology** — the
+> mass↔eigenvalue identification is not fixed by TNFR, so a free choice fits almost anything. Koide's
+> `2/3` and the fermion mass hierarchy are unexplained in **all** of physics: an open frontier
+> everywhere, not a TNFR-specific gap.
+
+**Synthesis.** TNFR gives the particle sector its **forms** (a quantised integer charge with a
+unit-charge selection; a finite generation count = the simplex-grade cardinal; the generations as a
+`Z₃` phase-triple = the Koide 120°-circle; a self-similar fractal triplet-tower across families) and
+a universal dynamical **scale** (`νf`); it does **not** give the numerical **values** (masses,
+ratios, the `√2`/45° amplitude, the phase `δ`, the spiral pitch). The forms emerge; the values stay
+open — a genuine **structural** advance over the earlier "nothing done", held to the same discipline
+as the rest of this document: an exact re-expression, closing no open problem. The repository's older
+"fundamental particles atlas" studies remain **ANALOGY / organizing program**, superseded here by
+the sharper form-vs-values arc.
+
+### 9.2 Quantum mechanics — **DERIVED (the boundary) / OPEN CONJECTURE (the reach)**
 
 *Conjecture.* Quantum phenomena would emerge from the substrate. *Status:* the emergent geometry is
 **classical** (§5.3) — a symplectic flow with classical, un-entangled Stokes/Poincaré
-polarization. A complex Hilbert space, the Born rule, and genuine (Bell-violating) entanglement are
-**not** derivable from the substrate as built; that would require ingredients TNFR does not
-currently have.
+polarization. This boundary is now a **measured, decisive** one, not just an assertion: a local,
+realistic hidden-variable model built directly on the substrate's own polarization angle (the
+equatorial circle of the Poincaré sphere, §5.3) gives a CHSH value `|S| = 2.0000` (2×10⁶-sample
+measurement) — *exactly* the classical (Bell) bound, not the quantum (Tsirelson) bound
+`2√2 ≈ 2.828`
+([emergent_bell_inequality_bound.py](../benchmarks/emergent_bell_inequality_bound.py)). By **Bell's
+theorem** (1964; confirmed by loophole-free experiments), this is not a gap further work could
+close: *any* substrate that is both **local** (§5.1's finite causal cone) and **classical** (§5.3's
+un-entangled polarization) is bounded this way — TNFR's own already-derived properties fix the
+boundary. A complex Hilbert space, the Born rule, genuine (Bell-violating) entanglement, and a
+physical `ħ` (a dimensionful empirical constant with no `Hz_str`-native partner to calibrate against
+without importing one, §1) are the reach beyond that boundary — ingredients TNFR does not currently
+have.
 
 ### 9.3 A descriptive note — **ANALOGY**
 
@@ -865,9 +1035,12 @@ unification, not a derived identity.
 
 ### 9.4 What would move the frontier to derivation
 
-- **§9.1:** conserved charges of the nodal attractors matching measured particle quantum numbers.
-- **§9.2:** genuine entanglement (Bell-violating correlations) from the substrate — which the
-  classical polarization structure cannot supply.
+- **§9.1 (values):** a *structural* principle that fixes the generation **ratios** — concretely, one
+  that selects the Koide `√2` / 45° (maximal equal-split) circle and the phase `δ`, which no natural
+  tetrahedron breaking reaches (§9.1). The **forms** are in hand; the **numbers** are not.
+- **§9.2:** genuine entanglement (Bell-violating correlations, `|S| > 2`) — measured to sit at the
+  classical bound (`|S| = 2.0000`, §9.2) while the substrate stays local (§5.1) and classical
+  (§5.3); moving this would mean abandoning one of those two already-derived properties.
 - **§7.2:** the inter-defect force reproducing Coulomb *and* a quantized gauge field (a photon) —
   the latter absent from the classical substrate.
 - **All:** a *predictive* test the standard framework does **not** make (the bar the empirical
@@ -877,9 +1050,13 @@ unification, not a derived identity.
 
 ## 10. Bottom line
 
-From the single nodal equation, organized by its **two faces**, a connected tower of structure
-genuinely emerges — by exact structural identity and reproducible measurement:
+From the single nodal equation — organized by its **two faces** (§2) and run as one **emergent
+structural history** (§2.5) — a connected tower of structure genuinely emerges, by exact structural
+identity and reproducible measurement:
 
+- an **emergent structural history** (a purely-TNFR "structural cosmology", §2.5) — a genesis from
+  the vacuum, an emergent time with an arrow, structure formation by coarsening, a growing causal
+  horizon, and a regime-dependent fate — the **temporal spine** the rest of the towers read;
 - a **shared geometry** (a metric, a dimension, the tetrad);
 - a **diffusive (thermodynamic) face** — heat, an emergent clock (time), coherence, an arrow of
   time, conservation (all on **one relaxation clock**), thermal fluctuations (Einstein /
@@ -893,6 +1070,11 @@ genuinely emerges — by exact structural identity and reproducible measurement:
 - a **matter sector** — a discrete mode lattice, a conserved integer charge, defect interactions,
   an electromagnetic Coulomb/gauge skeleton, an integrable inter-body dynamics, and composite
   matter (atoms, bonds, bands);
+- a **particle-sector arc** (§9.1) — the structural *forms* (a quantised integer charge with a
+  unit-charge selection; a finite generation count = the simplex-grade cardinal; the generations as
+  a `Z₃` phase-triple = the Koide 120°-circle; a self-similar fractal triplet-tower across families)
+  and a universal dynamical *scale* (`νf`), with the numerical *values* (masses, ratios) explicitly
+  **open**;
 - an **information layer** — the grammar as a regular formal language with a finite Shannon channel
   capacity.
 

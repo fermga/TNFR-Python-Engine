@@ -44,6 +44,20 @@ ENGINE (known theorems -- independent ground truth, all pre-TNFR):
     composite n == 1 (mod 4) the residue circulant is not a Paley graph and
     lambda_2 deviates -- so g(n) = 0 <=> n prime == 1 (mod 4) (tested to 2601 in
     the source note; this harness re-verifies to a smaller limit).
+  - Canonical TNFR Laplacian (AGENTS.md sec. 2): the emergent DNFR EPI channel is
+    the RANDOM-WALK Laplacian L_rw = I - D^-1 W, not the combinatorial L = D - A
+    used just above. Every residue circulant is vertex-transitive hence REGULAR
+    (constant degree d = a.sum()), so L_rw = (1/d) L EXACTLY -- identical
+    eigenvectors and ordering, eigenvalues rescaled by d. The canonical gap is
+    g_rw(n) = |lambda_2(L_rw) - (n - sqrt n)/(2 d)| = g_comb(n)/d (exact
+    regular-graph rescaling), whose target reduces to the clean closed form
+    sqrt n/(sqrt n + 1) = 1 - 1/(sqrt n + 1) on the prime locus (d = (n-1)/2).
+    It vanishes for exactly the same primes (a positive rescaling cannot move
+    the zero), so the Paley gap is Laplacian-independent; the
+    canonical form only makes lambda_2 the true relaxation rate of
+    dEPI/dt = -nu_f L_rw EPI and is bounded in (0,1) with the TNFR coherence-band
+    shape x/(x+1) (x = sqrt n in place of pi). TEST 5 verifies the d-rescaling to
+    machine precision.
   - Circulant diagonalisation: a circulant's eigenvalues are the DFT of its first
     row, so lambda_2 is computed by FFT in O(n log n); a symmetric first row
     (a[k] = a[n-k]) forces a real spectrum.
@@ -200,6 +214,62 @@ def paley_gap(n: int) -> float:
     if n % 4 != 1:
         return float("inf")
     return abs(lambda2_residue_fft(n) - paley_formula(n))
+
+
+# --------------------------------------------------------------------------- #
+# Canonical TNFR form: same gap through the RANDOM-WALK Laplacian L_rw = I-D^-1 W
+# (the emergent DNFR EPI channel, AGENTS.md sec. 2). Regular circulant => exact
+# rescaling L_rw = (1/d) L, so lambda_2(L_rw) = lambda_2(L)/d and the faithful gap
+# g_rw = g_comb/d selects the same primes; its target reduces to the clean closed
+# form sqrt n/(sqrt n+1) on the prime locus. TEST 5 checks the d-equivalence to
+# machine precision.
+# --------------------------------------------------------------------------- #
+def lambda2_residue_rw(n: int) -> float:
+    """First positive eigenvalue of the CANONICAL random-walk Laplacian L_rw.
+
+    L_rw = I - D^-1 A is the emergent TNFR DNFR EPI channel (AGENTS.md sec. 2),
+    computed independently of ``lambda2_residue_fft`` so the d-rescaling identity
+    lambda_2(L) == d * lambda_2(L_rw) is a genuine check, not a tautology. The
+    residue circulant is regular (D = d*I), so L_rw eigenvalues = 1 - (DFT of a)/d.
+    """
+    a = residue_first_row(n)
+    d = float(a.sum())
+    eig_adj = np.fft.fft(a).real  # real because a is symmetric
+    mu_rw = np.sort(1.0 - eig_adj / d)  # random-walk Laplacian eigenvalues
+    for v in mu_rw:
+        if v > 1e-12:
+            return float(v)
+    return float(mu_rw[1])
+
+
+def paley_formula_rw(n: int) -> float:
+    """Canonical closed form sqrt n/(sqrt n + 1) = 1 - 1/(sqrt n + 1).
+
+    Equals the combinatorial (n - sqrt n)/2 divided by the Paley degree
+    d = (n-1)/2; bounded in (0, 1) with the TNFR coherence-band shape x/(x+1).
+    """
+    s = math.sqrt(n)
+    return s / (s + 1.0)
+
+
+def paley_gap_rw(n: int) -> float:
+    """Canonical g_rw(n) = |lambda_2(L_rw) - (n - sqrt n)/(2 d)|.
+
+    The target uses the ACTUAL residue-circulant degree d = a.sum(); on the prime
+    locus d = (n-1)/2 and it reduces to the clean closed form sqrt n/(sqrt n + 1).
+    Because g_rw = g_comb/d exactly (regular-graph rescaling), it vanishes for
+    EXACTLY the same primes as the combinatorial ``paley_gap`` -- the Paley gap is
+    Laplacian-independent. (The naive prime-target gap
+    |lambda_2(L_rw) - sqrt n/(sqrt n + 1)| is faithful only on the prime locus:
+    off it the closed-form target assumes the Paley degree, so a composite whose
+    degree differs can be mis-flagged.) Meaningful only for n == 1 (mod 4).
+    """
+    if n % 4 != 1:
+        return float("inf")
+    a = residue_first_row(n)
+    d = float(a.sum())
+    target = (n - math.sqrt(n)) / (2.0 * d)
+    return abs(lambda2_residue_rw(n) - target)
 
 
 def residue_circulant_matrix(n: int) -> np.ndarray:
@@ -443,12 +513,99 @@ def test_paley_does_not_reach_the_phase(limit: int = 200) -> bool:
     return ok
 
 
+# --------------------------------------------------------------------------- #
+# TEST 5 -- canonical L_rw vs combinatorial L: the Paley gap is Laplacian-free
+# --------------------------------------------------------------------------- #
+def test_canonical_rw_equivalence(limit: int = 200) -> bool:
+    print("=" * 78)
+    print("TEST 5 -- canonical TNFR Laplacian L_rw = I - D^-1 W (AGENTS.md sec. 2) vs")
+    print("          the combinatorial L = D - A: equivalence by the degree factor d")
+    print("=" * 78)
+
+    print("  Paley circulants are REGULAR (deg d = (n-1)/2 for prime n == 1 mod 4), so")
+    print("  L_rw = (1/d) L EXACTLY: same eigenvectors and ordering, eigenvalues / d.")
+    print("  Canonical closed form: lambda_2(L_rw) = sqrt n/(sqrt n+1) = 1 - 1/(sqrt n+1).")
+    print()
+    print(
+        "      n | deg d |  lam2(L) comb | lam2(L_rw) can | sqrt/(sqrt+1) |"
+        "   g_comb |     g_rw"
+    )
+    print("  " + "-" * 82)
+
+    worst_rescale = 0.0
+    worst_canon_form = 0.0
+    worst_closed = 0.0
+    for n in (5, 13, 17, 29, 37):
+        d = (n - 1) / 2.0
+        lam_comb = lambda2_residue_fft(n)
+        lam_rw = lambda2_residue_rw(n)
+        ref_rw = paley_formula_rw(n)
+        # (i) regular-graph rescaling identity: lambda_2(L) == d * lambda_2(L_rw)
+        worst_rescale = max(worst_rescale, abs(lam_comb - d * lam_rw))
+        # (ii) canonical closed form matches the measured L_rw Fiedler value
+        worst_canon_form = max(worst_canon_form, abs(lam_rw - ref_rw))
+        # (iii) closed forms are consistent: (n-sqrt n)/2 == d * sqrt n/(sqrt n+1)
+        worst_closed = max(worst_closed, abs(paley_formula(n) - d * ref_rw))
+        print(
+            f"    {n:3d} | {d:5.1f} | {lam_comb:13.6f} | {lam_rw:14.9f} |"
+            f" {ref_rw:13.9f} | {paley_gap(n):8.1e} | {paley_gap_rw(n):8.1e}"
+        )
+
+    # canonical form is bounded in (0, 1) -- the TNFR coherence-band shape x/(x+1)
+    bounded = all(0.0 < lambda2_residue_rw(n) < 1.0 for n in (5, 13, 17, 29, 37))
+
+    # same primality selection as the combinatorial gap over the whole range
+    comb_primes = [
+        m for m in range(5, limit + 1) if m % 4 == 1 and paley_gap(m) <= _GAP_EPS
+    ]
+    rw_primes = [
+        m for m in range(5, limit + 1) if m % 4 == 1 and paley_gap_rw(m) <= _GAP_EPS
+    ]
+    same_selection = comb_primes == rw_primes
+
+    print()
+    print(
+        f"  max |lam2(L) - d*lam2(L_rw)|          : {worst_rescale:.2e}"
+        "  (regular-graph identity L_rw = L/d)"
+    )
+    print(
+        f"  max |lam2(L_rw) - sqrt n/(sqrt n+1)|  : {worst_canon_form:.2e}"
+        "  (canonical closed form)"
+    )
+    print(
+        f"  max |(n-sqrt n)/2 - d*sqrt n/(sqrt+1)|: {worst_closed:.2e}"
+        "  (closed-form equivalence)"
+    )
+    print(
+        f"  lam2(L_rw) in (0, 1)                  : {bounded}"
+        "   (bounded; coherence-band shape x/(x+1))"
+    )
+    print(
+        f"  same primes as combinatorial gap     : {same_selection}"
+        f"   ({len(rw_primes)} primes == 1 mod 4)"
+    )
+    ok = (
+        worst_rescale < 1e-9
+        and worst_canon_form < 1e-9
+        and worst_closed < 1e-9
+        and bounded
+        and same_selection
+    )
+    print(
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- "
+        f"{'canonical L_rw and combinatorial L agree up to the degree d; the Paley gap is Laplacian-independent' if ok else 'mismatch'}"
+    )
+    print()
+    return ok
+
+
 def main() -> int:
     print(__doc__)
     r1 = test_paley_gap_produces_primes()
     r2 = test_paley_mechanism_is_real_self_adjoint()
     r3 = test_paley_primes_ground_nu_f()
     r4 = test_paley_does_not_reach_the_phase()
+    r5 = test_canonical_rw_equivalence()
 
     print("=" * 78)
     print("SUMMARY")
@@ -465,7 +622,10 @@ def main() -> int:
     print(
         f"  TEST 4 Paley does NOT reach the phase S(T)    : {'PASS' if r4 else 'FAIL'}"
     )
-    structural = r1 and r2 and r3 and r4
+    print(
+        f"  TEST 5 canonical L_rw == combinatorial L / d  : {'PASS' if r5 else 'FAIL'}"
+    )
+    structural = r1 and r2 and r3 and r4 and r5
     print()
     print(f"  STRUCTURAL CHECKS: {'ALL PASS' if structural else 'SOME FAILED'}")
     print()
