@@ -85,6 +85,15 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 import networkx as nx
 import numpy as np
 
+from tnfr.physics.spectral_certificates import (
+    invariant_subspace_residual,
+    projector_score,
+)
+from tnfr.physics.spectral_projectors import (
+    EigenspaceCluster,
+    derived_tolerance,
+    spectral_clusters,
+)
 from tnfr.physics.structural_diffusion import structural_diffusion_operator
 
 
@@ -139,55 +148,16 @@ def noncoset_subspace(n, d):
     return Q[:, :rank]
 
 
-def derived_tolerance(L):
-    """Certificate tolerance tau = sqrt(eps) * ||L||_2 (no magic constant)."""
-    return math.sqrt(np.finfo(float).eps) * float(np.linalg.norm(L, 2))
+def coset_score(n, d, clusters):
+    """Basis-invariant score of the (i mod d) coset subspace (shared module)."""
+    return projector_score(
+        noncoset_subspace(n, d), clusters, min_abs_eigenvalue=1e-9
+    )
 
 
-def spectral_clusters(L, tol):
-    """(lambda, Pi, mult, group) spectral projectors; Pi = Q Q^H is basis-free."""
-    w, V = np.linalg.eig(L)
-    order = np.argsort(w.real)
-    w, V = w[order], V[:, order]
-    clusters, used = [], np.zeros(len(w), bool)
-    for i in range(len(w)):
-        if used[i]:
-            continue
-        grp = [j for j in range(len(w)) if not used[j] and abs(w[j] - w[i]) <= tol]
-        for j in grp:
-            used[j] = True
-        Q, _ = np.linalg.qr(V[:, grp])
-        clusters.append((complex(w[grp].mean()), Q @ Q.conj().T, len(grp), grp))
-    return clusters, V
-
-
-def projector_score(n, d, clusters):
-    """Best ||P_d Pi||^2 over non-trivial eigen-clusters (basis-invariant)."""
-    Q = noncoset_subspace(n, d)
-    if Q.shape[1] == 0:
-        return 0.0
-    P = Q @ Q.conj().T
-    best = 0.0
-    for lam, Pi, mult, grp in clusters:
-        if abs(lam) < 1e-9:  # skip the trivial constant mode
-            continue
-        s = np.linalg.svd(P @ Pi, compute_uv=False)
-        if s.size:
-            best = max(best, float(s[0]) ** 2)
-    return best
-
-
-def invariant_subspace_residual(n, d, L):
-    """r(d) = ||(I - Q Q^H) L Q||_2 for Q = C_d minus the constant.
-
-    ~0 iff the coset subspace is an exact L-invariant subspace (its modes are
-    eigenvectors).  Depends only on the subspace, so it is basis-free."""
-    Q = noncoset_subspace(n, d)
-    if Q.shape[1] == 0:
-        return 0.0
-    LQ = L @ Q
-    resid = LQ - Q @ (Q.conj().T @ LQ)
-    return float(np.linalg.svd(resid, compute_uv=False)[0])
+def coset_residual(n, d, L):
+    """Invariant-subspace residual of the (i mod d) coset (shared module)."""
+    return invariant_subspace_residual(noncoset_subspace(n, d), L)
 
 
 SEMIPRIMES = [
@@ -251,11 +221,11 @@ def experiment_2_basis_invariant_certificate():
     for n, p, d_false in ADVERSARIAL:
         _, L = structural_diffusion_operator(residue_digraph(n))
         tau = derived_tolerance(L)
-        clusters, _ = spectral_clusters(L, tau)
-        sc_p = projector_score(n, p, clusters)
-        sc_d = projector_score(n, d_false, clusters)
-        r_p = invariant_subspace_residual(n, p, L)
-        r_d = invariant_subspace_residual(n, d_false, L)
+        clusters = spectral_clusters(L, tol=tau)
+        sc_p = coset_score(n, p, clusters)
+        sc_d = coset_score(n, d_false, clusters)
+        r_p = coset_residual(n, p, L)
+        r_d = coset_residual(n, d_false, L)
         print(
             f"  {n:>4} {p:>3} {d_false:>3} | {sc_p:>8.4f} {sc_d:>8.4f} | "
             f"{r_p:>9.1e} {r_d:>9.1e} | {str(r_p < tau):>7} {str(r_d < tau):>7}"
@@ -269,24 +239,34 @@ def experiment_2_basis_invariant_certificate():
     print("  Basis-invariance under Q -> Q*U on a degenerate eigenspace (n=209):")
     _, L = structural_diffusion_operator(residue_digraph(209))
     tau = derived_tolerance(L)
-    clusters, V = spectral_clusters(L, tau)
-    big = max((c for c in clusters if abs(c[0]) > 1e-9), key=lambda c: c[2])
-    grp = big[3]
+    clusters = spectral_clusters(L, tol=tau)
+    w, V = np.linalg.eig(L)
+    V = V[:, np.argsort(w.real)]  # match the module's real-part-sorted order
+    big = max(
+        (c for c in clusters if abs(c.eigenvalue) > 1e-9),
+        key=lambda c: c.multiplicity,
+    )
+    grp = list(big.indices)
     rng = np.random.default_rng(0)
     A = rng.standard_normal((len(grp), len(grp))) + 1j * rng.standard_normal(
         (len(grp), len(grp))
     )
     U, _ = np.linalg.qr(A)
-    Vr = V.copy()
-    Vr[:, grp] = V[:, grp] @ U  # rotate the degenerate eigenspace basis
-    Qr, _ = np.linalg.qr(Vr[:, grp])
-    clusters_rot = [c for c in clusters if c[3] != grp]
-    clusters_rot.append((big[0], Qr @ Qr.conj().T, big[2], grp))
+    Qr, _ = np.linalg.qr(V[:, grp] @ U)  # rotate the degenerate eigenspace basis
+    clusters_rot = [c for c in clusters if c.indices != big.indices]
+    clusters_rot.append(
+        EigenspaceCluster(
+            eigenvalue=big.eigenvalue,
+            projector=Qr @ Qr.conj().T,
+            multiplicity=big.multiplicity,
+            indices=big.indices,
+        )
+    )
     # The projector Pi = Q Q^H of the eigenspace is identical for V and Q*U, so
     # the subspace score is invariant; an individual eigenvector column is not.
     for label, d in (("true  p=11", 11), ("false d= 3", 3)):
-        sc0 = projector_score(209, d, clusters)
-        sc1 = projector_score(209, d, clusters_rot)
+        sc0 = coset_score(209, d, clusters)
+        sc1 = coset_score(209, d, clusters_rot)
         print(
             f"    score({label}) : {sc0:.6f} -> {sc1:.6f}"
             f"  (Delta={abs(sc1 - sc0):.1e}, INVARIANT)"
@@ -307,11 +287,11 @@ def experiment_3_shuffle_control():
     print(f"  {'n':>4} {'p':>3} | {'r(p) canonical':>15} {'r(p) shuffled':>15}")
     for n, p, q in [(209, 11, 19), (91, 7, 13), (85, 5, 17)]:
         _, L = structural_diffusion_operator(residue_digraph(n))
-        r_can = invariant_subspace_residual(n, p, L)
+        r_can = coset_residual(n, p, L)
         rng = np.random.default_rng(3)
         perm = rng.permutation(n)
         Lp = L[np.ix_(perm, perm)]
-        r_shuf = invariant_subspace_residual(n, p, Lp)
+        r_shuf = coset_residual(n, p, Lp)
         print(f"  {n:>4} {p:>3} | {r_can:>15.2e} {r_shuf:>15.2e}")
     print()
     print("  -> canonical ~1e-15, shuffled O(1): structural, not an artefact.")
