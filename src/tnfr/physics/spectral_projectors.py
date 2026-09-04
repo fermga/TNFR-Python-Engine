@@ -33,6 +33,13 @@ from dataclasses import dataclass
 
 import numpy as np
 
+try:  # scipy is an OPTIONAL dependency; the Schur certificate is gated on it
+    from scipy.linalg import schur as _scipy_schur
+
+    _HAS_SCIPY = True
+except ImportError:  # pragma: no cover - exercised only without scipy
+    _HAS_SCIPY = False
+
 __all__ = [
     "EigenspaceCluster",
     "NonNormalOperatorError",
@@ -42,6 +49,12 @@ __all__ = [
     "is_normal",
     "subspace_projector",
     "spectral_clusters",
+    "matrix_exponential",
+    "spectral_abscissa",
+    "transient_gain",
+    "pseudospectral_bound",
+    "schur_residual",
+    "scipy_available",
 ]
 
 
@@ -178,3 +191,99 @@ def spectral_clusters(
             )
         )
     return clusters
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# R9 — non-normal directed dynamics certificates
+# For a non-normal generator the eigendecomposition is not an orthonormal basis,
+# so stability (spectral abscissa) and transient behaviour must be measured
+# separately: a stable spectrum does NOT preclude transient amplification.
+# ════════════════════════════════════════════════════════════════════════════
+def scipy_available() -> bool:
+    r"""Whether SciPy is importable (the Schur certificate needs it)."""
+    return _HAS_SCIPY
+
+
+def matrix_exponential(matrix, *, terms: int = 18) -> np.ndarray:
+    r"""``e^{A}`` via scaling-and-squaring with a Taylor inner series (numpy-only).
+
+    Self-contained so the non-normal certificates need no SciPy: ``A`` is scaled
+    by ``2^{-s}`` until its ∞-norm is ``≤ 1``, a truncated Taylor series is
+    evaluated, and the result is squared ``s`` times.
+    """
+    a = np.asarray(matrix, dtype=float)
+    n = a.shape[0]
+    norm = float(np.linalg.norm(a, np.inf))
+    s = max(0, int(np.ceil(np.log2(norm + 1.0))))
+    b = a / (2 ** s)
+    result = np.eye(n)
+    term = np.eye(n)
+    for k in range(1, terms):
+        term = term @ b / k
+        result = result + term
+    for _ in range(s):
+        result = result @ result
+    return result
+
+
+def spectral_abscissa(matrix) -> float:
+    r"""``α(A) = max_i Re λ_i(A)`` — the asymptotic growth rate.
+
+    For a diffusion generator ``−L`` asymptotic stability is ``α(−L) ≤ 0``.  Uses
+    ``eigvals`` (never ``eigh``), so it is valid for non-symmetric operators.
+    """
+    return float(np.max(np.linalg.eigvals(np.asarray(matrix)).real))
+
+
+def transient_gain(
+    matrix, *, t_max: float = 10.0, samples: int = 200
+) -> float:
+    r"""``max_{t∈[0, t_max]} ‖e^{tA}‖₂`` — the peak transient amplification.
+
+    For a **normal** stable ``A`` the semigroup is a contraction (gain ``≤ 1``);
+    a **non-normal** stable ``A`` can have gain ``> 1`` — transient growth that a
+    stable spectrum alone does not reveal.
+    """
+    a = np.asarray(matrix, dtype=float)
+    gain = 0.0
+    for t in np.linspace(0.0, t_max, samples):
+        gain = max(gain, float(np.linalg.norm(matrix_exponential(a * t), 2)))
+    return gain
+
+
+def pseudospectral_bound(matrix, *, grid: int = 40) -> float:
+    r"""Kreiss lower bound ``sup_{Re z>0} Re(z)·‖(zI − A)⁻¹‖₂`` on the transient
+    gain (a pseudospectral certificate).
+
+    The Kreiss matrix theorem gives ``K(A) ≤ sup_t ‖e^{tA}‖``, so a value ``> 1``
+    proves transient amplification from the resolvent alone, without exponentials.
+    """
+    a = np.asarray(matrix, dtype=complex)
+    n = a.shape[0]
+    eig = np.linalg.eigvals(a)
+    span = max(1.0, float(np.max(np.abs(eig))))
+    best = 0.0
+    for re in np.linspace(span / grid, span, grid):
+        for im in np.linspace(-span, span, grid):
+            z = complex(re, im)
+            resolvent = np.linalg.inv(z * np.eye(n) - a)
+            best = max(best, re * float(np.linalg.norm(resolvent, 2)))
+    return best
+
+
+def schur_residual(matrix) -> float:
+    r"""``‖A − Q T Qᴴ‖₂`` for the Schur decomposition (the correct unitary
+    factorisation for non-normal operators).
+
+    Requires SciPy (``scipy.linalg.schur``); raises when it is unavailable, so
+    the numpy-only core never silently mishandles a non-normal operator.
+    """
+    if not _HAS_SCIPY:
+        raise NonNormalOperatorError(
+            "schur_residual requires SciPy (scipy.linalg.schur); install SciPy "
+            "or use the numpy-only certificates (transient_gain, "
+            "pseudospectral_bound)."
+        )
+    a = np.asarray(matrix, dtype=float)
+    t, q = _scipy_schur(a)
+    return float(np.linalg.norm(a - q @ t @ q.conj().T, 2))
