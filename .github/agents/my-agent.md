@@ -83,6 +83,35 @@ Every node carries three attributes:
 - **Phase (φ or θ)** — synchronization parameter in [0, 2π); coupling is admissible
   only under the resonance condition `|φᵢ − φⱼ| ≤ Δφ_max`.
 
+### The fractal-resonant node (NFR)
+
+The node carrying the triad is a **Nodo Fractal Resonante (NFR)** — canonically, a
+**region of structural coherence coupled to a network** (TNFR.pdf §1.4.1). The triad
+(EPI, νf, φ) *defines* it; four properties characterize it:
+
+- **Multiscalar (fractal)** — an NFR can nest other NFRs (operational fractality; THOL
+  sub-EPIs, REMESH, grammar U5). A single node is a micro-NFR; a coherent region is a
+  macro-NFR.
+- **Autopoietic (self-generated)** — emerges by local reorganization, no external
+  support (Emission from vacuum; THOL).
+- **Relational** — exists only by coupling (U3). **Temporal** — persists while it
+  reorganizes its coherence.
+
+Its **nodal topology** is **radial** (one central nucleus), **annular** (passive center,
+peripheral ring) or **multinodal** (several centers), read from the emergent
+structural-potential geometry by [classify_nodal_topology](src/tnfr/physics/fields.py)
+and surfaced as a whole-NFR read-out by `Network.nfr()` ([src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)).
+
+The equilibrium `ΔNFR = 0` is **not** an NFR but its **resonant-coherence attractor** —
+the state where reorganization pressure vanishes (`C → 1`). Because the EPI channel
+diffuses to the uniform field (eigenmode decay `e^{−νf λ_k t}`), a fully relaxed network
+is **one uniform NFR** with flat geometry; differentiated nodal topology lives
+off-equilibrium. The shared fixed-point predicate is
+[is_structural_equilibrium](src/tnfr/metrics/common.py), and the per-node coherence map
+`structural_coherence` (`C = 1/(1+|ΔNFR|+|dEPI|)`) is the **single kernel** every domain
+reads — graph nodes, arithmetic nodes (primes), chemical nodes (noble gases) — with only
+the `ΔNFR` realisation domain-specific.
+
 ### Bounded evolution → the convergence requirement
 
 Integrating the nodal equation, coherence is preserved only when
@@ -355,9 +384,18 @@ in [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.
   risk `C < 1/(π+1) ≈ 0.2415`. The two cuts are the coherence band
   `[1/(π+1), π/(π+1)]` — the single structural quantity `1/(π+1)` and its complement
   (π the sole structural scale); using this π-band as the C(t) interpretation is a
-  telemetry convention.
+  telemetry convention. **Dual status**: beyond a
+  read-out, its per-node kernel `structural_coherence`
+  ([src/tnfr/metrics/common.py](src/tnfr/metrics/common.py)) is the single
+  *constitutive* coherence map — an NFR is canonically a region of structural
+  coherence (§2), so `C` measures the coherence that *defines* NFR-hood and the
+  monotone distance to the resonant-coherence attractor `ΔNFR = 0`
+  (`is_structural_equilibrium`); every domain (graph, arithmetic, chemical)
+  reads this one kernel.
 - **Si — sense index** `[0,1+]`, reorganization-capacity predictor: `Si > 0.8`
-  excellent; `Si < 0.4` bifurcation-prone.
+  excellent; `Si < 0.4` bifurcation-prone. Unlike `C(t)`, Si is a **heuristic
+  composite** (weighted νf, phase sync, |ΔNFR|) — predictive/diagnostic, **not**
+  constitutive of NFR-hood.
 - **Tetrad safety** (telemetry; see §3): only `|K_φ| < 0.9·π ≈ 2.827` is a genuine
   geometric bound (phase wrap). `Δ Φ_s < π/2 ≈ 1.571` / `|Φ_s| < π/4 ≈ 0.785` are π-derived
   (phase-wrap fractions); the `|∇φ|` sync onset is `≈ 0.29` (σ-dependent, not a fixed
@@ -496,7 +534,8 @@ Navier–Stokes regularity, or any Millennium problem.
 
 ## 13. Map of the codebase & examples
 
-- **Physics** — [src/tnfr/physics/](src/tnfr/physics/): `fields.py` (tetrad),
+- **Physics** — [src/tnfr/physics/](src/tnfr/physics/): `fields.py` (tetrad +
+  `classify_nodal_topology` for NFR radial/annular/multinodal topology),
   `conservation.py` (conservation theorem), `symplectic_substrate.py` (emergent geometry),
   `structural_diffusion.py` (transport), `gauge.py` (Ψ, gauge), `integrity.py`
   (operator-postcondition monitor + audit).
@@ -508,7 +547,10 @@ Navier–Stokes regularity, or any Millennium problem.
 - **Programs** — [src/tnfr/riemann/](src/tnfr/riemann/), [src/tnfr/navier_stokes/](src/tnfr/navier_stokes/),
   and number theory in [src/tnfr/mathematics/](src/tnfr/mathematics/).
 - **SDK** — [src/tnfr/sdk/](src/tnfr/sdk/): `simple.py` (`TNFR.create(...)`, tetrad,
-  conservation, substrate, integrity, audit), `fluent.py` (`auto_optimize()`).
+  conservation, substrate, integrity, audit, `nfr()` whole-NFR read-out,
+  `nodal_state`/`nodal_scan` micro-NFR), `fluent.py` (`auto_optimize()`). The shared
+  NFR fixed-point kernel (`structural_coherence`, `is_structural_equilibrium`) lives in
+  [src/tnfr/metrics/common.py](src/tnfr/metrics/common.py).
 - **Examples** — [examples/README.md](examples/README.md): ten thematic folders
   (`01_foundations` … `10_applications`); each file keeps a stable global number.
 - **Theory hub** — [theory/README.md](theory/README.md) · **Glossary** —
