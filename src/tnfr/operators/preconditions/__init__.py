@@ -22,6 +22,7 @@ from ...constants.canonical import DELTA_PHI_MAX, VAL_MIN_EPI
 
 __all__ = [
     "OperatorPreconditionError",
+    "validate_phase_gate_u3",
     "validate_emission",
     "validate_reception",
     "validate_coherence",
@@ -257,6 +258,40 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
     else:
         # Clear flag if previously set
         G.nodes[node]["_bifurcation_ready"] = False
+
+
+def validate_phase_gate_u3(
+    G: "TNFRGraph", node: "NodeId", operator: str
+) -> None:
+    """U3 hard invariant: UM/RA require a phase-compatible neighbour.
+
+    Canonical Invariant #2 / grammar U3: Coupling and Resonance are admissible
+    only under the resonance condition ``|φ_i − φ_j| ≤ Δφ_max`` with the
+    canonical gate ``DELTA_PHI_MAX = π/2``.  This check runs unconditionally
+    before any state mutation and **raises** (it is not a warning and cannot be
+    disabled via ``VALIDATE_OPERATOR_PRECONDITIONS``).
+
+    A node with neighbours must have at least one within the gate; otherwise the
+    operator would couple/propagate into antiphase (destructive) and violate U3.
+    Isolated nodes pass here — connectivity is a separate, configurable
+    precondition.
+    """
+    from ...utils.numeric import angle_diff
+
+    neighbors = list(G.neighbors(node))
+    if not neighbors:
+        return
+    theta_i = _get_node_attr(G, node, ALIAS_THETA)
+    max_phase_diff = float(G.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))
+    for neighbor in neighbors:
+        theta_j = _get_node_attr(G, neighbor, ALIAS_THETA)
+        if abs(angle_diff(theta_i, theta_j)) <= max_phase_diff:
+            return
+    raise OperatorPreconditionError(
+        operator,
+        f"U3 phase gate: no phase-compatible neighbour "
+        f"(all |Δφ| > {max_phase_diff:.4f} = Δφ_max). Align phases first.",
+    )
 
 
 def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:

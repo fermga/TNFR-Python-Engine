@@ -128,6 +128,7 @@ def validate_resonance_strict(
     """
     from ...alias import get_attr
     from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+    from ...constants.canonical import DELTA_PHI_MAX
     from ...utils.numeric import angle_diff
 
     # Get configuration with defensive fallbacks
@@ -136,7 +137,9 @@ def validate_resonance_strict(
     if max_dissonance is None:
         max_dissonance = float(G.graph.get("RA_MAX_DISSONANCE", 0.5))
     min_vf = float(G.graph.get("RA_MIN_VF", 0.01))
-    max_phase_diff = float(G.graph.get("RA_MAX_PHASE_DIFF", 1.0))  # ~60 degrees
+    # Canonical U3 gate Δφ_max = π/2 (Invariant #2); the hard phase gate is the
+    # enforcer, this mean-based check is a suboptimality diagnostic.
+    max_phase_diff = float(G.graph.get("RA_MAX_PHASE_DIFF", DELTA_PHI_MAX))
 
     # 1. Validate coherent source EPI
     epi = abs(float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)))
@@ -186,25 +189,26 @@ def validate_resonance_strict(
             suggestion="Apply IL (Coherence) first to stabilize.",
         )
 
-    # 5. Validate phase compatibility (warning only, neighbors exist)
+    # 5. Validate phase compatibility (suboptimality warning; the U3 hard gate
+    #    is the enforcer that raises on genuine incompatibility)
     if warn_phase_misalignment and neighbors:
         try:
             from ...metrics.trig import neighbor_phase_mean
-
+        except ImportError:
+            neighbor_phase_mean = None
+        if neighbor_phase_mean is not None:
             theta_node = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
             theta_neighbors = neighbor_phase_mean(G, node)
             phase_diff = abs(angle_diff(theta_neighbors, theta_node))
 
             if phase_diff > max_phase_diff:
                 warnings.warn(
-                    f"RA phase misalignment: Δφ = {phase_diff:.2f} > {max_phase_diff:.2f}. "
+                    f"RA phase misalignment: Δφ = {phase_diff:.2f} > "
+                    f"{max_phase_diff:.2f}. "
                     "Consider applying UM (Coupling) first for better resonance.",
                     UserWarning,
                     stacklevel=3,
                 )
-        except Exception:
-            # Phase validation is optional, don't fail if unavailable
-            pass
 
 
 def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:

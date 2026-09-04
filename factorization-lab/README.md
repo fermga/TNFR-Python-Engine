@@ -38,7 +38,10 @@ composite \(n\). This aligns with TNFR physics:
    - Detect **coherence gaps** that indicate submodules tied to factors.
 
 3. **Factor Recovery Pipeline**
-   - Cluster nodes using TNFR operator sequences (e.g., `[UM, RA, IL]`).
+   - Cluster nodes using TNFR operator **fragments** (e.g., `[UM, RA, IL]` — a
+     macro, not a standalone grammar word: it fails U1a on its own). A complete
+     word wraps the fragment with a generator prefix and a closure suffix, e.g.
+     `[AL, UM, RA, IL, SHA]`, which `validate_sequence` accepts.
    - Map cluster periodicities to candidate factors via modular consistency checks.
    - Iterate with controlled destabilizers (OZ, ZHIR) to refine guesses.
 

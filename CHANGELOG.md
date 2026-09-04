@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed — 2026-09-04 canonicity audit (invariants #1, #2, #4, #5, #6)
+
+- **Directed ΔNFR orientation (invariant #1).** The fused/vectorized EPI channel
+  now realizes the canonical *outgoing* random-walk Laplacian `L_out = I − D⁻¹W`
+  (node *i* receives the weighted mean of the nodes it points to), matching
+  `structural_diffusion_operator`. The fused kernel previously accumulated
+  predecessors (`L_in = L_outᵀ`), so directed graphs diffused the wrong way.
+  Undirected graphs are unchanged (both orientations coincide).
+- **Edge weights in the EPI channel (invariant #1).** Edge weights now reach the
+  fused ΔNFR EPI channel (weighted neighbour mean + weighted degree). Unit
+  weights reproduce the unweighted result bitwise; a live per-call weight read
+  makes weight mutations take effect on the next computation.
+- **U3 is a hard invariant for UM and RA (invariant #2).** The phase gate
+  `|φ_i − φ_j| ≤ Δφ_max = π/2` now runs on every Coupling/Resonance application,
+  independent of `VALIDATE_OPERATOR_PRECONDITIONS`, and raises before any state
+  mutation (it was previously skipped by default; RA treated it as a 1.0-rad
+  warning). Quality preconditions remain configurable.
+- **Single ξ_C kernel (invariant #5).** `telemetry()` and `tetrad()` now both use
+  `estimate_coherence_length` (with the spectral-gap fallback), so they agree and
+  never return NaN on a connected graph.
+- **Example 122 basis-invariance (invariants #4, #6).** The phase-sector
+  factor-coset read now uses a basis-invariant eigenspace-projector score
+  `‖P_d Π_λ‖²` plus a derived-tolerance invariant-subspace residual certificate
+  (`τ = √ε·‖L‖`); the non-canonical `η² > 0.9` rule (which mis-fires on
+  n = 209, 253, 299) is withdrawn. Complexity is stated in input bits `log₂ n`;
+  no factoring speedup or cryptographic claim.
+- **Dependencies / docs.** `cachetools` range widened to `>=5.0,<8.0` (only the
+  stable `cached`/`LRUCache` APIs are used). The factorization-lab README labels
+  `[UM, RA, IL]` as a grammar *fragment* and shows the complete
+  `[AL, UM, RA, IL, SHA]` word.
+
 ### Added — the emergent pulse read-outs (the rhythm the substrate plays)
 
 - **The pulse, surfaced at both scales.** The conservative face of the nodal

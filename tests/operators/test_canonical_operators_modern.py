@@ -159,9 +159,10 @@ class TestCanonicalOperatorPhysics:
 
     def test_coupling_synchronizes_phases(self) -> None:
         """Test UM (Coupling) synchronizes node phases."""
-        # Set different phases
+        # Phase-compatible pair (|Δθ| = 1.0 < Δφ_max = π/2): U3 admits coupling,
+        # which then narrows the difference.
         set_attr(self.G.nodes[1], ALIAS_THETA, 0.0)
-        set_attr(self.G.nodes[2], ALIAS_THETA, 2.0)
+        set_attr(self.G.nodes[2], ALIAS_THETA, 1.0)
 
         phase_diff_before = abs(
             get_attr(self.G.nodes[1], ALIAS_THETA)

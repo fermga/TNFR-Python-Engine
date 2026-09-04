@@ -30,6 +30,12 @@ class Resonance(Operator):
     name: ClassVar[str] = RESONANCE
     glyph: ClassVar[Glyph] = Glyph.RA
 
+    def _validate_hard_invariants(self, G: TNFRGraph, node: Any) -> None:
+        """U3 phase gate (Invariant #2) — always enforced, cannot be disabled."""
+        from .preconditions import validate_phase_gate_u3
+
+        validate_phase_gate_u3(G, node, "Resonance")
+
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate RA-specific preconditions."""
         from .preconditions import validate_resonance

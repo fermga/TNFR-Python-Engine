@@ -1,79 +1,79 @@
 #!/usr/bin/env python3
 """
-Example 122 — Factorization in the Phase Sector: the Complex Spectrum Completes
-the Factor-Coset Recovery the Real Sector Misses
+Example 122 — Phase-Sector Periodicity Diagnostic: a Basis-Invariant Read of
+the CRT Factor-Coset Structure (with a Derived Certificate)
 ==============================================================================
 
-Example 117 (Reading B, real sector) recovered the factor coset (i mod p) of a
-semiprime n = p*q as an η²→1 Fourier mode of the EMERGENT diffusion spectrum —
-but only PARTIALLY: it missed the high-frequency factor modes of 51 = 3*17 and
-91 = 7*13. Example 119/120 showed the missing content lives in the PHASE: for
-n ≡ 3 (mod 4) the residue graph is directed (a Paley tournament) and the
-canonical emergent operator's spectrum is COMPLEX. This example uses that
-complex phase sector to COMPLETE the factor-coset recovery.
+For a semiprime n = p·q the factor coset (i mod p) is Chinese-Remainder-Theorem
+(CRT) structure: Z_n ≅ Z_p × Z_q.  In the DFT basis it is carried by the Fourier
+modes at frequencies k = multiples of the cofactor q — modes that are CONSTANT
+within each coset (i mod p) and are EXACT eigenvectors of the canonical emergent
+operator ``structural_diffusion_operator`` (the ΔNFR EPI channel L_rw = I − D⁻¹W)
+on the residue (di)graph.  This example READS that periodic structure with a
+**basis-invariant** observable and a **derived** certificate.
 
-The structural fact (CRT, present in both sectors)
---------------------------------------------------
-For n = p*q the factor coset (i mod p) corresponds to the Fourier frequencies
-k = multiples of the cofactor q. A pure Fourier mode exp(2πi k j / n) with k a
-multiple of q is CONSTANT within each coset (i mod p), so it is an EXACT
-eigenvector of the emergent operator (a circulant / Cayley digraph). This holds
-for BOTH the undirected (real) and directed (complex) residue operator — the
-factor coset is CRT/circulant structure (Z_n ≅ Z_p × Z_q), verified to machine
-precision (eigenvector residual ~1e-14).
+Why the previous eigenvector-η² read was not canonical
+------------------------------------------------------
+A degenerate eigenvalue defines an EIGENSPACE, not a privileged eigenvector: if
+Q_λ spans it, so does Q_λ·U for any unitary U.  Any quantity read off individual
+eigenvector columns (e.g. the max η² of a single column, thresholded at 0.9) can
+change under that rotation while the operator is unchanged — it is an artefact of
+the eigensolver's basis, not a property of the dynamics.  The 2026-09-04
+canonicity audit exhibited explicit counterexamples (n = 209, 253, 299) where the
+0.9 threshold selects a FALSE divisor.
 
-Why the real sector misses 51 and 91
--------------------------------------
-The undirected residue operator is SYMMETRIC: its eigenvalues come in
-degenerate pairs (λ_k = λ_{n−k}). When the factor-coset frequency lands in a
-degenerate eigenspace, the eigensolver returns an arbitrary real combination
-that SCRAMBLES the coset structure, so the η² test fails (51, 91). The directed
-operator is NON-SYMMETRIC (a non-self-adjoint circulant): its eigenvalues are
-complex Gauss sums, which are LESS
-degenerate and ISOLATE the factor-coset mode — so the complex spectrum exposes
-the very modes the real sector loses.
+The canonical, basis-invariant observable
+-----------------------------------------
+Let C_d be the subspace of vectors constant on residue classes (i mod d), with
+its constant direction removed, and P_d its orthogonal projector.  Let Π_λ be the
+spectral projector of a (possibly degenerate) eigen-cluster.  The score
 
-Doctrine compliance
--------------------
-Everything uses the SAME canonical emergent operator —
-`structural_diffusion_operator` (the literal ΔNFR EPI channel, L_rw = I − D⁻¹W)
-— on the residue (di)graph. The complex eigenvectors ARE the emergent geometry
-on a directed graph. Only arithmetic input: x² mod n.
+    score(d, λ) = ‖ P_d · Π_λ ‖₂²   (largest cos² principal angle)
 
-Three measured results
-----------------------
-R1 THE FACTOR COSET IS A SHARED EIGENVECTOR. The Fourier mode at k = cofactor
-   is an eigenvector of BOTH the undirected and directed emergent operator
-   (residual ~1e-14). The factor structure is CRT, present in both spectra.
+depends only on the two SUBSPACES, so it is invariant under Q_λ → Q_λ·U.  The
+DECISION, however, is not a magic threshold: d is certified as a genuine period
+only when C_d is an EXACT L-invariant subspace, measured by the residual
 
-R2 THE COMPLEX SECTOR COMPLETES THE RECOVERY. Scanning prime candidate
-   divisors d ≤ √n and reading the smallest d whose best complex-η² mode
-   exceeds 0.9 recovers the smallest prime factor for 10/10 tested semiprimes —
-   including 51 and 91. The real undirected sector recovers only 8/10 (it fails
-   on exactly 51 and 91, the example-117 caveat).
+    r(d) = ‖ (I − P_d) · L · Q_d ‖₂   (Q_d an orthobasis of C_d ⊖ constant),
 
-R3 THE SIGNAL IS STRUCTURAL (shuffle control). Permuting the node labels
-   collapses the factor-coset η² from 1.0 to ~0.1–0.2: the signature is the
-   CRT/circulant structure of the residue digraph, not a numerical artefact.
+certified against a DERIVED tolerance τ = √ε · ‖L‖₂ (machine precision × operator
+norm) — never a hand-picked constant.
 
-Honest scope
-------------
-This re-expresses CRT / Fourier PERIOD structure (the same structure Shor's
-algorithm exploits via period finding) in the canonical emergent spectrum. It
-is NOT a new or fast factoring algorithm: the candidate scan is O(√n) prime
-divisors — the same order as trial division, NO speedup. The complex sector's
-only advantage is reduced eigenvalue degeneracy (a linear-algebra fact about
-circulant / Cayley digraphs), which isolates the factor-coset mode. The result
-COMPLETES example 117's partial real-sector recovery (8/10 → 10/10) via the
-phase sector; it closes no open problem and provides no cryptographic threat.
+Three measured results (seed-free; exact linear algebra)
+--------------------------------------------------------
+R1 SHARED EXACT EIGENVECTOR.  The factor-coset Fourier mode at k = cofactor is an
+   eigenvector of BOTH the undirected and directed emergent operator (residual
+   ~1e-14): the factor coset is CRT/circulant structure, present in both spectra.
+
+R2 BASIS-INVARIANT SCORE + DERIVED CERTIFICATE.  For n = 209, 253, 299 the true
+   factor p certifies (r(p) ~1e-15 < τ) while the audit's false candidate scores
+   ‖P_d Π_λ‖² ≈ 0.92–0.94 — ABOVE the discredited 0.9 threshold — yet is REJECTED
+   by the residual certificate (r(d) ~5e-2 ≫ τ).  The score is invariant under a
+   unitary rotation of a degenerate eigenspace (Δ ~1e-16), whereas a
+   single-eigenvector η² is not.
+
+R3 STRUCTURAL SIGNAL (shuffle control).  Permuting the node labels destroys the
+   CRT/circulant structure: the residual of the true coset jumps from ~1e-15 to
+   O(1), so the certificate correctly stops firing.
+
+Honest scope (unchanged conclusion, corrected method)
+-----------------------------------------------------
+This is a PERIODICITY DIAGNOSTIC of CRT structure in the canonical emergent
+spectrum — NOT a factoring algorithm.  The residue (di)graph has n nodes; building
+and diagonalizing it is poly(n) = poly(2^L), i.e. EXPONENTIAL in the input size
+L = log₂ n bits, and the candidate scan is O(√n) prime divisors (the order of
+trial division).  There is NO speedup and NO cryptographic consequence.  The
+correction relative to earlier drafts: the recovery is expressed with a
+basis-invariant subspace score and a derived-tolerance certificate, and the
+non-canonical η² > 0.9 decision rule is withdrawn.
 
 References
 ----------
 - src/tnfr/physics/structural_diffusion.py (structural_diffusion_operator)
-- examples/08_emergent_geometry/117_emergent_geometry_residue_graph.py (real sector, partial)
-- examples/08_emergent_geometry/119_phase_sector_directed_residue.py (the complex spectrum)
-- examples/08_emergent_geometry/120_symmetry_wall_substrate_vs_spectrum.py (why arithmetic is spectral)
-- theory/TNFR_NUMBER_THEORY.md §9.9 (this example; phase-sector factorization)
+- examples/08_emergent_geometry/117_emergent_geometry_residue_graph.py (real sector)
+- examples/08_emergent_geometry/119_phase_sector_directed_residue.py (complex spectrum)
+- examples/08_emergent_geometry/120_symmetry_wall_substrate_vs_spectrum.py (the wall)
+- theory/TNFR_NUMBER_THEORY.md §9.9 (this example; phase-sector periodicity)
 """
 
 import math
@@ -117,56 +117,77 @@ def residue_digraph(n):
     return G
 
 
-def _coset_eta2(vec, n, p):
-    """eta^2 with COMPLEX means: is the eigenvector a function of (i mod p)?
+# --- basis-invariant machinery -------------------------------------------------
 
-    The factor-coset Fourier mode is constant within each coset (i mod p), so
-    complex-mean eta^2 -> 1. (Magnitude is flat for a Fourier mode, so one MUST
-    use complex means, not |vec|.)
-    """
-    labels = np.array([i % p for i in range(n)])
-    v = np.asarray(vec, dtype=complex)
-    grand = v.mean()
-    total = float(np.sum(np.abs(v - grand) ** 2))
-    if total < 1e-15:
+
+def coset_basis(n, d):
+    """Orthonormal (n x d) basis of vectors constant on classes (i mod d)."""
+    B = np.zeros((n, d))
+    for c in range(d):
+        idx = np.arange(c, n, d)
+        B[idx, c] = 1.0 / math.sqrt(len(idx))
+    return B
+
+
+def noncoset_subspace(n, d):
+    """Orthonormal basis of C_d with the constant direction removed."""
+    B = coset_basis(n, d)
+    ones = np.ones((n, 1)) / math.sqrt(n)
+    Bp = B - ones @ (ones.T @ B)
+    Q, r = np.linalg.qr(Bp)
+    rank = int(np.sum(np.abs(np.diag(r)) > 1e-9))
+    return Q[:, :rank]
+
+
+def derived_tolerance(L):
+    """Certificate tolerance tau = sqrt(eps) * ||L||_2 (no magic constant)."""
+    return math.sqrt(np.finfo(float).eps) * float(np.linalg.norm(L, 2))
+
+
+def spectral_clusters(L, tol):
+    """(lambda, Pi, mult, group) spectral projectors; Pi = Q Q^H is basis-free."""
+    w, V = np.linalg.eig(L)
+    order = np.argsort(w.real)
+    w, V = w[order], V[:, order]
+    clusters, used = [], np.zeros(len(w), bool)
+    for i in range(len(w)):
+        if used[i]:
+            continue
+        grp = [j for j in range(len(w)) if not used[j] and abs(w[j] - w[i]) <= tol]
+        for j in grp:
+            used[j] = True
+        Q, _ = np.linalg.qr(V[:, grp])
+        clusters.append((complex(w[grp].mean()), Q @ Q.conj().T, len(grp), grp))
+    return clusters, V
+
+
+def projector_score(n, d, clusters):
+    """Best ||P_d Pi||^2 over non-trivial eigen-clusters (basis-invariant)."""
+    Q = noncoset_subspace(n, d)
+    if Q.shape[1] == 0:
         return 0.0
-    between = 0.0
-    for c in range(p):
-        m = labels == c
-        nc = int(m.sum())
-        if nc:
-            between += nc * float(np.abs(v[m].mean() - grand) ** 2)
-    return float(between / total)
-
-
-def _best_coset(eigvecs, n, p):
-    """Max complex-eta^2 over all non-trivial emergent modes."""
+    P = Q @ Q.conj().T
     best = 0.0
-    for j in range(1, eigvecs.shape[1]):
-        e = _coset_eta2(eigvecs[:, j], n, p)
-        if e > best:
-            best = e
+    for lam, Pi, mult, grp in clusters:
+        if abs(lam) < 1e-9:  # skip the trivial constant mode
+            continue
+        s = np.linalg.svd(P @ Pi, compute_uv=False)
+        if s.size:
+            best = max(best, float(s[0]) ** 2)
     return best
 
 
-def _emergent_eigvecs(G):
-    """Eigenvectors of the CANONICAL emergent operator, sorted by Re(lambda)."""
-    _, L = structural_diffusion_operator(G)
-    w, V = np.linalg.eig(L)
-    return V[:, np.argsort(w.real)]
+def invariant_subspace_residual(n, d, L):
+    """r(d) = ||(I - Q Q^H) L Q||_2 for Q = C_d minus the constant.
 
-
-def _primes_up_to(m):
-    return [d for d in range(2, m + 1) if all(d % k for k in range(2, d))]
-
-
-def _recover_smallest_factor(n, eigvecs):
-    """Smallest prime d<=sqrt(n) whose best emergent-eta^2 mode exceeds 0.9."""
-    for d in _primes_up_to(int(math.isqrt(n)) + 1):
-        e = _best_coset(eigvecs, n, d)
-        if e > 0.9:
-            return d, e
-    return 0, 0.0
+    ~0 iff the coset subspace is an exact L-invariant subspace (its modes are
+    eigenvectors).  Depends only on the subspace, so it is basis-free."""
+    Q = noncoset_subspace(n, d)
+    if Q.shape[1] == 0:
+        return 0.0
+    LQ = L @ Q
+    resid = LQ - Q @ (Q.conj().T @ LQ)
+    return float(np.linalg.svd(resid, compute_uv=False)[0])
 
 
 SEMIPRIMES = [
@@ -174,29 +195,28 @@ SEMIPRIMES = [
     (33, 3, 11),
     (51, 3, 17),
     (57, 3, 19),
-    (69, 3, 23),
-    (85, 5, 17),
     (91, 7, 13),
-    (93, 3, 31),
-    (95, 5, 19),
-    (115, 5, 23),
+    (85, 5, 17),
 ]
+
+# Audit counterexamples: (n, true factor p, false candidate d flagged at 0.9).
+ADVERSARIAL = [(209, 11, 3), (253, 11, 7), (299, 13, 7)]
 
 
 def experiment_1_shared_eigenvector():
     """R1: the factor-coset Fourier mode is an eigenvector of both operators."""
     print("=" * 74)
-    print("EXPERIMENT 1: The Factor Coset Is a Shared Eigenvector (CRT)")
+    print("EXPERIMENT 1: The Factor Coset Is a Shared Exact Eigenvector (CRT)")
     print("=" * 74)
-    print("The Fourier mode at k=cofactor is constant within each coset (i mod")
-    print("p), so it is an EXACT eigenvector of the emergent operator on BOTH")
-    print("the undirected and directed residue graph (CRT / circulant).")
+    print("The mode at k=cofactor is constant within each coset (i mod p), so")
+    print("it is an EXACT eigenvector of the emergent operator on BOTH the")
+    print("undirected and directed residue graph (CRT / circulant).")
     print()
     print(
         f"  {'n':>4} {'p':>3} {'q':>3} | {'undirected resid':>17} "
         f"{'directed resid':>16}"
     )
-    for n, p, q in SEMIPRIMES[:6]:
+    for n, p, q in SEMIPRIMES:
         _, Lu = structural_diffusion_operator(residue_graph_undirected(n))
         _, Ld = structural_diffusion_operator(residue_digraph(n))
         j = np.arange(n)
@@ -214,87 +234,111 @@ def experiment_1_shared_eigenvector():
     print("  -> ~1e-14: the factor coset is CRT structure in both spectra.")
 
 
-def experiment_2_complex_completes():
-    """R2: complex sector recovers 10/10, real sector only 8/10."""
+def experiment_2_basis_invariant_certificate():
+    """R2: basis-invariant score + derived certificate on the counterexamples."""
     print()
     print("=" * 74)
-    print("EXPERIMENT 2: The Complex Phase Sector Completes the Recovery")
+    print("EXPERIMENT 2: Basis-Invariant Score + Derived Certificate")
     print("=" * 74)
-    print("Scan prime candidate divisors d<=sqrt(n); the smallest d whose best")
-    print("emergent-eta^2 mode exceeds 0.9 is the recovered factor. Real")
-    print("(undirected) vs complex (directed) emergent spectrum.")
+    print("The audit's false candidate scores ||P_d Pi||^2 ABOVE 0.9, so the old")
+    print("threshold mis-fires. The DERIVED-tolerance residual certificate")
+    print("(tau = sqrt(eps)*||L||) rejects it and accepts only the exact period.")
     print()
     print(
-        f"  {'n':>4} {'true p':>7} | {'real d':>7} {'ok?':>5} | "
-        f"{'cplx d':>7} {'ok?':>5}"
+        f"  {'n':>4} {'p':>3} {'d?':>3} | {'score p':>8} {'score d?':>8} | "
+        f"{'r(p)':>9} {'r(d?)':>9} | {'p cert':>7} {'d? cert':>7}"
     )
-    rec_r = rec_c = 0
-    for n, p, q in SEMIPRIMES:
-        dr, _ = _recover_smallest_factor(
-            n, _emergent_eigvecs(residue_graph_undirected(n))
+    for n, p, d_false in ADVERSARIAL:
+        _, L = structural_diffusion_operator(residue_digraph(n))
+        tau = derived_tolerance(L)
+        clusters, _ = spectral_clusters(L, tau)
+        sc_p = projector_score(n, p, clusters)
+        sc_d = projector_score(n, d_false, clusters)
+        r_p = invariant_subspace_residual(n, p, L)
+        r_d = invariant_subspace_residual(n, d_false, L)
+        print(
+            f"  {n:>4} {p:>3} {d_false:>3} | {sc_p:>8.4f} {sc_d:>8.4f} | "
+            f"{r_p:>9.1e} {r_d:>9.1e} | {str(r_p < tau):>7} {str(r_d < tau):>7}"
         )
-        dc, _ = _recover_smallest_factor(n, _emergent_eigvecs(residue_digraph(n)))
-        okr, okc = (dr == p), (dc == p)
-        rec_r += int(okr)
-        rec_c += int(okc)
-        print(f"  {n:>4} {p:>7} | {dr:>7} {str(okr):>5} | " f"{dc:>7} {str(okc):>5}")
     print()
-    print(
-        f"  -> real undirected sector:  {rec_r}/{len(SEMIPRIMES)} "
-        f"(misses 51, 91 -- the example-117 caveat)"
+    print("  -> false candidate: score > 0.9 but r(d) >> tau => REJECTED.")
+    print("  -> true factor:     r(p) ~ 1e-15 < tau         => CERTIFIED.")
+
+    # Basis-invariance: rotate a degenerate eigenspace by a random unitary.
+    print()
+    print("  Basis-invariance under Q -> Q*U on a degenerate eigenspace (n=209):")
+    _, L = structural_diffusion_operator(residue_digraph(209))
+    tau = derived_tolerance(L)
+    clusters, V = spectral_clusters(L, tau)
+    big = max((c for c in clusters if abs(c[0]) > 1e-9), key=lambda c: c[2])
+    grp = big[3]
+    rng = np.random.default_rng(0)
+    A = rng.standard_normal((len(grp), len(grp))) + 1j * rng.standard_normal(
+        (len(grp), len(grp))
     )
-    print(
-        f"  -> complex directed sector: {rec_c}/{len(SEMIPRIMES)} "
-        f"(COMPLETE: recovers 51 and 91 via the phase)"
-    )
+    U, _ = np.linalg.qr(A)
+    Vr = V.copy()
+    Vr[:, grp] = V[:, grp] @ U  # rotate the degenerate eigenspace basis
+    Qr, _ = np.linalg.qr(Vr[:, grp])
+    clusters_rot = [c for c in clusters if c[3] != grp]
+    clusters_rot.append((big[0], Qr @ Qr.conj().T, big[2], grp))
+    # The projector Pi = Q Q^H of the eigenspace is identical for V and Q*U, so
+    # the subspace score is invariant; an individual eigenvector column is not.
+    for label, d in (("true  p=11", 11), ("false d= 3", 3)):
+        sc0 = projector_score(209, d, clusters)
+        sc1 = projector_score(209, d, clusters_rot)
+        print(
+            f"    score({label}) : {sc0:.6f} -> {sc1:.6f}"
+            f"  (Delta={abs(sc1 - sc0):.1e}, INVARIANT)"
+        )
+    print("    (a single-eigenvector eta^2 read of that eigenspace is NOT well")
+    print("     defined -- it changes with the arbitrary basis Q -> Q*U.)")
 
 
 def experiment_3_shuffle_control():
-    """R3: the factor-coset signal is structural (shuffle collapses eta^2)."""
+    """R3: the certificate is structural (a label shuffle breaks it)."""
     print()
     print("=" * 74)
-    print("EXPERIMENT 3: The Signal Is Structural (Shuffle Control)")
+    print("EXPERIMENT 3: The Certificate Is Structural (Shuffle Control)")
     print("=" * 74)
-    print("Permuting node labels destroys the CRT/circulant structure: the")
-    print("factor-coset eta^2 collapses from ~1.0 to the random baseline.")
+    print("Permuting node labels destroys the CRT/circulant structure: the true")
+    print("coset residual jumps from ~1e-15 to O(1), so the certificate stops.")
     print()
-    print(f"  {'n':>4} {'p':>3} | {'canonical eta2':>15} {'shuffled eta2':>15}")
-    for n, p, q in [(51, 3, 17), (91, 7, 13), (85, 5, 17), (115, 5, 23)]:
-        V = _emergent_eigvecs(residue_digraph(n))
-        e_can = _best_coset(V, n, p)
+    print(f"  {'n':>4} {'p':>3} | {'r(p) canonical':>15} {'r(p) shuffled':>15}")
+    for n, p, q in [(209, 11, 19), (91, 7, 13), (85, 5, 17)]:
+        _, L = structural_diffusion_operator(residue_digraph(n))
+        r_can = invariant_subspace_residual(n, p, L)
         rng = np.random.default_rng(3)
-        e_shuf = _best_coset(V[rng.permutation(n), :], n, p)
-        print(f"  {n:>4} {p:>3} | {e_can:>15.3f} {e_shuf:>15.3f}")
+        perm = rng.permutation(n)
+        Lp = L[np.ix_(perm, perm)]
+        r_shuf = invariant_subspace_residual(n, p, Lp)
+        print(f"  {n:>4} {p:>3} | {r_can:>15.2e} {r_shuf:>15.2e}")
     print()
-    print("  -> canonical ~1.0, shuffled ~0.1-0.2: structural, not artefact.")
+    print("  -> canonical ~1e-15, shuffled O(1): structural, not an artefact.")
 
 
 def main():
     print()
-    print("  TNFR Example 122: Factorization in the Phase Sector")
-    print("  The Complex Spectrum Completes the Factor-Coset Recovery")
-    print("  =======================================================")
+    print("  TNFR Example 122: Phase-Sector Periodicity Diagnostic")
+    print("  Basis-Invariant CRT Factor-Coset Read with a Derived Certificate")
+    print("  ================================================================")
     print()
     experiment_1_shared_eigenvector()
-    experiment_2_complex_completes()
+    experiment_2_basis_invariant_certificate()
     experiment_3_shuffle_control()
     print()
     print("=" * 74)
     print("WHAT THIS ESTABLISHES")
     print("=" * 74)
     print("The factor coset (i mod p) of a semiprime n=p*q is CRT/circulant")
-    print("structure -- a Fourier mode at k=cofactor, an exact eigenvector of")
-    print("the canonical emergent operator on BOTH the undirected and directed")
-    print("residue graph. The REAL undirected operator is symmetric, so its")
-    print("degenerate eigenpairs scramble the factor mode for 51 and 91 (the")
-    print("example-117 caveat). The COMPLEX directed operator has less")
-    print("degenerate Gauss-sum eigenvalues that ISOLATE the mode, completing")
-    print("the recovery: 10/10 vs the real sector's 8/10. HONEST SCOPE: this")
-    print("re-expresses CRT / Fourier PERIOD structure (the content Shor's")
-    print("algorithm exploits) in the emergent spectrum; the scan is O(sqrt n)")
-    print("prime divisors -- same order as trial division, NO speedup, no")
-    print("cryptographic threat. It completes 117 via the phase sector; it")
-    print("closes no open problem.")
+    print("structure -- a Fourier mode at k=cofactor, an EXACT eigenvector of the")
+    print("canonical emergent operator on both residue graphs. It is read with a")
+    print("BASIS-INVARIANT subspace score ||P_d Pi||^2 and CERTIFIED by an exact")
+    print("invariant-subspace residual against a DERIVED tolerance sqrt(eps)*||L||")
+    print("-- the non-canonical eta^2>0.9 rule is withdrawn (it mis-fires at")
+    print("~0.92 on n=209,253,299). HONEST SCOPE: a periodicity DIAGNOSTIC of CRT")
+    print("structure, poly(n)=exp(log2 n) to build/diagonalize and an O(sqrt n)")
+    print("candidate scan -- NO factoring speedup and no cryptographic threat.")
 
 
 if __name__ == "__main__":

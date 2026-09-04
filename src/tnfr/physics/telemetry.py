@@ -16,9 +16,13 @@ except ImportError:
 
 from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
 from ..mathematics.unified_numerical import np
-from .canonical import _get_dnfr, _get_phase, _get_precision_dtype
+from .canonical import (
+    _get_dnfr,
+    _get_phase,
+    _get_precision_dtype,
+    estimate_coherence_length,
+)
 from .vectorized_ops import (
-    compute_coherence_length_vectorized,
     compute_dnfr_flux_vectorized,
     compute_phase_current_vectorized,
     compute_phase_gradient_and_curvature_vectorized,
@@ -115,10 +119,11 @@ def compute_structural_telemetry(G: Any) -> dict[str, Any]:
         G, nodes, dnfr_map, alpha=2.0, dtype=dtype, distance_matrix=distance_matrix
     )
 
-    # 5. Compute Coherence Length (O(N^2) with precomputed D)
-    xi_c = compute_coherence_length_vectorized(
-        G, nodes, dnfr_map, dtype=dtype, distance_matrix=distance_matrix
-    )
+    # 5. Compute Coherence Length ξ_C via the single canonical kernel
+    #    (:func:`estimate_coherence_length`) — the same one ``tetrad()`` uses,
+    #    with the spectral-gap fallback, so telemetry() and tetrad() agree and
+    #    never return NaN on a connected graph (ADR-005, invariant #5).
+    xi_c = estimate_coherence_length(G)
 
     # 6. Compute Extended Fluxes (O(E))
     # Phase Current

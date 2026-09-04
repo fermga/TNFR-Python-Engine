@@ -893,7 +893,10 @@ def _audit_build_graph(n_nodes: int, seed: int) -> Any:
     rng = random.Random(seed)
     G = nx.watts_strogatz_graph(n_nodes, k, 0.2, seed=seed)
     for nd in G.nodes():
-        G.nodes[nd][ALIAS_THETA[0]] = rng.uniform(0.0, 2.0 * math.pi)
+        # Phases within a π/4 band so every neighbour pair satisfies the U3
+        # gate (|Δφ| ≤ Δφ_max = π/2): coupling/resonance are only admissible on
+        # a phase-coherent network (Invariant #2).
+        G.nodes[nd][ALIAS_THETA[0]] = rng.uniform(0.0, math.pi / 4)
         G.nodes[nd][ALIAS_EPI[0]] = rng.uniform(0.2, 0.6)
         G.nodes[nd][ALIAS_VF[0]] = rng.uniform(0.6, 1.2)
     default_compute_delta_nfr(G)

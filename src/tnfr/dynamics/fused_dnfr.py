@@ -44,6 +44,7 @@ except ImportError:
 def _compute_canonical_gradients_jit_kernel(
     edge_src,
     edge_dst,
+    edge_weight,
     phase,
     epi,
     vf,
@@ -57,42 +58,46 @@ def _compute_canonical_gradients_jit_kernel(
 ):
     """Numba JIT kernel for canonical TNFR gradient computation.
 
-    This function implements the exact TNFR nodal equation logic:
-    1. Accumulate neighbor sums (cos, sin, epi, vf, count)
-    2. Compute means (circular for phase, arithmetic for others)
-    3. Compute gradients (mean - value)
-    4. Apply weights
-
-    It supports both directed and undirected (symmetric) graphs.
+    Realizes the canonical **outgoing** random-walk operator L_out = I - D^-1 W
+    (the operator of :func:`tnfr.physics.structural_diffusion.
+    structural_diffusion_operator`): for edge ``u -> v`` node ``u`` receives
+    neighbour ``v``.  The EPI channel is edge-weighted (the channel with the
+    proven L_rw identity); phase, vf and topology use the unweighted
+    neighbourhood (ADR-002).  Undirected graphs carry both (u, v) and (v, u),
+    so the result is symmetric and reproduces the legacy path exactly.
     """
     # Allocations (Numba handles these efficiently in nopython mode)
     cos_sum = np.zeros(n_nodes, dtype=np.float64)
     sin_sum = np.zeros(n_nodes, dtype=np.float64)
-    epi_sum = np.zeros(n_nodes, dtype=np.float64)
+    epi_wsum = np.zeros(n_nodes, dtype=np.float64)
+    epi_weight = np.zeros(n_nodes, dtype=np.float64)
     vf_sum = np.zeros(n_nodes, dtype=np.float64)
     count = np.zeros(n_nodes, dtype=np.float64)
 
     n_edges = edge_src.shape[0]
 
-    # Pass 1: Accumulate neighbor statistics
+    # Pass 1: Accumulate neighbour statistics (outgoing orientation)
     for i in range(n_edges):
         u = edge_src[i]
         v = edge_dst[i]
+        w = edge_weight[i]
 
-        # u -> v (v receives from u)
-        cos_sum[v] += math.cos(phase[u])
-        sin_sum[v] += math.sin(phase[u])
-        epi_sum[v] += epi[u]
-        vf_sum[v] += vf[u]
-        count[v] += 1.0
+        # u -> v: node u receives neighbour v
+        cos_sum[u] += math.cos(phase[v])
+        sin_sum[u] += math.sin(phase[v])
+        epi_wsum[u] += w * epi[v]
+        epi_weight[u] += w
+        vf_sum[u] += vf[v]
+        count[u] += 1.0
 
         if symmetric:
-            # v -> u (u receives from v)
-            cos_sum[u] += math.cos(phase[v])
-            sin_sum[u] += math.sin(phase[v])
-            epi_sum[u] += epi[v]
-            vf_sum[u] += vf[v]
-            count[u] += 1.0
+            # v -> u: node v receives neighbour u
+            cos_sum[v] += math.cos(phase[u])
+            sin_sum[v] += math.sin(phase[u])
+            epi_wsum[v] += w * epi[u]
+            epi_weight[v] += w
+            vf_sum[v] += vf[u]
+            count[v] += 1.0
 
     # Pass 2: Compute gradients
     for i in range(n_nodes):
@@ -106,23 +111,26 @@ def _compute_canonical_gradients_jit_kernel(
             diff = (theta_mean - phase[i] + math.pi) % (2 * math.pi) - math.pi
             g_phase = diff / math.pi
 
-            # EPI/VF: g = mean - value
-            g_epi = (epi_sum[i] / count[i]) - epi[i]
+            # EPI: weighted neighbour mean (L_out with edge weights)
+            g_epi = 0.0
+            if epi_weight[i] > 0.0:
+                g_epi = (epi_wsum[i] / epi_weight[i]) - epi[i]
+            # VF: unweighted neighbour mean
             g_vf = (vf_sum[i] / count[i]) - vf[i]
 
             delta_nfr[i] = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf
 
-    # Pass 3: Topology (if needed)
+    # Pass 3: Topology (if needed) — unweighted out-degree neighbourhood
     if w_topo != 0.0:
         deg_sum = np.zeros(n_nodes, dtype=np.float64)
         for i in range(n_edges):
             u = edge_src[i]
             v = edge_dst[i]
 
-            # Accumulate neighbor degrees (degree = count)
-            deg_sum[v] += count[u]
+            # Accumulate neighbour degrees (degree = count)
+            deg_sum[u] += count[v]
             if symmetric:
-                deg_sum[u] += count[v]
+                deg_sum[v] += count[u]
 
         for i in range(n_nodes):
             if count[i] > 0:
@@ -156,6 +164,7 @@ def compute_fused_gradients(
     epi: Any,
     vf: Any,
     weights: Mapping[str, float],
+    edge_weight: Any | None = None,
     use_jit: bool = True,
 ) -> Any:
     """Compute all ΔNFR gradients in a fused kernel (Directed).
@@ -195,6 +204,7 @@ def compute_fused_gradients(
         epi=epi,
         vf=vf,
         weights=weights,
+        edge_weight=edge_weight,
         accumulate_both_directions=False,
         use_jit=use_jit,
     )
@@ -208,6 +218,7 @@ def compute_fused_gradients_symmetric(
     epi: Any,
     vf: Any,
     weights: Mapping[str, float],
+    edge_weight: Any | None = None,
     accumulate_both_directions: bool = True,
     use_jit: bool = True,
 ) -> Any:
@@ -256,11 +267,23 @@ def compute_fused_gradients_symmetric(
     if n_edges == 0:
         return delta_nfr
 
+    # Edge weights for the EPI channel (canonical L_rw = I - D^-1 W).  Absent
+    # weights default to unity, reproducing the unweighted path exactly.
+    if edge_weight is None:
+        w_edge = np.ones(n_edges, dtype=float)
+    else:
+        w_edge = np.asarray(edge_weight, dtype=float)
+        if w_edge.shape[0] != n_edges:
+            raise ValueError(
+                "edge_weight length does not match edge_src/edge_dst"
+            )
+
     # JIT Path
     if use_jit and _NUMBA_AVAILABLE and n_edges > 100:
         _compute_canonical_gradients_jit(
             edge_src,
             edge_dst,
+            w_edge,
             phase,
             epi,
             vf,
@@ -274,17 +297,22 @@ def compute_fused_gradients_symmetric(
         )
         return delta_nfr
 
-    # Pass 1: Accumulate neighbor statistics for computing means
-    # For phase: accumulate cos/sin sums for circular mean
-    # For EPI/vf: accumulate value sums for arithmetic mean
+    # Pass 1: Accumulate neighbour statistics for computing means, under the
+    # canonical outgoing orientation L_out = I - D^-1 W (node i receives the
+    # nodes it points to).  For edge i->j, node i (src) accumulates neighbour
+    # j (dst).  Undirected graphs carry both (i,j) and (j,i), so the result
+    # is symmetric and identical to the legacy computation.
+    #   phase: cos/sin sums for the circular mean
+    #   EPI:   weighted value sum + weighted degree (edge-weighted channel)
+    #   vf:    unweighted value sum
     neighbor_cos_sum = np.zeros(n_nodes, dtype=float)
     neighbor_sin_sum = np.zeros(n_nodes, dtype=float)
     neighbor_epi_sum = np.zeros(n_nodes, dtype=float)
+    neighbor_epi_weight = np.zeros(n_nodes, dtype=float)
     neighbor_vf_sum = np.zeros(n_nodes, dtype=float)
     neighbor_count = np.zeros(n_nodes, dtype=float)
 
-    # For undirected graphs, each edge contributes to both endpoints
-    # Extract neighbor values
+    # Extract neighbour values
     phase_src_vals = phase[edge_src]
     phase_dst_vals = phase[edge_dst]
     epi_src_vals = epi[edge_src]
@@ -292,24 +320,29 @@ def compute_fused_gradients_symmetric(
     vf_src_vals = vf[edge_src]
     vf_dst_vals = vf[edge_dst]
 
-    # Accumulate from src to dst (dst's neighbors include src)
-    np.add.at(neighbor_cos_sum, edge_dst, np.cos(phase_src_vals))
-    np.add.at(neighbor_sin_sum, edge_dst, np.sin(phase_src_vals))
-    np.add.at(neighbor_epi_sum, edge_dst, epi_src_vals)
-    np.add.at(neighbor_vf_sum, edge_dst, vf_src_vals)
-    np.add.at(neighbor_count, edge_dst, 1.0)
+    # Outgoing: node src receives neighbour dst
+    np.add.at(neighbor_cos_sum, edge_src, np.cos(phase_dst_vals))
+    np.add.at(neighbor_sin_sum, edge_src, np.sin(phase_dst_vals))
+    np.add.at(neighbor_epi_sum, edge_src, w_edge * epi_dst_vals)
+    np.add.at(neighbor_epi_weight, edge_src, w_edge)
+    np.add.at(neighbor_vf_sum, edge_src, vf_dst_vals)
+    np.add.at(neighbor_count, edge_src, 1.0)
 
     if accumulate_both_directions:
-        # Accumulate from dst to src (src's neighbors include dst)
-        np.add.at(neighbor_cos_sum, edge_src, np.cos(phase_dst_vals))
-        np.add.at(neighbor_sin_sum, edge_src, np.sin(phase_dst_vals))
-        np.add.at(neighbor_epi_sum, edge_src, epi_dst_vals)
-        np.add.at(neighbor_vf_sum, edge_src, vf_dst_vals)
-        np.add.at(neighbor_count, edge_src, 1.0)
+        # Reverse edge: node dst receives neighbour src
+        np.add.at(neighbor_cos_sum, edge_dst, np.cos(phase_src_vals))
+        np.add.at(neighbor_sin_sum, edge_dst, np.sin(phase_src_vals))
+        np.add.at(neighbor_epi_sum, edge_dst, w_edge * epi_src_vals)
+        np.add.at(neighbor_epi_weight, edge_dst, w_edge)
+        np.add.at(neighbor_vf_sum, edge_dst, vf_src_vals)
+        np.add.at(neighbor_count, edge_dst, 1.0)
 
     # Pass 2: Compute gradients from means
     # Avoid division by zero for isolated nodes
     has_neighbors = neighbor_count > 0
+    # EPI uses the weighted degree (positive whenever the node has neighbours
+    # of positive total weight).
+    has_epi_weight = neighbor_epi_weight > 0
 
     # Compute circular mean phase for nodes with neighbors
     phase_mean = np.zeros(n_nodes, dtype=float)
@@ -317,11 +350,11 @@ def compute_fused_gradients_symmetric(
         neighbor_sin_sum[has_neighbors], neighbor_cos_sum[has_neighbors]
     )
 
-    # Compute arithmetic means for EPI and νf
+    # Compute means: EPI weighted, νf arithmetic
     epi_mean = np.zeros(n_nodes, dtype=float)
     vf_mean = np.zeros(n_nodes, dtype=float)
-    epi_mean[has_neighbors] = (
-        neighbor_epi_sum[has_neighbors] / neighbor_count[has_neighbors]
+    epi_mean[has_epi_weight] = (
+        neighbor_epi_sum[has_epi_weight] / neighbor_epi_weight[has_epi_weight]
     )
     vf_mean[has_neighbors] = (
         neighbor_vf_sum[has_neighbors] / neighbor_count[has_neighbors]
@@ -336,7 +369,7 @@ def compute_fused_gradients_symmetric(
 
     # EPI/νf: g = mean - node_value
     g_epi = epi_mean - epi
-    g_epi[~has_neighbors] = 0.0
+    g_epi[~has_epi_weight] = 0.0
 
     g_vf = vf_mean - vf
     g_vf[~has_neighbors] = 0.0
@@ -352,9 +385,9 @@ def compute_fused_gradients_symmetric(
         deg_src_vals = degrees[edge_src]
         deg_dst_vals = degrees[edge_dst]
 
-        np.add.at(neighbor_deg_sum, edge_dst, deg_src_vals)
+        np.add.at(neighbor_deg_sum, edge_src, deg_dst_vals)
         if accumulate_both_directions:
-            np.add.at(neighbor_deg_sum, edge_src, deg_dst_vals)
+            np.add.at(neighbor_deg_sum, edge_dst, deg_src_vals)
 
         deg_mean = np.zeros(n_nodes, dtype=float)
         deg_mean[has_neighbors] = (

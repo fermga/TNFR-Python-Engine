@@ -672,6 +672,37 @@ def _build_edge_index_arrays(
     return edge_src, edge_dst
 
 
+def _build_edge_weight_array(
+    G: TNFRGraph,
+    nodes: Sequence[NodeId],
+    edge_src: Any,
+    edge_dst: Any,
+) -> Any:
+    """Per-edge weights aligned to ``(edge_src, edge_dst)``, read live from G.
+
+    The EPI channel realizes the random-walk Laplacian L_rw = I − D⁻¹W, so it
+    must use the current edge weights.  Reading them fresh each call keeps the
+    weighted diffusion correct even when edge weights mutate without a topology
+    change.  Returns ``None`` when every weight is unity — the fused kernel then
+    takes the exact unweighted path.
+    """
+    if np is None or edge_src is None or edge_dst is None:
+        return None
+    n_edges = int(getattr(edge_src, "shape", (0,))[0])
+    if n_edges == 0:
+        return None
+    weights = np.empty(n_edges, dtype=float)
+    any_non_unit = False
+    for k in range(n_edges):
+        u = nodes[int(edge_src[k])]
+        v = nodes[int(edge_dst[k])]
+        w = float(G[u][v].get("weight", 1.0))
+        weights[k] = w
+        if w != 1.0:
+            any_non_unit = True
+    return weights if any_non_unit else None
+
+
 def _refresh_dnfr_vectors(
     G: TNFRGraph, nodes: Sequence[NodeId], cache: DnfrCache
 ) -> None:
@@ -2391,6 +2422,20 @@ def _compute_dnfr(
 
         state = _ensure_numpy_state_vectors(data)
 
+        # Live edge weights for the EPI channel (L_rw = I - D^-1 W).  A graph is
+        # weighted only when the total edge weight differs from the edge count;
+        # this O(E) C-level check fast-paths unweighted graphs (edge_weight=None,
+        # bitwise-identical legacy result) and picks up weight mutations at once.
+        edge_weight = None
+        try:
+            n_edges_graph = G.number_of_edges()
+            weight_total = G.size(weight="weight")
+        except Exception:
+            n_edges_graph = 0
+            weight_total = 0.0
+        if weight_total != n_edges_graph:
+            edge_weight = _build_edge_weight_array(G, nodes, edge_src, edge_dst)
+
         # Note: accumulate_both_directions=False because _build_edge_index_arrays
         # already generates bidirectional edges for undirected graphs (via G.neighbors).
         # compute_fused_gradients_symmetric expects w_-prefixed weight keys
@@ -2409,6 +2454,7 @@ def _compute_dnfr(
                 "w_vf": data["w_vf"],
                 "w_topo": data["w_topo"],
             },
+            edge_weight=edge_weight,
             accumulate_both_directions=False,
         )
 

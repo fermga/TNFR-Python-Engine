@@ -75,6 +75,11 @@ class Operator(metaclass=OperatorMetaAuto):
         if self.glyph is None:
             raise NotImplementedError("Operator without assigned glyph")
 
+        # Hard structural invariants — always enforced before any state
+        # mutation, independent of VALIDATE_OPERATOR_PRECONDITIONS.  Coupling
+        # and Resonance override this to run the U3 phase gate (Invariant #2).
+        self._validate_hard_invariants(G, node)
+
         # Optional precondition validation
         validate_preconditions = kw.get("validate_preconditions", True)
         if validate_preconditions and G.graph.get(
@@ -133,6 +138,15 @@ class Operator(metaclass=OperatorMetaAuto):
             if "operator_metrics" not in G.graph:
                 G.graph["operator_metrics"] = []
             G.graph["operator_metrics"].append(metrics)
+
+    def _validate_hard_invariants(self, G: TNFRGraph, node: Any) -> None:
+        """Validate non-disableable structural invariants.
+
+        Runs on every operator application before any state mutation,
+        independent of ``VALIDATE_OPERATOR_PRECONDITIONS``.  Base implementation
+        does nothing; Coupling and Resonance override it to enforce the U3
+        phase gate (canonical Invariant #2).
+        """
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Validate operator-specific preconditions.
