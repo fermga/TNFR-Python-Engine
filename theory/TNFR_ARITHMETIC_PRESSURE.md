@@ -1,10 +1,11 @@
 # TNFR Arithmetic Pressure — Independence & Completeness Audit (R7)
 
-**Status**: primality sufficiency **PROVED** (classical); channel linear
-independence **MEASURED** (rank 3); minimality-for-primality **NEGATIVE**
-(redundant); structural completeness **OPEN / CONJECTURAL** (`NT-P07`). The
-"minimal and complete" language is downgraded to explicit scope. Arithmetic
-pressure is a *structural descriptor*, computed from the factorisation — **not** a
+**Status**: primality sufficiency **PROVED** (classical); channel functional
+independence **PROVED** (exact witness proof over ℚ); minimality-for-primality
+**NEGATIVE** (redundant); structural completeness **OPEN / CONJECTURAL**
+(`NT-P07`). The claim is split into `NT-P07a`–`e` (§6). The "minimal and
+complete" language is downgraded to explicit scope. Arithmetic pressure is a
+*structural descriptor*, computed from the factorisation — **not** a
 primality-discovery algorithm.
 **Module**: [src/tnfr/mathematics/arithmetic_pressure.py](../src/tnfr/mathematics/arithmetic_pressure.py) ·
 **Tests**: [tests/mathematics/test_arithmetic_pressure.py](../tests/mathematics/test_arithmetic_pressure.py) ·
@@ -45,7 +46,7 @@ is **not minimal for prime detection** — the "minimal" claim, read as *minimal
 for primality*, is **false** (a MEASURED negative). The channels are not there to
 detect primes more than once; they are there to carry *distinct structure*.
 
-## 3. Linear independence vs correlation (MEASURED)
+## 3. Linear independence vs correlation (PROVED + MEASURED)
 
 As real functions on the audited range the channels are **linearly independent**:
 
@@ -65,6 +66,21 @@ so no channel is a linear — or even affine — combination of the others
 **Correlation is not dependence.** High `r` (≈ 0.9) coexists with full rank: each
 channel carries independent structural information (factor multiplicity, divisor
 count, abundance), even though they move together on composites.
+
+**Exact proof (PROVED over ℚ).** Beyond the numerical rank, functional
+independence is proved exactly from three witness points
+(`prove_functional_independence`). Suppose `a·PΩ + b·Pτ + c·Pσ = 0` for all
+`n ≥ 2`. At the prime squares `4 = 2²` and `9 = 3²` the channels are `(1, 1, 1/2)`
+and `(1, 1, 1/3)`; their difference `(0, 0, 1/6)` forces `c = 0` and then
+`a + b = 0`. At the semiprime `6 = 2·3` the channels are `(1, 2, 5/6)`, which
+under `c = 0` forces `a + 2b = 0`, hence `b = 0` and `a = 0`. So `a = b = c = 0`:
+the `3×3` witness matrix has **exact rank 3** over ℚ (fraction Gaussian
+elimination). This upgrades independence from MEASURED to **PROVED** (`NT-P07b`).
+
+The scalar `ΔNFR(n)` is only **one chosen aggregation** (the sum) of these
+channels; `ArithmeticPressureVector` / `pressure_vector(n)` expose them as an
+independent triple, with `.scalar == arithmetic_pressure(n)`, so the reading is
+not mistaken for a minimal or unique basis.
 
 ## 4. Class-conditioned pressure (MEASURED)
 
@@ -103,12 +119,13 @@ pressure may **not** be presented as a primality/factoring algorithm.
 
 | Claim | Basis | Status |
 |-------|-------|--------|
-| each channel `0` iff prime; sum `0` iff prime | classical | **PROVED** |
-| minimal for primality | single channel suffices | **NEGATIVE** (redundant) |
-| channels linearly independent | rank 3, no affine relation | **MEASURED** |
+| `NT-P07a` each channel `0` iff prime; sum `0` iff prime | classical | **PROVED** |
+| `NT-P07b` channels functionally (linearly) independent | exact witness proof over ℚ | **PROVED** |
+| `NT-P07c` minimal for primality | single channel suffices | **NEGATIVE** (redundant) |
+| `NT-P07d` three channels structurally complete | no proof; task-scoped | **OPEN** |
+| `NT-P07e` `ΔNFR = 0` as a primality algorithm | needs the factorisation | **CIRCULAR** / no claim |
 | channels correlated but not dependent | `r ≈ 0.9`, rank 3 | **MEASURED** |
 | pressure grades compositeness by class | class-conditioned means | **MEASURED** |
-| three channels structurally complete | no proof | **OPEN / CONJECTURAL** (`NT-P07`) |
 
 **Bottom line.** The three-channel arithmetic pressure is a linearly-independent
 set of structural descriptors whose common (and individual) zero set is exactly

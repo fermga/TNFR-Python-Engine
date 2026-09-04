@@ -38,6 +38,7 @@ from tnfr.mathematics.arithmetic_pressure import (  # noqa: E402
     minimal_channels_for_primality,
     pressure_by_class,
     pressure_zero_iff_prime,
+    prove_functional_independence,
 )
 from tnfr.research import (  # noqa: E402
     CircularityAudit,
@@ -65,12 +66,15 @@ def main() -> int:
           f"(redundant / non-minimal: {redundant})")
 
     print()
-    print("2. Linear independence (MEASURED):")
+    print("2. Linear independence (PROVED + MEASURED):")
     rank = channel_rank(LO, HI)
     rel = has_linear_relation(LO, HI)
     corr = channel_correlations(LO, HI)
+    proof = prove_functional_independence()
     print(f"   rank[c1 c2 c3] = {rank} (3 => independent); "
           f"affine relation: {rel}")
+    print(f"   exact witness proof over Q: rank {proof.rank}, "
+          f"independent = {proof.independent} (a=b=c=0)")
     print(f"   correlations: c1-c2={corr[0][1]:.3f} c1-c3={corr[0][2]:.3f} "
           f"c2-c3={corr[1][2]:.3f} (correlated but independent)")
 
@@ -100,14 +104,17 @@ def main() -> int:
         artifacts=(),
     )
     print()
-    print(f"   primality sufficiency : {ClaimStatus.PROVED.value} (classical)")
-    print(f"   minimality (primality): {ClaimStatus.NEGATIVE.value} "
+    print(f"   NT-P07a individual sufficiency : {ClaimStatus.PROVED.value}")
+    print(f"   NT-P07b functional independence: {ClaimStatus.PROVED.value} "
+          "(exact witness proof over Q)")
+    print(f"   NT-P07c minimality (primality) : {ClaimStatus.NEGATIVE.value} "
           "(redundant; single channel suffices)")
-    print(f"   linear independence   : {ClaimStatus.MEASURED.value} (rank 3)")
-    print(f"   completeness (NT-P07) : {ClaimStatus.CONJECTURAL.value} / OPEN")
-    print(f"   circularity           : {audit.verdict.value} "
-          "(structural descriptor, not a primality algorithm)")
-    ok = suff and nonneg and zero_iff and rank == 3 and redundant
+    print(f"   NT-P07d completeness           : "
+          f"{ClaimStatus.CONJECTURAL.value} / OPEN (task-scoped)")
+    print(f"   NT-P07e primality-as-algorithm : {audit.verdict.value} "
+          "(uses factorisation; no algorithmic claim)")
+    ok = (suff and nonneg and zero_iff and rank == 3 and redundant
+          and proof.independent)
     return 0 if ok else 1
 
 

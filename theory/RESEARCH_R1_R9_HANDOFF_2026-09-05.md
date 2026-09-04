@@ -237,7 +237,7 @@ The research lines sit on this base; do not re-patch it.
 | NT-P04 | compatible p-adic tower realizes REMESH | transport **DERIVED**; REMESH **CONJECTURAL** (gate closed) |
 | NT-P05 | pulse detects split/inert/ramified | regression **DERIVED**; detection **CONJECTURAL** (k-sensitive) |
 | NT-P06 | TNFR additive phase exceeds Fourier | **NEGATIVE / OPEN** (reduction exact; no excess) |
-| NT-P07 | 3-channel pressure minimal & complete | sufficiency **PROVED**; minimal **NEGATIVE**; independent **MEASURED**; complete **OPEN** |
+| NT-P07 | 3-channel pressure minimal & complete | split (N02): `a` sufficiency **PROVED**; `b` functional independence **PROVED** (exact witness proof over ℚ); `c` minimal-for-primality **NEGATIVE** (redundant); `d` completeness **OPEN** (task-scoped); `e` primality-as-algorithm **CIRCULAR** |
 | NT-P08 | arithmetic maps ↔ operators | 2 **MEASURED** certificates, 4 rejected; full classification **OPEN** |
 | NT-P09 | generalized U2 bound (non-normal transients) | transient amplification **DERIVED+MEASURED**; U2 bound **OPEN** |
 

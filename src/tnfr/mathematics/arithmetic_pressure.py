@@ -38,6 +38,8 @@ from itertools import combinations
 
 import numpy as np
 
+from .krylov import exact_rank
+
 __all__ = [
     "big_omega",
     "num_divisors",
@@ -47,6 +49,8 @@ __all__ = [
     "channel_abundance",
     "channels",
     "arithmetic_pressure",
+    "ArithmeticPressureVector",
+    "pressure_vector",
     "CHANNEL_NAMES",
     "primes_in_range",
     "channel_zero_set",
@@ -57,6 +61,8 @@ __all__ = [
     "channel_matrix",
     "channel_rank",
     "has_linear_relation",
+    "IndependenceProof",
+    "prove_functional_independence",
     "channel_correlations",
     "ablation_detects_primes",
     "minimal_channels_for_primality",
@@ -67,6 +73,7 @@ __all__ = [
     "FourthChannelCriteria",
     "admits_fourth_channel",
     "completeness_proven",
+    "algorithmic_primality_is_circular",
 ]
 
 CHANNEL_NAMES = ("factorization", "divisor", "abundance")
@@ -140,6 +147,41 @@ def arithmetic_pressure(n: int) -> Fraction:
     return sum(channels(n), Fraction(0))
 
 
+@dataclass(frozen=True)
+class ArithmeticPressureVector:
+    """The three-channel pressure of ``n`` as a structured vector.
+
+    The scalar ``arithmetic_pressure(n)`` (mirrored by
+    ``ArithmeticTNFRFormalism.delta_nfr_value``) is one **chosen** aggregation of
+    these channels (their sum), not a unique or minimal basis. This vector keeps
+    the channels separate so the reading is not mistaken for a minimal/complete
+    basis for primality.
+    """
+
+    omega_defect: Fraction  # Ω(n) − 1  (factorization channel)
+    divisor_count_defect: Fraction  # τ(n) − 2  (divisor channel)
+    divisor_mass_defect: Fraction  # σ(n)/n − (1 + 1/n)  (abundance channel)
+
+    @property
+    def scalar(self) -> Fraction:
+        r"""The chosen scalar aggregation (the sum) = ``arithmetic_pressure(n)``."""
+        return (
+            self.omega_defect
+            + self.divisor_count_defect
+            + self.divisor_mass_defect
+        )
+
+    def as_tuple(self) -> tuple[Fraction, Fraction, Fraction]:
+        return (self.omega_defect, self.divisor_count_defect,
+                self.divisor_mass_defect)
+
+
+def pressure_vector(n: int) -> ArithmeticPressureVector:
+    r"""The three-channel pressure of ``n`` as a structured vector (exact)."""
+    c1, c2, c3 = channels(n)
+    return ArithmeticPressureVector(c1, c2, c3)
+
+
 _CHANNEL_FUNCS = (channel_factorization, channel_divisor, channel_abundance)
 
 
@@ -209,6 +251,37 @@ def has_linear_relation(lo: int, hi: int) -> bool:
     aug = np.column_stack([M, np.ones(len(M))])
     return not (np.linalg.matrix_rank(M) == 3
                 and np.linalg.matrix_rank(aug) == 4)
+
+
+@dataclass(frozen=True)
+class IndependenceProof:
+    """An exact witness-based proof of functional independence over ℚ."""
+
+    witnesses: tuple[tuple[int, tuple[Fraction, Fraction, Fraction]], ...]
+    rank: int
+    independent: bool
+
+
+def prove_functional_independence() -> IndependenceProof:
+    r"""Exact proof (over ℚ) that ``a·PΩ + b·Pτ + c·Pσ = 0`` for all ``n ≥ 2``
+    forces ``a = b = c = 0`` — the channels are functionally independent.
+
+    Witness points (report §14.3): the two prime squares ``4 = 2²`` and
+    ``9 = 3²`` give ``(1, 1, 1/2)`` and ``(1, 1, 1/3)``, whose difference
+    ``(0, 0, 1/6)`` pins ``c = 0`` and then ``a + b = 0``; the semiprime
+    ``6 = 2·3`` gives ``(1, 2, 5/6)``, which under ``c = 0`` pins ``a + 2b = 0``,
+    so ``b = 0`` and ``a = 0``. The 3×3 witness matrix has **exact rank 3** over ℚ
+    (fraction Gaussian elimination), which is stronger than a numerical rank.
+    """
+    witness_ns = (4, 9, 6)  # 2², 3², 2·3
+    witnesses: list[tuple[int, tuple[Fraction, Fraction, Fraction]]] = []
+    rows: list[list[Fraction]] = []
+    for n in witness_ns:
+        row = channels(n)
+        witnesses.append((n, row))
+        rows.append(list(row))
+    rank = exact_rank(rows)
+    return IndependenceProof(tuple(witnesses), rank, rank == 3)
 
 
 def channel_correlations(lo: int, hi: int) -> np.ndarray:
@@ -341,6 +414,17 @@ def completeness_proven() -> bool:
     r"""Whether structural completeness of the three channels is proven.
 
     ``False``: no proof exists that no fourth independent pressure degree is
-    relevant; completeness remains an open hypothesis (``NT-P07``).
+    relevant; completeness remains an open hypothesis (``NT-P07d``).
     """
     return False
+
+
+def algorithmic_primality_is_circular() -> bool:
+    r"""Whether using ``ΔNFR(n) = 0`` as a primality test is circular.
+
+    ``True``: every channel is computed **from** the factorisation of ``n``
+    (``Ω, τ, σ``), so the pressure presupposes the factorisation it would
+    "detect". It is a structural descriptor, not a primality/factoring algorithm —
+    the C5 circularity verdict is CIRCULAR (``NT-P07e``, no algorithmic claim).
+    """
+    return True

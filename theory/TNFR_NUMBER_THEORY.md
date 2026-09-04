@@ -258,7 +258,7 @@ Measures the **deviation of the divisor sum ratio from the prime pattern**. This
 
 ### 6.2 Component Independence
 
-The three pressure channels are algebraically independent — no linear combination of two can reproduce the third for all $n$. This makes the decomposition **minimal and complete** for characterizing compositeness through the three canonical arithmetic functions ($\Omega$, $\tau$, $\sigma$).
+The three pressure channels are **functionally linearly independent** — no linear (or affine) combination reproduces a third for all $n$. This is proved **exactly over $\mathbb{Q}$** from the witness points $p^2 \mapsto (1, 1, 1/p)$ and $pq \mapsto (1, 2, 1/p + 1/q)$ (`prove_functional_independence`; the $3\times 3$ witness matrix has exact rank 3). They therefore form a **linearly-independent diagnostic profile** of compositeness through $\Omega$, $\tau$, $\sigma$ — **not** a minimal or complete basis: the set is *redundant* for primality (each channel alone is zero iff $n$ is prime, so one channel already suffices), and structural completeness (that no fourth independent pressure degree is relevant) is **unproven**. See [TNFR_ARITHMETIC_PRESSURE.md](TNFR_ARITHMETIC_PRESSURE.md) (R7, NT-P07) for the independence proof, the redundancy result, and the closed fourth-channel gate.
 
 ### 6.3 Structural Pressure Landscape
 

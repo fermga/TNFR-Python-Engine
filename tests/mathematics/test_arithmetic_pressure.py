@@ -18,6 +18,7 @@ from tnfr.mathematics.arithmetic_pressure import (
     abundance_class,
     ablation_detects_primes,
     admits_fourth_channel,
+    algorithmic_primality_is_circular,
     all_channels_sufficient,
     arithmetic_pressure,
     big_omega,
@@ -36,14 +37,17 @@ from tnfr.mathematics.arithmetic_pressure import (
     minimal_channels_for_primality,
     num_divisors,
     pressure_by_class,
+    pressure_vector,
     pressure_zero_iff_prime,
     primes_in_range,
+    prove_functional_independence,
 )
 from tnfr.mathematics.number_theory import (
     ArithmeticStructuralTerms,
     ArithmeticTNFRFormalism,
     ArithmeticTNFRParameters,
 )
+from tnfr.research import CircularityAudit, CircularityVerdict
 
 
 # --------------------------------------------------------------------------- #
@@ -210,5 +214,59 @@ def test_module_exports_complete():
         "is_redundant_for_primality", "factor_class", "abundance_class",
         "pressure_by_class", "FourthChannelCriteria",
         "admits_fourth_channel", "completeness_proven",
+        "ArithmeticPressureVector", "pressure_vector",
+        "IndependenceProof", "prove_functional_independence",
+        "algorithmic_primality_is_circular",
     }
     assert expected <= set(ap.__all__)
+
+
+# --------------------------------------------------------------------------- #
+# N02 canonical correction (report Part III §14.7): the three channels are a
+# linearly-independent but primality-redundant profile; completeness is unproven.
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("index", [0, 1, 2])
+def test_each_channel_zero_iff_prime_domain_n_ge_2(index):
+    fn = (channel_factorization, channel_divisor, channel_abundance)[index]
+    for n in range(2, 200):
+        is_prime = big_omega(n) == 1
+        assert (fn(n) == 0) is is_prime
+
+
+def test_pressure_channels_exact_functional_independence():
+    # a*P_Omega + b*P_tau + c*P_sigma = 0 for all n>=2 forces a=b=c=0.
+    proof = prove_functional_independence()
+    assert proof.independent is True
+    assert proof.rank == 3
+    # the witness rows are exactly the report's (1,1,1/2), (1,1,1/3), (1,2,5/6)
+    rows = {n: row for n, row in proof.witnesses}
+    assert rows[4] == (Fraction(1), Fraction(1), Fraction(1, 2))
+    assert rows[9] == (Fraction(1), Fraction(1), Fraction(1, 3))
+    assert rows[6] == (Fraction(1), Fraction(2), Fraction(5, 6))
+
+
+@pytest.mark.parametrize("n", [7, 8, 12, 30, 100, 210])
+def test_scalar_equals_sum_of_vector_channels(n):
+    vec = pressure_vector(n)
+    assert vec.scalar == arithmetic_pressure(n)
+    assert vec.as_tuple() == channels(n)
+
+
+def test_minimality_claim_is_false_for_primality():
+    # a single channel already detects primes: the set is NOT minimal for it.
+    assert minimal_channels_for_primality(2, 500) == 1
+    assert is_redundant_for_primality(2, 500) is True
+
+
+def test_completeness_claim_requires_task_scope():
+    # completeness is not proven; the fourth-channel gate is closed by default.
+    assert completeness_proven() is False
+    assert admits_fourth_channel(FourthChannelCriteria()) is False
+
+
+def test_algorithmic_manifest_marks_factorization_dependency():
+    # DeltaNFR(n)=0 is NOT a primality algorithm: it presupposes factorisation.
+    assert algorithmic_primality_is_circular() is True
+    audit = CircularityAudit(uses_factorization_in_features=True)
+    assert audit.verdict is CircularityVerdict.CIRCULAR
+    assert audit.permits_discovery_claim is False
