@@ -45,7 +45,7 @@ therefore out of scope for Kaniz. The deliverable is the website source code
 The repository moved forward between the two briefs. The website content must
 reflect the **current** state. Concrete corrections (old → corrected):
 
-1. **Home, "Verify" card.** "~2,195 tests" → **1,599 tests** (README).
+1. **Home, "Verify" card.** "~2,195 tests" → **1,633 tests** (README).
 2. **`/learn/tutorials`.** A flat list "`01_hello_world.py` … `10_simplified_sdk_showcase.py`"
    → **150 examples across 10 thematic subfolders** (`examples/01_foundations` …
    `examples/10_applications`).
@@ -240,7 +240,7 @@ Render as three short side-by-side cards:
 
 | Read | Compute | Verify |
 |------|---------|--------|
-| The complete theory, derived from the nodal equation and 13 operators, with KaTeX-rendered equations. | Install the Python SDK (`pip install tnfr`) and run reproducible network simulations. | Inspect **1,599 tests**, benchmark scripts, and the open-source code on GitHub. |
+| The complete theory, derived from the nodal equation and 13 operators, with KaTeX-rendered equations. | Install the Python SDK (`pip install tnfr`) and run reproducible network simulations. | Inspect **1,633 tests**, benchmark scripts, and the open-source code on GitHub. |
 
 #### Block 3 — Quick start code
 

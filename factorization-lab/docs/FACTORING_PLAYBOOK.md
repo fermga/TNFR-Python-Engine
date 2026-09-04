@@ -13,7 +13,7 @@ TNFR-native verification metrics.
 2. Ensure FFT backends are available (`tnfr.dynamics.advanced_fft_arithmetic` is loaded
    automatically; distributed backends are optional).
 3. Export `TNFR_PARTITION_*` overrides only if you need custom block sizes.
-4. Keep `make.cmd smoke-tests` passing—this validates the self-optimizing engine,
+4. Keep `pytest` passing—this validates the self-optimizing engine,
    arithmetic formalism, and grammar rules before factoring new numbers.
 
 ## Canonical workflow

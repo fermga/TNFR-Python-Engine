@@ -101,7 +101,7 @@ But ΔNFR is undefined at EPI = 0 (no structure to reorganize).
 
 **Resonance Condition**: For constructive interference between nodes i and j:
 ```
-|φᵢ - φⱼ| ≤ Δφ_max
+|φᵢ - φⱼ| ≤ Δφ_max = π/2
 ```
 
 **Antiphase Problem**: When |φᵢ - φⱼ| ≈ π:

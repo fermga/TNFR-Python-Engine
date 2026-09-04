@@ -268,12 +268,12 @@ Extensive benchmarking with **full TNFR infrastructure** confirms:
 - **Prime certificates**: Detailed mathematical explanations for each result
 - **Structural field analysis**: Real-time monitoring of coherence metrics
 - **Network-wide validation**: Comprehensive prime characteristic analysis
-- **Canonical constant integration**: Direct use of φ, γ, π, e from main repository
+- **Canonical constant integration**: Direct use of the canonical π scale from the main repository
 
 ### Infrastructure Compatibility
 - **Graceful degradation**: Automatic fallback when advanced infrastructure unavailable
 - **Cross-platform support**: Windows, Linux, macOS with consistent performance
-- **Python 3.8+ compatibility**: Modern type hints and async-ready architecture
+- **Python 3.10+ compatibility**: Modern type hints and async-ready architecture
 
 ## Contact
 

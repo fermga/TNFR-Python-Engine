@@ -163,9 +163,8 @@ git checkout -b fix/issue-description
 ### 3. Test Your Changes
 
 ```bash
-# Run smoke tests (fast validation)
-make smoke-tests  # Unix/Linux
-.\make.cmd smoke-tests  # Windows
+# Run the core subset (fast validation)
+pytest tests/core_physics tests/operators tests/physics
 
 # Run full test suite
 pytest
@@ -195,7 +194,7 @@ Telemetry additions must:
 Performance guardrails:
 
 - Wrap optional expensive helpers with `perf_guard(label, registry)`.
-- Add/adjust tests under `tests/unit/performance/` for new instrumentation.
+- Add/adjust performance-marked tests under `tests/` (see the `performance` marker) for new instrumentation.
 - Avoid micro-optimizing at expense of clarity unless overhead > target.
 
 ### 4. Update Documentation
@@ -378,14 +377,14 @@ def test_coherence_monotonicity():
 ### Running Tests
 
 ```bash
-# Smoke tests (fast)
-make smoke-tests
+# Core subset (fast)
+pytest tests/core_physics tests/operators tests/physics
 
 # Full suite
 pytest
 
 # Specific module
-pytest tests/unit/operators/
+pytest tests/operators/
 
 # With coverage
 pytest --cov=src/tnfr --cov-report=html
@@ -481,7 +480,7 @@ If adding features, update:
 
 ### Before Submitting
 
-- [ ] Tests pass locally (`make smoke-tests`)
+- [ ] Tests pass locally (`pytest`)
 - [ ] Code follows style guidelines (`ruff check`)
 - [ ] Documentation updated
 - [ ] Commit messages are clear and descriptive

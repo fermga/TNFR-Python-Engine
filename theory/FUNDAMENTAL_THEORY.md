@@ -72,7 +72,7 @@ Measures how surrounding structural pressure accumulates at node $i$ via an inve
 ### 3.2 Phase Gradient ($|\nabla\phi|$)
 
 $$
-|\nabla\phi|(i) = \left|\theta_i - \mathrm{mean}\big(\theta_{\mathcal{N}(i)}\big)\right| \tag{5}
+|\nabla\phi|(i) = \frac{1}{|\mathcal{N}(i)|}\sum_{j\in\mathcal{N}(i)} \big|\mathrm{wrap}(\theta_j - \theta_i)\big| \tag{5}
 $$
 
 Quantifies local desynchronization between a node and its neighborhood. Detects stress regions that may require coherence operators.
@@ -307,7 +307,7 @@ Key observations:
 | SDK access (tetrad, conservation) | `src/tnfr/sdk/simple.py` |
 | Emergent symplectic substrate | `src/tnfr/physics/symplectic_substrate.py` |
 | Structural diffusion (transport) | `src/tnfr/physics/structural_diffusion.py` |
-| Test suite | `tests/` (1,599 passing) |
+| Test suite | `tests/` (1,633 passing) |
 
 ---
 

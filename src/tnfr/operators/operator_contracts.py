@@ -273,7 +273,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="C(t) not decreased (coherent integration)",
         context=ContractContext.NETWORK,
-        nodal_expression="E'N ⇒ input coherente → modulación de Wᵢ(t)",
+        nodal_expression="E'N ⇒ coherent input → modulation of Wᵢ(t)",
         pdf_reference="TNFR.pdf §2.2.1 (2) E'N — Recepción estructural",
     ),
     RESONANCE: OperatorContract(
@@ -286,7 +286,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="EPI structural identity (sign/kind) preserved",
         context=ContractContext.IDENTITY,
-        nodal_expression="R'A ⇒ propagación de EPI con νf amplificada",
+        nodal_expression="R'A ⇒ EPI propagation with amplified νf",
         pdf_reference="TNFR.pdf §2.2.1 R'A — Resonancia",
     ),
     # ── νf channel (frequency/mobility, capacity arm): SHA, VAL, NUL ────────
@@ -313,7 +313,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="νf not decreased (capacity added)",
         context=ContractContext.NETWORK,
-        nodal_expression="VA'L ⇒ νf ↑ (complejidad estructural)",
+        nodal_expression="VA'L ⇒ νf ↑ (structural complexity)",
         pdf_reference="TNFR.pdf §2.2.1 VA'L — Expansión",
     ),
     CONTRACTION: OperatorContract(
@@ -326,7 +326,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="νf not increased (capacity removed)",
         context=ContractContext.NETWORK,
-        nodal_expression="NU'L ⇒ νf ↓, ΔNFR densificada",
+        nodal_expression="NU'L ⇒ νf ↓, ΔNFR densified",
         pdf_reference="TNFR.pdf §2.2.1 NU'L — Contracción",
     ),
     # ── θ channel (phase → |∇φ|, K_φ): Coupling, Mutation ───────────────────
@@ -340,7 +340,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="|ΔNFR| not increased (mutual stabilization)",
         context=ContractContext.NETWORK,
-        nodal_expression="U'M ⇒ φᵢ(t) → φⱼ(t) (sincronización de fase)",
+        nodal_expression="U'M ⇒ φᵢ(t) → φⱼ(t) (phase synchronization)",
         pdf_reference="TNFR.pdf §2.2.1 U'M — Acoplamiento",
     ),
     MUTATION: OperatorContract(
@@ -353,7 +353,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="θ transformed (θ → θ')",
         context=ContractContext.PHASE,
-        nodal_expression="Z'HIR ⇒ θ → θ' cuando ΔEPI/Δt > ξ",
+        nodal_expression="Z'HIR ⇒ θ → θ' when ΔEPI/Δt > ξ",
         pdf_reference="TNFR.pdf §2.2.1 Z'HIR — Mutación",
     ),
     # ── ΔNFR channel (pressure → Φ_s, count arm): IL, OZ, THOL, NAV ─────────
@@ -380,7 +380,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="|ΔNFR| not decreased",
         context=ContractContext.NODE,
-        nodal_expression="O'Z ⇒ |ΔNFR| ↑ (puede gatillar ∂²EPI/∂t² > τ)",
+        nodal_expression="O'Z ⇒ |ΔNFR| ↑ (may trigger ∂²EPI/∂t² > τ)",
         pdf_reference="TNFR.pdf §2.2.1 O'Z — Disonancia",
     ),
     SELF_ORGANIZATION: OperatorContract(
@@ -406,7 +406,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         scale=OperatorScale.NODE,
         postcondition="state changed (νf, θ, or ΔNFR)",
         context=ContractContext.STATE,
-        nodal_expression="NA'V ⇒ ΔNFR → νf-aligned (transición de régimen)",
+        nodal_expression="NA'V ⇒ ΔNFR → νf-aligned (regime transition)",
         pdf_reference="TNFR.pdf §2.2.1 NA'V — Transición",
     ),
     # ── EPI channel at NETWORK scale (U5 fractality): Recursivity ──────────────

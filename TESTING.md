@@ -76,8 +76,8 @@ tests/
 pytest
 
 # Run specific test category
-pytest tests/unit
-pytest tests/integration
+pytest tests/operators
+pytest tests/sdk
 
 # Run with coverage report
 pytest --cov=tnfr --cov-report=html
@@ -88,12 +88,9 @@ pytest -v -s
 
 ### Artifact Guards
 
-Telemetry dashboards are part of the reproducibility surface. A lightweight regression test (`tests/test_precision_walk_dashboard_artifact.py`) ensures `benchmarks/results/precision_walk_dashboard.json` is valid JSON (no `NaN` literals) and remains loadable by downstream tooling. It now runs automatically via:
+Telemetry dashboards are part of the reproducibility surface. A lightweight regression test (`tests/test_precision_walk_dashboard_artifact.py`) ensures `benchmarks/results/precision_walk_dashboard.json` is valid JSON (no `NaN` literals) and remains loadable by downstream tooling. It is collected by the full `pytest` run; run it directly while iterating:
 
 ```bash
-# Curated smoke bundle (includes dashboard JSON guard)
-make smoke-tests
-
 # Run the guard directly when iterating on telemetry scripts
 pytest tests/test_precision_walk_dashboard_artifact.py
 ```
@@ -144,7 +141,7 @@ markers = [
 
 ## Test Categories
 
-### 1. Unit Tests (`tests/unit/`)
+### 1. Unit Tests (`tests/operators/`, `tests/core_physics/`, `tests/sdk/`)
 
 **Purpose**: Test individual modules and functions in isolation.
 
@@ -519,7 +516,7 @@ When optimizing tests:
 
 ```bash
 # Show print statements and detailed assertions
-pytest -v -s tests/unit/test_operators.py
+pytest -v -s tests/operators/
 
 # Show local variables on failure
 pytest --showlocals
@@ -529,7 +526,7 @@ pytest --showlocals
 
 ```bash
 # Run specific test function
-pytest tests/unit/test_cache.py::test_shelve_layer_stores_data
+pytest tests/operators/ -k coherence
 
 # Run test by keyword match
 pytest -k "coherence" tests/

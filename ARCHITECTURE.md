@@ -26,7 +26,7 @@ TNFR Engine features a mature, production-grade architecture grounded in the nod
 ### Core Module Organization
 
 ```
-src/tnfr/                          # ~346 files, ~104k LOC
+src/tnfr/                          # ~419 files, ~140k LOC
 ├── constants/canonical.py          # structural + operational constants (only π is a genuine structural scale)
 ├── operators/                      # 13 Canonical operators + U1-U6 grammar
 │   ├── grammar.py                  # Unified grammar validation
@@ -99,30 +99,22 @@ result = (TNFRNetwork(G)
 Validation uses the tetrad fields and a few telemetry thresholds. Only the π phase-wrap bounds and ξ_C ∝ 1/√λ₂ are genuine structural scales; the other thresholds are π-derived or free operational parameters, not derived structural constants.
 
 ```python
-from tnfr.constants.canonical import *
-from tnfr.physics.fields import compute_structural_tetrad
-from tnfr.operators.grammar import validate_u1_through_u6
+from tnfr.metrics.tetrad import collect_tetrad_snapshot
+from tnfr.operators.grammar import validate_sequence
 
 class CanonicalValidator:
-    def validate_sequence(self, sequence):
-        """All validation uses canonical thresholds."""
-        # Grammar validation with canonical tolerances
-        return validate_u1_through_u6(
-            sequence, 
-            phase_tolerance=PHASE_SYNC_TOLERANCE,      # heuristic ≈ 0.18 (operational early-warning; bound is π)
-            coherence_minimum=HIGH_COHERENCE_THRESHOLD  # π/(π+1) ≈ 0.7585 (emergent gate)
-        )
-    
-    def validate_graph_state(self, graph):
-        """Tetrad fields with telemetry thresholds."""
-        Phi_s, grad_phi, Psi, xi_C = compute_structural_tetrad(graph)
-        
-        # Tetrad safety check (only the π phase-wrap bounds are genuine)
-        return (
-            abs(Phi_s) < PHI_S_ESCAPE_THRESHOLD and    # < 0.771 (empirical, no closed form)
-            grad_phi < GRAD_PHI_STABILITY_LIMIT and    # heuristic early-warning (kinematic bound is π)
-            abs(Psi.real) < K_PHI_CONFINEMENT_LIMIT    # < 2.827 = 0.9π (phase wrap — genuine)
-        )
+    def check_sequence(self, sequence):
+        """Grammar validation (U1–U6) via the canonical entry point."""
+        return validate_sequence(sequence)       # -> SequenceValidationResult
+
+    def check_graph_state(self, graph):
+        """Observational tetrad snapshot: Φ_s, |∇φ|, K_φ, ξ_C.
+
+        Safety reading uses only the genuine π phase-wrap bounds
+        (|K_φ| < 0.9π ≈ 2.827; |∇φ| ≤ π; Φ_s per-node < π/4, drift < π/2;
+        ξ_C ∝ 1/√λ₂ from the spectral gap).
+        """
+        return collect_tetrad_snapshot(graph)    # keys: phi_s, phase_grad, phase_curv, xi_c
 ```
 ```
 
@@ -223,7 +215,7 @@ The TNFR grammar derives from the nodal equation; structural state is read throu
 | **Grammar Dynamics** | `operators/grammar_dynamics.py`, `operators/grammar_application.py` | Incremental U1-U6 validation + pre-filtered selection | Grammar-aware operator application at all code paths |
 | **Physics Core** | `physics/fields.py`, `physics/conservation.py`, `physics/integrity.py` | Unified Field Tetrad + Conservation Theorem + 13/13 postconditions | Field universality + structural conservation + operator contracts |
 | **Dynamics Engine** | `dynamics/self_optimizing_engine.py`, `dynamics/canonical.py` | Nodal equation ∂EPI/∂t = νf·ΔNFR(t) | Self-optimization - autonomous structural improvement |
-| **Telemetry System** | `telemetry/emit.py`, `metrics/telemetry.py` | Structural coherence mathematics C(t), Si | Complete monitoring - all structural changes tracked |
+| **Telemetry System** | `metrics/common.py`, `metrics/telemetry.py` | Structural coherence mathematics C(t), Si | Complete monitoring - all structural changes tracked |
 | **SDK Interface** | `sdk/simple.py`, `sdk/fluent.py`, `sdk/builders.py` | Tetrad, conservation, grammar-aware dynamics, canonical parameters | Research-grade access + user-friendly canonical API |
 
 ### Structural loop orchestration
@@ -258,9 +250,9 @@ flowchart LR
 ```
 
 1. **Discovery** imports the operator package so decorators populate the registry before any structural execution.【F:src/tnfr/operators/registry.py†L33-L50】
-2. **Validation** confirms the canonical RECEPTION→COHERENCE segment, checks THOL closure, and rejects unknown tokens before touching graph state.【F:src/tnfr/validation/__init__.py†L1-L104】【F:src/tnfr/operators/grammar.py†L600-L720】
+2. **Validation** confirms the canonical RECEPTION→COHERENCE segment, checks THOL closure, and rejects unknown tokens before touching graph state.【F:src/tnfr/validation/__init__.py†L1-L104】【F:src/tnfr/operators/grammar_patterns.py†L313-L430】
 3. **Execution** invokes each operator, then defers ΔNFR/EPI recomputation to the configured hook, keeping the structural layer free of ad-hoc state mutation.【F:src/tnfr/structural.py†L87-L105】
-4. **Dynamics** recompute ΔNFR, integrate the nodal equation, and coordinate phase coupling. Hooks accept per-run overrides while clamping νf/EPI against canonical bounds.【F:src/tnfr/dynamics/dnfr.py†L1958-L2006】【F:src/tnfr/dynamics/integrators.py†L420-L483】【F:src/tnfr/dynamics/__init__.py†L172-L199】
+4. **Dynamics** recompute ΔNFR, integrate the nodal equation, and coordinate phase coupling. Hooks accept per-run overrides while clamping νf/EPI against canonical bounds.【F:src/tnfr/dynamics/dnfr.py†L2509-L2581】【F:src/tnfr/dynamics/integrators.py†L420-L483】【F:src/tnfr/dynamics/__init__.py†L172-L199】
 5. **Telemetry** extracts coherence, Si, and trace snapshots with caches that ensure reproducible neighbour maps and glyph histories.【F:src/tnfr/metrics/common.py†L32-L111】【F:src/tnfr/metrics/sense_index.py†L1-L200】【F:src/tnfr/trace.py†L169-L319】
 
 ## ΔNFR and telemetry data paths
@@ -269,8 +261,8 @@ The following table highlights how ΔNFR values propagate through the engine and
 
 | Stage | Source module | Data emitted | Consumers |
 | --- | --- | --- | --- |
-| Hook install | `tnfr.dynamics.set_delta_nfr_hook` | Registers callable and metadata under `G.graph['compute_delta_nfr']`, seeding DNFR weights if absent.【F:src/tnfr/dynamics/dnfr.py†L1985-L2020】 | Structural loop (`run_sequence`), dynamics runners (`step`, `run`) |
-| Gradient mix | `tnfr.dynamics.dnfr.default_compute_delta_nfr` | Updates per-node ΔNFR attributes and records hook metadata for traces.【F:src/tnfr/dynamics/dnfr.py†L1958-L1982】 | Nodal integrators, telemetry caches |
+| Hook install | `tnfr.dynamics.set_delta_nfr_hook` | Registers callable and metadata under `G.graph['compute_delta_nfr']`, seeding DNFR weights if absent.【F:src/tnfr/dynamics/dnfr.py†L2582-L2620】 | Structural loop (`run_sequence`), dynamics runners (`step`, `run`) |
+| Gradient mix | `tnfr.dynamics.dnfr.default_compute_delta_nfr` | Updates per-node ΔNFR attributes and records hook metadata for traces.【F:src/tnfr/dynamics/dnfr.py†L2509-L2581】 | Nodal integrators, telemetry caches |
 | Integration | `tnfr.dynamics.integrators.update_epi_via_nodal_equation` | Produces EPI, dEPI/dt, and d²EPI/dt² while advancing graph time.【F:src/tnfr/dynamics/integrators.py†L434-L483】 | Metrics (`compute_coherence`), trace snapshots |
 | Coherence metrics | `tnfr.metrics.common.compute_coherence` | Aggregates C(t), mean |ΔNFR|, and |dEPI/dt| across nodes.【F:src/tnfr/metrics/common.py†L32-L58】 | Trace captures, CLI/SDK consumers |
 | Sense index | `tnfr.metrics.sense_index.compute_Si` | Evaluates Si with cached neighbour topology and harmonic weighting.【F:src/tnfr/metrics/sense_index.py†L40-L188】 | Trace captures, selectors |
@@ -283,7 +275,7 @@ Operator classes apply the `@register_operator` decorator, which verifies unique
 When introducing new operators:
 
 - Provide ASCII `name` and canonical `Glyph` binding on the class definition.【F:src/tnfr/operators/definitions.py†L45-L180】
-- Update grammar/syntax tables if the operator alters the canonical sequence, ensuring THOL blocks and closure sets remain valid.【F:src/tnfr/validation/__init__.py†L1-L104】【F:src/tnfr/operators/grammar.py†L600-L720】
+- Update grammar/syntax tables if the operator alters the canonical sequence, ensuring THOL blocks and closure sets remain valid.【F:src/tnfr/validation/__init__.py†L1-L104】【F:src/tnfr/operators/grammar_patterns.py†L313-L430】
 - Supply trace fields or telemetry hooks if the operator produces novel metrics, keeping the coherence log consistent.【F:src/tnfr/trace.py†L169-L319】
 
 ### Operator vocabulary (English only)
@@ -538,7 +530,7 @@ TNFR Engine is a complex-systems framework grounded in the nodal equation:
 | **Self-Optimization** | COMPLETE | Autonomous structural improvement |
 | **Telemetry** | COMPLETE | Complete system observability |
 | **Developer Experience** | COMPLETE | Fluent API + Simple SDK (tetrad, conservation, telemetry) |
-| **Production Readiness** | COMPLETE | 1,599 tests passing + benchmarks + validation |
+| **Production Readiness** | COMPLETE | 1,633 tests passing + benchmarks + validation |
 
 ### Architectural Principles (Canonical)
 

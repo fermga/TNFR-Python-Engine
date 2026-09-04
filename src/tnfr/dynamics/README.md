@@ -11,7 +11,7 @@ Centralized entry point for nodal equation integration and dynamical evolution. 
 ## Scope
 
 - **Adelic Dynamics (New)**: `adelic.py` - Implements the "First Principles" flow towards Riemann Zeros.
-- Nodal integration and solvers: `integrators.py`, `steppers.py` (if present), `nodal_equation.py`
+- Nodal integration and solvers: `integrators.py` (nodal-equation EPI update), `runtime.py` (`step`/`run` orchestration), `canonical.py`
 - Stability and boundedness checks (U2): helper routines in this package
 - Hooks for operator application within integration steps
 
@@ -26,8 +26,8 @@ Centralized entry point for nodal equation integration and dynamical evolution. 
 
 ```python
 # Standard Nodal Equation
-from tnfr.dynamics.nodal_equation import step
-EPI_next = step(G, dt=1.0)
+from tnfr.dynamics import step
+step(G, dt=1.0)  # advances the network in place
 
 # Adelic Dynamics (Riemann Flow)
 from tnfr.dynamics.adelic import AdelicDynamics

@@ -85,7 +85,7 @@ operators from the single network-scale operator, Recursivity (REMESH).
 - **Nodal channel**: EPI (form) (reorganize)
 - **Scale**: node
 - **Postcondition** (measured context: network): C(t) not decreased (coherent integration)
-- **Nodal expression**: `E'N ⇒ input coherente → modulación de Wᵢ(t)`
+- **Nodal expression**: `E'N ⇒ coherent input → modulation of Wᵢ(t)`
 - **Reference**: TNFR.pdf §2.2.1 (2) E'N — Recepción estructural
 
 #### Resonance (RA) — `tnfr.operators.definitions.Resonance`
@@ -94,7 +94,7 @@ operators from the single network-scale operator, Recursivity (REMESH).
 - **Nodal channel**: EPI (form) (reorganize)
 - **Scale**: node
 - **Postcondition** (measured context: identity): EPI structural identity (sign/kind) preserved
-- **Nodal expression**: `R'A ⇒ propagación de EPI con νf amplificada`
+- **Nodal expression**: `R'A ⇒ EPI propagation with amplified νf`
 - **Reference**: TNFR.pdf §2.2.1 R'A — Resonancia
 
 #### Silence (SHA) — `tnfr.operators.definitions.Silence`
@@ -112,7 +112,7 @@ operators from the single network-scale operator, Recursivity (REMESH).
 - **Nodal channel**: νf (capacity) (increase)
 - **Scale**: node
 - **Postcondition** (measured context: network): νf not decreased (capacity added)
-- **Nodal expression**: `VA'L ⇒ νf ↑ (complejidad estructural)`
+- **Nodal expression**: `VA'L ⇒ νf ↑ (structural complexity)`
 - **Reference**: TNFR.pdf §2.2.1 VA'L — Expansión
 
 #### Contraction (NUL) — `tnfr.operators.definitions.Contraction`
@@ -121,7 +121,7 @@ operators from the single network-scale operator, Recursivity (REMESH).
 - **Nodal channel**: νf (capacity) (decrease)
 - **Scale**: node
 - **Postcondition** (measured context: network): νf not increased (capacity removed)
-- **Nodal expression**: `NU'L ⇒ νf ↓, ΔNFR densificada`
+- **Nodal expression**: `NU'L ⇒ νf ↓, ΔNFR densified`
 - **Reference**: TNFR.pdf §2.2.1 NU'L — Contracción
 
 #### Coupling (UM) — `tnfr.operators.definitions.Coupling`
@@ -130,7 +130,7 @@ operators from the single network-scale operator, Recursivity (REMESH).
 - **Nodal channel**: θ (phase) (reorganize)
 - **Scale**: node
 - **Postcondition** (measured context: network): |ΔNFR| not increased (mutual stabilization)
-- **Nodal expression**: `U'M ⇒ φᵢ(t) → φⱼ(t) (sincronización de fase)`
+- **Nodal expression**: `U'M ⇒ φᵢ(t) → φⱼ(t) (phase synchronization)`
 - **Reference**: TNFR.pdf §2.2.1 U'M — Acoplamiento
 
 #### Mutation (ZHIR) — `tnfr.operators.definitions.Mutation`
@@ -139,7 +139,7 @@ operators from the single network-scale operator, Recursivity (REMESH).
 - **Nodal channel**: θ (phase) (transform)
 - **Scale**: node
 - **Postcondition** (measured context: phase): θ transformed (θ → θ')
-- **Nodal expression**: `Z'HIR ⇒ θ → θ' cuando ΔEPI/Δt > ξ`
+- **Nodal expression**: `Z'HIR ⇒ θ → θ' when ΔEPI/Δt > ξ`
 - **Reference**: TNFR.pdf §2.2.1 Z'HIR — Mutación
 
 #### Coherence (IL) — `tnfr.operators.definitions.Coherence`
@@ -157,7 +157,7 @@ operators from the single network-scale operator, Recursivity (REMESH).
 - **Nodal channel**: ΔNFR (pressure) (increase)
 - **Scale**: node
 - **Postcondition** (measured context: node): |ΔNFR| not decreased
-- **Nodal expression**: `O'Z ⇒ |ΔNFR| ↑ (puede gatillar ∂²EPI/∂t² > τ)`
+- **Nodal expression**: `O'Z ⇒ |ΔNFR| ↑ (may trigger ∂²EPI/∂t² > τ)`
 - **Reference**: TNFR.pdf §2.2.1 O'Z — Disonancia
 
 #### SelfOrganization (THOL) — `tnfr.operators.definitions.SelfOrganization`
@@ -175,7 +175,7 @@ operators from the single network-scale operator, Recursivity (REMESH).
 - **Nodal channel**: ΔNFR (pressure) (reorganize)
 - **Scale**: node
 - **Postcondition** (measured context: state): state changed (νf, θ, or ΔNFR)
-- **Nodal expression**: `NA'V ⇒ ΔNFR → νf-aligned (transición de régimen)`
+- **Nodal expression**: `NA'V ⇒ ΔNFR → νf-aligned (regime transition)`
 - **Reference**: TNFR.pdf §2.2.1 NA'V — Transición
 
 #### Recursivity (REMESH) — `tnfr.operators.definitions.Recursivity`
@@ -492,7 +492,7 @@ network_sync = [
 ```
 
 **Critical Requirements**:
-- **Phase verification**: Each COUPLING must satisfy |φᵢ - φⱼ| ≤ Δφ_max (U3)
+- **Phase verification**: Each COUPLING must satisfy |φᵢ - φⱼ| ≤ Δφ_max = π/2 (U3)
 - **Network topology**: Requires connected network with multiple nodes
 - **Health target**: > 0.80 for strong network coherence
 

@@ -490,13 +490,13 @@ The "partial" limitation of sector B (only $n\equiv 1\pmod 4$, §9.5) is **not**
 - Any per-node substrate variation comes from the (arithmetic-neutral) **seed**, never from the arithmetic — the substrate lives in the symmetric / fixed sector $\mathrm{Fix}(G_{\mathrm{aut}})$, **blind** to the connection set.
 - The arithmetic appears only in a **global** invariant sensitive to the connection set — the **spectrum** (eigenvalues $=$ group-character / Gauss sums) $=$ the complement $\mathrm{Fix}(G_{\mathrm{aut}})^\perp$.
 
-**The double dissociation (measured).** Compare the Paley residue digraph (QR structure) against a **random regular tournament** of the same out-degree, both seeded identically and evolved by the canonical nodal equation $\partial\mathrm{EPI}/\partial t=\nu_f\cdot\Delta\mathrm{NFR}$:
+**The double dissociation (measured).** Compare the Paley residue digraph (QR structure) against a **random regular tournament** of the same out-degree, both seeded identically and evolved by the canonical nodal equation $\partial\mathrm{EPI}/\partial t=\nu_f\cdot\Delta\mathrm{NFR}$. Table regenerated after the 2026-09-04 canonicity audit fixed the directed ΔNFR orientation (default path previously computed $L_{\mathrm{in}}$ instead of the canonical $L_{\mathrm{out}}$ on digraphs; the eigenvalue columns are orientation-invariant and unchanged, only $\sigma(\Phi_s)$ shifted):
 
 | $n$ | Paley distinct eig. | random distinct eig. | Paley $\sigma(\Phi_s)$ | random $\sigma(\Phi_s)$ |
 |----:|--------------------:|---------------------:|------------------------:|-------------------------:|
-| 11 | **3** | 11.0 | 0.400 | 0.366 |
-| 23 | **3** | 23.0 | 0.587 | 0.618 |
-| 47 | **3** | 47.0 | 0.998 | 0.938 |
+| 11 | **3** | 11.0 | 0.376 | 0.356 |
+| 23 | **3** | 23.0 | 0.559 | 0.533 |
+| 47 | **3** | 47.0 | 0.978 | 0.968 |
 
 - **Spectrum SEES the arithmetic**: Paley is rigidly 3 distinct eigenvalues (the §9.6 prime signature); the random tournament has $\sim n$. Swapping the QR structure for a random tournament changes the spectrum completely.
 - **Substrate is BLIND**: the per-node $\Phi_s$ dispersion is statistically **identical** for Paley and the random tournament. The substrate cannot tell the QR arithmetic from a random tournament of the same degree.

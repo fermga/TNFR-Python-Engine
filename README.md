@@ -52,7 +52,7 @@ TNFR is more than dynamics on a graph. The graph is only the substrate; the noda
 
 Two clearly-separated layers:
 
-**Solid and verified.** The engine, the tetrad, grammar U1–U6, conservation laws, and the emergent transport + symplectic geometry are implemented, anchored to experimentally-established phenomena, and covered by 1,599 tests.
+**Solid and verified.** The engine, the tetrad, grammar U1–U6, conservation laws, and the emergent transport + symplectic geometry are implemented, anchored to experimentally-established phenomena, and covered by 1,633 tests.
 
 **Open research programs.** TNFR is also used to probe famous open problems. These are honest, in-progress programs that **do not claim proofs**:
 
@@ -164,7 +164,7 @@ src/tnfr/
 └── factorization/     # Spectral factorization workflow
 
 examples/              # 150 examples in 10 thematic subfolders (see examples/README.md)
-tests/                 # 1,599 tests
+tests/                 # 1,633 tests
 theory/                # Theoretical derivations
 benchmarks/            # performance & structural-validation scripts
 ```
@@ -197,11 +197,11 @@ benchmarks/            # performance & structural-validation scripts
 ## Testing
 
 ```bash
-pytest                             # all tests (1,599 under tests/)
+pytest                             # all tests (1,633 under tests/)
 pytest tests/sdk/                  # SDK tests (tetrad, conservation, grammar)
-pytest tests/unit/                 # unit tests
-.\make.cmd smoke-tests             # smoke tests (Windows)
-make smoke-tests                   # smoke tests (Unix)
+pytest tests/core_physics/         # core physics tests
+pytest tests/operators/            # operator + grammar tests
+make test                          # core subset + Riemann benchmark (needs `make`)
 ```
 
 ---

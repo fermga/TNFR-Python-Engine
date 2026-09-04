@@ -123,8 +123,8 @@ Each function documents parameters and return types inline in `fields.py`.
 
 ## 5. Validation and Safety Thresholds
 
-Canonical telemetry thresholds (only the π phase-wrap bounds are genuine; the rest are empirical/heuristic):
-- Φ_s: maintain ΔΦ_s < 2.0 (escape threshold, empirical)  — see AGENTS.md (U6)
+Canonical telemetry thresholds (only the π phase-wrap bounds are genuine; the rest are π-derived or heuristic):
+- Φ_s: maintain ΔΦ_s < π/2 ≈ 1.571 (half phase-wrap drift bound, π-derived); per-node |Φ_s| < π/4 ≈ 0.785 (quarter phase-wrap) — see AGENTS.md (U6)
 - |∇φ|: kinematic bound |∇φ| ≤ π (phase wrap); γ/π ≈ 0.1837 is only a HEURISTIC early-warning level (not derived), track spikes
 - K_φ: flag |K_φ| ≥ 2.8274 (= 0.9π, phase wrap — genuine) as hotspots; assess multiscale decay var(K_φ) ~ 1/r^α
 - ξ_C: monitor divergence around I_c; the ξ_C scale is set by the spectral gap (ξ_C ∝ 1/√λ₂)

@@ -485,9 +485,9 @@ U6 is a **read-only safety check**, not a sequence constraint like U1-U5:
 │     Basis: C_parent ≥ α·ΣC_child (coherence conservation)     │
 │                                                                 │
 │ U6: STRUCTURAL POTENTIAL CONFINEMENT                            │
-│     Verify Δ Φ_s < 2.0 (escape threshold)                      │
+│     Verify Δ Φ_s < π/2 ≈ 1.571 (drift bound)                   │
 │     Telemetry-based safety check (read-only)                  │
-│     Basis: Emergent Φ_s field, empirical threshold            │
+│     Basis: Emergent Φ_s field, π-derived bound π/2            │
 │     Evidence: 2,400+ exp, corr = -0.822, CV = 0.1%            │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -1320,13 +1320,13 @@ Testing reveals U6 DOES identify sequences that pass U1-U5 but may be problemati
 - **Correlation**: corr(Δ Φ_s, ΔC) = -0.822 (strong negative correlation)
 - **Predictive power**: R² ≈ 0.68 (68% variance explained)
 - **Universality**: Validated across 5 topology families (scale-free, small-world, grid, tree, ring)
-- **Threshold**: Δ Φ_s < 2.0 (escape threshold, 30% typical for valid sequences)
+- **Threshold**: Δ Φ_s < π/2 ≈ 1.571 (`U6_STRUCTURAL_POTENTIAL_LIMIT`; half phase-wrap, π-derived)
 - **Mechanism**: Passive equilibrium - grammar acts as confinement field
 
 **Implementation**:
 - **Formula**: Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)² (inverse-square law analog)
 - **Usage**: Telemetry-based safety check (read-only, not sequence constraint)
-- **Typical drift**: Valid sequences maintain Δ Φ_s ≈ 0.6 (30% of threshold)
+- **Typical drift**: Valid sequences maintain Δ Φ_s ≈ 0.6 (≈38% of the π/2 bound)
 
 **Resolution of Previous Concerns**:
 
