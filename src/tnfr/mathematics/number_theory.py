@@ -2065,6 +2065,33 @@ def unitary_residue_set(m: int) -> set[int]:
     return {u for u in range(1, m) if math.gcd(u, m) == 1}
 
 
+def unit_power_residue_set(m: int, k: int) -> set[int]:
+    """Nonzero ``k``-th powers of the units modulo ``m``:
+    ``{u^k mod m : gcd(u, m) = 1}``.
+
+    Unlike :func:`power_residue_set` (which powers every residue), this restricts
+    to the unit group ``(Z/mZ)^*``.  That restriction is what makes the set
+    factor **exactly** under CRT: for ``gcd(a, b) = 1`` the CRT isomorphism
+    ``Z/abZ ~ Z/aZ x Z/bZ`` carries ``unit_power_residue_set(a*b, k)`` onto the
+    product ``unit_power_residue_set(a, k) x unit_power_residue_set(b, k)``.  For
+    prime ``m`` it coincides with :func:`power_residue_set`.
+    """
+    m, k = int(m), int(k)
+    if m < 2:
+        raise TNFRValueError(
+            f"Modulus {m} must be at least 2.",
+            context={"modulus": m},
+            suggestion="Provide an integer modulus >= 2.",
+        )
+    if k < 1:
+        raise TNFRValueError(
+            f"Power {k} must be at least 1.",
+            context={"power": k},
+            suggestion="Provide a positive integer power.",
+        )
+    return {pow(u, k, m) for u in range(1, m) if math.gcd(u, m) == 1} - {0}
+
+
 def arithmetic_cayley_digraph(m: int, connection: Iterable[int]) -> nx.DiGraph:
     """Directed Cayley graph ``Cay(ℤ/mℤ, connection)``.
 

@@ -44,6 +44,7 @@ from .number_theory import (
     quadratic_residue_set,
     residue_network_rank,
     run_basic_validation,
+    unit_power_residue_set,
     unitary_residue_set,
 )
 from .operators import CoherenceOperator, FrequencyOperator
@@ -200,6 +201,7 @@ __all__ = [
     # Arithmetic residue networks (structural-frequency rank, cyclotomy)
     "quadratic_residue_set",
     "power_residue_set",
+    "unit_power_residue_set",
     "unitary_residue_set",
     "arithmetic_cayley_digraph",
     "residue_network_rank",
