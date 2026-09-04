@@ -96,6 +96,22 @@ Each program restates a Clay Millennium Problem in TNFR-native terms and classif
 | [TNFR_BSD_RESEARCH_NOTES.md](TNFR_BSD_RESEARCH_NOTES.md) | Birch–Swinnerton-Dyer | $a_p$ as structural pressure, rank-separation reproduced; GL(1)→GL(2) gap **open** (Branch B) |
 | [TNFR_HODGE_RESEARCH_NOTES.md](TNFR_HODGE_RESEARCH_NOTES.md) | Hodge conjecture | Discrete Hodge theory (harmonic = Betti, Eckmann); strong negative — blind to (p,p) bigrading + algebraicity (Branch B3-leaning) |
 
+### Structural Research Programs (R1–R9)
+
+Nine internal research lines extending the arithmetic and spectral dynamics (2026-09; consolidation C0–C5 + research R1–R9). Each has a theory note, an exact/measured test suite, and a benchmark with a reproducibility manifest. **None closes an open problem**; several are deliberate constructive negatives. Full per-line status, claim ledger (NT-P01…NT-P09) and next-agent decision points: **[RESEARCH_R1_R9_HANDOFF_2026-09-05.md](RESEARCH_R1_R9_HANDOFF_2026-09-05.md)**.
+
+| Line | Document | Result & status |
+|------|----------|-----------------|
+| R1 | [TNFR_STRUCTURAL_OBSERVABILITY.md](TNFR_STRUCTURAL_OBSERVABILITY.md) | Symmetry-sector observability: diffusion + all 13 operators equivariant (isolated) — **DERIVED + MEASURED**; general proof staged |
+| R2 | [TNFR_ARITHMETIC_DYNAMICS.md](TNFR_ARITHMETIC_DYNAMICS.md) | Pointed-pulse rank = `gcd(k,p−1)+1` — **DERIVED + MEASURED** |
+| R3 | [TNFR_CRT_FRACTALITY.md](TNFR_CRT_FRACTALITY.md) | CRT as U5 synthesis, exact Kronecker `L_ab = I−(I−L_a)⊗(I−L_b)` — **DERIVED + MEASURED** (synthesis, not factoring) |
+| R4 | [TNFR_PADIC_DYNAMICS.md](TNFR_PADIC_DYNAMICS.md) | Projective p-adic tower: transport exact — **DERIVED**; REMESH **CONJECTURAL** (contract gate closed) |
+| R5 | [TNFR_ALGEBRAIC_NUMBER_FIELDS.md](TNFR_ALGEBRAIC_NUMBER_FIELDS.md) | Finite/Gaussian fields: prime regression exact — **DERIVED**; split/inert/ramified detection **CONJECTURAL** (k-sensitive) |
+| R6 | [TNFR_ADDITIVE_DYNAMICS.md](TNFR_ADDITIVE_DYNAMICS.md) | Additive reading **= Fourier** exactly; no TNFR excess — reduction **DERIVED**, excess **NEGATIVE / OPEN** |
+| R7 | [TNFR_ARITHMETIC_PRESSURE.md](TNFR_ARITHMETIC_PRESSURE.md) | Pressure audit: sufficiency **PROVED**, primality-minimal **NEGATIVE** (redundant), independent **MEASURED**, complete **OPEN** |
+| R8 | [TNFR_ARITHMETIC_OPERATORS.md](TNFR_ARITHMETIC_OPERATORS.md) | Operator certification: 2 certified, 4 rejected — **MEASURED**; full classification **OPEN**; no 14th operator |
+| R9 | [TNFR_DIRECTED_NONNORMAL_DYNAMICS.md](TNFR_DIRECTED_NONNORMAL_DYNAMICS.md) | Directed non-normal: stable spectrum + transient amplification — **DERIVED + MEASURED**; U2 transient bound **OPEN** |
+
 ### Hierarchy
 
 1. [../AGENTS.md](../AGENTS.md) — Primary theoretical reference (complete framework overview)
