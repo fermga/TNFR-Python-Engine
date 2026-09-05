@@ -93,14 +93,23 @@ equivariant, so no canonical word can move a symmetric state into
 $\mathrm{Fix}(\Gamma)^\perp$ — the §8.1.7 falsification search finds no
 counterexample.
 
-**Measurement caveat (a real finding).** The certification requires **clean
-module state per operator**. The engine memoizes per-node work under *content*
-digests; on a symmetric, content-identical graph that state leaks across
-successive operator applications and makes a *batch* audit report spurious
-$\sim 10^{-3}$ residuals that vanish under isolation (verified: Silence is $0$ in
-isolation on both graphs, $\sim 10^{-3}$ only after other operators run). This is
-a property of the caching, not of the operators; the test isolates each operator
-(one `pytest` case each, under the autouse reset fixture).
+**Root cause and fix (N01).** The certification requires each operator to be
+measured from an **independent, clean graph cache**. TNFR content-keyed caches
+(`_dnfr_prep_cache`, `_node_set_checksum_cache`, the graph cache managers) live in
+`G.graph` and survive `networkx`'s `G.copy()` by **shared reference**; keyed on a
+**label-independent** node-set checksum, they collide between the two isomorphic
+copies `A` and `B = σ(A)`, so `B` reads `A`'s cached ΔNFR prep. On reused seed
+graphs this leaked across operators and made a *batch* audit report spurious
+$\sim 10^{-3}$ residuals (verified: Silence is $0$ in isolation, $\sim 10^{-3}$
+only after other operators run). The fix (`_isolate_graph_caches`) drops those
+content caches on each copy, so every measurement is an **independent
+experiment** with a private cache (report R1-T01: prefer per-experiment local
+cache when a global content key cannot distinguish isomorphic siblings). With it
+the batch audit is exactly $0$ for all 13 operators, independent of cache warmth,
+operator order, or repeated runs
+([test_equivariance_cache_isolation.py](../tests/physics/test_equivariance_cache_isolation.py)).
+The config keys (`_dnfr_weights`, `_DNFR_META`) are preserved — only the caches
+are isolated.
 
 ## 5. Honest scope
 

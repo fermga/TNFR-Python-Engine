@@ -30,24 +30,30 @@ __all__ = [
 
 _CHANNELS = (ALIAS_EPI, ALIAS_THETA, ALIAS_VF, ALIAS_DNFR)
 
+# TNFR content-keyed caches live in ``G.graph`` and survive ``networkx``'s
+# ``G.copy()`` by shared reference. They are keyed on a **label-independent**
+# node-set checksum, so on a symmetric graph two isomorphic copies (``B = σ(A)``)
+# collide and ``B`` reads ``A``'s cached ΔNFR prep — the cross-operator leak
+# (report R1-T01). Dropping these containers per copy makes each measurement an
+# independent experiment with a clean, private cache; config keys
+# (``_dnfr_weights``, ``_DNFR_META``, ``_dnfr_hook_name``) are preserved.
+_GRAPH_CACHE_HINTS = (
+    "cache", "checksum", "dirty", "_node_list", "_node_set",
+)
 
-def _clear_module_caches() -> None:
-    """Best-effort reset of content-keyed module caches between operators.
 
-    The engine memoizes per-node work under content digests; on a symmetric
-    (content-identical) graph that state can leak between successive operator
-    audits and masquerade as non-equivariance.  A single operator measured from
-    clean state (e.g. one pytest case under the autouse reset fixture) is exact;
-    :func:`audit_operator_equivariance` calls this between operators so the
-    standalone batch is best-effort isolated.
+def _isolate_graph_caches(H) -> None:
+    """Drop the TNFR content-keyed caches ``H`` inherited via ``G.copy()``.
+
+    After this ``H`` recomputes ΔNFR from a clean, private cache, so a warm
+    (cross-experiment) engine cache cannot leak an isomorphic sibling's value.
     """
-    try:
-        from ..utils.cache import clear_node_repr_cache, reset_global_cache
-
-        clear_node_repr_cache()
-        reset_global_cache()
-    except Exception:
-        pass
+    stale = [
+        key for key in list(H.graph)
+        if any(hint in key for hint in _GRAPH_CACHE_HINTS)
+    ]
+    for key in stale:
+        H.graph.pop(key, None)
 
 
 def operator_equivariance_residual(op, G, sigma: dict, node, *, channels=None):
@@ -56,15 +62,18 @@ def operator_equivariance_residual(op, G, sigma: dict, node, *, channels=None):
     ``A`` applies ``op`` at ``node``; ``B`` applies it at ``σ(node)``.  If ``op``
     is equivariant and the seed is σ-invariant, ``O@σ(node) = σ(O@node)`` so
     ``B[σ(u)] = A[u]`` for every node ``u`` and channel.  ΔNFR is recomputed on
-    both (it is an emergent network field).  Measure one operator from clean
-    module state (the engine's content caches leak across operators on a
-    symmetric graph).
+    both (it is an emergent network field).  Each copy's inherited content-keyed
+    graph caches are isolated (:func:`_isolate_graph_caches`), so the result is
+    independent of any warm engine cache — an isomorphic sibling cannot leak its
+    ΔNFR prep across the isomorphism.
     """
     from ..dynamics import default_compute_delta_nfr
 
     channels = _CHANNELS if channels is None else channels
     A = G.copy()
     B = G.copy()
+    _isolate_graph_caches(A)  # private, clean cache per copy (no sibling leak)
+    _isolate_graph_caches(B)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         op(A, node)
@@ -167,7 +176,6 @@ def audit_operator_equivariance(*, tol: float = 1e-6):
     cases = _test_cases()
     results: list[OperatorEquivarianceResult] = []
     for name, glyph, cls in catalog:
-        _clear_module_caches()  # best-effort isolation from the prior operator
         worst = 0.0
         for G, sigma, node in cases:
             op = cls()

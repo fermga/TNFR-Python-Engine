@@ -107,15 +107,17 @@ The research lines sit on this base; do not re-patch it.
   VF2, Reynolds projector `Q_Γ`, orbit decomposition), [equivariance.py](../src/tnfr/physics/equivariance.py),
   [operator_equivariance.py](../src/tnfr/physics/operator_equivariance.py).
 - **Result**: the diffusion operator is exactly Γ-equivariant (`spec(L_e) ⊆ ...`, Schur);
-  **all 13 operators** are equivariant on `Fix(Γ)` seeds (residual `<1e-6`) when audited
-  **in isolation**.
-- **Key gotcha (documented)**: the engine's content-keyed caching **leaks state across
-  operators** on symmetric graphs, producing spurious `~1e-3` residuals in a batch loop
-  that vanish under per-operator isolation (conftest `reset_global_state`). Any future
-  operator audit must isolate per-operator.
+  **all 13 operators** are equivariant on `Fix(Γ)` seeds (residual `<1e-6`, exactly `0`).
+- **Cache leak — ROOT-CAUSED & FIXED (N01)**: TNFR content-keyed caches in `G.graph`
+  (`_dnfr_prep_cache`, node-set checksum, cache managers) survive `G.copy()` by **shared
+  reference** and are keyed on a **label-independent** checksum, so the isomorphic copies
+  `A` and `B = σ(A)` collided and `B` read `A`'s prep — spurious `~1e-3` batch residuals.
+  `_isolate_graph_caches` drops those caches per copy (per-experiment isolation); the batch
+  audit is now exactly `0`, independent of cache warmth / order / repeated runs
+  ([test_equivariance_cache_isolation.py](../tests/physics/test_equivariance_cache_isolation.py)).
 - **Decision point**: the *general* theorem "every equivariant TNFR word preserves the
   sectors" still needs a **formal composition proof** and a treatment of
-  **non-equivariant selectors** (specific-node operators = pointed). Prove by stages.
+  **non-equivariant selectors** (specific-node operators = pointed). Prove by stages (N06→N07).
 
 ### R2 — Arithmetic pulse recurrence · `NT-P02` · **DERIVED + MEASURED**
 - **Built**: [krylov.py](../src/tnfr/mathematics/krylov.py) (exact rational Hankel/Krylov rank),
