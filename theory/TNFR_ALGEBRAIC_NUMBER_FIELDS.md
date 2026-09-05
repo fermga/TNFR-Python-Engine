@@ -57,6 +57,37 @@ does **not** transfer to extensions: `distinct = gcd(k, q−1) + 1` becomes an
 count and the explicit additive Cayley spectrum agree in every case
 (`period_and_explicit_spectrum_agree`), an internal consistency control.
 
+### 2b. Trace collisions as loss of observability (N10)
+
+The extension collisions are not a nuisance — they *are* the durable R5 result,
+read through observability
+([trace_collisions.py](../src/tnfr/mathematics/trace_collisions.py)). For the
+`k`-th powers `H = { a^k : a ∈ F_q^* }` the trace `Tr : F_q → F_p` collapses `H`
+onto the `p` residues; the **fiber counts** `N_a = #{ h ∈ H : Tr(h) = a }` are the
+collision structure and `#{ a : N_a > 0 }` is the number of trace values that stay
+**observable**. This is the observation map `y_m = c^* P^m b` of §12.3: R2
+(`b = c = e_0`) sees every mode, the trace is an observation that identifies
+states and can only reduce the visible order.
+
+Two exact facts make the histogram canonical:
+
+- **Character formula (DERIVED, exact).** Fourier inversion on `F_p` gives
+  `N_a = (1/p) Σ_{u∈F_p} ψ(−ua) Σ_{h∈H} ψ(u·Tr(h))` with `ψ(t) = e^{2πi t/p}`.
+  It reproduces the direct counts to machine precision (`residual ≈ 1e-16`);
+  `N_a = |H|/p + (1/p) Σ_{u≠0} ψ(−ua) S(u)`, so the character sums `S(u)` are the
+  exact deviation from equidistribution.
+- **Galois invariance (MEASURED).** `Tr(h^p) = Tr(h)` for every `h`, so the
+  collision histogram is a **representation-free** field invariant — not an
+  artifact of how `F_q` is coordinatized.
+
+Measured: on `F_p` the trace is the identity, every `h` keeps its own residue
+(`observed = |H|`, no collisions — R2 recovered); on `F_{p^f}` the trace is
+`p^{f-1}`-to-one, e.g. `F_8` collapses all 7 non-zero cubes onto `{0, 1}`
+(`observed = 2`, `max fiber = 4`) and `F_25` sends the 12 squares onto 4 of the 5
+residues (`observed = 4 < p`). The **type detector is not built** here: a
+`k`-selective ramified/inert/split separator stays `NT-P05c` **CONJECTURAL**; the
+R5 durable result is this exact, invariant trace-collision structure.
+
 ## 3. Gaussian integers: split / inert / ramified (MEASURED, CONJECTURAL)
 
 For a rational prime `p` the quotient `ℤ[i]/(p)` has three classical shapes fixed
@@ -93,6 +124,9 @@ measured evidence.
 | `F_p`: `#{η_a} = gcd(k, p−1) + 1` | trace = identity (R2) | **DERIVED** + MEASURED |
 | `F_q`: `#{η_a} ≤ gcd(k, q−1) + 1`, strict for some | trace many-to-one | **MEASURED** (exact counts) |
 | trace-character count = explicit spectrum | character theory | **MEASURED** (agree) |
+| `N_a` via character formula = exact fiber count | Fourier inversion on `F_p` (N10) | **DERIVED** + MEASURED (`~1e-16`) |
+| trace collision histogram is representation-free | `Tr(h^p) = Tr(h)` (N10) | **MEASURED** (Galois-invariant) |
+| `#{a : N_a>0}` = visible order under the trace | observation map `y = c^* P^m b` (N10) | **MEASURED** (`F_p` full, extensions collapse) |
 | `k=2` count separates ramified/inert/split | Cayley spectrum | **MEASURED** (small `p`) |
 | pulse detects decomposition type | — | **CONJECTURAL** (`NT-P05`; k-sensitive, descriptive) |
 

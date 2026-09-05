@@ -183,9 +183,18 @@ The research lines sit on this base; do not re-patch it.
   does **not** transfer). ℤ[i]/(p) at `k=2` separates ramified(2)/inert(3)/split(6).
 - **Honest scope**: the Gaussian detector uses the classical type only as a **ground-truth
   label** (DESCRIPTIVE), is **k-sensitive** (k=3,4 don't separate), tested on small `p`.
-- **Decision point**: two open sub-questions — (a) a closed formula for the extension
-  collision count (when is it strict?); (b) whether *any* `k`-independent observable detects
-  the decomposition type. Until then `NT-P05` stays **CONJECTURAL**.
+- **Trace-collision reframe — DERIVED (N10)**: added
+  [trace_collisions.py](../src/tnfr/mathematics/trace_collisions.py). The durable R5 result is
+  **loss of observability under the trace**: for the `k`-th powers `H`, the fiber counts
+  `N_a = #{h∈H : Tr(h)=a}` and `#{a : N_a>0}` (visible order) are reproduced **exactly** by the
+  character formula (Fourier inversion on `F_p`, residual `~1e-16`) and are
+  **Galois-invariant** (`Tr(h^p)=Tr(h)` — representation-free). Measured: `F_p` no collisions
+  (R2 recovered), `F_8` collapses 7 cubes onto `{0,1}`, `F_25` onto 4 of 5 residues. The
+  `k`-selective type detector is **not** built (`NT-P05c` stays CONJECTURAL)
+  ([test_trace_collisions.py](../tests/mathematics/test_trace_collisions.py)).
+- **Decision point**: the collision count now has an exact character formula (N10);
+  sub-question (b) — a `k`-independent decomposition detector — stays **OPEN** and is only
+  pursued in N11 if a pre-registered `k`-independent rule emerges. `NT-P05c` CONJECTURAL.
 
 ### R6 — Controlled additive-character theory · `NT-P06` · reduction **DERIVED**, excess **NEGATIVE / OPEN**
 - **Built**: [additive_resonance.py](../src/tnfr/mathematics/additive_resonance.py) (local
@@ -266,7 +275,7 @@ The research lines sit on this base; do not re-patch it.
 | NT-P02 | pointed-pulse Hankel rank = `gcd(k,p−1)+1` | **DERIVED+MEASURED** |
 | NT-P03 | CRT realizes U5 for unit networks | **DERIVED+MEASURED** (synthesis; not factoring) |
 | NT-P04 | compatible p-adic tower realizes REMESH | transport **DERIVED**; REMESH **CONJECTURAL** (gate closed); **R4b honest close (N09)**: static `Lift·R_e` is a morphism failing only the temporal echo (3/4), genuine recurrence passes 4/4 — `NT-P04b` **MEASURED negative** for the tower |
-| NT-P05 | pulse detects split/inert/ramified | regression **DERIVED**; detection **CONJECTURAL** (k-sensitive) |
+| NT-P05 | pulse detects split/inert/ramified | regression **DERIVED**; **trace-collision count DERIVED** (N10: character formula exact + Galois-invariant, observability reading); detection **CONJECTURAL** (`NT-P05c`, k-sensitive) |
 | NT-P06 | TNFR additive phase exceeds Fourier | **NEGATIVE / OPEN** (reduction exact; no excess) |
 | NT-P07 | 3-channel pressure minimal & complete | split (N02): `a` sufficiency **PROVED**; `b` functional independence **PROVED** (exact witness proof over ℚ); `c` minimal-for-primality **NEGATIVE** (redundant); `d` completeness **OPEN** (task-scoped); `e` primality-as-algorithm **CIRCULAR** |
 | NT-P08 | arithmetic maps ↔ operators | 2 **MEASURED** certificates, 4 rejected; **morphism taxonomy DERIVED** (N08: intertwiner = nodal-flow transport, 6 kinds emerge + 1 boundary, `Q_Γ` = sector `PROJECTION`); full classification **OPEN** |
