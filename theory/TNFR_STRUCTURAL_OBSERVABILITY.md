@@ -111,6 +111,36 @@ operator order, or repeated runs
 The config keys (`_dnfr_weights`, `_DNFR_META`) are preserved — only the caches
 are isolated.
 
+## 4c. Word composition closure (N06)
+
+The base case (§4b) plus one algebraic step give the *general* word theorem.
+
+**Theorem (composition closure).** If each factor `O_i` is Γ-equivariant
+(`O_i ρ(g) = ρ(g) O_i` for every automorphism `g`), then the grammar word
+`W = O_k ∘ … ∘ O_1` is Γ-equivariant. *Proof (induction on length).* Length 1 is
+the per-operator base case. For `W' = O ∘ W` with `W, O` equivariant,
+
+$$W' \rho(g) = O\,(W \rho(g)) = O\,(\rho(g)\,W) = (O \rho(g))\,W = \rho(g)\,(O W) = \rho(g)\,W'. \qquad\blacksquare$$
+
+**Corollary (`Fix(Γ)` preservation).** An equivariant `W` maps `Fix(Γ)` into
+`Fix(Γ)`: if `ρ(g)x = x` for all `g` then `ρ(g) W(x) = W(ρ(g)x) = W(x)`. A
+symmetric configuration therefore **cannot** be pushed into `Fix(Γ)^⊥` by any
+grammar word — the wall of examples 117–122 and the Riemann residual
+`S(T) ∈ Fix(S_n)^⊥`.
+
+**Status.** The inductive **step is DERIVED** (the algebra above); the length-1
+**base case is MEASURED** (§4b, all 13 operators). The composition-closure
+*conclusion* is therefore DERIVED conditional on the measured base case — not a
+new empirical claim per word. The measurement in
+[word_equivariance.py](../src/tnfr/physics/word_equivariance.py) confirms it: the
+five canonical words (Bootstrap, Bootstrap+close, Stabilize, Propagate, Explore)
+have **exactly zero** residual on both test cases, every prefix stays within
+tolerance (`composition_closure_holds`), and a Γ-symmetric sweep keeps the seed
+orbit-constant (`word_preserves_fix`)
+([test_word_equivariance.py](../tests/physics/test_word_equivariance.py)). This
+closes remaining item (i) of §5; the residual open piece is the non-equivariant
+**selector** (ii).
+
 ## 5. Honest scope
 
 This is the representation theory of graph automorphisms (Schur's lemma)
@@ -120,9 +150,10 @@ residue-digraph vertex-transitivity wall (ex 120), the substrate blindness, the
 spectral primality (ex 119) and the Riemann residual
 $S(T)\in\ker(\mathcal R_\infty)\cap\mathrm{Fix}(S_n)^\perp$ — as one
 `Fix(Γ)/Fix(Γ)^⊥` split for different groups. It is **not** new mathematics and
-closes no open problem. The diffusion base case **and** the per-operator audit
-(§4b, all 13 equivariant under isolation) are certified; what remains for the
-*fully general* theorem is (i) a formal — not only measured — proof that
-grammatical composition preserves equivariance, and (ii) the treatment of
-non-equivariant **selectors** (a specific-node selector is pointed, §4), which is
-a property of the selection policy, not of the operators.
+closes no open problem. The diffusion base case, the per-operator audit (§4b, all
+13 equivariant under isolation) **and** the word composition-closure theorem
+(§4c) are now established: composition preserves equivariance by a derived
+induction on the measured base case. What remains for the *fully general*
+statement is the treatment of non-equivariant **selectors** (a specific-node
+selector is pointed, §4), which is a property of the selection policy, not of the
+operators.

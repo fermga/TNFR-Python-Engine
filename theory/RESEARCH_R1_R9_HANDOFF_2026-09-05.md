@@ -115,9 +115,17 @@ The research lines sit on this base; do not re-patch it.
   `_isolate_graph_caches` drops those caches per copy (per-experiment isolation); the batch
   audit is now exactly `0`, independent of cache warmth / order / repeated runs
   ([test_equivariance_cache_isolation.py](../tests/physics/test_equivariance_cache_isolation.py)).
-- **Decision point**: the *general* theorem "every equivariant TNFR word preserves the
-  sectors" still needs a **formal composition proof** and a treatment of
-  **non-equivariant selectors** (specific-node operators = pointed). Prove by stages (N06→N07).
+- **Word composition closure — DERIVED (N06)**: added
+  [word_equivariance.py](../src/tnfr/physics/word_equivariance.py). The inductive step
+  (`W' = O∘W`, both equivariant ⟹ `W'` equivariant) is a derived algebraic identity; the
+  length-1 base case is the measured per-operator equivariance. Corollary: an equivariant
+  word maps `Fix(Γ)` into `Fix(Γ)` (a symmetric state cannot reach `Fix(Γ)^⊥`). Measured:
+  the five canonical words have exactly-`0` residual, every prefix stays within tolerance,
+  and a Γ-symmetric sweep preserves orbit-constancy
+  ([test_word_equivariance.py](../tests/physics/test_word_equivariance.py)).
+- **Decision point**: the remaining piece for the *fully general* theorem is the treatment of
+  **non-equivariant selectors** (specific-node operators = pointed, N07); composition closure
+  is now settled.
 
 ### R2 — Arithmetic pulse recurrence · `NT-P02` · **DERIVED + MEASURED**
 - **Built**: [krylov.py](../src/tnfr/mathematics/krylov.py) (exact rational Hankel/Krylov rank),
@@ -233,7 +241,7 @@ The research lines sit on this base; do not re-patch it.
 
 | Claim | Statement | Status now |
 |-------|-----------|------------|
-| NT-P01 | symmetry sectors invariant under equivariant TNFR words | **DERIVED+MEASURED** (diffusion + 13 ops isolated); general proof staged |
+| NT-P01 | symmetry sectors invariant under equivariant TNFR words | **DERIVED+MEASURED** (diffusion + 13 ops isolated); **composition closure DERIVED** (N06: induction on the measured base case, `Fix(Γ)` preservation corollary); remaining piece = non-equivariant selectors (pointed, N07) |
 | NT-P02 | pointed-pulse Hankel rank = `gcd(k,p−1)+1` | **DERIVED+MEASURED** |
 | NT-P03 | CRT realizes U5 for unit networks | **DERIVED+MEASURED** (synthesis; not factoring) |
 | NT-P04 | compatible p-adic tower realizes REMESH | transport **DERIVED**; REMESH **CONJECTURAL** (gate closed) |
