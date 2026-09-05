@@ -117,6 +117,44 @@ with distinct semantics. **U2 in [AGENTS.md](../AGENTS.md) §6 is not modified**
 until the gate (defined quantity, chosen metric, EPI-channel proof, normal +
 non-normal certificate, temporal U6 bound) is met.
 
+## 4c. Structural-time theorem — νf as a clock (N04)
+
+For a scalar common frequency `ν_f(t) ≥ 0`, the linear EPI transport
+`ẋ = −ν_f(t) L x` on a fixed graph has the **exact** solution
+
+$$x(t) = e^{-s(t)\,L}\,x_0,\qquad s(t) = \int_0^t \nu_f(\tau)\,d\tau,$$
+
+because `L` is constant and all `ν_f(τ)L` commute. So `ν_f` is a **clock change**
+(a mobility, not a mass): it rescales the speed along a **fixed** state-space
+trajectory. Verified (`clock_change_residual`): an RK4 integrator of the
+time-varying ODE converges to `e^{−s(t)L}x_0` (`~3e-7`, shrinking with
+refinement).
+
+**Total reorganization is clock-invariant.** With the substitution `s = s(t)`,
+`ds = ν_f dt`,
+
+$$\int_0^\infty \nu_f(t)\,\lVert L\,e^{-s(t)L} Q x_0\rVert\,dt
+= \int_0^\infty \lVert L\,e^{-sL} Q x_0\rVert\,ds,$$
+
+so the accumulated structural variation depends on the **trajectory**, not the
+speed (`reorganization_time_invariance_residual`, `~3e-6`). Here `Q = I − 1πᵀ` is
+the projection out of the consensus mode; since `L·1 = 0` and `πᵀL = 0`,
+`LQ = QL = L` and `Q` commutes with the semigroup.
+
+**Finite reorganization (the linear-EPI-channel U2 form).** On the non-consensus
+subspace `‖e^{−sL}Q‖ ≤ M e^{−ωs}` with `M = ` `sustained_gain` (`= 1` normal,
+`> 1` non-normal — the transient cost) and `ω = ` `nonconsensus_abscissa` (the
+spectral gap). Hence
+
+$$J = \int_0^\infty \lVert L\,e^{-sL} Q x_0\rVert\,ds \;\le\; \frac{M\,\lVert LQ\rVert\,\lVert x_0\rVert}{\omega},$$
+
+`certify_structural_time` verifies `J ≤ bound` (measured: `J = 1.70 ≤ 2.20`). This
+is the exact, EPI-channel, scalar-frequency form of U2's `∫ ν_f ΔNFR dt < ∞`: the
+integral converges, and the non-normal cost is the finite factor `M`. It is
+**restricted** to the linear EPI channel with a **scalar** `ν_f` on a fixed graph;
+heterogeneous nodal `ν_f` (a diagonal `D_{ν_f}(t)`) is **not** a clock change and
+is out of scope (N13, `NT-P09` heterogeneous).
+
 ## 5. Claim ledger
 
 | Claim | Basis | Status |
@@ -129,6 +167,9 @@ non-normal certificate, temporal U6 bound) is met.
 | diffusion contracts in `L²(π)` (stationary gain `≤ 1`) | Jensen (N03) | **DERIVED** + MEASURED |
 | the Euclidean transient is metric-dependent | N03 metric layer | **MEASURED** (eucl `> 1`, stat `= 1`) |
 | `net ≤ total` U2 integral readings | triangle inequality | **DERIVED** + MEASURED |
+| `x(t) = e^{−s(t)L}x₀`, `s = ∫ν_f` (scalar-`ν_f` clock change) | commuting flow (N04) | **DERIVED** + MEASURED (RK4 `~3e-7`) |
+| total reorganization is clock-invariant | change of variables (N04) | **DERIVED** + MEASURED (`~3e-6`) |
+| `J ≤ M‖LQ‖‖x₀‖/ω` (finite reorganization) | exponential decay on `Q` (N04) | **DERIVED** + MEASURED |
 | which norm/integral is the canonical U2 | — | **OPEN** (`NT-P09b/c`; gate not met) |
 | generalized U2 bound for non-normal transients | — | **OPEN / CONJECTURAL** (`NT-P09`) |
 

@@ -28,6 +28,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from typing import Callable
 
 import numpy as np
 
@@ -60,6 +61,15 @@ __all__ = [
     "total_reorganization",
     "U2IntegralReadings",
     "u2_integral_readings",
+    "consensus_projection",
+    "nonconsensus_abscissa",
+    "sustained_gain",
+    "structural_time",
+    "clock_change_residual",
+    "reorganization_time_invariance_residual",
+    "total_variation_bound",
+    "StructuralTimeCertificate",
+    "certify_structural_time",
 ]
 
 
@@ -385,3 +395,192 @@ def u2_integral_readings(
         generator, x0, kind=kind, pi=pi, t_max=t_max, samples=samples
     )
     return U2IntegralReadings(kind.value, net, total)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# N04 — structural-time theorem (scalar common frequency)
+# For a scalar frequency ν_f(t) ≥ 0 the linear EPI transport ẋ = −ν_f(t) L x has
+# the exact solution x(t) = e^{−s(t) L} x₀ with s(t) = ∫₀^t ν_f (all ν_f(τ) L
+# commute, L constant). ν_f is a CLOCK CHANGE (mobility), not a mass: it rescales
+# the speed along a FIXED state-space trajectory. On the non-consensus subspace
+# Q = I − 1πᵀ the semigroup decays (‖e^{−sL}Q‖ ≤ M e^{−ωs}), so the total
+# reorganization is finite: J ≤ M‖LQ‖‖x₀‖/ω. Linear EPI channel, fixed graph.
+# ════════════════════════════════════════════════════════════════════════════
+def consensus_projection(adjacency) -> np.ndarray:
+    r"""Projection ``Q = I − 1 πᵀ`` out of the stationary consensus mode.
+
+    ``Q`` annihilates the consensus (``Q·1 = 0``, ``πᵀQ = 0``), is idempotent,
+    and commutes with ``L`` (``L·1 = 0`` and ``πᵀL = 0`` give ``LQ = QL = L``).
+    """
+    pi = stationary_distribution(adjacency)
+    n = len(pi)
+    return np.eye(n) - np.outer(np.ones(n), pi)
+
+
+def nonconsensus_abscissa(adjacency, *, tol: float | None = None) -> float:
+    r"""``ω = min_{λ≠0} Re λ(L)`` — the relaxation rate on the non-consensus
+    subspace (the spectral gap of the diffusion generator)."""
+    laplacian = directed_rw_laplacian(adjacency)
+    if tol is None:
+        tol = derived_tolerance(laplacian)
+    eig = np.linalg.eigvals(laplacian)
+    nonzero = eig[np.abs(eig) > tol]
+    if nonzero.size == 0:
+        return 0.0
+    return float(np.min(nonzero.real))
+
+
+def sustained_gain(
+    adjacency, *, t_max: float = 40.0, samples: int = 200
+) -> float:
+    r"""``M = sup_{s≥0} ‖e^{−sL} Q‖₂`` — the sustained non-consensus gain.
+
+    ``M = 1`` for a normal generator (contraction); ``M > 1`` for a non-normal
+    one (the transient cost that a stable spectrum alone does not show).
+    """
+    laplacian = directed_rw_laplacian(adjacency)
+    q = consensus_projection(adjacency)
+    gain = 0.0
+    for s in np.linspace(0.0, t_max, samples):
+        gain = max(
+            gain, float(np.linalg.norm(matrix_exponential(-laplacian * s) @ q,
+                                       2))
+        )
+    return gain
+
+
+def structural_time(vf: Callable[[float], float], t_grid) -> np.ndarray:
+    r"""Structural time ``s(t) = ∫₀^t ν_f(τ) dτ`` (cumulative trapezoid)."""
+    t = np.asarray(t_grid, dtype=float)
+    vals = np.array([float(vf(ti)) for ti in t], dtype=float)
+    ds = (vals[1:] + vals[:-1]) / 2.0 * np.diff(t)
+    return np.concatenate([[0.0], np.cumsum(ds)])
+
+
+def _rk4_transport(laplacian, x0, vf, t_grid) -> np.ndarray:
+    r"""RK4 integration of ``ẋ = −ν_f(t) L x`` on ``t_grid`` (returns x(t))."""
+    x = np.asarray(x0, dtype=float).copy()
+    out = [x.copy()]
+    for i in range(len(t_grid) - 1):
+        t, h = t_grid[i], t_grid[i + 1] - t_grid[i]
+
+        def f(tt, xx):
+            return -float(vf(tt)) * (laplacian @ xx)
+
+        k1 = f(t, x)
+        k2 = f(t + h / 2, x + h / 2 * k1)
+        k3 = f(t + h / 2, x + h / 2 * k2)
+        k4 = f(t + h, x + h * k3)
+        x = x + h / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
+        out.append(x.copy())
+    return np.array(out)
+
+
+def clock_change_residual(
+    adjacency, x0, vf: Callable[[float], float], t_grid
+) -> float:
+    r"""``max_t ‖x_RK4(t) − e^{−s(t)L} x₀‖`` for ``ẋ = −ν_f(t) L x``.
+
+    A numerical (non-exponential) integrator of the time-varying ODE converges to
+    the clock-changed exponential ``e^{−s(t)L} x₀`` — the structural-time theorem.
+    """
+    laplacian = directed_rw_laplacian(adjacency)
+    t = np.asarray(t_grid, dtype=float)
+    x_rk4 = _rk4_transport(laplacian, x0, vf, t)
+    s = structural_time(vf, t)
+    x0v = np.asarray(x0, dtype=float)
+    x_exact = np.array(
+        [matrix_exponential(-laplacian * si) @ x0v for si in s]
+    )
+    return float(np.max(np.abs(x_rk4 - x_exact)))
+
+
+def reorganization_time_invariance_residual(
+    adjacency, x0, vf: Callable[[float], float], t_grid
+) -> float:
+    r"""Relative residual of the change-of-variables identity
+
+    ``∫ ν_f(t) ‖L e^{−s(t)L} Q x₀‖ dt = ∫ ‖L e^{−sL} Q x₀‖ ds``,
+
+    i.e. the total reorganization is **invariant** under the ``ν_f`` clock change
+    (it depends on the trajectory, not the speed).
+    """
+    laplacian = directed_rw_laplacian(adjacency)
+    q = consensus_projection(adjacency)
+    x0v = np.asarray(x0, dtype=float)
+    t = np.asarray(t_grid, dtype=float)
+    s = structural_time(vf, t)
+
+    def speed(si):
+        return float(np.linalg.norm(
+            laplacian @ (matrix_exponential(-laplacian * si) @ q @ x0v)
+        ))
+
+    lhs = float(np.trapezoid([float(vf(ti)) * speed(si)
+                              for ti, si in zip(t, s)], t))
+    s_grid = np.linspace(0.0, s[-1], len(t))
+    rhs = float(np.trapezoid([speed(si) for si in s_grid], s_grid))
+    return abs(lhs - rhs) / max(rhs, np.finfo(float).eps)
+
+
+def total_variation_bound(
+    adjacency, x0, *, t_max: float = 60.0, samples: int = 600
+) -> tuple[float, float, bool]:
+    r"""``(J, bound, J ≤ bound)`` for the total reorganization on the
+    non-consensus subspace.
+
+    ``J = ∫₀^∞ ‖L e^{−sL} Q x₀‖ ds`` and ``bound = M ‖LQ‖ ‖x₀‖ / ω`` with
+    ``M = sustained_gain``, ``ω = nonconsensus_abscissa``. Finiteness of ``J`` is
+    the linear-EPI-channel form of U2 integral convergence.
+    """
+    laplacian = directed_rw_laplacian(adjacency)
+    q = consensus_projection(adjacency)
+    x0v = np.asarray(x0, dtype=float)
+    ts = np.linspace(0.0, t_max, samples)
+    speeds = [
+        float(np.linalg.norm(
+            laplacian @ (matrix_exponential(-laplacian * s) @ q @ x0v)))
+        for s in ts
+    ]
+    j = float(np.trapezoid(speeds, ts))
+    m = sustained_gain(adjacency)
+    omega = nonconsensus_abscissa(adjacency)
+    lq_norm = float(np.linalg.norm(laplacian @ q, 2))
+    x0_norm = float(np.linalg.norm(x0v, 2))
+    bound = m * lq_norm * x0_norm / omega if omega > 0 else float("inf")
+    return j, bound, j <= bound * (1.0 + 1e-6)
+
+
+@dataclass(frozen=True)
+class StructuralTimeCertificate:
+    """Certificate of the scalar-frequency structural-time theorem (N04)."""
+
+    nonconsensus_abscissa: float
+    sustained_gain: float  # M
+    clock_change_residual: float
+    reorganization_invariance_residual: float
+    total_reorganization: float
+    total_reorganization_bound: float
+    bound_holds: bool
+
+
+def certify_structural_time(
+    adjacency, x0, vf: Callable[[float], float], t_grid
+) -> StructuralTimeCertificate:
+    r"""Bundle the structural-time theorem checks for a digraph and ``ν_f(t)``."""
+    omega = nonconsensus_abscissa(adjacency)
+    m = sustained_gain(adjacency)
+    clock = clock_change_residual(adjacency, x0, vf, t_grid)
+    invariance = reorganization_time_invariance_residual(
+        adjacency, x0, vf, t_grid
+    )
+    j, bound, holds = total_variation_bound(adjacency, x0)
+    return StructuralTimeCertificate(
+        nonconsensus_abscissa=omega,
+        sustained_gain=m,
+        clock_change_residual=clock,
+        reorganization_invariance_residual=invariance,
+        total_reorganization=j,
+        total_reorganization_bound=bound,
+        bound_holds=holds,
+    )
