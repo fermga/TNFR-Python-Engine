@@ -189,6 +189,30 @@ random strongly-connected digraphs *and* extreme in-hub constructions (worst
 metric (`NT-P09b/c` OPEN) and does **not** modify U2/U6 in
 [AGENTS.md](../AGENTS.md).
 
+## 4e. Heterogeneous `ν_f` — where the clock change stops (N13)
+
+N04 needs a **common** `ν_f(t)`: then all generators `ν_f(τ)L` commute and
+`ẋ = −ν_f(t) L x` integrates to the clock change `x(t) = e^{−s(t)L}x₀`. A
+**heterogeneous** nodal frequency `D_{ν_f}(t) = diag(ν_f₁, …, ν_fₙ)` breaks this
+([heterogeneous_vf.py](../src/tnfr/physics/heterogeneous_vf.py)):
+`ẋ = −D_{ν_f}(t) L x` has generators `D_{ν_f}(t)L` that **do not commute**, so no
+clock change exists.
+
+- **No clock change (DERIVED + MEASURED).** The commutator `‖[D₁L, D₂L]‖` is `0`
+  for a common schedule (both are multiples of `L`) but `> 0` for a heterogeneous
+  one (measured `0.88`, `1.43`). The scalar-time ansatz `e^{−s̄(t)L}x₀` with
+  `s̄ = ∫ mean_i ν_f_i` is exact (`residual ≈ 0`) for a common schedule and
+  **fails** for a heterogeneous one (`residual ≈ 0.09–0.13`, ` > 10×` larger) — the
+  N04 theorem does **not** extend.
+- **Frozen stability (MEASURED).** A fixed positive `D_{ν_f}` keeps `−D_{ν_f}L`
+  stable: `L·1 = 0 ⇒ D_{ν_f}L·1 = 0` (consensus preserved) and the spectral
+  abscissa is `≤ 0`. The non-consensus transient gain stays `= 1` on the tested
+  graphs (no heterogeneity-induced amplification observed).
+- **Uniform stability (OPEN).** Whether the time-varying / switched flow is
+  **uniformly** stable for all schedules is not settled here — switched systems can
+  destabilise even when each frozen mode is stable. `NT-P09` heterogeneous stays
+  **OPEN**; U2/U6 are **not** modified.
+
 ## 5. Claim ledger
 
 | Claim | Basis | Status |
@@ -207,6 +231,9 @@ metric (`NT-P09b/c` OPEN) and does **not** modify U2/U6 in
 | non-consensus dynamics contracts in the Euclidean per-node energy (`peak = 1`) | `½(L_sub+L_subᵀ) ≻ 0` (N05) | **MEASURED** (2·10⁵ + in-hub, no counterexample) |
 | the ambient `M>1` is exactly the oblique factor `‖Q‖` | `Q` oblique, sup at `s=0` (N05) | **MEASURED** (`ambient = ‖Q‖`) |
 | `½(L_sub+L_subᵀ) ≻ 0` for every random-walk digraph | — | **CONJECTURAL** (no proof) |
+| scalar clock-change theorem does not extend to heterogeneous `ν_f` | `‖[D₁L,D₂L]‖ > 0` (N13) | **DERIVED** + MEASURED (ansatz residual large) |
+| a frozen positive `D_{ν_f}` keeps `−D_{ν_f}L` stable | consensus preserved, `α ≤ 0` (N13) | **MEASURED** |
+| uniform stability of the time-varying heterogeneous flow | — | **OPEN** (`NT-P09` heterogeneous) |
 | which norm/integral is the canonical U2 | — | **OPEN** (`NT-P09b/c`; gate not met) |
 | generalized U2 bound for non-normal transients | — | **OPEN / CONJECTURAL** (`NT-P09`) |
 
