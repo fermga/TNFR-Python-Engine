@@ -135,8 +135,16 @@ The research lines sit on this base; do not re-patch it.
   deviate (control). Turns the static cyclotomy rank into the order of the temporal pulse.
 - **Honest scope**: a recurrence-order identity, **not** a primality test (building the
   `p`-node network is exponential in `log₂ p`).
-- **Decision point**: essentially closed. Optional extension: a closed-form for the pulse
-  **amplitudes** `a_j` (not just the count), or the composite-`n` structure.
+- **Amplitudes — DERIVED (N12)**: added
+  [pulse_amplitudes.py](../src/tnfr/mathematics/pulse_amplitudes.py). The pulse amplitudes are
+  the **normalized spectral multiplicities** `a_λ = m_λ/n` (`NT-P02b`): `e₀` has uniform Fourier
+  weight `1/p` on the circulant, so grouping modes by distinct eigenvalue gives
+  `h(t) = Σ_λ (m_λ/p) e^{−tλ}`. Exact rationals summing to 1; confirmed by the spectral
+  projector (`e₀^*P_λe₀ = m_λ/p`, basis-invariant `~1e-16`) and exact rational moment
+  reconstruction (`~1e-13`); #tones = R2 rank
+  ([test_pulse_amplitudes.py](../tests/mathematics/test_pulse_amplitudes.py)).
+- **Decision point**: R2 is now **closed** — rank (NT-P02) and amplitudes (NT-P02b) both
+  DERIVED+MEASURED. Reopen only for a composite-`n` structure theorem or an R3/R5 composition.
 
 ### R3 — CRT as U5 fractality · `NT-P03` · **DERIVED + MEASURED**
 - **Built**: [crt_multiscale.py](../src/tnfr/mathematics/crt_multiscale.py); new
@@ -273,6 +281,7 @@ The research lines sit on this base; do not re-patch it.
 |-------|-----------|------------|
 | NT-P01 | symmetry sectors invariant under equivariant TNFR words | **DERIVED+MEASURED** (diffusion + 13 ops isolated); **composition closure DERIVED** (N06: induction on the measured base case, `Fix(Γ)` preservation corollary); **pointed selector DERIVED** (N07: `Aut(G)→Γ_v` orbit–stabilizer, residual-sector refinement, origin conjugation); R1 picture complete |
 | NT-P02 | pointed-pulse Hankel rank = `gcd(k,p−1)+1` | **DERIVED+MEASURED** |
+| NT-P02b | pointed-circulant amplitudes = `m_λ/n` (normalized multiplicities) | **DERIVED+MEASURED** (N12: uniform Fourier weight; exact reconstruction, basis-invariant) |
 | NT-P03 | CRT realizes U5 for unit networks | **DERIVED+MEASURED** (synthesis; not factoring) |
 | NT-P04 | compatible p-adic tower realizes REMESH | transport **DERIVED**; REMESH **CONJECTURAL** (gate closed); **R4b honest close (N09)**: static `Lift·R_e` is a morphism failing only the temporal echo (3/4), genuine recurrence passes 4/4 — `NT-P04b` **MEASURED negative** for the tower |
 | NT-P05 | pulse detects split/inert/ramified | regression **DERIVED**; **trace-collision count DERIVED** (N10: character formula exact + Galois-invariant, observability reading); detection **CONJECTURAL** (`NT-P05c`, k-sensitive) |

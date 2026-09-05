@@ -61,6 +61,31 @@ does **not** — e.g. ``n = 15, k = 2`` gives rank ``9 ≠ 3``. The identity is
 prime-specific; an occasional coincidental composite match (``n=15, k=3``) is why
 this is a **control**, not a primality test.
 
+### 3b. The amplitudes (DERIVED, N12)
+
+The recurrence order fixes *how many* tones the pulse has; the **amplitudes**
+``a_j`` fix *how loud* each is
+([pulse_amplitudes.py](../src/tnfr/mathematics/pulse_amplitudes.py)). Because
+``L_rw`` is a **circulant** it is diagonalized by the Fourier basis
+``f_j[x] = ω^{jx}/√p``, and the pointed seed has **uniform** Fourier weight,
+``|⟨e_0, f_j⟩|² = |f_j[0]|² = 1/p`` for every ``j``. Grouping the ``p`` modes by
+distinct eigenvalue ``λ`` of multiplicity ``m_λ``,
+
+$$h(t) = \sum_{j} \tfrac1p\, e^{-t\lambda_j} = \sum_{\lambda} \frac{m_\lambda}{p}\, e^{-t\lambda},
+\qquad a_\lambda = \frac{m_\lambda}{p}.$$
+
+**Theorem (`NT-P02b`).** The pointed-circulant pulse amplitudes are the
+**normalized spectral multiplicities** ``a_λ = m_λ/n`` (``n = p``) — exact
+rationals summing to ``1``. Two independent confirmations: the orthogonal
+spectral projector gives ``e_0^* P_λ e_0 = m_λ/p`` (**basis-invariant** — a random
+unitary rotation inside a degenerate eigenspace leaves it unchanged,
+``~1e-16``), and ``Σ_λ (m_λ/p)\,λ^m`` reconstructs the **exact rational** moments
+``μ_m = e_0^\top L^m e_0`` (``~1e-13``). Example ``(p,k)=(11,2)``: the spectrum is
+``a = 1/11`` at ``λ=0`` plus ``5/11`` on each of the two conjugate eigenvalues
+``1.10 ∓ 0.332i`` (real pulse, ``1/11 + 5/11 + 5/11 = 1``). The number of tones is
+the R2 rank ``gcd(k,p−1)+1``, so the amplitude spectrum refines the rank without
+changing it.
+
 ## 4. Two faces (do not mix)
 
 - **Dissipative face**: the heat semigroup ``e^{−ν_f L t}`` — valid with complex
