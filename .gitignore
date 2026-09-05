@@ -6,6 +6,7 @@ dist/
 build/
 site/
 docs/_build/
+build/docs-source/
 *.egg-info/
 *.egg
 .semantic_release/

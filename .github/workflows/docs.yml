@@ -1,62 +1,62 @@
-name: Build and Deploy Documentation (DISABLED)
+name: Documentation
 
-# DISABLED: Documentation is now built locally only. This workflow stays valid
-# but only runs on manual dispatch (a workflow with no 'on:' trigger is invalid
-# and reports a startup failure on every push). To re-enable automatic builds,
-# add the push / pull_request triggers under 'on:' below.
 on:
+  push:
+    branches: [main]
+    paths:
+      - '**.md'
+      - 'mkdocs.yml'
+      - 'pyproject.toml'
+      - 'scripts/check_documentation.py'
+      - 'scripts/prepare_docs.py'
+      - 'scripts/verify_internal_references.py'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**.md'
+      - 'mkdocs.yml'
+      - 'pyproject.toml'
+      - 'scripts/check_documentation.py'
+      - 'scripts/prepare_docs.py'
+      - 'scripts/verify_internal_references.py'
+      - '.github/workflows/docs.yml'
   workflow_dispatch: {}
 
-jobs:
-  build-deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+concurrency:
+  group: documentation-${{ github.ref }}
+  cancel-in-progress: true
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-
-      - name: Install dependencies
+          cache: pip
+      - name: Install project and documentation dependencies
+        run: python -m pip install --upgrade pip && python -m pip install '.[docs]'
+      - name: Verify documentation sources
         run: |
-          python -m pip install --upgrade pip
-          pip install -r docs/requirements.txt
-
-      - name: Sync README files
+          python scripts/verify_internal_references.py --ci
+          python scripts/check_documentation.py
+      - name: Build canonical site
         run: |
-          python scripts/sync-readme-docs.py
-
-      - name: Build docs
-        run: |
-          mkdocs build
-
-      - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main'
+          python scripts/prepare_docs.py
+          python -m mkdocs build --strict
+      - name: Deploy main documentation
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
+          publish_branch: gh-pages
           force_orphan: true
-          commit_message: "docs: deploy MkDocs site (${GITHUB_SHA})"
-
-  link-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install mkdocs mkdocs-material mkdocs-redirects
-      - name: Build (no deploy) & basic link check
-        run: |
-          mkdocs build
-          echo "(Basic build complete - consider adding lychee for deeper link checking)"
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+          commit_message: docs publish ${{ github.sha }}

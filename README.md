@@ -5,208 +5,176 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics on networks.
+TNFR is a Python framework for coherent-pattern analysis on graph-coupled
+networks. Every node carries form (EPI), structural frequency (`nu_f`, in
+`Hz_str`), and phase. Its evolution is organized by the nodal equation
 
-A single **nodal equation** drives every node. From it, a complete **transport and geometric structure emerges** — measured by the engine, verified to machine precision, and anchored to classical, experimentally-established physics. The graph is only the substrate; the dynamics generates its own geometry.
+$$
+\frac{\partial \mathrm{EPI}}{\partial t}=\nu_f\,\Delta\mathrm{NFR}(t).
+$$
+
+The repository implements 13 canonical structural operators, grammar U1-U6,
+network telemetry, the structural-field tetrad, and research programs built on
+those primitives. [AGENTS.md](AGENTS.md) is the canonical synthesized reference.
+Mathematical scope and counterexamples are stated explicitly in the linked
+theory documents.
 
 ```bash
 pip install tnfr
 ```
 
----
-
-## Core Ideas
-
-All systems evolve via the **nodal equation**:
-
-$$\frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t)$$
-
-Structural changes occur exclusively through **13 canonical operators** (AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR, NAV, REMESH) governed by **unified grammar rules U1-U6**. Each operator carries a canonical contract: it acts on exactly one channel of the nodal equation — the form EPI, the capacity νf, the phase θ, or the pressure ΔNFR — at node or network scale.
-
-System state is characterized by four **structural fields** — the four orders of the discrete structural-derivative tower (the tetrad). Only **π** is a genuine structural scale (the phase-wrap bound of the phase sector); the coherence length is set by the spectral gap (ξ_C ∝ 1/√λ₂) and the Φ_s confinement bound is π-derived. φ, γ, e are not structural scales — everything other than π emerges from the nodal dynamics.
-
-| Field | Tower order | Meaning & bound |
-|-------|-------------|------------------------------|
-| Φ_s | 0th (aggregation) | Structural potential (global stability); empirical bound, no closed form |
-| \|∇φ\| | 1st (local) | Phase gradient (local stress); bound \|∇φ\| ≤ π (phase wrap) |
-| K_φ | 2nd (local) | Phase curvature; bound \|K_φ\| < 0.9π; K_φ = L_rw·φ |
-| ξ_C | correlation | Coherence length; scale set by spectral gap, ξ_C ∝ 1/√λ₂ |
-
-**Complete theory**: [AGENTS.md](AGENTS.md)
-
----
-
-## From One Equation, a Geometry Emerges
-
-TNFR is more than dynamics on a graph. The graph is only the substrate; the nodal equation **generates its own geometry**, which the engine *measures* rather than postulates. Every structure below is verified to machine precision and anchored to classical, experimentally-established phenomena:
-
-- **Transport layer** (empirically anchored) — channel by channel, the nodal equation is a graph-Laplacian diffusion. From it emerge diffusion, synchronization (Kuramoto), random walks, effective resistance (Ohm/Kirchhoff), and standing-wave modes — all textbook phenomena.
-- **Emergent symplectic substrate** (TNFR-native) — the same dynamics carries a phase space with conserved charges (Noether), a Hamiltonian equal to the energy functional, complete integrability, and a polarization structure (Stokes/Poincaré).
-- **Orthogonal structure** — the dissipative (transport) and conservative (symplectic) parts are the two orthogonal Helmholtz–Hodge components of one flow.
-
-**Honest scope**: this reorganizes known mathematics and physics inside a single framework, verified in code. It is a *characterization* of structure the nodal equation already contains — not a claim of new physics.
-
----
-
-## Research Status
-
-Two clearly-separated layers:
-
-**Solid and verified.** The engine, the tetrad, grammar U1–U6, conservation laws, and the emergent transport + symplectic geometry are implemented, anchored to experimentally-established phenomena, and covered by 2,448 tests.
-
-**Open research programs.** TNFR is also used to probe famous open problems. These are honest, in-progress programs that **do not claim proofs**:
-
-| Program | What it does | Status |
-|---------|--------------|--------|
-| TNFR–Riemann | reads ζ as the integer-NFR **nodal pulse**; `S(T)` is the pulse phase and the critical line is its coherence axis | Riemann Hypothesis — **open** |
-| TNFR–Navier–Stokes | the **two-face reading**: linear NS is the diffusive (over-damped) projection, so blow-up is the nonlinear `K_φ` cascade, read through the emergent coherence attractor | 3D global regularity (Clay) — **open** |
-| TNFR–Yang–Mills | structural gap diagnostics on the gauge sector | non-Abelian mass gap — **open** |
-| TNFR–P vs NP | coherence verification O(\|E\|) vs synthesis trapping | worst-case separation — **open** |
-| TNFR–BSD | rank via structural-pressure accumulation | rank ↔ order of vanishing — **open** |
-| TNFR–Hodge | discrete Hodge = homology exactly (Eckmann) | (p,p) bigrading + algebraicity — **open** (structurally blind) |
-
-A separate **structural research program (R1–R9)** studies the arithmetic and spectral dynamics as internal theorems and constructive negatives — symmetry-sector observability with word-composition closure and pointed selectors (R1), the arithmetic pulse and its amplitudes `m_λ/n` (R2), CRT multiscale synthesis (R3), the projective p-adic tower and REMESH morphism audit (R4), trace-collision observability (R5), the additive-vs-Fourier negative (R6), the arithmetic-pressure profile (R7), the structural-morphism taxonomy derived from the nodal equation (R8), and directed non-normal dynamics with the scalar-`ν_f` clock-change theorem (R9). None is a Millennium claim; the canonical U2/U6 grammar is unchanged. Index: [theory/README.md](theory/README.md) · ledger: [theory/RESEARCH_R1_R9_HANDOFF_2026-09-05.md](theory/RESEARCH_R1_R9_HANDOFF_2026-09-05.md).
-
-See [AGENTS.md](AGENTS.md) and the `theory/` research notes for the full, audited status.
-
----
-
-## Quick Start
+## Quick start
 
 ```python
 from tnfr.sdk import TNFR
 
-# Create, connect, evolve
 net = TNFR.create(20).ring().evolve(5)
 print(net.results().summary())
-# -> C=0.987, Si=0.912, N=20, E=20, rho=0.105
+print(net.tetrad().summary())
+print(net.tetrad().is_safe())
 ```
 
-```python
-# Structural Field Tetrad — four canonical fields
-tetrad = net.tetrad()
-print(tetrad.summary())
-# -> Phi_s=0.0312, |grad_phi|=0.0841, |K_phi|=0.1523, xi_C=2.3147 (N=20)
-print(tetrad.is_safe())  # canonical threshold checks
+Current deterministic output for this uniform initial state:
+
+```text
+C=1.000, Si=1.000, N=20, E=20, rho=0.105
+Phi_s=0.0000, |grad_phi|=0.0000, |K_phi|=0.0000, xi_C=4.5201 (N=20)
+{'phi_s_safe': True, 'grad_phi_safe': True, 'k_phi_safe': True, 'xi_c_safe': True, 'overall': True}
 ```
 
-```python
-# Conservation laws — Noether charge, Lyapunov stability
-cons = net.conservation()
-print(cons.summary())
-# -> Q=1.2340, E=0.5678, dE/dt=-0.0012 (STABLE), quality=0.998
-```
+The same network exposes the principal read-outs:
 
 ```python
-# Emergent symplectic substrate — the geometry the dynamics generates
-sub = net.symplectic_substrate()
-print(sub.summary())
-# -> dim=80, H_sub=0.0000, U=0.0000, div(X_H)=0.00e+00 (VALID)
-# dim = 4N phase space; div(X_H)=0 => Liouville (volume-preserving)
-```
-
-```python
-# One-shot comprehensive analysis
+net.conservation()
+net.symplectic_substrate()
+net.rhythm()
+net.resonance()
+net.telemetry()
+net.audit_operators()
 analysis = TNFR.analyze(net)
-# Returns: coherence, tetrad, conservation, tensor_invariants,
-#          emergent_fields, integrity, features
 ```
 
+Grammar-aware evolution validates operator composition before applying it:
+
 ```python
-# Grammar-aware evolution (proactive U1-U6 enforcement)
 net.evolve_grammar_aware(steps=10)
 ```
 
-```python
-# Direct operator usage
-import networkx as nx
-from tnfr.operators.definitions import Emission, Coherence, Silence
-from tnfr.metrics.coherence import compute_coherence
+## Canonical structure
 
-G = nx.erdos_renyi_graph(20, 0.2)
-for node in G.nodes():
-    Emission()(G, node)
-    Coherence()(G, node)
-    Silence()(G, node)
+The public structural-field tetrad is `(Phi_s, |grad phi|, K_phi, xi_C)`.
 
-print(f"Coherence: {compute_coherence(G):.3f}")
-```
+| Field | Role | Exact or scoped statement |
+| --- | --- | --- |
+| `Phi_s` | Global pressure aggregation | General magnitude depends on pressure and graph geometry; `pi/4` and `pi/2` are selected warning policies |
+| Phase-gradient magnitude (`∇φ` norm) | Local phase stress | Mean absolute wrapped phase difference across neighboring nodes; exact bound `pi`, with `pi/16` as the selected warning threshold |
+| `K_phi` | Local wrapped phase curvature | Exact wrapped magnitude bound `pi`; `0.9*pi` is a warning margin |
+| `xi_C` | Non-local correlation range | Spectral estimate scales as `1/sqrt(lambda_2)` under its documented hypotheses |
 
----
+For small phase spread on a consistent branch and matching weight conventions,
+`K_phi` agrees with the random-walk Laplacian applied to phase. The EPI channel
+of `Delta NFR` is exact graph diffusion. These statements do not make every
+pressure channel a linear Laplacian or make the tetrad a complete state
+reconstruction theorem. See
+[Structural Fields](docs/STRUCTURAL_FIELDS_TETRAD.md) and
+[Minimal Structural Degrees](theory/MINIMAL_STRUCTURAL_DEGREES.md).
+
+Operators modify four nodal channels:
+
+- capacity `nu_f`: Silence, Expansion, Contraction;
+- pressure `Delta NFR`: Coherence, Dissonance, Self-organization, Transition;
+- phase: Coupling, Mutation;
+- form EPI: Emission, Reception, Resonance, Recursivity.
+
+The authoritative contracts live in
+[`operator_contracts.py`](src/tnfr/operators/operator_contracts.py). Grammar
+classifications are derived in
+[`physics_derivation.py`](src/tnfr/config/physics_derivation.py), materialized in
+[`grammar_canon.py`](src/tnfr/operators/grammar_canon.py), and exposed through
+[`grammar.py`](src/tnfr/operators/grammar.py).
+
+## Mathematical scope
+
+TNFR provides executable structural models, diagnostics, and reproducible
+experiments. Several correspondences are exact within stated finite-graph or
+linearized hypotheses; others are measured diagnostics or open conjectures.
+The current scope is centralized in:
+
+- [Unified Grammar Rules](theory/UNIFIED_GRAMMAR_RULES.md)
+- [Diagnostic and Grammar Scope](theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md)
+- [Minimal Structural Degrees](theory/MINIMAL_STRUCTURAL_DEGREES.md)
+- [Structural Conservation Theorem](theory/STRUCTURAL_CONSERVATION_THEOREM.md)
+
+The Riemann, Navier-Stokes, Yang-Mills, P-vs-NP, BSD, and Hodge programs remain
+open research programs. They do not claim solutions to the corresponding
+classical problems. Their current status is indexed in
+[the theory hub](theory/README.md).
 
 ## Installation
 
 ```bash
-pip install tnfr                       # stable release
-pip install -e ".[dev-minimal]"        # development
-pip install -e ".[test-all]"           # full test suite
-pip install -e ".[compute-jax]"        # JAX backend
-pip install -e ".[compute-torch]"      # PyTorch backend
+pip install tnfr
+pip install -e ".[dev-minimal]"   # local development
+pip install -e ".[test-all]"      # complete test tooling
+pip install -e ".[compute-jax]"   # optional JAX backend
+pip install -e ".[compute-torch]" # optional Torch numerical backend
+pip install -e ".[docs]"          # documentation build
 ```
 
----
+The Torch extra provides a supported numerical backend. TNFR does not currently
+ship a dedicated `TNFRGPUEngine` or promise CUDA speedups.
 
-## Project Structure
+## Repository map
 
 ```text
 src/tnfr/
-├── operators/         # 13 canonical operators + grammar U1–U6 (62 modules)
-├── physics/           # Tetrad, conservation, emergent symplectic substrate, structural diffusion (29 modules)
-├── engines/           # Self-optimization, pattern discovery, GPU/FFT (8 modules across 5 subpackages)
-├── dynamics/           # Nodal equation integration
-├── riemann/           # TNFR–Riemann program (52 modules; nodal-pulse foundation, RH open)
-├── navier_stokes/     # TNFR–Navier–Stokes program (conservative two-face reading, Clay open)
-├── yang_mills/        # TNFR–Yang–Mills diagnostics (mass gap open)
-├── sdk/               # Simplified & Fluent API (7 modules)
-│   └── simple.py      # Tetrad, conservation, symplectic substrate, grammar-aware dynamics
-├── mathematics/       # Number theory, backends
-├── constants/         # Canonical constants (mpmath 35-digit precision)
-├── metrics/           # Coherence, Si, phase sync, telemetry
-├── validation/        # Structural health monitoring + empirical-arm signal confrontation
-└── factorization/     # Spectral factorization workflow
-
-examples/              # 150 examples in 10 thematic subfolders (see examples/README.md)
-tests/                 # 1,633 tests
-theory/                # Theoretical derivations
-benchmarks/            # performance & structural-validation scripts
+├── config/          # runtime configuration and physics-derived classifications
+├── constants/       # canonical and operational constants
+├── operators/       # operator implementations, contracts, grammar and execution
+├── dynamics/        # Delta NFR computation and nodal integration
+├── physics/         # tetrad, diffusion, conservation and structural diagnostics
+├── metrics/         # coherence, sense index and telemetry kernels
+├── core/            # service protocols, defaults and dependency container
+├── services/        # orchestration facade
+├── sdk/             # simple and fluent public APIs
+├── engines/         # optimization and computation services
+├── mathematics/     # numerical backends and arithmetic structures
+└── research areas   # riemann, navier_stokes, yang_mills and related modules
 ```
 
----
+Executable demonstrations are grouped into ten thematic folders under
+[`examples/`](examples/README.md). The full architecture and source-of-truth map
+are documented in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Development and verification
+
+```bash
+python -m pytest
+python scripts/verify_internal_references.py --ci
+python scripts/check_documentation.py
+python scripts/prepare_docs.py
+python -m mkdocs build --strict
+```
+
+The configured default test run excludes tests marked `slow`. See
+[TESTING.md](TESTING.md) for focused suites, optional backends, slow tests, and
+reproducibility checks. See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution
+requirements.
 
 ## Documentation
 
-| Resource | Description |
-|----------|-------------|
-| [AGENTS.md](AGENTS.md) | **Primary reference** — complete TNFR theory, operators, grammar, fields |
-| [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md) | U1-U6 grammar derivations from physics |
-| [theory/FUNDAMENTAL_THEORY.md](theory/FUNDAMENTAL_THEORY.md) | Structural-field tetrad & field scales |
-| [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) | Field implementation specifications |
-| [docs/STRUCTURAL_INTERFACE_THEORY.md](docs/STRUCTURAL_INTERFACE_THEORY.md) | Structural-interface programme: pipelines, fair benchmarks, validated results, limitations |
-| [docs/EMPIRICAL_CONFRONTATION_EEG.md](docs/EMPIRICAL_CONFRONTATION_EEG.md) | Empirical confrontation of canonical magnitudes with real signals (the falsifiable arm) |
-| [theory/TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | TNFR-Riemann program |
-| [theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) | TNFR-Navier–Stokes program |
-| [theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md](theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md) | TNFR–Yang–Mills structural gap programme (mass gap open, not a proof) |
-| [theory/TNFR_P_VS_NP_RESEARCH_NOTES.md](theory/TNFR_P_VS_NP_RESEARCH_NOTES.md) | TNFR–P vs NP synthesis-vs-verification programme (not a proof) |
-| [theory/TNFR_BSD_RESEARCH_NOTES.md](theory/TNFR_BSD_RESEARCH_NOTES.md) | TNFR–Birch–Swinnerton-Dyer structural-pressure programme (not a proof) |
-| [theory/TNFR_HODGE_RESEARCH_NOTES.md](theory/TNFR_HODGE_RESEARCH_NOTES.md) | TNFR–Hodge discrete cochain programme (structurally blind, not a proof) |
-| [theory/GLOSSARY.md](theory/GLOSSARY.md) | Terminology and definitions |
-| [examples/](examples/) | Sequential tutorials |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | System design |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Development guidelines |
+| Resource | Purpose |
+| --- | --- |
+| [AGENTS.md](AGENTS.md) | Canonical synthesized TNFR reference and agent doctrine |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Implemented package boundaries and data flow |
+| [docs/README.md](docs/README.md) | Technical documentation hub |
+| [theory/README.md](theory/README.md) | Theory and research-program index |
+| [docs/API_CONTRACTS.md](docs/API_CONTRACTS.md) | Operator contract reference |
+| [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md) | Field definitions and safety-policy scope |
+| [examples/README.md](examples/README.md) | Executable examples |
 
----
-
-## Testing
-
-```bash
-pytest                             # all tests (1,633 under tests/)
-pytest tests/sdk/                  # SDK tests (tetrad, conservation, grammar)
-pytest tests/core_physics/         # core physics tests
-pytest tests/operators/            # operator + grammar tests
-make test                          # core subset + Riemann benchmark (needs `make`)
-```
-
----
+The published site is built from these repository sources by the documentation
+workflow: [TNFR documentation](https://fermga.github.io/TNFR-Python-Engine/).
 
 ## Citation
 
@@ -221,12 +189,4 @@ make test                          # core subset + Riemann benchmark (needs `mak
 }
 ```
 
----
-
-## License
-
-MIT — see [LICENSE.md](LICENSE.md).
-
-## Links
-
-[PyPI](https://pypi.org/project/tnfr/) · [Issues](https://github.com/fermga/TNFR-Python-Engine/issues) · [Discussions](https://github.com/fermga/TNFR-Python-Engine/discussions) · [Documentation](https://fermga.github.io/TNFR-Python-Engine/)
+MIT licensed. See [LICENSE.md](LICENSE.md).

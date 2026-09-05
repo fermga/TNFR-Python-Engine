@@ -216,4 +216,4 @@ necessity.
 - [Mathematical scope and exact witnesses](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).
 - [Unified grammar](UNIFIED_GRAMMAR_RULES.md).
 - [Fundamental theory](FUNDAMENTAL_THEORY.md): broader theory context.
-- [Finite-graph audit](../docs/audits/THEORY_CONTRADICTIONS_2026-09-05.md): T07–T11.
+- [Finite-graph witnesses and scope](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).

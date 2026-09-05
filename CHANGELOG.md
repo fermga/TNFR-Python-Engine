@@ -12,7 +12,7 @@ benchmark with a C5 reproducibility manifest, a theory-doc section and an honest
 claim-ledger transition. **U2/U6 in AGENTS.md were not modified** (the canonical
 gate was never met), **no 14th operator** was invented, and no classical open
 problem is claimed. Full ledger:
-[theory/RESEARCH_R1_R9_HANDOFF_2026-09-05.md](theory/RESEARCH_R1_R9_HANDOFF_2026-09-05.md).
+[theory/STRUCTURAL_RESEARCH_PROGRAM.md](theory/STRUCTURAL_RESEARCH_PROGRAM.md).
 
 - **R9 directed non-normal dynamics** (`src/tnfr/physics/directed_diffusion.py`,
   new `transient_u2.py`, `heterogeneous_vf.py`): the stationary `L²(π)` metric
@@ -178,7 +178,8 @@ problem is claimed. Full ledger:
 ### Changed (emergent derivation — every channel weight & operator gain from π)
 
 - **Replaced the residual magic numbers on the nodal-physics paths with values
-  derived from π** (the sole structural scale), per `EMERGENT_DERIVATION_PLAN.md`.
+  derived from π** (the sole structural scale), enforced by
+  `tests/core_physics/test_emergent_constants_guard.py`.
   The φ/γ/e purge had left two load-bearing weight sets **frozen at their literal
   φ/γ decimals** (`DNFR_WEIGHTS`/`SI_WEIGHTS` = `{0.737, 0.155, 0.09}` where
   `0.737 = φ/(φ+γ)`) and had replaced the operator gains with arbitrary
@@ -236,7 +237,7 @@ problem is claimed. Full ledger:
     curves, network-optimization outcomes) shift, with their qualitative attractors
     invariant. The φ/γ/e and arbitrary operational decimals were therefore **never
     load-bearing**: the refactor both cleans the foundation and *proves* the results
-    are genuinely emergent. See `EMERGENT_DERIVATION_PLAN.md` §7.
+    are genuinely emergent under the stated formulas.
   - **Constitution guard (Stage 0) + the last comment straggler.** A new regression
     guard (`tests/core_physics/test_emergent_constants_guard.py`) pins the channel
     weights, operator gains and coupling ladder to their exact π-formulas and
@@ -247,7 +248,7 @@ problem is claimed. Full ledger:
     the dead `≈ 0.618 = 1/φ` / `0.155` / `0.135` origins, nor the false "RECALIBRATED
     from canonical constants" / dead "Import canonical constants" comments (values
     unchanged — honest operational magnitudes on the optional J_φ-transport path).
-    `EMERGENT_DERIVATION_PLAN.md` Stage 0 is now complete.
+    The constants regression guard records the completed migration.
 
 ### Changed (documentation aligned to emergent π-derived canonicity)
 
@@ -336,7 +337,7 @@ problem is claimed. Full ledger:
 
 ### Changed (emergent-canon consolidation — frozen φ/γ/e values re-derived)
 
-- **Audited every constant** for emergent grounding (see `EMERGENT_CANON_AUDIT.md`).
+- **Audited every constant** for emergent grounding.
   The purge had left the numeric *values* frozen (e.g. `K_TOP_FALLBACK` still held
   `2.803171 = φ/γ`); those magic numbers are now re-derived or eliminated so the
   canonical base is genuinely emergent.

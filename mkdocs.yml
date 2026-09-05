@@ -1,0 +1,53 @@
+site_name: TNFR Python Engine
+site_description: Canonical documentation for the TNFR Python Engine
+site_url: https://fermga.github.io/TNFR-Python-Engine/
+repo_url: https://github.com/fermga/TNFR-Python-Engine
+repo_name: fermga/TNFR-Python-Engine
+docs_dir: build/docs-source
+site_dir: site
+strict: true
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.indexes
+    - navigation.sections
+    - content.code.copy
+
+plugins:
+  - search
+
+markdown_extensions:
+  - attr_list
+  - fenced_code
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Canonical reference: AGENTS.md
+  - Architecture: ARCHITECTURE.md
+  - Torch backend: docs/TORCH_BACKEND.md
+  - Technical documentation:
+      - Hub: docs/README.md
+      - Operator contracts: docs/API_CONTRACTS.md
+      - Single-file modules: docs/SINGLE_FILE_MODULES.md
+      - Structural fields: docs/STRUCTURAL_FIELDS_TETRAD.md
+      - Grammar verification: docs/grammar/PHYSICS_VERIFICATION.md
+      - Interface theory: docs/STRUCTURAL_INTERFACE_THEORY.md
+  - Theory and research:
+      - Index: theory/README.md
+      - Grammar scope: theory/UNIFIED_GRAMMAR_RULES.md
+      - Diagnostic scope: theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md
+      - Minimal structural degrees: theory/MINIMAL_STRUCTURAL_DEGREES.md
+      - Structural conservation: theory/STRUCTURAL_CONSERVATION_THEOREM.md
+      - Structural research program: theory/STRUCTURAL_RESEARCH_PROGRAM.md
+  - Examples: examples/README.md
+  - Development:
+      - Testing: TESTING.md
+      - Contributing: CONTRIBUTING.md
+      - Security: SECURITY.md
+      - Workflows: WORKFLOWS.md
+      - Repository scripts: scripts/README.md

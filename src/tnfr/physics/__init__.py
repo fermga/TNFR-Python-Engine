@@ -64,8 +64,7 @@ tnfr.operators.grammar : Unified Grammar (U1–U6) and validations
 tnfr.dynamics           : Nodal equation integration utilities
 docs/STRUCTURAL_FIELDS_TETRAD.md : Canonical tetrad documentation
 AGENTS.md               : Canonical invariants and field promotions
-src/tnfr/physics/README.md        : Module hub (Patterns,
-                                     Interactions, Workflows)
+ARCHITECTURE.md          : Package ownership and dependency boundaries
 
 References
 ----------

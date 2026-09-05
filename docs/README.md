@@ -16,11 +16,12 @@ canonical operators, grammar U1–U6, and the structural field tetrad
 |----------|--------|---------|
 | [AGENTS.md](../AGENTS.md) | **CANONICAL** | Primary reference — complete TNFR theory |
 | [STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md) | **CANONICAL** | Formal field definitions (Φ_s, \|∇φ\|, K_φ, ξ_C) |
-| [grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md) | **CANONICAL** | U1–U6 grammar proofs from the nodal equation |
+| [grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md) | Active | U1–U6 physics, implementation, tests, and mathematical-scope map |
 | [API_CONTRACTS.md](API_CONTRACTS.md) | Active | Pre/post-condition contracts for the 13 operators |
-| [CANONICAL_OZ_SEQUENCES.md](CANONICAL_OZ_SEQUENCES.md) | Active | Dissonance (OZ) operator-sequence patterns |
+| [SINGLE_FILE_MODULES.md](SINGLE_FILE_MODULES.md) | Active | Responsibilities of public modules implemented as single files |
 | [STRUCTURAL_INTERFACE_THEORY.md](STRUCTURAL_INTERFACE_THEORY.md) | Active | Structural-interface programme: pipelines, fair benchmarks, validated results, limitations |
 | [EMPIRICAL_CONFRONTATION_EEG.md](EMPIRICAL_CONFRONTATION_EEG.md) | Active | Empirical confrontation of canonical magnitudes with real signals (validation record) |
+| [TORCH_BACKEND.md](TORCH_BACKEND.md) | Active | Supported Torch backend scope and validation requirements |
 
 ---
 
@@ -32,7 +33,7 @@ Simple SDK ([src/tnfr/sdk/simple.py](../src/tnfr/sdk/simple.py)).
 
 **Developers** → [API_CONTRACTS.md](API_CONTRACTS.md) (operator specs) →
 [STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md) (field math) →
-[grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md) (grammar proofs).
+[grammar/PHYSICS_VERIFICATION.md](grammar/PHYSICS_VERIFICATION.md) (verification and scope map).
 
 **Theory** → the `theory/` folder holds the research programmes (Riemann,
 Navier–Stokes, Yang–Mills, P-vs-NP, BSD, Hodge, number theory, the variational

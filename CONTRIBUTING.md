@@ -3,7 +3,7 @@
 **Version**: 0.0.3.5  
 **Status**: Complete theoretical framework grounded in the nodal equation  
 **Authority**: the nodal equation ∂EPI/∂t = νf·ΔNFR(t) and the structural-field tetrad  
-**Quality**: Production-ready test suite  
+**Quality gate**: repository tests and documentation checks must pass
 
 This document provides guidelines for contributing to the TNFR (Resonant Fractal Nature Theory) project. TNFR constitutes a computational framework for modeling complex systems through coherent patterns and resonance dynamics.
 
@@ -11,7 +11,7 @@ This document provides guidelines for contributing to the TNFR (Resonant Fractal
 
 All contributions must maintain theoretical consistency. Requirements:
 
-- **Physics-derived where it counts**: structural bounds must trace to the nodal equation / dynamics (e.g. π phase-wrap, ξ_C ∝ 1/√λ₂, the π-derived Φ_s confinement bound, sampling-noise z-score scales). Only **π** is a genuine structural scale; every other parameter is either derived from the nodal dynamics / spectral gap or is a free operational parameter, and must NOT be presented as a derived structural constant.  
+- **Physics-derived where established**: exact bounds must state their hypotheses (for example, π phase wrap and the spectral estimate ξ_C ∝ 1/√λ₂). The π/4 and π/2 Φ_s values are selected safety policies. Operational parameters must not be presented as derived structural constants.
 - **No magic, no fake derivation**: prefer a quantity measured from the system over a fixed numeric constant; never present a free operational parameter as a structural derivation.  
 - **Canonical Constants**: Use `from tnfr.constants.canonical import *` for the structural and operational constants (only π is a genuine structural scale).  
 - **Grammar Compliance**: Operator sequences must satisfy U1-U6 rules
@@ -130,7 +130,7 @@ threshold = 0.75  # Lacks theoretical foundation
 5. **Verify installation:**
 
    ```bash
-   pytest tests/examples/test_u6_sequential_demo.py
+   pytest tests/physics/test_tetrad_bounds.py
    ```
 
 ## Development Workflow

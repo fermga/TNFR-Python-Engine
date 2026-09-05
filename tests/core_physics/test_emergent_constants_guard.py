@@ -1,7 +1,7 @@
 """Stage-0 guard for the emergent-constant constitution.
 
-``EMERGENT_DERIVATION_PLAN.md`` re-derived every physics constant from ``pi`` (the
-sole structural scale) and the pi-coherence band ``1/(pi+1)``, removing the
+The canonical constants policy distinguishes the exact phase scale ``pi`` (the
+sole structural scale) from the pi-coherence band ``1/(pi+1)``, removing the
 obsolete frozen phi / gamma / e decimals (golden ratio, Euler-Mascheroni, Napier).
 This guard pins the migrated constants to their pi-formulas and asserts that none
 has regressed to a known frozen phi/gamma/e decimal -- so the obsolete constants

@@ -163,22 +163,18 @@ a coherent region a macro-NFR.
 **Formula:** \(\Phi_s(i) = \sum_{j \neq i} \frac{\Delta\text{NFR}_j}{d(i,j)^\alpha}\) where \(\alpha = 2\)  
 **What:** Global structural potential field from ΔNFR distribution  
 **Status:** **CANONICAL** (Nov 2025)  
-**Validation:** 1,633 tests across 5 topologies  
-**Physics:** Passive equilibrium confinement landscape  
-**Grammar:** U6 STRUCTURAL POTENTIAL CONFINEMENT (Δ Φ_s < π/2 ≈ 1.571 confinement bound, half phase-wrap; ceiling 2.0 binary escape)  
+**Validation:** Structural-potential and tetrad tests across finite graph topologies
+**Physics:** Distance-weighted pressure aggregation
+**Grammar:** U6 monitors potential drift against the selected π/2 safety policy
 **API:** `tnfr.physics.fields.compute_structural_potential()`  
-**Threshold:** Per-node bound |Φ_s| < π/4 ≈ 0.785 (quarter phase-wrap; π-derived, tied to the one genuine structural scale π)  
+**Threshold:** |Φ_s| < π/4 ≈ 0.785 is the selected per-node warning policy
 **Documentation:** [docs/STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md)
 - [src/tnfr/physics/fields.py](../src/tnfr/physics/fields.py) - Implementation
 
-**Interpretation:**
-- Φ_s minima = passive equilibrium states
-- Δ Φ_s < π/2 ≈ 1.571 = confinement (safe regime, half phase-wrap)
-- Δ Φ_s ≥ 2.0 = binary escape threshold (fragmentation risk)
-- Valid sequences: Δ Φ_s ≈ 0.6 (≈ 38% of the π/2 bound)
-- Violations: Δ Φ_s ≈ 3.9 (≈ 248% of the π/2 bound)
-
-**Mechanism:** Grammar U1-U5 acts as passive confinement (NOT active attractor). Reduces escape drift by 85%.
+**Interpretation:** Φ_s depends on both pressure and graph geometry. The π/4
+per-node and π/2 drift values are selected monitoring policies, not universal
+bounds. Crossing either value records a warning and does not by itself prove
+fragmentation or grammar failure.
 
 ---
 
@@ -253,7 +249,7 @@ The quantities that govern TNFR dynamics, with their canonical status.
 | Structural frequency | νf | ℝ⁺ (Hz_str) | reorganization capacity = diffusivity/**mobility**; νf→0 inactivates | state |
 | Reorganization pressure | ΔNFR | ℝ | drive (4 channels); ΔNFR=0 = equilibrium | state |
 | Phase | φ, θ | [0, 2π) | synchronization | state |
-| Phase-coupling tolerance | Δφ_max | π/2 ≈ 1.5708 rad (90°) | U3 admissible coupling \|φᵢ−φⱼ\| ≤ Δφ_max | derived bound |
+| Phase-coupling tolerance | Δφ_max | π/2 ≈ 1.5708 rad (90°) | U3 admissible coupling \|φᵢ−φⱼ\| ≤ Δφ_max | canonical policy |
 | Mutation threshold | ξ | ZHIR_THRESHOLD_XI = 0.1 | ZHIR transforms θ when dEPI/dt > ξ (bifurcation) | heuristic |
 | Equilibrium tolerance | eps_dnfr / eps_depi | EPS_DNFR_STABLE = 1e-3 | `is_structural_equilibrium` cut (1e-12 for exact arithmetic) | numerical scale |
 | Spectral gap | λ₂ | graph-dependent | slowest relaxation; ξ_C ∝ 1/√λ₂; r_c = νf·λ₂ | structural |
@@ -261,9 +257,10 @@ The quantities that govern TNFR dynamics, with their canonical status.
 | Non-structural parameters | — | free / derived | operator gains, clamps, dt, coupling rates — derived from the dynamics or free operational parameters | operational |
 
 **Only π is a genuine structural constant** (the phase-wrap bound). φ, γ, e are **not**
-structural scales and no longer appear in the engine; every parameter other than π is
-derived from the nodal dynamics / spectral gap (e.g. ξ_C ∝ 1/√λ₂, the π-derived ΔΦ_s
-bound π/2) or is a free operational parameter (e.g. the ≈ 0.18 |∇φ| early-warning level).
+structural scales and no longer appear in the engine. Other values are derived under
+stated hypotheses (for example, ξ_C ∝ 1/√λ₂), selected canonical policies (for
+example, the π/2 ΔΦ_s warning threshold), or free operational parameters (for
+example, the ≈ 0.18 |∇φ| early-warning level).
 
 ---
 
@@ -271,7 +268,7 @@ bound π/2) or is a free operational parameter (e.g. the ≈ 0.18 |∇φ| early-
 
 The 13 canonical operators are the **only way** to modify nodes in TNFR. They're not arbitrary functions—they're **resonant transformations** with rigorous physics.
 
-For complete specifications with physics derivations, contracts, and usage examples, see **[AGENTS.md § The 13 Canonical Operators](../AGENTS.md#-the-13-canonical-operators)**.
+For complete specifications with physics derivations, contracts, and usage examples, see **[AGENTS.md § The 13 Canonical Operators](../AGENTS.md#5-the-13-canonical-operators)**.
 
 ### Quick Reference
 
@@ -308,7 +305,7 @@ Operators combine into **sequences** that implement complex behaviors:
 - `validate_sequence(ops)` - Check grammar compliance
 
 **Grammar:** See [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) for complete rules  
-**Detailed Specs:** See [AGENTS.md § The 13 Canonical Operators](../AGENTS.md#-the-13-canonical-operators)  
+**Detailed Specs:** See [AGENTS.md § The 13 Canonical Operators](../AGENTS.md#5-the-13-canonical-operators)
 **Math:** [Mathematical Foundations](MATHEMATICAL_DYNAMICS_BASIS.md)
 
 ---
@@ -447,33 +444,23 @@ All simulations must be:
 The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and RC1-RC4 systems.
 
 **Source of Truth:** [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)  
-**Quick Reference:** [AGENTS.md § Unified Grammar (U1-U6)](../AGENTS.md#-unified-grammar-u1-u6)  
+**Quick Reference:** [AGENTS.md § Unified Grammar (U1-U6)](../AGENTS.md#6-unified-grammar-u1u6)
 **Implementation:** `src/tnfr/operators/grammar.py`
 
-**Grammar Completeness**: The canonical TNFR grammar consists of **exactly six rules (U1-U6)** and is **COMPLETE**. No additional rules (U7, U8, etc.) are required or planned. Extended dynamics (flux fields) add telemetry, not prescriptive constraints.
+The implemented canonical grammar consists of six rules, U1-U6. This is the
+current engine contract; it is not a theorem that no future specification could
+ever require another rule.
 
 **Six Canonical Constraints:**
 
-| Rule | Name | Physics Basis | Requirement | Canonicity |
-|------|------|---------------|-------------|------------|
-| **U1** | STRUCTURAL INITIATION & CLOSURE | ∂EPI/∂t undefined at EPI=0 | Start with generator {AL, NAV, REMESH}, End with closure {SHA, NAV, REMESH, OZ} | ABSOLUTE |
-| **U2** | CONVERGENCE & BOUNDEDNESS | ∫νf·ΔNFR dt must converge | If destabilizer {OZ, ZHIR, VAL}, then include stabilizer {IL, THOL} | ABSOLUTE |
-| **U3** | RESONANT COUPLING | Phase compatibility required for resonance | If coupling {UM, RA}, verify \|φᵢ - φⱼ\| ≤ Δφ_max | ABSOLUTE |
-| **U4** | BIFURCATION DYNAMICS | ZHIR mutates θ when dEPI/dt > ξ; bifurcations need control | Triggers {OZ, ZHIR} need handlers {THOL, IL}; Transformers need a recent destabilizer (ZHIR also a prior IL) | STRONG |
-| **U5** | MULTI-SCALE COHERENCE | Hierarchical coupling + chain rule | Nested EPIs require stabilizers {IL, THOL} at each level | ABSOLUTE |
-| **U6** | STRUCTURAL POTENTIAL CONFINEMENT | Emergent Φ_s field: Φ_s(i) = Σ ΔNFR_j/d(i,j)² | Monitor Δ Φ_s < π/2 ≈ 1.571 (half phase-wrap); ceiling 2.0 | STRONG |
-
-**Canonicity Levels:**
-- **ABSOLUTE**: Mathematical necessity (direct consequence of nodal equation)
-- **STRONG**: Strong empirical/theoretical support (1,633 tests for U6)
-
-**Recent Updates:**
-- U5 added 2025-11-10 (hierarchical REMESH stabilization)
-- U6 promoted to canonical 2025-11-11 (Φ_s field validation complete)
-  - Replaces experimental "Temporal Ordering" research proposal
-  - Validated across 5 topologies: ring, scale_free, small-world, tree, grid
-  - Correlation: corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
-- 2025-11-15: Grammar declared COMPLETE (U1-U6) - no U7/U8 required
+| Rule | Requirement | Scope |
+|------|-------------|-------|
+| **U1** | Start with {AL, NAV, REMESH}; end with {SHA, NAV, REMESH, OZ} | Initialization and finite-word boundary contract |
+| **U2** | Destabilizers {OZ, ZHIR, VAL} require stabilizers {IL, THOL} within the debt policy | Calibrated finite-word convergence policy |
+| **U3** | {UM, RA} require wrapped phase compatibility | Runtime state precondition |
+| **U4** | Triggers require handlers; transformers require recent destabilizer context | Bifurcation composition contract |
+| **U5** | Nested EPI depth requires scale-local stabilization | Multi-scale identity contract |
+| **U6** | Monitor ΔΦ_s against π/2 | Read-only selected safety policy |
 
 **Not Part of Grammar** (telemetry/dynamics, NOT rules):
 - **Structural Field Hexad**: Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) + Flux Pair (J_φ, ∇·J_ΔNFR)
@@ -481,7 +468,7 @@ The consolidated TNFR grammar system (**U1-U6**) that replaces the old C1-C3 and
 
 **See Also:**
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) - Complete derivations from physics
-- [AGENTS.md § Unified Grammar](../AGENTS.md#-unified-grammar-u1-u6) - Quick reference
+- [AGENTS.md § Unified Grammar](../AGENTS.md#6-unified-grammar-u1u6) - Quick reference
 - [docs/grammar/U6_STRUCTURAL_POTENTIAL_CONFINEMENT.md](../docs/grammar/PHYSICS_VERIFICATION.md) - U6 complete specification
 - [docs/grammar/U6_STRUCTURAL_FIELD_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md) - Why no U7/U8
 - [STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md) - U6 validation details
@@ -561,17 +548,22 @@ Operators that require phase verification for valid coupling.
 
 ## The Structural-Field Tetrad
 
-**Theory:** The four structural fields are the minimal derivative tower (DERIVED). Only π is a genuine structural scale (the phase-wrap bound shared by |∇φ| and K_φ).
+**Theory:** The four structural fields form the canonical diagnostic read-out.
+Only π supplies an exact phase-wrap scale. Minimal complete state reconstruction
+from the tetrad remains open.
 
 ### The one structural scale
 
-Only **π** is a genuine structural scale — it bounds the phase sector (|∇φ| ≤ π and |K_φ| ≤ π). φ, γ, e are **not** structural scales and no longer appear in the engine; the coherence length is set by the spectral gap (ξ_C ∝ 1/√λ₂) and the Φ_s confinement bound is π-derived. Every other parameter is derived from the nodal dynamics or is a free operational parameter.
+Only **π** is a genuine structural scale: it bounds the wrapped phase sector.
+The coherence-length estimate is spectral. Φ_s safety values and the 0.9π
+curvature margin are selected policies; other parameters must be labelled as
+derived under stated hypotheses or operational.
 
 ### Structural Fields and their bounds
 
-1. **Φ_s** (0th order): π-derived confinement Δ Φ_s < π/2 ≈ 1.571 (half phase-wrap; per-node |Φ_s| < π/4 ≈ 0.785)
+1. **Φ_s** (0th order): selected warnings ΔΦ_s < π/2 and |Φ_s| < π/4
 2. **|∇φ|** (1st order): bound |∇φ| ≤ π (phase wrap); γ/π ≈ 0.184 is a heuristic early-warning only
-3. **K_φ** (2nd order): bound |K_φ| < 0.9×π ≈ 2.827 (phase wrap — GENUINE); K_φ = L_rw·φ
+3. **K_φ** (2nd order): exact wrapped bound π; 0.9π is a warning margin; agreement with L_rw·φ requires small phase spread and matching conventions
 4. **ξ_C** (correlation): scale set by the spectral gap, ξ_C ∝ 1/√λ₂ (not base e)
 
 **Documentation:** [Structural-field tetrad](FUNDAMENTAL_THEORY.md)
@@ -893,10 +885,10 @@ Tetrad fields are diagnostic outputs, not independent dynamical variables. They 
 
 **Value:** PHI_S_VON_KOCH_THRESHOLD = π/4 ≈ 0.785  
 **What:** Per-node safety threshold for structural potential |Φ_s|.  
-**Derivation:** π-derived — a quarter phase-wrap, tying the bound to the one genuine structural scale (π). The constant name retains "VON_KOCH" for code-compatibility only; there is no golden-ratio or von-Koch content (the earlier empirical 0.7711 / Γ(4/3)/Γ(1/3) framing is superseded).  
-**Usage:** |Φ_s(i)| < π/4 ≈ 0.785 indicates safe per-node structural potential.  
+**Status:** Selected warning policy. Writing the value as a fraction of π does not derive a graph-independent potential bound.
+**Usage:** |Φ_s(i)| ≥ π/4 records a per-node potential warning.
 **API:** `tnfr.constants.canonical.PHI_S_VON_KOCH_THRESHOLD`  
-**Relation to U6:** Part of three-tier Φ_s monitoring: π/4 ≈ 0.785 (per-node) → π/2 ≈ 1.571 (drift confinement, half phase-wrap) → 2.0 (escape ceiling).
+**Relation to U6:** π/4 is a per-node magnitude warning; π/2 is the separate drift-monitor policy.
 
 ---
 
@@ -942,11 +934,10 @@ Quick reference for canonical threshold values from `src/tnfr/constants/canonica
 
 | Threshold | Value | Derivation | Usage |
 |-----------|-------|------------|-------|
-| PHI_S_VON_KOCH_THRESHOLD | π/4 ≈ 0.785 | π-derived (quarter phase-wrap) | Per-node Φ_s safety |
+| PHI_S_VON_KOCH_THRESHOLD | π/4 ≈ 0.785 | Selected policy | Per-node Φ_s warning |
 | PHASE_GRADIENT_THRESHOLD | ≈ 0.18 | Heuristic early-warning, operational (not derived; bound is π) | \|∇φ\| stability |
 | K_PHI_CANONICAL_THRESHOLD | 0.9×π ≈ 2.8274 | 90% of wrap_angle π bound (genuine) | K_φ fault zone detection |
-| U6 canonical confinement | π/2 ≈ 1.571 | π-derived (half phase-wrap) | ΔΦ_s drift safety |
-| STRUCTURAL_ESCAPE_THRESHOLD | e^ln(2) = 2.0 | Binary escape theory | ΔΦ_s absolute ceiling |
+| U6 drift monitor | π/2 ≈ 1.571 | Selected policy | ΔΦ_s drift warning |
 | MIN_BUSINESS_COHERENCE | ≈ 0.75 | Operational (free parameter) | Business-health cut (the canonical strong-coherence gate is the emergent π/(π+1) ≈ 0.7585) |
 | THOL_MIN_COLLECTIVE_COHERENCE | 1/(π+1) ≈ 0.2415 | Geometric series bound | Fragmentation risk threshold |
 

@@ -33,7 +33,7 @@ CERTIFICATE SCOPE
   equation nu_f is mobility, not a derived inverse inertial mass.
 
 See theory/TNFR_VARIATIONAL_PRINCIPLE.md and
- docs/audits/SECOND_AUDIT_CERTIFICATES_2026-09-05.md for assumptions and migration.
+theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md for assumptions and scope.
 """
 
 from __future__ import annotations

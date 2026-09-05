@@ -14,7 +14,7 @@ setup(
     project_urls={
         "Repository": "https://github.com/fermga/TNFR-Python-Engine",
         "Bug Tracker": "https://github.com/fermga/TNFR-Python-Engine/issues",
-        "Documentation": "https://github.com/fermga/TNFR-Python-Engine/tree/main/primality-test/docs",
+        "Documentation": "https://github.com/fermga/TNFR-Python-Engine/tree/main/primality-test",
         "Source": "https://github.com/fermga/TNFR-Python-Engine/tree/main/primality-test",
     },
     classifiers=[

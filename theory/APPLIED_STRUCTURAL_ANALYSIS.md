@@ -1,7 +1,7 @@
 # Applied Structural Analysis
 
 **Status**: Technical reference
-**Version**: 0.0.3.3
+**Version**: 0.0.3.5
 **Date**: March 2026
 
 ---

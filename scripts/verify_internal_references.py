@@ -1,237 +1,138 @@
 #!/usr/bin/env python3
-"""Verify internal references in documentation, notebooks, and scripts.
+"""Validate local Markdown targets and GitHub-style heading fragments."""
 
-This script checks that all internal file references in markdown files point to
-existing files, ensuring documentation remains consistent and navigable.
-
-Usage:
-    python scripts/verify_internal_references.py         # Check and report
-    python scripts/verify_internal_references.py --verbose # Report all refs
-    python scripts/verify_internal_references.py --ci    # Exit 1 if broken refs found
-"""
+from __future__ import annotations
 
 import argparse
 import re
-import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import Iterable
+from urllib.parse import unquote
 
 
-def find_markdown_links(content: str) -> List[Tuple[str, str]]:
-    """Extract markdown links from content.
-
-    Returns:
-        List of (link_text, link_path) tuples.
-    """
-    # Match [text](path) but not [text](http://...) or [text](#anchor)
-    pattern = r"\[([^\]]+)\]\(([^)]+)\)"
-    return re.findall(pattern, content)
-
-
-def is_external_or_anchor(link_path: str) -> bool:
-    """Check if link is external URL or anchor."""
-    return link_path.startswith(("http://", "https://", "mailto:", "#"))
-
-
-# Directory names that are not part of the checked source tree (build outputs,
-# virtual environments, caches, installed packages). Markdown found under these
-# would produce false positives (e.g. .venv site-packages copies of LICENSE.md).
-EXCLUDE_DIR_PARTS = frozenset(
+REPO_ROOT = Path(__file__).resolve().parents[1]
+EXCLUDED_PARTS = frozenset(
     {
-        ".git",
-        ".venv",
-        "venv",
-        "env",
-        ".env",
-        "site-packages",
-        "build",
-        "dist",
-        "node_modules",
-        "__pycache__",
-        ".mypy_cache",
-        ".pytest_cache",
-        ".tox",
-        ".eggs",
-        ".ruff_cache",
-        "publish",
+        ".git", ".venv", "venv", "site-packages", "build", "dist", "site",
+        "node_modules", "__pycache__", ".mypy_cache", ".pytest_cache", ".tox",
+        "manual", "publish", "tmp",
     }
 )
-
-# Extensions that identify a genuine internal file reference.
-_FILE_REF_EXTS = (
-    ".md",
-    ".py",
-    ".pyi",
-    ".ipynb",
-    ".json",
-    ".txt",
-    ".yml",
-    ".yaml",
-    ".cff",
-    ".toml",
-    ".cfg",
-    ".ini",
-    ".rst",
-    ".png",
-    ".svg",
-    ".html",
-    ".pdf",
-    ".sh",
-    ".csv",
-    ".bib",
-)
+LINK_PATTERN = re.compile(r"!?\[([^\]]*)\]\(([^)]+)\)")
+HEADING_PATTERN = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$", re.MULTILINE)
+CUSTOM_ID_PATTERN = re.compile(r"\{#([^}]+)\}\s*$")
+HTML_ID_PATTERN = re.compile(r"""<a\s+(?:name|id)=["']([^"']+)["']""", re.I)
+FILE_SUFFIXES = {
+    ".bib", ".cff", ".csv", ".html", ".ini", ".ipynb", ".json", ".md",
+    ".pdf", ".png", ".py", ".pyi", ".rst", ".sh", ".svg", ".toml",
+    ".txt", ".yaml", ".yml",
+}
 
 
-def is_excluded_path(rel_posix: str) -> bool:
-    """True if a markdown file lives outside the checked source tree."""
-    if set(rel_posix.split("/")) & EXCLUDE_DIR_PARTS:
+def _excluded(path: Path) -> bool:
+    try:
+        relative = path.relative_to(REPO_ROOT)
+    except ValueError:
         return True
-    # .github/agents/my-agent.md is a verbatim mirror of AGENTS.md and uses
-    # repo-root-relative links; it is validated through AGENTS.md at the root.
-    return rel_posix.startswith(".github/agents/")
+    return bool(set(relative.parts) & EXCLUDED_PARTS) or relative.as_posix().startswith(
+        ".github/agents/"
+    )
 
 
-def looks_like_file_reference(clean_path: str) -> bool:
-    """Heuristic: real internal refs have a path separator or a file extension.
+def _markdown_files(search_roots: Iterable[str]) -> list[Path]:
+    files: set[Path] = set()
+    for value in search_roots:
+        root = (REPO_ROOT / value).resolve()
+        if root.is_file() and root.suffix.lower() == ".md" and not _excluded(root):
+            files.add(root)
+        elif root.is_dir():
+            files.update(path for path in root.rglob("*.md") if not _excluded(path))
+    return sorted(files)
 
-    Skips inline-math / bracket artifacts the markdown-link regex catches
-    (e.g. ``[k](tau_g)``), which are not file references.
-    """
-    if "/" in clean_path or "\\" in clean_path:
-        return True
-    return clean_path.lower().endswith(_FILE_REF_EXTS)
+
+def _github_slug(text: str) -> str:
+    text = CUSTOM_ID_PATTERN.sub("", text)
+    text = re.sub(r"!?\[([^\]]+)\]\([^)]+\)", r"\1", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = text.replace(chr(96), "").lower()
+    text = "".join(
+        char for char in text if char.isalnum() or char in {" ", "-", "_"}
+    )
+    return re.sub(r"\s+", "-", text.strip())
 
 
-def verify_references(
-    base_dir: Path, search_dirs: List[str], verbose: bool = False
-) -> Tuple[List[dict], List[dict]]:
-    """Verify all internal references in markdown files.
-
-    Args:
-        base_dir: Repository root directory
-        search_dirs: List of directories to search for markdown files
-        verbose: Print all references if True
-
-    Returns:
-        Tuple of (all_refs, broken_refs) where each is a list of dicts
-    """
-    all_refs = []
-    broken_refs = []
-
-    for search_dir in search_dirs:
-        dir_path = base_dir / search_dir
-        if not dir_path.exists():
-            if verbose:
-                print(f"Warning: Directory {search_dir} does not exist")
+def _anchors(markdown: Path) -> set[str]:
+    content = markdown.read_text(encoding="utf-8-sig")
+    anchors = set(HTML_ID_PATTERN.findall(content))
+    counts: dict[str, int] = {}
+    for heading in HEADING_PATTERN.findall(content):
+        custom = CUSTOM_ID_PATTERN.search(heading)
+        if custom:
+            anchors.add(custom.group(1))
+        slug = _github_slug(heading)
+        if not slug:
             continue
+        occurrence = counts.get(slug, 0)
+        counts[slug] = occurrence + 1
+        anchors.add(slug if occurrence == 0 else f"{slug}-{occurrence}")
+    return anchors
 
-        for md_file in dir_path.rglob("*.md"):
-            rel_posix = md_file.relative_to(base_dir).as_posix()
-            if is_excluded_path(rel_posix):
+
+def _is_external(target: str) -> bool:
+    return target.lower().startswith(("http://", "https://", "mailto:", "codex://"))
+
+
+def verify(search_roots: Iterable[str], verbose: bool = False) -> tuple[int, list[str]]:
+    references = 0
+    failures: list[str] = []
+    anchor_cache: dict[Path, set[str]] = {}
+
+    for source in _markdown_files(search_roots):
+        content = source.read_text(encoding="utf-8-sig")
+        for _, raw_target in LINK_PATTERN.findall(content):
+            target = unquote(raw_target.strip().strip("<>"))
+            if _is_external(target):
                 continue
-            try:
-                content = md_file.read_text(encoding="utf-8")
-            except Exception as e:
-                print(f"Error reading {md_file}: {e}")
+            path_text, separator, fragment = target.partition("#")
+            if not path_text:
+                destination = source
+            else:
+                clean_path = Path(path_text.replace("\\", "/"))
+                if "/" not in path_text and clean_path.suffix.lower() not in FILE_SUFFIXES:
+                    continue
+                destination = (source.parent / clean_path).resolve()
+            references += 1
+            display = f"{source.relative_to(REPO_ROOT)} -> {raw_target}"
+            if not destination.exists():
+                failures.append(f"missing target: {display}")
                 continue
-
-            links = find_markdown_links(content)
-
-            for link_text, link_path in links:
-                # Skip external URLs and anchors
-                if is_external_or_anchor(link_path):
+            if separator and fragment and destination.suffix.lower() == ".md":
+                anchors = anchor_cache.setdefault(destination, _anchors(destination))
+                if fragment.lower() not in anchors:
+                    failures.append(f"missing fragment: {display}")
                     continue
-
-                # Handle anchor in local files (e.g., file.md#section)
-                clean_path = link_path.split("#")[0] if "#" in link_path else link_path
-                if not clean_path:  # Just an anchor
-                    continue
-
-                if not looks_like_file_reference(clean_path):
-                    continue
-
-                # Resolve relative path
-                ref_path = (md_file.parent / clean_path).resolve()
-
-                ref_info = {
-                    "source_file": str(md_file.relative_to(base_dir)),
-                    "link_text": link_text,
-                    "link_path": link_path,
-                    "resolved_path": str(ref_path),
-                    "exists": ref_path.exists(),
-                }
-
-                all_refs.append(ref_info)
-
-                if not ref_path.exists():
-                    broken_refs.append(ref_info)
-                elif verbose:
-                    print(f"✓ {ref_info['source_file']}: {link_path}")
-
-    return all_refs, broken_refs
+            if verbose:
+                print(f"OK {display}")
+    return references, failures
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Verify internal references in TNFR documentation"
-    )
-    parser.add_argument(
-        "--verbose",
-        "-v",
-        action="store_true",
-        help="Print all references, not just broken ones",
-    )
-    parser.add_argument(
-        "--ci",
-        action="store_true",
-        help="CI mode: exit with code 1 if broken references found",
-    )
-    parser.add_argument(
-        "--dirs",
-        nargs="+",
-        default=["docs/source", "examples", "scripts", "."],
-        help="Directories to search (default: docs/source examples scripts .)",
-    )
-
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--verbose", "-v", action="store_true")
+    parser.add_argument("--ci", action="store_true")
+    parser.add_argument("--dirs", nargs="+", default=["."])
     args = parser.parse_args()
 
-    # Get repository root (script is in scripts/)
-    script_dir = Path(__file__).parent
-    repo_root = script_dir.parent
-
-    print(f"Verifying internal references in {repo_root}")
-    print(f"Searching directories: {', '.join(args.dirs)}")
-    print()
-
-    all_refs, broken_refs = verify_references(
-        repo_root, args.dirs, verbose=args.verbose
-    )
-
-    # Report results
-    print(f"Total internal references found: {len(all_refs)}")
-    print(f"Broken references: {len(broken_refs)}")
-    print()
-
-    if broken_refs:
-        print("=" * 70)
-        print("BROKEN REFERENCES")
-        print("=" * 70)
-        for ref in broken_refs:
-            print(f"\nSource: {ref['source_file']}")
-            print(f"  Link text: {ref['link_text']}")
-            print(f"  Link path: {ref['link_path']}")
-            print(f"  Resolved to: {ref['resolved_path']}")
-            print(f"  Status: ✗ NOT FOUND")
-        print()
-
-        if args.ci:
-            print("CI mode: Exiting with error code 1")
-            sys.exit(1)
-    else:
-        print("✓ All internal references are valid!")
-
+    references, failures = verify(args.dirs, verbose=args.verbose)
+    print(f"Checked {references} internal Markdown references")
+    if failures:
+        for failure in failures:
+            print(f"ERROR {failure}")
+        print(f"Broken references: {len(failures)}")
+        return 1 if args.ci else 0
+    print("All internal Markdown targets and fragments are valid")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

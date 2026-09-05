@@ -40,7 +40,7 @@ pressure, nor establish DeltaNFR=-dV/dEPI for the tetrad potential. These
 geometric calculations do not settle an open arithmetic or fluid problem.
 
 References: theory/TNFR_VARIATIONAL_PRINCIPLE.md and
- docs/audits/SECOND_AUDIT_CERTIFICATES_2026-09-05.md.
+theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md.
 """
 
 from __future__ import annotations

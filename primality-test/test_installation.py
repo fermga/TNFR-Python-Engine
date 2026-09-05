@@ -11,7 +11,7 @@ import time
 import traceback
 
 
-def test_import():
+def _check_import():
     """Test that all modules can be imported."""
     print("Testing imports...")
 
@@ -34,7 +34,7 @@ def test_import():
     return True
 
 
-def test_basic_functionality():
+def _check_basic_functionality():
     """Test basic primality testing functionality."""
     print("\nTesting basic functionality...")
 
@@ -77,7 +77,7 @@ def test_basic_functionality():
         return False
 
 
-def test_optimized_functionality():
+def _check_optimized_functionality():
     """Test optimized implementation."""
     print("\nTesting optimized functionality...")
 
@@ -125,7 +125,7 @@ def test_optimized_functionality():
         return False
 
 
-def test_performance():
+def _check_performance():
     """Test performance characteristics."""
     print("\nTesting performance...")
 
@@ -158,7 +158,7 @@ def test_performance():
         return False
 
 
-def test_validation():
+def _check_validation():
     """Test theoretical validation."""
     print("\nTesting theoretical validation...")
 
@@ -187,6 +187,31 @@ def test_validation():
         return False
 
 
+def test_import():
+    """Expose import verification to pytest."""
+    assert _check_import()
+
+
+def test_basic_functionality():
+    """Expose basic functional verification to pytest."""
+    assert _check_basic_functionality()
+
+
+def test_optimized_functionality():
+    """Expose optimized functional verification to pytest."""
+    assert _check_optimized_functionality()
+
+
+def test_performance():
+    """Expose the non-binding performance smoke check to pytest."""
+    assert _check_performance()
+
+
+def test_validation():
+    """Expose arithmetic validation to pytest."""
+    assert _check_validation()
+
+
 def main():
     """Run all installation tests."""
     print("TNFR Primality Testing - Installation Verification")
@@ -196,11 +221,11 @@ def main():
     print()
 
     tests = [
-        ("Import functionality", test_import),
-        ("Basic functionality", test_basic_functionality),
-        ("Optimized functionality", test_optimized_functionality),
-        ("Performance characteristics", test_performance),
-        ("Theoretical validation", test_validation),
+        ("Import functionality", _check_import),
+        ("Basic functionality", _check_basic_functionality),
+        ("Optimized functionality", _check_optimized_functionality),
+        ("Performance characteristics", _check_performance),
+        ("Theoretical validation", _check_validation),
     ]
 
     passed = 0

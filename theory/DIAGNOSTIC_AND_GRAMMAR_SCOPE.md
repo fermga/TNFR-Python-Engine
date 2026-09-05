@@ -189,5 +189,5 @@ and minimality in this stronger sense remain open.
 - [Field definitions and API](../docs/STRUCTURAL_FIELDS_TETRAD.md).
 - [Canonical calibration functions](../src/tnfr/config/physics_derivation.py).
 - [Threshold values](../src/tnfr/constants/canonical.py).
-- [Finite-graph contradiction audit](../docs/audits/THEORY_CONTRADICTIONS_2026-09-05.md):
-  T07, T08, T10, and T11 contain the original deterministic witnesses.
+- The deterministic finite-graph witnesses used by this scope statement are
+  recorded directly in the sections above and covered by the linked tests.

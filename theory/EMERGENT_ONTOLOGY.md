@@ -425,21 +425,22 @@ DERIVED**. Only **π** is a genuine structural scale; the field bounds are of tw
   `|K_φ| ≤ π` hold for *any* configuration, parameter-independently. The K_φ threshold
   `|K_φ| < 0.9π ≈ 2.83` sits **at this wrap bound** — the genuine **geometric** scale π (verified:
   arbitrary configs respect it).
-- **The other bounds are not structural constants.** The `|∇φ|` early-warning level (`≈ 0.18`) sits
+- **The other thresholds are not structural constants.** The `|∇φ|` early-warning level (`≈ 0.18`) sits
   **far below** the wrap bound: it is a heuristic, and a fair test finds `|∇φ|` at the sync onset is
-  **≈ 0.29 and varies with the disorder `σ`** — not a fixed constant. The `Φ_s` bound is
-  **π-derived** (per-node `π/4 ≈ 0.785`, drift `π/2 ≈ 1.571` — quarter / half phase-wrap); and the
+  **≈ 0.29 and varies with the disorder `σ`** — not a fixed constant. The `Φ_s` values
+  (per-node `π/4 ≈ 0.785`, drift `π/2 ≈ 1.571`) are selected warning policies; and the
   coherence length is set by the **spectral gap** (`ξ_C ∝ 1/√λ₂`, verified).
 
 > **Honest boundary.** Only **π** is a genuine structural scale (the phase-wrap bound of the phase
 > sector). The other field scales are not structural constants: the `|∇φ|` onset is a σ-dependent
-> dynamical transition (≈ 0.29), the `Φ_s` bound is π-derived (quarter / half phase-wrap), and the
-> coherence length is set by the spectral gap (`ξ_C ∝ 1/√λ₂`). The tetrad as a **minimal basis** is
-> DERIVED; φ, γ, e are not structural scales and no longer appear in the engine.
+> dynamical transition (≈ 0.29), the `Φ_s` values are selected policies, and the
+> coherence length is set by the spectral gap (`ξ_C ∝ 1/√λ₂`). The tetrad is the
+> canonical diagnostic basis; complete state reconstruction remains open.
 
 **Genuine relationships (verified).** A fresh study found the real structure
-behind the four fields: `K_φ` **is** the central operator applied to phase (`K_φ = L_rw·φ` in the
-smooth limit, **corr = 1.000**) — the phase image of the *one operator* of §2.1; `ξ_C ∝ 1/√λ₂` (the
+behind the four fields: `K_φ` agrees with `L_rw·φ` in the smooth,
+consistent-branch limit with matching conventions (**corr = 1.000** on the
+recorded protocol); `ξ_C ∝ 1/√λ₂` (the
 correlation length is set by the spectral gap, §6.2); and the real organizing axis is **local**
 phase derivatives (`|∇φ|`, `K_φ`, both π-bounded) vs **non-local** source/correlation (`Φ_s`, `ξ_C`),
 across the derivative orders — *not* four separate constants.

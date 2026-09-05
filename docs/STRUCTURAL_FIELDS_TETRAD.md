@@ -270,4 +270,4 @@ observable.
 - [Unified grammar](../theory/UNIFIED_GRAMMAR_RULES.md).
 - [Tetrad reconstruction scope](../theory/MINIMAL_STRUCTURAL_DEGREES.md).
 - [Mathematical hypotheses and witnesses](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).
-- [Physics module overview](../src/tnfr/physics/README.md).
+- [Field implementation](../src/tnfr/physics/fields.py).

@@ -3609,7 +3609,7 @@ P48 promotes the §13nonies operator-level lift of the smooth half of T-HP from 
 
 ### §13vicies-octavo.1 Motivation
 
-P31 ([§13decies-quarto](#13decies-quarto-p31--prime-ladder-oscillatory-correction-branch-b1-retry-does-not-advance-g4)) attacks the **oscillatory half** of T-HP at the ζ-track by reconstructing $S(T) = \pi^{-1} \arg \zeta(1/2 + iT)$ from the canonical prime-ladder spectrum $\{(k\log p, \log p)\}$ via the Riemann–von Mangoldt template, then applying a Newton step on the P28 smooth targets. P49 is the **L-track analogue** of P31, one primitive real Dirichlet character at a time, reconstructing
+P31 ([§13decies Branch B1 Retry](#13decies-branch-b1-retry-prime-ladder-oscillatory-correction-p31)) attacks the **oscillatory half** of T-HP at the ζ-track by reconstructing $S(T) = \pi^{-1} \arg \zeta(1/2 + iT)$ from the canonical prime-ladder spectrum $\{(k\log p, \log p)\}$ via the Riemann–von Mangoldt template, then applying a Newton step on the P28 smooth targets. P49 is the **L-track analogue** of P31, one primitive real Dirichlet character at a time, reconstructing
 $$S_\chi(T) = \frac{1}{\pi}\arg L\!\left(\tfrac{1}{2} + iT,\,\chi\right)$$
 from the canonical P34 χ-twisted prime-ladder spectrum $\{(k\log p,\,\chi(p)^k \log p)\}$ via the χ-twisted Riemann–von Mangoldt template
 $$\pi\, S_\chi^{\mathrm{TNFR}}(T;\,N,K) \;=\; -\!\!\!\!\sum_{(\mu,w)\in\Sigma_{N,K}^{(\chi)}}\!\!\!\frac{w}{\mu}\,\frac{\sin(T\mu)}{\exp(\mu/2)}$$

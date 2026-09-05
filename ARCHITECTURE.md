@@ -1,560 +1,214 @@
-# TNFR Python Engine - Architecture Guide
+# TNFR Python Engine Architecture
 
-**Version**: 0.0.3.5  
-**Status**: Production-ready framework with mathematical foundations  
-**Foundation**: the nodal equation ∂EPI/∂t = νf·ΔNFR(t) and its minimal structural-field tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
+**Version:** 0.0.3.5
+**Status:** Implemented architecture reference
 
-This guide details the TNFR Python Engine architecture. The engine provides a complex systems framework whose physics derives from the nodal equation; structural state is read out through the four-field tetrad.
+This document describes the repository as implemented. Mathematical claims are
+owned by [AGENTS.md](AGENTS.md) and the scoped specifications under
+[`theory/`](theory/README.md); this guide links to those sources rather than
+strengthening their claims.
 
-## Architectural Philosophy
+## Authority and ownership
 
-**Core Principle**: Physics derives from the nodal equation; structural state is read through the tetrad of fields.
+| Concern | Source of truth |
+| --- | --- |
+| Canonical TNFR synthesis and invariants | [AGENTS.md](AGENTS.md) |
+| Operator channel, scale and postcondition | [`operator_contracts.py`](src/tnfr/operators/operator_contracts.py) |
+| Operator-role derivation | [`physics_derivation.py`](src/tnfr/config/physics_derivation.py) |
+| Grammar specification | [`grammar_canon.py`](src/tnfr/operators/grammar_canon.py) |
+| Grammar validation facade | [`grammar.py`](src/tnfr/operators/grammar.py) |
+| Canonical and operational constants | [`constants/`](src/tnfr/constants/) |
+| Nodal pressure computation | [`dnfr.py`](src/tnfr/dynamics/dnfr.py) |
+| Nodal integration | [`integrators.py`](src/tnfr/dynamics/integrators.py) |
+| Structural fields | [`fields.py`](src/tnfr/physics/fields.py) |
+| Coherence and equilibrium kernel | [`common.py`](src/tnfr/metrics/common.py) |
+| Public high-level API | [`sdk/simple.py`](src/tnfr/sdk/simple.py) |
 
-> **On the constants.** The four fields are the four orders of the discrete derivative tower (the tetrad), derived from the nodal equation. Only **π** is a genuine structural scale — the phase-wrap bound shared by |∇φ| and K_φ. The coherence length is set by the spectral gap (ξ_C ∝ 1/√λ₂) and the Φ_s confinement bound is π-derived; φ, γ, e are not structural scales. Every parameter other than π is either derived from the nodal dynamics / spectral gap or is a free operational parameter — not a derived structural constant. (γ/π is not the |∇φ| scale — the measured sync onset is ≈ 0.29 and σ-dependent.)
+Derived documents and tables must import or link to these owners. They must not
+define competing constants, operator sets, or theorem scope.
 
-The TNFR Engine is built on four pillars:
-
-1. **Nodal Foundation**: Physics derives from ∂EPI/∂t = νf·ΔNFR(t); structural quantities are the four orders of the derivative tower (the tetrad). Only π is a genuine structural scale; every other parameter is derived from the nodal dynamics or is a free operational parameter, not a structural constant.
-2. **Structural Operators**: Exactly 13 canonical operators implement all possible coherent transformations  
-3. **Grammar Physics**: U1-U6 rules emerge inevitably from the nodal equation ∂EPI/∂t = νf·ΔNFR(t)
-4. **Tetrad Telemetry**: Four unified fields (Φ_s, |∇φ|, Ψ=K_φ+i·J_φ, ξ_C) provide complete system observability
-
-## Modular Architecture
-
-TNFR Engine features a mature, production-grade architecture grounded in the nodal equation, with self-optimization capabilities and complete domain extensibility.
-
-### Core Module Organization
-
-```
-src/tnfr/                          # ~419 files, ~140k LOC
-├── constants/canonical.py          # structural + operational constants (only π is a genuine structural scale)
-├── operators/                      # 13 Canonical operators + U1-U6 grammar
-│   ├── grammar.py                  # Unified grammar validation
-│   ├── grammar_dynamics.py         # Grammar-aware dynamic selection
-│   └── grammar_application.py      # Pre-validated operator application
-├── physics/                        # Structural fields + conservation
-│   ├── fields.py                   # Tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
-│   ├── conservation.py             # Structural Conservation Theorem
-│   └── integrity.py                # Closed-loop integrity monitor
-├── dynamics/                       # Self-optimizing engine + integrators
-├── engines/                        # Centralized engines hub
-├── mathematics/                    # Number theory + nodal equation
-├── metrics/                        # Coherence, Si, phase sync
-├── telemetry/                      # Unified field monitoring
-├── sdk/                            # Fluent API + Simple SDK + builders
-├── validation/                      # Structural health + empirical-arm signal confrontation
-├── riemann/                         # TNFR-Riemann program (nodal-pulse foundation)
-├── navier_stokes/                   # TNFR-Navier-Stokes program (conservative two-face reading)
-├── yang_mills/                      # TNFR-Yang-Mills gap diagnostics
-└── factorization/                  # Spectral factorization workflow
-```
-
-### Core Architectural Interfaces
-
-The engine is structured around mathematically grounded interfaces that enforce TNFR canonicity:
-
-| **Interface** | **Responsibility** | **Mathematical Basis** | **Implementation** |
-|---------------|-------------------|----------------------|--------------------|
-| **Canonical Constants** | Structural + operational parameters | Nodal equation + field tetrad (π is the one genuine structural scale) | `constants/canonical.py` |
-| **Operator Registry** | 13 canonical transformations | Nodal equation completeness | `operators/definitions.py` |
-| **Grammar Validation** | U1-U6 sequence rules | Physics-derived constraints | `operators/grammar.py` |
-| **Grammar Dynamics** | Grammar-aware operator selection | Incremental U1-U6 checks | `operators/grammar_dynamics.py` |
-| **Dynamics Engine** | ∂EPI/∂t = νf·ΔNFR integration | Structural manifold calculus | `dynamics/canonical.py` |
-| **Field Telemetry** | Tetrad monitoring (Φ_s,|∇φ|,Ψ,ξ_C) | Unified field theory | `physics/fields.py` |
-| **Conservation** | Structural conservation law | Noether-like derivation from U1-U6 | `physics/conservation.py` |
-| **Integrity Monitor** | Operator postcondition verification | 13/13 operator contracts | `physics/integrity.py` |
-| **Self-Optimization** | Autonomous improvement | Gradient descent on structure | `dynamics/self_optimizing_engine.py` |
-
-### Self-Optimizing Architecture
-
-The TNFR Engine has automated optimization of its own structure using unified field telemetry:
-
-```python
-from tnfr.dynamics.self_optimizing_engine import TNFRSelfOptimizingEngine
-from tnfr.sdk.fluent import TNFRNetwork
-from tnfr.constants.canonical import *
-
-# Self-optimizing engine with canonical parameters
-engine = TNFRSelfOptimizingEngine(
-    G, 
-    optimization_threshold=SELF_OPT_THRESHOLD,  # ≈ 0.092 (operational)
-    max_iterations=SELF_OPT_MAX_ITER           # 16 (operational)
-)
-
-# Auto-optimization using unified fields (Φ_s, |∇φ|, Ψ, ξ_C)
-success, metrics = engine.step(node_id)
-
-# Fluent API with auto-optimization
-result = (TNFRNetwork(G)
-          .focus(node)
-          .auto_optimize()    # One-line self-optimization
-          .execute())
-```
-
-**Physics**: This is **gradient descent on the structural manifold**, driven by the nodal equation's pressure term ΔNFR.
-```
-
-### Parameter Usage
-
-Validation uses the tetrad fields and a few telemetry thresholds. Only the π phase-wrap bounds and ξ_C ∝ 1/√λ₂ are genuine structural scales; the other thresholds are π-derived or free operational parameters, not derived structural constants.
-
-```python
-from tnfr.metrics.tetrad import collect_tetrad_snapshot
-from tnfr.operators.grammar import validate_sequence
-
-class CanonicalValidator:
-    def check_sequence(self, sequence):
-        """Grammar validation (U1–U6) via the canonical entry point."""
-        return validate_sequence(sequence)       # -> SequenceValidationResult
-
-    def check_graph_state(self, graph):
-        """Observational tetrad snapshot: Φ_s, |∇φ|, K_φ, ξ_C.
-
-        Safety reading uses only the genuine π phase-wrap bounds
-        (|K_φ| < 0.9π ≈ 2.827; |∇φ| ≤ π; Φ_s per-node < π/4, drift < π/2;
-        ξ_C ∝ 1/√λ₂ from the spectral gap).
-        """
-        return collect_tetrad_snapshot(graph)    # keys: phi_s, phase_grad, phase_curv, xi_c
-```
-```
-
-### Parameter Convention Benefits
-
-1. **Traceability**: only π phase-wrap and ξ_C ∝ 1/√λ₂ are genuine structural scales; every other parameter is derived from the nodal dynamics or is a free operational parameter, explicitly labelled as such (never claimed as a derived structural constant).
-2. **Predictable Behavior**: Deterministic system response via fixed parameters
-3. **Cross-Domain Consistency**: Same nodal-equation foundation across physics, chemistry, and network science
-4. **Self-Optimization**: Automated capability to improve its own structure
-5. **Research Ready**: Mathematically pure framework suitable for scientific publication
-6. **Production Stability**: No magic numbers that fail under extreme conditions
-
-### Architecture Diagram
-
-```mermaid
-flowchart TB
-    subgraph Services["Service Layer"]
-        ORCH[TNFROrchestrator]
-    end
-    subgraph Interfaces["Core Interfaces"]
-        VAL[ValidationService]
-        REG[OperatorRegistry]
-        DYN[DynamicsEngine]
-        TEL[TelemetryCollector]
-    end
-    subgraph Implementation["Default Implementations"]
-        DVAL[DefaultValidationService]
-        DREG[DefaultOperatorRegistry]
-        DDYN[DefaultDynamicsEngine]
-        DTEL[DefaultTelemetryCollector]
-    end
-    subgraph Existing["Existing Modules"]
-        VMOD[tnfr.validation]
-        OMOD[tnfr.operators]
-        DYMOD[tnfr.dynamics]
-        MMOD[tnfr.metrics]
-    end
-    
-    ORCH --> VAL
-    ORCH --> REG
-    ORCH --> DYN
-    ORCH --> TEL
-    
-    VAL -.implements.- DVAL
-    REG -.implements.- DREG
-    DYN -.implements.- DDYN
-    TEL -.implements.- DTEL
-    
-    DVAL --> VMOD
-    DREG --> OMOD
-    DDYN --> DYMOD
-    DTEL --> MMOD
-```
-
-## Mathematical Grammar Architecture
-
-### Structural-Field Tetrad Foundation
-
-The TNFR grammar derives from the nodal equation; structural state is read through the four-field tetrad (the four orders of the discrete derivative tower). Each field is *associated* with a constant, but only **π** is a genuine structural scale:
-
-| **Field** | **Tower order** | **Grammar Rule** | **Structural scale** |
-|-----------|-----------------|------------------|-----------------------------------|
-| **Φ_s** (Structural Potential) | 0th (aggregation) | **U6** Confinement | Empirical bound (no closed form); φ is motivation only |
-| **\|∇φ\|** (Phase Gradient) | 1st (local) | **U2** Convergence | π (phase wrap) — γ is NOT its scale |
-| **K_φ** (Phase Curvature) | 2nd (local) | **U3** Coupling | π (phase wrap); K_φ = L_rw·φ |
-| **ξ_C** (Coherence Length) | correlation | **U4** Bifurcation | spectral gap, ξ_C ∝ 1/√λ₂ — not e |
-
-### Canonical Grammar Rules (U1-U6)
-
-**Every grammar constraint derives inevitably from physics** - no arbitrary rules exist.
-
-**Complete Derivations**: [UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md)  
-**Quick Reference**: [AGENTS.md § Unified Grammar](AGENTS.md#unified-grammar-u1-u6)
-
-1. **U1 - INITIATION & CLOSURE**: Mathematical necessity at EPI=0, action potential endpoints
-2. **U2 - CONVERGENCE**: Integral ∫νf·ΔNFR dt convergence requirement (stabilizers mandatory)
-3. **U3 - RESONANT COUPLING**: Wave physics |φᵢ - φⱼ| ≤ Δφ_max for constructive interference
-4. **U4 - BIFURCATION**: Threshold physics ∂²EPI/∂t² > τ requires control mechanisms
-5. **U5 - MULTI-SCALE**: Central limit theorem + hierarchical coupling mathematics
-6. **U6 - STRUCTURAL CONFINEMENT**: Field theory Φ_s escape threshold from distance-weighted ΔNFR
-
-### Architecture Principles
-
-- **Nodal Foundation**: Every grammar rule traces to the nodal equation (U1–U6).  
-- **Honest tiering**: structural bounds derive from the dynamics where genuine (π phase-wrap; ξ_C ∝ 1/√λ₂; the π-derived Φ_s bound); other parameters are free operational calibrations, NOT derived structural constants.  
-- **Single Source Implementation**: `src/tnfr/operators/grammar.py` canonical authority  
-- **Complete Physics Traceability**: Theory → Math → Code → Tests chain maintained  
-- **Self-Validation**: Grammar rules verify their own mathematical consistency
-
-## Production Architecture Layers
-
-### Core Responsibility Matrix
-
-| **Layer** | **Canonical Modules** | **Mathematical Foundation** | **TNFR Invariants** |
-|-----------|----------------------|----------------------------|---------------------|
-| **Constants Foundation** | `constants/canonical.py` | Structural + operational parameters (only π genuine) | π phase-wrap is the one genuine structural scale |
-| **Operator Engine** | `operators/definitions.py`, `operators/grammar.py` | 13 canonical transformations + U1-U6 physics | Structural completeness - all coherent dynamics covered |
-| **Grammar Dynamics** | `operators/grammar_dynamics.py`, `operators/grammar_application.py` | Incremental U1-U6 validation + pre-filtered selection | Grammar-aware operator application at all code paths |
-| **Physics Core** | `physics/fields.py`, `physics/conservation.py`, `physics/integrity.py` | Unified Field Tetrad + Conservation Theorem + 13/13 postconditions | Field universality + structural conservation + operator contracts |
-| **Dynamics Engine** | `dynamics/self_optimizing_engine.py`, `dynamics/canonical.py` | Nodal equation ∂EPI/∂t = νf·ΔNFR(t) | Self-optimization - autonomous structural improvement |
-| **Telemetry System** | `metrics/common.py`, `metrics/telemetry.py` | Structural coherence mathematics C(t), Si | Complete monitoring - all structural changes tracked |
-| **SDK Interface** | `sdk/simple.py`, `sdk/fluent.py`, `sdk/builders.py` | Tetrad, conservation, grammar-aware dynamics, canonical parameters | Research-grade access + user-friendly canonical API |
-
-### Structural loop orchestration
+## Nodal execution flow
 
 ```mermaid
 flowchart LR
-    subgraph Preparation
-        DO[discover_operators]
-        VS[validate_sequence]
-    end
-    subgraph Execution
-        RS[run_sequence]
-        SH[set_delta_nfr_hook]
-    end
-    subgraph Dynamics
-        DN[default_compute_delta_nfr]
-        UE[update_epi_via_nodal_equation]
-        CP[coordinate_global_local_phase]
-    end
-    subgraph Telemetry
-        CC[compute_coherence]
-        SI[compute_Si]
-        TR[trace.register_trace_field]
-    end
-    DO --> VS --> RS
-    RS --> SH --> DN --> UE --> CP
-    DN --> CC
-    UE --> CC
-    CC --> SI
-    CC --> TR
-    CP --> TR
+    A[Graph and nodal triad] --> B[Delta NFR channels]
+    B --> C[Nodal equation integrator]
+    C --> D[Updated EPI and derivatives]
+    D --> E[Coherence and tetrad telemetry]
+    E --> F[SDK, services and reports]
+    G[Canonical operator request] --> H[Grammar and precondition checks]
+    H --> I[Operator implementation]
+    I --> B
+    I --> D
 ```
 
-1. **Discovery** imports the operator package so decorators populate the registry before any structural execution.【F:src/tnfr/operators/registry.py†L33-L50】
-2. **Validation** confirms the canonical RECEPTION→COHERENCE segment, checks THOL closure, and rejects unknown tokens before touching graph state.【F:src/tnfr/validation/__init__.py†L1-L104】【F:src/tnfr/operators/grammar_patterns.py†L313-L430】
-3. **Execution** invokes each operator, then defers ΔNFR/EPI recomputation to the configured hook, keeping the structural layer free of ad-hoc state mutation.【F:src/tnfr/structural.py†L87-L105】
-4. **Dynamics** recompute ΔNFR, integrate the nodal equation, and coordinate phase coupling. Hooks accept per-run overrides while clamping νf/EPI against canonical bounds.【F:src/tnfr/dynamics/dnfr.py†L2509-L2581】【F:src/tnfr/dynamics/integrators.py†L420-L483】【F:src/tnfr/dynamics/__init__.py†L172-L199】
-5. **Telemetry** extracts coherence, Si, and trace snapshots with caches that ensure reproducible neighbour maps and glyph histories.【F:src/tnfr/metrics/common.py†L32-L111】【F:src/tnfr/metrics/sense_index.py†L1-L200】【F:src/tnfr/trace.py†L169-L319】
+1. Nodes store EPI, structural frequency, phase, pressure, and trace metadata.
+2. `tnfr.dynamics.dnfr` computes the configured pressure channels. The EPI
+   channel realizes random-walk graph diffusion; other channels retain their
+   documented circular, capacity, and topology semantics.
+3. `tnfr.dynamics.integrators` advances EPI through the nodal equation and
+   records derivatives needed by coherence telemetry.
+4. `tnfr.metrics` and `tnfr.physics` compute coherence, equilibrium, the tetrad,
+   conservation diagnostics, pulse, and other read-outs.
+5. Operator execution passes through canonical grammar and operator
+   preconditions. Coupling and Resonance enforce the U3 phase gate before state
+   mutation.
 
-## ΔNFR and telemetry data paths
+## Package boundaries
 
-The following table highlights how ΔNFR values propagate through the engine and how related telemetry is persisted.
+### Foundations
 
-| Stage | Source module | Data emitted | Consumers |
-| --- | --- | --- | --- |
-| Hook install | `tnfr.dynamics.set_delta_nfr_hook` | Registers callable and metadata under `G.graph['compute_delta_nfr']`, seeding DNFR weights if absent.【F:src/tnfr/dynamics/dnfr.py†L2582-L2620】 | Structural loop (`run_sequence`), dynamics runners (`step`, `run`) |
-| Gradient mix | `tnfr.dynamics.dnfr.default_compute_delta_nfr` | Updates per-node ΔNFR attributes and records hook metadata for traces.【F:src/tnfr/dynamics/dnfr.py†L2509-L2581】 | Nodal integrators, telemetry caches |
-| Integration | `tnfr.dynamics.integrators.update_epi_via_nodal_equation` | Produces EPI, dEPI/dt, and d²EPI/dt² while advancing graph time.【F:src/tnfr/dynamics/integrators.py†L434-L483】 | Metrics (`compute_coherence`), trace snapshots |
-| Coherence metrics | `tnfr.metrics.common.compute_coherence` | Aggregates C(t), mean |ΔNFR|, and |dEPI/dt| across nodes.【F:src/tnfr/metrics/common.py†L32-L58】 | Trace captures, CLI/SDK consumers |
-| Sense index | `tnfr.metrics.sense_index.compute_Si` | Evaluates Si with cached neighbour topology and harmonic weighting.【F:src/tnfr/metrics/sense_index.py†L40-L188】 | Trace captures, selectors |
-| Trace capture | `tnfr.trace.register_trace_field` et al. | Stores ΔNFR weights, Kuramoto order, glyph counts, and callbacks into history buffers.【F:src/tnfr/trace.py†L169-L319】 | Audit tooling, reproducibility checks |
+- `tnfr.constants` separates canonical structural quantities from operational
+  tuning parameters.
+- `tnfr.config` owns attribute configuration and physics-derived operator
+  classifications.
+- `tnfr.errors` provides contextual public exceptions.
+- `tnfr.mathematics` owns numerical backends and domain-neutral mathematical
+  structures.
 
-## Operator registration mechanics
+### Structural dynamics
 
-Operator classes apply the `@register_operator` decorator, which verifies unique ASCII names, binds glyphs, and inserts implementations into the shared `OPERATORS` map used by syntax validators and dynamic dispatch.【F:src/tnfr/operators/definitions.py†L45-L180】【F:src/tnfr/operators/registry.py†L13-L58】 The discovery routine scans the `tnfr.operators` package exactly once per interpreter session, importing every submodule except the registry itself so that registration side effects run reliably before the structural loop accesses them.【F:src/tnfr/operators/registry.py†L33-L58】
+- `tnfr.operators` implements the fixed 13-operator catalog, contracts,
+  grammar, preconditions, postconditions, and sequence execution.
+- `tnfr.dynamics` computes `Delta NFR`, integrates the nodal equation, and owns
+  adaptive evolution services.
+- `tnfr.physics` computes fields and mathematically scoped diagnostics.
+- `tnfr.metrics` owns shared constitutive and telemetry kernels.
 
-When introducing new operators:
+### Orchestration and public APIs
 
-- Provide ASCII `name` and canonical `Glyph` binding on the class definition.【F:src/tnfr/operators/definitions.py†L45-L180】
-- Update grammar/syntax tables if the operator alters the canonical sequence, ensuring THOL blocks and closure sets remain valid.【F:src/tnfr/validation/__init__.py†L1-L104】【F:src/tnfr/operators/grammar_patterns.py†L313-L430】
-- Supply trace fields or telemetry hooks if the operator produces novel metrics, keeping the coherence log consistent.【F:src/tnfr/trace.py†L169-L319】
+- `tnfr.core` defines service protocols, default implementations, and the
+  dependency container.
+- `tnfr.services` provides the orchestrator facade over those protocols.
+- `tnfr.sdk` provides the supported Simple and fluent user interfaces.
+- `tnfr.engines` groups optimization, discovery, integration, and computation
+  services that build on the canonical core.
 
-### Operator vocabulary (English only)
+### Domain and research modules
 
-TNFR 2.0 completes the transition to **English-only** operator identifiers. The registry,
-validation helpers, CLI, and documentation all use the same canonical ASCII tokens:
+`tnfr.riemann`, `tnfr.navier_stokes`, `tnfr.yang_mills`,
+`tnfr.factorization`, and arithmetic modules under `tnfr.mathematics` apply the
+same nodal vocabulary to bounded research programs. They do not redefine the
+canonical operator catalog, grammar, coherence kernel, or tetrad.
 
-| Token         | Role summary            |
-| ------------- | ----------------------- |
-| `emission`    | Initiates resonance     |
-| `reception`   | Captures information    |
-| `coherence`   | Stabilises the form     |
-| `dissonance`  | Introduces controlled Δ |
-| `coupling`    | Synchronises nodes      |
-| `resonance`   | Propagates coherence    |
-| `silence`     | Freezes evolution       |
-| `expansion`   | Scales the structure    |
-| `contraction` | Densifies the form      |
-| `self_organization` | Guides self-order |
-| `mutation`    | Adjusts phase safely    |
-| `transition`  | Crosses thresholds      |
-| `recursivity` | Maintains memory        |
+## Structural fields and scope
 
-Only the canonical English spellings remain in the public API, the exported ``__all__`` bindings,
-and the validation layer. Downstream callers must use the names shown above; the registry no
-longer performs alias canonicalisation and ``get_operator_class()`` raises :class:`KeyError` for
-non-English identifiers.【F:src/tnfr/config/operator_names.py†L1-L77】【F:src/tnfr/operators/registry.py†L13-L45】
+The canonical diagnostic tetrad is `(Phi_s, |grad phi|, K_phi, xi_C)`.
+`Psi = K_phi + i J_phi` is a derived complex field and does not replace `K_phi`
+in the tetrad.
 
-## Enforcing TNFR invariants in runtime orchestration
+- Wrapped phase differences and wrapped curvature have exact magnitude bound
+  `pi`.
+- `0.9*pi` is an operational curvature warning margin.
+- `pi/4` per-node potential and `pi/2` potential drift are selected safety
+  policies, not topology-independent bounds.
+- The spectral coherence-length estimate scales as `1/sqrt(lambda_2)` under
+  its stated graph hypotheses.
+- The tetrad is the canonical read-out. Complete reconstruction of arbitrary
+  system state from four scalars remains an open stronger claim.
 
-Runtime functions coordinate clamps, selectors, and job overrides to keep simulations reproducible without sacrificing performance:
+See [the field specification](docs/STRUCTURAL_FIELDS_TETRAD.md) and
+[the minimality scope note](theory/MINIMAL_STRUCTURAL_DEGREES.md).
 
-- `apply_canonical_clamps` enforces configured bounds for EPI, νf, and θ, optionally recording clamp alerts for strict graphs.【F:src/tnfr/validation/runtime.py†L46-L103】
-- `_normalize_job_overrides` and `_resolve_jobs_override` map user overrides to canonical keys, ensuring distributed execution honours reproducibility contracts.【F:src/tnfr/dynamics/__init__.py†L114-L169】
-- Trace helpers attach before/after callbacks through the central manager so that operator applications, glyph selectors, and Kuramoto order parameters remain auditable.【F:src/tnfr/trace.py†L169-L319】
+## Operator registry and grammar
 
-Together these layers ensure every structural change maps back to the TNFR grammar, preserves unit semantics, and leaves behind a telemetry trail suitable for coherence analysis.
+The registry in [`operators/registry.py`](src/tnfr/operators/registry.py) is a
+lazily populated fixed map of the 13 implementations. `discover_operators()` is
+a compatibility no-op; runtime package scanning is not part of current
+registration.
 
-## Numerical Stability and Boundary Protection
+Public operator identifiers are the canonical English tokens. Glyphs remain
+internal structural symbols. The grammar authority is split deliberately:
 
-### TNFR Structural Boundaries
+1. contract predicates derive operator roles;
+2. `grammar_canon.py` materializes U1-U6;
+3. `grammar.py` exposes validation;
+4. precondition modules enforce state-dependent requirements during execution.
 
-In TNFR, the EPI range [-1.0, 1.0] represents the **structural container** of node identity. Boundaries are not arbitrary restrictions but intrinsic limits that preserve coherence:
+Passing a word validator does not prove infinite-horizon convergence or future
+U6 confinement. The exact scope is stated in
+[Unified Grammar Rules](theory/UNIFIED_GRAMMAR_RULES.md).
 
-- **EPI_MAX = 1.0**: Maximum structural expansion before identity fragmentation
-- **EPI_MIN = -1.0**: Maximum structural contraction before identity collapse
+## Public API
 
-These boundaries define the **operational space** within which a node maintains its structural identity. Exceeding them does not simply produce "out of range" values—it represents a transition beyond the node's capacity to maintain coherent form.
+The stable high-level entry point is:
 
-### Boundary Protection System
-
-The engine implements a **three-layer protection system** that progressively enforces structural boundaries while preserving TNFR operational principles:
-
-1. **Conservative constants**: Reduced expansion factors that naturally stay within bounds
-2. **Edge-aware scaling**: Operators dynamically adapt their magnitude near boundaries  
-3. **Structural clipping**: Unified boundary enforcement preserving continuity
-
-This layered approach embodies the TNFR principle that **operators are the only paths for change**—boundaries are maintained through operational awareness, not post-hoc corrections.
-
-#### Layer 1: Conservative Constants
-
-The `VAL_scale` parameter controls expansion rate for the VAL (expansion) operator:
-
-- **Current value**: 1.05 (reduced from previous 1.15)
-- **Critical threshold**: EPI ≥ 0.952381 (vs previous 0.869565)
-- **Rationale**: 8.7% reduction in scale factor improves numerical stability while maintaining meaningful expansion capacity
-
-This conservative value means that single VAL applications rarely approach boundaries under normal operation, reducing the need for downstream interventions.
-
-#### Layer 2: Edge-aware Scaling
-
-Operators dynamically adapt near boundaries through **edge-aware scaling**, which adjusts the effective scale factor based on proximity to structural limits:
-
-**VAL (Expansion) edge-awareness**:
 ```python
-scale_eff = min(VAL_scale, EPI_MAX / max(abs(EPI_current), ε))
+from tnfr.sdk import TNFR
+
+net = TNFR.create(20).ring().evolve(5)
+result = net.results()
+tetrad = net.tetrad()
+telemetry = net.telemetry()
+analysis = TNFR.analyze(net)
 ```
 
-This ensures that `EPI_current * scale_eff ≤ EPI_MAX`, providing a **gradual approach** to boundaries without overshoot.
-
-**NUL (Contraction) edge-awareness**:
-```python
-if EPI_current < 0:
-    scale_eff = min(NUL_scale, abs(EPI_MIN / min(EPI_current, -ε)))
-else:
-    scale_eff = NUL_scale  # Normal contraction (always safe with scale < 1.0)
-```
-
-For negative EPI values approaching EPI_MIN, the scale is adapted to prevent underflow.
-
-**Configuration**:
-- `EDGE_AWARE_ENABLED`: Enable/disable edge-aware scaling (default: `True`)
-- `EDGE_AWARE_EPSILON`: Small value to prevent division by zero (default: `1e-12`)
-
-**Telemetry**: When scale adaptation occurs, the engine records intervention metadata in `graph["edge_aware_interventions"]`, tracking:
-- Glyph name (VAL/NUL)
-- EPI before/after
-- Requested vs. effective scale
-- Adaptation flag
-
-#### Layer 3: Structural Clipping
-
-The `structural_clip()` function provides the final enforcement layer, applied during nodal equation integration. See the "Structural Boundary Preservation" section below for detailed documentation.
-
-### TNFR Principles Alignment
-
-This three-layer system preserves core TNFR principles:
-
-- **Operator closure**: All operators produce valid EPI values within structural bounds
-- **Coherence preservation**: Boundaries define valid structural space; violations represent identity loss
-- **Structural continuity**: Edge-aware scaling provides smooth approach to limits
-- **Operational fractality**: Boundary awareness operates at all scales
-- **Reproducibility**: Deterministic adaptation ensures identical results across runs
-
-The key insight is that **boundary protection is integrated into the operational fabric**, not imposed externally. Operators "know" about boundaries and adapt accordingly, maintaining the TNFR principle that structure emerges from resonance, not constraint.
-
-## Structural Boundary Preservation
-
-TNFR maintains strict structural boundaries to preserve coherence and ensure that the Primary Information Structure (EPI) remains within valid ranges. This prevents numerical precision issues from violating structural invariants during operator application and integration.
-
-### The structural_clip Function
-
-The `structural_clip` function in `tnfr.dynamics.structural_clip` implements canonical TNFR boundary enforcement with two modes:
-
-- **Hard mode** (default): Classic clamping for immediate stability. Values outside [EPI_MIN, EPI_MAX] are clamped to the nearest boundary. Fast and ensures strict bounds.
-- **Soft mode**: Smooth hyperbolic tangent mapping that preserves derivative continuity. Values are smoothly compressed near boundaries using a sigmoid function, controlled by the `CLIP_SOFT_K` steepness parameter.
-
-### Integration Point
-
-Structural clipping is automatically applied during nodal equation integration in `DefaultIntegrator.integrate()`. After computing the new EPI value via the canonical equation `∂EPI/∂t = νf · ΔNFR(t)`, the integrator applies `structural_clip` before updating node attributes:
+The fluent network API supports chained construction, named sequences, and
+measurement:
 
 ```python
-# In src/tnfr/dynamics/integrators.py, line ~565
-epi_clipped = structural_clip(
-    epi, 
-    lo=epi_min,  # From graph config or DEFAULTS
-    hi=epi_max,  # From graph config or DEFAULTS
-    mode=clip_mode,  # "hard" (default) or "soft"
-    k=clip_k,  # Steepness for soft mode (default: 3.0)
+from tnfr.sdk.fluent import NetworkConfig, TNFRNetwork
+
+config = NetworkConfig(random_seed=7, default_epi_range=(0.1, 0.5))
+
+result = (
+    TNFRNetwork("experiment", config)
+    .add_nodes(20, phase_range=(0.0, 0.1))
+    .connect_nodes(connection_pattern="ring")
+    .apply_sequence(["emission", "coherence", "silence"])
+    .measure()
 )
 ```
 
-### Configuration
+Low-level operator and dynamics APIs remain available for research code, but
+documentation examples should prefer the SDK unless they demonstrate a
+specific contract.
 
-Structural boundary behavior is configured via graph-level parameters:
+## Numerical backends
 
-- `EPI_MIN`: Lower boundary for EPI (default: -1.0)
-- `EPI_MAX`: Upper boundary for EPI (default: 1.0)
-- `CLIP_MODE`: Clipping mode, either "hard" or "soft" (default: "hard")
-- `CLIP_SOFT_K`: Steepness parameter for soft mode (default: 3.0)
+NumPy is a core dependency. JAX and Torch are optional numerical backends
+selected through the mathematics backend interface and tested through the
+backend suite. The repository does not currently contain a dedicated
+`TNFRGPUEngine`; backend availability alone is not evidence of CUDA acceleration
+or a performance guarantee. Any future GPU claim requires an implementation,
+hardware metadata, reproducible benchmark inputs, and recorded results.
 
-### Critical Use Cases
+## Self-optimization
 
-This mechanism solves the VAL/NUL operator boundary issue documented in the issue tracker:
+Self-optimization analyzes telemetry and chooses bounded actions through the
+implemented engine and SDK paths. It is an adaptive strategy layer. The current
+implementation does not expose a general structural-manifold gradient, so it
+must not be documented as a proved gradient-descent method. Its operational
+parameters live in `tnfr.constants.operational`.
 
-1. **VAL (Expansion) overflow**: With the conservative VAL_scale=1.05, the critical threshold is EPI ≥ 0.952381 (vs previous 0.869565 with VAL_scale=1.15). This 8.7% reduction in scale factor significantly improves numerical stability while maintaining meaningful expansion capacity. `structural_clip` provides secondary protection ensuring EPI ≤ EPI_MAX.
-2. **NUL (Contraction) underflow**: Symmetric case for negative EPI values. `structural_clip` ensures EPI ≥ EPI_MIN.
-3. **Repeated operator applications**: Multiple VAL or NUL applications in sequence maintain boundaries through consistent clipping. Note that TNFR canonical grammar prevents consecutive VAL→VAL transitions (high→high), requiring intermediate consolidation operators (RA, IL, UM) to preserve structural coherence.
+## Documentation architecture
 
-### Telemetry (Optional)
+The documentation has four layers:
 
-The `structural_clip` function supports optional telemetry via `StructuralClipStats`, which tracks:
-- Number of hard and soft clip interventions
-- Maximum and average deltas applied
-- Total adjustments made
+1. canonical doctrine: `AGENTS.md` and its exact agent mirror;
+2. normative specifications: grammar, field, and operator-contract documents;
+3. user and developer guides: README, architecture, testing, contributing, and
+   examples;
+4. dated research and audit records.
 
-This telemetry is disabled by default for performance but can be enabled via `record_stats=True` for debugging and tuning.
+`scripts/check_documentation.py` verifies invariant documentation assumptions.
+`scripts/verify_internal_references.py` validates local paths and Markdown
+fragments. `scripts/prepare_docs.py` stages canonical repository sources for the
+single MkDocs build. CI builds with strict mode and publishes the same artifact
+to GitHub Pages.
 
-### TNFR Principles
+## Extension constraints
 
-Structural boundary preservation aligns with core TNFR principles:
+Changes must preserve the six invariants in
+[AGENTS.md](AGENTS.md#8-canonical-invariants):
 
-- **Coherence preservation**: Boundaries define valid structural space; clipping prevents fragmentation
-- **Operator closure**: All operators must produce valid EPI values within structural bounds
-- **Structural continuity**: Soft mode preserves smooth derivatives for gradient-based analysis
-- **Reproducibility**: Deterministic clipping ensures identical results across runs
+- EPI changes remain traceable to canonical operators and the nodal equation;
+- Coupling and Resonance retain the U3 phase gate;
+- nested EPI identity is preserved;
+- sequences remain grammar-valid;
+- telemetry retains TNFR units and canonical read-outs;
+- seeded evolution remains reproducible.
 
-## Test isolation and module management
-
-### Module clearing pattern for test independence
-
-Test files use `sys.modules` manipulation to guarantee test isolation and enable
-controlled re-import scenarios. This pattern is **not URL validation** or sanitization —
-it is legitimate module cache management for testing purposes.
-
-#### Using the utility function
-
-The canonical approach is to use the `clear_test_module()` utility from `tests.utils`:
-
-```python
-from tests.utils import clear_test_module
-
-# Clear a module before re-importing
-clear_test_module('tnfr.utils.io')
-import tnfr.utils.io  # Fresh import with clean state
-```
-
-#### Why this pattern exists
-
-1. **Test isolation**: Ensures each test starts with a fresh module state
-2. **Import side effects**: Tests deprecation warnings, lazy imports, and initialization logic
-3. **Cache clearing**: Validates that caching mechanisms work correctly across imports
-4. **Fixture cleanup**: Guarantees fixtures provide truly independent module instances
-
-#### Static analysis considerations
-
-The pattern `'module.name' in sys.modules` may trigger false positives in static analysis
-tools (e.g., CodeQL's `py/incomplete-url-substring-sanitization`). This is because:
-
-- Module paths contain dots (like `tnfr.utils.io`)
-- Security scanners may mistake this for incomplete URL validation
-- The substring check is NOT validating hostnames or URLs
-
-**Resolution**: The repository includes `.codeql/codeql-config.yml` that excludes test files
-from this specific rule, since test code legitimately uses module path checking for isolation,
-not security validation.
-
-#### Direct manipulation (avoid)
-
-While the following pattern works, it should be avoided in favor of the utility function:
-
-```python
-# Discouraged: direct manipulation may trigger security scanners
-if 'module.name' in sys.modules:  # May be flagged as URL sanitization
-    del sys.modules['module.name']
-```
-
-The utility function approach provides better clarity and centralizes the pattern in one
-well-documented location.
-
----
-
-## Production Architecture Summary
-
-### Foundation Summary
-
-TNFR Engine is a complex-systems framework grounded in the nodal equation:
-
-- **Constants**: only π is a genuine structural scale; every other parameter is derived from the nodal dynamics / spectral gap or is a free operational parameter — NOT a derived structural constant.  
-- **Field tetrad**: Φ_s, |∇φ|, K_φ, ξ_C — the four orders of the derivative tower; only π is a genuine structural scale, ξ_C ∝ 1/√λ₂.  
-- **Self-Optimization**: Engine automatically improves its own structure  
-- **Cross-Domain Framework**: Physics, chemistry, network science — unified nodal-equation base  
-
-### Architecture Maturity Indicators
-
-| **Aspect** | **Status** | **Achievement** |
-|------------|------------|-----------------|
-| **Mathematical Foundation** | COMPLETE | Nodal equation + field tetrad |
-| **Operator System** | COMPLETE | 13 canonical operators + U1-U6 grammar |
-| **Physics Engine** | COMPLETE | Unified field tetrad + conservation theorem |
-| **Grammar Dynamics** | COMPLETE | Grammar-aware selection + pre-validation + integrity monitor |
-| **Self-Optimization** | COMPLETE | Autonomous structural improvement |
-| **Telemetry** | COMPLETE | Complete system observability |
-| **Developer Experience** | COMPLETE | Fluent API + Simple SDK (tetrad, conservation, telemetry) |
-| **Production Readiness** | COMPLETE | 1,633 tests passing + benchmarks + validation |
-
-### Architectural Principles (Canonical)
-
-1. **Nodal Foundation First**: architecture decisions trace to the nodal equation; only π is a genuine structural scale, every other parameter is derived from the dynamics or is a free operational parameter
-2. **Physics-Derived Design**: structural bounds trace to the dynamics where genuine (π phase-wrap, ξ_C ∝ 1/√λ₂)
-3. **Complete Observability**: Unified field tetrad provides full system insight
-4. **Self-Optimization**: Automated optimization built into core architecture
-5. **Cross-Domain Applicability**: Same mathematical base across applications
-6. **Production Stability**: No magic numbers mean no unexpected parameter failures
-
-### Essential Architecture References
-
-- **[AGENTS.md](AGENTS.md)**: Complete theory + canonical invariants  
-- **[src/tnfr/constants/canonical.py](src/tnfr/constants/canonical.py)**: structural + operational constants (only π is a genuine structural scale)  
-- **[src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py)**: U1-U6 implementation  
-- **[src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.py)**: Grammar-aware dynamic selection
-- **[src/tnfr/physics/fields.py](src/tnfr/physics/fields.py)**: Unified field tetrad  
-- **[src/tnfr/physics/conservation.py](src/tnfr/physics/conservation.py)**: Structural Conservation Theorem
-- **[src/tnfr/physics/integrity.py](src/tnfr/physics/integrity.py)**: Closed-loop integrity monitor (13/13 postconditions)
-- **[src/tnfr/dynamics/self_optimizing_engine.py](src/tnfr/dynamics/self_optimizing_engine.py)**: Autonomous optimization  
-
----
-
-**TNFR Engine Architecture**: Where mathematical foundations meet computational implementation.
-
-**Status**: Architecturally mature - v1.0.0
-
+New domain modules should depend on the canonical core and expose diagnostics
+without adding parallel definitions of constants, grammar sets, coherence, or
+operator contracts.

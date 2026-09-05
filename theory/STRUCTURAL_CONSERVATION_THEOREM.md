@@ -4,7 +4,7 @@
 
 **Status**: CANONICAL — Derived from first principles  
 **Date**: March 2026  
-**Version**: 0.0.3.3  
+**Version**: 0.0.3.5
 **Prerequisite**: [AGENTS.md](../AGENTS.md) §Foundational Physics, [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) §U2, §U6
 
 ---
@@ -16,7 +16,7 @@
 3. [Structural Charge and Current Definitions](#3-structural-charge-and-current-definitions)
 4. [Derivation of the Continuity Equation](#4-derivation-of-the-continuity-equation)
 5. [Two-Sector Decomposition](#5-two-sector-decomposition)
-6. [Noether Correspondence: Grammar ↔ Conservation](#6-noether-correspondence-grammar--conservation)
+6. [Noether Correspondence: Grammar ↔ Conservation](#6-noether-correspondence-grammar-conservation)
 7. [Ward Identities for Operator Sequences](#7-ward-identities-for-operator-sequences)
 8. [Lyapunov Stability from the Energy Functional](#8-lyapunov-stability-from-the-energy-functional)
 9. [Discrete Formulation on Graphs](#9-discrete-formulation-on-graphs)

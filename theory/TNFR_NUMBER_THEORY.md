@@ -1,7 +1,7 @@
 # TNFR Number Theory: Arithmetic Emergence from Structural Dynamics
 
 **Status**: Canonical theoretical reference
-**Version**: 0.0.3.3
+**Version**: 0.0.3.5
 **Date**: March 2026
 
 ---
@@ -211,7 +211,7 @@ Any wider "significance band" is an operational convenience, not a structural co
 
 ### 5.6 Derivation Status
 
-The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are positive operational weights applied to arithmetic functions (canonical units; the prime ⟺ ΔNFR = 0 criterion is coefficient-independent, §4.2). The structural-field thresholds are the **same canonical π-derived bounds as any TNFR network** — only π is a genuine structural scale (per-node $|\Phi_s| < \pi/4$, drift $\Delta\Phi_s < \pi/2$; see §7.5 and [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4). An earlier φ/γ/e "arithmetic recalibration" was removed (audit 2026); no domain-specific tuning remains.
+The 9 dynamical arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are positive operational weights applied to arithmetic functions (canonical units; the prime ⟺ ΔNFR = 0 criterion is coefficient-independent, §4.2). The arithmetic network uses the same tetrad implementation and selected warning policies as other TNFR graphs; these policies are not graph-independent bounds. An earlier φ/γ/e "arithmetic recalibration" was removed; no domain-specific threshold tuning remains.
 
 ---
 
@@ -280,7 +280,7 @@ $$\Phi_s(n) = \sum_{m \neq n} \frac{\Delta\mathrm{NFR}(m)}{d(n, m)^2}$$
 
 where $d(n, m)$ is the graph distance in the arithmetic network. Primes, being zero-pressure nodes, act as **sinks** in the potential field — they attract nearby composites toward equilibrium.
 
-**Threshold**: $|\Phi_s| < \pi/4 \approx 0.785$ (π-derived, quarter phase-wrap — see [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §4); the arithmetic network uses this same canonical π-derived bound (§7.5).
+**Warning policy**: $|\Phi_s| < \pi/4 \approx 0.785$ is the shared selected per-node policy; it is not derived from arithmetic or phase wrapping.
 
 ### 7.2 Phase Gradient: $|\nabla\phi|$
 
@@ -306,12 +306,12 @@ The coherence length measures how far structural correlations propagate through 
 
 ### 7.5 Tetrad thresholds on the arithmetic network
 
-The arithmetic network uses the same canonical, π-derived structural-field
-tetrad thresholds as any TNFR network — only π is a genuine structural scale:
+The arithmetic network uses the same tetrad implementation and selected
+warning policies as any TNFR network:
 
 | Field | Threshold | Source |
 |-------|-----------|--------|
-| $\Phi_s$ | π/4 ≈ 0.785 (per-node), π/2 ≈ 1.571 (drift) | `PHI_S_VON_KOCH_THRESHOLD`, `U6_STRUCTURAL_POTENTIAL_LIMIT` |
+| $\Phi_s$ | π/4 ≈ 0.785 (per-node), π/2 ≈ 1.571 (drift), both selected policies | `PHI_S_VON_KOCH_THRESHOLD`, `U6_STRUCTURAL_POTENTIAL_LIMIT` |
 | $|\nabla\phi|$ | ≤ π (phase wrap); π/16 ≈ 0.196 heuristic early-warning | `GRAD_PHI_CANONICAL_THRESHOLD` |
 | $K_\phi$ | < 0.9·π ≈ 2.827 (phase-wrap safety) | `K_PHI_CANONICAL_THRESHOLD` |
 | $\xi_C$ | spectral gap (ξ_C ∝ 1/√λ₂) | Computed per network |
@@ -894,4 +894,4 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 
 ---
 
-**Version**: 0.0.3.3 | **Status**: Canonical | **Authority**: [AGENTS.md](../AGENTS.md)
+**Version**: 0.0.3.5 | **Status**: Canonical | **Authority**: [AGENTS.md](../AGENTS.md)

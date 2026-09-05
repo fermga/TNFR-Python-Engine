@@ -1,7 +1,7 @@
 # TNFR Fundamental Theory
 
 **Status**: Canonical reference
-**Version**: 0.0.3.3
+**Version**: 0.0.3.5
 **Date**: March 2026
 
 ---
@@ -347,9 +347,9 @@ universal upper bound or a proof of state reconstruction.
 
 The exact definition-level facts are pressure linearity and the π phase-wrap
 bounds. Potential policies π/4 and π/2, curvature margin 0.9π, and phase-gradient
-warning π/16 retain their current values. The original finite-graph witnesses
-and the distinctions they require are recorded in
-[the contradiction audit](../docs/audits/THEORY_CONTRADICTIONS_2026-09-05.md).
+warning π/16 retain their current values. The finite-graph witnesses and the
+distinctions they require are recorded in
+[DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).
 A test count measures tested behavior; it does not establish an open theorem.
 
 ---
@@ -376,7 +376,7 @@ A test count measures tested behavior; it does not establish an open theorem.
 | SDK access (tetrad, conservation) | `src/tnfr/sdk/simple.py` |
 | Emergent symplectic substrate | `src/tnfr/physics/symplectic_substrate.py` |
 | Structural diffusion (transport) | `src/tnfr/physics/structural_diffusion.py` |
-| Test suite | `tests/` (1,633 passing) |
+| Test suite | `tests/` (current executable verification; counts are obtained from pytest) |
 
 ---
 
