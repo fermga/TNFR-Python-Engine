@@ -4,6 +4,53 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-05 post-review roadmap (R1–R9 continuation, N00–N13)
+
+Twelve PRs implementing the external post-review canonical plan on top of the
+R1–R9 research program. Every PR carries an exact/invariance test suite, a
+benchmark with a C5 reproducibility manifest, a theory-doc section and an honest
+claim-ledger transition. **U2/U6 in AGENTS.md were not modified** (the canonical
+gate was never met), **no 14th operator** was invented, and no classical open
+problem is claimed. Full ledger:
+[theory/RESEARCH_R1_R9_HANDOFF_2026-09-05.md](theory/RESEARCH_R1_R9_HANDOFF_2026-09-05.md).
+
+- **R9 directed non-normal dynamics** (`src/tnfr/physics/directed_diffusion.py`,
+  new `transient_u2.py`, `heterogeneous_vf.py`): the stationary `L²(π)` metric
+  layer and signed-vs-total U2 integral readings (N03); the scalar-`ν_f`
+  **structural-time theorem** `x(t) = e^{−s(t)L}x₀` with clock-invariant
+  reorganization and a finite bound `J ≤ M‖LQ‖‖x₀‖/ω` (N04); the transient U2/U6
+  certificate showing the non-consensus dynamics **contracts** in the Euclidean
+  per-node energy (`peak = 1`) — the naive ambient `>1` is exactly the oblique
+  projection factor `‖Q‖` (N05); and the heterogeneous-`ν_f` boundary where the
+  clock-change theorem stops (non-commuting generators, N13).
+- **R1 symmetry-sector observability** (`operator_equivariance.py`, new
+  `word_equivariance.py`, `pointed_symmetry.py`): per-copy graph-cache isolation
+  fixing a cross-operator leak (N01); the **word composition-closure theorem**
+  (equivariant operators compose to equivariant words, N06); and the **pointed
+  selector** structure — a localized action performs a declared reduction
+  `Aut(G) → Γ_v` (orbit–stabilizer, residual sectors, origin conjugation, N07).
+- **R4/R8 structural morphisms** (new `structural_morphism.py`, `remesh_audit.py`):
+  a **morphism taxonomy derived from the nodal equation** — an intertwiner
+  `M L_src = L_tgt M` is exactly a nodal-flow transport, and 6 of 7 kinds emerge
+  from `∂EPI/∂t = ν_f·ΔNFR` (N08); and the REMESH contract audit closing R4b as an
+  honest negative — the p-adic tower lift is a projection morphism that fails only
+  the temporal echo (N09).
+- **R5 trace collisions** (new `trace_collisions.py`): loss of observability under
+  the field trace, with an exact character formula (Fourier inversion) and a
+  Galois-invariant collision histogram (N10).
+- **R2 pulse amplitudes** (new `pulse_amplitudes.py`): the pointed-circulant pulse
+  amplitudes are the normalized spectral multiplicities `a_λ = m_λ/n` (N12).
+
+### Changed — 2026-09-05
+
+- **R7 arithmetic-pressure canon** (`src/tnfr/mathematics/arithmetic_pressure.py`):
+  removed the "minimal and complete" claim for the three pressure channels; added
+  `ArithmeticPressureVector` and an exact functional-independence proof over ℚ.
+  The scalar `delta_nfr_value` aggregation and API are preserved (N02).
+- Documentation resynced: `theory/README.md` R1–R9 index, `AGENTS.md` §12/§13 and
+  its verbatim mirror, and the per-line theory notes now reflect the N00–N13
+  results and claim ledger.
+
 ### Fixed — 2026-09-04 canonicity audit (invariants #1, #2, #4, #5, #6)
 
 - **Directed ΔNFR orientation (invariant #1).** The fused/vectorized EPI channel

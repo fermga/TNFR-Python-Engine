@@ -52,7 +52,7 @@ TNFR is more than dynamics on a graph. The graph is only the substrate; the noda
 
 Two clearly-separated layers:
 
-**Solid and verified.** The engine, the tetrad, grammar U1–U6, conservation laws, and the emergent transport + symplectic geometry are implemented, anchored to experimentally-established phenomena, and covered by 1,633 tests.
+**Solid and verified.** The engine, the tetrad, grammar U1–U6, conservation laws, and the emergent transport + symplectic geometry are implemented, anchored to experimentally-established phenomena, and covered by 2,448 tests.
 
 **Open research programs.** TNFR is also used to probe famous open problems. These are honest, in-progress programs that **do not claim proofs**:
 
@@ -64,6 +64,8 @@ Two clearly-separated layers:
 | TNFR–P vs NP | coherence verification O(\|E\|) vs synthesis trapping | worst-case separation — **open** |
 | TNFR–BSD | rank via structural-pressure accumulation | rank ↔ order of vanishing — **open** |
 | TNFR–Hodge | discrete Hodge = homology exactly (Eckmann) | (p,p) bigrading + algebraicity — **open** (structurally blind) |
+
+A separate **structural research program (R1–R9)** studies the arithmetic and spectral dynamics as internal theorems and constructive negatives — symmetry-sector observability with word-composition closure and pointed selectors (R1), the arithmetic pulse and its amplitudes `m_λ/n` (R2), CRT multiscale synthesis (R3), the projective p-adic tower and REMESH morphism audit (R4), trace-collision observability (R5), the additive-vs-Fourier negative (R6), the arithmetic-pressure profile (R7), the structural-morphism taxonomy derived from the nodal equation (R8), and directed non-normal dynamics with the scalar-`ν_f` clock-change theorem (R9). None is a Millennium claim; the canonical U2/U6 grammar is unchanged. Index: [theory/README.md](theory/README.md) · ledger: [theory/RESEARCH_R1_R9_HANDOFF_2026-09-05.md](theory/RESEARCH_R1_R9_HANDOFF_2026-09-05.md).
 
 See [AGENTS.md](AGENTS.md) and the `theory/` research notes for the full, audited status.
 
