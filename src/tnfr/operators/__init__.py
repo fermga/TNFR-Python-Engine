@@ -36,7 +36,7 @@ from ..constants.canonical import (
 )
 from ..errors import TNFRValueError
 from ..metrics.trig import neighbor_phase_mean
-from ..rng import make_rng
+from ..rng import make_rng, resolve_graph_seed, validate_graph_seed
 from ..types import EPIValue, Glyph, NodeId, TNFRGraph
 from ..utils import angle_diff, get_nodenx
 from . import definitions as _definitions
@@ -553,7 +553,7 @@ def _um_select_candidates(
     th: float,
 ) -> list[NodeProtocol]:
     """Select a subset of ``candidates`` for UM coupling."""
-    rng = make_rng(int(node.graph.get("RANDOM_SEED", 0)), node.offset(), node.G)
+    rng = make_rng(resolve_graph_seed(node), node.offset(), node.G)
 
     if limit <= 0:
         return list(candidates)
@@ -1603,72 +1603,44 @@ GLYPH_OPERATIONS: dict[Glyph, GlyphOperation] = {
 }
 
 
-def apply_glyph_obj(
-    node: NodeProtocol, glyph: Glyph | str, *, window: int | None = None
-) -> None:
-    """Apply ``glyph`` to an object satisfying :class:`NodeProtocol`."""
+def _resolve_glyph_operation(glyph: Glyph | str) -> tuple[Glyph, GlyphOperation]:
+    """Resolve public names and glyph aliases before touching runtime state."""
+    from .grammar_types import function_name_to_glyph, glyph_function_name
 
-    from ..validation.input_validation import ValidationError, validate_glyph
-    from .grammar import function_name_to_glyph
-
-    # Validate glyph parameter
-    try:
-        if not isinstance(glyph, Glyph):
-            validated_glyph = validate_glyph(glyph)
-            glyph = (
-                validated_glyph.value
-                if isinstance(validated_glyph, Glyph)
-                else str(glyph)
-            )
-        else:
-            glyph = glyph.value
-    except ValidationError as e:
-        step_idx = glyph_history.current_step_idx(node)
-        hist = glyph_history.ensure_history(node)
-        glyph_history.append_metric(
-            hist,
-            "events",
-            (
-                "warn",
-                {
-                    "step": step_idx,
-                    "node": getattr(node, "n", None),
-                    "msg": f"invalid glyph: {e}",
-                },
-            ),
-        )
-        raise TNFRValueError(f"invalid glyph: {e}", context={"error": str(e)}) from e
-
-    # Try direct glyph code first
-    try:
-        g = Glyph(str(glyph))
-    except ValueError:
-        # Try structural function name mapping
-        g = function_name_to_glyph(glyph)
-        if g is None:
-            step_idx = glyph_history.current_step_idx(node)
-            hist = glyph_history.ensure_history(node)
-            glyph_history.append_metric(
-                hist,
-                "events",
-                (
-                    "warn",
-                    {
-                        "step": step_idx,
-                        "node": getattr(node, "n", None),
-                        "msg": f"unknown glyph: {glyph}",
-                    },
-                ),
-            )
-            raise TNFRValueError(f"unknown glyph: {glyph}", context={"glyph": glyph})
-
+    g = function_name_to_glyph(glyph_function_name(glyph))
+    if g is None:
+        raise TNFRValueError(f"unknown glyph: {glyph}", context={"glyph": glyph})
     op = GLYPH_OPERATIONS.get(g)
     if op is None:
         raise TNFRValueError(
             f"glyph has no registered operator: {g}", context={"glyph": g}
         )
+    return g, op
+
+
+def _validated_execution_window(subject: Any, window: int | None) -> int:
+    """Validate the trace bound before an operator can change the node."""
+    from ..validation.window import validate_window
+
     if window is None:
-        window = int(get_param(node, "GLYPH_HYSTERESIS_WINDOW"))
+        window = get_param(subject, "GLYPH_HYSTERESIS_WINDOW")
+    return validate_window(window)
+
+
+def apply_glyph_obj(
+    node: NodeProtocol, glyph: Glyph | str, *, window: int | None = None
+) -> None:
+    """Apply a canonical name or glyph to a :class:`NodeProtocol` object.
+
+    Argument and history validation precede the structural operation. This
+    low-level primitive does not make arbitrary operator failures transactional.
+    """
+    from .grammar_debt import require_replayable_history
+
+    g, op = _resolve_glyph_operation(glyph)
+    window = _validated_execution_window(node, window)
+    validate_graph_seed(node)
+    require_replayable_history(node._glyph_storage().get("glyph_history"))
     gf = get_glyph_factors(node)
     op(node, gf)
     glyph_history.push_glyph(node._glyph_storage(), g.value, window)
@@ -1694,6 +1666,13 @@ def apply_glyph(
             f"Invalid parameters for apply_glyph: {e}", context={"error": str(e)}
         ) from e
 
+    # Reject invalid requests before constructing/caching a NodeNX wrapper.
+    glyph, _ = _resolve_glyph_operation(glyph)
+    window = _validated_execution_window(G, window)
+    validate_graph_seed(G)
+    from .grammar_debt import require_replayable_history
+
+    require_replayable_history(G.nodes[n].get("glyph_history"))
     NodeNX = get_nodenx()
     if NodeNX is None:
         raise ImportError("NodeNX is unavailable")

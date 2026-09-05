@@ -59,6 +59,10 @@ from typing import Any
 
 from .physics_derivation import (
     derive_bifurcation_window_from_physics,
+    derive_destabilizers_from_physics,
+    derive_end_operators_from_physics,
+    derive_start_operators_from_physics,
+    derive_transformers_from_physics,
     derive_u2_debt_capacity_from_physics,
 )
 
@@ -103,9 +107,9 @@ ENGLISH_OPERATOR_NAMES = CANONICAL_OPERATOR_NAMES
 # Physics-derived operator sets (derived from TNFR canonical principles)
 # Import here to avoid issues, but actual derivation is in physics_derivation module
 # These are computed at module load time from TNFR physical principles
-VALID_START_OPERATORS = frozenset({EMISSION, RECURSIVITY, TRANSITION})
+VALID_START_OPERATORS = derive_start_operators_from_physics()
 INTERMEDIATE_OPERATORS = frozenset({DISSONANCE, COUPLING, RESONANCE})
-VALID_END_OPERATORS = frozenset({SILENCE, TRANSITION, RECURSIVITY, DISSONANCE})
+VALID_END_OPERATORS = derive_end_operators_from_physics()
 SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 
 # R4 Bifurcation control: operators that enable structural transformations
@@ -114,8 +118,8 @@ SELF_ORGANIZATION_CLOSURES = frozenset({SILENCE, CONTRACTION})
 # derived in physics_derivation.increases_structural_pressure).  These three
 # operators raise |ΔNFR|; NAV (controlled transition) and EN (reception) do NOT
 # and are therefore NOT destabilizers — see validate_physics_derivation().
-DESTABILIZERS = frozenset({DISSONANCE, MUTATION, EXPANSION})  # OZ, ZHIR, VAL
-TRANSFORMERS = frozenset({MUTATION, SELF_ORGANIZATION})  # ZHIR, THOL
+DESTABILIZERS = derive_destabilizers_from_physics()
+TRANSFORMERS = derive_transformers_from_physics()
 # Canonical U4b window: DERIVED from the pulse relaxation, not assumed. A
 # destabilizer's |ΔNFR| perturbation relaxes geometrically under the discrete
 # nodal step EPI += dt·νf·ΔNFR; the window is the number of steps for it to

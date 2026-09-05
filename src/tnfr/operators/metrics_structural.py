@@ -611,7 +611,7 @@ def mutation_metrics(
         **Grammar validation (NEW):**
 
         - grammar_u4b_satisfied: Boolean (IL precedence + destabilizer)
-        - il_precedence_found: Boolean (IL in history)
+        - il_precedence_found: Boolean (prior IL in lifetime grammar context)
         - destabilizer_recent: Boolean (within window)
 
     Examples
@@ -762,10 +762,9 @@ def mutation_metrics(
 
     # === GRAMMAR VALIDATION (U4b) ===
     # Check if U4b satisfied (IL precedence + recent destabilizer)
-    glyph_history = G.nodes[node].get("glyph_history", [])
+    from .grammar_debt import node_has_prior_coherence
 
-    # Look for IL in history
-    il_precedence_found = any("IL" in str(g) for g in glyph_history)
+    il_precedence_found = node_has_prior_coherence(G.nodes[node])
 
     # Check if destabilizer is recent (within the relaxation window)
     destabilizer_recent = (

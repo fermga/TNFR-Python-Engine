@@ -182,6 +182,20 @@ def _mean_numeric(values: Sequence[float]) -> float | None:
         return float(sum(data) / len(data))
 
 
+def _graph_structure(graph: Any) -> dict[str, Any]:
+    """Graph diagnostics shared by recommendations and persisted snapshots."""
+    count = graph.number_of_nodes()
+    edges = graph.number_of_edges()
+    return {
+        "nodes": count, "edges": edges, "density": nx.density(graph),
+        "is_connected": (
+            (nx.is_weakly_connected(graph) if graph.is_directed() else nx.is_connected(graph))
+            if count else False
+        ),
+        "avg_degree": 2 * edges / count if count else 0.0,
+    }
+
+
 def _sense_index_mean(payload: Any) -> float | None:
     """Reduce compute_Si outputs (dict, array) to a scalar average."""
     if payload is None:
@@ -360,11 +374,9 @@ class TNFRSelfOptimizingEngine:
             return insights
 
         # Basic graph properties
-        num_nodes = len(G.nodes())
-        num_edges = len(G.edges())
-        density = (
-            (2 * num_edges) / (num_nodes * (num_nodes - 1)) if num_nodes > 1 else 0
-        )
+        graph_structure = _graph_structure(G)
+        num_nodes = graph_structure["nodes"]
+        density = graph_structure["density"]
 
         # Unified Field Analysis (New Nov 2025)
         unified_insights = {}
@@ -418,13 +430,7 @@ class TNFRSelfOptimizingEngine:
                 insights["conservation_feedback"] = fv
 
         # Mathematical structure analysis
-        insights["graph_structure"] = {
-            "nodes": num_nodes,
-            "edges": num_edges,
-            "density": density,
-            "is_connected": nx.is_connected(G) if HAS_NETWORKX else False,
-            "avg_degree": 2 * num_edges / num_nodes if num_nodes > 0 else 0,
-        }
+        insights["graph_structure"] = graph_structure
 
         # Spectral properties for optimization
         if self.pattern_engine:
@@ -458,7 +464,7 @@ class TNFRSelfOptimizingEngine:
         dnfr_values = [get_attr(G.nodes[node], ALIAS_DNFR, 0.0) for node in G.nodes()]
 
         # Mathematical properties for optimization
-        epi_variance = np.var(epi_values)
+        epi_variance = np.var(epi_values) if epi_values else 0.0
         vf_range = np.max(vf_values) - np.min(vf_values) if vf_values else 0
         dnfr_magnitude = np.mean(np.abs(dnfr_values)) if dnfr_values else 0
 
@@ -751,10 +757,7 @@ class TNFRSelfOptimizingEngine:
         matching_policies = []
         if HAS_NETWORKX and G:
             num_nodes = len(G.nodes())
-            num_edges = len(G.edges())
-            density = (
-                (2 * num_edges) / (num_nodes * (num_nodes - 1)) if num_nodes > 1 else 0
-            )
+            density = nx.density(G)
 
             size_bucket = (
                 "small" if num_nodes < 20 else "medium" if num_nodes < 100 else "large"
@@ -856,6 +859,8 @@ class TNFRSelfOptimizingEngine:
             or exec_kwargs.pop("target_node", None)
             or exec_kwargs.pop("focus_node", None)
         )
+        partition_label = exec_kwargs.pop("partition_id", None)
+        report_label = partition_label if partition_label is not None else node_label
         output_dir = exec_kwargs.pop("output_dir", _DEFAULT_OUTPUT_DIR)
         operator_sequence = exec_kwargs.pop("operator_sequence", None)
         glyph_sequence = exec_kwargs.pop("glyph_sequence", None)
@@ -881,10 +886,16 @@ class TNFRSelfOptimizingEngine:
                 validation_report,
                 operation_type,
                 seed_value,
-                node_label,
+                report_label,
             )
+            if partition_label is not None:
+                payload["metadata"]["partition_id"] = str(partition_label)
+                payload["metadata"]["node"] = _sanitize_label(node_label, "global")
             safe_seed = _sanitize_label(seed_value, "unseeded")
-            safe_node = _sanitize_label(node_label, "global")
+            safe_node = _sanitize_label(report_label, "global")
+            if partition_label is not None:
+                label_hash = hashlib.sha256(str(partition_label).encode("utf-8")).hexdigest()[:12]
+                safe_node = f"{safe_node}_{label_hash}"
             snapshot_path, signature = self._persist_dry_run_payload(
                 payload,
                 output_dir,
@@ -1113,17 +1124,7 @@ class TNFRSelfOptimizingEngine:
         if G is None or not HAS_NETWORKX:
             snapshot = {"timestamp": timestamp, "graph": None, "telemetry": None}
         else:
-            num_nodes = len(G.nodes())
-            num_edges = len(G.edges())
-            density = (
-                (2 * num_edges) / (num_nodes * (num_nodes - 1)) if num_nodes > 1 else 0
-            )
-            graph_metrics = {
-                "nodes": num_nodes,
-                "edges": num_edges,
-                "density": density,
-                "is_connected": nx.is_connected(G) if HAS_NETWORKX else False,
-            }
+            graph_metrics = _graph_structure(G)
             snapshot = {
                 "timestamp": timestamp,
                 "graph": graph_metrics,

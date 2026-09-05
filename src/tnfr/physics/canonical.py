@@ -24,8 +24,10 @@ U6 decisions must be invariant across precision modes.
 CACHE INVALIDATION (root cause corrected + fixed, May 2026):
 ------------------------------------------------------------
 compute_structural_potential (and estimate_coherence_length, J_ΔNFR) is
-cached via @cache_tnfr_computation with dependencies
-{graph_topology, node_dnfr}. The cache key embeds a dependency hash of the
+cached via @cache_tnfr_computation with graph_topology and node_dnfr
+dependencies. Precision-aware canonical fields additionally declare
+precision_mode, so changing either the source or numerical mode cannot reuse
+an incompatible cached field. The cache key embeds a dependency hash of the
 node fields, so changing ΔNFR on a fixed topology MUST invalidate the entry.
 
 **Historical bug (now fixed)**: the dependency hash
@@ -190,28 +192,29 @@ def _get_precision_dtype() -> type:
 
 
 # Centralised helpers — single source of truth in _helpers.py
+from ._helpers import compensated_sum  # noqa: E402
 from ._helpers import get_dnfr as _get_dnfr  # noqa: E402
 from ._helpers import get_phase as _get_phase  # noqa: E402
+from ._helpers import neighborhood_arrays  # noqa: E402
 from ._helpers import wrap_angle as _wrap_angle  # noqa: E402
 
 _PHI_S_DISTANCE_CACHE: dict[tuple, dict[Any, dict[Any, float]]] = {}
 
 
 def _graph_topology_hash(G: Any) -> int:
-    """Return lightweight topology hash (nodes, edges, degree multiset).
+    """Hash the labelled, weighted topology used by shortest-path distances.
 
     Hash changes on structural reorganization affecting distances; phase-only
     changes do not alter shortest-path distances and should keep cache valid.
     """
-    num_nodes = G.number_of_nodes()
-    num_edges = G.number_of_edges()
-    degrees = sorted([d for _, d in G.degree()])
-    return hash((num_nodes, num_edges, tuple(degrees)))
+    from ..utils.cache import _compute_dependency_hash
+
+    return hash(_compute_dependency_hash(G, {"graph_topology"}))
 
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={"graph_topology", "node_dnfr"},
+    dependencies={"graph_topology", "node_dnfr", "precision_mode"},
 )
 def compute_structural_potential(
     G: Any,
@@ -223,300 +226,192 @@ def compute_structural_potential(
     max_refinements: int = 3,
     sample_size: int = 32,
 ) -> dict[Any, float]:
-    """Compute structural potential Φ_s for each locus [CANONICAL].
+    """Compute the structural potential ``sum_j ΔNFR_j / d(i,j)**alpha``.
+
+    The default is exact at every graph size. Distances follow outgoing arcs
+    on directed graphs and the ``weight`` edge attribute (default 1). Positive
+    edge lengths define the metric; for compatibility, zero-length and
+    unreachable source-target pairs contribute zero. Parallel edges use the
+    minimum path length, as in NetworkX shortest-path routines.
 
     Parameters
     ----------
     G : Graph
         TNFR graph with ΔNFR node attributes.
     alpha : float, default 2.0
-        Distance exponent (inverse-square analog).
+        Distance exponent. The canonical inverse-square field uses 2.
     landmark_ratio : float | None
-        Optional override for landmark sampling ratio (0 < r ≤ 0.5). If None,
-        canonical size-based heuristic is used.
+        Explicitly opt into a landmark approximation with a ratio clamped to
+        [0.001, 0.5]. ``None`` selects exact evaluation. Landmark distances are
+        lengths of paths through a landmark, never lower distance bounds.
+        With signed pressure, these distances do not bound relative potential
+        error. Use the exact default for U6 decisions.
     validate : bool, default False
-        If True, performs adaptive refinement: compares landmark approximation
-        against exact potentials on a random node subset (size = sample_size)
-        and increases landmark_ratio until relative mean absolute error < ε.
+        For explicit approximations, compare every returned node to the exact
+        field. Refine up to ``max_refinements``; return the exact field if the
+        requested global RMAE is still unmet. Thus this option also incurs the
+        cost of exact evaluation.
     error_epsilon : float, default 0.05
-        Relative mean absolute error (RMAE) threshold for acceptance.
+        Nonnegative finite tolerance for ``sum(abs(approx-exact)) /
+        sum(abs(exact))`` over all nodes. A zero exact denominator yields zero
+        only when the absolute error is zero, otherwise infinity.
     max_refinements : int, default 3
-        Maximum number of landmark_ratio doublings during validation.
+        Maximum number of ratio doublings during validation.
     sample_size : int, default 32
-        Number of nodes sampled for exact comparison.
+        Retained for call compatibility. Verification covers all nodes;
+        sampling cannot certify the global error of a signed field.
 
     Returns
     -------
     dict[node, float]
-        Mapping of node to Φ_s value.
+        Node potentials. Explicit ``landmark_ratio`` plus ``validate=True``
+        retains the legacy diagnostic keys ``__phi_s_landmark_ratio__`` and
+        ``__phi_s_rmae__``. ``__phi_s_fallback_exact__`` is 1.0 after an exact
+        fallback and 0.0 otherwise; RMAE describes the returned field.
 
-    Canonical Integrity
-    -------------------
-    - Preserves physical definition: Σ ΔNFR_j / d(i,j)^α.
-    - Landmark approximation is a controlled sampling strategy; validation
-      enforces bounded error (U6 safety—confinement metrics remain meaningful).
-    - Distance cache keyed on topology hash + ratio enables reuse across phase
-      changes (phase does not affect shortest-path distances).
+    Notes
+    -----
+    This read-only computation does not modify the graph or consume random
+    state. Exactness means exact graph distances with floating-point sums.
     """
     if nx is None:
         raise RuntimeError("networkx required for structural potential computation")
-
     nodes = list(G.nodes())
-    num_nodes = len(nodes)
-
-    # Precompute ΔNFR values using TNFR alias system
-    delta_nfr = {n: _get_dnfr(G, n) for n in nodes}
-
-    # Choose computation path
-    use_landmarks = False
-    effective_ratio: float | None = None
-    if landmark_ratio is not None:
-        effective_ratio = max(0.001, min(0.5, landmark_ratio))
-        use_landmarks = True
-    else:
-        # Heuristic selection based on size bands
-        if num_nodes <= 50:
-            return _compute_phi_s_exact(G, nodes, delta_nfr, alpha)
-        elif num_nodes <= 500:
-            return _compute_phi_s_optimized(G, nodes, delta_nfr, alpha)
-        else:
-            effective_ratio = min(0.1, 50.0 / num_nodes)
-            use_landmarks = True
-
-    if not use_landmarks:
+    delta_nfr = {node: _get_dnfr(G, node) for node in nodes}
+    if landmark_ratio is None or not nodes:
         return _compute_phi_s_exact(G, nodes, delta_nfr, alpha)
 
-    # Landmark computation with optional caching and validation
-    import random
+    ratio = float(landmark_ratio)
+    if not math.isfinite(ratio):
+        raise ValueError("landmark_ratio must be finite")
+    ratio = max(0.001, min(0.5, ratio))
+    if validate and (not math.isfinite(error_epsilon) or error_epsilon < 0.0):
+        raise ValueError("error_epsilon must be finite and nonnegative")
+    if validate and max_refinements < 0:
+        raise ValueError("max_refinements must be nonnegative")
+    if validate and not all(math.isfinite(value) for value in delta_nfr.values()):
+        raise ValueError("potential validation requires finite ΔNFR values")
 
-    topo_hash = _graph_topology_hash(G)
-    cache_key = (topo_hash, effective_ratio)
-    cached = _PHI_S_DISTANCE_CACHE.get(cache_key)
-
-    def compute_with_ratio(ratio: float) -> dict[Any, float]:
-        """Inner landmark pass (rebuild distances only if ratio changed)."""
-        nonlocal cached
-        if cached is None or cache_key[1] != ratio:
-            # Rebuild landmarks & distances
-            num_landmarks = max(3, int(len(nodes) * ratio))
-            node_scores = []
-            for node in nodes:
-                degree = G.degree(node)
-                dnfr_contrib = abs(delta_nfr[node])
-                score = degree * (1.0 + dnfr_contrib)
-                node_scores.append((score, node))
-            node_scores.sort(reverse=True)
-            top_candidates = [n for _, n in node_scores[: num_landmarks * 2]]
-            landmarks = random.sample(
-                top_candidates, min(num_landmarks, len(top_candidates))
-            )
-            landmark_distances: dict[Any, dict[Any, float]] = {}
-            for landmark in landmarks:
-                if G.number_of_edges() > 0:
-                    distances = nx.single_source_dijkstra_path_length(
-                        G, landmark, weight="weight"
-                    )
-                else:
-                    distances = {landmark: 0.0}
-                landmark_distances[landmark] = distances
-            cached = landmark_distances
-            _PHI_S_DISTANCE_CACHE[(topo_hash, ratio)] = cached
-        landmark_distances = cached
-
-        # Use vectorized implementation if available
-        if _VECTORIZATION_AVAILABLE:
-            landmarks = list(landmark_distances.keys())
-            return compute_phi_s_landmarks_vectorized(
-                G,
-                nodes,
-                delta_nfr,
-                alpha,
-                landmarks,
-                landmark_distances,
-                dtype=_get_precision_dtype(),
-            )
-
-        # Approximate potentials (Python fallback)
-        potential: dict[Any, float] = {}
-        landmarks = list(landmark_distances.keys())
-        for src in nodes:
-            total = 0.0
-            # Exact contributions from landmarks
-            for landmark in landmarks:
-                if landmark == src:
-                    continue
-                d = landmark_distances[landmark].get(src, math.inf)
-                if math.isfinite(d) and d > 0.0:
-                    total += delta_nfr[landmark] / (d**alpha)
-            # Approximate remaining nodes
-            for dst in nodes:
-                if dst == src or dst in landmarks:
-                    continue
-                min_approx_dist = math.inf
-                for landmark in landmarks:
-                    d_land_src = landmark_distances[landmark].get(src, math.inf)
-                    d_land_dst = landmark_distances[landmark].get(dst, math.inf)
-                    if math.isfinite(d_land_src) and math.isfinite(d_land_dst):
-                        approx_dist = abs(d_land_src - d_land_dst)
-                        if approx_dist <= 0.0:
-                            approx_dist = 1.0
-                        if approx_dist < min_approx_dist:
-                            min_approx_dist = approx_dist
-                if math.isfinite(min_approx_dist) and min_approx_dist > 0.0:
-                    total += delta_nfr[dst] / (min_approx_dist**alpha)
-            potential[src] = total
+    # The path-bound interpretation requires positive edge lengths. Preserve
+    # the exact kernel's historical exclusion of zero-distance pairs.
+    has_nonpositive_edge = any(
+        float(data.get("weight", 1.0)) <= 0.0 for _, _, data in G.edges(data=True)
+    )
+    if has_nonpositive_edge:
+        potential = _compute_phi_s_exact(G, nodes, delta_nfr, alpha)
+        if validate:
+            _require_finite_exact_potential(potential)
+            potential.update({
+                "__phi_s_landmark_ratio__": ratio,
+                "__phi_s_rmae__": 0.0,
+                "__phi_s_fallback_exact__": 1.0,
+            })
         return potential
 
-    current_ratio = effective_ratio if effective_ratio is not None else 0.01
-    potential = compute_with_ratio(current_ratio)
+    potential = _compute_phi_s_landmarks(G, nodes, delta_nfr, alpha, ratio)
+    if not validate:
+        return potential
 
-    if validate and num_nodes >= 100:
-        # Sample subset for exact computation
-        import random as _r
+    exact = _compute_phi_s_exact(G, nodes, delta_nfr, alpha)
+    _require_finite_exact_potential(exact)
+    denominator = math.fsum(abs(value) for value in exact.values())
 
-        subset = nodes if len(nodes) <= sample_size else _r.sample(nodes, sample_size)
-        exact_subset: dict[Any, float] = {}
-        dtype = _get_precision_dtype()
-        mode = get_precision_mode()
-        for src in subset:
-            if G.number_of_edges() > 0:
-                lengths = nx.single_source_dijkstra_path_length(G, src, weight="weight")
-            else:
-                lengths = {src: 0.0}
-            total = dtype(0.0)
-            for dst in nodes:
-                if dst == src:
-                    continue
-                d = lengths.get(dst, math.inf)
-                if not math.isfinite(d) or d <= 0.0:
-                    continue
-                if mode in ("high", "research"):
-                    log_contrib = np.log(abs(delta_nfr[dst]) + 1e-100) - alpha * np.log(
-                        d
-                    )
-                    contrib = dtype(np.exp(log_contrib))
-                    if delta_nfr[dst] < 0:
-                        contrib = -contrib
-                else:
-                    contrib = dtype(delta_nfr[dst] / (d**alpha))
-                total += contrib
-            exact_subset[src] = float(total)
+    def relative_error(candidate: dict[Any, float]) -> float:
+        if not all(math.isfinite(candidate[node]) for node in nodes):
+            return math.inf
+        error = math.fsum(abs(candidate[node] - exact[node]) for node in nodes)
+        return error / denominator if denominator else (0.0 if error == 0.0 else math.inf)
 
-        # Compute relative mean absolute error (RMAE)
-        abs_errors = []
-        exact_vals = []
-        for n in subset:
-            e_val = exact_subset[n]
-            a_val = potential[n]
-            exact_vals.append(abs(e_val))
-            abs_errors.append(abs(e_val - a_val))
-        denom = (sum(exact_vals) / len(exact_vals)) if exact_vals else 1.0
-        rmae = (sum(abs_errors) / len(abs_errors)) / denom if denom else 0.0
-        refinements = 0
-        while rmae > error_epsilon and refinements < max_refinements:
-            current_ratio = min(current_ratio * 2.0, 0.5)
-            potential = compute_with_ratio(current_ratio)
-            abs_errors = []
-            exact_vals = []
-            for n in subset:
-                e_val = exact_subset[n]
-                a_val = potential[n]
-                exact_vals.append(abs(e_val))
-                abs_errors.append(abs(e_val - a_val))
-            denom = (sum(exact_vals) / len(exact_vals)) if exact_vals else 1.0
-            rmae = (sum(abs_errors) / len(abs_errors)) / denom if denom else 0.0
-            refinements += 1
-        # (Optional) embed metadata for downstream telemetry introspection
-        # Embed approximation metadata (prefixed with __)
-        potential["__phi_s_landmark_ratio__"] = current_ratio  # type: ignore[index]
-        potential["__phi_s_rmae__"] = rmae  # type: ignore[index]
-
+    rmae = relative_error(potential)
+    for _ in range(max_refinements):
+        if rmae <= error_epsilon or ratio >= 0.5:
+            break
+        ratio = min(ratio * 2.0, 0.5)
+        potential = _compute_phi_s_landmarks(G, nodes, delta_nfr, alpha, ratio)
+        rmae = relative_error(potential)
+    fallback_exact = rmae > error_epsilon
+    if fallback_exact:
+        potential, rmae = exact, 0.0
+    potential.update({
+        "__phi_s_landmark_ratio__": ratio,
+        "__phi_s_rmae__": rmae,
+        "__phi_s_fallback_exact__": float(fallback_exact),
+    })
     return potential
+
+
+def _require_finite_exact_potential(potential: dict[Any, float]) -> None:
+    """Reject nonfinite reference fields before certifying approximation error."""
+    if not all(math.isfinite(value) for value in potential.values()):
+        raise ValueError("potential validation requires finite exact potentials")
 
 
 def _compute_phi_s_exact(
     G: Any, nodes: list[Any], delta_nfr: dict[Any, float], alpha: float
 ) -> dict[Any, float]:
-    """Exact Φ_s computation using all-pairs shortest paths.
-
-    Precision-aware: uses dtype from get_precision_mode().
-    """
-    # Use vectorized implementation if available and appropriate
-    # Vectorized is faster for N < 500 (approx)
-    # For larger N, memory might be an issue if dense matrix is created
-    if _VECTORIZATION_AVAILABLE and len(nodes) <= 1000:
+    """Exact distances with a small dense path or streamed BFS/Dijkstra."""
+    if _VECTORIZATION_AVAILABLE and len(nodes) <= 50:
         return compute_phi_s_exact_vectorized(
             G, nodes, delta_nfr, alpha, dtype=_get_precision_dtype()
         )
-
-    potential: dict[Any, float] = {}
-    dtype = _get_precision_dtype()
-    mode = get_precision_mode()
-
-    for src in nodes:
-        lengths = (
-            nx.single_source_dijkstra_path_length(G, src, weight="weight")
-            if G.number_of_edges() > 0
-            else {src: 0.0}
-        )
-        total = dtype(0.0)
-        for dst in nodes:
-            if dst == src:
-                continue
-            d = lengths.get(dst, math.inf)
-            if not math.isfinite(d) or d <= 0.0:
-                continue
-
-            # High/research modes: use more stable exponentiation
-            if mode in ("high", "research"):
-                # log-space computation for better numerical stability
-                log_contrib = np.log(abs(delta_nfr[dst]) + 1e-100) - alpha * np.log(d)
-                contrib = dtype(np.exp(log_contrib))
-                if delta_nfr[dst] < 0:
-                    contrib = -contrib
-            else:
-                # Standard mode: direct computation
-                contrib = dtype(delta_nfr[dst] / (d**alpha))
-
-            total += contrib
-        potential[src] = float(total)
-
-    return potential
+    return _compute_phi_s_optimized(G, nodes, delta_nfr, alpha)
 
 
 def _compute_phi_s_optimized(
     G: Any, nodes: list[Any], delta_nfr: dict[Any, float], alpha: float
 ) -> dict[Any, float]:
-    """Optimized Φ_s computation using BFS for unweighted graphs."""
+    """Exact per-source sums without an O(N²) resident distance matrix.
+
+    Unweighted graphs use BFS, weighted graphs Dijkstra, including parallel
+    edge attributes. Compensated float sums reduce cancellation for signed
+    pressure; research mode retains the configured extended scalar dtype.
+    """
+    has_weights = any("weight" in data for _, _, data in G.edges(data=True))
+    mode = get_precision_mode()
+    dtype = _get_precision_dtype() if mode == "research" else float
     potential: dict[Any, float] = {}
-
-    # Check if graph is unweighted
-    has_weights = any("weight" in G[u][v] for u, v in G.edges())
-
-    if not has_weights:
-        # Use BFS for unweighted graphs (more efficient)
-        for src in nodes:
-            total = 0.0
-            visited = {src}
-            queue = [(src, 0)]
-
-            while queue:
-                node, dist = queue.pop(0)
-                for neighbor in G.neighbors(node):
-                    if neighbor not in visited:
-                        visited.add(neighbor)
-                        new_dist = dist + 1
-                        if new_dist > 0:
-                            contrib = delta_nfr[neighbor] / (new_dist**alpha)
-                            total += contrib
-                        queue.append((neighbor, new_dist))
-
-            potential[src] = total
-    else:
-        # Fall back to exact method for weighted graphs
-        return _compute_phi_s_exact(G, nodes, delta_nfr, alpha)
-
+    for source in nodes:
+        lengths = (
+            nx.single_source_dijkstra_path_length(G, source, weight="weight")
+            if has_weights
+            else nx.single_source_shortest_path_length(G, source)
+        )
+        contributions = (
+            dtype(delta_nfr[target]) / dtype(distance) ** alpha
+            for target, distance in lengths.items()
+            if target != source and math.isfinite(distance) and distance > 0.0
+        )
+        potential[source] = compensated_sum(contributions, dtype=dtype)
     return potential
+
+
+def _landmark_distance_maps(
+    G: Any, nodes: list[Any], ratio: float
+) -> tuple[list[Any], dict[Any, dict[Any, float]], dict[Any, dict[Any, float]]]:
+    """Deterministic topology-only landmarks and both directed distance legs."""
+    count = min(len(nodes), max(3, int(len(nodes) * ratio)))
+    landmarks = sorted(nodes, key=lambda node: (-G.degree(node), repr(node)))[:count]
+    topology = _graph_topology_hash(G)
+    outward_key = (topology, tuple(landmarks), "outward")
+    outward = _PHI_S_DISTANCE_CACHE.get(outward_key)
+    if outward is None:
+        outward = {
+            node: nx.single_source_dijkstra_path_length(G, node, weight="weight")
+            for node in landmarks
+        }
+        _PHI_S_DISTANCE_CACHE[outward_key] = outward
+    if not G.is_directed():
+        return landmarks, outward, outward
+    inward_key = (topology, tuple(landmarks), "inward")
+    inward = _PHI_S_DISTANCE_CACHE.get(inward_key)
+    if inward is None:
+        reverse = G.reverse(copy=False)
+        inward = {
+            node: nx.single_source_dijkstra_path_length(reverse, node, weight="weight")
+            for node in landmarks
+        }
+        _PHI_S_DISTANCE_CACHE[inward_key] = inward
+    return landmarks, outward, inward
 
 
 def _compute_phi_s_landmarks(
@@ -526,79 +421,35 @@ def _compute_phi_s_landmarks(
     alpha: float,
     landmark_ratio: float = 0.1,
 ) -> dict[Any, float]:
-    """Approximate Φ_s computation using landmark sampling."""
-    import random
-
-    num_landmarks = max(3, int(len(nodes) * landmark_ratio))
-
-    # Select landmarks: prefer high-degree nodes and nodes with high |ΔNFR|
-    node_scores = []
-    for node in nodes:
-        degree = G.degree(node)
-        dnfr_contrib = abs(delta_nfr[node])
-        score = degree * (1.0 + dnfr_contrib)
-        node_scores.append((score, node))
-
-    # Select top nodes by score, with some randomization
-    node_scores.sort(reverse=True)
-    top_candidates = [node for _, node in node_scores[: num_landmarks * 2]]
-    landmarks = random.sample(top_candidates, min(num_landmarks, len(top_candidates)))
-
-    # Compute exact distances from landmarks
-    landmark_distances = {}
-    for landmark in landmarks:
-        if G.number_of_edges() > 0:
-            distances = nx.single_source_dijkstra_path_length(
-                G, landmark, weight="weight"
-            )
-        else:
-            distances = {landmark: 0.0}
-        landmark_distances[landmark] = distances
-
-    # Approximate potential for each node
+    """Opt-in paths-via-landmarks approximation; no relative-error guarantee."""
+    if not nodes:
+        return {}
+    landmarks, outward, inward = _landmark_distance_maps(G, nodes, landmark_ratio)
+    if _VECTORIZATION_AVAILABLE:
+        return compute_phi_s_landmarks_vectorized(
+            G, nodes, delta_nfr, alpha, landmarks, outward,
+            dtype=_get_precision_dtype(), reverse_landmark_distances=inward,
+        )
     potential: dict[Any, float] = {}
-
-    for src in nodes:
-        total = 0.0
-
-        # Exact contribution from landmarks
-        for landmark in landmarks:
-            if landmark == src:
+    for source in nodes:
+        contributions = []
+        for target in nodes:
+            if source == target:
                 continue
-            d = landmark_distances[landmark].get(src, math.inf)
-            if math.isfinite(d) and d > 0.0:
-                contrib = delta_nfr[landmark] / (d**alpha)
-                total += contrib
-
-        # Approximate contribution from non-landmarks
-        for dst in nodes:
-            if dst == src or dst in landmarks:
-                continue
-
-            # Find nearest landmark to dst and approximate distance
-            min_approx_dist = math.inf
-            for landmark in landmarks:
-                d_landmark_src = landmark_distances[landmark].get(src, math.inf)
-                d_landmark_dst = landmark_distances[landmark].get(dst, math.inf)
-
-                if math.isfinite(d_landmark_src) and math.isfinite(d_landmark_dst):
-                    # Triangle approximation
-                    approx_dist = abs(d_landmark_src - d_landmark_dst)
-                    approx_dist = max(approx_dist, 1.0)  # Avoid zero distance
-                    min_approx_dist = min(min_approx_dist, approx_dist)
-
-            if math.isfinite(min_approx_dist) and min_approx_dist > 0.0:
-                contrib = delta_nfr[dst] / (min_approx_dist**alpha)
-                total += contrib
-
-        potential[src] = total
-
+            distance = min(
+                inward[landmark].get(source, math.inf)
+                + outward[landmark].get(target, math.inf)
+                for landmark in landmarks
+            )
+            if math.isfinite(distance) and distance > 0.0:
+                contributions.append(delta_nfr[target] / distance**alpha)
+        potential[source] = math.fsum(contributions)
     return potential
 
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={"graph_topology", "node_phase"},
+    dependencies={"graph_topology", "node_phase", "precision_mode"},
 )
 def compute_phase_gradient(G: Any) -> dict[Any, float]:
     r"""Compute magnitude of discrete phase gradient |∇φ| per locus [CANONICAL].
@@ -635,7 +486,7 @@ def compute_phase_gradient(G: Any) -> dict[Any, float]:
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={"graph_topology", "node_phase"},
+    dependencies={"graph_topology", "node_phase", "precision_mode"},
 )
 def compute_phase_curvature(G: Any) -> dict[Any, float]:
     """Compute discrete Laplacian curvature K_φ of the phase field [CANONICAL]."""
@@ -659,38 +510,9 @@ def _compute_phase_gradient_and_curvature(
     # Vectorized path
     if _VECTORIZATION_AVAILABLE:
         try:
-            node_to_idx = {node: i for i, node in enumerate(nodes)}
-
             # Phase array
             phases = np.array([_get_phase(G, node) for node in nodes], dtype=np.float64)
-
-            # Degree array
-            degrees = np.array([G.degree[node] for node in nodes], dtype=np.float64)
-
-            # Edge lists
-            edge_src_list = []
-            edge_dst_list = []
-
-            is_directed = G.is_directed()
-
-            for u, v in G.edges():
-                if u not in node_to_idx or v not in node_to_idx:
-                    continue
-
-                u_idx = node_to_idx[u]
-                v_idx = node_to_idx[v]
-
-                # If u is center, v is neighbor: src=v, dst=u
-                edge_src_list.append(v_idx)
-                edge_dst_list.append(u_idx)
-
-                if not is_directed:
-                    # If v is center, u is neighbor: src=u, dst=v
-                    edge_src_list.append(u_idx)
-                    edge_dst_list.append(v_idx)
-
-            edge_src = np.array(edge_src_list, dtype=np.intp)
-            edge_dst = np.array(edge_dst_list, dtype=np.intp)
+            edge_src, edge_dst, degrees = neighborhood_arrays(G, nodes, dtype=dtype)
 
             grad_arr, curv_arr = compute_phase_gradient_and_curvature_vectorized(
                 phases, edge_src, edge_dst, degrees, dtype=dtype
@@ -749,7 +571,7 @@ def _compute_phase_gradient_and_curvature(
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
-    dependencies={"graph_topology", "node_dnfr"},
+    dependencies={"graph_topology", "node_dnfr", "precision_mode"},
 )
 def _estimate_coherence_length_autocorr(G: Any) -> float:
     """Coherence length ξ_C from the spatial-autocorrelation exp-decay fit.

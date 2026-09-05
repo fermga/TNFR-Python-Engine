@@ -237,6 +237,7 @@ __all__ = (
     "edge_version_update",
     "ensure_node_index_map",
     "ensure_node_offset_map",
+    "stable_node_offsets",
     "get_graph_version",
     "increment_edge_version",
     "increment_graph_version",
@@ -244,6 +245,7 @@ __all__ = (
     "stable_json",
     "configure_graph_cache_limits",
     "DNFR_PREP_STATE_KEY",
+    "GRAPH_RUNTIME_CACHE_KEYS",
     "DnfrCache",
     "DnfrPrepState",
     "new_dnfr_cache",
@@ -258,6 +260,7 @@ __all__ = (
 NODE_SET_CHECKSUM_KEY: str
 _GRAPH_CACHE_LAYERS_KEY: str
 DNFR_PREP_STATE_KEY: str
+GRAPH_RUNTIME_CACHE_KEYS: frozenset[str]
 
 class DnfrCache:
     idx: dict[Any, int]
@@ -380,6 +383,8 @@ def build_cache_manager(
 def cached_node_list(G: nx.Graph) -> tuple[Any, ...]: ...
 def ensure_node_index_map(G: TNFRGraph) -> dict[NodeId, int]: ...
 def ensure_node_offset_map(G: TNFRGraph) -> dict[NodeId, int]: ...
+
+def stable_node_offsets(G: nx.Graph) -> ContextManager[tuple[NodeId, ...]]: ...
 def configure_graph_cache_limits(
     G: GraphLike | TNFRGraph | MutableMapping[str, Any],
     *,

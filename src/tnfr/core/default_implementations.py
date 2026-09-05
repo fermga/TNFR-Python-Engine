@@ -19,6 +19,7 @@ DefaultTelemetryCollector
 from __future__ import annotations
 
 from contextlib import contextmanager
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -205,7 +206,7 @@ class DefaultTraceContext:
         if self.transitions:
             existing = self.graph.graph.get("_trace_transitions", [])
             existing_copy = list(existing)  # Make a copy to avoid mutation
-            existing_copy.extend(self.transitions)
+            existing_copy.extend(deepcopy(self.transitions))
             self.graph.graph["_trace_transitions"] = existing_copy
 
     def capture_state(self, graph: TNFRGraph) -> dict[str, Any]:
@@ -252,8 +253,8 @@ class DefaultTraceContext:
         self.transitions.append(
             {
                 "operator": operator_token,
-                "pre": pre_state,
-                "post": post_state,
+                "pre": deepcopy(pre_state),
+                "post": deepcopy(post_state),
                 "delta_coherence": post_state["coherence"] - pre_state["coherence"],
             }
         )

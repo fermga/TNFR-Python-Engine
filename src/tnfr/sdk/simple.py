@@ -57,6 +57,8 @@ from ..operators.nodal_equation import compute_d2epi_dt2, compute_expected_depi_
 
 # TNFR core imports
 from ..structural import create_nfr
+from ._topology import grid_edges, nonnegative_integer, probability as validate_probability
+from ._topology import ring_edges, small_world_edges
 
 # Canonical telemetry marks (AGENTS.md §7) -- heuristic cuts, not fitted:
 #   C(t) > COHERENCE_STRONG (π/(π+1) ~0.7585, emergent gate) -> strong coherence
@@ -95,31 +97,44 @@ def _run_network_sequence(
     Coupling) see neighbours at the same time step. A row-major schedule
     (whole sequence per node) would fracture coupling symmetry.
 
-    The grammar (U1-U6) is validated once when *validate* is True; every node
-    then receives the same validated trajectory, interleaved across the
-    lock-step. Form (EPI) is created from the structural vacuum by the
+    When *validate* is True, canonical instance validation supplies explicit
+    remaining-word context for U4a's future handlers. Live U2/U3/U4b checks
+    still run at each node; a blocked step raises instead of substituting a
+    different operator. Earlier accepted steps are not rolled back. Without
+    validation, standalone incremental selection remains active. Form (EPI)
+    is created from the structural vacuum by the
     Emission generator that opens canonical sequences -- never by direct
     assignment (invariant #1; grammar U1).
     """
     from ..operators.registry import get_operator_class
+    from ..operators.grammar_execution import ValidatedSequence
     from ..validation import validate_sequence
 
     names = list(operator_names)
     if not names:
         return
-    if validate:
-        validate_sequence(names, context=context)
     ops = [get_operator_class(n)() for n in names]
+    execution_word = ValidatedSequence(ops, context=context) if validate else None
+    if validate:
+        outcome = validate_sequence(names, context=context)
+        if not outcome.passed:
+            raise TNFRValueError(
+                "Invalid sequence: " + outcome.summary.get("message", "validation failed"),
+                context={"sequence": names, "outcome": outcome.summary},
+            )
     compute = G.graph.get("compute_delta_nfr")
     nodes = list(G.nodes())
     with warnings.catch_warnings():
         if suppress_birth_warnings:
             warnings.filterwarnings("ignore", message=r".*has no sources.*")
         for _ in range(cycles):
-            for op in ops:
+            for index, op in enumerate(ops):
                 for node in nodes:
                     G._last_operator_applied = op.name
-                    op(G, node)
+                    if execution_word is None:
+                        op(G, node)
+                    else:
+                        op(G, node, sequence_context=execution_word.step(index))
                 if callable(compute):
                     compute(G)
                 if on_step is not None:
@@ -777,8 +792,7 @@ class Network:
     def ring(self) -> Network:
         """Connect nodes in a ring (each node to its two neighbours)."""
         nodes = list(self.G.nodes())
-        edges = [(nodes[i], nodes[(i + 1) % len(nodes)]) for i in range(len(nodes))]
-        self.G.add_edges_from(edges)
+        self.G.add_edges_from(ring_edges(nodes))
         return self
 
     def complete(self) -> Network:
@@ -796,6 +810,7 @@ class Network:
         supplied, so identical seeds reproduce identical topologies
         (canonical invariant #6).
         """
+        probability = validate_probability(probability)
         s = seed if seed is not None else self._seed
         rng = np.random.RandomState(s)
         nodes = list(self.G.nodes())
@@ -805,11 +820,15 @@ class Network:
                     self.G.add_edge(u, v)
         return self
 
-    def star(self, center: int | None = None) -> Network:
+    def star(self, center: Any = None) -> Network:
         """Connect every node to a single central hub (star topology)."""
         nodes = list(self.G.nodes())
         if center is None:
+            if not nodes:
+                return self
             center = nodes[0]
+        if center not in self.G:
+            raise TNFRValueError("star center must be an existing node")
 
         for node in nodes:
             if node != center:
@@ -830,9 +849,10 @@ class Network:
         seed : int, optional
             Random seed for reproducibility.
         """
-        n = len(self.G.nodes())
-        ws = nx.watts_strogatz_graph(n, k, p, seed=seed)
-        self.G.add_edges_from(ws.edges())
+        nodes = list(self.G)
+        self.G.add_edges_from(small_world_edges(
+            nodes, k, p, seed if seed is not None else self._seed,
+        ))
         return self
 
     def scale_free(self, m: int = 2, seed: int | None = None) -> Network:
@@ -845,27 +865,23 @@ class Network:
         seed : int, optional
             Random seed for reproducibility.
         """
-        n = len(self.G.nodes())
-        ba = nx.barabasi_albert_graph(n, m, seed=seed)
-        self.G.add_edges_from(ba.edges())
+        nodes = list(self.G)
+        m = nonnegative_integer(m, "m")
+        ba = nx.barabasi_albert_graph(
+            len(nodes), m, seed=seed if seed is not None else self._seed,
+        )
+        self.G.add_edges_from((nodes[u], nodes[v]) for u, v in ba.edges())
         return self
 
     def grid(self, rows: int | None = None, cols: int | None = None) -> Network:
         """Create 2-D grid (lattice) topology.
 
-        If *rows* and *cols* are omitted the closest square layout is used.
+        Insertion order fills a near-square rectangle when dimensions are
+        omitted; the final row may be incomplete. An explicit dimension infers
+        the other. Two explicit dimensions must accommodate every node. Like
+        the other topology builders, this adds edges to existing support.
         """
-        n = len(self.G.nodes())
-        if rows is None:
-            rows = int(n**0.5)
-        if cols is None:
-            cols = rows
-        g2d = nx.grid_2d_graph(rows, cols)
-        mapping = {node: i for i, node in enumerate(g2d.nodes())}
-        g2d = nx.relabel_nodes(g2d, mapping)
-        for u, v in g2d.edges():
-            if u in self.G and v in self.G:
-                self.G.add_edge(u, v)
+        self.G.add_edges_from(grid_edges(list(self.G), rows, cols))
         return self
 
     def path(self) -> Network:
@@ -1485,30 +1501,41 @@ class Network:
     def spectrum(self) -> dict[str, Any]:
         """Structural relaxation spectrum of the diffusion operator.
 
-        The EPI channel of the nodal equation is exactly a graph diffusion
-        dEPI/dt = -nu_f * L_rw * EPI. Its eigenmodes relax as
-        exp(-nu_f*lambda_k*t): lambda_1 = 0 is the conserved uniform mode and
-        the spectral gap lambda_2 (the Fiedler value) sets the slowest
-        relaxation, the synchronization tendency, and -- via the coherence
-        length xi_C ~ 1/sqrt(lambda_2) -- the structural correlation range.
+        For symmetric adjacency, nodal decay rates are eigenvalues of
+        diag(nu_f)*L_rw; only a common frequency gives nu_f*lambda_k.
+        Geometry supplies the separate proxy xi_C = 1/sqrt(lambda_2).
+        Multiple stationary modes give a zero gap and an infinite proxy.
+        Asymmetric adjacency has no symmetric geometry basis; its damping
+        rates can be read directly with physics.relaxation_spectrum.
 
         Returns
         -------
         dict
             ``diffusivity`` (mean nu_f), ``relaxation_rates``
-            (nu_f*lambda_k ascending), ``spectral_gap`` (nu_f*lambda_2),
-            ``structural_rank`` (distinct frequencies) and
-            ``coherence_length`` (xi_C ~ 1/sqrt(spectral_gap)).
+            (actual nodal decay rates ascending), ``spectral_gap`` (second
+            nodal decay rate), ``structural_rank`` (distinct geometry modes) and
+            ``coherence_length`` (xi_C ~ 1/sqrt(lambda_2), independent of
+            the nu_f clock scale).
         """
         from ..physics.structural_diffusion import (
             relaxation_spectrum,
             structural_diffusivity,
+            structural_eigenmodes,
             structural_frequency_rank,
         )
 
         rates = [float(r) for r in relaxation_spectrum(self.G)]
-        gap = next((r for r in rates if r > 1e-12), 0.0)
-        xi_c = 1.0 / float(np.sqrt(gap)) if gap > 1e-12 else float("inf")
+        gap = rates[1] if len(rates) > 1 and rates[1] > 1e-12 else 0.0
+        eigenvalues, _ = structural_eigenmodes(self.G)
+        geometry_gap = (
+            float(eigenvalues[1])
+            if len(eigenvalues) > 1 and eigenvalues[1] > 1e-12 else 0.0
+        )
+        xi_c = (
+            1.0 / float(np.sqrt(geometry_gap))
+            if geometry_gap > 1e-12
+            else float("inf")
+        )
         return {
             "diffusivity": float(structural_diffusivity(self.G)),
             "relaxation_rates": rates,
@@ -2056,11 +2083,7 @@ class TNFR:
         --------
         >>> net = TNFR.create(10, seed=7).ring().evolve(5)
         """
-        if num_nodes < 0:
-            raise TNFRValueError(
-                "num_nodes must be non-negative.",
-                context={"num_nodes": num_nodes},
-            )
+        num_nodes = nonnegative_integer(num_nodes, "num_nodes")
         G = nx.Graph()
         for i in range(num_nodes):
             create_nfr(i, graph=G, epi=0.0, vf=1.0, theta=0.0)

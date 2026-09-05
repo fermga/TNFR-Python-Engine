@@ -180,7 +180,7 @@ class CoreDefaults:
     )
     NAV_RANDOM: bool = True
     NAV_STRICT: bool = False
-    RANDOM_SEED: int = 0
+    RANDOM_SEED: int | None = 0
     JITTER_CACHE_SIZE: int = 256
     OZ_NOISE_MODE: bool = False
     OZ_SIGMA: float = COUPLING_GENTLE  # 1/(4π) ≈ 0.0796 (OZ stochastic-mode noise width)

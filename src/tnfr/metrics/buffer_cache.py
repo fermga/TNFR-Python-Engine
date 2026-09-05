@@ -6,7 +6,7 @@ cache key patterns and invalidation strategies.
 
 Cache Key Structure
 -------------------
-All buffer caches use a tuple key: ``(key_prefix, count, buffer_count)``
+All buffer caches use a tuple key: ``(key_prefix, count, buffer_count, dtype)``
 
 This ensures:
 - Collision avoidance between different computations (via unique key_prefix)
@@ -53,7 +53,7 @@ def ensure_numpy_buffers(
 
     Cache Behavior
     --------------
-    - **Key**: ``(key_prefix, count, buffer_count)`` ensures uniqueness
+    - **Key**: ``(key_prefix, count, buffer_count, dtype)`` preserves type requests
     - **Invalidation**: Automatic on edge version changes
     - **Capacity**: Controlled by ``max_cache_entries`` parameter
     - **Override**: Graph-level config via ``configure_hot_path_caches`` or ``CacheManager``
@@ -138,13 +138,14 @@ def ensure_numpy_buffers(
     if dtype is None:
         dtype = float
     np = _unified_np
+    dtype = np.dtype(dtype)
 
     def builder() -> tuple[Any, ...]:
         return tuple(np.empty(count, dtype=dtype) for _ in range(buffer_count))
 
     return edge_version_cache(
         G,
-        (key_prefix, count, buffer_count),
+        (key_prefix, count, buffer_count, dtype),
         builder,
         max_entries=max_cache_entries,
     )

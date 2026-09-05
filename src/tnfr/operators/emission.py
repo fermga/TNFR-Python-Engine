@@ -121,10 +121,10 @@ class Emission(Operator):
     name: ClassVar[str] = EMISSION
     glyph: ClassVar[Glyph] = Glyph.AL
 
-    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Apply AL with structural irreversibility tracking.
 
-        Marks temporal irreversibility before delegating to grammar execution.
+        Marks temporal irreversibility after preflight and before glyph execution.
         This ensures every emission leaves a persistent structural trace as
         required by TNFR.pdf §2.2.1 (AL - Foundational emission).
 
@@ -140,11 +140,11 @@ class Emission(Operator):
         # Check and clear latency state if reactivating from silence
         self._check_reactivation(G, node)
 
-        # Mark structural irreversibility BEFORE grammar execution
+        # Preflight succeeded; record lineage before applying the selected glyph.
         self._mark_irreversibility(G, node)
 
-        # Delegate to parent __call__ which applies grammar
-        super().__call__(G, node, **kw)
+        # Execute the selected glyph and its base telemetry.
+        super()._execute(G, node, **kw)
 
     def _check_reactivation(self, G: TNFRGraph, node: Any) -> None:
         """Check and clear latency state when reactivating from silence.

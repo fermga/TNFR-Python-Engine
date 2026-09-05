@@ -37,6 +37,12 @@ _CLUSTERING_HIGH_THRESHOLD = 0.6
 _CLUSTERING_LOW_THRESHOLD = 0.2
 
 
+def _node_attribute(graph: Any, node: Any, aliases: tuple, default: float) -> float:
+    """Resolve structural aliases without treating a physical zero as absent."""
+    value = get_attr(graph.nodes[node], aliases, None)
+    return float(default if value is None else value)
+
+
 class FractalPartitioner:
     """Partitions TNFR networks respecting structural coherence.
 
@@ -89,6 +95,11 @@ class FractalPartitioner:
         use_spatial_index: bool = True,
         adaptive: bool = True,
     ):
+        if max_partition_size is not None and (
+            not isinstance(max_partition_size, int) or isinstance(max_partition_size, bool)
+            or max_partition_size <= 0
+        ):
+            raise ValueError("max_partition_size must be a positive integer or None")
         self.max_partition_size = max_partition_size
         self.coherence_threshold = coherence_threshold
         self.use_spatial_index = use_spatial_index and HAS_SCIPY and HAS_NUMPY
@@ -128,6 +139,8 @@ class FractalPartitioner:
             partition_size = self._compute_adaptive_partition_size(graph)
         else:
             partition_size = self.max_partition_size or 100
+        if self.max_partition_size is not None:
+            partition_size = min(partition_size, self.max_partition_size)
 
         # Build spatial index if requested and available
         if self.use_spatial_index:
@@ -141,13 +154,18 @@ class FractalPartitioner:
         current_partition = set()
 
         for community in communities:
-            if len(current_partition) + len(community) <= partition_size:
-                current_partition.update(community)
-            else:
-                if current_partition:
-                    subgraph = graph.subgraph(current_partition).copy()
-                    partitions.append((current_partition.copy(), subgraph))
-                current_partition = community.copy()
+            # A coherent community may itself exceed the capacity. Split it
+            # in stable graph order while preserving each induced subgraph.
+            ordered = [node for node in graph if node in community]
+            for start in range(0, len(ordered), partition_size):
+                chunk = set(ordered[start:start + partition_size])
+                if len(current_partition) + len(chunk) <= partition_size:
+                    current_partition.update(chunk)
+                else:
+                    if current_partition:
+                        subgraph = graph.subgraph(current_partition).copy()
+                        partitions.append((current_partition.copy(), subgraph))
+                    current_partition = chunk
 
         # Add final partition
         if current_partition:
@@ -211,7 +229,7 @@ class FractalPartitioner:
             elif avg_clustering < _CLUSTERING_LOW_THRESHOLD:
                 # Low clustering: use larger partitions
                 size_multiplier *= 1.2
-        except (AttributeError, ZeroDivisionError, ValueError, TypeError):
+        except (AttributeError, ZeroDivisionError, ValueError, TypeError, nx.NetworkXNotImplemented):
             # If clustering calculation fails, skip adjustment
             pass
 
@@ -233,20 +251,11 @@ class FractalPartitioner:
             return
 
         # Extract νf and phase coordinates
-        def _get_node_attr(
-            node_id: Any, alias: tuple, fallback_key: str, default: float
-        ) -> float:
-            """Get node attribute via TNFR alias or direct access."""
-            return float(
-                get_attr(graph.nodes[node_id], alias, None)
-                or graph.nodes[node_id].get(fallback_key, default)
-            )
-
         coords = np.array(
             [
                 [
-                    _get_node_attr(node, ALIAS_VF, "vf", 1.0),
-                    _get_node_attr(node, ALIAS_THETA, "phase", 0.0),
+                    _node_attribute(graph, node, ALIAS_VF, 1.0),
+                    _node_attribute(graph, node, ALIAS_THETA, 0.0),
                 ]
                 for node in nodes
             ]
@@ -308,7 +317,7 @@ class FractalPartitioner:
 
         # Filter to available nodes and exclude seed
         neighbors = []
-        for idx in indices:
+        for idx in np.atleast_1d(indices):
             if idx == seed_idx:
                 continue
             node = self._node_index_map[idx]
@@ -328,7 +337,7 @@ class FractalPartitioner:
 
         while unprocessed:
             # Select seed node
-            seed = next(iter(unprocessed))
+            seed = next(node for node in graph if node in unprocessed)
             community = self._grow_coherent_community(graph, seed, unprocessed)
             communities.append(community)
             unprocessed -= community
@@ -360,6 +369,7 @@ class FractalPartitioner:
         falling back to O(n) graph neighbors otherwise.
         """
         community = {seed}
+        node_order = {node: index for index, node in enumerate(graph)}
 
         # Use spatial index if available for faster neighbor finding
         if self.use_spatial_index and self._kdtree is not None:
@@ -375,7 +385,7 @@ class FractalPartitioner:
             best_candidate = None
             best_coherence = -1.0
 
-            for candidate in candidates:
+            for candidate in sorted(candidates, key=node_order.__getitem__):
                 coherence = self._compute_community_coherence(
                     graph, community, candidate
                 )
@@ -428,22 +438,13 @@ class FractalPartitioner:
         if not community:
             return 0.0
 
-        def _get_node_attr(
-            node_id: Any, alias: tuple, fallback_key: str, default: float
-        ) -> float:
-            """Get node attribute via TNFR alias or direct access."""
-            return float(
-                get_attr(graph.nodes[node_id], alias, None)
-                or graph.nodes[node_id].get(fallback_key, default)
-            )
-
-        candidate_vf = _get_node_attr(candidate, ALIAS_VF, "vf", 1.0)
-        candidate_phase = _get_node_attr(candidate, ALIAS_THETA, "phase", 0.0)
+        candidate_vf = _node_attribute(graph, candidate, ALIAS_VF, 1.0)
+        candidate_phase = _node_attribute(graph, candidate, ALIAS_THETA, 0.0)
 
         coherences = []
         for member in community:
-            member_vf = _get_node_attr(member, ALIAS_VF, "vf", 1.0)
-            member_phase = _get_node_attr(member, ALIAS_THETA, "phase", 0.0)
+            member_vf = _node_attribute(graph, member, ALIAS_VF, 1.0)
+            member_phase = _node_attribute(graph, member, ALIAS_THETA, 0.0)
 
             # Frequency coherence: inversely proportional to difference
             vf_diff = abs(candidate_vf - member_vf)
@@ -459,7 +460,7 @@ class FractalPartitioner:
             # Weighted combination: prioritize frequency alignment
             coherences.append(0.6 * vf_coherence + 0.4 * phase_coherence)
 
-        return sum(coherences) / len(coherences) if coherences else 0.0
+        return math.fsum(coherences) / len(coherences) if coherences else 0.0
 
     def partition_with_manifest(
         self,
@@ -494,10 +495,14 @@ class FractalPartitioner:
         - communities: list of community metadata with coherence scores
         - telemetry: global coherence, sense_index, phase metrics
         - network_metadata: node count, edge count, partition count
+
+        The entries index references one graph payload per returned partition.
+        Node IDs retain their scalar JSON types. Graph attributes, triad, and
+        JSON history are preserved; unsupported runtime state raises ValueError.
         """
-        import json
         from datetime import datetime, timezone
         from pathlib import Path
+        from ..engines.manifest import collect_manifest_telemetry, write_manifest_bundle
 
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -505,30 +510,7 @@ class FractalPartitioner:
         # Perform partitioning
         partitions = self.partition_network(graph)
 
-        # Compute telemetry metrics
-        telemetry = {}
-        try:
-            from ..physics import compute_coherence, compute_sense_index
-
-            telemetry["coherence"] = float(compute_coherence(graph))
-            telemetry["sense_index"] = float(compute_sense_index(graph))
-        except Exception:
-            telemetry["coherence"] = None
-            telemetry["sense_index"] = None
-
-        try:
-            from ..physics.fields import compute_structural_potential_field
-
-            phi_s_values = compute_structural_potential_field(graph)
-            if phi_s_values:
-                telemetry["structural_potential_range"] = [
-                    float(min(phi_s_values.values())),
-                    float(max(phi_s_values.values())),
-                ]
-            else:
-                telemetry["structural_potential_range"] = None
-        except Exception:
-            telemetry["structural_potential_range"] = None
+        telemetry = collect_manifest_telemetry(graph)
 
         # Extract network metadata
         node_count = len(graph.nodes()) if hasattr(graph, "nodes") else 0
@@ -536,15 +518,10 @@ class FractalPartitioner:
 
         # Serialize partition communities
         communities_serialized = []
+        graph_payloads = []
         for partition_idx, (node_set, subgraph) in enumerate(partitions):
-            # Compute community-level coherence
-            community_coherence = None
-            try:
-                from ..physics import compute_coherence
-
-                community_coherence = float(compute_coherence(subgraph))
-            except Exception:
-                pass
+            community_telemetry = collect_manifest_telemetry(subgraph)
+            graph_payloads.append((f"{partition_id}:p{partition_idx}", subgraph, community_telemetry))
 
             community_data = {
                 "partition_index": partition_idx,
@@ -552,8 +529,8 @@ class FractalPartitioner:
                 "edge_count": (
                     len(subgraph.edges()) if hasattr(subgraph, "edges") else 0
                 ),
-                "node_ids": [str(n) for n in sorted(node_set)],
-                "community_coherence": community_coherence,
+                "node_ids": [n for n in graph if n in node_set],
+                "community_coherence": community_telemetry["coherence"],
             }
             communities_serialized.append(community_data)
 
@@ -577,11 +554,6 @@ class FractalPartitioner:
             },
         }
 
-        # Write manifest
-        manifest_path = output_dir / "fractal_partition_manifest.json"
-        with open(manifest_path, "w") as f:
-            json.dump(manifest, f, indent=2)
-
         # Write summary
         summary = {
             "operation_type": "fractal_partition",
@@ -591,12 +563,10 @@ class FractalPartitioner:
             "sense_index": telemetry.get("sense_index"),
             "average_community_size": node_count / len(partitions) if partitions else 0,
         }
-        summary_path = output_dir / "fractal_partition_summary.json"
-        with open(summary_path, "w") as f:
-            json.dump(summary, f, indent=2)
-
         return {
             "partitions": partitions,
-            "manifest_absolute": manifest_path.resolve(),
-            "summary_absolute": summary_path.resolve(),
+            **write_manifest_bundle(
+                output_dir, "fractal_partition_manifest.json", "fractal_partition_summary.json",
+                manifest, summary, graph_payloads,
+            ),
         }

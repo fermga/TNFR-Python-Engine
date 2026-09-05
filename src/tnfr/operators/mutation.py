@@ -32,7 +32,7 @@ class Mutation(Operator):
     name: ClassVar[str] = MUTATION
     glyph: ClassVar[Glyph] = Glyph.ZHIR
 
-    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Apply ZHIR; detect bifurcation; optional post checks."""
         # Capture state before mutation for postcondition verification
         validate_postconditions = kw.get(
@@ -60,7 +60,7 @@ class Mutation(Operator):
             )
 
         # Apply base operator (glyph, preconditions, metrics)
-        super().__call__(G, node, **kw)
+        super()._execute(G, node, **kw)
 
         # Detect bifurcation potential if acceleration exceeds threshold
         if d2_epi > tau:

@@ -1,9 +1,13 @@
 """Pre-configured templates for common TNFR use cases.
 
-This module provides ready-to-use templates for domain-specific TNFR
-applications. Each template encodes structural patterns and operator
-sequences appropriate for modeling different types of complex systems
-while maintaining TNFR theoretical fidelity.
+This module provides operational topology and operator-sequence examples
+under domain-oriented names. All structural evolution uses canonical words.
+
+These are operational graph examples, not validated domain models. Random
+initial phases can make a requested word inadmissible at the live U3 gate;
+the call raises and returns no result. Callers needing to inspect or recover
+partially evolved state should construct a TNFRNetwork explicitly and apply
+appropriate canonical preparation. These templates do not bypass phase checks.
 
 Examples
 --------
@@ -24,27 +28,31 @@ Model neural network with TNFR principles:
 
 from __future__ import annotations
 
-from ..constants.canonical import (
+from ._defaults import (
     SDK_CONNECTIVITY_DEFAULT,
     SDK_INSPIRATION_LEVEL,
     SDK_INTERACTION_STRENGTH,
+    SDK_REWIRING_PROB_DEFAULT,
     SDK_VF_RANGE_LOW_MAX,
     SDK_VF_RANGE_LOW_MIN,
     SDK_VF_RANGE_MODERATE_MAX,
     SDK_VF_RANGE_MODERATE_MIN,
 )
-from .fluent import NetworkResults, TNFRNetwork
+from ._topology import (
+    contact_degree, hierarchical_edges, nonnegative_integer, positive_integer,
+    probability, rewired_contact_edges,
+)
+from .fluent import NetworkConfig, NetworkResults, TNFRNetwork
 
 __all__ = ["TNFRTemplates"]
 
 
 class TNFRTemplates:
-    """Pre-configured templates for common domain-specific use cases.
+    """Operational graph examples with explicit topology and cycle controls.
 
-    This class provides static methods that encode expert knowledge about
-    how to apply TNFR to different domains. Each template configures
-    appropriate structural frequencies, topologies, and operator sequences
-    for its target domain.
+    These methods choose initial structural frequencies, graph support and
+    canonical operator words. Their domain names are illustrative and do not
+    certify empirical models of social, neural or organizational systems.
 
     Methods are named after the domain they model and return
     :class:`NetworkResults` instances ready for analysis.
@@ -57,24 +65,24 @@ class TNFRTemplates:
         simulation_steps: int = 20,
         random_seed: int | None = None,
     ) -> NetworkResults:
-        """Simulate social network dynamics using TNFR.
+        """Evolve a contact graph with a specified initial mean degree.
 
-        Models human social networks where nodes represent individuals with
-        moderate structural frequencies (representing human timescales) and
-        small-world connectivity (reflecting real social structures).
-
-        The simulation applies activation, synchronization, and consolidation
-        phases that mirror social dynamics: initial interaction, alignment
-        of behaviors/beliefs, and stabilization of relationships.
+        A ring-based scaffold is rewired at SDK_REWIRING_PROB_DEFAULT while
+        preserving edge count. Individual degrees can vary after rewiring.
+        Activation, synchronization and consolidation use canonical words.
 
         Parameters
         ----------
         people : int, default=50
             Number of individuals in the social network.
         connections_per_person : int, default=5
-            Average number of social connections per person.
+            Exact initial mean degree, an integer in [0, people - 1].
+            The product people * connections_per_person must be even.
+            Rewiring probability is independent of this contact count.
         simulation_steps : int, default=20
-            Number of simulation steps to run.
+            Non-negative number of canonical word applications. One third
+            each is assigned to activation and synchronization; consolidation
+            receives the remainder. A live grammar rejection stops execution.
         random_seed : int, optional
             Random seed for reproducibility.
 
@@ -88,19 +96,25 @@ class TNFRTemplates:
         >>> results = TNFRTemplates.social_network_simulation(people=100)
         >>> print(f"Social coherence: {results.coherence:.3f}")
         """
-        connection_prob = connections_per_person / people
+        people = positive_integer(people, "people")
+        connections_per_person = contact_degree(people, connections_per_person)
+        simulation_steps = nonnegative_integer(simulation_steps, "simulation_steps")
 
-        network = TNFRNetwork("social_network")
-        if random_seed is not None:
-            network._config.random_seed = random_seed
+        network = TNFRNetwork("social_network", config=NetworkConfig(random_seed=random_seed))
 
-        # Human timescale frequencies: moderate reorganization rates
+        # Operational frequency range; no conversion to human timescales.
         network.add_nodes(
             people, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX)
-        )  # Human timescale canonical
+        )
 
-        # Small-world topology reflects real social structures
-        network.connect_nodes(connection_prob, "small_world")
+        graph = network.graph
+        graph.add_edges_from(rewired_contact_edges(
+            list(graph), connections_per_person, SDK_REWIRING_PROB_DEFAULT, network._rng,
+        ))
+        graph.graph["template_topology"] = {
+            "kind": "rewired_contact_ring", "mean_degree": connections_per_person,
+            "rewiring_probability": SDK_REWIRING_PROB_DEFAULT,
+        }
 
         # Simulate social dynamics in phases
         steps_per_phase = simulation_steps // 3
@@ -121,7 +135,7 @@ class TNFRTemplates:
     @staticmethod
     def neural_network_model(
         neurons: int = 100,
-        connectivity: float = SDK_CONNECTIVITY_DEFAULT,  # Canonical neural connectivity
+        connectivity: float = SDK_CONNECTIVITY_DEFAULT,
         activation_cycles: int = 30,
         random_seed: int | None = None,
     ) -> NetworkResults:
@@ -136,7 +150,7 @@ class TNFRTemplates:
         ----------
         neurons : int, default=100
             Number of neurons in the network.
-        connectivity : float, default=0.15
+        connectivity : float, default=SDK_CONNECTIVITY_DEFAULT
             Connection probability between neurons (sparse connectivity).
         activation_cycles : int, default=30
             Number of activation cycles to simulate.
@@ -154,9 +168,7 @@ class TNFRTemplates:
         >>> avg_si = sum(results.sense_indices.values()) / len(results.sense_indices)
         >>> print(f"Average neural sense: {avg_si:.3f}")
         """
-        network = TNFRNetwork("neural_model")
-        if random_seed is not None:
-            network._config.random_seed = random_seed
+        network = TNFRNetwork("neural_model", config=NetworkConfig(random_seed=random_seed))
 
         # Neural frequencies: high end of valid range (0.5-1.0 Hz_str)
         network.add_nodes(
@@ -174,16 +186,15 @@ class TNFRTemplates:
     @staticmethod
     def ecosystem_dynamics(
         species: int = 25,
-        interaction_strength: float = SDK_INTERACTION_STRENGTH,  # Canonical interaction strength
+        interaction_strength: float = SDK_INTERACTION_STRENGTH,
         evolution_steps: int = 50,
         random_seed: int | None = None,
     ) -> NetworkResults:
-        """Model ecosystem dynamics with TNFR structural evolution.
+        """Cycle canonical transformation, synchronization and consolidation words.
 
-        Represents species as nodes with diverse structural frequencies
-        (within TNFR bounds) and medium connectivity (species interactions).
-        Alternates between mutation (innovation), synchronization (adaptation),
-        and consolidation (stable ecosystems).
+        Species labels describe an operational random support graph, not an
+        empirically calibrated ecosystem model. Every requested step is one
+        complete word: creative_mutation, network_sync, then consolidation.
 
         Parameters
         ----------
@@ -192,7 +203,8 @@ class TNFRTemplates:
         interaction_strength : float, default=0.25
             Probability of ecological interactions between species.
         evolution_steps : int, default=50
-            Number of evolutionary steps to simulate.
+            Non-negative number of canonical word applications, with no
+            discarded remainder. A live grammar rejection stops execution.
         random_seed : int, optional
             Random seed for reproducibility.
 
@@ -206,57 +218,51 @@ class TNFRTemplates:
         >>> results = TNFRTemplates.ecosystem_dynamics(species=30)
         >>> print(f"Ecosystem stability: {results.coherence:.3f}")
         """
-        network = TNFRNetwork("ecosystem")
-        if random_seed is not None:
-            network._config.random_seed = random_seed
+        species = positive_integer(species, "species")
+        evolution_steps = nonnegative_integer(evolution_steps, "evolution_steps")
+        interaction_strength = probability(interaction_strength)
+        network = TNFRNetwork("ecosystem", config=NetworkConfig(random_seed=random_seed))
 
-        # Biological timescales: diversity within bounds (0.2-0.9 Hz_str)
+        # Shared operational frequency interval, measured in Hz_str.
         network.add_nodes(
             species, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX)
-        )  # Biological timescales canonical
+        )
 
         # Random interaction network
         network.connect_nodes(interaction_strength, "random")
 
-        # Simulate evolution in cycles
-        num_cycles = evolution_steps // 10
-        for cycle in range(num_cycles):
-            phase = cycle % 3
-
-            if phase == 0:
-                # Innovation: mutations and new forms
-                network.apply_sequence("creative_mutation", repeat=3)
-            elif phase == 1:
-                # Adaptation: species synchronize to environment
-                network.apply_sequence("network_sync", repeat=5)
-            else:
-                # Stabilization: ecosystem consolidates
-                network.apply_sequence("consolidation", repeat=2)
+        words = ("creative_mutation", "network_sync", "consolidation")
+        for step in range(evolution_steps):
+            network.apply_sequence(words[step % len(words)])
 
         return network.measure()
 
     @staticmethod
     def creative_process_model(
         ideas: int = 15,
-        inspiration_level: float = SDK_INSPIRATION_LEVEL,  # Canonical creative inspiration
+        inspiration_level: float = SDK_INSPIRATION_LEVEL,
         development_cycles: int = 12,
         random_seed: int | None = None,
     ) -> NetworkResults:
-        """Model creative processes using TNFR structural evolution.
+        """Evolve an operational rewired idea graph through canonical words.
 
-        Represents ideas as nodes with diverse structural frequencies
-        (creative exploration within TNFR bounds) starting with sparse
-        connectivity (disconnected ideas). Applies exploration, mutation,
-        and synthesis sequences to model creative ideation and development.
+        The small-world scaffold starts from a ring lattice, and the inspiration
+        parameter controls rewiring. This topology choice is not a physical
+        measure of creativity. Exploration, mutation and synthesis remain the
+        existing named operator words.
 
         Parameters
         ----------
         ideas : int, default=15
             Number of initial ideas/concepts.
         inspiration_level : float, default=0.4
-            Level of cross-pollination between ideas (rewiring probability).
+            Rewiring probability in [0, 1], independent of the ring's edge
+            count. Zero retains the lattice; one attempts every rewire.
+            Tiny or complete scaffolds may have no alternative edges.
         development_cycles : int, default=12
-            Number of creative development cycles.
+            Non-negative number of canonical word applications. Exploration
+            and mutation receive one third each; synchronization receives
+            the remainder. A live grammar rejection stops execution.
         random_seed : int, optional
             Random seed for reproducibility.
 
@@ -270,19 +276,20 @@ class TNFRTemplates:
         >>> results = TNFRTemplates.creative_process_model(ideas=20)
         >>> print(f"Creative coherence: {results.coherence:.3f}")
         """
-        network = TNFRNetwork("creative_process")
-        if random_seed is not None:
-            network._config.random_seed = random_seed
+        ideas = positive_integer(ideas, "ideas")
+        inspiration_level = probability(inspiration_level)
+        development_cycles = nonnegative_integer(development_cycles, "development_cycles")
+        network = TNFRNetwork("creative_process", config=NetworkConfig(random_seed=random_seed))
 
-        # Diverse frequencies for creative exploration (0.3-0.9 Hz_str)
+        # Shared operational frequency interval, measured in Hz_str.
         network.add_nodes(
             ideas, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_MODERATE_MAX)
-        )  # Creative exploration canonical
+        )
 
-        # Sparse initial connectivity: ideas start disconnected
-        network.connect_nodes(
-            SDK_CONNECTIVITY_DEFAULT, "random"
-        )  # Canonical sparse connectivity
+        network.connect_nodes(inspiration_level, "small_world")
+        network.graph.graph["template_topology"] = {
+            "kind": "small_world", "rewiring_probability": inspiration_level,
+        }
 
         # Creative process in phases
         cycles_per_phase = development_cycles // 3
@@ -307,20 +314,24 @@ class TNFRTemplates:
         coordination_steps: int = 25,
         random_seed: int | None = None,
     ) -> NetworkResults:
-        """Model organizational networks with hierarchical structure.
+        """Evolve an undirected graph with explicit organizational layers.
 
-        Creates a hierarchical network structure representing organizational
-        levels with moderate structural frequencies (organizational timescales).
-        Models coordination and information flow through the hierarchy.
+        Depth one is a peer ring. Deeper graphs have one root, evenly populated
+        subsequent layers, within-layer rings and one preceding-layer parent
+        per child. Node hierarchy_level metadata records these graph layers;
+        this scaffold does not construct nested EPIs or certify U5 coherence.
 
         Parameters
         ----------
         agents : int, default=40
             Number of agents/roles in the organization.
         hierarchy_depth : int, default=3
-            Number of hierarchical levels.
+            Number of nonempty graph layers, an integer in [1, agents].
+            A depth equal to agents produces a chain from the first node.
         coordination_steps : int, default=25
-            Number of coordination cycles to simulate.
+            Non-negative number of canonical word applications. Half use
+            network_sync; consolidation receives the remainder. A live
+            grammar rejection stops execution.
         random_seed : int, optional
             Random seed for reproducibility.
 
@@ -334,18 +345,26 @@ class TNFRTemplates:
         >>> results = TNFRTemplates.organizational_network(agents=50)
         >>> print(f"Organizational coherence: {results.coherence:.3f}")
         """
-        network = TNFRNetwork("organizational_network")
-        if random_seed is not None:
-            network._config.random_seed = random_seed
+        agents = positive_integer(agents, "agents")
+        hierarchy_depth = positive_integer(hierarchy_depth, "hierarchy_depth")
+        if hierarchy_depth > agents:
+            raise ValueError("hierarchy_depth cannot exceed agents")
+        coordination_steps = nonnegative_integer(coordination_steps, "coordination_steps")
+        network = TNFRNetwork("organizational_network", config=NetworkConfig(random_seed=random_seed))
 
-        # Organizational timescales: moderate frequencies
+        # Shared operational frequency interval, measured in Hz_str.
         network.add_nodes(
             agents, vf_range=(SDK_VF_RANGE_LOW_MIN, SDK_VF_RANGE_LOW_MAX)
-        )  # Market agent canonical frequencies
+        )
 
-        # Small-world topology approximates organizational structure
-        # (local teams + cross-functional connections)
-        network.connect_nodes(0.15, "small_world")
+        graph = network.graph
+        edges, levels = hierarchical_edges(list(graph), hierarchy_depth)
+        graph.add_edges_from(edges)
+        for node, level in levels.items():
+            graph.nodes[node]["hierarchy_level"] = level
+        graph.graph["template_topology"] = {
+            "kind": "layered_organization", "hierarchy_depth": hierarchy_depth,
+        }
 
         # Simulate organizational dynamics
         steps_per_phase = coordination_steps // 2

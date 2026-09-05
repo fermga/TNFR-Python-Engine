@@ -9,30 +9,26 @@ from __future__ import annotations
 
 from typing import Any
 
-try:
-    import networkx as nx
-except ImportError:
-    nx = None
-
 from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
 from ..mathematics.unified_numerical import np
+from ._helpers import neighborhood_arrays
 from .canonical import (
     _get_dnfr,
     _get_phase,
     _get_precision_dtype,
+    compute_structural_potential,
     estimate_coherence_length,
 )
 from .vectorized_ops import (
     compute_dnfr_flux_vectorized,
     compute_phase_current_vectorized,
     compute_phase_gradient_and_curvature_vectorized,
-    compute_phi_s_exact_vectorized,
 )
 
 
 @cache_tnfr_computation(
     level=CacheLevel.DERIVED_METRICS,
-    dependencies={"graph_topology", "node_phase", "node_dnfr"},
+    dependencies={"graph_topology", "node_phase", "node_dnfr", "precision_mode"},
 )
 def compute_structural_telemetry(G: Any) -> dict[str, Any]:
     """Compute the full Canonical Structural Suite in a single optimized pass.
@@ -68,44 +64,12 @@ def compute_structural_telemetry(G: Any) -> dict[str, Any]:
 
     # 1. Extract Arrays (O(N))
     # We do this once for all fields
-    node_to_idx = {node: i for i, node in enumerate(nodes)}
-
     phases = np.array([_get_phase(G, node) for node in nodes], dtype=dtype)
     dnfr_map = {node: _get_dnfr(G, node) for node in nodes}
     dnfr_arr = np.array([dnfr_map[node] for node in nodes], dtype=dtype)
-    degrees = np.array([G.degree[node] for node in nodes], dtype=dtype)
-
-    # 2. Compute Distance Matrix (O(N^3) or O(N*E))
-    # Only if N is reasonable for dense matrix operations
-    distance_matrix = None
-    if n < 1000 and nx is not None:
-        try:
-            distance_matrix = nx.floyd_warshall_numpy(G, nodelist=nodes)
-            # Fix infinity for potential calculation (handled inside ops, but good to be safe)
-        except Exception:
-            pass
 
     # 3. Compute Gradient & Curvature (O(E))
-    # Build edge lists for vectorized op
-    edge_src_list = []
-    edge_dst_list = []
-    is_directed = G.is_directed()
-
-    for u, v in G.edges():
-        if u in node_to_idx and v in node_to_idx:
-            u_idx = node_to_idx[u]
-            v_idx = node_to_idx[v]
-
-            # If u is center, v is neighbor: src=v, dst=u
-            edge_src_list.append(v_idx)
-            edge_dst_list.append(u_idx)
-
-            if not is_directed:
-                edge_src_list.append(u_idx)
-                edge_dst_list.append(v_idx)
-
-    edge_src = np.array(edge_src_list, dtype=np.intp)
-    edge_dst = np.array(edge_dst_list, dtype=np.intp)
+    edge_src, edge_dst, degrees = neighborhood_arrays(G, nodes, dtype=dtype)
 
     grad_arr, curv_arr = compute_phase_gradient_and_curvature_vectorized(
         phases, edge_src, edge_dst, degrees, dtype=dtype
@@ -114,10 +78,9 @@ def compute_structural_telemetry(G: Any) -> dict[str, Any]:
     grad_phi = {node: float(grad_arr[i]) for i, node in enumerate(nodes)}
     curv_phi = {node: float(curv_arr[i]) for i, node in enumerate(nodes)}
 
-    # 4. Compute Structural Potential (O(N^2) with precomputed D)
-    phi_s = compute_phi_s_exact_vectorized(
-        G, nodes, dnfr_map, alpha=2.0, dtype=dtype, distance_matrix=distance_matrix
-    )
+    # 4. Use the exact canonical kernel at every size, sharing its cache and
+    # sparse shortest-path strategy with direct field and U6 callers.
+    phi_s = compute_structural_potential(G)
 
     # 5. Compute Coherence Length ξ_C via the single canonical kernel
     #    (:func:`estimate_coherence_length`) — the same one ``tetrad()`` uses,

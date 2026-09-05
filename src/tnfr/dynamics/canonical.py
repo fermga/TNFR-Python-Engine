@@ -31,6 +31,7 @@ References:
 from __future__ import annotations
 
 import math
+from numbers import Integral
 from typing import TYPE_CHECKING, Any, NamedTuple
 
 from ..alias import get_attr, set_attr
@@ -529,26 +530,26 @@ def integrate_canonical_nodal_equation(
     tolerance: float | None = None,
     use_gpu: bool | None = None,
 ) -> dict[str, Any]:
-    """CANONICAL nodal equation integrator used by all TNFR modules.
+    """Integrate the stored constant-frequency, constant-pressure nodal field.
 
-    This is the single source of truth for integrating:
-        ∂EPI/∂t = νf · ΔNFR(t)
-
-    All other integration functions should delegate to this implementation
-    to maintain theoretical consistency and eliminate redundancy.
+    This convenience API holds nu_f and DeltaNFR fixed throughout its loop.
+    Both accepted method names therefore give the exact constant-derivative
+    update. It does not recompute pressure from changing EPI or supersede the
+    runtime integrator's time-dependent forcing and boundary policies.
 
     Parameters
     ----------
     G : TNFRGraph
         Graph with TNFR node attributes (EPI, νf, ΔNFR, phase)
     dt : float, optional
-        Integration timestep (from config if None)
+        Finite nonnegative timestep (from config if None); zero is a no-op
     method : {"euler", "rk4"}, default="rk4"
         Integration method
     max_steps : int, optional
         Maximum integration steps (from config if None)
     tolerance : float, optional
-        Convergence tolerance (from config if None)
+        Nonnegative step-change tolerance (from config if None); zero disables
+        early stopping. This is not a structural-equilibrium residual.
     use_gpu : bool, optional
         Enable GPU acceleration (from config if None)
 
@@ -559,44 +560,45 @@ def integrate_canonical_nodal_equation(
 
     Notes
     -----
-    This function serves as the canonical entry point that all other
-    TNFR modules should use for nodal equation integration. It ensures:
-    - Consistent parameter handling via unified config
-    - GPU acceleration through unified backend
-    - Proper error handling and validation
-    - Reproducible results with deterministic methods
+    ``final_error`` is the norm of the most recent EPI increment. ``converged``
+    reports that step-change criterion, not DeltaNFR equilibrium. No convergence
+    assessment is made when dt is zero (steps=0, converged=False).
     """
     from ..backend_config import get_config
-    from ..engines.computation.unified_gpu_system import execute_with_gpu_fallback
 
     # Get configuration defaults (backend_config provides the @dataclass TNFRConfig)
     config = get_config()
     integration_config = config.get_integration_config()
 
     # Resolve parameters from config
-    dt = dt or integration_config["dt"]
-    max_steps = max_steps or integration_config["max_steps"]
-    tolerance = tolerance or integration_config["tolerance"]
+    dt = integration_config["dt"] if dt is None else dt
+    max_steps = integration_config["max_steps"] if max_steps is None else max_steps
+    tolerance = integration_config["tolerance"] if tolerance is None else tolerance
     use_gpu = use_gpu if use_gpu is not None else (config.gpu_mode != "disabled")
 
     # Validate inputs
-    if dt <= 0:
+    dt_resolved = float(dt)
+    tolerance_resolved = float(tolerance)
+    if not math.isfinite(dt_resolved) or dt_resolved < 0:
         raise TNFRValueError(
-            f"Integration timestep must be positive, got {dt}",
+            f"Integration timestep must be finite and nonnegative, got {dt}",
             context={"dt": dt},
-            suggestion="set a positive timestep (dt > 0).",
+            suggestion="Set a finite timestep (dt >= 0).",
         )
-    if max_steps <= 0:
+    if isinstance(max_steps, bool) or not isinstance(max_steps, Integral) or max_steps <= 0:
         raise TNFRValueError(
-            f"Max steps must be positive, got {max_steps}",
+            f"Max steps must be a positive integer, got {max_steps}",
             context={"max_steps": max_steps},
             suggestion="set max_steps to a positive integer.",
         )
 
-    # Ensure all parameters are resolved (not None)
-    dt_resolved = float(dt)
+    if not math.isfinite(tolerance_resolved) or tolerance_resolved < 0:
+        raise TNFRValueError("Convergence tolerance must be finite and nonnegative",
+                             context={"tolerance": tolerance})
+    if method not in ("euler", "rk4"):
+        raise TNFRValueError("Integration method must be 'euler' or 'rk4'",
+                             context={"method": method})
     max_steps_resolved = int(max_steps)
-    tolerance_resolved = float(tolerance)
 
     # Define GPU and CPU integration functions
     def gpu_integration() -> dict[str, Any]:
@@ -621,7 +623,12 @@ def integrate_canonical_nodal_equation(
         )
 
     # Execute with automatic GPU fallback
-    if use_gpu:
+    if dt_resolved == 0.0:
+        result = {"converged": False, "steps": 0, "final_error": 0.0, "time_ms": 0.0}
+        backend_used = "none"
+    elif use_gpu:
+        from ..engines.computation.unified_gpu_system import execute_with_gpu_fallback
+
         result, backend_used = execute_with_gpu_fallback(
             gpu_integration, cpu_integration
         )
@@ -667,6 +674,8 @@ def _integrate_with_backend(
         [get_attr(G.nodes[node], ALIAS_DNFR, 0.0) for node in nodes]
     )
 
+    # The stored fields are frozen, so every RK4 stage has this same slope.
+    derivatives = vf_values * dnfr_values
     converged = False
     final_error = float("inf")
 
@@ -674,31 +683,7 @@ def _integrate_with_backend(
         # Store previous values
         epi_prev = epi_values
 
-        # Compute derivatives using canonical nodal equation
-        if method == "euler":
-            # Euler method: EPI_{n+1} = EPI_n + dt * νf * ΔNFR
-            derivatives = backend.as_array(
-                [vf * dnfr for vf, dnfr in zip(vf_values, dnfr_values)]
-            )
-            epi_values = epi_prev + dt * derivatives
-
-        elif method == "rk4":
-            # RK4 method for higher accuracy
-            k1 = backend.as_array(
-                [vf * dnfr for vf, dnfr in zip(vf_values, dnfr_values)]
-            )
-            k2 = k1  # Simplified - assume ΔNFR constant over dt
-            k3 = k1
-            k4 = k1
-
-            epi_values = epi_prev + (dt / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
-
-        else:
-            raise TNFRValueError(
-                f"Unknown integration method: {method}",
-                context={"method": method, "available": ["euler", "rk4"]},
-                suggestion="Use 'euler' or 'rk4' as the integration method.",
-            )
+        epi_values = epi_prev + dt * derivatives
 
         # Check convergence
         if hasattr(backend, "norm"):

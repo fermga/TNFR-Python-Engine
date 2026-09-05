@@ -6,8 +6,11 @@ import random
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from .constants import THETA_KEY, VF_KEY, get_graph_param
-from .rng import make_rng
+from .alias import get_attr, set_attr
+from .config import get_config
+from .constants import get_graph_param
+from .constants.aliases import ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
+from .rng import make_rng, resolve_graph_seed
 from .types import NodeInitAttrMap
 from .utils import clamp
 
@@ -41,8 +44,9 @@ class InitParams:
     def from_graph(cls, G: "nx.Graph") -> "InitParams":
         """Construct ``InitParams`` from ``G.graph`` configuration."""
 
+        get_config().validate_config(G.graph)
         return cls(
-            seed=get_graph_param(G, "RANDOM_SEED", int),
+            seed=resolve_graph_seed(G),
             init_rand_phase=get_graph_param(G, "INIT_RANDOM_PHASE", bool),
             th_min=get_graph_param(G, "INIT_THETA_MIN"),
             th_max=get_graph_param(G, "INIT_THETA_MAX"),
@@ -70,14 +74,9 @@ def _init_phase(
     th_max: float,
 ) -> None:
     """Initialise ``θ`` in ``nd``."""
-    if random_phase:
-        if override or THETA_KEY not in nd:
-            nd[THETA_KEY] = rng.uniform(th_min, th_max)
-    else:
-        if override:
-            nd[THETA_KEY] = 0.0
-        else:
-            nd.setdefault(THETA_KEY, 0.0)
+    if override or not any(key in nd for key in ALIAS_THETA):
+        theta = rng.uniform(th_min, th_max) if random_phase else 0.0
+        set_attr(nd, ALIAS_THETA, theta)
 
 
 def _init_vf(
@@ -109,11 +108,11 @@ def _init_vf(
                 vf_max_lim,
             )
     else:
-        vf = float(nd.get(VF_KEY, 0.5))
+        vf = get_attr(nd, ALIAS_VF, 0.5)
     if clamp_to_limits:
         vf = clamp(vf, vf_min_lim, vf_max_lim)
-    if override or VF_KEY not in nd:
-        nd[VF_KEY] = vf
+    if override or not any(key in nd for key in ALIAS_VF):
+        set_attr(nd, ALIAS_VF, vf)
 
 
 def _init_si_epi(
@@ -126,12 +125,12 @@ def _init_si_epi(
     epi_val: float,
 ) -> None:
     """Initialise ``Si`` and ``EPI`` in ``nd``."""
-    if override or "EPI" not in nd:
-        nd["EPI"] = epi_val
+    if override or not any(key in nd for key in ALIAS_EPI):
+        set_attr(nd, ALIAS_EPI, epi_val)
 
     si = rng.uniform(si_min, si_max)
-    if override or "Si" not in nd:
-        nd["Si"] = si
+    if override or not any(key in nd for key in ALIAS_SI):
+        set_attr(nd, ALIAS_SI, si)
 
 
 def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
@@ -146,6 +145,12 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
     ``INIT_VF_MAX``, values are swapped and clamped to ``VF_MIN``/``VF_MAX``.
     When clamping results in an invalid range (min > max), both bounds
     collapse to ``VF_MIN``, ensuring ``VF_MIN``/``VF_MAX`` are hard limits.
+    Existing canonical or legacy aliases are preserved when ``override=False``;
+    overrides use the shared alias write precedence. A fixed seed reproduces
+    the same draws for the same node iteration order and initialization options.
+    ``RANDOM_SEED=None`` draws entropy once and records the realized integer in
+    graph metadata. Reusing that integer reproduces initialization and the
+    graph's runtime random streams for the same node order and operations.
     """
     params = InitParams.from_graph(G)
 
@@ -166,7 +171,7 @@ def init_node_attrs(G: "nx.Graph", *, override: bool = True) -> "nx.Graph":
         # Collapse to VF_MIN when the requested range is entirely below the limit
         params.vf_uniform_min = params.vf_uniform_max = vf_min_lim
 
-    rng = make_rng(params.seed, -1, G)
+    rng = make_rng(cast(int, params.seed), -1, G)
     for _, nd in G.nodes(data=True):
         node_attrs = cast(NodeInitAttrMap, nd)
 

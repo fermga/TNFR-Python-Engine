@@ -26,7 +26,9 @@ Chain operations for rapid prototyping:
 
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass
+import math
 from pathlib import Path
 from typing import Any
 
@@ -40,11 +42,13 @@ from ..constants.canonical import (
     THOL_MIN_COLLECTIVE_COHERENCE as COHERENCE_FRAGMENTATION,
 )
 from ..mathematics.unified_numerical import NUMPY_AVAILABLE as _HAS_NUMPY
-from ..mathematics.unified_numerical import np
+from ..mathematics.unified_numerical import compute_circular_mean, np
 from ..metrics.coherence import compute_coherence
 from ..metrics.sense_index import compute_Si
 from ..structural import create_nfr, run_sequence
 from ..validation import validate_sequence
+from ._state import copy_graph_state
+from ._topology import nonnegative_integer, probability, ring_edges, small_world_edges
 
 # ---------------------------------------------------------------------------
 # Canonical coherence marks for adaptive sequence selection.
@@ -304,7 +308,8 @@ class NetworkResults:
     avg_vf : float, optional
         Average structural frequency across all nodes.
     avg_phase : float, optional
-        Average phase angle across all nodes.
+        Circular mean phase angle across all nodes, in [0, 2π).
+        None when the resultant is indistinguishable from zero at precision.
     """
 
     coherence: float
@@ -345,14 +350,17 @@ class NetworkResults:
             except Exception:
                 pass
 
+        def measured_average(value: float | None, unit: str) -> str:
+            return "not measured or undefined" if value is None else f"{value:.3f} {unit} (computed)"
+
         return f"""
 TNFR Network Results:
   • Coherence C(t): {self.coherence:.3f}
   • Nodes: {len(self.sense_indices)}
   • Avg Sense Index Si: {avg_si:.3f}
   • Avg ΔNFR: {avg_dnfr:.3f}
-  • Avg νf: {self.avg_vf:.3f} Hz_str{' (computed)' if self.avg_vf else ''}
-  • Avg Phase: {self.avg_phase:.3f} rad{' (computed)' if self.avg_phase else ''}{unified_summary}
+  • Avg νf: {measured_average(self.avg_vf, 'Hz_str')}
+  • Avg Phase: {measured_average(self.avg_phase, 'rad')}{unified_summary}
 """.strip()
 
     def to_dict(self) -> dict[str, Any]:
@@ -423,15 +431,13 @@ class TNFRNetwork:
         self._results: NetworkResults | None = None
         self._node_counter = 0
 
-        # Initialize RNG if seed provided
-        if _HAS_NUMPY and self._config.random_seed is not None:
+        # Every network owns its RNG, including unseeded and NumPy-free runs.
+        if _HAS_NUMPY:
             self._rng = np.random.RandomState(self._config.random_seed)
         else:
             import random
 
-            if self._config.random_seed is not None:
-                random.seed(self._config.random_seed)
-            self._rng = random  # type: ignore[assignment]
+            self._rng = random.Random(self._config.random_seed)
 
     def add_nodes(
         self,
@@ -477,61 +483,50 @@ class TNFRNetwork:
 
         >>> network = TNFRNetwork().add_nodes(10, vf_range=(0.5, 2.0))
         """
-        if self._graph is None:
-            self._graph = nx.Graph()
+        from ..validation.input_validation import ValidationError, validate_epi_value, validate_vf_value
 
+        count = nonnegative_integer(count, "count")
         if vf_range is None:
             vf_range = self._config.default_vf_range
         if epi_range is None:
             epi_range = self._config.default_epi_range
 
-        # Setup RNG for this operation
-        if _HAS_NUMPY:
-            rng = (
-                np.random.RandomState(random_seed)
-                if random_seed is not None
-                else self._rng
+        def checked_range(values, name, validator):
+            if len(values) != 2:
+                raise ValueError(f"{name} must contain two finite endpoints")
+            try:
+                low, high = (validator(value) for value in values)
+            except ValidationError as exc:
+                raise ValueError(f"Invalid {name}: {exc}") from exc
+            if low > high:
+                raise ValueError(f"{name} lower endpoint must not exceed upper endpoint")
+            return low, high
+
+        vf_range = checked_range(vf_range, "vf_range", validate_vf_value)
+        epi_range = checked_range(epi_range, "epi_range", validate_epi_value)
+        # Phase endpoints are finite real values; create_nfr performs wrapping.
+        phase_range = checked_range(phase_range, "phase_range", validate_epi_value)
+        rng = self._rng
+        if random_seed is not None:
+            if _HAS_NUMPY:
+                rng = np.random.RandomState(random_seed)
+            else:
+                import random
+                rng = random.Random(random_seed)
+        if self._graph is None:
+            self._graph = nx.Graph()
+        for _ in range(count):
+            node_id = f"node_{self._node_counter}"
+            while node_id in self._graph:
+                self._node_counter += 1
+                node_id = f"node_{self._node_counter}"
+            vf = rng.uniform(*vf_range)
+            phase = rng.uniform(*phase_range)
+            epi = rng.uniform(*epi_range)
+            self._graph, _ = create_nfr(
+                node_id, graph=self._graph, vf=vf, theta=phase, epi=epi,
             )
-
-            for _ in range(count):
-                node_id = f"node_{self._node_counter}"
-                self._node_counter += 1
-
-                # Generate valid TNFR properties
-                vf = rng.uniform(*vf_range)
-                phase = rng.uniform(*phase_range)
-                epi = rng.uniform(*epi_range)
-
-                # Create NFR node with structural properties
-                self._graph, _ = create_nfr(
-                    node_id,
-                    graph=self._graph,
-                    vf=vf,
-                    theta=phase,
-                    epi=epi,
-                )
-        else:
-            # Fallback to standard random
-            import random
-
-            if random_seed is not None:
-                random.seed(random_seed)
-
-            for _ in range(count):
-                node_id = f"node_{self._node_counter}"
-                self._node_counter += 1
-
-                vf = random.uniform(*vf_range)
-                phase = random.uniform(*phase_range)
-                epi = random.uniform(*epi_range)
-
-                self._graph, _ = create_nfr(
-                    node_id,
-                    graph=self._graph,
-                    vf=vf,
-                    theta=phase,
-                    epi=epi,
-                )
+            self._node_counter += 1
 
         return self
 
@@ -542,8 +537,9 @@ class TNFRNetwork:
     ) -> TNFRNetwork:
         """Connect nodes according to specified topology pattern.
 
-        Establishes coupling between nodes using common network patterns.
-        Connections enable resonance and phase synchronization between nodes.
+        Adds graph support using common patterns while retaining existing
+        nodes and edges. This scaffolds topology; later Coupling/Resonance
+        operators perform their live U3 phase checks.
 
         Parameters
         ----------
@@ -574,7 +570,7 @@ class TNFRNetwork:
 
         Create ring lattice:
 
-        >>> network = TNFRNetwork().add_nodes(15).connect_nodes(pattern="ring")
+        >>> network = TNFRNetwork().add_nodes(15).connect_nodes(connection_pattern="ring")
 
         Create small-world network:
 
@@ -583,81 +579,23 @@ class TNFRNetwork:
         if self._graph is None or self._graph.number_of_nodes() == 0:
             raise ValueError("No nodes in graph. Call add_nodes() first.")
 
-        nodes = list(self._graph.nodes())
-
-        if connection_pattern == "random":
-            # Erdős-Rényi random graph
-            if _HAS_NUMPY:
-                for i, node1 in enumerate(nodes):
-                    for node2 in nodes[i + 1 :]:
-                        if self._rng.random() < connection_probability:
-                            self._graph.add_edge(node1, node2)
-            else:
-                import random
-
-                for i, node1 in enumerate(nodes):
-                    for node2 in nodes[i + 1 :]:
-                        if random.random() < connection_probability:
-                            self._graph.add_edge(node1, node2)
-
-        elif connection_pattern == "ring":
-            # Ring lattice
-            for i in range(len(nodes)):
-                next_node = nodes[(i + 1) % len(nodes)]
-                self._graph.add_edge(nodes[i], next_node)
-
-        elif connection_pattern == "small_world":
-            # Watts-Strogatz small-world network
-            # Start with ring lattice, then rewire
-            k = max(4, int(len(nodes) * 0.1))  # ~10% degree, minimum 4
-
-            # Create initial ring with k nearest neighbors
-            for i in range(len(nodes)):
-                for j in range(1, k // 2 + 1):
-                    target = (i + j) % len(nodes)
-                    if nodes[i] != nodes[target]:  # Avoid self-loops
-                        self._graph.add_edge(nodes[i], nodes[target])
-
-            # Rewire edges with given probability
-            edges = list(self._graph.edges())
-            if _HAS_NUMPY:
-                for u, v in edges:
-                    if self._rng.random() < connection_probability:
-                        # Remove edge and create new random edge
-                        self._graph.remove_edge(u, v)
-                        # Find node not already connected
-                        candidates = [
-                            n
-                            for n in nodes
-                            if n != u and not self._graph.has_edge(u, n)
-                        ]
-                        if candidates:
-                            idx = int(self._rng.randint(0, len(candidates)))
-                            if idx >= len(candidates):
-                                idx = len(candidates) - 1
-                            w = candidates[idx]
-                            self._graph.add_edge(u, w)
-            else:
-                import random
-
-                for u, v in edges:
-                    if random.random() < connection_probability:
-                        self._graph.remove_edge(u, v)
-                        candidates = [
-                            n
-                            for n in nodes
-                            if n != u and not self._graph.has_edge(u, n)
-                        ]
-                        if candidates:
-                            w = random.choice(candidates)
-                            self._graph.add_edge(u, w)
-
-        else:
+        if connection_pattern not in {"random", "ring", "small_world"}:
             available = ", ".join(["random", "ring", "small_world"])
             raise ValueError(
                 f"Unknown connection pattern '{connection_pattern}'. "
                 f"Available: {available}"
             )
+        connection_probability = probability(connection_probability)
+        nodes = list(self._graph)
+        if connection_pattern == "random":
+            edges = [(u, v) for index, u in enumerate(nodes) for v in nodes[index + 1:]
+                     if self._rng.random() < connection_probability]
+        elif connection_pattern == "ring":
+            edges = ring_edges(nodes)
+        else:
+            k = min(len(nodes), max(4, int(len(nodes) * 0.1)))
+            edges = small_world_edges(nodes, k, connection_probability, self._rng)
+        self._graph.add_edges_from(edges)
 
         return self
 
@@ -727,10 +665,6 @@ class TNFRNetwork:
         else:
             operator_list = sequence
 
-        # Validate sequence if configured
-        if self._config.validate_invariants:
-            validate_sequence(operator_list, context=context)
-
         # Lock-step network evolution from the canonical SDK primitive: each
         # operator is applied to every node before advancing, honouring the
         # temporal simultaneity of dEPI/dt = vf * dNFR(t). A row-major
@@ -741,7 +675,7 @@ class TNFRNetwork:
             self._graph,
             operator_list,
             cycles=repeat,
-            validate=False,
+            validate=self._config.validate_invariants,
             context=context,
         )
 
@@ -868,8 +802,10 @@ class TNFRNetwork:
         """Calculate TNFR metrics and return structured results.
 
         Computes coherence C(t), sense indices Si, and ΔNFR values for
-        all nodes, plus aggregate statistics. Results are cached internally
-        and returned as a :class:`NetworkResults` instance.
+        all nodes, plus aggregate statistics. The returned result contains a
+        detached graph-data snapshot; subsequent evolution does not rewrite it.
+        Runtime caches are rebuilt and external callbacks remain shared under
+        Python deepcopy rules. Unsupported runtime objects raise explicitly.
 
         Returns
         -------
@@ -911,16 +847,25 @@ class TNFRNetwork:
 
         # Compute aggregate statistics
         vf_sum = 0.0
-        phase_sum = 0.0
+        phases = []
         node_count = self._graph.number_of_nodes()
 
         for node_id in self._graph.nodes():
             node_data = self._graph.nodes[node_id]
             vf_sum += get_attr(node_data, ALIAS_VF, 0.0)
-            phase_sum += get_attr(node_data, ALIAS_THETA, 0.0)
+            phases.append(get_attr(node_data, ALIAS_THETA, 0.0))
 
         avg_vf = vf_sum / node_count if node_count > 0 else 0.0
-        avg_phase = phase_sum / node_count if node_count > 0 else 0.0
+        phase_resultant = complex(
+            math.fsum(math.cos(phase) for phase in phases),
+            math.fsum(math.sin(phase) for phase in phases),
+        )
+        # Unit-circle contributions carry floating-point rounding error. A
+        # vanishing resultant defines no direction, including antipodal pairs.
+        avg_phase = (
+            None if abs(phase_resultant) <= node_count * math.ulp(1.0)
+            else float(compute_circular_mean(phases)) % (2.0 * _PI)
+        )
 
         # Unified field telemetry (Nov 28, 2025 - comprehensive audit integration)
         unified_telemetry = {}
@@ -937,7 +882,7 @@ class TNFRNetwork:
             coherence=coherence,
             sense_indices=si_dict,
             delta_nfr=delta_nfr_dict,
-            graph=self._graph,
+            graph=copy_graph_state(self._graph),
             avg_vf=avg_vf,
             avg_phase=avg_phase,
             unified_fields=unified_telemetry,  # New field for unified telemetry
@@ -1302,13 +1247,15 @@ class TNFRNetwork:
         return m / max_edges if max_edges > 0 else 0.0
 
     def clone(self) -> TNFRNetwork:
-        """Create a copy of the network structure.
+        """Copy graph data and continue the current RNG in an independent network.
 
         Returns
         -------
         TNFRNetwork
-            A new network with copied structure. Note that this copies
-            the graph structure but not all internal state (like locks).
+            A new network preserving graph kind, node/key identity and nested
+            data, with independent configuration and RNG state. Runtime caches
+            are rebuilt. External callbacks follow Python deepcopy semantics
+            and remain shared; unsupported runtime objects raise.
 
         Raises
         ------
@@ -1318,11 +1265,9 @@ class TNFRNetwork:
         if self._graph is None:
             raise ValueError("No network created. Use add_nodes() first.")
 
-        import networkx as nx
-
-        new_network = TNFRNetwork(f"{self.name}_copy", config=self._config)
-        # Use NetworkX's copy method which handles TNFR graphs properly
-        new_network._graph = nx.Graph(self._graph)
+        new_network = TNFRNetwork(f"{self.name}_copy", config=deepcopy(self._config))
+        new_network._graph = copy_graph_state(self._graph)
+        new_network._rng = deepcopy(self._rng)
         new_network._node_counter = self._node_counter
         return new_network
 
@@ -1572,7 +1517,10 @@ class TNFRNetwork:
             return {"recommendations_available": False, "error": str(e)}
 
     def export_to_dict(self) -> dict:
-        """Export network structure to dictionary format.
+        """Export metadata and current measurements to dictionary format.
+
+        This report is not a full graph-state snapshot. Measurements are
+        refreshed because the public graph can change after an earlier read.
 
         Returns
         -------
@@ -1587,9 +1535,7 @@ class TNFRNetwork:
         if self._graph is None:
             raise ValueError("No network created. Use add_nodes() first.")
 
-        # Measure if not done yet
-        if self._results is None:
-            self.measure()
+        self.measure()
 
         return {
             "name": self.name,

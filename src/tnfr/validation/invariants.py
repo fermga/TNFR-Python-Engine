@@ -1,10 +1,10 @@
 """TNFR Invariant Validators.
 
-This module implements the 10 canonical TNFR invariants as described in AGENTS.md.
-Each invariant is a structural constraint that must be preserved to maintain
-coherence within the TNFR paradigm.
+This module retains ten historical validation check identifiers for API and
+report compatibility. AGENTS.md defines six canonical invariants; the checks
+below split their implementation concerns and do not define a second canon.
 
-Canonical Invariants:
+Legacy check identifiers:
 1. EPI as coherent form: changes only via structural operators
 2. Structural units: νf expressed in Hz_str (structural hertz)
 3. ΔNFR semantics: sign and magnitude modulate reorganization rate
@@ -27,7 +27,7 @@ from typing import Any
 
 from ..constants import DEFAULTS, DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
 from ..constants.canonical import DELTA_PHI_MAX
-from ..types import TNFRGraph
+from ..types import NodeId, TNFRGraph
 
 # ---------------------------------------------------------------------------
 # Invariant guardrail thresholds
@@ -70,7 +70,7 @@ class InvariantViolation:
     invariant_id: int
     severity: InvariantSeverity
     description: str
-    node_id: str | None = None
+    node_id: NodeId | None = None
     expected_value: Any | None = None
     actual_value: Any | None = None
     suggestion: str | None = None
@@ -82,7 +82,7 @@ class TNFRInvariant(ABC):
     @property
     @abstractmethod
     def invariant_id(self) -> int:
-        """TNFR invariant number (1-10)."""
+        """Legacy validation check number (1-10)."""
 
     @property
     @abstractmethod

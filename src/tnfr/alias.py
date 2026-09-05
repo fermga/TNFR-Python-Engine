@@ -1,59 +1,19 @@
-"""Attribute helpers supporting alias keys.
+"""Canonical ordered attribute access and scalar update helpers.
 
-``AliasAccessor`` provides the main implementation for dealing with
-alias-based attribute access. Legacy wrappers ``alias_get`` and
-``alias_set`` have been removed; use :func:`get_attr` and
-:func:`set_attr` instead.
+Alias tuples in tnfr.constants.aliases define read/write precedence. New
+mappings receive the first (canonical) key. Existing legacy mappings keep the
+first present key; writes do not rename keys or synchronize every duplicate.
+Read through get_attr instead of assuming which accepted spelling is present.
+For example, ALIAS_VF accepts nu_f but does not contain the plain key vf.
 
-CRITICAL: Canonical Attribute Access
-=====================================
+Each read resolves the current mapping under its current conversion policy.
+Permissive conversion can try later aliases; strict conversion raises at the
+first invalid present value. Only alias-tuple validation is cached. Mapping
+identities, sizes and previous successful keys cannot establish current
+precedence and must not decide future reads or writes.
 
-**ALWAYS use the alias system for reading/writing TNFR attributes.**
-
-The TNFR canonical attribute keys use Unicode symbols (e.g., 'νf' for structural
-frequency), but NetworkX and Python code often use ASCII equivalents (e.g., 'vf').
-This creates a critical inconsistency:
-
-**WRONG (breaks canonicity)**:
-    >>> G.add_node(0, vf=1.0)           # Uses ASCII 'vf' key
-    >>> value = G.nodes[0]['vf']         # Reads ASCII 'vf' - may not exist!
-    >>> G.nodes[0]['vf'] = 2.0           # Writes ASCII 'vf' - wrong key!
-
-**CORRECT (maintains canonicity)**:
-    >>> from tnfr.alias import set_vf, get_attr
-    >>> from tnfr.constants.aliases import ALIAS_VF
-    >>> from tnfr.constants import VF_PRIMARY
-    >>>
-    >>> # For initialization, use canonical setters:
-    >>> set_vf(G, 0, 1.0)                # Writes to 'νf' (Greek nu)
-    >>>
-    >>> # For reading, use canonical getters:
-    >>> value = get_attr(G.nodes[0], ALIAS_VF, 0.0)  # Reads from 'νf'
-    >>>
-    >>> # Or use PRIMARY constants in add_node:
-    >>> G.add_node(1, **{VF_PRIMARY: 1.0})  # Writes to 'νf' directly
-
-**Why This Matters**:
-- The alias system tries ALL aliases in order: ('νf', 'nu_f', 'nu-f', 'nu', 'freq', 'frequency')
-- If you write to 'vf', the data is stored under a key NOT in the alias list
-- Reading via get_attr() will return the default (0.0) instead of your value
-- This breaks the nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
-
-**For Tests**:
-    >>> from tnfr.structural import create_nfr
-    >>> # PREFERRED: Use create_nfr which handles canonicity
-    >>> G, node = create_nfr("test", vf=1.0, epi=0.5, theta=0.0)
-    >>>
-    >>> # ALTERNATIVE: Manual initialization with canonical setters
-    >>> from tnfr.alias import set_vf, get_attr
-    >>> from tnfr.constants.aliases import ALIAS_VF
-    >>> G = nx.Graph()
-    >>> G.add_node(0, theta=0.0, EPI=1.0, Si=0.5)  # Other attrs OK
-    >>> set_vf(G, 0, 1.0)                          # Use canonical setter for vf
-    >>> value = get_attr(G.nodes[0], ALIAS_VF, 0.0)  # Use canonical getter
-
-**Applies to**: νf (vf), θ (theta), ΔNFR (dnfr), and other aliased attributes.
-See ALIAS_VF, ALIAS_THETA, ALIAS_DNFR in tnfr.constants.aliases for full lists.
+Graph-level set_vf/set_dnfr/set_theta retain their maximum/phase cache hooks.
+Use those setters when updating the corresponding runtime scalar channels.
 """
 
 from __future__ import annotations
@@ -61,7 +21,6 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, MutableMapping, Sized
 from functools import lru_cache, partial
-from threading import Lock
 from typing import TYPE_CHECKING, Any, Callable, Generic, Hashable, TypeVar, cast
 
 from .compat.dataclass import dataclass
@@ -132,8 +91,6 @@ class AliasAccessor(Generic[T]):
         self._default = default
         # expose cache for testing and manual control
         self._alias_cache = _alias_cache
-        self._key_cache: dict[tuple[int, tuple[str, ...]], tuple[str, int]] = {}
-        self._lock = Lock()
 
     def _prepare(
         self,
@@ -166,27 +123,6 @@ class AliasAccessor(Generic[T]):
             default = self._default
         return aliases, conv, default
 
-    def _resolve_cache_key(
-        self, d: dict[str, Any], aliases: tuple[str, ...]
-    ) -> tuple[tuple[int, tuple[str, ...]], str | None]:
-        """Return cache entry for ``d`` and ``aliases`` if still valid.
-
-        The mapping remains coherent only when the cached key exists in
-        ``d`` and the dictionary size has not changed. Invalid entries are
-        removed to preserve structural consistency.
-        """
-
-        cache_key = (id(d), aliases)
-        with self._lock:
-            cached = self._key_cache.get(cache_key)
-        if cached is not None:
-            key, size = cached
-            if size == len(d) and key in d:
-                return cache_key, key
-            with self._lock:
-                self._key_cache.pop(cache_key, None)
-        return cache_key, None
-
     def get(
         self,
         d: dict[str, Any],
@@ -197,24 +133,20 @@ class AliasAccessor(Generic[T]):
         log_level: int | None = None,
         conv: Callable[[Any], T] | None = None,
     ) -> T | None:
-        """Return ``value`` for the first alias present in ``d``."""
+        """Read aliases in order under this call's conversion/strictness policy.
+
+        Mapping identity and size cannot certify alias priority: earlier keys
+        or values may change without a size change. Resolving this short tuple
+        directly also avoids retaining identities of discarded mappings.
+        """
 
         aliases, conv, default = self._prepare(aliases, conv, default)
-        cache_key, key = self._resolve_cache_key(d, aliases)
-        if key is not None:
-            ok, value = convert_value(
-                d[key], conv, strict=strict, key=key, log_level=log_level
-            )
-            if ok:
-                return value
         for key in aliases:
             if key in d:
                 ok, value = convert_value(
                     d[key], conv, strict=strict, key=key, log_level=log_level
                 )
                 if ok:
-                    with self._lock:
-                        self._key_cache[cache_key] = (key, len(d))
                     return value
         if default is not None:
             ok, value = convert_value(
@@ -235,18 +167,16 @@ class AliasAccessor(Generic[T]):
         value: Any,
         conv: Callable[[Any], T] | None = None,
     ) -> T:
-        """Write ``value`` under the first matching alias and cache the choice."""
+        """Write to the first present alias, or the first alias if none exists."""
 
         aliases, conv, _ = self._prepare(aliases, conv)
-        cache_key, key = self._resolve_cache_key(d, aliases)
-        if key is not None:
-            d[key] = conv(value)
-            return d[key]
-        key = next((k for k in aliases if k in d), aliases[0])
+        for key in aliases:
+            if key in d:
+                break
+        else:
+            key = aliases[0]
         val = conv(value)
         d[key] = val
-        with self._lock:
-            self._key_cache[cache_key] = (key, len(d))
         return val
 
 
@@ -283,12 +213,10 @@ def get_attr(
 ) -> T | None:
     """Return the value for the first key in ``aliases`` found in ``d``.
 
-    WARNING: This function searches for keys in alias order. If you manually
-    wrote to a non-canonical key (e.g., 'vf' instead of 'νf'), this function
-    will NOT find it and will return the default value instead.
-
-    For structural frequency: ALWAYS use set_vf() to write, not d['vf'] = value.
-    See module docstring for detailed guidance on canonical attribute access.
+    Alias precedence is evaluated on every call. With permissive conversion,
+    invalid values may fall through to a later alias; strict conversion raises
+    at the first invalid present value. Keys outside the alias tuple are not
+    read (for example, 'vf' is not an ALIAS_VF key).
     """
 
     return _generic_accessor.get(
@@ -299,6 +227,18 @@ def get_attr(
         log_level=log_level,
         conv=conv,
     )
+
+
+def _nodes_iter_and_size(
+    G: "networkx.Graph", nodes: Iterable[NodeId],
+) -> tuple[Iterable[NodeId], int]:
+    """Resolve a node iterable once for both scalar collection entry points."""
+    if nodes is G.nodes:
+        return G.nodes, G.number_of_nodes()
+    if isinstance(nodes, Sized):
+        return nodes, len(nodes)
+    materialized = list(nodes)
+    return materialized, len(materialized)
 
 
 def collect_attr(
@@ -326,15 +266,8 @@ def collect_attr(
         Collected attribute values in the same order as ``nodes``.
     """
 
-    def _nodes_iter_and_size(nodes: Iterable[NodeId]) -> tuple[Iterable[NodeId], int]:
-        if nodes is G.nodes:
-            return G.nodes, G.number_of_nodes()
-        if isinstance(nodes, Sized):
-            return nodes, len(nodes)  # type: ignore[arg-type]
-        nodes_list = list(nodes)
-        return nodes_list, len(nodes_list)
-
-    nodes_iter, size = _nodes_iter_and_size(nodes)
+    aliases, _, _ = _generic_accessor._prepare(aliases, _bepi_to_float)
+    nodes_iter, size = _nodes_iter_and_size(G, nodes)
 
     def _value(node: NodeId) -> float:
         val = get_attr(G.nodes[node], aliases, default)
@@ -355,15 +288,7 @@ def collect_theta_attr(
 ) -> FloatArray | list[float]:
     """Collect ``theta`` values honouring the English-only attribute contract."""
 
-    def _nodes_iter_and_size(nodes: Iterable[NodeId]) -> tuple[Iterable[NodeId], int]:
-        if nodes is G.nodes:
-            return G.nodes, G.number_of_nodes()
-        if isinstance(nodes, Sized):
-            return nodes, len(nodes)  # type: ignore[arg-type]
-        nodes_list = list(nodes)
-        return nodes_list, len(nodes_list)
-
-    nodes_iter, size = _nodes_iter_and_size(nodes)
+    nodes_iter, size = _nodes_iter_and_size(G, nodes)
 
     def _value(node: NodeId) -> float:
         return cast(float, get_theta_attr(G.nodes[node], default))
@@ -384,16 +309,11 @@ def set_attr_generic(
     *,
     conv: Callable[[Any], T],
 ) -> T:
-    """Assign ``value`` to the FIRST (canonical) alias key in ``aliases``.
+    """Write under the first present alias, or the canonical key on a new mapping.
 
-    CRITICAL: This function writes to the FIRST key in the alias tuple.
-    For ALIAS_VF = ('νf', 'nu_f', ...), this writes to 'νf' (Greek nu), NOT 'vf'.
-
-    If you later try to read with G.nodes[n]['vf'], you will NOT find the value.
-    ALWAYS use get_attr() to read what set_attr() wrote.
-
-    For high-level usage, prefer set_vf(), set_theta(), etc. which handle this correctly.
-    See module docstring for detailed guidance on canonical attribute access.
+    Existing legacy keys are retained for compatibility. When multiple aliases
+    exist, their declared order decides the write target, independently of
+    earlier reads. Read back through get_attr() instead of assuming a key.
     """
 
     return _generic_accessor.set(d, aliases, value, conv=conv)
@@ -419,7 +339,6 @@ def set_theta_attr(d: MutableMapping[str, Any], value: Any) -> float:
 
 
 @dataclass(slots=True)
-@dataclass
 class AbsMaxResult:
     """Absolute maximum value and the node where it occurs."""
 

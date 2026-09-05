@@ -203,8 +203,8 @@ def path_integrated_gradient(G: Any, source: Any, target: Any) -> float:
     -----
     - Telemetry-only; does not mutate graph state.
     - Uses shortest path from networkx.
-    - If multiple shortest paths exist, uses lexicographically first one
-      (arbitrary but deterministic).
+    - If multiple shortest paths exist, NetworkX resolves ties using graph
+      traversal order. The sum has one term per edge, excluding the target.
     """
     if nx is None:
         raise RuntimeError("networkx required for path operations")
@@ -219,7 +219,7 @@ def path_integrated_gradient(G: Any, source: Any, target: Any) -> float:
 
     # Sum gradients along path
     total = 0.0
-    for node in path:
+    for node in path[:-1]:
         if node in grad:
             total += grad[node]
 
@@ -380,14 +380,11 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
             "centrality": {},
             "n_nodes": 0,
         }
-    lengths = dict(nx.all_pairs_shortest_path_length(G))
-    centrality: dict[Any, float] = {}
-    for i in nodes:
-        s = 0.0
-        for j, d in lengths.get(i, {}).items():
-            if j != i and d > 0:
-                s += 1.0 / (float(d) ** alpha)
-        centrality[i] = s
+    from .canonical import _compute_phi_s_exact
+
+    # Evaluate the documented unit-source geometry with exactly the same
+    # weighted, outgoing distance kernel as the dynamical potential.
+    centrality = _compute_phi_s_exact(G, nodes, {node: 1.0 for node in nodes}, alpha)
     vals = np.asarray([centrality[i] for i in nodes], dtype=float)
     mean = float(vals.mean())
     vmax = float(vals.max())

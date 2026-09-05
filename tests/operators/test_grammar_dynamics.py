@@ -198,10 +198,47 @@ class TestU3:
         # Use very strict delta_phi_max
         G.graph["DELTA_PHI_MAX"] = 0.01
         cr = validate_candidate(G, node, "UM")
-        # Should get a U3 warning (severity=warning, so still allowed)
+        # U3 is the same hard phase gate used by operator execution.
         assert any(v.rule == "U3" for v in cr.violations)
-        # U3 is a warning, not an error — allowed is True
-        assert cr.allowed
+        assert not cr.allowed
+        assert cr.suggested_alternative == "IL"
+
+    @pytest.mark.parametrize("candidate", ["UM", "RA"])
+    @pytest.mark.parametrize(
+        ("phase", "allowed"),
+        [
+            (0.3, True),
+            (math.pi, False),
+            (3 * math.pi, False),
+            (4 * math.pi + 0.3, True),
+            (-3 * math.pi, False),
+        ],
+    )
+    def test_selection_agrees_with_operator_phase_gate(
+        self, candidate: str, phase: float, allowed: bool
+    ) -> None:
+        from tnfr.operators.preconditions import (
+            OperatorPreconditionError,
+            validate_phase_gate_u3,
+        )
+
+        G, node = _make_graph()
+        for nb in G.neighbors(node):
+            G.nodes[nb]["theta"] = phase
+        cr = validate_candidate(G, node, candidate)
+        assert cr.allowed is allowed
+        if allowed:
+            validate_phase_gate_u3(G, node, candidate)
+        else:
+            with pytest.raises(OperatorPreconditionError):
+                validate_phase_gate_u3(G, node, candidate)
+            assert filter_candidates(G, node, [candidate, "IL"]) == ["IL"]
+
+    def test_phase_gate_errors_are_not_silently_accepted(self) -> None:
+        G, node = _make_graph()
+        G.graph["DELTA_PHI_MAX"] = "invalid"
+        with pytest.raises(ValueError):
+            validate_candidate(G, node, "UM")
 
     def test_non_coupling_ignores_u3(self) -> None:
         G, node = _make_graph()
@@ -438,6 +475,15 @@ class TestApplyGlyphWithGrammarPrevalidation:
         result = enforce_canonical_grammar(G, node, "IL")
         assert result in _GENERATOR_CODES
 
+    def test_fallback_is_selected_independently_for_each_node(self) -> None:
+        from tnfr.operators.grammar_application import apply_glyph_with_grammar
+
+        G, node = _make_graph(epi=0.6)
+        G.nodes[node]["EPI"] = 0.0
+        apply_glyph_with_grammar(G, [node, 1], "IL")
+        assert _to_code(G.nodes[node]["glyph_history"][-1]) in _GENERATOR_CODES
+        assert _to_code(G.nodes[1]["glyph_history"][-1]) == "IL"
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 #  validate_sequence_incremental (GAP #4)
@@ -483,6 +529,33 @@ class TestValidateSequenceIncremental:
         after = list(G.nodes[node]["glyph_history"])
         assert original == after
 
+    def test_rejected_destabilizer_cannot_enable_transformer(self) -> None:
+        from tnfr.operators.grammar_dynamics import validate_sequence_incremental
+
+        G, node = _make_graph(epi=1.0)
+        results = validate_sequence_incremental(G, node, ["OZ", "THOL"])
+        assert not results[0].allowed  # U4a: no handler for OZ
+        assert not results[1].allowed  # U4b: rejected OZ supplies no context
+        assert any(v.rule == "U4b" for v in results[1].violations)
+
+    def test_rejected_stabilizer_cannot_supply_initiation_history(self) -> None:
+        from tnfr.operators.grammar_dynamics import validate_sequence_incremental
+
+        G, node = _make_graph(epi=0.0)
+        results = validate_sequence_incremental(G, node, ["IL", "OZ"])
+        assert not results[0].allowed
+        assert not results[1].allowed
+        assert any(v.rule == "U1a" for v in results[1].violations)
+
+    def test_preserves_explicit_none_history(self) -> None:
+        from tnfr.operators.grammar_dynamics import validate_sequence_incremental
+
+        G, node = _make_graph(epi=1.0)
+        G.nodes[node]["glyph_history"] = None
+        validate_sequence_incremental(G, node, ["IL"])
+        assert "glyph_history" in G.nodes[node]
+        assert G.nodes[node]["glyph_history"] is None
+
     def test_empty_sequence(self) -> None:
         from tnfr.operators.grammar_dynamics import validate_sequence_incremental
 
@@ -515,9 +588,17 @@ class TestEdgeCases:
         G.add_node(
             0, EPI=1.0, nu_f=1.0, DNFR=0.05, theta=0.0, delta_nfr=0.05, phase=0.0
         )
-        # UM on isolated node → U3 warning (no neighbours)
+        # Isolated nodes have no phase conflict, matching the hard gate.
         cr = validate_candidate(G, 0, "UM")
-        assert any(v.rule == "U3" for v in cr.violations)
+        assert cr.allowed
+        assert not any(v.rule == "U3" for v in cr.violations)
+
+    def test_unknown_operator_is_rejected(self) -> None:
+        G, node = _make_graph()
+        cr = validate_candidate(G, node, "NOT_AN_OPERATOR")
+        assert not cr.allowed
+        assert cr.suggested_alternative == "IL"
+        assert filter_candidates(G, node, ["NOT_AN_OPERATOR", "IL"]) == ["IL"]
 
     def test_candidate_result_dataclass(self) -> None:
         cr = CandidateResult(candidate="IL", allowed=True)

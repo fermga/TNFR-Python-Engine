@@ -1,7 +1,6 @@
 """Tests for TNFR Variational Principle — Lagrangian Action Formulation.
 
-Validates that the nodal equation ∂EPI/∂t = νf · ΔNFR(t) arises from
-the Euler-Lagrange equations of the TNFR action functional:
+Checks the implemented field functionals and explicitly scoped certificates:
 
     S_TNFR = ∫ dt Σ_i ℒ_TNFR(i)
 
@@ -13,7 +12,7 @@ Tests verify:
 3.  Conjugate pairs: (K_φ, J_φ) and (Φ_s, J_ΔNFR)
 4.  Euler-Lagrange residual: small for grammar-compliant evolution
 5.  Action functional: finite for U2-compliant sequences
-6.  Symplectic preservation: canonical operators preserve ω
+6.  Symplectic preservation: supplied Jacobians preserve omega or fail
 7.  Grammar as stationarity: U1-U6 mapped to variational conditions
 8.  Potential critical points: thresholds at φ, γ/π, 0.9π
 9.  VariationalTracker: time-series accumulation
@@ -23,7 +22,8 @@ Tests verify:
 13. Virial ratio diagnostics
 14. Reproducibility under deterministic seeds
 
-TIER: CORE PHYSICS — variational formulation axiomatises the nodal equation.
+These tests do not establish an equivalence between the full nodal dynamics
+and the isotropic harmonic substrate model.
 """
 
 from __future__ import annotations
@@ -69,6 +69,12 @@ from tnfr.physics.variational import (
     compute_variational_suite,
     identify_conjugate_pairs,
 )
+
+
+def test_declared_variational_exports_exist():
+    import tnfr.physics.variational as variational
+
+    assert all(hasattr(variational, name) for name in variational.__all__)
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -302,14 +308,16 @@ class TestActionFunctional:
 
 
 class TestSymplecticPreservation:
-    """Canonical operators preserve symplectic structure."""
+    """Only tangent evidence can certify local symplectic preservation."""
 
-    def test_identity_is_canonical(self, ws_graph):
-        """No change → perfect canonical transformation."""
+    def test_unchanged_snapshots_are_inconclusive(self, ws_graph):
+        """Identical endpoints can be fixed points of non-symplectic maps."""
         snap = capture_lagrangian_snapshot(ws_graph)
         sc = check_symplectic_preservation(snap, snap, "identity")
-        assert sc.is_canonical
-        assert sc.classification == "canonical"
+        assert sc.is_canonical is None
+        assert sc.classification == "inconclusive"
+        assert sc.verification_method == "snapshot_only"
+        assert sc.symplectic_residual is None
         assert abs(sc.volume_ratio - 1.0) < 1e-12
 
     def test_perturbation_classified(self, ws_graph):
@@ -318,7 +326,58 @@ class TestSymplecticPreservation:
         snap2 = capture_lagrangian_snapshot(G2)
         sc = check_symplectic_preservation(snap1, snap2, "perturbation")
         assert isinstance(sc, SymplecticCheck)
-        assert sc.classification in ("canonical", "dissipative", "expansive", "mixed")
+        assert sc.classification == "inconclusive"
+        assert sc.heuristic_classification in ("canonical", "dissipative", "expansive", "mixed")
+
+    @staticmethod
+    def _snapshot(q, p):
+        pair = ConjugatePair("geometric", {0: q}, {0: p})
+        return LagrangianSnapshot({}, {}, {}, {}, {}, 0., 0., 0., 0., pair, pair)
+
+    def test_canonical_rotation_passes_despite_changing_snapshot_products(self):
+        c = 1.0 / math.sqrt(2.0)
+        rotation = np.array([[c, c, 0, 0], [-c, c, 0, 0],
+                             [0, 0, c, c], [0, 0, -c, c]])
+        result = check_symplectic_preservation(
+            self._snapshot(1., 0.), self._snapshot(c, -c),
+            "rotation", jacobian=rotation,
+        )
+        assert result.is_canonical is True
+        assert result.classification == "canonical"
+        assert result.symplectic_residual < 1e-12
+        assert result.heuristic_classification == "expansive"
+        assert result.verification_method == "provided_jacobian"
+
+    def test_reflection_fails_despite_preserving_snapshot_products_and_volume(self):
+        reflection = np.diag([1., -1., 1., -1.])
+        assert np.linalg.det(reflection) == 1.0
+        result = check_symplectic_preservation(
+            self._snapshot(1., 1.), self._snapshot(1., -1.),
+            "reflection", jacobian=reflection,
+        )
+        assert result.is_canonical is False
+        assert result.classification == "non_symplectic"
+        assert result.symplectic_residual == pytest.approx(2.0)
+        assert result.heuristic_classification == "canonical"
+
+    def test_zero_fixed_point_does_not_certify_a_contraction(self):
+        snap = self._snapshot(0., 0.)
+        result = check_symplectic_preservation(snap, snap, jacobian=0.5*np.eye(4))
+        assert result.is_canonical is False
+        assert result.symplectic_residual == pytest.approx(0.75)
+
+    def test_jacobian_tolerance_is_not_the_legacy_ratio_tolerance(self):
+        snap = self._snapshot(1., 1.)
+        result = check_symplectic_preservation(snap, snap, jacobian=1.00001*np.eye(4))
+        assert result.is_canonical is False
+
+    @pytest.mark.parametrize("jacobian", [np.eye(3), np.ones((4, 3)),
+                                          np.full((4, 4), np.nan),
+                                          np.eye(4, dtype=complex)])
+    def test_invalid_jacobian_is_rejected(self, jacobian):
+        snap = self._snapshot(1., 1.)
+        with pytest.raises(ValueError):
+            check_symplectic_preservation(snap, snap, jacobian=jacobian)
 
     def test_symplectic_check_structure(self, ws_graph):
         snap = capture_lagrangian_snapshot(ws_graph)
@@ -370,7 +429,20 @@ class TestGrammarStationarity:
 
 
 class TestCriticalPoints:
-    """TNFR thresholds correspond to critical points of V."""
+    """Telemetry thresholds are distinct from critical points of V."""
+
+    def test_near_threshold_observations_do_not_create_quadratic_extrema(self, monkeypatch):
+        monkeypatch.setattr(
+            "tnfr.physics.variational.compute_structural_potential",
+            lambda graph: {0: U6_STRUCTURAL_POTENTIAL_LIMIT},
+        )
+        results = analyze_potential_critical_points(nx.empty_graph(1))
+        potential = next(r for r in results if r.field_name == "Phi_s")
+        assert potential.near_threshold_count == 1
+        assert potential.gradient_at_threshold == U6_STRUCTURAL_POTENTIAL_LIMIT
+        assert potential.curvature_at_threshold == 1.0
+        assert potential.is_critical is False
+        assert potential.critical_type == "regular"
 
     def test_three_fields_analysed(self, ws_graph):
         results = analyze_potential_critical_points(ws_graph)
@@ -454,6 +526,14 @@ class TestOperatorClassification:
         result = classify_operator_canonical(snap, snap, "SHA")
         assert result["energy_classification"] == "neutral"
         assert result["consistent_with_theory"]
+        assert result["symplectic_check"].classification == "inconclusive"
+
+    def test_supplied_jacobian_is_forwarded_to_the_local_check(self, ws_graph):
+        snap = capture_lagrangian_snapshot(ws_graph)
+        matrix = np.eye(4 * len(snap.conjugate_geometric.q))
+        result = classify_operator_canonical(snap, snap, "identity", jacobian=matrix)
+        assert result["symplectic_check"].is_canonical is True
+        assert result["symplectic_check"].verification_method == "provided_jacobian"
 
     def test_energy_increase_classified_generating(self, ws_graph):
         snap_before = capture_lagrangian_snapshot(ws_graph)
@@ -496,7 +576,7 @@ class TestOperatorClassification:
 
 
 class TestCrossTopology:
-    """Variational principle holds across topologies."""
+    """Readout identities hold across the tested topologies."""
 
     @pytest.mark.parametrize(
         "topology,n",

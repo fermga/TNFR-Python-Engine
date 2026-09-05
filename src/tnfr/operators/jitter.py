@@ -3,32 +3,32 @@
 from __future__ import annotations
 
 import threading
+from numbers import Integral
 from typing import TYPE_CHECKING, Any, cast
 
-from ..rng import base_seed, cache_enabled
+from ..locking import get_lock
 from ..rng import clear_rng_cache as _clear_rng_cache
-from ..rng import make_rng, seed_hash
-from ..types import NodeId, TNFRGraph
+from ..rng import make_rng, resolve_graph_seed, seed_hash, validate_graph_seed, validate_seed
 from ..utils import (
     CacheManager,
     InstrumentedLRUCache,
     ScopedCounterCache,
     build_cache_manager,
-    ensure_node_offset_map,
-    get_nodenx,
 )
+from ..utils.cache import _scoped_node_offset
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..node import NodeProtocol
 
-# Guarded by the cache lock to ensure thread-safe access. ``seq`` stores
-# per-scope jitter sequence counters in an instrumented LRU cache bounded to avoid
-# unbounded memory usage.
+# Retained for callers of the legacy cache API. Runtime jitter progress lives
+# on individual nodes, so eviction cannot change a graph's random trajectory.
 _JITTER_MAX_ENTRIES = 1024
+_JITTER_PROGRESS_KEY = "_rng_jitter_progress"
+_JITTER_PROGRESS_LOCK = get_lock("jitter_progress")
 
 
 class JitterCache:
-    """Container for jitter-related caches."""
+    """Compatibility container; runtime draw counts are persistent node data."""
 
     def __init__(
         self,
@@ -210,27 +210,19 @@ def reset_jitter_manager() -> None:
     _JITTER_MANAGER = None
 
 
-def _node_offset(G: TNFRGraph, n: NodeId) -> int:
-    """Deterministic node index used for jitter seeds."""
-    mapping = ensure_node_offset_map(G)
-    return int(mapping.get(n, 0))
-
-
-def _resolve_jitter_seed(node: NodeProtocol) -> tuple[int, int]:
-    node_nx_type = get_nodenx()
-    if node_nx_type is None:
-        raise ImportError("NodeNX is unavailable")
-    if isinstance(node, node_nx_type):
-        graph = cast(TNFRGraph, getattr(node, "G"))
-        node_id = cast(NodeId, getattr(node, "n"))
-        return _node_offset(graph, node_id), id(graph)
-    uid = getattr(node, "_noise_uid", None)
-    if uid is None:
-        uid = id(node)
-        setattr(node, "_noise_uid", uid)
-    graph = cast(TNFRGraph | None, getattr(node, "G", None))
-    scope = graph if graph is not None else node
-    return int(uid), id(scope)
+def _jitter_progress(storage: Any) -> tuple[int | None, int | None, int]:
+    """Validate one node's constant-size, JSON-compatible progress record."""
+    state = storage.get(_JITTER_PROGRESS_KEY)
+    if state is None:
+        return None, None, 0
+    if not isinstance(state, dict) or set(state) != {"seed", "offset", "draws"}:
+        raise ValueError("Invalid _rng_jitter_progress: expected seed, offset, and draws")
+    seed = validate_seed(state["seed"], allow_none=False)
+    for name in ("offset", "draws"):
+        value = state[name]
+        if isinstance(value, bool) or not isinstance(value, Integral) or value < 0:
+            raise ValueError(f"Invalid _rng_jitter_progress: {name} must be a nonnegative integer")
+    return seed, int(state["offset"]), int(state["draws"])
 
 
 def random_jitter(
@@ -239,25 +231,42 @@ def random_jitter(
 ) -> float:
     """Return deterministic noise in ``[-amplitude, amplitude]`` for ``node``.
 
-    The per-node jitter sequences are tracked using the global manager
-    returned by :func:`get_jitter_manager`.
+    The seed depends only on the recorded graph seed, canonical node offset,
+    and per-node draw count. Each node's ``_rng_jitter_progress`` attribute
+    records its seed, offset, and next draw count. Replacing this constant-size
+    record isolates ordinary graph copies and keeps work per draw bounded.
+    Cache eviction/clearing never restarts an active stream.
+
+    Replay requires the same node ordering (including ``SORT_NODES`` policy)
+    and operations; graph views intentionally share their parent's node data.
+    Changing ``RANDOM_SEED`` or a node's offset starts its stream at draw zero.
+    Explicit ``stable_node_offsets(graph)`` scopes amortize NodeNX offset
+    validation under a caller-owned stable-order contract. Other node
+    implementations keep their own offset semantics.
     """
     if amplitude < 0:
         raise ValueError("amplitude must be positive")
+    validate_graph_seed(node)
     if amplitude == 0:
         return 0.0
+    with _JITTER_PROGRESS_LOCK:
+        storage = node._glyph_storage()
+        progress_seed, progress_offset, seq = _jitter_progress(storage)
+        seed_root = resolve_graph_seed(node)
+        from ..node import NodeNX
 
-    seed_root = base_seed(node.G)
-    seed_key, scope_id = _resolve_jitter_seed(node)
-
-    cache_key = (seed_root, scope_id, seed_key)
-    seq = 0
-    if cache_enabled(node.G):
-        manager = get_jitter_manager()
-        seq = manager.bump(cache_key)
-    seed = seed_hash(seed_root, scope_id)
-    rng = make_rng(seed, seed_key + seq, node.G)
-    return rng.uniform(-amplitude, amplitude)
+        offset = _scoped_node_offset(node.G, node.n) if type(node) is NodeNX else None
+        if offset is None:
+            offset = node.offset()
+        if isinstance(offset, bool) or not isinstance(offset, Integral) or offset < 0:
+            raise ValueError("Jitter node offset must be a nonnegative integer")
+        offset = int(offset)
+        if progress_seed != seed_root or progress_offset != offset:
+            seq = 0
+        rng = make_rng(seed_hash(seed_root, offset), seq, node)
+        value = rng.uniform(-amplitude, amplitude)
+        storage[_JITTER_PROGRESS_KEY] = {"seed": seed_root, "offset": offset, "draws": seq + 1}
+        return value
 
 
 __all__ = [

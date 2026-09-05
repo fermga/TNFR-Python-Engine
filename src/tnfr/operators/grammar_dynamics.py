@@ -13,8 +13,8 @@ state, rather than detecting them reactively after the damage is done.
 Incremental rule applicability
 ------------------------------
 - **U1a** (Initiation): Checked when EPI ≈ 0 and history is empty.
-- **U2**  (Convergence): Tracked via a destabilizer/stabilizer debt counter
-  over a sliding window of recent history.
+- **U2**  (Convergence): Tracked via a cumulative destabilizer/stabilizer debt
+  counter, independent of bounded history retention.
 - **U3**  (Resonant Coupling): Phase compatibility required for UM/RA candidates.
 - **U4a** (Bifurcation triggers): OZ/ZHIR require handlers in recent context.
 - **U4b** (Transformer context): ZHIR/THOL need a recent destabilizer (and
@@ -35,6 +35,10 @@ from dataclasses import dataclass, field
 from typing import Any, Sequence
 
 from ..types import Glyph
+from .grammar_debt import (
+    PRIOR_COHERENCE_KEY, U2_DEBT_KEY, advance_debt, advance_prior_coherence,
+    debt_from_history, node_debt, node_has_prior_coherence, require_replayable_history,
+)
 from .grammar_types import (
     BIFURCATION_HANDLERS,
     BIFURCATION_TRIGGERS,
@@ -45,6 +49,7 @@ from .grammar_types import (
     GLYPH_TO_FUNCTION,
     STABILIZERS,
     TRANSFORMERS,
+    glyph_function_name,
 )
 from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
 
@@ -110,26 +115,21 @@ class CandidateResult:
 
 def _to_code(glyph: Any) -> str:
     """Normalize a glyph to its uppercase code string (e.g. 'IL')."""
-    if isinstance(glyph, Glyph):
-        return glyph.value
+    name = glyph_function_name(glyph)
+    if name in _NAME_TO_CODE:
+        return _NAME_TO_CODE[name]
     s = str(glyph).strip()
     # Handle "Glyph.AL" format
     if "." in s:
         s = s.rsplit(".", 1)[-1]
-    upper = s.upper()
-    if upper in _CODE_TO_NAME:
-        return upper
-    # Try canonical name → code
-    lower = s.lower()
-    if lower in _NAME_TO_CODE:
-        return _NAME_TO_CODE[lower]
-    return upper  # best effort
+    return s.upper()  # best effort; unknown candidates fail syntax validation
 
 
 def _recent_codes(G: Any, node: Any, window: int = _DEFAULT_WINDOW) -> list[str]:
     """Extract the last *window* glyph codes from the node's history."""
     nd = G.nodes[node]
     raw = nd.get("glyph_history")
+    require_replayable_history(raw)
     if not raw:
         return []
     items = list(raw)[-window:]
@@ -159,23 +159,22 @@ def _check_u1a(
 def _check_u2(
     candidate: str,
     history: list[str],
+    *,
+    current_debt: int | None = None,
 ) -> GrammarViolation | None:
     """U2: Convergence — destabilizer debt must not grow unbounded.
 
-    Counts destabilizers vs stabilizers in recent history + candidate.
-    If adding the candidate would leave >2 uncompensated destabilizers,
-    flag a violation.
+    Neutral operations cannot erase debt. A stabilizer may reduce a legacy
+    over-capacity state, but new destabilization above capacity is rejected.
     """
-    full = history + [candidate]
-    destab = sum(1 for g in full if g in _DESTABILIZER_CODES)
-    stab = sum(1 for g in full if g in _STABILIZER_CODES)
-    debt = destab - stab
-    if debt > U2_DEBT_CAPACITY:
+    before = debt_from_history(history) if current_debt is None else current_debt
+    debt = advance_debt(before, candidate)
+    if debt > U2_DEBT_CAPACITY and debt >= before:
         return GrammarViolation(
             rule="U2",
             message=(
-                f"Convergence violation: {destab} destabilizers vs "
-                f"{stab} stabilizers in recent window (debt={debt}). "
+                f"Convergence violation: uncompensated destabilizer debt "
+                f"{before} -> {debt} exceeds capacity {U2_DEBT_CAPACITY}. "
                 f"Add a stabilizer (IL/THOL) before more destabilizers."
             ),
             severity="error",
@@ -191,44 +190,33 @@ def _check_u3(
     """U3: Coupling/resonance candidates require phase-compatible neighbours."""
     if candidate not in _COUPLING_CODES:
         return None
+    from .preconditions import OperatorPreconditionError, validate_phase_gate_u3
+
+    # Selection and execution share one unconditional U3 gate, including
+    # wrapped angular distance and the isolated-node convention.
     try:
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_THETA
-        from ..constants.canonical import DELTA_PHI_MAX
-
-        theta_i = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
-        delta_phi_max = float(G.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))
-        for nb in G.neighbors(node):
-            theta_j = float(get_attr(G.nodes[nb], ALIAS_THETA, 0.0))
-            diff = abs(theta_i - theta_j)
-            # Wrap to [0, π]
-            import math
-
-            diff = min(diff, 2 * math.pi - diff)
-            if diff <= delta_phi_max:
-                return None  # at least one compatible neighbour
+        validate_phase_gate_u3(G, node, _CODE_TO_NAME[candidate])
+    except OperatorPreconditionError as exc:
         return GrammarViolation(
             rule="U3",
-            message=(
-                f"No phase-compatible neighbour for {candidate} "
-                f"(all |φᵢ - φⱼ| > Δφ_max={delta_phi_max:.2f})."
-            ),
-            severity="warning",
+            message=str(exc),
+            severity="error",
         )
-    except Exception:
-        return None  # graceful degradation
+    return None
 
 
 def _check_u4a(
     candidate: str,
     history: list[str],
+    *,
+    future_handler: bool = False,
 ) -> GrammarViolation | None:
     """U4a: Bifurcation triggers need handlers in nearby context."""
     if candidate not in _BIFURCATION_TRIGGER_CODES:
         return None
     # Check if there's a handler anywhere in recent history or candidate itself
     full = history + [candidate]
-    has_handler = any(g in _HANDLER_CODES for g in full)
+    has_handler = future_handler or any(g in _HANDLER_CODES for g in full)
     if not has_handler:
         return GrammarViolation(
             rule="U4a",
@@ -244,6 +232,8 @@ def _check_u4a(
 def _check_u4b(
     candidate: str,
     history: list[str],
+    *,
+    has_prior_coherence: bool | None = None,
 ) -> GrammarViolation | None:
     """U4b: Transformers need recent destabilizer context.
 
@@ -268,7 +258,7 @@ def _check_u4b(
         )
     # ZHIR additionally requires prior IL
     if candidate == "ZHIR":
-        has_il = "IL" in history
+        has_il = "IL" in history if has_prior_coherence is None else has_prior_coherence
         if not has_il:
             return GrammarViolation(
                 rule="U4b",
@@ -289,8 +279,18 @@ def _check_violations(
     node: Any,
     code: str,
     window: int = _DEFAULT_WINDOW,
+    *,
+    sequence_context: Any = None,
 ) -> tuple[bool, list[GrammarViolation]]:
     """Core validation logic without alternative suggestion (avoids recursion)."""
+    if code not in _CODE_TO_NAME:
+        return False, [
+            GrammarViolation(
+                rule="SYNTAX",
+                message=f"Unknown canonical operator '{code}'.",
+                severity="error",
+            )
+        ]
     history = _recent_codes(G, node, window)
 
     # Read EPI for U1a
@@ -303,10 +303,30 @@ def _check_violations(
         epi = 1.0  # assume initialized
 
     violations: list[GrammarViolation] = []
-    for checker in (_check_u1a, _check_u2, _check_u4a, _check_u4b):
-        v = checker(code, history, epi) if checker is _check_u1a else checker(code, history)  # type: ignore[call-arg]
+    future_handler = False
+    if sequence_context is not None:
+        from .grammar_execution import ValidatedSequenceStep
+
+        if not isinstance(sequence_context, ValidatedSequenceStep):
+            raise TypeError("sequence_context must be a validated sequence step")
+        future_handler = sequence_context.has_future_handler(code)
+
+    for v in (
+        _check_u1a(code, history, epi),
+        _check_u4a(code, history, future_handler=future_handler),
+    ):
         if v is not None:
             violations.append(v)
+
+    v4b = _check_u4b(
+        code, history, has_prior_coherence=node_has_prior_coherence(G.nodes[node])
+    )
+    if v4b is not None:
+        violations.append(v4b)
+
+    v2 = _check_u2(code, history, current_debt=node_debt(G.nodes[node]))
+    if v2 is not None:
+        violations.append(v2)
 
     # U3 needs the graph
     v3 = _check_u3(code, G, node)
@@ -324,11 +344,16 @@ def validate_candidate(
     candidate: str | Glyph,
     *,
     window: int = _DEFAULT_WINDOW,
+    sequence_context: Any = None,
 ) -> CandidateResult:
     """Check whether *candidate* is grammar-valid given the node's recent history.
 
     Runs incremental checks for U1a, U2, U3, U4a, U4b.  Returns a
     :class:`CandidateResult` with ``allowed=True`` if no errors are found.
+    A one-shot ``glyph_history`` iterator raises ``ValueError`` without being
+    consumed; read-only checks require a replayable list, tuple or deque.
+    An optional validated sequence step can supply a future U4a handler;
+    it supplies no past history, stabilization credit, or phase permission.
 
     Parameters
     ----------
@@ -339,7 +364,7 @@ def validate_candidate(
     candidate : str | Glyph
         Candidate glyph code (e.g. ``"OZ"``) or :class:`Glyph` enum.
     window : int, optional
-        How many recent history entries to consider (default 6).
+        Recent U1/U4 history context (default 6). U2 debt does not expire.
 
     Returns
     -------
@@ -347,7 +372,9 @@ def validate_candidate(
         Validation result with violations and suggested alternative.
     """
     code = _to_code(candidate)
-    allowed, violations = _check_violations(G, node, code, window)
+    allowed, violations = _check_violations(
+        G, node, code, window, sequence_context=sequence_context,
+    )
 
     alt: str | None = None
     if not allowed:
@@ -388,9 +415,10 @@ def filter_candidates(
     """
     result: list[str] = []
     for c in candidates:
-        cr = validate_candidate(G, node, c, window=window)
-        if cr.allowed:
-            result.append(cr.candidate)
+        code = _to_code(c)
+        allowed, _ = _check_violations(G, node, code, window)
+        if allowed:
+            result.append(code)
     return result
 
 
@@ -441,12 +469,15 @@ def enforce_grammar_on_glyph(
     candidate: str | Glyph,
     *,
     window: int = _DEFAULT_WINDOW,
+    sequence_context: Any = None,
 ) -> str:
-    """Validate *candidate* and replace it with a safe alternative if invalid.
+    """Validate *candidate*, using fallback only outside a validated word.
 
     Single source of truth for incremental grammar enforcement (U1-U6).
     ``enforce_canonical_grammar()`` delegates here; all application paths
     converge through this function exactly once before executing the operator.
+    With ``sequence_context``, a blocked live step raises StructuralGrammarError
+    before execution so a validated word is never silently rewritten.
 
     Parameters
     ----------
@@ -464,9 +495,19 @@ def enforce_grammar_on_glyph(
     str
         The validated (or replaced) glyph code.
     """
-    cr = validate_candidate(G, node, candidate, window=window)
+    cr = validate_candidate(
+        G, node, candidate, window=window, sequence_context=sequence_context,
+    )
     if cr.allowed:
         return cr.candidate
+    if sequence_context is not None:
+        from .grammar_types import StructuralGrammarError
+
+        raise StructuralGrammarError(
+            rule=cr.violations[0].rule,
+            candidate=cr.candidate,
+            message="; ".join(violation.message for violation in cr.violations),
+        )
     return cr.suggested_alternative or _FALLBACK_CODE
 
 
@@ -485,6 +526,8 @@ def validate_sequence_incremental(
 
     It appends each accepted glyph to a *shadow* history copy so that later
     steps in the sequence see the effect of earlier ones.
+    A one-shot ``glyph_history`` iterator raises ``ValueError`` before any
+    history is consumed or graph state is temporarily replaced.
 
     Parameters
     ----------
@@ -500,30 +543,52 @@ def validate_sequence_incremental(
     Returns
     -------
     list[CandidateResult]
-        One result per step.  All ``allowed=True`` means the sequence is
-        grammar-safe for this node in its current state.
+        One result per step. Only accepted glyphs enter the shadow history.
+        Phase checks use the current graph state; this function does not
+        simulate operator effects or certify later phase compatibility.
     """
     nd = G.nodes[node]
     raw = nd.get("glyph_history")
+    require_replayable_history(raw)
     shadow: list[str] = [_to_code(g) for g in (list(raw) if raw else [])]
+    shadow_debt = node_debt(nd)
+    shadow_prior_coherence = node_has_prior_coherence(nd)
 
     results: list[CandidateResult] = []
     for step in sequence:
         code = _to_code(step)
         # Temporarily set shadow history on the node for the check
+        had_history = "glyph_history" in nd
         original_history = nd.get("glyph_history")
+        had_debt = U2_DEBT_KEY in nd
+        original_debt = nd.get(U2_DEBT_KEY)
+        had_prior_coherence = PRIOR_COHERENCE_KEY in nd
+        original_prior_coherence = nd.get(PRIOR_COHERENCE_KEY)
         nd["glyph_history"] = shadow[-window:] if shadow else []
+        nd[U2_DEBT_KEY] = shadow_debt
+        nd[PRIOR_COHERENCE_KEY] = shadow_prior_coherence
         try:
             cr = validate_candidate(G, node, code, window=window)
         finally:
             # Restore original history
-            if original_history is not None:
+            if had_history:
                 nd["glyph_history"] = original_history
             else:
                 nd.pop("glyph_history", None)
+            if had_debt:
+                nd[U2_DEBT_KEY] = original_debt
+            else:
+                nd.pop(U2_DEBT_KEY, None)
+            if had_prior_coherence:
+                nd[PRIOR_COHERENCE_KEY] = original_prior_coherence
+            else:
+                nd.pop(PRIOR_COHERENCE_KEY, None)
         results.append(cr)
         # Accepted glyphs extend the shadow for subsequent steps
-        shadow.append(code)
+        if cr.allowed:
+            shadow.append(code)
+            shadow_debt = advance_debt(shadow_debt, code)
+            shadow_prior_coherence = advance_prior_coherence(shadow_prior_coherence, code)
 
     return results
 

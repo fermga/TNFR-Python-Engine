@@ -22,15 +22,63 @@ import random
 
 import networkx as nx
 import numpy as np
+import pytest
 
 from tnfr.alias import get_attr, set_attr
-from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from tnfr.config import get_precision_mode, set_precision_mode
+from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from tnfr.dynamics import default_compute_delta_nfr
 from tnfr.physics.canonical import (
+    _PHI_S_DISTANCE_CACHE,
+    compute_phase_curvature,
+    compute_phase_gradient,
     compute_structural_potential,
     estimate_coherence_length,
 )
-from tnfr.utils.cache import _compute_dependency_hash
+from tnfr.physics.telemetry import compute_structural_telemetry
+from tnfr.utils.cache import _compute_dependency_hash, reset_global_cache
+
+
+@pytest.fixture
+def restore_precision_mode():
+    previous_mode = get_precision_mode()
+    reset_global_cache()
+    yield
+    set_precision_mode(previous_mode)
+    reset_global_cache()
+
+
+@pytest.mark.parametrize("graph", [None, nx.path_graph(2)])
+def test_precision_dependency_hash_tracks_mode_without_changing_topology_key(
+    graph, restore_precision_mode,
+):
+    set_precision_mode("standard")
+    standard = _compute_dependency_hash(graph, {"precision_mode"})
+    topology = _compute_dependency_hash(graph, {"graph_topology"})
+    set_precision_mode("research")
+    assert standard != _compute_dependency_hash(graph, {"precision_mode"})
+    assert topology == _compute_dependency_hash(graph, {"graph_topology"})
+
+
+@pytest.mark.parametrize(
+    "compute",
+    [compute_structural_potential, compute_phase_gradient,
+     compute_phase_curvature, compute_structural_telemetry],
+)
+def test_precision_aware_field_cache_separates_modes(compute, restore_precision_mode):
+    graph = nx.path_graph(3)
+    for node in graph:
+        set_attr(graph.nodes[node], ALIAS_DNFR, 0.1 * (node + 1))
+        set_attr(graph.nodes[node], ALIAS_THETA, 0.2 * node)
+    set_precision_mode("standard")
+    standard = compute(graph)
+    assert compute(graph) is standard
+    set_precision_mode("research")
+    research = compute(graph)
+    assert research is not standard
+    assert compute(graph) is research
+    set_precision_mode("standard")
+    assert compute(graph) is standard
 
 
 def _build(n: int = 80, seed: int = 7) -> nx.Graph:
@@ -145,3 +193,55 @@ def test_coherence_length_responds_to_dnfr_change():
         assert (
             abs(xi2 - xi1) > 1e-9
         ), "ξ_C returned a stale cached value after ΔNFR changed"
+
+
+def test_mixed_phase_aliases_invalidate_per_node():
+    """Each node resolves its own first alias, including a legacy-key neighbor."""
+    graph = nx.path_graph(2)
+    graph.nodes[0][ALIAS_THETA[0]] = 0.0
+    graph.nodes[1][ALIAS_THETA[-1]] = 0.25
+    assert compute_phase_gradient(graph)[0] == pytest.approx(0.25)
+    graph.nodes[1][ALIAS_THETA[-1]] = 0.75
+    assert compute_phase_gradient(graph)[0] == pytest.approx(0.75)
+
+
+def test_dependency_hash_preserves_node_value_boundaries():
+    """(1, 23) and (12, 3) are different pressure fields, despite concatenation."""
+    graph = nx.path_graph(2)
+    graph.nodes[0][ALIAS_DNFR[0]] = 1
+    graph.nodes[1][ALIAS_DNFR[0]] = 23
+    before = compute_structural_potential(graph)
+    graph.nodes[0][ALIAS_DNFR[0]] = 12
+    graph.nodes[1][ALIAS_DNFR[0]] = 3
+    after = compute_structural_potential(graph)
+    assert before == {0: 23.0, 1: 1.0}
+    assert after == {0: 3.0, 1: 12.0}
+
+
+def test_potential_invalidates_after_edge_weight_change():
+    """Φ_s uses weighted distance: doubling one-edge distance quarters Φ_s."""
+    graph = nx.Graph()
+    graph.add_edge(0, 1, weight=1.0)
+    for node in graph:
+        set_attr(graph.nodes[node], ALIAS_DNFR, 1.0)
+    assert compute_structural_potential(graph) == {0: 1.0, 1: 1.0}
+    graph[0][1]["weight"] = 2.0
+    assert compute_structural_potential(graph) == {0: 0.25, 1: 0.25}
+
+
+def test_landmark_cache_separates_relabelled_topologies():
+    """Equal node counts/degrees do not identify a distance matrix's labels."""
+    _PHI_S_DISTANCE_CACHE.clear()
+    try:
+        first = nx.path_graph(8)
+        second = nx.relabel_nodes(first, {node: f"n{node}" for node in first})
+        for graph in (first, second):
+            for node in graph:
+                set_attr(graph.nodes[node], ALIAS_DNFR, 0.2)
+        compute_structural_potential(first, landmark_ratio=0.5)
+        result = compute_structural_potential(second, landmark_ratio=0.5)
+        assert set(result) == set(second)
+        assert all(math.isfinite(value) for value in result.values())
+    finally:
+        _PHI_S_DISTANCE_CACHE.clear()
+        reset_global_cache()

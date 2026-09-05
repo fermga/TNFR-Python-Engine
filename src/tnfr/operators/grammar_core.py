@@ -28,7 +28,8 @@ from .grammar_telemetry import (
     warn_phase_curvature_telemetry,
     warn_phase_gradient_telemetry,
 )
-from ..config.operator_names import BIFURCATION_WINDOW
+from ..config.operator_names import BIFURCATION_WINDOW, U2_DEBT_CAPACITY
+from .grammar_debt import advance_debt
 from .grammar_types import (
     BIFURCATION_HANDLERS,
     BIFURCATION_TRIGGERS,
@@ -198,17 +199,18 @@ class GrammarValidator:
         tuple[bool, str]
             (is_valid, message)
         """
-        # DESIGN NOTE (B4): This check verifies *presence* of stabilizers in
-        # the sequence, not their ordering relative to destabilizers.  A sequence
-        # such as [AL, OZ, NAV, IL, SHA] passes even though IL appears after the
-        # destabilizer.  The physics ideally requires IL to act *forward* in time
-        # (before or around the destabilizer), but enforcing strict ordering
-        # requires positional analysis not yet implemented.  This is an accepted
-        # design trade-off documented here; see bug B4 for the ordering roadmap.
+        names = [getattr(op, "canonical_name", op.name.lower()) for op in sequence]
+        debt = 0
+        for index, name in enumerate(names):
+            debt = advance_debt(debt, name)
+            if debt > U2_DEBT_CAPACITY:
+                return False, (
+                    f"U2 violated: uncompensated destabilizer debt={debt} "
+                    f"exceeds capacity {U2_DEBT_CAPACITY} at position {index}. "
+                    "A later stabilizer cannot repair an over-capacity prefix."
+                )
         destabilizers_present = [
-            getattr(op, "canonical_name", op.name.lower())
-            for op in sequence
-            if getattr(op, "canonical_name", op.name.lower()) in DESTABILIZERS
+            name for name in names if name in DESTABILIZERS
         ]
 
         if not destabilizers_present:
@@ -217,9 +219,7 @@ class GrammarValidator:
 
         # Check for stabilizers
         stabilizers_present = [
-            getattr(op, "canonical_name", op.name.lower())
-            for op in sequence
-            if getattr(op, "canonical_name", op.name.lower()) in STABILIZERS
+            name for name in names if name in STABILIZERS
         ]
 
         if not stabilizers_present:
@@ -399,17 +399,20 @@ class GrammarValidator:
         """
         # Check if sequence contains transformers
         transformer_ops = []
+        has_prior_il = False
         for i, op in enumerate(sequence):
             op_name = getattr(op, "canonical_name", op.name.lower())
             if op_name in TRANSFORMERS:
-                transformer_ops.append((i, op_name))
+                transformer_ops.append((i, op_name, has_prior_il))
+            if op_name == "coherence":
+                has_prior_il = True
 
         if not transformer_ops:
             return True, "U4b: not applicable (no transformers)"
 
         # For each transformer, check context
         violations = []
-        for idx, transformer_name in transformer_ops:
+        for idx, transformer_name, prior_il in transformer_ops:
             # "Recent" = within the structural-relaxation window
             # BIFURCATION_WINDOW (derived from the nodal equation: the discrete
             # steps for a ΔNFR perturbation to relax into the coherence band).
@@ -419,7 +422,9 @@ class GrammarValidator:
             # length. Single source: config.operator_names.BIFURCATION_WINDOW.
             window_start = max(0, idx - BIFURCATION_WINDOW)
             recent_destabilizers = []
-            prior_il = False
+            # The relaxation window constrains destabilizing pressure. U4b
+            # requires a prior stable base, captured by the linear scan above
+            # without expiring earlier IL or rescanning each sequence prefix.
 
             for j in range(window_start, idx):
                 op_name = getattr(
@@ -429,8 +434,6 @@ class GrammarValidator:
                 )
                 if op_name in DESTABILIZERS:
                     recent_destabilizers.append((j, op_name))
-                if op_name == "coherence":
-                    prior_il = True
 
             # Check requirements
             if not recent_destabilizers:
@@ -633,29 +636,24 @@ class GrammarValidator:
             - Contract IL: Reduces |ΔNFR| at all scales
             - Contract THOL: Autopoietic closure across hierarchical levels
         """
-        # KNOWN LIMITATION (B3): No operator currently exposes a 'depth'
-        # attribute; getattr(op, 'depth', 1) always returns the default 1.
-        # As a result this entire function is forward-looking dead code and will
-        # always return "not applicable" until Recursivity (REMESH) exposes
-        # depth > 1.  Do NOT treat the N/A result as a passed check.
-        # Tracking: see bug tracker B3.
+        from .recursivity import validate_recursivity_depth
+
+        # Recursivity exposes depth. This check validates that declared scale
+        # and nearby stabilizers; it does not measure parent/child coherence.
         deep_remesh_indices = []
 
         for i, op in enumerate(sequence):
             op_name = getattr(op, "canonical_name", op.name.lower())
             if op_name == "recursivity":
-                # Check if operator has depth attribute
-                depth = getattr(op, "depth", 1)  # Default depth=1 if not present
+                try:
+                    depth = validate_recursivity_depth(getattr(op, "depth", 1))
+                except ValueError as exc:
+                    return False, f"U5 violated: recursivity at position {i}: {exc}"
                 if depth > 1:
                     deep_remesh_indices.append((i, depth))
 
         if not deep_remesh_indices:
-            # Always reached today because no operator exposes depth > 1 (B3).
-            return True, (
-                "U5: not applicable — no operator currently exposes 'depth' > 1; "
-                "this check is forward-looking dead code (bug B3) until REMESH "
-                "exposes depth > 1"
-            )
+            return True, "U5: not applicable — sequence has no recursivity depth > 1"
 
         # For each deep REMESH, check for stabilizers in window
         violations = []
@@ -830,7 +828,7 @@ class GrammarValidator:
         - U2: Convergence & boundedness (+ U2-REMESH sub-rule)
         - U3: Resonant coupling
         - U4: Bifurcation dynamics
-        - U5: Multi-scale coherence (forward-looking; always N/A until REMESH exposes depth)
+        - U5: Declared Recursivity depth and nearby scale stabilizers
         - U6-EXP: Temporal ordering (experimental; DISTINCT from canonical U6 = Φ_s
           confinement in grammar_u6.py — enabled only when experimental_u6=True)
 

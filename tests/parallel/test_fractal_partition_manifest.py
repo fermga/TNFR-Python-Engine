@@ -104,7 +104,8 @@ def test_summary_structure_is_valid(sample_network):
         assert "average_community_size" in summary
 
 
-def test_sdk_wrapper_accepts_fractal_partition_manifests(sample_network):
+def test_sdk_wrapper_accepts_fractal_partition_manifests(sample_network, monkeypatch):
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[2] / "factorization-lab"))
     """Test that SDK wrapper can process fractal partition manifests."""
     partitioner = FractalPartitioner(max_partition_size=10)
 
@@ -119,31 +120,20 @@ def test_sdk_wrapper_accepts_fractal_partition_manifests(sample_network):
         # Import SDK function
         from tnfr.sdk import run_fractal_partition_optimization
 
-        # Test that function accepts the manifest path without error
-        # Note: The CLI runners expect specific manifest format with "entries",
-        # which fractal partition manifests don't have. This test validates
-        # that the SDK wrapper correctly passes parameters and handles the
-        # ValueError gracefully.
-        try:
-            opt_result = run_fractal_partition_optimization(
-                manifest_path=result["manifest_absolute"],
-                manifest_summary_path=result["summary_absolute"],
-                base_name="test_opt",
-            )
-            # If it runs successfully, result should be dict or None
-            assert opt_result is None or isinstance(opt_result, dict)
-        except (RuntimeError, ImportError):
-            # Expected if factorization-lab not installed
-            pytest.skip("Self-optimization helpers not available")
-        except ValueError as e:
-            # Expected if manifest format doesn't match CLI runner expectations
-            # This is acceptable - the SDK wrapper correctly passed the parameters
-            if "entries" in str(e):
-                pytest.skip(
-                    "CLI runner expects 'entries' format - integration test requires format alignment"
-                )
-            else:
-                raise
+        opt_result = run_fractal_partition_optimization(
+            manifest_path=result["manifest_absolute"],
+            manifest_summary_path=result["summary_absolute"],
+            base_name="test_opt",
+            output_root=output_dir / "optimization",
+        )
+        assert opt_result is not None
+        runner = opt_result["runner_summary"]
+        assert runner["success_count"] == len(result["partitions"])
+        assert runner["failure_count"] == 0
+        assert opt_result["promotable"] == {}
+        for entry in runner["partition_results"]:
+            assert entry["telemetry_deltas"]["delta_c"] == 0.0
+
 
 
 def test_manifest_telemetry_includes_coherence(sample_network):
@@ -168,6 +158,8 @@ def test_manifest_telemetry_includes_coherence(sample_network):
         # Coherence and sense_index should be present (may be None if physics unavailable)
         assert "coherence" in telemetry
         assert "sense_index" in telemetry
+        assert isinstance(telemetry["coherence"], float)
+        assert isinstance(telemetry["sense_index"], float)
 
 
 def test_community_coherence_computed(sample_network):

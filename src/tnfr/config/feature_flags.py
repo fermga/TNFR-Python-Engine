@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, replace
 from typing import Iterator
+
+from .parsing import parse_bool
 
 __all__ = ("MathFeatureFlags", "get_flags", "context_flags")
 
@@ -20,23 +23,20 @@ class MathFeatureFlags:
     math_backend: str = "numpy"
 
 
-_TRUE_VALUES = {"1", "true", "on", "yes", "y", "t"}
-_FALSE_VALUES = {"0", "false", "off", "no", "n", "f"}
-
 _BASE_FLAGS: MathFeatureFlags | None = None
-_FLAGS_STACK: list[MathFeatureFlags] = []
+_CONTEXT_FLAGS: ContextVar[MathFeatureFlags | None] = ContextVar(
+    "tnfr_math_feature_flags", default=None
+)
 
 
 def _parse_env_flag(name: str, default: bool) -> bool:
     value = os.getenv(name)
     if value is None:
         return default
-    lowered = value.strip().lower()
-    if lowered in _TRUE_VALUES:
-        return True
-    if lowered in _FALSE_VALUES:
-        return False
-    return default
+    try:
+        return parse_bool(value)
+    except ValueError:
+        return default
 
 
 def _load_base_flags() -> MathFeatureFlags:
@@ -58,14 +58,13 @@ def _load_base_flags() -> MathFeatureFlags:
 def get_flags() -> MathFeatureFlags:
     """Return the currently active feature flags."""
 
-    if _FLAGS_STACK:
-        return _FLAGS_STACK[-1]
-    return _load_base_flags()
+    flags = _CONTEXT_FLAGS.get()
+    return flags if flags is not None else _load_base_flags()
 
 
 @contextmanager
-def context_flags(**overrides: bool) -> Iterator[MathFeatureFlags]:
-    """Temporarily override math feature flags."""
+def context_flags(**overrides: bool | str) -> Iterator[MathFeatureFlags]:
+    """Override flags in the current context, isolated from other threads/tasks."""
 
     invalid = set(overrides) - set(MathFeatureFlags.__annotations__)
     if invalid:
@@ -73,9 +72,13 @@ def context_flags(**overrides: bool) -> Iterator[MathFeatureFlags]:
         raise TypeError(f"Unknown flag overrides: {invalid_names}")
 
     previous = get_flags()
-    next_flags = replace(previous, **overrides)
-    _FLAGS_STACK.append(next_flags)
+    parsed = {
+        key: value if key == "math_backend" else parse_bool(value)
+        for key, value in overrides.items()
+    }
+    next_flags = replace(previous, **parsed)
+    token = _CONTEXT_FLAGS.set(next_flags)
     try:
         yield next_flags
     finally:
-        _FLAGS_STACK.pop()
+        _CONTEXT_FLAGS.reset(token)

@@ -7,12 +7,28 @@ from typing import Any, Dict
 
 import pytest
 from tnfr_factorization.self_opt_support import (  # type: ignore[import]
+    _extract_promotable_partitions,
     attach_self_opt_sequences,
     run_partition_self_optimization,
 )
 
 import scripts.run_self_opt_validation as validator_mod
 import scripts.run_self_optimization as runner_mod
+
+
+@pytest.mark.parametrize("actual_delta", [None, 0.0, -0.1, float("nan"), float("inf")])
+def test_archived_or_nonpositive_changes_cannot_be_promoted(actual_delta):
+    summary = _fake_runner_summary()
+    entry = summary["partition_results"][0]
+    entry["telemetry"]["delta_c"] = 0.9
+    entry["telemetry_deltas"]["delta_c"] = actual_delta
+    assert _extract_promotable_partitions(summary, _fake_validation_summary()) == {}
+
+
+def test_dry_run_cannot_be_promoted_even_with_inconsistent_positive_delta():
+    summary = _fake_runner_summary()
+    summary["partition_results"][0]["engine"]["dry_run"] = True
+    assert _extract_promotable_partitions(summary, _fake_validation_summary()) == {}
 
 
 def _fake_runner_summary() -> Dict[str, Any]:
@@ -22,6 +38,7 @@ def _fake_runner_summary() -> Dict[str, Any]:
                 "success": True,
                 "partition_id": "p0",
                 "telemetry": {"delta_c": 0.15, "delta_phi_s": -0.02, "delta_si": 0.04},
+                "telemetry_deltas": {"delta_c": 0.15, "delta_phi_s": -0.02, "delta_si": 0.04},
                 "engine": {
                     "validation": {
                         "passed": True,

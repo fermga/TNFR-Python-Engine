@@ -17,6 +17,19 @@ from ..types import Glyph, TNFRGraph
 from .definitions_base import Operator
 
 
+def validate_recursivity_depth(depth: Any) -> int:
+    """Validate the positive integer scale declaration used by batch U5."""
+    from ..validation.window import validate_window
+
+    try:
+        return validate_window(depth, positive=True)
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(
+            f"depth must be a positive integer, got {depth!r}",
+            context={"depth": depth},
+        ) from exc
+
+
 class Recursivity(Operator):
     """Propagate fractal echoes; enforce multi-scale identity retention.
 
@@ -28,13 +41,8 @@ class Recursivity(Operator):
     glyph: ClassVar[Glyph] = Glyph.REMESH
 
     def __init__(self, depth: int = 1):
-        """set recursion depth (>=1)."""
-        if depth < 1:
-            raise TNFRValueError(
-                f"depth must be >= 1, got {depth}",
-                context={"depth": depth},
-            )
-        self.depth = depth
+        """Declare recursion depth (positive integer) for batch U5 validation."""
+        self.depth = validate_recursivity_depth(depth)
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Run REMESH precondition validator."""

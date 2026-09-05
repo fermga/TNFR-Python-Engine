@@ -44,6 +44,7 @@ from tnfr.physics.structural_diffusion import (
     structural_diffusivity,
     structural_eigenmodes,
     structural_field,
+    symmetric_normalized_laplacian,
     verify_discrete_modes,
     verify_overdamped_projection,
     verify_overdamped_regime,
@@ -124,6 +125,9 @@ class TestDiffusionConservation:
 
     def test_degree_weighted_total_conserved(self) -> None:
         G = _canonical_graph(60)
+        # Degree-weighted conservation requires a common nodal frequency.
+        for node in G:
+            G.nodes[node]["nu_f"] = 1.0
         cert = verify_structural_diffusion(G)
         assert cert.degree_weighted_conserved
         assert cert.max_conservation_drift < 1e-9
@@ -348,6 +352,33 @@ class TestUndampedLimit:
 
 class TestDiscreteModes:
     """A bounded manifold has discrete standing-wave eigenmodes."""
+
+    def test_isolated_node_has_zero_diffusion_mode(self) -> None:
+        G = nx.Graph()
+        G.add_edge("left", "right", weight=2.5)
+        G.add_node("isolated")
+        nx.set_node_attributes(G, 1.0, "nu_f")
+
+        eigvals, eigvecs = structural_eigenmodes(G)
+        _, lap = symmetric_normalized_laplacian(G)
+        _, diffusion = structural_diffusion_operator(G)
+
+        # Every connected component has a stationary mode: an isolated NFR
+        # cannot acquire reorganization pressure from absent neighbours.
+        assert np.allclose(eigvals, [0.0, 0.0, 2.0], atol=1e-12)
+        assert np.allclose(lap @ eigvecs, eigvecs * eigvals, atol=1e-12)
+        assert np.allclose(eigvals, np.sort(np.linalg.eigvals(diffusion).real))
+        assert np.allclose(relaxation_spectrum(G), eigvals)
+
+    def test_edgeless_network_has_no_collective_vibration(self) -> None:
+        G = nx.empty_graph(3)
+        eigvals, eigvecs = structural_eigenmodes(G)
+
+        assert np.array_equal(eigvals, np.zeros(3))
+        assert np.allclose(eigvecs.T @ eigvecs, np.eye(3))
+        pulse = compute_emergent_pulse(G)
+        assert pulse["fundamental"] == 0.0
+        assert pulse["vibration_energy"] == 0.0
 
     def test_spectrum_is_discrete_and_finite(self) -> None:
         G = nx.path_graph(30)

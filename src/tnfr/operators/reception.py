@@ -27,7 +27,7 @@ class Reception(Operator):
     name: ClassVar[str] = RECEPTION
     glyph: ClassVar[Glyph] = Glyph.EN
 
-    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Detect sources (optional); apply grammar; integrate intake."""
         # Detect emission sources BEFORE applying reception
         if kw.get("track_sources", True):
@@ -50,7 +50,7 @@ class Reception(Operator):
                 )
 
         # Delegate to parent __call__ which applies grammar
-        super().__call__(G, node, **kw)
+        super()._execute(G, node, **kw)
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Run EN precondition validation (capacity, dnfr, sources)."""

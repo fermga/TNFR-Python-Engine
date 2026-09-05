@@ -102,25 +102,32 @@ peripheral ring) or **multinodal** (several centers), read from the emergent
 structural-potential geometry by [classify_nodal_topology](src/tnfr/physics/fields.py)
 and surfaced as a whole-NFR read-out by `Network.nfr()` ([src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)).
 
-The equilibrium `ΔNFR = 0` is **not** an NFR but its **resonant-coherence attractor** —
-the state where reorganization pressure vanishes (`C → 1`). Because the EPI channel
-diffuses to the uniform field (eigenmode decay `e^{−νf λ_k t}`), a fully relaxed network
-is **one uniform NFR** with flat geometry; differentiated nodal topology lives
-off-equilibrium. The shared fixed-point predicate is
+The pressure equilibrium `ΔNFR = 0` is the **resonant-coherence attractor** —
+the state where reorganization pressure vanishes (`C = 1` when `dEPI = 0`).
+Stationarity alone is weaker: zero capacity freezes EPI even under nonzero pressure.
+For the pure EPI channel on a fixed connected symmetric graph with positive capacity,
+equilibrium is a uniform field; disconnected components can have different constants.
+This restricted diffusion result does not establish the attractors of the full
+multichannel dynamics. The shared equilibrium predicate is
 [is_structural_equilibrium](src/tnfr/metrics/common.py), and the per-node coherence map
 `structural_coherence` (`C = 1/(1+|ΔNFR|+|dEPI|)`) is the **single kernel** every domain
 reads — graph nodes, arithmetic nodes (primes), chemical nodes (noble gases) — with only
 the `ΔNFR` realisation domain-specific.
 
-### Bounded evolution → the convergence requirement
+### Accumulated evolution and the convergence policy
 
-Integrating the nodal equation, coherence is preserved only when
+Integrating the nodal equation gives the accumulated structural change:
 
-$$\int_{t_0}^{t_f} \nu_f(\tau)\,\Delta\mathrm{NFR}(\tau)\,d\tau < \infty.$$
+$$\mathrm{EPI}(t)-\mathrm{EPI}(t_0)=\int_{t_0}^{t}\nu_f(\tau)\,\Delta\mathrm{NFR}(\tau)\,d\tau.$$
 
-Without stabilizers, `ΔNFR` grows by positive feedback, the integral diverges, and
-the pattern fragments. This integral-convergence fact is the physical basis of
-grammar rule **U2**.
+Finite-horizon integrability, bounded trajectories, convergence as `t → ∞`, and
+absolute integrability are distinct conditions. Absolute integrability is sufficient
+for a finite limiting EPI; bounded or vanishing pressure alone is insufficient.
+Positive feedback can destabilize a trajectory, while diffusion can relax without
+named stabilizers. Grammar **U2** is the engine's stabilization and debt policy,
+motivated by controlling this accumulated change; it is not a universal convergence
+theorem for arbitrary pressure laws. See
+[theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).
 
 ### Transport content (structural diffusion)
 
@@ -131,22 +138,26 @@ The canonical `ΔNFR` aggregates four structural gradient channels,
 
 $$\Delta\mathrm{NFR}_{\text{epi}}(i) = \overline{\mathrm{EPI}}_{\mathcal{N}(i)} - \mathrm{EPI}(i) = -(L_{\mathrm{rw}}\,\mathrm{EPI})(i),\qquad L_{\mathrm{rw}} = I - D^{-1}W,$$
 
-so `∂EPI/∂t = −νf · L_rw · EPI` is the discrete diffusion equation with diffusivity
-`νf`. Consequences (all TNFR-internal, empirically anchored): structural diffusion
-to a uniform field with eigenmode decay `e^{−νf λ_k t}`; conserved degree-weighted
-total; equilibrium ⟺ uniform field; the spectral gap `λ₂` (Fiedler value) sets the
-slowest relaxation, the synchronization tendency, and — via `r_c = νf·λ₂` — the
-spectral form of U2. See [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py).
+so `∂EPI/∂t = −diag(νf) · L_rw · EPI` describes the isolated channel, with zero
+Laplacian rows at isolates. For fixed capacities and fixed symmetric nonnegative
+weights with a common
+positive capacity, modes decay as `e^{−νf λ_k t}` and the degree-weighted total
+is conserved. Positive heterogeneous capacities instead conserve weights `d_i/νf_i`;
+their rates are eigenvalues of `diag(νf)L_rw`. On a connected homogeneous graph,
+`νf·λ₂` is the slowest nonuniform decay rate. The reaction threshold `r_c=νf·λ₂`
+concerns nonuniform modes; a positive reaction already grows the uniform mode.
+These scoped identities do not certify U2 for arbitrary operator sequences.
+The exact Dirichlet balance below uses this same adjacency convention. See
+[src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py).
 
 ---
 
 ## 3. The structural tetrad
 
-Four structural fields characterize any coherent system on a graph — the four
-orders of the discrete derivative tower (minimality is DERIVED). They are the
-canonical state read-out of a network; their characteristic scales are given
-below. The one genuine structural constant is **π**, which scales the phase
-sector (it bounds both `|∇φ|` and `K_φ`).
+Four structural fields form the canonical diagnostic read-out of a network.
+They organize aggregation, local phase derivatives and non-local correlation.
+Their selection does not establish complete reconstruction of the graph state or
+its evolution. **π** is the exact phase-wrap scale bounding `|∇φ|` and `|K_φ|`.
 
 | Structural field | Symbol | Tower order | Role |
 |------------------|--------|-------------|------|
@@ -157,45 +168,46 @@ sector (it bounds both `|∇φ|` and `K_φ`).
 
 ### Field scales
 
-The four-field basis is the minimal derivative tower. Each field has a
-characteristic scale:
+Each field has a characteristic scale or configured interpretation:
 
 - **π — phase scale (geometric, exact).** Both phase derivatives are **wrapped
   angles**, so `|∇φ| ≤ π` *and* `|K_φ| ≤ π` for any configuration — π scales the
-  whole **phase sector**, not K_φ alone. `|K_φ| < 0.9·π ≈ 2.827` sits at this wrap
-  limit (exact, parameter-free).
+  whole **phase sector**. `|K_φ| < 0.9·π ≈ 2.827` is a selected safety margin
+  inside that exact bound; the factor 0.9 is a policy choice.
 - **|∇φ| — phase-wrap bounded.** Its genuine bound is `|∇φ| ≤ π`. There is no fixed
   structural constant for the synchronization onset: the measured value is `≈ 0.29`
   and σ-dependent (a dynamical transition, not a derived threshold).
-- **ξ_C — spectral gap.** The correlation length is set by the **spectral gap**:
-  `ξ_C ∝ 1/√λ₂` (verified).
-- **Φ_s — π-derived confinement.** `Δ Φ_s < π/2 ≈ 1.571` (half phase-wrap, the U6
-  drift bound) and per-node `|Φ_s| < π/4 ≈ 0.785` (quarter phase-wrap). The phase
-  sector — scaled by the sole structural constant π — confines Φ_s; both are
-  π-fractions, **not** empirical.
+- **ξ_C — correlation length.** The correlation fit is state-dependent; the
+  spectral scale `1/√λ₂` supplies a model comparison and fallback, not an identity
+  for every fitted field or graph.
+- **Φ_s — confinement policy.** `Δ Φ_s < π/2 ≈ 1.571` is the U6 drift policy;
+  per-node `|Φ_s| < π/4 ≈ 0.785` is a separate magnitude policy. Both are selected
+  π-scaled thresholds. Phase wrapping alone does not bound the source aggregation:
+  `||Φ_s||∞ ≤ ||B_G||∞ ||ΔNFR||∞`, where `(B_G)_ij=1/d(i,j)²` off the diagonal
+  and zero for unreachable pairs. A complete graph with unit pressure gives `Φ_s=n−1`.
 
-**Structure (verified).** `K_φ` **is** the central operator applied to phase
-(`K_φ = L_rw·φ` in the smooth limit, corr = 1.000) — the phase image of the one operator that
-generates geometry/diffusion/modes; `ξ_C ∝ 1/√λ₂`. The organizing axis is **local** phase
-derivatives (`|∇φ|`, `K_φ`; π-bounded) vs **non-local** source/correlation (`Φ_s`, `ξ_C`), across
-the derivative orders. The tetrad is a real minimal basis; among the constants, only **π** is a
-genuine structural scale.
+**Structure and scope.** Circular phase curvature linearizes to a Laplacian action
+in a small-spread regime with matching neighborhood weights. The wrapped nonlinear
+field is not globally the linear EPI diffusion operator. Local phase derivatives
+and non-local source/correlation diagnostics provide complementary information.
 
 ### Why exactly four (minimality)
 
-The tetrad is the **minimal and complete** structural basis. A scalar phase field
-coupled to a scalar source on a graph admits exactly four independent structural
-channels — the orders of the discrete derivative tower:
+The four canonical channels organize the following read-outs:
 
 ```
 ΔNFR_j → Σ 1/d²  → Φ_s   (0th order, global aggregation)
 φ_i    → ∇       → |∇φ|   (1st order, local)
-       → ∇²      → K_φ    (2nd order, local; graph Laplacian is the top operator)
+       → ∇²      → K_φ    (2nd order, local; Laplacian after phase linearization)
        → corr    → ξ_C    (non-local correlation range)
 ```
 
-Higher graph derivatives decompose into products of lower ones, so no fifth
-independent channel exists; removing any field creates a structural blind spot.
+Higher Laplacian powers belong to the algebra generated by the Laplacian, but this
+does not make their observations reconstructible from lossy tetrad summaries.
+For four distinct eigenvalues, `I,L,L²,L³` are linearly independent. Uniformly
+rescaling capacity can preserve the tetrad while changing the nodal evolution rate.
+A minimal complete state basis therefore remains unproved; the tetrad remains the
+required diagnostic interface.
 Full treatment: [theory/MINIMAL_STRUCTURAL_DEGREES.md](theory/MINIMAL_STRUCTURAL_DEGREES.md),
 [theory/FUNDAMENTAL_THEORY.md](theory/FUNDAMENTAL_THEORY.md),
 [docs/STRUCTURAL_FIELDS_TETRAD.md](docs/STRUCTURAL_FIELDS_TETRAD.md). All four fields
@@ -205,22 +217,24 @@ are CANONICAL; compute them via [src/tnfr/physics/fields.py](src/tnfr/physics/fi
 
 ## 4. Emergent geometry
 
-The conservation laws reveal that the nodal dynamics carries its **own intrinsic
-geometry** — emergent, not imposed. This section synthesizes it; the derivations
-and verifications live in the linked modules and theory notes.
+Graph fields support geometric read-outs and specified auxiliary dynamical models.
+Their algebraic identities, model flows and correspondence with engine trajectories
+must be stated separately. The implementations expose the corresponding scope.
 
 ### Emergent symplectic substrate
 
-The dynamics generates a symplectic phase space `P = ℝ^{4N}` with two canonical
-conjugate pairs per node:
+The substrate model uses an ambient symplectic space `P = ℝ^{4N}` with two canonical
+conjugate pairs per node, initialized from extracted graph fields:
 
 - **Geometric sector** `(K_φ, J_φ)` — curvature ↔ phase current
 - **Potential sector** `(Φ_s, J_ΔNFR)` — potential ↔ ΔNFR flux
 
 with canonical brackets `{K_φ, J_φ} = {Φ_s, J_ΔNFR} = 1`. The Hamiltonian is the
 structural **energy functional** `H_sub = ½Σ(K_φ² + J_φ² + Φ_s² + J_ΔNFR²)` (plus
-the `½Σ|∇φ|²` background). The flow is a **symplectomorphism** (Liouville: phase
-volume preserved), so the 13 operators are canonical, volume-preserving transforms.
+the held-fixed `½Σ|∇φ|²` background). Its exact harmonic flow is a
+**symplectomorphism**, preserving phase volume. This does not certify the 13 engine
+operators: each induced map would need its own symplecticity check, and extracted
+graph fields need not fill or remain on the ambient space under that flow.
 **Noether** ties each continuous symmetry to a conserved charge: time translation →
 `H_sub`; the geometric U(1) (`Ψ → e^{iα}Ψ`) → `E_geo = ½Σ|Ψ|²`; the potential U(1)
 → `E_pot`. The complex coordinate `Ψ = K_φ + i·J_φ` is the geometric sector under
@@ -229,20 +243,30 @@ the substrate's complex structure (flat Kähler). The substrate further carries 
 **Poincaré sphere** — this is classical wave polarization (Stokes/Poincaré), a
 product (un-entangled) classical texture, **not** a quantum state.
 
-The nodal equation is the **overdamped projection** of this Hamiltonian flow.
+The full nodal equation has not been derived as an overdamped projection of this
+isotropic Hamiltonian. A restricted exact bridge exists for EPI-only diffusion
+on fixed symmetric nonnegative conductance: with `B=D−W`,
+`E_D=½ EPIᵀ B EPI`, and `M=diag(νf_i/d_i)` (zero at isolates),
+`dEPI/dt=−M∇E_D` and `dE_D/dt=−∇E_Dᵀ M∇E_D≤0`.
+`compute_diffusion_energy` reads this balance without evolving the graph.
+This Dirichlet energy differs from the tetrad potential; zero capacity yields
+degenerate mobility. A separate damped graph wave with stiffness `L_rw` has a
+slow diffusion limit, while the isotropic substrate has identity stiffness.
+See [theory/TNFR_VARIATIONAL_PRINCIPLE.md](theory/TNFR_VARIATIONAL_PRINCIPLE.md).
 Implementation and certificates: [src/tnfr/physics/symplectic_substrate.py](src/tnfr/physics/symplectic_substrate.py);
 gauge / U(2) structure: [theory/GAUGE_SYMMETRY_AND_UNIFICATION.md](theory/GAUGE_SYMMETRY_AND_UNIFICATION.md).
 
 ### Structural conservation theorem (Noether-like)
 
-Grammar symmetry (U1–U6) implies a structural conservation law:
+The structural conservation diagnostics measure the balance
 
 $$\frac{\partial \rho}{\partial t} + \nabla\cdot\mathbf{J} = S_{\text{grammar}},\qquad \rho = \Phi_s + K_\phi,\quad \mathbf{J} = (J_\phi, J_{\Delta\mathrm{NFR}}),$$
 
-with `S_grammar → 0` under U1–U6. The energy functional
+where the residual `S_grammar` must be measured along the actual trajectory;
+valid operator labels alone do not prove it vanishes. The energy functional
 `E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) ≥ 0` is a **Lyapunov candidate**:
-`dE/dt ≤ 0` is observed under grammar-compliant evolution (proof sketch; a complete
-proof of asymptotic stability is open). The six downstream emergent fields
+its non-increase requires trajectory evidence or a model-specific proof. A
+complete general proof of asymptotic stability remains open. The six derived fields
 (`χ, 𝒮, 𝒞, ℰ, 𝒜, 𝒬`) are bilinear contractions of the singlets (`Φ_s`, `|∇φ|`) and
 the complex fields `Ψ = K_φ + i·J_φ` and `Ω = |∇φ| + i·J_ΔNFR` (e.g. chirality
 `χ = Re(Ψ·Ω)`). Conservation theorem:
@@ -253,24 +277,26 @@ emergent fields: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py),
 
 ### Regime correspondences
 
-The single nodal dynamics produces two empirically-anchored regimes (external labels
-"classical"/"quantum-like" are comparisons only, not TNFR primitives):
+The nodal law and graph-wave diagnostics admit the following scoped comparisons
+(external labels "classical"/"quantum-like" are not TNFR primitives):
 
-- **Smooth-trajectory / overdamped drift** (high coherence): first order in time,
+- **Smooth-trajectory / overdamped drift**: first order in time,
   `q̇ = νf·F` — drift velocity ∝ force, `νf` is **mobility** (Stokes/Einstein), not
   inverse mass. The inertial (second-order) regime lives in the conservative
   substrate flow.
-- **Discrete-mode** (high dissonance): on a bounded graph the diffusion operator has
-  a discrete spectrum of orthonormal standing-wave eigenmodes (vibrating-string /
-  Chladni analogue), with nodal-domain ordering (Courant).
+- **Discrete-mode**: finite graphs give a finite spectrum independently of dissonance.
+  Symmetric normalized diffusion supplies an orthonormal basis; graph-wave
+  frequencies are `√λ_k`. Nodal-domain upper bounds do not imply monotonic counts
+  across every degenerate eigenbasis. Directed transport needs separate analysis.
 
-The conservative regime is a **sustained vibration — the pulse**, read at two scales: the
+The graph-wave model has a **sustained vibration — the pulse**, read at two scales: the
 **collective** network rhythm (resonances `ω_k = √λ_k`, the fundamental, the dominant beat
 `ω_j − ω_k`, vibration energy; `compute_emergent_pulse`, SDK `net.rhythm()`) and the **per-NFR**
 pulse — every NFR a phase oscillator pulsing at its own `νf` with phase `φ`, coupled by
 **resonance** (`local_phase_sync` per NFR, the Kuramoto order `R`, gate `Δφ_max = π/2`;
-`compute_nodal_pulse`, SDK `net.resonance()`). The collective pulse emerges as the per-NFR pulses
-lock (`R → 1`); the `ΔNFR = 0` equilibria are the **beats** the vibration passes through.
+`compute_nodal_pulse`, SDK `net.resonance()`). These report modal rhythm and phase
+synchronization separately; a high Kuramoto order does not by itself establish
+an engine trajectory following the auxiliary conservative wave.
 
 See [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py)
 and [examples/02_physics_regimes/](examples/README.md).
@@ -336,33 +362,41 @@ and [144_branching_combinator.py](examples/08_emergent_geometry/144_branching_co
 
 ## 6. Unified grammar (U1–U6)
 
-The grammar is derived from the nodal equation, not imposed. Validation entry point:
+The grammar is the engine's structural contract, motivated by the nodal equation
+and encoded operator roles. Its policy choices are distinguished from mathematical
+implications in [theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).
+Validation entry point:
 [src/tnfr/operators/grammar.py](src/tnfr/operators/grammar.py); canonical specification
 [src/tnfr/operators/grammar_canon.py](src/tnfr/operators/grammar_canon.py); full
 derivations [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md).
 
-- **U1 — Initiation & closure.** From `EPI = 0`, `∂EPI/∂t` is undefined, so a sequence
-  must start with a generator `{AL, NAV, REMESH}` (U1a) and end in a coherent attractor
-  `{SHA, NAV, REMESH, OZ}` (U1b).
-- **U2 — Convergence & boundedness.** Because `∫νf·ΔNFR dt` must converge, any
+- **U1 — Initiation & closure.** A standalone sequence must start with a generator
+  `{AL, NAV, REMESH}` (U1a) and end with a closure `{SHA, NAV, REMESH, OZ}` (U1b).
+  These are operator-history contracts: the nodal derivative is defined at `EPI=0`
+  for finite capacity and pressure. Context-aware execution may extend existing history.
+- **U2 — Convergence & boundedness.** The stabilization policy requires that any
   destabilizer `{OZ, ZHIR, VAL}` requires a stabilizer `{IL, THOL}`. The max
-  uncompensated-destabilizer debt is the **relaxation absorption capacity**
-  `⌊1/(νf·dt·ρ)⌋ = 2` (the same pulse relaxation as the U4b window, read as a
-  capacity not a time; `derive_u2_debt_capacity_from_physics`). Specialized
+  uncompensated-destabilizer debt is the configured **relaxation absorption capacity**
+  `⌊1/(νf·dt·ρ)⌋ = 2` under canonical mean-rate calibration
+  (`derive_u2_debt_capacity_from_physics`), not a graph-uniform absorption theorem. Specialized
   sub-rule: REMESH combined with a destabilizer also requires `{IL, THOL}` (recursive
   amplification control).
 - **U3 — Resonant coupling.** Coupling/resonance `{UM, RA}` require phase compatibility
   `|φᵢ − φⱼ| ≤ Δφ_max` (antiphase is destructive).
 - **U4 — Bifurcation dynamics.** (a) Triggers `{OZ, ZHIR}` need handlers `{THOL, IL}`.
   (b) Transformers `{ZHIR, THOL}` need a recent destabilizer within the **structural-relaxation
-  window** — derived from the pulse (the discrete steps for a `ΔNFR` perturbation to relax into
-  the coherence band `1/(π+1)`; canonically 3 ops, **one window for every destabilizer** —
-  `derive_bifurcation_window_from_physics`, no `e`, no magic constant); ZHIR also needs a prior
+  window** — canonically 3 ops, **one window for every destabilizer**,
+  calibrated by a mean-rate relaxation surrogate to the band `1/(π+1)`
+  (`derive_bifurcation_window_from_physics`). Individual graph modes can take
+  substantially longer to relax; this recency policy is not a universal decay time.
+  ZHIR also needs a prior
   IL (stable base).
 - **U5 — Multi-scale coherence.** Nested EPIs require stabilizers at each level;
-  `C_parent ≥ α · Σ C_child`.
+  `C_parent ≥ α · Σ C_child` is a hierarchy-dependent target requiring a specified α and normalization.
 - **U6 — Structural potential confinement.** Telemetry safety: monitor `Δ Φ_s < π/2 ≈ 1.571`
-  (half phase-wrap; `Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²`). Read-only check, not a sequence constraint.
+  (selected half-wrap threshold; `Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²`). This compares
+  potential with a reference state; it is a read-only check, not a sequence constraint
+  or a graph-independent bound on source aggregation.
 
 **Single source of truth.** The operator-classification sets (generators, closures,
 stabilizers `{IL, THOL}`, destabilizers `{OZ, ZHIR, VAL}`, transformers `{ZHIR, THOL}`)
@@ -379,7 +413,7 @@ in [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.
 ## 7. Telemetry & metrics
 
 - **C(t) — total coherence** `[0,1]`, the primary stability indicator:
-  `C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|)`, derived from the nodal equation
+  `C(t) = 1 / (1 + mean|ΔNFR| + mean|dEPI|)`, the canonical nodal read-out
   (equilibrium → `C → 1`). Strong coherence `C > π/(π+1) ≈ 0.7585`; fragmentation
   risk `C < 1/(π+1) ≈ 0.2415`. The two cuts are the coherence band
   `[1/(π+1), π/(π+1)]` — the single structural quantity `1/(π+1)` and its complement
@@ -396,11 +430,11 @@ in [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.
   excellent; `Si < 0.4` bifurcation-prone. Unlike `C(t)`, Si is a **heuristic
   composite** (weighted νf, phase sync, |ΔNFR|) — predictive/diagnostic, **not**
   constitutive of NFR-hood.
-- **Tetrad safety** (telemetry; see §3): only `|K_φ| < 0.9·π ≈ 2.827` is a genuine
-  geometric bound (phase wrap). `Δ Φ_s < π/2 ≈ 1.571` / `|Φ_s| < π/4 ≈ 0.785` are π-derived
-  (phase-wrap fractions); the `|∇φ|` sync onset is `≈ 0.29` (σ-dependent, not a fixed
-  constant); `ξ_C` is set by the spectral
-  gap `λ₂` (`ξ_C ∝ 1/√λ₂`).
+- **Tetrad safety** (telemetry; see §3): `|∇φ|≤π` and `|K_φ|≤π` are phase-wrap
+  bounds. The curvature margin `0.9·π`, U6 drift `π/2` and potential magnitude
+  `π/4` are selected safety policies. The measured synchronization onset `≈0.29`
+  depends on the experiment; fitted `ξ_C` and the spectral fallback `1/√λ₂`
+  must be reported with their respective scope.
 
 Required telemetry must stay in TNFR-coherent terms (C(t), Si, phase, νf, and the
 tetrad), in Hz_str units. Computation: [src/tnfr/physics/fields.py](src/tnfr/physics/fields.py),
@@ -520,7 +554,7 @@ program history** (the full milestone/gap/branch threads live in the notes).
 |---------|--------|-----------|
 | **TNFR-Riemann** | `σ_c → ½` numerically verified; ζ↔L attack surface shipped (P12–P49). The bridge to RH is the open conjecture **T-HP** (gap G4), paused at the oscillatory residue `S(T) = (1/π)·arg ζ(½+iT)`. | [TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
 | **REMESH-∞ closure** | The 13-operator catalog is closed under the `τ_g → ∞` limit (N15, Branch A); universality is structural/operational, not spectral. | [REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) |
-| **TNFR-Navier–Stokes** | The two-face reading: incompressible NS is first-order, so its *linear* part is the **diffusive (over-damped) projection** of the substrate wave (`ν_f = ν`; `verify_diffusive_face` VALID for every physical viscosity) — blow-up is a purely **nonlinear `K_φ` cascade** (the vortex-stretching VAL source), not a linear resonance. Measured: peak enstrophy debt grows with Re at matched `τ_str = ν·t` (bounded at fixed Re — the diffusive face regularises); the `Re → ∞` cascade bound = Clay, **open**. Closes nothing. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
+| **TNFR-Navier–Stokes** | The two-face reading: incompressible NS is first-order, so its *linear* part is the **diffusive (over-damped) projection** of the separate graph-wave model (`ν_f = ν`; `verify_diffusive_face` VALID for every physical viscosity) — blow-up is a purely **nonlinear `K_φ` cascade** (the vortex-stretching VAL source), not a linear resonance. Measured: peak enstrophy debt grows with Re at matched `τ_str = ν·t` (bounded at fixed Re — the diffusive face regularises); the `Re → ∞` cascade bound = Clay, **open**. Closes nothing. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
 | **Number theory** | Primality as `ΔNFR = 0` (canonical **unit** coefficients, §4.2 coefficient independence); arithmetic structural triad; the arithmetic network as an NFR (multinodal topology + emergent symplectic geometry); the cyclotomy law `s_k(p) = gcd(k, p−1) + 1` (proved), read as the **arithmetic pulse** (the residue-NFR's tone-count — a prime is its most degenerate chord). | [TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) |
 | **Structural research program (R1–R9)** | Nine internal lines on the arithmetic/spectral dynamics, refined by the post-review roadmap (N00–N13): symmetry-sector observability with **word-composition closure and pointed selectors** (R1, N06/N07 **derived**; cross-operator cache leak fixed, N01); the arithmetic pulse recurrence `gcd(k,p−1)+1` plus **amplitudes `= m_λ/n`** (R2, N12 **derived**); CRT as U5 synthesis (R3, exact Kronecker); the projective p-adic tower — transport exact, **REMESH is a morphism not an operator** (R4/N09, the static lift fails only the temporal echo); finite/Gaussian fields with the exact **trace-collision** character formula (R5, N10; type detection still k-sensitive); controlled additive theory (R6, additive reading **= Fourier**, constructive negative); the arithmetic-pressure audit — sufficient, functionally independent, **primality-redundant**, completeness open (R7/N02); operator certification plus a **structural-morphism taxonomy derived from the nodal equation** (R8/N08, 6 of 7 kinds emerge as nodal-flow transports — no 14th operator); directed non-normal dynamics — metric layer, scalar-`ν_f` **clock-change theorem**, transient U2/U6 (per-node contraction; the ambient `>1` is the `‖Q‖` projection artifact) and the heterogeneous-`ν_f` boundary (R9, N03–N05/N13). The canonical U2 metric stays **open** and U2/U6 are **unmodified**. None closes an open problem. | [RESEARCH_R1_R9_HANDOFF_2026-09-05.md](theory/RESEARCH_R1_R9_HANDOFF_2026-09-05.md) |
 | **Millennium reformulations** | P vs NP, BSD, Hodge, Yang–Mills: TNFR-internal structural reformulations and diagnostics — none a proof. | `theory/TNFR_*_RESEARCH_NOTES.md` |

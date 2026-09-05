@@ -4,9 +4,11 @@ This module provides optimized NumPy implementations of structural field computa
 to replace slow Python loops in canonical.py.
 """
 
+import math
 from typing import Any
 
 from ..mathematics.unified_numerical import np
+from ._helpers import compensated_sum
 
 try:
     import networkx as nx
@@ -22,9 +24,7 @@ def compute_phi_s_exact_vectorized(
     dtype: type = np.float64,
     distance_matrix: np.ndarray | None = None,
 ) -> dict[Any, float]:
-    """Vectorized exact Φ_s computation."""
-    n = len(nodes)
-    node_to_idx = {node: i for i, node in enumerate(nodes)}
+    """Exact-distance Φ_s, with compensated rows for signed pressure."""
 
     # Get adjacency matrix or distance matrix
     # For small N, Floyd-Warshall is fine
@@ -45,27 +45,36 @@ def compute_phi_s_exact_vectorized(
         # For N < 500, FW is fast.
         return _compute_phi_s_exact_python_fallback(G, nodes, delta_nfr, alpha, dtype)
 
-    # Handle infinity (disconnected)
-    D[np.isinf(D)] = 1e9  # Large number to make potential ~0
-
+    # Cast before exponentiation so a genuinely extended dtype retains its
+    # intermediate range as well as its accumulator precision.
+    D = np.asarray(D, dtype=dtype)
     # Mask diagonal (self-interaction)
     np.fill_diagonal(D, np.inf)
 
     # Compute potential
     # Φ_i = Σ_j ΔNFR_j / D_ij^α
 
-    # Inverse distance matrix
-    # Avoid division by zero (diagonal is inf)
-    with np.errstate(divide="ignore"):
-        inv_D = 1.0 / (D**alpha)
-
-    # Fix diagonal (1/inf = 0)
-    inv_D[np.isinf(D)] = 0.0
+    # Only reachable, positive distances contribute, as in the scalar kernel.
+    # A finite substitute for infinity invents cross-component interaction.
+    valid_distances = np.isfinite(D) & (D > 0.0)
 
     # ΔNFR vector
     dnfr_vec = np.array([delta_nfr[node] for node in nodes], dtype=dtype)
 
+    if np.any(dnfr_vec < 0.0) and np.any(dnfr_vec > 0.0):
+        # A dot product may lose a residual such as 1e30 + 1 - 1e30.
+        # Use the same compensated reduction as streamed BFS/Dijkstra.
+        return {
+            node: compensated_sum(
+                dnfr_vec[valid_distances[i]] / D[i, valid_distances[i]] ** alpha,
+                dtype=dtype,
+            )
+            for i, node in enumerate(nodes)
+        }
+
     # Matrix-vector product
+    inv_D = np.zeros_like(D, dtype=dtype)
+    inv_D[valid_distances] = 1.0 / (D[valid_distances] ** alpha)
     phi_vec = inv_D @ dnfr_vec
 
     return {node: float(phi_vec[i]) for i, node in enumerate(nodes)}
@@ -76,12 +85,12 @@ def _compute_phi_s_exact_python_fallback(G, nodes, delta_nfr, alpha, dtype):
     potential = {}
     for src in nodes:
         lengths = nx.single_source_dijkstra_path_length(G, src, weight="weight")
-        total = dtype(0.0)
-        for dst, d in lengths.items():
-            if dst == src or d <= 0:
-                continue
-            total += dtype(delta_nfr[dst] / (d**alpha))
-        potential[src] = float(total)
+        contributions = (
+            dtype(delta_nfr[dst]) / dtype(distance) ** alpha
+            for dst, distance in lengths.items()
+            if dst != src and math.isfinite(distance) and distance > 0.0
+        )
+        potential[src] = compensated_sum(contributions, dtype=dtype)
     return potential
 
 
@@ -93,128 +102,62 @@ def compute_phi_s_landmarks_vectorized(
     landmarks: list[Any],
     landmark_distances: dict[Any, dict[Any, float]],
     dtype: type = np.float64,
+    *,
+    reverse_landmark_distances: dict[Any, dict[Any, float]] | None = None,
 ) -> dict[Any, float]:
-    """Vectorized landmark approximation for Φ_s."""
+    """Approximate Φ_s with paths ``d(i, landmark) + d(landmark, j)``.
+
+    For positive edge lengths these are upper bounds on shortest-path
+    distances. They do not certify relative potential error for signed ΔNFR.
+    A pair without a path through any selected landmark contributes zero;
+    disconnected components never exchange an artificial source.
+
+    ``landmark_distances`` contains outgoing distances from each landmark.
+    On directed graphs the reverse maps supply distances to each landmark;
+    they are computed here when the optional maps are omitted. Scalar and
+    vectorized callers therefore use the same outgoing-path convention.
+    """
     num_nodes = len(nodes)
-    num_landmarks = len(landmarks)
-    node_to_idx = {n: i for i, n in enumerate(nodes)}
+    if not nodes:
+        return {}
+    if not landmarks:
+        return {node: 0.0 for node in nodes}
+    if reverse_landmark_distances is None:
+        if G.is_directed():
+            reverse = G.reverse(copy=False)
+            reverse_landmark_distances = {
+                node: nx.single_source_dijkstra_path_length(reverse, node, weight="weight")
+                for node in landmarks
+            }
+        else:
+            reverse_landmark_distances = landmark_distances
 
-    # 1. Build Landmark Distance Matrix D_L (L x N)
-    D_L = np.zeros((num_landmarks, num_nodes), dtype=dtype)
+    outward = np.asarray([
+        [landmark_distances[landmark].get(node, np.inf) for node in nodes]
+        for landmark in landmarks
+    ], dtype=dtype)
+    inward = np.asarray([
+        [reverse_landmark_distances[landmark].get(node, np.inf) for node in nodes]
+        for landmark in landmarks
+    ], dtype=dtype)
+    pressure = np.asarray([delta_nfr[node] for node in nodes], dtype=dtype)
+    potential = np.zeros(num_nodes, dtype=dtype)
 
-    for i, l in enumerate(landmarks):
-        dists = landmark_distances[l]
-        # Fill row
-        # We iterate nodes to ensure order
-        # Optimization: use map/array creation if dists is complete
-        # But dists might be sparse if disconnected?
-        # Assuming connected component or handling inf
-
-        # Vectorized fill
-        # Create a temporary array filled with inf
-        row = np.full(num_nodes, np.inf, dtype=dtype)
-
-        # We need to map node IDs to indices efficiently
-        # Doing this in a loop is slow.
-        # Better: iterate over dists items
-        for n, d in dists.items():
-            if n in node_to_idx:
-                row[node_to_idx[n]] = d
-
-        D_L[i, :] = row
-
-    # 2. Prepare vectors
-    dnfr_vec = np.array([delta_nfr[n] for n in nodes], dtype=dtype)
-    phi_vec = np.zeros(num_nodes, dtype=dtype)
-
-    # 3. Chunked Computation
-    batch_size = 200  # Tunable
-
-    for start_idx in range(0, num_nodes, batch_size):
-        end_idx = min(start_idx + batch_size, num_nodes)
-        batch_len = end_idx - start_idx
-
-        # D_L_src: (L, B)
-        D_L_src = D_L[:, start_idx:end_idx]
-
-        # D_L_dst: (L, N)
-        D_L_dst = D_L
-
-        # Approx dist: |D_L_src - D_L_dst|
-        # Shape: (L, B, N)
-        # Broadcasting: (L, B, 1) - (L, 1, N)
-        # Note: D_L contains infs. inf - inf = nan.
-        # We need to handle this.
-
-        # Mask infs
-        # If either is inf, approx dist is inf (disconnected)
-        # We can replace inf with a large number for subtraction?
-        # No, |inf - 5| = inf. |inf - inf| = nan.
-        # Let's use 1e9 for inf.
-
-        D_L_src_safe = np.where(np.isinf(D_L_src), 1e9, D_L_src)
-        D_L_dst_safe = np.where(np.isinf(D_L_dst), 1e9, D_L_dst)
-
-        diff = np.abs(D_L_src_safe[:, :, None] - D_L_dst_safe[:, None, :])
-
-        # Min over landmarks: (B, N)
-        approx_dist = np.min(diff, axis=0)
-
-        # Restore infs where approx_dist is large (meaning disconnected)
-        # If approx_dist > 1e8, treat as inf
-        # But wait, if both are 1e9, diff is 0.
-        # If one is 1e9, diff is ~1e9.
-        # If both are 1e9 (disconnected from landmark), diff is 0.
-        # This implies distance 0 between two disconnected nodes? WRONG.
-        # If both are disconnected from landmark, we have NO INFO from that landmark.
-        # We should ignore that landmark.
-        # But we take MIN over landmarks.
-        # If all landmarks are disconnected, we have a problem.
-        # Assuming graph is connected for now (standard TNFR assumption).
-
-        # Clamp to 1.0 to avoid zero division
-        approx_dist = np.maximum(approx_dist, 1.0)
-
-        # Inverse power
-        inv_dist = 1.0 / (approx_dist**alpha)
-
-        # Mask self-interaction
-        # Global indices for batch rows: start_idx + i
-        # We want inv_dist[i, start_idx + i] = 0
-        rows = np.arange(batch_len)
-        cols = np.arange(start_idx, end_idx)
-        inv_dist[rows, cols] = 0.0
-
-        # Compute approximate potential
-        phi_batch = inv_dist @ dnfr_vec
-
-        # 4. Landmark Corrections
-        for l_idx, l_node in enumerate(landmarks):
-            global_l_idx = node_to_idx[l_node]
-
-            # Subtract approx term
-            approx_term = inv_dist[:, global_l_idx] * delta_nfr[l_node]
-            phi_batch -= approx_term
-
-            # Add exact term
-            d_exact = D_L_src[l_idx, :]  # (B,)
-
-            # Handle self-interaction (if src is the landmark)
-            # d_exact is 0.0 there.
-            # We want term to be 0.0.
-
-            # Safe inverse
-            with np.errstate(divide="ignore"):
-                term_exact = delta_nfr[l_node] / (d_exact**alpha)
-
-            # Fix infs (div by zero or disconnected)
-            term_exact[np.isinf(term_exact)] = 0.0
-
-            phi_batch += term_exact
-
-        phi_vec[start_idx:end_idx] = phi_batch
-
-    return {n: float(phi_vec[i]) for i, n in enumerate(nodes)}
+    # A two-dimensional working block avoids the old L x batch x N tensor.
+    # Infinity remains infinity throughout, including for unreachable pairs.
+    batch_size = 200
+    for start in range(0, num_nodes, batch_size):
+        end = min(start + batch_size, num_nodes)
+        distances = np.full((end - start, num_nodes), np.inf, dtype=dtype)
+        for index in range(len(landmarks)):
+            through_landmark = inward[index, start:end, None] + outward[index, None, :]
+            np.minimum(distances, through_landmark, out=distances)
+        distances[np.arange(end - start), np.arange(start, end)] = np.inf
+        valid = np.isfinite(distances) & (distances > 0.0)
+        inverse = np.zeros_like(distances)
+        inverse[valid] = 1.0 / distances[valid] ** alpha
+        potential[start:end] = inverse @ pressure
+    return {node: float(potential[index]) for index, node in enumerate(nodes)}
 
 
 def compute_vf_variance_vectorized(

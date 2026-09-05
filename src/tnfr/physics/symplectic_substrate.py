@@ -1,151 +1,46 @@
-r"""TNFR Emergent Symplectic Substrate — the geometry the dynamics generates.
+r"""TNFR symplectic substrate: geometry of the specified harmonic model.
 
-This module establishes, as a first-class canonical object, the **symplectic
-phase space that emerges from the TNFR nodal dynamics itself** — rather than
-being imposed externally like the underlying graph. It is the substrate on
-which the nodal equation, the conservation laws, and the 13 operators all
-live as intrinsic geometric structures.
+The ambient space is R^(4N), with two coordinate pairs per node:
 
-MOTIVATION (substrate from emergence, not imposition)
-=====================================================
-TNFR computes its fields on a *graph* G — an imposed combinatorial
-substrate. But the Structural Conservation Theorem
-(:mod:`tnfr.physics.conservation`) and the Variational Principle
-(:mod:`tnfr.physics.variational`) reveal that the nodal dynamics carries
-its **own** geometry: a symplectic phase space with canonical conjugate
-pairs. This module makes that emergent geometry explicit and primary.
+    (q_A, p_A) = (K_phi, J_phi),
+    (q_B, p_B) = (Phi_s, J_DNFR).
 
-THE EMERGENT PHASE SPACE
-========================
-From the conservation-law structure, every node carries two canonical
-conjugate pairs (position ↔ momentum):
+Initial coordinates are extracted through canonical and extended field
+functions. The model assigns the constant form
 
-    Geometric sector:  (q^A, p^A) = (K_φ,  J_φ)       curvature ↔ phase current
-    Potential  sector: (q^B, p^B) = (Φ_s,  J_ΔNFR)    potential ↔ ΔNFR flux
+    omega = sum(dq_A wedge dp_A + dq_B wedge dp_B)
 
-So the phase space is P = ℝ^{4N} for an N-node network, with coordinates
-z = (K_φ, J_φ, Φ_s, J_ΔNFR) per node. **These coordinates are derived from
-canonical field functions** — this module never recomputes them, it
-delegates to :mod:`tnfr.physics.canonical` and :mod:`tnfr.physics.extended`.
+and H_sub=0.5*sum(q_A**2+p_A**2+q_B**2+p_B**2). Its flow is the harmonic
+rotation q'=p, p'=-q. Adding the held-fixed |grad_phi| background reproduces
+the full structural energy readout at the extracted point.
 
-THE SYMPLECTIC FORM
-===================
-The emergent symplectic 2-form (named in :mod:`tnfr.physics.variational`):
+VERIFIED SCOPE
+===============
+The constant form, Poisson brackets, Liouville theorem, sector Noether charges,
+compatible flat metric/complex structure, and harmonic-flow invariants are
+properties of this specified ambient model. Initial extraction from a graph
+does not establish that every ambient point remains realizable by graph
+fields, or that the 13 nonlinear engine operators are symplectomorphisms.
+Their local derivatives can be checked with symplectic_pullback_residual;
+field snapshots alone cannot certify a transformation.
 
-    ω = Σ_i [ dK_φ(i) ∧ dJ_φ(i) + dΦ_s(i) ∧ dJ_ΔNFR(i) ].
+The positive-energy diagonal U(1) reduction has dimension 4N-2 and global
+quotient CP^(2N-1). A certificate tests its horizontal tangent form, not global
+flatness. At zero energy the level and quotient are a point; the regular-level
+theorem is not applicable. Action-angle coordinates are local and their angles
+are undefined at zero actions.
 
-In the per-node basis (q^A, p^A, q^B, p^B) its matrix is block-diagonal
-with N copies of the canonical block
+UNRESOLVED MODEL BRIDGE
+=======================
+No equivalence between the isotropic q''=-q flow and the full nodal dynamics is
+certified here. The separately implemented graph wave has q''=-L_rw*q, and its
+overdamped limit yields graph diffusion under explicit damping assumptions.
+That valid limit does not derive this module's Hamiltonian from the nodal
+pressure, nor establish DeltaNFR=-dV/dEPI for the tetrad potential. These
+geometric calculations do not settle an open arithmetic or fluid problem.
 
-    J₄ = [[ 0, 1, 0, 0],
-          [-1, 0, 0, 0],
-          [ 0, 0, 0, 1],
-          [ 0, 0,-1, 0]].
-
-Verified properties (all exact): **antisymmetric** (J₄ᵀ = −J₄),
-**non-degenerate** (det J₄ = 1), **closed** (dω = 0, constant
-coefficients).
-
-CANONICAL POISSON BRACKETS
-==========================
-The symplectic form induces the canonical bracket
-{f, g} = (∇f)ᵀ J (∇g), giving
-
-    {q^A_i, p^A_j} = δ_ij,   {q^B_i, p^B_j} = δ_ij,
-    {q, q} = {p, p} = 0,     {A-sector, B-sector} = 0.
-
-The Jacobi identity holds (constant J), so (P, {·,·}) is a Poisson
-manifold.
-
-THE HAMILTONIAN IS THE ENERGY FUNCTIONAL
-========================================
-The generator of the flow is the canonical TNFR energy (the same
-:func:`tnfr.physics.conservation.compute_energy_functional`). Its
-symplectic core — the part living on the conjugate pairs — is
-
-    H_sub = ½ Σ_i [ K_φ² + J_φ² + Φ_s² + J_ΔNFR² ].
-
-(The remaining ½Σ|∇φ|² term of the full energy is a configuration-space
-background potential — it has no conjugate momentum and is not part of the
-symplectic core.) The Hamiltonian flow X_H = J ∇H reproduces the harmonic
-canonical dynamics q̇ = p, ṗ = −q per sector.
-
-LIOUVILLE'S THEOREM (structural)
-================================
-Every Hamiltonian flow on this substrate is volume-preserving, for a
-structural reason: div(X_H) = tr(J · Hess H) = 0 because J is
-antisymmetric and the Hessian is symmetric. This is the geometric origin
-of why the 13 operators preserve phase-space volume (they are
-**symplectomorphisms** — verified by
-:func:`tnfr.physics.variational.check_symplectic_preservation`).
-
-THE COMPLETE GEOMETRIC TOWER
-============================
-On this substrate the entire classical Hamiltonian-geometry tower is
-derived from the nodal dynamics — each structure has a certificate
-dataclass (full detail in its docstring) and a ``verify_*`` function, and
-:func:`verify_substrate_geometry` runs them all at once:
-
-1. **Symplectic / Poisson / Liouville**
-   (:class:`CanonicalStructureCertificate`,
-   :func:`verify_canonical_structure`) — ω closed & non-degenerate,
-   canonical brackets, Jacobi, div(X_H)=0.
-2. **Noether charges** (:class:`NoetherChargeCertificate`,
-   :func:`verify_noether_conservation`) — H_sub = E_geo + E_pot splits
-   exactly; the geometric U(1) charge ½Σ|Ψ|² is the gauge invariant of
-   :mod:`tnfr.physics.gauge`.
-3. **Hermitian / flat Kähler** (:class:`HermitianStructureCertificate`,
-   :func:`verify_hermitian_structure`) — compatible triple (ω, J=−ω, g=I);
-   the complex coordinate ζ^A = K_φ + i·J_φ **is** the gauge field Ψ, so
-   H_sub = ½Σ|ζ|² is the Kähler potential.
-4. **Complete integrability** (:class:`IntegrabilityCertificate`,
-   :func:`verify_integrability`) — action–angle variables I = ½|ζ|²
-   (2N integrals in involution); the flow is Liouville–Arnold integrable.
-5. **Poincaré–Cartan invariants** (:class:`PoincareCartanCertificate`,
-   :func:`verify_poincare_cartan`) — the flow preserves the whole ω^k
-   tower; ∮ p dq = 2π I (Bohr–Sommerfeld) on the action torus.
-6. **Marsden–Weinstein reduction** (:class:`MarsdenWeinsteinCertificate`,
-   :func:`verify_symplectic_reduction`) — moment map J = H_sub; the
-   quotient P//U(1) is a symplectic manifold of dimension 4N − 2.
-
-THE NODAL EQUATION LIVES HERE
-=============================
-The nodal equation ∂EPI/∂t = νf·ΔNFR(t) is the **overdamped projection**
-of the Hamiltonian flow on this substrate (Variational Principle §3.4),
-with ΔNFR = −∂V/∂EPI the negative functional gradient of the structural
-potential. The substrate is therefore not an analogy bolted on after the
-fact: it is the geometric arena the nodal equation already inhabits.
-
-HONEST SCOPE
-============
-- This module makes EXPLICIT and verifies the emergent symplectic
-  structure already implied by conservation.py and variational.py. It is
-  a *canonical consolidation*, not a new physical postulate.
-- The phase-space coordinates are derived from existing canonical fields;
-  no field formula is duplicated or redefined.
-- The symplectic form, brackets, Liouville theorem, operator
-  symplectomorphism, Noether charges, Hermitian (ω, J, g) compatibility,
-  action–angle integrability, Poincaré–Cartan invariants, and the
-  Marsden–Weinstein reduction are EXACT structural results.
-- The Kähler / integrability / reduction results are for the **flat**
-  (constant-coefficient) substrate and its **H_sub harmonic backbone** —
-  a flat linear symplectic space, NOT a curved manifold, and NOT the full
-  nonlinear operator dynamics (the 13 operators are canonical transforms
-  *on* this substrate).
-- The nodal-equation correspondence is the established overdamped limit
-  of the variational principle (cited, not re-derived numerically).
-- This does NOT, by itself, resolve any open program (Riemann G4, NS).
-  It is foundational geometry: the substrate from which the canonical
-  structures derive.
-
-References
-----------
-- :mod:`tnfr.physics.variational` — Lagrangian/Hamiltonian, symplectic 2-form
-- :mod:`tnfr.physics.conservation` — conjugate pairs, energy, Noether charge
-- :mod:`tnfr.physics.gauge` — U(1) gauge structure of Psi = K_phi + i*J_phi
-- theory/TNFR_VARIATIONAL_PRINCIPLE.md — full derivation
-- AGENTS.md §"Emergent Symplectic Substrate (CANONICAL)" — the full tower
-- AGENTS.md §"Minimal Structural Degrees of Freedom" — why the tetrad
+References: theory/TNFR_VARIATIONAL_PRINCIPLE.md and
+ docs/audits/SECOND_AUDIT_CERTIFICATES_2026-09-05.md.
 """
 
 from __future__ import annotations
@@ -177,6 +72,7 @@ __all__ = [
     "SubstrateGeometryReport",
     "extract_phase_space_point",
     "symplectic_form_matrix",
+    "symplectic_pullback_residual",
     "complex_structure_matrix",
     "compatible_metric_matrix",
     "substrate_hamiltonian",
@@ -518,16 +414,15 @@ class IntegrabilityCertificate:
     The actions are pairwise in involution ({I_i, I_j} = 0, structural — the
     conjugate pairs are decoupled), conserved along the flow, and the
     conjugate **angle variables** θ_i = arg ζ_i advance linearly
-    θ_i(t) = θ_i(0) − t.  So (I_i, θ_i) are global action–angle coordinates
+    θ_i(t) = θ_i(0) − t where I_i>0. These are local action–angle coordinates
     in which the harmonic backbone is trivial (a rigid phase rotation per
     pair).  The sector action sums recover the Noether charges
     (Σ I^A = E_geo, Σ I^B = E_pot).
 
     HONEST SCOPE: this is the integrability of the *substrate harmonic
     backbone* (the H_sub flow), not of the full nonlinear operator dynamics.
-    The 13 operators act as canonical transformations that redistribute the
-    action variables; the actions are the adiabatic invariants of that
-    backbone.
+    This certificate does not establish canonical transformations for the
+    13 nonlinear operators. The actions belong to this harmonic backbone.
 
     Attributes
     ----------
@@ -676,7 +571,7 @@ class PoincareCartanCertificate:
 
 @dataclass(frozen=True)
 class MarsdenWeinsteinCertificate:
-    r"""Verification of the Marsden–Weinstein symplectic reduction.
+    r"""Local reduction certificate with explicit regular-level scope.
 
     The substrate flow is the **diagonal U(1)** action ζ → e^{−it}ζ rotating
     every conjugate pair together (θ_k → θ_k − t for all k).  Its
@@ -684,22 +579,11 @@ class MarsdenWeinsteinCertificate:
     is exactly the Noether charge of time translation (so the symmetry that
     generates the flow is the symmetry one reduces by).
 
-    The Marsden–Weinstein quotient P//U(1) = J⁻¹(μ)/U(1) is built explicitly
-    in action–angle coordinates (m = 2·n_nodes conjugate pairs):
-
-    - **level set** J⁻¹(μ): Σ_k I_k = μ (codimension 1),
-    - **quotient** by the collective phase θ_0: the reduced coordinates are
-      the (m−1) independent actions and the (m−1) **relative phases**
-      φ_k = θ_k − θ_0, which are invariant under the diagonal U(1).
-
-    The reduced symplectic form is Σ_{k≥1} dI_k ∧ dφ_k — canonical and
-    **non-degenerate** — so the reduced space is a genuine symplectic
-    manifold of dimension 4N − 2.  (Reducing instead by the sector
-    U(1)×U(1) of :class:`NoetherChargeCertificate` gives 4N − 4.)
-
-    HONEST SCOPE: this reduces the **flat** substrate by its diagonal U(1)
-    flow symmetry; the reduced space is a flat linear symplectic space (the
-    relative-phase coordinates), not a curved reduced manifold.
+    At positive energy, the level is regular and the phase action is free.
+    The form is restricted to the horizontal tangent space perpendicular to
+    z and omega*z, of dimension 4N-2. Globally the quotient is CP^(2N-1),
+    not a flat linear space. At zero energy the level and quotient are a
+    single point; the regular-level certificate is not applicable.
 
     Attributes
     ----------
@@ -713,15 +597,21 @@ class MarsdenWeinsteinCertificate:
     moment_map_conserved : bool
         J is invariant along the flow (drift below tolerance).
     reduced_dimension : int
-        Dimension of P//U(1) = 4N − 2.
+        4N-2 at positive energy, 0 at the zero level.
     reduced_form_nondegenerate : bool
         The reduced symplectic form has non-zero determinant.
-    relative_phases_invariant : bool
-        φ_k = θ_k − θ_0 are invariant under the diagonal U(1) flow.
+    relative_phases_invariant : bool or None
+        Tested only between nonzero complex coordinates; None at zero level.
     max_moment_drift : float
         Max |J(t) − J(0)| over the sampled flow.
     reduced_form_determinant : float
-        Determinant of the reduced symplectic form (≠ 0 ⇒ symplectic).
+        Determinant in an orthonormal horizontal basis; NaN at zero level.
+    is_regular_level : bool
+        Whether J>0 and the regular-level theorem applies.
+    reduction_status : str
+        ``'regular_level'`` or ``'singular_zero_level'`` for computed results.
+    relative_phase_pairs : int
+        Number of defined relative phases checked, excluding the reference.
     """
 
     n_nodes: int
@@ -731,15 +621,19 @@ class MarsdenWeinsteinCertificate:
     moment_map_conserved: bool
     reduced_dimension: int
     reduced_form_nondegenerate: bool
-    relative_phases_invariant: bool
+    relative_phases_invariant: bool | None
     max_moment_drift: float
     reduced_form_determinant: float
+    is_regular_level: bool = False
+    reduction_status: str = "unverified"
+    relative_phase_pairs: int = 0
 
     @property
     def is_valid_reduction(self) -> bool:
-        """True when the reduction yields a valid symplectic quotient."""
-        return (
-            self.moment_map_is_hamiltonian
+        """True when this regular-level local certificate passes."""
+        return bool(
+            self.is_regular_level
+            and self.moment_map_is_hamiltonian
             and self.moment_map_conserved
             and self.reduced_form_nondegenerate
             and self.relative_phases_invariant
@@ -747,7 +641,9 @@ class MarsdenWeinsteinCertificate:
 
     def summary(self) -> str:
         """Human-readable one-line verdict."""
-        ok = "VALID" if self.is_valid_reduction else "INVALID"
+        ok = "VALID" if self.is_valid_reduction else self.reduction_status.upper()
+        if self.reduction_status == "regular_level" and not self.is_valid_reduction:
+            ok = "INVALID"
         return (
             f"Marsden–Weinstein [{ok}]: "
             f"P//U(1) dim {self.phase_space_dimension}→"
@@ -1014,6 +910,31 @@ def symplectic_form_matrix(n_nodes: int) -> Any:
         s = 4 * i
         omega[s : s + 4, s : s + 4] = BLOCK_SYMPLECTIC_FORM
     return omega
+
+
+def symplectic_pullback_residual(jacobian: Any, n_nodes: int) -> float:
+    r"""Return max |M.T @ omega @ M - omega| for a supplied tangent map.
+
+    Coordinates interleave (K_phi, J_phi, Phi_s, J_DNFR) at each node,
+    matching :meth:`PhaseSpacePoint.to_vector`. A zero residual establishes
+    symplecticity of this matrix; it does not establish that the matrix is the
+    derivative of a particular engine operator, or certify other states.
+
+    Raises ValueError for non-real, nonfinite, or incorrectly shaped input.
+    """
+    omega = symplectic_form_matrix(n_nodes)
+    if np.iscomplexobj(jacobian):
+        raise ValueError("jacobian must be a real matrix")
+    matrix = np.asarray(jacobian, dtype=float)
+    if matrix.shape != omega.shape:
+        raise ValueError(f"jacobian must have shape {omega.shape}")
+    if not np.all(np.isfinite(matrix)):
+        raise ValueError("jacobian must contain only finite values")
+    with np.errstate(over="ignore", invalid="ignore"):
+        difference = matrix.T @ omega @ matrix - omega
+    if not np.all(np.isfinite(difference)):
+        return float("inf")
+    return float(np.max(np.abs(difference)))
 
 
 def substrate_hamiltonian(point: PhaseSpacePoint) -> float:
@@ -1791,7 +1712,6 @@ def verify_poincare_cartan(
     """
     point = extract_phase_space_point(G)
     n = point.n_nodes
-    omega = symplectic_form_matrix(n)
 
     # --- 1st invariant: flow is symplectic, and tower via palindromic poly ---
     omega_drift = 0.0
@@ -1799,7 +1719,7 @@ def verify_poincare_cartan(
     volume_ok = True
     for t in flow_times:
         m = substrate_flow_matrix(n, t)
-        omega_drift = max(omega_drift, float(np.max(np.abs(m.T @ omega @ m - omega))))
+        omega_drift = max(omega_drift, symplectic_pullback_residual(m, n))
         det_err = abs(float(np.linalg.det(m)) - 1.0)
         volume_ok = volume_ok and det_err < tolerance
         coeffs = np.poly(m)
@@ -1872,7 +1792,7 @@ def diagonal_moment_map(point: PhaseSpacePoint) -> float:
 
 
 def reduced_symplectic_form_matrix(n_nodes: int) -> Any:
-    r"""Reduced symplectic form of P//U(1) in action–angle coordinates.
+    r"""Legacy local action-angle tangent-basis matrix at a regular level.
 
     Builds the Marsden–Weinstein reduced 2-form explicitly.  With
     m = 2·n_nodes conjugate pairs and ω = Σ_k dI_k ∧ dθ_k, the diagonal
@@ -1883,8 +1803,12 @@ def reduced_symplectic_form_matrix(n_nodes: int) -> Any:
     - quotienting by ξ (relative-phase directions b_k = dθ_k − dθ_0).
 
     The pullback Bᵀ Ω B of the full 2m×2m form Ω to this basis is the
-    reduced symplectic form, a (4N−2)×(4N−2) non-degenerate matrix
-    (det = (2N)² = m²) ⇒ the quotient is a symplectic manifold.
+    matrix has dimension (4N-2) and determinant (2N)^2. This is a
+    non-orthonormal tangent basis, not globally defined quotient coordinates.
+    It assumes positive actions and does not certify the regularity of a
+    supplied state. :func:`verify_symplectic_reduction` instead constructs
+    the horizontal tangent space at the actual point, including zero actions
+    on an otherwise regular positive-energy level.
 
     Parameters
     ----------
@@ -1924,13 +1848,16 @@ def verify_symplectic_reduction(
     flow_times: tuple[float, ...] = (0.5, 1.7, 3.0),
     tolerance: float = 1e-9,
 ) -> MarsdenWeinsteinCertificate:
-    r"""Verify the Marsden–Weinstein reduction of the substrate.
+    r"""Certify the local positive-energy reduction, or identify the zero level.
 
-    Confirms that the diagonal U(1) flow symmetry has moment map J = H_sub
-    (the time-translation Noether charge), that J is conserved, that the
-    reduced phase space P//U(1) has dimension 4N − 2 with a non-degenerate
-    reduced symplectic form, and that the relative phases φ_k = θ_k − θ_0
-    (the reduced coordinates) are invariant under the flow.
+    For J>0, restrict omega to the horizontal tangent space orthogonal to
+    z=grad(J) and omega*z (the orbit direction). This construction does not
+    use the angle of a zero complex coordinate. Relative phases are checked
+    only on nonzero pairs, relative to the largest-amplitude pair.
+
+    J=0 has a zero-dimensional quotient and is reported as a singular level;
+    it must not receive the regular 4N-2 certificate. Coordinates, tolerance,
+    and sampling times must be finite; tolerance must be positive.
 
     Parameters
     ----------
@@ -1946,14 +1873,43 @@ def verify_symplectic_reduction(
     """
     point = extract_phase_space_point(G)
     n = point.n_nodes
-
+    if not np.isfinite(tolerance) or tolerance <= 0.0:
+        raise ValueError("tolerance must be finite and positive")
+    if not all(np.isfinite(t) for t in flow_times):
+        raise ValueError("flow_times must be finite")
+    z = point.to_vector()
+    if not np.all(np.isfinite(z)):
+        raise ValueError("reduction requires finite phase-space coordinates")
     j0 = diagonal_moment_map(point)
+    if not np.isfinite(j0):
+        raise ValueError("moment map must be finite")
     is_hamiltonian = abs(j0 - substrate_hamiltonian(point)) < tolerance
+
+    if j0 == 0.0:
+        if np.any(z != 0.0):
+            raise ValueError("moment map underflow: rescale the coordinates")
+        return MarsdenWeinsteinCertificate(
+            n_nodes=n,
+            phase_space_dimension=4 * n,
+            moment_map_value=0.0,
+            moment_map_is_hamiltonian=is_hamiltonian,
+            moment_map_conserved=True,
+            reduced_dimension=0,
+            reduced_form_nondegenerate=False,
+            relative_phases_invariant=None,
+            max_moment_drift=0.0,
+            reduced_form_determinant=float("nan"),
+            is_regular_level=False,
+            reduction_status="singular_zero_level",
+        )
 
     # Moment-map conservation and relative-phase invariance along the flow.
     aa0 = to_action_angle(point)
     th0 = np.concatenate([aa0["angle_geometric"], aa0["angle_potential"]])
-    rel0 = np.angle(np.exp(1j * (th0 - th0[0])))
+    actions = np.concatenate([aa0["action_geometric"], aa0["action_potential"]])
+    active = actions > 0.0
+    reference = int(np.argmax(actions))
+    rel0 = th0[active] - th0[reference]
 
     moment_drift = 0.0
     phases_ok = True
@@ -1962,13 +1918,25 @@ def verify_symplectic_reduction(
         moment_drift = max(moment_drift, abs(diagonal_moment_map(evolved) - j0))
         aa = to_action_angle(evolved)
         th = np.concatenate([aa["angle_geometric"], aa["angle_potential"]])
-        rel = np.angle(np.exp(1j * (th - th[0])))
-        phases_ok = phases_ok and bool(np.allclose(rel, rel0, atol=1e-7))
-    moment_conserved = moment_drift < tolerance
+        rel = th[active] - th[reference]
+        phase_error = np.angle(np.exp(1j * (rel - rel0)))
+        phases_ok = phases_ok and bool(np.all(np.abs(phase_error) <= tolerance))
+    moment_conserved = moment_drift <= tolerance * max(1.0, abs(j0))
 
-    reduced = reduced_symplectic_form_matrix(n)
+    omega = symplectic_form_matrix(n)
+    normalized = z / np.max(np.abs(z))
+    normalized /= np.linalg.norm(normalized)
+    # The normal to J's level and the phase-orbit direction are orthonormal.
+    # Their common orthogonal complement represents the quotient tangent space.
+    _, _, vh = np.linalg.svd(
+        np.stack([normalized, omega @ normalized]), full_matrices=True
+    )
+    horizontal = vh[2:].T
+    reduced = horizontal.T @ omega @ horizontal
     det_reduced = float(np.linalg.det(reduced))
-    nondegenerate = abs(det_reduced) > tolerance
+    # In this orthonormal horizontal basis det(omega_reduced)=1 in exact
+    # arithmetic. Reuse the computed determinant instead of a second dense SVD.
+    nondegenerate = bool(np.isfinite(det_reduced) and abs(det_reduced) > tolerance)
 
     return MarsdenWeinsteinCertificate(
         n_nodes=n,
@@ -1981,6 +1949,9 @@ def verify_symplectic_reduction(
         relative_phases_invariant=phases_ok,
         max_moment_drift=moment_drift,
         reduced_form_determinant=det_reduced,
+        is_regular_level=True,
+        reduction_status="regular_level",
+        relative_phase_pairs=max(int(np.count_nonzero(active)) - 1, 0),
     )
 
 
@@ -2171,7 +2142,7 @@ def verify_polarization_symmetry(
     for i in range(n):
         b = 4 * i
         m_rot[b : b + 4, b : b + 4] = rot4
-    rotation_symplectic = bool(np.allclose(m_rot.T @ omega @ m_rot, omega))
+    rotation_symplectic = symplectic_pullback_residual(m_rot, n) <= tolerance
 
     # Conservation along the substrate flow.
     charge_drift = 0.0
@@ -2231,10 +2202,9 @@ class AdiabaticInvarianceCertificate:
     *adiabatic invariant*: the relative drift |ΔI|/I → 0 as the ramp slows
     (the adiabaticity parameter ε = ω̇/ω² → 0).  Fast ramps break it.
 
-    This measures the AGENTS.md statement "the actions are the adiabatic
-    invariants; the 13 operators are canonical transformations that
-    redistribute them": ν_f is the **clock**, and a slow ν_f ramp preserves
-    the action while a sudden one injects/extracts it.
+    This measures a slow frequency ramp of the specified oscillator. It does
+    not certify the 13 engine operators or derive a varying stiffness from a
+    change of the nodal clock.
 
     HONEST SCOPE: this is the adiabatic theorem for the substrate harmonic
     backbone with ν_f providing the slowly-varying frequency.  It is the

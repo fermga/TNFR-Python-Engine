@@ -1136,37 +1136,19 @@ class TNFREmergentPatternEngine:
         - discovered_patterns: list of pattern metadata
         - telemetry: coherence, sense_index, phase metrics
         - network_metadata: node count, edge count, structural metrics
+
+        The entries index references a graph payload beside the manifest.
+        Only finite built-in JSON state and scalar node IDs are supported;
+        runtime callbacks, arrays, RNG objects, and other unsupported state
+        raise ValueError rather than being serialized as misleading strings.
         """
-        import json
         from datetime import datetime, timezone
+        from ..manifest import collect_manifest_telemetry, write_manifest_bundle
 
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Compute telemetry metrics
-        telemetry = {}
-        try:
-            from ...physics import compute_coherence, compute_sense_index
-
-            telemetry["coherence"] = float(compute_coherence(G))
-            telemetry["sense_index"] = float(compute_sense_index(G))
-        except Exception:
-            telemetry["coherence"] = None
-            telemetry["sense_index"] = None
-
-        try:
-            from ...physics.fields import compute_structural_potential_field
-
-            phi_s_values = compute_structural_potential_field(G)
-            if phi_s_values:
-                telemetry["structural_potential_range"] = [
-                    float(min(phi_s_values.values())),
-                    float(max(phi_s_values.values())),
-                ]
-            else:
-                telemetry["structural_potential_range"] = None
-        except Exception:
-            telemetry["structural_potential_range"] = None
+        telemetry = collect_manifest_telemetry(G)
 
         # Extract network metadata
         node_count = len(G.nodes()) if hasattr(G, "nodes") else 0
@@ -1213,11 +1195,6 @@ class TNFREmergentPatternEngine:
             "predictive_accuracy": float(discovery_result.predictive_accuracy),
         }
 
-        # Write manifest
-        manifest_path = output_dir / "pattern_manifest.json"
-        with open(manifest_path, "w") as f:
-            json.dump(manifest, f, indent=2)
-
         # Write summary
         summary = {
             "operation_type": "pattern_discovery",
@@ -1228,14 +1205,10 @@ class TNFREmergentPatternEngine:
             "compression_potential": float(discovery_result.compression_potential),
             "predictive_accuracy": float(discovery_result.predictive_accuracy),
         }
-        summary_path = output_dir / "pattern_summary.json"
-        with open(summary_path, "w") as f:
-            json.dump(summary, f, indent=2)
-
-        return {
-            "manifest_absolute": manifest_path.resolve(),
-            "summary_absolute": summary_path.resolve(),
-        }
+        return write_manifest_bundle(
+            output_dir, "pattern_manifest.json", "pattern_summary.json",
+            manifest, summary, [(partition_id, G, telemetry)],
+        )
 
 
 # Factory functions for easy access

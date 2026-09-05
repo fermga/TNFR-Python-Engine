@@ -14,9 +14,11 @@ Physics-First Design:
 from __future__ import annotations
 
 from functools import lru_cache
+from types import SimpleNamespace
 from typing import Any, NamedTuple
 
-from ..validation.compatibility import CompatibilityLevel, get_compatibility_level
+from ..validation.compatibility import CompatibilityLevel
+from .grammar_types import glyph_function_name
 
 
 # Static sequence properties that can be safely memoized
@@ -25,7 +27,7 @@ class SequenceSignature(NamedTuple):
 
     glyph_names: tuple[str, ...]
     compatibility_level: str
-    epi_zero_start: bool
+    epi_zero_start: bool  # Initiation required, matching the canonical EPI > 0 rule.
 
     def __str__(self) -> str:
         sep = ",".join(self.glyph_names)
@@ -55,17 +57,21 @@ def create_sequence_signature(
     compatibility_level: CompatibilityLevel | None = None,
 ) -> SequenceSignature:
     """Create memoization signature from sequence parameters."""
-    # Extract glyph names (assume operators have .name attribute)
-    glyph_names = tuple(getattr(op, "name", str(op)) for op in sequence)
-
-    # Get compatibility level
-    if compatibility_level is None:
-        compatibility_level = get_compatibility_level()
+    glyph_names = tuple(
+        glyph_function_name(
+            getattr(op, "canonical_name", getattr(op, "name", op)), default=str(op)
+        )
+        for op in sequence
+    )
 
     return SequenceSignature(
         glyph_names=glyph_names,
-        compatibility_level=compatibility_level.name,
-        epi_zero_start=(abs(epi_initial) < 1e-9),
+        # Compatibility levels describe operator pairs, not global state.
+        # An explicit level remains cache metadata; it cannot relax U1-U6.
+        compatibility_level=(
+            compatibility_level.name if compatibility_level is not None else "canonical"
+        ),
+        epi_zero_start=not (epi_initial > 0.0),
     )
 
 
@@ -77,14 +83,11 @@ def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationR
     sequence structure and compatibility level - never on dynamic
     network state or operator history.
     """
-    from ..config.operator_names import (
-        CANONICAL_OPERATOR_NAMES,
-        VALID_END_OPERATORS,
-        VALID_START_OPERATORS,
-    )
+    from ..config.operator_names import CANONICAL_OPERATOR_NAMES
     from .grammar_types import (
         BIFURCATION_TRIGGERS,
         CLOSURES,
+        COUPLING_RESONANCE,
         DESTABILIZERS,
         GENERATORS,
         STABILIZERS,
@@ -128,18 +131,18 @@ def _validate_sequence_static(signature: SequenceSignature) -> StaticValidationR
     u1a_compliant = True
     if signature.epi_zero_start:
         # Starting from EPI=0 requires generator
-        if glyph_names[0] not in VALID_START_OPERATORS:
+        if glyph_names[0] not in GENERATORS:
             u1a_compliant = False
             errors.append("U1a violation: EPI=0 start requires generator")
 
     # U1b: End rule (static check)
-    u1b_compliant = glyph_names[-1] in VALID_END_OPERATORS
+    u1b_compliant = glyph_names[-1] in CLOSURES
     if not u1b_compliant:
         errors.append("U1b violation: Invalid closure operator")
 
     # U2, U3, U4 require dynamic checking (not cached)
     u2_needs_check = has_destabilizers
-    u3_needs_check = any(g in ["UM", "RA"] for g in glyph_names)  # Coupling/Resonance
+    u3_needs_check = any(g in COUPLING_RESONANCE for g in glyph_names)
     u4_needs_check = has_bifurcation_triggers or has_transformers
 
     return StaticValidationResult(
@@ -167,7 +170,18 @@ def validate_sequence_optimized(
     recent_destabilizers: list[str] | None = None,
     bifurcation_window: int | None = None,
 ) -> tuple[bool, list[str]]:
-    """Optimized sequence validation with memoization.
+    """Canonical sequence validation with a cached structural preflight.
+
+    Static syntax/initiation/closure failures can return from the cache. All
+    remaining grammar decisions delegate to :class:`GrammarValidator` on every
+    call so ordered U4b context and per-operator U5 metadata stay current.
+
+    ``compatibility_level`` remains cache metadata. ``recent_destabilizers`` and
+    ``bifurcation_window`` are retained for call compatibility; they cannot
+    substitute for the ordered sequence or override the canonical relaxation
+    window. ``graph`` requests a U3 reminder, not runtime phase certification:
+    the sequence does not specify target nodes, and operators enforce that gate
+    when applied. Canonical U6 is a separate graph-telemetry check.
 
     Returns
     -------
@@ -178,53 +192,23 @@ def validate_sequence_optimized(
     signature = create_sequence_signature(sequence, epi_initial, compatibility_level)
     static_result = _validate_sequence_static(signature)
 
-    messages = static_result.static_errors.copy()
-
     # Early return if static validation failed
     if static_result.static_errors:
-        return False, messages
+        return False, static_result.static_errors.copy()
 
-    # Dynamic validation (NEVER cached)
-    is_valid = True
+    from .grammar_core import GrammarValidator
 
-    # U2: Convergence & Boundedness (dynamic check)
-    if static_result.u2_needs_check:
-        if static_result.has_destabilizers and not static_result.has_stabilizers:
-            is_valid = False
-            messages.append("U2 violation: Destabilizers without stabilizers")
+    # Strings carry no extra metadata. Preserve real operator instances so
+    # changes such as REMESH depth remain visible even when the signature hits.
+    normalized = [
+        SimpleNamespace(name=name) if isinstance(op, str) else op
+        for op, name in zip(sequence, signature.glyph_names)
+    ]
+    is_valid, messages = GrammarValidator().validate(normalized, epi_initial)
 
-    # U3: Resonant Coupling (dynamic check - requires graph state)
+    # No node targets are available here for the runtime U3 phase gate.
     if static_result.u3_needs_check and graph is not None:
-        # This would need actual phase compatibility checking
-        # For now, just flag that dynamic check is needed
         messages.append("U3 check: Phase compatibility validation required")
-
-    # U4: Bifurcation Dynamics (dynamic check - requires history)
-    if static_result.u4_needs_check:
-        glyph_names = signature.glyph_names
-
-        # U4a: Triggers need handlers
-        if static_result.has_bifurcation_triggers and not static_result.has_stabilizers:
-            is_valid = False
-            messages.append("U4a violation: Bifurcation triggers without handlers")
-
-        # U4b: Transformers need context (dynamic - requires recent_destabilizers)
-        if static_result.has_transformers:
-            if "ZHIR" in glyph_names:  # Mutation
-                # Check for prior IL (can be static)
-                has_prior_il = any(g == "IL" for g in glyph_names[:-1])
-                if not has_prior_il:
-                    is_valid = False
-                    messages.append("U4b violation: ZHIR without prior IL")
-
-                # Check for recent destabilizer (dynamic)
-                if recent_destabilizers is None:
-                    msg = "U4b warning: Cannot verify recent destabilizer for" " ZHIR"
-                    messages.append(msg)
-                elif not recent_destabilizers:
-                    is_valid = False
-                    msg = "U4b violation: ZHIR without recent destabilizer"
-                    messages.append(msg)
 
     return is_valid, messages
 

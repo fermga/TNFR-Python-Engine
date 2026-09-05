@@ -1,228 +1,83 @@
-r"""TNFR Structural Diffusion — the transport content of the nodal equation.
+r"""Structural diffusion and scoped diagnostics for the nodal EPI channel.
 
-This module makes explicit, and verifies, that the TNFR nodal equation
+For a fixed, nonnegative adjacency W, let D contain its row strengths and
+L_rw = I - D^-1 W, with a zero row at an isolated node. The canonical EPI
+pressure is DeltaNFR_epi = -L_rw EPI. With the capacity vector nu_f, the
+isolated channel therefore evolves as
 
-    ∂EPI/∂t = νf · ΔNFR(t)
+    dEPI/dt = -A EPI,    A = diag(nu_f) L_rw.
 
-is **structurally a diffusion equation on the network**.  This is not an
-analogy imported from another paradigm: it is the literal content of the
-canonical ΔNFR computation.
+The full pressure also includes phase, frequency and topology channels.
+Wrapped circular phase averaging is nonlinear and is not this scalar
+Laplacian identity. These diagnostics hold the graph and capacity fixed;
+they do not integrate a changing canonical operator sequence.
 
-THE NODAL EQUATION IS GRAPH DIFFUSION
-=====================================
-The canonical ΔNFR (:func:`tnfr.dynamics.default_compute_delta_nfr`) is a
-weighted sum of *neighbour-mean-minus-self* gradients, one per structural
-channel (see :mod:`tnfr.dynamics.dnfr`):
+Transport and spectral scope
+----------------------------
+For symmetric adjacency and a common positive capacity nu, each mode
+decays at nu*lambda_k. A connected graph relaxes to a uniform field and
+conserves sum(d_i*EPI_i). With disconnected components, stationarity need
+not be globally uniform. With positive heterogeneous capacity the conserved
+weights are d_i/nu_i and the decay rates are eigenvalues of A; replacing
+capacity by its mean changes the dynamics. Zero capacity freezes a node
+even when its pressure is nonzero. Directed transport uses the actual
+nonsymmetric A; real eigenvalue parts describe asymptotic damping, without
+certifying normality or absence of transient growth.
 
-    g_epi(i)   = mean_{j∈N(i)} EPI(j) − EPI(i)
-    g_phase(i) = −angle_diff(θ(i), mean θ neighbours) / π
-    g_vf(i)    = mean νf(neighbours) − νf(i)
-    g_topo(i)  = mean deg(neighbours) − deg(i)
+The symmetric normalized Laplacian provides an orthonormal geometry basis
+only for symmetric adjacency. Its zero mode is proportional to sqrt(d)
+on a connected component, corresponding to a uniform EPI field after the
+degree-coordinate transformation. Finite dimension gives a finite spectrum;
+a nodal-domain upper bound does not imply monotonic domain counts for every
+graph or every basis of a degenerate eigenspace.
 
-Each ``neighbour-mean − self`` term is exactly the action of the
-**random-walk graph Laplacian** L_rw = I − D⁻¹W on that field:
+Adding a scalar reaction rate r gives real growth rates
+r - Re(eigenvalues(A)). On a connected homogeneous network the first
+nonuniform threshold is nu*lambda_2. This is a spatial-mode threshold,
+not a bound on all evolution: the uniform mode already grows for any r>0.
+The correspondence is a linear diagnostic, not a derivation of grammar U2
+for arbitrary sequences.
 
-    g_epi = −(L_rw · EPI)   (verified to machine precision).
+Drift, waves and certificates
+----------------------------
+Under held pressure F the nodal equation is the first-order mobility law
+q_dot = nu_f*F. The damped graph-wave model q_ddot + gamma*q_dot + L*q = 0
+has a slow diffusion limit with mobility 1/gamma. The wave-to-diffusion
+checks below concern that specified graph-wave model. They do not prove
+that the isotropic Hamiltonian implemented by symplectic_substrate, or all
+13 engine operators, induces that graph wave.
 
-So the EPI channel of the nodal equation is
+verify_structural_diffusion checks the canonical pressure on a replica and
+samples the actual frozen-capacity flow. It reports global uniformity and
+degree-weighted conservation separately from stationarity and the complete
+left-nullspace invariants of A. Finite-time residuals are diagnostics, not
+proofs of eventual convergence.
 
-    ∂EPI/∂t = νf · ΔNFR_epi = −νf · L_rw · EPI,
+Random walks and currents
+------------------------
+P = I - L_rw is row-stochastic, with an absorbing self-transition at an
+isolated node. For symmetric adjacency the degree distribution is
+stationary; convergence of a discrete walk additionally requires
+aperiodicity within an irreducible component. Resistance geometry requires
+symmetric nonnegative conductance. Disconnected pairs have infinite
+resistance and commute time; finite commute times use the volume of the
+pair's component.
 
-i.e. the **discrete diffusion (heat) equation** with diffusivity νf.  The
-structural form EPI spreads across the network exactly as heat or a
-concentration diffuses; ΔNFR is the diffusive gradient (the structural
-pressure) driving the flux, and νf is the mobility / diffusivity.
+For symmetric W, edge currents J_ij = W_ij*(EPI_i-EPI_j) have divergence
+(D-W)*EPI. At nodes with positive degree and capacity, the nodal continuity
+balance is (d_i/nu_i)*dEPI_i/dt + div(J)_i = 0. This EPI-channel identity
+is distinct from the tetrad charge and currents in physics.conservation.
 
-WHAT EMERGES (empirically-grounded, in TNFR's own terms)
-========================================================
-- **Structural diffusion** (EPI channel): the form relaxes to a uniform
-  field; each Laplacian eigenmode decays as exp(−νf·λ_k·t); the slowest
-  rate is set by the spectral gap λ₂ (the Fiedler value).
-- **Conserved structural total**: the random-walk Laplacian conserves the
-  **degree-weighted total** Σ_i deg(i)·EPI(i) (its left null vector is the
-  degree vector), the analogue of the conserved amount of diffusing
-  substance.
-- **Equilibrium ⟺ no gradients**: ΔNFR = 0 ⟺ the field is uniform across
-  neighbourhoods — the diffusive steady state.
-- **Synchronization** (phase channel): the phase term aligns θ to the
-  neighbour mean, driving Kuramoto-type synchronization (R → 1).
+The same conductance model gives the Dirichlet energy
+E_D = (1/4)*sum_ij W_ij*(EPI_i-EPI_j)^2. Its gradient is (D-W)*EPI,
+and the mobility is diag(nu_i/d_i), zero at isolates. Hence the frozen
+EPI-only flow satisfies dE_D/dt = -sum_i mobility_i*gradient_i^2 <= 0.
+compute_diffusion_energy reports this balance without evolving the graph.
+This energy is distinct from the tetrad potential in physics.variational.
 
-These are the registers whose existence is established by the strictest
-empirical method — diffusion (Fourier 1822, Fick 1855, Einstein 1905) and
-synchronization (Kuramoto; observed in fireflies, pacemaker cells, neurons,
-Josephson junctions).  They are reproduced here as the **same mathematics**
-(the graph Laplacian is the discrete diffusion operator), not as a
-metaphor.
-
-THE MECHANICAL REGIME IS OVERDAMPED DRIFT (not inertial)
-========================================================
-Because the nodal equation is **first order in time**, the mechanical
-regime it produces directly is the **overdamped drift law**, not Newtonian
-inertia.  Reading EPI as a position-like coordinate q and ΔNFR as the
-structural pressure F, the nodal equation is
-
-    q̇ = νf · F,
-
-i.e. **velocity proportional to applied force**, with νf the **mobility**.
-Under a sustained structural pressure the field drifts at *constant*
-velocity (linear in time), it does **not** accelerate.  This is the
-empirically-demonstrated mobility / drift law — Stokes drag (1851),
-Einstein's mobility relation (1905), terminal velocity, sedimentation,
-electrophoresis — where νf is the mobility, NOT an inverse inertial mass.
-
-The **inertial** Newtonian regime (second order, q̈ = F/m, oscillation)
-is a *different* structure: it lives in the conservative **symplectic
-substrate** Hamiltonian flow (:mod:`tnfr.physics.symplectic_substrate`,
-where the flow is q̈ = −q per conjugate pair).  The bare nodal equation is
-the **overdamped projection** of that substrate flow.  So:
-
-    bare nodal equation (1st order)  →  overdamped drift  v = νf·F
-    symplectic substrate (2nd order) →  inertial oscillation  q̈ = −∂V/∂q
-
-both empirically grounded, but distinct regimes — a single first-order
-nodal equation cannot, by itself, be Newton's second law.
-
-DISCRETE MODES ARE THE BOUNDED-MANIFOLD STANDING WAVES
-======================================================
-On a **bounded** structural manifold (a finite graph) the diffusion
-operator has a **discrete** spectrum of eigenmodes — the same structure as
-the discrete harmonics of a bounded vibrating medium.  The symmetric
-normalized Laplacian L_sym = I − D^{-1/2} W D^{-1/2} shares the diffusion
-operator L_rw's spectrum {λ_k} but has **orthonormal** eigenvectors v_k:
-
-- **Discrete spectrum**: a finite manifold supports a finite, discrete set
-  of eigenvalues {λ_k} (not a continuum) — the structural origin of
-  "discrete modes".  λ_1 = 0 is the uniform mode (the conserved diffusion
-  mode); λ_2 (the spectral gap) is the first non-trivial mode.
-- **Standing-wave shapes**: the eigenvectors v_k are orthonormal standing
-  waves.  On a path graph they are exactly the cosine standing waves of a
-  vibrating string (overlap 1.0 to machine precision).
-- **Nodal-domain ordering** (Courant): the number of sign changes (nodal
-  domains) grows with the mode index k — the structural "mode number" k
-  emerges from the bounded geometry, not from a postulate.
-- **Two time-regimes, same modes**: under diffusion (first order) mode k
-  relaxes as exp(−νf·λ_k·t); under the wave/substrate flow (second order)
-  it oscillates at the standing-wave frequency ω_k = √λ_k.
-
-This is the discrete-harmonic structure of a bounded elastic medium —
-vibrating strings (Pythagoras), Chladni plate modes (1787), molecular
-vibrational spectra — all established by the strictest empirical method.
-The discreteness is a consequence of the **bounded structural geometry**,
-not an imported quantum postulate.
-
-STRUCTURAL STABILITY: THE DISPERSION RELATION
-=============================================
-The growth or decay of each structural eigenmode under diffusion plus a
-local reaction rate r is governed by the **dispersion relation**
-
-    σ_k = r − νf · λ_k,
-
-the universal linear-stability law (the same tool that governs every
-instability and pattern-forming system — convective instability, the
-onset of pattern formation).  From the canonical Laplacian spectrum {λ_k}:
-
-- **Pure diffusion** (r = 0): σ_k = −νf·λ_k ≤ 0, so every non-uniform mode
-  *decays* — structural equilibrium is stable, the integral ∫νf·ΔNFR dt
-  converges.  This is the linear-stability content of "diffusion relaxes
-  to uniform".
-- **Structural instability threshold** r_c = νf·λ_2 (the spectral gap, the
-  Fiedler value, times the diffusivity).  For 0 < r < r_c only the uniform
-  mode grows (global amplification, no spatial structure); for r > r_c the
-  **Fiedler mode** (k = 1) also grows — the first *structural* pattern.
-- **The first structural pattern is the Fiedler partition**: the Fiedler
-  eigenvector splits the network along its **weakest structural cut** (the
-  two most weakly-connected communities) — the empirically-validated
-  spectral-clustering result.
-- **U2 grammar, spectrally**: a destabilizing reaction raises r, a
-  stabilizer lowers it; bounded evolution (U2) ⟺ keeping r below r_c.
-  Above r_c the Fiedler mode grows unboundedly → fragmentation (the
-  U2-violation the grammar prevents).
-
-The reaction rate r is a generic local rate; in TNFR the operators supply
-it (stabilizers lower r, destabilizers raise it).  A *two-channel*
-structural diffusion with **differential diffusivity** and an
-activator–inhibitor coupling supports a finite-wavelength (Turing)
-instability — the empirically-demonstrated pattern-formation mechanism
-(Belousov–Zhabotinsky, morphogenesis); those kinetics are a model input,
-not TNFR-derived, so only the dispersion-relation mechanism is certified
-here.
-
-THE STRUCTURAL RANDOM WALK AND RESISTANCE GEOMETRY
-==================================================
-The diffusion operator is **literally the generator of a random walk** on
-the network: L_rw = I − D^{-1}W = I − P, where P = D^{-1}W is the
-random-walk transition matrix (verified exactly).  So the structural
-transport is **Brownian motion on the network** — the empirically-
-demonstrated random walk (Einstein 1905, Perrin 1908, the proof of atoms):
-
-- **Stationary distribution ∝ degree**: the random walk converges to
-  π_i = deg(i) / Σ deg — exactly the **degree-weighted total** the
-  diffusion conserves.  The conserved quantity *is* the equilibrium
-  measure.
-- **Effective resistance** (Ohm's law): treating the network as a
-  resistor network (the combinatorial Laplacian L = D − W is the
-  conductance matrix — Kirchhoff 1847), the effective resistance
-  R_eff(i,j) = L⁺_ii + L⁺_jj − 2L⁺_ij (L⁺ the pseudoinverse) is a
-  **transport metric** (symmetric, non-negative, triangle inequality) —
-  the structural "difficulty of transport" between two nodes.
-- **Commute time = 2m·R_eff**: the expected round-trip time of the random
-  walk between two nodes equals 2m times the effective resistance (m the
-  number of edges) — the exact link between the diffusion random walk and
-  the resistance geometry (Chandra et al. 1996), confirmed against
-  Monte-Carlo walks.
-
-These are the same mathematics as Brownian motion (random walk) and
-electrical networks (Ohm/Kirchhoff resistance) — both established by the
-strictest empirical method.
-
-THE STRUCTURAL FLOW: CURRENT, KIRCHHOFF, AND CONTINUITY
-======================================================
-The transport carries a **structural current**: the diffusion edge current
-J_ij = EPI_i − EPI_j (Fick's law — flux from high to low, antisymmetric).
-Its node-level balance is **Kirchhoff's current law**, which *is* the
-discrete continuity equation:
-
-    div(J)(i) = Σ_{j∼i} J_ij = (L·EPI)(i),
-
-so the net outflow at a node equals the combinatorial Laplacian acting on
-EPI.  Hence the diffusion continuity equation ∂EPI/∂t + div(J) = 0 holds,
-and for a closed network (no sources) the total flux balances, Σ_i div(J)
-= 0 (L has zero column sums — the structural-conservation analogue here).
-Under an injected unit current from s to t the induced potential drop is
-the **effective resistance** R_eff(s,t) (Ohm's law) — tying the current to
-the resistance geometry above.  These are Fick diffusion, Kirchhoff's
-circuit laws, and Ohm's law — all empirically demonstrated.
-
-This is the EPI-channel current; it complements the tetrad-field
-continuity of :mod:`tnfr.physics.conservation` (which tracks the charge
-ρ = Φ_s + K_φ and the current J = (J_φ, J_ΔNFR)).
-
-HONEST SCOPE
-============
-- The identity ΔNFR_epi = −L_rw·EPI is EXACT (machine precision), a
-  mathematical fact about the canonical ΔNFR.
-- The full ΔNFR is multi-channel: EPI **diffusion** + phase
-  **synchronization** + νf/topology **homogenization**.  This module
-  isolates and certifies the diffusion (EPI) channel and reports the
-  synchronization channel qualitatively.
-- **λ₂ is topological, NOT tied to the canonical constants.** The spectral
-  gap λ₂ (which governs relaxation, stability, and the instability
-  threshold) is a purely spectral/topological quantity — determined by N,
-  degree, and connectivity (e.g. ring λ₂ = 1 − cos(2π/N), complete-graph
-  λ₂ = n/(n−1)).  The overlay threshold scales of the tetrad fields do
-  **not** enter the Laplacian spectrum; any numerical proximity is
-  coincidental (the 2π/N in a ring is a geometric polygon angle, not a
-  structural scale).  Measured
-  negative result — do not assert a λ₂ ↔ constant relation.
-- This characterises the transport content of the nodal dynamics; it does
-  not, by itself, resolve any open program (Riemann G4, Navier–Stokes).
-
-References
-----------
-- :mod:`tnfr.dynamics.dnfr` — the canonical ΔNFR neighbour-mean gradients
-- :func:`tnfr.observers.kuramoto_order` — the synchronization order R
-- :mod:`tnfr.physics.conservation` — the structural continuity equation
-- AGENTS.md §"Foundational Physics" — the nodal equation
+References within the implementation: dynamics.dnfr (canonical pressure),
+directed_diffusion (nonsymmetric transport), symplectic_substrate (specified
+Hamiltonian), and physics.conservation (tetrad diagnostics).
 """
 
 from __future__ import annotations
@@ -233,8 +88,10 @@ from typing import Any
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..mathematics.unified_numerical import np
+from ._conductance import ConductanceSnapshot, read_conductance
 
 __all__ = [
+    "DiffusionEnergyBalance",
     "StructuralDiffusionCertificate",
     "OverdampedRegimeCertificate",
     "OverdampedProjectionCertificate",
@@ -250,6 +107,7 @@ __all__ = [
     "relaxation_spectrum",
     "structural_frequency_rank",
     "degree_weighted_total",
+    "compute_diffusion_energy",
     "structural_eigenmodes",
     "nodal_domain_count",
     "compute_emergent_pulse",
@@ -280,6 +138,28 @@ def _ordered_nodes(G: Any) -> list:
     return list(G.nodes())
 
 
+def _weighted_adjacency(G: Any, nodes: list | None = None) -> tuple[list, Any]:
+    """One nonnegative adjacency convention, including parallel edges/loops."""
+    conductance = read_conductance(G, nodes)
+    return conductance.nodes, conductance.dense()
+
+
+def _nodal_frequencies(G: Any, nodes: list | None = None) -> Any:
+    """Read the actual capacity vector; zero capacity freezes a node."""
+    if nodes is None:
+        nodes = _ordered_nodes(G)
+    try:
+        frequency = np.array([
+            get_attr(G.nodes[node], ALIAS_VF, 0.0, conv=float, strict=True)
+            for node in nodes
+        ], dtype=float)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("Structural frequency must be finite and nonnegative") from exc
+    if not np.all(np.isfinite(frequency)) or np.any(frequency < 0.0):
+        raise ValueError("Structural frequency must be finite and nonnegative")
+    return frequency
+
+
 def structural_diffusion_operator(G: Any) -> tuple[list, Any]:
     r"""Return the random-walk graph Laplacian L_rw = I − D⁻¹W.
 
@@ -287,6 +167,10 @@ def structural_diffusion_operator(G: Any) -> tuple[list, Any]:
     ΔNFR ``neighbour-mean − self`` gradient: g = −L_rw·field.  Built from
     the (optionally weighted) adjacency; isolated nodes (degree 0) get a
     zero row (no diffusion).
+
+    Finite effective edge weights are normalized in scaled coordinates, so
+    a raw row sum need not fit in a float. Raw degree-weighted quantities
+    retain their separate representability requirements.
 
     Parameters
     ----------
@@ -297,24 +181,12 @@ def structural_diffusion_operator(G: Any) -> tuple[list, Any]:
     (nodes, L_rw) : tuple[list, np.ndarray]
         The node ordering and the N×N random-walk Laplacian.
     """
-    nodes = _ordered_nodes(G)
-    index = {n: i for i, n in enumerate(nodes)}
-    n = len(nodes)
-    lap = np.zeros((n, n), dtype=float)
-    for node in nodes:
-        i = index[node]
-        neigh = list(G.neighbors(node))
-        if not neigh:
-            continue
-        # weighted degree (weight defaults to 1.0 when absent)
-        weights = [float(G[node][m].get("weight", 1.0)) for m in neigh]
-        deg = sum(weights)
-        if deg <= 0.0:
-            continue
-        lap[i, i] = 1.0
-        for m, w in zip(neigh, weights):
-            lap[i, index[m]] -= w / deg
-    return nodes, lap
+    conductance = read_conductance(G)
+    probability, scale, _ = conductance.normalization()
+    laplacian = conductance.dense(-probability)
+    diagonal = np.diag_indices(len(conductance.nodes))
+    laplacian[diagonal] += (scale > 0.0)
+    return conductance.nodes, laplacian
 
 
 def symmetric_normalized_laplacian(
@@ -322,11 +194,16 @@ def symmetric_normalized_laplacian(
 ) -> tuple[list, Any]:
     r"""Return the symmetric normalized Laplacian L_sym = I − D^{-1/2} W D^{-1/2}.
 
-    L_sym shares the spectrum of the canonical diffusion operator
+    For symmetric adjacency, L_sym shares the spectrum of the diffusion operator
     L_rw = I − D⁻¹W (:func:`structural_diffusion_operator`) but is symmetric, so
     it has an orthonormal eigenbasis and real eigenvalues — the canonical choice
     for the relaxation spectrum (its λ₂ is the structural ``diffusion_gap``).
-    Isolated nodes (degree 0) get a zero row.
+    Isolated nodes (degree 0) get a zero row. Asymmetric adjacency is rejected:
+    it cannot be passed to a symmetric eigensolver. Directed damping rates are
+    available through :func:`relaxation_spectrum`.
+
+    Scaled conductance avoids overflowing raw row sums; square-root ratios
+    retain representable symmetric coefficients at very unequal strengths.
 
     Parameters
     ----------
@@ -339,32 +216,11 @@ def symmetric_normalized_laplacian(
     (nodes, L_sym) : tuple[list, np.ndarray]
         The node ordering and the N×N symmetric normalized Laplacian.
     """
-    if nodes is None:
-        nodes = _ordered_nodes(G)
-    index = {nd: i for i, nd in enumerate(nodes)}
-    n = len(nodes)
-    deg = np.zeros(n, dtype=float)
-    for node in nodes:
-        deg[index[node]] = sum(
-            float(G[node][m].get("weight", 1.0)) for m in G.neighbors(node)
-        )
-    # Compute D^{-1/2} only on connected nodes; isolated nodes (deg = 0) keep
-    # d_inv_sqrt = 0. Masked assignment avoids evaluating 1/sqrt(0) (which the
-    # np.where form does for every entry before selecting, emitting a warning).
-    d_inv_sqrt = np.zeros(n, dtype=float)
-    positive = deg > 0.0
-    d_inv_sqrt[positive] = 1.0 / np.sqrt(deg[positive])
-    lap = np.zeros((n, n), dtype=float)
-    for node in nodes:
-        i = index[node]
-        if deg[i] <= 0.0:
-            continue
-        lap[i, i] = 1.0
-        for m in G.neighbors(node):
-            j = index[m]
-            w = float(G[node][m].get("weight", 1.0))
-            lap[i, j] -= w * d_inv_sqrt[i] * d_inv_sqrt[j]
-    return nodes, lap
+    conductance = read_conductance(G, nodes, symmetric=True)
+    normalized, positive = conductance.symmetric_normalized_weights()
+    lap = conductance.dense(-normalized)
+    lap[np.diag_indices(len(conductance.nodes))] += positive
+    return conductance.nodes, lap
 
 
 def structural_field(G: Any, nodes: list | None = None) -> Any:
@@ -372,63 +228,154 @@ def structural_field(G: Any, nodes: list | None = None) -> Any:
     if nodes is None:
         nodes = _ordered_nodes(G)
     return np.array(
-        [float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes],
+        [get_attr(G.nodes[n], ALIAS_EPI, 0.0, conv=float, strict=True) for n in nodes],
         dtype=float,
     )
 
 
 def structural_diffusivity(G: Any) -> float:
-    r"""Mean structural frequency νf — the diffusion coefficient (mobility).
+    r"""Mean structural frequency, a descriptive capacity summary.
 
     In ∂EPI/∂t = −νf·L_rw·EPI, νf plays the role of the diffusivity: the
-    larger the structural frequency, the faster the form spreads.
+    larger the structural frequency, the faster the form spreads. This mean
+    is a diffusion coefficient only when all nodal frequencies are equal;
+    heterogeneous transport uses diag(νf)·L_rw, never mean(νf)·L_rw.
     """
-    nodes = _ordered_nodes(G)
-    vf = [float(get_attr(G.nodes[n], ALIAS_VF, 0.0)) for n in nodes]
-    return float(np.mean(vf)) if vf else 0.0
+    vf = _nodal_frequencies(G)
+    return float(np.mean(vf)) if len(vf) else 0.0
 
 
 def degree_weighted_total(G: Any) -> float:
-    r"""The conserved structural total Σ_i deg(i)·EPI(i).
+    r"""The row-strength-weighted total Σ_i d_i·EPI(i).
 
-    The random-walk Laplacian conserves the degree-weighted total (its left
-    null vector is the degree vector), the analogue of the conserved amount
-    of a diffusing substance.
+    For symmetric adjacency and a common frequency this total is conserved.
+    For fixed positive heterogeneous frequencies the conserved weights are
+    d_i/νf_i instead; a directed graph requires the generator's left nullspace.
+    This helper keeps its literal weighted-total meaning in every case.
+    Nonfinite EPI or an unrepresentable final total raises ValueError.
+    Edge-based summation allows finite cancellation even when an intermediate
+    degree or product exceeds float range.
 
-    This is the **EPI-channel** conserved quantity (of the diffusion
-    ∂EPI/∂t = −νf·L_rw·EPI).  It is **distinct** from the tetrad Noether charge
+    Under those restrictions this is an **EPI-channel** conserved quantity.
+    It is **distinct** from the tetrad Noether charge
     Q = Σ(Φ_s + K_φ)
     (:func:`tnfr.physics.conservation.compute_noether_charge`), conserved under
     grammar U1–U6: TNFR carries two distinct conservation laws, on the EPI
     field and on the tetrad fields respectively (see
     STRUCTURAL_CONSERVATION_THEOREM §8.7).
     """
-    nodes = _ordered_nodes(G)
-    total = 0.0
-    for node in nodes:
-        neigh = list(G.neighbors(node))
-        deg = sum(float(G[node][m].get("weight", 1.0)) for m in neigh)
-        total += deg * float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-    return float(total)
+    conductance = read_conductance(G)
+    field = structural_field(G, conductance.nodes)
+    if not np.all(np.isfinite(field)):
+        raise ValueError("Structural transport requires finite scalar EPI")
+    total = conductance.weighted_total(field)
+    if not np.isfinite(total):
+        raise ValueError("Degree-weighted total exceeds finite floating-point range")
+    return total
+
+
+def _read_edge_flux(G: Any) -> tuple[ConductanceSnapshot, Any, Any]:
+    """Share edge differences between current, divergence and energy gradient.
+
+    Capacity is deliberately absent: constitutive current can remain nonzero
+    at a frozen node. Effective zero edges are removed before subtraction.
+    """
+    conductance = read_conductance(G, symmetric=True)
+    field = structural_field(G, conductance.nodes)
+    if not np.all(np.isfinite(field)):
+        raise ValueError("Structural transport requires finite scalar EPI")
+    try:
+        with np.errstate(over="raise", invalid="raise"):
+            difference = field[conductance.source] - field[conductance.target]
+            flux = conductance.weight * difference
+    except FloatingPointError as exc:
+        raise ValueError("Structural current exceeds finite floating-point range") from exc
+    return conductance, difference, flux
+
+
+@dataclass(frozen=True)
+class DiffusionEnergyBalance:
+    """Instantaneous balance for the fixed symmetric EPI-only channel.
+
+    Arrays follow ``nodes`` and are detached from the graph. ``gradient``
+    is the Euclidean derivative of ``energy``; ``epi_rate`` includes the
+    actual nodal capacities. Zero mobility is permitted and does not imply
+    zero pressure. This is not a certificate for the full tetrad energy,
+    changing topology, or arbitrary finite integration steps.
+    """
+
+    nodes: list
+    energy: float
+    gradient: Any
+    mobility: Any
+    epi_rate: Any
+    energy_rate: float
+
+
+def compute_diffusion_energy(G: Any) -> DiffusionEnergyBalance:
+    r"""Read the Dirichlet gradient-flow balance on symmetric conductance.
+
+    With B = D-W and x = EPI, E_D = x^T B x / 2 and grad(E_D) = Bx.
+    The canonical pure EPI channel is x' = -M grad(E_D), where
+    M_ii = nu_f_i/d_i for positive row strength and zero otherwise.
+    Thus E_D' = -grad(E_D)^T M grad(E_D) <= 0. For positive capacity
+    and strength this is the gradient flow in metric diag(d_i/nu_f_i);
+    zero capacity instead gives a degenerate positive-semidefinite mobility.
+
+    Nonnegative finite weights, finite scalar EPI and nonnegative finite
+    capacities are required. Parallel edges and loops follow the shared
+    diffusion adjacency convention; loops add strength but no energy.
+    Asymmetric adjacency has no such symmetric Dirichlet identity and is
+    rejected. No graph attributes, pressure callbacks or caches are changed.
+    Unrepresentable floating-point balances raise ValueError.
+    A row strength itself may exceed float range when the returned mobility,
+    gradient, energy and rates remain representable in scaled coordinates.
+    """
+    try:
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            conductance, difference, flux = _read_edge_flux(G)
+            nodes = conductance.nodes
+            frequency = _nodal_frequencies(G, nodes)
+            mobility = conductance.divide_by_strength(frequency)
+            gradient = conductance.divergence(flux)
+            energy = float(0.25 * np.sum(flux * difference))
+            epi_rate = -mobility * gradient
+            energy_rate = float(gradient @ epi_rate)
+    except FloatingPointError as exc:
+        raise ValueError("Diffusion energy balance exceeds finite floating-point range") from exc
+    return DiffusionEnergyBalance(nodes, energy, gradient, mobility, epi_rate, energy_rate)
 
 
 def relaxation_spectrum(G: Any) -> Any:
-    r"""Diffusion relaxation rates νf·λ_k (sorted ascending).
+    r"""Real decay rates of diag(νf)·L_rw, sorted ascending.
 
-    The eigenvalues λ_k of the random-walk Laplacian L_rw scaled by the
-    diffusivity νf give the decay rates of the diffusion eigenmodes:
-    mode k relaxes as exp(−νf·λ_k·t).  λ₁ = 0 (the conserved uniform mode);
-    λ₂ (the spectral gap / Fiedler value) sets the slowest relaxation.
+    Equal frequencies reduce to νf·λ_k and reuse the cached symmetric geometry
+    on an undirected graph. With heterogeneous frequency, the generator is
+    diag(νf)·L_rw. Directed rates are real parts of its possibly complex
+    eigenvalues; they do not specify oscillation or transient amplification.
 
     Returns
     -------
     np.ndarray
-        The rates νf·λ_k sorted ascending (real parts).
+        The decay rates sorted ascending (real parts).
     """
-    # L_sym and L_rw share the spectrum; reuse the cached symmetric
-    # eigendecomposition (ascending, clipped >= 0). The rates are nu_f*lambda_k.
-    eig, _ = _cached_eigh(G)
-    return structural_diffusivity(G) * eig
+    frequency = _nodal_frequencies(G)
+    if not len(frequency):
+        return np.empty(0, dtype=float)
+    if not G.is_directed():
+        if np.all(frequency == frequency[0]):
+            eig = _cached_eigenvalues(G)
+            return frequency[0] * eig
+        _, lap_sym = symmetric_normalized_laplacian(G)
+        root_frequency = np.sqrt(frequency)
+        # AB and BA share eigenvalues even if a frequency is zero.
+        rates = np.linalg.eigvalsh(
+            root_frequency[:, None] * lap_sym * root_frequency[None, :]
+        )
+    else:
+        _, lap = structural_diffusion_operator(G)
+        rates = np.linalg.eigvals(frequency[:, None] * lap).real
+    return np.maximum(np.sort(rates), 0.0)
 
 
 def structural_frequency_rank(G: Any, decimals: int = 8) -> int:
@@ -486,11 +433,11 @@ class StructuralDiffusionCertificate:
     max_laplacian_residual : float
         Max |ΔNFR_epi − (−L_rw·EPI)| over the nodes (≈ 0).
     diffusivity : float
-        Mean νf (the diffusion coefficient / mobility).
+        Mean νf, a capacity summary (a diffusion coefficient only if uniform).
     spectral_gap : float
-        λ₂ of L_rw (the Fiedler value); sets the slowest relaxation.
+        Second-smallest real part of the geometry spectrum of L_rw.
     slowest_relaxation_rate : float
-        νf·λ₂ — the slowest diffusion decay rate.
+        Smallest positive real decay rate of diag(νf)·L_rw.
     degree_weighted_conserved : bool
         Σ deg·EPI is conserved under the diffusion flow.
     max_conservation_drift : float
@@ -499,6 +446,14 @@ class StructuralDiffusionCertificate:
         The field relaxes to a spatially uniform diffusive equilibrium.
     final_field_std : float
         Std of the field after the sampled diffusion flow (≈ 0).
+    invariant_weighted_conserved : bool or None
+        All left-nullspace coordinates of diag(νf)·L_rw remain constant.
+    max_invariant_conservation_drift : float
+        Maximum absolute drift in the orthonormal invariant coordinates.
+    reaches_stationary_state : bool or None
+        Final nodal derivative is below the sampled-flow threshold.
+    final_stationarity_residual : float
+        Maximum absolute final nodal derivative; distinct from ΔNFR pressure.
     """
 
     n_nodes: int
@@ -511,14 +466,26 @@ class StructuralDiffusionCertificate:
     max_conservation_drift: float
     relaxes_to_uniform: bool
     final_field_std: float
+    invariant_weighted_conserved: bool | None = None
+    max_invariant_conservation_drift: float = 0.0
+    reaches_stationary_state: bool | None = None
+    final_stationarity_residual: float = 0.0
 
     @property
     def is_valid_diffusion(self) -> bool:
         """True when the nodal EPI channel verifies as graph diffusion."""
         return (
             self.dnfr_is_graph_laplacian
-            and self.degree_weighted_conserved
-            and self.relaxes_to_uniform
+            and (
+                self.degree_weighted_conserved
+                if self.invariant_weighted_conserved is None
+                else self.invariant_weighted_conserved
+            )
+            and (
+                self.relaxes_to_uniform
+                if self.reaches_stationary_state is None
+                else self.reaches_stationary_state
+            )
         )
 
     def summary(self) -> str:
@@ -528,13 +495,15 @@ class StructuralDiffusionCertificate:
             f"Structural diffusion [{ok}]: "
             f"ΔNFR_epi = −L_rw·EPI={self.dnfr_is_graph_laplacian} "
             f"(res {self.max_laplacian_residual:.1e}), "
-            f"diffusivity νf={self.diffusivity:.4f}, "
+            f"mean capacity νf={self.diffusivity:.4f}, "
             f"spectral gap λ₂={self.spectral_gap:.4f}, "
-            f"slowest rate νf·λ₂={self.slowest_relaxation_rate:.4f}, "
+            f"slowest positive nodal rate={self.slowest_relaxation_rate:.4f}, "
             f"deg-weighted conserved={self.degree_weighted_conserved} "
             f"(drift {self.max_conservation_drift:.1e}), "
             f"relaxes to uniform={self.relaxes_to_uniform} "
-            f"(final std {self.final_field_std:.1e})"
+            f"(final std {self.final_field_std:.1e}), "
+            f"nodal invariants conserved={self.invariant_weighted_conserved}, "
+            f"stationary={self.reaches_stationary_state}"
         )
 
 
@@ -581,10 +550,16 @@ def verify_structural_diffusion(
 ) -> StructuralDiffusionCertificate:
     r"""Verify the nodal equation's EPI channel is graph diffusion.
 
-    Confirms (1) the canonical ΔNFR EPI channel equals −L_rw·EPI to machine
-    precision, (2) the degree-weighted total is conserved under the
-    diffusion flow, and (3) the field relaxes to a uniform diffusive
-    equilibrium; and reports the diffusivity νf and the relaxation spectrum.
+    Checks the EPI pressure identity and samples the actual frozen-frequency
+    nodal flow ``e' = -diag(νf) L_rw e``. Conservation is checked against all
+    left-nullspace invariants of that generator. Degree-weighted conservation
+    and global uniformity are reported separately: they need not hold with
+    heterogeneous frequencies, disconnected components or frozen nodes.
+
+    ``reaches_stationary_state`` tests the final nodal derivative, not pressure
+    equilibrium: zero capacity can freeze a nonuniform field. This is a finite
+    sampled-flow diagnostic, not a proof of eventual convergence for every
+    graph. The explicit step must preserve the nonnegative diffusion transition.
 
     The caller's graph is never mutated (the ΔNFR check runs on a copy).
 
@@ -602,45 +577,72 @@ def verify_structural_diffusion(
     -------
     StructuralDiffusionCertificate
     """
+    if not np.isfinite(dt) or dt <= 0.0:
+        raise ValueError("dt must be finite and positive")
+    if isinstance(steps, bool) or not isinstance(steps, (int, np.integer)) or steps < 0:
+        raise ValueError("steps must be a nonnegative integer")
+    if not np.isfinite(tolerance) or tolerance <= 0.0:
+        raise ValueError("tolerance must be finite and positive")
     nodes, lap = structural_diffusion_operator(G)
     n = len(nodes)
     epi = structural_field(G, nodes)
+    if not np.all(np.isfinite(epi)):
+        raise ValueError("The diffusion certificate requires a finite EPI field")
+    frequency = _nodal_frequencies(G, nodes)
+    generator = frequency[:, None] * lap
+    if dt * float(np.max(np.diag(generator), initial=0.0)) > 1.0:
+        raise ValueError("dt exceeds the nonnegative explicit diffusion step bound")
 
     # (1) ΔNFR (epi channel) == −L_rw·EPI ?
     try:
         dnfr_epi = _dnfr_epi_channel(G, nodes)
-        residual = float(np.max(np.abs(dnfr_epi - (-(lap @ epi)))))
+        residual = float(np.max(np.abs(dnfr_epi + lap @ epi), initial=0.0))
         is_laplacian = residual < max(tolerance, 1e-12)
     except Exception:
         residual = float("nan")
         is_laplacian = False
 
     # diffusivity and spectrum
-    diffusivity = structural_diffusivity(G)
+    diffusivity = float(np.mean(frequency)) if n else 0.0
     eig = np.linalg.eigvals(lap).real
     eig.sort()
-    spectral_gap = float(eig[1]) if n > 1 else 0.0
-    slowest_rate = diffusivity * spectral_gap
+    spectral_gap = max(0.0, float(eig[1])) if n > 1 else 0.0
+    rates = relaxation_spectrum(G)
+    slowest_rate = next((float(rate) for rate in rates if rate > tolerance), 0.0)
 
     # degree vector for the conserved weighted total
-    deg = np.array(
-        [
-            sum(float(G[node][m].get("weight", 1.0)) for m in G.neighbors(node))
-            for node in nodes
-        ],
-        dtype=float,
-    )
+    deg = read_conductance(G, nodes).strength
+    # Columns of U beyond rank(A) span ker(A.T), hence their scalar products
+    # with e are conserved. On an undirected positive-frequency graph this
+    # includes the analytic weights d_i/νf_i, component by component.
+    left_vectors, singular_values, _ = np.linalg.svd(generator, full_matrices=True)
+    rank_tolerance = n * np.finfo(float).eps * float(np.max(singular_values, initial=0.0))
+    rank = int(np.count_nonzero(singular_values > rank_tolerance))
+    invariants = left_vectors[:, rank:].T
 
-    # (2)+(3) integrate the pure diffusion flow e ← e − dt·L_rw·e
+    # (2)+(3) integrate the nodal flow at the specified physical time step.
     e = epi.copy()
     w0 = float(deg @ e)
     max_drift = 0.0
+    initial_invariants = invariants @ e
+    invariant_drift = 0.0
     for _ in range(steps):
-        e = e - dt * (lap @ e)
+        e = e - dt * (generator @ e)
         max_drift = max(max_drift, abs(float(deg @ e) - w0))
+        invariant_drift = max(invariant_drift, float(np.max(
+            np.abs(invariants @ e - initial_invariants), initial=0.0,
+        )))
     conserved = max_drift < max(tolerance, 1e-9 * (abs(w0) + 1e-12))
-    final_std = float(np.std(e))
-    relaxes = final_std < max(1e-3, 1e-2 * float(np.std(epi) + 1e-12))
+    invariant_conserved = invariant_drift <= tolerance * max(
+        1.0, float(np.max(np.abs(initial_invariants), initial=0.0)),
+    )
+    final_std = float(np.std(e)) if n else 0.0
+    initial_std = float(np.std(epi)) if n else 0.0
+    relaxes = final_std < max(1e-3, 1e-2 * (initial_std + 1e-12))
+    stationarity_residual = float(np.max(np.abs(generator @ e), initial=0.0))
+    stationary = stationarity_residual < max(1e-3, 1e-2 * float(
+        np.max(np.abs(generator @ epi), initial=0.0),
+    ))
 
     return StructuralDiffusionCertificate(
         n_nodes=n,
@@ -653,6 +655,10 @@ def verify_structural_diffusion(
         max_conservation_drift=max_drift,
         relaxes_to_uniform=relaxes,
         final_field_std=final_std,
+        invariant_weighted_conserved=bool(invariant_conserved),
+        max_invariant_conservation_drift=invariant_drift,
+        reaches_stationary_state=bool(stationary),
+        final_stationarity_residual=stationarity_residual,
     )
 
 
@@ -674,8 +680,8 @@ class OverdampedRegimeCertificate:
     This is the empirically-demonstrated overdamped regime (Stokes 1851,
     Einstein 1905, terminal velocity, sedimentation, electrophoresis).  The
     inertial Newtonian regime (q̈ = F/m, second order) is the separate
-    :mod:`tnfr.physics.symplectic_substrate` Hamiltonian flow; the nodal
-    equation is its overdamped projection.
+    :mod:`tnfr.physics.symplectic_substrate` Hamiltonian flow. This held-force
+    diagnostic does not establish a projection from that Hamiltonian.
 
     Attributes
     ----------
@@ -822,7 +828,7 @@ def verify_overdamped_regime(
 
 
 # ---------------------------------------------------------------------------
-# Overdamped projection: the bridge from the conservative substrate wave
+# Overdamped projection: the limit of a specified damped graph wave
 # to the dissipative structural diffusion
 # ---------------------------------------------------------------------------
 
@@ -830,8 +836,8 @@ def verify_overdamped_regime(
 def damped_wave_rates(G: Any, gamma: float) -> tuple[Any, Any, Any]:
     r"""Per-mode slow/fast rates of the damped graph wave q̈ + γq̇ + Lq = 0.
 
-    The conservative symplectic substrate carries the graph **wave**
-    equation q̈ = −L q (second order, mode k oscillating at √λ_k — the
+    The specified graph-wave model has the equation q̈ = −L q
+    (second order, mode k oscillating at √λ_k — the
     standing-wave ``discrete modes`` of :func:`verify_discrete_modes`).
     Adding a damping γ gives the damped oscillator q̈ + γq̇ + L q = 0, whose
     per-mode characteristic equation is
@@ -868,16 +874,14 @@ def damped_wave_rates(G: Any, gamma: float) -> tuple[Any, Any, Any]:
 
 @dataclass(frozen=True)
 class OverdampedProjectionCertificate:
-    r"""Verification that structural diffusion is the overdamped projection
-    of the conservative symplectic-substrate wave flow.
+    r"""Verification of the specified graph-wave-to-diffusion limit.
 
-    The conservative substrate (:mod:`tnfr.physics.symplectic_substrate`)
-    carries the graph wave q̈ = −L q (second order).  Damping it and taking
+    The model starts from the graph wave q̈ = −L q. Damping it and taking
     the strong-damping (Smoluchowski) limit collapses it onto the
     first-order structural diffusion q̇ = −(1/γ) L q, with the
     identification **ν_f = 1/γ** (structural frequency = inverse damping =
-    mobility).  Both endpoints are canonical TNFR objects; this certificate
-    measures the bridge between them.
+    mobility). This does not establish a projection of the different isotropic
+    Hamiltonian implemented in :mod:`tnfr.physics.symplectic_substrate`.
 
     Attributes
     ----------
@@ -921,14 +925,14 @@ class OverdampedProjectionCertificate:
 
     @property
     def is_valid_projection(self) -> bool:
-        """True when the damped substrate wave projects onto diffusion."""
+        """True when the specified damped graph wave approaches diffusion."""
         return self.projects_to_diffusion
 
     def summary(self) -> str:
         """Human-readable one-line verdict."""
         ok = "VALID" if self.is_valid_projection else "INVALID"
         return (
-            f"Overdamped projection [{ok}]: damped substrate wave "
+            f"Overdamped projection [{ok}]: damped graph wave "
             f"projects onto diffusion with nu_f=1/gamma="
             f"{self.nu_f_effective:.4f}; rate error "
             f"{self.max_rate_rel_error:.2e} (x gamma^2="
@@ -946,7 +950,7 @@ def verify_overdamped_projection(
     n_time_samples: int = 40,
     tolerance: float = 1e-2,
 ) -> OverdampedProjectionCertificate:
-    r"""Verify diffusion is the overdamped projection of the substrate wave.
+    r"""Verify the overdamped diffusion limit of the specified graph wave.
 
     Builds the canonical random-walk Laplacian L_rw, forms the damped graph
     wave q̈ + γq̇ + L q = 0, and measures two things in the strong-damping
@@ -1047,11 +1051,11 @@ def verify_overdamped_projection(
 
 @dataclass(frozen=True)
 class UndampedLimitCertificate:
-    r"""Verification that the γ→0 limit of the damped substrate wave is the
+    r"""Verification that the γ→0 limit of the damped graph wave is the
     undamped standing-wave spectrum √λ_k (the discrete modes).
 
     The overdamped projection (γ→∞, :func:`verify_overdamped_projection`)
-    collapses the damped substrate wave onto structural diffusion.  Its
+    collapses the damped graph wave onto structural diffusion. Its
     opposite end, γ→0, is the **conservative** limit: the roots of
     s² + γs + λ_k = 0 become the pure-imaginary pair s = ±i√λ_k, so every
     mode oscillates undamped at the standing-wave frequency ω_k = √λ_k —
@@ -1112,7 +1116,7 @@ def verify_undamped_limit(
     gamma: float = 1e-3,
     tolerance: float = 1e-2,
 ) -> UndampedLimitCertificate:
-    r"""Verify the γ→0 limit of the damped substrate wave is standing waves.
+    r"""Verify the γ→0 limit of the damped graph wave is standing waves.
 
     Forms the damped graph wave q̈ + γq̇ + L q = 0 at a *small* damping γ and
     measures that each underdamped mode's complex root tends to the
@@ -1176,32 +1180,12 @@ def verify_undamped_limit(
 
 
 def _symmetric_normalized_laplacian(G: Any) -> tuple[list, Any]:
-    r"""Return the symmetric normalized Laplacian L_sym.
+    """Compatibility wrapper for the canonical normalized Laplacian.
 
-    L_sym = I − D^{-1/2} W D^{-1/2} is symmetric (orthonormal eigenvectors)
-    and shares the spectrum of the random-walk diffusion operator L_rw used
-    by ΔNFR.
+    Reuse its zero-row convention for isolated nodes so the cached spectrum
+    and the nodal diffusion operator have the same stationary modes.
     """
-    nodes = _ordered_nodes(G)
-    index = {n: i for i, n in enumerate(nodes)}
-    n = len(nodes)
-    deg = np.zeros(n, dtype=float)
-    adj = np.zeros((n, n), dtype=float)
-    for node in nodes:
-        i = index[node]
-        for m in G.neighbors(node):
-            w = float(G[node][m].get("weight", 1.0))
-            adj[i, index[m]] = w
-            deg[i] += w
-    # Compute D^{-1/2} only on connected nodes; isolated nodes (deg = 0) keep
-    # dinv = 0 (no division by zero -- the np.where form still evaluates
-    # 1/sqrt(0) for every entry before selecting, emitting a spurious warning).
-    dinv = np.zeros(n, dtype=float)
-    positive = deg > 0.0
-    dinv[positive] = 1.0 / np.sqrt(deg[positive])
-    lap = np.eye(n) - (dinv[:, None] * adj * dinv[None, :])
-    lap = 0.5 * (lap + lap.T)  # symmetrise residual numerical asymmetry
-    return nodes, lap
+    return symmetric_normalized_laplacian(G)
 
 
 def _topology_signature(G: Any) -> tuple:
@@ -1212,15 +1196,27 @@ def _topology_signature(G: Any) -> tuple:
     unchanged the spectrum is unchanged, so the eigendecomposition can be
     reused across evolution steps and across read-outs.
     """
-    nodes = _ordered_nodes(G)
-    idx = {nd: i for i, nd in enumerate(nodes)}
-    edges = tuple(
-        sorted(
-            (idx[u], idx[v], float(d.get("weight", 1.0)))
-            for u, v, d in G.edges(data=True)
-        )
-    )
-    return (len(nodes), tuple(nodes), edges)
+    conductance = read_conductance(G)
+    edges = tuple(sorted(zip(conductance.source.tolist(), conductance.target.tolist(),
+                             conductance.weight.tolist())))
+    return (G.is_directed(), G.is_multigraph(), tuple(conductance.nodes), edges)
+
+
+def _cached_eigenvalues(G: Any) -> Any:
+    """Cache only the spectrum when a read-out does not require mode shapes.
+
+    A full decomposition, when already cached, supplies the same values.
+    Otherwise eigvalsh avoids computing and retaining an unused N-by-N basis.
+    The full-spectrum solver and its Laplacian are still dense.
+    """
+    sig = _topology_signature(G)
+    cache = G.graph.get("_tnfr_spectrum_cache")
+    if isinstance(cache, dict) and cache.get("sig") == sig:
+        return cache["vals"]
+    _, lap = _symmetric_normalized_laplacian(G)
+    values = np.clip(np.linalg.eigvalsh(lap), 0.0, None)
+    G.graph["_tnfr_spectrum_cache"] = {"sig": sig, "vals": values}
+    return values
 
 
 def _cached_eigh(G: Any) -> tuple[Any, Any]:
@@ -1231,11 +1227,12 @@ def _cached_eigh(G: Any) -> tuple[Any, Any]:
     O(N^3) ``eigh`` runs once per topology; the cache lives in ``G.graph`` and
     self-invalidates when the signature changes. ``structural_eigenmodes`` (the
     rhythm path) and ``relaxation_spectrum`` (the spectrum / NFR path) share
-    this one decomposition -- L_sym and L_rw have the same spectrum.
+    this cache -- L_sym and L_rw have the same spectrum. A value-only cache
+    is upgraded on the first request for actual eigenvectors.
     """
     sig = _topology_signature(G)
     cache = G.graph.get("_tnfr_spectrum_cache")
-    if isinstance(cache, dict) and cache.get("sig") == sig:
+    if isinstance(cache, dict) and cache.get("sig") == sig and "vecs" in cache:
         return cache["vals"], cache["vecs"]
     _, lap = _symmetric_normalized_laplacian(G)
     eigvals, eigvecs = np.linalg.eigh(lap)
@@ -1255,7 +1252,9 @@ def structural_eigenmodes(G: Any) -> tuple[Any, Any]:
     symmetric normalized Laplacian L_sym (same spectrum as the diffusion
     operator L_rw).  The eigenvalues are the discrete mode "energies"; the
     eigenvectors are the standing-wave mode shapes (orthonormal), sorted by
-    ascending λ_k.  λ_1 = 0 is the uniform mode.
+    ascending λ_k. For symmetric adjacency the zero mode is proportional
+    to sqrt(row strength), corresponding to uniform EPI in degree coordinates.
+    Asymmetric adjacency is rejected. Returned arrays are independent copies.
 
     Parameters
     ----------
@@ -1267,7 +1266,8 @@ def structural_eigenmodes(G: Any) -> tuple[Any, Any]:
         ``eigenvalues`` shape ``(N,)`` ascending; ``eigenvectors`` shape
         ``(N, N)`` with column ``k`` the k-th standing-wave mode shape.
     """
-    return _cached_eigh(G)
+    eigenvalues, eigenvectors = _cached_eigh(G)
+    return eigenvalues.copy(), eigenvectors.copy()
 
 
 def nodal_domain_count(mode: Any) -> int:
@@ -1326,7 +1326,7 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
         (:math:`\tfrac12\sum\lambda_k`, the conserved structural-pressure
         energy of the vibration), ``n_modes``.
     """
-    eigvals, _ = structural_eigenmodes(G)
+    eigvals = _cached_eigenvalues(G)
     eigvals = np.asarray(eigvals, dtype=float)
     omega = np.sqrt(np.clip(eigvals, 0.0, None))
     nz = np.sort(omega[eigvals > 1e-9])  # exclude the uniform (lambda~0) mode
@@ -1337,7 +1337,7 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
         "resonant_spectrum": [float(x) for x in nz[:n_modes]],
         "fundamental": float(nz[0]) if nz.size else 0.0,
         "dominant_beat": float(pos.min()) if pos.size else 0.0,
-        "spectral_multiplicity": int(counts.max()),
+        "spectral_multiplicity": int(counts.max()) if counts.size else 0,
         "vibration_energy": float(0.5 * np.sum(eigvals)),
         "n_modes": int(nz.size),
     }
@@ -1568,12 +1568,12 @@ def verify_discrete_modes(
 
 
 def dispersion_relation(G: Any, reaction_rate: float = 0.0) -> Any:
-    r"""Per-mode growth rates σ_k = reaction_rate − νf·λ_k (dispersion).
+    r"""Real growth rates r − Re(eigenvalues(diag(νf)·L_rw)).
 
     The growth (σ_k > 0) or decay (σ_k < 0) rate of each structural
     eigenmode under diffusion plus a local reaction rate.  At
     ``reaction_rate = 0`` this is the negative of the relaxation spectrum
-    (pure diffusion: every non-uniform mode decays).
+    (pure diffusion: nonnegative damping, possibly multiple frozen modes).
 
     Parameters
     ----------
@@ -1585,20 +1585,19 @@ def dispersion_relation(G: Any, reaction_rate: float = 0.0) -> Any:
     Returns
     -------
     np.ndarray
-        The growth rates σ_k sorted by ascending λ_k.
+        Growth rates sorted by ascending nodal decay rate.
     """
-    eigvals, _ = structural_eigenmodes(G)
-    nu = structural_diffusivity(G)
-    return float(reaction_rate) - nu * eigvals
+    return float(reaction_rate) - relaxation_spectrum(G)
 
 
 def instability_threshold(G: Any) -> float:
-    r"""Structural instability threshold r_c = νf·λ_2 (spectral gap).
+    r"""Second nodal decay rate, the first nonuniform reaction threshold.
 
-    The reaction rate above which the first *non-uniform* (Fiedler) mode
-    becomes unstable.  For 0 < r < r_c only the uniform mode grows (global
-    amplification); for r > r_c a structural pattern (the Fiedler partition)
-    emerges.
+    On a connected symmetric graph with common positive frequency this is
+    νf·λ_2 and its geometry mode is Fiedler. Heterogeneous capacity uses the
+    actual nodal generator. Multiple zero modes give a zero threshold.
+    For any positive r the constant mode already grows, so this is not
+    a global boundedness certificate or an operator-sequence U2 test.
 
     Parameters
     ----------
@@ -1607,11 +1606,10 @@ def instability_threshold(G: Any) -> float:
     Returns
     -------
     float
-        νf·λ_2 (0 if the graph has fewer than two modes).
+        Second-smallest real decay rate (0 with fewer than two modes).
     """
-    eigvals, _ = structural_eigenmodes(G)
-    nu = structural_diffusivity(G)
-    return float(nu * eigvals[1]) if len(eigvals) > 1 else 0.0
+    rates = relaxation_spectrum(G)
+    return float(rates[1]) if len(rates) > 1 else 0.0
 
 
 def fiedler_partition(G: Any) -> tuple[list, list]:
@@ -1650,7 +1648,8 @@ class StructuralStabilityCertificate:
     every structural eigenmode.  Pure diffusion (r = 0) decays every
     non-uniform mode (stable equilibrium); the threshold r_c = νf·λ_2
     separates uniform amplification from structural pattern formation (the
-    Fiedler partition).  This is the spectral form of U2 grammar.
+    Fiedler partition). This certificate requires a connected symmetric
+    graph and a common positive capacity. It does not certify grammar U2.
 
     Attributes
     ----------
@@ -1720,7 +1719,10 @@ def verify_structural_stability(
     equilibrium), that the r = 0 dispersion equals the negative relaxation
     spectrum, that the instability threshold is r_c = νf·λ_2, and that the
     first structural mode to go unstable above threshold is the Fiedler
-    mode (whose eigenvector gives the weakest-cut partition).
+    mode. This homogeneous Fiedler certificate requires symmetric adjacency,
+    a connected positive-weight support, at least two nodes, and one common
+    positive frequency. For heterogeneous/directed damping use
+    :func:`relaxation_spectrum` and :func:`dispersion_relation`.
 
     Parameters
     ----------
@@ -1732,10 +1734,17 @@ def verify_structural_stability(
     -------
     StructuralStabilityCertificate
     """
-    eigvals, eigvecs = structural_eigenmodes(G)
+    if not np.isfinite(tolerance) or tolerance <= 0.0:
+        raise ValueError("tolerance must be finite and positive")
+    frequency = _nodal_frequencies(G)
+    if len(frequency) < 2 or not np.all(frequency == frequency[0]) or frequency[0] <= 0.0:
+        raise ValueError("Fiedler stability requires at least two nodes and a common positive frequency")
+    eigvals = _cached_eigenvalues(G)
     n = len(eigvals)
-    nu = structural_diffusivity(G)
-    gap = float(eigvals[1]) if n > 1 else 0.0
+    nu = float(frequency[0])
+    gap = float(eigvals[1])
+    if gap <= tolerance:
+        raise ValueError("Fiedler stability requires connected positive-weight support")
     r_c = nu * gap
 
     # pure diffusion (r=0): non-uniform modes (k>=1) decay
@@ -1743,8 +1752,9 @@ def verify_structural_stability(
     max_nonuniform = float(np.max(sigma0[1:])) if n > 1 else 0.0
     stable = max_nonuniform < tolerance
 
-    # dispersion at r=0 == negative relaxation spectrum
-    rates = relaxation_spectrum(G)
+    # Independently check the modal readout against the actual nodal matrix.
+    _, lap = structural_diffusion_operator(G)
+    rates = np.linalg.eigvals(frequency[:, None] * lap).real
     matches = bool(np.allclose(np.sort(-sigma0), np.sort(rates), atol=1e-7))
 
     # first non-uniform mode to go unstable just above threshold
@@ -1778,24 +1788,24 @@ def verify_structural_stability(
 
 def _adjacency_degree(G: Any) -> tuple[list, Any, Any]:
     """Return (nodes, weighted adjacency W, weighted degree vector)."""
-    nodes = _ordered_nodes(G)
-    index = {n: i for i, n in enumerate(nodes)}
-    n = len(nodes)
-    adj = np.zeros((n, n), dtype=float)
-    for node in nodes:
-        i = index[node]
-        for m in G.neighbors(node):
-            adj[i, index[m]] = float(G[node][m].get("weight", 1.0))
-    deg = adj.sum(axis=1)
-    return nodes, adj, deg
+    conductance = read_conductance(G)
+    return conductance.nodes, conductance.dense(), conductance.strength
+
+
+def _symmetric_adjacency_degree(G: Any) -> tuple[list, Any, Any]:
+    """Require the reversible conductance model used by resistance geometry."""
+    conductance = read_conductance(G, symmetric=True)
+    return conductance.nodes, conductance.dense(), conductance.strength
 
 
 def random_walk_matrix(G: Any) -> tuple[list, Any]:
-    r"""Return the random-walk transition matrix P = D^{-1}W.
+    r"""Return the random-walk transition matrix P = I - L_rw.
 
     The diffusion operator is L_rw = I − P, so P is exactly the
     random-walk the structural diffusion generates.  Row-stochastic (each
-    row sums to 1); isolated nodes get a zero row.
+    row sums to 1); nodes with zero outgoing strength are absorbing. This
+    includes isolated nodes, directed sinks and nodes with only zero-weight
+    edges. Parallel edge conductances are summed by the shared adjacency.
 
     Parameters
     ----------
@@ -1805,18 +1815,24 @@ def random_walk_matrix(G: Any) -> tuple[list, Any]:
     -------
     (nodes, P) : tuple[list, np.ndarray]
     """
-    nodes, adj, deg = _adjacency_degree(G)
-    with np.errstate(divide="ignore", invalid="ignore"):
-        dinv = np.where(deg > 0.0, 1.0 / deg, 0.0)
-    return nodes, dinv[:, None] * adj
+    conductance = read_conductance(G)
+    return conductance.nodes, conductance.transition()
 
 
 def stationary_distribution(G: Any) -> tuple[list, Any]:
-    r"""Stationary distribution π_i = deg(i) / Σ deg of the random walk.
+    r"""A stationary distribution of a walk with symmetric conductances.
 
-    The random walk converges to the degree distribution — exactly the
-    degree-weighted total the diffusion conserves.  The conserved quantity
-    is the equilibrium measure.
+    Uses row strengths ``π_i = d_i / Σ d`` when any conductance is present,
+    and the uniform distribution when every node is absorbing. The empty
+    graph returns an empty vector. This is a stationary measure, not a claim
+    of uniqueness or convergence on disconnected or periodic walks.
+
+    Asymmetric adjacency is rejected: its stationary measure is generally
+    not the degree distribution. The separate directed-diffusion stationary
+    solver supports the strictly positive measure on strongly connected
+    directed networks. Self-loop conductance is counted once, as in P.
+    Scaled strengths avoid overflowing row sums and total volume. Stationary
+    probabilities below the floating-point range round to zero.
 
     Parameters
     ----------
@@ -1826,17 +1842,113 @@ def stationary_distribution(G: Any) -> tuple[list, Any]:
     -------
     (nodes, pi) : tuple[list, np.ndarray]
     """
-    nodes, _, deg = _adjacency_degree(G)
-    total = float(deg.sum())
-    pi = deg / total if total > 0 else deg
+    conductance = read_conductance(G, symmetric=True)
+    nodes = conductance.nodes
+    scaled = conductance.relative_strength()
+    if np.any(scaled > 0.0):
+        with np.errstate(under="ignore"):
+            pi = scaled / scaled.sum()
+    else:
+        pi = np.full(len(nodes), 1.0 / len(nodes)) if nodes else scaled
     return nodes, pi
 
 
-def _laplacian_pinv(G: Any) -> tuple[list, Any, float]:
-    """Return (nodes, pinv(L) of the combinatorial Laplacian, n_edges)."""
-    nodes, adj, deg = _adjacency_degree(G)
-    lap = np.diag(deg) - adj
-    return nodes, np.linalg.pinv(lap), float(deg.sum()) / 2.0
+def _resistance_geometry(G: Any) -> tuple[list, Any, Any, list]:
+    """Return dimensionless resistance, component scales and exact-capable volumes.
+
+    Work component by component so unreachable pairs stay infinite and
+    the pseudoinverse's numerical rank is scaled locally. Connectivity is
+    determined by positive conductance, including summed parallel edges.
+    Non-loop weights set the scale: loops change holding time, not resistance.
+    A volume too large for float is retained as a Fraction internally; its
+    ratio with the conductance scale can still give a finite commute time.
+    """
+    import networkx as nx
+    import math
+    from fractions import Fraction
+
+    conductance = read_conductance(G, symmetric=True)
+    nodes, adjacency = conductance.nodes, conductance.dense()
+    resistance = np.full(adjacency.shape, np.inf)
+    scales = np.ones(len(nodes))
+    volumes = [0.0] * len(nodes)
+    for component in nx.connected_components(nx.from_numpy_array(adjacency)):
+        indices = np.asarray(sorted(component), dtype=int)
+        block = np.ix_(indices, indices)
+        weights = adjacency[block]
+        positive_weights = weights[weights > 0.0]
+        try:
+            volume = math.fsum(positive_weights)
+        except OverflowError:
+            volume = sum((Fraction.from_float(float(weight)) for weight in positive_weights),
+                         Fraction())
+        for index in indices:
+            volumes[index] = volume
+        weights = weights.copy()
+        np.fill_diagonal(weights, 0.0)
+        scale = float(np.max(weights, initial=0.0)) or 1.0
+        positive = weights > 0.0
+        with np.errstate(under="ignore"):
+            weights /= scale
+        if np.any(positive & (weights == 0.0)):
+            raise ValueError("Resistance conductance ratios are below floating-point range")
+        scales[indices] = scale
+        laplacian = np.diag(weights.sum(axis=1)) - weights
+        inverse = np.linalg.pinv(laplacian, hermitian=True)
+        diagonal = np.diag(inverse)
+        resistance[block] = np.maximum(
+            diagonal[:, None] + diagonal[None, :] - 2.0 * inverse, 0.0,
+        )
+    np.fill_diagonal(resistance, 0.0)
+    return nodes, resistance, scales, volumes
+
+
+def _resistance_scale_ratios(numerators: Any, denominators: Any) -> list:
+    """Retain an exact exceptional ratio until the requested matrix is formed."""
+    from fractions import Fraction
+
+    result = []
+    for numerator, denominator in zip(numerators, denominators):
+        if isinstance(numerator, Fraction):
+            result.append(numerator / Fraction.from_float(float(denominator)))
+        else:
+            with np.errstate(over="ignore", under="ignore"):
+                ratio = float(numerator) / float(denominator)
+            if np.isfinite(ratio) and (ratio != 0.0 or numerator == 0.0):
+                result.append(ratio)
+            else:
+                result.append(Fraction.from_float(float(numerator))
+                              / Fraction.from_float(float(denominator)))
+    return result
+
+
+def _commute_from_resistance(resistance: Any, volumes: Any) -> Any:
+    """Apply finite or exact scale factors; only unreachable pairs stay infinite."""
+    finite = np.isfinite(resistance)
+    try:
+        with np.errstate(over="raise", invalid="raise", under="ignore"):
+            factors = np.asarray(volumes, dtype=float)
+            result = np.multiply(
+                factors[:, None], resistance,
+                out=np.full_like(resistance, np.inf), where=finite,
+            )
+        if not np.all(np.isfinite(result[finite])):
+            raise OverflowError
+    except (FloatingPointError, OverflowError):
+        from fractions import Fraction
+
+        result = np.full_like(resistance, np.inf)
+        for row, factor in enumerate(volumes):
+            exact_factor = factor if isinstance(factor, Fraction) else Fraction.from_float(float(factor))
+            for column in np.flatnonzero(finite[row]):
+                exact = Fraction.from_float(float(resistance[row, column])) * exact_factor
+                try:
+                    result[row, column] = float(exact)
+                except OverflowError as exc:
+                    raise ValueError("Resistance read-out exceeds finite floating-point range") from exc
+    if np.any(finite & (resistance > 0.0) & (result == 0.0)):
+        raise ValueError("Resistance read-out is below floating-point range")
+    return result
 
 
 def effective_resistance(G: Any) -> tuple[list, Any]:
@@ -1848,9 +1960,15 @@ def effective_resistance(G: Any) -> tuple[list, Any]:
 
         R_eff(i,j) = L⁺_ii + L⁺_jj − 2·L⁺_ij,
 
-    with L⁺ the Moore–Penrose pseudoinverse.  R_eff is a metric
-    (symmetric, non-negative, triangle inequality) — the structural
-    "difficulty of transport" between two nodes.
+    with L⁺ the Moore–Penrose pseudoinverse within the pair's connected
+    component. R_eff is an extended metric: different positive-conductance
+    components have infinite resistance, including distinct isolated nodes.
+    Self-resistance is zero. The conductance matrix must be symmetric;
+    directed asymmetric resistance is outside this formula's scope.
+    Component scaling avoids raw degree/volume overflow and removes loops
+    before forming the Laplacian. Unrepresentable requested finite entries
+    raise ValueError; infinity is reserved for unreachable pairs. This remains
+    a floating-point pseudoinverse, with its numerical rank-resolution limit.
 
     Parameters
     ----------
@@ -1861,20 +1979,24 @@ def effective_resistance(G: Any) -> tuple[list, Any]:
     (nodes, R) : tuple[list, np.ndarray]
         ``R[i, j]`` is the effective resistance between node i and node j.
     """
-    nodes, lp, _ = _laplacian_pinv(G)
-    diag = np.diag(lp)
-    r = diag[:, None] + diag[None, :] - 2.0 * lp
-    np.fill_diagonal(r, 0.0)
-    return nodes, np.maximum(r, 0.0)
+    nodes, resistance, scales, _ = _resistance_geometry(G)
+    return nodes, _commute_from_resistance(
+        resistance, _resistance_scale_ratios(np.ones(len(nodes)), scales),
+    )
 
 
 def commute_time(G: Any) -> tuple[list, Any]:
-    r"""Commute-time matrix C(i,j) = 2m·R_eff(i,j).
+    r"""Commute-time matrix C(i,j) = volume(component)·R_eff(i,j).
 
     The expected round-trip time of the structural random walk between two
-    nodes equals 2m times the effective resistance (m the number of
-    edges) — the exact link between the diffusion random walk and the
-    resistance geometry (Chandra et al. 1996).
+    reachable nodes equals their component's total row strength times the
+    effective resistance. For a connected, unweighted, loopless graph the
+    volume is 2m. Self-loop conductances contribute once to row strengths
+    and account for holding time. Unreachable pairs have infinite commute
+    time; self-commute time is zero. Symmetric conductance is required.
+    A common conductance scale cancels before raw resistance or volume is
+    materialized, so their separate overflow need not prevent a finite result.
+    A requested reachable commute time outside float range raises ValueError.
 
     Parameters
     ----------
@@ -1884,10 +2006,10 @@ def commute_time(G: Any) -> tuple[list, Any]:
     -------
     (nodes, C) : tuple[list, np.ndarray]
     """
-    nodes, r = effective_resistance(G)
-    _, _, deg = _adjacency_degree(G)
-    m_edges = float(deg.sum()) / 2.0
-    return nodes, 2.0 * m_edges * r
+    nodes, resistance, scales, volumes = _resistance_geometry(G)
+    return nodes, _commute_from_resistance(
+        resistance, _resistance_scale_ratios(volumes, scales),
+    )
 
 
 @dataclass(frozen=True)
@@ -1895,8 +2017,11 @@ class RandomWalkCertificate:
     r"""Verification of the structural random walk and resistance geometry.
 
     The diffusion operator is the generator of a random walk (Brownian
-    motion on the network); its stationary distribution is the degree, and
-    the effective resistance / commute time give the transport geometry.
+    motion on the network). For symmetric conductance its stationary
+    measure follows row strength, and resistance / commute time describe
+    transport within components. Disconnected pairs have infinite distance.
+    This certificate retains its historical field names; ``2m`` means the
+    pair's component volume, and an edgeless graph uses uniform stationarity.
 
     Attributes
     ----------
@@ -1904,16 +2029,17 @@ class RandomWalkCertificate:
     operator_is_walk_generator : bool
         L_rw = I − P exactly (the diffusion operator generates the walk).
     transition_row_stochastic : bool
-        P = D⁻¹W is row-stochastic.
+        Every row of P sums to one, including absorbing zero-strength rows.
     stationary_is_degree : bool
-        π = deg / Σ deg is the stationary distribution (π·P = π).
+        The normalized degree measure (uniform if edgeless) obeys π·P = π.
     resistance_is_metric : bool
         R_eff is symmetric, non-negative, and obeys the triangle
-        inequality.
+        inequality, allowing infinity between different components.
     max_resistance : float
         The largest pairwise effective resistance (transport diameter).
     commute_equals_2m_resistance : bool
-        C(i,j) = 2m·R_eff(i,j) (random walk ↔ resistance identity).
+        C(i,j) = component volume·R_eff(i,j) for reachable pairs; both
+        quantities are infinite for unreachable pairs.
     max_walk_generator_residual : float
         Max |L_rw − (I − P)| (≈ 0).
     """
@@ -1946,10 +2072,10 @@ class RandomWalkCertificate:
             f"L_rw = I−P={self.operator_is_walk_generator} "
             f"(res {self.max_walk_generator_residual:.1e}), "
             f"P row-stochastic={self.transition_row_stochastic}, "
-            f"stationary π=degree={self.stationary_is_degree}, "
-            f"R_eff metric={self.resistance_is_metric} "
+            f"stationary measure={self.stationary_is_degree}, "
+            f"R_eff extended metric={self.resistance_is_metric} "
             f"(max R {self.max_resistance:.4f}), "
-            f"commute=2m·R_eff={self.commute_equals_2m_resistance}"
+            f"commute=component volume·R_eff={self.commute_equals_2m_resistance}"
         )
 
 
@@ -1960,8 +2086,10 @@ def verify_structural_random_walk(
 
     Confirms that the diffusion operator is the random-walk generator
     (L_rw = I − P), that P is row-stochastic with stationary distribution
-    π = degree, that the effective resistance is a transport metric, and
-    that the commute time equals 2m·R_eff (random walk ↔ resistance).
+    proportional to row strength (uniform if edgeless), that effective
+    resistance is an extended transport metric, and that commute time uses
+    each component's volume. Requires symmetric conductance. Stationarity
+    does not assert convergence or uniqueness; triangle checks are sampled.
 
     Parameters
     ----------
@@ -1973,27 +2101,33 @@ def verify_structural_random_walk(
     -------
     RandomWalkCertificate
     """
-    nodes, lrw = structural_diffusion_operator(G)
+    if not np.isfinite(tolerance) or tolerance <= 0.0:
+        raise ValueError("tolerance must be finite and positive")
+    nodes, scaled_resistance, scales, volumes = _resistance_geometry(G)
     n = len(nodes)
+    r = _commute_from_resistance(
+        scaled_resistance, _resistance_scale_ratios(np.ones(n), scales),
+    )
+    _, lrw = structural_diffusion_operator(G)
     _, p = random_walk_matrix(G)
 
     # L_rw = I − P
     gen_res = float(np.max(np.abs(lrw - (np.eye(n) - p)))) if n else 0.0
     is_generator = gen_res < max(tolerance, 1e-12)
 
-    # P row-stochastic (rows of connected nodes sum to 1)
+    # Every row is stochastic, including absorbing zero-strength rows.
     row_sums = p.sum(axis=1)
-    deg_nonzero = np.array([sum(1 for _ in G.neighbors(nd)) > 0 for nd in nodes])
-    row_stochastic = (
-        bool(np.all(np.abs(row_sums[deg_nonzero] - 1.0) < tolerance)) if n else True
-    )
+    row_stochastic = bool(np.all(np.abs(row_sums - 1.0) < tolerance))
 
     # stationary distribution π = degree, π·P = π
     _, pi = stationary_distribution(G)
-    stationary_ok = bool(np.allclose(pi @ p, pi, atol=1e-7)) if n else True
+    stationary_ok = bool(
+        np.allclose(pi @ p, pi, atol=tolerance, rtol=0.0)
+        and np.all(pi >= 0.0)
+        and abs(float(pi.sum()) - 1.0) < tolerance
+    ) if n else True
 
     # effective resistance is a metric
-    _, r = effective_resistance(G)
     symmetric = bool(np.allclose(r, r.T))
     nonneg = bool(np.all(r >= -1e-9))
     # triangle inequality on a sample of triples
@@ -2008,11 +2142,11 @@ def verify_structural_random_walk(
     is_metric = symmetric and nonneg and triangle
     max_r = float(np.max(r)) if n else 0.0
 
-    # commute time = 2m·R_eff
+    # The volume belongs to the pair's component, never to unreachable nodes.
     _, c = commute_time(G)
-    _, _, deg = _adjacency_degree(G)
-    m_edges = float(deg.sum()) / 2.0
-    commute_ok = bool(np.allclose(c, 2.0 * m_edges * r, atol=1e-7))
+    commute_ok = bool(np.allclose(
+        c, _commute_from_resistance(r, volumes), atol=tolerance, rtol=0.0,
+    ))
 
     return RandomWalkCertificate(
         n_nodes=n,
@@ -2030,12 +2164,14 @@ def verify_structural_random_walk(
 # The structural flow: current, Kirchhoff's law, and continuity
 # ---------------------------------------------------------------------------
 def structural_current(G: Any) -> tuple[list, Any]:
-    r"""Structural (diffusion) edge-current matrix J_ij = EPI_i − EPI_j.
+    r"""Structural edge-current matrix J_ij = W_ij (EPI_i − EPI_j).
 
     The transport carries a current: along each edge i∼j the diffusion
-    flux is J_ij = EPI_i − EPI_j (Fick's law — flux from high to low
+    flux is J_ij = W_ij (EPI_i − EPI_j) (flux from high to low
     concentration).  The matrix is **antisymmetric** (J_ij = −J_ji) and
-    supported on edges only (J_ij = 0 when i and j are not adjacent).
+    supported on positive-conductance edges only. Symmetric conductance is
+    required; parallel edges add their conductances and self-loops carry
+    zero current. Asymmetric directed transport is outside this contract.
 
     Parameters
     ----------
@@ -2046,18 +2182,8 @@ def structural_current(G: Any) -> tuple[list, Any]:
     (nodes, J) : tuple[list, np.ndarray]
         ``J[i, j]`` is the current from node i to node j across edge i∼j.
     """
-    from ..alias import get_attr
-    from ..constants.aliases import ALIAS_EPI
-
-    nodes, adj, _ = _adjacency_degree(G)
-    epi = np.array(
-        [float(get_attr(G.nodes[n], ALIAS_EPI, 0.0)) for n in nodes],
-        dtype=float,
-    )
-    mask = adj != 0.0
-    # J_ij = EPI_i − EPI_j on edges, zero elsewhere
-    j = (epi[:, None] - epi[None, :]) * mask
-    return nodes, j
+    conductance, _, flux = _read_edge_flux(G)
+    return conductance.nodes, conductance.dense(flux)
 
 
 def current_divergence(G: Any) -> tuple[list, Any]:
@@ -2065,9 +2191,11 @@ def current_divergence(G: Any) -> tuple[list, Any]:
 
     Kirchhoff's current law: the net outflow at a node equals the
     combinatorial Laplacian L = D − W acting on EPI.  This is the discrete
-    continuity equation div(J) = L·EPI, so ∂EPI/∂t + div(J) = 0 for the
-    diffusion dynamics (∂EPI/∂t = −L_rw·EPI carries the same content
-    degree-normalized).
+    continuity equation div(J) = L·EPI. At positive row strength d_i and
+    frequency νf_i, the nodal equation gives
+    ``(d_i / νf_i) ∂EPI_i/∂t + div(J)_i = 0``. This constitutive flux
+    does not itself include mobility: a frozen node can carry nonzero
+    pressure/current while its nodal derivative vanishes.
 
     Parameters
     ----------
@@ -2078,19 +2206,20 @@ def current_divergence(G: Any) -> tuple[list, Any]:
     (nodes, div) : tuple[list, np.ndarray]
         ``div[i]`` is the net current leaving node i.
     """
-    nodes, j = structural_current(G)
-    return nodes, j.sum(axis=1)
+    conductance, _, flux = _read_edge_flux(G)
+    return conductance.nodes, conductance.divergence(flux)
 
 
 @dataclass(frozen=True)
 class StructuralFlowCertificate:
     r"""Verification of the structural flow (current, Kirchhoff, Ohm).
 
-    The diffusion transport carries a structural current J_ij = EPI_i −
-    EPI_j (Fick's law).  Its node balance is Kirchhoff's current law —
+    Symmetric diffusion transport carries the current
+    J_ij = W_ij (EPI_i − EPI_j). Its node balance is Kirchhoff's current law —
     the discrete continuity equation div(J) = L·EPI — and under an
     injected current the potential drop is the effective resistance
-    (Ohm's law).
+    (Ohm's law). The latter checks sampled reachable pairs and the injected
+    current equation, not injections between disconnected components.
 
     Attributes
     ----------
@@ -2105,7 +2234,8 @@ class StructuralFlowCertificate:
         A uniform EPI field produces zero current everywhere.
     ohm_law_holds : bool
         An injected unit current s→t induces a potential drop equal to
-        R_eff(s,t).
+        R_eff(s,t), with L·V equal to the injected source/sink vector,
+        for sampled reachable pairs.
     max_kirchhoff_residual : float
         Max |Σ_j J_ij − (L·EPI)_i| (≈ 0).
     """
@@ -2148,12 +2278,15 @@ def verify_structural_flow(
 ) -> StructuralFlowCertificate:
     r"""Verify the structural flow: current, Kirchhoff's law, Ohm's law.
 
-    Confirms that the diffusion edge current J_ij = EPI_i − EPI_j is
+    Confirms that the diffusion edge current J_ij = W_ij (EPI_i − EPI_j) is
     antisymmetric, that Kirchhoff's current law div(J) = L·EPI holds (the
     discrete continuity equation), that the total flux balances on a closed
     network, that a uniform EPI field carries zero current, and that an
     injected unit current induces a potential drop equal to the effective
-    resistance (Ohm's law).
+    resistance (Ohm's law). Conductance must be symmetric. Up to 20 distinct
+    reachable pairs are sampled reproducibly; their voltage fields must
+    satisfy L·V = b as well as the resistance drop. When no distinct pair
+    is reachable, this sampled Ohm check is vacuous.
 
     Parameters
     ----------
@@ -2165,9 +2298,8 @@ def verify_structural_flow(
     -------
     StructuralFlowCertificate
     """
-    from ..alias import get_attr
-    from ..constants.aliases import ALIAS_EPI
-
+    if not np.isfinite(tolerance) or tolerance <= 0.0:
+        raise ValueError("tolerance must be finite and positive")
     nodes, j = structural_current(G)
     n = len(nodes)
 
@@ -2175,12 +2307,9 @@ def verify_structural_flow(
     antisym = bool(np.allclose(j, -j.T, atol=tolerance)) if n else True
 
     # Kirchhoff: net outflow = (L·EPI) with L the combinatorial Laplacian
-    _, adj, deg = _adjacency_degree(G)
+    _, adj, deg = _symmetric_adjacency_degree(G)
     lap = np.diag(deg) - adj
-    epi = np.array(
-        [float(get_attr(G.nodes[nd], ALIAS_EPI, 0.0)) for nd in nodes],
-        dtype=float,
-    )
+    epi = structural_field(G, nodes)
     net_out = j.sum(axis=1)
     kirchhoff_res = float(np.max(np.abs(net_out - lap @ epi))) if n else 0.0
     kirchhoff_ok = kirchhoff_res < max(tolerance, 1e-9)
@@ -2192,25 +2321,34 @@ def verify_structural_flow(
 
     # equilibrium: a uniform EPI field carries zero current
     uniform = np.ones(n)
-    j_uniform = (uniform[:, None] - uniform[None, :]) * (adj != 0.0)
+    j_uniform = (uniform[:, None] - uniform[None, :]) * adj
     equilibrium_ok = bool(np.allclose(j_uniform, 0.0, atol=tolerance)) if n else True
 
     # Ohm's law: injected unit current s→t induces drop V_s − V_t = R_eff
     ohm_ok = True
     if n >= 2:
-        lp = np.linalg.pinv(lap)
-        diag = np.diag(lp)
+        _, resistance = effective_resistance(G)
+        pairs = np.argwhere(np.triu(np.isfinite(resistance), k=1))
         rng = np.random.default_rng(0)
-        for _ in range(min(20, n)):
-            s, t = rng.integers(0, n, size=2)
-            if s == t:
-                continue
+        if len(pairs) > 20:
+            pairs = pairs[rng.choice(len(pairs), size=20, replace=False)]
+        inverses = {}
+        for s, t in pairs:
+            component = tuple(np.flatnonzero(np.isfinite(resistance[s])))
+            indices = np.asarray(component, dtype=int)
+            if component not in inverses:
+                inverses[component] = np.linalg.pinv(
+                    lap[np.ix_(indices, indices)], hermitian=True,
+                )
             b = np.zeros(n)
             b[s], b[t] = 1.0, -1.0
-            v = lp @ b
+            v = np.zeros(n)
+            v[indices] = inverses[component] @ b[indices]
             drop = v[s] - v[t]
-            r_eff = diag[s] + diag[t] - 2.0 * lp[s, t]
-            if not np.isclose(drop, r_eff, atol=1e-7):
+            if not (
+                np.allclose(lap @ v, b, atol=tolerance, rtol=0.0)
+                and np.isclose(drop, resistance[s, t], atol=tolerance, rtol=tolerance)
+            ):
                 ohm_ok = False
                 break
 

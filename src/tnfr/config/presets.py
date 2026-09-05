@@ -5,6 +5,8 @@ Only the canonical English preset identifiers are recognised.
 
 from __future__ import annotations
 
+from copy import deepcopy
+
 from ..execution import (
     CANONICAL_PRESET_NAME,
     CANONICAL_PROGRAM_TOKENS,
@@ -75,9 +77,9 @@ def legacy_preset_guidance(name: str) -> str | None:
 
 
 def get_preset(name: str) -> PresetTokens:
-    """Return the preset token sequence identified by ``name``."""
+    """Return an owned copy of the preset and its mutable nested blocks."""
 
     try:
-        return _PRESETS[name]
+        return deepcopy(_PRESETS[name])
     except KeyError:
         raise KeyError(f"Preset not found: {name}") from None

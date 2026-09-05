@@ -1,8 +1,10 @@
-"""Physics-based derivation of canonical start/end operators from TNFR principles.
+"""Canonical operator-role predicates and physics-motivated grammar calibration.
 
-This module derives which operators can validly start or end sequences based on
-the fundamental TNFR nodal equation and structural coherence principles, rather
-than using arbitrary static lists.
+This module derives which operators can validly start or end sequences from
+their declared nodal-channel contracts. Consumers share these predicates rather
+than duplicating operator lists. The numerical recency/debt formulas calibrate
+grammar policies to a scalar relaxation surrogate; they are not universal
+trajectory bounds. See ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md``.
 
 Core TNFR Equation
 ------------------
@@ -11,14 +13,14 @@ Core TNFR Equation
 Where:
 - EPI: Primary Information Structure (coherent form)
 - νf: Structural frequency (reorganization rate, Hz_str)
-- ΔNFR: Internal reorganization operator/gradient
+- ΔNFR: Structural reorganization pressure
 
-Node Activation Conditions
+Operator Activation Contracts
 ---------------------------
-A node activates (exists structurally) when:
-1. νf > 0 (has reorganization capacity)
-2. ΔNFR ≠ 0 (has structural pressure)
-3. EPI ≥ ε (minimum coherence threshold)
+Active reorganization requires nonzero νf and ΔNFR. Initialization and latent
+form thresholds are additional operator contracts. The nodal derivative is
+well-defined at EPI=0 whenever νf and ΔNFR are finite; the generator requirement
+is not a consequence of a singular derivative at zero.
 
 Node Termination Conditions
 ----------------------------
@@ -55,27 +57,23 @@ __all__ = [
 def derive_bifurcation_window_from_physics(
     nu_f: float = 1.0, dt: float | None = None
 ) -> int:
-    r"""Derive the U4b destabilizer-recency window from the pulse relaxation.
+    r"""Return the U4b recency policy calibrated to a scalar decay surrogate.
 
-    A destabilizer (``{OZ, ZHIR, VAL}``) raises the structural pressure
-    ``|ΔNFR|``, leaving the structure plastic.  Under the canonical *discrete*
-    nodal step ``EPI += dt·νf·ΔNFR`` it decays **geometrically**: each step
-    multiplies it by ``q = 1 − νf·dt·ρ``, where ``ρ`` is the mean
-    structural relaxation rate = the mean eigenvalue of the random-walk
-    Laplacian ``L_rw`` = ``trace(L_rw) / N = 1`` (exact — every connected node
-    has ``L_rw[i, i] = 1``).  A transformer (``{ZHIR, THOL}``) can still act on
-    the destabilised structure until that perturbation relaxes back into the
-    coherence band, i.e. below the canonical fraction ``1/(π + 1)`` (π the sole
-    structural scale).  The U4b window is that discrete step count.
+    The calibration uses ``q = 1 - nu_f*dt*rho`` with fixed ``rho = 1`` and
+    selects the first step with ``q**n < 1/(pi+1)``. At ``nu_f=1, dt=0.5``
+    the result is the canonical **3-operation** window, shared by every
+    destabilizer. The public function name and numerical behavior are retained.
 
-    This replaces the hardcoded ``~3 ops`` with a derivation grounded in the
-    nodal equation: **no** ``e`` (the canonical relaxation is the *discrete*
-    geometric decay ``q^n``, not the continuous exponential ``e^{−νf λ t}``,
-    which is only the ``dt → 0`` limit the engine never takes), and no magic
-    constant — only ``π`` (the coherence band), ``νf`` and ``dt``.  For the
-    canonical ``νf = 1`` and ``dt = 0.5`` it evaluates to **3**, the canonical
-    U4b window.  The rate ``ρ = 1`` is topology-independent, so the same window
-    applies to every destabiliser (no graduated split).
+    On loopless graphs without isolates, ``trace(L_rw)/N = 1`` is the mean
+    eigenvalue, not the rate of each pressure perturbation. An Euler diffusion
+    mode has multiplier ``1-nu_f*dt*lambda_k``. On a 21-node path its Fiedler
+    mode needs 231 steps to reach the target at the canonical frequency and
+    step. Thus this policy is not a topology-independent modal relaxation bound.
+
+    The ``q <= 0`` one-step return and the 64-step cap are compatibility
+    fallbacks. A negative modal multiplier can oscillate or grow; these
+    branches do not certify Euler stability. See
+    ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for assumptions and witnesses.
 
     Parameters
     ----------
@@ -87,8 +85,7 @@ def derive_bifurcation_window_from_physics(
     Returns
     -------
     int
-        Discrete steps for a structural-pressure perturbation to relax into the
-        coherence band ``1/(π + 1)`` — the U4b recency window.
+        Calibrated U4b recency-window length in operator positions.
     """
     import math
 
@@ -96,10 +93,10 @@ def derive_bifurcation_window_from_physics(
         from ..constants.canonical import DT_CANONICAL
 
         dt = DT_CANONICAL
-    rho = 1.0  # mean eigenvalue of L_rw = trace/N (exact, parameter-free)
-    q = 1.0 - float(nu_f) * float(dt) * rho  # discrete per-step decay factor
+    rho = 1.0  # fixed mean-rate surrogate; not every graph mode's rate
+    q = 1.0 - float(nu_f) * float(dt) * rho  # scalar calibration multiplier
     if q <= 0.0:
-        return 1  # overdamped: the perturbation is removed in a single step
+        return 1  # compatibility floor, not a modal-stability certificate
     band = 1.0 / (math.pi + 1.0)  # the coherence-band fraction (π only)
     n = 1
     while q ** n >= band and n < 64:
@@ -110,21 +107,20 @@ def derive_bifurcation_window_from_physics(
 def derive_u2_debt_capacity_from_physics(
     nu_f: float = 1.0, dt: float | None = None
 ) -> int:
-    r"""Derive the U2 convergence debt capacity from the pulse relaxation.
+    r"""Return the U2 debt policy calibrated to a scalar forced recurrence.
 
-    U2 (convergence / boundedness) requires the integral ``∫νf·ΔNFR dt`` to stay
-    finite: a destabiliser raises ``|ΔNFR|``, a stabiliser relaxes it.  Under
-    the canonical discrete nodal step the perturbation decays by
-    ``q = 1 − νf·dt·ρ`` per step (``ρ`` = mean ``L_rw`` eigenvalue = ``trace/N =
-    1``, exact).  A **sustained** unit-destabilisation debt accumulates to the
-    geometric steady state ``Σ q^k = 1/(1 − q) = 1/(νf·dt·ρ)`` — the maximum
-    standing debt of uncompensated destabilisers the relaxation can absorb
-    before the integral diverges and the structure fragments (a U2 violation).
-    The same ``q`` that sets the U4b *time* window
-    (:func:`derive_bifurcation_window_from_physics`) sets this *capacity*: the
-    window is the relaxation time, the debt is the relaxation absorption.  For
-    the canonical ``νf = 1`` and ``dt = 0.5`` this is **2** — the canonical U2
-    debt threshold, now DERIVED (no magic constant).
+    With fixed ``rho=1`` and ``0 <= q=1-nu_f*dt*rho < 1``, a unit-forced
+    scalar recurrence has steady state ``sum(q**k)=1/(nu_f*dt*rho)``.
+    Its floor calibrates the maximum operator-bookkeeping debt. At
+    ``nu_f=1, dt=0.5`` this is the canonical **2**. The same surrogate sets
+    the U4b recency window in :func:`derive_bifurcation_window_from_physics`.
+
+    This geometric sum is not a maximum physical pressure, does not describe
+    every graph mode, and does not prove convergence of the nodal integral
+    under sustained forcing. Grammar debt counts declared operator obligations;
+    a trajectory bound additionally needs feedback, gains, time steps, and a
+    norm. The nonpositive-rate return and all numerical behavior are retained.
+    See ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for the analytic distinction.
 
     Parameters
     ----------
@@ -136,8 +132,8 @@ def derive_u2_debt_capacity_from_physics(
     Returns
     -------
     int
-        The maximum sustainable uncompensated-destabiliser debt
-        ``⌊1/(νf·dt·ρ)⌋`` — the U2 convergence threshold.
+        Operator-bookkeeping capacity ``floor(1/(nu_f*dt*rho))`` for positive
+        ``nu_f*dt``, otherwise zero; a grammar policy rather than a theorem.
     """
     import math
 
@@ -145,7 +141,7 @@ def derive_u2_debt_capacity_from_physics(
         from ..constants.canonical import DT_CANONICAL
 
         dt = DT_CANONICAL
-    rho = 1.0  # mean eigenvalue of L_rw = trace/N (exact, parameter-free)
+    rho = 1.0  # fixed mean-rate surrogate; not every graph mode's rate
     relax = float(nu_f) * float(dt) * rho  # = 1 - q (the per-step relaxation)
     if relax <= 0.0:
         return 0

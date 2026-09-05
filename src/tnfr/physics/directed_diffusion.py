@@ -1,11 +1,13 @@
 r"""Directed non-normal structural dynamics (R9).
 
-The canonical structural-diffusion operator ``L_rw = I − D_out⁻¹ W`` is symmetric
-(hence **normal**) only for undirected or vertex-transitive graphs.  A general
-**directed** graph makes ``L_rw`` non-normal, and then the naive spectral reading
-breaks down:
+The structural-diffusion operator ``L_rw = I − D_out⁻¹ W`` uses outgoing
+conductance. Even for an undirected graph its matrix need not be symmetric:
+on positive-strength vertices, symmetric W makes it similar through D^(1/2)
+to the symmetric normalized Laplacian. Raw Euclidean normality is a separate
+property. On a non-normal operator the naive orthogonal spectral reading
+does not apply:
 
-* ``eigh`` is invalid (the operator is not symmetric);
+* ``eigh`` requires a symmetric/Hermitian representation;
 * a stable spectrum (``spectral_abscissa(−L) ≤ 0``) does **not** exclude
   **transient amplification** of ``‖e^{−tL}‖``;
 * right eigenvectors are not orthogonal, so ``Q Qᴴ`` is not the spectral
@@ -17,11 +19,11 @@ spectral machinery applies unchanged.  This module separates the two regimes and
 certifies the non-normal one with numpy-only measures (transient gain,
 pseudospectral / Kreiss bound), gating the Schur residual on SciPy.
 
-**U2 scope (honest).**  The reading ``r_c = ν_f λ₂`` describes **asymptotic**
-relaxation only.  For non-normal operators a positive transient gain means
-``C(t)`` can dip before it relaxes; the U2 integral convergence still holds
-asymptotically, but no generalized U2 bound is claimed until the transient
-contribution is derived (``NT-P09`` OPEN).
+**U2 scope.** These matrix diagnostics do not prove grammar sufficiency or
+convergence for arbitrary pressure laws. Semigroup norms depend on the chosen
+metric, and a diffusion generator retains stationary modes. Its nonpositive
+spectral abscissa does not imply decay of the full state to zero. The canonical
+U2 metric and generalized bound remain open.
 """
 
 from __future__ import annotations
@@ -32,6 +34,7 @@ from typing import Callable
 
 import numpy as np
 
+from ..mathematics._weight_normalization import normalize_weights
 from .spectral_projectors import (
     commutator_norm,
     derived_tolerance,
@@ -73,25 +76,41 @@ __all__ = [
 ]
 
 
-def directed_rw_laplacian(adjacency) -> np.ndarray:
-    r"""Directed random-walk Laplacian ``L_rw = I − D_out⁻¹ W`` (OUTGOING
-    convention, C1).
+def _row_normalized_transition(adjacency) -> np.ndarray:
+    """Validated outgoing transition with absorbing zero-strength rows.
 
-    ``W[i][j] = 1`` means an edge ``i → j``; the row is normalised by the
-    out-degree ``D_out[i]``.  A sink (out-degree 0) contributes a zero row (it
-    neither relaxes nor drives), which keeps ``L_rw`` well defined.
+    Divide rows directly instead of forming reciprocal strengths, which can
+    overflow for subnormal conductance. Scaling each nonzero row by its largest
+    entry first also avoids overflow in a sum of finite conductances. Returned
+    storage is independent of the input matrix.
     """
-    w = np.asarray(adjacency, dtype=float)
-    n = w.shape[0]
-    out_degree = w.sum(axis=1)
-    inv = np.divide(
-        1.0, out_degree, out=np.zeros_like(out_degree), where=out_degree > 0
-    )
-    transition = (w.T * inv).T  # D_out^{-1} W
-    laplacian = np.eye(n) - transition
-    # zero-out sink rows so isolated sinks do not spuriously self-relax
-    laplacian[out_degree == 0] = 0.0
-    return laplacian
+    try:
+        if np.iscomplexobj(adjacency):
+            raise ValueError("Adjacency must contain real conductance")
+        weights = np.asarray(adjacency, dtype=float)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("Adjacency must be a square real matrix") from exc
+    if weights.ndim != 2 or weights.shape[0] != weights.shape[1]:
+        raise ValueError("Adjacency must be a square real matrix")
+    if not np.all(np.isfinite(weights)) or np.any(weights < 0.0):
+        raise ValueError("Adjacency requires finite nonnegative conductance")
+
+    transition, row_scale, _ = normalize_weights(weights)
+    sinks = np.flatnonzero(row_scale == 0.0)
+    transition[sinks, sinks] = 1.0
+    return transition
+
+
+def directed_rw_laplacian(adjacency) -> np.ndarray:
+    r"""Outgoing random-walk Laplacian ``L_rw = I − P`` (convention C1).
+
+    Input is a square matrix of finite nonnegative conductance. Positive rows
+    use ``P_ij = W_ij / sum_j W_ij``. Zero-strength rows are absorbing in P and
+    zero in L: the sink's own state is fixed, but it can still influence nodes
+    with arcs pointing to it. Self-loops contribute once to row strength.
+    """
+    transition = _row_normalized_transition(adjacency)
+    return np.eye(len(transition)) - transition
 
 
 def directed_cayley_adjacency(n: int, connection) -> np.ndarray:
@@ -132,10 +151,11 @@ class DirectedDynamicsCertificate:
     commutator:
         ``‖L Lᴴ − Lᴴ L‖₂`` (zero iff normal).
     abscissa:
-        Spectral abscissa ``α(−L) = max Re λ(−L)``; ``≤ 0`` ⇒ asymptotically
-        stable.
+        Spectral abscissa ``α(−L) = max Re λ(−L)``. Diffusion retains stationary
+        modes; a nonpositive value does not imply full-state decay to zero.
     asymptotically_stable:
-        ``abscissa ≤ tol``.
+        Legacy flag for ``abscissa ≤ tol`` (no positive spectral growth),
+        not a claim that the stationary subspace decays.
     transient_gain:
         Peak ``‖e^{−tL}‖₂``; ``> 1`` ⇒ transient amplification.
     has_transient_amplification:
@@ -161,7 +181,7 @@ def certify_directed_dynamics(
 ) -> DirectedDynamicsCertificate:
     r"""Certify the directed diffusion generator ``−L_rw`` of a digraph.
 
-    Measures normality, asymptotic stability (spectral abscissa), and transient
+    Measures normality, spectral growth (abscissa), and transient
     behaviour (gain + pseudospectral bound) — the transient measures are what a
     stable spectrum alone cannot provide for a non-normal operator.
     """
@@ -210,19 +230,22 @@ class NormKind(Enum):
 
 
 def stationary_distribution(adjacency, *, tol: float | None = None) -> np.ndarray:
-    r"""Stationary distribution ``π`` of the random walk ``P = D_out⁻¹ W``.
+    r"""Strictly positive stationary ``π`` for the outgoing walk ``P = I−L``.
 
-    ``π`` is the left Perron eigenvector (``πᵀ P = πᵀ``, ``π ≥ 0``, ``Σ π = 1``).
-    Raises ``ValueError`` unless ``π`` is strictly positive (the graph must be
-    strongly connected for the ``L²(π)`` norm to be non-degenerate).
+    Uses the same validated transition as :func:`directed_rw_laplacian`,
+    including absorbing zero-strength rows. Verifies ``π P = π`` and
+    ``sum(π)=1``. The stationary-norm API retains its strict positivity gate;
+    it does not return an arbitrary sink-supported measure of a reducible
+    graph. A strongly connected finite walk has a unique positive stationary
+    distribution; the one-node absorbing walk is also supported.
     """
-    w = np.asarray(adjacency, dtype=float)
-    n = w.shape[0]
-    out_degree = w.sum(axis=1)
-    inv = np.divide(
-        1.0, out_degree, out=np.zeros_like(out_degree), where=out_degree > 0
-    )
-    transition = (w.T * inv).T
+    transition = _row_normalized_transition(adjacency)
+    if not len(transition):
+        raise ValueError("A stationary distribution requires at least one node")
+    if tol is None:
+        tol = derived_tolerance(transition)
+    if not np.isfinite(tol) or tol < 0.0:
+        raise ValueError("Stationary tolerance must be finite and nonnegative")
     vals, vecs = np.linalg.eig(transition.T)
     idx = int(np.argmin(np.abs(vals - 1.0)))
     pi = np.real(vecs[:, idx])
@@ -230,13 +253,19 @@ def stationary_distribution(adjacency, *, tol: float | None = None) -> np.ndarra
     if abs(total) < np.finfo(float).eps:
         raise ValueError("degenerate stationary vector (graph not irreducible)")
     pi = pi / total
-    if tol is None:
-        tol = derived_tolerance(transition)
     if np.min(pi) <= tol:
         raise ValueError(
             "stationary distribution is not strictly positive; the L²(π) norm "
-            "requires a strongly connected graph"
+            "requires positive stationary weights"
         )
+    residual_tolerance = max(tol, len(transition) * np.finfo(float).eps)
+    if (
+        not np.all(np.isfinite(pi))
+        or abs(vals[idx] - 1.0) > residual_tolerance
+        or np.max(np.abs(pi @ transition - pi)) > residual_tolerance
+        or abs(float(pi.sum()) - 1.0) > residual_tolerance
+    ):
+        raise ValueError("Stationary eigenvector does not satisfy the walk balance")
     return pi
 
 

@@ -9,12 +9,14 @@ edge artifacts in sync with ΔNFR driven updates.
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import logging
 import pickle
 import sys
 import threading
 import time
+import weakref
 from collections import defaultdict
 from collections.abc import (
     Callable,
@@ -25,6 +27,7 @@ from collections.abc import (
     MutableMapping,
 )
 from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import field
 from functools import lru_cache, wraps
 from time import perf_counter
@@ -84,6 +87,7 @@ __all__ = (
     "edge_version_update",
     "ensure_node_index_map",
     "ensure_node_offset_map",
+    "stable_node_offsets",
     "get_graph_version",
     "increment_edge_version",
     "increment_graph_version",
@@ -91,6 +95,7 @@ __all__ = (
     "stable_json",
     "configure_graph_cache_limits",
     "DNFR_PREP_STATE_KEY",
+    "GRAPH_RUNTIME_CACHE_KEYS",
     "DnfrPrepState",
     "build_cache_manager",
     "configure_global_cache_layers",
@@ -1135,10 +1140,8 @@ def stable_json(obj: Any) -> str:
     )
 
 
-@lru_cache(maxsize=1024)
-def _node_repr_digest(obj: Any) -> tuple[str, bytes]:
-    """Return cached stable representation and digest for ``obj``."""
-
+def _compute_node_repr_digest(obj: Any) -> tuple[str, bytes]:
+    """Serialize one label without using node equality as a cache identity."""
     try:
         repr_ = stable_json(obj)
     except TypeError:
@@ -1147,10 +1150,47 @@ def _node_repr_digest(obj: Any) -> tuple[str, bytes]:
     return repr_, digest
 
 
+class _NodeIdentityKey:
+    """Keep a label alive while its bounded digest entry uses object identity."""
+
+    __slots__ = ("node",)
+
+    def __init__(self, node: Any) -> None:
+        self.node = node
+
+    def __hash__(self) -> int:
+        return id(self.node)
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, _NodeIdentityKey) and self.node is other.node
+
+
+@lru_cache(maxsize=1024, typed=True)
+def _cached_node_repr_digest(key: _NodeIdentityKey) -> tuple[str, bytes]:
+    return _compute_node_repr_digest(key.node)
+
+
+def _node_repr_digest(obj: Any) -> tuple[str, bytes]:
+    """Return a stable digest cached for the actual node object.
+
+    Identity is only an in-process cache key; it never enters serialization or
+    digest bytes. Keeping the object in a bounded key prevents id reuse while
+    separating equal labels with different nested types or representations.
+    """
+    return _cached_node_repr_digest(_NodeIdentityKey(obj))
+
+
+# Preserve the existing functools cache diagnostics and uncached entry point.
+_node_repr_digest.cache_info = _cached_node_repr_digest.cache_info  # type: ignore[attr-defined]
+_node_repr_digest.cache_clear = _cached_node_repr_digest.cache_clear  # type: ignore[attr-defined]
+_node_repr_digest.cache_parameters = _cached_node_repr_digest.cache_parameters  # type: ignore[attr-defined]
+_node_repr_digest.__wrapped__ = _compute_node_repr_digest  # type: ignore[attr-defined]
+
+
 def clear_node_repr_cache() -> None:
     """Clear cached node representations used for checksums."""
 
-    _node_repr_digest.cache_clear()
+    _cached_node_repr_digest.cache_clear()
 
 
 def configure_global_cache_layers(
@@ -1362,6 +1402,19 @@ def _iter_node_digests(nodes: Iterable[Any], *, presorted: bool) -> Iterable[byt
             yield digest
 
 
+def _same_node_snapshot(previous: tuple[Any, ...], current: tuple[Any, ...]) -> bool:
+    """Compare actual node objects, preserving order and label representation.
+
+    Equality alone conflates replacements such as ``1``, ``True``, and ``1.0``.
+    These labels can have different serialization and sorting despite comparing
+    equal, so a cached snapshot may be reused only for the same objects.
+    """
+    return previous is current or (
+        len(previous) == len(current)
+        and all(old is new for old, new in zip(previous, current))
+    )
+
+
 def _node_set_checksum_no_nodes(
     G: nx.Graph,
     graph: Any,
@@ -1369,27 +1422,8 @@ def _node_set_checksum_no_nodes(
     presorted: bool,
     store: bool,
 ) -> str:
-    """Checksum helper when no explicit node set is provided."""
-
-    nodes_view = G.nodes()
-    current_nodes = frozenset(nodes_view)
-    cached = graph.get(NODE_SET_CHECKSUM_KEY)
-    if cached and len(cached) == 3 and cached[2] == current_nodes:
-        return cached[1]
-
-    hasher = hashlib.blake2b(digest_size=16)
-    for digest in _iter_node_digests(nodes_view, presorted=presorted):
-        hasher.update(digest)
-
-    checksum = hasher.hexdigest()
-    if store:
-        token = checksum[:16]
-        if cached and cached[0] == token:
-            return cached[1]
-        graph[NODE_SET_CHECKSUM_KEY] = (token, checksum, current_nodes)
-    else:
-        graph.pop(NODE_SET_CHECKSUM_KEY, None)
-    return checksum
+    """Compatibility helper using the same snapshot policy as explicit nodes."""
+    return node_set_checksum(G, tuple(G.nodes()), presorted=presorted, store=store)
 
 
 def node_set_checksum(
@@ -1399,23 +1433,34 @@ def node_set_checksum(
     presorted: bool = False,
     store: bool = True,
 ) -> str:
-    """Return a BLAKE2b checksum of ``G``'s node set."""
+    """Return a BLAKE2b checksum of the selected nodes.
+
+    A complete ordered snapshot and the sorting mode validate reuse. This
+    detects replacement/reordering even when graph size is unchanged and
+    prevents a subset or ``presorted`` result from contaminating another call.
+    ``store=False`` removes the saved record, including on a cache hit.
+    """
 
     graph = get_graph(G)
     if nodes is None:
         return _node_set_checksum_no_nodes(G, graph, presorted=presorted, store=store)
 
-    hasher = hashlib.blake2b(digest_size=16)
-    for digest in _iter_node_digests(nodes, presorted=presorted):
-        hasher.update(digest)
-
-    checksum = hasher.hexdigest()
+    snapshot = tuple(nodes)
+    cached = graph.get(NODE_SET_CHECKSUM_KEY)
+    if (
+        isinstance(cached, tuple) and len(cached) == 4
+        and _same_node_snapshot(cached[2], snapshot) and cached[3] is bool(presorted)
+    ):
+        checksum = cached[1]
+    else:
+        hasher = hashlib.blake2b(digest_size=16)
+        for digest in _iter_node_digests(snapshot, presorted=presorted):
+            hasher.update(digest)
+        checksum = hasher.hexdigest()
     if store:
-        token = checksum[:16]
-        cached = graph.get(NODE_SET_CHECKSUM_KEY)
-        if cached and cached[0] == token:
-            return cached[1]
-        graph[NODE_SET_CHECKSUM_KEY] = (token, checksum)
+        # Replace legacy two/three-field entries even when the digest is the
+        # same. Otherwise every later lookup would rebuild all node digests.
+        graph[NODE_SET_CHECKSUM_KEY] = (checksum[:16], checksum, snapshot, bool(presorted))
     else:
         graph.pop(NODE_SET_CHECKSUM_KEY, None)
     return checksum
@@ -1430,6 +1475,15 @@ class NodeCache:
     sorted_nodes: tuple[Any, ...] | None = None
     idx: dict[Any, int] | None = None
     offset: dict[Any, int] | None = None
+    owner: weakref.ReferenceType[Any] | None = field(default=None, repr=False, compare=False)
+    offset_sorted: bool | None = None
+
+    def __reduce__(self) -> tuple[Any, tuple[Any, ...]]:
+        """Preserve legacy picklability while rebuilding runtime ownership."""
+        return type(self), (
+            self.checksum, self.nodes, self.sorted_nodes, self.idx, self.offset,
+            None, getattr(self, "offset_sorted", None),
+        )
 
     @property
     def n(self) -> int:
@@ -1443,11 +1497,12 @@ def _update_node_cache(
     *,
     checksum: str,
     sorted_nodes: tuple[Any, ...] | None = None,
+    owner: weakref.ReferenceType[Any] | None = None,
 ) -> None:
     """Store ``nodes`` and ``checksum`` in ``graph`` under ``key``."""
 
     graph[f"{key}_cache"] = NodeCache(
-        checksum=checksum, nodes=nodes, sorted_nodes=sorted_nodes
+        checksum=checksum, nodes=nodes, sorted_nodes=sorted_nodes, owner=owner
     )
     graph[f"{key}_checksum"] = checksum
 
@@ -1458,10 +1513,12 @@ def _refresh_node_list_cache(
     *,
     sort_nodes: bool,
     current_n: int,
+    nodes: tuple[Any, ...] | None = None,
 ) -> tuple[Any, ...]:
     """Refresh the cached node list and return the nodes."""
 
-    nodes = tuple(G.nodes())
+    if nodes is None:
+        nodes = tuple(G.nodes())
     checksum = node_set_checksum(G, nodes, store=True)
     sorted_nodes = tuple(sorted(nodes, key=_node_repr)) if sort_nodes else None
     _update_node_cache(
@@ -1470,71 +1527,38 @@ def _refresh_node_list_cache(
         "_node_list",
         checksum=checksum,
         sorted_nodes=sorted_nodes,
+        owner=weakref.ref(G),
     )
     graph["_node_list_len"] = current_n
     return nodes
 
 
-def _reuse_node_list_cache(
-    graph: Any,
-    cache: NodeCache,
-    nodes: tuple[Any, ...],
-    sorted_nodes: tuple[Any, ...] | None,
-    *,
-    sort_nodes: bool,
-    new_checksum: str | None,
-) -> None:
-    """Reuse existing node cache and record its checksum if missing."""
-
-    checksum = cache.checksum if new_checksum is None else new_checksum
-    if sort_nodes and sorted_nodes is None:
-        sorted_nodes = tuple(sorted(nodes, key=_node_repr))
-    _update_node_cache(
-        graph,
-        nodes,
-        "_node_list",
-        checksum=checksum,
-        sorted_nodes=sorted_nodes,
-    )
-
-
 def _cache_node_list(G: nx.Graph) -> tuple[Any, ...]:
-    """Cache and return the tuple of nodes for ``G``."""
+    """Validate one ordered snapshot and reuse graph-owned derived maps.
+
+    NetworkX permits mutations without TNFR version hooks, including filtered
+    views and same-size replacement. Comparing the complete tuple preserves
+    that detection without serializing/hash-sorting unchanged nodes.
+    """
 
     graph = get_graph(G)
     cache: NodeCache | None = graph.get("_node_list_cache")
-    nodes = cache.nodes if cache else None
-    sorted_nodes = cache.sorted_nodes if cache else None
-    stored_len = graph.get("_node_list_len")
-    current_n = G.number_of_nodes()
+    snapshot = tuple(G.nodes())
+    current_n = len(snapshot)
     dirty = bool(graph.pop("_node_list_dirty", False))
-
-    invalid = nodes is None or stored_len != current_n or dirty
-    new_checksum: str | None = None
-
-    if not invalid and cache:
-        new_checksum = node_set_checksum(G)
-        invalid = cache.checksum != new_checksum
-
     sort_nodes = bool(graph.get("SORT_NODES", False))
-
-    if invalid:
-        nodes = _refresh_node_list_cache(
-            G, graph, sort_nodes=sort_nodes, current_n=current_n
+    if (
+        cache is None or getattr(cache, "owner", None) is None or cache.owner() is not G
+        or not _same_node_snapshot(cache.nodes, snapshot) or dirty
+    ):
+        return _refresh_node_list_cache(
+            G, graph, sort_nodes=sort_nodes, current_n=current_n, nodes=snapshot
         )
-    elif cache and "_node_list_checksum" not in graph:
-        _reuse_node_list_cache(
-            graph,
-            cache,
-            nodes,
-            sorted_nodes,
-            sort_nodes=sort_nodes,
-            new_checksum=new_checksum,
-        )
-    else:
-        if sort_nodes and sorted_nodes is None and cache is not None:
-            cache.sorted_nodes = tuple(sorted(nodes, key=_node_repr))
-    return nodes
+    graph.setdefault("_node_list_checksum", cache.checksum)
+    graph["_node_list_len"] = current_n
+    if sort_nodes and cache.sorted_nodes is None:
+        cache.sorted_nodes = tuple(sorted(cache.nodes, key=_node_repr))
+    return cache.nodes
 
 
 def cached_node_list(G: nx.Graph) -> tuple[Any, ...]:
@@ -1555,7 +1579,10 @@ def _ensure_node_map(
     _cache_node_list(G)
     cache: NodeCache = graph["_node_list_cache"]
 
-    missing = [attr for attr in attrs if getattr(cache, attr) is None]
+    missing = [
+        attr for attr in attrs
+        if getattr(cache, attr) is None or (attr == "offset" and cache.offset_sorted is not sort)
+    ]
     if missing:
         if sort:
             nodes_opt = cache.sorted_nodes
@@ -1572,6 +1599,8 @@ def _ensure_node_map(
                 mappings[attr][node] = idx
         for attr in missing:
             setattr(cache, attr, mappings[attr])
+            if attr == "offset":
+                cache.offset_sorted = sort
     return cast(dict[NodeId, int], getattr(cache, attrs[0]))
 
 
@@ -1588,6 +1617,139 @@ def ensure_node_offset_map(G: TNFRGraph) -> dict[NodeId, int]:
     return _ensure_node_map(G, attrs=("offset",), sort=sort)
 
 
+def _offset_scope_owner() -> tuple[int, Any]:
+    """Keep a synchronous scope local even when an async context is copied."""
+    try:
+        task = asyncio.current_task()
+    except RuntimeError:
+        task = None
+    return threading.get_ident(), task
+
+
+@dataclass(slots=True)
+class _NodeOffsetScope:
+    graph: nx.Graph
+    nodes: tuple[Any, ...]
+    offsets: dict[Any, int]
+    node_data: dict[Any, Any]
+    storage: Any
+    metadata: Any
+    sort: bool
+    owner: tuple[int, Any]
+    active: bool = True
+
+    def check(self, *, complete: bool = False) -> None:
+        G = self.graph
+        changed = (
+            G._node is not self.storage or G.graph is not self.metadata
+            or len(G._node) != len(self.nodes)
+            or bool(G.graph.get("SORT_NODES", False)) is not self.sort
+        )
+        if complete and not changed:
+            changed = (
+                not _same_node_snapshot(self.nodes, tuple(G.nodes()))
+                or any(G._node[node] is not data for node, data in self.node_data.items())
+            )
+        if changed:
+            raise RuntimeError(
+                "stable_node_offsets: node order, storage, or SORT_NODES changed "
+                "during the scope; earlier operations are not rolled back"
+            )
+
+
+_NODE_OFFSET_SCOPES: ContextVar[tuple[_NodeOffsetScope, ...]] = ContextVar(
+    "tnfr_node_offset_scopes", default=()
+)
+
+
+def _scoped_node_offset(G: nx.Graph, node: NodeId) -> int | None:
+    """Read an opted-in offset; unrelated/expired execution uses normal lookup."""
+    for scope in reversed(_NODE_OFFSET_SCOPES.get()):
+        if (
+            scope.graph is not G or not scope.active
+            or scope.owner != _offset_scope_owner()
+        ):
+            continue
+        scope.check()
+        # A replaced target must not consume its predecessor's offset before
+        # the complete boundary check. Other same-size mutations are checked
+        # at scope exit, under the caller's explicit stable-order contract.
+        if node not in scope.offsets or G._node.get(node) is not scope.node_data[node]:
+            raise RuntimeError("stable_node_offsets: target node changed during the scope")
+        return scope.offsets[node]
+    return None
+
+
+@contextmanager
+def stable_node_offsets(G: nx.Graph) -> Iterator[tuple[NodeId, ...]]:
+    """Reuse jitter offsets during an explicitly owned synchronous traversal.
+
+    The caller must have exclusive graph access and keep node membership,
+    order, node attribute dictionaries, label representations and SORT_NODES
+    unchanged until exit, including inside callbacks. Attribute *values* and
+    edges may change. The yielded tuple retains graph insertion order; jitter
+    offsets still follow SORT_NODES. Public NodeNX.offset always performs its
+    normal complete validation, even inside this scope.
+
+    Only ordinary NetworkX Graph/DiGraph/MultiGraph/MultiDiGraph instances are
+    supported; views and subclasses retain their normal lookup path. A warm
+    scope costs O(V) at its boundaries and O(1) per jitter offset for fixed
+    nesting depth, using O(V) temporary storage. Offset selection is O(depth)
+    for arbitrarily nested scopes. This is not O(1) arbitrary-mutation detection
+    or a lock: final membership/order changes raise on exit, and earlier
+    operations are not rolled back. Transient changes restored before exit
+    are not tracked.
+
+    Scopes nest, expire on exceptions, and are not inherited by other threads
+    or async tasks. Do not yield/await while holding this synchronous scope.
+    No snapshot is stored on the graph or carried into graph copies.
+
+    Example::
+
+        from tnfr.node import NodeNX
+        from tnfr.operators.jitter import random_jitter
+        from tnfr.utils.cache import stable_node_offsets
+
+        with stable_node_offsets(graph) as nodes:
+            for node_id in nodes:
+                value = random_jitter(NodeNX.from_graph(graph, node_id), 0.1)
+    """
+    if (
+        type(G) not in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+        or hasattr(G, "_graph")
+    ):
+        raise TypeError(
+            "stable_node_offsets requires an ordinary NetworkX graph, not a view/subclass"
+        )
+    owner = _offset_scope_owner()
+    previous = _NODE_OFFSET_SCOPES.get()
+    for outer in previous:
+        if outer.graph is G and outer.active and outer.owner == owner:
+            outer.check(complete=True)
+    offsets = dict(ensure_node_offset_map(G))
+    nodes = G.graph["_node_list_cache"].nodes
+    scope = _NodeOffsetScope(
+        G, nodes, offsets, {node: G._node[node] for node in nodes}, G._node,
+        G.graph, bool(G.graph.get("SORT_NODES", False)), owner,
+    )
+    token = _NODE_OFFSET_SCOPES.set((*previous, scope))
+    try:
+        try:
+            yield nodes
+        except BaseException as exc:
+            try:
+                scope.check(complete=True)
+            except RuntimeError as violation:
+                if hasattr(exc, "add_note"):  # Python 3.11+, preserving 3.10 support.
+                    exc.add_note(str(violation))
+            raise
+        else:
+            scope.check(complete=True)
+    finally:
+        scope.active = False
+        _NODE_OFFSET_SCOPES.reset(token)
+
+
 @dataclass
 class EdgeCacheState:
     cache: MutableMapping[Hashable, Any]
@@ -1599,6 +1761,17 @@ class EdgeCacheState:
 _GRAPH_CACHE_MANAGER_KEY = "_tnfr_cache_manager"
 _GRAPH_CACHE_CONFIG_KEY = "_tnfr_cache_config"
 DNFR_PREP_STATE_KEY = "_dnfr_prep_state"
+
+# Rebuildable state owned by this cache/metrics infrastructure. Configuration
+# (_cache_config, _tnfr_cache_config, _tnfr_cache_layers) is deliberately absent.
+# Graph-state copies can omit these keys before copying persistent user data.
+GRAPH_RUNTIME_CACHE_KEYS = frozenset({
+    _GRAPH_CACHE_MANAGER_KEY, "_edge_cache_manager", DNFR_PREP_STATE_KEY,
+    "_dnfr_prep_cache", "_tnfr_change_tracker", "_trig_version",
+    "_node_cache", "_node_cache_weak",
+    "_node_list_cache", "_node_list_checksum", "_node_list_len",
+    "_node_list_dirty", NODE_SET_CHECKSUM_KEY, "_dnfr_nodes_checksum",
+})
 
 # Ephemeral graph cache management:
 # ----------------------------------
@@ -1684,8 +1857,11 @@ def _coerce_dnfr_state(
 
 def _graph_cache_manager(graph: MutableMapping[str, Any]) -> CacheManager:
     manager = graph.get(_GRAPH_CACHE_MANAGER_KEY)
-    if not isinstance(manager, CacheManager):
+    # NetworkX copies graph metadata shallowly. Rebinding only the outer
+    # EdgeCacheManager still shares the inner buffers and reset hooks.
+    if not isinstance(manager, CacheManager) or getattr(manager, "_graph_owner", None) is not graph:
         manager = build_cache_manager(graph=graph, default_capacity=128)
+        manager._graph_owner = graph
         graph[_GRAPH_CACHE_MANAGER_KEY] = manager
     config = graph.get(_GRAPH_CACHE_CONFIG_KEY)
     if isinstance(config, dict):
@@ -1899,7 +2075,15 @@ def edge_version_cache(
     *,
     max_entries: int | None | object = CacheManager._MISSING,
 ) -> T:
-    """Return cached ``builder`` output tied to the edge version of ``G``."""
+    """Return cached ``builder`` output tied to the edge version of ``G``.
+
+    NetworkX views share their parent's metadata dictionary and may expose a
+    different node/edge set. They compute fresh values instead of reading or
+    writing that shared cache. Ordinary graph copies receive their own manager.
+    """
+
+    if isinstance(G, nx.Graph) and getattr(G, "_graph", None) is not None:
+        return builder()
 
     graph = get_graph(G)
     manager = graph.get("_edge_cache_manager")  # type: ignore[assignment]
@@ -1970,6 +2154,7 @@ def cached_nodes_and_A(
 
     if nodes is None:
         nodes = cached_node_list(G)
+    nodes = tuple(nodes)
     graph = G.graph
 
     checksum = getattr(graph.get("_node_list_cache"), "checksum", None)
@@ -1982,7 +2167,7 @@ def cached_nodes_and_A(
     if checksum is None:
         checksum = ""
 
-    key = f"_dnfr_{len(nodes)}_{checksum}"
+    key = ("_dnfr", nodes, bool(prefer_sparse))
     graph["_dnfr_nodes_checksum"] = checksum
 
     def builder() -> tuple[tuple[Any, ...], Any]:
@@ -2966,37 +3151,32 @@ def _generate_cache_key(
     # Build key components
     key_parts = [func_name]
 
+    def argument_key(value: Any) -> str:
+        # Signature binding turns positional graphs into keyword arguments;
+        # both forms must retain identity instead of NetworkX's summary str.
+        if hasattr(value, "graph"):
+            return f"graph:{id(value)}"
+        return repr(value)
+
     # Add positional args
     for arg in args:
-        if hasattr(arg, "__name__"):  # For graph objects, use name
-            key_parts.append(f"graph:{arg.__name__}")
-        elif hasattr(arg, "graph"):  # NetworkX graphs have .graph attribute
-            # Use graph id for identity (session-specific, cache cleared between sessions)
-            key_parts.append(f"graph:{id(arg)}")
-        else:
-            # For simple types, include value
-            key_parts.append(str(arg))
+        key_parts.append(argument_key(arg))
 
     # Add keyword args (sorted for consistency)
     for k in sorted(kwargs.keys()):
         v = kwargs[k]
-        key_parts.append(f"{k}={v}")
+        key_parts.append(f"{k}={argument_key(v)}")
 
     # Create deterministic hash (MD5 is acceptable for non-security cache keys)
-    key_str = "|".join(key_parts)
+    key_str = repr(key_parts)
     return hashlib.md5(key_str.encode(), usedforsecurity=False).hexdigest()
 
 
 def _extract_graph_from_args(args: tuple, kwargs: dict) -> Any | None:
-    """Extract graph object from function arguments."""
-    if args:
-        # Assume first argument is graph if it has graph-like attributes
-        # or just return it and let the caller check
-        return args[0]
-    if "graph" in kwargs:
-        return kwargs["graph"]
-    if "G" in kwargs:
-        return kwargs["G"]
+    """Find the first explicit graph argument, independent of its name."""
+    for value in (*args, *kwargs.values()):
+        if hasattr(value, "graph") and callable(getattr(value, "nodes", None)):
+            return value
     return None
 
 
@@ -3036,14 +3216,16 @@ def _compute_dependency_hash(graph: Any, dependencies: set[str]) -> str:
     This ensures that cache keys reflect the current state of mutable
     node attributes like phase and delta_nfr, and that different subgraphs
     (with different node sets or edge sets) produce distinct keys when
-    ``graph_topology`` is declared as a dependency.
+    ``graph_topology`` is declared as a dependency. Precision-aware consumers
+    declare ``precision_mode`` to separate results across global mode changes.
     """
-    if not dependencies or graph is None:
+    if not dependencies:
         return ""
 
     node_deps = {d for d in dependencies if d.startswith("node_")}
     has_topology = "graph_topology" in dependencies
-    if not node_deps and not has_topology:
+    has_precision = "precision_mode" in dependencies
+    if not node_deps and not has_topology and not has_precision:
         return ""
 
     hasher = hashlib.md5(usedforsecurity=False)
@@ -3051,20 +3233,43 @@ def _compute_dependency_hash(graph: Any, dependencies: set[str]) -> str:
     # Check if graph is a NetworkX graph
     is_nx = hasattr(graph, "nodes") and callable(graph.nodes)
 
-    if not is_nx:
+    if not is_nx and not has_precision:
         return ""
 
-    # Include graph topology (node IDs + edge set) when declared
+    def update_record(record: Any) -> None:
+        # Delimit records structurally: [1, 23] must not hash like [12, 3].
+        encoded = repr(record).encode("utf-8")
+        hasher.update(len(encoded).to_bytes(8, "big"))
+        hasher.update(encoded)
+
+    if has_precision:
+        from ..config.precision_modes import get_precision_mode
+
+        update_record(("precision_mode", get_precision_mode()))
+
+    if not is_nx:
+        return hasher.hexdigest()
+
+    # Include labelled, weighted topology: shortest paths consume weights,
+    # and degree sequences alone cannot identify edges or their node labels.
     if has_topology:
         try:
-            sorted_nodes = sorted(graph.nodes(), key=str)
-            hasher.update(b"nodes:")
-            for n in sorted_nodes:
-                hasher.update(str(n).encode("utf-8"))
-            sorted_edges = sorted(graph.edges(), key=lambda e: (str(e[0]), str(e[1])))
-            hasher.update(b"edges:")
-            for u, v in sorted_edges:
-                hasher.update(f"{u}-{v}".encode("utf-8"))
+            directed = graph.is_directed()
+            multigraph = graph.is_multigraph()
+            update_record(("graph", directed, multigraph))
+            update_record(("nodes", sorted(_node_repr(node) for node in graph)))
+            edges = (
+                graph.edges(keys=True, data=True)
+                if multigraph
+                else ((u, v, None, data) for u, v, data in graph.edges(data=True))
+            )
+            edge_records = []
+            for u, v, key, data in edges:
+                endpoints = (_node_repr(u), _node_repr(v))
+                if not directed:
+                    endpoints = tuple(sorted(endpoints))
+                edge_records.append((*endpoints, repr(key), repr(data.get("weight", 1.0))))
+            update_record(("edges", sorted(edge_records)))
         except Exception:
             pass
 
@@ -3076,30 +3281,20 @@ def _compute_dependency_hash(graph: Any, dependencies: set[str]) -> str:
         if not alias_keys:
             continue
         try:
-            # Resolve through the canonical alias tuple: the writer stores
-            # under the FIRST alias (Greek/canonical, e.g. 'ΔNFR', 'νf',
-            # 'EPI'), so try alias keys in order and use the first one
-            # actually present.  A hardcoded English name would silently
-            # read None for every node and make the key blind to the field.
-            items = None
-            for key in alias_keys:
-                candidate = list(graph.nodes(data=key, default=_DEP_HASH_MISSING))
-                if any(v is not _DEP_HASH_MISSING for _, v in candidate):
-                    items = candidate
-                    break
-            if items is None:
-                continue
-            # sorting by node ID ensures determinism;
-            # str(node) handles non-sortable node IDs
-            items.sort(key=lambda x: str(x[0]))
-
-            hasher.update(dep.encode("utf-8"))
-            for node, val in items:
-                # Hash the value. Use str() for simplicity.
-                # For floats, this might be sensitive to formatting, but
-                # within the same process/machine it should be consistent.
-                if val is not _DEP_HASH_MISSING and val is not None:
-                    hasher.update(str(val).encode("utf-8"))
+            # Alias precedence is per node, just as in the field readers.
+            # Mixed canonical and legacy keys must all participate.
+            items = []
+            for node, data in graph.nodes(data=True):
+                value = next(
+                    (data[key] for key in alias_keys if key in data),
+                    _DEP_HASH_MISSING,
+                )
+                items.append((
+                    _node_repr(node),
+                    value is not _DEP_HASH_MISSING,
+                    repr(value) if value is not _DEP_HASH_MISSING else "",
+                ))
+            update_record((dep, sorted(items)))
         except Exception:
             # If graph doesn't support this, skip
             pass
@@ -3124,7 +3319,8 @@ def cache_tnfr_computation(
         Cache level for storing results.
     dependencies : set[str]
         set of structural properties this computation depends on.
-        Examples: {'graph_topology', 'node_epi', 'node_vf', 'node_phase'}
+        Examples: {'graph_topology', 'node_epi', 'node_vf', 'node_phase'}.
+        Include 'precision_mode' when computation reads global precision state.
     cost_estimator : callable, optional
         Function that takes same arguments as decorated function and returns
         estimated computational cost as float. Used for eviction priority.
@@ -3162,7 +3358,12 @@ def cache_tnfr_computation(
     """
 
     def decorator(func: F) -> F:
-        func_name = func.__name__
+        func_name = f"{func.__module__}.{func.__qualname__}"
+        # A private dependency targets this wrapper alone, including functions
+        # with no structural dependencies and separately constructed closures.
+        function_dependency = f"__tnfr_function__:{func_name}:{id(func)}"
+        structural_dependencies = set(dependencies)
+        entry_dependencies = structural_dependencies | {function_dependency}
 
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -3180,17 +3381,17 @@ def cache_tnfr_computation(
                 bound.apply_defaults()
                 norm_kwargs = dict(bound.arguments)
                 cache_key = _generate_cache_key(
-                    func_name,
+                    function_dependency,
                     tuple(),
                     norm_kwargs,
                 )
             except Exception:
                 # Fallback to raw args/kwargs if binding fails
-                cache_key = _generate_cache_key(func_name, args, kwargs)
+                cache_key = _generate_cache_key(function_dependency, args, kwargs)
 
             # Append dependency hash to key to detect in-place updates
             graph_obj = _extract_graph_from_args(args, kwargs)
-            dep_hash = _compute_dependency_hash(graph_obj, dependencies)
+            dep_hash = _compute_dependency_hash(graph_obj, structural_dependencies)
             if dep_hash:
                 cache_key = f"{cache_key}:{dep_hash}"
 
@@ -3211,13 +3412,15 @@ def cache_tnfr_computation(
                     comp_cost = 1.0
 
             # Store in cache
-            cache.set(cache_key, result, level, dependencies, comp_cost)
+            cache.set(cache_key, result, level, entry_dependencies, comp_cost)
 
             return result
 
         # Attach metadata for introspection
         wrapper._cache_level = level  # type: ignore
-        wrapper._cache_dependencies = dependencies  # type: ignore
+        wrapper._cache_dependencies = structural_dependencies  # type: ignore
+        wrapper._cache_instance = cache_instance  # type: ignore
+        wrapper._cache_function_dependency = function_dependency  # type: ignore
         wrapper._is_cached = True  # type: ignore
 
         return wrapper  # type: ignore
@@ -3250,14 +3453,11 @@ def invalidate_function_cache(func: Callable[..., Any]) -> int:
             suggestion="Ensure the function is decorated with @cache_tnfr_computation.",
         )
 
-    cache = get_global_cache()
-    dependencies = getattr(func, "_cache_dependencies", set())
-
-    total = 0
-    for dep in dependencies:
-        total += cache.invalidate_by_dependency(dep)
-
-    return total
+    cache = getattr(func, "_cache_instance", None)
+    if cache is None:
+        cache = get_global_cache()
+    dependency = getattr(func, "_cache_function_dependency", None)
+    return cache.invalidate_by_dependency(dependency) if dependency is not None else 0
 
 
 # ============================================================================
@@ -3305,13 +3505,13 @@ class GraphChangeTracker:
         self._cache = cache
         self.topology_changes = 0
         self.property_changes = 0
-        self._tracked_graphs: set[int] = set()
+        self._tracked_graphs: weakref.WeakSet[Any] = weakref.WeakSet()
 
     def track_graph_changes(self, graph: Any) -> None:
         """Install hooks to track changes in a graph.
 
-        Wraps the graph's add_node, remove_node, add_edge, and remove_edge
-        methods to trigger cache invalidation.
+        Wraps single and bulk node/edge mutations, preserving their arguments
+        and return values. Nested calls count as one public operation.
 
         Parameters
         ----------
@@ -3321,46 +3521,37 @@ class GraphChangeTracker:
         Notes
         -----
         This uses monkey-patching to intercept graph modifications. The
-        original methods are preserved and called after invalidation.
+        original methods are preserved. Invalidation also follows an exception
+        because a bulk operation may have modified a prefix before failing.
         """
-        graph_id = id(graph)
-        if graph_id in self._tracked_graphs:
+        if graph in self._tracked_graphs:
             return  # Already tracking this graph
+        self._tracked_graphs.add(graph)
+        depth = 0
 
-        self._tracked_graphs.add(graph_id)
+        def wrap_mutation(original: Callable[..., Any]) -> Callable[..., Any]:
+            @wraps(original)
+            def tracked(*args: Any, **kwargs: Any) -> Any:
+                nonlocal depth
+                depth += 1
+                try:
+                    return original(*args, **kwargs)
+                finally:
+                    depth -= 1
+                    if depth == 0:
+                        self._on_topology_change()
+                        # clear() removes graph metadata, but not these hooks.
+                        graph.graph["_tnfr_change_tracker"] = self
+            return tracked
 
-        # Store original methods
-        original_add_node = graph.add_node
-        original_remove_node = graph.remove_node
-        original_add_edge = graph.add_edge
-        original_remove_edge = graph.remove_edge
-
-        # Create tracked versions
-        def tracked_add_node(node_id: Any, **attrs: Any) -> None:
-            result = original_add_node(node_id, **attrs)
-            self._on_topology_change()
-            return result
-
-        def tracked_remove_node(node_id: Any) -> None:
-            result = original_remove_node(node_id)
-            self._on_topology_change()
-            return result
-
-        def tracked_add_edge(u: Any, v: Any, **attrs: Any) -> None:
-            result = original_add_edge(u, v, **attrs)
-            self._on_topology_change()
-            return result
-
-        def tracked_remove_edge(u: Any, v: Any) -> None:
-            result = original_remove_edge(u, v)
-            self._on_topology_change()
-            return result
-
-        # Replace methods
-        graph.add_node = tracked_add_node
-        graph.remove_node = tracked_remove_node
-        graph.add_edge = tracked_add_edge
-        graph.remove_edge = tracked_remove_edge
+        for name in (
+            "add_node", "add_nodes_from", "remove_node", "remove_nodes_from",
+            "add_edge", "add_edges_from", "add_weighted_edges_from",
+            "remove_edge", "remove_edges_from", "clear", "clear_edges", "update",
+        ):
+            original = getattr(graph, name, None)
+            if callable(original):
+                setattr(graph, name, wrap_mutation(original))
 
         # Store reference to tracker for property changes
         if hasattr(graph, "graph"):
@@ -3398,6 +3589,16 @@ class GraphChangeTracker:
         # Invalidate global property dependency
         global_dep = f"all_node_{property_name}"
         self._cache.invalidate_by_dependency(global_dep)
+
+        # Match the same canonical aliases used by dependency hashing. Keep
+        # legacy fine-grained names above, while invalidating shared readers.
+        for dependency in ("node_epi", "node_vf", "node_phase", "node_dnfr"):
+            if property_name in _dependency_alias_keys(dependency) or property_name == dependency[5:]:
+                canonical_property = dependency[5:]
+                for name in (dependency, f"node_{canonical_property}_{node_id}",
+                             f"all_node_{canonical_property}"):
+                    self._cache.invalidate_by_dependency(name)
+        self._cache.invalidate_by_dependency("node_data")
 
         # Invalidate derived metrics for this node
         if property_name in ["epi", "vf", "phase", "delta_nfr"]:
@@ -3634,16 +3835,23 @@ class PersistentTNFRCache:
                 "timestamp": time.time(),
             }
 
-        try:
-            with open(file_path, "wb") as f:
-                pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
-        except (pickle.PickleError, OSError):
-            # Log error but don't fail
-            # In production, this should use proper logging
-            pass
+            try:
+                with open(file_path, "wb") as f:
+                    pickle.dump(cache_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+            except (pickle.PickleError, OSError):
+                # A failed write must not leave a partial cache to be loaded.
+                file_path.unlink(missing_ok=True)
+        else:
+            # A memory-only replacement must not revive an older disk value
+            # after memory eviction or a process restart.
+            (self.cache_dir / level.value / f"{key}.pkl").unlink(missing_ok=True)
 
     def invalidate_by_dependency(self, dependency: str) -> int:
-        """Invalidate memory and disk cache entries for a dependency.
+        """Invalidate dependent memory entries and discard disk snapshots.
+
+        The legacy disk format has no authenticated dependency index. Disk
+        invalidation is conservative: all snapshots are discarded, without
+        unpickling them to inspect dependencies. Unaffected memory survives.
 
         Parameters
         ----------
@@ -3658,9 +3866,7 @@ class PersistentTNFRCache:
         # Invalidate memory cache
         count = self._memory_cache.invalidate_by_dependency(dependency)
 
-        # Note: Disk cache is lazily invalidated on load
-        # Entries with stale dependencies will be detected when loaded
-
+        self.clear_persistent_cache()
         return count
 
     def clear_persistent_cache(self, level: CacheLevel | None = None) -> None:

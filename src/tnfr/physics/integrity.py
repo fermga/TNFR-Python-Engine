@@ -930,9 +930,11 @@ def audit_operator_contracts(
 
     Applies all 13 canonical operators, each in its correct canonical
     context, and measures whether its contract (AGENTS.md §Operators) holds.
-    The emergent ΔNFR field is recomputed after application (it is a network
-    property).  Returns an :class:`OperatorContractAudit` with a per-operator
-    result.
+    Network readouts recompute the emergent ΔNFR field after application.
+    The direct OZ pressure postcondition is measured before recomputation,
+    which would overwrite that channel. Every probe also checks the recorded
+    glyph: a grammar fallback cannot certify the requested operator.
+    Returns an :class:`OperatorContractAudit` with a per-operator result.
 
     Parameters
     ----------
@@ -968,6 +970,7 @@ def audit_operator_contracts(
         Transition,
     )
     from ..operators.operator_contracts import OPERATOR_CONTRACTS, iter_contracts
+    from ..operators.grammar_types import glyph_function_name
 
     _classes = {
         "emission": Emission,
@@ -997,18 +1000,32 @@ def audit_operator_contracts(
         eng_name = OPERATOR_CONTRACTS[name].english_name
         G = _audit_build_graph(n_nodes, seed)
         op = cls()
+        execution_errors = []
+
+        def apply_probe(node):
+            op(G, node)
+            history = G.nodes[node].get("glyph_history", ())
+            actual = history[-1] if history else None
+            if glyph_function_name(actual) != name:
+                execution_errors.append(f"node {node}: requested {glyph}, executed {actual}")
 
         with _warnings.catch_warnings():
             _warnings.simplefilter("ignore")
+            if glyph == "THOL":
+                # A transformer needs actual destabilization before its probe.
+                for nd in list(G.nodes()):
+                    Coherence()(G, nd)
+                    Dissonance()(G, nd)
+                default_compute_delta_nfr(G)
             if context == "node":
                 # local destabiliser: single node, measure that node's |ΔNFR|
                 node = list(G.nodes())[0]
+                Coherence()(G, node)  # U4a handler in the execution context
                 d_before = abs(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
-                op(G, node)
-                default_compute_delta_nfr(G)
+                apply_probe(node)
                 d_after = abs(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
                 satisfied = d_after >= d_before - tol
-                detail = f"node |ΔNFR| {d_before:.4f}→{d_after:.4f}"
+                detail = f"direct node |ΔNFR| {d_before:.4f}→{d_after:.4f}"
 
             elif context == "identity":
                 signs_before = {
@@ -1016,7 +1033,7 @@ def audit_operator_contracts(
                     for n in G.nodes()
                 }
                 for nd in list(G.nodes()):
-                    op(G, nd)
+                    apply_probe(nd)
                 default_compute_delta_nfr(G)
                 preserved = sum(
                     1
@@ -1039,7 +1056,7 @@ def audit_operator_contracts(
                     n: get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in G.nodes()
                 }
                 for nd in list(G.nodes()):
-                    op(G, nd)
+                    apply_probe(nd)
                 changed = sum(
                     1
                     for n in G.nodes()
@@ -1056,7 +1073,7 @@ def audit_operator_contracts(
                     n: get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in G.nodes()
                 }
                 for nd in list(G.nodes()):
-                    op(G, nd)
+                    apply_probe(nd)
                 default_compute_delta_nfr(G)
                 after = _audit_metrics(G)
                 theta_changed = any(
@@ -1072,7 +1089,7 @@ def audit_operator_contracts(
                 # REMESH is a network-level echo verified elsewhere; the
                 # contract here is advisory (always satisfied at this level).
                 for nd in list(G.nodes()):
-                    op(G, nd)
+                    apply_probe(nd)
                 default_compute_delta_nfr(G)
                 satisfied = True
                 detail = "advisory (network echo)"
@@ -1080,7 +1097,7 @@ def audit_operator_contracts(
             else:  # network
                 before = _audit_metrics(G)
                 for nd in list(G.nodes()):
-                    op(G, nd)
+                    apply_probe(nd)
                 default_compute_delta_nfr(G)
                 after = _audit_metrics(G)
                 if glyph == "AL":
@@ -1118,6 +1135,10 @@ def audit_operator_contracts(
                 else:
                     satisfied = True
                     detail = "n/a"
+
+        if execution_errors:
+            satisfied = False
+            detail = "; ".join(execution_errors[:3])
 
         results.append(
             OperatorContractResult(

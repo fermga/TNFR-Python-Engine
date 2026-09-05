@@ -213,10 +213,16 @@ def glyph_function_name(
             glyph_function_name._glyph_value_map = {
                 g.value: func for g, func in GLYPH_TO_FUNCTION.items()
             }
-        # Try to convert glyph value to function name
-        func_name = glyph_function_name._glyph_value_map.get(val)
+        # Serialized histories may contain Glyph.VAL, lowercase codes or
+        # public English names. Every consumer resolves these consistently.
+        token = val.strip()
+        if token.startswith("Glyph."):
+            token = token.rsplit(".", 1)[-1]
+        func_name = glyph_function_name._glyph_value_map.get(token.upper())
         if func_name:
             return func_name
+        if token.lower() in FUNCTION_TO_GLYPH:
+            return token.lower()
         # Otherwise assume it's already a function name
         return val
     # Unknown type: cannot map safely

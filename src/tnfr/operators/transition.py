@@ -37,7 +37,12 @@ class Transition(Operator):
     name: ClassVar[str] = TRANSITION
     glyph: ClassVar[Glyph] = Glyph.NAV
 
-    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+    def _validate_application_preconditions(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Retain NAV's precondition policy, before changing latency state."""
+        if kw.get("validate_preconditions", True) or G.graph.get("VALIDATE_PRECONDITIONS", False):
+            self._validate_preconditions(G, node)
+
+    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Detect regime; apply grammar; adjust θ, νf, ΔNFR; log metrics."""
         from ..alias import get_attr
         from ..constants.aliases import ALIAS_EPI
@@ -49,13 +54,6 @@ class Transition(Operator):
         # 2. Handle latency reactivation if applicable
         if G.nodes[node].get("latent", False):
             self._handle_latency_transition(G, node)
-
-        # 3. Validate preconditions (if enabled)
-        validate_preconditions = kw.get("validate_preconditions", True) or G.graph.get(
-            "VALIDATE_PRECONDITIONS", False
-        )
-        if validate_preconditions:
-            self._validate_preconditions(G, node)
 
         # 4. Capture state before for metrics/validation
         collect_metrics = kw.get("collect_metrics", False) or G.graph.get(
@@ -75,9 +73,9 @@ class Transition(Operator):
             _integrity_monitor.before_operator(G, node)
 
         # 5. Apply grammar
-        from . import apply_glyph_with_grammar
+        from .grammar_application import _apply_selected_glyph
 
-        apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
+        _apply_selected_glyph(G, node, self.glyph, kw.get("window"))
 
         # 6. Execute structural transition (BEFORE metrics collection)
         self._apply_structural_transition(G, node, current_regime, **kw)

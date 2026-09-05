@@ -72,8 +72,19 @@ def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
     :func:`_ensure_history`.
     """
 
+    from .operators.grammar_debt import (
+        PRIOR_COHERENCE_KEY, U2_DEBT_KEY, advance_debt, advance_prior_coherence,
+        node_debt, node_has_prior_coherence,
+    )
+
+    # Capture debt before resizing/evicting the bounded trace. Neutral glyphs
+    # and a zero-length trace cannot erase uncompensated destabilization.
+    debt = node_debt(nd)
+    prior_coherence = node_has_prior_coherence(nd)
     _, hist = _ensure_history(nd, window, create_zero=True)
     hist.append(str(glyph))
+    nd[U2_DEBT_KEY] = advance_debt(debt, glyph)
+    nd[PRIOR_COHERENCE_KEY] = advance_prior_coherence(prior_coherence, glyph)
 
 
 def recent_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:

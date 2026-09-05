@@ -24,6 +24,7 @@ def update_node_sample(G: TNFRGraph, *, step: int) -> None:
     tuple of nodes.
     """
     graph = G.graph
+    seed = base_seed(G)
     limit = int(graph.get("UM_CANDIDATE_COUNT", 0))
     nodes = cast(tuple[NodeId, ...], cached_node_list(G))
     current_n = len(nodes)
@@ -31,6 +32,5 @@ def update_node_sample(G: TNFRGraph, *, step: int) -> None:
         graph["_node_sample"] = nodes
         return
 
-    seed = base_seed(G)
     rng = _rng_for_step(seed, step)
     graph["_node_sample"] = rng.sample(nodes, limit)

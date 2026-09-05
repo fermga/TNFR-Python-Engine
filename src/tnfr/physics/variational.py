@@ -1,89 +1,39 @@
-r"""TNFR Variational Principle — Lagrangian Action Formulation.
+r"""TNFR variational diagnostics and a specified quadratic substrate model.
 
-This module derives the TNFR nodal equation from a **variational principle**,
-establishing that ``∂EPI/∂t = νf · ΔNFR(t)`` is not an ad-hoc postulate but
-the **Euler-Lagrange equation** of a well-defined action functional.
+IMPLEMENTED FUNCTIONALS
+=======================
+For canonical field readouts, this module computes
 
-MAIN RESULT (TNFR Variational Theorem)
-=======================================
-The TNFR action functional on a graph G = (V, E) is:
+    T = 0.5 * (J_phi**2 + J_DNFR**2),
+    V = 0.5 * (Phi_s**2 + |grad_phi|**2 + K_phi**2),
+    L = T - V,  H = T + V,  S = sum(dt * L).
 
-    S_TNFR = Σ_n Δt · Σ_i ℒ_TNFR(i, t_n)
+The full H equals conservation.compute_energy_functional; its density and
+bilinear interaction delegate to physics.unified. The conjugate-coordinate
+model uses (K_phi, J_phi) and (Phi_s, J_DNFR), with an isotropic harmonic flow.
+Its algebra and local Jacobian checks are valid for that specified model.
 
-where the **TNFR Lagrangian density** at node i is:
+CERTIFICATE SCOPE
+==================
+- Snapshot products and covariance statistics are legacy diagnostics, not
+  symplectic volumes or Poisson brackets. Symplectic preservation requires a
+  supplied tangent map; snapshot-only calls return an inconclusive result.
+- Nonzero telemetry thresholds are regular points of V=0.5*x**2, whose only
+  critical point is x=0. Proximity to a threshold is reported separately.
+- Finite recorded action and energy changes do not prove infinite-horizon
+  convergence or grammar compliance. The grammar-labelled stationarity
+  readouts are heuristic comparisons, not replacement grammar validators.
+- A derivation of the full nodal equation from this V remains unresolved.
+  In particular, DeltaNFR=-dV/dEPI is not an identity of the implemented field
+  definitions: on one edge in the pure EPI channel, DeltaNFR=[-1,1] at
+  EPI=[1,0], whereas the negative gradient of this V is [-2,2].
+- The graph-wave overdamped limit uses q''+gamma*q'+L_rw*q=0; the isotropic
+  substrate flow instead has q''=-q. An explicit coordinate/metric/damping
+  bridge between these models has not been established here. In the nodal
+  equation nu_f is mobility, not a derived inverse inertial mass.
 
-    ℒ_TNFR(i) = T(i) − V(i)
-
-with:
-
-    T(i) = ½ [J_φ(i)² + J_ΔNFR(i)²]         (transport/kinetic energy)
-    V(i) = ½ [Φ_s(i)² + |∇φ|(i)² + K_φ(i)²]  (configuration/potential energy)
-
-The Euler-Lagrange equations ``δS/δφ_i = 0`` reproduce the nodal equation
-in the **overdamped limit** (dominant structural dissipation):
-
-    ∂EPI/∂t = νf · ΔNFR(t)
-
-DERIVATION
-==========
-1. **Canonical conjugate pairs** identified from conservation law structure:
-   - Geometric sector:  (K_φ, J_φ)    — curvature ↔ phase current
-   - Potential sector:  (Φ_s, J_ΔNFR) — potential ↔ ΔNFR flux
-
-2. **Hamiltonian** ≡ energy functional (already canonical in conservation.py):
-       H = ½ Σ_i [Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²] = E
-
-3. **Legendre transform** yields the Lagrangian ℒ = T − V.
-
-4. **Full Euler-Lagrange** equations give second-order dynamics:
-       (1/νf) · ∂²EPI/∂t² = −∂V/∂EPI
-
-   In the **overdamped regime** (structural dissipation dominates inertia):
-       ∂EPI/∂t = νf · ΔNFR(t)
-
-   where ΔNFR_i = −∂V/∂EPI_i is the **negative functional gradient** of
-   the structural potential — a derived result, not an assumption.
-
-5. **Grammar rules U1-U6 as stationarity conditions**:
-   - U1 → Boundary conditions on S (initiation/closure)
-   - U2 → Finite action requirement (∫ νf·ΔNFR dt < ∞)
-   - U3 → Regularity of coupling terms (phase compatibility)
-   - U4 → Morse-theory constraints at bifurcation critical points
-   - U5 → Hierarchical factorisation of S across scales
-   - U6 → Boundedness of potential sector (Φ_s < π/2)
-
-6. **13 operators as canonical transformations**: Each operator preserves
-   the symplectic 2-form ω = Σ_i dK_φ(i) ∧ dJ_φ(i) + dΦ_s(i) ∧ dJ_ΔNFR(i).
-
-7. **Thresholds as critical points of V**: The canonical thresholds
-   (π/2 for Φ_s, 0.9π for |∇φ| and K_φ) correspond to saddle points or extrema of V.
-
-CONSISTENCY WITH EXISTING MODULES
-==================================
-- ``compute_energy_density()`` in unified.py is the CANONICAL SOURCE for the
-  raw quadratic form ℰ = Σ fields².  This module's ``compute_hamiltonian_density``
-  computes H(i) = ½·ℰ(i), and  conservation's ``compute_energy_functional``
-  computes E = ½·Σℰ(i).  All three derive from the same canonical source.
-- ``compute_action_density()`` in unified.py is the CANONICAL SOURCE for the
-  bilinear coupling.  This module's ``compute_interaction_density`` delegates
-  directly to ``unified.compute_action_density`` (no duplicate code).
-- ``compute_energy_functional()`` in conservation.py = H (total Hamiltonian)
-  = Σ_i H(i) = ½·Σ_i ℰ(i).
-- ``compute_lyapunov_derivative()`` in conservation.py = dH/dt (should be ≤ 0
-  under grammar), which is now understood as the **dissipation function**.
-- ``translate_sectors()`` maps between the variational T/V decomposition
-  and the conservation ρ/J decomposition — different projections of the
-  same 6D field space.
-
-STATUS: CANONICAL — Derived from first principles.
-
-References
-----------
-- Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)  [TNFR.pdf §2.1]
-- Conservation: src/tnfr/physics/conservation.py (Noether theorem)
-- Grammar: theory/UNIFIED_GRAMMAR_RULES.md (U1-U6)
-- Classical mechanics mapper: src/tnfr/physics/classical_mechanics.py
-- Unified fields: src/tnfr/physics/unified.py
+See theory/TNFR_VARIATIONAL_PRINCIPLE.md and
+ docs/audits/SECOND_AUDIT_CERTIFICATES_2026-09-05.md for assumptions and migration.
 """
 
 from __future__ import annotations
@@ -99,7 +49,6 @@ from ..mathematics.unified_numerical import np
 # Critical point classification
 # ---------------------------------------------------------------------------
 _THRESHOLD_PROXIMITY_FRACTION = 0.1
-_CURVATURE_SIGN_THRESHOLD = 0.1
 
 try:
     import networkx as nx
@@ -112,6 +61,12 @@ from .canonical import (
     compute_structural_potential,
 )
 from .extended import compute_dnfr_flux, compute_phase_current
+from .unified import (
+    _StructuralFieldReadout,
+    _action_density_from_fields,
+    _capture_structural_fields,
+    _energy_density_from_fields,
+)
 from .unified import compute_action_density as _action_density
 from .unified import compute_energy_density as _raw_energy_density
 
@@ -184,16 +139,11 @@ class LagrangianSnapshot:
 
 @dataclass(frozen=True)
 class EulerLagrangeResidual:
-    r"""Residual of the Euler-Lagrange equations at each node.
+    r"""Residual of the specified harmonic momentum equations.
 
-    If ``|residual(i)| ≈ 0`` for all *i*, the field configuration is
-    **stationary** — the system sits at an extremum of the action.
-
-    The EL residual for the phase field φ_i is:
-
-        R(i) = ∂V/∂φ_i + d(∂T/∂φ̇_i)/dt
-
-    In the overdamped limit this reduces to the nodal equation.
+    For each conjugate sector, R=dp/dt+q. A small value checks this equation
+    only; it does not establish the configuration equation q'=p, stationarity
+    of the full graph-field action, or equivalence with the nodal equation.
 
     Attributes
     ----------
@@ -218,46 +168,56 @@ class EulerLagrangeResidual:
 
 @dataclass(frozen=True)
 class SymplecticCheck:
-    r"""Result of symplectic structure preservation test for an operator.
+    r"""Local Jacobian check with legacy snapshot statistics.
 
-    A canonical transformation preserves the symplectic 2-form:
-        ω = Σ_i dK_φ(i)∧dJ_φ(i) + dΦ_s(i)∧dJ_ΔNFR(i)
-
-    We quantify preservation via the ratio of symplectic areas before/after.
+    Symplecticity requires ``D(F).T @ omega @ D(F) = omega``. Snapshots alone
+    do not determine D(F); without a supplied Jacobian the result is explicitly
+    inconclusive. Even a passing Jacobian check concerns that supplied tangent
+    map, not a proof for the operator at every state.
 
     Attributes
     ----------
     operator_name : str
     symplectic_ratio_geometric : float
-        |ω_geo_after / ω_geo_before|.  ≈ 1 for canonical.
+        Legacy ratio of sum |q*p| in the geometric sector; not a 2-form ratio.
     symplectic_ratio_potential : float
-        |ω_pot_after / ω_pot_before|.  ≈ 1 for canonical.
-    is_canonical : bool
-        True when both ratios are within tolerance of 1.
+        Legacy ratio of sum |q*p| in the potential sector.
+    is_canonical : bool or None
+        True/False for the supplied Jacobian, None without tangent evidence.
     phase_space_volume_before : float
     phase_space_volume_after : float
     volume_ratio : float
-        ≈ 1 for canonical (Liouville theorem).
+        Legacy ratio of snapshot products; not a transported volume ratio.
     classification : str
-        ``'canonical'``, ``'dissipative'``, ``'expansive'``, or ``'mixed'``.
+        ``'canonical'``, ``'non_symplectic'``, or ``'inconclusive'``.
+    heuristic_classification : str
+        The former product-ratio classification, retained as a statistic only.
+    verification_method : str
+        ``'snapshot_only'`` or ``'provided_jacobian'``.
+    symplectic_residual : float or None
+        Maximum absolute entry of D(F).T @ omega @ D(F) - omega.
     """
 
     operator_name: str
     symplectic_ratio_geometric: float
     symplectic_ratio_potential: float
-    is_canonical: bool
+    is_canonical: bool | None
     phase_space_volume_before: float
     phase_space_volume_after: float
     volume_ratio: float
     classification: str
+    heuristic_classification: str = "unknown"
+    verification_method: str = "snapshot_only"
+    symplectic_residual: float | None = None
 
 
 @dataclass(frozen=True)
 class GrammarStationarityAnalysis:
-    r"""Analysis of grammar rules as stationarity / boundary conditions.
+    r"""Heuristic field comparisons labelled by related grammar rules.
 
-    Each grammar rule U1-U6 is mapped to a condition on the action
-    functional S_TNFR.
+    These do not validate operator sequences or establish stationarity of an
+    action. Use the operator grammar validator for U1-U5 and drift telemetry
+    for U6. The legacy ``is_satisfied`` field refers to this heuristic only.
 
     Attributes
     ----------
@@ -274,11 +234,12 @@ class GrammarStationarityAnalysis:
     variational_interpretation: str
     is_satisfied: bool
     diagnostic_value: float
+    verification_scope: str = "heuristic"
 
 
 @dataclass(frozen=True)
 class CriticalPointAnalysis:
-    r"""Analysis of structural field thresholds as critical points of V.
+    r"""Quadratic-potential derivatives at a telemetry threshold.
 
     Attributes
     ----------
@@ -294,6 +255,9 @@ class CriticalPointAnalysis:
         ∂²V/∂field² — positive = minimum, negative = maximum.
     critical_type : str
         ``'minimum'``, ``'maximum'``, ``'saddle'``, or ``'regular'``.
+    near_threshold_count : int
+        Observed nodes within the threshold-proximity band. Proximity does
+        not imply a stationary point of V.
     """
 
     field_name: str
@@ -302,6 +266,7 @@ class CriticalPointAnalysis:
     is_critical: bool
     curvature_at_threshold: float
     critical_type: str
+    near_threshold_count: int = 0
 
 
 @dataclass
@@ -359,7 +324,13 @@ def compute_kinetic_density(G: Any) -> dict[Any, float]:
     """
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
-    return {n: 0.5 * (j_phi[n] ** 2 + j_dnfr[n] ** 2) for n in G.nodes()}
+    return _kinetic_density_from_fields(j_phi, j_dnfr)
+
+
+def _kinetic_density_from_fields(
+    j_phi: dict[Any, float], j_dnfr: dict[Any, float]
+) -> dict[Any, float]:
+    return {n: 0.5 * (j_phi[n] ** 2 + j_dnfr[n] ** 2) for n in j_phi}
 
 
 def compute_potential_density(G: Any) -> dict[Any, float]:
@@ -367,8 +338,10 @@ def compute_potential_density(G: Any) -> dict[Any, float]:
 
     V(i) = ½ [Φ_s(i)² + |∇φ|(i)² + K_φ(i)²]
 
-    The configuration fields (Φ_s, |∇φ|, K_φ) encode the static
-    structural state from which forces (gradients) derive.
+    These configuration-field statistics define the recorded potential.
+    Their negative EPI gradient is not generally the canonical pressure.
+    The separate EPI-only Dirichlet balance is implemented by
+    ``structural_diffusion.compute_diffusion_energy``.
 
     Parameters
     ----------
@@ -381,8 +354,15 @@ def compute_potential_density(G: Any) -> dict[Any, float]:
     phi_s = compute_structural_potential(G)
     grad_phi = compute_phase_gradient(G)
     k_phi = compute_phase_curvature(G)
+    return _potential_density_from_fields(phi_s, grad_phi, k_phi)
+
+
+def _potential_density_from_fields(
+    phi_s: dict[Any, float], grad_phi: dict[Any, float], k_phi: dict[Any, float]
+) -> dict[Any, float]:
     return {
-        n: 0.5 * (phi_s[n] ** 2 + grad_phi[n] ** 2 + k_phi[n] ** 2) for n in G.nodes()
+        n: 0.5 * (phi_s[n] ** 2 + grad_phi[n] ** 2 + k_phi[n] ** 2)
+        for n in phi_s
     }
 
 
@@ -395,9 +375,8 @@ def compute_lagrangian_density(G: Any) -> dict[Any, float]:
     Positive ℒ indicates transport-dominated dynamics (kinetic regime).
     Negative ℒ indicates configuration-dominated dynamics (potential regime).
 
-    The Euler-Lagrange equations ``δS/δφ = 0`` where
-    ``S = ∫ dt Σ_i ℒ(i)`` reproduce the nodal equation in the
-    overdamped limit.
+    This defines the recorded action density. A derivation of the full nodal
+    equation from this particular field potential remains unresolved.
 
     Parameters
     ----------
@@ -470,8 +449,9 @@ def compute_interaction_density(G: Any) -> dict[Any, float]:
 def translate_sectors(G: Any) -> dict[str, Any]:
     r"""Translate between the variational and conservation sector decompositions.
 
-    The **same 6 canonical fields** admit two physically meaningful
-    decompositions — different projections of the same 6D field space:
+    The **same five configuration and transport fields** admit two
+    decompositions of the recorded energy. Coherence length ξ_C does not
+    enter these algebraic expressions and is not computed here:
 
     +-------------------+---------------------------------------------------------+
     | Decomposition     | Fields                                                  |
@@ -508,23 +488,23 @@ def translate_sectors(G: Any) -> dict[str, Any]:
         - ``energy_density``: dict[node, float]  (raw ℰ from unified.py)
         - ``consistency_check``: float  (max |T+V − ½ℰ| across nodes, should be ~0)
     """
-    T = compute_kinetic_density(G)
-    V = compute_potential_density(G)
-    raw = _raw_energy_density(G)
+    from .conservation import _charge_density_from_fields
+    from .unified import _complex_geometric_field
 
-    # Conservation decomposition
-    phi_s = compute_structural_potential(G)
-    k_phi = compute_phase_curvature(G)
-    j_phi = compute_phase_current(G)
-    j_dnfr = compute_dnfr_flux(G)
+    fields = _capture_structural_fields(G)
+    phi_s, grad_phi, k_phi = fields.phi_s, fields.grad_phi, fields.k_phi
+    j_phi, j_dnfr = fields.j_phi, fields.j_dnfr
+    T = _kinetic_density_from_fields(j_phi, j_dnfr)
+    V = _potential_density_from_fields(phi_s, grad_phi, k_phi)
+    raw = _energy_density_from_fields(phi_s, grad_phi, k_phi, j_phi, j_dnfr)
 
-    rho = {n: phi_s[n] + k_phi[n] for n in G.nodes()}
-    psi = {n: complex(k_phi[n], j_phi[n]) for n in G.nodes()}
+    rho = _charge_density_from_fields(phi_s, k_phi)
+    psi = _complex_geometric_field(k_phi, j_phi)
 
     # Consistency: T(i) + V(i) must equal ½·ℰ(i)
     max_err = (
-        max(abs((T[n] + V[n]) - 0.5 * raw[n]) for n in G.nodes())
-        if G.number_of_nodes() > 0
+        max(abs((T[n] + V[n]) - 0.5 * raw[n]) for n in phi_s)
+        if phi_s
         else 0.0
     )
 
@@ -576,12 +556,13 @@ def identify_conjugate_pairs(G: Any) -> tuple[ConjugatePair, ConjugatePair]:
 
 
 def compute_phase_space_volume(pair: ConjugatePair) -> float:
-    r"""Compute the phase-space volume occupied by a conjugate pair.
+    r"""Return the legacy snapshot product statistic sum |q(i)*p(i)|.
 
     Ω = Σ_i |q(i)·p(i)|
 
-    This is a discrete approximation of the symplectic area.
-    By Liouville's theorem, canonical transformations preserve Ω.
+    The historical function name is retained for compatibility. This is not a
+    symplectic volume: a canonical rotation can change it from zero to nonzero.
+    It must not be used to certify a map or invoke Liouville's theorem.
 
     Parameters
     ----------
@@ -600,15 +581,12 @@ def compute_phase_space_volume(pair: ConjugatePair) -> float:
 def compute_poisson_bracket_estimate(
     pair: ConjugatePair,
 ) -> float:
-    r"""Estimate the Poisson bracket {q, p} for a conjugate pair.
+    r"""Return a legacy covariance-determinant statistic for node samples.
 
-    For canonical coordinates, {q_i, p_j} = δ_{ij}.  On the discrete
-    graph, we estimate the average bracket:
-
-        {q, p} ≈ (1/N) Σ_i [Var(q) · Var(p) − Cov(q,p)²]^{1/2}
-
-    A value near the geometric mean of field variances indicates
-    non-degenerate symplectic structure.
+    Despite its historical name, this is not a Poisson bracket. Field sample
+    variances do not determine the Poisson tensor. Use
+    :func:`tnfr.physics.symplectic_substrate.poisson_bracket` with observable
+    gradients when a bracket on the specified substrate is required.
 
     Parameters
     ----------
@@ -617,7 +595,7 @@ def compute_poisson_bracket_estimate(
     Returns
     -------
     float
-        Estimated Poisson bracket magnitude.
+        Square root of the nonnegative part of the sample statistic.
     """
     nodes = list(pair.q.keys())
     if len(nodes) < 2:
@@ -642,6 +620,9 @@ def compute_poisson_bracket_estimate(
 def capture_lagrangian_snapshot(G: Any) -> LagrangianSnapshot:
     """Capture complete Lagrangian analysis of the current graph state.
 
+    The caller must hold graph state fixed during the call. Returned maps are
+    detached; capture is not atomic with concurrent evolution.
+
     Parameters
     ----------
     G : NetworkX graph
@@ -650,18 +631,28 @@ def capture_lagrangian_snapshot(G: Any) -> LagrangianSnapshot:
     -------
     LagrangianSnapshot
     """
-    T = compute_kinetic_density(G)
-    V = compute_potential_density(G)
+    return _lagrangian_snapshot_from_fields(_capture_structural_fields(G))
 
-    nodes = list(G.nodes())
+
+def _lagrangian_snapshot_from_fields(
+    fields: _StructuralFieldReadout,
+) -> LagrangianSnapshot:
+    """Derive every snapshot component from the same owned base maps."""
+    T = _kinetic_density_from_fields(fields.j_phi, fields.j_dnfr)
+    V = _potential_density_from_fields(fields.phi_s, fields.grad_phi, fields.k_phi)
+
+    nodes = fields.phi_s
     lagrangian = {n: T[n] - V[n] for n in nodes}
     hamiltonian = {n: T[n] + V[n] for n in nodes}
-    interaction = compute_interaction_density(G)
+    interaction = _action_density_from_fields(
+        fields.phi_s, fields.grad_phi, fields.k_phi, fields.j_phi, fields.j_dnfr
+    )
 
     total_T = sum(T.values())
     total_V = sum(V.values())
 
-    geo, pot = identify_conjugate_pairs(G)
+    geo = ConjugatePair(sector="geometric", q=fields.k_phi, p=fields.j_phi)
+    pot = ConjugatePair(sector="potential", q=fields.phi_s, p=fields.j_dnfr)
 
     return LagrangianSnapshot(
         kinetic=T,
@@ -703,7 +694,8 @@ def compute_euler_lagrange_residual(
 
         R(i) = Δp_i/Δt + [∂V/∂q_i]_{mean}
 
-    Small residual ≈ stationary trajectory ≈ grammar-compliant evolution.
+    A small residual concerns these harmonic momentum equations only. It does
+    not validate the full nodal equation, grammar, or configuration equations.
 
     Parameters
     ----------
@@ -772,8 +764,7 @@ def compute_action_functional(
 
     S = Σ_n Δt · L(t_n)  where L(t_n) = Σ_i ℒ(i, t_n)
 
-    Finite S is the variational equivalent of grammar rule U2
-    (convergence & boundedness).
+    A finite recorded sum does not prove infinite-horizon convergence or U2.
 
     Parameters
     ----------
@@ -783,7 +774,8 @@ def compute_action_functional(
     Returns
     -------
     float
-        Total action.  Finite ↔ U2-compliant evolution.
+        Sampled action over the supplied finite trajectory; this does not
+        certify U2 compliance or convergence over an infinite time horizon.
     """
     return dt * sum(s.total_lagrangian for s in snapshots)
 
@@ -798,26 +790,37 @@ def check_symplectic_preservation(
     after: LagrangianSnapshot,
     operator_name: str = "unknown",
     tolerance: float = 0.3,
+    *,
+    jacobian: Any | None = None,
+    jacobian_tolerance: float = 1e-9,
 ) -> SymplecticCheck:
-    r"""Check whether an operator preserves the symplectic structure.
+    r"""Check a supplied local Jacobian, or report inconclusive snapshots.
 
-    A **canonical transformation** preserves the symplectic 2-form
-    ω, which in the discrete setting is approximated by phase-space
-    volume and Poisson bracket estimates.
-
-    The volume ratio Ω_after/Ω_before ≈ 1 for canonical transformations
-    (Liouville's theorem).
+    A pair of snapshots cannot distinguish the identity from a non-symplectic
+    map fixing the same point. The original positional arguments and product
+    ratios remain available, but only a Jacobian can set ``is_canonical``.
 
     Parameters
     ----------
     before, after : LagrangianSnapshot
     operator_name : str
     tolerance : float
+        Tolerance for the legacy product-ratio classification only.
+    jacobian : array-like, optional
+        Caller-supplied derivative of the map, of shape (4N, 4N). Input/output
+        coordinates use each snapshot's geometric-q node order and interleave
+        (K_phi, J_phi, Phi_s, J_DNFR) per node. A passing result certifies this
+        tangent map only. Dimension-changing maps are not supported here.
+    jacobian_tolerance : float
+        Absolute pullback-residual tolerance, independent of the legacy ratio
+        tolerance. Must be finite and nonnegative.
 
     Returns
     -------
     SymplecticCheck
     """
+    if not math.isfinite(jacobian_tolerance) or jacobian_tolerance < 0.0:
+        raise ValueError("jacobian_tolerance must be finite and nonnegative")
     vol_geo_before = compute_phase_space_volume(before.conjugate_geometric)
     vol_geo_after = compute_phase_space_volume(after.conjugate_geometric)
     vol_pot_before = compute_phase_space_volume(before.conjugate_potential)
@@ -837,17 +840,41 @@ def check_symplectic_preservation(
 
     is_canonical_geo = abs(ratio_geo - 1.0) < tolerance
     is_canonical_pot = abs(ratio_pot - 1.0) < tolerance
-    is_canonical = is_canonical_geo and is_canonical_pot
+    ratios_match = is_canonical_geo and is_canonical_pot
 
     # Classification based on volume change
-    if is_canonical:
-        classification = "canonical"
+    if ratios_match:
+        heuristic = "canonical"
     elif vol_ratio < 1.0 - tolerance:
-        classification = "dissipative"
+        heuristic = "dissipative"
     elif vol_ratio > 1.0 + tolerance:
-        classification = "expansive"
+        heuristic = "expansive"
     else:
-        classification = "mixed"
+        heuristic = "mixed"
+
+    is_canonical = None
+    classification = "inconclusive"
+    residual = None
+    method = "snapshot_only"
+    if jacobian is not None:
+        from .symplectic_substrate import symplectic_pullback_residual
+
+        n_nodes = len(before.conjugate_geometric.q)
+        for snapshot in (before, after):
+            nodes = set(snapshot.conjugate_geometric.q)
+            if len(nodes) != n_nodes or any(
+                set(values) != nodes
+                for values in (
+                    snapshot.conjugate_geometric.p,
+                    snapshot.conjugate_potential.q,
+                    snapshot.conjugate_potential.p,
+                )
+            ):
+                raise ValueError("Jacobian checks require matching fixed-size coordinate fields")
+        residual = symplectic_pullback_residual(jacobian, n_nodes)
+        is_canonical = residual <= jacobian_tolerance
+        classification = "canonical" if is_canonical else "non_symplectic"
+        method = "provided_jacobian"
 
     return SymplecticCheck(
         operator_name=operator_name,
@@ -858,6 +885,9 @@ def check_symplectic_preservation(
         phase_space_volume_after=total_after,
         volume_ratio=vol_ratio,
         classification=classification,
+        heuristic_classification=heuristic,
+        verification_method=method,
+        symplectic_residual=residual,
     )
 
 
@@ -871,10 +901,11 @@ def analyze_grammar_stationarity(
     snapshots: Sequence[LagrangianSnapshot] | None = None,
     dt: float = 1.0,
 ) -> list[GrammarStationarityAnalysis]:
-    r"""Map grammar rules U1-U6 to variational conditions on the action.
+    r"""Return heuristic field comparisons associated with grammar labels.
 
-    Each grammar rule has a precise interpretation as a condition on the
-    TNFR action functional ``S = ∫ dt Σ_i ℒ(i)``.
+    Their thresholds test sampled energy/interaction statistics. They do not
+    check operator history, phase admissibility, nested identities, or U6 drift,
+    and must not replace the canonical grammar and confinement validators.
 
     Parameters
     ----------
@@ -889,20 +920,29 @@ def analyze_grammar_stationarity(
     -------
     list[GrammarStationarityAnalysis]
     """
+    return _grammar_stationarity_from_snapshot(
+        capture_lagrangian_snapshot(G), snapshots, dt
+    )
+
+
+def _grammar_stationarity_from_snapshot(
+    snap: LagrangianSnapshot,
+    snapshots: Sequence[LagrangianSnapshot] | None = None,
+    dt: float = 1.0,
+) -> list[GrammarStationarityAnalysis]:
+    """Evaluate existing heuristic comparisons without recapturing fields."""
     results: list[GrammarStationarityAnalysis] = []
-    snap = capture_lagrangian_snapshot(G)
 
     # --- U1a: Initiation = boundary condition on S at t=0 ------------------
-    # S requires well-defined initial data: EPI ≠ 0 or generator applied.
-    # Check: at least some nodes have non-trivial Lagrangian density.
+    # Diagnostic only: nonzero density does not establish generator history.
     lag_vals = list(snap.lagrangian.values())
     has_nontrivial = any(abs(v) > 1e-12 for v in lag_vals)
     results.append(
         GrammarStationarityAnalysis(
             rule="U1a",
             variational_interpretation=(
-                "Boundary condition: S requires well-defined initial data "
-                "(generator sets non-zero ℒ at t=0)."
+                "Heuristic: at least one sampled Lagrangian density is nonzero; "
+                "generator history is not checked."
             ),
             is_satisfied=has_nontrivial,
             diagnostic_value=float(np.max(np.abs(lag_vals))) if lag_vals else 0.0,
@@ -910,15 +950,14 @@ def analyze_grammar_stationarity(
     )
 
     # --- U1b: Closure = boundary condition on S at t_f --------------------
-    # The final state must be at a local extremum of V (attractor).
-    # Check: potential energy dominates (ℒ < 0 means V > T → attractor).
+    # Potential dominance alone does not establish an attractor or closure.
     potential_dominant = snap.total_potential > snap.total_kinetic
     results.append(
         GrammarStationarityAnalysis(
             rule="U1b",
             variational_interpretation=(
-                "Boundary condition: final state at action extremum "
-                "(V > T → attractor basin, ℒ < 0)."
+                "Heuristic: potential energy exceeds kinetic energy (V > T); "
+                "closure and attraction are not certified."
             ),
             is_satisfied=potential_dominant,
             diagnostic_value=snap.total_lagrangian,
@@ -933,8 +972,8 @@ def analyze_grammar_stationarity(
             GrammarStationarityAnalysis(
                 rule="U2",
                 variational_interpretation=(
-                    "Finite action: S = ∫ℒ dt < ∞ requires stabilisers to bound "
-                    "∫ νf·ΔNFR dt (convergence of the action integral)."
+                    "Heuristic: the recorded finite-horizon action sum is finite; "
+                    "this does not establish U2 convergence."
                 ),
                 is_satisfied=is_finite,
                 diagnostic_value=S if is_finite else float("inf"),
@@ -956,7 +995,7 @@ def analyze_grammar_stationarity(
         )
 
     # --- U3: Resonant coupling = regularity of coupling terms ------
-    # Phase compatibility ensures interaction terms are non-singular.
+    # A finite interaction statistic is not a phase-compatibility test.
     interaction_vals = list(snap.interaction.values())
     max_interaction = (
         float(np.max(np.abs(interaction_vals))) if interaction_vals else 0.0
@@ -966,8 +1005,8 @@ def analyze_grammar_stationarity(
         GrammarStationarityAnalysis(
             rule="U3",
             variational_interpretation=(
-                "Coupling regularity: interaction Lagrangian 𝒜 remains bounded "
-                "when |φ_i − φ_j| ≤ Δφ_max (no destructive interference)."
+                "Heuristic: sampled interaction magnitude is below 16; "
+                "the U3 phase gate is not evaluated."
             ),
             is_satisfied=interaction_bounded,
             diagnostic_value=max_interaction,
@@ -975,20 +1014,17 @@ def analyze_grammar_stationarity(
     )
 
     # --- U4: Bifurcation = Morse-theory constraints at critical points ----
-    # Near bifurcation, the Hessian of V changes signature.
-    # Check: kinetic/potential ratio indicates proximity to bifurcation.
+    # Energy partition does not determine the Hessian or a bifurcation.
     if snap.total_potential > 1e-12:
         tv_ratio = snap.total_kinetic / snap.total_potential
     else:
         tv_ratio = float("inf")
-    # Near bifurcation: T/V → 1 (equipartition at critical point)
-    near_bifurcation = abs(tv_ratio - 1.0) < 0.5
     results.append(
         GrammarStationarityAnalysis(
             rule="U4",
             variational_interpretation=(
-                "Morse condition: near bifurcation (T/V ≈ 1), handlers (IL/THOL) "
-                "required to select correct branch of V extremum."
+                "Advisory heuristic: kinetic/potential energy ratio; "
+                "bifurcation and handler history are not checked."
             ),
             is_satisfied=True,  # advisory
             diagnostic_value=tv_ratio,
@@ -1011,8 +1047,8 @@ def analyze_grammar_stationarity(
         GrammarStationarityAnalysis(
             rule="U5",
             variational_interpretation=(
-                "Multi-scale factorisation: action decomposes coherently "
-                "across scales (energy CV < 2.0 → stabilisers at each level)."
+                "Heuristic: node energy CV is below 2; nested identity and "
+                "per-level stabilizers are not checked."
             ),
             is_satisfied=well_distributed,
             diagnostic_value=cv,
@@ -1031,8 +1067,8 @@ def analyze_grammar_stationarity(
         GrammarStationarityAnalysis(
             rule="U6",
             variational_interpretation=(
-                "Potential boundedness: |Φ_s| < π/2 ensures V(Φ_s) "
-                "remains in a confining well (action bounded from below)."
+                "Heuristic: absolute potential magnitude is below π/2; "
+                "the U6 change from a reference state is not evaluated."
             ),
             is_satisfied=confined,
             diagnostic_value=max_phi_s,
@@ -1048,24 +1084,24 @@ def analyze_grammar_stationarity(
 
 
 def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
-    r"""Analyse TNFR thresholds as critical points of the potential V.
+    r"""Evaluate quadratic-potential derivatives at telemetry thresholds.
 
     The TNFR potential per node is:
         V(i) = ½[Φ_s² + |∇φ|² + K_φ²]
 
-    For each field, V has the form ½x² so ∂V/∂x = x (zero at x=0).
-    The canonical thresholds mark boundaries of the confining well:
+    For each field, V has the form ½x², so V'=x and V''=1. Its only critical
+    point is x=0; the nonzero thresholds below are regular points. Counts of
+    nearby observations are reported separately from criticality:
 
-    - Φ_s threshold at π/2 ≈ 1.571: half phase-wrap confinement bound
-      (the per-node Φ_s bound is empirical, no closed form)
+    - Φ_s threshold at π/2 ≈ 1.571: configured comparison level.
     - |∇φ| threshold at 0.9π ≈ 2.827: phase-wrap confinement limit. |∇φ| is
       a mean of WRAPPED angles, so |∇φ| ≤ π — the SAME bound as K_φ (audit
       2026: π scales the whole phase sector). The earlier |∇φ| early-warning level was an overlay,
       not a derived bound (measured sync-onset ≈ 0.29, σ-dependent).
     - K_φ threshold at 0.9π ≈ 2.827: phase-wrap confinement limit (same bound)
 
-    At these values, the effective potential transitions from confining
-    (restoring force towards equilibrium) to expelling (runaway dynamics).
+    No nonlinear constrained effective potential is specified by this function,
+    so no saddle point or change in restoring-force sign is inferred.
 
     Parameters
     ----------
@@ -1078,14 +1114,20 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
     phi_s = compute_structural_potential(G)
     grad_phi = compute_phase_gradient(G)
     k_phi = compute_phase_curvature(G)
+    return _potential_critical_points_from_fields(phi_s, grad_phi, k_phi)
 
+
+def _potential_critical_points_from_fields(
+    phi_s: dict[Any, float], grad_phi: dict[Any, float], k_phi: dict[Any, float]
+) -> list[CriticalPointAnalysis]:
+    """Apply the existing threshold readout to already captured field maps."""
     results: list[CriticalPointAnalysis] = []
 
     # Canonical thresholds. Both phase derivatives (|∇φ|, K_φ) are means of
     # WRAPPED angles bounded by π (audit 2026: π scales the whole phase
     # sector), so they share the SAME 0.9π wrap-margin threshold. Φ_s uses the
-    # U6 confinement bound (π/2; the per-node Φ_s bound is empirical, no closed
-    # form). The earlier |∇φ| early-warning level was an overlay, not a derived
+    # configured U6 comparison value (π/2). This evaluates magnitude, not the
+    # actual U6 drift. The earlier |∇φ| early-warning level was an overlay, not a derived
     # bound: the measured sync-onset is ≈ 0.29 and σ-dependent.
     thresholds = [
         ("Phi_s", U6_STRUCTURAL_POTENTIAL_LIMIT, phi_s),
@@ -1103,37 +1145,10 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
             np.abs(np.abs(vals) - threshold) < _THRESHOLD_PROXIMITY_FRACTION * threshold
         ]
 
-        # For V = ½x², gradient = x, curvature = 1 (always minimum at 0)
-        # But the effective potential with interactions adds nonlinear terms.
-        # The threshold marks where the quadratic well transitions to
-        # a different regime (grammar violations become energetically costly).
-
-        # Gradient of the quadratic part at the threshold
-        gradient_at_thresh = threshold  # ∂(½x²)/∂x = x
-
-        # Effective curvature: for quadratic, always +1 (minimum)
-        # But interaction terms can make it negative (maximum/saddle)
-        # Estimate from field variance near threshold
-        curvature = 1.0  # default (minimum of quadratic)
-
-        if len(at_threshold) > 1:
-            curvature = float(1.0 - np.var(at_threshold) / (threshold**2 + 1e-12))
-
-        # The threshold IS a critical point of the full effective potential
-        # (including grammar constraint terms as Lagrange multipliers).
-        # At the threshold, the grammar-constrained potential V_eff has
-        # a saddle point: restoring force vanishes and grammar violation
-        # energy begins to dominate.
-        is_critical_point = len(at_threshold) > 0
-
-        if curvature > _CURVATURE_SIGN_THRESHOLD:
-            ctype = "minimum"
-        elif curvature < -_CURVATURE_SIGN_THRESHOLD:
-            ctype = "maximum"
-        elif is_critical_point:
-            ctype = "saddle"
-        else:
-            ctype = "regular"
+        gradient_at_thresh = threshold
+        curvature = 1.0
+        is_critical_point = threshold == 0.0
+        ctype = "minimum" if is_critical_point else "regular"
 
         results.append(
             CriticalPointAnalysis(
@@ -1143,6 +1158,7 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
                 is_critical=is_critical_point,
                 curvature_at_threshold=curvature,
                 critical_type=ctype,
+                near_threshold_count=len(at_threshold),
             )
         )
 
@@ -1178,35 +1194,36 @@ def classify_operator_canonical(
     after: LagrangianSnapshot,
     operator_name: str,
     tolerance: float = 0.3,
+    *,
+    jacobian: Any | None = None,
+    jacobian_tolerance: float = 1e-9,
 ) -> dict[str, Any]:
-    r"""Classify a TNFR operator in the variational (Hamiltonian) framework.
+    r"""Report energy changes and an optional local symplectic check.
 
-    In the Hamiltonian formulation:
-
-    - **Canonical** operators preserve H and ω (symplectic).
-      Examples: EN, UM, RA, SHA, THOL, NAV, REMESH.
-
-    - **Generating** operators increase H (inject energy).
-      Examples: AL, OZ, VAL, ZHIR.
-
-    - **Dissipative** operators decrease H (remove energy / stabilise).
-      Examples: IL, NUL.
-
-    Grammar U2 ensures: for every generating operator, there exists
-    a dissipative operator to restore energy balance → finite action.
+    Energy increase/decrease and symplecticity are independent: a canonical
+    transformation need not preserve a given Hamiltonian. The historical
+    ``expected_*`` table and ``consistent_with_theory`` key retain their
+    energy-heuristic meaning, not a proof of operator or grammar compliance.
+    Without a Jacobian, the nested symplectic check is inconclusive.
 
     Parameters
     ----------
     before, after : LagrangianSnapshot
     operator_name : str
     tolerance : float
+        Energy and legacy snapshot-statistic tolerance.
+    jacobian, jacobian_tolerance
+        Optional tangent evidence passed to :func:`check_symplectic_preservation`.
 
     Returns
     -------
     dict[str, Any]
         Classification results.
     """
-    symp = check_symplectic_preservation(before, after, operator_name, tolerance)
+    symp = check_symplectic_preservation(
+        before, after, operator_name, tolerance,
+        jacobian=jacobian, jacobian_tolerance=jacobian_tolerance,
+    )
 
     dH = after.total_hamiltonian - before.total_hamiltonian
     dT = after.total_kinetic - before.total_kinetic
@@ -1333,7 +1350,10 @@ class VariationalTracker:
 
 
 def compute_variational_suite(G: Any) -> dict[str, Any]:
-    """Compute the complete variational analysis for a graph state.
+    """Compute the variational analysis from one local collection of fields.
+
+    The caller must hold graph state fixed during the call. Returned maps are
+    detached; capture is not atomic with concurrent evolution.
 
     Returns
     -------
@@ -1345,9 +1365,12 @@ def compute_variational_suite(G: Any) -> dict[str, Any]:
         - ``poisson_bracket_potential``: {Φ_s, J_ΔNFR} estimate
         - ``virial_ratio``: T/V (= 1 at virialisation)
     """
-    snap = capture_lagrangian_snapshot(G)
-    crit = analyze_potential_critical_points(G)
-    grammar = analyze_grammar_stationarity(G)
+    fields = _capture_structural_fields(G)
+    snap = _lagrangian_snapshot_from_fields(fields)
+    crit = _potential_critical_points_from_fields(
+        fields.phi_s, fields.grad_phi, fields.k_phi
+    )
+    grammar = _grammar_stationarity_from_snapshot(snap)
 
     pb_geo = compute_poisson_bracket_estimate(snap.conjugate_geometric)
     pb_pot = compute_poisson_bracket_estimate(snap.conjugate_potential)
@@ -1380,7 +1403,6 @@ __all__ = [
     "SymplecticCheck",
     "GrammarStationarityAnalysis",
     "CriticalPointAnalysis",
-    "ThresholdDerivation",
     "VariationalTimeSeries",
     # Core Lagrangian
     "compute_kinetic_density",
@@ -1406,7 +1428,6 @@ __all__ = [
     "analyze_grammar_stationarity",
     # Critical points
     "analyze_potential_critical_points",
-    "derive_tetrad_threshold_values",
     # Comprehensive suite
     "compute_variational_suite",
 ]

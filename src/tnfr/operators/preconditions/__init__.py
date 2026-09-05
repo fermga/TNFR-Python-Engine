@@ -1063,7 +1063,9 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
         history_names = [glyph_function_name(g) for g in glyph_history]
 
         # Check for prior IL (coherence)
-        il_found = "coherence" in history_names
+        from ..grammar_debt import node_has_prior_coherence
+
+        il_found = node_has_prior_coherence(G.nodes[node])
 
         if not il_found:
             raise OperatorPreconditionError(

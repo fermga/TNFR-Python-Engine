@@ -216,7 +216,7 @@ from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..constants.canonical import REMESH_SIMILARITY_THRESHOLD_CANONICAL
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
-from ..rng import make_rng
+from ..rng import make_rng, resolve_graph_seed, validate_seed
 from ..types import RemeshMeta
 from ..utils import cached_import, edge_version_update, kahan_sum_nd
 
@@ -1664,14 +1664,14 @@ def apply_topological_remesh(
     When ``seed`` is ``None`` the RNG draws its base seed from
     ``G.graph['RANDOM_SEED']`` to keep runs reproducible.
     """
+    if seed is None:
+        base_seed = resolve_graph_seed(G)
+    else:
+        base_seed = validate_seed(seed, allow_none=False)
     nodes = list(G.nodes())
     n_before = len(nodes)
     if n_before <= 1:
         return
-    if seed is None:
-        base_seed = int(G.graph.get("RANDOM_SEED", 0))
-    else:
-        base_seed = int(seed)
     rnd = make_rng(base_seed, -2, G)
 
     if mode is None:

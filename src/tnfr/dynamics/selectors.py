@@ -30,7 +30,6 @@ from ..validation import (
     GrammarContext,
     StructuralGrammarError,
     enforce_canonical_grammar,
-    on_applied_glyph,
     record_grammar_violation,
     soft_grammar_filters,
 )
@@ -663,8 +662,6 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
             g = enforce_canonical_grammar(G, n, g)
 
         apply_glyph(G, n, g, window=window)
-        if use_canon:
-            on_applied_glyph(G, n, g)
 
         if n in forced_al_nodes:
             h_al[n] = 0

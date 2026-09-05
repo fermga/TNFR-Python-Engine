@@ -34,6 +34,7 @@ from .defaults import (
 )
 from .feature_flags import context_flags, get_flags
 from .init import apply_config, load_config
+from .parsing import parse_bool as _parse_bool
 from .precision_modes import (
     DiagnosticsLevel,
     PrecisionMode,
@@ -93,7 +94,7 @@ def get_config() -> TNFRConfig:
     """Get the global TNFR configuration singleton."""
     global _GLOBAL_CONFIG
     if _GLOBAL_CONFIG is None:
-        _GLOBAL_CONFIG = TNFRConfig()
+        _GLOBAL_CONFIG = TNFRConfig(defaults=DEFAULTS)
     return _GLOBAL_CONFIG
 
 
@@ -103,8 +104,8 @@ def inject_defaults(G, defaults=None, override=False):
 
     Uses TNFRConfig internally for validation.
     """
-    config = TNFRConfig(defaults=defaults or DEFAULTS, validate_invariants=True)
-    config.inject_defaults(G, defaults=defaults or DEFAULTS, override=override)
+    selected = DEFAULTS if defaults is None else defaults
+    get_config().inject_defaults(G, defaults=selected, override=override)
 
 
 def merge_overrides(G, **overrides):
@@ -122,20 +123,11 @@ def merge_overrides(G, **overrides):
     KeyError
         If any parameter name is not present in DEFAULTS.
     """
-    import copy
-    from typing import cast
-
-    from ..immutable import _is_immutable
-    from ..types import TNFRConfigValue
-
-    for key, value in overrides.items():
+    for key in overrides:
         if key not in DEFAULTS:
             raise KeyError(f"Unknown parameter: '{key}'")
-        G.graph[key] = (
-            value
-            if _is_immutable(value)
-            else cast(TNFRConfigValue, copy.deepcopy(value))
-        )
+    updates = get_config()._prepare_updates(G.graph, overrides, override=True)
+    G.graph.update(updates)
 
 
 def get_param(G, key: str):
@@ -151,18 +143,14 @@ def get_param(G, key: str):
     Returns
     -------
     TNFRConfigValue
-        Configuration value.
+        Graph-owned value, or an isolated copy of a mutable default.
 
     Raises
     ------
     KeyError
         If key not found in graph or DEFAULTS.
     """
-    if key in G.graph:
-        return G.graph[key]
-    if key not in DEFAULTS:
-        raise KeyError(f"Unknown parameter: '{key}'")
-    return DEFAULTS[key]
+    return get_config().get_param_with_fallback(G.graph, key)
 
 
 def get_graph_param(G, key: str, cast_fn=float):
@@ -183,7 +171,9 @@ def get_graph_param(G, key: str, cast_fn=float):
         Casted parameter value, or None if value is None.
     """
     val = get_param(G, key)
-    return None if val is None else cast_fn(val)
+    if val is None:
+        return None
+    return _parse_bool(val) if cast_fn is bool else cast_fn(val)
 
 
 __all__ = (

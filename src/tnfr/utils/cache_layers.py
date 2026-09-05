@@ -8,7 +8,9 @@ secure serialization with HMAC signing to prevent tampering.
 from __future__ import annotations
 
 import os
+import io
 import pickle
+import pickletools
 import shelve
 import threading
 import warnings
@@ -28,7 +30,8 @@ __all__ = (
     "create_secure_redis_layer",
 )
 
-_SIGNATURE_PREFIX = b"TNFRSIG1"
+_SIGNATURE_PREFIX = b"TNFRSIG2"
+_LEGACY_SIGNATURE_PREFIX = b"TNFRSIG1"
 _SIGN_MODE_RAW = 0
 _SIGN_MODE_PICKLE = 1
 _SIGNATURE_HEADER_SIZE = len(_SIGNATURE_PREFIX) + 1 + 4
@@ -48,8 +51,10 @@ def create_secure_shelve_layer(
     """Create a ShelveCacheLayer with HMAC signature validation enabled.
 
     This is the recommended way to create persistent cache layers that handle
-    TNFR structures (EPI, NFR, NetworkX graphs). Signature validation protects
-    against arbitrary code execution from tampered pickle data.
+    TNFR structures (EPI, NFR, NetworkX graphs). The outer shelf container is
+    decoded without executable globals; version-2 signatures authenticate both
+    payload bytes and their interpretation before inner pickle decoding.
+    Legacy version-1 signed cache entries must be rebuilt.
 
     Parameters
     ----------
@@ -118,7 +123,8 @@ def create_secure_redis_layer(
 
     This is the recommended way to create distributed cache layers for TNFR.
     Signature validation protects against arbitrary code execution if Redis
-    is compromised or contains tampered data.
+    is compromised or contains tampered data. Version-2 signatures cover the
+    raw/pickle mode as well as the payload; version-1 entries must be rebuilt.
 
     Parameters
     ----------
@@ -210,12 +216,52 @@ def _pack_signed_envelope(mode: int, payload: bytes, signature: bytes) -> bytes:
 def _is_signed_envelope(blob: bytes) -> bool:
     """Return ``True`` when *blob* represents a signed cache entry."""
 
-    return blob.startswith(_SIGNATURE_PREFIX)
+    return blob.startswith((_SIGNATURE_PREFIX, _LEGACY_SIGNATURE_PREFIX))
+
+
+def _signature_input(mode: int, payload: bytes) -> bytes:
+    """Authenticate interpretation as well as payload bytes.
+
+    Version 1 signed only the payload, so a raw byte string could be relabelled
+    as a pickle. Those derived cache entries must be rebuilt, not trusted.
+    """
+    return _SIGNATURE_PREFIX + bytes([mode]) + payload
+
+
+class _EnvelopeUnpickler(pickle.Unpickler):
+    """Defense in depth after primitive-only outer opcode validation."""
+
+    def find_class(self, module: str, name: str) -> Any:
+        raise TNFRSecurityError("executable outer shelve pickle rejected")
+
+
+_OUTER_ENVELOPE_OPCODES = frozenset({
+    "PROTO", "FRAME", "STOP", "SHORT_BINBYTES", "BINBYTES", "BINBYTES8",
+    "MEMOIZE", "BINPUT", "LONG_BINPUT", "PUT", "BINGET", "LONG_BINGET", "GET",
+})
+
+
+def _decode_outer_envelope(blob: bytes) -> bytes:
+    """Validate a bytes-only outer representation before any unpickling.
+
+    EXT opcodes can bypass Unpickler.find_class through Python's global
+    extension cache. No extensions, globals, reducers or persistent IDs are
+    permitted in the outer representation, regardless of process state.
+    """
+    for opcode, _, _ in pickletools.genops(blob):
+        if opcode.name not in _OUTER_ENVELOPE_OPCODES:
+            raise TNFRSecurityError(f"nonprimitive outer pickle opcode: {opcode.name}")
+    entry = _EnvelopeUnpickler(io.BytesIO(blob)).load()
+    if type(entry) is not bytes:
+        raise TNFRSecurityError("outer shelve envelope must be bytes")
+    return entry
 
 
 def _unpack_signed_envelope(blob: bytes) -> tuple[int, bytes, bytes]:
     """Return the ``(mode, signature, payload)`` triple encoded in *blob*."""
 
+    if blob.startswith(_LEGACY_SIGNATURE_PREFIX):
+        raise TNFRSecurityError("legacy signed cache entries must be rebuilt")
     if len(blob) < _SIGNATURE_HEADER_SIZE:
         raise TNFRSecurityError("signed payload header truncated")
     if not _is_signed_envelope(blob):
@@ -378,7 +424,19 @@ class ShelveCacheLayer(CacheLayer):
         with self._lock:
             if name not in self._shelf:
                 raise KeyError(name)
-            entry = self._shelf[name]
+            if self._require_signature or self._validator is not None:
+                # Shelf.__getitem__ invokes pickle before returning its value.
+                # Verify the outer container cannot execute before examining
+                # and authenticating the inner envelope. Unsigned, explicitly
+                # trusted shelves retain their original object policy below.
+                blob = self._shelf.dict[name.encode(self._shelf.keyencoding)]
+                try:
+                    entry = _decode_outer_envelope(blob)
+                except (pickle.PickleError, EOFError, ValueError, TNFRSecurityError) as exc:
+                    self.delete(name)
+                    raise TNFRSecurityError("invalid outer shelve envelope") from exc
+            else:
+                entry = self._shelf[name]
 
         return self._decode_entry(name, entry)
 
@@ -387,10 +445,19 @@ class ShelveCacheLayer(CacheLayer):
             stored_value: Any = value
         else:
             mode, payload = _prepare_payload_bytes(value, protocol=self._protocol)
-            signature = self._signer(payload)
+            signature = self._signer(_signature_input(mode, payload))
             stored_value = _pack_signed_envelope(mode, payload, signature)
         with self._lock:
-            self._shelf[name] = stored_value
+            if self._signer is None:
+                self._shelf[name] = stored_value
+            else:
+                # A fixed bytes-only outer protocol avoids GLOBAL/REDUCE in
+                # protocols 0-2. The requested protocol still controls the
+                # authenticated inner value, preserving its public semantics.
+                self._shelf.dict[name.encode(self._shelf.keyencoding)] = pickle.dumps(
+                    stored_value, protocol=3,
+                )
+                self._shelf.cache.pop(name, None)
             self._shelf.sync()
 
     def delete(self, name: str) -> None:
@@ -428,7 +495,7 @@ class ShelveCacheLayer(CacheLayer):
                         )
                 else:
                     try:
-                        valid = validator(payload, signature)
+                        valid = validator(_signature_input(mode, payload), signature)
                     except Exception as exc:  # pragma: no cover - defensive
                         self.delete(name)
                         raise TNFRSecurityError(
@@ -546,7 +613,7 @@ class RedisCacheLayer(CacheLayer):
                         )
                 else:
                     try:
-                        valid = validator(payload, signature)
+                        valid = validator(_signature_input(mode, payload), signature)
                     except Exception as exc:  # pragma: no cover - defensive
                         self.delete(name)
                         raise TNFRSecurityError(
@@ -567,6 +634,9 @@ class RedisCacheLayer(CacheLayer):
                 raise TNFRSecurityError(f"unsigned cache entry rejected: {name}")
             # pickle from trusted Redis; documented security warning in class docstring
             return pickle.loads(blob)  # nosec B301
+        if self._require_signature:
+            self.delete(name)
+            raise TNFRSecurityError(f"unsigned nonbinary cache entry rejected: {name}")
         return value
 
     def store(self, name: str, value: Any) -> None:
@@ -577,7 +647,7 @@ class RedisCacheLayer(CacheLayer):
                 payload = pickle.dumps(value, protocol=self._protocol)
         else:
             mode, payload_bytes = _prepare_payload_bytes(value, protocol=self._protocol)
-            signature = self._signer(payload_bytes)
+            signature = self._signer(_signature_input(mode, payload_bytes))
             payload = _pack_signed_envelope(mode, payload_bytes, signature)
         with self._lock:
             self._client.set(key, payload)

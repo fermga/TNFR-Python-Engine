@@ -19,14 +19,15 @@ Derived fields defined HERE (single location, no duplicates):
     Action Density           𝒜 = Φ_s·|∇φ| + K_φ·J_φ + |∇φ|·J_ΔNFR  (bilinear)
     Topological Charge       𝒬 = |∇φ|·J_φ − K_φ·J_ΔNFR  (topological invariant)
 
-Physics Foundation:
-    K_φ and J_φ exhibit strong anticorrelation r ≈ −0.85 to −0.997, indicating
-    they are dual aspects of a single complex geometric object Ψ.  This module
-    formalises that duality and all derived quantities that emerge from it.
+Algebraic scope:
+    Ψ combines K_φ and J_φ as real and imaginary coordinates by definition.
+    Their measured correlation depends on graph topology, phase state, and
+    sampling; no universal correlation range is assumed by these formulas.
 """
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 from ..mathematics.unified_numerical import np
@@ -44,6 +45,94 @@ from .canonical import (
 )
 from .extended import compute_dnfr_flux, compute_phase_current
 
+
+@dataclass(frozen=True)
+class _StructuralFieldReadout:
+    """Owned base-field maps for one synchronous composite readout.
+
+    This object is local to the caller, never persisted on the graph. It does
+    not lock the graph against concurrent evolution; callers must hold state
+    fixed while reading it, as for the individual field functions.
+    """
+
+    phi_s: dict[Any, float]
+    grad_phi: dict[Any, float]
+    k_phi: dict[Any, float]
+    j_phi: dict[Any, float]
+    j_dnfr: dict[Any, float]
+
+
+def _capture_structural_fields(G: Any) -> _StructuralFieldReadout:
+    """Read each required kernel once and detach its returned mapping."""
+    return _StructuralFieldReadout(
+        phi_s=dict(compute_structural_potential(G)),
+        grad_phi=dict(compute_phase_gradient(G)),
+        k_phi=dict(compute_phase_curvature(G)),
+        j_phi=dict(compute_phase_current(G)),
+        j_dnfr=dict(compute_dnfr_flux(G)),
+    )
+
+
+def _complex_geometric_field(
+    k_phi: dict[Any, float], j_phi: dict[Any, float]
+) -> dict[Any, complex]:
+    return {n: complex(k_phi[n], j_phi[n]) for n in k_phi}
+
+
+def _chirality_field(
+    grad_phi: dict[Any, float], k_phi: dict[Any, float],
+    j_phi: dict[Any, float], j_dnfr: dict[Any, float],
+) -> dict[Any, float]:
+    return {n: grad_phi[n] * k_phi[n] - j_phi[n] * j_dnfr[n] for n in grad_phi}
+
+
+def _symmetry_breaking_field(
+    grad_phi: dict[Any, float], k_phi: dict[Any, float],
+    j_phi: dict[Any, float], j_dnfr: dict[Any, float],
+) -> dict[Any, float]:
+    return {
+        n: (grad_phi[n] ** 2 - k_phi[n] ** 2) + (j_phi[n] ** 2 - j_dnfr[n] ** 2)
+        for n in grad_phi
+    }
+
+
+def _coherence_coupling_field(
+    phi_s: dict[Any, float], psi: dict[Any, complex]
+) -> dict[Any, float]:
+    return {n: phi_s[n] * abs(psi[n]) for n in phi_s}
+
+
+def _energy_density_from_fields(
+    phi_s: dict[Any, float], grad_phi: dict[Any, float], k_phi: dict[Any, float],
+    j_phi: dict[Any, float], j_dnfr: dict[Any, float],
+) -> dict[Any, float]:
+    """The shared raw quadratic form for live and captured field readouts."""
+    return {
+        n: (
+            phi_s[n] ** 2 + grad_phi[n] ** 2 + k_phi[n] ** 2
+            + j_phi[n] ** 2 + j_dnfr[n] ** 2
+        )
+        for n in phi_s
+    }
+
+
+def _action_density_from_fields(
+    phi_s: dict[Any, float], grad_phi: dict[Any, float], k_phi: dict[Any, float],
+    j_phi: dict[Any, float], j_dnfr: dict[Any, float],
+) -> dict[Any, float]:
+    """The shared bilinear interaction, without another graph read."""
+    return {
+        n: phi_s[n] * grad_phi[n] + k_phi[n] * j_phi[n] + grad_phi[n] * j_dnfr[n]
+        for n in phi_s
+    }
+
+
+def _topological_charge(
+    grad_phi: dict[Any, float], k_phi: dict[Any, float],
+    j_phi: dict[Any, float], j_dnfr: dict[Any, float],
+) -> dict[Any, float]:
+    return {n: grad_phi[n] * j_phi[n] - k_phi[n] * j_dnfr[n] for n in grad_phi}
+
 # ============================================================================
 # COMPLEX GEOMETRIC FIELD  Ψ = K_φ + i·J_φ
 # ============================================================================
@@ -52,9 +141,9 @@ from .extended import compute_dnfr_flux, compute_phase_current
 def compute_complex_geometric_field(G: Any) -> dict[Any, complex]:
     """Compute unified complex geometric field Ψ = K_φ + i·J_φ.
 
-    K_φ (curvature) and J_φ (current) show strong anticorrelation
-    (r ≈ −0.85 to −0.997), indicating they are dual aspects of a single
-    complex geometric object.
+    This is an algebraic pairing of curvature and current. Their correlation
+    is a fixture-dependent measurement, not a prerequisite or a consequence
+    of representing the two maps as one complex field.
 
     - Real part (K_φ):  Static geometric confinement
     - Imaginary part (J_φ):  Dynamic transport flow
@@ -73,7 +162,7 @@ def compute_complex_geometric_field(G: Any) -> dict[Any, complex]:
     """
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
-    return {node: complex(k_phi[node], j_phi[node]) for node in G.nodes()}
+    return _complex_geometric_field(k_phi, j_phi)
 
 
 def compute_field_magnitude(complex_field: dict[Any, complex]) -> dict[Any, float]:
@@ -100,7 +189,7 @@ def compute_chirality_field(G: Any) -> dict[Any, float]:
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
-    return {n: grad_phi[n] * k_phi[n] - j_phi[n] * j_dnfr[n] for n in G.nodes()}
+    return _chirality_field(grad_phi, k_phi, j_phi, j_dnfr)
 
 
 def compute_symmetry_breaking_field(G: Any) -> dict[Any, float]:
@@ -113,10 +202,7 @@ def compute_symmetry_breaking_field(G: Any) -> dict[Any, float]:
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
-    return {
-        n: (grad_phi[n] ** 2 - k_phi[n] ** 2) + (j_phi[n] ** 2 - j_dnfr[n] ** 2)
-        for n in G.nodes()
-    }
+    return _symmetry_breaking_field(grad_phi, k_phi, j_phi, j_dnfr)
 
 
 def compute_coherence_coupling_field(G: Any) -> dict[Any, float]:
@@ -127,7 +213,7 @@ def compute_coherence_coupling_field(G: Any) -> dict[Any, float]:
     """
     phi_s = compute_structural_potential(G)
     psi = compute_complex_geometric_field(G)
-    return {n: phi_s[n] * abs(psi[n]) for n in G.nodes()}
+    return _coherence_coupling_field(phi_s, psi)
 
 
 # ============================================================================
@@ -170,16 +256,7 @@ def compute_energy_density(G: Any) -> dict[Any, float]:
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
-    return {
-        n: (
-            phi_s[n] ** 2
-            + grad_phi[n] ** 2
-            + k_phi[n] ** 2
-            + j_phi[n] ** 2
-            + j_dnfr[n] ** 2
-        )
-        for n in G.nodes()
-    }
+    return _energy_density_from_fields(phi_s, grad_phi, k_phi, j_phi, j_dnfr)
 
 
 def compute_action_density(G: Any) -> dict[Any, float]:
@@ -207,10 +284,7 @@ def compute_action_density(G: Any) -> dict[Any, float]:
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
-    return {
-        n: (phi_s[n] * grad_phi[n] + k_phi[n] * j_phi[n] + grad_phi[n] * j_dnfr[n])
-        for n in G.nodes()
-    }
+    return _action_density_from_fields(phi_s, grad_phi, k_phi, j_phi, j_dnfr)
 
 
 def compute_topological_charge(G: Any) -> dict[Any, float]:
@@ -223,7 +297,7 @@ def compute_topological_charge(G: Any) -> dict[Any, float]:
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
-    return {n: grad_phi[n] * j_phi[n] - k_phi[n] * j_dnfr[n] for n in G.nodes()}
+    return _topological_charge(grad_phi, k_phi, j_phi, j_dnfr)
 
 
 # ============================================================================
@@ -235,8 +309,13 @@ def compute_unified_field_suite(G: Any) -> dict[str, Any]:
     """Compute complete unified field analysis.
 
     Returns all derived fields, tensor invariants, and conservation
-    measures in a single comprehensive call.  Conservation quantities
-    delegate to :mod:`tnfr.physics.conservation`.
+    measures from one local collection of the five required base fields.
+    Conservation density uses :mod:`tnfr.physics.conservation`; scalar totals
+    are reduced from the same returned density maps.
+
+    The caller must hold topology, attributes and configuration fixed during
+    the call. Returned maps are detached; capture is not atomic with concurrent
+    graph evolution.
 
     Returns
     -------
@@ -247,37 +326,43 @@ def compute_unified_field_suite(G: Any) -> dict[str, Any]:
         - ``charge_density``, ``current_j_phi``, ``current_j_dnfr``
         - ``conservation_metrics``: {noether_charge, structural_energy}
     """
-    from .conservation import compute_charge_density as _rho
-    from .conservation import compute_energy_functional, compute_noether_charge
+    from .conservation import _charge_density_from_fields
 
+    fields = _capture_structural_fields(G)
+    phi_s, grad_phi, k_phi = fields.phi_s, fields.grad_phi, fields.k_phi
+    j_phi, j_dnfr = fields.j_phi, fields.j_dnfr
     results: dict[str, Any] = {}
 
     # Complex geometric field
-    psi = compute_complex_geometric_field(G)
+    psi = _complex_geometric_field(k_phi, j_phi)
     results["psi_magnitude"] = compute_field_magnitude(psi)
     results["psi_phase"] = compute_field_phase(psi)
 
     # Emergent fields
-    results["chirality"] = compute_chirality_field(G)
-    results["symmetry_breaking"] = compute_symmetry_breaking_field(G)
-    results["coherence_coupling"] = compute_coherence_coupling_field(G)
+    results["chirality"] = _chirality_field(grad_phi, k_phi, j_phi, j_dnfr)
+    results["symmetry_breaking"] = _symmetry_breaking_field(
+        grad_phi, k_phi, j_phi, j_dnfr
+    )
+    results["coherence_coupling"] = _coherence_coupling_field(phi_s, psi)
 
     # Tensor invariants
-    results["energy_density"] = compute_energy_density(G)
-    results["action_density"] = compute_action_density(G)
-    results["topological_charge"] = compute_topological_charge(G)
+    results["energy_density"] = _energy_density_from_fields(
+        phi_s, grad_phi, k_phi, j_phi, j_dnfr
+    )
+    results["action_density"] = _action_density_from_fields(
+        phi_s, grad_phi, k_phi, j_phi, j_dnfr
+    )
+    results["topological_charge"] = _topological_charge(grad_phi, k_phi, j_phi, j_dnfr)
 
     # Conservation quantities (canonical source)
-    results["charge_density"] = _rho(G)
-    j_phi = compute_phase_current(G)
-    j_dnfr = compute_dnfr_flux(G)
+    results["charge_density"] = _charge_density_from_fields(phi_s, k_phi)
     results["current_j_phi"] = j_phi
     results["current_j_dnfr"] = j_dnfr
 
     # Scalar conservation diagnostics
     results["conservation_metrics"] = {
-        "noether_charge": compute_noether_charge(G),
-        "structural_energy": compute_energy_functional(G),
+        "noether_charge": sum(results["charge_density"].values()),
+        "structural_energy": 0.5 * sum(results["energy_density"].values()),
     }
 
     return results

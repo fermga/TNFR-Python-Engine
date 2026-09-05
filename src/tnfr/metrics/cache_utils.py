@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Mapping
-from typing import Any, MutableMapping
+from typing import Any
 
 from ..types import GraphLike
 from ..utils import get_graph
@@ -106,17 +106,19 @@ def configure_hot_path_caches(
     {'buffer_max_entries': 256, 'trig_cache_size': 512}
     """
     graph = get_graph(G)
-    config: MutableMapping[str, Any] = graph.setdefault("_cache_config", {})
+    # Graph.copy() shallow-copies metadata; configuration updates must not
+    # mutate a dictionary still owned by the source graph.
+    config = get_cache_config(G)
+    graph["_cache_config"] = config
 
     # Consolidate edge cache capacity requirements
-    edge_capacities = []
     if buffer_max_entries is not None:
         config["buffer_max_entries"] = int(buffer_max_entries)
-        edge_capacities.append(int(buffer_max_entries))
 
     if trig_cache_size is not None:
         config["trig_cache_size"] = int(trig_cache_size)
-        edge_capacities.append(int(trig_cache_size))
+
+    edge_capacities = [config[key] for key in ("buffer_max_entries", "trig_cache_size") if key in config]
 
     # If any edge-cache related capacity is set, update the unified CacheManager
     if edge_capacities:

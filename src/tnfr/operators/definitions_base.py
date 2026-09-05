@@ -12,6 +12,7 @@ from typing import Any, ClassVar
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..rng import validate_graph_seed
 from ..types import Glyph, TNFRGraph
 from .registry import OperatorMetaAuto
 
@@ -54,7 +55,7 @@ class Operator(metaclass=OperatorMetaAuto):
         **kw : Any
             Additional keyword arguments forwarded to the grammar layer.
             Supported keys include:
-            - ``window``: constrain grammar window
+            - ``window``: maximum stored glyph-history length
             - ``validate_preconditions``: toggle precondition checks
             - ``collect_metrics``: toggle metrics collection
 
@@ -66,27 +67,56 @@ class Operator(metaclass=OperatorMetaAuto):
 
         Notes
         -----
-        The invocation delegates to
-        :func:`tnfr.validation.apply_glyph_with_grammar`, which enforces
-        the TNFR grammar before activating the structural transformation. The
-        grammar may expand, contract or stabilise the neighbourhood so that the
-        operator preserves canonical closure and coherence.
+        Preconditions and incremental grammar selection run before subclass
+        execution. If grammar selects a fallback, that canonical operator's
+        workflow runs, including its own metadata and metrics. Subclasses
+        extend ``_execute``; public calls retain the ``None`` return value.
+        Later execution or postcondition failures are not graph transactions.
         """
         if self.glyph is None:
             raise NotImplementedError("Operator without assigned glyph")
+
+        from . import _validated_execution_window
+        from .grammar_application import enforce_canonical_grammar
+        from .grammar_debt import require_replayable_history
+        from .grammar_types import glyph_function_name
+        from .registry import get_operator_class
+
+        kw["window"] = _validated_execution_window(G, kw.get("window"))
+        validate_graph_seed(G)
+        require_replayable_history(G.nodes[node].get("glyph_history"))
 
         # Hard structural invariants — always enforced before any state
         # mutation, independent of VALIDATE_OPERATOR_PRECONDITIONS.  Coupling
         # and Resonance override this to run the U3 phase gate (Invariant #2).
         self._validate_hard_invariants(G, node)
 
-        # Optional precondition validation
+        self._validate_application_preconditions(G, node, **kw)
+
+        # Select before entering any subclass workflow. A fallback must run
+        # its own metadata/metrics and effects, never those of the rejected
+        # request (e.g. THOL nesting after an IL replacement).
+        selected = enforce_canonical_grammar(G, node, self.glyph, kw.get("sequence_context"))
+        if glyph_function_name(selected) != glyph_function_name(self.glyph):
+            fallback = get_operator_class(glyph_function_name(selected))()
+            fallback(G, node, **kw)
+            return
+        self._execute(G, node, **kw)
+
+    def _validate_application_preconditions(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Apply this operator's existing precondition configuration policy."""
         validate_preconditions = kw.get("validate_preconditions", True)
         if validate_preconditions and G.graph.get(
             "VALIDATE_OPERATOR_PRECONDITIONS", False
         ):
             self._validate_preconditions(G, node)
 
+    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Execute an already selected operator; subclasses extend this hook.
+
+        Public calls enter through ``__call__`` so argument, hard-invariant,
+        precondition and grammar rejection precede subclass metadata writes.
+        """
         # Capture state before operator application for metrics and validation
         collect_metrics = kw.get("collect_metrics", False) or G.graph.get(
             "COLLECT_OPERATOR_METRICS", False
@@ -104,9 +134,9 @@ class Operator(metaclass=OperatorMetaAuto):
         if _integrity_monitor is not None:
             _integrity_monitor.before_operator(G, node)
 
-        from . import apply_glyph_with_grammar
+        from .grammar_application import _apply_selected_glyph
 
-        apply_glyph_with_grammar(G, [node], self.glyph, kw.get("window"))
+        _apply_selected_glyph(G, node, self.glyph, kw.get("window"))
 
         # Structural Integrity Monitor — post-operator evaluation
         # Conservation quality, Lyapunov dE/dt, postconditions, grammar

@@ -7,7 +7,9 @@ configuration with explicit semantic mapping to TNFR invariants (νf, θ, ΔNFR)
 from __future__ import annotations
 
 import copy
+import math
 from collections.abc import Mapping
+from numbers import Real
 from typing import Any, TypeVar, cast
 
 from ..immutable import _is_immutable
@@ -48,6 +50,18 @@ class TNFRConfigError(Exception):
     """Raised when TNFR configuration violates structural invariants."""
 
 
+def _validate_finite_real(value: Any, name: str) -> None:
+    """Validate an optional real scalar without silently coercing strings."""
+    if value is None:
+        return
+    try:
+        valid = isinstance(value, Real) and math.isfinite(value)
+    except (OverflowError, TypeError, ValueError):
+        valid = False
+    if not valid:
+        raise TNFRConfigError(f"{name} must be a finite real number, got {value!r}")
+
+
 class TNFRConfig:
     """Canonical TNFR configuration with structural invariant validation.
 
@@ -56,11 +70,10 @@ class TNFRConfig:
 
     TNFR Structural Invariants Enforced:
     -------------------------------------
-    1. νf (structural frequency) must be in Hz_str units, > 0
-    2. θ (phase) must be in [-π, π] if THETA_WRAP enabled
-    3. ΔNFR magnitude bounds define reorganization stability
-    4. EPI coherent form bounds define valid state space
-    5. Configuration parameters maintain operator closure
+    Checks cover finite scalar values, nonnegative νf (including inactive
+    nodes), ordered bounds, and phase bounds when wrapping is disabled.
+    These configuration checks do not certify operator closure or the
+    physical interpretation of a caller's ΔNFR implementation.
 
     Parameters
     ----------
@@ -85,7 +98,7 @@ class TNFRConfig:
         validate_invariants: bool = True,
     ) -> None:
         """Initialize TNFR configuration."""
-        self._defaults = defaults or {}
+        self._defaults = copy.deepcopy(dict(defaults)) if defaults is not None else {}
         self._validate_invariants = validate_invariants
 
     def validate_vf_bounds(
@@ -97,7 +110,7 @@ class TNFRConfig:
         """Validate νf (structural frequency) bounds.
 
         TNFR Invariant: νf must be expressed in Hz_str (structural hertz)
-        and must be > 0 to maintain node existence.
+        and must be nonnegative; zero denotes an inactive node.
 
         Parameters
         ----------
@@ -121,9 +134,15 @@ class TNFRConfig:
         if not self._validate_invariants:
             return True
 
-        # Invariant 5: Structural Metrology - νf in Hz_str, must be positive
+        for name, value in (("VF_MIN", vf_min), ("VF_MAX", vf_max), ("νf", vf)):
+            _validate_finite_real(value, name)
+
+        # Invariant 5: Structural Metrology - νf in Hz_str, including zero.
         if vf_min is not None and vf_min < 0.0:
             raise TNFRConfigError(f"VF_MIN must be >= 0 (Hz_str units), got {vf_min}")
+
+        if vf_max is not None and vf_max < 0.0:
+            raise TNFRConfigError(f"VF_MAX must be >= 0 (Hz_str units), got {vf_max}")
 
         if vf_max is not None and vf_min is not None and vf_max < vf_min:
             raise TNFRConfigError(f"VF_MAX ({vf_max}) must be >= VF_MIN ({vf_min})")
@@ -168,7 +187,7 @@ class TNFRConfig:
         if not self._validate_invariants:
             return True
 
-        import math
+        _validate_finite_real(theta, "θ")
 
         # Invariant 2: Phase-Coherent Coupling - valid synchrony requires bounded phase
         if theta is not None and not theta_wrap:
@@ -212,6 +231,9 @@ class TNFRConfig:
         if not self._validate_invariants:
             return True
 
+        for name, value in (("EPI_MIN", epi_min), ("EPI_MAX", epi_max), ("EPI", epi)):
+            _validate_finite_real(value, name)
+
         # Invariant 1: Nodal Equation Integrity (EPI as coherent form) - must have valid bounds
         if epi_max is not None and epi_min is not None and epi_max < epi_min:
             raise TNFRConfigError(f"EPI_MAX ({epi_max}) must be >= EPI_MIN ({epi_min})")
@@ -245,7 +267,8 @@ class TNFRConfig:
         Returns
         -------
         bool
-            True if ΔNFR semantics are preserved.
+            True if the supplied scalar is finite. A value and a context
+            label alone cannot certify the physical semantics of its use.
 
         Raises
         ------
@@ -255,13 +278,7 @@ class TNFRConfig:
         if not self._validate_invariants:
             return True
 
-        # Invariant 1: Nodal Equation Integrity (ΔNFR semantics) - modulates reorganization rate
-        # Sign and magnitude are semantically significant
-        # This validation ensures we don't reinterpret ΔNFR incorrectly
-
-        # No specific numeric bounds - ΔNFR can be any real value
-        # The semantic check is about usage context, not numeric range
-
+        _validate_finite_real(dnfr, "ΔNFR")
         return True
 
     def validate_config(
@@ -298,6 +315,8 @@ class TNFRConfig:
         theta_wrap = config.get("THETA_WRAP", True)
         init_theta_min = config.get("INIT_THETA_MIN")
         init_theta_max = config.get("INIT_THETA_MAX")
+        _validate_finite_real(init_theta_min, "INIT_THETA_MIN")
+        _validate_finite_real(init_theta_max, "INIT_THETA_MAX")
         if init_theta_min is not None:
             self.validate_theta_bounds(theta=init_theta_min, theta_wrap=theta_wrap)
         if init_theta_max is not None:
@@ -309,12 +328,29 @@ class TNFRConfig:
         if epi_min is not None or epi_max is not None:
             self.validate_epi_bounds(epi_min=epi_min, epi_max=epi_max)
 
-        # Validate DT (time step) is positive for temporal coherence
+        # Integrators define DT=0 as a no-op; configuration must preserve it.
         dt = config.get("DT")
-        if dt is not None and dt <= 0:
+        _validate_finite_real(dt, "DT")
+        if dt is not None and dt < 0:
             raise TNFRConfigError(
-                f"DT (time step) must be > 0 for temporal coherence, got {dt}"
+                f"DT (time step) must be >= 0, got {dt}"
             )
+
+        for key in (
+            "INIT_VF_MIN", "INIT_VF_MAX", "INIT_VF_MEAN", "INIT_VF_STD",
+            "INIT_SI_MIN", "INIT_SI_MAX", "INIT_EPI_VALUE",
+        ):
+            _validate_finite_real(config.get(key), key)
+        vf_std = config.get("INIT_VF_STD")
+        if vf_std is not None and vf_std < 0:
+            raise TNFRConfigError("INIT_VF_STD must be >= 0")
+
+        from ..rng import validate_seed
+
+        try:
+            validate_seed(config.get("RANDOM_SEED"))
+        except ValueError as exc:
+            raise TNFRConfigError(str(exc)) from exc
 
         return True
 
@@ -352,6 +388,25 @@ class TNFRConfig:
             return default
         raise KeyError(f"Parameter '{key}' not found in graph or defaults")
 
+    def _prepare_updates(
+        self,
+        current: Mapping[str, Any],
+        incoming: Mapping[str, TNFRConfigValue],
+        *,
+        override: bool,
+    ) -> dict[str, TNFRConfigValue]:
+        """Stage owned values and validate the effective configuration."""
+        updates = {
+            key: value if _is_immutable(value) else copy.deepcopy(value)
+            for key, value in incoming.items()
+            if override or key not in current
+        }
+        effective = dict(self._defaults)
+        effective.update(current)
+        effective.update(updates)
+        self.validate_config(effective)
+        return updates
+
     def inject_defaults(
         self,
         G: GraphLike,
@@ -374,18 +429,9 @@ class TNFRConfig:
         TNFRConfigError
             If configuration violates TNFR invariants.
         """
-        config_to_inject = defaults or self._defaults
-
-        # Validate before injection
-        if self._validate_invariants:
-            self.validate_config(config_to_inject)
-
-        G.graph.setdefault("_tnfr_defaults_attached", False)
-        for k, v in config_to_inject.items():
-            if override or k not in G.graph:
-                G.graph[k] = (
-                    v if _is_immutable(v) else cast(TNFRConfigValue, copy.deepcopy(v))
-                )
+        config_to_inject = self._defaults if defaults is None else defaults
+        updates = self._prepare_updates(G.graph, config_to_inject, override=override)
+        G.graph.update(updates)
         G.graph["_tnfr_defaults_attached"] = True
 
         # Ensure node offset map if available

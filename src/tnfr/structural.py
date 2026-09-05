@@ -597,6 +597,12 @@ def run_sequence(
     operator, while the hook keeps EPI, νf and phase consistent with the
     resulting ΔNFR variations.
 
+    Canonical validation retains actual operator metadata and supplies the
+    remaining word as U4a context. Live U2 debt, U3 phase compatibility and
+    U4b history can still block a step; this raises before that operation
+    rather than silently substituting another glyph. The already executed
+    prefix remains committed if a later operation or hook fails.
+
     Parameters
     ----------
     G : TNFRGraph
@@ -660,6 +666,7 @@ def run_sequence(
     compute = G.graph.get("compute_delta_nfr")
     ops_list = list(ops)
     names = [op.name for op in ops_list]
+    execution_word = None
 
     # Initialize validators (reuse global instances for performance)
     if not hasattr(run_sequence, "_invariant_validator"):
@@ -683,6 +690,11 @@ def run_sequence(
             )
             validation_context["initial_epi_nonzero"] = True
 
+        from .operators.grammar_execution import ValidatedSequence
+
+        # Keep operator instances so U5 depth and other declared metadata are
+        # validated before giving any step access to a future U4a handler.
+        execution_word = ValidatedSequence(ops_list, context=validation_context)
         outcome = validate_sequence(names, context=validation_context)
         if not outcome.passed:
             summary_message = outcome.summary.get("message", "validation failed")
@@ -739,13 +751,13 @@ def run_sequence(
             if validation_config.min_severity != InvariantSeverity.WARNING:
                 raise
 
-    for op in ops_list:
+    for index, op in enumerate(ops_list):
         # Mark last operator for tracking (for Invariant 1)
         if not hasattr(G, "_last_operator_applied"):
             G._last_operator_applied = None  # type: ignore[attr-defined]
         G._last_operator_applied = op.name  # type: ignore[attr-defined]
 
-        op(G, node)
+        op(G, node, sequence_context=execution_word.step(index))
         if callable(compute):
             compute(G)
 

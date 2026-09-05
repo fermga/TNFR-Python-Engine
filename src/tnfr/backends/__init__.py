@@ -29,7 +29,7 @@ Available backends
 ------------------
 - **numpy**: Vectorized NumPy implementation (default, stable)
 - **jax**: JIT-compiled JAX with autodiff support (experimental)
-- **torch**: PyTorch GPU-accelerated implementation (experimental)
+- **torch**: PyTorch adapter using canonical CPU graph kernels (experimental)
 """
 
 from __future__ import annotations

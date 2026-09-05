@@ -23,7 +23,9 @@ import time
 import warnings
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import quote, unquote, urlparse, urlunparse
+
+from .parsing import parse_bool
 
 
 class ConfigurationError(Exception):
@@ -179,6 +181,17 @@ def load_github_credentials() -> dict[str, str | None]:
     }
 
 
+def _parse_redis_database(value: str) -> int:
+    """Normalize the database index for URL and individual-variable inputs."""
+    try:
+        database = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ConfigurationError("REDIS_DB must be a nonnegative integer") from exc
+    if database < 0:
+        raise ConfigurationError("REDIS_DB must be a nonnegative integer")
+    return database
+
+
 def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
     """Load Redis connection configuration from environment.
 
@@ -202,6 +215,9 @@ def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
     - REDIS_DB (default: 0)
     - REDIS_USE_TLS (default: False)
     - REDIS_URL (alternative: full URL, overrides individual params)
+
+    URL passwords are percent-decoded for use as connection parameters.
+    Database indices must be nonnegative integers in either input form.
 
     Security
     --------
@@ -227,9 +243,9 @@ def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
 
         return {
             "host": parsed.hostname or "localhost",
-            "port": parsed.port or 6379,
-            "password": parsed.password,
-            "db": int(parsed.path.lstrip("/") or "0") if parsed.path else 0,
+            "port": 6379 if parsed.port is None else parsed.port,
+            "password": unquote(parsed.password) if parsed.password is not None else None,
+            "db": _parse_redis_database(parsed.path.lstrip("/") or "0"),
             "ssl": parsed.scheme == "rediss",
             "url": redis_url,
         }
@@ -250,20 +266,21 @@ def load_redis_config(validate_url: bool = True) -> dict[str, Any]:
     if not (1 <= port <= 65535):
         raise ConfigurationError(f"REDIS_PORT must be between 1 and 65535, got: {port}")
 
-    try:
-        db = int(db_str)
-    except ValueError:
-        raise ConfigurationError(f"REDIS_DB must be an integer, got: {db_str}")
+    db = _parse_redis_database(db_str)
 
-    use_tls = use_tls_str.lower() in ("true", "1", "yes", "on")
+    try:
+        use_tls = parse_bool(use_tls_str)
+    except ValueError as exc:
+        raise ConfigurationError("REDIS_USE_TLS must be a boolean") from exc
 
     # Construct URL for validation
     if validate_url:
         scheme = "rediss" if use_tls else "redis"
+        url_host = f"[{host}]" if ":" in host and not host.startswith("[") else host
         if password:
-            url = f"{scheme}://:{password}@{host}:{port}/{db}"
+            url = f"{scheme}://:{quote(password, safe='')}@{url_host}:{port}/{db}"
         else:
-            url = f"{scheme}://{host}:{port}/{db}"
+            url = f"{scheme}://{url_host}:{port}/{db}"
         SecureCredentialValidator.validate_redis_url(url)
 
     return {
@@ -839,15 +856,14 @@ class SecurityAuditor:
         """
         issues = []
 
-        # Check if password is set
-        redis_password = os.environ.get("REDIS_PASSWORD")
-        if not redis_password:
-            issues.append("REDIS_PASSWORD not set - authentication disabled")
-
-        # Check if TLS is enabled
-        redis_use_tls = os.environ.get("REDIS_USE_TLS", "false").lower()
-        if redis_use_tls not in ("true", "1", "yes", "on"):
-            issues.append("REDIS_USE_TLS not enabled - unencrypted connection")
+        try:
+            config = load_redis_config()
+        except (ConfigurationError, ValueError):
+            return ["Invalid Redis configuration"]
+        if not config["password"]:
+            issues.append("Redis authentication password not configured")
+        if not config["ssl"]:
+            issues.append("Redis TLS not enabled - unencrypted connection")
 
         return issues
 

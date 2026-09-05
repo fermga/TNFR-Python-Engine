@@ -1,14 +1,13 @@
 """Trace logging.
 
-Field helpers avoid unnecessary copying by reusing dictionaries stored on
-the graph whenever possible.  Callers are expected to treat returned
-structures as immutable snapshots.
+Field helpers detach captured metadata from live graph dictionaries so later
+configuration changes cannot rewrite historical observations.
 
 Immutability Guarantees
 -----------------------
-Trace field producers return mappings wrapped in ``MappingProxyType`` to
-prevent accidental mutation. These proxies enforce immutability while avoiding
-unnecessary data copying. Consumers that need to modify trace data should
+Mapping field producers wrap detached mappings in ``MappingProxyType`` to
+prevent accidental top-level mutation. Nested containers are copied but are
+not recursively frozen. Consumers that need to modify trace data should
 create mutable copies using ``dict(proxy)`` or merge patterns like
 ``{**proxy1, **proxy2, "new_key": value}``.
 
@@ -33,6 +32,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable, Mapping
+from copy import deepcopy
 from types import MappingProxyType
 from typing import Any, NamedTuple, Protocol, cast
 
@@ -207,6 +207,17 @@ def _callback_names(
 EMPTY_MAPPING: Mapping[str, Any] = MappingProxyType({})
 
 
+def _copy_trace_value(value: Any) -> Any:
+    """Detach metadata, including mapping proxies unsupported by deepcopy."""
+    if isinstance(value, Mapping):
+        return {key: _copy_trace_value(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_copy_trace_value(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_copy_trace_value(item) for item in value)
+    return deepcopy(value)
+
+
 def mapping_field(G: TNFRGraph, graph_key: str, out_key: str) -> TraceMetadata:
     """Copy mappings from ``G.graph`` into trace output."""
     mapping = get_graph_mapping(
@@ -214,7 +225,7 @@ def mapping_field(G: TNFRGraph, graph_key: str, out_key: str) -> TraceMetadata:
     )
     if mapping is None:
         return {}
-    return {out_key: mapping}
+    return {out_key: MappingProxyType(_copy_trace_value(mapping))}
 
 
 # -------------------------
@@ -264,7 +275,8 @@ def _trace_capture(G: TNFRGraph, phase: str, fields: TraceFieldMap) -> None:
             meta.update(getter(G))
     if hist is None or key is None:
         return
-    append_metric(hist, key, meta)
+    # Custom producers can also expose live nested mappings or arrays.
+    append_metric(hist, key, _copy_trace_value(meta))
 
 
 # -------------------------
@@ -323,7 +335,7 @@ def _si_sensitivity_field(G: TNFRGraph) -> TraceMetadata:
     if normalised != mapping:
         G.graph["_Si_sensitivity"] = normalised
 
-    return {"si_sensitivity": MappingProxyType(normalised)}
+    return {"si_sensitivity": MappingProxyType(_copy_trace_value(normalised))}
 
 
 def si_weights_field(G: TNFRGraph) -> TraceMetadata:
@@ -514,8 +526,8 @@ def register_trace(G: TNFRGraph) -> None:
       - sigma: global sense-plane vector
       - glyphs: glyph counts after the step
 
-    Field helpers reuse graph dictionaries and expect them to be treated as
-    immutable snapshots by consumers.
+    Stored metadata is detached from live graph values. Consumers should treat
+    history entries as observations; nested containers are not frozen.
     """
     if G.graph.get("_trace_registered"):
         return

@@ -21,6 +21,7 @@ from ...config.operator_names import (
     DESTABILIZERS,
 )
 from ...constants.aliases import ALIAS_VF
+from ..grammar_debt import node_has_prior_coherence
 from . import OperatorPreconditionError
 
 __all__ = [
@@ -276,7 +277,7 @@ def validate_grammar_u4b(
 
     # Part 1: Check for prior IL (Coherence)
     require_il = bool(G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False))
-    il_found = "coherence" in history_names
+    il_found = node_has_prior_coherence(G.nodes[node])
 
     if require_il and not il_found:
         raise OperatorPreconditionError(
@@ -515,10 +516,10 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
         from ..grammar import glyph_function_name
 
         history_names = [glyph_function_name(g) for g in glyph_history]
-        il_found = "coherence" in history_names
     else:
-        il_found = False
         history_names = []
+
+    il_found = node_has_prior_coherence(G.nodes[node])
 
     checks["il_precedence"] = {
         "passed": il_found,

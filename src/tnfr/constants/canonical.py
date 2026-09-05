@@ -7,15 +7,19 @@ Single source of truth for TNFR constants. Nodal equation:
 
 ∂EPI/∂t = νf · ΔNFR(t)
 
-Only π is a genuine structural scale: the phase-wrap bound shared by the two
-phase derivatives (|∇φ| ≤ π, |K_φ| < 0.9·π) — the whole phase sector — with
-K_φ = L_rw·φ the central operator applied to phase. The coherence length is
-set by the spectral gap (ξ_C ∝ 1/√λ₂). The Φ_s confinement bound is the
-π-derived ``U6_STRUCTURAL_POTENTIAL_LIMIT`` = π/2.
+The phase definitions give exact bounds |∇φ| ≤ π and |K_φ| ≤ π. The curvature
+warning 0.9·π is a selected margin. K_φ approaches L_rw·φ only in the
+small-phase-spread regime with matching neighbor weights. The spectral
+coherence-length reference is 1/√λ₂ on connected undirected graphs; a fitted
+correlation length need not equal that reference.
+
+Potential is linear in pressure: Φ_s = B_G·ΔNFR. Its general norm bound depends
+on pressure and the graph kernel B_G. The π/4 per-node and π/2 U6 drift values
+are selected safety policies, not consequences of phase wrapping. See
+``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for exact hypotheses and witnesses.
 
 Every other value here is one of:
-- a structural quantity derived from the nodal equation, the spectral gap,
-  or a π-fraction;
+- a mathematical quantity with a stated nodal or spectral derivation;
 - a free simulation / operator parameter — a clean structural default (unit,
   π-fraction, or plain value) labeled tunable, NOT a derived constant.
 
@@ -26,9 +30,9 @@ meaning and live in the separate module ``tnfr.constants.operational``
 
 The obsolete constants φ (golden ratio), γ (Euler–Mascheroni), and e (Napier)
 are intentionally ABSENT: they are not structural scales, and nothing here is
-derived from them (audit 2026). Everything emerges from the nodal dynamics;
-only π is assumed as a genuine structural scale (ℝ is the assumed continuum
-substrate).
+derived from them (audit 2026). Expressing a policy as a π-fraction does not
+establish its physical necessity; configured gains and safety values remain
+policies unless an explicit derivation supplies the required hypotheses.
 
 Author: TNFR Research Team
 Date: November 29, 2025 (φ/γ/e purge 2026-06)
@@ -47,7 +51,7 @@ mp.mp.dps = 35
 
 # Genuine structural scale: π (the phase-wrap bound shared by |∇φ| and K_φ).
 # φ, γ, e are NOT structural scales and are intentionally absent — only π is
-# genuine; every other value emerges from the nodal dynamics (audit 2026).
+# the remaining values have mathematical or operational roles documented below.
 PI = float(mp.pi)  # Pi π ≈ 3.141592653589793
 LN_2 = float(
     mp.log(2)
@@ -298,22 +302,21 @@ FEEDBACK_LEARNING_RATE = COUPLING_FINE  # 1/(8π) ≈ 0.0398 (feedback-loop gain
 # ============================================================================
 
 # --- Canonical Structural Field Tetrad Thresholds ---
-# Φ_s and K_φ are π-derived (phase-wrap fractions); |∇φ| is a HEURISTIC
-# early-warning (the genuine |∇φ| bound is the π wrap, like K_φ); ξ_C is set by
-# the spectral gap (ξ_C ∝ 1/√λ₂). Only π is a genuine structural scale.
+# The phase maxima are π; their warning margins are selected policies.
+# Potential thresholds are also policies: its linear pressure field has no
+# universal phase-wrap bound. ξ_C has a fitted length and a spectral fallback.
 
-# Φ_s: Structural Potential Field. The per-node confinement bound is π/4
-# (quarter phase-wrap), consistent with the U6 drift bound π/2 (half phase-wrap):
-# the phase sector (scaled by the sole structural constant π) confines Φ_s.
-# The name retains VON_KOCH for code-compat.
-PHI_S_VON_KOCH_THRESHOLD: float = PI / 4  # π/4 ≈ 0.7854 (quarter phase-wrap)
+# Φ_s: selected per-node safety value π/4, distinct from U6's drift policy π/2.
+# A mathematical bound requires pressure and graph-kernel assumptions.
+# The name retains VON_KOCH for code compatibility.
+PHI_S_VON_KOCH_THRESHOLD: float = PI / 4  # π/4 ≈ 0.7854 (selected potential warning)
 
 # |∇φ|: Phase Gradient Field — HEURISTIC early-warning level (audit 2026:
 # NOT a derived bound; the kinematic bound is |∇φ| ≤ π (wrap), the SAME as K_φ;
 # the sync-onset is σ-dependent ≈ 0.29, not a fixed constant).
 GRAD_PHI_CANONICAL_THRESHOLD = PI / 16  # π/16 ≈ 0.196 (heuristic |∇φ| early-warning, tunable)
 
-# |K_φ|: Phase Curvature Field — 0.9×π from wrap_angle bounds (90% of π maximum)
+# |K_φ|: selected 90% warning margin within the exact π wrap maximum.
 K_PHI_CANONICAL_THRESHOLD = 0.9 * PI  # 0.9×π ≈ 2.8274
 
 # ξ_C: Coherence Length Field (critical phenomena + RG)
@@ -339,7 +342,7 @@ ANTIPHASE_THRESHOLD = math.cos(2 * PI / 3)  # cos(2π/3) ≈ -0.5 (120° destruc
 # ============================================================================
 
 # Grammar validation
-U6_STRUCTURAL_POTENTIAL_LIMIT = PI / 2  # U6: ΔΦ_s < π/2 (half phase-wrap confinement bound)
+U6_STRUCTURAL_POTENTIAL_LIMIT = PI / 2  # selected U6 drift policy, not a phase-wrap theorem
 GRAMMAR_TOLERANCE = 1e-10  # Numerical precision for grammar checks
 PHASE_VERIFICATION_TOLERANCE = PI / 180  # 1° tolerance for phase coupling
 

@@ -2,7 +2,7 @@
 
 This module provides the TNFRValidator class which serves as the canonical
 entry point for all TNFR validation operations. It integrates:
-- Invariant validation (10 canonical TNFR invariants)
+- Invariant validation (10 legacy checks covering the six canonical invariants)
 - Input validation (parameters, types, bounds)
 - Graph validation (structure, coherence)
 - Runtime validation (canonical clamps, contracts)
@@ -12,6 +12,7 @@ entry point for all TNFR validation operations. It integrates:
 
 from __future__ import annotations
 
+from html import escape
 from typing import Any, Mapping
 
 from ..errors import TNFRValueError
@@ -47,7 +48,7 @@ class TNFRValidator:
 
     Features
     --------
-    - Validates 10 canonical TNFR invariants
+    - Applies 10 legacy checks covering the six canonical TNFR invariants
     - Input validation with security checks
     - Graph structure and coherence validation
     - Runtime canonical validation
@@ -823,10 +824,11 @@ class TNFRValidator:
                     report_lines.append(
                         f"  Invariant #{violation.invariant_id}: {violation.description}"
                     )
-                    if violation.node_id:
+                    if violation.node_id is not None:
                         report_lines.append(f"    Node: {violation.node_id}")
-                    if violation.expected_value and violation.actual_value:
+                    if violation.expected_value is not None:
                         report_lines.append(f"    Expected: {violation.expected_value}")
+                    if violation.actual_value is not None:
                         report_lines.append(f"    Actual: {violation.actual_value}")
                     if violation.suggestion:
                         report_lines.append(
@@ -860,9 +862,9 @@ class TNFRValidator:
                     "description": v.description,
                     "node_id": v.node_id,
                     "expected_value": (
-                        str(v.expected_value) if v.expected_value else None
+                        str(v.expected_value) if v.expected_value is not None else None
                     ),
-                    "actual_value": str(v.actual_value) if v.actual_value else None,
+                    "actual_value": str(v.actual_value) if v.actual_value is not None else None,
                     "suggestion": v.suggestion,
                 }
             )
@@ -1006,27 +1008,28 @@ class TNFRValidator:
                         f"""
                     <div class="violation" style="border-left-color: {color};">
                         <div class="violation-title">
-                            Invariant #{violation.invariant_id}: {violation.description}
+                            Invariant #{violation.invariant_id}: {escape(str(violation.description))}
                         </div>
                     """
                     )
 
-                    if violation.node_id:
+                    if violation.node_id is not None:
                         html_parts.append(
-                            f'<div class="violation-detail"><strong>Node:</strong> {violation.node_id}</div>'
+                            f'<div class="violation-detail"><strong>Node:</strong> {escape(str(violation.node_id))}</div>'
                         )
 
-                    if violation.expected_value and violation.actual_value:
+                    if violation.expected_value is not None:
                         html_parts.append(
-                            f'<div class="violation-detail"><strong>Expected:</strong> {violation.expected_value}</div>'
+                            f'<div class="violation-detail"><strong>Expected:</strong> {escape(str(violation.expected_value))}</div>'
                         )
+                    if violation.actual_value is not None:
                         html_parts.append(
-                            f'<div class="violation-detail"><strong>Actual:</strong> {violation.actual_value}</div>'
+                            f'<div class="violation-detail"><strong>Actual:</strong> {escape(str(violation.actual_value))}</div>'
                         )
 
                     if violation.suggestion:
                         html_parts.append(
-                            f'<div class="suggestion">💡 <strong>Suggestion:</strong> {violation.suggestion}</div>'
+                            f'<div class="suggestion">💡 <strong>Suggestion:</strong> {escape(str(violation.suggestion))}</div>'
                         )
 
                     html_parts.append("</div>")
@@ -1057,207 +1060,9 @@ class TNFRValidationError(TNFRValueError):
         )
 
     def export_to_json(self, violations: list[InvariantViolation]) -> str:
-        """Export violations to JSON format.
-
-        Parameters
-        ----------
-        violations : list[InvariantViolation]
-            list of violations to export.
-
-        Returns
-        -------
-        str
-            JSON-formatted string of violations.
-        """
-        import json
-
-        violations_data = []
-        for v in violations:
-            violations_data.append(
-                {
-                    "invariant_id": v.invariant_id,
-                    "severity": v.severity.value,
-                    "description": v.description,
-                    "node_id": v.node_id,
-                    "expected_value": (
-                        str(v.expected_value) if v.expected_value else None
-                    ),
-                    "actual_value": str(v.actual_value) if v.actual_value else None,
-                    "suggestion": v.suggestion,
-                }
-            )
-
-        return json.dumps(
-            {
-                "total_violations": len(violations),
-                "by_severity": {
-                    InvariantSeverity.CRITICAL.value: len(
-                        [
-                            v
-                            for v in violations
-                            if v.severity == InvariantSeverity.CRITICAL
-                        ]
-                    ),
-                    InvariantSeverity.ERROR.value: len(
-                        [v for v in violations if v.severity == InvariantSeverity.ERROR]
-                    ),
-                    InvariantSeverity.WARNING.value: len(
-                        [
-                            v
-                            for v in violations
-                            if v.severity == InvariantSeverity.WARNING
-                        ]
-                    ),
-                    InvariantSeverity.INFO.value: len(
-                        [v for v in violations if v.severity == InvariantSeverity.INFO]
-                    ),
-                },
-                "violations": violations_data,
-            },
-            indent=2,
-        )
+        """Export through the shared validator report implementation."""
+        return TNFRValidator().export_to_json(violations)
 
     def export_to_html(self, violations: list[InvariantViolation]) -> str:
-        """Export violations to HTML format.
-
-        Parameters
-        ----------
-        violations : list[InvariantViolation]
-            list of violations to export.
-
-        Returns
-        -------
-        str
-            HTML-formatted string of violations.
-        """
-        if not violations:
-            return """
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>TNFR Validation Report</title>
-                <style>
-                    body { font-family: Arial, sans-serif; margin: 40px; }
-                    .success { color: green; font-size: 24px; }
-                </style>
-            </head>
-            <body>
-                <h1>TNFR Validation Report</h1>
-                <p class="success">✅ No TNFR invariant violations found.</p>
-            </body>
-            </html>
-            """
-
-        # Group by severity
-        by_severity: dict[InvariantSeverity, list[InvariantViolation]] = {}
-        for v in violations:
-            if v.severity not in by_severity:
-                by_severity[v.severity] = []
-            by_severity[v.severity].append(v)
-
-        severity_colors = {
-            InvariantSeverity.INFO: "#17a2b8",
-            InvariantSeverity.WARNING: "#ffc107",
-            InvariantSeverity.ERROR: "#dc3545",
-            InvariantSeverity.CRITICAL: "#6f42c1",
-        }
-
-        html_parts = [
-            """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>TNFR Validation Report</title>
-            <style>
-                body {{ font-family: Arial, sans-serif; margin: 40px; background-color: #f5f5f5; }}
-                h1 {{ color: #333; }}
-                .summary {{ background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }}
-                .severity-section {{ background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }}
-                .severity-header {{ font-size: 20px; font-weight: bold; margin-bottom: 15px; }}
-                .violation {{ background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-left: 4px solid; border-radius: 3px; }}
-                .violation-title {{ font-weight: bold; margin-bottom: 5px; }}
-                .violation-detail {{ margin-left: 20px; color: #666; }}
-                .suggestion {{ background: #e7f5ff; padding: 10px; margin-top: 10px; border-radius: 3px; }}
-            </style>
-        </head>
-        <body>
-            <h1>🚨 TNFR Validation Report</h1>
-            <div class="summary">
-                <h2>Summary</h2>
-                <p><strong>Total Violations:</strong> {}</p>
-        """.format(
-                len(violations)
-            )
-        ]
-
-        for severity in [
-            InvariantSeverity.CRITICAL,
-            InvariantSeverity.ERROR,
-            InvariantSeverity.WARNING,
-            InvariantSeverity.INFO,
-        ]:
-            count = len(by_severity.get(severity, []))
-            if count > 0:
-                html_parts.append(
-                    f"<p><strong>{severity.value.upper()}:</strong> {count}</p>"
-                )
-
-        html_parts.append("</div>")
-
-        for severity in [
-            InvariantSeverity.CRITICAL,
-            InvariantSeverity.ERROR,
-            InvariantSeverity.WARNING,
-            InvariantSeverity.INFO,
-        ]:
-            if severity in by_severity:
-                color = severity_colors[severity]
-                html_parts.append(
-                    f"""
-                <div class="severity-section">
-                    <div class="severity-header" style="color: {color};">
-                        {severity.value.upper()} ({len(by_severity[severity])})
-                    </div>
-                """
-                )
-
-                for violation in by_severity[severity]:
-                    html_parts.append(
-                        f"""
-                    <div class="violation" style="border-left-color: {color};">
-                        <div class="violation-title">
-                            Invariant #{violation.invariant_id}: {violation.description}
-                        </div>
-                    """
-                    )
-
-                    if violation.node_id:
-                        html_parts.append(
-                            f'<div class="violation-detail"><strong>Node:</strong> {violation.node_id}</div>'
-                        )
-
-                    if violation.expected_value and violation.actual_value:
-                        html_parts.append(
-                            f'<div class="violation-detail"><strong>Expected:</strong> {violation.expected_value}</div>'
-                        )
-                        html_parts.append(
-                            f'<div class="violation-detail"><strong>Actual:</strong> {violation.actual_value}</div>'
-                        )
-
-                    if violation.suggestion:
-                        html_parts.append(
-                            f'<div class="suggestion">💡 <strong>Suggestion:</strong> {violation.suggestion}</div>'
-                        )
-
-                    html_parts.append("</div>")
-
-                html_parts.append("</div>")
-
-        html_parts.append(
-            """
-        </body>
-        </html>
-        """
-        )
-
-        return "".join(html_parts)
+        """Export through the shared validator report implementation."""
+        return TNFRValidator().export_to_html(violations)

@@ -31,7 +31,7 @@ class Dissonance(Operator):
     name: ClassVar[str] = DISSONANCE
     glyph: ClassVar[Glyph] = Glyph.OZ
 
-    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Apply OZ with optional network propagation.
 
         Parameters
@@ -50,7 +50,7 @@ class Dissonance(Operator):
         dnfr_before = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
 
         # Apply standard operator logic via parent
-        super().__call__(G, node, **kw)
+        super()._execute(G, node, **kw)
 
         # Compute dissonance increase
         dnfr_after = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))

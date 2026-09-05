@@ -1,8 +1,8 @@
 """Tests for the emergent symplectic substrate.
 
 Module under test: physics/symplectic_substrate.py.
-Verifies that the geometry emerging from the TNFR nodal dynamics is a valid
-symplectic manifold: antisymmetric non-degenerate closed 2-form, canonical
+Verifies the specified ambient harmonic model: antisymmetric non-degenerate
+closed 2-form, canonical
 Poisson brackets, Jacobi identity, Liouville volume preservation, harmonic
 Hamiltonian flow, and consistency with the canonical energy functional.
 """
@@ -14,6 +14,7 @@ import random
 
 import networkx as nx
 import numpy as np
+import pytest
 
 from tnfr.dynamics.dnfr import default_compute_delta_nfr
 from tnfr.physics.conservation import compute_energy_functional
@@ -21,6 +22,7 @@ from tnfr.physics.symplectic_substrate import (
     BLOCK_COMPATIBLE_METRIC,
     BLOCK_COMPLEX_STRUCTURE,
     BLOCK_SYMPLECTIC_FORM,
+    PhaseSpacePoint,
     background_potential,
     canonical_bracket_table,
     compatible_metric_matrix,
@@ -41,6 +43,7 @@ from tnfr.physics.symplectic_substrate import (
     substrate_flow_matrix,
     substrate_hamiltonian,
     symplectic_form_matrix,
+    symplectic_pullback_residual,
     to_action_angle,
     to_complex_coordinates,
     verify_adiabatic_invariance,
@@ -68,6 +71,11 @@ def _canonical_graph(n: int = 30, seed: int = 5) -> nx.Graph:
 
 class TestBlockSymplecticForm:
     """The per-node canonical block J4 has the symplectic properties."""
+
+    def test_shared_pullback_residual_for_harmonic_flow(self):
+        for t in (0.0, 0.3, 1.7):
+            matrix = substrate_flow_matrix(2, t)
+            assert symplectic_pullback_residual(matrix, 2) < 1e-12
 
     def test_antisymmetric(self) -> None:
         assert np.allclose(BLOCK_SYMPLECTIC_FORM.T, -BLOCK_SYMPLECTIC_FORM)
@@ -494,7 +502,47 @@ class TestMarsdenWeinstein:
         G = _canonical_graph(24)
         cert = verify_symplectic_reduction(G)
         assert cert.reduced_form_nondegenerate
-        assert abs(cert.reduced_form_determinant) > 1.0
+        assert cert.reduced_form_determinant == pytest.approx(1.0)
+
+    def test_zero_level_is_a_point_not_a_regular_reduction(self) -> None:
+        graph = nx.path_graph(2)
+        for node in graph:
+            graph.nodes[node].update(EPI=0., nu_f=0., theta=0., delta_nfr=0.)
+        cert = verify_symplectic_reduction(graph)
+        assert cert.moment_map_value == 0.0
+        assert cert.reduced_dimension == 0
+        assert cert.is_regular_level is False
+        assert cert.is_valid_reduction is False
+        assert cert.reduction_status == "singular_zero_level"
+        assert cert.relative_phases_invariant is None
+        assert math.isnan(cert.reduced_form_determinant)
+        assert "SINGULAR_ZERO_LEVEL" in cert.summary()
+
+    @pytest.mark.parametrize("scale", [1e-12, 1.0, 1e12])
+    def test_regular_level_with_zero_actions_uses_defined_phase_reference(self, monkeypatch, scale):
+        # The first pair has zero action, so its angle cannot be a reference.
+        point = PhaseSpacePoint((0,), np.array([0.]), np.array([0.]),
+                                np.array([scale]), np.array([0.]), np.array([0.]))
+        monkeypatch.setattr(
+            "tnfr.physics.symplectic_substrate.extract_phase_space_point", lambda graph: point
+        )
+        cert = verify_symplectic_reduction(nx.empty_graph(1))
+        assert cert.is_regular_level
+        assert cert.is_valid_reduction
+        assert cert.reduced_dimension == 2
+        assert cert.relative_phase_pairs == 0
+        assert cert.reduced_form_determinant == pytest.approx(1.0)
+
+    def test_relative_phase_comparison_respects_the_angle_wrap(self, monkeypatch):
+        point = PhaseSpacePoint((0,), np.array([1.]), np.array([0.]),
+                                np.array([-1.]), np.array([1e-16]), np.array([0.]))
+        monkeypatch.setattr(
+            "tnfr.physics.symplectic_substrate.extract_phase_space_point", lambda graph: point
+        )
+        cert = verify_symplectic_reduction(nx.empty_graph(1))
+        assert cert.relative_phase_pairs == 1
+        assert cert.relative_phases_invariant
+        assert cert.is_valid_reduction
 
     def test_reduced_form_invalid_nodes(self) -> None:
         import pytest

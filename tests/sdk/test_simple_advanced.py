@@ -522,6 +522,45 @@ class TestEmergentOntologyAndNumberTheory:
         assert len(s["relaxation_rates"]) >= 1
         assert s["structural_rank"] >= 1
 
+    def test_spectrum_uses_heterogeneous_nodal_frequencies(self):
+        import networkx as nx
+
+        graph = nx.path_graph(3)
+        nx.set_node_attributes(graph, {0: 1.0, 1: 3.0, 2: 5.0}, "nu_f")
+        spectrum = Network(graph).spectrum()
+        assert spectrum["relaxation_rates"] == pytest.approx([0.0, 2.0, 7.0], abs=1e-12)
+        assert spectrum["spectral_gap"] == pytest.approx(2.0)
+        assert spectrum["coherence_length"] == pytest.approx(1.0)
+
+    def test_disconnected_spectrum_does_not_skip_extra_stationary_mode(self):
+        import networkx as nx
+
+        graph = nx.Graph([(0, 1), (2, 3)])
+        nx.set_node_attributes(graph, 1.0, "nu_f")
+        spectrum = Network(graph).spectrum()
+        assert spectrum["spectral_gap"] == 0.0
+        assert spectrum["coherence_length"] == float("inf")
+
+    @pytest.mark.parametrize("nu_f", [0.0, 0.25, 1.0, 4.0])
+    def test_spectrum_coherence_length_is_independent_of_clock(self, nu_f):
+        import math
+
+        from tnfr.alias import set_attr
+        from tnfr.constants.aliases import ALIAS_VF
+
+        net = TNFR.create(7, seed=3).ring()
+        for node in net.G:
+            set_attr(net.G.nodes[node], ALIAS_VF, nu_f)
+
+        spectrum = net.spectrum()
+        # On C_7, lambda_2 = 1 - cos(2*pi/7). Changing reorganization
+        # capacity rescales relaxation rates but preserves spatial geometry.
+        geometry_gap = 1.0 - math.cos(2.0 * math.pi / 7.0)
+        assert spectrum["spectral_gap"] == pytest.approx(nu_f * geometry_gap)
+        assert spectrum["coherence_length"] == pytest.approx(
+            1.0 / math.sqrt(geometry_gap)
+        )
+
     def test_symbolic_layer_reads_canonical_fixed_point(self):
         """Chemistry ΔNFR is read through the SAME equilibrium predicate."""
         from tnfr.metrics.common import is_structural_equilibrium

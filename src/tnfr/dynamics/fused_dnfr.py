@@ -24,6 +24,7 @@ import math
 from typing import Any, Mapping
 
 from ..mathematics.unified_numerical import np
+from ..mathematics._neighbor_differences import _require_finite_pressure, edge_mean_differences
 from ..utils import get_logger
 
 logger = get_logger(__name__)
@@ -46,8 +47,8 @@ def _compute_canonical_gradients_jit_kernel(
     edge_dst,
     edge_weight,
     phase,
-    epi,
-    vf,
+    g_epi,
+    g_vf,
     w_phase: float,
     w_epi: float,
     w_vf: float,
@@ -69,9 +70,6 @@ def _compute_canonical_gradients_jit_kernel(
     # Allocations (Numba handles these efficiently in nopython mode)
     cos_sum = np.zeros(n_nodes, dtype=np.float64)
     sin_sum = np.zeros(n_nodes, dtype=np.float64)
-    epi_wsum = np.zeros(n_nodes, dtype=np.float64)
-    epi_weight = np.zeros(n_nodes, dtype=np.float64)
-    vf_sum = np.zeros(n_nodes, dtype=np.float64)
     count = np.zeros(n_nodes, dtype=np.float64)
 
     n_edges = edge_src.shape[0]
@@ -80,23 +78,15 @@ def _compute_canonical_gradients_jit_kernel(
     for i in range(n_edges):
         u = edge_src[i]
         v = edge_dst[i]
-        w = edge_weight[i]
-
         # u -> v: node u receives neighbour v
         cos_sum[u] += math.cos(phase[v])
         sin_sum[u] += math.sin(phase[v])
-        epi_wsum[u] += w * epi[v]
-        epi_weight[u] += w
-        vf_sum[u] += vf[v]
         count[u] += 1.0
 
         if symmetric:
             # v -> u: node v receives neighbour u
             cos_sum[v] += math.cos(phase[u])
             sin_sum[v] += math.sin(phase[u])
-            epi_wsum[v] += w * epi[u]
-            epi_weight[v] += w
-            vf_sum[v] += vf[u]
             count[v] += 1.0
 
     # Pass 2: Compute gradients
@@ -111,14 +101,8 @@ def _compute_canonical_gradients_jit_kernel(
             diff = (theta_mean - phase[i] + math.pi) % (2 * math.pi) - math.pi
             g_phase = diff / math.pi
 
-            # EPI: weighted neighbour mean (L_out with edge weights)
-            g_epi = 0.0
-            if epi_weight[i] > 0.0:
-                g_epi = (epi_wsum[i] / epi_weight[i]) - epi[i]
-            # VF: unweighted neighbour mean
-            g_vf = (vf_sum[i] / count[i]) - vf[i]
-
-            delta_nfr[i] = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf
+            # Linear channels arrive from the shared stable edge reducer.
+            delta_nfr[i] = w_phase * g_phase + g_epi[i] + g_vf[i]
 
     # Pass 3: Topology (if needed) — unweighted out-degree neighbourhood
     if w_topo != 0.0:
@@ -278,6 +262,22 @@ def compute_fused_gradients_symmetric(
                 "edge_weight length does not match edge_src/edge_dst"
             )
 
+    if accumulate_both_directions:
+        linear_src = np.concatenate((edge_src, edge_dst))
+        linear_dst = np.concatenate((edge_dst, edge_src))
+        linear_weight = np.concatenate((w_edge, w_edge))
+    else:
+        linear_src, linear_dst, linear_weight = edge_src, edge_dst, w_edge
+    # Disabled channels never evaluate nodal differences, including at extremes.
+    g_epi = (
+        edge_mean_differences(epi, linear_src, linear_dst, linear_weight, coefficient=w_epi)
+        if w_epi != 0.0 else np.zeros(n_nodes, dtype=float)
+    )
+    g_vf = (
+        edge_mean_differences(vf, linear_src, linear_dst, coefficient=w_vf)
+        if w_vf != 0.0 else np.zeros(n_nodes, dtype=float)
+    )
+
     # JIT Path
     if use_jit and _NUMBA_AVAILABLE and n_edges > 100:
         _compute_canonical_gradients_jit(
@@ -285,8 +285,8 @@ def compute_fused_gradients_symmetric(
             edge_dst,
             w_edge,
             phase,
-            epi,
-            vf,
+            g_epi,
+            g_vf,
             w_phase,
             w_epi,
             w_vf,
@@ -295,6 +295,7 @@ def compute_fused_gradients_symmetric(
             accumulate_both_directions,
             delta_nfr,
         )
+        _require_finite_pressure(delta_nfr)
         return delta_nfr
 
     # Pass 1: Accumulate neighbour statistics for computing means, under the
@@ -303,61 +304,34 @@ def compute_fused_gradients_symmetric(
     # j (dst).  Undirected graphs carry both (i,j) and (j,i), so the result
     # is symmetric and identical to the legacy computation.
     #   phase: cos/sin sums for the circular mean
-    #   EPI:   weighted value sum + weighted degree (edge-weighted channel)
-    #   vf:    unweighted value sum
+    # Linear EPI/frequency gradients were reduced above without common offsets.
     neighbor_cos_sum = np.zeros(n_nodes, dtype=float)
     neighbor_sin_sum = np.zeros(n_nodes, dtype=float)
-    neighbor_epi_sum = np.zeros(n_nodes, dtype=float)
-    neighbor_epi_weight = np.zeros(n_nodes, dtype=float)
-    neighbor_vf_sum = np.zeros(n_nodes, dtype=float)
     neighbor_count = np.zeros(n_nodes, dtype=float)
 
     # Extract neighbour values
     phase_src_vals = phase[edge_src]
     phase_dst_vals = phase[edge_dst]
-    epi_src_vals = epi[edge_src]
-    epi_dst_vals = epi[edge_dst]
-    vf_src_vals = vf[edge_src]
-    vf_dst_vals = vf[edge_dst]
 
     # Outgoing: node src receives neighbour dst
     np.add.at(neighbor_cos_sum, edge_src, np.cos(phase_dst_vals))
     np.add.at(neighbor_sin_sum, edge_src, np.sin(phase_dst_vals))
-    np.add.at(neighbor_epi_sum, edge_src, w_edge * epi_dst_vals)
-    np.add.at(neighbor_epi_weight, edge_src, w_edge)
-    np.add.at(neighbor_vf_sum, edge_src, vf_dst_vals)
     np.add.at(neighbor_count, edge_src, 1.0)
 
     if accumulate_both_directions:
         # Reverse edge: node dst receives neighbour src
         np.add.at(neighbor_cos_sum, edge_dst, np.cos(phase_src_vals))
         np.add.at(neighbor_sin_sum, edge_dst, np.sin(phase_src_vals))
-        np.add.at(neighbor_epi_sum, edge_dst, w_edge * epi_src_vals)
-        np.add.at(neighbor_epi_weight, edge_dst, w_edge)
-        np.add.at(neighbor_vf_sum, edge_dst, vf_src_vals)
         np.add.at(neighbor_count, edge_dst, 1.0)
 
     # Pass 2: Compute gradients from means
     # Avoid division by zero for isolated nodes
     has_neighbors = neighbor_count > 0
-    # EPI uses the weighted degree (positive whenever the node has neighbours
-    # of positive total weight).
-    has_epi_weight = neighbor_epi_weight > 0
 
     # Compute circular mean phase for nodes with neighbors
     phase_mean = np.zeros(n_nodes, dtype=float)
     phase_mean[has_neighbors] = np.arctan2(
         neighbor_sin_sum[has_neighbors], neighbor_cos_sum[has_neighbors]
-    )
-
-    # Compute means: EPI weighted, νf arithmetic
-    epi_mean = np.zeros(n_nodes, dtype=float)
-    vf_mean = np.zeros(n_nodes, dtype=float)
-    epi_mean[has_epi_weight] = (
-        neighbor_epi_sum[has_epi_weight] / neighbor_epi_weight[has_epi_weight]
-    )
-    vf_mean[has_neighbors] = (
-        neighbor_vf_sum[has_neighbors] / neighbor_count[has_neighbors]
     )
 
     # Compute gradients using TNFR canonical formula
@@ -366,13 +340,6 @@ def compute_fused_gradients_symmetric(
     phase_diff = (phase_mean - phase + np.pi) % (2 * np.pi) - np.pi
     g_phase = phase_diff / np.pi
     g_phase[~has_neighbors] = 0.0  # Isolated nodes have no gradient
-
-    # EPI/νf: g = mean - node_value
-    g_epi = epi_mean - epi
-    g_epi[~has_epi_weight] = 0.0
-
-    g_vf = vf_mean - vf
-    g_vf[~has_neighbors] = 0.0
 
     # Topology: Canonical form is (mean_neighbor_degree - node_degree)
     if w_topo != 0.0:
@@ -403,7 +370,9 @@ def compute_fused_gradients_symmetric(
         g_topo = 0.0
 
     # Combine gradients
-    delta_nfr = w_phase * g_phase + w_epi * g_epi + w_vf * g_vf + g_topo
+    with np.errstate(over="ignore", invalid="ignore"):
+        delta_nfr = w_phase * g_phase + g_epi + g_vf + g_topo
+    _require_finite_pressure(delta_nfr)
 
     return delta_nfr
 

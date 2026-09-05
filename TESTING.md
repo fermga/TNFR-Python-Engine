@@ -1,566 +1,156 @@
 # TNFR Testing Guide
 
-This document describes the testing strategy, infrastructure, and best practices for the TNFR Python Engine. It consolidates information about test organization, coverage requirements, and structural fidelity validation.
+This is the authoritative guide to the test suite. Test expectations follow the
+[nodal equation and six invariants](AGENTS.md#8-canonical-invariants),
+[operator contracts](src/tnfr/operators/operator_contracts.py), and
+[unified grammar](theory/UNIFIED_GRAMMAR_RULES.md). A passing test establishes
+only the behavior and parameter range asserted by that test.
 
-## Table of Contents
+## Run the repository tests
 
-- [Testing Philosophy](#testing-philosophy)
-- [Test Organization](#test-organization)
-- [Running Tests](#running-tests)
-- [Test Categories](#test-categories)
-- [Structural Fidelity Tests](#structural-fidelity-tests)
-- [Backend Selection](#backend-selection)
-- [Coverage Requirements](#coverage-requirements)
-- [Test Development Guidelines](#test-development-guidelines)
+Run commands from the repository root with the Python interpreter for your
+active environment. Install the project and the same dependency groups used by
+the main CI test job:
 
-## Testing Philosophy
-
-TNFR tests validate **structural coherence** first, implementation details second. Every test must:
-
-1. **Preserve TNFR Invariants**: Verify canonical constraints (see ARCHITECTURE.md §3)
-2. **Test Structural Behavior**: Focus on coherence, phase, frequency, not implementation
-3. **Maintain Reproducibility**: Use seeds, validate determinism
-4. **Guard Regressions**: Performance, accuracy, and API stability
-
-Tests are **not** responsible for:
-- Fixing unrelated pre-existing failures
-- Optimizing code that already passes
-- Validating framework internals (NetworkX, NumPy)
-
-## Test Organization
-
-The test suite is organized by concern and scope:
-
-```
-tests/
-├── conftest.py              # Shared fixtures and configuration
-├── utils.py                 # Test utilities (module clearing, etc.)
-├── unit/                    # Unit tests for individual modules
-│   ├── test_cache.py
-│   ├── test_dynamics.py
-│   ├── test_operators.py
-│   ├── test_structural.py
-│   └── ...
-├── integration/             # Integration tests for subsystems
-│   ├── test_glyph_sequences.py
-│   ├── test_operator_chains.py
-│   └── test_telemetry_pipeline.py
-├── property/                # Property-based tests (Hypothesis)
-│   └── test_tnfr_invariants.py
-├── stress/                  # Stress and scale tests
-│   └── test_large_networks.py
-├── performance/             # Performance regression tests
-│   └── test_dnfr_pipeline.py
-├── mathematics/             # Mathematical backend tests
-│   └── test_epi.py
-└── cli/                     # CLI interface tests
-    └── test_cli.py
+```sh
+python -m pip install -e ".[test,numpy,yaml,orjson]"
+python -m pytest
 ```
 
-### Key Test Files
+[pyproject.toml](pyproject.toml) sets `pythonpath = ["src"]`,
+`testpaths = ["tests"]`, and `addopts = "-m 'not slow'"`. Thus pytest imports the
+working source tree and excludes tests marked `slow` by default. It does not
+configure `--benchmark-skip`, `--strict-markers`, or `--tb=short`.
 
-| File | Purpose | Markers |
-|------|---------|---------|
-| `test_extreme_cases.py` | Boundary value testing | `unit` |
-| `test_glyph_sequences.py` | Grammar and sequence validation | `integration` |
-| `test_tnfr_invariants.py` | Property-based invariant checks | `property`, `slow` |
-| `test_dnfr_pipeline.py` | Performance regression guards | `performance`, `slow` |
-| `test_trace.py` | Telemetry and debugging utilities | `unit` |
+Useful bounded runs:
 
-## Running Tests
-
-### Basic Test Execution
-
-```bash
-# Run all tests (excluding slow/benchmarks by default)
-pytest
-
-# Run specific test category
-pytest tests/operators
-pytest tests/sdk
-
-# Run with coverage report
-pytest --cov=tnfr --cov-report=html
-
-# Run verbose with output
-pytest -v -s
+```sh
+python -m pytest tests/operators -q
+python -m pytest tests/core_physics tests/physics -q
+python -m pytest tests/mathematics/test_backends.py -q
+python -m pytest tests/sdk -q
+python -m pytest tests/operators/test_u3_hard_invariant.py -v
+python -m pytest --collect-only -q
 ```
 
-### Artifact Guards
+To remove the default slow exclusion, use `python -m pytest -o addopts=""`.
+To select only tests actually marked slow, use `python -m pytest -m slow`.
+A marker can be registered without any currently collected tests using it;
+inspect collection before treating a marker-selected run as coverage.
 
-Telemetry dashboards are part of the reproducibility surface. A lightweight regression test (`tests/test_precision_walk_dashboard_artifact.py`) ensures `benchmarks/results/precision_walk_dashboard.json` is valid JSON (no `NaN` literals) and remains loadable by downstream tooling. It is collected by the full `pytest` run; run it directly while iterating:
+For standalone scripts outside pytest, use an editable installation or set
+`PYTHONPATH` to `src`; pytest's `pythonpath` setting does not affect ordinary
+`python` invocations. Otherwise an installed release can be imported instead
+of the working tree.
 
-```bash
-# Run the guard directly when iterating on telemetry scripts
-pytest tests/test_precision_walk_dashboard_artifact.py
+## Organization
+
+| Location | Current scope |
+|---|---|
+| [core_physics/](tests/core_physics/) | Nodal equation, structural triad, pressure channels, conservation, backend agreement |
+| [operators/](tests/operators/) | Canonical operators, contracts, grammar, U3 phase gate, selection and execution |
+| [physics/](tests/physics/) | Structural fields, diffusion, symmetry, conservation, directed dynamics, cache correctness |
+| [mathematics/](tests/mathematics/) | Mathematical backends, spaces, arithmetic networks, pulse, multiscale constructions |
+| [sdk/](tests/sdk/) | Public network interface |
+| [engines/](tests/engines/) | Self-optimization and pattern-discovery manifests |
+| [parallel/](tests/parallel/) | Fractal partition manifests |
+| [research/](tests/research/) | Research infrastructure |
+| [scripts/](tests/scripts/) | Self-optimization command-line scripts |
+| [Top-level test files](tests/) | Phase-gate interfaces, external data interfaces, replay, distributed FFT, factorization and mechanics |
+| [data/](tests/data/) | Fixture data and manifests |
+
+[tests/conftest.py](tests/conftest.py) defines shared fixtures, backend selection,
+and global-state cleanup. [tests/utils.py](tests/utils.py) supplies additional
+helpers. The current tree has no separate `unit`, `property`, `integration`,
+`performance`, `stress`, or `grammar_operators` test directories. Research
+benchmark scripts live separately in [benchmarks/](benchmarks/README.md);
+use their documented entry points rather than assuming pytest collection.
+
+## Structural regression evidence
+
+Start with the checks relevant to the changed physical contract. These are
+existing entry points, not claims of exhaustive invariant coverage:
+
+| Behavior | Test entry points |
+|---|---|
+| Nodal equation and pressure computation | [test_nodal_equation.py](tests/core_physics/test_nodal_equation.py), [test_delta_nfr_computation_paths.py](tests/core_physics/test_delta_nfr_computation_paths.py), [test_dnfr_backend_consistency.py](tests/core_physics/test_dnfr_backend_consistency.py) |
+| Operator channel and scale contracts | [test_operator_contracts.py](tests/operators/test_operator_contracts.py) |
+| U3 rejection before mutation and wrapped phase distance | [test_u3_hard_invariant.py](tests/operators/test_u3_hard_invariant.py) |
+| U1-U4 context, accepted history and per-node fallback | [test_grammar_dynamics.py](tests/operators/test_grammar_dynamics.py) |
+| Grammar classification consistency | [test_grammar_canon.py](tests/operators/test_grammar_canon.py), [test_grammar_canonical_consistency.py](tests/operators/test_grammar_canonical_consistency.py) |
+| Silence EPI preservation and coupling phase synchronization | [test_canonical_operators_modern.py](tests/operators/test_canonical_operators_modern.py) |
+| Tetrad bounds, field readout and cache invalidation | [test_tetrad_bounds.py](tests/physics/test_tetrad_bounds.py), [test_field_readout_consistency.py](tests/physics/test_field_readout_consistency.py), [test_field_cache_invalidation.py](tests/physics/test_field_cache_invalidation.py) |
+| Diffusion modes and conservation | [test_structural_diffusion.py](tests/physics/test_structural_diffusion.py), [test_dissipative_conservation.py](tests/physics/test_dissipative_conservation.py) |
+| Multiscale arithmetic transport and REMESH audit | [test_crt_multiscale.py](tests/mathematics/test_crt_multiscale.py), [test_remesh_audit.py](tests/mathematics/test_remesh_audit.py) |
+
+For new or changed dynamics, assert the actual contract: IL must not reduce
+`C(t)` outside a documented dissonance test; OZ needs a handler; RA must respect
+phase compatibility and preserve identity; SHA must preserve EPI over the
+specified evolution interval; ZHIR must obey its threshold and context; nested
+EPIs must retain identity. Check the same seeded run twice when changing
+stochastic execution. Execution without an exception alone does not establish
+these properties, and changing EPI alone does not verify the nodal equation.
+
+Specify graph topology, seed, initial triad, operator sequence, time step,
+tolerances and measured quantities. Keep structural frequency in `Hz_str` and
+report `C(t)`, `Si`, phase, structural frequency and the tetrad when relevant.
+Declare whether a sequence is a full grammar word or a fragment; full words
+require initiation, closure and transformer context. Set up initial fixtures
+explicitly, then exercise state changes through canonical operators.
+
+## Backends and optional dependencies
+
+[tests/conftest.py](tests/conftest.py) accepts `--math-backend` and
+`TNFR_TEST_MATH_BACKEND`. The command-line option takes precedence over that
+test-specific environment variable; the selected value sets
+`TNFR_MATH_BACKEND` and clears the backend cache before test collection.
+
+```sh
+python -m pytest tests/mathematics/test_backends.py --math-backend=numpy -q
+python -m pytest tests/mathematics/test_backends.py --math-backend=torch -q
 ```
 
-### Test Markers
+Install optional backends before interpreting their results. The cross-backend
+tests explicitly request NumPy, JAX and PyTorch and skip cases where the
+requested adapter is unavailable. Setting the session backend does not replace
+explicit per-test backend arguments. NumPy is required by the shared conftest;
+a missing NumPy installation does not constitute a successful NumPy-free run.
+Use `-rs` to review skip reasons and report which adapters were exercised.
 
-Tests are marked for selective execution:
+The registered project markers are `slow`, `benchmarks`, `stress`, `val`,
+`canonical`, `nodal_equation`, `fractality`, and `integration`; inspect
+`python -m pytest --markers` for their definitions. Backend-specific markers such
+as `requires_jax` and `numpy_only` are not registered project options.
 
-```bash
-# Run only fast tests (default in CI)
-pytest -m "not slow"
+## Validation workflow and reporting
 
-# Run slow/property-based tests
-pytest -m slow
+1. Read the relevant doctrine and operator contract; search for existing helpers.
+2. Run the relevant baseline before editing. Reproduce a suspected defect with
+   an explicit expected result and record whether it fails before the fix.
+3. Add a regression that exercises the physical or public API behavior, including
+   boundary cases and cache invalidation where relevant.
+4. Run the affected tests, then the full default suite before delivery. Run
+   applicable slow, optional-backend or research checks explicitly when the
+   changed scope requires them.
+5. Report exact commands, interpreter/dependency versions, pass/fail/skip counts,
+   warnings and any untested scope. Do not assume failures are pre-existing
+   without baseline evidence.
 
-# Run performance regression tests
-pytest -m performance tests/performance
+The `structural_rng` fixture supplies `numpy.random.default_rng(seed=0)`.
+`structural_tolerances` supplies `atol=1e-12` and `rtol=1e-10`; use tolerances
+appropriate to the mathematical scale and backend precision and document any
+relaxation. The autouse cleanup fixture resets selected global state; tests
+that mutate additional caches or configuration must restore those explicitly.
 
-# Run backend-specific tests
-pytest -m numpy_only
-pytest -m requires_jax
+Coverage is a measurement, not proof of a physical invariant. With the test
+dependencies installed, generate a report using:
+
+```sh
+python -m pytest --cov=tnfr --cov-report=term-missing --cov-report=html
 ```
 
-### Configuration
-
-Default pytest options are configured in `pyproject.toml`:
-
-```toml
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-addopts = [
-    "-m", "not slow",          # Skip slow tests by default
-    "--benchmark-skip",        # Skip benchmarks by default
-    "--strict-markers",
-    "--tb=short",
-]
-markers = [
-    "slow: marks tests as slow (deselected by default)",
-    "performance: marks performance regression tests",
-    "numpy_only: requires NumPy backend",
-    "requires_jax: requires JAX backend",
-    "requires_torch: requires PyTorch backend",
-]
-```
-
-## Test Categories
-
-### 1. Unit Tests (`tests/operators/`, `tests/core_physics/`, `tests/sdk/`)
-
-**Purpose**: Test individual modules and functions in isolation.
-
-**Coverage Areas**:
-
-- Structural operators (emission, reception, coherence, etc.)
-- Dynamics (ΔNFR computation, nodal equation integration)
-- Cache layers (Shelve, Redis, Memory)
-- Validation (sequence grammar, graph state)
-- Telemetry (coherence, sense index, traces)
-
-**Example**:
-
-```python
-def test_coherence_operator_stabilizes_epi(simple_graph):
-    """Coherence operator should increase stability."""
-    G, node = simple_graph
-    initial_coherence = compute_coherence(G)
-    
-    apply_operator(G, node, "coherence")
-    
-    final_coherence = compute_coherence(G)
-    assert final_coherence >= initial_coherence
-```
-
-### 2. Integration Tests (`tests/integration/`)
-
-**Purpose**: Test interactions between subsystems and operator sequences.
-
-**Coverage Areas**:
-
-- Canonical glyph sequences (emission→reception→coherence)
-- Operator chaining and graph state evolution
-- Telemetry pipeline end-to-end
-- Validation and execution coordination
-
-**Example**:
-
-```python
-def test_canonical_sequence_execution():
-    """Test canonical TNFR sequence executes without errors."""
-    G, node = create_nfr("test", epi=1.0, vf=1.0)
-    sequence = ["emission", "reception", "coherence", "coupling"]
-    
-    result = run_sequence(G, node, sequence)
-    
-    assert result["success"]
-    assert compute_coherence(G) > 0
-```
-
-### 3. Property-Based Tests (`tests/property/`)
-
-**Purpose**: Use Hypothesis to generate test cases validating TNFR invariants.
-
-**Coverage Areas**:
-
-- Operator invariants (bounds preservation, no NaN/inf)
-- Coherence monotonicity
-- Phase coupling symmetry
-- Frequency scaling laws
-
-**Example**:
-
-```python
-@given(
-    epi=st.floats(min_value=0.1, max_value=10.0),
-    vf=st.floats(min_value=0.1, max_value=10.0),
-)
-def test_coherence_operator_preserves_bounds(epi, vf):
-    """Coherence operator should never produce NaN or infinite values."""
-    G, node = create_nfr("prop_test", epi=epi, vf=vf)
-    
-    apply_operator(G, node, "coherence")
-    
-    epi_after = G.nodes[node]["epi"]
-    assert np.isfinite(epi_after).all()
-```
-
-### 4. Stress Tests (`tests/stress/`)
-
-**Purpose**: Validate behavior under extreme conditions and large scales.
-
-**Coverage Areas**:
-
-- Large networks (1000+ nodes)
-- Long sequences (100+ operators)
-- Memory usage patterns
-- Parallel execution stability
-
-**Example**:
-
-```python
-@pytest.mark.slow
-def test_large_network_coherence():
-    """Test coherence computation on large networks."""
-    G = nx.DiGraph()
-    for i in range(1000):
-        G.add_node(i, epi=np.random.rand(10), vf=1.0, phase=0.0)
-    
-    coherence = compute_coherence(G)
-    
-    assert 0 <= coherence <= 1.0
-    assert np.isfinite(coherence)
-```
-
-### 5. Performance Tests (`tests/performance/`)
-
-**Purpose**: Guard against performance regressions in critical paths.
-
-**Coverage Areas**:
-
-- ΔNFR computation pipeline
-- Alias cache effectiveness
-- Trigonometric metric calculations
-- Sense index computation
-
-**Execution**:
-```bash
-pytest -m performance tests/performance
-```
-
-## Structural Fidelity Tests
-
-## Invariant Tests
-
-These tests validate the 6 TNFR canonical invariants. For complete invariant definitions and physics, see **[AGENTS.md § Canonical Invariants](AGENTS.md#canonical-invariants)**.
-
-### Invariant 1: Nodal Equation Integrity
-
-```python
-def test_nodal_equation_integrity():
-    """EPI evolution must follow ∂EPI/∂t = νf · ΔNFR(t) only."""
-    G, node = create_nfr("test", epi=1.0, vf=1.0)
-    initial_epi = G.nodes[node]["epi"].copy()
-    
-    # Changes occur only via structural operators
-    # Validates nodal equation constraint
-    apply_operator(G, node, "coherence")
-    
-    assert not np.array_equal(G.nodes[node]["epi"], initial_epi)
-```
-
-### Invariant 5: Structural Metrology
-
-```python
-def test_structural_metrology_units():
-    """Structural frequency must remain in Hz_str units with proper telemetry."""
-    G, node = create_nfr("test", epi=1.0, vf=2.5)
-    
-    apply_operator(G, node, "mutation")
-    
-    vf = G.nodes[node]["vf"]
-    assert isinstance(vf, (int, float))
-    assert vf > 0  # Positive Hz_str
-```
-
-### Invariant 5: Phase Check Before Coupling
-
-```python
-def test_coupling_requires_phase_check():
-    """Coupling should verify phase synchrony."""
-    G = nx.DiGraph()
-    n1 = G.add_node(1, epi=1.0, vf=1.0, phase=0.0)
-    n2 = G.add_node(2, epi=1.0, vf=1.0, phase=np.pi)
-    
-    # Should validate phase compatibility
-    with pytest.raises(ValidationError):
-        apply_operator(G, n1, "coupling", target=n2)
-```
-
-### Invariant 8: Reproducible Simulations
-
-```python
-def test_deterministic_with_seed():
-    """Same seed should produce same results."""
-    seed = 42
-    
-    # Run 1
-    G1, node1 = create_nfr("test", epi=1.0, vf=1.0, seed=seed)
-    run_sequence(G1, node1, ["emission", "coherence"])
-    result1 = compute_coherence(G1)
-    
-    # Run 2
-    G2, node2 = create_nfr("test", epi=1.0, vf=1.0, seed=seed)
-    run_sequence(G2, node2, ["emission", "coherence"])
-    result2 = compute_coherence(G2)
-    
-    assert result1 == result2
-```
-
-## Backend Selection
-
-TNFR supports multiple mathematical backends (NumPy, JAX, PyTorch). Tests can specify backend requirements:
-
-### Environment Variable
-
-```bash
-# Set backend before running tests
-export TNFR_MATH_BACKEND=numpy  # or jax, torch
-pytest tests/mathematics
-```
-
-### Command Line
-
-```bash
-# Use pytest option
-pytest tests/mathematics --math-backend=torch
-```
-
-### In Tests
-
-```python
-@pytest.mark.requires_jax
-def test_jax_specific_feature():
-    """This test requires JAX backend."""
-    from tnfr.mathematics import get_backend
-    backend = get_backend()
-    assert backend.name == "jax"
-```
-
-### Backend Availability
-
-When a requested backend is unavailable, pytest automatically skips backend-specific tests while continuing with NumPy fallback.
-
-## Coverage Requirements
-
-### Minimum Coverage Targets
-
-- **Overall**: 80% line coverage
-- **Core modules** (structural, dynamics, operators): 90%
-- **Telemetry** (metrics, trace): 85%
-- **Utilities** (cache, validation): 80%
-
-### Critical Paths (Must be 100% covered)
-
-- Nodal equation integration (`dynamics/integrators.py`)
-- Operator registry and dispatch (`operators/registry.py`)
-- Canonical sequence validation (`validation/__init__.py`)
-- ΔNFR computation (`dynamics/dnfr.py`)
-
-### Coverage Report
-
-```bash
-# Generate HTML coverage report
-pytest --cov=tnfr --cov-report=html
-
-# Open report
-open htmlcov/index.html
-```
-
-## Test Development Guidelines
-
-### 1. Test Isolation
-
-Use `clear_test_module()` utility for test independence:
-
-```python
-from tests.utils import clear_test_module
-
-def test_fresh_import():
-    """Test with fresh module state."""
-    clear_test_module('tnfr.utils.io')
-    import tnfr.utils.io  # Fresh import
-```
-
-**Note**: Module path checking (`'module' in sys.modules`) may trigger CodeQL warnings. This is legitimate test infrastructure, not URL validation. See ARCHITECTURE.md §"Test isolation and module management".
-
-### 2. Fixture Usage
-
-Prefer pytest fixtures for common setup:
-
-```python
-@pytest.fixture
-def simple_graph():
-    """Create a simple test graph."""
-    G = nx.DiGraph()
-    node = G.add_node(1, epi=np.array([1.0, 2.0]), vf=1.0, phase=0.0)
-    return G, node
-
-def test_with_fixture(simple_graph):
-    G, node = simple_graph
-    # Test implementation
-```
-
-### 3. Parametrize for Variants
-
-Use `pytest.mark.parametrize` for multiple test cases:
-
-```python
-@pytest.mark.parametrize("operator", [
-    "emission", "reception", "coherence", "dissonance"
-])
-def test_operator_preserves_structure(operator):
-    """All operators should preserve graph structure."""
-    G, node = create_nfr("test", epi=1.0, vf=1.0)
-    apply_operator(G, node, operator)
-    
-    assert node in G.nodes
-```
-
-### 4. Document Test Intent
-
-Every test should have a clear docstring explaining:
-
-- What structural behavior is being validated
-- Which TNFR invariant(s) are checked
-- Why the test matters for coherence
-
-```python
-def test_resonance_propagates_coherence():
-    """
-    Resonance operator should propagate coherence to coupled nodes
-    without altering EPI identity (Invariant 1, 4).
-    
-    This test validates that resonance maintains operational
-    fractality while increasing network coupling.
-    """
-    # Test implementation
-```
-
-### 5. Avoid Brittleness
-
-- Don't assert exact floating-point equality (use `np.allclose`)
-- Don't depend on internal implementation details
-- Don't test framework internals (NetworkX, NumPy)
-- Focus on structural semantics, not code paths
-
-### 6. Performance Awareness
-
-Mark slow tests appropriately:
-
-```python
-@pytest.mark.slow
-def test_expensive_computation():
-    """This test takes >1 second to run."""
-    # Long-running test
-```
-
-## Test Maintenance
-
-### Pre-Existing Failures
-
-The repository tracks known test failures that are not regressions:
-
-- **Import errors**: 3 known (require infrastructure changes)
-- **Backend compatibility**: Some tests may fail with specific backends
-- **Platform-specific**: Windows vs Unix path handling
-
-These are documented and should not block PR approval unless your changes introduce new failures.
-
-### Continuous Integration
-
-All PRs must:
-
-1. Pass the default test suite (`pytest -m "not slow"`)
-2. Maintain or improve coverage
-3. Not introduce new failures (beyond pre-existing)
-4. Pass all structural fidelity tests
-
-### Test Optimization
-
-When optimizing tests:
-
-1. Consolidate redundant tests across directories
-2. Use shared fixtures to reduce duplication
-3. Parametrize instead of copying test functions
-4. Profile slow tests and optimize data generation
-
-## Debugging Tests
-
-### Verbose Output
-
-```bash
-# Show print statements and detailed assertions
-pytest -v -s tests/operators/
-
-# Show local variables on failure
-pytest --showlocals
-```
-
-### Run Single Test
-
-```bash
-# Run specific test function
-pytest tests/operators/ -k coherence
-
-# Run test by keyword match
-pytest -k "coherence" tests/
-```
-
-### Debug with PDB
-
-```bash
-# Drop into debugger on failure
-pytest --pdb
-
-# Drop into debugger at test start
-pytest --trace
-```
-
-### Capture Warnings
-
-```bash
-# Show warnings
-pytest -W default
-
-# Treat warnings as errors
-pytest -W error
-```
-
-## Resources
-
-- **ARCHITECTURE.md**: TNFR invariants and canonical constraints
-- **SECURITY.md**: Security testing guidelines
-- **CONTRIBUTING.md**: General contribution workflow
-- **tests/README.md**: Detailed test suite organization
-- **pyproject.toml**: Test configuration and markers
-
----
-
-**Last Updated**: November 2025  
-**Version**: 0.0.3.5
+The current project configuration does not enforce a coverage percentage.
+The [main CI workflow](.github/workflows/ci.yml) runs Python 3.10-3.13, applies
+the default pytest selection and reports coverage on Python 3.11. Consult the
+workflow files for the current checks rather than duplicating their matrices
+or results in test reports.

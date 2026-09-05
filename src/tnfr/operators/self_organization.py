@@ -36,7 +36,7 @@ class SelfOrganization(Operator):
     name: ClassVar[str] = SELF_ORGANIZATION
     glyph: ClassVar[Glyph] = Glyph.THOL
 
-    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Apply THOL; if d2_epi>tau spawn sub-EPI; validate ensemble."""
         # Compute structural acceleration before base operator
         d2_epi = self._compute_epi_acceleration(G, node)
@@ -47,7 +47,7 @@ class SelfOrganization(Operator):
             tau = float(G.graph.get("THOL_BIFURCATION_THRESHOLD", 0.1))
 
         # Apply base operator (includes glyph application and metrics)
-        super().__call__(G, node, **kw)
+        super()._execute(G, node, **kw)
 
         # Bifurcate if acceleration exceeds threshold
         if d2_epi > tau:

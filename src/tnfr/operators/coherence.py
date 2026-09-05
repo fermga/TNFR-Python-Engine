@@ -31,7 +31,7 @@ class Coherence(Operator):
     name: ClassVar[str] = COHERENCE
     glyph: ClassVar[Glyph] = Glyph.IL
 
-    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Reduce delta NFR; track coherence; optional phase lock.
 
         Parameters
@@ -85,7 +85,7 @@ class Coherence(Operator):
         dnfr_before = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
 
         # Parent __call__ applies grammar (includes reduction)
-        super().__call__(G, node, **kw)
+        super()._execute(G, node, **kw)
 
         # Apply phase locking after grammar application
         locking_coef = kw.get("phase_locking_coefficient", 0.3)

@@ -32,13 +32,13 @@ class Silence(Operator):
     name: ClassVar[str] = SILENCE
     glyph: ClassVar[Glyph] = Glyph.SHA
 
-    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Mark latency then apply base operator."""
-        # Mark latency state BEFORE grammar execution
+        # Grammar and preconditions already passed at the public entry point.
         self._mark_latency_state(G, node)
 
-        # Delegate to parent __call__ which applies grammar
-        super().__call__(G, node, **kw)
+        # Apply the selected glyph with latency metadata ready for metrics.
+        super()._execute(G, node, **kw)
 
     def _mark_latency_state(self, G: TNFRGraph, node: Any) -> None:
         """set latent flag, timestamp, preserved epi, duration=0.0.

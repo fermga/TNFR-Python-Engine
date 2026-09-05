@@ -12,6 +12,7 @@ from typing import Any
 
 from ..mathematics.unified_numerical import NUMPY_AVAILABLE as HAS_NUMPY
 from ..mathematics.unified_numerical import np
+from ..utils.io import json_dumps, safe_write
 
 __all__ = [
     "compare_networks",
@@ -171,9 +172,13 @@ def export_to_json(
     else:
         data = network_data
 
-    # Write JSON
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=indent, ensure_ascii=False)
+    # Serialize before opening a destination, then reuse the shared atomic
+    # writer. Failed serialization cannot truncate an existing report.
+    payload = json_dumps(
+        data, indent=indent, ensure_ascii=False,
+        separators=(",", ": ") if indent is not None else (", ", ": "),
+    )
+    safe_write(filepath, lambda stream: stream.write(payload))
 
 
 def import_from_json(filepath: Path | str) -> dict[str, Any]:

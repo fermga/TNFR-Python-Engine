@@ -17,6 +17,7 @@ from typing import Any
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR
 from ..mathematics.unified_numerical import np
+from ._helpers import neighborhood_arrays
 
 try:
     import networkx as nx
@@ -107,43 +108,9 @@ def compute_phase_current(G: Any) -> dict[Any, float]:
 
     # Check for vectorization support
     try:
-        # Prepare data for vectorized op
-        node_to_idx = {node: i for i, node in enumerate(nodes)}
-        n = len(nodes)
-
         # Phase array
         phases = np.array([_get_phase(G, node) for node in nodes], dtype=np.float64)
-
-        # Degree array
-        # Note: G.degree returns (node, degree) or degree depending on input
-        # G.degree[node] is safer
-        degrees = np.array([G.degree[node] for node in nodes], dtype=np.float64)
-
-        # Edge lists
-        # We need (neighbor, center) pairs
-        edge_src_list = []
-        edge_dst_list = []
-
-        is_directed = G.is_directed()
-
-        for u, v in G.edges():
-            if u not in node_to_idx or v not in node_to_idx:
-                continue
-
-            u_idx = node_to_idx[u]
-            v_idx = node_to_idx[v]
-
-            # If u is center, v is neighbor: src=v, dst=u
-            edge_src_list.append(v_idx)
-            edge_dst_list.append(u_idx)
-
-            if not is_directed:
-                # If v is center, u is neighbor: src=u, dst=v
-                edge_src_list.append(u_idx)
-                edge_dst_list.append(v_idx)
-
-        edge_src = np.array(edge_src_list, dtype=np.intp)
-        edge_dst = np.array(edge_dst_list, dtype=np.intp)
+        edge_src, edge_dst, degrees = neighborhood_arrays(G, nodes)
 
         # Vectorized computation
         current_arr = compute_phase_current_vectorized(
@@ -232,39 +199,9 @@ def compute_dnfr_flux(G: Any) -> dict[Any, float]:
 
     # Check for vectorization support
     try:
-        # Prepare data for vectorized op
-        node_to_idx = {node: i for i, node in enumerate(nodes)}
-
         # ΔNFR array
         dnfr_arr = np.array([_get_dnfr(G, node) for node in nodes], dtype=np.float64)
-
-        # Degree array
-        degrees = np.array([G.degree[node] for node in nodes], dtype=np.float64)
-
-        # Edge lists
-        edge_src_list = []
-        edge_dst_list = []
-
-        is_directed = G.is_directed()
-
-        for u, v in G.edges():
-            if u not in node_to_idx or v not in node_to_idx:
-                continue
-
-            u_idx = node_to_idx[u]
-            v_idx = node_to_idx[v]
-
-            # If u is center, v is neighbor: src=v, dst=u
-            edge_src_list.append(v_idx)
-            edge_dst_list.append(u_idx)
-
-            if not is_directed:
-                # If v is center, u is neighbor: src=u, dst=v
-                edge_src_list.append(u_idx)
-                edge_dst_list.append(v_idx)
-
-        edge_src = np.array(edge_src_list, dtype=np.intp)
-        edge_dst = np.array(edge_dst_list, dtype=np.intp)
+        edge_src, edge_dst, degrees = neighborhood_arrays(G, nodes)
 
         # Vectorized computation
         flux_arr = compute_dnfr_flux_vectorized(dnfr_arr, edge_src, edge_dst, degrees)

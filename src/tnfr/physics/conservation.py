@@ -79,6 +79,7 @@ from .canonical import (
     compute_structural_potential,
 )
 from .extended import compute_dnfr_flux, compute_phase_current
+from .unified import _capture_structural_fields, _energy_density_from_fields
 from .unified import compute_energy_density as _raw_energy_density
 
 # ---------------------------------------------------------------------------
@@ -131,10 +132,11 @@ class ConservationBalance:
     accuracy:
 
     * ``residual[i] = Δρ(i)/Δt + ½[div J_before(i) + div J_after(i)]``
-      — should be ≈ 0 when grammar is satisfied.
+      — a finite-interval balance diagnostic, not a grammar validator.
     * ``mean_residual``, ``max_residual`` — aggregate diagnostics.
     * ``conservation_quality`` — scalar in [0, 1]; 1 = perfect conservation.
-    * ``grammar_violation_index`` — ∝ |mean_residual|;  0 = no violation.
+    * ``grammar_violation_index`` — legacy name for the mean absolute residual;
+      zero does not certify grammar compliance.
     """
 
     residual: dict[Any, float]
@@ -208,8 +210,14 @@ def compute_charge_density(G: Any) -> dict[Any, float]:
     """
     phi_s = compute_structural_potential(G)
     k_phi = compute_phase_curvature(G)
-    nodes = list(G.nodes())
-    return {n: phi_s.get(n, 0.0) + k_phi.get(n, 0.0) for n in nodes}
+    return _charge_density_from_fields(phi_s, k_phi)
+
+
+def _charge_density_from_fields(
+    phi_s: dict[Any, float], k_phi: dict[Any, float]
+) -> dict[Any, float]:
+    """Shared charge definition for live and captured field maps."""
+    return {n: phi_s[n] + k_phi.get(n, 0.0) for n in phi_s}
 
 
 def compute_current_divergence(G: Any) -> dict[Any, float]:
@@ -237,6 +245,13 @@ def compute_current_divergence(G: Any) -> dict[Any, float]:
     """
     j_phi = compute_phase_current(G)
     j_dnfr = compute_dnfr_flux(G)
+    return _current_divergence_from_fields(G, j_phi, j_dnfr)
+
+
+def _current_divergence_from_fields(
+    G: Any, j_phi: dict[Any, float], j_dnfr: dict[Any, float]
+) -> dict[Any, float]:
+    """Apply the existing neighbor-mean divergence to recorded currents."""
     nodes = list(G.nodes())
 
     divergence: dict[Any, float] = {}
@@ -267,6 +282,10 @@ def capture_conservation_snapshot(G: Any) -> ConservationSnapshot:
 
     This is a *read-only* operation that never mutates EPI.
 
+    The caller must hold graph state fixed during the complete call, including
+    the topology-dependent divergence. Returned maps are detached; capture is
+    not atomic with concurrent evolution.
+
     Parameters
     ----------
     G : TNFRGraph
@@ -276,15 +295,12 @@ def capture_conservation_snapshot(G: Any) -> ConservationSnapshot:
     -------
     ConservationSnapshot
     """
-    phi_s = compute_structural_potential(G)
-    k_phi = compute_phase_curvature(G)
-    grad_phi = compute_phase_gradient(G)
-    j_phi = compute_phase_current(G)
-    j_dnfr = compute_dnfr_flux(G)
+    fields = _capture_structural_fields(G)
+    phi_s, k_phi, grad_phi = fields.phi_s, fields.k_phi, fields.grad_phi
+    j_phi, j_dnfr = fields.j_phi, fields.j_dnfr
 
-    nodes = list(G.nodes())
-    charge = {n: phi_s.get(n, 0.0) + k_phi.get(n, 0.0) for n in nodes}
-    div_j = compute_current_divergence(G)
+    charge = _charge_density_from_fields(phi_s, k_phi)
+    div_j = _current_divergence_from_fields(G, j_phi, j_dnfr)
 
     return ConservationSnapshot(
         charge_density=charge,
@@ -314,10 +330,13 @@ def verify_conservation_balance(
 
         Δρ(i)/Δt + ½[div J_before(i) + div J_after(i)] ≈ 0
 
-    This gives O(Δt²) accuracy, compared to the O(Δt) of a
-    right-endpoint scheme.  A small residual means the operator
-    sequence conserved structural charge;  large residuals indicate
-    grammar violations acting as sources.
+    For sufficiently smooth evolution on fixed support, the trapezoidal
+    approximation has O(Δt²) accuracy, compared to the O(Δt) of a
+    right-endpoint scheme. A small residual records agreement with this
+    balance over the sampled interval; it does not prove sequence-wide
+    conservation or grammar compliance. Large residuals can reflect numerical
+    error, changing topology or node support, source terms, or a failure of the
+    assumed balance. Their cause requires separate investigation.
 
     Parameters
     ----------
@@ -753,14 +772,11 @@ def _energy_from_snapshot(snapshot: ConservationSnapshot) -> float:
     the live graph): both evaluate the same canonical quadratic form, so the
     energy-density definition lives in one place rather than being inlined.
     """
-    return 0.5 * sum(
-        snapshot.phi_s[n] ** 2
-        + snapshot.grad_phi[n] ** 2
-        + snapshot.k_phi[n] ** 2
-        + snapshot.j_phi[n] ** 2
-        + snapshot.j_dnfr[n] ** 2
-        for n in snapshot.phi_s
+    raw = _energy_density_from_fields(
+        snapshot.phi_s, snapshot.grad_phi, snapshot.k_phi,
+        snapshot.j_phi, snapshot.j_dnfr,
     )
+    return 0.5 * sum(raw.values())
 
 
 # ---------------------------------------------------------------------------

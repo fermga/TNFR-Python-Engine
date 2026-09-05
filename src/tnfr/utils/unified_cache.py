@@ -263,11 +263,15 @@ class UnifiedLRUCache(MutableMapping[K, V], Generic[K, V]):
         self[key] = value
 
     def clear(self) -> None:
-        """Clear cache."""
+        """Clear entries, size accounting and per-entry removal resources."""
         with self._lock:
+            removed = list(self._cache.items())
             self._cache.clear()
+            self._currsize = 0
             self._stats.size = 0
             # Don't reset hits/misses for historical stats
+            for key, value in removed:
+                self._dispatch_removal(key, value)
 
     def get_stats(self) -> CacheStats:
         """Get cache statistics."""

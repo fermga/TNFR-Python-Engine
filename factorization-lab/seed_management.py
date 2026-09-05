@@ -2,21 +2,23 @@
 TNFR Seed Management System
 
 Comprehensive seed capture and reproducibility framework for factorization experiments.
-Captures and restores complete system state including random seeds, initialization
-parameters, and environmental conditions for perfect reproducibility.
+Captures and restores the Python and legacy NumPy global RNG states and the
+manager's component seeds. Environment and experiment parameters are recorded
+for comparison; independent Generator instances, graph state, external library
+RNGs and the recorded environment are not restored.
 
 Design Principles:
-1. Complete reproducibility of all stochastic processes
-2. Lightweight seed capture with minimal performance overhead
-3. Cross-platform compatibility and version resilience
+1. Reproduce the captured global RNG continuations
+2. Record the component seeds and environment used by an experiment
+3. Serialize state for compatible Python and NumPy RNG implementations
 4. Hierarchical seeding for multi-scale reproducibility
 5. Audit trail for debugging non-deterministic issues
 
 Mathematical Foundation:
 - Deterministic evolution: EPI(t+dt) = f(EPI(t), seed_state)
-- State reproducibility: Same seeds → identical trajectories
+- State reproducibility: Same supported RNG state → identical RNG continuation
 - Hierarchical consistency: Master seed → component seeds → operation seeds
-- Audit integrity: Complete traceability of all random operations
+- Audit scope: Recorded seeds and observations do not trace every random operation
 """
 
 import hashlib
@@ -27,10 +29,18 @@ import random
 import sys
 import time
 from dataclasses import asdict, dataclass
+from numbers import Integral
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+
+
+_COMPONENT_SEEDS = (
+    "node_initialization", "coupling_dynamics", "phase_evolution",
+    "operator_sequence", "global_network", "partition_level", "node_level",
+    "spectral_analysis", "clustering", "threshold_jitter",
+)
 
 
 @dataclass
@@ -53,7 +63,7 @@ class SystemEnvironment:
 
     # Hardware fingerprint (for debugging)
     cpu_count: int
-    memory_total_gb: float
+    memory_total_gb: Optional[float]
 
 
 @dataclass
@@ -150,7 +160,7 @@ class TNFRSeedManager:
     def __init__(self, master_seed: Optional[int] = None):
         """Initialize seed manager with optional master seed."""
 
-        self.master_seed = master_seed or self._generate_master_seed()
+        self.master_seed = self._generate_master_seed() if master_seed is None else master_seed
         self.seed_history = []
         self.current_experiment_id = None
 
@@ -203,7 +213,7 @@ class TNFRSeedManager:
         np.random.seed(self.master_seed % (2**32))  # NumPy requires uint32
 
     def capture_complete_state(self) -> Dict[str, Any]:
-        """Capture complete reproducibility state."""
+        """Capture supported RNG states, component seeds and environment metadata."""
 
         # Capture environment
         environment = self._capture_system_environment()
@@ -233,38 +243,41 @@ class TNFRSeedManager:
         }
 
     def restore_complete_state(self, state_data: Dict[str, Any]) -> bool:
-        """Restore complete system state from captured data."""
+        """Restore captured RNG state after validating it without live writes.
+
+        Both in-memory tuples and the lists produced by JSON are accepted.
+        Invalid payloads return False without changing manager or global RNGs.
+        This does not restore graph state or independently created generators.
+        """
 
         try:
-            # Restore master seed
-            self.master_seed = state_data["master_seed"]
-
-            # Restore random states
             seed_state = state_data["seed_state"]
+            master_seed = state_data["master_seed"]
+            if master_seed != seed_state["master_seed"]:
+                raise ValueError("master_seed disagrees with captured seed state")
+            seeds = {name + "_seed": seed_state[name + "_seed"] for name in _COMPONENT_SEEDS}
+            for value in (master_seed, *seeds.values()):
+                if isinstance(value, bool) or not isinstance(value, Integral):
+                    raise ValueError("captured seeds must be integers")
 
-            # Restore Python random state
-            random.setstate(tuple(seed_state["python_random_state"]))
+            version, internal, gaussian = seed_state["python_random_state"]
+            python_probe = random.Random()
+            python_probe.setstate((version, tuple(internal), gaussian))
+            numpy_probe = np.random.RandomState()
+            numpy_probe.set_state(self._numpy_state_tuple(seed_state["numpy_random_state"]))
 
-            # Restore NumPy state
-            self._set_numpy_state(seed_state["numpy_random_state"])
-
-            # Restore derived seeds
-            self.node_initialization_seed = seed_state["node_initialization_seed"]
-            self.coupling_dynamics_seed = seed_state["coupling_dynamics_seed"]
-            self.phase_evolution_seed = seed_state["phase_evolution_seed"]
-            self.operator_sequence_seed = seed_state["operator_sequence_seed"]
-            self.global_network_seed = seed_state["global_network_seed"]
-            self.partition_level_seed = seed_state["partition_level_seed"]
-            self.node_level_seed = seed_state["node_level_seed"]
-            self.spectral_analysis_seed = seed_state["spectral_analysis_seed"]
-            self.clustering_seed = seed_state["clustering_seed"]
-            self.threshold_jitter_seed = seed_state["threshold_jitter_seed"]
-
-            return True
-
-        except (KeyError, TypeError, ValueError) as e:
+        except (KeyError, TypeError, ValueError, OverflowError) as e:
             print(f"Failed to restore state: {e}")
             return False
+
+        # Commit only states already accepted by independent instances of the
+        # same RNG implementations. No live state changes occur on rejection.
+        random.setstate(python_probe.getstate())
+        np.random.set_state(numpy_probe.get_state())
+        self.master_seed = master_seed
+        for name, value in seeds.items():
+            setattr(self, name, value)
+        return True
 
     def create_experiment_context(
         self,
@@ -368,7 +381,8 @@ class TNFRSeedManager:
         results = []
         for i in range(test_iterations):
             # Restore state
-            self.restore_complete_state(context_data["reproducibility_state"])
+            if not self.restore_complete_state(context_data["reproducibility_state"]):
+                return {"valid": False, "error": "Captured RNG state restoration failed"}
 
             # Run mock experiment (would be actual factorization in practice)
             result = self._run_reproducibility_test(params)
@@ -388,7 +402,12 @@ class TNFRSeedManager:
     def _capture_system_environment(self) -> SystemEnvironment:
         """Capture system environment information."""
 
-        import psutil
+        try:
+            import psutil
+        except ImportError:
+            memory_total_gb = None
+        else:
+            memory_total_gb = psutil.virtual_memory().total / (1024**3)
 
         return SystemEnvironment(
             platform_system=platform.system(),
@@ -401,7 +420,7 @@ class TNFRSeedManager:
             utc_timestamp=time.time(),
             local_timezone=str(time.tzname),
             cpu_count=os.cpu_count() or 1,
-            memory_total_gb=psutil.virtual_memory().total / (1024**3),
+            memory_total_gb=memory_total_gb,
         )
 
     def _get_numpy_state(self) -> dict:
@@ -420,10 +439,10 @@ class TNFRSeedManager:
             ),
         }
 
-    def _set_numpy_state(self, state_dict: dict):
-        """Restore NumPy random state from serializable format."""
-
-        state_tuple = (
+    @staticmethod
+    def _numpy_state_tuple(state_dict: dict) -> tuple:
+        """Decode the captured legacy NumPy state without modifying an RNG."""
+        return (
             state_dict["generator"],
             np.array(state_dict["state"], dtype=np.uint32),
             state_dict["pos"],
@@ -431,7 +450,9 @@ class TNFRSeedManager:
             state_dict["cached_gaussian"],
         )
 
-        np.random.set_state(state_tuple)
+    def _set_numpy_state(self, state_dict: dict):
+        """Restore NumPy random state from serializable format."""
+        np.random.set_state(self._numpy_state_tuple(state_dict))
 
     def _generate_experiment_id(self, params: ExperimentParameters) -> str:
         """Generate unique experiment identifier."""

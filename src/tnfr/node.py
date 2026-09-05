@@ -413,7 +413,12 @@ class NodeNX(NodeProtocol):
         self.rng: np.random.Generator | None = rng
         # Only add to default cache if not being created by from_graph
         if not G.graph.get("_creating_node", False):
-            G.graph.setdefault("_node_cache", {})[n] = self
+            cache = G.graph.get("_node_cache")
+            owner_sample = next(iter(cache.values()), None) if cache is not None else None
+            if owner_sample is None or owner_sample.G is not G:
+                cache = {}
+                G.graph["_node_cache"] = cache
+            cache[n] = self
 
     def _glyph_storage(self) -> MutableMapping[str, Any]:
         return self.G.nodes[self.n]
@@ -461,7 +466,7 @@ class NodeNX(NodeProtocol):
         cache = G.graph.get(cache_key)
         if cache is not None:
             node = cache.get(n)
-            if node is not None:
+            if node is not None and node.G is G:
                 return node
 
         # Slow path: need to create node or initialize cache
@@ -472,8 +477,17 @@ class NodeNX(NodeProtocol):
             cache = G.graph.get(cache_key)
             if cache is not None:
                 node = cache.get(n)
-                if node is not None:
+                if node is not None and node.G is G:
                     return node
+                # NetworkX copies cache dictionaries shallowly. Never insert
+                # replacement adapters into a dictionary owned by another
+                # graph, or return an adapter that would write into its parent.
+                owner_sample = next(iter(cache.values()), None)
+                # An empty inherited mapping has no adapter that can prove
+                # ownership; replace it before the first insertion as well.
+                if owner_sample is None or owner_sample.G is not G:
+                    cache = WeakValueDictionary() if use_weak_cache else {}
+                    G.graph[cache_key] = cache
 
             # Initialize cache if needed
             if cache is None:
@@ -491,7 +505,7 @@ class NodeNX(NodeProtocol):
 
             # Check again after cache initialization
             node = cache.get(n)
-            if node is not None:
+            if node is not None and node.G is G:
                 return node
 
             # Create node - use a sentinel to prevent __init__ from adding to cache

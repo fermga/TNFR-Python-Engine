@@ -35,92 +35,105 @@ def apply_glyph_with_grammar(
     glyph : Any
         Glyph to apply
     window : Any, optional
-        Grammar window constraint
+        Maximum stored glyph-history length
 
     Notes
     -----
-    This function delegates to apply_glyph for each node, which wraps
-    the node in NodeNX and applies the glyph operation.
+    Targets and trace arguments are validated before the first application.
+    Each selected glyph then delegates to apply_glyph. A failure during a
+    later structural operation does not roll back earlier accepted targets.
     """
-    from . import apply_glyph
+    from . import _resolve_glyph_operation, _validated_execution_window
+    from .grammar_debt import require_replayable_history
 
-    # Handle single node or iterable of nodes
-    # Check if it's a single hashable node or an iterable
+    glyph, _ = _resolve_glyph_operation(glyph)
+    window = _validated_execution_window(G, window)
+
+    # Membership distinguishes a tuple/frozenset node from an iterable of
+    # nodes. Hashability alone also classified generators as single nodes.
     try:
-        # Try to treat as single hashable node
-        hash(nodes)
-        # If hashable, it's a single node
+        single_node = nodes in G
+    except TypeError:
+        single_node = False
+    if single_node or isinstance(nodes, (str, bytes)):
         nodes_iter = [nodes]
-    except (TypeError, AttributeError):
-        # Not hashable, treat as iterable
-        # Convert to list to allow multiple iterations if needed
+    else:
         try:
             nodes_iter = list(nodes)
         except TypeError:
-            # If not iterable, wrap in list
             nodes_iter = [nodes]
 
+    # Invalid targets/histories must not leave an earlier target modified.
+    # Runtime failures after valid operations are not a batch transaction.
     for node in nodes_iter:
-        # Grammar enforcement (single source of truth, U1-U6)
-        glyph = enforce_canonical_grammar(G, node, glyph)
+        require_replayable_history(G.nodes[node].get("glyph_history"))
 
-        apply_glyph(G, node, glyph, window=window)
+    for node in nodes_iter:
+        selected_glyph = enforce_canonical_grammar(G, node, glyph)
+        _apply_selected_glyph(G, node, selected_glyph, window)
 
-        # Check for IL sequences in node history after applying glyph
-        if "glyph_history" in G.nodes[node]:
-            history = G.nodes[node]["glyph_history"]
-            if len(history) >= 2:
-                # Check last two glyphs for canonical patterns
-                # Convert to list to support slicing
-                history_list = list(history)
 
-                # Convert string names to Glyphs for recognition
-                glyph_history = []
-                for item in history_list[-2:]:
-                    if isinstance(item, str):
-                        if item.startswith("Glyph."):
-                            # Handle 'Glyph.AL' format
-                            glyph_name = item.split(".")[1]
-                            try:
-                                glyph_history.append(Glyph[glyph_name])
-                            except KeyError:
-                                glyph_history.append(item)
-                        else:
-                            # Handle direct glyph name 'IL'
-                            try:
-                                glyph_history.append(Glyph[item])
-                            except KeyError:
-                                glyph_history.append(item)
+def _apply_selected_glyph(G, node, glyph, window) -> None:
+    """Execute a selected glyph and recognize patterns without reselecting it."""
+    from . import apply_glyph
+
+    apply_glyph(G, node, glyph, window=window)
+
+    # Check for IL sequences in node history after applying glyph
+    if "glyph_history" in G.nodes[node]:
+        history = G.nodes[node]["glyph_history"]
+        if len(history) >= 2:
+            # Check last two glyphs for canonical patterns
+            # Convert to list to support slicing
+            history_list = list(history)
+
+            # Convert string names to Glyphs for recognition
+            glyph_history = []
+            for item in history_list[-2:]:
+                if isinstance(item, str):
+                    if item.startswith("Glyph."):
+                        # Handle 'Glyph.AL' format
+                        glyph_name = item.split(".")[1]
+                        try:
+                            glyph_history.append(Glyph[glyph_name])
+                        except KeyError:
+                            glyph_history.append(item)
                     else:
-                        glyph_history.append(item)
+                        # Handle direct glyph name 'IL'
+                        try:
+                            glyph_history.append(Glyph[item])
+                        except KeyError:
+                            glyph_history.append(item)
+                else:
+                    glyph_history.append(item)
 
-                recognized = recognize_il_sequences(glyph_history)
+            recognized = recognize_il_sequences(glyph_history)
 
-                if recognized:
-                    # Initialize graph-level pattern tracking if needed
-                    if "recognized_coherence_patterns" not in G.graph:
-                        G.graph["recognized_coherence_patterns"] = []
+            if recognized:
+                # Initialize graph-level pattern tracking if needed
+                if "recognized_coherence_patterns" not in G.graph:
+                    G.graph["recognized_coherence_patterns"] = []
 
-                    # Add recognized patterns to graph tracking
-                    for pattern in recognized:
-                        pattern_info = {
-                            "node": node,
-                            "pattern_name": pattern["pattern_name"],
-                            "position": len(history) - 2 + pattern["position"],
-                            "is_antipattern": pattern.get("is_antipattern", False),
-                        }
-                        G.graph["recognized_coherence_patterns"].append(pattern_info)
+                # Add recognized patterns to graph tracking
+                for pattern in recognized:
+                    pattern_info = {
+                        "node": node,
+                        "pattern_name": pattern["pattern_name"],
+                        "position": len(history) - 2 + pattern["position"],
+                        "is_antipattern": pattern.get("is_antipattern", False),
+                    }
+                    G.graph["recognized_coherence_patterns"].append(pattern_info)
 
-                        # Emit warnings for antipatterns if not already done
-                        is_antipattern = pattern.get("is_antipattern", False)
-                        severity = pattern.get("severity", "")
-                        if is_antipattern and severity in ("warning", "error"):
-                            import warnings
+                    # Emit warnings for antipatterns if not already done
+                    is_antipattern = pattern.get("is_antipattern", False)
+                    severity = pattern.get("severity", "")
+                    if is_antipattern and severity in ("warning", "error"):
+                        import warnings
 
-                            pattern_name = pattern["pattern_name"]
-                            warnings.warn(
-                                f"Anti-pattern detected: {pattern_name}", UserWarning
-                            )
+                        pattern_name = pattern["pattern_name"]
+                        warnings.warn(
+                            f"Anti-pattern detected: {pattern_name}", UserWarning
+                        )
 
 
 def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
@@ -137,10 +150,18 @@ def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
     applied : Any
         Applied glyph or operator name
     """
-    # Minimal stub for telemetry
+    from .grammar_debt import (
+        PRIOR_COHERENCE_KEY, U2_DEBT_KEY, advance_debt, advance_prior_coherence,
+        node_debt, node_has_prior_coherence,
+    )
+
+    debt = node_debt(G.nodes[n])
+    prior_coherence = node_has_prior_coherence(G.nodes[n])
     if "glyph_history" not in G.nodes[n]:
         G.nodes[n]["glyph_history"] = []
     G.nodes[n]["glyph_history"].append(applied)
+    G.nodes[n][U2_DEBT_KEY] = advance_debt(debt, applied)
+    G.nodes[n][PRIOR_COHERENCE_KEY] = advance_prior_coherence(prior_coherence, applied)
 
 
 def enforce_canonical_grammar(
@@ -153,7 +174,9 @@ def enforce_canonical_grammar(
 
     Delegates to :func:`grammar_dynamics.enforce_grammar_on_glyph` for
     proactive validation.  If *cand* would violate a grammar rule, it is
-    replaced with a safe alternative.
+    replaced with a safe alternative during standalone selection. An explicit
+    validated sequence context instead raises before a blocked step; it can
+    supply a future U4a handler without bypassing other live grammar checks.
 
     Parameters
     ----------
@@ -164,7 +187,8 @@ def enforce_canonical_grammar(
     cand : Any
         Candidate glyph/operator
     ctx : Any, optional
-        Grammar context (unused, kept for backward compatibility)
+        A ValidatedSequenceStep may supply a future U4a handler. Other legacy
+        context values retain their previous behavior and are ignored.
 
     Returns
     -------
@@ -172,5 +196,7 @@ def enforce_canonical_grammar(
         The validated (or replaced) glyph code.
     """
     from .grammar_dynamics import enforce_grammar_on_glyph
+    from .grammar_execution import ValidatedSequenceStep
 
-    return enforce_grammar_on_glyph(G, n, cand)
+    sequence_context = ctx if isinstance(ctx, ValidatedSequenceStep) else None
+    return enforce_grammar_on_glyph(G, n, cand, sequence_context=sequence_context)

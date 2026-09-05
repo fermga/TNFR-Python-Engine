@@ -14,8 +14,11 @@ Integration respects TNFR invariants:
   - Phase coherence (network synchronization)
   - Reproducibility (deterministic with seeds)
 
-The canonical base term is computed explicitly in _collect_nodal_increments()
-at line 321 and 342 as: base = vf * dnfr, implementing ∂EPI/∂t = νf·ΔNFR(t).
+The base term is ``vf * dnfr`` with stored frequency and pressure held fixed
+during each call. For the built-in time-only forcing at fixed phases, ``rk4``
+is fourth-order quadrature. It does not reevaluate a state-dependent pressure
+law at Runge-Kutta stages. Optional clipping can alter the unconstrained ODE
+trajectory, so the order claim applies while clipping is inactive.
 """
 
 from __future__ import annotations
@@ -25,6 +28,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable, Mapping
 from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import get_context
+from numbers import Real
 from typing import Any, Literal, cast
 
 import networkx as nx
@@ -45,7 +49,6 @@ from ..constants.aliases import (
 from ..constants.canonical import (
     INTEGRATORS_CLIP_SOFT_K_CANONICAL,
     INTEGRATORS_DNFR_BOUNDS_CANONICAL,
-    INTEGRATORS_EPI_MARGIN_CANONICAL,
     INTEGRATORS_FLUX_FALLBACK_CANONICAL,
     INTEGRATORS_HALF_STEP_CANONICAL,
     INTEGRATORS_J_PHI_SCALE_CANONICAL,
@@ -58,7 +61,7 @@ from ..gamma import _get_gamma_spec, eval_gamma, eval_gamma_vectorized
 from ..mathematics.unified_numerical import np
 from ..types import NodeId, TNFRGraph
 from ..utils import resolve_chunk_size
-from .structural_clip import structural_clip
+from .structural_clip import structural_clip, structural_clip_array
 
 __all__ = (
     "AbstractIntegrator",
@@ -190,9 +193,8 @@ def prepare_integration_params(
 ) -> tuple[float, int, float, Literal["euler", "rk4"]]:
     """Validate and normalise ``dt``, ``t`` and ``method`` for integration.
 
-    The function raises :class:`TypeError` when ``dt`` cannot be coerced to a
-    number, :class:`NetworkConfigError` if ``dt`` is negative, and another
-    :class:`NetworkConfigError` when an unsupported method is requested.  When ``dt``
+    Explicit and graph-default timesteps must be finite and nonnegative.
+    Invalid parameters raise :class:`NetworkConfigError`. When ``dt``
     exceeds a positive ``DT_MIN`` stored on ``G`` the span is deterministically
     subdivided into integer steps so that the resulting ``dt_step`` never falls
     below that minimum threshold.
@@ -202,30 +204,23 @@ def prepare_integration_params(
     time.
     """
     if dt is None:
-        # Import canonical time step from constants
+        dt = G.graph.get("DT", DEFAULTS.get("DT", 0.1))
+    if not isinstance(dt, Real):
+        raise NetworkConfigError(parameter="dt", value=dt, reason="Time step must be numeric")
+    dt = float(dt)
+    if not math.isfinite(dt) or dt < 0:
+        raise NetworkConfigError(parameter="dt", value=dt,
+                                 reason="Time step must be finite and non-negative")
 
-        dt_canonical = 0.1  # 1/(4φ²) ≈ 0.095 (natural structural time step)
-        dt = float(G.graph.get("DT", DEFAULTS.get("DT", dt_canonical)))
-    else:
-        if not isinstance(dt, (int, float)):
-            raise NetworkConfigError(
-                parameter="dt", value=dt, reason="Time step must be numeric"
-            )
-        if dt < 0:
-            raise NetworkConfigError(
-                parameter="dt", value=dt, reason="Time step must be non-negative"
-            )
-        dt = float(dt)
-
-    if t is None:
-        t = float(G.graph.get("_t", 0.0))
-    else:
-        t = float(t)
+    t = float(G.graph.get("_t", 0.0) if t is None else t)
+    if not math.isfinite(t):
+        raise NetworkConfigError(parameter="t", value=t, reason="Initial time must be finite")
 
     method_value = (
         method
         or G.graph.get("INTEGRATOR_METHOD", DEFAULTS.get("INTEGRATOR_METHOD", "euler"))
-    ).lower()
+    )
+    method_value = method_value.lower() if isinstance(method_value, str) else method_value
     if method_value not in ("euler", "rk4"):
         raise NetworkConfigError(
             parameter="method",
@@ -234,12 +229,16 @@ def prepare_integration_params(
         )
 
     dt_min = float(G.graph.get("DT_MIN", DEFAULTS.get("DT_MIN", 0.0)))
+    if not math.isfinite(dt_min) or dt_min < 0:
+        raise NetworkConfigError(parameter="DT_MIN", value=dt_min,
+                                 reason="Minimum time step must be finite and non-negative")
     steps = 1
     if dt_min > 0 and dt > dt_min:
         ratio = dt / dt_min
-        steps = max(1, int(math.floor(ratio + 1e-12)))
-        if dt / steps < dt_min:
-            steps = int(math.ceil(ratio))
+        if not math.isfinite(ratio):
+            raise NetworkConfigError(parameter="DT_MIN", value=dt_min,
+                                     reason="Time-step subdivision ratio must be finite")
+        steps = max(1, int(math.floor(ratio)))
     dt_step = dt / steps if steps else 0.0
 
     return dt_step, steps, t, cast(Literal["euler", "rk4"], method_value)
@@ -377,7 +376,6 @@ def _collect_nodal_increments(
         Mapping of nodes to staged integration increments
 
     Notes:
-        - Line 321 implements the canonical nodal equation explicitly
         - Units: vf in Hz_str, dnfr dimensionless, base in Hz_str
         - Preserves TNFR operator closure and structural semantics
     """
@@ -538,7 +536,7 @@ def _integrate_rk4(
     *,
     n_jobs: int | None = None,
 ) -> NodalUpdate:
-    """One Runge–Kutta order-4 integration step."""
+    """Fourth-order forcing quadrature with the stored nodal base held fixed."""
     increments = _build_gamma_increments(
         G,
         dt_step,
@@ -572,7 +570,7 @@ def _integrate_vectorized_step(
     nodes = list(G.nodes)
     n_nodes = len(nodes)
     if n_nodes == 0:
-        return t0
+        return t0 + dt_step * steps
 
     # 1. Extract state into arrays
     vf = cast(Any, collect_attr(G, nodes, ALIAS_VF, 0.0))
@@ -601,6 +599,7 @@ def _integrate_vectorized_step(
     d2EPI = np.zeros_like(dEPI)
 
     for _ in range(steps):
+        epi_previous = epi.copy()
         dEPI_prev = dEPI.copy()
 
         if method == "rk4":
@@ -640,34 +639,12 @@ def _integrate_vectorized_step(
         else:
             d2EPI[:] = 0.0
 
-        # Clipping
-        if clip_mode == "hard":
-            np.clip(epi, epi_min, epi_max, out=epi)
-        else:
-            # Soft clip logic matching structural_clip.py
-            if epi_min == epi_max:
-                epi[:] = epi_min
-            else:
-                margin = (epi_max - epi_min) * INTEGRATORS_EPI_MARGIN_CANONICAL
-                working_lo = epi_min - margin
-                working_hi = epi_max + margin
-                range_width = working_hi - working_lo
-
-                if abs(range_width) < 1e-10:
-                    epi[:] = (epi_min + epi_max) / INTEGRATORS_HALF_STEP_CANONICAL
-                else:
-                    mid = (working_lo + working_hi) / INTEGRATORS_HALF_STEP_CANONICAL
-                    normalized = (
-                        INTEGRATORS_HALF_STEP_CANONICAL * (epi - mid) / range_width
-                    )
-                    smooth_normalized = np.tanh(clip_k * normalized)
-
-                    mid_out = (epi_min + epi_max) / INTEGRATORS_HALF_STEP_CANONICAL
-                    half_range = (epi_max - epi_min) / INTEGRATORS_HALF_STEP_CANONICAL
-                    epi = mid_out + smooth_normalized * half_range
-
-                    # Final safety clamp
-                    np.clip(epi, epi_min, epi_max, out=epi)
+        # Boundary projection must not move a node with zero integrated change.
+        changed = epi != epi_previous
+        if np.any(changed):
+            epi[changed] = structural_clip_array(
+                epi[changed], lo=epi_min, hi=epi_max, mode=clip_mode, k=clip_k
+            )
 
         t_local += dt_step
 
@@ -719,6 +696,9 @@ class DefaultIntegrator(AbstractIntegrator):
             graph, dt, t, cast(IntegratorMethod | None, method)
         )
 
+        if dt_step == 0.0:
+            return
+
         if np is not None:
             t_final = _integrate_vectorized_step(
                 graph, dt_step, steps, t0, resolved_method, np
@@ -755,7 +735,8 @@ class DefaultIntegrator(AbstractIntegrator):
                     graph.graph.get("CLIP_SOFT_K", INTEGRATORS_CLIP_SOFT_K_CANONICAL)
                 )
 
-                epi_clipped = structural_clip(
+                epi_previous = float(get_attr(nd, ALIAS_EPI, 0.0))
+                epi_clipped = epi_previous if epi == epi_previous else structural_clip(
                     epi,
                     lo=epi_min,
                     hi=epi_max,
@@ -879,133 +860,69 @@ def _update_extended_nodal_system(
     method: Literal["euler", "rk4"] | None = None,
     n_jobs: int | None = None,
 ) -> None:
-    """Update network using extended TNFR dynamics with flux fields.
+    """Advance the coupled EPI/phase/pressure system by synchronous Euler.
 
-    This function implements the coupled system:
-    1. ∂EPI/∂t = νf · ΔNFR(t)     [Classical nodal equation]
-    2. ∂θ/∂t = f(νf, ΔNFR, J_φ)   [Phase evolution with transport]
-    3. ∂ΔNFR/∂t = g(∇·J_ΔNFR)     [ΔNFR conservation dynamics]
-
-    The extended system requires canonical flux fields to be computed
-    before integration. Uses compute_extended_nodal_system() from
-    canonical module for physics-correct dynamics.
-
-    Args:
-        G: TNFR graph with extended dynamics enabled
-        dt: Integration time step
-        t: Current simulation time
-        method: Integration method (currently supports 'euler')
-        n_jobs: Parallel jobs (extended system uses single-threaded for now)
-
-    Notes:
-        - Requires J_φ and J_ΔNFR fields computed via physics module
-        - Falls back gracefully if flux fields missing (J=0 assumption)
-        - Updates EPI, theta, and ΔNFR for each node
-        - Maintains numerical stability with clipping
+    Each substep evaluates canonical fields and all nodal derivatives from the
+    same graph state before writing any updates. This optional coupled system
+    currently supports Euler only; unsupported methods are rejected explicitly.
+    Clipping is a boundary policy, not a proof of numerical stability.
     """
     from .canonical import compute_extended_nodal_system
+    from ..physics.extended import compute_dnfr_flux, compute_phase_current
 
-    # Get integration parameters
-    if dt is None:
-        dt = G.graph.get("dt", DEFAULTS.dt)
-    if t is None:
-        t = G.graph.get("_t", 0.0)
+    dt_step, steps, t_local, resolved_method = prepare_integration_params(G, dt, t, method)
+    if resolved_method != "euler":
+        raise NetworkConfigError(parameter="method", value=resolved_method,
+                                 reason="Extended nodal dynamics supports only 'euler'")
+    if dt_step == 0.0:
+        return
 
-    # Extended system currently uses Euler method for stability
-    if method is None:
-        method = "euler"
-    elif method != "euler":
-        # RK4 implementation requires numerical stability analysis for extended canonical fields
-        # Currently using Euler method for guaranteed stability with coupled field equations
-        method = "euler"
+    epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
+    epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
+    clip_mode = str(G.graph.get("CLIP_MODE", "hard"))
+    if clip_mode not in ("hard", "soft"):
+        clip_mode = "hard"
+    clip_k = float(G.graph.get("CLIP_SOFT_K", INTEGRATORS_CLIP_SOFT_K_CANONICAL))
 
-    # Import flux field computations
-    try:
-        from ..physics.extended import compute_dnfr_flux, compute_phase_current
+    for _ in range(steps):
+        # Zero flux is a valid canonical field value, never a missing-data signal.
+        phase_current = compute_phase_current(G)
+        pressure_flux = compute_dnfr_flux(G)
+        divergences = compute_flux_divergence_vectorized(G, pressure_flux)
+        updates = {}
+        for node in G:
+            nd = G.nodes[node]
+            vf, dnfr, previous_derivative, epi = _node_state(nd)
+            theta = float(get_attr(nd, ALIAS_THETA, 0.0))
+            result = compute_extended_nodal_system(
+                nu_f=vf, delta_nfr=dnfr, theta=theta,
+                j_phi=phase_current.get(node, 0.0),
+                j_dnfr_divergence=divergences.get(node, 0.0),
+                coupling_strength=_estimate_local_coupling_strength(G, node),
+                validate_units=False,
+            )
+            new_epi = epi + result.classical_derivative * dt_step
+            if new_epi != epi:
+                new_epi = structural_clip(new_epi, lo=epi_min, hi=epi_max,
+                                          mode=clip_mode, k=clip_k)
+            new_theta = (theta + result.phase_derivative * dt_step) % (2 * math.pi)
+            new_dnfr = dnfr + result.dnfr_derivative * dt_step
+            if new_dnfr != dnfr:
+                new_dnfr = max(-INTEGRATORS_DNFR_BOUNDS_CANONICAL,
+                               min(INTEGRATORS_DNFR_BOUNDS_CANONICAL, new_dnfr))
+            updates[node] = (new_epi, new_theta, new_dnfr, result, previous_derivative)
 
-        flux_fields_available = True
-    except ImportError:
-        # Graceful degradation if extended fields not available
-        flux_fields_available = False
-
-    # Update each node with extended dynamics
-    for node in G.nodes():
-        nd = G.nodes[node]
-
-        # Get current state
-        vf, dnfr, _, epi_current = _node_state(nd)
-        theta_current = nd.get("theta", 0.0)
-
-        # Compute flux fields if available
-        if flux_fields_available:
-            try:
-                # Use centralized canonical field computations (entire graph)
-                j_phi_dict = compute_phase_current(G, theta_attr="theta")
-                j_dnfr_dict = compute_dnfr_flux(G, dnfr_attr=ALIAS_DNFR)
-
-                # Extract values for current node
-                j_phi = j_phi_dict.get(node, 0.0)
-                j_dnfr = j_dnfr_dict.get(node, 0.0)
-
-                # If fluxes are still zero, use synthetic fallback
-                if abs(j_phi) < 1e-9:
-                    j_phi = _compute_synthetic_phase_current(G, node)
-
-                # Compute divergences vectorized for efficiency
-                if "j_dnfr_divergences" not in locals():
-                    # Cache vectorized divergences for all nodes
-                    j_dnfr_divergences = compute_flux_divergence_vectorized(
-                        G, j_dnfr_dict
-                    )
-                j_dnfr_div = j_dnfr_divergences.get(node, 0.0)
-
-            except Exception:
-                # Fallback to synthetic values for testing
-                j_phi = _compute_synthetic_phase_current(G, node)
-                j_dnfr_div = _compute_synthetic_dnfr_divergence(G, node)
-        else:
-            # Use synthetic flux fields for extended dynamics testing
-            j_phi = _compute_synthetic_phase_current(G, node)
-            j_dnfr_div = _compute_synthetic_dnfr_divergence(G, node)
-
-        # Estimate coupling strength from local topology
-        coupling_strength = _estimate_local_coupling_strength(G, node)
-
-        # Compute extended system derivatives
-        result = compute_extended_nodal_system(
-            nu_f=vf,
-            delta_nfr=dnfr,
-            theta=theta_current,
-            j_phi=j_phi,
-            j_dnfr_divergence=j_dnfr_div,
-            coupling_strength=coupling_strength,
-            validate_units=False,  # Skip validation for performance
-        )
-
-        # Integrate using Euler method
-        new_epi = epi_current + result.classical_derivative * dt
-        new_theta = (theta_current + result.phase_derivative * dt) % (2 * math.pi)
-        new_dnfr = dnfr + result.dnfr_derivative * dt
-
-        # Apply clipping for numerical stability
-        new_epi = max(0.0, min(1.0, new_epi))  # EPI ∈ [0, 1]
-        new_dnfr = max(
-            -INTEGRATORS_DNFR_BOUNDS_CANONICAL,
-            min(INTEGRATORS_DNFR_BOUNDS_CANONICAL, new_dnfr),
-        )  # ΔNFR bounded
-
-        # Update node attributes
-        set_attr(nd, ALIAS_EPI, new_epi)
-        nd["theta"] = new_theta
-        set_attr(nd, ALIAS_DNFR, new_dnfr)
-
-        # Cache derivatives for analysis
-        set_attr(nd, ALIAS_DEPI, result.classical_derivative)
-        nd["dtheta_dt"] = result.phase_derivative
-        nd["ddnfr_dt"] = result.dnfr_derivative
-
-    # Update simulation time
-    G.graph["_t"] = t + dt
+        for node, (epi, theta, dnfr, result, previous_derivative) in updates.items():
+            nd = G.nodes[node]
+            set_attr(nd, ALIAS_EPI, epi)
+            set_attr(nd, ALIAS_THETA, theta)
+            set_attr(nd, ALIAS_DNFR, dnfr)
+            set_attr(nd, ALIAS_DEPI, result.classical_derivative)
+            set_attr(nd, ALIAS_D2EPI, (result.classical_derivative - previous_derivative) / dt_step)
+            nd["dtheta_dt"] = result.phase_derivative
+            nd["ddnfr_dt"] = result.dnfr_derivative
+        t_local += dt_step
+    G.graph["_t"] = t_local
 
 
 # Centralized flux divergence computation
@@ -1043,92 +960,30 @@ def _compute_flux_divergence_centralized(
 def compute_flux_divergence_vectorized(
     G: TNFRGraph, flux_dict: dict[NodeId, float]
 ) -> dict[NodeId, float]:
+    """Evaluate the scalar unique-neighbor divergence for every graph size.
+
+    The existing discretization is sqrt(k_i) * (J_i - mean_neighbor(J)).
+    Neighbors are outgoing successors on directed graphs; parallel edges and
+    self-loops follow G.neighbors semantics. Edge weights are not metric spacing
+    in this diagnostic. Nodes without outgoing neighbors have zero divergence.
     """
-    Vectorized flux divergence computation using sparse matrix operations.
-
-    Uses adjacency matrix and broadcasting for true vectorization,
-    following TNFR patterns from dynamics/dnfr.py for optimal performance.
-
-    Args:
-        G: TNFR graph
-        flux_dict: Node -> flux value mapping
-
-    Returns:
-        Node -> divergence value mapping
-    """
-    try:
-        from scipy import sparse
-
-        SCIPY_AVAILABLE = True
-    except ImportError:
-        SCIPY_AVAILABLE = False
-
-    if not SCIPY_AVAILABLE or np is None:
-        # Fallback to node-by-node computation
-        return {
-            node: _compute_flux_divergence_centralized(G, flux_dict, node)
-            for node in G.nodes()
-        }
-
-    if not G.nodes() or not G.edges():
-        return {node: 0.0 for node in G.nodes()}
-
-    nodes = list(G.nodes())
-    n_nodes = len(nodes)
-
-    # Flux array
-    flux_array = np.array([flux_dict.get(node, 0.0) for node in nodes])
-
-    if SCIPY_AVAILABLE and n_nodes > 100:  # Use sparse for larger graphs
-        try:
-            # Build adjacency matrix for vectorized operations
-            A = sparse.csr_matrix(nx.adjacency_matrix(G, nodelist=nodes))
-
-            # Degree array for normalization
-            degrees = np.array(A.sum(axis=1)).flatten()
-
-            # Neighbor mean fluxes using sparse matrix multiplication
-            neighbor_sums = A @ flux_array  # Sum of neighbor fluxes
-            neighbor_means = np.divide(
-                neighbor_sums,
-                degrees,
-                out=np.zeros_like(neighbor_sums),
-                where=degrees != 0,
-            )
-
-            # Vectorized divergence computation
-            # spacing = 1.0 / sqrt(degree) for each node
-            spacings = np.divide(
-                1.0, np.sqrt(degrees), out=np.ones_like(degrees), where=degrees != 0
-            )
-
-            divergence_array = (flux_array - neighbor_means) / spacings
-
-        except Exception:
-            # Fallback to dense if sparse fails
-            SCIPY_AVAILABLE = False
-
-    if not SCIPY_AVAILABLE or n_nodes <= 100:
-        # Dense NumPy implementation for smaller graphs
-        divergence_array = np.zeros(n_nodes, dtype=float)
-
-        for i, node in enumerate(nodes):
-            neighbors = list(G.neighbors(node))
-            if not neighbors:
-                continue
-
-            neighbor_indices = np.array(
-                [nodes.index(neighbor) for neighbor in neighbors]
-            )
-            neighbor_fluxes = flux_array[neighbor_indices]
-
-            central_flux = flux_array[i]
-            mean_neighbor_flux = np.mean(neighbor_fluxes)
-            spacing = 1.0 / math.sqrt(len(neighbors))
-            divergence_array[i] = (central_flux - mean_neighbor_flux) / spacing
-
-    # Convert back to dict
-    return {node: float(divergence_array[i]) for i, node in enumerate(nodes)}
+    if np is None:
+        return {node: _compute_flux_divergence_centralized(G, flux_dict, node) for node in G}
+    nodes = list(G)
+    if not nodes:
+        return {}
+    index = {node: i for i, node in enumerate(nodes)}
+    values = np.asarray([flux_dict.get(node, 0.0) for node in nodes], dtype=float)
+    counts = np.zeros(len(nodes), dtype=float)
+    sums = np.zeros(len(nodes), dtype=float)
+    # Linear adjacency traversal avoids dense matrices and repeated nodes.index.
+    for i, node in enumerate(nodes):
+        neighbors = list(G.neighbors(node))
+        counts[i] = len(neighbors)
+        sums[i] = math.fsum(float(values[index[neighbor]]) for neighbor in neighbors)
+    means = np.divide(sums, counts, out=np.zeros_like(sums), where=counts > 0)
+    divergence = np.where(counts > 0, (values - means) * np.sqrt(counts), 0.0)
+    return {node: float(divergence[i]) for i, node in enumerate(nodes)}
 
 
 def _compute_synthetic_phase_current(G: TNFRGraph, node: NodeId) -> float:

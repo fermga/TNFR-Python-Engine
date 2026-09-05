@@ -11,27 +11,12 @@ from pathlib import Path
 from typing import Any, Callable
 
 from ..errors import TNFRValueError
-from .init import LazyImportProxy, cached_import, get_logger, warn_once
+from .init import LazyImportProxy, cached_import, get_logger
 
 logger = get_logger(__name__)
 
-_ORJSON_PARAMS_MSG = (
-    "'separators', 'cls' and extra kwargs are ignored when using orjson: %s"
-)
-
-_warn_ignored_params_once = warn_once(logger, _ORJSON_PARAMS_MSG)
-
-
 def clear_orjson_param_warnings() -> None:
-    """Reset cached warnings for ignored :mod:`orjson` parameters."""
-
-    _warn_ignored_params_once.clear()
-
-
-def _format_ignored_params(combo: frozenset[str]) -> str:
-    """Return a stable representation for ignored parameter combinations."""
-
-    return "{" + ", ".join(map(repr, sorted(combo))) + "}"
+    """Compatibility no-op: JSON options are now honored by one encoder."""
 
 
 @dataclass(frozen=True)
@@ -49,43 +34,6 @@ class JsonDumpsParams:
 DEFAULT_PARAMS = JsonDumpsParams()
 
 
-def _collect_ignored_params(
-    params: JsonDumpsParams, extra_kwargs: dict[str, Any]
-) -> frozenset[str]:
-    """Return a stable set of parameters ignored by :mod:`orjson`.
-
-    ``ensure_ascii`` is intentionally excluded: orjson always emits UTF-8,
-    which is byte-identical to the standard library's
-    ``ensure_ascii=False`` output (verified) and parses to the same object
-    regardless of the requested value. It is therefore honored natively
-    rather than dropped.
-    """
-
-    ignored: set[str] = set()
-    if params.separators != (",", ":"):
-        ignored.add("separators")
-    if params.cls is not None:
-        ignored.add("cls")
-    if extra_kwargs:
-        ignored.update(extra_kwargs.keys())
-    return frozenset(ignored)
-
-
-def _json_dumps_orjson(
-    orjson: Any,
-    obj: Any,
-    params: JsonDumpsParams,
-    **kwargs: Any,
-) -> bytes | str:
-    """Serialize using :mod:`orjson` and warn about unsupported parameters."""
-
-    ignored = _collect_ignored_params(params, kwargs)
-    if ignored:
-        _warn_ignored_params_once(ignored, _format_ignored_params(ignored))
-
-    option = orjson.OPT_SORT_KEYS if params.sort_keys else 0
-    data = orjson.dumps(obj, option=option, default=params.default)
-    return data if params.to_bytes else data.decode("utf-8")
 
 
 def _json_dumps_std(
@@ -118,7 +66,13 @@ def json_dumps(
     to_bytes: bool = False,
     **kwargs: Any,
 ) -> bytes | str:
-    """Serialize ``obj`` to JSON using ``orjson`` when available."""
+    """Serialize with stable standard-library JSON semantics.
+
+    Optional encoders must not change cache/signature bytes, turn nonfinite
+    values into null, reject otherwise supported integers/keys, or ignore
+    requested formatting. One encoder keeps those contracts independent of
+    installed dependencies. Set allow_nan=False for strict finite JSON.
+    """
 
     if not isinstance(sort_keys, bool):
         raise TypeError("sort_keys must be a boolean")
@@ -154,9 +108,6 @@ def json_dumps(
             cls=cls,
             to_bytes=to_bytes,
         )
-    orjson = cached_import("orjson", emit="log")
-    if orjson is not None:
-        return _json_dumps_orjson(orjson, obj, params, **kwargs)
     return _json_dumps_std(obj, params, **kwargs)
 
 
@@ -477,7 +428,9 @@ def safe_write(
         File mode passed to :func:`open`. Text modes (default) use UTF-8
         encoding unless ``encoding`` is ``None``. When a binary mode is used
         (``'b'`` in ``mode``) no encoding parameter is supplied so
-        ``write`` may write bytes.
+        ``write`` may write bytes. Atomic writing supports replacement modes
+        based on 'w' only. Use atomic=False for append, update or exclusive
+        creation; a fresh temporary file cannot supply those semantics.
     encoding:
         Encoding for text modes. Ignored for binary modes.
     atomic:
@@ -520,6 +473,11 @@ def safe_write(
     except (ValueError, PathTraversalError) as e:
         raise type(e)(f"Invalid path {path!r}: {e}") from e
 
+    if not isinstance(mode, str):
+        raise TypeError("mode must be a string")
+    if atomic and mode.replace("b", "").replace("t", "").replace("+", "") != "w":
+        raise ValueError("Atomic writing requires a replacement mode based on 'w'")
+
     path = validated_path
     path.parent.mkdir(parents=True, exist_ok=True)
     open_params = dict(mode=mode, **open_kwargs)
@@ -552,7 +510,11 @@ def safe_write(
                     fd.flush()
                     os.fsync(fd.fileno())
     except (OSError, ValueError, TypeError) as e:
-        raise type(e)(f"Failed to write file {path}: {e}") from e
+        # Preserve structured exception arguments, including encoding details
+        # and OSError.errno. add_note is available on Python 3.11+.
+        if hasattr(e, "add_note"):
+            e.add_note(f"Failed to write file {path}")
+        raise
     finally:
         if tmp_path is not None:
             tmp_path.unlink(missing_ok=True)

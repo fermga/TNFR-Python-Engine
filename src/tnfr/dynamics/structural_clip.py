@@ -15,6 +15,7 @@ import math
 from typing import Literal
 
 from ..config.defaults_core import CoreDefaults
+from ..mathematics.unified_numerical import np
 
 # Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
 from ..constants.operational import (
@@ -24,6 +25,7 @@ from ..constants.operational import (
 
 __all__ = [
     "structural_clip",
+    "structural_clip_array",
     "StructuralClipStats",
 ]
 
@@ -219,3 +221,29 @@ def structural_clip(
 
     else:
         raise ValueError(f"mode must be 'hard' or 'soft', got {mode!r}")
+
+
+def structural_clip_array(
+    values,
+    lo: float = -1.0,
+    hi: float = 1.0,
+    mode: Literal["hard", "soft"] = "hard",
+    k: float = CoreDefaults().CLIP_SOFT_K,
+):
+    """Apply the scalar clipping contract to an array without input mutation."""
+    if lo > hi:
+        raise ValueError(f"Lower bound {lo} must be <= upper bound {hi}")
+    values = np.asarray(values, dtype=float)
+    if mode == "hard":
+        return np.clip(values, lo, hi)
+    if mode != "soft":
+        raise ValueError(f"mode must be 'hard' or 'soft', got {mode!r}")
+    if lo == hi:
+        return np.full_like(values, lo)
+    margin = (hi - lo) * NODAL_OPT_COUPLING_CANONICAL
+    working_lo, working_hi = lo - margin, hi + margin
+    width = working_hi - working_lo
+    if abs(width) < 1e-10:
+        return np.full_like(values, (lo + hi) / 2.0)
+    normalized = OPT_ORCH_FFT_SPEEDUP_CANONICAL * (values - (working_lo + working_hi) / 2.0) / width
+    return np.clip((lo + hi) / 2.0 + np.tanh(k * normalized) * (hi - lo) / 2.0, lo, hi)

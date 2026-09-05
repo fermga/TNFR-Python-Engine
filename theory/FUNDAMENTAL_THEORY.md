@@ -8,7 +8,13 @@
 
 ## 1. Scope
 
-This document formalizes the theoretical foundations of Resonant Fractal Nature Theory (TNFR). It derives the structural field tetrad from the nodal equation, examines the association between mathematical constants and structural fields (only π is a genuine structural scale), and provides the multiscale derivation framework that connects nodal dynamics to macroscopic phenomena across all application domains.
+This document describes the nodal equation, canonical structural diagnostics,
+operator policies, and explicitly specified model correspondences. The tetrad
+is a canonical selection of diagnostic channels; complete state reconstruction
+and universal minimality are not established. Mathematical hypotheses and
+counterexamples are centralized in
+[DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md), which governs
+the interpretation of grammar calibration and field thresholds here.
 
 
 ---
@@ -47,19 +53,27 @@ $$
 \mathrm{EPI}(t_f) = \mathrm{EPI}(t_0) + \int_{t_0}^{t_f} \nu_f(\tau) \, \Delta\mathrm{NFR}(\tau) \, d\tau \tag{2}
 $$
 
-Bounded evolution (coherence preservation) requires integral convergence:
+On an infinite horizon, a sufficient condition for convergence is absolute
+integrability of the structural velocity:
 
 $$
-\int_{t_0}^{t_f} \nu_f(\tau) \, \Delta\mathrm{NFR}(\tau) \, d\tau < \infty \tag{3}
+\int_{t_0}^{\infty} \|\nu_f(\tau) \, \Delta\mathrm{NFR}(\tau)\| \, d\tau < \infty \tag{3}
 $$
 
-This convergence criterion is the physical basis for grammar rule U2 (Convergence and Boundedness). Operators that increase $\Delta\mathrm{NFR}$ must be paired with stabilizers to prevent divergence.
+Boundedness only requires bounded partial integrals and does not imply (3) or
+convergence to a limit. Local integrability suffices for finite-horizon
+trajectories. U2 prescribes stabilization and a two-unit prefix-debt policy;
+it motivates control of accumulated change but does not independently prove
+an infinite-horizon estimate. Its numerical calibration and the three-operation
+U4b window use a mean-rate surrogate, not every graph mode's decay time.
 
 ---
 
 ## 3. Structural Field Tetrad
 
-TNFR exposes four telemetry channels that characterize the complete state of a network. They are computed at every integration step and stored for diagnostics.
+TNFR exposes four canonical diagnostic channels. They complement the structural
+triad, frequency, and graph state; they do not determine the full dynamics.
+Their computation and storage depend on the selected telemetry path.
 
 ### 3.1 Structural Potential ($\Phi_s$)
 
@@ -93,7 +107,10 @@ $$
 C(r) = A \exp(-r / \xi_C) \tag{7}
 $$
 
-Characterizes the spatial persistence of correlations. When $\xi_C$ approaches the system diameter, the network enters a critical regime.
+Characterizes a fitted spatial correlation scale. If fitting is unsuitable,
+the implementation uses a spectral fallback; a connected undirected graph has
+reference scale $1/\sqrt{\lambda_2}$. A large fitted length is a diagnostic
+signal requiring protocol-specific interpretation, not a proof of criticality.
 
 ### 3.5 Complex Geometric Field ($\Psi$)
 
@@ -103,7 +120,9 @@ $$
 \Psi = K_\phi + i \cdot J_\phi \tag{8}
 $$
 
-Evidence: $r(K_\phi, J_\phi) \in [-0.854, -0.997]$ across topologies (near-perfect anticorrelation). This unification reduces six independent fields to three complex fields.
+This complex packaging retains the two real coordinates. Correlation measured
+on particular trajectories does not reduce their algebraic degrees of freedom
+or establish completeness of the field representation.
 
 ### 3.6 Emergent Invariants
 
@@ -123,21 +142,28 @@ From the tetrad, the following tensor invariants emerge:
 
 ### 4.1 Statement
 
-The four structural fields are the four orders of the discrete derivative tower (the tetrad — this basis is DERIVED and minimal). Only **π** is a genuine structural scale (the phase-wrap bound shared by $|\nabla\phi|$ and $K_\phi$); the coherence length is set by the spectral gap ($\xi_C \propto 1/\sqrt{\lambda_2}$) and the $\Phi_s$ confinement bound is π-derived. φ, γ, e are **not** structural scales and no longer appear in the engine.
+The four fields organize source aggregation, local phase mismatch, circular
+curvature, and correlation. Higher derivative operators can be formed by
+composition, but this does not prove that their outputs can be recovered from
+four lossy diagnostics. Universal minimality and complete reconstruction remain
+open under a specified state space and equivalence relation. π gives the exact
+phase-wrap maximum; writing other values as π-fractions does not prove their
+physical necessity.
 
 | Field | Symbol | Operational limit | Structural scale |
 |-------|--------|-------------------|------------------|
-| Structural potential | $\Phi_s$ | $\Delta\Phi_s < \pi/2 \approx 1.571$ | π-derived confinement (half phase-wrap) |
-| Phase gradient | $|\nabla\phi|$ | $|\nabla\phi| \le \pi$ (phase wrap) | $\pi$ (phase-wrap bound), same as $K_\phi$ |
-| Phase curvature | $K_\phi$ | $|K_\phi| < 0.9\pi \approx 2.827$ | $\pi$ (phase-wrap bound); $K_\phi = L_{rw}\phi$ |
-| Coherence length | $\xi_C$ | $C(r) \sim \exp(-r/\xi_C)$ | Spectral gap, $\xi_C \propto 1/\sqrt{\lambda_2}$ |
+| Structural potential | $\Phi_s$ | Drift policy $\pi/2$; per-node policy $\pi/4$ | Pressure and graph-kernel dependent |
+| Phase gradient | $\lvert\nabla\phi\rvert$ | Warning $\pi/16$ | Exact maximum $\pi$ |
+| Phase curvature | $K_\phi$ | Warning $0.9\pi$ | Exact absolute maximum $\pi$; Laplacian only after linearization |
+| Coherence length | $\xi_C$ | Configured length comparisons | Correlation fit or spectral reference $1/\sqrt{\lambda_2}$ on connected undirected graphs |
 
-Only the $\pi$ phase-wrap bounds and the spectral-gap scaling $\xi_C \propto 1/\sqrt{\lambda_2}$ are genuine structural scales; the $\Phi_s$ bound is π-derived (quarter / half phase-wrap).
+The phase bounds are kinematic identities. The warning margins and potential
+thresholds are unchanged engine policies. Fitted correlation lengths need not
+equal the graph-spectral reference for every state.
 
 ### 4.2 The four fields
 
-The tetrad spans four independent structural channels — the orders of the
-derivative tower:
+The tetrad groups four selected diagnostic channels by their construction:
 
 ```text
         Φ_s (0th — global aggregation)
@@ -154,26 +180,41 @@ derivative tower:
 
 ### 4.3 Derivation Outline
 
-1. **$\Phi_s$ (0th order)**: The confinement scale for aggregated inverse-square potentials; $\Phi_s$ exceeding the drift bound correlates with runaway accumulation of $\Delta\mathrm{NFR}$. The engine ties the confinement bound to the one genuine structural scale π: drift $\Delta\Phi_s < \pi/2 \approx 1.571$ (half phase-wrap) and per-node $|\Phi_s| < \pi/4 \approx 0.785$ (quarter phase-wrap), superseding the earlier empirical $0.7711$ / golden-ratio ($\varphi$) framing. These are O(1) bounds, consistent with the inverse-square fluctuation scale of the kernel: the one-sided accumulation on a 1D resonant chain saturates to $\zeta(2)=\pi^2/6\approx1.6449$ (Basel) and the per-node variance to $\zeta(4)=\pi^4/90$, both O(1). The exponent $\alpha=2$ is required (at $\alpha\neq2$ the saturation structure is lost); see `benchmarks/phi_s_confinement_investigation.py`.
+1. **$\Phi_s$ (aggregation)**: At fixed graph kernel $B_G$, potential is linear
+   in pressure and satisfies $\|\Phi_s\|_\infty\le
+   \|B_G\|_\infty\|\Delta\mathrm{NFR}\|_\infty$. Unit pressure on $K_4$ gives
+   potential 3 even at zero phase. Thus $\pi/4$ and $\pi/2$ are selected policies,
+   not phase-wrap bounds. Chain summability does not uniquely select exponent
+   2: absolute sums converge for every $\alpha>1$ and independent-pressure
+   variance sums for every $\alpha>1/2$. The inverse-square kernel remains the
+   canonical modeling choice.
 
-2. **$|\nabla\phi|$ (1st order)**: $|\nabla\phi|$ is a mean of WRAPPED phase angles, so its genuine bound is $|\nabla\phi| \le \pi$ — the SAME phase-wrap bound as $K_\phi$ ($\pi$ scales the whole phase sector). A fixed $\approx 0.18$ level is a heuristic early-warning level, not a derived bound: the measured synchronization onset is $\approx 0.29$ and $\sigma$-dependent, so there is no structural constant for the $|\nabla\phi|$ onset — only the $\pi$ phase-wrap is genuine. This field captures local phase stress that the *global aggregate* coherence $C(t) = 1/(1 + \overline{|\Delta\mathrm{NFR}|} + \overline{|d\mathrm{EPI}|})$ averages away; the scale-invariant dispersion variant $1 - (\sigma_{\Delta\mathrm{NFR}}/\Delta\mathrm{NFR}_{\max})$ makes the blind spot explicit, being invariant under proportional scaling of $\Delta\mathrm{NFR}$.
+2. **Phase gradient (local mismatch)**: The mean absolute wrapped difference
+   has exact maximum π. The current warning value is π/16 ≈ 0.19635;
+   synchronization onset is protocol dependent. The local field identifies
+   spatial stress that a global aggregate does not locate. Canonical C(t) is
+   amplitude sensitive; only the separate normalized dispersion statistic is
+   invariant under positive pressure scaling when its denominator is nonzero.
 
 3. **$K_\phi$ (2nd order)**: Phase curvature must remain below $\pi$ (the theoretical maximum from wrap_angle bounds). The operational threshold uses a 90% safety margin: $0.9\pi \approx 2.8274$.
 
-4. **$\xi_C$ (correlation)**: correlation decay is exponential, so its base is $e$ — but that is near-tautological (any exponential decay has base $e$). The genuine structural scale of $\xi_C$ is the **spectral gap**: $\xi_C \propto 1/\sqrt{\lambda_2}$, not $e$. Critical thresholds: $\xi_C > \mathrm{diameter}$ (critical), $\xi_C > \pi \cdot \bar{d}$ (watch), $\xi_C < \bar{d}$ (stable).
+4. **$\xi_C$ (correlation)**: Exponential decay is a fitting assumption.
+   The fallback selects the smallest positive graph eigenvalue; on a connected
+   undirected graph it gives $1/\sqrt{\lambda_2}$. Diameter and mean-distance
+   comparisons are telemetry policies, not universal criticality theorems.
 
 ### 4.4 Grammar Integration
 
-Each grammar clause references at least one structural field:
+Grammar obligations and field readouts have distinct enforcement paths:
 
 | Rule | Primary fields | Enforcement |
 |------|---------------|-------------|
-| U1 (Initiation/Closure) | $\Phi_s$, $|\nabla\phi|$ | Bounded at sequence boundaries |
-| U2 (Convergence) | $\Phi_s$, $K_\phi$ | Destabilizers paired with stabilizers |
-| U3 (Resonant Coupling) | $|\nabla\phi|$ | Phase alignment verified before UM/RA |
-| U4 (Bifurcation Control) | $K_\phi$, $\xi_C$ | Imminent regime changes detected |
-| U5 (Multi-scale Coherence) | $\xi_C$ | Fractal nesting maintained |
-| U6 (Structural Confinement) | $\Phi_s$ | $\Delta\Phi_s < \pi/2 \approx 1.571$ enforced |
+| U1 (Initiation/Closure) | Context and endpoint roles | Supported generator and closure contracts |
+| U2 (Convergence policy) | Operator roles and debt | Stabilizer presence and prefix debt at most 2 |
+| U3 (Resonant Coupling) | Actual wrapped phase mismatch | Phase alignment verified before UM/RA |
+| U4 (Bifurcation Control) | Operator context | Handlers, recent destabilizer, prior IL for Mutation |
+| U5 (Multi-scale Coherence) | Declared hierarchy | Deep Recursivity requires nearby scale stabilization |
+| U6 (Structural Confinement) | $\Phi_s$ | Read-only drift policy $\pi/2$ |
 
 ---
 
@@ -197,7 +238,8 @@ Capacity for stable reorganization in $[0, 1+]$.
 
 ## 6. Multiscale Domain Mapping
 
-The nodal equation (Eq. 1) generates macroscopic equations across different regimes through a systematic reduction procedure:
+Domain-correspondence studies use a specified pressure law and reduction
+procedure. A derivation must state the assumptions at each step:
 
 ### 6.1 Reduction Procedure
 
@@ -208,20 +250,20 @@ The nodal equation (Eq. 1) generates macroscopic equations across different regi
 
 ### 6.2 Regime Summary
 
-Verified regime reductions (with implementation, benchmarks, and/or test coverage):
+Model comparisons and research applications (each retains its own assumptions):
 
 | Domain | Regime condition | Telemetry priorities | Governing reduction | Verification |
 |--------|-----------------|---------------------|-------------------|-------------|
-| Classical mechanics | $|\nabla\phi| \to 0$, $\nu_f = \mathrm{const}$, $C(t) \approx 1$ | $\Phi_s$, $J_\phi$ | Newton's equations ($F = ma$ with $m = 1/\nu_f$) | Kepler benchmark + tests |
-| Inertial | $\Delta\mathrm{NFR} = 0$ | $J_\phi$ (momentum) | Constant velocity | Two-train benchmark |
-| Quantum mechanics | High $|\nabla\phi|$, boundary reflections | $\Psi$, $\nu_f$ spectra | Discrete eigenvalues from resonant modes | Particle-in-box benchmark |
+| Overdamped drift | Specified restoring pressure and frequency | Structural velocity and pressure | First-order mobility law; frequency is not inverse mass | Requires the stated pressure law |
+| Nodal equilibrium | $\Delta\mathrm{NFR}=0$ | Structural velocity | Zero EPI derivative at finite frequency | Direct nodal identity |
+| Discrete-mode analogy | Bounded graph with specified boundary conditions | Graph spectrum | Standing graph modes; no quantum-state identification | Spectral calculations |
 | Spectral factorization | Stationary modes on Paley graphs | $\Phi_s$, $|\nabla\phi|$, $K_\phi$, $\xi_C$ | Partitioned periodicity detection | 10 test modules |
 
 ### 6.3 Tetrad Requirements per Domain
 
 Every domain study must quantify the four structural fields:
 
-- **$\Phi_s$**: Report distributions and gradients; compare against the $\pi/2 \approx 1.571$ drift bound (half phase-wrap).
+- **$\Phi_s$**: Report distributions and gradients; compare against the selected $\pi/2 \approx 1.571$ drift policy with its baseline and aggregation.
 - **$|\nabla\phi|$**: Monitor the heuristic early-warning level ($\approx \pi/16 \approx 0.196$; not derived — the kinematic bound is $\pi$).
 - **$K_\phi$**: Flag mutation-prone regions ($|K_\phi| \geq 2.8274$).
 - **$\xi_C$**: Track multi-scale integration; check critical scaling ratios.
@@ -230,68 +272,95 @@ Every domain study must quantify the four structural fields:
 
 ## 7. Emergent Geometry from the Nodal Equation
 
-The nodal equation is more than dynamics on a graph: the graph is only the substrate, and Eq. (1) **generates its own geometry**, which the engine *measures* rather than postulates. Every structure below is verified to machine precision and anchored to classical, experimentally-established phenomena.
+The following constructions have different coordinates and evolution laws.
+Their certificates apply to those specified models; identifying them with the
+full four-channel nodal dynamics requires an explicit mathematical bridge.
 
 ### 7.1 Transport Layer (Structural Diffusion)
 
-Channel by channel, the canonical $\Delta\mathrm{NFR}$ is a *neighbour-mean-minus-self* gradient. For the EPI channel this is exactly the random-walk graph Laplacian $L_{\mathrm{rw}} = I - D^{-1}W$:
+For the pure EPI channel on a graph with the stated neighbor-weight convention,
 
-$$
-\Delta\mathrm{NFR}_{\text{epi}}(i) = \overline{\mathrm{EPI}}_{\mathcal{N}(i)} - \mathrm{EPI}(i) = -(L_{\mathrm{rw}}\,\mathrm{EPI})(i),
-$$
+    ΔNFR_epi = −L_rw EPI,
+    EPI' = −diag(ν_f) L_rw EPI.
 
-so the EPI channel of Eq. (1) is the **discrete diffusion equation** $\partial\mathrm{EPI}/\partial t = -\nu_f L_{\mathrm{rw}}\,\mathrm{EPI}$ with diffusivity $\nu_f$ (verified to residual $\sim 10^{-16}$). From this single identity the engine measures, in TNFR's own variables, a tower of empirically-established transport phenomena:
+On a fixed undirected graph with positive homogeneous frequency, Laplacian
+modes decay as exp(−ν_f λ_k t), and equilibrium is constant on each connected
+component. Degree-weighted total EPI is conserved. For fixed positive
+heterogeneous frequencies the invariant weights are degree_i/ν_f_i and modal
+rates come from diag(ν_f)L_rw. Isolated nodes have no diffusive coupling.
 
-- **Diffusion / relaxation**: each Laplacian eigenmode decays as $e^{-\nu_f\lambda_k t}$; the slowest rate is the spectral gap $\nu_f\lambda_2$ (Fourier 1822, Fick 1855).
-- **Synchronization**: the phase channel aligns $\theta$ to the neighbour circular mean, driving a Kuramoto transition ($R \to 1$).
-- **Structural random walk**: $L_{\mathrm{rw}}$ generates a random walk with stationary distribution $\pi_i = \deg(i)/\sum\deg$ (Einstein 1905); the effective resistance $R_{\mathrm{eff}}$ (Ohm/Kirchhoff) is its transport metric.
-- **Structural flow**: the EPI current $J_{ij} = \mathrm{EPI}_i - \mathrm{EPI}_j$ (Fick) obeys Kirchhoff's current law, the discrete continuity equation.
-- **Standing modes**: on a bounded graph the spectrum is discrete; eigenvectors are orthonormal standing waves (vibrating string, Chladni plates).
-- **Stability / pattern formation**: the dispersion relation $\sigma_k = r - \nu_f\lambda_k$ gives the threshold $r_c = \nu_f\lambda_2$ separating homogenization from Fiedler-mode pattern formation — the spectral form of grammar U2.
+The Dirichlet energy ½ EPIᵀ(D−W)EPI has degree-metric gradient L_rw EPI.
+This supplies an exact gradient-flow identity for the isolated EPI channel.
+It is a different functional from the sum of squared tetrad fields and does
+not prove a variational identity for the full four-channel pressure.
 
-**Implementation**: `src/tnfr/physics/structural_diffusion.py`. **Examples**: 99, 134, 135.
+**Implementation:** [structural_diffusion.py](../src/tnfr/physics/structural_diffusion.py)
+and [variational.py](../src/tnfr/physics/variational.py).
+The connected homogeneous formulas require their stated assumptions; the
+spectral stability of nonstationary modes does not alone settle stationary
+sources, nonlinear operator gains, or general U2 compliance.
 
 ### 7.2 Emergent Symplectic Substrate
 
-The same dynamics carries an intrinsic **symplectic phase space** $\mathcal{P} = \mathbb{R}^{4N}$ with two canonical conjugate pairs per node — the *geometric* sector $(K_\phi, J_\phi)$ and the *potential* sector $(\Phi_s, J_{\Delta\mathrm{NFR}})$:
+The substrate implementation specifies an ambient phase space with pairs
+(K_φ, J_φ) and (Φ_s, J_ΔNFR). Its isotropic Hamiltonian is
 
-- **Symplectic form** $\omega = \sum_i [dK_\phi \wedge dJ_\phi + d\Phi_s \wedge dJ_{\Delta\mathrm{NFR}}]$ — antisymmetric, non-degenerate, closed (all exact).
-- **Hamiltonian = energy functional**: $H_{\mathrm{sub}} = \tfrac12\sum(K_\phi^2 + J_\phi^2 + \Phi_s^2 + J_{\Delta\mathrm{NFR}}^2) + \tfrac12\sum|\nabla\phi|^2$ equals the structural energy $E$ ([STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md)) exactly.
-- **Liouville**: $\mathrm{div}(X_H) = 0$ structurally — the 13 operators are volume-preserving symplectomorphisms.
-- **Noether charges**: time translation $\to H_{\mathrm{sub}}$; the geometric $U(1)$ (the gauge symmetry of $\Psi = K_\phi + iJ_\phi$) $\to E_{\mathrm{geo}} = \tfrac12\sum|\Psi|^2$; the potential $U(1)$ $\to E_{\mathrm{pot}}$.
-- **Hermitian (flat Kähler) structure**: the compatible complex structure $J = -\omega$ acts as multiplication by $i$ on $\zeta^A = K_\phi + iJ_\phi = \Psi$ — so $\Psi$ is the complex coordinate the substrate induces, not an ad-hoc field.
-- **Complete integrability**: $H_{\mathrm{sub}}$ is a sum of decoupled oscillators, giving global action–angle coordinates (Liouville–Arnold); the actions are adiabatic invariants and the operators redistribute them.
-- **U(2) polarization symmetry**: $H_{\mathrm{sub}}$ is the squared norm of a complex doublet, invariant under $U(2)$; the $SU(2)$ part supplies three conserved Stokes parameters, and each node is a fully-polarized point on the Poincaré sphere (classical wave polarization, Stokes 1852 / Poincaré 1892 — *not* a quantum two-level system).
+    H_sub = ½ Σ_i (K_φ² + J_φ² + Φ_s² + J_ΔNFR²),
 
-**Implementation**: `src/tnfr/physics/symplectic_substrate.py` (one-shot `verify_substrate_geometry`); SDK `net.symplectic_substrate()`. **Examples**: 98, 106, 114.
+with the phase-gradient term treated as a fixed background in the corresponding
+readout. The canonical symplectic form and harmonic flow are well-defined on
+these independent ambient coordinates. Hamiltonian flow preserves symplectic
+form and phase volume; that theorem does not certify all 13 implemented
+operator maps.
+
+The isotropic model has its specified U(1)/U(2) invariances and oscillator
+charges. Action-angle coordinates apply away from zero actions; singular
+levels and global quotient topology need separate treatment. Extracting
+coordinates from a graph can impose dependencies that an ambient-coordinate
+certificate does not remove.
+
+**Implementation:** [symplectic_substrate.py](../src/tnfr/physics/symplectic_substrate.py).
+See its current certificate assumptions and
+[the variational note](TNFR_VARIATIONAL_PRINCIPLE.md).
 
 ### 7.3 Orthogonal Structure and the Overdamped Projection
 
-The dissipative (transport) tower and the conservative (symplectic) tower are the two orthogonal **Helmholtz–Hodge** components of one flow (verified $\langle\cdot,\cdot\rangle = 0$ to machine precision). The bare nodal equation, being first-order in time, is the **overdamped projection** of the substrate's second-order Hamiltonian flow, with $\nu_f$ playing the role of mobility (inverse damping).
+A separately specified damped graph wave with stiffness L_rw has an
+overdamped diffusion limit under its damping, time-scale, and coordinate
+assumptions. The isotropic substrate evolves with identity stiffness, so the
+graph-wave calculation is not a derivation of the full nodal equation from
+that substrate.
 
-**Honest scope**: this section *reorganizes* known mathematics and physics (diffusion, Kuramoto, Ohm/Kirchhoff, symplectic mechanics, Stokes/Poincaré polarization) inside a single framework and verifies it in code. It is a **characterization** of structure the nodal equation already contains — not a claim of new physics, and it does not by itself resolve any open research program.
+Likewise an orthogonal decomposition of selected graph currents is a result
+in its specified graph metric. It does not establish a universal orthogonal
+decomposition of every four-channel nonlinear evolution. The exact EPI
+Dirichlet gradient flow, the graph-wave approximation, and the independent
+harmonic substrate should be reported separately.
 
 ---
-
 ## 8. Empirical Validation
 
-The tetrad thresholds have been validated across 2,400+ simulations covering five topologies: lattice, scale-free, modular, random geometric, and fully connected.
+Field and operator experiments test defined protocols, with topology, weights,
+initial state, gains, time steps, and seeds recorded. A correlation between
+potential drift and coherence loss is evidence for that protocol, not a
+universal upper bound or a proof of state reconstruction.
 
-Key observations:
-
-1. Telemetry violations coincide with coherence loss within two operator steps.
-2. Correlation between predicted thresholds and observed failure events exceeds 0.8 in all datasets.
-3. Identical thresholds function without retuning across classical mechanics, molecular network, and TNFR-Riemann case studies.
-4. Of the tetrad bounds, the $\pi$ phase-wrap bounds ($|\nabla\phi| \le \pi$, $|K_\phi| < 0.9\pi$) are genuine and exact, $\xi_C \propto 1/\sqrt{\lambda_2}$ follows from the spectral gap, and the $\Phi_s$ bounds (per-node $\pi/4$, drift $\pi/2$) are π-derived; the $\approx 0.18$ $|\nabla\phi|$ early-warning level is heuristic, not a derived bound (see §4.3).
+The exact definition-level facts are pressure linearity and the π phase-wrap
+bounds. Potential policies π/4 and π/2, curvature margin 0.9π, and phase-gradient
+warning π/16 retain their current values. The original finite-graph witnesses
+and the distinctions they require are recorded in
+[the contradiction audit](../docs/audits/THEORY_CONTRADICTIONS_2026-09-05.md).
+A test count measures tested behavior; it does not establish an open theorem.
 
 ---
-
 ## 9. Practical Guidance
 
 1. **Monitoring**: Export $\Phi_s$, $|\nabla\phi|$, $K_\phi$, $\xi_C$ after every operator batch; treat threshold crossings as actionable events.
 2. **Operator design**: When introducing new operators, specify their expected effect on each field to maintain grammar compliance.
 3. **Model calibration**: Prefer dimensionless ratios ($\Phi_s/(\pi/2)$, $|\nabla\phi|/\pi$, $|K_\phi|/(0.9\pi)$) to compare scenarios across scales.
-4. **Critical diagnostics**: Prolonged $\xi_C$ near the network diameter indicates a critical regime; add coherence operations before running exploratory destabilizers.
+4. **Correlation diagnostics**: A large $\xi_C$ warrants checking fit quality,
+   spectral fallback, and finite-size effects before interpreting a critical
+   regime. Any subsequent operators must satisfy their grammar and contracts.
 
 ---
 
@@ -348,8 +417,9 @@ analysis = TNFR.analyze(net)               # Comprehensive analysis
 ## 12. References
 
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 derivations
-- [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Why exactly four structural fields (minimality + completeness proof)
-- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — The structural-field tetrad as the minimal derivative-tower basis (only π is a genuine structural scale)
+- [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Four diagnostic channels and open reconstruction/minimality questions
+- [DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) — Exact hypotheses, numerical policies, and finite-graph witnesses
+- [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — Broader derivative-tower context, read with the scope distinctions above
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Noether-like conservation laws
 - [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) — Lagrangian formulation
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions

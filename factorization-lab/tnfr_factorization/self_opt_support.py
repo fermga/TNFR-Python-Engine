@@ -7,6 +7,7 @@ can trigger the pipeline without duplicating boilerplate.
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional
 
@@ -159,10 +160,15 @@ def _extract_promotable_partitions(
         if not partition_id:
             continue
         telemetry = entry.get("telemetry") or {}
-        delta_c = telemetry.get("delta_c")
-        if delta_c is None or float(delta_c) <= 0.0:
+        delta_c = (entry.get("telemetry_deltas") or {}).get("delta_c")
+        if (
+            not isinstance(delta_c, (int, float))
+            or not math.isfinite(delta_c) or delta_c <= 0.0
+        ):
             continue
         engine_block = entry.get("engine") or {}
+        if engine_block.get("dry_run"):
+            continue
         validation_block = engine_block.get("validation") or {}
         if not validation_block.get("passed"):
             continue

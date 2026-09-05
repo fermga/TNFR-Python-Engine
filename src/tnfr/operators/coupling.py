@@ -2,9 +2,9 @@
 
 Purpose: synchronize phases; establish structural links; enable resonance.
 Physics: aligns theta across neighbors; may reduce dnfr locally.
-Grammar: coupling requires phase compatibility (U3) when strict enabled.
+Grammar: coupling always requires phase compatibility (U3).
 Effects: phase spread narrows; vf may align; epi untouched.
-Preconditions: active epi & vf; optional phase window; connectivity.
+Preconditions: active epi & vf; mandatory phase gate; connectivity.
 Typical: AL->UM; UM->RA; UM->IL; EN->UM; UM->THOL.
 Avoid: UM with insufficient epi/vf or extreme phase mismatch.
 """

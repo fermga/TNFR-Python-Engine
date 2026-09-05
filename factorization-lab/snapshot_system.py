@@ -1,7 +1,7 @@
 """
 TNFR Partition Invariant Snapshot Schema
 
-Comprehensive state capture system for partition verification processes.
+Measurement snapshot system for partition verification processes.
 Captures nodal deltas, phase relationships, and structural metrics at key
 transition points to enable detailed analysis and reproducibility.
 
@@ -12,10 +12,15 @@ Mathematical Foundation:
 - Partition dynamics: Coherence preservation across boundaries
 
 Design Principles:
-1. Complete reproducibility of verification trajectories
-2. Minimal storage overhead with delta compression
-3. Fast snapshot creation/restoration for debugging
+1. Stable recorded observations of verification trajectories
+2. Compressed storage of the declared snapshot schema
+3. Snapshot creation/retrieval for debugging
 4. Rich telemetry for analysis and optimization
+
+These records are not executable graph checkpoints: graph kind, arbitrary
+node/edge attributes, full glyph histories, callbacks and RNG states are not
+part of this schema. Pickle storage is for trusted local records only; the
+content hash detects accidental changes and does not authenticate a writer.
 """
 
 import gzip
@@ -24,6 +29,8 @@ import json
 import pickle
 import sqlite3
 import time
+import warnings
+from copy import deepcopy
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -295,6 +302,9 @@ class PartitionSnapshotManager:
             state_hash="",  # Will be computed below
         )
 
+        # Detach all nested inputs before hashing, storage or caching.
+        snapshot = deepcopy(snapshot)
+
         # Compute state hash for integrity
         snapshot.state_hash = self._compute_state_hash(snapshot)
 
@@ -333,11 +343,16 @@ class PartitionSnapshotManager:
         return snapshot_id
 
     def load_snapshot(self, snapshot_id: str) -> Optional[VerificationSnapshot]:
-        """Load snapshot from database or cache."""
+        """Load an independent snapshot value from the database or cache.
+
+        Legacy partial hashes remain readable with a warning. New snapshots
+        verify the complete stored schema. Only trusted pickle data is valid
+        input; the checksum is not an authentication or unpickling boundary.
+        """
 
         # Check cache first
         if snapshot_id in self._snapshot_cache:
-            return self._snapshot_cache[snapshot_id]
+            return deepcopy(self._snapshot_cache[snapshot_id])
 
         # Load from database
         with sqlite3.connect(self.db_path) as conn:
@@ -357,13 +372,27 @@ class PartitionSnapshotManager:
             snapshot = SnapshotCompressor.decompress_snapshot(compressed_data)
 
             # Verify integrity
-            computed_hash = self._compute_state_hash(snapshot)
-            if computed_hash != expected_hash:
+            if str(expected_hash).startswith("sha256:"):
+                computed_hash = self._compute_state_hash(snapshot)
+            else:
+                computed_hash = self._compute_legacy_state_hash(snapshot)
+            if (
+                computed_hash != expected_hash
+                or snapshot.state_hash != expected_hash
+                or snapshot.snapshot_id != snapshot_id
+            ):
                 raise ValueError(f"Snapshot {snapshot_id} integrity check failed")
+            if not str(expected_hash).startswith("sha256:"):
+                warnings.warn(
+                    f"Snapshot {snapshot_id} uses a legacy partial integrity hash; "
+                    "nodal, topology and most telemetry fields are not verified",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
 
             # Cache and return
             self._snapshot_cache[snapshot_id] = snapshot
-            return snapshot
+            return deepcopy(snapshot)
 
     def list_snapshots(
         self,
@@ -488,7 +517,17 @@ class PartitionSnapshotManager:
         return f"snap_{hash_object.hexdigest()[:12]}"
 
     def _compute_state_hash(self, snapshot: VerificationSnapshot) -> str:
-        """Compute hash for snapshot integrity verification."""
+        """Hash every declared field except the self-referential hash value."""
+        hash_data = asdict(snapshot)
+        hash_data.pop("state_hash")
+        encoded = json.dumps(
+            hash_data, sort_keys=True, separators=(",", ":"), allow_nan=False,
+        ).encode("utf-8")
+        return "sha256:" + hashlib.sha256(encoded).hexdigest()
+
+    @staticmethod
+    def _compute_legacy_state_hash(snapshot: VerificationSnapshot) -> str:
+        """Read old records without presenting their partial hash as complete."""
 
         # Create deterministic representation
         hash_data = {
@@ -508,11 +547,18 @@ class PartitionSnapshotManager:
         cutoff_time = time.time() - (max_age_hours * 3600)
 
         with sqlite3.connect(self.db_path) as conn:
+            expired_ids = [row[0] for row in conn.execute(
+                "SELECT snapshot_id FROM snapshots WHERE timestamp < ?", (cutoff_time,),
+            )]
             result = conn.execute(
                 "DELETE FROM snapshots WHERE timestamp < ?", (cutoff_time,)
             )
 
-            return result.rowcount
+            deleted = result.rowcount
+
+        for snapshot_id in expired_ids:
+            self._snapshot_cache.pop(snapshot_id, None)
+        return deleted
 
 
 # Utility functions for snapshot creation

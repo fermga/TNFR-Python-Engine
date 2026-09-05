@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 import threading
 import time
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 from statistics import fmean
 from typing import Any, Dict, Iterable, List, Optional, Sequence
@@ -23,20 +23,8 @@ if (
 ):  # Ensure tnfr_factorization is importable without installation
     sys.path.insert(0, str(FACTOR_LAB_ROOT))
 
-from tnfr_factorization.spectral_paley import (  # type: ignore  # noqa: E402
-    _annotate_graph_for_fft,
-    _build_paley_graph,
-)
-
-import tnfr.dynamics.self_optimizing_engine as _engine_module  # noqa: E402
 from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine  # noqa: E402
-
-if not hasattr(_engine_module.datetime, "UTC"):
-
-    class _DateTimeCompat(datetime):
-        UTC = timezone.utc
-
-    _engine_module.datetime = _DateTimeCompat
+from tnfr.engines.manifest import decode_graph  # noqa: E402
 
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "results" / "self_optimization"
 DEFAULT_OPERATION = "paley_partition"
@@ -48,6 +36,7 @@ class PartitionWorkItem:
     partition_id: str
     path: Path
     manifest_entry: Dict[str, Any]
+    source_index: int = 0
 
 
 class PaleyGraphCache:
@@ -58,6 +47,10 @@ class PaleyGraphCache:
         self._lock = threading.Lock()
 
     def get(self, modulus: int) -> nx.Graph:
+        from tnfr_factorization.spectral_paley import (
+            _annotate_graph_for_fft, _build_paley_graph,
+        )
+
         with self._lock:
             cached = self._cache.get(modulus)
             if cached is not None:
@@ -90,7 +83,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
         "--max-partitions", type=int, help="Maximum number of partitions to process"
     )
     parser.add_argument(
-        "--seed", type=int, help="Base random seed; partition index offsets are added"
+        "--seed", type=int,
+        help="Recorded seed label plus original entry index; does not reseed engine execution",
     )
     parser.add_argument(
         "--output-dir",
@@ -100,7 +94,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--operation-type",
-        default=DEFAULT_OPERATION,
+        default=None,
         help="Operation label passed to TNFRSelfOptimizingEngine",
     )
     parser.add_argument(
@@ -135,6 +129,7 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 def run(args: argparse.Namespace) -> Dict[str, Any]:
     start = time.perf_counter()
     manifest = _load_json(args.manifest)
+    args.operation_type = args.operation_type or manifest.get("operation_type") or DEFAULT_OPERATION
     manifest_summary = (
         _load_json(args.manifest_summary) if args.manifest_summary else None
     )
@@ -229,18 +224,22 @@ class PartitionProcessor:
     def _process_single(self, index: int, item: PartitionWorkItem) -> Dict[str, Any]:
         try:
             partition_payload = _load_json(item.path)
-            modulus_value = partition_payload.get("modulus")
-            if modulus_value is None:
-                raise ValueError("Partition file is missing modulus")
-            modulus = int(modulus_value)
             partition_data = partition_payload.get("partition") or {}
-            node_indices = partition_data.get("node_indices") or []
-            if not node_indices:
-                raise ValueError("Partition file is missing node indices")
-            base_graph = self._graph_cache.get(modulus)
-            subgraph = base_graph.subgraph(node_indices).copy()
+            if "graph" in partition_payload:
+                subgraph = decode_graph(partition_payload["graph"])
+            else:
+                modulus_value = partition_payload.get("modulus")
+                if modulus_value is None:
+                    raise ValueError("Partition file requires a graph payload or Paley modulus")
+                node_indices = partition_data.get("node_indices") or []
+                if not node_indices:
+                    raise ValueError("Partition file is missing node indices")
+                base_graph = self._graph_cache.get(int(modulus_value))
+                if any(node not in base_graph for node in node_indices):
+                    raise ValueError("Partition node indices are outside the Paley graph")
+                subgraph = base_graph.subgraph(node_indices).copy()
             operator_sequence = _extract_operator_sequence(partition_data)
-            seed_value = None if self._args.seed is None else self._args.seed + index
+            seed_value = None if self._args.seed is None else self._args.seed + item.source_index
             dry_run = not bool(self._args.apply)
             capture_snapshots = self._args.capture_snapshots or dry_run
             result = self._run_optimizer(
@@ -257,8 +256,10 @@ class PartitionProcessor:
                 telemetry,
                 result.get("telemetry_snapshots"),
             )
-            for key, value in telemetry_deltas.items():
-                telemetry.setdefault(key, value)
+            for field in ("delta_c", "delta_phi_s", "delta_si", "delta_sense_index"):
+                if field in telemetry:
+                    telemetry[f"manifest_{field}"] = telemetry.pop(field)
+            telemetry.update(telemetry_deltas)
             engine_payload = {
                 k: v for k, v in result.items() if k not in {"telemetry_snapshots"}
             }
@@ -266,6 +267,8 @@ class PartitionProcessor:
                 "partition_id": item.partition_id,
                 "path": str(item.path),
                 "success": success,
+                "seed": seed_value,
+                "seed_scope": "recorded_label",
                 "engine": _json_safe(engine_payload),
                 "telemetry_snapshots": result.get("telemetry_snapshots"),
                 "telemetry": telemetry,
@@ -296,35 +299,16 @@ class PartitionProcessor:
         seed_value: Optional[int],
         operator_sequence: Optional[List[str]],
     ) -> Dict[str, Any]:
-        try:
-            return self._engine.optimize_automatically(
-                subgraph,
-                self._args.operation_type or DEFAULT_OPERATION,
-                dry_run=dry_run,
-                seed=seed_value,
-                node=partition_id,
-                operator_sequence=operator_sequence,
-                output_dir=self._args.output_dir or DEFAULT_OUTPUT_DIR,
-                capture_snapshots=capture_snapshots,
-            )
-        except AttributeError as exc:
-            if capture_snapshots and "UTC" in str(exc):
-                if not self._args.quiet:
-                    print(
-                        "[self-opt] partition="
-                        f"{partition_id} snapshot capture unavailable; retrying without telemetry",
-                    )
-                return self._engine.optimize_automatically(
-                    subgraph,
-                    self._args.operation_type or DEFAULT_OPERATION,
-                    dry_run=dry_run,
-                    seed=seed_value,
-                    node=partition_id,
-                    operator_sequence=operator_sequence,
-                    output_dir=self._args.output_dir or DEFAULT_OUTPUT_DIR,
-                    capture_snapshots=False,
-                )
-            raise
+        return self._engine.optimize_automatically(
+            subgraph,
+            self._args.operation_type or DEFAULT_OPERATION,
+            dry_run=dry_run,
+            seed=seed_value,
+            partition_id=partition_id,
+            operator_sequence=operator_sequence,
+            output_dir=self._args.output_dir or DEFAULT_OUTPUT_DIR,
+            capture_snapshots=capture_snapshots,
+        )
 
 
 def _collect_partition_entries(
@@ -333,17 +317,25 @@ def _collect_partition_entries(
     override_partition_dir: Optional[Path],
 ) -> List[PartitionWorkItem]:
     entries = manifest.get("entries")
-    if not entries:
+    if not isinstance(entries, list) or not entries:
         raise ValueError("Manifest JSON is missing 'entries'")
-    manifest_dir = manifest_path.parent
-    partition_dir = override_partition_dir or manifest_dir / manifest.get(
-        "partition_directory", ""
+    manifest_dir = manifest_path.resolve().parent
+    partition_dir = (
+        override_partition_dir.resolve() if override_partition_dir is not None
+        else manifest_dir / manifest.get("partition_directory", "")
     )
     resolved_items: List[PartitionWorkItem] = []
-    for entry in entries:
+    seen_ids = set()
+    for source_index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            raise ValueError("Manifest entries must be objects")
         partition_id = entry.get("partition_id") or entry.get("id")
         if not partition_id:
             raise ValueError("Manifest entry is missing partition_id")
+        partition_id = str(partition_id)
+        if partition_id in seen_ids:
+            raise ValueError(f"Duplicate manifest partition_id: {partition_id}")
+        seen_ids.add(partition_id)
         relative_path = entry.get("relative_path") or entry.get("path")
         candidate_paths = _candidate_paths(
             relative_path=relative_path,
@@ -359,7 +351,8 @@ def _collect_partition_entries(
             )
         resolved_items.append(
             PartitionWorkItem(
-                partition_id=partition_id, path=partition_path, manifest_entry=entry
+                partition_id=partition_id, path=partition_path, manifest_entry=entry,
+                source_index=source_index,
             )
         )
     return resolved_items
@@ -443,7 +436,7 @@ def _snapshot_field(snapshot: Optional[Dict[str, Any]], key: str) -> Optional[fl
     if not snapshot:
         return None
     value = snapshot.get(key)
-    if isinstance(value, (int, float)):
+    if isinstance(value, (int, float)) and math.isfinite(value):
         return float(value)
     return None
 
@@ -469,34 +462,38 @@ def _compute_telemetry_deltas(
     after = snapshots.get("after") or {}
     deltas: Dict[str, float] = {}
 
-    baseline_phi = telemetry.get("phi_s")
     snapshot_phi = _snapshot_phi_mean(before)
-    if baseline_phi is not None and snapshot_phi is not None:
-        delta_phi = float(snapshot_phi) - float(baseline_phi)
-        telemetry["phi_s_snapshot"] = snapshot_phi
-        deltas["delta_phi_s"] = delta_phi
-
-    baseline_coherence = telemetry.get("coherence")
     snapshot_coherence = _snapshot_field(before, "coherence")
-    if baseline_coherence is not None and snapshot_coherence is not None:
-        deltas["delta_c"] = float(snapshot_coherence) - float(baseline_coherence)
-
-    baseline_si = telemetry.get("sense_index")
     snapshot_si = _snapshot_field(before, "sense_index")
-    if baseline_si is not None and snapshot_si is not None:
-        deltas["delta_sense_index"] = float(snapshot_si) - float(baseline_si)
+
+    # Archived-source drift is not an optimization gain. A dry run has the
+    # same before/after snapshot and must report zero actual improvement.
+    for field, value in (
+        ("phi_s", snapshot_phi), ("coherence", snapshot_coherence),
+        ("sense_index", snapshot_si),
+    ):
+        baseline = telemetry.get(field)
+        if (
+            value is not None and isinstance(baseline, (int, float))
+            and math.isfinite(baseline) and math.isfinite(value)
+        ):
+            deltas[f"manifest_{field}_drift"] = value - float(baseline)
 
     phi_after = _snapshot_phi_mean(after)
     if snapshot_phi is not None and phi_after is not None:
-        deltas["delta_phi_s_snapshot"] = float(phi_after) - float(snapshot_phi)
+        deltas["delta_phi_s"] = float(phi_after) - float(snapshot_phi)
+        deltas["delta_phi_s_snapshot"] = deltas["delta_phi_s"]
 
     coherence_after = _snapshot_field(after, "coherence")
     if snapshot_coherence is not None and coherence_after is not None:
-        deltas["delta_c_snapshot"] = float(coherence_after) - float(snapshot_coherence)
+        deltas["delta_c"] = float(coherence_after) - float(snapshot_coherence)
+        deltas["delta_c_snapshot"] = deltas["delta_c"]
 
     sense_after = _snapshot_field(after, "sense_index")
     if snapshot_si is not None and sense_after is not None:
-        deltas["delta_sense_snapshot"] = float(sense_after) - float(snapshot_si)
+        deltas["delta_si"] = float(sense_after) - float(snapshot_si)
+        deltas["delta_sense_index"] = deltas["delta_si"]
+        deltas["delta_sense_snapshot"] = deltas["delta_si"]
 
     return deltas
 

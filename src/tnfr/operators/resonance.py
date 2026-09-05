@@ -2,7 +2,7 @@
 
 Purpose: propagate coherence through coupled phase-aligned nodes.
 Physics: circulates structural pattern preserving epi identity (sign/kind).
-Grammar: requires prior coupling (U3) when strict phase validation active.
+Grammar: always requires phase-compatible coupling (U3).
 Effects: propagates/redistributes epi (identity preserved); amplifies vf.
 Preconditions: coherent epi, edges, phase alignment, sufficient vf.
 Typical: UM->RA; IL->RA; AL->RA; RA->IL; RA->EN.

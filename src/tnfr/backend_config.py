@@ -1,4 +1,4 @@
-"""Centralized TNFR configuration management.
+"""Configuration for optional execution services.
 
 This module provides unified configuration for all TNFR subsystems, including:
 - Mathematics backend selection (JAX, PyTorch, NumPy)
@@ -8,14 +8,16 @@ This module provides unified configuration for all TNFR subsystems, including:
 - Memory management settings
 - Structural field computation parameters
 
-All configuration follows the nodal equation principles and maintains
-coherence with TNFR theoretical framework.
+This service configuration is distinct from the graph parameters in
+``tnfr.config``. Its integration defaults are recommendations returned by
+``get_integration_config``; setting them does not rewrite a graph's DT or
+INTEGRATOR_METHOD. Environment overrides are read when this object is created.
 """
 
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from typing import Any, Literal
 
 from .constants.canonical import (
@@ -24,6 +26,7 @@ from .constants.canonical import (
     STRUCTURAL_ESCAPE_THRESHOLD_THEORETICAL,
 )
 from .errors import TNFRValueError
+from .config.parsing import parse_bool
 
 __all__ = [
     "TNFRConfig",
@@ -39,7 +42,7 @@ GPUMode = Literal["auto", "force", "disabled"]
 
 @dataclass
 class TNFRConfig:
-    """Unified TNFR configuration following nodal dynamics coherence."""
+    """Optional backend/service settings, separate from graph configuration."""
 
     # Mathematics Backend Configuration
     math_backend: BackendType = "auto"
@@ -131,7 +134,7 @@ class TNFRConfig:
     @staticmethod
     def _parse_bool(value: str) -> bool:
         """Parse boolean from environment string."""
-        return value.lower() in ("1", "true", "yes", "on", "enable", "enabled")
+        return parse_bool(value)
 
     def get_backend_config(self) -> dict[str, Any]:
         """Get configuration dict for mathematics backend."""
@@ -205,15 +208,16 @@ def configure(**kwargs: Any) -> None:
     """
     config = get_config()
 
-    for key, value in kwargs.items():
-        if hasattr(config, key):
-            setattr(config, key, value)
-        else:
+    allowed = {item.name for item in fields(config) if not item.name.startswith("_")}
+    for key in kwargs:
+        if key not in allowed:
             raise TNFRValueError(
                 f"Unknown configuration parameter: {key}",
                 context={"parameter": key},
                 suggestion="Check available configuration options in TNFRConfig.",
             )
+    for key, value in kwargs.items():
+        setattr(config, key, value)
 
 
 def reset_config() -> None:

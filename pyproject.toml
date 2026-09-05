@@ -1,12 +1,3 @@
-[tool.poetry]
-name = "tnfr"
-version = "0.0.3.5"
-description = "TNFR (Resonant Fractal Nature Theory): a mathematical framework for modeling coherent patterns in complex systems through resonance-based dynamics on networks."
-readme = "README.md"
-authors = ["F. F. Martinez Gamo"]
-license = "MIT"
-packages = [{include = "tnfr", from = "src"}]
-
 [project]
 name = "tnfr"
 version = "0.0.3.5"
@@ -23,28 +14,6 @@ dependencies = [
   "mpmath>=1.3,<2.0",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-# Minimal core - truly minimal for primality testing
-networkx = {version = "^2.6", optional = true}
-cachetools = {version = ">=5.0,<8.0", optional = true}
-mpmath = {version = "^1.3", optional = true}
-numpy = {version = "^1.24", optional = true}
-scipy = {version = "^1.9", optional = true}
-sympy = {version = "^1.10", optional = true}
-
-[tool.poetry.extras]
-full = ["numpy", "scipy", "networkx", "cachetools", "sympy", "mpmath"]
-math = ["sympy"]
-tnfr = ["networkx", "cachetools", "mpmath"]
-dev = ["pytest", "black", "flake8", "mypy"]
-
-[tool.poetry.scripts]
-tnfr-primality = "tnfr_primality.cli:main"
-
-[tool.tnfr.metadata]
-# ORCID retained outside PEP 621 authors block to satisfy strict validators
-primary_author_orcid = "0009-0007-6116-0613"
 keywords = [
   "TNFR", "Resonant Fractal Nature Theory", "complex systems", "fractals", "resonance", 
   "networks", "structural dynamics", "structural operators", "coherence theory",
@@ -63,11 +32,11 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Information Analysis",
   "Topic :: Scientific/Engineering :: Mathematics"
 ]
-dependencies = [
-  "networkx>=2.6,<4.0",
-  "cachetools>=5.0,<8.0",
-  "mpmath>=1.3,<2.0",
-]
+
+[tool.tnfr.metadata]
+# Project dependencies and distribution metadata are defined once in [project].
+# ORCID is retained outside the PEP 621 authors block.
+primary_author_orcid = "0009-0007-6116-0613"
 
 [project.optional-dependencies]
 # Computational backends
@@ -259,7 +228,7 @@ ignore_merge_commits = true
 
 [tool.black]
 line-length = 88
-target-version = ["py39", "py310", "py311", "py312", "py313"]
+target-version = ["py310", "py311", "py312", "py313"]
 
 [tool.isort]
 profile = "black"
@@ -304,7 +273,7 @@ markers = [
 ]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 warn_unused_configs = true
 warn_return_any = false
 no_implicit_optional = false
