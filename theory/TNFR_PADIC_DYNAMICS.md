@@ -104,6 +104,30 @@ map keeps its neutral name. The claim *"a compatible p-adic tower realises
 REMESH"* (`NT-P04`) is therefore **CONJECTURAL**; naming the reduction REMESH is
 forbidden until every contract field is independently established.
 
+### 5b. The R4b campaign — what the lift lacks (N09)
+
+The missing ingredient is now **measured**, not just asserted
+([remesh_audit.py](../src/tnfr/mathematics/remesh_audit.py)). The static tower
+candidate is the same-scale projection `P = Lift_e · R_e` (regenerate the fine
+field from its fiber averages — a projection **morphism**, N08). Auditing the four
+conditions against a genuine temporal recurrence
+`EPI_new = (1-α)² EPI(t) + α(1-α) EPI(t-τ_l) + α EPI(t-τ_g)`:
+
+| candidate | temporal echo | NETWORK scale | identity | U5 | REMESH |
+|-----------|---------------|---------------|----------|----|--------|
+| static `Lift·R_e` (the tower) | **no** (`0`) | yes | yes | yes | **no** |
+| temporal recurrence | yes (`≈ 1.5`) | yes | yes | yes | **yes** |
+
+The static map satisfies **three of four** conditions but has **zero temporal
+echo** (perturbing the delayed inputs leaves the output unchanged) — it transports
+structure instantaneously, so it is a morphism, not REMESH. The temporal
+recurrence passes all four (its coefficients `((1-α)², α(1-α), α)` are a partition
+of unity — a convex, identity- and coherence-preserving mix). So the gate is a
+**real discriminator, not vacuous**: it *accepts* a genuine `EPI(t) ← EPI(t-τ)`
+recursion and *rejects* the static lift. R4b closes as an **honest negative for
+the tower**: the only thing the projective transport lacks to be REMESH is the
+temporal echo.
+
 ## 6. Claim ledger
 
 | Claim | Basis | Status |
@@ -114,6 +138,8 @@ forbidden until every contract field is independently established.
 | `spec(L_e) ⊆ spec(L_{e+1})` | intertwining corollary | **DERIVED** + MEASURED (`~1e-15`) |
 | compatibility necessary | non-uniform control | **MEASURED** (residual `≠ 0`) |
 | tower realises REMESH | contract unverified | **CONJECTURAL** (`NT-P04`, `realizes_remesh = False`) |
+| static `Lift·R_e` fails only the temporal echo | four-condition audit (N09) | **MEASURED** (3/4 pass, echo `= 0`) |
+| the four-condition gate discriminates REMESH | recurrence passes all four (N09) | **MEASURED** (`NT-P04b` negative for the tower) |
 
 **Bottom line.** The reduction-compatible p-adic tower carries a genuinely
 projective transport: coarse and fine dynamics commute with fiber-averaging, the

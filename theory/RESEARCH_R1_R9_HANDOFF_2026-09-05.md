@@ -161,9 +161,18 @@ The research lines sit on this base; do not re-patch it.
 - **Key discipline**: the scale map is named `projective_scale_map`, **not REMESH**. The
   `RemeshContractAudit` records all four REMESH conditions as **unverified**
   (`realizes_remesh == False`).
-- **Decision point**: to earn the REMESH name, an agent must verify the four contract
-  conditions (recursive EPI echo, NETWORK scale, preserved identity, U5) *independently*.
-  Until then `NT-P04` stays **CONJECTURAL**. Do **not** rename the map without that proof.
+- **R4b REMESH audit — honest close (N09)**: added
+  [remesh_audit.py](../src/tnfr/mathematics/remesh_audit.py). The four-condition audit
+  (temporal echo, NETWORK scale, preserved identity, U5) run as one campaign shows the static
+  tower candidate `Lift·R_e` (a projection **morphism**, N08) satisfies **3 of 4** conditions
+  but has **zero temporal echo** — so it is a morphism, not REMESH. A genuine temporal
+  recurrence `(1-α)² EPI(t)+α(1-α) EPI(t-τ_l)+α EPI(t-τ_g)` passes all four, so the gate is a
+  real discriminator (not vacuous). `NT-P04b` is a **measured negative for the tower**: the
+  only missing ingredient is the `EPI(t) ← EPI(t-τ)` recursion
+  ([test_remesh_audit.py](../tests/mathematics/test_remesh_audit.py)).
+- **Decision point**: `NT-P04a` projective transport is essentially **closed** (DERIVED);
+  `NT-P04b` REMESH is a **negative for the tower** (the lift is a morphism). Do **not** rename
+  the map REMESH; a genuine REMESH needs the temporal echo, a distinct dynamic.
 
 ### R5 — Finite & algebraic number fields · `NT-P05` · regression **DERIVED**, detection **CONJECTURAL**
 - **Built**: [finite_fields.py](../src/tnfr/mathematics/finite_fields.py) (F_q via trace
@@ -256,7 +265,7 @@ The research lines sit on this base; do not re-patch it.
 | NT-P01 | symmetry sectors invariant under equivariant TNFR words | **DERIVED+MEASURED** (diffusion + 13 ops isolated); **composition closure DERIVED** (N06: induction on the measured base case, `Fix(Γ)` preservation corollary); **pointed selector DERIVED** (N07: `Aut(G)→Γ_v` orbit–stabilizer, residual-sector refinement, origin conjugation); R1 picture complete |
 | NT-P02 | pointed-pulse Hankel rank = `gcd(k,p−1)+1` | **DERIVED+MEASURED** |
 | NT-P03 | CRT realizes U5 for unit networks | **DERIVED+MEASURED** (synthesis; not factoring) |
-| NT-P04 | compatible p-adic tower realizes REMESH | transport **DERIVED**; REMESH **CONJECTURAL** (gate closed) |
+| NT-P04 | compatible p-adic tower realizes REMESH | transport **DERIVED**; REMESH **CONJECTURAL** (gate closed); **R4b honest close (N09)**: static `Lift·R_e` is a morphism failing only the temporal echo (3/4), genuine recurrence passes 4/4 — `NT-P04b` **MEASURED negative** for the tower |
 | NT-P05 | pulse detects split/inert/ramified | regression **DERIVED**; detection **CONJECTURAL** (k-sensitive) |
 | NT-P06 | TNFR additive phase exceeds Fourier | **NEGATIVE / OPEN** (reduction exact; no excess) |
 | NT-P07 | 3-channel pressure minimal & complete | split (N02): `a` sufficiency **PROVED**; `b` functional independence **PROVED** (exact witness proof over ℚ); `c` minimal-for-primality **NEGATIVE** (redundant); `d` completeness **OPEN** (task-scoped); `e` primality-as-algorithm **CIRCULAR** |
