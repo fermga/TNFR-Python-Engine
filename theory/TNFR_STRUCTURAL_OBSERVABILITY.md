@@ -75,6 +75,28 @@ the break is *declared*: the reduced symmetry is stated, not presented as
 spontaneous emergence. This distinction is the basis of the arithmetic-pulse
 programme (R2), which studies the pointed residue network `(G_{p,k}, 0)`.
 
+**Formal structure (N07).** The stabilizer
+`Γ_o = {g ∈ Aut(G) : g(o) = o}` is a subgroup of `Aut(G)`
+([pointed_symmetry.py](../src/tnfr/physics/pointed_symmetry.py)), and three facts
+make the break *exactly* `Aut(G) → Γ_o`:
+
+- **Orbit–stabilizer** (DERIVED group theory, MEASURED): `|Aut(G)| = |Γ_o| · |orbit(o)|`
+  — verified `24 = 6·4` (star leaf) and `12 = 2·6` (cycle vertex).
+- **Residual sectors refine, never coarsen** (DERIVED): `Fix(Aut(G)) ⊆ Fix(Γ_o)`
+  and `dim Fix(Γ_o) = #orbits(Γ_o) ≥ #orbits(Aut(G))`. The origin splits its
+  orbit: star `2 → 3` sectors (`{0},{1,2,3,4} → {0},{1},{2,3,4}`), cycle `1 → 4`.
+- **Break localization** (MEASURED): a pointed Emission maps `Fix(Aut(G))` **out**
+  of `Fix(Aut(G))` (`break_magnitude ≈ 0.07 > 0`) yet **into** `Fix(Γ_o)`
+  (`stabilizer_residual = 0`). The broken directions are exactly the coset space
+  `Aut(G)/Γ_o = orbit(o)`; a singleton-orbit origin (the star centre) breaks
+  nothing (`break_magnitude = 0`).
+
+**No privileged origin (conjugation).** Origins in one orbit are conjugate:
+`Γ_{g(o)} = g Γ_o g⁻¹` and `O@{g(o)} = g (O@o) g⁻¹` (MEASURED), so the pointed
+structures at `o` and `g(o)` are isomorphic — the choice of `0` in `(G_{p,k}, 0)`
+is a labelling convention, and the arithmetic-pulse observables are independent
+of it.
+
 ## 4b. Per-operator equivariance (all 13, certified under isolation)
 
 The non-linear stage asks whether each operator `O` is equivariant,
@@ -138,8 +160,8 @@ have **exactly zero** residual on both test cases, every prefix stays within
 tolerance (`composition_closure_holds`), and a Γ-symmetric sweep keeps the seed
 orbit-constant (`word_preserves_fix`)
 ([test_word_equivariance.py](../tests/physics/test_word_equivariance.py)). This
-closes remaining item (i) of §5; the residual open piece is the non-equivariant
-**selector** (ii).
+closes remaining item (i) of §5; the non-equivariant **selector** (ii) is the
+pointed structure of §4 (N07).
 
 ## 5. Honest scope
 
@@ -151,9 +173,11 @@ spectral primality (ex 119) and the Riemann residual
 $S(T)\in\ker(\mathcal R_\infty)\cap\mathrm{Fix}(S_n)^\perp$ — as one
 `Fix(Γ)/Fix(Γ)^⊥` split for different groups. It is **not** new mathematics and
 closes no open problem. The diffusion base case, the per-operator audit (§4b, all
-13 equivariant under isolation) **and** the word composition-closure theorem
-(§4c) are now established: composition preserves equivariance by a derived
-induction on the measured base case. What remains for the *fully general*
-statement is the treatment of non-equivariant **selectors** (a specific-node
-selector is pointed, §4), which is a property of the selection policy, not of the
-operators.
+13 equivariant under isolation), the word composition-closure theorem (§4c)
+**and** the pointed selector structure (§4, N07) are now established: composition
+preserves equivariance by a derived induction on the measured base case, and a
+localized selector performs a *declared* reduction `Aut(G) → Γ_o` (orbit–
+stabilizer, residual-sector refinement, origin conjugation) rather than a
+spontaneous break. The representation-theoretic picture of R1 is therefore
+complete; what it does **not** do is close any external open problem — it
+organizes and certifies the walls, nothing more.
