@@ -155,6 +155,40 @@ integral converges, and the non-normal cost is the finite factor `M`. It is
 heterogeneous nodal `ν_f` (a diagonal `D_{ν_f}(t)`) is **not** a clock change and
 is out of scope (N13, `NT-P09` heterogeneous).
 
+## 4d. Transient U2/U6 certificate — the ‖Q‖ artifact (N05)
+
+The N04 ambient gain `M = sup_s ‖e^{−sL} Q‖₂ > 1` for non-normal digraphs looks
+like transient amplification. **It is not.** Restrict the dynamics to the
+`L`-invariant non-consensus subspace `{y : πᵀy = 0}` with an **orthonormal** basis
+`V` (`VᵀV = I`) — i.e. measure the **Euclidean per-node energy** of the
+reorganizing component, `L_sub = Vᵀ L V`. Then:
+
+- **No transient in the per-node energy.** The symmetric part
+  `½(L_sub + L_subᵀ)` is **positive definite** (`symmetric_part_min_eig > 0`), so
+  `‖e^{−s L_sub}‖₂ ≤ 1` for all `s`: the non-consensus semigroup is a genuine
+  **contraction**, `peak_gain = 1` (measured exactly for normal and non-normal),
+  and the Kreiss lower bound satisfies `kreiss ≤ peak_gain = 1`.
+- **The naive `>1` is the oblique projection.** `Q = I − 1πᵀ` is an **oblique**
+  projection when `π` is non-uniform, so `‖Q‖₂ > 1`. Measured:
+  `ambient_oblique_gain = ‖Q‖₂` **exactly** (the sup is at `s = 0`). The ambient
+  Euclidean `M > 1` is a **coordinate/projection artifact**, not dynamical growth.
+
+This **reinforces N03**: in *both* the stationary `L²(π)` norm (Jensen) *and* the
+Euclidean per-node energy, directed diffusion does **not** amplify the
+non-consensus component. Consequently the transient does **not** threaten U2
+convergence (`J ≤ M‖LQ‖‖x₀‖/ω` finite, N04) nor U6 confinement (`Φ_s(s) = −B L
+e^{−sL} Q x₀` with the canonical inverse-square `B`, `max_{s,i}|Φ_s(s)[i]| < π/2`
+over the full trajectory for a bounded perturbation). `certify_transient_u2`
+bundles all of these readings.
+
+**Evidence and status.** `symmetric_part_min_eig > 0` was measured on `2·10⁵`
+random strongly-connected digraphs *and* extreme in-hub constructions (worst
+`≈ +9·10⁻³`); no counterexample. The **general** positive-definiteness of
+`½(L_sub + L_subᵀ)` for every random-walk digraph is stated as a **CONJECTURE**
+(strong numerical evidence, no proof). It does **not** decide the canonical U2
+metric (`NT-P09b/c` OPEN) and does **not** modify U2/U6 in
+[AGENTS.md](../AGENTS.md).
+
 ## 5. Claim ledger
 
 | Claim | Basis | Status |
@@ -170,6 +204,9 @@ is out of scope (N13, `NT-P09` heterogeneous).
 | `x(t) = e^{−s(t)L}x₀`, `s = ∫ν_f` (scalar-`ν_f` clock change) | commuting flow (N04) | **DERIVED** + MEASURED (RK4 `~3e-7`) |
 | total reorganization is clock-invariant | change of variables (N04) | **DERIVED** + MEASURED (`~3e-6`) |
 | `J ≤ M‖LQ‖‖x₀‖/ω` (finite reorganization) | exponential decay on `Q` (N04) | **DERIVED** + MEASURED |
+| non-consensus dynamics contracts in the Euclidean per-node energy (`peak = 1`) | `½(L_sub+L_subᵀ) ≻ 0` (N05) | **MEASURED** (2·10⁵ + in-hub, no counterexample) |
+| the ambient `M>1` is exactly the oblique factor `‖Q‖` | `Q` oblique, sup at `s=0` (N05) | **MEASURED** (`ambient = ‖Q‖`) |
+| `½(L_sub+L_subᵀ) ≻ 0` for every random-walk digraph | — | **CONJECTURAL** (no proof) |
 | which norm/integral is the canonical U2 | — | **OPEN** (`NT-P09b/c`; gate not met) |
 | generalized U2 bound for non-normal transients | — | **OPEN / CONJECTURAL** (`NT-P09`) |
 
