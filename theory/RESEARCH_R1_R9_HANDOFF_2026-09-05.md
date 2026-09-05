@@ -217,9 +217,21 @@ The research lines sit on this base; do not re-patch it.
   projection = relabeling; p-adic lift = REMESH-unverified, reusing R4; affine = automorphism;
   power map = endomorphism). **No fourteenth operator invented.**
 - **This is the intended boundary result** — the negatives sharpen the 13-operator catalogue.
+- **Structural-morphism taxonomy — DERIVED (N08)**: added
+  [structural_morphism.py](../src/tnfr/physics/structural_morphism.py). The four rejections are
+  kinds of a taxonomy that **emerges from the nodal equation**: a morphism is an intertwiner
+  `M L_src = L_tgt M`, which is *exactly* nodal-flow transport `M e^{−sL_src} = e^{−sL_tgt} M`
+  (DERIVED; the intertwining defect = the `nodal_flow_preservation_residual`). Six kinds emerge
+  (automorphism, relabeling, coarse-graining, lift, conjugation-intertwiner, and the Reynolds
+  sector projector `Q_Γ`); the folding endomorphism does **not** (`nodal_flow ≈ 1.9`, the R8
+  boundary). Fixed a real mis-classification: the idempotent `Q_Γ` is the emergent `PROJECTION`,
+  not an endomorphism. Inclusions: `AUTOMORPHISM ⊆ RELABELING`, `COARSE_GRAINING ⊆ PROJECTION`;
+  the genus is the intertwiner. No 14th operator, no new grammar rule
+  ([test_structural_morphism.py](../tests/physics/test_structural_morphism.py)).
 - **Decision point**: the general classification of arithmetic maps into operators is **OPEN**.
   A next agent could (a) audit more candidates (e.g. Frobenius, Hecke-like maps), or (b) attempt
-  the REMESH contract proof from R4 to convert the p-adic-lift rejection into a certificate.
+  the REMESH contract proof from R4 to convert the p-adic-lift rejection into a certificate
+  (N09).
 
 ### R9 — Directed non-normal dynamics · `NT-P09` · dynamics **DERIVED**, U2 bound **OPEN**
 - **Built**: extended [spectral_projectors.py](../src/tnfr/physics/spectral_projectors.py)
@@ -248,7 +260,7 @@ The research lines sit on this base; do not re-patch it.
 | NT-P05 | pulse detects split/inert/ramified | regression **DERIVED**; detection **CONJECTURAL** (k-sensitive) |
 | NT-P06 | TNFR additive phase exceeds Fourier | **NEGATIVE / OPEN** (reduction exact; no excess) |
 | NT-P07 | 3-channel pressure minimal & complete | split (N02): `a` sufficiency **PROVED**; `b` functional independence **PROVED** (exact witness proof over ℚ); `c` minimal-for-primality **NEGATIVE** (redundant); `d` completeness **OPEN** (task-scoped); `e` primality-as-algorithm **CIRCULAR** |
-| NT-P08 | arithmetic maps ↔ operators | 2 **MEASURED** certificates, 4 rejected; full classification **OPEN** |
+| NT-P08 | arithmetic maps ↔ operators | 2 **MEASURED** certificates, 4 rejected; **morphism taxonomy DERIVED** (N08: intertwiner = nodal-flow transport, 6 kinds emerge + 1 boundary, `Q_Γ` = sector `PROJECTION`); full classification **OPEN** |
 | NT-P09 | generalized U2 bound (non-normal transients) | Euclidean transient amplification **DERIVED+MEASURED**; stationary `L²(π)` contraction **DERIVED+MEASURED** (N03: gain `=1`, Euclidean transient is metric-dependent); scalar-`ν_f` structural-time theorem **DERIVED+MEASURED** (N04: `x=e^{−s(t)L}x₀`, clock-invariant reorganization, finite `J ≤ M‖LQ‖‖x₀‖/ω`, `M=1` normal / `>1` non-normal); **per-node-energy contraction MEASURED** (N05: `peak=1`, symmetric part of `L_sub` `≻0` over 2·10⁵ + in-hub, ambient `>1` is exactly `‖Q‖`; general PSD **CONJECTURAL**); canonical U2 metric/integral **OPEN** (gate not met, U2/U6 unmodified) |
 
 ---

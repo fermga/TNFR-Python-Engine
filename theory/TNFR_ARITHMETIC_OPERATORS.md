@@ -57,7 +57,48 @@ does not fit the 13 operators without an external axiom.
   space to a subgroup, not a node's `νf`, so certifying them as Contraction would
   be decorative.
 
-## 4. Claim ledger
+## 4. Structural morphisms — the emergent taxonomy (N08)
+
+The four rejections are not ad-hoc labels: they are kinds of a **taxonomy that
+emerges from the nodal equation** itself
+([structural_morphism.py](../src/tnfr/physics/structural_morphism.py)).
+
+**Genus (DERIVED).** For the EPI channel with a common `ν_f` the nodal equation is
+`dEPI/dt = −ν_f L · EPI` with flow `EPI(t) = e^{−ν_f t L} EPI(0)`. A linear map
+`M : (V_src, L_src) → (V_tgt, L_tgt)` carries **every** source solution to a target
+solution, `M e^{−s L_src} = e^{−s L_tgt} M` for all `s`, **iff** it intertwines the
+generators, `M L_src = L_tgt M` (differentiate at `s = 0` for ⇒; both sides solve
+the same ODE `d/ds(·) = −L_tgt(·)` with equal initial data for ⇐). So a
+**structural morphism is exactly a map that transports the nodal-equation flow** —
+the intertwining defect equals the nodal-flow-preservation defect
+(`nodal_flow_preservation_residual`). This is not an imported category; it is a
+property of `∂EPI/∂t = ν_f · ΔNFR`.
+
+**Species.** An intertwiner is fixed by two invariants — the dimension change and
+the rank type — giving a grid whose non-empty cells are the kinds:
+
+| kind | dimension | rank | canonical root | emerges |
+|------|-----------|------|----------------|---------|
+| `AUTOMORPHISM` ⊆ `RELABELING` | preserve | iso (permutation) | R1 symmetry / relabel-invariance (C1) | yes |
+| `INTERTWINER` | preserve | iso (non-permutation) | change of coordinates | yes |
+| `PROJECTION` ⊇ `COARSE_GRAINING` | preserve / reduce | idempotent / quotient | R1 sector projector `Q_Γ` / U5 fiber quotient (R4) | yes |
+| `LIFT` | increase | embedding | U5 prolongation (R4) | yes |
+| `ENDOMORPHISM` | preserve | rank-deficient **fold** | — (does not intertwine) | **no** |
+
+Measured (`audit_structural_morphisms`): six kinds have `nodal_flow_residual ≈ 0`
+(they emerge); the folding power map `x ↦ x² (mod p)` has `≈ 1.9` — it does **not**
+emerge, the R8 boundary. Notably the **Reynolds sector projector `Q_Γ`** (R1) is an
+idempotent intertwiner: a rank test alone would misfile it as an endomorphism, but
+it is the emergent `PROJECTION` onto `Fix(Γ)`.
+
+**Operator vs morphism (the R8 separation).** A canonical operator acts *within* a
+network, `X_G → X_G`, and reorganizes nodal state through `∂EPI/∂t = ν_f · ΔNFR`; a
+structural morphism maps *between* networks, `X_G → X_H`, transporting the flow
+without reorganizing. Both are grounded in the nodal equation, which is why the
+rejections are precise: a relabeling, an automorphism, a fiber quotient and a lift
+are morphisms (`is_operator = False`), not the fourteenth operator.
+
+## 5. Claim ledger
 
 | Claim | Basis | Status |
 |-------|-------|--------|
@@ -66,8 +107,9 @@ does not fit the 13 operators without an external axiom.
 | CRT / affine are operators | relabeling changes no channel | **NEGATIVE** |
 | p-adic lift is REMESH | REMESH contract unverified | **NEGATIVE** (R4) |
 | power map is Contraction | endomorphism, not νf | **NEGATIVE** |
-| a fourteenth operator is needed | — | **not invented** (`NT-P08` OPEN) |
-
+| a fourteenth operator is needed | — | **not invented** (`NT-P08` OPEN) || morphism taxonomy emerges from the nodal equation | intertwiner = nodal-flow transport (N08) | **DERIVED** + MEASURED |
+| Reynolds `Q_Γ` is a sector `PROJECTION` (not an endomorphism) | idempotent intertwiner (N08) | **MEASURED** |
+| the folding endomorphism does not emerge | `nodal_flow_residual ≈ 1.9` (N08) | **MEASURED** (boundary) |
 **Bottom line.** The certification framework maps two arithmetic transformations
 to canonical operators with verified contracts and grammar words, and rejects four
 others with explicit, measured reasons. No new operator is created; the negatives
