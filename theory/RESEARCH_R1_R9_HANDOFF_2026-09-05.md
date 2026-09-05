@@ -241,7 +241,7 @@ The research lines sit on this base; do not re-patch it.
 | NT-P06 | TNFR additive phase exceeds Fourier | **NEGATIVE / OPEN** (reduction exact; no excess) |
 | NT-P07 | 3-channel pressure minimal & complete | split (N02): `a` sufficiency **PROVED**; `b` functional independence **PROVED** (exact witness proof over ℚ); `c` minimal-for-primality **NEGATIVE** (redundant); `d` completeness **OPEN** (task-scoped); `e` primality-as-algorithm **CIRCULAR** |
 | NT-P08 | arithmetic maps ↔ operators | 2 **MEASURED** certificates, 4 rejected; full classification **OPEN** |
-| NT-P09 | generalized U2 bound (non-normal transients) | transient amplification **DERIVED+MEASURED**; U2 bound **OPEN** |
+| NT-P09 | generalized U2 bound (non-normal transients) | Euclidean transient amplification **DERIVED+MEASURED**; stationary `L²(π)` contraction **DERIVED+MEASURED** (N03: gain `=1`, Euclidean transient is metric-dependent); canonical U2 metric/integral **OPEN** (gate not met, U2 unmodified) |
 
 ---
 

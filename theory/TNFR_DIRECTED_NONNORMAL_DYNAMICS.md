@@ -77,15 +77,59 @@ relaxes**, a temporal risk for U6 monitoring. The U2 integral convergence
 > transient enters the integral convergence — and its interaction with U6
 > potential confinement — is left **open** (`NT-P09`).
 
+## 4b. Metric layer and U2 semantics (N03)
+
+The transient gain is **metric-dependent**, so no physical U2 conclusion may be
+drawn without an explicit norm. The N03 layer
+([directed_diffusion.py](../src/tnfr/physics/directed_diffusion.py)) exposes two
+norms and both integral readings, and **does not** decide U2.
+
+**The Euclidean transient is a metric artefact (DERIVED + MEASURED).** Let
+`P = D_out⁻¹ W` (row-stochastic) with stationary distribution `π` (`πᵀP = πᵀ`,
+`π > 0` for a strongly connected digraph). In the weighted inner product
+`⟨f, g⟩_π = Σ π_i f_i g_i`, Jensen gives
+
+$$\lVert P f\rVert_{2,\pi}^2 = \sum_i \pi_i\Big(\sum_j P_{ij} f_j\Big)^2
+\le \sum_i \pi_i \sum_j P_{ij} f_j^2
+= \sum_j f_j^2 \underbrace{\sum_i \pi_i P_{ij}}_{=\,\pi_j}
+= \lVert f\rVert_{2,\pi}^2,$$
+
+so `‖P‖_{2,π} ≤ 1`. Since `e^{−tL} = e^{−t}\sum_k \tfrac{t^k}{k!} P^k` is a convex
+combination of `π`-contractions, `‖e^{−tL}‖_{2,π} ≤ 1`: **the diffusion semigroup
+is a contraction in `L²(π)`**. Measured (`stationary_transient_gain`,
+`is_stationary_contraction`): for every non-normal strongly connected digraph the
+Euclidean gain exceeds 1 (e.g. `1.03`, `1.02`) while the **stationary gain is
+exactly `1.0`**. The Euclidean transient amplification is a coordinate effect of
+the non-normal basis, not a `π`-weighted energy growth.
+
+**The U2 integral has two readings (report §16.2).** `u2_integral_readings`
+distinguishes the **signed** displacement `‖x(∞) − x(0)‖ = ‖∫₀^∞ ẋ\,dt‖`
+(reorganizations may cancel) from the **total structural variation**
+`∫₀^∞ ‖ẋ(s)‖\,ds` (no cancellation); always `net ≤ total`. Which one U2
+canonically means — "existence of the EPI limit" (net) vs "total pressure
+absorbed" (total) — is **not decided here**.
+
+**The metric decision stays OPEN.** Three outcomes remain possible (report
+§16.3): (i) the transient is real in the canonical TNFR per-node energy (the
+unweighted / Euclidean norm) and must enter U2/U6; (ii) it is a coordinate effect
+and the canonical metric is `L²(π)`; (iii) both norms are useful and are exposed
+with distinct semantics. **U2 in [AGENTS.md](../AGENTS.md) §6 is not modified**
+until the gate (defined quantity, chosen metric, EPI-channel proof, normal +
+non-normal certificate, temporal U6 bound) is met.
+
 ## 5. Claim ledger
 
 | Claim | Basis | Status |
 |-------|-------|--------|
 | directed circulants are normal | commutator `= 0` | **MEASURED** (exact) |
 | circulant diffusion has unit transient gain | normal contraction | **DERIVED** + MEASURED |
-| non-normal stable digraphs amplify transiently | Kreiss theorem | **DERIVED** + MEASURED (`gain > 1`) |
+| non-normal stable digraphs amplify transiently (Euclidean) | Kreiss theorem | **DERIVED** + MEASURED (`gain > 1`) |
 | `pseudospectral_bound ≤ transient_gain` | Kreiss matrix theorem | **DERIVED** + MEASURED |
 | Schur residual `= 0` | unitary factorisation | **MEASURED** (SciPy-gated) |
+| diffusion contracts in `L²(π)` (stationary gain `≤ 1`) | Jensen (N03) | **DERIVED** + MEASURED |
+| the Euclidean transient is metric-dependent | N03 metric layer | **MEASURED** (eucl `> 1`, stat `= 1`) |
+| `net ≤ total` U2 integral readings | triangle inequality | **DERIVED** + MEASURED |
+| which norm/integral is the canonical U2 | — | **OPEN** (`NT-P09b/c`; gate not met) |
 | generalized U2 bound for non-normal transients | — | **OPEN / CONJECTURAL** (`NT-P09`) |
 
 **Bottom line.** R9 separates the normal (directed circulant) regime, where the
