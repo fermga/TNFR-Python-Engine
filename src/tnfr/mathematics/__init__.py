@@ -22,6 +22,13 @@ from .backend import (
     get_backend,
     register_backend,
 )
+from .cayley import (
+    cayley_action,
+    cayley_diffusion_action,
+    cayley_first_row,
+    cayley_laplacian,
+    cayley_spectrum,
+)
 from .dynamics import ContractiveDynamicsEngine, MathematicalDynamicsEngine
 from .epi import BEPIElement, CoherenceEvaluation, evaluate_coherence_transform
 from .generators import build_delta_nfr, build_lindblad_delta_nfr
@@ -164,6 +171,12 @@ __all__ = [
     "available_backends",
     "get_backend",
     "register_backend",
+    # Exact circulant structural operators
+    "cayley_laplacian",
+    "cayley_first_row",
+    "cayley_action",
+    "cayley_spectrum",
+    "cayley_diffusion_action",
     # Unified numerical and cache systems
     "TNFRConstants",
     "CONSTANTS",

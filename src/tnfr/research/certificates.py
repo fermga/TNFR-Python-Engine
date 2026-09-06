@@ -10,6 +10,7 @@ precision.  This complements the exact invariant-subspace certificate of
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 
 __all__ = ["NumericalCertificate", "certify_within_tolerance"]
 
@@ -36,6 +37,26 @@ class NumericalCertificate:
             "condition_number": self.condition_number,
             "precision": self.precision,
         }
+
+    def validate_for_admission(self) -> None:
+        """Require numerical context before admitting a public result."""
+        if not self.quantity or not self.precision:
+            raise ValueError("quantity and precision are required")
+        if self.precision not in {"float32", "float64", "longdouble", "exact"}:
+            raise ValueError("precision must name a supported numerical model")
+        values = (self.value, self.tolerance)
+        if not all(math.isfinite(float(value)) for value in values):
+            raise ValueError("value and tolerance must be finite")
+        if self.tolerance < 0.0:
+            raise ValueError("tolerance must be nonnegative")
+        if self.backward_error is None or self.condition_number is None:
+            raise ValueError(
+                "backward_error and condition_number are required for admission"
+            )
+        if not math.isfinite(self.backward_error) or self.backward_error < 0.0:
+            raise ValueError("backward_error must be finite and nonnegative")
+        if not math.isfinite(self.condition_number) or self.condition_number < 0.0:
+            raise ValueError("condition_number must be finite and nonnegative")
 
 
 def certify_within_tolerance(

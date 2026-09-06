@@ -224,7 +224,7 @@ def experiment_5_the_law(results):
     print()
     print("  one law: topological(occupant)=Fix-invariant=DIRECT; spectral(stage)")
     print("  =Fix^perp-trapped=PARTIAL(the wall); process=consumes-input=CIRCULAR.")
-    print("  Unifies the position ladder (155/§9.8), particle classification (§7.1),")
+    print("  Compares the position ladder (155/§9.12), particle classification (§7.1),")
     print("  the Riemann/number wall (§9.5-9.7, §10.5) and the §0 axis under ONE")
     print("  principle: representation theory of the coupling's symmetry group.")
     print()

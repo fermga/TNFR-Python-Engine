@@ -1,5 +1,4 @@
-r"""Tests for the C5 research infrastructure (claims, manifests, certificates,
-circularity)."""
+r"""Tests for research claims, manifests, certificates, and circularity."""
 
 from __future__ import annotations
 
@@ -13,6 +12,8 @@ from tnfr.research import (
     ClaimStatus,
     ClaimTransitionError,
     ExperimentManifest,
+    EvidenceAdmissionError,
+    EvidenceSidecar,
     ManifestValidationError,
     NumericalCertificate,
     certify_within_tolerance,
@@ -45,6 +46,19 @@ def test_claim_cannot_silently_weaken():
     claim = Claim("NT-X", "example", ClaimStatus.PROVED)
     with pytest.raises(ClaimTransitionError):
         claim.with_status(ClaimStatus.CONJECTURAL)
+
+
+def test_claim_promotion_requires_justification_and_proof_reference():
+    claim = Claim("NT-X", "example", ClaimStatus.MEASURED)
+    with pytest.raises(ClaimTransitionError):
+        claim.promote(ClaimStatus.DERIVED, justification="", proof_references=())
+    promoted = claim.promote(
+        ClaimStatus.DERIVED,
+        justification="exact finite-dimensional identity",
+        proof_references=("theory/example.md",),
+    )
+    assert promoted.status is ClaimStatus.DERIVED
+    assert promoted.references == ("theory/example.md",)
 
 
 def test_terminal_statuses_do_not_transition():
@@ -119,6 +133,24 @@ def test_manifest_known_factor_flag_survives_round_trip():
     assert ExperimentManifest.from_dict(manifest.to_dict()).uses_known_factors
 
 
+def test_strict_manifest_admission_requires_explicit_provenance():
+    manifest = _manifest()
+    manifest.validate_for_admission()
+    data = manifest.to_dict()
+    data.pop("uses_known_factors")
+    with pytest.raises(ManifestValidationError):
+        ExperimentManifest.from_dict(data, strict=True)
+    data = _manifest().to_dict()
+    data["uses_known_factors"] = "false"
+    with pytest.raises(ManifestValidationError):
+        ExperimentManifest.from_dict(data, strict=True)
+
+
+def test_strict_manifest_rejects_old_bit_length_wording():
+    with pytest.raises(ManifestValidationError):
+        _manifest(input_size_model="L = ceil(log2 n) bits").validate_for_admission()
+
+
 def test_input_bit_length():
     assert input_bit_length(1) == 1
     assert input_bit_length(255) == 8
@@ -137,6 +169,85 @@ def test_numerical_certificate_pass_and_fail():
     assert NumericalCertificate(**{
         k: v for k, v in ok.to_dict().items()
     }) == ok
+
+
+def test_strict_numerical_admission_requires_error_context():
+    with pytest.raises(ValueError):
+        certify_within_tolerance("residual", 1e-15, 1e-8).validate_for_admission()
+    cert = certify_within_tolerance(
+        "residual", 1e-15, 1e-8,
+        backward_error=1e-15,
+        condition_number=2.0,
+    )
+    cert.validate_for_admission()
+    with pytest.raises(ValueError):
+        certify_within_tolerance(
+            "residual", 1e-15, 1e-8,
+            backward_error=1e-15, condition_number=2.0,
+            precision="magic128",
+        ).validate_for_admission()
+
+
+def _sidecar(**overrides):
+    values = dict(
+        manifest=_manifest(),
+        artifact="results/example.json",
+        model="fixed linear EPI channel",
+        norm="euclidean",
+        distance_convention="outgoing weighted shortest path",
+        clock="structural_time",
+        finite_horizon=4.0,
+        tail_status="UNASSESSED_FINITE_WINDOW",
+        provenance={
+            "uses_known_factors": False,
+            "uses_target_labels": False,
+            "uses_expected_answers": False,
+        },
+        claim_statement="finite residual is below declared tolerance",
+        claim_status="measured",
+        scope="finite four-node fixture",
+        assumptions=("fixed graph", "float64"),
+        outcome="measured residual",
+        source_imports=("tnfr.physics.structural_morphism",),
+        dirty_source_hash="sha256:example",
+        graph_context={"family": "path", "nodes": 4, "directed": False},
+        state_context={"initial_triads": "fixture", "operator_word": []},
+        numerical_context={"precision": "float64", "conditioning": 2.0},
+        observation_context={"observable": "residual", "aggregation": "max"},
+        cost_context={"construction_seconds": 0.0, "solve_seconds": 0.0},
+        artifact_hashes={"results/example.json": "sha256:example"},
+    )
+    values.update(overrides)
+    return EvidenceSidecar(**values)
+
+
+def test_evidence_sidecar_requires_complete_context_and_serializes():
+    sidecar = _sidecar(
+        certificate=certify_within_tolerance(
+            "residual", 1e-15, 1e-8,
+            backward_error=1e-15,
+            condition_number=2.0,
+        ),
+    )
+    sidecar.validate_for_admission()
+    assert sidecar.to_dict()["provenance"]["uses_known_factors"] is False
+
+
+def test_evidence_sidecar_rejects_missing_provenance_answer():
+    sidecar = _sidecar(provenance={"uses_known_factors": False})
+    with pytest.raises(EvidenceAdmissionError):
+        sidecar.validate_for_admission()
+
+
+def test_evidence_sidecar_validates_before_export(tmp_path):
+    sidecar = _sidecar()
+    destination = sidecar.write_admitted(tmp_path / "sidecar.json")
+    assert destination.exists()
+
+
+def test_evidence_sidecar_rejects_missing_context_group():
+    with pytest.raises(EvidenceAdmissionError):
+        _sidecar(cost_context={}).validate_for_admission()
 
 
 # --- circularity --------------------------------------------------------------

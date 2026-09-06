@@ -50,7 +50,7 @@ Run:
     python benchmarks/emergent_musical_nfr.py
 
 Theoretical anchor: EMERGENT_ONTOLOGY.md section 5.5 (the pulse); theory/
-TNFR_NUMBER_THEORY.md (9.12 the arithmetic pulse, 9.7 the wall);
+TNFR_NUMBER_THEORY.md (9.13 the arithmetic pulse, 9.7 the wall);
 src/tnfr/physics/structural_diffusion.py (compute_emergent_pulse);
 benchmarks/emergent_rhythm.py + inverse_spectrum_to_symmetry.py.
 Status: RESEARCH.

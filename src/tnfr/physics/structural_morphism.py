@@ -1,9 +1,9 @@
-r"""Structural morphisms: nodal-flow transports between networks (R4/R8).
+r"""Structural morphisms: nodal-flow transports between networks.
 
-The operator-certification audit (R8) rejects four arithmetic maps *as operators*
+The operator-contract boundary rejects four arithmetic maps *as operators*
 — CRT projection (a relabeling), the affine map (an automorphism), the power map
 (an endomorphism) and the p-adic lift (a transport map) — while the p-adic tower
-(R4) supplies exact projection/lift **intertwiners**.  Those rejections and that
+supplies exact projection/lift **intertwiners**.  Those rejections and that
 transport are the same thing seen twice: they are **morphisms of the structural
 category**, not nodal reorganizations.
 
@@ -30,22 +30,22 @@ structure-preserving morphisms are exactly the maps that commute with the
 nodal-equation semigroup.  The taxonomy below is the classification of these
 nodal-flow transports by their dimension change and rank; a folding
 ``ENDOMORPHISM`` generally fails the intertwining test, so it does **not** emerge
-as a nodal transport — precisely the R8 boundary.
+as a nodal transport.
 
 **Taxonomy.**
 
 - ``RELABELING`` — bijection to a **re-labelled** graph (``L_src ≠ L_tgt``);
   ``AUTOMORPHISM`` is the sub-case onto the **same** graph (``L_src = L_tgt``,
-  the symmetry of one NFR — R1).
+    the symmetry of one NFR).
 - ``INTERTWINER`` — full-rank same-dimension transport that is not a permutation
   (a change of coordinates conjugating isospectral generators).
 - ``PROJECTION`` — an idempotent onto an ``L``-invariant sector: either
   dimension-dropping (a non-partition surjection) or same-dimension (the ambient
-  Reynolds sector projector ``Q_Γ`` of R1); ``COARSE_GRAINING`` is the sub-case
-  that is a fiber **partition average** (the U5 quotient — R4).
-- ``LIFT`` — dimension-raising injection (prolongation, the U5 lift — R4).
+    Reynolds sector projector ``Q_Γ``); ``COARSE_GRAINING`` is the sub-case that
+    is a fiber **partition average** (a U5-compatible quotient).
+- ``LIFT`` — dimension-raising injection (prolongation, a U5-compatible lift).
 - ``ENDOMORPHISM`` — a rank-deficient **folding** self-map that does **not**
-  intertwine, so it does **not** emerge from the nodal flow (the R8 boundary).
+    intertwine, so it does **not** emerge from the nodal flow.
 
 The genus is the intertwiner; the species are the cells of the (dimension change)
 × (rank type) grid, with ``AUTOMORPHISM ⊆ RELABELING`` and
@@ -59,6 +59,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+import math
 
 import numpy as np
 
@@ -70,6 +71,7 @@ __all__ = [
     "is_partition_average",
     "is_idempotent",
     "intertwining_residual",
+    "finite_time_intertwining_bound",
     "nodal_flow_preservation_residual",
     "classify_morphism",
     "StructuralMorphismCertificate",
@@ -91,7 +93,25 @@ class StructuralMorphismKind(Enum):
 
 
 def _as_float(matrix) -> np.ndarray:
-    return np.asarray(matrix, dtype=float)
+    if np.iscomplexobj(matrix):
+        raise ValueError("structural morphism matrices must be real")
+    value = np.asarray(matrix, dtype=float)
+    if not np.all(np.isfinite(value)):
+        raise ValueError("structural morphism matrices must be finite")
+    return value
+
+
+def _validated_morphism_system(morphism, laplacian_src, laplacian_tgt):
+    m = _as_float(morphism)
+    ls = _as_float(laplacian_src)
+    lt = _as_float(laplacian_tgt)
+    if m.ndim != 2 or ls.ndim != 2 or lt.ndim != 2:
+        raise ValueError("morphism and generators must be matrices")
+    if ls.shape[0] != ls.shape[1] or lt.shape[0] != lt.shape[1]:
+        raise ValueError("source and target generators must be square")
+    if m.shape != (lt.shape[0], ls.shape[0]):
+        raise ValueError("morphism shape must map source to target coordinates")
+    return m, ls, lt
 
 
 def is_permutation_matrix(matrix, *, tol: float = 1e-9) -> bool:
@@ -137,10 +157,44 @@ def intertwining_residual(morphism, laplacian_src, laplacian_tgt) -> float:
     the nodal-flow-preservation defect (the ``s = 0`` derivative of
     :func:`nodal_flow_preservation_residual`).
     """
-    m = _as_float(morphism)
-    ls = _as_float(laplacian_src)
-    lt = _as_float(laplacian_tgt)
+    m, ls, lt = _validated_morphism_system(
+        morphism, laplacian_src, laplacian_tgt
+    )
     return float(np.linalg.norm(m @ ls - lt @ m, 2))
+
+
+def finite_time_intertwining_bound(
+    morphism, laplacian_src, laplacian_tgt, x0, *, structural_time: float
+) -> tuple[float, float]:
+    r"""Return direct defect and a finite-time Duhamel Euclidean bound.
+
+    For ``R = M L_src - L_tgt M``, the flow defect is bounded by
+    ``s exp(s max(||L_src||₂, ||L_tgt||₂)) ||R||₂ ||x0||₂``. This generic
+    finite-time bound is deliberately conservative. Contractive symmetric
+    diffusion semigroups admit the tighter factor ``s`` without the generic
+    exponential amplification; this implementation retains the all-matrix
+    bound and does not claim tightness. It does not certify a nonlinear
+    observer, a tail, U5, or the temporal REMESH contract.
+    """
+    if not np.isfinite(structural_time) or structural_time < 0.0:
+        raise ValueError("structural_time must be finite and nonnegative")
+    m, ls, lt = _validated_morphism_system(
+        morphism, laplacian_src, laplacian_tgt
+    )
+    state = _as_float(x0)
+    if m.shape != (lt.shape[0], ls.shape[0]) or state.shape != (ls.shape[0],):
+        raise ValueError("morphism, generators and source state have incompatible shapes")
+    defect = m @ (matrix_exponential(-structural_time * ls) @ state)
+    defect -= matrix_exponential(-structural_time * lt) @ (m @ state)
+    residual = intertwining_residual(m, ls, lt)
+    growth = max(float(np.linalg.norm(ls, 2)), float(np.linalg.norm(lt, 2)))
+    bound = (
+        structural_time
+        * math.exp(structural_time * growth)
+        * residual
+        * float(np.linalg.norm(state, 2))
+    )
+    return float(np.linalg.norm(defect, 2)), bound
 
 
 def nodal_flow_preservation_residual(
@@ -155,7 +209,9 @@ def nodal_flow_preservation_residual(
     ``≈ 0`` **iff** ``M`` intertwines; a morphism that fails it does not emerge
     from ``∂EPI/∂t = ν_f · ΔNFR`` (e.g. a folding endomorphism).
     """
-    m = _as_float(morphism)
+    m, _, _ = _validated_morphism_system(
+        morphism, laplacian_src, laplacian_tgt
+    )
     ls = _as_float(laplacian_src)
     lt = _as_float(laplacian_tgt)
     n_src = m.shape[1]
@@ -174,7 +230,9 @@ def classify_morphism(
     morphism, laplacian_src, laplacian_tgt, *, tol: float | None = None
 ) -> StructuralMorphismKind:
     r"""Classify ``M : (V_src, L_src) → (V_tgt, L_tgt)`` into its structural kind."""
-    m = _as_float(morphism)
+    m, _, _ = _validated_morphism_system(
+        morphism, laplacian_src, laplacian_tgt
+    )
     n_tgt, n_src = m.shape
     if tol is None:
         tol = derived_tolerance(m)
@@ -196,7 +254,7 @@ def classify_morphism(
     if rank < n_src:  # rank-deficient self-map
         # an intertwining idempotent projects onto an L-invariant sector (it
         # emerges from the nodal flow, e.g. the Reynolds projector Q_Γ); a
-        # folding map that fails intertwining does not emerge (R8 boundary).
+        # A folding map that fails intertwining does not emerge.
         intertwines = intertwining_residual(
             m, laplacian_src, laplacian_tgt) < max(tol, 1e-6)
         if intertwines and is_idempotent(m, tol=tol):
@@ -231,12 +289,13 @@ def certify_morphism(
 ) -> StructuralMorphismCertificate:
     r"""Bundle the classification and structure diagnostics for a morphism.
 
-    ``emerges_from_nodal_equation`` is the direct test that ``M`` carries the
-    nodal-equation flow (``M e^{−sL_src} = e^{−sL_tgt} M``); by the emergence
-    theorem it agrees with ``is_intertwiner``.  ``is_operator`` is always
+    ``emerges_from_nodal_equation`` is the universal generator-level test that
+    ``M`` carries every nodal-equation trajectory.  The optional flow probe is
+    retained as a sampled diagnostic and cannot establish this flag by itself.
+    ``is_operator`` is always
     ``False``: a structural morphism transports the flow but performs no
     ``∂EPI/∂t = ν_f · ΔNFR`` reorganization, so it is **not** one of the 13
-    canonical operators (the R8 boundary).
+    canonical operators.
     """
     m = _as_float(morphism)
     n_tgt, n_src = m.shape
@@ -262,13 +321,15 @@ def certify_morphism(
         intertwining_residual=resid,
         is_intertwiner=resid < threshold,
         nodal_flow_residual=flow,
-        emerges_from_nodal_equation=flow < threshold,
+        # A single probe can lie in a shared invariant subspace (for example,
+        # the constant consensus vector), so it cannot certify every state.
+        emerges_from_nodal_equation=resid < threshold,
         is_operator=False,
         tolerance=tol,
         claim_status=(
             "taxonomy DERIVED from the nodal equation (intertwiner = nodal-flow "
-            "transport); example kinds MEASURED; not a canonical operator (R8 "
-            "boundary); no 14th operator"
+            "transport); example kinds MEASURED; not a canonical operator; no "
+            "14th operator"
         ),
     )
 
@@ -278,7 +339,7 @@ def audit_structural_morphisms() -> list[tuple[str, StructuralMorphismCertificat
 
     Six kinds emerge from the nodal equation (intertwiners: automorphism,
     relabeling, coarse-graining, lift, conjugation-intertwiner, and the Reynolds
-    sector projector); the folding endomorphism does **not** (the R8 boundary).
+    sector projector); the folding endomorphism does **not**.
     """
     import networkx as nx
 
@@ -309,7 +370,7 @@ def audit_structural_morphisms() -> list[tuple[str, StructuralMorphismCertificat
     q = permutation_matrix({0: 2, 1: 0, 2: 3, 3: 1}, list(range(4)))
     out.append(("relabeling", certify_morphism(q, lp, q @ lp @ q.T)))
 
-    # COARSE_GRAINING and LIFT: the p-adic scale adjunction (R4, U5)
+    # COARSE_GRAINING and LIFT: the p-adic scale adjunction (U5-compatible)
     base = frozenset({1, 2})
     l_hi = frac(padic_laplacian(3, 2, compatible_connection_set(3, 2, base)))
     l_lo = frac(padic_laplacian(3, 1, compatible_connection_set(3, 1, base)))
@@ -325,7 +386,7 @@ def audit_structural_morphisms() -> list[tuple[str, StructuralMorphismCertificat
     out.append(("intertwiner",
                 certify_morphism(shear, ls, shear @ ls @ np.linalg.inv(shear))))
 
-    # PROJECTION: the Reynolds sector projector Q_Γ (R1) — the emergent case that
+    # PROJECTION: the Reynolds sector projector Q_Γ — the emergent case that
     # a rank test alone would miss
     star = nx.star_graph(4)
     l_star = lap(star)

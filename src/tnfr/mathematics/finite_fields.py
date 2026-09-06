@@ -34,6 +34,7 @@ import numpy as np
 
 __all__ = [
     "FiniteField",
+    "presentation_isomorphism",
     "additive_character",
     "gauss_period",
     "normalized_periods",
@@ -77,7 +78,13 @@ class FiniteField:
     ``F_p`` in base ``p``.  Arithmetic is exact; the trace lands in ``F_p``.
     """
 
-    def __init__(self, p: int, f: int = 1) -> None:
+    def __init__(
+        self,
+        p: int,
+        f: int = 1,
+        *,
+        modulus: list[int] | tuple[int, ...] | None = None,
+    ) -> None:
         if p < 2:
             raise ValueError("p must be a prime >= 2")
         if f < 1:
@@ -85,7 +92,25 @@ class FiniteField:
         self.p = int(p)
         self.f = int(f)
         self.q = p ** f
-        self.modulus = _find_irreducible(p, f)
+        if modulus is None:
+            self.modulus = _find_irreducible(p, f)
+        else:
+            coefficients = [int(value) % p for value in modulus]
+            if len(coefficients) != f + 1 or coefficients[-1] != 1:
+                raise ValueError("modulus must be monic of declared degree")
+            if f == 1:
+                if coefficients != [0, 1]:
+                    raise ValueError("prime fields use the canonical x modulus")
+            elif f > 3:
+                raise NotImplementedError(
+                    "extension degree f > 3 unsupported"
+                )
+            elif any(
+                _poly_eval(coefficients, value, p) == 0
+                for value in range(p)
+            ):
+                raise ValueError("modulus must be irreducible over F_p")
+            self.modulus = coefficients
 
     def _to_list(self, a: int) -> list[int]:
         d = []
@@ -155,6 +180,42 @@ class FiniteField:
         if k < 1:
             raise ValueError("power k must be >= 1")
         return {self.power(a, k) for a in range(1, self.q)} - {0}
+
+
+def _evaluate_in_field(
+    coefficients: list[int], value: int, field: FiniteField
+) -> int:
+    result = 0
+    for coefficient in reversed(coefficients):
+        result = field.add(field.mul(result, value), coefficient % field.p)
+    return result
+
+
+def presentation_isomorphism(
+    source: FiniteField, target: FiniteField
+) -> tuple[int, ...]:
+    """Return the explicit base-field-preserving map between presentations.
+
+    The source polynomial-basis generator is sent to the first target-field
+    root of the source modulus.  The result maps integer encodings; it is a
+    deterministic presentation control, not a preferred canonical basis.
+    """
+    if source.p != target.p or source.f != target.f:
+        raise ValueError("presentations must have the same p and degree")
+    roots = [
+        value for value in target.elements()
+        if _evaluate_in_field(source.modulus, value, target) == 0
+    ]
+    if not roots:
+        raise ValueError("no presentation isomorphism root found")
+    root = roots[0]
+    mapping = []
+    for element in source.elements():
+        coefficients = source._to_list(element)
+        mapping.append(_evaluate_in_field(coefficients, root, target))
+    if len(set(mapping)) != source.q:
+        raise ValueError("presentation map is not bijective")
+    return tuple(mapping)
 
 
 def additive_character(field: FiniteField, a: int, x: int) -> complex:

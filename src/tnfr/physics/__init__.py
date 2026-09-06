@@ -158,14 +158,37 @@ from .dissipative_conservation import (
     verify_dissipative_balance,
 )
 from .fields import (
+    CoherenceLengthEstimate,
     compute_k_phi_multiscale_variance,
     compute_phase_curvature,
     compute_phase_gradient,
     compute_phase_winding,
     compute_structural_potential,
     estimate_coherence_length,
+    estimate_coherence_length_with_provenance,
     fit_k_phi_asymptotic_alpha,
     k_phi_multiscale_safety,
+)
+from .observability import (
+    LinearObservabilityCertificate,
+    LocalObserverCertificate,
+    ObservationSignature,
+    finite_difference_observer_certificate,
+    linear_observability_certificate,
+    minimal_distinguishing_channels,
+    observation_signature,
+    observer_ablation_ranks,
+    tetrad_observation_channels,
+    tetrad_observation_vector,
+    transform_linear_observer,
+)
+from .reduction_certificates import (
+    ComposedReductionCertificate,
+    KronReductionCertificate,
+    ObserverTransportCertificate,
+    composed_reduction_certificate,
+    kron_reduction_certificate,
+    observer_transport_certificate,
 )
 from .gauge import (
     N_REGIMES,
@@ -284,6 +307,7 @@ from .structural_diffusion import (
     structural_current,
     structural_diffusion_operator,
     structural_diffusivity,
+    structural_eigenvalues,
     structural_eigenmodes,
     structural_field,
     verify_discrete_modes,
@@ -292,6 +316,13 @@ from .structural_diffusion import (
     verify_structural_flow,
     verify_structural_random_walk,
     verify_structural_stability,
+)
+from .winding_certificates import (
+    WindingCertificate,
+    WindingStepObservation,
+    WindingWordObservation,
+    certify_phase_winding,
+    observe_winding_word,
 )
 from .symplectic_substrate import (
     CanonicalStructureCertificate,
@@ -382,10 +413,37 @@ __all__ = [
     "compute_phase_gradient",
     "compute_phase_curvature",
     "estimate_coherence_length",
+    "estimate_coherence_length_with_provenance",
+    "CoherenceLengthEstimate",
     "compute_k_phi_multiscale_variance",
     "fit_k_phi_asymptotic_alpha",
     "k_phi_multiscale_safety",
     "compute_phase_winding",
+    # --- Read-only field observability ---
+    "LinearObservabilityCertificate",
+    "LocalObserverCertificate",
+    "ObservationSignature",
+    "linear_observability_certificate",
+    "finite_difference_observer_certificate",
+    "observer_ablation_ranks",
+    "tetrad_observation_channels",
+    "tetrad_observation_vector",
+    "observation_signature",
+    "minimal_distinguishing_channels",
+    "transform_linear_observer",
+    # --- Structural reduction diagnostics ---
+    "ObserverTransportCertificate",
+    "KronReductionCertificate",
+    "ComposedReductionCertificate",
+    "observer_transport_certificate",
+    "kron_reduction_certificate",
+    "composed_reduction_certificate",
+    # --- Branch-aware phase topology ---
+    "WindingCertificate",
+    "WindingStepObservation",
+    "WindingWordObservation",
+    "certify_phase_winding",
+    "observe_winding_word",
     # --- Force-like Interactions ---
     "InteractionResult",
     "em_like",
@@ -554,6 +612,7 @@ __all__ = [
     "structural_diffusivity",
     "relaxation_spectrum",
     "degree_weighted_total",
+    "structural_eigenvalues",
     "structural_eigenmodes",
     "nodal_domain_count",
     "dispersion_relation",

@@ -14,6 +14,8 @@ from tnfr.physics.canonical import (
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
+    estimate_coherence_length,
+    estimate_coherence_length_with_provenance,
 )
 from tnfr.physics.extended import compute_dnfr_flux, compute_phase_current
 from tnfr.physics.telemetry import compute_structural_telemetry
@@ -72,6 +74,35 @@ def test_disconnected_potential_has_no_cross_component_source():
     for node in graph:
         set_attr(graph.nodes[node], ALIAS_DNFR, 0.5)
     assert compute_structural_potential(graph) == {0: 0.0, 1: 0.0}
+
+
+def test_coherence_length_provenance_matches_scalar_readout():
+    graph = nx.path_graph(8)
+    for node in graph:
+        set_attr(graph.nodes[node], ALIAS_DNFR, 0.1 * (node + 1))
+    estimate = estimate_coherence_length_with_provenance(graph)
+    assert estimate.method in {"autocorrelation_fit", "spectral_gap", "unavailable"}
+    assert estimate.distance_weighting != "unspecified"
+    assert estimate.sample_selection != "unspecified"
+    assert estimate.fit_quality != "unspecified"
+    assert estimate.positive_mode_selection != "unspecified"
+    assert estimate.graph_regime == "undirected; connected"
+    if estimate.method != "unavailable":
+        assert estimate.value == pytest.approx(estimate_coherence_length(graph))
+
+
+def test_coherence_length_gap_fallback_does_not_cache_mode_shapes():
+    graph = nx.path_graph(3)
+    estimate = estimate_coherence_length_with_provenance(graph)
+    assert estimate.method == "spectral_gap"
+    assert "vecs" not in graph.graph["_tnfr_spectrum_cache"]
+
+
+def test_coherence_length_directed_flat_field_refuses_symmetric_fallback():
+    graph = nx.DiGraph([(0, 1), (1, 2)])
+    estimate = estimate_coherence_length_with_provenance(graph)
+    assert estimate.method == "unavailable"
+    assert estimate.graph_regime == "directed; connected"
 
 
 def test_landmark_potential_is_zero_at_equilibrium():

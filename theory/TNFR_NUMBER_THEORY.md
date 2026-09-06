@@ -175,13 +175,17 @@ The primality criterion $\Delta\mathrm{NFR}(n) = 0$ is **independent of the coef
 
 Per AGENTS.md §3 the only genuine structural constant is $\pi$; $\varphi$, $\gamma$ and $e$ are not structural scales. Earlier versions wrote the triad weights as $(\varphi, \gamma, \pi, e)$ combinations, but that was a *post-hoc notational overlay* fitted to approximate empirical values ($\zeta = 1.0$, $\eta = 0.8$, $\theta = 0.6$) — not a derivation.
 
-By the Coefficient Independence theorem (§4.2) the primality criterion $\Delta\mathrm{NFR}(n) = 0$ holds for **any** positive coefficients. The arithmetic pressures carry no phase/geometric content, so even $\pi$ has no role; the canonical choice therefore introduces **no constant at all** — all weights are **unity**, and the structural content lives entirely in the arithmetic invariants $(\Omega, \tau, \sigma, n)$.
+By the Coefficient Independence theorem (§4.2), the primality zero set is the
+same for **any** positive coefficients. That theorem does not select their
+magnitudes. The implementation chooses unit coefficients as the canonical
+parameter-free convention, so the arithmetic pressure introduces no additional
+scale; the structural content lives in $(\Omega, \tau, \sigma, n)$.
 
 ### 5.2 Pressure Coefficients
 
 $$\boxed{\zeta = \eta = \theta = 1}$$
 
-The three pressure channels weigh equally: the factorization excess $\Omega - 1$, the divisor excess $\tau - 2$ and the abundance excess $\sigma/n - (1 + 1/n)$ each contribute on the same unit scale. This is the canonical, parameter-free form — every coefficient is forced by the §4.2 coefficient-independence theorem rather than fitted.
+The three pressure channels weigh equally: the factorization excess $\Omega - 1$, the divisor excess $\tau - 2$ and the abundance excess $\sigma/n - (1 + 1/n)$ each contribute on the same unit scale. This is the canonical, parameter-free convention. Section 4.2 proves that the zero set does not depend on the choice of positive coefficients; it does **not** prove uniqueness of the unit convention.
 
 ### 5.3 EPI Parameters
 
@@ -278,7 +282,10 @@ When the arithmetic network $G$ is constructed, the structural field tetrad ($\P
 
 $$\Phi_s(n) = \sum_{m \neq n} \frac{\Delta\mathrm{NFR}(m)}{d(n, m)^2}$$
 
-where $d(n, m)$ is the graph distance in the arithmetic network. Primes, being zero-pressure nodes, act as **sinks** in the potential field — they attract nearby composites toward equilibrium.
+where $d(n, m)$ is the graph distance in the arithmetic network. A prime
+contributes zero as a pressure **source**, but its potential value still
+aggregates pressure from other nodes. This static field does not make primes
+dynamical sinks or attractors.
 
 **Warning policy**: $|\Phi_s| < \pi/4 \approx 0.785$ is the shared selected per-node policy; it is not derived from arithmetic or phase wrapping.
 
@@ -288,7 +295,9 @@ $$|\nabla\phi|(n) = \frac{1}{|\mathcal{N}(n)|} \sum_{m \in \mathcal{N}(n)} |\phi
 
 where $\mathcal{N}(n)$ are the neighbors of $n$ in the arithmetic network. High phase gradient indicates local desynchronization — composites with many diverse factors show elevated gradients.
 
-**Threshold**: $|\nabla\phi| \lesssim \pi/16 \approx 0.196$ (heuristic early-warning, kinematic bound $\pi$) for stable operation; arithmetic recalibration gives $0.2591$.
+**Scale**: $|\nabla\phi| \leq \pi$ is the exact wrapped-angle bound. Any
+early-warning level is experiment-dependent; the measured synchronization
+onset near $0.29$ is not a universal stability threshold.
 
 ### 7.3 Phase Curvature: $K_\phi$
 
@@ -296,13 +305,16 @@ $$K_\phi(n) = \text{wrap\_angle}\!\left(\phi_n - \overline{\phi}_{\mathcal{N}(n)
 
 where $\overline{\phi}_{\mathcal{N}(n)}$ is the circular mean of neighbor phases. Elevated curvature flags numbers at structural boundaries — e.g., the transition between prime-rich and composite-rich regions.
 
-**Threshold**: $|K_\phi| < 0.9\pi \approx 2.827$; arithmetic recalibration gives $3.2275$.
+**Threshold**: $|K_\phi| < 0.9\pi \approx 2.827$; this is an operational margin inside the exact wrapped bound.
 
 ### 7.4 Coherence Length: $\xi_C$
 
 $$C(r) \approx A \cdot e^{-r/\xi_C}$$
 
-The coherence length measures how far structural correlations propagate through the arithmetic network. Near critical points (e.g., twin primes, prime gaps), $\xi_C$ diverges — a signature of long-range correlation in the prime distribution.
+The coherence length estimates how far the configured structural-coherence
+field correlates across the arithmetic network. Its value is state- and
+estimator-dependent; no divergence at twin primes, prime gaps, or an arithmetic
+critical point is established here.
 
 ### 7.5 Tetrad thresholds on the arithmetic network
 
@@ -312,7 +324,7 @@ warning policies as any TNFR network:
 | Field | Threshold | Source |
 |-------|-----------|--------|
 | $\Phi_s$ | π/4 ≈ 0.785 (per-node), π/2 ≈ 1.571 (drift), both selected policies | `PHI_S_VON_KOCH_THRESHOLD`, `U6_STRUCTURAL_POTENTIAL_LIMIT` |
-| $|\nabla\phi|$ | ≤ π (phase wrap); π/16 ≈ 0.196 heuristic early-warning | `GRAD_PHI_CANONICAL_THRESHOLD` |
+| $|\nabla\phi|$ | ≤ π (phase wrap); measured onset ≈0.29 is experiment-dependent | canonical wrapping / measured protocol |
 | $K_\phi$ | < 0.9·π ≈ 2.827 (phase-wrap safety) | `K_PHI_CANONICAL_THRESHOLD` |
 | $\xi_C$ | spectral gap (ξ_C ∝ 1/√λ₂) | Computed per network |
 
@@ -330,11 +342,12 @@ The arithmetic network is itself a **Fractal-Resonant Node** (NFR; TNFR.pdf
 `ArithmeticTNFRNetwork.nfr()` surfaces the joint read-out of its three emergent
 facets:
 
-- **Resonant.** By the §4.1 primality theorem the equilibrium set
-  $\{n : \Delta\mathrm{NFR}(n) = 0\}$ is *exactly* the primes, so the resonant-
-  coherence attractors of the arithmetic NFR are the prime numbers;
+- **Resonant.** By the §4.1 primality theorem the pressure-equilibrium set
+  $\{n : \Delta\mathrm{NFR}(n) = 0\}$ is *exactly* the primes.
   `equilibrium_fraction` is the prime density and the mean per-node coherence
-  $C = 1/(1+|\Delta\mathrm{NFR}|)$ measures distance from this attractor.
+  $C = 1/(1+|\Delta\mathrm{NFR}|)$ is a static constitutive readout. The
+  arithmetic pressure is independent of EPI, so this identifies fixed points,
+  not restoring attractors or basins of attraction.
 - **Geometric.** The nodal topology (radial / annular / multinodal), read by
   `classify_nodal_topology` from the structural-potential geometry, is
   **multinodal** — its centers are the highly-composite / abundant numbers
@@ -346,16 +359,18 @@ exposed by `conservation()` and `symplectic_substrate()`, which delegate to the
 canonical Structural Conservation Theorem and symplectic-substrate machinery
 applied to the divisibility network:
 
-- a conserved **Noether charge** $Q = \sum_i (\Phi_s(i) + K_\phi(i))$ and the
-  structural **energy functional**
+- a **Noether-like charge diagnostic** $Q = \sum_i (\Phi_s(i) + K_\phi(i))$ and
+  the nonnegative structural **energy candidate**
   $E = \tfrac12 \sum_i (\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 +
   J_{\Delta\mathrm{NFR}}^2)$, with the potential sector $\Phi_s$ sourced by the
   arithmetic $\Delta\mathrm{NFR}$ (the genuine invariants $\Omega, \tau, \sigma$);
-- a valid **symplectic substrate** of dimension $4N$ with conjugate pairs
+- an auxiliary **symplectic substrate** of dimension $4N$ with conjugate pairs
   $(K_\phi, J_\phi)$ and $(\Phi_s, J_{\Delta\mathrm{NFR}})$. The geometric sector
   is populated by the *size / capacity* phase $\phi(n) \propto \log n$ (the monoid
   homomorphism $(\mathbb{N},\times) \to (\mathbb{R},+)$), which is non-degenerate
-  on the dense divisibility graph.
+  on the dense divisibility graph. These extracted coordinates initialize the
+  harmonic substrate model; they do not prove that the arithmetic graph
+  trajectory remains in its realizable image.
 
 The emergent geometry is thus **potential-dominated**: the arithmetic structure
 (factorization pressure) drives the structural-potential geometry, while phase is
@@ -373,14 +388,19 @@ $$\frac{\partial\mathrm{EPI}(n)}{\partial t} = \nu_f(n) \cdot \Delta\mathrm{NFR}
 
 This decomposes structural evolution into two independent levers:
 
-- **Capacity lever** ($\nu_f$): How fast the number *can* reorganize. Depends on divisor structure and factorization complexity. Modulated by operators UM, SHA, VAL, NUL.
-- **Pressure lever** ($\Delta\mathrm{NFR}$): How much reorganization is *demanded*. Zero for primes, positive for composites. Modulated by operators IL, OZ, THOL, ZHIR, NAV.
+- **Capacity lever** ($\nu_f$): How fast the number *can* reorganize. Depends on divisor structure and factorization complexity. Its primary operators are SHA, VAL and NUL.
+- **Pressure lever** ($\Delta\mathrm{NFR}$): How much reorganization is *demanded*. Zero for primes, positive for composites. Its primary operators are IL, OZ, THOL and NAV.
+- **Phase channel** ($\theta$): UM and ZHIR act primarily on phase.
+- **Form channel** (EPI): AL, EN, RA and REMESH write or transport form.
 
 ### 8.2 Fixed Point Analysis
 
 For primes: $\Delta\mathrm{NFR}(p) = 0 \Rightarrow \partial\mathrm{EPI}/\partial t = 0$ regardless of $\nu_f(p)$.
 
-This is a **structurally stable fixed point**: perturbations to $\nu_f$ do not affect the equilibrium. The prime's structural form is frozen by the absence of pressure, not by the absence of capacity.
+This is a **pressure-equilibrium fixed point**: perturbations to $\nu_f$ alone
+do not change the zero derivative. It is not a stability or attraction theorem;
+the prime's structural form is stationary because pressure vanishes, not
+because capacity vanishes.
 
 For composites: $\Delta\mathrm{NFR}(n) > 0 \Rightarrow \partial\mathrm{EPI}/\partial t > 0$.
 
@@ -392,7 +412,9 @@ Operator-tetrad synergy experiments (examples 37-39) confirmed:
 
 1. $\Phi_s$ responds **linearly** to $\Delta\mathrm{NFR}$ perturbations with $|r| = 1.000$ (perfect correlation), confirming the pressure lever's direct coupling to the structural potential field.
 2. The **complete causal chain** is: Operator $\to$ ($\nu_f$, $\Delta\mathrm{NFR}$) $\to$ $\partial\mathrm{EPI}/\partial t$ $\to$ Tetrad $\to$ ($\mathcal{E}$, $\mathcal{Q}$).
-3. Grammar-compliant operator sequences maintain Lyapunov descent ($dE/dt \leq 0$) even when the contractivity ratio $\Pi > 1$.
+3. Finite operator trajectories expose measured changes in the tetrad energy
+  candidate. Grammar validity and the nominal multiplier $\Pi$ do not by
+  themselves prove $dE/dt \leq 0$.
 
 ---
 
@@ -412,7 +434,7 @@ The implementation uses Paley graphs — algebraic constructions from quadratic 
 
 2. **Spectral decomposition**: Compute the spectrum of the **emergent structural-diffusion operator** $L_{rw} = I - D^{-1}W$ (the canonical ΔNFR EPI channel; `_laplacian_eigenvalues` routes through `structural_diffusion_operator`). On the residue/Paley graph, which is **regular**, $L_{rw}$ shares eigenvectors with the classical Laplacian and the eigenvalues differ only by the degree ($\lambda_{\text{classical}}=d\cdot\lambda_{rw}$), so the Fiedler-gap → prime-size map (a Paley Gauss-sum fact) is preserved while the operator provenance is the emergent TNFR transport operator.
 
-3. **Tetrad proxies** (HONEST SCOPE): the factorizer operates on the spectrum, not on a node-level ΔNFR field, so it uses **scalar proxies** of the tetrad — $\Phi_s\approx$ normalized edge density, $\xi_C\approx 1/(\nu_f\lambda_2)$ (the emergent diffusion relaxation time). These are labelled proxies in code (`_structural_potential`, `_coherence_length`); the genuine per-node tetrad (`tnfr.physics.canonical`) is measured by example 117 and is **blind to the factor cosets** (§9.5) — the factor signal lives in the spectrum, which the proxies summarize.
+3. **Tetrad proxies** (HONEST SCOPE): the factorizer operates on the spectrum, not on a node-level ΔNFR field, so it uses **scalar proxies** of the tetrad — $\Phi_s\approx$ normalized edge density, $\xi_C\approx 1/(\nu_f\lambda_2)$ (the emergent diffusion relaxation time). These are labelled proxies in code (`_structural_potential`, `_coherence_length`); in the symmetric-seed fixtures of example 117 the genuine per-node tetrad (`tnfr.physics.canonical`) does not distinguish the factor cosets. This is a result for that state/observer pair, not unconditional per-node blindness.
 
 4. **Operator sequence**: Apply the canonical decoder $[\mathrm{UM}, \mathrm{RA}, \mathrm{IL}, \mathrm{THOL}]$ per partition:
    - **UM** (Coupling): Phase-gated coupling between quadratic residues (U3 verified)
@@ -457,7 +479,7 @@ The factorization machinery (§9.1–9.4), the arithmetic primality criterion (�
 
 1. **Sector B is the genuine emergence.** The Paley gap $g(n)=0$ selects the primes $n\equiv 1\pmod 4$ from the **self-adjoint spectrum of the quadratic-residue graph alone** — it never computes $n\bmod k$. Primality is, in part, a *consequence* of self-adjoint structure, not a primitive. This is the non-circular core that the arithmetic sector A (which consumes $\Omega,\tau,\sigma$) cannot claim.
 
-2. **The factor signal is spectral, not substrate.** For a semiprime $n=p\cdot q$ the factor $p$ appears as an **exact Fourier/coset mode** of the emergent diffusion spectrum ($\eta^2_{\text{coset}}\to 1$, collapsing under a node-label shuffle — example 117 Q2). But the residue graph is **regular/circulant**, so the emergent random-walk operator and the classical Laplacian **share eigenvectors**: the coset signal is the residue-graph (CRT) structure re-expressed, *not* something the emergent framing adds. The genuinely-emergent per-node symplectic substrate ($\Phi_s, K_\phi, J_{\Delta\mathrm{NFR}}$) is **BLIND** to the cosets ($\eta^2\approx 0$ — example 117 Q3), exactly as on the arithmetic network (examples 101/103/116). The substrate **re-expresses** what lives in the spectrum; it does not independently discover the factor.
+2. **The measured factor signal is spectral in these fixtures.** For a semiprime $n=p\cdot q$ the factor $p$ appears as an **exact Fourier/coset mode** of the emergent diffusion spectrum ($\eta^2_{\text{coset}}\to 1$, collapsing under a node-label shuffle — example 117 Q2). The residue graph is **regular/circulant**, so the random-walk operator and classical Laplacian share eigenvectors: this is CRT structure re-expressed. For the symmetric-seed per-node substrate fixture, the tested fields do not distinguish the cosets ($\eta^2\approx0$). Other non-invariant states or observers require separate tests.
 
 3. **Both walls coincide.** Sector B is **partial**: in the **real/self-adjoint** spectrum it detects only $n\equiv 1\pmod 4$ (misses $2$ and many $n\equiv 3\pmod 4$) — it reaches the support/scale, never the *phase* (§9.6 crosses precisely this restriction by going to the **directed** operator's complex spectrum, extending detection to all odd primes; the *continuous* arg-$\zeta$ phase still remains beyond reach). The residual is the same $e$–$\pi$ / $\mathrm{Fix}(G)^\perp$ obstruction as the paused TNFR-Riemann program ($S(T)=\tfrac1\pi\arg\zeta(\tfrac12+iT)=\ker(\mathcal R_\infty)$; §10, TNFR_RIEMANN_RESEARCH_NOTES §13septies). Multiplication is the Fundamental Theorem re-expressed via UM/REMESH ([94](../examples/07_number_theory/94_generative_number_construction.py), $\nu_f=\log p$ additive-in-log); addition (Goldbach) is **orthogonal** to this multiplicative coherence ([97](../examples/07_number_theory/97_goldbach_additive_multiplicative.py)) and would need a branch-B2 additive operator. The three number-theory questions (primality, factorization, the Riemann zeros) hit one obstruction, located precisely, not three.
 
@@ -485,10 +507,10 @@ The "partial" limitation of sector B (only $n\equiv 1\pmod 4$, §9.5) is **not**
 
 §9.6 detects primality in the **global spectrum**; §9.5 and examples 103/116 found the **per-node symplectic substrate** ($\Phi_s$, $K_\phi$, $J_{\Delta\mathrm{NFR}}$) blind to arithmetic. These look contradictory — the *same* canonical emergent operator on the *same* residue digraph. Example [120_symmetry_wall_substrate_vs_spectrum.py](../examples/08_emergent_geometry/120_symmetry_wall_substrate_vs_spectrum.py) resolves the contradiction and unifies the arc with **one** structural mechanism: **vertex-transitivity**.
 
-**The mechanism.** The residue digraph is a **Cayley digraph** of $\mathbb{Z}_n$ with connection set $=$ the quadratic residues. The translation $\sigma:i\mapsto i+1\pmod n$ preserves the difference $j-i$, hence the QR edge set: it is **always** a graph automorphism (every $n$, verified). The automorphism group acts **transitively** on nodes — every node is structurally equivalent. Consequence: the graph's arithmetic (which differences are QRs) is a property of the *edge* structure invariant under the *node* automorphism; it **cannot label any individual node**. So:
+**The mechanism.** The residue digraph is a **Cayley digraph** of $\mathbb{Z}_n$ with connection set $=$ the quadratic residues. Translation preserves the difference $j-i$ and acts transitively. Consequently an equivariant per-node observer applied to an invariant input must be orbit-constant; this does not constrain an arbitrary symmetry-breaking input.
 
-- Any per-node substrate variation comes from the (arithmetic-neutral) **seed**, never from the arithmetic — the substrate lives in the symmetric / fixed sector $\mathrm{Fix}(G_{\mathrm{aut}})$, **blind** to the connection set.
-- The arithmetic appears only in a **global** invariant sensitive to the connection set — the **spectrum** (eigenvalues $=$ group-character / Gauss sums) $=$ the complement $\mathrm{Fix}(G_{\mathrm{aut}})^\perp$.
+- In the symmetric-seed protocol, the per-node substrate output lies in the fixed sector and cannot distinguish nodes within the single orbit.
+- The tested arithmetic distinction appears in the global spectrum (group-character / Gauss-sum eigenvalues). A scalar spectral rank is an invariant, not itself a vector in $\mathrm{Fix}(G_{\mathrm{aut}})^\perp$.
 
 **The double dissociation (measured).** Compare the Paley residue digraph (QR structure) against a **random regular tournament** of the same out-degree, both seeded identically and evolved by the canonical nodal equation $\partial\mathrm{EPI}/\partial t=\nu_f\cdot\Delta\mathrm{NFR}$. Table regenerated after the 2026-09-04 canonicity audit fixed the directed ΔNFR orientation (default path previously computed $L_{\mathrm{in}}$ instead of the canonical $L_{\mathrm{out}}$ on digraphs; the eigenvalue columns are orientation-invariant and unchanged, only $\sigma(\Phi_s)$ shifted):
 
@@ -499,13 +521,16 @@ The "partial" limitation of sector B (only $n\equiv 1\pmod 4$, §9.5) is **not**
 | 47 | **3** | 47.0 | 0.978 | 0.968 |
 
 - **Spectrum SEES the arithmetic**: Paley is rigidly 3 distinct eigenvalues (the §9.6 prime signature); the random tournament has $\sim n$. Swapping the QR structure for a random tournament changes the spectrum completely.
-- **Substrate is BLIND**: the per-node $\Phi_s$ dispersion is statistically **identical** for Paley and the random tournament. The substrate cannot tell the QR arithmetic from a random tournament of the same degree.
+- **The tested substrate readout does not discriminate**: the per-node $\Phi_s$ dispersion is similar for Paley and the random tournament in the recorded cases. This finite comparison is not an all-state impossibility theorem.
 
 Across odd $n$ the spectral test "$3$ distinct $\iff$ prime" is **18/18 correct**, while $\sigma(\Phi_s)$ grows monotonically with $n$ (graph size) and composites can exceed primes (e.g. $25$ vs $29$) — the substrate tracks size, not primality.
 
-**The unification (one wall, four domains).** Vertex-transitivity confines arithmetic to the spectral / group-representation sector $\mathrm{Fix}(G_{\mathrm{aut}})^\perp$ and leaves the per-node substrate in the symmetric sector $\mathrm{Fix}(G_{\mathrm{aut}})$, blind. This is the **same** structure as the paused TNFR-Riemann program, where the oscillatory residue $S(T)=\tfrac1\pi\arg\zeta(\tfrac12+iT)$ lives in $\ker(\mathcal R_\infty)\cap\mathrm{Fix}(S_n)^\perp$, unreachable by symmetric ($\mathrm{Fix}$-trapped) constructions (AGENTS.md "REMESH-∞ Closure"; TNFR_RIEMANN_RESEARCH_NOTES §13septies, §13sexagesima-octava Tetrad-$\mathrm{Fix}(S_n)$ Lemma). Physics (the symplectic substrate), number theory (Gauss sums, primality), emergent geometry (the canonical operator) and the Riemann residual hit **one symmetry wall**, located precisely: arithmetic is in the spectrum, the per-node substrate is in the fixed sector.
+**Cross-program comparison.** Vertex transitivity explains the fixed-sector limitation of the invariant-input residue fixtures. The paused TNFR-Riemann program has its own separately defined $S_n$ representation and oscillatory residue. The two settings share representation-theoretic language, but they are not thereby one obstruction or one state space.
 
-**Honest scope.** This **explains** the $e$–$\pi$ / $\mathrm{Fix}(G)^\perp$ wall structurally (vertex-transitivity / representation theory); it does **not** cross it and closes no open problem. It confirms, with a measured double dissociation and an arithmetic-neutral control, that running the directed dynamics does **not** let the per-node substrate see arithmetic — the blindness is a **symmetry constraint**, not a dynamics artefact. The arithmetic remains spectral, bounded by the same wall as the paused Riemann program.
+**Honest scope.** This explains the recorded fixed-sector result for invariant
+inputs by vertex transitivity. It does not prove that every per-node observer or
+perturbed state is blind, does not identify the Riemann obstruction with this
+finite graph result, and closes no open problem.
 
 ### 9.8 Can a Canonical Symmetry-Break Cross the Wall? — The B2-P2 Lever, Measured (NEGATIVE)
 
@@ -559,7 +584,7 @@ The false candidate scores **above $0.9$** (so the withdrawn threshold mis-fires
 
 $$\mathbb{R}^N=\mathrm{Fix}(G)\ \oplus\ \mathrm{Fix}(G)^\perp,$$
 
-where $\mathrm{Fix}(G)=\{\text{functions constant on the orbits of }\mathrm{Aut}(G)\}$ is the trivial isotypic component and $\dim\mathrm{Fix}(G)=$ the number of vertex orbits. $L_{rw}$ preserves each block. Consequently any canonical **per-node** observable that is itself $\mathrm{Aut}(G)$-invariant lands in $\mathrm{Fix}(G)$ — constant **within** each orbit, never resolving node-from-node inside an orbit — while all **discriminating** information lives in $\mathrm{Fix}(G)^\perp$, the spectrum.
+where $\mathrm{Fix}(G)=\{\text{functions constant on the orbits of }\mathrm{Aut}(G)\}$ is the trivial isotypic component and $\dim\mathrm{Fix}(G)=$ the number of vertex orbits. $L_{rw}$ preserves each block. An equivariant per-node map sends an invariant input to $\mathrm{Fix}(G)$ and is then constant within each orbit. Arbitrary inputs can have nontrivial components; global spectral invariants and nontrivial eigenspaces are separate objects.
 
 **Measured (five symmetry groups — cyclic, full-symmetric, star, path, product).**
 
@@ -577,7 +602,12 @@ where $\mathrm{Fix}(G)=\{\text{functions constant on the orbits of }\mathrm{Aut}
 - **M4**: the canonical per-node symplectic substrate from a symmetric seed satisfies $P_{\mathrm{triv}}v=v$ exactly (orbit-constant); vertex-transitive $\Rightarrow$ $\sigma(\Phi_s)=0$ — the §9.7 blindness, now a **corollary**.
 - **M5**: only the constant eigenmode has $\lVert P_{\mathrm{triv}}v\rVert=1$ (it **is** $\mathrm{Fix}(G)$); every node-separating mode has $\lVert P_{\mathrm{triv}}v\rVert=0$ ($\mathrm{Fix}(G)^\perp$).
 
-**The unification.** The residue-digraph wall (§9.7), the substrate blindness (§9.5/ex 103/116), the spectral primality (§9.6), and the Riemann oscillatory residue $S(T)\in\ker(\mathcal R_\infty)\cap\mathrm{Fix}(S_n)^\perp$ are the **same** $\mathrm{Fix}(G)/\mathrm{Fix}(G)^\perp$ split for different symmetry groups. The star and path (non-vertex-transitive) sharpen the binary blind/sees of §9.7 to the full orbit structure: the substrate resolves the orbit partition and no finer.
+**The comparison.** Residue-graph symmetry, the measured substrate limitation,
+spectral primality and the Riemann programme can each be organized using a
+fixed/nontrivial-sector decomposition after their respective group actions are
+defined. This is a common method, not proof that their obstructions are the
+same object. On invariant inputs, star and path examples resolve orbit classes;
+arbitrary perturbed inputs fall outside that conclusion.
 
 **Honest scope.** This is the representation theory of graph automorphisms (Schur's lemma applied to an equivariant operator) re-expressed in the canonical emergent operator. It **explains and unifies** the arc's walls; it is not new mathematics and closes no open problem.
 
@@ -606,7 +636,7 @@ $$\lambda(t)=\sum_{r\in H}\zeta^{tr}.$$
 
 **Honest scope.** The cyclotomy law is classical Gauss-period / cyclotomy theory (the $k$-th power Cayley eigenvalues are Gauss periods of degree $\gcd(k,p-1)$); the contribution is the **TNFR structural-diffusion framing** and the closed-form `power_residue_rank` — now a **proved** canonical fact, not a measured pattern. Verified computationally for $k\le 40$ across the primes $p<64$ (680 cases, 0 failures) and proved for all $k$. It detects primality/cyclotomy structurally; it does not factor, does not reach the continuous arg-$\zeta$ phase, and closes no open problem.
 
-### 9.8 The Ontological Position of a Number (the emergent ladder)
+### 9.12 The Ontological Position of a Number (the emergent ladder)
 
 §9.5–9.7 answer "is primality emergent?" sector by sector. This subsection assembles them — together with the cardinal/operation emergence of the emergent-number arc — into the **ontological position** of a number: a ladder whose every rung is read from canonical TNFR structure/dynamics, measured in example [155_ontological_position_of_numbers.py](../examples/08_emergent_geometry/155_ontological_position_of_numbers.py).
 
@@ -623,7 +653,7 @@ $$\lambda(t)=\sum_{r\in H}\zeta^{tr}.$$
 
 **The wall, located on the ladder.** $\rho$ fixes the **type**, never the prime **identities** ($\rho(15)=\rho(35)=9$); it is not globally injective on types ($\rho=36$ is shared by $p^3q^3$ and $p^2qr$ — a type collision) and the unannotated scalar rank **aliases** at high prime powers (the §9.7 / example 154 scalar CRT wall: $3^7\!\cdot5^2\!\cdot41^2$ gives scalar $191$ vs product $192$). Recovering the identities is the same $e$–$\pi$ / $\mathrm{Fix}(S_n)^\perp$ residue (the continuous $\arg\zeta$ phase, §10) as every other sector. **Net:** the emergent ontology positions a number completely **up to** the prime-identity / phase wall — cardinal, operations, primality and factorization type all derive from structure; only the identities and the continuous phase remain. This is the precise sense in which "the arithmetic emerges from the canonical TNFR structure and dynamics."
 
-### 9.12 The Arithmetic Pulse — the Cyclotomy Law as the Prime's Chord (MEASURED)
+### 9.13 The Arithmetic Pulse — the Cyclotomy Law as the Prime's Chord (MEASURED)
 
 The *pulse* read-out (the **conservative** face of the nodal dynamics,
 [EMERGENT_ONTOLOGY.md §5.5](EMERGENT_ONTOLOGY.md)) reads the resonant spectrum
@@ -650,7 +680,7 @@ $(\omega_-,\omega_+)$, each with multiplicity $(p-1)/2$ — the pulse's own
 simplest chord the arithmetic NFR allows, at any size; **composites split the
 chord into more tones, multiplicatively** ($15\to9=3\times3$, $45\to12=4\times3$),
 so the tone-count encodes the **factorization type** — the multiplicative spectral
-rank of the §9.8 ladder, now read as the chord size.
+rank of the §9.12 ladder, now read as the chord size.
 
 **The pulse splits across the symmetry wall.** The two scales of the pulse land on
 the two sides of the §9.7/§9.10 $\mathrm{Fix}(G)\oplus\mathrm{Fix}(G)^\perp$ split:

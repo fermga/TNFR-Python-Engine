@@ -165,12 +165,12 @@ def spectral_dimension(eigvals: np.ndarray) -> float:
     return -2.0 * float(np.median(slope[k // 4:k - k // 4]))
 
 
-def _canonical_anchor_ok(G) -> bool:
-    """Anchor: hand-built L_sym spectrum == canonical engine spectrum."""
+def _canonical_anchor_ok(G) -> bool | None:
+    """Anchor: hand-built spectrum equals the canonical engine spectrum."""
     try:
         from tnfr.physics.structural_diffusion import structural_eigenmodes
     except Exception:
-        return True  # engine spectrum unavailable; L_sym stands alone
+        return None
     try:
         out = structural_eigenmodes(G)
         ev = np.asarray(out[0] if isinstance(out, tuple) else out, float)
@@ -178,7 +178,7 @@ def _canonical_anchor_ok(G) -> bool:
         ev = np.sort(ev[: len(mine)])
         return bool(np.allclose(ev, mine, atol=1e-8))
     except Exception:
-        return True
+        return None
 
 
 def main() -> None:
@@ -197,7 +197,8 @@ def main() -> None:
     G3, _ = sierpinski_simplex(3, 3)
     anchor = _canonical_anchor_ok(G3)
     print(f"  node-count recurrence N(m,k)=m*N(m,k-1)-C(m,2): {m1_ok}")
-    print(f"  L_sym spectrum == canonical structural_eigenmodes: {anchor}")
+    anchor_label = "UNAVAILABLE" if anchor is None else str(anchor)
+    print(f"  L_sym spectrum == canonical structural_eigenmodes: {anchor_label}")
     assert m1_ok, "self-similar construction node counts are wrong"
 
     # M2 -- DEFINITE similarity dimension, SET BY THE LOCAL GRADE.

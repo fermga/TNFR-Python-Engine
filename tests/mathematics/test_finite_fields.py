@@ -21,6 +21,7 @@ from tnfr.mathematics.finite_fields import (
     explicit_cayley_spectrum_count,
     gauss_period,
     prime_field_matches_cyclotomy,
+    presentation_isomorphism,
 )
 
 PRIMES = [5, 7, 11, 13, 17]
@@ -161,6 +162,20 @@ def test_degree_four_unsupported():
 def test_invalid_field_parameters(bad):
     with pytest.raises(ValueError):
         FiniteField(*bad)
+
+
+def test_invalid_alternate_modulus_is_rejected():
+    with pytest.raises(ValueError):
+        FiniteField(3, 2, modulus=[0, 0, 1])
+
+
+def test_alternate_presentations_have_an_explicit_isomorphism():
+    first = FiniteField(2, 3, modulus=[1, 0, 1, 1])
+    second = FiniteField(2, 3, modulus=[1, 1, 0, 1])
+    mapping = presentation_isomorphism(first, second)
+    assert mapping[0] == 0
+    assert mapping[first.one] == second.one
+    assert len(set(mapping)) == first.q
 
 
 def test_kth_power_rejects_nonpositive():

@@ -352,6 +352,13 @@ def classify_element(
     )
 
 
+def classify_element_observation(Z: int, *, max_n: int = 7):
+    """Return an element classification with explicit chemical provenance."""
+    from ..metrics.observations import observe_emergent_element
+
+    return observe_emergent_element(classify_element(Z, max_n=max_n))
+
+
 __all__ = [
     "EigenmodeShell",
     "EmergentElement",
@@ -362,4 +369,5 @@ __all__ = [
     "emergent_magic_numbers",
     "valence_delta_nfr",
     "classify_element",
+    "classify_element_observation",
 ]

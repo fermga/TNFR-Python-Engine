@@ -21,8 +21,8 @@ The projector construction is exact for **normal** operators
 every circulant / vertex-transitive Cayley operator in the TNFR number-theory
 programme.  For **non-normal** directed operators the right eigenvectors are not
 orthogonal and ``Q Qᴴ`` is not the spectral projector; such operators require a
-Schur/Riesz construction (the R9 directed non-normal programme) and are rejected
-here rather than silently mishandled.  This module never calls ``eigh`` on a
+Schur/Riesz construction and are rejected here rather than silently mishandled.
+This module never calls ``eigh`` on a
 non-symmetric operator.
 """
 
@@ -48,6 +48,7 @@ __all__ = [
     "commutator_norm",
     "is_normal",
     "subspace_projector",
+    "orthonormal_basis",
     "spectral_clusters",
     "matrix_exponential",
     "spectral_abscissa",
@@ -61,8 +62,8 @@ __all__ = [
 class NonNormalOperatorError(ValueError):
     """Raised when a non-normal operator reaches a normal-only spectral path.
 
-    Non-normal directed operators need a Schur/Riesz projector construction (the
-    R9 directed non-normal programme); ``Q Qᴴ`` from non-orthogonal right
+    Non-normal directed operators need a Schur/Riesz projector construction;
+    ``Q Qᴴ`` from non-orthogonal right
     eigenvectors is not the spectral projector, so it is refused here.
     """
 
@@ -96,6 +97,24 @@ def is_normal(matrix, *, tol: float | None = None) -> bool:
     return commutator_norm(a) <= tol
 
 
+def orthonormal_basis(basis, *, tol: float | None = None) -> np.ndarray:
+    r"""Return a rank-aware orthonormal basis for the supplied columns."""
+    b = np.asarray(basis, dtype=complex)
+    if b.ndim == 1:
+        b = b[:, None]
+    if b.ndim != 2:
+        raise ValueError("basis must be a one- or two-dimensional array")
+    if b.shape[1] == 0:
+        return np.zeros((b.shape[0], 0), dtype=complex)
+    if not np.all(np.isfinite(b)):
+        raise ValueError("basis must contain finite values")
+    u, singular_values, _ = np.linalg.svd(b, full_matrices=False)
+    if tol is None:
+        tol = max(b.shape) * np.finfo(float).eps * singular_values[0]
+    rank = int(np.sum(singular_values > max(float(tol), 0.0)))
+    return u[:, :rank]
+
+
 def subspace_projector(basis) -> np.ndarray:
     r"""Orthogonal projector ``Q Qᴴ`` onto ``span(basis)``.
 
@@ -106,9 +125,7 @@ def subspace_projector(basis) -> np.ndarray:
     b = np.asarray(basis, dtype=complex)
     if b.ndim == 1:
         b = b[:, None]
-    if b.shape[1] == 0:
-        return np.zeros((b.shape[0], b.shape[0]), dtype=complex)
-    q, _ = np.linalg.qr(b)
+    q = orthonormal_basis(b)
     return q @ q.conj().T
 
 
@@ -156,7 +173,7 @@ def spectral_clusters(
         Degeneracy-grouping tolerance; defaults to ``√ε·‖L‖₂``.
     assume_normal:
         Override normality detection.  When the operator is non-normal a
-        :class:`NonNormalOperatorError` is raised (use the R9 directed path).
+        :class:`NonNormalOperatorError` is raised (use a directed non-normal path).
     """
     a = np.asarray(matrix, dtype=complex)
     if tol is None:
@@ -194,7 +211,7 @@ def spectral_clusters(
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# R9 — non-normal directed dynamics certificates
+# Directed non-normal dynamics certificates
 # For a non-normal generator the eigendecomposition is not an orthonormal basis,
 # so stability (spectral abscissa) and transient behaviour must be measured
 # separately: a stable spectrum does NOT preclude transient amplification.

@@ -30,6 +30,12 @@ from .learning_metrics import (
     compute_learning_plasticity,
     glyph_history_to_operator_names,
 )
+from .observations import (
+    StructuralObservation,
+    observe_arithmetic_nfr,
+    observe_emergent_element,
+    observe_graph_tetrad,
+)
 from .phase_compatibility import (
     compute_network_phase_alignment,
     compute_phase_coupling_strength,
@@ -83,4 +89,8 @@ __all__ = (
     "TelemetryEvent",
     "collect_tetrad_snapshot",
     "get_tetrad_sample_interval",
+    "StructuralObservation",
+    "observe_graph_tetrad",
+    "observe_arithmetic_nfr",
+    "observe_emergent_element",
 )

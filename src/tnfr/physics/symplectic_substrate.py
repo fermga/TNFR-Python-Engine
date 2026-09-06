@@ -48,7 +48,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from ..mathematics.unified_numerical import np
+from ..mathematics.unified_numerical import np, trapezoid
 from .canonical import (
     compute_phase_curvature,
     compute_phase_gradient,
@@ -1676,7 +1676,7 @@ def loop_action_integral(action: float, *, n_points: int = 4000) -> float:
     s = np.linspace(0.0, 2.0 * np.pi, n_points)
     q = r * np.cos(s)
     p = r * np.sin(s)
-    return float(np.trapezoid(p, q))
+    return float(trapezoid(p, q))
 
 
 def verify_poincare_cartan(
@@ -1737,14 +1737,14 @@ def verify_poincare_cartan(
     s = np.linspace(0.0, 2.0 * np.pi, 4000)
     q0 = r * np.cos(s)
     p0 = r * np.sin(s)
-    base_loop = float(np.trapezoid(p0, q0))
+    base_loop = float(trapezoid(p0, q0))
 
     relative_drift = 0.0
     for t in flow_times:
         c, sn = float(np.cos(t)), float(np.sin(t))
         q_t = q0 * c + p0 * sn
         p_t = -q0 * sn + p0 * c
-        loop_t = float(np.trapezoid(p_t, q_t))
+        loop_t = float(trapezoid(p_t, q_t))
         relative_drift = max(relative_drift, abs(loop_t - base_loop))
     relative_ok = relative_drift < tolerance
 

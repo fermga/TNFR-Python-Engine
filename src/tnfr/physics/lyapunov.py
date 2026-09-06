@@ -1,7 +1,7 @@
-r"""Formal Lyapunov stability analysis for all 13 canonical operators.
+r"""Policy-oriented Lyapunov diagnostics for the 13 canonical operators.
 
 This module extends the generic Lyapunov analysis in ``conservation.py``
-with **per-operator energy bounds** derived from the glyph factors defined
+with **per-operator policy multipliers** derived from the glyph factors defined
 in ``tnfr.config.defaults_core.GLYPH_FACTORS`` and the canonical constants
 in ``tnfr.constants.canonical``.
 
@@ -18,9 +18,10 @@ coherence the operators natively alter, which has two equivalent emergent forms:
   E contains **no EPI or νf term** (measured: scaling EPI or νf leaves E
   unchanged); both functionals share the structural-pressure channel |ΔNFR|.
 
-Each operator changes the coherence by a bounded amount whose sign is its
-canonical grammar role, DERIVED from ``config.physics_derivation`` (the single
-source of truth, identical to the grammar U2 classification):
+The registry below maps each operator's canonical grammar role, derived from
+``config.physics_derivation``, to a nominal multiplier.  This is an operational
+screening model, not a proof of the realized change in either C(t) or the
+tetrad energy for every graph state:
 
 - **Stabilisers** (IL, THOL): reduce |ΔNFR| → raise coherence (Lyapunov-
   contractive), with a contraction rate from the operator's pressure factor.
@@ -31,12 +32,10 @@ source of truth, identical to the grammar U2 classification):
   does not penalise by its grammatical role — so they neither contract nor expand
   coherence (|ΔE_coherence| ≈ 0 by their U2 role).
 
-Grammar rule U2 (CONVERGENCE & BOUNDEDNESS) requires that every
-destabiliser be accompanied by a stabiliser.  The derivation argues that
-the *net* coherence change across a grammar-compliant sequence is
-non-negative (energy non-positive), supporting the Lyapunov proposition.
-A complete formal proof of asymptotic stability remains open (see §8.2 of
-the theory document for the proof sketch and its limitations).
+Grammar rule U2 requires that destabilizer debt be balanced by a stabilizer.
+It does not imply that the product of these nominal multipliers is at most one,
+nor that the measured tetrad energy is non-increasing.  Those are separate
+trajectory observations; a complete asymptotic-stability proof remains open.
 
 Spectral Gap Characterisation
 -----------------------------
@@ -142,17 +141,17 @@ class EnergyClass(str, Enum):
 
 @dataclass(frozen=True)
 class OperatorLyapunovBound:
-    r"""Formal energy bound for a single canonical operator application.
+    r"""Nominal U2-role multiplier for one canonical operator.
 
-    Each operator O maps E → E + ΔE where:
+    The compatibility model treats an operator O as if it mapped E → E + ΔE:
     - Stabilisers:   ΔE ≤ -ρ · E  for some contraction rate ρ > 0
     - Destabilisers: ΔE ≤ +κ · E  for some expansion rate κ > 0
     - Neutral:       |ΔE| ≤ ε      for some small residual ε ≥ 0
     - Mixed:         ΔE ≤ +κ · E   (worst case as destabiliser)
 
-    The net energy change across a grammar-compliant sequence satisfies
-    ΔE_net ≤ E₀ · Π(1 + cᵢ) - E₀ where cᵢ < 0 for stabilisers and
-    cᵢ > 0 for destabilisers.  U2 guarantees Σ cᵢ ≤ 0.
+    These formulas are not established bounds for the tetrad energy.  A
+    grammar-valid sequence can have a nominal product above one, and its actual
+    energy change must be measured from snapshots.
 
     Attributes
     ----------
@@ -370,7 +369,7 @@ def get_bound(name_or_glyph: str) -> OperatorLyapunovBound:
 
 
 # ---------------------------------------------------------------------------
-#  Per-operator energy bound computation
+#  Per-operator nominal energy-change computation
 # ---------------------------------------------------------------------------
 
 
@@ -379,7 +378,7 @@ def compute_operator_energy_bound(
     energy_before: float,
     n_nodes: int = 1,
 ) -> float:
-    r"""Return the theoretical upper bound on ΔE for one operator step.
+    r"""Return the legacy nominal ΔE allowance for one operator step.
 
     Parameters
     ----------
@@ -393,15 +392,14 @@ def compute_operator_energy_bound(
     Returns
     -------
     float
-        Upper bound on E_after - E_before.
-        Negative for stabilisers (guaranteed decrease).
-        Positive for destabilisers (worst-case increase).
+        Policy-model change assigned from the U2 role.  It is not a guaranteed
+        upper bound on the observed tetrad-energy change.
     """
     bound = get_bound(name_or_glyph)
     rate = bound.contraction_rate
 
     if bound.energy_class == EnergyClass.STABILISER:
-        # Guaranteed decrease: ΔE ≤ -ρ · E (where ρ > 0)
+        # Nominal stabilizer decrease in this policy model.
         return -rate * energy_before
 
     if bound.energy_class == EnergyClass.DESTABILISER:
@@ -420,7 +418,7 @@ def compute_operator_energy_bound(
 
 
 # ---------------------------------------------------------------------------
-#  Sequence energy bound (grammar-compliant U2)
+#  Sequence multiplier composition (grammar-role model)
 # ---------------------------------------------------------------------------
 
 
@@ -429,11 +427,11 @@ def compute_sequence_energy_bound(
     energy_initial: float,
     n_nodes: int = 1,
 ) -> float:
-    r"""Compute theoretical upper bound on energy after full sequence.
+    r"""Compose the legacy nominal energy multipliers for a sequence.
 
-    Under grammar rule U2, every destabiliser must be compensated by
-    a stabiliser.  This function computes the cumulative energy bound
-    assuming worst-case ordering per step.
+    U2 balances operator-role debt, but it does not prove this nominal product
+    bounds the measured tetrad energy.  The function is retained as a
+    compatibility diagnostic.
 
     Parameters
     ----------
@@ -710,7 +708,7 @@ class LyapunovSpectralSummary:
     Attributes
     ----------
     operator_bound : OperatorLyapunovBound
-        Formal energy bound for the operator.
+        Nominal U2-role multiplier for the operator.
     spectral : SpectralGapAnalysis
         Spectral gap analysis of the graph.
     effective_convergence_rate : float
@@ -773,17 +771,16 @@ def analyze_operator_convergence(
 
 
 # ---------------------------------------------------------------------------
-#  Grammar-compliant sequence analysis (U2 formal proof)
+#  Sequence analysis for the legacy U2 multiplier model
 # ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
 class SequenceLyapunovProof:
-    r"""Formal proof that a grammar-compliant sequence is net-contractive.
+    r"""Legacy nominal contractivity result for a supplied sequence.
 
-    Under U2, every destabiliser must be compensated by a stabiliser.
-    This data structure records the per-step energy multipliers and
-    verifies Π(1 + cᵢ) ≤ 1.
+    This records the product of policy multipliers and whether that product is
+    at most one.  It is not a proof that U2 implies tetrad-energy contraction.
 
     Attributes
     ----------
@@ -793,11 +790,11 @@ class SequenceLyapunovProof:
         Per-step multiplicative factors (1 + cᵢ).
         cᵢ < 0 for stabilisers, cᵢ > 0 for destabilisers.
     cumulative_product : float
-        Π(1 + cᵢ) — net energy ratio E_final/E_initial (upper bound).
+        Π(1 + cᵢ) — nominal energy ratio in the policy model.
     is_net_contractive : bool
-        True if cumulative_product ≤ 1.0 (Lyapunov stable).
+        True if cumulative_product ≤ 1.0 in the nominal model.
     net_contraction : float
-        1 - cumulative_product (positive = net energy decrease).
+        1 - cumulative_product (positive = nominal contraction).
     """
 
     operators: tuple
@@ -810,7 +807,7 @@ class SequenceLyapunovProof:
 def prove_sequence_lyapunov(
     operator_names: Sequence[str],
 ) -> SequenceLyapunovProof:
-    r"""Formally verify that an operator sequence is net-contractive.
+    r"""Evaluate nominal multiplier contractivity for an operator sequence.
 
     Each operator contributes a multiplicative factor to the energy:
     - Stabiliser with rate ρ: factor = 1 - ρ  (< 1)
@@ -818,8 +815,8 @@ def prove_sequence_lyapunov(
     - Neutral with residual ε: factor = 1 + ε  (≈ 1)
     - Mixed with rate κ: factor = 1 + κ  (worst case)
 
-    The product Π factors gives the net energy ratio.  If ≤ 1, the
-    sequence is Lyapunov stable per the Structural Conservation derivation.
+    A product at most one passes this policy model only.  Actual Lyapunov
+    behavior requires trajectory evidence or a model-specific proof.
 
     Parameters
     ----------

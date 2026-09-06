@@ -1,4 +1,4 @@
-r"""Tests for the R9 structural-time theorem (N04).
+r"""Tests for the scalar structural-time theorem.
 
 For a scalar frequency ``ν_f(t) ≥ 0`` the linear EPI transport ``ẋ = −ν_f(t) L x``
 has the exact solution ``x(t) = e^{−s(t)L} x₀`` with ``s(t) = ∫ ν_f`` — a clock
@@ -18,6 +18,7 @@ from tnfr.physics.directed_diffusion import (
     consensus_projection,
     directed_cayley_adjacency,
     directed_rw_laplacian,
+    dissipative_envelope_bound,
     nonconsensus_abscissa,
     reorganization_time_invariance_residual,
     stationary_distribution,
@@ -25,6 +26,7 @@ from tnfr.physics.directed_diffusion import (
     sustained_gain,
     total_variation_bound,
 )
+from tnfr.physics.spectral_projectors import matrix_exponential
 
 NON_NORMAL_SC = np.array(
     [[0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2], [2, 0, 1, 0]], dtype=float
@@ -56,6 +58,15 @@ def test_structural_time_is_cumulative_integral():
     s = structural_time(lambda x: 2.0, t)  # constant vf=2 -> s(t)=2t
     assert s[0] == 0.0
     assert np.allclose(s, 2.0 * t, atol=1e-9)
+
+
+def test_zero_and_integrable_capacity_schedules_have_finite_structural_time():
+    t = np.linspace(0.0, 20.0, 4000)
+    zero = structural_time(lambda _x: 0.0, t)
+    finite = structural_time(lambda x: np.exp(-x), t)
+    assert np.allclose(zero, 0.0)
+    assert finite[-1] == pytest.approx(1.0 - np.exp(-20.0), rel=1e-5)
+    assert finite[-1] < 1.0 + 1e-5
 
 
 # --------------------------------------------------------------------------- #
@@ -106,6 +117,55 @@ def test_transient_bound_dominates_measured_reorganization():
     assert holds
     assert j <= bound * (1.0 + 1e-6)
     assert np.isfinite(bound)
+
+
+def test_structural_time_certificate_reports_supplied_finite_window():
+    t = np.linspace(0.0, 8.0, 120)
+    cert = certify_structural_time(NON_NORMAL_SC, X0, _vf, t)
+    assert cert.observation_window_structural == pytest.approx(8.0)
+    assert cert.tail_status == "UNASSESSED_FINITE_WINDOW"
+
+
+@pytest.mark.parametrize("kwargs", [{"t_max": -1.0}, {"samples": 1}])
+def test_total_variation_bound_rejects_degenerate_scan(kwargs):
+    with pytest.raises(ValueError):
+        total_variation_bound(NON_NORMAL_SC, X0, **kwargs)
+
+
+def test_total_variation_bound_does_not_claim_infinite_horizon():
+    short = total_variation_bound(
+        NON_NORMAL_SC, X0, t_max=2.0, samples=40
+    )
+    long = total_variation_bound(
+        NON_NORMAL_SC, X0, t_max=20.0, samples=400
+    )
+    assert short[0] <= long[0] + 1e-9
+
+
+def test_analytic_dissipative_envelope_bounds_normal_control():
+    adjacency = directed_cayley_adjacency(7, {1, 2})
+    x0 = np.array([1.0, -1.0, 0.5, -0.5, 0.25, -0.25, 0.1])
+    bound = dissipative_envelope_bound(adjacency, x0)
+    measured, _, _ = total_variation_bound(adjacency, x0, t_max=20.0)
+    assert np.isfinite(bound)
+    assert measured <= bound
+
+
+def test_analytic_envelope_is_inconclusive_for_weighted_counterexample():
+    weights = np.array([
+        [0, 1, 0, 0, 0, 12], [0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 15, 0, 0], [0, 9, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 10], [1, 0, 0, 0, 0, 0],
+    ], dtype=float)
+    assert np.isinf(dissipative_envelope_bound(weights, np.ones(6)))
+
+
+def test_jordan_block_requires_decay_rate_below_spectral_abscissa():
+    # exp(-t J) has the polynomial factor t*exp(-t), so its spectral gap 1
+    # cannot be used with envelope constant one at every finite time.
+    jordan = np.array([[1.0, 1.0], [0.0, 1.0]])
+    for time in (0.5, 1.0, 2.0):
+        assert np.linalg.norm(matrix_exponential(-time * jordan), 2) > np.exp(-time)
 
 
 def test_nonconsensus_abscissa_is_positive_spectral_gap():

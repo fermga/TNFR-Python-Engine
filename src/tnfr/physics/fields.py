@@ -82,10 +82,12 @@ _ISING_2D_EXPONENT_TOLERANCE = 0.15
 
 # Canonical Structural Triad (Φ_s, |∇φ|, K_φ) + ξ_C experimental
 from .canonical import (
+    CoherenceLengthEstimate,
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
     estimate_coherence_length,
+    estimate_coherence_length_with_provenance,
 )
 
 # Backward-compatible alias (used by pattern_discovery and parallel modules)
@@ -132,6 +134,8 @@ __all__ = [
     "compute_phase_gradient",
     "compute_phase_curvature",
     "estimate_coherence_length",
+    "estimate_coherence_length_with_provenance",
+    "CoherenceLengthEstimate",
     # Unified Telemetry
     "compute_structural_telemetry",
     # Extended Canonical Fields (NEWLY PROMOTED Nov 12, 2025)

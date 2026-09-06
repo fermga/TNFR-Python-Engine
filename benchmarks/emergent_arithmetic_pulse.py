@@ -25,7 +25,7 @@ WHAT EMERGES (measured):
     (p-1)/2 -- the pulse's spectral_multiplicity field reads (p-1)/2 exactly.
   - M3 COMPOSITES ENRICH THE CHORD MULTIPLICATIVELY: the tone-count is
     multiplicative (15 -> 9 = 3x3, 45 -> 12 = 4x3), encoding the factorization
-    TYPE (the ontological-ladder rank, NT theory 9.8).
+    TYPE (the ontological-ladder rank, NT theory 9.12).
   - M4 A PRIME IS MAXIMALLY DEGENERATE: just gcd(k,p-1)+1 tones no matter how
     large p is -- mean multiplicity ~ (p-1)/d grows, the chord stays minimal.
 

@@ -5,18 +5,38 @@ import sys
 from pathlib import Path
 
 
-def _load_benchmark_module():
-    root = Path(__file__).resolve().parents[1]
-    path = root / "benchmarks" / "external_phase_gate_validation.py"
-    spec = importlib.util.spec_from_file_location(
-        "external_phase_gate_validation", path
-    )
+def _load_module(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
     assert spec is not None
     assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def _load_benchmark_module():
+    root = Path(__file__).resolve().parents[1]
+    path = root / "benchmarks" / "external_phase_gate_validation.py"
+    return _load_module(
+        "external_phase_gate_validation",
+        path,
+    )
+
+
+def test_dynamic_example_import_preserves_tnfr_module_identity():
+    import tnfr
+    import tnfr.utils.cache as cache_module
+
+    root = Path(__file__).resolve().parents[1]
+    module = _load_module(
+        "phase_gate_monitor_demo",
+        root / "examples" / "10_applications" / "90_phase_gate_monitor_demo.py",
+    )
+
+    assert module.ROOT == root
+    assert sys.modules["tnfr"] is tnfr
+    assert sys.modules["tnfr.utils.cache"] is cache_module
 
 
 def test_phase_gate_validation_finds_tnfr_local_advantage(tmp_path: Path):

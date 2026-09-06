@@ -9,15 +9,119 @@ Terminology (TNFR semantics):
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..mathematics.unified_numerical import np
 from .grammar_types import StructuralPotentialConfinementError
 
+__all__ = [
+    "StructuralPotentialConfinementObservation",
+    "observe_structural_potential_confinement",
+    "structural_potential_change_terms",
+    "validate_structural_potential_confinement",
+]
+
+
+@dataclass(frozen=True)
+class StructuralPotentialConfinementObservation:
+    """Read-only U6 drift report with explicit field conventions.
+
+    This records a two-snapshot, finite-observation comparison. It does not
+    certify the interval between snapshots or an unobserved future tail.
+    """
+
+    confined: bool
+    mean_absolute_drift: float
+    threshold: float
+    kernel: str
+    aggregation: str
+    reference: str
+    time_coverage: str
+    message: str
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return detached JSON-compatible U6 observation metadata."""
+        return {
+            "confined": self.confined,
+            "mean_absolute_drift": self.mean_absolute_drift,
+            "threshold": self.threshold,
+            "kernel": self.kernel,
+            "aggregation": self.aggregation,
+            "reference": self.reference,
+            "time_coverage": self.time_coverage,
+            "message": self.message,
+        }
+
+
+def structural_potential_change_terms(
+    kernel_before: Any,
+    pressure_before: Any,
+    kernel_after: Any,
+    pressure_after: Any,
+) -> tuple[Any, Any, Any]:
+    r"""Decompose ``Phi_after - Phi_before`` under a topology change.
+
+    For aligned nodes and declared kernels, the exact identity is
+    ``B_after @ (p_after-p_before) + (B_after-B_before) @ p_before``.
+    It distinguishes pressure reorganization from distance-kernel change;
+    unmatched node sets must be handled by the caller before this read-out.
+    """
+    before_kernel = np.asarray(kernel_before, dtype=float)
+    after_kernel = np.asarray(kernel_after, dtype=float)
+    before_pressure = np.asarray(pressure_before, dtype=float)
+    after_pressure = np.asarray(pressure_after, dtype=float)
+    if (
+        before_kernel.ndim != 2
+        or before_kernel.shape != after_kernel.shape
+        or before_kernel.shape[0] != before_kernel.shape[1]
+        or before_pressure.shape != after_pressure.shape
+        or before_pressure.shape != (before_kernel.shape[0],)
+    ):
+        raise ValueError("kernels and pressures must use one aligned node order")
+    pressure_term = after_kernel @ (after_pressure - before_pressure)
+    topology_term = (after_kernel - before_kernel) @ before_pressure
+    return pressure_term, topology_term, pressure_term + topology_term
+
 # ============================================================================
 # U6: Structural Potential Confinement (CANONICAL as of 2025-11-11)
 # ============================================================================
+
+
+def observe_structural_potential_confinement(
+    G: Any,
+    phi_s_reference: dict[Any, float],
+    phi_s_observed: dict[Any, float],
+    *,
+    threshold: float = U6_STRUCTURAL_POTENTIAL_LIMIT,
+    reference: str = "provided_snapshot",
+    time_coverage: str = "two_snapshot_finite_observation",
+) -> StructuralPotentialConfinementObservation:
+    """Observe canonical U6 drift without changing validation behaviour.
+
+    ``phi_s_reference`` and ``phi_s_observed`` must be generated from the
+    canonical directed, weighted shortest-path field when this report is used
+    as a canonical U6 observation. The report does not infer that provenance
+    from arbitrary dictionaries; callers declare it explicitly at acquisition.
+    """
+    confined, drift, message = validate_structural_potential_confinement(
+        G,
+        phi_s_reference,
+        phi_s_observed,
+        threshold=threshold,
+        strict=False,
+    )
+    return StructuralPotentialConfinementObservation(
+        confined=confined,
+        mean_absolute_drift=drift,
+        threshold=threshold,
+        kernel="canonical_directed_weighted_shortest_path_inverse_square",
+        aggregation="mean_absolute_nodewise_drift",
+        reference=reference,
+        time_coverage=time_coverage,
+        message=message,
+    )
 
 
 def validate_structural_potential_confinement(
@@ -27,15 +131,12 @@ def validate_structural_potential_confinement(
     threshold: float = U6_STRUCTURAL_POTENTIAL_LIMIT,  # Δ Φ_s < π/2 (half phase-wrap)
     strict: bool = True,
 ) -> tuple[bool, float, str]:
-    """Validate U6: STRUCTURAL POTENTIAL CONFINEMENT.
+    """Evaluate the U6 potential-drift policy on two supplied snapshots.
 
-    Checks that structural potential drift Δ Φ_s remains below escape threshold,
-    ensuring system stays confined in potential well and avoids fragmentation.
-
-    Canonical Status: CANONICAL (promoted 2025-11-11)
-    - 2,400+ experiments, 5 topology families
-    - corr(Δ Φ_s, ΔC) = -0.822 (R² ≈ 0.68)
-    - Perfect universality: CV = 0.1%
+    The result is a read-only finite observation:
+    ``mean_i |Phi_s_after(i) - Phi_s_before(i)| < pi/2``. It reports the
+    configured policy condition for the supplied fields; it does not establish
+    confinement between snapshots, a future tail bound, or fragmentation.
 
     Parameters
     ----------
@@ -45,9 +146,8 @@ def validate_structural_potential_confinement(
         Structural potential before sequence application
     phi_s_after : dict[NodeId, float]
         Structural potential after sequence application
-    threshold : float, default=1.618
-        Canonical threshold for Δ Φ_s (drift). Above π/2 (the U6 confinement bound), fragmentation risk.
-        Rigorously derived from canonical TNFR constants (φ escape threshold).
+    threshold : float, default=pi/2
+        Selected U6 structural-potential drift policy.
     strict : bool, default=True
         If True, raises StructuralPotentialConfinementError on violation.
         If False, returns (False, drift, message) without raising.
@@ -66,27 +166,12 @@ def validate_structural_potential_confinement(
     StructuralPotentialConfinementError
         If Δ Φ_s ≥ threshold and strict=True
 
-    Physical Interpretation
-    -----------------------
-    Φ_s minima = passive equilibrium states (potential wells).
-    Grammar-valid sequences naturally maintain small Δ Φ_s (~0.6).
-    Large Δ Φ_s (~3.9) indicates escape from well → fragmentation risk.
-
-    Grammar U1-U5 acts as passive confinement mechanism (not active attractor):
-    - Reduces drift by 85% (valid 0.6 vs violation 3.9)
-    - No force pulling back, only resistance to escape
-
-    Safety Criteria (Classical)
-    --------------------------
-    This function validates **drift** Δ Φ_s = mean(|Φ_s_after - Φ_s_before|):
-    - Δ Φ_s < π/2: Confined (U6 satisfied)
-    - Δ Φ_s ≥ π/2: Escape risk (U6 violated)
-    - Valid sequences: Δ Φ_s ≈ 0.6 (37% of φ threshold)
-    - Violations: Δ Φ_s ≈ 3.9 (240% of φ threshold)
-
-    Separate criterion (absolute value, checked elsewhere):
-    - |Φ_s| < 0.771 (Von Koch): Safe regime per node
-    - See: PHI_S_VON_KOCH_THRESHOLD in constants/canonical.py
+    Notes
+    -----
+    U6 is a telemetry policy separate from grammar-word validation. The
+    inverse-square potential is not bounded by phase wrapping alone: a proof
+    of stronger confinement requires declared pressure and graph-geometry
+    assumptions.
 
     Examples
     --------

@@ -80,6 +80,11 @@ GlyphFactors = dict[str, Any]
 GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
 from .grammar import apply_glyph_with_grammar  # noqa: E402
+from .grammar_observations import GrammarObservation, observe_grammar
+from .grammar_u6 import (
+    StructuralPotentialConfinementObservation,
+    observe_structural_potential_confinement,
+)
 from .hamiltonian import (  # noqa: E402
     InternalHamiltonian,
     build_H_coherence,
@@ -106,6 +111,10 @@ __all__ = [
     "apply_glyph_obj",
     "apply_glyph",
     "apply_glyph_with_grammar",
+    "GrammarObservation",
+    "observe_grammar",
+    "StructuralPotentialConfinementObservation",
+    "observe_structural_potential_confinement",
     "apply_network_remesh",
     "apply_topological_remesh",
     "apply_remesh_if_globally_stable",

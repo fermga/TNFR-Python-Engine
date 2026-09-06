@@ -30,6 +30,7 @@ from __future__ import annotations
 from fractions import Fraction
 from math import gcd
 
+from .cayley import cayley_laplacian
 from .krylov import hankel_rank, krylov_dimension
 from .number_theory import power_residue_set
 
@@ -45,18 +46,7 @@ __all__ = [
 def power_residue_laplacian(p: int, k: int) -> list[list[Fraction]]:
     r"""Exact ``L_rw = I − (1/d) W`` for the k-th power residue Cayley digraph on
     ``ℤ/pℤ`` (out-degree ``d = |R_k|``; edge ``i→j`` iff ``(j−i) mod p ∈ R_k``)."""
-    residues = set(power_residue_set(p, k))
-    d = len(residues)
-    if d == 0:
-        raise ValueError("empty power-residue connection set")
-    inv = Fraction(1, d)
-    L = [[Fraction(0) for _ in range(p)] for _ in range(p)]
-    for i in range(p):
-        L[i][i] = Fraction(1)
-        for j in range(p):
-            if i != j and ((j - i) % p) in residues:
-                L[i][j] = -inv
-    return L
+    return cayley_laplacian(p, set(power_residue_set(p, k)))
 
 
 def cyclotomic_rank(p: int, k: int) -> int:

@@ -108,6 +108,7 @@ __all__ = [
     "structural_frequency_rank",
     "degree_weighted_total",
     "compute_diffusion_energy",
+    "structural_eigenvalues",
     "structural_eigenmodes",
     "nodal_domain_count",
     "compute_emergent_pulse",
@@ -1243,6 +1244,17 @@ def _cached_eigh(G: Any) -> tuple[Any, Any]:
         "vecs": eigvecs,
     }
     return eigvals, eigvecs
+
+
+def structural_eigenvalues(G: Any) -> Any:
+    """Return only the canonical structural eigenvalues.
+
+    Unlike :func:`structural_eigenmodes`, this value-only readout neither
+    computes nor retains eigenvectors unless a previous mode request already
+    populated them.  Asymmetric adjacency is rejected by the shared canonical
+    Laplacian constructor.
+    """
+    return _cached_eigenvalues(G).copy()
 
 
 def structural_eigenmodes(G: Any) -> tuple[Any, Any]:

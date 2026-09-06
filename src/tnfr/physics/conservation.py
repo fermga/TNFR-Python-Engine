@@ -1,55 +1,25 @@
-"""TNFR Structural Conservation Laws — Noether-like Theorems from the Nodal Equation.
+"""TNFR structural conservation diagnostics.
 
-This module derives and verifies the conservation laws that emerge from the
-TNFR nodal equation ∂EPI/∂t = νf · ΔNFR(t) under unified grammar constraints
-U1-U6.
+The module records the balance
 
-MAIN RESULT (Structural Continuity Theorem):
-=============================================
-Let G be a TNFR network evolving under the nodal equation with grammar
-constraints.  Define:
+    Δρ/Δt + div J = S,  ρ = Φ_s + K_φ,
+    J = (J_φ, J_ΔNFR),
 
-    ρ(i, t)  = Φ_s(i, t) + K_φ(i, t)       [structural charge density]
-    J(i, t)  = (J_φ(i, t), J_ΔNFR(i, t))    [structural current vector]
+between two observed graph states.  ``S`` is the measured source/residual of
+that finite-interval balance.  This identity follows from the definition of
+``S``; grammar-valid operator labels alone do not prove that it vanishes or is
+small.  Likewise, the non-negative quadratic structural energy exposed here is
+a Lyapunov *candidate*: monotonicity requires trajectory evidence or a
+model-specific proof.
 
-Then the **discrete structural continuity equation** holds:
-
-    Δρ(i)/Δt + div J(i) ≈ S(i)
-
-where S(i) is a *source term* that is bounded and small when:
-  (a) Grammar U2 is satisfied (convergence: stabilizers balance destabilizers)
-  (b) Grammar U6 is satisfied (confinement: |Φ_s| < π/2)
-
-The bound ||S||_{ℓ²} ≤ C/√N (§4.5 of the theory document) implies
-  S → 0 in the continuum limit N → ∞.  On finite graphs S is empirically
-  small (charge drift < 0.03%) but does not vanish exactly.
-
-This is the TNFR analogue of the Noether theorem:
-    Grammar symmetry (U-rules) ⟹ Approximate structural conservation law.
-
-DERIVATION
-==========
-The conservation law derives from the nodal equation ∂EPI/∂t = νf·ΔNFR(t)
-under grammar constraints U1–U6. The complete formal proof, including
-explicit operator norm bounds and scaling analysis, is in:
-
-    theory/STRUCTURAL_CONSERVATION_THEOREM.md  §4 (Derivation of the Continuity Equation)
-
-Key results from the proof:
-
-- §4.5 Step 1: U2+U6 guarantee M_U2 := sup_t Σ|∂ΔNFR_j/∂t| < ∞
-- §4.5 Step 2: U3 guarantees |∂K_φ/∂t| ≤ 2·νf_max =: M_U3
-- §4.5 Step 3: Source S = R_pot + R_geo (potential + geometric residuals)
-- §4.5 Step 4: |R_pot| ~ O(1/D), |R_geo| ~ O(Δφ³_max) under grammar
-- §4.5 Step 5: ||S||_rms bounded independently of N → q(N) ~ 1 - C/√N
-- §4.5 Step 6: S ≠ 0 detects and classifies grammar violations (U2/U3/U6)
+The exact conservation result owned elsewhere is the degree-weighted EPI total
+for fixed symmetric pure diffusion under its stated capacity assumptions.  It
+must not be conflated with the tetrad charge reported by this module.
 
 STATUS
 ======
-CANONICAL — Derived from the nodal equation under grammar constraints.
-The continuity equation is analytically derived; the bound on the source
-term relies on specific operator-norm constants from the TNFR implementation.
-Numerical validation: charge drift < 0.03% across tested topologies and seeds.
+CANONICAL DIAGNOSTIC INTERFACE.  Residuals, charge drift, and energy change are
+observations of the supplied trajectory, not consequences of U1-U6 by label.
 
 References
 ----------
@@ -170,7 +140,7 @@ class ConservationTimeSeries:
 
     @property
     def is_conserved(self) -> bool:
-        """True when mean conservation quality ≥ 0.9 across all steps."""
+        """Return the legacy finite-series quality classification."""
         if not self.conservation_quality:
             return False
         return float(np.mean(self.conservation_quality)) >= 0.9
@@ -191,13 +161,13 @@ class ConservationTimeSeries:
 def compute_charge_density(G: Any) -> dict[Any, float]:
     r"""Compute structural charge density ρ(i) = Φ_s(i) + K_φ(i).
 
-    This is the conserved "charge" of TNFR structural dynamics:
+    This is the Noether-like charge-density diagnostic used by TNFR:
     - Φ_s captures global structural potential (long-range coupling)
     - K_φ captures local geometric curvature (short-range confinement)
 
-    Their sum is the natural conserved density because the nodal equation
-    couples global (ΔNFR distribution → Φ_s) and local (phase dynamics → K_φ)
-    degrees of freedom.
+    Their sum combines global and local structural fields. Conservation of its
+    total must be checked on the actual trajectory or derived for a specified
+    auxiliary model.
 
     Parameters
     ----------
@@ -571,23 +541,24 @@ def decompose_conservation_residual(
 
 
 def compute_grammar_conservation_bounds(G: Any) -> dict[str, float]:
-    r"""Compute theoretical upper bounds on conservation residual.
+    r"""Compute legacy grammar-scaled diagnostic alert levels.
 
-    From TNFR grammar constraints:
+    The legacy alert construction combines:
 
-    - U2 (convergence): ∫|νf·ΔNFR| dt < ∞  ⟹  |ΔΦ_s/Δt| bounded
-    - U6 (confinement): |Φ_s| < π/2   ⟹  |ρ| < π/2 + π ≈ 4.71
-    - U3 (coupling):    |Δθ| < Δθ_max        ⟹  |J_φ| ≤ 1
+    - U2's stabilizer/debt role as qualitative context;
+    - the U6 drift policy ``ΔPhi_s < pi/2`` as a numeric scale;
+    - the exact trigonometric bound ``|J_phi| <= 1``.
 
-    These bounds predict the maximum allowed residual for a grammar-
-    compliant sequence.
+    These values combine configured U3/U6 scales into monitoring thresholds.
+    They are not proved upper bounds on the residual of every grammar-valid
+    trajectory, so callers must not use them as a conservation certificate.
 
     Returns
     -------
     dict[str, float]
-        'max_charge_density'  : theoretical upper bound on |ρ|
-        'max_current_magnitude' : theoretical upper bound on |J|
-        'max_allowed_residual' : theoretical bound on |Δρ/Δt + div J|
+        'max_charge_density'  : legacy policy-scaled alert level for |ρ|
+        'max_current_magnitude' : legacy alert level for |J|
+        'max_allowed_residual' : legacy alert level for |Δρ/Δt + div J|
         'phi_s_confinement'   : π/2 (the U6 confinement bound)
         'k_phi_hotspot'       : 0.9×π ≈ 2.8274 (curvature hotspot threshold)
     """
@@ -606,8 +577,8 @@ def compute_grammar_conservation_bounds(G: Any) -> dict[str, float]:
     j_phi_bound = 1.0
 
     # J_ΔNFR = mean(ΔNFR_j - ΔNFR_i), bounded by max|ΔNFR| spread
-    # Under U2, ΔNFR is bounded; use Φ_s bound as proxy
-    j_dnfr_bound = 2.0 * phi_s_bound  # worst case: ±Φ_s
+    # Legacy alert proxy. U2/U6 alone do not bound pressure spread.
+    j_dnfr_bound = 2.0 * phi_s_bound
 
     # Maximum current magnitude
     max_current = math.sqrt(j_phi_bound**2 + j_dnfr_bound**2)
@@ -638,11 +609,11 @@ def detect_grammar_violations_from_conservation(
     balance: ConservationBalance,
     bounds: dict[str, float] | None = None,
 ) -> dict[str, Any]:
-    r"""Detect grammar violations by analyzing conservation residuals.
+    r"""Flag residual patterns associated with possible grammar violations.
 
-    High conservation residuals indicate that the operator sequence
-    violated grammar constraints. This function classifies violations
-    by type.
+    High residuals are heuristic alerts, not a grammar validator: numerical
+    discretization, topology changes, or an external pressure law can produce
+    them even for a valid operator history.  Validate U1-U6 independently.
 
     Parameters
     ----------
@@ -700,12 +671,10 @@ def detect_grammar_violations_from_conservation(
 def compute_noether_charge(G: Any) -> float:
     r"""Compute the total Noether charge Q = Σ_i ρ(i) = Σ_i [Φ_s(i) + K_φ(i)].
 
-    Under grammar-compliant evolution, Q is approximately conserved:
-
-        dQ/dt ≈ 0  ⟺  Grammar U1-U6 satisfied
-
     The charge Q integrates global (potential) and local (geometric)
-    structural information into a single scalar.
+    structural information into a single scalar.  Its drift must be measured
+    along the actual trajectory; grammar compliance is neither sufficient nor
+    inferred from a small drift.
 
     This **tetrad** charge is **distinct** from the EPI-channel degree-weighted
     total Σ_i deg(i)·EPI(i)
@@ -744,8 +713,9 @@ def compute_energy_functional(G: Any) -> float:
         ``E == sum(variational.compute_hamiltonian_density(G).values())``
         ``E == 0.5 * sum(unified.compute_energy_density(G).values())``
 
-    Under grammar-compliant evolution (U2 convergence):
-        dE/dt ≤ 0  (energy is non-increasing)
+    The result is non-negative.  It is a Lyapunov candidate only: U2 validity
+    alone does not prove ``dE/dt <= 0`` for an arbitrary pressure law or
+    operator sequence.
 
     Parameters
     ----------
@@ -805,9 +775,9 @@ def analyze_sector_coupling(
         - Violated by phase-incompatible operations (grammar U3)
         - Monitored by curvature hotspot detection (|K_φ| < 2.8274)
 
-    The CROSS-COUPLING between sectors measures how potential changes
-    induce geometric changes and vice versa — this is the mechanism
-    behind the Ψ = K_φ + i·J_φ unification.
+    The cross-correlation summarizes co-variation between the two residual
+    channels. It does not establish a causal coupling or derive the complex
+    field ``Psi = K_phi + i*J_phi``.
 
     Parameters
     ----------
@@ -980,10 +950,11 @@ def compute_ward_identity(
 def verify_sequence_ward_identity(
     identities: Sequence[WardIdentity],
 ) -> dict[str, Any]:
-    r"""Verify the sequence Ward identity: Σ_k ⟨S_k⟩ ≈ 0.
+    r"""Measure the sequence Ward residual ``Σ_k <S_k>``.
 
-    For a complete grammar-valid sequence, the total source over all steps
-    must approximately vanish (U1 closure + U2 convergence).
+    The legacy ``sequence_conserved`` flag applies a configured finite-sequence
+    threshold.  It does not infer grammar validity or prove that every valid
+    sequence has a vanishing source.
 
     Parameters
     ----------
@@ -1029,7 +1000,8 @@ class LyapunovResult:
     """Result of Lyapunov stability analysis for an operator step.
 
     The energy functional E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²) is a
-    Lyapunov candidate.  Under grammar-compliant evolution (U2), dE/dt ≤ 0.
+    Lyapunov candidate.  This result reports whether one observed finite step
+    decreases it; grammar validity alone does not determine that sign.
 
     Attributes
     ----------
@@ -1066,10 +1038,9 @@ def compute_lyapunov_derivative(
     The structural energy functional:
         E = ½ Σ_i [Φ_s(i)² + |∇φ|(i)² + K_φ(i)² + J_φ(i)² + J_ΔNFR(i)²]
 
-    Under grammar-compliant evolution (U2 convergence + stabilizers):
-        dE/dt ≤ 0  (Lyapunov theorem)
-
-    The structural dissipation function is D[G] = -dE/dt ≥ 0.
+    The structural dissipation readout is ``D[G] = max(0, -dE/dt)``.  A
+    non-increasing observation supports stability for that step; this function
+    does not prove a general Lyapunov theorem from grammar labels.
 
     Parameters
     ----------

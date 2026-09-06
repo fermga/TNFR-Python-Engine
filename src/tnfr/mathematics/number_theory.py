@@ -1420,6 +1420,12 @@ class ArithmeticTNFRNetwork:
             "n_nodes": n,
         }
 
+    def nfr_observation(self):
+        """Return the arithmetic NFR readout with explicit provenance."""
+        from ..metrics.observations import observe_arithmetic_nfr
+
+        return observe_arithmetic_nfr(self.nfr())
+
     def _geometry_graph(self, phase_method: str = "logn") -> nx.Graph:
         """Undirected arithmetic graph prepared for the canonical emergent-
         geometry functions.

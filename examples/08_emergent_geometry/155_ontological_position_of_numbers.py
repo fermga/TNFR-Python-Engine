@@ -41,7 +41,7 @@ Physics
   A(m)=prod(e+ceil(e/2)+1) at small exponents -- rho(p)=3 (cyclotomy k=2),
   rho(p^2)=4, rho(p^3)=6 -- and is multiplicative there. So primality (rho=3)
   and the factorization TYPE (Omega, tau) are read off the spectrum -- the
-  arithmetic emerges (TNFR_NUMBER_THEORY.md §9.5-9.8).
+    arithmetic emerges (TNFR_NUMBER_THEORY.md §9.5-9.12).
 - Layer 4: rho gives the factorization TYPE, never the prime IDENTITIES (15 and
   35 share rho=9); the unannotated scalar rank also aliases at high prime powers
   (the §9.7 / ex 154 scalar wall) -- the same e-pi / Fix(S_n)^perp wall as the

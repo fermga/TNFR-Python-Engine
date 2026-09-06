@@ -1,9 +1,9 @@
-# TNFR Structural Conservation Theorem
+# TNFR Structural Conservation Diagnostics
 
 ## Noether-Like Laws from the Nodal Equation
 
-**Status**: CANONICAL — Derived from first principles  
-**Date**: March 2026  
+**Status**: CANONICAL DIAGNOSTIC REFERENCE — algebraic balance plus measured residuals
+**Date**: March 2026
 **Version**: 0.0.3.5
 **Prerequisite**: [AGENTS.md](../AGENTS.md) §Foundational Physics, [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) §U2, §U6
 
@@ -14,11 +14,11 @@
 1. [Scope and Motivation](#1-scope-and-motivation)
 2. [Governing Dynamics Recap](#2-governing-dynamics-recap)
 3. [Structural Charge and Current Definitions](#3-structural-charge-and-current-definitions)
-4. [Derivation of the Continuity Equation](#4-derivation-of-the-continuity-equation)
+4. [Construction of the Balance Equation](#4-derivation-of-the-continuity-equation)
 5. [Two-Sector Decomposition](#5-two-sector-decomposition)
-6. [Noether Correspondence: Grammar ↔ Conservation](#6-noether-correspondence-grammar-conservation)
-7. [Ward Identities for Operator Sequences](#7-ward-identities-for-operator-sequences)
-8. [Lyapunov Stability from the Energy Functional](#8-lyapunov-stability-from-the-energy-functional)
+6. [Noether-Like Grammar/Conservation Correspondences](#6-noether-correspondence-grammar-conservation)
+7. [Ward-Like Diagnostics for Operator Sequences](#7-ward-identities-for-operator-sequences)
+8. [Lyapunov Candidate and Restricted Stability](#8-lyapunov-stability-from-the-energy-functional)
 9. [Discrete Formulation on Graphs](#9-discrete-formulation-on-graphs)
 10. [Numerical Validation](#10-numerical-validation)
 11. [Physical Interpretation and Analogies](#11-physical-interpretation-and-analogies)
@@ -37,22 +37,25 @@ operator sequences constrained by grammar rules U1–U6. The question is:
 > **Do the grammar constraints play the role of continuous symmetries and
 > generate conservation laws?**
 
-This document argues that the answer is **yes**, via explicit derivation and
-numerical validation. The unified grammar is not
-merely a validation filter; it is the *structural symmetry* whose invariance
-implies approximate conservation of structural charge.
+The implemented answer is deliberately narrower. The balance below defines a
+measurable source term, while grammar validation supplies separate constraints
+on operator histories. A valid history does not by itself prove a vanishing
+source, conservation of the tetrad charge, or monotonicity of the structural
+energy candidate.
 
 ### Main Result
 
-**Structural Continuity Theorem**: Let $G$ be a TNFR network evolving under
-the nodal equation $\partial\text{EPI}/\partial t = \nu_f \cdot \Delta\text{NFR}(t)$
-with grammar constraints U1–U6 satisfied. Then:
+**Structural balance identity**: for two snapshots of a declared trajectory,
+define
 
 $$\frac{\partial \rho}{\partial t} + \nabla \cdot \mathbf{J} = \mathcal{S}_{\text{grammar}}$$
 
 where $\rho = \Phi_s + K_\phi$ is the **structural charge density**,
 $\mathbf{J} = (J_\phi, J_{\Delta\text{NFR}})$ is the **structural current**,
-and $\mathcal{S}_{\text{grammar}} \to 0$ when grammar is satisfied.
+and measure $\mathcal{S}$ as the residual. The equation is exact by this
+definition of $\mathcal{S}$; its smallness must be demonstrated on the actual
+trajectory. The legacy name $\mathcal{S}_{\text{grammar}}$ records the intended
+diagnostic use and is not an implication from U1–U6.
 
 ---
 
@@ -83,12 +86,14 @@ $h \to \sin(\phi_j - \phi_i)$ (Kuramoto-type).
 
 The evolution is restricted to operator sequences satisfying U1–U6:
 
-- **U2** (Convergence): $\int_0^T |\nu_f \cdot \Delta\text{NFR}| \, dt < \infty$
+- **U2** (stabilization/debt policy): destabilizers require stabilizers within
+  the configured finite-history policy
 - **U3** (Coupling): $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$ for interactions
-- **U6** (Confinement): $|\Phi_s| < \pi/2 \approx 1.571$
+- **U6** (Confinement): monitor $\Delta\Phi_s < \pi/2 \approx 1.571$ relative
+  to a declared reference
 
-These constraints define the **grammar manifold** $\mathcal{M}_G$ — the space
-of all allowed evolutions.
+These are execution and telemetry contracts. They do not define a proved
+smooth manifold or a general convergence theorem for arbitrary pressure laws.
 
 ---
 
@@ -151,28 +156,32 @@ $r(K_\phi, J_\phi) \approx -0.997$ anticorrelation (see
 
 ---
 
-## 4. Derivation of the Continuity Equation
+## 4. Construction of the Balance Equation {#4-derivation-of-the-continuity-equation}
 
 ### 4.1 Time Derivative of Structural Potential
 
 $$\frac{\partial \Phi_s(i)}{\partial t} = \sum_{j \neq i} \frac{1}{d(i,j)^\alpha} \frac{\partial \Delta\text{NFR}_j}{\partial t}$$
 
 By the nodal equation, $\Delta\text{NFR}_j$ changes through operator
-applications. Under grammar U2 (convergence):
+applications. If a specific model supplies an integrable pressure derivative,
+then
 
 $$\sum_{j \neq i} \frac{|\partial \Delta\text{NFR}_j / \partial t|}{d(i,j)^\alpha} < \infty$$
 
-This ensures $\partial \Phi_s / \partial t$ is **bounded**.
+the fixed-kernel potential derivative is bounded. U2 sequence validity alone
+does not supply this analytic hypothesis; topology changes add a kernel-change
+term and must be handled separately.
 
 ### 4.2 Time Derivative of Phase Curvature
 
 $$\frac{\partial K_\phi(i)}{\partial t} = \frac{\partial \phi_i}{\partial t} - \sum_{j \in \mathcal{N}(i)} w_j \frac{\partial \phi_j}{\partial t}$$
 
-where $w_j$ are the circular mean weights. Under grammar U3 (coupling):
+where $w_j$ are the circular mean weights. U3 checks the wrapped phase
+difference before a coupling/resonance action. A phase-velocity bound requires
+an additional, specified phase-evolution law; it does not follow from U3 alone.
 
-$$\left|\frac{\partial \phi_i}{\partial t} - \sum_j w_j \frac{\partial \phi_j}{\partial t}\right| \leq C_{\text{U3}}$$
-
-because phase compatibility constrains the differential phase velocity.
+For a bounded Kuramoto comparison model one may derive a model-specific
+$C_{\text{phase}}$; that auxiliary result is not a universal grammar bound.
 
 ### 4.3 Discrete Divergence of Current
 
@@ -190,172 +199,85 @@ The **structural source term** is:
 
 $$\mathcal{S}(i) = \frac{\Delta \rho(i)}{\Delta t} + (\nabla \cdot \mathbf{J})(i)$$
 
-### 4.5 Grammar Implies Conservation
+### 4.5 Measured conservation residual and conditional bounds
 
-**Theorem (Structural Conservation).**
-Let $G$ be a finite TNFR network with $N$ nodes evolving under the nodal
-equation, with operator sequences satisfying U1–U6. Then the source term
-satisfies:
+For a finite graph and two recorded snapshots, the implementation computes
+$\mathcal S$ directly. A decay estimate such as
 
 $$\|\mathcal{S}\|_{\ell^2} \;\leq\; \frac{C_{\text{net}}}{\sqrt{N}}$$
 
-where $C_{\text{net}}$ depends on topology and operator parameters but not on
-$N$. In particular, $\|\mathcal{S}\|_{\ell^2} \to 0$ as $N \to \infty$
-(continuum limit), and conservation quality $q = 1/(1 + \|\mathcal{S}\|_{\text{rms}}) \to 1$.
+is a **hypothesis requiring a specified graph sequence and uniform analytical
+bounds**. It is not established by U1–U6, by one finite-size fit, or by the
+identity defining $\mathcal S$. No continuum-limit theorem is claimed.
 
-*Proof.*
+*Historical heuristic and numerical scope.*
 
-We establish explicit bounds on each component of $\mathcal{S}(i) = \Delta\rho(i)/\Delta t + (\nabla \cdot \mathbf{J})(i)$ and show that grammar
-constraints make them mutually cancelling up to a residual that vanishes
-with network size.
+The following steps document the heuristic that motivated the diagnostics.
+They do not establish the displayed asymptotic bound. The residual must be
+reported with the actual topology, pressure law, discretization, and finite
+trajectory; topology changes and infinite-horizon behavior require separate
+analysis.
 
-**Step 1. Operator norm bounds on $\partial\Delta\text{NFR}/\partial t$ (from U2).**
+**Step 1. Operational multipliers do not prove a trajectory bound.**
 
-Each canonical operator modifies $\Delta\text{NFR}_i$ by a bounded multiplicative
-factor. In the implementation:
+The implementation assigns nominal pressure-role multipliers to IL, OZ and
+other operators. For example, the configured OZ–IL product can exceed one.
+U2 requires stabilizer coverage and limits uncompensated debt; it does not
+prove absolute integrability of $\nu_f\Delta\mathrm{NFR}$ for every pressure
+law or every valid word.
 
-- **Stabilizers** (IL): $\Delta\text{NFR}_i \mapsto \rho_{\text{IL}} \cdot \Delta\text{NFR}_i$, where $\rho_{\text{IL}} = 0.75 < 1$ (operational stabiliser gain; the contract fixes the sign $\rho < 1$, not the magnitude).
-- **Destabilizers** (OZ): $\Delta\text{NFR}_i \mapsto \rho_{\text{OZ}} \cdot \Delta\text{NFR}_i$, where $\rho_{\text{OZ}} = 2.0 > 1$ (operational destabiliser gain; the contract fixes the sign $\rho > 1$).
+If a particular model independently establishes
 
-For a sequence of $n_+$ destabilizers and $n_-$ stabilizers applied over
-interval $[0, T]$, the cumulative gain is:
+$$M_{\mathrm{rate}}=
+\sup_t\sum_j|\partial_t\Delta\mathrm{NFR}_j|<\infty,$$
 
-$$\prod_{k=1}^{n_+ + n_-} \rho_k = \rho_{\text{OZ}}^{n_+} \cdot \rho_{\text{IL}}^{n_-}$$
+then a fixed potential kernel $B_G$ gives the conditional estimate
 
-U2 requires $n_- \geq 1$ whenever $n_+ \geq 1$. In the minimal case
-$n_- = n_+$, the net factor per destabilizer–stabilizer pair is:
+$$\|\partial_t\Phi_s\|_\infty
+\leq\|B_G\|_\infty M_{\mathrm{rate}}.$$
 
-$$\rho_{\text{OZ}} \cdot \rho_{\text{IL}} = 2.0 \cdot 0.75 = 1.5$$
+U6 monitors potential drift; it does not invert a signed aggregation into a
+bound on absolute pressure. A topology change additionally contributes the
+kernel-change term documented by `structural_potential_change_terms`.
 
-This product exceeds 1, so a single OZ–IL pair is expansive. However, in
-practice stabilizers often appear in greater number than destabilizers
-(typical sequences contain 2–3 IL per OZ). The key bound from U2 is not
-that each pair contracts, but that the *integral* converges:
+**Step 2. Phase-rate bounds require a phase model.**
 
-$$\int_0^T |\nu_f \cdot \Delta\text{NFR}(\tau)| \, d\tau < \infty \quad \text{(U2 convergence)}$$
+U3 checks the wrapped phase difference before Coupling or Resonance. It does
+not by itself bound $\dot\phi$. For an explicitly selected Kuramoto law with
+bounded capacity, $|\sin(\phi_j-\phi_i)|\leq1$ supplies a model-specific
+phase-rate estimate. Such an estimate is not a theorem about every canonical
+operator trajectory.
 
-This holds because U6 independently confines $|\Phi_s| < \pi/2$, which
-bounds the aggregate $\sum_j |\Delta\text{NFR}_j|$ (since $\Phi_s$ is a
-weighted sum of $\Delta\text{NFR}_j$ values). Therefore:
+**Step 3. The residual is observed, not cancelled by definition.**
 
-$$\left|\frac{\partial \Phi_s(i)}{\partial t}\right| = \left|\sum_{j \neq i} \frac{\partial\Delta\text{NFR}_j/\partial t}{d(i,j)^\alpha}\right| \leq \frac{M_{\text{U2}}}{d_{\min}^\alpha}$$
+$\Phi_s$ uses a non-local inverse-distance kernel, whereas
+$J_{\Delta\mathrm{NFR}}$ and $J_\phi$ use local neighbour differences. Their
+finite-difference balance need not vanish. The implementation therefore
+records potential and geometric residuals separately instead of asserting an
+exact continuum correspondence.
 
-where $M_{\text{U2}} := \sup_t \sum_j |\partial\Delta\text{NFR}_j/\partial t| < \infty$ is guaranteed by U2+U6.
+**Step 4. Linearization and scaling are conditional.**
 
-**Step 2. Bound on $\partial K_\phi/\partial t$ (from U3).**
+The approximation $\sin(\Delta\phi)\approx\Delta\phi$ requires a measured
+small-branch margin. Likewise, diameter or density scaling depends on a
+specified graph family. U3 and U6 alone imply neither condition.
 
-Phase evolves as $\partial\phi_i/\partial t = \nu_{f,i} \cdot h_i$ where
-$h_i$ is the phase coupling function. From §4.2:
+**Step 5. Finite-size evidence remains measured.**
 
-$$\left|\frac{\partial K_\phi(i)}{\partial t}\right| = \left|\dot{\phi}_i - \sum_j w_j \dot{\phi}_j\right|$$
+The historical experiments fitted
 
-U3 requires $|\phi_i - \phi_j| \leq \Delta\phi_{\max}$ for coupled pairs.
-For Kuramoto-type coupling $h \sim \sin(\phi_j - \phi_i)$, this gives
-$|h_i| \leq \sin(\Delta\phi_{\max}) \leq 1$. With $\nu_f$ bounded (finite
-network, bounded frequencies), each phase velocity satisfies:
+$$q(N)\sim1-\frac{C}{\sqrt N}$$
 
-$$|\dot{\phi}_i| \leq \nu_{f,\max} \cdot |\mathcal{N}(i)|^{-1} \sum_{j \in \mathcal{N}(i)} |\sin(\phi_j - \phi_i)| \leq \nu_{f,\max}$$
+with $C\approx2.1$ over their sampled topologies. This is a finite empirical
+fit, not a continuum-limit theorem or a graph-uniform bound.
 
-Therefore:
+**Step 6. Residuals are alerts, not validators.**
 
-$$\left|\frac{\partial K_\phi(i)}{\partial t}\right| \leq 2\nu_{f,\max} =: M_{\text{U3}}$$
-
-**Step 3. Current divergence tracks charge variation (balance identity).**
-
-The current components are defined from the *same* fields that define charge:
-
-- $J_{\Delta\text{NFR}}(i) = |\mathcal{N}(i)|^{-1} \sum_{j \in \mathcal{N}(i)} (\Delta\text{NFR}_j - \Delta\text{NFR}_i)$
-   is the discrete Laplacian of $\Delta\text{NFR}$, which approximates
-   $\nabla^2(\Delta\text{NFR})$ on graphs.
-- $J_\phi(i) = |\mathcal{N}(i)|^{-1} \sum_{j \in \mathcal{N}(i)} \sin(\phi_j - \phi_i)$
-   approximates the divergence of phase transport.
-
-The graph divergence $\nabla \cdot \mathbf{J}$ applies the graph Laplacian
-$L$ again. For any function $f$ on a connected graph with $N$ nodes and
-average degree $\bar{d}$, the Laplacian satisfies $\|Lf\|_2 \leq 2\bar{d} \cdot \|f\|_\infty$.
-
-When charge $\rho = \Phi_s + K_\phi$ changes at node $i$, the change is
-driven by modifications to $\Delta\text{NFR}$ (affecting $\Phi_s$) and to
-phase (affecting $K_\phi$). The same modifications also alter $J_{\Delta\text{NFR}}$
-and $J_\phi$ respectively, because operators couple both sectors through
-the nodal equation $\partial\text{EPI}/\partial t = \nu_f \cdot \Delta\text{NFR}$.
-
-The key identity (exact on the continuum, approximate on graphs) is:
-
-$$\frac{\partial \Phi_s(i)}{\partial t} = -\sum_{j \neq i} \frac{J_{\Delta\text{NFR},j}}{d(i,j)^\alpha} + R_{\text{pot}}(i)$$
-
-$$\frac{\partial K_\phi(i)}{\partial t} = -(\nabla \cdot J_\phi)(i) + R_{\text{geo}}(i)$$
-
-where the **residuals** $R_{\text{pot}}$ and $R_{\text{geo}}$ arise from:
-(a) the discrete graph approximation to continuous operators, and
-(b) nonlinear terms ($\sin$ vs. linear, wrap-around vs. linear difference).
-
-The source term is therefore:
-
-$$\mathcal{S}(i) = R_{\text{pot}}(i) + R_{\text{geo}}(i)$$
-
-**Step 4. Residual vanishes under grammar constraints.**
-
-We bound each residual:
-
-**(a) Potential residual $R_{\text{pot}}$:**
-The mismatch between $\partial\Phi_s/\partial t$ and $-\nabla \cdot J_{\Delta\text{NFR}}$
-arises because $\Phi_s$ uses inverse-distance weighting ($d^{-\alpha}$) while
-$J_{\Delta\text{NFR}}$ uses neighbor averaging. On a graph with diameter $D$
-and minimum degree $\delta_{\min}$:
-
-$$|R_{\text{pot}}(i)| \leq \frac{M_{\text{U2}}}{\delta_{\min}} \cdot \mathcal{O}\!\left(\frac{1}{D}\right)$$
-
-U6 ensures $M_{\text{U2}}$ is bounded (confinement prevents unbounded $\Phi_s$).
-As $N \to \infty$ with fixed average degree, $D \sim \log N$ for small-world
-topologies, giving $|R_{\text{pot}}| \sim \mathcal{O}(1/\log N)$.
-
-**(b) Geometric residual $R_{\text{geo}}$:**
-The mismatch between $\partial K_\phi/\partial t$ and $-\nabla \cdot J_\phi$
-arises from the nonlinearity of $\sin(\cdot)$ and the wrap-around in
-$K_\phi = \text{wrap}(\phi_i - \text{circmean}(\phi_j))$. Linearizing
-$\sin(\Delta\phi) \approx \Delta\phi$ for small phase differences:
-
-$$|R_{\text{geo}}(i)| \leq \mathcal{O}(\Delta\phi_{\max}^3)$$
-
-U3 constrains $\Delta\phi_{\max} \leq \pi/2$, giving $|R_{\text{geo}}| \leq \mathcal{O}(1)$.
-In practice, grammar-compliant sequences maintain $|\phi_i - \phi_j| \ll \pi/2$
-(typical $\approx 0.3$ rad), yielding $|R_{\text{geo}}| \ll 1$.
-
-**Step 5. Aggregate bound and scaling.**
-
-Combining the per-node residual bound:
-
-$$\|\mathcal{S}\|_{\ell^2}^2 = \sum_{i=1}^{N} \mathcal{S}(i)^2 \leq N \cdot \left(|R_{\text{pot}}|_{\max}^2 + |R_{\text{geo}}|_{\max}^2\right)$$
-
-$$\|\mathcal{S}\|_{\text{rms}} = \frac{\|\mathcal{S}\|_{\ell^2}}{\sqrt{N}} \leq \sqrt{|R_{\text{pot}}|_{\max}^2 + |R_{\text{geo}}|_{\max}^2}$$
-
-The RMS residual is bounded *independently* of $N$, while the per-node
-residual decreases as the network grows (denser graph $\to$ better discrete
-approximation). This yields the scaling law:
-
-$$q(N) = \frac{1}{1 + \|\mathcal{S}\|_{\text{rms}}} \sim 1 - \frac{C}{\sqrt{N}}$$
-
-validated numerically with $C \approx 2.1$ across topologies (§10.4).
-
-**Step 6. Grammar violation detection.**
-
-When a grammar rule is violated, the corresponding bound fails:
-
-| Violation | Effect on $\mathcal{S}$ | Detection |
-|---|---|---|
-| U2 (no stabilizer after OZ) | $M_{\text{U2}} \to \infty$, $R_{\text{pot}}$ diverges | $\|\mathcal{S}_{\text{pot}}\| > \Phi_s^{\text{thresh}}$ |
-| U3 (coupling without phase check) | $\Delta\phi \to \pi$, $R_{\text{geo}} \sim \mathcal{O}(1)$ | $\|\mathcal{S}_{\text{geo}}\| > K_\phi^{\text{thresh}}$ |
-| U6 ($\Phi_s$ escapes confinement) | $\Phi_s > \pi/2$, charge accumulates | $|\Delta Q| > Q^{\text{thresh}}$ |
-
-Thus $\mathcal{S} \neq 0$ is a **computable diagnostic** that identifies
-which grammar rule was broken. $\square$
-
-**Remark.** The proof is constructive: all bounds are computable from network
-parameters ($N$, $D$, $\bar{d}$, $\delta_{\min}$) and operator constants
-($\rho_{\text{IL}}$, $\rho_{\text{OZ}}$, $\nu_{f,\max}$, $\Delta\phi_{\max}$).
-The function `compute_grammar_conservation_bounds(G)` in
-`src/tnfr/physics/conservation.py` implements these bounds numerically.
+Large potential or geometric residuals can accompany U2, U3 or U6 risks, but
+they may also arise from discretization, topology changes or an external
+pressure law. The actual operator history must be validated independently.
+`compute_grammar_conservation_bounds` therefore exposes compatibility alert
+levels, not admitted analytical bounds on every valid trajectory.
 
 ---
 
@@ -368,8 +290,8 @@ The full conservation law decomposes into two coupled sub-equations:
 $$\frac{\partial \Phi_s}{\partial t} + \nabla \cdot J_{\Delta\text{NFR}} = \mathcal{S}_{\text{pot}}$$
 
 - **Physics**: Global ΔNFR landscape evolves via operator-driven redistribution
-- **Grammar coupling**: U2 (convergence) bounds $\mathcal{S}_{\text{pot}}$;
-  U6 (confinement) prevents escape
+- **Grammar context**: U2 tracks stabilizer debt; U6 supplies a potential-drift
+  alert. Neither bounds $\mathcal{S}_{\text{pot}}$ by itself.
 - **Monitoring**: Track via $|\Delta\Phi_s| < \pi/2$ per U6
 
 ### 5.2 Geometric Sector
@@ -377,8 +299,8 @@ $$\frac{\partial \Phi_s}{\partial t} + \nabla \cdot J_{\Delta\text{NFR}} = \math
 $$\frac{\partial K_\phi}{\partial t} + \nabla \cdot J_\phi = \mathcal{S}_{\text{geo}}$$
 
 - **Physics**: Local phase curvature evolves via synchronization dynamics
-- **Grammar coupling**: U3 (resonant coupling) ensures coherent transport;
-  U4 (bifurcation) controls curvature jumps
+- **Grammar context**: U3 gates coupling and U4 checks bifurcation context;
+  neither proves a bound on curvature transport by itself.
 - **Monitoring**: Track via $|K_\phi| < 2.8274$ (hotspot threshold)
 
 ### 5.3 Cross-Sector Coupling
@@ -387,55 +309,59 @@ The two sectors are not independent. The **coupling strength** is:
 
 $$\kappa = \text{corr}\!\left(\mathcal{S}_{\text{pot}}, \mathcal{S}_{\text{geo}}\right)$$
 
-Numerical experiments show $\kappa \approx 0.6$–$0.7$, confirming significant
-cross-sector coupling. This coupling is the *physical manifestation* of the
-complex field unification $\Psi = K_\phi + i J_\phi$.
+The recorded finite experiments found $\kappa \approx 0.6$–$0.7$. This is a
+correlation between residual channels in that protocol, not evidence of a
+causal mechanism or a proof of the algebraic complex-field construction
+$\Psi = K_\phi + i J_\phi$.
 
 ---
 
-## 6. Noether Correspondence: Grammar ↔ Conservation
+## 6. Noether-Like Grammar/Conservation Correspondences {#6-noether-correspondence-grammar-conservation}
 
 ### 6.1 The Correspondence Table
 
-> **Note**: The "Analogy" column lists structural parallels to established physics for intuition. These are naming conventions within TNFR, not claims of deriving those physical conservation laws.
+> **Note**: Every row below is an interpretive/diagnostic correspondence. The
+> harmonic substrate has genuine continuous symmetries and Noether charges;
+> the discrete grammar rules alone do not generate these conservation laws.
 
-| Grammar Rule | Symmetry Type | Conserved Quantity | Analogy |
-|-------------|---------------|-------------------|---------|
-| **U2** (Convergence) | Temporal translation | Total Noether charge $Q = \sum_i \rho(i)$ | Energy conservation |
-| **U3** (Phase coupling) | Phase rotation | Phase current $\sum_i J_\phi(i)$ | Electric charge |
-| **U6** (Confinement) | Potential boundedness | Structural energy $E$ | Mass-energy bound |
-| **U1** (Initiation/Closure) | Sequence completeness | Charge creation/annihilation balance | Baryon number |
-| **U4** (Bifurcation control) | Curvature stability | Topological charge $\mathcal{Q}$ | Winding number |
-| **U5** (Multi-scale) | Scale invariance | Hierarchical charge $Q_{\text{parent}} \geq \alpha \sum Q_{\text{child}}$ | Fractal dimension |
+| Grammar Rule | Enforced contract | Associated diagnostic analogy |
+|-------------|-------------------|-------------------------------|
+| **U1** | generator/closure history | source/closure balance |
+| **U2** | stabilizer coverage and bounded debt | energy/coherence trend |
+| **U3** | wrapped phase compatibility | phase-current admissibility |
+| **U4** | bifurcation context and recency | curvature-transition context |
+| **U5** | nested identity and per-level stabilization | hierarchical charge readout |
+| **U6** | potential drift telemetry | confinement alert |
 
-### 6.2 Conservation Hierarchy
+### 6.2 Diagnostic hierarchy
 
-The conserved quantities form a hierarchy:
+The reported quantities form an evidence hierarchy:
 
-1. **Exact** (zero residual): Total charge $Q$ under adiabatic (infinitely
-   slow) evolution
-2. **Approximate** (small residual): $Q$ under finite-rate grammar-compliant
-   evolution
-3. **Statistical** (bounded variance): Charge fluctuations under repeated
-   operator applications
+1. **Exact model identities:** for example, substrate charges along the exact
+  harmonic flow or the degree-weighted EPI total in its fixed symmetric
+  diffusion regime.
+2. **Finite-trajectory measurements:** charge drift and continuity residuals
+  computed from recorded snapshots.
+3. **Statistical summaries:** residual distributions over declared operators,
+  graph families and seeds.
 
 ### 6.3 Symmetry Breaking
 
-When grammar is violated, specific conserved quantities break:
+Grammar violations may correlate with characteristic residual patterns:
 
-- **U2 violation** (no stabilizer after destabilizer): Total energy $E$
-  increases without bound — *energy non-conservation*
-- **U3 violation** (coupling without phase check): Phase current becomes
-  incoherent — *current non-conservation*
-- **U6 violation** ($\Phi_s$ escapes confinement): Charge accumulates at
-  nodes — *charge non-conservation*
+- **U2 violation** (uncompensated destabilizer): inspect pressure, C(t), and
+  energy trends; unbounded growth is not inferred from the label alone.
+- **U3 violation** (coupling without a phase check): the action is inadmissible;
+  any current residual is supporting telemetry only.
+- **U6 alert** (potential drift exceeds $\pi/2$): report the kernel, reference,
+  norm, and finite observation window.
 
-This provides a *diagnostic tool*: measuring which conservation law is
-violated reveals which grammar rule was broken.
+This provides a heuristic *diagnostic tool*. It does not replace the canonical
+grammar validator or uniquely infer which rule was broken.
 
 ---
 
-## 7. Ward Identities for Operator Sequences
+## 7. Ward-Like Diagnostics for Operator Sequences {#7-ward-identities-for-operator-sequences}
 
 ### 7.1 Definition
 
@@ -447,49 +373,43 @@ $$\langle \Delta \rho \rangle_k + \langle \nabla \cdot \mathbf{J} \rangle_k = \l
 
 where $\langle \cdot \rangle_k$ denotes the network average at step $k$.
 
-### 7.2 Operator-Specific Identities
+### 7.2 Operator-specific measurements
 
-Each of the 13 canonical operators has a characteristic conservation signature:
+The contract source fixes each operator's primary channel and U2 role; it does
+not fix a universal sign for $\Delta\rho$ or $\Delta E$:
 
-| Operator | $\Delta \rho$ | $\Delta E$ | Conservation Character |
-|----------|--------------|------------|----------------------|
-| **Emission (AL)** | $> 0$ | $> 0$ | Charge source (creation) |
-| **Reception (EN)** | $\lessgtr 0$ | $\leq 0$ | Charge neutral (redistribution) |
-| **Coherence (IL)** | $\leq 0$ | $\leq 0$ | Charge sink (stabilization) |
-| **Dissonance (OZ)** | $> 0$ | $> 0$ | Charge source (destabilization) |
-| **Coupling (UM)** | $\approx 0$ | $\approx 0$ | Charge transport (no creation) |
-| **Resonance (RA)** | $\approx 0$ | $\leq 0$ | Charge transport + dissipation |
-| **Silence (SHA)** | $= 0$ | $= 0$ | Exactly conserved |
-| **Expansion (VAL)** | $> 0$ | $> 0$ | Charge source |
-| **Contraction (NUL)** | $< 0$ | $< 0$ | Charge sink |
-| **Self-org (THOL)** | $\leq 0$ | $\leq 0$ | Internal redistribution |
-| **Mutation (ZHIR)** | $\lessgtr 0$ | $\lessgtr 0$ | Phase-dependent |
-| **Transition (NAV)** | $\lessgtr 0$ | $\lessgtr 0$ | Trajectory-dependent |
-| **Recursivity (REMESH)** | $\leq 0$ | $\leq 0$ | Scale redistribution |
+| Operators | Primary channel | U2 role | $\Delta\rho$, $\Delta E$ |
+|-----------|-----------------|---------|---------------------------|
+| AL, EN, RA, REMESH | EPI form | neutral | measured per trajectory |
+| SHA, NUL | capacity (NUL also pressure) | neutral | measured per trajectory |
+| VAL | capacity | destabilizer | measured per trajectory |
+| UM | phase | neutral | measured per trajectory; U3-gated |
+| ZHIR | phase | destabilizer | measured per trajectory; U4 context |
+| IL, THOL | pressure | stabilizer | measured per trajectory |
+| OZ | pressure | destabilizer | measured per trajectory |
+| NAV | pressure | neutral | measured per trajectory |
 
-### 7.3 Sequence Ward Identity
+### 7.3 Sequence Ward residual
 
-For a complete grammar-valid sequence $\sigma = [\mathcal{O}_1, \ldots, \mathcal{O}_N]$:
+For a recorded sequence $\sigma = [\mathcal{O}_1, \ldots, \mathcal{O}_N]$,
+the diagnostic aggregates
 
 $$\sum_{k=1}^{N} \langle \mathcal{S}_k \rangle \approx 0$$
 
-The total source over a complete sequence vanishes because U1 requires
-closure (sources created by generators must be absorbed by closures) and U2
-requires convergence (destabilizer sources must be compensated by stabilizer
-sinks).
+Whether this value is small is measured. U1 closure and U2 debt balance do not
+prove cancellation of the independently defined tetrad residual.
 
-**Experimental note (Causal Chain)**: The operator-specific Ward signatures in
-§7.2 are consistent with the experimentally observed **complete causal chain**:
+**Experimental note (causal readout chain)**: The operator-specific measurements
+in §7.2 are consistent with the recorded chain:
 Operator → (ν_f, ΔNFR) → dEPI/dt → Tetrad → (ℰ, Q). Each operator
-produces a unique tetrad fingerprint (see [STRUCTURAL_OPERATORS.md
+produced a tetrad fingerprint in the stated fixtures (see [STRUCTURAL_OPERATORS.md
 §17.2](STRUCTURAL_OPERATORS.md) and [example 37](../examples/02_physics_regimes/37_operator_tetrad_synergy.py)).
 The IL-OZ symmetry (ΔE = −0.011 for both, despite opposite physics)
-confirms that charge source/sink classification depends on signed ΔNFR, not
-the perturbation magnitude.
+shows why a fixed sign cannot be assigned from perturbation magnitude alone.
 
 ---
 
-## 8. Lyapunov Stability from the Energy Functional
+## 8. Lyapunov Candidate and Restricted Stability {#8-lyapunov-stability-from-the-energy-functional}
 
 ### 8.1 Energy Functional
 
@@ -504,84 +424,68 @@ because phase gradient stress is the local driver of K_φ transport.
 
 $E \geq 0$ always (sum of squares).
 
-### 8.2 Lyapunov Proposition for Grammar-Compliant Evolution
+### 8.2 Lyapunov candidate for observed evolution
 
-**Proposition**: Under grammar-compliant evolution (U2 satisfied):
+For a trajectory whose measured energy is non-increasing,
 
 $$\frac{dE}{dt} \leq 0$$
 
-*Proof sketch (not a complete formal proof)*:
+The following is a motivation, not a proof:
 
-1. Coherence operators (IL) reduce $|\Delta\text{NFR}|$, hence reduce
-   $\Phi_s^2$ and $J_{\Delta\text{NFR}}^2$
-2. Self-organization (THOL) redistributes without increasing total energy
-3. Destabilizers (OZ, ZHIR, VAL) increase energy locally, but U2 mandates
-   compensating stabilizers that absorb the excess
-4. Net effect over a complete grammar sequence: energy is non-increasing
+1. Coherence (IL) has a pressure-reducing contract, but cancellation in
+  $\Phi_s$ means this does not fix the sign of every energy term.
+2. Self-organization (THOL) preserves global form while producing sub-EPIs;
+  its tetrad-energy change remains trajectory-dependent.
+3. U2 requires stabilizer coverage for destabilizer debt; it does not quantify
+  absorption of tetrad energy.
+4. The net energy change must therefore be computed from actual snapshots.
 
-Therefore $E$ is a **candidate Lyapunov function** for grammar-compliant
-dynamics. A complete formal proof of asymptotic stability would require
-analytic bounds on the nonlinear operator interactions; the per-operator
-bounds in §8.4 provide supporting evidence.
+Therefore $E$ is a **candidate Lyapunov function**. Grammar validity alone does
+not fix the sign of its finite-step change. A complete formal proof of
+asymptotic stability would require analytic bounds on the nonlinear operator
+interactions; §8.4 records only an operational multiplier model.
 
-**Refinement (Grammar-Energy Landscape)**: The Lyapunov contractivity bound
-($\Pi < 1$) is *sufficient* but not *necessary* for energy descent.
+**Refinement (Grammar-Energy Landscape)**: The nominal multiplier indicator
+($\Pi < 1$) is neither a necessary nor a general sufficient theorem for energy
+descent.
 Experimental evidence ([example 38](../examples/02_physics_regimes/38_grammar_energy_landscape.py))
 shows sequences with $\Pi \approx 1.288$ (non-contractive) that still achieve
-net energy descent ($\Delta E = -9.59$). The formal bound is conservative;
-actual grammar-compliant sequences may descend more steeply than the
-multiplicative product predicts, because operators interact nonlinearly on
-the shared graph state.
+net energy descent ($\Delta E = -9.59$). The nominal model is conservative in
+that fixture;
+the measured sequence descended more steeply than the nominal product
+suggested, because operators interacted nonlinearly on that graph state.
 
 ### 8.3 Energy Dissipation Rate
 
 The dissipation rate $\dot{E}$ has physical meaning:
 
-$$-\frac{dE}{dt} = \mathcal{D}[G] \geq 0$$
+$$\mathcal{D}[G] = \max\!\left(0,-\frac{dE}{dt}\right) \geq 0$$
 
-where $\mathcal{D}$ is the **structural dissipation function**. This
-quantifies how quickly the network approaches its coherent attractor.
+where $\mathcal{D}$ is a nonnegative **dissipation readout** for steps with
+$dE/dt\leq0$. This measures the observed change; it does not prove attraction.
 
-High $\mathcal{D}$ → fast convergence to coherence (heavy stabilization)  
-Low $\mathcal{D}$ → slow convergence (exploration phase)  
-$\mathcal{D} < 0$ → grammar violation (energy injection without control)
+High $\mathcal{D}$ → fast convergence to coherence (heavy stabilization)
+Low $\mathcal{D}$ → slow convergence (exploration phase)
+Energy increase → inspect the trajectory and grammar independently
 
-### 8.4 Per-Operator Formal Lyapunov Bounds
+### 8.4 Per-operator nominal multiplier model
 
-Each of the 13 canonical operators admits a formal energy bound derived
-from its glyph factor.  Operators are classified into four energy classes:
+The compatibility API assigns each operator a nominal multiplier from its U2
+role and configured factor. These values are not proved bounds on the tetrad
+energy for every state.
 
-**Energy Class Taxonomy**
+The canonical U2 partition is derived from
+`config.physics_derivation`: stabilizers `{IL, THOL}`, destabilizers
+`{OZ, ZHIR, VAL}`, and all other operators neutral for debt accounting. The
+compatibility class `OperatorLyapunovBound` maps this partition to nominal
+multipliers; despite its historical name, it is not a proof of a bound on the
+tetrad energy. Operator names, channels and postconditions remain owned by
+`operator_contracts.py` and must not be duplicated here.
 
-| Class | Definition | Bound Form |
-|-------|-----------|------------|
-| **Stabiliser** | $E_{\text{after}} \leq (1 - \rho)\,E_{\text{before}}$ | Multiplicative contraction, $\rho > 0$ |
-| **Destabiliser** | $\Delta E \leq \kappa\,E_{\text{before}}$ | Multiplicative expansion, $\kappa > 0$ |
-| **Neutral** | $|\Delta E| \leq \varepsilon\,N$ | Additive perturbation |
-| **Mixed** | Competing stabilising and destabilising components | Worst-case bound |
+**Nominal sequence product (not a U2 consequence)**
 
-**Per-Operator Bounds**
-
-| Operator | Glyph | Class | Rate | Glyph Factor | Derivation |
-|----------|-------|-------|------|--------------|-----------|
-| Coherence | IL | Stabiliser | $\rho = 0.438$ | IL_DNFR = 0.75 | $\rho = 1 - f^2$; IL multiplies $\Delta$NFR by $f$ → energy component scales as $f^2$ |
-| Reception | EN | Stabiliser | $\rho = 0.183$ | EN_MIX = 0.2413 | Jensen inequality on convex combination: $E_{\text{mix}} \leq (1-m)\,E$ |
-| Coupling | UM | Stabiliser | $\rho = 0.150$ | UM_DNFR = 0.15 | Phase-synchronisation reduces $\Delta$NFR by factor $(1-f)$ |
-| Self-organisation | THOL | Stabiliser | $\rho = 0.100$ | THOL_ACCEL = 0.10 | Autopoietic redistribution: global form preserved, local energy absorbed |
-| Transition | NAV | Stabiliser | $\rho = 0.499$ | NAV_ETA = 0.5 | Regime shift mixes EPI with target at ratio $\eta$ → contraction by $1 - \eta^2$ |
-| Dissonance | OZ | Destabiliser | $\kappa = 3.0$ | OZ_DNFR = 2.0 | Multiplicative amplification: $\Delta E \leq (f^2 - 1)\,E$ |
-| Expansion | VAL | Destabiliser | $\kappa = 0.103$ | VAL_SCALE = 1.05 | Scaling $f > 1$: $\Delta E \leq (f^2 - 1)\,E$ |
-| Emission | AL | Destabiliser | $\kappa = 0.010/\text{node}$ | AL_BOOST = 0.10 | Additive: $\Delta E \leq f^2\,N$ |
-| Resonance | RA | Destabiliser | $\kappa = 0.103$ | RA_VF = 0.05 | Amplification $(1+f)^2 - 1$ on frequency component |
-| Silence | SHA | Neutral | $\varepsilon = 0.190$ | SHA_VF = 0.9 | Near-isometric: $|\Delta E| \leq (1 - f^2)\,N$ |
-| Mutation | ZHIR | Neutral | $\varepsilon = 0.056/\text{node}$ | ZHIR_SHIFT = 0.3 | Phase shift: $|\Delta E| \leq (\Delta\theta)^2\,N$ where $\Delta\theta = f \cdot \pi/N$ |
-| Recursivity | REMESH | Neutral | $\varepsilon = 0$ | REMESH_ALPHA = 0.5 | Advisory operator: no field modification → exact isometry |
-| Contraction | NUL | Mixed | $\kappa = 0.234$ | NUL_DENS = 1.111 | EPI shrinks ($f_s = 0.9$) but $\Delta$NFR densifies ($f_d = 1.111$) |
-
-**U2 Grammar Consequence (Sequence Contractiveness)**
-
-For a grammar-compliant sequence $\{O_1, O_2, \ldots, O_n\}$, define the
-energy multiplier per operator:
+For any supplied sequence $\{O_1, O_2, \ldots, O_n\}$, the compatibility
+model defines a nominal multiplier per operator:
 
 $$m_i = \begin{cases}
 1 - \rho_i & \text{stabiliser} \\
@@ -591,8 +495,11 @@ $$m_i = \begin{cases}
 
 The cumulative product $\Pi = \prod_{i=1}^{n} m_i$ satisfies:
 
-- $\Pi < 1$ → **net-contractive** sequence (U2 satisfied)
-- $\Pi \geq 1$ → **non-contractive** (U2 may be violated)
+- $\Pi < 1$ → contractive in this nominal multiplier model
+- $\Pi \geq 1$ → non-contractive in this nominal multiplier model
+
+Neither result establishes or refutes grammar validity; U2 is checked by the
+grammar/debt owner and actual energy change is read from the trajectory.
 
 *Example*: OZ followed by 4×IL:
 $(1 + 3.0) \times (1 - 0.438)^4 = 4.0 \times 0.0997 \approx 0.40 < 1$ ✓
@@ -621,24 +528,22 @@ uses the **normalized** (canonical) gap; `analyze_spectral_gap` exposes it as
 | Cheeger bound | $h$ | $\sqrt{2\,d_{\max}\,\lambda_1}$ | Isoperimetric lower bound |
 | Spectral ratio | $r$ | $\lambda_{\max}/\lambda_1$ | Condition number of dynamics |
 
-**Effective Convergence Rate**
+**Nominal comparison rate**
 
-The per-operator convergence rate is bounded by the minimum of the
-operator's Lyapunov contraction rate and the spectral gap:
+For a stabilizer, the compatibility API reports
 
 $$r_{\text{eff}} = \min(\rho, \lambda_1)$$
 
-For stabilisers, the energy half-life is:
+and an associated nominal half-life:
 
 $$t_{1/2} = \frac{\ln 2}{r_{\text{eff}}}$$
 
-This characterisation shows that:
-1. Well-connected topologies ($\lambda_1$ large) allow operators to converge faster
-2. Loosely-connected topologies bottleneck convergence regardless of operator strength
-3. The spectral ratio $\lambda_{\max}/\lambda_1$ measures the dynamic range of the system
+This is a policy-model summary, not a theorem that an arbitrary operator step
+follows the linear diffusion eigenmodes. The spectral ratio remains a graph
+diagnostic; actual convergence must be established for the declared dynamics.
 
-**Implementation**: `src/tnfr/physics/lyapunov.py` — complete per-operator
-bounds, spectral gap analysis, and sequence contractiveness proofs.  
+**Implementation**: `src/tnfr/physics/lyapunov.py` — nominal per-operator
+multipliers, spectral gap analysis, and sequence policy diagnostics.
 **Validation**: the Lyapunov test suite in
 `tests/core_physics/test_lyapunov_operators.py`.
 
@@ -656,47 +561,40 @@ $$F(t) \sim e^{-2\nu_f \lambda_2 t},\qquad \lambda_2 = \lambda_2(L_{\mathrm{sym}
 verified to machine precision in a mode-isolated test ($|{\rm err}| \sim 10^{-15}$
 across regular and irregular graphs; the combinatorial $\lambda_2(L=D-A)$ gives
 the *wrong* rate, off by the degree factor $1/d$ on regular graphs and more on
-irregular ones). This is the **same** $\lambda_2$ that §8.5 uses for the Lyapunov
-convergence rate: the diffusion H-theorem and the structural Lyapunov energy
-share a single relaxation clock, $\nu_f\,\lambda_2(L_{\mathrm{sym}})$.
+irregular ones). This is the $\lambda_2$ that §8.5 uses for the **diffusion**
+relaxation rate. It does not establish the decay rate of the full tetrad energy
+or of arbitrary operator trajectories.
 
 **Partial reduction of the open $dE/dt\le 0$ proof.** The energy functional
 $E = \tfrac12\sum(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2)$
 splits into (i) **gradient / Dirichlet sectors** ($|\nabla\phi|^2$ and the EPI
-diffusion sector), whose decrease is *governed by the proven structural
-H-theorem* at rate $2\nu_f\lambda_2$, and (ii) a **residual**: the destabiliser
-(U4: OZ/ZHIR/VAL) energy injection — bounded by the U2 contract — together with
-the conjugate-momentum sectors $(J_\phi, J_{\Delta\mathrm{NFR}})$. Under
-stabiliser-only (destabiliser-free) evolution the diffusion-governed sectors are
-therefore provably non-increasing. This **reduces** the open asymptotic-stability
-question to the U4 residual; it does **not** close it — it isolates exactly what
-an outstanding proof must control.
+diffusion sector), for which a fixed symmetric pure-diffusion model has an exact
+Dirichlet balance, and (ii) the remaining tetrad terms and operator-dependent
+sources. U2 does not bound the latter by itself. This isolates rather than
+solves the open monotonicity and asymptotic-stability questions.
 
-The same monotone-relaxation structure recurs in the grammar layer (the Parry /
-Markov H-theorem, `examples/08_emergent_geometry/150_emergent_grammatical_pattern_parry.py`):
-all three functionals relax to equilibrium by one mechanism, on the one canonical
-clock $\nu_f\,\lambda_2(L_{\mathrm{sym}})$.
+A separate Parry/Markov model is explored in
+`examples/08_emergent_geometry/150_emergent_grammatical_pattern_parry.py`.
+Its relaxation must not be identified with the graph-diffusion clock without
+an explicit model bridge.
 
 ### 8.7 The two conservation/Lyapunov structures
 
-TNFR carries **two distinct conservation laws**, on two different fields, sharing
-the one relaxation clock of §8.6:
+TNFR exposes one restricted exact diffusion conservation law and a distinct
+tetrad conservation diagnostic:
 
 | | EPI channel (diffusion) | Tetrad / grammar |
 |---|---|---|
 | **Field** | the scalar form EPI | the tetrad $(\Phi_s, \lvert\nabla\phi\rvert, K_\phi, \dots)$ |
-| **Conserved quantity** | degree-weighted total $\sum_i \deg(i)\,\mathrm{EPI}_i$ (left null vector of $L_{\mathrm{rw}}$) | Noether charge $Q=\sum_i(\Phi_s+K_\phi)$ |
-| **Conserved under** | $\partial_t\mathrm{EPI}=-\nu_f L_{\mathrm{rw}}\mathrm{EPI}$ | grammar U1–U6 |
+| **Quantity** | degree-weighted total $\sum_i \deg(i)\,\mathrm{EPI}_i$ (left null vector of $L_{\mathrm{rw}}$) | Noether-like charge $Q=\sum_i(\Phi_s+K_\phi)$ |
+| **Status** | conserved for fixed symmetric pure diffusion with the stated capacity assumptions | drift measured on the supplied trajectory; not implied by U1–U6 |
 | **Lyapunov functional** | Dirichlet energy $F=\tfrac12\sum A_{ij}(\mathrm{EPI}_i-\mathrm{EPI}_j)^2$ | $E=\tfrac12\sum(\Phi_s^2+\lvert\nabla\phi\rvert^2+K_\phi^2+J_\phi^2+J_{\Delta\mathrm{NFR}}^2)$ |
-| **Equilibrium** | uniform EPI (stationary measure $\pi_i\propto\deg i$) | confined tetrad (U2 satisfied) |
+| **Equilibrium** | uniform EPI on each connected component | no general attractor theorem |
 | **Implementation** | `structural_diffusion.degree_weighted_total`, `stationary_distribution` | `conservation.compute_noether_charge`, `compute_energy_functional` |
 
-The two are **independent** (the degree-weighted total acts on EPI; $Q$ on the
-tetrad), but both relax on the **same clock** $\nu_f\,\lambda_2(L_{\mathrm{sym}})$
-(§8.6): $F$ provably (the structural H-theorem), $E$ for its diffusion-governed
-sectors. This is standard graph-diffusion conservation plus the tetrad
-conservation law of §8.1–§8.6; the only contribution is the explicit statement
-that TNFR runs **two** parallel conservation/Lyapunov structures on one clock.
+The two are **independent**: the degree-weighted total acts on EPI, while $Q$
+is a tetrad diagnostic. The exact fixed-graph diffusion theorem does not imply
+conservation or one-clock relaxation of the full tetrad trajectory.
 
 ---
 
@@ -731,16 +629,16 @@ transported → *conservation regime*
 High-frequency modes ($\lambda_k$ large): rapid transport, potential
 dissipation → *relaxation regime*
 
-### 9.3 Conservation Resolution by Scale
+### 9.3 Residual resolution by scale
 
-The eigenvalue spectrum of $L$ determines at which scales conservation
-holds most precisely:
+The eigenvalue spectrum supplies a basis in which to report the measured
+balance residual by scale:
 
-- **Global modes** ($k = 0, 1$): Total charge $Q$ is most conserved
-- **Mesoscale modes**: Sector-level conservation with cross-coupling
-- **Local modes** ($k \to N$): Rapid equilibration, sources/sinks active
+- **Global modes** ($k = 0, 1$): inspect aggregate charge drift
+- **Mesoscale modes**: inspect sector-level residual coupling
+- **Local modes** ($k \to N$): inspect rapidly varying sources and sinks
 
-This spectral hierarchy mirrors the U5 multi-scale coherence principle.
+This is an observational decomposition; it does not certify U5.
 
 ---
 
@@ -769,20 +667,22 @@ Conservation validated across:
 
 ### 10.3 Interpretation
 
-- **Charge drift < 0.03%** across all topologies — $Q$ is effectively conserved
+- **Charge drift < 0.03%** in this finite protocol
 - **Conservation quality ≈ 0.6** reflects the discrete approximation; improves
   with smaller $\Delta t$ and denser networks
-- **Cross-coupling** ≈ 0.6–0.7 confirms the Ψ unification is physically real
-- **Energy monotonically decreasing** supports Lyapunov proposition
+- **Cross-coupling** ≈ 0.6–0.7 is a measured correlation in these runs
+- **Energy monotonically decreasing** in these runs supports continued study
+  of the Lyapunov candidate
 
-### 10.4 Scaling Behavior
+### 10.4 Measured finite-size fit
 
 Conservation quality scales as:
 
 $$q(N) \sim 1 - \frac{C}{\sqrt{N}}$$
 
-where $C \approx 2.1$ is topology-dependent. In the continuum limit ($N \to \infty$):
-$q \to 1$, i.e., **exact conservation**.
+where $C \approx 2.1$ was fitted on the recorded finite topologies. No
+continuum-limit convergence or exact conservation theorem follows from that
+finite sample.
 
 ---
 
@@ -825,7 +725,8 @@ $q \to 1$, i.e., **exact conservation**.
 
 ### 12.1 Grammar Violation Detection
 
-Conservation residuals serve as a **real-time grammar violation detector**:
+Conservation residuals serve as a **real-time anomaly indicator** alongside
+the canonical grammar validator:
 
 ```python
 tracker = ConservationTracker(G)
@@ -836,7 +737,7 @@ tracker.record(t=1.0)
 balance = tracker.latest_balance
 if balance.grammar_violation_index > 0.5:
     violations = detect_grammar_violations_from_conservation(balance)
-    # violations['violation_types'] reveals WHICH rule was broken
+    # Heuristic classification; validate the actual history separately.
 ```
 
 ### 12.2 Self-Optimization via Conservation Monitoring
@@ -844,7 +745,7 @@ if balance.grammar_violation_index > 0.5:
 The `ConservationTracker` can guide the self-optimizing engine:
 
 1. **Monitor** conservation quality during optimization
-2. **Detect** when operator choices violate grammar (rising residuals)
+2. **Flag** operator choices for review when residuals rise
 3. **Correct** by selecting operators that restore conservation
 4. **Verify** improvement after correction
 
@@ -856,9 +757,9 @@ Conservation quality serves as an aggregate health metric:
 - $0.5 < q < 0.9$: Active dynamics, normal operation
 - $q < 0.5$: Possible grammar violation or fragmentation risk
 
-### 12.4 Predictive Diagnostics
+### 12.4 Diagnostic associations
 
-The sector decomposition predicts failure modes:
+The sector decomposition flags patterns for investigation:
 
 - **Potential sector dominant**: ΔNFR imbalance → U2/U6 risk
 - **Geometric sector dominant**: Phase decoherence → U3 risk
@@ -868,10 +769,9 @@ The sector decomposition predicts failure modes:
 
 The per-operator Ward identities (§7.2) are experimentally confirmed by the
 **operator-tetrad fingerprint matrix** ([example 37](../examples/02_physics_regimes/37_operator_tetrad_synergy.py)).
-Each operator produces a unique signature across (Φ_s, |∇φ|, K_φ, ξ_C),
-and the causal chain Operator → Tetrad → (ℰ, Q) is unidirectional. This
-fingerprint can serve as a runtime diagnostic to identify which operator was
-applied from conservation residual patterns.
+Each operator produced a signature across (Φ_s, |∇φ|, K_φ, ξ_C) in the
+recorded protocol. Such fingerprints can assist runtime diagnosis, but they do
+not uniquely identify an operator outside that finite model and state family.
 
 ---
 
@@ -894,8 +794,8 @@ applied from conservation residual patterns.
 | `verify_conservation_balance(...)` | Continuity equation residual (Crank-Nicolson, O(Δt²)) |
 | `decompose_conservation_residual(...)` | Sector decomposition (Crank-Nicolson) |
 | `analyze_sector_coupling(...)` | Cross-sector correlation |
-| `compute_grammar_conservation_bounds(G)` | Theoretical bounds from U-rules |
-| `detect_grammar_violations_from_conservation(...)` | Violation classification |
+| `compute_grammar_conservation_bounds(G)` | Legacy policy-scaled alert levels |
+| `detect_grammar_violations_from_conservation(...)` | Heuristic alert classification |
 
 | `WardIdentity` | Per-operator conservation signature |
 | `LyapunovResult` | Lyapunov dE/dt analysis |
@@ -911,20 +811,20 @@ applied from conservation residual patterns.
 | Component | Purpose |
 |-----------|---------|
 | `EnergyClass` | Enum: STABILISER, DESTABILISER, NEUTRAL, MIXED |
-| `OperatorLyapunovBound` | Per-operator formal energy bound with derivation |
+| `OperatorLyapunovBound` | Legacy-named nominal U2-role multiplier |
 | `OPERATOR_LYAPUNOV_BOUNDS` | Registry of all 13 operator bounds |
 | `get_bound(name_or_glyph)` | Lookup by operator name or glyph |
-| `compute_operator_energy_bound(...)` | Theoretical ΔE upper bound per step |
-| `compute_sequence_energy_bound(...)` | Cumulative energy bound across sequence |
-| `verify_operator_lyapunov(...)` | Empirical vs theoretical bound check |
+| `compute_operator_energy_bound(...)` | Nominal ΔE allowance per step |
+| `compute_sequence_energy_bound(...)` | Cumulative nominal multiplier model |
+| `verify_operator_lyapunov(...)` | Observed change versus nominal model |
 | `analyze_spectral_gap(G)` | Full Laplacian eigendecomposition: λ₁, τ_relax, t_mix, Cheeger |
 | `analyze_operator_convergence(G, name)` | Combined Lyapunov + spectral rate |
-| `prove_sequence_lyapunov(operators)` | Formal U2 contractiveness proof |
+| `prove_sequence_lyapunov(operators)` | Legacy-named nominal contractivity check |
 
 ### 13.2 Tests
 
-**File**: `tests/core_physics/test_conservation_laws.py` — 62 tests  
-**File**: `tests/core_physics/test_lyapunov_operators.py` — 96 tests (per-operator bounds, spectral gap, sequence proofs)
+**File**: `tests/core_physics/test_conservation_laws.py` — 62 tests
+**File**: `tests/core_physics/test_lyapunov_operators.py` — compatibility multipliers, spectral gap and sequence diagnostics
 
 ### 13.3 Benchmark
 
@@ -938,19 +838,19 @@ applied from conservation residual patterns.
 
 ## 14. Summary of Main Results
 
-1. **Structural Continuity Theorem**: $\partial\rho/\partial t + \nabla \cdot \mathbf{J} = \mathcal{S}_{\text{grammar}}$ where $\mathcal{S} \to 0$ under U1–U6.
+1. **Structural balance identity**: $\partial\rho/\partial t + \nabla \cdot \mathbf{J} = \mathcal{S}$, where $\mathcal S$ is measured from the actual trajectory.
 
-2. **Noether Correspondence**: Each grammar rule corresponds to a conserved quantity — grammar is the structural symmetry of TNFR.
+2. **Noether-like correspondence**: Grammar rules organize diagnostic analogies; only a specified continuous symmetry and model establish a Noether charge.
 
 3. **Two-Sector Structure**: Conservation decomposes into potential ($\Phi_s \leftrightarrow J_{\Delta\text{NFR}}$) and geometric ($K_\phi \leftrightarrow J_\phi$) sectors coupled through $\Psi = K_\phi + i J_\phi$.
 
-4. **Ward Identities**: Each canonical operator has a characteristic conservation signature; complete sequences satisfy $\sum_k \langle \mathcal{S}_k \rangle \approx 0$.
+4. **Ward diagnostics**: Operators have measured conservation signatures; the aggregate residual is reported rather than assumed to vanish.
 
-5. **Lyapunov Stability**: The energy functional $E = \frac{1}{2}\sum(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\text{NFR}}^2)$ is non-increasing under grammar-compliant evolution in all tested configurations, supporting asymptotic stability of coherent attractors. Formal per-operator bounds are derived from glyph factors for all 13 canonical operators (§8.4), with explicit spectral gap characterisation (§8.5) giving topology-dependent convergence rates. A complete proof of asymptotic stability remains open.
+5. **Lyapunov candidate**: $E = \frac{1}{2}\sum(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\text{NFR}}^2)$ is nonnegative. Its observed change and the nominal per-operator multipliers are diagnostics; a complete monotonicity or asymptotic-stability proof remains open. The separate Dirichlet energy decreases exactly in its fixed symmetric diffusion regime.
 
-6. **Numerical Validation**: Charge drift < 0.03% across topologies; conservation quality improves toward 1 in the continuum limit.
+6. **Numerical validation**: The recorded finite protocol measured small charge drift and a size trend on selected topologies; no continuum extrapolation is claimed.
 
-7. **Diagnostic Application**: Conservation residuals detect and classify grammar violations in real time.
+7. **Diagnostic application**: Conservation residuals flag patterns for review; canonical history validation decides grammar compliance.
 
 ---
 
@@ -983,7 +883,7 @@ print(cons.summary())                # Q, E, dE/dt, stability
 
 ---
 
-**Status**: CANONICAL  
-**Derived from**: Nodal equation + Grammar U1–U6  
-**Validated by**: 158 tests (62 conservation + 96 Lyapunov), numerical experiments across topologies  
+**Status**: CANONICAL DIAGNOSTIC REFERENCE
+**Derived from**: field definitions and the measured balance identity; exact diffusion results retain their stated hypotheses
+**Validated by**: finite numerical experiments and the current test suite
 **Implementation**: `src/tnfr/physics/conservation.py`

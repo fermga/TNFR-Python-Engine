@@ -14,16 +14,10 @@ import math
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "src"
-sys.path.insert(0, str(SRC))
-
-loaded_tnfr = sys.modules.get("tnfr")
-loaded_path = str(getattr(loaded_tnfr, "__file__", "")) if loaded_tnfr else ""
-if loaded_tnfr is not None and not loaded_path.startswith(str(SRC)):
-    for name in list(sys.modules):
-        if name == "tnfr" or name.startswith("tnfr."):
-            del sys.modules[name]
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
 import networkx as nx  # noqa: E402
 

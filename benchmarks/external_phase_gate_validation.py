@@ -36,14 +36,8 @@ from typing import Any, Iterable, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = REPO_ROOT / "src"
-sys.path.insert(0, str(SRC_DIR))
-
-loaded_tnfr = sys.modules.get("tnfr")
-loaded_path = str(getattr(loaded_tnfr, "__file__", "")) if loaded_tnfr else ""
-if loaded_tnfr is not None and not loaded_path.startswith(str(SRC_DIR)):
-    for name in list(sys.modules):
-        if name == "tnfr" or name.startswith("tnfr."):
-            del sys.modules[name]
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
 import networkx as nx  # noqa: E402
 

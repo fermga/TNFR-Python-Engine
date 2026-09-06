@@ -314,10 +314,10 @@ class TetradSnapshot:
 
 @dataclass
 class ConservationReport:
-    """Conservation law diagnostics from structural continuity theorem.
+    """Finite-trajectory structural conservation diagnostics.
 
-    Captures Noether charge Q, energy functional E, Lyapunov stability,
-    and conservation quality metrics.
+    Captures the Noether-like tetrad charge, energy candidate, observed
+    finite-step energy change, and conservation-quality telemetry.
     """
 
     noether_charge: float = 0.0
@@ -986,15 +986,14 @@ class Network:
     def auto_optimize(self) -> Network:
         """Auto-optimize: drive the network toward coherence.
 
-        Self-optimization in TNFR is *gradient descent on the structural
-        manifold* (AGENTS.md §Self-Optimizing Dynamics): apply grammar-valid
-        **stabilizers** (coherence IL, reception EN, resonance RA, coupling
-        UM) per node, which monotonically reduce |ΔNFR| and raise C(t).
+        Self-optimization selects grammar-valid low-risk candidates. Coherence
+        (IL) is the canonical U2 stabilizer; Reception, Resonance, and
+        Coupling remain form/phase operations whose realized telemetry is
+        measured rather than assumed to establish convergence.
 
-        This delegates to the grammar-aware evolution restricted to a
-        stabilizer-only candidate set, so it never destabilizes (the full
-        glyph selector would explore/destabilize fragile nodes, which is the
-        general dynamics, not coherence optimization).
+        This delegates to grammar-aware evolution with a stabilizer-leaning
+        candidate set. It does not claim a general gradient-descent or
+        asymptotic-convergence theorem for arbitrary pressure laws.
 
         Returns
         -------
@@ -1285,6 +1284,12 @@ class Network:
             j_dnfr=j_dnfr,
         )
 
+    def tetrad_observation(self):
+        """Return the tetrad in the optional cross-domain provenance envelope."""
+        from ..metrics.observations import observe_graph_tetrad
+
+        return observe_graph_tetrad(self.tetrad())
+
     def fields(self) -> dict[str, dict[str, float]]:
         """Compute all canonical + extended fields as flat per-node dicts.
 
@@ -1307,12 +1312,12 @@ class Network:
     # === CONSERVATION LAWS ===
 
     def conservation(self) -> ConservationReport:
-        """Compute conservation law diagnostics (Noether charge, energy, Lyapunov).
+        """Compute finite-trajectory conservation diagnostics.
 
-        Uses the Structural Conservation Theorem (Noether-like) to compute:
-        - Noether charge Q = sum(Phi_s + K_phi)
-        - Energy functional E = 0.5 * sum(energy_density)
-        - Lyapunov stability between the two most recent snapshots
+        Computes a Noether-like tetrad charge, a non-negative energy candidate,
+        and an observed finite-step balance between the two most recent
+        snapshots. Grammar labels alone do not imply a zero residual or a
+        monotone energy trajectory.
 
         Returns
         -------
@@ -1352,8 +1357,9 @@ class Network:
 
         The TNFR nodal dynamics generates its own geometry: a symplectic
         phase space P = R^{4N} with canonical conjugate pairs (K_phi, J_phi)
-        and (Phi_s, J_dnfr), on which the energy functional is the
-        Hamiltonian and the 13 operators are symplectomorphisms.
+        and (Phi_s, J_dnfr), on which the auxiliary substrate Hamiltonian is
+        evaluated. The substrate flow is symplectic; this readout does not
+        certify every canonical engine operator as a symplectomorphism.
 
         Returns
         -------
@@ -1627,6 +1633,20 @@ class Network:
             "n_nodes": n,
         }
 
+    def nfr_observation(self):
+        """Return the graph NFR readout with explicit observation provenance."""
+        from ..metrics.observations import StructuralObservation
+
+        return StructuralObservation(
+            domain="graph",
+            pressure_realization="graph_coupled_delta_nfr",
+            aggregation="global_network_nfr",
+            derivative_kind="read_only_snapshot",
+            equilibrium_tolerance=1e-12,
+            scope="graph NFR observation",
+            value=self.nfr(),
+        )
+
     def rhythm(self) -> dict[str, Any]:
         """The emergent pulse: the resonant rhythm the substrate plays.
 
@@ -1794,11 +1814,12 @@ class Network:
         return compute_energy_functional(self.G)
 
     def grammar_violations(self, dt: float = 1.0) -> dict[str, Any]:
-        """Detect grammar violations via conservation residuals.
+        """Report heuristic grammar-risk signals from a conservation residual.
 
         Requires at least two snapshots.  Takes snapshots before and
-        after a single compliant evolution step (dt) and checks the
-        conservation balance.
+        after a single evolution step (dt) and checks the conservation balance.
+        Canonical grammar validation remains authoritative: a residual cannot
+        by itself prove which, if any, grammar rule was violated.
 
         Returns
         -------

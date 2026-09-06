@@ -25,6 +25,7 @@ from tnfr.physics.spectral_projectors import (
     commutator_norm,
     derived_tolerance,
     is_normal,
+    orthonormal_basis,
     spectral_clusters,
     subspace_projector,
 )
@@ -89,6 +90,19 @@ def test_subspace_projector_is_idempotent_hermitian_and_basis_free():
     assert np.allclose(subspace_projector(mixed), P, atol=1e-10)
 
 
+def test_rank_deficient_basis_does_not_create_spurious_projector_directions():
+    basis = np.array([[1.0, 2.0, 0.0], [0.0, 0.0, 0.0]])
+    q = orthonormal_basis(basis)
+    assert q.shape == (2, 1)
+    assert np.trace(subspace_projector(basis)) == pytest.approx(1.0)
+    assert np.allclose(subspace_projector(basis), np.diag([1.0, 0.0]))
+
+
+def test_zero_basis_produces_zero_projector():
+    basis = np.zeros((3, 2))
+    assert np.allclose(subspace_projector(basis), np.zeros((3, 3)))
+
+
 def test_spectral_clusters_projectors_partition_identity():
     rng = np.random.default_rng(1)
     A = rng.standard_normal((6, 6)) + 1j * rng.standard_normal((6, 6))
@@ -130,6 +144,15 @@ def test_unitary_basis_rotation_leaves_projector_invariant():
     assert np.allclose(
         subspace_projector(grp), subspace_projector(grp @ rotation), atol=1e-10
     )
+
+
+def test_ambiguous_cluster_identity_returns_unresolved_decision():
+    matrix = np.diag([0.0, 1.0, 1.0 + 3e-8])
+    basis = np.array([[0.0], [1.0], [0.0]])
+    certificate = certify_invariant_subspace(matrix, basis, tol=2e-8)
+    assert certificate.is_invariant_subspace
+    assert certificate.cluster_identity_resolved is False
+    assert certificate.decision is None
 
 
 # --- certificate on the residue digraph (via the module) ----------------------

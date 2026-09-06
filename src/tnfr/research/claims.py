@@ -2,8 +2,8 @@ r"""Claim-status ledger for TNFR research results.
 
 Every research result carries an explicit epistemic status so that a measured
 regularity is never silently promoted to a theorem.  The canonical statuses are
-those of the handoff programme: ``PROVED``, ``DERIVED``, ``MEASURED``,
-``CONJECTURAL``, ``NEGATIVE`` and ``SUPERSEDED``.  Status may only *strengthen*
+``PROVED``, ``DERIVED``, ``MEASURED``, ``CONJECTURAL``, ``NEGATIVE`` and
+``SUPERSEDED``.  Status may only *strengthen*
 along ``CONJECTURAL → MEASURED → DERIVED → PROVED``; a claim can always be
 corrected to ``NEGATIVE`` (falsified) or ``SUPERSEDED`` (replaced by a stronger
 result), but it may never silently weaken (e.g. ``PROVED → CONJECTURAL``) without
@@ -101,6 +101,27 @@ class Claim:
         """Return a copy at ``new_status`` after validating the transition."""
         validate_transition(self.status, new_status)
         return replace(self, status=ClaimStatus(new_status))
+
+    def promote(
+        self,
+        new_status,
+        *,
+        justification: str,
+        proof_references: tuple[str, ...] = (),
+    ) -> "Claim":
+        """Promote a claim only with explicit justification and proof sources."""
+        target = ClaimStatus(new_status)
+        validate_transition(self.status, target)
+        if target not in {ClaimStatus.DERIVED, ClaimStatus.PROVED}:
+            raise ClaimTransitionError(
+                "promote() is reserved for DERIVED or PROVED transitions"
+            )
+        if not justification.strip() or not proof_references:
+            raise ClaimTransitionError(
+                "claim promotion requires justification and proof references"
+            )
+        merged = tuple(dict.fromkeys((*self.references, *proof_references)))
+        return replace(self, status=target, references=merged)
 
     def to_dict(self) -> dict:
         return {

@@ -1,4 +1,4 @@
-r"""Arithmetic-pressure independence and completeness audit (R7).
+r"""Arithmetic-pressure independence and completeness audit.
 
 The canonical arithmetic realisation of the nodal gradient is the three-channel
 structural pressure (``ArithmeticTNFRFormalism.delta_nfr_value`` with unit
@@ -424,7 +424,6 @@ def algorithmic_primality_is_circular() -> bool:
 
     ``True``: every channel is computed **from** the factorisation of ``n``
     (``Ω, τ, σ``), so the pressure presupposes the factorisation it would
-    "detect". It is a structural descriptor, not a primality/factoring algorithm —
-    the C5 circularity verdict is CIRCULAR (``NT-P07e``, no algorithmic claim).
+    "detect". It is a structural descriptor, not a primality/factoring algorithm.
     """
     return True

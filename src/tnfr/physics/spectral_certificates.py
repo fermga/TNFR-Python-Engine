@@ -28,6 +28,7 @@ import numpy as np
 from .spectral_projectors import (
     EigenspaceCluster,
     derived_tolerance,
+    orthonormal_basis,
     spectral_clusters,
     subspace_projector,
 )
@@ -41,13 +42,7 @@ __all__ = [
 
 
 def _orthonormal(basis) -> np.ndarray:
-    b = np.asarray(basis, dtype=complex)
-    if b.ndim == 1:
-        b = b[:, None]
-    if b.shape[1] == 0:
-        return b
-    q, _ = np.linalg.qr(b)
-    return q
+    return orthonormal_basis(basis)
 
 
 def projector_score(
@@ -114,6 +109,8 @@ class SubspaceCertificate:
     tolerance: float
     score: float
     is_invariant_subspace: bool
+    cluster_identity_resolved: bool
+    decision: bool | None
 
 
 def certify_invariant_subspace(
@@ -139,9 +136,20 @@ def certify_invariant_subspace(
     score = projector_score(
         subspace_basis, clusters, min_abs_eigenvalue=min_abs_eigenvalue
     )
+    representatives = [cluster.eigenvalue for cluster in clusters]
+    separation = min(
+        (abs(left - right)
+         for index, left in enumerate(representatives)
+         for right in representatives[index + 1:]),
+        default=float("inf"),
+    )
+    resolved = separation > 2.0 * tol
+    invariant = residual < tol
     return SubspaceCertificate(
         residual=residual,
         tolerance=tol,
         score=score,
-        is_invariant_subspace=residual < tol,
+        is_invariant_subspace=invariant,
+        cluster_identity_resolved=resolved,
+        decision=invariant if resolved else None,
     )

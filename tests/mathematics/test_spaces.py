@@ -103,8 +103,15 @@ def test_banach_space_coherence_functional(
     f = np.exp(1j * np.pi * x_grid)
 
     derivative = np.gradient(f, x_grid, edge_order=2)
-    numerator = np.trapezoid(np.abs(derivative) ** 2, x_grid)
-    denominator = 1.0 + np.trapezoid(np.abs(f) ** 2, x_grid)
+    spacing = np.diff(x_grid)
+    derivative_sq = np.abs(derivative) ** 2
+    function_sq = np.abs(f) ** 2
+    numerator = np.sum(
+        0.5 * (derivative_sq[:-1] + derivative_sq[1:]) * spacing
+    )
+    denominator = 1.0 + np.sum(
+        0.5 * (function_sq[:-1] + function_sq[1:]) * spacing
+    )
     expected = numerator / denominator
 
     result = space.compute_coherence_functional(f, x_grid)

@@ -43,6 +43,7 @@ from typing import Sequence
 import numpy as np
 
 from ..physics.spectral_projectors import derived_tolerance
+from .cayley import cayley_laplacian
 from .number_theory import power_residue_set, unit_power_residue_set
 
 __all__ = [
@@ -62,26 +63,10 @@ __all__ = [
 Matrix = list[list[Fraction]]
 
 
-def _cayley_laplacian(m: int, connection: set[int]) -> Matrix:
-    r"""Exact ``L_rw = I − (1/d) W`` for ``Cay(ℤ/mℤ, connection)`` (out-degree
-    ``d = |connection|``; edge ``i→j`` iff ``(j − i) mod m ∈ connection``)."""
-    d = len(connection)
-    if d == 0:
-        raise ValueError("empty connection set")
-    inv = Fraction(1, d)
-    L: Matrix = [[Fraction(0) for _ in range(m)] for _ in range(m)]
-    for i in range(m):
-        L[i][i] = Fraction(1)
-        for j in range(m):
-            if i != j and ((j - i) % m) in connection:
-                L[i][j] = -inv
-    return L
-
-
 def unit_power_residue_laplacian(m: int, k: int) -> Matrix:
     r"""Exact ``L_rw`` for the **unit** k-th power-residue Cayley digraph on
     ``ℤ/mℤ`` (connection set :func:`unit_power_residue_set`)."""
-    return _cayley_laplacian(m, set(unit_power_residue_set(m, k)))
+    return cayley_laplacian(m, set(unit_power_residue_set(m, k)))
 
 
 def full_power_residue_laplacian(m: int, k: int) -> Matrix:
@@ -92,7 +77,7 @@ def full_power_residue_laplacian(m: int, k: int) -> Matrix:
     non-unit residues, its connection set does not CRT-factor in general, so the
     Kronecker identity :func:`crt_kronecker_residual` does **not** hold for it.
     """
-    return _cayley_laplacian(m, set(power_residue_set(m, k)))
+    return cayley_laplacian(m, set(power_residue_set(m, k)))
 
 
 def crt_ordering(a: int, b: int) -> list[int]:

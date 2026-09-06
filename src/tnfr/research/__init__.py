@@ -1,10 +1,8 @@
 r"""TNFR research infrastructure: claims, manifests, certificates, circularity.
 
-Lightweight, non-bureaucratic scaffolding so every research result records its
-epistemic status, a reproducibility manifest, numerical certificates and a
-circularity audit — the C5 consolidation of the 2026-09-04 handoff programme.
-Storing this outside ``AGENTS.md`` keeps the synthesized canon free of session
-history while making each experiment reproducible and honestly classified.
+The utilities record epistemic status, reproducibility manifests, numerical
+certificates, and circularity audits without placing experiment history in the
+synthesized canonical guidance.
 """
 
 from __future__ import annotations
@@ -19,6 +17,7 @@ from .claims import (
     is_valid_transition,
     validate_transition,
 )
+from .evidence_sidecar import EvidenceAdmissionError, EvidenceSidecar
 from .manifests import (
     ExperimentManifest,
     ManifestValidationError,
@@ -33,6 +32,8 @@ __all__ = [
     "CircularityAudit",
     "CircularityVerdict",
     "ExperimentManifest",
+    "EvidenceAdmissionError",
+    "EvidenceSidecar",
     "ManifestValidationError",
     "NumericalCertificate",
     "certify_within_tolerance",

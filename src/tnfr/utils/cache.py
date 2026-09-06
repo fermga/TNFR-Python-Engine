@@ -2959,6 +2959,23 @@ class TNFRHierarchicalCache:
             "entry_counts": entry_counts,
         }
 
+    def memory_profile(self) -> dict[str, Any]:
+        """Return retained cache bytes by declared ownership level.
+
+        This is accounting for ``CacheEntry.size_bytes`` retained by this
+        instance, not a process-RSS measurement. It supports cache ownership
+        audits without conflating independent graph or backend cache lifetimes.
+        """
+        by_level = {
+            level.value: sum(entry.size_bytes for entry in cache.values())
+            for level, cache in self._direct_caches.items()
+        }
+        return {
+            "retained_bytes": sum(by_level.values()),
+            "retained_bytes_by_level": by_level,
+            "memory_limit_bytes": self._max_memory,
+        }
+
     def _estimate_size(self, value: Any) -> int:
         """Estimate memory size of a value in bytes.
 

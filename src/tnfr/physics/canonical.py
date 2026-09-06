@@ -57,6 +57,7 @@ See: tests/physics/test_field_cache_invalidation.py for regression coverage
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 from typing import Any
 
 from ..mathematics.unified_numerical import np
@@ -494,6 +495,10 @@ def compute_phase_curvature(G: Any) -> dict[Any, float]:
     return curvature
 
 
+@cache_tnfr_computation(
+    level=CacheLevel.DERIVED_METRICS if _CACHE_AVAILABLE else None,
+    dependencies={"graph_topology", "node_phase", "precision_mode"},
+)
 def _compute_phase_gradient_and_curvature(
     G: Any,
 ) -> tuple[dict[Any, float], dict[Any, float]]:
@@ -694,11 +699,11 @@ def _spectral_gap_coherence_length(G: Any) -> float:
     spectral-gap form used by ``Network.nfr()``.
     """
     from .structural_diffusion import (  # local import: avoid module cycle
-        structural_eigenmodes,
+        structural_eigenvalues,
     )
 
     try:
-        eigvals, _ = structural_eigenmodes(G)
+        eigvals = structural_eigenvalues(G)
         nonzero = [float(v) for v in np.asarray(eigvals) if float(v) > 1e-9]
         if not nonzero:
             return float("nan")
@@ -720,10 +725,84 @@ def estimate_coherence_length(G: Any) -> float:
     defined.  So ξ_C reads the emergent geometry throughout and is never ``nan``
     on a valid connected graph.
     """
-    xi = _estimate_coherence_length_autocorr(G)
-    if xi == xi and xi > 0.0:  # finite (not nan) and positive
-        return float(xi)
-    return _spectral_gap_coherence_length(G)
+    return estimate_coherence_length_with_provenance(G).value
+
+
+def estimate_coherence_length_with_provenance(
+    G: Any,
+) -> CoherenceLengthEstimate:
+    """Return ``ξ_C`` together with the fit/fallback method used."""
+    fit = _estimate_coherence_length_autocorr(G)
+    if fit == fit and fit > 0.0:
+        return CoherenceLengthEstimate(
+            float(fit), "autocorrelation_fit", True,
+            distance_weighting="graph shortest-path distance",
+            sample_selection=_coherence_sample_selection(G),
+            fit_quality="negative slope; at least three positive distance bins",
+            positive_mode_selection="not applicable",
+            graph_regime=_coherence_graph_regime(G),
+        )
+    spectral = _spectral_gap_coherence_length(G)
+    if spectral == spectral and spectral > 0.0:
+        return CoherenceLengthEstimate(
+            float(spectral), "spectral_gap", False,
+            distance_weighting="not applicable",
+            sample_selection="not applicable",
+            fit_quality="autocorrelation fit unavailable",
+            positive_mode_selection="smallest eigenvalue above 1e-9",
+            graph_regime=_coherence_graph_regime(G),
+        )
+    return CoherenceLengthEstimate(
+        float("nan"), "unavailable", False,
+        distance_weighting="graph shortest-path distance",
+        sample_selection=_coherence_sample_selection(G),
+        fit_quality="no admissible decay fit or positive symmetric mode",
+        positive_mode_selection="smallest eigenvalue above 1e-9",
+        graph_regime=_coherence_graph_regime(G),
+    )
+
+
+def _coherence_sample_selection(G: Any) -> str:
+    """Describe the active autocorrelation sampling policy."""
+    size = len(G)
+    if size < 1000 and _VECTORIZATION_AVAILABLE:
+        return "all unordered node pairs"
+    mode = get_precision_mode()
+    threshold = 100 if mode == "research" else 75 if mode == "high" else 50
+    return (
+        "all source nodes" if size <= threshold
+        else "deterministic evenly-spaced source-node sample"
+    )
+
+
+def _coherence_graph_regime(G: Any) -> str:
+    """Describe graph assumptions visible at the estimator boundary."""
+    directed = bool(G.is_directed())
+    connected = False
+    try:
+        connected = bool(
+            nx.is_weakly_connected(G) if directed else nx.is_connected(G)
+        )
+    except nx.NetworkXPointlessConcept:
+        pass
+    return (
+        f"{'directed' if directed else 'undirected'}; "
+        f"{'connected' if connected else 'empty_or_disconnected'}"
+    )
+
+
+@dataclass(frozen=True)
+class CoherenceLengthEstimate:
+    """Coherence-length value with estimator provenance."""
+
+    value: float
+    method: str
+    fit_available: bool
+    distance_weighting: str = "unspecified"
+    sample_selection: str = "unspecified"
+    fit_quality: str = "unspecified"
+    positive_mode_selection: str = "unspecified"
+    graph_regime: str = "unspecified"
 
 
 __all__ = [
@@ -731,4 +810,6 @@ __all__ = [
     "compute_phase_gradient",
     "compute_phase_curvature",
     "estimate_coherence_length",
+    "estimate_coherence_length_with_provenance",
+    "CoherenceLengthEstimate",
 ]

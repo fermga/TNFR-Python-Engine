@@ -256,6 +256,20 @@ def test_graph_tracker_invalidates_canonical_property_dependency():
     assert cache.get("metric", CacheLevel.NODE_PROPERTIES) is None
 
 
+def test_memory_profile_reports_retained_bytes_by_level_and_invalidation():
+    cache = TNFRHierarchicalCache(max_memory_mb=1)
+    cache.set("temporary", list(range(16)), CacheLevel.TEMPORARY, {"node_epi"})
+    cache.set("derived", list(range(32)), CacheLevel.DERIVED_METRICS, {"node_phase"})
+    warm = cache.memory_profile()
+    assert warm["retained_bytes"] > 0
+    assert warm["retained_bytes_by_level"][CacheLevel.TEMPORARY.value] > 0
+    assert warm["retained_bytes_by_level"][CacheLevel.DERIVED_METRICS.value] > 0
+    assert cache.invalidate_by_dependency("node_epi") == 1
+    cold = cache.memory_profile()
+    assert cold["retained_bytes"] < warm["retained_bytes"]
+    assert cold["retained_bytes_by_level"][CacheLevel.TEMPORARY.value] == 0
+
+
 class _WriteMarkerOnUnpickle:
     def __init__(self, path):
         self.path = str(path)

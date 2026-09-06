@@ -1,10 +1,8 @@
-r"""Tests for the transient U2/U6 certificate (R9, N05).
+r"""Tests for the transient U2/U6 certificate.
 
-Canonical finding: directed random-walk diffusion has **no** non-consensus
-transient in the Euclidean per-node energy (``peak_gain = 1``, symmetric part of
-``L_sub`` positive definite). The naive ambient operator-norm gain ``> 1`` is
-exactly the oblique consensus-projection factor ``‖Q‖`` — a coordinate artifact,
-not dynamical amplification. This reinforces N03 (contraction in ``L²(π)``).
+These tests cover contracting fixtures and a weighted counterexample. The
+ambient gain can additionally include the oblique projection factor ``‖Q‖``;
+stationary-weighted contraction is tested separately.
 """
 
 from __future__ import annotations
@@ -24,6 +22,7 @@ from tnfr.physics.transient_u2 import (
     nonconsensus_basis,
     peak_transient_gain,
     potential_operator,
+    potential_operator_from_graph,
     restricted_generator,
     structural_potential_peak,
     symmetric_part_min_eig,
@@ -117,6 +116,16 @@ def test_potential_operator_inverse_square_kernel():
     assert np.allclose(b, b.T)              # symmetric distance kernel
 
 
+def test_graph_potential_kernel_preserves_directed_weighted_convention():
+    graph = __import__("networkx").DiGraph()
+    graph.add_weighted_edges_from([(0, 1, 2.0), (1, 2, 3.0), (2, 0, 4.0)])
+    nodes, kernel = potential_operator_from_graph(graph)
+    assert nodes == [0, 1, 2]
+    assert kernel[0, 1] == pytest.approx(0.25)
+    assert kernel[0, 2] == pytest.approx(1.0 / 25.0)
+    assert kernel[1, 0] == pytest.approx(1.0 / 49.0)
+
+
 def test_structural_potential_peak_within_operator_bound():
     for w in [NORMAL, *NON_NORMALS]:
         x = _unit([(-1) ** i * (1.0 / (i + 1)) for i in range(len(w))])
@@ -129,6 +138,25 @@ def test_u6_confined_for_small_perturbation():
     c = certify_transient_u2(NON_NORMAL, 0.1 * X4)
     assert c.peak_structural_potential < U6_STRUCTURAL_POTENTIAL_LIMIT
     assert c.u6_confined
+
+
+@pytest.mark.parametrize("kwargs", [{"t_max": -1.0}, {"samples": 1}])
+def test_finite_transient_scans_reject_degenerate_windows(kwargs):
+    x = _unit([1.0, -1.0, 0.5, -0.5, 0.25, -0.25, 0.125])
+    with pytest.raises(ValueError):
+        peak_transient_gain(NORMAL, **kwargs)
+    with pytest.raises(ValueError):
+        structural_potential_peak(NORMAL, x, **kwargs)
+
+
+def test_transient_certificate_reports_unassessed_tail():
+    x = _unit([1.0, -1.0, 0.5, -0.5, 0.25, -0.25, 0.125])
+    certificate = certify_transient_u2(NORMAL, x)
+    assert certificate.observation_window_structural == pytest.approx(40.0)
+    assert certificate.tail_status == "UNASSESSED_FINITE_WINDOW"
+    assert certificate.continuous_u6_status == (
+        "INCONCLUSIVE_NO_INTERVAL_OR_TAIL_BOUND"
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -157,6 +185,24 @@ def test_certificate_relabel_invariant():
         base.symmetric_part_min_eig, abs=1e-6)
     assert c.consensus_projection_norm == pytest.approx(
         base.consensus_projection_norm, abs=1e-6)
+
+
+def test_weighted_nonconsensus_euclidean_contraction_has_counterexample():
+    """The weighted graph class is not universally Euclidean-contracting."""
+    weights = np.array([
+        [0, 1, 0, 0, 0, 12],
+        [0, 0, 1, 0, 0, 0],
+        [0, 0, 0, 15, 0, 0],
+        [0, 9, 0, 0, 1, 0],
+        [0, 0, 0, 0, 0, 10],
+        [1, 0, 0, 0, 0, 0],
+    ], dtype=float)
+    vector = np.array([4341, -4028, -4275, -4065, 2273, 4998], dtype=float)
+    basis = nonconsensus_basis(weights)
+    restricted = basis.T @ tu2.directed_rw_laplacian(weights) @ basis
+    symmetric_part = (restricted + restricted.T) / 2.0
+    assert np.min(np.linalg.eigvalsh(symmetric_part)) < -1e-4
+    assert np.linalg.norm(restricted @ (basis.T @ vector)) > 0.0
 
 
 def test_module_exports_complete():

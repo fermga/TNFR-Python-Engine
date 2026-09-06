@@ -1,15 +1,16 @@
-r"""Tests for structural morphisms — nodal-flow transports between networks (N08).
+r"""Tests for structural morphisms — nodal-flow transports between networks.
 
 Every TNFR morphism is an intertwiner ``M L_src = L_tgt M``, which is exactly the
 condition that ``M`` carries the nodal-equation flow ``dEPI/dt = -L EPI`` from the
 source network to the target one. Six kinds emerge from the nodal equation; the
-folding endomorphism does not (the R8 boundary).
+folding endomorphism does not.
 """
 
 from __future__ import annotations
 
 import networkx as nx
 import numpy as np
+import pytest
 
 from tnfr.mathematics.padic_tower import (
     compatible_connection_set,
@@ -24,6 +25,7 @@ from tnfr.physics.structural_morphism import (
     audit_structural_morphisms,
     certify_morphism,
     classify_morphism,
+    finite_time_intertwining_bound,
     intertwining_residual,
     is_idempotent,
     is_partition_average,
@@ -72,6 +74,24 @@ def test_flow_residual_tracks_intertwining_defect():
     perturb[0, 1] = 0.4  # breaks commutation with L
     assert intertwining_residual(perturb, lap, lap) > 1e-6
     assert nodal_flow_preservation_residual(perturb, lap, lap) > 1e-6
+
+
+def test_finite_time_duhamel_bound_handles_exact_and_perturbed_transport():
+    lap = _lap(nx.cycle_graph(5))
+    state = np.array([1.0, -1.0, 0.5, -0.5, 0.25])
+    exact, exact_bound = finite_time_intertwining_bound(
+        np.eye(5), lap, lap, state, structural_time=0.7
+    )
+    assert exact < 1e-12
+    assert exact_bound < 1e-12
+
+    perturb = np.eye(5)
+    perturb[0, 1] = 0.4
+    defect, bound = finite_time_intertwining_bound(
+        perturb, lap, lap, state, structural_time=0.7
+    )
+    assert defect > 0.0
+    assert defect <= bound + 1e-12
 
 
 # --------------------------------------------------------------------------- #
@@ -155,6 +175,34 @@ def test_certificate_marks_morphism_not_operator():
     assert cert.is_intertwiner
 
 
+def test_constant_probe_cannot_certify_nonintertwining_map():
+    """A consensus probe can hide a generator-level transport defect."""
+    source = np.array([[1.0, -1.0], [-1.0, 1.0]])
+    target = 0.5 * source
+    cert = certify_morphism(
+        np.eye(2), source, target, flow_probe=np.ones(2)
+    )
+    assert cert.nodal_flow_residual < 1e-9
+    assert cert.intertwining_residual > 1e-3
+    assert not cert.is_intertwiner
+    assert not cert.emerges_from_nodal_equation
+
+
+@pytest.mark.parametrize(
+    "morphism,source,target",
+    [
+        (np.eye(2), np.eye(3), np.eye(2)),
+        (np.eye(2), np.array([[1.0, np.nan], [0.0, 1.0]]), np.eye(2)),
+        (np.eye(2, dtype=complex) * (1.0 + 1.0j), np.eye(2), np.eye(2)),
+    ],
+)
+def test_morphism_certificate_rejects_incompatible_or_nonfinite_systems(
+    morphism, source, target
+):
+    with pytest.raises(ValueError):
+        certify_morphism(morphism, source, target)
+
+
 def test_audit_six_emerge_one_boundary():
     results = audit_structural_morphisms()
     assert len(results) == 7
@@ -180,7 +228,7 @@ def test_kinds_are_relabel_invariant():
 def test_module_exports_complete():
     expected = {
         "StructuralMorphismKind", "is_permutation_matrix", "is_partition_average",
-        "is_idempotent", "intertwining_residual",
+        "is_idempotent", "intertwining_residual", "finite_time_intertwining_bound",
         "nodal_flow_preservation_residual", "classify_morphism",
         "StructuralMorphismCertificate", "certify_morphism",
         "audit_structural_morphisms",
