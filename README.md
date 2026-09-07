@@ -73,7 +73,7 @@ The public structural-field tetrad is `(Phi_s, |grad phi|, K_phi, xi_C)`.
 | Field | Role | Exact or scoped statement |
 | --- | --- | --- |
 | `Phi_s` | Global pressure aggregation | General magnitude depends on pressure and graph geometry; `pi/4` and `pi/2` are selected warning policies |
-| Phase-gradient magnitude (`∇φ` norm) | Local phase stress | Mean absolute wrapped phase difference across neighboring nodes; exact bound `pi`, with `pi/16` as the selected warning threshold |
+| `grad phi` | Local phase stress | Mean absolute wrapped phase difference across neighboring nodes; exact bound `pi`, with `pi/16` as the selected warning threshold |
 | `K_phi` | Local wrapped phase curvature | Exact wrapped magnitude bound `pi`; `0.9*pi` is a warning margin |
 | `xi_C` | Non-local correlation range | Spectral estimate scales as `1/sqrt(lambda_2)` under its documented hypotheses |
 
