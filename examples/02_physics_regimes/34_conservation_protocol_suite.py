@@ -1,30 +1,36 @@
-"""Example 34: Conservation Protocol Suite.
+"""Example 34: finite reproduction of a conservation protocol suite.
 
-Implements the full numerical validation protocol from
+Reproduces the numerical checks proposed in
 theory/STRUCTURAL_CONSERVATION_THEOREM.md ss 10:
 
   1. Charge drift test: |Q(t_f) - Q(t_0)| / |Q(t_0)| < threshold
-  2. Conservation quality tracking: q = 1 / (1 + RMS_residual)
+  2. Balance quality tracking: q = 1 / (1 + RMS_residual)
   3. Sector decomposition: potential (Phi_s, J_DELTA_NFR) vs
      geometric (K_phi, J_phi) contributions
-  4. Cross-topology universality: WS, BA, Grid, Ring, Complete
-  5. Scaling analysis: conservation quality vs network size
+  4. Finite cross-topology comparison: WS, BA, Grid, Ring, Complete
+  5. Scaling analysis: balance quality vs network size
+  6. Candidate-energy monotonicity on the sampled trajectory
 
-The conservation law derives from the nodal equation under grammar
-constraints (Noether-like theorem):
+The implemented Noether-like balance candidate is evaluated along a seeded
+auxiliary smoothing trajectory:
 
-  d(rho)/dt + div(J) = S_grammar
+  d(rho)/dt + div(J) = S_residual
 
-where rho = Phi_s + K_phi, J = (J_phi, J_DELTA_NFR), and S -> 0
-under U1-U6 compliant evolution.
+where rho = Phi_s + K_phi and J = (J_phi, J_DELTA_NFR). The residual is
+measured; it is not forced to zero by an asserted grammar label. This example
+does not execute canonical operators and therefore makes no U1-U6 compliance
+claim.
 
-Expected results (from ss 10):
+Legacy numerical targets under test:
   - Charge drift < 0.03% across topologies
-  - Conservation quality q ~ 0.6-0.65
+  - Mean sampled balance quality q ~ 0.6-0.65
   - Sector asymmetry ratio ~ 1.0-1.2
+  - Negative 1/sqrt(N) coefficient in the proposed finite-size form
+  - Non-increasing candidate energy at every sampled step
 
-Physics basis:
-  Grammar symmetry (U1-U6) => structural conservation (Noether-like).
+Outcome policy:
+  Every target is reported as PASS or FAIL from the values produced here. A
+  failed target is retained as a negative result rather than relabelled WARN.
   See: theory/STRUCTURAL_CONSERVATION_THEOREM.md ss 10
   See: src/tnfr/physics/conservation.py
 """
@@ -44,8 +50,6 @@ from tnfr.constants import inject_defaults
 from tnfr.physics.conservation import (
     ConservationTracker,
     capture_conservation_snapshot,
-    compute_charge_density,
-    compute_current_divergence,
     compute_energy_functional,
     compute_noether_charge,
     verify_conservation_balance,
@@ -87,7 +91,11 @@ def _build_graph(n: int, topology: str, seed: int = 42) -> nx.Graph:
 
 
 def _evolve_step(G: nx.Graph, dt: float = 0.05) -> None:
-    """Grammar-compliant diffusion step (IL-like stabilization)."""
+    """Apply the example's auxiliary phase/DELTA_NFR smoothing rule.
+
+    This direct numerical rule is neither an IL application nor a validated
+    grammar word.
+    """
     for n in G.nodes():
         neighbors = list(G.neighbors(n))
         if neighbors:
@@ -103,8 +111,8 @@ def _evolve_step(G: nx.Graph, dt: float = 0.05) -> None:
 # ---------------------------------------------------------------------------
 
 
-def demo_charge_drift() -> None:
-    """Verify charge drift stays below 0.03% across topologies."""
+def demo_charge_drift() -> dict[str, float | int | bool]:
+    """Test the legacy 0.03% charge-drift target across five fixtures."""
     print("=" * 65)
     print("  1. CHARGE DRIFT TEST (ss 10.1)")
     print("=" * 65)
@@ -119,8 +127,8 @@ def demo_charge_drift() -> None:
     n_steps = 20
     dt = 0.05
 
-    print(f"\n  Protocol: Evolve {n_steps} stabilization steps, measure charge drift")
-    print(f"  Expected: |Q(t_f) - Q(t_0)| /|Q(t_0)| < 0.03%")
+    print(f"\n  Protocol: Evolve {n_steps} auxiliary smoothing steps, measure charge drift")
+    print("  Legacy target: |Q(t_f) - Q(t_0)| / |Q(t_0)| < 0.03%")
     print()
     print(
         f"  {'Topology':<18}  {'Q(t_0)':>10}  {'Q(t_f)':>10}  "
@@ -128,6 +136,7 @@ def demo_charge_drift() -> None:
     )
     print("  " + "-" * 68)
 
+    drift_percentages: list[float] = []
     for name, topo, n in topologies:
         G = _build_graph(n, topo)
         snap_before = capture_conservation_snapshot(G)
@@ -141,22 +150,36 @@ def demo_charge_drift() -> None:
 
         drift_abs = abs(q_f - q_0)
         drift_pct = drift_abs / abs(q_0) * 100 if abs(q_0) > 1e-10 else 0.0
-        status = "PASS" if drift_pct < 0.03 else "WARN"
+        drift_percentages.append(drift_pct)
+        status = "PASS" if drift_pct < 0.03 else "FAIL"
         print(
             f"  {name:<18}  {q_0:10.4f}  {q_f:10.4f}  "
             f"{drift_abs:10.6f}  {drift_pct:8.4f}  {status:>8}"
         )
 
+    passed = sum(value < 0.03 for value in drift_percentages)
+    target_met = passed == len(drift_percentages)
+    print(
+        f"\n  Target result: {'PASS' if target_met else 'FAIL'} "
+        f"({passed}/{len(drift_percentages)} fixtures below 0.03%)"
+    )
+    return {
+        "passed": passed,
+        "total": len(drift_percentages),
+        "target_met": target_met,
+        "max_drift_pct": max(drift_percentages),
+    }
+
 
 # ---------------------------------------------------------------------------
-# 2. Conservation quality tracking
+# 2. Balance quality tracking
 # ---------------------------------------------------------------------------
 
 
-def demo_conservation_quality() -> None:
-    """Track conservation quality q = 1/(1 + RMS_residual) over time."""
+def demo_balance_quality() -> dict[str, float | bool]:
+    """Track balance quality q = 1/(1 + RMS_residual) over time."""
     print("\n" + "=" * 65)
-    print("  2. CONSERVATION QUALITY TRACKING (ss 10.2)")
+    print("  2. BALANCE QUALITY TRACKING (ss 10.2)")
     print("=" * 65)
 
     G = _build_graph(50, "WS")
@@ -167,43 +190,50 @@ def demo_conservation_quality() -> None:
     tracker.record(t=0.0)
 
     print(f"\n  WS (N=50), {n_steps} steps, dt = {dt}")
-    print(f"  Expected: quality q ~ 0.6-0.65")
+    print("  Legacy target band: mean quality q in [0.60, 0.65]")
     print()
     print(
         f"  {'Step':>6}  {'Quality':>10}  {'RMS_res':>10}  "
-        f"{'Drift':>10}  {'GVI':>10}"
+        f"{'Drift':>10}  {'Alert idx':>10}"
     )
     print("  " + "-" * 50)
 
     for step in range(1, n_steps + 1):
         _evolve_step(G, dt)
-        snap = tracker.record(t=step * dt)
+        tracker.record(t=step * dt)
 
     # Print report from tracker
     report = tracker.report()
     step_idx = 0
-    for t, q, rms, drift, gvi in zip(
+    for t, q, rms, drift, alert_index in zip(
         report.times[1:],
-        report.conservation_quality,
-        report.rms_residuals,
-        report.charge_drift,
-        report.grammar_violation_index,
+        report.conservation_quality[1:],
+        report.rms_residuals[1:],
+        report.charge_drift[1:],
+        report.grammar_violation_index[1:],
     ):
         step_idx += 1
         if step_idx % 5 == 0 or step_idx <= 3:
             print(
                 f"  {step_idx:6d}  {q:10.4f}  {rms:10.6f}  "
-                f"{drift:10.6f}  {gvi:10.6f}"
+                f"{drift:10.6f}  {alert_index:10.6f}"
             )
 
+    mean_sampled_quality = report.sampled_mean_quality
     print(f"\n  Summary:")
-    print(f"    Mean quality: {report.mean_quality:.4f}")
-    print(f"    Is conserved (mean q >= 0.9): {report.is_conserved}")
+    print(f"    Mean sampled quality: {mean_sampled_quality:.4f}")
+    target_met = 0.60 <= mean_sampled_quality <= 0.65
+    print(f"    Legacy target met: {'PASS' if target_met else 'FAIL'}")
+    print(
+        "    Legacy aggregate alert (sampled mean q >= 0.9): "
+        f"{report.aggregate_balance_within_alert}"
+    )
     print(
         f"    Final charge drift: {report.charge_drift[-1]:.6f}"
         if report.charge_drift
         else ""
     )
+    return {"mean_quality": mean_sampled_quality, "target_met": target_met}
 
 
 # ---------------------------------------------------------------------------
@@ -211,7 +241,7 @@ def demo_conservation_quality() -> None:
 # ---------------------------------------------------------------------------
 
 
-def demo_sector_decomposition() -> None:
+def demo_sector_decomposition() -> dict[str, float | bool]:
     """Decompose conservation into potential vs geometric sectors."""
     print("\n" + "=" * 65)
     print("  3. SECTOR DECOMPOSITION (ss 10.3)")
@@ -261,7 +291,9 @@ def demo_sector_decomposition() -> None:
     # Sector asymmetry ratio
     ratio = V_pot / V_geo if V_geo > 1e-10 else float("inf")
     print(f"\n  Sector asymmetry ratio V_pot / V_geo = {ratio:.4f}")
-    print(f"  Expected range: 1.0 - 1.2  (balanced sectors)")
+    target_met = 1.0 <= ratio <= 1.2
+    print("  Legacy target range: 1.0 - 1.2")
+    print(f"  Target result: {'PASS' if target_met else 'FAIL'}")
 
     # Conjugate pair correlations
     r_potential = (
@@ -274,18 +306,19 @@ def demo_sector_decomposition() -> None:
     print(f"\n  Conjugate pair correlations:")
     print(f"    r(Phi_s, J_DELTA_NFR)   = {r_potential:.4f}  (potential sector)")
     print(f"    r(K_phi, J_phi)          = {r_geometric:.4f}  (geometric sector)")
-    print(f"    Geometric anticorrelation expected (Psi unification)")
+    print("    These are finite correlations; they do not prove conjugacy.")
+    return {"ratio": ratio, "target_met": target_met}
 
 
 # ---------------------------------------------------------------------------
-# 4. Cross-topology universality
+# 4. Finite cross-topology comparison
 # ---------------------------------------------------------------------------
 
 
 def demo_cross_topology() -> None:
-    """Verify conservation quality across multiple topologies and sizes."""
+    """Compare the balance diagnostics on nine finite fixtures."""
     print("\n" + "=" * 65)
-    print("  4. CROSS-TOPOLOGY UNIVERSALITY (ss 10.4)")
+    print("  4. FINITE CROSS-TOPOLOGY COMPARISON (ss 10.4)")
     print("=" * 65)
 
     configs = [
@@ -304,7 +337,7 @@ def demo_cross_topology() -> None:
 
     print(f"\n  Protocol: {n_steps} steps, dt = {dt}")
     print(
-        f"  {'Config':<18}  {'Noether Q':>10}  {'Energy E':>10}  "
+        f"  {'Config':<18}  {'Charge Q*':>10}  {'Candidate E':>11}  "
         f"{'Quality':>10}  {'Drift %':>8}"
     )
     print("  " + "-" * 62)
@@ -335,8 +368,8 @@ def demo_cross_topology() -> None:
 # ---------------------------------------------------------------------------
 
 
-def demo_scaling_analysis() -> None:
-    """Test conservation quality scaling with network size."""
+def demo_scaling_analysis() -> dict[str, float | bool]:
+    """Compare finite-size data with the proposed 1-C/sqrt(N) form."""
     print("\n" + "=" * 65)
     print("  5. SCALING ANALYSIS — Quality vs Network Size (ss 10.5)")
     print("=" * 65)
@@ -346,11 +379,11 @@ def demo_scaling_analysis() -> None:
     dt = 0.05
 
     print(f"\n  WS topology, k=4, p=0.3, {n_steps} steps")
-    print(f"  Theory predicts: q(N) ~ 1 - C/sqrt(N)")
+    print("  Legacy target: q(N) ~ 1 - C/sqrt(N), with C > 0")
     print()
     print(
         f"  {'N':>6}  {'Quality':>10}  {'RMS_res':>10}  "
-        f"{'Noether Q':>10}  {'Energy E':>10}"
+        f"{'Charge Q*':>10}  {'Candidate E':>11}"
     )
     print("  " + "-" * 50)
 
@@ -374,24 +407,38 @@ def demo_scaling_analysis() -> None:
             f"{balance.rms_residual:10.6f}  {noether_q:10.4f}  {energy:10.4f}"
         )
 
-    # Fit q(N) ~ 1 - C/sqrt(N)
-    if len(sizes) >= 3:
-        x = 1.0 / np.sqrt(np.array(sizes, dtype=float))
-        y = np.array(qualities)
-        coeffs = np.polyfit(x, y, 1)
-        print(f"\n  Linear fit: q = {coeffs[1]:.4f} + {coeffs[0]:.4f} / sqrt(N)")
-        print(f"  Predicted q(N->inf) = {coeffs[1]:.4f}")
+    # An unconstrained fit exposes both claims in q = 1 - C/sqrt(N):
+    # the intercept should be one and the 1/sqrt(N) coefficient negative.
+    x = 1.0 / np.sqrt(np.array(sizes, dtype=float))
+    y = np.array(qualities)
+    slope, intercept = np.polyfit(x, y, 1)
+    direction_met = slope < 0.0
+    print(f"\n  Unconstrained fit: q = {intercept:.4f} + {slope:.4f} / sqrt(N)")
+    print("  Target requires: intercept -> 1 and coefficient < 0")
+    print(
+        f"  Direction result: {'PASS' if direction_met else 'FAIL'} "
+        f"(coefficient = {slope:+.4f})"
+    )
+    print(
+        "  This finite fit does not support the proposed scaling law. Its "
+        "extrapolated intercept is descriptive, not an asymptotic estimate."
+    )
+    return {
+        "intercept": float(intercept),
+        "slope": float(slope),
+        "target_met": direction_met,
+    }
 
 
 # ---------------------------------------------------------------------------
-# 6. Lyapunov stability check
+# 6. Candidate-energy monotonicity check
 # ---------------------------------------------------------------------------
 
 
-def demo_lyapunov_stability() -> None:
-    """Verify dE/dt <= 0 under grammar-compliant evolution."""
+def demo_candidate_energy_monotonicity() -> dict[str, int | bool]:
+    """Measure candidate-energy monotonicity on the auxiliary trajectory."""
     print("\n" + "=" * 65)
-    print("  6. LYAPUNOV STABILITY — dE/dt <= 0 (ss 10.6)")
+    print("  6. CANDIDATE-ENERGY MONOTONICITY — finite trajectory (ss 10.6)")
     print("=" * 65)
 
     G = _build_graph(50, "WS")
@@ -399,7 +446,7 @@ def demo_lyapunov_stability() -> None:
     dt = 0.05
 
     print(f"\n  WS (N=50), {n_steps} steps, dt = {dt}")
-    print(f"  Theory: E = 0.5 * sum(E_density) >= 0, dE/dt <= 0")
+    print("  Sampled target: E >= 0 and dE/dt <= 0 at every recorded step")
     print()
     print(
         f"  {'Step':>6}  {'Energy E':>12}  {'dE/dt':>12}  {'E >= 0':>8}  {'dE/dt <= 0':>12}"
@@ -407,16 +454,16 @@ def demo_lyapunov_stability() -> None:
     print("  " + "-" * 54)
 
     E_prev = compute_energy_functional(G)
-    violations = 0
+    positive_derivative_steps = 0
     for step in range(1, n_steps + 1):
         _evolve_step(G, dt)
         E_curr = compute_energy_functional(G)
         dE_dt = (E_curr - E_prev) / dt
 
         positive = E_curr >= -1e-10
-        decreasing = dE_dt <= 1e-6  # small tolerance
+        decreasing = dE_dt <= 0.0
         if not decreasing:
-            violations += 1
+            positive_derivative_steps += 1
 
         if step % 5 == 0 or step <= 3:
             print(
@@ -425,8 +472,22 @@ def demo_lyapunov_stability() -> None:
             )
         E_prev = E_curr
 
-    print(f"\n  Lyapunov violations: {violations}/{n_steps} steps")
-    print(f"  Result: {'STABLE (Lyapunov)' if violations == 0 else 'MARGINAL'}")
+    target_met = positive_derivative_steps == 0
+    print(
+        f"\n  Positive-derivative steps: {positive_derivative_steps}/{n_steps}"
+    )
+    print(f"  Finite target result: {'PASS' if target_met else 'FAIL'}")
+    print(
+        "  Passing this sample does not establish a Lyapunov theorem "
+        "or U1-U6 result."
+    )
+    return {
+        "positive_derivative_steps": positive_derivative_steps,
+        # Backward-compatible historical result key.
+        "violations": positive_derivative_steps,
+        "steps": n_steps,
+        "target_met": target_met,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -437,36 +498,57 @@ def demo_lyapunov_stability() -> None:
 def main() -> None:
     print()
     print("*" * 65)
-    print("  TNFR Example 34: Conservation Protocol Suite")
+    print("  TNFR Example 34: Finite Conservation-Protocol Reproduction")
     print("  Theory: STRUCTURAL_CONSERVATION_THEOREM.md ss 10")
     print("*" * 65)
 
-    demo_charge_drift()
-    demo_conservation_quality()
-    demo_sector_decomposition()
+    charge = demo_charge_drift()
+    quality = demo_balance_quality()
+    sectors = demo_sector_decomposition()
     demo_cross_topology()
-    demo_scaling_analysis()
-    demo_lyapunov_stability()
+    scaling = demo_scaling_analysis()
+    energy = demo_candidate_energy_monotonicity()
 
     print("\n" + "=" * 65)
     print("  SUMMARY")
     print("=" * 65)
+    print("\n  Finite protocol outcomes:")
     print(
-        f"""
-  Conservation Protocol Validation (ss 10):
-
-  1. Charge drift:   |Q_f - Q_0|/|Q_0| across 5 topologies
-  2. Quality q:      1/(1+RMS) tracking over evolution
-  3. Sectors:        Potential (Phi_s, J_DELTA_NFR) vs
-                     Geometric (K_phi, J_phi) decomposition
-  4. Universality:   9 topology-size configurations validated
-  5. Scaling:        q(N) ~ 1 - C/sqrt(N) confirmed
-  6. Lyapunov:       E >= 0 and dE/dt <= 0 verified
-
-  Main result: Grammar symmetry (U1-U6) => Conservation law (Noether-like)
-  Residual S -> 0 under compliant evolution, non-zero S detects violations.
-"""
+        f"  1. Charge-drift target:  "
+        f"{'PASS' if charge['target_met'] else 'FAIL'} "
+        f"({charge['passed']}/{charge['total']} fixtures)"
     )
+    print(
+        f"  2. Legacy q band:        "
+        f"{'PASS' if quality['target_met'] else 'FAIL'} "
+        f"(mean q = {quality['mean_quality']:.4f})"
+    )
+    print(
+        f"  3. Sector-ratio target:  "
+        f"{'PASS' if sectors['target_met'] else 'FAIL'} "
+        f"(ratio = {sectors['ratio']:.4f})"
+    )
+    print("  4. Cross-topology table: descriptive finite comparison")
+    print(
+        f"  5. Scaling-law direction: "
+        f"{'PASS' if scaling['target_met'] else 'FAIL'} "
+        f"(coefficient = {scaling['slope']:+.4f})"
+    )
+    print(
+        f"  6. Sampled energy target: "
+        f"{'PASS' if energy['target_met'] else 'FAIL'} "
+        f"({energy['steps'] - energy['positive_derivative_steps']}/"
+        f"{energy['steps']} steps)"
+    )
+
+    targets = (charge, quality, sectors, scaling, energy)
+    all_targets_met = all(result["target_met"] for result in targets)
+    print(
+        "\n  Overall legacy protocol result: "
+        + ("PASS" if all_targets_met else "NEGATIVE — advertised targets fail")
+    )
+    print("  No canonical operator word was executed, so this run cannot infer")
+    print("  conservation or Lyapunov stability from grammar compliance.")
 
 
 if __name__ == "__main__":

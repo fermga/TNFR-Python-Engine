@@ -190,10 +190,18 @@ def _check_u3(
     """U3: Coupling/resonance candidates require phase-compatible neighbours."""
     if candidate not in _COUPLING_CODES:
         return None
+    from ._phase_gate import resolve_u3_phase_limits
     from .preconditions import OperatorPreconditionError, validate_phase_gate_u3
 
-    # Selection and execution share one unconditional U3 gate, including
-    # wrapped angular distance and the isolated-node convention.
+    # Symbolic/proactive selection validates configured limits but leaves an
+    # isolate unassessed: it may acquire an edge before concrete execution.
+    # Every concrete UM/RA path separately requires a compatible live edge.
+    resolve_u3_phase_limits(G.graph, operator_code=candidate)
+    if not tuple(G.neighbors(node)):
+        return None
+
+    # Non-isolated selection and execution share the same wrapped-distance
+    # compatibility predicate.
     try:
         validate_phase_gate_u3(G, node, _CODE_TO_NAME[candidate])
     except OperatorPreconditionError as exc:

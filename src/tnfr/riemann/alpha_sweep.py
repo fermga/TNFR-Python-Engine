@@ -248,7 +248,7 @@ def sweep_alpha(
     For each :math:`\sigma` in ``sigmas`` the Weil functional
     :math:`W[\sigma]` is computed *once* (via the classical zero side,
     reused across gauges).  For each ``(gauge_name, gauge_fn)`` pair in
-    ``gauges`` the canonical TNFR Lyapunov energy is computed by
+    ``gauges`` the nonnegative TNFR structural snapshot-energy candidate is computed by
     building a test state with that gauge and evaluating
     :func:`tnfr.physics.conservation.compute_energy_functional`.
 
@@ -304,7 +304,7 @@ def sweep_alpha(
         )
         weil_vals[j] = float(w_total)
 
-    # ----- TNFR Lyapunov energy table E[sigma; gauge] -----------------
+    # ----- TNFR structural snapshot-energy table E[sigma; gauge] -----
     energy_table = np.empty((n_gauge, n_sigma), dtype=float)
     for i, name in enumerate(gauge_names):
         gauge_fn = gauge_map[name]

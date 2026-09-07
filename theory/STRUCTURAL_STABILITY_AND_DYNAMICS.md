@@ -1,93 +1,252 @@
 # Structural Stability and Dynamics
 
-This document collects the stability analysis, phase transition theory, lifecycle dynamics, and integrity monitoring that emerge from the nodal equation $\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$. Each section corresponds to a verified implementation in the codebase.
+This document collects implemented stability diagnostics, phase-transition
+read-outs, life telemetry, lifecycle classification, an auxiliary Hamiltonian
+model, and integrity tools anchored to the nodal equation
+$\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$. Exact
+restricted results, selected policies, finite observations, and compatibility
+models are identified separately.
 
-**Status**: CANONICAL — All results derived from the nodal equation and validated computationally.
+**Status**: Mixed — exact restricted diffusion results, operational operator
+classifications and measured diagnostics are identified separately.
 
 ---
 
 ## 1. Lyapunov Stability Analysis
 
-### 1.1 Energy Functional
+### 1.1 Tetrad-plus-current structural energy
 
-The structural energy functional serves as a Lyapunov candidate:
+`compute_energy_functional` implements the non-negative quadratic diagnostic
 
 $$
 E[G] = \frac{1}{2}\sum_i \left[\Phi_s(i)^2 + |\nabla\phi|(i)^2 + K_\phi(i)^2 + J_\phi(i)^2 + J_{\Delta\mathrm{NFR}}(i)^2\right]
 $$
 
-For grammar-compliant evolution: $dE/dt \le 0$ (Lyapunov stability).
+This is the **tetrad-plus-current structural energy**: it contains three tetrad
+fields $(\Phi_s,|\nabla\phi|,K_\phi)$ and the two currents
+$(J_\phi,J_{\Delta\mathrm{NFR}})$. It omits the fourth tetrad field $\xi_C$, so
+calling it the “tetrad energy” is inaccurate. It also contains no explicit EPI
+or $\nu_f$ term, although recomputing the fields after a state change can alter
+the value indirectly.
 
-### 1.2 Per-Operator Lyapunov Role
+For general engine trajectories, $E$ is a **Lyapunov candidate**. The finite
+difference returned by `compute_lyapunov_derivative` only reports whether two
+supplied snapshots show non-increase within its tolerance. Grammar compliance
+does not prove $dE/dt\leq0$. A proved Lyapunov result exists for the different,
+weighted centered energy of restricted pure EPI diffusion; see
+[the heterogeneous diffusion theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md).
 
-The structural energy functional $E$ above is **emergent**: it is built entirely from the tetrad fields $(\Phi_s, |\nabla\phi|, K_\phi, J_\phi, J_{\Delta\mathrm{NFR}})$ and contains **no $\mathrm{EPI}$ or $\nu_f$ term**. Measured directly: scaling the form $\mathrm{EPI}$ or the capacity $\nu_f$ on every node leaves $E$ unchanged ($\Delta E = 0$), while the phase $\theta$ (through $|\nabla\phi|, K_\phi, J_\phi$) and the structural pressure $\Delta\mathrm{NFR}$ (through $\Phi_s, J_{\Delta\mathrm{NFR}}$) do enter it. The coherence $C(t) = 1/(1 + \mathrm{mean}|\Delta\mathrm{NFR}| + \mathrm{mean}|\mathrm{dEPI}|)$ likewise responds to the pressure channel. Both Lyapunov candidates share one structural-pressure channel, $|\Delta\mathrm{NFR}|$.
+### 1.2 Canonical channels and nominal U2 roles
 
-Consequently each operator's Lyapunov role **is its canonical grammar U2 role**, derived from `config.physics_derivation` (the single source of truth, identical to the U2 stabiliser/destabiliser classification) — not a separate energy algebra. An operator contracts the Lyapunov functional iff it provides negative feedback on $|\Delta\mathrm{NFR}|$, and expands it iff it raises $|\Delta\mathrm{NFR}|$. The contraction/expansion rate is the operator's own structural-pressure factor.
+The canonical operator channel is defined by
+[`operator_contracts.py`](../src/tnfr/operators/operator_contracts.py). It is
+distinct from the operator's U2 composition role:
 
-#### Stabilisers ($\Delta E \le 0$ — reduce $|\Delta\mathrm{NFR}|$)
+| Primary nodal channel | Operators | Contract scope |
+|-----------------------|-----------|----------------|
+| **EPI (form)** | AL, EN, RA, REMESH | Write or propagate form |
+| **$\nu_f$ (capacity)** | SHA, VAL, NUL | Decrease, increase, or remove capacity; NUL also densifies pressure |
+| **$\Delta\mathrm{NFR}$ (pressure)** | IL, OZ, THOL, NAV | Stabilize, perturb, reorganize, or control pressure |
+| **$\theta$ (phase)** | UM, ZHIR | Synchronize or transform phase |
 
-| Operator | Pressure factor | Contraction rate $\rho$ |
-|----------|-----------------|-------------------------|
-| **IL** (Coherence) | $f = 0.75$ (operational) | $\rho = 1 - f = 0.25$ |
-| **THOL** (Self-organization) | accel $= 0.10$ | $\rho \approx 0.100$ |
+Grammar U2 instead classifies IL and THOL as stabilizers; OZ, ZHIR, and VAL as
+destabilizers; and the other eight operators as neutral with respect to U2
+debt. Thus a phase-channel operator such as ZHIR can be a U2 destabilizer, and
+a pressure-channel operator such as NAV can remain U2-neutral.
 
-#### Destabilisers ($\Delta E \le \kappa \cdot E$ — raise $|\Delta\mathrm{NFR}|$)
+[`physics.lyapunov`](../src/tnfr/physics/lyapunov.py) maps those U2 roles to a
+legacy compatibility model. Its public objects retain names such as
+`OperatorLyapunovBound`, but the multipliers are **nominal policy values**, not
+proved bounds on the structural energy above or on $C(t)$. The preferred API
+names are `OperatorPolicyMultiplier`, `OPERATOR_POLICY_MULTIPLIERS`,
+`U2PolicyRole`, `evaluate_sequence_policy`, and
+`compare_operator_energy_to_policy`; the legacy names remain source-compatible
+wrappers.
 
-| Operator | Pressure factor | Expansion rate $\kappa$ |
-|----------|-----------------|-------------------------|
-| **OZ** (Dissonance) | $f = 2.0$ (operational) | $\kappa = f - 1 = 1.0$ |
-| **ZHIR** (Mutation) | $\theta$-shift $= 0.30$ | $\kappa \approx 0.300$ |
-| **VAL** (Expansion) | $\nu_f$-scale $\approx 1.068$ | $\kappa \approx 0.068$ |
+#### Stabilizer policy entries
 
-#### Neutral ($\Delta E \approx 0$ by grammatical role)
+| Operator | Canonical default input | Policy multiplier |
+|----------|-------------------------|-------------------|
+| **IL** (Coherence) | pressure retention $\pi/(\pi+1)\approx0.7585$ | $0.7585$ |
+| **THOL** (Self-organization) | acceleration $1/(4\pi)\approx0.0796$ | $1-1/(4\pi)\approx0.9204$ |
 
-| Operators | Channel | Why neutral |
-|-----------|---------|-------------|
-| **AL, EN, RA, REMESH** | EPI (the form, LHS) | Write the left-hand side of the nodal equation, absent from $E$ |
-| **UM** | $\theta$ (phase) | Coupling via U3 phase sync; no net $|\Delta\mathrm{NFR}|$ sign |
-| **SHA** | $\nu_f$ (capacity) | Freezes $\nu_f$, absent from $E$ |
-| **NUL** | $\nu_f$ + $\Delta\mathrm{NFR}$ | Pulls both levers; net role not a pure stabiliser/destabiliser |
-| **NAV** | $\Delta\mathrm{NFR}$ (controlled) | Controlled trajectory, excluded from the U2 destabiliser set |
+#### Destabilizer policy entries
 
-**Dual-lever vs Lyapunov role**: The dual-lever structure ([STRUCTURAL_OPERATORS.md §17.1](STRUCTURAL_OPERATORS.md)) classifies operators by which right-hand-side factor of the nodal equation they modulate — the capacity lever $\nu_f$ (UM, SHA, VAL), the pressure lever $\Delta\mathrm{NFR}$ (IL, OZ, THOL, ZHIR, NAV), both (NUL), or neither/the form on the LHS (AL, EN, RA, REMESH). The Lyapunov role above is the grammar U2 role (stabiliser/destabiliser), which depends on the *sign* of the $|\Delta\mathrm{NFR}|$ feedback: VAL engages the capacity lever yet is a U2 destabiliser, while NAV engages the pressure lever yet is U2-neutral because its trajectory is controlled. The two classifications are related but distinct. See [example 39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py) and `src/tnfr/physics/lyapunov.py`.
+| Operator | Canonical default input | Policy multiplier |
+|----------|-------------------------|-------------------|
+| **OZ** (Dissonance) | pressure scale $(\pi+1)/\pi\approx1.3183$ | $1.3183$ |
+| **ZHIR** (Mutation) | phase-shift factor $1/\pi\approx0.3183$ | $1+1/\pi\approx1.3183$ |
+| **VAL** (Expansion) | capacity scale $1+1/(4\pi)\approx1.0796$ | $1.0796$ |
 
-### 1.3 Grammar U2 Lyapunov Theorem
+#### U2-neutral policy entries
 
-Grammar rule U2 (CONVERGENCE & BOUNDEDNESS) requires that every destabiliser be accompanied by a stabiliser. The formal proof shows that the **net** energy change across a grammar-compliant sequence is non-positive:
+AL, EN, UM, RA, SHA, NUL, NAV, and REMESH receive multiplier one because they
+carry no U2 stabilizer/destabilizer debt. This value does not predict zero
+observed change in phase-dependent or pressure-dependent energy fields.
+
+The legacy `compute_operator_energy_bound` and `compute_sequence_energy_bound`
+functions interpret their numeric input as an abstract policy score. Their
+names do not confer energy-bound semantics. The legacy `within_bound` result of
+`verify_operator_lyapunov` is a one-sided screen against that model and carries
+`is_lyapunov_certificate=False`. Actual field-energy and coherence changes
+require before/after telemetry, including the actual glyph executed after
+grammar selection. See
+[example 39](../examples/02_physics_regimes/39_nodal_equation_decomposition.py).
+
+### 1.3 U2 stability scope
+
+Grammar rule U2 requires destabilizers to be accompanied by stabilizers and
+limits uncompensated debt. This is an operator-composition policy. It does not
+by itself imply
 
 $$
-\sum_{\text{ops}} \Delta E_{\text{op}} \le 0 \quad\text{(for any U2-compliant sequence)}
+\sum_{\text{ops}} \Delta E_{\text{op}} \le 0
 $$
 
-This confirms Lyapunov stability for the full 13-operator algebra.
+because the grammar does not supply a common state functional, elapsed times, or
+proved gain bounds for arbitrary operator realizations. Even a nominal
+multiplier product at most one remains a compatibility-model result; analytic
+contractivity requires a separate dynamical proof.
 
-**Refinement**: The formal bound $\sum \Delta E_{\text{op}} \le 0$ is
-*sufficient* but not *necessary* for energy descent. Experimental
-observation ([example 38](../examples/02_physics_regimes/38_grammar_energy_landscape.py)) shows
-grammar-compliant sequences with cumulative Lyapunov product $\Pi \approx
-1.288$ (formally non-contractive) that still achieve net energy decrease
-($\Delta E = -9.59$). The multiplicative bound is conservative because
-operator interactions on the shared graph state are nonlinear.
+Examples 29 and 38 report the nominal product beside measured energy changes.
+Agreement or disagreement in a finite run measures the compatibility model; it
+cannot establish a grammar-wide guarantee.
 
-### 1.4 Spectral Gap Characterisation
+`analyze_operator_policy_context` also reports a U2 multiplier beside the
+normalized graph diffusion gap. It deliberately leaves the historical
+`effective_convergence_rate` field as `NaN`: an operator-position multiplier and
+a continuous-time pure-EPI eigenvalue cannot be combined without an explicit
+operator-time model. Its `policy_half_steps` is a score-model statistic; its
+`diffusion_relaxation_time` is the separate unit-capacity pure-EPI scale.
 
-The algebraic connectivity $\lambda_1$ of the graph Laplacian controls the relaxation time:
+### 1.4 Restricted affine EPI gain theorem
+
+One restricted operator result now supplies real gain semantics without
+changing U2. In a positive common diffusion metric `H=diag(h)`, let
+`Q=I-1h^T/(h^T1)` and `V(x)=||Qx||_H^2/2`. A declared affine EPI reset
+`x+=Ax+b` has a finite global multiplicative `V` gain exactly when `A1` and
+`b` are uniform. Otherwise a uniform input gives the decisive
+`V_before=0<V_after` counterexample.
+
+For a passing reset, the sharp gain is the squared weighted induced norm of
+`QAQ`. The engine uses a rational weighted-Frobenius upper bound computed
+exactly on the represented binary64 coefficients for
+composition with continuous diffusion. Valid flow and reset proofs yield a
+finite-horizon multiplicative bound. The flow contribution uses only its
+rationally certified quotient-rate lower bound, never its eigensolver estimate.
+The strict contraction decision uses a rational upper enclosure of the net
+log-energy budget; caller tolerance does not decide its sign, and the reported
+multiplier is rounded upward. Asymptotic disagreement decay is asserted only when the caller
+declares repetition of the same word with positive flow duration. Exact
+weighted-mean preservation identifies convergence to the initial weighted
+consensus only together with that repeated contraction and exact preservation
+of the same mean by the represented flow.
+
+The first two catalog realizations are now explicit for local Reception (EN)
+and Resonance (RA). Their runtime kernels use one centralized unweighted
+neighbour mean and two-stage binary64 blend. Under fixed connected undirected
+support, scalar or uniform-real BEPI, convex mixing, and inactive hard clipping,
+the ideal-real update is affine and preserves constants, but a nontrivial local
+blend does not preserve a positive weighted mean as a global functional. A
+represented coefficient matrix is nested into the affine theorem only when its
+consensus identity passes exactly; runtime/matrix agreement remains a snapshot
+diagnostic.
+
+RA additionally filters every contributing neighbour through circular U3 with
+a configured limit in `[0,pi/2]`. Its EPI mix and phase coupling lie in `[0,1]`,
+and its frequency amplification is nonnegative. Scalar EPI can change: the
+identity gate independently forbids a strict negative/positive crossing and a
+change to an established nonempty `epi_kind`; exact zero is neutral and an
+absent kind may be initialized. The certificate separates the ideal-real blend,
+represented binary64 map, two-stage proposal, and accepted identity-gated
+snapshot. A local frequency boost generally changes `h_i=d_i/nu_i`, so a fixed
+post-RA diffusion theorem remains available while pre/post switching abstains
+unless the metrics are exactly proportional. Every accepted nontrivial EN or
+RA EPI change invalidates the old pure-EPI pressure by the exact defect
+`delta L_rw e_i`; pressure must be refreshed before continuing under that
+channel model. These gates, rounding stages, and multichannel changes preclude
+a global binary64 runtime-affinity claim.
+
+The generic theorem otherwise applies only to the supplied affine map. The
+canonical operator name is metadata, and the nominal policy table above
+contributes no coefficient. See the centralized
+[affine-reset and hybrid-word theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md#affine-reset-gain-and-hybrid-word-theorem)
+and the implementations in
+[`hybrid_operator_stability.py`](../src/tnfr/physics/hybrid_operator_stability.py)
+[`reception_realization.py`](../src/tnfr/physics/reception_realization.py), and
+[`resonance_realization.py`](../src/tnfr/physics/resonance_realization.py).
+
+### 1.5 Spectral Gap Characterisation
+
+For connected fixed symmetric pure EPI diffusion, the first positive
+generalized eigenvalue $\lambda_*$ of $Bv=\lambda Hv$, with
+$H=\operatorname{diag}(d_i/\nu_i)$, controls the weighted-energy decay:
 
 | Quantity | Expression | Physical meaning |
 |----------|-----------|------------------|
-| Relaxation time | $\tau = 1/\lambda_1$ | Time for diffusive equilibration |
-| Mixing time | $t_{\text{mix}} \sim \ln(N)/\lambda_1$ | Time to reach near-equilibrium |
-| Cheeger bound | $h^2/(2d_{\max}) \le \lambda_1$ | Lower bound from expansion |
+| Energy decay | $V(t) \le e^{-2\lambda_*t}V(0)$ | Exact upper bound |
+| Relaxation scale | $1/\lambda_*$ | Heterogeneous structural time |
+| Homogeneous reduction | $\lambda_*=\nu_f\lambda_2(L_{sym})$ | Common-capacity case |
 
-**Implementation**: `src/tnfr/physics/lyapunov.py` — `OperatorStabilityClass`, `OperatorEnergyBound`, `LyapunovPerOperator`, `analyze_spectral_gap()`.
+This table is the exact real-arithmetic theorem. The executable binary64
+certificate separately rationalizes its materialized generator and displayed
+metric. It first requires exact invariance of the consensus subspace, then
+proves positivity of the symmetrized dissipation on the metric-orthogonal
+quotient and returns a downward-rounded certified rate. Its generalized
+eigenvalue remains an estimate. Exact conservation of the displayed weighted
+mean is a further independent Boolean; without it, the snapshot projection
+center is not promoted as the final consensus value.
+
+For time-varying capacities satisfying positive finite per-node bounds, the
+Dirichlet energy is a common Lyapunov function with decay rate at least
+`2 lambda_2(B) min_i(lower_i/d_i)`. The executable theorem treats the effective
+binary64 conductances and capacity bounds as exact real coefficients, then forms
+degrees, the Laplacian, the quotient gap and the rate in rational arithmetic.
+Ordinary binary64 eigengaps, products and energies remain labelled estimates;
+whether `diag(strength)-adjacency` happens to annihilate constants after floating
+accumulation is a separate diagnostic. A positive exact rate that underflows on
+publication still proves the exact-real theorem but supplies no operational
+binary64 rate. The routine neither observes the future capacity schedule nor
+certifies a numerical integrator. Within the conditional exact-real model the
+field converges to consensus, but the consensus value is schedule-dependent
+unless the capacity ratios remain fixed.
+
+For a finite family of changing symmetric topologies on fixed node support,
+the normalized metric `d_i/nu_i` is a common Lyapunov metric when the raw
+represented metric vectors are exactly proportional across every regime.
+Caller-tolerance proximity is diagnostic and cannot promote the theorem. The
+minimum certified rational quotient bound then controls arbitrary switching.
+Every represented regime must fix the uniform EPI field exactly; the weaker
+consensus-subspace condition and preservation of the displayed weighted mean are
+reported independently and cannot replace that canonical fixed-point identity.
+The object's equilibrium, Lyapunov-value and derivative fields are binary64
+diagnostics for its first snapshot and displayed normalized metric. Composition
+instead uses the rationalized reference metric and certified rate; a sampled
+trajectory must recenter that common metric at every state.
+This is a restricted
+topology-change theorem; it does not cover node creation/removal or nodal-type
+transitions.
+
+**Implementation**:
+`physics.structural_diffusion.verify_heterogeneous_diffusion_stability` provides
+the exact fixed-capacity certificate;
+`derive_time_varying_diffusion_stability_bound` supplies the conditional common
+bound; `verify_switching_diffusion_stability` checks the common-metric switching
+theorem. `diagnose_euler_relaxation_window` resolves the frozen graph's actual
+explicit-Euler modal factors and solver-step relaxation count, using a
+dimensionless zero-mode tolerance relative to the fastest decay rate. That count is a
+numerical-integration quantity, not the U4 operator-position window.
+`physics.lyapunov` retains nominal operator-role diagnostics and must not be read
+as a universal convergence prover.
 
 ---
 
 ## 2. Phase Transitions
 
-### 2.1 Order Parameter
+### 2.1 Order-parameter candidate
 
-The symmetry breaking field $\mathcal{S}$ serves as the order parameter for phase transitions:
+The symmetry-breaking field $\mathcal{S}$ is the implemented order-parameter
+candidate for controlled phase-transition sweeps:
 
 $$
 \mathcal{S}(i) = \left(|\nabla\phi|^2 - K_\phi^2\right) + \left(J_\phi^2 - J_{\Delta\mathrm{NFR}}^2\right)
@@ -95,290 +254,472 @@ $$
 
 ### 2.2 Phase Classification
 
-The phase is decided by the sampling-noise z-score of the symmetry breaking,
-$z = |\langle\mathcal{S}\rangle| / \mathrm{SE}$ with $\mathrm{SE} = \sqrt{\mathrm{Var}(\mathcal{S})/N}$ — the
-statistical significance measured from the system itself. The only cut is $z = 1$ (one
-sampling sigma); likewise $z_\chi$ for the chirality field.
+The phase is decided by the standardized spatial imbalance of the signed global mean,
+$z = |\langle\mathcal{S}\rangle| / \sqrt{\mathrm{Var}(\mathcal{S})/N}$, and likewise for
+signed chirality. Because graph nodes are coupled, this ratio is not a
+hypothesis-test z-score without an independent sampling or effective-sample-size
+model. The engine retains the historical function name `symmetry_zscore`, but
+uses the ratio only as a deterministic classifier input. The selected operational
+cut is $z = 1$. The local magnitudes $\langle|\mathcal{S}|\rangle$ and
+$\langle|\chi|\rangle$ remain separate telemetry and cannot establish global
+symmetry breaking because opposite signs may cancel.
 
-| Phase | Condition | Physical meaning |
+| Phase | Condition | Operational meaning |
 |-------|-----------|------------------|
-| **NON_LIFE** | $z \le 1$ | $\langle\mathcal{S}\rangle$ within sampling noise of zero (symmetric) |
-| **LIFE** | $z > 1$ AND $z_\chi > 1$ | significant symmetry breaking + homochirality |
-| **CRITICAL** | $z > 1$ AND $z_\chi \le 1$ | broken magnitude, no preferred handedness |
+| **NON_LIFE** | $z \le 1$ | signed mean below the selected standardized-imbalance cut |
+| **LIFE** | $z > 1$ AND $z_\chi > 1$ | both signed-imbalance ratios exceed the selected cut |
+| **CRITICAL** | $z > 1$ AND $z_\chi \le 1$ | order imbalance without a chirality-ratio crossing |
 
-### 2.3 Critical Exponent (measured observable)
+### 2.3 Effective time-series exponent fit
 
-Near the critical point the order parameter follows a power law:
+`fit_critical_exponent` and `detect_phase_transition` fit the diagnostic model
 
 $$
-|\langle\mathcal{S}\rangle| \sim |p - p_c|^{\beta}
+|\langle\mathcal{S}\rangle| \sim |t-t_c|^{p_{\mathrm{fit}}}
 $$
 
-The exponent $\beta$ is an **observable to be measured** (`fit_critical_exponent`), **not** a derived universal constant. A measurement across sweep protocols gives protocol-dependent values, so there is no universal closed-form exponent. The constant $\gamma/\pi \approx 0.1837$ is retained only as a **calibrated reference / noise-floor scale** (TIER-2), not a prediction of the nodal equation.
+by log-log regression. In the time-series detector, $t_c$ is the time of the
+largest sampled susceptibility, when that maximum is positive. The fit uses
+only positive samples strictly after $t_c$; it never substitutes earlier
+samples. It returns `exponent`/`measured_exponent` and $R^2$, or `None` when fewer
+than three eligible post-$t_c$ samples exist.
 
-### 2.4 Constants
+The neutral symbol $p_{\mathrm{fit}}$ avoids assigning competing $\beta$ and
+$\gamma$ names to the same implemented regression. The result is
+protocol-dependent. It becomes a conventional critical exponent only when the
+time coordinate is mapped to a declared control-parameter distance and a
+finite-size protocol supports that interpretation. No universal value follows
+from the nodal equation.
 
-| Constant | Value | Status |
-|----------|-------|--------|
-| Reference scale | $\approx \pi/16 \approx 0.196$ | Heuristic early-warning (operational, not a derived universal exponent) |
-| Noise floor | $\approx 0.034$ | Calibrated detection threshold (operational) |
-| Chirality threshold | $\approx 0.155$ | Calibrated TIER-2 reference (operational) |
+### 2.4 Classification scale
+
+The classifier uses only `Z_SIGNIFICANCE = 1`, a selected standardized-spread
+policy. It is neither a p-value cut nor a graph-independent critical constant.
+Legacy constants such as $\pi/16$, `0.034` and `0.155` do not enter this phase
+classification and must not be presented as universal transition thresholds.
 
 ### 2.5 Susceptibility
 
-The structural susceptibility diverges at the critical point:
+The finite-sample structural susceptibility diagnostic is
 
 $$
 \chi_{\mathcal{S}}(t) = N \cdot \operatorname{Var}(\mathcal{S})
 $$
 
-### 2.6 Critical Exponent Fitting
+The implementation records its maximum along the supplied sequence. A sampled
+peak is not a divergence theorem.
 
-For systems near the transition, the critical exponent can be fit from the scaling law $|\langle\mathcal{S}\rangle| \sim |p - p_c|^{\gamma_{\text{fit}}}$. The theoretical prediction $\gamma_{\text{fit}} \to \gamma/\pi$ serves as validation.
+### 2.6 Finite-size protocol
 
-**Implementation**: `src/tnfr/physics/phase_transition.py` — `Phase` enum, `PhaseTransitionTelemetry`, `PhaseSnapshot`, `compute_order_parameter()`, `classify_phase()`, `detect_phase_transition()`, `fit_critical_exponent()`.
+`analyze_phase_finite_size_scaling` accepts one shared control grid at three or
+more node counts, with a balanced replicate axis. It reports the sampled
+pseudocritical control, replicate standard errors and power-law slopes of peak
+susceptibility, order magnitude and coherence length against node count `N`.
+The use of `N` is explicit: converting these slopes to conventional exponent
+ratios requires an independently justified linear-size or dimension map.
+Replicating one graph family does not establish universality. A susceptibility
+maximum on the first or last sampled control value is flagged as unbracketed
+instead of being presented as a located critical point. Every exact maximizer
+is retained, so plateaus are marked ambiguous and any boundary contact makes
+the sampled peak unbracketed.
 
----
-
-## 3. Self-Sustaining Dynamics and Autopoiesis
-
-### 3.1 Autopoietic Coefficient
-
-The autopoietic coefficient measures a system's capacity for self-generation relative to external driving:
-
-$$
-A(t) = \frac{\langle G(\mathrm{EPI}) \cdot \partial\mathrm{EPI}/\partial t\rangle}{\langle|\Delta\mathrm{NFR}_{\text{ext}}|^2\rangle}
-$$
-
-where the self-generation function follows logistic growth:
-
-$$
-G(\mathrm{EPI}) = \gamma\,\|\mathrm{EPI}\|\left(1 - \frac{\|\mathrm{EPI}\|}{\mathrm{EPI}_{\max}}\right)
-$$
-
-### 3.2 Self-Sustaining Threshold
-
-$$
-A(t) > 1.0 \implies \text{Self-sustaining dynamics}
-$$
-
-When $A > 1$, the system generates more structural change through self-organisation than through external forcing — the defining property of autopoietic systems in the sense of Maturana & Varela.
-
-### 3.3 Auxiliary Indices
-
-| Index | Definition | Interpretation |
-|-------|-----------|---------------|
-| Vitality $V_i$ | $\gamma\,\|\mathrm{EPI}\|(1 - \|\mathrm{EPI}\|/\mathrm{EPI}_{\max})$ | Self-generation capacity |
-| Self-Organisation $S$ | $\varepsilon\,|\partial G/\partial\|\mathrm{EPI}\|| / (|\partial\Delta\mathrm{NFR}_{\text{ext}}/\partial t| + \delta)$ | Sensitivity of self-generation to reorganisation |
-| Stability Margin $M$ | $(\|\mathrm{EPI}\| - \mathrm{EPI}_{\max}/2)/\mathrm{EPI}_{\max}$ | Position relative to carrying capacity |
-
-### 3.4 Self-Sustaining Threshold Detection
-
-The threshold time $t_{\text{self}}$ is found by interpolation at the $A(t) = 1.0$ crossing. The `LifeTelemetry` dataclass records the complete trajectory $(V_i(t), A(t), S(t), M(t))$.
-
-**Implementation**: `src/tnfr/physics/life.py` — `detect_life_emergence()`, `LifeTelemetry` dataclass.
+**Implementation**: `src/tnfr/physics/phase_transition.py` provides snapshot and
+time-series classification; `src/tnfr/physics/phase_scaling.py` provides the
+balanced finite-size diagnostic.
 
 ---
 
-## 4. Node Lifecycle
+## 3. Life-telemetry diagnostics
 
-### 4.1 Lifecycle States
+### 3.1 Implemented formulas
 
-Each TNFR node passes through a sequence of canonical states determined by its structural attributes:
+[`physics.life`](../src/tnfr/physics/life.py) consumes supplied time series; it
+does not evolve the graph. It is an assumption-explicit logistic diagnostic,
+not a biological classifier or an operator implementation. Every channel must
+be a finite numeric one-dimensional series; Boolean, multidimensional, NaN and
+infinite inputs are rejected. `detect_life_emergence` additionally requires a
+nonempty nonnegative EPI series, matching channel shapes and strictly increasing
+sample times. It requires $0\leq\varepsilon\leq1$, $\gamma\geq0$, and
+$\mathrm{EPI}_{\max}>0$. No input is clipped or broadcast implicitly.
 
-| State | Condition | Physical meaning |
-|-------|-----------|------------------|
-| **DORMANT** | $\nu_f < \text{activation threshold}$ | Below activation energy |
-| **ACTIVATION** | $\nu_f$ increasing, $\Delta\mathrm{NFR}$ growing | Energy accumulation |
-| **STABILIZATION** | High $C(t)$, low $|\Delta\mathrm{NFR}|$ | Coherent attractor reached |
-| **PROPAGATION** | High phase coupling | Pattern spreading via UM/RA |
-| **MUTATION** | High $|\Delta\mathrm{NFR}|$, phase shifts | Qualitative state change |
-| **COLLAPSING** | Losing coherence | Approaching dissolution |
-| **COLLAPSED** | $\nu_f \to 0$, EPI dissolved | Terminal state |
+Let $x(t)\geq0$ be the supplied EPI-magnitude series. The declared model computes
 
-Priority order for classification: mutation > propagation > stabilization > activation > dormant. Collapse is checked first.
+$$
+G(t)=\gamma x(t)\left(1-\frac{x(t)}{\mathrm{EPI}_{\max}}\right)
+$$
 
-### 4.2 Collapse Conditions
+and the **time-local** autopoietic coefficient
 
-Four canonical collapse reasons, checked in priority order:
+$$
+A(t)=\frac{G(t)\,\dot x(t)}{|\Delta\mathrm{NFR}_{\mathrm{ext}}(t)|^2+\epsilon_{\mathrm{num}}}.
+$$
 
-| Collapse reason | Condition | Physical basis |
-|----------------|-----------|---------------|
-| **Frequency failure** | $\nu_f < \text{collapse threshold}$ | Fundamental reorganisation capacity lost |
-| **Extreme dissonance** | $|\Delta\mathrm{NFR}| > \text{bifurcation threshold}$ | Structural instability |
-| **Network decoupling** | Phase coherence below minimum | Loss of resonance with neighbours |
-| **EPI dissolution** | $\mathrm{EPI} \to 0$ | Form completely degraded |
+The numerator and denominator are evaluated element by element. The
+implementation does not take the ensemble or time averages shown in older
+versions of this note, and `dEPI_dt` supplies $\dot x$ rather than the function
+estimating it internally. The small $\epsilon_{\mathrm{num}}$ is the shared
+safe division guard.
 
-### 4.3 Default Thresholds
+The remaining returned series are
 
-| Parameter | Default | Source |
-|-----------|---------|--------|
-| Activation threshold | $0.1$ (min $\nu_f$) | Operational |
-| Collapse threshold | $0.01$ (min $\nu_f$) | Operational |
-| Bifurcation threshold | $10.0$ (max $|\Delta\mathrm{NFR}|$) | Operational |
-| Stabilization $\Delta\mathrm{NFR}$ | $1.0$ | Operational |
-| Stabilization coherence | $0.8$ | Operational |
-| Propagation coupling | $0.7$ | Operational |
-| Mutation $\Delta\mathrm{NFR}$ | $5.0$ | Operational (ZHIR threshold, free parameter) |
+$$
+V_i(t)=\frac{|\varepsilon G(t)|}
+{|\varepsilon G(t)|+|\Delta\mathrm{NFR}_{\mathrm{ext}}(t)|+\epsilon_{\mathrm{num}}},
+$$
 
-**Implementation**: `src/tnfr/operators/lifecycle.py` — `LifecycleState`, `CollapseReason`, `get_lifecycle_state()`, `check_collapse_conditions()`.
+$$
+S(t)=\frac{\varepsilon\,|\gamma(1-2x(t)/\mathrm{EPI}_{\max})|}
+{|\partial_t\Delta\mathrm{NFR}_{\mathrm{ext}}(t)|+\delta+\epsilon_{\mathrm{num}}},
+\qquad
+M(t)=\frac{x(t)-\mathrm{EPI}_{\max}/2}{\mathrm{EPI}_{\max}}.
+$$
+
+`LifeTelemetry.vitality_index` is the internal-versus-total pressure ratio
+$V_i$ above. It does not include $C(t)$; callers may combine the two as a
+separate analysis.
+
+### 3.2 Operational threshold detection
+
+`detect_life_emergence` uses $A(t)>1$ as a selected operational event. It
+linearly interpolates the first transition from $A\leq1$ to $A>1$, returns the
+first supplied time when the series already starts above one, and otherwise
+returns `None`. This classifier records a telemetry crossing; it does not prove
+future self-sustenance or a biological classification.
+
+The returned `LifeTelemetry` contains the supplied times, $V_i$, $A$, $S$, $M$,
+and `life_threshold_time`.
 
 ---
 
-## 5. Internal Hamiltonian Construction
+## 4. Node lifecycle classifier
 
-### 5.1 Definition
+### 4.1 Implemented state priority
 
-The internal Hamiltonian governs structural evolution:
+`get_lifecycle_state` is an instantaneous rule-based classifier. It does not
+estimate whether $\nu_f$ or $\Delta\mathrm{NFR}$ is increasing. With the default
+parameters, it evaluates conditions in this order:
 
-$$
-\hat{H}_{\text{int}} = \hat{H}_{\text{coh}} + \hat{H}_{\text{freq}} + \hat{H}_{\text{coupling}}
-$$
+| Returned state | Implemented condition |
+|----------------|-----------------------|
+| **COLLAPSING** | $\nu_f<0.01$, or $|\Delta\mathrm{NFR}|>10$, or a non-isolated node has coupling $<0.1$ |
+| **MUTATION** | $|\Delta\mathrm{NFR}|>5$ and $\nu_f>0.1$ |
+| **PROPAGATION** | coupling $>0.7$ and $\nu_f>0.1$ |
+| **STABILIZATION** | $|\Delta\mathrm{NFR}|<1$ and scalar EPI $>0.8$ |
+| **ACTIVATION** | $\nu_f\geq0.1$ after the earlier checks |
+| **DORMANT** | all remaining states above the collapse-frequency cut |
 
-### 5.2 Components
+The stabilization test uses scalar EPI as a proxy; it does not call the
+canonical $C(t)$ kernel. `LifecycleState.COLLAPSED` exists in the enum but
+`get_lifecycle_state` currently returns `COLLAPSING` for every collapse trigger
+and never returns `COLLAPSED`.
 
-**Coherence potential** (attractive interaction):
-
-$$
-\hat{H}_{\text{coh}} = -C_0 \sum_{i,j} w_{ij}\,|i\rangle\langle j|
-$$
-
-where $w_{ij}$ is the coherence weight from structural similarity and $C_0 = -1.0$ (attractive).
-
-**Frequency operator** (diagonal):
-
-$$
-\hat{H}_{\text{freq}} = \sum_i \nu_{f,i}\,|i\rangle\langle i|
-$$
-
-Each node's $\nu_f$ becomes its diagonal energy.
-
-**Coupling Hamiltonian** (topology):
+For a node with neighbors, the current coupling approximation is
 
 $$
-\hat{H}_{\text{coupling}} = J_0 \sum_{(i,j) \in E} \left(|i\rangle\langle j| + |j\rangle\langle i|\right)
+c_i=1-\frac{\min\left(|\theta_i-\operatorname{mean}_{j\in\mathcal N(i)}
+\theta_j|,\pi\right)}{\pi}.
 $$
 
-All components are $N \times N$ Hermitian matrices ($N$ = number of nodes).
+This is an arithmetic neighbor-phase mean followed by a capped absolute
+difference, rather than a circular mean. Isolates receive $c_i=0$, but the
+network-decoupling collapse check is applied only when neighbors exist.
 
-### 5.3 Time Evolution
+### 4.2 Collapse-reason check
 
-The unitary time evolution operator:
+`check_collapse_conditions` is a separate predicate. It returns the first
+matching reason in this order:
 
-$$
-U(t) = \exp\left(-i\,\hat{H}_{\text{int}}\,t\,/\,\hbar_{\text{str}}\right)
-$$
+| Collapse reason | Default condition |
+|-----------------|-------------------|
+| **Frequency failure** | $\nu_f<0.01$ |
+| **Extreme dissonance** | $|\Delta\mathrm{NFR}|>10$ |
+| **Network decoupling** | non-isolated node with $c_i<0.1$ |
+| **EPI dissolution** | scalar EPI $<0.01$ |
 
-Propagates states: $|\psi(t)\rangle = U(t)|\psi(0)\rangle$.
+The EPI-dissolution condition belongs to this separate predicate and is not
+consulted by `get_lifecycle_state`. Configuration values override graph values,
+which in turn override these operational defaults.
 
-### 5.4 Energy Spectrum
-
-The eigenvalue equation:
-
-$$
-\hat{H}_{\text{int}}|\phi_n\rangle = E_n|\phi_n\rangle
-$$
-
-gives stationary states $|\phi_n\rangle$ with energies $E_n$ (maximally stable configurations).
-
-### 5.5 ΔNFR from Hamiltonian
-
-The $\Delta\mathrm{NFR}$ operator follows from the Hamiltonian commutator:
-
-$$
-\Delta\mathrm{NFR} = \frac{i}{\hbar_{\text{str}}}\,\hat{H}_{\text{int}}
-$$
-
-Per-node: $\Delta\mathrm{NFR}_n = (i/\hbar_{\text{str}})\langle n|[\hat{H}_{\text{int}}, \rho_n]|n\rangle$ where $\rho_n = |n\rangle\langle n|$.
-
-**Implementation**: `src/tnfr/operators/hamiltonian.py` — `InternalHamiltonian` class with `get_spectrum()`, `time_evolution_operator()`, `compute_delta_nfr_operator()`.
+**Implementation**:
+[`operators.lifecycle`](../src/tnfr/operators/lifecycle.py) provides
+`LifecycleState`, `CollapseReason`, `get_lifecycle_state`,
+`check_collapse_conditions`, and `should_collapse`.
 
 ---
 
-## 6. Structural Integrity Monitor
+## 5. Auxiliary internal Hamiltonian
 
-### 6.1 Purpose
+### 5.1 Implemented matrix
 
-The integrity monitor verifies **postconditions** of all 13 canonical operators after each application. This closes the loop between theoretical contracts and runtime behaviour.
+[`operators.hamiltonian`](../src/tnfr/operators/hamiltonian.py) constructs the
+finite matrix
 
-### 6.2 Postconditions (13/13 Operators)
+$$
+H_{\mathrm{int}}=H_{\mathrm{coh}}+H_{\mathrm{freq}}+H_{\mathrm{coupling}},
+$$
 
-| Operator | Contract verified |
-|----------|------------------|
-| **AL** (Emission) | $\mathrm{EPI}$ not decreased ($\partial\mathrm{EPI}/\partial t \ge 0$) |
-| **EN** (Reception) | $C(t)$ not decreased |
-| **IL** (Coherence) | $C(t)$ not decreased (outside dissonance test) |
-| **OZ** (Dissonance) | $|\Delta\mathrm{NFR}|$ increased |
-| **UM** (Coupling) | Phase compatibility $|\phi_i - \phi_j| \le \Delta\phi_{\max}$ |
-| **RA** (Resonance) | EPI structural identity (sign/kind) preserved |
-| **SHA** (Silence) | EPI preserved over time; $\nu_f$ frozen |
-| **VAL** (Expansion) | $\nu_f$ not decreased (capacity added) |
-| **NUL** (Contraction) | $\nu_f$ not increased (capacity removed) |
-| **THOL** (Self-org) | Global form preserved; sub-EPIs created |
-| **ZHIR** (Mutation) | Phase $\theta$ changed when $\Delta\mathrm{EPI}/\Delta t > \xi$ |
-| **NAV** (Transition) | Controlled trajectory; no coherence collapse |
-| **REMESH** (Recursivity) | Nested structure maintained; parent identity preserved |
+with the literal implementation
 
-### 6.3 Monitor Modes
+$$
+H_{\mathrm{coh}}=C_0 W,\qquad
+H_{\mathrm{freq}}=\operatorname{diag}(\nu_{f,1},\ldots,\nu_{f,N}),\qquad
+H_{\mathrm{coupling}}=J_0 A_{\mathrm{sym}}.
+$$
+
+$W$ is the matrix returned by `coherence_matrix`. The constructor default is
+$C_0=-1$, so the coherence term is $-W$; writing an additional leading minus
+sign reverses the implemented sign. The default coupling is $J_0=0.1$, and the
+builder writes both matrix directions for every graph edge. The constructor
+checks every component and their sum for Hermiticity and raises when the check
+fails.
+
+This matrix supplies an auxiliary linear model. The repository does not derive
+the general engine trajectory or the canonical graph $\Delta\mathrm{NFR}$ from
+it.
+
+### 5.2 Unitary flow and eigenmodes
+
+For a constructor-accepted Hermitian matrix, `time_evolution_operator` computes
+
+$$
+U(t)=\exp\left(-\frac{iH_{\mathrm{int}}t}{\hbar_{\mathrm{str}}}\right).
+$$
+
+`get_spectrum` uses a Hermitian eigensolver and returns ascending real
+eigenvalues and eigenvectors satisfying
+
+$$
+H_{\mathrm{int}}|\phi_n\rangle=E_n|\phi_n\rangle.
+$$
+
+An eigenvector evolves only by the phase
+$e^{-iE_nt/\hbar_{\mathrm{str}}}$ in this auxiliary unitary flow. That makes it
+a stationary ray of this model; it does not make it a maximally stable TNFR
+configuration or establish dissipative attraction.
+
+### 5.3 Compatibility helpers and sign scope
+
+Despite its name, `compute_delta_nfr_operator()` does not compute a commutator.
+It literally returns
+
+$$
+G_+=\frac{i}{\hbar_{\mathrm{str}}}H_{\mathrm{int}},
+$$
+
+which is anti-Hermitian and is the negative of the ket-state generator
+$-iH_{\mathrm{int}}/\hbar_{\mathrm{str}}$ used by $U(t)$.
+
+`compute_node_delta_nfr(n)` separately constructs
+$\rho_n=|n\rangle\langle n|$ and returns the real part of
+
+$$
+\frac{i}{\hbar_{\mathrm{str}}}
+\langle n|[H_{\mathrm{int}},\rho_n]|n\rangle.
+$$
+
+For this localized projector, the displayed diagonal commutator is exactly
+zero: $[H,\rho_n]_{nn}=H_{nn}-H_{nn}=0$. Under the implemented unitary
+$U\rho U^\dagger$, the density-matrix derivative would instead carry the sign
+$-i[H,\rho]/\hbar_{\mathrm{str}}$. These helpers therefore do not reconstruct
+the engine's node-local structural pressure; canonical $\Delta\mathrm{NFR}$ is
+computed by
+[`dynamics.dnfr`](../src/tnfr/dynamics/dnfr.py).
+
+---
+
+## 6. Optional structural integrity tools
+
+### 6.1 Reactive monitor
+
+The reactive monitor is opt-in. `enable_integrity_monitor(G, mode=...)` creates
+a `StructuralIntegrityMonitor` and stores it in
+`G.graph["integrity_monitor"]`. Calls through the operator-class pipeline then
+invoke `before_operator` and `after_operator`. Without an attached monitor,
+ordinary operator calls do not run these diagnostics.
+
+For each monitored call, the implementation attempts to compare conservation
+snapshots, the finite change of the structural-energy candidate, heuristic
+grammar-violation labels, Noether-charge drift, and an operator-specific
+postcondition. These are runtime diagnostics. They do not turn the
+five-term energy into a general Lyapunov theorem. `ENFORCE` raises after a
+reported unhealthy result; it does not roll back an operator mutation.
+
+An `IntegrityReport` is healthy only when its conservation quality is above
+`0.7`, its sampled energy change is classified stable, no grammar diagnostics
+are present, and its postcondition check passes. Charge drift is reported but
+is not part of that property.
+
+### 6.2 Implemented postcondition registry
+
+`POSTCONDITIONS` has one entry for every canonical operator name, but several
+entries check only a measurable proxy and REMESH is explicitly advisory:
+
+| Operator | Check currently performed by the reactive registry |
+|----------|----------------------------------------------------|
+| **AL** | EPI and $\nu_f$ do not decrease |
+| **EN** | $C(t)$ does not decrease |
+| **IL** | $C(t)$ does not decrease and $|\Delta\mathrm{NFR}|$ does not increase |
+| **OZ** | $|\Delta\mathrm{NFR}|$ does not decrease |
+| **UM** | $|\Delta\mathrm{NFR}|$ does not increase |
+| **RA** | nonzero EPI sign is preserved and $\nu_f$ does not decrease |
+| **SHA** | EPI is unchanged and $\nu_f$ does not increase |
+| **VAL** | $\nu_f$ does not decrease |
+| **NUL** | $\nu_f$ does not increase |
+| **THOL** | $C(t)$ does not fall by more than 10% |
+| **ZHIR** | delegates phase, identity, and bifurcation checks to the mutation postcondition module |
+| **NAV** | at least one of $\nu_f$, $\theta$, or $\Delta\mathrm{NFR}$ changes |
+| **REMESH** | advisory entry; returns success without a network-remesh check |
+
+The U3 phase-compatibility gate for UM and RA is a hard precondition in their
+operator pipeline, separate from the reactive postcondition table. Registry
+lookup uses the lower-case English function name (`"coherence"`,
+`"self_organization"`, and so on); a glyph string such as `"IL"` does not
+select the corresponding registry checker.
+
+#### ZHIR temporal evidence and execution boundary
+
+The nodal equation gives the instantaneous prediction
+`predicted_depi_dt = nu_f * DeltaNFR`. Its signed strict comparison with `xi`
+is useful as a current-state prediction, but it is not a measurement of a
+realized trajectory and cannot satisfy the ZHIR gate by itself. The SDK keeps
+the historical name `near_bifurcation` as an alias of this predicted crossing.
+
+ZHIR has a separate non-disableable admission gate based on an **observed signed
+secant**. Timestamped `epi_time_history` supplies
+`(EPI[k] - EPI[k-1]) / (t[k] - t[k-1])`; both samples and the interval must be
+finite, the interval must be strictly positive, and the final EPI sample must
+represent the current endpoint. The runtime default requires an exact endpoint
+match. Once physical history is supplied it is authoritative, so an invalid or
+stale record does not fall back to an untimestamped source.
+
+The compatibility channels `epi_history` and `_epi_history` use two finite
+scalar samples separated by one operator step. Their difference is therefore a
+legacy unit-step rate, explicitly reported as
+`physical_time_resolved=False`; it makes no claim about physical elapsed time or
+endpoint provenance. In both evidence modes the gate requires the signed strict
+inequality `observed_depi_dt > xi`. Equality, contraction, invalid or missing
+history, non-increasing physical time, and a stale physical endpoint reject
+direct execution. The default `ZHIR_THRESHOLD_XI = 0.1` is an operational
+calibration. Direct execution also requires active finite capacity
+(`nu_f > 0`), while `ZHIR_MIN_VF` can only tighten that condition.
+
+Dynamic selection treats unavailable, invalid, or non-crossing Mutation
+evidence as an abstention: it substitutes IL before ordinary grammar enforcement
+and records the requested and applied glyphs with the reason in
+`mutation_abstentions`. The SDK whole-word runner preflights every target node
+before any operator in a word containing ZHIR. It also rejects timestamped
+evidence when an earlier EPI-channel operator in the same word would make its
+endpoint stale before Mutation; legacy histories retain their unit-operator-step
+compatibility semantics. Missing or invalid evidence leaves the certificate's
+`observed_crossed` value unknown (`None`), rather than treating absence as an
+observed non-crossing. The observed-predicted `rate_gap` is available only for
+valid physical evidence because legacy evidence has no physical-time basis.
+
+`compute_d2epi_dt2` is a separate three-sample estimate of structural
+acceleration: it compares adjacent timestamped secants for physical histories
+and uses the unit-step second difference for legacy histories. It may support
+bifurcation-potential telemetry; it is not the two-sample ZHIR threshold gate.
+Likewise,
+`ZHIR_BIFURCATION_VF_THRESHOLD = 0.5` controls whether a branch selector
+proposes ZHIR and is not an admission precondition. The pure
+`MutationTriggerCertificate` and SDK `nodal_state()` expose prediction and
+evidence without evaluating U4b. Prior IL and a recent destabilizer remain
+separate U4b context requirements enforced by the grammar or strict
+precondition route; neither read-only interface certifies execution readiness.
+
+Mutation postconditions read `epi_kind` as structural identity. Successful
+dispatch records `source_glyph = "ZHIR"` as operator provenance without changing
+that identity; `source_glyph` and `epi_kind` are distinct metadata channels.
+
+Registry coverage is therefore not a proof that every full operator contract
+has been verified. For a reproducible catalog-level measurement, use
+`audit_operator_contracts`. It builds controlled graphs, places each request in
+its intended context, checks the actually appended glyph so a grammar fallback
+cannot certify the request, and returns an `OperatorContractAudit`. Its REMESH
+case remains an advisory network-level result.
+
+### 6.3 Monitor modes
 
 | Mode | Behaviour |
 |------|-----------|
-| **OFF** | No checking (production performance) |
-| **OBSERVE** | Log violations without blocking |
+| **OFF** | Hook methods return default data without metric computation |
+| **OBSERVE** | Record reports and violations without raising |
 | **ENFORCE** | Raise `StructuralIntegrityViolation` on failure |
 
-### 6.4 Corrective Suggestions
+### 6.4 Suggestions and SDK scope
 
-When a violation is detected in OBSERVE or ENFORCE mode, the monitor provides corrective suggestions (e.g. "apply IL after OZ to restore convergence").
+Corrective suggestions are generated for recognized conservation-derived
+grammar labels, an increasing energy-candidate observation, or charge drift
+above the internal alert. A postcondition failure alone need not produce a
+suggestion.
 
-**Implementation**: `src/tnfr/physics/integrity.py` — `IntegrityReport`, `IntegritySummary`, `MonitorMode`, `StructuralIntegrityViolation`, `POSTCONDITIONS` registry.
+The SDK exposes two different dictionary-returning conveniences:
 
-**Tests**: `tests/test_integrity.py`
+- `Network.integrity_check(operator_name)` calls `after_operator` directly for
+  at most ten current nodes and returns `operator`, `nodes_checked`, `passed`,
+  `failed`, `pass_rate`, and per-node `reports`. It does not execute an
+  operator, capture a matching before snapshot, attach the monitor, or audit
+  all 13 operators. Use an English function name to activate a registry check.
+- `Network.audit_operators()` runs the independent controlled
+  `audit_operator_contracts` protocol and returns a dictionary with the 13
+  contextual results and its summary. It audits the operator implementation,
+  rather than the current `Network` instance's trajectory.
+
+**Implementation**:
+[`physics.integrity`](../src/tnfr/physics/integrity.py) provides
+`IntegrityReport`, `IntegritySummary`, `MonitorMode`,
+`StructuralIntegrityViolation`, `POSTCONDITIONS`, and
+`audit_operator_contracts`.
+
+**Tests**:
+[`tests/physics/test_structural_integrity.py`](../tests/physics/test_structural_integrity.py)
+and
+[`tests/sdk/test_simple_advanced.py`](../tests/sdk/test_simple_advanced.py).
 
 ---
 
-## Implementation Reference
+## Implementation and examples
 
 | Module | Content |
 |--------|---------|
-| `src/tnfr/physics/lyapunov.py` | Per-operator energy bounds, spectral gap analysis |
-| `src/tnfr/physics/phase_transition.py` | Order parameter, phase classification, critical exponent |
-| `src/tnfr/physics/life.py` | Autopoietic coefficient, self-sustaining threshold detection |
-| `src/tnfr/operators/lifecycle.py` | Node states, collapse conditions |
-| `src/tnfr/operators/hamiltonian.py` | Internal Hamiltonian, time evolution, spectrum |
-| `src/tnfr/physics/integrity.py` | 13/13 postconditions, monitor modes |
-
----
-
-## Implementation & Examples
+| `src/tnfr/physics/lyapunov.py` | Nominal U2-role multipliers and spectral diagnostics |
+| `src/tnfr/physics/structural_diffusion.py` | Fixed, time-varying and exact-common-metric pure-EPI flow certificates |
+| `src/tnfr/physics/hybrid_operator_stability.py` | Declared affine-reset gains and hybrid flow/reset budgets |
+| `src/tnfr/physics/reception_realization.py` | Read-only EN runtime-to-affine-flow boundary |
+| `src/tnfr/physics/resonance_realization.py` | Read-only identity-gated RA runtime-to-affine-flow boundary and post-RA metric audit |
+| `src/tnfr/physics/phase_transition.py` | Order parameter, operational phase classification, effective exponent fit |
+| `src/tnfr/physics/life.py` | Strict supplied-series logistic diagnostics and selected $A(t)>1$ event |
+| `src/tnfr/operators/lifecycle.py` | Instantaneous node-state and collapse predicates |
+| `src/tnfr/operators/hamiltonian.py` | Auxiliary matrix, unitary flow, spectrum, compatibility helpers |
+| `src/tnfr/physics/integrity.py` | Optional reactive monitor and contextual operator audit |
 
 ### SDK Entry Points
 
 ```python
+from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 from tnfr.sdk import TNFR
 
 net = TNFR.create(20).ring().evolve(5)
-report = net.integrity_check()    # IntegrityReport (13/13 operators)
+monitor = enable_integrity_monitor(net.G, mode=MonitorMode.OBSERVE)
+# Subsequent operator-class calls append IntegrityReport objects to monitor.summary.
+
+snapshot = net.integrity_check("coherence")  # dict; up to ten current nodes
+catalog = net.audit_operators()               # dict; 13 controlled probes
 ```
 
 ### Executable Demonstrations
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [29_lyapunov_stability_demo.py](../examples/02_physics_regimes/29_lyapunov_stability_demo.py) | All 13 operator Lyapunov bounds, energy class taxonomy, U2 net-contractivity proof, spectral gap, self-sustaining dynamics/autopoiesis |
-
-### Key Source Modules
-
-- `src/tnfr/physics/integrity.py` — Structural integrity monitor (13/13 operator postconditions)
-- `src/tnfr/physics/conservation.py` — Energy functional (Lyapunov candidate)
-- `src/tnfr/physics/phase_transition.py` — Phase transition detection
-- `src/tnfr/operators/lifecycle.py` — Node lifecycle management
-
----
+| [29_lyapunov_stability_demo.py](../examples/02_physics_regimes/29_lyapunov_stability_demo.py) | Nominal operator-role multipliers, measured energy diagnostics, spectral read-outs, and life telemetry |
+| [161_core_research_trajectory.py](../examples/02_physics_regimes/161_core_research_trajectory.py) | Sampled pure-EPI path, modal limit, common energy budget and two-mesh comparison |
+| [162_hybrid_epi_stability.py](../examples/02_physics_regimes/162_hybrid_epi_stability.py) | Affine amplification absorbed by diffusion, consensus drift, and the infinite-gain local-offset witness |
+| [163_reception_runtime_bridge.py](../examples/02_physics_regimes/163_reception_runtime_bridge.py) | EN ideal-real, represented, runtime-snapshot and pressure-refresh boundary |
+| [164_resonance_runtime_bridge.py](../examples/02_physics_regimes/164_resonance_runtime_bridge.py) | U3-filtered RA identity gate, four realization layers, post-RA flow certificate and switching abstention |
 
 ## Cross-References
 
-- Lyapunov energy in conservation: [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) §8
+- Structural-energy candidate and conservation diagnostics: [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) §8
 - Grammar U2 (convergence): [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
 - Hamiltonian/Lagrangian formulation: [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md)
 - Order parameter $\mathcal{S}$: [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) §3.2

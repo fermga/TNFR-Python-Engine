@@ -1,29 +1,9 @@
-"""Tests for TNFR Conservation-Gauge Unification.
+"""Tests for scoped TNFR conservation/gauge snapshot diagnostics.
 
-Validates the central theoretical result:
-
-    Grammar (U1-U6) → Symmetry (Translation × U(1))
-        → Conservation (H = E, Q) → Gauge (Ψ, A, F) — UNIFIED
-
-All four arise as different projections of the TNFR action functional:
-
-    S_TNFR = Σ_n Δt · Σ_i [½(J_φ² + J_ΔNFR²) − ½(Φ_s² + |∇φ|² + K_φ²)]
-
-Tests verify:
- 1.  Grammar symmetry mapping covers all 6 rules
- 2.  Action-energy identity: H_variational ≡ E_conservation (rel_err < 1e-10)
- 3.  Noether-gauge decomposition: Q, E, S_YM, S_matter are finite
- 4.  Gauge-conservation coupling: energy IS gauge-invariant, charge is NOT
- 5.  Symplectic-gauge compatibility: ω preserved under U(1) rotation
- 6.  Full unification pipeline produces coherent result
- 7.  Multi-topology validation (WS, BA, Grid)
- 8.  Conjugate pair structure: geometric (K_φ, J_φ) + potential (Φ_s, J_ΔNFR)
- 9.  Sector energy decomposition: E_geo + E_pot > 0
-10.  Gauge charge sensitivity: ΔQ > 0 under gauge rotation
-11.  Summary dict contains all required keys
-12.  Seed reproducibility
-
-TIER: CORE PHYSICS — unification of conservation and gauge sectors.
+The historical grammar-symmetry rows remain available, but each row states
+whether the supplied evidence can assess the corresponding U-rule. A current
+graph snapshot assesses U3 phase compatibility; U6 needs a reference state;
+U1, U2, U4, and U5 need operator or hierarchy context outside this module.
 """
 
 from __future__ import annotations
@@ -39,6 +19,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
+from tnfr.physics.conservation import capture_conservation_snapshot
 from tnfr.physics.conservation_gauge_unification import (
     ActionEnergyConsistency,
     ConservationGaugeUnification,
@@ -109,7 +90,7 @@ def grid_graph():
 
 
 class TestGrammarSymmetryMapping:
-    """Grammar rules U1-U6 map to symmetries and conservation laws."""
+    """Historical mapping rows expose honest applicability metadata."""
 
     def test_covers_all_six_rules(self, ws_graph):
         """Mapping must return exactly 6 entries, one per U-rule."""
@@ -128,6 +109,8 @@ class TestGrammarSymmetryMapping:
             assert isinstance(m.variational_role, str)
             assert isinstance(m.is_satisfied, bool)
             assert isinstance(m.diagnostic_value, float)
+            assert isinstance(m.is_applicable, bool)
+            assert m.assessment_status in {"pass", "fail", "not_assessed"}
 
     def test_symmetry_types_are_distinct(self, ws_graph):
         """Each grammar rule maps to a different symmetry type."""
@@ -143,25 +126,180 @@ class TestGrammarSymmetryMapping:
         }
         assert set(types) == expected
 
-    def test_u1_boundary_satisfied(self, ws_graph):
-        """U1 (initiation/closure) is satisfied for any existing graph."""
+    def test_history_dependent_rules_are_not_assessed(self, ws_graph):
+        """A snapshot cannot assess U1, U2, U4, or U5."""
         mappings = compute_grammar_symmetry_mapping(ws_graph)
-        u1 = [m for m in mappings if m.rule == "U1"][0]
-        assert u1.is_satisfied
-        assert u1.diagnostic_value == 0.0
+        by_rule = {m.rule: m for m in mappings}
+        for rule in ("U1", "U2", "U4", "U5"):
+            row = by_rule[rule]
+            assert not row.is_applicable
+            assert not row.is_satisfied
+            assert row.assessment_status == "not_assessed"
+            assert row.required_evidence
 
-    def test_u2_stability_finite_energy(self, ws_graph):
-        """U2 is satisfied when energy functional is finite."""
+    def test_only_u3_is_assessed_without_reference(self, ws_graph):
         mappings = compute_grammar_symmetry_mapping(ws_graph)
-        u2 = [m for m in mappings if m.rule == "U2"][0]
-        assert u2.is_satisfied
+        assert [m.rule for m in mappings if m.is_applicable] == ["U3"]
+        assert [m.rule for m in mappings if not m.is_applicable] == [
+            "U1",
+            "U2",
+            "U4",
+            "U5",
+            "U6",
+        ]
 
-    def test_u6_confinement_check(self, ws_graph):
-        """U6 checks structural potential confinement < φ."""
+    def test_u3_is_unassessed_when_edge_phase_is_missing(self):
+        graph = nx.path_graph(2)
+        inject_defaults(graph)
+        u3 = next(
+            m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3"
+        )
+        assert not u3.is_applicable
+        assert not u3.is_satisfied
+        assert u3.assessment_status == "not_assessed"
+        assert "finite phase" in u3.required_evidence
+
+    @pytest.mark.parametrize(
+        "bad_phase", [None, "0.1", float("nan"), 10**1000]
+    )
+    def test_u3_is_unassessed_when_edge_phase_is_invalid(self, bad_phase):
+        graph = nx.path_graph(2)
+        inject_defaults(graph)
+        graph.nodes[0]["phase"] = bad_phase
+        graph.nodes[1]["phase"] = 0.0
+        u3 = next(
+            m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3"
+        )
+        assert not u3.is_applicable
+        assert u3.assessment_status == "not_assessed"
+
+    @pytest.mark.parametrize(
+        "bad_gate", [True, -0.1, float("inf"), "0.2", 10**1000]
+    )
+    def test_u3_is_unassessed_when_phase_gate_is_invalid(self, bad_gate):
+        graph = nx.path_graph(2)
+        inject_defaults(graph)
+        graph.nodes[0]["phase"] = 0.0
+        graph.nodes[1]["phase"] = 0.1
+        graph.graph["delta_phi_max"] = bad_gate
+        u3 = next(
+            m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3"
+        )
+        assert not u3.is_applicable
+        assert "delta_phi_max" in u3.required_evidence
+
+    def test_u3_reports_phase_failure_from_current_edges(self):
+        graph = nx.Graph()
+        graph.add_edge(0, 1)
+        inject_defaults(graph)
+        graph.nodes[0]["phase"] = 0.0
+        graph.nodes[1]["phase"] = math.pi
+        graph.graph["delta_phi_max"] = math.pi / 4
+        u3 = next(
+            m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3"
+        )
+        assert u3.is_applicable
+        assert not u3.is_satisfied
+        assert u3.assessment_status == "fail"
+        assert u3.diagnostic_value == pytest.approx(3 * math.pi / 4)
+
+    def test_u3_wraps_arbitrary_phase_representatives(self):
+        graph = nx.Graph()
+        graph.add_edge(0, 1)
+        inject_defaults(graph)
+        graph.nodes[0]["phase"] = 0.0
+        graph.nodes[1]["phase"] = 4 * math.pi + 0.1
+        graph.graph["delta_phi_max"] = 0.2
+        u3 = next(
+            m for m in compute_grammar_symmetry_mapping(graph) if m.rule == "U3"
+        )
+        assert u3.is_satisfied
+        assert u3.diagnostic_value == 0.0
+
+    def test_u6_requires_reference_state(self, ws_graph):
         mappings = compute_grammar_symmetry_mapping(ws_graph)
-        u6 = [m for m in mappings if m.rule == "U6"][0]
-        # Well-initialised graph should have confined Φ_s
-        assert isinstance(u6.is_satisfied, bool)
+        u6 = next(m for m in mappings if m.rule == "U6")
+        assert not u6.is_applicable
+        assert not u6.is_satisfied
+        assert u6.assessment_status == "not_assessed"
+        assert "reference" in u6.required_evidence
+
+    def test_u6_is_unassessed_when_required_dnfr_is_missing(self, ws_graph):
+        reference = ws_graph.copy()
+        ws_graph.nodes[next(iter(ws_graph))].pop("delta_nfr")
+        u6 = next(
+            m
+            for m in compute_grammar_symmetry_mapping(
+                ws_graph, reference_graph=reference
+            )
+            if m.rule == "U6"
+        )
+        assert not u6.is_applicable
+        assert u6.assessment_status == "not_assessed"
+        assert "delta_nfr" in u6.required_evidence
+
+    def test_u6_uses_reference_graph_for_potential_drift(self, ws_graph):
+        reference = ws_graph.copy()
+        unchanged = next(
+            m
+            for m in compute_grammar_symmetry_mapping(
+                ws_graph, reference_graph=reference
+            )
+            if m.rule == "U6"
+        )
+        assert unchanged.is_applicable
+        assert unchanged.is_satisfied
+        assert unchanged.assessment_status == "pass"
+        assert unchanged.diagnostic_value == pytest.approx(0.0)
+
+        for node in ws_graph:
+            ws_graph.nodes[node]["delta_nfr"] += 10.0
+        drifted = next(
+            m
+            for m in compute_grammar_symmetry_mapping(
+                ws_graph, reference_graph=reference
+            )
+            if m.rule == "U6"
+        )
+        assert drifted.is_applicable
+        assert not drifted.is_satisfied
+        assert drifted.assessment_status == "fail"
+        assert drifted.diagnostic_value > math.pi / 2
+
+    def test_u6_accepts_reference_snapshot(self, ws_graph):
+        reference = capture_conservation_snapshot(ws_graph)
+        u6 = next(
+            m
+            for m in compute_grammar_symmetry_mapping(
+                ws_graph, reference_snapshot=reference
+            )
+            if m.rule == "U6"
+        )
+        assert u6.is_applicable
+        assert u6.is_satisfied
+        assert u6.diagnostic_value == pytest.approx(0.0)
+
+    def test_u6_rejects_ambiguous_reference_sources(self, ws_graph):
+        snapshot = capture_conservation_snapshot(ws_graph)
+        with pytest.raises(ValueError, match="at most one"):
+            compute_grammar_symmetry_mapping(
+                ws_graph,
+                reference_graph=ws_graph.copy(),
+                reference_snapshot=snapshot,
+            )
+
+    def test_u6_node_mismatch_is_not_assessed(self, ws_graph):
+        reference = ws_graph.copy()
+        reference.remove_node(next(iter(reference)))
+        u6 = next(
+            m
+            for m in compute_grammar_symmetry_mapping(
+                ws_graph, reference_graph=reference
+            )
+            if m.rule == "U6"
+        )
+        assert not u6.is_applicable
+        assert u6.assessment_status == "not_assessed"
 
     def test_diagnostic_values_nonnegative(self, ws_graph):
         """All diagnostic values are ≥ 0."""
@@ -225,7 +363,7 @@ class TestActionEnergyConsistency:
 
 
 class TestNoetherGaugeDecomposition:
-    """Symmetry decomposes into external (Noether) and internal (gauge) sectors."""
+    """Legacy fields expose accurately scoped finite snapshot aliases."""
 
     def test_returns_correct_type(self, ws_graph):
         result = compute_noether_gauge_decomposition(ws_graph)
@@ -248,12 +386,19 @@ class TestNoetherGaugeDecomposition:
         assert np.isfinite(result.noether_charge)
 
     def test_yang_mills_nonnegative(self, ws_graph):
-        """S_YM ≥ 0 (gauge field action is positive semi-definite)."""
+        """The squared cycle-closure penalty is nonnegative."""
         result = compute_noether_gauge_decomposition(ws_graph)
         assert result.yang_mills_action >= -1e-12
 
+    def test_legacy_gauge_names_have_accurate_snapshot_aliases(self, ws_graph):
+        result = compute_noether_gauge_decomposition(ws_graph)
+        assert result.mean_cycle_closure_residual == result.mean_gauge_curvature
+        assert result.squared_cycle_closure_penalty == result.yang_mills_action
+        assert result.covariant_difference_energy == result.matter_action
+        assert result.energy_density_uniformity_score == result.decomposition_quality
+
     def test_matter_action_nonnegative(self, ws_graph):
-        """S_matter = Σ|DΨ|² ≥ 0."""
+        """The covariant-difference energy Σ|DΨ|² is nonnegative."""
         result = compute_noether_gauge_decomposition(ws_graph)
         assert result.matter_action >= -1e-12
 
@@ -281,7 +426,7 @@ class TestNoetherGaugeDecomposition:
 
 
 class TestGaugeConservationCoupling:
-    """Quantifies the K_φ-mediated coupling between gauge and conservation."""
+    """Quantifies separate constant/local coordinate-rotation diagnostics."""
 
     def test_returns_correct_type(self, ws_graph):
         result = compute_gauge_conservation_coupling(ws_graph)
@@ -310,7 +455,7 @@ class TestGaugeConservationCoupling:
         assert 0.0 <= result.sector_coupling_parameter <= 1.0
 
     def test_shared_field_fraction_nonnegative(self, ws_graph):
-        """K_φ fraction of ρ is well-defined and non-negative.
+        """The legacy K_φ/ρ ratio is well-defined and non-negative.
 
         Note: fraction can exceed 1 when K_φ and Φ_s have opposite signs
         (|K_φ| > |Φ_s + K_φ|), so we only check non-negativity.
@@ -318,9 +463,10 @@ class TestGaugeConservationCoupling:
         result = compute_gauge_conservation_coupling(ws_graph)
         assert result.shared_field_fraction >= 0.0
         assert np.isfinite(result.shared_field_fraction)
+        assert result.shared_field_ratio == result.shared_field_fraction
 
     def test_ward_gauge_consistency_meaningful(self, ws_graph):
-        """Ward-gauge consistency value is > 0."""
+        """The legacy Ward-named field carries the local covariance score."""
         result = compute_gauge_conservation_coupling(ws_graph)
         assert result.ward_gauge_consistency > 0.0
 
@@ -339,6 +485,10 @@ class TestGaugeConservationCoupling:
         assert r1.geometric_sector_energy == r2.geometric_sector_energy
         assert r1.energy_gauge_invariance == r2.energy_gauge_invariance
 
+    def test_nonfinite_global_rotation_angle_is_rejected(self, ws_graph):
+        with pytest.raises(ValueError, match="gauge_angle must be finite"):
+            compute_gauge_conservation_coupling(ws_graph, gauge_angle=float("nan"))
+
 
 # ---------------------------------------------------------------------------
 # 5. Symplectic-Gauge Compatibility
@@ -346,19 +496,19 @@ class TestGaugeConservationCoupling:
 
 
 class TestSymplecticGaugeCompatibility:
-    """Symplectic form ω is preserved under gauge rotations (det R = 1)."""
+    """The auxiliary two-form is preserved by a global oscillator rotation."""
 
     def test_returns_correct_type(self, ws_graph):
         result = verify_symplectic_gauge_compatibility(ws_graph)
         assert isinstance(result, SymplecticGaugeCompatibility)
 
     def test_is_compatible(self, ws_graph):
-        """Symplectic form must be gauge-compatible (area-preserving)."""
+        """The declared rotation is area-preserving."""
         result = verify_symplectic_gauge_compatibility(ws_graph)
         assert result.is_compatible
 
     def test_volumes_nonnegative(self, ws_graph):
-        """Phase space volumes ≥ 0."""
+        """Legacy snapshot-product statistics are nonnegative."""
         result = verify_symplectic_gauge_compatibility(ws_graph)
         assert result.geometric_volume >= 0.0
         assert result.potential_volume >= 0.0
@@ -376,16 +526,23 @@ class TestSymplecticGaugeCompatibility:
         )
 
     def test_poisson_brackets_finite(self, ws_graph):
-        """Poisson bracket estimates are finite."""
+        """Legacy normalized covariance statistics are finite."""
         result = verify_symplectic_gauge_compatibility(ws_graph)
         assert np.isfinite(result.geometric_poisson)
         assert np.isfinite(result.potential_poisson)
+        assert result.geometric_snapshot_product == result.geometric_volume
+        assert result.potential_snapshot_product == result.potential_volume
+        assert result.geometric_normalized_covariance == result.geometric_poisson
+        assert result.potential_normalized_covariance == result.potential_poisson
 
     def test_gauge_volume_invariance_small(self, ws_graph):
-        """Gauge volume deviation is a diagnostic, should be small for
-        the 2-form (which is EXACTLY preserved)."""
+        """The global oscillator rotation preserves the auxiliary two-form."""
         result = verify_symplectic_gauge_compatibility(ws_graph)
-        assert np.isfinite(result.gauge_volume_invariance)
+        assert result.gauge_volume_invariance < 1e-12
+        assert result.is_compatible
+        assert result.transformation_scope == "global_constant_oscillator_rotation"
+        assert result.local_gauge_assessed is False
+        assert np.isfinite(result.snapshot_product_change)
 
     def test_multi_topology(self, ws_graph, ba_graph, grid_graph):
         """Compatible across topologies."""
@@ -395,12 +552,12 @@ class TestSymplecticGaugeCompatibility:
 
 
 # ---------------------------------------------------------------------------
-# 6. Full Unification
+# 6. Aggregate diagnostic pipeline
 # ---------------------------------------------------------------------------
 
 
 class TestConservationGaugeUnification:
-    """Complete pipeline: Grammar → Symmetry → Conservation → Gauge."""
+    """Aggregate result retains its legacy API with explicit scope."""
 
     def test_returns_correct_type(self, ws_graph):
         result = run_conservation_gauge_unification(ws_graph)
@@ -432,7 +589,7 @@ class TestConservationGaugeUnification:
         assert result.symplectic_gauge.is_compatible
 
     def test_quality_in_range(self, ws_graph):
-        """Unification quality ∈ [0, 1]."""
+        """Aggregate diagnostic quality lies in [0, 1]."""
         result = run_conservation_gauge_unification(ws_graph)
         assert 0.0 <= result.unification_quality <= 1.0
 
@@ -441,6 +598,10 @@ class TestConservationGaugeUnification:
         result = run_conservation_gauge_unification(ws_graph)
         required = {
             "grammar_rules_satisfied",
+            "grammar_rules_assessed",
+            "grammar_rules_unassessed",
+            "grammar_validation_applicable",
+            "grammar_validated",
             "H_variational",
             "E_conservation",
             "H_E_relative_error",
@@ -448,8 +609,13 @@ class TestConservationGaugeUnification:
             "V_potential",
             "kinetic_fraction",
             "noether_charge_Q",
+            "historical_structural_charge_snapshot",
             "gauge_invariant_energy",
             "yang_mills_action",
+            "mean_cycle_closure_residual",
+            "squared_cycle_closure_penalty",
+            "covariant_difference_energy",
+            "energy_density_uniformity_score",
             "mean_psi_magnitude",
             "geometric_sector_energy",
             "potential_sector_energy",
@@ -457,12 +623,19 @@ class TestConservationGaugeUnification:
             "shared_K_phi_fraction",
             "gauge_charge_sensitivity",
             "energy_gauge_invariance_dev",
+            "local_pure_gauge_invariance_score",
             "symplectic_volume_geo",
             "symplectic_volume_pot",
             "poisson_bracket_geo",
             "poisson_bracket_pot",
+            "global_oscillator_symplectic_residual",
+            "global_oscillator_snapshot_product_change",
+            "global_oscillator_scope",
+            "local_gauge_assessed_by_symplectic_check",
             "unification_quality",
             "is_unified",
+            "aggregate_diagnostic_passed",
+            "diagnostic_scope",
             "narrative",
         }
         assert required <= set(result.summary.keys())
@@ -472,6 +645,25 @@ class TestConservationGaugeUnification:
         result = run_conservation_gauge_unification(ws_graph)
         assert isinstance(result.summary["narrative"], str)
         assert len(result.summary["narrative"]) > 10
+        assert "grammar was not validated" in result.summary["narrative"]
+
+    def test_legacy_is_unified_is_only_aggregate_alias(self, ws_graph):
+        result = run_conservation_gauge_unification(ws_graph)
+        assert result.is_unified == result.aggregate_diagnostic_passed
+        assert result.summary["is_unified"] == result.aggregate_diagnostic_passed
+        assert result.grammar_validated is False
+        assert result.summary["grammar_validated"] is False
+        assert result.assessed_grammar_rules == ("U3",)
+        assert result.unassessed_grammar_rules == ("U1", "U2", "U4", "U5", "U6")
+
+    def test_reference_extends_coverage_only_to_u6(self, ws_graph):
+        result = run_conservation_gauge_unification(
+            ws_graph, reference_graph=ws_graph.copy()
+        )
+        assert result.assessed_grammar_rules == ("U3", "U6")
+        assert result.unassessed_grammar_rules == ("U1", "U2", "U4", "U5")
+        assert result.diagnostic_scope == "two_snapshot_aggregate_with_u6_reference"
+        assert result.grammar_validated is False
 
     def test_seed_reproducibility(self, ws_graph):
         """Same gauge_seed → identical results."""
@@ -494,16 +686,16 @@ class TestConservationGaugeUnification:
 
 
 # ---------------------------------------------------------------------------
-# 7. Coherent Phase Graph (Phase-aligned — should give full unification)
+# 7. Coherent Phase Graph
 # ---------------------------------------------------------------------------
 
 
 class TestCoherentGraph:
-    """A graph with aligned phases should pass all checks including U3."""
+    """A graph with aligned phases should pass the applicable U3 check."""
 
     @pytest.fixture
     def coherent_graph(self):
-        """Graph with closely aligned phases (U3, U6 satisfied)."""
+        """Graph with closely aligned phases for the U3 snapshot check."""
         rng = np.random.default_rng(42)
         G = nx.watts_strogatz_graph(20, 4, 0.3, seed=42)
         inject_defaults(G)
@@ -517,18 +709,17 @@ class TestCoherentGraph:
         G.graph["delta_phi_max"] = math.pi / 4
         return G
 
-    def test_all_grammar_rules_satisfied(self, coherent_graph):
-        """Coherent graph should satisfy all grammar rules."""
+    def test_only_u3_is_assessed_and_satisfied(self, coherent_graph):
         mappings = compute_grammar_symmetry_mapping(coherent_graph)
-        for m in mappings:
-            assert (
-                m.is_satisfied
-            ), f"Rule {m.rule} not satisfied: diag={m.diagnostic_value}"
+        assessed = [m for m in mappings if m.is_applicable]
+        assert [m.rule for m in assessed] == ["U3"]
+        assert assessed[0].is_satisfied
 
-    def test_full_unification(self, coherent_graph):
-        """Coherent graph should achieve full unification."""
+    def test_aggregate_diagnostics_pass(self, coherent_graph):
         result = run_conservation_gauge_unification(coherent_graph)
-        assert result.is_unified
+        assert result.aggregate_diagnostic_passed
+        assert result.is_unified == result.aggregate_diagnostic_passed
+        assert not result.grammar_validated
         assert result.unification_quality > 0.8
 
     def test_high_decomposition_quality(self, coherent_graph):
@@ -536,10 +727,11 @@ class TestCoherentGraph:
         result = compute_noether_gauge_decomposition(coherent_graph)
         assert result.decomposition_quality > 0.5
 
-    def test_narrative_unified(self, coherent_graph):
-        """Narrative should indicate UNIFIED."""
+    def test_narrative_states_grammar_scope(self, coherent_graph):
         result = run_conservation_gauge_unification(coherent_graph)
-        assert "UNIFIED" in result.summary["narrative"]
+        assert result.summary["narrative"] == (
+            "Aggregate finite diagnostics passed; grammar was not validated"
+        )
 
 
 # ---------------------------------------------------------------------------

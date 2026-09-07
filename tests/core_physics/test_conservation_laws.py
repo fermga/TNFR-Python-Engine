@@ -1,7 +1,7 @@
-"""Test Conservation Laws — TNFR Structural Continuity Theorem.
+"""Tests for TNFR structural-balance and energy diagnostics.
 
-Validates the Noether-like conservation law:
-    ∂ρ/∂t + div(J) ≈ 0  when grammar U1-U6 is satisfied
+The suite verifies finite-snapshot computations and their scope metadata. It
+does not infer grammar U1-U6 from residuals or charge drift.
 
 where ρ = Φ_s + K_φ (structural charge) and J = (J_φ, J_ΔNFR) (current).
 
@@ -19,6 +19,7 @@ import pytest
 from tnfr.constants import inject_defaults
 from tnfr.constants.canonical import PI
 from tnfr.physics.conservation import (
+    ConservationAlertLevels,
     ConservationBalance,
     ConservationSnapshot,
     ConservationTimeSeries,
@@ -226,6 +227,14 @@ class TestConservationBalance:
         assert abs(balance.total_charge_before - expected_q) < 1e-12
         assert abs(balance.total_charge_after - expected_q) < 1e-12
 
+    def test_balance_exposes_non_grammar_scope(self, ws_graph):
+        snap = capture_conservation_snapshot(ws_graph)
+        balance = verify_conservation_balance(snap, snap)
+        assert balance.diagnostic_scope == "two_snapshot_structural_balance"
+        assert balance.grammar_validation_applicable is False
+        assert balance.assessed_grammar_rules == ()
+        assert balance.balance_alert_index == balance.grammar_violation_index
+
 
 # ===========================================================================
 # Test: Noether charge
@@ -278,12 +287,21 @@ class TestEnergyFunctional:
 
 
 class TestGrammarBounds:
-    """Test theoretical conservation bounds from grammar constraints."""
+    """Test backward-compatible legacy pi-scaled alert levels."""
 
     def test_bounds_contain_phi_confinement(self, ws_graph):
         bounds = compute_grammar_conservation_bounds(ws_graph)
-        # U6 Φ_s confinement bound is π-derived (U6_STRUCTURAL_POTENTIAL_LIMIT = π/2)
+        # Legacy key retained; the value is the U6 drift alert scale.
         assert bounds["phi_s_confinement"] == pytest.approx(PI / 2, rel=1e-10)
+
+    def test_alert_metadata_rejects_bound_and_grammar_semantics(self, ws_graph):
+        levels = compute_grammar_conservation_bounds(ws_graph)
+        assert isinstance(levels, ConservationAlertLevels)
+        assert isinstance(levels, dict)
+        assert levels.metadata["thresholds_are_proven_bounds"] is False
+        assert levels.metadata["grammar_validation_applicable"] is False
+        assert levels.metadata["applicable_grammar_rules"] == ()
+        assert levels.metadata["u6_drift_requires_reference"] is True
 
     def test_bounds_are_positive(self, ws_graph):
         bounds = compute_grammar_conservation_bounds(ws_graph)
@@ -292,7 +310,7 @@ class TestGrammarBounds:
 
     def test_max_charge_equals_phi_plus_pi(self, ws_graph):
         bounds = compute_grammar_conservation_bounds(ws_graph)
-        # max|ρ| = Φ_s confinement (π/2) + K_φ bound (π) = 3π/2
+        # Historical composite alert retains its numerical API.
         expected = PI / 2 + PI
         assert bounds["max_charge_density"] == pytest.approx(expected, rel=1e-10)
 
@@ -310,6 +328,11 @@ class TestConservationTracker:
         snap = tracker.record(t=0.0)
         assert isinstance(snap, ConservationSnapshot)
         assert tracker.latest_balance is None  # Only one snapshot
+        report = tracker.report()
+        assert report.mean_quality == 0.0
+        assert report.sampled_mean_quality == 0.0
+        assert report.mean_quality_including_baseline == 1.0
+        assert not report.aggregate_balance_within_alert
 
     def test_tracker_two_records(self, ws_graph):
         tracker = ConservationTracker(ws_graph)
@@ -339,6 +362,12 @@ class TestConservationTracker:
         assert len(report.times) == 5
         assert len(report.total_charge) == 5
         assert isinstance(report.mean_quality, float)
+        assert report.mean_quality == pytest.approx(
+            np.mean(report.conservation_quality[1:])
+        )
+        assert report.mean_quality_including_baseline == pytest.approx(
+            np.mean(report.conservation_quality)
+        )
 
     def test_near_static_evolution_is_conserved(self, ws_graph):
         """Near-static evolution should achieve high conservation quality."""
@@ -412,7 +441,7 @@ class TestSectorCoupling:
 
 
 class TestGrammarViolationDetection:
-    """Test detection of grammar violations via conservation analysis."""
+    """Test that the legacy entry point reports alerts, not grammar verdicts."""
 
     def test_no_violations_on_static_state(self, ws_graph):
         snap = capture_conservation_snapshot(ws_graph)
@@ -429,8 +458,19 @@ class TestGrammarViolationDetection:
         balance = verify_conservation_balance(before, after)
         bounds = compute_grammar_conservation_bounds(ws_graph)
         result = detect_grammar_violations_from_conservation(balance, bounds)
-        # Extreme perturbation should be detected
+        # Extreme perturbation produces a balance alert, never an inferred
+        # U2/U3/U6 classification.
         assert result["severity"] > 0.0
+        assert result["alerts_detected"]
+        assert result["alert_count"] > 0
+        assert not result["violations_detected"]
+        assert result["violation_types"] == []
+        assert result["nodes_violating"] == []
+        assert result["grammar_validation_applicable"] is False
+        assert result["grammar_validated"] is False
+        assert result["grammar_rules_assessed"] == ()
+        assert result["thresholds_are_proven_bounds"] is False
+        assert all(not label.startswith("U") for label in result["alert_types"])
 
 
 # ===========================================================================
@@ -490,6 +530,28 @@ class TestWardIdentity:
         assert math.isfinite(ward.delta_charge)
         assert math.isfinite(ward.delta_energy)
 
+    def test_ward_mean_source_uses_rate_and_trapezoidal_divergence(self, ws_graph):
+        before = capture_conservation_snapshot(ws_graph)
+        for node in ws_graph.nodes():
+            ws_graph.nodes[node]["delta_nfr"] += 0.2
+        after = capture_conservation_snapshot(ws_graph)
+        dt = 0.25
+        ward = compute_ward_identity(before, after, "observed_step", dt=dt)
+
+        expected = ward.delta_charge / (len(ws_graph) * dt) + np.mean(
+            [
+                0.5 * (before.divergence[node] + after.divergence[node])
+                for node in ws_graph
+            ]
+        )
+        assert ward.mean_source == pytest.approx(expected)
+
+    @pytest.mark.parametrize("threshold", [0.0, -1.0, math.nan, math.inf])
+    def test_ward_rejects_invalid_classification_threshold(self, ws_graph, threshold):
+        snap = capture_conservation_snapshot(ws_graph)
+        with pytest.raises(ValueError, match="threshold"):
+            compute_ward_identity(snap, snap, "SHA", threshold=threshold)
+
     def test_ward_identity_energy_character(self, ws_graph):
         """Energy character should be one of dissipative/injective/neutral."""
         snap = capture_conservation_snapshot(ws_graph)
@@ -514,6 +576,24 @@ class TestWardIdentity:
         assert "total_energy_change" in result
         assert "sequence_conserved" in result
         assert isinstance(result["operator_summary"], dict)
+        assert (
+            result["sequence_conserved"]
+            == result["aggregate_balance_within_alert"]
+        )
+        assert result["thresholds_are_proven_bounds"] is False
+        assert result["grammar_validation_applicable"] is False
+        assert result["grammar_validated"] is False
+
+    def test_sequence_ward_accepts_explicit_alert_level(self, ws_graph):
+        snap = capture_conservation_snapshot(ws_graph)
+        ward = compute_ward_identity(snap, snap, operator_name="observed_step")
+        result = verify_sequence_ward_identity([ward], alert_level=0.25)
+        assert result["alert_threshold"] == pytest.approx(0.25)
+
+    @pytest.mark.parametrize("alert_level", [0.0, -1.0, math.nan, math.inf])
+    def test_sequence_ward_rejects_invalid_alert_level(self, alert_level):
+        with pytest.raises(ValueError, match="alert_level"):
+            verify_sequence_ward_identity([], alert_level=alert_level)
 
 
 # ===========================================================================
@@ -621,12 +701,10 @@ class TestSpectralConservation:
 
 
 class TestDissipativeOperatorSequences:
-    """Test that destabilizer-stabilizer sequences maintain U2 convergence.
+    """Check finite diagnostics for sequences carrying U2 role labels.
 
-    Physics: Grammar U2 requires ∫νf·ΔNFR dt to converge. Destabilizers
-    (OZ, VAL) increase |ΔNFR| creating convergence "debt"; stabilizers
-    (IL, THOL) decrease |ΔNFR| paying it back. These tests verify the
-    full feedback loop at the conservation level.
+    The labels organize grammar debt; they do not prove convergence of the
+    nodal integral or fix the sign of the structural-energy candidate.
     """
 
     @staticmethod
@@ -640,7 +718,7 @@ class TestDissipativeOperatorSequences:
         return G
 
     def test_dissonance_then_coherence_lyapunov_stable(self):
-        """OZ → IL sequence should be Lyapunov stable (dE/dt ≤ 0 net)."""
+        """OZ → IL returns a finite energy-change diagnostic."""
         from tnfr.operators.definitions import Coherence, Dissonance
 
         G = self._make_graph()
@@ -701,7 +779,7 @@ class TestDissipativeOperatorSequences:
         ), f"Mean conservation quality {report.mean_quality:.4f} is zero"
 
     def test_destabilizer_debt_repaid_by_stabilizers(self):
-        """3×OZ + 3×IL: stabilizers should reduce Lyapunov energy."""
+        """3×OZ + 3×IL stays within this fixture's broad finite-energy alert."""
         from tnfr.operators.definitions import Coherence, Dissonance
 
         G = self._make_graph()
@@ -722,11 +800,9 @@ class TestDissipativeOperatorSequences:
         lyap_oz = compute_lyapunov_derivative(snap_initial, snap_post_oz)
         lyap_il = compute_lyapunov_derivative(snap_post_oz, snap_post_il)
 
-        # OZ should inject energy or maintain it (not strongly stable)
-        # IL should dissipate energy (dE/dt ≤ 0 or near zero)
+        # ``dissipation`` is the nonnegative negative-part read-out by definition.
         assert lyap_il.dissipation >= 0.0
-        # After IL, energy should be ≤ post-OZ peak (or close)
-        # Allow tolerance for stochastic operator effects
+        # Fixture-level alert only; no universal IL sign follows from U2.
         assert lyap_il.energy_after <= lyap_oz.energy_after + 1.0, (
             f"IL did not reduce energy: post-OZ={lyap_oz.energy_after:.4f}, "
             f"post-IL={lyap_il.energy_after:.4f}"
@@ -734,7 +810,7 @@ class TestDissipativeOperatorSequences:
 
     @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
     def test_oz_il_stable_across_topologies(self, topo):
-        """OZ → IL Lyapunov stability should hold across topologies."""
+        """OZ → IL energy diagnostics stay finite across sampled topologies."""
         from tnfr.operators.definitions import Coherence, Dissonance
 
         n = 16 if topo == "grid" else 25
@@ -805,7 +881,7 @@ class TestDissonancePostconditionConservation:
             ), f"{topo} node {node}: network |ΔNFR| {total_before:.6f} → {total_after:.6f}"
 
     def test_dissonance_energy_injection(self):
-        """OZ should inject energy (E_after ≥ E_before) or be neutral."""
+        """OZ stays within this fixture's broad energy-change alert."""
         from tnfr.operators.definitions import Dissonance
 
         G = self._make_graph()
@@ -823,11 +899,10 @@ class TestDissonancePostconditionConservation:
 
 
 class TestDissipationGrammarViolationCorrelation:
-    """Test that conservation diagnostics detect grammar violations.
+    """Test legacy residual labels as balance diagnostics.
 
-    Physics: The source term S = ∂ρ/∂t + div(J) vanishes under grammar
-    compliance. High |S| (large residuals) should correlate with grammar
-    violation severity from detect_grammar_violations_from_conservation.
+    The source residual need not vanish for a grammar-valid history, and no
+    grammar sequence can be reconstructed from two structural snapshots.
     """
 
     @staticmethod

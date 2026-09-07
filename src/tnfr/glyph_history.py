@@ -25,6 +25,8 @@ __all__ = (
     "recent_glyph",
     "ensure_history",
     "current_step_idx",
+    "current_operator_step",
+    "next_operator_step",
     "append_metric",
     "count_glyphs",
 )
@@ -64,6 +66,28 @@ def _ensure_history(
         nd["glyph_history"] = hist
     return v_window, hist
 
+_OPERATOR_STEP_KEY = "_operator_step"
+
+
+def current_operator_step(nd: Mapping[str, Any]) -> int:
+    """Return a monotonic operator index independent of bounded trace length."""
+
+    history = nd.get("glyph_history", ())
+    try:
+        retained = len(history)
+    except TypeError:
+        retained = 0
+    raw = nd.get(_OPERATOR_STEP_KEY)
+    if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
+        return max(raw, retained)
+    return retained
+
+
+def next_operator_step(nd: Mapping[str, Any]) -> int:
+    """Return the index that the next canonical glyph will receive."""
+
+    return current_operator_step(nd) + 1
+
 
 def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``.
@@ -82,7 +106,9 @@ def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
     debt = node_debt(nd)
     prior_coherence = node_has_prior_coherence(nd)
     _, hist = _ensure_history(nd, window, create_zero=True)
+    step = current_operator_step(nd) + 1
     hist.append(str(glyph))
+    nd[_OPERATOR_STEP_KEY] = step
     nd[U2_DEBT_KEY] = advance_debt(debt, glyph)
     nd[PRIOR_COHERENCE_KEY] = advance_prior_coherence(prior_coherence, glyph)
 

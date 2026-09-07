@@ -1,24 +1,23 @@
-"""Example 33: Complex Field Unification (Psi = K_phi + i*J_phi).
+"""Example 33: finite diagnostics for Psi = K_phi + i*J_phi.
 
-Demonstrates the fundamental discovery that phase curvature K_phi and
-phase current J_phi are dual aspects of a single complex geometric field:
+Demonstrates the implemented algebraic pairing of phase curvature K_phi and
+phase current J_phi as a complex geometric field:
 
   Psi = K_phi + i * J_phi
 
-Key results shown:
-  1. K_phi-J_phi anticorrelation: r ~ -0.854 to -0.997 across topologies
+Measurements shown:
+  1. K_phi-J_phi correlation on five seeded topology/size fixtures
   2. Complex field Psi: magnitude, phase, polar decomposition
   3. Emergent derived fields: chirality (chi), symmetry breaking (S),
      coherence coupling (C)
-  4. Tensor invariants: energy density (E), topological charge (Q)
+  4. Named tensor diagnostics: energy density (E), topological charge (Q)
   5. Energy decomposition: T (kinetic/transport) + V (potential/geometric)
   6. Action density and cross-sector coupling
 
-Physics basis:
-  The near-perfect anticorrelation r(K_phi, J_phi) implies that
-  increasing phase curvature (confinement) suppresses phase current
-  (transport). Static confinement and dynamic transport are dual
-  aspects — they trade off within the unified complex field Psi.
+Scope:
+  A negative sample correlation does not imply that increasing curvature
+  causally suppresses current, nor does it prove a topology-independent law.
+  Psi is well-defined algebraically regardless of the measured correlation.
   See: theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md ss 2-3
   See: theory/STRUCTURAL_CONSERVATION_THEOREM.md ss 4-6
 """
@@ -43,7 +42,6 @@ from tnfr.physics.fields import (
     compute_phase_gradient,
     compute_structural_potential,
     compute_tensor_invariants,
-    estimate_coherence_length,
 )
 from tnfr.physics.unified import (
     compute_chirality_field,
@@ -83,7 +81,11 @@ def _build_graph(n: int, topology: str, seed: int = 42) -> nx.Graph:
 
 
 def _evolve_step(G: nx.Graph, dt: float = 0.05) -> None:
-    """One diffusion step: phase alignment + DELTA_NFR smoothing."""
+    """Apply an auxiliary phase-alignment and DELTA_NFR-smoothing step.
+
+    This deliberately specified numerical rule is not a canonical operator
+    word and carries no U1-U6 compliance claim.
+    """
     for n in G.nodes():
         neighbors = list(G.neighbors(n))
         if neighbors:
@@ -100,7 +102,7 @@ def _evolve_step(G: nx.Graph, dt: float = 0.05) -> None:
 
 
 def demo_anticorrelation() -> None:
-    """Verify strong anticorrelation between K_phi and J_phi."""
+    """Measure K_phi/J_phi correlation on five deterministic fixtures."""
     print("=" * 65)
     print("  1. K_phi - J_phi ANTICORRELATION across Topologies")
     print("=" * 65)
@@ -113,7 +115,7 @@ def demo_anticorrelation() -> None:
         ("Complete (N=15)", "Complete", 15),
     ]
 
-    print(f"\n  Expected: r(K_phi, J_phi) in [-0.997, -0.854]")
+    print("\n  Scope: one seed and one size per topology; no universal interval assumed")
     print(
         f"\n  {'Topology':<20}  {'r(K_phi, J_phi)':>16}  {'Mean |Psi|':>10}  {'Verdict':>10}"
     )
@@ -143,9 +145,10 @@ def demo_anticorrelation() -> None:
         verdict = "STRONG" if corr < -0.7 else ("MODERATE" if corr < -0.3 else "WEAK")
         print(f"  {name:<20}  {corr:16.4f}  {mean_mag:10.4f}  {verdict:>10}")
 
-    print(f"\n  Physical mechanism:")
-    print(f"    Increasing K_phi (confinement) -> suppresses J_phi (transport)")
-    print(f"    They are dual aspects of unified complex field Psi")
+    print("\n  Interpretation:")
+    print("    Negative r is an association in these finite auxiliary trajectories.")
+    print("    It does not identify a causal suppression mechanism.")
+    print("    Psi algebraically pairs K_phi and J_phi independently of r.")
 
 
 # ---------------------------------------------------------------------------
@@ -216,20 +219,20 @@ def demo_emergent_fields() -> None:
     sb_arr = np.array(list(sym_break.values()))
 
     print(f"\n  a) Chirality  chi = |grad_phi|*K_phi - J_phi*J_DELTA_NFR")
-    print(f"     Detects: Structural handedness / broken parity")
+    print("     Interpretation label: structural handedness / parity imbalance")
     print(f"     Mean: {np.mean(chi_arr):.6f}")
     print(f"     Std:  {np.std(chi_arr):.6f}")
-    print(f"     |chi| > 0 signals asymmetry between local and transport sectors")
+    print("     |chi| is reported as a bilinear sector-asymmetry diagnostic")
 
     print(
         f"\n  b) Symmetry Breaking  S = (|grad_phi|^2 - K_phi^2) + (J_phi^2 - J_DELTA_NFR^2)"
     )
-    print(f"     Order parameter for phase transitions")
+    print("     Candidate sector-imbalance diagnostic")
     print(f"     Mean: {np.mean(sb_arr):.6f}  (S ~ 0 = balanced, |S| >> 0 = broken)")
     print(f"     Std:  {np.std(sb_arr):.6f}")
 
     print(f"\n  c) Coherence Coupling  C = Phi_s * |Psi|")
-    print(f"     Multi-scale connector: global potential <-> local geometry")
+    print("     Algebraic product of global potential and local-field magnitude")
     cc_arr = np.array(emergent.get("coherence_coupling", [0.0]))
     if len(cc_arr) > 1:
         print(f"     Mean: {np.mean(cc_arr):.6f}")
@@ -258,7 +261,7 @@ def demo_emergent_fields() -> None:
 def demo_tensor_invariants() -> None:
     """Compute energy density, topological charge, and charge density."""
     print("\n" + "=" * 65)
-    print("  4. TENSOR INVARIANTS — Gauge-Invariant Quantities")
+    print("  4. NAMED TENSOR DIAGNOSTICS")
     print("=" * 65)
 
     topologies = [
@@ -324,11 +327,12 @@ def demo_tensor_invariants() -> None:
     print(f"    Mean A: {np.mean(action):.6f}")
     print(f"    Sum A:  {np.sum(action):.4f}")
 
-    # Topological charge conservation check
+    # Single-snapshot topological-charge diagnostic
     Q_total = np.sum(gp * jp - kp * jd)
     print(f"\n  Topological charge Q = sum(|grad_phi|*J_phi - K_phi*J_DELTA_NFR):")
     print(f"    Q_total = {Q_total:.6f}")
-    print(f"    (Should be approximately conserved under grammar-compliant evolution)")
+    print("    This snapshot does not test conservation; that requires a declared")
+    print("    trajectory and a before/after comparison.")
 
 
 # ---------------------------------------------------------------------------
@@ -373,12 +377,10 @@ def demo_evolution_tracking() -> None:
 
         _evolve_step(G, dt=0.1)
 
-    print(f"\n  Expected behavior:")
-    print(f"    |Psi| decreases as network synchronizes (K_phi, J_phi -> 0)")
-    print(f"    |chi| decreases (symmetry restoration)")
-    print(f"    |S| decreases (sector balance improves)")
-    print(f"    E decreases (Lyapunov stability)")
-    print(f"    Q approximately conserved (topological invariant)")
+    print("\n  Observed in this seeded auxiliary trajectory:")
+    print("    |Psi|, |chi|, |S|, E and |Q| all decrease in the sampled table.")
+    print("    These trends are finite measurements, not grammar-wide invariants,")
+    print("    a Lyapunov proof or a proof of symmetry restoration.")
 
 
 # ---------------------------------------------------------------------------
@@ -389,7 +391,7 @@ def demo_evolution_tracking() -> None:
 def main() -> None:
     print()
     print("*" * 65)
-    print("  TNFR Example 33: Complex Field Unification")
+    print("  TNFR Example 33: Complex Field Construction and Diagnostics")
     print("  Psi = K_phi + i * J_phi")
     print("  Theory: EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md ss 2-3")
     print("*" * 65)
@@ -405,28 +407,28 @@ def main() -> None:
     print("=" * 65)
     print(
         f"""
-  Complex Geometric Field Psi = K_phi + i * J_phi unifies:
+  Complex Geometric Field Psi = K_phi + i * J_phi packages:
     Real part (K_phi):  Static geometric confinement
     Imaginary part (J_phi):  Dynamic transport flow
 
-  Anticorrelation r(K_phi, J_phi) ~ -0.85 to -0.997
-    -> Confinement and transport are dual aspects
+  The table reports a strong negative correlation in five seeded fixtures.
+  It does not establish a universal interval, causality or dynamical duality.
 
   Emergent fields from Psi:
-    Chirality chi:       Structural handedness detector
-    Symmetry Breaking S: Phase transition order parameter
-    Coherence Coupling C: Multi-scale connector (Phi_s * |Psi|)
+    Chirality chi:       named handedness diagnostic
+    Symmetry Breaking S: named sector-imbalance diagnostic
+    Coherence Coupling C: algebraic product Phi_s * |Psi|
 
-  Tensor invariants:
-    Energy density E:    Gauge-invariant total energy
-    Topological charge Q: Conserved under grammar evolution
-    Action density A:    Cross-sector coupling measure
+  Named tensor diagnostics:
+    Energy density E:    candidate structural-energy diagnostic
+    Topological charge Q: trajectory-dependent diagnostic
+    Action density A:    cross-sector contraction diagnostic
 
-  These six downstream fields are not independent: the precise
-  generating structure (example 108) shows they are all generated by
+  The implementation constructs six named downstream quantities from
   the scalar Phi_s and two complex fields Psi = K_phi + i*J_phi and
-  Omega = |grad phi| + i*J_DNFR -- i.e. 6 downstream fields = 5 reals,
-  no information loss.
+  Omega = |grad phi| + i*J_DNFR (see example 108). This construction
+  does not establish invertibility, independence or complete graph-state
+  reconstruction.
 """
     )
 

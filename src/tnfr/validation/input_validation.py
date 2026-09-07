@@ -264,13 +264,18 @@ def validate_dnfr_value(value: Any, field_name: str = "dnfr") -> float:
     return validated
 
 
-def validate_glyph_factors(factors: Any) -> dict:
+def validate_glyph_factors(
+    factors: Any, *, glyph: Glyph | str | None = None
+) -> dict[str, Any]:
     """Validate glyph factors dictionary.
 
     Parameters
     ----------
     factors : Any
-        Value to validate as glyph factors
+        Value to validate as glyph factors.
+    glyph : Glyph or str, optional
+        Operator context. When supplied, only that operator's known factors
+        are validated; extension-owned keys remain untouched.
 
     Returns
     -------
@@ -282,15 +287,15 @@ def validate_glyph_factors(factors: Any) -> dict:
     ValidationError
         If factors is invalid
     """
-    if factors is None:
-        return {}
+    from ..operators.factor_contracts import (
+        GlyphFactorValidationError,
+        validate_glyph_factors as validate_factor_mapping,
+    )
 
-    if not isinstance(factors, dict):
-        raise ValidationError(
-            f"Glyph factors must be a dictionary, got {type(factors).__name__}"
-        )
-
-    return factors
+    try:
+        return validate_factor_mapping(factors, glyph=glyph)
+    except GlyphFactorValidationError as exc:
+        raise ValidationError(str(exc)) from exc
 
 
 def validate_operator_parameters(**params: Any) -> dict:

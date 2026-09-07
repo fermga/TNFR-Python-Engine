@@ -1,7 +1,7 @@
 """Transition (NAV) operator.
 
 Purpose: controlled regime handoff (latent/active/resonant).
-Physics: adjusts θ, νf, ΔNFR for smooth state change.
+Physics: adjusts theta, nu_f, and DeltaNFR for smooth state change.
 Grammar: generator/closure compatible; sequence bridge.
 Telemetry: stores origin regime and before/after values.
 Typical: AL->NAV->IL, SHA->NAV->AL, NAV->ZHIR, IL->NAV->OZ.
@@ -11,221 +11,713 @@ from __future__ import annotations
 
 import math
 import warnings
+from collections.abc import Mapping
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any, ClassVar
 
+from ..alias import get_attr, set_attr
 from ..config.operator_names import TRANSITION
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..types import Glyph, TNFRGraph
+from ..utils import angle_diff
+from ._argument_validation import (
+    finite_node_real,
+    finite_real,
+    reject_operator_argument,
+    require_list_sink,
+    strict_bool,
+    validate_common_execution_arguments,
+)
 from .definitions_base import Operator
+from .factor_contracts import resolve_runtime_operator_factors
 
-# ---------------------------------------------------------------------------
-# Regime detection thresholds
-# ---------------------------------------------------------------------------
 _VF_LATENT_THRESHOLD = 0.05
 _EPI_RESONANT_THRESHOLD = 0.5
 _VF_RESONANT_THRESHOLD = 0.8
 _EPI_DRIFT_TOLERANCE = 0.01
 
 
-class Transition(Operator):
-    """Guide structural handoff; adjust θ, νf, ΔNFR per regime.
+@dataclass(frozen=True, slots=True)
+class _LatencyProposal:
+    """Validated latency metadata whose commit is deferred until NAV succeeds."""
 
-    Regimes: latent (reactivate), active (scale νf), resonant (dampen).
-    Metrics: regime_origin, before/after vf, theta, dnfr, phase_shift.
-    """
+    active: bool
+    duration: float | None = None
+    max_duration: float | None = None
+    extended: bool = False
+    preserved_epi: float | None = None
+    current_epi: float | None = None
+    epi_drift: float | None = None
+    drifted: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class _TransitionPreflight:
+    """Finite NAV request and output envelope prepared before glyph dispatch."""
+
+    regime: str
+    epi_before: float
+    vf_before: float
+    vf_after: float
+    theta_before: float
+    theta_after: float
+    phase_shift_requested: float
+    phase_shift_applied: float
+    dnfr_before: float
+    retention: float
+    handler_dnfr_after: float | None
+    dnfr_after: float | None
+    handler_dnfr_bounds: tuple[float, float]
+    dnfr_bounds: tuple[float, float]
+    latency: _LatencyProposal
+
+
+class Transition(Operator):
+    """Guide structural handoff; adjust theta, nu_f, and DeltaNFR per regime."""
 
     __slots__ = ()
     name: ClassVar[str] = TRANSITION
     glyph: ClassVar[Glyph] = Glyph.NAV
 
-    def _validate_application_preconditions(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Retain NAV's precondition policy, before changing latency state."""
-        if kw.get("validate_preconditions", True) or G.graph.get("VALIDATE_PRECONDITIONS", False):
+    def _validate_application_preconditions(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> None:
+        """Validate NAV's full public boundary before grammar or metadata."""
+
+        self._validate_request_boundary(G, node, kw)
+        run_preconditions = bool(kw.get("validate_preconditions", True)) or bool(
+            G.graph.get("VALIDATE_PRECONDITIONS", False)
+        )
+        if run_preconditions:
+            self._validate_precondition_config(G)
             self._validate_preconditions(G, node)
 
+    def _validate_request_boundary(
+        self, G: TNFRGraph, node: Any, kw: Mapping[str, Any]
+    ) -> None:
+        """Reject malformed state, flags, arguments, and sinks without mutation."""
+
+        validate_common_execution_arguments(G.graph, kw, operator=self.name)
+        for key in (
+            "VALIDATE_PRECONDITIONS",
+            "NAV_STRICT",
+            "NAV_RANDOM",
+        ):
+            if key in G.graph:
+                strict_bool(G.graph[key], operator=self.name, label=key)
+
+        epi, vf, _, _, latent = self._read_state(G, node)
+        regime = self._regime_from_state(epi, vf, latent)
+        finite_real(
+            kw.get("vf_factor", 1.0),
+            operator=self.name,
+            label="vf_factor",
+            lower=0.0,
+        )
+        finite_real(
+            kw.get("phase_shift", self._default_phase_shift(regime)),
+            operator=self.name,
+            label="phase_shift",
+        )
+        self._validate_sinks_and_monitor(G, node, kw)
+        self._prepare_latency(G, node)
+
+    def _validate_precondition_config(self, G: TNFRGraph) -> None:
+        """Validate every threshold consumed by ``validate_transition``."""
+
+        if "NAV_STRICT_SEQUENCE_CHECK" in G.graph:
+            strict_bool(
+                G.graph["NAV_STRICT_SEQUENCE_CHECK"],
+                operator=self.name,
+                label="NAV_STRICT_SEQUENCE_CHECK",
+            )
+        finite_real(
+            G.graph.get("NAV_MIN_VF", 0.01),
+            operator=self.name,
+            label="NAV_MIN_VF",
+            lower=0.0,
+        )
+        finite_real(
+            G.graph.get("NAV_MAX_DNFR", 1.0),
+            operator=self.name,
+            label="NAV_MAX_DNFR",
+            lower=0.0,
+        )
+        finite_real(
+            G.graph.get("NAV_MIN_EPI_FROM_LATENCY", 0.05),
+            operator=self.name,
+            label="NAV_MIN_EPI_FROM_LATENCY",
+            lower=0.0,
+        )
+
+    def _validate_sinks_and_monitor(
+        self, G: TNFRGraph, node: Any, kw: Mapping[str, Any]
+    ) -> None:
+        """Validate every append target used by an accepted NAV request."""
+
+        for key in ("_nav_transitions", "recognized_coherence_patterns"):
+            require_list_sink(G.graph, key, operator=self.name)
+        collect_metrics = bool(kw.get("collect_metrics", False)) or bool(
+            G.graph.get("COLLECT_OPERATOR_METRICS", False)
+        )
+        if collect_metrics:
+            require_list_sink(G.graph, "operator_metrics", operator=self.name)
+            if "silence_duration" in G.nodes[node]:
+                finite_real(
+                    G.nodes[node]["silence_duration"],
+                    operator=self.name,
+                    label="silence_duration",
+                    lower=0.0,
+                )
+
+        monitor = G.graph.get("integrity_monitor")
+        if monitor is not None and not all(
+            callable(getattr(monitor, method, None))
+            for method in ("before_operator", "after_operator")
+        ):
+            reject_operator_argument(
+                self.name,
+                "integrity_monitor must provide callable before_operator and "
+                "after_operator methods",
+            )
+
+    def _read_state(
+        self, G: TNFRGraph, node: Any
+    ) -> tuple[float, float, float, float, bool]:
+        """Return one finite physical NAV state without permissive coercions."""
+
+        epi = finite_real(
+            get_attr(G.nodes[node], ALIAS_EPI, 0.0, strict=True),
+            operator=self.name,
+            label="EPI state",
+        )
+        vf = finite_node_real(
+            G.nodes[node],
+            ALIAS_VF,
+            0.0,
+            operator=self.name,
+            label="nu_f state",
+            lower=0.0,
+        )
+        dnfr = finite_node_real(
+            G.nodes[node],
+            ALIAS_DNFR,
+            0.0,
+            operator=self.name,
+            label="DeltaNFR state",
+        )
+        theta = finite_node_real(
+            G.nodes[node],
+            ALIAS_THETA,
+            0.0,
+            operator=self.name,
+            label="theta state",
+        )
+        latent = strict_bool(
+            G.nodes[node].get("latent", False),
+            operator=self.name,
+            label="latent",
+        )
+        return epi, vf, dnfr, theta, latent
+
+    @staticmethod
+    def _regime_from_state(epi: float, vf: float, latent: bool) -> str:
+        if latent or vf < _VF_LATENT_THRESHOLD:
+            return "latent"
+        if epi > _EPI_RESONANT_THRESHOLD and vf > _VF_RESONANT_THRESHOLD:
+            return "resonant"
+        return "active"
+
+    @staticmethod
+    def _default_phase_shift(regime: str) -> float:
+        return {"latent": 0.1, "active": 0.2, "resonant": 0.15}[regime]
+
+    @staticmethod
+    def _retention(regime: str) -> float:
+        return {"latent": 0.7, "active": 0.8, "resonant": 0.9}[regime]
+
+    def _prepare_latency(self, G: TNFRGraph, node: Any) -> _LatencyProposal:
+        """Parse latency inputs without clearing or creating any metadata."""
+
+        data = G.nodes[node]
+        active = strict_bool(
+            data.get("latent", False),
+            operator=self.name,
+            label="latent",
+        )
+        if not active:
+            return _LatencyProposal(active=False)
+
+        duration: float | None = None
+        max_duration: float | None = None
+        extended = False
+        if "latency_start_time" in data:
+            raw_start = data["latency_start_time"]
+            if not isinstance(raw_start, str):
+                reject_operator_argument(
+                    self.name, "latency_start_time must be an ISO-8601 string"
+                )
+            try:
+                start = datetime.fromisoformat(raw_start)
+            except ValueError as exc:
+                reject_operator_argument(
+                    self.name,
+                    f"latency_start_time must be valid ISO-8601: {exc}",
+                )
+            if start.tzinfo is None or start.utcoffset() is None:
+                reject_operator_argument(
+                    self.name, "latency_start_time must include a UTC offset"
+                )
+            duration = finite_real(
+                (
+                    datetime.now(timezone.utc) - start.astimezone(timezone.utc)
+                ).total_seconds(),
+                operator=self.name,
+                label="silence duration",
+                lower=0.0,
+            )
+            if "MAX_SILENCE_DURATION" in G.graph:
+                max_duration = finite_real(
+                    G.graph["MAX_SILENCE_DURATION"],
+                    operator=self.name,
+                    label="MAX_SILENCE_DURATION",
+                    lower=0.0,
+                )
+                extended = duration > max_duration
+
+        preserved_epi: float | None = None
+        current_epi: float | None = None
+        epi_drift: float | None = None
+        drifted = False
+        if data.get("preserved_epi") is not None:
+            preserved_epi = finite_real(
+                data["preserved_epi"],
+                operator=self.name,
+                label="preserved_epi",
+            )
+            current_epi = finite_real(
+                get_attr(data, ALIAS_EPI, 0.0, strict=True),
+                operator=self.name,
+                label="EPI state",
+            )
+            epi_drift = finite_real(
+                abs(current_epi - preserved_epi),
+                operator=self.name,
+                label="EPI latency drift",
+                lower=0.0,
+            )
+            drifted = epi_drift > _EPI_DRIFT_TOLERANCE * abs(preserved_epi)
+
+        return _LatencyProposal(
+            active=True,
+            duration=duration,
+            max_duration=max_duration,
+            extended=extended,
+            preserved_epi=preserved_epi,
+            current_epi=current_epi,
+            epi_drift=epi_drift,
+            drifted=drifted,
+        )
+
+    def _build_preflight(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> _TransitionPreflight:
+        """Build the deterministic proposal or the random output envelope."""
+
+        self._validate_request_boundary(G, node, kw)
+        epi, vf, dnfr, theta, latent = self._read_state(G, node)
+        regime = self._regime_from_state(epi, vf, latent)
+        vf_factor = finite_real(
+            kw.get("vf_factor", 1.0),
+            operator=self.name,
+            label="vf_factor",
+            lower=0.0,
+        )
+        phase_shift = finite_real(
+            kw.get("phase_shift", self._default_phase_shift(regime)),
+            operator=self.name,
+            label="phase_shift",
+        )
+
+        vf_multiplier = {"latent": 1.2, "resonant": 0.95}.get(
+            regime, vf_factor
+        )
+        vf_after = finite_real(
+            vf * vf_multiplier,
+            operator=self.name,
+            label="nu_f proposal",
+            lower=0.0,
+        )
+        theta_normalized = finite_real(
+            theta % math.tau,
+            operator=self.name,
+            label="normalized theta state",
+            lower=0.0,
+            upper=math.tau,
+        )
+        theta_after = finite_real(
+            (theta_normalized + phase_shift) % math.tau,
+            operator=self.name,
+            label="theta proposal",
+            lower=0.0,
+            upper=math.tau,
+        )
+        phase_applied = finite_real(
+            angle_diff(theta_after, theta_normalized),
+            operator=self.name,
+            label="applied phase shift",
+        )
+
+        factors = resolve_runtime_operator_factors(
+            G.graph.get("GLYPH_FACTORS"), self.glyph, G.graph
+        )
+        strict = strict_bool(
+            G.graph.get("NAV_STRICT", False),
+            operator=self.name,
+            label="NAV_STRICT",
+        )
+        random_mode = strict_bool(
+            G.graph.get("NAV_RANDOM", True),
+            operator=self.name,
+            label="NAV_RANDOM",
+        )
+        if strict:
+            base = vf
+        else:
+            eta = factors["NAV_eta"]
+            target = vf if dnfr >= 0.0 else -vf
+            base = finite_real(
+                (1.0 - eta) * dnfr + eta * target,
+                operator=self.name,
+                label="deterministic DeltaNFR proposal",
+            )
+        base = finite_real(
+            base,
+            operator=self.name,
+            label="deterministic DeltaNFR proposal",
+        )
+        jitter = factors["NAV_jitter"]
+
+        handler_after: float | None
+        if random_mode and jitter > 0.0:
+            handler_after = None
+            handler_low = finite_real(
+                base - jitter,
+                operator=self.name,
+                label="random DeltaNFR lower proposal bound",
+            )
+            handler_high = finite_real(
+                base + jitter,
+                operator=self.name,
+                label="random DeltaNFR upper proposal bound",
+            )
+        else:
+            signed_jitter = (
+                0.0 if random_mode else (jitter if base >= 0.0 else -jitter)
+            )
+            handler_after = finite_real(
+                base + signed_jitter,
+                operator=self.name,
+                label="DeltaNFR handler proposal",
+            )
+            if handler_after == dnfr:
+                reject_operator_argument(
+                    self.name,
+                    "NAV must change DeltaNFR before recording its history",
+                )
+            handler_low = handler_high = handler_after
+
+        retention = self._retention(regime)
+        dnfr_low = finite_real(
+            handler_low * retention,
+            operator=self.name,
+            label="final DeltaNFR lower proposal bound",
+        )
+        dnfr_high = finite_real(
+            handler_high * retention,
+            operator=self.name,
+            label="final DeltaNFR upper proposal bound",
+        )
+        dnfr_after = (
+            finite_real(
+                handler_after * retention,
+                operator=self.name,
+                label="final DeltaNFR proposal",
+            )
+            if handler_after is not None
+            else None
+        )
+        if (
+            dnfr_after is not None
+            and vf_after == vf
+            and phase_applied == 0.0
+            and dnfr_after == dnfr
+        ):
+            reject_operator_argument(
+                self.name, "NAV proposal must change at least one nodal channel"
+            )
+
+        return _TransitionPreflight(
+            regime=regime,
+            epi_before=epi,
+            vf_before=vf,
+            vf_after=vf_after,
+            theta_before=theta,
+            theta_after=theta_after,
+            phase_shift_requested=phase_shift,
+            phase_shift_applied=phase_applied,
+            dnfr_before=dnfr,
+            retention=retention,
+            handler_dnfr_after=handler_after,
+            dnfr_after=dnfr_after,
+            handler_dnfr_bounds=(handler_low, handler_high),
+            dnfr_bounds=(min(dnfr_low, dnfr_high), max(dnfr_low, dnfr_high)),
+            latency=self._prepare_latency(G, node),
+        )
+
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Detect regime; apply grammar; adjust θ, νf, ΔNFR; log metrics."""
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_EPI
+        """Dispatch NAV only after its complete public proposal is valid."""
 
-        # 1. Detect current regime and store for metrics collection
-        current_regime = self._detect_regime(G, node)
-        G.nodes[node]["_regime_before"] = current_regime
-
-        # 2. Handle latency reactivation if applicable
-        if G.nodes[node].get("latent", False):
-            self._handle_latency_transition(G, node)
-
-        # 4. Capture state before for metrics/validation
-        collect_metrics = kw.get("collect_metrics", False) or G.graph.get(
-            "COLLECT_OPERATOR_METRICS", False
+        proposal = self._build_preflight(G, node, **kw)
+        collect_metrics = bool(kw.get("collect_metrics", False)) or bool(
+            G.graph.get("COLLECT_OPERATOR_METRICS", False)
         )
-        validate_equation = kw.get("validate_nodal_equation", False) or G.graph.get(
-            "VALIDATE_NODAL_EQUATION", False
+        validate_equation = bool(kw.get("validate_nodal_equation", False)) or bool(
+            G.graph.get("VALIDATE_NODAL_EQUATION", False)
         )
-
         state_before = None
         if collect_metrics or validate_equation:
-            state_before = self._capture_state(G, node)
+            state_before = {
+                "epi": proposal.epi_before,
+                "vf": proposal.vf_before,
+                "dnfr": proposal.dnfr_before,
+                "theta": proposal.theta_before,
+            }
 
-        # Structural Integrity Monitor — pre-operator snapshot
-        _integrity_monitor = G.graph.get("integrity_monitor")
-        if _integrity_monitor is not None:
-            _integrity_monitor.before_operator(G, node)
+        self._emit_latency_warnings(G, node, proposal.latency)
+        integrity_monitor = G.graph.get("integrity_monitor")
+        if integrity_monitor is not None:
+            integrity_monitor.before_operator(G, node)
 
-        # 5. Apply grammar
         from .grammar_application import _apply_selected_glyph
 
         _apply_selected_glyph(G, node, self.glyph, kw.get("window"))
+        handler_dnfr = finite_node_real(
+            G.nodes[node],
+            ALIAS_DNFR,
+            0.0,
+            operator=self.name,
+            label="DeltaNFR handler result",
+        )
+        handler_low, handler_high = proposal.handler_dnfr_bounds
+        if not handler_low <= handler_dnfr <= handler_high:
+            reject_operator_argument(
+                self.name,
+                "DeltaNFR handler result escaped the validated proposal bounds",
+            )
+        dnfr_after = finite_real(
+            handler_dnfr * proposal.retention,
+            operator=self.name,
+            label="final DeltaNFR result",
+        )
+        dnfr_low, dnfr_high = proposal.dnfr_bounds
+        if not dnfr_low <= dnfr_after <= dnfr_high:
+            reject_operator_argument(
+                self.name,
+                "final DeltaNFR result escaped the validated proposal bounds",
+            )
 
-        # 6. Execute structural transition (BEFORE metrics collection)
-        self._apply_structural_transition(G, node, current_regime, **kw)
+        set_attr(G.nodes[node], ALIAS_VF, proposal.vf_after)
+        set_attr(G.nodes[node], ALIAS_THETA, proposal.theta_after)
+        set_attr(G.nodes[node], ALIAS_DNFR, dnfr_after)
+        self._commit_latency(G, node, proposal.latency)
+        G.nodes[node]["_regime_before"] = proposal.regime
+        self._record_transition(G, node, proposal, handler_dnfr, dnfr_after)
 
-        # Structural Integrity Monitor — post-operator evaluation
-        if _integrity_monitor is not None:
-            _integrity_monitor.after_operator(G, node, self.name)
+        if integrity_monitor is not None:
+            integrity_monitor.after_operator(G, node, self.name)
 
-        # 7. Optional nodal equation validation
         if validate_equation and state_before is not None:
             from .nodal_equation import validate_nodal_equation
-
-            dt = float(kw.get("dt", 1.0))
-            strict = G.graph.get("NODAL_EQUATION_STRICT", False)
-            epi_after = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
 
             validate_nodal_equation(
                 G,
                 node,
                 epi_before=state_before["epi"],
-                epi_after=epi_after,
-                dt=dt,
+                epi_after=finite_real(
+                    get_attr(G.nodes[node], ALIAS_EPI, 0.0, strict=True),
+                    operator=self.name,
+                    label="EPI result",
+                ),
+                dt=finite_real(
+                    kw.get("dt", 1.0),
+                    operator=self.name,
+                    label="dt",
+                    lower=math.nextafter(0.0, math.inf),
+                ),
                 operator_name=self.name,
-                strict=strict,
+                strict=strict_bool(
+                    G.graph.get("NODAL_EQUATION_STRICT", False),
+                    operator=self.name,
+                    label="NODAL_EQUATION_STRICT",
+                ),
             )
 
-        # 8. Optional metrics collection (AFTER structural transformation)
         if collect_metrics and state_before is not None:
-            metrics = self._collect_metrics(G, node, state_before)
-            if "operator_metrics" not in G.graph:
-                G.graph["operator_metrics"] = []
-            G.graph["operator_metrics"].append(metrics)
+            G.graph.setdefault("operator_metrics", []).append(
+                self._collect_metrics(G, node, state_before)
+            )
+
+    def _record_transition(
+        self,
+        G: TNFRGraph,
+        node: Any,
+        proposal: _TransitionPreflight,
+        handler_dnfr: float,
+        dnfr_after: float,
+    ) -> None:
+        """Append telemetry using only previously validated scalar values."""
+
+        G.graph.setdefault("_nav_transitions", []).append(
+            {
+                "node": node,
+                "regime_origin": proposal.regime,
+                "vf_before": proposal.vf_before,
+                "vf_after": proposal.vf_after,
+                "theta_before": proposal.theta_before,
+                "theta_after": proposal.theta_after,
+                "dnfr_before": handler_dnfr,
+                "dnfr_after": dnfr_after,
+                "phase_shift": proposal.phase_shift_applied,
+                "phase_shift_requested": proposal.phase_shift_requested,
+            }
+        )
+
+    def _emit_latency_warnings(
+        self, G: TNFRGraph, node: Any, proposal: _LatencyProposal
+    ) -> None:
+        """Emit staged latency diagnostics while the graph is still unchanged."""
+
+        if proposal.extended:
+            duration = proposal.duration
+            max_duration = proposal.max_duration
+            assert duration is not None and max_duration is not None
+            warnings.warn(
+                f"Node {node} transitioning after extended silence "
+                f"(duration: {duration:.2f}s, max: {max_duration:.2f}s)",
+                stacklevel=4,
+            )
+        if proposal.drifted:
+            epi_drift = proposal.epi_drift
+            preserved_epi = proposal.preserved_epi
+            current_epi = proposal.current_epi
+            assert (
+                epi_drift is not None
+                and preserved_epi is not None
+                and current_epi is not None
+            )
+            warnings.warn(
+                f"Node {node} EPI drift drift={epi_drift:.3f} "
+                f"pres={preserved_epi:.3f} cur={current_epi:.3f}",
+                stacklevel=4,
+            )
+
+    @staticmethod
+    def _commit_latency(
+        G: TNFRGraph, node: Any, proposal: _LatencyProposal
+    ) -> None:
+        """Clear latency state only after low-level NAV has succeeded."""
+
+        if not proposal.active:
+            return
+        if proposal.duration is not None:
+            G.nodes[node]["silence_duration"] = proposal.duration
+        G.nodes[node].pop("latent", None)
+        G.nodes[node].pop("latency_start_time", None)
+        G.nodes[node].pop("preserved_epi", None)
 
     def _detect_regime(self, G: TNFRGraph, node: Any) -> str:
-        """Return regime label: latent | active | resonant."""
-        from ..alias import get_attr
-        from ..constants.aliases import ALIAS_EPI, ALIAS_VF
+        """Return a validated regime label: latent, active, or resonant."""
 
-        epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-        vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
-        latent = G.nodes[node].get("latent", False)
-
-        if latent or vf < _VF_LATENT_THRESHOLD:
-            return "latent"
-        elif epi > _EPI_RESONANT_THRESHOLD and vf > _VF_RESONANT_THRESHOLD:
-            return "resonant"
-        else:
-            return "active"
+        epi, vf, _, _, latent = self._read_state(G, node)
+        return self._regime_from_state(epi, vf, latent)
 
     def _handle_latency_transition(self, G: TNFRGraph, node: Any) -> None:
-        """Reactivate; check silence duration & epi drift; clear flags."""
-        from datetime import datetime, timezone
+        """Validate and commit latency metadata for direct compatibility calls."""
 
-        # Verify silence duration if timestamp available
-        if "latency_start_time" in G.nodes[node]:
-            start = datetime.fromisoformat(G.nodes[node]["latency_start_time"])
-            duration = (datetime.now(timezone.utc) - start).total_seconds()
-            G.nodes[node]["silence_duration"] = duration
-
-            max_silence = G.graph.get("MAX_SILENCE_DURATION", float("inf"))
-            if duration > max_silence:
-                warnings.warn(
-                    f"Node {node} transitioning after extended silence "
-                    f"(duration: {duration:.2f}s, max: {max_silence:.2f}s)",
-                    stacklevel=4,
-                )
-
-        # Check EPI preservation integrity
-        preserved_epi = G.nodes[node].get("preserved_epi")
-        if preserved_epi is not None:
-            from ..alias import get_attr
-            from ..constants.aliases import ALIAS_EPI
-
-            current_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-            epi_drift = abs(current_epi - preserved_epi)
-
-            # Allow small numerical drift (1% tolerance)
-            if epi_drift > _EPI_DRIFT_TOLERANCE * abs(preserved_epi):
-                warnings.warn(
-                    (
-                        f"Node {node} EPI drift drift={epi_drift:.3f} "
-                        f"pres={preserved_epi:.3f} cur={current_epi:.3f}"
-                    ),
-                    stacklevel=4,
-                )
-
-        # Clear latency state
-        del G.nodes[node]["latent"]
-        if "latency_start_time" in G.nodes[node]:
-            del G.nodes[node]["latency_start_time"]
-        if "preserved_epi" in G.nodes[node]:
-            del G.nodes[node]["preserved_epi"]
-        # Keep silence_duration for telemetry/metrics - don't delete it
+        proposal = self._prepare_latency(G, node)
+        self._emit_latency_warnings(G, node, proposal)
+        self._commit_latency(G, node, proposal)
 
     def _apply_structural_transition(
         self, G: TNFRGraph, node: Any, regime: str, **kw: Any
     ) -> None:
-        """Adjust θ, νf, ΔNFR per regime; append transition telemetry."""
-        from ..alias import get_attr, set_attr
-        from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
+        """Apply a checked post-handler transition for compatibility calls."""
 
-        # Get current state
-        theta = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
-        vf = float(get_attr(G.nodes[node], ALIAS_VF, 1.0))
-        dnfr = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
-
-        # Apply regime-specific adjustments
-        if regime == "latent":
-            # Latent → Active: gradual reactivation
-            vf_new = vf * 1.2  # 20% increase
-            theta_shift = kw.get("phase_shift", 0.1)  # Small phase shift
-            theta_new = (theta + theta_shift) % (2 * math.pi)
-            dnfr_new = dnfr * 0.7  # 30% reduction for smooth transition
-        elif regime == "active":
-            # Active: standard transition
-            vf_new = vf * kw.get("vf_factor", 1.0)  # Configurable
-            theta_shift = kw.get("phase_shift", 0.2)  # Standard shift
-            theta_new = (theta + theta_shift) % (2 * math.pi)
-            dnfr_new = dnfr * 0.8  # 20% reduction
-        else:  # resonant
-            # Resonant → Active: careful transition (high energy state)
-            vf_new = vf * 0.95  # 5% reduction for stability
-            theta_shift = kw.get("phase_shift", 0.15)  # Careful phase shift
-            theta_new = (theta + theta_shift) % (2 * math.pi)
-            dnfr_new = dnfr * 0.9  # 10% reduction, gentle
-
-        # Apply changes via canonical alias system
-        set_attr(G.nodes[node], ALIAS_VF, vf_new)
-        set_attr(G.nodes[node], ALIAS_THETA, theta_new)
-        set_attr(G.nodes[node], ALIAS_DNFR, dnfr_new)
-
-        # Telemetry tracking
-        if "_nav_transitions" not in G.graph:
-            G.graph["_nav_transitions"] = []
-        G.graph["_nav_transitions"].append(
+        if regime not in {"latent", "active", "resonant"}:
+            reject_operator_argument(self.name, f"unknown NAV regime {regime!r}")
+        _, vf, dnfr, theta, _ = self._read_state(G, node)
+        vf_factor = finite_real(
+            kw.get("vf_factor", 1.0),
+            operator=self.name,
+            label="vf_factor",
+            lower=0.0,
+        )
+        phase_shift = finite_real(
+            kw.get("phase_shift", self._default_phase_shift(regime)),
+            operator=self.name,
+            label="phase_shift",
+        )
+        vf_multiplier = {"latent": 1.2, "resonant": 0.95}.get(
+            regime, vf_factor
+        )
+        vf_after = finite_real(
+            vf * vf_multiplier,
+            operator=self.name,
+            label="nu_f proposal",
+            lower=0.0,
+        )
+        theta_normalized = theta % math.tau
+        theta_after = finite_real(
+            (theta_normalized + phase_shift) % math.tau,
+            operator=self.name,
+            label="theta proposal",
+            lower=0.0,
+            upper=math.tau,
+        )
+        dnfr_after = finite_real(
+            dnfr * self._retention(regime),
+            operator=self.name,
+            label="final DeltaNFR proposal",
+        )
+        require_list_sink(G.graph, "_nav_transitions", operator=self.name)
+        set_attr(G.nodes[node], ALIAS_VF, vf_after)
+        set_attr(G.nodes[node], ALIAS_THETA, theta_after)
+        set_attr(G.nodes[node], ALIAS_DNFR, dnfr_after)
+        applied = finite_real(
+            angle_diff(theta_after, theta_normalized),
+            operator=self.name,
+            label="applied phase shift",
+        )
+        G.graph.setdefault("_nav_transitions", []).append(
             {
                 "node": node,
                 "regime_origin": regime,
                 "vf_before": vf,
-                "vf_after": vf_new,
+                "vf_after": vf_after,
                 "theta_before": theta,
-                "theta_after": theta_new,
+                "theta_after": theta_after,
                 "dnfr_before": dnfr,
-                "dnfr_after": dnfr_new,
-                "phase_shift": theta_new - theta,
+                "dnfr_after": dnfr_after,
+                "phase_shift": applied,
+                "phase_shift_requested": phase_shift,
             }
         )
 
     def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
         """Run NAV precondition validator."""
+
         from .preconditions import validate_transition
 
         validate_transition(G, node)
@@ -233,7 +725,8 @@ class Transition(Operator):
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
     ) -> dict[str, Any]:
-        """Collect NAV metrics for operator telemetry."""
+        """Collect NAV metrics after the complete structural transition."""
+
         from .metrics import transition_metrics
 
         return transition_metrics(

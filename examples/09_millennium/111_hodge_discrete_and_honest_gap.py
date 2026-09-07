@@ -1,25 +1,19 @@
 #!/usr/bin/env python3
 """
-Example 111 — Hodge (TNFR): Discrete Hodge Theory and the Honest Gap
-===================================================================
+Example 111 — Auxiliary Finite Simplicial Hodge Baseline
+=========================================================
 
-The first milestone (HC-1) of the TNFR-native Hodge program. Unlike the
-sibling programs (Riemann / NS / Yang-Mills / P-vs-NP / BSD), the honest
-verdict here is a STRONG NEGATIVE: TNFR's discrete Hodge theory captures the
-*topological* content exactly but is structurally BLIND to the two features
-that constitute the Hodge conjecture. This is NOT a solution and NOT even an
-open attack surface on the conjecture itself (see "Honest scope").
+This HC-1 baseline constructs finite simplicial incidence matrices and
+reproduces standard combinatorial Hodge results. It does not derive a cochain
+complex from the canonical TNFR tetrad.
 
-TNFR-native object
-------------------
-Example 107 established the k=1 Helmholtz-Hodge decomposition of the phase
-field on a graph (gradient + cycle). Extending the field to a 2-complex
-(triangles) gives the FULL discrete Hodge decomposition. The tetrad supplies
-the natural cochain tower:
-
-    phase value        -> 0-cochain (vertices)
-    phase gradient |grad phi| -> 1-cochain (edges)
-    phase curvature K_phi     -> 2-cochain (triangles; holonomy / discrete curl)
+Scope correction
+----------------
+``compute_phase_gradient`` returns a nonnegative mean per node and loses edge
+orientation and sign. ``compute_phase_curvature`` also returns a wrapped scalar
+per node, not a value on an oriented face. Neither can be identified with the
+1- and 2-cochains used below. Example 107 checks an oriented EPI edge gradient
+against a selected circulation; it does not establish this missing bridge.
 
 The combinatorial Hodge Laplacians are
 
@@ -33,9 +27,9 @@ isomorphic to the homology H_k, so
 
 What this measures (HC-1)
 -------------------------
-  (1) the chain complex d1 d2 = 0 (the tetrad cochain tower is a complex);
-  (2) harmonic dimensions = Betti numbers EXACTLY (Eckmann), on a torus and
-      on a sphere -- the harmonic count tracks topology across spaces;
+  (1) the independently built chain complex satisfies d1 d2 = 0;
+  (2) numerically detected harmonic dimensions match the expected Betti
+      numbers on one triangulated torus and sphere;
   (3) harmonic 1-forms are closed and co-closed to machine precision.
 
 The HONEST gap (why this is NOT the Hodge conjecture)
@@ -52,37 +46,26 @@ NEITHER:
      no (p,q) bigrading -- there is only one real harmonic space per degree.
 
   B. ALGEBRAICITY. "Algebraic cycle" = cut out by polynomial equations,
-     strictly stronger than "integer topological cycle." In the combinatorial
-     setting EVERY harmonic class is already an integer simplicial cycle
-     (Eckmann), so the discrete analogue of the conjecture is TRIVIALLY true
-     -- precisely because the discrete setting cannot even express the
-     algebraicity distinction that is the whole difficulty.
+     strictly stronger than a topological cycle. Finite simplicial Hodge
+     theory gives harmonic representatives of real cohomology; it neither
+     makes every representative integral nor supplies algebraic cycles.
 
-So TNFR's discrete Hodge is structurally BLIND to the actual Hodge
-conjecture: it captures the topological half (harmonic = homology) exactly
-and says nothing about the (p,p) bigrading or algebraicity. This is the
-honest analogue of the Riemann result that the emergent substrate is "blind"
-to the arithmetic content -- here the discrete cochain tower is blind to the
-complex-algebraic content.
+The auxiliary finite complex says nothing about the (p,p) bigrading or
+algebraicity. A TNFR-specific result would first require oriented edge and
+face observables and a proof connecting them to canonical telemetry.
 
 Honest scope
 ------------
-- HC-1 reproduces classical combinatorial Hodge theory (Eckmann 1944) on the
-  TNFR cochain tower. It does NOT prove or even attack the Hodge conjecture.
-- The obstruction is classified Branch B3-leaning: there is no TNFR closure
-  of the *actual* conjecture in the discrete setting, because the discrete
-  setting cannot pose the (p,p)-bigrading / algebraicity question at all.
-  (Contrast: P-vs-NP and BSD are Branch B -- open attack surfaces with a
-  concrete next milestone; Hodge has no such discrete next milestone toward
-  the conjecture.)
-- The value is a PRECISE localisation of why Hodge is hard: it isolates
-  exactly what the discrete/structural setting can and cannot see.
+- HC-1 reproduces a classical combinatorial Hodge baseline (Eckmann 1944).
+- It does NOT prove or attack the Hodge conjecture and does not establish that
+  the tetrad is a cochain tower.
+- The current baseline cannot pose the (p,p)-bigrading or algebraicity question.
 
 References
 ----------
 - examples/08_emergent_geometry/107_orthogonal_structure_emergent_geometry.py (k=1 Helmholtz-Hodge)
 - theory/TNFR_HODGE_RESEARCH_NOTES.md (program, milestones, classification)
-- AGENTS.md section "Transport Content of the Nodal Equation"
+- AGENTS.md sections "Transport content" and "The structural tetrad"
 """
 
 import itertools
@@ -147,7 +130,7 @@ def hodge_dims(verts, edges, tris):
 
 def experiment_1_eckmann_torus():
     print("=" * 72)
-    print("HC-1: Discrete Hodge on the TNFR cochain tower (triangulated torus)")
+    print("HC-1: Auxiliary simplicial Hodge baseline (triangulated torus)")
     print("=" * 72)
     print()
     V, E, T = complex_from_triangles(torus_triangles(5))
@@ -168,15 +151,14 @@ def experiment_1_eckmann_torus():
         f"co-closed |d2^T h|={np.abs(d2.T @ H).max():.1e}"
     )
     print()
-    print("  Eckmann (1944): harmonic = homology, EXACT. The 2 harmonic")
-    print("  1-forms are the 2 independent loops a TNFR phase field can wind")
-    print("  around (the topological holes; cf. example 107).")
+    print("  Eckmann (1944) gives the exact finite-complex theorem; the values")
+    print("  above are its numerical realization at tolerance 1e-9.")
     print()
 
 
 def experiment_2_topology_tracking():
     print("=" * 72)
-    print("HC-1 contrast: harmonic count tracks topology EXACTLY")
+    print("HC-1 contrast: Betti dimensions distinguish the two complexes")
     print("=" * 72)
     print()
     octa = [
@@ -207,37 +189,33 @@ def experiment_2_topology_tracking():
     )
     print()
     print("  The sphere has NO 1-loops (harmonic_1 = 0); the torus has 2.")
-    print("  The harmonic count is a faithful TOPOLOGICAL invariant -- and")
-    print("  topology is exactly the half of Hodge that is NOT the hard part.")
+    print("  Betti numbers are topological invariants, but not complete ones.")
     print()
 
 
 def main():
     print()
-    print("  TNFR Example 111: Hodge -- Discrete Hodge Theory and the Honest Gap")
-    print("  Milestone HC-1 (structural reformulation; strong-negative verdict)")
+    print("  TNFR Example 111: Auxiliary Finite Simplicial Hodge Baseline")
+    print("  Milestone HC-1 (external comparison with an explicit scope gap)")
     print("  =================================================================")
     print()
     experiment_1_eckmann_torus()
     experiment_2_topology_tracking()
     print("=" * 72)
-    print("WHAT THIS ESTABLISHES (and the honest strong negative)")
+    print("WHAT THIS ESTABLISHES")
     print("=" * 72)
     print()
-    print("ESTABLISHES: the TNFR cochain tower (phase value / gradient |grad")
-    print("phi| / curvature K_phi over vertices / edges / triangles) carries a")
-    print("complete discrete Hodge decomposition; harmonic = homology exactly")
-    print("(Eckmann), tracking topology across spaces.")
+    print("ESTABLISHES: the independently constructed finite simplicial")
+    print("complexes reproduce the expected combinatorial Hodge dimensions and")
+    print("chain identity. This is a standard mathematical baseline.")
     print()
-    print("HONEST STRONG NEGATIVE: this is NOT the Hodge conjecture and not")
-    print("even an open attack surface on it. The conjecture needs a complex")
+    print("SCOPE BOUNDARY: this is NOT the Hodge conjecture. The conjecture")
+    print("needs a complex")
     print("(p,p) bigrading (Kähler) and ALGEBRAIC cycles (polynomial-cut-out);")
-    print("the real combinatorial setting has neither, and its harmonic")
-    print("classes are TRIVIALLY integer cycles (Eckmann). TNFR's discrete")
-    print("Hodge is structurally BLIND to the algebraic-complex content that")
-    print("IS the difficulty -- the honest analogue of the Riemann substrate")
-    print("being blind to arithmetic content. Obstruction Branch B3-leaning.")
-    print("No Clay claim.")
+    print("the real combinatorial setting has neither. Canonical |grad phi|")
+    print("and K_phi are node summaries, so they do not instantiate the edge")
+    print("and face cochains used here. The TNFR bridge remains OPEN.")
+    print("No Clay claim and no tetrad-completeness claim.")
     print()
 
 

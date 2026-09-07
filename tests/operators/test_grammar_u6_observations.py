@@ -103,3 +103,61 @@ def test_topology_change_decomposition_requires_aligned_nodes():
         structural_potential_change_terms(
             [[0.0, 1.0], [1.0, 0.0]], [1.0, 2.0], [[0.0]], [1.0]
         )
+
+
+@pytest.mark.parametrize(
+    ("before", "after"),
+    [
+        ({0: 0.0, 1: 0.0}, {0: 0.0}),
+        ({0: 0.0}, {0: 0.0, 1: 0.0}),
+        ({0: 0.0, 1: 0.0, 2: 0.0}, {0: 0.0, 1: 0.0}),
+    ],
+)
+def test_u6_rejects_unaligned_snapshot_keys(before, after):
+    graph = nx.path_graph(2)
+    with pytest.raises(ValueError, match="exactly the graph nodes"):
+        validate_structural_potential_confinement(
+            graph, before, after, strict=False
+        )
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), "invalid", True])
+def test_u6_rejects_nonfinite_or_nonreal_snapshot_values(value):
+    graph = nx.path_graph(2)
+    with pytest.raises((TypeError, ValueError), match="structural-potential"):
+        validate_structural_potential_confinement(
+            graph,
+            {0: 0.0, 1: 0.0},
+            {0: value, 1: 0.0},
+            strict=False,
+        )
+
+
+@pytest.mark.parametrize("threshold", [0.0, -1.0, float("nan"), float("inf")])
+def test_u6_rejects_invalid_threshold(threshold):
+    graph = nx.path_graph(1)
+    with pytest.raises(ValueError, match="threshold"):
+        validate_structural_potential_confinement(
+            graph, {0: 0.0}, {0: 0.0}, threshold=threshold, strict=False
+        )
+
+
+def test_u6_strict_threshold_is_not_silently_coerced():
+    graph = nx.path_graph(1)
+    with pytest.raises(TypeError, match="strict"):
+        validate_structural_potential_confinement(
+            graph, {0: 0.0}, {0: 0.0}, strict=1
+        )
+
+
+@pytest.mark.parametrize(
+    "bad_values",
+    [
+        ([[0.0, float("nan")], [1.0, 0.0]], [1.0, 2.0]),
+        ([[0.0, 1.0], [1.0, 0.0]], [1.0, float("inf")]),
+    ],
+)
+def test_topology_change_decomposition_rejects_nonfinite_values(bad_values):
+    kernel, pressure = bad_values
+    with pytest.raises(ValueError, match="finite"):
+        structural_potential_change_terms(kernel, pressure, kernel, pressure)

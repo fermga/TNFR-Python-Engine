@@ -1,32 +1,18 @@
-"""
-TNFR Self-Optimizing Mathematical Engine
+"""Evidence-scoped optimization recommendations for TNFR computations.
 
-This module implements self-optimization that emerges naturally from analyzing
-the mathematical structure of the nodal equation ∂EPI/∂t = νf · ΔNFR(t).
+The nodal equation defines the physical channels inspected by this module. It
+does not select a faster backend or prove that a computational strategy is
+optimal. Recommendations combine snapshot diagnostics with experience records;
+policies and speedup predictions are learned only from finite measurements
+reported in an optimizer's authoritative evidence payload.
 
-Mathematical Foundation:
-The nodal equation reveals natural optimization landscapes:
-
-1. **Gradient Flows**: ΔNFR naturally defines optimization directions
-2. **Energy Functionals**: EPI configurations have natural energy measures
-3. **Constraint Manifolds**: Grammar rules create constraint manifolds
-4. **Variational Principles**: Operator sequences minimize action functionals
-5. **Learning Dynamics**: Repeated patterns improve through experience
-6. **Adaptive Algorithms**: The system learns optimal strategies automatically
-
-Self-Optimization Mechanisms:
-- Automatic cache strategy learning based on mathematical importance
-- Dynamic operator sequence optimization using variational principles
-- Adaptive precision management based on mathematical requirements
-- Self-tuning computational backend selection
-- Emergent load balancing through mathematical analysis
-- Natural parallelization discovery via spectral decomposition
-
-Status: CANONICAL SELF-OPTIMIZING ENGINE
+Candidate-energy and balance values remain diagnostics. They do not validate
+grammar or prescribe canonical operators.
 """
 
 import hashlib
 import json
+import math
 import re
 import threading
 import time
@@ -34,12 +20,13 @@ from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
+from numbers import Real
 from pathlib import Path
 from statistics import fmean
 from typing import Any, Mapping, Sequence
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_VF
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 
 # Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
 from ..constants.operational import (
@@ -64,6 +51,7 @@ from ..constants.operational import (
 )
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
+from ..types import require_finite_real_scalar_epi
 from ..operators.grammar import glyph_function_name, validate_sequence
 
 try:
@@ -74,22 +62,91 @@ except ImportError:
     HAS_NETWORKX = False
     nx = None
 
-HAS_SCIPY = True  # Assume available for mathematical analysis
+
+def _finite_measurement(
+    value: Any, *, positive: bool = False, nonnegative: bool = False
+) -> float | None:
+    """Return a finite measured scalar, or ``None`` when evidence is absent."""
+
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
+        return None
+    try:
+        measured = float(value)
+    except (OverflowError, TypeError, ValueError):
+        return None
+    if not math.isfinite(measured):
+        return None
+    if positive and measured <= 0.0:
+        return None
+    if nonnegative and measured < 0.0:
+        return None
+    return measured
 
 
-def _extract_scalar_epi(val: Any) -> float:
-    """Extract scalar magnitude from potentially complex/dict EPI value."""
-    if isinstance(val, (int, float)):
-        return float(val)
-    if isinstance(val, complex):
-        return float(np.abs(val))
-    if isinstance(val, dict):
-        if "continuous" in val:
-            c = val["continuous"]
-            if isinstance(c, (tuple, list)) and len(c) > 0:
-                v = c[0]
-                return float(np.abs(v)) if isinstance(v, complex) else float(v)
-    return 0.0
+def _required_graph_scalar(
+    G: Any,
+    node: Any,
+    aliases: Sequence[str],
+    label: str,
+    *,
+    default: float = 0.0,
+    nonnegative: bool = False,
+) -> float:
+    """Read one finite graph scalar through strict alias precedence."""
+
+    raw = get_attr(
+        G.nodes[node], aliases, default, strict=True, conv=lambda value: value
+    )
+    value = _finite_measurement(raw, nonnegative=nonnegative)
+    if value is None:
+        qualifier = "nonnegative finite" if nonnegative else "finite"
+        raise TNFRValueError(f"node {node!r} {label} must be a {qualifier} real scalar")
+    return value
+
+
+def _node_scalar_epi(G: Any, node: Any) -> float:
+    """Read one finite signed scalar EPI through canonical alias precedence."""
+
+    raw = get_attr(
+        G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
+    )
+    return require_finite_real_scalar_epi(raw, f"node {node!r} EPI")
+
+
+def _result_evidence(result: Any) -> dict[str, float | int]:
+    """Extract only authoritative finite measurements from an optimizer result."""
+
+    evidence: dict[str, float | int] = {}
+    execution_time = _finite_measurement(
+        getattr(result, "execution_time", None), nonnegative=True
+    )
+    if execution_time is not None:
+        evidence["execution_time"] = execution_time
+
+    details = getattr(result, "details", {})
+    if not isinstance(details, Mapping):
+        return evidence
+    performance = details.get("performance_measurements")
+    if isinstance(performance, Mapping):
+        speedup = _finite_measurement(performance.get("speedup_factor"), positive=True)
+        memory = _finite_measurement(
+            performance.get("memory_used_mb"), nonnegative=True
+        )
+        if speedup is not None:
+            evidence["speedup_factor"] = speedup
+        if memory is not None:
+            evidence["memory_used_mb"] = memory
+
+    cache = details.get("cache_measurements")
+    if isinstance(cache, Mapping):
+        hits = cache.get("hits")
+        if (
+            isinstance(hits, int)
+            and not isinstance(hits, bool)
+            and hits >= 0
+        ):
+            evidence["cache_hits"] = hits
+    return evidence
 
 
 # Import Unified Fields (New Nov 2025)
@@ -100,7 +157,7 @@ try:
 except ImportError:
     HAS_UNIFIED_FIELDS = False
 
-# Import Structural Integrity Monitor (closed-loop conservation)
+# Import Structural Integrity Monitor (operator contracts + finite alerts)
 try:
     from ..physics.integrity import StructuralIntegrityMonitor
 
@@ -108,7 +165,7 @@ try:
 except ImportError:
     HAS_INTEGRITY_MONITOR = False
 
-# Import conservation functions for closed-loop optimization (P5)
+# Import finite structural-balance diagnostics for optimization telemetry (P5)
 try:
     from ..physics.conservation import (
         capture_conservation_snapshot,
@@ -147,15 +204,13 @@ try:
 except ImportError:
     HAS_ENGINES = False
 
-HAS_MATH_BACKENDS = True  # Assume available
-
 _SAFE_LABEL_RE = re.compile(r"[^A-Za-z0-9._-]+")
 _DEFAULT_OUTPUT_DIR = Path("results") / "self_optimization"
 
 # --- Self-optimization safety thresholds ---
-_MIN_CONSERVATION_QUALITY = 0.7  # below → add stabilizers
-_MAX_CHARGE_DRIFT = 0.1  # above → Noether charge drift correction
-_MAX_VIOLATION_RATE = 0.2  # above → grammar review needed
+_MIN_BALANCE_QUALITY_ALERT = 0.7
+_MAX_STRUCTURAL_CHARGE_DRIFT_ALERT = 0.1
+_MAX_MONITOR_ALERT_RATE = 0.2
 _MIN_EPI_VARIANCE = 0.01  # below → variance too low, optimize
 
 
@@ -171,15 +226,37 @@ def _sanitize_label(value: Any | None, default: str) -> str:
     return sanitized[:64] or default
 
 
-def _mean_numeric(values: Sequence[float]) -> float | None:
-    """Compute mean for numeric sequences with graceful fallback."""
-    data = [float(v) for v in values if isinstance(v, (int, float))]
+def _finite_population_variance(values: Sequence[float]) -> float | None:
+    """Return population variance, or ``None`` when it exceeds binary64."""
+
+    if not values:
+        return 0.0
+    scale = max(abs(value) for value in values)
+    if scale == 0.0:
+        return 0.0
+    normalized = [value / scale for value in values]
+    mean = fmean(normalized)
+    normalized_variance = fmean((value - mean) ** 2 for value in normalized)
+    if normalized_variance == 0.0:
+        return 0.0
+    if scale > math.sqrt(float(np.finfo(float).max) / normalized_variance):
+        return None
+    result = scale * scale * normalized_variance
+    return result if math.isfinite(result) else None
+
+
+def _mean_numeric(values: Sequence[Any]) -> float | None:
+    """Compute a mean only when every supplied sample is finite and numeric."""
+
+    data: list[float] = []
+    for value in values:
+        measured = _finite_measurement(value)
+        if measured is None:
+            return None
+        data.append(measured)
     if not data:
         return None
-    try:
-        return fmean(data)
-    except Exception:
-        return float(sum(data) / len(data))
+    return fmean(data)
 
 
 def _graph_structure(graph: Any) -> dict[str, Any]:
@@ -208,7 +285,7 @@ def _sense_index_mean(payload: Any) -> float | None:
         return None
     if array.size == 0:
         return None
-    return float(np.mean(array))
+    return _mean_numeric(list(array.reshape(-1)))
 
 
 def _json_safe(value: Any) -> Any:
@@ -275,7 +352,7 @@ class OptimizationExperience:
     operation_type: str
     strategy_used: str
     parameters: dict[str, Any]
-    performance_metrics: dict[str, float]
+    performance_metrics: dict[str, Any]
     timestamp: float
     success: bool
     mathematical_signature: dict[str, Any] | None = None
@@ -297,7 +374,11 @@ class OptimizationPolicy:
 
 @dataclass
 class SelfOptimizationResult:
-    """Result of self-optimization analysis."""
+    """Result of self-optimization analysis.
+
+    ``conservation_feedback`` is retained for compatibility.  Its accurately
+    scoped view is :attr:`balance_feedback`; neither field validates grammar.
+    """
 
     learned_policies: list[OptimizationPolicy]
     optimization_improvements: dict[str, float]
@@ -308,13 +389,24 @@ class SelfOptimizationResult:
     execution_time: float
     conservation_feedback: dict[str, float] | None = None
 
+    @property
+    def balance_feedback(self) -> dict[str, float] | None:
+        """Monitor feedback, with sample count, or ``None`` if unattached."""
+        return self.conservation_feedback
+
+    @property
+    def balance_alert_reviews(self) -> tuple[str, ...]:
+        """Review prompts kept outside executable optimization strategies."""
+        reviews = self.mathematical_insights.get("balance_alert_reviews", ())
+        return tuple(str(review) for review in reviews)
+
 
 class TNFRSelfOptimizingEngine:
     """
-    Self-optimizing engine that learns optimal strategies from mathematical structure.
+    Recommend computational strategies from graph diagnostics and measurements.
 
-    This engine discovers optimization patterns by analyzing the mathematical
-    properties of the nodal equation and learning from experience.
+    A learned policy summarizes available finite performance evidence. It is
+    conditional empirical guidance, not a proof of global optimality.
     """
 
     def __init__(
@@ -422,11 +514,14 @@ class TNFRSelfOptimizingEngine:
                 # Fallback if computation fails
                 insights["unified_field_error"] = str(e)
 
-        # Conservation Integrity Feedback (closed-loop)
+        # Finite balance / candidate-energy feedback. These diagnostics do not
+        # validate grammar and are kept separate from operator selection.
         if HAS_INTEGRITY_MONITOR:
             monitor = StructuralIntegrityMonitor.get(G) if G is not None else None
             if monitor is not None:
                 fv = monitor.feedback_vector()
+                insights["balance_feedback"] = fv
+                # Backward-compatible outer key.
                 insights["conservation_feedback"] = fv
 
         # Mathematical structure analysis
@@ -439,11 +534,17 @@ class TNFRSelfOptimizingEngine:
             # Extract optimization hints from discovered patterns
             optimization_hints = []
             for pattern in pattern_result.discovered_patterns:
-                if pattern.compression_ratio > SELF_OPT_COMPRESSION_HIGH_CANONICAL:
+                if (
+                    pattern.compression_ratio is not None
+                    and pattern.compression_ratio > SELF_OPT_COMPRESSION_HIGH_CANONICAL
+                ):
                     optimization_hints.append(
                         f"use_compression_{pattern.pattern_type.value}"
                     )
-                if pattern.prediction_horizon > PI:
+                if (
+                    pattern.prediction_horizon is not None
+                    and pattern.prediction_horizon > PI
+                ):
                     optimization_hints.append(
                         f"use_prediction_{pattern.pattern_type.value}"
                     )
@@ -457,14 +558,25 @@ class TNFRSelfOptimizingEngine:
             insights["compression_potential"] = pattern_result.compression_potential
 
         # Nodal equation analysis
-        epi_values = [
-            _extract_scalar_epi(G.nodes[node].get("EPI", 0.0)) for node in G.nodes()
+        epi_values = [_node_scalar_epi(G, node) for node in G.nodes()]
+        vf_values = [
+            _required_graph_scalar(
+                G,
+                node,
+                ALIAS_VF,
+                "structural frequency",
+                default=1.0,
+                nonnegative=True,
+            )
+            for node in G.nodes()
         ]
-        vf_values = [get_attr(G.nodes[node], ALIAS_VF, 1.0) for node in G.nodes()]
-        dnfr_values = [get_attr(G.nodes[node], ALIAS_DNFR, 0.0) for node in G.nodes()]
+        dnfr_values = [
+            _required_graph_scalar(G, node, ALIAS_DNFR, "DeltaNFR")
+            for node in G.nodes()
+        ]
 
         # Mathematical properties for optimization
-        epi_variance = np.var(epi_values) if epi_values else 0.0
+        epi_variance = _finite_population_variance(epi_values)
         vf_range = np.max(vf_values) - np.min(vf_values) if vf_values else 0
         dnfr_magnitude = np.mean(np.abs(dnfr_values)) if dnfr_values else 0
 
@@ -495,19 +607,40 @@ class TNFRSelfOptimizingEngine:
             if ufa.get("energy_density", 0) > SELF_OPT_ENERGY_HIGH_CANONICAL:
                 recommendations.append("high_energy_stabilization")
 
-        # Conservation-based recommendations (closed-loop)
-        cf = insights.get("conservation_feedback")
+        # Diagnostic review prompts. A residual, structural-charge drift, or
+        # candidate-energy increase does not prescribe an operator, identify
+        # a U-rule failure, or enter the executable optimization strategy list.
+        balance_alert_reviews: list[str] = []
+        cf = insights.get("balance_feedback", insights.get("conservation_feedback"))
         if cf is not None:
-            if cf.get("conservation_quality", 1.0) < _MIN_CONSERVATION_QUALITY:
-                recommendations.append("conservation_quality_low_stabilize")
-            if cf.get("energy_derivative", 0.0) > 0:
-                recommendations.append("lyapunov_unstable_add_IL")
-            if cf.get("charge_drift", 0.0) > _MAX_CHARGE_DRIFT:
-                recommendations.append("noether_charge_drift_correction")
-            if cf.get("violation_rate", 0.0) > _MAX_VIOLATION_RATE:
-                recommendations.append("high_violation_rate_grammar_review")
+            has_balance_samples = cf.get("balance_sample_count", 1.0) > 0.0
+            balance_quality = cf.get(
+                "balance_quality", cf.get("conservation_quality", 1.0)
+            )
+            candidate_derivative = cf.get(
+                "candidate_energy_derivative", cf.get("energy_derivative", 0.0)
+            )
+            charge_drift = cf.get(
+                "mean_structural_charge_drift",
+                cf.get("structural_charge_drift", cf.get("charge_drift", 0.0)),
+            )
+            alert_rate = cf.get(
+                "monitor_alert_rate", cf.get("violation_rate", 0.0)
+            )
+            if has_balance_samples and balance_quality < _MIN_BALANCE_QUALITY_ALERT:
+                balance_alert_reviews.append("balance_quality_low_review")
+            if has_balance_samples and candidate_derivative > 0.0:
+                balance_alert_reviews.append("candidate_energy_increase_review")
+            if (
+                has_balance_samples
+                and charge_drift > _MAX_STRUCTURAL_CHARGE_DRIFT_ALERT
+            ):
+                balance_alert_reviews.append("structural_charge_drift_review")
+            if alert_rate > _MAX_MONITOR_ALERT_RATE:
+                balance_alert_reviews.append("monitor_alert_rate_review")
+        insights["balance_alert_reviews"] = balance_alert_reviews
 
-        if epi_variance < _MIN_EPI_VARIANCE:
+        if epi_variance is not None and epi_variance < _MIN_EPI_VARIANCE:
             recommendations.append("low_variance_epi_optimization")
         if vf_range < NODAL_OPT_COUPLING_CANONICAL:
             recommendations.append("uniform_vf_optimization")
@@ -587,16 +720,23 @@ class TNFRSelfOptimizingEngine:
                 strategy_performance = defaultdict(list)
                 for exp in experiences:
                     strategy = exp.strategy_used
-                    improvement = exp.performance_metrics.get("speedup_factor", 1.0)
-                    strategy_performance[strategy].append(improvement)
+                    improvement = _finite_measurement(
+                        exp.performance_metrics.get("speedup_factor"), positive=True
+                    )
+                    if improvement is not None:
+                        strategy_performance[strategy].append(improvement)
 
                 # Select best strategy
                 best_strategy = None
-                best_avg_improvement = 0
+                best_avg_improvement = 0.0
+                best_sample_count = 0
                 for strategy, improvements in strategy_performance.items():
-                    avg_improvement = np.mean(improvements)
+                    if len(improvements) < 3:
+                        continue
+                    avg_improvement = fmean(improvements)
                     if avg_improvement > best_avg_improvement:
                         best_avg_improvement = avg_improvement
+                        best_sample_count = len(improvements)
                         best_strategy = strategy
 
                 if (
@@ -615,8 +755,10 @@ class TNFRSelfOptimizingEngine:
                         actions={
                             "recommended_strategy": best_strategy,
                             "expected_improvement": best_avg_improvement,
+                            "measurement_sample_count": best_sample_count,
+                            "evidence_basis": "measured_speedup_factor",
                         },
-                        confidence=min(len(experiences) / 10.0, 1.0),
+                        confidence=min(best_sample_count / 10.0, 1.0),
                         success_rate=len(experiences)
                         / max(
                             1,
@@ -629,6 +771,7 @@ class TNFRSelfOptimizingEngine:
                             ),
                         ),
                         average_improvement=best_avg_improvement,
+                        applications_count=best_sample_count,
                     )
                     new_policies.append(policy)
 
@@ -678,20 +821,23 @@ class TNFRSelfOptimizingEngine:
         if not successful_experiences:
             return
 
-        # Update cache size based on memory vs performance tradeoff
-        memory_usage = [
-            e.performance_metrics.get("memory_used_mb", 0)
-            for e in successful_experiences
-        ]
-        speedups = [
-            e.performance_metrics.get("speedup_factor", 1.0)
-            for e in successful_experiences
-        ]
+        # Update cache size only from runs that measured both quantities.
+        memory_speedup_pairs = []
+        for experience in successful_experiences:
+            memory = _finite_measurement(
+                experience.performance_metrics.get("memory_used_mb"),
+                nonnegative=True,
+            )
+            speedup = _finite_measurement(
+                experience.performance_metrics.get("speedup_factor"),
+                positive=True,
+            )
+            if memory is not None and speedup is not None:
+                memory_speedup_pairs.append((memory, speedup))
 
-        if len(memory_usage) > 0 and len(speedups) > 0:
-            # Simple heuristic: increase cache if low memory usage but good speedup
-            avg_memory = np.mean(memory_usage)
-            avg_speedup = np.mean(speedups)
+        if memory_speedup_pairs:
+            avg_memory = fmean(pair[0] for pair in memory_speedup_pairs)
+            avg_speedup = fmean(pair[1] for pair in memory_speedup_pairs)
 
             if (
                 avg_memory
@@ -716,8 +862,11 @@ class TNFRSelfOptimizingEngine:
         backend_performance = defaultdict(list)
         for exp in successful_experiences:
             backend = exp.parameters.get("backend", "numpy")
-            speedup = exp.performance_metrics.get("speedup_factor", 1.0)
-            backend_performance[backend].append(speedup)
+            speedup = _finite_measurement(
+                exp.performance_metrics.get("speedup_factor"), positive=True
+            )
+            if speedup is not None:
+                backend_performance[backend].append(speedup)
 
         if backend_performance:
             best_backend = max(
@@ -726,16 +875,21 @@ class TNFRSelfOptimizingEngine:
             )
             self.adaptive_config["backend_preference"] = best_backend
 
-        # Track conservation health across experiences (P5)
-        conservation_drifts = [
-            e.performance_metrics["conservation_charge_drift"]
-            for e in recent_experiences
-            if "conservation_charge_drift" in e.performance_metrics
-        ]
-        if conservation_drifts:
-            self.adaptive_config["mean_conservation_drift"] = float(
-                np.mean(conservation_drifts)
+        # Track the finite structural-charge diagnostic across experiences.
+        structural_charge_drifts = []
+        for experience in recent_experiences:
+            raw_drift = experience.performance_metrics.get(
+                "structural_charge_drift",
+                experience.performance_metrics.get("conservation_charge_drift"),
             )
+            drift = _finite_measurement(raw_drift)
+            if drift is not None:
+                structural_charge_drifts.append(drift)
+        if structural_charge_drifts:
+            mean_drift = fmean(structural_charge_drifts)
+            self.adaptive_config["mean_structural_charge_drift"] = mean_drift
+            # Backward-compatible configuration alias.
+            self.adaptive_config["mean_conservation_drift"] = mean_drift
 
     def recommend_optimization_strategy(
         self,
@@ -784,9 +938,12 @@ class TNFRSelfOptimizingEngine:
         # From learned policies
         for policy in matching_policies:
             strategy = policy.actions.get("recommended_strategy")
-            if strategy:
+            measured_prediction = _finite_measurement(
+                policy.average_improvement, positive=True
+            )
+            if strategy and measured_prediction is not None:
                 recommended_strategies.append(strategy)
-                predicted_speedups[strategy] = policy.average_improvement
+                predicted_speedups[strategy] = measured_prediction
 
         # From mathematical analysis
         math_recommendations = mathematical_insights.get(
@@ -801,25 +958,12 @@ class TNFRSelfOptimizingEngine:
         # Remove duplicates while preserving order
         recommended_strategies = list(dict.fromkeys(recommended_strategies))
 
-        # Conservation-aware strategy reordering (P5: closed-loop)
-        # When conservation is stressed, prefer safe computational strategies
-        # to avoid aggressive optimizations that may degrade structural integrity.
-        cf = mathematical_insights.get("conservation_feedback")
-        if cf is not None:
-            cq = cf.get("conservation_quality", 1.0)
-            de_dt = cf.get("energy_derivative", 0.0)
-            if cq < _MIN_CONSERVATION_QUALITY or de_dt > 0:
-                safe = []
-                other = []
-                for s in recommended_strategies:
-                    if any(
-                        kw in s.lower()
-                        for kw in ("cache", "structural", "stabiliz", "memo")
-                    ):
-                        safe.append(s)
-                    else:
-                        other.append(s)
-                recommended_strategies = safe + other
+        # Balance and candidate-energy alerts are surfaced for review above.
+        # They do not reorder computational strategies because they do not
+        # identify a cause or prescribe a canonical structural operator.
+        cf = mathematical_insights.get(
+            "balance_feedback", mathematical_insights.get("conservation_feedback")
+        )
 
         # Calculate optimization improvements
         optimization_improvements = {}
@@ -940,7 +1084,7 @@ class TNFRSelfOptimizingEngine:
                     optimization_strategy = strategy
                     break
 
-            # Conservation pre-check (P5: capture baseline conserved quantities)
+            # Capture a baseline for finite structural-balance diagnostics.
             conservation_before = None
             if HAS_CONSERVATION and G is not None:
                 try:
@@ -957,9 +1101,10 @@ class TNFRSelfOptimizingEngine:
                     G, operation_type, optimization_strategy, **exec_kwargs
                 )
 
-                # Conservation post-check (P5: verify conservation balance)
+                # Finite balance / candidate-energy post-check. These fields
+                # are diagnostic and do not validate grammar or decide whether
+                # the computational optimization succeeded.
                 conservation_result = None
-                conservation_healthy = True
                 if (
                     conservation_before is not None
                     and HAS_CONSERVATION
@@ -973,29 +1118,49 @@ class TNFRSelfOptimizingEngine:
                         lyapunov = compute_lyapunov_derivative(
                             conservation_before, conservation_after
                         )
-                        violations = detect_grammar_violations_from_conservation(
-                            balance
-                        )
+                        alerts = detect_grammar_violations_from_conservation(balance)
                         conservation_result = {
+                            "structural_charge_drift": balance.charge_drift,
+                            "balance_rms_residual": balance.rms_residual,
+                            "balance_quality": balance.conservation_quality,
+                            "candidate_energy_nonincreasing": (
+                                lyapunov.energy_derivative <= 0.0
+                            ),
+                            "candidate_energy_within_numerical_tolerance": (
+                                lyapunov.is_stable
+                            ),
+                            "candidate_energy_derivative": (
+                                lyapunov.energy_derivative
+                            ),
+                            "balance_alerts_detected": alerts["alerts_detected"],
+                            "balance_alert_types": alerts.get("alert_types", []),
+                            "grammar_validated": False,
+                            # Backward-compatible historical keys. The legacy
+                            # grammar-shaped fields stay false/empty.
                             "charge_drift": balance.charge_drift,
                             "rms_residual": balance.rms_residual,
                             "lyapunov_stable": lyapunov.is_stable,
                             "energy_derivative": lyapunov.energy_derivative,
-                            "violations_detected": violations["violations_detected"],
-                            "violation_types": violations.get("violation_types", []),
+                            "violations_detected": False,
+                            "violation_types": [],
                         }
-                        conservation_healthy = not violations["violations_detected"]
                     except Exception:
                         pass
 
-                # Record experience (P5: includes conservation metrics)
-                perf_metrics: dict[str, float] = {
-                    "speedup_factor": result.speedup_factor,
-                    "execution_time": result.execution_time,
-                    "memory_used_mb": result.memory_used_mb,
-                    "cache_hits": result.cache_hits,
-                }
+                # Record only authoritative measurements. Legacy result
+                # sentinels (speedup=1, memory=0, cache=0) are not evidence.
+                perf_metrics: dict[str, Any] = _result_evidence(result)
                 if conservation_result is not None:
+                    perf_metrics["structural_charge_drift"] = conservation_result[
+                        "structural_charge_drift"
+                    ]
+                    perf_metrics["candidate_energy_derivative"] = (
+                        conservation_result["candidate_energy_derivative"]
+                    )
+                    perf_metrics["balance_rms_residual"] = conservation_result[
+                        "balance_rms_residual"
+                    ]
+                    # Backward-compatible metric aliases.
                     perf_metrics["conservation_charge_drift"] = conservation_result[
                         "charge_drift"
                     ]
@@ -1017,7 +1182,7 @@ class TNFRSelfOptimizingEngine:
                     parameters=exec_kwargs,
                     performance_metrics=perf_metrics,
                     timestamp=time.time(),
-                    success=result.accuracy_preserved and conservation_healthy,
+                    success=result.accuracy_preserved,
                     mathematical_signature=recommendations.mathematical_insights,
                 )
 
@@ -1030,6 +1195,8 @@ class TNFRSelfOptimizingEngine:
                     "strategy_used": optimization_strategy.value,
                     "recommendations": recommendations,
                     "learning_updated": True,
+                    "balance_diagnostics": conservation_result,
+                    # Backward-compatible outer key.
                     "conservation": conservation_result,
                     "telemetry_snapshots": (
                         {

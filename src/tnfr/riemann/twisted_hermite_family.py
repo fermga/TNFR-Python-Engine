@@ -42,7 +42,7 @@ Reuse
 * :func:`tnfr.riemann.twisted_weil_explicit_formula.twisted_weil_zero_side`
   -- chi-twisted Hardy-Z zero-side enumerator (unchanged from P35).
 * :func:`tnfr.physics.conservation.compute_energy_functional`
-  -- TNFR Lyapunov energy (unchanged from P17).
+  -- nonnegative TNFR structural snapshot-energy candidate.
 
 Honesty disclaimer
 ------------------
@@ -171,7 +171,7 @@ def sweep_twisted_hermite2_eta(
     For each ``(eta, sigma)`` pair the chi-twisted Weil functional
     :math:`W_\chi[\sigma; h_{\sigma,\eta}]` is computed *once*
     (gauge-independent) via :func:`twisted_weil_zero_side` (P35).  For
-    each ``(eta, gauge, sigma)`` triple the TNFR Lyapunov energy is
+    each ``(eta, gauge, sigma)`` triple the TNFR structural snapshot-energy candidate is
     computed by building the test state with the corresponding
     Hermite2 profile and gauge on the P34 chi-twisted graph, then
     evaluating :func:`tnfr.physics.conservation.compute_energy_functional`.

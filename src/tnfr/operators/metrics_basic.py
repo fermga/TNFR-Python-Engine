@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from ..alias import get_attr_str
+from ..utils import angle_diff
 from .metrics_core import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from .metrics_core import EMISSION_TIMESTAMP_TUPLE as _ALIAS_EMISSION_TIMESTAMP_TUPLE
 from .metrics_core import HAS_EMISSION_TIMESTAMP_ALIAS as _HAS_EMISSION_TIMESTAMP_ALIAS
@@ -498,7 +499,7 @@ def dissonance_metrics(G, node, dnfr_before, theta_before):
         # Quantitative dynamics
         "dnfr_increase": dnfr_after - dnfr_before,
         "dnfr_final": dnfr_after,
-        "theta_shift": abs(theta_after - theta_before),
+        "theta_shift": abs(angle_diff(theta_after, theta_before)),
         "theta_final": theta_after,
         "d2epi": d2epi,
         # Bifurcation analysis

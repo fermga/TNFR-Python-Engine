@@ -56,7 +56,7 @@ $$
 
 Substituting $\nu_f = 1/m$ yields $F = ma$ under the inertial reading; departures introduce corrections proportional to $|\nabla\phi|$.
 
-**Regime refinement.** The bare nodal equation is *first order* in time, so taken literally (EPI as a position-like coordinate, $\Delta\mathrm{NFR}$ as force) it yields the **overdamped drift law** $\dot{q} = \nu_f\,F$ — velocity proportional to force, with $\nu_f$ acting as a **mobility**, not an inverse mass. The genuine **inertial** Newtonian regime ($\ddot{q} = F/m$, second order) demonstrated below — Keplerian orbits and the symplectic integrators of §2.5 — is realized through the second-order **emergent symplectic substrate** (Hamiltonian flow), not through the first-order nodal equation alone. Both regimes are empirically grounded but structurally distinct; see [../AGENTS.md](../AGENTS.md) §"Smooth-Trajectory Correspondence" and §"Emergent Symplectic Substrate".
+**Regime refinement.** The bare nodal equation is *first order* in time, so taken literally (EPI as a position-like coordinate, $\Delta\mathrm{NFR}$ as force) it yields the **overdamped drift law** $\dot{q} = \nu_f\,F$ — velocity proportional to force, with $\nu_f$ acting as a **mobility**, not an inverse mass. The second-order Newtonian examples ($\ddot{q}=F/m$) use an explicitly chosen classical adapter. Separately, a damped graph wave has a restricted pure-EPI diffusion limit. Neither construction derives the full inertial regime from the isotropic auxiliary substrate or from the first-order nodal law.
 
 ### 2.4 Force Interpretation
 
@@ -240,7 +240,12 @@ The five regimes form a coherent hierarchy indexed by the degree of structural d
 | Quantum | High | $\sim \pi$ | $\Psi$, winding number | Discrete eigenvalues |
 | Uncertainty | High + localized | Broadband | $\sigma_t \sigma_f$ product | Fourier bound |
 
-All regimes emerge from the same nodal equation as limiting cases under different parameter conditions. The correspondences to established physics are structural analogies that demonstrate the internal consistency of the TNFR formalism, not derivations of those physical theories from first principles.
+These regimes organize several implemented TNFR read-outs and declared auxiliary
+models. Only reductions with explicit hypotheses, such as fixed-graph EPI
+diffusion, follow from the nodal equation. The classical, thermodynamic, and
+quantum-labelled constructions are scoped correspondences or adapters; their
+presence in one package does not derive those physical theories from the nodal
+equation.
 
 ---
 
@@ -265,45 +270,51 @@ All regimes emerge from the same nodal equation as limiting cases under differen
 
 > Originally `docs/TNFR_CLASSICAL_MAPPING.md`. Consolidated here as the canonical mapping reference.
 
-**Scope**: Applies to low-dissonance, high-coherence regimes where TNFR reproduces Newtonian behavior (see `src/tnfr/dynamics/nbody.py`).
+**Scope**: This is an adapter dictionary. `dynamics/nbody.py` assumes the
+Newtonian potential, while `dynamics/nbody_tnfr.py` assumes a different
+regularized phase-coupled pair law. Neither model derives Newtonian mechanics
+from coherence or from the nodal equation.
 
 | TNFR Quantity | Definition (TNFR) | Classical Analog | Notes |
 |---------------|-------------------|------------------|-------|
 | **EPI** | Coherent form (spatial + kinematic state) | Generalized coordinates $q$, velocities $\dot{q}$ | Structural Triad |
-| **νf** | Reorganization rate (Hz_str) | Inertial mass via $m = 1/\nu_f$ | High νf → low inertia |
-| **ΔNFR** | Structural pressure | Generalized force $F = -\nabla U$ | Hamiltonian-derived |
-| **Φ_s** | Inverse-square ΔNFR accumulation | Potential energy $U(q)$ | U6 confinement ↔ potential wells |
+| **νf** | Reorganization rate (Hz_str) | Mobility in the overdamped projection | High νf → faster drift for fixed pressure |
+| **ΔNFR** | Structural pressure in the engine | Force/acceleration slot in an adapter | The Newtonian solver supplies it externally; the phase-coupled adapter's legacy commutator read-out is zero |
+| **Φ_s** | Inverse-square ΔNFR accumulation | Potential-like readout | U6 monitors drift between declared snapshots; a well analogy adds no bound |
 | **\|∇φ\|** | Local desynchronization | Stress/strain rate, tidal gradients | Shear force analog |
-| **K_φ** | Phase torsion | Curvature-induced forces (centripetal) | Geometric confinement |
-| **ξ_C** | Correlation decay scale | Interaction range / mean free path | Large ξ_C → long-range forces |
+| **K_φ** | Phase torsion read-out | Curvature comparison | Does not generate the adapter force |
+| **ξ_C** | Correlation decay scale | Interaction-range comparison | Does not set either N-body pair law |
 | **Ψ = K_φ + i·J_φ** | Complex geometric field | Complexified action density | Hamilton-Jacobi analog |
-| **Operator sequences** | Canonical transformations | Work/impulse protocols | Grammar U1-U6 ↔ mechanical admissibility |
+| **Operator sequences** | Canonical engine transformations | Work/impulse comparison | No equivalence between grammar validity and mechanical admissibility is established |
 
-**Structural Triad ↔ Phase Space**:
-- Form (EPI) → Canonical coordinates $(q, p)$
-- Frequency (νf) → Mass/inertia $m$
-- Phase (φ/θ) → Canonical phase (action-angle coordinates)
+**Structural Triad ↔ Phase Space comparison**:
+- Form (EPI) → configuration coordinate in the overdamped projection
+- Frequency (νf) → mobility; an inertial mass belongs only to a separately
+  specified conservative substrate model
+- Phase (φ/θ) → oscillator phase; action-angle status requires the auxiliary
+  Hamiltonian construction
 
 **Field Tetrad ↔ Energetics**:
-- Φ_s → potential wells; $\Delta\Phi_s < \pi/2$ mirrors bounded energy basins
-- |∇φ| → velocity potential gradient (fluid mechanics analog)
-- K_φ → curvature-induced forces (centripetal/Coriolis terms)
-- ξ_C → interaction range; large ξ_C produces long-range coupling analogous to gravitational/electromagnetic interactions, small ξ_C mimics contact forces
+- Φ_s → source-aggregation diagnostic; mean $|\Delta\Phi_s| < \pi/2$ is a
+  selected before/after policy, not a potential-energy bound
+- |∇φ| → local phase-stress comparison
+- K_φ → phase-curvature comparison; no centripetal/Coriolis force follows from it
+- ξ_C → fitted correlation-range comparison; the N-body force laws do not read it
 
 ### Executable Demonstrations
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [11_classical_limit_comparison.py](../examples/02_physics_regimes/11_classical_limit_comparison.py) | TNFR vs classical N-body comparison |
+| [11_classical_limit_comparison.py](../examples/02_physics_regimes/11_classical_limit_comparison.py) | Finite comparison of Newtonian and declared phase-coupled N-body adapters |
 | [12_classical_mechanics_demo.py](../examples/02_physics_regimes/12_classical_mechanics_demo.py) | Keplerian orbits from symplectic integrator |
-| [13_quantum_mechanics_demo.py](../examples/02_physics_regimes/13_quantum_mechanics_demo.py) | Emergent quantization from resonant standing waves |
-| [14_uncertainty_and_interference.py](../examples/02_physics_regimes/14_uncertainty_and_interference.py) | Structural uncertainty (ΔForm·Δνf ≥ K), double slit |
+| [13_quantum_mechanics_demo.py](../examples/02_physics_regimes/13_quantum_mechanics_demo.py) | Finite standing-wave spectral correspondence |
+| [14_uncertainty_and_interference.py](../examples/02_physics_regimes/14_uncertainty_and_interference.py) | Auxiliary Fourier-width and interference correspondence |
 | [15_train_crossing_demo.py](../examples/02_physics_regimes/15_train_crossing_demo.py) | Free-particle classical kinematics |
 
 ### Key Source Modules
 
-- `src/tnfr/physics/classical_mechanics.py` — Classical limit (Keplerian orbits, Newton's laws)
-- `src/tnfr/physics/quantum_mechanics.py` — Quantum regime (quantization, superposition)
+- `src/tnfr/physics/classical_mechanics.py` — Explicit classical adapter and diagnostics
+- `src/tnfr/physics/quantum_mechanics.py` — Finite spectral correspondence utilities
 
 ---
 

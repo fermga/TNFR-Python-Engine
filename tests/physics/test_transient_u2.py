@@ -1,4 +1,4 @@
-r"""Tests for the transient U2/U6 certificate.
+r"""Tests for the transient U2 and potential-magnitude certificate.
 
 These tests cover contracting fixtures and a weighted counterexample. The
 ambient gain can additionally include the oblique projection factor ``‖Q‖``;
@@ -6,6 +6,8 @@ stationary-weighted contraction is tested separately.
 """
 
 from __future__ import annotations
+
+from dataclasses import asdict, replace
 
 import numpy as np
 import pytest
@@ -103,7 +105,7 @@ def test_normal_graph_has_unit_ambient_gain():
 
 
 # --------------------------------------------------------------------------- #
-# Structural potential operator (U6)
+# Structural-potential magnitude diagnostics
 # --------------------------------------------------------------------------- #
 def test_potential_operator_inverse_square_kernel():
     # undirected support path 0-1-2: d(0,1)=1, d(1,2)=1, d(0,2)=2
@@ -116,6 +118,15 @@ def test_potential_operator_inverse_square_kernel():
     assert np.allclose(b, b.T)              # symmetric distance kernel
 
 
+def test_matrix_potential_kernel_preserves_directed_reachability():
+    adjacency = np.array([[0, 1, 0], [0, 0, 1], [1, 0, 0]], dtype=float)
+
+    kernel = potential_operator(adjacency)
+
+    assert kernel[0, 1] == pytest.approx(1.0)
+    assert kernel[1, 0] == pytest.approx(0.25)
+
+
 def test_graph_potential_kernel_preserves_directed_weighted_convention():
     graph = __import__("networkx").DiGraph()
     graph.add_weighted_edges_from([(0, 1, 2.0), (1, 2, 3.0), (2, 0, 4.0)])
@@ -126,6 +137,19 @@ def test_graph_potential_kernel_preserves_directed_weighted_convention():
     assert kernel[1, 0] == pytest.approx(1.0 / 49.0)
 
 
+def test_graph_potential_kernel_prefers_length_over_conductance():
+    graph = __import__("networkx").DiGraph()
+    graph.add_edge(0, 1, weight=100.0, length=2.0)
+    graph.add_edge(1, 2, weight=100.0, length=3.0)
+    graph.add_edge(0, 2, weight=1.0, length=10.0)
+
+    nodes, kernel = potential_operator_from_graph(graph)
+
+    assert nodes == [0, 1, 2]
+    assert kernel[0, 1] == pytest.approx(1.0 / 4.0)
+    assert kernel[0, 2] == pytest.approx(1.0 / 25.0)
+
+
 def test_structural_potential_peak_within_operator_bound():
     for w in [NORMAL, *NON_NORMALS]:
         x = _unit([(-1) ** i * (1.0 / (i + 1)) for i in range(len(w))])
@@ -133,11 +157,15 @@ def test_structural_potential_peak_within_operator_bound():
         assert peak <= bound * (1.0 + 1e-6)
 
 
-def test_u6_confined_for_small_perturbation():
-    # a small non-consensus perturbation keeps Φ_s below the π/2 drift limit
+def test_small_perturbation_has_small_potential_magnitude_without_u6_verdict():
+    # A magnitude below π/2 does not assess U6 without a reference state.
     c = certify_transient_u2(NON_NORMAL, 0.1 * X4)
-    assert c.peak_structural_potential < U6_STRUCTURAL_POTENTIAL_LIMIT
-    assert c.u6_confined
+    assert c.peak_structural_potential_magnitude < U6_STRUCTURAL_POTENTIAL_LIMIT
+    assert c.potential_magnitude_below_pi_scale
+    assert not c.u6_drift_assessed
+    # Compatibility aliases preserve the old API while exposing honest semantics.
+    assert c.peak_structural_potential == c.peak_structural_potential_magnitude
+    assert c.u6_confined is c.potential_magnitude_below_pi_scale
 
 
 @pytest.mark.parametrize("kwargs", [{"t_max": -1.0}, {"samples": 1}])
@@ -155,7 +183,45 @@ def test_transient_certificate_reports_unassessed_tail():
     assert certificate.observation_window_structural == pytest.approx(40.0)
     assert certificate.tail_status == "UNASSESSED_FINITE_WINDOW"
     assert certificate.continuous_u6_status == (
-        "INCONCLUSIVE_NO_INTERVAL_OR_TAIL_BOUND"
+        "NOT_ASSESSED_NO_REFERENCE_STATE_TRAJECTORY"
+    )
+    assert not certificate.u6_drift_assessed
+
+
+def test_transient_certificate_rejects_unimplemented_metric_label():
+    with pytest.raises(ValueError, match="norm_kind.*euclidean_nonconsensus"):
+        certify_transient_u2(NON_NORMAL, X4, norm_kind="weighted_l2")
+
+
+def test_single_node_certificate_has_trivial_nonconsensus_sector():
+    certificate = certify_transient_u2(np.zeros((1, 1)), np.array([0.25]))
+
+    assert certificate.peak_gain == 0.0
+    assert certificate.kreiss_lower_bound == 0.0
+    assert certificate.integrated_reorganization == 0.0
+    assert certificate.integrated_reorganization_bound == 0.0
+    assert certificate.bounds_hold
+
+
+@pytest.mark.parametrize("x0", [[1.0], [1.0, float("nan"), 0.0, 0.0]])
+def test_transient_certificate_rejects_misaligned_or_nonfinite_state(x0):
+    with pytest.raises(ValueError, match="x0 must be a finite vector"):
+        certify_transient_u2(NON_NORMAL, x0)
+
+
+def test_legacy_dataclass_fields_remain_serializable_and_constructible():
+    certificate = certify_transient_u2(NON_NORMAL, X4)
+    payload = asdict(certificate)
+
+    assert "peak_structural_potential" in payload
+    assert "structural_potential_bound" in payload
+    assert "u6_confined" in payload
+    rebuilt = type(certificate)(**payload)
+    assert rebuilt == certificate
+    assert replace(certificate, u6_confined=False).u6_confined is False
+    assert (
+        certificate.peak_structural_potential_magnitude
+        == certificate.peak_structural_potential
     )
 
 

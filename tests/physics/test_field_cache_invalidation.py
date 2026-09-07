@@ -229,6 +229,17 @@ def test_potential_invalidates_after_edge_weight_change():
     assert compute_structural_potential(graph) == {0: 0.25, 1: 0.25}
 
 
+def test_potential_invalidates_after_explicit_edge_length_change():
+    """The independent length channel participates in the topology cache key."""
+    graph = nx.path_graph(2)
+    graph[0][1].update(weight=7.0, length=1.0)
+    for node in graph:
+        set_attr(graph.nodes[node], ALIAS_DNFR, 1.0)
+    assert compute_structural_potential(graph) == {0: 1.0, 1: 1.0}
+    graph[0][1]["length"] = 2.0
+    assert compute_structural_potential(graph) == {0: 0.25, 1: 0.25}
+
+
 def test_landmark_cache_separates_relabelled_topologies():
     """Equal node counts/degrees do not identify a distance matrix's labels."""
     _PHI_S_DISTANCE_CACHE.clear()

@@ -42,8 +42,8 @@ li_keiper
     closure, but a TNFR-native witness for RH).
 weil_positivity
     P17 Weil-TNFR positivity bridge: tabulates the RH-equivalent
-    Weil functional W[σ] = Σ_γ h_σ(γ) against the canonical TNFR
-    Lyapunov energy E_TNFR[σ] across a Gaussian-width grid.
+    Weil functional W[σ] = Σ_γ h_σ(γ) against a nonnegative TNFR
+    structural-energy candidate E_TNFR[σ] across a Gaussian-width grid.
     Experimental research diagnostic (does NOT close gap G4 = RH).
 alpha_sweep
     P18 admissibility / gauge sweep of α(σ) = W[σ] / E_TNFR[σ]:
@@ -220,12 +220,12 @@ twisted_weil_positivity
     enumerator (zero side) and via the chi-twisted Weil-Guinand
     explicit formula with the P34 chi-twisted prime-ladder
     Hamiltonian for the prime side -- and checking W_chi[sigma] >= 0;
-    (2) chi-twisted TNFR Lyapunov bridge alpha_chi(sigma) :=
+    (2) chi-twisted structural candidate-energy ratio alpha_chi(sigma) :=
         W_chi[sigma] / E_TNFR_chi[sigma]
-    tabulated across a Gaussian width grid using a canonical
+    tabulated across a Gaussian width grid using a declared
     structural test state on the P34 graph. Implemented for primitive
-    real characters (chi_3, chi_4, chi_5). GRH_chi-equivalent
-    diagnostic on a finite Gaussian grid; does NOT prove GRH for any
+    real characters (chi_3, chi_4, chi_5). This finite-grid comparison
+    does not make the snapshot a Lyapunov functional or prove GRH for any
     L(s, chi) and does NOT advance G4 = RH.
 twisted_alpha_sweep
     P38 chi-twisted admissibility / gauge sweep of
@@ -398,28 +398,17 @@ twisted_oscillatory_correction
     counterpart.  Does NOT close G4 = RH, does NOT prove GRH for
     any L(s, chi).
 remesh_infinity_residue_split
-    P50 function-space diagnostic that lifts the N15 REMESH-infinity
-    closure (theory/REMESH_INFINITY_DERIVATION.md) into the
-    TNFR-Riemann program.  Splits the canonical P31 oscillatory
-    correction signal S_TNFR(T) into its projections on
-    range(R_infinity) and ker(R_infinity) using the N15-resonant
-    Fourier-mode mask at the canonical pair (tau_l, tau_g) = (4, 8).
-    Pre-registered structural prediction: the prime-ladder spectrum
-    has Fourier support exclusively at {k log p}, which by Baker's
-    theorem on linear independence of logarithms of algebraic
-    numbers is disjoint from the N15-resonant rational-multiple-of-
-    pi lattice; therefore the canonical reconstruction must lie
-    asymptotically in ker(R_infinity).  Verdicts:
-    RESIDUE_IN_KER_ONLY (branch B2 evidence at the function-space
-    level; corroborates the section 13septies / 13nonies structural
-    identification of the T-HP residual obstruction with the
-    oscillatory half), RESIDUE_IN_RANGE_ONLY (would refute P31),
-    RESIDUE_MIXED (gauge leak in P30 or boundary artefact).  Does
-    NOT advance G4 = RH; does NOT close T-HP; does NOT promote any
-    new canonical operator beyond the 13-operator catalog.
-    Complementary to the section 13vicies-novies graph-iteration-
-    matrix tests (which act on EPI-history state vectors): P50 acts
-    on a function in H^2(T-axis), a different mathematical object.
+    P50 finite-window Fourier diagnostic. The legacy module and API
+    names are retained for compatibility. It splits the finite P31
+    signal S_TNFR(T) between DFT bins fixed by both declared delays
+    and their orthogonal complement. Fixed modes are governed by
+    gcd(tau_l, tau_g); lcm(tau_l, tau_g) remains only a backward-
+    compatible sample-alignment requirement. Off-grid prime-ladder
+    frequencies produce finite spectral leakage, so the reported
+    verdicts describe one window, truncation and threshold. They do
+    not identify the analytic support of S(T), a runtime
+    tau_g -> infinity limit, or the open part of T-HP. No conclusion
+    about G4 = RH or completeness of the operator catalog follows.
 """
 
 from .admissible_family_sweep import (  # P19: admissible-family sweep (family × gauge × sigma)
@@ -599,7 +588,7 @@ from .prime_ladder_hamiltonian import (  # Graph + weight operator (P14); Hamilt
     verify_hamiltonian_reproduces_prime_ladder,
     weighted_spectral_trace,
 )
-from .remesh_infinity_residue_split import (  # P50: R_infinity residue split of the P31 oscillatory correction
+from .remesh_infinity_residue_split import (  # P50: legacy names; finite fixed-delay DFT split
     ResidueSplitCertificate,
     build_resonant_bin_mask,
     compute_residue_split_certificate,
@@ -737,6 +726,7 @@ from .twisted_weil_positivity import (  # P37: chi-twisted Weil-TNFR positivity 
     TwistedWeilTNFRBridgeCertificate,
     build_twisted_structural_test_state,
     twisted_tnfr_lyapunov_of_test_state,
+    twisted_tnfr_structural_energy_of_test_state,
     verify_twisted_weil_positivity,
     verify_twisted_weil_tnfr_bridge,
 )
@@ -769,6 +759,7 @@ from .weil_positivity import (  # P17: Weil-TNFR positivity bridge
     WeilTNFRBridgeCertificate,
     build_structural_test_state,
     tnfr_lyapunov_of_test_state,
+    tnfr_structural_energy_of_test_state,
     verify_weil_positivity,
     verify_weil_tnfr_bridge,
 )
@@ -836,6 +827,7 @@ __all__ = [
     "WeilPositivityCertificate",
     "WeilTNFRBridgeCertificate",
     "build_structural_test_state",
+    "tnfr_structural_energy_of_test_state",
     "tnfr_lyapunov_of_test_state",
     "verify_weil_positivity",
     "verify_weil_tnfr_bridge",
@@ -911,7 +903,7 @@ __all__ = [
     "prime_ladder_oscillatory_sum",
     "apply_oscillatory_correction",
     "compute_oscillatory_correction_certificate",
-    # P50: R_infinity residue split of P31 oscillatory correction
+    # P50: legacy names for the finite fixed-delay DFT split
     "ResidueSplitCertificate",
     "build_resonant_bin_mask",
     "split_residue_by_remesh_infinity",
@@ -998,6 +990,7 @@ __all__ = [
     "TwistedWeilPositivityCertificate",
     "TwistedWeilTNFRBridgeCertificate",
     "build_twisted_structural_test_state",
+    "twisted_tnfr_structural_energy_of_test_state",
     "twisted_tnfr_lyapunov_of_test_state",
     "verify_twisted_weil_positivity",
     "verify_twisted_weil_tnfr_bridge",

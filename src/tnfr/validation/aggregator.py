@@ -14,13 +14,13 @@ Design Principles
    rules only requires updating constants / mapping.
 4. Bounded Overhead: Single-pass field computations; avoids recompute.
 
-Threshold Defaults (Canonical / Safety)
---------------------------------------
-|Φ_s|_max      : 0.771  (empirical per-node threshold, U6 confinement)
-|∇φ|_max      : 0.38   (stable operation upper bound)
-|K_φ|_flag    : 2.8274    (local confinement / fault zone flag)
-ξ_C_crit_mult : 1.0    (ξ_C > system_diameter signals critical approach)
-ξ_C_watch_mult: 3.1416    (ξ_C > 3× mean_node_distance watch condition)
+Threshold Defaults (Selected Monitoring Policies)
+-------------------------------------------------
+ΔΦ_s_mean     : π/2    (U6 drift policy; evaluated only with a baseline)
+|∇φ|_max      : π/16  (selected early-warning policy; exact bound π)
+|K_φ|_flag    : 0.9π  (selected margin inside the exact bound π)
+ξ_C_crit_mult : 1.0   (finite-size comparison with graph diameter)
+ξ_C_watch_mult: π     (comparison with mean node eccentricity)
 
 Report Semantics
 ----------------
@@ -41,9 +41,11 @@ Usage
 
 Physics Traceability
 --------------------
-Grammar rules reference nodal equation boundedness and coupling
-conditions (U1-U4). Field thresholds derive from empirical validation
-summarised in AGENTS.md and docs/XI_C_CANONICAL_PROMOTION.md.
+Grammar rules reference nodal equation boundedness and coupling conditions
+(U1-U4). The phase-field values are monitoring policies, distinct from the
+exact wrapped-angle bound π and the measured, σ-dependent synchronization
+onset near 0.29. The potential drift value implements the selected U6 policy
+rather than a graph-independent bound.
 """
 
 from __future__ import annotations
@@ -51,7 +53,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable, Sequence
 
-from ..constants.canonical import K_PHI_CANONICAL_THRESHOLD
+from ..constants.canonical import (
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
+    U6_STRUCTURAL_POTENTIAL_LIMIT,
+    XI_C_CRITICAL_RATIO,
+    XI_C_WATCH_RATIO,
+)
 
 try:  # Graph dependency (NetworkX-like interface)
     import networkx as nx  # type: ignore
@@ -128,11 +136,11 @@ def run_structural_validation(
     *,
     sequence: Sequence[str] | None = None,
     # Threshold overrides
-    max_delta_phi_s: float = PHI,
-    max_phase_gradient: float = 0.38,
+    max_delta_phi_s: float = U6_STRUCTURAL_POTENTIAL_LIMIT,
+    max_phase_gradient: float = GRAD_PHI_CANONICAL_THRESHOLD,
     k_phi_flag_threshold: float = K_PHI_CANONICAL_THRESHOLD,
-    xi_c_critical_multiplier: float = 1.0,
-    xi_c_watch_multiplier: float = 3.0,
+    xi_c_critical_multiplier: float = XI_C_CRITICAL_RATIO,
+    xi_c_watch_multiplier: float = XI_C_WATCH_RATIO,
     # Optional baselines for drift calculations
     baseline_structural_potential: dict[Any, float] | None = None,
     # Performance instrumentation (opt-in)
@@ -151,15 +159,18 @@ def run_structural_validation(
         If None, grammar validation skipped (status remains 'valid'
         unless field risk escalates).
     max_delta_phi_s : float
-        Confinement escape threshold (ΔΦ_s). Evaluated against mean
-        absolute drift if baseline provided; otherwise potential
-        reported without drift flagging.
+        Selected U6 monitoring threshold for mean absolute ΔΦ_s drift.
+        Evaluated only when a baseline is provided.
     max_phase_gradient : float
-        Stable operation threshold for |∇φ|.
+        Selected early-warning threshold for the maximum local |∇φ|. The
+        exact wrapped-angle bound is π; this value is not that bound or the
+        measured synchronization onset.
     k_phi_flag_threshold : float
-        Local confinement / fault zone threshold for |K_φ| magnitudes.
+        Selected local warning margin for |K_φ| magnitudes inside the exact
+        wrapped-angle bound π.
     xi_c_critical_multiplier : float
-        Critical approach when ξ_C > system_diameter * multiplier.
+        Finite-size diameter flag when ξ_C > system_diameter * multiplier. It
+        does not by itself establish a critical transition.
     xi_c_watch_multiplier : float
         Watch condition when ξ_C > mean_node_distance * multiplier.
     baseline_structural_potential : dict | None
@@ -218,7 +229,7 @@ def run_structural_validation(
     # System geometry approximation (unweighted)
     if nx is not None:
         try:
-            # Use fast diameter approximation (46-111× speedup)
+            # Use the linear-traversal heuristic; runtime is workload-specific.
             try:
                 from ..utils.fast_diameter import (
                     approximate_diameter_2sweep,
@@ -233,7 +244,7 @@ def run_structural_validation(
         except Exception:  # pragma: no cover - fallback path
             system_diameter = 0
             compute_eccentricity_cached = None  # type: ignore
-        # Mean node distance (cached eccentricity, ~2.3s → 0.000s)
+        # Mean node eccentricity (cached when dependencies are unchanged)
         try:
             if compute_eccentricity_cached is not None:
                 ecc = compute_eccentricity_cached(G)
@@ -256,7 +267,7 @@ def run_structural_validation(
             notes.append(
                 (
                     f"ΔΦ_s drift {delta_phi_s:.3f} ≥ "
-                    f"{max_delta_phi_s:.3f} (escape threshold)"
+                    f"{max_delta_phi_s:.3f} (selected drift policy)"
                 )
             )
 
@@ -295,7 +306,7 @@ def run_structural_validation(
         notes.append(
             (
                 f"ξ_C {xi_c:.1f} > diameter {system_diameter} * "
-                f"{xi_c_critical_multiplier} (critical approach)"
+                f"{xi_c_critical_multiplier} (finite-size diameter flag)"
             )
         )
     elif xi_c_watch:

@@ -17,7 +17,7 @@ from ..alias import get_attr
 from ..config import apply_config
 from ..config.presets import PREFERRED_PRESET_NAMES, get_preset
 from ..constants import METRIC_DEFAULTS, VF_PRIMARY, get_aliases, get_param
-from ..constants.canonical import PI as _PI
+from ..constants.canonical import DELTA_PHI_MAX
 from ..dynamics import default_glyph_selector, parametric_glyph_selector, run
 from ..execution import CANONICAL_PRESET_NAME, play
 from ..flatten import parse_program_tokens
@@ -44,6 +44,7 @@ from ..trace import register_trace
 from ..types import ProgramTokens
 from ..utils import (
     StructuredFileError,
+    angle_diff,
     clamp01,
     get_logger,
     json_dumps,
@@ -53,9 +54,6 @@ from ..utils import (
 from ..validation import NFRValidator, validate_canon
 from .arguments import _args_to_dict
 from .utils import _parse_cli_variants
-
-# Constants
-TWO_PI = 2.0 * _PI
 
 logger = get_logger(__name__)
 
@@ -875,22 +873,23 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
     if check_phase:
         edges = list(_iter_graph_edges(graph))
         if edges:
+            phase_gate = float(
+                graph.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX)
+            )
             phase_violations = []
             for u, v in edges:
                 theta_u = float(get_attr(graph.nodes[u], THETA_ALIAS_KEYS, 0.0))
                 theta_v = float(get_attr(graph.nodes[v], THETA_ALIAS_KEYS, 0.0))
-                # Check if phases are defined (not both zero)
-                if abs(theta_u) > tolerance or abs(theta_v) > tolerance:
-                    # Phase difference should be bounded
-                    phase_diff = abs(theta_u - theta_v)
-                    if phase_diff > TWO_PI:  # > 2π
-                        phase_violations.append((u, v, phase_diff))
+                phase_diff = abs(angle_diff(theta_u, theta_v))
+                if phase_diff > phase_gate + tolerance:
+                    phase_violations.append((u, v, phase_diff))
 
             if phase_violations:
                 validation_passed = False
                 for u, v, diff in phase_violations[:5]:
                     validation_summary.append(
-                        f"  [WARN] Edge ({u},{v}): phase diff={diff:.6f} > 2π"
+                        f"  [FAIL] Edge ({u},{v}): wrapped phase diff={diff:.6f} "
+                        f"> Δφ_max={phase_gate:.6f}"
                     )
                 if len(phase_violations) > 5:
                     validation_summary.append(
@@ -898,7 +897,8 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
                     )
             else:
                 validation_summary.append(
-                    f"  [PASS] Phase synchrony maintained across {len(edges)} edges"
+                    f"  [PASS] U3 phase gate satisfied across {len(edges)} edges "
+                    f"(Δφ_max={phase_gate:.6f})"
                 )
         else:
             validation_summary.append("  [SKIP] No edges to validate")

@@ -1,9 +1,10 @@
 """Genuine structural-field tetrad bounds (π is the sole structural scale).
 
-The four-field tetrad (Φ_s, |∇φ|, K_φ, ξ_C) is the minimal derivative tower.
-The only genuine structural scale is π: both phase derivatives are wrapped
-angles, so |∇φ| ≤ π and |K_φ| ≤ π for any configuration. These tests check
-field computability and the genuine π bounds — no φ/γ/e correspondence.
+The four-field tetrad is the repository's canonical structural read-out; its
+universal observability minimality remains open. The only genuine structural
+scale is π: both phase derivatives are wrapped angles, so |∇φ| ≤ π and |K_φ| ≤
+π for any configuration. These tests check field computability and those π
+bounds — no φ/γ/e correspondence.
 """
 
 from __future__ import annotations

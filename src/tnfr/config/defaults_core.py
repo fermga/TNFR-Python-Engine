@@ -4,7 +4,8 @@ AUDIT 2026: only π (the phase-wrap bound) is a genuine structural scale. The
 earlier φ/γ/e "tetrahedral correspondence" overlay was an anti-magic-number
 naming convention, NOT a derivation from the nodal equation; it has been
 removed and the thresholds below are plain calibrated parameters.
-ξ_C's scale is the spectral gap (1/√λ₂). See AGENTS.md §3 and CHANGELOG (tetrad
+The ξ_C estimator has a state-dependent fit and a spectral fallback (1/√λ₂).
+See AGENTS.md §3 and CHANGELOG (tetrad
 correspondence audit).
 """
 
@@ -44,7 +45,7 @@ from ..constants.canonical import (
     NUL_SCALE_FACTOR,
     PI,
     SHA_VF_FACTOR,
-    THOL_MIN_COLLECTIVE_COHERENCE,
+    FRAGMENTATION_THRESHOLD,
     U6_STRUCTURAL_POTENTIAL_LIMIT,
     UM_COMPAT_THRESHOLD,
     UM_THETA_PUSH,
@@ -56,12 +57,13 @@ from ..constants.canonical import (
     VF_ADAPT_MU_CANONICAL,
     VF_MAX_CANONICAL,
     VF_MIN_CANONICAL,
+    ZHIR_THRESHOLD_XI_CANONICAL,
 )
 
-# U6 Structural Potential Confinement Constants
-# Grammar U6: Monitor Δ Φ_s < π/2 (U6 confinement bound)
+# U6 structural-potential drift policy.
+# Monitor mean_i |Δ Φ_s(i)| < π/2 between declared snapshots.
 STRUCTURAL_ESCAPE_THRESHOLD = (
-    U6_STRUCTURAL_POTENTIAL_LIMIT  # π/2 (canonical U6 confinement bound)
+    U6_STRUCTURAL_POTENTIAL_LIMIT  # π/2 (selected policy, not a universal bound)
 )
 
 SELECTOR_THRESHOLD_DEFAULTS: Mapping[str, float] = MappingProxyType(
@@ -216,16 +218,17 @@ class CoreDefaults:
     HISTORY_MAXLEN: int = 0
     NODAL_EQUATION_CLIP_AWARE: bool = True
     NODAL_EQUATION_TOLERANCE: float = 1e-9
+    ZHIR_THRESHOLD_XI: float = ZHIR_THRESHOLD_XI_CANONICAL
     # THOL (Self-organization) vibrational metabolism parameters
     THOL_METABOLIC_ENABLED: bool = True
     THOL_METABOLIC_GRADIENT_WEIGHT: float = COUPLING_MODERATE  # 1/(2π) ≈ 0.159
     THOL_METABOLIC_COMPLEXITY_WEIGHT: float = COUPLING_GENTLE  # 1/(4π) ≈ 0.0796
     THOL_BIFURCATION_THRESHOLD: float = 0.1
+    THOL_MAX_BIFURCATION_DEPTH: int = 5
 
-    # THOL network propagation and cascade parameters
-    THOL_PROPAGATION_ENABLED: bool = True
-    THOL_MIN_COUPLING_FOR_PROPAGATION: float = 0.5
-    THOL_PROPAGATION_ATTENUATION: float = 0.7
+    # Deprecated compatibility switch. Canonical THOL is local to the ΔNFR
+    # channel and rejects network propagation; use Resonance in a valid word.
+    THOL_PROPAGATION_ENABLED: bool = False
     THOL_CASCADE_MIN_NODES: int = 3
 
     # THOL precondition thresholds
@@ -234,9 +237,9 @@ class CoreDefaults:
     THOL_MIN_DEGREE: int = 1  # Minimum network connectivity
     THOL_MIN_HISTORY_LENGTH: int = 3  # Minimum EPI history for acceleration computation
     THOL_ALLOW_ISOLATED: bool = False  # Require network context by default
-    THOL_MIN_COLLECTIVE_COHERENCE: float = (
-        THOL_MIN_COLLECTIVE_COHERENCE  # 1/(π+1) ≈ 0.2415 (canonical collective coherence)
-    )
+    # Deprecated, inert compatibility alias for the fragmentation-risk cut.
+    # THOL does not consume it; U5 requires an explicit hierarchy and alpha.
+    THOL_MIN_COLLECTIVE_COHERENCE: float = FRAGMENTATION_THRESHOLD
 
     # VAL (Expansion) precondition thresholds
     VAL_MAX_VF: float = 10.0  # Maximum structural frequency threshold
@@ -340,18 +343,8 @@ MIN_DISTANCE_THRESHOLD = 0.01  # Numerical stability minimum distance
 # Field Optimization Constants
 HIGH_CORRELATION_THRESHOLD = 0.8  # Strong field duality threshold
 VERY_HIGH_CORRELATION_THRESHOLD = 0.95  # Very strong field duality
-MODERATE_CORRELATION_THRESHOLD = 0.5  # Moderate correlation for speedup
 CHIRALITY_THRESHOLD = 1.0  # Chirality magnitude threshold
 HIGH_ENERGY_THRESHOLD = 5.083204  # ≈ 5.083 (operational high energy threshold)
 LOW_ENERGY_THRESHOLD = 1.0  # Low energy density threshold
 COMPLEX_FIELD_THRESHOLD = 1.5  # complex-field magnitude threshold (tunable)
 SYMMETRY_BREAKING_THRESHOLD = 1.0  # Symmetry breaking threshold
-
-# Performance Scaling Constants
-CORRELATION_SPEEDUP_FACTOR = 2.0  # Speedup multiplier for high correlation
-CHIRALITY_MEMORY_FACTOR = 0.3  # Memory reduction factor for chirality
-MAX_MEMORY_REDUCTION = 0.8  # Maximum memory reduction
-MIN_ENERGY_FACTOR = 1.2  # Minimum energy computation factor
-ENERGY_SCALING_FACTOR = 0.1  # Energy scaling multiplier
-MAX_ENERGY_FACTOR = PI  # π ≈ 3.14159 (geometric energy computation factor)
-BASELINE_FACTOR = 1.0  # Baseline performance factor

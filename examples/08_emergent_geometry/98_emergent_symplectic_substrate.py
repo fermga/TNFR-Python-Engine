@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 """
-Example 98 — The Emergent Symplectic Substrate
-===============================================
+Example 98 — The Specified Auxiliary Symplectic Substrate
+==========================================================
 
-Demonstrates the geometry that the TNFR nodal dynamics generates from
-itself: a symplectic phase space with canonical conjugate pairs, on which
-the nodal equation, conservation laws, and 13 operators all live. The
-substrate is not imposed (like the graph) — it EMERGES from the structure.
+Demonstrates the specified auxiliary geometry obtained by embedding a TNFR
+graph-field snapshot in a symplectic phase space with two coordinate pairs
+per node.  The embedding supplies useful diagnostics, but does not prove that
+the full engine dynamics or any of the 13 operator maps is symplectic.
 
 Physics
 -------
-The Structural Conservation Theorem gives two canonical conjugate pairs
-per node:
+The substrate model assigns two canonical coordinate pairs per node:
 
     Geometric sector:  (K_φ,  J_φ)       curvature ↔ phase current
     Potential  sector: (Φ_s,  J_ΔNFR)    potential ↔ ΔNFR flux
@@ -21,27 +20,27 @@ so the emergent phase space is P = ℝ^{4N} with symplectic 2-form
     ω = Σ_i [ dK_φ(i) ∧ dJ_φ(i) + dΦ_s(i) ∧ dJ_ΔNFR(i) ].
 
 The substrate Hamiltonian H_sub = ½Σ(K_φ²+J_φ²+Φ_s²+J_ΔNFR²) plus the
-configuration background ½Σ|∇φ|² equals the canonical energy functional.
-The nodal equation ∂EPI/∂t = νf·ΔNFR is the overdamped projection of the
-Hamiltonian flow on this substrate.
+held-fixed background ½Σ|∇φ|² equals the structural-energy snapshot by
+definition.  The full nodal equation has not been derived as an overdamped
+projection of this isotropic flow.  A separate damped graph-wave model has a
+restricted pure-EPI diffusion limit under explicit assumptions.
 
 Experiments
 -----------
-1. The substrate emerges: extract P = ℝ^{4N} and verify it is a valid
+1. Extract P = ℝ^{4N} and verify the specified ambient model is a valid
    symplectic manifold (antisymmetric, non-degenerate, closed, canonical
    brackets, Jacobi, Liouville, harmonic flow)
 2. Energy consistency: H_sub + background = canonical energy functional
-3. Liouville is structural: div(X_H) = tr(J·Hess) = 0 for any Hamiltonian
-   (the geometric reason operators preserve phase-space volume)
+3. Liouville for Hamiltonian flow: div(X_H) = tr(J·Hess) = 0.  This does not
+   establish volume preservation for independently implemented operators.
 
 Honest scope
 ------------
-This makes EXPLICIT and verifies the emergent symplectic structure already
-implied by conservation.py and variational.py — a canonical consolidation,
-not a new postulate. Field coordinates are delegated to existing canonical
-functions. It does NOT, by itself, resolve any open program (Riemann,
-Navier–Stokes); it establishes the geometric substrate from which the
-canonical structures derive.
+This verifies the algebra and exact harmonic flow of one declared auxiliary
+model. Field coordinates are extracted with existing TNFR functions. It does
+not establish graph-field realizability of every ambient point, operator
+symplecticity, a variational derivation of the full nodal equation, or any open
+research program.
 
 References
 ----------
@@ -95,15 +94,15 @@ def _build_graph(n: int = 30, seed: int = 5) -> nx.Graph:
 
 
 # ============================================================================
-# EXPERIMENT 1: The substrate emerges and is a valid symplectic manifold
+# EXPERIMENT 1: The specified ambient substrate is symplectic
 # ============================================================================
 def experiment_1_emergent_substrate():
     """Extract P = ℝ^{4N} and verify the canonical symplectic structure."""
     print("=" * 72)
-    print("EXPERIMENT 1: The Emergent Symplectic Substrate")
+    print("EXPERIMENT 1: The Specified Symplectic Substrate")
     print("=" * 72)
     print()
-    print("Two canonical conjugate pairs per node emerge from conservation:")
+    print("Assign two canonical coordinate pairs to each extracted snapshot:")
     print("  geometric (K_φ, J_φ)   and   potential (Φ_s, J_ΔNFR)")
     print("→ phase space P = ℝ^{4N} with form ω = Σ dK_φ∧dJ_φ + dΦ_s∧dJ_ΔNFR")
     print()
@@ -173,26 +172,25 @@ def experiment_2_energy_consistency():
         )
 
     print()
-    print("VALIDATED: the substrate Hamiltonian reconstructs the canonical")
-    print("energy functional exactly. The substrate is consistent with the")
-    print("existing conservation machinery — it is the same physics, seen")
-    print("as the geometry the dynamics generates.")
+    print("VALIDATED: H_sub plus the held-fixed background reconstructs the")
+    print("structural-energy snapshot exactly. This is a definition-level")
+    print("identity, not a conservation or full-dynamics theorem.")
     print()
 
 
 # ============================================================================
-# EXPERIMENT 3: Liouville is structural — the origin of symplectomorphism
+# EXPERIMENT 3: Liouville for the specified Hamiltonian flow
 # ============================================================================
 def experiment_3_liouville_structural():
     """div(X_H) = tr(J·Hess) = 0 for ANY Hamiltonian — volume preserved."""
     print("=" * 72)
-    print("EXPERIMENT 3: Liouville is Structural (Operator Volume)")
+    print("EXPERIMENT 3: Liouville for the Substrate Flow")
     print("=" * 72)
     print()
     print("The Hamiltonian flow X_H = J·∇H has divergence tr(J·Hess H).")
     print("Since J is antisymmetric and the Hessian is symmetric,")
     print("tr(J·Hess) = 0 for EVERY Hamiltonian. Phase-space volume is")
-    print("preserved — this is why the 13 operators are symplectomorphisms.")
+    print("preserved by Hamiltonian flows on this ambient space.")
     print()
 
     G = _build_graph(20)
@@ -212,9 +210,9 @@ def experiment_3_liouville_structural():
         print(f"    trial {trial + 1}: tr(J·S) = {tr:.3e}")
 
     print()
-    print("VALIDATED: volume preservation is a structural identity, not a")
-    print("coincidence. The emergent geometry guarantees that grammar-")
-    print("compliant evolution conserves the symplectic phase-space volume.")
+    print("VALIDATED: the specified Hamiltonian flow preserves phase volume.")
+    print("No conclusion about an engine operator follows without checking")
+    print("that operator's induced map and Jacobian separately.")
     print()
 
 
@@ -252,7 +250,7 @@ def experiment_4_noether_charges():
     print("conservation — the total energy splits into two separately-")
     print("conserved sector charges. E_geo = ½Σ|Ψ|² is exactly the gauge")
     print("invariant of physics/gauge.py. Noether's theorem on the")
-    print("emergent substrate, derived to machine precision.")
+    print("specified substrate, verified to machine precision.")
     print()
 
 
@@ -287,7 +285,7 @@ def experiment_5_hermitian_structure():
     print("VALIDATED: Ψ = K_φ + i·J_φ of physics/gauge.py is NOT ad-hoc — it")
     print("is the complex coordinate ζ^A the substrate's complex structure J")
     print("induces on the geometric sector. The 'i' in Ψ IS the J = −ω of")
-    print("the emergent geometry. H_sub = ½Σ|ζ|² is the Kähler potential, and")
+    print("the auxiliary geometry. H_sub = ½Σ|ζ|² is the Kähler potential, and")
     print("the substrate flow is the diagonal U(1) phase rotation")
     print("ζ → e^{−it}ζ.")
     print()
@@ -336,10 +334,9 @@ def experiment_6_integrability():
     print()
     print("VALIDATED: the per-node moduli ½|ζ|² are the action variables /")
     print("adiabatic invariants of the substrate harmonic backbone, and the")
-    print("U(1) phases θ = arg ζ are their conjugate angles. The 13 operators")
-    print("act as canonical transformations that redistribute these actions.")
-    print("HONEST SCOPE: this is the integrability of the H_sub backbone, not")
-    print("of the full nonlinear operator dynamics.")
+    print("U(1) phases θ = arg ζ are their conjugate angles.")
+    print("HONEST SCOPE: this is the integrability of H_sub, not of the full")
+    print("nonlinear operator dynamics; operator symplecticity is untested.")
     print()
 
 
@@ -385,7 +382,7 @@ def experiment_7_poincare_cartan():
     print("VALIDATED: ω-preservation (Poincaré's relative invariant) is the")
     print("integral form of Liouville's theorem and is STRONGER than div=0:")
     print("it preserves areas ∮ p dq, not just the top volume. On an action")
-    print("torus ∮ p dq = 2π·I recovers the Bohr–Sommerfeld quantum, tying")
+    print("torus ∮ p dq = 2π·I is the classical periodic-orbit identity tying")
     print("the integral invariant to the action variables of Experiment 6.")
     print()
 
@@ -437,8 +434,8 @@ def experiment_8_symplectic_reduction():
     print("non-degenerate, so P//U(1) is a genuine symplectic manifold of")
     print("dimension 4N−2. The symmetry that GENERATES the flow (time")
     print("translation) is the symmetry one reduces by — moment map = H_sub.")
-    print("HONEST SCOPE: reduction of the FLAT substrate by its diagonal")
-    print("U(1); the reduced space is a flat linear symplectic space.")
+    print("HONEST SCOPE: the certificate checks a horizontal tangent form at")
+    print("positive energy. Globally the quotient is CP^(2N-1), not flat.")
     print()
 
 
@@ -484,7 +481,7 @@ def experiment_9_polarization():
     print()
     print(f"  VALID POLARIZATION SYMMETRY: {cert.is_valid_polarization_symmetry}")
     print()
-    print("VALIDATED: P_1 and P_2 are GENUINELY NEW conserved charges — the")
+    print("VALIDATED: P_1 and P_2 are additional conserved charges of H_sub —")
     print("cross-sector correlations between the geometric and potential")
     print("sectors — beyond the known P_3 = E_geo − E_pot. They close the")
     print("su(2) algebra and are conserved along the flow. Per node the")
@@ -523,8 +520,8 @@ def experiment_10_consolidated_tower():
 
 def main():
     print()
-    print("  TNFR Example 98: The Emergent Symplectic Substrate")
-    print("  The geometry the nodal dynamics generates from itself")
+    print("  TNFR Example 98: The Specified Symplectic Substrate")
+    print("  An auxiliary ambient model initialized from graph fields")
     print("  ====================================================")
     print()
 
@@ -543,11 +540,10 @@ def main():
     print("WHAT THIS ESTABLISHES")
     print("=" * 72)
     print()
-    print("The TNFR nodal dynamics generates its OWN geometry — a symplectic")
-    print("phase space P = ℝ^{4N} with canonical conjugate pairs, on which:")
-    print("  • the energy functional is the Hamiltonian (Experiment 2),")
-    print("  • the 13 operators are symplectomorphisms (Liouville, Exp. 3),")
-    print("  • symmetries generate conserved charges (Noether, Exp. 4),")
+    print("The declared ambient model is P = ℝ^{4N} with canonical pairs:")
+    print("  • H_sub plus a fixed background matches the energy readout,")
+    print("  • its harmonic flow is symplectic (Liouville, Exp. 3),")
+    print("  • its continuous symmetries generate charges (Noether, Exp. 4),")
     print("  • Ψ is the complex coordinate of a Hermitian structure (Exp. 5),")
     print("  • the flow is completely integrable (action–angle, Exp. 6),")
     print("  • it preserves the Poincaré–Cartan invariants (Exp. 7),")
@@ -555,13 +551,11 @@ def main():
     print("  • it carries a U(2) polarization symmetry with new Stokes")
     print("    charges (Exp. 9),")
     print("  • the whole tower verifies in one call (Exp. 10),")
-    print("  • the nodal equation is the overdamped Hamiltonian flow.")
+    print("  • a separate damped graph wave has a restricted diffusion limit.")
     print()
-    print("This substrate is EMERGENT (derived from the conservation laws),")
-    print("not imposed like the graph. It makes explicit the geometry the")
-    print("dynamics already inhabits — a canonical consolidation. It does")
-    print("not, by itself, resolve any open program; it is the geometric")
-    print("foundation from which the canonical structures derive.")
+    print("The construction is an auxiliary embedding initialized from TNFR")
+    print("fields. It does not certify operator maps or derive the full nodal")
+    print("dynamics, and it resolves no open research program.")
     print()
 
 

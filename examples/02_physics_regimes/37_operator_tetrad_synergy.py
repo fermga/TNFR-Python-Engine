@@ -1,37 +1,33 @@
 #!/usr/bin/env python3
 """
-Example 37 — Operator-Tetrad Synergy: Structural Fingerprints
-=============================================================
+Example 37 — Operator-Tetrad Response Diagnostics
+=================================================
 
-Demonstrates the deep coupling between the 13 canonical operators and the
-Structural Field Tetrad (Phi_s, |grad_phi|, K_phi, xi_C).
+Measures how the structural-field tetrad changes after one seeded set of
+operator requests. The runtime may replace a rejected request with a
+grammar-selected fallback, so every table keeps the requested and actually
+recorded glyphs separate.
 
 Physics
 -------
-Every operator modifies the nodal equation dEPI/dt = nu_f * DELTA_NFR(t).
-The tetrad fields respond differently to each operator because they probe
-distinct structural dimensions:
+The canonical operators reorganize the EPI, nu_f, DELTA_NFR, or phase channel
+of the nodal equation dEPI/dt = nu_f * DELTA_NFR(t). Recomputing the tetrad
+then supplies complementary read-outs:
 
     Phi_s     -> global stability     (0th order, harmonic accumulation)
     |grad_phi| -> local stress        (1st order, phase derivative)
     K_phi     -> geometric torsion    (2nd order, curvature)
     xi_C      -> correlation range    (non-local, exponential decay)
 
-This experiment applies each operator individually, measuring the tetrad
-before and after, to build an "operator fingerprint matrix" that reveals
-which operators couple to which fields.
-
-Theoretical prediction (from AGENTS.md / STRUCTURAL_OPERATORS.md):
-    - Stabilisers (IL, THOL) should reduce |grad_phi| and |K_phi|
-    - Destabilisers (OZ, VAL) should increase |grad_phi| and Phi_s
-    - Coupling (UM, RA) should primarily affect xi_C and |grad_phi|
-    - Generators (AL, NAV, REMESH) should increase Phi_s
+The resulting response matrix is descriptive for this graph, node, seed, and
+single-call protocol. It does not prove a universal causal fingerprint or that
+the tetrad reconstructs the complete graph state.
 
 References
 ----------
-- theory/STRUCTURAL_OPERATORS.md (operator energy bounds)
+- theory/STRUCTURAL_OPERATORS.md (operator contracts and nominal energy model)
 - theory/UNIFIED_GRAMMAR_RULES.md (U1-U6 derivations)
-- src/tnfr/physics/fields/ (tetrad computation)
+- src/tnfr/physics/fields.py (tetrad computation)
 """
 
 import math
@@ -109,11 +105,17 @@ def _snapshot_tetrad(G: nx.Graph) -> dict[str, float]:
     k_phi = compute_phase_curvature(G)
     xi_c = estimate_coherence_length(G)
 
+    phi_s_values = np.asarray(list(phi_s.values()), dtype=float)
+    grad_values = np.asarray(list(grad_phi.values()), dtype=float)
+    curvature_values = np.asarray(list(k_phi.values()), dtype=float)
+
     return {
-        "Phi_s_mean": float(np.mean(list(phi_s.values()))),
-        "Phi_s_max": float(np.max(np.abs(list(phi_s.values())))),
-        "grad_phi_mean": float(np.mean(list(grad_phi.values()))),
-        "K_phi_mean": float(np.mean(np.abs(list(k_phi.values())))),
+        "Phi_s_mean": float(np.mean(phi_s_values)),
+        "Phi_s_max": float(np.max(np.abs(phi_s_values))),
+        "grad_phi_mean": float(np.mean(grad_values)),
+        "grad_phi_max": float(np.max(np.abs(grad_values))),
+        "K_phi_mean": float(np.mean(np.abs(curvature_values))),
+        "K_phi_max": float(np.max(np.abs(curvature_values))),
         "xi_C": float(xi_c),
     }
 
@@ -123,6 +125,49 @@ def _deep_copy_graph(G: nx.Graph) -> nx.Graph:
     import copy
 
     return copy.deepcopy(G)
+
+
+def _history_codes(G: nx.Graph, node: int) -> tuple[str, ...]:
+    """Return the normalized runtime glyph history without changing it."""
+    history = G.nodes[node].get("glyph_history") or ()
+    return tuple(
+        str(getattr(item, "value", item)).rsplit(".", 1)[-1].upper()
+        for item in history
+    )
+
+
+def _apply_with_trace(G: nx.Graph, node: int, requested: str, op) -> dict[str, object]:
+    """Apply one request and return its authoritative runtime trace.
+
+    Operator failures propagate with the request and before/after histories in
+    the error message. A successful call must append an auditable history item;
+    the last recorded glyph identifies the transformation actually measured.
+    """
+    before = _history_codes(G, node)
+    try:
+        op(G, node)
+    except Exception as exc:
+        after = _history_codes(G, node)
+        raise RuntimeError(
+            f"request {requested} failed; history {before} -> {after}: "
+            f"{type(exc).__name__}: {exc}"
+        ) from exc
+
+    after = _history_codes(G, node)
+    if not after or after == before:
+        raise RuntimeError(
+            f"request {requested} completed without an auditable history "
+            f"append: {before} -> {after}"
+        )
+
+    actual = after[-1]
+    return {
+        "requested": requested,
+        "actual": actual,
+        "fallback": actual != requested,
+        "history_before": before,
+        "history_after": after,
+    }
 
 
 # ── canonical operator catalogue ─────────────────────────────────────────
@@ -145,19 +190,20 @@ ALL_OPERATORS = [
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# EXPERIMENT 1: Operator Fingerprint Matrix
+# EXPERIMENT 1: One-Call Tetrad Response Matrix
 # ═══════════════════════════════════════════════════════════════════════
 
 
 def experiment_operator_fingerprints():
-    """Apply each operator to an identical graph copy, measure tetrad delta.
+    """Issue each request on an identical graph copy and measure tetrad delta.
 
-    This builds a 13x5 matrix: operators (rows) x tetrad fields (columns).
-    Each cell = relative change in that field caused by that operator.
+    This builds a 13x5 response matrix: requests (rows) x field summaries
+    (columns). Each cell is the relative change observed after the actual
+    runtime glyph recorded in ``glyph_history``.
     """
     print("=" * 72)
-    print("  EXPERIMENT 1: Operator Fingerprint Matrix")
-    print("  (How each operator couples to each tetrad field)")
+    print("  EXPERIMENT 1: One-Call Tetrad Response Matrix")
+    print("  (requested and runtime-recorded glyphs are kept separate)")
     print("=" * 72)
 
     G_base = _build_graph(n=20, p=0.25)
@@ -173,221 +219,271 @@ def experiment_operator_fingerprints():
     results = {}
     for glyph, name, cls in ALL_OPERATORS:
         G = _deep_copy_graph(G_base)
-        try:
-            op = cls()
-            op(G, target_node)
-            after = _snapshot_tetrad(G)
-            deltas = {}
-            for f in field_names:
-                b = baseline[f]
-                a = after[f]
-                # Relative change (percent); avoid div-by-zero
-                if abs(b) > 1e-12:
-                    deltas[f] = (a - b) / abs(b) * 100.0
-                else:
-                    deltas[f] = (a - b) * 100.0
-            results[glyph] = {"name": name, "deltas": deltas, "ok": True}
-        except Exception as exc:
-            results[glyph] = {
-                "name": name,
-                "deltas": {f: float("nan") for f in field_names},
-                "ok": False,
-                "error": str(exc)[:60],
-            }
+        trace = _apply_with_trace(G, target_node, glyph, cls())
+        after = _snapshot_tetrad(G)
+        deltas = {}
+        for field in field_names:
+            before_value = baseline[field]
+            after_value = after[field]
+            # Relative change (percent); avoid division by zero.
+            if abs(before_value) > 1e-12:
+                deltas[field] = (
+                    (after_value - before_value) / abs(before_value) * 100.0
+                )
+            else:
+                deltas[field] = (after_value - before_value) * 100.0
+        results[glyph] = {"name": name, "deltas": deltas, **trace}
 
-    # ── print fingerprint matrix ──
-    print("\n  Operator Fingerprint Matrix (% change per field)")
-    print("  " + "-" * 68)
-    header = f"  {'Glyph':7s} {'Name':18s}"
+    # ── print response matrix ──
+    print("\n  One-Call Response Matrix (% change per field)")
+    print("  " + "-" * 80)
+    header = f"  {'Request':7s} {'Actual':7s} {'Name':18s}"
     for f in field_names:
         header += f" {f:>12s}"
     print(header)
-    print("  " + "-" * 68)
+    print("  " + "-" * 80)
 
     for glyph, name, _ in ALL_OPERATORS:
         r = results[glyph]
-        row = f"  {glyph:7s} {name:18s}"
-        if r["ok"]:
-            for f in field_names:
-                d = r["deltas"][f]
-                row += f" {d:+11.3f}%"
-        else:
-            row += f"  [SKIPPED: {r.get('error', 'unknown')}]"
+        row = f"  {glyph:7s} {str(r['actual']):7s} {name:18s}"
+        for f in field_names:
+            d = r["deltas"][f]
+            row += f" {d:+11.3f}%"
         print(row)
 
-    # ── classify by dominant field coupling ──
-    print("\n  Dominant Coupling Classification:")
-    print("  " + "-" * 48)
+    print("\n  Runtime substitutions and recorded histories:")
+    substitutions = [r for r in results.values() if r["fallback"]]
+    if not substitutions:
+        print("  none")
+    for result in substitutions:
+        print(
+            f"  requested {result['requested']} -> actual {result['actual']}; "
+            f"history {result['history_before']} -> {result['history_after']}"
+        )
+
+    # ── report the largest sampled response ──
+    print("\n  Largest Sampled Response Per Request:")
+    print("  " + "-" * 58)
     for glyph, name, _ in ALL_OPERATORS:
         r = results[glyph]
-        if not r["ok"]:
-            continue
         d = r["deltas"]
         dominant = max(field_names, key=lambda f: abs(d[f]))
-        sign = "+" if d[dominant] > 0 else "-"
-        print(f"  {glyph:7s} -> {dominant} ({sign}{abs(d[dominant]):.2f}%)")
+        if abs(d[dominant]) <= 1e-12:
+            response = "no sampled change"
+        else:
+            response = f"{d[dominant]:+.2f}%"
+        print(
+            f"  {glyph:7s} -> {str(r['actual']):7s}: "
+            f"{dominant} ({response})"
+        )
 
     return results
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# EXPERIMENT 2: Stabiliser / Destabiliser Energy Signature
+# EXPERIMENT 2: Requested U2 Role and Candidate Energy
 # ═══════════════════════════════════════════════════════════════════════
 
 
 def experiment_energy_signature():
-    """Compare energy functional E before/after stabilisers vs destabilisers.
+    """Compare candidate energy after requests from the two U2 roles.
 
-    U2 (Convergence) predicts: stabilisers reduce E, destabilisers increase E.
-    The energy functional E = 0.5 * sum(Phi_s^2 + |grad_phi|^2 + K_phi^2 + ...)
-    is the Lyapunov function for grammar-compliant evolution.
+    U2 classifies composition debt. It does not prove that every stabilizer
+    request decreases this five-term structural-energy candidate or that every
+    destabilizer request increases it.
     """
     print("\n" + "=" * 72)
-    print("  EXPERIMENT 2: Stabiliser vs Destabiliser Energy Signature")
-    print("  (Testing U2: convergence & boundedness)")
+    print("  EXPERIMENT 2: Requested U2 Role vs Sampled Energy Change")
+    print("  (one-call observations, not a U2 Lyapunov proof)")
     print("=" * 72)
 
     stabilisers = [("IL", Coherence), ("THOL", SelfOrganization)]
-    destabilisers = [("OZ", Dissonance), ("VAL", Expansion)]
+    destabilisers = [("OZ", Dissonance), ("ZHIR", Mutation), ("VAL", Expansion)]
 
     G_base = _build_graph(n=20, p=0.25)
     target = 0
+    observations = []
 
     for label, ops in [("STABILISERS", stabilisers), ("DESTABILISERS", destabilisers)]:
-        print(f"\n  {label}:")
+        print(f"\n  {label} (requested role):")
         print(
-            f'  {"Glyph":7s} {"E_before":>12s} {"E_after":>12s}'
-            f' {"Delta_E":>12s} {"dE/dt sign":>12s}'
+            f'  {"Request":7s} {"Actual":7s} {"E_before":>12s}'
+            f' {"E_after":>12s} {"Delta_E":>12s} {"sign":>9s}'
         )
-        print("  " + "-" * 56)
+        print("  " + "-" * 70)
 
         for glyph, cls in ops:
             G = _deep_copy_graph(G_base)
             E_before = compute_energy_functional(G)
-            try:
-                op = cls()
-                op(G, target)
-                E_after = compute_energy_functional(G)
-                dE = E_after - E_before
-                sign = "DECREASE" if dE < 0 else ("INCREASE" if dE > 0 else "ZERO")
+            trace = _apply_with_trace(G, target, glyph, cls())
+            E_after = compute_energy_functional(G)
+            dE = E_after - E_before
+            sign = "DECREASE" if dE < 0 else ("INCREASE" if dE > 0 else "ZERO")
+            observation = {
+                "requested_role": label,
+                "E_before": E_before,
+                "E_after": E_after,
+                "delta_E": dE,
+                **trace,
+            }
+            observations.append(observation)
+            print(
+                f"  {glyph:7s} {str(trace['actual']):7s} {E_before:12.6f}"
+                f" {E_after:12.6f} {dE:+12.6f} {sign:>9s}"
+            )
+            if trace["fallback"]:
                 print(
-                    f"  {glyph:7s} {E_before:12.6f} {E_after:12.6f}"
-                    f" {dE:+12.6f}  {sign}"
+                    f"           history {trace['history_before']} -> "
+                    f"{trace['history_after']}"
                 )
-            except Exception as exc:
-                print(f"  {glyph:7s} [SKIPPED: {str(exc)[:40]}]")
 
-    print("\n  Theory check (U2):")
-    print("  Stabilisers should show dE/dt <= 0 (Lyapunov decrease)")
-    print("  Destabilisers should show dE/dt > 0 (energy injection)")
+    print("\n  Scope:")
+    print("  U2 labels classify the requests; the measured delta belongs to the")
+    print("  actual glyph and this seeded graph snapshot. Sequence-level stability")
+    print("  requires trajectory evidence or a model-specific proof.")
+    return observations
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# EXPERIMENT 3: Tetrad Safety Envelope
+# EXPERIMENT 3: Exact Phase Bounds and Selected Policies
 # ═══════════════════════════════════════════════════════════════════════
 
 
 def experiment_tetrad_safety():
-    """Verify that grammar-compliant sequences keep tetrad within safety.
+    """Compare exact phase bounds and selected policies along one word.
 
-    Tetrad safety bounds (audit 2026: only the pi phase-wrap is genuine):
-        Phi_s :  |Phi_s| < 0.785 (π/4, quarter phase-wrap)
-        |grad_phi|:  |grad_phi| <= pi (phase wrap); pi/16 ~ 0.196 is a
-                     heuristic early-warning only, not a derived bound
-        K_phi :  |K_phi| < 2.8274 (0.9*pi, phase wrap -- genuine)
-
-    We run a Bootstrap + Stabilise sequence (grammar-compliant) and
-    verify the tetrad stays within its canonical safety envelope.
+    ``|grad_phi| <= pi`` and ``|K_phi| <= pi`` are exact wrapped-angle
+    bounds. The Phi_s magnitude cut, pi/16 gradient alert, and 0.9*pi
+    curvature margin are selected telemetry policies. Grammar compliance alone
+    does not imply that these selected policies will hold.
     """
     print("\n" + "=" * 72)
-    print("  EXPERIMENT 3: Tetrad Safety Envelope Under Grammar Compliance")
-    print("  (tetrad safety-bound verification; audit 2026: only pi genuine)")
+    print("  EXPERIMENT 3: Exact Phase Bounds and Selected Tetrad Policies")
+    print("  (one grammar-compliant requested word; actual trace recorded)")
     print("=" * 72)
 
     G = _build_graph(n=20, p=0.25)
     target = 0
 
-    # Grammar-compliant Bootstrap + Stabilise:
-    # [Emission, Coupling, Coherence, Silence]
-    # U1a: starts with generator (AL)
-    # U1b: ends with closure (SHA)
-    # U2: destabiliser-free -> no stabiliser needed beyond IL
-    sequence = [Emission(), Coupling(), Coherence(), Silence()]
-    seq_names = ["AL", "UM", "IL", "SHA"]
+    # Static grammar-valid word: generator AL, phase operation UM,
+    # stabilizer IL, and closure SHA.
+    sequence = [
+        ("AL", Emission()),
+        ("UM", Coupling()),
+        ("IL", Coherence()),
+        ("SHA", Silence()),
+    ]
 
-    print(f'\n  Grammar-compliant sequence: {" -> ".join(seq_names)}')
-    print(
-        f'\n  {"Step":6s} {"Op":7s} {"Phi_s_max":>10s} {"<0.77":>6s}'
-        f' {"|grad_phi|":>11s} {"<0.18":>6s}'
-        f' {"|K_phi|":>10s} {"<2.83":>6s}'
-        f' {"xi_C":>10s}'
-    )
-    print("  " + "-" * 74)
+    def policy_flags(snapshot):
+        selected = (
+            snapshot["Phi_s_max"] < PHI_S_VON_KOCH_THRESHOLD
+            and snapshot["grad_phi_max"] < GRAD_PHI_CANONICAL_THRESHOLD
+            and snapshot["K_phi_max"] < K_PHI_CANONICAL_THRESHOLD
+        )
+        exact_phase = (
+            snapshot["grad_phi_max"] <= PI + 1e-12
+            and snapshot["K_phi_max"] <= PI + 1e-12
+        )
+        return selected, exact_phase
 
-    snap = _snapshot_tetrad(G)
-    phi_s_ok = snap["Phi_s_max"] < PHI_S_VON_KOCH_THRESHOLD
-    grad_ok = snap["grad_phi_mean"] < GRAD_PHI_CANONICAL_THRESHOLD
-    k_phi_ok = snap["K_phi_mean"] < K_PHI_CANONICAL_THRESHOLD
-    print(
-        f"  {'INIT':6s} {'---':7s} {snap['Phi_s_max']:10.4f}"
-        f" {'OK' if phi_s_ok else 'WARN':>6s}"
-        f" {snap['grad_phi_mean']:11.4f}"
-        f" {'OK' if grad_ok else 'WARN':>6s}"
-        f" {snap['K_phi_mean']:10.4f}"
-        f" {'OK' if k_phi_ok else 'WARN':>6s}"
-        f" {snap['xi_C']:10.4f}"
-    )
-
-    all_safe = True
-    for i, (op, name) in enumerate(zip(sequence, seq_names)):
-        try:
-            op(G, target)
-        except Exception:
-            pass  # some operators may skip due to preconditions
-        snap = _snapshot_tetrad(G)
-        phi_s_ok = snap["Phi_s_max"] < PHI_S_VON_KOCH_THRESHOLD
-        grad_ok = snap["grad_phi_mean"] < GRAD_PHI_CANONICAL_THRESHOLD
-        k_phi_ok = snap["K_phi_mean"] < K_PHI_CANONICAL_THRESHOLD
-        step_safe = phi_s_ok and grad_ok and k_phi_ok
-        if not step_safe:
-            all_safe = False
+    def print_row(step, requested, actual, snapshot):
+        phi_status = (
+            "OK"
+            if snapshot["Phi_s_max"] < PHI_S_VON_KOCH_THRESHOLD
+            else "WARN"
+        )
+        grad_status = (
+            "OK"
+            if snapshot["grad_phi_max"] < GRAD_PHI_CANONICAL_THRESHOLD
+            else "WARN"
+        )
+        curvature_status = (
+            "OK"
+            if snapshot["K_phi_max"] < K_PHI_CANONICAL_THRESHOLD
+            else "WARN"
+        )
         print(
-            f"  {i + 1:6d} {name:7s} {snap['Phi_s_max']:10.4f}"
-            f" {'OK' if phi_s_ok else 'WARN':>6s}"
-            f" {snap['grad_phi_mean']:11.4f}"
-            f" {'OK' if grad_ok else 'WARN':>6s}"
-            f" {snap['K_phi_mean']:10.4f}"
-            f" {'OK' if k_phi_ok else 'WARN':>6s}"
-            f" {snap['xi_C']:10.4f}"
+            f"  {step:>4} {requested:>5s} {actual:>5s}"
+            f" {snapshot['Phi_s_max']:10.4f} {phi_status:>5s}"
+            f" {snapshot['grad_phi_max']:10.4f} {grad_status:>5s}"
+            f" {snapshot['K_phi_max']:10.4f} {curvature_status:>5s}"
+            f" {snapshot['xi_C']:10.4f}"
         )
 
-    print(f'\n  Safety envelope maintained: {"YES" if all_safe else "NO"}')
-    print("  Tetrad fields stay within their safety bounds (audit 2026: only pi is structural):")
-    print(f"    Phi_s      threshold = {PHI_S_VON_KOCH_THRESHOLD:.4f}  (pi/4, quarter phase-wrap)")
+    requested_word = " -> ".join(requested for requested, _ in sequence)
+    print(f"\n  Requested word: {requested_word}")
     print(
-        f"    |grad_phi| threshold = {GRAD_PHI_CANONICAL_THRESHOLD:.4f}"
-        f"  (pi/16, heuristic early-warning; kinematic bound is pi)"
+        f'\n  {"Step":>4s} {"Req":>5s} {"Act":>5s}'
+        f' {"Phi_s_max":>10s} {"pol":>5s}'
+        f' {"grad_max":>10s} {"pol":>5s}'
+        f' {"K_max":>10s} {"pol":>5s} {"xi_C":>10s}'
+    )
+    print("  " + "-" * 87)
+
+    snapshot = _snapshot_tetrad(G)
+    selected_ok, exact_ok = policy_flags(snapshot)
+    all_selected_ok = selected_ok
+    all_exact_ok = exact_ok
+    print_row("INIT", "---", "---", snapshot)
+
+    traces = []
+    for index, (requested, op) in enumerate(sequence, start=1):
+        trace = _apply_with_trace(G, target, requested, op)
+        traces.append(trace)
+        snapshot = _snapshot_tetrad(G)
+        selected_ok, exact_ok = policy_flags(snapshot)
+        all_selected_ok = all_selected_ok and selected_ok
+        all_exact_ok = all_exact_ok and exact_ok
+        print_row(str(index), requested, str(trace["actual"]), snapshot)
+
+    print("\n  Recorded runtime history:")
+    for trace in traces:
+        print(
+            f"  requested {trace['requested']} -> actual {trace['actual']}; "
+            f"history {trace['history_before']} -> {trace['history_after']}"
+        )
+
+    print(
+        f'\n  Exact wrapped-phase bounds respected: {"YES" if all_exact_ok else "NO"}'
     )
     print(
-        f"    K_phi      threshold = {K_PHI_CANONICAL_THRESHOLD:.4f}"
-        f"  (0.9*pi = {0.9 * PI:.4f})"
+        "  All selected policy margins satisfied: "
+        f'{"YES" if all_selected_ok else "NO"}'
     )
+    print(
+        f"    |Phi_s| policy = {PHI_S_VON_KOCH_THRESHOLD:.4f} (pi/4)"
+    )
+    print(
+        f"    |grad_phi| alert = {GRAD_PHI_CANONICAL_THRESHOLD:.4f} (pi/16); "
+        f"exact bound = {PI:.4f}"
+    )
+    print(
+        f"    |K_phi| margin = {K_PHI_CANONICAL_THRESHOLD:.4f} (0.9*pi); "
+        f"exact bound = {PI:.4f}"
+    )
+    print("    xi_C is state-dependent and has no universal bound in this example.")
+    return {
+        "traces": traces,
+        "selected_policies_satisfied": all_selected_ok,
+        "exact_phase_bounds_respected": all_exact_ok,
+    }
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# EXPERIMENT 4: Noether Charge Conservation Under Operators
+# EXPERIMENT 4: Noether-Like Charge Telemetry
 # ═══════════════════════════════════════════════════════════════════════
 
 
-def experiment_noether_conservation():
+def experiment_charge_telemetry():
     """Track Noether charge Q = sum(Phi_s + K_phi) through operator steps.
 
-    Structural Conservation Theorem predicts Q is approximately conserved
-    under grammar-compliant evolution (grammar symmetry -> conservation).
+    The finite changes are trajectory observations. Operator labels alone do
+    not imply zero charge drift; a conservation assessment also needs the
+    implemented current-divergence and source balance.
     """
     print("\n" + "=" * 72)
-    print("  EXPERIMENT 4: Noether Charge Conservation Under Operators")
-    print("  (Grammar Symmetry -> Conservation Law)")
+    print("  EXPERIMENT 4: Noether-Like Charge Telemetry")
+    print("  (finite differences along the actual runtime trace)")
     print("=" * 72)
 
     G = _build_graph(n=20, p=0.25)
@@ -405,30 +501,45 @@ def experiment_noether_conservation():
     ]
 
     print(
-        f'\n  {"Step":6s} {"Op":7s} {"Q (Noether)":>14s}'
-        f' {"E (energy)":>14s} {"dQ":>10s}'
+        f'\n  {"Step":6s} {"Req":7s} {"Actual":7s} {"Q":>14s}'
+        f' {"E candidate":>14s} {"dQ":>10s}'
     )
-    print("  " + "-" * 56)
+    print("  " + "-" * 70)
 
     Q_prev = compute_noether_charge(G)
-    E_prev = compute_energy_functional(G)
-    print(f"  {'INIT':6s} {'---':7s} {Q_prev:14.6f} {E_prev:14.6f}" f" {'---':>10s}")
+    energy = compute_energy_functional(G)
+    print(
+        f"  {'INIT':6s} {'---':7s} {'---':7s} {Q_prev:14.6f}"
+        f" {energy:14.6f} {'---':>10s}"
+    )
 
-    for i, (name, op) in enumerate(steps):
-        try:
-            op(G, target)
-        except Exception:
-            pass
+    traces = []
+    charge_deltas = []
+    for i, (requested, op) in enumerate(steps, start=1):
+        trace = _apply_with_trace(G, target, requested, op)
+        traces.append(trace)
         Q = compute_noether_charge(G)
-        E = compute_energy_functional(G)
+        energy = compute_energy_functional(G)
         dQ = Q - Q_prev
-        print(f"  {i + 1:6d} {name:7s} {Q:14.6f} {E:14.6f}" f" {dQ:+10.6f}")
+        charge_deltas.append(dQ)
+        print(
+            f"  {i:6d} {requested:7s} {str(trace['actual']):7s}"
+            f" {Q:14.6f} {energy:14.6f} {dQ:+10.6f}"
+        )
         Q_prev = Q
-        E_prev = E
 
-    print("\n  Structural Conservation Theorem:")
-    print("  Under grammar-compliant evolution, |dQ/dt| -> 0")
-    print("  Large dQ indicates grammar violation or boundary effects")
+    print("\n  Recorded runtime history:")
+    for trace in traces:
+        print(
+            f"  requested {trace['requested']} -> actual {trace['actual']}; "
+            f"history {trace['history_before']} -> {trace['history_after']}"
+        )
+
+    print("\n  Scope:")
+    print("  dQ is a sampled charge difference. Its size does not identify a")
+    print("  grammar violation or prove conservation without evaluating the full")
+    print("  continuity balance and its source term on the same trajectory.")
+    return {"traces": traces, "charge_deltas": charge_deltas}
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -438,41 +549,40 @@ def experiment_noether_conservation():
 
 def main():
     print()
-    print("  TNFR Example 37: Operator-Tetrad Synergy")
-    print("  Structural Fingerprints & Conservation Coupling")
+    print("  TNFR Example 37: Operator-Tetrad Response Diagnostics")
+    print("  Runtime Attribution & Structural-Field Telemetry")
     print("  " + "=" * 50)
     print(f"  Seed: {SEED}  |  Theory: AGENTS.md, STRUCTURAL_OPERATORS.md")
     print()
 
-    results = experiment_operator_fingerprints()
-    experiment_energy_signature()
-    experiment_tetrad_safety()
-    experiment_noether_conservation()
+    responses = experiment_operator_fingerprints()
+    energy_observations = experiment_energy_signature()
+    policy_result = experiment_tetrad_safety()
+    charge_result = experiment_charge_telemetry()
+
+    substitutions = sum(bool(result["fallback"]) for result in responses.values())
+    energy_substitutions = sum(
+        bool(result["fallback"]) for result in energy_observations
+    )
+    max_charge_step = max(abs(value) for value in charge_result["charge_deltas"])
 
     print("\n" + "=" * 72)
-    print("  SUMMARY: Operator-Tetrad Synergy Findings")
+    print("  SUMMARY: Bounded Findings From This Seeded Protocol")
     print("=" * 72)
     print(
-        """
-  1. Operator Fingerprint Matrix:
-     Each operator has a unique tetrad signature revealing its structural
-     coupling. Stabilisers and destabilisers show mirror-image patterns.
-
-  2. Energy Signature (U2 verification):
-     Stabilisers (IL, THOL) decrease E (Lyapunov contraction).
-     Destabilisers (OZ, VAL) increase E (energy injection).
-     This confirms the physics basis of grammar rule U2.
-
-  3. Tetrad Safety Envelope:
-     Grammar-compliant sequences maintain all four tetrad fields
-     within their safety bounds. Audit 2026: only the pi phase-wrap is
-     a genuine structural scale; the four-constant correspondence is overlay.
-
-  4. Noether Charge Conservation:
-     Q = sum(Phi_s + K_phi) is approximately conserved under
-     grammar-compliant evolution, confirming the Structural
-     Conservation Theorem: grammar symmetry -> conservation law.
-"""
+        f"  1. Fresh one-call trials produced {substitutions} runtime "
+        "substitution(s);\n"
+        "     every field delta is attributed to its recorded actual glyph.\n\n"
+        f"  2. The U2-role comparison produced {energy_substitutions} runtime "
+        "substitution(s).\n"
+        "     Its energy changes are observations, not universal bounds.\n\n"
+        "  3. Exact phase-wrap bounds respected along the requested word: "
+        f"{policy_result['exact_phase_bounds_respected']}.\n"
+        "     Selected telemetry policies all satisfied: "
+        f"{policy_result['selected_policies_satisfied']}.\n\n"
+        f"  4. Largest sampled |dQ| was {max_charge_step:.6f}; interpreting it "
+        "requires\n"
+        "     the continuity balance and source term, not operator labels alone."
     )
 
 

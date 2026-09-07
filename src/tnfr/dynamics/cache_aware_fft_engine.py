@@ -1,24 +1,18 @@
-"""
-TNFR Cache-Aware FFT Arithmetic Engine
+"""Cache-aware graph-spectral analysis for TNFR signals.
 
-This engine implements the advanced FFT arithmetic operations that emerge
-from the TNFR nodal equation ∂EPI/∂t = νf · ΔNFR(t) with full integration
-into the repository's unified cache system.
-
-Mathematical Foundation:
-The Graph Fourier Transform reveals TNFR dynamics as spectral operations:
-- EPI evolution → Spectral coefficient modulation
-- ΔNFR computation → Laplacian eigenvalue multiplication in frequency domain
-- νf modulation → Pointwise multiplication in spectral space
-- Phase coupling → Convolution operations via inverse FFT
+The public ``FFT`` names are historical.  This layer caches dense Laplacian
+eigenbases, GFT coefficients and spectral filter kernels.  Multiplication by a
+Laplacian eigenvalue represents that chosen Laplacian action.  Multiplication
+of two coefficient vectors represents graph spectral convolution.  Neither is
+the heterogeneous pointwise nodal product ``νf * ΔNFR``.
 
 Cache Integration Benefits:
-- Spectral basis reuse across engines (O(N³) → O(1) for repeated decompositions)
-- FFT kernel memoization (filter responses, windows, convolution kernels)
+- Spectral basis reuse avoids repeating an unchanged dense decomposition
+- Spectral-kernel memoization (filter responses and convolution kernels)
 - Cross-engine sharing of spectral artifacts
 - Predictive prefetching of likely spectral operations
 
-Status: CANONICAL CACHE-INTEGRATED FFT ENGINE
+Caching changes reuse and execution cost, not the mathematical operation.
 """
 
 import time
@@ -84,7 +78,7 @@ from ..constants.operational import (
 
 
 class FFTOperationType(Enum):
-    """Types of cache-optimized FFT operations."""
+    """Historical names for cache-optimized graph-spectral operations."""
 
     SPECTRAL_CONVOLUTION = "spectral_convolution"
     HARMONIC_ANALYSIS = "harmonic_analysis"
@@ -110,10 +104,10 @@ class CacheOptimizedFFTResult:
 
 class TNFRCacheAwareFFTEngine:
     """
-    Cache-aware FFT arithmetic engine for TNFR computations.
+    Cache-aware graph-spectral engine for TNFR computations.
 
-    This engine combines advanced FFT operations with intelligent caching
-    to maximize performance while preserving TNFR mathematical coherence.
+    It wraps :class:`TNFRAdvancedFFTEngine`; it does not implement canonical
+    nodal integration.
     """
 
     def __init__(
@@ -151,9 +145,10 @@ class TNFRCacheAwareFFTEngine:
         operation: str = "multiply",
     ) -> CacheOptimizedFFTResult:
         """
-        Perform spectral convolution with intelligent caching.
+        Perform graph spectral convolution with cache reuse.
 
-        This leverages cached spectral decompositions and memoized convolution kernels.
+        This reuses cached spectral decompositions and registers the resulting
+        graph-spectral operation for sharing with other engines.
         """
         if not self.fft_engine or not HAS_NUMPY:
             raise RuntimeError("FFT engine not available")
@@ -163,16 +158,15 @@ class TNFRCacheAwareFFTEngine:
         # Apply cache optimizations
         cache_results = []
         if self.enable_cache_optimization and self.cache_optimizer:
-            cache_results = self.cache_optimizer.optimize_cache_strategy(
-                G,
-                [
-                    CacheOptimizationStrategy.SPECTRAL_PERSISTENCE,
-                    CacheOptimizationStrategy.CROSS_ENGINE_SHARING,
-                    CacheOptimizationStrategy.PREDICTIVE_PREFETCH,
-                ],
-            )
+            strategies = [
+                CacheOptimizationStrategy.SPECTRAL_PERSISTENCE,
+                CacheOptimizationStrategy.CROSS_ENGINE_SHARING,
+            ]
+            if self.enable_predictive_prefetch:
+                strategies.append(CacheOptimizationStrategy.PREDICTIVE_PREFETCH)
+            cache_results = self.cache_optimizer.optimize_cache_strategy(G, strategies)
 
-        # Perform FFT operation (benefits from cache optimizations)
+        # Perform graph-spectral operation (benefits from cache optimizations)
         fft_result = self.fft_engine.spectral_convolution(
             G, signal1, signal2, operation
         )
@@ -202,7 +196,7 @@ class TNFRCacheAwareFFTEngine:
                 self.fft_engine.cache_coordinator,
                 "get_stats",
                 lambda: {"kernel_hits": 0},
-            )()["kernel_hits"],
+            )().get("kernel_hits", 0),
         )
 
     @record_computation("harmonic_analysis")
@@ -210,9 +204,10 @@ class TNFRCacheAwareFFTEngine:
         self, G: Any, num_harmonics: int = 5, window_size: int | None = None
     ) -> CacheOptimizedFFTResult:
         """
-        Perform harmonic analysis with cache optimization.
+        Rank Laplacian modes by coefficient amplitude with cache optimization.
 
-        Reuses spectral decompositions and caches harmonic pattern analysis.
+        Reuses the graph's spectral decomposition.  The live coefficient
+        ranking is recomputed because EPI may change without a topology change.
         """
         if not self.fft_engine:
             raise RuntimeError("FFT engine not available")
@@ -322,9 +317,10 @@ class TNFRCacheAwareFFTEngine:
         self, G: Any, scales: list[float] = None, analysis_type: str = "wavelet"
     ) -> CacheOptimizedFFTResult:
         """
-        Perform multi-scale spectral analysis with hierarchical caching.
+        Perform coefficient-rescaling analysis with hierarchical caching.
 
-        Each scale level can reuse computations from other scales.
+        This compatibility operation uniformly rescales all coefficients by
+        ``1/scale``.  It is not a graph wavelet transform.
         """
         if not HAS_SPECTRAL or not self.fft_engine:
             raise RuntimeError("Spectral analysis not available")
@@ -383,6 +379,7 @@ class TNFRCacheAwareFFTEngine:
             "scale_results": scale_results,
             "spectral_state": spectral_state,
             "analysis_type": analysis_type,
+            "operation_semantics": "uniform_coefficient_rescaling",
         }
 
         self.total_operations += 1
@@ -403,9 +400,11 @@ class TNFRCacheAwareFFTEngine:
         self, G1: Any, G2: Any, coherence_bands: list[tuple[float, float]] = None
     ) -> CacheOptimizedFFTResult:
         """
-        Compute cross-spectral coherence between two graphs with caching.
+        Compute an index-aligned spectral similarity diagnostic with caching.
 
-        Reuses spectral decompositions for both graphs and caches coherence calculations.
+        Coefficients are compared by mode index.  Interpretation therefore
+        requires compatible graph spectra and eigenvector conventions; the
+        result is not a statistical coherence estimator from repeated samples.
         """
         if not self.fft_engine:
             raise RuntimeError("FFT engine not available")
@@ -435,9 +434,10 @@ class TNFRCacheAwareFFTEngine:
                 )
             )
 
-        # Get spectral states for both graphs (leverages caching)
-        spectral1 = self.fft_engine.get_spectral_state(G1)
-        spectral2 = self.fft_engine.get_spectral_state(G2)
+        # Centralized compatibility validation and per-mode phase/sign alignment.
+        spectral1, spectral2, aligned_coeffs2 = (
+            self.fft_engine._get_aligned_spectral_states(G1, G2)
+        )
 
         # Compute cross-spectral coherence
         coherence_results = {}
@@ -454,7 +454,7 @@ class TNFRCacheAwareFFTEngine:
             if np.any(freq_mask1) and np.any(freq_mask2):
                 # Compute coherence in this band
                 coeffs1_band = spectral1.spectral_coeffs[freq_mask1]
-                coeffs2_band = spectral2.spectral_coeffs[freq_mask2]
+                coeffs2_band = aligned_coeffs2[freq_mask2]
 
                 # Cross-correlation in frequency domain
                 cross_power = np.mean(coeffs1_band * np.conj(coeffs2_band))
@@ -483,9 +483,14 @@ class TNFRCacheAwareFFTEngine:
         cross_spectral_result = {
             "coherence_bands": coherence_bands,
             "coherence_results": coherence_results,
-            "mean_coherence": np.mean(
-                [r["coherence"] for r in coherence_results.values()]
+            "mean_coherence": (
+                float(
+                    np.mean([r["coherence"] for r in coherence_results.values()])
+                )
+                if coherence_results
+                else 0.0
             ),
+            "metric_semantics": "band_averaged_snapshot_cross_power",
             "spectral_states": (spectral1, spectral2),
         }
 

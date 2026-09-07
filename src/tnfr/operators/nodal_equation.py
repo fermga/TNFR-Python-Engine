@@ -12,13 +12,18 @@ canonical relationship to maintain TNFR theoretical fidelity.
 
 from __future__ import annotations
 
+import math
+from collections.abc import Mapping
+from numbers import Real
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
 from ..alias import set_attr
-from ..constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_VF
+from ..constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from ..errors import TNFRValueError
+from ..types import BEPIProtocol, scalarize_epi
 
 __all__ = [
     "NodalEquationViolation",
@@ -290,7 +295,9 @@ def validate_nodal_equation(
     return is_valid
 
 
-def compute_d2epi_dt2(G: "TNFRGraph", node: "NodeId") -> float:
+def compute_d2epi_dt2(
+    G: "TNFRGraph", node: "NodeId", *, store: bool = True
+) -> float:
     """Compute ∂²EPI/∂t² (structural acceleration).
 
     According to TNFR canonical theory (§2.3.3, R4), bifurcation occurs when
@@ -308,6 +315,10 @@ def compute_d2epi_dt2(G: "TNFRGraph", node: "NodeId") -> float:
         Graph containing the node
     node : NodeId
         Node identifier to compute acceleration for
+    store : bool, default=True
+        Whether to write the computed acceleration to the node's ``D2_EPI``
+        telemetry attribute.  Set to ``False`` for a strictly read-only
+        diagnostic evaluation.
 
     Returns
     -------
@@ -320,7 +331,12 @@ def compute_d2epi_dt2(G: "TNFRGraph", node: "NodeId") -> float:
     -----
     **Computation method:**
 
-    Uses second-order finite difference approximation:
+    Timestamped physical histories use the unequal-step three-point estimate
+
+        ∂²EPI/∂t² ≈ 2·(s₂-s₁)/(Δt₁+Δt₂),
+
+    where ``s₁`` and ``s₂`` are the two adjacent secant rates.  For equal
+    spacing this reduces to the familiar second-order finite difference:
         ∂²EPI/∂t² ≈ (EPI_t - 2·EPI_{t-1} + EPI_{t-2}) / Δt²
 
     For discrete operator applications with Δt=1:
@@ -328,11 +344,15 @@ def compute_d2epi_dt2(G: "TNFRGraph", node: "NodeId") -> float:
 
     **History requirements:**
 
-    Requires at least 3 historical EPI values stored in node's `_epi_history`
-    attribute. If insufficient history exists, returns 0.0 (no acceleration).
+    ``epi_time_history`` is authoritative when present and must contain
+    strictly increasing ``(time, EPI)`` pairs whose final EPI matches the
+    current nodal state.  ``epi_history`` and ``_epi_history`` retain their
+    legacy unit-operator-step interpretation.  At least three samples are
+    required; otherwise the function returns 0.0 (acceleration unavailable).
 
-    The computed value is automatically stored in the node's `D2_EPI` attribute
-    (using ALIAS_D2EPI aliases) for telemetry and metrics collection.
+    By default the computed value is stored in the node's ``D2_EPI`` attribute
+    (using ALIAS_D2EPI aliases) for telemetry and metrics collection.  Passing
+    ``store=False`` leaves the graph unchanged.
 
     **Physical interpretation:**
 
@@ -367,25 +387,153 @@ def compute_d2epi_dt2(G: "TNFRGraph", node: "NodeId") -> float:
     tnfr.operators.metrics.dissonance_metrics : Reports d2epi in OZ metrics
     tnfr.operators.preconditions.validate_dissonance : Checks d2epi for bifurcation
     """
-    # Get EPI history from node
-    history = G.nodes[node].get("_epi_history", [])
+    if not isinstance(store, bool):
+        raise TNFRValueError("store must be a boolean.")
 
-    if len(history) < 3:
-        # Insufficient history for second derivative
-        # Need at least 3 points: t-2, t-1, t
+    node_data = G.nodes[node]
+    source, history = _select_acceleration_history(node_data)
+    if history is None:
+        return 0.0
+    length = _history_length_or_error(history, source)
+    if length < 3:
         return 0.0
 
-    # Extract last 3 EPI values
-    epi_t = history[-1]  # Current (most recent)
-    epi_t1 = history[-2]  # One step ago
-    epi_t2 = history[-3]  # Two steps ago
+    try:
+        samples = history[-3], history[-2], history[-1]
+    except (IndexError, KeyError, TypeError) as exc:
+        raise TNFRValueError(
+            f"{source} must be an indexed, replayable history."
+        ) from exc
 
-    # Second-order finite difference (assuming dt=1 for discrete operators)
-    # ∂²EPI/∂t² ≈ (EPI_t - 2·EPI_{t-1} + EPI_{t-2}) / dt²
-    # For dt=1: ∂²EPI/∂t² ≈ EPI_t - 2·EPI_{t-1} + EPI_{t-2}
-    d2epi = epi_t - 2.0 * epi_t1 + epi_t2
+    if source == "epi_time_history":
+        timed = tuple(
+            _physical_acceleration_sample(value, source, index)
+            for index, value in enumerate(samples, start=length - 3)
+        )
+        (t0, epi0), (t1, epi1), (t2, epi2) = timed
+        dt1 = t1 - t0
+        dt2 = t2 - t1
+        if dt1 <= 0.0 or dt2 <= 0.0:
+            raise TNFRValueError(
+                "epi_time_history timestamps must increase strictly."
+            )
+        current_raw = _first_present(node_data, ALIAS_EPI)
+        if current_raw is _MISSING:
+            raise TNFRValueError(
+                "epi_time_history requires an explicit current EPI endpoint."
+            )
+        current_epi = _canonical_epi_scalar(current_raw, "current EPI")
+        if epi2 != current_epi:
+            raise TNFRValueError(
+                "epi_time_history final EPI must match the current nodal state.",
+                context={"history_endpoint": epi2, "current_epi": current_epi},
+            )
+        slope1 = (epi1 - epi0) / dt1
+        slope2 = (epi2 - epi1) / dt2
+        d2epi = 2.0 * (slope2 - slope1) / (dt1 + dt2)
+    else:
+        epi0, epi1, epi2 = (
+            _finite_history_scalar(value, source, index)
+            for index, value in enumerate(samples, start=length - 3)
+        )
+        d2epi = epi2 - 2.0 * epi1 + epi0
 
-    # Store in node for telemetry (using set_attr to handle aliases)
-    set_attr(G.nodes[node], ALIAS_D2EPI, d2epi)
+    if not math.isfinite(d2epi):
+        raise TNFRValueError(f"{source} produces non-finite structural acceleration.")
+
+    # Store in node for telemetry (using set_attr to handle aliases) unless the
+    # caller explicitly requests a pure diagnostic read.
+    if store:
+        set_attr(G.nodes[node], ALIAS_D2EPI, d2epi)
 
     return float(d2epi)
+
+
+_MISSING = object()
+
+
+def _first_present(data: Mapping[str, Any], aliases: tuple[str, ...]) -> Any:
+    for key in aliases:
+        if key in data:
+            return data[key]
+    return _MISSING
+
+
+def _canonical_epi_scalar(value: Any, label: str) -> float:
+    serialized_bepi = isinstance(value, Mapping) and {
+        "continuous",
+        "discrete",
+        "grid",
+    }.issubset(value)
+    try:
+        if isinstance(value, BEPIProtocol) or serialized_bepi:
+            result = scalarize_epi(value)
+        elif isinstance(value, bool) or not isinstance(value, Real):
+            raise TypeError
+        else:
+            result = float(value)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(f"{label} must be a finite real scalar.") from exc
+    if not math.isfinite(result):
+        raise TNFRValueError(f"{label} must be finite.")
+    return result
+
+
+def _finite_real_scalar(value: Any, label: str) -> float:
+    try:
+        if isinstance(value, bool) or not isinstance(value, Real):
+            raise TypeError
+        result = float(value)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(f"{label} must be a finite real scalar.") from exc
+    if not math.isfinite(result):
+        raise TNFRValueError(f"{label} must be finite.")
+    return result
+
+
+def _history_length_or_error(history: Any, source: str) -> int:
+    try:
+        return len(history)
+    except (OverflowError, TypeError) as exc:
+        raise TNFRValueError(f"{source} must be a sized, indexed history.") from exc
+
+
+def _select_acceleration_history(
+    node_data: Mapping[str, Any],
+) -> tuple[str, Any | None]:
+    physical = node_data.get("epi_time_history")
+    if physical is not None:
+        return "epi_time_history", physical
+
+    canonical = node_data.get("epi_history")
+    if canonical is not None:
+        length = _history_length_or_error(canonical, "epi_history")
+        if length > 0:
+            return "epi_history", canonical
+
+    legacy = node_data.get("_epi_history")
+    if legacy is not None:
+        return "_epi_history", legacy
+    if canonical is not None:
+        return "epi_history", canonical
+    return "_epi_history", None
+
+
+def _finite_history_scalar(value: Any, source: str, index: int) -> float:
+    return _canonical_epi_scalar(value, f"{source}[{index}]")
+
+
+def _physical_acceleration_sample(
+    value: Any, source: str, index: int
+) -> tuple[float, float]:
+    if isinstance(value, (str, bytes, bytearray)):
+        raise TNFRValueError(f"{source}[{index}] must be a (time, EPI) pair.")
+    try:
+        if len(value) != 2:
+            raise TNFRValueError(f"{source}[{index}] must be a (time, EPI) pair.")
+        time_raw, epi_raw = value[0], value[1]
+    except (IndexError, KeyError, OverflowError, TypeError) as exc:
+        raise TNFRValueError(f"{source}[{index}] must be a (time, EPI) pair.") from exc
+    time = _finite_real_scalar(time_raw, f"{source}[{index}].time")
+    epi = _canonical_epi_scalar(epi_raw, f"{source}[{index}].EPI")
+    return time, epi

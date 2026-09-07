@@ -12,6 +12,7 @@ import random
 
 import networkx as nx
 import numpy as np
+import pytest
 
 from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI
@@ -44,6 +45,7 @@ from tnfr.physics.structural_diffusion import (
     structural_diffusivity,
     structural_eigenmodes,
     structural_field,
+    structural_frequency_rank,
     symmetric_normalized_laplacian,
     verify_discrete_modes,
     verify_overdamped_projection,
@@ -65,6 +67,96 @@ def _canonical_graph(n: int = 60, seed: int = 11) -> nx.Graph:
         G.nodes[node]["nu_f"] = rng.uniform(0.5, 1.5)
     default_compute_delta_nfr(G)
     return G
+
+
+@pytest.mark.parametrize(
+    "name,call",
+    [
+        ("decimals", lambda graph: structural_frequency_rank(graph, decimals=True)),
+        ("dt", lambda graph: verify_structural_diffusion(graph, dt=True)),
+        ("steps", lambda graph: verify_structural_diffusion(graph, steps=True)),
+        (
+            "tolerance",
+            lambda graph: verify_structural_diffusion(graph, tolerance=True),
+        ),
+        ("gamma", lambda graph: damped_wave_rates(graph, gamma=True)),
+        (
+            "projection gamma",
+            lambda graph: verify_overdamped_projection(graph, gamma=True),
+        ),
+        (
+            "n_time_samples",
+            lambda graph: verify_overdamped_projection(
+                graph, n_time_samples=True
+            ),
+        ),
+        (
+            "projection tolerance",
+            lambda graph: verify_overdamped_projection(graph, tolerance=True),
+        ),
+        (
+            "undamped gamma",
+            lambda graph: verify_undamped_limit(graph, gamma=True),
+        ),
+        (
+            "undamped tolerance",
+            lambda graph: verify_undamped_limit(graph, tolerance=True),
+        ),
+        ("n_modes", lambda graph: compute_emergent_pulse(graph, n_modes=True)),
+        (
+            "mode tolerance",
+            lambda graph: verify_discrete_modes(graph, tolerance=True),
+        ),
+        (
+            "reaction_rate",
+            lambda graph: dispersion_relation(graph, reaction_rate=True),
+        ),
+        (
+            "stability tolerance",
+            lambda graph: verify_structural_stability(graph, tolerance=True),
+        ),
+        (
+            "walk tolerance",
+            lambda graph: verify_structural_random_walk(graph, tolerance=True),
+        ),
+        (
+            "flow tolerance",
+            lambda graph: verify_structural_flow(graph, tolerance=True),
+        ),
+    ],
+)
+def test_public_numeric_controls_reject_booleans(name, call):
+    graph = _canonical_graph(8)
+    with pytest.raises(ValueError, match="not boolean"):
+        call(graph)
+
+
+@pytest.mark.parametrize("parameter", ["nu_f", "pressure", "dt", "steps", "tolerance"])
+def test_overdamped_regime_rejects_boolean_numeric_controls(parameter):
+    controls = {
+        "nu_f": 0.7,
+        "pressure": 1.3,
+        "dt": 0.01,
+        "steps": 300,
+        "tolerance": 1e-9,
+    }
+    controls[parameter] = np.bool_(True)
+    with pytest.raises(ValueError, match=rf"{parameter}.*not boolean"):
+        verify_overdamped_regime(**controls)
+
+
+@pytest.mark.parametrize("channel", ["EPI", "nu_f"])
+@pytest.mark.parametrize("boolean", [True, False, np.bool_(True), np.bool_(False)])
+def test_diffusion_state_readers_reject_boolean_channels(channel, boolean):
+    graph = _canonical_graph(8)
+    graph.nodes[1][channel] = boolean
+
+    if channel == "EPI":
+        with pytest.raises(ValueError, match="EPI.*not boolean"):
+            structural_field(graph)
+    else:
+        with pytest.raises(ValueError, match="frequency.*not boolean"):
+            structural_diffusivity(graph)
 
 
 class TestDiffusionOperator:

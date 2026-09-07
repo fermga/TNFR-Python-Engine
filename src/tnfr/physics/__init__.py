@@ -1,62 +1,60 @@
-"""TNFR Physics Module — Canonical Structural Telemetry (Expandable)
+"""TNFR physics package — structural diagnostics and scoped models.
 
-This package exposes physics-based structural telemetry derived from the
-TNFR nodal equation and validated empirically. All functions are centralized
-in a single module to avoid duplication and ensure a clear single source of
-truth. Documentation is English-only and organized for incremental growth.
+This package exposes read-only telemetry, model-specific certificates and
+auxiliary dynamics tied to the TNFR nodal equation.  A curated public surface
+is re-exported here; module-specific public names remain available from their
+defining modules.  Shared numerical primitives are centralized in private
+helper modules instead of duplicating them across those implementations.
 
 Canonical Structural Field Tetrad (Telemetry)
 ---------------------------------------------
-All four fields below are CANONICAL (November 2025) and read-only:
+The four read-only fields below form the canonical diagnostic interface:
 
 1) Structural Potential (Φ_s)
    - Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)^α (α=2, inverse-square)
-   - Validation: 2,400+ experiments; corr(ΔΦ_s, ΔC) = -0.822; CV = 0.1%
-   - Drift scale (U6): Δ Φ_s < π/2 ≈ 1.571 — a conservative bound just inside
-     the ζ(2) = π²/6 ≈ 1.6449 saturation of inverse-square accumulation
-   - Per-node safety: |Φ_s| < π/4 ≈ 0.785 — π-derived quarter phase-wrap (lies
-     within the O(1) ζ(4)=π⁴/90 variance band of inverse-square
-     pressure). The earlier empirical 0.7711 / "ψ(x) − x bounds" rationale was
-     withdrawn; see theory/MINIMAL_STRUCTURAL_DEGREES.md §4.1.
+   - U6 drift π/2 and per-node magnitude π/4 are selected monitoring policies,
+     not graph-independent bounds. Particular ζ sums do not derive them.
 
 2) Phase Gradient (|∇φ|)
    - |∇φ|(i) = mean_{j∈N(i)} |wrap(φ_j − φ_i)| (circular differences)
-   - Predicts peak stress; |corr| > 0.5 across topologies; threshold 0.38
+   - Exact wrapped-angle bound π; π/16 is a selected early-warning policy
+   - A measured synchronization onset near 0.29 is protocol/σ-dependent
 
 3) Phase Curvature (K_φ)
    - K_φ(i) = φ_i − mean_circular_{j∈N(i)} φ_j (Laplacian-like curvature)
-   - Threshold |K_φ| ≥ 2.8274 (hotspots); multiscale var(K_φ) ~ 1/r^α, α≈2.76
+   - Exact wrapped-angle bound π; 0.9π is a selected warning margin
 
 4) Coherence Length (ξ_C)
    - From spatial decay of local coherence correlations C(r) ~ exp(−r/ξ_C)
-   - Diverges near I_c (phase transitions); large ξ_C warns system-wide reorg
+   - Finite-network diagnostic; divergence requires a finite-size limit
 
 Physics Foundation
 ------------------
 Nodal equation (per node):  ∂EPI/∂t = ν_f · ΔNFR(t)
-EPI changes only via operators; telemetry functions compute read-only fields
-from current graph attributes. ν_f uses structural units Hz_str.
+Canonical glyphs are the exclusive semantic transformations at the operator
+layer. Declared domain solvers may advance EPI only through the shared nodal
+integrator from an explicit DeltaNFR with provenance and residual telemetry.
+Telemetry functions are read-only. nu_f uses structural units Hz_str.
 
 Modules
 -------
 fields : Centralized structural field computations and research utilities
     - compute_structural_potential, compute_phase_gradient,
       compute_phase_curvature, estimate_coherence_length
-    - k_φ multiscale helpers and topological winding (Q)
+    - k_φ multiscale helpers; declared-cycle winding is exposed separately
+    - historical Q is a continuous bilinear snapshot, not phase winding
 interactions : Canonical operator sequences with telemetry guards
       - em_like, weak_like, strong_like, gravity_like
          (returning InteractionResult)
-life : Life emergence detection from autopoietic TNFR dynamics
-    - detect_life_emergence, LifeTelemetry, autopoietic coefficients
-    - Threshold: A > 1.0 for autopoietic behavior
-cell : Cell formation from compartmentalized TNFR life patterns
-    - detect_cell_formation, CellTelemetry, membrane selectivity
-    - Requires life foundation (A > 1.0) plus spatial organization
-phase_transition : Life/non-life phase transition as universal symmetry breaking
+life : Assumption-explicit autopoietic diagnostics
+    - detect_life_emergence, LifeTelemetry, declared threshold policies
+cell : Compartment and membrane-pressure diagnostics
+    - detect_cell_formation, CellTelemetry, measured membrane flux
+phase_transition : Operational structural-symmetry transition diagnostics
     - Order parameter 𝒮, chirality χ, susceptibility, coherence length
     - Critical exponent measured as an observable (audit 2026: NOT the
       universal closed-form scale; the fitted exponent is protocol-dependent)
-    - Second-order transition with divergent ξ_C at criticality
+    - No universal transition order or ξ_C divergence is asserted
 
 See Also
 --------
@@ -90,12 +88,14 @@ Examples
 >>> drift = sum(
 ...     abs(phi_after[n] - phi_before[n]) for n in G.nodes()
 ... ) / G.number_of_nodes()
->>> assert drift < 1.571, "Escape threshold exceeded (π/2)"
+>>> assert drift < 1.571, "Selected U6 drift policy exceeded (π/2)"
 
 """
 
 from .cell import (
     CellTelemetry,
+    MembraneFluxResult,
+    MembraneNodeFlux,
     apply_membrane_flux,
     compute_boundary_coherence,
     compute_homeostatic_index,
@@ -126,6 +126,10 @@ from .conservation import (
     detect_grammar_violations_from_conservation,
     verify_conservation_balance,
     verify_sequence_ward_identity,
+)
+from .coherence_geometry import (
+    CoherenceLevelSetCertificate,
+    coherence_level_set_geometry,
 )
 from .conservation_gauge_unification import (
     ActionEnergyConsistency,
@@ -170,10 +174,12 @@ from .fields import (
     k_phi_multiscale_safety,
 )
 from .observability import (
+    EpiDiffusionReconstructionCertificate,
     LinearObservabilityCertificate,
     LocalObserverCertificate,
     ObservationSignature,
     finite_difference_observer_certificate,
+    epi_diffusion_reconstruction_certificate,
     linear_observability_certificate,
     minimal_distinguishing_channels,
     observation_signature,
@@ -247,19 +253,56 @@ from .life import (
 )
 from .lyapunov import (
     OPERATOR_LYAPUNOV_BOUNDS,
+    OPERATOR_POLICY_MULTIPLIERS,
     EnergyClass,
     LyapunovSpectralSummary,
     OperatorLyapunovBound,
     OperatorLyapunovVerification,
+    OperatorPolicyComparison,
+    OperatorPolicyMultiplier,
+    OperatorPolicySpectralContext,
     SequenceLyapunovProof,
+    SequencePolicyEvaluation,
     SpectralGapAnalysis,
+    U2PolicyRole,
     analyze_operator_convergence,
+    analyze_operator_policy_context,
     analyze_spectral_gap,
     compute_operator_energy_bound,
+    compute_operator_policy_delta,
     compute_sequence_energy_bound,
+    compute_sequence_policy_score,
+    compare_operator_energy_to_policy,
+    evaluate_sequence_policy,
     get_bound,
+    get_policy_multiplier,
     prove_sequence_lyapunov,
     verify_operator_lyapunov,
+)
+from .metriplectic import (
+    MetriplecticProductCertificate,
+    verify_metriplectic_product,
+)
+from .multiscale_coherence import (
+    U5CoherenceAssessment,
+    assess_u5_parent_child_coherence,
+)
+from .mutation_trigger import (
+    MutationTriggerCertificate,
+    MutationTriggerEvidence,
+    MutationTriggerInputError,
+    certify_mutation_trigger,
+)
+from .nonnormal_prediction import (
+    NonnormalPredictionCertificate,
+    NonnormalPredictorRecord,
+    benchmark_nonnormal_prediction,
+    deterministic_directed_family,
+    measure_nonnormal_pressure_prediction,
+)
+from .operator_quotient import (
+    OperatorQuotientCertificate,
+    certify_operator_quotient,
 )
 from .phase_transition import (
     Z_SIGNIFICANCE,
@@ -274,28 +317,68 @@ from .phase_transition import (
     fit_critical_exponent,
     symmetry_zscore,
 )
+from .phase_scaling import (
+    PhaseScalingDiagnostic,
+    SizePowerLawFit,
+    analyze_phase_finite_size_scaling,
+)
 from .spectral_conservation import (
     SpectralConservationBalance,
     SpectralLyapunovResult,
+    SpectralStructuralEnergyResult,
     SpectralSectorDecomposition,
     SpectralWardIdentity,
     classify_spectral_modes,
     compute_spectral_energy_conservation,
     compute_spectral_lyapunov,
+    compute_spectral_structural_energy,
     compute_spectral_ward_identity,
     decompose_spectral_sectors,
     verify_spectral_conservation_balance,
 )
+from .structural_morphism import (
+    EpiCoarseGrainingCertificate,
+    certify_epi_coarse_graining,
+)
+from .structural_state_distance import (
+    StructuralChannelScales,
+    StructuralStateDistanceCertificate,
+    circular_phase_distance,
+    fixed_topology_structural_state_distance,
+)
+from .temporal_identifiability import (
+    NearestSignatureIdentification,
+    SignatureMatrixCertificate,
+    SignatureNoiseMarginCertificate,
+    TemporalOperatorIdentifiabilityCertificate,
+    certify_signature_noise_margin,
+    certify_temporal_signature_matrix,
+    identify_nearest_signature,
+    probe_canonical_operator_identifiability,
+)
+from .topology_transitions import (
+    NodalTopologySnapshot,
+    NodalTopologyStep,
+    NodalTopologyTransitionCertificate,
+    capture_nodal_topology_snapshot,
+    detect_nodal_topology_transitions,
+)
 from .structural_diffusion import (
     DiscreteModeCertificate,
+    EulerRelaxationWindowDiagnostic,
+    HeterogeneousDiffusionStabilityCertificate,
     OverdampedRegimeCertificate,
     RandomWalkCertificate,
     StructuralDiffusionCertificate,
     StructuralFlowCertificate,
     StructuralStabilityCertificate,
+    SwitchingDiffusionStabilityCertificate,
+    TimeVaryingDiffusionStabilityBound,
     commute_time,
     current_divergence,
     degree_weighted_total,
+    derive_time_varying_diffusion_stability_bound,
+    diagnose_euler_relaxation_window,
     dispersion_relation,
     effective_resistance,
     fiedler_partition,
@@ -310,12 +393,40 @@ from .structural_diffusion import (
     structural_eigenvalues,
     structural_eigenmodes,
     structural_field,
+    verify_heterogeneous_diffusion_stability,
+    verify_switching_diffusion_stability,
     verify_discrete_modes,
     verify_overdamped_regime,
     verify_structural_diffusion,
     verify_structural_flow,
     verify_structural_random_walk,
     verify_structural_stability,
+)
+from .core_research_integration import (
+    CoreResearchIntegrationCertificate,
+    certify_core_research_integration,
+)
+from .core_research_trajectory import (
+    CoreResearchRefinementComparison,
+    CoreResearchRefinementSample,
+    CoreResearchTrajectoryCertificate,
+    CoreResearchTrajectoryIntervalCertificate,
+    certify_core_research_trajectory,
+    compare_core_research_trajectory_refinement,
+)
+from .hybrid_operator_stability import (
+    AffineEPIJumpGainCertificate,
+    HybridEPIStabilityCertificate,
+    certify_affine_epi_jump_gain,
+    compose_hybrid_epi_stability,
+)
+from .reception_realization import (
+    ReceptionEPIRealizationCertificate,
+    certify_reception_epi_realization,
+)
+from .resonance_realization import (
+    ResonanceEPIRealizationCertificate,
+    certify_resonance_epi_realization,
 )
 from .winding_certificates import (
     WindingCertificate,
@@ -375,9 +486,18 @@ from .unified import (
     compute_energy_density,
     compute_field_magnitude,
     compute_field_phase,
+    compute_historical_q_density,
     compute_symmetry_breaking_field,
     compute_topological_charge,
     compute_unified_field_suite,
+)
+from .emergent_particles import (
+    EmergentParticle,
+    WindingSector,
+    classify_particle,
+    classify_winding_sector,
+    winding_number,
+    winding_ring,
 )
 from .variational import (
     ConjugatePair,
@@ -420,11 +540,13 @@ __all__ = [
     "k_phi_multiscale_safety",
     "compute_phase_winding",
     # --- Read-only field observability ---
+    "EpiDiffusionReconstructionCertificate",
     "LinearObservabilityCertificate",
     "LocalObserverCertificate",
     "ObservationSignature",
     "linear_observability_certificate",
     "finite_difference_observer_certificate",
+    "epi_diffusion_reconstruction_certificate",
     "observer_ablation_ranks",
     "tetrad_observation_channels",
     "tetrad_observation_vector",
@@ -459,6 +581,8 @@ __all__ = [
     "detect_life_emergence",
     # --- Cell / Membrane ---
     "CellTelemetry",
+    "MembraneNodeFlux",
+    "MembraneFluxResult",
     "compute_boundary_coherence",
     "compute_selectivity_index",
     "compute_homeostatic_index",
@@ -488,6 +612,9 @@ __all__ = [
     "compute_lyapunov_derivative",
     "compute_spectral_conservation",
     "compute_conservation_scaling",
+    # --- Constitutive coherence geometry ---
+    "CoherenceLevelSetCertificate",
+    "coherence_level_set_geometry",
     # --- Unified Complex Fields (Ψ = K_φ + i·J_φ) ---
     "compute_complex_geometric_field",
     "compute_field_magnitude",
@@ -497,8 +624,17 @@ __all__ = [
     "compute_coherence_coupling_field",
     "compute_energy_density",
     "compute_action_density",
+    "compute_historical_q_density",
     "compute_topological_charge",
     "compute_unified_field_suite",
+    # --- Declared-cycle phase winding ---
+    "WindingSector",
+    "classify_winding_sector",
+    "winding_number",
+    "winding_ring",
+    # Historical compatibility names
+    "EmergentParticle",
+    "classify_particle",
     # --- Dissipative Conservation ---
     "DissipativeSnapshot",
     "DissipativeBalance",
@@ -525,10 +661,39 @@ __all__ = [
     "SpectralConservationBalance",
     "SpectralWardIdentity",
     "SpectralLyapunovResult",
+    "SpectralStructuralEnergyResult",
     "SpectralSectorDecomposition",
     "verify_spectral_conservation_balance",
+    # --- Exact pure-EPI coarse-graining ---
+    "EpiCoarseGrainingCertificate",
+    "certify_epi_coarse_graining",
+    # --- Structural-state quotient metric ---
+    "StructuralChannelScales",
+    "StructuralStateDistanceCertificate",
+    "circular_phase_distance",
+    "fixed_topology_structural_state_distance",
+    # --- Restricted executable S16 integration boundary ---
+    "CoreResearchIntegrationCertificate",
+    "certify_core_research_integration",
+    "CoreResearchTrajectoryIntervalCertificate",
+    "CoreResearchTrajectoryCertificate",
+    "CoreResearchRefinementSample",
+    "CoreResearchRefinementComparison",
+    "certify_core_research_trajectory",
+    "compare_core_research_trajectory_refinement",
+    # --- Affine EPI-reset and hybrid flow/reset stability ---
+    "AffineEPIJumpGainCertificate",
+    "HybridEPIStabilityCertificate",
+    "certify_affine_epi_jump_gain",
+    "compose_hybrid_epi_stability",
+    # --- Reception runtime-to-affine realization boundary ---
+    "ReceptionEPIRealizationCertificate",
+    "certify_reception_epi_realization",
+    "ResonanceEPIRealizationCertificate",
+    "certify_resonance_epi_realization",
     "compute_spectral_ward_identity",
     "compute_spectral_lyapunov",
+    "compute_spectral_structural_energy",
     "decompose_spectral_sectors",
     "compute_spectral_energy_conservation",
     "classify_spectral_modes",
@@ -602,8 +767,12 @@ __all__ = [
     "verify_substrate_geometry",
     # --- Structural Diffusion (transport content of the nodal equation) ---
     "StructuralDiffusionCertificate",
+    "HeterogeneousDiffusionStabilityCertificate",
+    "SwitchingDiffusionStabilityCertificate",
+    "TimeVaryingDiffusionStabilityBound",
     "OverdampedRegimeCertificate",
     "DiscreteModeCertificate",
+    "EulerRelaxationWindowDiagnostic",
     "StructuralStabilityCertificate",
     "RandomWalkCertificate",
     "StructuralFlowCertificate",
@@ -612,6 +781,10 @@ __all__ = [
     "structural_diffusivity",
     "relaxation_spectrum",
     "degree_weighted_total",
+    "derive_time_varying_diffusion_stability_bound",
+    "diagnose_euler_relaxation_window",
+    "verify_heterogeneous_diffusion_stability",
+    "verify_switching_diffusion_stability",
     "structural_eigenvalues",
     "structural_eigenmodes",
     "nodal_domain_count",
@@ -630,7 +803,7 @@ __all__ = [
     "verify_structural_stability",
     "verify_structural_random_walk",
     "verify_structural_flow",
-    # --- Gauge Structure (U(1) Symmetry of Ψ = K_φ + i·J_φ) ---
+    # --- Auxiliary pure-gauge U(1) coordinates for Ψ = K_φ + i·J_φ ---
     "GaugeSnapshot",
     "GaugeInvarianceResult",
     "apply_gauge_transformation",
@@ -648,7 +821,7 @@ __all__ = [
     "classify_network_regimes",
     "compute_yang_mills_action",
     "compute_gauge_energy_decomposition",
-    # --- Yang-Mills Formalism (complete field equations) ---
+    # --- Legacy Yang-Mills-named finite snapshot diagnostics ---
     "YangMillsFieldEquations",
     "BianchiIdentityResult",
     "InteractionRegimeMetrics",
@@ -674,7 +847,30 @@ __all__ = [
     "capture_phase_snapshot",
     "detect_phase_transition",
     "fit_critical_exponent",
-    # --- Formal Lyapunov Analysis (per-operator bounds + spectral gap) ---
+    # --- Finite-size phase-scaling protocol ---
+    "SizePowerLawFit",
+    "PhaseScalingDiagnostic",
+    "analyze_phase_finite_size_scaling",
+    # --- Dynamic nodal-topology observations ---
+    "NodalTopologySnapshot",
+    "NodalTopologyStep",
+    "NodalTopologyTransitionCertificate",
+    "capture_nodal_topology_snapshot",
+    "detect_nodal_topology_transitions",
+    # --- U2 policy multipliers and independent spectral diagnostics ---
+    "U2PolicyRole",
+    "OperatorPolicyMultiplier",
+    "OperatorPolicyComparison",
+    "OperatorPolicySpectralContext",
+    "SequencePolicyEvaluation",
+    "OPERATOR_POLICY_MULTIPLIERS",
+    "get_policy_multiplier",
+    "compute_operator_policy_delta",
+    "compare_operator_energy_to_policy",
+    "compute_sequence_policy_score",
+    "evaluate_sequence_policy",
+    "analyze_operator_policy_context",
+    # Historical compatibility names
     "EnergyClass",
     "OperatorLyapunovBound",
     "OperatorLyapunovVerification",
@@ -687,6 +883,35 @@ __all__ = [
     "verify_operator_lyapunov",
     "compute_sequence_energy_bound",
     "prove_sequence_lyapunov",
+    # --- Restricted dissipative-symplectic product ---
+    "MetriplecticProductCertificate",
+    "verify_metriplectic_product",
+    # --- Explicit U5 parent/child coherence assessment ---
+    "U5CoherenceAssessment",
+    "assess_u5_parent_child_coherence",
+    # --- Mutation prediction/observation certificate ---
+    "MutationTriggerCertificate",
+    "MutationTriggerEvidence",
+    "MutationTriggerInputError",
+    "certify_mutation_trigger",
+    # --- Directed non-normal pressure prediction ---
+    "NonnormalPredictorRecord",
+    "NonnormalPredictionCertificate",
+    "deterministic_directed_family",
+    "measure_nonnormal_pressure_prediction",
+    "benchmark_nonnormal_prediction",
+    # --- Generic operator quotient closure ---
+    "OperatorQuotientCertificate",
+    "certify_operator_quotient",
+    # --- Temporal operator identifiability ---
+    "NearestSignatureIdentification",
+    "SignatureMatrixCertificate",
+    "SignatureNoiseMarginCertificate",
+    "TemporalOperatorIdentifiabilityCertificate",
+    "certify_signature_noise_margin",
+    "certify_temporal_signature_matrix",
+    "identify_nearest_signature",
+    "probe_canonical_operator_identifiability",
     "analyze_spectral_gap",
     "analyze_operator_convergence",
     # --- Conservation-Gauge Unification ---

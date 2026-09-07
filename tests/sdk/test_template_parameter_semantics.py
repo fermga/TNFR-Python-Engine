@@ -75,7 +75,7 @@ def test_ecosystem_budget_counts_canonical_word_applications(monkeypatch, budget
 
     monkeypatch.setattr(TNFRNetwork, "apply_sequence", record)
     Templates.ecosystem_dynamics(species=6, evolution_steps=budget, random_seed=7)
-    words = ("creative_mutation", "network_sync", "consolidation")
+    words = ("exploration", "network_sync", "consolidation")
     assert scheduled == [words[index % 3] for index in range(budget)]
 
 
@@ -115,25 +115,50 @@ def test_invalid_template_controls_fail_before_node_creation(monkeypatch, method
 @pytest.mark.parametrize("method", ["social", "ecosystem", "creative", "organization"])
 @pytest.mark.parametrize("budget", [1, 2, 3])
 def test_real_template_cycles_follow_exact_words_and_repeat(monkeypatch, method, budget):
-    from tnfr.operators.definitions_base import Operator
+    from tnfr.operators import word_execution
+    from tnfr.operators.network_stage import (
+        OPERATOR_MAJOR_GAUSS_SEIDEL,
+        STAGE_SCHEDULE_KEY,
+        TWO_PHASE_JACOBI,
+    )
+    from tnfr.operators.registry import get_operator_class
 
     # Explicit coherent initial phases isolate cycle accounting from random
     # U3 admissibility. Operators and their hard phase gates remain active.
     original_nodes = TNFRNetwork.add_nodes
-    original_call = Operator.__call__
-    executed = []
+    original_run = word_execution.run_network_sequence
+    callbacks = []
 
     def coherent_nodes(self, *args, **kwargs):
         kwargs["phase_range"] = (0.0, 0.0)
         return original_nodes(self, *args, **kwargs)
 
-    def record_operator(self, graph, node, **kwargs):
-        result = original_call(self, graph, node, **kwargs)
-        executed.append(self.name)
-        return result
+    def traced_run(graph, operator_names, **kwargs):
+        caller_callback = kwargs.pop("on_step", None)
+
+        def record_committed_stage(operator_name):
+            callbacks.append(
+                {
+                    "operator": operator_name,
+                    "schedule": dict(graph.graph[STAGE_SCHEDULE_KEY]),
+                    "histories": {
+                        node: tuple(graph.nodes[node]["glyph_history"])
+                        for node in graph
+                    },
+                }
+            )
+            if caller_callback is not None:
+                caller_callback(operator_name)
+
+        return original_run(
+            graph,
+            operator_names,
+            on_step=record_committed_stage,
+            **kwargs,
+        )
 
     monkeypatch.setattr(TNFRNetwork, "add_nodes", coherent_nodes)
-    monkeypatch.setattr(Operator, "__call__", record_operator)
+    monkeypatch.setattr(word_execution, "run_network_sequence", traced_run)
     if method == "social":
         factory = Templates.social_network_simulation
         kwargs = {"people": 6, "connections_per_person": 5, "simulation_steps": budget}
@@ -143,25 +168,58 @@ def test_real_template_cycles_follow_exact_words_and_repeat(monkeypatch, method,
     elif method == "ecosystem":
         factory = Templates.ecosystem_dynamics
         kwargs = {"species": 6, "interaction_strength": 1.0, "evolution_steps": budget}
-        cycle = ("creative_mutation", "network_sync", "consolidation")
+        cycle = ("exploration", "network_sync", "consolidation")
         words = [cycle[index % 3] for index in range(budget)]
     elif method == "creative":
         factory = Templates.creative_process_model
         kwargs = {"ideas": 6, "inspiration_level": 0.4, "development_cycles": budget}
         third = budget // 3
-        words = (["exploration"] * third + ["creative_mutation"] * third
+        words = (["exploration"] * third + ["exploration"] * third
                  + ["network_sync"] * (budget - 2 * third))
     else:
         factory = Templates.organizational_network
         kwargs = {"agents": 6, "hierarchy_depth": 3, "coordination_steps": budget}
         half = budget // 2
         words = ["network_sync"] * half + ["consolidation"] * (budget - half)
+
+    expected_operators = [
+        name for word in words for name in NAMED_SEQUENCES[word]
+    ]
+    expected_glyphs = [
+        get_operator_class(name)().glyph.value for name in expected_operators
+    ]
+
+    def assert_execution_trace(records):
+        assert [record["operator"] for record in records] == expected_operators
+        for index, (record, operator_name, glyph) in enumerate(
+            zip(records, expected_operators, expected_glyphs, strict=True)
+        ):
+            schedule = record["schedule"]
+            assert schedule == {
+                "operator": operator_name,
+                "glyph": glyph,
+                "schedule": (
+                    TWO_PHASE_JACOBI
+                    if operator_name in {"reception", "resonance"}
+                    else OPERATOR_MAJOR_GAUSS_SEIDEL
+                ),
+                "nodes_processed": 6,
+            }
+            # The callback runs after the whole stage commits. Every target
+            # must therefore expose the same newly appended glyph. Compare the
+            # complete observable suffix so bounded histories remain valid.
+            expected_prefix = tuple(expected_glyphs[: index + 1])
+            for history in record["histories"].values():
+                assert history == expected_prefix[-len(history) :]
+
     first = factory(**kwargs, random_seed=7)
-    expected = [name for word in words for name in NAMED_SEQUENCES[word] for _ in range(6)]
-    assert executed == expected
-    executed.clear()
+    first_trace = list(callbacks)
+    assert_execution_trace(first_trace)
+    callbacks.clear()
     second = factory(**kwargs, random_seed=7)
-    assert executed == expected
+    second_trace = list(callbacks)
+    assert_execution_trace(second_trace)
+    assert first_trace == second_trace
     assert first.coherence == second.coherence
     assert first.sense_indices == second.sense_indices
     assert set(first.graph.edges()) == set(second.graph.edges())

@@ -12,10 +12,14 @@ from typing import Any, Sequence
 
 import networkx as nx
 
-from ..dynamics import dnfr_epi_vf_mixed, set_delta_nfr_hook
+from ..dynamics import (
+    dnfr_epi_vf_mixed,
+    set_delta_nfr_hook,
+    update_epi_via_nodal_equation,
+)
 from ..mathematics.unified_numerical import np
 from ..types import DeltaNFR, NodeId, TNFRGraph
-from ..utils import get_logger
+from ..utils import angle_diff, get_logger
 
 logger = get_logger(__name__)
 
@@ -307,8 +311,12 @@ class HierarchicalTNFRNetwork:
                 # Sequential evolution
                 results = self._evolve_sequential(dt, operators)
 
-            # Apply cross-scale coupling effects
-            self._apply_cross_scale_coupling(dt)
+            # Compose local and cross-scale pressure before advancing EPI once.
+            # The stored DeltaNFR is therefore the pressure used by the
+            # canonical nodal-equation step.
+            self._apply_cross_scale_coupling()
+            for graph in self.networks_by_scale.values():
+                update_epi_via_nodal_equation(graph, dt=dt, method="euler")
 
         # Compute final metrics
         total_coherence = self.compute_total_coherence()
@@ -321,14 +329,14 @@ class HierarchicalTNFRNetwork:
         )
 
     def _evolve_sequential(self, dt: float, operators: Sequence[str]) -> dict[str, Any]:
-        """Evolve scales sequentially."""
+        """Stage each scale's local pressure sequentially."""
         results = {}
 
         for scale_name, G in self.networks_by_scale.items():
-            # Simple evolution: update ΔNFR for all nodes
+            # EPI advances only after the cross-scale term has been composed
+            # into the pressure channel.
             for node in G.nodes():
                 phase = G.nodes[node]["phase"]
-                vf = G.nodes[node]["nu_f"]
 
                 # Compute neighbor phase difference contribution
                 neighbors = list(G.neighbors(node))
@@ -342,9 +350,6 @@ class HierarchicalTNFRNetwork:
 
                 G.nodes[node]["delta_nfr"] = dnfr
 
-                # Update EPI according to nodal equation: ∂EPI/∂t = νf · ΔNFR
-                G.nodes[node]["EPI"] += vf * dnfr * dt
-
             results[scale_name] = {"coherence": self._scale_coherence(G)}
 
         return results
@@ -355,7 +360,7 @@ class HierarchicalTNFRNetwork:
         Note: ThreadPoolExecutor is used instead of ProcessPoolExecutor because:
         1. NetworkX graphs are not easily picklable (required for multiprocessing)
         2. The overhead of serializing/deserializing graphs would negate benefits
-        3. Thread-based parallelism still provides speedup for I/O and NumPy ops
+        3. Thread-based execution may overlap I/O or native kernels that release the GIL
 
         For CPU-intensive workloads on very large scales, consider using
         ProcessPoolExecutor with custom serialization or shared memory.
@@ -380,13 +385,12 @@ class HierarchicalTNFRNetwork:
     def _evolve_single_scale(
         self, scale_name: str, dt: float, operators: Sequence[str]
     ) -> dict[str, Any]:
-        """Evolve a single scale (helper for parallel execution)."""
+        """Stage one scale's local pressure (parallel helper)."""
         G = self.networks_by_scale[scale_name]
 
-        # Same logic as _evolve_sequential but for one scale
+        # Same pressure-staging logic as _evolve_sequential.
         for node in G.nodes():
             phase = G.nodes[node]["phase"]
-            vf = G.nodes[node]["nu_f"]
 
             neighbors = list(G.neighbors(node))
             if neighbors:
@@ -396,42 +400,46 @@ class HierarchicalTNFRNetwork:
                 dnfr = 0.0
 
             G.nodes[node]["delta_nfr"] = dnfr
-            G.nodes[node]["EPI"] += vf * dnfr * dt
 
         return {"coherence": self._scale_coherence(G)}
 
-    def _apply_cross_scale_coupling(self, dt: float) -> None:
-        """Apply cross-scale coupling effects after evolution step."""
-        # For each scale, add cross-scale ΔNFR contributions
-        for target_scale in self.networks_by_scale:
-            G_target = self.networks_by_scale[target_scale]
+    def _apply_cross_scale_coupling(self) -> None:
+        """Compose cross-scale contributions into stored nodal pressure.
 
-            for node in G_target.nodes():
-                cross_contribution = 0.0
+        Source means are snapshotted before any target update.  The result is
+        independent of scale iteration order and exposes the full pressure used
+        by the subsequent nodal-equation step.
+        """
+        mean_pressure: dict[str, float] = {}
+        for scale_name, graph in self.networks_by_scale.items():
+            values = [
+                float(graph.nodes[node].get("delta_nfr", 0.0))
+                for node in graph.nodes()
+            ]
+            mean_pressure[scale_name] = float(np.mean(values)) if values else 0.0
 
-                for source_scale in self.networks_by_scale:
-                    if source_scale == target_scale:
-                        continue
+        proposals: dict[str, dict[NodeId, float]] = {}
+        for target_scale, target_graph in self.networks_by_scale.items():
+            cross_contribution = 0.0
+            for source_scale in self.networks_by_scale:
+                if source_scale == target_scale:
+                    continue
+                coupling = self.cross_scale_couplings.get(
+                    (target_scale, source_scale), 0.0
+                )
+                if coupling > 0.0:
+                    cross_contribution += coupling * mean_pressure[source_scale]
 
-                    coupling = self.cross_scale_couplings.get(
-                        (target_scale, source_scale), 0.0
-                    )
+            proposals[target_scale] = {
+                node: float(target_graph.nodes[node].get("delta_nfr", 0.0))
+                + cross_contribution
+                for node in target_graph.nodes()
+            }
 
-                    if coupling > 0:
-                        G_source = self.networks_by_scale[source_scale]
-                        source_dnfr_values = [
-                            G_source.nodes[n].get("delta_nfr", 0.0)
-                            for n in G_source.nodes()
-                        ]
-                        mean_source_dnfr = (
-                            np.mean(source_dnfr_values) if source_dnfr_values else 0.0
-                        )
-                        cross_contribution += coupling * mean_source_dnfr
-
-                # Apply cross-scale effect to EPI
-                if cross_contribution != 0.0:
-                    vf = G_target.nodes[node]["nu_f"]
-                    G_target.nodes[node]["EPI"] += vf * cross_contribution * dt
+        for scale_name, node_pressures in proposals.items():
+            graph = self.networks_by_scale[scale_name]
+            for node, pressure in node_pressures.items():
+                graph.nodes[node]["delta_nfr"] = pressure
 
     def _scale_coherence(self, G: TNFRGraph) -> float:
         """Per-scale coherence via the canonical kernel C = 1/(1+mean|ΔNFR|)."""
@@ -458,14 +466,13 @@ class HierarchicalTNFRNetwork:
         if len(scale_mean_phases) < 2:
             return 0.0
 
-        # Compute phase coherence between scales
+        # Compute phase coherence between scales from shortest-arc separation.
         phase_diffs = []
         for i in range(len(scale_mean_phases)):
             for j in range(i + 1, len(scale_mean_phases)):
-                phase_diff = abs(scale_mean_phases[i] - scale_mean_phases[j])
-                # Normalize to [0, π]
-                phase_diff = min(phase_diff, 2 * np.pi - phase_diff)
-                phase_diffs.append(phase_diff)
+                phase_diffs.append(
+                    abs(angle_diff(scale_mean_phases[i], scale_mean_phases[j]))
+                )
 
         mean_phase_diff = np.mean(phase_diffs) if phase_diffs else 0.0
         # Convert to synchrony metric (0 = no sync, 1 = perfect sync)

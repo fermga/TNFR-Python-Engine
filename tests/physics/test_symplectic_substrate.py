@@ -380,6 +380,25 @@ class TestIntegrability:
         )
         assert np.allclose(delta, 0.0, atol=1e-9)
 
+    def test_zero_action_pair_is_excluded_from_angle_check(self, monkeypatch) -> None:
+        point = PhaseSpacePoint(
+            (0,),
+            np.array([0.0]),
+            np.array([0.0]),
+            np.array([1.0]),
+            np.array([0.0]),
+            np.array([0.0]),
+        )
+        monkeypatch.setattr(
+            "tnfr.physics.symplectic_substrate.extract_phase_space_point",
+            lambda graph: point,
+        )
+
+        cert = verify_integrability(object(), flow_times=(0.7,))
+
+        assert cert.angles_advance_linearly
+        assert cert.max_angle_error < 1e-12
+
     def test_actions_in_involution(self) -> None:
         G = _canonical_graph(24)
         cert = verify_integrability(G)
@@ -519,12 +538,15 @@ class TestMarsdenWeinstein:
         assert "SINGULAR_ZERO_LEVEL" in cert.summary()
 
     @pytest.mark.parametrize("scale", [1e-12, 1.0, 1e12])
-    def test_regular_level_with_zero_actions_uses_defined_phase_reference(self, monkeypatch, scale):
+    def test_regular_level_with_zero_actions_uses_defined_phase_reference(
+        self, monkeypatch, scale
+    ):
         # The first pair has zero action, so its angle cannot be a reference.
         point = PhaseSpacePoint((0,), np.array([0.]), np.array([0.]),
                                 np.array([scale]), np.array([0.]), np.array([0.]))
         monkeypatch.setattr(
-            "tnfr.physics.symplectic_substrate.extract_phase_space_point", lambda graph: point
+            "tnfr.physics.symplectic_substrate.extract_phase_space_point",
+            lambda graph: point,
         )
         cert = verify_symplectic_reduction(nx.empty_graph(1))
         assert cert.is_regular_level
@@ -537,7 +559,8 @@ class TestMarsdenWeinstein:
         point = PhaseSpacePoint((0,), np.array([1.]), np.array([0.]),
                                 np.array([-1.]), np.array([1e-16]), np.array([0.]))
         monkeypatch.setattr(
-            "tnfr.physics.symplectic_substrate.extract_phase_space_point", lambda graph: point
+            "tnfr.physics.symplectic_substrate.extract_phase_space_point",
+            lambda graph: point,
         )
         cert = verify_symplectic_reduction(nx.empty_graph(1))
         assert cert.relative_phase_pairs == 1
@@ -689,7 +712,7 @@ class TestSubstrateGeometryReport:
 
 
 class TestSubstrateIntegration:
-    """The emergent substrate is exposed across SDK, telemetry, and API."""
+    """The auxiliary substrate is exposed across SDK, telemetry, and API."""
 
     def test_physics_package_exports(self) -> None:
         from tnfr.physics import extract_phase_space_point as _eps
@@ -758,7 +781,7 @@ class TestSubstrateIntegration:
 
 
 class TestAdiabaticInvariance:
-    """The substrate action is an adiabatic invariant of a slow nu_f ramp."""
+    """The auxiliary oscillator action is adiabatic under a slow omega ramp."""
 
     def test_slow_ramp_conserves_action(self) -> None:
         cert = verify_adiabatic_invariance()
@@ -788,4 +811,4 @@ class TestAdiabaticInvariance:
         cert = verify_adiabatic_invariance()
         assert isinstance(cert, AdiabaticInvarianceCertificate)
         assert "VALID" in cert.summary()
-        assert "clock" in cert.summary()
+        assert "auxiliary oscillator" in cert.summary()

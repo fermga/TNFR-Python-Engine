@@ -8,6 +8,7 @@ import math
 from typing import Any
 
 from ..mathematics.unified_numerical import np
+from ._edge_semantics import has_explicit_edge_lengths, structural_path_weight
 from ._helpers import compensated_sum
 
 try:
@@ -34,6 +35,13 @@ def compute_phi_s_exact_vectorized(
     try:
         if distance_matrix is not None:
             D = distance_matrix.copy()
+        elif has_explicit_edge_lengths(G):
+            # Floyd-Warshall's public weight argument is an attribute name, so
+            # use the shared callable fallback when per-edge ``length`` must
+            # take precedence over the legacy ``weight`` channel.
+            return _compute_phi_s_exact_python_fallback(
+                G, nodes, delta_nfr, alpha, dtype
+            )
         else:
             # Use networkx floyd_warshall_numpy if available
             # It returns a matrix of distances
@@ -84,7 +92,9 @@ def _compute_phi_s_exact_python_fallback(G, nodes, delta_nfr, alpha, dtype):
     """Fallback for when vectorization fails."""
     potential = {}
     for src in nodes:
-        lengths = nx.single_source_dijkstra_path_length(G, src, weight="weight")
+        lengths = nx.single_source_dijkstra_path_length(
+            G, src, weight=structural_path_weight(G)
+        )
         contributions = (
             dtype(delta_nfr[dst]) / dtype(distance) ** alpha
             for dst, distance in lengths.items()
@@ -125,8 +135,11 @@ def compute_phi_s_landmarks_vectorized(
     if reverse_landmark_distances is None:
         if G.is_directed():
             reverse = G.reverse(copy=False)
+            reverse_weight = structural_path_weight(reverse)
             reverse_landmark_distances = {
-                node: nx.single_source_dijkstra_path_length(reverse, node, weight="weight")
+                node: nx.single_source_dijkstra_path_length(
+                    reverse, node, weight=reverse_weight
+                )
                 for node in landmarks
             }
         else:

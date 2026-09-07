@@ -43,10 +43,11 @@ U5: MULTI-SCALE COHERENCE
     Basis: Hierarchical nodal equation + coherence conservation
     (C_parent ≥ α·ΣC_child).
 
-U6: STRUCTURAL POTENTIAL CONFINEMENT (Promoted 2025-11-11)
-    Verify Δ Φ_s < π/2 (U6 confinement bound)
-    Basis: Emergent Φ_s field from ΔNFR distribution + empirical validation
-    Status: CANONICAL - 2,400+ experiments, corr(Δ Φ_s, ΔC) = -0.822, CV = 0.1%
+U6: STRUCTURAL POTENTIAL DRIFT POLICY
+    Observe mean_i |Δ Φ_s(i)| < π/2 between declared reference and observed fields
+    Basis: selected telemetry policy for the emergent Φ_s field
+    Scope: finite read-only alert; it is not a graph-independent bound or a
+    certificate of future confinement/fragmentation
 
 For complete derivations and physics basis, see UNIFIED_GRAMMAR_RULES.md
 

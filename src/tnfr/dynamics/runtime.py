@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import inspect
+import math
 import sys
 from collections import deque
 from collections.abc import Iterable, Mapping, MutableMapping
@@ -11,7 +12,9 @@ from numbers import Real
 from typing import Any, cast
 
 from ..alias import get_attr
+from ..config.operator_names import BIFURCATION_WINDOW
 from ..constants import get_graph_param, get_param
+from ..errors import TNFRValueError
 from ..glyph_history import ensure_history
 from ..metrics.sense_index import compute_Si
 from ..operators import apply_remesh_if_globally_stable
@@ -50,6 +53,7 @@ __all__ = (
     "_normalize_job_overrides",
     "_resolve_jobs_override",
     "_prepare_dnfr",
+    "_record_mutation_flow_boundary",
     "_update_nodes",
     "_update_epi_hist",
     "_maybe_remesh",
@@ -59,6 +63,136 @@ __all__ = (
     "step",
     "run",
 )
+
+
+_MUTATION_TIME_HISTORY_KEY = "epi_time_history"
+_MUTATION_TIME_HISTORY_MAXLEN = max(2, BIFURCATION_WINDOW + 1)
+
+
+def _finite_mutation_sample_scalar(value: Any, field: str) -> float:
+    """Return one finite non-Boolean runtime sample scalar."""
+
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise TNFRValueError(
+            f"{field} must be a finite real scalar.",
+            context={"field": field, "value": repr(value)},
+        )
+    try:
+        resolved = float(value)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(
+            f"{field} must be representable as a finite real scalar.",
+            context={"field": field, "value": repr(value)},
+        ) from exc
+    if not math.isfinite(resolved):
+        raise TNFRValueError(
+            f"{field} must be finite.",
+            context={"field": field, "value": repr(value)},
+        )
+    return resolved
+
+
+def _validated_mutation_time_history(
+    raw: Any, *, node: NodeId
+) -> list[tuple[float, float]]:
+    """Materialize one existing physical history without accepting ambiguity."""
+
+    if raw is None:
+        return []
+    if isinstance(raw, (str, bytes)):
+        raise TNFRValueError(
+            "epi_time_history must be an indexed sequence of (time, EPI) pairs.",
+            context={"node": node, "history_type": type(raw).__name__},
+        )
+    try:
+        entries = list(raw)
+    except (OverflowError, TypeError) as exc:
+        raise TNFRValueError(
+            "epi_time_history must be replayable.",
+            context={"node": node, "history_type": type(raw).__name__},
+        ) from exc
+
+    samples: list[tuple[float, float]] = []
+    for index, entry in enumerate(entries):
+        if isinstance(entry, (str, bytes)):
+            pair = None
+        else:
+            try:
+                pair = tuple(entry)
+            except (OverflowError, TypeError):
+                pair = None
+        if pair is None or len(pair) != 2:
+            raise TNFRValueError(
+                "epi_time_history entries must be (time, EPI) pairs.",
+                context={"node": node, "sample_index": index},
+            )
+        sample_time = _finite_mutation_sample_scalar(
+            pair[0], f"epi_time_history[{index}].time"
+        )
+        sample_epi = _finite_mutation_sample_scalar(
+            pair[1], f"epi_time_history[{index}].EPI"
+        )
+        if samples and sample_time <= samples[-1][0]:
+            raise TNFRValueError(
+                "epi_time_history timestamps must increase strictly.",
+                context={
+                    "node": node,
+                    "sample_index": index,
+                    "previous_time": samples[-1][0],
+                    "current_time": sample_time,
+                },
+            )
+        samples.append((sample_time, sample_epi))
+    return samples[-_MUTATION_TIME_HISTORY_MAXLEN:]
+
+
+def _record_mutation_flow_boundary(G: TNFRGraph) -> None:
+    """Record a physical EPI boundary atomically across all runtime nodes.
+
+    A changed EPI at the same timestamp is an instantaneous hybrid jump. Its
+    history is restarted at that right-hand endpoint so the next secant
+    measures only continuous nodal flow and cannot absorb the jump into
+    ``dEPI/dt``. A custom integrator that changes EPI without advancing
+    ``G.graph['_t']`` therefore creates no fabricated physical rate.
+    """
+
+    sample_time = _finite_mutation_sample_scalar(
+        G.graph.get("_t", 0.0), "graph runtime time"
+    )
+    proposals: dict[NodeId, deque[tuple[float, float]]] = {}
+    for node, node_data in G.nodes(data=True):
+        node_id = cast(NodeId, node)
+        epi = _finite_mutation_sample_scalar(
+            get_attr(node_data, ALIAS_EPI, 0.0), f"node {node!r} EPI"
+        )
+        samples = _validated_mutation_time_history(
+            node_data.get(_MUTATION_TIME_HISTORY_KEY), node=node_id
+        )
+        if samples:
+            previous_time, previous_epi = samples[-1]
+            if sample_time < previous_time:
+                raise TNFRValueError(
+                    "Runtime time precedes the latest EPI sample.",
+                    context={
+                        "node": node,
+                        "runtime_time": sample_time,
+                        "history_time": previous_time,
+                    },
+                )
+            if sample_time == previous_time:
+                if epi != previous_epi:
+                    samples = [(sample_time, epi)]
+            else:
+                samples.append((sample_time, epi))
+        else:
+            samples.append((sample_time, epi))
+        proposals[node_id] = deque(
+            samples[-_MUTATION_TIME_HISTORY_MAXLEN:],
+            maxlen=_MUTATION_TIME_HISTORY_MAXLEN,
+        )
+
+    for node, history in proposals.items():
+        G.nodes[node][_MUTATION_TIME_HISTORY_KEY] = history
 
 
 def _normalize_job_overrides(
@@ -380,12 +514,17 @@ def _update_nodes(
 ) -> None:
     """Apply glyphs, integrate ΔNFR and refresh derived nodal state."""
 
+    # The left boundary makes the previous completed flow interval available
+    # to autonomous ZHIR selection. Any same-time EPI jump below restarts that
+    # node's history before integration.
+    _record_mutation_flow_boundary(G)
     _update_node_sample(G, step=step_idx)
     overrides = job_overrides or {}
     _prepare_dnfr(G, use_Si=use_Si, job_overrides=overrides)
     selector = selectors._apply_selector(G)
     if apply_glyphs:
         selectors._apply_glyphs(G, selector, hist)
+        _record_mutation_flow_boundary(G)
     _dt = get_graph_param(G, "DT") if dt is None else float(dt)
     method = get_graph_param(G, "INTEGRATOR_METHOD", str)
     n_jobs = _resolve_jobs_override(
@@ -418,6 +557,9 @@ def _update_nodes(
         allow_non_positive=False,
     )
     adaptation.adapt_vf_by_coherence(G, n_jobs=vf_jobs)
+    # Default integrators advance ``_t``. If a custom integrator does not,
+    # same-time EPI changes reset the history and cannot masquerade as flow.
+    _record_mutation_flow_boundary(G)
 
 
 def _update_epi_hist(G: TNFRGraph) -> None:

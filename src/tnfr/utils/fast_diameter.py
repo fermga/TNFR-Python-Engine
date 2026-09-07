@@ -1,8 +1,8 @@
 """Fast diameter and eccentricity approximations for TNFR graphs.
 
-Implements cached and approximate graph metrics to eliminate O(N³)
-bottlenecks in validation pipelines:
-- 2-sweep BFS diameter (46-111× speedup)
+Implements cached and approximate graph metrics to reduce repeated traversal
+work in validation pipelines:
+- 2-sweep BFS diameter heuristic
 - Cached eccentricity with dependency tracking
 
 References
@@ -152,9 +152,10 @@ def compute_eccentricity_cached(G: Any) -> dict[Any, int]:
     **Caching**: Automatically cached at CacheLevel.DERIVED_METRICS.
     Invalidated only when graph_topology changes (structural coupling).
 
-    **Performance**:
+    **Complexity**:
     - First call: O(N² + NM) via NetworkX BFS from all nodes
-    - Cached calls: O(1) lookup, ~2.3s → 0.000s (infinite speedup)
+    - Cache lookup overhead is implementation-dependent; no runtime ratio is
+      implied without a benchmark for the concrete graph and environment
 
     Parameters
     ----------
@@ -175,8 +176,8 @@ def compute_eccentricity_cached(G: Any) -> dict[Any, int]:
     Examples
     --------
     >>> G = nx.cycle_graph(100)
-    >>> ecc = compute_eccentricity_cached(G)  # First: ~5ms
-    >>> ecc2 = compute_eccentricity_cached(G)  # Cached: ~0.000ms
+    >>> ecc = compute_eccentricity_cached(G)
+    >>> ecc2 = compute_eccentricity_cached(G)
     >>> assert ecc == ecc2
     """
     return nx.eccentricity(G)  # type: ignore

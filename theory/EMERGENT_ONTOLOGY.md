@@ -1,7 +1,7 @@
 # Emergent Ontology from the Nodal Equation
 
 **Status**: WORKING DRAFT — EXPLORATORY (not canonical)
-**Date**: 2026-08-04 (reorganized around the emergent structural history, §2.5, as the temporal spine)
+**Date**: 2026-09-06 (audited against the current implementation and research certificates)
 **Prerequisite**: [AGENTS.md](../AGENTS.md), [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md), [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md)
 
 ---
@@ -57,11 +57,13 @@ signal→canonical-magnitude confrontation pipeline,
 value, but still a **tie** with strong baselines, not an out-prediction. The value here is *one
 vocabulary for many structures* (and a falsifiable instrument), not *better forecasts*.
 
-**Scope axis (read second).** This document catalogs emergence *within* the graph dynamics
-— the physical/structural manifestations (geometry, thermodynamics, relativistic structure,
-gauge) of the one nodal equation. That is **one axis** of the emergent ontology. The
+**Scope axis (read second).** This document catalogs exact graph read-outs, results for
+restricted channels of the nodal dynamics, and explicitly separate comparison models
+(geometry, thermodynamics, relativistic structure, and gauge coordinates). That is **one
+axis** of the emergent ontology. The
 orthogonal **cross-domain** axis — how the *same* fixed point `ΔNFR = 0` is read out across
-domains as a **spectrum of emergence** (particle winding *directly*; the number-theory
+domains as a **spectrum of emergence** (declared-cycle winding as a direct graph
+read-out; the number-theory
 spectral sector *genuinely* but partially; the arithmetic `ΔNFR` a *circular* re-expression
 that consumes divisibility; chemistry *mixed*) — is the three-sector trichotomy of
 [TNFR_NUMBER_THEORY.md §9.5](TNFR_NUMBER_THEORY.md) and the two-layer ontology of
@@ -123,19 +125,21 @@ with physical time and frequency themselves *emergents* (§4.2).
 (e.g. both being a diffusion equation) is direction-neutral. TNFR adds an interpretive **posit**:
 the nodal dynamics is the *structural substrate* (Hz_str), and the physical law is its
 *manifestation at a scale* — "the same structural law manifests, at the thermal scale, as heat".
-This is **not** provable from the form-sharing alone; its only **testable hook** is **fractal
-recurrence** (operational fractality, grammar U5 / REMESH): the *same* tetrad, the *same*
-relaxation clock `νf·λ₂`, the *same* grammar must recur self-similarly across scales. Throughout:
+This is **not** provable from the form-sharing alone. Its **testable hook** is
+fractal recurrence (operational fractality, grammar U5 / REMESH): an explicit
+coarse map must first define which observables, relaxation rates and grammar
+constraints are compared. Self-similar recurrence is then a falsifiable research
+question, not an assumed identity. Throughout:
 the shared **form** is **DERIVED**; the **structural-priority** reading is **POSITED**; the
 document never asserts that TNFR *is* thermodynamics or relativity — only that the one law
 **manifests as** them at scale.
 
-**The grammar is the generative syntax of emergence.** Operators are the *exclusive* mechanism
-that changes EPI, and the grammar U1–U6 constrains which operator sequences stay **coherent**. So
-the grammar is not a late add-on (its measurable face is §8) but the **generative engine upstream
-of every emergent below**: each rule is the coherence / *existence condition* for a class of
-emergents (the strong cases — U2, U3, U6 — are tight derivations; the rest are structural
-correspondences):
+**The grammar is the engine's generative syntax.** Operators are the exclusive
+mechanism that changes EPI, and U1–U6 constrain accepted operator sequences and
+telemetry. This makes grammar upstream of operator-driven engine trajectories;
+it does not make every auxiliary model below a theorem of grammar. U3 is an
+operator admissibility contract, U2 and U4 are calibrated sequence policies,
+and U6 is a read-only warning policy. Their mathematical promotions remain scoped:
 
 | Grammar rule | Coherence / existence condition | Emergent it enables |
 |---|---|---|
@@ -188,10 +192,13 @@ tying them into one structure (the synergies a first pass can miss):
   models reuse it under their own assumptions. This recurrence is not one
   universal engine clock.
 - **One diagnostic interface.** The four fields (§3.3) organize readouts
-  of the higher emergents — `|∇φ|` governs the synchronization onset (§6.1; its `γ/π` value is
-  **not** a universal constant — §3.3), `Φ_s` is the confined potential (U6) behind criticality,
-  `K_φ` carries the charge/defect structure (§7.1), and `ξ_C` is the diverging correlation length
-  at criticality (§6.2).
+  of the higher emergents — `|∇φ|` measures local synchronization stress
+  (§6.1; the selected `π/16` warning is distinct from the measured,
+  σ-dependent onset near `0.29`), `Φ_s` is the source aggregation monitored by U6,
+  `K_φ` enters the historical bilinear Q snapshot (§7.1), while integer phase
+  winding requires an explicitly declared cycle; `ξ_C` records a finite-network
+  correlation scale. A divergence claim requires a declared control parameter and a
+  reproducible finite-size limit (§6.2).
 - **One partition, the four channels.** The dual-lever channels sort the emergents: `νf` (capacity)
   → time, transport, fluctuations, wave speed; `ΔNFR` (pressure) → criticality, potential; `phase`
   → synchronization, EM, optics; `EPI` (form) → diffusion, modes, composites.
@@ -200,16 +207,19 @@ tying them into one structure (the synergies a first pass can miss):
 
 Some emergents appear only at the **intersection** of others — capabilities no single layer shows:
 
-- **Fault-tolerant memory** (matter × thermodynamics × information). The integer winding charge
-  `W` (§7.1b) is *topologically protected*: continuous perturbations cannot change it. Measured —
+- **Fault-tolerant memory** (winding model × thermodynamics × information). A
+  declared cycle's integer winding `W` (§7.1b) is unchanged under continuous
+  deformations that retain the cycle, nonzero phase support and a positive wrap-branch
+  margin. In the selected noise protocol,
   a stored `W=2` is **retained with probability ≈1 below a noise threshold** (`σ ≲ 0.3`) and lost
   above it, even while the coupling continually restores the field: a noise-margined,
   **error-corrected memory** (the classical analog of topological storage). → robust information
   storage.
-- **Scale-free fluctuations** (thermodynamics × criticality). At the U2 threshold (§6.2) the
-  correlation length `ξ_C` and the susceptibility **diverge**, so the thermal fluctuations of §4.7
-  become **long-range and scale-free** — critical opalescence, `1/f` noise, avalanches
-  (self-organized criticality). → critical phenomena, `1/f` noise, avalanche statistics.
+- **Candidate scale-free fluctuations** (thermodynamics × criticality). The auxiliary
+  reaction-diffusion normal form in §6.2 has an analytic critical-slowing limit. The canonical
+  finite-graph telemetry currently records only sampled susceptibility and `ξ_C`; it has not
+  established divergence, `1/f` noise, avalanches or a graph-independent universality class.
+  Those remain targets for the finite-size protocol.
 - **Scale-reduction diagnostics** (geometry × multi-scale grammar). Static
   Kron reduction preserves selected effective resistances, while observer-aware
   reduction diagnostics show that arbitrary transient closure generally needs
@@ -221,50 +231,57 @@ Some emergents appear only at the **intersection** of others — capabilities no
   discretizes the matter stage, §7.1a, and binds composites, §7.4). → the structural form of an
   effective mass from confinement (not a derived particle mass).
 
-### 2.3 The emergence-directness law — structural level × symmetry sector — **DERIVED (pieces); unifying correspondence**
+### 2.3 A directness taxonomy — structural level and declared symmetry action
 
-The §2.1–§2.2 pivots thread the *within-graph* towers; one more pivot threads the **orthogonal
-cross-domain axis** of §0 — *why* the domains order by directness (particle winding *directly*, the
-number-theory spectral sector *partially*, the arithmetic `ΔNFR` *circularly*). The order is fixed
-by two choices: **which level** of the three-level structure (§7.1 stage → occupant → process)
-carries a domain's canonical read-out, and **which `Aut(G)` representation sector** (Schur:
-`Fix(G) ⊕ Fix(G)^⊥`, [ex 123](../examples/08_emergent_geometry/123_symmetry_sector_decomposition.py))
-that read-out lives in.
+Sections 2.1–2.2 motivate a comparative taxonomy for the examples in this
+repository: a declared-cycle winding is computed directly from a phase field, a
+spectral statistic is computed after diagonalizing a selected graph operator, and
+an arithmetic `ΔNFR` can be circular when its input already contains the
+divisibility property under study. These are different observer pipelines. Their
+ordering is a documentation convention, not a theorem fixed by representation
+theory. An `Aut(G)` decomposition such as `Fix(G) ⊕ Fix(G)^⊥` applies only after
+the acted-on vector space and representation have been specified
+([ex 123](../examples/08_emergent_geometry/123_symmetry_sector_decomposition.py)).
 
 | Level / read-out | `Aut(G)` sector | Directness |
 |---|---|---|
-| **occupant** — winding `W` | `Fix(G)` (invariant) | **DIRECT** (particles) |
-| **stage** — spectral rank `ρ` | `Fix(G)^⊥` (non-trivial irreps) | **PARTIAL** — the wall (numbers) |
+| **occupant** — declared-cycle winding `W` | scalar invariant under the tested transported relabeling | **DIRECT GRAPH READ-OUT** |
+| **stage** — spectral rank `ρ` | invariant of the selected matrix spectrum | **INDIRECT** — requires a spectral transform |
 | **process** — `ΔNFR(Ω,τ,σ)` | — (consumes its input) | **CIRCULAR** (arithmetic) |
 
-**The correspondence (measured, [ex 156](../examples/08_emergent_geometry/156_emergence_directness_law.py)).** A
-topological (occupant) read-out is *direct* because it is a `Fix(G)` invariant — the winding `|W|`
-is unchanged by every automorphism in the recorded `C₁₂` test; a spectral
-(stage) read-out is *partial*. On an invariant input, an equivariant per-node
-observer is orbit-constant on a vertex-transitive graph; arbitrary perturbed
-inputs need not be. The arithmetic spectral discriminator uses non-trivial
-modes ([ex 120](../examples/08_emergent_geometry/120_symmetry_wall_substrate_vs_spectrum.py));
-a process read-out is *circular* because it consumes the divisibility it reports.
+**Finite evidence**
+([ex 156](../examples/08_emergent_geometry/156_emergence_directness_law.py)).
+The recorded `C12` test preserves `|W|` when both the phase field and declared
+cycle are relabeled. This scalar invariance does not place `W` itself in a vector
+subspace called `Fix(G)`. An equivariant per-node observer is orbit-constant on
+an invariant input to a vertex-transitive graph; arbitrary perturbed inputs need
+not be. The arithmetic example is circular precisely when the discriminator
+consumes the divisibility data it reports. These observations support the
+taxonomy only for the declared finite experiments.
 
-**One symmetry, many jobs.** This is the cross-domain face of the *same* representation theory that
-fixes the **secondary synergies** — each algebraic relation an operator has with the coupling `A`
-produces a distinct emergent (each measured):
+**Distinct algebraic comparisons.** Several benchmarks use matrices related to
+the same selected adjacency `A`, but the actions and state spaces must remain
+separate:
 
-| Relation to `A` | Signature | Emergent it produces |
+| Construction | Finite identity | What it establishes |
 |---|---|---|
-| commuting automorphism | `[A,P]=0` | the **wall** (`Fix(G)^⊥` confinement) |
-| anticommuting chiral `Γ` | `{A,Γ}=0` | the additive inverse `−n` = the antiparticle `−W` ([chiral_involution.py](../benchmarks/chiral_involution.py)) |
-| non-symmetric circulant | `A≠Aᵀ`, `[A,Aᵀ]=0` | the **Gauss-sum phase** (`ℤ/n` Fourier eigenbasis, §10.5 / [TNFR_NUMBER_THEORY.md](TNFR_NUMBER_THEORY.md)) |
-| graph product (Cartesian/tensor) | spectrum adds / multiplies | `+` / `×` — but **not** unique factorisation ([composition_arithmetic.py](../benchmarks/composition_arithmetic.py)) |
+| graph automorphism `P` | `PA=AP` | equivariance under that permutation; orbit-constant output needs invariant input |
+| bipartite sublattice involution `Γ` | `Γ A Γ=-A` | adjacency eigenvalues pair as `λ` and `-λ`; it does not construct integer additive inverses |
+| pointwise phase negation | `φ → -φ`, hence `W → -W` | orientation reversal of a declared-loop phase map; a separate `Z₂` action, not physical charge conjugation |
+| non-symmetric normal circulant | `A!=A^T`, `[A,A^T]=0` | Fourier diagonalization and, for the selected residue matrices, a measured Gauss-sum phase |
+| Cartesian/tensor graph product | selected spectra add/multiply | spectral composition identities, without unique factorization ([composition_arithmetic.py](../benchmarks/composition_arithmetic.py)) |
 
-The same `Z₂` distinction separates **parity** `P` (an orientation-reversing automorphism,
-*commuting*) from **charge conjugation** `C` (phase conjugation `φ → −φ`, the *anticommuting* chiral
-`Γ`): both send `W → −W`, but only `C` is the additive inverse of `ℤ`.
+The chiral benchmark makes the negative identification explicit
+([chiral_involution.py](../benchmarks/chiral_involution.py)): sublattice
+anticommutation acts on adjacency eigenvectors, while phase negation acts on a
+loop field. Both square to the identity and reverse a signed read-out, but they
+are not the same transformation. The scalar identities `λ+(-λ)=0`
+and `W+(-W)=0` do not describe a shared additive operation or a simulated
+annihilation process.
 
-**Honest scope.** Every piece is DERIVED/measured; the law itself is a **unifying re-expression**
-(one fixed point, many read-outs), not a new theorem. It closes **no** open problem — the wall
-persists (the prime identities / continuous `arg ζ` phase stay `Fix(S_n)^⊥`-confined; G4 = RH
-remains OPEN).
+**Scope.** The table mixes standard finite identities, measurements on named
+examples and an observer taxonomy. It is a comparison, not a derived
+cross-domain law, and it closes no open mathematical problem.
 
 ### 2.4 Shared interfaces across domains — **the synthesis**
 
@@ -275,7 +292,7 @@ must nevertheless be declared per domain. Similar obstruction patterns do not
 make them one mathematical object, and scalar invariants are not state-vector
 sectors.
 
-| Domain | Form (the coupling) | Dimension (grade / `d_s`) | Dynamics (the spectrum) | The shared wall (`Fix(G)^⊥`) |
+| Domain | Form (the coupling) | Dimension (grade / `d_s`) | Dynamics (the spectrum) | Domain-specific limitation |
 |--------|--------------------|---------------------------|-------------------------|------------------------------|
 | **Physics** | the graph / field | spatial `d_s` (§3.2) | the tetrad, the pulse `ω_k=√λ_k`, thermodynamics, gauge (§3–§9) | the non-spectral residue — no genuine particle / quantum closure (§9, OPEN) |
 | **Networks** | the network | `d_s`, the metric `R_eff` (§3.1) | transport, relaxation, synchronization (§4, §6) | **isospectral graphs** — Kac: the shape is not heard from the spectrum |
@@ -286,23 +303,25 @@ Thus the ontology offers **shared interfaces and comparisons across domains**.
 Numbers, dimensions, graph geometries and musical descriptions remain distinct
 objects even where one declared spectrum supplies related readouts. Likewise,
 prime identity, inverse-spectral ambiguity, the zeta residue and the
-particle/quantum frontier are separate open problems; `Fix(G)^perp` is a useful
+particle/quantum frontier are separate open problems; `Fix(G)^⊥` is a useful
 comparison only where the relevant representation action is explicitly
 defined.
 
-**The wall, characterised through one equilibrium readout (2026-07).** The recent re-foundings of the
-two Millennium programs give the `Fix(G)^⊥` wall one measurable form, and it is the *same* in both:
-**a low moment of the conservative spectrum is bounded; the high-moment tail is the wall.**
-*Riemann* — the coherence budget of `S(T) = (1/π) arg ζ(½+iT)` (the integer-NFR pulse phase): its
-RMS is bounded (`√(log log T)`, Selberg) while the **sup** (the extremes) stays `Fix(S_n)^⊥`-open.
-*Navier–Stokes* — the energy `M_0` of the vorticity spectrum is bounded (Leray) while the
-`λ`-moment ladder `M_1` (enstrophy), `M_2` (palinstrophy) is the open wall. Both are read through the
-**one universal coherence fixed-point readout** — `ΔNFR = 0`, `C = 1/(1+|ΔNFR|+|dEPI|)`
-([structural_coherence](../src/tnfr/metrics/common.py), `is_structural_equilibrium`), the *same*
-kernel every domain reads (§4.3): this is a shared equilibrium diagnostic, not a theorem that every
-trajectory enters the same basin — and the wall is only
-whether the high-moment **excursion** stays coherent uniformly in the limiting parameter (`T`, `Re`).
-One fixed-point readout, one wall; closes no open problem.
+**Limits of the cross-domain comparison.** Earlier versions described the
+Riemann and Navier–Stokes programs as having “the same wall.” That identification
+is unsupported. Bounds for fluctuations of the zeta argument and energy or
+higher-derivative estimates for fluid solutions concern different state spaces,
+operators and limiting questions. The Riemann hypothesis concerns zero
+locations; the three-dimensional Navier–Stokes problem concerns global regularity.
+Neither is equivalent to a `Fix(G)^⊥` obstruction or to the other problem.
+
+The function
+[`structural_coherence`](../src/tnfr/metrics/common.py) computes the same algebraic
+formula `C = 1/(1+|ΔNFR|+|dEPI|)` wherever a caller supplies those two
+quantities. Reusing that function does not prove that independently defined
+domain pressures, equilibria or trajectories are mathematically equivalent.
+Cross-domain uses must specify how `ΔNFR` and `dEPI` are realized and validate
+the resulting observer in that domain.
 
 ### 2.5 A structural-history analogy (the temporal spine)
 
@@ -311,28 +330,35 @@ engine and auxiliary-model results as a **structural-history analogy**. They do
 not form one demonstrated trajectory from a common initial state, so the
 ordering is expository rather than a derived cosmology.
 
-1. **Initialization and generation.** `EPI = 0` is a valid state; grammar U1 requires a generator for a standalone history, the
-   coherence flow builds a coherent vacuum, and a symmetry-breaking bifurcation crystallizes the
-   first topological charge — the Kibble-like genesis (§7.5).
-2. **Emergent time with an arrow.** Time *is* the relaxation clock `τ = 1/(νf·λ₂)` (§4.2); along it
-   the Dirichlet energy falls monotonically (the structural H-theorem, §4.4) — an irreversible
-   arrow.
+1. **Initialization and generation.** `EPI = 0` is a valid state and grammar U1
+   requires a generator for a standalone history. Emission and coherence can be
+   measured along that engine history. The unit-winding state used in the
+   Kibble-like comparison is constructed separately; no implemented bifurcation
+   has been shown to generate it (§7.5).
+2. **A relaxation arrow.** In fixed homogeneous EPI diffusion,
+   `τ = 1/(νf·λ₂)` is the slow-mode timescale and the Dirichlet energy falls
+   monotonically (§4.4). Other capacity and topology regimes use different
+   bounds; this supplies a structural-time diagnostic, not an identity with
+   physical time.
 3. **Structure formation (coarsening).** From an inhomogeneous early field the coherent domains
    **merge** over structural time — the coherent scale grows, an emergent structure-formation
    history.
 4. **A growing causal horizon.** On the conservative face a perturbation spreads at a finite
    emergent speed, so the causally-connected region grows ~linearly — an emergent expanding causal
    horizon (§5.1), the nearest TNFR-native analogue of an "expansion" (on a *fixed* emergent metric).
-5. **A regime-dependent fate.** The passive diffusive face relaxes to the uniform field (§4.3) — an
-   emergent equilibration ("heat-death"); a continuous drive carrying the U2 balance (§6.3) instead
-   **sustains** structure — a non-relaxing history.
+5. **A regime-dependent fate.** On a fixed symmetric graph with positive
+   capacities, the passive diffusive face relaxes to a componentwise-constant
+   field, which is uniform when the graph is connected
+   (§4.3). A separately declared continuously driven normal form can instead sustain
+   structure (§6.3); its operator labels do not establish U2 compliance.
 
-**The remaining sections provide scoped readings, not stages of one proven history.** §3 is
-the **geometry it unfolds on**; §4 its **thermodynamic arrow**; §5 its **causal cone / horizon**;
-§6 its **critical transitions and fate**; §7 and §9 the **matter and particles that form within
-it**. The static synthesis (§2.4 — one object read across domains) and this temporal one (§2.5 —
-one history from genesis to fate) are the two axes, space-like and time-like, of the *same* one
-dynamics ([emergent_structural_cosmology.py](../benchmarks/emergent_structural_cosmology.py),
+**The remaining sections provide scoped readings, not stages of one proven history.** §3
+describes graph geometry; §4 restricted diffusive results; §5 auxiliary conservative
+models; §6 synchronization diagnostics and separate normal forms; §7 and §9 winding
+and particle-physics comparison programs. The static synthesis (§2.4) and temporal
+scenario (§2.5) are two organizing axes of this taxonomy. Their juxtaposition does
+not make every listed construction a trajectory of one dynamics
+([emergent_structural_cosmology.py](../benchmarks/emergent_structural_cosmology.py),
 [emergent_structural_genesis.py](../benchmarks/emergent_structural_genesis.py)).
 
 > **Honest boundary — ANALOGY of scale.** This is the network's *own* emergent macro-history: the
@@ -343,16 +369,24 @@ dynamics ([emergent_structural_cosmology.py](../benchmarks/emergent_structural_c
 
 ---
 
-## 3. The shared geometry (regime-independent)
+## 3. Graph-derived geometric read-outs
 
-Both faces propagate with the canonical EPI-channel operator `L_rw = I − D⁻¹W`
-(`ΔNFR_epi = −L_rw·EPI`, exact), so its spectrum carries a geometry **both faces inherit**. Only
-the graph **connectivity** is primitive; the **geometry on it is derived**.
+The canonical EPI channel propagates with `L_rw = I − D⁻¹W`
+(`ΔNFR_epi = −L_rw·EPI`, exact). For a symmetric nonnegative conductance graph
+without isolates,
+`L_sym = D^(1/2) L_rw D^(−1/2)`: `L_sym` is a symmetric isospectral
+representative of `L_rw`, not the same nodal operator. Their eigenvalues agree,
+while their eigenvectors are related by degree scaling; the matrices coincide
+on regular connected components. The auxiliary graph-wave model must declare
+which representative supplies its stiffness. The isotropic harmonic substrate
+uses identity stiffness. Connectivity is primitive; every metric or spectral
+geometry below states which graph operator generates it.
 
 ### 3.1 Emergent metric — distance is derived, not imposed — **DERIVED**
 
-The intrinsic distance of `L_rw` is the **effective resistance**
-`R_eff(i,j) = L⁺_ii + L⁺_jj − 2L⁺_ij` (a true metric; symmetric, non-negative, triangle
+For a symmetric conductance graph, the combinatorial Laplacian `B=D-W`
+defines the **effective resistance**
+`R_eff(i,j) = B⁺_ii + B⁺_jj − 2B⁺_ij` (a true metric; symmetric, non-negative, triangle
 inequality — [effective_resistance](../src/tnfr/physics/structural_diffusion.py), ex.124). It is
 **not** the hop count: it sees *all* parallel paths (transport difficulty). Measured — a ring's
 antipodal nodes give `R_eff = 50` vs `hops = 100` (two parallel paths halve it); a tree's two
@@ -418,26 +452,29 @@ the field bounds are of two different kinds:
 
 - **Kinematic (geometric) — exact.** Both `|∇φ|` and `K_φ` are **wrapped angles**
   (`|∇φ| = mean|wrap Δφ| ∈ [0,π]`, `K_φ = wrap(φ − circmean) ∈ (−π,π]`), so `|∇φ| ≤ π` and
-  `|K_φ| ≤ π` hold for *any* configuration, parameter-independently. The K_φ threshold
-  `|K_φ| < 0.9π ≈ 2.83` sits **at this wrap bound** — the genuine **geometric** scale π (verified:
-  arbitrary configs respect it).
-- **The other thresholds are not structural constants.** The `|∇φ|` early-warning level (`≈ 0.18`) sits
-  **far below** the wrap bound: it is a heuristic, and a fair test finds `|∇φ|` at the sync onset is
+  `|K_φ| ≤ π` hold for *any* configuration, parameter-independently. The
+  `|K_φ| < 0.9π ≈ 2.83` value is a selected warning margin inside that exact
+  geometric bound.
+- **The other thresholds are not structural constants.** The selected `|∇φ|`
+  early-warning policy (`π/16 ≈ 0.196`) sits below the wrap bound, while a fair
+  test finds `|∇φ|` at the synchronization onset is
   **≈ 0.29 and varies with the disorder `σ`** — not a fixed constant. The `Φ_s` values
   (per-node `π/4 ≈ 0.785`, drift `π/2 ≈ 1.571`) are selected warning policies; and the
-  coherence length is set by the **spectral gap** (`ξ_C ∝ 1/√λ₂`, verified).
+  fitted coherence length is state- and estimator-dependent. `1/√λ₂` is a
+  spectral comparison or fallback, not a universal identity for fitted `ξ_C`.
 
 > **Honest boundary.** Only **π** is a genuine structural scale (the phase-wrap bound of the phase
 > sector). The other field scales are not structural constants: the `|∇φ|` onset is a σ-dependent
 > dynamical transition (≈ 0.29), the `Φ_s` values are selected policies, and the
-> coherence length is set by the spectral gap (`ξ_C ∝ 1/√λ₂`). The tetrad is the
+> spectral value `1/√λ₂` is a comparison/fallback for the state-dependent `ξ_C`
+> estimator. The tetrad is the
 > canonical diagnostic basis; complete state reconstruction remains open.
 
 **Genuine relationships (verified).** A fresh study found the real structure
 behind the four fields: `K_φ` agrees with `L_rw·φ` in the smooth,
 consistent-branch limit with matching conventions (**corr = 1.000** on the
-recorded protocol); `ξ_C ∝ 1/√λ₂` (the
-correlation length is set by the spectral gap, §6.2); and the real organizing axis is **local**
+recorded protocol). The fitted `ξ_C` can be compared with the spectral fallback
+`1/√λ₂`, but no universal equality is established. The organizing axis is **local**
 phase derivatives (`|∇φ|`, `K_φ`, both π-bounded) vs **non-local** source/correlation (`Φ_s`, `ξ_C`),
 across the derivative orders — *not* four separate constants.
 
@@ -468,46 +505,65 @@ structural-priority reading is POSITED, §1.1). The same caveat governs every `=
 every "manifests as" in this document: it equates **equations / structures**, never the underlying
 substances.
 
-### 4.2 Time = the relaxation clock — **DERIVED**
+### 4.2 Structural relaxation clocks — **DERIVED in scoped diffusion models**
 
-Eigenmodes of `L_rw` decay as `e^{−νf λ_k t}`; the slowest sets a single **structural clock**
-`νf·λ₂(L_sym)` (the Fiedler/spectral gap). Physical duration is *measured by* this relaxation, not
-assumed — **time is an emergent rate, not a background parameter** (verified to machine precision,
-conservation theorem §8.6).
+On a fixed graph with homogeneous constant `νf`, isolated eigenmodes decay as
+`e^{−νf λ_k t}` and the slowest nonstationary mode is set by `νf·λ₂`.
+With heterogeneous fixed capacity the relevant rate is the first positive
+generalized eigenvalue of `(D-W, diag(d_i/ν_i))`; time-varying capacity and
+switching topology require their own conditional common-function and
+exact-common-metric bounds. Declared affine EPI resets can be composed only
+after their gain is certified in that same metric. See
+[the diffusion stability theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md). These
+are dynamical relaxation rates in structural time, not a proof that physical
+time itself emerges.
 
 ### 4.3 Coherence and equilibrium — **DERIVED**
 
-`C = 1/(1 + mean|ΔNFR| + mean|dEPI|)` is the parameter-free proximity to equilibrium
-(`ΔNFR→0 ⟺ C→1`), a TNFR primitive with no prior equivalent. The diffusion fixed point is the
-**uniform EPI field** (consensus); there `ΔNFR=0` and the distinctive nonlocal potential `Φ_s`
-vanishes — TNFR's nonlocal field is *active only off equilibrium*.
+`C = 1/(1 + mean|ΔNFR| + mean|dEPI|)` is the parameter-free proximity to equilibrium.
+Because both terms are nonnegative, `C→1` exactly when both
+`mean|ΔNFR|→0` and `mean|dEPI|→0`. Pressure decay alone implies this only in a
+scope where the nodal relation `dEPI=nu_f*ΔNFR` holds and `nu_f` remains
+bounded. On a fixed symmetric nonnegative graph with positive capacities,
+the diffusion equilibria are exactly the fields that are constant on each
+connected component. A connected graph therefore has one uniform consensus
+field; a disconnected graph may have a different constant on each component.
+At these pressure equilibria `ΔNFR=0`, so the source-aggregated field `Φ_s`
+vanishes. Zero-capacity nodes and other pressure channels require separate
+stationarity conditions.
 
 ### 4.4 The arrow of time = the structural H-theorem — **DERIVED (proven)**
 
 The Dirichlet energy `F = ½Σ A_ij(EPI_i − EPI_j)²` is **monotonically non-increasing** under the
-diffusion flow, decaying as `e^{−2νf λ₂ t}` — a proven Lyapunov functional of the heat semigroup
+fixed symmetric diffusion flow. Its decay is bounded by an exponential envelope
+set by the appropriate spectral gap; equality with one exponential occurs only
+for an isolated eigenmode. This is a proven Lyapunov functional of the heat semigroup
 (conservation theorem §8.6, [ex.135](../examples/08_emergent_geometry/135_arrow_of_time_h_theorem.py)).
 → the thermodynamic arrow of time / entropy increase.
 
 ### 4.5 Conservation — **DERIVED**
 
-The degree-weighted total `Σ_i deg(i)·EPI_i` (the left null vector of `L_rw`) is **conserved**
-under the diffusion flow; the grammar layer conserves a Noether charge `Q = Σ(Φ_s + K_φ)`
-(conservation theorem §8.7). → physical conservation laws.
+For fixed homogeneous positive capacity, the degree-weighted total
+`Σ_i d_i·EPI_i` is conserved. For fixed heterogeneous positive capacity, the
+invariant is `Σ_i(d_i/ν_i)·EPI_i`; `Σ_i d_i·EPI_i` is not generally conserved.
+These statements apply componentwise on disconnected graphs, with isolates
+stationary under their zero Laplacian rows. The proposed charge
+`Q = Σ(Φ_s + K_φ)` is a diagnostic of the
+auxiliary conservation construction; general grammar evolution does not conserve it.
 
-### 4.6 ★ One clock for three relaxations — **DERIVED**
+### 4.6 Comparison of distinct relaxation diagnostics — **MIXED**
 
-Three *apparently different* approaches-to-equilibrium share **one** relaxation clock
-`νf·λ₂(L_sym)`:
+Several models expose relaxation-like quantities, but only fixed homogeneous
+EPI diffusion has the clock `νf·λ₂`:
 
 | Phenomenon | Functional | Anchor |
 |-----------|-----------|--------|
 | Diffusion (heat) | Dirichlet energy `F` | §8.6 (proven) |
-| Tetrad / "energy" relaxation | `E = ½Σ(Φ_s² + \|∇φ\|² + K_φ² + …)` | §8.6 |
-| Symbolic-sequence relaxation | Parry / Markov `H`-theorem | [ex.150](../examples/08_emergent_geometry/150_emergent_grammatical_pattern_parry.py) |
+| Structural-field candidate | `E = ½Σ(Φ_s² + \|∇φ\|² + K_φ² + …)` | no general decay theorem |
+| Symbolic-sequence diagnostic | Parry / Markov model | [ex.150](../examples/08_emergent_geometry/150_emergent_grammatical_pattern_parry.py) |
 
-Heat flow, structural-field relaxation, and symbolic-pattern relaxation are **one decay on one
-clock** — same mechanism, different phenomena.
+No identity currently equates these clocks. Comparing them requires a declared
+state map and time parametrization.
 
 > **Honest boundary.** The diffusive face has **no causal cone** (the heat kernel has infinite
 > support — a perturbation reaches every node instantly, arrival time `∝ k²`, front `~√t`). It is
@@ -519,12 +575,14 @@ Adding thermal noise to the diffusive face (the overdamped dynamics, whose mobil
 AGENTS.md's Stokes/Einstein mobility) gives a Langevin process `∂u/∂t = −νf·L u + ξ`
 (`⟨ξ_i ξ_j⟩ = 2νf T δ_ij`) whose equilibrium reproduces the primary thermal observables:
 
-- **Equipartition / fluctuation-dissipation.** Each mode carries energy `T/2`: `λ_k·⟨u_k²⟩ = T`
-  for **every** mode (measured mean `0.504 ± 0.013` at `T=0.5`). Slow modes fluctuate more
+- **Equipartition / fluctuation-dissipation.** Each nonzero mode carries energy
+  `T/2`: `λ_k·⟨u_k²⟩ = T`. Kernel modes have no restoring force and are
+  excluded; there is one such mode per connected component.
+  Slow modes fluctuate more
   (`⟨u_k²⟩ = T/λ_k`), exactly compensating their weak restoring force — the fluctuation–
   dissipation balance.
-- **Einstein relation.** The short-time diffusion coefficient equals mobility × temperature:
-  `D = μ·T` with `μ = νf` (measured `D/(νf·T) = 0.94`).
+- **Einstein relation.** In the declared Langevin comparison, the short-time
+  diffusion coefficient is `D = μ·T` with `μ = νf`.
 - **Mobility vs temperature.** Doubling `νf` rescales the relaxation time but leaves the
   equilibrium fluctuations (set by `T` alone) unchanged — the separation of mobility (kinetic)
   from temperature (equilibrium) that *is* the Einstein content.
@@ -532,9 +590,10 @@ AGENTS.md's Stokes/Einstein mobility) gives a Langevin process `∂u/∂t = −�
 Maps to observables: **Brownian motion**, **thermal fluctuations**, the **fluctuation-dissipation
 theorem**, **Johnson–Nyquist noise**.
 
-> **Honest boundary.** This is the standard overdamped Langevin / Ornstein–Uhlenbeck process
-> (Einstein 1905; FDT) on the canonical diffusion operator — the thermal-noise face of `νf`,
-> nothing new derived.
+> **Honest boundary.** This is the standard overdamped Langevin /
+> Ornstein–Uhlenbeck process on a selected diffusion operator. The repository
+> currently provides no maintained benchmark anchoring numerical equipartition
+> or Einstein-ratio estimates in this section.
 
 ### 4.8 Emergent transport — Ohm's law and conductivity — **DERIVED**
 
@@ -582,7 +641,8 @@ causal law for the full nodal engine.
 The wave dispersion `ω(k) = c·√λ(k)` carries an **approximate relativistic symmetry at long
 wavelength**:
 
-- **Linearity (1D).** From the canonical `L_sym` ring spectrum (`λ = 1 − cos q`), `ω(q)` is
+- **Linearity (1D).** A ring is regular, so `L_sym = L_rw` for the selected
+  normalization. From their common ring spectrum (`λ = 1 − cos q`), `ω(q)` is
   **linear at low `q`**: a fit `ω = v·q` gives `v = 0.696`, **R² = 0.9998** (a "massless"
   relativistic dispersion); it bends sub-linearly at the zone boundary (`ω(π)/[v·π] = 0.65`).
 - **Isotropy (2D).** On a **square** lattice, `ω(k)` along the axis vs the diagonal has ratio
@@ -591,14 +651,18 @@ wavelength**:
 
 So a **round, linear, relativistic light cone emerges at low energy**, broken at the lattice scale.
 
-### 5.3 The emergent symplectic geometry — **DERIVED (within TNFR)**
+### 5.3 The auxiliary symplectic geometry — **EXACT FOR THE SPECIFIED MODEL**
 
-The conservative flow generates **its own** symplectic phase space (canonical pairs `(K_φ,J_φ)`,
-`(Φ_s,J_ΔNFR)`), a Hamiltonian, Noether charges, and a **U(2) polarization** with conserved
+Embedding graph-field snapshots in independent ambient coordinates specifies a symplectic
+phase space (pairs `(K_φ,J_φ)`, `(Φ_s,J_ΔNFR)`), a harmonic Hamiltonian, its Noether charges,
+and a **U(2) polarization** with conserved
 Stokes parameters on a per-node Poincaré sphere
-([symplectic_substrate.py](../src/tnfr/physics/symplectic_substrate.py)). Geometry is not imposed;
-it is an emergent of the flow — a structural correspondence with classical Hamiltonian mechanics
-and classical wave polarization.
+([symplectic_substrate.py](../src/tnfr/physics/symplectic_substrate.py)). These are exact
+properties of the declared ambient model and a structural correspondence with classical
+Hamiltonian mechanics and wave polarization. They do not show that extracted graph states fill
+the ambient space or that engine operators preserve its symplectic form. Its global oscillator
+rotations generate conserved model charges; they are distinct from the node-dependent pure-gauge
+coordinate rephasing of §7.2.
 
 > **Honest boundary.** The finite speed is the **lattice wave speed** (set by `νf` and the graph
 > spectrum), only **approximately** Lorentz-invariant at low energy — a finite causal cone, **not**
@@ -648,22 +712,19 @@ read closed-form from the spectrum and the node state — no time integration.
   (`R → 1`) ([`compute_nodal_pulse`](../src/tnfr/physics/structural_diffusion.py); SDK
   `net.resonance()`).
 
-So the equilibria are **not** a separate class of node: every node is a pulsing NFR, and the
-`ΔNFR = 0` coherence states are the **beats** the resonating pulses pass through (the Chladni
-standing nodes of §3 / the geometry benchmarks). The dissipative read-out `C(t)` and `net.nfr()`
-see the relaxed state (the rhythm damped to silence); the pulse / resonance read-outs see the
-sustained vibration that **generates** it.
+The equilibrium and pulse quantities are separate read-outs. `ΔNFR = 0`
+defines a pressure-equilibrium snapshot, while the graph-wave spectrum defines
+an auxiliary conservative rhythm. A damped graph-wave model can be chosen whose
+slow limit approaches diffusion, but the repository has not shown that the
+conservative pulse generates engine equilibria or that every engine trajectory
+follows that auxiliary flow.
 
-**The fractal pulse — the cascade.** On a *self-similar* form (the canonical THOL/U5 nest, §3.2)
-the two scales above become a whole tower. The spectrum of `L` then **bands** self-similarly, and
-because each phase mode relaxes at the rate `νf·λ_k` (the eigenmode decay `e^{−νf λ_k t}` of the
-nodal equation), the resonance **locks scale by scale, fine → coarse**: the tightly-coupled inner
-NFRs (the high-`λ` band) synchronize first, the global mode (`λ₂`) last, so the **local synchrony
-leads** the collective order `R` ([`net.pulse_trajectory`](../src/tnfr/sdk/simple.py)). The
-collective pulse is what remains once the coarsest band locks. This is the **temporal face of
-operational fractality** — the multiscalar NFR (an NFR nests NFRs, U5) reorganizing its coherence
-inward-out — and it reads the **same self-similar spectrum** that §3.2 reads as the emergent
-*dimension*: resonance is to the dimension what the rhythm is to the geometry
+**The fractal-pulse hypothesis.** On a selected self-similar graph, the spectrum
+of a declared Laplacian may form bands. Pure EPI modes then relax according to
+that diffusion generator. Extending the same rate law to wrapped phase requires
+the small-spread linearization and matching phase weights; outside that regime
+it is not valid. Fine-to-coarse phase locking is therefore an auxiliary finite
+protocol, not a consequence of U5 alone
 ([`emergent_fractal_pulse.py`](../benchmarks/emergent_fractal_pulse.py)).
 
 **The arithmetic face.** The same pulse read on the *arithmetic* NFR — the residue
@@ -688,10 +749,12 @@ is no longer a frequency ratio but **phase coherence** (the U3 gate `Δφ_max = 
 `R = cos(Δφ/2)`); the `0D` clique is one rigid tone (a bell). Only the **tempered
 scale** (equal temperament) is an imposed human convention. Distinct primes are the
 **independent voices** of the polyphony (the Euler product, decoupled ladders). And
-the lens reaches the **same wall**: you cannot *hear the shape of the drum* (Kac) —
-isospectral NFRs share the pulse, and `ρ(pq)` is one chord for every semiprime — so
-the pulse hears the **type / symmetry**, never the **identity** (the `Fix(G)^⊥`
-wall, §7.1; [`emergent_musical_nfr.py`](../benchmarks/emergent_musical_nfr.py)).
+the lens also has an inverse-observer limitation: isospectral graphs share the
+same modal frequencies, and the selected `rho(pq)` statistic can coincide for
+distinct semiprimes. Those are two separate non-injectivity examples. They show
+that the selected read-outs do not always recover identity; they do not define a
+single `Fix(G)^⊥` obstruction
+([`emergent_musical_nfr.py`](../benchmarks/emergent_musical_nfr.py)).
 
 > **Honest boundary.** This is the standard standing-wave spectrum (`ω_k = √λ_k`), beat
 > interference, and Kuramoto phase-locking on the conservative face — re-read in TNFR terms (each
@@ -708,52 +771,58 @@ wall, §7.1; [`emergent_musical_nfr.py`](../benchmarks/emergent_musical_nfr.py))
 
 ## 6. Emergent collective phenomena
 
-### 6.1 ★ The phase channel = *all* synchronization — **DERIVED**
+### 6.1 A Kuramoto-type phase channel — **SCOPED CORRESPONDENCE**
 
-The phase channel `∂φ_i/∂t = νf·h(...)` with `h → sin(φ_j − φ_i)` **is** the Kuramoto model.
-Therefore power grids (swing = 2nd-order Kuramoto), neural assemblies, circadian rhythms, fireflies,
-and Josephson-junction arrays are the **same** phase channel of the **same** nodal equation — one
-mechanism, many phenomena (a grid testbed confirmed the mechanism is genuine, not a proxy). This
-is the substrate on which the charge/matter sector (§7) is built.
+When the selected phase interaction is `h(Δφ)=sin(Δφ)`, the auxiliary phase
+equation has Kuramoto form. This permits controlled comparisons with standard
+coupled-oscillator systems. It does not identify every synchronization process,
+nor does it make their domain-specific dynamics trajectories of the EPI nodal
+equation.
 
-### 6.2 Criticality — the U2 threshold is a 2nd-order phase transition — **DERIVED (nuanced)**
+### 6.2 Criticality in an auxiliary Landau graph model — **DERIVED IN MODEL / OPEN FOR TNFR OPERATORS**
 
-The destabilization threshold of grammar **U2**, in spectral form `r_c = νf·λ₂` (the Fiedler gap),
-is a genuine **continuous (2nd-order) phase transition**. With the conserved mean projected out, the
-saturated instability `∂u/∂t = r·u − νf·L u − u³` gives:
+Consider the separately declared reaction-diffusion normal form
+`∂u/∂t = r·u − νf·L u − u³`, with the conserved mean projected out. Its
+linearized Fiedler-mode threshold is `r_c = νf·λ₂`. This identity belongs to
+that auxiliary model: the grammar rule U2 constrains operator words and does
+not define the continuous reaction coefficient `r`. Equating the two without
+an operator-to-generator derivation was an error. Within the normal form:
 
 - **Order-parameter onset.** The steady amplitude `m(r)` is **zero below `r_c`** (disordered /
   uniform) and **rises continuously above it** (ordered) — a 2nd-order transition.
-- **Critical slowing down.** The slowest non-uniform rate is `|r − r_c|`, so the relaxation time
-  `τ = 1/|r − r_c|` **diverges at `r_c`** (measured `τ`: 945 → 9·10³ → 9·10⁴ as `r/r_c`: 0.9 →
-  0.99 → 0.999). This is the universal hallmark — and it is *why* a clean exponent is hard to pin
-  down here: the near-threshold points are under-converged precisely because of the divergence.
+- **Critical slowing down.** Linearization gives the model relaxation time
+  `τ = 1/|r − r_c|`; this diverges in the analytic infinite-time model as
+  `r → r_c`. Finite sampled trajectories do not prove a thermodynamic limit.
 - **Emergent pattern.** Above `r_c` the field condenses into the **Fiedler eigenvector** — the
   longest-wavelength spatial mode — a Turing-like pattern.
 
-Maps to observables: **second-order phase transitions** (order-parameter onset), **critical slowing
-down** (seen near critical points across physics and biology), and **pattern formation /
-morphogenesis** (the emergent spatial pattern).
+These are standard continuous-transition behaviors of the selected Landau
+normal form. They supply a controlled comparison protocol for TNFR telemetry,
+not a derivation that canonical operator dynamics has the same transition.
 
-> **Honest boundary.** This is the standard linear instability + Landau (cubic) saturation; the
-> order-parameter exponent is the **mean-field** value `β = ½` of the normal form, **not** a
-> fluctuation-corrected universality class (a wide-range fit gives an apparent `≈0.8`, contaminated
-> by the crossover and the critical slowing down). The content is the **U2 → criticality mapping**,
-> not a specific critical-exponent claim.
+> **Boundary.** The exponent `β = 1/2` follows from cubic saturation in this
+> mean-field normal form. The engine's `phase_transition` utility fits an
+> effective time-series slope and does not compare it with this value. The
+> balanced finite-size diagnostic reports slopes against node count without
+> promoting them to thermodynamic exponents. An U2-to-criticality map remains
+> open until operator events are related to a continuous generator.
 
-### 6.3 Sustained structures far from equilibrium — the driven regime — **DERIVED (new regime)**
+### 6.3 Sustained structures far from equilibrium — the driven regime — **AUXILIARY MODEL**
 
-Everything above **relaxes to equilibrium** (`ΔNFR→0`). But TNFR's slogan — *coherent patterns
-maintained by resonance, dissolving when coupling fails* — is **far from equilibrium**. With a
+The diffusive channel above relaxes; the conservative comparison models
+oscillate. A separate continuously driven normal form can model a sustained
+far-from-equilibrium pattern. With a
 continuous drive carrying the U2 balance (a destabilizer plus a stabilizer), the driven nodal
 dynamics `dz/dt = (μ+iω₀)z − |z|²z + K·∇²z` produces a **self-sustained coherent structure**:
 
 - **Existence (a Hopf onset).** For `μ<0` the field relaxes to the **dead** state; for `μ>0` a
   **sustained** structure appears (`|z|≈√μ`, permanently active), **coherent in a window** (`R` up
   to 0.84 near onset) that gives way to **turbulence** at large drive (`R→0`).
-- **U2 made dynamic.** With the destabilizer `μ>0` but **no** stabilizer the field **blows up**
-  (fragmentation); the stabilizer is what bounds it. The sustained structure is grammar **U2** — a
-  destabilizer admissible only with a stabilizer — operating *continuously*.
+- **Saturation.** The displayed cubic term `−|z|²z` is itself the stabilizer and
+  bounds the amplitude near `√μ`. Blow-up belongs to a different equation in
+  which this saturation is removed; it is not produced merely by setting
+  `μ>0` in the displayed model. Calling this a continuous analogue of U2 is an
+  interpretation, not a grammar theorem.
 - **The slogan, measured.** In the coherent window the collective coherence is `R=0.84` **with**
   coupling and **collapses to `R=0.09`** when the coupling is cut: *maintained by resonance,
   dissolving when coupling fails*.
@@ -769,59 +838,81 @@ counterpart of the two *passive* faces (§2).
 
 ---
 
-## 7. Emergent matter — charges and their dynamics
+## 7. Matter-comparison models — winding classes and auxiliary dynamics
 
-What plays the role of "matter": localized excitations carrying **conserved charges**, and their
-**interactions** — all emergent, with nothing imported as a primitive (we read observed phenomena
-*off* the dynamics, never importing "charge" or "force").
+This section separates exact graph identities from comparison models. A winding
+class is a property of a declared phase map under explicit regularity conditions.
+Calling it charge, matter or a particle is an analogy; interaction equations must
+be identified independently.
 
 ### 7.1 The three-level structure: stage → occupant → process — **DERIVED facts**
 
-- **(a) The stage — a discrete standing-mode spectrum.** On a bounded network `L_sym` has a
-  discrete spectrum above a uniform vacuum (`λ_0=0`); on a 1D box the low modes follow the
-  particle-in-a-box law `λ_k ∝ k²` (measured log-log slope **1.997**), ordered by Courant nodal
-  domains (`k+1`), with lifetimes `1/(νf·λ_k)`. It says **where** an excitation may sit.
-- **(b) The occupant — a conserved integer charge.** A closed phase manifold carries a **quantized
-  topological winding** `W ∈ ℤ` ([emergent_particles.py](../src/tnfr/physics/emergent_particles.py)):
-  always an integer, the class **emerging** from the measurement (`W=0` boson-like, `|W|=1`
-  fermion-like vortex, `|W|≥2` composite; `sign(W)` = matter/antimatter). It is invisible to the
-  mode spectrum and **conserved** under the canonical flow — it says **which** occupant sits on the
-  stage. An exact topological identity (degree of `S¹→S¹`, [ex.133](../examples/08_emergent_geometry/133_psi_topological_defects.py)).
-- **(c) The process — defect interaction.** Under the canonical coupling flow, winding defects
-  **interact**: opposite charges attract and **annihilate to vacuum**, like charges **repel**, the
-  **total charge is conserved at every step**. One process reproduces *pair annihilation*,
-  *like-charge repulsion*, *charge conservation*, and *particle/antiparticle* (`sign W`).
-- **(d) The wave-particle correspondence — the stage's own mode index is the occupant's charge.**
-  On a ring, the `k`-th stage eigenmode of `L_sym`, read as the complex order parameter
-  `Ψ = e^{iθ}` (§5.3), *is* the winding-`k` occupant: an exact eigenvector (residual `~10⁻¹⁵`) at
-  the canonical eigenvalue `λ_k = 1 − cos(2πk/n)`, whose topological winding is *exactly* `k` — the
-  wave's own dispersion label (`ω_k = √λ_k`) and the particle's charge are the *same* integer. A
+- **(a) The stage — a discrete standing-mode spectrum.** On a finite network
+  `L_sym` has a discrete spectrum. Its kernel is spanned by componentwise-constant
+  modes and is one-dimensional only for a connected graph. On a connected 1D box,
+  the low modes follow the particle-in-a-box law `λ_k ∝ k²` (measured log-log
+  slope **1.997**), ordered by Courant nodal-domain bounds, with homogeneous-
+  capacity lifetimes `1/(νf·λ_k)`. It says **where** an excitation may sit.
+- **(b) The occupant coordinate — an integer winding class.** On a declared
+  oriented cycle, a non-ambiguous node-phase map has winding `W ∈ ℤ`
+  ([emergent_particles.py](../src/tnfr/physics/emergent_particles.py)). The
+  preferred API is `WindingSector` / `classify_winding_sector`; the legacy
+  particle-named aliases remain for compatibility. The implementation labels
+  only zero, unit and multi-winding classes; it does not
+  infer bosonic/fermionic statistics, matter/antimatter or a particle species.
+  The sign reverses with cycle orientation. Preservation across evolution is
+  conditional on retaining the cycle and avoiding zeros and the wrap branch.
+  Supporting energy and historical-Q means are explicitly whole-graph snapshot
+  telemetry, including when the declared cycle is a proper subgraph.
+  [Example 133](../examples/08_emergent_geometry/133_psi_topological_defects.py)
+  separately shows that raw `arg(Ψ)` face winding is a static coordinate degree
+  and changes under node-dependent U(1) rephasing.
+- **(c) The process — auxiliary defect interaction.** Attraction, translation,
+  orbiting and annihilation claims in this repository belong to separately
+  posited point-vortex or Coulomb-gas comparison equations (§7.3). They have not
+  been derived from the canonical coupling operator or the nodal equation.
+- **(d) Ring mode/winding coincidence in a selected construction.** On a ring,
+  the complex Fourier vector `exp(2πikj/n)` is an exact eigenvector with
+  eigenvalue `λ_k = 1 − cos(2πk/n)` under the declared normalization and has
+  winding `k` within the branch-resolved range. This is a joint property of the
+  chosen vector; it does not identify a generic extracted TNFR `Ψ` field, a
+  particle charge, or quantum wave-particle duality. A
   real narrow-band ripple built from a few low-`k` modes stays at winding `0` for every amplitude
   tested (up to 20 rad) — a generic wave excitation of the vacuum is topologically trivial; only
-  the specific complex mode carries charge. This is the classical topology of maps `S¹→S¹`
-  underlying the textbook "particle on a ring" angular-momentum quantization, re-expressed on the
-  canonical operator ([emergent_wave_particle_correspondence.py](../benchmarks/emergent_wave_particle_correspondence.py)).
+  the specific complex mode carries nonzero winding. This is the classical
+  topology of maps `S¹→S¹` evaluated on a selected graph eigenvector
+  ([emergent_wave_particle_correspondence.py](../benchmarks/emergent_wave_particle_correspondence.py)).
   The genuinely quantum content of wave-particle duality — a probability amplitude, the Born rule,
   single-particle interference statistics, a physical `ħ` — is the classical-substrate frontier of
   §9.2 (OPEN).
 
-### 7.2 The electromagnetic gauge/charge sector — **DERIVED (skeleton)**
+### 7.2 Auxiliary local-U(1) coordinate model — **DERIVED (pure-gauge identity) / ANALOGY (electromagnetism)**
 
-The winding charge couples to a **local U(1) gauge field** ([gauge.py](../src/tnfr/physics/gauge.py)):
-a connection `A_ij = arg Ψ_j − arg Ψ_i`, a covariant derivative `D_ij Ψ`, and a **gauge curvature**
-`F_C = Σ_{(i,j)∈C} A_ij` per plaquette (a non-zero `F_C` is a gauge vortex — the discrete analog of
-magnetic flux). Measured: the interaction energy of a vortex(+1)–antivortex(−1) pair follows the
-**2D Coulomb law** `E(r) = a·log r + b` (`a ≈ 6`, **R² = 0.999**) — an attractive force `F ∝ 1/r` —
-and the enclosed flux is **quantized** at `2π·W`. A 3D manifold would give the Newtonian/Coulomb
-`1/r²`.
+[gauge.py](../src/tnfr/physics/gauge.py) defines a local rephasing coordinate for
+the diagnostic complex field `Ψ`. Its derived edge connection
+`A_ij = arg Ψ_j − arg Ψ_i` is the exact one-form `d(arg Ψ)`: oriented cycle sums
+therefore telescope to zero, up to floating-point closure residuals, and the
+covariant graph Laplacian is unitarily equivalent to its ordinary weighted graph
+Laplacian. This proves covariance of an auxiliary coordinate description; it does
+not supply an independent gauge degree of freedom, non-zero curvature, magnetic
+flux, a gauge vortex, or gauge-field dynamics. Electromagnetic language is an
+**ANALOGY** unless an independent edge field and its dynamics are derived from the
+nodal equation and canonical operators.
 
-### 7.3 Emergent inter-body dynamics — **DERIVED**
+The complex covariance statement applies on the non-zero support of `Ψ`. At a
+zero, `arg Ψ` is undefined and the implementation fixes it to zero as a
+deterministic convention; the covariant-difference magnitude remains the
+convention-independent endpoint-amplitude contrast. This coordinate identity is
+not a symmetry theorem for nodal trajectories or canonical operators.
 
-Treated as bodies, the winding defects have a reduced **point-vortex dynamics**: two opposite
-charges form a **translating pair**, two like charges an **orbiting pair**, and the **three-body
-(three-vortex) problem is integrable** — three invariants `(H, |P|², L)` conserved to integrator
-precision (Aref 1979). In the conservative regime the bodies *orbit* (Hamiltonian); in the
-overdamped regime they *annihilate/repel* (dissipative) — the two faces of §2 again.
+### 7.3 Auxiliary point-vortex comparison — **ANALOGY**
+
+When winding defects are inserted into the separately posited classical
+point-vortex equations, two opposite circulations translate as a pair, two like
+circulations orbit, and the three-vortex model carries the familiar invariants
+`(H, |P|², L)` to integrator precision. Those equations provide a controlled
+comparison model; the repository has not derived them as a trajectory of the
+nodal equation or as a composition of the 13 canonical operators.
 
 ### 7.4 Composite matter — atoms, bonds, and bands — **DERIVED (skeleton)**
 
@@ -841,19 +932,19 @@ hierarchy of bound matter (derived fresh, not assumed):
 Maps to observables: **atomic orbitals**, the **covalent bond** (molecular orbitals), and **band
 structure**.
 
-> **Honest boundary.** §7 is the **classical** skeleton — a discrete-mode spectrum, an integer
-> topological charge, the XY/superfluid vortex process, a lattice U(1) gauge / 2D Coulomb gas,
-> 2D point-vortex (Kirchhoff/Onsager/Aref) dynamics, and tight-binding bound states (atoms, bonds,
-> bands; Bloch/Hückel) — that the nodal dynamics **contains** (a *unification* of established
-> physics). It is **not** a derivation of any real particle's measured mass/charge/spin, nor of QED
-> or QFT; the genuine quantum particle (second quantization) needs ingredients the classical
-> substrate lacks (§9).
+> **Honest boundary.** §7 combines exact finite-graph identities with explicitly
+> auxiliary classical models: discrete spectra and integer winding are graph
+> results; the point-vortex, Coulomb-gas, local-U(1), and tight-binding pieces are
+> comparison constructions under their own declared equations. Their coexistence
+> in one vocabulary does not derive one model from another or derive any real
+> particle's measured mass, charge, or spin, QED, or QFT. A genuine quantum
+> particle (second quantization) needs ingredients the classical substrate lacks
+> (§9).
 
-### 7.5 The structural genesis — from the vacuum to the first charge — **DERIVED (sequence) / ANALOGY (Kibble, not cosmology)**
+### 7.5 A structural-genesis scenario — **MIXED CONSTRUCTION / Kibble analogy**
 
-The matter sector has a canonical **origin sequence** — a grammar-forced path from the structural
-vacuum to the first coherent charge — **stage 1 of the structural history (§2.5)**
-([emergent_structural_genesis.py](../benchmarks/emergent_structural_genesis.py)):
+The benchmark juxtaposes engine states with a separately constructed winding
+ring ([emergent_structural_genesis.py](../benchmarks/emergent_structural_genesis.py)):
 
 1. **The vacuum.** `EPI = 0`; the nodal equation `∂EPI/∂t = νf·ΔNFR` remains mathematically
  defined for finite capacity and pressure, while grammar **U1a** requires a generator `{AL, NAV, REMESH}`
@@ -861,90 +952,91 @@ vacuum to the first coherent charge — **stage 1 of the structural history (§2
    spontaneous event.
 2. **Emission — the first form.** `AL` sources `EPI` from the vacuum (`∂EPI/∂t > 0`, `νf` activates):
    measured, `EPI` rises monotonically from `0` (`0 → 0.09 → … → 0.50`) — form where there was none.
-3. **The coherent vacuum.** The coherence flow drives `C → 1` at winding `W = 0` — a smooth,
-   symmetric, coherent field with **no** topological defect (the ordered "false vacuum").
-4. **The first particle.** A symmetry-breaking bifurcation (a destabilizer with a stabilizer, U2/U4)
-   crystallizes the first quantized topological charge `W = 1` — the `|W| = 1` fundamental unit
-   charge (§9.1), a defect of the coherent phase field.
+3. **A coherent reference state.** The coherence flow can raise the recorded
+   coherence; a separately declared zero-winding ring supplies the comparison.
+4. **A unit-winding construction.** The benchmark creates `winding_ring(..., 1)`
+   directly. It does not demonstrate that a validated destabilizer/stabilizer
+   word generates this class from the preceding state.
 
-> **Honest boundary — DERIVED sequence, Kibble analogy.** Each step is canonical TNFR (U1
-> initiation, Emission, the coherence flow, a symmetry-breaking bifurcation), and the last is the
-> **Kibble mechanism** — topological-defect formation at a symmetry-breaking transition. The genesis
-> unfolds on TNFR's *own* emergent **space** (§3) and **time** (§4.2, §5.1): a **structural** origin
-> sequence yielding the first *form* — the `|W| = 1` unit charge (§9.1) — read as an **analogy** of
-> "the first particle", a structural re-expression carrying its own DERIVED/ANALOGY labels.
+> **Honest boundary.** Emission and coherence are engine operations; the final
+> winding state is constructed rather than dynamically derived. Its resemblance
+> to Kibble defect formation is an analogy and supplies no particle genesis.
 
 ---
 
 ## 8. Emergent information and computation
 
-The **grammar** (U1–U6) is the generative syntax of all the layers above (§1): operators are the
-exclusive way to change EPI, and U1–U6 are the coherence conditions that make stable emergence
-possible. Measured as a **formal language**, it has a definite information content — the
-*measurable shadow* of that generative engine.
+The **grammar** (U1–U6) is the generative syntax of canonical operator histories.
+Auxiliary models above do not thereby become grammar-generated. Finite counts of
+accepted flat sequences give a reproducible combinatorial diagnostic.
 
-### 8.1 The grammar is a regular language with a finite channel capacity — **DERIVED**
+### 8.1 Flat-sequence prefix growth — **MEASURED**
 
 The valid operator sequences form a **language** over the 13-operator alphabet. Counting them (the
 canonical `validate_grammar`, derived fresh):
 
-| `n` | 1 | 2 | 3 | 4 | 5 |
-|-----|---|---|---|---|---|
-| valid sequences `N(n)` | 2 | 9 | 84 | 852 | 9396 |
+| `n` | 1 | 2 | 3 | 4 | 5 | 6 |
+|-----|---|---|---|---|---|---|
+| valid sequences `N(n)` | 2 | 9 | 84 | 852 | 9378 | 109920 |
 
-The **Shannon channel capacity** `c = log₂(N_n/N_{n−1})` climbs `2.17 → 3.22 → 3.34 → 3.46`,
-**converging below** the unconstrained `log₂13 = 3.70`. The convergence means the language is
-**regular** (finite-state, Chomsky type-3): the grammar is a finite automaton, and its valid
-sequences are a constrained channel with a definite bits-per-operator capacity.
+The finite-prefix growth diagnostic `log₂(N_n/N_{n−1})` takes the recorded
+values `2.17 → 3.22 → 3.34 → 3.46 → 3.55`, below the unconstrained
+`log₂13 = 3.70` on these lengths. These six counts alone do not prove an
+asymptotic rate. The current default-depth history projection is represented by
+a 320-state reachable automaton and a 52-state minimal complete DFA, whose
+numerical adjacency radius is `10.9560791442`. Runtime U3 and reference-dependent
+U6 are external state checks; full U5 nesting is context-free and requires a
+stack-like model.
 
-### 8.2 The operators form a structured code — **DERIVED**
+### 8.2 Operator-frequency hierarchy in finite prefixes — **MEASURED**
 
-Operators appear in valid sequences with a strong **frequency hierarchy**: the generators/closures
-`NAV`, `REMESH` are most common (≈18% each), down to `ZHIR` at **0.1%** — an extreme bottleneck,
-because its U4b context (a prior `IL` plus a recent destabilizer) is rarely satisfied. The grammar
-is a *structured code*, not a uniform one.
+At length five, the exact finite enumeration has `NAV` and `REMESH` at about
+17.95% each and `ZHIR` at about 0.09%. Boundary roles and ZHIR's lifetime-IL plus
+recent-destabilizer preconditions help interpret this sample; it is not an
+asymptotic operator-frequency hierarchy.
 
 Maps to observables: **formal languages** (the Chomsky hierarchy), the **Shannon channel capacity**
 (the noiseless-channel coding theorem), and **symbolic dynamics** (subshift entropy).
 
-> **Honest boundary.** This is **formal-language + information theory** applied to the grammar. The
-> capacity climbs toward `log₂13` (the constraints are sub-extensive) — a *characterization* of the
-> grammar as a regular language, **not** a hidden tetrad constant or a new result. Derived fresh
-> from the canonical validator.
+> **Honest boundary.** Exact automata and monoid results apply to the constructed
+> flat, default-depth symbolic/history projection. The selected Parry chain is a
+> maximum-entropy Markov policy on its dominant component, not a TNFR physical
+> equilibrium or H-theorem. Full U5 nesting is context-free, and U3/U6 require
+> runtime state outside this symbolic automaton.
 
 ---
 
 ## 9. The particle / quantum frontier — forms derived, values & QM open
 
-The reach from the §7 skeleton toward genuine particles and quantum mechanics. Unlike §3–§8 this is
-a **mixed** status: §9.1 records what a focused arc **does** derive (the structural *forms* of the
-particle sector, plus a dynamical scale) and what it does **not** (the numerical *values*);
-§9.2–§9.3 remain **OPEN CONJECTURE / ANALOGY**.
+The reach from the §7 graph constructions toward physical particles and quantum
+mechanics. Section 9.1 records exact properties of selected abstract graph
+models; identifying those properties with a particle catalog, generations or
+masses remains analogy or open conjecture. Sections 9.2–9.3 remain open.
 
-### 9.1 The particle sector — structural FORMS derived, numerical VALUES open — **DERIVED (forms) / OPEN (values)**
+### 9.1 Particle-like graph patterns — **DERIVED IN DECLARED MODELS / PHYSICAL IDENTIFICATION OPEN**
 
-Particles are, in TNFR, not distinct objects but **coherent patterns of coherence** — stable
-resonant configurations of the nodal dynamics, labelled by their conserved structural invariants
-(AGENTS.md "model coherence, not objects"). A focused arc sharpens the older "nothing done" status
-into a precise **form-vs-values split**: TNFR **derives the structural forms** of the particle
-sector, and a universal dynamical **scale**, but **not** the numerical **values** (the measured
-masses and their ratios), which remain open — and are unexplained in *all* of physics.
+The repository constructs graph patterns labelled by structural read-outs.
+Exact winding, spectral and symmetry statements about
+those constructions remain useful mathematics. They do not establish that a
+physical particle is an NFR, that the constructions reproduce the Standard
+Model catalog, or that graph eigenvalues represent measured masses.
 
 | Layer | Question | Status |
 |-------|----------|--------|
-| **1** | does *a* particle exist? | **DERIVED** — an exact integer topological winding `W ∈ ℤ`, conserved |
-| **2** | *which* species (the catalog)? | **DERIVED** (selection principles below) |
-| **3 · form** | the *structure* of the properties | **DERIVED** — a `Z₃` phase-triple on a circle; a self-similar fractal tower |
-| **3 · scale** | the overall scale | **DERIVED (dynamic)** — `νf` relaxes to a universal value |
-| **3 · values** | the *numbers* (masses, ratios) | **OPEN** — not derived; open in all physics |
+| **1** | graph defect | **DERIVED IN MODEL** — integer winding `W ∈ ℤ` under the stated ring assumptions |
+| **2** | selected graph-pattern catalog | **MODEL-DEPENDENT** — follows from chosen graphs and energies |
+| **3 · form** | symmetry motifs | **DERIVED IN MODEL** — selected `Z₃` and nested-graph constructions |
+| **3 · scale** | structural frequency | **OPEN** — the nodal equation supplies no universal `νf` fixed point |
+| **3 · physical values** | masses and ratios | **OPEN / UNMAPPED** |
 
-**Layer 2 — the catalog is structured, not arbitrary (DERIVED).**
-(a) The charge lattice is exactly **ℤ** (the winding is an integer topological invariant, §7.1b).
+**Layer 2 — the selected graph catalog is structured (DERIVED IN MODEL).**
+(a) The declared-cycle winding classes lie in **ℤ** when the cycle and branch
+regularity hypotheses of §7.1b hold. This class does not specify quantum statistics.
 (b) The energy of a charge-`W` structure scales as `E ∝ W²` (exact on the ring: the excitation
 energy above vacuum is the integer squares `1,4,9,16,25`), so `|W|=2` costs more than two `|W|=1`
-and **fissions** — shown directly on a 2D manifold (a `|W|=2` core has higher self-energy than two
-separated `|W|=1`, and like charges repel). **`|W|=1` is the unique fundamental unit charge**;
-`|W|≥2` are composites.
+and splits in the selected 2D energy model (a `|W|=2` core has higher
+self-energy than two separated `|W|=1`). Thus `|W|=1` is the unit winding in
+that model; the physical-charge interpretation is not derived.
 ([emergent_particle_catalog.py](../benchmarks/emergent_particle_catalog.py),
 [emergent_mass_charge_spectrum.py](../benchmarks/emergent_mass_charge_spectrum.py)).
 (c) A localised coherent core — the maximally-coupled simplex `K_{g+1}` (§3.2) — binds only
@@ -955,30 +1047,30 @@ whose THOL/Sierpinski nesting dimension `log 4 / log 2 = 2` matches the substrat
 fibre** (§3.2) — a self-consistency selection (the U(2)↔2 convergence is a *noted* convergence,
 §3.2, not a derived identity).
 ([emergent_generation_count.py](../benchmarks/emergent_generation_count.py)).
-(d) The species carries a **form-channel** internal mode index `n` (the standing-mode frequency
-`ω_n = √λ_n`) that is **exactly decoupled** from the phase-channel charge `W` (they live in
-different dual-lever channels), so `mass = m(W, n)` admits a **same-charge mass tower** — correcting
-the naive "mass = f(charge)".
+(d) The construction carries a form-channel mode index `n` with
+`ω_n = √λ_n`, separately from phase winding `W`. This supplies a two-index
+graph-pattern label `(W,n)`. Calling it a same-charge mass tower would require
+the physical map that is currently absent.
 ([emergent_internal_quantum_numbers.py](../benchmarks/emergent_internal_quantum_numbers.py)).
 
-**Layer 3 · form — the generation geometry (DERIVED).**
-The three generations are the standard irrep of `S₄` (the tetrahedron's 3-fold internal level); a
-`C₃` axis acts on them with eigenvalues the **cube roots of unity** — three points at **exactly
-120° on a circle**. They are a **cyclic phase-triple** (a pulse-phase structure, not three fixed
-objects), which is *exactly* the geometry of the empirical **Koide relation** (`Q = 2/3`; the real
-charged leptons sit at 120° on a circle, Foot 1994). Across families the *same* motif recurs
-**self-similarly**: one fractal coherent core (the nested tetrahedron) carries a tower in which
-**every** excited mode is a generation-triplet (multiplicity a multiple of 3) at **every** scale,
-with new family-bands appearing log-periodically — the inter-family "spiral".
+**Layer 3 · form — a selected three-dimensional symmetry model.**
+The standard representation of `S₄` is three-dimensional, and a selected
+`C₃` action has cube-root eigenvalues at 120° on a circle. This is an exact
+representation-theory statement. Its resemblance to a phase
+parameterization of the empirical Koide relation is an analogy; it does not
+derive three physical generations or lepton masses. The nested-graph
+benchmark repeats the selected triplet motif across its construction, which
+is a property of that construction rather than evidence for physical family
+bands.
 ([emergent_generation_phase_circle.py](../benchmarks/emergent_generation_phase_circle.py),
 [emergent_resonant_pattern_tower.py](../benchmarks/emergent_resonant_pattern_tower.py)).
 
-**Layer 3 · scale — a universal `νf` (DERIVED, dynamic).**
-Under the canonical nodal evolution the structural frequency `νf` relaxes to a **universal** value,
-independent of initial conditions and of the graph geometry in the tests run — a dynamical fixed
-point that fixes the overall **scale** but carries no ratio information. So a "value" factorises as
-`νf` (dynamic, universal scale) × `√λ_n` (structural-form ratios): the dynamics supplies the scale,
-the structure supplies the ratios.
+**Layer 3 · scale — no universal `νf` has been derived.**
+The nodal equation specifies `dEPI/dt = νf·ΔNFR`; it does not by itself give an
+evolution equation forcing `νf` to one graph-independent value. Canonical
+operators can raise, lower or silence structural capacity. Consequently,
+`νf·sqrt(λ_n)` is a conditional modal scale for a declared state and graph,
+not a universal mass scale or fixed-point theorem.
 
 > **Honest boundary — the values are open.** What is **not** derived is the numerical **ratios**.
 > The real lepton masses (`1 : 207 : 3477`) satisfy Koide with a *specific* circle: amplitude `√2`
@@ -987,21 +1079,17 @@ the structure supplies the ratios.
 > the 45°/`√2` condition; every natural breaking sits near the democratic axis (`Q ≈ 1/3`,
 > near-degenerate), the **opposite** extreme from the leptons' 45° (`Q = 2/3`)
 > ([emergent_generation_phase_circle.py](../benchmarks/emergent_generation_phase_circle.py) M4).
-> Because the `νf` scale is universal, the ratios live in the structural **forms** and are **not**
-> additionally fixed by the dynamics. Claiming the numbers "emerge" would be **numerology** — the
-> mass↔eigenvalue identification is not fixed by TNFR, so a free choice fits almost anything. Koide's
-> `2/3` and the fermion mass hierarchy are unexplained in **all** of physics: an open frontier
-> everywhere, not a TNFR-specific gap.
+> The mass-to-eigenvalue identification is not fixed by TNFR, so a free choice
+> can fit many numerical patterns. Claiming that measured masses emerge would
+> therefore be unsupported. This graph construction does not derive Koide's
+> empirical `2/3` relation or the observed fermion mass hierarchy; both remain
+> outside the established TNFR results.
 
-**Synthesis.** TNFR gives the particle sector its **forms** (a quantised integer charge with a
-unit-charge selection; a finite generation count = the simplex-grade cardinal; the generations as a
-`Z₃` phase-triple = the Koide 120°-circle; a self-similar fractal triplet-tower across families) and
-a universal dynamical **scale** (`νf`); it does **not** give the numerical **values** (masses,
-ratios, the `√2`/45° amplitude, the phase `δ`, the spiral pitch). The forms emerge; the values stay
-open — a genuine **structural** advance over the earlier "nothing done", held to the same discipline
-as the rest of this document: an exact re-expression, closing no open problem. The repository's older
-"fundamental particles atlas" studies remain **ANALOGY / organizing program**, superseded here by
-the sharper form-vs-values arc.
+**Synthesis.** The selected graph models have exact winding, mode and symmetry
+properties. Their interpretation as particle charge, generations or mass is
+an analogy and no universal `νf` scale is derived. The numerical values and the
+physical map remain open; the associated benchmarks are exploratory model
+studies rather than evidence for a particle theory.
 
 ### 9.2 Quantum mechanics — **DERIVED (the boundary) / OPEN CONJECTURE (the reach)**
 
@@ -1039,8 +1127,10 @@ unification, not a derived identity.
 - **§9.2:** genuine entanglement (Bell-violating correlations, `|S| > 2`) — measured to sit at the
   classical bound (`|S| = 2.0000`, §9.2) while the substrate stays local (§5.1) and classical
   (§5.3); moving this would mean abandoning one of those two already-derived properties.
-- **§7.2:** the inter-defect force reproducing Coulomb *and* a quantized gauge field (a photon) —
-  the latter absent from the classical substrate.
+- **§7.2:** an independent edge connection with non-zero curvature and dynamics
+  derived from the nodal equation. The implemented connection is pure gauge, and
+  the separate point-vortex comparison does not provide a photon or a TNFR
+  electromagnetic field.
 - **All:** a *predictive* test the standard framework does **not** make (the bar the empirical
   record repeatedly set, and did not clear).
 
@@ -1060,19 +1150,17 @@ exact identities, finite measurements, analogies and open conjectures:
   time, conservation (all on **one relaxation clock**), thermal fluctuations (Einstein /
   fluctuation-dissipation), and Ohmic transport (conductivity);
 - a **conservative (relativistic) face** — a causal light cone, an approximate low-energy Lorentz
-  invariance, an emergent symplectic geometry, and optics (refraction, the refractive index,
+  invariance, an auxiliary symplectic model, and optics (refraction, the refractive index,
   Snell's law);
-- **synchronization** as one phase channel for many phenomena, a **2nd-order phase transition** at
-  the U2 threshold (order parameter, critical slowing down, pattern formation), and **self-sustained
-  dissipative structures** in the driven regime (U2 made dynamic);
-- a **matter sector** — a discrete mode lattice, a conserved integer charge, defect interactions,
-  an electromagnetic Coulomb/gauge skeleton, an integrable inter-body dynamics, and composite
-  matter (atoms, bonds, bands);
-- a **particle-sector arc** (§9.1) — the structural *forms* (a quantised integer charge with a
-  unit-charge selection; a finite generation count = the simplex-grade cardinal; the generations as
-  a `Z₃` phase-triple = the Koide 120°-circle; a self-similar fractal triplet-tower across families)
-  and a universal dynamical *scale* (`νf`), with the numerical *values* (masses, ratios) explicitly
-  **open**;
+- **synchronization** diagnostics and an auxiliary Landau model with a
+  continuous transition; mapping that model to U2 operator dynamics remains
+  open;
+- a **matter-comparison sector** — a discrete mode lattice and integer winding,
+  alongside separately declared point-vortex, pure-gauge U(1), and tight-binding
+  constructions; their physical identification and dynamical coupling are open;
+- a **particle-like graph-model arc** (§9.1) with exact properties inside
+  declared constructions, while physical identification, masses and a
+  universal frequency scale remain open;
 - an **information layer** — the grammar as a regular formal language with a finite Shannon channel
   capacity.
 

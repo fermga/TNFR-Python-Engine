@@ -1,41 +1,32 @@
-"""Structural boundary preservation for EPI values.
+"""Boundary projection for real scalar EPI coordinates.
 
-This module implements canonical TNFR structural clipping that preserves
-coherence by constraining EPI values to valid structural boundaries while
-maintaining smooth operator behavior.
-
-The structural_clip function ensures that EPI remains within [-1.0, 1.0]
-(or configurable bounds) after operator application and integration steps,
-preventing numerical precision issues from violating structural invariants.
+The nodal integrators call this module after evaluating
+``dEPI/dt = nu_f * DeltaNFR``. Clipping is therefore a numerical boundary
+policy, not an additional pressure term. Hard mode is the ordinary interval
+projection. Soft mode preserves a central identity region and replaces only
+the neighbourhood of each boundary by a continuously differentiable cubic
+knee.
 """
 
 from __future__ import annotations
 
 import math
-from typing import Literal
+from typing import Any, Literal
 
 from ..config.defaults_core import CoreDefaults
 from ..mathematics.unified_numerical import np
-
-# Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
-from ..constants.operational import (
-    NODAL_OPT_COUPLING_CANONICAL,
-    OPT_ORCH_FFT_SPEEDUP_CANONICAL,
-)
 
 __all__ = [
     "structural_clip",
     "structural_clip_array",
     "StructuralClipStats",
+    "get_clip_stats",
+    "reset_clip_stats",
 ]
 
 
 class StructuralClipStats:
-    """Telemetry for structural boundary interventions.
-
-    Tracks how often and by how much the structural_clip function
-    adjusts EPI values to preserve structural boundaries.
-    """
+    """Telemetry for structural boundary interventions."""
 
     def __init__(self) -> None:
         """Initialize empty statistics."""
@@ -48,7 +39,7 @@ class StructuralClipStats:
         self.sum_delta_soft: float = 0.0
 
     def record_hard_clip(self, delta: float) -> None:
-        """Record a hard clip intervention."""
+        """Record a hard-clip intervention."""
         self.hard_clips += 1
         self.total_adjustments += 1
         abs_delta = abs(delta)
@@ -56,7 +47,7 @@ class StructuralClipStats:
         self.sum_delta_hard += abs_delta
 
     def record_soft_clip(self, delta: float) -> None:
-        """Record a soft clip intervention."""
+        """Record a soft-clip intervention."""
         self.soft_clips += 1
         self.total_adjustments += 1
         abs_delta = abs(delta)
@@ -74,7 +65,7 @@ class StructuralClipStats:
         self.sum_delta_soft = 0.0
 
     def summary(self) -> dict[str, float | int]:
-        """Return summary statistics as dictionary."""
+        """Return summary statistics as a detached dictionary."""
         return {
             "hard_clips": self.hard_clips,
             "soft_clips": self.soft_clips,
@@ -82,26 +73,91 @@ class StructuralClipStats:
             "max_delta_hard": self.max_delta_hard,
             "max_delta_soft": self.max_delta_soft,
             "avg_delta_hard": (
-                self.sum_delta_hard / self.hard_clips if self.hard_clips > 0 else 0.0
+                self.sum_delta_hard / self.hard_clips if self.hard_clips else 0.0
             ),
             "avg_delta_soft": (
-                self.sum_delta_soft / self.soft_clips if self.soft_clips > 0 else 0.0
+                self.sum_delta_soft / self.soft_clips if self.soft_clips else 0.0
             ),
         }
 
 
-# Global statistics instance (optional telemetry)
 _global_stats = StructuralClipStats()
 
 
 def get_clip_stats() -> StructuralClipStats:
-    """Return the global clip statistics instance."""
+    """Return the process-local clipping telemetry object."""
     return _global_stats
 
 
 def reset_clip_stats() -> None:
-    """Reset global clip statistics."""
+    """Reset process-local clipping telemetry."""
     _global_stats.reset()
+
+
+def _finite_real(value: Any, name: str) -> float:
+    """Return a finite real scalar without accepting coercive text or booleans."""
+    if isinstance(value, (bool, str, bytes, complex)):
+        raise ValueError(f"{name} must be a finite real number")
+    try:
+        result = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(f"{name} must be a finite real number") from exc
+    if not math.isfinite(result):
+        raise ValueError(f"{name} must be a finite real number")
+    return result
+
+
+def _validated_contract(
+    lo: Any,
+    hi: Any,
+    mode: Any,
+    k: Any,
+) -> tuple[float, float, Literal["hard", "soft"], float]:
+    """Validate the shared scalar/array clipping parameters."""
+    lower = _finite_real(lo, "lo")
+    upper = _finite_real(hi, "hi")
+    if lower > upper:
+        raise ValueError(f"Lower bound {lower} must be <= upper bound {upper}")
+    if mode not in ("hard", "soft"):
+        raise ValueError(f"mode must be 'hard' or 'soft', got {mode!r}")
+    steepness = _finite_real(k, "k")
+    if steepness <= 0.0:
+        raise ValueError("k must be greater than zero")
+    return lower, upper, mode, steepness
+
+
+def _interval_geometry(lo: float, hi: float) -> tuple[float, float]:
+    """Compute midpoint and half-width without overflowing a finite interval."""
+    return lo / 2.0 + hi / 2.0, hi / 2.0 - lo / 2.0
+
+
+def _soft_clip_validated(value: float, lo: float, hi: float, k: float) -> float:
+    """Evaluate the validated C1 soft-knee projection for one scalar."""
+    if value <= lo:
+        return lo
+    if value >= hi:
+        return hi
+    if lo == hi:
+        return lo
+
+    midpoint, half_width = _interval_geometry(lo, hi)
+    magnitude = abs((value - midpoint) / half_width)
+
+    # ``exp(-k)`` is the normalized knee width, so increasing k approaches
+    # hard projection. ``-expm1(-k)`` retains accuracy for small positive k.
+    knee_width = math.exp(-k)
+    identity_limit = -math.expm1(-k)
+    if magnitude <= identity_limit or knee_width == 0.0:
+        return value
+
+    transition = (magnitude - identity_limit) / knee_width
+    # Hermite knee p(0)=0, p'(0)=1, p(1)=1, p'(1)=0.
+    eased = transition + transition * transition - transition**3
+    projected_magnitude = identity_limit + knee_width * eased
+    projected = midpoint + math.copysign(
+        projected_magnitude * half_width, value - midpoint
+    )
+    return max(lo, min(hi, projected))
 
 
 def structural_clip(
@@ -113,137 +169,89 @@ def structural_clip(
     *,
     record_stats: bool = False,
 ) -> float:
-    """Apply structural boundary preservation to EPI value.
+    """Project one finite real EPI coordinate into ``[lo, hi]``.
 
-    Ensures that values remain within structural boundaries while preserving
-    coherence. Two modes are available:
+    Hard mode returns ``min(hi, max(lo, value))``. Soft mode first normalizes
+    the interval to ``[-1, 1]``. With ``a = 1 - exp(-k)``, magnitudes at or
+    below ``a`` are unchanged. The remaining interval uses the cubic Hermite
+    knee ``p(t) = t + t**2 - t**3`` and values outside the interval project to
+    the nearest boundary. The resulting map is monotone, odd about the
+    interval midpoint, bounded, and continuously differentiable at both the
+    knee and the boundary. Larger ``k`` narrows the knee and approaches hard
+    projection.
 
-    - **hard**: Classic clamping for immediate stability (discontinuous derivative)
-    - **soft**: Smooth hyperbolic tangent mapping (continuous derivative)
-
-    Parameters
-    ----------
-    value : float
-        The EPI value to clip
-    lo : float, default -1.0
-        Lower structural boundary (EPI_MIN)
-    hi : float, default 1.0
-        Upper structural boundary (EPI_MAX)
-    mode : {'hard', 'soft'}, default 'hard'
-        Clipping mode:
-        - 'hard': Clamp to [lo, hi] (fast, discontinuous)
-        - 'soft': Smooth tanh-based remapping (slower, smooth)
-    k : float, default π ≈ 3.14159
-        Steepness parameter for soft mode (higher = sharper transition)
-    record_stats : bool, default False
-        If True, record intervention statistics in global telemetry
-
-    Returns
-    -------
-    float
-        Value constrained to [lo, hi] with specified mode
-
-    Notes
-    -----
-    The soft mode uses a scaled hyperbolic tangent:
-
-        y = tanh(k · x) / tanh(k)
-
-    which maps the input smoothly to [-1, 1], then rescales to [lo, hi].
-    This preserves derivative continuity but is computationally more expensive.
-
-    The hard mode is preferred for most use cases as it directly enforces
-    boundaries with minimal overhead.
+    ``value``, both bounds, and ``k`` must be finite real scalars; booleans,
+    text, and complex values are rejected. ``k`` must be positive. These
+    checks are identical in hard and soft mode so configuration errors cannot
+    remain latent until a later mode change.
 
     Examples
     --------
     >>> structural_clip(1.1, -1.0, 1.0, mode="hard")
     1.0
-    >>> structural_clip(-1.2, -1.0, 1.0, mode="hard")
+    >>> structural_clip(-1.2, -1.0, 1.0, mode="soft")
     -1.0
-    >>> abs(structural_clip(0.95, -1.0, 1.0, mode="soft") - 0.95) < 0.01
-    True
+    >>> structural_clip(0.95, -1.0, 1.0, mode="soft")
+    0.95
     """
-    if lo > hi:
-        raise ValueError(f"Lower bound {lo} must be <= upper bound {hi}")
+    lower, upper, resolved_mode, steepness = _validated_contract(lo, hi, mode, k)
+    scalar = _finite_real(value, "value")
 
-    if mode == "hard":
-        # Classic clamping - fast and simple
-        clipped = max(lo, min(hi, value))
-        if record_stats and clipped != value:
-            _global_stats.record_hard_clip(clipped - value)
-        return clipped
-
-    elif mode == "soft":
-        # Smooth sigmoid-based mapping that guarantees bounds
-        # Uses scaled tanh to create smooth transitions near boundaries
-        if lo == hi:
-            return lo
-
-        # First, clamp to slightly extended range to handle the mapping
-        # Map [lo, hi] to working range
-        margin = (
-            hi - lo
-        ) * NODAL_OPT_COUPLING_CANONICAL  # = 0.1 margin for smooth transition
-        working_lo = lo - margin
-        working_hi = hi + margin
-
-        # Normalize to [-1, 1] for tanh
-        # Check for zero-width range after extension (shouldn't happen with lo != hi)
-        range_width = working_hi - working_lo
-        if abs(range_width) < 1e-10:
-            # Degenerate case: return midpoint
-            return (lo + hi) / 2.0
-
-        normalized = (
-            OPT_ORCH_FFT_SPEEDUP_CANONICAL
-            * (value - (working_lo + working_hi) / 2.0)
-            / range_width
-        )
-
-        # Apply tanh with steepness k for smooth S-curve
-        # tanh maps R → (-1, 1), scaled by k to control steepness
-        smooth_normalized = math.tanh(k * normalized)
-
-        # Map back from (-1, 1) to [lo, hi]
-        # This ensures output is always within [lo, hi]
-        mid = (lo + hi) / 2.0
-        half_range = (hi - lo) / 2.0
-        clipped = mid + smooth_normalized * half_range
-
-        # Final safety clamp for numerical precision
-        clipped = max(lo, min(hi, clipped))
-
-        if record_stats and abs(clipped - value) > 1e-10:
-            _global_stats.record_soft_clip(clipped - value)
-
-        return clipped
-
+    if resolved_mode == "hard":
+        clipped = max(lower, min(upper, scalar))
     else:
-        raise ValueError(f"mode must be 'hard' or 'soft', got {mode!r}")
+        clipped = _soft_clip_validated(scalar, lower, upper, steepness)
+
+    if record_stats and clipped != scalar:
+        if resolved_mode == "hard":
+            _global_stats.record_hard_clip(clipped - scalar)
+        else:
+            _global_stats.record_soft_clip(clipped - scalar)
+    return clipped
 
 
 def structural_clip_array(
-    values,
+    values: Any,
     lo: float = -1.0,
     hi: float = 1.0,
     mode: Literal["hard", "soft"] = "hard",
     k: float = CoreDefaults().CLIP_SOFT_K,
 ):
-    """Apply the scalar clipping contract to an array without input mutation."""
-    if lo > hi:
-        raise ValueError(f"Lower bound {lo} must be <= upper bound {hi}")
-    values = np.asarray(values, dtype=float)
-    if mode == "hard":
-        return np.clip(values, lo, hi)
-    if mode != "soft":
-        raise ValueError(f"mode must be 'hard' or 'soft', got {mode!r}")
-    if lo == hi:
-        return np.full_like(values, lo)
-    margin = (hi - lo) * NODAL_OPT_COUPLING_CANONICAL
-    working_lo, working_hi = lo - margin, hi + margin
-    width = working_hi - working_lo
-    if abs(width) < 1e-10:
-        return np.full_like(values, (lo + hi) / 2.0)
-    normalized = OPT_ORCH_FFT_SPEEDUP_CANONICAL * (values - (working_lo + working_hi) / 2.0) / width
-    return np.clip((lo + hi) / 2.0 + np.tanh(k * normalized) * (hi - lo) / 2.0, lo, hi)
+    """Apply :func:`structural_clip` elementwise without mutating ``values``."""
+    lower, upper, resolved_mode, steepness = _validated_contract(lo, hi, mode, k)
+    if np is None:  # pragma: no cover - NumPy is an engine dependency
+        raise RuntimeError("structural_clip_array requires NumPy")
+    try:
+        source = np.asarray(values)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("values must contain finite real numbers") from exc
+    if source.dtype.kind not in "iuf" or not bool(np.all(np.isfinite(source))):
+        raise ValueError("values must contain finite real numbers")
+    array = np.asarray(source, dtype=float)
+
+    if resolved_mode == "hard":
+        return np.clip(array, lower, upper)
+    if lower == upper:
+        return np.full_like(array, lower, dtype=float)
+
+    midpoint, half_width = _interval_geometry(lower, upper)
+    clipped = np.clip(array, lower, upper)
+    magnitude = np.abs((clipped - midpoint) / half_width)
+    knee_width = math.exp(-steepness)
+    identity_limit = -math.expm1(-steepness)
+    if knee_width == 0.0:
+        return clipped
+
+    transition_mask = (magnitude > identity_limit) & (magnitude < 1.0)
+    transition = np.zeros_like(array, dtype=float)
+    transition[transition_mask] = (
+        magnitude[transition_mask] - identity_limit
+    ) / knee_width
+    eased = transition + transition * transition - transition**3
+    projected_magnitude = identity_limit + knee_width * eased
+    projected = midpoint + np.copysign(
+        projected_magnitude * half_width, clipped - midpoint
+    )
+    result = clipped.copy()
+    result[transition_mask] = projected[transition_mask]
+    return np.clip(result, lower, upper)

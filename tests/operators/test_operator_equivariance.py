@@ -57,9 +57,13 @@ TOL = 1e-6
 
 def _seed(G, theta_of, epi_of, vf_of):
     for nd in G.nodes():
+        epi = float(epi_of(nd))
         set_attr(G.nodes[nd], ALIAS_THETA, float(theta_of(nd)))
-        set_attr(G.nodes[nd], ALIAS_EPI, float(epi_of(nd)))
+        set_attr(G.nodes[nd], ALIAS_EPI, epi)
         set_attr(G.nodes[nd], ALIAS_VF, float(vf_of(nd)))
+        # Every operator shares this fixture. ZHIR additionally requires a
+        # two-sample signed-growth witness through its non-disableable gate.
+        G.nodes[nd]["epi_history"] = [epi - 1.0, epi]
     default_compute_delta_nfr(G)
     return G
 

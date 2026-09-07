@@ -29,7 +29,7 @@ Reuse
 * :func:`tnfr.riemann.twisted_weil_explicit_formula.twisted_weil_zero_side`
   — chi-twisted Hardy-Z zero-side enumerator (unchanged from P35).
 * :func:`tnfr.physics.conservation.compute_energy_functional`
-  — TNFR Lyapunov energy (unchanged from P17).
+  — nonnegative TNFR structural snapshot-energy candidate.
 
 Honesty disclaimer
 ------------------
@@ -187,7 +187,7 @@ def sweep_twisted_admissible_family(
     For each ``(family, sigma)`` pair the chi-twisted Weil functional
     :math:`W_\chi[\sigma; f]` is computed *once* (gauge-independent)
     via :func:`twisted_weil_zero_side` (P35).  For each
-    ``(family, gauge, sigma)`` triple the TNFR Lyapunov energy is
+    ``(family, gauge, sigma)`` triple the TNFR structural snapshot-energy candidate is
     computed by building the test state with that family/gauge on the
     P34 chi-twisted graph and evaluating
     :func:`tnfr.physics.conservation.compute_energy_functional`.

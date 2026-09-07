@@ -1,75 +1,24 @@
-r"""TNFR Phase Transition Module — Life/Non-Life as Universal Symmetry Breaking.
+r"""TNFR phase-transition diagnostics from structural-field symmetry.
 
-Derives the **life/non-life phase transition** from TNFR unified fields,
-replacing static threshold criteria with a rigorous second-order phase
-transition theory grounded in the nodal equation.
-
-MAIN RESULT (Structural Phase Transition Theorem)
-==================================================
-The symmetry breaking field
+The symmetry-breaking candidate
 
     𝒮 = (|∇φ|² − K_φ²) + (J_φ² − J_ΔNFR²)
 
-serves as the **order parameter** of a second-order phase transition
-between non-life (symmetric, ⟨𝒮⟩ = 0) and life (broken symmetry,
-⟨𝒮⟩ ≠ 0).
+and chirality ``χ`` provide reproducible read-outs for controlled sweeps. The
+operational phase labels compare the signed global means ``|⟨𝒮⟩|`` and
+``|⟨χ⟩|`` with their finite-network spatial spreads. The separate magnitudes
+``⟨|𝒮|⟩`` and ``⟨|χ|⟩`` describe local activity; they cannot establish global
+symmetry breaking or homochirality because opposite signs may cancel.
 
-Key predictions derived from the nodal equation (audit 2026: the
-constant correspondence is an overlay, only π is a genuine scale):
+This module measures susceptibility peaks, correlation length and an effective
+time-series power-law exponent. It does not derive a universal second-order
+transition, a universal exponent or divergence of correlation length. Those
+claims require a declared control parameter, finite-size scaling, uncertainty
+intervals and replication across graph families.
 
-1. **Symmetry classification**:
-       𝒮 = 0  ⟹  symmetric phase (non-life)
-       𝒮 ≠ 0  ⟹  broken symmetry (life)
-
-2. **Chirality requirement**: Life requires non-zero chirality
-   χ = |∇φ|·K_φ − J_φ·J_ΔNFR (biological homochirality).
-
-3. **Critical exponent**: Near the transition the order parameter follows
-   a power law |⟨𝒮⟩| ~ |p − p_c|^{β}. The exponent is an OBSERVABLE to be
-   MEASURED (``fit_critical_exponent``); it is NOT a derived universal
-   constant — a measurement across sweep protocols gives protocol-dependent
-   values (audit 2026), so the reference scale ≈ 0.196 (π/16) used below is a
-   calibrated TIER-2 parameter, not a prediction.
-
-4. **Divergent correlation length**: ξ_C → ∞ at the critical point,
-   as required for any continuous phase transition.
-
-DERIVATION
-==========
-From the nodal equation ∂EPI/∂t = νf · ΔNFR(t):
-
-**Step 1**: The symmetry breaking field 𝒮 measures the imbalance between
-conjugate field pairs.  In the symmetric (non-life) phase, gradient and
-curvature sectors are balanced: |∇φ|² ≈ K_φ² and J_φ² ≈ J_ΔNFR²,
-giving ⟨𝒮⟩ = 0.
-
-**Step 2**: Autopoietic dynamics (A > 1) create a persistent imbalance
-where self-generation amplifies the gradient sector over the curvature
-sector, breaking the conjugate symmetry: ⟨𝒮⟩ ≠ 0.
-
-**Step 3**: The chirality field χ measures handedness.  Mirror symmetry
-(χ = 0) prevails in non-life; autopoiesis selects a preferred chirality
-(|χ| > 0), providing the homochirality signature of biological systems.
-
-**Step 4**: Near the critical point p_c, the order parameter scales as
-|⟨𝒮⟩| ~ |p − p_c|^{β}. The exponent β is MEASURED, not derived: a sweep
-across protocols gives protocol-dependent values (audit 2026), so there is
-no universal closed-form exponent. The reference scale ≈ 0.196 (π/16) is retained
-only as a calibrated noise-floor scale (TIER-2), not a
-prediction of the nodal equation.
-
-**Step 5**: The coherence length ξ_C diverges at p_c via standard
-Landau theory, signalling the onset of long-range structural
-correlations that enable collective autopoietic behavior.
-
-Physics Foundation
-------------------
-- Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
-- Unified fields: 𝒮 and χ from unified.py (single source of truth)
-- Phase-gradient reference scale: ≈ 0.196 (π/16; calibrated TIER-2; audit
-  2026: NOT a derived universal exponent — the measured exponent is
-  protocol-dependent)
-- Coherence length: ξ_C from canonical.py
+The implementation remains anchored to the nodal equation through the unified
+fields. Its NON_LIFE/CRITICAL/LIFE names are operational classifications, not
+biological or metaphysical conclusions.
 
 See Also
 --------
@@ -99,36 +48,43 @@ from .canonical import estimate_coherence_length
 from .unified import compute_chirality_field, compute_symmetry_breaking_field
 
 # ============================================================================
-# EMERGENT CLASSIFICATION — sampling-noise z-scores (NO magic constant)
+# EMERGENT CLASSIFICATION — standardized spatial imbalance
 # ============================================================================
-# Audit 2026: the symmetric phase has ⟨𝒮⟩ = 0 EXACTLY (by symmetry), so any
-# finite-N deviation is sampling noise with standard error SE = √(Var/N). The
-# phase is decided by the z-score |⟨𝒮⟩|/SE — the statistical significance of
-# the symmetry breaking, MEASURED from the system itself. The previous magic
-# scales were verified INERT (they sat in a two-order-of-
-# magnitude gap; sweeping them changed no classification) and were removed.
-# The only cut is z = 1 (one sampling sigma) — the noise scale itself, not a
-# free parameter.
+# Audit 2026: classification uses |mean| / sqrt(Var/N).  Graph nodes are
+# coupled and therefore are not independent samples in general.  The ratio is
+# an operational standardized spatial imbalance, not a hypothesis-test
+# z-score unless an external sampling model justifies that interpretation.
+# The public ``symmetry_zscore`` name is retained for API compatibility.
 
-#: Significance cut: a field is "broken" when its z-score exceeds one sampling
-#: standard error (z > 1). This is the noise scale, not a tunable constant.
+#: Operational classification policy: a field is labelled broken when its
+#: standardized spatial imbalance exceeds one.  This selected policy is not a
+#: universal critical threshold.
 Z_SIGNIFICANCE: float = 1.0
 
 
 def symmetry_zscore(mean_abs: float, variance: float, n: int) -> float:
-    r"""Sampling-noise z-score |mean| / SE, with SE = √(Var/N).
+    r"""Return the standardized spatial imbalance ``|mean|/sqrt(Var/N)``.
 
-    The emergent significance of a field's deviation from zero, measured
-    against the system's own finite-N sampling noise — no magic constant.
-    Returns 0.0 for a perfectly uniform zero field (Var=0, mean=0) and +∞
-    for a uniform non-zero field (Var=0, mean>0, a fully broken state).
+    The denominator is the independent-sample standard error algebraically,
+    but TNFR graph nodes are usually correlated.  Accordingly, this function
+    supplies a deterministic classifier input rather than a p-value or a
+    statistical significance claim.  It returns 0.0 for a uniform zero field
+    and +∞ for a uniform non-zero field.
     """
-    if n <= 0:
+    if isinstance(n, bool) or not isinstance(n, (int, np.integer)) or n < 0:
+        raise ValueError("n must be a non-negative integer")
+    mean_value = float(mean_abs)
+    variance_value = float(variance)
+    if not math.isfinite(mean_value) or mean_value < 0.0:
+        raise ValueError("mean_abs must be finite and non-negative")
+    if not math.isfinite(variance_value) or variance_value < 0.0:
+        raise ValueError("variance must be finite and non-negative")
+    if n == 0:
         return 0.0
-    se = math.sqrt(max(variance, 0.0) / n)
+    se = math.sqrt(variance_value / n)
     if se == 0.0:
-        return 0.0 if mean_abs == 0.0 else math.inf
-    return mean_abs / se
+        return 0.0 if mean_value == 0.0 else math.inf
+    return mean_value / se
 
 
 # ============================================================================
@@ -137,55 +93,58 @@ def symmetry_zscore(mean_abs: float, variance: float, n: int) -> float:
 
 
 class Phase(Enum):
-    """Structural phase classification from symmetry breaking analysis."""
+    """Legacy labels for an operational signed-imbalance classification."""
 
-    NON_LIFE = "non_life"  # Symmetric: ⟨𝒮⟩ ≈ 0, |⟨χ⟩| ≈ 0
-    CRITICAL = "critical"  # Near transition: ⟨𝒮⟩ small, ξ_C large
-    LIFE = "life"  # Broken symmetry: ⟨𝒮⟩ ≠ 0, |⟨χ⟩| > 0
+    NON_LIFE = "non_life"  # Both standardized imbalances below the policy cut
+    CRITICAL = "critical"  # Order imbalance without chirality imbalance
+    LIFE = "life"  # Both standardized imbalances above the policy cuts
 
 
 @dataclass
 class PhaseTransitionTelemetry:
-    r"""Container for life/non-life phase transition telemetry.
+    r"""Container for operational finite-state transition diagnostics.
 
-    Captures the complete structural signature of the symmetry breaking
-    transition, including order parameter, chirality, susceptibility,
-    coherence length, and critical exponent measurements.
+    Captures selected structural read-outs for testing a candidate symmetry-
+    breaking transition: order parameter, chirality, susceptibility, coherence
+    length, and a finite time-series exponent fit.
 
     All quantities derive from the nodal equation via unified fields.
 
     Attributes
     ----------
     times : list[float]
-        Structural time stamps (Hz_str units).
+        Strictly increasing structural-time coordinates.
     order_parameter : np.ndarray
-        Network-averaged symmetry breaking ⟨𝒮⟩(t).  ⟨𝒮⟩ = 0 → non-life,
-        ⟨𝒮⟩ ≠ 0 → life.
+        Network-averaged signed imbalance ⟨𝒮⟩(t).
     order_parameter_abs : np.ndarray
-        |⟨𝒮⟩|(t) — magnitude of order parameter for scaling analysis.
+        |⟨𝒮⟩|(t) — magnitude of the signed global order parameter.
     chirality_mean : np.ndarray
-        Network-averaged chirality ⟨χ⟩(t).  Non-zero → homochirality.
+        Network-averaged signed chirality ⟨χ⟩(t).
     chirality_abs_mean : np.ndarray
         ⟨|χ|⟩(t) — mean absolute chirality (non-zero even without
         preferred handedness if local chirality exists).
     susceptibility : np.ndarray
-        χ_𝒮(t) = N · Var(𝒮) — fluctuation susceptibility.  Diverges
-        at the critical point.
+        χ_𝒮(t) = N · Var(𝒮) — finite-sample fluctuation susceptibility.
     coherence_length : np.ndarray
-        ξ_C(t) — spatial correlation scale.  Diverges at criticality.
+        ξ_C(t) — measured spatial correlation scale.
     phase_classification : list[Phase]
         Phase assignment per time step.
+    order_zscore : np.ndarray
+        Operational standardized spatial imbalance for 𝒮 at every step.
+    chirality_zscore : np.ndarray
+        Operational standardized spatial imbalance for χ at every step.
+    node_count : np.ndarray
+        Number of nodes at every step. A varying count makes raw
+        susceptibility peaks unsuitable for finite-size inference.
     transition_time : float | None
-        First structural time where the system transitions from NON_LIFE
-        to LIFE, with linear interpolation at the crossing.  None if no
-        transition detected.
+        First structural time where the order z-score crosses one, with linear
+        interpolation. The resulting phase may be CRITICAL or LIFE.
     critical_time : float | None
-        Time of maximum susceptibility (closest to critical point).
+        Time of maximum sampled susceptibility.
     measured_exponent : float | None
-        Fitted critical exponent from |⟨𝒮⟩| ~ |t − t_c|^{β} in the
-        post-transition regime. This is the real observable (audit 2026:
-        the exponent is protocol-dependent, not a universal constant — there
-        is no derived 'theoretical' value to compare against).
+        Effective time-series exponent from |⟨𝒮⟩| ~ |t − t_c|^{β}. It is
+        protocol-dependent and is not a thermodynamic exponent unless time is
+        explicitly related to a declared control parameter.
     exponent_fit_r_squared : float | None
         Coefficient of determination R² for the power-law fit.
     """
@@ -202,11 +161,14 @@ class PhaseTransitionTelemetry:
     critical_time: float | None = None
     measured_exponent: float | None = None
     exponent_fit_r_squared: float | None = None
+    order_zscore: np.ndarray = field(default_factory=lambda: np.array([]))
+    chirality_zscore: np.ndarray = field(default_factory=lambda: np.array([]))
+    node_count: np.ndarray = field(default_factory=lambda: np.array([], dtype=int))
 
 
 @dataclass
 class PhaseSnapshot:
-    """Instantaneous phase transition diagnostics for a single graph state.
+    """Candidate-transition read-outs for a single graph state.
 
     Lighter-weight alternative to :class:`PhaseTransitionTelemetry` for
     point-in-time analysis without a time series.
@@ -219,7 +181,10 @@ class PhaseSnapshot:
     susceptibility: float  # N · Var(𝒮)
     coherence_length: float  # ξ_C
     phase: Phase  # Classified phase
-    has_homochirality: bool  # |⟨χ⟩| > threshold
+    has_homochirality: bool  # Operational chirality classification
+    order_zscore: float = 0.0  # Standardized spatial imbalance of 𝒮
+    chirality_zscore: float = 0.0  # Standardized spatial imbalance of χ
+    node_count: int = 0
 
 
 # ============================================================================
@@ -228,14 +193,14 @@ class PhaseSnapshot:
 
 
 def compute_order_parameter(G: Any) -> dict[str, float]:
-    r"""Compute the phase transition order parameter from symmetry breaking.
+    r"""Compute the selected signed-imbalance order-parameter read-outs.
 
     Returns network statistics of 𝒮 = (|∇φ|² − K_φ²) + (J_φ² − J_ΔNFR²):
 
     - ⟨𝒮⟩ = (1/N) Σ_i 𝒮(i)  — mean (order parameter)
     - ⟨|𝒮|⟩ = (1/N) Σ_i |𝒮(i)|  — mean magnitude
     - Var(𝒮) = ⟨𝒮²⟩ − ⟨𝒮⟩²  — variance
-    - χ_𝒮 = N · Var(𝒮)  — susceptibility (diverges at critical point)
+    - χ_𝒮 = N · Var(𝒮)  — finite-sample susceptibility diagnostic
 
     Parameters
     ----------
@@ -274,10 +239,11 @@ def compute_order_parameter(G: Any) -> dict[str, float]:
 
 
 def compute_chirality_statistics(G: Any) -> dict[str, float]:
-    r"""Compute chirality field statistics for homochirality detection.
+    r"""Compute finite-state chirality-imbalance statistics.
 
     Chirality χ = |∇φ|·K_φ − J_φ·J_ΔNFR.
-    Non-zero ⟨χ⟩ indicates broken mirror symmetry (homochirality).
+    A non-zero sample mean records finite-state chirality imbalance; a symmetry-
+    breaking or homochirality claim requires an independent sampling model.
 
     Parameters
     ----------
@@ -314,39 +280,44 @@ def classify_phase(
 ) -> Phase:
     r"""Classify the structural phase from emergent z-scores.
 
-    The phase is decided by the STATISTICAL SIGNIFICANCE of symmetry
-    breaking, measured against the system's own sampling noise — no magic
-    constant (audit 2026). With ``order_z = |⟨𝒮⟩|/SE`` and
-    ``chirality_z = ⟨|χ|⟩/SE`` (SE = √(Var/N), via :func:`symmetry_zscore`):
+    The phase is decided by an operational standardized spatial imbalance.
+    With ``order_z = |⟨𝒮⟩|/sqrt(Var(𝒮)/N)`` and the analogous chirality ratio
+    (via :func:`symmetry_zscore`):
 
-    - **NON_LIFE**: ``order_z ≤ 1`` — ⟨𝒮⟩ is within one sampling sigma of
-      zero (symmetric phase).
-    - **LIFE**: ``order_z > 1`` AND ``chirality_z > 1`` — significant
-      symmetry breaking with significant homochirality.
-    - **CRITICAL**: ``order_z > 1`` but ``chirality_z ≤ 1`` — broken
-      magnitude without a significant preferred handedness (intermediate).
+    - **NON_LIFE**: ``order_z ≤ 1`` — the signed mean does not exceed the
+      selected standardized-imbalance cut.
+    - **LIFE**: ``order_z > 1`` AND ``chirality_z > 1`` — both operational
+      ratios lie above the selected cut.
+    - **CRITICAL**: ``order_z > 1`` but ``chirality_z ≤ 1`` — order ratio
+      above the cut without a chirality ratio above it (intermediate).
 
     Parameters
     ----------
     order_z : float
-        Sampling-noise z-score of |⟨𝒮⟩| (symmetry-breaking significance).
+        Standardized spatial imbalance of |⟨𝒮⟩|.
     chirality_z : float
-        Sampling-noise z-score of ⟨|χ|⟩ (homochirality significance).
+        Standardized spatial imbalance of |⟨χ⟩|.
 
     Returns
     -------
     Phase
         NON_LIFE, CRITICAL, or LIFE.
     """
-    if order_z <= Z_SIGNIFICANCE:
+    order_value = float(order_z)
+    chirality_value = float(chirality_z)
+    if math.isnan(order_value) or order_value < 0.0:
+        raise ValueError("order_z must be non-negative and not NaN")
+    if math.isnan(chirality_value) or chirality_value < 0.0:
+        raise ValueError("chirality_z must be non-negative and not NaN")
+    if order_value <= Z_SIGNIFICANCE:
         return Phase.NON_LIFE
-    if chirality_z > Z_SIGNIFICANCE:
+    if chirality_value > Z_SIGNIFICANCE:
         return Phase.LIFE
     return Phase.CRITICAL
 
 
 def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
-    """Capture instantaneous phase transition diagnostics.
+    """Capture instantaneous candidate-transition diagnostics.
 
     Parameters
     ----------
@@ -356,7 +327,7 @@ def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
     Returns
     -------
     PhaseSnapshot
-        Point-in-time phase transition diagnostics.
+        Point-in-time operational structural read-outs.
     """
     op = compute_order_parameter(G)
     chi = compute_chirality_statistics(G)
@@ -365,19 +336,22 @@ def capture_phase_snapshot(G: Any) -> PhaseSnapshot:
         xi = 0.0
 
     n_nodes = op["n_nodes"]
-    order_z = symmetry_zscore(op["abs_mean"], op["variance"], n_nodes)
-    chirality_z = symmetry_zscore(chi["abs_mean"], chi["variance"], n_nodes)
+    order_z = symmetry_zscore(abs(op["mean"]), op["variance"], n_nodes)
+    chirality_z = symmetry_zscore(abs(chi["mean"]), chi["variance"], n_nodes)
     phase = classify_phase(order_z, chirality_z)
 
     return PhaseSnapshot(
         order_parameter=op["mean"],
-        order_parameter_abs=op["abs_mean"],
+        order_parameter_abs=abs(op["mean"]),
         chirality_mean=chi["mean"],
         chirality_abs_mean=chi["abs_mean"],
         susceptibility=op["susceptibility"],
         coherence_length=xi,
         phase=phase,
         has_homochirality=chirality_z > Z_SIGNIFICANCE,
+        order_zscore=order_z,
+        chirality_zscore=chirality_z,
+        node_count=int(n_nodes),
     )
 
 
@@ -390,31 +364,36 @@ def detect_phase_transition(
     graph_sequence: Sequence[Any],
     times: Sequence[float],
 ) -> PhaseTransitionTelemetry:
-    r"""Detect life/non-life phase transition from a time series of graph states.
+    r"""Measure and classify candidate transition indicators in graph states.
 
     Computes the order parameter ⟨𝒮⟩, chirality ⟨χ⟩, susceptibility,
     and coherence length at each time step, then:
 
     1. Classifies each snapshot as NON_LIFE / CRITICAL / LIFE.
-    2. Finds the transition time via interpolation on |⟨𝒮⟩|.
-    3. Identifies the critical time (peak susceptibility).
-    4. Fits the critical exponent from the post-transition power law
-       |⟨𝒮⟩| ~ |t − t_c|^{γ_c}.
+    2. Records the operational threshold-crossing time.
+    3. Records the sampled susceptibility-peak time.
+    4. Fits an effective exponent after the declared sampled peak time from
+       |⟨𝒮⟩| ~ |t − t_c|^{p_fit}.
 
     Parameters
     ----------
     graph_sequence : Sequence[nx.Graph]
         Time-ordered TNFR network states.
     times : Sequence[float]
-        Structural times corresponding to each graph state.
+        Finite, strictly increasing structural times corresponding one-to-one
+        with the graph states.
 
     Returns
     -------
     PhaseTransitionTelemetry
-        Complete transition diagnostics including measured exponent.
+        Operational finite-state diagnostics including a measured exponent fit.
     """
-    times = list(times)
+    times = _validate_times(times)
     n = len(graph_sequence)
+    if len(times) != n:
+        raise ValueError(
+            "graph_sequence and times must contain the same number of entries"
+        )
 
     order_param = np.zeros(n)
     order_param_abs = np.zeros(n)
@@ -423,6 +402,8 @@ def detect_phase_transition(
     suscept = np.zeros(n)
     xi_c = np.zeros(n)
     order_z_series = np.zeros(n)
+    chirality_z_series = np.zeros(n)
+    node_counts = np.zeros(n, dtype=int)
     phases: list[Phase] = []
 
     for i, G in enumerate(graph_sequence):
@@ -433,31 +414,33 @@ def detect_phase_transition(
             xi = 0.0
 
         order_param[i] = op["mean"]
-        order_param_abs[i] = op["abs_mean"]
+        order_param_abs[i] = abs(op["mean"])
         chi_mean[i] = chi["mean"]
         chi_abs_mean[i] = chi["abs_mean"]
         suscept[i] = op["susceptibility"]
         xi_c[i] = xi
 
         n_nodes = op["n_nodes"]
-        order_z = symmetry_zscore(op["abs_mean"], op["variance"], n_nodes)
-        chirality_z = symmetry_zscore(chi["abs_mean"], chi["variance"], n_nodes)
+        order_z = symmetry_zscore(abs(op["mean"]), op["variance"], n_nodes)
+        chirality_z = symmetry_zscore(abs(chi["mean"]), chi["variance"], n_nodes)
         order_z_series[i] = order_z
+        chirality_z_series[i] = chirality_z
+        node_counts[i] = int(n_nodes)
 
         phase = classify_phase(order_z, chirality_z)
         phases.append(phase)
 
-    # --- Transition time: interpolate where the symmetry-breaking z-score ---
-    # --- crosses the significance cut (z = 1), the emergent noise scale.   ---
+    # Interpolate the finite standardized-imbalance crossing. The cut is an
+    # operational classifier policy, not a statistical significance level.
     transition_time = _find_crossing_time(times, order_z_series, Z_SIGNIFICANCE)
 
-    # --- Critical time: peak susceptibility ---
+    # --- Candidate time: sampled peak susceptibility ---
     critical_time: float | None = None
     if n > 0 and np.max(suscept) > 0:
         peak_idx = int(np.argmax(suscept))
         critical_time = times[peak_idx]
 
-    # --- Critical exponent fit ---
+    # --- Candidate effective-exponent fit ---
     measured_exp, r_squared = _fit_critical_exponent(
         times, order_param_abs, critical_time
     )
@@ -475,6 +458,9 @@ def detect_phase_transition(
         critical_time=critical_time,
         measured_exponent=measured_exp,
         exponent_fit_r_squared=r_squared,
+        order_zscore=order_z_series,
+        chirality_zscore=chirality_z_series,
+        node_count=node_counts,
     )
 
 
@@ -488,13 +474,18 @@ def fit_critical_exponent(
     order_parameter_abs: np.ndarray,
     critical_time: float | None = None,
 ) -> dict[str, float | None]:
-    r"""Fit the critical exponent from order parameter scaling.
+    r"""Fit an effective time-series exponent from order-parameter scaling.
 
-    Near the transition:
+    For the candidate fit:
 
-        |⟨𝒮⟩| ~ |t − t_c|^{γ_c}
+        |⟨𝒮⟩| ~ |t − t_c|^{p_fit}
 
-    Fits γ_c via log-log linear regression on the post-critical data.
+    Fits p_fit via log-log linear regression using only samples after the
+    declared candidate time with positive distance and order magnitude. At
+    least three such samples are required; earlier samples are never
+    substituted. This is not a
+    universal critical exponent unless the supplied time coordinate is a
+    declared control-parameter distance.
 
     Parameters
     ----------
@@ -503,18 +494,39 @@ def fit_critical_exponent(
     order_parameter_abs : np.ndarray
         |⟨𝒮⟩| time series.
     critical_time : float | None
-        Estimated critical time t_c.  If None, uses the midpoint where
-        the order parameter first exceeds the noise floor.
+        Declared candidate or sampled-peak time t_c. If None, no exponent is
+        fitted.
 
     Returns
     -------
     dict[str, float | None]
-        'exponent': fitted β, 'r_squared': R². Values are None if the fit
+        'exponent': fitted p_fit, 'r_squared': R². Values are None if the fit
         is impossible (insufficient data). There is no 'theoretical' value:
         the exponent is a measured observable, not a derived constant.
     """
+    validated_times = _validate_times(times)
+    order_abs = np.asarray(order_parameter_abs, dtype=float)
+    if order_abs.ndim != 1:
+        raise ValueError("order_parameter_abs must be a one-dimensional series")
+    if len(validated_times) != len(order_abs):
+        raise ValueError(
+            "times and order_parameter_abs must contain the same number of entries"
+        )
+    if not np.all(np.isfinite(order_abs)):
+        raise ValueError("order_parameter_abs must contain only finite values")
+    if np.any(order_abs < 0.0):
+        raise ValueError("order_parameter_abs cannot contain negative values")
+    parsed_critical_time: float | None = None
+    if critical_time is not None:
+        try:
+            parsed_critical_time = float(critical_time)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("critical_time must be finite when provided") from exc
+        if not math.isfinite(parsed_critical_time):
+            raise ValueError("critical_time must be finite when provided")
+
     exponent, r_sq = _fit_critical_exponent(
-        list(times), order_parameter_abs, critical_time
+        validated_times, order_abs, parsed_critical_time
     )
     return {
         "exponent": exponent,
@@ -525,6 +537,16 @@ def fit_critical_exponent(
 # ============================================================================
 # INTERNAL HELPERS
 # ============================================================================
+
+
+def _validate_times(times: Sequence[float]) -> list[float]:
+    """Return finite, strictly increasing structural-time coordinates."""
+    validated = [float(value) for value in times]
+    if not all(math.isfinite(value) for value in validated):
+        raise ValueError("times must contain only finite values")
+    if any(right <= left for left, right in zip(validated, validated[1:])):
+        raise ValueError("times must be strictly increasing")
+    return validated
 
 
 def _find_crossing_time(
@@ -542,6 +564,8 @@ def _find_crossing_time(
 
     for i in range(n - 1):
         if values[i] <= threshold < values[i + 1]:
+            if not math.isfinite(float(values[i + 1])):
+                return times[i + 1]
             # Linear interpolation
             dv = values[i + 1] - values[i]
             if abs(dv) < 1e-15:
@@ -561,29 +585,26 @@ def _fit_critical_exponent(
     order_abs: np.ndarray,
     t_c: float | None,
 ) -> tuple[float | None, float | None]:
-    r"""Fit |⟨𝒮⟩| ~ |t − t_c|^{γ_c} via log-log regression.
+    r"""Fit |⟨𝒮⟩| ~ |t − t_c|^{p_fit} via log-log regression.
 
-    Uses data points in the post-critical regime where both |t − t_c|
-    and |⟨𝒮⟩| are positive.  Returns (exponent, R²) or (None, None).
+    Uses data points after the declared candidate time where both |t − t_c|
+    and |⟨𝒮⟩| are positive. Returns (exponent, R²) or (None, None).
     """
-    if t_c is None or len(times) < 4:
+    if t_c is None:
         return None, None
 
     t_arr = np.array(times, dtype=float)
     dt = np.abs(t_arr - t_c)
 
-    # Select post-critical points with non-trivial order parameter
+    # Select post-candidate points with non-trivial order parameter.
     mask = (dt > 1e-12) & (order_abs > 1e-15) & (t_arr >= t_c)
-    if np.sum(mask) < 3:
-        # Try both sides if not enough post-critical data
-        mask = (dt > 1e-12) & (order_abs > 1e-15)
     if np.sum(mask) < 3:
         return None, None
 
     log_dt = np.log(dt[mask])
     log_S = np.log(order_abs[mask])
 
-    # Linear regression: log|S| = γ_c · log|t − t_c| + const
+    # Linear regression: log|S| = p_fit · log|t − t_c| + const
     A = np.vstack([log_dt, np.ones_like(log_dt)]).T
     try:
         result = np.linalg.lstsq(A, log_S, rcond=None)
@@ -594,7 +615,10 @@ def _fit_critical_exponent(
         predicted = A @ coeffs
         ss_res = float(np.sum((log_S - predicted) ** 2))
         ss_tot = float(np.sum((log_S - np.mean(log_S)) ** 2))
-        r_squared = 1.0 - ss_res / (ss_tot + 1e-15) if ss_tot > 1e-15 else 0.0
+        if ss_tot <= 1e-15:
+            r_squared = 1.0 if ss_res <= 1e-15 else 0.0
+        else:
+            r_squared = 1.0 - ss_res / ss_tot
 
         return exponent, r_squared
     except (np.linalg.LinAlgError, ValueError):

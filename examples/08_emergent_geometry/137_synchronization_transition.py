@@ -1,38 +1,30 @@
 #!/usr/bin/env python3
 """
-Example 137 — The Synchronization Transition: Kuramoto Criticality from the
-Canonical Phase Channel of the Nodal Equation
+Example 137 — Auxiliary circular-mean synchronization sweep
 ==============================================================================
 
 This example changes register from the diffusion/heat-kernel arc (ex 99, 134,
-135, 136) to the PHASE channel of the nodal equation and its collective
-behaviour. The phase component of the canonical dNFR is
+135, 136) to a separate phase-oscillator comparison. The phase component read
+by canonical DeltaNFR contains the circular-neighbour mismatch
 
     g_phase(i) = -angle_diff(theta_i, theta_bar_neighbours) / pi
 
-(dnfr.py): it pulls each node's phase toward the CIRCULAR MEAN of its
-neighbours. With heterogeneous structural frequencies nu_f (the frequency member
-of the TNFR triad EPI / nu_f / theta), the phase dynamics
+(dnfr.py). The auxiliary phase dynamics used here is
 
     dtheta_i/dt = nu_f_i + K * angle_diff(theta_bar_neighbours, theta_i)
 
-is a Kuramoto-type coupled-oscillator system. It undergoes the KURAMOTO
-SYNCHRONIZATION TRANSITION: below a critical coupling the oscillators drift
-incoherently (the order parameter R = |<e^{i theta}>| ~ 0); above it they lock
-into collective rhythm (R -> 1). This is a continuous (second-order) phase
-transition, one of the most empirically-established collective phenomena in
-nature (fireflies, pacemaker cells, neuronal oscillations, Josephson-junction
-arrays, AGENTS.md "phase coupling as Kuramoto sync").
+which is a Kuramoto-type coupled-oscillator model. It is not the nodal EPI
+equation, does not apply a canonical operator word, and does not establish the
+order or universality class of a TNFR phase transition.
 
 Doctrine compliance
 -------------------
-The coupling is the canonical TNFR phase channel: the pull toward the circular
-mean of neighbour phases. The example verifies (machine precision) that the
+The coupling kernel is the same pull toward the circular mean used by TNFR
+phase telemetry. The example verifies numerically that the
 vectorized coupling angle(sum_j A_ij e^{i theta_j}) - theta_i equals the
 canonical neighbour-circular-mean pull (neighbor_phase_mean_list + angle_diff).
-The order parameter R is the canonical Kuramoto order. Nothing is imposed -- the
-synchronization transition is a measured consequence of the canonical phase
-dynamics with heterogeneous nu_f.
+The order parameter R is the Kuramoto order. The time evolution, coupling sweep
+and threshold read-outs are explicitly imposed experimental choices.
 
 NOTE (honest): the canonical coupling uses the ANGLE to the neighbour circular
 mean, not the textbook sin-sum form K/N * sum sin(theta_j - theta_i). The two
@@ -43,37 +35,30 @@ dispersion) is claimed, not the textbook constant.
 
 Three measured results
 ----------------------
-M1 THE SYNCHRONIZATION TRANSITION. Sweeping the coupling K on an all-to-all
+M1 SYNCHRONIZATION CROSSOVER. Sweeping the coupling K on an all-to-all
    network with heterogeneous nu_f, the Kuramoto order parameter R rises from
-   ~0 (incoherent drift) to ~1 (collective lock) -- a continuous second-order
-   transition. (The coupling is verified == the canonical phase channel to
-   machine precision.)
+   ~0 (incoherent drift) toward collective lock on the sampled grid. The finite
+   sweep does not identify a transition order.
 
-M2 THE THRESHOLD IS SET BY THE FREQUENCY DISPERSION. The synchronization
-   threshold K_c (where R first exceeds 1/2) grows LINEARLY with the dispersion
-   sigma of the structural frequencies nu_f: more heterogeneous oscillators need
-   stronger coupling to lock (K_c ~ 0.9 * sigma, measured over 6 seeds). The
-   competition between frequency disorder and coupling order is the heart of the
-   transition.
+M2 FREQUENCY-DISPERSION TREND. The selected crossing statistic K_c (the first
+   sampled K where R exceeds 1/2) grows with the frequency dispersion sigma in
+   this finite six-seed protocol. The 1/2 crossing is a reporting policy, not a
+   canonical critical threshold.
 
 M3 LONG-RANGE PHASE ORDER. On a 2D lattice the phase correlation
    C(r) = <cos(theta_i - theta_{i+r})> decays fast below threshold (short-range
    order, the walker's phases are uncorrelated beyond a few steps) and develops
    long-range order above threshold (C(r) stays high across the lattice). The
-   correlation length grows through the transition -- the onset of collective
-   coherence, the canonical coherence length xi_C.
+   correlation range grows across the sampled crossover. This raw phase
+   correlation is not the canonical xi_C estimator.
 
 Honest scope
 ------------
-The Kuramoto synchronization transition is an empirically-established,
-rigorously-studied collective phenomenon (Kuramoto 1975; Strogatz 2000). The
-canonical TNFR phase channel realizes a Kuramoto-type coupling, so the
-transition is a genuine consequence of the nodal phase dynamics; but the
-coupling uses the circular-mean-angle form, so the textbook mean-field threshold
-constant is NOT claimed -- only the measured transition and the linear
-K_c-vs-sigma structure. This re-expresses a well-known collective transition in
-the canonical phase channel; it is not new mathematics and closes no open
-problem.
+The example establishes finite measurements only for the displayed auxiliary
+model, integration scheme, graph sizes, seeds and parameter grid. Its coupling
+kernel matches one TNFR phase mismatch construction, but this does not make its
+trajectory an execution of the nodal EPI equation. A phase-transition theorem,
+finite-size limit and universality comparison remain open.
 
 References
 ----------
@@ -122,7 +107,7 @@ def order_param(theta):
 def experiment_1_transition():
     """M1: the synchronization transition R(K), with the canonical anchor."""
     print("=" * 74)
-    print("M1: THE SYNCHRONIZATION TRANSITION R(K)")
+    print("M1: SAMPLED SYNCHRONIZATION CROSSOVER R(K)")
     print("=" * 74)
     # anchor: vectorized coupling == canonical phase channel
     G = nx.cycle_graph(8)
@@ -154,17 +139,18 @@ def experiment_1_transition():
         tag = "incoherent" if R < 0.3 else ("critical" if R < 0.7 else "synchronized")
         print(f"  {K:>6.2f} {R:>8.4f} {tag:>14}")
     print()
-    print("  -> R rises from ~0 (incoherent drift) to ~1 (collective lock):")
-    print("     a continuous second-order synchronization transition.")
+    print("  -> R rises across this finite coupling grid.")
+    print("     The sweep does not determine a transition order.")
 
 
 def experiment_2_threshold_vs_dispersion():
     """M2: the threshold K_c grows linearly with the nu_f dispersion sigma."""
     print()
     print("=" * 74)
-    print("M2: THE THRESHOLD IS SET BY THE FREQUENCY DISPERSION (K_c ~ sigma)")
+    print("M2: SAMPLED CROSSING VS FREQUENCY DISPERSION")
     print("=" * 74)
-    print("K_c = the coupling where R first exceeds 1/2 (6-seed average).")
+    print("K_c = first sampled coupling where R exceeds 1/2 (6-seed average).")
+    print("The 1/2 cut and coupling grid are reporting choices.")
     print("More heterogeneous nu_f needs stronger coupling to lock.")
     print()
     N = 200
@@ -189,15 +175,14 @@ def experiment_2_threshold_vs_dispersion():
         Kc = float(np.nanmean(Kcs))
         print(f"  {sigma:>6.1f} {Kc:>8.3f} {Kc / sigma:>10.3f}")
     print()
-    print("  -> K_c grows LINEARLY with sigma (K_c/sigma ~ const): the")
-    print("     competition between frequency disorder and coupling order.")
+    print("  -> the sampled crossing grows with sigma in this protocol.")
 
 
 def experiment_3_long_range_order():
     """M3: phase correlation C(r) develops long-range order above threshold."""
     print()
     print("=" * 74)
-    print("M3: LONG-RANGE PHASE ORDER (correlation length grows)")
+    print("M3: FINITE-TORUS PHASE-CORRELATION RANGE")
     print("=" * 74)
     print("On a 2D lattice, C(r) = <cos(theta_i - theta_{i+r})> decays fast")
     print("below threshold and stays high across the lattice above it.")
@@ -225,15 +210,14 @@ def experiment_3_long_range_order():
     print()
     print("  -> below threshold C(r) decays to ~0 within a few steps (short-")
     print("     range order); above threshold it stays high across the lattice")
-    print("     (long-range order). The coherence length grows -> the canonical")
-    print("     coherence length xi_C diverges through the transition.")
+    print("     (long-range order on this finite torus). This does not establish")
+    print("     divergence and is not the canonical xi_C estimator.")
 
 
 def main():
     print()
     print("  ===============================================================")
-    print("  The Synchronization Transition")
-    print("  Kuramoto Criticality from the Canonical Phase Channel")
+    print("  Auxiliary Circular-Mean Synchronization Sweep")
     print("  ===============================================================")
     print()
     experiment_1_transition()
@@ -241,22 +225,15 @@ def main():
     experiment_3_long_range_order()
     print()
     print("=" * 74)
-    print("WHAT THIS ESTABLISHES")
+    print("FINITE-PROTOCOL RESULT")
     print("=" * 74)
-    print("The phase channel of the nodal equation pulls each node toward the")
-    print("circular mean of its neighbours -- a Kuramoto-type coupling (verified")
-    print("== the canonical phase channel to machine precision). With")
-    print("heterogeneous structural frequencies nu_f it undergoes the KURAMOTO")
-    print("SYNCHRONIZATION TRANSITION: the order parameter R rises from ~0 to ~1")
-    print("(M1), the threshold K_c grows linearly with the nu_f dispersion (M2),")
-    print("and long-range phase order (the coherence length) develops above it")
-    print("(M3). HONEST SCOPE: the Kuramoto transition is an empirically-")
-    print("established collective phenomenon (fireflies, neurons, Josephson")
-    print("arrays); the canonical coupling is a Kuramoto-type circular-mean pull,")
-    print("so the measured transition and the linear K_c-vs-sigma structure are")
-    print("claimed, not the textbook mean-field constant. It re-expresses a known")
-    print("collective transition in the canonical phase channel; not new")
-    print("mathematics, closes no open problem.")
+    print("The auxiliary circular-mean model shows a reproducible synchronization")
+    print("crossover, a sampled crossing that grows with frequency dispersion,")
+    print("and increased phase-correlation range on a finite torus. Its coupling")
+    print("kernel matches the TNFR circular-neighbour mismatch, but its trajectory")
+    print("is not the nodal EPI equation or a canonical operator word. No")
+    print("transition order, divergent correlation length, or universality class")
+    print("is inferred from these finite measurements.")
 
 
 if __name__ == "__main__":

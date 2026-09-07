@@ -138,18 +138,22 @@ def get_operator_cache_stats():  # pragma: no cover
 
 
 class OperatorMetaAuto(type):  # pragma: no cover
-    """Metaclass providing backward-compatible auto-registration.
+    """Metaclass providing opt-out-compatible legacy registration.
 
-    New subclasses of Operator will be added to OPERATORS mapping so
-    legacy tests expecting dynamic behavior continue to pass. Physics
-    semantics remain unchanged – grammar references canonical set only.
+    Subclasses are registered for backward compatibility unless their class
+    body explicitly sets ``__register__ = False``. This guard lets internal
+    probes and application-only subclasses preserve the declared 13-member
+    registry surface.
     """
 
     def __init__(cls, name, bases, attrs):  # noqa: D401
         super().__init__(name, bases, attrs)
-        # Avoid registering the base Operator itself before load
-        if name != "Operator" and hasattr(cls, "name"):
+        # Read the class body rather than the inherited base-class marker:
+        # canonical operators rely on the legacy default, while an explicit
+        # opt-out must never mutate the module-level registry.
+        registration_enabled = attrs.get("__register__", True) is not False
+        if name != "Operator" and registration_enabled and hasattr(cls, "name"):
             try:
                 register_operator(cls)
-            except Exception:  # pragma: no cover - do not break tests
+            except Exception:  # pragma: no cover - do not break imports
                 pass

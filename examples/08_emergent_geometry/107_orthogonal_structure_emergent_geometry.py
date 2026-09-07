@@ -1,68 +1,25 @@
 #!/usr/bin/env python3
 """
-Example 107 — The Orthogonal Structure of the Emergent Geometry
-==============================================================
+Example 107 — Graph Hodge Orthogonality and a Winding-Ring Family
+================================================================
 
-Closes the emergent-geometry arc by measuring how its pieces fit together
-ORTHOGONALLY. Two exact, cache-free decompositions:
+The first experiment verifies one standard incidence-matrix fact: an EPI
+edge gradient is orthogonal to a chosen cycle flow.  The cycle flow is created
+for the calculation; it is not extracted from the auxiliary symplectic
+substrate.  Consequently this does not decompose the engine's nodal dynamics
+into dissipative and Hamiltonian parts, and ``B.T @ cycle = 0`` is a graph
+divergence identity rather than Liouville's phase-volume theorem.
 
-  (A) Helmholtz–Hodge decomposition of the nodal flow: the two emergent
-      towers — the dissipative TRANSPORT tower (diffusion, Example 99) and
-      the conservative SYMPLECTIC tower (Hamiltonian, Example 98) — are the
-      two ORTHOGONAL Hodge components of an edge flow on the graph. The
-      diffusion current is the gradient (irrotational) part; a circulation
-      is the cycle (solenoidal) part; they are orthogonal.
+The second experiment examines a specific analytic family of winding rings.
+For these uniformly spaced phases, the implemented phase-gradient magnitude
+tracks winding while the extracted curvature and phase current vanish.  This
+shows that this family lies in the kernel of those two read-outs.  It does not
+prove that tetrad summaries are independent coordinates or that winding and
+polarization decouple on arbitrary graphs and phase fields.
 
-  (C) Winding–polarization decoupling: the integer topological charge (the
-      winding number, Example "emergent particles") and the continuous
-      polarization vector (Example 106) live in DIFFERENT tetrad channels —
-      the winding in the phase gradient |∇φ|, the polarization in the
-      curvature/current K_φ, J_φ — and are structurally decoupled.
-
-Both are anchored to empirically-demonstrated classical structure
-(Helmholtz 1858 / Hodge theory; optical vortices and their gradient phase
-circulation) and are TNFR-native (the tetrad's own components).
-
-Physics
--------
-(A) On a graph, an edge flow decomposes (discrete Helmholtz–Hodge theorem)
-into orthogonal subspaces: the GRADIENT/cut space (irrotational, curl-free)
-and the CYCLE space (solenoidal, divergence-free). The structural diffusion
-current J_ij = EPI_i − EPI_j = grad(EPI) (Example 99) is a PURE gradient, so
-it lives entirely in the gradient subspace (circulation around every cycle
-= 0, telescoping). A circulation (cycle flow) is divergence-free (the
-discrete Liouville statement). The two are orthogonal. So the nodal flow's
-dissipative part (transport) and conservative part (symplectic rotation)
-are the two orthogonal Helmholtz–Hodge components — one object unifying the
-session's two towers.
-
-(C) A uniform winding φ_i = 2π·W·i/n has a CONSTANT phase gradient
-|∇φ| = 2π·W/n (linear in the winding W) and therefore ZERO phase curvature
-and current (K_φ = J_φ = 0: a constant gradient has no second-order
-structure). So the topological charge lives entirely in the gradient
-channel and leaves the polarization sector ζ^A = K_φ + i·J_φ empty. The
-tetrad's gradient (1st order) and curvature (2nd order) channels are
-genuinely independent (cf. the minimal-degrees-of-freedom argument), so a
-pure vortex and the polarization vector are decoupled.
-
-Honest scope
-------------
-- Both decompositions are EXACT (machine precision) and cache-free (A is
-  pure graph linear algebra; C uses analytic winding rings).
-- (A) restates and UNIFIES known facts (diffusion = gradient current,
-  Example 99; symplectic flow divergence-free = Liouville, Example 98) as
-  the two Hodge components — it is an organizing identity, not a new
-  theorem.
-- (C) is an honest DECOUPLING (a clean negative on the naive "spin–orbit
-  coupling" intuition): a uniform vortex carries its charge in |∇φ| and
-  leaves the polarization vector at the pole. This is faithful to the
-  tetrad's channel independence, not a new physical coupling.
-- A third probe (does the nodal flow TRANSPORT the polarization texture?)
-  was measured and found near-trivial/inconclusive — the geometric
-  polarization sector |ζ^A| collapses under phase synchronization (because
-  K_φ → 0 when phases align, which is almost definitional), with no clean
-  single-pole rotation because both polarization sectors co-vary through
-  the multi-channel ΔNFR. It is NOT canonized here.
+Both results are finite checks of classical graph/circular-field identities.
+They neither establish completeness of the tetrad nor connect the auxiliary
+harmonic substrate flow to an engine trajectory.
 
 References
 ----------
@@ -90,12 +47,12 @@ from tnfr.physics.extended import compute_phase_current
 
 
 # ============================================================================
-# EXPERIMENT 1 (A): Helmholtz–Hodge decomposition of the nodal flow
+# EXPERIMENT 1: incidence-matrix gradient/cycle orthogonality
 # ============================================================================
 def experiment_1_hodge():
-    """The two towers are the two orthogonal Hodge components of the flow."""
+    """Compare one constructed incidence gradient with one cycle vector."""
     print("=" * 72)
-    print("EXPERIMENT 1: Helmholtz–Hodge Decomposition of the Nodal Flow")
+    print("EXPERIMENT 1: Gradient/Cycle Orthogonality on One Graph")
     print("=" * 72)
     print()
     print("On a graph an edge flow splits (discrete Helmholtz–Hodge) into")
@@ -138,7 +95,9 @@ def experiment_1_hodge():
     print("    → J_diff is IRROTATIONAL (curl-free): the gradient/cut")
     print("      subspace. Circulation around every cycle = 0 (telescoping).")
 
-    cycles = nx.minimum_cycle_basis(G)
+    # ``cycle_basis`` returns each simple cycle in cyclic node order, which is
+    # required by the explicit circulation construction below.
+    cycles = nx.cycle_basis(G)
     max_circ = 0.0
     for cyc in cycles:
         k = len(cyc)
@@ -162,18 +121,17 @@ def experiment_1_hodge():
             e = edge_idx[key]
             rot[e] = 1.0 if edges[e] == (a, b) else -1.0
     div = B.T @ rot
-    print("  SYMPLECTIC tower:  a circulation (cycle flow)")
+    print("  CYCLE subspace:  a constructed circulation")
     print(f"    ||divergence|| = {np.linalg.norm(div):.1e}  → SOLENOIDAL")
-    print("      (divergence-free = the discrete Liouville statement).")
+    print("      (a graph-incidence identity, distinct from Liouville's theorem).")
     print()
 
     ortho = float(j_diff @ rot)
     print(f"  HODGE ORTHOGONALITY:  ⟨J_diff, circulation⟩ = {ortho:.1e}")
     print()
-    print("VERDICT: the dissipative TRANSPORT tower (gradient/irrotational)")
-    print("and the conservative SYMPLECTIC tower (cycle/solenoidal) are the")
-    print("two ORTHOGONAL Helmholtz–Hodge components of the nodal flow — one")
-    print("object unifying the session's two towers (Helmholtz 1858 / Hodge).")
+    print("VERDICT: this EPI gradient is orthogonal to the constructed cycle")
+    print("flow, as required by incidence-matrix Hodge theory. No engine")
+    print("Hamiltonian component or substrate flow is identified here.")
     print()
 
 
@@ -183,7 +141,7 @@ def experiment_1_hodge():
 def experiment_2_winding_decoupling():
     """The topological charge and the polarization live in different channels."""
     print("=" * 72)
-    print("EXPERIMENT 2: Winding–Polarization Decoupling")
+    print("EXPERIMENT 2: Uniform Winding-Ring Read-outs")
     print("=" * 72)
     print()
     print("A uniform winding φ_i = 2π·W·i/n has a CONSTANT gradient")
@@ -215,43 +173,33 @@ def experiment_2_winding_decoupling():
     gs = np.array([r[1] for r in rows], float)
     r = float(np.corrcoef(ws, gs)[0, 1])
     print()
-    print(f"  r(W, mean|∇φ|) = {r:.4f}  → the winding lives in the GRADIENT.")
+    print(f"  r(W, mean|∇φ|) = {r:.4f}  → winding is visible in this read-out.")
     print("  K_φ and J_φ (the polarization sector ζ^A = K_φ + i·J_φ) vanish.")
     print()
-    print("VERDICT: the topological winding number lives in the phase")
-    print("gradient |∇φ| (1st-order channel); the polarization vector lives")
-    print("in K_φ, J_φ (2nd-order channel). A pure vortex carries its charge")
-    print("in the gradient and leaves the polarization at the pole — the two")
-    print("are STRUCTURALLY DECOUPLED (different, independent tetrad channels).")
-    print("The naive optical 'spin–orbit coupling' is NOT automatic in TNFR.")
+    print("VERDICT: in this uniform winding-ring family, winding is visible in")
+    print("|∇φ| while K_φ and J_φ vanish. This kernel example does not prove")
+    print("global independence or decoupling of the diagnostic fields.")
     print()
 
 
 def main():
     print()
-    print("  TNFR Example 107: The Orthogonal Structure of the Emergent Geometry")
-    print("  Helmholtz–Hodge of the flow + winding–polarization decoupling")
+    print("  TNFR Example 107: Graph Hodge Orthogonality and Winding Read-outs")
+    print("  Incidence-matrix identity + a finite uniform-ring family")
     print("  ===================================================================")
     print()
     experiment_1_hodge()
     experiment_2_winding_decoupling()
     print("=" * 72)
-    print("WHAT THIS ESTABLISHES")
+    print("SCOPED FINDINGS")
     print("=" * 72)
     print()
-    print("The emergent geometry has a clean ORTHOGONAL structure, measured")
-    print("exactly. (1) The nodal flow's two towers — dissipative transport")
-    print("(diffusion) and conservative symplectic (Hamiltonian rotation) —")
-    print("are the two orthogonal Helmholtz–Hodge components of an edge flow:")
-    print("the diffusion current is the gradient (irrotational) part, a")
-    print("circulation is the cycle (solenoidal) part, orthogonal to machine")
-    print("precision. (2) The topological winding number and the polarization")
-    print("vector occupy DIFFERENT tetrad channels (gradient |∇φ| vs")
-    print("curvature/current K_φ, J_φ) and are structurally decoupled. Both")
-    print("are exact, cache-free, TNFR-native, and anchored to classical")
-    print("structure (Helmholtz–Hodge; optical vortices). This closes the")
-    print("emergent-geometry arc: the flat tower is complete and its pieces")
-    print("fit together orthogonally — characterization, not new physics.")
+    print("The sampled EPI gradient and constructed cycle circulation are")
+    print("orthogonal to numerical precision. Uniform winding rings place their")
+    print("winding signal in |grad phi| while the implemented K_phi and J_phi")
+    print("read-outs vanish. These facts have the finite and algebraic scopes")
+    print("stated above; they do not establish a nodal-flow decomposition,")
+    print("tetrad completeness, or a general substrate decoupling theorem.")
     print()
 
 

@@ -1,73 +1,24 @@
-r"""TNFR Conservation-Gauge Unification — Grammar → Symmetry → Conservation → Gauge.
+r"""Finite-snapshot conservation/gauge compatibility diagnostics.
 
-This module demonstrates the central theoretical result of TNFR physics:
+The module aggregates algebraic action-energy consistency, covariance of the
+auxiliary local pure-gauge coordinates, a separate global oscillator-rotation
+check in the ambient substrate, and selected graph-field measurements. These
+checks are complementary diagnostics. They do not derive
+the nodal equation from the auxiliary action, prove energy conservation along
+engine trajectories, or validate grammar U1-U6.
 
-    Grammar rules (U1-U6) → Continuous symmetries → Conservation laws → Gauge structure
+``compute_grammar_symmetry_mapping`` retains its historical public name and
+six-entry layout. Each entry now states whether the available evidence can
+actually assess the rule. A graph snapshot can measure current edge-phase
+compatibility for U3. U1, U2, U4, and U5 require operator history or hierarchy
+context. U3 also requires explicit finite phase data on every current edge.
+U6 requires a reference structural-potential field to measure drift.
 
-All four arise as **different projections** of a single underlying principle:
-the stationarity of the TNFR action functional S_TNFR under grammar constraints.
+``is_unified`` is retained for compatibility as an alias for a finite
+aggregate-diagnostic pass. It is never a universal unification theorem or a
+grammar-validity certificate.
 
-MAIN THEOREM (Conservation-Gauge Unification)
-==============================================
-The TNFR action functional:
-
-    S_TNFR = Σ_n Δt · Σ_i [½(J_φ² + J_ΔNFR²) − ½(Φ_s² + |∇φ|² + K_φ²)]
-
-encodes the nodal equation ∂EPI/∂t = νf · ΔNFR(t) as its Euler-Lagrange
-equation.  Under grammar-compliant evolution (U1-U6), S_TNFR possesses:
-
-1. **Time-translation symmetry** → Energy conservation (H = T + V = const)
-   - Via Noether's theorem: dH/dt ≤ 0 (equality for conservative grammar)
-   - H_variational ≡ E_conservation (exact identity, verified numerically)
-
-2. **Internal U(1) symmetry** → Gauge structure on Ψ = K_φ + i·J_φ
-   - Ψ → e^{iα}Ψ leaves the action invariant
-   - Gauge-invariant observables: ℰ, |Ψ|², C(t), |𝒯|², |𝒳|²
-   - Gauge connection A_ij, curvature F_C, covariant derivative D_ij
-
-3. **Grammar symmetry** → Structural continuity equation
-   - ∂ρ/∂t + div(J) = S_grammar where S_grammar → 0 under U1-U6
-   - Ward identities: ⟨S_k⟩ → 0 for grammar-compliant operators
-
-4. **Symplectic structure** → Phase space geometry
-   - ω = Σ_i dK_φ(i) ∧ dJ_φ(i) + dΦ_s(i) ∧ dJ_ΔNFR(i)
-   - Two conjugate pairs: geometric (K_φ, J_φ) and potential (Φ_s, J_ΔNFR)
-   - Canonical operators preserve ω (Liouville theorem analogue)
-
-The **unification** is that these four are not independent results but
-four facets of one mathematical structure:
-
-    S_TNFR
-    ├── δS/δΦ = 0  →  Euler-Lagrange = Nodal equation
-    ├── ∂S/∂t = 0   →  Noether → Energy conservation
-    ├── S[e^{iα}Ψ] = S[Ψ]  →  U(1) gauge structure
-    └── U1-U6 ⊂ Aut(S)  →  Structural continuity (ρ, J)
-
-PHYSICAL SIGNIFICANCE
-=====================
-Grammar rules are not arbitrary constraints but **symmetries of the action**.
-Each grammar rule protects a specific conservation law:
-
-    U1 → Boundary conditions → Energy finiteness (action endpoints)
-    U2 → Convergence → Lyapunov stability (dH/dt ≤ 0)
-    U3 → Phase coupling → Gauge connection regularity (A_ij smooth)
-    U4 → Bifurcation ctrl → Topological charge quantisation
-    U5 → Multi-scale → Hierarchical action factorisation
-    U6 → Confinement → Potential energy boundedness (V < ½φ²·N)
-
-SPECTRAL CONSEQUENCE
-=====================
-The gauge-conservation unification implies that the TNFR operator
-H^(k)(σ) = L_k + V_σ has spectral properties constrained by both:
-
-- **Conservation**: Eigenvalues satisfy sum rules from E = const
-- **Gauge**: U(1) symmetric spectrum at σ = 1/2 (self-dual point)
-- **Together**: Critical parameter σ*(k) → 1/2 as k → ∞
-
-This provides the structural basis for the convergence proved in
-convergence_proof.py.
-
-STATUS: CANONICAL — Derived from the TNFR action functional.
+STATUS: CANONICAL DIAGNOSTIC INTERFACE — scoped finite observations.
 
 References
 ----------
@@ -83,18 +34,13 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from numbers import Real
 from typing import Any
 
 from ..mathematics.unified_numerical import np
 
-try:
-    import networkx as nx
-except ImportError:  # pragma: no cover
-    nx = None
-
-from ..alias import get_attr
-from ..constants.aliases import ALIAS_THETA
-from ..constants.canonical import DELTA_PHI_MAX, PI, U6_STRUCTURAL_POTENTIAL_LIMIT
+from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
+from ..constants.canonical import DELTA_PHI_MAX, U6_STRUCTURAL_POTENTIAL_LIMIT
 
 # Canonical fields
 from .canonical import (
@@ -104,7 +50,11 @@ from .canonical import (
 )
 
 # Conservation layer
-from .conservation import compute_energy_functional, compute_noether_charge
+from .conservation import (
+    ConservationSnapshot,
+    compute_energy_functional,
+    compute_noether_charge,
+)
 from .extended import compute_dnfr_flux, compute_phase_current
 
 # Gauge layer
@@ -112,7 +62,6 @@ from .gauge import (
     GaugeInvarianceResult,
     capture_gauge_snapshot,
     compute_covariant_derivative_magnitude,
-    compute_gauge_curvature,
     compute_yang_mills_action,
     verify_gauge_invariance,
 )
@@ -146,6 +95,28 @@ __all__ = [
     "run_conservation_gauge_unification",
 ]
 
+
+def _as_finite_real(value: Any) -> float | None:
+    """Return a finite real scalar, rejecting booleans and overflow."""
+    if isinstance(value, bool) or not isinstance(value, Real):
+        return None
+    try:
+        scalar = float(value)
+    except (OverflowError, TypeError, ValueError):
+        return None
+    return scalar if math.isfinite(scalar) else None
+
+
+def _finite_node_field_issue(
+    G: Any, aliases: tuple[str, ...], field_name: str
+) -> str:
+    """Return why a required per-node scalar field is unavailable."""
+    for node, data in G.nodes(data=True):
+        alias = next((key for key in aliases if key in data), None)
+        if alias is None or _as_finite_real(data[alias]) is None:
+            return f"finite {field_name} is required at node {node!r}"
+    return ""
+
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
@@ -153,25 +124,35 @@ __all__ = [
 
 @dataclass(frozen=True)
 class GrammarSymmetryMapping:
-    """Maps each grammar rule U1-U6 to its symmetry type and conservation law.
+    """Historical rule/correspondence row with explicit applicability.
 
-    Each grammar rule protects a continuous symmetry of S_TNFR.
+    ``is_satisfied`` is retained for compatibility. It is meaningful only
+    when ``is_applicable`` is true; unassessed rows set it to false and expose
+    ``assessment_status='not_assessed'``.
 
     Attributes
     ----------
     rule : str
         Grammar rule identifier (e.g. 'U1', 'U2', ..., 'U6').
     symmetry_type : str
-        type of symmetry protected ('boundary', 'stability', 'gauge',
-        'topological', 'hierarchical', 'confinement').
+        Historical correspondence label ('boundary', 'stability', 'gauge',
+        'topological', 'hierarchical', or 'confinement').
     conservation_law : str
-        The conservation law that the symmetry implies.
+        Historical correspondence, now phrased without implying a theorem.
     variational_role : str
         Role in the variational formulation.
     is_satisfied : bool
-        Whether the rule is satisfied for the current network state.
+        Result of the scoped diagnostic when applicable; false otherwise.
     diagnostic_value : float
         Quantitative measure of (non-)satisfaction. 0 = perfect.
+    is_applicable : bool
+        Whether the supplied snapshot/context can assess this rule.
+    assessment_status : str
+        ``'pass'``, ``'fail'``, or ``'not_assessed'``.
+    assessment_scope : str
+        Evidence boundary for the row.
+    required_evidence : str
+        Missing evidence needed when the row is not assessed.
     """
 
     rule: str
@@ -180,15 +161,19 @@ class GrammarSymmetryMapping:
     variational_role: str
     is_satisfied: bool
     diagnostic_value: float
+    is_applicable: bool = True
+    assessment_status: str = "pass"
+    assessment_scope: str = "current_graph_snapshot"
+    required_evidence: str = ""
 
 
 @dataclass(frozen=True)
 class ActionEnergyConsistency:
-    """Verifies H_variational ≡ E_conservation (exact identity).
+    """Verify the algebraic equality of two same-snapshot energy read-outs.
 
-    The variational Hamiltonian H = Σ_i [T(i) + V(i)] must equal the
-    conservation energy functional E = ½Σ_i ℰ(i), since both derive
-    from the same action S_TNFR.
+    Both implementations sum the same five squared fields. Their agreement is
+    an implementation identity, not evidence that the engine follows the
+    auxiliary action or conserves this energy over time.
 
     Attributes
     ----------
@@ -219,14 +204,10 @@ class ActionEnergyConsistency:
 
 @dataclass(frozen=True)
 class NoetherGaugeDecomposition:
-    """Decomposes conservation into external (Noether) and internal (gauge) sectors.
+    """Decompose one snapshot into structural-charge and U(1) field read-outs.
 
-    The total symmetry group of S_TNFR factorises:
-
-        Aut(S_TNFR) ⊃ Translation_t × U(1)_Ψ
-
-    - Translation → Noether charge Q (energy-like)
-    - U(1)_Ψ → gauge-invariant observables
+    The historical Noether/gauge names identify the intended correspondence.
+    This object does not prove time-translation symmetry or conservation of Q.
 
     Attributes
     ----------
@@ -237,17 +218,21 @@ class NoetherGaugeDecomposition:
     gauge_invariant_energy : float
         Same as energy_functional, emphasising gauge invariance.
     mean_psi_magnitude : float
-        ⟨|Ψ|⟩ (gauge-invariant, internal field strength).
+        Mean magnitude of the diagnostic complex coordinate.
     mean_gauge_curvature : float
-        ⟨|F_C|⟩ (gauge-invariant, field strength on cycles).
+        Legacy name for the mean absolute cycle-closure residual. The bundled
+        connection is pure gauge, so this is numerical closure error rather
+        than an independent curvature field.
     yang_mills_action : float
-        S_YM = (1/2g²) Σ F² (gauge sector action).
+        Legacy name for the squared cycle-closure residual penalty returned by
+        :func:`compute_yang_mills_action`.
     matter_action : float
-        S_matter = Σ |D Ψ|² (matter sector from covariant derivative).
+        Legacy name for the finite covariant-difference energy ``Σ |D Ψ|²``.
     noether_gauge_ratio : float
-        |Q| / E — measures how much charge is vs energy.
+        Historical snapshot coordinate ``|Q| / E``; no sector-separation
+        theorem follows from it.
     decomposition_quality : float
-        How cleanly the Noether and gauge sectors separate. 1 = perfect.
+        Legacy name for ``1/(1 + std(energy_density)/mean(energy_density))``.
     """
 
     noether_charge: float
@@ -260,27 +245,49 @@ class NoetherGaugeDecomposition:
     noether_gauge_ratio: float
     decomposition_quality: float
 
+    @property
+    def mean_cycle_closure_residual(self) -> float:
+        """Accurate alias for ``mean_gauge_curvature``."""
+        return self.mean_gauge_curvature
+
+    @property
+    def squared_cycle_closure_penalty(self) -> float:
+        """Accurate alias for the legacy ``yang_mills_action`` field."""
+        return self.yang_mills_action
+
+    @property
+    def covariant_difference_energy(self) -> float:
+        """Accurate alias for the legacy ``matter_action`` field."""
+        return self.matter_action
+
+    @property
+    def energy_density_uniformity_score(self) -> float:
+        """Accurate alias for the legacy ``decomposition_quality`` field."""
+        return self.decomposition_quality
+
 
 @dataclass(frozen=True)
 class GaugeConservationCoupling:
-    """Quantifies how gauge structure and conservation laws couple.
+    """Quantify shared-field and U(1)-rotation diagnostics.
 
     The gauge sector (Ψ = K_φ + iJ_φ) and the conservation sector
     (ρ = Φ_s + K_φ) share the K_φ field.  This coupling means:
 
-    - Gauge transformations rotate K_φ ↔ J_φ
-    - This changes ρ (conservation charge is NOT gauge-invariant)
-    - But E (total energy) IS invariant
-    - The coupling is mediated by the geometric sector
+    A constant rotation of the geometric coordinate changes the historical
+    structural-charge snapshot while preserving its quadratic norm. A separate
+    seeded check tests the node-dependent pure-gauge coordinate covariance.
+    Neither calculation is a temporal conservation or Ward-identity test.
 
     Attributes
     ----------
     shared_field_fraction : float
-        Fraction of ρ that comes from K_φ (the shared field).
+        Legacy name for the mean ratio ``|K_φ|/|ρ|`` where ``|ρ|>0``. The
+        value can exceed one when ``Φ_s`` and ``K_φ`` cancel.
     gauge_charge_sensitivity : float
-        |ΔQ| under unit gauge rotation (measures coupling strength).
+        ``|ΔQ|`` under one constant coordinate rotation.
     energy_gauge_invariance : float
-        |ΔE| under gauge rotation (should be ~0 = gauge-invariant).
+        Maximum energy-density deviation in the seeded local pure-gauge
+        coordinate-covariance check.
     geometric_sector_energy : float
         E_geo = ½Σ_i |Ψ(i)|² (geometric sector contribution to H).
     potential_sector_energy : float
@@ -288,7 +295,8 @@ class GaugeConservationCoupling:
     sector_coupling_parameter : float
         κ = E_geo / (E_geo + E_pot) — normalised geometric sector weight.
     ward_gauge_consistency : float
-        Quality measure: Ward identity residuals ↔ gauge invariance. 1 = consistent.
+        Legacy name for the gauge-invariance pass score. It contains no Ward
+        residual and does not couple gauge invariance to conservation.
     """
 
     shared_field_fraction: float
@@ -299,34 +307,54 @@ class GaugeConservationCoupling:
     sector_coupling_parameter: float
     ward_gauge_consistency: float
 
+    @property
+    def shared_field_ratio(self) -> float:
+        """Accurate alias for the legacy ``shared_field_fraction`` field."""
+        return self.shared_field_fraction
+
+    @property
+    def local_pure_gauge_invariance_score(self) -> float:
+        """Accurate alias for the legacy ``ward_gauge_consistency`` field."""
+        return self.ward_gauge_consistency
+
 
 @dataclass(frozen=True)
 class SymplecticGaugeCompatibility:
-    """Verifies that the symplectic form ω is compatible with gauge structure.
+    """Check a constant oscillator rotation in the auxiliary substrate.
 
     The symplectic 2-form:
         ω = Σ_i [dK_φ(i) ∧ dJ_φ(i) + dΦ_s(i) ∧ dJ_ΔNFR(i)]
 
-    should be gauge-covariant: under Ψ → e^{iα}Ψ, the geometric sector
-    (K_φ, J_φ) rotates but ω_geo = Σ dK_φ ∧ dJ_φ is invariant because
-    rotation preserves the area form.
+    Under one constant angle, the geometric pair rotates and
+    ``ω_geo = Σ dK_φ ∧ dJ_φ`` is invariant. This is a global oscillator
+    symmetry of the declared harmonic model. It is distinct from, and does not
+    assess, the node-dependent pure-gauge rephasing used by ``gauge.py``.
 
     Attributes
     ----------
     geometric_volume : float
-        Phase space volume Ω_geo = Σ_i |K_φ(i) · J_φ(i)|.
+        Legacy snapshot-product statistic ``Σ_i |K_φ(i) J_φ(i)|``; not a
+        symplectic volume.
     potential_volume : float
-        Phase space volume Ω_pot = Σ_i |Φ_s(i) · J_ΔNFR(i)|.
+        Legacy snapshot-product statistic ``Σ_i |Φ_s(i) J_ΔNFR(i)|``.
     total_volume : float
-        Ω = Ω_geo + Ω_pot.
+        Sum of the two legacy snapshot-product statistics.
     geometric_poisson : float
-        Estimated {K_φ, J_φ} Poisson bracket.
+        Legacy normalized snapshot covariance; not a Poisson bracket.
     potential_poisson : float
-        Estimated {Φ_s, J_ΔNFR} Poisson bracket.
+        Legacy normalized snapshot covariance; not a Poisson bracket.
     gauge_volume_invariance : float
-        |ΔΩ_geo| under gauge rotation (should be ~0).
+        Legacy field name for the symplectic pullback residual of the constant
+        two-coordinate rotation.
     is_compatible : bool
-        True if symplectic form is gauge-compatible (|ΔΩ| < tol).
+        True if that global rotation preserves the auxiliary two-form.
+    snapshot_product_change : float
+        Relative change of ``Σ K_φ J_φ``. This coordinate statistic is
+        allowed to change and is not used for ``is_compatible``.
+    transformation_scope : str
+        Explicitly identifies the tested constant global rotation.
+    local_gauge_assessed : bool
+        False; local pure-gauge covariance is tested elsewhere.
     """
 
     geometric_volume: float
@@ -336,34 +364,66 @@ class SymplecticGaugeCompatibility:
     potential_poisson: float
     gauge_volume_invariance: float
     is_compatible: bool
+    snapshot_product_change: float = 0.0
+    transformation_scope: str = "global_constant_oscillator_rotation"
+    local_gauge_assessed: bool = False
+
+    @property
+    def geometric_snapshot_product(self) -> float:
+        """Accurate alias for the legacy ``geometric_volume`` field."""
+        return self.geometric_volume
+
+    @property
+    def potential_snapshot_product(self) -> float:
+        """Accurate alias for the legacy ``potential_volume`` field."""
+        return self.potential_volume
+
+    @property
+    def geometric_normalized_covariance(self) -> float:
+        """Accurate alias for the legacy ``geometric_poisson`` field."""
+        return self.geometric_poisson
+
+    @property
+    def potential_normalized_covariance(self) -> float:
+        """Accurate alias for the legacy ``potential_poisson`` field."""
+        return self.potential_poisson
 
 
 @dataclass(frozen=True)
 class ConservationGaugeUnification:
-    """Complete unification result: Grammar → Symmetry → Conservation → Gauge.
+    """Aggregate finite-snapshot conservation/gauge diagnostic result.
 
     This is the primary output of ``run_conservation_gauge_unification()``.
 
     Attributes
     ----------
     grammar_symmetry : list[GrammarSymmetryMapping]
-        Grammar rules mapped to symmetries and conservation laws.
+        Six historical correspondence rows with applicability metadata.
     action_consistency : ActionEnergyConsistency
         H_variational = E_conservation verification.
     noether_gauge : NoetherGaugeDecomposition
-        Noether (external) + gauge (internal) sector decomposition.
+        Historical charge and pure-gauge snapshot read-outs.
     gauge_conservation : GaugeConservationCoupling
-        Coupling between gauge and conservation sectors.
+        Shared-field and coordinate-rotation diagnostics.
     symplectic_gauge : SymplecticGaugeCompatibility
-        Symplectic form and gauge structure compatibility.
+        Global oscillator-rotation check; local gauge is not assessed here.
     gauge_invariance : GaugeInvarianceResult
         Full gauge invariance verification.
     is_unified : bool
-        True if all consistency checks pass.
+        Legacy alias for ``aggregate_diagnostic_passed``. It is not a
+        universal proof or grammar certificate.
     unification_quality : float
-        Aggregate quality metric [0, 1]. 1 = perfect unification.
+        Aggregate finite-diagnostic score in [0, 1].
     summary : dict[str, Any]
         Human-readable summary of key results.
+    aggregate_diagnostic_passed : bool
+        Whether all applicable finite checks passed the aggregate policy.
+    grammar_validated : bool
+        Always false: this pipeline does not validate an operator word.
+    assessed_grammar_rules, unassessed_grammar_rules : tuple[str, ...]
+        Explicit coverage of the six historical mapping rows.
+    diagnostic_scope : str
+        Scope of the aggregate result.
     """
 
     grammar_symmetry: list[GrammarSymmetryMapping]
@@ -375,147 +435,281 @@ class ConservationGaugeUnification:
     is_unified: bool
     unification_quality: float
     summary: dict[str, Any]
+    aggregate_diagnostic_passed: bool = False
+    grammar_validated: bool = False
+    assessed_grammar_rules: tuple[str, ...] = ()
+    unassessed_grammar_rules: tuple[str, ...] = ()
+    diagnostic_scope: str = "finite_snapshot_aggregate"
 
 
 # ---------------------------------------------------------------------------
-# 1. Grammar → Symmetry mapping
+# 1. Scoped grammar/correspondence mapping
 # ---------------------------------------------------------------------------
 
 
-def compute_grammar_symmetry_mapping(G: Any) -> list[GrammarSymmetryMapping]:
-    """Map grammar rules U1-U6 to their symmetry types and conservation laws.
+def compute_grammar_symmetry_mapping(
+    G: Any,
+    *,
+    reference_graph: Any | None = None,
+    reference_snapshot: ConservationSnapshot | None = None,
+) -> list[GrammarSymmetryMapping]:
+    """Return six legacy correspondence rows with scoped rule assessments.
 
-    Each grammar rule is interpreted as protecting a continuous symmetry
-    of S_TNFR, which via Noether's theorem implies a conservation law.
+    A current graph snapshot with explicit finite edge phases can assess U3
+    edge-phase compatibility. It
+    cannot assess U1 sequence boundaries, U2 debt/history, U4 trigger/handler
+    context, or U5 nesting. U6 is assessed only when ``reference_graph`` or
+    ``reference_snapshot`` supplies the earlier structural potential and the
+    required current/reference fields are explicit and finite.
+
+    This function is a diagnostic mapper, not a grammar validator. Use the
+    grammar module with an operator word/history for grammar validation.
 
     Parameters
     ----------
     G : TNFRGraph
         Graph with canonical TNFR attributes.
+    reference_graph : TNFRGraph, optional
+        Earlier graph state used only to measure mean absolute U6 potential
+        drift. Its node set must match ``G``.
+    reference_snapshot : ConservationSnapshot, optional
+        Earlier captured fields used instead of ``reference_graph`` for U6.
+        Supplying both reference forms raises ``ValueError``.
 
     Returns
     -------
     list[GrammarSymmetryMapping]
         One entry per grammar rule.
     """
-    # Compute field diagnostics
-    phi_s = compute_structural_potential(G)
-    grad_phi = compute_phase_gradient(G)
-    k_phi = compute_phase_curvature(G)
+    if reference_graph is not None and reference_snapshot is not None:
+        raise ValueError("provide at most one U6 reference source")
 
-    phi_s_vals = np.array(list(phi_s.values()))
-    grad_vals = np.array(list(grad_phi.values()))
-    k_phi_vals = np.array(list(k_phi.values()))
+    # Phase differences for U3. A missing, non-real, or non-finite endpoint
+    # phase makes this snapshot diagnostic unavailable rather than compatible.
+    edge_list = list(G.edges())
+    phase_nodes = {node for edge in edge_list for node in edge[:2]}
+    phase_values: dict[Any, float] = {}
+    u3_issue = ""
+    for node in phase_nodes:
+        data = G.nodes[node]
+        present_alias = next((key for key in ALIAS_THETA if key in data), None)
+        if present_alias is None:
+            u3_issue = f"finite phase is required at edge node {node!r}"
+            break
+        phase = _as_finite_real(data[present_alias])
+        if phase is None:
+            u3_issue = f"finite phase is required at edge node {node!r}"
+            break
+        phase_values[node] = phase
 
-    # Energy functional for U2 assessment
-    E = compute_energy_functional(G)
+    delta_phi_raw = G.graph.get("delta_phi_max", DELTA_PHI_MAX)
+    parsed_delta_phi = _as_finite_real(delta_phi_raw)
+    if not u3_issue:
+        if parsed_delta_phi is None or parsed_delta_phi < 0.0:
+            u3_issue = "delta_phi_max must be a finite nonnegative real number"
+    delta_phi_max = (
+        parsed_delta_phi if not u3_issue else float(DELTA_PHI_MAX)
+    )
 
-    # Phase differences for U3
     max_phase_diff = 0.0
-    for u, v in G.edges():
-        phi_u = get_attr(G.nodes[u], ALIAS_THETA, 0.0)
-        phi_v = get_attr(G.nodes[v], ALIAS_THETA, 0.0)
-        diff = abs(phi_u - phi_v)
-        diff = min(diff, 2 * math.pi - diff)
+    for u, v in edge_list if not u3_issue else ():
+        phi_u = phase_values[u]
+        phi_v = phase_values[v]
+        diff = abs(
+            (phi_u - phi_v + math.pi) % (2 * math.pi) - math.pi
+        )
         max_phase_diff = max(max_phase_diff, diff)
 
-    delta_phi_max = G.graph.get("delta_phi_max", DELTA_PHI_MAX)
+    # U6 requires a reference field because the policy concerns drift, not
+    # the magnitude of Phi_s in one state.
+    current_phi_s: dict[Any, float] | None = None
+    reference_phi_s: dict[Any, float] | None = None
+    reference_kind = ""
+    u6_issue = ""
+    if reference_snapshot is not None or reference_graph is not None:
+        u6_issue = _finite_node_field_issue(G, ALIAS_DNFR, "delta_nfr")
+    if reference_snapshot is not None and not u6_issue:
+        candidate_reference = reference_snapshot.phi_s
+        if not candidate_reference or any(
+            _as_finite_real(value) is None
+            for value in candidate_reference.values()
+        ):
+            u6_issue = "reference snapshot requires a nonempty finite phi_s field"
+        else:
+            current_phi_s = compute_structural_potential(G)
+            reference_phi_s = candidate_reference
+            reference_kind = "conservation_snapshot"
+    elif reference_graph is not None and not u6_issue:
+        u6_issue = _finite_node_field_issue(
+            reference_graph, ALIAS_DNFR, "reference delta_nfr"
+        )
+        if not u6_issue:
+            current_phi_s = compute_structural_potential(G)
+            reference_phi_s = compute_structural_potential(reference_graph)
+            reference_kind = "reference_graph"
 
-    # Gauge curvature for U4
-    curvature = compute_gauge_curvature(G)
-    curv_vals = list(curvature.values()) if curvature else [0.0]
-    max_curv = max(abs(f) for f in curv_vals)
+    for field_name, field_values in (
+        ("current phi_s", current_phi_s),
+        ("reference phi_s", reference_phi_s),
+    ):
+        if field_values is not None and any(
+            _as_finite_real(value) is None for value in field_values.values()
+        ):
+            u6_issue = f"{field_name} must contain only finite real values"
+            break
 
-    # U6: structural potential confinement
-    max_phi_s = float(np.max(np.abs(phi_s_vals))) if len(phi_s_vals) > 0 else 0.0
-    phi_s_confined = max_phi_s < U6_STRUCTURAL_POTENTIAL_LIMIT
+    u6_applicable = bool(
+        not u6_issue
+        and current_phi_s
+        and reference_phi_s is not None
+        and set(current_phi_s) == set(reference_phi_s)
+    )
+    if (
+        not u6_issue
+        and (reference_snapshot is not None or reference_graph is not None)
+        and not u6_applicable
+    ):
+        u6_issue = "matching nonempty current and reference phi_s fields are required"
+    if u6_applicable:
+        u6_drift = (
+            float(
+                np.mean(
+                    [
+                        abs(current_phi_s[node] - reference_phi_s[node])
+                        for node in current_phi_s
+                    ]
+                )
+            )
+            if current_phi_s
+            else 0.0
+        )
+        u6_satisfied = u6_drift < U6_STRUCTURAL_POTENTIAL_LIMIT
+    else:
+        u6_drift = 0.0
+        u6_satisfied = False
 
     mappings = []
 
-    # U1: STRUCTURAL INITIATION & CLOSURE
-    # Symmetry: Boundary conditions on S_TNFR
-    # Conservation: Energy finiteness (action has well-defined endpoints)
+    # U1 needs the operator word and its execution context.
     mappings.append(
         GrammarSymmetryMapping(
             rule="U1",
             symmetry_type="boundary",
-            conservation_law="Action finiteness — well-defined energy at boundaries",
-            variational_role="Boundary conditions δS|_∂ = 0 on action endpoints",
-            is_satisfied=True,  # static check: graph exists with nodes
+            conservation_law="No conservation inference from a graph snapshot",
+            variational_role="Historical boundary-condition correspondence",
+            is_satisfied=False,
             diagnostic_value=0.0,
+            is_applicable=False,
+            assessment_status="not_assessed",
+            assessment_scope="operator_history_required",
+            required_evidence="ordered operator word and execution context",
         )
     )
 
-    # U2: CONVERGENCE & BOUNDEDNESS
-    # Symmetry: Time-translation (energy conservation)
-    # Conservation: Lyapunov stability dH/dt ≤ 0
-    is_finite = bool(np.isfinite(E) and E < 1e6 * len(G.nodes()))
+    # A finite energy at one time cannot assess U2 debt or convergence.
     mappings.append(
         GrammarSymmetryMapping(
             rule="U2",
             symmetry_type="stability",
-            conservation_law="Lyapunov stability — dH/dt ≤ 0 under grammar",
-            variational_role="Finite action ∫νf·ΔNFR dt < ∞ ↔ convergent integral",
-            is_satisfied=is_finite,
-            diagnostic_value=0.0 if is_finite else float(E),
+            conservation_law=(
+                "No Lyapunov or convergence inference from one energy value"
+            ),
+            variational_role="Historical stability correspondence",
+            is_satisfied=False,
+            diagnostic_value=0.0,
+            is_applicable=False,
+            assessment_status="not_assessed",
+            assessment_scope="operator_history_required",
+            required_evidence="operator roles, debt history, and trajectory",
         )
     )
 
-    # U3: RESONANT COUPLING
-    # Symmetry: Gauge connection regularity
-    # Conservation: Phase current continuity
-    u3_sat = max_phase_diff <= delta_phi_max * 1.1  # small tolerance
+    # U3 phase compatibility is directly observable on current graph edges.
+    u3_applicable = not u3_issue
+    u3_sat = u3_applicable and max_phase_diff <= delta_phi_max
     mappings.append(
         GrammarSymmetryMapping(
             rule="U3",
             symmetry_type="gauge",
-            conservation_law="Gauge connection regularity — A_ij smooth on coupled edges",
-            variational_role="Regularity of coupling terms in S_TNFR",
+            conservation_law="Current-edge phase-admissibility diagnostic",
+            variational_role="Historical gauge-connection correspondence",
             is_satisfied=u3_sat,
-            diagnostic_value=max(0.0, max_phase_diff - delta_phi_max),
+            diagnostic_value=(
+                max(0.0, max_phase_diff - delta_phi_max)
+                if u3_applicable
+                else 0.0
+            ),
+            is_applicable=u3_applicable,
+            assessment_status=(
+                "pass" if u3_sat else "fail"
+            ) if u3_applicable else "not_assessed",
+            assessment_scope=(
+                "current_graph_edge_phase_compatibility"
+                if u3_applicable
+                else "finite_edge_phase_data_required"
+            ),
+            required_evidence=u3_issue,
         )
     )
 
-    # U4: BIFURCATION DYNAMICS
-    # Symmetry: Topological protection
-    # Conservation: Topological charge quantisation at critical points
-    u4_sat = max_curv < PI  # no extreme gauge curvature
+    # U4 needs trigger/handler and transformer recency context.
     mappings.append(
         GrammarSymmetryMapping(
             rule="U4",
             symmetry_type="topological",
-            conservation_law="Topological charge quantisation at bifurcation points",
-            variational_role="Morse-theory constraints at critical points of V",
-            is_satisfied=u4_sat,
-            diagnostic_value=max(0.0, max_curv - PI),
+            conservation_law="No topological conservation inference from a snapshot",
+            variational_role="Historical bifurcation/topology correspondence",
+            is_satisfied=False,
+            diagnostic_value=0.0,
+            is_applicable=False,
+            assessment_status="not_assessed",
+            assessment_scope="operator_history_required",
+            required_evidence="trigger, handler, transformer, and recency history",
         )
     )
 
-    # U5: MULTI-SCALE COHERENCE
-    # Symmetry: Scale separation
-    # Conservation: Hierarchical energy factorisation
+    # A flat graph snapshot has no declared parent/child hierarchy for U5.
     mappings.append(
         GrammarSymmetryMapping(
             rule="U5",
             symmetry_type="hierarchical",
-            conservation_law="Hierarchical energy factorisation across scales",
-            variational_role="S_TNFR = Σ_ℓ S^(ℓ) scale-by-scale decomposition",
-            is_satisfied=True,  # satisfied for single-scale graphs
+            conservation_law="No hierarchy conservation inference from a flat snapshot",
+            variational_role="Historical scale-factorisation correspondence",
+            is_satisfied=False,
             diagnostic_value=0.0,
+            is_applicable=False,
+            assessment_status="not_assessed",
+            assessment_scope="hierarchy_context_required",
+            required_evidence="declared parent/child EPI hierarchy and normalization",
         )
     )
 
-    # U6: STRUCTURAL POTENTIAL CONFINEMENT
-    # Symmetry: Bounded potential sector
-    # Conservation: Potential energy confinement V < ½(π/2)·N
+    # U6 is the finite two-snapshot mean |Delta Phi_s| policy.
     mappings.append(
         GrammarSymmetryMapping(
             rule="U6",
             symmetry_type="confinement",
-            conservation_law="Potential energy confinement — V bounded by π/2",
-            variational_role="V(i) < ½(π/2)² at each node (bounded potential well)",
-            is_satisfied=phi_s_confined,
-            diagnostic_value=max(0.0, max_phi_s - U6_STRUCTURAL_POTENTIAL_LIMIT),
+            conservation_law="Finite mean absolute structural-potential drift policy",
+            variational_role=(
+                "Historical confinement correspondence; not an energy bound"
+            ),
+            is_satisfied=u6_satisfied,
+            diagnostic_value=u6_drift,
+            is_applicable=u6_applicable,
+            assessment_status=(
+                ("pass" if u6_satisfied else "fail")
+                if u6_applicable
+                else "not_assessed"
+            ),
+            assessment_scope=(
+                f"two_snapshot_phi_s_drift:{reference_kind}"
+                if u6_applicable
+                else "phi_s_reference_required"
+            ),
+            required_evidence=(
+                "" if u6_applicable
+                else u6_issue or "matching reference graph or conservation snapshot"
+            ),
         )
     )
 
@@ -532,13 +726,14 @@ def verify_action_energy_consistency(
     *,
     tolerance: float = 1e-10,
 ) -> ActionEnergyConsistency:
-    """Verify H_variational ≡ E_conservation (exact theoretical identity).
+    """Compare two algebraically equivalent same-snapshot energy read-outs.
 
-    Both H and E derive from the same action S_TNFR:
+    Both implementations sum the same fields:
     - H = Σ_i [T(i) + V(i)] (variational Hamiltonian)
-    - E = ½Σ_i ℰ(i) (conservation energy functional)
+    - E = ½Σ_i ℰ(i) (structural energy diagnostic)
 
-    These must be exactly equal because T(i)+V(i) = ½ℰ(i) by construction.
+    They agree because T(i)+V(i) = ½ℰ(i) by construction. This check does not
+    establish an Euler-Lagrange bridge or temporal energy conservation.
 
     Parameters
     ----------
@@ -572,18 +767,16 @@ def verify_action_energy_consistency(
 
 
 # ---------------------------------------------------------------------------
-# 3. Noether-Gauge decomposition
+# 3. Historical Noether/gauge-named snapshot decomposition
 # ---------------------------------------------------------------------------
 
 
 def compute_noether_gauge_decomposition(G: Any) -> NoetherGaugeDecomposition:
-    """Decompose the symmetry of S_TNFR into Noether and gauge sectors.
+    """Compute structural-charge and U(1)-invariant snapshot diagnostics.
 
-    The full symmetry group factorises as:
-        Aut(S) ⊃ Translation_t × U(1)_Ψ
-
-    - Translation_t → Noether charge Q, energy H (external symmetry)
-    - U(1)_Ψ → gauge-invariant |Ψ|², ℰ (internal symmetry)
+    ``Q`` retains its historical Noether-like name, while its conservation
+    must be measured along a declared trajectory. U(1) invariance of the
+    quadratic field norms is an algebraic same-snapshot statement.
 
     Parameters
     ----------
@@ -602,21 +795,25 @@ def compute_noether_gauge_decomposition(G: Any) -> NoetherGaugeDecomposition:
     psi_mags = list(gauge.psi_magnitude.values())
     mean_psi = float(np.mean(psi_mags)) if psi_mags else 0.0
 
-    curv_vals = list(gauge.curvature.values())
-    mean_curv = float(np.mean([abs(f) for f in curv_vals])) if curv_vals else 0.0
+    closure_values = list(gauge.curvature.values())
+    mean_closure_residual = (
+        float(np.mean([abs(value) for value in closure_values]))
+        if closure_values
+        else 0.0
+    )
 
-    # Yang-Mills action (gauge sector)
-    s_ym = compute_yang_mills_action(G)
+    # Historical API name: a square penalty on pure-gauge cycle closure error.
+    squared_closure_penalty = compute_yang_mills_action(G)
 
-    # Matter action (covariant derivative sector)
+    # Historical API name: finite covariant-difference energy.
     cov_mag = compute_covariant_derivative_magnitude(G)
-    s_matter = sum(m**2 for m in cov_mag.values())
+    covariant_difference_energy = sum(m**2 for m in cov_mag.values())
 
-    # Noether-gauge ratio
+    # Historical snapshot ratio; no decomposition theorem is inferred.
     ratio = abs(Q) / max(E, 1e-15)
 
-    # Decomposition quality: measures clean separation
-    # Perfect if gauge-invariant energy ≫ gauge-dependent fluctuations
+    # Legacy decomposition-quality field: inverse normalized dispersion of
+    # the snapshot energy-density map. It is not a sector-separation measure.
     energy_vals = list(gauge.energy_density.values())
     energy_std = float(np.std(energy_vals)) if energy_vals else 0.0
     energy_mean = float(np.mean(energy_vals)) if energy_vals else 1e-15
@@ -627,9 +824,9 @@ def compute_noether_gauge_decomposition(G: Any) -> NoetherGaugeDecomposition:
         energy_functional=E,
         gauge_invariant_energy=E,  # E is gauge-invariant by construction
         mean_psi_magnitude=mean_psi,
-        mean_gauge_curvature=mean_curv,
-        yang_mills_action=s_ym,
-        matter_action=s_matter,
+        mean_gauge_curvature=mean_closure_residual,
+        yang_mills_action=squared_closure_penalty,
+        matter_action=covariant_difference_energy,
         noether_gauge_ratio=ratio,
         decomposition_quality=quality,
     )
@@ -646,12 +843,13 @@ def compute_gauge_conservation_coupling(
     gauge_angle: float = 0.1,
     seed: int = 42,
 ) -> GaugeConservationCoupling:
-    """Quantify coupling between gauge structure and conservation laws.
+    """Quantify shared-field and gauge-rotation snapshot diagnostics.
 
-    The key insight: K_φ appears in both the conservation charge
-    ρ = Φ_s + K_φ and the gauge field Ψ = K_φ + iJ_φ.  Under gauge
-    rotations, K_φ changes (rotating into J_φ), so ρ changes — but
-    the total energy E = ½Σ ℰ does NOT change (gauge-invariant).
+    ``K_φ`` appears in both the historical structural-charge density
+    ``ρ = Φ_s + K_φ`` and the complex coordinate ``Ψ = K_φ + iJ_φ``.
+    The charge-sensitivity field uses one constant oscillator rotation. The
+    energy-invariance field comes from a separate seeded local pure-gauge
+    coordinate check. This algebra proves no engine symmetry or conservation.
 
     Parameters
     ----------
@@ -665,6 +863,9 @@ def compute_gauge_conservation_coupling(
     -------
     GaugeConservationCoupling
     """
+    if not math.isfinite(gauge_angle):
+        raise ValueError("gauge_angle must be finite")
+
     phi_s = compute_structural_potential(G)
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
@@ -672,8 +873,6 @@ def compute_gauge_conservation_coupling(
     grad_phi = compute_phase_gradient(G)
 
     nodes = list(G.nodes())
-    N = len(nodes)
-
     # Shared field fraction: |K_φ| / |ρ| averaged over nodes
     shared_fracs = []
     for n in nodes:
@@ -714,8 +913,8 @@ def compute_gauge_conservation_coupling(
     total_e = e_geo + e_pot
     kappa = e_geo / max(total_e, 1e-15)
 
-    # Ward-gauge consistency:
-    # gauge_invariance quality ↔ conservation quality consistency
+    # Legacy field name: this is a gauge-invariance pass score only. No Ward
+    # residual or temporal conservation observation enters this function.
     ward_gauge = 1.0 if gauge_result.is_invariant else 0.5
 
     return GaugeConservationCoupling(
@@ -730,7 +929,7 @@ def compute_gauge_conservation_coupling(
 
 
 # ---------------------------------------------------------------------------
-# 5. Symplectic-Gauge compatibility
+# 5. Global oscillator rotation (legacy symplectic-gauge API name)
 # ---------------------------------------------------------------------------
 
 
@@ -740,15 +939,16 @@ def verify_symplectic_gauge_compatibility(
     gauge_angle: float = 0.1,
     tolerance: float = 1e-8,
 ) -> SymplecticGaugeCompatibility:
-    """Verify that the symplectic form is gauge-compatible.
+    """Check a constant global oscillator rotation against the auxiliary form.
 
     The symplectic 2-form ω = Σ dK_φ ∧ dJ_φ + dΦ_s ∧ dJ_ΔNFR
     splits into:
     - ω_geo = Σ dK_φ ∧ dJ_φ (the gauge-active sector)
     - ω_pot = Σ dΦ_s ∧ dJ_ΔNFR (gauge-singlet sector)
 
-    Under Ψ → e^{iα}Ψ, the geometric pair (K_φ, J_φ) rotates,
-    but the area form dK ∧ dJ is preserved by SO(2) ≅ U(1).
+    Under ``Ψ → e^{iα}Ψ`` with one constant ``α``, the geometric pair
+    rotates and ``dK ∧ dJ`` is preserved by SO(2). This is a symmetry of
+    the harmonic oscillator coordinates, not a test of local gauge dynamics.
 
     Parameters
     ----------
@@ -756,12 +956,17 @@ def verify_symplectic_gauge_compatibility(
     gauge_angle : float
         Rotation angle for invariance test.
     tolerance : float
-        Maximum acceptable volume deviation.
+        Maximum acceptable symplectic pullback residual.
 
     Returns
     -------
     SymplecticGaugeCompatibility
     """
+    if not math.isfinite(gauge_angle):
+        raise ValueError("gauge_angle must be finite")
+    if not math.isfinite(tolerance) or tolerance < 0.0:
+        raise ValueError("tolerance must be finite and nonnegative")
+
     geo_pair, pot_pair = identify_conjugate_pairs(G)
 
     vol_geo = compute_phase_space_volume(geo_pair)
@@ -770,19 +975,8 @@ def verify_symplectic_gauge_compatibility(
     pb_geo = compute_poisson_bracket_estimate(geo_pair)
     pb_pot = compute_poisson_bracket_estimate(pot_pair)
 
-    # Test gauge invariance of geometric volume
-    # Under rotation by α: K' = K cos α − J sin α, J' = K sin α + J cos α
-    # |K'·J'| = |K cos α − J sin α| · |K sin α + J cos α|
-    # For the SUM over nodes: Σ|K'_i · J'_i| can differ from Σ|K_i · J_i|
-    # because the absolute values break linearity.
-    # But the SIGNED symplectic form ω = Σ K_i · J_i IS exactly invariant:
-    # K'·J' = (K cos α − J sin α)(K sin α + J cos α)
-    #        = K²·sin α cos α + K·J·cos²α − J·K·sin²α − J²·sin α cos α
-    #        = (K² − J²)·sin α cos α + K·J·(cos²α − sin²α)
-    # This is NOT in general equal to K·J, so ω is NOT a scalar but a 2-form.
-    # However, as a 2-FORM, the area dK ∧ dJ is preserved because det(R) = 1.
-
-    # Compute signed volume (the actual symplectic invariant)
+    # The product sum is retained only as a legacy snapshot statistic. It is
+    # not a symplectic volume and need not be invariant under rotation.
     signed_geo_before = 0.0
     for n in list(G.nodes()):
         q_n = geo_pair.q.get(n, 0.0)
@@ -799,16 +993,14 @@ def verify_symplectic_gauge_compatibility(
         p_rot = q_n * sa + p_n * ca
         signed_geo_after += q_rot * p_rot
 
-    # The actual gauge-invariant is the 2-form area, not the scalar product
-    # For rotation: area element dq∧dp → (cos²α + sin²α)dq∧dp = dq∧dp
-    # So the 2-form is EXACTLY preserved. The signed scalar product changes.
-    # We verify using the Jacobian determinant = 1 (area-preserving).
     delta_signed = abs(signed_geo_after - signed_geo_before)
+    product_change = delta_signed / max(abs(signed_geo_before), 1e-15)
 
-    # True symplectic invariant check: det(rotation matrix) = 1
-    # This is exact, so gauge_volume_invariance ≈ 0 from the 2-form perspective
-    # We report the deviation of the less strict |q·p| measure as diagnostic
-    gauge_vol_dev = delta_signed / max(abs(signed_geo_before), 1e-15)
+    rotation = np.array([[ca, -sa], [sa, ca]], dtype=float)
+    omega = np.array([[0.0, 1.0], [-1.0, 0.0]], dtype=float)
+    pullback_residual = float(np.linalg.norm(rotation.T @ omega @ rotation - omega))
+    determinant_residual = abs(float(np.linalg.det(rotation)) - 1.0)
+    symplectic_residual = max(pullback_residual, determinant_residual)
 
     return SymplecticGaugeCompatibility(
         geometric_volume=vol_geo,
@@ -816,13 +1008,16 @@ def verify_symplectic_gauge_compatibility(
         total_volume=vol_geo + vol_pot,
         geometric_poisson=pb_geo,
         potential_poisson=pb_pot,
-        gauge_volume_invariance=gauge_vol_dev,
-        is_compatible=True,  # exact: det(rotation) = 1, so ω is preserved
+        gauge_volume_invariance=symplectic_residual,
+        is_compatible=symplectic_residual <= tolerance,
+        snapshot_product_change=product_change,
+        transformation_scope="global_constant_oscillator_rotation",
+        local_gauge_assessed=False,
     )
 
 
 # ---------------------------------------------------------------------------
-# 6. Complete unification
+# 6. Aggregate diagnostic pipeline
 # ---------------------------------------------------------------------------
 
 
@@ -831,11 +1026,14 @@ def run_conservation_gauge_unification(
     *,
     gauge_seed: int = 42,
     tolerance: float = 1e-10,
+    reference_graph: Any | None = None,
+    reference_snapshot: ConservationSnapshot | None = None,
 ) -> ConservationGaugeUnification:
-    """Run the complete Conservation-Gauge Unification analysis.
+    """Run the aggregate finite-snapshot conservation/gauge diagnostics.
 
-    Demonstrates: Grammar → Symmetry → Conservation → Gauge as four
-    facets of one mathematical structure: S_TNFR.
+    The legacy name and ``is_unified`` field are retained for compatibility.
+    The result combines applicable snapshot checks; it does not validate a
+    grammar word or prove a universal conservation-gauge unification.
 
     Parameters
     ----------
@@ -845,79 +1043,130 @@ def run_conservation_gauge_unification(
         RNG seed for gauge invariance verification.
     tolerance : float
         Tolerance for consistency checks.
+    reference_graph, reference_snapshot : optional
+        Mutually exclusive earlier state used to make the U6 mean-potential-
+        drift observation applicable. See
+        :func:`compute_grammar_symmetry_mapping`.
 
     Returns
     -------
     ConservationGaugeUnification
-        Complete unified analysis.
+        Aggregate diagnostics with explicit scope and coverage metadata.
     """
-    # 1. Grammar → Symmetry
-    grammar = compute_grammar_symmetry_mapping(G)
-    n_satisfied = sum(1 for m in grammar if m.is_satisfied)
+    # 1. Historical grammar/correspondence rows with applicability metadata.
+    grammar = compute_grammar_symmetry_mapping(
+        G,
+        reference_graph=reference_graph,
+        reference_snapshot=reference_snapshot,
+    )
+    assessed_rules = tuple(m.rule for m in grammar if m.is_applicable)
+    unassessed_rules = tuple(m.rule for m in grammar if not m.is_applicable)
+    n_satisfied = sum(1 for m in grammar if m.is_applicable and m.is_satisfied)
 
     # 2. Action-Energy consistency
     action_cons = verify_action_energy_consistency(G, tolerance=tolerance)
 
-    # 3. Noether-Gauge decomposition
+    # 3. Historical charge plus pure-gauge snapshot coordinates
     noether_gauge = compute_noether_gauge_decomposition(G)
 
-    # 4. Gauge-Conservation coupling
+    # 4. Shared-field and coordinate-rotation diagnostics
     gauge_cons = compute_gauge_conservation_coupling(G, seed=gauge_seed)
 
-    # 5. Symplectic-Gauge compatibility
-    symp_gauge = verify_symplectic_gauge_compatibility(G)
+    # 5. Separate global oscillator-rotation check
+    symp_gauge = verify_symplectic_gauge_compatibility(G, tolerance=tolerance)
 
-    # 6. Full gauge invariance
+    # 6. Local pure-gauge coordinate covariance
     gauge_inv = verify_gauge_invariance(G, seed=gauge_seed)
 
-    # Aggregate quality
+    # Aggregate finite diagnostics. Applicable U3/U6 observations can affect
+    # this aggregate, but they never turn it into full grammar validation.
+    applicable_rule_checks = [m.is_satisfied for m in grammar if m.is_applicable]
     checks = [
         action_cons.is_consistent,  # H_var = E_cons
         gauge_inv.is_invariant,  # gauge invariance
-        symp_gauge.is_compatible,  # symplectic compatibility
-        n_satisfied == len(grammar),  # all grammar rules satisfied
+        symp_gauge.is_compatible,  # global oscillator rotation
+        *applicable_rule_checks,
     ]
     quality_scores = [
         1.0 - min(action_cons.relative_error * 1e8, 1.0),  # action consistency
         1.0 if gauge_inv.is_invariant else 0.5,  # gauge invariance
         1.0 if symp_gauge.is_compatible else 0.5,  # symplectic
-        n_satisfied / max(len(grammar), 1),  # grammar coverage
-        noether_gauge.decomposition_quality,  # decomposition
-        gauge_cons.ward_gauge_consistency,  # ward-gauge
+        noether_gauge.decomposition_quality,  # energy-density uniformity
+        gauge_cons.ward_gauge_consistency,  # legacy local-covariance pass score
+        *[1.0 if passed else 0.0 for passed in applicable_rule_checks],
     ]
     quality = float(np.mean(quality_scores))
-    is_unified = all(checks) and quality > 0.8
+    aggregate_passed = all(checks) and quality > 0.8
+    diagnostic_scope = (
+        "two_snapshot_aggregate_with_u6_reference"
+        if "U6" in assessed_rules
+        else "current_snapshot_aggregate"
+    )
 
     # Summary
     summary = {
-        "grammar_rules_satisfied": f"{n_satisfied}/{len(grammar)}",
+        "grammar_rules_satisfied": f"{n_satisfied}/{len(assessed_rules)} assessed",
+        "grammar_rules_assessed": assessed_rules,
+        "grammar_rules_unassessed": unassessed_rules,
+        "grammar_validation_applicable": False,
+        "grammar_validated": False,
         "H_variational": action_cons.hamiltonian_variational,
         "E_conservation": action_cons.energy_conservation,
         "H_E_relative_error": action_cons.relative_error,
         "T_kinetic": action_cons.total_kinetic,
         "V_potential": action_cons.total_potential,
         "kinetic_fraction": action_cons.kinetic_fraction,
+        "historical_structural_charge_snapshot": noether_gauge.noether_charge,
         "noether_charge_Q": noether_gauge.noether_charge,
         "gauge_invariant_energy": noether_gauge.gauge_invariant_energy,
+        "mean_cycle_closure_residual": noether_gauge.mean_cycle_closure_residual,
+        "squared_cycle_closure_penalty": (
+            noether_gauge.squared_cycle_closure_penalty
+        ),
+        "covariant_difference_energy": noether_gauge.covariant_difference_energy,
+        "energy_density_uniformity_score": (
+            noether_gauge.energy_density_uniformity_score
+        ),
         "yang_mills_action": noether_gauge.yang_mills_action,
         "mean_psi_magnitude": noether_gauge.mean_psi_magnitude,
         "geometric_sector_energy": gauge_cons.geometric_sector_energy,
         "potential_sector_energy": gauge_cons.potential_sector_energy,
         "sector_coupling_kappa": gauge_cons.sector_coupling_parameter,
         "shared_K_phi_fraction": gauge_cons.shared_field_fraction,
+        "shared_K_phi_ratio": gauge_cons.shared_field_ratio,
         "gauge_charge_sensitivity": gauge_cons.gauge_charge_sensitivity,
         "energy_gauge_invariance_dev": gauge_cons.energy_gauge_invariance,
+        "local_pure_gauge_invariance_score": (
+            gauge_cons.local_pure_gauge_invariance_score
+        ),
         "symplectic_volume_geo": symp_gauge.geometric_volume,
         "symplectic_volume_pot": symp_gauge.potential_volume,
         "poisson_bracket_geo": symp_gauge.geometric_poisson,
         "poisson_bracket_pot": symp_gauge.potential_poisson,
+        "geometric_snapshot_product": symp_gauge.geometric_snapshot_product,
+        "potential_snapshot_product": symp_gauge.potential_snapshot_product,
+        "geometric_normalized_covariance": (
+            symp_gauge.geometric_normalized_covariance
+        ),
+        "potential_normalized_covariance": (
+            symp_gauge.potential_normalized_covariance
+        ),
+        "global_oscillator_symplectic_residual": (
+            symp_gauge.gauge_volume_invariance
+        ),
+        "global_oscillator_snapshot_product_change": (
+            symp_gauge.snapshot_product_change
+        ),
+        "global_oscillator_scope": symp_gauge.transformation_scope,
+        "local_gauge_assessed_by_symplectic_check": symp_gauge.local_gauge_assessed,
         "unification_quality": quality,
-        "is_unified": is_unified,
+        "is_unified": aggregate_passed,
+        "aggregate_diagnostic_passed": aggregate_passed,
+        "diagnostic_scope": diagnostic_scope,
         "narrative": (
-            "Grammar(U1-U6) → Symmetry(Translation×U(1)) "
-            "→ Conservation(H=E,Q) → Gauge(Ψ,A,F) — UNIFIED"
-            if is_unified
-            else "Partial unification — check diagnostics"
+            "Aggregate finite diagnostics passed; grammar was not validated"
+            if aggregate_passed
+            else "One or more aggregate diagnostics failed; grammar was not validated"
         ),
     }
 
@@ -928,7 +1177,12 @@ def run_conservation_gauge_unification(
         gauge_conservation=gauge_cons,
         symplectic_gauge=symp_gauge,
         gauge_invariance=gauge_inv,
-        is_unified=is_unified,
+        is_unified=aggregate_passed,
         unification_quality=quality,
         summary=summary,
+        aggregate_diagnostic_passed=aggregate_passed,
+        grammar_validated=False,
+        assessed_grammar_rules=assessed_rules,
+        unassessed_grammar_rules=unassessed_rules,
+        diagnostic_scope=diagnostic_scope,
     )

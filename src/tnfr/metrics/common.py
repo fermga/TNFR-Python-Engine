@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -13,7 +14,6 @@ from ..types import GraphLike, NodeAttrMap
 from ..utils import (
     clamp01,
     edge_version_cache,
-    kahan_sum_nd,
     normalize_optional_int,
     normalize_weights,
 )
@@ -41,31 +41,117 @@ _EPS_DNFR_STABLE: float = float(DEFAULTS["EPS_DNFR_STABLE"])
 _EPS_DEPI_STABLE: float = float(DEFAULTS["EPS_DEPI_STABLE"])
 
 
-def structural_coherence(dnfr: float, depi: float = 0.0) -> float:
-    r"""Per-node structural coherence ``C = 1/(1 + |ΔNFR| + |dEPI|)``.
+def _finite_scalar(value: float, *, name: str) -> float:
+    """Normalize a finite real scalar while rejecting truth values."""
+    if isinstance(value, bool) or (
+        np is not None and isinstance(value, np.bool_)
+    ):
+        raise TypeError(f"{name} must be a finite real scalar, not bool")
+    if isinstance(value, (str, bytes)) or (
+        np is not None and not bool(np.isscalar(value))
+    ):
+        raise TypeError(f"{name} must be a finite real scalar")
+    try:
+        normalized = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TypeError(f"{name} must be a finite real scalar") from exc
+    if not math.isfinite(normalized):
+        raise ValueError(f"{name} must be finite")
+    return normalized
 
-    The single-node kernel of the canonical network coherence
-    :func:`compute_coherence`. It is the **one** local coherence map shared by
-    every TNFR domain, derived directly from the nodal equation
+
+def _finite_mean_absolute(values: Iterable[float], *, name: str) -> float:
+    """Return a finite mean magnitude without overflowing the intermediate sum.
+
+    Scaling by the largest magnitude keeps the reduction in ``[0, count]``.
+    This matters when several valid binary64 inputs are close to the maximum
+    finite value: their mathematical mean is representable even though their
+    unscaled sum is not.
+    """
+    magnitudes = tuple(abs(_finite_scalar(value, name=name)) for value in values)
+    if not magnitudes:
+        return 0.0
+    scale = max(magnitudes)
+    if scale == 0.0:
+        return 0.0
+    normalized_mean = math.fsum(value / scale for value in magnitudes) / len(
+        magnitudes
+    )
+    result = scale * normalized_mean
+    if not math.isfinite(result):
+        raise ValueError(f"mean absolute {name} exceeds finite range")
+    return result
+
+
+def structural_coherence(dnfr: Any, depi: Any = 0.0) -> Any:
+    r"""Structural coherence ``C = 1/(1 + |ΔNFR| + |dEPI|)``.
+
+    The single-node kernel used by the canonical network coherence
+    :func:`compute_coherence`. It is the shared local coherence map used by
+    several TNFR domain models and is motivated by the nodal equation
     :math:`\partial\mathrm{EPI}/\partial t = \nu_f\,\Delta\mathrm{NFR}`: at the
     equilibrium fixed point (:math:`\Delta\mathrm{NFR}=0\Rightarrow d\mathrm{EPI}=0`)
     it returns ``1`` and decays monotonically towards ``0`` under unbounded
     reorganization pressure.
 
-    Domains differ only in how they *realise* ``ΔNFR`` -- the graph random-walk
-    Laplacian for the dynamics, an arithmetic pressure for number theory, a
-    valence pressure for chemistry. The coherence map itself is invariant; this
-    is what makes the equilibrium structure fractal and resonant across scales.
+    Domains differ in their state spaces, definitions of ``ΔNFR`` and available
+    dynamics. Reusing this scalar map centralizes a convention; it does not
+    prove a cross-domain physical identity.
 
     Parameters
     ----------
-    dnfr : float
-        Structural reorganization pressure ``ΔNFR`` at the node.
-    depi : float, optional
-        Structural change rate ``dEPI`` at the node (default ``0`` for static
-        scalar fields that carry no explicit time derivative).
+    dnfr : real scalar or array-like
+        Structural reorganization pressure ``ΔNFR``. Arrays are evaluated
+        elementwise for vectorized field read-outs.
+    depi : real scalar or array-like, optional
+        Structural change rate ``dEPI`` (default ``0`` for static fields).
+        Array inputs follow NumPy broadcasting rules.
     """
-    return 1.0 / (1.0 + abs(dnfr) + abs(depi))
+    if np is not None and (not np.isscalar(dnfr) or not np.isscalar(depi)):
+        arrays = []
+        for value, name in ((dnfr, "dnfr"), (depi, "depi")):
+            raw = np.asarray(value)
+            if raw.dtype.kind in "bSUOc":
+                raise TypeError(f"{name} must contain finite real values")
+            try:
+                normalized = np.asarray(value, dtype=float)
+            except (TypeError, ValueError, OverflowError) as exc:
+                raise TypeError(f"{name} must contain finite real values") from exc
+            if not bool(np.all(np.isfinite(normalized))):
+                raise ValueError(f"{name} must contain only finite values")
+            arrays.append(normalized)
+        try:
+            pressure, rate = np.broadcast_arrays(
+                np.abs(arrays[0]), np.abs(arrays[1])
+            )
+        except ValueError as exc:
+            raise ValueError("dnfr and depi arrays must be broadcast-compatible") from exc
+
+        with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
+            denominator = 1.0 + pressure + rate
+            direct = np.reciprocal(denominator)
+            scale = np.maximum(pressure, rate)
+            safe_scale = np.where(scale == 0.0, 1.0, scale)
+            inverse_scale = np.reciprocal(safe_scale)
+            scaled = inverse_scale / (
+                inverse_scale + pressure / safe_scale + rate / safe_scale
+            )
+        return np.where(np.isfinite(denominator), direct, scaled)
+
+    dnfr_value = _finite_scalar(dnfr, name="dnfr")
+    depi_value = _finite_scalar(depi, name="depi")
+    pressure = abs(dnfr_value)
+    rate = abs(depi_value)
+    denominator = 1.0 + pressure + rate
+    if math.isfinite(denominator):
+        return 1.0 / denominator
+
+    # The exact denominator may exceed binary64 even though its reciprocal is
+    # representable. Scale only on that exceptional path so ordinary inputs
+    # retain the historical arithmetic and bit pattern.
+    scale = max(pressure, rate)
+    inverse_scale = 1.0 / scale
+    return inverse_scale / (inverse_scale + pressure / scale + rate / scale)
 
 
 def is_structural_equilibrium(
@@ -83,18 +169,10 @@ def is_structural_equilibrium(
     the per-node stability criterion used by the engine's coherence tracker
     (:func:`tnfr.metrics.coherence._track_stability`).
 
-    This is the ONE deep structural invariant that recurs fractally across
-    TNFR: a relaxed graph node (``ΔNFR → 0``), a structural prime
-    (``ΔNFR_arith = 0``) and a noble-gas element (``ΔNFR_chem = 0``) are the
-    *same* fixed point read out under a domain-specific ``ΔNFR``. The tolerance
-    is a per-domain numerical scale (``1e-3`` for the graph dynamics; ``1e-12``
-    for exact integer arithmetic), **not** a different logic.
-
-    Particles read this fixed point *directly* as a topological winding of the
-    phase field; the arithmetic and chemical read-outs are *symbolic* -- the
-    per-node ΔNFR consumes the domain data -- while number theory additionally
-    carries a genuinely emergent *spectral* read-out (the Paley/residue Fiedler
-    gap; theory §9.5). One fixed point, a spectrum of emergence.
+    Graph, arithmetic and shell models can all apply this same numerical test
+    to their own pressure fields. They then share a predicate and tolerance
+    convention, not a fixed point in one common phase space. Closed-loop phase
+    winding is a different topological observation and is not evaluated here.
 
     Parameters
     ----------
@@ -105,7 +183,16 @@ def is_structural_equilibrium(
     eps_dnfr, eps_depi : float, optional
         Equilibrium tolerances (default: the canonical ``EPS_*_STABLE``).
     """
-    return abs(dnfr) <= eps_dnfr and abs(depi) <= eps_depi
+    dnfr_value = _finite_scalar(dnfr, name="dnfr")
+    depi_value = _finite_scalar(depi, name="depi")
+    dnfr_tolerance = _finite_scalar(eps_dnfr, name="eps_dnfr")
+    depi_tolerance = _finite_scalar(eps_depi, name="eps_depi")
+    if dnfr_tolerance < 0.0 or depi_tolerance < 0.0:
+        raise ValueError("equilibrium tolerances must be non-negative")
+    return (
+        abs(dnfr_value) <= dnfr_tolerance
+        and abs(depi_value) <= depi_tolerance
+    )
 
 
 def compute_coherence(
@@ -139,16 +226,8 @@ def compute_coherence(
     dnfr_values = collect_attr(G, nodes, ALIAS_DNFR, 0.0)
     depi_values = collect_attr(G, nodes, ALIAS_DEPI, 0.0)
 
-    if np is not None:
-        dnfr_mean = float(np.mean(np.abs(dnfr_values)))
-        depi_mean = float(np.mean(np.abs(depi_values)))
-    else:
-        dnfr_sum, depi_sum = kahan_sum_nd(
-            ((abs(d), abs(e)) for d, e in zip(dnfr_values, depi_values)),
-            dims=2,
-        )
-        dnfr_mean = dnfr_sum / count
-        depi_mean = depi_sum / count
+    dnfr_mean = _finite_mean_absolute(dnfr_values, name="dnfr")
+    depi_mean = _finite_mean_absolute(depi_values, name="depi")
 
     coherence = structural_coherence(dnfr_mean, depi_mean)
     return (coherence, dnfr_mean, depi_mean) if return_means else coherence

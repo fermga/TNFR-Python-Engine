@@ -21,9 +21,10 @@ from dataclasses import dataclass, field, fields
 from typing import Any, Literal
 
 from .constants.canonical import (
-    PHASE_GRADIENT_THRESHOLD_CANONICAL,
-    PHYSICS_CURVATURE_HOTSPOT_CANONICAL,
-    STRUCTURAL_ESCAPE_THRESHOLD_THEORETICAL,
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
+    PHI_S_VON_KOCH_THRESHOLD,
+    XI_C_CRITICAL_RATIO,
 )
 from .errors import TNFRValueError
 from .config.parsing import parse_bool
@@ -65,13 +66,13 @@ class TNFRConfig:
 
     # Structural Field Tetrad Parameters (audit 2026: only π genuine)
     structural_potential_threshold: float = (
-        STRUCTURAL_ESCAPE_THRESHOLD_THEORETICAL  # 2.0
+        PHI_S_VON_KOCH_THRESHOLD  # π/4 selected per-node warning policy
     )
-    phase_gradient_threshold: float = PHASE_GRADIENT_THRESHOLD_CANONICAL  # ≈ 0.196 (π/16)
+    phase_gradient_threshold: float = GRAD_PHI_CANONICAL_THRESHOLD  # π/16 policy
     phase_curvature_threshold: float = (
-        PHYSICS_CURVATURE_HOTSPOT_CANONICAL  # 0.9×π ≈ 2.8274
+        K_PHI_CANONICAL_THRESHOLD  # selected 0.9π margin; exact bound π
     )
-    coherence_length_critical: float = 1.0  # ξ_C finite-size scaling
+    coherence_length_critical: float = XI_C_CRITICAL_RATIO  # finite-size comparison
 
     # Nodal Equation Integration Parameters
     default_dt: float = 0.1

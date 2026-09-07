@@ -9,6 +9,7 @@ Terminology (TNFR semantics):
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
@@ -80,9 +81,26 @@ def structural_potential_change_terms(
         or before_pressure.shape != (before_kernel.shape[0],)
     ):
         raise ValueError("kernels and pressures must use one aligned node order")
-    pressure_term = after_kernel @ (after_pressure - before_pressure)
-    topology_term = (after_kernel - before_kernel) @ before_pressure
-    return pressure_term, topology_term, pressure_term + topology_term
+    if not all(
+        np.all(np.isfinite(values))
+        for values in (
+            before_kernel,
+            after_kernel,
+            before_pressure,
+            after_pressure,
+        )
+    ):
+        raise ValueError("kernels and pressures must contain only finite values")
+    try:
+        with np.errstate(over="raise", invalid="raise"):
+            pressure_term = after_kernel @ (after_pressure - before_pressure)
+            topology_term = (after_kernel - before_kernel) @ before_pressure
+            total = pressure_term + topology_term
+    except FloatingPointError as exc:
+        raise ValueError(
+            "structural-potential change decomposition exceeds floating-point range"
+        ) from exc
+    return pressure_term, topology_term, total
 
 # ============================================================================
 # U6: Structural Potential Confinement (CANONICAL as of 2025-11-11)
@@ -91,8 +109,8 @@ def structural_potential_change_terms(
 
 def observe_structural_potential_confinement(
     G: Any,
-    phi_s_reference: dict[Any, float],
-    phi_s_observed: dict[Any, float],
+    phi_s_reference: Mapping[Any, float],
+    phi_s_observed: Mapping[Any, float],
     *,
     threshold: float = U6_STRUCTURAL_POTENTIAL_LIMIT,
     reference: str = "provided_snapshot",
@@ -115,7 +133,7 @@ def observe_structural_potential_confinement(
     return StructuralPotentialConfinementObservation(
         confined=confined,
         mean_absolute_drift=drift,
-        threshold=threshold,
+        threshold=float(threshold),
         kernel="canonical_directed_weighted_shortest_path_inverse_square",
         aggregation="mean_absolute_nodewise_drift",
         reference=reference,
@@ -126,9 +144,9 @@ def observe_structural_potential_confinement(
 
 def validate_structural_potential_confinement(
     G: Any,
-    phi_s_before: dict[Any, float],
-    phi_s_after: dict[Any, float],
-    threshold: float = U6_STRUCTURAL_POTENTIAL_LIMIT,  # Δ Φ_s < π/2 (half phase-wrap)
+    phi_s_before: Mapping[Any, float],
+    phi_s_after: Mapping[Any, float],
+    threshold: float = U6_STRUCTURAL_POTENTIAL_LIMIT,  # selected ΔΦ_s < π/2 policy
     strict: bool = True,
 ) -> tuple[bool, float, str]:
     """Evaluate the U6 potential-drift policy on two supplied snapshots.
@@ -201,37 +219,69 @@ def validate_structural_potential_confinement(
 
     """
 
-    # Compute drift as mean absolute change
+    if isinstance(threshold, bool):
+        raise TypeError("threshold must be a finite positive real number")
+    threshold_value = float(threshold)
+    if not np.isfinite(threshold_value) or threshold_value <= 0.0:
+        raise ValueError("threshold must be finite and strictly positive")
+    if not isinstance(strict, bool):
+        raise TypeError("strict must be a bool")
+    if not isinstance(phi_s_before, Mapping) or not isinstance(phi_s_after, Mapping):
+        raise TypeError("structural-potential snapshots must be mappings")
+
+    # Require exact graph-node alignment. Missing entries previously became
+    # silent zeros, which could manufacture or hide drift.
     nodes = list(G.nodes())
+    node_set = set(nodes)
+    before_keys = set(phi_s_before)
+    after_keys = set(phi_s_after)
+    if before_keys != node_set or after_keys != node_set:
+        raise ValueError(
+            "structural-potential snapshots must contain exactly the graph nodes"
+        )
     if not nodes:
         return True, 0.0, "U6: No nodes, trivially satisfied"
 
-    drifts = []
+    drifts: list[float] = []
     for node in nodes:
-        phi_before_i = phi_s_before.get(node, 0.0)
-        phi_after_i = phi_s_after.get(node, 0.0)
+        before_raw = phi_s_before[node]
+        after_raw = phi_s_after[node]
+        if isinstance(before_raw, bool) or isinstance(after_raw, bool):
+            raise TypeError("structural-potential values must be finite real numbers")
+        try:
+            phi_before_i = float(before_raw)
+            phi_after_i = float(after_raw)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise TypeError(
+                "structural-potential values must be finite real numbers"
+            ) from exc
+        if not np.isfinite(phi_before_i) or not np.isfinite(phi_after_i):
+            raise ValueError("structural-potential values must be finite")
         drifts.append(abs(phi_after_i - phi_before_i))
 
     delta_phi_s = float(np.mean(drifts))
+    if not np.isfinite(delta_phi_s):
+        raise ValueError("structural-potential drift exceeds floating-point range")
 
     # Validate against threshold
-    valid = delta_phi_s < threshold
+    valid = delta_phi_s < threshold_value
 
     if valid:
         msg = (
-            f"U6: PASS - Δ Φ_s = {delta_phi_s:.3f} < {threshold:.3f} (confined). "
+            f"U6: PASS - Δ Φ_s = {delta_phi_s:.3f} < {threshold_value:.3f} (confined). "
             f"System remains in safe regime."
         )
         return True, delta_phi_s, msg
     else:
         msg = (
-            f"U6: FAIL - Δ Φ_s = {delta_phi_s:.3f} ≥ {threshold:.3f} (escape). "
-            f"Fragmentation risk. Valid sequences maintain Δ Φ_s ≈ 0.6."
+            f"U6: ALERT - mean |Δ Φ_s| = {delta_phi_s:.3f} ≥ "
+            f"{threshold_value:.3f}. The selected finite drift policy was exceeded; "
+            f"this observation alone does not prove fragmentation."
         )
         if strict:
             raise StructuralPotentialConfinementError(
                 delta_phi_s=delta_phi_s,
-                threshold=threshold,
+                threshold=threshold_value,
                 sequence=None,  # Sequence not available in this context
             )
         return False, delta_phi_s, msg

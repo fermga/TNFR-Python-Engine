@@ -1,21 +1,26 @@
-"""TNFR Structural Conservation Law — Demonstration.
+"""TNFR structural-balance diagnostics — finite demonstration.
 
-Demonstrates the Noether-like conservation theorem derived from the
-TNFR nodal equation under unified grammar constraints U1-U6.
+Evaluates the implemented Noether-like balance candidate on a declared
+trajectory. It does not turn grammar compliance into a general conservation or
+Lyapunov theorem.
 
-Main result (Structural Continuity Theorem):
+Balance candidate evaluated here:
 
-    dρ/dt + div(J) ≈ S_grammar    where S → 0 under grammar compliance
+    dρ/dt + div(J) = S_residual
+
+The trajectory below follows an explicitly declared auxiliary smoothing rule.
+It does not execute a U1-U6 word, so its residual cannot establish that grammar
+compliance implies conservation.
 
 This example shows:
-1. Conservation tracking across a multi-step evolution
+1. Structural-balance tracking across a multi-step evolution
 2. Two-sector decomposition (potential vs geometric)
-3. Ward identities for individual operator steps
-4. Lyapunov stability verification (dE/dt ≤ 0)
-5. Spectral conservation analysis (graph Laplacian decomposition)
-6. Grammar violation detection from conservation residuals
+3. Ward-style diagnostics for auxiliary evolution steps
+4. Finite-step energy-derivative measurement
+5. Static spectral activity analysis (normalized-Laplacian decomposition)
+6. Balance-alert screening on baseline and perturbed trajectories
 
-See: theory/STRUCTURAL_CONSERVATION_THEOREM.md for the full derivation.
+See: theory/STRUCTURAL_CONSERVATION_THEOREM.md for the construction and scope.
 """
 
 from __future__ import annotations
@@ -30,8 +35,6 @@ from tnfr.physics.conservation import (
     ConservationTracker,
     analyze_sector_coupling,
     capture_conservation_snapshot,
-    compute_charge_density,
-    compute_conservation_scaling,
     compute_energy_functional,
     compute_grammar_conservation_bounds,
     compute_lyapunov_derivative,
@@ -60,7 +63,11 @@ def _build_graph(n: int = 30, seed: int = 42) -> nx.Graph:
 
 
 def _evolve_step(G: nx.Graph, dt: float = 0.01) -> None:
-    """One step of nodal equation evolution (phase + ΔNFR diffusion)."""
+    """Apply the example's auxiliary phase/ΔNFR smoothing rule.
+
+    This is a declared numerical model, not a canonical operator application
+    and not evidence that the resulting trajectory is grammar-compliant.
+    """
     for n in G.nodes():
         nu_f = G.nodes[n].get("nu_f", 1.0)
         dnfr = G.nodes[n].get("delta_nfr", 0.0)
@@ -72,10 +79,10 @@ def _evolve_step(G: nx.Graph, dt: float = 0.01) -> None:
             G.nodes[n]["delta_nfr"] += dt * 0.1 * (mean_dnfr - dnfr)
 
 
-def demo_conservation_tracking() -> None:
-    """1. Track conservation across a multi-step evolution."""
+def demo_balance_tracking() -> None:
+    """1. Track finite structural-balance diagnostics."""
     print("=" * 65)
-    print("  1. CONSERVATION TRACKING — Multi-step evolution")
+    print("  1. STRUCTURAL-BALANCE TRACKING — Multi-step evolution")
     print("=" * 65)
 
     G = _build_graph()
@@ -83,8 +90,8 @@ def demo_conservation_tracking() -> None:
     E0 = compute_energy_functional(G)
 
     print(f"Network: Watts-Strogatz(30, k=4, p=0.3)")
-    print(f"Initial Noether charge  Q = {Q0:.6f}")
-    print(f"Initial structural energy E = {E0:.6f}")
+    print(f"Initial charge candidate Q = {Q0:.6f}")
+    print(f"Initial energy candidate E = {E0:.6f}")
     print()
 
     tracker = ConservationTracker(G)
@@ -97,13 +104,14 @@ def demo_conservation_tracking() -> None:
         tracker.record(t=(step + 1) * dt)
 
     report = tracker.report()
+    mean_sampled_quality = report.sampled_mean_quality
     Q_final = compute_noether_charge(G)
     E_final = compute_energy_functional(G)
 
     print(f"After {n_steps} steps (dt={dt}):")
     print(f"  Final Q = {Q_final:.6f}  (drift = {abs(Q_final - Q0):.6f})")
     print(f"  Final E = {E_final:.6f}  (drift = {abs(E_final - E0):.6f})")
-    print(f"  Mean conservation quality = {report.mean_quality:.4f}")
+    print(f"  Mean sampled balance quality = {mean_sampled_quality:.4f}")
     print(
         f"  Charge relative drift     = {abs(Q_final - Q0) / max(abs(Q0), 1e-15):.2e}"
     )
@@ -132,26 +140,27 @@ def demo_sector_decomposition() -> None:
     print(f"Dominant sector:               {coupling['dominant_sector']}")
     print(f"Sector asymmetry:              {coupling['sector_asymmetry']:.3f}")
     print()
-    print("Physics: The cross-coupling confirms the complex field")
-    print("unification Psi = K_phi + i*J_phi is physically real.")
+    print("Interpretation: this correlation is a finite diagnostic of the")
+    print("declared trajectory. It does not prove conjugacy or a causal coupling;")
+    print("Psi = K_phi + i*J_phi is the algebraic field definition.")
     print()
 
 
 def demo_ward_identities() -> None:
-    """3. Ward identities for individual evolution steps."""
+    """3. Ward-style diagnostics for individual auxiliary steps."""
     print("=" * 65)
-    print("  3. WARD IDENTITIES — Per-step conservation signatures")
+    print("  3. WARD-STYLE DIAGNOSTICS — Per-step balance signatures")
     print("=" * 65)
 
     G = _build_graph()
     identities = []
 
     step_labels = [
-        "diffusion_1",
-        "diffusion_2",
-        "diffusion_3",
-        "diffusion_4",
-        "diffusion_5",
+        "aux_step_1",
+        "aux_step_2",
+        "aux_step_3",
+        "aux_step_4",
+        "aux_step_5",
     ]
 
     for label in step_labels:
@@ -161,29 +170,35 @@ def demo_ward_identities() -> None:
         ward = compute_ward_identity(before, after, operator_name=label)
         identities.append(ward)
 
-    print(f"{'Step':<15} {'DQ':>10} {'DE':>10} {'Charge':>12} {'Energy':>12}")
-    print("-" * 59)
+    print(
+        f"{'Step':<15} {'DQ':>10} {'DE':>10} "
+        f"{'Legacy Q class':>16} {'Legacy E class':>16}"
+    )
+    print("-" * 71)
     for w in identities:
         print(
             f"{w.operator_name:<15} {w.delta_charge:>+10.6f} "
-            f"{w.delta_energy:>+10.6f} {w.charge_character:>12} "
-            f"{w.energy_character:>12}"
+            f"{w.delta_energy:>+10.6f} {w.charge_character:>16} "
+            f"{w.energy_character:>16}"
         )
+
+    print("  Legacy class names are finite threshold labels, not exact laws.")
 
     seq = verify_sequence_ward_identity(identities)
     print()
-    print(f"Sequence Ward identity:")
+    print("Sequence diagnostic:")
     print(f"  Total source         = {seq['total_source']:+.6f}")
     print(f"  Total charge change  = {seq['total_charge_change']:+.6f}")
     print(f"  Total energy change  = {seq['total_energy_change']:+.6f}")
-    print(f"  Sequence conserved   = {seq['sequence_conserved']}")
+    print(f"  Legacy aggregate alert passed = {seq['sequence_conserved']}")
+    print("  This threshold result neither validates grammar nor proves conservation.")
     print()
 
 
-def demo_lyapunov_stability() -> None:
-    """4. Lyapunov stability verification: dE/dt <= 0."""
+def demo_candidate_energy_trend() -> None:
+    """4. Measure the candidate-energy derivative on one trajectory."""
     print("=" * 65)
-    print("  4. LYAPUNOV STABILITY — Energy monotonicity")
+    print("  4. LYAPUNOV-CANDIDATE DIAGNOSTIC — sampled energy change")
     print("=" * 65)
 
     G = _build_graph()
@@ -198,7 +213,7 @@ def demo_lyapunov_stability() -> None:
         lyap = compute_lyapunov_derivative(before, after, dt=0.01)
         energies.append(lyap.energy_after)
 
-        status = "STABLE" if lyap.is_stable else "UNSTABLE"
+        status = "DESCENT" if lyap.is_stable else "INCREASE"
         if lyap.is_stable:
             stable_count += 1
         print(
@@ -208,16 +223,16 @@ def demo_lyapunov_stability() -> None:
         )
 
     print()
-    print(f"Stable steps: {stable_count}/10")
+    print(f"Non-increasing sampled steps: {stable_count}/10")
     print(f"Energy trend: {energies[0]:.4f} -> {energies[-1]:.4f}")
     print(f"Total energy change: {energies[-1] - energies[0]:+.6f}")
     print()
 
 
-def demo_spectral_conservation() -> None:
-    """5. Spectral conservation analysis (Laplacian eigenbasis)."""
+def demo_spectral_activity() -> None:
+    """5. Static spectral activity analysis (Laplacian eigenbasis)."""
     print("=" * 65)
-    print("  5. SPECTRAL CONSERVATION — Laplacian decomposition")
+    print("  5. STATIC SPECTRAL ACTIVITY — Laplacian decomposition")
     print("=" * 65)
 
     G = _build_graph()
@@ -226,102 +241,108 @@ def demo_spectral_conservation() -> None:
     print(f"Network: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
     print(f"Spectral gap (lambda_1): {spec.spectral_gap:.4f}")
     print(
-        f"Well-conserved modes: {spec.dominant_conservation_modes}/{len(spec.eigenvalues)}"
+        f"Below-median divergence-activity modes: "
+        f"{spec.low_divergence_activity_modes}/{len(spec.eigenvalues)}"
     )
     print()
 
     # Show a few modes
-    print(f"{'Mode':<6} {'lambda_k':>10} {'rho_hat':>10} {'Residual':>10}")
+    print(f"{'Mode':<6} {'lambda_k':>10} {'rho_hat':>10} {'Activity':>10}")
     print("-" * 36)
     n_show = min(8, len(spec.eigenvalues))
     for k in range(n_show):
         print(
             f"{k:<6} {spec.eigenvalues[k]:>10.4f} "
             f"{spec.rho_spectrum[k]:>10.4f} "
-            f"{spec.conservation_by_mode[k]:>10.6f}"
+            f"{spec.modal_divergence_magnitude[k]:>10.6f}"
         )
 
     print()
-    print("Physics: Low-frequency modes (small lambda_k) show best")
-    print("conservation — mirrors U5 multi-scale coherence principle.")
+    print("Interpretation: the table reports a static activity proxy in this")
+    print("graph's normalized-Laplacian basis. Without d(rho_hat)/dt it is not")
+    print("a modal balance residual and cannot verify U5 or conservation.")
     print()
 
 
-def demo_grammar_violation_detection() -> None:
-    """6. Grammar violation detection from conservation residuals."""
+def demo_balance_alerts() -> None:
+    """6. Compare finite-balance alerts on two labelled fixtures."""
     print("=" * 65)
-    print("  6. GRAMMAR VIOLATION DETECTION — Conservation-based")
+    print("  6. BALANCE ALERTS — Baseline vs perturbation")
     print("=" * 65)
 
     G = _build_graph()
     bounds = compute_grammar_conservation_bounds(G)
 
-    # Normal evolution
+    # Baseline auxiliary evolution; no canonical operator history is executed.
     before = capture_conservation_snapshot(G)
     for _ in range(3):
         _evolve_step(G, dt=0.01)
     after = capture_conservation_snapshot(G)
 
     balance = verify_conservation_balance(before, after, dt=0.03)
-    violations = detect_grammar_violations_from_conservation(balance, bounds)
+    alerts = detect_grammar_violations_from_conservation(balance, bounds)
 
-    print("Normal evolution (grammar-compliant):")
-    print(f"  Conservation quality   = {balance.conservation_quality:.4f}")
-    print(f"  Violations detected    = {violations['violations_detected']}")
-    print(f"  Severity               = {violations['severity']:.4f}")
+    print("Baseline auxiliary smoothing (grammar status not asserted):")
+    print(f"  Balance quality        = {balance.conservation_quality:.4f}")
+    print(f"  Balance alerts         = {alerts['alerts_detected']}")
+    print(f"  Alert types            = {alerts['alert_types']}")
+    print(f"  Grammar validated      = {alerts['grammar_validated']}")
+    print(f"  Alert severity         = {alerts['severity']:.4f}")
     print()
 
-    # Perturbed evolution (simulated grammar violation)
+    # Deliberately perturbed comparison fixture.
     G2 = _build_graph(seed=99)
     before2 = capture_conservation_snapshot(G2)
-    # Large sudden perturbation (simulates unconstrained destabilizer)
+    # Large sudden perturbation, with no canonical operator label.
     rng = np.random.default_rng(123)
     for n in G2.nodes():
         G2.nodes[n]["delta_nfr"] += rng.uniform(-5.0, 5.0)
     after2 = capture_conservation_snapshot(G2)
 
     balance2 = verify_conservation_balance(before2, after2, dt=1.0)
-    violations2 = detect_grammar_violations_from_conservation(balance2, bounds)
+    alerts2 = detect_grammar_violations_from_conservation(balance2, bounds)
 
-    print("Perturbed evolution (grammar violation simulated):")
-    print(f"  Conservation quality   = {balance2.conservation_quality:.4f}")
-    print(f"  Violations detected    = {violations2['violations_detected']}")
-    print(f"  Violation types        = {violations2['violation_types']}")
-    print(f"  Severity               = {violations2['severity']:.4f}")
-    print(f"  Nodes violating        = {len(violations2['nodes_violating'])}")
+    print("Unlabelled large perturbation:")
+    print(f"  Balance quality        = {balance2.conservation_quality:.4f}")
+    print(f"  Balance alerts         = {alerts2['alerts_detected']}")
+    print(f"  Alert types            = {alerts2['alert_types']}")
+    print(f"  Grammar validated      = {alerts2['grammar_validated']}")
+    print(f"  Alert severity         = {alerts2['severity']:.4f}")
+    print(f"  Nodes alerted          = {len(alerts2['nodes_alerted'])}")
     print()
-    print("Physics: Conservation residuals detect and classify grammar")
-    print("violations — a diagnostic tool for structural health.")
+    print("Interpretation: the legacy-named routine reports balance alerts only.")
+    print("Without validated operator history and live state, it cannot decide")
+    print("whether a U1-U6 rule was violated or satisfied.")
     print()
 
 
 def main() -> None:
     print()
     print("*" * 65)
-    print("  TNFR STRUCTURAL CONSERVATION LAW — DEMONSTRATION")
-    print("  Noether-like theorems from the nodal equation")
+    print("  TNFR STRUCTURAL-BALANCE DIAGNOSTICS — FINITE DEMONSTRATION")
+    print("  Noether-like balance diagnostics on an auxiliary trajectory")
     print("*" * 65)
     print()
 
-    demo_conservation_tracking()
+    demo_balance_tracking()
     demo_sector_decomposition()
     demo_ward_identities()
-    demo_lyapunov_stability()
-    demo_spectral_conservation()
-    demo_grammar_violation_detection()
+    demo_candidate_energy_trend()
+    demo_spectral_activity()
+    demo_balance_alerts()
 
     print("=" * 65)
     print("  SUMMARY")
     print("=" * 65)
     print()
-    print("The Structural Conservation Theorem establishes that grammar")
-    print("constraints U1-U6 act as structural symmetries, generating")
-    print("conservation laws analogous to Noether's theorem in physics:")
+    print("This run evaluates the implemented structural-balance residual and")
+    print("candidate energy on one reproducible trajectory:")
     print()
-    print("  Grammar compliance => dQ/dt ~ 0 (charge conservation)")
-    print("  U2 convergence     => dE/dt <= 0 (Lyapunov stability)")
-    print("  Sector coupling    => Psi = K_phi + i*J_phi unification")
+    print("  Charge residual    -> measured balance quality")
+    print("  Energy derivative  -> measured descent/increase per sampled step")
+    print("  Sector correlation -> measured association between diagnostics")
     print()
+    print("None of these observations proves a result for arbitrary U1-U6 words.")
     print("See: theory/STRUCTURAL_CONSERVATION_THEOREM.md")
     print()
 

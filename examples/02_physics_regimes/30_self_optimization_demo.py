@@ -1,24 +1,23 @@
-"""TNFR Self-Optimization — Intrinsic Agency on the Structural Manifold.
+"""TNFR Self-Optimization — Rule-Based Strategy Selection.
 
-Demonstrates that TNFR networks possess intrinsic agency: the ability to
-analyse their own mathematical structure and select optimal transformation
-strategies via gradient descent on the structural manifold.
+Demonstrates the engine's deterministic strategy-selection and history
+machinery.  The component scores a supplied graph, recommends configured
+strategies, records outcomes and can reorder future recommendations.
 
 Key results shown:
 1. Mathematical optimisation landscape analysis (unified fields, conservation,
    graph structure, nodal-equation analysis, recommendations)
-2. Automatic strategy recommendation from learned policies
-3. Experience-based learning loop (record → policy extraction → adaptive config)
+2. Strategy recommendation from persisted score policies
+3. History update loop (record → policy extraction → adaptive config)
 4. Exported knowledge: policies, adaptive configuration, performance statistics
 5. Dry-run optimisation with structural telemetry snapshots before / after
 6. Conservation integrity feedback driving strategy reordering
 
-Physics basis:
-  This is NOT "AI magic."  The self-optimising engine performs *gradient
-  descent on the structural manifold* driven by the pressure term ΔNFR
-  in the nodal equation ∂EPI/∂t = νf · ΔNFR(t).  Unified-field telemetry
-  (Ψ, χ, S, C) and conservation invariants (Noether charge, Lyapunov
-  derivative) close the feedback loop.
+Scope:
+  This is a rule-based optimizer over heuristic scores and recorded history.
+  It does not compute a manifold metric or natural gradient. Structural
+  telemetry and finite balance diagnostics inform recommendations without
+  establishing agency, learning dynamics or Noether closure.
 
 See: AGENTS.md § Self-Optimizing Dynamics
 """
@@ -298,7 +297,7 @@ if recs_auto is not None and hasattr(recs_auto, "recommended_strategies"):
     for s in strats[:6]:
         print(f"    • {s}")
 
-print(f"\n  Conservation closed-loop:")
+print("\n  Optional finite-balance diagnostic:")
 cf = auto_result.get("conservation")
 if cf is not None:
     print_dict(cf)
@@ -309,20 +308,19 @@ else:
 banner("Summary")
 print(
     """
-  Self-optimisation in TNFR is gradient descent on the structural manifold.
+  Self-optimisation in this engine is rule-based strategy selection.
   The engine:
     1. Analyses the mathematical landscape (unified fields, conservation,
        graph structure, nodal equation properties).
-    2. Recommends strategies — from learned policies and from mathematical
+    2. Recommends strategies — from persisted policies and declared
        analysis of Ψ, χ, S, C, E, Q.
-    3. Records experiences and extracts optimisation policies.
+    3. Records outcomes and extracts score policies.
     4. Reorders strategies when conservation health is stressed.
     5. Persists knowledge for reuse across sessions.
 
-  Physics:  ∂EPI/∂t = νf · ΔNFR(t)  →  natural gradient on structural
-  manifold.  Grammar rules (U1-U6) define the constraint sub-manifold.
-  Conservation laws (Noether charge, Lyapunov derivative) close the
-  feedback loop.
+  Scope: the nodal equation and telemetry supply features to the selector.
+  No structural metric, natural gradient, intrinsic agency, or universal
+  conservation feedback theorem is claimed.
 
   See: AGENTS.md § Self-Optimizing Dynamics
 """

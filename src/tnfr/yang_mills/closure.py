@@ -3,13 +3,15 @@ r"""Y5 closure / obstruction classification for TNFR–Yang–Mills.
 Y5 does not add a new gauge dynamics.  It classifies what Y1–Y4 establish and
 what remains obstructed.  The key distinction is between:
 
-* a finite TNFR-internal structural gauge diagnostic surface (currently U(1));
+* a finite field-based spectral diagnostic with an auxiliary pure-gauge U(1)
+  twist;
 * a Clay-strength Yang–Mills mass-gap claim, which would require non-Abelian
   derivability and a continuum / thermodynamic lower-bound theorem.
 
 The expected current programme verdict is ``BRANCH_B_OBSTRUCTION_CLASSIFIED``:
-finite TNFR U(1) diagnostics exist, but Clay-strength closure requires a new
-canonical non-Abelian derivation from the nodal equation.
+finite pure-gauge diagnostics exist, but Clay-strength closure requires an
+independently derived gauge sector, non-Abelian structure and a continuum
+lower-bound theorem.
 """
 
 from __future__ import annotations
@@ -105,6 +107,7 @@ def classify_yang_mills_closure(
     }
     metadata = {
         "scope": "Y5_closure_obstruction_not_clay_proof",
+        "implemented_gauge_scope": "auxiliary_scalar_u1_pure_gauge_twist",
         "finite_branch_definition": (
             "A = finite U(1) diagnostic surface supported; "
             "C = sampled finite collapse/failure"
@@ -176,15 +179,21 @@ def _established_results(
     scaling_report: FiniteScalingReport,
 ) -> tuple[str, ...]:
     results = [
-        "Y1 finite self-adjoint structural gauge operator constructed",
-        "Y2 U6 finite confinement sweep surface constructed",
+        "Y1 finite self-adjoint field-based spectral matrix constructed",
+        "Y2 legacy U6-named potential-magnitude sweep constructed",
         "Y3 non-Abelian derivability audit executed",
         "Y4 finite graph-size scaling diagnostic executed",
     ]
     if finite_branch == "A_FINITE_U1_DIAGNOSTIC_SURFACE":
-        results.append("Finite U(1) structural gap surface is supported")
+        results.append(
+            "Finite selected-matrix gap surface with an auxiliary pure-gauge "
+            "U(1) twist is supported"
+        )
     if derivability_report.verdict == "OPEN_DERIVABILITY_GAP":
-        results.append("Canonical gauge sector remains U(1) at this stage")
+        results.append(
+            "Only the auxiliary scalar pure-gauge U(1) coordinate model is "
+            "implemented; no canonical gauge sector is derived"
+        )
     if scaling_report.verdict == "GAP_COLLAPSE_OBSERVED":
         results.append("At least one sampled finite family exhibits gap collapse")
     return tuple(results)
@@ -231,9 +240,9 @@ def _primary_obstruction(
 def _tnfr_internal_result(finite_branch: str, clay_branch: str) -> str:
     if finite_branch == "A_FINITE_U1_DIAGNOSTIC_SURFACE":
         return (
-            "TNFR currently supports a finite, gauge-invariant U(1) "
-            "structural "
-            "gap diagnostic surface; Clay-strength closure is blocked by "
+            "TNFR currently supports a finite field-based spectral diagnostic "
+            "with an auxiliary pure-gauge U(1) twist; Clay-strength closure is "
+            "blocked by "
             f"{clay_branch}."
         )
     return (

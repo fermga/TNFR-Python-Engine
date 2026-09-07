@@ -10,7 +10,7 @@ This demo executes three blocks:
 1. **Detailed sigma chart for chi_3** -- the smallest non-trivial
    primitive real character.  Tabulates W_chi[sigma] (zero-side),
    W_chi[sigma] (explicit-formula side), the consistency residual,
-   the canonical TNFR Lyapunov energy E_TNFR_chi[sigma], and the
+   the TNFR structural snapshot-energy candidate E_TNFR_chi[sigma], and the
    bridge ratio alpha_chi(sigma) = W / E across a grid of widths.
 
 2. **Sweep across chi_3, chi_4, chi_5** -- the three smallest

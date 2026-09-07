@@ -33,10 +33,10 @@ setting:
    W_chi[sigma] >= 0.  This is the GRH_chi-equivalent diagnostic, in
    pure TNFR form.
 
-2. **chi-twisted TNFR-Lyapunov bridge**.  It defines a *canonical
-   structural test state* on the P34 chi-twisted prime-ladder graph
-   driven by the same Gaussian profile h_sigma, computes the canonical
-   TNFR Lyapunov energy E_TNFR_chi[sigma] via
+2. **chi-twisted TNFR structural-energy comparison**.  It defines a selected
+   structural test state on the P34 chi-twisted prime-ladder graph
+   driven by the same Gaussian profile h_sigma, computes the nonnegative
+   TNFR structural-energy candidate E_TNFR_chi[sigma] via
    `compute_energy_functional`, and tabulates the ratio
    alpha_chi(sigma) := W_chi[sigma] / E_TNFR_chi[sigma] across a grid
    of widths.  If alpha_chi(sigma) > 0 uniformly across an admissible
@@ -49,9 +49,9 @@ Honesty disclaimer
 This module **does not prove** the Generalised Riemann Hypothesis for
 any L(s, chi).  Weil positivity is GRH-equivalent in the limit of a
 dense admissible family; this module checks it numerically on a
-Gaussian grid.  The structural test state defined here is one
-*canonical* TNFR mapping of h_sigma to the P34 graph, not the unique
-one.  The bridge certificate reports alpha_chi(sigma) for *this*
+Gaussian grid.  The structural test state defined here is one selected TNFR
+mapping of h_sigma to the P34 graph, not a uniquely derived one.  The bridge
+certificate reports alpha_chi(sigma) for *this*
 mapping and serves as a structural diagnostic, not as a theorem of
 analytic number theory.  In particular this module does NOT advance
 G4 = RH (the localisation of zeros of zeta on Re(s) = 1/2) or the
@@ -85,6 +85,7 @@ __all__ = [
     "TwistedWeilPositivityCertificate",
     "TwistedWeilTNFRBridgeCertificate",
     "build_twisted_structural_test_state",
+    "twisted_tnfr_structural_energy_of_test_state",
     "twisted_tnfr_lyapunov_of_test_state",
     "verify_twisted_weil_positivity",
     "verify_twisted_weil_tnfr_bridge",
@@ -243,7 +244,7 @@ def build_twisted_structural_test_state(
     channel feeds Phi_s; the ``phase`` channel feeds |grad phi| and
     K_phi; the result is a structural state in which every component
     of the tetrad responds to h_sigma.  Different mappings would
-    activate different sectors of the Lyapunov functional and yield
+    activate different sectors of the structural snapshot-energy candidate and yield
     different E_TNFR_chi[sigma].
 
     Parameters
@@ -282,29 +283,38 @@ def build_twisted_structural_test_state(
     return G
 
 
-def twisted_tnfr_lyapunov_of_test_state(
+def twisted_tnfr_structural_energy_of_test_state(
     bundle: TwistedPrimeLadderHamiltonian,
     sigma: float,
 ) -> float:
-    r"""Compute the canonical TNFR Lyapunov energy E_TNFR_chi[sigma]
-    for the chi-twisted structural test state.
+    r"""Compute the nonnegative structural-energy candidate E_TNFR_chi.
 
     Equivalent to::
 
         G = build_twisted_structural_test_state(bundle, sigma)
         return compute_energy_functional(G)
 
-    The Lyapunov energy is the canonical structural functional
+    The snapshot functional is
 
         E[G] = (1/2) sum_i [Phi_s^2(i) + |grad phi|^2(i)
                           + K_phi^2(i) + J_phi^2(i) + J_DeltaNFR^2(i)],
 
-    guaranteed non-negative by construction.  Under grammar-compliant
-    evolution (U1-U6) the time derivative is non-positive (Structural
-    Conservation Theorem).
+    It is nonnegative by construction. U1–U6 alone do not imply a nonpositive
+    time derivative; any Lyapunov result needs a separately declared dynamics.
     """
     G = build_twisted_structural_test_state(bundle, sigma)
     return compute_energy_functional(G)
+
+
+def twisted_tnfr_lyapunov_of_test_state(
+    bundle: TwistedPrimeLadderHamiltonian,
+    sigma: float,
+) -> float:
+    """Backward-compatible alias for the structural-energy candidate.
+
+    The historical function name does not certify Lyapunov monotonicity.
+    """
+    return twisted_tnfr_structural_energy_of_test_state(bundle, sigma)
 
 
 # ---------------------------------------------------------------------------
@@ -423,7 +433,7 @@ def verify_twisted_weil_tnfr_bridge(
     For each sigma in ``sigmas``, computes
 
     * W_chi[sigma] via `verify_twisted_weil_positivity` (zero side),
-    * E_TNFR_chi[sigma] via `twisted_tnfr_lyapunov_of_test_state`,
+    * E_TNFR_chi[sigma] via `twisted_tnfr_structural_energy_of_test_state`,
     * alpha_chi(sigma) = W_chi[sigma] / E_TNFR_chi[sigma].
 
     A constant positive lower bound alpha_min > 0 across a dense
@@ -489,7 +499,7 @@ def verify_twisted_weil_tnfr_bridge(
             integration_limit=integration_limit,
         )
         W = float(cert.weil_functional_zero_side)
-        E = float(twisted_tnfr_lyapunov_of_test_state(bundle, sigma_f))
+        E = float(twisted_tnfr_structural_energy_of_test_state(bundle, sigma_f))
 
         W_vals[i] = W
         E_vals[i] = E

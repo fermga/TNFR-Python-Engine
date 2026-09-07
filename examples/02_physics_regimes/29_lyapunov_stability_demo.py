@@ -1,17 +1,16 @@
-"""TNFR Lyapunov Stability & Structural Lifecycle.
+"""TNFR Lyapunov policy diagnostics and structural lifecycle.
 
-Demonstrates the formal Lyapunov stability proof for TNFR dynamics:
-grammar rule U2 guarantees that operator sequences are net-contractive
-on the structural energy functional E[G].
+Demonstrates the registered U2-role multipliers, finite trajectory checks and
+the exact spectral result available for restricted diffusion. The nominal
+multiplier product is a policy diagnostic; U2 alone does not prove that the
+structural energy decreases for every operator realization.
 
 Key results shown:
-1. Per-operator energy bounds: all 13 operators classified (stabiliser /
-   destabiliser / neutral / mixed) with contraction/expansion rates
-2. Sequence Lyapunov proof: grammar-compliant sequences have product
-   of energy multipliers <= 1 (net-contractive)
-3. Spectral gap analysis: algebraic connectivity, relaxation time, mixing
-4. Operator convergence: combined Lyapunov + spectral analysis
-5. Grammar U2 in action: comparing compliant vs non-compliant sequences
+1. Per-operator U2 policy multipliers for all 13 operators
+2. Sequence multiplier diagnostic under the declared policy model
+3. Separate combinatorial and normalized diffusion gaps
+4. Side-by-side policy-step and pure-EPI continuous-time scales
+5. Measured five-field energy compared with the nominal policy score
 6. Life emergence detection: autopoietic coefficient and vitality index
 
 See: theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md for the full treatment.
@@ -19,6 +18,7 @@ See: theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md for the full treatment.
 
 from __future__ import annotations
 
+import math
 import os
 import sys
 
@@ -35,14 +35,12 @@ from tnfr.physics.life import (
     detect_life_emergence,
 )
 from tnfr.physics.lyapunov import (
-    OPERATOR_LYAPUNOV_BOUNDS,
-    EnergyClass,
-    analyze_operator_convergence,
+    OPERATOR_POLICY_MULTIPLIERS,
+    U2PolicyRole,
+    analyze_operator_policy_context,
     analyze_spectral_gap,
-    compute_operator_energy_bound,
-    get_bound,
-    prove_sequence_lyapunov,
-    verify_operator_lyapunov,
+    compare_operator_energy_to_policy,
+    evaluate_sequence_policy,
 )
 
 SEED = 42
@@ -67,64 +65,60 @@ def _build_graph(n: int = 20, seed: int = SEED) -> nx.Graph:
 
 
 # ------------------------------------------------------------------
-# 1. Per-operator Lyapunov bounds — the full registry
+# 1. Per-operator U2 policy multipliers — the full registry
 # ------------------------------------------------------------------
 
 
 def demo_operator_bounds() -> None:
-    """Display formal energy bounds for all 13 canonical operators."""
+    """Display the policy multipliers for all 13 canonical operators."""
     print("=" * 72)
-    print("1. PER-OPERATOR LYAPUNOV BOUNDS — all 13 canonical operators")
+    print("1. PER-OPERATOR U2 POLICY MULTIPLIERS — all 13 operators")
     print("=" * 72)
 
     # Group by energy class
-    by_class: dict[EnergyClass, list] = {c: [] for c in EnergyClass}
-    for name, bound in OPERATOR_LYAPUNOV_BOUNDS.items():
+    by_class: dict[U2PolicyRole, list] = {c: [] for c in U2PolicyRole}
+    for name, bound in OPERATOR_POLICY_MULTIPLIERS.items():
         by_class[bound.energy_class].append(bound)
 
     for cls in [
-        EnergyClass.STABILISER,
-        EnergyClass.DESTABILISER,
-        EnergyClass.NEUTRAL,
-        EnergyClass.MIXED,
+        U2PolicyRole.STABILISER,
+        U2PolicyRole.DESTABILISER,
+        U2PolicyRole.NEUTRAL,
+        U2PolicyRole.MIXED,
     ]:
         ops = by_class[cls]
         if not ops:
             continue
-        print(f"\n  {cls.value.upper()} operators:")
-        print(f"  {'Name':20s}  {'Glyph':6s}  {'Rate':>10s}  Factor")
+        print(f"\n  {cls.value.upper()} U2 role:")
+        print(f"  {'Name':20s}  {'Glyph':6s}  {'Multiplier':>10s}  Factor")
         print(f"  {'─' * 20}  {'─' * 6}  {'─' * 10}  {'─' * 20}")
         for b in sorted(ops, key=lambda x: x.contraction_rate, reverse=True):
-            rate_label = {
-                EnergyClass.STABILISER: f"ρ={b.contraction_rate:.4f}",
-                EnergyClass.DESTABILISER: f"κ={b.contraction_rate:.4f}",
-                EnergyClass.NEUTRAL: f"ε={b.contraction_rate:.4f}",
-                EnergyClass.MIXED: f"κ={b.contraction_rate:.4f}",
-            }[cls]
             print(
-                f"  {b.operator_name:20s}  {b.glyph:6s}  {rate_label:>10s}  "
+                f"  {b.operator_name:20s}  {b.glyph:6s}  "
+                f"{b.policy_multiplier:10.4f}  "
                 f"{b.glyph_factor_name}={b.glyph_factor_value:.4f}"
             )
+    print("\n  Multipliers are bookkeeping values, not measured-energy bounds.")
     print()
 
 
 # ------------------------------------------------------------------
-# 2. Sequence Lyapunov proof — grammar-compliant vs non-compliant
+# 2. Sequence multiplier diagnostic — grammar-compliant vs non-compliant
 # ------------------------------------------------------------------
 
 
-def demo_sequence_proof() -> None:
-    """Prove that grammar-compliant sequences are net-contractive."""
+def demo_sequence_policy() -> None:
+    """Evaluate nominal multipliers without promoting them to a proof."""
     print("=" * 72)
-    print("2. SEQUENCE LYAPUNOV PROOF — U2 guarantees net-contractivity")
+    print("2. SEQUENCE MULTIPLIER DIAGNOSTIC — policy model only")
     print("=" * 72)
 
     sequences = {
-        "Bootstrap (AL, UM, IL)": ["Emission", "Coupling", "Coherence"],
-        "Explore (OZ, ZHIR, IL)": ["Dissonance", "Mutation", "Coherence"],
-        "Stabilize (IL, SHA)": ["Coherence", "Silence"],
-        "Propagate (RA, UM)": ["Resonance", "Coupling"],
-        "Full cycle": [
+        "Bootstrap fragment": ["Emission", "Coupling", "Coherence"],
+        "Explore fragment": ["Dissonance", "Mutation", "Coherence"],
+        "Stabilize fragment": ["Coherence", "Silence"],
+        "Propagate fragment": ["Resonance", "Coupling"],
+        "Closed sample word": [
             "Emission",
             "Coupling",
             "Coherence",
@@ -136,8 +130,8 @@ def demo_sequence_proof() -> None:
             "Coherence",
             "Silence",
         ],
-        "VIOLATION: OZ without IL": ["Dissonance", "Silence"],
-        "VIOLATION: OZ, VAL, no stabilizer": [
+        "Unbalanced sample: OZ without IL": ["Dissonance", "Silence"],
+        "Unbalanced sample: OZ and VAL": [
             "Dissonance",
             "Expansion",
             "Silence",
@@ -145,18 +139,15 @@ def demo_sequence_proof() -> None:
     }
 
     for label, seq in sequences.items():
-        proof = prove_sequence_lyapunov(seq)
-        status = "STABLE" if proof.is_net_contractive else "UNSTABLE"
+        result = evaluate_sequence_policy(seq)
+        status = "<= 1" if result.policy_product_at_most_one else "> 1"
         print(f"\n  {label}")
-        print(f"    Operators:    {' → '.join(proof.operators)}")
+        print(f"    Operators:    {' → '.join(result.operators)}")
         print(
-            f"    Multipliers:  {' × '.join(f'{m:.4f}' for m in proof.energy_multipliers)}"
+            f"    Multipliers:  {' × '.join(f'{m:.4f}' for m in result.policy_multipliers)}"
         )
-        print(f"    Product:      {proof.cumulative_product:.6f}")
-        print(
-            f"    Contractive?  {status}  "
-            f"(net contraction = {proof.net_contraction:+.4f})"
-        )
+        print(f"    Policy product: {result.cumulative_product:.6f} ({status})")
+    print("\n  This calculation neither validates grammar nor predicts energy change.")
     print()
 
 
@@ -166,9 +157,9 @@ def demo_sequence_proof() -> None:
 
 
 def demo_spectral_gap() -> None:
-    """Compute spectral gap and derived time-scales for different topologies."""
+    """Compare combinatorial and normalized gaps across topologies."""
     print("=" * 72)
-    print("3. SPECTRAL GAP ANALYSIS — topology controls relaxation")
+    print("3. SPECTRAL READ-OUTS — combinatorial vs pure-EPI diffusion gap")
     print("=" * 72)
 
     topologies = {
@@ -182,9 +173,10 @@ def demo_spectral_gap() -> None:
     }
 
     print(
-        f"\n  {'Topology':40s} {'λ₁':>8s} {'τ_relax':>10s} {'t_mix':>10s} {'Ratio':>8s}"
+        f"\n  {'Topology':36s} {'λ_comb':>9s} {'λ_rw':>9s} "
+        f"{'τ_rw':>9s} {'log(N)/λ':>10s}"
     )
-    print(f"  {'─' * 40} {'─' * 8} {'─' * 10} {'─' * 10} {'─' * 8}")
+    print(f"  {'─' * 36} {'─' * 9} {'─' * 9} {'─' * 9} {'─' * 10}")
 
     for label, G in topologies.items():
         # Inject defaults for TNFR attributes
@@ -201,28 +193,29 @@ def demo_spectral_gap() -> None:
         mix_str = (
             f"{spec.mixing_time_bound:.4f}" if spec.mixing_time_bound < 1e6 else "∞"
         )
-        ratio_str = f"{spec.spectral_ratio:.2f}" if spec.spectral_ratio < 1e6 else "∞"
-
         print(
-            f"  {label:40s} {spec.spectral_gap:8.4f} {tau_str:>10s} {mix_str:>10s} {ratio_str:>8s}"
+            f"  {label:36s} {spec.spectral_gap:9.4f} "
+            f"{spec.diffusion_gap:9.4f} {tau_str:>9s} {mix_str:>10s}"
         )
+    print("\n  τ_rw is per unit homogeneous capacity on fixed pure-EPI diffusion.")
+    print("  log(N)/λ is a topology scale, not a universal mixing-time bound.")
     print()
 
 
 # ------------------------------------------------------------------
-# 4. Operator convergence — Lyapunov + spectral combined
+# 4. Policy and spectrum — deliberately not combined
 # ------------------------------------------------------------------
 
 
-def demo_operator_convergence() -> None:
-    """Show effective convergence rate combining operator and spectral gap."""
+def demo_policy_and_spectrum() -> None:
+    """Show policy-position and continuous-time quantities side by side."""
     print("=" * 72)
-    print("4. OPERATOR CONVERGENCE — Lyapunov rate vs spectral gap")
+    print("4. POLICY AND SPECTRUM — two scopes, no effective-rate formula")
     print("=" * 72)
 
     G = _build_graph()
 
-    stabilisers = [
+    operators = [
         "Coherence",
         "Reception",
         "Coupling",
@@ -231,52 +224,45 @@ def demo_operator_convergence() -> None:
     ]
 
     print(
-        f"\n  {'Operator':20s} {'ρ (Lyapunov)':>14s} {'λ₁ (spectral)':>14s} "
-        f"{'Effective':>10s} {'Steps to ½E':>12s}"
+        f"\n  {'Operator':20s} {'U2 role':>13s} {'policy m':>10s} "
+        f"{'score half':>11s} {'λ_rw':>9s} {'τ_rw':>9s}"
     )
-    print(f"  {'─' * 20} {'─' * 14} {'─' * 14} {'─' * 10} {'─' * 12}")
+    print(
+        f"  {'─' * 20} {'─' * 13} {'─' * 10} {'─' * 11} "
+        f"{'─' * 9} {'─' * 9}"
+    )
 
-    for name in stabilisers:
-        summary = analyze_operator_convergence(G, name)
-        steps_str = (
-            f"{summary.steps_to_half_energy:.2f}"
-            if summary.steps_to_half_energy < 1e6
+    for name in operators:
+        summary = analyze_operator_policy_context(G, name)
+        half_str = (
+            f"{summary.policy_half_steps:.2f}"
+            if math.isfinite(summary.policy_half_steps)
             else "∞"
         )
         print(
-            f"  {name:20s} {summary.operator_bound.contraction_rate:14.4f} "
-            f"{summary.spectral.spectral_gap:14.4f} "
-            f"{summary.effective_convergence_rate:10.4f} {steps_str:>12s}"
+            f"  {name:20s} {summary.operator_bound.policy_role.value:>13s} "
+            f"{summary.policy_multiplier:10.4f} {half_str:>11s} "
+            f"{summary.spectral.diffusion_gap:9.4f} "
+            f"{summary.diffusion_relaxation_time:9.4f}"
         )
+    print("\n  Policy m counts operator positions; λ_rw and τ_rw describe a")
+    print("  separate homogeneous pure-EPI continuous-time model.")
     print()
 
 
 # ------------------------------------------------------------------
-# 5. Empirical Lyapunov verification on a real graph
+# 5. Measured energy versus policy-score comparison
 # ------------------------------------------------------------------
 
 
 def demo_empirical_verification() -> None:
-    """Verify operator energy bounds against actual E[G] measurements."""
+    """Compare actual five-field energy changes with the independent policy."""
     print("=" * 72)
-    print("5. EMPIRICAL LYAPUNOV VERIFICATION — bounds vs reality")
+    print("5. MEASURED ENERGY VS POLICY SCORE — mismatch is allowed")
     print("=" * 72)
 
     from tnfr.operators import apply_glyph
-    from tnfr.physics.canonical import (
-        compute_phase_curvature,
-        compute_phase_gradient,
-        compute_structural_potential,
-    )
-
-    def _energy(G: nx.Graph) -> float:
-        """Compute structural energy E = ½ Σ (Φ_s² + |∇φ|² + K_φ²)."""
-        phi_s = compute_structural_potential(G)
-        grad = compute_phase_gradient(G)
-        k_phi = compute_phase_curvature(G)
-        return sum(
-            0.5 * (phi_s[n] ** 2 + grad[n] ** 2 + k_phi[n] ** 2) for n in G.nodes()
-        )
+    from tnfr.physics.conservation import compute_energy_functional
 
     glyphs = [
         ("Coherence (IL)", "IL"),
@@ -288,25 +274,28 @@ def demo_empirical_verification() -> None:
         G = _build_graph()
         n = G.number_of_nodes()
 
-        E_before = _energy(G)
+        E_before = compute_energy_functional(G)
 
         # Apply operator to a node
         test_node = list(G.nodes())[0]
-        try:
-            apply_glyph(G, test_node, glyph)
-        except Exception:
-            print(f"  {label:25s}  (skipped — apply error)")
-            continue
+        apply_glyph(G, test_node, glyph)
 
-        E_after = _energy(G)
+        E_after = compute_energy_functional(G)
 
-        vf = verify_operator_lyapunov(glyph, E_before, E_after, n_nodes=n)
+        comparison = compare_operator_energy_to_policy(
+            glyph, E_before, E_after, n_nodes=n
+        )
         print(f"\n  {label}:")
-        print(f"    E_before = {vf.energy_before:.6f}")
-        print(f"    E_after  = {vf.energy_after:.6f}")
-        print(f"    delta_E  = {vf.delta_e:+.6f}")
-        print(f"    Bound    = {vf.theoretical_bound:+.6f}")
-        print(f"    Within?  = {vf.within_bound}  (margin = {vf.margin:.6f})")
+        print(f"    E_before          = {comparison.energy_before:.6f}")
+        print(f"    E_after           = {comparison.energy_after:.6f}")
+        print(f"    measured delta_E  = {comparison.delta_e:+.6f}")
+        print(f"    policy-score delta= {comparison.policy_delta:+.6f}")
+        print(f"    observed E ratio  = {comparison.observed_energy_ratio:.6f}")
+        print(f"    policy multiplier = {comparison.policy_multiplier:.6f}")
+        print(f"    multiplier residual = {comparison.multiplier_residual:+.6f}")
+        print(f"    one-sided screen  = {comparison.policy_screen_passed}")
+    print("\n  A failed screen is a model mismatch, not an operator-contract failure;")
+    print("  a passed screen is not a Lyapunov certificate.")
     print()
 
 
@@ -398,22 +387,22 @@ def demo_life_emergence() -> None:
 
 def main() -> None:
     print()
-    print("TNFR LYAPUNOV STABILITY & STRUCTURAL LIFECYCLE")
-    print("Grammar U2 guarantees net-contractive energy evolution.")
+    print("TNFR LYAPUNOV POLICY DIAGNOSTICS & STRUCTURAL LIFECYCLE")
+    print("U2 role balance and measured energy change are distinct checks.")
     print("E[G] = 1/2 * Sum_i [Phi_s^2 + |grad_phi|^2 + K_phi^2 + ...]")
     print()
 
     demo_operator_bounds()
-    demo_sequence_proof()
+    demo_sequence_policy()
     demo_spectral_gap()
-    demo_operator_convergence()
+    demo_policy_and_spectrum()
     demo_empirical_verification()
     demo_life_emergence()
 
     print("=" * 72)
-    print("CONCLUSION: Grammar U2 ensures Lyapunov stability.")
-    print("Every destabiliser is compensated by a stabiliser,")
-    print("guaranteeing the product of energy multipliers <= 1.")
+    print("CONCLUSION: U2 constrains composition; it is not by itself a")
+    print("global Lyapunov theorem. Policy multipliers organize U2 bookkeeping,")
+    print("while exact stability needs a specified model and state functional.")
     print("See: theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md")
     print("=" * 72)
 

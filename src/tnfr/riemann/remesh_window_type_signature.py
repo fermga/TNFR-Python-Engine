@@ -1,79 +1,59 @@
 """REMESH-Window-Type Signature — Diagnostic for the T-REMESH-window Conjecture (§13quadraginta-tertia).
 
-This module implements a purely diagnostic quantity, the **REMESH-
-Window-Type Signature** :math:`\\mathcal{S}_{\\tau}`, that quantifies
-on canonical TNFR network evolutions whether the canonical REMESH
-memory window
-:math:`(\\tau_l, \\tau_g) \\in \\mathbb{N} \\times \\mathbb{N}`
-admits an *irreducible* continuous-time or fractional-order lift
-(e.g. a continuous kernel :math:`K(t, s)` with :math:`s \\in [0, t]`,
-or a fractional-order discrete window
-:math:`\\tau_l, \\tau_g \\in \\mathbb{R}^+ \\setminus \\mathbb{N}`),
-or whether the integer-indexed history vector read by
-:func:`tnfr.operators.remesh.apply_network_remesh` is structurally
-sufficient.
+This module implements a finite **REMESH-Window-Type Signature**
+:math:`\\mathcal{S}_{\\tau}`. It records how the current runtime stores
+the delay pair and how three adjacent integer-delay experiments differ.
+The measurement describes the implemented history lookup; it cannot decide
+whether a continuous or fractional memory model is mathematically necessary.
 
 Methodological scope (mandatory honesty)
 ----------------------------------------
-This module is a *diagnostic only*.  It does **not** construct,
-promote, or modify any canonical operator.  It does **not** advance
-G4 = RH.  It does **not** by itself decide the T-REMESH-window
-Conjecture (which requires the forcing-axiom reduction of
-§13quadraginta-quarta and the final verdict of
-§13quadraginta-quinta — both deferred to B4b/B4c).
+This module is a *diagnostic only*. It does **not** construct or promote a
+memory kernel, modify an operator, prove catalog completeness, or advance
+G4 = RH. The legacy conjecture and verdict labels are retained for API and
+research-record compatibility.
 
 The diagnostic probes two orthogonal axes:
 
 1. **Integer-index storage axis** — the fraction of REMESH-bearing
-   parameter reads at which the canonical window slot
+   parameter reads at which both runtime window slots
    ``G.graph["REMESH_TAU_LOCAL"]`` / ``G.graph["REMESH_TAU_GLOBAL"]``
-   stores a non-integer-coercible value (float with non-zero
-   fractional part, NumPy float, mapping, tensor, callable, or
-   otherwise non-``int`` payload).  Under the canonical
-   implementation
-   :func:`tnfr.operators.remesh.apply_network_remesh`, both slots
-   are coerced via ``int(get_param(...))`` at every read, so this
-   fraction is structurally ``0`` — exactly mirroring
-   ``w_frac = 0`` (B2a), ``bepi_frac = 0`` (B1a), and
-   ``T_frac = 0`` (B3a).
+   contain an integer-coercible value. The default and bracket setup use
+   integers, so the expected value is ``1.0``. A lower value reports a
+   non-integer raw payload that the runtime reader would coerce with
+   ``int(get_param(...))``.
 2. **Window-refinement sensitivity axis** — variance of the
    post-REMESH per-node EPI snapshot across a small bracket of
    adjacent integer windows
    :math:`\\{(\\tau_l + j, \\tau_g + j) : j = 0, 1, 2\\}`,
-   normalised to :math:`[0, 1]`.  Low variance is a *necessary*
-   condition for the canonical integer-indexed REMESH to be
-   structurally adequate: it says that the canonical step-function
-   :math:`\\tau \\mapsto (\\text{EPI history slot})` is already
-   *Lipschitz-smooth* in :math:`\\tau` at the resolution at which
-   the dynamics evolves, so no continuous kernel
-   :math:`K(t, s)` is forced by canonical evolution.
+   normalised to :math:`[0, 1]`. Low variance says only that these
+   three finite integer-delay experiments have similar final states.
+   Three samples neither establish Lipschitz regularity between delays
+   nor prove that a continuous kernel is unnecessary.
 
-A high :math:`\\mathcal{S}_{\\tau}` is a *necessary-condition*
-check: it says only that adjacent integer windows produce
-substantially different post-REMESH states, so a continuous-time
-kernel *might* be required to disambiguate the true asymptotic
-target.  It does **not** prove that the canonical type of the
-REMESH window is a non-trivial continuous kernel.
+A high :math:`\\mathcal{S}_{\\tau}` says only that adjacent integer
+windows produce substantially different post-REMESH states. It can motivate
+a richer follow-up model, but it does **not** prove that the REMESH window
+requires a continuous kernel.
 
-A low :math:`\\mathcal{S}_{\\tau}` plus a zero integer-storage
-fraction is the empirically expected outcome — structurally
-consistent with the catalog row 1 typing
-:math:`(\\tau_l, \\tau_g) \\in \\mathbb{N} \\times \\mathbb{N}`,
-with the N15 REMESH-∞ closure
-(``theory/REMESH_INFINITY_DERIVATION.md``, §§1–8) supplying the
-asymptotic-limit discharge mechanism (mean ergodic theorem
-applied to the contractive transfer matrix at integer
-:math:`\\tau_g \\to \\infty`), and with the integer-indexed
-history read at
+A low :math:`\\mathcal{S}_{\\tau}` plus a unit integer-storage
+fraction is the empirically expected outcome. It is consistent with
+the catalog row 1 typing
+:math:`(\\tau_l, \\tau_g) \\in \\mathbb{N} \\times \\mathbb{N}` and with
+the integer-indexed history read at
 ``src/tnfr/operators/remesh.py:1218–1228`` (``int(get_param(...))``
-+ ``hist[-(tau_g + 1)]``).
++ ``hist[-(tau_g + 1)]``). It supplies no statement about a literal
+:math:`\\tau_g\\to\\infty` runtime limit. The corrected N15 record proves
+a separate Cesàro projection theorem only for a finite cyclic filter with
+fixed delays; its fixed modes are governed by
+:math:`\\gcd(\\tau_l,\\tau_g)`.
 
 References
 ----------
 - ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md`` §13quadraginta-tertia
 - ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §4 row B4
-- ``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8 (N15 closure;
-  canonical asymptotic-limit discharge mechanism)
+- ``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8 (corrected finite
+  fixed-delay cyclic surrogate and runtime-limit boundary)
 - ``src/tnfr/operators/remesh.py:1212::apply_network_remesh``
   (canonical integer-indexed implementation)
 - ``src/tnfr/config/defaults_core.py:221–222`` (canonical defaults
@@ -288,7 +268,8 @@ class RemeshWindowTypeSignatureCertificate:
         integer-window-adequate (the three bracket windows produce
         essentially identical post-REMESH EPI snapshots); ``1`` means
         adjacent integer windows produce maximally different
-        snapshots (continuous kernel may be necessary).
+        snapshots. The legacy verdict label may then mention a continuous
+        kernel, but the measurement alone cannot establish its necessity.
     integer_storage_fraction : float
         Fraction of REMESH-bearing window-slot reads in which the
         canonical slot stored an *integer-coercible* payload.  ``1.0``
@@ -321,9 +302,10 @@ class RemeshWindowTypeSignatureCertificate:
     verdict : str
         One of ``"INTEGER_WINDOW_ADEQUATE"`` (signature <
         ``scalar_threshold`` AND integer storage fraction == 1.0),
-        ``"CONTINUOUS_KERNEL_NECESSARY"`` (signature >
+        legacy ``"CONTINUOUS_KERNEL_NECESSARY"`` (signature >
         ``continuous_threshold`` OR integer storage fraction < 1.0),
-        or ``"INDETERMINATE"``.
+        or ``"INDETERMINATE"``. These are compatibility labels for
+        threshold outcomes, not mathematical necessity claims.
     diagnostics : dict
         Auxiliary fields (bracket EPI matrices, thresholds, seed,
         warmup steps, raw counters).
@@ -360,7 +342,7 @@ class RemeshWindowTypeSignatureCertificate:
             f"  graph                    : {self.n_nodes} nodes,"
             f" {self.n_remesh_events} REMESH events ({self.n_remesh_events // 3} per window)",
             f"  verdict                  : {self.verdict}",
-            "  scope: necessary-condition diagnostic; does NOT advance G4 = RH",
+            "  scope: finite adjacent-window diagnostic; legacy verdict labels do not prove a continuous kernel",
         ]
         return "\n".join(lines)
 
@@ -408,7 +390,8 @@ def compute_remesh_window_type_signature(
     continuous_threshold : float, default 0.5
         Above this signature value OR with integer storage fraction
         below ``1.0``, the verdict is
-        ``"CONTINUOUS_KERNEL_NECESSARY"``.
+        the legacy label ``"CONTINUOUS_KERNEL_NECESSARY"``. This label
+        records a threshold crossing; it does not prove necessity.
 
     Returns
     -------
@@ -434,21 +417,21 @@ def compute_remesh_window_type_signature(
     - **Window-refinement sensitivity axis**: for each of three
       adjacent integer windows
       :math:`\\{(\\tau_l + j, \\tau_g + j) : j = 0, 1, 2\\}`,
-      deep-copy the warmed-up template graph, fire
+      rebuild and warm an identically seeded graph, fire
       :func:`apply_network_remesh` ``remesh_events_per_window``
       times, and record the final per-node EPI snapshot.  Compute
       the per-node variance across the bracket, normalise by per-
       node mean absolute EPI (scale invariance), and squash through
       :math:`\\tanh` to ``[0, 1]``.  A low signature means the three
       adjacent integer windows produce essentially identical post-
-      REMESH states — the canonical integer-indexed REMESH is
-      structurally smooth in :math:`\\tau` and no continuous kernel
-      :math:`K(t, s)` is forced by canonical evolution.
+      REMESH states over this finite bracket. It does not establish
+      smoothness between integer delays and cannot select or exclude a
+      continuous kernel :math:`K(t, s)`.
 
     The diagnostic preserves the canonical implementation entirely
     (no monkey-patching, no operator modification, no parameter
-    coercion bypass).  It is a *read-only probe* of canonical
-    canonical TNFR evolution at three canonical integer windows.
+    coercion bypass). It is a finite probe of TNFR evolution at three
+    integer windows.
 
     Empirical baseline
     ------------------

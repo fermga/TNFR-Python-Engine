@@ -1,25 +1,29 @@
-"""TNFR Variational Principle — Lagrangian Action Formulation.
+"""Finite variational diagnostics and the auxiliary quadratic model.
 
-Demonstrates that the nodal equation ∂EPI/∂t = νf · ΔNFR(t) is NOT an
-ad-hoc postulate but the Euler-Lagrange equation of a well-defined action
-functional in the overdamped (dissipation-dominated) limit.
+This example computes graph-field energy/action read-outs and the momentum
+residual of a declared harmonic coordinate model. The nodal equation
+``∂EPI/∂t = νf · ΔNFR(t)`` has not been derived as its Euler–Lagrange or
+overdamped equation.
 
 Key results shown:
 1. Lagrangian density ℒ(i) = T(i) − V(i), Hamiltonian density H(i) = T(i) + V(i)
-2. Canonical conjugate pairs: geometric (K_φ, J_φ) and potential (Φ_s, J_ΔNFR)
-3. Euler-Lagrange residual → stationarity check (R ≈ 0 at equilibrium)
-4. Action functional S = ∫ dt Σ_i ℒ(i) computed along evolution
-5. Symplectic preservation: operator classification (canonical / dissipative / expansive)
-6. Grammar rules U1-U6 as stationarity conditions on the action
-7. Sector translation: variational (T/V), conservation (ρ/J), unified (Ψ)
+2. Auxiliary coordinate pairs: geometric (K_φ, J_φ) and potential (Φ_s, J_ΔNFR)
+3. Harmonic-model momentum residual between two engine snapshots
+4. Finite sampled action S = Σ dt · Σ_i ℒ(i)
+5. Snapshot energy trends; symplecticity remains inconclusive without a Jacobian
+6. Heuristic field comparisons carrying historical U1–U6 labels
+7. Algebraically consistent finite sector read-outs
 
-See: theory/TNFR_VARIATIONAL_PRINCIPLE.md for the full derivation.
+See: theory/TNFR_VARIATIONAL_PRINCIPLE.md for definitions and scope.
 """
 
 from __future__ import annotations
 
 import os
 import sys
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
@@ -108,14 +112,14 @@ def demo_lagrangian_snapshot() -> None:
 
 
 # ------------------------------------------------------------------
-# 2. Canonical conjugate pairs — (K_φ, J_φ) and (Φ_s, J_ΔNFR)
+# 2. Auxiliary coordinate pairs — (K_φ, J_φ) and (Φ_s, J_ΔNFR)
 # ------------------------------------------------------------------
 
 
 def demo_conjugate_pairs() -> None:
-    """Identify the two canonical conjugate sectors of TNFR phase space."""
+    """Read the two coordinate pairs declared by the auxiliary model."""
     print("=" * 60)
-    print("2. CONJUGATE PAIRS  —  (K_φ, J_φ) and (Φ_s, J_ΔNFR)")
+    print("2. AUXILIARY COORDINATE PAIRS  —  (K_φ, J_φ) and (Φ_s, J_ΔNFR)")
     print("=" * 60)
 
     G = _build_graph()
@@ -126,29 +130,29 @@ def demo_conjugate_pairs() -> None:
 
     print(f"  Geometric sector ({geo.sector}):")
     print(f"    q = K_φ,  p = J_φ")
-    print(f"    Phase-space volume = {vol_geo:.6f}")
+    print(f"    Legacy snapshot product = {vol_geo:.6f}")
 
     print(f"  Potential sector ({pot.sector}):")
     print(f"    q = Φ_s,  p = J_ΔNFR")
-    print(f"    Phase-space volume = {vol_pot:.6f}")
+    print(f"    Legacy snapshot product = {vol_pot:.6f}")
     print()
 
 
 # ------------------------------------------------------------------
-# 3. Euler-Lagrange residual — stationarity test
+# 3. Auxiliary momentum-equation residual
 # ------------------------------------------------------------------
 
 
 def demo_euler_lagrange() -> None:
-    """Check whether the field configuration is stationary (R ≈ 0)."""
+    """Measure the declared harmonic momentum residual between snapshots."""
     print("=" * 60)
-    print("3. EULER-LAGRANGE RESIDUAL  —  stationarity test")
+    print("3. AUXILIARY MOMENTUM RESIDUAL  —  finite snapshot comparison")
     print("=" * 60)
 
     G = _build_graph()
     dt = 0.05
 
-    # After a few steps — measure how far from equilibrium
+    # Compare two engine snapshots with the auxiliary momentum equation.
     snap_before = capture_lagrangian_snapshot(G)
     for _ in range(3):
         _evolve_step(G)
@@ -158,10 +162,10 @@ def demo_euler_lagrange() -> None:
     print(f"  After 3 steps:")
     print(f"    RMS residual       = {el.rms_residual:.6f}")
     print(f"    Max residual       = {el.max_residual:.6f}")
-    print(f"    Stationary?        = {el.is_stationary}")
-    print(f"    Stationarity qual. = {el.stationarity_quality:.4f}")
+    print(f"    Below model cutoff? = {el.is_stationary}")
+    print(f"    Residual score      = {el.stationarity_quality:.4f}")
 
-    # Evolve further toward equilibrium
+    # Repeat over a later pair; this is still a model-residual comparison.
     snap_mid = capture_lagrangian_snapshot(G)
     for _ in range(30):
         _evolve_step(G)
@@ -171,8 +175,8 @@ def demo_euler_lagrange() -> None:
     print(f"  After 33 steps:")
     print(f"    RMS residual       = {el2.rms_residual:.6f}")
     print(f"    Max residual       = {el2.max_residual:.6f}")
-    print(f"    Stationary?        = {el2.is_stationary}")
-    print(f"    Stationarity qual. = {el2.stationarity_quality:.4f}")
+    print(f"    Below model cutoff? = {el2.is_stationary}")
+    print(f"    Residual score      = {el2.stationarity_quality:.4f}")
     print()
 
 
@@ -202,14 +206,14 @@ def demo_action_functional() -> None:
 
 
 # ------------------------------------------------------------------
-# 5. Symplectic preservation — operator classification
+# 5. Snapshot trend heuristic; no tangent-map certificate
 # ------------------------------------------------------------------
 
 
 def demo_symplectic() -> None:
-    """Classify operators as canonical, dissipative, or expansive."""
+    """Show endpoint heuristics and their inconclusive symplectic status."""
     print("=" * 60)
-    print("5. SYMPLECTIC PRESERVATION  —  operator classification")
+    print("5. ENDPOINT HEURISTICS  —  symplecticity requires a Jacobian")
     print("=" * 60)
 
     glyphs = [
@@ -235,7 +239,8 @@ def demo_symplectic() -> None:
             )
             print(
                 f"  {label:25s}  class={check.classification:12s}  "
-                f"vol_ratio={check.volume_ratio:.4f}  canonical={check.is_canonical}"
+                f"legacy_product_ratio={check.volume_ratio:.4f}  "
+                f"local_symplectic={check.is_canonical}"
             )
         except Exception as e:
             print(f"  {label:25s}  error: {e}")
@@ -243,36 +248,36 @@ def demo_symplectic() -> None:
 
 
 # ------------------------------------------------------------------
-# 6. Grammar as stationarity — U1-U6 mapped to action conditions
+# 6. Heuristic field comparisons with historical grammar labels
 # ------------------------------------------------------------------
 
 
 def demo_grammar_stationarity() -> None:
-    """Show how each grammar rule maps to a stationarity condition on S."""
+    """Show advisory comparisons; these are not grammar validation."""
     print("=" * 60)
-    print("6. GRAMMAR → STATIONARITY  —  U1-U6 as action conditions")
+    print("6. HISTORICAL U1-U6 LABELS  —  advisory field comparisons")
     print("=" * 60)
 
     G = _build_graph()
     results = analyze_grammar_stationarity(G)
 
-    print("  Per-rule stationarity summary:")
+    print("  Per-label heuristic summary (grammar not validated):")
     for r in results:
-        status = "SATISFIED" if r.is_satisfied else "VIOLATED"
+        status = "within" if r.is_satisfied else "outside"
         print(f"    {r.rule:4s}  [{status:9s}]  diag={r.diagnostic_value:.4f}")
         print(f"          {r.variational_interpretation[:72]}")
     print()
 
 
 # ------------------------------------------------------------------
-# 7. Sector translation — three decompositions of the same 6 fields
+# 7. Finite sector read-outs from the same fields
 # ------------------------------------------------------------------
 
 
 def demo_sector_translation() -> None:
-    """Show the three equivalent decompositions: T/V, ρ/J, Ψ."""
+    """Show algebraically related same-snapshot read-outs."""
     print("=" * 60)
-    print("7. SECTOR TRANSLATION  —  variational | conservation | unified")
+    print("7. SECTOR READ-OUTS  —  quadratic | balance | complex coordinate")
     print("=" * 60)
 
     G = _build_graph()
@@ -329,9 +334,9 @@ def demo_critical_points() -> None:
 
 def main() -> None:
     print()
-    print("TNFR VARIATIONAL PRINCIPLE — LAGRANGIAN ACTION FORMULATION")
-    print("The nodal equation ∂EPI/∂t = νf · ΔNFR(t) is the")
-    print("Euler-Lagrange equation of the TNFR action functional.")
+    print("TNFR FINITE VARIATIONAL DIAGNOSTICS")
+    print("The quadratic auxiliary model is initialized from graph read-outs.")
+    print("It is not a derivation of the full nodal equation or operator maps.")
     print()
 
     demo_lagrangian_snapshot()
@@ -344,8 +349,9 @@ def main() -> None:
     demo_critical_points()
 
     print("=" * 60)
-    print("CONCLUSION: The nodal equation emerges from an action principle.")
-    print("Grammar rules U1-U6 map to stationarity conditions on S_TNFR.")
+    print("CONCLUSION: the identities and finite diagnostics above are scoped")
+    print("to snapshots or the declared auxiliary model; grammar requires its")
+    print("own operator-history validator and symplecticity requires a Jacobian.")
     print("See: theory/TNFR_VARIATIONAL_PRINCIPLE.md")
     print("=" * 60)
 

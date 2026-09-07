@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, Hashable, TypeVar, cas
 from .compat.dataclass import dataclass
 from .constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from .mathematics.unified_numerical import np
-from .types import FloatArray, NodeId
+from .types import FloatArray, NodeId, scalarize_epi
 from .utils import convert_value
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -36,28 +36,21 @@ T = TypeVar("T")
 
 
 def _bepi_to_float(value: Any) -> float:
-    """Extract scalar from BEPIElement dict or convert value to float.
+    """Extract the canonical scalar from BEPI storage or convert to float.
 
-    When operators transform EPI from float to BEPIElement dict, this helper
-    extracts the maximum magnitude from the 'continuous' component. This
-    preserves ΔNFR semantics (§3.3) and structural metrics accuracy (§3.9).
-
-    Parameters
-    ----------
-    value : Any
-        Value to convert. If it's a dict with a 'continuous' key, extracts
-        the maximum magnitude. Otherwise converts directly to float.
-
-    Returns
-    -------
-    float
-        Scalar representation of the value.
+    Canonical ``continuous/discrete/grid`` mappings are normalized through
+    :func:`tnfr.types.scalarize_epi`. Uniform real embeddings retain their
+    sign; richer BEPI values retain the maximum-component magnitude projection.
+    Ordinary scalar channels continue to use their native :class:`float`
+    conversion.
     """
-    if isinstance(value, dict) and "continuous" in value:
-        cont = value["continuous"]
-        if isinstance(cont, tuple):
-            return float(max(abs(c) for c in cont)) if cont else 0.0
-        return float(abs(cont))
+
+    if isinstance(value, Mapping) and {
+        "continuous",
+        "discrete",
+        "grid",
+    }.issubset(value):
+        return scalarize_epi(value)
     return float(value)
 
 

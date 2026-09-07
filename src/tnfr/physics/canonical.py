@@ -1,7 +1,7 @@
-"""TNFR Canonical Structural Fields - Core Implementation
+"""TNFR structural-field diagnostics - core implementation.
 
-The four CANONICAL structural fields that provide complete multi-scale
-characterization of TNFR network state:
+The four canonical public read-outs organize complementary aggregation, phase
+and correlation information. They do not reconstruct a complete network state:
 
 - Φ_s: Global structural potential (field theory dimension)
 - |∇φ|: Local phase desynchronization (gradient dimension)
@@ -61,6 +61,11 @@ from dataclasses import dataclass
 from typing import Any
 
 from ..mathematics.unified_numerical import np
+from ._edge_semantics import (
+    has_explicit_edge_lengths,
+    has_nonpositive_edge_length,
+    structural_path_weight,
+)
 
 try:
     import networkx as nx
@@ -230,10 +235,12 @@ def compute_structural_potential(
     """Compute the structural potential ``sum_j ΔNFR_j / d(i,j)**alpha``.
 
     The default is exact at every graph size. Distances follow outgoing arcs
-    on directed graphs and the ``weight`` edge attribute (default 1). Positive
-    edge lengths define the metric; for compatibility, zero-length and
-    unreachable source-target pairs contribute zero. Parallel edges use the
-    minimum path length, as in NetworkX shortest-path routines.
+    on directed graphs. An explicit ``length`` edge attribute defines the
+    metric; an edge without it falls back to ``weight`` for compatibility and
+    then to unit length. ``weight`` remains the EPI transport-conductance
+    channel, so new weighted graphs should set both attributes whenever those
+    quantities differ. Zero-length and unreachable source-target pairs
+    contribute zero. Parallel edges use the minimum effective path length.
 
     Parameters
     ----------
@@ -295,9 +302,7 @@ def compute_structural_potential(
 
     # The path-bound interpretation requires positive edge lengths. Preserve
     # the exact kernel's historical exclusion of zero-distance pairs.
-    has_nonpositive_edge = any(
-        float(data.get("weight", 1.0)) <= 0.0 for _, _, data in G.edges(data=True)
-    )
+    has_nonpositive_edge = has_nonpositive_edge_length(G)
     if has_nonpositive_edge:
         potential = _compute_phi_s_exact(G, nodes, delta_nfr, alpha)
         if validate:
@@ -351,7 +356,11 @@ def _compute_phi_s_exact(
     G: Any, nodes: list[Any], delta_nfr: dict[Any, float], alpha: float
 ) -> dict[Any, float]:
     """Exact distances with a small dense path or streamed BFS/Dijkstra."""
-    if _VECTORIZATION_AVAILABLE and len(nodes) <= 50:
+    if (
+        _VECTORIZATION_AVAILABLE
+        and len(nodes) <= 50
+        and not has_explicit_edge_lengths(G)
+    ):
         return compute_phi_s_exact_vectorized(
             G, nodes, delta_nfr, alpha, dtype=_get_precision_dtype()
         )
@@ -367,14 +376,19 @@ def _compute_phi_s_optimized(
     edge attributes. Compensated float sums reduce cancellation for signed
     pressure; research mode retains the configured extended scalar dtype.
     """
-    has_weights = any("weight" in data for _, _, data in G.edges(data=True))
+    has_lengths = any(
+        "length" in data or "weight" in data
+        for _, _, data in G.edges(data=True)
+    )
     mode = get_precision_mode()
     dtype = _get_precision_dtype() if mode == "research" else float
     potential: dict[Any, float] = {}
     for source in nodes:
         lengths = (
-            nx.single_source_dijkstra_path_length(G, source, weight="weight")
-            if has_weights
+            nx.single_source_dijkstra_path_length(
+                G, source, weight=structural_path_weight(G)
+            )
+            if has_lengths
             else nx.single_source_shortest_path_length(G, source)
         )
         contributions = (
@@ -396,8 +410,11 @@ def _landmark_distance_maps(
     outward_key = (topology, tuple(landmarks), "outward")
     outward = _PHI_S_DISTANCE_CACHE.get(outward_key)
     if outward is None:
+        path_weight = structural_path_weight(G)
         outward = {
-            node: nx.single_source_dijkstra_path_length(G, node, weight="weight")
+            node: nx.single_source_dijkstra_path_length(
+                G, node, weight=path_weight
+            )
             for node in landmarks
         }
         _PHI_S_DISTANCE_CACHE[outward_key] = outward
@@ -407,8 +424,11 @@ def _landmark_distance_maps(
     inward = _PHI_S_DISTANCE_CACHE.get(inward_key)
     if inward is None:
         reverse = G.reverse(copy=False)
+        reverse_weight = structural_path_weight(reverse)
         inward = {
-            node: nx.single_source_dijkstra_path_length(reverse, node, weight="weight")
+            node: nx.single_source_dijkstra_path_length(
+                reverse, node, weight=reverse_weight
+            )
             for node in landmarks
         }
         _PHI_S_DISTANCE_CACHE[inward_key] = inward
@@ -473,13 +493,10 @@ def compute_phase_gradient(G: Any) -> dict[Any, float]:
     synchronized state (|∇φ| = 0), and high |∇φ| = high potential energy
     = high stress.
 
-    Safety threshold (telemetry): |∇φ| < 0.196 is the *claimed* Kuramoto
-    critical coupling. NOTE
-    (audit 2026-06): a fair test finds |∇φ| at the synchronization onset is
-    ≈ 0.29 and σ-dependent, **not** a fixed constant. The genuine kinematic
-    bound is |∇φ| ≤ π (a mean of wrapped angles); this reference is a *dynamical transition*
-    value, not a universal constant. Treat it as an organizing heuristic, not a
-    derived threshold.
+    Telemetry uses π/16 ≈ 0.196 as a selected early-warning policy. It is
+    neither the Kuramoto critical coupling nor an exact phase-gradient bound.
+    The measured synchronization onset is ≈0.29 and σ-dependent. The exact
+    kinematic bound is |∇φ| ≤ π because this field averages wrapped angles.
     """
     grad, _ = _compute_phase_gradient_and_curvature(G)
     return grad
@@ -690,13 +707,12 @@ def _estimate_coherence_length_autocorr(G: Any) -> float:
 
 
 def _spectral_gap_coherence_length(G: Any) -> float:
-    """Emergent-geometry coherence length ``1/√λ₂`` (the Fiedler gap of L_rw).
+    """Graph-spectral fallback scale ``1/√λ_gap`` from ``L_rw``.
 
-    The robust canonical ``ξ_C``: the second-smallest eigenvalue of the
-    random-walk Laplacian (the emergent structural operator) is always well
-    defined, so this holds where the autocorrelation fit degenerates (a
-    uniformly coherent / near-equilibrium field, a small graph).  Same
-    spectral-gap form used by ``Network.nfr()``.
+    This topology-only value is used when the state-dependent autocorrelation
+    fit degenerates. On a connected undirected graph the smallest positive
+    mode is λ₂. On disconnected or degenerate graphs it does not describe
+    correlations across components and may be unavailable.
     """
     from .structural_diffusion import (  # local import: avoid module cycle
         structural_eigenvalues,
@@ -714,16 +730,15 @@ def _spectral_gap_coherence_length(G: Any) -> float:
 
 
 def estimate_coherence_length(G: Any) -> float:
-    """Coherence length ξ_C [CANONICAL] -- emergent-geometry robust.
+    """Estimate state-dependent coherence length with a spectral fallback.
 
     Primary: the exponential-decay fit ``C(r) ~ exp(-r/ξ_C)`` of the coherence
     autocorrelation vs graph distance (:func:`_estimate_coherence_length_autocorr`).
     When that fit degenerates -- a uniformly coherent / near-equilibrium field
     (all per-node ``C ≈ 1`` ⇒ flat correlation ⇒ non-negative slope) or a graph
-    too small -- fall back to the **emergent-geometry** coherence length
-    ``1/√λ₂`` (the Fiedler spectral gap of ``L_rw``), which is always well
-    defined.  So ξ_C reads the emergent geometry throughout and is never ``nan``
-    on a valid connected graph.
+    too small -- fall back to the topology-only scale ``1/√λ₂`` on a valid
+    connected graph. The returned provenance distinguishes the fit from this
+    fallback; the two are not asserted to be identical observables.
     """
     return estimate_coherence_length_with_provenance(G).value
 

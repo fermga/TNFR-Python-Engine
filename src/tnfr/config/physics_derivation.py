@@ -171,10 +171,9 @@ def can_generate_epi_from_null(operator: str) -> bool:
     Physical Rationale:
 
     **EMISSION (AL)**: ✓ Can generate from null
-    - Creates outward coherence pulse
-    - Generates positive νf (activates reorganization)
-    - Creates positive ΔNFR (initiates structural pressure)
-    - From ∂EPI/∂t = νf · ΔNFR: can produce ∂EPI/∂t > 0 from zero
+    - Writes a positive increment to the EPI channel
+    - Does not directly write νf, phase, or ΔNFR
+    - Active capacity/pressure and the nodal update remain separate conditions
 
     **RECEPTION (EN)**: ✗ Cannot generate from null
     - Requires external coherence to capture
@@ -208,7 +207,8 @@ def can_activate_latent_epi(operator: str) -> bool:
     **RECURSIVITY (REMESH)**: ✓ Can activate latent
     - Echoes/replicates existing patterns
     - Requires source EPI > 0 to replicate
-    - Increases νf of dormant structure
+    - Its network realization mixes present and delayed EPI; it does not
+      directly increase νf
     - Fractality: can activate nested EPIs
 
     **TRANSITION (NAV)**: ✓ Can activate latent
@@ -220,10 +220,11 @@ def can_activate_latent_epi(operator: str) -> bool:
 
 
 def can_stabilize_reorganization(operator: str) -> bool:
-    """Check if operator can reduce ∂EPI/∂t → 0 (stabilize evolution).
+    """Check whether an operator supplies the νf-side closure role.
 
-    Terminal operators must reduce the rate of structural change to zero
-    or near-zero, achieving stability.
+    The historical predicate name is retained. This classifies the registered
+    Silence role; it does not measure a trajectory or assert one-step arrival
+    at equilibrium.
 
     Parameters
     ----------
@@ -233,15 +234,16 @@ def can_stabilize_reorganization(operator: str) -> bool:
     Returns
     -------
     bool
-        True if operator achieves ∂EPI/∂t → 0
+        True if the operator is registered to suppress the nodal rate via νf
 
     Notes
     -----
     Physical Rationale:
 
-    **SILENCE (SHA)**: ✓ Achieves ∂EPI/∂t → 0
-    - Reduces νf → νf_min ≈ 0
-    - From ∂EPI/∂t = νf · ΔNFR: forces ∂EPI/∂t → 0
+    **SILENCE (SHA)**: ✓ supplies rate suppression
+    - Scales νf by a configured factor below one
+    - Repetition can drive νf and therefore νf·ΔNFR toward zero when pressure
+      remains bounded; a single label does not prove stationarity
     - Preserves EPI intact (memory/latency)
     - Canonical structural silence
 
@@ -255,10 +257,10 @@ def can_stabilize_reorganization(operator: str) -> bool:
 
 
 def achieves_operational_closure(operator: str) -> bool:
-    """Check if operator provides operational closure (completes cycle).
+    """Check whether an operator belongs to the operational-closure policy.
 
-    Some operators naturally close structural sequences by establishing
-    a complete operational cycle or handing off to a stable successor state.
+    The historical predicate name is retained. Membership marks an operator-
+    history boundary or handoff; it does not prove a stable successor state.
 
     Parameters
     ----------
@@ -268,7 +270,7 @@ def achieves_operational_closure(operator: str) -> bool:
     Returns
     -------
     bool
-        True if operator achieves operational closure
+        True if the operator is registered as an operational closure
 
     Notes
     -----
@@ -281,9 +283,9 @@ def achieves_operational_closure(operator: str) -> bool:
     - Natural boundary operator
 
     **RECURSIVITY (REMESH)**: ✓ Achieves closure
-    - Fractal echo creates self-similar closure
-    - Nested EPI structure naturally terminates
-    - Operational fractality preserves identity
+    - Registered operational boundary after a fractal echo
+    - Closure membership does not prove termination at an attractor
+    - Identity preservation is checked from the realized transition
 
     **DISSONANCE (OZ)**: ? Questionable closure
     - Generates high ΔNFR (instability)
@@ -373,11 +375,11 @@ def derive_start_operators_from_physics() -> frozenset[str]:
 
 
 def derive_end_operators_from_physics() -> frozenset[str]:
-    """Derive valid end operators from TNFR physical principles.
+    """Derive registered end operators from TNFR closure predicates.
 
-    A sequence can end with an operator if it satisfies at least one:
-    1. Stabilizes reorganization (∂EPI/∂t → 0)
-    2. Achieves operational closure (completes cycle)
+    A sequence can end with an operator if it satisfies at least one policy:
+    1. Supplies νf-side rate suppression
+    2. Belongs to the operational closure/handoff set
 
     Returns
     -------
@@ -398,8 +400,8 @@ def derive_end_operators_from_physics() -> frozenset[str]:
     -----
     **Derived End Operators:**
 
-    1. **silence** - Stabilizer
-       - Forces ∂EPI/∂t → 0 via νf → 0
+    1. **silence** - Rate-suppression closure
+       - Scales νf downward; repeated application approaches latency
        - Preserves EPI intact
        - Physical: structural suspension
 
@@ -409,8 +411,8 @@ def derive_end_operators_from_physics() -> frozenset[str]:
        - Physical: regime boundary
 
     3. **recursivity** - Fractal closure
-       - Self-similar pattern completion
-       - Nested EPI termination
+       - Registered boundary after delayed/multi-scale EPI mixing
+       - Does not certify an attractor or asymptotic termination
        - Physical: operational fractality
 
     4. **dissonance** - Questionable closure
@@ -439,7 +441,7 @@ def derive_end_operators_from_physics() -> frozenset[str]:
     # Import here to avoid circular dependency
     from .operator_names import DISSONANCE, RECURSIVITY, SILENCE, TRANSITION
 
-    stabilizers = {SILENCE}  # Forces ∂EPI/∂t → 0
+    stabilizers = {SILENCE}  # Registered νf-side rate suppression
     closures = {TRANSITION, RECURSIVITY}  # Completes operational cycles
 
     # DISSONANCE is questionable but included for backward compatibility
@@ -452,65 +454,70 @@ def derive_end_operators_from_physics() -> frozenset[str]:
 
 
 # ===========================================================================
-# U2 / U4 classification — derived from the structural-pressure channel ΔNFR
+# U2 / U4 classification — role policy across the four state channels
 # ===========================================================================
 #
-# U2 (convergence/boundedness) is a property of the integral ∫νf·ΔNFR dt.  An
-# operator's U2 role is therefore determined by the SIGN of its effect on the
-# structural pressure |ΔNFR|:
-#   - DESTABILIZER: increases |ΔNFR| (positive feedback → integral may diverge)
-#   - STABILIZER:   reduces  |ΔNFR| (negative feedback → integral converges)
-# U4 (bifurcation) is governed by the second derivative ∂²EPI/∂t²: triggers
-# raise it past τ, handlers absorb it, transformers execute the threshold
-# crossing.  Each predicate below encodes the per-operator nodal-equation
-# rationale (see the operator contracts in AGENTS.md §Operators); the
-# derive_* helpers turn the predicates into the canonical operator sets.
+# Operator contracts have exactly four primary channels: EPI, νf, phase, and
+# ΔNFR (the centralized registry is ``operators.operator_contracts``). U2 roles
+# are orthogonal metadata: OZ acts directly on pressure, ZHIR perturbs phase,
+# and VAL raises capacity, yet all three incur U2 destabilizer debt. IL directly
+# reduces pressure; THOL supplies stabilizing reorganization during a
+# bifurcation. Debt coverage is a finite-word policy and is not a convergence
+# theorem for ∫νf·ΔNFR dt.
+# U4 records operator roles around bifurcation thresholds. The label-level
+# predicates do not establish that ∂²EPI/∂t² crossed τ, that a handler absorbed
+# a perturbation, or that all destabilizer channels share one scalar threshold.
+# The derive_* helpers turn the predicates into the centralized grammar sets.
 
 
 def increases_structural_pressure(operator: str) -> bool:
-    """U2 Destabilizer test: does the operator raise |ΔNFR| (positive feedback)?
+    """Return whether an operator incurs U2 destabilizer debt.
 
-    From ∂EPI/∂t = νf·ΔNFR, an operator destabilizes when it raises the
-    structural pressure |ΔNFR|, pushing the integral ∫νf·ΔNFR dt toward
-    divergence.  Exactly three canonical operators do this:
+    The historical function name is retained for API compatibility. Only OZ
+    directly raises the primary ``ΔNFR`` channel. ZHIR acts on phase and VAL on
+    ``νf``; their declared perturbations also incur U2 debt. Thus this predicate
+    classifies grammar roles, not a measured sign of instantaneous pressure or
+    proof about the nodal integral. Exactly three operators return ``True``:
 
     **DISSONANCE (OZ)**: ✓ destabilizer
     - Contract: "must increase |ΔNFR|" — injects controlled instability directly
       into the structural-pressure channel.
 
     **EXPANSION (VAL)**: ✓ destabilizer
-    - dim(EPI) increases — every new structural degree of freedom enters
-      unaligned with the existing form, raising |ΔNFR|.
+    - Raises the νf capacity channel, increasing the response to any nonzero
+      pressure. This is a policy-classified capacity perturbation; a pressure
+      increase is not asserted.
 
     **MUTATION (ZHIR)**: ✓ destabilizer
-    - θ → θ' phase jump — desynchronizes the node from its neighbours, raising
-      the phase gradient |∇φ| (the phase channel of ΔNFR).
+    - Transforms θ → θ'. The realized wrapped phase gradient can rise or fall,
+      so the destabilizer label records the declared phase perturbation.
 
     **Why others are NOT destabilizers:**
     - TRANSITION (NAV): a *controlled* trajectory between attractors — it is a
-      generator/closure, not positive feedback; it does not drive unbounded
-      pressure growth.
+      generator/closure, not an assigned U2 destabilizer.
     - RECEPTION (EN): integrates incoming resonance (contract: must not reduce
       C(t)) — neutral, not positive feedback.
-    - CONTRACTION (NUL): dim(EPI) decreases — removes degrees of freedom, the
-      opposite of expansion.
+    - CONTRACTION (NUL): reduces νf while densifying ΔNFR by the reciprocal
+      factor; the registry treats it as a simplifier rather than U2 debt.
     """
     return operator in {"dissonance", "expansion", "mutation"}
 
 
 def provides_negative_feedback(operator: str) -> bool:
-    """U2 Stabilizer test: does the operator reduce |ΔNFR| (negative feedback)?
+    """Return whether an operator supplies U2 stabilizer coverage.
 
-    A stabilizer drives ∫νf·ΔNFR dt toward convergence by reducing the
-    structural pressure.  Two canonical operators do this:
+    The historical name is retained for API compatibility. IL directly reduces
+    structural pressure. THOL has a reorganizing, coherence-preserving contract
+    during sub-EPI formation; it need not monotonically reduce instantaneous
+    pressure. Neither role alone proves convergence. Two operators return
+    ``True``:
 
     **COHERENCE (IL)**: ✓ stabilizer
-    - Contract: "reduces |ΔNFR|, increases C(t)" — direct negative feedback on
-      the structural-pressure channel (measured: network |ΔNFR| 0.46 → 0.25).
+    - Contract: reduces |ΔNFR| without reducing C(t), a direct pressure feedback.
 
     **SELF-ORGANIZATION (THOL)**: ✓ stabilizer
-    - Autopoietic stabilization — bounds the aggregate child reorganization
-      while preserving the global form (U5: C_parent ≥ α·Σ C_child).
+    - Autopoietic reorganization preserves global form while managing a
+      bifurcation. Parent/child coherence must be measured separately.
     """
     return operator in {"coherence", "self_organization"}
 
@@ -521,8 +528,8 @@ def executes_bifurcation(operator: str) -> bool:
 
     **MUTATION (ZHIR)**: ✓ transformer
     - Phase transition θ → θ' when ΔEPI/Δt > ξ — crosses a structural threshold,
-      requiring elevated |ΔNFR| (recent destabilizer) plus a stable base
-      (prior IL).
+      requiring a recent declared pressure/phase/capacity perturbation plus a
+      stable base (prior IL). The label check does not measure either threshold.
 
     **SELF-ORGANIZATION (THOL)**: ✓ transformer
     - Spontaneous autopoietic reorganization — spawns sub-EPIs once the second
@@ -560,14 +567,14 @@ def _all_canonical_operator_names() -> frozenset[str]:
 
 
 def derive_stabilizers_from_physics() -> frozenset[str]:
-    """Derive the U2 stabilizer set: operators that reduce |ΔNFR|."""
+    """Derive the U2 stabilizer-coverage set from declared role predicates."""
     return frozenset(
         op for op in _all_canonical_operator_names() if provides_negative_feedback(op)
     )
 
 
 def derive_destabilizers_from_physics() -> frozenset[str]:
-    """Derive the U2 destabilizer set: operators that increase |ΔNFR|."""
+    """Derive the U2 debt set (pressure, phase, or capacity perturbation)."""
     return frozenset(
         op
         for op in _all_canonical_operator_names()

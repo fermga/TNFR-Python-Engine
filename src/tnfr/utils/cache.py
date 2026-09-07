@@ -298,7 +298,8 @@ class CacheManager:
         encoder: Callable[[Any], Any] | None = None,
         decoder: Callable[[Any], Any] | None = None,
     ) -> None:
-        """Register ``name`` with ``factory`` and optional lifecycle hooks."""
+        """Register `
+ame`` with ``factory`` and optional lifecycle hooks."""
 
         if lock_factory is None:
             lock_factory = threading.RLock
@@ -369,7 +370,8 @@ class CacheManager:
         fallback: int | None = None,
         use_default: bool = True,
     ) -> int | None:
-        """Return capacity for ``name`` considering overrides and defaults."""
+        """Return capacity for `
+ame`` considering overrides and defaults."""
 
         with self._registry_lock:
             override = self._capacity_overrides.get(name, self._MISSING)
@@ -390,13 +392,15 @@ class CacheManager:
         return None
 
     def has_override(self, name: str) -> bool:
-        """Return ``True`` if ``name`` has an explicit capacity override."""
+        """Return ``True`` if `
+ame`` has an explicit capacity override."""
 
         with self._registry_lock:
             return name in self._capacity_overrides
 
     def get_lock(self, name: str) -> threading.Lock | threading.RLock:
-        """Return the lock guarding cache ``name`` for external coordination."""
+        """Return the lock guarding cache `
+ame`` for external coordination."""
 
         entry = self._entries.get(name)
         if entry is None:
@@ -410,7 +414,8 @@ class CacheManager:
             return iter(tuple(self._entries))
 
     def get(self, name: str, *, create: bool = True) -> Any:
-        """Return cache ``name`` creating it on demand when ``create`` is true."""
+        """Return cache `
+ame`` creating it on demand when ``create`` is true."""
 
         entry = self._entries.get(name)
         if entry is None:
@@ -423,7 +428,8 @@ class CacheManager:
             return value
 
     def peek(self, name: str) -> Any:
-        """Return cache ``name`` without creating a missing entry."""
+        """Return cache `
+ame`` without creating a missing entry."""
 
         entry = self._entries.get(name)
         if entry is None:
@@ -432,7 +438,8 @@ class CacheManager:
             return self._load_from_layers(name, entry)
 
     def store(self, name: str, value: Any) -> None:
-        """Replace the stored value for cache ``name`` with ``value``."""
+        """Replace the stored value for cache `
+ame`` with ``value``."""
 
         entry = self._entries.get(name)
         if entry is None:
@@ -447,7 +454,8 @@ class CacheManager:
         *,
         create: bool = True,
     ) -> Any:
-        """Apply ``updater`` to cache ``name`` storing the resulting value."""
+        """Apply ``updater`` to cache `
+ame`` storing the resulting value."""
 
         entry = self._entries.get(name)
         if entry is None:
@@ -601,7 +609,8 @@ class CacheManager:
         amount: int = 1,
         duration: float | None = None,
     ) -> None:
-        """Increase cache hit counters for ``name`` (optionally logging latency)."""
+        """Increase cache hit counters for `
+ame`` (optionally logging latency)."""
 
         metrics = self._ensure_metrics(name)
         with metrics.lock:
@@ -617,7 +626,8 @@ class CacheManager:
         amount: int = 1,
         duration: float | None = None,
     ) -> None:
-        """Increase cache miss counters for ``name`` (optionally logging latency)."""
+        """Increase cache miss counters for `
+ame`` (optionally logging latency)."""
 
         metrics = self._ensure_metrics(name)
         with metrics.lock:
@@ -627,14 +637,16 @@ class CacheManager:
                 metrics.timings += 1
 
     def increment_eviction(self, name: str, *, amount: int = 1) -> None:
-        """Increase eviction count for cache ``name``."""
+        """Increase eviction count for cache `
+ame``."""
 
         metrics = self._ensure_metrics(name)
         with metrics.lock:
             metrics.evictions += int(amount)
 
     def record_timing(self, name: str, duration: float) -> None:
-        """Accumulate ``duration`` into latency telemetry for ``name``."""
+        """Accumulate ``duration`` into latency telemetry for `
+ame``."""
 
         metrics = self._ensure_metrics(name)
         with metrics.lock:
@@ -643,7 +655,8 @@ class CacheManager:
 
     @contextmanager
     def timer(self, name: str) -> TimingContext:
-        """Context manager recording execution time for ``name``."""
+        """Context manager recording execution time for `
+ame``."""
 
         start = perf_counter()
         try:
@@ -652,7 +665,8 @@ class CacheManager:
             self.record_timing(name, perf_counter() - start)
 
     def get_metrics(self, name: str) -> CacheStatistics:
-        """Return a snapshot of telemetry collected for cache ``name``."""
+        """Return a snapshot of telemetry collected for cache `
+ame``."""
 
         metrics = self._metrics.get(name)
         if metrics is None:
@@ -1499,7 +1513,8 @@ def _update_node_cache(
     sorted_nodes: tuple[Any, ...] | None = None,
     owner: weakref.ReferenceType[Any] | None = None,
 ) -> None:
-    """Store ``nodes`` and ``checksum`` in ``graph`` under ``key``."""
+    """Store `
+odes`` and ``checksum`` in ``graph`` under ``key``."""
 
     graph[f"{key}_cache"] = NodeCache(
         checksum=checksum, nodes=nodes, sorted_nodes=sorted_nodes, owner=owner
@@ -2148,7 +2163,8 @@ def cached_nodes_and_A(
     When ``prefer_sparse`` is true the adjacency matrix construction is skipped
     unless a caller later requests it explicitly.  This lets ΔNFR reuse the
     edge-index buffers stored on :class:`~tnfr.dynamics.dnfr.DnfrCache` without
-    paying for ``nx.to_numpy_array`` on sparse graphs while keeping the
+    paying for `
+x.to_numpy_array`` on sparse graphs while keeping the
     canonical cache interface unchanged.
     """
 
@@ -2546,9 +2562,9 @@ class TNFRHierarchicalCache:
     Internally uses ``CacheManager`` for unified cache management, metrics,
     and telemetry integration with the rest of TNFR.
 
-    **Performance Optimizations** (v2):
-    - Direct cache references bypass CacheManager overhead on hot path (50% faster reads)
-    - Lazy persistence batches writes to persistent layers (40% faster writes)
+    **Implementation characteristics** (v2):
+    - Direct cache references bypass CacheManager dispatch on the hot path
+    - Lazy persistence batches writes to persistent layers
     - type-based size estimation caching reduces memory tracking overhead
     - Dependency change detection avoids redundant updates
     - Batched invalidation reduces persistence operations
@@ -3203,7 +3219,8 @@ _DEP_HASH_MISSING = object()
 
 
 def _dependency_alias_keys(dep: str) -> tuple[str, ...]:
-    """Map a ``node_*`` cache dependency to its canonical alias keys.
+    """Map a `
+ode_*`` cache dependency to its canonical alias keys.
 
     The canonical field writer (:func:`tnfr.alias.set_attr`) stores each
     field under the FIRST alias of its tuple, which is the Greek/canonical
@@ -3214,12 +3231,19 @@ def _dependency_alias_keys(dep: str) -> tuple[str, ...]:
     field and returning stale results (the bug this maps around).
     """
     try:
-        from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+        from ..constants.aliases import (
+            ALIAS_DEPI,
+            ALIAS_DNFR,
+            ALIAS_EPI,
+            ALIAS_THETA,
+            ALIAS_VF,
+        )
     except Exception:
         return ()
     mapping = {
         "node_phase": ALIAS_THETA,
         "node_dnfr": ALIAS_DNFR,
+        "node_depi": ALIAS_DEPI,
         "node_epi": ALIAS_EPI,
         "node_vf": ALIAS_VF,
     }
@@ -3267,8 +3291,9 @@ def _compute_dependency_hash(graph: Any, dependencies: set[str]) -> str:
     if not is_nx:
         return hasher.hexdigest()
 
-    # Include labelled, weighted topology: shortest paths consume weights,
-    # and degree sequences alone cannot identify edges or their node labels.
+    # Include labelled topology plus both edge channels. ``weight`` is the
+    # transport conductance and legacy path-length fallback; an explicit
+    # ``length`` overrides it only for structural-potential geometry.
     if has_topology:
         try:
             directed = graph.is_directed()
@@ -3285,7 +3310,14 @@ def _compute_dependency_hash(graph: Any, dependencies: set[str]) -> str:
                 endpoints = (_node_repr(u), _node_repr(v))
                 if not directed:
                     endpoints = tuple(sorted(endpoints))
-                edge_records.append((*endpoints, repr(key), repr(data.get("weight", 1.0))))
+                edge_records.append(
+                    (
+                        *endpoints,
+                        repr(key),
+                        repr(data.get("weight", 1.0)),
+                        repr(data.get("length", None)),
+                    )
+                )
             update_record(("edges", sorted(edge_records)))
         except Exception:
             pass
@@ -3609,7 +3641,13 @@ class GraphChangeTracker:
 
         # Match the same canonical aliases used by dependency hashing. Keep
         # legacy fine-grained names above, while invalidating shared readers.
-        for dependency in ("node_epi", "node_vf", "node_phase", "node_dnfr"):
+        for dependency in (
+            "node_epi",
+            "node_vf",
+            "node_phase",
+            "node_dnfr",
+            "node_depi",
+        ):
             if property_name in _dependency_alias_keys(dependency) or property_name == dependency[5:]:
                 canonical_property = dependency[5:]
                 for name in (dependency, f"node_{canonical_property}_{node_id}",

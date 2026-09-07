@@ -1,51 +1,34 @@
 #!/usr/bin/env python3
 """
-Example 106 — The Per-Node Polarization Geometry of the Emergent Substrate
-=========================================================================
+Example 106 — Polarization Geometry of the Auxiliary Substrate
+===============================================================
 
-Returns to the emergent symplectic substrate (Example 98) to deepen its
-per-node polarization geometry: the U(2) polarization symmetry, the Stokes
-parameters, and the Poincaré-sphere vector each node carries. Three
-explorations, all measured:
+The auxiliary substrate represents each extracted graph-field tuple
+``(K_phi, J_phi, Phi_s, J_dNFR)`` as a classical complex doublet.  Its
+quadratic isotropic Hamiltonian admits U(2) rotations, and the associated
+Stokes vector obeys the usual Poincare-sphere identities.  These are exact
+identities of the declared ambient model.
 
-  (2) the intrinsic polarization structure and its dynamics;
-  (3) which canonical operators rotate the polarization (Stokes) vector;
-  (1) the polarization field in the networks studied this session (P14,
-      the arithmetic number network, Navier–Stokes).
+The per-node tuples are computed from a coupled graph snapshot.  Calling them
+N doublets does not make their coordinates dynamically or statistically
+independent, and it does not show that graph trajectories remain on the
+ambient harmonic flow.  The global data are a classical collection of
+doublets, not a quantum tensor-product state.
 
-Honest scope (stated up front)
-------------------------------
-This is CLASSICAL wave polarization, not a quantum two-level system. Each
-node's ℝ⁴ fiber (K_φ, J_φ, Φ_s, J_ΔNFR) is the complex doublet
-ζ = (ζ^A, ζ^B) with ζ^A = K_φ + i·J_φ (geometric sector) and
-ζ^B = Φ_s + i·J_ΔNFR (potential sector). Its SU(2) moment map gives the
-Stokes 3-vector whose length equals the per-node energy — so the
-normalized vector lies on the Poincaré sphere S² (Poincaré 1892), a unit
-fully-polarized vector of radius = energy. The empirically-anchored
-pre-TNFR name for this is the **Stokes parameters** (Stokes 1852) of
-**wave polarization**, on the **Poincaré sphere** — NOT "isospin" (nuclear
-physics) nor a "qubit"/"Bloch vector" (quantum). It is a CLASSICAL
-polarization texture (a field of Stokes vectors): the doublet is PER-NODE,
-so the global object is a PRODUCT of N independent ℂ² points — there is no
-superposition and no entanglement. (Mathematically the map ζ/|ζ| onto S²
-is the Hopf fibration S³ → S², a topological identity; the physical anchor
-is the Poincaré sphere of polarization optics.)
-
-Physics
--------
-H_sub = ½Σ‖(ζ^A, ζ^B)‖² is the squared norm of a ℂ² doublet, so it carries
-the polarization symmetry U(2) = U(1) × SU(2). The SU(2) Stokes parameters
-are
-  P_3 = ½Σ(|ζ^A|² − |ζ^B|²) = E_geo − E_pot,
-  P_1 = Σ(K_φ·Φ_s + J_φ·J_ΔNFR),   P_2 = Σ(K_φ·J_ΔNFR − J_φ·Φ_s),
-with per-node densities whose length is the per-node energy (full
-polarization → the Poincaré sphere).
+Experiment 1 verifies algebraic identities and conserved Stokes quantities
+under ``evolve_substrate_flow`` itself.  Experiment 2 instead applies each
+engine operator once to one seeded fixture and compares the extracted
+before/after vectors.  That table is a finite response audit, not a general
+classification of induced symplectic maps or grammar-valid words.  Experiment
+3 uses explicit encodings for three domain fixtures and reports read-outs; it
+does not derive those encodings from the nodal equation.
 
 References
 ----------
 - examples/08_emergent_geometry/98_emergent_symplectic_substrate.py (substrate + polarization)
-- examples/08_emergent_geometry/103_emergent_substrate_meets_riemann.py (P14 polariz. carries log p)
-- examples/08_emergent_geometry/104_navier_stokes_is_not_riemann.py (NS velocity = geometric sector)
+- examples/08_emergent_geometry/103_emergent_substrate_meets_riemann.py
+  (constructed P14 phase encoding)
+- examples/08_emergent_geometry/104_navier_stokes_is_not_riemann.py (NS adapter)
 - examples/07_number_theory/101_numbers_as_coupled_network.py (primes = low-coupling periphery)
 - src/tnfr/physics/symplectic_substrate.py (polarization_density,
   polarization_vector, evolve_substrate_flow)
@@ -83,6 +66,7 @@ from tnfr.operators.definitions import (
     Silence,
     Transition,
 )
+from tnfr.operators.preconditions import OperatorPreconditionError
 from tnfr.physics.symplectic_substrate import (
     evolve_substrate_flow,
     extract_phase_space_point,
@@ -170,16 +154,15 @@ def experiment_1_intrinsic():
         f"   mean neighbor p·p = {np.mean(neigh):+.3f},  "
         f"random = {np.mean(rand):+.3f}"
     )
-    print("   → no EXCESS neighbor alignment on a random graph (honest")
-    print("     negative): a random phase field has no polarization ordering.")
+    print("   → this one neighbor sample shows no excess over its random-pair")
+    print("     control; it is not a population-level ordering result.")
     print()
 
     # (D) honest scope: product state, no entanglement
-    print("D. HONEST SCOPE: the doublet is PER-NODE → the global object is a")
-    print(f"   PRODUCT of {len(pt.nodes)} independent ℂ² polarization vectors")
-    print("   (a classical polarization texture), NOT an entangled state in")
-    print("   ℂ^(2N). This is the Poincaré sphere of WAVE polarization")
-    print("   (Stokes/Poincaré), not a quantum register.")
+    print("D. SCOPE: the read-out contains one classical doublet per node.")
+    print(f"   The {len(pt.nodes)} tuples depend on coupled graph fields and are")
+    print("   not independent dynamical coordinates. No quantum state or")
+    print("   entanglement is defined by this classical Poincare map.")
     print()
 
 
@@ -187,13 +170,14 @@ def experiment_1_intrinsic():
 # EXPERIMENT 2 (direction 3): which operators rotate the Stokes vector
 # ============================================================================
 def experiment_2_operators():
-    """Operator-polarization fingerprint: rotators vs preservers."""
+    """Finite before/after response table on one seeded fixture."""
     print("=" * 72)
-    print("EXPERIMENT 2: Which Canonical Operators Rotate the Stokes Vector")
+    print("EXPERIMENT 2: Finite Operator-to-Read-out Response Table")
     print("=" * 72)
     print()
-    print("Apply each operator to every node; measure how far it rotates the")
-    print("global Stokes 3-vector P = (P₁, P₂, P₃).")
+    print("Apply each operator once to every node of one seeded fixture and")
+    print("compare the extracted global Stokes vectors. These isolated calls")
+    print("are not a grammar word or a universal operator classification.")
     print()
 
     ops = [
@@ -231,7 +215,7 @@ def experiment_2_operators():
         return np.array([c["p_1"], c["p_2"], c["p_3"]])
 
     p0 = stokes_vec(G0)
-    rotators, preservers = [], []
+    rotators, preservers, blocked = [], [], []
     print(f"  {'op':>7} {'Stokes rotation (deg)':>22}")
     print("  " + "-" * 31)
     with warnings.catch_warnings():
@@ -239,8 +223,13 @@ def experiment_2_operators():
         for glyph, cls in ops:
             G = copy.deepcopy(G0)
             op = cls()
-            for nd in list(G.nodes()):
-                op(G, nd)
+            try:
+                for nd in list(G.nodes()):
+                    op(G, nd)
+            except OperatorPreconditionError as exc:
+                blocked.append((glyph, str(exc).split(":", 1)[-1].strip()))
+                print(f"  {glyph:>7} {'BLOCKED':>22}")
+                continue
             p1 = stokes_vec(G)
             cos = np.dot(p0, p1) / (np.linalg.norm(p0) * np.linalg.norm(p1) + 1e-30)
             ang = math.degrees(math.acos(max(-1.0, min(1.0, cos))))
@@ -249,13 +238,11 @@ def experiment_2_operators():
     print()
     print(f"  ROTATORS  (> 1°): {rotators}")
     print(f"  PRESERVERS (≤ 1°): {preservers}")
+    print(f"  BLOCKED by hard precondition: {[glyph for glyph, _ in blocked]}")
     print()
-    print("  → UM (Coupling) is the dominant rotator: phase synchronization")
-    print("    collapses the geometric sector ζ^A, nearly annihilating |P|.")
-    print("    The ΔNFR-lever operators (IL, OZ, THOL, ZHIR, NAV) tilt the")
-    print("    Stokes vector; AL/EN/RA/SHA/VAL/REMESH preserve it. This is the")
-    print("    substrate-geometry fingerprint, complementary to the tetrad")
-    print("    fingerprint of Example 37.")
+    print("  → these labels describe only the >1-degree rule on this fixture.")
+    print("    A general preserve/rotate claim would require trajectories,")
+    print("    grammar context, and a proof for each induced field map.")
     print()
 
 
@@ -272,12 +259,12 @@ def experiment_3_networks():
     print("½(K_φ² + J_φ²) (no Φ_s degeneracy) in each network.")
     print()
 
-    # P14 (Riemann) under the dynamics θ = ν_f·τ
+    # P14 with a deliberately imposed phase encoding theta = nu_f.
     from tnfr.riemann.prime_ladder_hamiltonian import build_prime_ladder_graph
 
     Gp = build_prime_ladder_graph(10, max_power=4)
     for nd in Gp.nodes():
-        Gp.nodes[nd]["phase"] = float(Gp.nodes[nd]["nu_f"])
+        Gp.nodes[nd]["phase"] = float(Gp.nodes[nd]["nu_f"] % (2 * math.pi))
     pt, eg = _geo_polarization_energy(Gp)
     idx = {n: i for i, n in enumerate(pt.nodes)}
     primes = sorted({p for (p, _k) in Gp.nodes()})
@@ -286,9 +273,9 @@ def experiment_3_networks():
         by_p.setdefault(p, []).append(eg[idx[(p, k)]])
     mean_eg = [float(np.mean(by_p[p])) for p in primes]
     r = float(np.corrcoef(mean_eg, [math.log(p) for p in primes])[0, 1])
-    print(f"  P14 (Riemann, dynamics): r(geo polariz. energy, log p) = {r:.3f}")
+    print(f"  P14 (phase=nu_f encoding): r(geo energy, log p) = {r:.3f}")
     print(
-        "    → the polarization field carries the prime ladder {k·log p}" " (Ex 103)."
+        "    → the read-out retains the prime ladder inserted into phase" " (Ex 103)."
     )
     print()
 
@@ -308,8 +295,8 @@ def experiment_3_networks():
         f"  Arithmetic: geo polariz. energy  prime = {egp:.3f}, "
         f"composite = {egc:.3f}"
     )
-    print("    → primes carry lower polarization energy (the low-coupling")
-    print("      periphery, Ex 101).")
+    print("    → in this n<=80 fixture, the sampled prime mean is lower.")
+    print("      No population-wide or causal claim follows from this encoding.")
     print()
 
     # Navier–Stokes
@@ -321,20 +308,20 @@ def experiment_3_networks():
     Gn = build_torus_graph_3d(8)
     u, _v, _w = taylor_green_initial_condition_3d(Gn, 1.0)
     for i, nd in enumerate(list(Gn.nodes)):
-        Gn.nodes[nd]["phase"] = float(u[i])
-        Gn.nodes[nd]["theta"] = float(u[i])
+        encoded_phase = float(u[i] % (2 * math.pi))
+        Gn.nodes[nd]["phase"] = encoded_phase
+        Gn.nodes[nd]["theta"] = encoded_phase
     pt, eg = _geo_polarization_energy(Gn)
     print(
         f"  NS (3D Taylor–Green): total geo polariz. energy Σe_geo = "
         f"{float(np.sum(eg)):.2f}"
     )
-    print("    → the velocity field IS a geometric-sector polarization")
-    print("      texture (K_φ = vorticity proxy; enstrophy-like, Ex 104).")
+    print("    → after velocity is encoded as phase, the auxiliary geometric")
+    print("      sector supplies the displayed derived texture (Ex 104).")
     print()
-    print("  HONEST: in all three the polarization vector is a GEOMETRIC")
-    print("  readout of the tetrad (the Poincaré-sphere map), inheriting the")
-    print("  structure already measured (Ex 101/103/104). It re-expresses")
-    print("  that content in polarization language; it adds no new closure.")
+    print("  SCOPE: each row maps an explicitly prepared graph snapshot to the")
+    print("  auxiliary field doublet. It re-expresses those inputs in classical")
+    print("  polarization language and adds no new domain closure.")
     print()
 
 
@@ -351,22 +338,12 @@ def main():
     print("WHAT THIS ESTABLISHES")
     print("=" * 72)
     print()
-    print("Each node of the emergent substrate carries a polarization")
-    print("(Stokes) vector — the unit point on the Poincaré sphere of its ℂ²")
-    print("doublet, of radius = its energy (exact). This per-node POLARIZATION")
-    print("geometry is intrinsic (Stokes vector conserved under the diagonal")
-    print("flow, no precession), it is a CLASSICAL polarization texture")
-    print("(product state, no entanglement), and it has no neighbor ordering")
-    print("on a random graph. The canonical operators act on it with a clear")
-    print("fingerprint — UM collapses it by phase synchronization, the")
-    print("ΔNFR-lever operators tilt it, six operators preserve it — a new")
-    print("lens complementary to the tetrad fingerprint. In the networks")
-    print("studied this session the polarization field re-expresses their")
-    print("known content (the prime ladder in P14, the periphery in")
-    print("arithmetic, the velocity texture in NS). This is a structural")
-    print("characterization of the substrate's polarization geometry — the")
-    print("Stokes/Poincaré of a classical wave, not a quantum claim and not a")
-    print("closure of any open program.")
+    print("Nonzero auxiliary doublets obey the classical Stokes/Poincare")
+    print("identities, and their Stokes vector is conserved by the declared")
+    print("diagonal harmonic flow. Per-node tuples remain graph-dependent")
+    print("read-outs. The operator table is one finite snapshot-response audit;")
+    print("it does not classify the induced maps generally. The domain examples")
+    print("re-express explicitly encoded graph data and close no open program.")
     print()
 
 

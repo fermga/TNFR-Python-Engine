@@ -5,12 +5,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from ..alias import get_attr
 from ..config.operator_names import BIFURCATION_WINDOW
+from ..constants.aliases import ALIAS_EPI
 from .grammar_debt import node_debt, node_has_prior_coherence
 from .grammar_dynamics import validate_sequence_incremental
 from .grammar_types import DESTABILIZERS, glyph_function_name
 from .grammar_validate import validate_grammar
 from .operator_contracts import contract_for
+from ._epi_domain import require_real_scalar_epi
 
 __all__ = ["GrammarObservation", "observe_grammar"]
 
@@ -79,8 +82,20 @@ def observe_grammar(
     history = data.get("glyph_history") or ()
     history_length = len(history)
     try:
+        epi_value = get_attr(
+            data,
+            ALIAS_EPI,
+            0.0,
+            strict=True,
+            conv=lambda value: value,
+        )
         result = validate_grammar(
-            sequence, epi_initial=float(data.get("EPI", 0.0))
+            sequence,
+            epi_initial=require_real_scalar_epi(
+                epi_value,
+                operator="Grammar observation",
+                label="initial EPI",
+            ),
         )
         sequence_message = "valid" if result else "grammar validation failed"
     except (AttributeError, TypeError, ValueError) as exc:

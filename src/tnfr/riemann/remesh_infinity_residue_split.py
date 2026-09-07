@@ -1,117 +1,103 @@
-r"""P50 — R\_infinity residue split of the P31 oscillatory correction.
+r"""P50 — fixed-delay Fourier split of the P31 oscillatory correction.
 
-Diagnostic milestone that lifts the N15 REMESH-\ :math:`\infty` closure
-(`theory/REMESH_INFINITY_DERIVATION.md`, master commits a1f298fd /
-badac156 / 48b0574a) to the canonical TNFR-Riemann program.
+The public names and verdict strings are retained from the historical N15
+programme for compatibility. The implementation is a finite cyclic DFT-bin
+projection; it is not a literal runtime :math:`\tau_g\to\infty` limit.
 
 Background
 ----------
-The N15 derivation proved that the asymptotic REMESH limit
+The corrected N15 analysis defines, for a finite cyclic history window, the
+Cesàro limit of the fixed-coefficient filter
 
 .. math::
 
-    \mathcal{R}_\infty
-        := \lim_{\tau_g \to \infty}
-            \mathcal{R}_{\tau_l, \tau_g, \alpha}
+    P_d := \lim_{N\to\infty}\frac1N\sum_{j=0}^{N-1}F^j,
+    \qquad
+    F=\beta I+\gamma S^{\tau_l}+\delta S^{\tau_g},
 
-is a bounded self-adjoint orthogonal projection on :math:`H^2(D)`,
-equal to the projector onto :math:`\ker(I - \mathcal{R})`.  Its
+where :math:`S` is the unitary cyclic shift. For
+:math:`0<\alpha<1`, :math:`F` is a normal contraction and :math:`P_d`
+is the orthogonal projector onto :math:`\ker(I-F)`. Its
 fixed-mode subspace is spanned by Fourier components at the resonant
 angular frequencies
 
 .. math::
 
-    \omega_k = \frac{2\pi k}{\operatorname{lcm}(\tau_l, \tau_g)},
+    \omega_k = \frac{2\pi k}{\gcd(\tau_l, \tau_g)},
         \qquad k \in \mathbb{Z},
 
-with uniform spectral density
-:math:`\rho = \operatorname{lcm}(\tau_l, \tau_g) / \pi`.
+on a compatible discrete window. There is no continuum spectral-density or
+runtime-limit conclusion.
 
 The §13septies / §13nonies analysis (`theory/TNFR_RIEMANN_RESEARCH_NOTES.md`)
-identifies the residual obstruction of T-HP with the **oscillatory
-half** :math:`S(T) = \pi^{-1}\arg\zeta(\tfrac12 + iT)`, structurally
-matched with :math:`\ker(\mathcal{R}_\infty)`.  The **smooth half** of
+historically compared the residual obstruction of T-HP with the **oscillatory
+half** :math:`S(T) = \pi^{-1}\arg\zeta(\tfrac12 + iT)` and the complement
+of this selected periodic subspace. No intertwining theorem identifies those
+objects. The **smooth half** of
 the admissible rescaling operator :math:`\mathcal{F}` is closed at
 the density level by P28 and lifted to the operator level by P30
 (`structural_zero_density.py`, `admissible_rescaling.py`).
 
 What P50 measures
 -----------------
-P50 takes the canonical TNFR prime-ladder reconstruction
+P50 takes the finite TNFR prime-ladder reconstruction
 :math:`S_{\mathrm{TNFR}}(T)` of :math:`S(T)` from P31
 (`oscillatory_correction.py`), evaluates it on a uniform :math:`T`
-grid aligned with the REMESH-\ :math:`\infty` resonant lattice, and
-splits it via the Fourier-mode projector
+grid, and splits its DFT via the fixed-delay Fourier projector
 
 .. math::
 
-    \mathcal{R}_\infty[f](T)
-        = \sum_{k\,:\,\omega_k\in\operatorname{lattice}}
+    P_d[f](T)
+        = \sum_{k\,:\,k\in\operatorname{fixed\ bins}}
             \hat f_k\, e^{i\omega_k T},
 
-into a *range part* :math:`\mathcal{R}_\infty\,S_{\mathrm{TNFR}}` and
-a *kernel part* :math:`(I - \mathcal{R}_\infty)\,S_{\mathrm{TNFR}}`.
+into a *range part* :math:`P_d S_{\mathrm{TNFR}}` and a *complement
+part* :math:`(I-P_d)S_{\mathrm{TNFR}}`. The legacy API calls the latter
+``kernel_part`` because it is in :math:`\ker P_d`.
 
 A priori structural prediction
 ------------------------------
-The prime-ladder spectrum (P12 / P14 canonical) has Fourier content
-exclusively at the transcendental frequencies :math:`\{k \log p\}`.
-These are linearly independent over :math:`\mathbb{Q}` (Baker's
-theorem on linear independence of logarithms of algebraic numbers)
-and in particular none coincides with a rational multiple of
-:math:`\pi/\operatorname{lcm}(\tau_l, \tau_g)`.  Therefore the
-N15-resonant lattice and the prime-ladder Fourier support are
-disjoint, and the prediction is
+The finite prime-ladder signal uses frequencies :math:`k\log p`, which do
+not generally align with the selected periodic modes. A finite rectangular
+window nevertheless spreads off-grid frequencies across DFT bins, so the two
+computed parts are not exact analytic spectral supports. For fixed finite
+prime-ladder content, the testable large-window expectation is
 
 .. math::
 
-    \|\mathcal{R}_\infty\,S_{\mathrm{TNFR}}\|
+    \|P_d S_{\mathrm{TNFR}}\|
         / \|S_{\mathrm{TNFR}}\| \;\to\; 0
 
-as the diagnostic window length :math:`L \to \infty`.
+as the diagnostic window length grows. The certificate reports a finite
+sample and does not prove that limit.
 
 Pre-registered verdicts
 -----------------------
 * ``RESIDUE_IN_KER_ONLY``
-    Range fraction below the canonical threshold (default 5%).
-    Confirms the §13septies / §13nonies structural identification:
-    the P31 oscillatory correction lives in
-    :math:`\ker(\mathcal{R}_\infty)`, structurally matching the
-    location predicted for the T-HP residual obstruction.
+    Range fraction below the selected threshold (default 5%). The finite
+    sample has little energy in the declared periodic subspace.
 * ``RESIDUE_IN_RANGE_ONLY``
-    Kernel fraction below the threshold.  Would refute the P31
-    construction as an oscillatory attack — the correction would be
-    fully absorbed by the smooth half already closed by P30.
+    Complement fraction below the threshold. The finite sample lies mostly
+    in the declared periodic subspace.
 * ``RESIDUE_MIXED``
-    Both fractions above the threshold.  Indicates either a gauge
-    leak in P30 (smooth half not cleanly separated) or a numerical
-    boundary artefact (window too short for the asymptotic limit).
+    Both fractions exceed the threshold. This is a descriptive finite-window
+    outcome and can change with the window or signal truncation.
 
 Honest scope (mandatory)
 ------------------------
-* P50 is a **structural-compatibility diagnostic only**.  It does NOT
-  advance G4 = RH.  It does NOT close T-HP.  It does NOT promote any
-  new canonical operator beyond the 13-operator catalog.
-* Positive verdict (``RESIDUE_IN_KER_ONLY``) is **branch B2
-  evidence** at the function-space level: it corroborates that any
-  closure of T-HP through the oscillatory half requires structure
-  that lives in :math:`\ker(\mathcal{R}_\infty)`, where the
-  prime-ladder content already sits.  The decision between branches
-  B1 / B2 / B3 of §13septies / §13octies remains open.
-* This module imports ONLY canonical TNFR ingredients
-  (`prime_ladder_oscillatory_sum` from P31, REMESH-canonical
-  :math:`(\tau_l, \tau_g) = (4, 8)`, :math:`\alpha = 0.5`).  No
-  external zeros, no mpmath, no fitting.
+* P50 is a finite Fourier diagnostic only. It does not advance G4 = RH,
+  close T-HP, identify its smooth/oscillatory split, or certify a runtime
+  REMESH limit.
+* A positive legacy verdict is evidence only about the selected bins, window,
+  threshold, and finite prime-ladder signal.
+* Computing this auxiliary projection requires no additional registry entry;
+  that fact does not prove the 13-operator catalog complete.
 
 References
 ----------
-* N15 master:  `theory/REMESH_INFINITY_DERIVATION.md` §§1-23.
-* T-HP gap:    `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13septies,
-               §13nonies.
+* Corrected N15 record: `theory/REMESH_INFINITY_DERIVATION.md` §§1-23.
 * P31:         `oscillatory_correction.py`
                (`prime_ladder_oscillatory_sum`).
-* P30:         `admissible_rescaling.py` (smooth half of T-HP).
-* AGENTS.md:   "REMESH-\u221E Closure: Catalog Completeness Theorem".
 """
 
 from __future__ import annotations
@@ -133,7 +119,7 @@ __all__ = [
 
 
 # ----------------------------------------------------------------------
-# R_infinity projector as a DFT-bin mask
+# Fixed-delay cyclic-filter projector as a DFT-bin mask
 # ----------------------------------------------------------------------
 
 
@@ -143,7 +129,7 @@ def build_resonant_bin_mask(
     tau_l: int = 4,
     tau_g: int = 8,
 ) -> np.ndarray:
-    r"""Boolean mask over DFT bins selecting the N15-resonant lattice.
+    r"""Return DFT bins fixed by the finite cyclic delay filter.
 
     On a uniform sample grid of length ``n_samples`` with unit spacing
     in :math:`T`-units, DFT bin :math:`k` corresponds to angular
@@ -151,13 +137,14 @@ def build_resonant_bin_mask(
     bins :math:`k > n_{\text{samples}}/2` aliasing to the negative
     half).
 
-    The N15-resonant subspace of :math:`\mathcal{R}_\infty` consists
-    of Fourier modes at :math:`\omega = 2\pi m / L` for integer
-    :math:`m`, where :math:`L = \operatorname{lcm}(\tau_l, \tau_g)`.
-    For these to coincide with DFT bins we require
-    ``n_samples`` to be a positive integer multiple of :math:`L`, and
-    the resonant bins are :math:`k \in \{0, M, 2M, \dots\}` with
-    :math:`M = n_{\text{samples}} / L`.
+    For positive mixing coefficients, a unit-circle mode is fixed precisely
+    when both delay phases equal one. Thus its period is
+    :math:`d=\gcd(\tau_l,\tau_g)`. The public API retains the historical
+    requirement that ``n_samples`` be a multiple of
+    :math:`\operatorname{lcm}(\tau_l,\tau_g)`; this is stricter than needed
+    but guarantees compatibility. The fixed bins are
+    :math:`k\in\{0,M,2M,\ldots,(d-1)M\}` with
+    :math:`M=n_{\text{samples}}/d`.
 
     Parameters
     ----------
@@ -171,9 +158,8 @@ def build_resonant_bin_mask(
     Returns
     -------
     np.ndarray
-        Boolean array of shape ``(n_samples,)``; ``True`` entries
-        mark resonant DFT bins (including the negative-frequency
-        aliases at :math:`k = n_{\text{samples}} - jM`).
+        Boolean array of shape ``(n_samples,)`` whose ``True`` entries mark
+        the common fixed modes of the two delays.
     """
     if n_samples <= 0:
         raise ValueError("n_samples must be positive")
@@ -185,7 +171,8 @@ def build_resonant_bin_mask(
             f"n_samples ({n_samples}) must be a multiple of "
             f"lcm(tau_l, tau_g) = {period}"
         )
-    step = n_samples // period
+    fixed_period = math.gcd(int(tau_l), int(tau_g))
+    step = n_samples // fixed_period
     mask = np.zeros(n_samples, dtype=bool)
     mask[::step] = True
     return mask
@@ -197,7 +184,7 @@ def split_residue_by_remesh_infinity(
     tau_l: int = 4,
     tau_g: int = 8,
 ) -> tuple[np.ndarray, np.ndarray]:
-    r"""Split a signal into range / kernel of :math:`\mathcal{R}_\infty`.
+    r"""Split a signal into range / kernel of the cyclic projector.
 
     Parameters
     ----------
@@ -211,11 +198,10 @@ def split_residue_by_remesh_infinity(
     Returns
     -------
     range_part : np.ndarray
-        :math:`\mathcal{R}_\infty[\text{signal}]`, real-valued, same
-        shape as ``signal``.
-    kernel_part : np.ndarray
-        :math:`(I - \mathcal{R}_\infty)[\text{signal}]`, real-valued,
+        Projection onto the common fixed-delay DFT bins, real-valued and the
         same shape as ``signal``.
+    kernel_part : np.ndarray
+        Orthogonal complement, equivalently the kernel of this projection.
 
     Notes
     -----
@@ -241,7 +227,7 @@ def split_residue_by_remesh_infinity(
 
 @dataclass(frozen=True)
 class ResidueSplitCertificate:
-    r"""Certificate for the P50 :math:`\mathcal{R}_\infty` residue split.
+    r"""Certificate for the legacy P50 fixed-delay Fourier split.
 
     Attributes
     ----------
@@ -250,7 +236,9 @@ class ResidueSplitCertificate:
     tau_l, tau_g
         Canonical REMESH delays.
     lcm_period
-        :math:`\operatorname{lcm}(\tau_l, \tau_g)`.
+        Historical sampling-alignment period
+        :math:`\operatorname{lcm}(\tau_l, \tau_g)`. The fixed-mode period is
+        instead available as :attr:`fixed_period_gcd`.
     n_primes, max_power
         P12 / P14 prime-ladder parameters used to build
         :math:`S_{\mathrm{TNFR}}`.
@@ -260,24 +248,18 @@ class ResidueSplitCertificate:
         :math:`\|S_{\mathrm{TNFR}}\|_2` on the window (L\ :sup:`2`
         norm, FFT convention).
     norm_in_range
-        :math:`\|\mathcal{R}_\infty\,S_{\mathrm{TNFR}}\|_2`.
+        Norm of the component in the selected fixed-delay subspace.
     norm_in_kernel
-        :math:`\|(I - \mathcal{R}_\infty)\,S_{\mathrm{TNFR}}\|_2`.
+        Norm of the orthogonal complement.
     ratio_in_range, ratio_in_kernel
         Energy fractions in each subspace.  Sum exactly to 1 by
         Parseval.
     range_control_resonant
-        Diagnostic sanity check: range fraction for the canonical
-        positive-control signal :math:`\sin(\omega_1 T)` with
-        :math:`\omega_1 = 2\pi /\operatorname{lcm}(\tau_l, \tau_g)`,
-        which lies entirely in :math:`\operatorname{range}
-        (\mathcal{R}_\infty)`.  Should be :math:`1` up to round-off.
+        Diagnostic sanity check: range fraction for a cosine at the first
+        common fixed-delay frequency. Should be :math:`1` up to round-off.
     range_control_nonresonant
-        Diagnostic sanity check: range fraction for the canonical
-        negative-control signal :math:`\sin(\gamma T)` with
-        :math:`\gamma` the Euler-Mascheroni constant (transcendental,
-        non-resonant), which lies entirely in :math:`\ker
-        (\mathcal{R}_\infty)` asymptotically.  Should be near zero.
+        Diagnostic sanity check for an exactly unselected DFT bin. Should be
+        zero up to round-off whenever the selected subspace is proper.
     threshold
         Decision threshold on the dominant fraction (default 5%).
     verdict
@@ -306,25 +288,32 @@ class ResidueSplitCertificate:
     verdict: str
     notes: str
 
+    @property
+    def fixed_period_gcd(self) -> int:
+        """Period of the modes fixed by both declared delays."""
+
+        return math.gcd(self.tau_l, self.tau_g)
+
     def summary(self) -> str:
         lines = [
-            "P50 — REMESH-infinity Residue Split Certificate",
+            "P50 — Fixed-Delay Fourier Split Certificate",
             f"  n_samples              : {self.n_samples}",
             f"  (tau_l, tau_g)         : ({self.tau_l}, {self.tau_g})",
-            f"  lcm period             : {self.lcm_period}",
+            f"  lcm sample alignment   : {self.lcm_period}",
+            f"  gcd fixed-mode period  : {self.fixed_period_gcd}",
             f"  n_primes               : {self.n_primes}",
             f"  max_power (K)          : {self.max_power}",
             f"  T window               : " f"[{self.t_min:.3f}, {self.t_max:.3f}]",
             f"  ||S_TNFR||_2           : {self.norm_total:.4e}",
-            f"  ||R_inf S_TNFR||_2     : {self.norm_in_range:.4e}",
-            f"  ||(I-R_inf) S_TNFR||_2 : {self.norm_in_kernel:.4e}",
+            f"  ||P_d S_TNFR||_2       : {self.norm_in_range:.4e}",
+            f"  ||(I-P_d) S_TNFR||_2   : {self.norm_in_kernel:.4e}",
             f"  range fraction         : " f"{100.0 * self.ratio_in_range:7.4f} %",
             f"  kernel fraction        : " f"{100.0 * self.ratio_in_kernel:7.4f} %",
             "  controls (sanity):",
-            f"    range[sin(omega_1 T)] : "
+            f"    range[fixed cosine]   : "
             f"{100.0 * self.range_control_resonant:7.4f} %  "
             "(expect ~100)",
-            f"    range[sin(gamma T)]   : "
+            f"    range[other DFT bin]  : "
             f"{100.0 * self.range_control_nonresonant:7.4f} %  "
             "(expect ~0)",
             f"  threshold              : " f"{100.0 * self.threshold:.2f} %",
@@ -344,14 +333,15 @@ def compute_residue_split_certificate(
     t_min: float = 1.0,
     threshold: float = 0.05,
 ) -> ResidueSplitCertificate:
-    r"""Run the full P50 diagnostic and emit a certificate.
+    r"""Run the finite P50 Fourier diagnostic and emit a certificate.
 
     Builds the canonical P12 / P14 prime-ladder spectrum, evaluates
     :math:`S_{\mathrm{TNFR}}(T)` on a uniform :math:`T` grid of
     length :math:`n_{\text{periods}} \cdot \operatorname{lcm}
-    (\tau_l, \tau_g)`, splits via the
-    :math:`\mathcal{R}_\infty` Fourier-mode projector, and reports
-    range / kernel norms plus two canonical control signals.
+    (\tau_l, \tau_g)`, splits it with the common fixed-delay DFT projector,
+    and reports range/complement norms plus two numerical controls. The LCM
+    sets backward-compatible sample alignment; the fixed modes are determined
+    by :math:`\gcd(\tau_l,\tau_g)`.
 
     Parameters
     ----------
@@ -364,7 +354,8 @@ def compute_residue_split_certificate(
         canonical pair.
     n_periods : int, default 64
         Window length in units of :math:`\operatorname{lcm}(\tau_l,
-        \tau_g)`.  Larger values sharpen the asymptotic verdict.
+        \tau_g)`. Larger values change spectral leakage; no universal
+        convergence rate is implied.
     t_min : float, default 1.0
         Diagnostic window start in :math:`T`-units (kept positive to
         avoid the :math:`T = 0` singularity of the smooth density).
@@ -403,47 +394,54 @@ def compute_residue_split_certificate(
     ratio_range = (norm_range / norm_total) ** 2
     ratio_kernel = (norm_kernel / norm_total) ** 2
 
-    # Canonical sanity controls
-    omega_resonant = 2.0 * math.pi / period
-    control_resonant = np.sin(omega_resonant * t_grid)
+    # Sanity controls for the declared finite DFT projection.
+    fixed_period = math.gcd(int(tau_l), int(tau_g))
+    sample_index = np.arange(n_samples, dtype=float)
+    omega_resonant = 2.0 * math.pi / fixed_period
+    control_resonant = np.cos(omega_resonant * sample_index)
     rng_res, _ = split_residue_by_remesh_infinity(
         control_resonant, tau_l=tau_l, tau_g=tau_g
     )
     n_res = float(np.linalg.norm(control_resonant))
     ctrl_res_frac = (float(np.linalg.norm(rng_res)) / n_res) ** 2
 
-    # Euler-Mascheroni constant: transcendental, non-resonant.
-    gamma_em = 0.5772156649015329
-    control_nonres = np.sin(gamma_em * t_grid)
-    rng_nonres, _ = split_residue_by_remesh_infinity(
-        control_nonres, tau_l=tau_l, tau_g=tau_g
-    )
-    n_nonres = float(np.linalg.norm(control_nonres))
-    ctrl_nonres_frac = (float(np.linalg.norm(rng_nonres)) / n_nonres) ** 2
+    mask = build_resonant_bin_mask(n_samples, tau_l=tau_l, tau_g=tau_g)
+    unselected = np.flatnonzero(~mask)
+    if unselected.size:
+        k_nonres = int(unselected[0])
+        control_nonres = np.cos(
+            2.0 * math.pi * k_nonres * sample_index / n_samples
+        )
+        rng_nonres, _ = split_residue_by_remesh_infinity(
+            control_nonres, tau_l=tau_l, tau_g=tau_g
+        )
+        n_nonres = float(np.linalg.norm(control_nonres))
+        ctrl_nonres_frac = (float(np.linalg.norm(rng_nonres)) / n_nonres) ** 2
+    else:
+        # Degenerate one-dimensional/all-selected sample space: there is no
+        # non-range control vector. Keep the compatibility field finite.
+        ctrl_nonres_frac = 0.0
 
     if ratio_range < threshold and ratio_kernel >= threshold:
         verdict = "RESIDUE_IN_KER_ONLY"
         notes = (
-            "Branch B2 evidence at the function-space level: the "
-            "P31 oscillatory correction lives in ker(R_inf), "
-            "structurally matching the location predicted for the "
-            "T-HP residual obstruction. Does NOT advance G4 = RH."
+            "Finite-window evidence that the P31 signal has little energy "
+            "in the selected fixed-delay periodic bins. This does not "
+            "identify a runtime REMESH kernel or advance G4 = RH."
         )
     elif ratio_kernel < threshold and ratio_range >= threshold:
         verdict = "RESIDUE_IN_RANGE_ONLY"
         notes = (
-            "Refutes P31 as an oscillatory attack: the correction "
-            "would already be absorbed by the smooth half (P30). "
-            "Requires audit of P30 / P31 reconstruction. Does NOT "
-            "advance G4 = RH."
+            "The finite-window P31 signal lies mostly in the selected "
+            "fixed-delay periodic bins. No conclusion about the T-HP "
+            "smooth/oscillatory split or G4 = RH follows."
         )
     else:
         verdict = "RESIDUE_MIXED"
         notes = (
-            "Both fractions above threshold: gauge leak in P30 "
-            "smooth half or boundary artefact (window too short). "
-            "Increase n_periods and re-test. Does NOT advance "
-            "G4 = RH."
+            "Both finite-window fractions exceed the selected threshold. "
+            "Report the window and truncation before comparing runs; no "
+            "conclusion about G4 = RH follows."
         )
 
     return ResidueSplitCertificate(

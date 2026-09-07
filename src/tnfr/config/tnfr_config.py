@@ -35,7 +35,8 @@ ALIASES: dict[str, tuple[str, ...]] = {
     "THETA": (THETA_KEY, "phase"),
     "DNFR": (DNFR_KEY, "delta_nfr", "dnfr"),
     "EPI": ("EPI", "psi", "PSI", "value"),
-    "EPI_KIND": ("EPI_kind", "epi_kind", "source_glyph"),
+    "EPI_KIND": ("EPI_kind", "epi_kind"),
+    "SOURCE_GLYPH": ("source_glyph", "last_glyph"),
     "SI": ("Si", "sense_index", "S_i", "sense", "meaning_index"),
     "DEPI": ("dEPI_dt", "dpsi_dt", "dEPI", "velocity"),
     "D2EPI": ("d2EPI_dt2", "d2psi_dt2", "d2EPI", "accel"),
@@ -328,6 +329,26 @@ class TNFRConfig:
         if epi_min is not None or epi_max is not None:
             self.validate_epi_bounds(epi_min=epi_min, epi_max=epi_max)
 
+        # Glyph coefficients are part of the operator contracts, not arbitrary
+        # tuning scalars. Validate every known override while preserving keys
+        # owned by external operator extensions.
+        glyph_factors = config.get("GLYPH_FACTORS")
+        remesh_alpha = config.get("REMESH_ALPHA")
+        if glyph_factors is not None or remesh_alpha is not None:
+            from ..operators.factor_contracts import (
+                GlyphFactorValidationError,
+                validate_glyph_factor,
+                validate_glyph_factors,
+            )
+
+            try:
+                if glyph_factors is not None:
+                    validate_glyph_factors(glyph_factors)
+                if remesh_alpha is not None:
+                    validate_glyph_factor("REMESH_alpha", remesh_alpha)
+            except GlyphFactorValidationError as exc:
+                raise TNFRConfigError(str(exc)) from exc
+
         # Integrators define DT=0 as a no-op; configuration must preserve it.
         dt = config.get("DT")
         _validate_finite_real(dt, "DT")
@@ -470,6 +491,7 @@ THETA_PRIMARY = get_aliases("THETA")[0]  # theta
 DNFR_PRIMARY = get_aliases("DNFR")[0]  # ΔNFR
 EPI_PRIMARY = get_aliases("EPI")[0]  # EPI
 EPI_KIND_PRIMARY = get_aliases("EPI_KIND")[0]  # EPI_kind
+SOURCE_GLYPH_PRIMARY = get_aliases("SOURCE_GLYPH")[0]  # source_glyph
 SI_PRIMARY = get_aliases("SI")[0]  # Si
 dEPI_PRIMARY = get_aliases("DEPI")[0]  # dEPI_dt
 D2EPI_PRIMARY = get_aliases("D2EPI")[0]  # d2EPI_dt2
@@ -529,6 +551,7 @@ __all__ = (
     "DNFR_PRIMARY",
     "EPI_PRIMARY",
     "EPI_KIND_PRIMARY",
+    "SOURCE_GLYPH_PRIMARY",
     "SI_PRIMARY",
     "dEPI_PRIMARY",
     "D2EPI_PRIMARY",

@@ -227,5 +227,5 @@ Three plausible paths (recommend choosing one before drafting):
 - [NUCLEUS_A_PRIME_LADDER_ATLAS.md](NUCLEUS_A_PRIME_LADDER_ATLAS.md) — companion internal atlas for P12–P30
 - [TNFR_RIEMANN_RESEARCH_NOTES.md §13sexagesima-{tertia..novena}](TNFR_RIEMANN_RESEARCH_NOTES.md) — full derivations of every lemma cited above
 - [TNFR_RIEMANN_RESEARCH_NOTES.md §13septies](TNFR_RIEMANN_RESEARCH_NOTES.md) — T-HP statement and B0★/B1/B2/B3 trichotomy context
-- [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) — N15 closure; the structural identification of $\mathrm{range}(\mathcal{R}_\infty)$ ↔ smooth half and $\ker(\mathcal{R}_\infty)$ ↔ $S(T)$ is essential context for the RH connection
+- [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) — fixed-delay surrogate analysis; the literal $\tau_g\to\infty$ operator and any range/kernel identification with the smooth or oscillatory terms remain open
 - [AGENTS.md](../AGENTS.md) §"TNFR-Riemann Program Overview" — top-level program status

@@ -9,6 +9,7 @@ ALIAS_THETA = get_aliases("THETA")
 ALIAS_DNFR = get_aliases("DNFR")
 ALIAS_EPI = get_aliases("EPI")
 ALIAS_EPI_KIND = get_aliases("EPI_KIND")
+ALIAS_SOURCE_GLYPH = get_aliases("SOURCE_GLYPH")
 ALIAS_SI = get_aliases("SI")
 ALIAS_DEPI = get_aliases("DEPI")
 ALIAS_D2EPI = get_aliases("D2EPI")
@@ -22,6 +23,7 @@ __all__ = [
     "ALIAS_DNFR",
     "ALIAS_EPI",
     "ALIAS_EPI_KIND",
+    "ALIAS_SOURCE_GLYPH",
     "ALIAS_SI",
     "ALIAS_DEPI",
     "ALIAS_D2EPI",

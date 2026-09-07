@@ -1,104 +1,28 @@
 #!/usr/bin/env python3
-"""
-Example 123 — The Symmetry-Sector Decomposition: Why the Substrate Sees Only
-Down to Orbits and the Spectrum Sees the Rest (a Capstone for the 117-122 Arc)
-==============================================================================
+"""Example 123 — finite automorphism-sector checks on selected graphs.
 
-Example 120 found, for the residue digraph, that vertex-transitivity confines
-the arithmetic to the GLOBAL spectrum (Fix(G_aut)^perp) and leaves the per-node
-substrate in the symmetric sector Fix(G_aut), blind. This example shows that is
-a special case of a GENERAL representation-theoretic principle of the canonical
-emergent operator — and that the principle is exactly why every wall in the
-117-122 arc (and the Riemann residual) has the same shape.
+For each graph in a fixed test family, the script enumerates its automorphisms,
+builds their permutation matrices and averages them to obtain the invariant
+projector ``P_triv``. It then checks, numerically, that the random-walk
+diffusion matrix commutes with those permutations, that the projector rank
+equals the number of vertex orbits, and that the invariant subspace is
+preserved.
 
-The principle (Schur, applied to the canonical emergent operator)
------------------------------------------------------------------
-For ANY graph G with automorphism group Aut(G), the canonical emergent operator
-L_rw = I - D^-1 W is EQUIVARIANT: it commutes with the permutation
-representation of every automorphism,
+Two additional comparisons have narrower scope. First, a uniformly seeded graph
+is passed to ``extract_phase_space_point`` and its resulting ``Phi_s`` vector is
+projected. This auxiliary model is initialized from the supplied graph state;
+the engine dynamics do not derive it. Second,
+eigenvectors returned for the vertex-transitive complete and cycle graphs are
+projected onto the invariant subspace. Those finite checks do not imply that all
+node information outside an orbit is spectral, that every possible read-out lies
+in one of the observed locations, or that degree resolves every orbit.
 
-    P_sigma L_rw = L_rw P_sigma   for all sigma in Aut(G).
+The decomposition ``V = Fix(G) (+) Fix(G)^perp`` is ordinary finite
+representation theory for the explicitly defined graph action. No map from
+``S(T)`` or any Millennium-problem target into these spaces is constructed, so
+the example makes no Riemann-obstruction identification.
 
-By Schur's lemma, an equivariant operator block-diagonalizes by the isotypic
-components (irreducible representations) of Aut(G). The coarsest split is
-
-    R^N = Fix(G)  (+)  Fix(G)^perp,
-
-where Fix(G) = { functions constant on the orbits of Aut(G) } is the trivial
-isotypic component, and dim Fix(G) = number of orbits of Aut(G) on the vertices.
-L_rw preserves each block. Consequently:
-
-  * Any canonical PER-NODE observable that is itself Aut(G)-invariant (a function
-    of the local structure only) lands in Fix(G): it is constant WITHIN each
-    orbit. It can distinguish orbit from orbit, never node from node within an
-    orbit.
-  * All the DISCRIMINATING information (the eigenmodes that separate nodes inside
-    an orbit) lives in Fix(G)^perp, the non-trivial irreps — i.e. in the SPECTRUM.
-
-The example-120 wall is the extreme case: a VERTEX-TRANSITIVE graph has ONE
-orbit, so Fix(G) = constants (dim 1), and the per-node substrate is GLOBALLY
-constant — blind to everything. A graph with several orbits (a star, a path)
-lets the substrate see DOWN TO the orbit partition, but no finer.
-
-Doctrine compliance
--------------------
-The operator is the canonical `structural_diffusion_operator` (the literal
-DeltaNFR EPI channel L_rw = I - D^-1 W); the per-node fields come from the
-canonical symplectic substrate `extract_phase_space_point`; the dynamics is the
-canonical nodal equation. The automorphisms are read off the graph (networkx
-VF2). No formula is re-implemented.
-
-Five measured results (across cyclic, full-symmetric, star, path, product)
---------------------------------------------------------------------------
-M1 EQUIVARIANCE. ||P_sigma L_rw - L_rw P_sigma|| = 0 (machine zero) for EVERY
-   automorphism of every test graph: the canonical operator commutes with the
-   whole automorphism group.
-
-M2 dim Fix(G) = #ORBITS. The trivial projector P_triv = mean over Aut(G) of
-   P_sigma has rank exactly equal to the number of vertex orbits (1 for the
-   vertex-transitive cycle / complete / torus, 2 for the star = {center,
-   leaves}, 3 for the path = {ends, near-ends, middle}).
-
-M3 L_rw PRESERVES Fix(G). ||L_rw P_triv - P_triv L_rw|| ~ 0: the operator is
-   block-diagonal with respect to Fix(G) (+) Fix(G)^perp.
-
-M4 THE SUBSTRATE LIVES IN Fix(G). The canonical per-node symplectic substrate
-   from a symmetric seed satisfies P_triv v = v exactly (orbit-constant). On a
-   vertex-transitive graph that forces sigma(Phi_s) = 0 — exactly the example-120
-   per-node blindness, now a COROLLARY. Per-node structural invariants (degree,
-   clustering) are likewise constant within each orbit.
-
-M5 THE DISCRIMINATING SPECTRUM LIVES IN Fix(G)^perp. Only the constant
-   eigenmode has ||P_triv v|| = 1 (it IS Fix(G)); every node-separating
-   eigenmode has ||P_triv v|| = 0 (Fix(G)^perp).
-
-The unification (one structure, the whole arc)
-----------------------------------------------
-This is the single structure behind every result of the 117-122 arc: the
-canonical emergent operator splits into a per-node-blind sector Fix(G) (where
-the symplectic substrate lives) and a discriminating spectral sector
-Fix(G)^perp (where the arithmetic / the distinguishing information lives),
-indexed by the irreps of the graph's automorphism group. The residue-digraph
-wall (120), the substrate blindness (103/116), the spectral primality (119),
-and the Riemann oscillatory residue S(T) in ker(R_inf) ^ Fix(S_n)^perp are all
-the same Fix(G) / Fix(G)^perp split for different symmetry groups.
-
-Honest scope
-------------
-This is the representation theory of graph automorphisms (Schur's lemma applied
-to an equivariant operator) re-expressed in the canonical emergent operator. It
-EXPLAINS and UNIFIES the arc's walls; it is not new mathematics and closes no
-open problem. The value is the clean, measured statement that the per-node
-substrate resolves the orbit partition and no finer, with the spectrum carrying
-the rest.
-
-References
-----------
-- src/tnfr/physics/structural_diffusion.py (structural_diffusion_operator)
-- src/tnfr/physics/symplectic_substrate.py (extract_phase_space_point)
-- examples/08_emergent_geometry/120_symmetry_wall_substrate_vs_spectrum.py (the special case)
-- theory/TNFR_NUMBER_THEORY.md §9.10 (this example; the general principle)
-- AGENTS.md "REMESH-∞ Closure" (S(T) in ker(R_inf) ^ Fix(S_n)^perp)
+Status: RESEARCH example; finite graph algebra with scoped auxiliary read-outs.
 """
 
 import os
@@ -185,8 +109,8 @@ def experiment_1_equivariance_orbits():
     print("=" * 74)
     print("EXPERIMENT 1: Equivariance, dim Fix(G) = #orbits, L_rw preserves it")
     print("=" * 74)
-    print("L_rw commutes with every automorphism (Schur); the trivial projector")
-    print("P_triv = mean of P_sigma has rank = #vertex orbits = dim Fix(G).")
+    print("For each selected graph, enumerate automorphisms and test whether L_rw")
+    print("commutes with them. Compare projector rank with the orbit count.")
     print()
     print(
         f"  {'graph':22s} {'|Aut|':>6} {'n':>3} {'orbits':>7} "
@@ -212,20 +136,19 @@ def experiment_1_equivariance_orbits():
             f"{rank:>5} {max_comm:>8.1e} {pres:>9.1e}"
         )
     print()
-    print("  -> equiv=0 (commutes with all Aut); rank=orbits (dim Fix(G));")
-    print("     preserve~0 (block-diagonal: Fix(G) (+) Fix(G)^perp).")
+    print("  -> On this finite family: commutators vanish, rank=orbits, and")
+    print("     the invariant subspace and its orthogonal complement are preserved.")
     return out
 
 
-def experiment_2_substrate_in_fix(results):
-    """M4: per-node symmetric-seed substrate lies in Fix(G) (orbit-constant)."""
+def experiment_2_symmetric_auxiliary_projection(results):
+    """Project an auxiliary Phi_s read-out obtained from a symmetric seed."""
     print()
     print("=" * 74)
-    print("EXPERIMENT 2: The Per-Node Substrate Lives in Fix(G) (Orbit-Constant)")
+    print("EXPERIMENT 2: Auxiliary Phi_s Read-out from a Symmetric Seed")
     print("=" * 74)
-    print("The canonical symplectic substrate from a symmetric seed satisfies")
-    print("P_triv v = v (orbit-constant). Vertex-transitive -> 1 orbit ->")
-    print("Fix(G)=constants -> sigma(Phi_s)=0 (the example-120 blindness).")
+    print("Initialize the auxiliary phase-space model from a uniform graph state")
+    print("and measure whether its Phi_s vector is invariant under P_triv.")
     print()
     print(
         f"  {'graph':22s} {'orbits':>7} {'||v-P_triv v||':>15} " f"{'sigma(Phi_s)':>13}"
@@ -238,17 +161,18 @@ def experiment_2_substrate_in_fix(results):
         resid = float(np.linalg.norm(v - P_triv @ v))
         print(f"  {name:22s} {orbits:>7} {resid:>15.1e} {np.std(v):>13.1e}")
     print()
-    print("  -> ||v - P_triv v|| = 0: the substrate is orbit-constant, in Fix(G).")
+    print("  -> The selected symmetric initialization gives an invariant Phi_s")
+    print("     vector. This is not a claim about arbitrary states or trajectories.")
 
 
-def experiment_3_orbit_resolution():
-    """M4b: per-node invariants resolve orbits but no finer."""
+def experiment_3_degree_orbit_comparison():
+    """Show that degree is orbit-invariant and can be coarser than the orbits."""
     print()
     print("=" * 74)
-    print("EXPERIMENT 3: The Substrate Resolves the Orbit Partition, No Finer")
+    print("EXPERIMENT 3: Degree Is Orbit-Invariant but Need Not Resolve Orbits")
     print("=" * 74)
-    print("Per-node degree (a canonical Aut-invariant) takes one value per")
-    print("orbit-class: it tells orbit from orbit, never node from node within.")
+    print("Degree is constant within every automorphism orbit, but distinct orbits")
+    print("can share a degree. It is one graph statistic, not the full substrate.")
     print()
     for name, G in [
         ("star K1,5 (S5)", nx.star_graph(5)),
@@ -261,19 +185,19 @@ def experiment_3_orbit_resolution():
             f"({len(degs)} class(es))"
         )
     print()
-    print("  -> star: center vs leaves (2 classes); path: ends/near/middle")
-    print("     collapse to 2 degree values but 3 orbits; complete: 1 class.")
-    print("     The substrate sees the orbit partition; the spectrum sees more.")
+    print("  -> star: two degree classes; path: three orbits collapse to two")
+    print("     degree values; complete: one class. The calculation explicitly")
+    print("     refutes the claim that this statistic always resolves all orbits.")
 
 
-def experiment_4_discriminating_spectrum(results):
-    """M5: discriminating eigenmodes lie in Fix(G)^perp."""
+def experiment_4_transitive_eigenvector_projections(results):
+    """Project eigenvectors for two selected vertex-transitive graphs."""
     print()
     print("=" * 74)
-    print("EXPERIMENT 4: The Discriminating Spectrum Lives in Fix(G)^perp")
+    print("EXPERIMENT 4: Eigenvector Projections on Two Transitive Graphs")
     print("=" * 74)
-    print("Project each emergent eigenmode onto Fix(G): only the constant mode")
-    print("has ||P_triv v|| = 1; every node-separating mode has ||P_triv v|| = 0.")
+    print("Project the numerically returned L_rw eigenvectors onto the invariant")
+    print("subspace for K6 and C8. Degenerate eigenspace bases are solver-chosen.")
     print()
     for name in ["complete K6 (S6)", "cycle C8 (D8)"]:
         nodes, L, P_triv, orbits = results[name]
@@ -287,36 +211,37 @@ def experiment_4_discriminating_spectrum(results):
         print(f"  {name}: ||P_triv v_k|| by eigenvalue:")
         print("    " + " ".join(f"{t:.2f}" for t in fracs))
     print()
-    print("  -> only the constant mode is in Fix(G); all discriminating modes")
-    print("     are in Fix(G)^perp (the spectral / representation sector).")
+    print("  -> In these two transitive examples, the constant mode projects onto")
+    print("     Fix(G) and the reported nonconstant modes project onto its complement.")
+    print("     No location for arithmetic or S(T) is inferred.")
+
+
+# Historical callable names remain aliases for compatibility only.
+experiment_2_substrate_in_fix = experiment_2_symmetric_auxiliary_projection
+experiment_3_orbit_resolution = experiment_3_degree_orbit_comparison
+experiment_4_discriminating_spectrum = experiment_4_transitive_eigenvector_projections
 
 
 def main():
     print()
-    print("  TNFR Example 123: The Symmetry-Sector Decomposition")
-    print("  The Substrate Sees Down to Orbits; the Spectrum Sees the Rest")
-    print("  ============================================================")
+    print("  TNFR Example 123: Finite Automorphism-Sector Checks")
+    print("  ===================================================")
     print()
     results = experiment_1_equivariance_orbits()
-    experiment_2_substrate_in_fix(results)
-    experiment_3_orbit_resolution()
-    experiment_4_discriminating_spectrum(results)
+    experiment_2_symmetric_auxiliary_projection(results)
+    experiment_3_degree_orbit_comparison()
+    experiment_4_transitive_eigenvector_projections(results)
     print()
     print("=" * 74)
-    print("WHAT THIS ESTABLISHES")
+    print("SCOPED RESULT")
     print("=" * 74)
-    print("The canonical emergent operator L_rw is EQUIVARIANT under the graph's")
-    print("automorphism group, so (Schur) it block-diagonalizes into Fix(G) (+)")
-    print("Fix(G)^perp, with dim Fix(G) = #vertex orbits. The per-node symplectic")
-    print("substrate lives in Fix(G) -- it resolves the orbit partition and no")
-    print("finer (sigma=0 when vertex-transitive); all discriminating information")
-    print("lives in Fix(G)^perp, the spectrum. The example-120 residue-digraph")
-    print("wall, the substrate blindness (103/116), the spectral primality (119),")
-    print("and the Riemann residual S(T) in ker(R_inf) ^ Fix(S_n)^perp are the")
-    print("SAME Fix(G)/Fix(G)^perp split for different symmetry groups. HONEST")
-    print("SCOPE: this is the representation theory of graph automorphisms")
-    print("(Schur) re-expressed in the canonical operator; it explains and")
-    print("unifies the arc's walls, it is not new mathematics, closes no problem.")
+    print("For the selected finite graphs, L_rw commutes with the enumerated")
+    print("automorphisms and preserves their invariant subspaces. A symmetric")
+    print("initialization yields an invariant auxiliary Phi_s vector, and the")
+    print("reported eigenvectors on two transitive graphs have the shown")
+    print("projections. These checks do not locate all information, characterize")
+    print("engine reachability, generate a symplectic substrate, or define an")
+    print("S(T) map or Riemann obstruction.")
 
 
 if __name__ == "__main__":

@@ -1,22 +1,28 @@
-"""Structural Integrity Monitor — closed-loop conservation enforcement.
+"""Structural integrity monitor for operator contracts and finite-step alerts.
 
-Bridges the gap between passive telemetry (conservation.py) and active
-operator execution (operators/definitions_base.py).  The monitor hooks
-into the operator pipeline so that every structural transformation is
-checked against the conservation laws **in real time**.
+Bridges passive telemetry (:mod:`conservation`) and active operator execution.
+The monitor hooks into the operator pipeline so that every structural
+transformation can be checked against its operator postcondition while the
+finite structural balance and candidate energy are recorded as diagnostics.
 
 PHYSICS
 =======
 After each operator application the monitor evaluates:
 
-1. **Conservation quality**  — |Δρ/Δt + div J| via `verify_conservation_balance`
-2. **Lyapunov stability**    — dE/dt ≤ 0 via `compute_lyapunov_derivative`
-3. **Grammar violation index**— classified by `detect_grammar_violations_from_conservation`
-4. **Noether charge drift**  — |ΔQ| via `compute_noether_charge`
+1. **Balance quality** — ``|Δρ/Δt + div J|`` via
+   :func:`verify_conservation_balance`
+2. **Candidate-energy change** — sampled ``dE/dt`` via
+   :func:`compute_lyapunov_derivative`
+3. **Balance alerts** — legacy-scaled residual alerts via
+   :func:`detect_grammar_violations_from_conservation`
+4. **Structural-charge drift** — sampled ``|ΔQ|`` via
+   :func:`compute_noether_charge`
 
-If any metric exceeds its threshold the monitor raises
-`StructuralIntegrityViolation` (hard mode) or records a warning and
-suggests corrective operators (soft mode).
+These quantities do not validate U1--U6 and a positive candidate-energy step
+does not establish universal Lyapunov instability.  Grammar validity belongs
+to the history/state-aware grammar validators.  In ``ENFORCE`` mode this class
+enforces its configured *monitor alert policy* and operator postconditions;
+the resulting exception is not a grammar verdict.
 
 OPERATOR POSTCONDITIONS
 =======================
@@ -24,7 +30,7 @@ Each canonical operator has a contract (AGENTS.md §Operators):
 
     IL  → C(t) must not decrease  (monotonicity)
     OZ  → |ΔNFR| must increase   (destabilisation)
-    UM  → |φ_i − φ_j| ≤ Δφ_max  (phase compatibility)
+    UM  → |wrap(φ_i − φ_j)| ≤ Δφ_max  (phase compatibility)
     RA  → effective coupling must increase (propagation)
     SHA → EPI unchanged           (silence)
     EN  → C(t) must not decrease  (reception)
@@ -37,20 +43,31 @@ INTEGRATION POINTS
 ==================
 * ``definitions_base.py``  — ``Operator.__call__`` invokes the monitor
 * ``self_optimizing_engine.py`` — reads ``integrity_report`` for feedback
-* ``ConservationTracker``  — re-used; no duplication with conservation.py
+* conservation helpers — re-used; no duplicate field computation
 """
 
 from __future__ import annotations
 
+import math
 import warnings
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
+from ..constants.aliases import (
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_EPI_KIND,
+    ALIAS_THETA,
+    ALIAS_VF,
+)
+from ..constants.canonical import (
+    U6_STRUCTURAL_POTENTIAL_LIMIT,
+    ZHIR_THRESHOLD_XI_CANONICAL,
+)
 from ..types import TNFRGraph
+from ..utils import angle_diff
 
 # ---------------------------------------------------------------------------
 # Lazy imports to avoid circular dependencies
@@ -100,14 +117,15 @@ def _ensure_imports() -> None:
 
 
 class StructuralIntegrityViolation(Exception):
-    """Raised when an operator violates structural conservation laws.
+    """Raised when an operator fails a configured monitor policy.
 
     Attributes
     ----------
     operator : str
-        Name of the operator that caused the violation.
+        Name of the operator associated with the alert or contract failure.
     violation_type : str
-        Category: 'conservation', 'lyapunov', 'postcondition', 'grammar'.
+        Category: ``postcondition``, ``balance_alert``,
+        ``candidate_energy_alert`` or ``charge_drift_alert``.
     details : dict
         Diagnostic data (residuals, dE/dt, etc.).
     """
@@ -119,7 +137,7 @@ class StructuralIntegrityViolation(Exception):
         self.violation_type = violation_type
         self.details = details
         super().__init__(
-            f"{operator} violated {violation_type}: "
+            f"{operator} triggered {violation_type}: "
             f"{details.get('reason', 'see details')}"
         )
 
@@ -133,13 +151,13 @@ class MonitorMode(Enum):
     """Enforcement level for the integrity monitor."""
 
     OFF = "off"  # No monitoring (backward compatible)
-    OBSERVE = "observe"  # Record violations, never raise
+    OBSERVE = "observe"  # Record postconditions and alerts, never raise
     ENFORCE = "enforce"  # Raise StructuralIntegrityViolation
 
 
 @dataclass
 class IntegrityReport:
-    """Result of a single operator integrity check.
+    """Operator postcondition result plus finite-step diagnostic alerts.
 
     Produced after every monitored operator application.  Consumed by the
     self-optimization engine for closed-loop feedback.
@@ -151,46 +169,136 @@ class IntegrityReport:
     energy_derivative: float = 0.0
     is_lyapunov_stable: bool = True
     noether_charge_drift: float = 0.0
+    balance_alerts: list[str] = field(default_factory=list)
+    balance_sample_available: bool = False
+    balance_within_alert: bool = True
+    residual_alerts_within_policy: bool = True
+    candidate_energy_within_alert: bool = True
+    charge_drift_within_alert: bool = True
+    grammar_validated: bool = False
     grammar_violations: list[str] = field(default_factory=list)
+    postcondition_evaluated: bool = False
     postcondition_ok: bool = True
     postcondition_detail: str = ""
     corrective_suggestion: str = ""
 
     @property
-    def is_healthy(self) -> bool:
-        """True when all checks pass."""
+    def balance_quality(self) -> float | None:
+        """Sampled balance quality, or ``None`` when capture failed."""
+        return self.conservation_quality if self.balance_sample_available else None
+
+    @property
+    def candidate_energy_derivative(self) -> float | None:
+        """Sampled candidate-energy change, or ``None`` without an interval."""
+        return self.energy_derivative if self.balance_sample_available else None
+
+    @property
+    def candidate_energy_nonincreasing(self) -> bool | None:
+        """Finite-step trend, or ``None`` when no interval was sampled."""
+        if not self.balance_sample_available:
+            return None
+        if not math.isfinite(self.energy_derivative):
+            return None
+        return self.energy_derivative <= 0.0
+
+    @property
+    def candidate_energy_within_numerical_tolerance(self) -> bool | None:
+        """Historical Lyapunov classification, including its tolerance."""
+        return self.is_lyapunov_stable if self.balance_sample_available else None
+
+    @property
+    def candidate_energy_alert(self) -> bool:
+        """Whether sampled candidate-energy growth exceeds monitor tolerance."""
+        return not self.candidate_energy_within_alert
+
+    @property
+    def structural_charge_drift(self) -> float | None:
+        """Sampled charge drift, or ``None`` when capture failed."""
+        return self.noether_charge_drift if self.balance_sample_available else None
+
+    @property
+    def structural_charge_drift_alert(self) -> bool:
+        """Whether charge drift exceeds the configured monitor threshold."""
+        return not self.charge_drift_within_alert
+
+    @property
+    def diagnostic_follow_up(self) -> str:
+        """Accurately scoped view of the legacy corrective suggestion."""
+        return self.corrective_suggestion
+
+    @property
+    def within_monitor_policy(self) -> bool:
+        """Whether all configured alerts and the operator contract pass.
+
+        This aggregate does not validate grammar and is not a theorem about
+        conservation or asymptotic stability.
+        """
         return (
-            self.conservation_quality > 0.7
-            and self.is_lyapunov_stable
-            and not self.grammar_violations
+            self.balance_within_alert
+            and self.residual_alerts_within_policy
+            and self.candidate_energy_within_alert
+            and self.charge_drift_within_alert
             and self.postcondition_ok
         )
+
+    @property
+    def is_healthy(self) -> bool:
+        """Backward-compatible alias for :attr:`within_monitor_policy`."""
+        return self.within_monitor_policy
 
 
 @dataclass
 class IntegritySummary:
-    """Aggregated integrity report over a sequence of operator applications."""
+    """Aggregate monitor-policy results over operator applications."""
 
     reports: list[IntegrityReport] = field(default_factory=list)
     total_operators: int = 0
+    balance_samples: int = 0
     violations_count: int = 0
     mean_conservation_quality: float = 1.0
     mean_energy_derivative: float = 0.0
     total_charge_drift: float = 0.0
+
+    @property
+    def alerts_count(self) -> int:
+        """Accurately named alias for the legacy ``violations_count`` field."""
+        return self.violations_count
+
+    @property
+    def mean_balance_quality(self) -> float:
+        """Accurately named view of the running balance-quality mean."""
+        return self.mean_conservation_quality
+
+    @property
+    def mean_candidate_energy_derivative(self) -> float:
+        """Running mean of sampled candidate-energy derivatives."""
+        return self.mean_energy_derivative
+
+    @property
+    def total_structural_charge_drift(self) -> float:
+        """Accurately named view of accumulated absolute charge drift."""
+        return self.total_charge_drift
+
+    @property
+    def mean_structural_charge_drift(self) -> float:
+        """Mean absolute structural-charge drift per sampled interval."""
+        return self.total_charge_drift / max(self.balance_samples, 1)
 
     def append(self, report: IntegrityReport) -> None:
         self.reports.append(report)
         self.total_operators += 1
         if not report.is_healthy:
             self.violations_count += 1
-        n = self.total_operators
-        self.mean_conservation_quality += (
-            report.conservation_quality - self.mean_conservation_quality
-        ) / n
-        self.mean_energy_derivative += (
-            report.energy_derivative - self.mean_energy_derivative
-        ) / n
-        self.total_charge_drift += abs(report.noether_charge_drift)
+        if report.balance_sample_available:
+            self.balance_samples += 1
+            n = self.balance_samples
+            self.mean_conservation_quality += (
+                report.conservation_quality - self.mean_conservation_quality
+            ) / n
+            self.mean_energy_derivative += (
+                report.energy_derivative - self.mean_energy_derivative
+            ) / n
+            self.total_charge_drift += abs(report.noether_charge_drift)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -397,9 +505,7 @@ def _postcond_mutation(
         )
 
         verify_phase_transformed(G, node, before.get("theta", 0.0))
-        epi_kind_before = G.nodes[node].get("_integrity_epi_kind_before")
-        if epi_kind_before is not None:
-            verify_identity_preserved(G, node, epi_kind_before)
+        verify_identity_preserved(G, node, before.get("epi_kind"))
         verify_bifurcation_handled(G, node)
     except Exception as exc:
         return str(exc)
@@ -451,7 +557,9 @@ def _postcond_transition(
 ) -> str | None:
     """NAV: At least one state variable (νf, θ, ΔNFR) must change."""
     vf_changed = abs(after.get("vf", 0.0) - before.get("vf", 0.0)) > 1e-9
-    theta_changed = abs(after.get("theta", 0.0) - before.get("theta", 0.0)) > 1e-9
+    theta_changed = (
+        abs(angle_diff(after.get("theta", 0.0), before.get("theta", 0.0))) > 1e-9
+    )
     dnfr_changed = abs(after.get("dnfr", 0.0) - before.get("dnfr", 0.0)) > 1e-9
     if not (vf_changed or theta_changed or dnfr_changed):
         return "No state change during Transition: " "νf, θ, and ΔNFR all unchanged"
@@ -492,27 +600,49 @@ POSTCONDITIONS: dict[str, Callable[..., str | None]] = {
 # ═══════════════════════════════════════════════════════════════════════════
 
 _CORRECTIVE_MAP: dict[str, str] = {
-    "U6_confinement_breach": "Apply IL (Coherence) to reduce Φ_s below φ threshold",
-    "U2_convergence_failure": "Apply IL or THOL to stabilise divergent ΔNFR",
-    "U3_phase_incompatibility": "Apply SHA (Silence) then UM with phase-compatible nodes",
-    "lyapunov_unstable": "Apply IL or THOL; energy is increasing (dE/dt > 0)",
-    "charge_drift": "Apply IL to restore Noether charge Q toward conserved value",
+    "balance_residual_above_legacy_alert": (
+        "Inspect the sampled balance, source terms, topology, and time step"
+    ),
+    "balance_rms_above_legacy_alert": (
+        "Inspect the sampled balance, source terms, topology, and time step"
+    ),
+    "balance_peak_above_legacy_alert": (
+        "Inspect nodes with large residuals before choosing an operator"
+    ),
+    "charge_drift_above_legacy_pi_alert": (
+        "Inspect the structural-charge definition and trajectory; validate U6 "
+        "from Phi_s reference drift separately"
+    ),
+    "balance_quality_below_monitor_threshold": (
+        "Review the finite-step balance; this alert does not identify a grammar rule"
+    ),
+    "candidate_energy_increase_above_monitor_tolerance": (
+        "Review the sampled candidate-energy change and operator postcondition"
+    ),
+    "structural_charge_drift_above_monitor_threshold": (
+        "Review the sampled structural-charge drift and balance source"
+    ),
 }
-
-_NOETHER_CHARGE_DRIFT_ALERT = 0.5
 
 
 def _suggest_correction(report: IntegrityReport) -> str:
-    """Derive a corrective operator suggestion from violation diagnostics."""
+    """Describe follow-up checks for measured alerts without inferring grammar."""
     suggestions: list[str] = []
-    for vtype in report.grammar_violations:
-        if vtype in _CORRECTIVE_MAP:
-            suggestions.append(_CORRECTIVE_MAP[vtype])
-    if not report.is_lyapunov_stable:
-        suggestions.append(_CORRECTIVE_MAP["lyapunov_unstable"])
-    if abs(report.noether_charge_drift) > _NOETHER_CHARGE_DRIFT_ALERT:
-        suggestions.append(_CORRECTIVE_MAP["charge_drift"])
-    return "; ".join(suggestions) if suggestions else ""
+    for alert_type in report.balance_alerts:
+        suggestion = _CORRECTIVE_MAP.get(alert_type)
+        if suggestion is not None and suggestion not in suggestions:
+            suggestions.append(suggestion)
+    if not report.candidate_energy_within_alert:
+        suggestions.append(
+            _CORRECTIVE_MAP["candidate_energy_increase_above_monitor_tolerance"]
+        )
+    if not report.charge_drift_within_alert:
+        suggestions.append(
+            _CORRECTIVE_MAP["structural_charge_drift_above_monitor_threshold"]
+        )
+    if not report.postcondition_ok:
+        suggestions.append("Review the operator-specific postcondition failure")
+    return "; ".join(dict.fromkeys(suggestions)) if suggestions else ""
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -528,6 +658,13 @@ def _capture_node_state(G: TNFRGraph, node: Any) -> dict[str, Any]:
         "vf": float(get_attr(G.nodes[node], ALIAS_VF, 0.0)),
         "dnfr": float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)),
         "theta": float(get_attr(G.nodes[node], ALIAS_THETA, 0.0)),
+        "epi_kind": get_attr(
+            G.nodes[node],
+            ALIAS_EPI_KIND,
+            None,
+            strict=True,
+            conv=lambda value: None if value is None else str(value),
+        ),
     }
     try:
         state["coherence"] = float(_compute_coherence(G))
@@ -542,7 +679,7 @@ def _capture_node_state(G: TNFRGraph, node: Any) -> dict[str, Any]:
 
 
 class StructuralIntegrityMonitor:
-    """Real-time conservation-law enforcement during operator execution.
+    """Real-time operator-contract checks and finite-step alert monitoring.
 
     Attaches to a TNFR graph via ``G.graph["integrity_monitor"]`` and is
     consulted by ``Operator.__call__`` after every structural transformation.
@@ -551,14 +688,17 @@ class StructuralIntegrityMonitor:
     ----------
     mode : MonitorMode
         OFF — no overhead, backward compatible.
-        OBSERVE — record all violations, never raise.
-        ENFORCE — raise ``StructuralIntegrityViolation`` on first failure.
+        OBSERVE — record postconditions and alerts, never raise.
+        ENFORCE — raise ``StructuralIntegrityViolation`` when the configured
+        monitor policy or operator postcondition fails.
     conservation_threshold : float
         Minimum ``conservation_quality`` (default 0.5; 1 = perfect).
     lyapunov_tolerance : float
-        Maximum allowed dE/dt before flagging instability (default 0.1).
+        Maximum sampled candidate-energy increase before an alert (default
+        0.1). This is a monitor tolerance, not a stability theorem.
     charge_drift_threshold : float
-        Maximum |ΔQ| per step (default π/2, the U6 confinement bound).
+        Selected alert level for |ΔQ| per step (default π/2). This legacy
+        charge diagnostic is separate from the U6 mean |ΔΦ_s| drift policy.
     """
 
     def __init__(
@@ -568,6 +708,16 @@ class StructuralIntegrityMonitor:
         lyapunov_tolerance: float = 0.1,
         charge_drift_threshold: float = U6_STRUCTURAL_POTENTIAL_LIMIT,
     ) -> None:
+        if not math.isfinite(conservation_threshold) or not (
+            0.0 <= conservation_threshold <= 1.0
+        ):
+            raise ValueError("conservation_threshold must be finite and in [0, 1]")
+        if not math.isfinite(lyapunov_tolerance) or lyapunov_tolerance < 0.0:
+            raise ValueError("lyapunov_tolerance must be finite and non-negative")
+        if not math.isfinite(charge_drift_threshold) or charge_drift_threshold < 0.0:
+            raise ValueError(
+                "charge_drift_threshold must be finite and non-negative"
+            )
         self.mode = mode
         self.conservation_threshold = conservation_threshold
         self.lyapunov_tolerance = lyapunov_tolerance
@@ -592,6 +742,16 @@ class StructuralIntegrityMonitor:
     def reset(self) -> None:
         """Clear accumulated reports."""
         self._summary = IntegritySummary()
+        self.discard_pending_operator()
+
+    def discard_pending_operator(self) -> None:
+        """Discard an unfinished before/after interval without a report.
+
+        Operator dispatch calls this when the structural transformation
+        raises after :meth:`before_operator`. The next report can therefore
+        never compare against a stale pre-failure snapshot.
+        """
+
         self._snapshot_before = None
         self._node_state_before = {}
         self._charge_before = 0.0
@@ -624,7 +784,7 @@ class StructuralIntegrityMonitor:
         node: Any,
         operator_name: str,
     ) -> IntegrityReport:
-        """Evaluate conservation laws after operator application.
+        """Evaluate an operator postcondition and finite-step diagnostics.
 
         Called by ``Operator.__call__`` when a monitor is active.
 
@@ -636,7 +796,8 @@ class StructuralIntegrityMonitor:
         Raises
         ------
         StructuralIntegrityViolation
-            Only in ``MonitorMode.ENFORCE`` when a violation is detected.
+            Only in ``MonitorMode.ENFORCE`` when the configured alert policy
+            or operator postcondition fails.
         """
         if self.mode is MonitorMode.OFF:
             return IntegrityReport(operator=operator_name, node=node)
@@ -644,28 +805,47 @@ class StructuralIntegrityMonitor:
         _ensure_imports()
         report = IntegrityReport(operator=operator_name, node=node)
 
-        # 1. Conservation quality (continuity equation residual)
+        # 1. Finite-step structural-balance quality and alerts.
         if self._snapshot_before is not None:
             try:
                 snap_after = _capture_conservation_snapshot(G)
                 balance = _verify_conservation_balance(
                     self._snapshot_before, snap_after
                 )
+                report.balance_sample_available = True
                 report.conservation_quality = balance.conservation_quality
+                report.balance_within_alert = (
+                    balance.conservation_quality >= self.conservation_threshold
+                )
 
-                # 2. Lyapunov stability (dE/dt ≤ 0)
+                # 2. Candidate-energy change on this observed step.
                 lyap = _compute_lyapunov_derivative(self._snapshot_before, snap_after)
                 report.energy_derivative = lyap.energy_derivative
                 report.is_lyapunov_stable = lyap.is_stable
+                report.candidate_energy_within_alert = (
+                    lyap.energy_derivative <= self.lyapunov_tolerance
+                )
 
-                # 3. Grammar violations from conservation residuals
-                violations = _detect_grammar_violations(balance)
-                if violations["violations_detected"]:
-                    report.grammar_violations = violations["violation_types"]
+                # 3. Residual alerts. The legacy helper explicitly performs
+                # no grammar validation and therefore cannot populate
+                # ``grammar_violations``.
+                alert_result = _detect_grammar_violations(balance)
+                report.balance_alerts = list(alert_result.get("alert_types", []))
+                report.residual_alerts_within_policy = not bool(
+                    alert_result.get("alerts_detected", False)
+                )
+                if not report.balance_within_alert:
+                    report.balance_alerts.append(
+                        "balance_quality_below_monitor_threshold"
+                    )
 
-                # 4. Noether charge drift
+                # 4. Structural-charge drift on this observed step.
                 charge_after = _compute_noether_charge(G)
                 report.noether_charge_drift = abs(charge_after - self._charge_before)
+                report.charge_drift_within_alert = (
+                    report.noether_charge_drift <= self.charge_drift_threshold
+                )
+                report.balance_alerts = list(dict.fromkeys(report.balance_alerts))
             except Exception as exc:
                 warnings.warn(
                     f"Integrity monitor conservation check failed: {exc}",
@@ -675,8 +855,9 @@ class StructuralIntegrityMonitor:
         # 5. Operator postcondition
         node_state_after = _capture_node_state(G, node)
         postcond_fn = POSTCONDITIONS.get(operator_name.lower())
-        if postcond_fn is not None:
+        if postcond_fn is not None and self._node_state_before:
             try:
+                report.postcondition_evaluated = True
                 violation_msg = postcond_fn(
                     G,
                     node,
@@ -698,28 +879,64 @@ class StructuralIntegrityMonitor:
         # Record
         self._summary.append(report)
 
-        # Enforce if configured
+        # Captures are single-use. A direct ``after_operator`` call without a
+        # new ``before_operator`` must not reuse an earlier operator interval.
+        self._snapshot_before = None
+        self._node_state_before = {}
+        self._charge_before = 0.0
+
+        # Enforce configured monitor policy. This never raises a grammar
+        # violation from residual, charge, or energy data.
         if self.mode is MonitorMode.ENFORCE and not report.is_healthy:
-            violation_type = "postcondition"
-            if report.grammar_violations:
-                violation_type = "grammar"
-            elif not report.is_lyapunov_stable:
-                violation_type = "lyapunov"
-            elif report.conservation_quality < self.conservation_threshold:
-                violation_type = "conservation"
+            if not report.postcondition_ok:
+                violation_type = "postcondition"
+                reason = report.postcondition_detail
+            elif not report.residual_alerts_within_policy:
+                violation_type = "balance_alert"
+                reason = "; ".join(report.balance_alerts)
+            elif not report.balance_within_alert:
+                violation_type = "balance_alert"
+                reason = (
+                    f"balance quality {report.conservation_quality:.4f} below "
+                    f"monitor threshold {self.conservation_threshold:.4f}"
+                )
+            elif not report.candidate_energy_within_alert:
+                violation_type = "candidate_energy_alert"
+                reason = (
+                    f"candidate dE/dt={report.energy_derivative:.6f} above "
+                    f"monitor tolerance {self.lyapunov_tolerance:.6f}"
+                )
+            elif not report.charge_drift_within_alert:
+                violation_type = "charge_drift_alert"
+                reason = (
+                    f"structural-charge drift={report.noether_charge_drift:.6f} "
+                    f"above monitor threshold {self.charge_drift_threshold:.6f}"
+                )
 
             raise StructuralIntegrityViolation(
                 operator=operator_name,
                 violation_type=violation_type,
                 details={
-                    "reason": report.postcondition_detail
-                    or "; ".join(report.grammar_violations)
-                    or f"dE/dt={report.energy_derivative:.6f}"
-                    or f"quality={report.conservation_quality:.4f}",
+                    "reason": reason or "operator postcondition failed",
                     "conservation_quality": report.conservation_quality,
+                    "balance_quality": report.balance_quality,
                     "energy_derivative": report.energy_derivative,
+                    "candidate_energy_derivative": (
+                        report.candidate_energy_derivative
+                    ),
+                    "candidate_energy_nonincreasing": (
+                        report.candidate_energy_nonincreasing
+                    ),
+                    "candidate_energy_within_numerical_tolerance": (
+                        report.candidate_energy_within_numerical_tolerance
+                    ),
                     "charge_drift": report.noether_charge_drift,
+                    "structural_charge_drift": report.structural_charge_drift,
+                    "balance_alerts": report.balance_alerts,
+                    "grammar_validated": report.grammar_validated,
                     "grammar_violations": report.grammar_violations,
+                    "diagnostic_follow_up": report.diagnostic_follow_up,
+                    # Backward-compatible key.
                     "suggestion": report.corrective_suggestion,
                 },
             )
@@ -740,27 +957,41 @@ class StructuralIntegrityMonitor:
     # ── feedback for self-optimization ────────────────────────────────────
 
     def feedback_vector(self) -> dict[str, float]:
-        """Return a dict of scalars suitable for the optimization engine.
+        """Return finite-diagnostic scalars for the optimization engine.
 
         Keys
         ----
-        conservation_quality : float
-            Running mean of conservation_quality across steps.
-        energy_derivative : float
-            Running mean of dE/dt.
-        charge_drift : float
-            Cumulative |ΔQ|.
-        violation_rate : float
-            Fraction of operators that were unhealthy.
+        Accurate keys are ``balance_sample_count``, ``balance_quality``,
+        ``candidate_energy_derivative``, mean/total structural-charge drift,
+        and ``monitor_alert_rate``. Historical keys remain as numeric aliases.
+        None of these fields reports grammar validity.
         """
         s = self._summary
         n = max(s.total_operators, 1)
-        return {
-            "conservation_quality": s.mean_conservation_quality,
-            "energy_derivative": s.mean_energy_derivative,
-            "charge_drift": s.total_charge_drift,
-            "violation_rate": s.violations_count / n,
+        alert_rate = s.violations_count / n
+        result = {
+            "balance_sample_count": float(s.balance_samples),
+            "balance_quality": s.mean_balance_quality,
+            "candidate_energy_derivative": s.mean_candidate_energy_derivative,
+            "mean_structural_charge_drift": s.mean_structural_charge_drift,
+            "total_structural_charge_drift": s.total_structural_charge_drift,
+            # Generic canonical view uses the per-sample mean so it does not
+            # grow solely because monitoring ran for more intervals.
+            "structural_charge_drift": s.mean_structural_charge_drift,
+            "monitor_alert_rate": alert_rate,
         }
+        result.update(
+            {
+                # Backward-compatible aliases. The names do not change the
+                # finite-diagnostic scope documented above.
+                "conservation_quality": result["balance_quality"],
+                "energy_derivative": result["candidate_energy_derivative"],
+                # Historical behavior accumulated absolute drift.
+                "charge_drift": result["total_structural_charge_drift"],
+                "violation_rate": result["monitor_alert_rate"],
+            }
+        )
+        return result
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -865,11 +1096,11 @@ class OperatorContractAudit:
         return tuple(r for r in self.results if not r.satisfied)
 
     def summary(self) -> str:
-        ok = "ALL SATISFIED" if self.all_satisfied else "VIOLATIONS"
+        ok = "ALL PROBES PASS" if self.all_satisfied else "PROBE FAILURES"
         lines = [
-            f"Operator-contract audit [{ok}]: "
-            f"{self.n_satisfied}/{self.n_operators} operators satisfy "
-            f"their canonical postcondition contract (measured)."
+            f"Operator postcondition probes [{ok}]: "
+            f"{self.n_satisfied}/{self.n_operators} catalog probes pass "
+            f"on the declared deterministic fixtures."
         ]
         for r in self.results:
             mark = "ok " if r.satisfied else "XX "
@@ -894,7 +1125,7 @@ def _audit_build_graph(n_nodes: int, seed: int) -> Any:
     G = nx.watts_strogatz_graph(n_nodes, k, 0.2, seed=seed)
     for nd in G.nodes():
         # Phases within a π/4 band so every neighbour pair satisfies the U3
-        # gate (|Δφ| ≤ Δφ_max = π/2): coupling/resonance are only admissible on
+        # gate (|wrap(Δφ)| ≤ Δφ_max = π/2): coupling/resonance are admissible on
         # a phase-coherent network (Invariant #2).
         G.nodes[nd][ALIAS_THETA[0]] = rng.uniform(0.0, math.pi / 4)
         G.nodes[nd][ALIAS_EPI[0]] = rng.uniform(0.2, 0.6)
@@ -926,14 +1157,16 @@ def audit_operator_contracts(
     seed: int = 7,
     tol: float = 1e-6,
 ) -> OperatorContractAudit:
-    r"""Measure each canonical operator against its postcondition contract.
+    r"""Measure each catalog entry on a deterministic postcondition fixture.
 
-    Applies all 13 canonical operators, each in its correct canonical
-    context, and measures whether its contract (AGENTS.md §Operators) holds.
+    Applies all 13 canonical operators, each in one declared test context,
+    and measures whether the corresponding finite probe passes.
     Network readouts recompute the emergent ΔNFR field after application.
     The direct OZ pressure postcondition is measured before recomputation,
     which would overwrite that channel. Every probe also checks the recorded
-    glyph: a grammar fallback cannot certify the requested operator.
+    glyph: a grammar fallback cannot count as evidence for the requested
+    operator. Passing this finite suite is regression evidence, not a proof
+    over all graph states, parameters or operator compositions.
     Returns an :class:`OperatorContractAudit` with a per-operator result.
 
     Parameters
@@ -1052,6 +1285,14 @@ def audit_operator_contracts(
                 for nd in list(G.nodes()):
                     Dissonance()(G, nd)
                 default_compute_delta_nfr(G)
+                if glyph == "ZHIR":
+                    # The deterministic ZHIR probe must carry evidence for its
+                    # non-disableable signed-growth trigger. Anchor the newest
+                    # sample to the live EPI so the fixture remains coherent.
+                    step = ZHIR_THRESHOLD_XI_CANONICAL + 1.0
+                    for nd in list(G.nodes()):
+                        current = float(get_attr(G.nodes[nd], ALIAS_EPI, 0.0))
+                        G.nodes[nd]["epi_history"] = [current - step, current]
                 theta_before = {
                     n: get_attr(G.nodes[n], ALIAS_THETA, 0.0) for n in G.nodes()
                 }
@@ -1060,7 +1301,11 @@ def audit_operator_contracts(
                 changed = sum(
                     1
                     for n in G.nodes()
-                    if abs(get_attr(G.nodes[n], ALIAS_THETA, 0.0) - theta_before[n])
+                    if abs(
+                        angle_diff(
+                            get_attr(G.nodes[n], ALIAS_THETA, 0.0), theta_before[n]
+                        )
+                    )
                     > 1e-9
                 )
                 total = G.number_of_nodes()
@@ -1077,7 +1322,12 @@ def audit_operator_contracts(
                 default_compute_delta_nfr(G)
                 after = _audit_metrics(G)
                 theta_changed = any(
-                    abs(get_attr(G.nodes[n], ALIAS_THETA, 0.0) - theta_before[n]) > 1e-9
+                    abs(
+                        angle_diff(
+                            get_attr(G.nodes[n], ALIAS_THETA, 0.0), theta_before[n]
+                        )
+                    )
+                    > 1e-9
                     for n in G.nodes()
                 )
                 satisfied = theta_changed or any(

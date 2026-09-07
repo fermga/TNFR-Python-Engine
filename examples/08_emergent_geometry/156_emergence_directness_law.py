@@ -1,75 +1,39 @@
 #!/usr/bin/env python3
-"""
-Example 156 — The Emergence-Directness Law: Structural Level x Symmetry Sector
-=============================================================================
+"""Example 156 — finite comparisons between independently chosen read-outs.
 
-The cross-domain axis of ``theory/EMERGENT_ONTOLOGY.md`` (§0) orders domains by
-how DIRECTLY they read the shared fixed point ``ΔNFR = 0`` — particle winding
-*directly*, the number-theory spectral sector *genuinely but partially*, the
-arithmetic ``ΔNFR`` *circular*. This example measures WHY that ordering holds: a
-domain's directness is fixed by
+This script retains the numerical experiments historically presented as an
+"emergence-directness law", but the measurements do not establish such a law.
+They concern three separately constructed objects:
 
-    (i)  WHICH level of the three-level structure (§7.1 stage -> occupant ->
-         process) carries its canonical read-out, and
-    (ii) WHICH ``Aut(G)`` representation sector (Schur: ``Fix(G) ⊕ Fix(G)^perp``,
-         example 123) that read-out lives in.
+* a phase field planted on a cycle, whose winding is measured along selected
+  orientations;
+* a cycle whose node pressures are assigned uniformly by its constructor;
+* quadratic-residue Cayley digraphs, whose rank statistic is compared with
+  externally supplied prime/composite labels on five inputs.
 
-    Level / read-out          Aut(G) sector         Directness
-    ------------------------  --------------------  -----------------------
-    occupant  winding W       Fix(G)  (invariant)   DIRECT       (particles)
-    stage     spectral rho    Fix(G)^perp           PARTIAL/WALL (numbers)
-    process   dNFR(Omega,..)  -- (consumes input)   CIRCULAR     (arithmetic)
-
-THE LAW (one sentence): a topological (occupant) read-out is DIRECT because it is
-a ``Fix(G)`` invariant; a spectral (stage) read-out is PARTIAL because it is
-trapped in ``Fix(G)^perp`` (the non-trivial irreps = the symmetry wall); a
-process read-out is CIRCULAR because it consumes its own input.
-
-This is the cross-domain face of the SAME representation theory that organizes the
-secondary synergies — each algebraic relation an operator has with the coupling
-``A`` produces a distinct emergent structure:
-
-    commuting automorphism   [A,P]=0          -> the WALL (Fix^perp confinement)
-    anticommuting chiral G    {A,G}=0          -> additive inverse -n / antiparticle
-    non-symmetric circulant  A!=A^T,[A,A^T]=0 -> Gauss-sum PHASE (Z/n Fourier basis)
-    graph products           spec add/mult     -> +, x (NOT unique factorisation)
-
-Physics
--------
-- occupant: the winding ``W = (1/2pi) * circulation`` is the degree of a map
-  ``S^1 -> S^1``, an exact integer invariant under every graph automorphism
-  (``Aut`` maps cycles to cycles) — the ``Fix(G)`` (trivial-rep) robust charge.
-  Two distinct ``Z_2`` involutions send ``W -> -W``: parity ``P`` (an
-  orientation-reversing automorphism) and charge conjugation ``C`` (phase
-  conjugation ``phi -> -phi``, the chiral involution, ``chiral_involution.py``).
-  ``|W|`` is the invariant of both.
-- stage: on a vertex-transitive graph the per-node substrate is orbit-constant
-  (it lives in ``Fix(G)``) and CANNOT discriminate nodes. The arithmetic
-  discriminator lives in the spectrum ``= Fix(G)^perp`` (examples 120/123). On the
-  residue Cayley digraph that ``Fix^perp`` sector is exactly the non-trivial
-  ``Z_n`` characters = the Gauss-sum eigenbasis (``TNFR_NUMBER_THEORY.md``
-  §9.5-9.8, §10.5 — the non-self-adjoint circulant phase operator).
-- process: the arithmetic ``dNFR(n)`` computes ``Omega, tau, sigma`` from ``n`` by
-  trial division — it consumes the divisibility it "reads", so it is circular
-  (Sector A).
+The cycle automorphisms, pointwise phase negation and residue graphs are chosen
+before measurement. Agreement between their finite outputs does not put the
+read-outs in a common representation sector, derive one from another, or rank
+their degree of emergence. In particular, winding sectors are not physical
+particle species, and phase negation is not identified with any physical
+conjugation operation.
 
 Experiments
 -----------
-1. occupant -- ``|W|`` is an ``Aut(G)`` invariant (Fix): robust / DIRECT
-2. the two ``W -> -W`` involutions: parity ``P`` vs charge conjugation ``C``
-3. stage per-node -- orbit-constant on a vertex-transitive graph (Fix): BLIND
-4. stage spectral -- ``rho(n)`` discriminates primes in ``Fix^perp`` while every
-   per-node ``Fix`` quantity stays blind: the WALL
-5. the law -- assemble the level x sector table from the measurements
+1. Measure winding on all dihedral traversals of one prepared ``C_12`` field.
+2. Compare traversal reflection with pointwise phase negation on that field.
+3. Confirm that the constructor's uniform pressure gives uniform coherence.
+4. Compare ``residue_network_rank`` with five external arithmetic labels.
+5. State the common limits of those finite comparisons.
 
 References
 ----------
-- theory/EMERGENT_ONTOLOGY.md §0 (cross-domain axis), §2.3 (this law), §7.1
-- theory/TNFR_NUMBER_THEORY.md §9.5-9.8 (sectors + ladder), §10.5 (phase operator)
-- examples 123 (Schur Fix/Fix^perp), 120 (arithmetic in Fix^perp), 155 (ladder)
-- benchmarks: chiral_involution.py, composition_arithmetic.py,
-  residue_phase_vs_riemann.py
-- src/tnfr/physics/emergent_particles.py (winding), metrics/common.py (coherence)
+* ``src/tnfr/physics/emergent_particles.py`` for winding measurement.
+* ``src/tnfr/mathematics/number_theory.py`` for the residue-graph statistics.
+* ``theory/EMERGENT_ONTOLOGY.md`` for the separation between constructed input,
+  measured read-out and dynamical emergence.
+
+Status: RESEARCH example; finite comparison and negative identification result.
 """
 
 import os
@@ -105,8 +69,8 @@ def _winding_along(G, order):
     return winding_number(G, order=order)[0]
 
 
-def _conjugate_phase(G):
-    """Charge conjugation C: a copy of G with every phase negated (phi -> -phi)."""
+def _negate_phase(G):
+    """Return a copy of ``G`` with every phase multiplied by ``-1``."""
     H = G.copy()
     for i in H.nodes():
         ph = -float(H.nodes[i].get("phase", H.nodes[i].get("theta", 0.0)))
@@ -116,11 +80,11 @@ def _conjugate_phase(G):
 
 
 # --------------------------------------------------------------------------- #
-# Experiment 1 -- occupant: |W| is an Aut(G) invariant (Fix) -> DIRECT
+# Experiment 1 -- finite dihedral-traversal comparison
 # --------------------------------------------------------------------------- #
-def experiment_1_occupant_fix_invariant():
+def experiment_1_dihedral_winding_comparison():
     print("=" * 78)
-    print("(1) OCCUPANT: the winding |W| is an Aut(G) invariant (Fix sector)")
+    print("(1) PREPARED LOOP: winding under the 24 dihedral traversals of C_12")
     print("=" * 78)
     n, W = 12, 2
     G = winding_ring(n, W)
@@ -129,44 +93,50 @@ def experiment_1_occupant_fix_invariant():
     preserved = sum(_winding_along(G, perm) == W0 for _, _, perm in autos)
     flipped = sum(_winding_along(G, perm) == -W0 for _, _, perm in autos)
     ok = preserved + flipped == len(autos)
-    print(f"  ring C_{n}, planted W={W} -> measured occupant charge W = {W0}")
-    print(f"  under all {len(autos)} automorphisms of D_{n}: rotations preserve W "
+    print(f"  ring C_{n}, planted target W={W} -> measured W = {W0}")
+    print(f"  under all {len(autos)} dihedral automorphisms of C_{n}: rotations preserve W "
           f"({preserved}), reflections flip W->-W ({flipped})")
-    print(f"  => |W| invariant under EVERY automorphism: {ok}  "
-          f"(a Fix(G) topological invariant = DIRECT)")
+    print(f"  => |W| is unchanged in this complete finite traversal check: {ok}")
+    print("     The phase field and the group action were supplied as inputs; this")
+    print("     does not show that TNFR dynamics formed the winding sector.")
     return ok
 
 
 # --------------------------------------------------------------------------- #
-# Experiment 2 -- the two W->-W involutions: parity P vs charge conjugation C
+# Experiment 2 -- two externally selected sign-reversing operations
 # --------------------------------------------------------------------------- #
-def experiment_2_parity_vs_charge_conjugation():
+def experiment_2_reflection_vs_phase_negation():
     print("=" * 78)
-    print("(2) Two distinct Z_2 send W->-W: parity P (automorphism) vs C (chiral)")
+    print("(2) Reflection of traversal vs pointwise phase negation")
     print("=" * 78)
     n, W = 12, 3
     G = winding_ring(n, W)
     W0 = _winding_along(G, list(range(n)))
-    # parity P: an orientation-reversing automorphism (reflection i -> -i)
-    parity_order = [(-i) % n for i in range(n)]
-    W_parity = _winding_along(G, parity_order)
-    # charge conjugation C: phase conjugation phi -> -phi (the chiral involution)
-    W_charge = _winding_along(_conjugate_phase(G), list(range(n)))
-    ok = (W_parity == -W0) and (W_charge == -W0) and abs(W0) == abs(W_parity)
-    print(f"  W = {W0};  parity P (reflection): W -> {W_parity};  "
-          f"charge-conj C (phi->-phi): W -> {W_charge}")
+    # Orientation-reversing traversal (reflection i -> -i).
+    reflection_order = [(-i) % n for i in range(n)]
+    W_reflection = _winding_along(G, reflection_order)
+    # A separate, pointwise transformation of the supplied phase field.
+    W_negated = _winding_along(_negate_phase(G), list(range(n)))
+    ok = (
+        (W_reflection == -W0)
+        and (W_negated == -W0)
+        and abs(W0) == abs(W_reflection)
+    )
+    print(f"  W = {W0};  reflected traversal: W -> {W_reflection};  "
+          f"negated phase field: W -> {W_negated}")
     print(f"  => both flip the sign, |W| invariant under both: {ok}")
-    print("     P = spatial (commuting automorphism); C = chiral (anticommuting "
-          "Gamma, = additive inverse -n, chiral_involution.py). Distinct Z_2.")
+    print("     These are two externally selected involutions on different inputs.")
+    print("     Their matching output does not identify the transformations or give")
+    print("     the winding a physical interpretation.")
     return ok
 
 
 # --------------------------------------------------------------------------- #
-# Experiment 3 -- stage per-node: orbit-constant on vertex-transitive (Fix) BLIND
+# Experiment 3 -- uniform constructor input gives a uniform node read-out
 # --------------------------------------------------------------------------- #
-def experiment_3_stage_pernode_blind():
+def experiment_3_uniform_node_readout():
     print("=" * 78)
-    print("(3) STAGE per-node read-out: orbit-constant on a vertex-transitive graph")
+    print("(3) UNIFORM INPUT: per-node coherence on a prepared cycle")
     print("=" * 78)
     n = 12
     G = winding_ring(n, 2)  # a ring is vertex-transitive
@@ -175,17 +145,19 @@ def experiment_3_stage_pernode_blind():
     distinct = len(set(coh))
     ok = distinct == 1
     print(f"  structural_coherence over C_{n}: distinct per-node values = {distinct}")
-    print(f"  => orbit-constant (lives in Fix(G)) = {ok}; per-node read-out is "
-          "BLIND. A discriminator must sit in Fix(G)^perp.")
+    print(f"  => uniform on this constructed field: {ok}")
+    print("     The constructor assigns the same delta_nfr to every node, so this")
+    print("     result does not locate a universal representation sector or constrain")
+    print("     where an unrelated arithmetic diagnostic must live.")
     return ok
 
 
 # --------------------------------------------------------------------------- #
-# Experiment 4 -- stage spectral: rho discriminates in Fix^perp while Fix is blind
+# Experiment 4 -- finite residue-rank comparison with external truth labels
 # --------------------------------------------------------------------------- #
-def experiment_4_stage_spectral_fixperp_wall():
+def experiment_4_residue_rank_comparison():
     print("=" * 78)
-    print("(4) STAGE spectral: rho(n) discriminates primes in Fix^perp (the wall)")
+    print("(4) RESIDUE GRAPHS: finite rank comparison with arithmetic labels")
     print("=" * 78)
     samples = [(7, True), (11, True), (13, True), (15, False), (21, False)]
     rows = []
@@ -194,57 +166,61 @@ def experiment_4_stage_spectral_fixperp_wall():
         conn = sorted(c for c in quadratic_residue_set(n) if c != 0)
         G = arithmetic_cayley_digraph(n, conn)
         outdeg = {d for _, d in G.out_degree()}
-        pernode_uniform = len(outdeg) == 1          # Fix: vertex-transitive
+        pernode_uniform = len(outdeg) == 1
         rho = residue_network_rank(n, kind="quadratic")
-        rho_says_prime = rho == 3                    # Fix^perp spectral invariant
+        rho_says_prime = rho == 3
         ok = (rho_says_prime == is_prime) and pernode_uniform
         all_ok &= ok
         rows.append((n, is_prime, pernode_uniform, rho, rho_says_prime))
-    print("   n   prime?  per-node uniform (Fix)   rho (Fix^perp)   rho=3<=>prime")
+    print("   n   prime?  uniform out-degree   residue rank rho   rho==3")
     for n, is_prime, uni, rho, says in rows:
         print(f"  {n:<3}  {str(is_prime):<6}  {str(uni):<22}  {rho:<14}  {says}")
-    print("  => per-node (Fix) is uniform for EVERY n (blind to primality); "
-          "primality is a spectral Fix^perp invariant (rho).")
-    print(f"     all consistent: {all_ok}  (= the symmetry wall, examples 120/123)")
+    print("  => every selected Cayley graph has uniform out-degree, while rho=3")
+    print(f"     matches the five supplied labels: {all_ok}")
+    print("     This finite table is not a general primality theorem and does not")
+    print("     prove that one read-out is the hidden complement of another.")
     return all_ok
 
 
 # --------------------------------------------------------------------------- #
-# Experiment 5 -- assemble the level x sector law
+# Experiment 5 -- summarize what the finite checks do and do not identify
 # --------------------------------------------------------------------------- #
-def experiment_5_the_law(results):
+def experiment_5_scope_summary(results):
     print("=" * 78)
-    print("(5) THE EMERGENCE-DIRECTNESS LAW (assembled from the measurements)")
+    print("(5) SCOPE: finite comparisons, with no cross-domain identification")
     print("=" * 78)
-    print("   level      read-out        Aut(G) sector     directness")
-    print("   ---------  --------------  ----------------  --------------------")
-    print("   occupant   winding W       Fix(G)            DIRECT    (particles)")
-    print("   stage      spectral rho    Fix(G)^perp       PARTIAL   (numbers/wall)")
-    print("   process    dNFR(Om,ta,si)  consumes input    CIRCULAR  (arithmetic)")
+    print("   constructed input       measured output       justified conclusion")
+    print("   ----------------------  --------------------  --------------------------")
+    print("   phased cycle C_12       winding by traversal  finite orientation check")
+    print("   uniform cycle pressure  node coherence        uniform-input response")
+    print("   five residue digraphs   rank rho              finite label agreement")
     print()
-    print("  one law: topological(occupant)=Fix-invariant=DIRECT; spectral(stage)")
-    print("  =Fix^perp-trapped=PARTIAL(the wall); process=consumes-input=CIRCULAR.")
-    print("  Compares the position ladder (155/§9.12), particle classification (§7.1),")
-    print("  the Riemann/number wall (§9.5-9.7, §10.5) and the §0 axis under ONE")
-    print("  principle: representation theory of the coupling's symmetry group.")
-    print()
-    print("  HONEST SCOPE: every piece is DERIVED/measured; the law is a unifying")
-    print("  re-expression (one fixed point, many read-outs). It closes NO open")
-    print("  problem -- the wall persists; G4 = RH stays OPEN.")
+    print("  The experiments use different state spaces and externally selected")
+    print("  constructions. They do not derive a directness ordering, a shared")
+    print("  symmetry decomposition, particle physics, or a new arithmetic proof.")
     return all(results.values())
+
+
+# Historical callable names remain aliases so existing imports keep working.
+# Their former labels are not interpretations of the measurements.
+experiment_1_occupant_fix_invariant = experiment_1_dihedral_winding_comparison
+experiment_2_parity_vs_charge_conjugation = experiment_2_reflection_vs_phase_negation
+experiment_3_stage_pernode_blind = experiment_3_uniform_node_readout
+experiment_4_stage_spectral_fixperp_wall = experiment_4_residue_rank_comparison
+experiment_5_the_law = experiment_5_scope_summary
 
 
 def main():
     results = {}
-    results["1_occupant_fix"] = experiment_1_occupant_fix_invariant()
+    results["1_dihedral_winding"] = experiment_1_dihedral_winding_comparison()
     print()
-    results["2_parity_vs_charge"] = experiment_2_parity_vs_charge_conjugation()
+    results["2_reflection_vs_negation"] = experiment_2_reflection_vs_phase_negation()
     print()
-    results["3_stage_blind"] = experiment_3_stage_pernode_blind()
+    results["3_uniform_node_readout"] = experiment_3_uniform_node_readout()
     print()
-    results["4_stage_fixperp"] = experiment_4_stage_spectral_fixperp_wall()
+    results["4_residue_rank"] = experiment_4_residue_rank_comparison()
     print()
-    ok = experiment_5_the_law(results)
+    ok = experiment_5_scope_summary(results)
     print()
     print("=" * 78)
     status = "ALL EXPERIMENTS PASSED" if ok else "SOME EXPERIMENTS FAILED"

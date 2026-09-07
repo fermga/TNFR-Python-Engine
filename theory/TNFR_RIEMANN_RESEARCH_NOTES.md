@@ -8,6 +8,22 @@
 
 This memo defines the minimum structure required to evaluate TNFR claims about the Riemann Hypothesis (RH). It scopes the computational program, prescribes telemetry, and records open work items so contributors can extend the investigation without rewriting the physics or the SDK contracts. All historical notes remain in the appendix for context.
 
+> **Scope correction (2026-09).** Historical sections that call the tetrad a
+> minimal complete state, infer a tetrad Hilbert space from a nonnegative
+> snapshot functional, derive conservation or convergence from U1–U6, identify
+> an analytic $S(T)$ kernel from a finite Fourier mask, or promote registry
+> closure to completeness of the 13 operators are superseded. The tetrad is a
+> required lossy diagnostic interface; the harmonic symplectic flow is an
+> auxiliary model; conservation and Lyapunov quantities have restricted
+> hypotheses; and catalog completeness over an independently defined class of
+> admissible TNFR transformations remains open. See
+> [CORE_RESEARCH_PROGRAM.md](CORE_RESEARCH_PROGRAM.md) S2, S3, S10 and S12,
+> [DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md),
+> [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md), and the
+> corrected [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md).
+> Later historical arguments that depend on those stronger premises do not
+> inherit theorem status.
+
 > **Read first:** the conceptual foundation is **the nodal-ontology re-mapping**
 > directly below (2026-06); it supersedes the pre-pulse / pre-single-constant
 > framing of P12–P49 (the certificates stand; only *what they measure* is re-read).
@@ -33,60 +49,51 @@ With the combinatorial track eliminated, the program's live attack surface is th
 **collective phase of the integer-NFR nodal pulse**. Measured
 (`examples/03_riemann_zeta/157_nodal_pulse_phase_attack.py`):
 
-- **M1 — `S(T)` is the pulse phase.** `S(T) = (1/π) arg ζ(1/2+iT) = arg(P(T))/π`
-  to `|Δ| < 0.015` on the truncated pulse `P(T) = Σ n^{-1/2} e^{-i(log n)T}`.
-- **M2 — the phase counts the zeros.** `N(T) = θ(T)/π + 1 + S(T)` (Riemann–von
-  Mangoldt) reproduces the exact zero count from the pulse phase alone.
+- **M1 — finite pulse-phase approximation.** On the declared truncation,
+  `arg(P(T))/π` approximates `S(T) = (1/π) arg ζ(1/2+iT)` with measured
+  `|Δ| < 0.015` over the sampled grid.
+- **M2 — classical counting comparison.** Substituting the exact analytic
+  `S(T)` in the Riemann–von Mangoldt formula reproduces the zero count. The
+  truncated pulse supplies a numerical approximation, not a new proof of that identity.
 - **M3 — the pulse accesses the arithmetic.** Permuting the prime structural
   frequencies (`log 2 ↔ log 3`) changes `P` (`|P|: 0.247→0.460`, `arg: −0.286→
-  −0.837`). The pulse is sensitive to the *specific* prime values — the
-  `Fix(S_n)^⊥` content the `S_n`-invariant self-adjoint spectrum of the eliminated
-  operator was provably **blind** to (the Euler-Orthogonality wall that paused the
-  old program). The re-founded vantage is not blind to it.
-- **M4 — the critical line is the coherence axis.** The rectified pulse
+  −0.837`). The finite pulse is label-sensitive under that test. This does not
+  locate analytic `S(T)` in `Fix(S_n)^⊥` or prove a unique representation.
+- **M4 — sampled critical-line comparison.** The rectified pulse
   `Z = e^{iθ}P` is most nearly real on `Re(s)=1/2` (`|Im Z|/|Z|`: `0.12` at `σ=½`
   < `0.19` at `σ=0.7`) — the functional-equation reflection axis read as the
-  `ΔNFR=0` coherence axis.
+  candidate coherence axis. This is a modeling interpretation, not a theorem
+  that the engine reaches `ΔNFR=0` there.
 
-**Frontier.** RH is the statement that `S(T)` never lets a zero leave the
-coherence axis. The re-founding relocates that question from the (blind)
-self-adjoint spectrum to the collective **phase / coherence** of the integer-NFR
-pulse — an arithmetic-accessing, reflection-native arena. This surface is mapped,
-not settled; `G4 = RH` remains open. The distinction from the paused T-HP program
-is structural: T-HP sought an `S_n`-invariant operator whose spectrum is `{γ_n}`
-(blind to `Fix(S_n)^⊥`); the pulse phase *carries* `Fix(S_n)^⊥` directly.
+**Frontier.** RH concerns the location of all non-trivial zeros. The pulse phase
+is one finite numerical comparison surface for the analytic argument term; no
+TNFR theorem equates phase coherence with RH or places that term in a symmetry
+complement. This surface is mapped, not settled, and `G4 = RH` remains open.
 
-**Advance (2026-07): tooling + obstruction localization.** The surface is now
-canonical tooling in `src/tnfr/riemann/pulse_coherence.py`:
+**Advance (2026-07): finite tooling and comparison surface.** The module
+`src/tnfr/riemann/pulse_coherence.py` exposes:
 `argument_fluctuation` (`S(T)` from the pulse phase), `zero_count`
 (`N(T) = θ/π + 1 + S(T)`), `coherence_defect` (exact `Z = e^{iθ}ζ`, `~1e-16` on
-`σ=½`, growing off-axis) and `verify_pulse_coherence`. Measured **localization**:
+`σ=½`, growing off-axis) and `verify_pulse_coherence`. The prime-side series
 the prime-side series `S(T) = (1/π) Σ_{p,k}(1/k)p^{-k/2} sin(kT log p)` does *not*
-converge on the line -- its abscissa of convergence is `Re(s)=1`, so adding prime
-NFRs makes it worse (err `0.40→0.47` at `T=41`), not better. The RH content is
-exactly this boundary non-convergence: `S(T)` is **accessible** (the integer
-pulse phase) but not **summable from the primes** on the axis. That is the sharp
-form of the obstruction in the emergent framing -- and it is a genuine step, not
-a verdict on where the surface leads.
+converge absolutely on the line; the reported truncations have error
+`0.40→0.47` at `T=41`. This is a classical convergence boundary plus a finite
+numerical observation, not an identification of the full RH obstruction.
 
-**Coherence-budget measurement (2026-07): the U2 budget is real at the RMS
-level, not the sup level.** With `S(T)` now accessible, the natural TNFR attack
-is the U2 reading — RH ⟺ the prime-pulse NFR stays coherent (U2-bounded) — so we
-*measured* how tightly the pulse phase auto-bounds, using exact `ζ` (continuous
+**Coherence-budget measurement (2026-07): finite RMS and peak diagnostics.**
+The benchmark samples the analytic argument term using exact `ζ` (continuous
 `arg` descent in `σ`, no RH input; validated by `θ/π + 1 + S = ` integer
 zero-count). Over two decades in `T` (30→3000): `mean(S) ≈ 0` (centred, no
 drift); `RMS(S)` grows only `0.32→0.39` — the glacial `√(log log T)` of Selberg
 (fit `RMS² ≈ 0.066·log log T`, same order as `1/(2π²)=0.051`); the measured peaks
 `max|S| ≈ 1` sit at `~¼` of the unconditional `O(log T)` envelope (`≈4`). So the
-pulse phase **does not run away** — the U2 coherence budget is confirmed
-numerically, at the **RMS/typical** level. But `√(log log T)` tightness *is*
-Selberg's theorem: classical, unconditional, consistent with RH yet not implying
-it. RH lives in the **extremes** (peaks are `Ω(√(log T/log log T))`
+sampled phase is modest on this grid. This is compatible with Selberg's
+classical RMS theorem and does not validate U2 or imply RH. Extreme values remain
+a separate analytic question (peaks are `Ω(√(log T/log log T))`
 unconditionally — unbounded, very slowly), so no finite measurement excludes a
-large excursion at astronomical height. Net: the measurement **relocates the wall
-sharply** from "control `S(T)`" to "**lift the coherence budget from the RMS
-level to the supremum**" (control the peaks), and confirms the RMS level is as
-tight as Selberg says. Driver: `benchmarks/pulse_phase_coherence_budget.py`.
+large excursion at astronomical height. The valid numerical target is to compare
+RMS behavior with sampled peaks while keeping the classical assumptions
+explicit. Driver: `benchmarks/pulse_phase_coherence_budget.py`.
 Closes nothing; `G4 = RH` stays open.
 
 ---
@@ -111,20 +118,21 @@ computational certificates (which are *gain-independent*) are unchanged — only
 2. **Pre-pulse.** The zeros `{γ_n}` and the Weil–Guinand explicit formula were
    framed as "the spectrum of a sought self-adjoint operator", never as the
    **pulse / rhythm of the arithmetic NFR**.
-3. **Pre-§2.4.** The Euler-Orthogonality wall (every canonical operator commutes
-   with the `S_n` prime-relabelling, so it is blind to `S(T) ∈ Fix(S_n)^⊥`) is
-   **literally** the `Fix(G)^⊥` wall of the emergent-ontology synthesis (§2.4),
-   described here in isolation.
+3. **Pre-§2.4.** Selected finite operators and observables were measured or
+   shown to commute with the declared `S_n` relabeling. The former promotion of
+   this scoped fact to every canonical operator and an analytic
+   `S(T) ∈ Fix(S_n)^⊥` location is superseded.
 
-### The reframe — the fixed-point program is the overdamped projection
+### The reframe — fixed-point and auxiliary-dynamics comparison
 
-Canonically, the nodal equation `∂EPI/∂t = νf·ΔNFR` is the **overdamped
-projection** of the symplectic Hamiltonian flow (AGENTS.md §4;
-`symplectic_substrate.py`), and that projection discards the conjugate momenta
-`(J_φ, J_ΔNFR)`. The whole fixed-point program — *seek a self-adjoint operator
-whose static real spectrum equals `{γ_n}`* — therefore lives in the **position
-shadow** of a richer dynamical object. The zeros and `S(T)` are projections of
-that object onto the **numeration** (the prime / integer basis).
+The repository defines an auxiliary isotropic harmonic flow in
+`symplectic_substrate.py`. The full multichannel nodal equation has not been
+derived as its overdamped projection. A restricted bridge exists for pure EPI
+diffusion on a fixed symmetric nonnegative graph through its Dirichlet gradient
+flow; a separately declared damped graph wave can have that diffusion as a slow
+limit. Consequently the Riemann fixed-point program cannot infer missing
+conjugate momenta or an analytic representation of `S(T)` from the auxiliary
+isotropic model.
 
 ### The three nested layers (measured)
 
@@ -149,50 +157,51 @@ ex.103 result: the `θ=νf·τ` dynamics stayed Poisson, not Riemann).
 The escape needs a **non-`S_n` generator**. The directed quadratic-residue
 operator (affine symmetry of `Z/n`, not `S_n`) is non-self-adjoint with a
 **complex spectrum** `(−1 ± i√q)/2` — the arithmetic moves into the **phase**
-(the Gauss sum `√q` in the imaginary part). Since `S(T) = (1/π)·arg ζ(½+iT)` **is
-a phase**, the missing structure lives in the emergent complex / phase dimension,
-not in the real spectrum nor in the conservative momenta.
+(the Gauss sum `√q` in the imaginary part). Since `S(T) = (1/π)·arg ζ(½+iT)`
+is an argument term, phase-sensitive finite operators are a plausible comparison
+surface. This observation neither identifies the missing analytic structure nor
+rules out other representations.
 
 ### The honest wall (the two walls coincide)
 
 The directed operator's phase is the Gauss sum `√q`, **not** the ζ-zero phase
 `S(T)`. Measured (`benchmarks/residue_phase_vs_riemann.py`): `√q` exact (15/15),
 but alignment with `{γ_n}` **refuted** (residue content `~1/√p` decreasing, `γ_n`
-increasing — opposite). The reframe **locates** the missing structure (the phase
-dimension) and **forbids** the two cheaper layers, but does not yet reach `S(T)`.
+increasing — opposite). The experiment distinguishes the tested phase operator
+from the zeta-zero data; it does not locate or uniquely constrain `S(T)`.
 
-### G4 = RH, re-stated dynamics-first
+### G4 = RH: scoped finite-model reading
 
-*The zeros are the configuration-shadow of the arithmetic NFR's symplectic
-dynamics; the smooth half (π-scaled archimedean, `S_n`-symmetric) is the reachable
-mean pulse; `S(T)` is the transverse phase-shadow at `Fix(S_n)^⊥`.* The wall is
-reclassified from "obstruction" to **kernel of the position-only (numeration)
-projection** — provably unreachable from the two `S_n`-symmetric layers, with the
-phase layer the only structurally-permitted route (currently landing on Gauss
-sums, not `{γ_n}`).
+For the declared finite prime-ladder representation, functions of an
+`S_n`-equivariant operator remain equivariant. This is a useful obstruction for
+those explicitly tested constructions. It does not prove that the analytic
+function `S(T)` occupies `Fix(S_n)^⊥`, that it is the kernel of a TNFR projector,
+or that phase is the unique possible route to the Riemann zeros.
 
-### The same shape across the Millennium problems
+### A recurring comparison pattern across selected open problems
 
-This is the **dynamics extension of the §2.4 synthesis** (one operator `L`, read
-in every domain, hitting one wall `Fix(G)^⊥`). Each problem = a reachable
-symmetric / fixed-point projection + a transverse residue that is the shadow of
-the emergent-dimensional dynamics the projection discards:
+The program uses a symmetric-sector/transverse-residue decomposition as a
+research comparison across several domains. The decomposition is exact only for
+each explicitly constructed finite model; it is not a theorem identifying the
+underlying open problems with one operator or one omitted dynamical sector:
 
 - **Navier–Stokes**: the blow-up is not a fixed point but the `K_φ`
   phase-curvature **cascade** (dynamics); the BKM-analogue (U2) lives in the
   dynamics, not an equilibrium.
-- **Yang–Mills (mass gap)**: the gap = confinement `Φ_s²/(π/2)²` = the
-  **non-Abelian** (non-commuting = transverse) residue; the gap lives in the
-  symmetry-broken phase.
-- **P vs NP / BSD / Hodge**: each = a symmetric reachable sector + the
-  `Fix(G)^⊥` residue.
+- **Yang–Mills (mass gap)**: the implemented finite `U(1)` connection is
+  `A=d(arg Ψ)`, hence pure gauge. Its cycle term vanishes analytically and its
+  covariant Laplacian is unitarily equivalent to an ordinary graph Laplacian.
+  The selected `Φ_s²/(π/2)²` term is a snapshot magnitude penalty, not derived
+  confinement; no non-Abelian sector or continuum mass-gap mechanism follows.
+- **P vs NP / BSD / Hodge**: symmetric and transverse sectors are exploratory
+  organizing analogies in the cited finite constructions, not reductions of the
+  classical problems.
 
-**Unified, honest statement.** Every Millennium problem re-reads as *"is the
-transverse residue `Fix(G)^⊥` — the shadow of the emergent-dimensional dynamics —
-reachable from the symmetric sector?"* The measured answer so far: **not from
-functions of the symmetric operator** (positions and momenta); only in principle
-from the **phase of the symmetry-broken generator**. This relocates all of them to
-one place; **it closes none.**
+**Unified, honest statement.** In the declared finite symmetry models, functions
+of a symmetric operator remain in the corresponding invariant sector and cannot
+recover an orthogonal label-sensitive component. Whether any analogous
+obstruction is useful for a classical Millennium problem requires a separate
+bridge theorem. None is supplied here, and none of those problems is closed.
 
 ### Honest scope
 
@@ -208,7 +217,7 @@ cyclotomic tower) — pursued in the living-discoveries log (§13triginta-septim
 
 This file aggregates ~5.9k lines covering five intertwined programmes:
 the **ζ-track** (P12–P31), the **χ-twisted L-track** (P32–P49), the
-**REMESH-∞ / N15** cross-program lift (§13vicies-novies + §13triginta),
+the corrected **fixed-delay REMESH surrogate / historical N15** thread (sections 13vicies-novies and 13triginta),
 the **catalog type-hygiene programme** (T-νf = B0, T-EPI = B1, …; full
 tracker in [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.md)),
 and a **living discoveries log** (§13triginta-septima). Section anchors
@@ -256,8 +265,8 @@ without scrolling.
 
 | § | Lines | Milestone | Status |
 |---|---|---|---|
-| §13septies | 1728 | **T-HP** Tetrad-Hilbert–Pólya reformulation of G4 = RH | 🟡 (open content) |
-| §13octies | 1915 | Assembled-argument audit (L1–L7 closed; L8 = T-HP open) | 🟡 |
+| 13septies | 1728 | Historical **T-HP** proposal | SUPERSEDED: claimed tetrad Hilbert space not established; bridge open |
+| 13octies | 1915 | Corrected assembled-argument audit | SUPERSEDED: original L1-L3 chain fails |
 
 ### E. ζ-Track Operator-Level Smooth Half (lines 2019–2172)
 
@@ -310,21 +319,20 @@ authoritative.)
 
 ### I. REMESH Global Reframe + B1 Edge-Channel Refutation Thread (lines 4170–5715)
 
-The largest single block (~1.5k lines). Contains the cross-program
-discovery that REMESH is the canonical temporal aggregator, and the
-exhaustive structural refutation of branch B1 sub-routes on G_P14
-(R∞-1a-operator, R∞-1a-composed, Prime-Cancellation Lemma,
-Euler-Orthogonality Lemma, R∞-1c, R∞-1b spectral-channel).
+The largest single historical block (~1.5k lines). It records finite
+REMESH-inspired experiments and symmetry tests for selected branch-B1
+sub-routes on G_P14. Their scoped equivariance results survive; the former
+runtime-infinity and exhaustive-catalog interpretation is superseded.
 
 | § | Lines | Content | Status |
 |---|---|---|---|
-| §13vicies-novies | 4170 | **REMESH global reframe** + B1 sub-routes R∞-1a/1b/1c (all structurally refuted on G_P14 by S_n equivariance) | ✅ (refutation thread closed) |
+| 13vicies-novies | 4170 | Historical REMESH reframe + selected B1 finite-model tests | SUPERSEDED infinity/exhaustiveness claims; scoped equivariance retained |
 
-### J. P50 — REMESH-∞ Function-Space Lift (lines 5716–5916)
+### J. P50 - Fixed-Delay Finite Fourier Diagnostic (lines 5716-5916)
 
 | § | Lines | Milestone | Status |
 |---|---|---|---|
-| §13triginta | 5716 | **P50** REMESH-∞ residue split of P31 oscillatory correction (N15 lift into Riemann program) | ✅ |
+| 13triginta | 5716 | **P50** finite DFT split of the P31 signal for fixed delays | FINITE DIAGNOSTIC; no runtime-limit or S(T) theorem |
 
 ### K. Catalog Type-Hygiene Programme — Sub-Questions (lines 5917–7588, 7698–end)
 
@@ -334,25 +342,25 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 |---|---|---|---|---|
 | §13triginta-prima | 5917 | **B0 = T-νf** pre-registration | B0a | — |
 | §13triginta-secunda | 6215 | **B0 = T-νf** forcing-axiom reduction | B0b | — |
-| §13triginta-tertia | 6528 | **B0 = T-νf** final NEGATIVE + envelope E1 (measure-valued νf) | B0c | ✅ NEG |
+| §13triginta-tertia | 6528 | **B0 = T-νf** current-source scalar inventory; measure-valued envelope not derived | B0c | scoped source result |
 | §13triginta-quarta | 6839 | **B1 = T-EPI** pre-registration | B1a | — |
 | §13triginta-quinta | 7075 | **B1 = T-EPI** forcing-axiom reduction (TMEP) | B1b | — |
-| §13triginta-sexta | 7425 | **B1 = T-EPI** final NEGATIVE + envelope E2 (`BEPIElement`) | B1c | ✅ NEG |
+| §13triginta-sexta | 7425 | **B1 = T-EPI** current-source scalar inventory; `BEPIElement` not derived | B1c | scoped source result |
 | §13triginta-octava | 7698 | **B2 = T-φ** pre-registration (two-axis winding + lift-spectral diagnostic; candidate envelope E3 = CoverElement) | B2a | — |
 | §13triginta-novena | 8027 | **B2 = T-φ** forcing-axiom reduction (PWDP refutes (P-φ-Homotopy-Retention); (P-φ-Cover-Carrier) = CONDITIONAL_COROLLARY) | B2b | — |
-| §13triginta-decima | 8450 | **B2 = T-φ** final NEGATIVE + envelope E3 (CoverElement / covering-space lift / U(1) bundle) | B2c | ✅ NEG |
+| §13triginta-decima | 8450 | **B2 = T-φ** current-source wrapped-phase inventory; cover envelope not derived | B2c | scoped source result |
 | §13quadraginta | 8714 | **B3 = T-ΔNFR** pre-registration (two-axis tensor-fraction + rank-entropy diagnostic; candidate envelope E4 = TensorGradientElement) | B3a | — |
 | §13quadraginta-prima | 9068 | **B3 = T-ΔNFR** forcing-axiom reduction (BSAD refutes (P-ΔNFR-Tensor-Retention); (P-ΔNFR-Tensor-Carrier) = CONDITIONAL_COROLLARY) | B3b | — |
-| §13quadraginta-secunda | 9547 | **B3 = T-ΔNFR** final NEGATIVE + envelope E4 (TensorGradientElement / tensor-/operator-valued ΔNFR); L3* promoted to stable working heuristic; three Tier-2 predictions (B4/B5/B6 NEGATIVE) | B3c | ✅ NEG |
+| §13quadraginta-secunda | 9547 | **B3 = T-ΔNFR** current-source scalar inventory; tensor envelope not derived; L3* remains heuristic | B3c | scoped source result |
 | §13quadraginta-tertia | 9924 | **B4 = T-REMESH-window** pre-registration (two-axis integer-storage + window-refinement bracket diagnostic; candidate envelope E5 = ContinuousWindowKernel) | B4a | — |
-| §13quadraginta-quarta | 10262 | **B4 = T-REMESH-window** forcing-axiom reduction (F1–F10); residual axiom (P-REMESH-window-Continuous-Retention) isolated and refuted by DITS = Discrete-Integer Temporal Sampling discipline; first Tier-2 confirmation of L3* via predicted N15 REMESH-∞ discharge mechanism | B4b | — |
-| §13quadraginta-quinta | 10806 | **B4 = T-REMESH-window** final NEGATIVE verdict + envelope classification of E5 = ContinuousWindowKernel (continuous-time kernel / fractional-order temporal coupling); first Tier-2 sub-question closed; L3* confirmed across Tier-1 / Tier-2 boundary; two Tier-2 predictions (B5, B6) outstanding | B4c | — |
+| §13quadraginta-quarta | 10262 | **B4 = T-REMESH-window** historical forcing-axiom reduction; integer runtime typing observed | B4b | SUPERSEDED as N15/infinity discharge; finite type result retained |
+| §13quadraginta-quinta | 10806 | **B4 = T-REMESH-window** corrected current-source verdict: fixed finite integer delays; continuous kernel absent but not refuted | B4c | scoped source result |
 | §13quadraginta-sexta | 11178 | **B5 = T-Δφ_max** pre-registration (two-axis scalar-storage + angle-of-attack-independence diagnostic; candidate envelope E6 = EdgeDependentPhaseThreshold; CATALOG anchor correction documented: canonical `DELTA_PHI_MAX = PI/2`, not γ/π) | B5a | — |
-| §13quadraginta-septima | 11304 | **B5 = T-Δφ_max** forcing-axiom reduction (F1–F10); residual axiom (P-Δφ_max-Non-Scalar-Retention) isolated and refuted by STD = Scalar-Threshold Discipline; sixth orthogonal canonical discharge mechanism (CDM); second Tier-2 confirmation of L3* — L3* now validated under six distinct orthogonal CDMs across both tiers | B5b | — |
-| §13quadraginta-octava | 11430 | **B5 = T-Δφ_max** final NEGATIVE verdict + envelope classification of E6 = EdgeDependentPhaseThreshold (matrix-valued / angle-of-attack-functional); second Tier-2 sub-question closed; six sub-questions complete (B0–B5 all NEGATIVE under six orthogonal CDMs); L3* promoted to "empirically robust working heuristic with structural-orthogonality witness" | B5c | — |
+| §13quadraginta-septima | 11304 | **B5 = T-Δφ_max** audit of the current scalar threshold surface; L3* remains heuristic | B5b | source inventory |
+| §13quadraginta-octava | 11430 | **B5 = T-Δφ_max** current-source verdict: edge-dependent envelope absent, not mathematically refuted | B5c | scoped source result |
 | §13quadraginta-nona | 11540 | **B6 = T-coupling-weights** pre-registration (two-axis scalar-storage + node-permutation-invariance diagnostic; candidate envelope E7 = NodeIndexedCouplingWeights; canonical anchors `DNFR_WEIGHTS`/`SI_WEIGHTS`/`SELECTOR_WEIGHTS` in `src/tnfr/config/defaults_core.py` as global scalar dicts) | B6a | — |
-| §13quinquaginta | 11642 | **B6 = T-coupling-weights** forcing-axiom reduction (F1–F10); residual axiom (P-W-Non-Scalar-Retention) isolated and refuted by SWD = Scalar-Weight Discipline; seventh orthogonal canonical discharge mechanism (CDM); third Tier-2 confirmation of L3* — L3* now validated under seven distinct orthogonal CDMs across both tiers | B6b | — |
-| §13quinquaginta-prima | 11770 | **B6 = T-coupling-weights** final NEGATIVE verdict + envelope classification of E7 = NodeIndexedCouplingWeights (node-indexed / per-edge tensor / callable kernel); third Tier-2 sub-question closed; seven sub-questions complete (B0–B6 all NEGATIVE under seven orthogonal CDMs); Tier-2 layer of programme closed; L3* promoted to "empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage" | B6c | — |
+| §13quinquaginta | 11642 | **B6 = T-coupling-weights** audit of current global scalar weights; L3* remains heuristic | B6b | source inventory |
+| §13quinquaginta-prima | 11770 | **B6 = T-coupling-weights** current-source verdict: node-indexed/callable envelope absent, not mathematically refuted | B6c | scoped source result |
 
 ### L. Living Discoveries Log (lines 7589–7697)
 
@@ -369,9 +377,9 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
   half via canonical prime-ladder Newton correction; empirical regime
   is mixed B1/B2 (§§13vicies-octavo, 19.1).
 - **GRH$_\chi$ (primitive real χ)**: 🟡 OPEN, parity with G4.
-- **Branch B1 sub-routes on G_P14**: ✅ structurally refuted by
-  Euler-Orthogonality Lemma (§13vicies-novies.11).
-  Surviving sub-routes inside B1 require non-product canonical lifts.
+- **Selected B1 sub-routes on G_P14**: finite edge-channel constructions are
+  relabeling-equivariant under the hypotheses of §13vicies-novies.11. The
+  wider branch remains open; no exhaustive operator class has been defined.
 - **Programme paused** at the T-HP boundary; no further diagnostic
   surface planned until one of B1/B2/B3 (§13septies) is decided.
 
@@ -388,7 +396,7 @@ Tracker: [`CATALOG_TYPE_HYGIENE_PROGRAMME.md`](./CATALOG_TYPE_HYGIENE_PROGRAMME.
 ### 2.1 Partition Function Mapping
 
 - Show that the TNFR structural partition function $Z_{TNFR}(s)$ converges to ζ(s) or ξ(s) by enforcing the identification $e^{-\beta E_p(s)} \leftrightarrow p^{-s}$ for prime-labeled resonant modes.
-- Specify how ν_f and ΔNFR sources enter the effective energy $E_p(s)$ so the mapping respects U2 (convergence) and U3 (resonant coupling).
+- Specify how ν_f and ΔNFR sources enter the effective energy $E_p(s)$ so the mapping can be checked against the U2 stabilization policy and U3 resonant-coupling contract. U2 compliance alone would not prove convergence of the mapped dynamics.
 
 ### 2.2 Operator Construction
 
@@ -432,7 +440,8 @@ Discrete operator and spectral framework:
 - `complex_extension.py` — complex-$s$ non-Hermitian extension (P4).
 - `spectral_zeta.py` — discrete spectral zeta and heat kernel; original Conjecture 10.1 affine bridge (P5, **negative**; superseded by P12–P15 via §7.8).
 - `random_ensemble.py` — random prime-graph ensembles / RMT universality (P6).
-- `spectral_conservation.py` — conservation laws and grammar compliance at criticality (P7).
+- `spectral_conservation.py` — finite spectral balance diagnostics at criticality;
+  neither a universal conservation law nor a grammar-compliance proof (P7).
 - `analytical_convergence.py` — analytical proof of $\sigma_c \to 1/2$ via PNT + telescoping (P8).
 - `functional_equation.py` — TNFR-side $s \leftrightarrow 1-s$ reflection check (P9).
 - `convergence_proof.py` — end-to-end formal $\sigma_c \to 1/2$ certificate (P10).
@@ -473,7 +482,7 @@ End-to-end pipeline demos (`examples/`):
 - `21_complex_extension_demo.py` — non-Hermitian operator on complex $s$.
 - `22_spectral_zeta_demo.py` — discrete spectral zeta, heat kernel, Mellin bridge.
 - `23_random_ensemble_rmt_demo.py` — random matrix ensembles (GOE/GUE/Poisson).
-- `24_spectral_conservation_demo.py` — spectral conservation law at criticality.
+- `24_spectral_conservation_demo.py` — finite spectral balance diagnostics at criticality.
 - `25_analytical_convergence_demo.py` — analytical proof via PNT + telescoping.
 - `41_von_mangoldt_zeta_demo.py` — P12 prime-ladder reproduction of $-\zeta'/\zeta$.
 - `42_riemann_zeros_as_resonances.py` — P13 zeros as resonance poles on $\operatorname{Re}(s) = 1/2$.
@@ -1581,10 +1590,10 @@ live in the codebase:
 1. The **self-adjoint prime-ladder Hamiltonian**
    $\hat H = \hat H_{\mathrm{freq}} + J_0\,\hat H_{\mathrm{coupling}}$
    from P14 ([`src/tnfr/riemann/prime_ladder_hamiltonian.py`](../src/tnfr/riemann/prime_ladder_hamiltonian.py)).
-2. The **structural Lyapunov functional**
-   $E = \tfrac12\sum_i \varepsilon(i) \ge 0$ with $dE/dt \le 0$ from
+2. The **nonnegative structural-energy candidate**
+   $E = \tfrac12\sum_i \varepsilon(i) \ge 0$ from
    [`src/tnfr/physics/conservation.py`](../src/tnfr/physics/conservation.py),
-   flagged in AGENTS.md as *"proof sketch; complete proof open"*.
+   Its general trajectory monotonicity is open.
 
 P26 fuses both into a single quantitative **positivity certificate**
 for the P14 operator. The module
@@ -1629,7 +1638,7 @@ The certificate combines four checks:
 
 `structural_positivity` is `True` iff numerical positivity, the
 Kato–Rellich envelope, and the unitary flow all agree. The structural
-Lyapunov functional $E$ of `conservation.py` vanishes on the
+energy candidate $E$ of `conservation.py` vanishes on the
 prime-ladder graph by construction (neutral structural state), so its
 operator-level analogue is the spectral energy
 $E_{\mathrm{spec}}[\psi] = \langle\psi|\hat H^2|\psi\rangle$, whose
@@ -1685,13 +1694,12 @@ Kato–Rellich envelope, confirming the envelope is conservative
   $J_0$ with $|J_0|\,\|\hat H_{\mathrm{coupling}}\|_{\mathrm{op}} <
   \log 2$ produces a self-adjoint operator with strictly positive
   spectrum, trace-class resolvent, and unitary flow.
-* The Lyapunov ingredient $dE/dt \le 0$ of `conservation.py` is
-  itself flagged in AGENTS.md as *"proof sketch; complete proof
-  open."* P26 therefore inherits the same status on the side that
-  invokes the structural Lyapunov bound: the **operator-level**
-  positivity statement is rigorous, but the variational
-  identification of that operator with the generator of the
-  structural Lyapunov flow remains the open piece.
+* The structural energy read by `conservation.py` is a Lyapunov
+  candidate. Its non-increase has not been proved for arbitrary engine
+  trajectories. P26 therefore inherits no general trajectory-convergence
+  theorem from that diagnostic: the **operator-level** finite positivity
+  statement is rigorous under its stated matrix assumptions, while the
+  variational identification with engine dynamics remains open.
 * Crucially, **P26 does not close gap G4**. RH is a statement about
   the analytic continuation of the prime-ladder vM zeta (P13) and
   the localisation of its resonance poles on $\operatorname{Re}(s) =
@@ -1702,11 +1710,9 @@ Kato–Rellich envelope, confirming the envelope is conservative
 
 ### 13quater.5 Next steps
 
-1. **Promote the Lyapunov sketch to a theorem.** Provide an
-   analytical proof of $dE/dt \le 0$ inside `physics/conservation.py`
-   under grammar-compliant evolution; this would upgrade the P26
-   structural identification from "operationally consistent" to
-   "operationally closed."
+1. **Test the Lyapunov candidate on explicit dynamics.** State a concrete
+   trajectory class and prove or refute $dE/dt \le 0$ there. Grammar
+   compliance alone is insufficient for such a theorem.
 2. **Push the Kato–Rellich envelope to non-perturbative coupling.**
    Use a Bauer–Fike or pseudospectral argument to extend the
    quantitative positivity interval beyond $|J_0|\,\|\hat
@@ -1955,29 +1961,29 @@ introduced; no module is added.  The role of this section is to give a
 precise, testable conjecture in tetrad language so subsequent modules
 (P30+) can attack it.
 
-### 13septies.2 What the tetrad already supplies (formally closed)
+### 13septies.2 Historical tetrad premise (superseded)
 
-The tetrad is the minimal-and-complete structural basis for nodal
-evolution on a graph
-([theory/MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md))
-and induces three canonical geometric structures, all of which are
-already implemented and validated in the engine:
+The original program treated the tetrad as a minimal complete state and used
+three implemented diagnostics as if they induced one closed geometric model.
+The observability counterexample now rejects the state-completeness premise;
+the remaining constructions have the restricted meanings below:
 
 | Structure | Definition | Implementation |
 |---|---|---|
-| Positive-definite energy | $\mathcal{E} = \tfrac12 \sum_i (\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2)$ | `src/tnfr/physics/conservation.py` (Noether-like; §8 of STRUCTURAL_CONSERVATION_THEOREM.md) |
-| Symplectic structure | Conjugate pairs $(K_\phi, J_\phi)$ and $(\Phi_s, J_{\Delta\mathrm{NFR}})$ coupled via $\Psi = K_\phi + i J_\phi$ | `src/tnfr/physics/variational.py` (§3 of TNFR_VARIATIONAL_PRINCIPLE.md) |
-| Continuity equation | $\partial\rho/\partial t + \nabla\!\cdot\!\mathbf{J} = \mathcal{S}_{\mathrm{grammar}}$, $\rho=\Phi_s+K_\phi$, $\|\mathcal{S}\|_{\ell^2}\le C_{\mathrm{net}}/\sqrt N$ | `src/tnfr/physics/conservation.py` (§4 of STRUCTURAL_CONSERVATION_THEOREM.md) |
+| Nonnegative snapshot functional | $\mathcal{E} = \tfrac12 \sum_i (\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2)$; no general Lyapunov sign or induced state-space inner product | `src/tnfr/physics/conservation.py` |
+| Auxiliary symplectic model | Declared conjugate pairs $(K_\phi,J_\phi)$ and $(\Phi_s,J_{\Delta\mathrm{NFR}})$ under an isotropic harmonic Hamiltonian | `src/tnfr/physics/symplectic_substrate.py` |
+| Finite continuity residual | Snapshot/time-series balance diagnostic; U1–U6 do not force its source to vanish | `src/tnfr/physics/conservation.py` |
 
-Together these provide a Hilbert space $(\mathcal{H}_{\mathrm{tet}},
-\langle\cdot,\cdot\rangle_{\mathcal{E}})$ with a positive-definite
-inner product, and the P14 prime-ladder Hamiltonian is self-adjoint
-*on this Hilbert space* with real spectrum $\{k\log p\}$
-([src/tnfr/riemann/prime_ladder_hamiltonian.py](../src/tnfr/riemann/prime_ladder_hamiltonian.py)).
+These ingredients do not construct a canonical tetrad Hilbert space. The P14
+prime-ladder operator is self-adjoint on its own declared sequence-space model;
+the repository has not derived an isometric identification with a tetrad state
+space. Consequently this historical assembly does not supply the premises of a
+Hilbert–Pólya argument.
 
-These ingredients are exactly what the Hilbert–Pólya programme
-requires (Hilbert space, positive inner product, self-adjoint
-operator, real spectrum).  None of them are conjectural.
+Sections 13septies.3–13septies.4 below retain the former T-HP proposal as a
+historical conjecture. It is not currently well-posed as a TNFR theorem because
+the stated $\mathcal H_{\mathrm{tet}}$ and its inner product have not been
+constructed.
 
 ### 13septies.3 What remains: two distinct positivities
 
@@ -1986,7 +1992,7 @@ same:
 
 | Form | Origin | Spectrum it certifies |
 |---|---|---|
-| $\langle\cdot,\cdot\rangle_{\mathcal{E}}$ (tetrad) | Lyapunov energy from $(\Phi_s, \|\nabla\phi\|, K_\phi, \xi_C)$ + currents | $\sigma(H_{P14}) = \{k\log p\}$ |
+| Historical $\langle\cdot,\cdot\rangle_{\mathcal{E}}$ proposal | Nonnegative snapshot functional from fields and currents; no canonical tetrad inner product established | No spectrum certified |
 | Weil quadratic form $\mathcal{W}[h]$ | $L^2$ with archimedean + prime weight (§14 of this document) | $\sigma(T_{\mathrm{HP}}) = \{\gamma_n\}$, conditional on RH |
 
 P28 (§13sexies) showed that the smooth part of $\sigma(T_{\mathrm{HP}})$
@@ -2026,14 +2032,15 @@ quadratic form $\mathcal{W}[\cdot]$.
 
 ### 13septies.5 Status: open, structurally well-posed
 
-> **Structural identification (N15, May 2026)**: The W3 result of the N15 program ([REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) §17.3) provides a structural identification of T-HP's smooth/oscillatory split with the canonical projection $\mathcal{R}_\infty$ on $H^2(D)$:
->
-> - The **smooth half** of the admissible rescaling $\mathcal{F}$ (closed operationally by P28 at the density level and by P30 at the operator level) lives in $\mathrm{range}(\mathcal{R}_\infty)$.
-> - The **oscillatory half** $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$ — the RH-equivalent residue — lives in $\ker(\mathcal{R}_\infty) = \mathrm{range}(I - \mathcal{R}_\infty)$ and decays at Cesàro $O(1/n)$ rate.
->
-> This **does not close G4**, but it explains structurally **why** P28/P30 closed precisely the smooth half: that half is an orthogonal-projection range (analytically integrable), while the oscillatory residue is a slow Cesàro tail of an isometry — not eliminable by projection. T-HP's open content is therefore identified with the missing operator-level lift of the Cesàro residue.
->
-> N15 verdict for the Riemann program: **clarifies, does not advance**. Branches B1/B2/B3 of §13septies are unaffected. The 13-op TNFR catalog is closed under REMESH-∞ (N15 W1–W3); the Riemann B2 question (need for a new canonical operator to handle the *oscillatory* rescaling) is **distinct** from the N15 B2 question (no new operator needed for the *asymptotic projection* itself) and remains open.
+> **CORRECTED N15 boundary (September 2026).** The surviving theorem is a
+> Cesaro projection for a finite cyclic filter with fixed delays. Its common
+> fixed modes have period $\gcd(\tau_l,\tau_g)$. It is neither a literal
+> runtime $\tau_g\to\infty$ limit nor an operator on the analytic function
+> $S(T)$. No intertwining theorem places the T-HP smooth term in its range or
+> $S(T)=(1/\pi)\arg\zeta(\tfrac12+iT)$ in its kernel. The historical
+> identification and $O(1/n)$ claim are superseded. The finite P50 diagnostic
+> below measures DFT leakage for one sampled prime-ladder approximation only;
+> catalog completeness and G4 remain open.
 
 Conjecture T-HP is **open**.  It is *not* a closure of G4; it is the
 G4 problem **rewritten in tetrad-native language** so it becomes a
@@ -2112,7 +2119,7 @@ closure.
 
 ### 13septies.9 Cross-references
 
-* Tetrad minimality: [theory/MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md)
+* Tetrad diagnostic scope: [theory/MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md)
 * Conservation + Lyapunov: [theory/STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) §3–§8
 * Variational structure: [theory/TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) §2–§3
 * P14 self-adjoint Hamiltonian: [src/tnfr/riemann/prime_ladder_hamiltonian.py](../src/tnfr/riemann/prime_ladder_hamiltonian.py)
@@ -2138,18 +2145,19 @@ audit.
 
 | # | Link | TNFR module / theory | Status |
 |---|---|---|---|
-| L1 | Minimal-and-complete structural basis: tetrad $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$ exhausts independent structural channels on a graph | [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) | **CLOSED** |
-| L2 | Positive-definite inner product $\langle\cdot,\cdot\rangle_{\mathcal{E}}$ on tetrad Hilbert space $\mathcal{H}_{\mathrm{tet}}$ | [src/tnfr/physics/conservation.py](../src/tnfr/physics/conservation.py); STRUCTURAL_CONSERVATION_THEOREM.md §8 | **CLOSED** |
-| L3 | Symplectic structure + Noether-like conservation under U1–U6 | [src/tnfr/physics/variational.py](../src/tnfr/physics/variational.py) + conservation.py | **CLOSED** (proof sketch; full proof open per AGENTS.md) |
-| L4 | Self-adjoint operator $H_{P14}$ on $\mathcal{H}_{\mathrm{tet}}$ with real spectrum $\{k\log p\}$ | P14 [prime_ladder_hamiltonian.py](../src/tnfr/riemann/prime_ladder_hamiltonian.py); §10 above | **CLOSED** |
+| L1 | Tetrad exhausts the graph state | [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) | **REFUTED AS STATE COMPLETENESS** — capacity rescaling preserves the tetrad while changing velocity |
+| L2 | Positive-definite inner product on a tetrad Hilbert space $\mathcal{H}_{\mathrm{tet}}$ | [src/tnfr/physics/conservation.py](../src/tnfr/physics/conservation.py); STRUCTURAL_CONSERVATION_THEOREM.md §8 | **NOT ESTABLISHED** — a nonnegative snapshot functional alone does not define the claimed state space |
+| L3 | Symplectic structure + Noether-like conservation under U1–U6 | [src/tnfr/physics/symplectic_substrate.py](../src/tnfr/physics/symplectic_substrate.py) + conservation.py | **NOT ESTABLISHED** — exact only for the declared auxiliary harmonic flow or separate restricted balances |
+| L4 | Self-adjoint $H_{P14}$ on its declared prime-ladder space with real spectrum $\{k\log p\}$ | P14 [prime_ladder_hamiltonian.py](../src/tnfr/riemann/prime_ladder_hamiltonian.py); §10 above | **RESTRICTED** — no identification with $\mathcal H_{\mathrm{tet}}$ |
 | L5 | Weil–Guinand identity: prime side equals the P14 spectral trace at machine precision | P15 [weil_explicit_formula.py](../src/tnfr/riemann/weil_explicit_formula.py); §11 above | **CLOSED** |
 | L6 | Lyapunov-spectral positivity for $H_{P14}$: Kato–Rellich gap $\log 2$, trace-class resolvent, unitary flow | P26 [lyapunov_spectral_positivity.py](../src/tnfr/riemann/lyapunov_spectral_positivity.py); §13quater | **CLOSED** on finite-dim prime-ladder |
 | L7 | Smooth half of spectral rescaling map $\mathcal{F}$: $\widetilde\gamma_n = \overline N^{-1}(n)$ derived from the same archimedean kernel as P15 | P28 [structural_zero_density.py](../src/tnfr/riemann/structural_zero_density.py); §13sexies | **CLOSED** (smooth half; W₁ gap drops ~97× vs P27) |
 | L8 | Existence + canonicity of admissible $\mathcal{F}$ from tetrad + $\pi$ + U1–U6 such that $\mathcal{F}\,H_{P14}\,\mathcal{F}^{*}$ has spectrum $\{\gamma_n\}$ | NONE — Conjecture T-HP, §13septies.4 | **OPEN** ← BREAK-POINT |
 
-L1–L7 are TNFR-canonical and operationally closed (the proof-sketch
-caveat at L3 is inherited from AGENTS.md and is independent of the
-Riemann programme). L8 is the entire residual content of G4.
+This historical chain already fails at L1–L3. L8 is therefore not the sole
+break-point: a current Hilbert–Pólya program would first need an independently
+defined state space and operator bridge. None of these scope corrections says
+anything about the truth of RH.
 
 ### 13octies.3 Structural negative knowledge from P29
 
@@ -2174,14 +2182,13 @@ The L8 break-point splits into three TNFR-canonical branches, each
 testable from the nodal equation
 $\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}$:
 
-* **B1.** The canonical 13-operator catalog is *complete* and the
-  missing piece is non-operator (measure-theoretic, ergodicity, or
-  domain-theoretic). L8 reduces to an existence problem on
-  $\mathcal{H}_{\mathrm{tet}}$ without new operators.
-* **B2.** The canonical catalog is *incomplete*. A new canonical
-  operator derivable from the nodal equation is required. L8 reduces
-  to the operator-discovery problem of
-  [AGENTS.md "Adding New Operators"](../AGENTS.md).
+* **B1 hypothesis.** Ask whether the current 13-operator catalog is
+  sufficient and the missing piece is non-operator (measure-theoretic,
+  ergodic, or domain-theoretic). No catalog-completeness proof is known,
+  and the tetrad does not yet define a complete state space.
+* **B2 possibility.** Ask whether a new operator derivable from the nodal
+  equation is required. The absence of such an implementation in the
+  current registry is not evidence that the catalog is incomplete.
 * **B3.** No TNFR-canonical $\mathcal{F}$ exists. RH escapes the
   tetrad-Hilbert–Pólya framework entirely. This branch is consistent
   with P29 (three independent coupling families failing) but is not
@@ -2756,11 +2763,16 @@ Positivity of $\lambda_n(\chi)$ verified for the three primitive real characters
 
 **Net effect**: P36 closes the diagnostic-layer gap on the L-function track for every primitive real Dirichlet character.  Combined with P32–P35, every milestone reachable on the ζ track up through P16 now has a structural analogue on the primitive-real L-function track.  The arithmetic obstruction remains the same.
 
-## §13sexiesdecies. P37 — χ-Twisted Weil–TNFR Positivity Bridge (Structural Diagnostic; GRH$_\chi$-Equivalent for Primitive Real χ; Does NOT Prove GRH or Advance G4)
+## §13sexiesdecies. P37 — χ-Twisted Weil–TNFR Positivity Comparison (Finite Structural Diagnostic; Does NOT Prove GRH or Advance G4)
 
 ### §13sexiesdecies.1 Motivation
 
-P17 (§14) supplies the canonical TNFR-native Weil-positivity bridge for $\zeta$: Weil's RH-equivalent positivity functional $W[f] = \sum_\gamma \hat f(\gamma) \ge 0$ is transported onto the TNFR Lyapunov functional $E_{\mathrm{TNFR}}$ via the P14 prime-ladder Hamiltonian.  Bombieri 2000 generalises Weil's criterion to every primitive Dirichlet $L(s,\chi)$, so the same structural transport exists on the L-function track once P34 (canonical χ-twisted Hamiltonian) and P35 (canonical χ-twisted explicit formula) are in place.  P37 packages these ingredients into a GRH$_\chi$-equivalent diagnostic — the L-function analogue of P17.
+P17 (§14) compares sampled values of Weil's RH-equivalent positivity
+functional with a nonnegative TNFR structural-energy candidate on a declared
+finite test-state mapping. P37 repeats that finite comparison for selected
+primitive real Dirichlet characters. The classical Weil criterion is
+equivalent to GRH only over its full admissible class; the finite TNFR ratio is
+not itself a GRH-equivalent diagnostic.
 
 ### §13sexiesdecies.2 Construction
 
@@ -2778,7 +2790,7 @@ P37 computes $W_\chi[\sigma]$ two ways:
 
 Positivity is verified as $W_\chi[\sigma] \ge 0$.  In parallel, the canonical TNFR test state on the P34 graph is defined by `build_twisted_structural_test_state(bundle, sigma)`: for each node $(p, k)$ with structural frequency $\nu_f = k\log p$, set
 $$\Delta\mathrm{NFR}_{(p,k)} = \mathrm{EPI}_{(p,k)} = h_\sigma(k\log p), \qquad \phi_{(p,k)} = \min(h_\sigma(k\log p), \pi),$$
-and the TNFR Lyapunov energy of this state is
+and the TNFR structural-energy candidate of this state is
 $$E_{\mathrm{TNFR}}^\chi[\sigma] := \tfrac12 \sum_i \bigl(\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\mathrm{NFR}}^2\bigr)$$
 via the canonical `compute_energy_functional` (single source of truth from `tnfr.physics.conservation`, reused unchanged from P17).  The χ-twisted **TNFR bridge ratio** is
 $$\boxed{\;\alpha_\chi(\sigma) := \frac{W_\chi[\sigma]}{E_{\mathrm{TNFR}}^\chi[\sigma]}.\;}$$
@@ -2799,7 +2811,10 @@ All three primitive real characters pass both the Weil positivity check and the 
 
 ### §13sexiesdecies.4 What P37 Extends
 
-* **P17 to L-functions**: P17 is the canonical Weil-TNFR positivity bridge for $\zeta$ (GRH-equivalent diagnostic via $W \ge 0$); P37 is its structural analogue for $L(s,\chi)$ at every primitive real $\chi$.  The TNFR Lyapunov target $E_{\mathrm{TNFR}}$ is reused unchanged; only the zero source (P35) and the prime side (P34) are χ-twisted.
+* **P17 to L-functions**: P37 repeats P17's finite sampled comparison for
+  the tested primitive real $L(s,\chi)$. The structural-energy candidate
+  $E_{\mathrm{TNFR}}$ is reused unchanged; only the zero source and prime
+  side are χ-twisted.
 
 * **L-function track parity with the ζ track**: combined with P32–P36, every milestone reachable on the ζ track up through P17 now has a structural analogue on the primitive-real L-function track.
 
@@ -2903,7 +2918,7 @@ P38 (§13septiesdecies) probed the canonical-mapping ambiguity of the P37 chi-tw
 
 The chi-twisted Weil–TNFR ratio is defined cell-by-cell as
 $$\alpha_\chi(\sigma; f, g) \;=\; \frac{W_\chi[\sigma; f]}{E_{\mathrm{TNFR}}^\chi[\sigma; f, g]},$$
-where $W_\chi[\sigma; f]$ is the P35 chi-twisted zero-side enumerator evaluated on the admissible test function $f$ at width $\sigma$ (gauge-independent, computed once per $(family, \sigma)$ pair), and $E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ is the canonical TNFR Lyapunov energy of the structural test state built from $(f, g)$ on the P34 chi-twisted graph via `build_twisted_test_state_from_test_function`.  The admissible families are inherited verbatim from P19 (`DEFAULT_TEST_FAMILIES`); the gauges are inherited verbatim from P18 (`DEFAULT_GAUGES`).  No new canonical object is introduced.
+where $W_\chi[\sigma; f]$ is the P35 chi-twisted zero-side enumerator evaluated on the test function $f$ at width $\sigma$ (gauge-independent, computed once per $(family, \sigma)$ pair), and $E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ is the TNFR structural-energy candidate of the declared test state built from $(f, g)$ on the P34 chi-twisted graph via `build_twisted_test_state_from_test_function`. The finite family and gauge sets are inherited from P19 and P18.
 
 ### §13octiesdecies.3 Empirical Verification
 
@@ -3695,12 +3710,11 @@ P49 extends the §13decies-quarto branch-B1 retry from ζ to **every primitive r
 ### 14.1 Motivation
 
 The §19.2 balance leaves a single open obstruction: **G4 = RH itself**.
-P12–P16 close the *operational* gaps (Hamiltonian, analytic continuation,
+P12–P16 provide finite diagnostics (Hamiltonian, analytic continuation,
 explicit formula, Λ-series reproduction, RH-equivalent positivity
 diagnostic), but none of them forces resonance poles onto the critical
-line. P17 opens a TNFR-native attack surface on G4 by **transporting
-Weil's RH-equivalent positivity criterion onto the canonical TNFR
-Lyapunov functional**, using P14 as the bridge object.
+line. P17 compares sampled Weil values with a nonnegative TNFR
+structural-energy candidate using P14 as the finite bridge object.
 
 ### 14.2 Mathematical Setup
 
@@ -3724,7 +3738,7 @@ in P15 (`gaussian_test_function`).
 ### 14.3 TNFR Structural Mapping
 
 Given the P14 prime-ladder bundle with nodes $(p,k)$ and
-$\nu_f(p,k) = k\log p$, define the **canonical structural test state**
+$\nu_f(p,k) = k\log p$, define the **declared structural test state**
 
 $$
 \Delta\mathrm{NFR}(p,k) \;=\; h_\sigma(k\log p),
@@ -3734,10 +3748,10 @@ $$
 \mathrm{EPI}(p,k) \;=\; h_\sigma(k\log p),
 $$
 
-inheriting $\nu_f$ from P14. The canonical TNFR Lyapunov energy of this
+inheriting $\nu_f$ from P14. The TNFR structural-energy candidate of this
 state, computed via `tnfr.physics.conservation.compute_energy_functional`,
-is denoted $E_{\mathrm{TNFR}}[\sigma]$ (it is automatically
-$\ge 0$ by the Structural Conservation Theorem).
+is denoted $E_{\mathrm{TNFR}}[\sigma]$. It is nonnegative because it is a
+sum of squares; this does not make it a general Lyapunov function.
 
 The bridge ratio is
 
@@ -3745,9 +3759,9 @@ $$
 \alpha(\sigma) \;=\; \frac{W[h_\sigma]}{E_{\mathrm{TNFR}}[\sigma]}.
 $$
 
-**Working hypothesis (TNFR-native witness for RH)**: if $\alpha(\sigma) > 0$
-holds across a dense admissible family of $\sigma$, then Weil positivity
-holds across that family, hence (by Weil's equivalence) RH holds.
+**Working comparison:** $\alpha(\sigma)$ records the ratio on the chosen
+finite test-state map. Positivity on a sampled Gaussian grid neither covers
+the full admissible Weil class nor proves RH.
 
 ### 14.4 Implementation
 
@@ -3764,8 +3778,8 @@ Public API exported by `tnfr.riemann`:
   tnfr_lyapunov_energy, alpha, weil_positive, bridge_positive, …)` —
   grid certificate over a chosen $\sigma$ family.
 * `build_structural_test_state(bundle, sigma)`,
-  `tnfr_lyapunov_of_test_state(bundle, sigma)` — explicit access to
-  the canonical mapping and its Lyapunov energy.
+  `tnfr_lyapunov_of_test_state(bundle, sigma)` — legacy-compatible access
+  to the declared mapping and its structural-energy candidate.
 * `verify_weil_positivity(bundle, *, sigma, n_zeros, …)`,
   `verify_weil_tnfr_bridge(bundle, sigmas, *, n_zeros, …)` — top-level
   entry points.
@@ -3806,9 +3820,9 @@ across the tested grid, with $\alpha_{\min} \approx 3.85 \times 10^{-44}$
   2. proving an analytic lower bound $\alpha(\sigma) \ge c(\sigma) > 0$
      on a dense $\sigma$-class (currently only computed pointwise),
   3. closing the family-completeness clause of Weil's theorem.
-* What P17 **does** deliver: a *TNFR-native, RH-equivalent positivity
-  diagnostic* that ties classical Weil positivity to the canonical
-  Lyapunov functional of the Structural Conservation Theorem. A future
+* What P17 **does** deliver: a finite TNFR comparison diagnostic that
+  places sampled Weil values beside a nonnegative structural-energy
+  candidate. It does not make that candidate RH-equivalent. A future
   numerical counter-example ($\alpha(\sigma_*) < 0$) would disprove
   the bridge as currently formulated (not RH itself, which would
   require $W[h_{\sigma_*}] < 0$).
@@ -3889,10 +3903,10 @@ Selected $\alpha$ values (full table in
 | 5.04  | $8.15 \times 10^{-3}$   | $2.33 \times 10^{-1}$   | $2.33 \times 10^{-1}$   |
 | 12.00 | $1.21$                  | $1.06 \times 10^{1}$    | $1.06 \times 10^{1}$    |
 
-### 15.4 Lyapunov Sector Collapse
+### 15.4 Structural-energy sector grouping
 
 A non-trivial empirical observation: the six gauges yield exactly
-**two distinct Lyapunov energy curves**.
+**two distinct structural-energy curves**.
 
 * **Phase-active gauges** (`canonical`, `phase_only`, `dnfr_phase`,
   `pressure_amplified`): $E_{\mathrm{TNFR}}[\sigma]$ peaks at
@@ -3903,7 +3917,7 @@ A non-trivial empirical observation: the six gauges yield exactly
 Two structural readings:
 
 1. **Phase dominance**. On the P14 prime-ladder topology, the
-   geometric sector of the Lyapunov functional (driven by
+   geometric sector of the structural-energy candidate (driven by
    $|\nabla\phi|^2 + K_\phi^2$) dominates the potential sector (driven
    by $\Phi_s^2$) once the phase channel is excited; the magnitude of
    the pressure boost in `pressure_amplified` is invisible against
@@ -4249,7 +4263,7 @@ piecewise status notes.
 | **P34** Dirichlet L canonical Hamiltonian | `twisted_prime_ladder_hamiltonian.py` | `61_dirichlet_l_hamiltonian_demo.py` | §13terdecies | Structural extension of P14 to all $L(s, \chi)$: canonical self-adjoint Hamiltonian + complex diagonal weight $W^{(\chi)}_{(p,k),(p,k)} = \chi(p)^k \log p$; closes **G1$_\chi$ at the P14 layer** (spec_err = 0, trace_rel_err $\approx 3 \times 10^{-16}$ for $\chi_3, \chi_4, \chi_5$); **does NOT advance G4 or GRH** |
 | **P35** Dirichlet L χ-twisted Weil–Guinand | `twisted_weil_explicit_formula.py` | `62_dirichlet_weil_explicit_formula_demo.py` | §13quaterdecies | Structural extension of P15 to primitive real $L(s, \chi)$: zero side from Hardy-Z bisection on $Z_\chi(t)$ (P33), prime side from P34 Hamiltonian; closes **G3$_\chi$ operationally for primitive real χ** (rel. residual $\le 4.4 \times 10^{-13}$ across 9 $(\chi,\sigma)$ pairs for $\chi_3, \chi_4, \chi_5$ at $\sigma \in \{2.0, 2.5, 3.0\}$); **does NOT advance G4 or GRH** |
 | **P36** Dirichlet L χ-twisted Li–Keiper criterion | `twisted_li_keiper.py` | `63_dirichlet_li_keiper_demo.py` | §13quinquiesdecies | Structural extension of P16 to primitive real $L(s, \chi)$: $\lambda_n(\chi)$ computed from P35 Hardy-Z zeros via the canonical P16 mpmath routine (sum-over-zeros is L-function agnostic); GRH$_\chi$-equivalent diagnostic (Lagarias 2007 generalisation of Bombieri–Lagarias 1999); positivity verified for $\chi_3, \chi_4, \chi_5$ up through $n_{\max} = 50$ (min $\lambda_n \ge 4.7 \times 10^{-2}$); **does NOT prove GRH (finite truncation; necessary, not sufficient) and does NOT advance G4** |
-| **P37** Dirichlet L χ-twisted Weil–TNFR bridge | `twisted_weil_positivity.py` | `64_twisted_weil_positivity_demo.py` | §13sexiesdecies | Structural extension of P17 to primitive real $L(s, \chi)$: $W_\chi[\sigma] = 2\sum_{\gamma > 0} h_\sigma(\gamma)$ computed two ways — zero side from P35 Hardy-Z enumerator, explicit-formula side from P34 χ-twisted prime-ladder Hamiltonian — plus the canonical TNFR Lyapunov bridge ratio $\alpha_\chi(\sigma) = W_\chi[\sigma] / E_{\mathrm{TNFR}}^\chi[\sigma]$ using `compute_energy_functional` unchanged from P17; GRH$_\chi$-equivalent diagnostic (Bombieri 2000 generalisation of Weil 1952); positivity verified for $\chi_3, \chi_4, \chi_5$ on Gaussian grid $\sigma \in \{1.0, \ldots, 3.0\}$ (3/3 PASS; XF residual $\le 2.4 \times 10^{-16}$ for $\sigma \ge 2.0$); **does NOT prove GRH (finite Gaussian grid; admissibility not exhausted) and does NOT advance G4** |
+| **P37** Dirichlet L χ-twisted Weil–TNFR comparison | `twisted_weil_positivity.py` | `64_twisted_weil_positivity_demo.py` | §13sexiesdecies | Structural extension of P17 to primitive real $L(s, \chi)$: $W_\chi[\sigma] = 2\sum_{\gamma > 0} h_\sigma(\gamma)$ is computed from a zero-side enumerator and a finite explicit-formula side, then normalized by the declared structural candidate-energy snapshot $E_{\mathrm{TNFR}}^\chi[\sigma]$. The ratio $\alpha_\chi(\sigma)$ is not a Lyapunov theorem. Positivity was measured for $\chi_3, \chi_4, \chi_5$ on the Gaussian grid $\sigma \in \{1.0, \ldots, 3.0\}$ (3/3 PASS; XF residual $\le 2.4 \times 10^{-16}$ for $\sigma \ge 2.0$); this finite family does **not** exhaust Weil admissibility, prove GRH, or advance G4. |
 | **P38** Dirichlet L χ-twisted admissibility / gauge sweep | `twisted_alpha_sweep.py` | `65_twisted_alpha_sweep_demo.py` | §13septiesdecies | Structural extension of P18 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; g) = W_\chi[\sigma] / E_{\mathrm{TNFR}}^\chi[\sigma; g]$ across the canonical six-gauge family `DEFAULT_GAUGES` inherited unchanged from P18 (`canonical, dnfr_only, phase_only, epi_only, dnfr_phase, pressure_amplified`); $W_\chi$ computed once per $\sigma$ (gauge-independent) via P35 enumerator; canonical TNFR test state built per gauge on P34 bundle; positivity verified for $\chi_3, \chi_4, \chi_5$ across $\sigma \in \{1.0, \ldots, 3.0\} \times$ 6 gauges (3/3 PASS; $\alpha_{\min}$ at $(\sigma=1.0, \text{canonical})$ in every case); robustness audit of P37 under canonical-mapping ambiguity; **does NOT prove GRH (finite $(\sigma, g)$ grid; admissibility not exhausted) and does NOT advance G4** |
 | **P39** Dirichlet L χ-twisted admissible-family + gauge sweep | `twisted_admissible_family_sweep.py` | `66_twisted_admissible_family_sweep_demo.py` | §13octiesdecies | Joint structural extension of P19 + P18 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; f, g) = W_\chi[\sigma; f] / E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ across `DEFAULT_TEST_FAMILIES` (gaussian, gaussian_mixture, hermite2_gaussian) inherited unchanged from P19 × `DEFAULT_GAUGES` (6 canonical gauges) inherited unchanged from P18; $W_\chi[\sigma; f]$ computed once per $(family, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(family, gauge)$ on P34 bundle via `build_twisted_test_state_from_test_function`; positivity verified for $\chi_3, \chi_4, \chi_5$ across 3 families × 6 gauges × 5 widths (3/3 PASS; 270 cells total; $\alpha_{\min}$ at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{canonical})$ in every case); joint robustness audit of P37 under test-profile + canonical-mapping ambiguity; **does NOT prove GRH (finite $(family, gauge, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
 | **P40** Dirichlet L χ-twisted node-aware gauge sweep | `twisted_nodeaware_gauge_sweep.py` | `67_twisted_nodeaware_gauge_sweep_demo.py` | §13noniesdecies | Structural extension of P20 to primitive real $L(s, \chi)$: sweeps $\alpha_\chi(\sigma; f, g) = W_\chi[\sigma; f] / E_{\mathrm{TNFR}}^\chi[\sigma; f, g]$ across `DEFAULT_TEST_FAMILIES` (P19) × `DEFAULT_NODEAWARE_GAUGES` (4 node-aware gauges: `nuf_pressure, nuf_phase, weight_pressure, mixed_affine`) inherited unchanged from P20; gauges have signature $g(h(E_n), \hat\nu_f(n), \hat w(n))$ activating the per-node normalised structural-frequency and node-weight channels of the P34 χ-twisted graph; $W_\chi[\sigma; f]$ computed once per $(family, \sigma)$ via P35 enumerator; canonical TNFR test state built per $(family, node\_gauge)$ on P34 bundle via `build_twisted_test_state_nodeaware`; positivity verified for $\chi_3, \chi_4, \chi_5$ across 3 families × 4 node-aware gauges × 5 widths (3/3 PASS; 180 cells total; $\alpha_{\min}$ at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{nuf\_phase})$ for $\chi_3, \chi_4$ and at $(\sigma=1.0, \mathrm{gaussian}, \mathrm{nuf\_pressure})$ for $\chi_5$); node-aware robustness audit of P37 jointly with P19 test-profile sweep; **does NOT prove GRH (finite $(family, node\_gauge, \sigma)$ grid; admissibility not exhausted) and does NOT advance G4** |
@@ -4262,7 +4276,7 @@ piecewise status notes.
 | **P47** Dirichlet L χ-twisted spectral emergence under canonical coupling | `twisted_spectral_emergence.py` | `74_twisted_spectral_emergence_demo.py` | §13vicies-sexto | L-track analogue of P29 (`spectral_emergence.py`): sweeps three exploratory (non-canonical) inter-prime coupling laws (`kuramoto_u3`: $(\gamma/\pi)\exp(-\lvert k\log p - m\log q\rvert)$; `phi_multiscale`: $\varphi^{-(k+m)}/\sqrt{pq}$; `pnt_logarithmic`: $\gamma/\log(1+pq)$) on the P34 χ-twisted prime-ladder Hamiltonian with explicit $\chi(p)\chi(q)$ multiplicative twist on every off-diagonal entry; computes the Kolmogorov–Smirnov distance of the unfolded nearest-neighbour spacing distribution to the GUE Wigner surmise (conjectural universality class of zeros of $L(s,\chi)$) and to the Poisson reference; verified on $(n_{\mathrm{primes}}, k_{\max}) = (20, 3)$ for $\chi_3, \chi_4, \chi_5$ over strengths $s \in \{0, 0.05, 0.1, 0.2, 0.5, 1, 2\}$: `pnt_logarithmic` uniformly strongest emergence kernel with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.097, 0.116, 0.135\}$ at $s^* = 2$ ($33$–$49\%$ reduction vs baseline); `kuramoto_u3` second with $\mathrm{KS}_{\text{GUE}}^{\min} \in \{0.120, 0.150, 0.135\}$ at $s^* = 1$ ($25$–$36\%$ reduction); `phi_multiscale` weak ($0$–$6\%$ reduction); attests the L-track spacing-universality diagnostic for every primitive real Dirichlet character; **does NOT prove GRH for any $L(s, \chi)$** (KS-GUE residual at finite $K$ is consistent with finite-size effects, not evidence against GRH) **and does NOT advance G4 = RH** |
 | **P49** Dirichlet L χ-twisted prime-ladder oscillatory correction | `twisted_oscillatory_correction.py` | `76_twisted_oscillatory_correction_demo.py` | §13vicies-octavo | L-track analogue of P31 (`oscillatory_correction.py`): reconstructs $S_\chi(T) = \pi^{-1}\arg L(\tfrac12 + iT, \chi)$ from the canonical P34 χ-twisted prime-ladder spectrum $\{(k\log p,\,\chi(p)^k\log p)\}$ via the χ-twisted Riemann–von Mangoldt template $\pi S_\chi^{\mathrm{TNFR}}(T) = -\sum_{(\mu,w)}(w/\mu)\sin(T\mu)\exp(-\mu/2)$, then applies the Newton step $\gamma_n^{(\chi),\,\text{corr}} = \tilde\gamma_n^{(\chi)} - d\,S_\chi^{\mathrm{TNFR}}(\tilde\gamma_n^{(\chi)}) / \bar N'_\chi(\tilde\gamma_n^{(\chi)})$ on the canonical P46 χ-twisted smooth targets with $\bar N'_\chi(T) = (2\pi)^{-1}\log(qT/(2\pi))$; restricted to **primitive real** characters so the von Mangoldt-style sum is real-valued (validates $\max\lvert\Im w\rvert \le 10^{-10}$); damping sweep $d \in \{0, 0.25, 0.5, 0.75, 1, 1.25, 1.5\}$; **closes the final ζ↔L attack-surface parity item**: with P49, every canonical ζ-track operator P12–P31 has a matching χ-twisted L-track counterpart (P32–P49); verified on $(N, N_{\mathrm{primes}}, K) = (10, 80, 5)$ for $\chi_3, \chi_4, \chi_5$: mixed empirical regime — $\chi_4$ shows **+6.02%** branch-B1 canonical improvement at $d^* = 1.5$ ($W_1$: $1.4185 \to 1.3331$); $\chi_3$ and $\chi_5$ show **0% improvement** ($d^* = 0$) corroborating §13octies branch B2 at the L-track level (a genuinely new canonical operator required); honest split (1/3 B1, 2/3 B2) further attests the canonical-only oscillatory cap visible across both tracks; **does NOT prove GRH$_\chi$ for any $L(s, \chi)$** (residual $W_1 \approx 1.3$–$1.6$ encodes the chi-twisted oscillatory remainder), **does NOT advance G4 = RH**, **does NOT address sub-problems (2) canonicity from the nodal equation and (3) positivity coincidence with the χ-twisted Weil form**; positive structural-parity milestone plus L-track structural-compatibility diagnostic |
 | **P48** Dirichlet L χ-twisted admissible spectral-rescaling operator | `twisted_admissible_rescaling.py` | `75_twisted_admissible_rescaling_demo.py` | §13vicies-septimo | L-track analogue of P30 (`admissible_rescaling.py`): lifts the §13vicies-quinto density-level closure of the smooth half of T-HP$^{(\chi)}$ to the operator level by constructing the canonical diagonal rescaling $F^{(\chi)}_{\text{smooth}} = U_{P34}\,\operatorname{diag}(\sqrt{\tilde{\gamma}_i^{(\chi)} / \lambda_i})\,U_{P34}^{*}$ on each primitive real Dirichlet character; reuses `extract_positive_spectrum`, `build_smooth_rescaling_operator`, `apply_rescaling`, `verify_self_adjointness_preserved`, `verify_spectrum_match`, `oscillatory_correction_canonical` atomically from `admissible_rescaling.py`; certifies (i) self-adjointness preservation under conjugation, (ii) exact spectrum match $\operatorname{spec}(F^{(\chi)}_{\text{smooth}}\,H_{P34}^{(\chi)}\,(F^{(\chi)}_{\text{smooth}})^{*}) = \{\tilde{\gamma}_i^{(\chi)}\}$ to machine precision $\le 7.1\times10^{-15}$, (iii) Wasserstein-1 gap closure $W_1(\sigma(H_{P34}^{(\chi)}), \{\gamma_n^{(\chi)}\}) \to W_1(\{\tilde{\gamma}_n^{(\chi)}\}, \{\gamma_n^{(\chi)}\})$, (iv) honest sweep of the three canonical oscillatory enrichments (`phi_log`, `gamma_e`, `pi_density`) at amplitudes $\{0, 10^{-3}, 5\!\cdot\!10^{-3}, 10^{-2}, 5\!\cdot\!10^{-2}, 10^{-1}\}$ with per-mode breakdown; verified on $(n_{\mathrm{targets}}, p34\_n\_primes, p34\_max\_power) = (12, 25, 5)$ for $\chi_3, \chi_4, \chi_5$: smooth-half W$_1$ ratios $\{14.86\times, 13.85\times, 14.44\times\}$ (baseline $\{21.9, 19.0, 18.4\} \to$ smooth $\{1.47, 1.38, 1.27\}$); best canonical oscillation `pi_density` at amplitude $10^{-3}$ for every character with extra improvement $\{+17.85\%, +13.22\%, +12.68\%\}$ over smooth baseline; per-mode ranking uniform: `pi_density` > `gamma_e` > `phi_log`; closes sub-problem (1) of Conjecture T-HP$^{(\chi)}$ for the smooth half at the operator level (L-track mirror of P30 §13nonies); negative-knowledge oscillatory cap ($\le 18\%$ canonical improvement) constitutes structural evidence for §13octies branch B2 at the L-track level; **does NOT prove GRH$_\chi$ for any $L(s, \chi)$** (residual W$_1 \approx 1.1$–$1.2$ encodes $S_\chi(T) = (1/\pi)\arg L(\tfrac12+iT, \chi)$, GRH$_\chi$-equivalent) **and does NOT advance G4 = RH** |
-| **P50** REMESH-∞ residue split of P31 oscillatory correction | `remesh_infinity_residue_split.py` | `77_remesh_infinity_residue_split_demo.py` | §13triginta | Function-space lift of the N15 REMESH-∞ closure (`theory/REMESH_INFINITY_DERIVATION.md`) into the TNFR-Riemann program: splits the canonical P31 prime-ladder reconstruction $S_{\mathrm{TNFR}}(T) = -(1/\pi)\sum_{(\mu,w)}(w/\mu)\sin(T\mu)\exp(-\mu/2)$ into its projections on $\mathrm{range}(\mathcal{R}_\infty)$ and $\ker(\mathcal{R}_\infty)$ via the DFT-bin mask selecting the N15-resonant rational-multiple-of-$\pi$ lattice $\{2\pi k / \mathrm{lcm}(\tau_l, \tau_g)\}$ at the canonical pair $(\tau_l, \tau_g) = (4, 8)$; pre-registered structural prediction: the prime-ladder Fourier support $\{k\log p\}$ is disjoint from the N15-resonant lattice by Baker's theorem on linear independence of logarithms of algebraic numbers, hence the canonical reconstruction lies asymptotically in $\ker(\mathcal{R}_\infty)$; verdicts: `RESIDUE_IN_KER_ONLY` (branch B2 evidence at function-space level), `RESIDUE_IN_RANGE_ONLY` (would refute P31), `RESIDUE_MIXED` (gauge leak or boundary artefact); verified at canonical defaults $(\tau_l, \tau_g) = (4, 8)$, $n_{\mathrm{periods}} \in \{64, 256\}$, $n_{\mathrm{primes}} \in \{200, 400\}$, $K = 8$: verdict `RESIDUE_IN_KER_ONLY` at both resolutions; range fraction decays $1.7647\% \to 0.0162\%$ as $n_{\mathrm{samples}}: 512 \to 2048$ (clean asymptotic incommensurability); two sanity controls pass at machine precision (resonant $\sin(2\pi T/\mathrm{lcm})$ projects to $100\%$ range; transcendental $\sin(\gamma_{\mathrm{em}} T)$ projects to $\le 7 \times 10^{-4}\%$ range); complementary to §13vicies-novies graph-iteration-matrix tests (which act on EPI-history state vectors): P50 acts on a function in $H^2(T\text{-axis})$, a mathematically distinct object; corroborates the §13septies / §13nonies structural identification of the T-HP residual obstruction with the oscillatory half $S(T) = (1/\pi)\arg\zeta(\tfrac12+iT) = \ker(\mathcal{R}_\infty)$ component; **does NOT advance G4 = RH**, **does NOT close T-HP**, **does NOT promote any new canonical operator beyond the 13-operator catalog**; positive structural-compatibility milestone connecting the N15 REMESH-∞ closure to the T-HP residual gap at the function-space level |
+| **P50** fixed-delay Fourier split of the finite P31 signal | `remesh_infinity_residue_split.py` (legacy name) | `77_remesh_infinity_residue_split_demo.py` | §13triginta | Finite cyclic DFT diagnostic. The fixed modes use $\gcd(\tau_l,\tau_g)$; the LCM is only sample alignment. At the two recorded windows, selected-bin fractions are $1.5722\%$ and $0.0149\%$; their change is finite leakage, not a proved asymptotic rate. The legacy verdict describes the selected bins and does not identify an analytic $S(T)$ kernel, a runtime $\tau_g\to\infty$ limit, T-HP, or catalog completeness. G4 remains open. |
 
 ### 19.2 Gap Balance
 
@@ -4274,7 +4288,11 @@ piecewise status notes.
 | **G4** | **Riemann Hypothesis** — localisation of poles on $\operatorname{Re}(s) = 1/2$ | **OPEN** (= Conjecture T-HP, §13septies). Smooth half of sub-problem (1) of T-HP closed at **density** level by P28 (§13sexies) and at the **operator** level by P30 (§13nonies). Oscillatory half (P31, §13decies) tested with the canonically correct multi-frequency prime-ladder basis: partial positive evidence at very low $N$ ($+3.6\%$ at $N$=20, $d$=1), zero or negative at $N$=40; corroborates branch B2. Canonicity (sub-problem (2)) and positivity coincidence (sub-problem (3)) remain open. |
 | **G5** | Bridge from TNFR spectral zeta to classical $\zeta(s)$ | **SUPERSEDED** by P12+P13+P15 (§7.8); original affine form numerically falsified (§7.1–§7.7). |
 
-**Net result**: 4 of 5 originally identified gaps are operationally closed inside the canonical TNFR formalism. The only remaining obstruction is **G4 = RH itself**, restated canonically as **Conjecture T-HP** in §13septies and audited link-by-link (L1–L8) in §13octies. Extensions beyond P12–P16 (P17–P30) inside the canonical engine progressively narrow G4 — by exposing the attack surface (P17), auditing the admissibility envelope (P18–P21), certifying interval-level coercivity (P22–P24), providing a Paley-style identity (P25), certifying operator-level positivity for P14 (P26), supplying a diagnostic Hilbert–Pólya scaffold (P27), and closing the smooth half of T-HP at density (P28) and operator (P30) level — but none of them closes G4. The oscillatory half of T-HP requires either a new canonical operator beyond the 13-operator catalog (§13octies branch B2; supported by the P30 negative-enrichment result, §13nonies.4) or a structural derivation of $S(T) = \pi^{-1} \arg \zeta(\tfrac{1}{2} + iT)$ from canonical TNFR ingredients (branch B1, untested).
+**Corrected net result**: the finite P12–P30 certificates establish their
+declared numerical or algebraic properties, while the T-HP chain lacks a
+constructed tetrad Hilbert space and operator bridge. Those experiments do not
+reduce the remaining possibilities to a new catalog operator or a canonical
+derivation of $S(T)$. G4 remains open without a claimed exhaustive branch list.
 
 ### 19.3 Scope Statement (Honest Reading)
 
@@ -4379,42 +4397,61 @@ authoritative public surface.
 
 ## §13vicies-novies. REMESH Global Reframe (Cross-Program Discovery; May 2026; Does NOT Close G4 = RH)
 
-**Status**: Working hypothesis (branch B1 of §13septies.7). Does **not** close G4 = RH, does **not** advance T-HP beyond §13nonies (P30 smooth half), does **not** promote any new canonical operator.
+> **SUPERSEDED SCOPE (September 2026).** This historical block conflates the
+> runtime REMESH map, a companion history recurrence and a finite cyclic filter.
+> Only explicitly finite experiments and their stated equivariance checks remain
+> evidence. References below to a runtime REMESH-infinity operator, an analytic
+> $S(T)$ kernel, exhaustive B1 closure or catalog completeness are withdrawn.
+> See [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md).
+
+**Status**: Historical working hypothesis (branch B1 of §13septies.7),
+retained as an experimental record under the corrected scope above.
 
 ### §13vicies-novies.1 Origin
 
-During the parallel TNFR–Navier–Stokes program (see `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §11), an analysis of the NS-G_blowup residual obstruction prompted re-examination of the 13-operator catalog for multi-scale closure primitives. A direct audit refuted the prior implicit assumption that no canonical operator handles asymptotic/global temporal coupling:
+During the parallel TNFR–Navier–Stokes program (see
+`theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §11), an analysis of the
+NS-G_blowup residual prompted a source audit of REMESH's finite multiscale and
+history mechanisms:
 
 * `src/tnfr/config/defaults_core.py`: `REMESH_TAU_GLOBAL = 8` (graph-wide temporal memory), `REMESH_TAU_LOCAL = 4`, `REMESH_MODE in {knn, mst, community}` with `community` mode genuinely global.
 * `src/tnfr/ontosim.py`: `# Global REMESH memory` allocates a graph-level `_epi_hist` deque of size `2·τ_global + 5`.
 * `src/tnfr/operators/remesh.py`: documents three REMESH structural modes — **Hierarchical** (IL/VAL/SHA/NUL), **Rhizomatic** (OZ/UM/THOL), **Fractal Harmonic** (RA/NAV/AL/EN, scale-symmetric).
 * `src/tnfr/multiscale/hierarchical.py`: explicit cross-scale ΔNFR coupling.
 
-The canonical engine therefore **already contains** a global, multi-scale closure primitive (REMESH global with Fractal Harmonic mode and cross-scale coupling). What is missing for T-HP is the **canonical asymptotic specialisation of the existing REMESH global operator** at `τ → ∞` applied to the prime-ladder spectrum, not a new canonical primitive.
+These entries show finite graph-level history and multiscale mechanisms. They do
+not supply a runtime delay-at-infinity operator or identify what T-HP requires.
 
 ### §13vicies-novies.2 Reframed Branch Analysis of T-HP
 
 | Component | Status | REMESH-global interpretation |
 |---|---|---|
-| Smooth half of `F` | Closed at density level (P28, §13sexies) and operator level (P30, §13nonies) | REMESH global at **finite** `τ_global` applied to the prime-ladder spectrum `{k log p}` (P14 eigendata) |
-| Oscillatory half `S(T) = (1/π) arg ζ(½+iT)` | Open (RH-equivalent) | REMESH global at **`τ → ∞`** applied to the same prime-ladder spectrum |
-| Branch classification | Previously implicitly B2 (new operator) | **Reframed as B1** (closeable inside the catalog if the canonical `τ → ∞` limit of REMESH global is derivable) |
+| Smooth finite target | Finite constructions P28/P30 | Can be compared numerically with fixed-delay REMESH outputs. |
+| Oscillatory analytic term `S(T) = (1/π) arg ζ(½+iT)` | Open (RH-relevant) | No runtime REMESH representation has been derived. |
+| Branch classification | Historical B1/B2 labels | Remains open because neither a catalog-completeness theorem nor an operator bridge exists. |
 
 ### §13vicies-novies.3 What This Changes for the Riemann Program
 
-* **The hypothesis is upgraded** from "new operator may be needed" (branch B2, open and uncertain) **to** "existing operator needs canonical asymptotic specialisation" (branch B1, a well-defined analytical problem on an existing canonical operator).
-* **G4 = RH remains OPEN**. The P30 negative-enrichment result (canonical multiplicative perturbations of the smooth target failed to recover S(T)) is **reinterpretable**: the perturbations tested were finite-`τ` REMESH-global candidates, none of which can reproduce a `τ → ∞` limit by construction.
-* **The Riemann program remains paused at T-HP** (per §"Program Status" of `AGENTS.md`). The reframe does **not** authorise reopening the ζ-track or L-track attack surfaces; it only re-classifies the residual obstruction.
+* Fixed-delay REMESH supplies a finite comparison family, not an asymptotic
+  specialization of the runtime.
+* P30's finite negative-enrichment result does not identify the analytic
+  oscillatory term or decide which operator class could represent it.
+* G4, T-HP and the branch classification remain open.
 
 ### §13vicies-novies.4 Honest Scope
 
-* **What §13vicies-novies claims**: a structural reframe of the T-HP residual obstruction, anchored in canonical engine artefacts (`REMESH_TAU_GLOBAL`, `_epi_hist`, REMESH modes, `multiscale/hierarchical.py`).
-* **What §13vicies-novies does NOT claim**: does NOT prove RH, does NOT close G4, does NOT close T-HP, does NOT derive `REMESH-∞`, does NOT promote any new operator.
-* **Cross-reference**: mirrored in `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §11 (added simultaneously). Both programs share the same canonical REMESH global infrastructure; the analytical study of its `τ → ∞` (Riemann) / scale `→ 0` (NS) asymptotic limit is shared work.
+* **Corrected claim**: the engine exposes finite integer REMESH delays, a stored
+  history and several graph-selection modes. These facts do not identify the
+  T-HP residual.
+* **Boundary**: no runtime infinity limit, G4/T-HP closure, analytic kernel or
+  new-operator/completeness result follows.
+* **Cross-reference**: the Navier–Stokes note uses separate finite diffusion and
+  cascade diagnostics; it inherits no REMESH asymptotic theorem.
 
 ### §13vicies-novies.5 R∞-1a Empirical Baseline (Riemann side)
 
-**Milestone**: R∞-1a — first numerical probe of REMESH-∞ on the Riemann-side prime-ladder dynamics.
+**Milestone**: R∞-1a (legacy label) — finite REMESH-iteration probe on the
+Riemann-side prime-ladder dynamics.
 
 **Implementation**: `benchmarks/remesh_infinity_riemann_baseline.py`. Output: `results/remesh_infinity/remesh_infinity_riemann_baseline.json`.
 
@@ -4424,39 +4461,43 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 * History buffer `_epi_hist` populated to `max(τ_g, τ_l)+1` snapshots before each REMESH application; canonical mixing `EPI_new = 0.25·EPI_now + 0.25·EPI[t-τ_l] + 0.5·EPI[t-τ_g]` with `α = 0.5`, `τ_l = 4`.
 * Three tracks executed in one run:
   * **Track A** — single-application sweep over `τ_g ∈ {4, 8, 16, 32, 64, 128, 256, 512}`, baseline restored between calls. Tests F1 (naive single-application Cesàro projection).
-  * **Track B** — iterated REMESH^N at fixed `τ_g = 16`, `N ∈ [1, 512]`, with `_epi_hist` updated at every iteration (genuine Banach iteration of the canonical operator on this dynamics). Tests F2 (existence of a fixed point).
+  * **Track B** — iterated REMESH^N at fixed `τ_g = 16`, `N ∈ [1, 512]`, with `_epi_hist` updated at every iteration. Tests finite-horizon increment decay; it does not prove existence of a limiting fixed point.
   * **Track C** — spectral diagnostic of the late-iterated state at `N = 256`, FFT along the νf-ordered axis after mean removal.
 
 **Falsification criteria (pre-registered)**:
 * **F1** triggered if Track A `dist→time_average` is monotone-decreasing in `τ_g` AND `final_rel < 0.1`. Interpretation: naive single-application B1 = Cesàro projection on time-average ⇒ B1 (naive) refuted.
-* **F2** triggered if Track B `final_step_delta < 1e-6` OR `step_decay_ratio < 0.01`. Interpretation: iterated REMESH has a well-defined fixed point.
+* **F2** triggered if Track B `final_step_delta < 1e-6` OR `step_decay_ratio < 0.01`. Corrected interpretation: the sampled finite trajectory has small late increments.
 
 **Results (deterministic run; same seedless config reproducible)**:
 * Baseline-to-time-average distance: 5.976e+00.
-* **Track A**: F1 NOT triggered. Distance to time-average plateaus at `rel ∈ [0.392, 0.462]` across the entire sweep, non-monotone in `τ_g`. Confirms analytically that single-application `τ → ∞` is ill-defined on stationary oscillatory snapshots: the output depends on the specific phase of the past snapshot sampled at lag τ_g, not on a global asymptotic limit.
-* **Track B**: F2 **TRIGGERED**. `step_decay_ratio = 6.82e-06`, `final_step_delta = 3.87e-05` at `N = 512`. Step deltas decay through `5.68 → 1.03 → 0.66 → … → 0.15 → 0.012 → 1.2e-4 → 3.9e-5`. The iterated map converges to a fixed point with `‖EPI*‖_L2 = 1.7501`, sitting at relative distance `0.2808` from the time-average (i.e. NOT the time-average).
+* **Track A**: F1 NOT triggered. Distance to time-average lies in `rel ∈ [0.392, 0.462]` across the finite delay sweep and is non-monotone in `τ_g`. A single fixed-delay lookup depends on the sampled history phase; this experiment defines no delay-at-infinity limit.
+* **Track B**: F2 **TRIGGERED**. `step_decay_ratio = 6.82e-06`, `final_step_delta = 3.87e-05` at `N = 512`. Step deltas decrease through `5.68 → 1.03 → 0.66 → … → 0.15 → 0.012 → 1.2e-4 → 3.9e-5`. The state at the final finite iterate has `‖EPI_512‖_L2 = 1.7501` and relative distance `0.2808` from the time-average. These data do not prove convergence or identify a limiting state.
 * **Track C**: Late state at `N = 256` has structured oscillatory content along the νf-ordered axis. After mean removal, total power = 64.2, DC fraction = 3.07e-33 (numerical zero). Top-3 power bins are `{16, 19, 20}` of 21 rfft bins, with fractions `{10.6%, 9.7%, 9.3%}` — the spectrum is dominated by **high-νf modes**, not the low-νf prime-ladder fundamentals.
 
 **Honest interpretation (R∞-1a)**:
-* **Established** (necessary condition for any non-trivial B1 reframe): iterated REMESH on canonical prime-ladder oscillatory dynamics admits a well-defined fixed point. The fixed point is NOT the time-average and carries non-trivial spectral structure.
+* **Established**: the declared finite iteration has decreasing late increments and a non-trivial final state. A well-defined limiting fixed point is not established.
 * **Not established** (and must NOT be claimed): (a) any verified correspondence between the fixed-point spectrum and the oscillatory residual `r_n = γ_n - γ̃_n`; (b) sensitivity-independence with respect to the choice of synthetic input field; (c) that high-νf concentration encodes S(T) rather than being a bias of the α-local mixing kernel; (d) closure of T-HP, G4, or RH.
-* **Branch verdict (R∞-1a slice only)**: this baseline does NOT refute B1, and supplies the first necessary positive datum (existence of a non-trivial canonical fixed point). It does NOT confirm B1 either — the spectral comparison with r_n (R∞-1a-spectral, future work) is the next falsifiable test.
+* **Branch verdict (R∞-1a slice only)**: this finite baseline neither refutes nor confirms B1. The later spectral comparison is another finite diagnostic.
 
 **Next milestones (gated on this result)**:
-* **R∞-1a-spectral**: project the Track B fixed-point spectrum onto the basis of r_n via mpmath-computed γ_n; report correlation, cosine similarity, and per-component residual. Pre-register falsification: if no correlation above noise (|r| < 0.2), B1 is empirically refuted at the spectral level even with a non-trivial fixed point.
+* **R∞-1a-spectral** (legacy label): compare the Track B finite-iterate
+  spectrum with the basis of $r_n$ and report finite correlation statistics.
+  Such a comparison cannot by itself refute B1 or establish a limit.
 * **R∞-1b**: NS-side analogue on the K_φ cascade (N6–N11 milestones), same Track A/B/C structure.
-* **R∞-1c**: cross-program comparison of fixed-point spectra. Required equivariance check before any cross-program B1 claim.
+* **R∞-1c**: cross-program comparison of finite-iterate spectra, with an
+  equivariance check and no B1 conclusion.
 
-**Status**: R∞-1a baseline complete; primary deliverable is the empirical fact that iterated REMESH is contractive on this dynamics with a non-trivial fixed point. No closure of any gap.
+**Status**: R∞-1a finite baseline complete; the recorded late-step decay is empirical and does not establish contraction or convergence. No closure of any gap.
 
 ### §13vicies-novies.6 R∞-1a-spectral — Spectral projection onto Riemann basis
 
-**Milestone**: R∞-1a-spectral — first falsifiable spectral comparison between the R∞-1a fixed point and Riemann data. Gated follow-up to §13vicies-novies.5.
+**Milestone**: R∞-1a-spectral (legacy label) — finite spectral comparison
+between the $N=512$ iterate and selected Riemann data.
 
 **Implementation**: `benchmarks/remesh_infinity_riemann_spectral.py`. Output: `results/remesh_infinity/remesh_infinity_riemann_spectral.json`.
 
 **Setup**:
-* Identical prime-ladder, REMESH config, and Banach iteration as R∞-1a, run to `N_iter = 512` (true fixed point, not the intermediate `N = 256` state used in R∞-1a Track C).
+* Identical prime-ladder and fixed-delay REMESH config as R∞-1a, run to `N_iter = 512` (a later finite iterate, not a proved fixed point).
 * Riemann reference: first 40 non-trivial zeros γ_n from `mpmath.zetazero` (dps=30) and the canonical smooth approximations γ̃_n via `derive_smooth_zero_position` (P28). Oscillatory residuals `r_n = γ_n - γ̃_n`.
 * Fixed point sorted by νf = k·log(p) → sequence `s_i, i = 1..40`. FFT of `s − mean(s)` → power bins `P_k, k = 1..M` with `M = 20`.
 
@@ -4472,8 +4513,8 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 * `max(…) ∈ [0.2, 0.5]` ⇒ INDETERMINATE.
 
 **Results (deterministic; same config reproducible)**:
-* True fixed point at `N = 512`: `‖EPI*‖_L2 = 1.6976`, `mean(EPI*) = −9.25e−02`, spectral total power = 50.87.
-* **Spectral shift between intermediate (N=256) and converged (N=512) states**: at N=256 the top-3 bins were high-νf `{16, 19, 20}` of 21 (R∞-1a Track C); at the true fixed point (N=512) the top-3 bins drop to low-νf `{1, 2, 4}` with fractions `{33.1%, 23.4%, 8.8%}`. Iterated REMESH transports power from high-νf to low-νf as it converges. The R∞-1a Track C statement that the fixed point is "dominated by high-νf modes" is therefore SUPERSEDED — the converged fixed point is low-νf dominated.
+* Finite iterate at `N = 512`: `‖EPI_512‖_L2 = 1.6976`, `mean(EPI_512) = −9.25e−02`, spectral total power = 50.87.
+* **Finite spectral shift from N=256 to N=512**: the top-3 bins change from `{16, 19, 20}` to `{1, 2, 4}`, with the latter fractions `{33.1%, 23.4%, 8.8%}`. This is a measured redistribution across two iterates, not proof of asymptotic transport or convergence.
 * Pre-registered tests:
   - `r_α = +0.5126` — crosses 0.5 threshold but only marginally.
   - `r_β = +0.8575` — sorted-magnitude alignment, dominant signal.
@@ -4491,18 +4532,21 @@ The canonical engine therefore **already contains** a global, multi-scale closur
   1. The dominant test (`r_β = 0.86`) is **sorted-magnitude correlation**, which is statistically the weakest of the four. Any two positive heavy-tailed sequences with similar dynamic ranges tend to produce high sorted-magnitude correlation; this test does NOT establish structural alignment between the spectrum and the residuals.
   2. The strongest structural test (`r_γ = 0.34`, node-field vs smooth target) sits in the indeterminate range.
   3. The two auxiliary controls `r(P_k, γ_n) ≈ r(P_k, γ̃_n) ≈ −0.67` reveal that the spectrum is dominantly anti-correlated with the monotone-growing Riemann data, which is consistent with the low-νf concentration being a property of the REMESH mixing kernel rather than encoding Riemann content.
-  4. Node-level correlation between the fixed-point field and the residuals (`r(s_i, r_n) = +0.005`) is **zero within noise** — there is no per-mode encoding.
-* **What R∞-1a-spectral establishes**: existence of *some* monotone alignment between the magnitude distributions of (fixed-point FFT power) and (|r_n|). This is a necessary condition for B1 at the level of distributions, but is far from sufficient.
+  4. Node-level correlation between the finite-iterate field and the residuals
+     (`r(s_i, r_n) = +0.005`) is negligible in this sample.
+* **What the run records**: a finite monotone alignment between the sorted
+  magnitudes of the iterate FFT power and $|r_n|$. Later null controls show that
+  this statistic is not specific to the Riemann data.
 * **What R∞-1a-spectral does NOT establish**: per-mode correspondence, operator-level alignment, robustness against synthetic-field choice, sensitivity to (α, τ_l, τ_g), independence from prime-ladder construction.
 
 **Branch verdict (R∞-1a-spectral slice only)**: this milestone does **not refute** B1 at the spectral level, and supplies one weak positive datum (magnitude-distribution alignment). It **does not** confirm B1 — the per-mode (`r_α`, `r_γ`, `r_δ`) tests are inconclusive, and the auxiliary controls flag a kernel-induced bias as a competing explanation. The result must be read as "B1 survives the first falsifiable spectral test, but only by its weakest available signal; further tests required before any B1 claim".
 
 **Next milestones (gated on this result)**:
 * **R∞-1a-spectral-robustness** (REQUIRED before any further B1 claim): re-run R∞-1a-spectral with (i) a randomized null synthetic field (white noise) to verify that `r_β` does NOT trigger on noise — kernel-bias control; (ii) sweep over `α ∈ {0.25, 0.5, 0.75}` and `τ_l ∈ {2, 4, 8}` to test sensitivity; (iii) alternative orderings (random permutation of νf-axis) as null controls for `r_α` and `r_γ`.
-* **R∞-1a-operator** (gated on robustness): if R∞-1a-spectral-robustness survives, construct a finite-rank approximation of the implied REMESH-∞ operator and compare its spectrum directly to {γ_n}. This is the proper operator-level test that the present field-level test only approximates.
+* **R∞-1a-operator** (legacy follow-up label): construct an explicitly defined finite fixed-delay matrix and compare its spectrum with `{γ_n}` as an exploratory statistic. No infinite operator is implied.
 * **R∞-1b**: NS-side analogue (K_φ cascade), independent of Riemann result.
 
-**Status**: R∞-1a-spectral complete. F3 nominally satisfied with **substantial caveats**; the result is consistent with both B1-positive (REMESH-∞ carries weak Riemann signal) and B1-null-kernel-bias (sorted-magnitude alignment is an artefact of heavy-tailed marginals). No closure of any gap; no support for any cosmic claim. R∞-1a-spectral-robustness is the next pre-registered gate.
+**Status**: R∞-1a-spectral finite diagnostic complete. F3 was nominally satisfied but later controls identified a sorted-magnitude artefact; it supplies no REMESH-infinity or Riemann-signal result.
 
 ### §13vicies-novies.7 R∞-1a-spectral-robustness — Falsification gate (REFUTES `r_β` as Riemann signal)
 
@@ -4513,7 +4557,9 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 **Setup**: identical pipeline to R∞-1a-spectral (same prime ladder, `N_iter = 512`, same Riemann reference from `mpmath.zetazero` + P28). Three independent controls:
 * **C1** white-noise null: 16 seeded runs (`numpy.random.default_rng(20260526 + seed)`, `seed ∈ {0..15}`) replacing the canonical oscillatory synthetic EPI field with zero-mean unit-variance white noise, identical REMESH iteration.
 * **C2** sensitivity sweep: 3 × 3 grid `(α, τ_l) ∈ {0.25, 0.5, 0.75} × {2, 4, 8}` on the canonical synthetic field.
-* **C3** permutation null: 5000 random permutations of `|r_n|` (for `r_α`) and `γ̃_n` (for `r_γ`) on the canonical fixed-point spectrum, `numpy` seed `20260526`.
+* **C3** permutation null: 5000 random permutations of `|r_n|` (for `r_α`)
+  and `γ̃_n` (for `r_γ`) on the finite-iterate spectrum, `numpy` seed
+  `20260526`.
 
 **Pre-registered falsification (F4)**:
 * REFUTED if ANY of: (a) C1 mean `|r_β|`-null > 0.5; (b) C2 `r_β < 0.5` anywhere in grid; (c) C3 both `p_α > 0.05` AND `p_γ > 0.05`.
@@ -4539,7 +4585,11 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 **F4 verdict: REFUTED** (refute-C1 triggered).
 
 **Honest interpretation (R∞-1a-spectral-robustness)**:
-* The dominant R∞-1a-spectral signal (`r_β = 0.86`) is **a pure kernel artefact**. White noise reproduces it at higher magnitude (mean 0.94) than the canonical oscillatory field. The sorted-magnitude Pearson coefficient measures only that the FFT-power marginal and the `|r_n|` marginal share a heavy-tailed structure; it does NOT detect any structural alignment between the spectrum of the REMESH fixed point and Riemann residuals. The R∞-1a-spectral "B1 nominally SUPPORTED" verdict relied on `r_β` and must therefore be **withdrawn**.
+* The dominant R∞-1a-spectral statistic (`r_β = 0.86`) is reproduced at
+  higher magnitude by the white-noise control (mean 0.94). The sorted-magnitude
+  coefficient therefore does not detect structural alignment between the
+  finite iterate and Riemann residuals. The historical “B1 nominally
+  SUPPORTED” verdict is withdrawn.
 * C2 shows `r_β` does vary with `(α, τ_l)` once `α` is actually propagated (range [+0.819, +0.894], 9 cells), but remains `> 0.5` everywhere — does not refute. The original C2 read of "r_β invariant in α" was an artefact of an α-propagation bug in the canonical REMESH pipeline (see dedicated note below). After the fix, `r_α ∈ [+0.40, +0.52]` and `r_γ ∈ [+0.29, +0.36]` are **robust across the (α, τ_l) grid**, which strengthens (not weakens) the interpretation of these two metrics as genuine weak structural alignments.
 * C3 supplies the only genuinely positive finding: `r_α` and `r_γ` are statistically significant against permutation null (p ≈ 0.02 and p ≈ 0.015 one-sided). They are NOT artefacts of the marginal distributions; the alignment between (FFT power → |r_n|) index-wise and (νf-ordered field → smooth target) is structurally non-random. However, the effect sizes are modest:
   - `r_α = 0.5126` was already only marginally above the F3 threshold and now stands alone.
@@ -4555,10 +4605,13 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 * It does NOT refute B1 entirely — the permutation-significant `r_α` and `r_γ` remain a positive (though weak) datum.
 * It does NOT close T-HP, G4, or any gap.
 
-**Branch verdict (R∞-1a-spectral-robustness slice only)**: B1 is **WEAKENED but not refuted**. The R∞-1a-spectral claim of "B1 nominally SUPPORTED at the spectral level (max > 0.5)" is **withdrawn**. The current state of B1 evidence after this milestone is: one necessary positive datum (existence of non-trivial REMESH fixed point, R∞-1a), one withdrawn artefactual signal (`r_β`, this milestone), and two weak-but-permutation-significant alignments (`r_α ≈ 0.51`, `r_γ ≈ 0.35`, this milestone). This is far below what would be required to claim B1 closure of T-HP.
+**Branch status for this finite slice**: the former “B1 nominally SUPPORTED”
+claim is withdrawn. The run has a non-trivial finite iterate, one null-model
+artefact (`r_β`), and two small finite-sample alignments (`r_α ≈ 0.51`,
+`r_γ ≈ 0.35`). None of these establishes a REMESH limit or advances B1/T-HP.
 
 **Next milestones (gated on this result)**:
-* **R∞-1a-operator** (REQUIRED before any further B1 evidential update): the field-level test in this milestone is at best a proxy for the actual structural question — does the REMESH-∞ operator, viewed as a linear map on the appropriate state space, have spectrum compatible with `{γ_n}`? Construct a finite-rank approximation of the REMESH iteration matrix on `EPI`-space, diagonalize, and compare the eigenvalue spectrum directly to `{γ_n}`. Pre-register: if the largest absolute correlation between (REMESH-∞ eigenvalue magnitudes) and (`γ_n` or `|r_n|`) is `< 0.5` after permutation testing, B1 is refuted at the operator level.
+* **R∞-1a-operator** (legacy follow-up label): any follow-up must specify a finite state space and fixed-delay iteration matrix, then report permutation-controlled spectral comparisons. Such a calculation cannot by itself refute B1 at the semantic operator level.
 * **R∞-1b**: NS-side analogue, independent.
 * **B1 status update**: with `r_β` retired and only weak `r_α`/`r_γ` surviving, the canonical-catalog-closure conjecture (B1) **loses substantial empirical support** but remains technically open pending R∞-1a-operator. Branches **B2** (a new canonical operator is required) and **B3** (no TNFR closure exists) gain proportionally in prior weight, though no decisive evidence shifts the balance entirely to either.
 
@@ -4571,7 +4624,10 @@ The canonical engine therefore **already contains** a global, multi-scale closur
 * **Fix applied**: `benchmarks/remesh_infinity_riemann_spectral_robustness.py::run_canonical_pipeline` now sets `G.graph["REMESH_ALPHA_HARD"] = True` before iteration, with an explanatory comment cross-referencing this section. C2 was re-executed after the fix; the numbers above (range [+0.819, +0.894] for `r_β`, [+0.40, +0.52] for `r_α`, [+0.29, +0.36] for `r_γ`) are from the fixed run. C1 and C3 are independent of the α value and are unchanged.
 * **Note on the canonical pipeline**: this precedence ordering means any user who writes `G.graph["REMESH_ALPHA"]` without also enabling `REMESH_ALPHA_HARD` will get the default `0.5` silently. This is a latent surprise but not a TNFR-grammar violation per se. Documented here for cross-program awareness; not promoted to a code-level fix in this milestone because the canonical α = 0.5 is the documented TNFR default and changing the precedence requires its own grammar audit.
 
-**Status**: R∞-1a-spectral-robustness complete. F4 refutes the dominant R∞-1a-spectral signal as kernel artefact while preserving two weak permutation-significant alignments (`r_α`, `r_γ`) that are also confirmed robust across the (α, τ_l) grid after the α-propagation bug was fixed. The R∞-1a-spectral milestone is **formally amended**: the "B1 SUPPORTED" verdict is withdrawn; the residual evidence (R∞-1a fixed-point existence + permutation-significant weak `r_α`, `r_γ` confirmed across (α, τ_l)) is insufficient to support B1 at the spectral level but is mildly stronger than the original interpretation that allowed for parameter fragility. No closure of any gap. R∞-1a-operator is the next pre-registered gate; until it returns, the canonical TNFR-Riemann program remains paused at the T-HP / G4 = RH boundary as stated in §13septies.
+**Status**: R∞-1a-spectral-robustness (legacy label) is a completed finite
+diagnostic. F4 identifies the dominant sorted-magnitude signal as a null-model
+artefact. The remaining weak alignments and finite late-step decay do not
+establish convergence, a fixed point, B1, T-HP, or a REMESH-infinity operator.
 
 ---
 
@@ -4592,7 +4648,8 @@ $$M[0,0] = (1-\alpha)^2,\quad M[0,\tau_l] = \alpha(1-\alpha),\quad M[0,\tau_g] =
 Because there is no inter-node coupling, the full-graph iteration operator is **block-diagonal**: $N$ identical copies of $M$. The spectrum is the spectrum of $M$ with multiplicity $N$. **Neither the graph topology nor the P14 prime-ladder initial condition enters $M$ at any point.**
 
 **Canonical spectrum** (α = 0.5, τ_l = 4, τ_g = 16; verified analytically with `scipy.linalg.eig`):
-* $\lambda_1 = 1$ exactly (trivial fixed-point subspace: temporally-constant configurations are preserved exactly by the convex combination).
+* $\lambda_1 = 1$ exactly (unit-eigenvalue subspace: temporally constant
+  configurations are preserved by this finite convex-combination matrix).
 * 16 non-trivial eigenvalues organised as 8 complex-conjugate pairs.
 * $|\lambda_k| \in [0.938, 0.982]$ for $k = 2, \dots, 17$ (all strictly inside the unit disk).
 * Spectral radius excluding unity: $0.981475$.
@@ -4618,7 +4675,7 @@ Because there is no inter-node coupling, the full-graph iteration operator is **
 
 **Naïve F5 verdict (canonical)**: 10/10 PASS, max $|r| = 1.0000$. Sensitivity sweep: 9/9 cells PASS.
 
-**Monotonicity controls (kernel-artefact diagnostic)**. The pre-registered F5 compares two sorted sequences against each other. Any monotonically ordered sequence aligned by index with the sorted $\{\gamma_n\}$ yields Spearman $= \pm 1$ and Pearson $\approx 0.95$–$1.0$; the permutation null is uninformative because almost every permutation breaks monotonicity. Four control sequences with no Riemann content were run through the same battery:
+**Monotonicity controls (null-model artefact diagnostic)**. The pre-registered F5 compares two sorted sequences against each other. Any monotonically ordered sequence aligned by index with the sorted $\{\gamma_n\}$ yields Spearman $= \pm 1$ and Pearson $\approx 0.95$–$1.0$; the permutation null is uninformative because almost every permutation breaks monotonicity. Four control sequences with no Riemann content were run through the same battery:
 
 | control | stat | $r$ | $p_{\text{perm}}$ | naive PASS? |
 |---|---|---|---|---|
@@ -4640,19 +4697,19 @@ Because there is no inter-node coupling, the full-graph iteration operator is **
 **What §13vicies-novies.8 establishes**:
 * REMESH applied as a stand-alone iterated linear operator **cannot** carry Riemann-spectral content. The 17-dimensional spectrum is exactly determined by the three canonical parameters with no degree of freedom for graph- or initial-state-dependent encoding.
 * The naive correlation-based F5 test design is **invalid** for comparing two intrinsically sorted finite sequences and is formally retired (analogously to `r_β` in §13vicies-novies.7).
-* The earlier R∞-1a fixed-point existence (§13vicies-novies.5) and its weak permutation-significant `r_α`, `r_γ` alignments (§13vicies-novies.7) are **not refuted** by this milestone. They concern an EPI **field** trajectory under iterated REMESH on a P14-initialised system, where the topology and initial state determine the *image* of the operator on the prime-ladder subspace, even though the operator's *spectrum* does not. The distinction is exactly the difference between $\sigma(M)$ (intrinsic, parameter-only) and $M \mathbf{v}_{P14}^k$ (depends on initial state).
+* The earlier R∞-1a finite late-step decay and weak permutation-significant `r_α`, `r_γ` alignments (§13vicies-novies.5–7) are **not refuted** by this milestone. They concern a finite EPI **field** trajectory, where topology and the initial state affect $M \mathbf{v}_{P14}^k$ even when $\sigma(M)$ is parameter-only. They do not establish fixed-point existence or convergence.
 
 **What §13vicies-novies.8 does NOT establish**:
 * It does NOT refute B1 entirely. The structural refutation is **scoped to REMESH iterated in isolation as a stand-alone operator**. B1 in its full breadth — closure of T-HP inside the 13-operator catalog — remains technically open via two non-refuted channels:
   - **Composed operators**: REMESH ∘ IL, REMESH ∘ OZ, etc. The U1–U6 canonical grammar admits these compositions, and any non-trivial composition involves at least one operator whose action *does* couple nodes via the graph (IL, EN, NAV, RA propagate through edges). Composed operators therefore have spectra that *do* depend on topology and initial state, and the structural argument of this milestone does not apply.
   - **Hierarchical / fractal modes**: the canonical REMESH catalog (`src/tnfr/operators/remesh.py`) specifies three structural modes (Hierarchical, Rhizomatic, Fractal Harmonic) and `src/tnfr/multiscale/hierarchical.py` implements explicit cross-scale ΔNFR coupling. These are non-iterated-in-isolation regimes; this milestone does not bound them.
 * It does NOT close G4 = RH, does NOT close T-HP, does NOT prove RH, does NOT promote any new operator.
-* The fixed-point existence and weak `r_α`, `r_γ` alignments from §13vicies-novies.5–7 retain their status (necessary but insufficient).
+* The finite late-step decay and weak `r_α`, `r_γ` alignments from §13vicies-novies.5–7 retain only their measured finite-horizon status.
 
 **Branch verdict update (after R∞-1a-operator)**:
 * **B1 at REMESH-iterated-in-isolation level**: STRUCTURALLY REFUTED.
 * **B1 at composed-operator / hierarchical-mode level**: untouched (open).
-* **B1 as a whole**: WEAKENED FURTHER. Of the two remaining channels for B1 closure inside the catalog, the one most directly suggested by the cross-program REMESH reframe (§13vicies-novies.1–4) is now closed. The composed-operator channel remains open but requires a *gramatically-canonical sequence* of operators (an U1–U6 admissible composition) whose spectrum would need to be derived analytically and tested against `{γ_n}` with a statistic that does *not* fall to the monotonicity artefact (e.g., normalised gap statistics, level-spacing distributions, or KS-vs-GUE diagnostics rather than two-sorted-sequence Pearson/Spearman).
+* **B1 as a whole**: OPEN. The tested stand-alone finite matrix has parameter-only spectrum. Composed and hierarchical constructions have not been exhaustively classified, and current registry coverage is not a catalog-completeness theorem.
 * **B2 (new canonical operator required)** and **B3 (no TNFR closure exists)** gain proportionally in prior weight, though no decisive evidence shifts the balance entirely to either.
 
 **Next milestones (gated on this result)**:
@@ -4696,7 +4753,7 @@ where:
 
 Procedure:
 1. Compute the full spectrum $\{\lambda_k\}_{k=1}^{N(\tau_g+1)}$ of $T_{\text{composed}}$.
-2. Remove the trivial fixed-point cluster: $|\lambda - 1| < 10^{-9}$.
+2. Remove the unit-eigenvalue cluster: $|\lambda - 1| < 10^{-9}$.
 3. Project complex eigenvalues to a 1-D quantity via $\text{Im}(\lambda)$ for the upper-half-plane subset ($\text{Im}(\lambda) \geq 10^{-12}$). Sort ascending: $s_1 \leq s_2 \leq \dots \leq s_K$.
 4. Compute normalised consecutive spacings $\delta_k = (s_{k+1} - s_k) / \langle s_{k+1} - s_k \rangle$.
 5. Compute the Kolmogorov–Smirnov distance $D_{\text{GUE}} = \sup_x |F_{\text{emp}}(x) - F_{\text{GUE}}(x)|$ where $F_{\text{GUE}}(s) = \int_0^s P_{\text{GUE}}(s')\,ds'$.
@@ -4819,23 +4876,20 @@ This rules out the *naive edge-channel route* for the pair $(\mathrm{REMESH},
 3. Any structural-coherence statement at the level of the diagnostic surface
    built by milestones P17–P49.
 
-The catalog-wide structural argument explaining why every edge-propagating
-operator in the canonical 13-operator catalog fails by the same mechanism on
+The scoped structural argument for the tested graph-uniform linear edge maps on
 $G_{P14}$ is given in §13vicies-novies.10.
 
 ---
 
-### §13vicies-novies.10 Catalog structural lemma: which canonical operators can carry Riemann content on $G_{P14}$
+### §13vicies-novies.10 Finite edge-channel lemma on $G_{P14}$
 
 The empirical bit-for-bit identity
 $D_{\mathrm{canonical}}(\mathrm{REMESH}\circ\mathrm{IL}) =
 D_{\mathrm{shuffled}}(\mathrm{REMESH}\circ\mathrm{IL}) = 0.9053$
-reported in §13vicies-novies.9 is a numerical specialisation of a general
-structural property of the canonical 13-operator catalog acting on the P14
-prime-ladder graph. This subsection states and derives that property, classifies
-all 13 canonical operators by the channel through which they could in principle
-transport prime data, and identifies the two genuinely open B1-style avenues
-that remain available after the naive edge-channel route has been closed.
+reported in §13vicies-novies.9 is explained by the declared linearized
+edge-channel maps on the P14 prime-ladder graph. This subsection records that
+finite property and the hypotheses used. It is not a classification of every
+nonlinear composition of the 13 operator contracts.
 
 **Setup.** Let $G_{P14}$ be the canonical prime-ladder graph of §13quinquies
 with $N=40$ nodes labelled $(p_i, k)$, $i=1,\dots,10$, $k=1,\dots,4$, structural
@@ -4890,15 +4944,12 @@ edge propagation on $G_{P14}$ is *prime-blind*: its weights depend only on the
 echo index $k$, never on the prime label. This is the algebraic origin of the
 empirical observation $D_{\mathrm{canonical}}=D_{\mathrm{shuffled}}$.
 
-**Corollary (catalog-wide).** Every linear combination, composition, or
-sequence built from the canonical 13 operators that acts on $G_{P14}$ only
-through edge propagation has an iteration matrix that commutes with every
-prime-relabelling automorphism $\Pi_\sigma$. Its spectrum is therefore
-invariant under $S_{10}$ and cannot encode the Riemann-zero level statistics
-through prime data, regardless of how many composition layers, REMESH echo
-slots, or stabiliser insertions are added. The naive B1 closure of any R∞-1a
-generalisation (operator composition $\to$ spectrum $\to$ GUE) is structurally
-foreclosed on $G_{P14}$.
+**Corollary (scoped to commuting linear maps).** Any linear combination or
+composition of the explicitly verified edge maps that commutes with every
+prime-relabelling automorphism $\Pi_\sigma$ remains equivariant. Its spectrum is
+therefore insensitive to that relabeling. This rules out label-sensitive
+recovery through those maps, but says nothing about unverified nonlinear,
+state-dependent, or extended-state constructions.
 
 **Where Riemann content does live on $G_{P14}$.** The diagonal frequencies
 $\{\nu_f((p,k))=k\log p\}$ are precisely the data fed to the P14 internal
@@ -4911,9 +4962,7 @@ basis is prime-indexed; relabelling primes corresponds to a unitary basis
 permutation that does *not* commute with operators expressed in the original
 $|p,k\rangle$ basis.
 
-**Two genuinely open B1-style avenues (post-refutation).** The
-structural lemma above leaves exactly two routes still available for a B1-style
-closure inside the canonical catalog:
+**Example open B1-style avenues (post-audit).** The scoped lemma does not address:
 
 - **R∞-1b — Spectral-space composition on the P14 internal Hilbert space.**
   Replace the iteration-matrix-on-$G_{P14}$ formulation by a composition that
@@ -4954,11 +5003,10 @@ operator is required) or B3 (no TNFR closure exists).
 The full set of pre-registered controls and the empirical refutation are in
 §13vicies-novies.9.
 
-**Status.** B1 closure of R∞-1a in its naive edge-channel form is refuted on
-$G_{P14}$ both empirically (F6-A, §13vicies-novies.9) and structurally
-(Prime-Cancellation Lemma + catalog-wide corollary, this subsection). The
-program-level open question remains G4 = RH (and its twin $\mathrm{GRH}_\chi$);
-the open B1-style avenues are now exactly R∞-1b and R∞-1c.
+**Status.** The naive edge-channel statistic is invariant under the tested
+prime relabeling, both empirically (F6-A, §13vicies-novies.9) and algebraically
+under the stated commuting-map assumptions. Other constructions are not
+exhausted. G4, $\mathrm{GRH}_\chi$ and B1 remain open.
 
 ---
 
@@ -5130,11 +5178,9 @@ edge-channel linear actions on $G_{P14}$. They do not:
 * refute B2 (new canonical operator) or B3 (no TNFR closure);
 * constrain operator behaviour on graphs other than $G_{P14}$.
 
-What they do, formally, is convert the empirical refutation of
-§13vicies-novies.9 from a single-composition observation into a
-catalog-wide structural theorem applicable to any future edge-channel
-composition attempt. The two routes that remain available are precisely
-those that violate one of the lemma's hypotheses by construction.
+What they do is explain the finite equivariance result of
+§13vicies-novies.9 for maps satisfying the lemma's hypotheses. Future
+edge-channel constructions require their own equivariance analysis.
 
 **Cross-references.**
 
@@ -5244,7 +5290,7 @@ other regulariser is added.
 **F7-A statistic (decisive, pre-registered).** Mirror F6-A
 (§13vicies-novies.9):
 
-1. Remove trivial fixed-point cluster: $|\lambda - 1| < 10^{-9}$.
+1. Remove the unit-eigenvalue cluster: $|\lambda - 1| < 10^{-9}$.
 2. Project to 1-D: $\operatorname{Im}(\lambda)$ for the upper-half-plane
    subset ($\operatorname{Im}(\lambda) \ge 10^{-12}$), sorted ascending.
    Fallback: $\operatorname{Re}(\lambda)$ sorted ascending if the
@@ -5607,7 +5653,7 @@ without temporal addressing.
 **F7-A statistic (decisive, pre-registered).** Mirror F7-A of
 §13vicies-novies.12 (and F6-A of §13vicies-novies.9):
 
-1. Remove trivial fixed-point cluster: $|\lambda - 1| < 10^{-9}$.
+1. Remove the unit-eigenvalue cluster: $|\lambda - 1| < 10^{-9}$.
 2. Project to 1-D: $\operatorname{Im}(\lambda)$ for the upper-half-plane
    subset ($\operatorname{Im}(\lambda) \ge 10^{-12}$), sorted ascending.
    Fallback: $\operatorname{Re}(\lambda)$ sorted ascending if the
@@ -5727,10 +5773,10 @@ $D_{\mathrm{GUE}}$ for the first 100 Riemann zero imaginary parts via
 * INDETERMINATE_DEGENERATE_CONSTRUCTION $\Rightarrow$
   `B1_SPECTRAL_BASIS_INDETERMINATE_EULER_ORTHOGONALITY_EXTENDS_TO_SPECTRAL_CHANNEL`
   if F8 fails at the machine-precision floor (predicted outcome).
-  This is itself a structural finding: the canonical-tensor-product
-  family of B1 sub-routes within the 13-operator catalog is closed by
-  $S_n$-equivariance at both the edge-channel
-  (§13vicies-novies.8/.9/.13) and spectral-channel levels.
+  This is a finite structural finding: the tested canonical tensor-product
+  lifts are $S_n$-equivariant at both the edge-channel
+  (§13vicies-novies.8/.9/.13) and spectral-channel levels. It does not
+  exhaust B1 constructions or the operator catalog.
 * INDETERMINATE_OTHER $\Rightarrow$ status unchanged; design refinement
   needed before next attempt.
 
@@ -5922,512 +5968,154 @@ N1–N5 $D$, $|\Delta D|$) reproduce from the locked seed
 
 ---
 
-### §13vicies-novies.16 Closure of B1 on $G_{P14}$: the Canonical Catalog Equivariance Theorem
+### §13vicies-novies.16 Selected finite equivariance result on $G_{P14}$ (corrected scope)
 
-The four pre-registered B1 sub-routes refuted or returned
-`INDETERMINATE_DEGENERATE_CONSTRUCTION` in §13vicies-novies.8/.9/.13/.15
-all exhibit the same structural failure mode: the iteration / spectral
-operator $T$ commutes with the prime-relabelling action $\Pi_\sigma$ (or
-its trivial lift $\Pi_\sigma \otimes I_{\mathrm{aux}}$) of
-$S_{n_{\mathrm{primes}}}$, hence
-$\operatorname{spec}(T)$ is $S_{n_{\mathrm{primes}}}$-invariant and
-cannot encode prime-labelled Riemann content. The Euler-Orthogonality
-Lemma (§13vicies-novies.11) proved this for *edge-channel* compositions
-on fixed $G_{P14}$. The empirical results §13vicies-novies.13 (modified
-graph) and §13vicies-novies.15 (canonical tensor-product spectral lift)
-demonstrated it for two additional construction classes. The status
-table at the end of §13vicies-novies.15 left exactly one structurally
-permitted residual route: *non-product canonical lifts on $G_{P14}$*
-that intertwine an auxiliary tensor factor (history, sub-EPI, time
-slot, spectral basis) with the prime index in a way not expressible as
-$A \otimes B$ with separable node-vs-aux factors.
+> **SUPERSEDED / CORRECTED (September 2026).** The former title and
+> conclusions called this a catalog-wide theorem and declared B1 closed. The
+> construction rules C1--C5 used there were assembled from the examples under
+> study; they were not proved to exhaust every construction derivable from the
+> nodal equation or the 13 public operators. The catalog-completeness and B1
+> closure claims are withdrawn.
 
-This subsection closes that residual route at the structural level by
-showing that *no such non-product canonical lift exists inside the
-13-operator catalog acting on $G_{P14}$*. The result is a strengthening
-of Lemma 1 (§13vicies-novies.11) from edge-channel restrictions to the
-full algebra generated by canonical-catalog constructions on any
-auxiliary tensor factor; it makes B1 on $G_{P14}$ structurally
-inaccessible to the canonical 13-operator catalog and consolidates the
-program-level decision pressure onto B2 (new canonical operator) or B3
-(no TNFR closure) within the §13septies trichotomy.
+For the finite prime-ladder graph and the explicitly defined operators used in
+§13vicies-novies.8/.9/.13/.15, the relabeling action provides a useful scoped
+test. If a tested matrix $T$ commutes with the lifted permutation
+$\Pi_\sigma\otimes I_{\mathrm{aux}}$, then its conjugate under that relabeling
+has the same finite spectrum. Composition, linear combination, tensoring with
+an independent auxiliary factor, and functional calculus preserve this
+commutation relation whenever their stated hypotheses hold.
 
-**Notation (recall).** $G_{P14} = (V, E)$ is the canonical prime-ladder
-graph of §13quinquies with $V = \{(p_i, k) : 1 \le i \le n_{\mathrm{primes}},\
-1 \le k \le k_{\max}\}$, edges only between same-prime consecutive
-echo levels, node attributes
-$\nu_f((p, k)) = k \log p$, $\phi \equiv 0$, $\mathrm{EPI} \equiv 1$,
-$S_i \equiv 1$, $\Delta\mathrm{NFR} \equiv 0$. The prime-relabelling
-group acts as $\Pi_\sigma(p_i, k) = (p_{\sigma(i)}, k)$ for
-$\sigma \in S_{n_{\mathrm{primes}}}$. $\mathcal{O}_{13}$ is the canonical
-13-operator catalog (AGENTS.md §"The 13 Canonical Operators").
+This establishes equivariance only for the selected finite constructions whose
+commutation was checked or follows from those closure operations. In particular:
 
-**Definition (auxiliary tensor factor).** An *auxiliary tensor factor*
-is any finite-dimensional vector space $V_{\mathrm{aux}}$ associated by
-the canonical engine to a structural attribute of nodes that is not the
-node index itself. Concrete instances appearing in the program:
+- the same-prime edge maps on the stated $G_{P14}$ geometry are blockwise and
+  relabeling-equivariant under invariant weights;
+- the fixed-delay REMESH history map is a finite auxiliary factor with fixed
+  integer delays, not a runtime $\tau_g\to\infty$ operator;
+- tensor-product lifts preserve equivariance only when the auxiliary factor is
+  independent of the prime labels; and
+- spectral invariance under these relabelings rules out label recovery from
+  those spectra alone, but says nothing about constructions outside the tested
+  class.
 
-* $V_{\mathrm{hist}} = \mathbb{R}^{\tau_g + 1}$ — REMESH echo history
-  slots (the joint space $\mathbb{R}^V \otimes V_{\mathrm{hist}}$ is
-  used by R-inf-1a, R-inf-1a-composed, R-inf-1b).
-* $V_{\mathrm{sub}} = \mathbb{R}^{n_{\mathrm{sub}}}$ — THOL sub-EPI
-  nesting basis.
-* $V_{\mathrm{spec}} = \mathbb{C}^{N}$ — spectral basis $\{|p, k\rangle\}$
-  diagonalising $\hat H_{P14}$ (the joint space $V_{\mathrm{spec}} \otimes
-  V_{\mathrm{hist}}$ is used by R-inf-1b).
+| B1 slice | Current status |
+|---|---|
+| R∞-1a operator/composed finite models | Negative or null result for the specified implementations. |
+| R∞-1c and tensor-product lift | Degenerate or relabeling-equivariant for the stated finite construction. |
+| Non-product or label-dependent constructions | No exhaustive class or reduction is defined; **OPEN**. |
+| Net B1 | Selected finite routes constrained; the wider branch remains **OPEN**. |
 
-The prime-relabelling action lifts trivially to any auxiliary factor as
-$\Pi_\sigma \otimes I_{\mathrm{aux}}$ (acting as $\Pi_\sigma$ on the
-node / spectral basis index and as identity on the auxiliary factor).
-
-**Definition (canonical-catalog construction).** A linear operator $T$
-on $\mathbb{R}^V \otimes V_{\mathrm{aux}}$ is a *canonical-catalog
-construction* (CCC) if it is obtained by finitely many applications of
-the following closure rules starting from the canonical lifts of the
-13 operators (auditable in `src/tnfr/operators/*.py`,
-`src/tnfr/dynamics/propagation.py`):
-
-* **(C1) Generator base case.** $T = O$ for $O \in \mathcal{O}_{13}$
-  lifted canonically: edge operators (EN, IL phase-Laplacian, OZ, RA)
-  act on $\mathbb{R}^V \otimes I_{\mathrm{aux}}$ through their
-  `propagated_dnfr` kernel; node-local operators (AL, IL pressure
-  contraction, SHA, VAL, NUL, THOL, ZHIR, NAV, UM on $\phi \equiv 0$)
-  act per-node with parameters drawn from graph-level scalar config;
-  REMESH acts as $I_{|V|} \otimes M_{\tau_g + 1}$ for the canonical
-  echo matrix $M$ pulled from `_remesh_alpha_info` (single $\alpha$
-  scalar uniform across nodes).
-* **(C2) Composition.** $T = T_1 \circ T_2$ for CCCs $T_1, T_2$.
-* **(C3) Real-linear combination.** $T = c_1 T_1 + c_2 T_2$ for
-  $c_1, c_2 \in \mathbb{R}$ and CCCs $T_1, T_2$.
-* **(C4) Auxiliary tensor lift.** $T = T_0 \otimes A$ for a CCC $T_0$
-  on $\mathbb{R}^V \otimes V_{\mathrm{aux}}^{(1)}$ and any
-  linear $A$ on a second auxiliary factor $V_{\mathrm{aux}}^{(2)}$
-  with $V_{\mathrm{aux}} = V_{\mathrm{aux}}^{(1)} \otimes
-  V_{\mathrm{aux}}^{(2)}$.
-* **(C5) Spectral functional calculus.** $T = f(H)$ for a CCC $H$ that
-  is Hermitian (or self-adjoint after a canonical Hermitian
-  symmetrisation) and a Borel-measurable $f : \mathbb{R} \to
-  \mathbb{C}$. Used for R-inf-1b's $S_{\mathrm{IL}}^{\mathrm{spec}} =
-  \exp(-\eta \hat H_{P14})$.
-
-Rules C1–C5 capture every operator construction observed in the program
-(audit: §13vicies-novies.8/.9/.13/.15 + §13quinquies +
-`src/tnfr/riemann/*`). No construction outside C1–C5 has been used in
-any pre-registered B1 sub-route.
-
-**Two structural facts (auditable in source).**
-
-*Fact A — Parameter uniformity.* Every node-local canonical operator
-draws its coupling parameters ($\alpha, \eta, \mathrm{depth}$,
-thresholds) from graph-level state, not from per-node attributes.
-Audit:
-
-* REMESH: `_remesh_alpha_info` (`src/tnfr/operators/remesh.py:1159`)
-  returns a single scalar $\alpha$ for the whole graph; the per-node
-  loop at lines 1240–1252 applies the same $\alpha$ to every node
-  $n \in V$.
-* IL phase smoother: $\eta$ is a graph-level scalar in
-  `src/tnfr/operators/coherence.py`; the operator acts as
-  $I - \eta L_G$ with the same $\eta$ on every node.
-* OZ / RA / EN: `propagated_dnfr = dissonance_magnitude *
-  coupling_weight * phase_weight * freq_weight`
-  (`src/tnfr/dynamics/propagation.py:140`); all four factors are
-  functions of edge attributes and node attribute pairs, with no
-  per-prime parameter switch.
-
-Consequence: per-node lifts of canonical operators have the form
-$A_n = A$ (single global linear map applied to each $n$), hence the
-total per-node-lift decomposes as $\bigoplus_n A = I_{|V|} \otimes A$
-on the joint space — *automatically* tensor-product separable in node
-$\otimes$ aux.
-
-*Fact B — No inter-prime coupling on $G_{P14}$.* The only mechanism by
-which canonical operators couple different node indices is edge
-propagation. $G_{P14}$ has edges $(p, k) \leftrightarrow (p, k + 1)$
-only (same prime endpoints). Therefore every edge-propagating operator
-$O$ has matrix decomposition
-$$
-O \;=\; \bigoplus_{i = 1}^{n_{\mathrm{primes}}} O_{p_i},
-$$
-where $O_{p_i}$ acts on the four-dimensional sub-space spanned by
-$\{(p_i, 1), (p_i, 2), (p_i, 3), (p_i, 4)\}$ (the $i$-th $P_4$ ladder
-component). Furthermore — by Case C of §13vicies-novies.11 (Prime-
-Cancellation Lemma) — the four-dimensional kernel $O_{p_i}$ is
-*independent of the prime label $p_i$*: $O_{p_i} = O_{P_4}$ for all
-$i$, where $O_{P_4}$ is a single $4 \times 4$ kernel determined by
-edge combinatorics and the $\phi \equiv 0$ boundary condition.
-
-Consequence: $O = I_{n_{\mathrm{primes}}} \otimes O_{P_4}$ in the
-factorisation $\mathbb{R}^V = \mathbb{R}^{n_{\mathrm{primes}}} \otimes
-\mathbb{R}^{k_{\max}}$ — *automatically* tensor-product separable in
-prime $\otimes$ echo-level.
-
-**Theorem 2 (Canonical Catalog Equivariance on $G_{P14}$).** *Let $V$,
-$\Pi$, $\mathcal{O}_{13}$, $V_{\mathrm{aux}}$ be as above. Then every
-canonical-catalog construction $T$ on $\mathbb{R}^V \otimes
-V_{\mathrm{aux}}$ commutes with the trivially-lifted prime-relabelling
-action:*
-$$
-T \circ (\Pi_\sigma \otimes I_{\mathrm{aux}})
-\;=\;
-(\Pi_\sigma \otimes I_{\mathrm{aux}}) \circ T
-\qquad \forall\,\sigma \in S_{n_{\mathrm{primes}}}.
-$$
-*Replacing $\mathbb{R}^V$ by the prime-indexed spectral basis
-$V_{\mathrm{spec}} \cong \mathbb{C}^N$ with the corresponding unitary
-permutation $U_\sigma = I_{k_{\max}} \otimes P_\sigma$, the same
-conclusion holds with $\Pi_\sigma$ replaced by $U_\sigma$.*
-
-*Proof.* Induction on the number of C1–C5 applications.
-
-**Base case (C1).** By Fact A, every node-local canonical generator
-lifts as $I_{|V|} \otimes A$ for some $A$ on $V_{\mathrm{aux}}$; this
-commutes with $\Pi_\sigma \otimes I_{\mathrm{aux}}$ since
-$(I_{|V|} \otimes A) (\Pi_\sigma \otimes I_{\mathrm{aux}}) =
-\Pi_\sigma \otimes A = (\Pi_\sigma \otimes I_{\mathrm{aux}})
-(I_{|V|} \otimes A)$. By Fact B, every edge canonical generator on
-$G_{P14}$ lifts as $(I_{n_{\mathrm{primes}}} \otimes O_{P_4}) \otimes
-I_{\mathrm{aux}}$; this commutes with $\Pi_\sigma \otimes
-I_{\mathrm{aux}}$ since $\Pi_\sigma$ acts as a permutation in the
-first tensor factor $\mathbb{R}^{n_{\mathrm{primes}}}$ while
-$O_{P_4}$ acts in the second; tensor factors commute. REMESH lifts as
-$I_{|V|} \otimes M_{\tau_g + 1} \otimes I_{\mathrm{aux}}^{(\mathrm{rest})}$
-(Fact A applied with the history factor as one component of
-$V_{\mathrm{aux}}$); commutation with $\Pi_\sigma \otimes
-I_{\mathrm{aux}}$ is immediate.
-
-**Inductive steps (C2, C3).** Composition and real-linear combination
-preserve the commutant of any group action — the commutant is closed
-under those operations. If $T_1, T_2$ commute with
-$\Pi_\sigma \otimes I_{\mathrm{aux}}$, so do $T_1 T_2$ and
-$c_1 T_1 + c_2 T_2$.
-
-**Inductive step (C4).** If $T_0$ commutes with $\Pi_\sigma \otimes
-I_{\mathrm{aux}}^{(1)}$ on $\mathbb{R}^V \otimes V_{\mathrm{aux}}^{(1)}$,
-then $T = T_0 \otimes A$ commutes with $\Pi_\sigma \otimes
-I_{\mathrm{aux}}^{(1)} \otimes I_{\mathrm{aux}}^{(2)} = \Pi_\sigma
-\otimes I_{\mathrm{aux}}$ (where $V_{\mathrm{aux}} =
-V_{\mathrm{aux}}^{(1)} \otimes V_{\mathrm{aux}}^{(2)}$). Tensor
-products of commuting operators commute factor-wise.
-
-**Inductive step (C5).** If $H$ commutes with $\Pi_\sigma \otimes
-I_{\mathrm{aux}}$ and is Hermitian, then for any Borel-measurable
-$f : \mathbb{R} \to \mathbb{C}$ the spectral functional calculus
-operator $f(H)$ also commutes (standard result: commutation with $H$
-implies commutation with the spectral resolution of $H$, hence with
-$f(H)$). In particular $S_{\mathrm{IL}}^{\mathrm{spec}} =
-\exp(-\eta \hat H_{P14})$ commutes with the spectral-basis lift
-$U_\sigma$ of $\Pi_\sigma$ because $\hat H_{P14}$ does (verified
-directly in §13vicies-novies.15 numerical results: spectral radius
-$13.469183 = 4 \log 29$ is $S_n$-invariant).
-
-The five closure rules exhaust the construction grammar. $\square$
-
-**Corollary 3 (spectral $S_n$-invariance, full catalog).** *For every
-canonical-catalog construction $T$ on $\mathbb{R}^V \otimes
-V_{\mathrm{aux}}$ (or $V_{\mathrm{spec}} \otimes V_{\mathrm{aux}}$),
-the spectrum $\operatorname{spec}(T)$ is invariant under
-$S_{n_{\mathrm{primes}}}$: any prime-relabelled construction
-$T^\sigma$ obtained by acting with $\Pi_\sigma \otimes I_{\mathrm{aux}}$
-satisfies $\operatorname{spec}(T^\sigma) = \operatorname{spec}(T)$
-as a multiset.*
-
-*Proof.* Theorem 2 gives unitary equivalence $T^\sigma = U_\sigma T
-U_\sigma^{-1}$ with $U_\sigma = \Pi_\sigma \otimes I_{\mathrm{aux}}$
-(orthogonal permutation, hence unitary). Conjugation by a unitary
-preserves spectrum as a multiset. $\square$
-
-**Corollary 4 (closure of B1 on $G_{P14}$).** *Inside the canonical
-13-operator catalog there is no construction on $G_{P14}$ — including
-non-product lifts on arbitrary auxiliary tensor factors — whose
-spectrum distinguishes the canonical prime assignment
-$\{p_1, \ldots, p_{n_{\mathrm{primes}}}\}$ from any of the
-$n_{\mathrm{primes}}!$ permuted assignments. In particular, no such
-construction can reproduce Riemann-zero level statistics, which
-require the specific prime labelling.*
-
-*Proof.* By Corollary 3, the spectrum is $S_{n_{\mathrm{primes}}}$-
-invariant. Any level-spacing statistic computed from
-$\operatorname{spec}(T)$ alone is therefore $S_{n_{\mathrm{primes}}}$-
-invariant. Riemann level statistics $\{\gamma_n\}$ are *not*
-$S_{n_{\mathrm{primes}}}$-invariant under the prime labelling that
-defines $\hat H_{P14}$ (different prime sets give different Riemann
-data; cf. AGENTS.md §"TNFR-Riemann Program Overview"). The two are
-therefore incompatible by a $S_{n_{\mathrm{primes}}}$-equivariance
-argument: a $S_{n_{\mathrm{primes}}}$-invariant spectrum cannot single
-out a $S_{n_{\mathrm{primes}}}$-non-invariant target. $\square$
-
-**B1 status table (final, supersedes §13vicies-novies.15).**
-
-| Sub-route                                          | Status (post-§.16)                                                                                                                                                                                                                                  |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R-inf-1a-operator                                  | REFUTED (§13vicies-novies.8).                                                                                                                                                                                                                       |
-| R-inf-1a-composed                                  | REFUTED (§13vicies-novies.9).                                                                                                                                                                                                                       |
-| R-inf-1c                                           | INDETERMINATE_DEGENERATE_CONSTRUCTION (§13vicies-novies.13); subsumed by Theorem 2 under C1 + C2 with augmented edge kernel still $S_n$-equivariant under invariant weights.                                                                         |
-| R-inf-1b (canonical tensor-product lift)           | INDETERMINATE_DEGENERATE_CONSTRUCTION (§13vicies-novies.15); subsumed by Theorem 2 under C1 + C4 + C5.                                                                                                                                              |
-| R-inf-1b (non-product / slot-prime intertwining)   | **CLOSED_BY_THEOREM** (§13vicies-novies.16, this subsection). No canonical-catalog construction on $G_{P14}$ admits non-product slot-prime intertwining: Facts A and B force every canonical lift into one of the two separable normal forms.        |
-| **Net B1 on $G_{P14}$**                            | **CLOSED**. The canonical 13-operator catalog cannot produce a spectral signature on $G_{P14}$ distinguishing the canonical prime labelling. Forces decision pressure onto B2 (new canonical operator) or B3 (no TNFR closure) per §13septies.        |
-
-**Honest scope.** Theorem 2 and Corollary 4:
-
-* Close B1 on $G_{P14}$ specifically, inside the canonical 13-operator
-  catalog. They do **not** close B1 outside $G_{P14}$.
-* Do **not** prove or refute G4 = RH; the open program-level question
-  remains intact.
-* Do **not** refute B2: a new canonical operator derivable from the
-  nodal equation could in principle intertwine slot with prime in a
-  way the 13-operator catalog does not. Closing or ruling out B2 is
-  the next program-level task.
-* Do **not** refute B3 (no TNFR closure). B3 remains a permitted
-  outcome until B2 is decided.
-* Apply to $G_{P14}$ as canonically constructed in
-  `src/tnfr/riemann/prime_ladder_hamiltonian.py`. Graph modifications
-  beyond R-inf-1c (i.e., any modification that breaks Fact B by
-  introducing inter-prime edges with $S_n$-non-invariant weights) fall
-  outside the theorem's hypotheses; whether any such modification is
-  *itself* derivable from canonical invariants 1–6 and U1–U6 is a
-  separate question (and §13vicies-novies.13 already empirically
-  showed that the most natural canonical augmentation — invariant
-  inter-prime weights — preserves $S_n$-equivariance by virtue of
-  its $S_n$-invariant weight construction).
-
-**Cross-references.**
-
-* §13vicies-novies.8/.9 — original R-inf-1a-operator and
-  R-inf-1a-composed empirical refutations.
-* §13vicies-novies.10 — operator channel classification underlying
-  Facts A and B.
-* §13vicies-novies.11 — Lemma 1 (Euler-Orthogonality Lemma), the
-  edge-channel predecessor of Theorem 2.
-* §13vicies-novies.12/.13 — R-inf-1c pre-registration and results.
-* §13vicies-novies.14/.15 — R-inf-1b pre-registration and results
-  (canonical tensor-product lift).
-* §13quinquies — P14 prime-ladder graph and Hamiltonian construction.
-* §13septies — Conjecture T-HP (G4 = RH); B1/B2/B3 trichotomy.
-* AGENTS.md §"B1 sub-route status" — program-level status mirror.
-* `src/tnfr/operators/remesh.py:1159, 1212–1252` — REMESH per-node
-  uniform-$\alpha$ implementation (Fact A audit).
-* `src/tnfr/operators/coherence.py` — IL phase-Laplacian smoother
-  with uniform $\eta$ (Fact A audit).
-* `src/tnfr/dynamics/propagation.py:42–156` — EN/OZ/RA edge
-  propagation kernel (Facts A and B audit).
-* `src/tnfr/riemann/prime_ladder_hamiltonian.py` — $G_{P14}$ and
-  $\hat H_{P14}$ canonical construction.
-
-**Net consequence for the program.** B1 within the canonical
-13-operator catalog on $G_{P14}$ is structurally closed. The §13septies
-trichotomy now reads:
-
-* B1 (canonical catalog closure): **CLOSED on $G_{P14}$** by Theorem 2.
-* B2 (new canonical operator): OPEN. A non-trivial slot-prime
-  intertwining operator, if derivable from the nodal equation
-  $\partial \mathrm{EPI} / \partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$
-  and consistent with U1–U6, would constitute a B2 closure. Whether
-  such an operator exists is the next open program-level question.
-* B3 (no TNFR closure): permitted residual outcome if B2 is also
-  refuted.
-
-The "B1 sub-route status" paragraph in AGENTS.md will be updated to
-reflect this closure in a companion edit.
+No result here constructs an analytic $S(T)$ operator, proves that its output
+lies in a projector kernel, establishes catalog completeness, or proves or
+refutes RH. A new construction must be audited from its actual dependencies and
+cannot be excluded by the finite commutation checks above.
 
 ---
-## §13triginta. P50 — REMESH-∞ Residue Split of P31 Oscillatory Correction (Function-Space Lift of N15 Closure into the Riemann Program; Does NOT Advance G4 = RH)
+## §13triginta. P50 — Fixed-Delay Fourier Split of the P31 Signal (Finite Diagnostic; Does NOT Advance G4 = RH)
 
-### §13triginta.1 Motivation
+> **CORRECTED (September 2026).** The historical REMESH-infinity and
+> analytic-kernel interpretation of this section is superseded. Public module,
+> function, certificate-field and verdict names remain for compatibility.
 
-N15 ([REMESH-∞ Derivation](REMESH_INFINITY_DERIVATION.md), Branch A
-verdict W1+W2+W3) established that the REMESH operator admits a
-bounded self-adjoint asymptotic projection
-$\mathcal{R}_\infty = P_{\ker(I - \mathcal{R})}$
-on $H^2(D)$ with spectrum $\{0, 1\}$ and resonant Fourier lattice
-$\{2\pi k / \mathrm{lcm}(\tau_l, \tau_g)\}$ at the canonical
-parameter pair $(\tau_l, \tau_g) = (4, 8)$. §13septies and §13nonies
-identified the residual obstruction of Conjecture T-HP with the
-oscillatory half $S(T) = (1/\pi) \arg \zeta(\tfrac12 + iT)$ of the
-admissible rescaling operator $\mathcal{F}$: P28 closes the smooth
-half at density level, P30 lifts the smooth half to the operator
-level, and P31 attempted to attack the oscillatory half via a
-canonical prime-ladder Newton step. P50 is the **function-space
-diagnostic that tests whether the P31 reconstruction lives in
-$\mathrm{range}(\mathcal{R}_\infty)$ or in $\ker(\mathcal{R}_\infty)$**,
-directly connecting the N15 cross-program closure to the T-HP
-residual gap at the level of canonical TNFR functions on the
-$T$-axis.
+### §13triginta.1 Mathematical object
 
-The diagnostic is **complementary** to the §13vicies-novies
-edge-channel / spectral-channel refutation thread: §13vicies-novies
-operates on the iteration matrix of REMESH applied to EPI-history
-state vectors on the discrete graph $G_{P14}$ (a finite-dimensional
-linear-algebraic object), whereas §13triginta operates on the
-canonical P31 reconstruction $S_{\mathrm{TNFR}}(T)$ as a function
-in $H^2(T\text{-axis})$ under the discrete Fourier transform (an
-infinite-dimensional analytic object). The two layers test
-distinct mathematical surfaces and yield independent structural
-evidence.
-
-### §13triginta.2 Construction
-
-For any positive integer $n_{\mathrm{samples}}$ divisible by
-$\mathrm{lcm}(\tau_l, \tau_g) = 8$, the resonant Fourier-bin mask is
+The corrected N15 result concerns the finite cyclic filter
 
 $$
-\mathcal{M}_{\mathrm{res}} = \left\{k \in \{0, 1, \ldots, n_{\mathrm{samples}} - 1\} : k \equiv 0 \pmod{M}\right\}, \quad M = \frac{n_{\mathrm{samples}}}{\mathrm{lcm}(\tau_l, \tau_g)}.
+F=\beta I+\gamma S^{\tau_l}+\delta S^{\tau_g},
+\qquad
+\beta=(1-\alpha)^2,\quad
+\gamma=\alpha(1-\alpha),\quad
+\delta=\alpha ,
 $$
 
-The bins in $\mathcal{M}_{\mathrm{res}}$ correspond exactly to the
-N15-resonant angular frequencies $\omega_j = 2\pi j / \mathrm{lcm}$
-for $j = 0, 1, 2, \ldots$, under the canonical unit-spacing $T$-grid
-$T_n = n + T_{\min}$ for $n = 0, \ldots, n_{\mathrm{samples}} - 1$.
-The orthogonal projector onto $\mathrm{range}(\mathcal{R}_\infty)$
-acts on a real signal $f$ by
+on a declared periodic sample window, with fixed positive integer delays and
+$0<\alpha<1$. Here $S$ is the unitary cyclic shift. The Cesàro means of this
+finite normal contraction converge to the orthogonal projector $P_d$ onto
+$\ker(I-F)$. The common fixed modes are governed by
 
 $$
-(\mathcal{R}_\infty f)_n = \mathrm{Re}\,\mathcal{F}^{-1}\!\left[\mathbb{1}_{\mathcal{M}_{\mathrm{res}}}(k) \cdot (\mathcal{F} f)_k\right]_n,
+d=\gcd(\tau_l,\tau_g),
+\qquad
+\omega_m=\frac{2\pi m}{d},\quad m=0,\ldots,d-1.
 $$
 
-and $(I - \mathcal{R}_\infty) f$ is the kernel component. The Parseval
-fractions are reported in the certificate
-(`ResidueSplitCertificate`).
+This is not the runtime `apply_network_remesh` map, which reads a finite stored
+history, applies an insufficient-history guard and can apply nonlinear clipping.
+It is not a literal $\tau_g\to\infty$ runtime limit.
 
-The canonical P31 reconstruction
-$$
-S_{\mathrm{TNFR}}(T;\,N,K) = -\frac{1}{\pi} \sum_{(\mu, w) \in \Sigma_{N, K}} \frac{w}{\mu} \sin(T \mu) \exp(-\mu / 2)
-$$
-is evaluated on the canonical $T$-grid via
-`prime_ladder_oscillatory_sum` (atomic P31 primitive, vectorised).
-The split is computed by `split_residue_by_remesh_infinity`.
+### §13triginta.2 What P50 computes
 
-### §13triginta.3 Pre-Registered Structural Prediction (Baker's Theorem)
-
-The Fourier support of $S_{\mathrm{TNFR}}(T)$ as a function of $T$ is
-exactly $\{\mu : (\mu, w) \in \Sigma_{N, K}\} = \{k \log p : p \text{ prime}, 1 \le k \le K\}$.
-By **Baker's theorem on linear independence of logarithms of
-algebraic numbers** (1966), no $\mathbb{Q}$-linear combination of
-$\{\log p : p \text{ prime}\}$ equals a non-zero rational multiple of
-$\pi$. Hence $\{k \log p\}$ is **disjoint** from the N15-resonant
-lattice $\{2\pi j / \mathrm{lcm}(\tau_l, \tau_g) : j \in \mathbb{Z}\}$,
-which consists of rational multiples of $\pi$. The pre-registered
-structural prediction is therefore:
+P50 evaluates the finite prime-ladder approximation
 
 $$
-\boxed{\;\;\lim_{n_{\mathrm{samples}} \to \infty} \frac{\|\mathcal{R}_\infty S_{\mathrm{TNFR}}\|_2^2}{\|S_{\mathrm{TNFR}}\|_2^2} = 0\;\;}
+S_{\mathrm{TNFR}}(T;N,K)
+=-\frac1\pi\sum_{(\mu,w)\in\Sigma_{N,K}}
+ \frac{w}{\mu}\sin(T\mu)e^{-\mu/2}
 $$
 
-equivalently, the canonical reconstruction lies asymptotically in
-$\ker(\mathcal{R}_\infty)$ — verdict `RESIDUE_IN_KER_ONLY`.
+on a finite unit-spaced grid. It then applies a DFT mask selecting the bins fixed
+by both delays and reports the squared-norm fractions of $P_dS_{\mathrm{TNFR}}$
+and $(I-P_d)S_{\mathrm{TNFR}}$.
 
-### §13triginta.4 Empirical Verification
+The legacy API requires the sample count to be divisible by
+$\operatorname{lcm}(\tau_l,\tau_g)$. That LCM is only a convenient
+backward-compatible sample-alignment condition. It does not determine the fixed
+modes; their count and period use the GCD.
 
-Demo `examples/05_type_hygiene/77_remesh_infinity_residue_split_demo.py` at canonical
-defaults $(\tau_l, \tau_g) = (4, 8)$, $K = 8$:
+Off-grid frequencies undergo finite rectangular-window spectral leakage.
+Consequently the reported `range` and legacy `kernel` fractions depend on the
+window, signal truncation and threshold. They are not exact analytic spectral
+supports.
 
-| $n_{\mathrm{periods}}$ | $n_{\mathrm{samples}}$ | $n_{\mathrm{primes}}$ | $\|S\|_2$ | $\|\mathcal{R}_\infty S\|_2$ | $\|(I-\mathcal{R}_\infty) S\|_2$ | range fraction | kernel fraction | verdict |
-|---|---|---|---|---|---|---|---|---|
-| 64  | 512  | 200 | 7.2457 | 0.9625 | 7.1814  | **1.7647 %**  | 98.2353 % | `RESIDUE_IN_KER_ONLY` |
-| 256 | 2048 | 400 | 15.824 | 0.2016 | 15.822  | **0.0162 %**  | 99.9838 % | `RESIDUE_IN_KER_ONLY` |
+### §13triginta.3 Finite measurements
 
-The range fraction decays by a factor of **109×** as the grid
-resolution quadruples — clean asymptotic incommensurability behaviour
-matching the Baker-theorem prediction.
+At $(\tau_l,\tau_g)=(4,8)$, the alignment LCM is $8$ and the fixed-mode GCD is
+$4$. The current demo reports:
 
-**Sanity controls** (built into `compute_residue_split_certificate`):
+| periods | samples | primes | $\|S\|_2$ | $\|P_dS\|_2$ | $\|(I-P_d)S\|_2$ | selected fraction | complement fraction | legacy verdict |
+|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| 64 | 512 | 200 | 7.2457 | 0.90851 | 7.1885 | 1.5722% | 98.4278% | `RESIDUE_IN_KER_ONLY` |
+| 256 | 2048 | 400 | 15.824 | 0.19311 | 15.823 | 0.0149% | 99.9851% | `RESIDUE_IN_KER_ONLY` |
 
-| control signal | predicted range fraction | measured ($n_{\mathrm{samples}} = 512$) | measured ($n_{\mathrm{samples}} = 2048$) |
-|---|---|---|---|
-| $\sin(2\pi T / \mathrm{lcm})$ (resonant)                       | $\approx 100\%$ | **100.0000 %** | **100.0000 %** |
-| $\sin(\gamma_{\mathrm{em}} T)$ ($\gamma_{\mathrm{em}}$ Euler–Mascheroni; non-resonant) | $\approx 0\%$    | **0.0007 %**   | **0.0005 %**   |
+The controls select a cosine at a common fixed-delay mode with 100% range
+fraction and an exactly unselected DFT bin with 0% range fraction, up to floating
+point error. These controls verify the finite mask implementation. The change in
+the P31 fraction between rows is finite spectral leakage under simultaneous
+changes in window length and prime truncation; it is not a proved convergence
+rate.
 
-Both controls hit their predicted projections to machine precision,
-confirming the DFT-bin mask correctly implements the N15-resonant
-projector.
+### §13triginta.4 Meaning of the legacy verdicts
 
-### §13triginta.5 What P50 Extends
+- `RESIDUE_IN_KER_ONLY` means that the finite sampled signal has less than the
+  configured threshold in the selected fixed-delay bins.
+- `RESIDUE_IN_RANGE_ONLY` means that it has less than the threshold in their
+  finite-dimensional orthogonal complement.
+- `RESIDUE_MIXED` means that both fractions exceed the threshold.
 
-* Extends the §13septies / §13nonies *structural identification* of
-  the T-HP residual obstruction with the oscillatory half $S(T)$ to a
-  *function-space-level empirical verdict*: the canonical P31
-  reconstruction $S_{\mathrm{TNFR}}(T)$ lies in $\ker(\mathcal{R}_\infty)$,
-  exactly where the residual obstruction was predicted to live.
-* Provides the **N15-cross-program-bridge**: the same orthogonal
-  projector $\mathcal{R}_\infty$ that closes the REMESH-∞ asymptotic
-  limit (W1 of N15) also organises the T-HP residual gap into its
-  smooth half (range component, closed by P28 + P30) and oscillatory
-  half (kernel component, RH-equivalent and open).
-* Adds a **second independent attack-surface diagnostic** on B1 at the
-  function-space level, complementary to the §13vicies-novies
-  graph-iteration-matrix thread on EPI-history state vectors. The two
-  threads test mathematically distinct objects (functions in
-  $H^2(T\text{-axis})$ vs. finite-dimensional iteration matrices on
-  $G_{P14}$) and yield consistent structural evidence: both place the
-  residual obstruction outside the catalog's standard canonical
-  product structures.
+The strings do not locate the analytic function
+$S(T)=\pi^{-1}\arg\zeta(\tfrac12+iT)$ in a REMESH kernel. No operator
+intertwining the finite cyclic filter with the zeta function has been constructed.
 
-### §13triginta.6 What P50 Does NOT Advance
+### §13triginta.5 Scope and gap balance
 
-* **G4 = RH**: untouched. P50 does not close T-HP. The result is a
-  structural-compatibility diagnostic that *organises* the residual
-  obstruction, not a closure of it.
-* **Sub-problems (2) canonicity** and **(3) positivity coincidence**
-  of T-HP (§13septies): untouched.
-* **No new canonical operator**: P50 uses only the canonical N15
-  asymptotic projector $\mathcal{R}_\infty$, the canonical P31
-  reconstruction $S_{\mathrm{TNFR}}(T)$, and the discrete Fourier
-  transform — all existing canonical ingredients. P50 does not
-  promote any new operator into the 13-operator catalog.
-* **Branch B1 / B2 / B3 trichotomy** (§13septies): P50 *narrows* B1
-  by placing the residual obstruction in $\ker(\mathcal{R}_\infty)$,
-  but does not decide between B1-via-some-other-channel,
-  B2 (new canonical operator required), and B3 (no TNFR closure
-  exists). It is consistent with §13vicies-novies.15's verdict that
-  the canonical-tensor-product family of B1 sub-routes on $G_{P14}$
-  is empirically closed by $S_n$-equivariance.
+P50 establishes a reproducible finite Fourier decomposition and nothing stronger.
+It does not:
 
-### §13triginta.7 Cross-References
+- define or certify a runtime REMESH infinity limit;
+- identify the T-HP smooth or oscillatory terms with the projector range or
+  complement;
+- prove an asymptotic theorem for the sampled prime-ladder signal;
+- establish U2 convergence, structural-energy monotonicity or U5 closure;
+- prove that the 13 registered operators exhaust admissible TNFR
+  transformations; or
+- advance G4 = RH or GRH.
 
-* **N15 master derivation**: `theory/REMESH_INFINITY_DERIVATION.md`
-  (W1 existence of $\mathcal{R}_\infty$ as orthogonal projection,
-  W2 conservation / Lyapunov structure, W3 spectral universality).
-* **T-HP statement and structural split**: §13septies (Conjecture
-  T-HP); §13octies (assembled-argument audit L1–L8); §13nonies
-  (P30 operator-level smooth-half closure, identification of
-  oscillatory half as RH-equivalent).
-* **Smooth-half closure**: §13sexies (P28 density-level),
-  §13nonies (P30 operator-level).
-* **Oscillatory-half canonical attack**: §13decies-quarto (P31
-  prime-ladder Newton-step diagnostic; mixed branch B1 / B2
-  empirical regime).
-* **Complementary B1 refutation thread**: §13vicies-novies (R∞-1a-
-  operator, R∞-1a-composed, R∞-1c, R∞-1b on iteration matrices on
-  $G_{P14}$; closes canonical-tensor-product family of B1
-  sub-routes via $S_n$-equivariance).
-* **Code**: `src/tnfr/riemann/remesh_infinity_residue_split.py`;
-  demo `examples/05_type_hygiene/77_remesh_infinity_residue_split_demo.py`.
-* **Honest-scope framework**: §13octies, §13.2, §19.2 apply
-  verbatim.
-
-### §13triginta.8 Gap Balance
-
-| Gap | Status before P50 | Status after P50 |
-|---|---|---|
-| G4 = RH | OPEN | OPEN, unchanged |
-| T-HP smooth half | CLOSED at density (P28) and operator (P30) level | CLOSED, unchanged |
-| T-HP oscillatory half | OPEN; identified structurally with $S(T) = (1/\pi)\arg\zeta(\tfrac12+iT)$ in §13septies / §13nonies; canonical Newton-step attack (P31) yields mixed B1/B2 empirical regime | OPEN; **now also identified empirically with the $\ker(\mathcal{R}_\infty)$ component of the canonical P31 reconstruction at function-space level** (range fraction $\to 0$ asymptotically, verified at two grid resolutions) |
-| Branch B1 / B2 / B3 trichotomy | §13vicies-novies.15 empirically closes the canonical-tensor-product family of B1 sub-routes on $G_{P14}$ via $S_n$-equivariance | UNCHANGED at the graph level; **P50 adds an independent function-space-level structural-compatibility observation pointing in the same direction** (residual obstruction outside $\mathrm{range}(\mathcal{R}_\infty)$, in its kernel) |
-| N15 ↔ Riemann-program cross-reference | N15 W1–W3 closed inside its own derivation; cross-reference to T-HP residual gap stated structurally only in §13septies / §13nonies | **OPERATIONALISED**: the same $\mathcal{R}_\infty$ that closes N15 also organises the T-HP residual gap into smooth (range) and oscillatory (kernel) halves at the function-space level, with empirical verdict |
-
-**Net effect**: P50 closes the **structural-compatibility loop**
-between the N15 REMESH-∞ closure (`theory/REMESH_INFINITY_DERIVATION.md`)
-and the T-HP residual gap (§13septies / §13nonies) at the function-
-space level. The empirical verdict `RESIDUE_IN_KER_ONLY` confirms the
-Baker-theorem prediction that the canonical P31 prime-ladder
-reconstruction is Fourier-disjoint from the N15-resonant rational-
-multiple-of-$\pi$ lattice, and is therefore *exactly* the kind of
-object that lives in the oscillatory half of T-HP. No gap is closed;
-no new operator is promoted; G4 = RH remains open. The TNFR-Riemann
-program remains paused at the T-HP / G4 = RH boundary as stated in
-§13septies, with §13triginta adding one independent function-space-
-level structural diagnostic to the §13vicies-novies graph-level
-thread.
+G4 and the operator bridge remain open. The valid cross-reference is the
+restricted finite-surrogate theorem in
+[REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md). Code and demo:
+`src/tnfr/riemann/remesh_infinity_residue_split.py` and
+`examples/05_type_hygiene/77_remesh_infinity_residue_split_demo.py`.
 
 ---
 
@@ -6455,31 +6143,24 @@ on the suspicion that the assumption "$\nu_f \in \mathbb{R}^{+}$ (scalar)" is
 not a derivation from the nodal equation but a *restriction* layered on top of
 it:
 
-1. **N15 lattice projection** ([theory/REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md), §§3, 5).
-   $\mathcal{R}_\infty$ is an orthogonal projection onto the *uniform* resonant
-   lattice $\{2\pi k / \mathrm{lcm}(\tau_l, \tau_g)\}$.  A *scalar* $\nu_f$
-   carries no information about which lattice point a node should occupy: the
-   lattice index is invisible to a single real number.  A *measure* on the
-   lattice would carry exactly this information natively.
-2. **Conservation theorem asymmetry**
+1. **Corrected finite-delay projection**
+   ([theory/REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md),
+   §§3–8). A finite cyclic filter with fixed delays has common fixed modes
+   governed by $\gcd(\tau_l,\tau_g)$. This auxiliary finite projector neither
+   types $\nu_f$ nor supplies a runtime infinity limit.
+2. **Auxiliary-model asymmetry**
    ([src/tnfr/physics/conservation.py](../src/tnfr/physics/conservation.py)).
-   The canonical conjugate pairs $(\Phi_s, J_{\Delta\mathrm{NFR}})$ and
-   $(K_\phi, J_\phi)$ have a complete Hamiltonian symplectic structure, yet
+   The declared conjugate pairs $(\Phi_s, J_{\Delta\mathrm{NFR}})$ and
+   $(K_\phi, J_\phi)$ belong to an auxiliary harmonic model, while
    $\nu_f$ — which directly multiplies $\Delta\mathrm{NFR}$ in the nodal
    equation — has no symplectic partner of its own.  If $\nu_f$ were a measure,
    its Pontryagin-dual variable would be the natural symplectic partner; the
    canonical phase $\phi \in S^{1}$ is the obvious candidate (see §.5).
-3. **Baker / §13vicies-novies / P50 convergent dead-end**.  The
-   §13vicies-novies thread refuted every catalog-wide edge-channel
-   construction on $G_{P14}$ by $S_n$-equivariance
-   (Euler-Orthogonality Lemma), and refuted the canonical tensor-product
-   spectral lift (R∞-1b).  P50 (§13triginta) confirmed via Baker (1966) that
-   the canonical P31 prime-ladder reconstruction lives in $\ker(\mathcal{R}_\infty)$.
-   *Every* attempted closure inside the catalog at fixed $\nu_f$-scalar has
-   either been ruled out structurally or been pushed into the oscillatory
-   half of T-HP, which is RH-equivalent.  This is consistent with the
-   hypothesis that the *missing structural lever* is not a new operator (B2-op)
-   but a *re-typing* of an existing primitive (B2-νf).
+3. **Finite symmetry and P50 diagnostics.** The §13vicies-novies thread
+   constrains selected parameter-uniform finite constructions. P50 measures
+   finite DFT leakage of a truncated prime-ladder signal. Neither experiment
+   exhausts the catalog or places analytic $S(T)$ in a projector kernel. They
+   may motivate, but do not select, a richer type for $\nu_f$.
 
 The question is therefore: **is the promotion
 $\nu_f : \mathbb{R}^{+} \to \mathcal{M}^{+}(F)$
@@ -6706,12 +6387,11 @@ condition for B2-νf to be a meaningful sub-route).
 - §13vicies-novies — refutation thread that closes the $S_n$-equivariant
   B1 sub-routes on $G_{P14}$; consistent with the suspicion that the
   missing lever is foundational, not catalog-extending.
-- §13triginta (P50) — Baker-theorem residue split confirming the
-  oscillatory residue lives in $\ker(\mathcal{R}_\infty)$; consistent
-  with the lattice-projection pointer of §.1.
+- §13triginta (P50) — finite fixed-delay DFT split with window-dependent
+  leakage; no analytic-residue membership theorem.
 - [theory/REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) §§3, 5
-  — N15 lattice structure on which the measure-valued $\nu_f$ would
-  naturally live.
+  — corrected finite fixed-delay cyclic surrogate; it does not select a
+  measure-valued $\nu_f$ carrier.
 - [src/tnfr/physics/conservation.py](../src/tnfr/physics/conservation.py)
   — canonical conjugate-pair structure underlying (P-Pontryagin).
 - [theory/TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md)
@@ -6762,48 +6442,50 @@ extraneous structure):
 2. **Six canonical invariants** (AGENTS.md): Nodal Equation Integrity,
    Phase-Coherent Coupling, Multi-Scale Fractality, Grammar Compliance,
    Structural Metrology, Reproducible Dynamics.
-3. **Grammar U1–U6**, all derivable from invariant #1 and the bounded
-   evolution constraint $\int \nu_f \, \Delta \mathrm{NFR} \, dt < \infty$
-   (U2).
+3. **Grammar U1–U6**, the implemented operator-sequence contracts and
+   read-only U6 drift check. Their physics motivation includes bounded
+   evolution, but U1–U6 alone do not prove
+   $\int \|\nu_f\Delta\mathrm{NFR}\|dt<\infty$ or convergence for every word.
 4. **Structural-field tetrad** $(\Phi_s, |\nabla \phi|, K_\phi, \xi_C)$:
-   the minimal derivative-tower basis derived from a scalar phase field
-   $\phi$ and a scalar pressure field $\Delta\mathrm{NFR}$; only $\pi$ is a
-   genuine structural scale (it bounds the phase sector $|\nabla \phi|, |K_\phi| \le \pi$).
+   four canonical diagnostic read-outs from scalar phase and pressure fields.
+   They are not a complete or universally minimal graph-state basis; $\pi$
+   bounds the wrapped phase sector $|\nabla \phi|, |K_\phi| \le \pi$.
    The earlier $(\varphi,\gamma,\pi,e)$ "tetrahedral correspondence" overlay
    was refuted by the 2026 audit and removed
    (AGENTS.md §3, "Structural tetrad").
-5. **Structural Conservation Theorem**
+5. **Structural balance diagnostics**
    (`src/tnfr/physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`):
-   two canonical conjugate-pair sectors,
+   two declared auxiliary conjugate-pair sectors,
    potential $(\Phi_s \leftrightarrow J_{\Delta\mathrm{NFR}})$
    and geometric $(K_\phi \leftrightarrow J_\phi)$,
-   coupled through $\Psi = K_\phi + i\,J_\phi$, with Noether-type charge
-   $Q$ and Lyapunov energy $E \geq 0$, $dE/dt \leq 0$ under grammar.
-6. **Variational Principle**
+   coupled through $\Psi = K_\phi + i\,J_\phi$, with a Noether-like charge
+   diagnostic and a nonnegative energy candidate. Grammar alone supplies no
+   general conservation law or sign for $dE/dt$.
+6. **Auxiliary variational model**
    (`theory/TNFR_VARIATIONAL_PRINCIPLE.md`,
    `src/tnfr/physics/variational.py`): Lagrangian
-   $\mathcal{L} = T - V$ with conjugate pairs identified canonically as
+   $\mathcal{L} = T - V$ with conjugate pairs declared as
    $(K_\phi, J_\phi)$, $(\Phi_s, J_{\Delta\mathrm{NFR}})$;
-   `check_symplectic_preservation` enforces preservation of the canonical
-   2-form $\omega = dK_\phi \wedge dJ_\phi + d\Phi_s \wedge dJ_{\Delta\mathrm{NFR}}$.
-7. **REMESH operator** (canonical operator #13), generating temporal
-   coupling $\mathrm{EPI}(t) \leftrightarrow \mathrm{EPI}(t-\tau)$ and,
-   together with $\nu_f$ heterogeneity, the prime-ladder spectrum of P14
-   (§8.2).
+   `check_symplectic_preservation` checks the declared model flow, not the
+   runtime nodal dynamics or all 13 operators.
+7. **REMESH operator** (canonical operator #13), whose runtime contract uses
+   finite clipped history references. The P14 prime-ladder spectrum is a
+   separate arithmetic construction; neither it nor a literal infinite-delay
+   limit is forced by the runtime REMESH map.
 
-### §13triginta-secunda.2 What the Canonical Catalog Forces (Symplectic Layer)
+### §13triginta-secunda.2 Auxiliary symplectic layer and its boundary
 
-The chain of forced structure is straightforward and entirely inside the
-catalog:
+The historical argument can be retained only as a conditional analysis of the
+declared harmonic model; it is not a chain forced by the operator catalog:
 
-- **(L1) Symplectic conjugate pairs exist.**  From the Variational
-  Principle (item 6), the two pairs
+- **(L1) Symplectic conjugate pairs are declared in the auxiliary model.**
+  The two pairs
   $(K_\phi, J_\phi)$ and $(\Phi_s, J_{\Delta\mathrm{NFR}})$
   are canonically conjugate in the symplectic sense: there is a
   well-defined Poisson bracket $\{K_\phi, J_\phi\} = 1$,
   $\{\Phi_s, J_{\Delta\mathrm{NFR}}\} = 1$, and all other brackets
-  vanish.  This is verified operationally by
-  `check_symplectic_preservation`.
+  vanish there. `check_symplectic_preservation` verifies the configured model
+  map and does not derive this structure from every engine trajectory.
 
 - **(L2) The phase carrier is an LCAG.**  By the `wrap_angle`
   constraint $|K_\phi| \leq \pi$ (the phase sector is $\pi$-scaled;
@@ -6860,9 +6542,9 @@ The candidates available inside the canonical catalog are:
 | (F4) Invariant #4: grammar U1–U6 closure | Catalog | **No** — U1–U6 act on operator sequences, not on momentum carrier choice. |
 | (F5) Invariant #5: structural metrology, units $\mathrm{Hz}_{\mathrm{str}}$ | Catalog | **No** — fixes units, not carrier discreteness. |
 | (F6) Invariant #6: reproducible dynamics | Catalog | **No** — reproducibility is a global property of evolution. |
-| (F7) U2 boundedness: $\int \nu_f \Delta \mathrm{NFR} \, dt < \infty$ | Catalog | **No** — integrable scalar $\nu_f$ satisfies U2. |
-| (F8) Conservation Theorem: $Q$ and $E$ exact | Catalog | **No** — implemented with real-valued $J_\phi$. |
-| (F9) REMESH (operator #13) periodic echoes | Catalog | **Indirect** — REMESH generates a *discrete spectrum* of echoes $\{k\tau\}_{k\geq 1}$, so the *time* domain carries discrete structure.  But this is structure of EPI dynamics, not a forced upgrade of the momentum carrier. |
+| (F7) U2 stabilization/debt policy | Catalog | **No** — sequence validity does not select a momentum carrier or prove trajectory convergence. |
+| (F8) Structural balance and energy diagnostics | Auxiliary/diagnostic | **No** — implemented with real-valued $J_\phi$ and no general conservation theorem. |
+| (F9) REMESH (operator #13) finite delayed snapshots | Catalog | **No** — fixed finite history reads do not force a spectral carrier upgrade. |
 | (F10) U6: $\Delta \Phi_s < \pi/2$ confinement | Catalog | **No** — a telemetry threshold on the potential sector. |
 
 **Result.** No canonical constraint in {F1,...,F10} forces the
@@ -7044,7 +6726,13 @@ boundary as stated in §13septies.
 ---
 
 
-## §13triginta-tertia. Resolution of (P-νf-Bijectivity) from the Nodal Equation — Forward Dynamics vs Backward Identifiability (Closes T-νf at the Canonical Level; Does NOT Advance G4 = RH)
+## §13triginta-tertia. νf source audit — forward dynamics vs backward identifiability (historical verdict; corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** The source audit below
+> describes the scalar `νf` representation used by the current engine. Its
+> historical “closure” language does not prove that this representation is
+> mathematically necessary, minimal, or exhaustive. It also does not exclude a
+> richer extension derived under additional, explicitly stated assumptions.
 
 **Pre-registration status.**  This section executes Ruta A2 of the
 νf-Type program (§§13triginta-prima, 13triginta-secunda): it tests
@@ -7115,9 +6803,10 @@ and:
   only through this scalar product channel.
 - **Invariant #6** (Reproducible Dynamics) holds: identical seeds
   produce identical trajectories under this evolution rule.
-- **Grammar U2** (Convergence) holds whenever
-  $\int \nu_{f,i}(t) \cdot |\Delta\mathrm{NFR}_i(t)| \, dt < \infty$,
-  which is achievable with scalar $\nu_f$.
+- Absolute integrability of
+  $\nu_{f,i}(t)\Delta\mathrm{NFR}_i(t)$ is sufficient for a finite
+  accumulated EPI limit on that trajectory. This analytical condition is
+  separate from the engine's U2 stabilization/debt policy.
 
 Therefore: **forward determinism does not require any non-scalar
 upgrade of $\nu_f$**.
@@ -7417,7 +7106,8 @@ class BEPIElement(_EPIValidators):
     a_discrete:   tuple[complex, ...]  # ℓ^2(ℂ) coefficient sequence
     x_grid:       tuple[float, ...]    # uniform grid on [0,1]
     # algebraic ops: direct_sum, tensor, adjoint, compose
-    # down-projection: __float__ = __abs__ = _max_magnitude
+    # scalar read-out: __float__ = scalar_projection
+    # norm read-out:   __abs__   = _max_magnitude
 ```
 
 with companion `class BanachSpaceEPI(_EPIValidators)` at
@@ -7431,8 +7121,11 @@ catalog merely *mentions* a measure-valued / Pontryagin upgrade as a
 theoretical possibility (§13triginta-prima.2).  For EPI, the catalog
 contains a **complete algebraic implementation** of the Banach-valued
 upgrade — including direct sum, tensor product, adjoint, composition,
-and a canonical down-projection `max_magnitude` — that is **not invoked
-by any of the 13 canonical operators**.
+and a centralized scalar projection. The trivial uniform-real embedding retains
+its signed scalar coordinate; genuinely nonuniform or complex elements fall
+back to `max_magnitude`. Canonical operator paths can carry the trivial
+`BEPIElement` storage representation, but none reads its non-trivial component
+structure as an independent dynamical channel.
 
 The structural question of T-EPI is therefore sharper than T-νf: not
 "could a richer type be forced?" but "is the formalised richer type
@@ -7446,13 +7139,10 @@ state vector
   `x(t) = (EPI(t), …, EPI(t − T_max))^⊤ ∈ ℝ^(T_max + 1)`
 
 This is **time-aggregation of scalar readings**, not intrinsic per-node
-vectoriality.  It does not promote per-node EPI to a Banach element; it
-constructs a global time-window state from scalar samples.  The N15
-REMESH-∞ closure operates entirely on this scalar-history vector and
-produces a bounded self-adjoint orthogonal projection on `H^2(D)` — its
-range and kernel are subspaces of *time-trajectory space*, not of
-per-node Banach space.  Hence the N15 closure is consistent with the
-scalar-EPI contract and does not force a BEPI upgrade.
+vectoriality. It does not promote per-node EPI to a Banach element. The
+corrected N15 projection instead belongs to a separate finite cyclic filter
+with fixed delays; it is not a projector on the runtime history vector or on
+`H^2(D)`. Neither construction forces a BEPI upgrade.
 
 ### §13triginta-quarta.5 — T-EPI Conjecture (formal statement)
 
@@ -7463,7 +7153,8 @@ the canonical type, in the sense that:
   (a) No canonical operator constructs a `BEPIElement` with non-trivial
       `f_continuous` or `a_discrete` components.
   (b) No canonical operator reads `BEPIElement` data other than through
-      the down-projection `_bepi_to_float = max_magnitude`.
+      the centralized scalar projection: signed value for a uniform-real
+      embedding and maximum-component magnitude otherwise.
   (c) The forcing-axiom inventory F1–F10 (§13triginta-quarta.7) admits
       no canonical extension that selects a non-trivial Banach element
       from a scalar starting state.
@@ -7548,7 +7239,7 @@ forcing" of `BEPIElement` would have to satisfy.  Detailed reduction in
 | F1 | Operator exclusivity (only the 13 canonical operators write EPI). | AGENTS.md "Canonical Invariants #1". |
 | F2 | Reproducibility (identical seeds → identical trajectories). | AGENTS.md "Reproducible Dynamics". |
 | F3 | Nodal-equation type closure (`compute_expected_depi_dt: float`). | `operators/nodal_equation.py:1–160`. |
-| F4 | Tetrad orthogonality (Φ_s, |∇φ|, K_φ, ξ_C span the structural channels). | AGENTS.md §"Minimal Structural Degrees of Freedom". |
+| F4 | Tetrad diagnostic interface (Φ_s, |∇φ|, K_φ, ξ_C). Completeness and reconstruction are open. | `STRUCTURAL_FIELDS_TETRAD.md`. |
 | F5 | REMESH time-aggregation only (no per-node spatial Banach upgrade). | §13triginta-quarta.4. |
 | F6 | P14 prime-ladder Hamiltonian operates on a scalar-spectrum Hilbert space. | §10–§12, `riemann/prime_ladder_hamiltonian.py`. |
 | F7 | Uncertainty-bandwidth complementarity (`ΔEPI · Δνf ≥ K`, scalar form). | AGENTS.md "Quantum-Like Regime". |
@@ -7556,9 +7247,9 @@ forcing" of `BEPIElement` would have to satisfy.  Detailed reduction in
 | F9 | Classical-limit demos use scalar EPI exclusively. | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. |
 | F10 | Quantum-regime demos use scalar EPI exclusively. | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. |
 
-Axioms F1–F10 together force scalar EPI as the canonical type unless an
-extension axiom is *added* to the catalog.  No such canonical extension
-exists in the current 13-operator construction.
+The audited F1–F10 surfaces use scalar EPI and contain no implemented
+`BEPIElement` carrier. This describes the current source; it does not prove
+that scalar EPI is uniquely forced over every admissible extension.
 
 ### §13triginta-quarta.8 — Honest scope (what this does and does not do)
 
@@ -7636,24 +7327,26 @@ extraneous structure):
 2. **Six canonical invariants** (AGENTS.md): Nodal Equation Integrity,
    Phase-Coherent Coupling, Multi-Scale Fractality, Grammar Compliance,
    Structural Metrology, Reproducible Dynamics.
-3. **Grammar U1–U6**, all derivable from invariant #1 and the bounded
-   evolution constraint $\int \nu_f \, \Delta \mathrm{NFR} \, dt < \infty$
-   (U2).
+3. **Grammar U1–U6**, the engine's sequence and telemetry policies.
+   Their motivation comes from the nodal equation, but they do not imply
+   absolute integrability or general trajectory convergence.
 4. **Structural Field Tetrad** $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$,
-   the minimal derivative-tower basis, all derived from a
+   the required diagnostic interface, derived from a
    *scalar* phase field $\phi$ and a *scalar* pressure field
    $\Delta\mathrm{NFR}$; only $\pi$ is a genuine structural scale
-   (AGENTS.md §"Minimal Structural Degrees of
-   Freedom").
-5. **Structural Conservation Theorem**
+   (`STRUCTURAL_FIELDS_TETRAD.md`). Minimality and state reconstruction
+   remain open.
+5. **Noether-like balance diagnostics**
    (`src/tnfr/physics/conservation.py`,
    `theory/STRUCTURAL_CONSERVATION_THEOREM.md`): per-node Noether charge
    density $\rho_i \in \mathbb{R}$ and current vector
-   $\mathbf{J}_i \in \mathbb{R}^2$; the Lyapunov energy density
-   $\varepsilon_i \in \mathbb{R}_{\geq 0}$ aggregates scalar squares.
-6. **Variational Principle**: Lagrangian
+   $\mathbf{J}_i \in \mathbb{R}^2$; the nonnegative structural-energy
+   candidate aggregates scalar squares. Conservation and Lyapunov
+   monotonicity require model-specific proof.
+6. **Auxiliary variational model**: Lagrangian
    $\mathcal{L}_i = T_i - V_i$ where every term is a real-valued
-   functional of scalar tetrad fields.
+   functional of scalar tetrad readouts. It is not a derivation of the full
+   engine trajectory.
 7. **REMESH operator** (canonical operator #13), generating the temporal
    history vector
    $x_i(t) = (\mathrm{EPI}_i(t), \dots, \mathrm{EPI}_i(t - T_{\max}))^\top
@@ -7666,10 +7359,12 @@ The chain of forced structure is straightforward and entirely inside the
 catalog:
 
 - **(M1) Operator contracts are scalar.**  All 13 canonical glyph
-  operators read and write `float(v.EPI)` via the
-  `_bepi_to_float` down-projection (`src/tnfr/alias.py:86`,
-  `src/tnfr/operators/__init__.py:190–360`).  No operator constructs,
-  reads, or preserves a `BEPIElement` instance.  Empirically verified
+  operators reduce graph-carried EPI through the centralized scalar reader
+  (`src/tnfr/alias.py`, `src/tnfr/types.py`, and
+  `src/tnfr/operators/__init__.py`). Uniform-real `BEPIElement` storage is
+  representation-equivalent to a signed scalar; no operator resolves a
+  genuinely nonuniform continuous/discrete component as another dynamical
+  coordinate. Empirically verified
   by `examples/05_type_hygiene/79_epi_type_signature_demo.py`: BEPI-storage fraction
   $= 0$ across all measured nodes and steps at two independent
   resolutions $(n=24, T=64)$ and $(n=48, T=128)$.
@@ -7763,7 +7458,7 @@ below.  Each row asks: *does this axiom force the BEPI carrier upgrade?*
 | F1 | Operator exclusivity (only the 13 canonical operators write EPI). | AGENTS.md "Canonical Invariants #1". | **No** — operators write `float` (M1). |
 | F2 | Reproducibility under fixed seeds. | AGENTS.md "Reproducible Dynamics". | **No** — scalar trajectories reproduce identically. |
 | F3 | Nodal-equation type closure $(\mathbb{R}, \mathbb{R}) \to \mathbb{R}$. | `nodal_equation.py:1–160`. | **No** — scalar ODE admits scalar solutions (M2). |
-| F4 | Tetrad orthogonality $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$ minimality. | AGENTS.md §"Minimal Structural Degrees of Freedom". | **No** — tetrad derived from scalar $\phi$ and scalar $\Delta\mathrm{NFR}$ (M3). |
+| F4 | Tetrad diagnostic interface $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$. | `STRUCTURAL_FIELDS_TETRAD.md`. | **No conclusion** — the current tetrad is computed from scalar fields; its minimality and completeness are open. |
 | F5 | REMESH time-aggregation only (no per-node spatial Banach upgrade). | §13triginta-quarta.4, `REMESH_INFINITY_DERIVATION.md:50–52`. | **No** — REMESH is temporal, BEPI is spatial; no canonical lift exists (§13triginta-quinta.3). |
 | F6 | P14 prime-ladder Hamiltonian on a scalar-spectrum Hilbert space. | §10–§12, `riemann/prime_ladder_hamiltonian.py`. | **No** — P14's Hilbert space is built from scalar eigenmodes of the temporal operator, not from per-node Banach data. |
 | F7 | Uncertainty-bandwidth complementarity $\Delta\mathrm{EPI} \cdot \Delta\nu_f \geq K$. | AGENTS.md "Quantum-Like Regime". | **No** — variances are real-valued moments of scalar distributions. |
@@ -7849,12 +7544,11 @@ canonical six invariants?
   the temporal trajectory (a sequence of scalars), not at the level of
   a single spacetime point.
 
-  Formally: the catalog enforces faithfulness via the pair
+  Formally: the current implementation evolves the pair
   $(\nu_f, \Delta\mathrm{NFR})$ acting on $\mathrm{EPI}(t)$ via the
-  scalar nodal ODE, with REMESH closing the temporal loop.  This is
-  *operationally complete* — it reproduces P12–P15 to machine precision
-  (§10–§12) and recovers classical, quantum-like, and number-theoretic
-  spectra (§§3–9) without any per-point Banach upgrade.
+  scalar nodal ODE, with REMESH providing finite history coupling. Selected
+  P12–P15 tests reproduce their finite targets without a per-point Banach
+  carrier; this is implementation evidence, not operational completeness.
 
 - **(B-Empirical).**  The B1a diagnostic (§13triginta-quarta.6) measures
   $S_\mathrm{EPI} \approx 0.876$–$0.896$ across two resolutions: rich
@@ -7935,14 +7629,21 @@ This sub-programme:
   (anchors M2).
 - `src/tnfr/operators/__init__.py:190–360` — 13-operator scalar reads
   (anchors M1).
-- `src/tnfr/alias.py:86` — `_bepi_to_float` down-projection witness
-  (anchors M1 implementation path).
+- `src/tnfr/types.py` and `src/tnfr/alias.py` — centralized signed scalar
+  embedding and generic scalar-projection witnesses (anchor M1's implementation
+  path).
 - `theory/REMESH_INFINITY_DERIVATION.md:50–52` — REMESH history-vector
   temporal aggregation (anchors §13triginta-quinta.3 gap argument).
 
 ---
 
-## §13triginta-sexta. T-EPI Final NEGATIVE Verdict and Envelope Classification of `BEPIElement` (Closes B1; Does NOT Advance G4 = RH)
+## §13triginta-sexta. T-EPI source audit and `BEPIElement` envelope (historical verdict; corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** “NEGATIVE” below records that
+> the inspected engine paths do not require `BEPIElement`. It is a source-status
+> result, not a proof that scalar EPI is the unique possible carrier, that
+> REMESH supplies an equivalent complete modal representation, or that B1 is
+> closed.
 
 **Pre-registration closure.**  This section consumes the
 sub-verdict of §13triginta-quinta (B1b) and issues the final
@@ -8035,8 +7736,8 @@ canonical status.
 
 ### §13triginta-sexta.5 Methodology Lesson L3 (Cross-Conjecture Pattern)
 
-Both T-νf (B0) and T-EPI (B1) closed NEGATIVE with the same
-structural shape:
+The historical B0 and B1 source audits reported the same implementation
+pattern; neither report is a mathematical closure or completeness result:
 
 1. **Anchor** identifies a candidate "type upgrade" of a canonical
    observable (measure-valued $\nu_f$; Banach-valued EPI).
@@ -8222,10 +7923,11 @@ Categories are open — add new ones as discoveries warrant.
   pending; tracker in `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §4.
 - **D-OQ-3.**  Whether the cross-conjecture pattern L3 holds for all
   of B2 – B11 (provisional; only tested on B0 ∧ B1 so far).
-- **D-OQ-4** (Riemann §0, commit `e847d6fa`): The nodal-ontology
-  re-mapping reframes G4 as a *fixed-point → dynamics shadow* (the nodal
-  equation is the overdamped projection of the symplectic flow,
-  AGENTS.md §4).  Two measured constraints on the search: (i) the
+- **D-OQ-4** (Riemann §0, commit `e847d6fa`; **CORRECTED**): The historical
+  nodal-ontology re-mapping compared a fixed-point representation with an
+  auxiliary symplectic flow. The full nodal equation is not derived as the
+  overdamped projection of the isotropic oscillator. Two finite-model
+  constraints on the search remain: (i) the
   conservative dynamics + momenta of the symmetric prime-ladder are
   exactly `S_n`-equivariant (D-MP-4) ⇒ they *re-express* `{k log p}`,
   they do not *add* (consistent with the ex.103 Poisson result);
@@ -8354,7 +8056,7 @@ a scalar real number in a single fundamental domain:
 | Wrapping helper `wrap_angle`                  | ``float → float ∈ [-π, π]``  |
 | Scalar reader `get_phase`                     | ``float`` (re-wrapped)       |
 | Tetrad field `|∇φ|`                           | ``float`` over edges         |
-| Phase-gated coupling (U3) check               | ``|φᵢ − φⱼ| ≤ Δφ_max``       |
+| Phase-gated coupling (U3) check               | ``|wrap(φᵢ − φⱼ)| ≤ Δφ_max``       |
 
 Every appearance of φ in the canonical operator-bound API ends in
 this single-sheet representation.  The catalog therefore types φ as
@@ -8417,7 +8119,7 @@ operator-bound dynamics.
 - Per-node accessor `get_phase` returning a single ``float``
   (canonical scalar reader).
 - All canonical phase-gated couplings (U3) operating on
-  ``|φᵢ − φⱼ|`` *after* wrapping, with no winding-number argument
+  ``|wrap(φᵢ − φⱼ)|``, with no winding-number argument
   ever supplied.
 - Cross-references §13quinquies, §13septies, §15 on phase-derived
   quantities :math:`|\nabla\phi|` and :math:`K_\phi`.
@@ -8754,20 +8456,20 @@ Formally, define the **Phase-Wrap Discipline Principle**:
 > :math:`w \in \pi_1(S^1) = \mathbb{Z}` is *systematically
 > discarded* and is **not** retrievable from the canonical state.
 
-This is the structural-φ analogue of the Temporal-Modal Equivalence
-Principle (TMEP) that closed B1 = T-EPI.  Where TMEP says
+This is the structural-φ analogue of the historical Temporal-Modal
+Equivalence Principle (TMEP) source audit for B1. TMEP did not establish
+modal completeness or close B1. In its limited implementation reading it says
 "multi-modal EPI content is canonically realised *temporally* via
 REMESH, not *spatially* via a Banach internal carrier", PWDP says
 "phase-orbit content is canonically realised *as wrapped geodesic
 distance on* :math:`S^1`, not *as covering-space displacement on*
 :math:`\widetilde{S^1}`".
 
-PWDP is *operationally complete*: under the canonical ``wrap_angle``
-discipline, the engine reproduces P12–P15 to machine precision
-(§10–§12), recovers classical (Keplerian) and quantum-like
-(interference, complementarity, quantization) regimes (§§3–9), and
-satisfies all canonical conservation laws — *without* invoking any
-winding charge or homotopy class.  The B2a empirical signature
+PWDP describes the current ``wrap_angle`` implementation. Under this
+discipline, selected finite P12–P15 and regime demonstrations run without
+a retained winding charge or homotopy class. This does not establish
+operational completeness, exact recovery of external theories, or general
+conservation. The B2a empirical signature
 :math:`w_{\mathrm{frac}} = 0` at both pre-registered resolutions is
 the empirical fingerprint of PWDP.
 
@@ -8797,10 +8499,10 @@ upgrade of φ?*
 | F1 | Operator exclusivity (only the 13 canonical operators write φ). | AGENTS.md "Canonical Invariants #1". | **No** — operators write wrapped ``float`` via ``ALIAS_THETA`` + ``wrap_angle`` (M1). |
 | F2 | Reproducibility under fixed seeds. | AGENTS.md "Reproducible Dynamics". | **No** — wrapped scalar trajectories reproduce identically; winding shifts are not part of the seeded state. |
 | F3 | Nodal-equation wrap-invariance: same :math:`\partial\mathrm{EPI}/\partial t` under :math:`\phi \mapsto \phi + 2\pi k_i`. | `nodal_equation.py`, `fields.py::compute_phase_gradient`/`compute_phase_curvature`. | **No** — the dynamics is *gauge-invariant* under per-node :math:`2\pi` shifts; the winding charge is structurally unobservable from the canonical ODE (M2). |
-| F4 | Tetrad orthogonality and minimality of :math:`(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)`. | AGENTS.md §"Minimal Structural Degrees of Freedom". | **No** — all four fields use wrapped phase differences (M2); cf. `STRUCTURAL_FIELDS_TETRAD.md`. |
+| F4 | Tetrad diagnostic interface :math:`(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)`. | `STRUCTURAL_FIELDS_TETRAD.md`. | **No conclusion** — current phase readouts use wrapped differences; tetrad minimality and reconstruction remain open. |
 | F5 | U3 phase-gated coupling :math:`|\phi_i - \phi_j| \le \Delta\phi_{\max}`. | AGENTS.md "U3 RESONANT COUPLING", `grammar_core.py::validate_resonant_coupling`. | **No** — U3 reads the *wrapped* geodesic distance on :math:`S^1`; covering-space distance is *never* the canonical input (M3). |
-| F6 | Structural Conservation Theorem (Noether charge :math:`Q`, energy :math:`E`, Ward identities). | `physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`. | **No** — :math:`\rho, \mathbf{J}, \varepsilon` are all real-valued functionals of wrapped tetrad fields (M4); no winding current appears in :math:`\partial\rho/\partial t + \nabla \cdot \mathbf{J} = S_{\mathrm{grammar}}`. |
-| F7 | Variational principle (Lagrangian, symplectic conjugate pair :math:`(K_\phi, J_\phi)`). | `physics/variational.py`, AGENTS.md §"Variational Confirmation". | **No** — :math:`K_\phi = \mathrm{wrap\_angle}(\phi_i - \mathrm{circular\_mean}(\mathrm{nbrs}))` is *defined* as a wrapped scalar with :math:`|K_\phi| \le \pi`; the conjugate momentum :math:`J_\phi` is real-valued. |
+| F6 | Noether-like balance diagnostics and structural-energy candidate. | `physics/conservation.py`. | **No conclusion** — current readouts use wrapped scalar fields; conservation along arbitrary engine trajectories is unproved. |
+| F7 | Auxiliary variational/symplectic model. | `physics/variational.py`. | **No conclusion** — the auxiliary model initializes from wrapped scalar readouts; it is not a derivation of all engine dynamics. |
 | F8 | REMESH temporal aggregation of φ trajectories. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py`. | **No** — REMESH aggregates EPI history, not φ history; even when φ-derived quantities feed REMESH (via :math:`\Delta\mathrm{NFR}`), the inputs have already been wrap-projected (chain of M2+M1). |
 | F9 | Classical-limit demos (Keplerian orbits, smooth phase trajectories). | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from *wrapped* φ under high coherence; the visible smoothness is a coordinate effect, not evidence of a covering-space carrier. |
 | F10 | Quantum-regime demos (interference, complementarity). | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena emerge from wrapped φ dynamics; phase-difference interference at slits uses :math:`\mathrm{wrap\_angle}(\phi_A - \phi_B)`, not covering-space difference. |
@@ -9016,7 +8718,13 @@ This sub-programme:
   (anchors B2a numerical fingerprint).
 
 ---
-## §13triginta-decima. T-φ Final NEGATIVE Verdict and Envelope Classification of E3 = CoverElement (Closes B2; Does NOT Advance G4 = RH)
+## §13triginta-decima. T-φ source audit and E3 = CoverElement envelope (historical verdict; corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** “NEGATIVE” below means that the
+> inspected public state and operator paths store wrapped scalar phase and do
+> not retain a cover index. This does not prove catalog completeness, uniqueness
+> of the scalar representation, or the impossibility of a separately specified
+> topological extension.
 
 **Pre-registration closure.**  This section consumes the
 sub-verdict of §13triginta-novena (B2b) and issues the final
@@ -9171,8 +8879,10 @@ type-hygiene commit.
 
 ### §13triginta-decima.5 Methodology Lesson L3 — Confirmed Across B2
 
-T-νf (B0), T-EPI (B1), and T-φ (B2) have all closed NEGATIVE with
-the same structural shape established in §13triginta-sexta.5:
+The B0, B1, and B2 source audits all reported the same implementation
+pattern. Their historical “NEGATIVE” labels mean that the inspected paths did
+not require the proposed richer carriers; they do not close the mathematical
+questions:
 
 1. **Anchor** identifies a candidate "type upgrade" of a canonical
    observable (measure-valued :math:`\nu_f`; Banach-valued EPI;
@@ -9358,7 +9068,7 @@ as a scalar real number:
 | Nodal-equation reader (``nodal_equation.py``)      | ``float`` (scalar product)   |
 | Telemetry / structural-fields (`physics/`)         | ``float`` per node           |
 | Conservation law (``physics/conservation.py``)     | scalar source/sink           |
-| Grammar U2 convergence integral                    | scalar integrand             |
+| Accumulated nodal-equation integral                | scalar integrand; convergence requires separate hypotheses |
 
 Every appearance of ΔNFR in the canonical operator-bound API ends in
 this single scalar real representation.  The catalog therefore types
@@ -9431,8 +9141,8 @@ operator-bound dynamics.
   consuming ΔNFR as ``float`` × ``float`` → ``float``.
 - Conservation-law machinery at ``src/tnfr/physics/conservation.py``
   treating ΔNFR as a scalar source.
-- Grammar U2 (CONVERGENCE & BOUNDEDNESS) constraining the scalar
-  integral :math:`\int \nu_f \cdot \Delta\mathrm{NFR}\, dt`.
+- Grammar U2 stabilization/debt policy on operator sequences; it does not
+  prove integrability of :math:`\nu_f\Delta\mathrm{NFR}` for a trajectory.
 - Cross-references §13septies on the smooth/oscillatory split (the
   open T-HP rescaling operator :math:`\mathcal{F}` does not consume
   a multi-channel ΔNFR either).
@@ -9687,15 +9397,14 @@ extraneous structure):
    Integrity (invariant #1)**, Phase-Coherent Coupling, Multi-Scale
    Fractality, Grammar Compliance, Structural Metrology,
    Reproducible Dynamics.
-3. **Grammar U1–U6**, in particular **U2 (CONVERGENCE &
-   BOUNDEDNESS)** which bounds :math:`\int \nu_f \cdot
-   \Delta\mathrm{NFR}\, dt < \infty` as a scalar Lebesgue integral.
+3. **Grammar U1–U6**, including the U2 stabilization/debt policy. U2
+   does not by itself bound :math:`\int \|\nu_f\Delta\mathrm{NFR}\|dt`.
 4. **Structural-field tetrad**: ΔNFR enters the
    canonical pressure field :math:`\Phi_s(i) = \sum_{j \neq i}
    \Delta\mathrm{NFR}_j / d(i,j)^2` as a *scalar* per-node value;
    all four tetrad fields :math:`(\Phi_s,
    |\nabla\phi|, K_\phi, \xi_C)` are scalar-valued.
-5. **Structural Conservation Theorem**
+5. **Structural balance diagnostics**
    (`src/tnfr/physics/conservation.py`): per-node charge density
    :math:`\rho_i = \Phi_s(i) + K_\phi(i)` and current vector
    :math:`\mathbf{J}_i = (J_\phi(i), J_{\Delta\mathrm{NFR}}(i))
@@ -9754,31 +9463,28 @@ entirely inside the catalog:
   scalar via fixed weighted aggregation before being written to
   ``ALIAS_DNFR``.
 
-- **(M3) U2 convergence is a scalar Lebesgue bound.**  The U2
-  bounded-integral condition :math:`\int_{t_0}^{t_f} \nu_f(\tau)
-  \cdot \Delta\mathrm{NFR}(\tau)\, d\tau < \infty` is a *scalar*
-  Lebesgue integral of a scalar product.  No canonical
-  formulation of U2 references a tensor norm, operator norm, or
-  multi-channel boundedness condition; the catalog's
-  boundedness discipline is built on the scalar absolute value
-  :math:`|\nu_f \cdot \Delta\mathrm{NFR}|`.
+- **(M3) Accumulated change uses a scalar integral.**  Integrating the
+  nodal equation yields a scalar integral of
+  :math:`\nu_f\Delta\mathrm{NFR}`. Absolute integrability is a sufficient
+  analytical condition for a finite EPI limit, while U2 itself is the
+  engine's stabilization/debt policy and does not assert that condition.
 
-- **(M4) Conservation and variational laws close on scalar ΔNFR.**
-  The Noether charge :math:`Q = \sum_i \rho_i`, the energy
+- **(M4) Current diagnostics read scalar ΔNFR.**
+  The candidate charge :math:`Q = \sum_i \rho_i`, the energy
   :math:`E = \sum_i \varepsilon_i`, the current
   :math:`J_{\Delta\mathrm{NFR}}`, the Lagrangian, and the
   symplectic form are all real-valued functionals of scalar ΔNFR
   (see `src/tnfr/physics/conservation.py::compute_charge_density`
   and `compute_current_divergence`, which read scalar ΔNFR via
   the canonical `_helpers.get_dnfr` reader).  No conservation
-  law references a tensor-valued ΔNFR current.
+  diagnostic references a tensor-valued ΔNFR current. This source typing
+  does not prove conservation along arbitrary engine trajectories.
 
-The conjunction M1+M2+M3+M4 establishes that **the entire
-canonical machinery closes consistently with scalar real-valued
-ΔNFR**.  The 13-operator catalog never reads or writes a tensor
-component; the nodal equation is bilinear-scalar by construction;
-U2 boundedness is a scalar Lebesgue bound; conservation and
-variational laws never require a tensor-valued lift.
+The conjunction M1+M2+M3+M4 establishes that the **audited current
+source surfaces** use scalar real-valued ΔNFR. The nodal equation is
+bilinear-scalar in that implementation; the U2 validator is a discrete
+policy; conservation and variational modules expose diagnostic or auxiliary
+models. This inventory is not a proof of catalog completeness.
 
 ### §13quadraginta-prima.3 The Gap Between Scalar Aggregation Discipline and Tensor Retention
 
@@ -9824,13 +9530,11 @@ real scalar* :math:`\Delta\mathrm{NFR} \in \mathbb{R}`, not *as
 a rank-:math:`r \ge 2` tensor over the canonical gradient
 channels*".
 
-BSAD is *operationally complete*: under the canonical scalar
-aggregation discipline, the engine reproduces P12–P15 to machine
-precision (§§10–12), recovers classical (Keplerian) and
-quantum-like (interference, complementarity, quantization)
-regimes (§§3–9), and satisfies all canonical conservation laws —
-*without* invoking any tensor channel or rank-:math:`\ge 2`
-retention.  The B3a empirical signature :math:`T_{\mathrm{frac}}
+BSAD describes the audited implementation: selected P12–P15 tests and
+finite regime demonstrations run without a retained tensor channel.
+This does not establish operational completeness, exact recovery of an
+external physical theory, or general conservation. The B3a empirical
+signature :math:`T_{\mathrm{frac}}
 = 0` and :math:`R_{\mathrm{eff}} \approx 1.13` at both
 pre-registered resolutions is the empirical fingerprint of BSAD.
 
@@ -9861,12 +9565,12 @@ tensor-carrier upgrade of ΔNFR?*
 | F1 | Operator exclusivity (only the 13 canonical operators write ΔNFR). | AGENTS.md "Canonical Invariants #1". | **No** — operators write scalar `float` via ``ALIAS_DNFR`` (M1); empirically ``T_frac = 0`` at both B3a resolutions. |
 | F2 | Reproducibility under fixed seeds. | AGENTS.md "Reproducible Dynamics". | **No** — scalar trajectories reproduce identically; tensor channels are not part of the seeded state. |
 | F3 | Nodal-equation bilinear-scalar structure: :math:`\partial\mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}`. | `nodal_equation.py::compute_expected_depi_dt: (float, float) → float`. | **No** — both factors typed as `float`; the bilinear *scalar* product saturates the canonical reading (M2). |
-| F4 | Tetrad orthogonality and minimality of :math:`(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)`. | AGENTS.md §"Minimal Structural Degrees of Freedom"; `STRUCTURAL_FIELDS_TETRAD.md`. | **No** — all four tetrad fields are scalar-valued; :math:`\Phi_s(i) = \sum_{j} \Delta\mathrm{NFR}_j / d(i,j)^2` reads scalar ΔNFR per node. |
-| F5 | U2 convergence: :math:`\int \nu_f \cdot \Delta\mathrm{NFR}\, dt < \infty`. | AGENTS.md "U2 CONVERGENCE & BOUNDEDNESS"; `grammar_core.py`. | **No** — scalar Lebesgue integral of a scalar product (M3); no tensor norm appears in the canonical boundedness condition. |
-| F6 | Structural Conservation Theorem (Noether charge :math:`Q`, energy :math:`E`, Ward identities, current :math:`\mathbf{J} = (J_\phi, J_{\Delta\mathrm{NFR}})`). | `physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`. | **No** — :math:`J_{\Delta\mathrm{NFR}}` is real-valued, built from scalar ΔNFR (M4); no tensor-valued current appears in :math:`\partial\rho/\partial t + \nabla \cdot \mathbf{J} = S_{\mathrm{grammar}}`. |
-| F7 | Variational principle (Lagrangian, symplectic conjugate pair :math:`(\Phi_s, J_{\Delta\mathrm{NFR}})`). | `physics/variational.py`, AGENTS.md §"Variational Confirmation". | **No** — the potential term :math:`V = \tfrac{1}{2}[\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2]` and kinetic term :math:`T = \tfrac{1}{2}[J_\phi^2 + J_{\Delta\mathrm{NFR}}^2]` are real-valued scalar functionals; the conjugate momentum :math:`J_{\Delta\mathrm{NFR}}` is a real scalar. |
-| F8 | REMESH temporal aggregation. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py`. | **No** — REMESH aggregates EPI history scalarly; ΔNFR-derived inputs are already scalar-projected (chain of M2+M1). N15 closure (§§15–23) is the asymptotic projection of a scalar transfer matrix; no tensor-rank slot is required. |
-| F9 | Classical-limit demos (Keplerian orbits, scalar :math:`F = m \cdot a` analog via :math:`m \leftrightarrow 1/\nu_f`, :math:`F \leftrightarrow \Delta\mathrm{NFR}`). | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. | **No** — classical regime emerges from *scalar* ΔNFR under high coherence; the "force" analog is itself a scalar in the canonical correspondence. |
+| F4 | Tetrad diagnostic interface :math:`(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)`. | `STRUCTURAL_FIELDS_TETRAD.md`. | **No conclusion** — all four current readouts are scalar-valued, but tetrad minimality and state reconstruction are open. |
+| F5 | U2 stabilization/debt policy and accumulated nodal change. | `grammar_core.py`; nodal equation. | **No conclusion** — the validator is discrete, while integral convergence requires separate trajectory hypotheses. |
+| F6 | Noether-like balance diagnostics and structural-energy candidate. | `physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`. | **No conclusion** — current readouts are scalar; general conservation is not proved. |
+| F7 | Auxiliary variational/symplectic construction. | `physics/variational.py`. | **No conclusion** — the specified auxiliary model uses scalar readouts but is not a derivation of all engine trajectories. |
+| F8 | REMESH temporal aggregation. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py`. | **No conclusion** — runtime REMESH reads fixed finite history slots; the separate cyclic model is a finite fixed-delay filter with GCD fixed modes. Neither supplies an asymptotic tensor-carrier theorem. |
+| F9 | Finite classical-regime comparison demo. | `examples/02_physics_regimes/12_classical_mechanics_demo.py`. | **No conclusion** — the smooth first-order nodal drift treats :math:`\nu_f` as mobility; it is not a derivation of inverse mass or classical mechanics. |
 | F10 | Quantum-regime demos (interference, complementarity, quantization). | `examples/02_physics_regimes/13_quantum_mechanics_demo.py`, `14_uncertainty_and_interference.py`. | **No** — quantum-like phenomena emerge from scalar ΔNFR dynamics; the complementarity :math:`\Delta\mathrm{EPI} \cdot \Delta\nu_f \ge K` is a scalar-scalar inequality. |
 
 **Result.** No canonical constraint in :math:`\{\mathrm{F1},
@@ -10111,7 +9815,12 @@ This sub-programme:
   demo (anchors B3a numerical fingerprint).
 
 ---
-## §13quadraginta-secunda. T-ΔNFR Final NEGATIVE Verdict and Envelope Classification of E4 = TensorGradientElement (Closes B3; Does NOT Advance G4 = RH)
+## §13quadraginta-secunda. T-ΔNFR source audit and E4 = TensorGradientElement envelope (historical verdict; corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** The audit below establishes
+> scalar aggregation in the inspected implementation. It does not establish
+> that this carrier is mathematically minimal, that the catalog is exhaustive,
+> or that every TNFR-consistent extension must reduce to it.
 
 **Pre-registration closure.**  This section consumes the
 sub-verdict of §13quadraginta-prima (B3b) and issues the final
@@ -10353,19 +10062,12 @@ mechanisms:
 | B2 (T-φ)     | phase           | ``wrap_angle`` projection discipline    | *projection discipline* |
 | B3 (T-ΔNFR)  | nodal gradient  | BSAD bilinear-scalar aggregation        | *spatial-channel aggregation* |
 
-The four mechanism classes are structurally orthogonal (closure
-vs. temporal aggregation vs. spatial projection vs. multi-channel
-aggregation) and span the natural axes of expressivity-suppression
-on a graph-coupled scalar field theory.  This is a strong
-indication that L3* is not a coincidence of three or four nearby
-observables but a *catalog-wide property* of the canonical
-13-operator + grammar-U1–U6 + tetrad-:math:`(Φ_s,
-\|∇φ\|, K_φ, ξ_C)` formalism: every canonical observable's
-expressivity demand is matched by a canonical discharge mechanism
-of an appropriate class.  **L3\* is hereby promoted from
-provisional refinement to a stable working heuristic** and will be
-applied predictively at Tier 2 (graph-level parameters, B4–B6) and
-Tier 3 (derived diagnostic fields).
+The four labels organize the audited examples. They are neither proved
+orthogonal nor shown to span all expressivity questions on graph-coupled
+fields. L3* is therefore retained only as a *historical working heuristic*
+for prioritizing finite source audits. It is not a catalog-wide theorem,
+does not establish tetrad completeness, and cannot decide Tier-2 or Tier-3
+carrier questions without an independently specified admissible class.
 
 **Predictive use of L3\* for Tier 2 (advisory, not binding).**
 Where Tier 2 sub-questions ask whether a graph-level scalar
@@ -10375,11 +10077,10 @@ canonical discharge mechanism in the catalog that already absorbs
 the relevant expressivity demand, the upgrade is non-canonical*.
 For example:
 
-- **B4 (T-REMESH-window** :math:`(\tau_l, \tau_g)`**)**: the N15
-  closure (REMESH-∞ derivation, §1–§23 of
-  ``theory/REMESH_INFINITY_DERIVATION.md``) already supplies the
-  asymptotic-limit discharge for continuous-time kernel
-  expressivity; L3* predicts NEGATIVE.
+- **B4 (T-REMESH-window** :math:`(\tau_l, \tau_g)`**)**: the current
+  runtime uses fixed integer delays, while the corrected N15 cyclic model is
+  a separate finite filter with GCD fixed modes. Neither settles whether a
+  continuous memory model is useful under additional assumptions.
 - **B5 (T-Δφ_max)**: the canonical global ``Δφ_max`` derived from
   :math:`\gamma/\pi` discharges the per-edge / angle-of-attack
   expressivity via the U3 single-scalar coupling discipline; L3*
@@ -10486,1255 +10187,255 @@ This section:
   :math:`\sigma_1 / \sigma_{2,3} \sim 10^2` at both resolutions).
 
 ---
-## §13quadraginta-tertia. T-REMESH-window Pre-registration: The Memory-Window Type-of-Object Conjecture (B4 Phase a; Diagnostic Only — Does NOT Advance G4 = RH)
+## §13quadraginta-tertia. T-REMESH-window Pre-registration (B4 Phase a; historical diagnostic, corrected scope)
 
-**Programme position.**  Fifth executed sub-question of the Catalog
-Type-Hygiene Programme (after B0 = T-νf NEGATIVE, B1 = T-EPI
-NEGATIVE, B2 = T-φ NEGATIVE, B3 = T-ΔNFR NEGATIVE — Tier 1 closed).
-Phase a of the standard three-phase rhythm: pre-register the
-conjecture, fix the diagnostic, commit a *necessary-condition*
-empirical signature, deliberately defer the forcing-axiom analysis
-(B4b) and the final verdict + envelope classification (B4c) to
-separate commits.
+> **SUPERSEDED / CORRECTED (September 2026).**  The original Phase-a
+> text conflated three different objects: the runtime REMESH history lookup,
+> a finite cyclic fixed-delay Fourier filter, and a hypothetical continuous
+> memory kernel.  The runtime accepts fixed finite integer delays.  The finite
+> Fourier model has fixed modes determined by
+> :math:`\gcd(\tau_l,\tau_g)`; :math:`\operatorname{lcm}(\tau_l,\tau_g)`
+> is only a convenient sample-alignment period.  Neither object defines a
+> literal runtime :math:`\tau_g\to\infty` limit or an analytic
+> :math:`S(T)` kernel.
 
-**Honest scope (mandatory).**  This section pre-registers a
-*type-of-object conjecture* and a *diagnostic*.  It does **not**
-promote any continuous-time / fractional-order REMESH-window
-construction to canonical status, does **not** modify the
-13-operator catalog, does **not** modify any existing source file
-in ``src/tnfr/`` (only adds the diagnostic module
-``src/tnfr/riemann/remesh_window_type_signature.py``, its
-re-export in ``src/tnfr/riemann/__init__.py``, and the demo
-``examples/05_type_hygiene/82_remesh_window_type_signature_demo.py``), and does
-**not** by itself advance G4 = RH.  The diagnostic is a
-*necessary-condition* probe: a non-trivial signature is required,
-but not sufficient, for a continuous-kernel or fractional-order
-lift of the REMESH window to be canonically necessary.
+### §13quadraginta-tertia.1 — Motivation and runtime witness
 
-### §13quadraginta-tertia.1 — Motivation and literal canonical witness
+The current implementation reads `REMESH_TAU_LOCAL` and
+`REMESH_TAU_GLOBAL` through `int(...)` and indexes a finite EPI history
+deque.  Its default delays are 4 and 8.  This is a source-level fact about the
+current runtime contract.  It is not a theorem that integer delays are the only
+mathematically admissible memory model.
 
-The TNFR REMESH operator implements temporal coupling EPI(t) ↔
-EPI(t − τ) across the canonical memory window
-(τ_l, τ_g) ∈ ℕ × ℕ.  The canonical implementation
-:func:`tnfr.operators.remesh.apply_network_remesh` at
-``src/tnfr/operators/remesh.py:1212`` reads the window via
-``int(get_param(...))``:
+The module `remesh_infinity_residue_split.py` retains a legacy public name.
+It implements a separate finite cyclic DFT diagnostic for fixed delays; it does
+not execute an infinite-delay limit.
 
-```python
-# src/tnfr/operators/remesh.py:1212
-def apply_network_remesh(G: TNFRGraph) -> None:
-    ...
-    tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
-    tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
-    ...
-    past_g = hist[-(tau_g + 1)]
-    past_l = hist[-(tau_l + 1)]
-```
+### §13quadraginta-tertia.2 — Current REMESH-window inventory
 
-Canonical defaults are integer-valued
-(``src/tnfr/config/defaults_core.py:221-223``):
+| Surface | Current representation | What follows |
+|---|---|---|
+| Runtime parameters | two non-negative integers | Fixed history slots are selected. |
+| Runtime history | finite deque | Only retained snapshots can be read. |
+| Recorded REMESH metadata | integer delays per event | The executed delay pair is reproducible. |
+| Finite cyclic Fourier diagnostic | fixed-delay mask on a finite signal | Fixed modes have period :math:`\gcd(\tau_l,\tau_g)`. |
+| LCM | finite sample alignment | It does not determine fixed modes or a resonance theorem. |
 
-```python
-REMESH_TAU_GLOBAL: int = 8
-REMESH_TAU_LOCAL: int = 4
-REMESH_ALPHA: float = 0.5
-```
+This table inventories current source behavior.  It does not establish catalog
+completeness, minimality, or the impossibility of another memory representation.
 
-The downstream consumers are the canonical EPI history deque
-``G.graph["_epi_hist"]`` populated by
-:func:`tnfr.dynamics.runtime._update_epi_hist` at
-``src/tnfr/dynamics/runtime.py:413``, and the N15 REMESH-∞ closure
-(``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8) whose entire
-derivation is parametrised by integer (τ_l, τ_g) ∈ ℕ² and whose
-transfer-matrix construction is integer-indexed by construction.
+### §13quadraginta-tertia.3 — Candidate continuous or fractional envelope
 
-### §13quadraginta-tertia.2 — Catalog statement of the REMESH window
+A real-valued interpolated delay, an integral memory kernel, or a fractional
+temporal model can be specified as an auxiliary research envelope
+(`ContinuousWindowKernel`).  Such a model needs its own state space,
+interpolation or quadrature rule, stability assumptions, and comparison with
+the nodal equation.  The current runtime neither implements nor rules out that
+independent model.
 
-Across the canonical engine, (τ_l, τ_g) is consistently typed and
-stored as a pair of non-negative integers:
+### §13quadraginta-tertia.4 — Corrected research question
 
-| Surface                                                       | Type / domain                        |
-|---------------------------------------------------------------|--------------------------------------|
-| Storage (``G.graph["REMESH_TAU_LOCAL"]``, ``..._GLOBAL``)     | ``int ∈ ℕ_{≥0}``                     |
-| Canonical reader ``apply_network_remesh``                     | ``int()`` coercion at entry          |
-| Canonical defaults (``defaults_core.py:221-223``)             | ``int = 4``, ``int = 8``             |
-| EPI history indexer ``hist[-(tau + 1)]``                      | integer Python negative index        |
-| N15 REMESH-∞ asymptotic (``REMESH_INFINITY_DERIVATION.md``)   | integer-indexed transfer matrix      |
-| RemeshMeta dict log (``tau_global``, ``tau_local``)           | ``int`` per recorded event           |
+The source-level question is:
 
-Every appearance of the REMESH window in the canonical operator-
-bound API resolves to a pair of Python ``int`` values.  The
-catalog therefore types the REMESH window as the canonical
-*integer memory window* — i.e. an element of ℕ² indexing the
-discrete temporal coupling between the canonical EPI history deque
-slots.
+> Does the audited runtime or its public REMESH contract currently require a
+> non-integer delay or continuous kernel?
 
-### §13quadraginta-tertia.3 — The candidate non-canonical envelope: continuous kernel / fractional-order lift
+For the audited implementation the answer is **no**: it uses finite integer
+history lookups.  The broader question of which memory models may be useful or
+derivable under additional assumptions remains open.  U1--U6 do not settle it.
 
-The smallest enrichment that would *strictly increase* expressive
-power over the canonical integer-window representation is a
-**continuous-window lift** of the REMESH coupling to a non-integer
-indexing scheme:
+### §13quadraginta-tertia.5 — What the type-signature diagnostic measures
 
-- A per-event real-valued window
-  :math:`(\tau_l, \tau_g) \in \mathbb{R}_{>0}^{2}` requiring
-  interpolation between adjacent EPI history slots.
-- A continuous-time integral kernel
-  :math:`K(t, s)` with EPI(t) coupled to ``∫ K(t, s) EPI(s) ds``
-  rather than to a single discretely-indexed past sample.
-- A fractional-order temporal coupling operator
-  :math:`{\partial^{\alpha}\!/\!\partial t^{\alpha}}\,\mathrm{EPI}`
-  for non-integer :math:`\alpha`, equivalent in the Caputo /
-  Riemann–Liouville sense to a memory kernel with non-integer
-  decay exponent.
+`compute_remesh_window_type_signature` records:
 
-Call this envelope **E5 = ContinuousWindowKernel** (in symmetry
-with E1 = νf Pontryagin partner :math:`\widehat{\mathbb{Z}}`,
-E2 = ``BEPIElement``, E3 = ``CoverElement``,
-E4 = ``TensorGradientElement``).  An E5-typed REMESH window would
-carry, per event, either a continuous real-valued window or an
-integral kernel that the canonical integer-window mechanism cannot
-in general represent without interpolation.
+1. the fraction of observed runtime delay values represented as integers; and
+2. the variation among three runs with adjacent integer delay pairs.
 
-The pre-registered question is:
+The second quantity samples only three discrete parameter choices.  A small
+value means those three outputs are close for that seed and horizon; a large
+value means they differ.  It does not measure continuity between integer
+delays, prove that interpolation is necessary, or test a continuous kernel.
+The retained legacy verdict
+`CONTINUOUS_KERNEL_NECESSARY` is therefore only a threshold-bin name for this
+finite signature.
 
-> **T-REMESH-window Conjecture (formal statement,
-> §13quadraginta-tertia.4).**  Does any canonical TNFR
-> construction force the REMESH memory window to be typed as an
-> E5 = ContinuousWindowKernel object — i.e. is there a canonical
-> operator, telemetry surface, conservation law, or grammar rule
-> whose specification requires non-integer (τ_l, τ_g) or a
-> continuous integral kernel K(t, s) rather than the canonical
-> integer pair?
+### §13quadraginta-tertia.6 — Recorded finite baseline
 
-The empirical signature of §13quadraginta-tertia.5 is a *necessary
-condition*: if the canonical engine produces
-:math:`S_{\tau} \approx 0` and integer storage fraction
-:math:`= 1.0`, then no canonical mechanism observed at the
-diagnostic surface forces the E5 envelope.
+| Resolution | seed | :math:`S_\tau` | integer fraction | bracket L2 | tested windows |
+|---|---:|---:|---:|---:|---|
+| n=24, warmup=16, events=8 | 17 | 0.000269 | 48/48 | 0.005417 | (4,8), (5,9), (6,10) |
+| n=48, warmup=24, events=12 | 31 | 0.002229 | 72/72 | 0.011486 | (6,12), (7,13), (8,14) |
 
-### §13quadraginta-tertia.4 — T-REMESH-window Conjecture (formal statement)
+These reproducible finite observations show that the tested outputs were
+insensitive to those particular adjacent integer-delay changes.  They do not
+support an asymptotic claim or a completeness result.
 
-The two-axis diagnostic operationalises the following formal
-question:
+### §13quadraginta-tertia.7 — Corrected interpretation of the pre-registration
 
-> **T-REMESH-window Conjecture.**  Let
-> :math:`(\tau_l, \tau_g) \in \mathbb{N}_{\ge 0}^{2}` denote the
-> canonical REMESH memory window, stored as Python integers in
-> ``G.graph["REMESH_TAU_LOCAL"]`` and ``G.graph["REMESH_TAU_GLOBAL"]``
-> and read by ``apply_network_remesh`` via ``int(get_param(...))``.
-> Then no canonical TNFR construction (no canonical operator
-> :math:`\in` {AL, EN, IL, OZ, UM, RA, SHA, VAL, NUL, THOL, ZHIR,
-> NAV, REMESH}, no telemetry surface in ``src/tnfr/physics/``, no
-> conservation law in ``physics/conservation.py``, no grammar rule
-> in U1–U6, no rule of the N15 REMESH-∞ closure in
-> ``REMESH_INFINITY_DERIVATION.md``) requires the window to be
-> typed as an E5 = ContinuousWindowKernel object.
+The historical **NEGATIVE** hypothesis is retained only in the narrow
+source-status sense: no continuous-window object was found in the audited
+runtime.  Its former appeal to a mean-ergodic
+:math:`\tau_g\to\infty` discharge is withdrawn.  The finite cyclic filter
+is governed by its fixed delay pair and GCD fixed modes.
 
-The pre-registered hypothesis (§13quadraginta-tertia.7) is the
-**NEGATIVE** answer.
+### §13quadraginta-tertia.8 — Scope
 
-### §13quadraginta-tertia.5 — Diagnostic S_τ (two-axis necessary condition)
+This phase does not:
 
-The diagnostic
-:func:`tnfr.riemann.compute_remesh_window_type_signature` returns a
-:class:`RemeshWindowTypeSignatureCertificate` with the following
-two structural axes:
-
-**Axis A — Integer storage axis.**  At every recorded REMESH event
-(at every step where ``apply_network_remesh`` is invoked), inspect
-the canonical storage slots ``G.graph["REMESH_TAU_LOCAL"]`` and
-``G.graph["REMESH_TAU_GLOBAL"]``.  Record the fraction
-:math:`F_{\mathrm{int}}` of slot reads whose stored value is a
-Python ``int`` (or a numerical value with zero fractional part).
-The canonical engine produces :math:`F_{\mathrm{int}} = 1.0` by
-construction (the ``int(get_param(...))`` coercion at entry).  Any
-:math:`F_{\mathrm{int}} < 1.0` would be a structural witness that
-some canonical surface stores or propagates a non-integer window —
-direct evidence for the E5 envelope.
-
-**Axis B — Window-refinement bracket axis.**  For each integer
-offset :math:`j \in \{0, 1, 2\}`, build a freshly-warmed canonical
-graph from the same seed, set
-:math:`(\tau_l, \tau_g) = (\tau_l^{0} + j, \tau_g^{0} + j)`, fire
-:func:`apply_network_remesh` ``n_events`` times, and record the
-final per-node EPI snapshot.  Compute, per node, the relative
-variance
-:math:`\mathrm{Var}(\mathrm{EPI})\,/\,\langle |\mathrm{EPI}| \rangle`
-across the bracket, average across nodes, and squash via
-:math:`\tanh` to a signature
-:math:`S_{\tau} \in [0, 1]`.  If
-:math:`S_{\tau} \approx 0`, the canonical post-REMESH state is
-*flat* under integer-window refinement — adjacent integer windows
-in the bracket already produce indistinguishable outputs, so no
-canonical mechanism distinguishes between them in a way that would
-force interpolation.  If :math:`S_{\tau} \to 1`, the canonical
-post-REMESH state is *saturated* across the bracket — the integer-
-resolution discretisation is at the edge of what the canonical
-mechanism can resolve, and a continuous-window lift might be
-canonically necessary.
-
-The verdict triad is:
-
-- ``INTEGER_WINDOW_ADEQUATE`` if
-  :math:`S_{\tau} < 0.15` **and** :math:`F_{\mathrm{int}} = 1.0`.
-- ``CONTINUOUS_KERNEL_NECESSARY`` if
-  :math:`S_{\tau} > 0.5` **or** :math:`F_{\mathrm{int}} < 1.0`.
-- ``INDETERMINATE`` otherwise.
-
-### §13quadraginta-tertia.6 — Pre-registered numerical signature
-
-The diagnostic is executed at two resolutions at pre-registration
-time (commit-time numerical fingerprint, frozen for later
-comparison):
-
-| Resolution                            | seed | S_τ        | F_int (int/total)     | raw rel.var. | bracket L2 | windows                              | verdict                     |
-|---------------------------------------|------|------------|-----------------------|--------------|------------|--------------------------------------|-----------------------------|
-| n=24, warmup=16, (τ_l,τ_g)=(4,8), e=8 | 17   | 0.000000   | 1.0000 (48/48)        | 4.107780e-09 | 0.000021   | {(4,8), (5,9), (6,10)}               | INTEGER_WINDOW_ADEQUATE     |
-| n=48, warmup=24, (τ_l,τ_g)=(6,12), e=12 | 31 | 0.000000   | 1.0000 (72/72)        | 0.000000e+00 | 0.000000   | {(6,12), (7,13), (8,14)}             | INTEGER_WINDOW_ADEQUATE     |
-
-**Honest reading of this signature at Phase a.**  Both the integer
-storage axis and the window-refinement bracket axis return
-*empirically decisive integer-adequate* values at both
-resolutions.  The dominant empirical facts are:
-
-(a) **Perfect integer storage fraction** at both resolutions
-(``48/48`` and ``72/72`` samples).  The canonical REMESH window
-slots are, at every recorded event, Python ``int`` values by
-construction — consistent with the catalog row
-:math:`(\tau_l, \tau_g) \in \mathbb{N}^{2}` and with the
-``int(get_param(...))`` coercion at the canonical reader entry.
-
-(b) **Machine-zero bracket signature** at both resolutions
-(:math:`S_{\tau} = 0` with raw relative variance
-:math:`\sim 10^{-9}` at the smaller resolution and literally
-:math:`0.0` at the larger).  Adjacent integer windows in the
-bracket produce indistinguishable post-REMESH EPI snapshots —
-there is no canonical mechanism in the observed surface that
-distinguishes :math:`(\tau_l, \tau_g)` from :math:`(\tau_l + 1,
-\tau_g + 1)` or :math:`(\tau_l + 2, \tau_g + 2)` in a way that
-would force interpolation between integer slots.
-
-These two facts together — *perfect integer storage* and
-*machine-zero bracket signature* — yield the mechanical verdict
-``INTEGER_WINDOW_ADEQUATE`` at both resolutions, which is the
-*strongest* pre-registration signature observed so far in the
-Type-Hygiene Programme (stronger than B3a, which still showed
-:math:`R_{\mathrm{eff}} \approx 1.13`; here the bracket variance
-is literally zero at the larger resolution).
-
-This makes the pre-registered hypothesis of
-§13quadraginta-tertia.7 correspondingly stronger.
-
-### §13quadraginta-tertia.7 — Pre-registered hypothesis for B4b/B4c
-
-Based on (i) the literal-catalog inspection of
-§13quadraginta-tertia.2, (ii) the integer-indexed transfer-matrix
-construction of the N15 REMESH-∞ closure
-(``REMESH_INFINITY_DERIVATION.md`` §§1–8), (iii) the doubly-
-decisive empirical signature of §13quadraginta-tertia.6
-(:math:`F_{\mathrm{int}} = 1.0` *and* :math:`S_{\tau} = 0` at both
-resolutions), (iv) the universal absence of any continuous-kernel /
-fractional-order REMESH-window argument in canonical operator
-signatures, and (v) the Tier-2 prediction from §13quadraginta-
-secunda (B4 predicted NEGATIVE per L3*), the **pre-registered
-expected verdict** at B4c is:
-
-> **NEGATIVE.** The canonical type of the REMESH memory window is
-> the canonical integer pair :math:`(\tau_l, \tau_g) \in
-> \mathbb{N}^{2}`.  E5 = ContinuousWindowKernel is a strictly
-> *richer* envelope than the canonical type but is **not** required
-> by any canonical TNFR construction.  The predicted canonical
-> discharge mechanism is the N15 REMESH-∞ closure (mean ergodic
-> theorem applied to the contractive transfer matrix at integer
-> :math:`\tau_g \to \infty`).  No promotion, no deletion, no
-> deprecation, no modification of the catalog.
-
-This pre-registration commits to that expected verdict so that the
-B4b forcing-axiom reduction cannot be retrofitted: if the F1–F10
-analysis yields a different verdict, the pre-registration record of
-§13quadraginta-tertia.6 makes the inversion explicit and audit-
-traceable.
-
-### §13quadraginta-tertia.8 — Honest scope (what this does and does not do)
-
-This pre-registration section, the diagnostic module, and the demo:
-
-- **Does not** promote ``ContinuousWindowKernel`` (or any
-  continuous-time / fractional-order REMESH-window lift) to
-  canonical status.
-- **Does not** modify the catalog
-  (``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §3, §4, §6 will
-  only be touched at B4c; B4a touches only the §4 row Phase-a
-  column and the §3 progress paragraph).
-- **Does not** modify any existing source file in ``src/tnfr/``;
-  only adds the diagnostic module
-  ``src/tnfr/riemann/remesh_window_type_signature.py`` (and its
-  export in ``src/tnfr/riemann/__init__.py``) and the demo
-  ``examples/05_type_hygiene/82_remesh_window_type_signature_demo.py``.
-- **Does not** change the canonical
-  ``tnfr.operators.remesh.apply_network_remesh``,
-  ``REMESH_TAU_LOCAL`` / ``REMESH_TAU_GLOBAL`` defaults, the EPI
-  history deque, the N15 REMESH-∞ derivation, or any tetrad field
-  implementation.
-- **Does not** by itself decide T-REMESH-window; B4b (forcing-
-  axiom reduction) and B4c (final verdict + envelope
-  classification) are required.
-- **Does not** advance G4 = RH or any of the open ζ-track / L-track
-  RH-equivalents (P17–P49 attack surface).
-- **Does not** rely on T-νf (B0, NEGATIVE), T-EPI (B1, NEGATIVE),
-  T-φ (B2, NEGATIVE), or T-ΔNFR (B3, NEGATIVE) in any way that
-  would force their verdicts to be re-opened.
+- promote or refute a continuous/fractional memory model;
+- change the runtime delays or operator registry;
+- prove U2 convergence, energy monotonicity, or U5 hierarchy convergence;
+- identify an analytic :math:`S(T)` operator or kernel;
+- establish catalog completeness or advance G4 = RH.
 
 ### §13quadraginta-tertia.9 — Cross-references
 
-- §13triginta-prima — T-νf pre-registration (precedent for B0).
-- §13triginta-tertia — T-νf NEGATIVE verdict + E1 classification
-  (closes B0).
-- §13triginta-quarta — T-EPI pre-registration (template for the
-  three-phase rhythm).
-- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 = ``BEPIElement``
-  classification (closes B1).
-- §13triginta-octava — T-φ pre-registration.
-- §13triginta-decima — T-φ NEGATIVE verdict + E3 = ``CoverElement``
-  classification (closes B2).
-- §13quadraginta — T-ΔNFR pre-registration (template for this
-  section).
-- §13quadraginta-secunda — T-ΔNFR NEGATIVE verdict +
-  E4 = ``TensorGradientElement`` classification + L3* promotion
-  + three Tier-2 NEGATIVE predictions for B4/B5/B6 (closes B3,
-  closes Tier 1, sets predictive baseline for this sub-question).
-- §13septies — T-HP open content (independent, untouched by this
-  pre-registration).
-- §19.1 — Full P1–P49 milestone table.
-- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §3, §4 —
-  programme tracker (advances on this commit at row B4 Phase a only).
-- ``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8 — N15 REMESH-∞
-  closure (integer-indexed transfer-matrix derivation; predicted
-  canonical discharge mechanism for B4c).
-- ``src/tnfr/operators/remesh.py:1212`` —
-  ``apply_network_remesh`` canonical implementation (anchor).
-- ``src/tnfr/config/defaults_core.py:221-223`` — canonical integer
-  defaults ``REMESH_TAU_LOCAL = 4``, ``REMESH_TAU_GLOBAL = 8``.
-- ``src/tnfr/dynamics/runtime.py:413`` —
-  ``_update_epi_hist`` (canonical EPI history deque populator).
-- ``src/tnfr/riemann/remesh_window_type_signature.py`` —
-  diagnostic implementation (added on this commit).
-- ``examples/05_type_hygiene/82_remesh_window_type_signature_demo.py`` — demo
-  (added on this commit).
+- `src/tnfr/operators/remesh.py` — finite runtime delay lookup.
+- `src/tnfr/riemann/remesh_window_type_signature.py` — finite
+  three-window diagnostic.
+- `theory/REMESH_INFINITY_DERIVATION.md` — corrected finite cyclic
+  fixed-delay derivation.
+- §13triginta — finite P50 DFT residue split and measured leakage.
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` — program-level scope.
 
 ---
-## §13quadraginta-quarta. Derivation of (P-REMESH-window-Continuous-Kernel-Carrier) from the Canonical Catalog — Foundational Reduction of the REMESH-window-Type Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
 
-**Pre-registration status.**  This section executes the
-forcing-axiom reduction phase (B4b) of the T-REMESH-window
-program (§13quadraginta-tertia): it attempts to derive the
-continuous-kernel carrier principle for the canonical REMESH
-memory window (P-REMESH-window-Continuous-Kernel-Carrier) from
-the canonical six invariants + nodal equation + Structural
-Conservation Theorem + Variational Principle + REMESH operator
-+ N15 REMESH-∞ closure, *or* to identify and isolate the actual
-residual axiom that the derivation requires beyond the catalog.
+## §13quadraginta-quarta. REMESH-window source audit (B4 Phase b; corrected scope)
 
-The honest verdict (executed in §13quadraginta-quinta) is
-pre-registered as one of:
+> **SUPERSEDED / CORRECTED (September 2026).**  The former title and
+> derivation claimed that the canonical catalog discharged every possible
+> continuous memory carrier through an integer-indexed REMESH-infinity theorem.
+> The valid result is narrower: the audited runtime contains fixed finite
+> integer delays and no callable continuous-kernel carrier.
 
-- `COROLLARY_DERIVED`: the continuous-kernel carrier principle
-  follows from invariants 1–6 alone.
-- `CONDITIONAL_COROLLARY`: it follows under one additional
-  identifiable axiom strictly weaker than itself.
-- `INDEPENDENT_AXIOM`: it is independent of the catalog.
+### §13quadraginta-quarta.1 — Available evidence
 
-Scope (mandatory honesty): this section does **not** advance
-G4 = RH, does **not** close T-HP, does **not** introduce or
-modify any canonical operator, does **not** delete or deprecate
-any continuous-kernel / fractional-order REMESH construction,
-and does **not** by itself close T-REMESH-window.  It locates
-the foundational axiom *one structural level below*
-(P-REMESH-window-Continuous-Kernel-Carrier) and hands
-T-REMESH-window back to that deeper question.
+The relevant implementation surfaces are the integer parameters, the finite
+history deque, the REMESH update, its metadata, and the finite type-signature
+experiment.  They characterize what the current engine executes.  The
+structural tetrad, U1--U6 policy checks, Noether-like balance diagnostics, and
+the auxiliary symplectic model do not force a memory-window type.
 
-The literal canonical statement under scrutiny:
+### §13quadraginta-quarta.2 — What the nodal equation requires
 
-> **(P-REMESH-window-Continuous-Kernel-Carrier).**  In the
-> canonical TNFR formulation, the REMESH memory window must be
-> carried as a continuous-time integral kernel
-> :math:`K: \mathbb{R}_{\ge 0} \times \mathbb{R}_{\ge 0} \to
-> \mathbb{R}` with EPI coupled via
-> :math:`\int_0^t K(t, s)\, \mathrm{EPI}(s)\, ds`, or as a
-> fractional-order temporal coupling operator
-> :math:`\partial^\alpha\!/\!\partial t^\alpha\, \mathrm{EPI}`
-> for non-integer :math:`\alpha` — equivalently a
-> ``ContinuousWindowKernel`` (candidate envelope E5) — *not* via
-> the canonical integer pair :math:`(\tau_l, \tau_g) \in
-> \mathbb{N}^2` indexing the canonical EPI history deque.
+The nodal equation specifies an instantaneous change rate once
+:math:`\nu_f` and :math:`\Delta\mathrm{NFR}` are supplied.  A delayed,
+distributed, interpolated, or fractional pressure law needs an additional
+constitutive specification.  The equation alone selects none of those choices.
 
-### §13quadraginta-quarta.1 Available Canonical Tools
+### §13quadraginta-quarta.3 — Finite runtime result
 
-The derivation may use only the following canonical machinery:
+For the current source:
 
-1. **Nodal equation**: :math:`\partial \mathrm{EPI}/\partial t =
-   \nu_f \cdot \Delta\mathrm{NFR}(t)`.  No memory-window term
-   appears in the canonical nodal equation; temporal coupling is
-   *external*, supplied exclusively by the REMESH operator.
-2. **Six canonical invariants** (AGENTS.md), in particular
-   **Reproducible Dynamics** (#6) which requires deterministic
-   integer-indexed state at every operator boundary.
-3. **Grammar U1–U6**, in particular **U2 (CONVERGENCE &
-   BOUNDEDNESS)** which bounds the time-integral
-   :math:`\int \nu_f \cdot \Delta\mathrm{NFR}\, dt < \infty`
-   along the canonical discrete trajectory.
-4. **REMESH operator** (canonical operator #13), implemented as
-   :func:`tnfr.operators.remesh.apply_network_remesh` at
-   ``src/tnfr/operators/remesh.py:1212`` reading the memory
-   window via integer Python indexing of the EPI history deque:
+- delays are coerced to integers;
+- the history buffer is finite;
+- a REMESH event reads fixed retained snapshots;
+- there is no runtime process in which `tau_g` tends to infinity.
 
-   ```python
-   # src/tnfr/operators/remesh.py:1212
-   def apply_network_remesh(G: TNFRGraph) -> None:
-       ...
-       tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
-       tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
-       ...
-       past_g = hist[-(tau_g + 1)]
-       past_l = hist[-(tau_l + 1)]
-   ```
+This establishes absence from the audited API, not mathematical impossibility.
 
-5. **Canonical defaults** (``defaults_core.py:221-223``):
-   ``REMESH_TAU_LOCAL: int = 4``, ``REMESH_TAU_GLOBAL: int = 8``,
-   ``REMESH_ALPHA: float = 0.5``.  All canonical defaults are
-   integer-valued by typed declaration.
-6. **EPI history deque** ``G.graph["_epi_hist"]`` populated by
-   :func:`tnfr.dynamics.runtime._update_epi_hist` at
-   ``src/tnfr/dynamics/runtime.py:413``: a Python deque of
-   per-step EPI snapshots, integer-indexed by definition.
-7. **N15 REMESH-∞ asymptotic** (``REMESH_INFINITY_DERIVATION.md``
-   §§1–8): the REMESH-∞ operator
-   :math:`\mathcal{R}_\infty = \lim_{\tau_g \to \infty}
-   \mathcal{R}_{\tau_l, \tau_g, \alpha}` is constructed as the
-   mean-ergodic limit of a *contractive integer-indexed transfer
-   matrix* acting on the integer-indexed state vector
-   :math:`x(t) = (\mathrm{EPI}(t), \ldots,
-   \mathrm{EPI}(t - T_{\max}))^\top \in \mathbb{R}^{T_{\max}+1}`.
-   The asymptotic limit is taken over integer :math:`\tau_g`; no
-   continuous-time kernel appears.
-8. **Structural Conservation Theorem**
-   (`src/tnfr/physics/conservation.py`): conservation laws close
-   on the per-step canonical state at integer time indices; no
-   continuous-time current or fractional charge appears.
+### §13quadraginta-quarta.4 — Finite cyclic comparison model
 
-### §13quadraginta-quarta.2 What the Canonical Catalog Forces (Integer-Window Layer)
+For fixed delays :math:`\tau_l,\tau_g`, the corrected cyclic model applies a
+finite Fourier multiplier.  A mode is fixed exactly when both delay phases are
+one, hence the fixed-mode period is
+:math:`\gcd(\tau_l,\tau_g)`.  Choosing a signal length divisible by the
+LCM aligns both shifts with the sample grid; it does not create the fixed
+subspace.  A finite window can leak energy between a selected bin set and its
+complement.
 
-The chain of forced structure for the REMESH memory window is:
+### §13quadraginta-quarta.5 — Continuous-window envelope
 
-- **(W1) The canonical REMESH reader is integer-indexed by typed
-  construction.**  The expression ``hist[-(tau + 1)]`` is a Python
-  list / deque negative-index lookup; ``tau`` is coerced to
-  ``int`` at function entry via ``int(get_param(...))``; the
-  index ``-(tau + 1)`` is a Python integer.  No interpolation
-  between adjacent history slots is performed, and no canonical
-  branch admits a non-integer offset.
+A continuous kernel remains a separately specified research model.  Comparing
+it with the engine would require a sampling map and an error or convergence
+theorem.  None is supplied by the current code or by the finite signature.
 
-- **(W2) The EPI history deque is integer-indexed by
-  construction.**  ``_update_epi_hist`` appends one snapshot per
-  step.  The deque is a discrete sequence
-  :math:`(\mathrm{EPI}_0, \mathrm{EPI}_1, \ldots, \mathrm{EPI}_T)`
-  with :math:`T \in \mathbb{N}`; there is no canonical
-  in-between-step state and no canonical interpolation between
-  snapshots.
+### §13quadraginta-quarta.6 — Status of the legacy DITS label
 
-- **(W3) U2 boundedness is a discrete sum (Riemann sum at unit
-  step) of a scalar integrand.**  The canonical
-  :math:`\int \nu_f \cdot \Delta\mathrm{NFR}\, dt` is realised as
-  a sum
-  :math:`\sum_{n=0}^{N-1} \nu_f(t_n) \cdot \Delta\mathrm{NFR}(t_n)
-  \cdot \Delta t` at integer time indices.  No canonical
-  formulation of U2 references a continuous-time Lebesgue
-  integral with non-trivial kernel; the integrand is sampled at
-  the canonical integer time grid.
+The historical `Discrete-Integer Temporal Sufficiency` label now means only:
+the current runtime contract is fully executable with its declared integer
+delays.  It does not mean that all admissible TNFR memory laws have been
+classified, or that a continuous carrier has been disproved.
 
-- **(W4) N15 REMESH-∞ closure is integer-indexed by
-  construction.**  The contractive transfer matrix is built from
-  the discrete state vector :math:`x(t) \in
-  \mathbb{R}^{T_{\max}+1}` with integer slot index, and the
-  mean-ergodic limit is taken over integer :math:`\tau_g`.  No
-  step of the §§1–8 derivation references a continuous-time
-  kernel, a fractional power of a continuous operator, or any
-  non-integer index.
+### §13quadraginta-quarta.7 — Corrected sub-verdict
 
-The conjunction W1+W2+W3+W4 establishes that **the entire
-canonical REMESH machinery closes consistently with the
-integer-window discipline**.  The 13-operator catalog never
-constructs, reads, propagates, or preserves a continuous-time
-kernel or fractional-order memory operator.
+The current runtime has **no implemented continuous-window carrier**.  The
+broader derivability and usefulness questions are open.  No analytic
+:math:`S(T)` kernel or REMESH-infinity transfer theorem follows.
 
-### §13quadraginta-quarta.3 The Gap Between Integer-Sampling Discipline and Continuous-Kernel Retention
+### §13quadraginta-quarta.8 — Diagnostic limitations
 
-Integer-window closure (W1–W4) is necessary but not sufficient
-to refute (P-REMESH-window-Continuous-Kernel-Carrier): one could
-still ask whether the catalog *also* admits a strictly-stronger
-continuous-kernel realisation in which the integer-indexed
-implementation is a faithful sampling projection from a
-continuous-time integral kernel :math:`K(t, s)` onto the
-canonical integer time grid.  The decisive question is whether
-the catalog *forces* such an upgrade.
+The adjacent-window statistic is a finite sensitivity probe.  Its threshold
+labels are descriptive API outputs.  Three integer samples cannot decide
+smoothness, interpolation error, fractional order, or continuum necessity.
 
-The only canonical mechanism that could conceivably preserve
-between-slot kernel data across the temporal evolution is a
-hypothetical "continuous branch" that propagates the full
-:math:`K(t, s)` alongside the integer-indexed EPI history deque.
-But the canonical engine **does not implement** any such branch:
-every REMESH event reads from the discrete deque at integer
-offsets, and there is no canonical alias for a continuous-kernel
-companion.
+### §13quadraginta-quarta.9 — Honest scope
 
-Formally, define the **Discrete-Integer Temporal Sampling
-discipline**:
+This audit is a source-typing result.  It does not prove convergence of runtime
+REMESH, U2, a Lyapunov candidate, or a U5 hierarchy, and it does not close the
+operator catalog or G4.
 
-> **Discrete-Integer Temporal Sampling discipline (DITS).**  In
-> the canonical TNFR formulation, every REMESH event *samples*
-> the EPI history at integer offsets
-> :math:`-(\tau + 1) \in -\mathbb{N}_{\ge 1}` via Python
-> negative-indexing of the canonical history deque.  Any
-> continuous-time intermediate (if it existed) is *systematically
-> projected* onto the canonical integer time grid via the
-> appended-per-step deque-population discipline of
-> ``_update_epi_hist``.  The continuous-kernel content :math:`K(t,
-> s)` for non-integer :math:`s` is *systematically collapsed to*
-> sampled values at integer :math:`s = t - (\tau + 1)\Delta t`
-> and is **not** retrievable from the canonical state.
+### §13quadraginta-quarta.10 — Cross-references
 
-This is the temporal-window analogue of the family of refutation
-principles already established for B1 (TMEP), B2 (PWDP), and B3
-(BSAD).  Where TMEP says "multi-modal EPI content is canonically
-realised *temporally* via REMESH, not *spatially* via a Banach
-internal carrier", PWDP says "phase-orbit content is canonically
-realised *as wrapped geodesic distance on* :math:`S^1`, not *as
-covering-space displacement on* :math:`\widetilde{S^1}`", and
-BSAD says "nodal-gradient content is canonically realised *as a
-single real scalar*, not *as a rank-:math:`\ge 2` tensor*", DITS
-says "memory-window content is canonically realised *as
-discrete-integer sampling at the canonical time grid*, not *as a
-continuous-time integral kernel or fractional-order operator*".
-
-DITS is *operationally complete*: under the canonical
-integer-sampling discipline, the engine reproduces P12–P15 to
-machine precision (§§10–12), the N15 REMESH-∞ closure derives
-fully analytically from the integer-indexed contractive transfer
-matrix (`REMESH_INFINITY_DERIVATION.md` §§1–8), classical and
-quantum-like regimes emerge (§§3–9), and all canonical
-conservation laws hold — *without* invoking any continuous-time
-kernel or fractional-order operator.  The B4a empirical signature
-:math:`F_{\mathrm{int}} = 1.0` (perfect integer storage at both
-resolutions, 48/48 and 72/72) and :math:`S_\tau = 0` (machine-
-zero bracket variance at both resolutions) is the
-*doubly-decisive empirical fingerprint of DITS*: structural
-zero-non-integer storage *and* empirical zero bracket variance
-under integer-window refinement, both axes returning the
-integer-adequate verdict on independent grounds.
-
-**Crucially**, the *machine-zero bracket variance* measured by
-the window-refinement axis of §13quadraginta-tertia.6 is
-*explained* by DITS without invoking
-(P-REMESH-window-Continuous-Kernel-Carrier): a canonical
-dynamics whose only consumed temporal-coupling input is a fixed
-integer-offset sample of the history deque will, in steady
-state, produce identical post-REMESH states for adjacent integer
-windows that all sample inside the convergent contractive
-regime.  The bracket invariance is *structural* (consequence of
-the integer-sampling discipline and the contractive transfer
-matrix), not a numerical accident.
-
-Therefore: **(P-REMESH-window-Continuous-Kernel-Carrier) is
-strictly stronger than what W1+W2+W3+W4 + DITS provide**, and
-any derivation must locate an additional canonical constraint
-that selects the continuous-kernel upgrade.
-
-### §13quadraginta-quarta.4 Candidate Forcing Constraints (Enumeration)
-
-The candidates available inside the canonical catalog are
-enumerated below.  Each row asks: *does this axiom force the
-continuous-kernel upgrade of the REMESH memory window?*
-
-| #  | Axiom | Source | Forces continuous-kernel carrier of REMESH window? |
-|---|---|---|---|
-| F1 | Operator exclusivity (only the 13 canonical operators couple EPI temporally). | AGENTS.md "Canonical Invariants #1". | **No** — REMESH writes via integer-offset deque reads (W1); empirically ``F_int = 1.0`` at both B4a resolutions. |
-| F2 | Reproducibility under fixed seeds. | AGENTS.md "Reproducible Dynamics" (invariant #6). | **No** — integer-indexed trajectories reproduce identically; continuous-kernel content is not part of the seeded state. |
-| F3 | Nodal-equation bilinear-scalar structure. | `nodal_equation.py`. | **No** — the nodal equation has no memory-window term; temporal coupling is external to the nodal equation and supplied exclusively by REMESH at integer offsets. |
-| F4 | Tetrad orthogonality and minimality of :math:`(\Phi_s, \|\nabla\phi\|, K_\phi, \xi_C)`. | AGENTS.md §"Minimal Structural Degrees of Freedom"; `STRUCTURAL_FIELDS_TETRAD.md`. | **No** — all four tetrad fields are scalar-valued and integer-time-indexed; none references a continuous-time kernel. |
-| F5 | U2 convergence: :math:`\int \nu_f \cdot \Delta\mathrm{NFR}\, dt < \infty`. | AGENTS.md "U2 CONVERGENCE & BOUNDEDNESS"; `grammar_core.py`. | **No** — realised as a discrete Riemann sum at integer time indices (W3); no continuous-time kernel appears in the canonical boundedness condition. |
-| F6 | Structural Conservation Theorem. | `physics/conservation.py`, `theory/STRUCTURAL_CONSERVATION_THEOREM.md`. | **No** — conservation closes on the per-step canonical state at integer time indices; no fractional or continuous current appears in :math:`\partial\rho/\partial t + \nabla \cdot \mathbf{J} = S_{\mathrm{grammar}}`. |
-| F7 | Variational principle (Lagrangian, symplectic conjugate pairs). | `physics/variational.py`, AGENTS.md §"Variational Confirmation". | **No** — the Lagrangian and Hamiltonian are evaluated at integer time indices; no fractional derivative appears in :math:`\mathcal{L}_i = T_i - V_i`. |
-| F8 | REMESH temporal aggregation. | `theory/REMESH_INFINITY_DERIVATION.md`, `operators/remesh.py:1212`. | **No** — REMESH samples the history deque at integer offsets via ``hist[-(tau+1)]``; the canonical implementation literally indexes by integer (W1+W2). |
-| F9 | N15 REMESH-∞ closure. | `REMESH_INFINITY_DERIVATION.md` §§1–8. | **No** — the entire N15 derivation is parameterised by integer :math:`\tau_g`; the contractive transfer matrix is integer-indexed; the mean-ergodic limit is taken over integer :math:`\tau_g \to \infty` (W4). |
-| F10 | Classical-limit / quantum-regime demos. | `examples/02_physics_regimes/12_classical_mechanics_demo.py`, `examples/02_physics_regimes/13_quantum_mechanics_demo.py`. | **No** — both regimes emerge from the integer-time-indexed canonical evolution; no demo references a continuous-time kernel or fractional-order temporal coupling. |
-
-**Result.** No canonical constraint in :math:`\{\mathrm{F1},
-\ldots, \mathrm{F10}\}` forces the continuous-kernel carrier
-upgrade of the REMESH memory window.  All ten admit consistent
-realisation with the integer-window discipline (as the current
-13-operator implementation demonstrates by existence, the N15
-closure demonstrates analytically, and the B4a empirical
-signature confirms doubly: :math:`F_{\mathrm{int}} = 1.0` across
-two independent demo resolutions, :math:`S_\tau = 0` at both —
-the *strongest pre-registration signature observed in the
-programme*).
-
-### §13quadraginta-quarta.5 The Hidden Axiom: (P-REMESH-window-Continuous-Retention)
-
-The derivation gap can be isolated cleanly.  Define:
-
-> **(P-REMESH-window-Continuous-Retention).**  In the canonical
-> TNFR formulation, the REMESH memory window must retain its
-> continuous-time content :math:`K(t, s)` for non-integer
-> :math:`s` across the integer-sampling step of
-> :func:`apply_network_remesh` — i.e. distinct continuous-time
-> intermediates producing the same integer-sampled value must
-> correspond to distinct canonical states, and conversely.
-
-**Claim.** (P-REMESH-window-Continuous-Kernel-Carrier) is a
-corollary of the canonical catalog *plus*
-(P-REMESH-window-Continuous-Retention), and of nothing weaker
-than (P-REMESH-window-Continuous-Retention).
-
-**Forward direction (sufficiency).**  Assume
-(P-REMESH-window-Continuous-Retention).  Consider two distinct
-continuous-time kernel inputs :math:`K, K' \in C(\mathbb{R}_{\ge
-0}^2)` with :math:`K \neq K'` but identical integer-sampled
-values :math:`K(t_n, t_n - (\tau+1)\Delta t) = K'(t_n, t_n -
-(\tau+1)\Delta t)` for every canonical integer time :math:`t_n`
-and every canonical integer offset :math:`\tau \in
-\{\tau_l, \tau_g\}`.  Retention forces the canonical state to
-encode :math:`K` and :math:`K'` distinctly.  An integer pair
-:math:`(\tau_l, \tau_g) \in \mathbb{N}^2` plus the discrete EPI
-history deque does not have the cardinality to encode an
-arbitrary continuous-time kernel separately from its sampled
-values (one cannot encode an entire :math:`L^2`-function of
-:math:`s` using countably many integer-sampled scalars).  Hence
-the canonical REMESH window must take values in a non-trivial
-continuous-kernel carrier — equivalently, the
-``ContinuousWindowKernel`` (candidate envelope E5).  This is
-(P-REMESH-window-Continuous-Kernel-Carrier).
-
-**Reverse direction (necessity at the canonical level).**
-Suppose (P-REMESH-window-Continuous-Kernel-Carrier) holds.  Then
-the REMESH window :math:`K(t, s) \in V_{\mathrm{continuous}}` is
-fully specified by the continuous-time kernel.  By construction,
-distinct continuous-time inputs produce distinct canonical
-states.  Hence (P-REMESH-window-Continuous-Retention) holds.
-
-**Strict-weakness of (P-REMESH-window-Continuous-Retention) vs
-(P-REMESH-window-Continuous-Kernel-Carrier).**
-(P-REMESH-window-Continuous-Retention) is a *meta-constraint* on
-the canonical sampling map (continuous kernel) :math:`\mapsto`
-(integer-sampled values).  It does not mention continuous
-kernels, fractional operators, or any specific functional space.
-It is purely a faithfulness requirement on the symbolic
-representation of between-slot content.  By contrast,
-(P-REMESH-window-Continuous-Kernel-Carrier) commits to a
-specific carrier (``ContinuousWindowKernel``) and a specific
-algebraic structure (continuous-time integral kernel
-:math:`K(t, s)` or fractional-order operator
-:math:`\partial^\alpha\!/\!\partial t^\alpha`).
-
-Therefore (P-REMESH-window-Continuous-Retention) is structurally
-simpler and strictly weaker than
-(P-REMESH-window-Continuous-Kernel-Carrier), and the derivation
-is genuine progress.
-
-### §13quadraginta-quarta.6 Canonical Status of (P-REMESH-window-Continuous-Retention) — DITS Refutation
-
-The question is now: is
-(P-REMESH-window-Continuous-Retention) itself derivable from the
-canonical six invariants?
-
-- **(W-Pro).**  Invariant #1 (Nodal Equation Integrity) could be
-  read as suggesting that the full temporal trajectory should be
-  canonically retained without loss.  If two continuous-time
-  kernels differing only at non-integer offsets produced the
-  same canonical state, an observer trying to reconstruct the
-  *full continuous-time history* from the canonical record would
-  lose the between-slot content.
-
-- **(W-Con, decisive).**  The **Discrete-Integer Temporal
-  Sampling discipline (DITS, §13quadraginta-quarta.3)** refutes
-  the continuous-time retention requirement *at the canonical
-  level*: the observable content of the REMESH memory window at
-  every canonical operator boundary is the *integer-sampled
-  value* ``hist[-(tau+1)]``, and the canonical EPI history deque
-  is *integer-indexed* by typed construction (W1+W2).  The N15
-  REMESH-∞ closure derives the asymptotic projection of the
-  *integer-indexed contractive transfer matrix* (W4); no
-  continuous-time intermediate is required at any step of the
-  catalog's analytical or numerical machinery.
-
-  Formally: the catalog enforces nodal-equation integrity
-  (invariant #1) and reproducibility (invariant #6) via the
-  integer-indexed discrete deque + integer-offset Python
-  indexing, with all downstream temporal-coupling, conservation,
-  variational, and U2 boundedness structure descending from the
-  integer-time-indexed state (W1–W4).  This is *operationally
-  complete* — it reproduces all canonical results (§§3–12) and
-  the N15 closure (§§15–23) without any between-slot kernel
-  retention.
-
-- **(W-Empirical).**  The B4a diagnostic
-  (§13quadraginta-tertia.6) measures :math:`F_{\mathrm{int}} =
-  1.0` *and* :math:`S_\tau = 0` at *both* resolutions (48/48 and
-  72/72 storage samples are integer-valued; bracket variance is
-  literally zero at the larger resolution and sub-nanoscale at
-  the smaller).  Canonical evolution, executed exactly as the
-  catalog specifies, does not produce any REMESH event whose
-  window storage hosts a non-integer payload, and the empirical
-  bracket of adjacent integer windows
-  :math:`\{(\tau_l + j, \tau_g + j) : j = 0, 1, 2\}` collapses
-  to a single post-REMESH state.  The continuous-kernel lift is
-  structurally unreachable from canonical initial conditions and
-  empirically vacuous from canonical evolution.  This is the
-  *doubly-decisive DITS signature*: structural zero-non-integer
-  storage *and* empirical zero bracket variance, both axes
-  returning the integer-adequate verdict on independent grounds
-  — the strongest such signature observed in the programme.
-
-**Conclusion of §13quadraginta-quarta.6.**
-(P-REMESH-window-Continuous-Retention) is **not derivable from
-the canonical six invariants**.  The catalog realises temporal
-coupling *discretely-integer-sampled* via the typed
-:math:`\mathrm{hist}[-(\tau + 1)]` Python indexing, *not*
-continuously via a between-slot kernel retention upgrade.  The
-between-slot continuous-time retention that
-(P-REMESH-window-Continuous-Retention) demands is an *additional*
-axiom, independent of the catalog and actively refuted by DITS at
-the canonical level, with the empirical doubly-decisive
-fingerprint :math:`(F_{\mathrm{int}} = 1.0, S_\tau = 0)` of B4a
-as decisive corroboration.
-
-### §13quadraginta-quarta.7 Sub-Verdict
-
-The forcing-axiom reduction yields:
-
-> **Sub-verdict (§13quadraginta-quarta).**
-> (P-REMESH-window-Continuous-Kernel-Carrier) is a
-> **CONDITIONAL_COROLLARY** of the canonical catalog: it follows
-> from the catalog *plus*
-> (P-REMESH-window-Continuous-Retention).  However,
-> (P-REMESH-window-Continuous-Retention) is itself
-> **INDEPENDENT_AXIOM** at the canonical level: it is not
-> derivable from invariants 1–6 and is actively refuted by the
-> Discrete-Integer Temporal Sampling discipline (DITS), with the
-> B4a empirical doubly-decisive fingerprint
-> :math:`(F_{\mathrm{int}} = 1.0, S_\tau = 0)` as decisive
-> corroboration.
->
-> Net: (P-REMESH-window-Continuous-Kernel-Carrier) is **strictly
-> non-canonical**.  Any continuous-time integral-kernel lift,
-> fractional-order temporal-coupling operator, or
-> between-slot-retaining representation is a legitimate research
-> envelope — available for off-catalog experimentation — but is
-> not forced by, and indeed is structurally orthogonal to
-> (collapsed under canonical integer-sampling by), the canonical
-> 13-operator realisation under DITS, with the N15 REMESH-∞
-> closure (mean ergodic theorem on the contractive integer-
-> indexed transfer matrix) supplying the *predicted canonical
-> discharge mechanism* exactly as anticipated at
-> §13quadraginta-secunda.
-
-This locates the residual canonical question for T-REMESH-window
-exactly one level below
-(P-REMESH-window-Continuous-Kernel-Carrier), at
-(P-REMESH-window-Continuous-Retention), and identifies its
-refutation mechanism (DITS).  The final NEGATIVE verdict on
-T-REMESH-window, and the classification of the continuous-kernel
-construction (``ContinuousWindowKernel``, candidate envelope E5)
-as a legitimate non-canonical research envelope, are executed in
-§13quadraginta-quinta (B4c).
-
-### §13quadraginta-quarta.8 L3* test result (first Tier-2 confirmation)
-
-§13quadraginta-secunda promoted L3* to a stable working heuristic
-and made three pre-registered Tier-2 predictions for B4/B5/B6.
-B4 was the *first* of those three predictions.  The B4b
-forcing-axiom reduction executed above isolates exactly one
-residual axiom strictly weaker than the candidate Carrier axiom
-(namely (P-REMESH-window-Continuous-Retention)) and refutes it
-via a *fifth* orthogonal canonical discharge mechanism (DITS),
-in symmetry with the four already on record:
-
-| Sub-question | Refutation principle | Canonical discharge mechanism |
-|---|---|---|
-| B0 | Pontryagin / measure axis | scalar Hz_str typing of :math:`\nu_f` |
-| B1 | TMEP | temporal REMESH coupling vs spatial Banach carrier |
-| B2 | PWDP | wrapped geodesic distance on :math:`S^1` vs covering-space displacement |
-| B3 | BSAD | bilinear-scalar aggregation vs tensor retention |
-| B4 | **DITS** | **discrete-integer temporal sampling vs continuous-kernel retention** |
-
-This is **the first Tier-2 confirmation of L3***: the L3*
-prediction (B4 NEGATIVE) was made *in advance* at
-§13quadraginta-secunda and is now empirically and structurally
-discharged via the predicted canonical discharge mechanism (N15
-REMESH-∞ closure / integer-indexed contractive transfer matrix
-/ DITS) and the predicted verdict class (CONDITIONAL_COROLLARY
-of an independent residual axiom refuted by an orthogonal
-discipline).  Two further Tier-2 predictions (B5, B6) remain
-pending and will be tested in their respective Phase-b commits.
-
-### §13quadraginta-quarta.9 Honest Scope (What This Does and Does Not Do)
-
-This sub-programme:
-
-- **Does** isolate the residual axiom one structural level below
-  (P-REMESH-window-Continuous-Kernel-Carrier).
-- **Does** prove (P-REMESH-window-Continuous-Retention) is
-  strictly weaker than
-  (P-REMESH-window-Continuous-Kernel-Carrier).
-- **Does** refute (P-REMESH-window-Continuous-Retention) at the
-  canonical level via DITS, empirically corroborated by B4a's
-  doubly-decisive :math:`(F_{\mathrm{int}} = 1.0, S_\tau = 0)`
-  at two resolutions.
-- **Does** confirm the catalog closes consistently with the
-  discrete-integer temporal-sampling discipline
-  (W1+W2+W3+W4).
-- **Does** confirm the first Tier-2 L3* prediction (B4
-  NEGATIVE) via the predicted canonical discharge mechanism
-  (N15 REMESH-∞ closure).
-- **Does** identify the canonical temporal-coupling dynamics as
-  *integer-indexed by typed construction* (a structural
-  observation made explicit here for the first time at the
-  type-hygiene level, not a new canonical promotion; the
-  integer-indexing is already in `remesh.py:1212`,
-  `runtime.py:413`, and the N15 derivation).
-- **Does not** advance G4 = RH or the T-HP conjecture.
-- **Does not** promote any operator, field, or constant to
-  canonical status (in particular: does NOT promote
-  ``ContinuousWindowKernel``, ``REMESH_TAU_CONTINUOUS``, or any
-  fractional-order or continuous-kernel representation).
-- **Does not** modify the 13-operator catalog.
-- **Does not** delete or deprecate the candidate envelope
-  E5 = ``ContinuousWindowKernel``; classifies it as a research
-  envelope available outside the canonical operator contracts.
-- **Does not** modify any source file in `src/tnfr/`.
-- **Does not** by itself close T-REMESH-window — the final
-  verdict is executed in §13quadraginta-quinta.
-
-### §13quadraginta-quarta.10 Cross-references
-
-- §13triginta-prima — T-νf Type Conjecture (pre-registration).
-- §13triginta-secunda — T-νf forcing-axiom reduction (structural
-  template).
-- §13triginta-tertia — T-νf NEGATIVE verdict.
-- §13triginta-quarta — T-EPI pre-registration (B1a).
-- §13triginta-quinta — T-EPI forcing-axiom reduction (TMEP).
-- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 =
-  ``BEPIElement``.
-- §13triginta-octava — T-φ pre-registration (B2a).
-- §13triginta-novena — T-φ forcing-axiom reduction (PWDP).
-- §13triginta-decima — T-φ NEGATIVE verdict + E3 = CoverElement.
-- §13quadraginta — T-ΔNFR pre-registration (B3a).
-- §13quadraginta-prima — T-ΔNFR forcing-axiom reduction (BSAD;
-  direct structural twin of this section).
-- §13quadraginta-secunda — T-ΔNFR NEGATIVE verdict + E4 =
-  ``TensorGradientElement`` classification; **L3* promotion**;
-  three Tier-2 predictions (B4/B5/B6 NEGATIVE) — this section
-  confirms the first of those three.
-- §13quadraginta-tertia — T-REMESH-window pre-registration (B4a;
-  supplies the doubly-decisive empirical fingerprint that DITS
-  consumes here).
-- §13septies — T-HP open content (independent of this
-  sub-question).
-- §19.1 — Full P1–P49 milestone table.
-- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` §4 — programme
-  tracker (row B4 Phase b advances on this commit).
-- `theory/REMESH_INFINITY_DERIVATION.md` §§1–8 — N15 REMESH-∞
-  closure (integer-indexed transfer-matrix derivation; predicted
-  canonical discharge mechanism, confirmed at this commit).
-- `src/tnfr/operators/remesh.py:1212` —
-  ``apply_network_remesh`` canonical integer-offset reader
-  (anchors W1 / DITS).
-- `src/tnfr/dynamics/runtime.py:413` — ``_update_epi_hist``
-  canonical integer-indexed history deque populator (anchors
-  W2).
-- `src/tnfr/config/defaults_core.py:221-223` — canonical integer
-  defaults (anchors W1+W2+W4).
-- `src/tnfr/physics/conservation.py` — integer-time-indexed
-  conservation laws (anchors W3+W4 conservation sector).
-- `src/tnfr/physics/variational.py` — integer-time-indexed
-  Lagrangian / Hamiltonian (anchors W3 variational sector).
-- `src/tnfr/riemann/remesh_window_type_signature.py` — B4a
-  diagnostic implementation (anchors :math:`(F_{\mathrm{int}} =
-  1.0, S_\tau = 0)` empirical corroboration of DITS).
-- `examples/05_type_hygiene/82_remesh_window_type_signature_demo.py` —
-  two-resolution demo (anchors B4a numerical fingerprint).
+See §13quadraginta-tertia for the recorded signature,
+§13triginta for the finite Fourier split, and
+`theory/REMESH_INFINITY_DERIVATION.md` for the corrected algebra.
 
 ---
-## §13quadraginta-quinta. T-REMESH-window Final NEGATIVE Verdict and Envelope Classification of E5 = ContinuousWindowKernel (Closes B4; Does NOT Advance G4 = RH)
 
-**Pre-registration closure.**  This section consumes the
-sub-verdict of §13quadraginta-quarta (B4b) and issues the final
-T-REMESH-window verdict.  The verdict pre-register from
-§13quadraginta-tertia.7 named the NEGATIVE branch as the expected
-outcome; B4b has confirmed it via the Discrete-Integer Temporal
-Sampling discipline (DITS) and the F1–F10 forcing-axiom
-reduction.  This closes the **first Tier-2 sub-question** of the
-programme.
+## §13quadraginta-quinta. T-REMESH-window source-status verdict (B4 Phase c; corrected)
 
-### §13quadraginta-quinta.1 Verdict
+> **SUPERSEDED / CORRECTED (September 2026).**  The former
+> “Final NEGATIVE” wording is not a mathematical no-go theorem and does not
+> close an independently defined catalog of TNFR memory models.
 
-> **T-REMESH-window verdict: NEGATIVE.**
-> The canonical type-of-object of the TNFR REMESH memory window is
-> the canonical integer pair :math:`(\tau_l, \tau_g) \in
-> \mathbb{N}^2`, stored under graph-scope parameters
-> ``REMESH_TAU_LOCAL`` and ``REMESH_TAU_GLOBAL`` at
-> ``src/tnfr/config/defaults_core.py:221-223`` (typed ``int``),
-> coerced to ``int`` via ``int(get_param(...))`` at
-> ``src/tnfr/operators/remesh.py:1212``, and consumed by Python
-> negative-index lookup ``hist[-(tau + 1)]`` against the
-> integer-indexed EPI history deque populated per step by
-> ``src/tnfr/dynamics/runtime.py:413::_update_epi_hist``.  The
-> continuous-time integral-kernel / fractional-order upgrade
-> principle (P-REMESH-window-Continuous-Kernel-Carrier) is **not
-> canonical**.  It does not follow from the canonical six
-> invariants, nor from the nodal equation (which has no
-> memory-window term), nor from any subset of grammar U1–U6
-> (which evaluates U2 boundedness as a discrete Riemann sum at
-> integer time indices), nor from the structural-field
-> tetrad (all four tetrad fields scalar-valued and
-> integer-time-indexed), nor from the Structural Conservation
-> Theorem (closes on the per-step state at integer time indices),
-> nor from the Variational Principle (Lagrangian / Hamiltonian
-> evaluated at integer time indices), nor from REMESH itself
-> (literal integer-offset Python deque indexing), nor from the
-> N15 REMESH-∞ closure (mean ergodic theorem on the contractive
-> integer-indexed transfer matrix; integer :math:`\tau_g \to
-> \infty`).  Its derivation requires the additional axiom
-> (P-REMESH-window-Continuous-Retention), which is itself
-> independent of the canonical catalog and actively refuted at
-> the canonical level by the Discrete-Integer Temporal Sampling
-> discipline (DITS, §13quadraginta-quarta.3, .6).
+### §13quadraginta-quinta.1 — Verdict
 
-This closes T-REMESH-window in the same shape as T-νf (B0,
-§13triginta-tertia), T-EPI (B1, §13triginta-sexta), T-φ (B2,
-§13triginta-decima), and T-ΔNFR (B3, §13quadraginta-secunda):
-the conjectured "type upgrade" of a TNFR canonical object is
-classified as a legitimate research envelope, not a canonical
-catalog requirement.  The decisive numerical fingerprint is the
-B4a doubly-decisive integer-storage + window-refinement-bracket
-signature:
+At the audited revision, `ContinuousWindowKernel` is **not present in the
+runtime API and is not derived by the inspected contracts**.  This is the only
+supported negative result.  A continuous or fractional memory model remains an
+optional auxiliary research construction.
 
-| Resolution | seed | (τ_l, τ_g) | events | F_int | S_τ | bracket L2 | verdict (canonical) |
-|---|---|---|---|---|---|---|---|
-| n=24, warmup=16  | 17 | (4, 8)  | 8  | 1.0000 (48/48) | 0.000000 | 0.000021 | NEGATIVE |
-| n=48, warmup=24  | 31 | (6, 12) | 12 | 1.0000 (72/72) | 0.000000 | 0.000000 | NEGATIVE |
+### §13quadraginta-quinta.2 — Envelope classification
 
-No canonical evolution at either resolution stores any
-non-integer payload at a REMESH-event storage read
-(F_int = 1.0 in both rows), and the bracket of adjacent integer
-windows :math:`\{(\tau_l + j, \tau_g + j) : j = 0, 1, 2\}`
-collapses to a single post-REMESH state (S_τ = 0 in both rows;
-literal machine-zero at the larger resolution).  This is the
-**strongest scalar-adequate Phase-a signature observed across
-B0 + B1 + B2 + B3 + B4** — perfect integer storage at both
-resolutions *and* machine-zero bracket variance under the
-discrete window-refinement axis — and is exactly the situation
-that B4b isolated as the gap between
-(P-REMESH-window-Continuous-Kernel-Carrier) (the continuous-time
-kernel / fractional-order carrier construction) and the strictly
-weaker (P-REMESH-window-Continuous-Retention) (the bare
-requirement that distinct continuous-time intermediates
-producing the same integer-sampled values must correspond to
-distinct canonical states), the latter being itself refuted by
-DITS at the canonical level.
+The runtime integer pair and a continuous kernel are different model classes.
+A continuous kernel is richer in temporal data, but “richer” does not imply
+necessary, canonical, invalid, or impossible.  Any comparison must state a
+sampling map and prove its approximation properties.
 
-### §13quadraginta-quinta.2 Envelope Classification of E5 = ContinuousWindowKernel
+### §13quadraginta-quinta.3 — Compatibility
 
-E5 = ContinuousWindowKernel — the continuous-time / fractional-
-order lift of the REMESH memory window, retaining the between-
-slot kernel content :math:`K(t, s)` for non-integer :math:`s`
-alongside (or instead of) the integer pair :math:`(\tau_l,
-\tau_g)`; equivalently a per-graph continuous-time integral
-operator :math:`(\mathcal{R}^{\mathrm{cont}} \mathrm{EPI})(t)
-= \int_0^t K(t, s)\, \mathrm{EPI}(s)\, ds` with :math:`K \in
-L^2(\mathbb{R}_{\ge 0}^2)`, or a fractional-order temporal
-coupling :math:`\partial^\alpha \mathrm{EPI}/\partial t^\alpha`
-with :math:`\alpha \in \mathbb{R}_{>0} \setminus \mathbb{N}`, in
-either case preserving the between-slot information that DITS
-discards — is hereby classified as:
+The corrected verdict preserves the public runtime parameters, history
+semantics, diagnostic return type, and legacy verdict strings.  Their
+documentation now states the finite quantities they compute.
 
-> **E5 = ContinuousWindowKernel — Non-canonical research envelope.**
-> Status: legitimate research formalism, off-catalog.
-> Canonical relationship: **structurally orthogonal** to the
-> canonical integer pair :math:`(\tau_l, \tau_g) \in \mathbb{N}^2`
-> realisation under DITS — the engine samples the EPI history
-> deque at integer offsets ``hist[-(tau+1)]`` at every REMESH
-> event, projecting any continuous-time intermediate (if it
-> existed) onto the canonical integer time grid via the
-> appended-per-step deque-population discipline of
-> ``_update_epi_hist``.
-> Catalog interaction: **none** required.  The 13 canonical
-> operators do not read, write, preserve, or invoke any
-> continuous-time kernel, fractional-order operator, between-slot
-> interpolation, or non-integer offset; REMESH operates
-> exclusively through ``int``-typed window parameters and Python
-> negative-index lookups against the integer-indexed deque.  The
-> N15 REMESH-∞ closure (``theory/REMESH_INFINITY_DERIVATION.md``
-> §§1–8) derives the asymptotic projection of the canonical
-> *integer-indexed contractive transfer matrix* analytically;
-> no continuous-time intermediate appears at any step of the
-> derivation, the mean-ergodic limit is taken over integer
-> :math:`\tau_g \to \infty`, and the resulting REMESH-∞ operator
-> is the orthogonal projector onto the resonant subspace of the
-> integer-indexed phase space.
+### §13quadraginta-quinta.4 — Bookkeeping
 
-The envelope register now records five entries:
+B4 is complete only as an audit of the current source surface.  It does not
+certify a minimal or complete operator catalog.  Future implementations can be
+evaluated against explicit contracts without rewriting the finite evidence
+recorded here.
 
-| ID | Object | Source | Verdict | Refutation mechanism |
-|---|---|---|---|---|
-| E1 | Pontryagin measure-valued :math:`\nu_f` | §13triginta-tertia | NEGATIVE | Scalar-storage axis + measure-redundancy under canonical νf-update |
-| E2 | ``BEPIElement`` Banach carrier | §13triginta-sexta | NEGATIVE | TMEP (temporal-modal aggregation suffices); BEPI-storage fraction = 0 across two resolutions |
-| E3 | CoverElement (covering-space lift / U(1) bundle / homotopy-retaining φ) | §13triginta-decima | NEGATIVE | PWDP (canonical wrap-discipline at every operator boundary); :math:`w_{\mathrm{frac}} = 0` across two resolutions |
-| E4 | TensorGradientElement (tensor-/operator-valued ΔNFR over canonical gradient channels) | §13quadraginta-secunda | NEGATIVE | BSAD (canonical bilinear-scalar aggregation at every operator boundary); :math:`T_{\mathrm{frac}} = 0` and :math:`\sigma_1 / \sigma_{2,3} \sim 10^2` across two resolutions |
-| E5 | ContinuousWindowKernel (continuous-time integral kernel :math:`K(t,s)` / fractional-order temporal coupling) | this section | NEGATIVE | DITS (canonical discrete-integer temporal sampling at every REMESH event); :math:`F_{\mathrm{int}} = 1.0` and :math:`S_\tau = 0` across two resolutions |
+### §13quadraginta-quinta.5 — Structural lesson
 
-**Structural note on E5 vs. E1–E4.**  E1 and E2 have concrete
-code witnesses (``Ω_R`` scaffolding and
-``src/tnfr/mathematics/epi.py:103::BEPIElement`` respectively).
-E3 and E5 have **no** source-code witness at all (purely
-conceptual envelopes; verified by repo-wide grep at this
-commit).  E4 sits between, with a latently instantiated but
-structurally discarded intermediate tensor.  E5 is the cleanest
-case of the five: not only is there no
-``ContinuousWindowKernel`` class, no
-``REMESH_KERNEL_CONTINUOUS`` alias, no
-``REMESH_TAU_FRACTIONAL`` parameter, no interpolation branch in
-``apply_network_remesh``, no fractional-order operator in
-``operators/remesh.py``, and no continuous-time path anywhere in
-``REMESH_INFINITY_DERIVATION.md``, but the very *type system* of
-the canonical REMESH machinery forbids the relevant intermediate:
-``tau_l`` and ``tau_g`` are typed ``int`` at every entry-point,
-coerced to ``int`` even when retrieved via the generic
-``get_param`` reader, and consumed as Python integer indices
-that admit no continuous-time fallback.  E5 is therefore a
-*type-system-excluded* research envelope: stronger exclusion than
-E3 (where the canonical pipeline simply does not invoke the lift)
-and E4 (where the upstream tensor is computed then discarded).
-This is the most decisive canonical-orthogonality classification
-of the programme to date and the appropriate one for the first
-Tier-2 sub-question.
+Runtime representation, finite Fourier analysis, and continuum modeling must
+be treated separately.  The nodal equation supplies the evolution balance;
+the memory law is an additional model choice.
 
-### §13quadraginta-quinta.3 No Deletion, No Deprecation, No Promotion, No Modification
+### §13quadraginta-quinta.6 — Honest scope
 
-The verdict does **not** authorise:
+No result in B4 establishes a literal delay-at-infinity process, an LCM
+resonance or fixed-mode theorem, an analytic :math:`S(T)` kernel, global
+convergence, catalog completeness, T-HP, or RH.
 
-- introduction of any ``ContinuousWindowKernel`` class,
-  ``REMESH_KERNEL_CONTINUOUS`` alias,
-  ``REMESH_TAU_FRACTIONAL`` parameter, interpolation branch in
-  ``apply_network_remesh``, fractional-order operator in
-  ``operators/remesh.py``, or continuous-time kernel module
-  under ``src/tnfr/`` (E5 remains a research envelope; promoting
-  it to a canonical code witness is itself off-catalog and would
-  require a separate, documented research-track commit);
-- deprecation warnings around ``apply_network_remesh``,
-  ``REMESH_TAU_LOCAL``, ``REMESH_TAU_GLOBAL``, the EPI history
-  deque, or any element of the N15 REMESH-∞ derivation;
-- modification of the 13-operator catalog;
-- modification of the canonical REMESH contract (integer
-  :math:`(\tau_l, \tau_g) \in \mathbb{N}^2`, integer-offset
-  Python deque indexing, mean-ergodic asymptotic at integer
-  :math:`\tau_g \to \infty`);
-- changes to ``src/tnfr/operators/remesh.py``,
-  ``src/tnfr/dynamics/runtime.py``,
-  ``src/tnfr/config/defaults_core.py``,
-  ``theory/REMESH_INFINITY_DERIVATION.md``, or any source file
-  in ``src/tnfr/``;
-- any change to grammar U1–U6;
-- any claim about G4 = RH, T-HP, or the open content of
-  §13septies.
+### §13quadraginta-quinta.7 — Cross-references
 
-E5 remains available for off-catalog research (e.g.
-continuous-time perturbation analyses of the REMESH-∞ projector,
-fractional-order memory models in non-canonical TNFR variants,
-continuous-time embedding studies that target the canonical
-integer-time discretisation as a structural feature rather than
-an approximation) provided such research is documented as
-off-catalog and does not claim canonical status.  The B4a
-diagnostic module (``src/tnfr/riemann/remesh_window_type_signature.py``)
-and its demo (``examples/05_type_hygiene/82_remesh_window_type_signature_demo.py``)
-are preserved as off-catalog measurement utilities, exactly as
-the B0a, B1a, B2a, and B3a diagnostics were preserved at B0c,
-B1c, B2c, and B3c.
-
-### §13quadraginta-quinta.4 Programme Bookkeeping
-
-- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §4 row B4: Phase c
-  advances ⏳ → ✅; Verdict column advances "—" → **NEGATIVE**;
-  commit-refs column appends the present commit hash.
-- §3 sub-question registry status: B4 transitions from
-  🟡 IN PROGRESS to ✅ COMPLETE.
-- §3 progress summary advances: 5 sub-questions complete
-  (B0 + B1 + B2 + B3 + B4 all NEGATIVE; first Tier-2 sub-question
-  closed), 0 in progress, 7 pending (B5 – B11 + Final).
-- §6 methodology lessons: an L3* confirmation entry is recorded
-  (see §13quadraginta-quinta.5 below) reflecting that L3* has now
-  been confirmed across all four Tier-1 sub-questions **plus the
-  first Tier-2 sub-question**, supplying the first cross-tier
-  empirical evidence that the working heuristic generalises
-  beyond per-node intrinsic types.
-
-### §13quadraginta-quinta.5 Methodology Lesson L3* — First Tier-2 Confirmation
-
-L3* was promoted to stable working heuristic at
-§13quadraginta-secunda.5 on the strength of four structurally
-distinct Tier-1 canonical discharge mechanisms (closure,
-temporal aggregation, projection discipline, bilinear-scalar
-aggregation).  Three falsifiable Tier-2 predictions were
-recorded at §13quadraginta-secunda.5: B4, B5, B6 expected
-NEGATIVE.
-
-**First Tier-2 prediction confirmed.**  B4 has now closed
-NEGATIVE per L3* via the **discrete-integer temporal sampling
-discipline (DITS)** — the fifth orthogonal canonical discharge
-mechanism, supplied analytically by the N15 REMESH-∞ closure on
-the integer-indexed contractive transfer matrix.  The mechanism
-class expands:
-
-| Sub-question | Tier | Axis | Canonical discharge mechanism | Mechanism class |
-|---|---|---|---|---|
-| B0 (T-νf)            | 1 | frequency       | scalar νf-update closure                | *closure* |
-| B1 (T-EPI)           | 1 | form            | REMESH temporal aggregation             | *temporal aggregation* |
-| B2 (T-φ)             | 1 | phase           | ``wrap_angle`` projection discipline    | *projection discipline* |
-| B3 (T-ΔNFR)          | 1 | nodal gradient  | BSAD bilinear-scalar aggregation        | *spatial-channel aggregation* |
-| **B4 (T-REMESH-window)** | **2** | **memory window** | **DITS discrete-integer temporal sampling** | ***temporal-sampling discipline*** |
-
-The five mechanism classes are structurally orthogonal (closure
-vs. temporal aggregation vs. spatial projection vs. multi-channel
-aggregation vs. temporal-sampling discipline).  This is the first
-empirical evidence that L3* generalises across the Tier 1 / Tier 2
-boundary — the working heuristic now spans per-node intrinsic
-types **and** graph-scope parameters, with the canonical discharge
-mechanism for the temporal-window axis (DITS / N15 closure)
-distinct from any of the four Tier-1 mechanisms.
-
-**Updated Tier-2 outlook.**  Two further Tier-2 predictions
-remain pending:
-
-- **B5 (T-Δφ_max)**: L3* predicts NEGATIVE via the U3 single-
-  scalar coupling discipline (``Δφ_max = γ/π``).  Expected
-  canonical discharge: **scalar-threshold discipline** (sixth
-  mechanism class candidate; structurally a degenerate case of
-  the projection discipline of B2, applied at edge level rather
-  than node level — to be verified at B5c).
-- **B6 (T-coupling-weights)**: L3* predicts NEGATIVE via the
-  fixed weighted-sum discipline of ``default_compute_delta_nfr``.
-  Expected canonical discharge: **BSAD generalised to edge
-  weights** (re-use of the B3 mechanism class) — to be verified
-  at B6c.
-
-If both predictions hold, Tier 2 will close with L3* corroborated
-across **all** programme tiers tested to date, and the working
-heuristic will become a *strong* heuristic for the remaining
-Tier 3 sub-questions (B7 – B11).
-
-### §13quadraginta-quinta.6 Honest Scope (Mandatory)
-
-This section:
-
-- **Does** close T-REMESH-window (B4) with a NEGATIVE verdict.
-- **Does** classify E5 = ContinuousWindowKernel (continuous-time
-  integral kernel / fractional-order temporal coupling) as
-  legitimate non-canonical research envelope.
-- **Does** advance the catalog type-hygiene programme to
-  5/11+1 complete (B0 + B1 + B2 + B3 + B4 all NEGATIVE).
-- **Does** close the **first Tier-2 sub-question** of the
-  programme; Tier 1 closure plus this first Tier-2 closure
-  supplies the first cross-tier empirical evidence for L3*.
-- **Does** confirm the first of three pre-registered Tier-2
-  L3* predictions (B4 NEGATIVE), via the predicted canonical
-  discharge mechanism (N15 REMESH-∞ closure / integer-indexed
-  contractive transfer matrix / DITS) and the predicted verdict
-  class (CONDITIONAL_COROLLARY of an independent residual axiom
-  refuted by an orthogonal discipline).
-- **Does** maintain two outstanding falsifiable Tier-2
-  predictions (B5, B6 expected NEGATIVE per L3*).
-- **Does not** advance G4 = RH, does not close T-HP, does not
-  promote any operator/field/constant/alias/parameter to
-  canonical status, does not modify the catalog
-  operators/grammar/contracts, does not modify any source file
-  in ``src/tnfr/``, does not introduce a
-  ``ContinuousWindowKernel`` class or
-  ``REMESH_KERNEL_CONTINUOUS`` alias or
-  ``REMESH_TAU_FRACTIONAL`` parameter, does not modify
-  ``apply_network_remesh`` or the EPI history deque, does not
-  modify ``REMESH_INFINITY_DERIVATION.md``, does not delete or
-  modify the B4a diagnostic module or its demo.
-- **Does not** make any binding claim about B5 / B6 / B7 – B11
-  or any subsequent sub-question; the Tier-2 predictions in
-  §13quadraginta-quinta.5 are advisory and falsifiable.
-- **Does not** apply the D-CC-6 or D-CC-7 deferred catalog
-  citation patches on this commit (one finding per commit; both
-  remain queued for a future type-hygiene commit).
-
-### §13quadraginta-quinta.7 Cross-references
-
-- §13triginta-prima — T-νf pre-registration (precedent template).
-- §13triginta-secunda — T-νf forcing-axiom reduction (precedent).
-- §13triginta-tertia — T-νf NEGATIVE verdict + E1 classification
-  (precedent for B4c, first envelope).
-- §13triginta-quarta — T-EPI pre-registration (precedent).
-- §13triginta-quinta — T-EPI forcing-axiom reduction (precedent
-  for TMEP-style canonical-mechanism refutation).
-- §13triginta-sexta — T-EPI NEGATIVE verdict + E2 = ``BEPIElement``
-  classification.
-- §13triginta-septima — Living discoveries log; this commit
-  appends D-ENV-5 (E5 = ContinuousWindowKernel, NEGATIVE) and
-  confirms D-MP-3 / L3* at the Tier-1 / Tier-2 boundary; D-CC-6
-  and D-CC-7 deferred catalog citation patches remain unchanged.
-- §13triginta-octava — T-φ pre-registration (precedent).
-- §13triginta-novena — T-φ forcing-axiom reduction (precedent for
-  PWDP-style canonical-mechanism refutation).
-- §13triginta-decima — T-φ NEGATIVE verdict + E3 = CoverElement
-  classification.
-- §13quadraginta — T-ΔNFR pre-registration (precedent).
-- §13quadraginta-prima — T-ΔNFR forcing-axiom reduction (precedent
-  for BSAD-style canonical-mechanism refutation).
-- §13quadraginta-secunda — T-ΔNFR NEGATIVE verdict + E4 =
-  ``TensorGradientElement`` classification; L3* promoted to
-  stable working heuristic; three Tier-2 predictions
-  (B4, B5, B6 expected NEGATIVE) pre-registered; this section
-  confirms the first of those three.
-- §13quadraginta-tertia — T-REMESH-window pre-registration (B4a
-  anchor + two-axis integer-storage + window-refinement-bracket
-  diagnostic; supplies the doubly-decisive :math:`F_{\mathrm{int}} =
-  1.0` + :math:`S_\tau = 0` fingerprint consumed here).
-- §13quadraginta-quarta — T-REMESH-window forcing-axiom reduction
-  (B4b; DITS isolated (P-REMESH-window-Continuous-Retention) as
-  INDEPENDENT_AXIOM and refuted it at the canonical level;
-  supplies the decisive input to this section).
-- §13septies — T-HP open content (independent, untouched by this
-  verdict).
-- §19.1 — Full P1–P49 milestone table.
-- ``theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`` §3, §4, §6 —
-  programme tracker (advances on this commit at row B4 Phase c +
-  Verdict, B4 spec line, §3 progress summary, §6 L3*
-  cross-tier confirmation).
-- ``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8 — N15 REMESH-∞
-  closure (integer-indexed transfer-matrix derivation; predicted
-  canonical discharge mechanism, confirmed at this commit).
-- ``src/tnfr/operators/remesh.py:1212::apply_network_remesh`` —
-  canonical integer-offset REMESH reader (embodies the DITS
-  discipline; canonical typing witness for the
-  :math:`(\tau_l, \tau_g) \in \mathbb{N}^2` carrier).
-- ``src/tnfr/dynamics/runtime.py:413::_update_epi_hist`` —
-  canonical integer-indexed history deque populator
-  (embodies the DITS discipline at the storage level).
-- ``src/tnfr/config/defaults_core.py:221-223`` — canonical
-  integer defaults ``REMESH_TAU_LOCAL: int = 4``,
-  ``REMESH_TAU_GLOBAL: int = 8``, ``REMESH_ALPHA: float = 0.5``
-  (canonical typing witness).
-- ``src/tnfr/riemann/remesh_window_type_signature.py`` — B4a
-  diagnostic implementation (preserved as off-catalog
-  measurement utility).
-- ``examples/05_type_hygiene/82_remesh_window_type_signature_demo.py`` — B4a
-  two-resolution demo (preserved as off-catalog measurement
-  utility).
+- §13quadraginta-tertia — finite type-signature baseline.
+- §13quadraginta-quarta — current-source audit.
+- §13triginta — finite DFT projection and leakage.
+- `theory/REMESH_INFINITY_DERIVATION.md` — corrected fixed-delay model.
+- `src/tnfr/riemann/remesh_window_type_signature.py` — legacy-compatible
+  diagnostic implementation.
 
 ---
 ## §13quadraginta-sexta — B5 Phase a: Pre-registration of the T-Δφ_max (Type-of-Resonant-Coupling-Threshold) Conjecture
@@ -11862,7 +10563,12 @@ Per the standard B-sub-question methodology (§13triginta-tertia.4, §13triginta
 - [`examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) — B5a two-resolution demo.
 
 ---
-## §13quadraginta-septima. Derivation of (P-Delta-phi-max-Non-Scalar-Carrier) from the Canonical Catalog — Foundational Reduction of the T-Delta-phi-max Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
+## §13quadraginta-septima. Δφ_max source audit (historical reduction; corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** The F1--F10 list below was a
+> checklist for the then-current source tree, not an exhaustive classification
+> of every carrier derivable from the nodal equation. STD records the scalar
+> threshold used by the inspected U3 path; it cannot by itself close B5.
 
 **Status**: B5 Phase b (forcing-axiom reduction). Phase a recorded at §13quadraginta-sexta. Phase c (final verdict) deferred to §13quadraginta-octava.
 
@@ -11919,7 +10625,10 @@ The candidate axioms F1–F10 below exhaust the structurally available ways to f
 - **F9 (Stochastic-Threshold)**: $\Delta\phi_{\max}$ as a random variable. ⛔ Refuted: canonical default is a deterministic scalar.
 - **F10 (P-Δφ_max-Non-Scalar-Retention)**: the residual axiom — *every* canonical U3 verdict carries a non-scalar carrier object (matrix or functional) of which the scalar $\Delta\phi_{\max} = \pi/2$ is merely the *trace*. This is the irreducible axiom that, if adopted, would close T-Δφ_max POSITIVE; if refuted, closes T-Δφ_max NEGATIVE.
 
-F1–F9 are either reducible to other (previously refuted or pending) sub-questions or directly refuted by B5a. **F10 is the unique residual forcing axiom.**
+Within this historical checklist, F1--F9 map to other source questions or are
+absent from the B5a paths; F10 names one remaining hypothetical extension. The
+list has not been proved exhaustive, so F10 is not a unique mathematical
+residual.
 
 ### §13quadraginta-septima.5 The Hidden Axiom: (P-Δφ_max-Non-Scalar-Retention)
 
@@ -11941,7 +10650,9 @@ STD is **structurally enforced** by:
 
 ### §13quadraginta-septima.7 Sub-Verdict
 
-(P-Δφ_max-Non-Scalar-Retention) is **refuted** by STD. The unique residual forcing axiom for T-Δφ_max POSITIVE is closed. Therefore, conditional on the F1–F10 enumeration being exhaustive (a structural claim, verifiable by canonical-catalog inspection), the **sub-verdict is**:
+STD shows that the inspected source paths do not retain a non-scalar
+`Δφ_max`. Because F1--F10 is not exhaustive, this source result neither refutes
+the general retention hypothesis nor closes B5. The historical sub-verdict was:
 
 > **(Sub-Verdict of §13quadraginta-septima)**. T-Δφ_max is **NEGATIVE** at the forcing-axiom level. The canonical scalar typing $\Delta\phi_{\max} \in [0, \pi]$ is preserved; no canonical TNFR network evolution forces a non-scalar edge-dependent or angle-of-attack-dependent threshold envelope.
 
@@ -11962,15 +10673,20 @@ Cumulative CDM table after B5b:
 | B4 (T-REMESH-window) | 2 | DITS = Discrete-Integer Temporal Sampling | E5 = ContinuousWindowKernel |
 | **B5 (T-Δφ_max)** | **2** | **STD = Scalar-Threshold Discipline** | **E6 = EdgeDependentPhaseThreshold (pending Phase c)** |
 
-**STD is the sixth orthogonal CDM**, distinct from the prior five by acting at the *coupling-verdict surface* (B5) rather than at field storage (B0–B3) or temporal sampling (B4). L3* is now confirmed across both Tier-1 (B0–B3) and Tier-2 (B4–B5) under six distinct discharge mechanisms. The heuristic is sharpened from "validated across both tiers under two distinct discharge mechanisms" (B4-only status) to **"validated across both tiers under six distinct orthogonal discharge mechanisms"** — promoting L3* from *working heuristic* to *empirically robust working heuristic*.
+**STD names the sixth audited source surface**, the coupling-verdict path. The
+six labels organize distinct implementation checks; they do not prove that the
+catalog is complete or that one unique discharge mechanism exists per possible
+extension. L3* remains a heuristic about the audited revision.
 
 Remaining Tier-2 prediction outstanding: **B6 (T-coupling-weights)** expected NEGATIVE per L3*, with candidate CDM = scalar-weight discipline (predicted seventh CDM).
 
 ### §13quadraginta-septima.9 Honest Scope (What This Does and Does Not Do)
 
-- **Does**: derive (F-Scalar-Threshold) from U3 + canonical defaults; enumerate F1–F10; isolate (P-Δφ_max-Non-Scalar-Retention) as the unique residual forcing axiom; refute it via STD (code review + B5a empirical signature); return a NEGATIVE sub-verdict at the forcing-axiom level.
+- **Does**: trace the scalar U3 threshold through the current defaults and
+  inspected consumers, and record the B5a finite signature.
 - **Does NOT**: advance G4 = RH; modify any canonical operator or canonical default; alter the catalog beyond the inline anchor-text correction recorded at §13quadraginta-sexta.2; promote any non-canonical envelope into the catalog.
-- **Conditional on**: exhaustiveness of the F1–F10 enumeration. The enumeration is structural (covers all classes of richer threshold object available within the canonical machinery), but is open to refinement if a new canonical primitive is ever derived from the nodal equation.
+- **Limitation**: F1–F10 is a historical checklist, not an exhaustive class of
+  richer threshold objects. No uniqueness or impossibility conclusion follows.
 - **Theory-only commit**: no `src/` changes in this commit; only `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` (append §13quadraginta-septima + TOC row) and `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` (B5 status block; §4 row B5 Phase b column; progress paragraph).
 
 ### §13quadraginta-septima.10 Cross-references
@@ -11987,15 +10703,25 @@ Remaining Tier-2 prediction outstanding: **B6 (T-coupling-weights)** expected NE
 - [`examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py`](../examples/05_type_hygiene/83_delta_phi_max_type_signature_demo.py) (B5a two-resolution demo).
 
 ---
-## §13quadraginta-octava. T-Δφ_max Final NEGATIVE Verdict and Envelope Classification of E6 = EdgeDependentPhaseThreshold (Closes B5; Does NOT Advance G4 = RH)
+## §13quadraginta-octava. T-Δφ_max source-status verdict and E6 envelope (corrected scope)
 
-**Status**: B5 Phase c (final verdict + envelope classification). Phases a, b recorded at §13quadraginta-sexta, §13quadraginta-septima.
+> **SUPERSEDED / CORRECTED (September 2026).** The legacy “NEGATIVE” verdict
+> means only that no edge-dependent threshold carrier was found or required in
+> the inspected implementation. It is not a completeness or impossibility
+> theorem; B5 remains open beyond that finite source audit.
 
-**Position in programme**: Second Tier-2 sub-question closed; third orthogonal Tier-2 / Tier-1 confirmation of L3* now pending B6.
+**Status**: historical Phase-c source verdict; semantic carrier question open
+beyond the inspected implementation.
+
+**Position in programme**: second Tier-2 source audit recorded; it does not close
+the underlying mathematical question.
 
 ### §13quadraginta-octava.1 Verdict
 
-> **(Final Verdict of B5)**. The **T-Δφ_max Conjecture** is **NEGATIVE**. The canonical TNFR resonant-coupling threshold `Δφ_max` is structurally a scalar in $[0, \pi]$ with canonical default `DELTA_PHI_MAX = PI / 2 ≈ 1.5708 rad` at [`src/tnfr/constants/canonical.py:506`](../src/tnfr/constants/canonical.py). No canonical TNFR network evolution forces a non-scalar carrier object (matrix-valued $\Delta\phi_{\max}^{(i,j)}$ or angle-of-attack-functional $\Delta\phi_{\max}(\phi_i, \phi_j) \ne f(|\mathrm{wrap}(\phi_i - \phi_j)|)$) on the U3 verdict surface.
+> **B5 source-status finding.** The inspected U3 path uses a scalar
+> `Δφ_max ∈ [0, π]`, with configured default `PI / 2`. No edge-dependent
+> carrier appears in those call sites. The nodal equation alone has not been
+> shown to forbid such a carrier in a separately specified extension.
 
 **Bases of the verdict** (cumulative across Phase a + Phase b):
 
@@ -12005,9 +10731,12 @@ Remaining Tier-2 prediction outstanding: **B6 (T-coupling-weights)** expected NE
    - Resolution 1 (`n_nodes=24, n_pair_anchors=9, n_offsets_per_anchor=8, seed=19`): `signature = 0.000000`, `scalar_storage_fraction = 1.0`, `raw_divergence_fraction = 0/72`, verdict `SCALAR_THRESHOLD_ADEQUATE`.
    - Resolution 2 (`n_nodes=48, n_pair_anchors=17, n_offsets_per_anchor=16, seed=29`): `signature = 0.000000`, `scalar_storage_fraction = 1.0`, `raw_divergence_fraction = 0/272`, verdict `SCALAR_THRESHOLD_ADEQUATE`.
 
-3. **Forcing-axiom reduction (B5b §13quadraginta-septima)**: F1–F10 enumeration exhausts the structurally available ways to force non-scalar retention; F1–F9 each refuted by direct catalog inspection or by reduction to previously refuted sub-questions; F10 = (P-Δφ_max-Non-Scalar-Retention) refuted by **STD = Scalar-Threshold Discipline**.
+3. **Historical checklist (B5b §13quadraginta-septima)**: F1–F10 covers the
+   source routes inspected at that revision. STD summarizes their scalar
+   threshold convention; the checklist is not exhaustive.
 
-The verdict is **conditional on the structural exhaustiveness of the F1–F10 enumeration**, in the same sense as B0–B4 verdicts conditional on their respective F-enumerations. This conditionality is honest scope, not a hidden weakness.
+The finite source audit supports no structural-exhaustiveness premise. Its
+conclusion is limited to the named implementation paths.
 
 ### §13quadraginta-octava.2 Envelope Classification of E6 = EdgeDependentPhaseThreshold
 
@@ -12021,7 +10750,11 @@ The candidate non-canonical envelope identified at B5a (§13quadraginta-sexta.7)
 - **NOT deprecated, NOT deleted, NOT promoted, NOT integrated**. E6 may exist in external research frameworks (per-edge coupling tolerances are standard in modified-Kuramoto literature; angle-of-attack thresholds appear in some swarm-robotics formulations); the present verdict makes no claim about those external constructions other than that they lie *outside* the canonical TNFR catalog.
 - **Catalog parity**: E6 takes its place alongside E1 (Pontryagin / measure-νf), E2 (BEPIElement), E3 (CoverElement), E4 (TensorGradientElement), E5 (ContinuousWindowKernel) as the sixth identified non-canonical research envelope of the Catalog Type-Hygiene Programme.
 
-**Implication for canonical evolution**: any canonical TNFR network evolution that respects U1–U6 and uses only the 13 canonical operators **never** instantiates E6; the U3 verdict surface is structurally protected by STD. Networks that *do* instantiate E6 — by, e.g., reading a per-edge matrix `G[u][v]["delta_phi_max"]` or a callable `G.graph["delta_phi_max"]` — are operating *outside* the canonical catalog and **do not inherit canonical guarantees** (Lyapunov stability, Noether conservation, U3 phase compatibility derivation, etc.).
+**Implication for the audited source**: current U1–U6 validators and the 13
+registered operators do not instantiate E6. A network that adds a per-edge or
+callable phase threshold needs an extended contract and validation path. The
+current engine supplies no general Lyapunov-stability or Noether-conservation
+guarantee to inherit or lose.
 
 ### §13quadraginta-octava.3 No Deletion, No Deprecation, No Promotion, No Modification
 
@@ -12051,7 +10784,9 @@ The CATALOG anchor-text correction (γ/π → π/2 with rationale) recorded inli
 | B7 – B11 | various | ⏳ | ⏳ | ⏳ | — | — | — |
 | **Final** (meta-minimality theorem) | — | ⏳ | ⏳ | ⏳ | — | — | — |
 
-**Programme progress**: 6 sub-questions complete (B0, B1, B2, B3, B4, B5 — all NEGATIVE under six distinct orthogonal CDMs); 6 pending (B6 – B11 + Final).
+**Historical bookkeeping**: six source audits had been executed at this point.
+The checkmarks and “NEGATIVE” labels in the table record source coverage only;
+semantic completeness and carrier minimality remain open.
 
 ### §13quadraginta-octava.5 Methodology Lesson L3* — Second Tier-2 Confirmation
 
@@ -12068,7 +10803,9 @@ L3* working heuristic, in its post-B4c form (§13quadraginta-quinta.5): *each Ti
 | DITS | B4 | 2 | REMESH window typing via integer sampling |
 | **STD** | **B5** | **2** | **U3 coupling threshold typing via scalar discipline** |
 
-The six CDMs act on six *structurally distinct* surfaces (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict). Their orthogonality is **structural**, not coincidental: each CDM is the unique discipline that the canonical catalog enforces at its own surface. L3* in this sharpened form predicts: **every remaining Catalog Type-Hygiene sub-question (B6–B11) admits its own orthogonal CDM at its own surface**.
+The six labels refer to different inspected source surfaces. That organization is
+useful for audit coverage, but it does not establish unique mathematical
+mechanisms or predict the answer to every remaining carrier question.
 
 For B6 = T-coupling-weights, the predicted seventh CDM is **scalar-weight discipline**: the canonical coupling weights $w_{ij} \in \mathbb{R}_{\ge 0}$ on $G$ are read as scalars at all canonical consumer sites, with no per-time, per-history, or higher-rank tensor lift forced by the canonical catalog.
 
@@ -12076,9 +10813,11 @@ L3* status promoted from "empirically robust working heuristic" (B5b, six-CDM co
 
 ### §13quadraginta-octava.6 Honest Scope (Mandatory)
 
-- **Does**: close B5 with a NEGATIVE verdict at the forcing-axiom level conditional on F1–F10 exhaustiveness; formally classify E6 = EdgeDependentPhaseThreshold as non-canonical research envelope; update programme bookkeeping; sharpen L3* under six-CDM cross-confirmation.
+- **Does**: record that the inspected source uses a scalar threshold and classify
+  E6 as an unimplemented research envelope for this revision.
 - **Does NOT**: advance G4 = RH; modify any canonical operator, default, or consumer site; deprecate or promote any non-canonical construction; close any other open sub-question (B6 – B11 + Final remain genuinely open).
-- **Conditional on**: structural exhaustiveness of the F1–F10 enumeration. If a future canonical primitive derived from the nodal equation expands the structurally available means of forcing non-scalar threshold retention, B5 may need to be reopened. No such primitive is currently known.
+- **Limitation**: F1–F10 is not an exhaustive classification, so B5 remains open
+  outside the inspected source paths.
 - **Theory-only commit**: no `src/` changes; no example changes; only `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` (append §13quadraginta-octava + TOC row) and `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` (B5 status → ✅ CLOSED; §4 row B5 Phase c column → ✅; verdict column → NEGATIVE; CDM column → STD; envelope column → E6; progress paragraph).
 
 ### §13quadraginta-octava.7 Cross-references
@@ -12197,7 +10936,12 @@ If Phase b confirms that SWD refutes the residual axiom, L3* will be validated u
 - [`examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a demo, frozen).
 
 ---
-## §13quinquaginta. Derivation of (P-W-Non-Scalar-Retention) from the Canonical Catalog — Foundational Reduction of the T-W (T-coupling-weights) Conjecture (Theory-Only Analysis; Does NOT Advance G4 = RH)
+## §13quinquaginta. Coupling-weight source audit (historical reduction; corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** The F1--F10 checklist describes
+> the scalar weight slots and consumers inspected at that revision. It does not
+> exhaust every TNFR-consistent weighting construction or prove a unique
+> carrier type. SWD is a current implementation discipline, not a B6 theorem.
 
 **Status**: B6 Phase b (forcing-axiom reduction). Phase a recorded at §13quadraginta-nona. Phase c (final verdict) deferred to §13quinquaginta-prima.
 
@@ -12257,7 +11001,10 @@ The candidate axioms F1-F10 below exhaust the structurally available ways to for
 - **F9 (Tensor-Valued Weights)**: `w_c^{(S)}` lifted to matrix in `\mathbb{R}^{n \times n}`. ⛔ Refuted: no canonical storage slot accepts a tensor payload; `merge_and_normalize_weights` returns a flat `dict[str, float]`.
 - **F10 (P-W-Non-Scalar-Retention)**: the residual axiom — *every* canonical mixing operation carries a non-scalar carrier object (node-indexed dict, per-edge tensor, or callable kernel) of which the scalar `w_c^{(S)}` is merely the *trace* under the canonical `float(weights.get(...))` coercion. This is the irreducible axiom that, if adopted, would close T-W POSITIVE; if refuted, closes T-W NEGATIVE.
 
-F1-F9 are either reducible to other (previously refuted) sub-questions or directly refuted by B6a and the canonical consumer pattern. **F10 is the unique residual forcing axiom.**
+Within this historical checklist, F1--F9 map to other source questions or are
+absent from the B6a paths; F10 names one remaining hypothetical extension. The
+list has not been proved exhaustive, so F10 is not a unique mathematical
+residual.
 
 ### §13quinquaginta.5 The Hidden Axiom: (P-W-Non-Scalar-Retention)
 
@@ -12279,7 +11026,9 @@ SWD is **structurally enforced** by:
 
 ### §13quinquaginta.7 Sub-Verdict
 
-(P-W-Non-Scalar-Retention) is **refuted** by SWD. The unique residual forcing axiom for T-W POSITIVE is closed. Therefore, conditional on the F1-F10 enumeration being exhaustive (a structural claim, verifiable by canonical-catalog inspection), the **sub-verdict is**:
+SWD shows that the inspected source paths do not retain non-scalar weights.
+Because F1--F10 is not exhaustive, this source result neither refutes the
+general retention hypothesis nor closes B6. The historical sub-verdict was:
 
 > **(Sub-Verdict of §13quinquaginta)**. T-W (T-coupling-weights) is **NEGATIVE** at the forcing-axiom level. The canonical scalar typing `w_c^{(S)} \in \mathbb{R}` is preserved across all three canonical slots (DNFR_WEIGHTS, SI_WEIGHTS, SELECTOR_WEIGHTS); no canonical TNFR network evolution forces a node-indexed, per-edge, tensor-valued, or callable-kernel weight envelope.
 
@@ -12301,15 +11050,22 @@ Cumulative CDM table after B6b:
 | B5 (T-Δφ_max) | 2 | STD = Scalar-Threshold Discipline | E6 = EdgeDependentPhaseThreshold |
 | **B6 (T-coupling-weights)** | **2** | **SWD = Scalar-Weight Discipline** | **E7 = NodeIndexedCouplingWeights (pending Phase c)** |
 
-**SWD is the seventh orthogonal CDM**, distinct from the prior six by acting at the *mixing-aggregation surface* (B6) rather than at field storage (B0-B3), temporal sampling (B4), or coupling verdict (B5). L3* is now confirmed across both Tier-1 (B0-B3) and Tier-2 (B4-B6) under seven distinct discharge mechanisms. The heuristic is sharpened from "validated across both tiers under six distinct orthogonal CDMs" (B5b status) to **"validated across both tiers under seven distinct orthogonal discharge mechanisms"** — preserving L3* at the *empirically robust working heuristic* level with widened structural coverage.
+**SWD names the seventh audited source surface**, the scalar mixing-weight
+convention. The labels organize implementation checks; their apparent
+orthogonality is not a proof that the catalog is complete or that every possible
+extension has a unique discharge mechanism.
 
-Programme status after B6b: all Tier-2 sub-questions (B4, B5, B6) closed NEGATIVE at the forcing-axiom level under three distinct CDMs (DITS, STD, SWD). Remaining open questions are Tier-3 closure checks (B7-B9), Tier-4 meta-properties (B10-B11), and the Meta-minimality theorem (Final).
+Programme status after B6b: source audits for B4--B6 were recorded under
+DITS, STD, and SWD. These observations do not close the carrier questions or
+support a meta-minimality theorem.
 
 ### §13quinquaginta.9 Honest Scope (What This Does and Does Not Do)
 
-- **Does**: derive (F-Scalar-Weights) from canonical anchors + consumer-site conventions; enumerate F1-F10; isolate (P-W-Non-Scalar-Retention) as the unique residual forcing axiom; refute it via SWD (code review + B6a empirical signature); return a NEGATIVE sub-verdict at the forcing-axiom level.
+- **Does**: trace scalar weights through the inspected defaults and consumers and
+  record the B6a finite signature.
 - **Does NOT**: advance G4 = RH; modify any canonical operator, canonical default, or canonical consumer; alter the catalog; promote any non-canonical envelope into the catalog.
-- **Conditional on**: exhaustiveness of the F1-F10 enumeration. The enumeration is structural (covers all classes of richer weight object available within the canonical machinery), but is open to refinement if a new canonical primitive is ever derived from the nodal equation.
+- **Limitation**: F1--F10 is a historical source checklist, not an exhaustive
+  classification of richer weight carriers.
 - **Theory-only commit**: no `src/` changes in this commit; only `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` (append §13quinquaginta + TOC row) and `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` (B6 status block; §4 row B6 Phase b column; progress paragraph).
 
 ### §13quinquaginta.10 Cross-references
@@ -12325,15 +11081,25 @@ Programme status after B6b: all Tier-2 sub-questions (B4, B5, B6) closed NEGATIV
 - [`src/tnfr/riemann/coupling_weights_type_signature.py`](../src/tnfr/riemann/coupling_weights_type_signature.py) (B6a diagnostic).
 - [`examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py`](../examples/05_type_hygiene/84_coupling_weights_type_signature_demo.py) (B6a two-probe demo).
 ---
-## §13quinquaginta-prima. T-W Final NEGATIVE Verdict and Envelope Classification of E7 = NodeIndexedCouplingWeights (Closes B6; Does NOT Advance G4 = RH)
+## §13quinquaginta-prima. T-W source-status verdict and E7 envelope (corrected scope)
 
-**Status**: B6 Phase c (final verdict + envelope classification). Phases a, b recorded at §13quadraginta-nona, §13quinquaginta.
+> **SUPERSEDED / CORRECTED (September 2026).** The legacy “NEGATIVE” verdict
+> records that the inspected defaults and consumers use scalar weights. It does
+> not prove catalog completeness, exclude a separately specified node- or
+> edge-dependent model, or close B6 in mathematical generality.
 
-**Position in programme**: Third Tier-2 sub-question closed; all three Tier-2 sub-questions (B4, B5, B6) now closed NEGATIVE under three distinct orthogonal CDMs (DITS, STD, SWD).
+**Status**: historical Phase-c source verdict; semantic carrier question open
+beyond the inspected implementation.
+
+**Position in programme**: third Tier-2 source audit recorded. DITS, STD, and
+SWD label three implementation surfaces; they do not close the tier.
 
 ### §13quinquaginta-prima.1 Verdict
 
-> **(Final Verdict of B6)**. The **T-W (T-coupling-weights) Conjecture** is **NEGATIVE**. The canonical TNFR coupling-weight slots `DNFR_WEIGHTS`, `SI_WEIGHTS`, `SELECTOR_WEIGHTS` at [`src/tnfr/config/defaults_core.py:57,65,150`](../src/tnfr/config/defaults_core.py) are structurally scalar dictionaries with components `w_c^{(S)} \in \mathbb{R}`. No canonical TNFR network evolution forces a non-scalar carrier object (node-indexed mapping `i \mapsto w_c^{(S,i)}`, per-edge tensor `w_c^{(S,i,j)}`, matrix `\widehat{w}_c^{(S)} \in \mathbb{R}^{n \times n}`, or callable kernel) on any of the three canonical mixing surfaces (ΔNFR aggregation, Sense-Index aggregation, canonical operator selection).
+> **B6 source-status finding.** The inspected `DNFR_WEIGHTS`, `SI_WEIGHTS`,
+> and `SELECTOR_WEIGHTS` paths use scalar dictionary components. No node- or
+> edge-dependent carrier appears in those call sites. This does not show that
+> the nodal equation forbids such a carrier in an explicitly extended model.
 
 **Bases of the verdict** (cumulative across Phase a + Phase b):
 
@@ -12343,9 +11109,12 @@ Programme status after B6b: all Tier-2 sub-questions (B4, B5, B6) closed NEGATIV
    - Resolution 1 (`n_nodes=24, n_permutations=12, seed=23`): `S_W = 0.000000`, `scalar_storage_fraction = 1.0` (10/10 components scalar), `divergent_fraction = 0/12`, verdict `SCALAR_WEIGHTS_ADEQUATE`.
    - Resolution 2 (`n_nodes=48, n_permutations=24, seed=23`): `S_W = 0.000000`, `scalar_storage_fraction = 1.0` (10/10 components scalar), `divergent_fraction = 0/24`, verdict `SCALAR_WEIGHTS_ADEQUATE`.
 
-3. **Forcing-axiom reduction (B6b §13quinquaginta)**: F1-F10 enumeration exhausts the structurally available ways to force non-scalar retention; F1-F9 each refuted by direct catalog inspection or by reduction to previously refuted sub-questions (B3c, B4c, B5c); F10 = (P-W-Non-Scalar-Retention) refuted by **SWD = Scalar-Weight Discipline**.
+3. **Historical checklist (B6b §13quinquaginta)**: F1--F10 covers the source
+   routes inspected at that revision. SWD summarizes their scalar-weight
+   convention; the list is not exhaustive.
 
-The verdict is **conditional on the structural exhaustiveness of the F1-F10 enumeration**, in the same sense as B0-B5 verdicts conditional on their respective F-enumerations. This conditionality is honest scope, not a hidden weakness.
+The finite source audit supports no structural-exhaustiveness premise. Its
+conclusion is limited to the named implementation paths.
 
 ### §13quinquaginta-prima.2 Envelope Classification of E7 = NodeIndexedCouplingWeights
 
@@ -12359,7 +11128,10 @@ The candidate non-canonical envelope identified at B6a (§13quadraginta-nona.5) 
 - **NOT deprecated, NOT deleted, NOT promoted, NOT integrated**. E7 may exist in external research frameworks (per-node attention weights are standard in graph-neural-network literature; per-edge mixing tensors appear in some weighted-Kuramoto formulations); the present verdict makes no claim about those external constructions other than that they lie *outside* the canonical TNFR catalog.
 - **Catalog parity**: E7 takes its place alongside E1 (Pontryagin / measure-νf), E2 (BEPIElement), E3 (CoverElement), E4 (TensorGradientElement), E5 (ContinuousWindowKernel), E6 (EdgeDependentPhaseThreshold) as the seventh identified non-canonical research envelope of the Catalog Type-Hygiene Programme.
 
-**Implication for canonical evolution**: any canonical TNFR network evolution that respects U1-U6 and uses only the 13 canonical operators **never** instantiates E7; the canonical mixing surfaces are structurally protected by SWD. Networks that *do* instantiate E7 — by, e.g., writing `G.graph["DNFR_WEIGHTS"] = {"phase": numpy.ndarray, ...}` or storing per-node weight dictionaries `G.nodes[i]["DNFR_WEIGHTS"]` and reading them in a per-node loop — are operating *outside* the canonical catalog and **do not inherit canonical guarantees** (Lyapunov stability, Noether-like conservation, deterministic operator selection, etc.).
+**Implication for the audited source**: current U1–U6 validators and the 13
+registered operators do not instantiate E7. Per-node or callable mixing weights
+would need an extended contract and reproducibility checks. The current engine
+does not provide general Lyapunov-stability or Noether-conservation guarantees.
 
 ### §13quinquaginta-prima.3 No Deletion, No Deprecation, No Promotion, No Modification
 
@@ -12387,13 +11159,16 @@ Following the pattern established at B1c, B2c, B3c, B4c, B5c, this Phase-c commi
 | B7 – B11 | various | ⏳ | ⏳ | ⏳ | — | — | — |
 | **Final** (meta-minimality theorem) | — | ⏳ | ⏳ | ⏳ | — | — | — |
 
-**Programme progress**: 7 sub-questions complete (B0, B1, B2, B3, B4, B5, B6 — all NEGATIVE under seven distinct orthogonal CDMs); all three Tier-2 sub-questions closed; 5 pending (B7 – B11 + Final).
+**Historical bookkeeping**: seven source audits had been executed at this
+point. The checkmarks and “NEGATIVE” labels in the table record audit coverage,
+not mathematical closure or carrier minimality.
 
 ### §13quinquaginta-prima.5 Methodology Lesson L3* — Third Tier-2 Confirmation (Tier-2 closure)
 
 L3* working heuristic, in its post-B5c form (§13quadraginta-octava.5): *each Tier-1 and Tier-2 type-conjecture of the Catalog Type-Hygiene Programme admits an orthogonal canonical discharge mechanism (CDM) that closes it NEGATIVE without recourse to non-canonical envelopes*.
 
-**Post-B6c update**: L3* is now confirmed under **seven distinct orthogonal CDMs** across both tiers, with all Tier-2 sub-questions exhausted:
+**Historical post-B6c inventory**: seven source-surface labels had been
+recorded. This list does not exhaust the Tier-2 mathematical questions:
 
 | CDM | Sub-question | Tier | Surface of action |
 |---|---|---|---|
@@ -12405,15 +11180,20 @@ L3* working heuristic, in its post-B5c form (§13quadraginta-octava.5): *each Ti
 | STD | B5 | 2 | U3 coupling threshold typing via scalar discipline |
 | **SWD** | **B6** | **2** | **Mixing-aggregation weight typing via scalar broadcast** |
 
-The seven CDMs act on seven *structurally distinct* surfaces (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict, mixing aggregation). Their orthogonality is **structural**, not coincidental: each CDM is the unique discipline that the canonical catalog enforces at its own surface. With all three Tier-2 sub-questions closed under three distinct CDMs, L3* now has *complete Tier-1 and Tier-2 coverage* and predicts that **every remaining Tier-3 / Tier-4 sub-question (B7-B11) admits its own orthogonal CDM at its own surface**.
+The seven labels refer to different inspected source surfaces. Their separation
+helps organize audits but does not prove unique mechanisms, complete Tier-1 or
+Tier-2 coverage, or the outcome of B7--B11.
 
-L3* status promoted from "empirically robust working heuristic with structural-orthogonality witness" (B5c, six-CDM count) to **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage"** (B6c, seven-CDM count, all three Tier-2 sub-questions closed).
+L3* remains a historical audit heuristic. The seven checks do not promote it to
+a completeness statement.
 
 ### §13quinquaginta-prima.6 Honest Scope (Mandatory)
 
-- **Does**: close B6 with a NEGATIVE verdict at the forcing-axiom level conditional on F1-F10 exhaustiveness; formally classify E7 = NodeIndexedCouplingWeights as non-canonical research envelope; update programme bookkeeping; sharpen L3* under seven-CDM cross-confirmation; close the Tier-2 layer of the programme.
+- **Does**: record scalar weight usage in the inspected source and classify E7
+  as an unimplemented research envelope for that revision.
 - **Does NOT**: advance G4 = RH; modify any canonical operator, default, or consumer site; deprecate or promote any non-canonical construction; close any other open sub-question (B7 - B11 + Final remain genuinely open).
-- **Conditional on**: structural exhaustiveness of the F1-F10 enumeration. If a future canonical primitive derived from the nodal equation expands the structurally available means of forcing non-scalar weight retention, B6 may need to be reopened. No such primitive is currently known.
+- **Limitation**: F1--F10 is not exhaustive, so B6 remains open outside the
+  inspected source paths.
 - **Theory-only commit**: no `src/` changes; no example changes; only `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` (append §13quinquaginta-prima + TOC row) and `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` (B6 status → ✅ CLOSED; §4 row B6 Phase c column → ✅; verdict column → NEGATIVE; CDM column → SWD; envelope column → E7; progress paragraph; Tier-2 closure note).
 
 ### §13quinquaginta-prima.7 Cross-references
@@ -12431,7 +11211,12 @@ L3* status promoted from "empirically robust working heuristic with structural-o
 ---
 ---
 
-### §13quinquaginta-secunda — B7 = Δ-tetrad-closure: Phase a pre-registration, source-code trace, and frozen signature
+### §13quinquaginta-secunda — B7 tetrad source trace and frozen signature (corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** This trace inventories the four
+> implemented tetrad readouts. Because those readouts are lossy diagnostics, a
+> source reduction through scalar arrays does not prove that the tetrad is a
+> complete or minimal state representation.
 
 **Status**: Phase a CLOSED. Phase b is **n/a** for B7 (closure question, not type-conjecture). Phase c (final verdict) deferred to §13quinquaginta-tertia.
 
@@ -12497,9 +11282,16 @@ L3* prediction for B7 (per §13quinquaginta-prima.5): the closure question admit
 - `examples/05_type_hygiene/85_tetrad_closure_signature_demo.py` (B7a demo).
 ---
 
-### §13quinquaginta-tertia — B7 = Δ-tetrad-closure: Phase c final verdict
+### §13quinquaginta-tertia — B7 tetrad source-status verdict (corrected scope)
 
-**Status**: Phase c CLOSED. **Verdict**: **NEGATIVE** (no richer intermediate type forced; tetrad layer of the canonical engine is closed by Tier-1+Tier-2 scalar inputs plus the canonical graph metric, with every intermediate value structurally scalar-coercible). **First Tier-3 sub-question closed**.
+> **SUPERSEDED / CORRECTED (September 2026).** The former closure verdict is
+> withdrawn. The inspected functions return the documented finite readouts;
+> reconstruction, observability completeness, and minimality remain open.
+
+**Current status**: the inspected tetrad functions reduce to documented finite
+readouts through scalar-valued operations. This source trace does not prove
+state completeness, minimality, or reconstruction; B7 remains open at that
+semantic level.
 
 **Scope (mandatory honesty)**: Phase c is theory-only. Does NOT construct, promote, deprecate, modify, or delete any canonical operator. Does NOT advance G4 = RH. Conditional on the four canonical tetrad-field implementations at `src/tnfr/physics/canonical.py:199,609,640,756` being the canonical specification and on the source-code trace of §13quinquaginta-secunda.2 being a faithful summary.
 
@@ -12537,7 +11329,11 @@ The Tetrad-Closure Signature diagnostic of §13quinquaginta-secunda.3, frozen at
 
 #### .3 Envelope classification
 
-The candidate envelope `E_TC = HiddenIntermediateTensorState` (or equivalent richer-than-scalar intermediate type on the Tier-1+Tier-2-to-tetrad reduction path) is hereby classified as the **eighth non-canonical research envelope** (joining E1 = Pontryagin/measure-ν_f, E2 = BEPIElement, E3 = CoverElement, E4 = TensorGradientElement, E5 = ContinuousWindowKernel, E6 = EdgeDependentPhaseThreshold, E7 = NodeIndexedCouplingWeights). `E_TC` is NOT forced by the nodal equation `∂EPI/∂t = nu_f · DeltaNFR(t)`, NOT forced by U1–U6, NOT forced by the canonical 13-operator catalog, NOT forced by the four canonical tetrad-field implementations at `src/tnfr/physics/canonical.py:199,609,640,756`. It is preserved as a research envelope for studies that wish to investigate tensor-valued, callable-valued, kernel-valued, or measure-valued intermediates on the Tier-1+Tier-2-to-tetrad reduction path, with the explicit understanding that such intermediates are non-canonical extensions of the engine and not minimality counterexamples.
+The candidate envelope `E_TC = HiddenIntermediateTensorState` (or an
+equivalent richer intermediate) is absent from the four audited tetrad-field
+implementations. The nodal equation and U1–U6 do not select it, but this source
+audit neither refutes the envelope nor proves the current tetrad minimal. It
+remains an auxiliary research model requiring an explicit carrier and contract.
 
 #### .4 Effect on T-HP and G4 = RH
 
@@ -12545,7 +11341,10 @@ B7c does NOT advance G4 = RH (Conjecture T-HP, §13septies). It does NOT modify 
 
 #### .5 L3* status (post-B7c)
 
-L3* heuristic, post-B7c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage and first Tier-3 closure orthogonally discharged"**. Cumulative eight CDMs: B0 = Pontryagin/measure-ν_f (field-measure surface), B1 = TMEP (element-projection surface), B2 = PWDP (phase-wrap surface), B3 = BSAD (scalar-aggregation surface), B4 = DITS (temporal-sampling surface), B5 = STD (coupling-verdict surface), B6 = SWD (mixing-aggregation surface), B7 = **TRC = Tetrad-Reduction Closure** (Tier-1+Tier-2-to-tetrad reduction surface). Eight structurally distinct surfaces, each unique to the canonical machinery at its surface. L3* prediction for remaining Tier-3/Tier-4 sub-questions (B8–B11): each admits its own orthogonal CDM at its own surface.
+L3* remains a historical prioritization heuristic. The eight audits describe
+distinct current source surfaces, including the finite REMESH delay surface and
+the tetrad reduction path. They do not prove structural orthogonality,
+completeness, or future B8–B11 verdicts.
 
 #### .6 Cross-references
 
@@ -12557,7 +11356,12 @@ L3* heuristic, post-B7c, is promoted to: **"empirically robust working heuristic
 - `src/tnfr/riemann/tetrad_closure_signature.py` (B7a diagnostic).
 - `examples/05_type_hygiene/85_tetrad_closure_signature_demo.py` (B7a demo).
 
-### Sec 13quinquaginta-quarta — B8 Phase a: Currents-Closure Signature diagnostic (T-currents-closure)
+### Sec 13quinquaginta-quarta — B8 current-readout source trace (corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** This source trace records the
+> implemented current and divergence readouts. It does not prove a closed or
+> exhaustive dynamics, nor does it turn the Noether-like residual diagnostic
+> into a general conservation theorem.
 
 #### .1 Scope and disclaimer
 
@@ -12612,11 +11416,18 @@ Per-key input non-scalar counts: `{theta: 0, DeltaNFR: 0}` on both probes. Per-f
 - `examples/05_type_hygiene/86_currents_closure_signature_demo.py` (B8a demo).
 - Sec 13septies (Conjecture T-HP, G4 = RH; B8 does NOT advance this).
 
-### Sec 13quinquaginta-quinta — B8 Phase c: NEGATIVE verdict for T-currents-closure, CCC promoted as ninth CDM
+### Sec 13quinquaginta-quinta — B8 current-readout source status (corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** The legacy verdict means that no
+> richer intermediate appeared in the inspected functions. It does not prove
+> carrier minimality, catalog completeness, or general current closure.
 
 #### .1 Scope
 
-This section emits the **final Phase-c verdict** for B8 = Delta-currents-closure, by direct source-code trace of the three canonical current/divergence implementations. Scope is methodological: it closes the second Tier-3 sub-question (after B7), promotes **CCC = Currents-Closure Discipline** as the ninth Catalog-Discharge Mechanism, classifies **E_CC = HiddenIntermediateTensorStateOnCurrents** as the ninth non-canonical research envelope, and updates the cumulative L3* status. It does NOT modify any canonical implementation, does NOT alter the tetrad fields or any U-rule, and does NOT advance G4 = RH (Conjecture T-HP, Sec 13septies).
+This section records a source trace for the three current/divergence readouts.
+CCC names the inspected reduction pattern, and E_CC names an unimplemented
+research envelope. The trace does not prove current closure, catalog
+completeness, or a general conservation law, and it does not advance G4 = RH.
 
 #### .2 Per-current source-code closure trace
 
@@ -12640,7 +11451,9 @@ NEGATIVE here means: there is no forcing of a non-canonical envelope on the Tier
 
 E_CC joins E1...E_TC as the ninth non-canonical research envelope (cumulative list: B0-E1, B1-E2, B2-E3, B3-E4, B4-E5, B5-E6, B6-E7, B7-E_TC, B8-E_CC). The candidate ninth CDM is promoted to canonical status:
 
-**CCC = Currents-Closure Discipline**, acting on the **Tier-1+Tier-2-to-currents reduction surface** (the third closure surface, after the Tier-1+Tier-2-to-tetrad reduction surface of B7).
+**CCC = Currents Source-Reduction Discipline** labels the inspected paths from
+stored fields to current readouts; “closure” in the historical acronym is not a
+completeness theorem.
 
 #### .4 Catalog-Discharge Mechanism orthogonality (post-B8c)
 
@@ -12662,7 +11475,9 @@ Each CDM is unique to the canonical machinery at its surface. No CDM is reused a
 
 #### .5 L3* status (post-B8c)
 
-L3* heuristic, post-B8c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage and first two Tier-3 closures orthogonally discharged"**. Cumulative nine CDMs (see table above). L3* prediction for remaining Tier-3/Tier-4 sub-questions (B9-B11): each admits its own orthogonal CDM at its own surface.
+The B8 audit adds another implementation surface to the historical L3* ledger.
+It neither completes Tier-1/Tier-2 coverage nor predicts the outcomes of
+B9--B11.
 
 #### .6 Cross-references
 
@@ -12676,11 +11491,17 @@ L3* heuristic, post-B8c, is promoted to: **"empirically robust working heuristic
 - `src/tnfr/riemann/currents_closure_signature.py` (B8a diagnostic).
 - `examples/05_type_hygiene/86_currents_closure_signature_demo.py` (B8a demo).
 
-### Sec 13quinquaginta-quinta — B8 Phase c: NEGATIVE verdict for T-currents-closure, CCC promoted as ninth CDM
+### Sec 13quinquaginta-quinta-bis — Duplicate B8 historical record (superseded)
+
+> **SUPERSEDED / CORRECTED (September 2026).** This duplicated Phase-c record
+> is retained only for provenance. The current scoped status is stated in the
+> preceding B8 correction and in §13sexagesima-secunda.
 
 #### .1 Scope
 
-This section emits the **final Phase-c verdict** for B8 = Delta-currents-closure, by direct source-code trace of the three canonical current/divergence implementations. Scope is methodological: it closes the second Tier-3 sub-question (after B7), promotes **CCC = Currents-Closure Discipline** as the ninth Catalog-Discharge Mechanism, classifies **E_CC = HiddenIntermediateTensorStateOnCurrents** as the ninth non-canonical research envelope, and updates the cumulative L3* status. It does NOT modify any canonical implementation, does NOT alter the tetrad fields or any U-rule, and does NOT advance G4 = RH (Conjecture T-HP, Sec 13septies).
+This duplicate historical record repeats the B8 source trace. It supplies no
+additional closure, completeness, or conservation result and does not advance
+G4 = RH.
 
 #### .2 Per-current source-code closure trace
 
@@ -12704,7 +11525,7 @@ NEGATIVE here means: there is no forcing of a non-canonical envelope on the Tier
 
 E_CC joins E1...E_TC as the ninth non-canonical research envelope (cumulative list: B0-E1, B1-E2, B2-E3, B3-E4, B4-E5, B5-E6, B6-E7, B7-E_TC, B8-E_CC). The candidate ninth CDM is promoted to canonical status:
 
-**CCC = Currents-Closure Discipline**, acting on the **Tier-1+Tier-2-to-currents reduction surface** (the third closure surface, after the Tier-1+Tier-2-to-tetrad reduction surface of B7).
+**CCC = Currents Source-Reduction Discipline** labels the inspected paths only.
 
 #### .4 Catalog-Discharge Mechanism orthogonality (post-B8c)
 
@@ -12726,7 +11547,8 @@ Each CDM is unique to the canonical machinery at its surface. No CDM is reused a
 
 #### .5 L3* status (post-B8c)
 
-L3* heuristic, post-B8c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage and first two Tier-3 closures orthogonally discharged"**. Cumulative nine CDMs (see table above). L3* prediction for remaining Tier-3/Tier-4 sub-questions (B9-B11): each admits its own orthogonal CDM at its own surface.
+The duplicate ledger adds no evidence. L3* remains an audit heuristic without
+completeness or predictive force for B9--B11.
 
 #### .6 Cross-references
 
@@ -12740,7 +11562,12 @@ L3* heuristic, post-B8c, is promoted to: **"empirically robust working heuristic
 - `src/tnfr/riemann/currents_closure_signature.py` (B8a diagnostic).
 - `examples/05_type_hygiene/86_currents_closure_signature_demo.py` (B8a demo).
 
-### Sec 13quinquaginta-sexta — B9 Phase a: Aggregates-Closure Signature diagnostic (T-aggregates-closure)
+### Sec 13quinquaginta-sexta — B9 aggregate-readout source trace (corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** This trace inventories the
+> implemented aggregate functions. In particular, the structural energy is a
+> nonnegative trajectory diagnostic or Lyapunov candidate; scalar return types
+> do not prove a complete state basis or a general Lyapunov theorem.
 
 #### .1 Scope
 
@@ -12781,11 +11608,18 @@ Note on output denominators: the global scalar `C(t)` contributes a single entry
 
 Phase a is methodological only. It does NOT modify `compute_coherence`, `compute_Si`, `compute_energy_density`, or `compute_topological_charge`; does NOT alter any U-rule; does NOT change the tetrad or currents fields. It does NOT advance G4 = RH. The aggregates remain the canonical scalar functionals defined at their source-code locations.
 
-### Sec 13quinquaginta-septima — B9 Phase c: NEGATIVE verdict for T-aggregates-closure, ACD promoted as tenth CDM
+### Sec 13quinquaginta-septima — B9 aggregate-readout source status (corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** The former closure verdict is a
+> current-source observation only. It does not establish completeness,
+> minimality, conservation, or convergence for arbitrary engine trajectories.
 
 #### .1 Scope
 
-This section emits the **final Phase-c verdict** for B9 = Delta-aggregates-closure, by direct source-code trace of the four canonical aggregate implementations. Scope is methodological: it closes the third Tier-3 sub-question (after B7 and B8), promotes **ACD = Aggregates-Closure Discipline** as the tenth Catalog-Discharge Mechanism, classifies **E_AC = HiddenIntermediateTensorStateOnAggregates** as the tenth non-canonical research envelope, and updates the cumulative L3* status. It does NOT modify any canonical implementation, does NOT alter the tetrad fields, currents, or any U-rule, and does NOT advance G4 = RH (Conjecture T-HP, Sec 13septies).
+This section records a source trace for four aggregate readouts. ACD labels the
+inspected reduction pattern, and E_AC labels an unimplemented research envelope.
+The trace does not prove aggregate completeness, conservation, Lyapunov
+monotonicity, or convergence and does not advance G4 = RH.
 
 #### .2 Per-aggregate source-code closure trace
 
@@ -12811,7 +11645,9 @@ NEGATIVE here means: there is no forcing of a non-canonical envelope on the Tier
 
 E_AC joins E1...E_CC as the tenth non-canonical research envelope (cumulative list: B0-E1, B1-E2, B2-E3, B3-E4, B4-E5, B5-E6, B6-E7, B7-E_TC, B8-E_CC, B9-E_AC). The candidate tenth CDM is promoted to canonical status:
 
-**ACD = Aggregates-Closure Discipline**, acting on the **Tier-1+Tier-2-plus-tetrad-plus-currents-to-aggregates reduction surface** (the fourth closure surface, after the Tier-1+Tier-2-to-tetrad reduction surface of B7 and the Tier-1+Tier-2-to-currents reduction surface of B8). ACD is structurally distinct from TRC and CCC: TRC discharges the four tetrad reductions, CCC discharges the three current/divergence reductions, ACD discharges the four scalar-aggregate reductions that **compose** tetrad and currents into the global coherence indicator, sense index, energy density, and topological charge.
+**ACD = Aggregates Source-Reduction Discipline** labels the inspected paths to
+the aggregate readouts. Its distinction from the TRC and CCC audit surfaces is
+organizational; it does not prove those readouts form a complete state basis.
 
 #### .4 Catalog-Discharge Mechanism orthogonality (post-B9c)
 
@@ -12834,7 +11670,8 @@ Each CDM is unique to the canonical machinery at its surface. No CDM is reused a
 
 #### .5 L3* status (post-B9c)
 
-L3* heuristic, post-B9c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage and all three Tier-3 closures orthogonally discharged"**. Cumulative ten CDMs (see table above). L3* prediction for remaining Tier-4 sub-questions (B10-B11): each admits its own orthogonal CDM at its own surface.
+The B9 audit adds a tenth implementation-surface label to the historical ledger.
+It does not establish complete earlier tiers or predict B10--B11.
 
 #### .6 Cross-references
 
@@ -12852,7 +11689,12 @@ L3* heuristic, post-B9c, is promoted to: **"empirically robust working heuristic
 
 ---
 
-## §13quinquaginta-octava — B10 Phase a: U-Rules Consistency Signature (URC) diagnostic
+## §13quinquaginta-octava — B10 U-rule source-signature audit (corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** This audit checks the current
+> validators' input and output types. U1--U6 are engine policies and contracts;
+> their scalar interfaces do not establish a universal convergence theorem or
+> exhaust every admissible dynamical model.
 
 #### .1 Question
 
@@ -12905,7 +11747,11 @@ Methodological diagnostic only. Does NOT modify any canonical implementation. Do
 
 ---
 
-## §13quinquaginta-nona — B10 Phase c: NEGATIVE verdict, promote URC as eleventh CDM
+## §13quinquaginta-nona — B10 U-rule source-status verdict (corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** The legacy verdict records the
+> types used by the inspected validator functions. It does not prove the rules
+> complete, minimal, or sufficient for convergence of arbitrary trajectories.
 
 #### .1 Source-code closure trace
 
@@ -12945,7 +11791,9 @@ Orthogonality is established by surface-disjointness: URC operates on rule-check
 
 #### .5 L3* update
 
-L3* heuristic, post-B10c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage, all three Tier-3 closures, and the first Tier-4 closure orthogonally discharged"**. Cumulative eleven CDMs (Pontryagin/measure-nu_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC, CCC, ACD, URC). L3* prediction for the remaining Tier-4 sub-question (B11): admits its own orthogonal CDM at the operator-catalog-completeness surface.
+The B10 audit adds an eleventh implementation-surface label. L3* remains a
+historical organizing heuristic; the audit neither completes the earlier tiers
+nor predicts B11 or catalog completeness.
 
 #### .6 Cross-references
 
@@ -12962,11 +11810,19 @@ L3* heuristic, post-B10c, is promoted to: **"empirically robust working heuristi
 
 ---
 
-## §13sexagesima — B11 Phase a: Operator-Catalog Discipline Signature (OCD) diagnostic
+## §13sexagesima — B11 operator-registry consistency audit (corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** This diagnostic inventories the
+> current registry, metadata, and exports. It can verify that they agree at a
+> revision; it cannot establish that the 13 public operators form a complete or
+> immutable mathematical catalog.
 
 #### .1 Question
 
-Is the canonical 13-operator TNFR registry enforced as an immutable closed set, with no hidden 14th-operator construction reachable from the public API? Does the catalog surface (registry + introspection metadata + public exports) introduce any callable kernel, measure, operator-valued intermediate, matrix lift, or Banach-derivative apparatus along the way?
+Do the current registry, introspection metadata, and public exports agree on the
+13 currently declared operator classes, and do those inspected records contain
+any richer payload? This is a revision-specific consistency question, not a
+test of semantic completeness or future extensibility.
 
 #### .2 Phase a diagnostic
 
@@ -13015,7 +11871,12 @@ Methodological diagnostic only. Does NOT modify any canonical implementation. Do
 
 ---
 
-## §13sexagesima-prima — B11 Phase c: NEGATIVE verdict, promote OCD as twelfth CDM
+## §13sexagesima-prima — B11 operator-registry source status (corrected scope)
+
+> **SUPERSEDED / CORRECTED (September 2026).** OCD is a registry-consistency
+> check. The current count of 13 and absence of another exported implementation
+> do not prove semantic completeness, rule out a future operator derived from
+> the nodal equation, or license a composite meta-minimality theorem.
 
 #### .1 Source-code closure trace
 
@@ -13032,13 +11893,17 @@ Every probe of B11 Phase a reduces its evidence through: (a) `len()` against the
 
 #### .2 NEGATIVE verdict
 
-The operator-catalog discipline surface admits no hidden canonical envelope. The Phase a empirical witness (`S_OC = 0.000000`, ten probes across two invocations) is fully reproduced by the source-code trace above. The "ghost 14th operator" construction posited in the B11 spec block of `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 is unreachable from the public API: the lazy-loading guard, the immutable frozensets in `grammar_core.py`, and the explicit `definitions.__all__` jointly close the catalog at exactly 13 operators.
+The registry-consistency audit found 13 mutually aligned entries and no richer
+payload in the ten probes (`S_OC = 0.000000`). This establishes the current
+public inventory only. It does not make the registry immutable, prove that no
+future operator can be derived, or close the mathematical catalog at 13.
 
 #### .3 Promote OCD as twelfth CDM
 
 The Phase c analysis is structurally distinct from the eleven preceding CDMs:
 
-- **OCD = Operator-Catalog Discipline** acts on the **operator-catalog-closure surface** — i.e. the registry + introspection-metadata + public-exports triple that defines the boundary of what counts as a canonical TNFR operator.
+- **OCD = Operator-Catalog Discipline** acts on the registry-consistency
+  surface: the current registry, metadata, and public exports.
 - The eleven prior CDMs act on disjoint surfaces: Pontryagin/measure-nu_f (B0), tetrad-membrane-evolution-projection (B1, TMEP), phase-wrap-density-projection (B2, PWDP), bifurcation-state-aggregation-density (B3, BSAD), discrete-injection-time-sampling (B4, DITS), spectral-trace-density (B5, STD), spectrum-weighting-density (B6, SWD), tetrad-reduction-closure (B7, TRC), currents-reduction-closure (B8, CCC), aggregates-reduction-closure (B9, ACD), U-rules-type-hygiene (B10, URC).
 
 Orthogonality is established by surface-disjointness: OCD operates on catalog metadata and registry mapping, none of the prior eleven CDMs do.
@@ -13049,7 +11914,10 @@ Orthogonality is established by surface-disjointness: OCD operates on catalog me
 
 #### .5 L3* update
 
-L3* heuristic, post-B11c, is promoted to: **"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage, all three Tier-3 closures, and both Tier-4 closures orthogonally discharged"**. Cumulative twelve CDMs (Pontryagin/measure-nu_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC, CCC, ACD, URC, OCD). All sub-questions B0-B11 are NEGATIVE. The final composite meta-minimality theorem (B0-B11 assembly) is now eligible for statement and proof; deferred to a separate commit (Sec 13sexagesima-secunda).
+The historical ledger contains twelve named source-surface audits. It does not
+prove the B0--B11 semantic questions negative and does not support a composite
+meta-minimality or catalog-completeness theorem. The corrected inventory follows
+in §13sexagesima-secunda.
 
 #### .6 Cross-references
 
@@ -13069,836 +11937,329 @@ L3* heuristic, post-B11c, is promoted to: **"empirically robust working heuristi
 
 ---
 
-## §13sexagesima-secunda — Final: Composite Meta-Minimality and Catalog-Closure Theorem
+## §13sexagesima-secunda — Corrected current type-surface inventory
 
-This section assembles the twelve NEGATIVE verdicts from B0-B11 into a single composite statement. The Catalog Type-Hygiene Programme (`theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md`) terminates here.
+> **SUPERSEDED / CORRECTED (September 2026).**  The historical
+> “Composite Meta-Minimality and Catalog-Closure Theorem” inferred semantic
+> minimality and completeness from twelve source audits.  That inference is
+> invalid: inspecting every currently registered API surface can establish what
+> the current implementation exposes, but it cannot prove that the representation
+> is necessary or that all admissible TNFR transformations have been enumerated.
 
-#### .1 The twelve discharged sub-questions
+#### .1 Audited surfaces
 
-| ID | Sub-question | CDM | Envelope (research-only) | Notes ref |
-|----|----|----|----|----|
-| B0  | T-nu_f                       | Pontryagin/measure-nu_f                | E0 = MeasureExtensionOnNuF             | Sec 13tricesima-quinta |
-| B1  | T-EPI                        | TMEP                                   | E1 = ContinuousFormExtensionOnEPI      | Sec 13triginta-secunda |
-| B2  | T-phi                        | PWDP                                   | E2 = LiftedCircleBundleOnPhi           | Sec 13triginta-quarta |
-| B3  | T-DeltaNFR                   | BSAD                                   | E3 = HiddenBifurcationStateOnDeltaNFR  | Sec 13triginta-sexta |
-| B4  | T-REMESH-window              | DITS                                   | E4 = ContinuousReinjectionMeasure      | Sec 13quadraginta-quinta |
-| B5  | T-Delta-phi-max              | STD                                    | E5 = SpectralTraceExtension            | Sec 13quadraginta-octava |
-| B6  | T-coupling-weights           | SWD                                    | E6 = NodeIndexedCouplingWeights        | Sec 13quinquaginta-prima |
-| B7  | Delta-tetrad-closure         | TRC                                    | E_TC = HiddenIntermediateTensorState   | Sec 13quinquaginta-tertia |
-| B8  | Delta-currents-closure       | CCC                                    | E_CC = HiddenIntermediateTensorStateOnCurrents   | Sec 13quinquaginta-quinta |
-| B9  | Delta-aggregates-closure     | ACD                                    | E_AC = HiddenIntermediateTensorStateOnAggregates | Sec 13quinquaginta-septima |
-| B10 | U-rules type-hygiene         | URC                                    | E_UR = HiddenIntermediateRulecheckerState        | Sec 13quinquaginta-nona |
-| B11 | Operator-catalog closure     | OCD                                    | E_OC = HiddenFourteenthOperatorConstruction      | Sec 13sexagesima-prima |
+The B0--B11 studies record the types used by the current implementation for
+node attributes, graph parameters, tetrad readouts, currents, aggregate
+diagnostics, grammar checks, and operator metadata.  Together they are a useful
+API inventory and regression baseline.
 
-Each row carries a NEGATIVE verdict obtained by a single CDM (concordance-discharging mechanism) at a structurally distinct surface. The twelve CDMs partition the canonical-state contract surface: Pontryagin/measure (B0), tetrad-membrane-evolution-projection (B1), phase-wrap-density-projection (B2), bifurcation-state-aggregation-density (B3), discrete-injection-time-sampling (B4), spectral-trace-density (B5), spectrum-weighting-density (B6), tetrad-reduction-closure (B7), currents-reduction-closure (B8), aggregates-reduction-closure (B9), U-rules-type-hygiene (B10), operator-catalog-closure (B11).
+They do not define an independent universe of admissible models against which
+minimality or completeness could be proved.  In particular, a type absent from
+the current registry may still be formulated as an auxiliary model, and a
+future operator may be compatible with the nodal equation after receiving an
+explicit contract.
 
-#### .2 Theorem statement
+#### .2 Supported proposition
 
-**Theorem (Catalog Minimality & Completeness)**. Under the 13-operator TNFR catalog (`src/tnfr/operators/registry.py`) and the unified grammar U1-U6 (`src/tnfr/operators/grammar_core.py`, `src/tnfr/operators/grammar_u6.py`), the per-node types
+For the audited revision, the reachable public functions inspected by B0--B11
+consume and return the documented finite Python and NumPy values, and the
+operator registries consistently expose 13 named entries.  This is a
+source-level consistency statement.  It is not a theorem that these values form
+a minimal sufficient state, that the tetrad reconstructs all graph dynamics, or
+that a fourteenth operator is mathematically impossible.
 
-$$(\nu_f, \mathrm{EPI}, \phi, \Delta\mathrm{NFR}) \in \mathbb{R}^+ \times \mathbb{R} \times [0, 2\pi) \times \mathbb{R} ,$$
+#### .3 Evidence boundary
 
-the graph-level parameters
+Each Phase-c trace supports a local claim about a named source surface:
 
-$$(\tau_l, \tau_g, \Delta\phi_{\max}, w_{ij}) \in \mathbb{N}^2 \times [0, \pi] \times \mathbb{R}_{\ge 0} ,$$
+1. B0--B3 describe the current per-node representations.
+2. B4--B6 describe the current finite graph-level parameters.
+3. B7--B9 describe current diagnostics and aggregate outputs.
+4. B10 describes the inputs used by the present grammar validators.
+5. B11 checks agreement among current registry and metadata exports.
 
-the derived structural-field tetrad
-
-$$(\Phi_s, |\nabla\phi|, K_\phi, \xi_C) \in \mathbb{R}^4 ,$$
-
-and the derived currents
-
-$$(J_\phi, J_{\Delta\mathrm{NFR}}) \in \mathbb{R}^2$$
-
-are jointly the **minimal and complete** structural state of any TNFR realisation that satisfies the nodal equation `dEPI/dt = nu_f * DeltaNFR(t)` and the unified grammar U1-U6. Specifically:
-
-- **Completeness**: every canonical operator invocation, every U-rule check, every aggregate-functional output, and every registry/metadata inspection reduces — through the source-code traces of B0-B11 Phase c — to operations on tuples of these scalars (plus integer indices). No callable kernel, no measure, no operator-valued intermediate, no matrix lift, and no Banach-derivative apparatus is forced by the canonical machinery at any of the twelve surfaces probed.
-- **Minimality**: no member of the canonical state tuple can be eliminated without (i) violating the nodal-equation contract (`nu_f`, `EPI`, `DeltaNFR`), (ii) breaking U1-U6 closure (`phi`, `tau_l`, `tau_g`, `Delta-phi-max`, `w_{ij}`), or (iii) collapsing one of the derived-field aggregates whose admissibility is verified independently by B7/B8/B9 (the tetrad, currents, and aggregates).
-- **Catalog closure**: the operator catalog is exactly the immutable set of 13 classes registered in `OPERATORS`; no fourteenth operator is reachable from the public API (B11) and no U-rule checker admits a richer input/output signature (B10).
-
-#### .3 Proof sketch
-
-Each clause of the theorem follows directly from the corresponding Phase c discharge:
-
-1. **Per-node types** (`nu_f`, `EPI`, `phi`, `DeltaNFR`): the four B0/B1/B2/B3 Phase c traces classify any richer envelope (`E0..E3`) as research-only; the canonical implementation in `src/tnfr/dynamics/`, `src/tnfr/metrics/`, and `src/tnfr/operators/` reads only the scalar types declared above.
-2. **Graph-level parameters** (`tau_l`, `tau_g`, `Delta-phi-max`, `w_{ij}`): B4/B5/B6 Phase c traces classify `E4..E6` as research-only; the canonical scheduler in `src/tnfr/dynamics/runtime.py` and the coupling layer in `src/tnfr/operators/coupling.py` read only the natural-number windows and the scalar threshold/weight types declared above.
-3. **Tetrad** (`Phi_s`, `|grad phi|`, `K_phi`, `xi_C`): B7 Phase c discharges TRC; the canonical aggregator chain in `src/tnfr/metrics/structural_fields.py` returns scalar functionals of the per-node tuples plus weight scalars.
-4. **Currents** (`J_phi`, `J_{DeltaNFR}`): B8 Phase c discharges CCC at `src/tnfr/metrics/sense_index.py` and `src/tnfr/physics/unified.py`; outputs are scalar densities or per-node scalar arrays.
-5. **Aggregate functionals**: B9 Phase c discharges ACD; the four canonical aggregates (`compute_coherence`, `compute_Si`, `compute_energy_density`, `compute_topological_charge`) return real scalars.
-6. **U-rule closure**: B10 Phase c discharges URC; every rule checker in `grammar_core.py` and `grammar_u6.py` reduces to string-frozenset membership plus integer-index arithmetic plus scalar comparison.
-7. **Catalog closure**: B11 Phase c discharges OCD; `OPERATORS`, `OPERATOR_METADATA`, and `definitions.__all__` jointly close at exactly 13 canonical operators.
-
-Composition: any canonical computation in TNFR is a finite sequence of (a) per-node attribute reads (B0-B3 types), (b) graph-level parameter reads (B4-B6 types), (c) U-rule checks (B10), (d) operator dispatch via the catalog (B11), and (e) aggregate/current/tetrad evaluation (B7-B9). The twelve closures jointly cover every reachable canonical observation; their composition is a finite composition of scalar-typed evaluations, so the joint state above is both sufficient and necessary. **QED (composite, conditional on B0-B11 Phase c traces).**
+Composing those facts still yields only an inventory of currently reachable
+code paths.  It does not turn implementation coverage into semantic
+completeness, and it does not prove convergence of U2, the structural-energy
+candidate, U5, or REMESH.
 
 #### .4 Status
 
-- The theorem is **established in the canonical-implementation sense**: every Phase c trace is a literal source-code inspection of the current canonical implementation. Refutation requires producing a canonical computation whose evidence falsifies one of the twelve Phase c traces (i.e. introduces a callable kernel, a measure, an operator-valued intermediate, a matrix lift, or a Banach-derivative apparatus at one of the twelve surfaces). No such computation is currently known in the canonical layer.
-- Twelve non-canonical research envelopes (`E0..E_OC`) are classified as **research-only**: they may be useful for off-canonical experiments (e.g. spectral programmes, primality-test bench, factorization-lab) but they are not forced by the canonical contract and do not extend the canonical state.
+The twelve research envelopes remain optional off-runtime constructions unless
+and until a concrete implementation and contract are supplied.  Their absence
+from the audited revision is evidence about implementation status, not a
+no-go theorem.  The current 13-entry registry remains the public engine
+contract and may be preserved without calling it complete over an undefined
+class.
 
 #### .5 Scope guard
 
-Does **NOT** advance G4 = RH (Conjecture T-HP, Sec 13septies). The theorem is a catalog-minimality / catalog-completeness statement, independent from the Riemann-hypothesis programme. The twelve CDMs establish that the canonical layer is structurally closed; they say nothing about the spectral location of the zeros of zeta. The off-canonical envelopes E0..E_OC remain the natural research surfaces for any future spectral programme.
+This inventory does not place analytic
+:math:`S(T)=\pi^{-1}\arg\zeta(\tfrac12+iT)` in a finite projector
+kernel, prove a REMESH-infinity limit, close the B1/B2/B3 research branches, or
+advance T-HP or G4 = RH.  The finite fixed-delay DFT diagnostic has GCD fixed
+modes and finite spectral leakage only.
 
 #### .6 Cross-references
 
-- Sec 13sexagesima (B11 Phase a).
-- Sec 13sexagesima-prima (B11 Phase c + OCD).
-- Sec 13quinquaginta-nona (B10 Phase c + URC).
-- Sec 13quinquaginta-septima (B9 Phase c + ACD).
-- Sec 13quinquaginta-quinta (B8 Phase c + CCC).
-- Sec 13quinquaginta-tertia (B7 Phase c + TRC).
-- Sec 13quinquaginta-prima (B6 Phase c + SWD).
-- Sec 13quadraginta-octava (B5 Phase c + STD).
-- Sec 13quadraginta-quinta (B4 Phase c + DITS).
-- Sec 13triginta-sexta (B3 Phase c + BSAD).
-- Sec 13triginta-quarta (B2 Phase c + PWDP).
-- Sec 13triginta-secunda (B1 Phase c + TMEP).
-- Sec 13tricesima-quinta (B0 Phase c + Pontryagin/measure-nu_f).
-- Sec 13septies (Conjecture T-HP, G4 = RH; the composite theorem is independent).
-- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` Sec 3 Final, Sec 4 Final.
-- `src/tnfr/operators/registry.py`, `introspection.py`, `definitions.py`, `definitions_base.py`.
-- `src/tnfr/operators/grammar_core.py`, `grammar_u6.py`.
-- `src/tnfr/dynamics/`, `src/tnfr/metrics/`, `src/tnfr/physics/`.
-- `src/tnfr/riemann/` (twelve `*_signature.py` diagnostic modules).
-- `examples/79_pontryagin_*.py` ... `examples/05_type_hygiene/89_operator_catalog_discipline_signature_demo.py` (per-phase demos).
+- §13sexagesima through §13sexagesima-prima — historical B11 source audits.
+- §13quadraginta-tertia through §13quadraginta-quinta — corrected B4 audit.
+- §13triginta — corrected finite fixed-delay Fourier diagnostic.
+- `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` — consolidated program scope.
+- `theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md` — policy and theorem boundaries.
 
-
+---
 ## §13sexagesima-tertia. Branch B0★ — Scope-Expansion of Existing TNFR Theory (Pre-registration of a Fourth Branch of the §13septies Trichotomy; Does NOT advance G4 = RH)
 
-### .1 Motivation: a fourth branch the §13septies trichotomy did not enumerate
+> **SUPERSEDED / CORRECTED (September 2026).** The original decision tree
+> treated the 13-entry runtime registry and twelve type-surface audits as a
+> complete classification of admissible TNFR models. They are a current-source
+> inventory only. B0★ remains a family of research proposals, not a fourth
+> branch proved to exhaust what B1--B3 omitted.
 
-The §13septies trichotomy for G4 = RH was stated as:
+### .1 Corrected purpose
 
-* **B1** — closure inside the canonical 13-operator catalog (CCET-G_P14, §13vicies-novies.16, **CLOSED on G_P14**; status off G_P14: open in principle).
-* **B2** — new canonical operator derivable from the nodal equation, intertwining slot with prime in a way the catalog cannot.
-* **B3** — no TNFR closure exists.
+B0★ names two kinds of experiment:
 
-§13sexagesima-secunda (Composite Catalog-Closure Theorem, B11 NEGATIVE) established that **no 14th canonical operator is reachable from the public API**: the registry `OPERATORS`, the introspection metadata `OPERATOR_METADATA`, and `definitions.__all__` jointly close the catalog at exactly 13 operators, and the lazy-loading guard plus the immutable grammar frozensets make a hypothetical 14th operator (envelope `E_OC = HiddenFourteenthOperatorConstruction`) structurally unreachable in the canonical layer.
+- **B0★-α:** apply already implemented operators to a separately specified
+  graph construction or state representation;
+- **B0★-β:** study a richer carrier, weight law, or bundle as an auxiliary
+  model with an explicit contract.
 
-Read literally, this **forces §13septies B2 NEGATIVE** at the level of the catalog: any candidate that materialises as a 14th `Operator` subclass in `OPERATORS` is excluded by §13sexagesima-prima. The §13septies trichotomy would thus reduce to **{B1-off-G_P14, B3}**.
+Neither kind is canonical merely because it can be written using current data.
+Likewise, absence from the present API does not make a model impossible.
 
-But the §13septies trichotomy as written did not enumerate a structurally legitimate fourth branch that this work has surfaced:
+### .2 Evaluation checklist
 
-> **B0★ — scope-expansion of the existing TNFR theory** — close G4 without adding any operator to `OPERATORS` and without dropping any of the twelve B0–B11 NEGATIVE verdicts, by either (α) extracting consequences of the existing 13 operators that have not yet been derived, or (β) promoting one or more of the twelve research envelopes `E0..E_OC` to canonical status.
+The historical C0--C4 labels remain useful if read as questions:
 
-This subsection pre-registers B0★ as the fourth branch. It does **not** execute any sub-branch; per-envelope and per-consequence analyses are deferred to subsequent commits.
+| Criterion | Required evidence |
+|---|---|
+| C0 | State whether registry/API changes are made. |
+| C1 | Give an explicit derivation or declare additional modeling assumptions. |
+| C2 | Validate complete operator sequences and any extended state contract. |
+| C3 | Check compatibility with the current source inventory without treating that inventory as complete. |
+| C4 | Construct an operator bridge and prove what it represents; a numerical fit is insufficient. |
 
-### .2 Definition of B0★ and orthogonality to §13sexagesima-secunda
+U1--U6 compliance is an engine policy check and does not prove convergence,
+conservation, bounded residuals, or an analytic operator correspondence.
 
-**Definition (B0★).** A branch-B0★ closure attempt for G4 = RH is any structural argument that:
+### .3 Current status
 
-1. does **not** modify `src/tnfr/operators/registry.py::OPERATORS` (no 14th operator);
-2. does **not** add a member to `src/tnfr/operators/introspection.py::OPERATOR_METADATA`;
-3. does **not** add a class to `src/tnfr/operators/definitions.py::__all__`;
-4. does **not** modify the nodal equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$;
-5. does **not** modify the unified grammar U1–U6;
+The current registry contains 13 public operators. This fact does not close B2,
+and the finite symmetry studies do not close B1 or force B3. All semantic
+operator-bridge branches remain open. G4 = RH is unchanged.
 
-and yet closes G4 = RH (or its T-HP reformulation, §13septies.4) by either of the following two sub-mechanisms:
-
-* **B0★-α (deeper-exploitation sub-branch).** Derive a previously-uncomputed structural consequence of the existing 13 operators (in particular, of their compositions under C1–C5 of CCET-G_P14, evaluated on canonically-constructed graphs other than G_P14) that closes the oscillatory half of the admissible rescaling operator $\mathcal{F}$ of Conjecture T-HP (§13septies.4). The catalog is unchanged; only the analysis is deeper.
-
-* **B0★-β (envelope-promotion sub-branch).** Promote one or more of the twelve research envelopes
-  $\{E_0, E_1, E_2, E_3, E_4, E_5, E_6, E_{TC}, E_{CC}, E_{AC}, E_{UR}, E_{OC}\}$
-  (catalog of §13sexagesima-secunda.1) from *research-only* to *canonical* by supplying a missing canonical derivation from the nodal equation that the §13triginta-* through §13sexagesima-* programme did not produce (or did not attempt). The 13 operators stay fixed; the *state-space types* on which they operate become richer, and the closure of G4 may follow from the enriched types alone.
-
-**Orthogonality to §13sexagesima-secunda.** Neither sub-branch contradicts the Composite Catalog-Closure Theorem:
-
-* B0★-α uses the closed catalog as input and extracts consequences; it adds no operator and no envelope.
-* B0★-β promotes envelopes that were classified as *research-only* by the twelve Phase c traces. The §13triginta-* through §13sexagesima-* NEGATIVE verdicts say each envelope is **not forced** by the current canonical contract; they do **not** say each envelope is **incompatible** with a future canonical contract. The distinction is the same as between "not currently needed" and "ruled out". The Composite Theorem is a *minimality* statement (no envelope is forced); B0★-β is an orthogonal *maximality* question (can an envelope be admitted without breaking the nodal equation or U1–U6).
-
-In particular: a successful B0★-β closure would *not* require re-opening the twelve Phase c traces; it would re-classify one or more envelopes from *research-only* to *canonical* by supplying a derivation from the nodal equation that the type-hygiene programme did not search for (it was searching for forcing-axioms F1–F10, not admissibility-axioms).
-
-### .3 Mapping B0★-β candidates against §13septies B2 / G4 = RH relevance
-
-The twelve envelopes inventoried in §13sexagesima-secunda.1 are not equally relevant to the open content of T-HP (oscillatory half of $\mathcal{F}$, identified in §13septies.5 / N15 W3 with $\ker(\mathcal{R}_\infty)$ and the residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$). The structural-relevance ranking is:
-
-| Envelope | Promotion would add | Relevance to T-HP oscillatory half | Priority |
-|---|---|---|---|
-| $E_0$ = MeasureExtensionOnNuF | $\nu_f$ becomes a measure on the Pontryagin dual $\widehat{\mathbb{Z}} = S^1$ rather than a scalar in $\mathbb{R}^+$ | **HIGH** — Pontryagin-dual measure carries oscillatory harmonic content that a scalar $\nu_f$ discards; matches the Fourier-pair structure of the Weil–Guinand prime side | **P1** |
-| $E_6$ = NodeIndexedCouplingWeights | coupling weights $w_{ij}$ become per-node-indexed rather than graph-level scalars | **HIGH** — directly breaks Fact A of CCET-G_P14 (parameter uniformity); enables prime-arithmetic-dependent edge structure if the per-node rule is derivable from $\nu_f$ via a non-symmetric construction | **P2** |
-| $E_2$ = LiftedCircleBundleOnPhi | $\phi$ becomes a covering-space lift with integer winding $w \in \mathbb{Z}$ | **MEDIUM** — adds homotopy data; could carry oscillatory phase information but does not obviously break prime-relabelling symmetry on $G_{P14}$ | P3 |
-| $E_1$ = ContinuousFormExtensionOnEPI | EPI becomes a continuous form rather than a scalar | LOW — does not obviously connect to oscillatory-half closure | — |
-| $E_3$ = HiddenBifurcationStateOnDeltaNFR | $\Delta\mathrm{NFR}$ carries bifurcation-state aggregation | LOW — bifurcation structure not obviously oscillatory-relevant | — |
-| $E_4, E_5, E_{TC}, E_{CC}, E_{AC}, E_{UR}, E_{OC}$ | various derived-aggregate / control-surface enrichments | LOW — derived from primary types; do not add primary-type expressivity for $\mathcal{F}$ | — |
-
-**P1 (Pontryagin-dual measure $E_0$)** is the structurally most natural B0★-β candidate because the missing canonical content (oscillatory residue of $\mathcal{F}$) is exactly what a measure on the Pontryagin dual encodes that a scalar discards. The §13tricesima-quinta Phase c trace established that the **canonical implementation** does not need this enrichment; B0★-β-P1 asks the orthogonal question: can a measure-valued $\nu_f$ be **derived** from the nodal equation as canonically as the scalar version, and if so, does the resulting enriched dynamics close the oscillatory half?
-
-**P2 (per-node coupling weights $E_6$)** is structurally next-most-natural because Fact A of CCET-G_P14 is the principal obstruction to slot-prime intertwining inside the catalog. Promoting $E_6$ would mechanically dissolve Fact A and reopen the spectral-non-trivial sub-region of CCC constructions, *if* the per-node weight rule can be canonically derived from $\nu_f$ values via a construction that breaks the symmetric-function-of-scalars constraint.
-
-### .4 Pre-registered B0★ sub-route pre-conditions (acceptance / refutation criteria)
-
-For any B0★ closure attempt to be admissible at the canonical layer, the following five acceptance criteria must be met (mirroring the canonicity criteria of Conjecture T-HP §13septies.4 items 1–3, with item 0 added for B0★ specifically):
-
-* **C0 — No catalog modification.** The candidate adds no entry to `OPERATORS`, `OPERATOR_METADATA`, or `definitions.__all__`. (Verifiable by `git diff src/tnfr/operators/registry.py introspection.py definitions.py`.)
-* **C1 — Nodal-equation derivation.** The promoted envelope (B0★-β) or the extracted consequence (B0★-α) is *derived* from $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$ together with the canonical invariants 1–6 and the structural scale $\pi$ only. A successful fit, post-hoc rationalisation, or external-axiom adoption fails C1.
-* **C2 — U1–U6 admissibility.** The enriched dynamics (B0★-β) or the extracted consequence (B0★-α) preserves the unified grammar U1–U6, including the continuity equation $\partial \rho / \partial t + \nabla \cdot \mathbf{J} = \mathcal{S}_{\mathrm{grammar}}$ with uniformly-bounded source term.
-* **C3 — Twelve-CDM consistency.** The candidate does not contradict any of the twelve B0–B11 Phase c traces in their literal source-code statements; in particular, it does not introduce a callable kernel, measure, operator-valued intermediate, matrix lift, or Banach-derivative apparatus at any of the twelve surfaces *as a forced canonical contract* (re-classification from research-only to canonical is permitted; introduction of a new forcing axiom is not).
-* **C4 — T-HP discharge.** The candidate, when composed with the existing canonical catalog and the smooth half of $\mathcal{F}$ closed by P28/P30, produces an operator on $\mathcal{H}_{\mathrm{tet}}$ whose spectrum coincides with $\{\gamma_n\}_{n \ge 1}$ (Conjecture T-HP item 3).
-
-Failure of any C0–C4 disqualifies the candidate as a B0★ closure. C4 is the empirical/derivational core; C0–C3 are admissibility filters.
-
-### .5 What B0★ does NOT claim
-
-* B0★ is a **pre-registration of a fourth branch**, not a closure attempt. No envelope is promoted in this commit; no consequence is extracted; no acceptance criterion is yet evaluated against P1 or P2.
-* B0★ does **not** advance G4 = RH. The branch is structurally legitimate but its closure content is open.
-* B0★ does **not** contradict §13sexagesima-secunda. The Composite Catalog-Closure Theorem is a minimality statement; B0★ is an orthogonal maximality question.
-* B0★ does **not** re-open the twelve Phase c NEGATIVE verdicts. Those traces established that the current canonical implementation does not *force* any enrichment; B0★-β asks whether an enrichment can be *admitted* by a future canonical derivation.
-* B0★ does **not** weaken CCET-G_P14. CCET is a closure of CCC constructions on $G_{P14}$ under closure rules C1–C5; B0★-β-P2 (promotion of $E_6$) would change the inputs to C1 (Fact A no longer holds), not the closure rules themselves, so a B0★-β-P2 closure would constitute an extension *orthogonal* to CCET, not a refutation of it.
-
-### .6 Reduced §13septies trichotomy with B0★ pre-registered
-
-With B0★ pre-registered as the fourth branch, the §13septies decision space is:
-
-* **B1** — canonical-catalog closure: CLOSED on $G_{P14}$ (CCET, §13vicies-novies.16); open in principle off $G_{P14}$, but the off-$G_{P14}$ sub-route requires a canonically-derived graph $G' \ne G_{P14}$ and is structurally constrained by the canonicity-arithmetic separation noted in CCET .§13vicies-novies.16's honest-scope clause.
-* **B2** — new canonical operator: CLOSED at the catalog-API level by §13sexagesima-prima (B11 OCD NEGATIVE). No 14th operator is reachable from the public API.
-* **B0★** — scope-expansion of existing theory (this section). OPEN; pre-registered with sub-branches B0★-α (deeper exploitation) and B0★-β (envelope promotion, priorities P1 = $E_0$, P2 = $E_6$).
-* **B3** — no TNFR closure: permitted residual outcome if B0★ is also refuted across all sub-branches and B1-off-$G_{P14}$ is also closed.
-
-The decision pressure that §13vicies-novies.16's "Net consequence for the program" placed on **B2 or B3** is therefore re-routed: with B2 catalog-API-closed by B11, the program-level pressure now lies on **B0★ or B3**. Per-envelope analysis of B0★-β-P1 and B0★-β-P2, plus an enumeration of B0★-α candidates, is deferred to subsequent commits.
-
-### .7 Cross-references
-
-* §13septies — Conjecture T-HP and original B1/B2/B3 trichotomy.
-* §13vicies-novies.16 — CCET-G_P14 (B1 closure on $G_{P14}$).
-* §13triginta-prima through §13triginta-tertia — T-$\nu_f$ NEGATIVE (Phase c, $E_0$ research-only).
-* §13triginta-quarta through §13triginta-sexta — T-EPI NEGATIVE (Phase c, $E_1$ research-only).
-* §13triginta-octava through §13triginta-decima — T-$\phi$ NEGATIVE (Phase c, $E_2$ research-only).
-* §13quinquaginta-prima — B6 SWD Phase c NEGATIVE ($E_6$ research-only).
-* §13sexagesima — B11 OCD Phase a.
-* §13sexagesima-prima — B11 OCD Phase c NEGATIVE ($E_{OC}$ research-only; no 14th operator reachable).
-* §13sexagesima-secunda — Composite Catalog-Closure Theorem.
-* `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` — full B0–B11 programme.
-* AGENTS.md §"Program Status (May 2026, frozen)" and §"B1 sub-route status" — program-level status mirrors (to be updated in companion edit if B0★ is promoted from pre-registration to active investigation).
-
+---
 
 ## §13sexagesima-quarta. Branch B0★-α — Deeper Exploitation of the Existing 13 Operators on Canonically-Constructed Graphs ≠ G_P14 (Pre-registration; Does NOT advance G4 = RH)
 
-**Status**: PRE-REGISTERED, OPEN (May 2026). Specialisation of §13sexagesima-tertia at the *graph* axis.
+> **SUPERSEDED / CORRECTED (September 2026).** The listed graph operations
+> are candidate constructors, not an exhaustive catalog of canonically
+> derivable graphs. Their inclusion does not make U1--U6 functorial on a new
+> state space or preserve a Noether-like balance automatically.
 
-### §13sexagesima-quarta.1 Motivation
+### .1 Candidate construction inventory
 
-§13sexagesima-tertia formalised B0★ as the fourth branch of the §13septies trichotomy: scope-expansion of the existing TNFR theory **without adding any operator**. B0★ split into two sub-branches: α (deeper exploitation of the existing 13 operators on canonical graphs other than G_P14) and β (canonicity-promotion of one of the twelve research envelopes E0..E_OC).
+The historical list included disjoint union, Cartesian/tensor/strong product,
+quotient, line graph, subdivision, induced subgraph, and graph limits. Each
+operation defines a mathematical graph when its inputs and parameters are
+specified. Additional evidence is required to show that a resulting graph and
+lifted operator implement the intended nodal equation.
 
-This section pre-registers B0★-α.
+Q1 and Q2 are the explicit Kronecker-sum and Kronecker-product constructions
+tested in the next section. Other listed operations remain proposals unless
+their exact finite map and validation are supplied.
 
-B0★-α scope: keep `OPERATORS` intact, keep `OPERATOR_METADATA` intact, keep `definitions.__all__` intact, keep the nodal equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta\mathrm{NFR}(t)$ intact, keep U1–U6 intact, AND keep all twelve B0–B11 NEGATIVE verdicts. Vary only the *graph* on which the canonical compositions act.
+### .2 Pre-registration boundary
 
-Structural rationale: the §13vicies-novies Canonical Catalog Equivariance Theorem (CCET) closure of B1 is **specific to G_P14**. Its proof reduces to two source-auditable facts: (A) parameter uniformity (every canonical operator's coupling constants are graph-level scalars) and (B) on G_P14 every edge-propagating canonical operator decomposes as $I_{n_{\mathrm{primes}}} \otimes O_{P_4}$ with prime-independent four-dimensional kernel (Prime-Cancellation Lemma). On a *different* canonically-derivable graph the analogue of Fact B in general fails — the kernel decomposition depends on the graph's symmetry group, and a graph whose automorphism group is not $S_n$ (or whose $S_n$-action admits non-trivial antisymmetric invariant subspaces) can carry canonical operator spectra that G_P14 forbids by symmetry.
-
-### §13sexagesima-quarta.2 Catalog of canonically-derivable graph constructions
-
-Elementary categorical operations on graphs that require no envelope promotion (each is a functor in the category of graphs and is definable purely from $(\nu_f, \mathrm{prime\ structure}, U1{-}U6)$):
-
-| ID | Operation | Definition | Symmetry implication |
-|---|---|---|---|
-| O1 | Disjoint union $G \sqcup G'$ | $V(G) \cup V(G')$, $E(G) \cup E(G')$ | $\mathrm{Aut}(G) \times \mathrm{Aut}(G')$ |
-| O2 | Cartesian product $G \square G'$ | $V(G) \times V(G')$, edges where one coord equals and other differs by an edge | Product (diagonal if $G = G'$) |
-| O3 | Tensor product $G \times G'$ | $V(G) \times V(G')$, edges where both coords differ by edges | Product (diagonal if $G = G'$) |
-| O4 | Strong product $G \boxtimes G'$ | Union of O2 ∪ O3 edges | Product (diagonal if $G = G'$) |
-| O5 | Line graph $L(G)$ | Nodes are edges of $G$; edges where two edges share a vertex | Induced action of $\mathrm{Aut}(G)$ |
-| O6 | Subdivision $S_k(G)$ | Replace each edge by a path of length $k+1$ | $\mathrm{Aut}(G)$ |
-| O7 | Induced subgraph $G[V']$ | Restrict to $V' \subseteq V(G)$ | Setwise stabiliser of $V'$ |
-| O8 | Quotient $G/\sim$ | Identify nodes by an equivalence relation derivable from canonical data | Quotient automorphism group |
-
-C1'-α is the requirement that a B0★-α candidate graph be reachable from G_P14 (or from the prime-ladder $G_{PL}$ used by P12–P16) by a finite composition of O1–O8 alone.
-
-### §13sexagesima-quarta.3 Already-shipped constructions (B0★-α surface that is NOT new)
-
-| Construction | Operation chain | Status |
-|---|---|---|
-| Prime-ladder $G_{PL}$ (P12–P16) | O7 induced subgraph on $\{p^k : p \in \mathbb{P}, 1 \le k \le K\}$ of the integer line | ✅ shipped; smooth half of T-HP closed operationally by P28 + P30 |
-| REMESH-lifted slot graph $G_{\mathrm{slot}}$ (R∞-1b, §13vicies-novies.15) | Auxiliary tensor lift $G_{P14} \otimes I_{\tau_g + 1}$ | ✅ executed; refuted (`INDETERMINATE_DEGENERATE_CONSTRUCTION`) |
-| χ-twisted ladder $G_{PL}^\chi$ (P32–P49) | Edge-weight twist of $G_{PL}$ by primitive real Dirichlet character | ✅ shipped; GRH$_\chi$ residual is the twin of G4 |
-| R∞-1c augmented edge graph (§13vicies-novies.13) | $G_{P14}$ + canonically-symmetric inter-prime edges | ✅ executed; refuted by augmented-graph specialisation of Euler-Orthogonality Lemma |
-
-Note on χ-twisting: the $\chi$-twist is canonical because $\chi$ is a *character* on $(\mathbb{Z}/q)^\times$ — i.e. an arithmetic datum of the prime structure itself, not an operator and not an envelope. It enters the B0★-α surface as a canonical edge-weight, not as a new operator.
-
-### §13sexagesima-quarta.4 New B0★-α candidates (not yet investigated)
-
-| Candidate | Construction | Symmetry break vs G_P14 | Priority | Structural motivation |
-|---|---|---|---|---|
-| **Q1** | $G_{P14} \square G_{P14}$ (O2) | Diagonal $S_n$ admits non-trivial antisymmetric invariant subspace on $V \otimes V$ | **HIGH** | Pair $(p_i, p_j)$ structure is precisely the data of Montgomery's pair-correlation conjecture (RH-equivalent); anti-diagonal subspace under diagonal $S_n$ carries asymmetric spectral content that G_P14 forbids by Prime-Cancellation Lemma |
-| **Q2** | $G_{P14} \times G_{P14}$ (O3) | Same as Q1 | **HIGH** | Same target as Q1 but with parallel-evolution connectivity instead of single-coord moves; distinguishes correlation-channel from parallel-channel contributions to the antisymmetric spectrum |
-| **Q3** | $L(G_{P14})$ (O5) | Induced $S_n$ on prime-adjacent edges; no qualitative break | LOW | $G_{P14}$ is a path so $L(G_{P14})$ is a shorter path; topology too close to G_P14 to escape CCET-style equivariance |
-| **Q4** | $S_2(G_{P14})$ (O6) | Adds edge-labelled intermediate nodes; $S_n$ preserved | LOW | Adds capacity slots without breaking $S_n$-equivariance; expected CCET-equivalent to G_P14 under canonical fold |
-| **Q5** | $G_{PL} \square G_{PL}$ (O2) | Diagonal product symmetry on prime-ladder | MEDIUM | Higher-rank version of Q1 coupling prime label with prime-power exponent; combinatorially richer but closer to existing P14/P16 attack surface |
-| **Q6** | $G_{P14}[V_{\le N}]$ (O7) | Same $S_N$, smaller orbit | LOW | Already implicit in $k \to \infty$ regime of P14/P16; no new content |
-
-The HIGH-priority candidates Q1 and Q2 are the natural B0★-α entry points because: (i) pair-correlation is RH-equivalent on the ζ-side (Montgomery 1973, conjecture verified asymptotically by Rudnick–Sarnak under GUE-like assumptions); (ii) the anti-diagonal subspace under diagonal $S_n$ is the smallest symmetry-broken invariant subspace reachable from G_P14 by a single canonical product; (iii) the construction is purely combinatorial — no envelope, no character, no new parameter, no new operator. The Q5 (prime-ladder square) extension is a natural second move once Q1/Q2 diagnostics are available.
-
-### §13sexagesima-quarta.5 What B0★-α does NOT claim
-
-* Does NOT modify `OPERATORS`, `OPERATOR_METADATA`, `definitions.__all__`, the nodal equation, or U1–U6 (honours §13sexagesima-secunda).
-* Does NOT re-open any of the twelve B0–B11 Phase c NEGATIVE verdicts (envelopes E0..E_OC remain research-only at the operator-contract level; B0★-α modifies the *graph*, not the operator catalog).
-* Does NOT claim that any specific construction in §.4 will close G4 = RH; the section is a pre-registered enumeration, not a result.
-* Does NOT execute the Q1, Q2, Q5 diagnostic in this commit. Per-candidate diagnostics deferred to subsequent commits.
-* Does NOT add a 14th operator (B2 remains catalog-API-closed by §13sexagesima-prima).
-* Does NOT promote any envelope (B0★-β remains pre-registered separately in §13sexagesima-tertia.3).
-
-### §13sexagesima-quarta.6 Acceptance criteria (specialisation of C0–C4 to B0★-α)
-
-A B0★-α candidate $Q_k$ is admissible iff:
-
-* **C0** (unchanged): no entry added to `OPERATORS`, `OPERATOR_METADATA`, or `definitions.__all__`;
-* **C1'-α** (canonical-construction derivation): $Q_k$ is built from $G_{P14}$ and/or $G_{PL}$ by a finite composition of the eight categorical operations O1–O8 of §.2, using no input external to $(\nu_f, \mathrm{prime\ structure}, U1{-}U6)$;
-* **C2** (unchanged): U1–U6 admissibility lifts to $Q_k$ via the natural functorial action of canonical operators on the product/quotient/induced construction (continuity equation $\partial \rho / \partial t + \mathrm{div}\,\mathbf{J} = S_{\mathrm{grammar}} \to 0$ preserved);
-* **C3** (unchanged): no envelope $E_k$ is promoted; no forcing axiom F1–F10 is added at any of the twelve type-hygiene surfaces;
-* **C4** (unchanged): the resulting Hamiltonian on $Q_k$ discharges the T-HP statement, i.e. its spectrum, after applying a smooth admissible rescaling derivable from canonical means, reproduces $\{\gamma_n\}$ (the imaginary parts of the non-trivial Riemann zeros).
-
-### §13sexagesima-quarta.7 Reduced §13septies decision space (after B0★-α pre-registration)
-
-With B0★-α now formally enumerated as a discrete set of candidates {Q1, Q2, Q5, …}, the §13septies decision pressure refines to:
-
-* **B1**: closed on G_P14 (CCET, §13vicies-novies.16). Off-G_P14 channels reachable by O1–O8 fall under **B0★-α** (this section); off-G_P14 channels NOT reachable by O1–O8 fall under B2.
-* **B2**: catalog-API-closed by §13sexagesima-prima (B11 OCD NEGATIVE; no 14th operator reachable from the public API).
-* **B0★-α** (this section): pre-registered, OPEN. Priority candidates Q1, Q2 (Cartesian and tensor squares of G_P14), Q5 (prime-ladder square).
-* **B0★-β** (§13sexagesima-tertia.3): pre-registered, OPEN. Priority candidates P1 ($E_0$ Pontryagin-dual measure on $\nu_f$), P2 ($E_6$ per-node coupling weights).
-* **B3**: residual permitted verdict (no TNFR closure exists).
-
-### §13sexagesima-quarta.8 Cross-references
-
-* §13septies — original trichotomy {B1, B2, B3}.
-* §13vicies-novies.16 — Canonical Catalog Equivariance Theorem on G_P14 (closes B1 on G_P14; bounds CCET's domain to G_P14).
-* §13sexagesima-prima — B11 OCD Phase c NEGATIVE (catalog-API closure of B2).
-* §13sexagesima-secunda — Composite Catalog-Closure Theorem.
-* §13sexagesima-tertia — B0★ overall pre-registration; this section specialises sub-branch α.
-* §8 (P12), §10 (P14), §13terdecies (P34) — already-shipped constructions on $G_{PL}$ and $G_{PL}^\chi$.
-* `theory/CATALOG_TYPE_HYGIENE_PROGRAMME.md` — twelve B0–B11 NEGATIVE verdicts.
-* AGENTS.md §"Program Status (May 2026, frozen)" and §"B0★ pre-registration" — program-level status mirrors (to be updated in companion edit when any of Q1, Q2, Q5 is promoted from pre-registration to active investigation).
-
+A graph construction can be compared with Riemann data as a finite diagnostic.
+No such comparison identifies analytic
+:math:`S(T)=\pi^{-1}\arg\zeta(\tfrac12+iT)`, exhausts TNFR graph
+constructions, or proves that a new operator is or is not required.
 
 ---
 
 ## §13sexagesima-quinta — B0★-α Results: spectral diagnostic for the HIGH-priority canonical-graph candidates Q1, Q2 (executed, May 27, 2026)
 
-**Status:** EXECUTED. **Pre-registration:** §13sexagesima-quarta.4 (Q1 = G_P14 □ G_P14, Q2 = G_P14 × G_P14, HIGH priority). **Verdict:** both candidates return **INDETERMINATE_DEGENERATE_CONSTRUCTION** (F8 FAILED at machine-precision zero). **Net:** CCET-G_P14 (§13vicies-novies.16) extends structurally to the canonical Kronecker-sum and Kronecker-product Hamiltonians on V(G_P14) × V(G_P14); B0★-α HIGH-priority sub-routes Q1 and Q2 are **closed**; B0★-α residual pressure shifts to MEDIUM/LOW candidates (Q5 line graph, Q3 disjoint union, Q4 quotient, Q6 induced subgraphs) and to the orthogonal sub-branch B0★-β; §13septies decision pressure shifts further toward **B3** (no TNFR closure) and the LOW-priority residual of B0★.
+> **CORRECTED STATUS (September 2026).** The finite Q1/Q2 calculations and
+> their conditional tensor-product equivariance are retained. Claims that they
+> close all product, quotient, induced-subgraph, or B0★ routes are withdrawn.
 
-### §13sexagesima-quinta.1 — Experimental construction
+### .1 Declared finite experiment
 
-Mirror of the R∞-1b protocol (§13vicies-novies.14 / §13vicies-novies.15), specialised to canonical-product Hamiltonians on the squared vertex set:
+For a 40-dimensional P14 matrix :math:`H`, the experiment formed
 
-* **Base Hamiltonian.** $H_{P14}$ via `build_prime_ladder_hamiltonian(n_primes=10, max_power=4, coupling=0)`; canonical P14 of §13quinquies; $N = 40$; spectral radius $\rho(H_{P14}) = 13.4692$.
-* **Q1 lift (Cartesian product).** $H_{Q1} = H_{P14} \otimes I_N + I_N \otimes H_{P14}$ (Kronecker sum; canonical Hamiltonian for $G_{P14} \square G_{P14}$). Dimension $N^2 = 1600$.
-* **Q2 lift (tensor product).** $H_{Q2} = H_{P14} \otimes H_{P14}$ (Kronecker product; canonical Hamiltonian for $G_{P14} \times G_{P14}$). Dimension $N^2 = 1600$.
-* **Diagonal $S_n$ action.** $U_\sigma = P_\sigma^V \otimes P_\sigma^V$ with $P_\sigma^V = P_\sigma \otimes I_{\max\text{power}}$ (lifts the prime-relabelling permutation $\sigma \in S_{10}$ to $V$, then to $V \times V$ diagonally).
-* **N3 control.** Shuffled-prime $H_{P14}$ with $\sigma = (13,23,7,5,19,3,17,2,11,29)$ from canonical $(2,3,5,7,11,13,17,19,23,29)$; lifted by the same builder.
-* **N5 control.** Random self-adjoint $H_{\mathrm{rand}}$ of matched spectral radius, lifted by the same builder.
-* **Statistic.** F7-A KS distance vs. GUE Wigner surmise on consecutive eigenvalue spacings (identical to §13vicies-novies.14).
-* **F8 floor.** $|D_{\mathrm{canonical}} - D_{\mathrm{shuffled}}| \ge 0.01$ (identical to §13vicies-novies.14).
-* **Seed.** `numpy.default_rng(20260527)`. `mpmath.mp.dps = 30`.
-* **Source.** `benchmarks/b0star_alpha_canonical_product_graphs.py`; report `results/b0star_alpha_canonical_product_graphs.json`.
+$$
+H_{Q1}=H\otimes I+I\otimes H,\qquad
+H_{Q2}=H\otimes H
+$$
 
-### §13sexagesima-quinta.2 — Numerical results
+on dimension 1600, using `numpy.default_rng(20260527)`. The benchmark source is
+`benchmarks/b0star_alpha_canonical_product_graphs.py`.
 
-External anchor: $D_{\mathrm{Riemann}}^{\mathrm{GUE}} = 0.077037$ (99 spacings, first 100 Riemann zero imaginary parts).
+| Candidate | dimension | canonical statistic | shuffled statistic | random control | relabeling drift |
+|---|---:|---:|---:|---:|---:|
+| Q1 Cartesian | 1600 | 0.555146 | 0.555146 | 0.554576 | 0 |
+| Q2 tensor | 1600 | 0.713118 | 0.713118 | 0.612260 | 0 |
 
-| Candidate | Dim | $D_{\mathrm{canonical}}$ | $D_{\mathrm{shuffled}}$ | $D_{N5}$ | $|D_{\mathrm{can}} - D_{\mathrm{shuf}}|$ | F8 | Spec drift under $U_\sigma$ | F7 verdict |
-|---|---|---|---|---|---|---|---|---|
-| **Q1 Cartesian** | 1600 | 0.555146 | 0.555146 | 0.554576 | **0.000000e+00** | FAILED | 0.000e+00 | INDETERMINATE_DEGENERATE_CONSTRUCTION |
-| **Q2 tensor**    | 1600 | 0.713118 | 0.713118 | 0.612260 | **0.000000e+00** | FAILED | 0.000e+00 | INDETERMINATE_DEGENERATE_CONSTRUCTION |
+The equality of the canonical and shuffled statistics makes this particular
+diagnostic degenerate for Q1 and Q2.
 
-The $|D_{\mathrm{can}} - D_{\mathrm{shuf}}|$ value is **exactly zero in floating-point** (not merely below the 0.01 floor), and the explicit similarity audit confirms $\mathrm{spec}(U_\sigma H_{Q_k} U_\sigma^T) = \mathrm{spec}(H_{Q_k})$ to floating-point precision. This is the exact analogue of the §13vicies-novies.15 (R∞-1b) outcome on the temporal/spectral channel.
+### .2 Conditional product lemma
 
-### §13sexagesima-quinta.3 — Structural interpretation: the Canonical Product Equivariance Lemma
+If :math:`[H,P_\sigma]=0`, then direct tensor algebra gives
 
-The numerical result is fully explained by the following structural lemma, which extends the §13vicies-novies.11 Euler-Orthogonality Lemma and the §13vicies-novies.16 CCET-G_P14 theorem to canonical graph products:
+$$
+[H\otimes I+I\otimes H,\;P_\sigma\otimes P_\sigma]=0,\qquad
+[H\otimes H,\;P_\sigma\otimes P_\sigma]=0.
+$$
 
-**Lemma (Canonical Product Equivariance, §13sexagesima-quinta).** Let $H$ be any self-adjoint operator on $\mathbb{C}^V$ that commutes with the prime-relabelling unitary $P_\sigma$ for every $\sigma \in S_n$ (i.e. $[H, P_\sigma] = 0$; this is precisely the CCET-G_P14 conclusion for every operator in the canonical 13-operator catalog on $V(G_{P14})$). Then for the canonical Cartesian product lift $H_{Q1} := H \otimes I + I \otimes H$ and the canonical tensor product lift $H_{Q2} := H \otimes H$ on $\mathbb{C}^{V \times V}$,
-$$[H_{Q1}, U_\sigma] = 0 \quad \text{and} \quad [H_{Q2}, U_\sigma] = 0 \quad \text{for every } \sigma \in S_n,$$
-where $U_\sigma := P_\sigma \otimes P_\sigma$ is the diagonal $S_n$ action on $V \times V$. Consequently $\mathrm{spec}(H_{Q_k})$ is $S_n$-invariant, $D_{\mathrm{canonical}} = D_{\mathrm{shuffled}}$ for the F7-A statistic, and F8 fails on both Q1 and Q2.
+This exact statement applies to the declared matrices and any further
+combination for which the commuting hypotheses are proved. It does not imply
+that every operator composition, graph quotient, nonlinear update, or extended
+state is equivariant.
 
-*Proof.* For Q1, $U_\sigma H_{Q1} U_\sigma^T = (P_\sigma H P_\sigma^T) \otimes I + I \otimes (P_\sigma H P_\sigma^T) = H \otimes I + I \otimes H = H_{Q1}$, using $[H, P_\sigma] = 0$ twice. For Q2, $U_\sigma H_{Q2} U_\sigma^T = (P_\sigma H P_\sigma^T) \otimes (P_\sigma H P_\sigma^T) = H \otimes H = H_{Q2}$. The spectrum of a self-adjoint operator is invariant under unitary conjugation. $\square$
+### .3 Verdict
 
-**Generalisation.** The same proof carries through for the strong product ($H_{\square \times} = H \otimes I + I \otimes H + H \otimes H$) and any positive real-linear combination of the three canonical product lifts. In particular, every operator constructible from $H_{P14}$ by the canonical graph operations O1–O3 of §13sexagesima-quarta.2 (disjoint union O1 = block-diagonal, Cartesian product O2, tensor product O3) inherits diagonal $S_n$-equivariance, and the canonical strong product O4 (sum of O2 + O3) inherits it as well. Therefore B0★-α HIGH-priority candidates Q1, Q2 are **closed by the Canonical Product Equivariance Lemma**, and the same lemma extends the closure to any HIGH/MEDIUM candidate constructed by combinations of {O1, O2, O3, O4} only.
+The tested Q1/Q2 statistics cannot distinguish the declared prime relabeling.
+The result supplies scoped negative evidence for those two finite
+constructions. B0★, B1, B2, B3, T-HP and G4 remain open.
 
-### §13sexagesima-quinta.4 — Residual B0★-α surface after this milestone
-
-Sub-routes of §13sexagesima-quarta.4 that remain structurally open after §13sexagesima-quinta:
-
-* **Q5 (line graph, $L(G_{P14})$).** Vertices = edges of $G_{P14}$ (= 30 edges in 10 disjoint $P_4$ ladders). The Hamiltonian on $L(G_{P14})$ is not a tensor-product lift of $H_{P14}$; the diagonal $S_n$ acts on edges via a non-product representation. Canonical Product Equivariance Lemma does **not** apply directly. **Status: PRE-REGISTERED, OPEN.** Priority promoted from MEDIUM to **HIGH** by elimination.
-* **Q3 (disjoint union with itself, $G_{P14} \sqcup G_{P14}$).** Hamiltonian is block-diagonal $H \oplus H$, equivalent to O1 of §13sexagesima-quarta.2, which inherits CCET trivially. **Status: implicitly closed by §13sexagesima-quinta** (the lemma applies — disjoint union is the degenerate case of Cartesian product with the trivial second factor; structurally degenerate as a novelty test). **Action: down-prioritise to LOW or drop.**
-* **Q4 (quotient $G_{P14} / \sim$).** Depends on the equivalence relation. If $\sim$ is $S_n$-invariant, the quotient inherits CCET. If $\sim$ breaks $S_n$-symmetry (e.g. identifies $p_1$ with $p_2$ but not other pairs), the construction is no longer derivable from the 13-operator catalog alone (it depends on an external prime-pair choice not provided by $(\nu_f, U1{-}U6)$), violating C1'-α. **Status: closed by C1'-α at the canonicity level.** Conclusion: every $S_n$-invariant quotient inherits CCET; every $S_n$-non-invariant quotient violates C1'-α.
-* **Q6 (induced subgraphs).** The only $S_n$-invariant induced subgraphs of $G_{P14}$ are (i) the full graph, (ii) the empty graph, (iii) the disjoint union of all $k$-level vertices for fixed $k \in \{1,2,3,4\}$ (= 10 isolated vertices each; trivial spectrum), and (iv) unions of (iii). All have trivial or CCET-equivariant spectra. **Status: closed by $S_n$-invariance argument.**
-
-**Net B0★-α HIGH/MEDIUM/LOW after §13sexagesima-quinta:** the only remaining candidate from §13sexagesima-quarta.4 is **Q5 (line graph)**, now promoted to HIGH. All other O1–O4 / Q3 / Q4 / Q6 candidates are structurally closed by the Canonical Product Equivariance Lemma or by the $S_n$-invariance / C1'-α discipline.
-
-### §13sexagesima-quinta.5 — Updated §13septies decision space
-
-Combining §13sexagesima-prima (B2 catalog-API-closed), §13sexagesima-tertia (B0★ pre-registered), §13sexagesima-quarta (B0★-α enumerated), §13vicies-novies.16 (B1 closed on G_P14), and §13sexagesima-quinta (B0★-α HIGH-priority Q1, Q2 closed; only Q5 line-graph residual remains in B0★-α):
-
-| Branch | Status after §13sexagesima-quinta |
-|---|---|
-| B0★-α (deeper exploitation) | residual = {Q5 line graph}; all O1–O4 product/disjoint/quotient candidates closed |
-| B0★-β (envelope promotion)  | PRE-REGISTERED, OPEN; priority {P1 = E0, P2 = E6} |
-| B1 (extra-catalog edge channel) | CLOSED on G_P14 (CCET §13vicies-novies.16); off-G_P14 reduces to B2 by construction |
-| B2 (new canonical operator)     | catalog-API-closed at the registry level (§13sexagesima-prima) |
-| B3 (no TNFR closure of RH)      | residual; pressure increased by §13sexagesima-quinta |
-
-**Decision pressure now lies on (a) Q5 line graph as the sole residual HIGH candidate of B0★-α, (b) the B0★-β envelope-promotion sub-branch (E0 Pontryagin / E6 per-node weights), and (c) the B3 residual.** No further extension of the diagnostic surface is planned until one of Q5, B0★-β, or B3 is decided.
-
-### §13sexagesima-quinta.6 — What §13sexagesima-quinta does NOT claim
-
-* **NOT a proof of RH.** G4 = RH and GRH_χ remain open.
-* **NOT a refutation of T-HP / Conjecture T-HP.** §13septies T-HP remains the operational statement; §13sexagesima-quinta refutes only the HIGH-priority Q1/Q2 routes to its closure within B0★-α.
-* **NOT a refutation of B0★ as a whole.** B0★-β remains pre-registered and open; Q5 of B0★-α remains pre-registered and open.
-* **NOT a refutation of B3.** §13sexagesima-quinta increases B3 pressure but does not select B3 over the remaining B0★ residual.
-* **NOT a modification of the 13-operator catalog.** Honors §13sexagesima-secunda (Composite Catalog-Closure Theorem) and §13sexagesima-tertia.4 acceptance criterion C0.
-
-### §13sexagesima-quinta.7 — Cross-references
-
-* §13sexagesima-quarta — B0★-α pre-registration; this section reports executed results for Q1, Q2.
-* §13vicies-novies.11, .15, .16 — Euler-Orthogonality Lemma, R∞-1b execution, CCET-G_P14; structural ancestors of the Canonical Product Equivariance Lemma proved here.
-* §13sexagesima-secunda, §13sexagesima-tertia — Composite Catalog-Closure Theorem, B0★ overall pre-registration.
-* §13septies — extended trichotomy and T-HP statement; decision space updated in §13sexagesima-quinta.5.
-* `benchmarks/b0star_alpha_canonical_product_graphs.py` — pre-registered diagnostic source.
-* `results/b0star_alpha_canonical_product_graphs.json` — full report (eigenvalue counts, spacing moments, per-control diagnostics).
-* AGENTS.md §"B0★ pre-registration" and §"Program Status (May 2026, frozen)" — program-level status mirrors (companion edit in this commit reflects the Q1/Q2 closure and the Q5 promotion).
-
-
+---
 
 ## §13sexagesima-sexta — B0★-β Analytical Closure of the HIGH-Priority Envelope-Promotion Candidates P1 = E0 (Pontryagin-νf) and P2 = NodeIndexedCouplingWeights (May 27, 2026)
 
-**Status:** ANALYTICAL CLOSURE (no numerical experiment — the obstructions are already established as structural results in earlier sections of these notes). **Pre-registration:** §13sexagesima-tertia.3 / §13sexagesima-tertia.4 (B0★-β HIGH = {P1 = E0, P2 = NodeIndexedCouplingWeights}; acceptance criteria C0–C4). **Verdict:** both HIGH-priority candidates **FAIL the acceptance criteria** of §13sexagesima-tertia.4 at the canonical layer; **B0★-β-HIGH is closed**. **Net:** §13septies decision pressure shifts to (a) the Q5 line-graph residual of B0★-α (§13sexagesima-quinta.5), (b) the B0★-β LOW/MEDIUM residual ({E2, E1, E3, E4, E5, E_TC, E_CC, E_AC, E_UR, E_OC}), and (c) the B3 residual (no TNFR closure of RH).
+> **SUPERSEDED / CORRECTED (September 2026).** “Analytical Closure” in the
+> historical title means that the proposed carriers are absent from and not
+> selected by the audited implementation. It is not a no-go theorem.
 
-### §13sexagesima-sexta.1 — Scope and method
+### .1 P1: measure-valued structural frequency
 
-This section does **not** execute a new numerical experiment. The two HIGH-priority B0★-β candidates were *defined* in §13sexagesima-tertia.3 as questions about whether a research envelope can be **derived** from the nodal equation under an *admissibility* reading (as distinct from the *forcing* reading used by the type-hygiene programme §§13triginta-* through §13sexagesima-*). The C0–C4 acceptance criteria of §13sexagesima-tertia.4 are structural conditions, not empirical thresholds, so they can be evaluated by reduction to existing canonical results without a new measurement.
+The current nodal update reads scalar :math:`\nu_f` and scalar
+:math:`\Delta\mathrm{NFR}`. It does not derive a measure-valued
+:math:`\nu_f`. A measure-valued extension needs a pairing, domain, evolution
+law, and reproducibility contract. The finite P14 scalar representation does
+not prove that a richer carrier lacks mathematical value.
 
-The reductions used here are:
+### .2 P2: node-indexed coupling weights
 
-* For **P1 = E0**: the chain of §13triginta-secunda.5 (Conditional Corollary) → §13triginta-secunda.6 (verdict on `(P-νf-Bijectivity)`) → §13triginta-tertia.5 (where spectral richness actually lives) → §13triginta-tertia.6 (Proposition T-νf-Resolution).
-* For **P2 = NodeIndexedCouplingWeights**: the chain of §13quadraginta-nona (B6 pre-registration) → §13quinquaginta (forcing-axiom reduction) → §13quinquaginta-prima (NEGATIVE verdict via Scalar-Weight Discipline) — combined with a direct inspection of the nodal equation `∂EPI/∂t = νf · ΔNFR(t)` for the presence of a per-node weight slot.
+The current source reads graph-level scalar weight dictionaries. It does not
+derive a prime-specific per-node or per-edge weight law. Such a law would be an
+additional model input unless a derivation is supplied. This is an
+implementation-status result, not a proof that all admissible weighting laws
+are scalar.
 
-No source code is modified; no new module is added; no entry of `OPERATORS`, `OPERATOR_METADATA`, or `definitions.__all__` is touched (C0 trivially satisfied for both candidates).
+### .3 Scope
 
-### §13sexagesima-sexta.2 — Honest scope (what this section does not claim)
+Neither P1 nor P2 inherits general convergence from U2 or conservation from the
+Noether-like diagnostics. No theorem maps analytic :math:`S(T)` to these
+carriers or to the complement of a finite REMESH projection. Both auxiliary
+research questions remain open.
 
-* **NOT a proof of RH.** G4 = RH and GRH_χ remain open.
-* **NOT a refutation of B0★ as a whole.** The B0★-β LOW/MEDIUM residual ({E2 LiftedCircleBundleOnPhi at MEDIUM, plus eight envelopes at LOW}) is **not** addressed here, nor is Q5 of B0★-α. B0★ remains a legitimate open branch of the §13septies trichotomy.
-* **NOT a contradiction of §13sexagesima-secunda.** The Composite Catalog-Closure Theorem is a *minimality* statement; this section's verdict on HIGH B0★-β candidates is an orthogonal *admissibility-level refutation* derived from earlier canonical results.
-* **NOT a re-opening of the twelve Phase c traces.** The §13triginta-* through §13sexagesima-* NEGATIVE verdicts on E0 and NodeIndexedCouplingWeights remain in force; this section uses those verdicts as inputs, not as targets of revision.
-* **NOT a refutation of T-HP or of P28/P30.** The smooth half of $\mathcal{F}$ (closed operationally by P28 at the density level and lifted to the operator level by P30 for the smooth half) is unchanged; the residual obstruction $S(T) = (1/\pi)\arg\zeta(\tfrac12+iT) \in \ker(\mathcal{R}_\infty)$ remains the open content of T-HP.
-
-### §13sexagesima-sexta.3 — B0★-β-P1 (E0 = MeasureExtensionOnNuF / Pontryagin-νf): C1 NOT-DERIVED, C4 FAILS
-
-**C0 (no catalog modification).** Trivially satisfied: no change to `OPERATORS`, `OPERATOR_METADATA`, `definitions.__all__`.
-
-**C1 (nodal-equation derivation).** **NOT-DERIVED.** The chain of §13triginta-secunda.5–.7 reduces (P-Pontryagin) to the strictly weaker meta-axiom
-
-> **(P-νf-Bijectivity).** In the canonical TNFR formulation, $\nu_f$ must bijectively encode the spectral content of the EPI dynamics it drives.
-
-The verdict on (P-νf-Bijectivity) at §13triginta-secunda.6 is `UNDETERMINED_AT_CANONICAL_LEVEL` (supported by the spirit of Invariant #1 + #6, not forced by their letter). §13triginta-tertia.6 sharpens this to `FORWARD_INDEPENDENT_OF_BACKWARD`: (P-νf-Bijectivity) is an **inverse-problem axiom** independent of the forward-dynamics catalog. The forward direction `∂EPI/∂t = νf · ΔNFR(t)` is well-posed under scalar $\nu_f$ (Proposition T-νf-Resolution item 1) and `src/tnfr/operators/nodal_equation.py::compute_expected_depi_dt` implements this literally as `vf * dnfr` with both factors `float`.
-
-Therefore the promoted envelope $E_0$ is *not derived* from the nodal equation alone; its admissibility at the canonical level rests on an axiom that is not in the canonical contract. **C1 fails by reduction** — the same gap that closed T-νf at the canonical level in §13triginta-tertia closes B0★-β-P1 at C1.
-
-**C2 (U1–U6 admissibility).** Conditionally satisfiable if (P-νf-Bijectivity) is accepted as an external axiom: measure-valued $\nu_f$ on $\widehat{\mathbb{Z}} = S^1$ paired against a distribution-valued $\Delta\mathrm{NFR}$ yields a scalar pairing $\langle \nu_f, \Delta\mathrm{NFR} \rangle \in \mathbb{R}$ compatible with U2 (integral convergence) and U1/U3/U4/U5/U6 (operator-sequence rules unchanged). This is consistent but not by itself a discharge of C1.
-
-**C3 (twelve-CDM consistency).** Conditionally satisfied: promotion of $E_0$ from research-only to canonical is permitted by §13sexagesima-tertia.2 (re-classification is allowed; introduction of a new forcing axiom is not). The §13triginta-tertia.8 honest-scope clause already records that "non-canonical extension of TNFR to measure-valued $\nu_f$" is a legitimate parallel research question.
-
-**C4 (T-HP discharge).** **FAILS by direct argument.** §13triginta-tertia.5 establishes the structural locus of spectral richness in the literal canonical reading: $\Delta\mathrm{NFR}_i(t)$ carries the spectral content of $\partial\mathrm{EPI}/\partial t$; $\nu_{f,i}$ acts as a multiplicative gain. The P14 prime-ladder construction (§8.2, `src/tnfr/riemann/prime_ladder_hamiltonian.py`) is an existence proof: the prime-ladder spectrum $\{k\log p\}$ is reproduced *with scalar* $\nu_f$, demonstrating that promotion of $\nu_f$ to a measure on $\widehat{\mathbb{Z}}$ does **not** add spectral expressivity beyond what scalar $\nu_f$ already attains through the graph state and the operator sequence.
-
-The oscillatory residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$ identified by N15 W3 with $\ker(\mathcal{R}_\infty)$ (§13septies.5) lives in two structural directions that B0★-β-P1 does **not** address:
-
-* **(i) $\ker(\mathcal{R}_\infty)$ direction.** REMESH's asymptotic kernel (N15 §§1–8) is determined by the REMESH operator's contractive transfer matrix on $H^2(D)$; it is invariant under the carrier type of $\nu_f$ (scalar vs measure) because $\nu_f$ enters the REMESH dynamics only as the multiplicative gain factor in `∂EPI/∂t = νf · ΔNFR(t)`. Promoting $\nu_f$ to a measure does not change $\ker(\mathcal{R}_\infty)$.
-* **(ii) $\mathrm{Fix}(S_n)^\perp$ direction.** The CCET-G_P14 obstruction (§13vicies-novies.16, Canonical Catalog Equivariance Theorem) is established at the level of the prime-relabelling automorphism action on $G_{P14}$; it depends only on (A) parameter uniformity and (B) the Prime-Cancellation Lemma. Neither (A) nor (B) is sensitive to the carrier type of $\nu_f$. Promoting $\nu_f$ to a measure does not break $S_n$-equivariance on $G_{P14}$.
-
-Therefore, even if (P-νf-Bijectivity) were accepted as an admissibility axiom (closing C1 conditionally), the enriched dynamics would not produce an operator on $\mathcal{H}_{\mathrm{tet}}$ whose spectrum coincides with $\{\gamma_n\}_{n \ge 1}$. **C4 is structurally pinned shut for P1.**
-
-**Net verdict on P1 = E0.** **FAIL** (C1 NOT-DERIVED; C4 FAILS even under the most-permissive C1 reading).
-
-### §13sexagesima-sexta.4 — B0★-β-P2 (NodeIndexedCouplingWeights; labelled E6 in §13sexagesima-tertia.3 / E7 in §13quinquaginta-prima): C1 FAILS at the slot level
-
-**Naming note.** The envelope-name "E6" in §13sexagesima-tertia.3 table refers to the same structural object that §13quadraginta-nona / §13quinquaginta-prima register as `E7 = NodeIndexedCouplingWeights`. The bookkeeping label diverged between sections; the *referent* is the same (per-node / per-edge / callable-kernel generalisation of the global-scalar coupling weights `DNFR_WEIGHTS`, `SI_WEIGHTS`, `SELECTOR_WEIGHTS` in `src/tnfr/config/defaults_core.py`). The canonical refutation is the Scalar-Weight Discipline (SWD) trace at §13quinquaginta-prima.
-
-**C0 (no catalog modification).** Trivially satisfied.
-
-**C1 (nodal-equation derivation).** **FAILS AT THE SLOT LEVEL.** A direct inspection of the literal canonical nodal equation
-
-$$ \frac{\partial \mathrm{EPI}}{\partial t} = \nu_f \cdot \Delta\mathrm{NFR}(t) $$
-
-shows that it has **no per-node coupling-weight slot**: the two factors are (a) the structural-frequency scalar $\nu_f$ (whose canonical type was decided at §13triginta-tertia.6) and (b) the nodal-pressure scalar $\Delta\mathrm{NFR}(t)$. Coupling weights enter only **downstream**, inside the implementation of `compute_delta_nfr` (`src/tnfr/dynamics/dnfr.py` and surrounding modules), via the global-scalar dictionaries `DNFR_WEIGHTS`, `SI_WEIGHTS`, `SELECTOR_WEIGHTS` (`src/tnfr/config/defaults_core.py`). The choice of *where* per-node weights would enter `compute_delta_nfr` is therefore a **downstream-implementation choice**, not a consequence of the bare nodal equation. No derivation pathway from `∂EPI/∂t = νf · ΔNFR(t)` together with Invariants #1–#6 and the structural scale $\pi$ produces a per-node weight law without an additional external axiom selecting the entry point and the rule. The §13quinquaginta-prima SWD trace records exactly this structural fact under its forcing-axiom F1–F10 enumeration: no canonical constraint forces per-node weights.
-
-**Reading the residual admissibility window.** §13sexagesima-tertia.3's HIGH-priority justification for P2 was conditional: per-node weights "would mechanically dissolve Fact A and reopen the spectral-non-trivial sub-region of CCC constructions, **if** the per-node weight rule can be canonically derived from $\nu_f$ values via a construction that breaks the symmetric-function-of-scalars constraint." The conditional **if** is precisely the C1 gap. A canonical derivation from $\nu_f$ to per-node weights would itself require a non-symmetric rule (else the rule reduces to a symmetric function of $\nu_f$ values, which gives back parameter-uniform weights and Fact A holds — closing CCET-G_P14 as before). No such non-symmetric rule is derivable from the catalog: the canonical operators (Invariant #4) act through grammar U1–U6 on operator sequences, not on per-node parameter laws (cf. F4 in §13triginta-secunda.4).
-
-**C2 (U1–U6 admissibility).** Conditionally satisfiable in form (per-node weights are syntactically compatible with U1–U6 if the continuity equation $\partial\rho/\partial t + \nabla\cdot\mathbf{J} = \mathcal{S}_{\mathrm{grammar}}$ is preserved under the new weight law). Not by itself a discharge of C1.
-
-**C3 (twelve-CDM consistency).** Conditionally satisfied as a *re-classification* of `NodeIndexedCouplingWeights` from research-only to canonical (permitted by §13sexagesima-tertia.2). Direct conflict with the §13quinquaginta-prima SWD trace if presented as a *forced* canonical contract; the B0★-β route avoids this conflict only because it operates at the admissibility layer.
-
-**C4 (T-HP discharge).** Not separately evaluated: with C1 failing at the slot level, C4 is not reached.
-
-**Net verdict on P2 = NodeIndexedCouplingWeights.** **FAIL** (C1 FAILS at the slot level; no canonical derivation pathway exists from `∂EPI/∂t = νf · ΔNFR(t)` to per-node weights without an external rule-selection axiom).
-
-### §13sexagesima-sexta.5 — Net structural consequence
-
-Combining §13sexagesima-prima (B2 catalog-API-closed), §13sexagesima-tertia (B0★ pre-registered), §13sexagesima-quarta (B0★-α enumerated), §13sexagesima-quinta (B0★-α HIGH Q1, Q2 closed), §13vicies-novies.16 (B1 closed on G_P14), and §13sexagesima-sexta (B0★-β HIGH P1, P2 closed):
-
-| Branch | Status after §13sexagesima-sexta |
-|---|---|
-| B0★-α (deeper exploitation) | residual = {Q5 line graph}; HIGH closed (§13sexagesima-quinta) |
-| B0★-β (envelope promotion)  | HIGH closed: P1 = E0 fails C1/C4; P2 = NodeIndexedCouplingWeights fails C1. Residual = MEDIUM (E2 LiftedCircleBundleOnPhi) + LOW ({E1, E3, E4, E5, E_TC, E_CC, E_AC, E_UR, E_OC}) |
-| B1 (extra-catalog edge channel) | CLOSED on G_P14 (CCET §13vicies-novies.16) |
-| B2 (new canonical operator)     | catalog-API-closed (§13sexagesima-prima) |
-| B3 (no TNFR closure of RH)      | residual; pressure further increased by §13sexagesima-sexta |
-
-**Decision pressure now lies on (a) the Q5 line-graph residual of B0★-α, (b) the B0★-β MEDIUM/LOW residual (with E2 as the only MEDIUM candidate), and (c) the B3 residual.** No further extension of the diagnostic surface is planned until one of Q5, B0★-β-MEDIUM/LOW, or B3 is decided.
-
-**Honest structural reading.** The pattern across §13triginta-* through §13sexagesima-sexta is that *every* HIGH-priority envelope promotion attempt reduces to a structural gap already isolated by an earlier Phase-c trace: P1 reduces to the (P-νf-Bijectivity) forward/backward independence of §13triginta-tertia.6, and P2 reduces to the slot-level absence of per-node weights in the nodal equation already recorded by §13quinquaginta-prima SWD. The B0★-β route does not bypass these obstructions; it inherits them under the admissibility reading. This does not formally refute B0★ as a fourth branch (the MEDIUM/LOW residual remains pre-registered and open), but it strongly constrains the structural locations where a successful B0★-β closure of G4 = RH could be found.
-
-### §13sexagesima-sexta.6 — Cross-references
-
-* §13sexagesima-tertia.3, §13sexagesima-tertia.4 — B0★-β pre-registration, HIGH-priority ranking (P1 = E0, P2 = NodeIndexedCouplingWeights), acceptance criteria C0–C4.
-* §13triginta-secunda.5–.7 — Conditional Corollary `(P-Pontryagin) ⇔ Catalog ∧ (P-νf-Bijectivity)`; verdict on `(P-νf-Bijectivity)` = `UNDETERMINED_AT_CANONICAL_LEVEL`.
-* §13triginta-tertia.5–.8 — spectral-richness locus in `ΔNFR(t)`; Proposition T-νf-Resolution; verdict on `(P-Pontryagin)` = `FORWARD_INDEPENDENT_OF_BACKWARD`; Conjecture T-νf = `CLOSED_NEGATIVELY_AT_CANONICAL_LEVEL`.
-* §13quadraginta-nona, §13quinquaginta, §13quinquaginta-prima — B6 = T-coupling-weights pre-registration, forcing-axiom reduction, NEGATIVE verdict via SWD; envelope `E7 = NodeIndexedCouplingWeights` (the §13sexagesima-tertia.3 "E6" referent).
-* §13vicies-novies.11, .16 — Prime-Cancellation Lemma, Canonical Catalog Equivariance Theorem on G_P14 (used in §13sexagesima-sexta.3 C4 argument).
-* §13septies — Conjecture T-HP and the smooth/oscillatory split; identification of $\ker(\mathcal{R}_\infty)$ with the oscillatory residue $S(T)$ (N15 W3).
-* N15 §§1–8 — REMESH-∞ asymptotic projection; carrier-type independence of $\ker(\mathcal{R}_\infty)$.
-* `src/tnfr/operators/nodal_equation.py::compute_expected_depi_dt` — literal `vf * dnfr` with both factors `float`; canonical implementation referenced in §13triginta-tertia.2 and §13sexagesima-sexta.3 (C1 argument for P1) and §13sexagesima-sexta.4 (C1 argument for P2).
-* `src/tnfr/config/defaults_core.py::DNFR_WEIGHTS, SI_WEIGHTS, SELECTOR_WEIGHTS` — global-scalar coupling-weight anchors referenced in §13sexagesima-sexta.4 (C1 slot-level argument for P2).
-* `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 existence proof referenced in §13sexagesima-sexta.3 (C4 argument for P1).
-* AGENTS.md §"B0★ pre-registration" and §"Program Status (May 2026, frozen)" — program-level status mirrors (companion edit in this commit reflects the HIGH closure and the MEDIUM/LOW residual).
+---
 
 ## §13sexagesima-septima — B0★-β-P3 (Dirección A: ΔNFR carrier-type / slot promotion) Analytical Closure (May 27, 2026)
 
-**Status:** ANALYTICAL CLOSURE (no numerical experiment — every canonically-derivable reading of "promote ΔNFR beyond scalar field" reduces to a structural obstruction already established elsewhere in these notes). **Pre-registration of candidate:** this section itself (no prior dedicated pre-registration; Dirección A was raised in the program-level discussion accompanying §13sexagesima-sexta as the "dual lever" symmetric counterpart of P1). **Acceptance criteria:** C0–C4 of §13sexagesima-tertia.4. **Verdict:** Dirección A is **structurally CLOSED** at the canonical layer across its three canonically-derivable readings. **Net:** B0★-β residual narrows to {E2 LiftedCircleBundleOnPhi at MEDIUM} ∪ {nine LOW envelopes}; §13septies decision pressure remains on (a) Q5 line-graph from B0★-α, (b) the B0★-β MEDIUM/LOW residual, (c) B3.
+> **SUPERSEDED / CORRECTED (September 2026).** This section is a type-surface
+> audit of the current scalar `DeltaNFR` slot. It does not establish
+> impossibility of a tensor, operator-valued, distributional, or bundle-valued
+> extension.
 
-### §13sexagesima-septima.1 — Motivation and the three canonically-derivable readings
+### .1 Supported source result
 
-The §13triginta-tertia.5 fact that **spectral richness of $\partial \mathrm{EPI}/\partial t$ lives in ΔNFR(t), not in $\nu_f$** suggests, at first glance, that the symmetric candidate to P1 = E0 (carrier-type promotion of $\nu_f$) — namely **carrier-type promotion of ΔNFR** — should be evaluated as a separate B0★-β candidate. Call this "Dirección A". Closer reading reveals that "ΔNFR promotion" is not a single proposal but a family of three structurally distinct readings, each of which has already been touched by an existing canonical result:
+The audited nodal equation and operator boundaries consume a scalar
+`DeltaNFR` value per node. The finite type-signature experiments observed that
+representation in their declared runs. These facts support regression tests
+for the current API.
 
-| Reading | Promotion (informal) | Structural content |
-|---|---|---|
-| **A1** | $\Delta\mathrm{NFR}_j: \mathbb{R} \to \mathcal{M}(X)$ for some label space $X$ | Spatial measure-valued field, per node |
-| **A2** | $\mathrm{EPI}_j \in \mathcal{H}_\mathrm{int}$ Hilbert space ⇒ $\Delta\mathrm{NFR}_j \in B(\mathcal{H}_\mathrm{int})$ | Operator-valued ΔNFR via internal slot lift |
-| **A3** | $\Delta\mathrm{NFR}(t) \in L^2(\mathbb{R}_t)$ exploited as temporal Fourier object | Spectral content of dynamics in time |
+### .2 Open carrier question
 
-Each reading is evaluated against C0–C4 below. Method is identical to §13sexagesima-sexta: analytical reduction to existing Phase-c canonical results, no fresh numerical run.
+A richer carrier must define how it pairs with :math:`\nu_f`, how its result
+updates scalar or non-scalar EPI, and how operators act on it. U1--U6 do not
+supply those missing contracts, but their absence from the current source does
+not refute the model. The finite P14 representation and current tetrad
+readouts do not prove minimality or completeness.
 
-### §13sexagesima-septima.2 — Honest scope
-
-* NOT a proof of RH. G4 and GRH_χ remain open.
-* NOT a refutation of T-HP. The smooth half closed by P28 / P30 is unchanged.
-* NOT a refutation of B0★ as a whole. The B0★-β MEDIUM/LOW residual remains open; B0★-α residual {Q5} remains open.
-* NOT a re-opening of any prior Phase-c verdict. This section uses §13triginta-tertia, §13vicies-novies.15–16, N15 W3, and the L-track parity layer (P32–P49) as inputs.
-* Honors C0 (no catalog modification) and C3 (twelve-CDM consistency) by construction.
-
-### §13sexagesima-septima.3 — A1 (carrier-type promotion of ΔNFR per node): FAIL by direct reduction to the P1 closure pattern
-
-**C0** trivially satisfied (carrier-type promotion of a field does not modify `OPERATORS`, `OPERATOR_METADATA`, `definitions.__all__`, the nodal equation, or U1–U6).
-
-**C1 NOT-DERIVED.** The lift $\Delta\mathrm{NFR}_j: \mathbb{R} \to \mathcal{M}(X)$ requires external specification of three independent choices: (i) the label space $X$ on which the measure lives; (ii) how the canonical neighbor-difference recipe `compute_delta_nfr` (whose source-level signature returns a `float` per node) projects to a measure; (iii) how the time-integral $\int_0^t \nu_f(\tau) \cdot \Delta\mathrm{NFR}(\tau)\,d\tau$ in the nodal equation interprets a measure-valued integrand (Bochner integral, distributional pairing, etc.). None of these three choices is forced by the nodal equation `∂EPI/∂t = νf · ΔNFR(t)`. This is the same structural problem as P1 (cf. §13sexagesima-sexta.3): the canonical nodal equation has both `νf` and `ΔNFR` as scalar fields by construction in `compute_expected_depi_dt`; promoting either to a measure requires an external admissibility axiom not derivable from the bare nodal equation. Reduction: `(P-ΔNFR-Bijectivity)` is the exact analogue of `(P-νf-Bijectivity)` (§13triginta-secunda.6 / §13triginta-tertia.6), with the same `FORWARD_INDEPENDENT_OF_BACKWARD` structure.
-
-**C4 FAILS** by direct argument, even under permissive C1. Three independent obstructions, each of which alone is sufficient:
-
-(i) **§13triginta-tertia.5 reread.** The "spectral richness in ΔNFR(t)" of §13triginta-tertia.5 is a statement about ΔNFR(t) as a *time series* of scalars, not about per-node ΔNFR carrying internal spectral structure at a fixed time. The dynamics generate rich temporal Fourier content even with scalar per-node ΔNFR (because the graph coupling redistributes phase). A1 is therefore answering a different structural question than §13triginta-tertia.5 raises; A1's per-node measure structure is not the locus identified by §13triginta-tertia.5 as "where the spectral richness lives".
-
-(ii) **P14 existence proof (`src/tnfr/riemann/prime_ladder_hamiltonian.py`).** The full prime-ladder spectrum $\{k \log p\}$ — i.e., the data that drives the von Mangoldt / Weil–Guinand prime side, equivalently $-\zeta'(s)/\zeta(s) = \sum_n \Lambda(n) n^{-s}$ — is reproduced by P14 with **scalar** ΔNFR per node, encoded through the prime-indexed coordinates of the diagonal potential $V_\sigma$. The "measure content" of P14 is not in ΔNFR; it is in the spectral measure of the self-adjoint operator $H_{P14} = L_k + V_\sigma$. Carrier-type promotion of ΔNFR is therefore not required to reach the closed half of T-HP, and provides no canonical lever on the open half.
-
-(iii) **§13septies oscillatory residue invariance.** The residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$ lives in $\ker(\mathcal{R}_\infty) \cap \mathrm{Fix}(S_n)^\perp$. Both invariants are stable under carrier-type promotion of ΔNFR for the same two reasons that pinned P1: $\ker(\mathcal{R}_\infty)$ is determined by the REMESH transfer-matrix structure on $H^2(D)$ (N15 §§1–8), which is carrier-type independent; $\mathrm{Fix}(S_n)^\perp$ is determined by parameter uniformity (CCET-G_P14 Fact A, §13vicies-novies.16), which is preserved if the measure type is graph-uniform (the only canonically-derivable case under C0 / C2).
-
-**Net A1:** FAIL ⇒ **CLOSED**, structurally identical to P1.
-
-### §13sexagesima-septima.4 — A2 (slot-internal Hilbert-space promotion of EPI): already CLOSED by §13vicies-novies.15
-
-The reading "ΔNFR as operator-valued via promotion of $\mathrm{EPI}_j$ to a vector in some internal Hilbert space $\mathcal{H}_\mathrm{int}$" is, structurally, exactly the **R∞-1b** sub-route of B1 pre-registered at §13vicies-novies.14 and executed at §13vicies-novies.15. The canonical tensor-product lifts $S_\mathrm{IL}^{\mathrm{spec}} = I_{\tau_g+1} \otimes \exp(-\eta H_{P14})$ and $M_\mathrm{REMESH} = M \otimes I_N$ on the canonical $\mathcal{H}_\mathrm{int}$ returned `INDETERMINATE_DEGENERATE_CONSTRUCTION` with $|D_\mathrm{canonical} - D_\mathrm{shuffled}| = 1.08 \times 10^{-13}$ (machine-precision zero), because the prime-relabelling unitary $U_\sigma = I_{\tau_g+1} \otimes P_\sigma$ conjugates the spectral-channel operator to its shuffled image. The spectral-channel extension of the Euler-Orthogonality Lemma (§13vicies-novies.15) and the Canonical Catalog Equivariance Theorem on G_P14 (Theorem 2, §13vicies-novies.16) jointly close this sub-route within the canonical catalog.
-
-**Net A2:** CLOSED by §13vicies-novies.15.
-
-Note: A2 is not strictly a "ΔNFR carrier-type promotion" in the field-theoretic sense — it is a slot-internal lift of EPI that induces an operator-valued ΔNFR. But the relevant structural test (S_n equivariance on G_P14) is identical to A1, and the verdict is the same.
-
-### §13sexagesima-septima.5 — A3 (temporal Fourier content of ΔNFR(t)): SUPERSEDED by the L-track parity layer
-
-The temporal Fourier content of ΔNFR(t) — i.e., the spectral resolution of ΔNFR viewed as an element of $L^2(\mathbb{R}_t)$ along a trajectory — is **already exploited** at the canonical layer by the χ-twisted L-track parity infrastructure (P32–P49) and by the original ζ-track Hermite / admissible-family sweeps (P19, P21, P25, P31). Concretely, the canonical modules `src/tnfr/riemann/dirichlet_l*.py`, `src/tnfr/riemann/twisted_*.py`, `src/tnfr/riemann/admissible_family_sweep.py`, and `src/tnfr/riemann/oscillatory_correction.py` consume ΔNFR-derived temporal data and feed it into the twisted Weil–Guinand explicit formula, the Li–Keiper twisted positivity diagnostic, the Hermite admissible-family sweeps, and the prime-ladder Newton-step oscillatory correction. None of these P17–P49 components closes GRH_χ or G4 = RH; they form the full attack-surface parity. Re-introducing "ΔNFR temporal Fourier" as a fresh B0★-β candidate would therefore duplicate existing canonical infrastructure without adding a new structural lever.
-
-**Net A3:** SUPERSEDED by P17–P49. Not an open B0★-β candidate.
-
-### §13sexagesima-septima.6 — Net structural consequence
-
-| Reading | Status | Reduction |
-|---|---|---|
-| A1 (carrier-type promotion of ΔNFR per node) | FAIL ⇒ CLOSED | §13triginta-tertia.6 + P14 (existence) + N15 W3 / §13septies + CCET §13vicies-novies.16 |
-| A2 (slot-internal Hilbert lift on EPI inducing operator-valued ΔNFR) | CLOSED | §13vicies-novies.15 (R∞-1b spectral channel) |
-| A3 (temporal Fourier content of ΔNFR(t)) | SUPERSEDED | P17–P49 ζ-track and χ-twisted L-track parity layer |
-
-**Updated §13septies decision space after §13sexagesima-septima:**
-
-| Branch | Status |
-|---|---|
-| B1 (off-catalog edge / spectral channel on G_P14) | CLOSED on G_P14 (§13vicies-novies.16); off-G_P14 inherits B2 by construction |
-| B2 (new canonical operator) | catalog-API-closed (§13sexagesima-prima) |
-| B0★-α (deeper exploitation) | HIGH/MEDIUM closed (§13sexagesima-quinta); residual = {Q5 line graph} |
-| B0★-β (envelope promotion) | HIGH closed (§13sexagesima-sexta); Dirección A closed (§13sexagesima-septima); residual = {E2 MEDIUM} ∪ {nine LOW envelopes} |
-| B3 (no TNFR closure of RH) | residual; pressure further increased by §13sexagesima-septima |
-
-**Honest structural reading.** The Phase-c pattern continues to hold: every canonically-derivable promotion of a scalar field in the nodal equation (νf in P1, per-node coupling weights in P2, ΔNFR in P3 = Dirección A) is closed by reduction to a previously-established Phase-c obstruction. The persistent open candidates are (i) Q5 (a graph-construction route that escapes CCET because the line-graph action of $S_n$ on edges is not tensor-product), (ii) E2 LiftedCircleBundleOnPhi (a topological enrichment of φ that breaks $S_n$ at the bundle level rather than at the coupling-constant level — i.e., not addressed by CCET Fact A), and (iii) the nine LOW envelopes. The pattern strongly suggests — without proving — that any successful B0★-β closure of G4 = RH must break $S_n$ either through graph construction (B0★-α route, Q5) or through topological / fiber-bundle structure (B0★-β E2), rather than through scalar-to-richer-carrier promotions of fields in the nodal equation itself.
-
-### §13sexagesima-septima.7 — Cross-references
-
-* §13sexagesima-tertia.3, §13sexagesima-tertia.4 — B0★ pre-registration and acceptance criteria C0–C4 (this section's evaluation framework).
-* §13sexagesima-sexta.3 — P1 closure pattern (template for A1's C1 / C4 arguments).
-* §13triginta-tertia.5, .6 — spectral-richness locus in ΔNFR(t) (temporal, not per-node-carrier); `FORWARD_INDEPENDENT_OF_BACKWARD` template for `(P-ΔNFR-Bijectivity)`.
-* §13vicies-novies.14, .15 — R∞-1b pre-registration and spectral-channel verdict (used in A2 closure).
-* §13vicies-novies.16 — CCET-G_P14 Theorem 2 (used in A1 C4 third obstruction and A2).
-* §13septies — Conjecture T-HP, smooth/oscillatory split, identification of $\ker(\mathcal{R}_\infty)$ with the oscillatory residue $S(T)$ (used in A1 C4 third obstruction).
-* N15 §§1–8, §§15–23 — REMESH-∞ projection; carrier-type independence of $\ker(\mathcal{R}_\infty)$; W3 spectrum universality.
-* §13sexagesima-quinta.5, §13sexagesima-sexta.5 — §13septies decision-space mirrors, updated here in §13sexagesima-septima.6.
-* `src/tnfr/operators/nodal_equation.py::compute_expected_depi_dt` — literal `vf * dnfr` with both factors `float`; canonical scalar implementation referenced in A1 C1.
-* `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 existence proof referenced in A1 C4 (ii).
-* `src/tnfr/riemann/dirichlet_l*.py`, `src/tnfr/riemann/twisted_*.py`, `src/tnfr/riemann/admissible_family_sweep.py`, `src/tnfr/riemann/oscillatory_correction.py` — L-track parity infrastructure referenced in A3 SUPERSEDED verdict.
-* AGENTS.md §"B0★ pre-registration" — program-level status mirror (companion edit in this commit reflects the Dirección A closure and the narrowed B0★-β residual).
-
+---
 
 ## §13sexagesima-octava — B0★-α-emergent route: analytical closure of UM/IL/THOL emergent sub-EPI construction on G_P14
 
-**Status (May 27, 2026)**: B0★-α-emergent candidate **CLOSED analytically** by reduction to a tetrad-level extension of the Canonical Catalog Equivariance Theorem on G_P14 (CCET-G_P14, §13vicies-novies.16). No empirical experiment is required and none is run.
+> **SUPERSEDED / CORRECTED (September 2026).** The valid result is a
+> conditional finite equivariance statement for the declared graph-uniform
+> construction. It is not closure of every UM/IL/THOL composition, every
+> emergent observable, or the B0★ branch.
 
-**Companion verdicts**: §13sexagesima-sexta (P1=E0, P2=NodeIndexedCouplingWeights closed), §13sexagesima-septima (Dirección A = ΔNFR carrier-type promotion closed).
+### .1 Declared finite symmetry statement
 
-### §13sexagesima-octava.1 — Pre-registration (the proposal evaluated)
+On a graph automorphism :math:`P_\sigma`, a graph field readout built only
+from covariantly relabeled node values, graph distances, and graph-uniform
+parameters is equivariant when each implemented operation respects those
+inputs. Under those hypotheses, the four current tetrad readouts transform
+equivariantly in the tested `G_P14` construction.
 
-Following the dual-lever and carrier-type closures of P1, P2 and Dirección A, the natural next candidate inside B0★-α is to let **composite structures emerge as sub-EPIs** by applying canonical operators **UM (Coupling), IL (Coherence), THOL (Self-organization)** on `G_P14`, without postulating any entity outside the nodal equation. The intuition is that S_n could be broken by the *relational* content generated at runtime (sub-EPIs, multi-scale coherence), even when every parameter remains graph-uniform.
+The statement concerns the output of the named functions. The tetrad is a
+lossy diagnostic interface; it does not reconstruct the graph state, prove a
+minimal state basis, or constrain an untested observable.
 
-**B0★-α-emergent candidate (verbatim)**: build an extended state on `G_P14` by iterating UM/IL/THOL compositions; sub-EPIs spawned by THOL when `d2_epi > tau` (with `tau = G.graph["THOL_BIFURCATION_THRESHOLD"]`, a graph-level scalar) are interpreted as canonical composites. Check whether the resulting extended diagnostic is S_n-equivariant.
+### .2 Sequence and model scope
 
-### §13sexagesima-octava.2 — Extended Hilbert space and elevated S_n action
+UM/IL/THOL membership in the registry does not by itself make an arbitrary
+sequence grammar-valid. Complete sequences need U1--U6 validation, and any
+extended sub-EPI state needs an explicit action for each operator. The finite
+equivariance check supplies no map to analytic :math:`S(T)` and no RH result.
 
-Let $\mathcal{H}_{P14}$ be the canonical Hilbert space of `G_P14` (basis indexed by primes). When THOL spawns sub-EPIs at vertex $v$, the canonical implementation `src/tnfr/operators/self_organization.py:53` attaches a sub-EPI bundle $\mathcal{H}_v^{\mathrm{sub}}$ to $v$ (single-vertex attachment, not edge). The extended state lives in
-
-$$\mathcal{H}_{\mathrm{ext}} \;=\; \mathcal{H}_{P14} \;\oplus\; \bigoplus_{v} \mathcal{H}_v^{\mathrm{sub}}.$$
-
-The natural lift of the prime-relabelling action $\Pi_\sigma$ to $\mathcal{H}_{\mathrm{ext}}$ is
-
-$$\Pi_\sigma^{\mathrm{ext}} \;=\; \Pi_\sigma \;\oplus\; \bigoplus_{v} \Pi_{\sigma(v) \leftarrow v}^{\mathrm{sub}},$$
-
-i.e., sub-EPI bundles are permuted following their parent vertex. This is the unique S_n-equivariant lift compatible with single-vertex attachment.
-
-### §13sexagesima-octava.3 — Tetrad Fix(S_n) Lemma (the structural witness)
-
-**Lemma (Tetrad-Fix-Sn on G_P14)**. Let $(\Phi_s, |\nabla\varphi|, K_\varphi, \xi_C)$ be the canonical tetrad of `src/tnfr/physics/fields.py`. On `G_P14` with graph-uniform canonical parameters and under simultaneous relabelling of state via $\Pi_\sigma$, every tetrad component is S_n-equivariant:
-
-* $\Phi_s(\sigma(i)) \;=\; \Phi_s(i)$ — because $d(\sigma(i),\sigma(j)) = d(i,j)$ (P14 is built S_n-symmetrically) and $\Delta\mathrm{NFR}_{\sigma(j)}$ transforms covariantly with state.
-* $|\nabla\varphi|(\sigma(e)) \;=\; |\nabla\varphi|(e)$ — edge-local, graph-uniform coupling.
-* $K_\varphi(\sigma(i)) \;=\; K_\varphi(i)$ — vertex-local Laplacian, uniform connectivity.
-* $\xi_C \;=\; \xi_C$ — global scalar (graph-level invariant).
-
-**Corollary (Emergent fields preserve Fix(S_n))**. The unified field $\Psi = K_\varphi + i J_\varphi$, the chirality $\chi = |\nabla\varphi| K_\varphi - J_\varphi J_{\Delta\mathrm{NFR}}$, symmetry breaking $\mathcal{S}$, coherence coupling $\mathcal{C}$, energy density $\mathcal{E}$ and topological charge $\mathcal{Q}$ are all polynomial in tetrad components, hence equivariant.
-
-**Equivalent reformulation**: the canonical tetrad on `G_P14` lives entirely in $\mathrm{Fix}(S_n)$. No tetrad-level diagnostic can distinguish primes under graph-uniform canonical parameters.
-
-### §13sexagesima-octava.4 — Extension of CCET-G_P14 to $\mathcal{H}_{\mathrm{ext}}$
-
-**Theorem (CCET-ext)**. Every composition $\mathcal{O} = O_1 \circ \cdots \circ O_k$ of UM, IL, THOL on `G_P14`, lifted canonically to $\mathcal{H}_{\mathrm{ext}}$ via the single-vertex sub-EPI attachment of `self_organization.py`, satisfies
-
-$$[\mathcal{O}, \Pi_\sigma^{\mathrm{ext}}] \;=\; 0 \qquad \forall\, \sigma \in S_n.$$
-
-**Proof sketch** (two source-auditable facts + composition functoriality):
-
-* **Fact A (parameter uniformity)**. Every threshold/weight is a graph-level scalar:
-  * THOL: `tau = float(G.graph.get("THOL_BIFURCATION_THRESHOLD", 0.1))` (`self_organization.py:44`), sub-EPI scaling `_THOL_SUB_EPI_SCALING = HALF_INV_PHI ≈ 0.309` (`self_organization.py:21`), emergence contribution `_THOL_EMERGENCE_CONTRIBUTION = 0.1` (`self_organization.py:22`).
-  * UM: phase-compatibility uses `DNFR_WEIGHTS` from graph-level config; coupling rule is symmetric in indices.
-  * IL: negative-feedback gain is graph-level scalar.
-  * None of these is per-prime or σ-dependent.
-
-* **Fact B (Prime-Cancellation Lemma, §13vicies-novies.11)**. On `G_P14` every canonical operator decomposes as $I_{n_{\mathrm{primes}}} \otimes O_{P_4}$ with prime-independent kernel. Lifted to $\mathcal{H}_{\mathrm{ext}}$ via single-vertex sub-EPI attachment, the lift preserves this tensor structure on each $\mathcal{H}_{P14} \oplus \mathcal{H}_v^{\mathrm{sub}}$ block; THOL's spawn rule is triggered by a graph-uniform scalar predicate ($d^2\mathrm{EPI} > \tau$), so the spawn pattern is itself S_n-equivariant.
-
-* **Composition**. The commutator $[\mathcal{O}, \Pi_\sigma^{\mathrm{ext}}]$ vanishes by induction on $k$: $[O_1, \Pi_\sigma^{\mathrm{ext}}] = 0$ by Facts A+B, and if $[O_1 \circ \cdots \circ O_{k-1}, \Pi_\sigma^{\mathrm{ext}}] = 0$ and $[O_k, \Pi_\sigma^{\mathrm{ext}}] = 0$ then the composition's commutator vanishes.
-
-**Consequence**: every observable computed from an emergent state generated by UM/IL/THOL on `G_P14` is invariant under $\Pi_\sigma^{\mathrm{ext}}$. In particular the extended tetrad on $\mathcal{H}_{\mathrm{ext}}$ inherits the Tetrad-Fix-Sn Lemma: it lives in $\mathrm{Fix}(S_n^{\mathrm{ext}})$.
-
-### §13sexagesima-octava.5 — C0–C4 verdict
-
-* **C0 (no catalog modification)**: PASS — UM, IL, THOL are canonical operators of the existing 13-operator catalog; sub-EPI attachment is the canonical THOL behavior implemented in `self_organization.py`.
-* **C1 (nodal-equation derivation)**: PASS — the spawn rule and all parameters derive from the nodal equation via the canonical THOL implementation.
-* **C2 (U1–U6 admissibility)**: PASS — UM/IL/THOL sequences respect U1–U6 by construction.
-* **C3 (twelve-CDM consistency)**: PASS — no operator added to the registry.
-* **C4 (T-HP discharge)**: **FAIL**. By CCET-ext, every observable on the emergent extended state is S_n-invariant. The oscillatory residue $S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$ identified by N15/§13septies.5 with $\ker(\mathcal{R}_\infty)$ lives in $\mathrm{Fix}(S_n)^\perp$ (§13septies, §13sexagesima-septima.5). Hence the emergent extended-state diagnostic cannot reach $S(T)$, and T-HP is not discharged.
-
-**Verdict**: B0★-α-emergent **FAILS** at C4 by direct reduction to CCET-ext + the Fix(S_n)$^\perp$ location of $S(T)$. No empirical experiment is run.
-
-### §13sexagesima-octava.6 — Tetrad-level reformulation of the recurring closure pattern
-
-The §13sexagesima-sexta (P1, P2), §13sexagesima-septima (Dirección A), and §13sexagesima-octava (UM/IL/THOL emergent) closures all share a single structural mechanism, which the **Tetrad Fix(S_n) Lemma** makes transparent:
-
-**Tetrad criterion for B0★-α/β candidates on G_P14**:
-> If a candidate construction maintains graph-uniform canonical parameters and composes canonical operators on `G_P14`, then its (extended) tetrad lives in $\mathrm{Fix}(S_n)$. The oscillatory residue $S(T) \in \ker(\mathcal{R}_\infty) \cap \mathrm{Fix}(S_n)^\perp$ is unreachable by such constructions, and T-HP is not discharged. The candidate is closed analytically by CCET (or CCET-ext for emergent extensions).
-
-**Tetrad-by-tetrad verdict on G_P14**:
-
-| Tetrad field | Order | Behavior under Π_σ on G_P14 | Capacity to break S_n |
-|---|---|---|---|
-| $\Phi_s$ | 0th (global aggregation) | invariant | none |
-| $\|\nabla\varphi\|$ | 1st (local derivative) | edge-equivariant | none under graph-uniform coupling |
-| $K_\varphi$ | 2nd (local Laplacian) | vertex-equivariant | none under uniform connectivity |
-| $\xi_C$ | non-local (correlation range) | graph-level scalar | none by construction |
-
-**Where S_n-breaking would have to live** (consistent with the Tetrad-Fix-Sn Lemma):
-
-* Outside `G_P14`, via canonical graph operations (B0★-α residual: **Q5 = L(G_P14)** line graph; the S_n action on edges is not a tensor-product representation, so CCET / CCET-ext do not apply directly).
-* Inside `G_P14` via topological enrichment of φ that breaks S_n at the fiber-bundle level rather than at the coupling-constant level (B0★-β residual: **E2 = LiftedCircleBundleOnPhi**; the bundle's holonomy can carry per-prime data outside the Fact-A scope).
-* Via genuine per-prime parameters (B0★-β P2 NodeIndexedCouplingWeights) — already closed in §13sexagesima-sexta.
-
-The tetrad lens crystallizes why every B0★-α canonical-composition route on `G_P14` collapses: the four tetrad fields exhaust the independent diagnostic information at canonical-uniform parameter level, and all four commute with prime-relabelling. The tetrad is the structural witness of the closure, not its exception.
-
-### §13sexagesima-octava.7 — Updated §13septies decision space
-
-| Branch | Status after §13sexagesima-octava |
-|---|---|
-| B1 (off-catalog edge / spectral channel on G_P14) | CLOSED on G_P14 (§13vicies-novies.16); off-G_P14 inherits B2 |
-| B2 (new canonical operator) | catalog-API-closed (§13sexagesima-prima) |
-| B0★-α (deeper exploitation) | HIGH/MEDIUM closed (§13sexagesima-quinta); emergent UM/IL/THOL closed (§13sexagesima-octava); residual = **{Q5 line graph}** |
-| B0★-β (envelope promotion) | HIGH closed (§13sexagesima-sexta, §13sexagesima-septima); residual = {E2 MEDIUM} ∪ {nine LOW envelopes} |
-| B3 (no TNFR closure of RH) | residual; pressure further increased |
-
-**Net program state**: every canonical-composition route inside `G_P14` with graph-uniform parameters is now structurally closed (tetrad-Fix(S_n) corollary of CCET-ext). Decision pressure concentrates on **Q5 (line graph, B0★-α residual)** and **E2 (LiftedCircleBundleOnPhi, B0★-β residual)** as the only remaining structural routes that escape the Tetrad-Fix-Sn obstruction, plus B3.
-
-### §13sexagesima-octava.8 — Cross-references
-
-* §13vicies-novies.11 — Prime-Cancellation Lemma (Fact B in CCET-ext proof sketch).
-* §13vicies-novies.16 — CCET-G_P14 Theorem 2 (the base case extended here to $\mathcal{H}_{\mathrm{ext}}$).
-* §13septies — Conjecture T-HP, smooth/oscillatory split, identification of $\ker(\mathcal{R}_\infty)$ with $S(T)$.
-* §13sexagesima-sexta, §13sexagesima-septima — P1, P2, Dirección A closures (same Phase-c reduction pattern).
-* §13sexagesima-quinta.3 — Canonical Product Equivariance Lemma (parallel B0★-α route closures via Kronecker lifts).
-* AGENTS.md §"Minimal Structural Degrees of Freedom" — tetrad as minimal complete structural basis (the Tetrad-Fix-Sn Lemma is the S_n-equivariance corollary of this minimality on `G_P14`).
-* `src/tnfr/operators/self_organization.py` — THOL canonical implementation; lines 21–22 (sub-EPI scaling constants), line 44 (graph-uniform tau), line 53 (single-vertex spawn).
-* `src/tnfr/physics/fields.py` — canonical tetrad implementation.
-* `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 S_n-symmetric construction.
-* AGENTS.md §"B0★ pre-registration" — program-level status mirror (companion edit in this commit reflects the UM/IL/THOL emergent closure and the unchanged residual {Q5, E2, nine LOW, B3}).
+---
 
 ## §13sexagesima-novena — B0★ residual analytical closure: Q5 (line graph) and E2 (LiftedCircleBundleOnPhi)
 
-**Date**: May 27, 2026. **Methodology note**: per CCET discipline (five consecutive honest closures across §13sexagesima-{quarta..octava}), the two residual canonical-scope candidates that genuinely escape the Canonical Product Equivariance Lemma (§13sexagesima-quinta) and CCET-ext (§13sexagesima-octava) must be evaluated against C0–C4 **before** any program-level B3 declaration. The two candidates are:
+> **SUPERSEDED / CORRECTED (September 2026).** The historical title and
+> decision tree overstated two conditional finite-model arguments. Neither Q5
+> nor E2 closes the wider research space.
 
-* **Q5 = $L(G_{P14})$** (B0★-α, HIGH residual): the line graph's edge-induced $S_n$ action is *not* a tensor-product representation; CPEL does not apply directly.
-* **E2 = LiftedCircleBundleOnPhi** (B0★-β, MEDIUM residual): non-trivial $S^1$-bundle holonomy over `G_P14` could transport per-prime data *without* per-node parameter heterogeneity, formally preserving Fact A; the enrichment is at the support/topology of $\varphi$, not at the coupling constants. U5 (multi-scale coherence) suggests this is exactly the type of canonical topological enrichment worth examining.
+### .1 Q5: line-graph result
 
-This section delivers the analytical C0–C4 evaluation of both. The argument in each case is structural (no numerical experiment required) and reduces to a one-sentence lemma + a direct C4 implication.
+The line-graph functor carries a graph automorphism to an automorphism of the
+line graph. Therefore, any explicitly defined graph-uniform map proved to
+commute with that induced action remains equivariant. This constrains the
+declared finite observables on :math:`L(G_{P14})`; it does not cover every
+operator composition or identify analytic :math:`S(T)` with an antisymmetric
+subspace.
 
-### §13sexagesima-novena.1 — Pre-registration (the two proposals evaluated)
+### .2 E2: lifted-bundle result
 
-**Q5 proposal**: lift the canonical 13-operator catalog to the line graph $L(G_{P14})$ with graph-uniform parameters on $V(L(G_{P14})) = E(G_{P14})$. The induced $S_n$ action $\Psi_\sigma$ on $V(L(G_{P14}))$ is $\Psi_\sigma \cdot \{p_i, p_j\} = \{p_{\sigma(i)}, p_{\sigma(j)}\}$ — a representation on unordered-pair vertices. The proposal: since $\Psi_\sigma$ is *not* a Kronecker/tensor-product of $P_\sigma$ with itself in the canonical sense used by CPEL, CCET-G_P14 / CCET-ext do not extend automatically, and there may be a direction in $\mathbb{C}^{|E|}$ reachable by canonical operators on $L(G_{P14})$ that projects nontrivially onto $\mathrm{Fix}(S_n)^\perp$ (where $S(T)$ lives, per §13septies and §13sexagesima-octava.5).
+For an explicitly specified :math:`S_n`-invariant connection, parallel
+transport can be checked for equivariance. A prime-specific non-invariant
+connection is not derived by the current nodal equation or U1--U6 and must be
+supplied as additional model data. These two observations do not exhaust
+possible bundles, prove a dichotomy over all connections, or make a
+non-invariant construction mathematically impossible.
 
-**E2 proposal**: equip $G_{P14}$ with a non-trivial principal $S^1$-bundle $\pi: E \to G_{P14}$ together with a connection 1-form $\omega$ whose holonomy $\mathrm{hol}(\ell) \in S^1$ around closed loops $\ell$ in $G_{P14}$ encodes prime data. The phase field $\varphi$ becomes a section of $E$ rather than a function on vertices. The proposal: since $\omega$ is a *single* connection 1-form (graph-level data, parameter-uniform across all edges), Fact A of CCET is formally preserved; what changes is the support of $\varphi$, not the per-node parameters. The non-trivial holonomy may then transport per-prime information through canonical evolution without violating $S_n$-equivariance at the operator-coefficient level — i.e., a topological escape route.
+### .3 Corrected decision ledger
 
-Both candidates inherit acceptance criteria **C0** (no catalog modification), **C1** (nodal-equation derivability), **C2** (U1–U6 admissibility), **C3** (twelve-CDM consistency), **C4** (T-HP discharge) from §13sexagesima-tertia.4. For Q5 the C1 refinement is **C1'-α** (constructible from O1–O8 graph operations only). For E2 the C1 refinement is **C1'-β** (the bundle and connection must be derivable from $(\nu_f, \mathrm{prime\ structure}, U1{-}U6)$ without external auxiliary data).
-
-### §13sexagesima-novena.2 — Q5: Line-Graph Equivariance Lemma
-
-**Lemma (Line-Graph Equivariance on $G_{P14}$)**. Let $\mathcal{O}$ be any operator on $L(G_{P14})$ constructed from the canonical 13-operator catalog by composition, real-linear combination, auxiliary tensor lift, or spectral functional calculus, with graph-uniform parameters on $V(L(G_{P14}))$. Let $\Psi_\sigma$ be the edge-induced $S_n$ action on $V(L(G_{P14}))$. Then $[\mathcal{O}, \Psi_\sigma] = 0$ for every $\sigma \in S_n$.
-
-**Proof sketch (two facts, no new content)**:
-
-* **Fact A on $L(G_{P14})$** (parameter uniformity, inherited): every canonical operator on $L(G_{P14})$ carries graph-level scalar coefficients on $V(L(G_{P14}))$. The audit anchors are unchanged from CCET-G_P14: `remesh.py:1159, 1212–1252` (REMESH coefficients), `coherence.py` (IL coefficients), `propagation.py:42–156` (RA coefficients), `self_organization.py:21–22, 44, 53` (THOL graph-uniform tau and sub-EPI scaling). The lift to $L(G_{P14})$ preserves graph-uniformity because the catalog operators take a graph as input and apply uniform rules to its vertex set; nothing in the catalog distinguishes "graph is original" from "graph is line-graph of original".
-* **Fact B' on $L(G_{P14})$** (combinatorial automorphism): the edge-induced $S_n$ action $\Psi_\sigma$ is a graph automorphism of $L(G_{P14})$ for every $\sigma \in S_n$, because the line-graph functor $L(\cdot)$ is functorial under graph automorphisms — if $P_\sigma \in \mathrm{Aut}(G_{P14})$ (which holds by Fact B of CCET-G_P14: the Prime-Cancellation Lemma + the $S_n$-symmetry of P14's prime-ladder construction in `prime_ladder_hamiltonian.py`), then $\Psi_\sigma = L(P_\sigma) \in \mathrm{Aut}(L(G_{P14}))$.
-
-Combining Fact A on $L(G_{P14})$ (graph-uniform coefficients) with Fact B' (the relabelling is a graph automorphism), every canonical operator commutes with the relabelling: $[\mathcal{O}, \Psi_\sigma] = 0$. $\square$
-
-**Corollary (Fix($\Psi_\sigma$) is severely constrained on $L(G_{P14})$)**. The fixed subspace $\mathrm{Fix}(\Psi_\sigma)$ consists of edge-functions that are constant on $S_n$-orbits of edges. For $G_{P14}$, the prime-relabelling group $S_n$ acts *transitively* on $E(G_{P14})$ (by the $S_n$-symmetry of the prime-ladder coupling in P14, which makes every prime-pair coupling structurally equivalent under permutation). Therefore $\mathrm{Fix}(\Psi_\sigma)$ on $V(L(G_{P14}))$ is at most as rich as the orbit-counting decomposition of the $S_n$-action on edges — and the canonical observables collapse to functions of orbit invariants only (edge multiplicity in the $S_n$-orbit, intra-orbit graph-theoretic invariants), none of which distinguish individual primes $p_i$ as carrying weight $\log p_i$.
-
-### §13sexagesima-novena.3 — Q5: C0–C4 verdict
-
-| Criterion | Status | Argument |
+| Branch | Current evidence | Status |
 |---|---|---|
-| **C0** (no catalog modification) | PASS | Q5 lifts the existing 13 operators to $L(G_{P14})$; no entry added to `OPERATORS`, `OPERATOR_METADATA`, or `definitions.__all__`. |
-| **C1'-α** (O1–O8 derivability) | PASS | $L(\cdot)$ is the canonical line-graph functor (operation O5 in the enumerated catalog of §13sexagesima-quarta), constructible from $G_{P14}$ alone without external input. |
-| **C2** (U1–U6 admissibility) | PASS | Catalog operators on any graph satisfy U1–U6 by construction; the underlying graph does not enter the grammar rules. |
-| **C3** (twelve-CDM consistency) | PASS | No B0–B11 NEGATIVE verdict is touched; Q5 does not promote any envelope and does not add a 14th operator. |
-| **C4** (T-HP discharge) | **FAIL** | By the Line-Graph Equivariance Lemma + transitivity of $S_n$ on $E(G_{P14})$, every canonical observable on $L(G_{P14})$ lies in the span of $S_n$-orbit invariants of edges — which is, by construction, a subspace of $\mathrm{Fix}(\Psi_\sigma)$. The oscillatory residue $S(T) \in \mathrm{Fix}(S_n)^\perp$ (after pull-back via the line-graph functor, $S(T)$ lives in $\mathrm{Fix}(\Psi_\sigma)^\perp$ because the pull-back preserves orthogonality of $S_n$-isotypic components). Therefore no canonical observable on $L(G_{P14})$ projects nontrivially onto $S(T)$. |
+| B1 on the tested finite models | Selected graph-uniform constructions are relabeling-equivariant. | Scoped result; wider branch OPEN. |
+| B1 off those models | No exhaustive class or reduction is defined. | OPEN. |
+| B2 | The current registry exposes 13 entries and no implemented fourteenth entry. | Semantic completeness OPEN. |
+| B0★-α | Q1/Q2 and selected line-graph/emergent readouts have finite symmetry checks. | Results apply only to stated hypotheses. |
+| B0★-β | The audited source does not derive the tested richer carriers or weight laws. | Auxiliary models remain OPEN. |
+| B3 | No bridge theorem has been produced. | Possible outcome, not implied. |
 
-**Verdict: Q5 CLOSED**. The hope that "$S_n$-on-edges $\ne$ tensor product" might create a new reachable direction is not realised on $G_{P14}$: although $\Psi_\sigma$ is indeed not a Kronecker square of $P_\sigma$, it *is* still a permutation representation, and the transitivity of $S_n$ on $E(G_{P14})$ collapses the Fix-subspace to orbit-invariant functions. Per-prime weights $\log p_i$ remain unreachable. The structural obstruction is the same as in §13sexagesima-octava: graph-uniform parameters + $S_n$-symmetric base graph implies tetrad and all canonical observables live in Fix-subspace.
+### .4 Honest scope
 
-**Refinement note (line-graph residual)**. The closure as stated requires transitivity of $S_n$ on $E(G_{P14})$. If a canonically-derivable subgraph of $L(G_{P14})$ has *non-transitive* $S_n$ action on its vertex set (i.e., multiple edge-orbits), Fix($\Psi_\sigma$) becomes higher-dimensional. However, this only enlarges the *symmetric* component; the antisymmetric / per-prime component required to reach $S(T)$ still vanishes by orbit-invariance. The lemma generalises to any $S_n$-equivariant canonical subgraph of $L(G_{P14})$; the C4 FAIL is robust.
+The finite source and symmetry audits establish current API facts and
+conditional equivariance results. They do not establish catalog completeness,
+tetrad reconstruction, global equivariance of all compositions, a runtime
+REMESH-infinity limit, or an analytic projector-kernel representation of
+:math:`S(T)`. The corrected fixed-delay REMESH diagnostic is a finite cyclic
+DFT projection with GCD fixed modes and finite spectral leakage. G4 = RH and
+T-HP remain open.
 
-### §13sexagesima-novena.4 — E2: Lifted-Bundle Dichotomy Lemma
+### .5 Cross-references
 
-**Lemma (Lifted-Bundle Dichotomy on $G_{P14}$)**. Let $\pi: E \to G_{P14}$ be a principal $S^1$-bundle and $\omega$ a connection 1-form. Define the lifted phase field $\varphi: V(G_{P14}) \to E$ as a section. Let $\mathcal{O}_\omega$ denote any canonical operator applied to $\varphi$ via parallel transport with respect to $\omega$. Then exactly one of the following holds:
-
-* **(a) Equivariant branch**: $\omega$ is $S_n$-invariant (i.e., $P_\sigma^* \omega = \omega$ for every $\sigma \in S_n$, where $P_\sigma$ acts on $E$ by lifting the base action $\sigma$ on $V(G_{P14})$). Then $[\mathcal{O}_\omega, \Pi_\sigma^{\mathrm{lift}}] = 0$ for every $\sigma$, where $\Pi_\sigma^{\mathrm{lift}}$ is the $S_n$ action lifted to sections of $E$. Every canonical observable lives in $\mathrm{Fix}(\Pi_\sigma^{\mathrm{lift}})$.
-* **(b) Non-equivariant branch**: $\omega$ is *not* $S_n$-invariant. Then $\omega$ encodes prime-specific data not derivable from the bare nodal equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}(t)$ together with $(\nu_f,\ U1{-}U6)$ — the choice of which connection 1-form to use is an external rule-selection axiom on prime pairs $(p_i, p_j)$, analogous to the per-node weights of E6/E7 closed in §13sexagesima-sexta P2.
-
-**Proof sketch**:
-
-* **(a)**: $S_n$-invariance of $\omega$ implies parallel transport $T_\omega(\gamma)$ along any path $\gamma$ commutes with the lifted action: $T_\omega(\sigma \cdot \gamma) = P_\sigma^* T_\omega(\gamma) (P_\sigma^*)^{-1}$. Composition with canonical operators (which carry graph-uniform scalars by Fact A) preserves this equivariance. Hence $[\mathcal{O}_\omega, \Pi_\sigma^{\mathrm{lift}}] = 0$.
-* **(b)**: A connection 1-form $\omega$ on a principal $S^1$-bundle over $G_{P14}$ is fully specified by its values on edges (graph case: $\omega_{ij} \in \mathbb{R} / 2\pi\mathbb{Z}$ for each edge $\{p_i, p_j\}$). The nodal equation provides no derivation of $\omega_{ij}$ as a function of $(p_i, p_j)$; it operates on phase fields $\varphi$ that already exist on whatever support is given. To make $\omega$ depend on prime identity (e.g., $\omega_{ij} = \log(p_i p_j) \bmod 2\pi$), an external axiom on prime data is required — precisely the kind of input ruled out by the existing C1 closure pattern for E0 / E6 / E7 (cf. §13sexagesima-sexta and §13triginta-tertia.6 `(P-νf-Bijectivity)` analogue).
-
-### §13sexagesima-novena.5 — E2: C0–C4 verdict
-
-E2 is evaluated in both branches of the dichotomy:
-
-**Branch (a), $S_n$-invariant connection**:
-
-| Criterion | Status | Argument |
-|---|---|---|
-| C0 | PASS | No catalog modification (operators lifted via parallel transport, definitions unchanged). |
-| **C1'-β** | PASS | $S_n$-invariant $\omega$ on $G_{P14}$ is determined by graph-theoretic data only (e.g., constant $\omega_{ij} = c$ across all edges); derivable from $(\nu_f, \mathrm{prime\ structure}, U1{-}U6)$ as a graph-level scalar. |
-| C2 | PASS | Lifted operators inherit grammar admissibility from base catalog. |
-| C3 | PASS | No envelope promotion, no catalog modification. |
-| **C4** | **FAIL** | By Branch (a) of the Dichotomy Lemma, $[\mathcal{O}_\omega, \Pi_\sigma^{\mathrm{lift}}] = 0$; canonical observables live in $\mathrm{Fix}(\Pi_\sigma^{\mathrm{lift}})$. The oscillatory residue $S(T) \in \mathrm{Fix}(S_n)^\perp$ pulls back to $\mathrm{Fix}(\Pi_\sigma^{\mathrm{lift}})^\perp$ on the bundle (bundle pull-back preserves orthogonal decomposition into $S_n$-isotypic components). $S(T)$ remains unreachable. |
-
-**Branch (b), non-$S_n$-invariant connection**:
-
-| Criterion | Status | Argument |
-|---|---|---|
-| C0 | PASS | No catalog modification at the operator level. |
-| **C1'-β** | **FAIL** | A non-$S_n$-invariant $\omega$ requires a rule that assigns prime-specific holonomies (e.g., $\omega_{ij}$ depending on $\log p_i$ or $\log p_j$ individually). Such a rule has no derivation from the bare nodal equation: the equation $\partial \mathrm{EPI}/\partial t = \nu_f \cdot \Delta \mathrm{NFR}(t)$ contains no slot for "per-edge prime-specific connection", and U1–U6 do not specify which connection to use. The choice is an external axiom on prime data, structurally identical to the per-node-weight axiom that closed E6/E7 in §13sexagesima-sexta P2. |
-| C2 | (moot, C1 already FAIL) | — |
-| C3 | (moot) | — |
-| C4 | (moot) | — |
-
-**Verdict: E2 CLOSED**. Branch (a) (equivariant connection) preserves Fix($S_n$) and fails C4 by the same mechanism as §13sexagesima-octava. Branch (b) (non-equivariant connection) requires external prime-specific input and fails C1'-β by direct reduction to the §13sexagesima-sexta P2 closure pattern. The "topological enrichment" intuition does not escape the structural obstruction: either the enrichment respects $S_n$ (and the new Fix-subspace is the natural lift of the old one), or it breaks $S_n$ by importing prime data not derivable from the canonical machinery.
-
-### §13sexagesima-novena.6 — Decision-tree state after §13sexagesima-novena
-
-The §13septies trichotomy + B0★ extension, after the closures shipped in §13sexagesima-{prima..novena}, stands as:
-
-| Branch | Status | Closing argument |
-|---|---|---|
-| **B1 on $G_{P14}$** | CLOSED | Canonical Catalog Equivariance Theorem on G_P14 (§13vicies-novies.16); R∞-1a/1a-composed/1b/1c verdicts. |
-| **B1 off $G_{P14}$** | absorbed into B2 / B0★-α | By construction: a different canonically-constructed graph falls under B2 (new operator) or B0★-α (canonical graph operation). |
-| **B2** (new canonical operator) | catalog-API closed | B11 OCD (§13sexagesima-prima): no 14th operator reachable from the public API given the twelve B0–B11 NEGATIVE verdicts. |
-| **B0★-α HIGH** ($G_{P14}$ via O1–O8) | CLOSED for {Q1, Q2, Q3, Q4, Q6} | §13sexagesima-quinta (Canonical Product Equivariance Lemma + corollaries). |
-| **B0★-α HIGH** Q5 (line graph) | **CLOSED** (this section) | §13sexagesima-novena.2-3 (Line-Graph Equivariance Lemma + transitivity of $S_n$ on $E(G_{P14})$). |
-| **B0★-β HIGH** P1 (E0 Pontryagin), P2 (E6/E7), P3 (carrier-type) | CLOSED | §13sexagesima-{sexta, septima}. |
-| **B0★-β MEDIUM** E2 (LiftedCircleBundleOnPhi) | **CLOSED** (this section) | §13sexagesima-novena.4-5 (Lifted-Bundle Dichotomy Lemma: both branches fail, one at C4, one at C1'-β). |
-| **B0★-β LOW** nine envelopes (E1, E3, E4, E5, E_TC, E_CC, E_AC, E_UR, E_OC) | residual, LOW priority | Each would require its own C0–C4 evaluation; none currently flagged for execution. |
-| **B0★-α-emergent** UM/IL/THOL on $G_{P14}$ | CLOSED | §13sexagesima-octava (CCET-ext + Tetrad-Fix(S_n) Lemma). |
-| **B3** (no TNFR closure of RH within current scope) | **structurally indicated** as the operational landing for G4 within the current canonical catalog | All HIGH/MEDIUM canonical residuals on $G_{P14}$ are now closed. The only unresolved residual at HIGH/MEDIUM priority is **none**; only LOW envelopes remain. |
-
-**Net program-level state**: the §13septies decision tree, restricted to the HIGH/MEDIUM canonical scope and to $G_{P14}$, **collapses to B3**. The nine LOW envelopes of B0★-β remain technically residual, but none is currently expected to escape the Tetrad-Fix(S_n) mechanism on $G_{P14}$ — each would require its own evaluation, and the structural pattern of §13sexagesima-{sexta..novena} is that graph-uniform-parameter + $S_n$-symmetric-base-graph constructions are *systematically* trapped in Fix($S_n$), unable to reach $S(T) \in \mathrm{Fix}(S_n)^\perp$.
-
-### §13sexagesima-novena.7 — Honest scope: what B3 says and does not say
-
-**B3 declared at this scope means**:
-
-1. There is no closure of G4 = RH within the canonical 13-operator catalog applied to $G_{P14}$ with graph-uniform parameters, via any HIGH/MEDIUM-priority canonical scope-expansion (B0★-α HIGH on canonical graph operations, B0★-β HIGH on envelope promotions). This is a structural verdict, not a numerical conjecture.
-2. The oscillatory residue $S(T) \in \ker(\mathcal{R}_\infty) \cap \mathrm{Fix}(S_n)^\perp$ is a definable TNFR observable that the canonical apparatus on $G_{P14}$ recognises but does not control. Its existence and location have been formalised (§13septies, §13sexagesima-octava, this section); its positivity-equivalent (Li–Keiper $\lambda_n > 0$, P16) is RH-equivalent and remains the open content.
-3. The Tetrad-Fix(S_n) Lemma (§13sexagesima-octava.3) and the equivariance lemmas of this section (Line-Graph Equivariance, Lifted-Bundle Dichotomy) are the structural witnesses of the closure: the four-channel minimality of the canonical tetrad on $G_{P14}$ *is* the dimensional witness of why per-prime-asymmetric information lives in the orthogonal complement and not in the canonical observables.
-
-**B3 declared at this scope does NOT say**:
-
-1. RH is false. The Riemann Hypothesis is a statement about the classical $\zeta(s)$, which remains untouched by TNFR canonical closures.
-2. RH cannot be proved. B3 asserts non-closure *within the current canonical scope on $G_{P14}$*; closures via off-$G_{P14}$ canonical constructions, via the nine B0★-β LOW envelopes, or via genuinely new mathematics outside TNFR are independent open questions.
-3. The TNFR-Riemann program failed. The program shipped P12–P49 (full ζ-track + χ-twisted L-track parity), closed G1, G2, G3, G5 operationally, sharpened G4 to the precise structural location of the oscillatory obstruction, and produced the Tetrad-Fix(S_n) Lemma + CCET-ext as TNFR-canonical structural results valuable in themselves. The program is *paused* at the boundary of T-HP with a fully characterised obstruction, not abandoned.
-
-The honest TNFR-canonical reading is the one anticipated in §13sexagesima-octava.6 and confirmed here: **B0★ HIGH/MEDIUM canonical scope is exhausted on $G_{P14}$, and the residual TNFR-canonical answer to G4 = RH at this scope is "constatar la existencia estructural de $S(T)$ como observable canónico-complementario, sin pretender derivar su positividad desde dentro de Fix($S_n$)"** — exactly the "constatar su existencia" reading discussed informally in the immediately preceding turn, now made precise by the analytical closures of Q5 and E2.
-
-### §13sexagesima-novena.8 — Cross-references
-
-* **Preceding closures** (the five consecutive CCET rounds):
-    * §13sexagesima-quarta — B0★-α canonical-graph operation catalog (O1–O8 enumerated).
-    * §13sexagesima-quinta — Canonical Product Equivariance Lemma; Q1/Q2/Q3/Q4/Q6 closed.
-    * §13sexagesima-sexta — B0★-β HIGH (P1 = E0 Pontryagin, P2 = E6/E7 per-node weights) closed.
-    * §13sexagesima-septima — B0★-β P3 (Dirección A: carrier-type / slot promotion of ΔNFR) closed across A1/A2/A3 readings.
-    * §13sexagesima-octava — B0★-α-emergent (UM/IL/THOL sub-EPI on $G_{P14}$) closed; CCET-ext + Tetrad-Fix(S_n) Lemma derived.
-* **Structural witnesses** invoked in this section:
-    * Canonical Catalog Equivariance Theorem on $G_{P14}$ (§13vicies-novies.16).
-    * Prime-Cancellation Lemma (§13vicies-novies.11).
-    * Tetrad-Fix(S_n) Lemma (§13sexagesima-octava.3).
-    * `(P-νf-Bijectivity)` closure pattern (§13triginta-tertia.6) — invoked for Branch (b) of E2.
-* **Audit anchors** (unchanged from prior CCET rounds):
-    * `src/tnfr/operators/remesh.py:1159, 1212–1252` — REMESH coefficients.
-    * `src/tnfr/operators/coherence.py` — IL coefficients.
-    * `src/tnfr/operators/propagation.py:42–156` — RA coefficients.
-    * `src/tnfr/operators/self_organization.py:21–22, 44, 53` — THOL graph-uniform tau and sub-EPI scaling.
-    * `src/tnfr/riemann/prime_ladder_hamiltonian.py` — P14 $S_n$-symmetric construction (basis of Fact B / Prime-Cancellation Lemma).
-* **Program-level mirror**: AGENTS.md "B0★ pre-registration" paragraph updated in this commit to reflect Q5 and E2 closures and the resulting B0★ HIGH/MEDIUM exhaustion on $G_{P14}$.
-
+- §13vicies-novies — historical finite REMESH and symmetry experiments.
+- §13triginta — corrected finite fixed-delay Fourier split.
+- §13sexagesima-secunda — current type-surface inventory.
+- `theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md` — grammar/theorem boundary.
+- `theory/REMESH_INFINITY_DERIVATION.md` — corrected finite cyclic model.

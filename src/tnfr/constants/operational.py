@@ -29,6 +29,14 @@ from __future__ import annotations
 from .canonical import PI
 
 # ============================================================================
+# RECEPTION SOURCE DETECTION (operators/network_analysis/source_detection.py)
+# ============================================================================
+# Selected midpoint of the positive unit EPI interval.  This is an operational
+# classification threshold for EN source discovery, not a structural constant
+# derived from the nodal equation or an exponential activation law.
+ACTIVE_EMISSION_THRESHOLD = 0.5
+
+# ============================================================================
 # CYCLE DETECTION (operational balance rails — operators/cycle_detection.py)
 # ============================================================================
 # NOTE: the structural balance target CYCLE_OPTIMAL_BALANCE_CANONICAL = 1/(π+1)
@@ -85,9 +93,6 @@ OPT_ORCH_VECTORIZED_BOOST_CANONICAL = 0.6  # operational tuning (not TNFR physic
 OPT_ORCH_ARITHMETIC_BOOST_CANONICAL = 0.06  # operational tuning (not TNFR physics)
 OPT_ORCH_DENSE_BOOST_CANONICAL = 0.37  # operational tuning (not TNFR physics)
 OPT_ORCH_BEST_THRESHOLD_CANONICAL = 0.7  # operational tuning (not TNFR physics)
-OPT_ORCH_VECTORIZED_SPEEDUP_CANONICAL = 0.93  # operational tuning (not TNFR physics)
-OPT_ORCH_FFT_SPEEDUP_CANONICAL = 2.14  # operational tuning (not TNFR physics)
-OPT_ORCH_CACHE_SPEEDUP_CANONICAL = PI  # π (incidental cache-hit speedup estimate)
 
 # ============================================================================
 # MULTI-MODAL CACHE (dynamics/multi_modal_cache.py)
@@ -195,36 +200,15 @@ UNIFIED_CACHE_MIN_COHERENCE_CANONICAL = 0.62  # operational tuning (not TNFR phy
 
 # ============================================================================
 # EMERGENT INTEGRATION ENGINE (dynamics/emergent_integration_engine.py —
-# confidence levels and performance/memory baselines)
+# evidence-neutral discovery thresholds)
 # ============================================================================
-INTEGRATION_COMPUTATION_REDUCTION_CANONICAL = 0.34  # operational tuning (not TNFR physics)
-INTEGRATION_MEMORY_SAVINGS_CANONICAL = 0.49  # operational tuning (not TNFR physics)
-INTEGRATION_CACHE_EFFICIENCY_CANONICAL = 0.16  # operational tuning (not TNFR physics)
 INTEGRATION_CONFIDENCE_HIGH_CANONICAL = 0.75  # operational tuning (not TNFR physics)
 INTEGRATION_CENTRALITY_THRESHOLD_CANONICAL = 0.74  # operational tuning (not TNFR physics)
-INTEGRATION_HIT_RATE_IMPROVE_CANONICAL = 0.02  # operational tuning (not TNFR physics)
-INTEGRATION_MEMORY_REDUCE_CANONICAL = 0.22  # operational tuning (not TNFR physics)
-INTEGRATION_ACCESS_TIME_CANONICAL = 0.16  # operational tuning (not TNFR physics)
 INTEGRATION_CONFIDENCE_MEDIUM_CANONICAL = 0.43  # operational tuning (not TNFR physics)
-INTEGRATION_SPEEDUP_CANONICAL = 0.49  # operational tuning (not TNFR physics)
-INTEGRATION_EFFICIENCY_CANONICAL = 0.16  # operational tuning (not TNFR physics)
-INTEGRATION_CPU_UTIL_CANONICAL = 0.34  # operational tuning (not TNFR physics)
 INTEGRATION_CONFIDENCE_LOW_CANONICAL = 0.37  # operational tuning (not TNFR physics)
-INTEGRATION_PRECOMPUTE_SUCCESS_CANONICAL = 0.3  # operational tuning (not TNFR physics)
-INTEGRATION_COMPUTATION_AVOID_CANONICAL = 0.34  # operational tuning (not TNFR physics)
-INTEGRATION_RESPONSE_TIME_CANONICAL = 0.02  # operational tuning (not TNFR physics)
 INTEGRATION_CONFIDENCE_MINIMAL_CANONICAL = 0.34  # operational tuning (not TNFR physics)
 INTEGRATION_SYNC_THRESHOLD_CANONICAL = 0.74  # operational tuning (not TNFR physics)
-INTEGRATION_PREFETCH_ACCURACY_CANONICAL = 0.62  # operational tuning (not TNFR physics)
-INTEGRATION_CACHE_EFF_CANONICAL = 0.16  # operational tuning (not TNFR physics)
-INTEGRATION_SYNC_PREDICTION_CANONICAL = 0.34  # operational tuning (not TNFR physics)
 INTEGRATION_CONFIDENCE_SYNC_CANONICAL = 0.28  # operational tuning (not TNFR physics)
-INTEGRATION_MEMORY_MB_CANONICAL = 8.5  # operational tuning (not TNFR physics)
-INTEGRATION_COMPUTATION_TIME_CANONICAL = 0.001352  # operational tuning (not TNFR physics)
-INTEGRATION_COMPUTATION_BASELINE_CANONICAL = 0.1  # operational tuning (not TNFR physics)
-INTEGRATION_MEMORY_BASELINE_CANONICAL = 50.0  # 50.0 MB (baseline)
-INTEGRATION_CACHE_HIT_BASELINE_CANONICAL = 0.3  # operational tuning (not TNFR physics)
-INTEGRATION_CPU_BASELINE_CANONICAL = 0.49  # operational tuning (not TNFR physics)
 INTEGRATION_CONFIDENCE_THRESHOLD_CANONICAL = 0.74  # operational tuning (not TNFR physics)
 
 # ============================================================================
@@ -232,10 +216,6 @@ INTEGRATION_CONFIDENCE_THRESHOLD_CANONICAL = 0.74  # operational tuning (not TNF
 # ============================================================================
 NODAL_OPT_COUPLING_CANONICAL = 0.1  # operational tuning (not TNFR physics)
 NODAL_OPT_TARGET_DT_CANONICAL = 0.1  # operational tuning (not TNFR physics)
-NODAL_OPT_VECTORIZED_SPEEDUP_CANONICAL = 0.6  # operational tuning (not TNFR physics)
-NODAL_OPT_PARALLEL_SPEEDUP_CANONICAL = 1.16  # operational tuning (not TNFR physics)
-NODAL_OPT_CACHE_SPEEDUP_CANONICAL = 0.7  # operational tuning (not TNFR physics)
-NODAL_OPT_ADAPTIVE_SPEEDUP_CANONICAL = 0.34  # operational tuning (not TNFR physics)
 
 # ============================================================================
 # STRUCTURAL CACHE (dynamics/structural_cache.py)

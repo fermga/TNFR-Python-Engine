@@ -6,6 +6,7 @@ and metabolic efficiency in self-organizing systems.
 
 from __future__ import annotations
 
+from numbers import Integral
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_EPI
+from ..glyph_history import current_operator_step
 
 __all__ = [
     "compute_structural_complexity",
@@ -20,9 +22,6 @@ __all__ = [
     "compute_metabolic_efficiency",
     "compute_emergence_index",
 ]
-
-# Emergence index calculation constant
-_EMERGENCE_INDEX_EPSILON = 1e-6  # Small value to avoid zero in geometric mean
 
 
 def compute_structural_complexity(G: TNFRGraph, node: NodeId) -> int:
@@ -110,26 +109,41 @@ def compute_bifurcation_rate(G: TNFRGraph, node: NodeId, window: int = 10) -> fl
     >>> rate  # 2 bifurcations in last 10 steps
     0.2
     """
+    if isinstance(window, bool) or not isinstance(window, Integral) or window <= 0:
+        raise ValueError("window must be a positive integer")
+    window = int(window)
+
     sub_epis = G.nodes[node].get("sub_epis", [])
     if not sub_epis:
         return 0.0
 
-    # Get current timestamp from glyph history
-    current_time = len(G.nodes[node].get("glyph_history", []))
+    node_data = G.nodes[node]
+    timestamps: list[int] = []
+    for record in sub_epis:
+        raw_timestamp = record.get("timestamp", 0)
+        if (
+            isinstance(raw_timestamp, bool)
+            or not isinstance(raw_timestamp, Integral)
+            or raw_timestamp < 0
+        ):
+            raise ValueError("sub-EPI timestamps must be nonnegative integer steps")
+        timestamps.append(int(raw_timestamp))
 
-    # Count bifurcations in window
-    recent_bifurcations = [
-        s for s in sub_epis if s.get("timestamp", 0) >= (current_time - window)
-    ]
-
-    return len(recent_bifurcations) / float(window)
+    # The explicit counter survives bounded glyph-history eviction.  The
+    # timestamp maximum keeps legacy records readable when no counter exists.
+    current_time = max(current_operator_step(node_data), max(timestamps, default=0))
+    recent_count = sum(
+        current_time - window < timestamp <= current_time
+        for timestamp in timestamps
+    )
+    return recent_count / float(window)
 
 
 def compute_metabolic_efficiency(G: TNFRGraph, node: NodeId) -> float:
     """Calculate EPI gain per T'HOL application (metabolic efficiency).
 
-    Metabolic efficiency measures how effectively T'HOL converts
-    reorganization events into stable structural complexity (EPI growth).
+    Metabolic efficiency is a retrospective ratio of signed EPI change to
+    recorded T'HOL applications under one fixed observation protocol.
 
     Parameters
     ----------
@@ -146,15 +160,9 @@ def compute_metabolic_efficiency(G: TNFRGraph, node: NodeId) -> float:
 
     Notes
     -----
-    High efficiency (> 0.1) indicates:
-    - Effective self-organization
-    - Strong coherence maintenance
-    - Productive metabolic cycles
-
-    Low efficiency (< 0.01) indicates:
-    - Ineffective reorganization
-    - High structural friction
-    - Possible need for different operator sequences
+    This is a signed net EPI change divided by the number of recorded THOL
+    applications. It is a retrospective heuristic and does not attribute the
+    change causally to THOL when other operators occur in the same interval.
 
     Examples
     --------
@@ -191,8 +199,8 @@ def compute_metabolic_efficiency(G: TNFRGraph, node: NodeId) -> float:
 def compute_emergence_index(G: TNFRGraph, node: NodeId) -> float:
     """Composite metric combining complexity, rate, and efficiency.
 
-    Emergence index provides a holistic measure of T'HOL metabolic health,
-    combining structural complexity, bifurcation dynamics, and efficiency.
+    Emergence index combines recorded structural complexity, bifurcation rate,
+    and retrospective EPI efficiency under one fixed observation protocol.
 
     Parameters
     ----------
@@ -204,8 +212,8 @@ def compute_emergence_index(G: TNFRGraph, node: NodeId) -> float:
     Returns
     -------
     float
-        Emergence index (0.0 to ~1.0 typical, higher indicates more emergent)
-        Computed as: sqrt(complexity * rate * efficiency)
+        Nonnegative, unbounded heuristic geometric mean:
+        cbrt(complexity * rate * max(efficiency, 0)).
 
     Notes
     -----
@@ -214,8 +222,9 @@ def compute_emergence_index(G: TNFRGraph, node: NodeId) -> float:
     - Rate: how actively new structure forms
     - Efficiency: how productive each reorganization is
 
-    High index (> 0.5) indicates healthy emergent dynamics.
-    Low index (< 0.1) suggests reorganization is stalled or inefficient.
+    The three factors have different units and are not normalized, so the
+    result is suitable only for comparisons made with the same sampling and
+    history protocol. A zero or negative net EPI efficiency yields zero.
 
     Examples
     --------
@@ -228,18 +237,13 @@ def compute_emergence_index(G: TNFRGraph, node: NodeId) -> float:
     >>> G.nodes[node]["sub_epis"] = [{"timestamp": 1}, {"timestamp": 2}]
     >>> index = compute_emergence_index(G, node)
     >>> index  # doctest: +SKIP
-    0.63...
+    0.430886...
     """
     complexity = float(compute_structural_complexity(G, node))
     rate = compute_bifurcation_rate(G, node)
     efficiency = compute_metabolic_efficiency(G, node)
 
-    # Geometric mean to avoid dominance by any single factor
-    # Add epsilon to avoid zero multiplication when no bifurcations occurred
-    index = (
-        (complexity + _EMERGENCE_INDEX_EPSILON)
-        * (rate + _EMERGENCE_INDEX_EPSILON)
-        * (efficiency + _EMERGENCE_INDEX_EPSILON)
-    ) ** (1.0 / 3.0)
-
-    return index
+    # A negative net EPI change is a loss, not a complex-valued emergence
+    # magnitude. Exact zeros remain zero rather than being lifted by epsilon.
+    product = complexity * rate * max(efficiency, 0.0)
+    return float(product ** (1.0 / 3.0)) if product > 0.0 else 0.0

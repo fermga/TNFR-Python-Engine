@@ -1,47 +1,34 @@
-r"""Policy-oriented Lyapunov diagnostics for the 13 canonical operators.
+r"""U2 policy multipliers and independent graph-spectral diagnostics.
 
-This module extends the generic Lyapunov analysis in ``conservation.py``
-with **per-operator policy multipliers** derived from the glyph factors defined
-in ``tnfr.config.defaults_core.GLYPH_FACTORS`` and the canonical constants
-in ``tnfr.constants.canonical``.
+The public API in this module historically called its records *Lyapunov bounds*.
+No such per-operator bounds have been derived.  The registry is a finite policy
+model: it maps the U2 role of each canonical operator to a nominal multiplier
+built from the canonical default glyph factors.  The multiplier is useful for
+bookkeeping and comparison, but it is not an upper bound on a measured state
+functional.
 
-Physics Foundation
-------------------
-The structural Lyapunov functional is **emergent**, not imposed.  It is the
-coherence the operators natively alter, which has two equivalent emergent forms:
+Two implemented state diagnostics are relevant and distinct:
 
-- the **coherence** ``C(t) = 1/(1 + mean|ΔNFR| + mean|dEPI|)``, emerging directly
-  from the nodal dynamics ``∂EPI/∂t = νf·ΔNFR``; and
-- the **tetrad energy** ``E = ½ Σ_i [Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²]``
-  (conservation.py), which emerges purely from the tetrad geometry — Φ_s and
-  J_ΔNFR from the structural pressure ΔNFR, and |∇φ|/K_φ/J_φ from the phase θ.
-  E contains **no EPI or νf term** (measured: scaling EPI or νf leaves E
-  unchanged); both functionals share the structural-pressure channel |ΔNFR|.
+* ``C(t) = 1/(1 + mean|DeltaNFR| + mean|dEPI|)`` is a coherence read-out;
+* ``E = 1/2 sum(Phi_s^2 + |grad phi|^2 + K_phi^2 + J_phi^2
+  + J_DeltaNFR^2)`` is a non-negative five-field energy candidate.
 
-The registry below maps each operator's canonical grammar role, derived from
-``config.physics_derivation``, to a nominal multiplier.  This is an operational
-screening model, not a proof of the realized change in either C(t) or the
-tetrad energy for every graph state:
+They are not equivalent, and an operator's U2 label does not determine the
+finite change of either one.  In particular, a zero multiplier adjustment for
+a U2-neutral operator means only "no U2 debt adjustment".  It does not predict
+zero phase, pressure, coherence, or energy change.
 
-- **Stabilisers** (IL, THOL): reduce |ΔNFR| → raise coherence (Lyapunov-
-  contractive), with a contraction rate from the operator's pressure factor.
-- **Destabilisers** (OZ, ZHIR, VAL): raise |ΔNFR| → lower coherence, with an
-  explicit expansion rate.
-- **Neutral** (AL, EN, RA, UM, SHA, NUL, NAV, REMESH): act on the EPI-form,
-  νf-capacity, θ-phase or advisory channel that the coherence-pressure functional
-  does not penalise by its grammatical role — so they neither contract nor expand
-  coherence (|ΔE_coherence| ≈ 0 by their U2 role).
-
-Grammar rule U2 requires that destabilizer debt be balanced by a stabilizer.
-It does not imply that the product of these nominal multipliers is at most one,
-nor that the measured tetrad energy is non-increasing.  Those are separate
-trajectory observations; a complete asymptotic-stability proof remains open.
+The legacy names ``EnergyClass``, ``OperatorLyapunovBound``,
+``compute_operator_energy_bound``, ``verify_operator_lyapunov`` and
+``prove_sequence_lyapunov`` remain available.  Their results explicitly describe
+the policy model.  New code should prefer the policy-named aliases and functions
+defined alongside them.
 
 Spectral Gap Characterisation
 -----------------------------
 ``analyze_spectral_gap`` reports two distinct, both-meaningful quantities:
 
-- the **combinatorial algebraic connectivity** λ₁ (Fiedler value) of
+- the **combinatorial algebraic connectivity** λ₂ (Fiedler value) of
   L = D − A — a graph-topology measure; and
 - the **canonical diffusion relaxation gap** λ₂ of the symmetric normalized
   Laplacian L_sym = I − D^{-1/2} W D^{-1/2}, which shares the spectrum of the
@@ -49,9 +36,11 @@ Spectral Gap Characterisation
 
 The *diffusive* relaxation time-scale is set by the **diffusion gap**: the EPI
 field relaxes as exp(−ν_f·λ₂·t).  The two gaps coincide only up to the degree
-normalisation (λ₁/d on a d-regular graph) and differ on irregular graphs.
-Derived: relaxation time, mixing-time estimate, Cheeger-type bound, and the
-stabiliser convergence rate (which uses the canonical diffusion gap).
+normalisation (λ₂(D-W)/d on a d-regular graph) and differ on irregular graphs.
+The normalized gap supplies a relaxation scale for homogeneous, fixed-graph,
+pure-EPI diffusion.  It does not combine with a per-operation U2 multiplier to
+produce a physical convergence rate; those quantities have different scopes and
+time semantics.
 
 References
 ----------
@@ -77,65 +66,30 @@ try:
 except ImportError:  # pragma: no cover
     nx = None  # type: ignore[assignment]
 
-# Lazy import to break circular dependencies
-_conservation = None
-
-
-def _get_conservation():
-    global _conservation
-    if _conservation is None:
-        from tnfr.physics import conservation as _mod
-
-        _conservation = _mod
-    return _conservation
-
-
-# ---------------------------------------------------------------------------
-#  Canonical glyph factors (defaults from tnfr.config.defaults_core)
-# ---------------------------------------------------------------------------
-
-# Import canonical constants for single-source-of-truth
-from tnfr.constants.canonical import AL_BOOST_CANONICAL, EN_MIX_FACTOR, NUL_DENSIFICATION_FACTOR, NUL_SCALE_FACTOR, SHA_VF_FACTOR, UM_THETA_PUSH, VAL_SCALE_FACTOR
-
-# Values documented in AGENTS.md § The 13 Canonical Operators
-_GLYPH_DEFAULTS: dict[str, float] = {
-    "AL_boost": 0.10,  # Emission EPI increment (free gain; energy-neutral)
-    "EN_mix": EN_MIX_FACTOR,  # 1/(π+1) ≈ 0.2415
-    "IL_dnfr_factor": 0.75,  # Coherence |ΔNFR| retention (stabiliser)
-    "OZ_dnfr_factor": 2.0,  # Dissonance |ΔNFR| amplification (destabiliser)
-    "UM_theta_push": UM_THETA_PUSH,  # 1/(π+1) ≈ 0.2415
-    "UM_vf_sync": 0.10,
-    "UM_dnfr_reduction": 0.15,
-    "RA_epi_diff": 0.15,
-    "RA_vf_amplification": 0.05,
-    "RA_phase_coupling": 0.10,
-    "SHA_vf_factor": round(SHA_VF_FACTOR, 4),  # 0.9 (ν_f freeze step)
-    "VAL_scale": round(VAL_SCALE_FACTOR, 4),  # 1.05 (ν_f expansion step)
-    "NUL_scale": round(NUL_SCALE_FACTOR, 4),  # 0.9 (ν_f contraction step)
-    "NUL_densification_factor": round(NUL_DENSIFICATION_FACTOR, 4),  # 1/λ ≈ 1.111
-    "THOL_accel": 0.10,
-    "ZHIR_theta_shift_factor": 0.3,
-    "NAV_eta": 0.5,
-    "NAV_jitter": 0.05,
-    "REMESH_alpha": 0.5,
-}
-
 # ---------------------------------------------------------------------------
 #  Energy class taxonomy
 # ---------------------------------------------------------------------------
 
 
 class EnergyClass(str, Enum):
-    """Classification of an operator's effect on the energy functional."""
+    """Legacy name for an operator's U2 bookkeeping role.
 
-    STABILISER = "stabiliser"  # dE/dt ≤ 0 (contractive)
-    DESTABILISER = "destabiliser"  # dE/dt > 0 (expansive, bounded)
-    NEUTRAL = "neutral"  # |dE/dt| ≈ 0 (quasi-isometric)
-    MIXED = "mixed"  # sign depends on state
+    The enum values do not classify the sign of the five-field energy change.
+    ``MIXED`` is retained for compatibility; the current U2 partition does not
+    assign it to a canonical operator.
+    """
+
+    STABILISER = "stabiliser"
+    DESTABILISER = "destabiliser"
+    NEUTRAL = "neutral"
+    MIXED = "mixed"
+
+
+U2PolicyRole = EnergyClass
 
 
 # ---------------------------------------------------------------------------
-#  Per-operator Lyapunov bound
+#  Per-operator policy multiplier (legacy class name retained)
 # ---------------------------------------------------------------------------
 
 
@@ -143,15 +97,11 @@ class EnergyClass(str, Enum):
 class OperatorLyapunovBound:
     r"""Nominal U2-role multiplier for one canonical operator.
 
-    The compatibility model treats an operator O as if it mapped E → E + ΔE:
-    - Stabilisers:   ΔE ≤ -ρ · E  for some contraction rate ρ > 0
-    - Destabilisers: ΔE ≤ +κ · E  for some expansion rate κ > 0
-    - Neutral:       |ΔE| ≤ ε      for some small residual ε ≥ 0
-    - Mixed:         ΔE ≤ +κ · E   (worst case as destabiliser)
-
-    These formulas are not established bounds for the tetrad energy.  A
-    grammar-valid sequence can have a nominal product above one, and its actual
-    energy change must be measured from snapshots.
+    ``OperatorLyapunovBound`` is a compatibility name.  ``energy_class`` and
+    ``contraction_rate`` likewise preserve the historical schema; canonically
+    they mean ``policy_role`` and ``policy_rate``.  The model assigns multiplier
+    ``1-rho`` to a stabilizer, ``1+kappa`` to a destabilizer, and ``1`` to a
+    U2-neutral operator.  It makes no statement about a measured energy change.
 
     Attributes
     ----------
@@ -160,17 +110,17 @@ class OperatorLyapunovBound:
     glyph : str
         Two-to-five letter glyph (e.g. ``"IL"``).
     energy_class : EnergyClass
-        Stabiliser / destabiliser / neutral / mixed.
+        U2 bookkeeping role.  This is not an observed energy-sign class.
     contraction_rate : float
-        ρ > 0 for stabilisers (fractional energy decrease per step).
-        For destabilisers this is the expansion rate κ.
-        For neutral operators this is the residual bound ε.
+        Legacy field containing the dimensionless policy-rate adjustment.
     glyph_factor_name : str
-        Name of the dominant glyph factor (e.g. ``"IL_dnfr_factor"``).
+        Name of the representative glyph factor selected by this finite policy
+        model (e.g. ``"IL_dnfr_factor"``).
     glyph_factor_value : float
-        Numeric value of the glyph factor.
+        Shared-registry-validated canonical default.  Runtime graph overrides
+        are intentionally outside this representative policy table.
     derivation : str
-        Human-readable derivation sketch of the bound.
+        Human-readable policy rationale and scope statement.
     """
 
     operator_name: str
@@ -181,42 +131,58 @@ class OperatorLyapunovBound:
     glyph_factor_value: float
     derivation: str
 
+    @property
+    def policy_role(self) -> EnergyClass:
+        """U2 bookkeeping role (preferred name for ``energy_class``)."""
+        return self.energy_class
+
+    @property
+    def policy_rate(self) -> float:
+        """Dimensionless policy adjustment (preferred name for the legacy field)."""
+        return self.contraction_rate
+
+    @property
+    def policy_multiplier(self) -> float:
+        """Return the nominal multiplier assigned by the U2 policy model."""
+        if self.energy_class == EnergyClass.STABILISER:
+            return max(0.0, 1.0 - self.contraction_rate)
+        if self.energy_class in {EnergyClass.DESTABILISER, EnergyClass.MIXED}:
+            return 1.0 + self.contraction_rate
+        return 1.0
+
+    @property
+    def verification_scope(self) -> str:
+        """Machine-readable reminder that this record is not an analytic bound."""
+        return "u2_policy_heuristic"
+
+    @property
+    def is_energy_bound(self) -> bool:
+        """Whether this record certifies a bound on measured energy (always false)."""
+        return False
+
+
+# Preferred descriptive alias.  The original class object and constructor stay
+# intact for callers importing ``OperatorLyapunovBound``.
+OperatorPolicyMultiplier = OperatorLyapunovBound
+
 
 # ---------------------------------------------------------------------------
-#  Registry of formal bounds for all 13 operators
+#  Registry of policy multipliers for all 13 operators
 # ---------------------------------------------------------------------------
 
 
 def _build_bounds() -> dict[str, OperatorLyapunovBound]:
-    """Construct the canonical Lyapunov bounds dictionary.
+    """Construct the U2 policy-multiplier dictionary.
 
-    Each bound is derived from the operator's ``apply()`` semantics and its
-    dominant glyph factor, as documented in ``AGENTS.md``.
+    Roles come from the canonical grammar predicates.  Numeric values come from
+    validated canonical defaults in the shared glyph-factor registry.  Runtime
+    graph overrides do not enter this representative/default-only table.  The
+    mapping from one representative factor to a multiplier is a declared
+    compatibility policy, not a dynamical derivation.
     """
-    gf = _GLYPH_DEFAULTS
-
-    # ── CANONICAL CLASSIFICATION — single source of truth ───────────────────
-    #
-    # The structural Lyapunov functional is EMERGENT, not a pre-existing
-    # scoreboard: the tetrad energy E = ½Σ(Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²)
-    # (conservation.py) emerges from the phase field θ and the structural
-    # pressure ΔNFR — Φ_s and J_ΔNFR come from ΔNFR, |∇φ|/K_φ/J_φ from θ.  It
-    # contains NO EPI or νf term (measured: scaling EPI or νf leaves E exactly
-    # unchanged).  Equivalently, the primary coherence
-    # C(t) = 1/(1 + mean|ΔNFR| + mean|dEPI|) emerges from the nodal dynamics
-    # ∂EPI/∂t = νf·ΔNFR.  What operators NATIVELY alter is the coherence,
-    # through the structural-pressure channel |ΔNFR|.
-    #
-    # The per-operator Lyapunov role is therefore the canonical grammar
-    # coherence-pressure role, DERIVED from the nodal-equation predicates in
-    # ``config.physics_derivation`` (the SAME single source of truth the grammar
-    # U2 sets derive from) — NOT from hardcoded energy algebra that wrongly
-    # assumed EPI/νf entered E:
-    #   provides_negative_feedback(op)   → STABILISER (reduces |ΔNFR| → raises C)
-    #   increases_structural_pressure(op)→ DESTABILISER (raises |ΔNFR| → lowers C)
-    #   otherwise                        → NEUTRAL  (acts on the EPI-form,
-    #       νf-capacity, θ-phase or advisory channel that the coherence-pressure
-    #       functional does not penalise by its grammatical role).
+    # Classification is centralized in physics_derivation.  These predicates
+    # encode U2 composition roles; their names do not establish a sign for the
+    # five-field energy or for coherence on every realized state.
     from ..config.operator_names import (
         COHERENCE,
         CONTRACTION,
@@ -236,18 +202,30 @@ def _build_bounds() -> dict[str, OperatorLyapunovBound]:
         increases_structural_pressure,
         provides_negative_feedback,
     )
+    from ..operators.factor_contracts import (
+        GLYPH_FACTOR_SPECS,
+        canonical_glyph_factor_defaults,
+        validate_glyph_factors,
+    )
     from ..operators.operator_contracts import contract_for
 
-    # (function name, dominant structural-pressure factor). The English name
-    # and glyph are NOT duplicated here — they derive from the canonical
-    # operator_contracts single source via contract_for() below.
-    _OPS = (
+    # Validate the complete canonical table before selecting one representative
+    # factor per operator.  This prevents a non-representative invalid default
+    # from being hidden by the intentionally partial U2 policy projection.
+    glyph_defaults = validate_glyph_factors(
+        canonical_glyph_factor_defaults(),
+        preserve_unknown=False,
+    )
+
+    # (function name, representative canonical-default factor). English names
+    # and glyphs derive from operator_contracts and are not duplicated here.
+    representative_factors = (
         (EMISSION, "AL_boost"),
         (RECEPTION, "EN_mix"),
         (COHERENCE, "IL_dnfr_factor"),
         (DISSONANCE, "OZ_dnfr_factor"),
-        (COUPLING, "UM_dnfr_reduction"),
-        (RESONANCE, "RA_vf_amplification"),
+        (COUPLING, "UM_theta_push"),
+        (RESONANCE, "RA_epi_diff"),
         (SILENCE, "SHA_vf_factor"),
         (EXPANSION, "VAL_scale"),
         (CONTRACTION, "NUL_scale"),
@@ -258,65 +236,81 @@ def _build_bounds() -> dict[str, OperatorLyapunovBound]:
     )
 
     bounds: dict[str, OperatorLyapunovBound] = {}
-    for fname, factor_name in _OPS:
+    for fname, factor_name in representative_factors:
         contract = contract_for(fname)
         ename = contract.english_name
         glyph = contract.glyph
-        factor_val = float(gf.get(factor_name, 0.0))
+        factor_spec = GLYPH_FACTOR_SPECS[factor_name]
+        if not factor_spec.has_canonical_default:
+            raise RuntimeError(
+                f"U2 representative {factor_name!r} has no canonical default"
+            )
+        if factor_spec.glyph.value != glyph:
+            raise RuntimeError(
+                f"U2 representative {factor_name!r} belongs to "
+                f"{factor_spec.glyph.value}, not {glyph}"
+            )
+        try:
+            factor_val = glyph_defaults[factor_name]
+        except KeyError as exc:
+            raise RuntimeError(
+                f"Canonical default missing for U2 representative {factor_name!r}"
+            ) from exc
         if provides_negative_feedback(fname):
             energy_class = EnergyClass.STABILISER
             if fname == COHERENCE:
-                # IL scales |ΔNFR| → f·|ΔNFR| (f<1); pressure contraction = 1−f.
                 rate = max(0.0, 1.0 - factor_val)
                 deriv = (
-                    f"IL reduces structural pressure |ΔNFR| → f·|ΔNFR| "
-                    f"(f={factor_val:.3f}); coherence C=1/(1+mean|ΔNFR|+…) "
-                    f"rises. Pressure contraction ρ = 1−f ≈ {rate:.3f}."
+                    f"U2 stabilizer. The canonical default pressure-retention "
+                    f"factor is {factor_val:.6g}, so the policy model assigns "
+                    f"multiplier {factor_val:.6g}. This does not bound the "
+                    "five-field energy or coherence change."
                 )
             else:  # THOL
-                # THOL redistributes |ΔNFR| into coherent sub-EPIs (handler).
+                # This unit ceiling belongs to the legacy multiplier encoding,
+                # not to THOL's operator-factor domain (which only requires a
+                # positive acceleration). A larger future canonical default is
+                # legitimate for THOL but requires revising this policy model.
+                if factor_val > 1.0:
+                    raise ValueError(
+                        "THOL_accel exceeds the unit-rate U2 policy encoding"
+                    )
                 rate = factor_val
                 deriv = (
-                    f"THOL redistributes |ΔNFR| into coherent sub-EPIs "
-                    f"(accel={factor_val:.3f}); the negative feedback raises "
-                    f"coherence. Redistribution ρ ≈ {rate:.3f}."
+                    f"U2 stabilizer. The canonical default acceleration factor "
+                    f"{factor_val:.6g} is reused as a nominal policy adjustment, "
+                    "not as a derived contraction rate of a state functional."
                 )
         elif increases_structural_pressure(fname):
             energy_class = EnergyClass.DESTABILISER
             if fname == DISSONANCE:
-                # OZ scales |ΔNFR| → f·|ΔNFR| (f>1); pressure expansion = f−1.
                 rate = max(0.0, factor_val - 1.0)
                 deriv = (
-                    f"OZ raises structural pressure |ΔNFR| → f·|ΔNFR| "
-                    f"(f={factor_val:.3f}); coherence falls. Pressure "
-                    f"expansion κ = f−1 ≈ {rate:.3f}."
+                    f"U2 destabilizer. The canonical default pressure factor "
+                    f"{factor_val:.6g} is used directly as the policy "
+                    "multiplier; it is not a global energy-gain bound."
                 )
             elif fname == EXPANSION:
-                # VAL adds unaligned DOF (scales νf); the new DOF raise |ΔNFR|.
                 rate = max(0.0, factor_val - 1.0)
                 deriv = (
-                    f"VAL adds unaligned structural DOF (νf scale "
-                    f"{factor_val:.3f}); the new DOF raise |ΔNFR| → coherence "
-                    f"falls. Nominal expansion κ ≈ {rate:.3f}."
+                    f"U2 destabilizer. The canonical default capacity scale "
+                    f"{factor_val:.6g} is reused as a policy multiplier. "
+                    "Changing capacity alone does not determine energy change."
                 )
             else:  # ZHIR
-                # ZHIR's θ→θ' jump desynchronises the node → raises |∇φ| and
-                # hence the structural pressure |ΔNFR|.
                 rate = factor_val
                 deriv = (
-                    f"ZHIR jumps θ→θ' (shift factor {factor_val:.3f}); the "
-                    f"phase desync raises |∇φ| → raises |ΔNFR| → coherence "
-                    f"falls. Nominal expansion κ ≈ {rate:.3f}."
+                    f"U2 destabilizer. The canonical default phase-shift factor "
+                    f"{factor_val:.6g} is reused as a nominal multiplier "
+                    "adjustment; no universal phase-energy gain follows."
                 )
         else:
             energy_class = EnergyClass.NEUTRAL
             rate = 0.0
             deriv = (
-                "Coherence-neutral by grammatical role: acts on the EPI-form "
-                "(AL/EN/RA), νf-capacity (SHA/NUL), θ-phase (UM) or advisory "
-                "(NAV/REMESH) channel, not the structural-pressure |ΔNFR| axis "
-                "the coherence functional penalises — so it neither contracts "
-                "nor expands coherence by its U2 role."
+                "U2-neutral bookkeeping role: the policy multiplier is one. "
+                "Neutrality here means no stabilizer/destabilizer debt; it does "
+                "not predict a zero state, coherence, or energy change."
             )
         bounds[ename] = OperatorLyapunovBound(
             operator_name=ename,
@@ -331,8 +325,10 @@ def _build_bounds() -> dict[str, OperatorLyapunovBound]:
     return bounds
 
 
-# Singleton registry
+# Singleton registry.  The policy-named object is canonical; the historical
+# Lyapunov name points to the same dictionary for source compatibility.
 OPERATOR_LYAPUNOV_BOUNDS: dict[str, OperatorLyapunovBound] = _build_bounds()
+OPERATOR_POLICY_MULTIPLIERS = OPERATOR_LYAPUNOV_BOUNDS
 
 # Glyph → name lookup
 _GLYPH_TO_NAME: dict[str, str] = {
@@ -341,7 +337,7 @@ _GLYPH_TO_NAME: dict[str, str] = {
 
 
 def get_bound(name_or_glyph: str) -> OperatorLyapunovBound:
-    """Look up the formal Lyapunov bound by operator name or glyph.
+    """Look up a policy multiplier by operator name or glyph.
 
     Parameters
     ----------
@@ -368,9 +364,70 @@ def get_bound(name_or_glyph: str) -> OperatorLyapunovBound:
     )
 
 
+def get_policy_multiplier(name_or_glyph: str) -> OperatorPolicyMultiplier:
+    """Preferred policy-named alias for :func:`get_bound`."""
+    return get_bound(name_or_glyph)
+
+
 # ---------------------------------------------------------------------------
-#  Per-operator nominal energy-change computation
+#  Policy score computation (legacy energy-bound name retained)
 # ---------------------------------------------------------------------------
+
+
+def _validate_policy_score(value: float, name: str) -> float:
+    """Return a finite non-negative score or raise a clear error."""
+    if isinstance(value, bool):
+        raise ValueError(f"{name} must be a finite non-negative scalar")
+    try:
+        score = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{name} must be a finite non-negative scalar") from exc
+    if not math.isfinite(score) or score < 0.0:
+        raise ValueError(f"{name} must be a finite non-negative scalar")
+    return score
+
+
+def _validate_node_count(n_nodes: int) -> int:
+    """Validate the compatibility-only node-count argument."""
+    if isinstance(n_nodes, bool) or not isinstance(n_nodes, int) or n_nodes < 1:
+        raise ValueError("n_nodes must be a positive integer")
+    return n_nodes
+
+
+def _operator_sequence(operator_names: Sequence[str]) -> tuple[str, ...]:
+    """Materialize and validate an operator-name sequence once."""
+    if isinstance(operator_names, (str, bytes)):
+        raise TypeError("operator_names must be a sequence of operator names")
+    try:
+        operators = tuple(operator_names)
+    except TypeError as exc:
+        raise TypeError("operator_names must be a sequence of operator names") from exc
+    if any(not isinstance(name, str) for name in operators):
+        raise TypeError("each operator name or glyph must be a string")
+    return operators
+
+
+def compute_operator_policy_delta(
+    name_or_glyph: str,
+    score_before: float,
+    n_nodes: int = 1,
+) -> float:
+    r"""Return one nominal change in an abstract non-negative policy score.
+
+    ``n_nodes`` is retained because it was part of the historical energy-bound
+    API.  The current multiplier model is scale-free, so the value does not enter
+    the calculation after validation.
+
+    Returns
+    -------
+    float
+        ``(policy_multiplier - 1) * score_before``.  This is neither a prediction
+        nor an upper bound on the five-field energy.
+    """
+    score = _validate_policy_score(score_before, "score_before")
+    _validate_node_count(n_nodes)
+    policy = get_policy_multiplier(name_or_glyph)
+    return (policy.policy_multiplier - 1.0) * score
 
 
 def compute_operator_energy_bound(
@@ -378,43 +435,13 @@ def compute_operator_energy_bound(
     energy_before: float,
     n_nodes: int = 1,
 ) -> float:
-    r"""Return the legacy nominal ΔE allowance for one operator step.
+    r"""Compatibility wrapper for :func:`compute_operator_policy_delta`.
 
-    Parameters
-    ----------
-    name_or_glyph : str
-        Operator name or glyph.
-    energy_before : float
-        E[G] before operator application.
-    n_nodes : int
-        Number of nodes affected (default 1 for single-node operators).
-
-    Returns
-    -------
-    float
-        Policy-model change assigned from the U2 role.  It is not a guaranteed
-        upper bound on the observed tetrad-energy change.
+    The return value is a nominal policy-score change.  Despite the historical
+    function name, it is not a mathematical bound on ``energy_before`` or on an
+    observed TNFR energy change.
     """
-    bound = get_bound(name_or_glyph)
-    rate = bound.contraction_rate
-
-    if bound.energy_class == EnergyClass.STABILISER:
-        # Nominal stabilizer decrease in this policy model.
-        return -rate * energy_before
-
-    if bound.energy_class == EnergyClass.DESTABILISER:
-        # Worst-case increase: ΔE ≤ κ · E (for multiplicative)
-        # For additive (AL): ΔE ≤ κ · N  (κ = boost²)
-        if bound.glyph == "AL":
-            return rate * n_nodes
-        return rate * energy_before
-
-    if bound.energy_class == EnergyClass.NEUTRAL:
-        # Residual bound: |ΔE| ≤ ε · N
-        return rate * n_nodes
-
-    # MIXED (NUL): worst-case as destabiliser
-    return rate * energy_before
+    return compute_operator_policy_delta(name_or_glyph, energy_before, n_nodes)
 
 
 # ---------------------------------------------------------------------------
@@ -422,48 +449,44 @@ def compute_operator_energy_bound(
 # ---------------------------------------------------------------------------
 
 
+def compute_sequence_policy_score(
+    operator_names: Sequence[str],
+    score_initial: float,
+    n_nodes: int = 1,
+) -> float:
+    r"""Compose U2 multipliers on an abstract non-negative policy score."""
+    score = _validate_policy_score(score_initial, "score_initial")
+    _validate_node_count(n_nodes)
+    for name in _operator_sequence(operator_names):
+        score *= get_policy_multiplier(name).policy_multiplier
+    return score
+
+
 def compute_sequence_energy_bound(
     operator_names: Sequence[str],
     energy_initial: float,
     n_nodes: int = 1,
 ) -> float:
-    r"""Compose the legacy nominal energy multipliers for a sequence.
+    r"""Compatibility wrapper returning the nominal final policy score.
 
-    U2 balances operator-role debt, but it does not prove this nominal product
-    bounds the measured tetrad energy.  The function is retained as a
-    compatibility diagnostic.
-
-    Parameters
-    ----------
-    operator_names : Sequence[str]
-        Ordered operator names or glyphs.
-    energy_initial : float
-        Starting energy E₀.
-    n_nodes : int
-        Network size.
-
-    Returns
-    -------
-    float
-        Upper bound on final energy E_final.
+    ``energy_initial`` is interpreted as the initial abstract score.  The result
+    is not an upper bound on the measured five-field energy.
     """
-    e = energy_initial
-    for name in operator_names:
-        delta = compute_operator_energy_bound(name, e, n_nodes)
-        e = e + delta
-        # Energy cannot go below zero
-        e = max(0.0, e)
-    return e
+    return compute_sequence_policy_score(operator_names, energy_initial, n_nodes)
 
 
 # ---------------------------------------------------------------------------
-#  Operator Lyapunov verification (empirical check)
+#  Comparison of measured energy with the independent policy model
 # ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
 class OperatorLyapunovVerification:
-    r"""Result of verifying an operator's energy change against its bound.
+    r"""Measured energy change compared with a nominal policy-score change.
+
+    This compatibility record does not verify a Lyapunov theorem.  The fields
+    ``theoretical_bound`` and ``within_bound`` retain their names; they represent
+    the model delta and a one-sided policy screen, respectively.
 
     Attributes
     ----------
@@ -474,11 +497,11 @@ class OperatorLyapunovVerification:
     delta_e : float
         Actual E_after - E_before.
     theoretical_bound : float
-        Upper bound on ΔE from formal analysis.
+        Nominal policy-score delta (legacy field name).
     within_bound : bool
-        True if delta_e ≤ theoretical_bound + tolerance.
+        Result of the legacy one-sided comparison.  It is not a certificate.
     margin : float
-        theoretical_bound - delta_e (positive = safe margin).
+        Nominal policy delta minus measured energy delta.
     energy_class : EnergyClass
     """
 
@@ -492,15 +515,61 @@ class OperatorLyapunovVerification:
     margin: float
     energy_class: EnergyClass
 
+    @property
+    def policy_delta(self) -> float:
+        """Preferred name for ``theoretical_bound``."""
+        return self.theoretical_bound
 
-def verify_operator_lyapunov(
+    @property
+    def policy_screen_passed(self) -> bool:
+        """Preferred name for the legacy one-sided comparison result."""
+        return self.within_bound
+
+    @property
+    def policy_residual(self) -> float:
+        """Measured energy change minus nominal policy-score change."""
+        return -self.margin
+
+    @property
+    def policy_multiplier(self) -> float:
+        """Nominal score multiplier reconstructed from the compatibility fields."""
+        if self.energy_before == 0.0:
+            return 1.0
+        return 1.0 + self.policy_delta / self.energy_before
+
+    @property
+    def observed_energy_ratio(self) -> float:
+        """Measured ``energy_after / energy_before``, or ``nan`` at zero baseline."""
+        if self.energy_before == 0.0:
+            return float("nan")
+        return self.energy_after / self.energy_before
+
+    @property
+    def multiplier_residual(self) -> float:
+        """Observed energy ratio minus policy multiplier, when defined."""
+        ratio = self.observed_energy_ratio
+        return ratio - self.policy_multiplier if math.isfinite(ratio) else float("nan")
+
+    @property
+    def verification_scope(self) -> str:
+        return "measured_energy_vs_u2_policy_heuristic"
+
+    @property
+    def is_lyapunov_certificate(self) -> bool:
+        return False
+
+
+OperatorPolicyComparison = OperatorLyapunovVerification
+
+
+def compare_operator_energy_to_policy(
     name_or_glyph: str,
     energy_before: float,
     energy_after: float,
     n_nodes: int = 1,
     tolerance: float = 1e-6,
 ) -> OperatorLyapunovVerification:
-    r"""Verify that an operator's actual energy change respects its bound.
+    r"""Compare a measured energy change with the nominal U2 policy delta.
 
     Parameters
     ----------
@@ -511,27 +580,55 @@ def verify_operator_lyapunov(
     n_nodes : int
         Number of affected nodes.
     tolerance : float
-        Numerical tolerance for bound check.
+        Non-negative relative tolerance for the legacy one-sided screen.
 
     Returns
     -------
     OperatorLyapunovVerification
     """
-    bound_info = get_bound(name_or_glyph)
-    delta_e = energy_after - energy_before
-    theoretical = compute_operator_energy_bound(name_or_glyph, energy_before, n_nodes)
+    before = _validate_policy_score(energy_before, "energy_before")
+    after = _validate_policy_score(energy_after, "energy_after")
+    _validate_node_count(n_nodes)
+    try:
+        tolerance = float(tolerance)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("tolerance must be finite and non-negative") from exc
+    if not math.isfinite(tolerance) or tolerance < 0.0:
+        raise ValueError("tolerance must be finite and non-negative")
+
+    bound_info = get_policy_multiplier(name_or_glyph)
+    delta_e = after - before
+    theoretical = compute_operator_policy_delta(name_or_glyph, before, n_nodes)
     margin = theoretical - delta_e
+    scale = max(1.0, before, after, abs(theoretical), abs(delta_e))
 
     return OperatorLyapunovVerification(
         operator_name=bound_info.operator_name,
         glyph=bound_info.glyph,
-        energy_before=energy_before,
-        energy_after=energy_after,
+        energy_before=before,
+        energy_after=after,
         delta_e=delta_e,
         theoretical_bound=theoretical,
-        within_bound=(delta_e <= theoretical + tolerance),
+        within_bound=(delta_e <= theoretical + tolerance * scale),
         margin=margin,
         energy_class=bound_info.energy_class,
+    )
+
+
+def verify_operator_lyapunov(
+    name_or_glyph: str,
+    energy_before: float,
+    energy_after: float,
+    n_nodes: int = 1,
+    tolerance: float = 1e-6,
+) -> OperatorLyapunovVerification:
+    r"""Compatibility wrapper for :func:`compare_operator_energy_to_policy`."""
+    return compare_operator_energy_to_policy(
+        name_or_glyph,
+        energy_before,
+        energy_after,
+        n_nodes=n_nodes,
+        tolerance=tolerance,
     )
 
 
@@ -542,15 +639,12 @@ def verify_operator_lyapunov(
 
 @dataclass(frozen=True)
 class SpectralGapAnalysis:
-    r"""Comprehensive spectral gap characterisation of a TNFR network.
-
-    The algebraic connectivity λ₁ (smallest non-zero Laplacian eigenvalue)
-    controls the diffusive relaxation time-scale.
+    r"""Combinatorial and normalized spectral read-outs for one graph.
 
     Attributes
     ----------
     spectral_gap : float
-        λ₁ — combinatorial algebraic connectivity (Fiedler value): the
+        Combinatorial algebraic connectivity (Fiedler value): the
         second-smallest eigenvalue of L = D − A.  A graph-topology measure.
     fiedler_value : float
         Same as spectral_gap (alternative name from spectral graph theory).
@@ -563,15 +657,16 @@ class SpectralGapAnalysis:
         time-scale.  Equals ``spectral_gap``/d on a d-regular graph; differs on
         irregular graphs.
     relaxation_time : float
-        τ_relax = 1/λ₁ — time for the slowest non-trivial mode to decay
-        by factor e.  ``inf`` if graph is disconnected (λ₁ = 0).
+        Per-unit-capacity pure-EPI scale ``1/diffusion_gap``.  A physical time
+        additionally needs a homogeneous capacity and a fixed graph.
     convergence_rate : float
-        Exponential convergence rate for diffusive processes: exp(-λ₁ t).
+        Legacy field containing ``diffusion_gap`` per unit capacity.
     mixing_time_bound : float
-        Upper bound on mixing time: t_mix ≤ ln(N)/λ₁.
+        Legacy ``log(N)/diffusion_gap`` topology scale.  It is not a universal
+        total-variation mixing bound on irregular weighted graphs.
     cheeger_lower : float
-        Cheeger inequality lower bound: h²/(2·d_max) ≤ λ₁.
-        Stored as h_estimate = √(2·d_max·λ₁).
+        ``diffusion_gap/2``, the standard normalized-Cheeger lower expression
+        for conductance under the usual reversible-graph convention.
     n_nodes : int
         Network size.
     max_eigenvalue : float
@@ -600,14 +695,12 @@ class SpectralGapAnalysis:
 
 
 def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
-    r"""Compute the spectral gap and derived quantities for a TNFR graph.
+    r"""Compute independent combinatorial and normalized graph gaps.
 
-    Forms the graph Laplacian L, computes its eigenvalues, and derives:
-    - λ₁ (algebraic connectivity / Fiedler value)
-    - Relaxation time τ = 1/λ₁
-    - Mixing time bound ln(N)/λ₁
-    - Cheeger estimate h ≈ √(2·d_max·λ₁)
-    - Spectral condition ratio λ_max/λ₁
+    The returned pure-EPI relaxation scale uses the normalized diffusion gap.
+    It assumes a fixed connected symmetric graph and unit homogeneous capacity.
+    Heterogeneous capacities require the generalized certificate in
+    :mod:`structural_diffusion`.
 
     Parameters
     ----------
@@ -655,9 +748,9 @@ def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
     eigvals = np.linalg.eigvalsh(L)
     eigvals = np.sort(eigvals)
 
-    # λ₁ = second-smallest eigenvalue (combinatorial algebraic connectivity)
-    lambda_1 = float(eigvals[1]) if n > 1 else 0.0
-    lambda_1 = max(0.0, lambda_1)  # numerical safety
+    # Second-smallest eigenvalue (combinatorial algebraic connectivity).
+    combinatorial_gap = float(eigvals[1]) if n > 1 else 0.0
+    combinatorial_gap = max(0.0, combinatorial_gap)  # numerical safety
 
     lambda_max = float(eigvals[-1])
 
@@ -670,24 +763,30 @@ def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
     sym_eigs = np.sort(np.linalg.eigvalsh(L_sym))
     diffusion_gap = max(0.0, float(sym_eigs[1])) if n > 1 else 0.0
 
-    is_connected = lambda_1 > 1e-10
-    tau = 1.0 / lambda_1 if is_connected else float("inf")
-    mixing = math.log(n) / lambda_1 if is_connected else float("inf")
+    # Normalization removes a harmless global conductance scale, so it is the
+    # more reliable connectivity signal for very small or very large weights.
+    is_connected = diffusion_gap > 1e-10
+    if not is_connected:
+        combinatorial_gap = 0.0
+        diffusion_gap = 0.0
+    tau = 1.0 / diffusion_gap if is_connected else float("inf")
+    mixing = math.log(n) / diffusion_gap if is_connected else float("inf")
+    cheeger_lower = 0.5 * diffusion_gap if is_connected else 0.0
 
-    # Maximum degree for Cheeger bound
-    d_max = max(dict(G.degree()).values()) if n > 0 else 1
-    cheeger_h = math.sqrt(2.0 * d_max * lambda_1) if is_connected else 0.0
-
-    ratio = lambda_max / lambda_1 if is_connected else float("inf")
+    ratio = (
+        lambda_max / combinatorial_gap
+        if is_connected and combinatorial_gap > 0.0
+        else float("inf")
+    )
 
     return SpectralGapAnalysis(
-        spectral_gap=lambda_1,
-        fiedler_value=lambda_1,
+        spectral_gap=combinatorial_gap,
+        fiedler_value=combinatorial_gap,
         diffusion_gap=diffusion_gap,
         relaxation_time=tau,
-        convergence_rate=lambda_1,
+        convergence_rate=diffusion_gap,
         mixing_time_bound=mixing,
-        cheeger_lower=cheeger_h,
+        cheeger_lower=cheeger_lower,
         n_nodes=n,
         max_eigenvalue=lambda_max,
         spectral_ratio=ratio,
@@ -697,13 +796,18 @@ def analyze_spectral_gap(G: Any) -> SpectralGapAnalysis:
 
 
 # ---------------------------------------------------------------------------
-#  Combined Lyapunov + spectral convergence analysis
+#  Side-by-side policy and spectral context (legacy names retained)
 # ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
 class LyapunovSpectralSummary:
-    r"""Combined per-operator Lyapunov + spectral gap summary.
+    r"""Side-by-side U2 policy and graph-spectral read-outs.
+
+    A policy multiplier acts per operator position.  ``diffusion_gap`` acts per
+    unit continuous time for a restricted pure-EPI model.  No canonical mapping
+    between those clocks is available, so this record does not combine them into
+    an effective physical rate.
 
     Attributes
     ----------
@@ -712,31 +816,46 @@ class LyapunovSpectralSummary:
     spectral : SpectralGapAnalysis
         Spectral gap analysis of the graph.
     effective_convergence_rate : float
-        For stabilisers: min(ρ, λ₁) — the tighter of the operator's
-        contraction rate and the graph's spectral relaxation.
-        For destabilisers/neutral: 0.0.
+        Deprecated compatibility field.  Always ``nan`` because the combined
+        rate is undefined without an explicit operator-time dynamical model.
     steps_to_half_energy : float
-        For stabilisers: ln(2) / effective_convergence_rate.
-        Number of steps to halve the energy.
+        Deprecated compatibility field.  Equals ``policy_half_steps`` and says
+        nothing about measured energy.
+    policy_multiplier : float
+        Nominal multiplier per operator position.
+    policy_half_steps : float
+        Number of repeated nominal multipliers needed to halve the abstract
+        score; ``inf`` unless ``0 < policy_multiplier < 1``.
+    diffusion_relaxation_time : float
+        Independent per-unit-capacity pure-EPI relaxation scale.
+    combination_defined : bool
+        Always false for this API because the required bridge is absent.
     """
 
     operator_bound: OperatorLyapunovBound
     spectral: SpectralGapAnalysis
     effective_convergence_rate: float
     steps_to_half_energy: float
+    policy_multiplier: float = 1.0
+    policy_half_steps: float = float("inf")
+    diffusion_relaxation_time: float = float("inf")
+    combination_defined: bool = False
+    verification_scope: str = "independent_policy_and_pure_epi_spectral_readouts"
 
 
-def analyze_operator_convergence(
+OperatorPolicySpectralContext = LyapunovSpectralSummary
+
+
+def analyze_operator_policy_context(
     G: Any,
     name_or_glyph: str,
 ) -> LyapunovSpectralSummary:
-    r"""Combine per-operator Lyapunov bound with spectral gap analysis.
+    r"""Report policy multiplier and pure-EPI spectral scale side by side.
 
-    For stabilisers, the effective convergence rate is the tighter of
-    the operator's contraction rate ρ and the graph's canonical diffusion
-    relaxation gap λ₂(L_sym) (``diffusion_gap``, the structural_diffusion
-    relaxation rate — not the combinatorial algebraic connectivity).
-    The number of steps to halve energy is ln(2)/rate.
+    The result deliberately leaves ``effective_convergence_rate`` undefined.
+    Taking ``min(policy_rate, diffusion_gap)`` would mix a dimensionless
+    per-operation adjustment with a continuous-time eigenvalue and would not be
+    a theorem about IL, THOL, or any other realized operator.
 
     Parameters
     ----------
@@ -749,25 +868,34 @@ def analyze_operator_convergence(
     -------
     LyapunovSpectralSummary
     """
-    bound = get_bound(name_or_glyph)
+    bound = get_policy_multiplier(name_or_glyph)
     spectral = analyze_spectral_gap(G)
-
-    if bound.energy_class == EnergyClass.STABILISER:
-        # The diffusive relaxation bound is the CANONICAL diffusion gap
-        # λ₂(L_sym) (= the structural_diffusion relaxation rate), not the
-        # combinatorial algebraic connectivity.
-        rate = min(bound.contraction_rate, spectral.diffusion_gap)
-        steps = math.log(2) / rate if rate > 1e-15 else float("inf")
-    else:
-        rate = 0.0
-        steps = float("inf")
+    multiplier = bound.policy_multiplier
+    policy_half_steps = (
+        math.log(0.5) / math.log(multiplier)
+        if 0.0 < multiplier < 1.0
+        else float("inf")
+    )
 
     return LyapunovSpectralSummary(
         operator_bound=bound,
         spectral=spectral,
-        effective_convergence_rate=rate,
-        steps_to_half_energy=steps,
+        effective_convergence_rate=float("nan"),
+        steps_to_half_energy=policy_half_steps,
+        policy_multiplier=multiplier,
+        policy_half_steps=policy_half_steps,
+        diffusion_relaxation_time=spectral.relaxation_time,
+        combination_defined=False,
+        verification_scope="independent_policy_and_pure_epi_spectral_readouts",
     )
+
+
+def analyze_operator_convergence(
+    G: Any,
+    name_or_glyph: str,
+) -> LyapunovSpectralSummary:
+    r"""Compatibility wrapper for :func:`analyze_operator_policy_context`."""
+    return analyze_operator_policy_context(G, name_or_glyph)
 
 
 # ---------------------------------------------------------------------------
@@ -777,7 +905,7 @@ def analyze_operator_convergence(
 
 @dataclass(frozen=True)
 class SequenceLyapunovProof:
-    r"""Legacy nominal contractivity result for a supplied sequence.
+    r"""Product of nominal U2 policy multipliers for a supplied sequence.
 
     This records the product of policy multipliers and whether that product is
     at most one.  It is not a proof that U2 implies tetrad-energy contraction.
@@ -787,10 +915,9 @@ class SequenceLyapunovProof:
     operators : tuple
         Operator names in sequence order.
     energy_multipliers : tuple
-        Per-step multiplicative factors (1 + cᵢ).
-        cᵢ < 0 for stabilisers, cᵢ > 0 for destabilisers.
+        Legacy name for the per-position policy multipliers.
     cumulative_product : float
-        Π(1 + cᵢ) — nominal energy ratio in the policy model.
+        Product of nominal policy multipliers.
     is_net_contractive : bool
         True if cumulative_product ≤ 1.0 in the nominal model.
     net_contraction : float
@@ -803,20 +930,41 @@ class SequenceLyapunovProof:
     is_net_contractive: bool
     net_contraction: float
 
+    @property
+    def policy_multipliers(self) -> tuple:
+        """Preferred name for ``energy_multipliers``."""
+        return self.energy_multipliers
 
-def prove_sequence_lyapunov(
+    @property
+    def policy_product_at_most_one(self) -> bool:
+        """Preferred name for ``is_net_contractive``."""
+        return self.is_net_contractive
+
+    @property
+    def verification_scope(self) -> str:
+        return "u2_policy_multiplier_product"
+
+    @property
+    def is_lyapunov_proof(self) -> bool:
+        return False
+
+
+SequencePolicyEvaluation = SequenceLyapunovProof
+
+
+def evaluate_sequence_policy(
     operator_names: Sequence[str],
 ) -> SequenceLyapunovProof:
-    r"""Evaluate nominal multiplier contractivity for an operator sequence.
+    r"""Evaluate the nominal U2 multiplier product for an operator sequence.
 
-    Each operator contributes a multiplicative factor to the energy:
+    Each operator contributes a multiplier to an abstract policy score:
     - Stabiliser with rate ρ: factor = 1 - ρ  (< 1)
     - Destabiliser with rate κ: factor = 1 + κ  (> 1)
     - Neutral with residual ε: factor = 1 + ε  (≈ 1)
     - Mixed with rate κ: factor = 1 + κ  (worst case)
 
-    A product at most one passes this policy model only.  Actual Lyapunov
-    behavior requires trajectory evidence or a model-specific proof.
+    The function does not validate grammar and does not inspect a trajectory.
+    A product at most one is only a property of this finite multiplier model.
 
     Parameters
     ----------
@@ -827,32 +975,31 @@ def prove_sequence_lyapunov(
     -------
     SequenceLyapunovProof
     """
-    multipliers = []
-    for name in operator_names:
-        bound = get_bound(name)
-        if bound.energy_class == EnergyClass.STABILISER:
-            factor = 1.0 - bound.contraction_rate
-            # Ensure factor stays positive (physical constraint)
-            factor = max(factor, 0.0)
-        elif bound.energy_class == EnergyClass.DESTABILISER:
-            factor = 1.0 + bound.contraction_rate
-        elif bound.energy_class == EnergyClass.NEUTRAL:
-            factor = 1.0 + bound.contraction_rate
-        else:  # MIXED
-            factor = 1.0 + bound.contraction_rate
-        multipliers.append(factor)
+    operators = _operator_sequence(operator_names)
+    multipliers = [get_policy_multiplier(name).policy_multiplier for name in operators]
 
     product = 1.0
     for f in multipliers:
         product *= f
 
     return SequenceLyapunovProof(
-        operators=tuple(operator_names),
+        operators=operators,
         energy_multipliers=tuple(multipliers),
         cumulative_product=product,
         is_net_contractive=product <= 1.0,
         net_contraction=1.0 - product,
     )
+
+
+def prove_sequence_lyapunov(
+    operator_names: Sequence[str],
+) -> SequenceLyapunovProof:
+    r"""Compatibility wrapper for :func:`evaluate_sequence_policy`.
+
+    The historical name does not turn the returned multiplier product into a
+    Lyapunov proof.
+    """
+    return evaluate_sequence_policy(operator_names)
 
 
 # ---------------------------------------------------------------------------
@@ -861,24 +1008,36 @@ def prove_sequence_lyapunov(
 
 __all__ = [
     # Enums
+    "U2PolicyRole",
     "EnergyClass",
     # Data structures
+    "OperatorPolicyMultiplier",
+    "OperatorPolicyComparison",
+    "OperatorPolicySpectralContext",
+    "SequencePolicyEvaluation",
     "OperatorLyapunovBound",
     "OperatorLyapunovVerification",
     "SpectralGapAnalysis",
     "LyapunovSpectralSummary",
     "SequenceLyapunovProof",
     # Registry
+    "OPERATOR_POLICY_MULTIPLIERS",
     "OPERATOR_LYAPUNOV_BOUNDS",
+    "get_policy_multiplier",
     "get_bound",
     # Per-operator analysis
+    "compute_operator_policy_delta",
+    "compare_operator_energy_to_policy",
     "compute_operator_energy_bound",
     "verify_operator_lyapunov",
     # Sequence analysis
+    "compute_sequence_policy_score",
+    "evaluate_sequence_policy",
     "compute_sequence_energy_bound",
     "prove_sequence_lyapunov",
     # Spectral gap
     "analyze_spectral_gap",
     # Combined analysis
+    "analyze_operator_policy_context",
     "analyze_operator_convergence",
 ]

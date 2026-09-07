@@ -12,21 +12,18 @@ The EPI channel of the nodal equation is the discrete diffusion equation
 Diffusion is IRREVERSIBLE. It carries a monotone Lyapunov functional -- the
 H-theorem (Boltzmann 1872) -- and a structural ARROW OF TIME: the forward flow
 smooths and forgets, while the time-reversed flow is ill-posed. This is the
-second law of thermodynamics emerging directly from the nodal dynamics, anchored
-to one of the most empirically-established phenomena in all of physics (Clausius
-1865, Boltzmann 1872).
+standard irreversible behavior of this restricted graph-heat model.  It does
+not extend a thermodynamic second-law theorem to the full multichannel engine.
 
 Doctrine compliance
 -------------------
 Everything emerges from the canonical structural-diffusion operator: the flow is
 the EPI channel of the nodal equation, the H-functional is the total squared
 canonical structural Fick current (structural_current), and the stationary
-measure is the canonical stationary_distribution. Nothing is imported -- this is
-the CLASSICAL Shannon/Dirichlet H of the EPI random-walk channel. It is DISTINCT
-from (and complementary to) two existing canonical pieces: the tetrad Lyapunov
-energy of conservation.py (which is the tetrad-field energy, not the EPI Dirichlet
-energy) and the Von Neumann entropy of dissipative_conservation.py (which is the
-Lindblad density-matrix entropy, a separate quantum-dissipative abstraction).
+measure is ``stationary_distribution``. This is the classical Shannon/Dirichlet
+analysis of the EPI random-walk channel. It is distinct from the five-field
+structural energy candidate in ``conservation.py`` and the von Neumann entropy
+diagnostic in ``dissipative_conservation.py``.
 
 Three measured results
 ----------------------
@@ -56,19 +53,18 @@ Dirichlet energy and the relative entropy to the stationary measure are Lyapunov
 functionals of the heat semigroup / reversible Markov chain), and the arrow of
 time / second law is one of the most empirically-established phenomena in physics
 (Clausius, Boltzmann). This re-expresses the irreversibility of the diffusion
-equation -- which we established IS the nodal EPI channel (ex 99, 134) -- in
-thermodynamic language. It is a distinct functional from the tetrad Lyapunov
-energy (conservation.py) and the Lindblad / Von Neumann entropy
-(dissipative_conservation.py), though it shares the canonical relaxation clock
-nu_f*lambda_2(L_sym) with the tetrad Lyapunov energy (theorem 8.6 of
-STRUCTURAL_CONSERVATION_THEOREM.md). It is not new mathematics and closes no
-open problem.
+equation -- the restricted nodal EPI channel (ex 99, 134) -- in thermodynamic
+language. It is distinct from the five-field structural energy candidate
+(``conservation.py``) and the Lindblad / von Neumann entropy diagnostics
+(``dissipative_conservation.py``). The clock ``nu_f*lambda_2`` is proved here
+for fixed pure-EPI diffusion; it is not assigned to the five-field candidate.
+This is not new mathematics and closes no open problem.
 
 References
 ----------
 - src/tnfr/physics/structural_diffusion.py (structural_diffusion_operator,
   structural_current, stationary_distribution)
-- src/tnfr/physics/conservation.py (the tetrad Lyapunov energy -- distinct)
+- src/tnfr/physics/conservation.py (five-field energy candidate -- distinct)
 - src/tnfr/physics/dissipative_conservation.py (Lindblad/Von Neumann -- distinct)
 - AGENTS.md "Transport Content of the Nodal Equation (Structural Diffusion)"
 - examples/08_emergent_geometry/99_structural_diffusion.py (the diffusion layer)
@@ -267,9 +263,9 @@ def main():
     print("provable (Lyapunov functionals of the heat semigroup), and the second")
     print("law / arrow of time is empirically ironclad (Clausius, Boltzmann). It")
     print("re-expresses the irreversibility of the EPI diffusion channel (ex 99,")
-    print("134) in thermodynamic language; a distinct functional from the tetrad")
-    print("Lyapunov energy (conservation.py) but sharing its relaxation clock")
-    print("nu_f*lambda_2(L_sym) (theorem 8.6). Not new mathematics, closes no problem.")
+    print("134) in thermodynamic language; distinct from the five-field energy")
+    print("candidate in conservation.py. The nu_f*lambda_2 clock belongs to")
+    print("the restricted pure-EPI diffusion model. No open problem is closed.")
 
 
 if __name__ == "__main__":

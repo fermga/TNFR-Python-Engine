@@ -46,6 +46,11 @@ if str(_SRC) not in _sys.path:
     _sys.path.insert(0, str(_SRC))
 
 # Import canonical field computations
+from tnfr.constants.canonical import (  # type: ignore  # noqa: E402
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
+    XI_C_CRITICAL_RATIO,
+)
 from tnfr.physics.fields import (  # type: ignore  # noqa: E402
     compute_phase_curvature,
     compute_phase_gradient,
@@ -302,12 +307,19 @@ def classify_regime(G: nx.Graph) -> str:
 
     xi_norm = float(xi_c) / max(1e-9, float(diam))
 
-    # Simple regime labeling
-    if (grad_mean < 0.38) and (kphi_max < 3.0) and (xi_norm < 1.0):
+    # Exploratory regime labeling using the centralized monitoring policies.
+    if (
+        grad_mean < GRAD_PHI_CANONICAL_THRESHOLD
+        and kphi_max < K_PHI_CANONICAL_THRESHOLD
+        and xi_norm < XI_C_CRITICAL_RATIO
+    ):
         return "stable_localized"
-    if xi_norm >= 1.0:
+    if xi_norm >= XI_C_CRITICAL_RATIO:
         return "critical_global"
-    if (grad_mean >= 0.38) or (kphi_max >= 3.0):
+    if (
+        grad_mean >= GRAD_PHI_CANONICAL_THRESHOLD
+        or kphi_max >= K_PHI_CANONICAL_THRESHOLD
+    ):
         return "high_stress"
     return "unknown"
 

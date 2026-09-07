@@ -62,6 +62,31 @@ def test_large_default_weighted_directed_signed_path():
     assert compute_structural_potential(graph) == pytest.approx(expected, abs=1e-12)
 
 
+def test_explicit_length_separates_geometry_from_transport_conductance():
+    graph = nx.path_graph(3)
+    graph.edges[0, 1].update(weight=100.0, length=0.5)
+    graph.edges[1, 2].update(weight=0.25, length=1.5)
+    _set_pressure(graph, {node: 1.0 for node in graph})
+
+    potential = compute_structural_potential(graph)
+
+    assert potential == pytest.approx(
+        {
+            0: 1.0 / 0.5**2 + 1.0 / 2.0**2,
+            1: 1.0 / 0.5**2 + 1.0 / 1.5**2,
+            2: 1.0 / 2.0**2 + 1.0 / 1.5**2,
+        }
+    )
+
+
+def test_weight_remains_legacy_length_fallback():
+    graph = nx.path_graph(2)
+    graph.edges[0, 1]["weight"] = 2.0
+    _set_pressure(graph, {0: 1.0, 1: 1.0})
+
+    assert compute_structural_potential(graph) == {0: 0.25, 1: 0.25}
+
+
 @pytest.mark.parametrize("mode", ["standard", "high", "research"])
 @pytest.mark.parametrize("leaf_count", [3, 50])
 def test_exact_potential_preserves_signed_residual_across_size_and_precision(mode, leaf_count):

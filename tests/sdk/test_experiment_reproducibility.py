@@ -42,6 +42,35 @@ def test_builder_seed_controls_actual_triad_and_topology(factory, kwargs):
     assert set(first.graph.edges()) == set(second.graph.edges())
 
 
+def test_creativity_builder_stores_mutation_intensity_in_glyph_factors():
+    result = Builders.creativity_emergence(
+        nodes=6, mutation_intensity=0.25, steps=0, random_seed=7
+    )
+
+    assert result.graph.graph["GLYPH_FACTORS"]["ZHIR_theta_shift_factor"] == 0.25
+    assert "ZHIR_theta_shift_factor" not in result.graph.graph
+
+
+def test_creativity_builder_reports_fresh_network_mutation_abstention(monkeypatch):
+    original = TNFRNetwork.add_nodes
+
+    def coherent_nodes(self, *args, **kwargs):
+        kwargs["phase_range"] = (0.0, 0.0)
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(TNFRNetwork, "add_nodes", coherent_nodes)
+    result = Builders.creativity_emergence(
+        nodes=6, mutation_intensity=0.25, steps=1, random_seed=7
+    )
+
+    assert result.mutation_workflows[0]["status"] == "mutation_abstained"
+    assert result.mutation_workflows[0]["reason"] == "missing_history"
+    assert all(
+        "ZHIR" not in data["glyph_history"]
+        for _, data in result.graph.nodes(data=True)
+    )
+
+
 def test_topology_comparison_starts_with_identical_nodes():
     results = Builders.compare_topologies(node_count=6, steps=0, random_seed=5)
     assert _triad(results["random"].graph) == _triad(results["ring"].graph)

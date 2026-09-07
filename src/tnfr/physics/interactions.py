@@ -21,8 +21,8 @@ Operator–Grammar Mapping (informative):
 - Silence (SHA): closure/observation window (U1b)
 
 Telemetry (read-only):
-- |∇φ|: phase gradient; early stress indicator (threshold ≈ 0.38)
-- K_φ: phase curvature (part of unified Ψ); confinement hotspots (|K_φ| ≥ 2.8274)
+- |∇φ|: phase gradient; selected early-warning policy π/16 (exact bound π)
+- K_φ: phase curvature (part of unified Ψ); selected warning margin 0.9π
 - Φ_s: structural potential; mean absolute drift as passive safety (ΔΦ_s < π/2)
 
 Contracts (summary):
@@ -62,8 +62,8 @@ except Exception:  # pragma: no cover
 
 from ..constants.canonical import U6_STRUCTURAL_POTENTIAL_LIMIT
 from ..constants.canonical import (
-    PHYSICS_CURVATURE_HOTSPOT_CANONICAL,
-    PHYSICS_GRAD_THRESHOLD_CANONICAL,
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
     PHYSICS_HOTSPOT_FRACTION_CANONICAL,
 )
 from ..operators.definitions import (
@@ -134,7 +134,7 @@ def _telemetry_after(G: Any, snap: dict, *, compute_phi_s: bool = False) -> dict
         "grad_a": grad_a,
         "kphi_a": kphi_a,
         "phi_a": phi_a,
-        "phi_drift": drift,
+        "phi_s_drift": drift,
     }
 
 
@@ -143,7 +143,7 @@ def em_like(
     nodes: Iterable[Any],
     *,
     compute_phi_s: bool = False,
-    grad_threshold: float = PHYSICS_GRAD_THRESHOLD_CANONICAL,
+    grad_threshold: float = GRAD_PHI_CANONICAL_THRESHOLD,
 ) -> InteractionResult:
     """EM-like sequence: [Coupling → Resonance → Coherence].
 
@@ -167,10 +167,10 @@ def em_like(
         Nodes to which the operator sequence will be applied.
     compute_phi_s : bool, default False
         If True, compute Φ_s before/after and report mean drift.
-    grad_threshold : float, default PHYSICS_GRAD_THRESHOLD_CANONICAL
-        Heuristic early-warning threshold for mean |∇φ| (≈ 0.196, π/16;
-        calibrated, audit 2026: NOT a derived bound — the kinematic bound is
-        |∇φ| ≤ π and the sync-onset is σ-dependent ≈ 0.29).
+    grad_threshold : float, default GRAD_PHI_CANONICAL_THRESHOLD
+        Selected early-warning policy for mean |∇φ| (≈ 0.196, π/16). It is
+        not a derived bound; the kinematic bound is |∇φ| ≤ π and the measured
+        sync-onset is σ-dependent and near 0.29.
 
     Returns
     -------
@@ -200,11 +200,11 @@ def em_like(
                 f"{grad_mean_a:.3f} ≥ {grad_threshold}"
             )
         )
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
+    if aft.get("phi_s_drift") is not None and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
+                f"{float(aft['phi_s_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
             )
         )
 
@@ -216,7 +216,9 @@ def em_like(
         kphi_before_abs_mean=kphi_abs_b,
         kphi_after_abs_mean=kphi_abs_a,
         phi_s_drift_mean=(
-            float(aft["phi_drift"]) if aft.get("phi_drift") is not None else None
+            float(aft["phi_s_drift"])
+            if aft.get("phi_s_drift") is not None
+            else None
         ),
     )
 
@@ -227,7 +229,7 @@ def weak_like(
     *,
     compute_phi_s: bool = False,
     ensure_stable_base: bool = True,
-    grad_threshold: float = PHYSICS_GRAD_THRESHOLD_CANONICAL,
+    grad_threshold: float = GRAD_PHI_CANONICAL_THRESHOLD,
 ) -> InteractionResult:
     """Weak-like sequence: [IL (optional) → Dissonance → Mutation → Coherence].
 
@@ -247,10 +249,10 @@ def weak_like(
     ----------
     ensure_stable_base : bool, default True
         Insert IL before OZ→ZHIR to satisfy U4b stable base requirement.
-    grad_threshold : float, default PHYSICS_GRAD_THRESHOLD_CANONICAL
-        Heuristic early-warning threshold for mean |∇φ| (≈ 0.196, π/16;
-        calibrated, audit 2026: NOT a derived bound — the kinematic bound is
-        |∇φ| ≤ π and the sync-onset is σ-dependent ≈ 0.29).
+    grad_threshold : float, default GRAD_PHI_CANONICAL_THRESHOLD
+        Selected early-warning policy for mean |∇φ| (≈ 0.196, π/16). It is
+        not a derived bound; the kinematic bound is |∇φ| ≤ π and the measured
+        sync-onset is σ-dependent and near 0.29.
 
     Returns
     -------
@@ -283,11 +285,11 @@ def weak_like(
                 f"{grad_mean_a:.3f} ≥ {grad_threshold}"
             )
         )
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
+    if aft.get("phi_s_drift") is not None and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
+                f"{float(aft['phi_s_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
             )
         )
 
@@ -299,7 +301,9 @@ def weak_like(
         kphi_before_abs_mean=kphi_abs_b,
         kphi_after_abs_mean=kphi_abs_a,
         phi_s_drift_mean=(
-            float(aft["phi_drift"]) if aft.get("phi_drift") is not None else None
+            float(aft["phi_s_drift"])
+            if aft.get("phi_s_drift") is not None
+            else None
         ),
     )
 
@@ -309,7 +313,7 @@ def strong_like(
     nodes: Iterable[Any],
     *,
     compute_phi_s: bool = False,
-    curvature_hotspot_threshold: float = PHYSICS_CURVATURE_HOTSPOT_CANONICAL,
+    curvature_hotspot_threshold: float = K_PHI_CANONICAL_THRESHOLD,
 ) -> InteractionResult:
     """Strong-like sequence: [Coupling → Coherence → SelfOrganization].
 
@@ -327,8 +331,8 @@ def strong_like(
 
     Parameters
     ----------
-    curvature_hotspot_threshold : float, default PHYSICS_CURVATURE_HOTSPOT_CANONICAL
-        Canonical |K_φ| threshold for hotspot flagging (0.9×π ≈ 2.8274).
+    curvature_hotspot_threshold : float, default K_PHI_CANONICAL_THRESHOLD
+        Selected |K_φ| warning margin for hotspot flagging (0.9×π ≈ 2.8274).
 
     Returns
     -------
@@ -357,11 +361,11 @@ def strong_like(
                 f"{hotspot_frac * 100:.1f}% ≥ {PHYSICS_HOTSPOT_FRACTION_CANONICAL * 100:.1f}%"
             )
         )
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
+    if aft.get("phi_s_drift") is not None and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
+                f"{float(aft['phi_s_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
             )
         )
 
@@ -375,7 +379,9 @@ def strong_like(
         ),  # type: ignore[index]
         kphi_after_abs_mean=_mean(kphi_abs_a),
         phi_s_drift_mean=(
-            float(aft["phi_drift"]) if aft.get("phi_drift") is not None else None
+            float(aft["phi_s_drift"])
+            if aft.get("phi_s_drift") is not None
+            else None
         ),
     )
 
@@ -421,11 +427,11 @@ def gravity_like(
 
     aft = _telemetry_after(G, snap, compute_phi_s=compute_phi_s)
     warnings: list[str] = []
-    if aft.get("phi_drift") is not None and float(aft["phi_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
+    if aft.get("phi_s_drift") is not None and float(aft["phi_s_drift"]) >= U6_STRUCTURAL_POTENTIAL_LIMIT:
         warnings.append(
             (
                 "structural potential drift exceeded threshold: "
-                f"{float(aft['phi_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
+                f"{float(aft['phi_s_drift']):.3f} ≥ {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}"
             )
         )
 
@@ -441,7 +447,9 @@ def gravity_like(
             {k: abs(v) for k, v in aft["kphi_a"].items()}
         ),  # type: ignore[index]
         phi_s_drift_mean=(
-            float(aft["phi_drift"]) if aft.get("phi_drift") is not None else None
+            float(aft["phi_s_drift"])
+            if aft.get("phi_s_drift") is not None
+            else None
         ),
     )
 

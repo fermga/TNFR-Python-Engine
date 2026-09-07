@@ -1,17 +1,17 @@
 """Branch-aware winding observations for declared oriented cycles.
 
-The legacy integer winding helper remains unchanged. Missing cycles and phase
-differences on the wrap branch are reported as undefined rather than rounded
-into an apparent invariant.
+Missing cycles, absent or invalid phase values, and phase differences on the
+wrap branch are reported as undefined rather than defaulted or rounded into an
+apparent invariant.
 """
 
 from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from numbers import Real
 from typing import Any, Iterable
 
-from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA
 from ..utils.numeric import angle_diff
 
@@ -78,6 +78,49 @@ def _has_oriented_edge(graph: Any, source: Any, target: Any) -> bool:
     return bool(graph.has_edge(source, target))
 
 
+def _finite_cycle_phase(graph: Any, node: Any) -> tuple[float | None, str | None]:
+    """Read one explicit finite phase without a zero-valued fallback."""
+    data = graph.nodes[node]
+    alias = next((key for key in ALIAS_THETA if key in data), None)
+    if alias is None:
+        return None, f"phase is missing at cycle node {node!r}"
+    raw = data[alias]
+    if isinstance(raw, bool) or not isinstance(raw, Real):
+        return None, f"phase at cycle node {node!r} must be a finite real number"
+    try:
+        phase = float(raw)
+    except (OverflowError, ValueError):
+        return None, f"phase at cycle node {node!r} must be finite"
+    if not math.isfinite(phase):
+        return None, f"phase at cycle node {node!r} must be finite"
+    # Reduce each operand before subtraction.  Two individually finite values
+    # near opposite float limits can otherwise overflow their phase difference
+    # and fabricate NaN winding telemetry.
+    return math.remainder(phase, math.tau), None
+
+
+def _finite_nonnegative_parameter(value: Any, name: str) -> float:
+    """Normalize a finite nonnegative certificate parameter."""
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise ValueError(f"{name} must be finite and nonnegative")
+    try:
+        normalized = float(value)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise ValueError(f"{name} must be finite and nonnegative") from exc
+    if not math.isfinite(normalized) or normalized < 0.0:
+        raise ValueError(f"{name} must be finite and nonnegative")
+    return normalized
+
+
+def _required_phase(graph: Any, node: Any) -> float:
+    """Read an explicit phase or fail before an observation is fabricated."""
+    phase, error = _finite_cycle_phase(graph, node)
+    if error is not None:
+        raise ValueError(error)
+    assert phase is not None
+    return phase
+
+
 def certify_phase_winding(
     graph: Any,
     cycle_nodes: Iterable[Any],
@@ -90,16 +133,17 @@ def certify_phase_winding(
     Wrapped differences use the half-open branch ``[-π, π)``.  A difference
     within ``branch_tolerance`` of the branch boundary makes the result
     undefined.  U3 admissibility is reported separately and does not determine
-    whether the topological winding itself is defined.
+    whether the topological winding itself is defined. Every declared cycle
+    node must carry an explicit finite real phase; no zero fallback is used.
     """
     nodes = tuple(cycle_nodes)
     convention = "wrapped phase differences in [-pi, pi)"
     if branch_tolerance is None:
         branch_tolerance = math.sqrt(float.fromhex("0x1.0p-52")) * math.pi
-    if not math.isfinite(branch_tolerance) or branch_tolerance < 0.0:
-        raise ValueError("branch_tolerance must be finite and nonnegative")
-    if not math.isfinite(phase_gate) or phase_gate < 0.0:
-        raise ValueError("phase_gate must be finite and nonnegative")
+    branch_tolerance = _finite_nonnegative_parameter(
+        branch_tolerance, "branch_tolerance"
+    )
+    phase_gate = _finite_nonnegative_parameter(phase_gate, "phase_gate")
 
     valid_nodes = len(nodes) >= 3 and len(set(nodes)) == len(nodes)
     cycle_exists = valid_nodes and all(node in graph for node in nodes)
@@ -114,10 +158,32 @@ def certify_phase_winding(
             convention, None, None, None, "declared oriented cycle is absent",
         )
 
+    phases: dict[Any, float] = {}
+    for node in nodes:
+        phase, phase_issue = _finite_cycle_phase(graph, node)
+        if phase_issue is not None:
+            return WindingCertificate(
+                status="undefined",
+                winding=None,
+                absolute_winding=None,
+                raw_winding=None,
+                quantization_residual=None,
+                cycle_nodes=nodes,
+                cycle_exists=True,
+                orientation="declared",
+                branch_convention=convention,
+                minimum_branch_margin=None,
+                minimum_u3_margin=None,
+                u3_admissible=None,
+                reason=phase_issue,
+            )
+        assert phase is not None
+        phases[node] = phase
+
     differences = []
     for source, target in zip(nodes, nodes[1:] + nodes[:1]):
-        source_phase = float(get_attr(graph.nodes[source], ALIAS_THETA, 0.0))
-        target_phase = float(get_attr(graph.nodes[target], ALIAS_THETA, 0.0))
+        source_phase = phases[source]
+        target_phase = phases[target]
         differences.append(float(angle_diff(target_phase, source_phase)))
     branch_margin = min(math.pi - abs(value) for value in differences)
     gate_margin = min(phase_gate - abs(value) for value in differences)
@@ -159,31 +225,31 @@ def observe_winding_word(
     validated = ValidatedSequence(word, context=context)
     cycle = tuple(cycle_nodes)
     initial = certify_phase_winding(graph, cycle)
+    if not initial.is_defined:
+        raise ValueError(
+            "winding word requires a defined initial cycle: " + initial.reason
+        )
+    for item in graph.nodes():
+        _required_phase(graph, item)
     history_before = tuple(graph.nodes[node].get("glyph_history", ()))
     compute = graph.graph.get("compute_delta_nfr")
     steps = []
     for index, operator in enumerate(word):
         phases_before = {
-            item: float(get_attr(graph.nodes[item], ALIAS_THETA, 0.0))
-            for item in graph.nodes()
+            item: _required_phase(graph, item) for item in graph.nodes()
         }
         edges_before = graph.number_of_edges()
         operator(graph, node, sequence_context=validated.step(index))
         if callable(compute):
             compute(graph)
+        phases_after = {
+            item: _required_phase(graph, item) for item in graph.nodes()
+        }
         phase_changes = tuple(
-            (
-                item,
-                float(
-                    angle_diff(
-                        float(get_attr(graph.nodes[item], ALIAS_THETA, 0.0)),
-                        phases_before[item],
-                    )
-                ),
-            )
-            for item in graph.nodes()
-            if float(get_attr(graph.nodes[item], ALIAS_THETA, 0.0))
-            != phases_before[item]
+            (item, float(angle_diff(phases_after[item], phases_before[item])))
+            for item in phases_after
+            if item in phases_before
+            if phases_after[item] != phases_before[item]
         )
         edges_after = graph.number_of_edges()
         steps.append(

@@ -17,6 +17,7 @@ __all__ = [
     "_normalize_job_overrides",
     "_resolve_jobs_override",
     "_prepare_dnfr",
+    "_record_mutation_flow_boundary",
     "_update_nodes",
     "_update_epi_hist",
     "_maybe_remesh",
@@ -43,6 +44,7 @@ def _run_before_callbacks(
 def _prepare_dnfr(
     G: TNFRGraph, *, use_Si: bool, job_overrides: Mapping[str, Any] | None = None
 ) -> None: ...
+def _record_mutation_flow_boundary(G: TNFRGraph) -> None: ...
 def _update_nodes(
     G: TNFRGraph,
     *,

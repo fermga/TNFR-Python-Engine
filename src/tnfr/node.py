@@ -36,6 +36,7 @@ from .constants.aliases import (
     ALIAS_DNFR,
     ALIAS_EPI,
     ALIAS_EPI_KIND,
+    ALIAS_SOURCE_GLYPH,
     ALIAS_SI,
     ALIAS_THETA,
     ALIAS_VF,
@@ -177,6 +178,14 @@ ATTR_SPECS: dict[str, AttrSpec] = {
         to_python=str,
         to_storage=str,
     ),
+    "source_glyph": AttrSpec(
+        aliases=ALIAS_SOURCE_GLYPH,
+        default="",
+        getter=get_attr_str,
+        setter=set_attr_str,
+        to_python=str,
+        to_storage=str,
+    ),
     "dnfr": AttrSpec(aliases=ALIAS_DNFR, setter=set_dnfr, use_graph_setter=True),
     "d2EPI": AttrSpec(aliases=ALIAS_D2EPI),
 }
@@ -236,6 +245,7 @@ class NodeProtocol(Protocol):
     theta: Phase
     Si: SenseIndex
     epi_kind: str
+    source_glyph: str
     dnfr: DeltaNFR
     d2EPI: SecondDerivativeEPI
     graph: MutableMapping[str, Any]
@@ -288,6 +298,7 @@ class NodeNX(NodeProtocol):
     theta: Phase = ATTR_SPECS["theta"].build_property()
     Si: SenseIndex = ATTR_SPECS["Si"].build_property()
     epi_kind: str = ATTR_SPECS["epi_kind"].build_property()
+    source_glyph: str = ATTR_SPECS["source_glyph"].build_property()
     dnfr: DeltaNFR = ATTR_SPECS["dnfr"].build_property()
     d2EPI: SecondDerivativeEPI = ATTR_SPECS["d2EPI"].build_property()
 

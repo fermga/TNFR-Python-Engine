@@ -1,43 +1,36 @@
-"""
-TNFR Advanced FFT Arithmetic Engine
+"""Graph-spectral analysis and filtering for TNFR signals.
 
-This module implements advanced FFT arithmetic operations that emerge naturally from
-the nodal equation ∂EPI/∂t = νf · ΔNFR(t) when viewed in spectral domain.
+This compatibility module retains its historical ``FFT`` names, but its core
+transform is a Graph Fourier Transform (GFT) obtained from a dense Laplacian
+eigenbasis.  Generic graph diagonalization is normally cubic and each dense
+transform is quadratic; it is distinct from a one-dimensional ``numpy.fft``.
 
-Mathematical Foundation:
-The Graph Fourier Transform reveals that TNFR dynamics have natural spectral structure:
-- EPI signals live in graph spectral domain
-- ΔNFR operations are convolutions in spectral space
-- νf modulation becomes multiplication in frequency domain
-- Multi-scale coupling creates harmonic relationships
+Modewise multiplication of two GFT coefficient vectors defines a
+basis-dependent graph convolution.  It is not the pointwise physical-space
+product ``νf * ΔNFR`` in the nodal equation.  Canonical nodal evolution must
+form that product at nodes before any optional change of basis.
 
-Advanced Operations:
-1. **Spectral Convolution**: Fast ΔNFR computation via FFT
-2. **Harmonic Analysis**: Multi-scale resonance detection
-3. **Spectral Filtering**: Noise reduction and mode selection
-4. **Phase-Locked Loops**: Automatic phase synchronization
-5. **Adaptive Windowing**: Time-frequency analysis of EPI evolution
-6. **Cross-Spectral Analysis**: Multi-graph coherence measurement
+Exposed operations include basis-dependent graph convolution, Laplacian-mode
+amplitude ranking, diagonal spectral filtering, and index-aligned cross-spectrum
+diagnostics.  These are graph-signal read-outs; they do not apply canonical
+operators or advance the TNFR nodal state.
 
-Performance:
-- O(N log N) complexity for most operations
-- GPU acceleration via JAX/PyTorch backends
-- Automatic precision management
-- Cache-aware spectral decomposition reuse
-
-Status: CANONICAL SPECTRAL ARITHMETIC ENGINE
+Cached bases can avoid repeated diagonalization; they do not change the
+complexity of a new dense GFT.  GPU backends may accelerate matrix operations.
 """
 
 import time
 from dataclasses import dataclass, field
 from enum import Enum
+from numbers import Integral
 from typing import Any
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_VF
+from ..constants.aliases import ALIAS_EPI, ALIAS_VF
 from ..errors import TNFRValueError
 from ..errors.contextual import NetworkConfigError, TNFRUserError
 from ..mathematics.unified_numerical import np
+from ..types import real_scalar_epi
 
 try:
     import networkx as nx
@@ -98,13 +91,13 @@ except ImportError:  # pragma: no cover - circular import guard during bootstrap
 class SpectralOperation(Enum):
     """Types of spectral operations."""
 
-    CONVOLUTION = "convolution"  # Spectral convolution (fast ΔNFR)
-    CORRELATION = "correlation"  # Cross-correlation analysis
+    CONVOLUTION = "convolution"  # Basis-dependent graph convolution
+    CORRELATION = "correlation"  # Reserved compatibility label
     FILTERING = "filtering"  # Spectral filtering
-    WINDOWING = "windowing"  # Time-frequency windowing
-    HARMONIC_ANALYSIS = "harmonic_analysis"  # Multi-scale harmonics
-    PHASE_LOCKING = "phase_locking"  # Phase synchronization
-    COHERENCE_ANALYSIS = "coherence_analysis"  # Cross-spectral coherence
+    WINDOWING = "windowing"  # Reserved compatibility label
+    HARMONIC_ANALYSIS = "harmonic_analysis"  # Laplacian-mode ranking
+    PHASE_LOCKING = "phase_locking"  # Reserved compatibility label
+    COHERENCE_ANALYSIS = "coherence_analysis"  # Snapshot cross-power
 
 
 @dataclass
@@ -118,12 +111,14 @@ class SpectralState:
     amplitudes: np.ndarray
     phases: np.ndarray
     coherence_length: float = 0.0
+    spectral_parameter_kind: str = "laplacian_eigenvalue"
+    coherence_length_semantics: str = "inverse_root_spectral_centroid_heuristic"
     dominant_modes: np.ndarray = field(default_factory=lambda: np.array([]))
 
 
 @dataclass
 class FFTArithmeticResult:
-    """Result of FFT arithmetic operation."""
+    """Result container; ``fft_operations`` counts dense GFT/IGFT transforms."""
 
     operation: SpectralOperation
     input_shape: tuple[int, ...]
@@ -140,8 +135,9 @@ class TNFRAdvancedFFTEngine:
     """
     Advanced FFT arithmetic engine for TNFR computations.
 
-    This engine leverages the spectral structure of the nodal equation to
-    provide O(N log N) arithmetic operations on graph signals.
+    The historical class name is retained for compatibility.  Operations use
+    dense graph eigenbases and do not claim FFT complexity or nodal-equation
+    equivalence.
     """
 
     def __init__(
@@ -173,8 +169,87 @@ class TNFRAdvancedFFTEngine:
         # Spectral cache for eigendecompositions (fallback when coordinator unavailable)
         self._spectral_cache = {} if self.cache_coordinator is None else None
 
-        # Precomputed windows for time-frequency analysis
-        self._window_cache = {}
+    @staticmethod
+    def _graph_epi_signal(G: Any) -> np.ndarray:
+        """Return the live signed scalar-EPI chart in graph iteration order."""
+
+        values: list[float] = []
+        for node in G.nodes():
+            raw = get_attr(
+                G.nodes[node],
+                ALIAS_EPI,
+                0.0,
+                strict=True,
+                conv=lambda value: value,
+            )
+            if isinstance(raw, bool):
+                scalar = None
+            else:
+                try:
+                    scalar = real_scalar_epi(raw)
+                except (OverflowError, TypeError, ValueError):
+                    scalar = None
+            if scalar is None or not np.isfinite(scalar):
+                raise TNFRValueError(
+                    "Graph spectral analysis requires finite uniform-real EPI values",
+                    context={"node": node, "value": repr(raw)},
+                    suggestion=(
+                        "Use a raw real scalar or a uniform-real BEPI embedding for "
+                        "each graph node."
+                    ),
+                )
+            values.append(float(scalar))
+        return np.asarray(values, dtype=float)
+
+    @staticmethod
+    def _graph_frequency_signal(G: Any) -> np.ndarray:
+        """Return finite nonnegative structural frequencies in node order."""
+
+        values: list[float] = []
+        for node in G.nodes():
+            raw = get_attr(
+                G.nodes[node],
+                ALIAS_VF,
+                1.0,
+                strict=True,
+                conv=lambda value: value,
+            )
+            try:
+                scalar = float(raw) if not isinstance(raw, bool) else float("nan")
+            except (OverflowError, TypeError, ValueError):
+                scalar = float("nan")
+            if not np.isfinite(scalar) or scalar < 0.0:
+                raise TNFRValueError(
+                    "Graph spectral analysis requires finite nonnegative nu_f values",
+                    context={"node": node, "value": repr(raw)},
+                    suggestion="Store structural frequency as a nonnegative Hz_str scalar.",
+                )
+            values.append(scalar)
+        return np.asarray(values, dtype=float)
+
+    @staticmethod
+    def _finite_signal(
+        signal: Any, *, label: str, expected_shape: tuple[int, ...]
+    ) -> np.ndarray:
+        """Validate an explicitly supplied scalar graph signal."""
+
+        array = np.asarray(signal)
+        if array.shape != expected_shape:
+            raise TNFRValueError(
+                "Graph spectral convolution requires equally sized node vectors",
+                context={
+                    f"{label}_shape": array.shape,
+                    "expected_shape": expected_shape,
+                },
+                suggestion="Pass one scalar value per graph node in graph iteration order.",
+            )
+        if array.dtype.kind not in "iufc" or not np.all(np.isfinite(array)):
+            raise TNFRValueError(
+                f"{label} must contain only finite numeric scalars",
+                context={"dtype": str(array.dtype), "shape": array.shape},
+                suggestion="Remove booleans, strings, NaNs, and infinities.",
+            )
+        return array
 
     def get_capabilities(self) -> FFTBackendCapabilities:
         """Return capability metadata for planning purposes."""
@@ -201,32 +276,22 @@ class TNFRAdvancedFFTEngine:
         )
 
     def _calculate_attenuation_db(self, filter_response: np.ndarray) -> float:
-        """Calculate filter attenuation in dB safely."""
+        """Return the response dynamic range as nonnegative attenuation dB."""
         if len(filter_response) == 0:
             return 0.0
 
-        positive_vals = filter_response[filter_response > 0]
-        if len(positive_vals) == 0:
-            return -np.inf  # Complete attenuation
-
-        max_positive = np.max(positive_vals)
-        max_overall = np.max(filter_response)
-
-        if max_overall <= 0:
-            return -np.inf  # Complete attenuation
-
-        if max_positive == max_overall:
-            return 0.0  # No attenuation
-
-        return -20 * np.log10(max_positive / max_overall)
+        magnitudes = np.abs(np.asarray(filter_response, dtype=float))
+        peak = float(np.max(magnitudes))
+        floor = float(np.min(magnitudes))
+        if peak <= 0.0 or floor <= 0.0:
+            return float("inf")
+        return float(20.0 * np.log10(peak / floor))
 
     def get_spectral_state(
         self, G: Any, force_recompute: bool = False
     ) -> SpectralState:
         """
-        Get spectral decomposition of graph.
-
-        This is the fundamental operation that enables all FFT arithmetic.
+        Get an orthonormal symmetric-Laplacian basis for the graph signal.
         """
         if not HAS_NETWORKX or G is None:
             raise NetworkConfigError(
@@ -244,14 +309,6 @@ class TNFRAdvancedFFTEngine:
             eigenvalues = spectral_basis.eigenvalues
             eigenvectors = spectral_basis.eigenvectors
         else:
-            graph_id = id(G)
-            if (
-                not force_recompute
-                and self._spectral_cache is not None
-                and graph_id in self._spectral_cache
-            ):
-                return self._spectral_cache[graph_id]
-
             if not HAS_SPECTRAL:
                 raise TNFRUserError(
                     message="Spectral analysis not available",
@@ -265,13 +322,13 @@ class TNFRAdvancedFFTEngine:
                     CacheEntryType.SPECTRAL_DECOMPOSITION,
                     G,
                     computation_func=lambda: get_laplacian_spectrum(G),
-                    mathematical_importance=FFT_ARITHMETIC_IMPORTANCE_CANONICAL,  # π ≈ 3.1416 → canonical
+                    mathematical_importance=FFT_ARITHMETIC_IMPORTANCE_CANONICAL,
                 )
             else:
                 eigenvalues, eigenvectors = get_laplacian_spectrum(G)
 
         # Extract current signal from nodes
-        signal = np.array([G.nodes[node].get("EPI", 0.0) for node in G.nodes()])
+        signal = self._graph_epi_signal(G)
 
         # Compute spectral coefficients
         spectral_coeffs = gft(signal, eigenvectors)
@@ -291,22 +348,74 @@ class TNFRAdvancedFFTEngine:
             eigenvalues=eigenvalues,
             eigenvectors=eigenvectors,
             spectral_coeffs=spectral_coeffs,
-            frequencies=eigenvalues,  # In graph setting, eigenvalues are frequencies
+            # Historical field name: these are Laplacian spectral parameters,
+            # not temporal frequencies.  Graph-wave angular frequencies would
+            # be sqrt(lambda).
+            frequencies=eigenvalues,
             amplitudes=amplitudes,
             phases=phases,
             coherence_length=coherence_length,
             dominant_modes=dominant_indices,
         )
 
-        # Cache the result locally when coordinator absent
-        if self._spectral_cache is not None:
-            graph_id = id(G)
-            self._spectral_cache[graph_id] = spectral_state
+        # Do not cache the complete state locally: it contains live EPI
+        # coefficients and would become stale after a nodal update.  The
+        # decomposition itself is cached by the spectral/cache layers.
 
         if self.cache_coordinator is not None:
             self.cache_coordinator.register_spectral_state(G, spectral_state)
 
         return spectral_state
+
+    def _get_aligned_spectral_states(
+        self, G1: Any, G2: Any
+    ) -> tuple[SpectralState, SpectralState, np.ndarray]:
+        """Return compatible graph states and second coefficients in basis one.
+
+        Matching eigenvalues alone are insufficient because cospectral graphs
+        can have different eigenvectors.  This shared validator also removes
+        the independent sign/phase choice of each eigenvector.
+        """
+        spectral1 = self.get_spectral_state(G1)
+        spectral2 = self.get_spectral_state(G2)
+        if tuple(G1.nodes()) != tuple(G2.nodes()):
+            raise TNFRValueError(
+                "Cross-spectral comparison requires the same node order",
+                context={
+                    "first_nodes": tuple(G1.nodes()),
+                    "second_nodes": tuple(G2.nodes()),
+                },
+                suggestion="Align node labels and order before comparing graph modes.",
+            )
+        compatible_shape = spectral1.frequencies.shape == spectral2.frequencies.shape
+        compatible_values = compatible_shape and np.allclose(
+            spectral1.frequencies, spectral2.frequencies, rtol=1e-10, atol=1e-12
+        )
+        if not compatible_values:
+            raise TNFRValueError(
+                "Cross-spectral comparison requires matching Laplacian spectra",
+                context={
+                    "first_shape": spectral1.frequencies.shape,
+                    "second_shape": spectral2.frequencies.shape,
+                },
+                suggestion="Compare signals in one shared graph basis.",
+            )
+        overlap = spectral1.eigenvectors.conj().T @ spectral2.eigenvectors
+        diagonal_overlap = np.diag(overlap)
+        aligned_basis = np.allclose(
+            overlap,
+            np.diag(diagonal_overlap),
+            rtol=1e-9,
+            atol=1e-11,
+        ) and np.allclose(np.abs(diagonal_overlap), 1.0, rtol=1e-9, atol=1e-11)
+        if not aligned_basis:
+            raise TNFRValueError(
+                "Cross-spectral comparison requires aligned eigenvectors",
+                context={"basis_shape": spectral1.eigenvectors.shape},
+                suggestion="Project both signals into one explicitly shared basis.",
+            )
+        aligned_coefficients2 = diagonal_overlap * spectral2.spectral_coeffs
+        return spectral1, spectral2, aligned_coefficients2
 
     def spectral_convolution(
         self,
@@ -315,28 +424,42 @@ class TNFRAdvancedFFTEngine:
         signal2: np.ndarray | None = None,
         operation: str = "multiply",
     ) -> FFTArithmeticResult:
-        """
-        Perform spectral domain convolution.
+        """Combine graph signals in the cached Laplacian eigenbasis.
 
-        This enables fast computation of ΔNFR and other nodal operations.
+        ``multiply`` and the compatibility alias ``convolve`` multiply modal
+        coefficients, defining graph spectral convolution. ``add`` adds modal
+        coefficients and therefore reconstructs ordinary signal addition.
+        None of these operations computes the nodal product ``νf * ΔNFR``.
+
+        When omitted, ``signal1`` is the graph EPI signal and ``signal2`` is the
+        structural-frequency signal for backward compatibility.  Their default
+        graph convolution must not be interpreted as nodal evolution.
         """
         start_time = time.perf_counter()
 
-        # Get spectral state
+        # Get the orthonormal symmetric-Laplacian basis.
         spectral_state = self.get_spectral_state(G)
 
         # Extract signals from graph if not provided
         if signal1 is None:
-            signal1 = np.array([G.nodes[node].get("EPI", 0.0) for node in G.nodes()])
+            signal1 = self._graph_epi_signal(G)
         if signal2 is None:
-            signal2 = np.array(
-                [get_attr(G.nodes[node], ALIAS_VF, 1.0) for node in G.nodes()]
-            )
+            signal2 = self._graph_frequency_signal(G)
 
-        # Use GPU backend for large signals when available
+        expected_shape = (len(spectral_state.eigenvalues),)
+        signal1 = self._finite_signal(
+            signal1, label="signal1", expected_shape=expected_shape
+        )
+        signal2 = self._finite_signal(
+            signal2, label="signal2", expected_shape=expected_shape
+        )
+
+        actual_backend = "numpy_dense_gft"
+
+        # Use a matrix backend for large signals when available.
         if HAS_MATH_BACKENDS and len(signal1) > 100:
             try:
-                backend = get_backend()
+                backend = self.backend or get_backend()
                 if backend.supports_autodiff:
                     # Convert to backend tensors
                     s1_tensor = backend.as_array(signal1)
@@ -370,11 +493,14 @@ class TNFRAdvancedFFTEngine:
                         U_tensor, result_spectral_tensor
                     )
                     result_spatial = backend.to_numpy(result_spatial_tensor)
+                    actual_backend = f"{backend.name}_dense_gft"
 
                 else:
                     raise TNFRUserError(
                         message="Backend doesn't support autodiff",
-                        suggestion="Use a backend with autodiff support (e.g., JAX, PyTorch)",
+                        suggestion=(
+                            "Use a backend with autodiff support (e.g., JAX, PyTorch)"
+                        ),
                         context={"backend": self.backend_name},
                     )
             except Exception:
@@ -424,16 +550,8 @@ class TNFRAdvancedFFTEngine:
 
         # Update statistics
         self.total_operations += 1
-        self.total_fft_ops += 2  # Forward + inverse transform
-
-        # Determine actual backend used
-        actual_backend = self.default_backend
-        if HAS_MATH_BACKENDS and len(signal1) > 100:
-            try:
-                backend = get_backend()
-                actual_backend = f"{self.default_backend}({backend.name})"
-            except Exception:
-                pass
+        # One state GFT, two operand GFTs, and one reconstruction.
+        self.total_fft_ops += 4
 
         result = FFTArithmeticResult(
             operation=SpectralOperation.CONVOLUTION,
@@ -441,8 +559,9 @@ class TNFRAdvancedFFTEngine:
             output_data=result_spatial,
             spectral_state=spectral_state,
             execution_time=execution_time,
-            fft_operations=2,
+            fft_operations=4,
             backend_used=actual_backend,
+            accuracy_metrics={"nodal_product_equivalent": 0.0},
         )
 
         if self.cache_coordinator is not None:
@@ -455,40 +574,52 @@ class TNFRAdvancedFFTEngine:
     def harmonic_analysis(
         self, G: Any, num_harmonics: int = 5, window_size: int | None = None
     ) -> FFTArithmeticResult:
-        """
-        Perform multi-scale harmonic analysis.
+        """Rank graph-Laplacian modes by current EPI amplitude.
 
-        Identifies resonant modes and harmonic relationships in EPI evolution.
+        The compatibility output retains historical ``harmonic_*`` keys.  The
+        reported values are Laplacian spectral parameters and amplitude ratios,
+        not temporal harmonics. ``window_size`` is retained for API compatibility
+        and is reported but cannot window a single graph snapshot.
         """
+        if (
+            isinstance(num_harmonics, bool)
+            or not isinstance(num_harmonics, Integral)
+            or num_harmonics <= 0
+        ):
+            raise TNFRValueError(
+                "num_harmonics must be a positive integer",
+                context={"num_harmonics": num_harmonics},
+                suggestion="Request at least one Laplacian mode.",
+            )
+        num_harmonics = int(num_harmonics)
         start_time = time.perf_counter()
 
         # Get spectral state
         spectral_state = self.get_spectral_state(G)
 
         # Extract EPI signal
-        epi_signal = np.array([G.nodes[node].get("EPI", 0.0) for node in G.nodes()])
+        epi_signal = self._graph_epi_signal(G)
 
-        # Identify dominant harmonics
+        # Rank modes by current coefficient amplitude.
         amplitudes = spectral_state.amplitudes
-        frequencies = spectral_state.frequencies
-
-        # Find peaks in amplitude spectrum
-        harmonic_indices = np.argsort(amplitudes)[-num_harmonics:]
-        harmonic_freqs = frequencies[harmonic_indices]
+        spectral_parameters = spectral_state.frequencies
+        count = min(num_harmonics, len(amplitudes))
+        harmonic_indices = np.argsort(amplitudes)[::-1][:count]
+        harmonic_freqs = spectral_parameters[harmonic_indices]
         harmonic_amps = amplitudes[harmonic_indices]
 
-        # Analyze harmonic relationships
-        fundamental_freq = harmonic_freqs[np.argmax(harmonic_amps)]
+        dominant_parameter = harmonic_freqs[0]
 
         harmonic_ratios = []
-        for freq in harmonic_freqs:
-            if fundamental_freq > 0:
-                ratio = freq / fundamental_freq
+        for parameter in harmonic_freqs:
+            if dominant_parameter > 0:
+                ratio = parameter / dominant_parameter
                 harmonic_ratios.append(ratio)
             else:
                 harmonic_ratios.append(0.0)
 
-        # Compute harmonic distortion
+        # Compatibility metric: energy outside the dominant selected mode,
+        # normalized by the dominant amplitude.  This is not audio THD.
         total_harmonic_distortion = (
             np.sqrt(np.sum(harmonic_amps[1:] ** 2)) / harmonic_amps[0]
             if harmonic_amps[0] > 0
@@ -499,15 +630,19 @@ class TNFRAdvancedFFTEngine:
 
         # Create result
         harmonic_data = {
-            "fundamental_frequency": fundamental_freq,
+            "fundamental_frequency": dominant_parameter,
             "harmonic_frequencies": harmonic_freqs,
             "harmonic_amplitudes": harmonic_amps,
             "harmonic_ratios": harmonic_ratios,
             "total_harmonic_distortion": total_harmonic_distortion,
-            "dominant_mode_index": harmonic_indices[np.argmax(harmonic_amps)],
+            "dominant_mode_index": harmonic_indices[0],
+            "metric_semantics": "laplacian_mode_amplitude_ranking",
+            "window_size_applied": False,
+            "requested_window_size": window_size,
         }
 
         self.total_operations += 1
+        self.total_fft_ops += 1
 
         return FFTArithmeticResult(
             operation=SpectralOperation.HARMONIC_ANALYSIS,
@@ -516,7 +651,7 @@ class TNFRAdvancedFFTEngine:
             spectral_state=spectral_state,
             execution_time=execution_time,
             fft_operations=1,
-            backend_used=self.default_backend,
+            backend_used="dense_gft",
         )
 
     def spectral_filtering(
@@ -529,7 +664,8 @@ class TNFRAdvancedFFTEngine:
         """
         Apply spectral filtering to graph signals.
 
-        Enables noise reduction and mode selection in EPI evolution.
+        Returns a filtered EPI signal for downstream analysis.  It does not
+        write graph state or advance the nodal equation.
         """
         start_time = time.perf_counter()
 
@@ -555,7 +691,7 @@ class TNFRAdvancedFFTEngine:
                 _build_filter,
                 kernel_params={
                     "type": filter_type,
-                    "cutoff": round(float(cutoff_frequency), 6),
+                    "cutoff": float(cutoff_frequency),
                     "order": filter_order,
                 },
             )
@@ -563,7 +699,7 @@ class TNFRAdvancedFFTEngine:
             filter_response = _build_filter()
 
         # Apply filter to current signal
-        epi_signal = np.array([G.nodes[node].get("EPI", 0.0) for node in G.nodes()])
+        epi_signal = self._graph_epi_signal(G)
         spectral_coeffs = spectral_state.spectral_coeffs
 
         # Apply filter
@@ -585,7 +721,8 @@ class TNFRAdvancedFFTEngine:
         }
 
         self.total_operations += 1
-        self.total_fft_ops += 1  # Inverse transform
+        # The live state GFT plus the filtered reconstruction.
+        self.total_fft_ops += 2
 
         result = FFTArithmeticResult(
             operation=SpectralOperation.FILTERING,
@@ -593,8 +730,8 @@ class TNFRAdvancedFFTEngine:
             output_data=filtered_data,
             spectral_state=spectral_state,
             execution_time=execution_time,
-            fft_operations=1,
-            backend_used=self.default_backend,
+            fft_operations=2,
+            backend_used="dense_gft",
         )
 
         if self.cache_coordinator is not None:
@@ -613,6 +750,24 @@ class TNFRAdvancedFFTEngine:
     ) -> np.ndarray:
         """Construct smooth spectral filter responses."""
 
+        if (
+            isinstance(filter_order, bool)
+            or not isinstance(filter_order, Integral)
+            or filter_order <= 0
+        ):
+            raise TNFRValueError(
+                "filter_order must be a positive integer",
+                context={"filter_order": filter_order},
+                suggestion="Use an integer filter order of at least one.",
+            )
+        filter_order = int(filter_order)
+        if not np.isfinite(cutoff_frequency) or cutoff_frequency < 0.0:
+            raise TNFRValueError(
+                "cutoff_frequency must be finite and nonnegative",
+                context={"cutoff_frequency": cutoff_frequency},
+                suggestion="Use a nonnegative Laplacian spectral parameter.",
+            )
+
         response = np.ones_like(frequencies)
         safe_cutoff = max(cutoff_frequency, 1e-9)
 
@@ -620,7 +775,7 @@ class TNFRAdvancedFFTEngine:
             attenuation = np.maximum(frequencies - safe_cutoff, 0.0)
             response = np.exp(-attenuation * filter_order / safe_cutoff)
         elif filter_type == "highpass":
-            attenuation = np.maximum(safe_cutoff - frequencies, 0.0)
+            attenuation = np.maximum(frequencies - safe_cutoff, 0.0)
             response = 1.0 - np.exp(-attenuation * filter_order / safe_cutoff)
         elif filter_type == "bandpass":
             low_cutoff = (
@@ -640,8 +795,9 @@ class TNFRAdvancedFFTEngine:
                 safe_cutoff * FFT_BANDWIDTH_CANONICAL
             )  # = 0.1 (operational)
             distance = np.abs(frequencies - safe_cutoff)
+            safe_bandwidth = max(bandwidth, 1e-12)
             response = 1.0 - np.exp(
-                -(bandwidth - distance).clip(min=0.0) * filter_order / safe_cutoff
+                -((distance / safe_bandwidth) ** filter_order)
             )
         else:
             raise TNFRUserError(
@@ -655,23 +811,37 @@ class TNFRAdvancedFFTEngine:
     def cross_spectral_coherence(
         self, G1: Any, G2: Any, frequency_bands: int | None = 10
     ) -> FFTArithmeticResult:
-        """
-        Compute cross-spectral coherence between two graphs.
+        """Compute band-averaged alignment in compatible graph coordinates.
 
-        Measures synchronization and coupling strength between TNFR networks.
+        This snapshot diagnostic compares coefficient vectors only when both
+        Laplacian spectra match.  Each band's normalized averaged cross-power is
+        assigned to its modes.  It is not a trajectory-level synchronization or
+        coupling certificate.
         """
+        if frequency_bands is not None and (
+            isinstance(frequency_bands, bool)
+            or not isinstance(frequency_bands, Integral)
+            or frequency_bands <= 0
+        ):
+            raise TNFRValueError(
+                "frequency_bands must be a positive integer or None",
+                context={"frequency_bands": frequency_bands},
+                suggestion="Use a positive band count, or None for one global band.",
+            )
+        if frequency_bands is not None:
+            frequency_bands = int(frequency_bands)
         start_time = time.perf_counter()
 
-        # Get spectral states for both graphs
-        spectral1 = self.get_spectral_state(G1)
-        spectral2 = self.get_spectral_state(G2)
-
-        # Ensure compatible dimensions
-        min_size = min(len(spectral1.spectral_coeffs), len(spectral2.spectral_coeffs))
-        coeffs1 = spectral1.spectral_coeffs[:min_size]
-        coeffs2 = spectral2.spectral_coeffs[:min_size]
-        freqs1 = spectral1.frequencies[:min_size]
-        freqs2 = spectral2.frequencies[:min_size]
+        spectral1, spectral2, coeffs2 = self._get_aligned_spectral_states(G1, G2)
+        coeffs1 = spectral1.spectral_coeffs
+        freqs1 = spectral1.frequencies
+        min_size = len(coeffs1)
+        if min_size == 0:
+            raise TNFRValueError(
+                "Cross-spectral comparison requires a non-empty graph",
+                context={"node_count": 0},
+                suggestion="Provide graphs with at least one node.",
+            )
 
         # Compute cross-spectral density
         cross_spectrum = coeffs1 * np.conj(coeffs2)
@@ -680,27 +850,37 @@ class TNFRAdvancedFFTEngine:
         power1 = np.abs(coeffs1) ** 2
         power2 = np.abs(coeffs2) ** 2
 
-        # Compute coherence function
-        coherence = np.abs(cross_spectrum) ** 2 / (
-            power1 * power2 + 1e-12
-        )  # Avoid division by zero
-
-        # Compute frequency-band coherence
-        if frequency_bands:
-            band_edges = np.linspace(
-                0, np.max([np.max(freqs1), np.max(freqs2)]), frequency_bands + 1
-            )
-            band_coherence = []
-
-            for i in range(frequency_bands):
-                band_mask = (freqs1 >= band_edges[i]) & (freqs1 < band_edges[i + 1])
-                if np.any(band_mask):
-                    band_coh = np.mean(coherence[band_mask])
-                    band_coherence.append(band_coh)
-                else:
-                    band_coherence.append(0.0)
+        band_count = frequency_bands or 1
+        lower = float(np.min(freqs1))
+        upper = float(np.max(freqs1))
+        if upper == lower:
+            band_edges = np.array([lower, np.nextafter(upper, np.inf)])
+            band_count = 1
         else:
-            band_coherence = []
+            band_edges = np.linspace(lower, upper, band_count + 1)
+            band_edges[-1] = np.nextafter(band_edges[-1], np.inf)
+
+        coherence = np.zeros(min_size, dtype=float)
+        band_coherence = []
+        for index in range(band_count):
+            band_mask = (freqs1 >= band_edges[index]) & (
+                freqs1 < band_edges[index + 1]
+            )
+            if not np.any(band_mask):
+                band_coherence.append(0.0)
+                continue
+            cross_mean = np.mean(cross_spectrum[band_mask])
+            auto_power1 = float(np.mean(power1[band_mask]))
+            auto_power2 = float(np.mean(power2[band_mask]))
+            denominator = auto_power1 * auto_power2
+            value = (
+                float(abs(cross_mean) ** 2 / denominator)
+                if denominator > 0
+                else 0.0
+            )
+            value = float(np.clip(value, 0.0, 1.0))
+            coherence[band_mask] = value
+            band_coherence.append(value)
 
         # Compute overall coherence metrics
         mean_coherence = np.mean(coherence)
@@ -721,23 +901,29 @@ class TNFRAdvancedFFTEngine:
             "max_coherence": max_coherence,
             "coherent_bandwidth": coherent_bandwidth,
             "frequency_bands": frequency_bands,
+            "metric_semantics": "band_averaged_snapshot_cross_power",
         }
 
         self.total_operations += 1
+        self.total_fft_ops += 2
 
         return FFTArithmeticResult(
             operation=SpectralOperation.COHERENCE_ANALYSIS,
             input_shape=(min_size,),
             output_data=coherence_data,
             execution_time=execution_time,
-            fft_operations=0,  # No additional FFTs needed
-            backend_used=self.default_backend,
+            fft_operations=2,
+            backend_used="dense_gft",
         )
 
     def _estimate_coherence_length(
         self, eigenvalues: np.ndarray, amplitudes: np.ndarray
     ) -> float:
-        """Estimate spatial coherence length from spectral decay."""
+        """Return an inverse-root spectral-centroid scale heuristic.
+
+        The compatibility field ``coherence_length`` is not the fitted canonical
+        ``xi_C`` and is not the topology-only ``1/sqrt(lambda_2)`` fallback.
+        """
         # Find spectral centroid (weighted average frequency)
         total_power = np.sum(amplitudes**2)
         if total_power > 0:
@@ -760,7 +946,9 @@ class TNFRAdvancedFFTEngine:
             "total_fft_operations": self.total_fft_ops,
             "cache_hits": self.cache_hits,
             "cache_hit_rate": self.cache_hits / max(1, self.total_operations),
-            "cached_spectra": len(self._spectral_cache),
+            "cached_spectra": (
+                len(self._spectral_cache) if self._spectral_cache is not None else 0
+            ),
             "backend": self.default_backend,
             "precision": self.precision,
             "spectral_analysis_available": HAS_SPECTRAL,
@@ -769,8 +957,8 @@ class TNFRAdvancedFFTEngine:
 
     def clear_cache(self) -> None:
         """Clear internal caches."""
-        self._spectral_cache.clear()
-        self._window_cache.clear()
+        if self._spectral_cache is not None:
+            self._spectral_cache.clear()
 
 
 # Factory functions
@@ -782,7 +970,7 @@ def create_fft_arithmetic_engine(**kwargs) -> TNFRAdvancedFFTEngine:
 def fast_spectral_convolution(
     G: Any, signal1: np.ndarray, signal2: np.ndarray
 ) -> np.ndarray:
-    """Convenience function for fast spectral convolution."""
+    """Return a graph spectral convolution (historical name retained)."""
     engine = create_fft_arithmetic_engine()
     result = engine.spectral_convolution(G, signal1, signal2, operation="multiply")
     return result.output_data

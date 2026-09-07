@@ -290,7 +290,10 @@ def test_reading_b_emergence(limit: int = 200) -> bool:
         f"  g(n) = 0 set == primes == 1 (mod 4) ?  exact = {exact} "
         f"(extra = {extra}, missed = {miss})"
     )
-    print(f"  genuinely emergent (no n % k): True ; primes-OUT count = {len(zeros)}")
+    print(
+        "  non-circular within this residue-family protocol (no n % k); "
+        f"primes-OUT count = {len(zeros)}"
+    )
     print("  HONEST PARTIALITY: the detector is blind to 2 and to the == 3 (mod 4)")
     print(f"                    primes (e.g. {missed_classes[:8]}...) -- they live")
     print("                    outside the Paley == 1 (mod 4) class. And the residue")
@@ -298,7 +301,7 @@ def test_reading_b_emergence(limit: int = 200) -> bool:
     print("                    sector (Camino 8): reaches the support, not S(T).")
     print(
         f"  VERDICT: {'PASS' if exact else 'FAIL'} "
-        "-- non-circular emergence, but PARTIAL and self-adjoint"
+        "-- non-circular finite-family diagnostic; PARTIAL and self-adjoint"
     )
     return exact
 

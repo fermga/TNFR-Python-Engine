@@ -65,7 +65,8 @@ consistent with the catalog row 5 typing
 :math:`\\Delta\\phi_{\\max} \\in \\mathbb{R}` (scalar), with U3
 (Unified Grammar Rule 3) requiring a single global threshold for
 the resonance condition
-:math:`|\\phi_i - \\phi_j| \\le \\Delta\\phi_{\\max}`, and with the
+:math:`|\\operatorname{wrap}(\\phi_i - \\phi_j)| \\le \\Delta\\phi_{\\max}`,
+and with the
 ``float(G.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))`` read pattern
 at every U3 call site.
 
@@ -91,6 +92,8 @@ from typing import Any
 
 import numpy as np
 
+from ..utils import angle_diff
+
 __all__ = [
     "DeltaPhiMaxTypeSignatureCertificate",
     "compute_delta_phi_max_type_signature",
@@ -105,12 +108,10 @@ def _wrap_to_pi(angle: float) -> float:
 def _wrapped_abs_diff(theta_i: float, theta_j: float) -> float:
     """Canonical wrapped absolute phase difference in ``[0, π]``.
 
-    Mirrors the canonical U3 check at
-    ``src/tnfr/operators/grammar_dynamics.py:185-188``:
-    ``diff = abs(theta_i - theta_j); diff = min(diff, 2π - diff)``.
+    Uses the shared shortest-arc kernel, including for phase representatives
+    outside a single fundamental turn.
     """
-    diff = abs(float(theta_i) - float(theta_j))
-    return float(min(diff, 2.0 * math.pi - diff))
+    return abs(angle_diff(float(theta_i), float(theta_j)))
 
 
 def _is_scalar_payload(value: Any) -> bool:

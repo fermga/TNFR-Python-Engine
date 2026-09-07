@@ -38,7 +38,9 @@ def _graph(kind=nx.Graph):
     if graph.is_multigraph():
         graph.add_edge("a", ("b", 2), weight=7.0)
     graph.graph["RANDOM_SEED"] = 17
-    for node, phase, pressure in zip(nodes, [0.2, -0.5, 0.7, 0.1], [0.2, -0.3, 0.7, -0.1]):
+    for node, phase, pressure in zip(
+        nodes, [0.2, -0.5, 0.7, 0.1], [0.2, -0.3, 0.7, -0.1]
+    ):
         set_attr(graph.nodes[node], ALIAS_THETA, phase)
         set_attr(graph.nodes[node], ALIAS_DNFR, pressure)
         graph.nodes[node].update(EPI=0.5, nu_f=1.0)
@@ -73,6 +75,7 @@ def test_unified_suite_matches_individual_fields_and_conservation_totals(kind):
         "coherence_coupling": unified.compute_coherence_coupling_field,
         "energy_density": unified.compute_energy_density,
         "action_density": unified.compute_action_density,
+        "historical_q_density": unified.compute_historical_q_density,
         "topological_charge": unified.compute_topological_charge,
         "charge_density": conservation.compute_charge_density,
         "current_j_phi": unified.compute_phase_current,
@@ -80,6 +83,7 @@ def test_unified_suite_matches_individual_fields_and_conservation_totals(kind):
     }
     for key, function in functions.items():
         assert result[key] == function(graph)
+    assert result["historical_q_density"] is not result["topological_charge"]
     psi = unified.compute_complex_geometric_field(graph)
     assert result["psi_magnitude"] == unified.compute_field_magnitude(psi)
     assert result["psi_phase"] == unified.compute_field_phase(psi)
@@ -95,13 +99,21 @@ def test_variational_suite_matches_standalone_results_and_energy_identity(kind):
     result = variational.compute_variational_suite(graph)
     snap = result["lagrangian_snapshot"]
     assert snap == variational.capture_lagrangian_snapshot(graph)
-    assert result["critical_points"] == variational.analyze_potential_critical_points(graph)
-    assert result["grammar_stationarity"] == variational.analyze_grammar_stationarity(graph)
+    assert result["critical_points"] == variational.analyze_potential_critical_points(
+        graph
+    )
+    assert result["grammar_stationarity"] == variational.analyze_grammar_stationarity(
+        graph
+    )
     assert snap.kinetic == variational.compute_kinetic_density(graph)
     assert snap.potential == variational.compute_potential_density(graph)
     assert snap.interaction == variational.compute_interaction_density(graph)
-    assert snap.hamiltonian == pytest.approx(variational.compute_hamiltonian_density(graph))
-    assert snap.total_hamiltonian == pytest.approx(conservation.compute_energy_functional(graph))
+    assert snap.hamiltonian == pytest.approx(
+        variational.compute_hamiltonian_density(graph)
+    )
+    assert snap.total_hamiltonian == pytest.approx(
+        conservation.compute_energy_functional(graph)
+    )
     sectors = variational.translate_sectors(graph)
     assert sectors["variational"] == {"T": snap.kinetic, "V": snap.potential}
     assert sectors["consistency_check"] < 1e-12
@@ -115,16 +127,21 @@ def test_conservation_snapshot_divergence_uses_its_recorded_currents(kind):
         neighbors = list(graph.neighbors(node))
         expected = (
             sum(snap.j_phi[j] - snap.j_phi[node] for j in neighbors) / len(neighbors)
-            + sum(snap.j_dnfr[j] - snap.j_dnfr[node] for j in neighbors) / len(neighbors)
+            + sum(snap.j_dnfr[j] - snap.j_dnfr[node] for j in neighbors)
+            / len(neighbors)
             if neighbors else 0.0
         )
         assert snap.divergence[node] == expected
         assert snap.charge_density[node] == snap.phi_s[node] + snap.k_phi[node]
-    assert conservation._energy_from_snapshot(snap) == conservation.compute_energy_functional(graph)
+    assert conservation._energy_from_snapshot(
+        snap
+    ) == conservation.compute_energy_functional(graph)
 
 
 @pytest.mark.parametrize("kind", GRAPH_KINDS)
-def test_readout_refreshes_after_canonical_operator_without_changing_old_snapshots(kind):
+def test_readout_refreshes_after_canonical_operator_without_changing_old_snapshots(
+    kind,
+):
     graph = _graph(kind)
     old_conservation = conservation.capture_conservation_snapshot(graph)
     old_variational = variational.capture_lagrangian_snapshot(graph)
@@ -163,7 +180,10 @@ def test_mutating_returned_maps_does_not_corrupt_a_later_readout():
 def test_empty_graph_preserves_empty_maps_and_zero_totals():
     graph = nx.Graph()
     result = unified.compute_unified_field_suite(graph)
-    assert result.pop("conservation_metrics") == {"noether_charge": 0, "structural_energy": 0}
+    assert result.pop("conservation_metrics") == {
+        "noether_charge": 0,
+        "structural_energy": 0,
+    }
     assert all(value == {} for value in result.values())
     suite = variational.compute_variational_suite(graph)
     assert suite["critical_points"] == []
@@ -172,4 +192,23 @@ def test_empty_graph_preserves_empty_maps_and_zero_totals():
     assert snap.total_hamiltonian == snap.total_lagrangian == 0
     assert snap == variational.capture_lagrangian_snapshot(graph)
     assert variational.translate_sectors(graph)["consistency_check"] == 0
-    assert all(value == {} for value in asdict(conservation.capture_conservation_snapshot(graph)).values())
+    assert all(
+        value == {}
+        for value in asdict(conservation.capture_conservation_snapshot(graph)).values()
+    )
+
+
+def test_correlation_helper_skips_complex_and_misaligned_maps():
+    result = unified.analyze_field_correlations(
+        {
+            "constant": {0: 1.0, 1: 1.0},
+            "varying": {0: 1.0, 1: 2.0},
+            "complex_coordinate": {0: 1.0j, 1: 2.0j},
+            "partial": {0: 3.0},
+        }
+    )
+    assert result == {}
+
+
+def test_correlation_helper_handles_empty_input():
+    assert unified.analyze_field_correlations({}) == {}

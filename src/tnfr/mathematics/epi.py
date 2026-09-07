@@ -209,6 +209,8 @@ class BEPIElement(_EPIValidators):
         return BEPIElement(new_f, new_a, self.x_grid)
 
     def _max_magnitude(self) -> float:
+        """Return the non-negative component supremum used by ``abs``."""
+
         mags = []
         if self.f_continuous.size:
             mags.append(float(np.max(np.abs(self.f_continuous))))
@@ -216,8 +218,46 @@ class BEPIElement(_EPIValidators):
             mags.append(float(np.max(np.abs(self.a_discrete))))
         return float(max(mags)) if mags else 0.0
 
-    def __float__(self) -> float:
+    def real_scalar_embedding(self) -> float | None:
+        """Return the exact signed scalar embedding, if one is present.
+
+        Both BEPI components must be non-empty and every entry in both must be
+        exactly the same finite real number.  Returning ``None`` distinguishes
+        richer elements from the valid scalar value zero.
+        """
+
+        if not self.f_continuous.size or not self.a_discrete.size:
+            return None
+        representative = complex(self.f_continuous[0])
+        if (
+            representative.imag == 0.0
+            and bool(np.isfinite(representative.real))
+            and bool(np.all(self.f_continuous == representative))
+            and bool(np.all(self.a_discrete == representative))
+        ):
+            return float(representative.real)
+        return None
+
+    def scalar_projection(self) -> float:
+        """Return the canonical scalar read-out of this EPI element.
+
+        A uniform real element is the trivial embedding produced by
+        :func:`tnfr.types.ensure_bepi` for a scalar.  Its signed value is the
+        scalar EPI carried by the graph engine.  A genuinely non-scalar or
+        complex element has no signed one-dimensional representative, so its
+        established maximum-component magnitude remains the projection.
+
+        Uniformity is intentionally exact.  Approximate equality would silently
+        discard resolved structural variation and could change sign near zero.
+        """
+
+        scalar = self.real_scalar_embedding()
+        if scalar is not None:
+            return scalar
         return self._max_magnitude()
+
+    def __float__(self) -> float:
+        return self.scalar_projection()
 
     def __abs__(self) -> float:
         return self._max_magnitude()
@@ -328,7 +368,9 @@ class BEPIElement(_EPIValidators):
     def __eq__(self, other: object) -> bool:
         """Check equality with another BEPIElement or numeric value.
 
-        When comparing to a numeric value, compares with the maximum magnitude.
+        Numeric comparison uses the same canonical scalar projection as
+        :class:`float`.  Thus scalar embeddings retain their sign while richer
+        BEPI elements retain the established maximum-magnitude comparison.
         """
         if isinstance(other, BEPIElement):
             return (
@@ -341,9 +383,7 @@ class BEPIElement(_EPIValidators):
                 and np.allclose(self.x_grid, other.x_grid, rtol=1e-12, atol=1e-12)
             )
         elif isinstance(other, (int, float)):
-            # Compare with maximum magnitude for numeric comparisons
-            # Use consistent tolerance with element comparisons
-            return abs(self._max_magnitude() - float(other)) < 1e-12
+            return abs(self.scalar_projection() - float(other)) < 1e-12
         return NotImplemented
 
 

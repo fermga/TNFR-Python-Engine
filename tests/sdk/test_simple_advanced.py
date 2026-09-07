@@ -1,14 +1,18 @@
-"""Tests for the upgraded Simple SDK — tetrad, conservation, telemetry.
+"""Tests for the upgraded Simple SDK — tetrad, balance, telemetry.
 
 Validates that the advanced TNFR physics stack (Structural Field Tetrad,
-conservation laws, integrity monitoring, grammar-aware dynamics) is
+scoped balance diagnostics, integrity monitoring, grammar-aware dynamics) is
 correctly exposed through the simplified Network API.
 """
 
 from __future__ import annotations
 
+import math
+
+import numpy as np
 import pytest
 
+from tnfr.constants.aliases import ALIAS_DNFR
 from tnfr.sdk.simple import (
     TNFR,
     ConservationReport,
@@ -91,10 +95,33 @@ class TestTetradSnapshot:
 class TestConservationReport:
     """ConservationReport creation and methods."""
 
-    def test_default_report_stable(self):
+    def test_default_report_is_unsampled(self):
         report = ConservationReport()
         assert report.lyapunov_stable is True
-        assert "STABLE" in report.summary()
+        assert report.candidate_energy_nonincreasing is None
+        assert report.candidate_energy_within_numerical_tolerance is None
+        assert report.candidate_energy_derivative is None
+        assert report.balance_quality is None
+        assert "UNSAMPLED" in report.summary()
+
+    def test_exact_candidate_trend_is_separate_from_legacy_tolerance(self):
+        report = ConservationReport(
+            lyapunov_stable=True,
+            lyapunov_derivative=1e-7,
+            sample_available=True,
+        )
+        assert report.candidate_energy_nonincreasing is False
+        assert report.candidate_energy_within_numerical_tolerance is True
+        assert "INCREASING" in report.summary()
+
+    def test_nonfinite_candidate_derivative_has_no_trend_verdict(self):
+        report = ConservationReport(
+            lyapunov_stable=False,
+            lyapunov_derivative=float("nan"),
+            sample_available=True,
+        )
+        assert report.candidate_energy_nonincreasing is None
+        assert "UNDEFINED" in report.summary()
 
     def test_conservation_from_network(self, small_ring: Network):
         report = small_ring.conservation()
@@ -102,6 +129,9 @@ class TestConservationReport:
         assert isinstance(report.noether_charge, float)
         assert isinstance(report.energy, float)
         assert isinstance(report.lyapunov_stable, bool)
+        assert report.structural_charge == report.noether_charge
+        assert report.candidate_energy == report.energy
+        assert report.sample_available is False
 
 
 # ---------------------------------------------------------------------------
@@ -147,13 +177,16 @@ class TestNetworkFields:
 
 
 class TestNetworkConservation:
-    """Conservation law integration in Network."""
+    """Finite structural-balance integration in Network."""
 
     def test_conservation_report_keys(self, small_ring: Network):
         c = small_ring.conservation()
         assert hasattr(c, "noether_charge")
         assert hasattr(c, "energy")
         assert hasattr(c, "lyapunov_stable")
+        assert hasattr(c, "structural_charge")
+        assert hasattr(c, "candidate_energy")
+        assert hasattr(c, "balance_quality")
 
     def test_conservation_multiple_calls_track_snapshots(self, small_ring: Network):
         """Calling conservation() twice populates Lyapunov derivative."""
@@ -162,7 +195,34 @@ class TestNetworkConservation:
         small_ring.evolve(1)
         c2 = small_ring.conservation()
         # Second call should have a real Lyapunov derivative
+        assert c1.sample_available is False
+        assert c2.sample_available is True
         assert isinstance(c2.lyapunov_derivative, float)
+        assert isinstance(c2.candidate_energy_derivative, float)
+        assert isinstance(c2.balance_quality, float)
+
+    def test_balance_alerts_are_read_only_and_do_not_validate_grammar(
+        self, small_ring: Network
+    ):
+        before = {
+            node: dict(data) for node, data in small_ring.G.nodes(data=True)
+        }
+        baseline = small_ring.balance_alerts()
+        after = {
+            node: dict(data) for node, data in small_ring.G.nodes(data=True)
+        }
+        assert before == after
+        assert baseline["sample_available"] is False
+        assert baseline["grammar_validated"] is False
+        assert baseline["violations_detected"] is False
+
+    def test_legacy_grammar_violations_method_is_balance_alias(
+        self, small_ring: Network
+    ):
+        result = small_ring.grammar_violations()
+        assert result["grammar_validation_applicable"] is False
+        assert result["grammar_validated"] is False
+        assert result["violations_detected"] is False
 
 
 # ---------------------------------------------------------------------------
@@ -251,6 +311,13 @@ class TestResults:
 
 
 class TestTNFRAnalyze:
+    @pytest.fixture(autouse=True)
+    def _materialize_pressure_channel(self, small_ring: Network) -> None:
+        """TNFR analysis requires an observed pressure channel per node."""
+
+        for node in small_ring.G:
+            small_ring.G.nodes[node][ALIAS_DNFR[0]] = 0.0
+
     """TNFR.analyze() one-shot comprehensive analysis."""
 
     def test_analyze_returns_complete_dict(self, small_ring: Network):
@@ -350,6 +417,13 @@ class TestSDKExports:
 class TestNodalDynamicsBridge:
     """SDK nodal-dynamics diagnostics for TNFR equation study."""
 
+    @pytest.fixture(autouse=True)
+    def _materialize_pressure_channel(self, small_ring: Network) -> None:
+        """Make the diagnostic pressure explicit instead of assuming zero."""
+
+        for node in small_ring.G:
+            small_ring.G.nodes[node][ALIAS_DNFR[0]] = 0.0
+
     def test_nodal_state_returns_report(self, small_ring: Network):
         state = small_ring.nodal_state(0)
         assert isinstance(state, NodalStateReport)
@@ -408,6 +482,12 @@ class TestSDKPrimalityBridge:
         assert isinstance(report.components, dict)
         assert isinstance(report.triad, dict)
 
+    def test_report_summary_does_not_overclassify_direct_invalid_instance(self):
+        report = PrimalityReport(
+            n=1, is_prime=False, delta_nfr=float("inf"), tolerance=0.0
+        )
+        assert "status=not-prime" in report.summary()
+
     def test_network_primality_includes_synergy(self, small_ring: Network):
         report = small_ring.primality(91)
         assert isinstance(report, PrimalityReport)
@@ -415,6 +495,16 @@ class TestSDKPrimalityBridge:
         assert "synergy_index" in report.network_synergy
         assert "coherence_alignment" in report.network_synergy
         assert small_ring.is_prime(91) is False
+
+    @pytest.mark.parametrize("candidate", [True, 17.5, float("nan")])
+    def test_primality_rejects_non_integral_candidates(self, candidate):
+        with pytest.raises((TypeError, ValueError)):
+            TNFR.primality(candidate)
+
+    @pytest.mark.parametrize("tolerance", [True, -1.0, float("nan"), float("inf")])
+    def test_primality_rejects_invalid_tolerance(self, tolerance):
+        with pytest.raises((TypeError, ValueError)):
+            TNFR.primality(17, tolerance=tolerance)
 
 
 class TestResearchFunctions:
@@ -498,10 +588,21 @@ class TestEmergentOntologyAndNumberTheory:
         assert sodium["reactivity"] > 0.0
 
     def test_network_particle(self, small_ring: Network):
-        p = small_ring.particle()
-        assert "winding" in p
-        assert "particle_class" in p
-        assert isinstance(p["chirality"], int)
+        winding = small_ring.winding()
+        assert "winding" in winding
+        assert "winding_class" in winding
+        assert isinstance(winding["orientation_sign"], int)
+        assert winding["telemetry_scope"] == "whole_graph_snapshot"
+        assert small_ring.particle() == winding
+
+    @pytest.mark.parametrize("value", [True, 10.9, float("nan")])
+    def test_count_apis_reject_lossy_or_nonfinite_values(self, value):
+        with pytest.raises((TypeError, ValueError)):
+            TNFR.primes(value)
+        with pytest.raises((TypeError, ValueError)):
+            TNFR.magic_numbers(value)
+        with pytest.raises((TypeError, ValueError)):
+            TNFR.element(value)
 
     def test_network_phase(self, small_ring: Network):
         ph = small_ring.phase()
@@ -561,8 +662,8 @@ class TestEmergentOntologyAndNumberTheory:
             1.0 / math.sqrt(geometry_gap)
         )
 
-    def test_symbolic_layer_reads_canonical_fixed_point(self):
-        """Chemistry ΔNFR is read through the SAME equilibrium predicate."""
+    def test_symbolic_layer_reads_shared_scalar_predicate(self):
+        """The shell distance reuses only the scalar equilibrium predicate."""
         from tnfr.metrics.common import is_structural_equilibrium
 
         assert is_structural_equilibrium(TNFR.element(10)["delta_nfr"])  # Ne
@@ -570,11 +671,7 @@ class TestEmergentOntologyAndNumberTheory:
 
 
 class TestStructuralEquilibriumPrimitive:
-    """The single canonical fixed-point primitive shared by every domain.
-
-    Particles read this fixed point directly (winding); numbers and elements
-    read it symbolically. The coherence map and equilibrium predicate are one.
-    """
+    """Shared scalar kernel and predicate across distinct domain models."""
 
     def test_structural_coherence_unity_at_equilibrium(self):
         from tnfr.metrics.common import structural_coherence
@@ -596,6 +693,23 @@ class TestStructuralEquilibriumPrimitive:
 
         assert structural_coherence(1.0, 1.0) == 1.0 / 3.0
 
+    def test_structural_coherence_avoids_finite_input_overflow(self):
+        from tnfr.metrics.common import structural_coherence
+
+        result = structural_coherence(1.0e308, 1.0e308)
+        assert math.isfinite(result)
+        assert result == pytest.approx(5.0e-309, rel=1.0e-12)
+
+    def test_structural_coherence_preserves_vectorized_overflow_safety(self):
+        from tnfr.metrics.common import structural_coherence
+
+        result = structural_coherence(
+            np.array([0.0, 1.0e308]), np.array([0.0, 1.0e308])
+        )
+
+        assert np.all(np.isfinite(result))
+        np.testing.assert_allclose(result, np.array([1.0, 5.0e-309]), rtol=1.0e-12)
+
     def test_is_structural_equilibrium_default_tolerance(self):
         from tnfr.metrics.common import is_structural_equilibrium
 
@@ -609,6 +723,20 @@ class TestStructuralEquilibriumPrimitive:
         assert is_structural_equilibrium(1e-13, eps_dnfr=1e-12)
         assert not is_structural_equilibrium(1e-10, eps_dnfr=1e-12)
 
+    @pytest.mark.parametrize("value", [True, False, float("inf"), float("nan")])
+    def test_structural_coherence_rejects_invalid_scalars(self, value):
+        from tnfr.metrics.common import structural_coherence
+
+        error = TypeError if isinstance(value, bool) else ValueError
+        with pytest.raises(error):
+            structural_coherence(value)
+
+    def test_equilibrium_rejects_negative_tolerance(self):
+        from tnfr.metrics.common import is_structural_equilibrium
+
+        with pytest.raises(ValueError, match="non-negative"):
+            is_structural_equilibrium(0.0, eps_dnfr=-1.0)
+
     def test_compute_coherence_uses_kernel(self):
         """compute_coherence delegates to the structural_coherence kernel."""
         from tnfr.metrics.common import compute_coherence, structural_coherence
@@ -616,6 +744,23 @@ class TestStructuralEquilibriumPrimitive:
         net = TNFR.create(6, seed=1).ring().evolve(3)
         c, dnfr_mean, depi_mean = compute_coherence(net.G, return_means=True)
         assert c == structural_coherence(dnfr_mean, depi_mean)
+
+    def test_compute_coherence_avoids_intermediate_mean_overflow(self):
+        import networkx as nx
+
+        from tnfr.metrics.common import compute_coherence, structural_coherence
+
+        graph = nx.path_graph(2)
+        for node in graph:
+            graph.nodes[node].update(delta_nfr=1.0e308, dEPI_dt=1.0e308)
+
+        coherence, dnfr_mean, depi_mean = compute_coherence(
+            graph, return_means=True
+        )
+        assert dnfr_mean == 1.0e308
+        assert depi_mean == 1.0e308
+        assert coherence == structural_coherence(dnfr_mean, depi_mean)
+        assert coherence > 0.0
 
     def test_number_theory_local_coherence_delegates(self):
         """Arithmetic local coherence routes through the canonical kernel."""
@@ -668,20 +813,41 @@ class TestFractalResonantNode:
             "centers",
             "concentration",
             "coherence",
+            "zero_pressure_fraction",
             "equilibrium_fraction",
+            "pressure_telemetry_available",
+            "dynamic_telemetry_available",
+            "depi_dt_source",
+            "triad_available",
             "coherence_length",
             "triad",
             "n_nodes",
         }
         assert 0.0 <= d["equilibrium_fraction"] <= 1.0
+        assert d["pressure_telemetry_available"] is True
+        assert d["dynamic_telemetry_available"] is True
+        assert d["depi_dt_source"] in {"recorded", "nodal_equation"}
+        assert d["triad_available"] is True
         assert set(d["triad"]) == {"epi_mean", "vf_mean", "phase_sync"}
 
     def test_network_nfr_uniform_is_one_nfr(self):
-        """A fully relaxed network is one uniform NFR at the attractor."""
+        """The evolved fixture reaches the measured equilibrium tolerance."""
         net = TNFR.create(8, seed=1).ring().evolve(6)
         d = net.nfr()
         assert d["equilibrium_fraction"] == 1.0
         assert d["coherence"] >= 0.7
+
+    def test_bare_graph_reports_missing_nodal_telemetry(self):
+        import networkx as nx
+
+        result = Network(nx.path_graph(3)).nfr()
+        assert result["pressure_telemetry_available"] is False
+        assert result["dynamic_telemetry_available"] is False
+        assert result["depi_dt_source"] is None
+        assert result["triad_available"] is False
+        assert result["zero_pressure_fraction"] is None
+        assert result["equilibrium_fraction"] is None
+        assert result["coherence"] is None
 
     def test_nodal_state_exposes_coherence_facet(self):
         """The per-node micro-NFR exposes its constitutive coherence."""

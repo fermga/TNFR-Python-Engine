@@ -50,23 +50,28 @@ from ..validation.base import ValidationOutcome
 #
 # SINGLE SOURCE OF TRUTH.  These sets are DERIVED from the per-operator
 # nodal-equation predicates in ``tnfr.config.physics_derivation`` — they are not
-# hand-maintained frozensets.  Every grammar consumer (the U1-U6 validator,
-# grammar_dynamics, grammar_patterns, the runtime preconditions) must import
-# from here.  The derivation rationale (why each operator is a generator /
+# hand-maintained frozensets. Every sequence-grammar consumer (grammar_core,
+# grammar_dynamics, grammar_patterns, and runtime preconditions) must import
+# from here. Canonical U6 consumes field snapshots and does not define another
+# operator-role set. The derivation rationale (why each operator is a generator /
 # closure / stabilizer / destabilizer / transformer) lives in the predicate
-# docstrings of physics_derivation, grounded in ∂EPI/∂t = νf·ΔNFR.
+# docstrings of physics_derivation. These are operator-role policies motivated
+# by ∂EPI/∂t = νf·ΔNFR, not trajectory theorems.
 
 
 # U1a: Generators - Create EPI from null/dormant states (AL, NAV, REMESH)
 GENERATORS = _derive_starts()
 
-# U1b: Closures - Leave system in coherent attractor states (SHA, NAV, REMESH, OZ)
+# U1b: Registered operational closures (SHA, NAV, REMESH, OZ). Membership does
+# not by itself establish that the terminal state is an attractor.
 CLOSURES = _derive_ends()
 
-# U2: Stabilizers - Reduce |ΔNFR| (negative feedback → integral converges): IL, THOL
+# U2: Stabilizer coverage roles (IL directly reduces pressure; THOL reorganizes
+# a bifurcation while preserving global form): IL, THOL
 STABILIZERS = _derive_stabilizers()
 
-# U2: Destabilizers - Increase |ΔNFR| (positive feedback): OZ, ZHIR, VAL
+# U2: Operators that incur destabilizer debt through pressure, phase, or
+# capacity stress: OZ, ZHIR, VAL
 DESTABILIZERS = _derive_destabilizers()
 
 # U3: Coupling/Resonance - Require phase verification
@@ -384,10 +389,10 @@ class TransitionCompatibilityError(StructuralGrammarError):
 
 
 class StructuralPotentialConfinementError(StructuralGrammarError):
-    """Error for structural potential drift exceeding escape threshold (U6).
+    """Error for structural potential drift exceeding the selected U6 policy.
 
-    Raised when Δ Φ_s ≥ π/2, indicating system escaping potential well
-    and entering fragmentation regime.
+    Raised when the supplied before/after fields have mean absolute drift
+    Δ Φ_s ≥ π/2. This is a telemetry alert, not proof of fragmentation.
     """
 
     def __init__(
@@ -397,10 +402,10 @@ class StructuralPotentialConfinementError(StructuralGrammarError):
         sequence: list[str] | None = None,
     ):
         msg = (
-            f"U6 STRUCTURAL POTENTIAL CONFINEMENT violated: "
-            f"Δ Φ_s = {delta_phi_s:.3f} ≥ {threshold:.3f} (escape threshold). "
-            f"System entering fragmentation regime. "
-            f"Valid sequences maintain Δ Φ_s ≈ 0.6 (30% of threshold)."
+            f"U6 structural-potential drift policy exceeded: "
+            f"mean |Δ Φ_s| = {delta_phi_s:.3f} ≥ {threshold:.3f}. "
+            f"Inspect the supplied trajectory; this alert alone does not prove "
+            f"fragmentation or a grammar-word violation."
         )
         super().__init__(
             rule="U6_CONFINEMENT",

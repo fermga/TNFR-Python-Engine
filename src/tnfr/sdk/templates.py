@@ -194,7 +194,9 @@ class TNFRTemplates:
 
         Species labels describe an operational random support graph, not an
         empirically calibrated ecosystem model. Every requested step is one
-        complete word: creative_mutation, network_sync, then consolidation.
+        complete workflow: an evidence-gated Mutation request, network_sync,
+        then consolidation. A request without observed rate evidence becomes
+        a recorded controlled-exploration abstention.
 
         Parameters
         ----------
@@ -233,7 +235,11 @@ class TNFRTemplates:
 
         words = ("creative_mutation", "network_sync", "consolidation")
         for step in range(evolution_steps):
-            network.apply_sequence(words[step % len(words)])
+            word = words[step % len(words)]
+            if word == "creative_mutation":
+                network.apply_evidence_gated_mutation()
+            else:
+                network.apply_sequence(word)
 
         return network.measure()
 
@@ -248,8 +254,9 @@ class TNFRTemplates:
 
         The small-world scaffold starts from a ring lattice, and the inspiration
         parameter controls rewiring. This topology choice is not a physical
-        measure of creativity. Exploration, mutation and synthesis remain the
-        existing named operator words.
+        measure of creativity. Exploration and synthesis remain named words;
+        the development phase requests evidence-gated Mutation and records a
+        controlled-exploration abstention when no observed rate exists.
 
         Parameters
         ----------
@@ -260,9 +267,10 @@ class TNFRTemplates:
             count. Zero retains the lattice; one attempts every rewire.
             Tiny or complete scaffolds may have no alternative edges.
         development_cycles : int, default=12
-            Non-negative number of canonical word applications. Exploration
-            and mutation receive one third each; synchronization receives
-            the remainder. A live grammar rejection stops execution.
+            Non-negative number of canonical workflow applications.
+            Exploration and the evidence-gated Mutation request receive one
+            third each; synchronization receives the remainder. A live
+            grammar rejection stops execution.
         random_seed : int, optional
             Random seed for reproducibility.
 
@@ -297,8 +305,9 @@ class TNFRTemplates:
         # Phase 1: Exploration (divergent thinking)
         network.apply_sequence("exploration", repeat=cycles_per_phase)
 
-        # Phase 2: Development (mutation and elaboration)
-        network.apply_sequence("creative_mutation", repeat=cycles_per_phase)
+        # Phase 2: request Mutation from observed evidence, otherwise retain a
+        # truthful controlled-exploration trajectory.
+        network.apply_evidence_gated_mutation(repeat=cycles_per_phase)
 
         # Phase 3: Integration (convergent synthesis)
         network.apply_sequence(

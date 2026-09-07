@@ -75,6 +75,57 @@ leaves the tetrad unchanged while scaling ∂EPI/∂t = ν_f ΔNFR. Consequently
 tetrad alone does not determine the full dynamical state. The structural triad,
 frequency, pressure law, and graph remain part of the model.
 
+### 3.4 Conditional reconstruction in the pure EPI channel
+
+The negative result above identifies capacity as a necessary predictive model
+parameter. A graph-specific positive result is also available when the complete
+nodal structural-potential field is retained.
+
+For fixed connected undirected conductance, let `K` be the canonical
+inverse-square shortest-path kernel. Pure EPI pressure gives
+
+```text
+Phi_s = -K L_rw x,    x = EPI.
+```
+
+Write `O=-K L_rw`. Since `L_rw 1=0`, uniform EPI shifts are always invisible to
+`Phi_s`. If `rank(O)=N-1`, this is the only invisible EPI direction. Appending
+the fixed-capacity conserved mean
+
+```text
+m(x) = sum_i (d_i/nu_i)x_i / sum_i(d_i/nu_i)
+```
+
+makes `[O; m]` injective and hence reconstructs absolute EPI in exact arithmetic.
+Together with the capacity vector and known graph, this determines the future
+pure-diffusion trajectory. Thus, for this restricted algebraic task, the full
+potential field plus one zero-mode scalar is sufficient for form reconstruction,
+while capacity remains necessary to determine the clock/generator. Numerical
+promotion additionally requires scale-aware rank and residual checks.
+
+[`epi_diffusion_reconstruction_certificate`](../src/tnfr/physics/observability.py)
+computes the potential and augmented ranks with separate scale-aware SVD
+thresholds, then requires a small relative reconstruction residual before it
+reports numerical success. The exhaustive
+NetworkX graph atlas through six nodes gives `rank(O)=N-1` on all 142 connected
+simple graphs in that finite domain. This is a measured finite-domain result,
+not a proof for every graph, weight or structural-potential kernel.
+
+Algebraic rank is also weaker than robust reconstruction. On a four-node
+weighted star with edge weights `[10^-3, 10^3, 10^3]`, the rank remains `N-1`
+but the nonzero singular-value condition number exceeds `10^10`. Thus an exact
+observer can be practically unstable under extreme geometry. Uniformly scaling
+all conductances to `10^-8` or `10^8` also preserves the structural nullity but
+can make the unscaled augmented observer numerically singular. The certificate
+reports its thresholds, condition number and relative residual so downstream
+inverse methods can distinguish algebraic identifiability from numerical
+resolution.
+
+Global tetrad summaries remain insufficient because they discard the nodal
+potential field. Changing capacity ratios also removes the fixed conserved mean,
+as shown by the time-varying result in
+[TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md).
+
 ## 4. Field scales and selected thresholds
 
 The exact phase-wrap maximum π must be distinguished from policy values
@@ -203,6 +254,9 @@ program assumptions and open conjectures.
 | Three operations bound every diffusion relaxation time | False; the 21-node path is a counterexample |
 | Laplacian compositions prove tetrad completeness | False inference; operator generation is not reconstruction |
 | Tetrad is a minimal sufficient statistic for a specified state quotient | Open; quotient and observable class must first be specified |
+| Full Φ_s plus one zero-mode scalar reconstructs EPI | Conditional on `rank(-K L_rw)=N-1`, fixed graph and pure EPI pressure |
+| Rank condition holds on every connected graph | Open; measured on all 142 connected simple graph-atlas cases through six nodes |
+| Full-rank potential reconstruction is uniformly well-conditioned | False across unrestricted weights; extreme weighted stars are arbitrarily ill-conditioned candidates |
 
 Operator gains, discretization steps, numerical clamps, and safety thresholds
 remain configured policies unless an explicit derivation with its assumptions

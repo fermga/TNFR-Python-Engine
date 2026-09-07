@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     import logging
 
 from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-from ...constants.canonical import DELTA_PHI_MAX, VAL_MIN_EPI
+from ...constants.canonical import VAL_MIN_EPI
 
 __all__ = [
     "OperatorPreconditionError",
@@ -266,32 +266,42 @@ def validate_phase_gate_u3(
     """U3 hard invariant: UM/RA require a phase-compatible neighbour.
 
     Canonical Invariant #2 / grammar U3: Coupling and Resonance are admissible
-    only under the resonance condition ``|φ_i − φ_j| ≤ Δφ_max`` with the
+    only under the resonance condition ``|wrap(φ_i − φ_j)| ≤ Δφ_max`` with the
     canonical gate ``DELTA_PHI_MAX = π/2``.  This check runs unconditionally
     before any state mutation and **raises** (it is not a warning and cannot be
     disabled via ``VALIDATE_OPERATOR_PRECONDITIONS``).
 
-    A node with neighbours must have at least one within the gate; otherwise the
-    operator would couple/propagate into antiphase (destructive) and violate U3.
-    Isolated nodes pass here — connectivity is a separate, configurable
-    precondition.
+    A runtime target must have at least one neighbour within the effective
+    gate; otherwise the operator would be a no-op or couple/propagate into
+    destructive phase opposition. ``UM_MAX_PHASE_DIFF`` may tighten the UM
+    gate but cannot widen the hard graph limit.
     """
-    from ...utils.numeric import angle_diff
+    from ...alias import get_attr
+    from .._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
 
-    neighbors = list(G.neighbors(node))
-    if not neighbors:
-        return
-    theta_i = _get_node_attr(G, node, ALIAS_THETA)
-    max_phase_diff = float(G.graph.get("DELTA_PHI_MAX", DELTA_PHI_MAX))
-    for neighbor in neighbors:
-        theta_j = _get_node_attr(G, neighbor, ALIAS_THETA)
-        if abs(angle_diff(theta_i, theta_j)) <= max_phase_diff:
-            return
-    raise OperatorPreconditionError(
-        operator,
-        f"U3 phase gate: no phase-compatible neighbour "
-        f"(all |Δφ| > {max_phase_diff:.4f} = Δφ_max). Align phases first.",
+    operator_code = (
+        "UM" if str(operator).casefold() in {"um", "coupling"} else "RA"
     )
+    def phase(candidate: "NodeId") -> object:
+        return get_attr(
+            G.nodes[candidate],
+            ALIAS_THETA,
+            None,
+            strict=True,
+            conv=lambda value: value,
+        )
+    try:
+        resolve_u3_phase_neighbors(
+            G.graph,
+            phase(node),
+            G.neighbors(node),
+            phase_getter=phase,
+            operator_code=operator_code,
+        )
+    except U3PhaseGateError as exc:
+        raise OperatorPreconditionError(
+            operator, f"U3 phase gate: {exc}"
+        ) from exc
 
 
 def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
@@ -311,10 +321,9 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
         Minimum EPI magnitude required for coupling
     UM_MIN_VF : float, default 0.01
         Minimum structural frequency required for coupling
-    UM_STRICT_PHASE_CHECK : bool, default True (changed from False per U3)
-        Enable strict phase compatibility checking with existing neighbors.
-        **MANDATORY per AGENTS.md Invariant #2**: "no coupling is valid without
-        explicit phase verification (synchrony)"
+    UM_STRICT_PHASE_CHECK : bool
+        Retained as legacy configuration only. It cannot disable the hard U3
+        runtime invariant.
     UM_MAX_PHASE_DIFF : float, default π/2
         Maximum phase difference for compatible coupling (radians)
 
@@ -332,17 +341,11 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
         - Graph has no other nodes
         - EPI below threshold
         - Structural frequency below threshold
-        - No phase-compatible neighbors (when strict checking enabled)
+        - No phase-compatible neighbors
 
     Notes
     -----
-    **IMPORTANT**: Phase compatibility check is now MANDATORY by default
-    (UM_STRICT_PHASE_CHECK=True) to align with AGENTS.md Invariant #2 and U3.
-
-    [Legacy note: Previously referenced RC3. See docs/grammar/DEPRECATION-INDEX.md]
-
-    set UM_STRICT_PHASE_CHECK=False to disable (NOT RECOMMENDED - violates
-    canonical physics requirements).
+    Phase compatibility is mandatory and cannot be disabled by legacy flags.
 
     Examples
     --------
@@ -365,8 +368,6 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
 
     [Legacy: Previously referenced EMERGENT_GRAMMAR_ANALYSIS.md RC3]
     """
-    import math
-
     # Basic graph check - at least one other node required
     if G.number_of_nodes() <= 1:
         raise OperatorPreconditionError(
@@ -390,32 +391,9 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
             "Coupling", f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})"
         )
 
-    # U3: Phase compatibility check (was RC3)
-    # Per AGENTS.md Invariant #2: "no coupling is valid without explicit phase verification"
-    # Changed from False to True to align with canonical physics requirements
-    strict_phase = bool(G.graph.get("UM_STRICT_PHASE_CHECK", True))
-    if strict_phase:
-        neighbors = list(G.neighbors(node))
-        if neighbors:
-            from ...utils.numeric import angle_diff
-
-            theta_i = _get_node_attr(G, node, ALIAS_THETA)
-            max_phase_diff = float(G.graph.get("UM_MAX_PHASE_DIFF", DELTA_PHI_MAX))
-
-            # Check if at least one neighbor is phase-compatible
-            has_compatible = False
-            for neighbor in neighbors:
-                theta_j = _get_node_attr(G, neighbor, ALIAS_THETA)
-                phase_diff = abs(angle_diff(theta_i, theta_j))
-                if phase_diff <= max_phase_diff:
-                    has_compatible = True
-                    break
-
-            if not has_compatible:
-                raise OperatorPreconditionError(
-                    "Coupling",
-                    f"No phase-compatible neighbors (all |Δθ| > {max_phase_diff:.3f})",
-                )
+    # U3 is a hard runtime invariant even when configurable preconditions are
+    # disabled. Calling this validator directly must preserve that contract.
+    validate_phase_gate_u3(G, node, "Coupling")
 
 
 def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:
@@ -843,17 +821,43 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
             f"set THOL_ALLOW_ISOLATED=True to enable internal-only bifurcation.",
         )
 
-    # 5. EPI history validation (for d²EPI/dt² computation)
-    epi_history = G.nodes[node].get("epi_history", [])
+    # 5. EPI history validation (for d²EPI/dt² computation).  Use the same
+    # source selector as the public acceleration diagnostic: timestamped
+    # physical evidence is authoritative, followed by the canonical and
+    # private unit-step compatibility histories.
+    from ...errors import TNFRValueError
+    from ..nodal_equation import (
+        _select_acceleration_history,
+        compute_d2epi_dt2,
+    )
+
+    try:
+        history_source, active_history = _select_acceleration_history(
+            G.nodes[node]
+        )
+        history_length = 0 if active_history is None else len(active_history)
+    except (OverflowError, TypeError, TNFRValueError) as exc:
+        raise OperatorPreconditionError(
+            "Self-organization",
+            "Active EPI history must be a sized, indexed history",
+        ) from exc
     min_history_length = int(G.graph.get("THOL_MIN_HISTORY_LENGTH", 3))
 
-    if len(epi_history) < min_history_length:
+    if history_length < min_history_length:
         raise OperatorPreconditionError(
             "Self-organization",
             f"Insufficient EPI history for acceleration computation "
-            f"(have {len(epi_history)}, need ≥{min_history_length}). "
+            f"({history_source}: have {history_length}, need ≥{min_history_length}). "
             f"Apply operators to build history before THOL.",
         )
+
+    try:
+        d2_epi = abs(compute_d2epi_dt2(G, node, store=False))
+    except TNFRValueError as exc:
+        raise OperatorPreconditionError(
+            "Self-organization",
+            f"Invalid {history_source} acceleration evidence: {exc}",
+        ) from exc
 
     # 6. Metabolic context validation (if metabolism enabled)
     if G.graph.get("THOL_METABOLIC_ENABLED", True):
@@ -866,26 +870,13 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
             )
 
     # R4 Extended: Detect and record destabilizer type for telemetry
-    _record_destabilizer_context(G, node, logger)
+    from .mutation import record_destabilizer_context
 
-    # NEW: Bifurcation threshold validation (∂²EPI/∂t² > τ)
-    # This is NON-BLOCKING - THOL can execute without bifurcation
-    # Note: SelfOrganization uses its own _compute_epi_acceleration which looks at 'epi_history'
-    # while compute_d2epi_dt2 looks at '_epi_history'. We check both for compatibility.
+    record_destabilizer_context(G, node, logger)
 
-    # Get EPI history from node (try both keys for compatibility)
-    history = G.nodes[node].get("_epi_history") or G.nodes[node].get("epi_history", [])
-
-    # Compute d²EPI/dt² directly from history (same logic as both functions)
-    if len(history) >= 3:
-        epi_t = float(history[-1])
-        epi_t1 = float(history[-2])
-        epi_t2 = float(history[-3])
-        d2_epi_signed = epi_t - 2.0 * epi_t1 + epi_t2
-        d2_epi = abs(d2_epi_signed)
-    else:
-        # Insufficient history - should have been caught earlier, but handle gracefully
-        d2_epi = 0.0
+    # Bifurcation threshold validation is non-blocking: THOL can still apply
+    # coherence and metabolic effects when the shared acceleration stays in
+    # the closed window.
 
     # Get bifurcation threshold from graph configuration
     # Try BIFURCATION_THRESHOLD_TAU first (canonical), then THOL_BIFURCATION_THRESHOLD
@@ -916,191 +907,16 @@ def validate_self_organization(G: "TNFRGraph", node: "NodeId") -> None:
         )
 
 
-# Moved to mutation.py module for modularity
-# Import here for backward compatibility
-try:
-    from .mutation import record_destabilizer_context as _record_destabilizer_context
-except ImportError:
-    # Fallback if mutation.py not available (shouldn't happen)
-    def _record_destabilizer_context(
-        G: "TNFRGraph", node: "NodeId", logger: "logging.Logger"
-    ) -> None:
-        """Fallback implementation - see mutation.py for canonical version."""
-        G.nodes[node]["_mutation_context"] = {
-            "destabilizer_operator": None,
-            "destabilizer_distance": None,
-            "recent_history": [],
-        }
-
-
 def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
-    """ZHIR - Mutation requires node to be in valid structural state.
+    """Validate the canonical ZHIR gate and optional U4b preconditions.
 
-    Implements canonical TNFR requirements for mutation (AGENTS.md §11, TNFR.pdf §2.2.11):
-
-    1. Minimum νf for phase transformation capacity
-    2. **∂EPI/∂t > ξ: Structural change velocity exceeds threshold**
-    3. **U4b Part 1: Prior IL (Coherence) for stable transformation base**
-    4. **U4b Part 2: Recent destabilizer (~3 ops) for threshold energy**
-
-    Also detects and records the destabilizer that enabled this mutation
-    for telemetry and structural tracing purposes.
-
-    Parameters
-    ----------
-    G : TNFRGraph
-        Graph containing the node
-    node : NodeId
-        Node to validate
-
-    Raises
-    ------
-    OperatorPreconditionError
-        If node state is unsuitable for mutation or U4b requirements not met
-
-    Configuration Parameters
-    ------------------------
-    ZHIR_MIN_VF : float, default 0.05
-        Minimum structural frequency for phase transformation
-    ZHIR_THRESHOLD_XI : float, default 0.1
-        Threshold for ∂EPI/∂t velocity check
-    VALIDATE_OPERATOR_PRECONDITIONS : bool, default False
-        Enable strict U4b validation (IL precedence + destabilizer requirement)
-    ZHIR_REQUIRE_IL_PRECEDENCE : bool, default False
-        Require prior IL even if VALIDATE_OPERATOR_PRECONDITIONS=False
-    ZHIR_REQUIRE_DESTABILIZER : bool, default False
-        Require recent destabilizer even if VALIDATE_OPERATOR_PRECONDITIONS=False
-
-    Notes
-    -----
-    **Canonical threshold verification (∂EPI/∂t > ξ)**:
-
-    ZHIR is a phase transformation that requires sufficient structural reorganization
-    velocity to justify the transition. The threshold ξ represents the minimum rate
-    of structural change needed for a phase shift to be physically meaningful.
-
-    - If ∂EPI/∂t < ξ: Logs warning (soft check for backward compatibility)
-    - If ∂EPI/∂t ≥ ξ: Logs success, sets validation flag
-    - If insufficient history: Logs warning, cannot verify
-
-    **U4b Validation (Grammar Rule)**:
-
-    When strict validation enabled (VALIDATE_OPERATOR_PRECONDITIONS=True):
-    - **Part 1**: Prior IL (Coherence) required for stable base
-    - **Part 2**: Recent destabilizer (OZ/VAL/etc) required within ~3 ops
-
-    Without strict validation: Only telemetry/warnings logged.
-
-    This function implements R4 Extended telemetry by analyzing the glyph_history
-    to determine which destabilizer (strong/moderate/weak) enabled the mutation.
-    The destabilizer context is stored in node metadata for structural tracing.
+    The implementation is centralized in ``preconditions.mutation``.  The
+    signed, strict ``dEPI/dt > xi`` trigger is always enforced; configurable
+    U4b checks supplement the grammar layer when explicitly enabled.
     """
-    import logging
+    from .mutation import validate_mutation_strict
 
-    logger = logging.getLogger(__name__)
-
-    # Mutation is a phase change, require minimum vf for meaningful transition
-    vf = _get_node_attr(G, node, ALIAS_VF)
-    min_vf = float(G.graph.get("ZHIR_MIN_VF", 0.05))
-    if vf < min_vf:
-        raise OperatorPreconditionError(
-            "Mutation",
-            f"Structural frequency too low for mutation (νf={vf:.3f} < {min_vf:.3f})",
-        )
-
-    # NEW: Threshold crossing validation (∂EPI/∂t > ξ)
-    # Get EPI history - check both keys for compatibility
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
-        "_epi_history", []
-    )
-
-    if len(epi_history) >= 2:
-        # Compute ∂EPI/∂t (discrete approximation using last two points)
-        # For discrete operator applications with Δt=1: ∂EPI/∂t ≈ EPI_t - EPI_{t-1}
-        depi_dt = abs(epi_history[-1] - epi_history[-2])
-
-        # Get threshold from configuration
-        xi_threshold = float(G.graph.get("ZHIR_THRESHOLD_XI", 0.1))
-
-        # Verify threshold crossed
-        if depi_dt < xi_threshold:
-            # Allow mutation but log warning (soft check for backward compatibility)
-            logger.warning(
-                f"Node {node}: ZHIR applied with ∂EPI/∂t={depi_dt:.3f} < ξ={xi_threshold}. "
-                f"Mutation may lack structural justification. "
-                f"Consider increasing dissonance (OZ) first."
-            )
-            G.nodes[node]["_zhir_threshold_warning"] = True
-        else:
-            # Threshold met - log success
-            logger.info(
-                f"Node {node}: ZHIR threshold crossed (∂EPI/∂t={depi_dt:.3f} > ξ={xi_threshold})"
-            )
-            G.nodes[node]["_zhir_threshold_met"] = True
-    else:
-        # Insufficient history - cannot verify threshold
-        logger.warning(
-            f"Node {node}: ZHIR applied without sufficient EPI history "
-            f"(need ≥2 points, have {len(epi_history)}). Cannot verify threshold."
-        )
-        G.nodes[node]["_zhir_threshold_unknown"] = True
-
-    # U4b Part 1: IL Precedence Check (stable base for transformation)
-    # Check if strict validation enabled
-    strict_validation = bool(G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
-    require_il = strict_validation or bool(
-        G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False)
-    )
-
-    if require_il:
-        # Get glyph history
-        glyph_history = G.nodes[node].get("glyph_history", [])
-
-        # Import glyph_function_name to convert glyphs to operator names
-        from ..grammar import glyph_function_name
-
-        # Convert history to operator names
-        history_names = [glyph_function_name(g) for g in glyph_history]
-
-        # Check for prior IL (coherence)
-        from ..grammar_debt import node_has_prior_coherence
-
-        il_found = node_has_prior_coherence(G.nodes[node])
-
-        if not il_found:
-            raise OperatorPreconditionError(
-                "Mutation",
-                "U4b violation: ZHIR requires prior IL (Coherence) for stable transformation base. "
-                "Apply Coherence before mutation sequence. "
-                f"Recent history: {history_names[-5:] if len(history_names) > 5 else history_names}",
-            )
-
-        logger.debug(
-            f"Node {node}: ZHIR IL precedence satisfied (prior Coherence found)"
-        )
-
-    # U4b Part 2: Recent Destabilizer Check (threshold energy for bifurcation)
-    # R4 Extended: Detect and record destabilizer type for telemetry
-    _record_destabilizer_context(G, node, logger)
-
-    # If strict validation enabled, enforce destabilizer requirement
-    require_destabilizer = strict_validation or bool(
-        G.graph.get("ZHIR_REQUIRE_DESTABILIZER", False)
-    )
-
-    if require_destabilizer:
-        context = G.nodes[node].get("_mutation_context", {})
-        destabilizer_found = context.get("destabilizer_operator")
-
-        if destabilizer_found is None:
-            recent_history = context.get("recent_history", [])
-            raise OperatorPreconditionError(
-                "Mutation",
-                "U4b violation: ZHIR requires recent destabilizer (OZ/VAL/etc) within ~3 ops. "
-                f"Recent history: {recent_history}. "
-                "Apply Dissonance or Expansion to elevate ΔNFR first.",
-            )
-
+    validate_mutation_strict(G, node)
 
 def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
     """NAV - Comprehensive canonical preconditions for transition.

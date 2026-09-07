@@ -11,6 +11,7 @@ This module is PRIVATE (leading underscore) — it is not exported via
 from __future__ import annotations
 
 import math
+from numbers import Real
 from typing import Any, Iterable
 
 from ..mathematics.unified_numerical import kahan_sum_nd, np
@@ -23,12 +24,90 @@ except ImportError:
     ALIAS_DNFR = ["delta_nfr", "dnfr"]
 
 # ---------------------------------------------------------------------------
+# Numeric validation
+# ---------------------------------------------------------------------------
+
+
+def finite_real_scalar(value: Any, name: str) -> float:
+    """Return one finite real scalar while rejecting logical values.
+
+    Python and NumPy booleans are integer-like, so an unchecked ``float``
+    conversion silently turns state labels into physical zero/one values.  All
+    physics readers that require a scalar state channel should use this helper
+    before applying channel-specific sign constraints.
+    """
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
+        raise ValueError(f"{name} must be a finite real scalar, not boolean")
+    try:
+        result = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(f"{name} must be a finite real scalar") from exc
+    if not math.isfinite(result):
+        raise ValueError(f"{name} must be a finite real scalar")
+    return result
+
+
+def finite_real_series(
+    values: Any,
+    name: str,
+    *,
+    nonnegative: bool = False,
+    nonempty: bool = False,
+) -> np.ndarray:
+    """Return a strict finite one-dimensional real series.
+
+    Validation precedes float coercion so logical and textual samples cannot
+    silently become physical zero/one values or parsed numbers. A detached
+    float64 array is returned after every element has passed the scalar
+    contract.
+    """
+
+    if isinstance(values, (str, bytes, bytearray)):
+        raise ValueError(f"{name} must be a numeric one-dimensional series")
+    try:
+        raw = np.asarray(values, dtype=object)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"{name} must be a numeric one-dimensional series"
+        ) from exc
+    if raw.ndim != 1:
+        raise ValueError(f"{name} must be a one-dimensional series")
+    if nonempty and raw.size == 0:
+        raise ValueError(f"{name} must not be empty")
+
+    normalized: list[float] = []
+    for index, value in enumerate(raw):
+        if isinstance(value, (bool, np.bool_)):
+            raise ValueError(
+                f"{name} must contain only finite real numeric values; "
+                f"item {index} is boolean"
+            )
+        if isinstance(value, (str, bytes, bytearray)):
+            raise ValueError(
+                f"{name} must contain only finite real numeric values; "
+                f"item {index} is textual"
+            )
+        try:
+            normalized.append(finite_real_scalar(value, f"{name}[{index}]"))
+        except ValueError as exc:
+            raise ValueError(
+                f"{name} must contain only finite real numeric values; "
+                f"item {index} is invalid"
+            ) from exc
+
+    result = np.asarray(normalized, dtype=float)
+    if nonnegative and np.any(result < 0.0):
+        raise ValueError(f"{name} must contain nonnegative magnitudes")
+    return result
+
+
+# ---------------------------------------------------------------------------
 # Phase / angle helpers
 # ---------------------------------------------------------------------------
 
 
 def wrap_angle(angle: float) -> float:
-    """Map *angle* to the interval [-π, π]."""
+    """Map *angle* to the half-open interval [-π, π)."""
     return (angle + math.pi) % (2 * math.pi) - math.pi
 
 

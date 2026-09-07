@@ -22,7 +22,9 @@ without duplicating logic.
 
 from __future__ import annotations
 
+import hashlib
 import time
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -44,7 +46,7 @@ except ImportError:  # pragma: no cover - handled upstream
     HAS_SPECTRAL = False
 
 try:
-    from ..utils.cache import CacheLevel, cache_tnfr_computation
+    from ..utils.cache import CacheLevel, _compute_dependency_hash, cache_tnfr_computation
 
     _CORE_CACHE_AVAILABLE = True
 except ImportError:  # pragma: no cover - cache infra optional in some builds
@@ -58,7 +60,11 @@ from ..constants.operational import (
 from ..constants.canonical import PI  # π ≈ 3.1416 (structural scale)
 
 try:
-    from .multi_modal_cache import CacheEntryType, get_unified_cache
+    from .multi_modal_cache import (
+        CacheEntryType,
+        cache_signature_digest,
+        get_unified_cache,
+    )
 
     HAS_UNIFIED_CACHE = True
 except ImportError:  # pragma: no cover
@@ -73,7 +79,7 @@ except ImportError:  # pragma: no cover
     HAS_STRUCTURAL_CACHE = False
 
 
-@dataclass
+@dataclass(frozen=True, slots=True)
 class SpectralBasis:
     """Cached Laplacian eigensystem."""
 
@@ -130,7 +136,7 @@ class FFTCacheCoordinator:
 
         if not force_recompute and signature in self._spectral_cache:
             self._stats.spectral_hits += 1
-            return self._spectral_cache[signature]
+            return self._copy_basis(self._spectral_cache[signature])
 
         self._stats.spectral_misses += 1
         eigenvalues, eigenvectors = self._load_spectrum_with_repo_cache(G, signature)
@@ -146,13 +152,13 @@ class FFTCacheCoordinator:
             )
 
         basis = SpectralBasis(
-            eigenvalues=eigenvalues,
-            eigenvectors=eigenvectors,
+            eigenvalues=self._readonly_array(eigenvalues),
+            eigenvectors=self._readonly_array(eigenvectors),
             signature=signature,
             computed_at=time.time(),
         )
         self._spectral_cache[signature] = basis
-        return basis
+        return self._copy_basis(basis)
 
     def register_spectral_state(self, G: Any, spectral_state: Any) -> None:
         """Optional helper for storing richer spectral states in unified cache."""
@@ -180,20 +186,30 @@ class FFTCacheCoordinator:
     ) -> Any:
         """Return cached FFT kernel (window, filter, etc.)."""
 
-        signature = self._graph_signature(G)
-        params_str = self._serialize_params(kernel_params)
-        cache_key = f"{signature}:{kernel_name}:{params_str}"
+        signature = self._kernel_graph_signature(G)
+        parameter_digest = self._serialize_params(
+            {"kernel_name": kernel_name, "kernel_params": kernel_params or {}}
+        )
+        cache_key = f"{signature}:{parameter_digest}"
 
         if cache_key in self._kernel_cache:
             self._stats.kernel_hits += 1
-            return self._kernel_cache[cache_key]
+            return deepcopy(self._kernel_cache[cache_key])
 
         kernel = builder()
-        self._kernel_cache[cache_key] = kernel
+        try:
+            cached_kernel = deepcopy(kernel)
+        except Exception:
+            self._stats.kernel_misses += 1
+            return kernel
+        self._kernel_cache[cache_key] = cached_kernel
         self._stats.kernel_misses += 1
 
         if self._unified_cache is not None:
-            combined_params = {"kernel": kernel_name, **(kernel_params or {})}
+            combined_params = {
+                "kernel_name": kernel_name,
+                "kernel_params": kernel_params or {},
+            }
             self._unified_cache.get(
                 CacheEntryType.FFT_OPERATION,
                 G,
@@ -254,17 +270,64 @@ class FFTCacheCoordinator:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+    @classmethod
+    def _copy_basis(cls, basis: SpectralBasis) -> SpectralBasis:
+        """Return a detached basis whose arrays cannot modify cached storage."""
+
+        return SpectralBasis(
+            eigenvalues=cls._readonly_array(basis.eigenvalues),
+            eigenvectors=cls._readonly_array(basis.eigenvectors),
+            signature=basis.signature,
+            computed_at=basis.computed_at,
+        )
+
+    @staticmethod
+    def _readonly_array(values: Any) -> np.ndarray:
+        """Copy an array and freeze it before admitting it to the cache."""
+
+        result = np.array(values, copy=True)
+        result.setflags(write=False)
+        return result
+
     def _graph_signature(self, G: Any) -> str:
-        if self._unified_cache is not None:
-            return self._unified_cache.compute_graph_signature(G)
+        """Return the live labelled weighted-topology signature.
+
+        A spectral basis depends on edge conductance and node order, but never
+        on EPI, phase or structural frequency. Recomputing the dependency hash
+        prevents a mutable graph from retaining a stale per-object signature.
+        """
+        if _CORE_CACHE_AVAILABLE:
+            topology = _compute_dependency_hash(G, {"graph_topology"})
+            node_order = tuple(
+                (type(node).__module__, type(node).__qualname__, repr(node))
+                for node in G.nodes()
+            )
+            return hashlib.sha256(
+                repr((topology, node_order)).encode("utf-8")
+            ).hexdigest()
         if self._structural_cache is not None:
             return self._structural_cache.get_topology_hash(G)
         return f"graph_{id(G)}"
 
-    def _serialize_params(self, params: dict[str, Any] | None) -> str:
+    def _kernel_graph_signature(self, G: Any) -> str:
+        """Return a complete live-state key for an arbitrary kernel builder."""
+
+        if self._unified_cache is not None:
+            return self._unified_cache.compute_graph_signature(G)
+        graph_state = (
+            tuple(G.nodes(data=True)),
+            tuple(G.edges(keys=True, data=True))
+            if G.is_multigraph()
+            else tuple(G.edges(data=True)),
+            dict(G.graph),
+        )
+        return cache_signature_digest(graph_state)
+
+    @staticmethod
+    def _serialize_params(params: dict[str, Any] | None) -> str:
         if not params:
             return "default"
-        return "|".join(f"{k}={v}" for k, v in sorted(params.items()))
+        return cache_signature_digest(params)
 
     def _load_spectrum_with_repo_cache(
         self,

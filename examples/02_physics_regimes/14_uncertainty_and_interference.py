@@ -67,7 +67,7 @@ def run_uncertainty_demo(results_dir):
 
         # Plot Time Domain
         plt.subplot(3, 2, 2 * i + 1)
-        plt.plot(t, epi_mag, color="blue", label=f"|EPI(t)|, $\sigma_t$={sigma_t}")
+        plt.plot(t, epi_mag, color="blue", label=rf"|EPI(t)|, $\sigma_t$={sigma_t}")
         plt.plot(t, np.real(epi_packet), color="blue", alpha=0.3)
         plt.title(f"Structural Form (Time/Space) - Width {sigma_t}")
         plt.grid(True, alpha=0.3)

@@ -300,7 +300,7 @@ The connected homogeneous formulas require their stated assumptions; the
 spectral stability of nonstationary modes does not alone settle stationary
 sources, nonlinear operator gains, or general U2 compliance.
 
-### 7.2 Emergent Symplectic Substrate
+### 7.2 Auxiliary Symplectic Substrate
 
 The substrate implementation specifies an ambient phase space with pairs
 (K_φ, J_φ) and (Φ_s, J_ΔNFR). Its isotropic Hamiltonian is
@@ -374,7 +374,7 @@ A test count measures tested behavior; it does not establish an open theorem.
 | Integrity monitor | `src/tnfr/physics/integrity.py` |
 | Canonical constants | `src/tnfr/constants/canonical.py` |
 | SDK access (tetrad, conservation) | `src/tnfr/sdk/simple.py` |
-| Emergent symplectic substrate | `src/tnfr/physics/symplectic_substrate.py` |
+| Auxiliary symplectic substrate | `src/tnfr/physics/symplectic_substrate.py` |
 | Structural diffusion (transport) | `src/tnfr/physics/structural_diffusion.py` |
 | Test suite | `tests/` (current executable verification; counts are obtained from pytest) |
 
@@ -420,7 +420,7 @@ analysis = TNFR.analyze(net)               # Comprehensive analysis
 - [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Four diagnostic channels and open reconstruction/minimality questions
 - [DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) — Exact hypotheses, numerical policies, and finite-graph witnesses
 - [MATHEMATICAL_DYNAMICS_BASIS.md](MATHEMATICAL_DYNAMICS_BASIS.md) — Broader derivative-tower context, read with the scope distinctions above
-- [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Noether-like conservation laws
+- [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Balance diagnostics and restricted exact conservation results
 - [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) — Lagrangian formulation
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions
 - [TNFR.pdf](TNFR.pdf) — Original theoretical derivations

@@ -4,6 +4,339 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added — 2026-09-07 temporal Mutation and transactional operators
+
+- Added one pure Mutation trigger certificate that separates the instantaneous
+  nodal prediction `nu_f * DeltaNFR`, the observed signed two-sample EPI secant
+  and the three-sample structural acceleration. Timestamped histories use their
+  physical intervals and require a fresh endpoint; legacy histories retain an
+  explicit unit-operator-step basis. Missing, invalid or stale observations
+  abstain without becoming false non-crossings.
+- Recorded bounded timestamped EPI histories in the runtime, reset them across
+  same-time hybrid jumps, made autonomous ZHIR selection fall back to IL with
+  provenance, and added atomic whole-word SDK preflight across every target.
+  Fluent builders and templates now request evidence-gated Mutation, record an
+  explicit exploration abstention when the gate cannot be certified and never
+  manufacture threshold evidence.
+- Centralized structural acceleration in `compute_d2epi_dt2`, including the
+  unequal-timestep second difference, canonical BEPI scalarization and a
+  read-only mode used by Mutation and Self-organization.
+- Made propagated Dissonance and Self-organization full graph transactions:
+  all factors, histories, propagation proposals, hierarchy changes, telemetry
+  and monitoring sinks are validated before commit and restored on a late
+  failure. Common operator preflight now also clears failed integrity-monitor
+  proposals.
+- Synchronized the public runtime and typing facades for factor contracts,
+  Mutation evidence reports and SDK entry points. Pulse trajectories now use
+  within-interval threshold interpolation so distinct local and global crossings
+  in the same sampled step retain their observed order.
+- Unified the writable EPI boundary for AL, EN, RA, VAL, NUL, THOL and REMESH:
+  raw real scalars and uniform-real BEPI embeddings retain their sign, while
+  nonuniform or complex payloads are rejected before mutation. Yang-Mills graph
+  construction now starts from the same scalar structural vacuum without
+  consuming an extra random draw.
+- Routed legacy Self-organization and Mutation validators through the shared
+  physical/legacy history precedence and acceleration kernel. Multiscale EPI
+  evolution now composes local and cross-scale pressure first, then advances
+  every graph once through the nodal integrator, removing scale-order-dependent
+  direct increments.
+- Corrected the spectral-coordinate engine to evaluate canonical `-L_rw*EPI`
+  on the node field and multiply heterogeneous `nu_f` pointwise before
+  projection. Mutating simulations are no longer result-cached; reconstruction
+  refreshes pressure/rate telemetry and restarts histories from one truthful
+  endpoint rather than fabricating Mutation evidence.
+- Replaced direct membrane EPI injection by an additive, U3-gated membrane
+  `DeltaNFR` channel with explicit `dt`, simultaneous proposals, nodal residuals
+  and atomic commit. GPU AL/RA strategies now use the public canonical operators
+  with block rollback, and metabolic workflows execute validated OZ-THOL-IL
+  words with atomic failure recovery; the duplicate propagation helper is now
+  a read-only view of committed THOL telemetry.
+- Replaced insertion-order-dependent SDK Reception/Resonance and GPU Resonance
+  stages with one shared two-phase Jacobi scheduler: every target reads the
+  same immutable snapshot, global validation precedes writes, and state,
+  histories, telemetry and runtime attachments commit or roll back atomically.
+  The neutral word executor and field signatures now use this shared semantic
+  layer rather than depending on the SDK. GPU Resonance now runs the same
+  pressure-refresh callback and reports amplification from observed frequency
+  changes instead of assuming that amplification occurred.
+- Corrected Self-organization so signed structural acceleration drives signed
+  pressure, nested child EPI does not add mass to the parent coordinate,
+  configured depth limits are effective, and network propagation requires an
+  explicit grammar-valid Resonance stage. Membrane flux now advances every
+  graph node through one shared nodal-integration clock while adding membrane
+  pressure only at the boundary.
+- Hardened spectral and optimization infrastructure: graph Fourier reads use
+  the canonical signed scalar EPI chart; bases and cache results are
+  authenticated and detached; cache budgets use stored bytes; sequence FFT
+  precision is applied; normalized cross-power is scale invariant; and direct
+  FFT/Euler routes expose when convergence or integration stability is not a
+  certified property.
+- Removed fabricated GPU, cache, memory and speedup evidence. Canonical graph
+  pressure retains explicit CPU provenance until an accelerated kernel has
+  full weighted/directed parity, fallback requires a distinct declared CPU
+  callable, and orchestration learns only from finite measured comparisons.
+  Structural clipping now has one validated scalar/vector soft-knee contract
+  and no longer borrows an optimizer speedup constant.
+- Extended the shared graph transaction boundary to preserve runtime object
+  identity while restoring mutable mappings, sequences, sets, deques, NumPy
+  arrays, inherited slots, custom graph attributes and the graph-owned cache
+  manager. Rollback also restores exact node, neighbour, predecessor,
+  multiedge-key and graph-attribute insertion order, preserving later
+  Gauss--Seidel semantics. Unsupported mutable attachments now fail before the
+  first write.
+- Centralized finite signed scalar-EPI admission for diagnostics and manifests.
+  Centralization, pattern discovery and self-optimization now distinguish
+  measured evidence from unavailable values instead of inventing load,
+  prediction, compression, memory, cache or speedup observations. Advisory
+  integration routes now abstain until an executable adapter exists, validate
+  canonical state with a dependency signature and retain performance values only
+  with finite measured evidence; obsolete synthetic baselines were removed.
+- Stabilized coherence contrast at the finite binary64 extremes by sharing a
+  scaled distance kernel across NumPy and Python paths, so opposite maximal
+  finite values produce maximal finite contrast without overflow warnings.
+- Corrected parallel/distributed execution contracts: workers use the public
+  Sense-Index computation, graph direction and multiedges survive transport,
+  result merges reject incomplete or duplicate outputs, simulations accept an
+  explicit seed, and execution/backend claims remain unmeasured unless observed.
+- Made operator registry probes explicitly opt out through `__register__ = False`,
+  preventing test or extension classes from contaminating the canonical
+  13-operator catalog and its discipline signature.
+
+### Added — 2026-09-06 core stability program
+
+- Added the S1–S16 core dynamics research map and completed its first restricted
+  result: fixed connected symmetric pure-EPI diffusion with positive
+  heterogeneous structural frequencies converges exponentially in the
+  `diag(d_i/nu_i)` metric.
+- Added a read-only stability certificate reporting the conserved weighted mean,
+  Lyapunov balance, generalized spectral gap and exponential decay bound.
+- Derived a common Dirichlet-energy bound for arbitrary time-varying capacities
+  inside declared positive finite bounds, with a counterexample showing that
+  changing capacity ratios make the final consensus schedule-dependent.
+- Hardened that time-varying result into a rational exact-real theorem induced
+  by the effective binary64 conductances and capacity bounds. Exact theorem
+  status, availability of a positive downward-rounded binary64 rate, ordinary
+  spectral diagnostics and runtime-integration verification are now separate;
+  underflow and diagnostic overflow cause safe operational abstention without
+  erasing a valid exact-real proof.
+- Corrected the earlier claim that U2 compliance alone proves Lyapunov stability
+  for every operator sequence; that general result remains open.
+- Added a graph-specific EPI reconstruction certificate: full nodal `Phi_s`
+  recovers EPI modulo constants when `rank(-K L_rw)=N-1`, and one conserved
+  zero-mode scalar completes the state. The rank condition is measured, without
+  universal promotion, on 142 connected graph-atlas cases through six nodes;
+  extreme weighted stars expose the separate numerical-conditioning limit.
+- Added a graph-specific explicit-Euler relaxation diagnostic that reports the
+  heterogeneous modal factors, stability limit and solver-step count while
+  preserving the distinction from U4's operator-position policy.
+- Derived a common-metric stability theorem for arbitrary switching among a
+  finite family of connected symmetric topologies on fixed node support when
+  all normalized `d_i/nu_i` metric vectors are exactly common. The certificate
+  now separates exact equality from caller-tolerance proximity.
+- Derived the exact finite-gain criterion for declared affine EPI resets in a
+  common diffusion metric: the linear map and offset must preserve the
+  consensus subspace. Added exact zero-energy counterexamples for failure, an
+  upward-rounded rational weighted-Frobenius gain bound computed on the
+  represented binary64 coefficients, and an exact rational log/exp enclosure
+  for the hybrid flow/reset budget that separates finite-horizon contraction,
+  repeated-word disagreement decay and preservation of the initial weighted
+  consensus. Added a reproducible heterogeneous two-node example covering an
+  absorbed amplification, uniform consensus drift and an exact local-offset
+  obstruction. Operator names remain metadata rather than assumed gains.
+- Hardened heterogeneous and switching diffusion certificates against
+  binary64 reciprocal, accumulation and Laplacian-row residuals. The executable
+  proof now rationalizes the materialized generator and displayed metric,
+  requires the canonical uniform fixed-point identity in addition to the weaker
+  consensus-subspace condition, proves quotient dissipation by rational
+  LDL/inverse-norm bounds, and keeps eigensolver rates and exact weighted-mean
+  preservation separate. Hybrid composition consumes only the downward-rounded
+  certified rate and rebuilds affine jump proofs from their declared inputs.
+- Unified scalar EPI semantics across raw numbers, live `BEPIElement` values and
+  canonical or JSON mappings. Uniform finite real BEPI embeddings retain their
+  signed scalar coordinate; genuinely nonuniform or complex payloads retain a
+  nonnegative magnitude projection for generic read-outs and are rejected by
+  pure-EPI scalar certificates. Empty BEPI values now have a defined zero
+  magnitude without inventing a signed representative.
+- Added the first two runtime-to-theorem operator bridges, for local Reception
+  and Resonance. One neutral kernel now fixes their unweighted neighbour mean
+  and blend arithmetic. The Reception certificate distinguishes the ideal-real
+  map, represented coefficient map, and current runtime result, abstains outside
+  convex inactive-hard-clip scope, and proves that every nontrivial local EPI
+  update requires pure-EPI pressure refresh. Partial graph `GLYPH_FACTORS` now
+  merge with canonical defaults, and Reception's fallback uses the centralized
+  `EN_MIX_FACTOR`.
+- Added the read-only Resonance realization certificate and aligned the RA
+  runtime with its U3 and identity contracts. Only individually phase-compatible
+  neighbours contribute to EPI, phase, or the frequency trigger. RA validates
+  the convex EPI mix, nonnegative frequency boost, bounded phase coupling, and a
+  phase gate no weaker than the canonical `pi/2` limit before mutation. Its four
+  reported layers are the ideal-real blend, represented binary64 map, two-stage
+  binary64 proposal, and accepted identity-gated snapshot. Scalar EPI may change,
+  but a strict negative/positive crossing and replacement of an established
+  nonempty `epi_kind` are rejected independently; exact zero is neutral and an
+  absent kind may be initialized. Rejection is atomic for state and operator
+  tracking.
+- Added fixed post-RA diffusion and hybrid-recovery diagnostics. A local
+  frequency boost generally changes `h_i=d_i/nu_i`, so the certificate retains
+  the fixed post-RA theorem but abstains from a pre/post common-metric switching
+  claim unless the represented metrics are exactly proportional. It reports the
+  pressure-refresh defect after an accepted EPI change and explicitly declines
+  global binary64 runtime affinity; recovery estimates remain display-only while
+  Boolean recovery decisions use the exact hybrid composer.
+- Hardened the sampled S16 trajectory certificate so forward-Euler residuals
+  and local and cumulative common-Lyapunov variation decisions compare exact
+  rational quantities with the represented caller tolerance. Rounded floats
+  remain display diagnostics and can no longer promote a boundary failure.
+- Added an exact reversible pure-EPI coarse-graining certificate. It constructs
+  the quotient nodal generator, measures unresolved within-block dynamics and
+  reuses the structural-morphism classification instead of adding an operator.
+- Derived the local coherence levels as nonsmooth L1 diamonds, separating the
+  exact constitutive distance from any unchosen global information metric.
+- Added an exact decoupled metriplectic product for harmonic substrate pulse and
+  EPI relaxation; nonzero physical cross-coupling remains open.
+- Added a contract-identifiability certificate and proved that instantaneous
+  channel/direction/scale/context features cannot distinguish Silence from
+  Contraction, preserving temporal sequence identification as an open problem.
+- Corrected phase-transition classification to use `abs(mean(S))` and
+  `abs(mean(chi))`. The previous mean-absolute inputs could label cancelling
+  local chirality as global homochirality; local magnitudes remain available as
+  separate telemetry. Removed universal-divergence language from its scope.
+- Reclassified the legacy phase `symmetry_zscore` as an operational
+  standardized spatial imbalance because coupled graph nodes do not supply an
+  independent-sample significance test. Added strict time-series validation
+  and exposed node-count and classifier-input trajectories.
+- Added a balanced finite-size phase-scaling diagnostic with replicate standard
+  errors and slopes against node count. It deliberately leaves conversion to
+  thermodynamic exponent ratios and universality open.
+- Added descriptive radial/annular/multinodal transition certificates with
+  exact tetrad, flow, coherence and Si endpoint deltas. Label changes are
+  sample-bracketed observations, not interpolated bifurcations or predictors.
+- Added a generic operator-quotient certificate separating projected autonomy
+  from lift invariance. Matrices receive global finite-dimensional residuals
+  with explicitly tolerance-conditioned decisions; nonlinear callables receive
+  sampled fiber-dependence and repeatability evidence. Graph/history/nesting
+  mutations are rejected as outside that model.
+- Proved the fixed directed pure-EPI identity `p'=-Lp` for pressure and exposed
+  the logarithmic-norm sign as the exact Euclidean transient-growth criterion.
+  A deterministic 16-graph calibration/holdout benchmark separates it from
+  stable-spectrum prediction while keeping all magnitude claims finite-family.
+- Added an exact seven-channel structural-state quotient metric for finite simple
+  graphs within a declared topology/label class. It is invariant under node
+  relabeling and circular phase wrapping, includes effective edge conductance
+  and structural length, requires positive channel scales (with a documented
+  compatibility fallback for the length scale), and reports nodal-equation
+  residuals without silently repairing snapshots.
+- Separated algebraic EPI observability from numerically reliable reconstruction:
+  the potential and augmented observers now use independent scale-aware SVD
+  thresholds, and reconstruction success also requires a small relative residual.
+- Added quantitative one-step operator signatures. All 13 canonical operators
+  are distinct on the declared deterministic probes, resolving the categorical
+  Silence/Contraction collision. Added the exact finite-prototype noise margin:
+  nearest-row recovery is unique for additive error strictly below half the
+  minimum scaled pairwise separation. Unseen-state, stochastic and word-level
+  inverse identification remain open.
+- Replaced the phase-transition example with a reproducible finite-size
+  diagnostic and corrected the synchronization example and ontology text so
+  finite crossovers, selected warning margins and auxiliary normal forms are
+  not presented as universal TNFR critical laws.
+- Corrected the Yang–Mills Y1–Y4 scope: `Phi_s²/(pi/2)²` is a
+  single-snapshot magnitude penalty `V_Phi`, and the legacy `u6_*` sweep fields
+  are compatibility names for that magnitude coordinate. They now expose
+  `u6_drift_assessed=False`; a canonical U6 verdict requires a matching
+  reference snapshot. Grammar counts now include only applicable checks.
+- Established that the implemented connection `A=d(arg Psi)` is pure gauge:
+  its oriented cycle sums vanish analytically and its covariant Laplacian is
+  unitarily equivalent to the ordinary weighted graph Laplacian. Reclassified
+  curvature, vortex, confinement and dynamical gauge-language as unsupported by
+  that construction; any non-zero cycle value is a numerical closure residual.
+
+### Changed — 2026-09-06 research integration and scope hardening
+
+- Added the preferred phase-topology vocabulary `WindingSector`,
+  `classify_winding_sector()` and `Network.winding()` while retaining the
+  historical particle-named aliases. Winding now requires an explicit finite
+  phase on every declared cycle node, derives an order automatically only when
+  the whole graph is a simple cycle, reports unavailable whole-graph telemetry
+  as `None` with a reason, and keeps integer winding separate from the legacy
+  continuous `Q` bilinear.
+- Made `Network.nfr()` refuse to fabricate an equilibrium from incomplete
+  state. It now records whether `dEPI/dt` came from node telemetry or was
+  reconstructed from the nodal equation, and returns an unavailable read-out
+  when the required finite fields are absent.
+- Hardened primality, counting, coherence and tolerance entry points against
+  booleans, fractional counts, strings and non-finite values. Public counting
+  APIs no longer truncate numeric inputs silently.
+- Recast the finite shell classifier as an explicit auxiliary graph model.
+  Shell capacities, orbital degeneracies, spin factor, closure sequence and
+  label map are declared assumptions; even spectral clusters expose no angular
+  index, and the preferred `shell_closure_distance` is the single source for
+  closure and legacy reactivity metadata.
+- Reclassified both N-body implementations as explicit adapters: one embeds a
+  Newtonian central-force law and the other uses a selected phase-coupled pair
+  law. Added finite-input validation and corrected history allocation so a
+  final state is retained when `store_interval` does not divide the step count.
+- Replaced universal operator, Noether, gauge, variational, particle, chemical
+  and cross-domain claims by the exact finite certificate or auxiliary-model
+  scope actually implemented. Historical public names remain as compatibility
+  aliases where removal would break callers.
+- Corrected the fixed-delay REMESH study to a finite cyclic DFT diagnostic:
+  fixed modes are selected by the delay gcd, the lcm sets sample alignment, and
+  changes between finite windows are leakage measurements rather than an
+  infinity-limit kernel, convergence rate or catalog-completeness result.
+- Changed the operator-contract audit verdict to finite deterministic probe
+  coverage. Passing all probes confirms those declared fixtures and contracts;
+  it does not establish universal operator behavior or full U1-U6 compliance.
+- Separated structural geometry from transport conductance: an explicit edge
+  `length` now controls structural-potential paths, while `weight` remains
+  conductance and the legacy length fallback. Both channels invalidate caches.
+- Hardened the research certificates against false numerical promotion. Exact
+  switching metrics are compared before floating normalization, logarithmic-norm
+  signs inside backward error abstain, and nodal topology labels accept only the
+  calibrated inverse-square kernel.
+- Corrected structural morphism classification so automorphisms must actually
+  intertwine the generator and rank is invariant under global matrix scaling.
+  Coarse-graining now rejects disconnected or zero-capacity macro quotients;
+  the metriplectic product is independent of graph insertion order and reports
+  stored-pressure consistency separately.
+- Added an executable S16 endpoint certificate that composes stability, EPI
+  reconstruction, reversible quotient closure, structural distance, pure-EPI
+  pressure and nodal-equation consistency under one shared hypothesis set.
+  Added `CoreExperimentManifest` as domain-neutral research provenance, with a
+  validated Git revision, immutable version map, explicit clean/dirty state and
+  a required SHA-256 source digest for dirty working snapshots. Arithmetic
+  factor/bit semantics remain in the historical manifest.
+- Extended S16 from frozen endpoints to finite sampled pure-EPI trajectories.
+  Every interval now combines the endpoint evidence with a persistent-node
+  forward-Euler defect and its modal stability limit; the full path requires an
+  exact common switching metric and non-increase of the observed common
+  Lyapunov functional. First failures remain chronologically inspectable.
+- Separated modal spectral resolution from the dimensionless EPI residual
+  tolerance, made the eigenvalue cutoff relative to the fastest decay rate,
+  and added a whole-path positive-variation budget so small local energy
+  increases cannot accumulate silently.
+- Added a strict coarse/fine comparison with independent path and agreement
+  tolerances. It requires nested common times and a smaller fine mesh width,
+  an explicit caller declaration that both meshes represent the same dynamics,
+  uses direct persistent-id EPI errors for the verdict, and leaves the
+  relabeling-quotient distance as a diagnostic. The reproducible fixed-generator
+  example additionally checks both meshes against the exact linear semigroup;
+  it reports finite two-mesh evidence without claiming convergence or order.
+- Centralized scoped Git/source hashing in `current_git_source_provenance()` so
+  research examples share one clean/dirty provenance implementation.
+- Prevented boolean state values from becoming physical zero/one scalars and
+  made coherence means stable at finite extreme magnitudes. Winding-word
+  observation now rejects absent or invalid phases before mutation. The
+  transient U2 certificate preserves its serialized legacy fields while
+  rejecting unimplemented metric labels.
+- Made both N-body adapters reach a requested off-grid final time with a short
+  last step. Newtonian pair distances now use scaled norms so representable
+  forces at extreme separations are not erased by intermediate overflow, and
+  the TNFR adapter validates body counts and mass-vector shape consistently.
+- Centralized circular phase comparisons across operator telemetry, lifecycle,
+  structural identity, U3 validation and transition postconditions. Shortest-
+  arc distance now handles wrap boundaries and arbitrary complete-turn
+  representatives; requested directed phase shifts remain separate telemetry.
+
 ### Added — 2026-09-05 post-review roadmap (R1–R9 continuation, N00–N13)
 
 Twelve PRs implementing the external post-review canonical plan on top of the
@@ -175,14 +508,15 @@ problem is claimed. Full ledger:
   The spectrum is invariant under evolution on a fixed graph, so the O(N³) `eigh`
   runs once per topology instead of once per pulse/spectrum read-out.
 
-### Changed (emergent derivation — every channel weight & operator gain from π)
+### Changed (historical derivation — channel weights and nominal operator coefficients from π)
 
 - **Replaced the residual magic numbers on the nodal-physics paths with values
   derived from π** (the sole structural scale), enforced by
   `tests/core_physics/test_emergent_constants_guard.py`.
   The φ/γ/e purge had left two load-bearing weight sets **frozen at their literal
   φ/γ decimals** (`DNFR_WEIGHTS`/`SI_WEIGHTS` = `{0.737, 0.155, 0.09}` where
-  `0.737 = φ/(φ+γ)`) and had replaced the operator gains with arbitrary
+  `0.737 = φ/(φ+γ)`) and had replaced the nominal operator policy
+  coefficients with arbitrary
   "operational" decimals (`IL=0.75, OZ=2.0, SHA/NUL=0.9, VAL=1.05`). These are
   used *numerically* in every ΔNFR and Sense-Index evaluation, hence in every
   recorded result. They are now emergent:
@@ -191,7 +525,7 @@ problem is claimed. Full ledger:
     remainder: `(π/(π+1), π/(π+1)², 1/(π+1)²)` — which **normalises to exactly 1**
     (`π/(π+1) + π/(π+1)² + 1/(π+1)² = (π+1)²/(π+1)² = 1`). Ordering by structural
     primacy (phase ≻ EPI ≻ νf; topo inactive). `SI_WEIGHTS` takes the same hierarchy.
-  - **Operator gains → the coherence band and the π-fraction ladder.** Pressure
+  - **Nominal operator policy coefficients → the coherence band and the π-fraction ladder.** Pressure
     lever (ΔNFR): `IL = π/(π+1)`, `OZ = (π+1)/π` (a balanced `IL∘OZ` is **exactly
     isometric**). Capacity lever (νf, slow): the gentle π-step `δ = 1/(4π)` —
     `SHA/NUL = 1−δ`, `VAL = 1+δ`, `NUL_densification = 1/(1−δ)` (volume
@@ -212,7 +546,8 @@ problem is claimed. Full ledger:
     `CHANNEL_WEIGHT_PRIMARY/SECONDARY/TERTIARY`, `COHERENCE_RETENTION`,
     `DISSONANCE_AMPLIFICATION`, `COUPLING_GENTLE/MODERATE/FINE`,
     `MID_COHERENCE_THRESHOLD`. Full suite green (`2201 passed`) after each stage;
-    the dynamics stay bounded (U2). **Recorded research results computed with the
+    U2 grammar checks remained passing, which did not establish a universal
+    dynamical boundedness theorem. **Recorded research results computed with the
     old constants still require recomputation (planned Stage 5).**
   - **Benchmark/example φ/γ/e input purge.** Fixed a broken example
     (`examples/02_physics_regimes/37_operator_tetrad_synergy.py` imported the purged
@@ -231,8 +566,11 @@ problem is claimed. Full ledger:
     because each is *structural*, not an artifact of the magic numbers: primality
     (`ΔNFR=0`), Riemann σ_c/GUE and exact S_n equivariance (`‖[L, P_σ⊗P_τ]‖ = 0`),
     Navier–Stokes (a **pseudo-spectral** solver that never reads the operator
-    gains), conservation, the tetrad relations (`K_φ = L_rw·φ`, `ξ_C ∝ 1/√λ₂`), and
-    Yang–Mills U6 confinement all derive from the graph Laplacian, the spectral gap,
+    gains), conservation, the scoped phase linearization
+    (`K_φ ≈ L_rw·φ`) and the `1/√λ₂` spectral comparison/fallback for fitted
+    `ξ_C`, and
+    the Yang–Mills finite potential-magnitude diagnostic derives from graph and
+    structural-potential data,
     S_n symmetry, or unit arithmetic. Only the dynamic *trajectories* (C(t)/Si
     curves, network-optimization outcomes) shift, with their qualitative attractors
     invariant. The φ/γ/e and arbitrary operational decimals were therefore **never
@@ -252,12 +590,13 @@ problem is claimed. Full ledger:
 
 ### Changed (documentation aligned to emergent π-derived canonicity)
 
-- **Promoted the documented thresholds to their genuinely-emergent π-derived
-  values** across `AGENTS.md` (+ the `.github/agents/my-agent.md` mirror),
+- **Centralized the documented π-scaled monitoring policies**
+  across `AGENTS.md` (+ the `.github/agents/my-agent.md` mirror),
   `ARCHITECTURE.md`, `CONTRIBUTING.md`, `theory/`, `docs/grammar/`, examples, and
-  code docstrings: the Φ_s confinement bound is **π-derived** — drift
+  code docstrings: the selected Φ_s policies use π as a reference scale — drift
   `Δ Φ_s < π/2 ≈ 1.571` (half phase-wrap) and per-node `|Φ_s| < π/4 ≈ 0.785`
-  (quarter phase-wrap) — replacing the old φ ≈ 1.618 / empirical 0.7711 framing;
+  (quarter phase-wrap). These are policies rather than consequences of phase
+  wrapping, and they replace the old φ ≈ 1.618 / empirical 0.7711 framing;
   the strong-coherence cut is the emergent band gate `π/(π+1) ≈ 0.7585`
   (replacing the frozen `(e·φ)/(π+e) ≈ 0.7506`). Corrected a propagated arithmetic
   error: `π/(π+1)` is **0.7585**, not 0.7616 (it must complement `1/(π+1)=0.2415`).
@@ -280,7 +619,7 @@ problem is claimed. Full ledger:
   only scattered stale refs (now fixed). The most significant correction purges the
   refuted **"Universal Tetrahedral Correspondence"** (the φ↔Φ_s, γ↔|∇φ|, π↔K_φ,
   e↔ξ_C mapping) from `TNFR_RIEMANN_RESEARCH_NOTES.md` (20 references) — the explicit
-  mapping becomes the minimal **structural-field tetrad** (only π is structural), the
+  mapping becomes the canonical **structural-field diagnostic tetrad** (only π is structural), the
   three inter-prime coupling kernels are relabeled *exploratory, not canonical*, and
   the stale `DNFR_/SI_/SELECTOR_WEIGHTS` derivation claims/anchors are corrected to
   the operational `defaults_core.py` values. Operator-gain tables across
@@ -317,13 +656,14 @@ problem is claimed. Full ledger:
   no calculation, weight, threshold, or comment, and the "(φ,γ,π,e) notational
   vertex / four-constants / assumed-substrate" framing is retired. **Only π is a
   genuine structural scale** (the phase-wrap bound of the phase sector:
-  `|∇φ| ≤ π`, `|K_φ| < 0.9·π`); the coherence length is set by the spectral gap
-  (`ξ_C ∝ 1/√λ₂`); every other parameter is derived from the nodal dynamics or is
-  a free operational parameter.
-- **Φ_s confinement bound is now π-derived**: per-node
+  `|∇φ| ≤ π`, `|K_φ| ≤ π`; `0.9·π` is a warning margin). The fitted coherence
+  length has `1/√λ₂` as a connected-graph spectral comparison/fallback; every
+  other parameter is derived under stated hypotheses or is operational.
+- **Φ_s monitoring policies now use centralized π-scaled values**: per-node
   `PHI_S_VON_KOCH_THRESHOLD = π/4 ≈ 0.785` (quarter phase-wrap) and drift
-  `U6_STRUCTURAL_POTENTIAL_LIMIT = π/2 ≈ 1.571` (half phase-wrap), replacing the
-  empirical `0.7711` / golden-ratio (`φ ≈ 1.618`) framing.
+  `U6_STRUCTURAL_POTENTIAL_LIMIT = π/2 ≈ 1.571` (selected before/after drift
+  policy), replacing the empirical `0.7711` / golden-ratio (`φ ≈ 1.618`)
+  framing. Neither is a graph-independent potential bound.
 - **Removed `derive_tetrad_threshold_values`** and the `φ/γ/e` accumulation-law
   threshold-derivation machinery (`ThresholdDerivation`). Operator gain magnitudes
   are now plain operational parameters — the theory fixes each operator's channel
@@ -377,8 +717,10 @@ U1–U6 are unchanged.
 - **Only π is a genuine structural scale** — the phase-wrap bound shared by BOTH
   `|∇φ|` and `K_φ` (both are means of wrapped angles, ≤ π). γ, e, φ are
   recoverable as mathematical identities but are NOT the structural scales of
-  their tetrad fields. `K_φ = L_rw·φ` (the central operator on phase, corr ≈ 1);
-  `ξ_C ∝ 1/√λ₂` (spectral gap, not base e).
+  their tetrad fields. `K_φ` matches `L_rw·φ` only on a smooth, consistent
+  unwrapped branch with matching normalization; the reported correlation is a
+  finite-protocol measurement. The exact wrapped computation is nonlinear;
+  fitted `ξ_C` uses `1/√λ₂` as a spectral comparison/fallback (not base e).
 - **`|∇φ|` bound corrected** from `γ/π ≈ 0.1837` to the phase-wrap bound `0.9π`
   in `physics/variational.py`, symmetric with `K_φ`. The measured synchronization
   onset is ≈ 0.29 and σ-dependent, NOT the constant γ/π; γ/π is retained
@@ -406,16 +748,17 @@ U1–U6 are unchanged.
 
 ### Changed (emergent replacement of magic thresholds)
 
-- **`physics/phase_transition.py` fully redesigned** to emergent sampling-noise
-  z-scores. The "universal critical exponent γ_c = γ/π" was **measured false**
+- **`physics/phase_transition.py` redesigned** around a standardized signed-mean
+  ratio. The "universal critical exponent γ_c = γ/π" was **measured false**
   (the fitted exponent is protocol-dependent), and the classification noise
   floor `(γ/π)²` was **proven inert** (it sat in a two-order-of-magnitude gap;
   sweeping it changed no classification). Removed the magic constants `GAMMA_C`,
   `ORDER_PARAMETER_NOISE_FLOOR`, `CHIRALITY_THRESHOLD` and the
   `theoretical_exponent` field; added `symmetry_zscore(mean, var, n) =
-  |mean|/√(Var/N)` and the single cut `Z_SIGNIFICANCE = 1` (the sampling-noise
-  scale, not a tunable constant). `classify_phase(order_z, chirality_z)` now
-  decides phases from statistical significance measured from the system itself.
+  |mean|/√(Var/N)` and the selected cut `Z_SIGNIFICANCE = 1`. The later S6
+  audit recorded above corrects its interpretation: coupled graph nodes do not
+  justify an independent-sample significance test, so the ratio is an
+  operational spatial-imbalance diagnostic.
 - **Named γ/π constants relabelled** as heuristic / non-derived in
   `constants/canonical.py` (`CRITICAL_EXPONENT`, `GRAD_PHI_CANONICAL_THRESHOLD`,
   `PHASE_GRADIENT_THRESHOLD_CANONICAL`) and `mathematics/unified_numerical.py`;
@@ -514,20 +857,21 @@ equation are unchanged; everything below either *measures* structure the nodal
 equation already contains or removes duplication. Full suite: 2043 passed, 2
 skipped.
 
-### Emergent Geometry — Symplectic Substrate (canonical)
+### Symplectic Substrate (historical entry; current scope corrected)
 
-The nodal equation generates its own geometry; the graph is only the data
-substrate. The conservation laws of `physics/conservation.py` are consolidated
-into an explicit emergent **symplectic phase space** that the engine measures
-rather than postulates.
+This release introduced an auxiliary ambient **symplectic phase space**
+initialized from graph-field snapshots. Later audits established that its exact
+harmonic-flow identities do not derive the full nodal equation or certify the
+engine operators.
 
 - **New module**: `src/tnfr/physics/symplectic_substrate.py` — phase space
   `P = ℝ^{4N}` with conjugate pairs `(K_φ, J_φ)` (geometric) and `(Φ_s, J_ΔNFR)`
   (potential); symplectic 2-form `ω` (antisymmetric, non-degenerate, closed);
   canonical Poisson brackets; `H_sub = ½Σ(K_φ²+J_φ²+Φ_s²+J_ΔNFR²)` equal to the
-  energy functional exactly; Liouville `div(X_H)=0` (the 13 operators are
-  symplectomorphisms).
-- **Derived structure tower** (each measured to machine precision):
+  structural-energy snapshot exactly after adding the held-fixed gradient
+  background; Liouville `div(X_H)=0` for the specified harmonic flow. Each
+  engine operator would require a separate Jacobian pullback test.
+- **Auxiliary model structure tower** (each measured to machine precision):
   Noether charges (time-translation → `H_sub`; geometric U(1) → `E_geo = ½Σ|Ψ|²`;
   potential U(1) → `E_pot`); the compatible Hermitian / flat-Kähler triple
   `(ω, J, g)` with `J = −ω` — so the `i` in `Ψ = K_φ + i·J_φ` *is* the complex
@@ -537,10 +881,9 @@ rather than postulates.
   SU(2) part supplies three conserved **Stokes parameters** on the per-node
   Poincaré sphere (classical wave polarization — Stokes 1852 / Poincaré 1892 —
   not isospin or qubits).
-- **Threshold values derived non-circularly**: `physics/variational.py`
-  `derive_tetrad_threshold_values` recovers φ (inverse-square self-similar fixed
-  point), γ (harmonic-accumulation gap), e (memoryless-decay series) from each
-  tetrad field's accumulation law; π remains a geometric primitive.
+- **Historical threshold overlay**: `derive_tetrad_threshold_values` reconstructs
+  φ, γ, and e from chosen mathematical identities. They are organizational
+  overlays rather than derived TNFR field scales; π remains the phase primitive.
 - **Consolidated entry point**: `verify_substrate_geometry(G)` bundles all
   certificates into a `SubstrateGeometryReport`.
 - **SDK**: `Network.symplectic_substrate()` + `SymplecticReport`, in
@@ -590,14 +933,16 @@ transport phenomena.
 - **Public English names**: the structural-operator name (Emission, Reception, …)
   is canonical at the public level; the glyph code (AL, EN, …) is the internal
   symbol.
-- **Energy/coherence are emergent**: the structural energy
+- **Energy/coherence are emergent**: the structural candidate energy
   `E = ½Σ(Φ_s²+|∇φ|²+K_φ²+J_φ²+J_ΔNFR²)` contains no EPI or νf term (measured:
   scaling EPI or νf leaves E unchanged). The per-operator Lyapunov role in
   `physics/lyapunov.py` is therefore re-derived from the canonical grammar U2 role
   (`config.physics_derivation`), not from a hardcoded energy algebra:
   stabilisers {IL, THOL}, destabilisers {OZ, ZHIR, VAL}, the rest neutral. The
-  form-channel operators (AL, EN, RA, REMESH) are energy-neutral because EPI is
-  absent from E.
+  form-channel operators (AL, EN, RA, REMESH) leave a same-snapshot evaluation
+  unchanged when all derived fields are held fixed because EPI is absent from
+  the formula. This is a dependency statement, not an isometry or a conservation
+  law after pressure and fields are recomputed.
 - **Dual-lever clarified**: the two levers are the two right-hand-side factors of
   the nodal equation — νf (capacity) and ΔNFR (pressure); operators that write
   the form EPI (the LHS) sit on neither lever.
@@ -618,13 +963,15 @@ transport phenomena.
 - **Canonical grammar spec**: new `operators/grammar_canon.py` materializes the
   U1–U6 role table, the five-type structural typology, and the canonical glyphic
   macros (anchored to TNFR.pdf §2.3), with a self-consistency check.
-- **Formal-language thread** (characterization, demos only): the grammar is a
-  regular language with a 29-state minimal DFA and exact Perron–Frobenius
-  capacity; the asymptotic constraint lives entirely in the bifurcation rule
-  (U4b); the syntactic monoid is aperiodic so the language is star-free /
-  first-order definable; nesting `THOL[...]` lifts the glyphic sub-language to
-  context-free (Dyck/Catalan); the emergent operator distribution is the
-  Shannon–Parry maximum-entropy equilibrium.
+- **Formal-language thread** (characterization, demos only): the flat,
+  non-nested default-depth history projection is represented by 320 reachable
+  states and a 52-state minimal complete DFA. Its numerical growth radius is
+  `10.9560791442`; both U2 and U4b reduce the radius. The 944-element syntactic
+  monoid is aperiodic (index 4), so this constructed flat language is star-free
+  / first-order definable. Nested `THOL[...]` syntax requires a context-free,
+  stack-like model, while runtime U3 and reference-dependent U6 remain outside
+  the DFA. The Parry process is a selected maximum-entropy Markov policy on the
+  dominant component, not a TNFR physical equilibrium or grammar validator.
 - **Demonstrations**: `examples/08_emergent_geometry/139`–`152`.
 
 ### Number Theory & the Dual-Lever
@@ -658,10 +1005,11 @@ obstruction.
   the accumulated product reproduces the original 1965 empirical rank separation
   by brute-force point counting. GL(1)→GL(2) gap open; Branch B.
   `theory/TNFR_BSD_RESEARCH_NOTES.md`, `examples/09_millennium/110`.
-- **Hodge (HC-1)** — the tetrad cochain tower carries a complete discrete Hodge
-  decomposition (harmonic = homology exactly, Eckmann 1944), but is structurally
-  blind to the (p,p) bigrading and algebraicity the conjecture requires (a strong
-  negative, Branch B3-leaning). `theory/TNFR_HODGE_RESEARCH_NOTES.md`,
+- **Hodge (HC-1, scope corrected under Unreleased)** — an auxiliary simplicial
+  complex reproduces the standard finite Hodge decomposition and expected Betti
+  numbers. Canonical `|∇φ|` and `K_φ` are node summaries, not oriented edge and
+  face cochains, so no tetrad cochain tower has been derived. The `(p,p)` and
+  algebraicity gap remains outside this baseline. `theory/TNFR_HODGE_RESEARCH_NOTES.md`,
   `examples/09_millennium/111`.
 
 ### Documentation, Examples & Repository Hygiene
@@ -710,7 +1058,7 @@ Millennium Problem.
 
 - **Verdict surface**: `FINITE_SCALING_EVIDENCE` or `GAP_COLLAPSE_OBSERVED` depending on sampled finite graph families. This is a finite diagnostic only, not a continuum theorem.
 - **New API**: `run_finite_scaling_study()` in `src/tnfr/yang_mills/scaling.py`, exported from `tnfr.yang_mills` with `FiniteScalingPoint` and `FiniteScalingReport`.
-- **Scaling coordinate**: graph node count `n` under fixed U6 target ratios `ρ_U6 = max_i |Φ_s(i)| / φ`; grouped reports fit finite log-log slopes of mean gap versus `n`.
+- **Scaling coordinate (historical name corrected under Unreleased)**: graph node count `n` under fixed single-snapshot magnitude ratios `ρ_U6 = max_i |Φ_s(i)|/(π/2)`; this does not assess U6 drift. Grouped reports fit finite log-log slopes of mean gap versus `n`.
 - **Scope discipline**: Y4 runs while YMG-4 remains open. Therefore finite positive scaling evidence cannot be promoted to a Clay-strength Yang–Mills mass-gap claim.
 - **Validation**: 6 new tests in `tests/physics/test_yang_mills_scaling.py` cover report shape/scope, grouped finite scaling, reproducibility, sampled collapse classification, invalid input rejection, and package-root import. Y1–Y4 focused run: `29 passed`.
 - **Next target**: Y5 closure / obstruction classification, likely Branch B unless a later TNFR-native non-Abelian connection and generator algebra are derived.
@@ -726,10 +1074,13 @@ Millennium Problem.
 
 #### Y2 — TNFR–Yang–Mills U6 Confinement Sweep
 
-- **Verdict**: `EMPIRICAL_FINITE_GRAPH_ONLY` — finite sweep surface created for testing how the Y1 structural gauge gap behaves across U6-confined and U6-unconfined regimes.
+- **Verdict**: `EMPIRICAL_FINITE_GRAPH_ONLY` — finite sweep surface created for testing how the Y1 structural gauge gap behaves across two groups of the single-snapshot potential-magnitude coordinate; the original U6 wording was corrected under Unreleased.
 - **New API**: `run_u6_confinement_sweep()` in `src/tnfr/yang_mills/u6_sweep.py`, exported from `tnfr.yang_mills`.
-- **Sweep coordinate**: `ρ_U6 = max_i |Φ_s(i)| / φ`; `ρ_U6 < 1` is U6-confined and `ρ_U6 ≥ 1` intentionally probes unconfined finite structural-potential regimes.
-- **Telemetry recorded**: gap statistics, self-adjointness, seeded local-U(1) spectral invariance, Yang–Mills equation residuals, curvature activity, grammar-rule counts, U6 ratios, and finite-scope metadata.
+- **Sweep coordinate**: legacy `ρ_U6 = max_i |Φ_s(i)|/(π/2)`; values below one mean below that magnitude scale, not U6-confined. A U6 drift verdict requires a reference snapshot.
+- **Telemetry recorded**: gap statistics, self-adjointness, seeded local-U(1)
+  spectral invariance, pure-gauge cycle-closure residuals, applicable snapshot
+  checks, legacy magnitude ratios, and finite-scope metadata. The cycle residual
+  is numerical error, not curvature activity.
 - **Validation**: 5 new tests in `tests/physics/test_yang_mills_u6_sweep.py` cover report shape/scope, U6 target tracking, gap contracts, reproducibility, invalid input rejection, and package-root import. Y1+Y2 focused run: `18 passed`.
 - **Open boundary**: Y2 does not prove a U6 lower-bound theorem and does not address non-Abelian derivability (YMG-4) or continuum scaling (YMG-5). Next target: Y3 derivability audit.
 
@@ -737,8 +1088,14 @@ Millennium Problem.
 
 - **Verdict**: `DIAGNOSTIC_SURFACE_CREATED` — first TNFR-native Yang–Mills / structural mass-gap attack surface implemented as a finite-graph diagnostic, not a Clay-strength proof.
 - **New package**: `src/tnfr/yang_mills/` with `build_structural_gauge_graph()`, `build_structural_gauge_gap_operator()`, and `compute_structural_gauge_gap()`.
-- **Operator**: `H_YM^TNFR = L_A + V_F + V_U6`, where `L_A` is the gauge-covariant graph Laplacian from `A_ij`, `V_F` is cycle-curvature potential from `F_C²/π²`, and `V_U6` is structural-potential confinement from `Φ_s²/φ²`.
-- **TNFR scope discipline**: no separate quantum ontology; the gap is interpreted as spectral isolation of the first non-trivial nodal reorganisation mode above the coherent attractor.
+- **Operator (current notation)**: `H_structural = L_A + V_F + V_Phi`, where
+  `A=d(arg Psi)` makes `L_A` unitarily equivalent to the ordinary weighted graph
+  Laplacian, `V_F` is analytically zero apart from numerical cycle-closure
+  residuals, and `V_Phi` is the selected single-snapshot magnitude penalty
+  `Phi_s²/(pi/2)²`; it is not a U6 test.
+- **TNFR scope discipline**: the reported number is the spectral gap of this
+  selected finite matrix. It is not evidence of dynamical gauge curvature,
+  confinement, a physical mass, or a continuum Yang–Mills mass gap.
 - **Validation**: 13 new tests in `tests/physics/test_yang_mills_structural_gap.py` cover graph construction, self-adjointness, non-negative finite gap reporting, seeded local-U(1) spectral invariance, reproducibility, package imports, and no EPI/phase mutation. Focused run: `13 passed`.
 - **Open boundaries**: non-Abelian derivability (YMG-4) and continuum / thermodynamic scaling (YMG-5) remain open.
 - **Documentation**: `theory/TNFR_YANG_MILLS_RESEARCH_NOTES.md` records the Y-series gap ledger and updates the next target to Y2 (U6 confinement sweep).
@@ -767,22 +1124,36 @@ Millennium Problem.
 - **Scope**: NS-G5 closure does NOT affect NS-G1..G4 and does NOT address the Clay Millennium Problem (3D global regularity).
 - **Documentation**: `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §19.
 
-#### N15 REMESH-∞ Closure — Catalog-Completeness Theorem
+#### N15 REMESH fixed-delay surrogate — corrected historical record
 
-- **Master deliverable**: [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) §§1–23 (v3.0, ~816 lines). Three weeks (W1 + W2 + W3) executed in a single session and pushed to `origin/main`:
-  - W1 `a1f298fd` — operator existence: $\mathcal{R}_\infty = P_{\ker(I-\mathcal{R})}$, bounded self-adjoint orthogonal projection on $H^2(D)$
-  - W2 `badac156` — conservation + Lyapunov: projected Noether charge $Q_\infty$ exactly conserved; energy $V_\infty \ge 0$ monotone with Cesàro $O(1/n)$ tail at rational $\tau_g/\tau_l$
-  - W3 `48b0574a` — spectrum + final verdict: uniform spectral density $\rho = \mathrm{lcm}(\tau_l, \tau_g)/\pi$; **Branch A confirmed**
-- **Catalog completeness**: the 13-operator TNFR catalog is **closed under the REMESH-∞ asymptotic limit**. No 14th canonical operator is required.
-- **Branches ruled out**: B1 strong (constant vs log density, Thm 17.1), B1 via K41 (temporal vs spatial, Thm 18.1), B1 via RMT ($\delta$-clustering vs Wigner, Thm 19.1), B2 (no 14th operator), B3 (limit exists via mean ergodic theorem).
-- **B1-Euler partial = existing P30**: the partial universality (smooth half of T-HP) reduces to P12–P15 + P28 + P30 of the TNFR-Riemann program reformulated through the $\mathcal{R}_\infty$ lens (no new content). The oscillatory half ($S(T) = (1/\pi)\arg\zeta(\tfrac12 + iT)$, RH-equivalent) lives in $\ker(\mathcal{R}_\infty)$ and remains open.
-- **Consolidation edits**:
-  - `AGENTS.md` — new top-level section *REMESH-∞ Closure: Catalog Completeness Theorem (N15, May 2026)*
-  - `theory/README.md` — added `REMESH_INFINITY_DERIVATION.md` to canonical document map
-  - `theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md` §18.7 — N15 closure block with locked verdicts, B1/K41/RMT/B2/B3 ruled out, refined prediction P-W3-1 (temporal-only)
-  - `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13septies.5 — structural identification of T-HP smooth/oscillatory split with $\mathrm{range}/\ker$ of $\mathcal{R}_\infty$
-  - `theory/STRUCTURAL_OPERATORS.md` §4.3 — REMESH asymptotic limit note with operator definition, spectral density, and catalog-completeness consequence
-- **Scope (locked)**: N15 does NOT advance G4 = RH and does NOT resolve 3D Navier–Stokes global regularity. It settles only the $\tau_g \to \infty$ asymptotic limit of REMESH. Pure analytical result; no numerical experiments required for the verdict.
+- **Historical milestones**: commits `a1f298fd`, `badac156`, and `48b0574a`
+  introduced a history-space projection, projected charge/energy claims, and
+  spectral comparisons under the label “REMESH-∞ closure.” The corrected
+  analysis is maintained in
+  [theory/REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md)
+  §§1–23.
+- **Valid restricted result**: on a finite cyclic history window, the unclipped
+  fixed-coefficient filter
+  $F=\beta I+\gamma S^{\tau_l}+\delta S^{\tau_g}$ is a normal contraction for
+  $0<\alpha<1$. Its Cesàro averages converge to the orthogonal projection onto
+  $\ker(I-F)$. The common fixed modes have period
+  $\gcd(\tau_l,\tau_g)$; the former `lcm` lattice statement was incorrect.
+- **Runtime boundary**: `apply_network_remesh` is history-gated, configurable,
+  structurally clipped, and uses a snapshot whose location changes with
+  $\tau_g$. The finite cyclic result does not establish its literal
+  $\tau_g\to\infty$ limit.
+- **Invariant correction**: convex EPI mixing is not an isometry. Orthogonal
+  projection contracts the surrogate history norm, but it neither proves
+  conservation of TNFR structural charge nor monotonicity of the structural
+  candidate energy. The former exact-conservation and universal $O(1/n)$ rate
+  claims are superseded.
+- **Registry scope**: the surrogate projection can be computed without adding
+  an implementation registry entry. This does not prove that the 13 registered
+  operators exhaust all admissible TNFR transformations; catalog completeness
+  remains open.
+- **External-program scope**: the finite surrogate does not advance RH,
+  Navier–Stokes regularity, K41, or an RMT correspondence. Historical branch
+  labels now apply only to comparisons made inside that declared surrogate.
 
 ## [0.0.3.3] - 2026-03-07
 
@@ -813,8 +1184,12 @@ Millennium Problem.
 
 ### Structural Conservation Theorem
 
-- **conservation.py**: Complete structural conservation module implementing Noether-like conservation law derived from grammar symmetry (U1-U6)
-- **Charge density** ρ, **current divergence** div(J), **Noether charge** Q, **energy functional** E, **Ward identities**, **Lyapunov stability**, and **spectral decomposition**
+- **conservation.py**: Introduced a finite-trajectory structural-balance residual
+  and Noether-like vocabulary. Later audits established that U1-U6 do not imply
+  a vanishing residual or a universal conservation theorem.
+- Added charge-density/current, structural-energy, Ward-residual, stability-policy,
+  and spectral diagnostics; these names do not by themselves establish conserved
+  charges, Noether hypotheses, or Lyapunov monotonicity.
 - Two-sector structure: Potential (Φ_s ↔ J_ΔNFR) and Geometric (K_φ ↔ J_φ) coupled through Ψ = K_φ + i·J_φ
 - 62 validation tests, charge drift < 0.03% across topologies
 
@@ -898,7 +1273,7 @@ Millennium Problem.
 - **Scientific Independence**: Defend conclusions emerging rigorously from TNFR principles regardless of external paradigm alignment
 - **Validation Criteria**: Established 4-point validation framework (Derivable, Testable, Reproducible, Coherent)
 
-### Complete Framework Expansion  
+### Complete Framework Expansion
 
 - **29 New Examples**: Comprehensive examples (11-39) covering physics, biology, cosmology, consciousness studies
 - **TNFR-Riemann Program**: Complete theoretical framework connecting discrete operators to Riemann Hypothesis
@@ -922,7 +1297,7 @@ Millennium Problem.
 ### Technical Enhancements
 
 - **Enhanced N-body Dynamics**: Improved TNFR integration with classical mechanics
-- **Riemann Operator**: Complete implementation with eigenvalue analysis capabilities  
+- **Riemann Operator**: Complete implementation with eigenvalue analysis capabilities
 - **Type System**: Enhanced type definitions and structural validation
 - **Code Quality**: Significant cleanup removing outdated components
 

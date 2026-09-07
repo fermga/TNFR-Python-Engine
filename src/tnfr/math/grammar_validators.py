@@ -5,11 +5,11 @@ Provides formal mathematical validation for TNFR operator sequences (Glyphs)
 by applying symbolic analysis from `tnfr.math.symbolic`.
 
 Key capabilities:
-- U2 CONVERGENCE: Verify integral convergence for sequences.
-- U4 BIFURCATION: Analyze bifurcation risk based on sequence effects.
+- U2 BALANCE SURROGATE: Score declared stabilizer/destabilizer effects.
+- U4 BIFURCATION SURROGATE: Score declared trigger/handler labels.
 
-This module bridges the gap between computational grammar rules and the
-underlying physics of the nodal equation.
+This module supplies symbolic heuristics alongside computational grammar rules.
+Its scalar scores do not integrate the nodal equation or certify trajectories.
 
 Physics basis: AGENTS.md § Unified Grammar (U1-U6)
 """
@@ -31,10 +31,11 @@ from ..types import Glyph
 # math-layer validator can never drift from the canonical U2/U4 grammar.
 
 
-# U2: Destabilizers increase |ΔNFR|, risking divergence  ({OZ, ZHIR, VAL})
+# U2: Destabilizer-debt roles through pressure, phase, or capacity stress
+# ({OZ, ZHIR, VAL})
 DESTABILIZERS = {_to_glyph(n) for n in _DESTABILIZER_NAMES}
 
-# U2: Stabilizers reduce |ΔNFR|, promoting convergence  ({IL, THOL})
+# U2: Stabilizer-coverage roles ({IL, THOL})
 STABILIZERS = {_to_glyph(n) for n in _STABILIZER_NAMES}
 
 # U4a: Bifurcation triggers (high ∂²EPI/∂t²)  ({OZ, ZHIR})
@@ -44,7 +45,7 @@ BIFURCATION_TRIGGERS = {_to_glyph(n) for n in _TRIGGER_NAMES}
 BIFURCATION_HANDLERS = {_to_glyph(n) for n in _HANDLER_NAMES}
 
 # ============================================================================
-# U2: CONVERGENCE & BOUNDEDNESS VALIDATION
+# U2: CALIBRATED NET-GROWTH SURROGATE
 # ============================================================================
 
 
@@ -55,10 +56,12 @@ def verify_convergence_for_sequence(
     stabilizer_effect: float = -0.15,
 ) -> tuple[bool, float, str]:
     """
-    Verify U2 convergence for a glyph sequence.
+    Evaluate a scalar U2 net-growth surrogate for a glyph sequence.
 
-    Models the effect of a sequence on the exponential growth rate (λ) of ΔNFR.
-    A positive final λ indicates divergence risk.
+    The compatibility function name is retained, but the result is a heuristic
+    balance score. It adds fixed effects for declared U2 roles without observing
+    graph state, ordering, capacity, pressure, or elapsed time. A positive final
+    λ marks an uncovered score in this surrogate; it does not prove divergence.
 
     Args:
         sequence: list of TNFR Glyphs.
@@ -67,12 +70,12 @@ def verify_convergence_for_sequence(
         stabilizer_effect: Negative value added to λ by a stabilizer.
 
     Returns:
-        (converges, final_growth_rate, explanation)
+        (passes_surrogate, final_growth_rate, explanation)
 
-    Physics:
-        ∫ νf·ΔNFR dt must converge. If ΔNFR grows exponentially (λ > 0),
-        the integral diverges. Stabilizers must counteract destabilizers
-        to ensure λ ≤ 0.
+    Scope:
+        Actual convergence of ``∫νf·ΔNFR dt`` requires a specified trajectory,
+        time horizon, pressure law, gains, and norm. This function establishes
+        none of those conditions.
 
     See: AGENTS.md § U2: CONVERGENCE & BOUNDEDNESS
     """
@@ -84,20 +87,22 @@ def verify_convergence_for_sequence(
         elif glyph in STABILIZERS:
             current_growth_rate += stabilizer_effect
 
-    converges = current_growth_rate <= 0
+    passes_surrogate = current_growth_rate <= 0
 
-    if converges:
+    if passes_surrogate:
         explanation = (
-            f"✓ U2 SATISFIED: Sequence is net-stabilizing or neutral. "
-            f"Final λ = {current_growth_rate:.2f} ≤ 0."
+            f"U2 scalar surrogate passes: declared net score "
+            f"λ = {current_growth_rate:.2f} ≤ 0; trajectory convergence "
+            "was not evaluated."
         )
     else:
         explanation = (
-            f"⚠️ U2 VIOLATION: Sequence is net-destabilizing. "
-            f"Final λ = {current_growth_rate:.2f} > 0. Needs more stabilizers."
+            f"U2 scalar surrogate fails: declared net score "
+            f"λ = {current_growth_rate:.2f} > 0. Add stabilizer coverage or "
+            "evaluate the executed trajectory explicitly."
         )
 
-    return converges, current_growth_rate, explanation
+    return passes_surrogate, current_growth_rate, explanation
 
 
 # ============================================================================
@@ -113,10 +118,11 @@ def verify_bifurcation_risk_for_sequence(
     window_size: int = 3,
 ) -> tuple[bool, float, str]:
     """
-    Verify U4 bifurcation risk for a glyph sequence.
+    Evaluate a scalar U4 trigger/handler surrogate for a glyph sequence.
 
-    Models the accumulation of bifurcation risk. Triggers (OZ, ZHIR) increase
-    risk, while handlers (IL, THOL) mitigate it.
+    The score treats triggers (OZ, ZHIR) as positive increments and handlers
+    (IL, THOL) as negative increments. It does not inspect EPI acceleration,
+    operator state, gains, or the executed trajectory.
 
     Args:
         sequence: list of TNFR Glyphs.
@@ -125,12 +131,12 @@ def verify_bifurcation_risk_for_sequence(
         risk_threshold: The level of risk considered significant.
 
     Returns:
-        (is_safe, risk_level, explanation)
+        (passes_surrogate, risk_score, explanation)
 
-    Physics:
-    Uncontrolled bifurcation (high ∂²EPI/∂t²) leads to chaos.
-    U4a requires that triggers be matched by handlers.
-    This function provides a heuristic measure of that balance.
+    Scope:
+    U4a requires declared triggers to have handler coverage. This heuristic
+    scores that label balance; it neither measures ∂²EPI/∂t² nor establishes
+    bifurcation, chaos, or dynamical safety.
     """
     risk_level = 0.0
     pending_triggers: list[int] = []
@@ -160,16 +166,19 @@ def verify_bifurcation_risk_for_sequence(
 
     if unhandled_triggers:
         explanation = (
-            f"⚠️ U4 VIOLATION: Risk ({risk_level:.2f}) includes unhandled "
+            f"U4 scalar surrogate fails: score ({risk_level:.2f}) includes unhandled "
             f"triggers beyond {window_size} glyphs."
         )
     elif risk_is_high:
         explanation = (
-            f"✓ U4 MITIGATED: Elevated risk ({risk_level:.2f}) is handled, "
-            f"monitor for sustained acceleration."
+            f"U4 scalar surrogate remains above its selected threshold "
+            f"({risk_level:.2f}) despite handler coverage."
         )
     else:
-        explanation = f"✓ U4 SATISFIED: Bifurcation risk is low ({risk_level:.2f})."
+        explanation = (
+            f"U4 scalar surrogate passes with declared score {risk_level:.2f}; "
+            "trajectory behavior was not evaluated."
+        )
 
     is_safe = not unhandled_triggers and not risk_is_high
     return is_safe, risk_level, explanation
@@ -184,23 +193,23 @@ if __name__ == "__main__":
     print("TNFR Mathematical Grammar Validators")
     print("=" * 70)
 
-    # --- U2 Convergence Examples ---
-    print("\n--- U2: CONVERGENCE & BOUNDEDNESS ---")
+    # --- U2 scalar-surrogate examples ---
+    print("\n--- U2: SCALAR BALANCE SURROGATE ---")
 
     # Unsafe sequence: Destabilizer without stabilizer
     unsafe_seq_u2 = [Glyph.AL, Glyph.OZ, Glyph.RA]
     print(f"\nAnalyzing sequence: {[g.value for g in unsafe_seq_u2]}")
-    converges, _, explanation = verify_convergence_for_sequence(unsafe_seq_u2)
+    passes_surrogate, _, explanation = verify_convergence_for_sequence(unsafe_seq_u2)
     print(explanation)
 
     # Safe sequence: Destabilizer followed by stabilizer
     safe_seq_u2 = [Glyph.AL, Glyph.OZ, Glyph.IL, Glyph.RA]
     print(f"\nAnalyzing sequence: {[g.value for g in safe_seq_u2]}")
-    converges, _, explanation = verify_convergence_for_sequence(safe_seq_u2)
+    passes_surrogate, _, explanation = verify_convergence_for_sequence(safe_seq_u2)
     print(explanation)
 
     # --- U4 Bifurcation Examples ---
-    print("\n--- U4: BIFURCATION DYNAMICS ---")
+    print("\n--- U4: TRIGGER/HANDLER SURROGATE ---")
 
     # Unsafe sequence: Trigger without handler
     unsafe_seq_u4 = [Glyph.EN, Glyph.OZ, Glyph.UM]

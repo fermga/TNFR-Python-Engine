@@ -12,7 +12,8 @@ The mapping relies on the Nodal Equation:
 This relationship reveals that Classical Mechanics is a limiting case of TNFR
 dynamics where:
 1. Coherence is maximized (low dissonance regime).
-2. Structural frequency (νf) acts as inverse inertia.
+2. Structural frequency (νf) is assigned an inverse-inertia role in the optional
+   second-order adapter; this is not an identity of the first-order nodal law.
 3. Structural pressure (ΔNFR) manifests as phenomenological force.
 
 REGIME NOTE (two distinct mechanical regimes — keep them separate)
@@ -25,9 +26,11 @@ equation ∂EPI/∂t = νf·ΔNFR is *first order*, so by itself it produces the
 **overdamped drift** law q̇ = νf·F (velocity ∝ force, νf = mobility), the
 empirically-demonstrated Stokes/Einstein mobility regime
 (:func:`tnfr.physics.structural_diffusion.verify_overdamped_regime`).  The
-bare nodal equation is the overdamped projection of the substrate flow; the
-inertial mapping here applies at the substrate (second-order) level, not to
-the first-order nodal equation in isolation.
+bare nodal equation instead has an overdamped *form*. A separate damped graph
+wave has a restricted pure-EPI diffusion limit, while no derivation of the full
+nodal law from the isotropic substrate is established. The inertial mapping
+here is a user-selected second-order embedding, not a canonical consequence of
+the first-order nodal equation.
 
 Canonical Mappings:
 1. Generalized Coordinates (q) <--> EPI Spatial Components
@@ -47,7 +50,7 @@ from the conservation law structure:
 For a single mechanical degree of freedom:
 - Classical generalized coordinate q → K_φ (curvature acts as position-like)
 - Classical velocity qdot → J_φ (current acts as momentum-like / m)
-- Classical inertia m = 1/νf
+- Classical inertia m = 1/νf (adapter convention)
 - Classical force F → ΔNFR (structural pressure = Euler-Lagrange force)
 
 The mapping is **asymmetric**: Φ_s and K_φ are both part of the potential V,
@@ -114,7 +117,7 @@ class ClassicalMechanicsMapper:
         Returns:
             dict containing TNFR nodal attributes:
             - EPI: Combined state vector [q, q_dot]
-            - νf: Structural frequency (derived from mass)
+            - νf: Structural frequency assigned by the adapter convention
             - ΔNFR: Structural pressure (derived from Euler-Lagrange)
         """
         if system.q_dot is None:
@@ -122,7 +125,9 @@ class ClassicalMechanicsMapper:
                 "Lagrangian mapping requires generalized velocities (q_dot)."
             )
 
-        # 1. Map Mass to Frequency: νf = 1/m
+        # 1. Adapter convention: map mass to frequency as νf = 1/m.
+        # This is a chosen classical embedding, not a derivation from the bare
+        # first-order nodal equation (where νf has mobility semantics).
         # We take the mean mass if multiple, or return a vector if supported.
         # For a single node representing the system, we might use an effective mass.
         # Here we assume the system represents a single entity or we return arrays.
@@ -134,7 +139,7 @@ class ClassicalMechanicsMapper:
 
         # Let's assume 1D or N-D system mapped to N-D EPI.
 
-        # νf (Structural Frequency) <--> 1 / Mass
+        # Adapter-specific νf <--> 1 / mass assignment.
         # Using the first mass as reference or vector if supported by custom node types.
         # Standard TNFR nodes have scalar νf.
         mass_ref = np.mean(system.masses) if system.masses is not None else 1.0
@@ -190,7 +195,7 @@ class ClassicalMechanicsMapper:
                 "Hamiltonian mapping requires generalized momenta (p)."
             )
 
-        # 1. Map Mass to Frequency
+        # 1. Apply the same explicit adapter convention νf = 1/m.
         mass_ref = np.mean(system.masses) if system.masses is not None else 1.0
         nu_f = 1.0 / mass_ref if mass_ref > 0 else 1.0
 

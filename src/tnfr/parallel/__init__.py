@@ -1,54 +1,28 @@
-"""Parallel and distributed computation engines for TNFR networks.
+"""Parallel and distributed computation interfaces for TNFR networks.
 
-This module provides parallelization strategies that respect TNFR's structural
-coherence while enabling efficient computation on large networks. All parallel
-implementations preserve the canonical nodal equation and operator closure.
+The package exposes CPU parallel execution, structural partitioning, observed
+performance monitoring, an evidence-neutral strategy recommender, and a
+distributed wrapper. The distributed wrapper uses Ray or Dask when installed
+and otherwise selects its multiprocessing fallback in backend="auto" mode.
 
-Key components:
-- FractalPartitioner: Partitions networks using coherence-based communities
-- TNFRParallelEngine: Multiprocessing/threading engine for medium networks
-- TNFRDistributedEngine: Optional Ray/Dask backend for massive networks
-- TNFRGPUEngine: Optional GPU acceleration via JAX/CuPy
-- TNFRAutoScaler: Recommends optimal execution strategy
-- ParallelExecutionMonitor: Real-time performance tracking
-
-All engines maintain TNFR invariants:
-- EPI changes only via structural operators
-- νf expressed in Hz_str (structural hertz)
-- ΔNFR semantics preserved (not reinterpreted as ML gradient)
-- Operator closure maintained
-- Phase synchrony verification
-- Operational fractality preserved
+GPU computation is exposed separately through
+tnfr.engines.computation.unified_gpu_system. This package does not export a
+TNFRGPUEngine and makes no acceleration claim from device availability.
 """
 
 from __future__ import annotations
 
 from .auto_scaler import TNFRAutoScaler
+from .distributed import TNFRDistributedEngine
 from .engine import TNFRParallelEngine
 from .monitoring import ParallelExecutionMonitor, PerformanceMetrics
-
-# Import all core components
 from .partitioner import FractalPartitioner
 
 __all__ = (
     "FractalPartitioner",
     "TNFRParallelEngine",
+    "TNFRDistributedEngine",
     "TNFRAutoScaler",
     "ParallelExecutionMonitor",
     "PerformanceMetrics",
 )
-
-# Optional distributed backends
-try:
-    pass
-
-    __all__ = __all__ + ("TNFRDistributedEngine",)
-except ImportError:
-    pass
-
-# Optional GPU backend
-try:
-    # GPU functionality moved to tnfr.engines.computation.unified_gpu_system
-    pass
-except ImportError:
-    pass

@@ -2,6 +2,8 @@ r"""Tests for research claims, manifests, certificates, and circularity."""
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import pytest
 
 from tnfr.research import (
@@ -10,6 +12,8 @@ from tnfr.research import (
     Claim,
     ClaimRegistry,
     ClaimStatus,
+    CoreExperimentManifest,
+    current_git_source_provenance,
     ClaimTransitionError,
     ExperimentManifest,
     EvidenceAdmissionError,
@@ -20,6 +24,128 @@ from tnfr.research import (
     input_bit_length,
     is_valid_transition,
 )
+
+
+def test_git_source_provenance_is_scoped_and_content_addressed(
+    tmp_path, monkeypatch
+):
+    source = tmp_path / "src" / "model.py"
+    source.parent.mkdir()
+    source.write_text("version = 1\n", encoding="utf-8")
+    calls = []
+
+    def fake_run(command, *, cwd, check, capture_output):
+        calls.append((command, cwd, check, capture_output))
+        arguments = command[1:]
+        if arguments[:2] == ("rev-parse", "HEAD"):
+            output = b"deadbeef\n"
+        elif arguments[0] == "status":
+            output = b"?? src/model.py\0"
+        elif arguments[0] == "ls-files":
+            output = b"src/model.py\0"
+        else:  # pragma: no cover - guards the fixed Git protocol
+            raise AssertionError(arguments)
+        return SimpleNamespace(stdout=output)
+
+    monkeypatch.setattr("tnfr.research.core_manifests.subprocess.run", fake_run)
+
+    first = current_git_source_provenance(tmp_path, ("src",))
+    source.write_text("version = 2\n", encoding="utf-8")
+    second = current_git_source_provenance(tmp_path, ("src",))
+
+    assert first[0] == "deadbeef"
+    assert first[1] is True
+    assert first[2].startswith("sha256:")
+    assert first[2] != second[2]
+    assert all(call[1] == tmp_path.resolve() for call in calls)
+
+
+def test_git_source_provenance_rejects_an_ambiguous_path_scalar(tmp_path):
+    with pytest.raises(TypeError, match="iterable"):
+        current_git_source_provenance(tmp_path, "src")
+
+
+def _core_manifest(**overrides):
+    base = dict(
+        claim_id="S16",
+        git_sha="deadbeef",
+        versions={"tnfr": "0.0.3.5", "python": "3.13.5"},
+        graph_construction="weighted path graph with declared node attributes",
+        capacity_specification="positive heterogeneous nu_f in [0.5, 2.0]",
+        solver="read-only exact finite-dimensional certificate",
+        result_status=ClaimStatus.DERIVED,
+        seed=20260906,
+        telemetry=("C(t)", "Si", "nu_f", "phase", "tetrad"),
+        controls=("relabeling", "boundary partition"),
+        artifacts=("results/s16.json",),
+        source_dirty=False,
+    )
+    base.update(overrides)
+    return CoreExperimentManifest(**base)
+
+
+def test_core_manifest_is_domain_neutral_and_round_trips():
+    manifest = _core_manifest()
+    payload = manifest.to_dict()
+
+    assert "uses_known_factors" not in payload
+    assert "input_bits" not in payload
+    assert CoreExperimentManifest.from_dict(payload) == manifest
+    manifest.validate_for_admission()
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"result_status": "unknown"},
+        {"result_status": None},
+        {"git_sha": "not-a-sha"},
+        {"seed": True},
+        {"timestep": True},
+        {"timestep": "0.1"},
+        {"timestep": 10**1000},
+        {"timestep": 0.0},
+        {"versions": {"python": 3}},
+        {"operator_sequence": "AL"},
+        {"telemetry": "C(t)"},
+        {"controls": "relabeling"},
+        {"artifacts": "results/s16.json"},
+        {"source_dirty": "false"},
+        {"dirty_source_hash": "sha256:not-a-digest"},
+    ],
+)
+def test_core_manifest_rejects_ambiguous_provenance(overrides):
+    with pytest.raises(ManifestValidationError):
+        _core_manifest(**overrides)
+
+
+def test_core_manifest_frozen_contract_includes_versions_mapping():
+    manifest = _core_manifest()
+
+    with pytest.raises(TypeError):
+        manifest.versions["python"] = "mutated"  # type: ignore[index]
+    assert manifest.to_dict()["versions"]["python"] == "3.13.5"
+
+
+def test_core_manifest_from_dict_normalizes_invalid_status_error():
+    payload = _core_manifest().to_dict()
+    payload["result_status"] = None
+
+    with pytest.raises(ManifestValidationError, match="result_status"):
+        CoreExperimentManifest.from_dict(payload)
+
+
+def test_core_manifest_requires_dirty_tree_hash_for_admission():
+    dirty = _core_manifest(source_dirty=True)
+    with pytest.raises(ManifestValidationError, match="dirty_source_hash"):
+        dirty.validate_for_admission()
+
+    admitted = _core_manifest(
+        source_dirty=True,
+        dirty_source_hash="sha256:" + "a" * 64,
+    )
+    admitted.validate_for_admission()
+    assert CoreExperimentManifest.from_dict(admitted.to_dict()) == admitted
 
 
 # --- claims -------------------------------------------------------------------

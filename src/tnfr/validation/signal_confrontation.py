@@ -234,9 +234,9 @@ def confront_signal(
 
     pulse = compute_emergent_pulse(graph)
     omega0 = float(pulse["fundamental"])
-    # xi_C from the EMERGENT spectral gap (1/sqrt(lambda_2)) -- the robust
-    # emergent-geometry coherence length (the autocorrelation estimator is nan
-    # on these coupling graphs; Network.nfr() uses the same spectral-gap form).
+    # Topology-only 1/sqrt(lambda_2) fallback. The state-dependent
+    # autocorrelation fit is unavailable on these coupling graphs, so retain
+    # the spectral provenance rather than claiming an exact fit identity.
     xi_c = (1.0 / omega0) if omega0 > 0.0 else float("inf")
 
     # Emergent two-face diagnosis.  The damping is read from the EMERGENT

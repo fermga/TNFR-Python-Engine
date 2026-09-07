@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-r"""Example 49: U(1) Gauge Structure of the Complex Geometric Field Ψ.
+r"""Example 26: auxiliary U(1) coordinates of the complex field Ψ.
 
-Demonstrates that the complex field Ψ = K_φ + i·J_φ possesses a local U(1)
-gauge symmetry.  Under the transformation Ψ(i) → e^{iα(i)}Ψ(i) with
-*arbitrary* node-dependent α(i), certain physical quantities are exactly
-invariant while others transform as U(1) multiplets.
+Demonstrates the algebraic invariants of the nodewise transformation
+Ψ(i) → e^{iα(i)}Ψ(i).  This is an auxiliary field-coordinate action, not an
+engine operator or a derived symmetry of the nodal dynamics.
 
 Gauge-invariant quantities:
   - Energy density  ℰ(i) = Φ_s² + |∇φ|² + |Ψ|² + J_ΔNFR²
@@ -18,23 +17,20 @@ NOT gauge-invariant:
   - Symmetry breaking 𝒮: K_φ² and J_φ² individually change
   - arg(Ψ): the phase itself is the gauge degree of freedom
 
-Gauge geometric objects:
-  - Connection  A_ij = arg(Ψ_j) − arg(Ψ_i) on each edge
-  - Curvature   F_C  = Σ_cycle A_ij  (Wilson loop on triangles)
-  - Covariant derivative |D_ij Ψ| invariant under gauge transform
+Derived edge diagnostics:
+  - Connection A_ij = d(arg Ψ)_ij is an exact, pure-gauge one-form
+  - F_C = Σ_cycle A_ij is zero analytically modulo 2π
+  - Returned F_C values are floating-point cycle-closure residuals
+  - |D_ij Ψ| is invariant when A is reconstructed from the rotated Ψ
 
-Interaction regime classification:
-  - em_like     (small arg Ψ ≈ 0)
-  - weak_like   (arg Ψ ≈ π/2)
-  - strong_like (large curvature |F_C|)
-  - gravity_like(Φ_s ≫ |Ψ|)
+The historical em_like, weak_like, strong_like and gravity_like labels remain
+as an API-compatible snapshot heuristic.  They are not derived fundamental
+interactions; strong_like contains only an anomalous closure-residual score.
 
 TNFR physics basis:
   Nodal equation   ∂EPI/∂t = νf · ΔNFR(t)
   Complex field    Ψ = K_φ + i·J_φ (phase curvature + phase current)
-  Grammar rule U3  Resonant coupling |φ_i − φ_j| ≤ Δφ_max acts as
-                   gauge fixing for the network connection field.
-  Operator IL      Coherence acts as covariant derivative minimiser.
+  Grammar rule U3  Separately gates coupling by the node phase φ.
 
 Usage:
     python examples/02_physics_regimes/26_gauge_structure_demo.py
@@ -113,9 +109,9 @@ def main() -> None:
     print(f"  𝒮   max deviation : {result.symmetry_breaking_max_deviation:.4f}")
 
     # ------------------------------------------------------------------
-    # 3. Connection & Curvature Fields
+    # 3. Exact connection and cycle closure
     # ------------------------------------------------------------------
-    section("3. Gauge Connection A_ij & Curvature F_C")
+    section("3. Exact Connection A_ij & Cycle Closure F_C")
     conn = compute_gauge_connection(G)
     if conn:
         conn_vals = list(conn.values())
@@ -125,13 +121,14 @@ def main() -> None:
     curv = compute_gauge_curvature(G)
     if curv:
         curv_vals = list(curv.values())
-        print(f"  F_C range       : [{min(curv_vals):.4f}, {max(curv_vals):.4f}]")
+        max_closure = max(abs(value) for value in curv_vals)
+        print(f"  max |F_C|       : {max_closure:.2e} (numerical residual)")
         print(f"  Cycles detected  : {len(curv)}")
     else:
         print("  No short cycles found for curvature computation.")
 
     s_ym = compute_yang_mills_action(G)
-    print(f"  Yang–Mills action : S_YM = {s_ym:.6f}")
+    print(f"  legacy S_YM       : {s_ym:.2e} (squared closure residual)")
 
     # ------------------------------------------------------------------
     # 4. Covariant Derivative |D_ij Ψ|
@@ -143,29 +140,24 @@ def main() -> None:
         print(f"  |D_ij Ψ| range  : [{min(cov_vals):.4f}, {max(cov_vals):.4f}]")
         print(f"  Mean |D_ij Ψ|   : {sum(cov_vals) / len(cov_vals):.4f}")
 
-    # Verify |D_ij Ψ| is gauge-invariant by comparing before/after
-    # apply_gauge_transformation returns field dicts, so we build a rotated
-    # copy of the graph by injecting rotated K_φ, J_φ back as node data
-    # that canonical.py will read from the cache-invalidated copy.
-    import copy as _copy
-
+    # Verify |D_ij Ψ| by reconstructing A from the rotated auxiliary field.
     rng = np.random.default_rng(123)
     alpha = {n: float(rng.uniform(0, 2 * np.pi)) for n in G.nodes()}
     cov_before = compute_covariant_derivative_magnitude(G)
     rotated = apply_gauge_transformation(G, alpha)
-
-    # Build rotated graph copy with pre-computed rotated fields stored
-    # as overridden _gauge_k_phi / _gauge_j_phi so we can verify manually.
-    # We compare the *analytical* covariant derivative which is indeed
-    # invariant; here we just verify the snapshot fields are consistent.
-    snap_before = capture_gauge_snapshot(G)
-    snap_after_fields = apply_gauge_transformation(G, alpha)
-    mag_dev = max(
-        abs(snap_before.psi_magnitude[n] - snap_after_fields["psi_magnitude"][n])
-        for n in G.nodes()
-    )
-    print(f"  |Ψ| gauge deviation      : {mag_dev:.2e}")
-    print(f"  (Confirms |Ψ| invariance → |D_ij Ψ| invariance by construction)")
+    covariant_deviation = 0.0
+    for u, v in G.edges():
+        psi_u = rotated["psi"][u]
+        psi_v = rotated["psi"][v]
+        phase_u = float(np.angle(psi_u)) if abs(psi_u) > 1e-15 else 0.0
+        phase_v = float(np.angle(psi_v)) if abs(psi_v) > 1e-15 else 0.0
+        link = phase_v - phase_u
+        transported = psi_u * complex(np.cos(link), np.sin(link))
+        covariant_deviation = max(
+            covariant_deviation,
+            abs(abs(psi_v - transported) - cov_before[(u, v)]),
+        )
+    print(f"  |D_ij Ψ| rotation deviation: {covariant_deviation:.2e}")
 
     # ------------------------------------------------------------------
     # 5. Energy Decomposition
@@ -183,11 +175,11 @@ def main() -> None:
     # ------------------------------------------------------------------
     # 6. Interaction Regime Classification
     # ------------------------------------------------------------------
-    section("6. Interaction Regime Classification")
+    section("6. Historical Field-Coordinate Labels")
     regimes = classify_network_regimes(G)
     print(f"  Dominant regime   : {regimes['dominant_regime']}")
-    print(f"  Mean |F_C|        : {regimes['mean_gauge_curvature']:.4f}")
-    print(f"  Gauge flatness    : {regimes['gauge_flatness']:.4f}")
+    print(f"  Mean closure error: {regimes['mean_gauge_curvature']:.2e}")
+    print(f"  Closure fraction  : {regimes['gauge_flatness']:.4f}")
     print("  Regime counts:")
     for regime, count in sorted(regimes["regime_distribution"].items()):
         pct = 100 * count / G.number_of_nodes()
@@ -197,19 +189,19 @@ def main() -> None:
     # Summary
     # ------------------------------------------------------------------
     section("Summary")
-    print("  The complex geometric field Ψ = K_φ + i·J_φ possesses a")
-    print("  local U(1) gauge symmetry.  Under Ψ(i) → e^{iα(i)} Ψ(i):")
+    print("  The auxiliary field coordinates admit nodewise U(1) rotations.")
+    print("  Under Ψ(i) → e^{iα(i)} Ψ(i):")
     print()
     print("  INVARIANT: ℰ, |Ψ|², |𝒯|², |𝒳|², C(t), |D_ij Ψ|")
     print("  VARIANT  : Q, 𝒮, arg(Ψ), (𝒬,𝒬̃) and (χ,χ̃) rotate")
     print()
-    print("  Grammar rule U3 (phase verification) acts as gauge fixing,")
-    print("  the connection A_ij measures phase transport cost between")
-    print("  coupled nodes, and the curvature F_C detects topological")
-    print("  obstructions to global phase coherence.")
+    print("  A_ij=d(arg Ψ)_ij is pure gauge and every cycle closes exactly")
+    print("  modulo 2π; nonzero F_C reports floating-point residual only.")
     print()
     print("  Physics basis: nodal equation ∂EPI/∂t = νf · ΔNFR(t)")
-    print("  Grammar basis: U3 (resonant coupling), U6 (confinement)")
+    print("  Grammar relation: U3 separately constrains node-phase coupling.")
+    print("  U6 requires a separate before/after structural-potential drift;")
+    print("  this single-snapshot gauge demo does not assess it.")
 
 
 if __name__ == "__main__":

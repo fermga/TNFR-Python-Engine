@@ -1,29 +1,26 @@
-"""Tests for TNFR Phase Transition — Life/Non-Life as Universal Symmetry Breaking.
+"""Tests for TNFR phase-transition telemetry and operational phase labels.
 
-Validates the Structural Phase Transition Theorem: the symmetry breaking
-field 𝒮 = (|∇φ|² − K_φ²) + (J_φ² − J_ΔNFR²) serves as order parameter
-of a second-order phase transition between non-life (⟨𝒮⟩ = 0, symmetric)
-and life (⟨𝒮⟩ ≠ 0, broken symmetry).
+Validates the signed global order/chirality z-scores, time-series measurements
+and reproducibility. It does not assert a universal phase-transition theorem.
 
 Tests verify:
 1.  Symmetric phase: uniform/equilibrium graphs → ⟨𝒮⟩ = 0 (NON_LIFE)
-2.  Broken symmetry: heterogeneous phases/ΔNFR → ⟨𝒮⟩ ≠ 0 (LIFE)
-3.  Chirality: life phase requires ⟨|χ|⟩ > 0 (homochirality)
-4.  Critical exponent reference: γ_c = γ/π ≈ 0.1837 (calibrated TIER-2 scale;
-    audit 2026: the measured exponent is protocol-dependent, not universal)
-5.  Susceptibility: diverges near critical point (peak at transition)
-6.  Coherence length: grows near critical regime
+2.  Signed global imbalance is distinct from local heterogeneous activity
+3.  Preferred handedness uses |⟨χ⟩|, not ⟨|χ|⟩
+4.  Effective time-series exponent is measured without a universal comparator
+5.  Susceptibility: sampled peak along a declared transition sequence
+6.  Coherence length: finite non-negative sampled diagnostic
 7.  Phase classification consistency across topologies
 8.  Transition time detection via interpolation
-9.  Critical time at peak susceptibility
+9.  Sampled susceptibility-peak time
 10. PhaseSnapshot capture correctness
 11. Time-series detect_phase_transition() pipeline
-12. Power-law fit of critical exponent
+12. Power-law fit of a protocol-dependent effective exponent
 13. Constants consistency with canonical module
 14. Dataclass integrity (PhaseTransitionTelemetry fields)
 15. Reproducibility under seed control
 
-TIER: CORE PHYSICS — phase transition axiomatises life/non-life boundary.
+TIER: CORE TELEMETRY — operational classification and measured scaling.
 """
 
 from __future__ import annotations
@@ -128,16 +125,16 @@ def _build_transition_sequence(n_steps: int = 20, seed: int = 42) -> tuple:
 
 
 class TestEmergentClassification:
-    """The classification scale is the emergent sampling-noise z-score.
+    """The classifier uses a standardized spatial imbalance.
 
     Audit 2026: the magic scales (γ/π)² and γ/(π+γ) were proven INERT
     (they sat in a two-order-of-magnitude gap; sweeping them changed no
-    classification) and were removed. The phase is now decided by the
-    statistical significance of symmetry breaking measured from the system.
+    classification) and were removed. Coupled nodes do not justify an
+    independent-sample significance interpretation.
     """
 
     def test_z_significance_is_one_sigma(self):
-        """The only cut is z = 1 (the sampling-noise scale, not a constant)."""
+        """The retained operational standardized-imbalance cut is one."""
         assert Z_SIGNIFICANCE == 1.0
 
     def test_zscore_zero_for_uniform_zero_field(self):
@@ -149,13 +146,29 @@ class TestEmergentClassification:
         assert symmetry_zscore(0.5, 0.0, 30) == math.inf
 
     def test_zscore_is_mean_over_standard_error(self):
-        """z = |mean| / sqrt(Var/N) — emergent, measured from the system."""
+        """The legacy z-score API computes |mean| / sqrt(Var/N)."""
         z = symmetry_zscore(0.2, 0.01, 25)
         assert z == pytest.approx(0.2 / math.sqrt(0.01 / 25), rel=1e-12)
 
     def test_zscore_zero_nodes_is_zero(self):
-        """Empty system has no significance."""
+        """An empty system has zero standardized imbalance."""
         assert symmetry_zscore(1.0, 1.0, 0) == 0.0
+
+    @pytest.mark.parametrize(
+        "mean_abs,variance,n",
+        [(-0.1, 1.0, 2), (math.nan, 1.0, 2), (0.1, -1.0, 2), (0.1, 1.0, -1)],
+    )
+    def test_zscore_rejects_invalid_inputs(self, mean_abs, variance, n):
+        with pytest.raises(ValueError):
+            symmetry_zscore(mean_abs, variance, n)
+
+    @pytest.mark.parametrize(
+        "order_z,chirality_z",
+        [(math.nan, 0.0), (0.0, math.nan), (-1.0, 0.0), (0.0, -1.0)],
+    )
+    def test_phase_classifier_rejects_invalid_ratios(self, order_z, chirality_z):
+        with pytest.raises(ValueError):
+            classify_phase(order_z, chirality_z)
 
 
 # ============================================================================
@@ -200,7 +213,7 @@ class TestSymmetricPhase:
 
 
 class TestBrokenSymmetry:
-    """Heterogeneous graphs must show broken symmetry → LIFE."""
+    """The declared heterogeneous fixture has nonzero local activity."""
 
     def test_heterogeneous_nonzero_order_parameter(self, heterogeneous_graph):
         """⟨|𝒮|⟩ > 0 for diverse phases and ΔNFR."""
@@ -212,15 +225,21 @@ class TestBrokenSymmetry:
         chi = compute_chirality_statistics(heterogeneous_graph)
         assert chi["abs_mean"] > 0
 
-    def test_heterogeneous_classified_life(self, heterogeneous_graph):
-        """Diverse phases with strong ΔNFR → Phase.LIFE."""
+    def test_random_heterogeneity_without_signed_chirality_is_critical(
+        self, heterogeneous_graph
+    ):
+        """Local chiral activity does not imply preferred handedness."""
         snap = capture_phase_snapshot(heterogeneous_graph)
-        assert snap.phase == Phase.LIFE
+        assert snap.phase == Phase.CRITICAL
 
-    def test_heterogeneous_has_homochirality(self, heterogeneous_graph):
-        """Heterogeneous graph develops homochirality."""
+    def test_random_heterogeneity_does_not_force_homochirality(
+        self, heterogeneous_graph
+    ):
+        """Opposing local chirality cancels in the signed global mean."""
         snap = capture_phase_snapshot(heterogeneous_graph)
-        assert snap.has_homochirality is True
+        chi = compute_chirality_statistics(heterogeneous_graph)
+        assert chi["abs_mean"] > 10.0 * abs(chi["mean"])
+        assert snap.has_homochirality is False
 
     def test_positive_susceptibility(self, heterogeneous_graph):
         """χ_𝒮 > 0 in the broken phase (finite fluctuations)."""
@@ -272,7 +291,7 @@ class TestPhaseClassification:
     """Verify classify_phase() z-score logic (emergent, no magic constant)."""
 
     def test_zero_zscore_is_non_life(self):
-        """order_z = 0 → NON_LIFE (within sampling noise of zero)."""
+        """order_z = 0 maps to the operational NON_LIFE label."""
         assert classify_phase(0.0, 0.0) == Phase.NON_LIFE
 
     def test_subsigma_order_is_non_life(self):
@@ -326,6 +345,7 @@ class TestPhaseSnapshot:
         """|⟨𝒮⟩| ≥ 0 always."""
         snap = capture_phase_snapshot(heterogeneous_graph)
         assert snap.order_parameter_abs >= 0
+        assert snap.order_parameter_abs == pytest.approx(abs(snap.order_parameter))
 
     def test_snapshot_susceptibility_nonneg(self, heterogeneous_graph):
         """χ_𝒮 = N·Var(𝒮) ≥ 0 always."""
@@ -363,12 +383,11 @@ class TestPhaseTransitionDetection:
         # Step 0 is fully uniform
         assert tel.phase_classification[0] == Phase.NON_LIFE
 
-    def test_late_steps_life(self):
-        """Last steps (fully heterogeneous) → LIFE or CRITICAL."""
+    def test_late_random_heterogeneity_need_not_break_global_symmetry(self):
+        """Large local diversity may still cancel in signed global means."""
         graphs, times = _build_transition_sequence(n_steps=20, seed=42)
         tel = detect_phase_transition(graphs, times)
-        # Last step has maximum diversity
-        assert tel.phase_classification[-1] in (Phase.LIFE, Phase.CRITICAL)
+        assert tel.phase_classification[-1] == Phase.NON_LIFE
 
     def test_order_parameter_increases(self):
         """⟨|𝒮|⟩ increases as diversity grows."""
@@ -417,12 +436,12 @@ class TestPhaseTransitionDetection:
 
 
 # ============================================================================
-# Test 8: Susceptibility behaviour near transition
+# Test 8: Susceptibility along the declared sampled ramp
 # ============================================================================
 
 
 class TestSusceptibility:
-    """Susceptibility χ_𝒮 = N·Var(𝒮) should peak near the critical point."""
+    """Exercise the finite sampled maximum of χ_𝒮 = N·Var(𝒮)."""
 
     def test_susceptibility_peak_in_middle(self):
         """Susceptibility should peak somewhere between fully uniform and fully diverse."""
@@ -441,12 +460,12 @@ class TestSusceptibility:
 
 
 # ============================================================================
-# Test 9: Critical exponent fitting
+# Test 9: Protocol-dependent effective-exponent fitting
 # ============================================================================
 
 
-class TestCriticalExponentFit:
-    """Verify critical exponent estimation and theoretical comparison."""
+class TestEffectiveExponentFit:
+    """Verify protocol-dependent effective-exponent estimation."""
 
     def test_fit_returns_dict(self):
         """fit_critical_exponent returns a dictionary with expected keys."""
@@ -480,6 +499,34 @@ class TestCriticalExponentFit:
         if tel.measured_exponent is not None:
             # Power-law growth → positive exponent
             assert tel.measured_exponent > 0
+
+    def test_fit_never_substitutes_before_peak_samples(self):
+        """Two after-peak points remain insufficient despite earlier data."""
+        times = [-3.0, -2.0, -1.0, 0.0, 1.0, 2.0]
+        order = np.array([9.0, 4.0, 1.0, 0.0, 1.0, 4.0])
+
+        result = fit_critical_exponent(times, order, critical_time=0.0)
+
+        assert result == {"exponent": None, "r_squared": None}
+
+    def test_fit_uses_consistent_neutral_exponent_convention(self):
+        times = [0.0, 1.0, 2.0, 4.0]
+        order = np.sqrt(np.asarray(times, dtype=float))
+
+        result = fit_critical_exponent(times, order, critical_time=0.0)
+
+        assert result["exponent"] == pytest.approx(0.5)
+        assert result["r_squared"] == pytest.approx(1.0)
+
+    def test_constant_postcritical_response_has_perfect_zero_slope_fit(self):
+        result = fit_critical_exponent(
+            [0.0, 1.0, 2.0, 4.0],
+            np.array([0.0, 2.0, 2.0, 2.0]),
+            critical_time=0.0,
+        )
+
+        assert result["exponent"] == pytest.approx(0.0, abs=1e-14)
+        assert result["r_squared"] == pytest.approx(1.0)
 
 
 # ============================================================================
@@ -516,8 +563,8 @@ class TestMultiTopology:
         ],
         ids=["watts_strogatz", "barabasi_albert", "erdos_renyi"],
     )
-    def test_heterogeneous_is_life(self, graph_fn, seed):
-        """Heterogeneous phases + ΔNFR → LIFE across topologies."""
+    def test_selected_heterogeneous_fixtures_cross_order_cut(self, graph_fn, seed):
+        """The seeded fixtures cross the operational signed-order cut."""
         rng = np.random.default_rng(seed)
         G = graph_fn(seed)
         inject_defaults(G)
@@ -594,7 +641,7 @@ class TestReproducibility:
 
 
 class TestCoherenceLength:
-    """ξ_C should grow as the system approaches the critical regime."""
+    """ξ_C remains a sampled finite-network diagnostic."""
 
     def test_coherence_length_nonneg_in_telemetry(self):
         """ξ_C ≥ 0 at all time steps."""
@@ -639,6 +686,51 @@ class TestEdgeCases:
         inject_defaults(G)
         tel = detect_phase_transition([G], [0.0])
         assert len(tel.phase_classification) == 1
+
+    def test_time_series_requires_one_time_per_graph(self):
+        """A partial time coordinate cannot silently truncate diagnostics."""
+        G = nx.path_graph(3)
+        inject_defaults(G)
+        with pytest.raises(ValueError, match="same number"):
+            detect_phase_transition([G, G.copy()], [0.0])
+
+    @pytest.mark.parametrize(
+        "times",
+        [[0.0, 0.0], [1.0, 0.0], [0.0, float("nan")]],
+        ids=["duplicate", "decreasing", "non_finite"],
+    )
+    def test_time_series_requires_finite_strictly_increasing_times(self, times):
+        G = nx.path_graph(3)
+        inject_defaults(G)
+        with pytest.raises(ValueError):
+            detect_phase_transition([G, G.copy()], times)
+
+    def test_classifier_inputs_are_exposed_in_telemetry(self):
+        """The values governing labels remain directly auditable."""
+        G = nx.path_graph(3)
+        inject_defaults(G)
+        snapshot = capture_phase_snapshot(G)
+        telemetry = detect_phase_transition([G], [0.0])
+
+        assert snapshot.node_count == 3
+        assert snapshot.order_zscore == telemetry.order_zscore[0]
+        assert snapshot.chirality_zscore == telemetry.chirality_zscore[0]
+        assert telemetry.node_count.tolist() == [3]
+
+    @pytest.mark.parametrize(
+        "times,order,critical_time,error",
+        [
+            ([0.0, 1.0], np.array([0.1]), 0.5, "same number"),
+            ([0.0, 1.0], np.array([0.1, -0.2]), 0.5, "negative"),
+            ([0.0, 1.0], np.array([0.1, np.nan]), 0.5, "finite"),
+            ([0.0, 1.0], np.array([0.1, 0.2]), np.nan, "critical_time"),
+        ],
+    )
+    def test_exponent_fit_rejects_invalid_coordinates(
+        self, times, order, critical_time, error
+    ):
+        with pytest.raises(ValueError, match=error):
+            fit_critical_exponent(times, order, critical_time)
 
 
 # ============================================================================

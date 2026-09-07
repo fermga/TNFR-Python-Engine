@@ -105,7 +105,31 @@ spectrum, norm, Euler stability region, stationary-mode treatment, and
 operator-induced gains. Directed non-normal and heterogeneous-frequency
 generators require their own analysis.
 
-## 3. Structural potential and topology-dependent bounds
+The read-only
+[`diagnose_euler_relaxation_window`](../src/tnfr/physics/structural_diffusion.py)
+now performs that analysis for frozen symmetric pure-EPI diffusion with
+heterogeneous frequency. It returns the actual modal multipliers, explicit-Euler
+stability limit and first solver step below a declared target. It also reports
+the canonical U4 window for comparison while keeping the units distinct:
+solver steps are not operator positions. Directed non-normal transport and any
+policy mapping remain open.
+
+## 3. Assumption-explicit model thresholds
+
+[`physics.life`](../src/tnfr/physics/life.py) is a supplied-series diagnostic
+model, not a consequence of the nodal equation and not a biological
+classifier. It rejects Boolean, non-finite, multidimensional and implicitly
+broadcast inputs; the combined detector additionally requires nonnegative EPI,
+matched lengths and strictly increasing times. Its selected event $A(t)>1$
+means only that the declared time-local ratio
+$G(t)\dot x(t)/(|\Delta\mathrm{NFR}_{\rm ext}(t)|^2+\epsilon_{\rm num})$
+exceeds one on the supplied samples. The reported time is the first sample
+already above one or the linear interpolation of the first upward crossing. It
+does not establish persistence, autonomy or biological life. Formulas and
+parameter domains are centralized in
+[Structural Stability and Dynamics](STRUCTURAL_STABILITY_AND_DYNAMICS.md#3-life-telemetry-diagnostics).
+
+## 4. Structural potential and topology-dependent bounds
 
 For a fixed distance convention and positive finite distances, define
 
@@ -153,7 +177,7 @@ In contrast, the phase definitions give exact kinematic bounds:
 The curvature warning level 0.9π is a selected margin inside that bound. The
 phase-gradient warning level π/16 is also a policy value.
 
-## 4. Diagnostic channels and state reconstruction
+## 5. Diagnostic channels and state reconstruction
 
 The tetrad selects four useful readouts: source accumulation Φ_s, local phase
 mismatch |∇φ|, local circular curvature K_φ, and correlation length ξ_C. These
@@ -182,7 +206,15 @@ explicit fixtures and detection thresholds. Neither a test count nor an
 operator-composition identity supplies those missing hypotheses. Completeness
 and minimality in this stronger sense remain open.
 
-## 5. Authoritative entry points
+For fixed connected undirected pure EPI diffusion, this specification yields a
+conditional reconstruction result. The full nodal potential has observation
+operator `O=-K L_rw`; if `rank(O)=N-1`, it recovers EPI modulo a uniform shift.
+The conserved `d_i/nu_i` mean supplies that last scalar. Capacity is still
+required to determine the generator. The repository certificate evaluates the
+rank per graph; the condition has been measured on the 142 connected simple
+graph-atlas cases through six nodes and is not asserted universally.
+
+## 6. Authoritative entry points
 
 - [Unified grammar](UNIFIED_GRAMMAR_RULES.md): current U1–U6 requirements.
 - [Tetrad scope](MINIMAL_STRUCTURAL_DEGREES.md): interpretation and limitations.

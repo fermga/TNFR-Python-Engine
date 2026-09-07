@@ -59,10 +59,13 @@ For reachable nodes at positive distance,
 
 The default evaluates exact shortest-path distances at every graph size.
 “Exact” means the graph distance computation with floating-point sums.
-Distances follow outgoing arcs for a directed graph and use the weight edge
-attribute, defaulting to 1. Positive edge lengths define the intended metric;
-unreachable and zero-distance pairs contribute zero under the current
-compatibility behavior. Parallel edges use minimum path lengths.
+Distances follow outgoing arcs for a directed graph. The explicit `length`
+edge attribute defines geometry when present. For backward compatibility, an
+edge without `length` uses its `weight`; an edge with neither defaults to 1.
+The `weight` attribute remains the diffusion conductance, so experiments in
+which conductance and distance differ must set both attributes. Unreachable and
+zero-distance pairs contribute zero under the current compatibility behavior.
+Parallel edges use minimum effective path lengths.
 
 On a fixed graph, Φ_s = B_G ΔNFR is exactly linear in pressure. Therefore
 
@@ -151,10 +154,11 @@ only; it does not accept a coherence_key argument.
 - Initialize required attributes explicitly for reproducible studies instead
   of relying on missing-value fallbacks.
 
-The fields have different topology conventions. Potential uses weighted
-shortest-path lengths, while the local phase readouts average graph neighbors.
-A study comparing weighted fields and spectral quantities must specify which
-weights and graph operators it uses.
+The fields have different topology conventions. Potential uses effective
+shortest-path lengths (`length`, then the legacy `weight` fallback), while local
+phase readouts average graph neighbors and diffusion uses `weight` as
+conductance. A study comparing geometric and spectral quantities must declare
+both edge channels when their physical meanings differ.
 
 ## 4. API summary
 

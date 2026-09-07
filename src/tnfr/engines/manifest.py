@@ -12,25 +12,74 @@ import json
 import math
 from pathlib import Path
 from statistics import fmean
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 import networkx as nx
 
+from ..mathematics.unified_numerical import np
 from ..utils.io import safe_write
 
 GRAPH_SCHEMA = "tnfr-graph-json-v1"
 
 
-def _json_state(value: Any, path: str = "state") -> Any:
+def _finite_json_state(
+    value: Any,
+    path: str,
+    *,
+    extended_sequences: bool,
+) -> Any:
+    """Implement the manifest's strict and extended finite-JSON policies."""
+
+    if extended_sequences and isinstance(value, np.generic):
+        return _finite_json_state(
+            value.item(), path, extended_sequences=extended_sequences
+        )
     if value is None or type(value) in (str, bool, int):
         return value
-    if type(value) is float and math.isfinite(value):
-        return value
-    if isinstance(value, list):
-        return [_json_state(item, f"{path}[{i}]") for i, item in enumerate(value)]
-    if isinstance(value, dict) and all(isinstance(key, str) for key in value):
-        return {key: _json_state(item, f"{path}.{key}") for key, item in value.items()}
-    raise ValueError(f"{path} requires finite JSON state; unsupported {type(value).__name__}")
+    if type(value) is float:
+        if math.isfinite(value):
+            return value
+        raise ValueError(f"{path} requires finite JSON state; non-finite number")
+    if isinstance(value, list) or (extended_sequences and isinstance(value, tuple)):
+        return [
+            _finite_json_state(
+                item,
+                f"{path}[{index}]",
+                extended_sequences=extended_sequences,
+            )
+            for index, item in enumerate(value)
+        ]
+    mapping_type = Mapping if extended_sequences else dict
+    if isinstance(value, mapping_type):
+        if not all(isinstance(key, str) for key in value):
+            raise ValueError(f"{path} requires finite JSON state; non-string key")
+        return {
+            key: _finite_json_state(
+                item, f"{path}.{key}", extended_sequences=extended_sequences
+            )
+            for key, item in value.items()
+        }
+    raise ValueError(
+        f"{path} requires finite JSON state; unsupported {type(value).__name__}"
+    )
+
+
+def finite_json_state(value: Any, path: str = "state") -> Any:
+    """Return a finite JSON-native copy without changing value semantics.
+
+    Tuples become JSON arrays and NumPy scalars become their Python scalar
+    equivalents. Booleans remain booleans, ``None`` remains JSON null, and
+    nested string-keyed mappings retain their structure. Non-finite numbers
+    and unsupported runtime objects are rejected with their value path.
+    """
+
+    return _finite_json_state(value, path, extended_sequences=True)
+
+
+def _json_state(value: Any, path: str = "state") -> Any:
+    """Validate persistent graph state under the narrower v1 graph schema."""
+
+    return _finite_json_state(value, path, extended_sequences=False)
 
 
 def _scalar_id(value: Any) -> Any:

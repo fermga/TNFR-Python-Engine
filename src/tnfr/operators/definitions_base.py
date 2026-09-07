@@ -21,13 +21,6 @@ from .registry import OperatorMetaAuto
 
 __all__ = ["Operator"]
 
-# T'HOL canonical bifurcation constants
-# Import canonical constants
-
-_THOL_SUB_EPI_SCALING = 0.3  # ≈ 0.309 (fractal scale, sub-EPI)
-_THOL_EMERGENCE_CONTRIBUTION = 0.1  # Parent EPI +10% of sub-EPI
-
-
 class Operator(metaclass=OperatorMetaAuto):
     """Base class for TNFR structural operators.
 
@@ -101,10 +94,52 @@ class Operator(metaclass=OperatorMetaAuto):
             fallback = get_operator_class(glyph_function_name(selected))()
             fallback(G, node, **kw)
             return
+        # Subclasses may prepare latency, lineage, regime, or source metadata
+        # before delegating to the low-level glyph dispatcher. Resolve the
+        # effective branch's active numerical factors here so a rejected
+        # factor cannot leave those preparatory writes behind.
+        from .factor_contracts import resolve_runtime_operator_factors
+
+        resolve_runtime_operator_factors(
+            G.graph.get("GLYPH_FACTORS"), self.glyph, G.graph
+        )
         self._execute(G, node, **kw)
 
     def _validate_application_preconditions(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Apply this operator's existing precondition configuration policy."""
+        """Validate shared execution controls and configured preconditions."""
+
+        from ._argument_validation import (
+            reject_operator_argument,
+            require_list_sink,
+            validate_common_execution_arguments,
+        )
+
+        validate_common_execution_arguments(G.graph, kw, operator=self.name)
+        from ._epi_domain import validate_affine_epi_graph_input
+
+        validate_affine_epi_graph_input(
+            G,
+            node,
+            self.glyph,
+            operator=self.name,
+        )
+        collect_metrics = bool(kw.get("collect_metrics", False)) or bool(
+            G.graph.get("COLLECT_OPERATOR_METRICS", False)
+        )
+        if collect_metrics:
+            require_list_sink(G.graph, "operator_metrics", operator=self.name)
+
+        monitor = G.graph.get("integrity_monitor")
+        if monitor is not None and not all(
+            callable(getattr(monitor, method, None))
+            for method in ("before_operator", "after_operator")
+        ):
+            reject_operator_argument(
+                self.name,
+                "integrity_monitor must provide callable before_operator and "
+                "after_operator methods",
+            )
+
         validate_preconditions = kw.get("validate_preconditions", True)
         if validate_preconditions and G.graph.get(
             "VALIDATE_OPERATOR_PRECONDITIONS", False
@@ -136,7 +171,16 @@ class Operator(metaclass=OperatorMetaAuto):
 
         from .grammar_application import _apply_selected_glyph
 
-        _apply_selected_glyph(G, node, self.glyph, kw.get("window"))
+        try:
+            _apply_selected_glyph(G, node, self.glyph, kw.get("window"))
+        except Exception:
+            if _integrity_monitor is not None:
+                discard_pending = getattr(
+                    _integrity_monitor, "discard_pending_operator", None
+                )
+                if callable(discard_pending):
+                    discard_pending()
+            raise
 
         # Structural Integrity Monitor — post-operator evaluation
         # Conservation quality, Lyapunov dE/dt, postconditions, grammar

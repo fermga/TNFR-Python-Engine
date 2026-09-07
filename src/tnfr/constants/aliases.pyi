@@ -6,6 +6,7 @@ __all__ = [
     "ALIAS_DNFR",
     "ALIAS_EPI",
     "ALIAS_EPI_KIND",
+    "ALIAS_SOURCE_GLYPH",
     "ALIAS_SI",
     "ALIAS_DEPI",
     "ALIAS_D2EPI",
@@ -19,6 +20,7 @@ ALIAS_THETA: Incomplete
 ALIAS_DNFR: Incomplete
 ALIAS_EPI: Incomplete
 ALIAS_EPI_KIND: Incomplete
+ALIAS_SOURCE_GLYPH: Incomplete
 ALIAS_SI: Incomplete
 ALIAS_DEPI: Incomplete
 ALIAS_D2EPI: Incomplete

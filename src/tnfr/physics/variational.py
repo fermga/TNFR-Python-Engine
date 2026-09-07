@@ -42,7 +42,12 @@ import math
 from dataclasses import dataclass, field
 from typing import Any, Sequence
 
-from ..constants.canonical import PI, U6_STRUCTURAL_POTENTIAL_LIMIT
+from ..constants.canonical import (
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
+    PHI_S_VON_KOCH_THRESHOLD,
+    U6_STRUCTURAL_POTENTIAL_LIMIT,
+)
 from ..mathematics.unified_numerical import np
 
 # ---------------------------------------------------------------------------
@@ -77,7 +82,7 @@ from .unified import compute_energy_density as _raw_energy_density
 
 @dataclass(frozen=True)
 class ConjugatePair:
-    """A canonical conjugate pair (q, p) in the TNFR phase space.
+    """A coordinate pair (q, p) in the declared auxiliary phase space.
 
     Attributes
     ----------
@@ -96,7 +101,7 @@ class ConjugatePair:
 
 @dataclass(frozen=True)
 class LagrangianSnapshot:
-    """Complete Lagrangian analysis at a single instant.
+    """Finite snapshot of the declared quadratic and bilinear read-outs.
 
     Attributes
     ----------
@@ -109,11 +114,12 @@ class LagrangianSnapshot:
     hamiltonian : dict[Any, float]
         H(i) = T(i) + V(i) per node (= energy density / 2).
     interaction : dict[Any, float]
-        𝒜(i) = Φ_s·|∇φ| + K_φ·J_φ + |∇φ|·J_ΔNFR per node (bilinear coupling).
+        𝒜(i) = Φ_s·|∇φ| + K_φ·J_φ + |∇φ|·J_ΔNFR per node
+        (historical bilinear interaction coordinate).
     total_lagrangian : float
         L = Σ_i ℒ(i).
     total_hamiltonian : float
-        H = Σ_i H(i) (total energy).
+        H = Σ_i H(i), the auxiliary quadratic energy candidate at this snapshot.
     total_kinetic : float
         T = Σ_i T(i).
     total_potential : float
@@ -224,7 +230,7 @@ class GrammarStationarityAnalysis:
     rule : str
         Grammar rule identifier (e.g. ``'U1a'``).
     variational_interpretation : str
-        How the rule maps to a variational condition.
+        Historical field comparison associated with the rule label.
     is_satisfied : bool
     diagnostic_value : float
         Quantitative measure of (non-)satisfaction.
@@ -246,7 +252,7 @@ class CriticalPointAnalysis:
     field_name : str
         Name of the field analysed.
     threshold_value : float
-        Theoretical TNFR threshold.
+        Selected TNFR telemetry scale used for the comparison.
     gradient_at_threshold : float
         ∂V/∂field at the threshold value.
     is_critical : bool
@@ -287,7 +293,7 @@ class VariationalTimeSeries:
 
     @property
     def is_action_finite(self) -> bool:
-        """True when accumulated action remains bounded (U2 compliance)."""
+        """True when every recorded finite-horizon action sample is finite."""
         if not self.action_accumulated:
             return True
         return all(math.isfinite(a) for a in self.action_accumulated)
@@ -417,17 +423,18 @@ def compute_hamiltonian_density(G: Any) -> dict[Any, float]:
 
 
 def compute_interaction_density(G: Any) -> dict[Any, float]:
-    r"""Compute cross-sector interaction (bilinear coupling) per node.
+    r"""Compute a cross-sector bilinear snapshot coordinate per node.
 
     𝒜(i) = Φ_s·|∇φ| + K_φ·J_φ + |∇φ|·J_ΔNFR
 
-    This is the **interaction Lagrangian** coupling the geometric and
-    potential sectors.
+    The historical interpretation is an **interaction Lagrangian** coupling
+    the geometric and potential sectors. The formula alone does not define an
+    engine action or its equations of motion.
 
     **Single source of truth**: delegates to
     :func:`unified.compute_action_density`.
 
-    In the full Lagrangian with interactions:
+    In the optional auxiliary interaction model:
         ℒ_full = T − V − 𝒜
 
     Parameters
@@ -523,9 +530,9 @@ def translate_sectors(G: Any) -> dict[str, Any]:
 
 
 def identify_conjugate_pairs(G: Any) -> tuple[ConjugatePair, ConjugatePair]:
-    r"""Identify the canonical conjugate pairs in the TNFR phase space.
+    r"""Extract the coordinate pairs declared by the auxiliary model.
 
-    The conservation law structure (Noether theorem) reveals two sectors:
+    The model groups the graph read-outs into two sectors:
 
     - **Geometric sector**: (q, p) = (K_φ, J_φ)
       ``∂K_φ/∂t + div(J_φ) ≈ 0``
@@ -533,8 +540,8 @@ def identify_conjugate_pairs(G: Any) -> tuple[ConjugatePair, ConjugatePair]:
     - **Potential sector**: (q, p) = (Φ_s, J_ΔNFR)
       ``∂Φ_s/∂t + div(J_ΔNFR) ≈ 0``
 
-    These are the natural conjugate pairs from the symplectic structure
-    of the TNFR action.
+    Calling them conjugate specifies the auxiliary symplectic form. Extraction
+    from a graph does not prove that engine updates preserve that form.
 
     Parameters
     ----------
@@ -682,7 +689,7 @@ def compute_euler_lagrange_residual(
 ) -> EulerLagrangeResidual:
     r"""Compute the Euler-Lagrange residual between two snapshots.
 
-    The EL equation for the TNFR action is:
+    The Euler–Lagrange momentum equation for the declared quadratic model is:
 
         d/dt(∂ℒ/∂q̇_i) − ∂ℒ/∂q_i = 0
 
@@ -870,7 +877,9 @@ def check_symplectic_preservation(
                     snapshot.conjugate_potential.p,
                 )
             ):
-                raise ValueError("Jacobian checks require matching fixed-size coordinate fields")
+                raise ValueError(
+                    "Jacobian checks require matching fixed-size coordinate fields"
+                )
         residual = symplectic_pullback_residual(jacobian, n_nodes)
         is_canonical = residual <= jacobian_tolerance
         classification = "canonical" if is_canonical else "non_symplectic"
@@ -892,7 +901,7 @@ def check_symplectic_preservation(
 
 
 # ---------------------------------------------------------------------------
-#  Grammar rules as variational/stationarity conditions
+#  Heuristic field comparisons carrying historical grammar labels
 # ---------------------------------------------------------------------------
 
 
@@ -912,8 +921,8 @@ def analyze_grammar_stationarity(
     G : NetworkX graph
         Current state.
     snapshots : Sequence[LagrangianSnapshot], optional
-        Time series for temporal checks (U2, U5).  If *None*, only
-        instantaneous checks are performed.
+        Finite series used only for the U2-labelled action heuristic. It does
+        not validate convergence, operator debt, or U5 hierarchy.
     dt : float
 
     Returns
@@ -1055,7 +1064,7 @@ def _grammar_stationarity_from_snapshot(
         )
     )
 
-    # --- U6: Structural confinement = bounded potential sector ------------
+    # --- U6 compatibility proxy: single-state magnitude, not drift --------
     phi_s_vals = list(snap.conjugate_potential.q.values())
     if phi_s_vals:
         max_phi_s = float(np.max(np.abs(phi_s_vals)))
@@ -1093,12 +1102,11 @@ def analyze_potential_critical_points(G: Any) -> list[CriticalPointAnalysis]:
     point is x=0; the nonzero thresholds below are regular points. Counts of
     nearby observations are reported separately from criticality:
 
-    - Φ_s threshold at π/2 ≈ 1.571: configured comparison level.
-    - |∇φ| threshold at 0.9π ≈ 2.827: phase-wrap confinement limit. |∇φ| is
-      a mean of WRAPPED angles, so |∇φ| ≤ π — the SAME bound as K_φ (audit
-      2026: π scales the whole phase sector). The earlier |∇φ| early-warning level was an overlay,
-      not a derived bound (measured sync-onset ≈ 0.29, σ-dependent).
-    - K_φ threshold at 0.9π ≈ 2.827: phase-wrap confinement limit (same bound)
+    - Φ_s threshold at π/4 ≈ 0.785: selected per-node magnitude policy.
+    - |∇φ| threshold at π/16 ≈ 0.196: selected early-warning policy. The exact
+      bound is π and the measured sync-onset is ≈0.29 and σ-dependent.
+    - K_φ threshold at 0.9π ≈ 2.827: selected warning margin inside its exact
+      wrapped-angle bound π.
 
     No nonlinear constrained effective potential is specified by this function,
     so no saddle point or change in restoring-force sign is inferred.
@@ -1123,16 +1131,15 @@ def _potential_critical_points_from_fields(
     """Apply the existing threshold readout to already captured field maps."""
     results: list[CriticalPointAnalysis] = []
 
-    # Canonical thresholds. Both phase derivatives (|∇φ|, K_φ) are means of
-    # WRAPPED angles bounded by π (audit 2026: π scales the whole phase
-    # sector), so they share the SAME 0.9π wrap-margin threshold. Φ_s uses the
-    # configured U6 comparison value (π/2). This evaluates magnitude, not the
-    # actual U6 drift. The earlier |∇φ| early-warning level was an overlay, not a derived
-    # bound: the measured sync-onset is ≈ 0.29 and σ-dependent.
+    # Selected per-field telemetry policies. These are regular comparison
+    # points of the quadratic potential, not mathematical critical points.
+    # The π/4 potential magnitude policy is distinct from U6's π/2 drift
+    # policy, and π/16 is distinct from both the exact |∇φ| bound π and the
+    # measured, σ-dependent synchronization onset near 0.29.
     thresholds = [
-        ("Phi_s", U6_STRUCTURAL_POTENTIAL_LIMIT, phi_s),
-        ("grad_phi", 0.9 * PI, grad_phi),
-        ("K_phi", 0.9 * PI, k_phi),
+        ("Phi_s", PHI_S_VON_KOCH_THRESHOLD, phi_s),
+        ("grad_phi", GRAD_PHI_CANONICAL_THRESHOLD, grad_phi),
+        ("K_phi", K_PHI_CANONICAL_THRESHOLD, k_phi),
     ]
 
     for name, threshold, field_vals in thresholds:
@@ -1166,26 +1173,32 @@ def _potential_critical_points_from_fields(
 
 
 # ---------------------------------------------------------------------------
-#  Operator canonical classification
+#  Historical operator energy-trend map and optional tangent verification
 # ---------------------------------------------------------------------------
 
-# Expected canonical properties of the 13 operators.
-# Each operator has a type (canonical, dissipative, or expansive) and
-# its effect on Hamiltonian (energy).
+# Historical expected energy trends for the 13 operators. ``type`` is a
+# compatibility label, not a tangent-map classification. Every symplectic
+# verdict requires a supplied Jacobian, so the repeated legacy key is derived
+# from one explicit requirement.
+_JACOBIAN_REQUIRED = "requires_jacobian"
+_OPERATOR_ENERGY_TREND_MAP = {
+    "AL": {"type": "generating", "dH": "increase"},
+    "EN": {"type": "canonical", "dH": "neutral"},
+    "IL": {"type": "dissipative", "dH": "decrease"},
+    "OZ": {"type": "generating", "dH": "increase"},
+    "UM": {"type": "canonical", "dH": "neutral"},
+    "RA": {"type": "canonical", "dH": "neutral"},
+    "SHA": {"type": "canonical", "dH": "neutral"},
+    "VAL": {"type": "generating", "dH": "increase"},
+    "NUL": {"type": "dissipative", "dH": "decrease"},
+    "THOL": {"type": "canonical", "dH": "neutral"},
+    "ZHIR": {"type": "generating", "dH": "increase"},
+    "NAV": {"type": "canonical", "dH": "neutral"},
+    "REMESH": {"type": "canonical", "dH": "neutral"},
+}
 _OPERATOR_CANONICAL_MAP = {
-    "AL": {"type": "generating", "dH": "increase", "symplectic": "expansive"},
-    "EN": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
-    "IL": {"type": "dissipative", "dH": "decrease", "symplectic": "dissipative"},
-    "OZ": {"type": "generating", "dH": "increase", "symplectic": "expansive"},
-    "UM": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
-    "RA": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
-    "SHA": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
-    "VAL": {"type": "generating", "dH": "increase", "symplectic": "expansive"},
-    "NUL": {"type": "dissipative", "dH": "decrease", "symplectic": "dissipative"},
-    "THOL": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
-    "ZHIR": {"type": "generating", "dH": "increase", "symplectic": "expansive"},
-    "NAV": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
-    "REMESH": {"type": "canonical", "dH": "neutral", "symplectic": "canonical"},
+    operator: {**metadata, "symplectic": _JACOBIAN_REQUIRED}
+    for operator, metadata in _OPERATOR_ENERGY_TREND_MAP.items()
 }
 
 
@@ -1240,6 +1253,11 @@ def classify_operator_canonical(
     # Look up theoretical expectation
     expected = _OPERATOR_CANONICAL_MAP.get(operator_name, {})
 
+    energy_trend_matches = (
+        energy_class == expected.get("type", energy_class)
+        or energy_class == "neutral"
+    )
+
     return {
         "operator": operator_name,
         "symplectic_check": symp,
@@ -1250,10 +1268,11 @@ def classify_operator_canonical(
         "expected_type": expected.get("type", "unknown"),
         "expected_dH": expected.get("dH", "unknown"),
         "expected_symplectic": expected.get("symplectic", "unknown"),
-        "consistent_with_theory": (
-            energy_class == expected.get("type", energy_class)
-            or energy_class == "neutral"  # neutral is always acceptable
-        ),
+        "mapping_scope": "historical_energy_trend_heuristic",
+        "symplectic_evidence_scope": symp.verification_method,
+        "local_symplecticity": symp.is_canonical,
+        "energy_trend_matches_heuristic": energy_trend_matches,
+        "consistent_with_theory": energy_trend_matches,
     }
 
 
@@ -1263,7 +1282,7 @@ def classify_operator_canonical(
 
 
 class VariationalTracker:
-    """Track variational principle compliance across an operator sequence.
+    """Track finite variational diagnostics across an operator sequence.
 
     Usage
     -----
@@ -1359,11 +1378,12 @@ def compute_variational_suite(G: Any) -> dict[str, Any]:
     -------
     dict[str, Any]
         - ``lagrangian_snapshot``: full :class:`LagrangianSnapshot`
-        - ``critical_points``: threshold analysis
-        - ``grammar_stationarity``: U1-U6 variational interpretation
-        - ``poisson_bracket_geometric``: {K_φ, J_φ} estimate
-        - ``poisson_bracket_potential``: {Φ_s, J_ΔNFR} estimate
-        - ``virial_ratio``: T/V (= 1 at virialisation)
+        - ``critical_points``: quadratic-potential threshold analysis
+        - ``grammar_stationarity``: historical U1-U6-labelled heuristics
+        - ``poisson_bracket_geometric``: legacy normalized covariance statistic
+        - ``poisson_bracket_potential``: legacy normalized covariance statistic
+        - ``virial_ratio``: legacy name for the snapshot ratio T/V
+        - ``kinetic_potential_ratio``: preferred name for that same ratio
     """
     fields = _capture_structural_fields(G)
     snap = _lagrangian_snapshot_from_fields(fields)
@@ -1388,6 +1408,7 @@ def compute_variational_suite(G: Any) -> dict[str, Any]:
         "poisson_bracket_geometric": pb_geo,
         "poisson_bracket_potential": pb_pot,
         "virial_ratio": virial,
+        "kinetic_potential_ratio": virial,
     }
 
 

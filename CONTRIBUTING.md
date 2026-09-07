@@ -77,7 +77,7 @@ cd TNFR-Python-Engine
 pip install -e .[dev]
 
 # Verify installation
-python -c "from tnfr.constants.canonical import PI, U6_STRUCTURAL_POTENTIAL_LIMIT; print(f'π={PI:.6f}, U6 Φ_s bound={U6_STRUCTURAL_POTENTIAL_LIMIT:.6f}')"
+python -c "from tnfr.constants.canonical import PI, U6_STRUCTURAL_POTENTIAL_LIMIT; print(f'π={PI:.6f}, selected U6 ΔΦ_s policy={U6_STRUCTURAL_POTENTIAL_LIMIT:.6f}')"
 ```
 
 ### Canonical Constants Framework

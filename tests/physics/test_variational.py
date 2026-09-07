@@ -14,7 +14,7 @@ Tests verify:
 5.  Action functional: finite for U2-compliant sequences
 6.  Symplectic preservation: supplied Jacobians preserve omega or fail
 7.  Grammar as stationarity: U1-U6 mapped to variational conditions
-8.  Potential critical points: thresholds at φ, γ/π, 0.9π
+8.  Potential critical points: selected π/4, π/16, and 0.9π policies
 9.  VariationalTracker: time-series accumulation
 10. Operator classification: generating/dissipative/canonical
 11. Cross-topology validation: WS, BA, Grid
@@ -40,7 +40,11 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import PI, U6_STRUCTURAL_POTENTIAL_LIMIT
+from tnfr.constants.canonical import (
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
+    PHI_S_VON_KOCH_THRESHOLD,
+)
 from tnfr.physics.conservation import compute_energy_functional
 from tnfr.physics.unified import compute_energy_density
 from tnfr.physics.variational import (
@@ -327,7 +331,12 @@ class TestSymplecticPreservation:
         sc = check_symplectic_preservation(snap1, snap2, "perturbation")
         assert isinstance(sc, SymplecticCheck)
         assert sc.classification == "inconclusive"
-        assert sc.heuristic_classification in ("canonical", "dissipative", "expansive", "mixed")
+        assert sc.heuristic_classification in (
+            "canonical",
+            "dissipative",
+            "expansive",
+            "mixed",
+        )
 
     @staticmethod
     def _snapshot(q, p):
@@ -393,7 +402,7 @@ class TestSymplecticPreservation:
 
 
 class TestGrammarStationarity:
-    """Grammar rules U1-U6 mapped to variational conditions."""
+    """Historical U1-U6 labels remain explicitly heuristic."""
 
     def test_all_six_rules_covered(self, ws_graph):
         results = analyze_grammar_stationarity(ws_graph)
@@ -418,7 +427,7 @@ class TestGrammarStationarity:
         G2 = _perturb_graph(ws_graph)
         snap2 = capture_lagrangian_snapshot(G2)
         results = analyze_grammar_stationarity(G2, snapshots=[snap1, snap2], dt=1.0)
-        # U2 should use action-based check when snapshots provided
+        # U2 uses the scoped finite-action heuristic when snapshots are provided.
         u2 = [r for r in results if r.rule == "U2"][0]
         assert math.isfinite(u2.diagnostic_value)
 
@@ -431,15 +440,17 @@ class TestGrammarStationarity:
 class TestCriticalPoints:
     """Telemetry thresholds are distinct from critical points of V."""
 
-    def test_near_threshold_observations_do_not_create_quadratic_extrema(self, monkeypatch):
+    def test_near_threshold_observations_do_not_create_quadratic_extrema(
+        self, monkeypatch
+    ):
         monkeypatch.setattr(
             "tnfr.physics.variational.compute_structural_potential",
-            lambda graph: {0: U6_STRUCTURAL_POTENTIAL_LIMIT},
+            lambda graph: {0: PHI_S_VON_KOCH_THRESHOLD},
         )
         results = analyze_potential_critical_points(nx.empty_graph(1))
         potential = next(r for r in results if r.field_name == "Phi_s")
         assert potential.near_threshold_count == 1
-        assert potential.gradient_at_threshold == U6_STRUCTURAL_POTENTIAL_LIMIT
+        assert potential.gradient_at_threshold == PHI_S_VON_KOCH_THRESHOLD
         assert potential.curvature_at_threshold == 1.0
         assert potential.is_critical is False
         assert potential.critical_type == "regular"
@@ -455,11 +466,11 @@ class TestCriticalPoints:
         results = analyze_potential_critical_points(ws_graph)
         for r in results:
             if r.field_name == "Phi_s":
-                assert abs(r.threshold_value - U6_STRUCTURAL_POTENTIAL_LIMIT) < 1e-10
+                assert abs(r.threshold_value - PHI_S_VON_KOCH_THRESHOLD) < 1e-10
             elif r.field_name == "grad_phi":
-                assert abs(r.threshold_value - 0.9 * PI) < 1e-10
+                assert abs(r.threshold_value - GRAD_PHI_CANONICAL_THRESHOLD) < 1e-10
             elif r.field_name == "K_phi":
-                assert abs(r.threshold_value - 0.9 * PI) < 1e-10
+                assert abs(r.threshold_value - K_PHI_CANONICAL_THRESHOLD) < 1e-10
 
     def test_critical_type_valid(self, ws_graph):
         results = analyze_potential_critical_points(ws_graph)
@@ -527,6 +538,11 @@ class TestOperatorClassification:
         assert result["energy_classification"] == "neutral"
         assert result["consistent_with_theory"]
         assert result["symplectic_check"].classification == "inconclusive"
+        assert result["expected_symplectic"] == "requires_jacobian"
+        assert result["mapping_scope"] == "historical_energy_trend_heuristic"
+        assert result["symplectic_evidence_scope"] == "snapshot_only"
+        assert result["local_symplecticity"] is None
+        assert result["energy_trend_matches_heuristic"]
 
     def test_supplied_jacobian_is_forwarded_to_the_local_check(self, ws_graph):
         snap = capture_lagrangian_snapshot(ws_graph)
@@ -534,6 +550,8 @@ class TestOperatorClassification:
         result = classify_operator_canonical(snap, snap, "identity", jacobian=matrix)
         assert result["symplectic_check"].is_canonical is True
         assert result["symplectic_check"].verification_method == "provided_jacobian"
+        assert result["symplectic_evidence_scope"] == "provided_jacobian"
+        assert result["local_symplecticity"] is True
 
     def test_energy_increase_classified_generating(self, ws_graph):
         snap_before = capture_lagrangian_snapshot(ws_graph)
@@ -568,6 +586,9 @@ class TestOperatorClassification:
             "REMESH",
         }
         assert set(_OPERATOR_CANONICAL_MAP.keys()) == expected_ops
+        assert {
+            metadata["symplectic"] for metadata in _OPERATOR_CANONICAL_MAP.values()
+        } == {"requires_jacobian"}
 
 
 # ---------------------------------------------------------------------------
@@ -621,6 +642,7 @@ class TestCrossTopology:
         assert "critical_points" in suite
         assert "grammar_stationarity" in suite
         assert math.isfinite(suite["virial_ratio"])
+        assert suite["kinetic_potential_ratio"] == suite["virial_ratio"]
 
 
 # ---------------------------------------------------------------------------

@@ -82,16 +82,29 @@ Hamiltonian), and physics.conservation (tetrad diagnostics).
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
+from fractions import Fraction
+from functools import lru_cache
+import math
+import struct
+import sys
 from typing import Any
 
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+from ..mathematics._weight_normalization import normalize_weights
 from ..mathematics.unified_numerical import np
+from ..types import real_scalar_epi
 from ._conductance import ConductanceSnapshot, read_conductance
+from ._helpers import finite_real_scalar
 
 __all__ = [
     "DiffusionEnergyBalance",
+    "HeterogeneousDiffusionStabilityCertificate",
+    "SwitchingDiffusionStabilityCertificate",
+    "EulerRelaxationWindowDiagnostic",
+    "TimeVaryingDiffusionStabilityBound",
     "StructuralDiffusionCertificate",
     "OverdampedRegimeCertificate",
     "OverdampedProjectionCertificate",
@@ -108,6 +121,10 @@ __all__ = [
     "structural_frequency_rank",
     "degree_weighted_total",
     "compute_diffusion_energy",
+    "derive_time_varying_diffusion_stability_bound",
+    "diagnose_euler_relaxation_window",
+    "verify_heterogeneous_diffusion_stability",
+    "verify_switching_diffusion_stability",
     "structural_eigenvalues",
     "structural_eigenmodes",
     "nodal_domain_count",
@@ -134,6 +151,159 @@ __all__ = [
 ]
 
 
+# Two binary64 significands make the rational bisection finer than any
+# representable rate near a well-scaled endpoint.  Stopping early can only make
+# the returned lower bound more conservative.
+_EXACT_QUOTIENT_BISECTION_STEPS = 2 * sys.float_info.mant_dig
+# Refinement is optional because the inverse-norm endpoint is already a proof.
+# Limiting exact LDL bisection to four quotient coordinates keeps larger graph
+# certificates practical while retaining tight bounds in small theorem tests.
+_EXACT_QUOTIENT_REFINEMENT_MAX_DIMENSION = 4
+
+
+def _reject_boolean_numeric(value: Any, name: str) -> None:
+    """Reject booleans before NumPy can coerce them to zero or one."""
+    if isinstance(value, (bool, np.bool_)):
+        raise ValueError(f"{name} must be numeric, not boolean")
+
+
+def _readonly_float_array(value: Any) -> Any:
+    """Return a detached binary64 array whose ordinary writes are disabled."""
+    result = np.array(value, dtype=float, copy=True)
+    result.setflags(write=False)
+    return result
+
+
+def _finite_float_signature(value: Any) -> tuple[str, ...]:
+    """Encode one finite array exactly enough for an in-memory proof stamp."""
+    array = np.asarray(value, dtype=float)
+    if not np.all(np.isfinite(array)):
+        raise ValueError("proof data must remain finite")
+    return tuple(float(item).hex() for item in array.flat)
+
+
+def _fixed_flow_proof_stamp(
+    nodes: Any,
+    metric_weights: Any,
+    exact_gap: Fraction,
+    certified_rate: float,
+    is_certified: bool,
+    preserves_consensus_subspace: bool,
+    preserves_uniform_fixed_points: bool,
+    preserves_weighted_mean: bool,
+) -> tuple[Any, ...]:
+    """Snapshot the fields on which hybrid fixed-flow composition relies."""
+    return (
+        "fixed_heterogeneous_diffusion_v1",
+        tuple(nodes),
+        np.asarray(metric_weights).shape,
+        _finite_float_signature(metric_weights),
+        Fraction(exact_gap),
+        float(certified_rate).hex(),
+        bool(is_certified),
+        bool(preserves_consensus_subspace),
+        bool(preserves_uniform_fixed_points),
+        bool(preserves_weighted_mean),
+    )
+
+
+def _switching_flow_proof_stamp(
+    nodes: Any,
+    regime_count: int,
+    reference_metric_weights: Any,
+    normalized_metric_weights: Any,
+    exact_gaps: Any,
+    certified_rates: Any,
+    certified_rate: float,
+    shares_exact_common_metric: bool,
+    supports_exact_theorem: bool,
+    preserves_consensus_by_regime: Any,
+    preserves_consensus_subspace: bool,
+    preserves_uniform_fixed_points_by_regime: Any,
+    preserves_uniform_fixed_points: bool,
+    preserves_weighted_mean_by_regime: Any,
+    preserves_weighted_mean: bool,
+) -> tuple[Any, ...]:
+    """Snapshot the fields on which hybrid switching composition relies."""
+    return (
+        "exact_common_metric_switching_diffusion_v1",
+        tuple(nodes),
+        int(regime_count),
+        np.asarray(reference_metric_weights).shape,
+        _finite_float_signature(reference_metric_weights),
+        np.asarray(normalized_metric_weights).shape,
+        _finite_float_signature(normalized_metric_weights),
+        tuple(Fraction(value) for value in exact_gaps),
+        np.asarray(certified_rates).shape,
+        _finite_float_signature(certified_rates),
+        float(certified_rate).hex(),
+        bool(shares_exact_common_metric),
+        bool(supports_exact_theorem),
+        tuple(bool(value) for value in preserves_consensus_by_regime),
+        bool(preserves_consensus_subspace),
+        tuple(bool(value) for value in preserves_uniform_fixed_points_by_regime),
+        bool(preserves_uniform_fixed_points),
+        tuple(bool(value) for value in preserves_weighted_mean_by_regime),
+        bool(preserves_weighted_mean),
+    )
+
+
+def _fraction_lower_float(value: Fraction) -> float:
+    """Largest nearby binary64 value that is known not to exceed ``value``."""
+    if value < 0:
+        raise ValueError("a lower-rounded fraction must be nonnegative")
+    try:
+        rounded = float(value)
+    except OverflowError:
+        return math.nextafter(float("inf"), 0.0)
+    if math.isinf(rounded):
+        return math.nextafter(rounded, 0.0)
+    if Fraction.from_float(rounded) > value:
+        rounded = math.nextafter(rounded, 0.0)
+    return rounded
+
+
+def _fraction_upper_float(value: Fraction) -> float:
+    """Smallest nearby binary64 value that is known not to be below ``value``."""
+    if value < 0:
+        raise ValueError("an upper-rounded fraction must be nonnegative")
+    try:
+        rounded = float(value)
+    except OverflowError:
+        return float("inf")
+    if math.isinf(rounded):
+        return rounded
+    if Fraction.from_float(rounded) < value:
+        rounded = math.nextafter(rounded, float("inf"))
+    return rounded
+
+
+def _fraction_sqrt_upper_float(value: Fraction) -> float:
+    """Return a proved binary64 upper bound on ``sqrt(value)``.
+
+    The search compares squared binary64 candidates with the rational input,
+    so the result does not rely on a directed-rounding guarantee from libm.
+    Positive binary64 values have the same order as their unsigned bit
+    patterns, which makes a fixed 63-step binary search sufficient.
+    """
+    if value < 0:
+        raise ValueError("a square-root bound must be nonnegative")
+    if value == 0:
+        return 0.0
+    low_bits = 0
+    high_bits = 0x7FF0000000000000  # positive infinity
+    while low_bits + 1 < high_bits:
+        middle_bits = (low_bits + high_bits) // 2
+        candidate = struct.unpack(
+            ">d", middle_bits.to_bytes(8, byteorder="big")
+        )[0]
+        if math.isinf(candidate) or Fraction.from_float(candidate) ** 2 >= value:
+            high_bits = middle_bits
+        else:
+            low_bits = middle_bits
+    return struct.unpack(">d", high_bits.to_bytes(8, byteorder="big"))[0]
+
+
 def _ordered_nodes(G: Any) -> list:
     """Stable node ordering for the matrix representation."""
     return list(G.nodes())
@@ -150,13 +320,30 @@ def _nodal_frequencies(G: Any, nodes: list | None = None) -> Any:
     if nodes is None:
         nodes = _ordered_nodes(G)
     try:
-        frequency = np.array([
-            get_attr(G.nodes[node], ALIAS_VF, 0.0, conv=float, strict=True)
+        raw = [
+            get_attr(
+                G.nodes[node], ALIAS_VF, 0.0, conv=lambda value: value, strict=True
+            )
             for node in nodes
-        ], dtype=float)
-    except (TypeError, ValueError) as exc:
-        raise ValueError("Structural frequency must be finite and nonnegative") from exc
-    if not np.all(np.isfinite(frequency)) or np.any(frequency < 0.0):
+        ]
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(
+            "Structural frequency values must be finite real numbers"
+        ) from exc
+    if any(isinstance(value, (bool, np.bool_)) for value in raw):
+        raise ValueError(
+            "Structural frequency must be a finite real scalar, not boolean"
+        )
+    try:
+        frequency = np.array(
+            [finite_real_scalar(value, "Structural frequency") for value in raw],
+            dtype=float,
+        )
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(
+            "Structural frequency values must be finite real numbers"
+        ) from exc
+    if np.any(frequency < 0.0):
         raise ValueError("Structural frequency must be finite and nonnegative")
     return frequency
 
@@ -224,14 +411,44 @@ def symmetric_normalized_laplacian(
     return conductance.nodes, lap
 
 
+def _finite_scalar_epi(value: Any) -> float:
+    """Read raw real EPI or an exact uniform-real BEPI embedding."""
+
+    is_bepi_representation = isinstance(value, Mapping) or all(
+        hasattr(value, attribute)
+        for attribute in ("f_continuous", "a_discrete", "x_grid")
+    )
+    if not is_bepi_representation:
+        return finite_real_scalar(value, "EPI")
+    try:
+        scalar = real_scalar_epi(value)
+    except (KeyError, TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(
+            "EPI must be a finite real scalar or uniform real BEPI embedding"
+        ) from exc
+    if scalar is None:
+        raise ValueError(
+            "EPI must be a finite real scalar or uniform real BEPI embedding"
+        )
+    return scalar
+
+
 def structural_field(G: Any, nodes: list | None = None) -> Any:
-    r"""Return the EPI field as a vector aligned with ``nodes``."""
+    r"""Return the strict scalar EPI field aligned with ``nodes``.
+
+    Raw finite real values and exact uniform-real BEPI embeddings share the
+    signed scalar channel.  Nonuniform or complex BEPI elements are rejected
+    because their magnitude projection is not an equivalent diffusion state.
+    """
     if nodes is None:
         nodes = _ordered_nodes(G)
-    return np.array(
-        [get_attr(G.nodes[n], ALIAS_EPI, 0.0, conv=float, strict=True) for n in nodes],
-        dtype=float,
-    )
+    raw = [
+        get_attr(
+            G.nodes[node], ALIAS_EPI, 0.0, conv=lambda value: value, strict=True
+        )
+        for node in nodes
+    ]
+    return np.array([_finite_scalar_epi(value) for value in raw], dtype=float)
 
 
 def structural_diffusivity(G: Any) -> float:
@@ -257,13 +474,12 @@ def degree_weighted_total(G: Any) -> float:
     Edge-based summation allows finite cancellation even when an intermediate
     degree or product exceeds float range.
 
-    Under those restrictions this is an **EPI-channel** conserved quantity.
-    It is **distinct** from the tetrad Noether charge
-    Q = Σ(Φ_s + K_φ)
-    (:func:`tnfr.physics.conservation.compute_noether_charge`), conserved under
-    grammar U1–U6: TNFR carries two distinct conservation laws, on the EPI
-    field and on the tetrad fields respectively (see
-    STRUCTURAL_CONSERVATION_THEOREM §8.7).
+    Under the stated symmetric homogeneous restriction this is an exact
+    **EPI-channel** conserved quantity. It is distinct from the Noether-like
+    diagnostic ``Q = Σ(Φ_s + K_φ)``
+    (:func:`tnfr.physics.conservation.compute_noether_charge`). Grammar U1–U6
+    does not generally conserve that diagnostic; its drift must be evaluated on
+    the supplied trajectory.
     """
     conductance = read_conductance(G)
     field = structural_field(G, conductance.nodes)
@@ -313,6 +529,704 @@ class DiffusionEnergyBalance:
     energy_rate: float
 
 
+@dataclass(frozen=True)
+class HeterogeneousDiffusionStabilityCertificate:
+    """Lyapunov certificate for connected symmetric EPI diffusion.
+
+    ``metric_weights`` is the binary64 evaluation of ``d_i / nu_f_i`` and
+    ``lyapunov_value`` is the corresponding distance to consensus.  The
+    eigensolver fields are estimates.  ``exact_quotient_gap_lower_bound`` is
+    obtained from the actual represented generator and metric by rational
+    arithmetic; ``certified_exponential_rate_lower_bound`` is its
+    downward-rounded energy rate.  Hybrid composition uses only the latter.
+    ``exact_consensus_subspace_preservation`` says the represented generator
+    maps constant vectors back into that subspace.
+    ``exact_uniform_fixed_point_preservation`` is the stronger canonical
+    diffusion requirement that it annihilate them; rounded Laplacian rows need
+    not satisfy this automatically.
+    ``exact_weighted_mean_preservation`` separately records whether this
+    represented metric's mean is conserved exactly.  ``conserved_total`` and
+    ``equilibrium_value`` retain their compatibility names but are snapshot
+    values of ``h.T x`` and its projection center unless that flag is true.
+    The certificate concerns the frozen EPI-only channel; it does not certify
+    changing topology or an operator word.
+    """
+
+    nodes: tuple[Any, ...]
+    equilibrium_value: float
+    metric_weights: Any
+    conserved_total: float
+    lyapunov_value: float
+    lyapunov_derivative: float
+    generalized_gap: float
+    exponential_rate: float
+    derivative_upper_bound: float
+    balance_residual: float
+    is_consensus: bool
+    is_equilibrium: bool
+    is_certified: bool
+    exact_quotient_gap_lower_bound: Fraction = Fraction(0)
+    certified_exponential_rate_lower_bound: float = 0.0
+    exact_consensus_subspace_preservation: bool = False
+    exact_uniform_fixed_point_preservation: bool = False
+    exact_weighted_mean_preservation: bool = False
+    _proof_stamp: tuple[Any, ...] = field(
+        default=(), repr=False, compare=False
+    )
+
+    def _proof_fields_are_intact(self) -> bool:
+        """Detect ordinary construction, replacement, or payload mutation.
+
+        This private consistency stamp is not an authentication boundary;
+        deliberate reconstruction of private fields is outside its scope.
+        """
+        try:
+            expected = _fixed_flow_proof_stamp(
+                self.nodes,
+                self.metric_weights,
+                self.exact_quotient_gap_lower_bound,
+                self.certified_exponential_rate_lower_bound,
+                self.is_certified,
+                self.exact_consensus_subspace_preservation,
+                self.exact_uniform_fixed_point_preservation,
+                self.exact_weighted_mean_preservation,
+            )
+        except (TypeError, ValueError, OverflowError):
+            return False
+        return self._proof_stamp == expected
+
+
+@dataclass(frozen=True)
+class SwitchingDiffusionStabilityCertificate:
+    """Common-metric certificate for a finite family of graph topologies.
+
+    Each regime may change conductance and structural frequency.  The exact
+    common-Lyapunov theorem requires identical normalized weights
+    ``d_i/nu_f_i`` in every regime and requires every represented generator to
+    annihilate constant fields exactly.  Numerical agreement within a caller
+    chosen tolerance is reported separately and is not promoted to that
+    theorem.  ``equilibrium_value``, ``lyapunov_value``, and
+    ``derivative_upper_bound`` are binary64 diagnostics for the first snapshot
+    in the displayed normalized metric.  The theorem is anchored instead in
+    ``reference_metric_weights`` and the downward-rounded certified rate;
+    callers evaluating other snapshots must recenter them independently.
+    """
+
+    nodes: tuple[Any, ...]
+    regime_count: int
+    reference_metric_weights: Any
+    normalized_metric_weights: Any
+    metric_mismatches: Any
+    generalized_gaps: Any
+    equilibrium_value: float
+    lyapunov_value: float
+    uniform_exponential_rate: float
+    derivative_upper_bound: float
+    common_metric_residual: float
+    shares_exact_common_metric: bool
+    common_metric_within_tolerance: bool
+    numerical_hypotheses_pass: bool
+    supports_exact_switching_theorem: bool
+    tolerance: float
+    scope: str
+    exact_quotient_gap_lower_bounds: tuple[Fraction, ...] = ()
+    certified_exponential_rate_lower_bounds: Any = field(
+        default_factory=lambda: _readonly_float_array(())
+    )
+    certified_uniform_exponential_rate_lower_bound: float = 0.0
+    exact_consensus_subspace_preservation_by_regime: tuple[bool, ...] = ()
+    exact_common_consensus_subspace_preservation: bool = False
+    exact_uniform_fixed_point_preservation_by_regime: tuple[bool, ...] = ()
+    exact_common_uniform_fixed_point_preservation: bool = False
+    exact_weighted_mean_preservation_by_regime: tuple[bool, ...] = ()
+    exact_common_weighted_mean_preservation: bool = False
+    _proof_stamp: tuple[Any, ...] = field(
+        default=(), repr=False, compare=False
+    )
+
+    @property
+    def shares_common_metric(self) -> bool:
+        """Compatibility alias for exact common-metric equality."""
+        return self.shares_exact_common_metric
+
+    @property
+    def is_certified(self) -> bool:
+        """Compatibility alias for the exact switching-theorem flag."""
+        return self.supports_exact_switching_theorem
+
+    def _proof_fields_are_intact(self) -> bool:
+        """Detect ordinary construction, replacement, or payload mutation.
+
+        This private consistency stamp is not an authentication boundary;
+        deliberate reconstruction of private fields is outside its scope.
+        """
+        try:
+            expected = _switching_flow_proof_stamp(
+                self.nodes,
+                self.regime_count,
+                self.reference_metric_weights,
+                self.normalized_metric_weights,
+                self.exact_quotient_gap_lower_bounds,
+                self.certified_exponential_rate_lower_bounds,
+                self.certified_uniform_exponential_rate_lower_bound,
+                self.shares_exact_common_metric,
+                self.supports_exact_switching_theorem,
+                self.exact_consensus_subspace_preservation_by_regime,
+                self.exact_common_consensus_subspace_preservation,
+                self.exact_uniform_fixed_point_preservation_by_regime,
+                self.exact_common_uniform_fixed_point_preservation,
+                self.exact_weighted_mean_preservation_by_regime,
+                self.exact_common_weighted_mean_preservation,
+            )
+        except (TypeError, ValueError, OverflowError):
+            return False
+        return self._proof_stamp == expected
+
+
+@dataclass(frozen=True)
+class TimeVaryingDiffusionStabilityBound:
+    """Conditional exact-real bound induced by represented conductances.
+
+    The supplied frequency arrays are assumptions on every instant of the
+    schedule, not observations made by this read-only function.  Certification
+    interprets each effective binary64 conductance materialized by the shared
+    reader, and each frequency bound, as an exact real number; it forms degrees
+    and the Laplacian in rational arithmetic and proves a positive quotient gap
+    on the Euclidean disagreement subspace.
+    ``materialized_binary64_uniform_fixed_point_preservation`` separately says
+    whether the ordinary binary64 ``diag(strength)-adjacency`` construction
+    annihilates the uniform field; it is diagnostic and does not define the
+    exact-real theorem.
+
+    ``combinatorial_gap``, ``minimum_mobility``, ``maximum_mobility``,
+    ``dirichlet_energy``, and the fields prefixed by ``spectral_`` are
+    compatibility estimates.  ``energy_decay_rate``,
+    ``energy_derivative_upper_bound``, and ``consensus_distance_bound`` use only
+    rational proof quantities and directed binary64 enclosures.  An infinite
+    consensus-distance bound records safe abstention.  The spectral estimates
+    may be nonfinite when the ordinary diagnostic path exceeds binary64 range.
+    ``exact_real_continuous_time_model_certified`` records the rational theorem;
+    ``operational_binary64_rate_available`` and its compatibility alias
+    ``is_certified`` additionally require a positive public binary64 rate.
+    ``runtime_integration_certified`` remains false because no numerical
+    integrator or future schedule is observed here.
+    """
+
+    nodes: tuple[Any, ...]
+    frequency_lower_bounds: Any
+    frequency_upper_bounds: Any
+    combinatorial_gap: float
+    minimum_mobility: float
+    maximum_mobility: float
+    dirichlet_energy: float
+    energy_decay_rate: float
+    energy_derivative_upper_bound: float
+    consensus_distance_bound: float
+    is_certified: bool
+    spectral_energy_decay_rate_estimate: float
+    spectral_consensus_distance_estimate: float
+    exact_combinatorial_gap_lower_bound: Fraction
+    certified_combinatorial_gap_lower_bound: float
+    exact_minimum_mobility_lower_bound: Fraction
+    certified_minimum_mobility_lower_bound: float
+    exact_maximum_mobility_upper_bound: Fraction
+    certified_maximum_mobility_upper_bound: float
+    exact_energy_decay_rate_lower_bound: Fraction
+    exact_dirichlet_energy: Fraction
+    dirichlet_energy_lower_bound: float
+    dirichlet_energy_upper_bound: float
+    mobility_lower_bounds: Any
+    mobility_upper_bounds: Any
+    certified_mobility_lower_bounds: Any
+    certified_mobility_upper_bounds: Any
+    exact_real_uniform_fixed_point_preservation: bool
+    materialized_binary64_uniform_fixed_point_preservation: bool
+    exact_real_continuous_time_model_certified: bool
+    operational_binary64_rate_available: bool
+    runtime_integration_certified: bool
+    scope: str
+
+
+@dataclass(frozen=True)
+class EulerRelaxationWindowDiagnostic:
+    """Modal explicit-Euler relaxation for one frozen symmetric network.
+
+    ``modal_steps`` counts integration steps, whereas ``policy_window`` counts
+    operator positions.  Both are reported for comparison and are not treated
+    as interchangeable semantics.
+    """
+
+    dt: float
+    target_fraction: float
+    spectral_relative_tolerance: float
+    spectral_zero_threshold: float
+    decay_rates: Any
+    modal_multipliers: Any
+    slowest_decay_rate: float
+    fastest_decay_rate: float
+    euler_stability_limit: float
+    maximum_modal_factor: float
+    modal_steps: int | None
+    policy_window: int
+    is_euler_stable: bool
+    scope: str
+
+
+def _connected_symmetric_transport(
+    G: Any, nodes: list | None = None,
+) -> tuple[ConductanceSnapshot, Any, Any]:
+    """Return one validated positive, connected symmetric transport snapshot."""
+    conductance = read_conductance(G, nodes, symmetric=True)
+    if len(conductance.nodes) < 2:
+        raise ValueError("Stability certification requires at least two nodes")
+    strength = conductance.strength
+    if np.any(strength <= 0.0):
+        raise ValueError("Stability certification requires positive row strength")
+    adjacency = conductance.dense()
+
+    reached = {0}
+    frontier = [0]
+    while frontier:
+        source = frontier.pop()
+        for target in np.flatnonzero(adjacency[source] > 0.0):
+            target = int(target)
+            if target != source and target not in reached:
+                reached.add(target)
+                frontier.append(target)
+    if len(reached) != len(conductance.nodes):
+        raise ValueError("Stability certification requires connected positive conductance")
+    return conductance, adjacency, strength
+
+
+def _exact_projected_quadratic(
+    matrix: tuple[tuple[Fraction, ...], ...],
+    metric_weights: tuple[Fraction, ...],
+) -> tuple[tuple[Fraction, ...], ...]:
+    """Restrict a quadratic form to ``h.T y=0`` in a rational basis."""
+    dimension = len(metric_weights)
+    pivot = max(range(dimension), key=metric_weights.__getitem__)
+    free = tuple(index for index in range(dimension) if index != pivot)
+    # Column a is e_free[a] - (h_free[a]/h_pivot)e_pivot.  Choosing the
+    # largest metric entry keeps every ratio at most one.  Expanding this
+    # two-sparse basis avoids an O(n^4) generic matrix multiplication.
+    ratios = tuple(
+        metric_weights[index] / metric_weights[pivot] for index in free
+    )
+    return tuple(
+        tuple(
+            (
+                matrix[free[left]][free[right]]
+                - ratios[left] * matrix[pivot][free[right]]
+                - ratios[right] * matrix[free[left]][pivot]
+                + ratios[left] * ratios[right] * matrix[pivot][pivot]
+            )
+            for right in range(dimension - 1)
+        )
+        for left in range(dimension - 1)
+    )
+
+
+def _exact_symmetric_semidefinite(
+    matrix: tuple[tuple[Fraction, ...], ...],
+    *,
+    strict: bool,
+) -> bool:
+    """Test rational positive (semi)definiteness by exact LDL elimination."""
+    work = [list(row) for row in matrix]
+    dimension = len(work)
+    for pivot_index in range(dimension):
+        pivot = work[pivot_index][pivot_index]
+        if pivot < 0 or (strict and pivot == 0):
+            return False
+        if pivot == 0:
+            if any(
+                work[pivot_index][column] != 0
+                for column in range(pivot_index + 1, dimension)
+            ):
+                return False
+            continue
+        for row in range(pivot_index + 1, dimension):
+            for column in range(row, dimension):
+                updated = (
+                    work[row][column]
+                    - work[row][pivot_index]
+                    * work[pivot_index][column]
+                    / pivot
+                )
+                work[row][column] = updated
+                work[column][row] = updated
+    return True
+
+
+def _exact_matrix_inverse(
+    matrix: tuple[tuple[Fraction, ...], ...],
+) -> tuple[tuple[Fraction, ...], ...]:
+    """Invert a nonsingular rational matrix by exact Gauss--Jordan steps."""
+    dimension = len(matrix)
+    augmented = [
+        list(row)
+        + [Fraction(1) if i == j else Fraction(0) for j in range(dimension)]
+        for i, row in enumerate(matrix)
+    ]
+    for column in range(dimension):
+        pivot_row = next(
+            (
+                row
+                for row in range(column, dimension)
+                if augmented[row][column] != 0
+            ),
+            None,
+        )
+        if pivot_row is None:
+            raise ValueError("exact quotient matrix is singular")
+        if pivot_row != column:
+            augmented[column], augmented[pivot_row] = (
+                augmented[pivot_row],
+                augmented[column],
+            )
+        pivot = augmented[column][column]
+        augmented[column] = [value / pivot for value in augmented[column]]
+        for row in range(dimension):
+            if row == column:
+                continue
+            factor = augmented[row][column]
+            if factor == 0:
+                continue
+            augmented[row] = [
+                value - factor * pivot_value
+                for value, pivot_value in zip(
+                    augmented[row], augmented[column]
+                )
+            ]
+    return tuple(
+        tuple(row[dimension:]) for row in augmented
+    )
+
+
+def _exact_inverse_norm_gap_lower_bound(
+    dissipation: tuple[tuple[Fraction, ...], ...],
+    metric: tuple[tuple[Fraction, ...], ...],
+) -> Fraction:
+    r"""Bound ``min z'Kz/z'Gz`` with exact rational arithmetic.
+
+    For symmetric positive-definite ``K`` and ``G``,
+
+    ``lambda_min(K,G) >= 1/(||K^-1||_inf ||G||_inf)``.
+
+    That norm bound initializes a safe lower endpoint.  Coordinate Rayleigh
+    quotients give an upper endpoint, and exact semidefiniteness tests then
+    refine the lower endpoint by rational bisection.  Every returned value is
+    a proved lower bound; floating-point eigensolver output is never used.
+    """
+    if not _exact_symmetric_semidefinite(dissipation, strict=True):
+        return Fraction(0)
+    inverse = _exact_matrix_inverse(dissipation)
+    inverse_norm = max(
+        sum((abs(value) for value in row), Fraction(0))
+        for row in inverse
+    )
+    metric_norm = max(
+        sum((abs(value) for value in row), Fraction(0))
+        for row in metric
+    )
+    if inverse_norm <= 0 or metric_norm <= 0:
+        return Fraction(0)
+    lower = Fraction(1) / (inverse_norm * metric_norm)
+    upper = min(
+        dissipation[index][index] / metric[index][index]
+        for index in range(len(dissipation))
+    )
+    if upper <= lower:
+        return lower
+
+    def candidate_is_valid(candidate: Fraction) -> bool:
+        shifted = tuple(
+            tuple(
+                dissipation[i][j] - candidate * metric[i][j]
+                for j in range(len(dissipation))
+            )
+            for i in range(len(dissipation))
+        )
+        return _exact_symmetric_semidefinite(shifted, strict=False)
+
+    if candidate_is_valid(upper):
+        return upper
+    if len(dissipation) > _EXACT_QUOTIENT_REFINEMENT_MAX_DIMENSION:
+        return lower
+    for _ in range(_EXACT_QUOTIENT_BISECTION_STEPS):
+        midpoint = (lower + upper) / 2
+        if candidate_is_valid(midpoint):
+            lower = midpoint
+        else:
+            upper = midpoint
+    return lower
+
+
+@lru_cache(maxsize=128)
+def _exact_real_laplacian_gap_lower_bound(
+    laplacian: tuple[tuple[Fraction, ...], ...],
+) -> tuple[Fraction, bool]:
+    """Certify the Euclidean disagreement gap of one rational Laplacian.
+
+    The caller forms degrees exactly from the rational interpretations of the
+    stored binary64 conductances.  Symmetry and annihilation of the uniform
+    field are still checked before the quotient proof, so a malformed internal
+    matrix can only cause safe abstention.
+    """
+    dimension = len(laplacian)
+    is_symmetric = all(
+        laplacian[i][j] == laplacian[j][i]
+        for i in range(dimension)
+        for j in range(i)
+    )
+    preserves_uniform_fixed_point = is_symmetric and all(
+        sum(row, Fraction(0)) == 0 for row in laplacian
+    )
+    if not preserves_uniform_fixed_point:
+        return Fraction(0), False
+
+    unit_weights = (Fraction(1),) * dimension
+    identity = tuple(
+        tuple(Fraction(i == j) for j in range(dimension))
+        for i in range(dimension)
+    )
+    restricted_laplacian = _exact_projected_quadratic(
+        laplacian, unit_weights
+    )
+    restricted_identity = _exact_projected_quadratic(identity, unit_weights)
+    gap = _exact_inverse_norm_gap_lower_bound(
+        restricted_laplacian, restricted_identity
+    )
+    return gap, True
+
+
+def _exact_real_dirichlet_energy(
+    laplacian: tuple[tuple[Fraction, ...], ...],
+    field_values: Any,
+) -> Fraction:
+    """Evaluate ``x.T @ B @ x / 2`` for a rational model exactly."""
+    exact_field = tuple(
+        Fraction.from_float(float(value))
+        for value in np.asarray(field_values, dtype=float)
+    )
+    return sum(
+        (
+            exact_field[i] * laplacian[i][j] * exact_field[j]
+            for i in range(len(exact_field))
+            for j in range(len(exact_field))
+        ),
+        Fraction(0),
+    ) / 2
+
+
+@lru_cache(maxsize=128)
+def _exact_flow_gap_from_rationals(
+    laplacian: tuple[tuple[Fraction, ...], ...],
+    mobility: tuple[Fraction, ...],
+    metric: tuple[Fraction, ...],
+) -> tuple[Fraction, bool, bool, bool]:
+    """Cached exact quotient proof for one represented frozen generator."""
+    generator = tuple(
+        tuple(mobility[i] * laplacian[i][j] for j in range(len(metric)))
+        for i in range(len(metric))
+    )
+    mapped_consensus = tuple(sum(row, Fraction(0)) for row in generator)
+    preserves_consensus_subspace = all(
+        value == mapped_consensus[0] for value in mapped_consensus[1:]
+    )
+    preserves_uniform_fixed_points = all(
+        value == 0 for value in mapped_consensus
+    )
+    weighted_generator_row = tuple(
+        sum(
+            (metric[i] * generator[i][j] for i in range(len(metric))),
+            Fraction(0),
+        )
+        for j in range(len(metric))
+    )
+    preserves_weighted_mean = all(value == 0 for value in weighted_generator_row)
+
+    if not preserves_consensus_subspace:
+        return (
+            Fraction(0),
+            preserves_weighted_mean,
+            False,
+            preserves_uniform_fixed_points,
+        )
+
+    weighted_mobility = tuple(
+        metric[index] * mobility[index] for index in range(len(metric))
+    )
+    symmetric_dissipation = tuple(
+        tuple(
+            (
+                weighted_mobility[i] * laplacian[i][j]
+                + laplacian[i][j] * weighted_mobility[j]
+            )
+            / 2
+            for j in range(len(metric))
+        )
+        for i in range(len(metric))
+    )
+    metric_matrix = tuple(
+        tuple(
+            metric[i] if i == j else Fraction(0)
+            for j in range(len(metric))
+        )
+        for i in range(len(metric))
+    )
+    restricted_dissipation = _exact_projected_quadratic(
+        symmetric_dissipation, metric
+    )
+    restricted_metric = _exact_projected_quadratic(metric_matrix, metric)
+
+    gap = _exact_inverse_norm_gap_lower_bound(
+        restricted_dissipation, restricted_metric
+    )
+    return (
+        gap,
+        preserves_weighted_mean,
+        True,
+        preserves_uniform_fixed_points,
+    )
+
+
+def _exact_flow_gap_lower_bound(
+    laplacian: Any,
+    mobility: Any,
+    displayed_metric_weights: Any,
+) -> tuple[Fraction, bool, bool, bool]:
+    r"""Certify contraction in the displayed binary64 metric.
+
+    ``fl(d/nu)`` need not be the exact reciprocal of ``fl(nu/d)``.  Exact
+    rational arithmetic therefore starts from the binary64 Laplacian and
+    mobility already materialized by the verifier, including all degree-sum,
+    subtraction, and division rounding.  It forms the quotient dissipation of
+    that represented generator directly.  Exact LDL verifies positivity, and
+    an inverse-norm bound supplies a conservative generalized gap.  Small
+    quotients receive an optional exact bisection refinement.  The accompanying
+    Booleans separately record preservation of the consensus subspace, uniform
+    fixed points, and the displayed metric's weighted mean.
+    """
+    metric = tuple(
+        Fraction.from_float(float(value))
+        for value in np.asarray(displayed_metric_weights, dtype=float)
+    )
+    exact_laplacian = tuple(
+        tuple(Fraction.from_float(float(value)) for value in row)
+        for row in np.asarray(laplacian, dtype=float)
+    )
+    exact_mobility = tuple(
+        Fraction.from_float(float(value))
+        for value in np.asarray(mobility, dtype=float)
+    )
+    return _exact_flow_gap_from_rationals(
+        exact_laplacian, exact_mobility, metric
+    )
+
+
+def _exact_represented_flow_derivative_is_zero(
+    laplacian: Any,
+    mobility: Any,
+    field: Any,
+) -> bool:
+    """Test ``diag(mobility) @ laplacian @ field == 0`` exactly."""
+    exact_field = tuple(
+        Fraction.from_float(float(value)) for value in np.asarray(field)
+    )
+    exact_mobility = tuple(
+        Fraction.from_float(float(value)) for value in np.asarray(mobility)
+    )
+    exact_laplacian = tuple(
+        tuple(Fraction.from_float(float(value)) for value in row)
+        for row in np.asarray(laplacian)
+    )
+    return all(
+        exact_mobility[i]
+        * sum(
+            (
+                exact_laplacian[i][j] * exact_field[j]
+                for j in range(len(exact_field))
+            ),
+            Fraction(0),
+        )
+        == 0
+        for i in range(len(exact_field))
+    )
+
+
+def _float_flow_quotient_gap(
+    laplacian: Any,
+    frequency: Any,
+    strength: Any,
+    metric_weights: Any,
+) -> float:
+    """Estimate the actual flow quotient gap in the displayed metric."""
+    dimension = len(metric_weights)
+    pivot = int(np.argmax(metric_weights))
+    free = np.array(
+        [index for index in range(dimension) if index != pivot], dtype=int
+    )
+    basis = np.zeros((dimension, dimension - 1), dtype=float)
+    basis[pivot, :] = -metric_weights[free] / metric_weights[pivot]
+    basis[free, np.arange(dimension - 1)] = 1.0
+    # Match the represented theorem and the derivative path: materialize
+    # mobility first, then multiply by the displayed metric.  Reassociating
+    # these binary64 operations can change the diagnostic by one ulp.
+    weighted_mobility = metric_weights * (frequency / strength)
+    symmetric_dissipation = 0.5 * (
+        weighted_mobility[:, None] * laplacian
+        + laplacian * weighted_mobility[None, :]
+    )
+    restricted_dissipation = basis.T @ symmetric_dissipation @ basis
+    restricted_metric = basis.T @ (metric_weights[:, None] * basis)
+    factor = np.linalg.cholesky(restricted_metric)
+    left_solved = np.linalg.solve(factor, restricted_dissipation)
+    normalized = np.linalg.solve(factor, left_solved.T).T
+    normalized = 0.5 * (normalized + normalized.T)
+    rates = np.linalg.eigvalsh(normalized)
+    if not np.all(np.isfinite(rates)):
+        raise ValueError("flow quotient rate estimate must be finite")
+    return float(max(rates[0], 0.0))
+
+
+def _aligned_frequency_bound(values: Any, nodes: list, name: str) -> Any:
+    """Align one scalar, mapping or vector capacity bound with ``nodes``."""
+    _reject_boolean_numeric(values, name)
+    if np.isscalar(values):
+        result = np.full(len(nodes), float(values), dtype=float)
+    elif hasattr(values, "keys"):
+        try:
+            aligned = [values[node] for node in nodes]
+        except (KeyError, TypeError) as exc:
+            raise ValueError(f"{name} must define every graph node") from exc
+        if any(isinstance(value, (bool, np.bool_)) for value in aligned):
+            raise ValueError(f"{name} must contain numeric values, not booleans")
+        try:
+            result = np.array(aligned, dtype=float)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"{name} must define every graph node") from exc
+    else:
+        try:
+            unconverted = np.asarray(values, dtype=object)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"{name} must be scalar or node-aligned") from exc
+        if any(
+            isinstance(value, (bool, np.bool_))
+            for value in unconverted.flat
+        ):
+            raise ValueError(f"{name} must contain numeric values, not booleans")
+        try:
+            result = np.asarray(values, dtype=float)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"{name} must be scalar or node-aligned") from exc
+        if result.shape != (len(nodes),):
+            raise ValueError(f"{name} must contain one value per graph node")
+    if not np.all(np.isfinite(result)) or np.any(result <= 0.0):
+        raise ValueError(f"{name} must be finite and positive")
+    return result
+
+
 def compute_diffusion_energy(G: Any) -> DiffusionEnergyBalance:
     r"""Read the Dirichlet gradient-flow balance on symmetric conductance.
 
@@ -345,6 +1259,709 @@ def compute_diffusion_energy(G: Any) -> DiffusionEnergyBalance:
     except FloatingPointError as exc:
         raise ValueError("Diffusion energy balance exceeds finite floating-point range") from exc
     return DiffusionEnergyBalance(nodes, energy, gradient, mobility, epi_rate, energy_rate)
+
+
+def verify_heterogeneous_diffusion_stability(
+    G: Any, *, tolerance: float = 1e-10,
+) -> HeterogeneousDiffusionStabilityCertificate:
+    r"""Certify exponential convergence of the frozen heterogeneous EPI channel.
+
+    Let ``W`` be a fixed symmetric nonnegative conductance on a connected graph.
+    The verifier materializes binary64 ``B = fl(D-W)`` and
+    ``M = diag(fl(nu_f_i/d_i))``; the represented channel is ``x'=-M B x``.
+    All strengths and capacities must be positive.  The published metric is
+    ``H = diag(fl(d_i/nu_f_i))``; its rounding means that ``H M`` need not be
+    exactly the identity, and rounded rows of ``B`` need not sum to exact zero.
+    A canonical diffusion certificate therefore requires ``M B 1=0`` exactly.
+
+    With ``c = (h^T x)/(h^T 1)`` and ``y = x-c*1``, the weighted energy
+
+    ``V = 1/2 y^T H y``
+
+    has ``V' = -y^T S y``, where
+    ``S = (H M B + B M H)/2``.  The implementation restricts ``S`` and ``H``
+    to ``h^T y=0``, proves positivity using exact rational LDL elimination, and
+    bounds the generalized quotient with exact matrix norms.  Consequently the
+    disagreement energy decays at the returned certified rate.  Exact
+    preservation of ``h^T x`` is reported separately; only then is the initial
+    value of ``c`` itself the certified consensus limit.  Without that extra
+    condition the theorem establishes disagreement decay, while the scalar
+    consensus coordinate requires its own conclusion.
+
+    This is an analytic certificate for continuous-time pure EPI diffusion.
+    It makes no claim about the other pressure channels, finite-step integrator
+    stability, changing capacities/topology, or grammar U2 sufficiency.
+    """
+    _reject_boolean_numeric(tolerance, "tolerance")
+    if not np.isfinite(tolerance) or tolerance <= 0.0:
+        raise ValueError("tolerance must be finite and positive")
+
+    conductance, adjacency, strength = _connected_symmetric_transport(G)
+    nodes = conductance.nodes
+
+    field = structural_field(G, nodes)
+    frequency = _nodal_frequencies(G, nodes)
+    if not np.all(np.isfinite(field)):
+        raise ValueError("Structural transport requires finite scalar EPI")
+    if np.any(frequency <= 0.0):
+        raise ValueError("Stability certification requires positive structural frequency")
+
+    try:
+        with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
+            metric_weights = strength / frequency
+            if (not np.all(np.isfinite(metric_weights))
+                    or np.any(metric_weights <= 0.0)):
+                raise ValueError(
+                    "Stability metric weights must be finite and positive"
+                )
+            metric_total = float(np.sum(metric_weights))
+            conserved_total = float(metric_weights @ field)
+            equilibrium = conserved_total / metric_total
+            centered = field - equilibrium
+            lyapunov_value = float(0.5 * np.sum(metric_weights * centered**2))
+
+            laplacian = np.diag(strength) - adjacency
+            generalized_gap = _float_flow_quotient_gap(
+                laplacian, frequency, strength, metric_weights
+            )
+            exponential_rate = 2.0 * generalized_gap
+
+            mobility = frequency / strength
+            diffusion_rate = -mobility * (laplacian @ field)
+            lyapunov_derivative = float(
+                np.sum(metric_weights * centered * diffusion_rate)
+            )
+            weighted_mobility = metric_weights * mobility
+            symmetric_dissipation = 0.5 * (
+                weighted_mobility[:, None] * laplacian
+                + laplacian * weighted_mobility[None, :]
+            )
+            quadratic_derivative = -float(
+                centered @ symmetric_dissipation @ centered
+            )
+            balance_residual = abs(
+                lyapunov_derivative - quadratic_derivative
+            )
+    except (
+        FloatingPointError,
+        OverflowError,
+        np.linalg.LinAlgError,
+        ValueError,
+    ) as exc:
+        raise ValueError("Stability certificate exceeds finite floating-point range") from exc
+
+    (
+        exact_quotient_gap,
+        exact_mean_preservation,
+        exact_consensus_preservation,
+        exact_uniform_fixed_points,
+    ) = _exact_flow_gap_lower_bound(laplacian, mobility, metric_weights)
+    certified_rate = _fraction_lower_float(2 * exact_quotient_gap)
+    try:
+        derivative_upper_bound = -certified_rate * lyapunov_value
+    except OverflowError as exc:
+        raise ValueError(
+            "Stability certificate exceeds finite floating-point range"
+        ) from exc
+    if not np.isfinite(derivative_upper_bound):
+        raise ValueError("Stability certificate exceeds finite floating-point range")
+
+    positive_gap = certified_rate > 0.0
+    is_consensus = bool(np.max(np.abs(centered)) <= tolerance)
+    is_equilibrium = _exact_represented_flow_derivative_is_zero(
+        laplacian, mobility, field
+    )
+    # Canonical pure-EPI diffusion must leave every uniform field fixed.
+    certified = bool(positive_gap and exact_uniform_fixed_points)
+    node_tuple = tuple(nodes)
+    frozen_metric = _readonly_float_array(metric_weights)
+    proof_stamp = _fixed_flow_proof_stamp(
+        node_tuple,
+        frozen_metric,
+        exact_quotient_gap,
+        certified_rate,
+        certified,
+        exact_consensus_preservation,
+        exact_uniform_fixed_points,
+        exact_mean_preservation,
+    )
+
+    return HeterogeneousDiffusionStabilityCertificate(
+        nodes=node_tuple,
+        equilibrium_value=equilibrium,
+        metric_weights=frozen_metric,
+        conserved_total=conserved_total,
+        lyapunov_value=lyapunov_value,
+        lyapunov_derivative=lyapunov_derivative,
+        generalized_gap=generalized_gap,
+        exponential_rate=exponential_rate,
+        derivative_upper_bound=derivative_upper_bound,
+        balance_residual=balance_residual,
+        is_consensus=is_consensus,
+        is_equilibrium=is_equilibrium,
+        is_certified=certified,
+        exact_quotient_gap_lower_bound=exact_quotient_gap,
+        certified_exponential_rate_lower_bound=certified_rate,
+        exact_consensus_subspace_preservation=exact_consensus_preservation,
+        exact_uniform_fixed_point_preservation=exact_uniform_fixed_points,
+        exact_weighted_mean_preservation=exact_mean_preservation,
+        _proof_stamp=proof_stamp,
+    )
+
+
+def verify_switching_diffusion_stability(
+    graphs: Any, *, tolerance: float = 1e-10,
+) -> SwitchingDiffusionStabilityCertificate:
+    r"""Certify pure-EPI convergence under arbitrary switching of topology.
+
+    Consider a finite family of fixed, connected, symmetric conductance graphs
+    on one node set.  Regime ``r`` has materialized binary64 ``B_r``, mobility
+    ``M_r=diag(fl(nu_r/d_r))``, and metric weights
+    ``h_r=fl(d_r/nu_r)``.  If every represented ``h_r`` is a positive scalar
+    multiple of one vector ``p``, then
+
+    ``V=1/2 sum_i p_i (x_i-c)^2``
+
+    is common to all regimes, provided every represented generator also obeys
+    ``M_r B_r 1=0`` exactly.  Exact rational quotient tests certify its decay
+    under each represented generator, so arbitrary switching satisfies
+    ``V(t)<=exp(-r_* t)V(0)`` at the returned certified rate ``r_*``.
+    Preservation of ``p^T x`` is tested separately; when it holds in every
+    regime, ``c=p^T x/p^T 1`` is also conserved under arbitrary switching.
+
+    The theorem requires exact proportionality.  The certificate additionally
+    reports a within-tolerance diagnostic, but a large caller tolerance cannot
+    turn a nonzero metric mismatch into an exact common Lyapunov function.
+    Metric normalization is performed after max-scaling.  A positive component
+    that would underflow to zero is rejected because losing it can make two
+    distinct metrics appear exactly equal.
+
+    The certificate allows no node insertion/removal, directed edge, isolate,
+    zero capacity, nonlinear pressure channel or reset at a switch.  Failure of
+    the common-metric condition is a negative result for this theorem, not
+    evidence of instability.
+    """
+    _reject_boolean_numeric(tolerance, "tolerance")
+    if not np.isfinite(tolerance) or tolerance <= 0.0:
+        raise ValueError("tolerance must be finite and positive")
+    regimes = list(graphs)
+    if len(regimes) < 2:
+        raise ValueError("switching stability requires at least two regimes")
+
+    nodes = list(regimes[0])
+    node_set = set(nodes)
+    raw_metrics = []
+    normalized_metrics = []
+    gaps = []
+    exact_gap_bounds: list[Fraction] = []
+    exact_consensus_flags: list[bool] = []
+    exact_uniform_fixed_flags: list[bool] = []
+    exact_mean_flags: list[bool] = []
+    for graph in regimes:
+        if len(graph) != len(nodes) or set(graph) != node_set:
+            raise ValueError("switching regimes must share exactly one node set")
+        conductance, adjacency, strength = _connected_symmetric_transport(graph, nodes)
+        frequency = _nodal_frequencies(graph, nodes)
+        if np.any(frequency <= 0.0):
+            raise ValueError("switching stability requires positive structural frequency")
+        try:
+            with np.errstate(over="raise", invalid="raise", divide="raise"):
+                metric = strength / frequency
+                if not np.all(np.isfinite(metric)) or np.any(metric <= 0.0):
+                    raise ValueError(
+                        "switching metric weights must be finite and positive"
+                    )
+                raw_metrics.append(metric.copy())
+                normalized_metric, _, _ = normalize_weights(metric)
+                if (not np.all(np.isfinite(normalized_metric))
+                        or np.any(normalized_metric <= 0.0)):
+                    raise ValueError(
+                        "switching metric normalization exceeds floating-point "
+                        "dynamic range"
+                    )
+                normalized_metrics.append(normalized_metric)
+                laplacian = np.diag(strength) - adjacency
+                mobility = frequency / strength
+                gaps.append(
+                    _float_flow_quotient_gap(
+                        laplacian, frequency, strength, metric
+                    )
+                )
+                (
+                    exact_gap_bound,
+                    exact_mean,
+                    exact_consensus,
+                    exact_uniform_fixed,
+                ) = _exact_flow_gap_lower_bound(laplacian, mobility, metric)
+                exact_gap_bounds.append(exact_gap_bound)
+                exact_mean_flags.append(exact_mean)
+                exact_consensus_flags.append(exact_consensus)
+                exact_uniform_fixed_flags.append(exact_uniform_fixed)
+        except (FloatingPointError, OverflowError, np.linalg.LinAlgError) as exc:
+            raise ValueError(
+                "switching certificate exceeds finite floating-point range"
+            ) from exc
+
+    reference = normalized_metrics[0]
+    mismatches = np.array(
+        [np.max(np.abs(metric - reference)) for metric in normalized_metrics],
+        dtype=float,
+    )
+    common_metric_residual = float(np.max(mismatches))
+    within_tolerance = bool(common_metric_residual <= tolerance)
+    # Normalizing before comparison can collapse two distinct binary64 ratios
+    # to the same rounded vector.  Cross-products of exact float ratios test
+    # proportionality of the represented positive metric vectors directly.
+    def exactly_proportional(left: Any, right: Any) -> bool:
+        left_ratio = tuple(Fraction.from_float(float(value)) for value in left)
+        right_ratio = tuple(Fraction.from_float(float(value)) for value in right)
+        return all(
+            lhs * right_ratio[0] == rhs * left_ratio[0]
+            for lhs, rhs in zip(left_ratio, right_ratio)
+        )
+
+    raw_reference = raw_metrics[0]
+    exact_common = all(
+        exactly_proportional(metric, raw_reference)
+        for metric in raw_metrics[1:]
+    )
+    field = structural_field(regimes[0], nodes)
+    if not np.all(np.isfinite(field)):
+        raise ValueError("Structural transport requires finite scalar EPI")
+    try:
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            field_scale = float(np.max(np.abs(field), initial=0.0))
+            equilibrium = (
+                0.0
+                if field_scale == 0.0
+                else float(field_scale * (reference @ (field / field_scale)))
+            )
+            centered = field - equilibrium
+            value = float(0.5 * np.sum(reference * centered**2))
+            uniform_rate = 2.0 * min(gaps)
+            exact_uniform_gap_bound = min(exact_gap_bounds)
+            certified_uniform_rate = _fraction_lower_float(
+                2 * exact_uniform_gap_bound
+            )
+            derivative_upper_bound = -certified_uniform_rate * value
+    except (FloatingPointError, OverflowError) as exc:
+        raise ValueError(
+            "switching Lyapunov diagnostics exceed finite floating-point range"
+        ) from exc
+    if not all(
+        np.isfinite(number)
+        for number in (equilibrium, value, uniform_rate, derivative_upper_bound)
+    ):
+        raise ValueError(
+            "switching Lyapunov diagnostics exceed finite floating-point range"
+        )
+    certified_rates = _readonly_float_array(
+        [_fraction_lower_float(2 * bound) for bound in exact_gap_bounds]
+    )
+    numerical_hypotheses_pass = bool(
+        within_tolerance
+        and certified_uniform_rate > 0.0
+        and all(exact_uniform_fixed_flags)
+    )
+    exact_theorem = bool(
+        exact_common
+        and certified_uniform_rate > 0.0
+        and all(exact_uniform_fixed_flags)
+    )
+    exact_common_consensus = bool(
+        exact_common and all(exact_consensus_flags)
+    )
+    exact_common_uniform_fixed = bool(
+        exact_common and all(exact_uniform_fixed_flags)
+    )
+    exact_common_mean = bool(exact_common and all(exact_mean_flags))
+    node_tuple = tuple(nodes)
+    frozen_reference = _readonly_float_array(raw_reference)
+    frozen_normalized = _readonly_float_array(reference)
+    frozen_mismatches = _readonly_float_array(mismatches)
+    frozen_gaps = _readonly_float_array(gaps)
+    proof_stamp = _switching_flow_proof_stamp(
+        node_tuple,
+        len(regimes),
+        frozen_reference,
+        frozen_normalized,
+        tuple(exact_gap_bounds),
+        certified_rates,
+        certified_uniform_rate,
+        exact_common,
+        exact_theorem,
+        tuple(exact_consensus_flags),
+        exact_common_consensus,
+        tuple(exact_uniform_fixed_flags),
+        exact_common_uniform_fixed,
+        tuple(exact_mean_flags),
+        exact_common_mean,
+    )
+    return SwitchingDiffusionStabilityCertificate(
+        nodes=node_tuple,
+        regime_count=len(regimes),
+        reference_metric_weights=frozen_reference,
+        normalized_metric_weights=frozen_normalized,
+        metric_mismatches=frozen_mismatches,
+        generalized_gaps=frozen_gaps,
+        equilibrium_value=equilibrium,
+        lyapunov_value=value,
+        uniform_exponential_rate=uniform_rate,
+        derivative_upper_bound=derivative_upper_bound,
+        common_metric_residual=common_metric_residual,
+        shares_exact_common_metric=exact_common,
+        common_metric_within_tolerance=within_tolerance,
+        numerical_hypotheses_pass=numerical_hypotheses_pass,
+        supports_exact_switching_theorem=exact_theorem,
+        tolerance=float(tolerance),
+        scope="finite fixed-node connected symmetric pure-EPI switching family",
+        exact_quotient_gap_lower_bounds=tuple(exact_gap_bounds),
+        certified_exponential_rate_lower_bounds=certified_rates,
+        certified_uniform_exponential_rate_lower_bound=certified_uniform_rate,
+        exact_consensus_subspace_preservation_by_regime=tuple(
+            exact_consensus_flags
+        ),
+        exact_common_consensus_subspace_preservation=exact_common_consensus,
+        exact_uniform_fixed_point_preservation_by_regime=tuple(
+            exact_uniform_fixed_flags
+        ),
+        exact_common_uniform_fixed_point_preservation=(
+            exact_common_uniform_fixed
+        ),
+        exact_weighted_mean_preservation_by_regime=tuple(exact_mean_flags),
+        exact_common_weighted_mean_preservation=exact_common_mean,
+        _proof_stamp=proof_stamp,
+    )
+
+
+def derive_time_varying_diffusion_stability_bound(
+    G: Any,
+    frequency_lower_bounds: Any,
+    frequency_upper_bounds: Any,
+) -> TimeVaryingDiffusionStabilityBound:
+    r"""Derive a common-Lyapunov bound for time-varying nodal capacities.
+
+    Each effective binary64 conductance materialized by the shared reader and
+    each supplied binary64 capacity bound is interpreted as an exact real
+    coefficient.  Exact rational row sums define ``D`` and ``B=D-W``.  Assume a
+    continuous-time capacity schedule satisfying
+    ``lower_i <= nu_i(t) <= upper_i`` at every instant.  For
+    ``E_D=x^T Bx/2`` the induced pure-EPI model obeys
+
+    ``E_D' = -(Bx)^T diag(nu_i(t)/d_i) (Bx)``.
+
+    If ``mu = min_i lower_i/d_i`` and a rational quotient proof establishes
+    ``lambda_2(B)>0`` on ``1_perp``, then
+    ``E_D' <= -2*mu*lambda_2(B)*E_D``.  The public operational decay rate is a
+    downward-rounded lower bound on that exact rational rate.  The derivative
+    and current consensus-distance fields use corresponding directed
+    enclosures.  The ordinary binary64 eigengap, energy, and products remain
+    explicitly labelled estimates for compatibility.
+
+    Finite upper capacity bounds make the state velocity integrable in this
+    exact-real continuous model, so the field converges to a uniform value.
+    That value is generally schedule-dependent; no fixed weighted mean is
+    claimed unless all capacities share a common scalar modulation.  The
+    routine cannot observe a future schedule and does not certify a numerical
+    integration path.  Its result is therefore a conditional analytic theorem
+    induced by the represented input coefficients.
+    """
+    conductance, adjacency, strength = _connected_symmetric_transport(G)
+    nodes = conductance.nodes
+    lower = _aligned_frequency_bound(
+        frequency_lower_bounds, nodes, "frequency_lower_bounds"
+    )
+    upper = _aligned_frequency_bound(
+        frequency_upper_bounds, nodes, "frequency_upper_bounds"
+    )
+    if np.any(lower > upper):
+        raise ValueError("frequency lower bounds cannot exceed upper bounds")
+
+    field = structural_field(G, nodes)
+    if not np.all(np.isfinite(field)):
+        raise ValueError("Structural transport requires finite scalar EPI")
+
+    # These are compatibility diagnostics for the ordinary binary64 matrix
+    # path.  They never establish the theorem Boolean, so loss of range in an
+    # estimate must not suppress a valid exact-real certificate.
+    laplacian = np.diag(strength) - adjacency
+    try:
+        with np.errstate(
+            over="ignore", invalid="ignore", divide="ignore", under="ignore"
+        ):
+            eigenvalues = np.linalg.eigvalsh(laplacian)
+            combinatorial_gap = float(max(eigenvalues[1], 0.0))
+    except np.linalg.LinAlgError:
+        combinatorial_gap = float("nan")
+    with np.errstate(
+        over="ignore", invalid="ignore", divide="ignore", under="ignore"
+    ):
+        mobility_lower_estimates = lower / strength
+        mobility_upper_estimates = upper / strength
+        minimum_mobility = float(np.min(mobility_lower_estimates))
+        maximum_mobility = float(np.max(mobility_upper_estimates))
+        energy = float(0.5 * field @ laplacian @ field)
+        spectral_decay_rate = float(
+            np.multiply(
+                np.multiply(2.0, minimum_mobility), combinatorial_gap
+            )
+        )
+        spectral_distance_estimate = (
+            float(
+                np.sqrt(
+                    np.maximum(
+                        np.divide(np.multiply(2.0, energy), combinatorial_gap),
+                        0.0,
+                    )
+                )
+            )
+            if combinatorial_gap > 0.0
+            else float("inf")
+        )
+
+    exact_adjacency = tuple(
+        tuple(Fraction.from_float(float(value)) for value in row)
+        for row in np.asarray(adjacency, dtype=float)
+    )
+    exact_strength = tuple(
+        sum(row, Fraction(0)) for row in exact_adjacency
+    )
+    exact_laplacian = tuple(
+        tuple(
+            (exact_strength[i] if i == j else Fraction(0))
+            - exact_adjacency[i][j]
+            for j in range(len(nodes))
+        )
+        for i in range(len(nodes))
+    )
+    exact_gap, exact_real_uniform_fixed = (
+        _exact_real_laplacian_gap_lower_bound(exact_laplacian)
+    )
+
+    exact_materialized_laplacian = tuple(
+        tuple(Fraction.from_float(float(value)) for value in row)
+        for row in np.asarray(laplacian, dtype=float)
+    )
+    materialized_binary64_uniform_fixed = all(
+        sum(row, Fraction(0)) == 0
+        for row in exact_materialized_laplacian
+    )
+
+    exact_lower_frequency = tuple(
+        Fraction.from_float(float(value)) for value in lower
+    )
+    exact_upper_frequency = tuple(
+        Fraction.from_float(float(value)) for value in upper
+    )
+    exact_lower_mobility = tuple(
+        exact_lower_frequency[i] / exact_strength[i]
+        for i in range(len(nodes))
+    )
+    exact_upper_mobility = tuple(
+        exact_upper_frequency[i] / exact_strength[i]
+        for i in range(len(nodes))
+    )
+    exact_minimum_mobility = min(exact_lower_mobility)
+    exact_maximum_mobility = max(exact_upper_mobility)
+    certified_mobility_lower = _readonly_float_array(
+        [_fraction_lower_float(value) for value in exact_lower_mobility]
+    )
+    certified_mobility_upper = _readonly_float_array(
+        [_fraction_upper_float(value) for value in exact_upper_mobility]
+    )
+    certified_gap = _fraction_lower_float(exact_gap)
+    certified_minimum_mobility = _fraction_lower_float(
+        exact_minimum_mobility
+    )
+    certified_maximum_mobility = _fraction_upper_float(
+        exact_maximum_mobility
+    )
+    exact_decay_rate = 2 * exact_minimum_mobility * exact_gap
+    decay_rate = _fraction_lower_float(exact_decay_rate)
+    exact_energy = _exact_real_dirichlet_energy(
+        exact_laplacian, field
+    )
+    exact_real_model_certified = bool(
+        exact_real_uniform_fixed
+        and exact_gap > 0
+        and exact_minimum_mobility > 0
+        and exact_maximum_mobility > 0
+        and exact_energy >= 0
+    )
+    operational_rate_available = bool(
+        exact_real_model_certified and decay_rate > 0.0
+    )
+    if not operational_rate_available:
+        decay_rate = 0.0
+
+    if exact_energy >= 0:
+        energy_lower_bound = _fraction_lower_float(exact_energy)
+        energy_upper_bound = _fraction_upper_float(exact_energy)
+    else:
+        energy_lower_bound = float("-inf")
+        energy_upper_bound = float("inf")
+
+    if operational_rate_available:
+        exact_derivative_magnitude = (
+            Fraction.from_float(decay_rate) * exact_energy
+        )
+        derivative_bound = -_fraction_lower_float(
+            exact_derivative_magnitude
+        )
+    else:
+        derivative_bound = 0.0
+
+    if exact_gap > 0 and exact_energy >= 0:
+        distance_bound = _fraction_sqrt_upper_float(
+            2 * exact_energy / exact_gap
+        )
+    else:
+        distance_bound = float("inf")
+
+    return TimeVaryingDiffusionStabilityBound(
+        nodes=tuple(nodes),
+        frequency_lower_bounds=_readonly_float_array(lower),
+        frequency_upper_bounds=_readonly_float_array(upper),
+        combinatorial_gap=combinatorial_gap,
+        minimum_mobility=minimum_mobility,
+        maximum_mobility=maximum_mobility,
+        dirichlet_energy=energy,
+        energy_decay_rate=decay_rate,
+        energy_derivative_upper_bound=derivative_bound,
+        consensus_distance_bound=distance_bound,
+        is_certified=operational_rate_available,
+        spectral_energy_decay_rate_estimate=spectral_decay_rate,
+        spectral_consensus_distance_estimate=spectral_distance_estimate,
+        exact_combinatorial_gap_lower_bound=exact_gap,
+        certified_combinatorial_gap_lower_bound=certified_gap,
+        exact_minimum_mobility_lower_bound=exact_minimum_mobility,
+        certified_minimum_mobility_lower_bound=(
+            certified_minimum_mobility
+        ),
+        exact_maximum_mobility_upper_bound=exact_maximum_mobility,
+        certified_maximum_mobility_upper_bound=(
+            certified_maximum_mobility
+        ),
+        exact_energy_decay_rate_lower_bound=exact_decay_rate,
+        exact_dirichlet_energy=exact_energy,
+        dirichlet_energy_lower_bound=energy_lower_bound,
+        dirichlet_energy_upper_bound=energy_upper_bound,
+        mobility_lower_bounds=_readonly_float_array(
+            mobility_lower_estimates
+        ),
+        mobility_upper_bounds=_readonly_float_array(
+            mobility_upper_estimates
+        ),
+        certified_mobility_lower_bounds=certified_mobility_lower,
+        certified_mobility_upper_bounds=certified_mobility_upper,
+        exact_real_uniform_fixed_point_preservation=(
+            exact_real_uniform_fixed
+        ),
+        materialized_binary64_uniform_fixed_point_preservation=(
+            materialized_binary64_uniform_fixed
+        ),
+        exact_real_continuous_time_model_certified=(
+            exact_real_model_certified
+        ),
+        operational_binary64_rate_available=operational_rate_available,
+        runtime_integration_certified=False,
+        scope=(
+            "conditional exact-real continuous pure-EPI schedule induced by "
+            "effective binary64 conductances materialized by the shared reader "
+            "and binary64 capacity bounds"
+        ),
+    )
+
+
+def diagnose_euler_relaxation_window(
+    G: Any,
+    *,
+    dt: float,
+    target_fraction: float | None = None,
+    tolerance: float = 1e-12,
+) -> EulerRelaxationWindowDiagnostic:
+    r"""Compute the graph-specific modal relaxation steps for explicit Euler.
+
+    For frozen connected symmetric pure EPI diffusion, continuous decay rates
+    are the eigenvalues of ``diag(nu_f)L_rw``.  Explicit Euler maps each
+    nonstationary mode by ``q_k=1-dt*lambda_k``.  The worst modal amplitude
+    falls below ``target_fraction`` after the returned number of steps exactly
+    when ``max_k |q_k| < 1``.  Otherwise ``modal_steps`` is ``None``.
+
+    The canonical U4 value is included as ``policy_window`` only to expose the
+    calibration gap.  It counts operator positions, not solver timesteps, and
+    this diagnostic does not modify or validate grammar U4. ``tolerance`` is a
+    dimensionless relative cutoff against the fastest decay rate; it is not an
+    absolute rate in ``Hz_str``.
+    """
+    import math
+
+    _reject_boolean_numeric(dt, "dt")
+    if target_fraction is not None:
+        _reject_boolean_numeric(target_fraction, "target_fraction")
+    _reject_boolean_numeric(tolerance, "tolerance")
+    if G.is_directed():
+        raise ValueError("Euler modal diagnostic requires symmetric transport")
+    if not np.isfinite(dt) or dt <= 0.0:
+        raise ValueError("dt must be finite and positive")
+    if target_fraction is None:
+        target_fraction = 1.0 / (math.pi + 1.0)
+    if not np.isfinite(target_fraction) or not 0.0 < target_fraction < 1.0:
+        raise ValueError("target_fraction must lie strictly between zero and one")
+    if not np.isfinite(tolerance) or not 0.0 < tolerance < 1.0:
+        raise ValueError(
+            "tolerance must be finite and lie strictly between zero and one"
+        )
+
+    _connected_symmetric_transport(G)
+    frequency = _nodal_frequencies(G)
+    if np.any(frequency <= 0.0):
+        raise ValueError("Euler modal diagnostic requires positive structural frequency")
+    rates = relaxation_spectrum(G)
+    fastest_rate = float(np.max(rates, initial=0.0))
+    if not np.isfinite(fastest_rate) or fastest_rate <= 0.0:
+        raise ValueError("Euler modal diagnostic requires a positive decay scale")
+    zero_threshold = tolerance * fastest_rate
+    positive = rates[rates > zero_threshold]
+    zero_count = len(rates) - len(positive)
+    if zero_count != 1 or not len(positive):
+        raise ValueError("Euler modal diagnostic requires exactly one stationary mode")
+
+    multipliers = 1.0 - dt * positive
+    maximum_factor = float(np.max(np.abs(multipliers)))
+    fastest = float(positive[-1])
+    stability_limit = 2.0 / fastest
+    stable = maximum_factor < 1.0
+    steps = None
+    if stable:
+        if maximum_factor == 0.0:
+            steps = 1
+        else:
+            steps = max(
+                1,
+                int(math.floor(math.log(target_fraction) / math.log(maximum_factor))) + 1,
+            )
+            while maximum_factor**steps >= target_fraction:
+                steps += 1
+
+    from ..config.physics_derivation import derive_bifurcation_window_from_physics
+
+    return EulerRelaxationWindowDiagnostic(
+        dt=float(dt),
+        target_fraction=float(target_fraction),
+        spectral_relative_tolerance=float(tolerance),
+        spectral_zero_threshold=float(zero_threshold),
+        decay_rates=positive.copy(),
+        modal_multipliers=multipliers.copy(),
+        slowest_decay_rate=float(positive[0]),
+        fastest_decay_rate=fastest,
+        euler_stability_limit=stability_limit,
+        maximum_modal_factor=maximum_factor,
+        modal_steps=steps,
+        policy_window=derive_bifurcation_window_from_physics(),
+        is_euler_stable=stable,
+        scope="frozen connected symmetric pure EPI explicit-Euler modes",
+    )
 
 
 def relaxation_spectrum(G: Any) -> Any:
@@ -416,6 +2033,7 @@ def structural_frequency_rank(G: Any, decimals: int = 8) -> int:
     int
         The number of distinct eigenvalues of L_rw.
     """
+    _reject_boolean_numeric(decimals, "decimals")
     _, lap = structural_diffusion_operator(G)
     eig = np.linalg.eigvals(lap)
     rounded = np.round(eig.real, decimals) + 1j * np.round(eig.imag, decimals)
@@ -578,9 +2196,12 @@ def verify_structural_diffusion(
     -------
     StructuralDiffusionCertificate
     """
+    _reject_boolean_numeric(dt, "dt")
+    _reject_boolean_numeric(steps, "steps")
+    _reject_boolean_numeric(tolerance, "tolerance")
     if not np.isfinite(dt) or dt <= 0.0:
         raise ValueError("dt must be finite and positive")
-    if isinstance(steps, bool) or not isinstance(steps, (int, np.integer)) or steps < 0:
+    if not isinstance(steps, (int, np.integer)) or steps < 0:
         raise ValueError("steps must be a nonnegative integer")
     if not np.isfinite(tolerance) or tolerance <= 0.0:
         raise ValueError("tolerance must be finite and positive")
@@ -778,6 +2399,15 @@ def verify_overdamped_regime(
     """
     from ..dynamics.canonical import compute_canonical_nodal_derivative
 
+    for name, value in (
+        ("nu_f", nu_f),
+        ("pressure", pressure),
+        ("dt", dt),
+        ("steps", steps),
+        ("tolerance", tolerance),
+    ):
+        _reject_boolean_numeric(value, name)
+
     # integrate the bare nodal equation under a held pressure
     epi = 0.0
     velocities = []
@@ -863,6 +2493,7 @@ def damped_wave_rates(G: Any, gamma: float) -> tuple[Any, Any, Any]:
     (lambdas, s_slow, s_fast) : tuple[np.ndarray, np.ndarray, np.ndarray]
         Sorted Laplacian eigenvalues and the (real-part) slow/fast roots.
     """
+    _reject_boolean_numeric(gamma, "gamma")
     _, lap = structural_diffusion_operator(G)
     lambdas = np.sort(np.linalg.eigvals(lap).real)
     lambdas = np.clip(lambdas, 0.0, None)
@@ -978,6 +2609,9 @@ def verify_overdamped_projection(
     -------
     OverdampedProjectionCertificate
     """
+    _reject_boolean_numeric(gamma, "gamma")
+    _reject_boolean_numeric(n_time_samples, "n_time_samples")
+    _reject_boolean_numeric(tolerance, "tolerance")
     nodes, lap = structural_diffusion_operator(G)
     n = len(nodes)
     lambdas = np.sort(np.linalg.eigvals(lap).real)
@@ -1140,6 +2774,8 @@ def verify_undamped_limit(
     -------
     UndampedLimitCertificate
     """
+    _reject_boolean_numeric(gamma, "gamma")
+    _reject_boolean_numeric(tolerance, "tolerance")
     nodes, lap = structural_diffusion_operator(G)
     n = len(nodes)
     lambdas, s_slow, _ = damped_wave_rates(G, gamma)
@@ -1338,6 +2974,7 @@ def compute_emergent_pulse(G: Any, n_modes: int = 8) -> dict[str, Any]:
         (:math:`\tfrac12\sum\lambda_k`, the conserved structural-pressure
         energy of the vibration), ``n_modes``.
     """
+    _reject_boolean_numeric(n_modes, "n_modes")
     eigvals = _cached_eigenvalues(G)
     eigvals = np.asarray(eigvals, dtype=float)
     omega = np.sqrt(np.clip(eigvals, 0.0, None))
@@ -1538,6 +3175,7 @@ def verify_discrete_modes(
     -------
     DiscreteModeCertificate
     """
+    _reject_boolean_numeric(tolerance, "tolerance")
     eigvals, eigvecs = structural_eigenmodes(G)
     n = len(eigvals)
 
@@ -1599,6 +3237,7 @@ def dispersion_relation(G: Any, reaction_rate: float = 0.0) -> Any:
     np.ndarray
         Growth rates sorted by ascending nodal decay rate.
     """
+    _reject_boolean_numeric(reaction_rate, "reaction_rate")
     return float(reaction_rate) - relaxation_spectrum(G)
 
 
@@ -1746,6 +3385,7 @@ def verify_structural_stability(
     -------
     StructuralStabilityCertificate
     """
+    _reject_boolean_numeric(tolerance, "tolerance")
     if not np.isfinite(tolerance) or tolerance <= 0.0:
         raise ValueError("tolerance must be finite and positive")
     frequency = _nodal_frequencies(G)
@@ -2113,6 +3753,7 @@ def verify_structural_random_walk(
     -------
     RandomWalkCertificate
     """
+    _reject_boolean_numeric(tolerance, "tolerance")
     if not np.isfinite(tolerance) or tolerance <= 0.0:
         raise ValueError("tolerance must be finite and positive")
     nodes, scaled_resistance, scales, volumes = _resistance_geometry(G)
@@ -2310,6 +3951,7 @@ def verify_structural_flow(
     -------
     StructuralFlowCertificate
     """
+    _reject_boolean_numeric(tolerance, "tolerance")
     if not np.isfinite(tolerance) or tolerance <= 0.0:
         raise ValueError("tolerance must be finite and positive")
     nodes, j = structural_current(G)

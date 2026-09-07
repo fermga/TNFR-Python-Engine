@@ -171,11 +171,13 @@ class TNFRExperimentBuilder:
         steps: int = 15,
         random_seed: int | None = None,
     ) -> NetworkResults:
-        """Study creative emergence through controlled mutation.
+        """Study creative emergence through evidence-gated transformation.
 
         Models creative processes by starting with diverse frequencies
-        and applying mutation operators to study how new coherent forms
-        emerge from structural reorganization.
+        and requesting controlled Mutation. A fresh builder run has no
+        observed EPI rate, so it truthfully abstains into the canonical
+        exploration word; the result exposes that decision in
+        ``mutation_workflows``. ZHIR is never inferred from initialization.
 
         Parameters
         ----------
@@ -199,6 +201,11 @@ class TNFRExperimentBuilder:
         >>> results = TNFRExperimentBuilder.creativity_emergence(nodes=25)
         >>> print(f"Creative coherence: {results.coherence:.3f}")
         """
+        from ..operators.factor_contracts import validate_glyph_factor
+
+        mutation_factor = validate_glyph_factor(
+            "ZHIR_theta_shift_factor", mutation_intensity
+        )
         network = TNFRNetwork("creativity_study", config=NetworkConfig(random_seed=random_seed))
 
         network.add_nodes(
@@ -208,8 +215,10 @@ class TNFRExperimentBuilder:
         # Controlled mutation: drive the ZHIR phase-transform magnitude from
         # the requested intensity (canonical ZHIR_theta_shift_factor config)
         # so the mutation operator actually honours mutation_intensity.
-        network._graph.graph["ZHIR_theta_shift_factor"] = float(mutation_intensity)
-        return network.apply_sequence("creative_mutation", repeat=steps).measure()
+        factors = dict(network._graph.graph.get("GLYPH_FACTORS", {}))
+        factors["ZHIR_theta_shift_factor"] = mutation_factor
+        network._graph.graph["GLYPH_FACTORS"] = factors
+        return network.apply_evidence_gated_mutation(repeat=steps).measure()
 
     @staticmethod
     def compare_topologies(
@@ -374,8 +383,9 @@ class TNFRExperimentBuilder:
         network.apply_sequence("stabilization", repeat=initial_steps)
         results["initial"] = network.measure()
 
-        # Phase 2: Apply perturbation
-        network.apply_sequence("creative_mutation", repeat=perturbation_steps)
+        # Phase 2: request Mutation; without observed rate evidence, the
+        # high-level protocol records abstention and applies exploration.
+        network.apply_evidence_gated_mutation(repeat=perturbation_steps)
         results["perturbed"] = network.measure()
 
         # Phase 3: Recovery

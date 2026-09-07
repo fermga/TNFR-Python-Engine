@@ -19,27 +19,23 @@ the exterior" rather than passive data absorption.
 
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING, Any
 
-if TYPE_CHECKING:
-    from ...types import TNFRGraph
-
-import math
+from ...constants.operational import ACTIVE_EMISSION_THRESHOLD
+from ...utils import angle_diff
 
 try:
     import networkx as nx
 except ImportError:
     nx = None  # Fallback to neighbor-only detection if networkx unavailable
 
+if TYPE_CHECKING:
+    from ...types import TNFRGraph
+
 __all__ = [
     "detect_emission_sources",
 ]
-
-# Active emission threshold: minimum EPI for node to be considered emission source
-# Below this threshold, structural form is too weak to contribute coherence
-# Import canonical constants
-
-ACTIVE_EMISSION_THRESHOLD = 0.5  # ≈ 0.464 (exponential activation)
 
 
 def detect_emission_sources(
@@ -84,12 +80,12 @@ def detect_emission_sources(
 
     .. code-block:: text
 
-        phase_diff = |θ_r - θ_s|
-        normalized_diff = min(phase_diff / π, 1.0)  # Normalize to [0, 1]
+        phase_diff = |wrap(θ_r - θ_s)|
+        normalized_diff = phase_diff / π  # angle_diff already bounds this in [0, 1]
         compatibility = 1.0 - normalized_diff
 
-    Phase values are normalized to [0, π] range before comparison to respect
-    phase periodicity in TNFR.
+    ``phase_diff`` is the shortest-arc distance on the phase circle. Arbitrary
+    representatives that differ by complete turns therefore remain equivalent.
 
     **Coherence Strength:**
 
@@ -104,9 +100,11 @@ def detect_emission_sources(
 
     **Active Emission Threshold:**
 
-    Only nodes with EPI ≥ 0.2 are considered active emission sources.
-    Below this threshold, the node's structural form is too weak to
-    effectively contribute coherence.
+    Only nodes with EPI ≥ 0.5 are considered active emission sources. The
+    selected operational threshold is centralized in
+    :mod:`tnfr.constants.operational`; it is not a derived activation law.
+    Values below this selected cut are excluded by the EN source-discovery
+    policy; no universal activation claim follows from that classification.
 
     Examples
     --------
@@ -138,9 +136,6 @@ def detect_emission_sources(
 
     # Get receiver phase
     receiver_theta = float(get_attr(G.nodes[receiver_node], ALIAS_THETA, 0.0))
-    # Normalize to [0, π] range for phase comparison
-    receiver_theta = abs(receiver_theta) % math.pi
-
     sources = []
 
     # Scan network for potential sources
@@ -168,12 +163,9 @@ def detect_emission_sources(
 
         # Calculate phase compatibility
         source_theta = float(get_attr(G.nodes[source], ALIAS_THETA, 0.0))
-        # Normalize to [0, π] range
-        source_theta = abs(source_theta) % math.pi
-
         # Phase difference normalized to [0, 1] scale
-        phase_diff = abs(receiver_theta - source_theta)
-        normalized_diff = min(phase_diff / math.pi, 1.0)
+        phase_diff = abs(angle_diff(receiver_theta, source_theta))
+        normalized_diff = phase_diff / math.pi
         phase_compatibility = 1.0 - normalized_diff
 
         # Coherence strength (EPI × νf)

@@ -4,7 +4,8 @@ Purpose: controlled phase transformation (theta -> theta').
 Physics: trigger when dEPI/dt > xi; identity preserved (epi_kind).
 Grammar: U4b requires prior IL + recent destabilizer (OZ/VAL).
 Effects: regime shift; may adjust epi; keeps vf and identity stable.
-Preconditions: vf>=ZHIR_MIN_VF; velocity>xi; history length; coupling.
+Preconditions: active vf; signed sampled velocity>xi; two EPI samples.
+An explicit ZHIR_MIN_VF may further tighten the active-capacity requirement.
 Typical: IL->OZ->ZHIR->IL; THOL->OZ->ZHIR; IL->VAL->ZHIR->IL.
 Avoid: ZHIR->ZHIR; AL->ZHIR; ZHIR->OZ; OZ->ZHIR->OZ.
 """
@@ -13,8 +14,11 @@ from __future__ import annotations
 
 from typing import Any, ClassVar
 
+from ..alias import get_attr
 from ..config.operator_names import MUTATION
+from ..constants.aliases import ALIAS_EPI_KIND
 from ..types import Glyph, TNFRGraph
+from ._argument_validation import finite_real, require_list_sink
 from .definitions_base import Operator
 
 
@@ -32,6 +36,19 @@ class Mutation(Operator):
     name: ClassVar[str] = MUTATION
     glyph: ClassVar[Glyph] = Glyph.ZHIR
 
+    def _capture_state(self, G: TNFRGraph, node: Any) -> dict[str, Any]:
+        """Capture scalar channels plus the canonical structural identity."""
+
+        state = super()._capture_state(G, node)
+        state["epi_kind"] = get_attr(
+            G.nodes[node],
+            ALIAS_EPI_KIND,
+            None,
+            strict=True,
+            conv=lambda value: None if value is None else str(value),
+        )
+        return state
+
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Apply ZHIR; detect bifurcation; optional post checks."""
         # Capture state before mutation for postcondition verification
@@ -42,21 +59,27 @@ class Mutation(Operator):
         state_before = None
         if validate_postconditions:
             state_before = self._capture_state(G, node)
-            # Also capture epi_kind if tracked
-            state_before["epi_kind"] = G.nodes[node].get("epi_kind")
 
         # Compute structural acceleration before base operator
         d2_epi = self._compute_epi_acceleration(G, node)
 
-        # Get bifurcation threshold (tau) from kwargs or graph config
-        tau = kw.get("tau")
-        if tau is None:
-            # Resolve tau: canonical, operator-specific, fallback
-            tau = float(
-                G.graph.get(
-                    "BIFURCATION_THRESHOLD_TAU",
-                    G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5),
-                )
+        # Resolve and validate the active acceleration threshold before the
+        # base glyph can change phase, history, provenance, or telemetry.
+        tau_raw = kw.get("tau")
+        if tau_raw is None:
+            tau_raw = G.graph.get(
+                "BIFURCATION_THRESHOLD_TAU",
+                G.graph.get("ZHIR_BIFURCATION_THRESHOLD", 0.5),
+            )
+        tau = finite_real(
+            tau_raw,
+            operator=self.name,
+            label="tau",
+            lower=0.0,
+        )
+        if d2_epi > tau:
+            require_list_sink(
+                G.graph, "zhir_bifurcation_events", operator=self.name
             )
 
         # Apply base operator (glyph, preconditions, metrics)
@@ -71,23 +94,11 @@ class Mutation(Operator):
             self._verify_postconditions(G, node, state_before)
 
     def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
-        """Finite diff second derivative of epi history; abs value."""
+        """Return the shared structural-acceleration magnitude without writes."""
 
-        # Get EPI history (maintained by node for temporal analysis)
-        history = G.nodes[node].get("epi_history", [])
+        from .nodal_equation import compute_d2epi_dt2
 
-        # Need at least 3 points for second derivative
-        if len(history) < 3:
-            return 0.0
-
-        # Finite difference: d²EPI/dt² ≈ (EPI_t - 2*EPI_{t-1} + EPI_{t-2})
-        epi_t = float(history[-1])
-        epi_t1 = float(history[-2])
-        epi_t2 = float(history[-3])
-
-        d2_epi = epi_t - 2.0 * epi_t1 + epi_t2
-
-        return abs(d2_epi)
+        return abs(compute_d2epi_dt2(G, node, store=False))
 
     def _detect_bifurcation_potential(
         self, G: TNFRGraph, node: Any, d2_epi: float, tau: float
@@ -126,6 +137,12 @@ class Mutation(Operator):
 
         validate_mutation(G, node)
 
+    def _validate_hard_invariants(self, G: TNFRGraph, node: Any) -> None:
+        """Require ZHIR's signed positive-growth trigger on every application."""
+        from ._mutation_gate import validate_mutation_runtime_gate
+
+        validate_mutation_runtime_gate(G.nodes[node], G.graph)
+
     def _verify_postconditions(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
     ) -> None:
@@ -139,10 +156,8 @@ class Mutation(Operator):
         # Verify phase transformation
         verify_phase_transformed(G, node, state_before["theta"])
 
-        # Verify identity preservation (if tracked)
-        epi_kind_before = state_before.get("epi_kind")
-        if epi_kind_before is not None:
-            verify_identity_preserved(G, node, epi_kind_before)
+        # Verify structural identity independently from glyph provenance.
+        verify_identity_preserved(G, node, state_before.get("epi_kind"))
 
         # Verify bifurcation handling
         verify_bifurcation_handled(G, node)
@@ -160,4 +175,5 @@ class Mutation(Operator):
             state_before["epi"],
             vf_before=state_before.get("vf"),
             dnfr_before=state_before.get("dnfr"),
+            epi_kind_before=state_before.get("epi_kind"),
         )

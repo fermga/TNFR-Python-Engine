@@ -335,8 +335,9 @@ class PhaseError(TNFRUserError):
         Phase of first node (radians).
     phase2 : float
         Phase of second node (radians).
-    threshold : float
-        Phase difference threshold for coupling.
+    threshold : float, optional
+        Phase difference threshold for coupling. Defaults to the canonical
+        U3 gate ``DELTA_PHI_MAX = π/2``.
 
     Examples
     --------
@@ -349,9 +350,16 @@ class PhaseError(TNFRUserError):
         node2: str,
         phase1: float,
         phase2: float,
-        threshold: float = 0.5,
+        threshold: float | None = None,
     ):
-        phase_diff = abs(phase1 - phase2)
+        # Keep imports lazy: this foundational error module is imported while
+        # constants, types, and numeric utilities are still being initialized.
+        from ..constants.canonical import DELTA_PHI_MAX
+        from ..utils import angle_diff
+
+        if threshold is None:
+            threshold = DELTA_PHI_MAX
+        phase_diff = abs(angle_diff(phase1, phase2))
 
         suggestion = (
             f"Nodes cannot couple: phase difference ({phase_diff:.3f} rad) "

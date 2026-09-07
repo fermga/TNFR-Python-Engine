@@ -15,7 +15,8 @@ if TYPE_CHECKING:
     from ...types import NodeId, TNFRGraph
 
 from ...alias import get_attr
-from ...constants.aliases import ALIAS_THETA
+from ...constants.aliases import ALIAS_EPI_KIND, ALIAS_THETA
+from ...utils import angle_diff
 from . import OperatorContractViolation
 
 __all__ = [
@@ -65,11 +66,12 @@ def verify_phase_transformed(G: TNFRGraph, node: NodeId, theta_before: float) ->
     theta_after = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
 
     # Check if phase actually changed (with small tolerance for floating-point)
-    if abs(theta_after - theta_before) < 1e-6:
+    phase_difference = abs(angle_diff(theta_after, theta_before))
+    if phase_difference < 1e-6:
         raise OperatorContractViolation(
             "Mutation",
             f"Phase was not transformed (θ before={theta_before:.6f}, "
-            f"θ after={theta_after:.6f}, diff={abs(theta_after - theta_before):.9f}). "
+            f"θ after={theta_after:.6f}, diff={phase_difference:.9f}). "
             f"ZHIR must transform phase to fulfill its contract.",
         )
 
@@ -100,13 +102,9 @@ def verify_identity_preserved(
     Notes
     -----
     If epi_kind_before is None (identity not tracked), this check is skipped.
-    This allows flexibility for simple nodes while enforcing identity preservation
-    when it's explicitly tracked.
-
-    **Special Case**: If epi_kind is used to track operator glyphs (common pattern),
-    the check is skipped since this is operational metadata, not structural identity.
-    To enable strict identity checking, use a separate attribute (e.g., "structural_type"
-    or "node_type") for identity tracking.
+    Operator provenance belongs to ``source_glyph``/``last_glyph`` and never
+    weakens this identity check. A glyph-code value is therefore treated like
+    any other structural kind and must equal its pre-mutation value.
 
     Identity preservation is distinct from EPI preservation - EPI may change
     slightly during mutation (structural adjustments), but the fundamental type
@@ -117,38 +115,23 @@ def verify_identity_preserved(
     >>> from tnfr.structural import create_nfr
     >>> from tnfr.operators import Mutation
     >>> G, node = create_nfr("test", epi=0.5, vf=1.0)
-    >>> G.nodes[node]["structural_type"] = "stem_cell"  # Use separate attribute
-    >>> epi_kind_before = G.nodes[node]["structural_type"]
+    >>> G.nodes[node]["epi_kind"] = "stem_cell"
+    >>> epi_kind_before = G.nodes[node]["epi_kind"]
     >>> Mutation()(G, node)
-    >>> # After mutation, structural_type should still be "stem_cell"
-    >>> # verify_identity_preserved(G, node, epi_kind_before)  # Would check structural_type
+    >>> # After mutation, epi_kind must still be "stem_cell".
+    >>> verify_identity_preserved(G, node, epi_kind_before)
     """
     # Skip check if identity was not tracked
     if epi_kind_before is None:
         return
 
-    epi_kind_after = G.nodes[node].get("epi_kind")
-
-    # Skip if epi_kind appears to be tracking operator glyphs (common pattern)
-    # Operator glyphs are short codes like "IL", "OZ", "ZHIR"
-    if epi_kind_after in [
-        "IL",
-        "EN",
-        "AL",
-        "OZ",
-        "RA",
-        "UM",
-        "SHA",
-        "VAL",
-        "NUL",
-        "THOL",
-        "ZHIR",
-        "NAV",
-        "REMESH",
-    ]:
-        # epi_kind is being used for operator tracking, not identity
-        # This is acceptable operational metadata, skip identity check
-        return
+    epi_kind_after = get_attr(
+        G.nodes[node],
+        ALIAS_EPI_KIND,
+        None,
+        strict=True,
+        conv=lambda value: None if value is None else str(value),
+    )
 
     if epi_kind_after != epi_kind_before:
         raise OperatorContractViolation(

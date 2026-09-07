@@ -82,7 +82,11 @@ def _make_tnfr_graph(
         G.nodes[node]["phase"] = rng.uniform(0, 2 * math.pi)
         G.nodes[node]["frequency"] = rng.uniform(0.1, 1.0)
         G.nodes[node]["delta_nfr"] = rng.uniform(-0.5, 0.5)
-        G.nodes[node]["EPI"] = f"epi_{node}"
+        # Operator fixtures must inhabit the canonical scalar EPI domain.  A
+        # symbolic label cannot satisfy the nodal equation or its operator
+        # preconditions, even though the spectral read-outs below do not use
+        # EPI directly.
+        G.nodes[node]["EPI"] = 0.5
 
     return G
 
@@ -747,34 +751,61 @@ class TestParsevalDriftBounded:
 
 
 class TestSpectralLyapunovMonotonicity:
-    """Gap #3: Spectral Lyapunov stability under stabilizer-dominated evolution.
+    """Finite monotonicity observations for the historical energy candidate.
 
-    Physics: Under grammar-compliant sequences (U2), the Lyapunov energy
-    E = ½Σ[Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²] should not increase.
-    In spectral domain: dE/dt = Σ dE_k/dt ≤ 0 (Structural Conservation
-    Theorem §7).
-
-    We test with the Coherence (IL) operator which is the canonical stabilizer.
+    The five-field energy has no grammar-wide Lyapunov theorem. These fixtures
+    measure its sign for selected IL trajectories and do not generalize it to
+    every grammar-compliant sequence.
     """
 
-    def _apply_coherence_to_all(self, G: nx.Graph) -> None:
-        """Apply IL (Coherence) to every node — pure stabilizer sequence."""
+    def _apply_coherence_to_all(self, G: nx.Graph) -> tuple[int, int]:
+        """Apply IL and require at least one realized structural update."""
+        from tnfr.alias import get_attr
+        from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_THETA
         from tnfr.operators.definitions import Coherence
 
         coherence = Coherence()
-        for node in G.nodes():
+        nodes = tuple(G.nodes())
+        state_before = {
+            node: (
+                float(get_attr(G.nodes[node], ALIAS_THETA, 0.0)),
+                float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)),
+            )
+            for node in nodes
+        }
+        applied = []
+        precondition_failures = 0
+        for node in nodes:
             try:
                 coherence(G, node)
-            except Exception:
-                pass  # Some nodes may not support IL if νf=0
+            except ValueError as exc:
+                if not str(exc).startswith("IL precondition failed:"):
+                    raise
+                precondition_failures += 1
+            else:
+                applied.append(node)
+
+        changed = [
+            node
+            for node in applied
+            if state_before[node]
+            != (
+                float(get_attr(G.nodes[node], ALIAS_THETA, 0.0)),
+                float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)),
+            )
+        ]
+        assert applied, "IL fixture executed no operators"
+        assert changed, "IL fixture produced no phase or DeltaNFR change"
+        return len(applied), precondition_failures
 
     def test_stabilizer_does_not_increase_total_energy(self):
         """Total Lyapunov derivative ≤ 0 after IL application."""
         G = _make_tnfr_graph(30, "watts_strogatz", seed=42)
         before = capture_conservation_snapshot(G)
-        self._apply_coherence_to_all(G)
+        applied, _ = self._apply_coherence_to_all(G)
         after = capture_conservation_snapshot(G)
         result = compute_spectral_lyapunov(before, after, G)
+        assert applied > 0
         assert (
             result.total_derivative <= 0.0 or result.is_spectrally_stable
         ), f"Stabilizer increased spectral energy: dE/dt={result.total_derivative:.6f}"
@@ -783,12 +814,37 @@ class TestSpectralLyapunovMonotonicity:
         """After IL, most modes should be stable (dE_k/dt ≤ 0)."""
         G = _make_tnfr_graph(30, "watts_strogatz", seed=42)
         before = capture_conservation_snapshot(G)
-        self._apply_coherence_to_all(G)
+        applied, _ = self._apply_coherence_to_all(G)
         after = capture_conservation_snapshot(G)
         result = compute_spectral_lyapunov(before, after, G)
+        assert applied > 0
         assert (
             result.stable_fraction >= 0.5
         ), f"Stabilizer stable_fraction={result.stable_fraction:.3f}, expected ≥ 0.5"
+
+    def test_il_fixture_propagates_unexpected_operator_failures(self, monkeypatch):
+        from tnfr.operators.definitions import Coherence
+
+        def fail_unexpectedly(_operator, _graph, _node, **_kwargs):
+            raise ValueError("unexpected IL implementation failure")
+
+        monkeypatch.setattr(Coherence, "__call__", fail_unexpectedly)
+        graph = _make_tnfr_graph(8, "watts_strogatz", seed=42)
+
+        with pytest.raises(ValueError, match="unexpected IL implementation failure"):
+            self._apply_coherence_to_all(graph)
+
+    def test_il_fixture_rejects_an_all_precondition_failure_noop(self, monkeypatch):
+        from tnfr.operators.definitions import Coherence
+
+        def reject_precondition(_operator, _graph, _node, **_kwargs):
+            raise ValueError("IL precondition failed: inactive fixture")
+
+        monkeypatch.setattr(Coherence, "__call__", reject_precondition)
+        graph = _make_tnfr_graph(8, "watts_strogatz", seed=42)
+
+        with pytest.raises(AssertionError, match="executed no operators"):
+            self._apply_coherence_to_all(graph)
 
 
 class TestOperatorSpectralSignatures:

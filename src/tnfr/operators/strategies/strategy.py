@@ -8,7 +8,7 @@ from typing import Any, Literal, Protocol
 
 OperatorName = Literal["AL", "IL", "RA", "SHA"]
 BackendName = Literal["cpu", "gpu", "remote"]
-FailureRisk = Literal["low", "medium", "high"]
+FailureRisk = Literal["low", "medium", "high", "unknown"]
 PartitionBlock = Any
 PreparedBlock = Any
 
@@ -36,9 +36,9 @@ class StrategyContext:
 @dataclass(frozen=True)
 class ResourceEstimate:
     memory_bytes: int
-    time_ms: float
-    delta_nfr: float
-    phi_s_drift: float
+    time_ms: float | None
+    delta_nfr: float | None
+    phi_s_drift: float | None
     failure_risk: FailureRisk
 
 

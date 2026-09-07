@@ -14,6 +14,7 @@ This module provides lifecycle state tracking and transition validation.
 
 from __future__ import annotations
 
+import math
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
@@ -21,6 +22,8 @@ if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..metrics.trig import neighbor_phase_mean
+from ..utils import angle_diff
 
 __all__ = [
     "LifecycleState",
@@ -83,6 +86,16 @@ class CollapseReason(Enum):
 
 
 from .metrics_core import get_node_attr as _get_node_attr
+
+
+def _neighbor_phase_coupling(G: TNFRGraph, node: NodeId, theta: float) -> float:
+    """Return shortest-arc alignment with the circular neighbour mean."""
+
+    if not list(G.neighbors(node)):
+        return 0.0
+    mean_neighbor_phase = float(neighbor_phase_mean(G, node))
+    phase_diff = abs(angle_diff(theta, mean_neighbor_phase))
+    return 1.0 - phase_diff / math.pi
 
 
 def get_lifecycle_state(
@@ -163,13 +176,7 @@ def get_lifecycle_state(
     # Compute phase coupling (simplified - could use full network coupling)
     neighbors = list(G.neighbors(node))
     if neighbors:
-        import math
-
-        neighbor_phases = [_get_node_attr(G, n, ALIAS_THETA) for n in neighbors]
-        mean_neighbor_phase = sum(neighbor_phases) / len(neighbor_phases)
-        phase_diff = abs(theta - mean_neighbor_phase)
-        # Normalize to [0, 1] where 1 is perfect alignment
-        phase_coupling = 1.0 - min(phase_diff, math.pi) / math.pi
+        phase_coupling = _neighbor_phase_coupling(G, node, theta)
     else:
         phase_coupling = 0.0
 
@@ -261,12 +268,7 @@ def check_collapse_conditions(
     # Check network decoupling
     neighbors = list(G.neighbors(node))
     if neighbors:
-        import math
-
-        neighbor_phases = [_get_node_attr(G, n, ALIAS_THETA) for n in neighbors]
-        mean_neighbor_phase = sum(neighbor_phases) / len(neighbor_phases)
-        phase_diff = abs(theta - mean_neighbor_phase)
-        phase_coupling = 1.0 - min(phase_diff, math.pi) / math.pi
+        phase_coupling = _neighbor_phase_coupling(G, node, theta)
 
         if phase_coupling < min_coupling:
             return (True, CollapseReason.NETWORK_DECOUPLING)

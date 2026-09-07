@@ -159,9 +159,11 @@ its *return* to coherence uniformly (in structural time the diffusive relaxation
 rate is the spectral gap `λ₂`, Re-independent); the wall is whether the *peak
 excursion* the nonlinear VAL source drives stays coherent — the U2 debt rate
 (∝ Re) versus the fixed U2 capacity, now read as the erosion of the single
-canonical coherence `C`. Every TNFR mechanism (U2 grammar, the `ΔNFR=0` attractor,
-the Lyapunov energy, the U5 multi-scale recursion, REMESH-∞) converges on this one
-statement — none weakens it. Closes nothing; Clay OPEN.
+canonical coherence `C`. This is a measured finite-resolution trend plus a
+restricted diffusion comparison. U2 is a grammar policy, the structural energy is
+only a Lyapunov candidate outside proved model-specific cases, U5 is a hierarchy
+contract, and the corrected REMESH analysis supplies no runtime infinity limit.
+None of them proves the required uniform-in-Re bound. Clay remains open.
 
 ## 8. Honest scope
 

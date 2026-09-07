@@ -1,30 +1,9 @@
-"""
-TNFR Computational Centralization Hub
+"""Explicit dispatch hub for TNFR computation adapters.
 
-This module implements the natural centralization that emerges from the nodal equation:
-∂EPI/∂t = νf · ΔNFR(t)
-
-The hub recognizes that all TNFR computations share the same mathematical foundation
-and can be unified under a single computational infrastructure:
-
-Centralization Principles:
-1. **Single Mathematical Source**: All operations derive from nodal equation
-2. **Unified Resource Management**: Shared memory, compute, and cache coordination
-3. **Cross-Engine Communication**: Direct data sharing between optimization engines
-4. **Intelligent Load Balancing**: Route computations to optimal engines
-5. **Emergent Optimization**: System learns and adapts automatically
-6. **Hierarchical Coordination**: Multi-scale operation from local to global
-
-Key Features:
-- Unified computation dispatch across all engines
-- Shared memory pools for cross-engine data transfer
-- Intelligent caching with mathematical dependency tracking
-- Automatic backend selection (NumPy/JAX/PyTorch/GPU)
-- Performance learning and adaptation
-- Resource pooling and load balancing
-- Mathematical consistency guarantees
-
-Status: CANONICAL COMPUTATIONAL CENTRALIZATION HUB
+The hub routes a declared operation only to an adapter that implements that
+operation. It records observed execution time and propagates adapter failures;
+it does not infer mathematical equivalence, speedup, or accuracy from the nodal
+equation alone. Cache services remain auxiliary stores rather than executors.
 """
 
 import threading
@@ -38,6 +17,11 @@ from typing import Any, Callable
 
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
+from .optimization_orchestrator import (
+    FFT_EPI_DIFFUSION_OPERATION,
+    TNFROptimizationOrchestrator,
+    validate_fft_epi_diffusion_dispatch,
+)
 
 try:
     import networkx as nx
@@ -47,24 +31,82 @@ except ImportError:
     HAS_NETWORKX = False
     nx = None
 
-# Import all engines
+# Import engines independently so one optional subsystem cannot disable the rest.
 try:
     from .adelic import AdelicDynamics
+
+    HAS_ADELIC_ENGINE = True
+except ImportError:
+    HAS_ADELIC_ENGINE = False
+    AdelicDynamics = None  # type: ignore[assignment]
+
+try:
     from .advanced_fft_arithmetic import TNFRAdvancedFFTEngine
+
+    HAS_ADVANCED_FFT_ENGINE = True
+except ImportError:
+    HAS_ADVANCED_FFT_ENGINE = False
+    TNFRAdvancedFFTEngine = None  # type: ignore[assignment]
+
+try:
     from .fft_engine import FFTDynamicsEngine
+
+    HAS_FFT_ENGINE = True
+except ImportError:
+    HAS_FFT_ENGINE = False
+    FFTDynamicsEngine = None  # type: ignore[assignment]
+
+try:
     from .multi_modal_cache import TNFRUnifiedMultiModalCache
+
+    HAS_MULTI_MODAL_CACHE = True
+except ImportError:
+    HAS_MULTI_MODAL_CACHE = False
+    TNFRUnifiedMultiModalCache = None  # type: ignore[assignment]
+
+try:
     from .nodal_optimizer import NodalEquationOptimizer
-    from .optimization_orchestrator import TNFROptimizationOrchestrator
+
+    HAS_NODAL_OPTIMIZER = True
+except ImportError:
+    HAS_NODAL_OPTIMIZER = False
+    NodalEquationOptimizer = None  # type: ignore[assignment]
+
+try:
     from .structural_cache import StructuralCoherenceCache
+
+    HAS_STRUCTURAL_CACHE = True
+except ImportError:
+    HAS_STRUCTURAL_CACHE = False
+    StructuralCoherenceCache = None  # type: ignore[assignment]
+
+try:
     from .unified_backend import (
         ComputationType,
         TNFRUnifiedBackend,
         UnifiedComputationRequest,
     )
 
-    HAS_ALL_ENGINES = True
+    HAS_UNIFIED_BACKEND = True
 except ImportError:
-    HAS_ALL_ENGINES = False
+    HAS_UNIFIED_BACKEND = False
+    ComputationType = None  # type: ignore[assignment,misc]
+    TNFRUnifiedBackend = None  # type: ignore[assignment]
+    UnifiedComputationRequest = None  # type: ignore[assignment]
+
+HAS_OPTIMIZATION_ORCHESTRATOR = True
+HAS_ALL_ENGINES = all(
+    (
+        HAS_ADELIC_ENGINE,
+        HAS_ADVANCED_FFT_ENGINE,
+        HAS_FFT_ENGINE,
+        HAS_MULTI_MODAL_CACHE,
+        HAS_NODAL_OPTIMIZER,
+        HAS_STRUCTURAL_CACHE,
+        HAS_UNIFIED_BACKEND,
+        HAS_OPTIMIZATION_ORCHESTRATOR,
+    )
+)
 
 # Import mathematical backends
 try:
@@ -90,6 +132,7 @@ class ComputationPriority(Enum):
 class EngineType(Enum):
     """Available computational engines."""
 
+    AUTO = "auto"
     UNIFIED_BACKEND = "unified_backend"
     OPTIMIZATION_ORCHESTRATOR = "orchestrator"
     ADVANCED_FFT = "advanced_fft"
@@ -98,6 +141,37 @@ class EngineType(Enum):
     STRUCTURAL_CACHE = "structural_cache"
     ADELIC_DYNAMICS = "adelic_dynamics"
     MULTI_MODAL_CACHE = "multi_modal_cache"
+
+
+ENGINE_IMPORT_AVAILABILITY = {
+    EngineType.UNIFIED_BACKEND: HAS_UNIFIED_BACKEND,
+    EngineType.OPTIMIZATION_ORCHESTRATOR: HAS_OPTIMIZATION_ORCHESTRATOR,
+    EngineType.ADVANCED_FFT: HAS_ADVANCED_FFT_ENGINE,
+    EngineType.NODAL_OPTIMIZER: HAS_NODAL_OPTIMIZER,
+    EngineType.FFT_ENGINE: HAS_FFT_ENGINE,
+    EngineType.STRUCTURAL_CACHE: HAS_STRUCTURAL_CACHE,
+    EngineType.ADELIC_DYNAMICS: HAS_ADELIC_ENGINE,
+    EngineType.MULTI_MODAL_CACHE: HAS_MULTI_MODAL_CACHE,
+}
+
+UNIFIED_OPERATION_TO_COMPUTATION_TYPE = (
+    {
+        "general_computation": ComputationType.NODAL_EVOLUTION,
+        "nodal_evolution": ComputationType.NODAL_EVOLUTION,
+        "spectral_analysis": ComputationType.SPECTRAL_ANALYSIS,
+        "field_computation": ComputationType.FIELD_COMPUTATION,
+        "structural_fields": ComputationType.FIELD_COMPUTATION,
+        "temporal_integration": ComputationType.TEMPORAL_INTEGRATION,
+        "temporal_evolution": ComputationType.TEMPORAL_INTEGRATION,
+        "multi_step": ComputationType.TEMPORAL_INTEGRATION,
+        FFT_EPI_DIFFUSION_OPERATION: ComputationType.TEMPORAL_INTEGRATION,
+        "operator_application": ComputationType.OPERATOR_APPLICATION,
+        "operator_sequence": ComputationType.OPERATOR_APPLICATION,
+        "cross_scale_coupling": ComputationType.CROSS_SCALE_COUPLING,
+    }
+    if HAS_UNIFIED_BACKEND
+    else {}
+)
 
 
 @dataclass
@@ -151,11 +225,10 @@ class SystemResources:
 
 class TNFRComputationalHub:
     """
-    Centralized computational hub for all TNFR operations.
+    Dispatch declared computations across independently available adapters.
 
-    This hub emerges naturally from recognizing that all TNFR computations
-    are variations of the same mathematical structure and can benefit from
-    unified resource management and cross-engine optimization.
+    Structural and multimodal caches are imported capabilities, not execution
+    engines, so their compatibility enum values are never registered here.
     """
 
     def __init__(
@@ -170,21 +243,23 @@ class TNFRComputationalHub:
         self.enable_gpu = enable_gpu
         self.cache_size_mb = cache_size_mb
 
-        # Initialize all engines
-        self._engines = {}
-        if HAS_ALL_ENGINES:
-            self._engines[EngineType.UNIFIED_BACKEND] = TNFRUnifiedBackend()
-            self._engines[EngineType.OPTIMIZATION_ORCHESTRATOR] = (
-                TNFROptimizationOrchestrator()
-            )
-            self._engines[EngineType.ADVANCED_FFT] = TNFRAdvancedFFTEngine()
-            self._engines[EngineType.MULTI_MODAL_CACHE] = TNFRUnifiedMultiModalCache(
-                cache_size_mb
-            )
-            self._engines[EngineType.NODAL_OPTIMIZER] = NodalEquationOptimizer()
-            self._engines[EngineType.FFT_ENGINE] = FFTDynamicsEngine()
-            self._engines[EngineType.STRUCTURAL_CACHE] = StructuralCoherenceCache()
-            self._engines[EngineType.ADELIC_DYNAMICS] = AdelicDynamics()
+        # Initialize each available engine independently.
+        self._engines: dict[EngineType, Any] = {}
+        self._engine_initialization_errors: dict[EngineType, str] = {}
+        if HAS_UNIFIED_BACKEND:
+            self._register_engine(EngineType.UNIFIED_BACKEND, TNFRUnifiedBackend)
+        self._register_engine(
+            EngineType.OPTIMIZATION_ORCHESTRATOR,
+            TNFROptimizationOrchestrator,
+        )
+        if HAS_ADVANCED_FFT_ENGINE:
+            self._register_engine(EngineType.ADVANCED_FFT, TNFRAdvancedFFTEngine)
+        if HAS_NODAL_OPTIMIZER:
+            self._register_engine(EngineType.NODAL_OPTIMIZER, NodalEquationOptimizer)
+        if HAS_FFT_ENGINE:
+            self._register_engine(EngineType.FFT_ENGINE, FFTDynamicsEngine)
+        if HAS_ADELIC_ENGINE:
+            self._register_engine(EngineType.ADELIC_DYNAMICS, AdelicDynamics)
 
         # Computation coordination
         self._request_queue = PriorityQueue()
@@ -210,6 +285,15 @@ class TNFRComputationalHub:
 
         # Start background processing
         self._start_queue_processor()
+
+    def _register_engine(
+        self, engine_type: EngineType, factory: Callable[[], Any]
+    ) -> None:
+        """Register one engine without suppressing independent engines."""
+        try:
+            self._engines[engine_type] = factory()
+        except Exception as exc:
+            self._engine_initialization_errors[engine_type] = str(exc)
 
     def _start_queue_processor(self) -> None:
         """Start background queue processing thread."""
@@ -316,6 +400,16 @@ class TNFRComputationalHub:
         """Execute single computation request."""
         start_time = time.time()
 
+        if request.operation == "system_status":
+            return ComputationResult(
+                request_id=request.request_id,
+                engine_used=request.engine_type,
+                operation=request.operation,
+                success=True,
+                result_data=self.get_system_status(),
+                execution_time=time.perf_counter() - start_time,
+            )
+
         # Select optimal engine for this computation
         selected_engine = self._select_optimal_engine(request)
 
@@ -378,43 +472,92 @@ class TNFRComputationalHub:
 
         This selection emerges from mathematical analysis of the computation type.
         """
-        # Use specified engine if available and suitable
-        if request.engine_type in self._engines:
-            return request.engine_type
+        # Preserve the historical explicit-engine behavior. Automatic routing is
+        # opt-in through EngineType.AUTO so the public default remains stable.
+        if request.engine_type != EngineType.AUTO:
+            if request.engine_type in self._engines:
+                return request.engine_type
+            raise TNFRValueError(
+                f"Requested engine is unavailable: {request.engine_type.value}"
+            )
 
         # Intelligent selection based on operation and graph properties
-        if request.graph and HAS_NETWORKX:
+        if request.graph is not None and HAS_NETWORKX:
             num_nodes = len(request.graph.nodes())
 
             # Large graphs benefit from specialized FFT engines
             if num_nodes > 100:
-                if request.operation in ["spectral_analysis", "harmonic_analysis"]:
+                if (
+                    request.operation == "harmonic_analysis"
+                    and EngineType.ADVANCED_FFT in self._engines
+                ):
                     return EngineType.ADVANCED_FFT
-                elif request.operation in ["temporal_evolution", "multi_step"]:
+                if (
+                    request.operation == FFT_EPI_DIFFUSION_OPERATION
+                    and EngineType.FFT_ENGINE in self._engines
+                ):
                     return EngineType.FFT_ENGINE
 
             # Medium graphs good for nodal optimization
             elif 20 <= num_nodes <= 100:
-                if request.operation in ["nodal_evolution", "operator_sequence"]:
+                if (
+                    request.operation == FFT_EPI_DIFFUSION_OPERATION
+                    and EngineType.FFT_ENGINE in self._engines
+                ):
+                    return EngineType.FFT_ENGINE
+                if (
+                    request.operation == "nodal_evolution"
+                    and EngineType.NODAL_OPTIMIZER in self._engines
+                    and request.parameters.get("pressure_model") == "epi_diffusion"
+                ):
                     return EngineType.NODAL_OPTIMIZER
 
-        # Default to optimization orchestrator for intelligent routing
-        if EngineType.OPTIMIZATION_ORCHESTRATOR in self._engines:
-            return EngineType.OPTIMIZATION_ORCHESTRATOR
+        # The unified backend has an explicit operation table and is the safe
+        # fallback for every operation it can represent.
+        if (
+            request.operation in UNIFIED_OPERATION_TO_COMPUTATION_TYPE
+            and EngineType.UNIFIED_BACKEND in self._engines
+        ):
+            return EngineType.UNIFIED_BACKEND
 
-        # Fallback to unified backend
-        return EngineType.UNIFIED_BACKEND
+        if request.operation in {"temporal", "arithmetic", "trace", "general"}:
+            if EngineType.OPTIMIZATION_ORCHESTRATOR in self._engines:
+                return EngineType.OPTIMIZATION_ORCHESTRATOR
+
+        raise TNFRValueError(
+            f"No available engine supports operation={request.operation!r}"
+        )
 
     def _execute_unified_backend(self, request: ComputationRequest) -> Any:
-        """Execute using unified backend."""
+        """Execute one operation through its declared unified computation type."""
+        try:
+            computation_type = UNIFIED_OPERATION_TO_COMPUTATION_TYPE[
+                request.operation
+            ]
+        except KeyError as exc:
+            supported = ", ".join(sorted(UNIFIED_OPERATION_TO_COMPUTATION_TYPE))
+            raise TNFRValueError(
+                f"Unified backend does not support operation={request.operation!r}; "
+                f"supported operations: {supported}"
+            ) from exc
+
+        parameters = dict(request.parameters)
+        if request.operation == FFT_EPI_DIFFUSION_OPERATION:
+            parameters["pressure_model"] = validate_fft_epi_diffusion_dispatch(
+                request.operation, parameters.get("pressure_model")
+            )
+        return_trajectory = parameters.get("return_trajectory", False)
+        if not isinstance(return_trajectory, bool):
+            raise TNFRValueError("return_trajectory must be boolean")
+
         engine = self._engines[EngineType.UNIFIED_BACKEND]
 
-        # Map to unified computation request
         unified_request = UnifiedComputationRequest(
-            computation_type=ComputationType.NODAL_EVOLUTION,  # Default
+            computation_type=computation_type,
             graph=request.graph,
-            parameters=request.parameters,
+            parameters=parameters,
             enable_cache=request.enable_cache,
+            return_trajectory=return_trajectory,
         )
 
         result = engine.execute_computation(unified_request)
@@ -431,11 +574,43 @@ class TNFRComputationalHub:
         result = engine.execute_optimization(
             request.graph, request.operation, strategy, **request.parameters
         )
+        verification = result.details.get("accuracy_verification")
+        verification_failed = (
+            isinstance(verification, dict) and verification.get("passed") is False
+        )
+        if (
+            not result.accuracy_preserved
+            or "error" in result.details
+            or verification_failed
+        ):
+            reason = result.details.get("error", "accuracy verification failed")
+            raise TNFRValueError(
+                f"Optimization orchestrator failed: {reason}",
+                context={
+                    "strategy": result.strategy_used.value,
+                    "accuracy_preserved": result.accuracy_preserved,
+                    "details": result.details,
+                },
+            )
+        measurements = result.details.get("performance_measurements")
+        if not isinstance(measurements, dict):
+            measurements = {
+                "speedup_factor": result.speedup_factor,
+                "memory_used_mb": result.memory_used_mb,
+            }
 
         return {
             "strategy_used": result.strategy_used.value,
             "execution_time": result.execution_time,
-            "speedup_factor": result.speedup_factor,
+            "speedup_factor": measurements.get("speedup_factor"),
+            "memory_used_mb": measurements.get("memory_used_mb"),
+            "accuracy_verification": result.details.get(
+                "accuracy_verification",
+                {
+                    "basis": "legacy_strategy_contract",
+                    "passed": result.accuracy_preserved,
+                },
+            ),
             "cache_performance": {
                 "hits": result.cache_hits,
                 "misses": result.cache_misses,
@@ -447,30 +622,57 @@ class TNFRComputationalHub:
         """Execute using advanced FFT engine."""
         engine = self._engines[EngineType.ADVANCED_FFT]
 
-        operation = request.parameters.get("spectral_operation", "harmonic_analysis")
+        parameters = dict(request.parameters)
+        operation = parameters.pop("spectral_operation", "harmonic_analysis")
 
         if operation == "harmonic_analysis":
-            result = engine.harmonic_analysis(request.graph)
+            result = engine.harmonic_analysis(request.graph, **parameters)
         elif operation == "spectral_filtering":
-            result = engine.spectral_filtering(request.graph, **request.parameters)
+            result = engine.spectral_filtering(request.graph, **parameters)
         elif operation == "coherence_analysis":
-            # Requires second graph
-            graph2 = request.parameters.get("graph2")
-            if graph2:
-                result = engine.cross_spectral_coherence(request.graph, graph2)
-            else:
+            graph2 = parameters.pop("graph2", None)
+            if graph2 is None:
                 raise TNFRValueError(
                     "Coherence analysis requires second graph",
                     context={"parameters": request.parameters.keys()},
                     suggestion="Provide 'graph2' in request parameters for coherence analysis.",
                 )
+            result = engine.cross_spectral_coherence(
+                request.graph, graph2, **parameters
+            )
+        elif operation == "spectral_convolution":
+            result = engine.spectral_convolution(request.graph, **parameters)
         else:
-            result = engine.spectral_convolution(request.graph, **request.parameters)
+            raise TNFRValueError(
+                f"Unsupported advanced FFT operation: {operation!r}",
+                context={
+                    "supported": [
+                        "harmonic_analysis",
+                        "spectral_filtering",
+                        "coherence_analysis",
+                        "spectral_convolution",
+                    ]
+                },
+            )
 
         return result.output_data
 
     def _execute_nodal_optimizer(self, request: ComputationRequest) -> Any:
-        """Execute using nodal optimizer."""
+        """Return a detached EPI-diffusion proposal using the nodal optimizer."""
+        if request.operation == FFT_EPI_DIFFUSION_OPERATION:
+            pressure_model = validate_fft_epi_diffusion_dispatch(
+                request.operation, request.parameters.get("pressure_model")
+            )
+        elif (
+            request.operation == "nodal_evolution"
+            and request.parameters.get("pressure_model") == "epi_diffusion"
+        ):
+            pressure_model = "epi_diffusion"
+        else:
+            raise TNFRValueError(
+                "Nodal optimizer requires operation='epi_diffusion' or "
+                "operation='nodal_evolution' with pressure_model='epi_diffusion'"
+            )
         engine = self._engines[EngineType.NODAL_OPTIMIZER]
 
         dt = request.parameters.get("dt", 0.01)
@@ -478,31 +680,62 @@ class TNFRComputationalHub:
 
         return {
             "nodal_evolution": result,
+            "pressure_model": pressure_model,
+            "detached": True,
             "optimization_stats": engine.get_optimization_stats(),
         }
 
     def _execute_fft_engine(self, request: ComputationRequest) -> Any:
-        """Execute using FFT engine."""
+        """Execute the FFT engine under its explicit EPI-pressure contract."""
+        pressure_model = validate_fft_epi_diffusion_dispatch(
+            request.operation, request.parameters.get("pressure_model")
+        )
         engine = self._engines[EngineType.FFT_ENGINE]
 
         num_steps = request.parameters.get("num_steps", 10)
         dt = request.parameters.get("dt", 0.01)
 
         result = engine.run_fft_simulation(request.graph, num_steps, dt)
-        return result
+        if isinstance(result, dict):
+            return {
+                **result,
+                "operation": FFT_EPI_DIFFUSION_OPERATION,
+                "pressure_model": pressure_model,
+            }
+        return {
+            "result": result,
+            "operation": FFT_EPI_DIFFUSION_OPERATION,
+            "pressure_model": pressure_model,
+        }
 
     def _execute_adelic_dynamics(self, request: ComputationRequest) -> Any:
-        """Execute using Adelic dynamics."""
-        engine = self._engines[EngineType.ADELIC_DYNAMICS]
+        """Dispatch one explicit exploratory adelic operation."""
 
-        # This would integrate with actual Adelic operations
-        return {"adelic_computation": "completed", "engine": "adelic_dynamics"}
+        engine = self._engines[EngineType.ADELIC_DYNAMICS]
+        methods = {
+            "geometric_trace": engine.compute_geometric_trace,
+            "nodal_gradient": engine.compute_nodal_gradient,
+            "resonance_search": engine.run_resonance_search,
+            "adelic_structural_fields": engine.compute_structural_fields,
+            "adelic_step": engine.step,
+        }
+        try:
+            method = methods[request.operation]
+        except KeyError as exc:
+            raise TNFRValueError(
+                f"Unsupported adelic operation: {request.operation!r}",
+                context={"supported": sorted(methods)},
+            ) from exc
+        return method(**dict(request.parameters))
 
     def _validate_request(self, request: ComputationRequest) -> bool:
         """Validate computation request."""
         if not request.request_id:
             return False
-        if request.engine_type not in self._engines:
+        if (
+            request.engine_type != EngineType.AUTO
+            and request.engine_type not in self._engines
+        ):
             return False
         if request.graph is None and request.operation != "system_status":
             return False
@@ -531,6 +764,14 @@ class TNFRComputationalHub:
                 },
             },
             "engines_available": HAS_ALL_ENGINES,
+            "engine_import_availability": {
+                engine.value: available
+                for engine, available in ENGINE_IMPORT_AVAILABILITY.items()
+            },
+            "engine_initialization_errors": {
+                engine.value: message
+                for engine, message in self._engine_initialization_errors.items()
+            },
             "math_backends_available": HAS_MATH_BACKENDS,
         }
 

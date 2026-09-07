@@ -1,80 +1,34 @@
 #!/usr/bin/env python3
 """
-Example 139 — The Unified Grammar as a Formal Language: Capacity, Bottleneck
-Operators, and the U1 Boundary
-==============================================================================
+Example 139 — Flat Grammar Projection as a Formal Language
+==========================================================
 
-This example changes register from the field/dynamics layers to the GRAMMAR.
-The unified grammar U1-U6 (AGENTS.md) defines, over the alphabet of the 13
-canonical operators, a FORMAL LANGUAGE L: the set of operator sequences that
-satisfy all canonical constraints. This example characterizes that language with
-standard formal-language and information theory (Chomsky; Shannon channel
-capacity) -- measuring its size, its capacity, and which operators are
-bottlenecks.
+This example enumerates **flat**, non-nested operator sequences over the 13
+canonical glyphs and classifies them with ``validate_grammar`` from the
+standalone initial condition ``epi_initial=0.0``. For the current fixed
+policies, that flat projection can be represented with finite validator state
+and therefore admits a DFA/regular-language interpretation.
 
-HONEST FRAMING (important)
---------------------------
-Searching the grammar for a HIDDEN canonical constant is a CHARACTERIZED
-DEAD-END: the growth rate of L climbs toward the alphabet size 13, NOT toward any
-tetrad constant (phi, gamma, pi, e). This example does NOT re-open that search.
-It instead measures the language's information content honestly: the capacity
-ascends toward the unconstrained maximum log2(13), which means the coherence
-constraints U1-U6 are SUB-EXTENSIVE (boundary + sparse), not an extensive entropy
-reduction -- a genuine, measurable formal-language result, and the correct
-interpretation of why the growth rate climbs toward the alphabet.
+The enumeration does not execute operators on a graph. In particular, U3's
+graph-dependent phase-compatibility precondition is enforced by the operator
+pipeline and is not decided by this symbol-only validator projection.
 
-Doctrine compliance
--------------------
-The language is defined by the canonical validate_grammar (the U1-U6 validator);
-the alphabet is the 13 canonical operators. Every sequence is classified by the
-canonical validator -- nothing about the language is imposed. The measured
-quantities (size, capacity, operator frequencies, start/end sets) are read off
-the canonical grammar.
+This scope excludes U5 syntax such as ``THOL[body]``. Arbitrarily nested,
+balanced ``THOL[...]`` bodies require a stack or recursive production, so the
+complete nested glyph language is context-free rather than regular. Nothing in
+the flat enumeration proves otherwise.
 
-Three measured results
-----------------------
-M1 THE GRAMMAR IS A REGULAR LANGUAGE WITH A U1 BOUNDARY. The valid sequences of
-   length n number N(n) = 2, 9, 84, 852, 9396, 111060 for n=1..6. Every valid
-   sequence MUST start with a U1a generator {AL, NAV, REMESH} and end with a U1b
-   closure {SHA, NAV, REMESH, OZ} -- pruning to those boundary sets reproduces
-   N(n) exactly, confirming U1 is a necessary boundary condition of L. The
-   validator decides validity from a bounded context (recent-operator window +
-   stabilizer debt), so L has finite memory -- it is a REGULAR language
-   (Myhill-Nerode).
-
-M2 THE CAPACITY ASCENDS TOWARD THE ALPHABET (SUB-EXTENSIVE CONSTRAINTS). The
-   growth rate lambda_n = N(n)/N(n-1) climbs 4.5 -> 9.3 -> 10.1 -> 11.0 -> 11.8,
-   toward the alphabet size 13; the capacity (topological entropy)
-   log2(lambda_n) climbs 2.17 -> 3.56 toward the unconstrained maximum
-   log2(13) = 3.70 bits/operator. So the coherence constraints reduce capacity
-   only sub-extensively: U1 acts on the 2 boundary positions (fraction 2/n -> 0),
-   U2 is a sparse debt, and only U4b restricts locally (and only the rare
-   operators). The grammar is asymptotically near-free in CAPACITY -- this is the
-   honest information-theoretic content of the dead-end.
-
-M3 STRONG FREQUENCY HIERARCHY (BOTTLENECK OPERATORS). Although capacity is
-   near-maximal, the operator DISTRIBUTION in valid sequences is far from
-   uniform: NAV and REMESH dominate (2.3x uniform -- they are both generators and
-   closures), while ZHIR (Mutation) is the extreme bottleneck (0.01x -- 48 vs
-   ~9400 occurrences) because of its U4b preconditions (prior IL + a recent
-   destabilizer). THOL (0.22x) and VAL (0.34x) are also suppressed. The coherence
-   constraints do not cost capacity but impose a strong frequency HIERARCHY on
-   the operators.
-
-Honest scope
-------------
-This is standard formal-language theory (regular languages, Chomsky) and
-information theory (the topological entropy / Shannon capacity of a constrained
-sequence set). It confirms -- and correctly interprets -- the prior dead-end
-(no hidden tetrad constant; the growth rate climbs toward the alphabet because
-the constraints are sub-extensive). It is a CHARACTERIZATION of the canonical
-grammar, not new mathematics, and closes no open problem.
+The program reports exact counts only for lengths 1 through 6, adjacent finite
+ratios, finite per-symbol log-counts, and the length-5 glyph distribution. These
+measurements do not determine the asymptotic growth rate or topological entropy.
+``log2(13)`` is merely the unconstrained alphabet upper bound; convergence to it
+and sub-extensive constraint cost are not inferred from six lengths.
 
 References
 ----------
 - src/tnfr/operators/grammar_validate.py (the canonical U1-U6 validator)
 - src/tnfr/operators/definitions.py (the 13 canonical operators)
-- theory/UNIFIED_GRAMMAR_RULES.md (U1-U6 derivations)
+- theory/UNIFIED_GRAMMAR_RULES.md (U1-U6 and nested U5 syntax)
 - AGENTS.md "Unified Grammar (U1-U6)"
 """
 
@@ -124,14 +78,16 @@ INST = [o for _, o in OPS]
 A = len(OPS)
 GENERATORS = [0, 11, 12]  # AL, NAV, REMESH  (U1a)
 CLOSURES = [6, 11, 12, 3]  # SHA, NAV, REMESH, OZ  (U1b)
+_CACHE = {}
 
 
 def valid_sequences(n):
-    """All valid length-n sequences, enumerated with the U1 boundary prune.
+    """Enumerate valid flat length-n sequences with the U1 boundary prune.
 
     Every valid sequence must start with a generator and end with a closure
     (U1), so we only enumerate those; the canonical validator then decides the
-    full U1-U6 validity. For n<=2 we enumerate the full alphabet.
+    remaining flat constraints. Length one is tested over the full alphabet
+    because the same glyph must satisfy both boundaries.
     """
     out = []
     if n == 1:
@@ -149,39 +105,41 @@ def valid_sequences(n):
 
 
 def experiment_1_regular_language():
-    """M1: the grammar is a regular language with a U1 boundary."""
+    """M1: enumerate the flat regular projection and its U1 boundary."""
     print("=" * 70)
-    print("M1: THE GRAMMAR IS A REGULAR LANGUAGE WITH A U1 BOUNDARY")
+    print("M1: FLAT GRAMMAR PROJECTION AND THE U1 BOUNDARY")
     print("=" * 70)
-    print("L = the set of operator sequences satisfying canonical U1-U6.")
+    print("L_flat contains non-nested operator sequences accepted by the")
+    print("canonical validator with epi_initial=0.0 and current fixed policies.")
     print("Valid sequences must start with a U1a generator {AL, NAV, REMESH}")
-    print("and end with a U1b closure {SHA, NAV, REMESH, OZ}; pruning to those")
-    print("reproduces N(n) exactly (U1 is a necessary boundary condition).")
+    print("and end with a U1b closure {SHA, NAV, REMESH, OZ}; the enumeration")
+    print("applies these necessary boundaries before the canonical validator.")
     print()
-    global _CACHE
-    _CACHE = {}
+    _CACHE.clear()
     print(f"  {'n':>3} {'N(n)':>9}")
     for n in range(1, 7):
         v = valid_sequences(n)
         _CACHE[n] = v
         print(f"  {n:>3} {len(v):>9}")
     print()
-    print("  The validator decides validity from a bounded context (recent-")
-    print("  operator window + stabilizer debt) => finite memory => L is a")
-    print("  REGULAR language (Myhill-Nerode).")
+    print("  The current flat validator state is finite (bounded recency/debt and")
+    print("  boundary flags), so this projection admits a DFA/regular-language")
+    print("  representation. Full U5 syntax with nested THOL[...] is context-free")
+    print("  and is outside this enumeration. Runtime U3 phase compatibility also")
+    print("  needs a graph state and is not a symbol-only DFA condition here.")
 
 
-def experiment_2_capacity():
-    """M2: the capacity ascends toward the alphabet (sub-extensive constraints)."""
+def experiment_2_finite_counts():
+    """M2: report finite log-counts without inferring asymptotic capacity."""
     print()
     print("=" * 70)
-    print("M2: THE CAPACITY ASCENDS TOWARD THE ALPHABET (sub-extensive)")
+    print("M2: FINITE GROWTH RATIOS AND PER-SYMBOL LOG-COUNTS")
     print("=" * 70)
-    print(f"  unconstrained capacity = log2(13) = {math.log2(A):.3f} bits/operator")
+    print(f"  unconstrained upper bound = log2(13) = {math.log2(A):.3f} bits/operator")
     print()
     print(
         f"  {'n':>3} {'N(n)':>9} {'lambda_n':>9} {'log2 lambda':>12} "
-        f"{'cap/symbol':>11}"
+        f"{'log2N/n':>11}"
     )
     prev = None
     for n in range(1, 7):
@@ -197,19 +155,17 @@ def experiment_2_capacity():
             )
         prev = N
     print()
-    print("  -> lambda_n climbs toward the alphabet size 13 and log2(lambda_n)")
-    print("     toward log2(13)=3.70: the coherence constraints are SUB-EXTENSIVE")
-    print("     (U1 boundary ~ 2/n, U2 sparse debt, U4b only on rare operators).")
-    print("     This is the honest information-theoretic content of the prior")
-    print("     dead-end -- the growth rate climbs to the ALPHABET, not to any")
-    print("     tetrad constant (phi/gamma/pi/e).")
+    print("  -> These are exact finite-n values for n <= 6. Their upward trend does")
+    print("     not establish a limit, convergence to 13, sub-extensive constraint")
+    print("     cost, or the topological entropy of L_flat. Resolving an asymptotic")
+    print("     rate requires a proven transition matrix/DFA or longer exact counts.")
 
 
-def experiment_3_frequency_hierarchy():
-    """M3: strong frequency hierarchy -- bottleneck operators."""
+def experiment_3_length5_frequencies():
+    """M3: measure the glyph distribution at the single length n=5."""
     print()
     print("=" * 70)
-    print("M3: STRONG FREQUENCY HIERARCHY (bottleneck operators)")
+    print("M3: LENGTH-5 GLYPH FREQUENCIES")
     print("=" * 70)
     v = _CACHE[5]
     freq = Counter()
@@ -235,39 +191,39 @@ def experiment_3_frequency_hierarchy():
         f"(= U1b closures)"
     )
     print()
-    print("  -> capacity is near-maximal (M2), yet the operator DISTRIBUTION is")
-    print("     far from uniform: NAV/REMESH dominate (generators+closures),")
-    print("     ZHIR is the extreme bottleneck (~0.01x, its U4b preconditions:")
-    print("     prior IL + a recent destabilizer). The coherence constraints")
-    print("     impose a frequency HIERARCHY, not a capacity cost.")
+    least = min(range(A), key=lambda index: freq[index])
+    most = max(range(A), key=lambda index: freq[index])
+    print(
+        f"  -> At n=5, {NAMES[most]} is most frequent and {NAMES[least]} is "
+        "least frequent."
+    )
+    print("     Boundary roles and local preconditions help interpret this finite")
+    print("     distribution, but it is not an asymptotic frequency hierarchy.")
 
 
 def main():
     print()
     print("  ===============================================================")
-    print("  The Unified Grammar as a Formal Language")
-    print("  Capacity, Bottleneck Operators, and the U1 Boundary")
+    print("  Flat Grammar Projection as a Formal Language")
+    print("  Finite Counts, Glyph Frequencies, and the U1 Boundary")
     print("  ===============================================================")
     print()
     experiment_1_regular_language()
-    experiment_2_capacity()
-    experiment_3_frequency_hierarchy()
+    experiment_2_finite_counts()
+    experiment_3_length5_frequencies()
     print()
     print("=" * 70)
-    print("WHAT THIS ESTABLISHES")
+    print("SCOPED FINDINGS")
     print("=" * 70)
-    print("The unified grammar U1-U6 defines a REGULAR formal language L over the")
-    print("13-operator alphabet (M1, finite memory, U1 boundary). Its capacity")
-    print("(topological entropy) ascends toward the unconstrained maximum")
-    print("log2(13)=3.70 bits/operator (M2): the coherence constraints are")
-    print("SUB-EXTENSIVE -- the honest interpretation of why the growth rate")
-    print("climbs toward the alphabet (the prior dead-end: no hidden tetrad")
-    print("constant). Yet the operator DISTRIBUTION is strongly hierarchical (M3):")
-    print("NAV/REMESH dominate, ZHIR is the extreme bottleneck via its U4b")
-    print("preconditions. HONEST SCOPE: standard formal-language theory (regular")
-    print("languages, Chomsky) + information theory (topological entropy / Shannon")
-    print("capacity); a characterization of the canonical grammar, not new")
-    print("mathematics, closes no open problem.")
+    print("1. L_flat is the finite-state, non-nested projection accepted by the")
+    print("   current validator; its U1 start/end boundary is explicit.")
+    print("2. Full U5 expressions with arbitrarily nested THOL[...] belong to the")
+    print("   context-free glyph language and are not recognized by this flat DFA.")
+    print("3. Runtime U3 phase compatibility remains a graph-state precondition;")
+    print("   this enumeration measures only the static symbol validator.")
+    print("4. N(n), adjacent ratios, and glyph frequencies are exact only for the")
+    print("   printed finite lengths. They establish no asymptotic entropy, limit")
+    print("   toward the alphabet size, or persistent operator hierarchy.")
 
 
 if __name__ == "__main__":

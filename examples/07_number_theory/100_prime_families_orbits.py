@@ -61,9 +61,9 @@ Honest scope
   They are not new theorems.
 - The orbit / level-set classification is a TNFR-native ORGANIZING LENS (a
   dynamical-systems view of Z), not a new arithmetic result.
-- Shared invariant with the physics work: ΔNFR = 0 is the nodal-equation
-  EQUILIBRIUM (no structural pressure). This is the SAME fixed-point
-  condition the transport picture calls equilibrium. But the arithmetic
+- Shared scalar predicate with the physics work: ΔNFR = 0 means zero declared
+  structural pressure. This does not identify it with the graph-transport
+  fixed-point set. The arithmetic
   ΔNFR is a per-node function of (Ω, τ, σ), NOT the graph-diffusion
   Laplacian, so the diffusion/random-walk results (Example 99) do not
   transfer literally — only the nodal-equation-level fixed-point condition

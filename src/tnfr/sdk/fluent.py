@@ -35,37 +35,50 @@ from typing import Any
 import networkx as nx
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as COHERENCE_STRONG
 from ..constants.canonical import PI as _PI
+from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
 from ..constants.canonical import (
-    THOL_MIN_COLLECTIVE_COHERENCE as COHERENCE_FRAGMENTATION,
+    FRAGMENTATION_THRESHOLD as COHERENCE_FRAGMENTATION,
 )
 from ..mathematics.unified_numerical import NUMPY_AVAILABLE as _HAS_NUMPY
 from ..mathematics.unified_numerical import compute_circular_mean, np
 from ..metrics.coherence import compute_coherence
 from ..metrics.sense_index import compute_Si
+from ..errors import TNFRValueError
 from ..structural import create_nfr, run_sequence
-from ..validation import validate_sequence
 from ._state import copy_graph_state
 from ._topology import nonnegative_integer, probability, ring_edges, small_world_edges
 
 # ---------------------------------------------------------------------------
 # Canonical coherence marks for adaptive sequence selection.
 #
-# These are the C(t) telemetry marks from AGENTS.md §7, reused from the
-# canonical constants as a single source of truth (heuristic cuts -- not magic
-# numbers, not fitted to data):
-#   - COHERENCE_STRONG        (π/(π+1) ~0.7585, emergent): C(t) at/above -> strong
-#   - COHERENCE_FRAGMENTATION (1/(pi+1)       ~ 0.2415): C(t) below   -> fragmenting
-# Adaptive selection keys on these: below fragmentation the network is
-# breaking up (heal); below the strong/target mark it consolidates
-# (stabilize); at/above the strong mark it can explore (optimize/innovate).
+# These are the selected C(t) telemetry policy cuts from AGENTS.md §7, reused
+# from the canonical constants as a single source of truth (not fitted):
+#   - COHERENCE_STRONG        = π/(π+1)  ≈ 0.7585
+#   - COHERENCE_FRAGMENTATION = 1/(π+1)  ≈ 0.2415
+# Adaptive selection maps the lower band to healing, the intermediate band
+# to stabilization, and the upper band to exploration. The cuts select a
+# workflow; they do not prove a dynamical regime or future improvement.
 # ---------------------------------------------------------------------------
 
 # Minimum compute-engine speed-up worth reporting (display-only; NOT a TNFR
 # coherence threshold).
 _MIN_REPORTABLE_SPEEDUP = 1.1
+
+# High-level workflows may request Mutation while accepting a controlled
+# exploration when the hard observed-rate gate cannot be certified.  The log
+# is graph state so measured snapshots retain the exact decision provenance.
+_MUTATION_WORKFLOW_LOG_KEY = "mutation_workflows"
+_MUTATION_ABSTENTION_REASONS = frozenset(
+    {
+        "missing_history",
+        "insufficient_history",
+        "stale_physical_endpoint",
+        "threshold_not_crossed",
+    }
+)
 
 # Auto-optimization imports (NEW - Nov 28, 2025)
 try:
@@ -90,43 +103,32 @@ except ImportError:
 
 __all__ = ["TNFRNetwork", "NetworkConfig", "NetworkResults"]
 
-# Predefined operator sequences for common patterns (optimized with Grammar 2.0)
-# All sequences must respect TNFR grammar rules:
-# - Start with emission or recursivity
-# - Include reception→coherence segment
-# - Include coupling/dissonance/resonance segment
-# - End with recursivity, silence, or transition
-#
-# Sequences optimized for structural health ≥ 0.7 using Grammar 2.0:
-# - Balanced stabilizers/destabilizers
-# - Harmonic frequency transitions
-# - Proper closure operators
-# - Pattern completeness
+# Named complete words for high-level workflows.
+# Each word passes complete-word grammar validation. Live preconditions, including
+# U3 phase compatibility and ZHIR evidence, remain active; U6 remains telemetry.
+# No fixed C(t), Si, or health score is implied; measure the realized trajectory.
 NAMED_SEQUENCES = {
-    # Basic activation pattern - optimized with expansion for balance
-    # Health: 0.79 (good) - Pattern: activation
-    # Includes controlled expansion for structural balance
+    # Basic activation with a guarded expansion stage.
     "basic_activation": [
         "emission",  # AL: Initiate coherent structure
         "reception",  # EN: Stabilize incoming energy
         "coherence",  # IL: Primary stabilization (required)
-        "expansion",  # VAL: Controlled growth (balance +0.33)
+        "expansion",  # VAL: Controlled growth
         "resonance",  # RA: Amplify coherent structure
         "silence",  # SHA: Sustainable pause state
     ],
-    # Stabilization with expansion - optimized for regenerative cycles
-    # Health: 0.76 (good) - Pattern: regenerative
-    # Enables recursive consolidation with controlled expansion
+    # Stabilization with expansion and recursive closure.
     "stabilization": [
         "emission",  # AL: Initiate structure
         "reception",  # EN: Gather information
         "coherence",  # IL: Stabilize
-        "expansion",  # VAL: Controlled growth (balance +0.50)
+        "expansion",  # VAL: Controlled growth
         "resonance",  # RA: Amplify through network
         "recursivity",  # REMESH: Enable fractal recursion
     ],
-    # Creative mutation - corrected for OZ→IL physics
-    # Pattern: stabilized transformation with controlled mutation
+    # Creative mutation - explicit word with a hard observed-rate gate.
+    # Automatic experiments route through apply_evidence_gated_mutation so a
+    # missing or stale observation becomes a reported exploration abstention.
     "creative_mutation": [
         "emission",  # AL: Initiate exploration
         "coherence",  # IL: Establish stable base
@@ -136,16 +138,14 @@ NAMED_SEQUENCES = {
         "resonance",  # RA: Amplify new patterns
         "silence",  # SHA: Integration pause
     ],
-    # Network synchronization - optimized with transition for regenerative capability
-    # Health: 0.77 (good) - Pattern: regenerative
-    # Enables phase synchronization across multi-node networks with dissonance for balance
+    # Network synchronization with a Transition closure.
     "network_sync": [
         "emission",  # AL: Initiate network activity
         "reception",  # EN: Gather network state
         "coherence",  # IL: Stabilize local structure
         "coupling",  # UM: Establish phase synchronization
         "resonance",  # RA: Propagate through network
-        "transition",  # NAV: Enable regenerative cycles (changed from silence)
+        "transition",  # NAV: Close with a controlled regime shift
     ],
     # Exploration - corrected for physics compliance
     # Pattern: stable exploration with controlled discovery
@@ -157,14 +157,12 @@ NAMED_SEQUENCES = {
         "resonance",  # RA: Amplify discoveries
         "transition",  # NAV: Navigate to new state
     ],
-    # Consolidation - optimized with expansion for structural balance
-    # Health: 0.80 (good) - Pattern: stabilization
-    # Recursive consolidation with controlled expansion
+    # Recursive consolidation with guarded expansion.
     "consolidation": [
         "recursivity",  # REMESH: Start from fractal structure
         "reception",  # EN: Gather current state
         "coherence",  # IL: Consolidate structure
-        "expansion",  # VAL: Controlled growth (balance +0.25)
+        "expansion",  # VAL: Controlled growth
         "resonance",  # RA: Amplify consolidated state
         "coherence",  # IL: Re-stabilize after expansion
         "silence",  # SHA: Sustained stable state
@@ -266,6 +264,83 @@ NAMED_SEQUENCES = {
 }
 
 
+def _mutation_observation_reports(graph: nx.Graph) -> list[dict[str, Any]]:
+    """Read per-node Mutation certificates without altering graph state."""
+
+    # The SDK bridge owns canonical EPI scalarization and error translation;
+    # importing lazily avoids a module cycle with the Simple SDK facade.
+    from .simple import _certify_sdk_mutation_trigger
+
+    reports: list[dict[str, Any]] = []
+    xi = graph.graph.get("ZHIR_THRESHOLD_XI", ZHIR_THRESHOLD_XI_CANONICAL)
+    for node, node_data in graph.nodes(data=True):
+        certificate = _certify_sdk_mutation_trigger(
+            node=node,
+            current_epi=get_attr(node_data, ALIAS_EPI, None),
+            nu_f=get_attr(node_data, ALIAS_VF, None),
+            delta_nfr=get_attr(node_data, ALIAS_DNFR, 0.0),
+            xi=xi,
+            epi_time_history=node_data.get("epi_time_history"),
+            epi_history=node_data.get("epi_history"),
+            legacy_epi_history=node_data.get("_epi_history"),
+        )
+        reason = certificate.reason
+        if reason is None and not certificate.capacity_active:
+            reason = "inactive_structural_frequency"
+        reports.append(
+            {
+                "node": node,
+                "gate_satisfied": (
+                    certificate.threshold_gate_satisfied
+                    and certificate.capacity_active
+                ),
+                "capacity_active": certificate.capacity_active,
+                "evidence_available": certificate.evidence_available,
+                "evidence_valid": certificate.evidence_valid,
+                "observed_depi_dt": certificate.observed_depi_dt,
+                "threshold": certificate.xi,
+                "source": certificate.source,
+                "time_basis": certificate.time_basis,
+                "physical_time_resolved": certificate.physical_time_resolved,
+                "reason": reason,
+            }
+        )
+    return reports
+
+
+def _permitted_mutation_abstention(
+    failure: TNFRValueError,
+    observations: list[dict[str, Any]],
+) -> str | None:
+    """Return a physical abstention reason, leaving malformed data as errors."""
+
+    malformed = [
+        report
+        for report in observations
+        if not report["evidence_valid"]
+        and report["reason"] not in _MUTATION_ABSTENTION_REASONS
+    ]
+    if malformed:
+        return None
+
+    preflight_reason = str(failure.context.get("reason", ""))
+    if preflight_reason == "physical_mutation_evidence_would_be_stale":
+        return preflight_reason
+    if "requires active structural frequency" in preflight_reason:
+        return "inactive_structural_frequency"
+
+    blocked = [report for report in observations if not report["gate_satisfied"]]
+    if not blocked:
+        return None
+    if all(
+        report["reason"] in _MUTATION_ABSTENTION_REASONS
+        or report["reason"] == "inactive_structural_frequency"
+        for report in blocked
+    ):
+        return str(blocked[0]["reason"])
+    return None
+
+
 @dataclass
 class NetworkConfig:
     """Configuration for TNFR network creation.
@@ -310,6 +385,9 @@ class NetworkResults:
     avg_phase : float, optional
         Circular mean phase angle across all nodes, in [0, 2π).
         None when the resultant is indistinguishable from zero at precision.
+    mutation_workflows : list[dict[str, Any]], optional
+        Evidence-gated high-level Mutation decisions. Each record states
+        whether ZHIR ran or the workflow abstained into controlled exploration.
     """
 
     coherence: float
@@ -321,6 +399,7 @@ class NetworkResults:
     unified_fields: dict[str, Any] | None = (
         None  # Nov 28, 2025 - unified field telemetry
     )
+    mutation_workflows: list[dict[str, Any]] | None = None
 
     def summary(self) -> str:
         """Generate human-readable summary of network results.
@@ -353,6 +432,21 @@ class NetworkResults:
         def measured_average(value: float | None, unit: str) -> str:
             return "not measured or undefined" if value is None else f"{value:.3f} {unit} (computed)"
 
+        mutation_summary = ""
+        if self.mutation_workflows:
+            applied = sum(
+                decision.get("status") == "mutation_applied"
+                for decision in self.mutation_workflows
+            )
+            abstained = sum(
+                decision.get("status") == "mutation_abstained"
+                for decision in self.mutation_workflows
+            )
+            mutation_summary = (
+                f"\n  • Mutation Workflows: {applied} applied, "
+                f"{abstained} abstained"
+            )
+
         return f"""
 TNFR Network Results:
   • Coherence C(t): {self.coherence:.3f}
@@ -360,7 +454,7 @@ TNFR Network Results:
   • Avg Sense Index Si: {avg_si:.3f}
   • Avg ΔNFR: {avg_dnfr:.3f}
   • Avg νf: {measured_average(self.avg_vf, 'Hz_str')}
-  • Avg Phase: {measured_average(self.avg_phase, 'rad')}{unified_summary}
+  • Avg Phase: {measured_average(self.avg_phase, 'rad')}{mutation_summary}{unified_summary}
 """.strip()
 
     def to_dict(self) -> dict[str, Any]:
@@ -378,6 +472,7 @@ TNFR Network Results:
             "coherence": self.coherence,
             "sense_indices": self.sense_indices,
             "delta_nfr": self.delta_nfr,
+            "mutation_workflows": deepcopy(self.mutation_workflows or []),
             "summary_stats": {
                 "node_count": len(self.sense_indices),
                 "avg_si": sum(si_values) / len(si_values) if si_values else 0.0,
@@ -617,12 +712,13 @@ class TNFRNetwork:
         sequence : str or list[str]
             Either a predefined sequence name or list of operator names.
             Predefined sequences:
-            - "basic_activation": [emission, reception, coherence, resonance, silence]
-            - "stabilization": [emission, reception, coherence, resonance, recursivity]
-            - "creative_mutation": [emission, dissonance, reception, coherence, mutation, resonance, silence]
-            - "network_sync": [emission, reception, coherence, coupling, resonance, silence]
-            - "exploration": [emission, dissonance, reception, coherence, resonance, transition]
-            - "consolidation": [recursivity, reception, coherence, resonance, silence]
+            - "basic_activation": [emission, reception, coherence, expansion, resonance, silence]
+            - "stabilization": [emission, reception, coherence, expansion, resonance, recursivity]
+            - "creative_mutation": [emission, coherence, dissonance, mutation, coherence, resonance, silence]
+              (explicit ZHIR request; requires usable observed-rate evidence)
+            - "network_sync": [emission, reception, coherence, coupling, resonance, transition]
+            - "exploration": [emission, reception, coherence, dissonance, resonance, transition]
+            - "consolidation": [recursivity, reception, coherence, expansion, resonance, coherence, silence]
         repeat : int, default=1
             Number of times to apply the sequence.
         context : dict, optional
@@ -665,13 +761,12 @@ class TNFRNetwork:
         else:
             operator_list = sequence
 
-        # Lock-step network evolution from the canonical SDK primitive: each
-        # operator is applied to every node before advancing, honouring the
-        # temporal simultaneity of dEPI/dt = vf * dNFR(t). A row-major
-        # schedule (whole sequence per node) fractures coupling symmetry.
-        from .simple import _run_network_sequence
+        # The neutral executor uses operator-major stages. Reception and
+        # Resonance commit atomic two-phase Jacobi proposals; other operators
+        # retain graph-order commits until their merge laws are specified.
+        from ..operators.word_execution import run_network_sequence
 
-        _run_network_sequence(
+        run_network_sequence(
             self._graph,
             operator_list,
             cycles=repeat,
@@ -679,6 +774,130 @@ class TNFRNetwork:
             context=context,
         )
 
+        return self
+
+    def apply_evidence_gated_mutation(
+        self,
+        *,
+        repeat: int = 1,
+        mutation_sequence: str = "creative_mutation",
+        abstention_sequence: str = "exploration",
+        context: dict[str, Any] | None = None,
+    ) -> TNFRNetwork:
+        """Run Mutation only when the current observed-rate gate is executable.
+
+        This high-level experiment protocol never creates EPI history. It
+        preflights the requested ZHIR word against every node. When evidence
+        is missing, stale, below threshold, or attached to inactive capacity,
+        the protocol executes a complete controlled-exploration word instead
+        and records the abstention. Malformed evidence and configuration still
+        raise; direct :meth:`apply_sequence` calls remain strict.
+
+        A timestamped observation can also be valid at the current state yet
+        become stale if the requested word writes EPI before ZHIR. That case
+        abstains rather than reusing the old secant after the hybrid jump.
+
+        Parameters
+        ----------
+        repeat : int, default=1
+            Non-negative number of complete workflow cycles.
+        mutation_sequence : str, default="creative_mutation"
+            Named sequence containing ZHIR.
+        abstention_sequence : str, default="exploration"
+            Complete named sequence without ZHIR, used when the gate cannot be
+            certified.
+        context : dict, optional
+            Sequence-validation context forwarded to the executed word.
+
+        Returns
+        -------
+        TNFRNetwork
+            Self for method chaining. Decisions are available from measured
+            ``NetworkResults.mutation_workflows`` and graph metadata.
+        """
+
+        if self._graph is None or self._graph.number_of_nodes() == 0:
+            raise ValueError("No nodes in graph. Call add_nodes() first.")
+        repeat = nonnegative_integer(repeat, "repeat")
+        for label, sequence_name in (
+            ("mutation_sequence", mutation_sequence),
+            ("abstention_sequence", abstention_sequence),
+        ):
+            if sequence_name not in NAMED_SEQUENCES:
+                available = ", ".join(sorted(NAMED_SEQUENCES))
+                raise ValueError(
+                    f"Unknown {label} '{sequence_name}'. Available: {available}"
+                )
+        if "mutation" not in NAMED_SEQUENCES[mutation_sequence]:
+            raise ValueError("mutation_sequence must contain the Mutation operator")
+        if "mutation" in NAMED_SEQUENCES[abstention_sequence]:
+            raise ValueError("abstention_sequence must not contain Mutation")
+
+        prior_log = self._graph.graph.get(_MUTATION_WORKFLOW_LOG_KEY, [])
+        if not isinstance(prior_log, list):
+            raise ValueError(
+                f"{_MUTATION_WORKFLOW_LOG_KEY} must be a list when present"
+            )
+        if repeat == 0:
+            return self
+
+        observations = _mutation_observation_reports(self._graph)
+        malformed = [
+            report
+            for report in observations
+            if not report["evidence_valid"]
+            and report["reason"] not in _MUTATION_ABSTENTION_REASONS
+        ]
+        if malformed:
+            raise TNFRValueError(
+                "Invalid evidence-gated Mutation workflow input.",
+                context={"invalid_observations": malformed},
+                suggestion=(
+                    "Provide finite replayable samples with increasing physical "
+                    "timestamps, or remove the malformed history."
+                ),
+            )
+        from ..operators.word_execution import preflight_network_mutation_sequence
+
+        try:
+            preflight_network_mutation_sequence(
+                self._graph,
+                NAMED_SEQUENCES[mutation_sequence],
+                cycles=repeat,
+            )
+        except TNFRValueError as failure:
+            reason = _permitted_mutation_abstention(failure, observations)
+            if reason is None:
+                raise
+            self.apply_sequence(
+                abstention_sequence,
+                repeat=repeat,
+                context=context,
+            )
+            decision = {
+                "status": "mutation_abstained",
+                "requested_sequence": mutation_sequence,
+                "executed_sequence": abstention_sequence,
+                "cycles": repeat,
+                "reason": reason,
+                "observations": observations,
+            }
+        else:
+            self.apply_sequence(
+                mutation_sequence,
+                repeat=repeat,
+                context=context,
+            )
+            decision = {
+                "status": "mutation_applied",
+                "requested_sequence": mutation_sequence,
+                "executed_sequence": mutation_sequence,
+                "cycles": repeat,
+                "reason": None,
+                "observations": observations,
+            }
+
+        self._graph.graph[_MUTATION_WORKFLOW_LOG_KEY] = [*prior_log, decision]
         return self
 
     def apply_adaptive_sequence(
@@ -691,13 +910,11 @@ class TNFRNetwork:
         Selects a canonical sequence from the current coherence C(t), keyed
         on the canonical C(t) telemetry marks (AGENTS.md §7):
 
-        - ``C < COHERENCE_FRAGMENTATION`` (~0.2415): the network is breaking
-          up -> ``"healing"``.
-        - ``COHERENCE_FRAGMENTATION <= C < target_coherence``: it consolidates
-          -> ``"stabilization"``.
-        - ``C >= target_coherence`` (default ``COHERENCE_STRONG`` ~0.75):
-          strong enough to explore -> ``"optimization"`` (>5 nodes) or
-          ``"innovation"``.
+        - ``C < COHERENCE_FRAGMENTATION`` (~0.2415): select ``"healing"``.
+        - ``COHERENCE_FRAGMENTATION <= C < target_coherence``: select
+          ``"stabilization"``.
+        - ``C >= target_coherence`` (default ``COHERENCE_STRONG`` ≈0.7585):
+          select ``"optimization"`` (>5 nodes) or ``"innovation"``.
 
         Parameters
         ----------
@@ -726,6 +943,10 @@ class TNFRNetwork:
                 "optimization" if len(self._graph.nodes) > 5 else "innovation"
             )
 
+        if selected_sequence == "innovation":
+            return self.apply_evidence_gated_mutation(
+                mutation_sequence=selected_sequence
+            )
         return self.apply_sequence(selected_sequence)
 
     def apply_multiple_sequences(
@@ -796,7 +1017,20 @@ class TNFRNetwork:
                 f"Unknown chain pattern '{chain_pattern}'. Available: {available}"
             )
 
-        return self.apply_multiple_sequences(chains[chain_pattern])
+        for sequence_name, context, repeat in chains[chain_pattern]:
+            if sequence_name in {"innovation", "deep_transformation"}:
+                self.apply_evidence_gated_mutation(
+                    mutation_sequence=sequence_name,
+                    repeat=repeat,
+                    context=context,
+                )
+            else:
+                self.apply_sequence(
+                    sequence_name,
+                    context=context,
+                    repeat=repeat,
+                )
+        return self
 
     def measure(self) -> NetworkResults:
         """Calculate TNFR metrics and return structured results.
@@ -886,6 +1120,9 @@ class TNFRNetwork:
             avg_vf=avg_vf,
             avg_phase=avg_phase,
             unified_fields=unified_telemetry,  # New field for unified telemetry
+            mutation_workflows=deepcopy(
+                self._graph.graph.get(_MUTATION_WORKFLOW_LOG_KEY, [])
+            ),
         )
 
         return self._results
@@ -1301,7 +1538,7 @@ class TNFRNetwork:
             Analysis results including:
             - field_analysis: Unified field characteristics
             - optimization_recommendations: Specific strategies
-            - predicted_improvements: Expected performance gains
+            - predicted_improvements: Compatibility keys, ``None`` until measured
 
         Raises
         ------
@@ -1314,7 +1551,7 @@ class TNFRNetwork:
 
         >>> analysis = network.analyze_optimization_potential()
         >>> print(f"Recommendations: {analysis['optimization_recommendations']}")
-        >>> print(f"Predicted speedup: {analysis['predicted_improvements']}")
+        >>> print(f"Evidence: {analysis['performance_evidence']}")
         """
         if self._graph is None or self._graph.number_of_nodes() == 0:
             raise ValueError("No network created. Use add_nodes() first.")
@@ -1326,6 +1563,7 @@ class TNFRNetwork:
                 "field_analysis": {},
                 "optimization_recommendations": [],
                 "predicted_improvements": {},
+                "performance_evidence": "not_measured",
             }
 
         try:
@@ -1338,14 +1576,15 @@ class TNFRNetwork:
                 "field_analysis": {},
                 "optimization_recommendations": [],
                 "predicted_improvements": {},
+                "performance_evidence": "not_measured",
             }
 
     def auto_optimize(self, operation_type: str = "network_simulation") -> TNFRNetwork:
         """
-        Automatically apply optimization strategies based on mathematical analysis.
+        Run the advisory field-optimization analysis for the current network.
 
         This method uses the self-optimizing engine to analyze the current
-        network state and automatically apply the best optimization strategy.
+        network state and record an advisory optimization strategy.
 
         Parameters
         ----------
@@ -1367,7 +1606,7 @@ class TNFRNetwork:
         Apply automatic optimization:
 
         >>> network.auto_optimize("network_simulation")
-        >>> results = network.measure()  # Optimized computation
+        >>> results = network.measure()
         """
         if self._graph is None or self._graph.number_of_nodes() == 0:
             raise ValueError("No network created. Use add_nodes() first.")

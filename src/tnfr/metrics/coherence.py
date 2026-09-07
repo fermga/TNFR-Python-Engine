@@ -242,6 +242,59 @@ MetricProvider = Callable[[], MetricValue]
 MetricRecord: TypeAlias = tuple[MetricValue | MetricProvider, str]
 
 
+def _similarity_axis_scale(low: float, high: float) -> tuple[float, float]:
+    """Return a finite coordinate scale and scaled observed span.
+
+    Computing ``high - low`` directly can overflow even when both endpoints are
+    finite binary64 values.  Similarity only needs the dimensionless ratio, so
+    form the span after scaling both endpoints into ``[-1, 1]``.
+    """
+
+    if high <= low:
+        return 1.0, 1.0
+    scale = max(abs(low), abs(high))
+    if scale == 0.0:
+        return 1.0, 1.0
+    return scale, high / scale - low / scale
+
+
+def _bounded_normalized_delta(left: float, right: float, span: float) -> float:
+    """Return ``min(abs(left-right) / span, 1)`` without overflow."""
+
+    span = span if span > 0.0 else 1.0
+    if left == right:
+        return 0.0
+    if math.isinf(span):
+        return 0.0
+    scale = max(abs(left), abs(right), abs(span))
+    if scale == 0.0:
+        return 0.0
+    difference = abs(left / scale - right / scale)
+    scaled_span = span / scale
+    if scaled_span == 0.0 or difference >= scaled_span:
+        return 1.0
+    return difference / scaled_span
+
+
+def _bounded_normalized_delta_matrix(values: FloatArray, span: float) -> FloatMatrix:
+    """Vectorized counterpart of :func:`_bounded_normalized_delta`."""
+
+    if values.size == 0:
+        return cast(FloatMatrix, np.empty((0, 0), dtype=float))
+    span = span if span > 0.0 else 1.0
+    if math.isinf(span):
+        return cast(FloatMatrix, np.zeros((values.size, values.size), dtype=float))
+    scale = max(float(np.max(np.abs(values))), abs(span))
+    if scale == 0.0:
+        return cast(FloatMatrix, np.zeros((values.size, values.size), dtype=float))
+    scaled = values / scale
+    difference = np.abs(scaled[:, None] - scaled[None, :])
+    scaled_span = span / scale
+    if scaled_span == 0.0:
+        return cast(FloatMatrix, np.where(difference == 0.0, 0.0, 1.0))
+    return cast(FloatMatrix, np.minimum(difference / scaled_span, 1.0))
+
+
 def _compute_wij_phase_epi_vf_si_vectorized(
     epi: FloatArray,
     vf: FloatArray,
@@ -263,9 +316,9 @@ def _compute_wij_phase_epi_vf_si_vectorized(
     s_phase = 0.5 * (
         1.0 + cos_th[:, None] * cos_th[None, :] + sin_th[:, None] * sin_th[None, :]
     )
-    s_epi = 1.0 - np.abs(epi[:, None] - epi[None, :]) / epi_range
-    s_vf = 1.0 - np.abs(vf[:, None] - vf[None, :]) / vf_range
-    s_si = 1.0 - np.abs(si[:, None] - si[None, :])
+    s_epi = 1.0 - _bounded_normalized_delta_matrix(epi, epi_range)
+    s_vf = 1.0 - _bounded_normalized_delta_matrix(vf, vf_range)
+    s_si = 1.0 - _bounded_normalized_delta_matrix(si, 1.0)
     return s_phase, s_epi, s_vf, s_si
 
 
@@ -383,9 +436,10 @@ def compute_wij_phase_epi_vf_si(
 
     **Performance**:
 
-    - Vectorized mode (with `np`) is ~10-100x faster for large networks
-    - Trigonometric caching avoids redundant cos/sin evaluations
-    - Use `get_trig_cache(G)` to populate cache before repeated calls
+    - Vectorized mode batches pairwise array operations; relative runtime is
+      workload- and hardware-dependent and is not inferred by this function.
+    - Trigonometric caching avoids repeated cos/sin evaluations.
+    - Use `get_trig_cache(G)` to populate cache before repeated calls.
 
     **Normalization**:
 
@@ -488,9 +542,9 @@ def compute_wij_phase_epi_vf_si(
     cos_j = cos_vals[j]
     sin_j = sin_vals[j]
     s_phase = 0.5 * (1.0 + (cos_i * cos_j + sin_i * sin_j))
-    s_epi = 1.0 - abs(epi_vals[i] - epi_vals[j]) / epi_range
-    s_vf = 1.0 - abs(vf_vals[i] - vf_vals[j]) / vf_range
-    s_si = 1.0 - abs(si_vals[i] - si_vals[j])
+    s_epi = 1.0 - _bounded_normalized_delta(epi_vals[i], epi_vals[j], epi_range)
+    s_vf = 1.0 - _bounded_normalized_delta(vf_vals[i], vf_vals[j], vf_range)
+    s_si = 1.0 - _bounded_normalized_delta(si_vals[i], si_vals[j], 1.0)
     return s_phase, s_epi, s_vf, s_si
 
 
@@ -569,8 +623,16 @@ def _wij_vectorized(
     vf_max: float,
     self_diag: bool,
 ) -> FloatMatrix:
-    epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
-    vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
+    epi_scale, epi_range = _similarity_axis_scale(epi_min, epi_max)
+    vf_scale, vf_range = _similarity_axis_scale(vf_min, vf_max)
+    scaled_inputs = SimilarityInputs(
+        th_vals=inputs.th_vals,
+        epi_vals=np.asarray(inputs.epi_vals, dtype=float) / epi_scale,
+        vf_vals=np.asarray(inputs.vf_vals, dtype=float) / vf_scale,
+        si_vals=inputs.si_vals,
+        cos_vals=inputs.cos_vals,
+        sin_vals=inputs.sin_vals,
+    )
     (
         s_phase,
         s_epi,
@@ -583,7 +645,7 @@ def _wij_vectorized(
     ) = _wij_components_weights(
         G,
         nodes,
-        inputs,
+        scaled_inputs,
         wnorm,
         epi_range=epi_range,
         vf_range=vf_range,
@@ -619,9 +681,9 @@ def _compute_wij_value_raw(
     cos_j = cos_vals[j]
     sin_j = sin_vals[j]
     s_phase = 0.5 * (1.0 + (cos_i * cos_j + sin_i * sin_j))
-    s_epi = 1.0 - abs(epi_vals[i] - epi_vals[j]) / epi_range
-    s_vf = 1.0 - abs(vf_vals[i] - vf_vals[j]) / vf_range
-    s_si = 1.0 - abs(si_vals[i] - si_vals[j])
+    s_epi = 1.0 - _bounded_normalized_delta(epi_vals[i], epi_vals[j], epi_range)
+    s_vf = 1.0 - _bounded_normalized_delta(vf_vals[i], vf_vals[j], vf_range)
+    s_si = 1.0 - _bounded_normalized_delta(si_vals[i], si_vals[j], 1.0)
     wij = phase_w * s_phase + epi_w * s_epi + vf_w * s_vf + si_w * s_si
     return clamp01(wij)
 
@@ -702,8 +764,10 @@ def _wij_loops(
         inputs.sin_vals = sin_vals
     assert cos_vals is not None
     assert sin_vals is not None
-    epi_vals = list(inputs.epi_vals)
-    vf_vals = list(inputs.vf_vals)
+    epi_scale, epi_range = _similarity_axis_scale(epi_min, epi_max)
+    vf_scale, vf_range = _similarity_axis_scale(vf_min, vf_max)
+    epi_vals = [value / epi_scale for value in inputs.epi_vals]
+    vf_vals = [value / vf_scale for value in inputs.vf_vals]
     si_vals = list(inputs.si_vals)
     cos_vals_list = list(cos_vals)
     sin_vals_list = list(sin_vals)
@@ -713,8 +777,6 @@ def _wij_loops(
     inputs.cos_vals = cos_vals_list
     inputs.sin_vals = sin_vals_list
     wij = [[1.0 if (self_diag and i == j) else 0.0 for j in range(n)] for i in range(n)]
-    epi_range = epi_max - epi_min if epi_max > epi_min else 1.0
-    vf_range = vf_max - vf_min if vf_max > vf_min else 1.0
     weights = (
         float(wnorm["phase"]),
         float(wnorm["epi"]),

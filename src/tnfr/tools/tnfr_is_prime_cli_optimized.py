@@ -7,7 +7,7 @@ Usage after install:
   tnfr-is-prime --cached 17 97 197      # Force cached mode
 
 A number is prime iff ΔNFR(n) == 0, using the TNFR arithmetic pressure equation.
-This optimized version uses LRU caching for significant performance improvements.
+This version uses bounded LRU caches to reuse results for repeated inputs; no universal speedup is assumed.
 """
 
 from __future__ import annotations
@@ -17,10 +17,10 @@ import time
 from functools import lru_cache
 
 
-# Cached arithmetic functions for optimal performance
+# Cached arithmetic helpers for repeated inputs
 @lru_cache(maxsize=10000)
 def _divisor_count_cached(n: int) -> int:
-    """Optimized divisor count with LRU caching."""
+    """Return a divisor count with bounded LRU reuse."""
     cnt = 0
     i = 1
     while i * i <= n:
@@ -34,7 +34,7 @@ def _divisor_count_cached(n: int) -> int:
 
 @lru_cache(maxsize=10000)
 def _divisor_sum_cached(n: int) -> int:
-    """Optimized divisor sum with LRU caching."""
+    """Return a divisor sum with bounded LRU reuse."""
     total = 0
     i = 1
     while i * i <= n:
@@ -49,7 +49,7 @@ def _divisor_sum_cached(n: int) -> int:
 
 @lru_cache(maxsize=10000)
 def _prime_factor_count_cached(n: int) -> int:
-    """Optimized prime factor count (ω function) with LRU caching."""
+    """Return the prime factor count (ω function) with bounded LRU reuse."""
     count = 0
     d = 2
     temp_n = n
@@ -111,7 +111,7 @@ def tnfr_delta_nfr_cached(
     n: int, zeta: float = 1.0, eta: float = 0.8, theta: float = 0.6
 ) -> float:
     """
-    Cached TNFR ΔNFR computation for optimal performance.
+    Compute TNFR ΔNFR with bounded LRU reuse for repeated arguments.
 
     ΔNFR(n) = ζ·(ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))
     """

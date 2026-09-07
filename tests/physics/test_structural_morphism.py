@@ -8,6 +8,8 @@ folding endomorphism does not.
 
 from __future__ import annotations
 
+from dataclasses import asdict, replace
+
 import networkx as nx
 import numpy as np
 import pytest
@@ -21,6 +23,7 @@ from tnfr.mathematics.padic_tower import (
 from tnfr.physics import structural_morphism as sm
 from tnfr.physics.directed_diffusion import directed_rw_laplacian
 from tnfr.physics.structural_morphism import (
+    StructuralMorphismCertificate,
     StructuralMorphismKind,
     audit_structural_morphisms,
     certify_morphism,
@@ -107,6 +110,43 @@ def test_automorphism_vs_relabeling_split_on_generator():
         StructuralMorphismKind.RELABELING
 
 
+def test_noncommuting_permutation_is_not_an_automorphism():
+    lap = _lap(nx.path_graph(3))
+    swaps_centre_and_endpoint = permutation_matrix(
+        {0: 1, 1: 0, 2: 2}, list(range(3))
+    )
+
+    certificate = certify_morphism(swaps_centre_and_endpoint, lap, lap)
+
+    assert certificate.kind is StructuralMorphismKind.RELABELING
+    assert not certificate.intertwines_within_tolerance
+
+
+def test_full_rank_intertwiner_classification_is_scale_invariant():
+    lap = _lap(nx.path_graph(2))
+
+    certificates = [
+        certify_morphism(scale * np.eye(2), lap, lap)
+        for scale in (1e-20, 1e20)
+    ]
+
+    assert all(
+        certificate.kind is StructuralMorphismKind.INTERTWINER
+        for certificate in certificates
+    )
+    assert all(certificate.rank == 2 for certificate in certificates)
+    assert all(certificate.is_bijection for certificate in certificates)
+    assert all(
+        certificate.intertwines_within_tolerance
+        for certificate in certificates
+    )
+    assert all(
+        classify_morphism(scale * np.eye(2), lap, lap)
+        is StructuralMorphismKind.INTERTWINER
+        for scale in (1e-20, 1e20)
+    )
+
+
 def test_padic_scale_maps_are_coarse_graining_and_lift():
     base = frozenset({1, 2})
     l_hi = _frac(padic_laplacian(3, 2, compatible_connection_set(3, 2, base)))
@@ -163,6 +203,34 @@ def test_predicates():
     assert not is_idempotent(np.array([[0.0, 1.0], [1.0, 0.0]]))
 
 
+@pytest.mark.parametrize(
+    "boolean", [True, False, np.bool_(True), np.bool_(False)]
+)
+def test_public_morphism_numeric_controls_reject_booleans(boolean):
+    identity = np.eye(2)
+    state = np.array([1.0, -1.0])
+    calls = (
+        lambda: is_permutation_matrix(identity, tol=boolean),
+        lambda: is_partition_average(identity[:1], tol=boolean),
+        lambda: is_idempotent(identity, tol=boolean),
+        lambda: finite_time_intertwining_bound(
+            identity, identity, identity, state, structural_time=boolean
+        ),
+        lambda: nodal_flow_preservation_residual(
+            identity, identity, identity, s_max=boolean
+        ),
+        lambda: nodal_flow_preservation_residual(
+            identity, identity, identity, samples=boolean
+        ),
+        lambda: classify_morphism(identity, identity, identity, tol=boolean),
+        lambda: certify_morphism(identity, identity, identity, tol=boolean),
+    )
+
+    for call in calls:
+        with pytest.raises(ValueError, match="not boolean"):
+            call()
+
+
 # --------------------------------------------------------------------------- #
 # Certificate + audit
 # --------------------------------------------------------------------------- #
@@ -173,6 +241,41 @@ def test_certificate_marks_morphism_not_operator():
     assert cert.is_operator is False           # not one of the 13 operators
     assert cert.emerges_from_nodal_equation    # but it is a nodal-flow transport
     assert cert.is_intertwiner
+
+
+def test_morphism_certificate_preserves_stored_dataclass_api():
+    certificate = StructuralMorphismCertificate(
+        kind=StructuralMorphismKind.AUTOMORPHISM,
+        domain_dim=2,
+        codomain_dim=2,
+        rank=2,
+        is_injective=True,
+        is_surjective=True,
+        is_bijection=True,
+        intertwining_residual=0.0,
+        is_intertwiner=True,
+        nodal_flow_residual=0.0,
+        emerges_from_nodal_equation=True,
+        is_operator=False,
+        tolerance=1e-9,
+        claim_status="measured",
+    )
+
+    payload = asdict(certificate)
+    assert payload["is_intertwiner"] is True
+    assert payload["emerges_from_nodal_equation"] is True
+    assert "intertwines_within_tolerance" not in payload
+    assert "nodal_flow_transport_within_tolerance" not in payload
+    assert certificate.intertwines_within_tolerance is True
+    assert certificate.nodal_flow_transport_within_tolerance is True
+
+    replaced = replace(
+        certificate,
+        is_intertwiner=False,
+        emerges_from_nodal_equation=False,
+    )
+    assert replaced.intertwines_within_tolerance is False
+    assert replaced.nodal_flow_transport_within_tolerance is False
 
 
 def test_constant_probe_cannot_certify_nonintertwining_map():
@@ -186,6 +289,37 @@ def test_constant_probe_cannot_certify_nonintertwining_map():
     assert cert.intertwining_residual > 1e-3
     assert not cert.is_intertwiner
     assert not cert.emerges_from_nodal_equation
+
+
+def test_one_sampled_trajectory_can_hide_a_nonintertwining_direction():
+    probe = np.array([1.0, -2.0, 3.0])
+    orthogonal_projector = np.eye(3) - np.outer(probe, probe) / (probe @ probe)
+
+    sampled = nodal_flow_preservation_residual(
+        np.eye(3), np.zeros((3, 3)), orthogonal_projector, probe
+    )
+    global_defect = intertwining_residual(
+        np.eye(3), np.zeros((3, 3)), orthogonal_projector
+    )
+
+    assert sampled < 1e-12
+    assert global_defect == pytest.approx(1.0)
+
+
+@pytest.mark.parametrize(
+    "kwargs,message",
+    [
+        ({"s_max": 0.0}, "s_max"),
+        ({"s_max": float("inf")}, "s_max"),
+        ({"samples": 1}, "samples"),
+        ({"samples": 2.5}, "samples"),
+    ],
+)
+def test_sampled_flow_residual_rejects_vacuous_sampling(kwargs, message):
+    with pytest.raises(ValueError, match=message):
+        nodal_flow_preservation_residual(
+            np.eye(2), np.eye(2), np.eye(2), **kwargs
+        )
 
 
 @pytest.mark.parametrize(

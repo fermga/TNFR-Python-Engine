@@ -63,6 +63,7 @@ class NodeProtocol(Protocol):
     theta: Phase
     Si: SenseIndex
     epi_kind: str
+    source_glyph: str
     dnfr: DeltaNFR
     d2EPI: SecondDerivativeEPI
     graph: MutableMapping[str, Any]
@@ -80,6 +81,7 @@ class NodeNX(NodeProtocol):
     theta: Phase
     Si: SenseIndex
     epi_kind: str
+    source_glyph: str
     dnfr: DeltaNFR
     d2EPI: SecondDerivativeEPI
     G: TNFRGraph

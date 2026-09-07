@@ -1,86 +1,35 @@
 #!/usr/bin/env python3
 """
-Example 103 — The Emergent Substrate Meets the Riemann Program (Characterization)
-================================================================================
+Example 103 — Auxiliary Substrate Read-outs on the Prime-Ladder Graph
+=====================================================================
 
-Revisits the (paused) TNFR-Riemann program through the new physics built
-this session: the emergent symplectic substrate (Example 98) and the
-structural-transport view (Example 99), rather than the static graph
-geometry of G_P14. It does NOT reopen or advance G4 = RH. It precisely
-CHARACTERIZES how the emergent geometry relates to the frozen program —
-crediting the structural intuition that one should work with the geometry
-that emerges from the nodal dynamics, not the imposed graph, while keeping
-the honest scope intact.
+This finite characterization compares two snapshots of the prime-ladder graph
+with the auxiliary symplectic-substrate read-out.  The substrate is an ambient
+harmonic model initialized from extracted graph fields; it is not derived from
+the nodal dynamics, and this example does not evolve its harmonic flow.
 
-Background (why the program froze)
-----------------------------------
-The TNFR-Riemann program is paused at the boundary of Conjecture T-HP:
-∃ an admissible operator F built only from the tetrad (Φ_s, |∇φ|, K_φ,
-ξ_C) + canonical constants + grammar U1–U6 such that F·H_P14·F* has
-spectrum {γ_n} (the Riemann zeros). P28/P30 closed the SMOOTH half of F;
-the residual is the OSCILLATORY half S(T) = (1/π)·arg ζ(½+iT), which is
-RH-equivalent. The branch B1 (closeable inside the 13-operator catalog)
-was structurally CLOSED on G_P14 by the Canonical Catalog Equivariance
-Theorem: every catalog operator on G_P14 commutes with the S_n
-prime-relabelling, so it cannot encode Riemann level statistics. ALL of
-that is about operators on the STATIC graph geometry.
+The default P14 fixture stores ``nu_f = k*log(p)`` while phase and pressure are
+zero.  The extracted phase/pressure coordinates consequently vanish at that
+snapshot.  The second snapshot deliberately encodes the same frequency data as
+``phase = (tau*nu_f) mod 2*pi``.  This is a constructed embedding, not a consequence of
+the nodal equation, whose canonical evolution law concerns EPI rather than
+phase.  A correlation after this embedding therefore checks that the extractor
+retains deliberately supplied data; it is not evidence that the engine creates
+the embedding.
 
-The structural fact this example measures
------------------------------------------
-The prime-ladder Hamiltonian P14 places its entire prime content in the
-structural frequency ν_f = k·log p (each node (p,k); phase = 0, ΔNFR = 0
-by construction). The emergent symplectic substrate, however, is built
-from the tetrad coordinates (K_φ, J_φ, Φ_s, J_ΔNFR), which are computed
-from the PHASE θ and the pressure ΔNFR — never from ν_f. Three measured
-consequences (all verified below, n_primes=10, K=4 → 40 nodes):
-
-1. STATIC blindness: on the default P14 state (θ = 0, ΔNFR = 0) the whole
-   substrate is EXACTLY zero (|Ψ| = |Φ_s| = |∇φ| = 0 to machine
-   precision). The substrate is BLIND to the primes — this is the
-   structural reason the static-graph analysis closed B1: the tetrad does
-   not read ν_f.
-
-2. DYNAMICS carries the primes: the nodal equation advances phase at the
-   structural frequency (θ̇ ∝ ν_f), so the dynamics-emergent state
-   θ = ν_f·τ = (k·log p)·τ makes the tetrad prime-specific:
-   r(mean|∇φ| per prime, log p) ≈ 0.99. The geometry that emerges from
-   the DYNAMICS — unlike the static graph — does see ν_f. This is the
-   structural intuition, made precise: the right object is the emergent
-   geometry.
-
-3. But it RE-EXPRESSES, it does not ADD: the substrate fields are a
-   DETERMINISTIC function of the state θ = (k·log p)·τ, so the substrate
-   spectrum is a function of {k·log p}. It cannot contain more information
-   than the prime-ladder spectrum already has. Its level statistics stay
-   in the integrable / Poisson-like class (far from the Riemann/GUE
-   class), exactly like the bare {k·log p}. The substrate does NOT, by
-   itself, supply the rescaling to {γ_n}.
-
-Honest scope
-------------
-- This does NOT close, reopen, or advance G4 = RH. The program remains
-  PAUSED at T-HP. The oscillatory half S(T) (= ker of the REMESH-∞
-  projection, N15; RH-equivalent) remains the genuine open residual.
-- The POSITIVE content is a consistency/characterization result: the
-  emergent substrate is non-trivially populated by the prime-ladder
-  content UNDER THE DYNAMICS (a prerequisite for any tetrad-built F of
-  T-HP), and the static blindness pins down precisely why graph-geometry
-  arguments (CCET) closed B1. This strengthens, and is consistent with,
-  the existing P28/P30 smooth-half closure and the N15 smooth/oscillatory
-  split — it does not supply a new F.
-- "The substrate carries log p" is, at bottom, the statement that
-  ν_f = k·log p is prime-specific (true by construction) and that the
-  dynamics propagates it into θ. It is a faithful structural restatement,
-  not a new theorem, and emphatically not a route to RH.
+The final spacing calculation is an illustrative small-sample diagnostic of
+the bare frequencies and per-node auxiliary actions.  Because the latter are a
+deterministic function of the constructed snapshot, they add no information.
+The calculation neither supplies the conjectured T-HP map nor advances the
+Riemann hypothesis.  Branch and REMESH-infinity claims remain in their dedicated
+research notes and are not established here.
 
 References
 ----------
-- AGENTS.md §"TNFR-Riemann Program" (T-HP, branches B1/B2/B3, frozen)
-- AGENTS.md §"Emergent Symplectic Substrate" (the new geometry)
-- examples/08_emergent_geometry/98_emergent_symplectic_substrate.py (substrate construction)
-- src/tnfr/riemann/prime_ladder_hamiltonian.py (P14: ν_f = k·log p)
-- src/tnfr/physics/symplectic_substrate.py (extract_phase_space_point)
-- theory/TNFR_RIEMANN_RESEARCH_NOTES.md §13septies (T-HP), §13vicies-novies (CCET)
+- examples/08_emergent_geometry/98_emergent_symplectic_substrate.py
+- src/tnfr/riemann/prime_ladder_hamiltonian.py
+- src/tnfr/physics/symplectic_substrate.py
+- theory/TNFR_RIEMANN_RESEARCH_NOTES.md
 """
 
 import math
@@ -100,7 +49,7 @@ K = 4
 
 
 def _ks_vs_gue(spectrum):
-    """Indicative KS distance of unit-mean nn-spacings to the GUE surmise."""
+    """Indicative KS distance of unit-mean spacings to the GUE surmise."""
     s = np.sort(np.asarray(spectrum, dtype=float))
     s = s[np.isfinite(s)]
     sp = np.diff(s)
@@ -110,20 +59,27 @@ def _ks_vs_gue(spectrum):
     sp = sp / sp.mean()
     xs = np.sort(sp)
     emp = np.arange(1, len(xs) + 1) / len(xs)
-    gue = 1.0 - np.exp(-(4.0 / np.pi) * xs**2)
+    # Integral of (32/pi^2) s^2 exp(-4 s^2/pi), the GUE Wigner surmise.
+    gue = np.array(
+        [
+            math.erf(2.0 * x / math.sqrt(math.pi))
+            - (4.0 * x / math.pi) * math.exp(-4.0 * x * x / math.pi)
+            for x in xs
+        ]
+    )
     return float(np.max(np.abs(emp - gue)))
 
 
 # ============================================================================
-# EXPERIMENT 1: Static blindness — the substrate does not read ν_f
+# EXPERIMENT 1: default-snapshot auxiliary-coordinate check
 # ============================================================================
 def experiment_1_static_blindness(G):
-    """Default P14 (θ=0, ΔNFR=0): the whole substrate is exactly zero."""
+    """Read the auxiliary coordinates of the default P14 snapshot."""
     print("=" * 72)
-    print("EXPERIMENT 1: Static Blindness — the Substrate Does Not Read ν_f")
+    print("EXPERIMENT 1: Default-Snapshot Auxiliary Coordinates")
     print("=" * 72)
     print()
-    print("P14 puts all prime content in ν_f = k·log p, with phase = 0 and")
+    print("P14 stores the displayed frequencies ν_f = k·log p, with phase = 0 and")
     print("ΔNFR = 0. The substrate reads the tetrad (K_φ, J_φ, Φ_s, J_ΔNFR)")
     print("from θ and ΔNFR — never from ν_f. So on the static state:")
     print()
@@ -135,31 +91,30 @@ def experiment_1_static_blindness(G):
     print(f"  |∇φ|:   max = {np.abs(pt.grad_phi).max():.2e}")
     blind = psi.max() < 1e-9 and np.abs(pt.phi_s).max() < 1e-9
     print()
-    print(f"  -> substrate is EXACTLY blind to the primes: {blind}")
-    print("VERDICT: this is the structural reason the static-graph analysis")
-    print("(CCET, Euler-Orthogonality) closed B1 — the tetrad/substrate does")
-    print("not see ν_f, where P14's prime content lives.")
+    print(f"  -> displayed auxiliary coordinates vanish: {blind}")
+    print("VERDICT: at this particular snapshot the extractor has no direct")
+    print("ν_f coordinate. This finite check does not establish why any")
+    print("separate catalog or equivariance result succeeds or fails.")
     print()
 
 
 # ============================================================================
-# EXPERIMENT 2: The dynamics-emergent substrate carries the primes
+# EXPERIMENT 2: deliberately encode the frequencies in phase
 # ============================================================================
 def experiment_2_dynamics_carries_primes(G):
-    """θ = ν_f·τ makes the tetrad prime-specific: r(|∇φ|, log p) ≈ 0.99."""
+    """Measure a deliberately constructed phase encoding ``theta=tau*nu_f``."""
     print("=" * 72)
-    print("EXPERIMENT 2: The Dynamics-Emergent Substrate Carries the Primes")
+    print("EXPERIMENT 2: Constructed Phase Encoding of the Frequencies")
     print("=" * 72)
     print()
-    print("The nodal equation advances phase at the structural frequency")
-    print("(θ̇ ∝ ν_f). The dynamics-emergent state θ = ν_f·τ = (k·log p)·τ")
-    print("makes the tetrad prime-specific:")
+    print("Set θ = (ν_f·τ) mod 2π by hand, then extract the auxiliary")
+    print("coordinates. The nodal equation does not imply this phase law.")
     print()
 
     nodes = list(G.nodes())
     tau = 1.0
     for n in nodes:
-        G.nodes[n]["phase"] = float(G.nodes[n]["nu_f"] * tau)
+        G.nodes[n]["phase"] = float((G.nodes[n]["nu_f"] * tau) % (2 * math.pi))
     pt = extract_phase_space_point(G)
     idx = {n: i for i, n in enumerate(pt.nodes)}
 
@@ -175,9 +130,9 @@ def experiment_2_dynamics_carries_primes(G):
     print(f"  mean |∇φ| / prime: {[round(x, 3) for x in mean_gp]}")
     print(f"  r(mean |∇φ|, log p) = {r:.3f}")
     print()
-    print("VERDICT: the geometry that emerges from the DYNAMICS — unlike the")
-    print("static graph — DOES see ν_f. The emergent substrate is the right")
-    print("object, exactly as the structural intuition says.")
+    print("VERDICT: the read-out retains information deliberately encoded in")
+    print("phase. This is a consistency check of the extractor, not emergence")
+    print("of prime information from a TNFR trajectory.")
     print()
     return pt
 
@@ -186,15 +141,15 @@ def experiment_2_dynamics_carries_primes(G):
 # EXPERIMENT 3: It re-expresses {k·log p}; it does not add Riemann structure
 # ============================================================================
 def experiment_3_reexpresses_not_adds(G, pt):
-    """Substrate spectrum is a function of {k·log p}: integrable, not Riemann."""
+    """Compare spacings of bare frequencies and derived auxiliary actions."""
     print("=" * 72)
     print("EXPERIMENT 3: It Re-Expresses {k·log p}, It Does Not Add Riemann")
     print("=" * 72)
     print()
-    print("The substrate fields are a DETERMINISTIC function of the state")
-    print("θ = (k·log p)·τ, so the substrate spectrum is a function of the")
-    print("prime-ladder spectrum {k·log p} — it cannot carry more")
-    print("information. Its level statistics stay in the integrable class:")
+    print("The auxiliary fields are a deterministic function of the full graph")
+    print("snapshot after wrapped θ = (k·log p)·τ is imposed. They add no information")
+    print("beyond that input snapshot. The following spacing statistic is only")
+    print("illustrative; it does not classify either sequence universally:")
     print()
 
     nodes = list(G.nodes())
@@ -207,13 +162,11 @@ def experiment_3_reexpresses_not_adds(G, pt):
 
     print(f"  KS-vs-GUE of bare prime-ladder {{k·log p}}:   D ≈ {d_bare:.3f}")
     print(f"  KS-vs-GUE of substrate action ½|ζ|²:        D ≈ {d_sub:.3f}")
-    print("  (reference: Riemann zeros ≈ 0.08, GUE ≈ 0, Poisson ≈ 0.30)")
-    print("  [KS values are INDICATIVE — crude unfolding, small N]")
+    print("  [KS values are INDICATIVE — crude unfolding and a small sample]")
     print()
-    print("VERDICT: both stay far from the Riemann/GUE class — the substrate")
-    print("RE-EXPRESSES the integrable prime-ladder content; it does NOT")
-    print("produce the Riemann statistics. The rescaling {k·log p} → {γ_n}")
-    print("(the operator F of T-HP) is NOT supplied by the substrate alone.")
+    print("VERDICT: the auxiliary action RE-EXPRESSES the constructed")
+    print("prime-ladder snapshot. This finite statistic does not produce or")
+    print("identify the Riemann-zero spectrum, and it supplies no T-HP map.")
     print()
 
 
@@ -226,29 +179,25 @@ def experiment_4_synthesis():
     print("EXPERIMENT 4: Synthesis — the New Physics, Honestly Placed")
     print("=" * 72)
     print()
-    print("  Static graph geometry (G_P14):  BLIND to the primes (Exp 1).")
-    print("    -> structural origin of the B1 closure (CCET on G_P14).")
-    print("  Dynamics-emergent geometry:     CARRIES the primes (Exp 2).")
-    print("    -> the right object; the structural intuition, made precise.")
-    print("  But the substrate RE-EXPRESSES {k·log p} (Exp 3):")
-    print("    -> it is a deterministic function of the prime-ladder")
-    print("       spectrum; it adds no Riemann structure by itself.")
+    print("  Default P14 snapshot: extracted phase/pressure tuple is zero.")
+    print("    -> no causal explanation for separate B1 results is inferred.")
+    print("  Constructed phase encoding:     carries log(p) by design (Exp 2).")
+    print("    -> an extractor consistency check, not an engine trajectory.")
+    print("  Auxiliary action read-out (Exp 3):")
+    print("    -> deterministic in the constructed full graph snapshot.")
     print()
-    print("  So the emergent substrate is a NECESSARY arena for T-HP (it is")
-    print("  non-trivially populated by the prime data under the dynamics),")
-    print("  but it does NOT supply the admissible rescaling F. The residual")
-    print("  is precisely the OSCILLATORY half S(T) = (1/π)·arg ζ(½+iT) —")
-    print("  the RH-equivalent kernel already isolated by P28/P30 and N15.")
+    print("  The example neither proves the auxiliary substrate necessary for")
+    print("  T-HP nor supplies the admissible rescaling F. Any remaining")
+    print("  oscillatory residual is part of the separate, open program.")
     print()
     print("  STATUS: the program remains PAUSED at T-HP. G4 = RH is OPEN.")
-    print("  This is a characterization that STRENGTHENS the honest picture,")
-    print("  not a closure or a reopening.")
+    print("  This is a finite read-out characterization, not a closure.")
     print()
 
 
 def main():
     print()
-    print("  TNFR Example 103: The Emergent Substrate Meets Riemann")
+    print("  TNFR Example 103: Auxiliary Read-outs on the Prime Ladder")
     print("  Characterization, not closure — G4 = RH remains open")
     print("  =====================================================")
     print()
@@ -261,18 +210,12 @@ def main():
     print("WHAT THIS ESTABLISHES")
     print("=" * 72)
     print()
-    print("Working with the geometry that emerges from the nodal dynamics")
-    print("(the symplectic substrate) rather than the static graph G_P14 is")
-    print("the correct stance: the static graph is exactly blind to the")
-    print("primes (which is why graph-operator arguments closed B1), while")
-    print("the dynamics-emergent substrate carries the prime-ladder content")
-    print("(r ≈ 0.99 with log p). But the substrate is a deterministic")
-    print("function of {k·log p}; it re-expresses, it does not add Riemann")
-    print("structure. The admissible rescaling F of T-HP — specifically its")
-    print("oscillatory half S(T), RH-equivalent — is NOT supplied by the")
-    print("substrate alone. The program stays paused at T-HP; G4 = RH")
-    print("remains open. This is an honest characterization of where the new")
-    print("physics helps (the arena) and where it does not (the rescaling).")
+    print("The default snapshot has zero extracted phase/pressure coordinates.")
+    print("After phase = nu_f is imposed, the read-out correlates with log(p)")
+    print("because that information was explicitly inserted. The auxiliary")
+    print("action is deterministic in the constructed snapshot and supplies no")
+    print("new arithmetic information or T-HP rescaling. The Riemann program")
+    print("remains open; this example is only a finite read-out characterization.")
     print()
 
 

@@ -53,10 +53,11 @@ freedom) but does not force ∂EPI/∂t → 0 the way SILENCE (SHA) does. The en
 ``can_stabilize_reorganization``). This module documents the PDF nuance without
 overriding the physics derivation.
 
-All of this is DERIVED, not hand-maintained: the role table is built by querying
-the physics predicates, and a self-check (:func:`verify_canon_consistency`)
-asserts that the materialised roles reproduce the canonical sets in
-:mod:`grammar_types` exactly.
+The role table is derived rather than hand-maintained: it is built by querying
+the shared classification predicates, and a self-check
+(:func:`verify_canon_consistency`) asserts that the materialised roles reproduce
+the canonical sets in :mod:`grammar_types` exactly.  The rule descriptions and
+PDF typology are declarative specifications with explicit policy scope.
 """
 
 from __future__ import annotations
@@ -144,7 +145,8 @@ class GrammarRole(str, Enum):
     GENERATOR = "generator"  # U1a — can start (create/activate EPI)
     CLOSURE = "closure"  # U1b — can end (stabilize / close cycle)
     STABILIZER = "stabilizer"  # U2  — reduces |ΔNFR| (negative feedback)
-    DESTABILIZER = "destabilizer"  # U2  — raises |ΔNFR| (positive feedback)
+    # U2 debt: OZ perturbs pressure, ZHIR phase, and VAL capacity.
+    DESTABILIZER = "destabilizer"
     COUPLING = "coupling"  # U3  — requires phase verification
     TRIGGER = "trigger"  # U4a — may push ∂²EPI/∂t² past τ
     HANDLER = "handler"  # U4a — absorbs a triggered bifurcation
@@ -249,8 +251,9 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
     GrammarRule(
         rule_id="U1a",
         name="Structural Initiation",
-        physics="∂EPI/∂t is undefined at EPI=0; a generator must create or "
-        "activate EPI from the null/latent state before evolution.",
+        physics="At EPI=0 the nodal derivative remains νf·ΔNFR whenever its "
+        "channels are defined. U1a is the standalone-sequence policy that "
+        "requires an explicit generator to create or activate form.",
         operator_sets=("GENERATORS",),
         invariant=1,
         pdf_reference="§2.3.3 'Esquema formal de sintaxis' — valid start: AL, "
@@ -259,8 +262,10 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
     GrammarRule(
         rule_id="U1b",
         name="Structural Closure",
-        physics="A coherent sequence must terminate in a stable attractor: "
-        "either ∂EPI/∂t → 0 (silence) or an operational cycle close.",
+        physics="A standalone sequence must end with a registered closure. SHA "
+        "suppresses the rate; NAV and REMESH close operational cycles; OZ is "
+        "retained as a compatible terminal label. Closure membership alone "
+        "does not prove convergence to a stable attractor.",
         operator_sets=("CLOSURES",),
         invariant=1,
         pdf_reference="§2.3.3 'Cierre estructural' — close with a latency glyph "
@@ -268,9 +273,11 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
     ),
     GrammarRule(
         rule_id="U2",
-        name="Convergence & Boundedness",
-        physics="∫νf·ΔNFR dt must converge: every destabilizer (raises |ΔNFR|) "
-        "needs a stabilizer (reduces |ΔNFR|) or the integral diverges.",
+        name="Stabilization Coverage & Debt",
+        physics="U2 assigns finite calibrated debt to declared perturbations: "
+        "OZ directly raises |ΔNFR|, ZHIR transforms phase, and VAL raises νf. "
+        "The configured debt capacity and IL/THOL coverage form a sequence "
+        "policy; they do not prove convergence of ∫νf·ΔNFR dt.",
         operator_sets=("DESTABILIZERS", "STABILIZERS"),
         invariant=1,
         pdf_reference="Compatibilidad entre glifos / Bifurcación y mutación",
@@ -278,7 +285,7 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
     GrammarRule(
         rule_id="U3",
         name="Resonant Coupling",
-        physics="Resonance requires phase compatibility |φᵢ - φⱼ| ≤ Δφ_max; "
+        physics="Resonance requires phase compatibility |wrap(φᵢ - φⱼ)| ≤ Δφ_max; "
         "antiphase coupling produces destructive interference.",
         operator_sets=("COUPLING_RESONANCE",),
         invariant=2,
@@ -288,8 +295,9 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
     GrammarRule(
         rule_id="U4a",
         name="Bifurcation Dynamics — triggers need handlers",
-        physics="∂²EPI/∂t² > τ (a bifurcation) must be absorbed by a handler "
-        "or the cascade becomes chaotic.",
+        physics="Operators assigned the U4a trigger role require a registered "
+        "handler. The label-level rule does not itself establish a measured "
+        "crossing of ∂²EPI/∂t² > τ or its absorption.",
         operator_sets=("BIFURCATION_TRIGGERS", "BIFURCATION_HANDLERS"),
         invariant=4,
         pdf_reference="Bifurcación y mutación — OZ → [ZHIR / NUL]",
@@ -297,8 +305,9 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
     GrammarRule(
         rule_id="U4b",
         name="Bifurcation Dynamics — transformers need context",
-        physics="A threshold crossing needs elevated |ΔNFR|: a transformer "
-        "(ZHIR/THOL) requires a recent destabilizer; ZHIR also a prior IL.",
+        physics="A transformer (ZHIR/THOL) requires recent declared perturbation "
+        "context from the pressure, phase, or capacity debt channels; ZHIR "
+        "also requires a prior IL. The labels do not measure a threshold.",
         operator_sets=("TRANSFORMERS", "DESTABILIZERS"),
         invariant=4,
         pdf_reference="§2.3.3 'Compatibilidad entre glifos' — ZHIR must be "
@@ -307,9 +316,9 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
     GrammarRule(
         rule_id="U5",
         name="Multi-Scale Coherence",
-        physics="Hierarchical coupling: nested EPIs need stabilizers at each "
-        "scale so aggregate child reorganization stays bounded "
-        "(C_parent ≥ α·Σ C_child).",
+        physics="Hierarchical coupling requires stabilizer coverage at each "
+        "nested scale. C_parent ≥ α·Σ C_child is a configured target "
+        "whose interpretation requires a specified α and normalization.",
         operator_sets=("RECURSIVE_GENERATORS", "STABILIZERS"),
         invariant=3,
         pdf_reference="§2.3.3 'Agrupamiento y jerarquía' — THOL[...] nesting",
@@ -317,8 +326,9 @@ GRAMMAR_RULES: tuple[GrammarRule, ...] = (
     GrammarRule(
         rule_id="U6",
         name="Structural Potential Confinement",
-        physics="The emergent field Φ_s = Σ ΔNFR_j / d² stays confined: "
-        "ΔΦ_s < π/2 (structural-potential confinement).",
+        physics="Monitor the reference-state drift of Φ_s = Σ ΔNFR_j / d² "
+        "against the selected policy threshold ΔΦ_s < π/2. This is a "
+        "read-only check, not a graph-independent field bound.",
         operator_sets=(),  # telemetry-based, not a sequence constraint
         invariant=5,
         pdf_reference="§2.3 'Validación estructural' — coherence thresholds",

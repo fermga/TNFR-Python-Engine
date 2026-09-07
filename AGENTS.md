@@ -77,11 +77,21 @@ pressure**. Limiting states: `νf = 0` (node inactive, cannot reorganize);
 
 Every node carries three attributes:
 
-- **Form (EPI)** — coherent configuration in a structural manifold; changes only
-  via canonical operators; supports nesting (operational fractality).
+- **Form (EPI)** — coherent configuration in a structural manifold; named
+  transformations use canonical operators, while declared solver steps use the
+  shared nodal integrator with explicit pressure and provenance; supports
+  nesting (operational fractality).
 - **Frequency (νf)** — reorganization rate in Hz_str (ℝ⁺); `νf → 0` deactivates.
 - **Phase (φ or θ)** — synchronization parameter in [0, 2π); coupling is admissible
-  only under the resonance condition `|φᵢ − φⱼ| ≤ Δφ_max`.
+  only when the circular separation
+  `δ(φᵢ,φⱼ) = |wrap(φᵢ − φⱼ)| ≤ Δφ_max`.
+
+The graph engine's real scalar EPI chart is represented either directly or by
+the uniform-real `BEPIElement` embedding. `real_scalar_epi` recovers the signed
+coordinate and `scalarize_epi` applies the same rule to live and serialized
+values. `abs(BEPIElement)` remains a nonnegative magnitude; genuinely nonuniform
+or complex elements have no signed one-dimensional representative and are
+outside scalar-only diffusion and affine certificates.
 
 ### The fractal-resonant node (NFR)
 
@@ -100,15 +110,17 @@ The node carrying the triad is a **Nodo Fractal Resonante (NFR)** — canonicall
 Its **nodal topology** is **radial** (one central nucleus), **annular** (passive center,
 peripheral ring) or **multinodal** (several centers), read from the emergent
 structural-potential geometry by [classify_nodal_topology](src/tnfr/physics/fields.py)
-and surfaced as a whole-NFR read-out by `Network.nfr()` ([src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)).
+using its calibrated canonical inverse-square kernel (`alpha = 2`), and surfaced
+as a whole-NFR read-out by `Network.nfr()` ([src/tnfr/sdk/simple.py](src/tnfr/sdk/simple.py)).
 
-The pressure equilibrium `ΔNFR = 0` is the **resonant-coherence attractor** —
+The pressure equilibrium `ΔNFR = 0` is the **zero-pressure fixed-point set** —
 the state where reorganization pressure vanishes (`C = 1` when `dEPI = 0`).
 Stationarity alone is weaker: zero capacity freezes EPI even under nonzero pressure.
 For the pure EPI channel on a fixed connected symmetric graph with positive capacity,
 equilibrium is a uniform field; disconnected components can have different constants.
-This restricted diffusion result does not establish the attractors of the full
-multichannel dynamics. The shared equilibrium predicate is
+In that restricted model the uniform field is an attractor. This result does
+not establish attractors for the full multichannel dynamics or for static
+arithmetic and chemical pressure fields. The shared numeric predicate is
 [is_structural_equilibrium](src/tnfr/metrics/common.py), and the per-node coherence map
 `structural_coherence` (`C = 1/(1+|ΔNFR|+|dEPI|)`) is the **single kernel** every domain
 reads — graph nodes, arithmetic nodes (primes), chemical nodes (noble gases) — with only
@@ -146,6 +158,15 @@ is conserved. Positive heterogeneous capacities instead conserve weights `d_i/ν
 their rates are eigenvalues of `diag(νf)L_rw`. On a connected homogeneous graph,
 `νf·λ₂` is the slowest nonuniform decay rate. The reaction threshold `r_c=νf·λ₂`
 concerns nonuniform modes; a positive reaction already grows the uniform mode.
+The executable fixed-capacity certificate rationalizes its materialized
+binary64 generator: consensus-subspace invariance, the stronger uniform
+fixed-point identity and preservation of the displayed weighted mean are three
+separate facts. The bounded time-varying theorem instead treats the effective
+binary64 conductances materialized by the shared reader and the declared bounds
+as exact real coefficients, derives its Laplacian and rate rationally, and keeps
+ordinary binary64 spectral diagnostics separate. A proven positive exact rate
+may lack an operational float representation after underflow. Future-schedule
+and numerical-integration verification remain open.
 These scoped identities do not certify U2 for arbitrary operator sequences.
 The exact Dirichlet balance below uses this same adjacency convention. See
 [src/tnfr/physics/structural_diffusion.py](src/tnfr/physics/structural_diffusion.py).
@@ -184,14 +205,16 @@ Each field has a characteristic scale or configured interpretation:
   per-node `|Φ_s| < π/4 ≈ 0.785` is a separate magnitude policy. Both are selected
   π-scaled thresholds. Phase wrapping alone does not bound the source aggregation:
   `||Φ_s||∞ ≤ ||B_G||∞ ||ΔNFR||∞`, where `(B_G)_ij=1/d(i,j)²` off the diagonal
-  and zero for unreachable pairs. A complete graph with unit pressure gives `Φ_s=n−1`.
+  and zero for unreachable pairs. Explicit edge `length` defines `d`; absent
+  `length`, the transport `weight` remains a compatibility fallback. A complete
+  graph with unit pressure gives `Φ_s=n−1`.
 
 **Structure and scope.** Circular phase curvature linearizes to a Laplacian action
 in a small-spread regime with matching neighborhood weights. The wrapped nonlinear
 field is not globally the linear EPI diffusion operator. Local phase derivatives
 and non-local source/correlation diagnostics provide complementary information.
 
-### Why exactly four (minimality)
+### Why these four (scope and minimality boundary)
 
 The four canonical channels organize the following read-outs:
 
@@ -221,7 +244,7 @@ Graph fields support geometric read-outs and specified auxiliary dynamical model
 Their algebraic identities, model flows and correspondence with engine trajectories
 must be stated separately. The implementations expose the corresponding scope.
 
-### Emergent symplectic substrate
+### Auxiliary symplectic substrate
 
 The substrate model uses an ambient symplectic space `P = ℝ^{4N}` with two canonical
 conjugate pairs per node, initialized from extracted graph fields:
@@ -305,8 +328,14 @@ and [examples/02_physics_regimes/](examples/README.md).
 
 ## 5. The 13 canonical operators
 
-Operators are the **exclusive mechanism** for modifying a node. Each is a resonant
-transformation with a defined physical contract; no code may mutate EPI directly.
+Within the engine, registered canonical operators are the **semantic interface**
+for named node and network transformations. Declared numerical solvers form a
+separate evolution path: they may advance EPI only through the shared nodal
+integrator from explicit `nu_f` and `DeltaNFR`, with provenance or a residual;
+ad hoc state assignment is forbidden. The current registry contains 13
+transformations with defined physical contracts. Whether their composition,
+nesting and branching generate every mathematically admissible TNFR
+transformation remains open under research line S10.
 
 | # | Operator (glyph) | Physics / effect | Grammar role | Contract |
 |---|------------------|------------------|--------------|----------|
@@ -314,8 +343,8 @@ transformation with a defined physical contract; no code may mutate EPI directly
 | 2 | **Reception** (EN) | Integrates incoming resonance | — | Must not reduce C(t) |
 | 3 | **Coherence** (IL) | Negative feedback; reduces \|ΔNFR\|, raises C(t) | Stabilizer (U2) | Must not reduce C(t) (outside dissonance test) |
 | 4 | **Dissonance** (OZ) | Controlled instability; raises \|ΔNFR\| | Destabilizer (U2), bifurcation trigger (U4a), closure (U1b) | Must increase \|ΔNFR\| |
-| 5 | **Coupling** (UM) | Phase synchronization link `φᵢ → φⱼ` | Requires phase check (U3) | Valid only if `\|φᵢ − φⱼ\| ≤ Δφ_max` |
-| 6 | **Resonance** (RA) | Coherent amplification / propagation | Requires phase check (U3) | Propagates EPI, preserves identity |
+| 5 | **Coupling** (UM) | Phase synchronization link `φᵢ → φⱼ` | Requires phase check (U3) | Valid only if `\|wrap(φᵢ − φⱼ)\| ≤ Δφ_max` |
+| 6 | **Resonance** (RA) | Coherent amplification / propagation | Requires phase check (U3) | Blends scalar EPI over U3-compatible neighbours while preserving sign/kind identity |
 | 7 | **Silence** (SHA) | Freezes evolution; `νf → 0`, EPI fixed | Closure (U1b) | Preserves EPI over time |
 | 8 | **Expansion** (VAL) | Adds structural complexity; raises νf | Destabilizer (U2) | νf not decreased (capacity lever) |
 | 9 | **Contraction** (NUL) | Removes complexity; νf↓ and ΔNFR densifies | — | νf not increased (acts on both levers) |
@@ -343,6 +372,21 @@ TNFR.pdf anchor) is [src/tnfr/operators/operator_contracts.py](src/tnfr/operator
 the proactive audit, reactive monitor, and introspection metadata all derive from it.
 See [theory/STRUCTURAL_OPERATORS.md](theory/STRUCTURAL_OPERATORS.md).
 
+**Mutation evidence boundary.** The nodal product `νf·ΔNFR` is the instantaneous
+model prediction; it is not by itself an observed ZHIR trigger. Direct Mutation
+requires active capacity and a finite signed two-sample secant strictly above
+`ZHIR_THRESHOLD_XI`. Timestamped `epi_time_history` is authoritative, uses its
+physical interval, and must end at the current EPI state. Legacy `epi_history` and
+`_epi_history` retain an explicit unit-operator-step interpretation and make no
+physical-time claim. Missing, invalid, stale, equal-threshold or contracting evidence
+rejects direct execution; autonomous selection instead applies IL and records the
+abstention. The SDK preflights every target before a word containing ZHIR. Structural
+acceleration is a separate three-sample diagnostic, centralized by
+`compute_d2epi_dt2`; it does not replace the two-sample gate or U4b context. The
+`νf = 0.5` bifurcation-router threshold only proposes a branch and is not a Mutation
+admission condition. Pure certificates and `Network.nodal_state()` report prediction
+and evidence without certifying U4b execution readiness.
+
 ### Composition
 
 Operators compose into sequences satisfying U1–U6. The named building blocks are
@@ -355,7 +399,11 @@ A fragment becomes a valid word by adding the grammar glue (a U1a generator pref
 U1b closure suffix, and the U4b context a transformer needs), e.g. `[Emission,
 Coupling, Coherence, Silence]`. Nesting `THOL[ body ]` lifts sequences to
 context-free (nested sub-EPIs, U5); branching `OZ → [ZHIR | NUL]` is the U4a
-bifurcation. See [examples/08_emergent_geometry/143_glyphic_function_sublanguage.py](examples/08_emergent_geometry/143_glyphic_function_sublanguage.py)
+bifurcation. SDK words and supported GPU blocks preserve operator order.
+SDK EN/RA and GPU RA stages make all targets read one immutable snapshot and
+commit atomically (two-phase Jacobi); the remaining stages retain operator-major
+Gauss-Seidel semantics until explicit cross-target merge laws exist. See
+[examples/08_emergent_geometry/143_glyphic_function_sublanguage.py](examples/08_emergent_geometry/143_glyphic_function_sublanguage.py)
 and [144_branching_combinator.py](examples/08_emergent_geometry/144_branching_combinator.py).
 
 ---
@@ -382,7 +430,9 @@ derivations [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md).
   sub-rule: REMESH combined with a destabilizer also requires `{IL, THOL}` (recursive
   amplification control).
 - **U3 — Resonant coupling.** Coupling/resonance `{UM, RA}` require phase compatibility
-  `|φᵢ − φⱼ| ≤ Δφ_max` (antiphase is destructive).
+  `δ(φᵢ,φⱼ) = |wrap(φᵢ − φⱼ)| ≤ Δφ_max` (antiphase is destructive). RA filters
+  its neighbourhood by this condition: incompatible neighbours contribute to
+  neither its EPI mean, phase mean, nor frequency-amplification trigger.
 - **U4 — Bifurcation dynamics.** (a) Triggers `{OZ, ZHIR}` need handlers `{THOL, IL}`.
   (b) Transformers `{ZHIR, THOL}` need a recent destabilizer within the **structural-relaxation
   window** — canonically 3 ops, **one window for every destabilizer**,
@@ -392,7 +442,12 @@ derivations [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md).
   ZHIR also needs a prior
   IL (stable base).
 - **U5 — Multi-scale coherence.** Nested EPIs require stabilizers at each level;
-  `C_parent ≥ α · Σ C_child` is a hierarchy-dependent target requiring a specified α and normalization.
+  `C_parent ≥ α · Σ C_child` is a hierarchy-dependent target requiring a
+  specified α and normalization. Evaluate a concrete hierarchy with
+  [`assess_u5_parent_child_coherence`](src/tnfr/physics/multiscale_coherence.py).
+  THOL amplitude alignment is a separate dispersion diagnostic, not `C(t)` or U5.
+  `THOL_MIN_COLLECTIVE_COHERENCE` is an inert legacy alias of the general
+  fragmentation-risk cut; THOL does not consume it.
 - **U6 — Structural potential confinement.** Telemetry safety: monitor `Δ Φ_s < π/2 ≈ 1.571`
   (selected half-wrap threshold; `Φ_s(i) = Σ_{j≠i} ΔNFR_j / d(i,j)²`). This compares
   potential with a reference state; it is a read-only check, not a sequence constraint
@@ -422,10 +477,11 @@ in [src/tnfr/operators/grammar_dynamics.py](src/tnfr/operators/grammar_dynamics.
   read-out, its per-node kernel `structural_coherence`
   ([src/tnfr/metrics/common.py](src/tnfr/metrics/common.py)) is the single
   *constitutive* coherence map — an NFR is canonically a region of structural
-  coherence (§2), so `C` measures the coherence that *defines* NFR-hood and the
-  monotone distance to the resonant-coherence attractor `ΔNFR = 0`
-  (`is_structural_equilibrium`); every domain (graph, arithmetic, chemical)
-  reads this one kernel.
+  coherence (§2). At one instant, `1/C-1` is the local L1 diagnostic distance
+  `|ΔNFR|+|dEPI|` to `(0,0)`; this monotone transform does not imply temporal
+  monotonicity or a general attractor. Every domain (graph, arithmetic,
+  chemical) reads this one kernel, while only the restricted pure-EPI diffusion
+  model in §2 has the stated uniform attractor.
 - **Si — sense index** `[0,1+]`, reorganization-capacity predictor: `Si > 0.8`
   excellent; `Si < 0.4` bifurcation-prone. Unlike `C(t)`, Si is a **heuristic
   composite** (weighted νf, phase sync, |ΔNFR|) — predictive/diagnostic, **not**
@@ -448,11 +504,13 @@ Six invariants define TNFR consistency; preserve all of them.
 
 1. **Nodal equation integrity** — EPI changes only via `∂EPI/∂t = νf·ΔNFR`; ΔNFR keeps
    structural-pressure semantics; `νf → 0` inactivates. (Grammar U1, U2.)
-2. **Phase-coherent coupling** — `|φᵢ − φⱼ| ≤ Δφ_max` required before any coupling.
+2. **Phase-coherent coupling** — circular separation
+   `|wrap(φᵢ − φⱼ)| ≤ Δφ_max` is required before any coupling.
    (Grammar U3; `validate_resonant_coupling()`.)
 3. **Multi-scale fractality** — EPIs nest without identity loss. (Grammar U5.)
-4. **Grammar compliance** — operator sequences pass U1–U6; new functions map to
-   existing operators or define a new operator with full contracts.
+4. **Grammar compliance** — operator sequences pass U1–U6; named semantic
+   transformations map to existing operators or define a new operator with full
+   contracts; declared solvers use the shared nodal integrator.
 5. **Structural metrology** — νf in Hz_str; C(t), Si, phase, νf exposed in telemetry.
 6. **Reproducible dynamics** — identical seeds give identical trajectories; operations
    are traceable.
@@ -465,9 +523,10 @@ How a TNFR agent (human or AI) should reason and act.
 
 1. **Start from physics.** Treat `∂EPI/∂t = νf·ΔNFR` as the source of truth; keep EPI,
    νf, and phase well-defined; interpret behavior through the tetrad.
-2. **Operate only via canonical operators.** Never mutate EPI directly; map every new
-   behavior to existing operators (or justify a new one with full physics, contracts,
-   and tests); preserve operator semantics in refactors.
+2. **Use declared state-transition paths.** Map named behavior to canonical
+   operators (or justify a new one with full physics, contracts, and tests).
+   Numerical evolution must use the shared nodal integrator from explicit
+   `nu_f` and `DeltaNFR`, with provenance or residual; never assign EPI ad hoc.
 3. **Enforce U1–U6.** Check sequence validity; guard destabilizers with stabilizers;
    never couple without an explicit phase check.
 4. **Preserve invariants.** Keep Hz_str units; treat ΔNFR as structural pressure (not an
@@ -492,15 +551,16 @@ structural coherence and traceability, proceed.
 [theory/UNIFIED_GRAMMAR_RULES.md](theory/UNIFIED_GRAMMAR_RULES.md); check whether the
 utility already exists; run the test suite to understand current state.
 
-**Implementing changes**: search first; map new functions to operators; preserve all six
-invariants; add tests covering contracts and invariants; document the structural effect;
-trace the physics → math → code chain.
+**Implementing changes**: search first; map named transformations to operators and
+numerical evolution to the shared nodal integrator; preserve all six invariants; add
+tests covering contracts and invariants; document the structural effect; trace the
+physics → math → code chain.
 
 **Acceptable** changes increase C(t) or reduce ΔNFR where appropriate, preserve operator
 closure and fractality, and keep APIs stable or mapped. **Unacceptable**: recasting ΔNFR
-as an ML error gradient; replacing operators with unmapped imperative code; flattening
-nested EPIs; coupling without phase checks; mutating EPI directly; changing units
-(Hz_str → Hz).
+as an ML error gradient; replacing semantic operators with unmapped imperative code;
+advancing EPI outside the shared nodal integrator; flattening nested EPIs; coupling
+without phase checks; ad hoc state assignment; changing units (Hz_str → Hz).
 
 ### Commit / PR templates
 
@@ -533,7 +593,7 @@ only when `ΔEPI/Δt > ξ`), **multi-scale** (nested EPIs keep identity), and
 |---------|-------|-----|
 | "Needs generator" | Start from EPI=0 without U1a | Prefix `{AL, NAV, REMESH}` |
 | "Destabilizer without stabilizer" | OZ/ZHIR/VAL without IL/THOL (U2) | Add a stabilizer |
-| "Phase mismatch in coupling" | `|φᵢ − φⱼ| > Δφ_max` (U3) | Ensure phase compatibility first |
+| "Phase mismatch in coupling" | `|wrap(φᵢ − φⱼ)| > Δφ_max` (U3) | Ensure phase compatibility first |
 | "Mutation without context" | ZHIR without recent destabilizer / prior IL (U4b) | Add a destabilizer (~3 ops) and a prior IL |
 | C(t) decreasing unexpectedly | Monotonicity contract violated | Verify operator preserves C(t) |
 | Node collapse | `νf → 0`, extreme dissonance, or decoupling | Apply coherence earlier; ensure coupling |
@@ -552,10 +612,11 @@ program history** (the full milestone/gap/branch threads live in the notes).
 
 | Program | Status | Reference |
 |---------|--------|-----------|
-| **TNFR-Riemann** | `σ_c → ½` numerically verified; ζ↔L attack surface shipped (P12–P49). The bridge to RH is the open conjecture **T-HP** (gap G4), paused at the oscillatory residue `S(T) = (1/π)·arg ζ(½+iT)`. | [TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
-| **REMESH-∞ closure** | The 13-operator catalog is closed under the `τ_g → ∞` limit (N15, Branch A); universality is structural/operational, not spectral. | [REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) |
-| **TNFR-Navier–Stokes** | The two-face reading: incompressible NS is first-order, so its *linear* part is the **diffusive (over-damped) projection** of the separate graph-wave model (`ν_f = ν`; `verify_diffusive_face` VALID for every physical viscosity) — blow-up is a purely **nonlinear `K_φ` cascade** (the vortex-stretching VAL source), not a linear resonance. Measured: peak enstrophy debt grows with Re at matched `τ_str = ν·t` (bounded at fixed Re — the diffusive face regularises); the `Re → ∞` cascade bound = Clay, **open**. Closes nothing. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
-| **Number theory** | Primality as `ΔNFR = 0` (canonical **unit** coefficients, §4.2 coefficient independence); arithmetic structural triad; the arithmetic network as an NFR (multinodal topology + emergent symplectic geometry); the cyclotomy law `s_k(p) = gcd(k, p−1) + 1` (proved), read as the **arithmetic pulse** (the residue-NFR's tone-count — a prime is its most degenerate chord). | [TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) |
+| **Core dynamics S1–S16** | Restricted results cover pure-EPI diffusion, affine-reset budgets, observability, quotient geometry, temporal signatures and sampled-path certificates under declared hypotheses. SDK EN/RA and GPU RA use the shared atomic two-phase Jacobi all-target stage; other operator stages remain operator-major Gauss-Seidel, and general nonlinear, phase, history, changing-support and catalog-completeness results remain open. | [CORE_RESEARCH_PROGRAM.md](theory/CORE_RESEARCH_PROGRAM.md) |
+| **TNFR-Riemann** | Finite protocols estimate a critical-line-centered comparison and expose ζ/L diagnostic surfaces (P12–P50). No engine theorem identifies phase coherence with zero location. The bridge to RH, including control of `S(T) = (1/π)·arg ζ(½+iT)`, remains open. | [TNFR_RIEMANN_RESEARCH_NOTES.md](theory/TNFR_RIEMANN_RESEARCH_NOTES.md) |
+| **REMESH fixed-delay surrogate** | A finite cyclic, fixed-coefficient REMESH filter has a Cesàro fixed-mode projection and needs no additional registry entry to compute it. This is distinct from the clipped runtime map and does not establish the literal `τ_g → ∞` limit or completeness of the 13-operator catalog; both remain open. | [REMESH_INFINITY_DERIVATION.md](theory/REMESH_INFINITY_DERIVATION.md) |
+| **TNFR-Navier–Stokes** | A declared linear mapping compares viscous diffusion with the overdamped limit of a separate graph-wave model (`ν_f = ν`). Finite pseudo-spectral runs measure enstrophy growth with Reynolds number. The nonlinear vortex-stretching term is compared with a `K_φ`/VAL cascade, but no equivalence or uniform regularity bound is derived; the `Re → ∞` problem remains open. | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](theory/TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
+| **Number theory** | Primality as `ΔNFR = 0` (canonical **unit** coefficients, §4.2 coefficient independence); arithmetic structural triad; arithmetic networks can initialize the auxiliary symplectic read-out; the cyclotomy law `s_k(p) = gcd(k, p−1) + 1` is proved for the declared residue digraph and read as a finite arithmetic pulse diagnostic. | [TNFR_NUMBER_THEORY.md](theory/TNFR_NUMBER_THEORY.md) |
 | **Structural research program (R1–R9)** | Nine internal lines on arithmetic and spectral dynamics: observability, arithmetic pulse, CRT synthesis, p-adic transport, finite fields, additive reduction, arithmetic pressure, operator certification and directed non-normal evolution. Exact, measured, negative and open results are separated in the program index. | [STRUCTURAL_RESEARCH_PROGRAM.md](theory/STRUCTURAL_RESEARCH_PROGRAM.md) |
 | **Millennium reformulations** | P vs NP, BSD, Hodge, Yang–Mills: TNFR-internal structural reformulations and diagnostics — none a proof. | `theory/TNFR_*_RESEARCH_NOTES.md` |
 
@@ -564,14 +625,28 @@ numerical evidence; none currently closes a classical open problem. Do not exten
 program's diagnostic surface without a new structural idea, and never claim a proof of RH,
 Navier–Stokes regularity, or any Millennium problem.
 
+Core graph-dynamics publication artifacts use the domain-neutral
+[`CoreExperimentManifest`](src/tnfr/research/core_manifests.py) for graph construction,
+capacity, solver/timestep, seed, operator sequence, telemetry, canonical claim status,
+Git revision and an explicit clean/dirty source declaration. Dirty source requires a
+SHA-256 content digest of the declared working-source snapshot.
+The historical `ExperimentManifest` retains arithmetic-specific factor and bit-size fields.
+
 ---
 
 ## 13. Map of the codebase & examples
 
 - **Physics** — [src/tnfr/physics/](src/tnfr/physics/): `fields.py` (tetrad +
   `classify_nodal_topology` for NFR radial/annular/multinodal topology),
-  `conservation.py` (conservation theorem), `symplectic_substrate.py` (emergent geometry),
-  `structural_diffusion.py` (transport), `gauge.py` (Ψ, gauge), `integrity.py`
+  `conservation.py` (finite structural-balance diagnostics),
+  `symplectic_substrate.py` (auxiliary harmonic phase-space model),
+  `structural_diffusion.py` (transport), `hybrid_operator_stability.py` (affine
+  EPI-reset gains and hybrid flow/reset budgets), `reception_realization.py`
+  (EN runtime-to-theorem boundary), `resonance_realization.py` (RA four-layer
+  identity-gated boundary and post-RA metric audit),
+  `core_research_integration.py` (restricted
+  executable S16 endpoint intersection), `core_research_trajectory.py` (sampled
+  S16 path and mesh agreement), `gauge.py` (Ψ, gauge), `integrity.py`
   (operator-postcondition monitor + audit).
 - **Operators & grammar** — [src/tnfr/operators/](src/tnfr/operators/): `definitions.py`
   (13 operators + registry), `operator_contracts.py` (contract source of truth),
@@ -594,7 +669,8 @@ Navier–Stokes regularity, or any Millennium problem.
 - **SDK** — [src/tnfr/sdk/](src/tnfr/sdk/): `simple.py` (`TNFR.create(...)`, tetrad,
   conservation, substrate, integrity, audit, `nfr()` whole-NFR read-out,
   `nodal_state`/`nodal_scan` micro-NFR), `fluent.py` (`auto_optimize()`). The shared
-  NFR fixed-point kernel (`structural_coherence`, `is_structural_equilibrium`) lives in
+  coherence kernel and zero-pressure predicate (`structural_coherence`,
+  `is_structural_equilibrium`) live in
   [src/tnfr/metrics/common.py](src/tnfr/metrics/common.py).
 - **Examples** — [examples/README.md](examples/README.md): ten thematic folders
   (`01_foundations` … `10_applications`); each file keeps a stable global number.
@@ -608,13 +684,14 @@ The Simple SDK exposes the research-grade stack directly:
 from tnfr.sdk import TNFR
 net = TNFR.create(20).ring().evolve(5)
 net.tetrad()                 # TetradSnapshot (Φ_s, |∇φ|, K_φ, ξ_C) + is_safe()
-net.conservation()           # Noether charge, Lyapunov stability
-net.symplectic_substrate()   # the emergent geometry
+net.conservation()           # Noether-like charge and candidate-energy diagnostics
+net.symplectic_substrate()   # auxiliary harmonic phase-space diagnostics
+net.winding()                # declared-cycle winding sector and scoped telemetry
 net.rhythm()                 # the collective pulse (ω_k=√λ_k, beats, energy)
 net.resonance()              # the per-NFR pulses (νf_i, φ_i) + resonance (R)
 net.pulse_trajectory(8)      # the pulse in motion: R(t), C(t), local→global lock
 net.telemetry()              # C(t), Si, phase_sync, tetrad, pulse, resonance
-net.audit_operators()        # 13/13 operator-contract audit
+net.audit_operators()        # finite-probe catalog postcondition report
 analysis = TNFR.analyze(net) # one-shot comprehensive report
 ```
 

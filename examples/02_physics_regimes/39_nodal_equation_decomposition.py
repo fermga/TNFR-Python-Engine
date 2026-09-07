@@ -3,25 +3,27 @@
 Example 39 — Nodal Equation Operator Decomposition
 ===================================================
 
-Decomposes the nodal equation dEPI/dt = nu_f * DELTA_NFR(t) into
-per-operator contributions, tracing the complete causal chain:
+Compares the nodal-equation state dEPI/dt = nu_f * DELTA_NFR(t) before and
+after individual operator calls, then captures tetrad and conservation
+diagnostics from the resulting graph snapshots:
 
     Operator -> (nu_f, DELTA_NFR) -> dEPI/dt -> Tetrad Fields -> Conservation
 
 Physics
 -------
-The nodal equation is the *single* dynamical law of TNFR. Every operator
-modifies EPI *exclusively* through this equation by changing either nu_f
-(reorganisation capacity) or DELTA_NFR (reorganisation pressure) or both.
+The nodal equation anchors TNFR evolution. Each canonical operator has a
+declared primary channel and additional contract conditions. A one-call state
+difference is not a time-discretized integration step and cannot recover that
+contract from relative magnitudes alone.
 
 This experiment measures:
-  1. How each operator partitions its effect between nu_f and DELTA_NFR
-  2. How the resulting dEPI/dt maps to tetrad field changes
-  3. How conservation quantities (Q, E) respond to each component
+  1. Observed nu_f, DELTA_NFR, and EPI differences for one seeded state
+  2. The instantaneous nodal right-hand side before selected operator calls
+  3. Tetrad, Q, and E snapshot differences after those calls
 
-The decomposition reveals that operators do not change EPI directly —
-they modulate the *terms* of the nodal equation, and the equation itself
-propagates changes to the structural fields.
+The output is a reproducible diagnostic trace. It does not prove a complete
+causal decomposition, operator symplecticity, conservation, convergence, or
+minimality/completeness of the tetrad.
 
 References
 ----------
@@ -38,6 +40,9 @@ import sys
 
 import networkx as nx
 import numpy as np
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
@@ -124,6 +129,39 @@ def _capture_node(G, node):
     }
 
 
+def _glyph_code(value):
+    """Normalize a recorded glyph to its public short code."""
+    raw = getattr(value, "value", value)
+    return str(raw).rsplit(".", 1)[-1].upper()
+
+
+def _apply_with_trace(G, node, operator):
+    """Apply one request and report the glyph that history actually records.
+
+    ``Operator.__call__`` may replace a request to satisfy the grammar. The
+    appended history entry is therefore the authoritative execution label.
+    Runtime failures are returned explicitly, including failures that occur
+    after an operator has already changed state or appended history.
+    """
+    before = tuple(G.nodes[node].get("glyph_history", ()))
+    error = None
+    try:
+        operator(G, node)
+    except Exception as exc:  # The caller prints every rejection/failure.
+        error = f"{type(exc).__name__}: {exc}"
+
+    after = tuple(G.nodes[node].get("glyph_history", ()))
+    if after == before or not after:
+        executed = None
+    elif len(after) > len(before) and after[: len(before)] == before:
+        executed = _glyph_code(after[-1])
+    else:
+        # A bounded history can evict its oldest entry while appending a new
+        # glyph. Its final entry still identifies the latest execution.
+        executed = _glyph_code(after[-1])
+    return executed, error
+
+
 def _tetrad_summary(G):
     """Compute scalar tetrad summary for the whole network."""
     phi_s = compute_structural_potential(G)
@@ -144,15 +182,14 @@ def _tetrad_summary(G):
 
 
 def experiment_nodal_decomposition():
-    """For each operator, measure how it changes nu_f vs DELTA_NFR.
+    """Measure one-call state differences for each operator.
 
-    The nodal equation dEPI/dt = nu_f * DELTA_NFR means operators have
-    two "levers": they can change the frequency (capacity) or the
-    pressure (driving force). Different operators pull different levers.
+    The reported dominant delta is a snapshot heuristic. Canonical operator
+    channels come from operator contracts, not this magnitude comparison.
     """
     print("=" * 72)
-    print("  EXPERIMENT 1: Nodal Equation Decomposition Per Operator")
-    print("  dEPI/dt = nu_f * DELTA_NFR: which lever does each op pull?")
+    print("  EXPERIMENT 1: One-Call State Differences Per Operator")
+    print("  dEPI/dt = nu_f * DELTA_NFR: sampled state before and after")
     print("=" * 72)
 
     G_base = _build_graph()
@@ -174,49 +211,64 @@ def experiment_nodal_decomposition():
         ("REMESH", "Recursivity", Recursivity),
     ]
 
+    print("\n  Req/Requested identify the call; Exec identifies the recorded glyph.")
     print(
-        f'\n  {"Glyph":7s} {"Name":14s} {"d(nu_f)":>10s} {"d(DNFR)":>10s}'
-        f' {"d(EPI)":>10s} {"nu_f*DNFR":>10s} {"Primary lever":>16s}'
+        f'  {"Req":5s} {"Exec":5s} {"Requested":14s} {"d(nu_f)":>10s}'
+        f' {"d(DNFR)":>10s} {"d(EPI)":>10s} {"RHS before":>10s}'
+        f' {"Dominant delta":>16s}'
     )
-    print("  " + "-" * 82)
+    print("  " + "-" * 90)
 
     lever_summary = {}
     for glyph, name, cls in ALL_OPS:
         G = copy.deepcopy(G_base)
         before = _capture_node(G, target)
 
-        try:
-            op = cls()
-            op(G, target)
-            after = _capture_node(G, target)
+        executed, error = _apply_with_trace(G, target, cls())
+        execution_label = executed or "---"
+        trace_label = glyph if executed == glyph else f"{glyph}->{execution_label}"
 
-            d_nu_f = after["nu_f"] - before["nu_f"]
-            d_dnfr = after["delta_nfr"] - before["delta_nfr"]
-            d_epi = after["EPI"] - before["EPI"]
-            expected = before["nu_f"] * before["delta_nfr"]
-
-            # Classify primary lever
-            if abs(d_nu_f) > abs(d_dnfr) * 2 and abs(d_nu_f) > 1e-8:
-                lever = "nu_f (capacity)"
-            elif abs(d_dnfr) > abs(d_nu_f) * 2 and abs(d_dnfr) > 1e-8:
-                lever = "DNFR (pressure)"
-            elif abs(d_nu_f) > 1e-8 or abs(d_dnfr) > 1e-8:
-                lever = "BOTH"
-            else:
-                lever = "NEUTRAL"
-
-            lever_summary[glyph] = lever
+        if error is not None:
+            lever_summary[trace_label] = "ERROR"
             print(
-                f"  {glyph:7s} {name:14s} {d_nu_f:+10.6f} {d_dnfr:+10.6f}"
-                f" {d_epi:+10.6f} {expected:10.6f} {lever:>16s}"
+                f"  {glyph:5s} {execution_label:5s} {name:14s}"
+                f" [ERROR: {error[:58]}]"
             )
-        except Exception as exc:
-            lever_summary[glyph] = "SKIPPED"
-            print(f"  {glyph:7s} {name:14s} [SKIPPED: {str(exc)[:40]}]")
+            continue
+        if executed is None:
+            lever_summary[trace_label] = "UNRECORDED"
+            print(
+                f"  {glyph:5s} {'---':5s} {name:14s}"
+                " [NO GLYPH APPENDED; state differences not attributed]"
+            )
+            continue
 
-    print("\n  Lever Classification Summary:")
+        after = _capture_node(G, target)
+        d_nu_f = after["nu_f"] - before["nu_f"]
+        d_dnfr = after["delta_nfr"] - before["delta_nfr"]
+        d_epi = after["EPI"] - before["EPI"]
+        expected = before["nu_f"] * before["delta_nfr"]
+
+        # Classify only the dominant observed delta on this seeded state.
+        if abs(d_nu_f) > abs(d_dnfr) * 2 and abs(d_nu_f) > 1e-8:
+            lever = "nu_f (capacity)"
+        elif abs(d_dnfr) > abs(d_nu_f) * 2 and abs(d_dnfr) > 1e-8:
+            lever = "DNFR (pressure)"
+        elif abs(d_nu_f) > 1e-8 or abs(d_dnfr) > 1e-8:
+            lever = "BOTH"
+        else:
+            lever = "NEUTRAL"
+
+        lever_summary[trace_label] = lever
+        print(
+            f"  {glyph:5s} {executed:5s} {name:14s} {d_nu_f:+10.6f}"
+            f" {d_dnfr:+10.6f} {d_epi:+10.6f} {expected:10.6f}"
+            f" {lever:>16s}"
+        )
+
+    print("\n  Observed-delta summary (not the operator-contract partition):")
     for category in ["nu_f (capacity)", "DNFR (pressure)", "BOTH", "NEUTRAL"]:
-        ops = [g for g, l in lever_summary.items() if l == category]
+        ops = [g for g, label in lever_summary.items() if label == category]
         if ops:
             print(f'    {category:20s}: {", ".join(ops)}')
 
@@ -224,25 +276,25 @@ def experiment_nodal_decomposition():
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# EXPERIMENT 2: Causal Chain — Operator -> Nodal Eq -> Tetrad
+# EXPERIMENT 2: Snapshot Chain — Operator -> Nodal Eq -> Tetrad
 # ═══════════════════════════════════════════════════════════════════════
 
 
 def experiment_causal_chain():
-    """Trace the full causal chain from operator to tetrad fields.
+    """Compare selected state and diagnostic snapshots around an operator call.
 
     For selected operators (one stabiliser, one destabiliser, one coupling):
       1. Measure (nu_f, DELTA_NFR) before/after
-      2. Compute predicted dEPI/dt = nu_f * DELTA_NFR
-      3. Measure tetrad field response
-      4. Measure conservation quantity change
+      2. Compute the pre-call instantaneous RHS nu_f * DELTA_NFR
+      3. Measure tetrad snapshot differences
+      4. Measure candidate energy and charge differences
 
-    This demonstrates that the tetrad is a *diagnostic* of the nodal
-    equation, not an independent dynamical system.
+    These read-outs diagnose the graph state. Their finite differences do not
+    establish a complete or unidirectional causal factorization.
     """
     print("\n" + "=" * 72)
-    print("  EXPERIMENT 2: Full Causal Chain")
-    print("  Operator -> (nu_f, DNFR) -> dEPI/dt -> Tetrad -> Conservation")
+    print("  EXPERIMENT 2: Operator and Diagnostic Snapshot Chain")
+    print("  Operator -> state differences; state -> tetrad, E, and Q read-outs")
     print("=" * 72)
 
     test_ops = [
@@ -261,15 +313,11 @@ def experiment_causal_chain():
         tetrad_before = _tetrad_summary(G)
         E_before = compute_energy_functional(G)
         Q_before = compute_noether_charge(G)
-        predicted_depi = compute_expected_depi_dt(G, target)
+        rhs_before = compute_expected_depi_dt(G, target)
 
-        # Apply operator
-        try:
-            op = cls()
-            op(G, target)
-            applied = True
-        except Exception:
-            applied = False
+        # Apply the request and use history, rather than the requested class,
+        # as the source of truth for what the grammar executed.
+        executed, error = _apply_with_trace(G, target, cls())
 
         # After state
         node_after = _capture_node(G, target)
@@ -277,12 +325,19 @@ def experiment_causal_chain():
         E_after = compute_energy_functional(G)
         Q_after = compute_noether_charge(G)
 
-        print(f"\n  --- {label} ({glyph}) ---")
-        if not applied:
-            print("  [Operator preconditions not met; skipped]")
+        print(f"\n  --- Requested {label} ({glyph}) ---")
+        print(f"  Executed glyph: {executed or 'none recorded'}")
+        if error is not None:
+            print(f"  ERROR: {error}")
+            print("  State differences after a failed call are not attributed.")
             continue
+        if executed is None:
+            print("  No glyph was appended; state differences are not attributed.")
+            continue
+        if executed != glyph:
+            print(f"  Grammar fallback: requested {glyph}, executed {executed}.")
 
-        print(f"  Nodal Equation Decomposition:")
+        print(f"  State differences after executed {executed}:")
         print(
             f'    nu_f:     {node_before["nu_f"]:.6f}'
             f' -> {node_after["nu_f"]:.6f}'
@@ -298,15 +353,15 @@ def experiment_causal_chain():
             f' -> {node_after["EPI"]:.6f}'
             f'  (d = {node_after["EPI"] - node_before["EPI"]:+.6f})'
         )
-        print(f"    Predicted dEPI/dt = nu_f * DNFR = {predicted_depi:.6f}")
+        print(f"    RHS before call = nu_f * DNFR = {rhs_before:.6f}")
 
-        print(f"  Tetrad Response:")
+        print(f"  Tetrad Snapshot Differences:")
         for field in ["Phi_s_mean", "grad_phi_mean", "K_phi_rms", "xi_C"]:
             b = tetrad_before[field]
             a = tetrad_after[field]
             print(f"    {field:15s}: {b:.6f} -> {a:.6f}" f"  (d = {a - b:+.6f})")
 
-        print(f"  Conservation:")
+        print(f"  Candidate Energy and Charge Read-outs:")
         print(
             f"    E (energy): {E_before:.6f} -> {E_after:.6f}"
             f"  (dE = {E_after - E_before:+.6f})"
@@ -325,18 +380,19 @@ def experiment_causal_chain():
 def experiment_multi_step_trajectory():
     """Track nu_f, DELTA_NFR, and EPI evolution through a full sequence.
 
-    This provides a "waveform view" of the nodal equation, showing how
-    the two terms (nu_f, DELTA_NFR) oscillate as operators are applied.
+    This reports sampled state and instantaneous RHS values after attempted
+    operator calls. It is not a numerical integration trace of that RHS.
     """
     print("\n" + "=" * 72)
     print("  EXPERIMENT 3: Multi-Step Nodal Equation Trajectory")
-    print("  Waveform: nu_f(t), DELTA_NFR(t), EPI(t)")
+    print("  Sampled nu_f, DELTA_NFR, RHS, and EPI values")
     print("=" * 72)
 
     G = _build_graph()
     target = 0
 
-    # Extended sequence: Bootstrap + Explore + Stabilise + Propagate
+    # Deterministic attempted sequence. Individual calls may reject their
+    # preconditions; this example reports the resulting sampled state.
     sequence = [
         ("AL", Emission()),
         ("EN", Reception()),
@@ -350,15 +406,17 @@ def experiment_multi_step_trajectory():
     ]
 
     print(
-        f'\n  {"t":>3s} {"Op":>5s} {"nu_f":>10s} {"DNFR":>10s}'
-        f' {"nu_f*DNFR":>10s} {"EPI":>10s} {"dEPI":>10s}'
+        f'\n  {"t":>3s} {"Req":>5s} {"Exec":>5s} {"Status":>8s}'
+        f' {"nu_f":>10s} {"DNFR":>10s} {"nu_f*DNFR":>10s}'
+        f' {"EPI":>10s} {"dEPI":>10s}'
     )
-    print("  " + "-" * 62)
+    print("  " + "-" * 84)
 
     state = _capture_node(G, target)
     product = state["nu_f"] * state["delta_nfr"]
     print(
-        f"  {0:3d} {'---':>5s} {state['nu_f']:10.6f}"
+        f"  {0:3d} {'---':>5s} {'---':>5s} {'initial':>8s}"
+        f" {state['nu_f']:10.6f}"
         f" {state['delta_nfr']:10.6f}"
         f" {product:10.6f} {state['EPI']:10.6f} {'---':>10s}"
     )
@@ -366,19 +424,24 @@ def experiment_multi_step_trajectory():
     epi_prev = state["EPI"]
     trajectory = [state.copy()]
     for i, (glyph, op) in enumerate(sequence):
-        try:
-            op(G, target)
-        except Exception:
-            pass
+        executed, error = _apply_with_trace(G, target, op)
         state = _capture_node(G, target)
         product = state["nu_f"] * state["delta_nfr"]
         d_epi = state["EPI"] - epi_prev
+        status = "ERROR" if error is not None else ("OK" if executed else "UNREC")
         print(
-            f"  {i + 1:3d} {glyph:>5s} {state['nu_f']:10.6f}"
+            f"  {i + 1:3d} {glyph:>5s} {(executed or '---'):>5s}"
+            f" {status:>8s} {state['nu_f']:10.6f}"
             f" {state['delta_nfr']:10.6f}"
             f" {product:10.6f} {state['EPI']:10.6f}"
             f" {d_epi:+10.6f}"
         )
+        if error is not None:
+            print(f"      ERROR for requested {glyph}: {error}")
+        elif executed is None:
+            print(f"      Requested {glyph}: no glyph was appended.")
+        elif executed != glyph:
+            print(f"      Grammar fallback: requested {glyph}, executed {executed}.")
         epi_prev = state["EPI"]
         trajectory.append(state.copy())
 
@@ -408,15 +471,16 @@ def experiment_multi_step_trajectory():
 
 
 def experiment_tetrad_response():
-    """Measure tetrad field sensitivity to nodal equation perturbations.
+    """Measure finite tetrad differences in a controlled DELTA_NFR scan.
 
-    Applies small and large DELTA_NFR changes (via Coherence at different
-    states) and measures how each tetrad field responds. This reveals
-    the "response function" df_tetrad / d(DELTA_NFR).
+    Requests Coherence at several DELTA_NFR values and records the glyph that
+    the grammar actually executes before measuring each read-out difference.
+    This finite sample is not a derivative, susceptibility, or universal
+    response function.
     """
     print("\n" + "=" * 72)
-    print("  EXPERIMENT 4: Tetrad Response Functions")
-    print("  How tetrad fields respond to nodal equation perturbations")
+    print("  EXPERIMENT 4: Finite Tetrad Difference Scan")
+    print("  Seeded differences with requested and executed glyph trace")
     print("=" * 72)
 
     G_base = _build_graph()
@@ -426,10 +490,11 @@ def experiment_tetrad_response():
     perturbations = [0.01, 0.05, 0.1, 0.3, 0.5, 0.8]
 
     print(
-        f'\n  {"DNFR_init":>10s} {"d(Phi_s)":>10s} {"d(grad_phi)":>12s}'
+        f'\n  {"DNFR_init":>10s} {"Req":>5s} {"Exec":>5s} {"Status":>8s}'
+        f' {"d(Phi_s)":>10s} {"d(grad_phi)":>12s}'
         f' {"d(K_phi)":>10s} {"d(xi_C)":>10s}'
     )
-    print("  " + "-" * 56)
+    print("  " + "-" * 78)
 
     responses = []
     for dnfr_val in perturbations:
@@ -440,11 +505,8 @@ def experiment_tetrad_response():
         tetrad_before = _tetrad_summary(G)
         E_before = compute_energy_functional(G)
 
-        # Apply Coherence (stabiliser) to evolve the nodal equation
-        try:
-            Coherence()(G, target)
-        except Exception:
-            pass
+        # The requested class is not necessarily the grammar-selected glyph.
+        executed, error = _apply_with_trace(G, target, Coherence())
 
         tetrad_after = _tetrad_summary(G)
 
@@ -453,22 +515,31 @@ def experiment_tetrad_response():
         d_k = tetrad_after["K_phi_rms"] - tetrad_before["K_phi_rms"]
         d_xi = tetrad_after["xi_C"] - tetrad_before["xi_C"]
 
-        responses.append(
-            {
-                "dnfr": dnfr_val,
-                "d_phi_s": d_phi_s,
-                "d_grad": d_grad,
-                "d_k": d_k,
-                "d_xi": d_xi,
-            }
-        )
+        status = "ERROR" if error is not None else ("OK" if executed else "UNREC")
+        if error is None and executed is not None:
+            responses.append(
+                {
+                    "dnfr": dnfr_val,
+                    "d_phi_s": d_phi_s,
+                    "d_grad": d_grad,
+                    "d_k": d_k,
+                    "d_xi": d_xi,
+                }
+            )
 
         print(
-            f"  {dnfr_val:10.4f} {d_phi_s:+10.6f} {d_grad:+12.6f}"
+            f"  {dnfr_val:10.4f} {'IL':>5s} {(executed or '---'):>5s}"
+            f" {status:>8s} {d_phi_s:+10.6f} {d_grad:+12.6f}"
             f" {d_k:+10.6f} {d_xi:+10.6f}"
         )
+        if error is not None:
+            print(f"      ERROR for requested IL: {error}")
+        elif executed is None:
+            print("      Requested IL: no glyph was appended.")
+        elif executed != "IL":
+            print(f"      Grammar fallback: requested IL, executed {executed}.")
 
-    # Check linearity
+    # Report a descriptive sample correlation, without inferring a law.
     if len(responses) >= 2:
         dnfrs = [r["dnfr"] for r in responses]
         for field_name, key in [
@@ -477,17 +548,23 @@ def experiment_tetrad_response():
             ("K_phi", "d_k"),
         ]:
             vals = [r[key] for r in responses]
-            if any(abs(v) > 1e-10 for v in vals):
+            if float(np.ptp(vals)) > 1e-10:
                 corr = abs(np.corrcoef(dnfrs, vals)[0, 1])
-                regime = "LINEAR" if corr > 0.9 else "NONLINEAR"
                 print(
-                    f"\n    {field_name} response: |corr| = {corr:.4f}" f" -> {regime}"
+                    f"\n    {field_name} finite-scan |correlation| = {corr:.4f}"
+                )
+            else:
+                print(
+                    f"\n    {field_name} is constant in this scan; "
+                    "correlation is undefined."
                 )
 
     print("\n  Interpretation:")
-    print("  Linear response = tetrad field proportional to DELTA_NFR")
-    print("  Nonlinear = field saturates or has threshold behaviour")
-    print('  This reveals the structural "susceptibility" of each field')
+    print("  The execution column, sourced from glyph_history, identifies")
+    print("  which operator produced each successful row.")
+    print("  Correlation summarizes only these seeded finite differences.")
+    print("  Zero or nonzero changes depend on field definitions and operator state.")
+    print("  No derivative, threshold law, or susceptibility is inferred.")
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -513,35 +590,20 @@ def main():
     print("=" * 72)
     print(
         """
-  1. Operator Lever Analysis:
-     Each operator modulates EPI evolution through two channels:
-       - nu_f (reorganisation capacity): changed by AL, SHA, VAL, NUL
-       - DELTA_NFR (reorganisation pressure): changed by IL, OZ, EN
-       - BOTH: UM, RA act on both frequency and pressure
-     This dual-lever structure is why grammar needs both U2 (convergence
-     of the integral) and U4 (bifurcation control).
+  1. Operator calls produce reproducible state differences on the declared
+     seed. The dominant-delta labels describe this sample; operator contracts
+     remain the authority for canonical channel assignments.
 
-  2. Complete Causal Chain:
-     Operator -> (d_nu_f, d_DNFR) -> dEPI/dt -> Tetrad Response -> dE, dQ
-     The tetrad fields are *diagnostics* of nodal equation dynamics,
-     not independent variables. The chain is unidirectional:
-     operators drive the nodal equation, which drives the fields.
+  2. nu_f * DELTA_NFR is the instantaneous nodal right-hand side. A raw EPI
+     difference across an operator call is not automatically dt times that RHS.
 
-  3. Multi-Step Waveform:
-     nu_f and DELTA_NFR trace oscillating waveforms during sequences.
-     Grammar-compliant sequences produce bounded oscillations.
-     The product nu_f * DELTA_NFR predicts EPI change at each step.
+  3. The tetrad, candidate energy, and charge are graph-state diagnostics.
+     Their observed differences do not by themselves prove conservation,
+     convergence, a causal factorization, or grammar compliance.
 
-  4. Tetrad Response Functions:
-     Each tetrad field has a characteristic "susceptibility" to DELTA_NFR:
-       Phi_s:     responds to cumulative DELTA_NFR (integral, 0th order)
-       |grad_phi|: responds to local DELTA_NFR changes (1st order)
-       K_phi:     responds to curvature of DELTA_NFR field (2nd order)
-       xi_C:      responds to spatial correlation of changes (non-local)
-     This recovery of the derivative tower (0th, 1st, 2nd, integral)
-     from operator perturbations confirms the Minimal Structural Degrees
-     theorem: the tetrad is the complete and irreducible basis for
-     characterising nodal equation dynamics.
+  4. The finite DELTA_NFR scan shows that the tetrad channels respond
+     differently on this graph. It supports joint diagnostic use but does not
+     prove that the tetrad is minimal, complete, irreducible, or reconstructive.
 """
     )
 

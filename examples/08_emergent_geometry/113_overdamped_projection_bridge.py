@@ -1,21 +1,19 @@
-"""TNFR Example 113: The Overdamped Projection Bridge — from the conservative
-symplectic substrate to dissipative structural diffusion.
+"""TNFR Example 113: A damped graph-wave limit matching structural diffusion.
 
-Two emergent-geometry pieces of TNFR have, so far, been studied separately:
+Two auxiliary dynamics are compared under explicit fixed-graph assumptions:
 
-- the **conservative symplectic substrate** (example 98): the geometry the
-  nodal dynamics generates from itself, carrying the graph *wave* equation
-  q̈ = −L q (second order, mode k oscillating at √λ_k);
+- the **graph wave** q̈ = −Lq (second order, mode k oscillating at √λ_k);
 - the **dissipative structural diffusion** (example 99): the literal
   transport content of the nodal equation, q̇ = −νf·L·q (first order, mode
   k relaxing at νf·λ_k).
 
-AGENTS.md states that the nodal equation is the *overdamped projection* of
-the Hamiltonian flow on the substrate. This example MEASURES that bridge.
+The calculation establishes an overdamped limit for this graph wave. The
+isotropic auxiliary substrate in example 98 has identity stiffness; therefore
+this is not a derivation of the full nodal equation from that substrate.
 
 THE BRIDGE (precise statement on a graph)
 =========================================
-Damp the conservative substrate wave with a coefficient γ:
+Damp the graph wave with a coefficient γ:
 
     q̈ + γ q̇ + L q = 0          (damped graph oscillator)
 
@@ -26,12 +24,10 @@ exactly the structural-diffusion rate νf·λ_k under the identification
 
     νf = 1/γ        (structural frequency = inverse damping = MOBILITY).
 
-This is the same νf-as-mobility refinement of the classical-regime
-correspondence: the nodal equation is first order, so νf is a mobility, not
-an inverse mass. The conservative second-order substrate, damped, projects
-onto the first-order diffusion — both empirically grounded (damped
-oscillator; Smoluchowski overdamped limit) and both already canonical TNFR
-objects.
+This realizes the νf-as-mobility reading in the declared graph-wave model:
+the nodal equation's EPI diffusion channel is first order, so νf multiplies
+pressure as a mobility. The equality νf=1/γ is the parameter matching used in
+this model, not a universal identity for every TNFR evolution.
 
 WHAT EMERGES (measured, not asserted)
 =====================================
@@ -43,13 +39,14 @@ WHAT EMERGES (measured, not asserted)
 
 HONEST SCOPE
 ============
-This connects two canonical modules (symplectic_substrate ↔
-structural_diffusion) and confirms νf = 1/γ. It is foundational geometry,
-not a resolution of any open program (Riemann G4, Navier–Stokes).
+This connects a separately specified damped graph wave with restricted
+pure-EPI structural diffusion and verifies the stated asymptotic rates. It
+does not connect the full four-channel dynamics to the isotropic substrate or
+resolve an open program.
 
 References:
 - src/tnfr/physics/structural_diffusion.py (verify_overdamped_projection)
-- src/tnfr/physics/symplectic_substrate.py (the conservative substrate)
+- src/tnfr/physics/symplectic_substrate.py (distinct isotropic model)
 - examples/08_emergent_geometry/98_emergent_symplectic_substrate.py
 - examples/08_emergent_geometry/99_structural_diffusion.py
 - AGENTS.md §"Regime Correspondences from Nodal Dynamics"
@@ -144,9 +141,8 @@ def experiment_3_nu_f_is_mobility():
     print("EXPERIMENT 3: nu_f = 1/gamma  (mobility = inverse damping)")
     print("=" * 72)
     print()
-    print("The nodal equation is FIRST order, so nu_f is a mobility, not an")
-    print("inverse mass. The overdamped projection makes this exact: the")
-    print("damping gamma of the conservative wave is precisely 1/nu_f.")
+    print("The nodal equation is FIRST order, so nu_f multiplies pressure as")
+    print("a mobility. For this graph-wave comparison we set gamma=1/nu_f.")
     print()
 
     G = _build(40)
@@ -161,8 +157,8 @@ def experiment_3_nu_f_is_mobility():
             f"trajectory err {cert.trajectory_max_rel_error:.2e}"
         )
     print()
-    print("-> nu_f = 1/gamma confirmed: the structural frequency IS the")
-    print("   mobility (inverse damping) of the conservative substrate.")
+    print("-> within this model, nu_f=1/gamma matches the diffusion rate.")
+    print("   The equality is a declared parameter identification.")
     print()
 
 
@@ -170,7 +166,7 @@ def main():
     print()
     print("#" * 72)
     print("# TNFR Example 113: The Overdamped Projection Bridge")
-    print("# conservative symplectic substrate  -->  structural diffusion")
+    print("# damped graph wave  -->  restricted structural diffusion")
     print("#" * 72)
     print()
     experiment_1_rate_convergence()
@@ -183,11 +179,10 @@ def main():
     cert = verify_overdamped_projection(G, gamma=100.0)
     print(cert.summary())
     print()
-    print("The dissipative structural diffusion (the nodal equation's literal")
-    print("content) is the overdamped projection of the conservative")
-    print("symplectic-substrate wave, with nu_f = 1/gamma. Two emergent-")
-    print("geometry pieces, one bridge. Foundational geometry, no open")
-    print("program resolved.")
+    print("Restricted pure-EPI diffusion is the overdamped limit of the")
+    print("declared graph wave with nu_f=1/gamma. The result does not derive")
+    print("the full nodal equation from the isotropic substrate and resolves")
+    print("no open program.")
 
 
 if __name__ == "__main__":

@@ -7,35 +7,35 @@ Canonical base fields (computed elsewhere):
     Φ_s, |∇φ|, K_φ, ξ_C  →  canonical.py
     J_φ, J_ΔNFR            →  extended.py
 
-Conservation laws (computed elsewhere):
-    ρ, ∂ρ/∂t, Noether Q, energy E, Ward, Lyapunov  →  conservation.py
+Finite balance diagnostics (computed elsewhere):
+    ρ, ∂ρ/∂t, historical Q, energy candidate, Ward residual  →  conservation.py
 
-Derived fields defined HERE (single location, no duplicates):
-    Complex Geometric Field  Ψ = K_φ + i·J_φ  (geometry-transport unification)
-    Chirality Field          χ = |∇φ|·K_φ − J_φ·J_ΔNFR  (handedness)
-    Symmetry Breaking Field  𝒮 = (|∇φ|² − K_φ²) + (J_φ² − J_ΔNFR²)
-    Coherence Coupling Field 𝒞 = Φ_s · |Ψ|  (multi-scale connector)
+Derived snapshot fields defined HERE (single location, no duplicates):
+    Complex coordinate       Ψ = K_φ + i·J_φ
+    Historical chirality     χ = |∇φ|·K_φ − J_φ·J_ΔNFR  (bilinear)
+    Historical symmetry      𝒮 = (|∇φ|² − K_φ²) + (J_φ² − J_ΔNFR²)
+    Coherence coupling       𝒞 = Φ_s · |Ψ|  (product coordinate)
     Energy Density           ℰ = Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²
     Action Density           𝒜 = Φ_s·|∇φ| + K_φ·J_φ + |∇φ|·J_ΔNFR  (bilinear)
-    Topological Charge       𝒬 = |∇φ|·J_φ − K_φ·J_ΔNFR  (topological invariant)
+    Historical Q Density    𝒬 = |∇φ|·J_φ − K_φ·J_ΔNFR  (bilinear snapshot)
 
 Algebraic scope:
     Ψ combines K_φ and J_φ as real and imaginary coordinates by definition.
     Their measured correlation depends on graph topology, phase state, and
     sampling; no universal correlation range is assumed by these formulas.
+    Prefer ``compute_historical_q_density``. The public
+    ``compute_topological_charge`` name is retained for compatibility; its
+    bilinear output is not an integer winding, a homotopy invariant, or a
+    conserved quantity without separate trajectory evidence.
 """
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any
 
 from ..mathematics.unified_numerical import np
-
-try:
-    import networkx as nx
-except ImportError:
-    nx = None
 
 # Import canonical fields (Layer 1)
 from .canonical import (
@@ -145,10 +145,10 @@ def compute_complex_geometric_field(G: Any) -> dict[Any, complex]:
     is a fixture-dependent measurement, not a prerequisite or a consequence
     of representing the two maps as one complex field.
 
-    - Real part (K_φ):  Static geometric confinement
-    - Imaginary part (J_φ):  Dynamic transport flow
-    - Magnitude |Ψ|:  Total geometric-transport intensity
-    - Phase arg(Ψ):  Balance between geometry and transport
+    - Real part: ``K_φ``
+    - Imaginary part: ``J_φ``
+    - Magnitude: the Euclidean norm ``sqrt(K_φ² + J_φ²)``
+    - Phase: the coordinate angle ``atan2(J_φ, K_φ)``, undefined at ``Ψ=0``
 
     Parameters
     ----------
@@ -171,19 +171,24 @@ def compute_field_magnitude(complex_field: dict[Any, complex]) -> dict[Any, floa
 
 
 def compute_field_phase(complex_field: dict[Any, complex]) -> dict[Any, float]:
-    """Compute phase angle arg(Ψ) of complex field."""
+    """Compute NumPy's principal coordinate angle ``arg(Ψ)``.
+
+    At ``Ψ=0`` the mathematical phase is undefined; NumPy returns ``0.0`` by
+    convention, so callers requiring a phase map must check nonzero support.
+    """
     return {node: float(np.angle(value)) for node, value in complex_field.items()}
 
 
 # ============================================================================
-# EMERGENT FIELDS
+# DERIVED BILINEAR FIELDS
 # ============================================================================
 
 
 def compute_chirality_field(G: Any) -> dict[Any, float]:
     """Compute chirality field χ = |∇φ|·K_φ − J_φ·J_ΔNFR.
 
-    High |χ| indicates chiral patterns and broken mirror symmetry.
+    ``χ`` is a signed bilinear snapshot coordinate. A physical chirality or
+    broken-symmetry interpretation requires a declared transformation test.
     """
     grad_phi = compute_phase_gradient(G)
     k_phi = compute_phase_curvature(G)
@@ -195,8 +200,8 @@ def compute_chirality_field(G: Any) -> dict[Any, float]:
 def compute_symmetry_breaking_field(G: Any) -> dict[Any, float]:
     """Compute symmetry breaking field 𝒮 = (|∇φ|² − K_φ²) + (J_φ² − J_ΔNFR²).
 
-    Quantifies imbalance between conjugate field pairs.  Signals
-    phase transitions and reorganisation events.
+    Quantifies a same-snapshot imbalance between the declared coordinate
+    pairs. It does not by itself establish a phase transition.
     """
     grad_phi = compute_phase_gradient(G)
     k_phi = compute_phase_curvature(G)
@@ -208,8 +213,8 @@ def compute_symmetry_breaking_field(G: Any) -> dict[Any, float]:
 def compute_coherence_coupling_field(G: Any) -> dict[Any, float]:
     """Compute coherence coupling field 𝒞 = Φ_s · |Ψ|.
 
-    Connects global structural potential with local geometry-transport
-    intensity.  Predicts multi-scale coupling strength.
+    Multiplies structural potential by local geometry-transport intensity.
+    Predictive meaning must be established on a declared trajectory or dataset.
     """
     phi_s = compute_structural_potential(G)
     psi = compute_complex_geometric_field(G)
@@ -217,20 +222,20 @@ def compute_coherence_coupling_field(G: Any) -> dict[Any, float]:
 
 
 # ============================================================================
-# TENSOR INVARIANTS
+# SNAPSHOT QUADRATIC AND BILINEAR READ-OUTS
 # ============================================================================
 
 
 def compute_energy_density(G: Any) -> dict[Any, float]:
-    r"""Compute the raw quadratic energy density per node (CANONICAL SOURCE).
+    r"""Compute the raw quadratic structural-energy read-out per node.
 
     .. math::
 
         \mathcal{E}(i) = \Phi_s^2 + |\nabla\phi|^2 + K_\phi^2
                          + J_\phi^2 + J_{\Delta NFR}^2
 
-    This is the **unnormalised** quadratic form — the single source of
-    truth from which all other energy quantities derive:
+    This is the **unnormalised** quadratic form shared by the listed
+    finite-snapshot diagnostics:
 
     +------------------------------------+----------------------------------+
     | Derived quantity                   | Relation to ℰ                   |
@@ -260,7 +265,7 @@ def compute_energy_density(G: Any) -> dict[Any, float]:
 
 
 def compute_action_density(G: Any) -> dict[Any, float]:
-    r"""Compute action density (bilinear coupling) per node (CANONICAL SOURCE).
+    r"""Compute the historical action-density bilinear per node.
 
     .. math::
 
@@ -268,10 +273,9 @@ def compute_action_density(G: Any) -> dict[Any, float]:
                          + K_\phi \cdot J_\phi
                          + |\nabla\phi| \cdot J_{\Delta NFR}
 
-    This is the **single source of truth** for the bilinear field
-    interaction.  In the variational formulation, 𝒜 represents the
-    **interaction Lagrangian** (cross-sector coupling), distinct from
-    the free Lagrangian ℒ_free = T − V.
+    This is the shared implementation of the bilinear snapshot coordinate.
+    Its historical variational interpretation is an interaction term in a
+    declared auxiliary model; the formula alone supplies no engine action.
 
     ``variational.compute_interaction_density()`` delegates here.
 
@@ -287,11 +291,12 @@ def compute_action_density(G: Any) -> dict[Any, float]:
     return _action_density_from_fields(phi_s, grad_phi, k_phi, j_phi, j_dnfr)
 
 
-def compute_topological_charge(G: Any) -> dict[Any, float]:
-    """Compute topological charge 𝒬 = |∇φ|·J_φ − K_φ·J_ΔNFR.
+def compute_historical_q_density(G: Any) -> dict[Any, float]:
+    """Compute historical Q density 𝒬 = |∇φ|·J_φ − K_φ·J_ΔNFR.
 
-    Topological invariant — conserved under continuous deformations.
-    Characterises vortex structures and topological defects.
+    This is a continuous bilinear graph snapshot, not the integer winding of a
+    phase map. It has no general deformation or trajectory-conservation
+    guarantee.
     """
     grad_phi = compute_phase_gradient(G)
     k_phi = compute_phase_curvature(G)
@@ -300,16 +305,21 @@ def compute_topological_charge(G: Any) -> dict[Any, float]:
     return _topological_charge(grad_phi, k_phi, j_phi, j_dnfr)
 
 
+def compute_topological_charge(G: Any) -> dict[Any, float]:
+    """Compatibility alias for :func:`compute_historical_q_density`."""
+    return compute_historical_q_density(G)
+
+
 # ============================================================================
-# COMPREHENSIVE UNIFIED ANALYSIS
+# AGGREGATED SINGLE-SNAPSHOT READ-OUT
 # ============================================================================
 
 
 def compute_unified_field_suite(G: Any) -> dict[str, Any]:
-    """Compute complete unified field analysis.
+    """Compute the aggregated structural read-out for one graph snapshot.
 
-    Returns all derived fields, tensor invariants, and conservation
-    measures from one local collection of the five required base fields.
+    Returns derived fields, quadratic/bilinear coordinates, and finite balance
+    diagnostics from one local collection of the five required base fields.
     Conservation density uses :mod:`tnfr.physics.conservation`; scalar totals
     are reduced from the same returned density maps.
 
@@ -322,9 +332,11 @@ def compute_unified_field_suite(G: Any) -> dict[str, Any]:
     dict[str, Any]
         - ``psi_magnitude``, ``psi_phase``: Complex field Ψ
         - ``chirality``, ``symmetry_breaking``, ``coherence_coupling``
-        - ``energy_density``, ``action_density``, ``topological_charge``
+        - ``energy_density``, ``action_density``, ``historical_q_density``
+        - ``topological_charge``: legacy alias of ``historical_q_density``
         - ``charge_density``, ``current_j_phi``, ``current_j_dnfr``
-        - ``conservation_metrics``: {noether_charge, structural_energy}
+        - ``conservation_metrics``: historical charge and structural-energy
+          snapshot totals; neither key asserts temporal conservation
     """
     from .conservation import _charge_density_from_fields
 
@@ -345,21 +357,23 @@ def compute_unified_field_suite(G: Any) -> dict[str, Any]:
     )
     results["coherence_coupling"] = _coherence_coupling_field(phi_s, psi)
 
-    # Tensor invariants
+    # Snapshot quadratic and bilinear read-outs
     results["energy_density"] = _energy_density_from_fields(
         phi_s, grad_phi, k_phi, j_phi, j_dnfr
     )
     results["action_density"] = _action_density_from_fields(
         phi_s, grad_phi, k_phi, j_phi, j_dnfr
     )
-    results["topological_charge"] = _topological_charge(grad_phi, k_phi, j_phi, j_dnfr)
+    q_density = _topological_charge(grad_phi, k_phi, j_phi, j_dnfr)
+    results["historical_q_density"] = q_density
+    results["topological_charge"] = dict(q_density)
 
-    # Conservation quantities (canonical source)
+    # Finite balance coordinates (historical public keys retained)
     results["charge_density"] = _charge_density_from_fields(phi_s, k_phi)
     results["current_j_phi"] = j_phi
     results["current_j_dnfr"] = j_dnfr
 
-    # Scalar conservation diagnostics
+    # Scalar snapshot totals
     results["conservation_metrics"] = {
         "noether_charge": sum(results["charge_density"].values()),
         "structural_energy": 0.5 * sum(results["energy_density"].values()),
@@ -376,28 +390,49 @@ def compute_unified_field_suite(G: Any) -> dict[str, Any]:
 def analyze_field_correlations(
     results: dict[str, dict[Any, float]],
 ) -> dict[str, float]:
-    """Pairwise Pearson correlations between node-level fields in *results*.
+    """Return descriptive Pearson correlations between node-level read-outs.
 
-    Useful for verifying theoretical predictions (e.g. K_φ ↔ J_φ
-    anticorrelation).
+    Correlations are sample statistics for the supplied snapshot. Their sign
+    and magnitude are not universal identities of the field definitions.
+    Pairs with fewer than two samples or a constant member are omitted because
+    Pearson correlation is undefined there.
     """
     fields: dict[str, Any] = {}
-    first_field = next((v for v in results.values() if isinstance(v, dict)), None)
+    first_field = next(
+        (v for v in results.values() if isinstance(v, dict) and v), None
+    )
     if first_field is None:
         return {}
     sample_nodes = list(first_field.keys())
 
     for name, data in results.items():
-        if isinstance(data, dict) and sample_nodes[0] in data:
-            fields[name] = np.array([data[n] for n in sample_nodes])
+        if not isinstance(data, dict) or set(data) != set(sample_nodes):
+            continue
+        values = np.asarray([data[node] for node in sample_nodes])
+        if np.iscomplexobj(values):
+            continue
+        try:
+            real_values = np.asarray(values, dtype=float)
+        except (TypeError, ValueError):
+            continue
+        if real_values.ndim == 1 and bool(np.all(np.isfinite(real_values))):
+            fields[name] = real_values
 
     correlations: dict[str, float] = {}
     names = list(fields.keys())
     for i, n1 in enumerate(names):
         for j, n2 in enumerate(names):
             if i < j:
-                r = np.corrcoef(fields[n1], fields[n2])[0, 1]
-                correlations[f"{n1}_vs_{n2}"] = float(r) if not np.isnan(r) else 0.0
+                left, right = fields[n1], fields[n2]
+                if (
+                    left.size < 2
+                    or float(np.std(left)) == 0.0
+                    or float(np.std(right)) == 0.0
+                ):
+                    continue
+                raw = float(np.corrcoef(left, right)[0, 1])
+                if math.isfinite(raw):
+                    correlations[f"{n1}_vs_{n2}"] = raw
     return correlations
 
 

@@ -1,5 +1,4 @@
-r"""P17: Weil positivity bridge between the RH-equivalent Weil functional
-and the canonical TNFR Lyapunov energy.
+r"""P17: finite Weil comparison with a TNFR structural-energy candidate.
 
 Mathematical background
 -----------------------
@@ -31,10 +30,10 @@ This module performs two operations:
    Hamiltonian — and reports whether :math:`W[\sigma] \ge 0`.  This is
    the RH-equivalent diagnostic, in pure TNFR form.
 
-2. **TNFR-Lyapunov bridge**.  It defines a *canonical structural test
-   state* on the P14 prime-ladder graph driven by the same Gaussian
-   profile :math:`h_\sigma`, computes the canonical TNFR Lyapunov
-   energy :math:`E_{\mathrm{TNFR}}[\sigma]` via
+2. **TNFR structural-energy comparison**.  It defines a selected structural
+   test state on the P14 prime-ladder graph driven by the same Gaussian
+   profile :math:`h_\sigma`, computes the nonnegative TNFR structural-energy
+   candidate :math:`E_{\mathrm{TNFR}}[\sigma]` via
    :func:`tnfr.physics.conservation.compute_energy_functional`, and
    tabulates the ratio :math:`\alpha(\sigma) := W[\sigma]\,/\,
    E_{\mathrm{TNFR}}[\sigma]` across a grid of widths.  If
@@ -55,9 +54,9 @@ P14 graph, not the unique one — different mappings yield different
 diagnostic, not as a theorem of analytic number theory.
 
 Status: EXPERIMENTAL — Research prototype for TNFR-Riemann P17 program.
-The deliverable closes the operational distance between the canonical
-TNFR Lyapunov positivity (Structural Conservation Theorem) and the
-RH-equivalent Weil positivity functional; it does *not* close gap G4
+The deliverable compares one nonnegative finite-graph snapshot functional with
+the RH-equivalent Weil positivity functional. It supplies no monotonicity or
+lower-bound theorem and does *not* close gap G4
 (RH itself), which would require promoting the numerical inequality
 :math:`W[\sigma] \ge \alpha \cdot E_{\mathrm{TNFR}}[\sigma]` to a
 theorem over a dense admissible class.
@@ -86,6 +85,7 @@ __all__ = [
     "WeilPositivityCertificate",
     "WeilTNFRBridgeCertificate",
     "build_structural_test_state",
+    "tnfr_structural_energy_of_test_state",
     "tnfr_lyapunov_of_test_state",
     "verify_weil_positivity",
     "verify_weil_tnfr_bridge",
@@ -228,7 +228,7 @@ def build_structural_test_state(
     is a structural state in which every component of the tetrad
     responds to :math:`h_\sigma`.  Different mappings (e.g. encoding
     :math:`h_\sigma` only in ``phase`` or only in ``dnfr``) would
-    activate different sectors of the Lyapunov functional and yield
+    activate different sectors of the structural snapshot-energy candidate and yield
     different :math:`E_{\mathrm{TNFR}}[\sigma]`.
 
     Parameters
@@ -267,31 +267,41 @@ def build_structural_test_state(
     return G
 
 
-def tnfr_lyapunov_of_test_state(
+def tnfr_structural_energy_of_test_state(
     bundle: PrimeLadderHamiltonian,
     sigma: float,
 ) -> float:
-    r"""Compute the canonical TNFR Lyapunov energy
-    :math:`E_{\mathrm{TNFR}}[\sigma]` for the structural test state.
+    r"""Compute the nonnegative TNFR structural-energy candidate.
 
     Equivalent to::
 
         G = build_structural_test_state(bundle, sigma)
         return compute_energy_functional(G)
 
-    The Lyapunov energy is the canonical structural functional
+    The snapshot functional is
 
     .. math::
 
         E[G] \;=\; \tfrac12\sum_i\bigl[\Phi_s^2(i) + |\nabla\phi|^2(i)
                   + K_\phi^2(i) + J_\phi^2(i) + J_{\Delta\!NFR}^2(i)\bigr],
 
-    guaranteed non-negative by construction.  Under grammar-compliant
-    evolution (U1-U6) the time derivative is non-positive (Structural
-    Conservation Theorem, see :mod:`tnfr.physics.conservation`).
+    It is nonnegative by construction. No sign of its time derivative follows
+    from U1–U6 alone; monotonicity must be established for each declared
+    dynamics separately.
     """
     G = build_structural_test_state(bundle, sigma)
     return compute_energy_functional(G)
+
+
+def tnfr_lyapunov_of_test_state(
+    bundle: PrimeLadderHamiltonian,
+    sigma: float,
+) -> float:
+    """Backward-compatible alias for the structural-energy candidate.
+
+    The historical function name does not certify Lyapunov monotonicity.
+    """
+    return tnfr_structural_energy_of_test_state(bundle, sigma)
 
 
 # ---------------------------------------------------------------------------
@@ -383,7 +393,7 @@ def verify_weil_tnfr_bridge(
 
     * :math:`W[\sigma]` via :func:`verify_weil_positivity` (zero side),
     * :math:`E_{\mathrm{TNFR}}[\sigma]` via
-      :func:`tnfr_lyapunov_of_test_state`,
+      :func:`tnfr_structural_energy_of_test_state`,
     * :math:`\alpha(\sigma) = W[\sigma] / E_{\mathrm{TNFR}}[\sigma]`.
 
     A constant positive lower bound :math:`\alpha_{\min} > 0` across a
@@ -436,7 +446,7 @@ def verify_weil_tnfr_bridge(
             max_zeros=max_zeros,
         )
         W = float(cert.weil_functional_zero_side)
-        E = float(tnfr_lyapunov_of_test_state(bundle, sigma_f))
+        E = float(tnfr_structural_energy_of_test_state(bundle, sigma_f))
 
         W_vals[i] = W
         E_vals[i] = E

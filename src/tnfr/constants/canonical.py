@@ -139,10 +139,11 @@ VAL_MIN_COHERENCE = math.sin(
     PI / 3
 )  # sin(π/3) = √3/2 ≈ 0.8660 (60° harmonic coherence)
 
-# THOL self-organization thresholds (operational)
-THOL_MIN_COLLECTIVE_COHERENCE = (
-    FRAGMENTATION_THRESHOLD  # 1/(π+1) ≈ 0.2415 (same physics as VAL bifurcation)
-)
+# Deprecated compatibility alias. THOL no longer reads this value and it does
+# not certify canonical C(t) or the U5 parent/child target. New code should use
+# FRAGMENTATION_THRESHOLD for the coherence-band cut and
+# assess_u5_parent_child_coherence(..., alpha=...) for an explicit hierarchy.
+THOL_MIN_COLLECTIVE_COHERENCE = FRAGMENTATION_THRESHOLD
 
 # Coupling and mixing thresholds (operational)
 # Coupling forms when the composite compatibility (phase 50% + EPI 25% + Si 25%)
@@ -201,8 +202,13 @@ AL_BOOST_CANONICAL = 0.10  # emission EPI increment (tunable; energy-neutral)
 VF_ADAPT_MU_CANONICAL = 0.10  # νf adaptation rate (tunable)
 
 # Bifurcation thresholds (tunable parameters; midpoint of the unit range).
-ZHIR_VF_THRESHOLD_CANONICAL = 0.5  # mutation viability νf threshold (tunable)
+# Bifurcation-branch selector only. Direct ZHIR execution requires active νf
+# and may be tightened separately through an explicit ZHIR_MIN_VF setting.
+ZHIR_VF_THRESHOLD_CANONICAL = 0.5
 NUL_EPI_THRESHOLD_CANONICAL = 0.5  # contraction safety EPI threshold (tunable)
+# ZHIR's sampled positive-growth trigger.  This is an operational threshold,
+# not a structural constant; centralizing it prevents runtime/SDK drift.
+ZHIR_THRESHOLD_XI_CANONICAL = 0.1
 
 # Margin and selector constants (canonical selection boundaries)
 GLYPH_SELECTOR_MARGIN_CANONICAL = KL_MIN_CANONICAL  # = 1/(8π) (selection boundary precision)
@@ -260,7 +266,6 @@ DYNAMICS_SI_HI_THRESHOLD_CANONICAL = HIGH_COHERENCE_THRESHOLD  # π/(π+1) high-
 # Integrators Constants (RK4 and numerical computation)
 INTEGRATORS_RK4_SIXTH_CANONICAL = 6.0  # 6.0 (RK4 divisor: dt/6)
 INTEGRATORS_HALF_STEP_CANONICAL = 2.0  # 2.0 (half-step divisor: dt/2)
-INTEGRATORS_EPI_MARGIN_CANONICAL = 0.1  # EPI clipping margin fraction (tunable)
 INTEGRATORS_DNFR_BOUNDS_CANONICAL = 2.0  # 2.0 (ΔNFR bounds: max(-2,min(2,x)))
 INTEGRATORS_CLIP_SOFT_K_CANONICAL = PI  # π ≈ 3.1416 (soft clipping K parameter)
 INTEGRATORS_J_PHI_SCALE_CANONICAL = 0.1  # J_φ flux scaling factor (tunable)
@@ -320,8 +325,8 @@ GRAD_PHI_CANONICAL_THRESHOLD = PI / 16  # π/16 ≈ 0.196 (heuristic |∇φ| ear
 K_PHI_CANONICAL_THRESHOLD = 0.9 * PI  # 0.9×π ≈ 2.8274
 
 # ξ_C: Coherence Length Field (critical phenomena + RG)
-XI_C_CRITICAL_RATIO = 1.0  # 1.0 × diameter (finite-size scaling)
-XI_C_WATCH_RATIO = PI  # π × mean_distance (RG scaling)
+XI_C_CRITICAL_RATIO = 1.0  # selected finite-size comparison with graph diameter
+XI_C_WATCH_RATIO = PI  # selected watch multiplier for mean node eccentricity
 
 # ============================================================================
 # PHASE AND RESONANCE CONSTANTS
@@ -369,10 +374,10 @@ PHYSICS_GRAD_THRESHOLD_CANONICAL = PHASE_GRADIENT_THRESHOLD_CANONICAL
 PHYSICS_CURVATURE_HOTSPOT_CANONICAL = (
     K_PHI_CANONICAL_THRESHOLD  # 0.9×π ≈ 2.8274 (alias)
 )
-# Au-like permissive curvature threshold: the exact MIDPOINT between the strict
-# K_φ gate (0.9·π) and the π phase-wrap maximum (|K_φ| ≤ π): (0.9π + π)/2 =
-# 0.95π — a high-permissive confinement check, DERIVED from the two π-bounds
-# (not a free 0.95 fraction).
+# Legacy Au-like permissive threshold: the midpoint between the selected
+# 0.9·π warning level and the kinematic π wrap bound. The midpoint is exact
+# once those endpoints are chosen, but it is an operational policy rather than
+# a graph-independent physical derivation.
 AU_CURVATURE_PERMISSIVE_THRESHOLD = (K_PHI_CANONICAL_THRESHOLD + PI) / 2.0  # (0.9π+π)/2 = 0.95π ≈ 2.985 (permissive |K_φ|)
 PHYSICS_HOTSPOT_FRACTION_CANONICAL = 0.1  # curvature-hotspot fraction warning (tunable)
 

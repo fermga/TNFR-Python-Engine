@@ -19,6 +19,12 @@ those primitives. [AGENTS.md](AGENTS.md) is the canonical synthesized reference.
 Mathematical scope and counterexamples are stated explicitly in the linked
 theory documents.
 
+The graph engine's scalar EPI chart accepts a raw real value or the equivalent
+uniform-real `BEPIElement` representation. Its scalar projection retains the
+sign; `abs(EPI)` remains the nonnegative Banach-envelope magnitude. Genuinely
+nonuniform or complex BEPI payloads keep that magnitude projection for generic
+read-outs and are rejected by certificates that require one real EPI coordinate.
+
 ```bash
 pip install tnfr
 ```
@@ -71,6 +77,11 @@ The public structural-field tetrad is `(Phi_s, |grad phi|, K_phi, xi_C)`.
 | `K_phi` | Local wrapped phase curvature | Exact wrapped magnitude bound `pi`; `0.9*pi` is a warning margin |
 | `xi_C` | Non-local correlation range | Spectral estimate scales as `1/sqrt(lambda_2)` under its documented hypotheses |
 
+`Phi_s` uses explicit edge `length` for path geometry when available; otherwise
+it retains `weight` as a compatibility fallback. EPI diffusion always reads
+`weight` as conductance, so models with distinct geometry and transport should
+declare both attributes.
+
 For small phase spread on a consistent branch and matching weight conventions,
 `K_phi` agrees with the random-walk Laplacian applied to phase. The EPI channel
 of `Delta NFR` is exact graph diffusion. These statements do not make every
@@ -93,6 +104,60 @@ classifications are derived in
 [`grammar_canon.py`](src/tnfr/operators/grammar_canon.py), and exposed through
 [`grammar.py`](src/tnfr/operators/grammar.py).
 
+The operator registry is the canonical semantic interface for named
+transformations. Declared numerical solvers may advance EPI only through the
+shared nodal-equation integrator from explicit `nu_f` and `DeltaNFR`, with
+provenance or a residual; ad hoc state assignment is outside the engine
+contract.
+
+SDK words preserve operator order. Each SDK Reception or Resonance stage
+reads one immutable all-target snapshot and commits its validated proposals
+atomically; the GPU Resonance strategy reuses that same stage. These positions
+have two-phase Jacobi semantics. Other operator stages retain operator-major
+Gauss-Seidel semantics, so the guarantee does not make an entire mixed word
+simultaneous. No GPU Reception strategy is currently registered.
+
+THOL's `subepi_amplitude_alignment` is a variance-based EPI-amplitude
+diagnostic, not canonical `C(t)` and not U5. A concrete U5 target is evaluated
+by `assess_u5_parent_child_coherence(..., alpha=...)`; the hierarchy and
+nonnegative `alpha` must be supplied explicitly.
+
+### Mutation temporal evidence
+
+Mutation keeps three related quantities separate:
+
+| Read-out | Definition | Scope |
+| --- | --- | --- |
+| `predicted_depi_dt` | instantaneous `nu_f * DeltaNFR` | Nodal-equation prediction; its crossing is exposed by the legacy SDK alias `near_bifurcation` |
+| `observed_depi_dt` | signed two-sample EPI secant | Evidence used by the strict, non-disableable ZHIR threshold gate |
+| `d2epi_dt2` | three-sample change between adjacent secant rates | Structural-acceleration diagnostic; timestamped or legacy unit-step, and not the ZHIR gate |
+
+Physical evidence uses timestamped `(time, EPI)` records with finite increasing
+time and a fresh final EPI endpoint. If supplied, it is authoritative and does
+not fall back when invalid or stale. Legacy `epi_history` and `_epi_history`
+instead retain a unit-operator-step interpretation and are explicitly not
+resolved in physical time. Direct Mutation requires a valid observed rate
+strictly above `ZHIR_THRESHOLD_XI`, together with active capacity and any
+configured minimum capacity.
+
+When dynamic selection cannot support a proposed ZHIR from that evidence, it
+substitutes Coherence (IL) before ordinary grammar enforcement and records the
+requested and applied glyphs with the reason. The SDK whole-word runner
+checks all target nodes before executing a word that contains Mutation and
+rejects timestamped evidence that an earlier EPI-channel operator in the word
+would make stale. `ZHIR_BIFURCATION_VF_THRESHOLD = 0.5` only controls branch
+proposal; it is not the Mutation gate. `MutationTriggerCertificate` is an
+immutable diagnostic, and `nodal_state()` reads the same evidence without
+modifying the graph. Neither evaluates the prior-IL and recent-destabilizer
+context required by U4b, and neither certifies execution readiness.
+`TNFRNetwork.apply_evidence_gated_mutation()` is the high-level experiment
+policy: it runs the requested ZHIR word only after the same preflight;
+otherwise it executes a declared Mutation-free exploration word and records
+the decision in `NetworkResults.mutation_workflows`. It never synthesizes EPI
+history, and malformed evidence remains an error. Direct `apply_sequence()`
+calls remain strict. See
+[Mutation (ZHIR)](theory/STRUCTURAL_OPERATORS.md#91-mutation-zhir).
+
 ## Mathematical scope
 
 TNFR provides executable structural models, diagnostics, and reproducible
@@ -104,6 +169,59 @@ The current scope is centralized in:
 - [Diagnostic and Grammar Scope](theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md)
 - [Minimal Structural Degrees](theory/MINIMAL_STRUCTURAL_DEGREES.md)
 - [Structural Conservation Theorem](theory/STRUCTURAL_CONSERVATION_THEOREM.md)
+- [Core Dynamics Research Program](theory/CORE_RESEARCH_PROGRAM.md), with its
+  [diffusion stability theorem](theory/TNFR_DIFFUSION_STABILITY_THEOREM.md) and
+  [scale, geometry and bridge results](theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md)
+
+The restricted S16 executable boundary now covers both frozen endpoints and
+sampled pure-EPI trajectories. The path certificate checks every nodal update
+on persistent node identifiers, the explicit-Euler modal limit and a common
+switching Lyapunov metric. It separates spectral and residual tolerances and
+limits cumulative positive energy variation. Its mesh comparison requires an
+explicit same-dynamics declaration and keeps numerical agreement separate from
+a proof of convergence.
+
+Within that common metric, a declared affine EPI reset has a finite global
+disagreement gain exactly when it preserves the consensus subspace. The engine
+combines a rational Frobenius upper bound computed exactly on the represented
+binary64 coefficients for each passing reset with a rationally certified lower
+bound for the represented diffusion decay. The flow proof separately checks
+that its materialized generator preserves the consensus subspace and requires
+the stronger exact identity `A 1 = 0` so every uniform EPI field is a fixed
+point. Preservation of the displayed weighted mean, `h^T A = 0`, is reported
+separately. Spectral rates remain estimates. A rational log/exp enclosure
+decides and bounds finite and repeated hybrid words without using caller
+tolerance as a theorem gate.
+
+For bounded time-varying capacities, the certificate constructs `W`, `D`,
+`B=D-W`, its quotient gap and the Lyapunov rate rationally from the effective
+binary64 conductances and declared capacity bounds. It reports the conditional
+exact-real theorem, availability of a positive operational float rate, ordinary
+spectral diagnostics and numerical-integration verification separately; the
+last remains open because no future schedule or solver path is observed.
+
+Local Reception (EN) and Resonance (RA) are the first two catalog operators
+connected to this framework. They share one centralized unweighted-neighbour
+EPI blend even when transport conductance is weighted. The RA audit keeps four
+layers separate: the ideal-real convex blend, the represented binary64 affine
+map, the actual two-stage binary64 proposal, and the accepted identity-gated
+runtime snapshot. Only neighbours that individually pass U3 participate in
+RA's EPI mean, phase mean, and frequency trigger; its configured phase limit
+may tighten, but cannot exceed, the canonical `pi/2` gate.
+
+RA permits the scalar EPI to move through convex mixing while preserving its
+identity: a strict negative/positive crossing is rejected, exact zero is a
+neutral boundary, and an established nonempty `epi_kind` cannot change (an
+absent kind may be initialized). These sign and kind conditions are independent.
+The runtime also requires `0 <= RA_epi_diff <= 1`, nonnegative
+`RA_vf_amplification`, and `0 <= RA_phase_coupling <= 1` before mutation. A
+local frequency boost generally changes the post-RA diffusion metric
+`h_i=d_i/nu_i`; the fixed post-RA flow can still be certified, while a pre/post
+switching claim abstains unless the represented metrics are exactly
+proportional. Any accepted nontrivial EPI change requires pure-EPI pressure
+refresh before diffusion resumes. Separate rounding, clipping, identity gates,
+and multichannel effects preclude a global binary64 affinity claim. Canonical
+labels do not supply gains for the remaining runtime operators.
 
 The Riemann, Navier-Stokes, Yang-Mills, P-vs-NP, BSD, and Hodge programs remain
 open research programs. They do not claim solutions to the corresponding

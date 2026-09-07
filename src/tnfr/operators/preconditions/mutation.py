@@ -9,6 +9,7 @@ aligning with the architectural pattern used by Coherence (IL) and Dissonance (O
 
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -21,6 +22,11 @@ from ...config.operator_names import (
     DESTABILIZERS,
 )
 from ...constants.aliases import ALIAS_VF
+from .._mutation_gate import (
+    mutation_threshold_sample,
+    validate_mutation_capacity,
+    validate_mutation_threshold,
+)
 from ..grammar_debt import node_has_prior_coherence
 from . import OperatorPreconditionError
 
@@ -62,8 +68,9 @@ def validate_mutation_strict(G: TNFRGraph, node: NodeId) -> None:
     - ``VALIDATE_OPERATOR_PRECONDITIONS=True`` (global strict mode)
     - Individual flags enabled (ZHIR_REQUIRE_IL_PRECEDENCE, etc.)
 
-    For backward compatibility, threshold and U4b checks may be soft
-    (warnings only) when strict validation disabled.
+    The threshold is always a hard operator contract. U4b is checked here when
+    global strict validation or either explicit U4b flag is enabled; the normal
+    high-level operator path also enforces U4b through the grammar.
 
     Examples
     --------
@@ -87,41 +94,15 @@ def validate_mutation_strict(G: TNFRGraph, node: NodeId) -> None:
 
     # 3. Grammar U4b validation
     strict_validation = bool(G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
-    if strict_validation:
+    if strict_validation or bool(
+        G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False)
+    ) or bool(G.graph.get("ZHIR_REQUIRE_DESTABILIZER", False)):
         validate_grammar_u4b(G, node, logger)
-
-    # 4. History length validation
-    _validate_history_length(G, node)
 
 
 def _validate_minimum_vf(G: TNFRGraph, node: NodeId) -> None:
     """Validate minimum structural frequency for phase transformation."""
-    vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
-    min_vf = float(G.graph.get("ZHIR_MIN_VF", 0.05))
-
-    if vf < min_vf:
-        raise OperatorPreconditionError(
-            "Mutation",
-            f"Structural frequency too low for mutation (νf={vf:.3f} < {min_vf:.3f})",
-        )
-
-
-def _validate_history_length(G: TNFRGraph, node: NodeId) -> None:
-    """Validate sufficient EPI history for velocity calculation."""
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
-        "_epi_history", []
-    )
-    min_length = int(G.graph.get("ZHIR_MIN_HISTORY_LENGTH", 2))
-
-    if len(epi_history) < min_length:
-        import logging
-
-        logger = logging.getLogger(__name__)
-        logger.warning(
-            f"Node {node}: ZHIR applied without sufficient EPI history "
-            f"(need ≥{min_length} points, have {len(epi_history)}). "
-            f"Threshold verification may be inaccurate."
-        )
+    validate_mutation_capacity(G.nodes[node], G.graph)
 
 
 def validate_threshold_crossing(
@@ -142,14 +123,9 @@ def validate_threshold_crossing(
     logger : logging.Logger, optional
         Logger for telemetry output
 
-    Notes
-    -----
-    - If ∂EPI/∂t < ξ: Logs warning (soft check for backward compatibility)
-    - If ∂EPI/∂t ≥ ξ: Logs success, sets validation flag
-    - If insufficient history: Logs warning, cannot verify
-
-    The check is soft (warning only) unless ZHIR_STRICT_THRESHOLD_CHECK=True,
-    maintaining backward compatibility with existing code.
+    The canonical comparison is signed and strict. Equality, negative change,
+    invalid samples, and insufficient history all raise without writing node
+    metadata.
 
     Examples
     --------
@@ -164,50 +140,13 @@ def validate_threshold_crossing(
 
         logger = logging.getLogger(__name__)
 
-    # Get EPI history - check both keys for compatibility
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
-        "_epi_history", []
+    sample = validate_mutation_threshold(G.nodes[node], G.graph)
+    logger.info(
+        "Node %r: ZHIR threshold crossed (signed dEPI/dt=%g > xi=%g)",
+        node,
+        sample.depi_dt,
+        sample.xi,
     )
-
-    if len(epi_history) < 2:
-        # Insufficient history - cannot verify threshold
-        logger.warning(
-            f"Node {node}: ZHIR applied without sufficient EPI history "
-            f"(need ≥2 points, have {len(epi_history)}). Cannot verify threshold."
-        )
-        G.nodes[node]["_zhir_threshold_unknown"] = True
-        return
-
-    # Compute ∂EPI/∂t (discrete approximation using last two points)
-    # For discrete operator applications with Δt=1: ∂EPI/∂t ≈ EPI_t - EPI_{t-1}
-    depi_dt = abs(epi_history[-1] - epi_history[-2])
-
-    # Get threshold from configuration
-    xi_threshold = float(G.graph.get("ZHIR_THRESHOLD_XI", 0.1))
-
-    # Verify threshold crossed
-    if depi_dt < xi_threshold:
-        # Allow mutation but log warning (soft check for backward compatibility)
-        logger.warning(
-            f"Node {node}: ZHIR applied with ∂EPI/∂t={depi_dt:.3f} < ξ={xi_threshold}. "
-            f"Mutation may lack structural justification. "
-            f"Consider increasing dissonance (OZ) first."
-        )
-        G.nodes[node]["_zhir_threshold_warning"] = True
-
-        # Strict check if configured
-        if bool(G.graph.get("ZHIR_STRICT_THRESHOLD_CHECK", False)):
-            raise OperatorPreconditionError(
-                "Mutation",
-                f"Threshold not crossed: ∂EPI/∂t={depi_dt:.3f} < ξ={xi_threshold}. "
-                f"Apply Dissonance (OZ) or Expansion (VAL) to increase structural velocity first.",
-            )
-    else:
-        # Threshold met - log success
-        logger.info(
-            f"Node {node}: ZHIR threshold crossed (∂EPI/∂t={depi_dt:.3f} > ξ={xi_threshold})"
-        )
-        G.nodes[node]["_zhir_threshold_met"] = True
 
 
 def validate_grammar_u4b(
@@ -262,8 +201,18 @@ def validate_grammar_u4b(
 
     # Get glyph history
     glyph_history = G.nodes[node].get("glyph_history", [])
+    strict_validation = bool(G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
+    require_il = strict_validation or bool(
+        G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False)
+    )
+    require_destabilizer = strict_validation or bool(
+        G.graph.get("ZHIR_REQUIRE_DESTABILIZER", False)
+    )
     if not glyph_history:
-        # No history - cannot validate U4b
+        if require_il or require_destabilizer:
+            raise OperatorPreconditionError(
+                "Mutation", "U4b cannot be verified without glyph history"
+            )
         logger.warning(
             f"Node {node}: No glyph history available. Cannot verify U4b compliance."
         )
@@ -276,7 +225,6 @@ def validate_grammar_u4b(
     history_names = [glyph_function_name(g) for g in glyph_history]
 
     # Part 1: Check for prior IL (Coherence)
-    require_il = bool(G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False))
     il_found = node_has_prior_coherence(G.nodes[node])
 
     if require_il and not il_found:
@@ -292,11 +240,9 @@ def validate_grammar_u4b(
             f"Node {node}: ZHIR IL precedence satisfied (prior Coherence found)"
         )
 
-    # Part 2: Check for recent destabilizer
-    # This also records destabilizer context for telemetry
-    context = record_destabilizer_context(G, node, logger)
-
-    require_destabilizer = bool(G.graph.get("ZHIR_REQUIRE_DESTABILIZER", False))
+    # Compute the context without writing it. A rejected validation must not
+    # leave metadata that falsely reports an accepted mutation path.
+    context = record_destabilizer_context(G, node, logger, record=False)
     destabilizer_found = context.get("destabilizer_operator")
 
     if require_destabilizer and destabilizer_found is None:
@@ -307,10 +253,15 @@ def validate_grammar_u4b(
             f"Recent history: {recent_history}. "
             "Apply Dissonance or Expansion to elevate ΔNFR first.",
         )
+    G.nodes[node]["_mutation_context"] = context
 
 
 def record_destabilizer_context(
-    G: TNFRGraph, node: NodeId, logger: logging.Logger | None = None
+    G: TNFRGraph,
+    node: NodeId,
+    logger: logging.Logger | None = None,
+    *,
+    record: bool = True,
 ) -> dict:
     """Detect and record which destabilizer enabled the current mutation.
 
@@ -326,6 +277,9 @@ def record_destabilizer_context(
         Node being mutated
     logger : logging.Logger, optional
         Logger for telemetry output
+    record : bool, default True
+        Store the resolved context on the node. Diagnostics pass ``False`` to
+        remain read-only.
 
     Returns
     -------
@@ -370,7 +324,8 @@ def record_destabilizer_context(
             "destabilizer_distance": None,
             "recent_history": [],
         }
-        G.nodes[node]["_mutation_context"] = context
+        if record:
+            G.nodes[node]["_mutation_context"] = context
         return context
 
     # Import glyph_function_name to convert glyphs to operator names
@@ -401,7 +356,8 @@ def record_destabilizer_context(
         "destabilizer_distance": destabilizer_distance,
         "recent_history": recent_names,
     }
-    G.nodes[node]["_mutation_context"] = context
+    if record:
+        G.nodes[node]["_mutation_context"] = context
 
     # Log telemetry for structural tracing
     if destabilizer_found:
@@ -466,8 +422,14 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
 
     # Check 1: Minimum νf
     vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
-    min_vf = float(G.graph.get("ZHIR_MIN_VF", 0.05))
-    vf_passed = vf >= min_vf
+    min_vf = float(G.graph.get("ZHIR_MIN_VF", 0.0))
+    vf_passed = (
+        math.isfinite(vf)
+        and math.isfinite(min_vf)
+        and min_vf >= 0.0
+        and vf > 0.0
+        and vf >= min_vf
+    )
     checks["minimum_vf"] = {
         "passed": vf_passed,
         "value": vf,
@@ -479,36 +441,30 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
             f"Apply AL (Emission) or NAV (Transition) to boost structural frequency."
         )
 
-    # Check 2: Threshold crossing
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
-        "_epi_history", []
-    )
-    xi_threshold = float(G.graph.get("ZHIR_THRESHOLD_XI", 0.1))
-
-    if len(epi_history) >= 2:
-        depi_dt = abs(epi_history[-1] - epi_history[-2])
-        threshold_passed = depi_dt >= xi_threshold
-        checks["threshold_crossing"] = {
-            "passed": threshold_passed,
-            "depi_dt": depi_dt,
-            "xi": xi_threshold,
-        }
-        if not threshold_passed:
-            recommendations.append(
-                f"Increase structural velocity: ∂EPI/∂t={depi_dt:.3f} < ξ={xi_threshold}. "
-                f"Apply OZ (Dissonance) or VAL (Expansion) to elevate reorganization."
-            )
-    else:
+    # Check 2: use the same signed, strict, non-mutating sample as runtime.
+    sample = None
+    try:
+        sample = mutation_threshold_sample(G.nodes[node], G.graph)
+    except OperatorPreconditionError as exc:
         checks["threshold_crossing"] = {
             "passed": False,
             "depi_dt": None,
-            "xi": xi_threshold,
-            "reason": "Insufficient history",
+            "xi": G.graph.get("ZHIR_THRESHOLD_XI"),
+            "reason": str(exc),
         }
-        recommendations.append(
-            f"Build EPI history: only {len(epi_history)} points available (need ≥2). "
-            f"Apply several operators to establish history."
-        )
+        recommendations.append(str(exc))
+    else:
+        checks["threshold_crossing"] = {
+            "passed": sample.crossed,
+            "depi_dt": sample.depi_dt,
+            "xi": sample.xi,
+        }
+        if not sample.crossed:
+            recommendations.append(
+                "Increase positive structural velocity: "
+                f"signed dEPI/dt={sample.depi_dt:.3f} must exceed "
+                f"xi={sample.xi:.3f}."
+            )
 
     # Check 3: IL precedence
     glyph_history = G.nodes[node].get("glyph_history", [])
@@ -532,7 +488,7 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
 
     # Check 4: Recent destabilizer
     logger = logging.getLogger(__name__)
-    context = record_destabilizer_context(G, node, logger)
+    context = record_destabilizer_context(G, node, logger, record=False)
     destabilizer_found = context.get("destabilizer_operator") is not None
 
     checks["recent_destabilizer"] = {
@@ -545,13 +501,26 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
             "Apply destabilizer (OZ/VAL) within last ~3 operations to elevate ΔNFR (U4b Part 2)."
         )
 
-    # Check 5: History length
-    min_history = int(G.graph.get("ZHIR_MIN_HISTORY_LENGTH", 2))
-    history_passed = len(epi_history) >= min_history
+    # Check 5: the successful threshold sample is also the authority for
+    # history selection. This prevents a valid timestamped physical history
+    # from being contradicted by a separate legacy-only length check.
+    min_history = 2
+    history_source = sample.history_key if sample is not None else None
+    history_length = 0
+    if sample is not None:
+        raw_history = G.nodes[node].get(sample.history_key)
+        try:
+            history_length = len(raw_history)
+        except (OverflowError, TypeError):
+            # A successful certificate proves that two effective samples
+            # exist even if the supplied replayable input exposes no len().
+            history_length = min_history
+    history_passed = sample is not None
     checks["history_length"] = {
         "passed": history_passed,
-        "length": len(epi_history),
+        "length": history_length,
         "required": min_history,
+        "source": history_source,
     }
     # Already covered by threshold check recommendations
 

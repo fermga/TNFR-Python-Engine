@@ -100,6 +100,7 @@ class TestConservationFeedbackInResult:
         # conservation_feedback is Optional — may be None if no monitor
         # is attached, but the field must exist on the dataclass.
         assert hasattr(result, "conservation_feedback")
+        assert hasattr(result, "balance_feedback")
 
     def test_conservation_feedback_none_without_monitor(self) -> None:
         """Without an attached integrity monitor, conservation_feedback is None."""
@@ -109,16 +110,18 @@ class TestConservationFeedbackInResult:
         result = engine.recommend_optimization_strategy(G, "general")
         # No monitor attached → feedback_vector() returns nothing → None
         assert result.conservation_feedback is None
+        assert result.balance_feedback is None
 
     def test_conservation_feedback_propagated_from_monitor(self) -> None:
         """When the integrity monitor is attached, conservation_feedback
-        contains the four canonical fields from feedback_vector()."""
+        contains accurate diagnostic names and compatibility aliases."""
         from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         # Force at least one data point into the monitor
         monitor._summary.total_operators = 1
+        monitor._summary.balance_samples = 1
         monitor._summary.mean_conservation_quality = 0.85
         monitor._summary.mean_energy_derivative = -0.01
         monitor._summary.total_charge_drift = 0.02
@@ -128,26 +131,34 @@ class TestConservationFeedbackInResult:
         result = engine.recommend_optimization_strategy(G, "general")
         cf = result.conservation_feedback
         assert cf is not None
+        assert result.balance_feedback is cf
+        assert result.mathematical_insights["balance_feedback"] is cf
+        assert result.mathematical_insights["conservation_feedback"] is cf
+        assert "balance_quality" in cf
+        assert "candidate_energy_derivative" in cf
+        assert "mean_structural_charge_drift" in cf
+        assert "total_structural_charge_drift" in cf
+        assert "structural_charge_drift" in cf
+        assert "monitor_alert_rate" in cf
         assert "conservation_quality" in cf
         assert "energy_derivative" in cf
         assert "charge_drift" in cf
         assert "violation_rate" in cf
+        assert cf["balance_quality"] == cf["conservation_quality"]
         assert cf["conservation_quality"] == pytest.approx(0.85)
 
 
-class TestConservationAwareStrategyReordering:
-    """When conservation quality is low, safe strategies must be
-    promoted ahead of aggressive ones (P5: strategy reordering)."""
+class TestBalanceAlertsDoNotPrescribeStrategies:
+    """Finite diagnostic alerts are exposed without prescribing operators."""
 
-    def test_safe_strategies_promoted_when_quality_low(self) -> None:
-        """Strategies containing 'cache'/'structural'/'stabiliz' are moved
-        to the front when conservation_quality < 0.7."""
+    def test_low_balance_quality_generates_review_only(self) -> None:
         from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph(20)
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         # Simulate low conservation quality
         monitor._summary.total_operators = 10
+        monitor._summary.balance_samples = 10
         monitor._summary.mean_conservation_quality = 0.4
         monitor._summary.mean_energy_derivative = 0.05
         monitor._summary.total_charge_drift = 0.5
@@ -156,37 +167,25 @@ class TestConservationAwareStrategyReordering:
         engine = TNFRSelfOptimizingEngine()
         result = engine.recommend_optimization_strategy(G, "general")
 
-        # The result must be influenced by conservation feedback
         cf = result.conservation_feedback
         assert cf is not None
-        assert cf["conservation_quality"] < 0.7
-
-        # If both safe and non-safe strategies exist, safe must come first
+        assert cf["balance_quality"] < 0.7
         strategies = result.recommended_strategies
-        if len(strategies) >= 2:
-            safe_kw = ("cache", "structural", "stabiliz", "memo")
-            safe_indices = [
-                i
-                for i, s in enumerate(strategies)
-                if any(kw in s.lower() for kw in safe_kw)
-            ]
-            other_indices = [
-                i
-                for i, s in enumerate(strategies)
-                if not any(kw in s.lower() for kw in safe_kw)
-            ]
-            if safe_indices and other_indices:
-                assert max(safe_indices) < min(
-                    other_indices
-                ), f"Safe strategies should precede others: {strategies}"
+        reviews = result.balance_alert_reviews
+        assert "balance_quality_low_review" in reviews
+        assert "candidate_energy_increase_review" in reviews
+        assert "balance_quality_low_review" not in strategies
+        assert "candidate_energy_increase_review" not in strategies
+        assert "conservation_quality_low_stabilize" not in strategies
+        assert "lyapunov_unstable_add_IL" not in strategies
 
-    def test_no_reordering_when_quality_high(self) -> None:
-        """When conservation_quality >= 0.7 and dE/dt <= 0, no reordering."""
+    def test_no_balance_review_when_sample_is_within_alerts(self) -> None:
         from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph(20)
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor._summary.total_operators = 10
+        monitor._summary.balance_samples = 10
         monitor._summary.mean_conservation_quality = 0.95
         monitor._summary.mean_energy_derivative = -0.01
         monitor._summary.total_charge_drift = 0.01
@@ -196,9 +195,23 @@ class TestConservationAwareStrategyReordering:
         result = engine.recommend_optimization_strategy(G, "general")
         cf = result.conservation_feedback
         assert cf is not None
-        assert cf["conservation_quality"] >= 0.7
-        # Strategies exist in their natural order (no reordering applied)
-        assert len(result.recommended_strategies) >= 0  # sanity
+        assert cf["balance_quality"] >= 0.7
+        assert "balance_quality_low_review" not in result.balance_alert_reviews
+        assert "candidate_energy_increase_review" not in result.balance_alert_reviews
+
+    def test_attached_monitor_without_samples_does_not_generate_review(self) -> None:
+        from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
+
+        G = _make_tnfr_graph(20)
+        enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
+
+        result = TNFRSelfOptimizingEngine().recommend_optimization_strategy(
+            G, "general"
+        )
+
+        assert result.balance_feedback is not None
+        assert result.balance_feedback["balance_sample_count"] == 0.0
+        assert result.balance_alert_reviews == ()
 
 
 class TestConservationInExperienceRecording:
@@ -232,11 +245,10 @@ class TestConservationInExperienceRecording:
 
 
 class TestAdaptiveConfigTracksConservation:
-    """_update_adaptive_configuration() tracks mean conservation drift (P5 G5)."""
+    """Adaptive configuration tracks the finite structural-charge diagnostic."""
 
-    def test_mean_conservation_drift_tracked(self) -> None:
-        """After learning from experiences with conservation data,
-        adaptive_config contains mean_conservation_drift."""
+    def test_mean_structural_charge_drift_tracked(self) -> None:
+        """The accurate drift key is tracked with its compatibility alias."""
         engine = TNFRSelfOptimizingEngine()
         # Inject enough experiences to trigger learning (need >= 10)
         for i in range(12):
@@ -259,8 +271,12 @@ class TestAdaptiveConfigTracksConservation:
             )
             engine.learn_from_experience(exp)
 
+        assert "mean_structural_charge_drift" in engine.adaptive_config
         assert "mean_conservation_drift" in engine.adaptive_config
-        assert engine.adaptive_config["mean_conservation_drift"] > 0
+        assert engine.adaptive_config["mean_structural_charge_drift"] > 0
+        assert engine.adaptive_config["mean_conservation_drift"] == pytest.approx(
+            engine.adaptive_config["mean_structural_charge_drift"]
+        )
 
     def test_no_conservation_drift_without_data(self) -> None:
         """If experiences lack conservation data, key is absent."""
@@ -283,18 +299,19 @@ class TestAdaptiveConfigTracksConservation:
             engine.learn_from_experience(exp)
 
         assert "mean_conservation_drift" not in engine.adaptive_config
+        assert "mean_structural_charge_drift" not in engine.adaptive_config
 
 
 class TestConservationLowQualityRecommendations:
-    """Conservation text recommendations are generated when feedback
-    indicates problems (closed-loop from integrity monitor)."""
+    """Scoped review recommendations are generated from monitor alerts."""
 
-    def test_low_quality_generates_stabilize_recommendation(self) -> None:
+    def test_low_quality_generates_review_recommendation(self) -> None:
         from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor._summary.total_operators = 5
+        monitor._summary.balance_samples = 5
         monitor._summary.mean_conservation_quality = 0.3
         monitor._summary.mean_energy_derivative = 0.1
         monitor._summary.total_charge_drift = 0.5
@@ -303,31 +320,39 @@ class TestConservationLowQualityRecommendations:
         engine = TNFRSelfOptimizingEngine()
         result = engine.recommend_optimization_strategy(G, "general")
         strategies = result.recommended_strategies
+        reviews = result.balance_alert_reviews
 
-        assert "conservation_quality_low_stabilize" in strategies
-        assert "lyapunov_unstable_add_IL" in strategies
+        assert "balance_quality_low_review" in reviews
+        assert "candidate_energy_increase_review" in reviews
+        assert "balance_quality_low_review" not in strategies
+        assert "candidate_energy_increase_review" not in strategies
+        assert "conservation_quality_low_stabilize" not in strategies
+        assert "lyapunov_unstable_add_IL" not in strategies
 
-    def test_high_charge_drift_recommendation(self) -> None:
+    def test_high_structural_charge_drift_recommendation(self) -> None:
         from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor._summary.total_operators = 5
+        monitor._summary.balance_samples = 5
         monitor._summary.mean_conservation_quality = 0.9
         monitor._summary.mean_energy_derivative = -0.01
-        monitor._summary.total_charge_drift = 0.2
+        monitor._summary.total_charge_drift = 1.0  # mean 0.2 across 5 samples
         monitor._summary.violations_count = 0
 
         engine = TNFRSelfOptimizingEngine()
         result = engine.recommend_optimization_strategy(G, "general")
-        assert "noether_charge_drift_correction" in result.recommended_strategies
+        assert "structural_charge_drift_review" in result.balance_alert_reviews
+        assert "structural_charge_drift_review" not in result.recommended_strategies
 
-    def test_high_violation_rate_recommendation(self) -> None:
+    def test_high_monitor_alert_rate_recommendation(self) -> None:
         from tnfr.physics.integrity import MonitorMode, enable_integrity_monitor
 
         G = _make_tnfr_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor._summary.total_operators = 10
+        monitor._summary.balance_samples = 10
         monitor._summary.mean_conservation_quality = 0.9
         monitor._summary.mean_energy_derivative = -0.01
         monitor._summary.total_charge_drift = 0.01
@@ -335,4 +360,5 @@ class TestConservationLowQualityRecommendations:
 
         engine = TNFRSelfOptimizingEngine()
         result = engine.recommend_optimization_strategy(G, "general")
-        assert "high_violation_rate_grammar_review" in result.recommended_strategies
+        assert "monitor_alert_rate_review" in result.balance_alert_reviews
+        assert "monitor_alert_rate_review" not in result.recommended_strategies

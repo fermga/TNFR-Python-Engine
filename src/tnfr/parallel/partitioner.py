@@ -8,6 +8,7 @@ to preserve the fractal organization inherent in TNFR.
 from __future__ import annotations
 
 import math
+from numbers import Real
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -25,7 +26,6 @@ except ImportError:
     HAS_SCIPY = False
     KDTree = None  # type: ignore
 
-from ..alias import get_attr
 from ..constants.aliases import ALIAS_THETA, ALIAS_VF
 
 # ---------------------------------------------------------------------------
@@ -37,10 +37,30 @@ _CLUSTERING_HIGH_THRESHOLD = 0.6
 _CLUSTERING_LOW_THRESHOLD = 0.2
 
 
-def _node_attribute(graph: Any, node: Any, aliases: tuple, default: float) -> float:
-    """Resolve structural aliases without treating a physical zero as absent."""
-    value = get_attr(graph.nodes[node], aliases, None)
-    return float(default if value is None else value)
+def _node_attribute(
+    graph: Any,
+    node: Any,
+    aliases: tuple[str, ...],
+    default: float,
+    *,
+    label: str,
+    nonnegative: bool = False,
+) -> float:
+    """Read one finite structural scalar while preserving an explicit zero."""
+    attributes = graph.nodes[node]
+    value = default
+    for key in aliases:
+        if key in attributes:
+            value = attributes[key]
+            break
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise ValueError(f"{label} for node {node!r} must be a finite real")
+    resolved = float(value)
+    if not math.isfinite(resolved):
+        raise ValueError(f"{label} for node {node!r} must be a finite real")
+    if nonnegative and resolved < 0.0:
+        raise ValueError(f"{label} for node {node!r} must be nonnegative")
+    return resolved
 
 
 class FractalPartitioner:
@@ -61,8 +81,9 @@ class FractalPartitioner:
         Minimum coherence score for adding a node to a community. Higher values
         create tighter communities but may result in more partitions.
     use_spatial_index : bool, default=True
-        Whether to use spatial indexing (KDTree) for O(n log n) neighbor
-        finding. Requires scipy. Falls back to O(n²) if unavailable.
+        Whether to build a KDTree for structural-coordinate candidate queries.
+        Index construction is O(n log n); total partitioning complexity also
+        depends on repeated community scoring. Requires SciPy.
     adaptive : bool, default=True
         Whether to use adaptive partitioning that adjusts partition size
         based on network density and clustering coefficient.
@@ -83,9 +104,9 @@ class FractalPartitioner:
 
     Notes
     -----
-    Spatial indexing provides O(n log n) complexity for large networks
-    compared to O(n²) without it. Adaptive partitioning automatically
-    adjusts partition size based on network characteristics.
+    The optional KDTree has O(n log n) construction and O(log n + k) query
+    cost under its usual assumptions. Community growth still evaluates repeated
+    candidates, so these bounds are not an end-to-end partitioning bound.
     """
 
     def __init__(
@@ -100,12 +121,28 @@ class FractalPartitioner:
             or max_partition_size <= 0
         ):
             raise ValueError("max_partition_size must be a positive integer or None")
+        if (
+            isinstance(coherence_threshold, bool)
+            or not isinstance(coherence_threshold, Real)
+            or not math.isfinite(float(coherence_threshold))
+            or not 0.0 <= float(coherence_threshold) <= 1.0
+        ):
+            raise ValueError("coherence_threshold must be a finite real in [0, 1]")
         self.max_partition_size = max_partition_size
-        self.coherence_threshold = coherence_threshold
+        self.coherence_threshold = float(coherence_threshold)
         self.use_spatial_index = use_spatial_index and HAS_SCIPY and HAS_NUMPY
         self.adaptive = adaptive
         self._kdtree = None
         self._node_index_map = None
+
+    @staticmethod
+    def _validate_structural_coordinates(graph: TNFRGraph) -> None:
+        """Validate the finite canonical coordinates used by partition scoring."""
+        for node in graph:
+            _node_attribute(
+                graph, node, ALIAS_VF, 1.0, label="nu_f", nonnegative=True
+            )
+            _node_attribute(graph, node, ALIAS_THETA, 0.0, label="phase")
 
     def partition_network(self, graph: TNFRGraph) -> list[tuple[set[Any], TNFRGraph]]:
         """Partition network into coherent subgraphs.
@@ -127,14 +164,16 @@ class FractalPartitioner:
         - Phase coherence preserved within partitions
         - Frequency alignment respected
 
-        Uses spatial indexing for O(n log n) complexity when available.
-        Adapts partition size based on network density when adaptive=True.
+        Optionally builds a KDTree for candidate queries; this does not establish
+        an end-to-end O(n log n) partitioning bound. Adaptive sizing uses
+        declared density and clustering heuristics.
         """
 
         if len(graph) == 0:
             return []
+        self._validate_structural_coordinates(graph)
 
-        # Determine optimal partition size adaptively
+        # Determine the configured heuristic partition size
         if self.adaptive:
             partition_size = self._compute_adaptive_partition_size(graph)
         else:
@@ -179,7 +218,7 @@ class FractalPartitioner:
         return partitions
 
     def _compute_adaptive_partition_size(self, graph: TNFRGraph) -> int:
-        """Compute optimal partition size based on network characteristics.
+        """Compute a heuristic partition size from declared graph characteristics.
 
         Adapts partition size based on:
         - Network density (sparse vs dense)
@@ -238,7 +277,7 @@ class FractalPartitioner:
         return max(10, min(adapted_size, 500))
 
     def _build_spatial_index(self, graph: TNFRGraph) -> None:
-        """Build KDTree spatial index for O(n log n) neighbor finding.
+        """Build a KDTree over structural coordinates in O(n log n).
 
         Constructs a 2D spatial index using (νf, phase) coordinates
         to enable fast nearest-neighbor queries.
@@ -254,8 +293,10 @@ class FractalPartitioner:
         coords = np.array(
             [
                 [
-                    _node_attribute(graph, node, ALIAS_VF, 1.0),
-                    _node_attribute(graph, node, ALIAS_THETA, 0.0),
+                    _node_attribute(
+                        graph, node, ALIAS_VF, 1.0, label="nu_f", nonnegative=True
+                    ),
+                    _node_attribute(graph, node, ALIAS_THETA, 0.0, label="phase"),
                 ]
                 for node in nodes
             ]
@@ -278,7 +319,8 @@ class FractalPartitioner:
     ) -> list[Any]:
         """Find k nearest coherent neighbors using spatial index.
 
-        Uses KDTree for O(log n) nearest neighbor finding instead of O(n).
+        The KDTree query has expected O(log n + k) cost under standard assumptions;
+        filtering and subsequent community scoring are separate costs.
 
         Parameters
         ----------
@@ -365,8 +407,8 @@ class FractalPartitioner:
 
         Notes
         -----
-        Uses spatial indexing for O(log n) neighbor finding when available,
-        falling back to O(n) graph neighbors otherwise.
+        Uses an optional KDTree to propose structural-coordinate candidates.
+        Repeated scoring against the growing community remains an additional cost.
         """
         community = {seed}
         node_order = {node: index for index, node in enumerate(graph)}
@@ -433,18 +475,26 @@ class FractalPartitioner:
         Returns
         -------
         float
-            Coherence score in [0, 1], where higher means better alignment
+            Weighted affinity in [-0.4, 1], where higher means better alignment
         """
         if not community:
             return 0.0
 
-        candidate_vf = _node_attribute(graph, candidate, ALIAS_VF, 1.0)
-        candidate_phase = _node_attribute(graph, candidate, ALIAS_THETA, 0.0)
+        candidate_vf = _node_attribute(
+            graph, candidate, ALIAS_VF, 1.0, label="nu_f", nonnegative=True
+        )
+        candidate_phase = _node_attribute(
+            graph, candidate, ALIAS_THETA, 0.0, label="phase"
+        )
 
         coherences = []
         for member in community:
-            member_vf = _node_attribute(graph, member, ALIAS_VF, 1.0)
-            member_phase = _node_attribute(graph, member, ALIAS_THETA, 0.0)
+            member_vf = _node_attribute(
+                graph, member, ALIAS_VF, 1.0, label="nu_f", nonnegative=True
+            )
+            member_phase = _node_attribute(
+                graph, member, ALIAS_THETA, 0.0, label="phase"
+            )
 
             # Frequency coherence: inversely proportional to difference
             vf_diff = abs(candidate_vf - member_vf)

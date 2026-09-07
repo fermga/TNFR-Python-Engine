@@ -1,5 +1,5 @@
 """
-TNFR Arithmetic Network: Prime Numbers as Structural Attractors
+TNFR Arithmetic Network: Prime Numbers as Zero-Pressure Fixed Points
 
 Implementation of the theoretical framework for detecting structural primality
 (ΔNFR = 0) in TNFR arithmetic networks over the natural numbers.
@@ -12,14 +12,13 @@ Theoretical foundation: theory/TNFR_NUMBER_THEORY.md (Canonical)
     weights are canonically unity — no fitted overlay)
   - Spectral factorization via Paley-Jacobi decoding
 
-Ontological status (theory/TNFR_NUMBER_THEORY.md §9.5): the same nodal-equation
-fixed point ΔNFR = 0 is read out across a spectrum of emergence. The PHYSICAL
-layer (particles) reads it *directly* as the topological winding W
-(tnfr.physics.emergent_particles). For numbers there are three sectors: this
+Scope (theory/TNFR_NUMBER_THEORY.md §9.5): distinct domains can reuse the
+numeric predicate ΔNFR = 0 without sharing a state space or dynamics. For
+numbers there are three sectors: this
 module is SECTOR A -- the per-node arithmetic ΔNFR (an exact but *circular*
 re-expression) CONSUMES divisibility (Ω, τ, σ); SECTOR B -- the spectral
-Paley/residue Fiedler gap (input only x^2 mod n) -- is GENUINELY EMERGENT
-(primes-OUT, non-circular), carried by the spectral factorizer
+Paley/residue Fiedler gap (input only x^2 mod n) -- is a non-circular spectral
+probe carried by the factorizer
 (factorization-lab); SECTOR C (rep-theoretic irreducibility) is refuted. Only
 the equilibrium criterion (tnfr.metrics.common.is_structural_equilibrium) is
 shared across domains; the ΔNFR realisations are domain-specific.
@@ -33,6 +32,7 @@ from __future__ import annotations
 
 import logging
 import math
+import operator
 from dataclasses import dataclass
 from typing import Iterable
 
@@ -45,6 +45,7 @@ from ..constants.canonical import (
     MATH_DELTA_NFR_THRESHOLD_CANONICAL,
 )
 from ..errors import TNFRValueError
+from ..utils import angle_diff
 from .unified_numerical import np
 
 logger = logging.getLogger(__name__)
@@ -211,9 +212,9 @@ class ArithmeticTNFRFormalism:
 
         Delegates to the canonical single-node coherence kernel
         :func:`tnfr.metrics.common.structural_coherence`. A structural prime
-        sits at the same ``C = 1`` equilibrium as a relaxed graph node; only
-        the ``ΔNFR`` realisation (arithmetic pressure vs graph Laplacian)
-        differs, so the coherence map is shared, not re-derived.
+        and a relaxed graph node both map zero pressure and zero change to the
+        numeric value ``C = 1``. This shared kernel does not identify their
+        state spaces, pressure definitions or dynamics.
         """
         from ..metrics.common import structural_coherence
 
@@ -252,13 +253,12 @@ class ArithmeticTNFRFormalism:
         if components is None:
             components = ArithmeticTNFRFormalism.component_breakdown(n, terms, params)
         delta = ArithmeticTNFRFormalism.delta_nfr_value(n, terms, params)
-        # Primality = the canonical nodal-equation fixed point ΔNFR = 0, read
-        # out on the arithmetic pressure field. The SAME equilibrium criterion
-        # the graph dynamics and the chemical octet rule use; only the ΔNFR
-        # realisation differs (this consumes divisibility via (τ, σ, ω)).
+        # Primality is the zero-pressure fixed-point predicate read on this
+        # state-independent arithmetic field.  Other domains can reuse the
+        # numeric predicate while retaining different dynamics and pressures.
         structural_prime = is_structural_equilibrium(delta, eps_dnfr=tolerance)
         explanation = (
-            "ΔNFR vanishes within tolerance; node is a structural attractor"
+            "ΔNFR vanishes within tolerance; node is a zero-pressure fixed point"
             if structural_prime
             else "ΔNFR ≠ 0, coherence pressure reveals composite structure"
         )
@@ -284,7 +284,7 @@ class ArithmeticTNFRNetwork:
     - νf_n: Arithmetic frequency
     - ΔNFR_n: Factorization pressure
 
-    Prime numbers should emerge as structural attractors (ΔNFR ≈ 0).
+    Prime numbers are zero-pressure fixed points in the declared arithmetic field.
     """
 
     def __init__(
@@ -297,11 +297,19 @@ class ArithmeticTNFRNetwork:
             max_number: Maximum number to include in network (default 100)
             parameters: TNFR calibration parameters
         """
-        self.max_number = max_number
+        if isinstance(max_number, bool) or type(max_number).__name__ == "bool_":
+            raise TypeError("max_number must be an integer, not bool")
+        try:
+            normalized_max = operator.index(max_number)
+        except TypeError as exc:
+            raise TypeError("max_number must be an integer") from exc
+        self.max_number = int(normalized_max)
+        if self.max_number < 2:
+            raise ValueError("max_number must be >= 2")
         self.params = parameters or ArithmeticTNFRParameters()
 
         # Optimization: Precompute Sieve for fast factorization
-        self._min_prime_factor = self._precompute_sieve(max_number)
+        self._min_prime_factor = self._precompute_sieve(self.max_number)
 
         # Build the network
         self.graph = self._construct_arithmetic_network()
@@ -986,7 +994,7 @@ class ArithmeticTNFRNetwork:
         return phi
 
     def compute_phase_gradient(self) -> dict[int, float]:
-        """Compute |∇φ|(i) = mean_{j∈N(i)} |φ_i - φ_j| (neighbors in undirected graph)."""
+        """Compute |∇φ|(i) as the mean wrapped neighbor-phase separation."""
         if any("phi" not in self.graph.nodes[i] for i in self.graph.nodes()):
             self.compute_phase(store=True)
 
@@ -1004,11 +1012,14 @@ class ArithmeticTNFRNetwork:
                     val = 0.0
                 else:
                     diffs = [
-                        abs(self.graph.nodes[i]["phi"] - self.graph.nodes[j]["phi"])
+                        abs(
+                            angle_diff(
+                                self.graph.nodes[i]["phi"],
+                                self.graph.nodes[j]["phi"],
+                            )
+                        )
                         for j in nbrs
                     ]
-                    # Wrap-around adjustment for angular distance
-                    diffs = [min(d, 2 * math.pi - d) for d in diffs]
                     val = sum(diffs) / len(diffs)
                 phi_grad[i] = val
 
@@ -1347,11 +1358,12 @@ class ArithmeticTNFRNetwork:
         surfaces the arithmetic network as the joint read-out of its three
         emergent facets, each from canonical quantities:
 
-        - RESONANT: proximity to the ΔNFR = 0 coherence attractor
+        - RESONANT: proximity to the arithmetic ΔNFR = 0 fixed-point set
           (:func:`~tnfr.metrics.common.is_structural_equilibrium`). The
           **canonical payoff**: by the §4.1 primality theorem the equilibrium
-          set ``{n : ΔNFR(n) = 0}`` is *exactly* the primes, so the resonant-
-          coherence attractors of the arithmetic NFR are the prime numbers.
+          set ``{n : ΔNFR(n) = 0}`` is *exactly* the primes. Because this
+          pressure is state-independent, this is a fixed-point identity, not
+          a restoring-attractor or basin statement.
         - GEOMETRIC: the nodal topology radial / annular / multinodal
           (:func:`~tnfr.physics.fields.classify_nodal_topology`), read from the
           structural-potential geometry of the divisibility/GCD coupling.
@@ -1472,14 +1484,13 @@ class ArithmeticTNFRNetwork:
     def symplectic_substrate(
         self, *, phase_method: str = "logn"
     ) -> dict[str, object]:
-        """Diagnose the emergent symplectic substrate of the arithmetic NFR.
+        """Evaluate the auxiliary symplectic model on an arithmetic graph.
 
-        The TNFR nodal dynamics generates its own geometry (AGENTS.md §4): a
-        symplectic phase space ``P = ℝ^{4N}`` with canonical conjugate pairs
-        ``(K_φ, J_φ)`` and ``(Φ_s, J_ΔNFR)``, on which the energy functional is
-        the Hamiltonian and the flow is volume-preserving (Liouville).
-        Delegates to the canonical substrate machinery applied to the
-        arithmetic coupling network.
+        Extracted arithmetic-network fields initialize the declared ambient
+        phase space ``P = ℝ^{4N}`` with pairs ``(K_φ, J_φ)`` and
+        ``(Φ_s, J_ΔNFR)``. Its isotropic harmonic flow preserves phase volume.
+        This construction does not derive that flow from arithmetic nodal
+        dynamics or certify arithmetic operator trajectories as symplectic.
 
         Returns
         -------
@@ -1515,7 +1526,7 @@ class ArithmeticTNFRNetwork:
     ) -> dict[tuple[int, int], bool]:
         """Apply UM (Coupling): mark edges as coupled if phase compatible.
 
-        Contract (U3): Only valid if |φ_i - φ_j| ≤ Δφ_max (wrapped on circle).
+        Contract (U3): valid only if |wrap(φ_i - φ_j)| ≤ Δφ_max.
         Stores edge attribute 'coupled' = True/False on the undirected view.
 
         Returns a dict mapping undirected edge (min(i,j), max(i,j)) to boolean.
@@ -1527,8 +1538,11 @@ class ArithmeticTNFRNetwork:
         coupled: dict[tuple[int, int], bool] = {}
 
         for u, v, data in G.edges(data=True):
-            d = abs(self.graph.nodes[u]["phi"] - self.graph.nodes[v]["phi"])
-            d = min(d, 2 * math.pi - d)  # circular distance
+            d = abs(
+                angle_diff(
+                    self.graph.nodes[u]["phi"], self.graph.nodes[v]["phi"]
+                )
+            )
             is_ok = d <= float(delta_phi_max)
             data["coupled"] = bool(is_ok)
             key = (u, v) if u < v else (v, u)
@@ -1553,10 +1567,11 @@ class ArithmeticTNFRNetwork:
         out: list[tuple[int, float]] = []
         for j in G.neighbors(i):
             d = abs(
-                self.graph.nodes[i].get("phi", 0.0)
-                - self.graph.nodes[j].get("phi", 0.0)
+                angle_diff(
+                    self.graph.nodes[i].get("phi", 0.0),
+                    self.graph.nodes[j].get("phi", 0.0),
+                )
             )
-            d = min(d, 2 * math.pi - d)
             if d <= delta_phi_max:
                 # Use mean of parallel edges (gcd/divisibility) if exist in DiGraph
                 w = 0.0

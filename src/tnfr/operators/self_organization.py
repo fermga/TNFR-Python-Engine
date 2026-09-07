@@ -1,322 +1,1027 @@
-"""SelfOrganization (THOL) operator.
+"""Atomic public implementation of SelfOrganization (THOL).
 
-Purpose: autonomous emergence; spawn sub-EPIs when d2_epi>tau.
-Physics: bifurcation + metabolic capture of network signals.
-Grammar: transformer (U4b) + handler (U4a) during bifurcation.
-Effects: adds sub-structure; parent epi increments; preserves identity.
-Preconditions: sufficient epi history; vf>0; elevated d2_epi; capacity.
-Typical: OZ->THOL; THOL->IL; EN->THOL; THOL->RA; THOL->IL->RA.
-Avoid: THOL without ΔNFR elevation; deep nesting beyond max depth.
+THOL materializes operational fractality only after its complete U5 proposal is
+valid. The public operator separates read-only planning from commit and restores
+the graph if an external monitor or a later validation rejects the operation.
 """
 
 from __future__ import annotations
 
+import logging
+import math
+from collections.abc import Iterator, Mapping
+from dataclasses import dataclass
+from numbers import Real
 from typing import Any, ClassVar
 
 from ..config.operator_names import SELF_ORGANIZATION
-
-# Import canonical constants
-from ..constants.canonical import THOL_MIN_COLLECTIVE_COHERENCE
-from ..types import Glyph, TNFRGraph
+from ..constants.aliases import (
+    ALIAS_D2EPI,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_VF,
+)
+from ..constants.canonical import COUPLING_GENTLE, COUPLING_MODERATE
+from ..glyph_history import next_operator_step
+from ..types import Glyph, TNFRGraph, real_scalar_epi
+from ._argument_validation import (
+    finite_node_real,
+    finite_real,
+    nonnegative_integer,
+    reject_operator_argument,
+    require_list_sink,
+    strict_bool,
+    validate_common_execution_arguments,
+)
 from .definitions_base import Operator
+from .network_stage import GraphTransactionSnapshot
+from ._thol_constants import THOL_CHILD_VF_DAMPING, THOL_SUB_EPI_SCALING
 
-_THOL_SUB_EPI_SCALING = 0.3  # ≈ 0.309 (fractal scale)
-_THOL_EMERGENCE_CONTRIBUTION = 0.1  # parent epi increment fraction
+_OPERATOR = "Self-organization"
+
+
+@dataclass(frozen=True, slots=True)
+class _BifurcationProposal:
+    sub_node_id: str
+    sub_node_data: Mapping[str, Any]
+    sub_nodes: tuple[Any, ...]
+    hierarchy_children: tuple[Any, ...]
+    sub_epis: tuple[Mapping[str, Any], ...]
+
+
+@dataclass(frozen=True, slots=True)
+class _ExecutionProposal:
+    d2_epi: float
+    tau: float
+    dnfr_after: float
+    bifurcation: _BifurcationProposal | None
+    subepi_amplitude_alignment: float | None
+    precondition_context: Mapping[str, Any] | None
+    no_bifurcation_expected: bool | None
+    depth_limit_reached: Mapping[str, Any] | None
+    final_parent_epi: float
+
+
+_GraphSnapshot = GraphTransactionSnapshot
+
+
+def _checked_sum(left: float, right: float, label: str) -> float:
+    return finite_real(left + right, operator=_OPERATOR, label=label)
+
+
+def _checked_product(left: float, right: float, label: str) -> float:
+    return finite_real(left * right, operator=_OPERATOR, label=label)
+
+
+def _configured_tau(graph_data: Mapping[str, Any], kwargs: Mapping[str, Any]) -> float:
+    raw = kwargs.get("tau")
+    if raw is None:
+        raw = graph_data.get("BIFURCATION_THRESHOLD_TAU")
+    if raw is None:
+        raw = graph_data.get("THOL_BIFURCATION_THRESHOLD", 0.1)
+    return finite_real(raw, operator=_OPERATOR, label="tau", lower=0.0)
+
+
+def _configured_epi_bounds(graph_data: Mapping[str, Any]) -> tuple[float, float]:
+    """Return the signed scalar EPI interval used by THOL proposals."""
+
+    epi_min = finite_real(
+        graph_data.get("EPI_MIN", -1.0), operator=_OPERATOR, label="EPI_MIN"
+    )
+    epi_max = finite_real(
+        graph_data.get("EPI_MAX", 1.0), operator=_OPERATOR, label="EPI_MAX"
+    )
+    if epi_min > epi_max:
+        reject_operator_argument(_OPERATOR, "EPI_MIN must not exceed EPI_MAX")
+    return epi_min, epi_max
+
+
+def _existing_list(mapping: Mapping[str, Any], key: str) -> list[Any]:
+    value = mapping.get(key, [])
+    if not isinstance(value, list):
+        reject_operator_argument(_OPERATOR, f"{key} must be a list")
+    return value
+
+
+def _finite_epi_value(
+    value: Any,
+    *,
+    label: str,
+    lower: float | None = None,
+    upper: float | None = None,
+) -> float:
+    """Validate a real scalar or canonical BEPI representation."""
+
+    if isinstance(value, bool):
+        reject_operator_argument(_OPERATOR, f"{label} must be a real EPI value")
+    try:
+        result = real_scalar_epi(value)
+    except (OverflowError, TypeError, ValueError):
+        reject_operator_argument(
+            _OPERATOR, f"{label} must be a scalar or uniform-real BEPI value"
+        )
+    if result is None:
+        reject_operator_argument(
+            _OPERATOR, f"{label} must have an exact signed scalar embedding"
+        )
+    return finite_real(
+        result,
+        operator=_OPERATOR,
+        label=label,
+        lower=lower,
+        upper=upper,
+    )
+
+
+def _finite_node_epi(
+    node_data: Mapping[str, Any], *, label: str, default: Any = 0.0
+) -> float:
+    raw = default
+    for key in ALIAS_EPI:
+        if key in node_data:
+            raw = node_data[key]
+            break
+    return _finite_epi_value(raw, label=label)
+
+
+def _active_acceleration_history_length(node_data: Mapping[str, Any]) -> int:
+    """Read only the size selected by the shared acceleration implementation."""
+
+    from .nodal_equation import _select_acceleration_history
+
+    source, history = _select_acceleration_history(node_data)
+    if history is None:
+        return 0
+    if isinstance(history, (str, bytes, bytearray, Mapping, Iterator)):
+        reject_operator_argument(_OPERATOR, f"{source} must be an indexed history")
+    try:
+        return len(history)
+    except (OverflowError, TypeError):
+        reject_operator_argument(_OPERATOR, f"{source} must be a sized history")
+
+
+def _validate_signal_record(signals: Any, *, label: str) -> None:
+    if signals is None:
+        return
+    if not isinstance(signals, Mapping):
+        reject_operator_argument(_OPERATOR, f"{label} must be a mapping or None")
+    for key in ("epi_gradient", "mean_neighbor_epi"):
+        if key in signals:
+            finite_real(signals[key], operator=_OPERATOR, label=f"{label}.{key}")
+    if "phase_variance" in signals:
+        finite_real(
+            signals["phase_variance"],
+            operator=_OPERATOR,
+            label=f"{label}.phase_variance",
+            lower=0.0,
+        )
+    if "coupling_strength_mean" in signals:
+        finite_real(
+            signals["coupling_strength_mean"],
+            operator=_OPERATOR,
+            label=f"{label}.coupling_strength_mean",
+            lower=0.0,
+            upper=1.0,
+        )
+    if "neighbor_count" in signals:
+        nonnegative_integer(
+            signals["neighbor_count"],
+            operator=_OPERATOR,
+            label=f"{label}.neighbor_count",
+        )
+
+
+def _validate_sub_epi_records(records: list[Any]) -> tuple[Mapping[str, Any], ...]:
+    validated: list[Mapping[str, Any]] = []
+    for index, record in enumerate(records):
+        label = f"sub_epis[{index}]"
+        if not isinstance(record, Mapping):
+            reject_operator_argument(_OPERATOR, f"{label} must be a mapping")
+        if "epi" not in record:
+            reject_operator_argument(_OPERATOR, f"{label}.epi is required")
+        finite_real(
+            record["epi"],
+            operator=_OPERATOR,
+            label=f"{label}.epi",
+            lower=0.0,
+            upper=1.0,
+        )
+        for key in ("vf", "tau"):
+            if key in record:
+                finite_real(
+                    record[key],
+                    operator=_OPERATOR,
+                    label=f"{label}.{key}",
+                    lower=0.0,
+                )
+        if "d2_epi" in record:
+            finite_real(
+                record["d2_epi"],
+                operator=_OPERATOR,
+                label=f"{label}.d2_epi",
+            )
+        for key in ("timestamp", "bifurcation_level", "cascade_depth"):
+            if key in record:
+                nonnegative_integer(
+                    record[key], operator=_OPERATOR, label=f"{label}.{key}"
+                )
+        if "metabolized" in record:
+            strict_bool(
+                record["metabolized"],
+                operator=_OPERATOR,
+                label=f"{label}.metabolized",
+            )
+        if "hierarchy_path" in record and not isinstance(
+            record["hierarchy_path"], list
+        ):
+            reject_operator_argument(
+                _OPERATOR, f"{label}.hierarchy_path must be a list"
+            )
+        _validate_signal_record(record.get("network_signals"), label=label)
+        validated.append(record)
+    return tuple(validated)
+
+
+def _subepi_amplitude_alignment(records: tuple[Mapping[str, Any], ...]) -> float:
+    if len(records) < 2:
+        return 0.0
+    values = tuple(float(record["epi"]) for record in records)
+    mean = finite_real(
+        math.fsum(values) / len(values),
+        operator=_OPERATOR,
+        label="sub-EPI mean",
+    )
+    squared = tuple(
+        _checked_product(value - mean, value - mean, "sub-EPI squared deviation")
+        for value in values
+    )
+    variance = finite_real(
+        math.fsum(squared) / len(squared),
+        operator=_OPERATOR,
+        label="sub-EPI variance",
+        lower=0.0,
+    )
+    return finite_real(
+        1.0 / (1.0 + variance),
+        operator=_OPERATOR,
+        label="sub-EPI amplitude alignment",
+        lower=0.0,
+        upper=1.0,
+    )
 
 
 class SelfOrganization(Operator):
-    """Spawn sub-EPIs on bifurcation; metabolic capture; update parent epi.
-
-    Invariants: parent identity preserved; sub-EPIs coherent ensemble.
-    Typical: OZ->THOL; THOL->IL; THOL->RA; EN->THOL; THOL->IL->RA.
-    Metrics: d2_epi, sub_epi_value, bifurcation_level, collective_coherence.
-    """
+    """Spawn a coherent sub-EPI through one atomic U5 transaction."""
 
     __slots__ = ()
     name: ClassVar[str] = SELF_ORGANIZATION
     glyph: ClassVar[Glyph] = Glyph.THOL
 
-    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
-        """Apply THOL; if d2_epi>tau spawn sub-EPI; validate ensemble."""
-        # Compute structural acceleration before base operator
-        d2_epi = self._compute_epi_acceleration(G, node)
-
-        # Get bifurcation threshold (tau) from kwargs or graph config
-        tau = kw.get("tau")
-        if tau is None:
-            tau = float(G.graph.get("THOL_BIFURCATION_THRESHOLD", 0.1))
-
-        # Apply base operator (includes glyph application and metrics)
-        super()._execute(G, node, **kw)
-
-        # Bifurcate if acceleration exceeds threshold
-        if d2_epi > tau:
-            # Validate depth before bifurcation
-            self._validate_bifurcation_depth(G, node)
-            self._spawn_sub_epi(G, node, d2_epi=d2_epi, tau=tau)
-
-        # CANONICAL VALIDATION: Verify collective coherence of sub-EPIs
-        # Ensemble must stay coherent and preserve parent identity.
-        # Always validate if node has sub-EPIs (new or existing).
-        if G.nodes[node].get("sub_epis"):
-            self._validate_collective_coherence(G, node)
-
-    def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
-        """Finite diff second derivative abs value from epi_history."""
-
-        # Get EPI history (maintained by node for temporal analysis)
-        history = G.nodes[node].get("epi_history", [])
-
-        # Need at least 3 points for second derivative
-        if len(history) < 3:
-            return 0.0
-
-        # Finite difference: d²EPI/dt² ≈ (EPI_t - 2*EPI_{t-1} + EPI_{t-2})
-        epi_t = float(history[-1])
-        epi_t1 = float(history[-2])
-        epi_t2 = float(history[-3])
-
-        d2_epi = epi_t - 2.0 * epi_t1 + epi_t2
-
-        return abs(d2_epi)
-
-    def _spawn_sub_epi(
-        self, G: TNFRGraph, node: Any, d2_epi: float, tau: float
+    def _validate_application_preconditions(
+        self, G: TNFRGraph, node: Any, **kw: Any
     ) -> None:
-        """Create sub-EPI node; apply metabolic weights; update parent epi."""
-        from ..alias import get_attr, set_attr
-        from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
-        from .metabolism import capture_network_signals, metabolize_signals_into_subepi
+        """Validate the optional public gate without writing its telemetry."""
 
-        # Get current node state
-        parent_epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-        parent_vf = float(get_attr(G.nodes[node], ALIAS_VF, 1.0))
-        parent_theta = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
+        validate_common_execution_arguments(G.graph, kw, operator=_OPERATOR)
+        collect_metrics = bool(kw.get("collect_metrics", False)) or bool(
+            G.graph.get("COLLECT_OPERATOR_METRICS", False)
+        )
+        if collect_metrics:
+            require_list_sink(G.graph, "operator_metrics", operator=_OPERATOR)
+        monitor = G.graph.get("integrity_monitor")
+        if monitor is not None and not all(
+            callable(getattr(monitor, method, None))
+            for method in ("before_operator", "after_operator")
+        ):
+            reject_operator_argument(
+                _OPERATOR,
+                "integrity_monitor must provide callable before_operator and "
+                "after_operator methods",
+            )
+        requested = kw.get("validate_preconditions", True)
+        enabled = G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False)
+        if requested and enabled:
+            self._validate_preconditions(G, node, **kw)
 
-        # Check if vibrational metabolism is enabled
-        metabolic_enabled = G.graph.get("THOL_METABOLIC_ENABLED", True)
+    def _validate_preconditions(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> None:
+        """Apply the legacy THOL gate as a strictly read-only check."""
 
-        # CANONICAL METABOLISM: Capture network context
-        network_signals = None
-        if metabolic_enabled:
-            network_signals = capture_network_signals(G, node)
+        data = G.nodes[node]
+        epi = _finite_node_epi(data, label="EPI")
+        dnfr = finite_node_real(
+            data, ALIAS_DNFR, 0.0, operator=_OPERATOR, label="DeltaNFR"
+        )
+        vf = finite_node_real(
+            data,
+            ALIAS_VF,
+            0.0,
+            operator=_OPERATOR,
+            label="nu_f",
+            lower=0.0,
+        )
+        min_epi = finite_real(
+            G.graph.get("THOL_MIN_EPI", 0.2),
+            operator=_OPERATOR,
+            label="THOL_MIN_EPI",
+            lower=0.0,
+        )
+        min_vf = finite_real(
+            G.graph.get("THOL_MIN_VF", 0.1),
+            operator=_OPERATOR,
+            label="THOL_MIN_VF",
+            lower=0.0,
+        )
+        if epi < min_epi:
+            reject_operator_argument(
+                _OPERATOR, f"EPI too low for bifurcation ({epi!r} < {min_epi!r})"
+            )
+        if dnfr <= 0.0:
+            reject_operator_argument(
+                _OPERATOR, "DeltaNFR must be positive for self-organization"
+            )
+        if vf < min_vf:
+            reject_operator_argument(
+                _OPERATOR,
+                f"nu_f too low for reorganization ({vf!r} < {min_vf!r})",
+            )
 
-        # Get metabolic weights from graph config
-        gradient_weight = float(G.graph.get("THOL_METABOLIC_GRADIENT_WEIGHT", 0.15))
-        complexity_weight = float(G.graph.get("THOL_METABOLIC_COMPLEXITY_WEIGHT", 0.10))
+        min_degree = nonnegative_integer(
+            G.graph.get("THOL_MIN_DEGREE", 1),
+            operator=_OPERATOR,
+            label="THOL_MIN_DEGREE",
+        )
+        allow_isolated = strict_bool(
+            G.graph.get("THOL_ALLOW_ISOLATED", False),
+            operator=_OPERATOR,
+            label="THOL_ALLOW_ISOLATED",
+        )
+        degree = G.degree(node)
+        if degree < min_degree and not allow_isolated:
+            reject_operator_argument(
+                _OPERATOR,
+                f"node degree {degree} is below THOL_MIN_DEGREE {min_degree}",
+            )
 
-        # CANONICAL METABOLISM: Digest signals into sub-EPI
-        sub_epi_value = metabolize_signals_into_subepi(
-            parent_epi=parent_epi,
-            signals=network_signals if metabolic_enabled else None,
+        d2_epi = self._compute_epi_acceleration(G, node)
+        min_history = nonnegative_integer(
+            G.graph.get("THOL_MIN_HISTORY_LENGTH", 3),
+            operator=_OPERATOR,
+            label="THOL_MIN_HISTORY_LENGTH",
+        )
+        if min_history < 3:
+            reject_operator_argument(
+                _OPERATOR, "THOL_MIN_HISTORY_LENGTH must be at least 3"
+            )
+        history_length = _active_acceleration_history_length(data)
+        if history_length < min_history:
+            reject_operator_argument(
+                _OPERATOR,
+                f"active EPI history has {history_length} samples; "
+                f"{min_history} required",
+            )
+
+        metabolic = strict_bool(
+            G.graph.get("THOL_METABOLIC_ENABLED", True),
+            operator=_OPERATOR,
+            label="THOL_METABOLIC_ENABLED",
+        )
+        if metabolic and degree == 0:
+            reject_operator_argument(
+                _OPERATOR, "metabolic THOL requires at least one neighbour"
+            )
+
+        tau = _configured_tau(G.graph, kw)
+        logger = logging.getLogger(__name__)
+        if abs(d2_epi) <= tau:
+            logger.warning(
+                "Node %r: THOL acceleration magnitude %.6g does not exceed tau %.6g; "
+                "no sub-EPI will be generated.",
+                node,
+                abs(d2_epi),
+                tau,
+            )
+
+        from .preconditions.mutation import record_destabilizer_context
+
+        record_destabilizer_context(G, node, logger, record=False)
+
+    def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Validate, apply and observe THOL as one graph transaction."""
+
+        proposal = self._prepare_execution(G, node, kw)
+        snapshot = _GraphSnapshot(G)
+        try:
+            self._execute_transaction(G, node, proposal, kw)
+        except BaseException:
+            monitor = G.graph.get("integrity_monitor")
+            discard_pending = getattr(monitor, "discard_pending_operator", None)
+            if callable(discard_pending):
+                try:
+                    discard_pending()
+                except Exception:
+                    pass
+            snapshot.restore(G)
+            raise
+
+    def _execute_transaction(
+        self,
+        G: TNFRGraph,
+        node: Any,
+        proposal: _ExecutionProposal,
+        kw: Mapping[str, Any],
+    ) -> None:
+        collect_metrics = bool(kw.get("collect_metrics", False)) or bool(
+            G.graph.get("COLLECT_OPERATOR_METRICS", False)
+        )
+        validate_equation = bool(kw.get("validate_nodal_equation", False)) or bool(
+            G.graph.get("VALIDATE_NODAL_EQUATION", False)
+        )
+        state_before = None
+        if collect_metrics or validate_equation:
+            state_before = self._capture_state(G, node)
+
+        monitor = G.graph.get("integrity_monitor")
+        if monitor is not None:
+            monitor.before_operator(G, node)
+
+        from ..alias import set_attr
+        from .grammar_application import _apply_selected_glyph
+
+        # Feed the generic glyph kernel the same freshly reconstructed
+        # acceleration used by planning and bifurcation admission. This also
+        # refreshes the diagnostic alias atomically with the transaction.
+        set_attr(G.nodes[node], ALIAS_D2EPI, proposal.d2_epi)
+        _apply_selected_glyph(G, node, self.glyph, kw.get("window"))
+        self._commit_proposal(G, node, proposal)
+
+        if monitor is not None:
+            monitor.after_operator(G, node, self.name)
+
+        if validate_equation and state_before is not None:
+            from .nodal_equation import validate_nodal_equation
+
+            validate_nodal_equation(
+                G,
+                node,
+                epi_before=state_before["epi"],
+                epi_after=proposal.final_parent_epi,
+                dt=float(kw.get("dt", 1.0)),
+                operator_name=self.name,
+                strict=bool(G.graph.get("NODAL_EQUATION_STRICT", False)),
+            )
+
+        if collect_metrics and state_before is not None:
+            metrics = self._collect_metrics(G, node, state_before)
+            G.graph.setdefault("operator_metrics", []).append(metrics)
+
+    def _prepare_execution(
+        self, G: TNFRGraph, node: Any, kw: Mapping[str, Any]
+    ) -> _ExecutionProposal:
+        validate_common_execution_arguments(G.graph, kw, operator=_OPERATOR)
+        data = G.nodes[node]
+        parent_epi = _finite_node_epi(data, label="EPI")
+        parent_vf = finite_node_real(
+            data,
+            ALIAS_VF,
+            0.0,
+            operator=_OPERATOR,
+            label="nu_f",
+            lower=0.0,
+        )
+        parent_theta = finite_node_real(
+            data, ALIAS_THETA, 0.0, operator=_OPERATOR, label="theta"
+        )
+        dnfr = finite_node_real(
+            data, ALIAS_DNFR, 0.0, operator=_OPERATOR, label="DeltaNFR"
+        )
+        # The derivative reconstructed from active EPI history is
+        # authoritative. ALIAS_D2EPI is cached telemetry and may be stale.
+        d2_epi = self._compute_epi_acceleration(G, node)
+        tau = _configured_tau(G.graph, kw)
+
+        from .factor_contracts import resolve_runtime_operator_factors
+
+        factors = resolve_runtime_operator_factors(
+            G.graph.get("GLYPH_FACTORS"), self.glyph, G.graph
+        )
+        acceleration = finite_real(
+            factors["THOL_accel"],
+            operator=_OPERATOR,
+            label="THOL_accel",
+            lower=math.nextafter(0.0, math.inf),
+        )
+        contribution = _checked_product(
+            acceleration, d2_epi, "THOL DeltaNFR contribution"
+        )
+        dnfr_after = _checked_sum(dnfr, contribution, "THOL DeltaNFR proposal")
+
+        existing = _existing_list(data, "sub_epis")
+        existing_records = _validate_sub_epi_records(existing)
+        self._validate_subtree(G, node, frozenset())
+        bifurcation = None
+        depth_limit_reached = None
+        final_records = existing_records
+        final_parent_epi = parent_epi
+        if abs(d2_epi) > tau:
+            depth_limit_reached = self._depth_limit_diagnostic(G, node)
+            if depth_limit_reached is None:
+                bifurcation = self._prepare_bifurcation(
+                    G,
+                    node,
+                    parent_epi=parent_epi,
+                    parent_vf=parent_vf,
+                    parent_theta=parent_theta,
+                    d2_epi=d2_epi,
+                    tau=tau,
+                    existing_records=existing_records,
+                )
+                final_records = bifurcation.sub_epis
+
+        amplitude_alignment = None
+        if final_records:
+            amplitude_alignment = _subepi_amplitude_alignment(final_records)
+
+        preconditions_active = bool(
+            kw.get("validate_preconditions", True)
+        ) and bool(G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
+        context = None
+        no_bifurcation = None
+        if preconditions_active:
+            from .preconditions.mutation import record_destabilizer_context
+
+            context = record_destabilizer_context(G, node, record=False)
+            no_bifurcation = bifurcation is None
+
+        collect_metrics = bool(kw.get("collect_metrics", False)) or bool(
+            G.graph.get("COLLECT_OPERATOR_METRICS", False)
+        )
+        if collect_metrics:
+            require_list_sink(G.graph, "operator_metrics", operator=_OPERATOR)
+            self._validate_metric_inputs(G, node, bifurcation, final_records)
+
+        monitor = G.graph.get("integrity_monitor")
+        if monitor is not None:
+            for method in ("before_operator", "after_operator"):
+                if not callable(getattr(monitor, method, None)):
+                    reject_operator_argument(
+                        _OPERATOR,
+                        f"integrity_monitor.{method} must be callable",
+                    )
+
+        self._validate_nodal_proposal(
+            G,
+            kw,
+            epi_before=parent_epi,
+            epi_after=final_parent_epi,
+            vf=parent_vf,
+            dnfr=dnfr_after,
+        )
+        return _ExecutionProposal(
             d2_epi=d2_epi,
-            scaling_factor=_THOL_SUB_EPI_SCALING,
-            gradient_weight=gradient_weight,
-            complexity_weight=complexity_weight,
+            tau=tau,
+            dnfr_after=dnfr_after,
+            bifurcation=bifurcation,
+            subepi_amplitude_alignment=amplitude_alignment,
+            precondition_context=context,
+            no_bifurcation_expected=no_bifurcation,
+            depth_limit_reached=depth_limit_reached,
+            final_parent_epi=final_parent_epi,
         )
 
-        # Get current timestamp from glyph history length
-        timestamp = len(G.nodes[node].get("glyph_history", []))
+    def _depth_limit_diagnostic(
+        self, G: TNFRGraph, node: Any
+    ) -> Mapping[str, Any] | None:
+        """Return a committed diagnostic when the configured child depth is full."""
 
-        # Determine parent bifurcation level for hierarchical telemetry
-        parent_level = G.nodes[node].get("_bifurcation_level", 0)
+        parent_level = nonnegative_integer(
+            G.nodes[node].get("_bifurcation_level", 0),
+            operator=_OPERATOR,
+            label="_bifurcation_level",
+        )
+        max_depth = nonnegative_integer(
+            G.graph.get("THOL_MAX_BIFURCATION_DEPTH", 5),
+            operator=_OPERATOR,
+            label="THOL_MAX_BIFURCATION_DEPTH",
+        )
+        if parent_level < max_depth:
+            return None
+        require_list_sink(G.graph, "thol_depth_limits", operator=_OPERATOR)
+        return {
+            "node": node,
+            "depth": parent_level,
+            "max_depth": max_depth,
+        }
+
+    def _prepare_bifurcation(
+        self,
+        G: TNFRGraph,
+        node: Any,
+        *,
+        parent_epi: float,
+        parent_vf: float,
+        parent_theta: float,
+        d2_epi: float,
+        tau: float,
+        existing_records: tuple[Mapping[str, Any], ...],
+    ) -> _BifurcationProposal:
+        data = G.nodes[node]
+        legacy_propagation = strict_bool(
+            G.graph.get("THOL_PROPAGATION_ENABLED", False),
+            operator=_OPERATOR,
+            label="THOL_PROPAGATION_ENABLED",
+        )
+        if legacy_propagation:
+            reject_operator_argument(
+                _OPERATOR,
+                "THOL network propagation is outside the DeltaNFR channel; "
+                "use Resonance in a grammar-valid operator word",
+            )
+        metabolic_enabled = strict_bool(
+            G.graph.get("THOL_METABOLIC_ENABLED", True),
+            operator=_OPERATOR,
+            label="THOL_METABOLIC_ENABLED",
+        )
+        signals = None
+        if metabolic_enabled:
+            for neighbor in G.neighbors(node):
+                _finite_node_epi(
+                    G.nodes[neighbor], label=f"neighbor {neighbor!r} EPI"
+                )
+                finite_node_real(
+                    G.nodes[neighbor],
+                    ALIAS_THETA,
+                    0.0,
+                    operator=_OPERATOR,
+                    label=f"neighbor {neighbor!r} theta",
+                )
+            from .metabolism import capture_network_signals
+
+            signals = capture_network_signals(G, node)
+            _validate_signal_record(signals, label="captured network signals")
+
+        gradient_weight = COUPLING_MODERATE
+        complexity_weight = COUPLING_GENTLE
+        if signals is not None:
+            gradient_weight = finite_real(
+                G.graph.get(
+                    "THOL_METABOLIC_GRADIENT_WEIGHT", COUPLING_MODERATE
+                ),
+                operator=_OPERATOR,
+                label="THOL_METABOLIC_GRADIENT_WEIGHT",
+                lower=0.0,
+                upper=1.0,
+            )
+            complexity_weight = finite_real(
+                G.graph.get(
+                    "THOL_METABOLIC_COMPLEXITY_WEIGHT", COUPLING_GENTLE
+                ),
+                operator=_OPERATOR,
+                label="THOL_METABOLIC_COMPLEXITY_WEIGHT",
+                lower=0.0,
+                upper=1.0,
+            )
+        from .metabolism import compose_subepi_amplitude
+
+        raw_sub_epi = finite_real(
+            compose_subepi_amplitude(
+                parent_epi,
+                signals,
+                scaling_factor=THOL_SUB_EPI_SCALING,
+                gradient_weight=gradient_weight,
+                complexity_weight=complexity_weight,
+            ),
+            operator=_OPERATOR,
+            label="sub-EPI amplitude proposal",
+            lower=0.0,
+            upper=1.0,
+        )
+        epi_min, epi_max = _configured_epi_bounds(G.graph)
+        child_min = max(0.0, epi_min)
+        child_max = min(1.0, epi_max)
+        if child_min > child_max:
+            reject_operator_argument(
+                _OPERATOR,
+                "configured EPI interval cannot represent a nonnegative sub-EPI",
+            )
+        sub_epi = finite_real(
+            max(child_min, min(child_max, raw_sub_epi)),
+            operator=_OPERATOR,
+            label="bounded sub-EPI proposal",
+            lower=child_min,
+            upper=child_max,
+        )
+
+        parent_level = nonnegative_integer(
+            data.get("_bifurcation_level", 0),
+            operator=_OPERATOR,
+            label="_bifurcation_level",
+        )
+        hierarchy_level = nonnegative_integer(
+            data.get("hierarchy_level", 0),
+            operator=_OPERATOR,
+            label="hierarchy_level",
+        )
+        parent_path = data.get("_hierarchy_path", [])
+        if not isinstance(parent_path, list):
+            reject_operator_argument(_OPERATOR, "_hierarchy_path must be a list")
+        if node in parent_path:
+            reject_operator_argument(_OPERATOR, "_hierarchy_path contains a cycle")
+        child_path = [*parent_path, node]
         child_level = parent_level + 1
 
-        # Construct hierarchy path for full traceability
-        parent_path = G.nodes[node].get("_hierarchy_path", [])
-        child_path = parent_path + [node]
+        sub_nodes = _existing_list(data, "sub_nodes")
+        for child in sub_nodes:
+            if child not in G:
+                reject_operator_argument(
+                    _OPERATOR, f"sub-node reference {child!r} is missing"
+                )
+            if G.nodes[child].get("parent_node") != node:
+                reject_operator_argument(
+                    _OPERATOR, f"sub-node {child!r} has inconsistent parent identity"
+                )
+        sub_index = len(sub_nodes)
+        sub_node_id = f"{node}_sub_{sub_index}"
+        while sub_node_id in G:
+            sub_index += 1
+            sub_node_id = f"{node}_sub_{sub_index}"
 
-        # ARCHITECTURAL: Create sub-EPI as independent NFR node
-        # Enables fractality: recursive operators + hierarchical metrics.
-        sub_node_id = self._create_sub_node(
-            G,
-            parent_node=node,
-            sub_epi=sub_epi_value,
-            parent_vf=parent_vf,
-            parent_theta=parent_theta,
-            child_level=child_level,
-            child_path=child_path,
+        hierarchy = G.graph.get("hierarchy", {})
+        if not isinstance(hierarchy, dict):
+            reject_operator_argument(_OPERATOR, "hierarchy must be a dictionary")
+        hierarchy_children = hierarchy.get(node, [])
+        if not isinstance(hierarchy_children, list):
+            reject_operator_argument(
+                _OPERATOR, "hierarchy children must be stored in a list"
+            )
+
+        timestamp = next_operator_step(data)
+        child_vf = _checked_product(
+            parent_vf, THOL_CHILD_VF_DAMPING, "sub-node nu_f proposal"
         )
+        child_theta = finite_real(
+            parent_theta % math.tau,
+            operator=_OPERATOR,
+            label="sub-node theta proposal",
+            lower=0.0,
+            upper=math.tau,
+        )
+        from ..constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
 
-        # Store sub-EPI metadata for telemetry and backward compatibility
-        sub_epi_record = {
-            "epi": sub_epi_value,
-            "vf": parent_vf,
+        sub_node_data = {
+            EPI_PRIMARY: sub_epi,
+            VF_PRIMARY: child_vf,
+            THETA_PRIMARY: child_theta,
+            DNFR_PRIMARY: 0.0,
+            "parent_node": node,
+            "hierarchy_level": hierarchy_level + 1,
+            "_bifurcation_level": child_level,
+            "_hierarchy_path": child_path,
+            "epi_history": [sub_epi],
+            "glyph_history": [],
+        }
+        record = {
+            "epi": sub_epi,
+            "vf": child_vf,
             "timestamp": timestamp,
             "d2_epi": d2_epi,
             "tau": tau,
-            "node_id": sub_node_id,  # Reference to independent node
-            "metabolized": network_signals is not None and metabolic_enabled,
-            "network_signals": network_signals,
-            "bifurcation_level": child_level,  # Hierarchical depth tracking
-            "hierarchy_path": child_path,  # Full parent chain for traceability
+            "node_id": sub_node_id,
+            "metabolized": signals is not None,
+            "network_signals": signals,
+            "bifurcation_level": child_level,
+            "hierarchy_path": child_path,
         }
+        return _BifurcationProposal(
+            sub_node_id=sub_node_id,
+            sub_node_data=sub_node_data,
+            sub_nodes=(*sub_nodes, sub_node_id),
+            hierarchy_children=(*hierarchy_children, sub_node_id),
+            sub_epis=(*existing_records, record),
+        )
 
-        # Keep metadata list for telemetry/metrics backward compatibility
-        sub_epis = G.nodes[node].get("sub_epis", [])
-        sub_epis.append(sub_epi_record)
-        G.nodes[node]["sub_epis"] = sub_epis
-
-        # Increment parent EPI using canonical emergence contribution
-        # This reflects that bifurcation increases total structural complexity
-        new_epi = parent_epi + sub_epi_value * _THOL_EMERGENCE_CONTRIBUTION
-        set_attr(G.nodes[node], ALIAS_EPI, new_epi)
-
-        # CANONICAL PROPAGATION: Enable network cascade dynamics
-        if G.graph.get("THOL_PROPAGATION_ENABLED", True):
-            from .metabolism import propagate_subepi_to_network
-
-            propagations = propagate_subepi_to_network(G, node, sub_epi_record)
-
-            # Record propagation telemetry for cascade analysis
-            if propagations:
-                G.graph.setdefault("thol_propagations", []).append(
-                    {
-                        "source_node": node,
-                        "sub_epi": sub_epi_value,
-                        "propagations": propagations,
-                        "timestamp": timestamp,
-                    }
-                )
-
-    def _create_sub_node(
+    def _validate_metric_inputs(
         self,
         G: TNFRGraph,
-        parent_node: Any,
-        sub_epi: float,
-        parent_vf: float,
-        parent_theta: float,
-        child_level: int,
-        child_path: list,
-    ) -> str:
-        """Add sub-node with inherited state; record hierarchy metadata."""
-        from ..constants import DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
+        node: Any,
+        bifurcation: _BifurcationProposal | None,
+        final_records: tuple[Mapping[str, Any], ...],
+    ) -> None:
+        if not final_records:
+            _existing_list(G.graph, "sub_epi")
+        self._validate_subtree(G, node, frozenset())
 
-        # Generate unique sub-node ID
-        sub_nodes_list = G.nodes[parent_node].get("sub_nodes", [])
-        sub_index = len(sub_nodes_list)
-        sub_node_id = f"{parent_node}_sub_{sub_index}"
-
-        # Get parent hierarchy level
-        parent_hierarchy_level = G.nodes[parent_node].get("hierarchy_level", 0)
-
-        # Inherit parent's vf with slight damping (canonical: 95%)
-        sub_vf = parent_vf * 0.95
-
-        # Create the sub-node with full TNFR state
-        G.add_node(
-            sub_node_id,
-            **{
-                EPI_PRIMARY: float(sub_epi),
-                VF_PRIMARY: float(sub_vf),
-                THETA_PRIMARY: float(parent_theta),
-                DNFR_PRIMARY: 0.0,
-                "parent_node": parent_node,
-                "hierarchy_level": parent_hierarchy_level + 1,
-                "_bifurcation_level": child_level,
-                "_hierarchy_path": child_path,  # Full ancestor chain
-                "epi_history": [float(sub_epi)],
-                "glyph_history": [],
-            },
+    def _validate_subtree(
+        self, G: TNFRGraph, node: Any, ancestors: frozenset[Any]
+    ) -> None:
+        if node in ancestors:
+            reject_operator_argument(_OPERATOR, "sub-EPI hierarchy contains a cycle")
+        if node not in G:
+            reject_operator_argument(_OPERATOR, f"sub-node {node!r} is missing")
+        next_ancestors = ancestors | {node}
+        data = G.nodes[node]
+        _finite_node_epi(data, label=f"sub-node {node!r} EPI")
+        finite_node_real(
+            data,
+            ALIAS_VF,
+            0.0,
+            operator=_OPERATOR,
+            label=f"sub-node {node!r} nu_f",
+            lower=0.0,
         )
-
-        # Ensure ΔNFR hook is set for the sub-node
-        # (inherits from graph-level hook, but ensure it's activated)
-        if hasattr(G, "graph") and "_delta_nfr_hook" in G.graph:
-            # Graph-level hook applies to sub-node automatically.
-            pass
-
-        # Track sub-node in parent
-        sub_nodes_list.append(sub_node_id)
-        G.nodes[parent_node]["sub_nodes"] = sub_nodes_list
-
-        # Track hierarchy in graph metadata
-        hierarchy = G.graph.setdefault("hierarchy", {})
-        hierarchy.setdefault(parent_node, []).append(sub_node_id)
-
-        return sub_node_id
-
-    def _validate_bifurcation_depth(self, G: TNFRGraph, node: Any) -> None:
-        """Warn if bifurcation depth exceeds configured max."""
-        import logging
-
-        # Get current bifurcation level
-        current_level = G.nodes[node].get("_bifurcation_level", 0)
-
-        # Get max depth from graph config (default: 5 levels)
-        max_depth = int(G.graph.get("THOL_MAX_BIFURCATION_DEPTH", 5))
-
-        # Warn if at or exceeding maximum
-        if current_level >= max_depth:
-            logger = logging.getLogger(__name__)
-            logger.warning(
-                f"Node {node}: Bifurcation depth ({current_level}) at/exceeds "
-                f"maximum ({max_depth}). Deep nesting may impact performance. "
-                f"Consider adjusting THOL_MAX_BIFURCATION_DEPTH if intended."
-            )
-
-            # Record warning in node for telemetry
-            G.nodes[node]["_thol_max_depth_warning"] = True
-
-            # Record event for analysis
-            events = G.graph.setdefault("thol_depth_warnings", [])
-            events.append(
-                {
-                    "node": node,
-                    "depth": current_level,
-                    "max_depth": max_depth,
-                }
-            )
-
-    def _validate_collective_coherence(self, G: TNFRGraph, node: Any) -> None:
-        """Compute ensemble coherence; warn if below threshold."""
-        import logging
-
-        from .metabolism import compute_subepi_collective_coherence
-
-        # Compute collective coherence
-        coherence = compute_subepi_collective_coherence(G, node)
-
-        # Always store telemetry value (even if 0.0).
-        G.nodes[node]["_thol_collective_coherence"] = coherence
-
-        # Get threshold from graph config (fallback: canonical 1/(π+1) ≈ 0.2415)
-        min_coherence = float(
-            G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", THOL_MIN_COLLECTIVE_COHERENCE)
+        finite_node_real(
+            data,
+            ALIAS_DNFR,
+            0.0,
+            operator=_OPERATOR,
+            label=f"sub-node {node!r} DeltaNFR",
         )
+        finite_node_real(
+            data,
+            ALIAS_THETA,
+            0.0,
+            operator=_OPERATOR,
+            label=f"sub-node {node!r} theta",
+        )
+        records = _existing_list(data, "sub_epis")
+        validated_records = _validate_sub_epi_records(records)
+        children = _existing_list(data, "sub_nodes")
+        if children:
+            for child in children:
+                if child not in G:
+                    reject_operator_argument(
+                        _OPERATOR, f"sub-node reference {child!r} is missing"
+                    )
+                if G.nodes[child].get("parent_node") != node:
+                    reject_operator_argument(
+                        _OPERATOR,
+                        f"sub-node {child!r} has inconsistent parent identity",
+                    )
+                self._validate_subtree(G, child, next_ancestors)
+        for record in validated_records:
+            child = record.get("node_id")
+            if child is None:
+                continue
+            try:
+                child_exists = child in G
+                listed_child = child in children
+            except TypeError:
+                reject_operator_argument(
+                    _OPERATOR, "sub-EPI node_id must be a hashable node identifier"
+                )
+            if not child_exists:
+                reject_operator_argument(
+                    _OPERATOR, f"sub-EPI node_id reference {child!r} is missing"
+                )
+            # Listed children were already traversed above. Record-only legacy
+            # references remain supported, but receive the same full validation.
+            if not listed_child:
+                self._validate_subtree(G, child, next_ancestors)
 
-        # Validate against threshold (only warn if we have multiple sub-EPIs)
-        sub_epis = G.nodes[node].get("sub_epis", [])
-        if len(sub_epis) >= 2 and coherence < min_coherence:
-            # Log warning (but don't fail - allow monitoring)
-            logger = logging.getLogger(__name__)
-            logger.warning(
-                f"Node {node}: THOL collective coherence ({coherence:.3f}) < "
-                f"threshold ({min_coherence}). Sub-EPIs may be fragmenting. "
-                f"Sub-EPI count: {len(sub_epis)}."
+    def _validate_nodal_proposal(
+        self,
+        G: TNFRGraph,
+        kw: Mapping[str, Any],
+        *,
+        epi_before: float,
+        epi_after: float,
+        vf: float,
+        dnfr: float,
+    ) -> None:
+        active = bool(kw.get("validate_nodal_equation", False)) or bool(
+            G.graph.get("VALIDATE_NODAL_EQUATION", False)
+        )
+        if not active:
+            return
+        dt = finite_real(
+            kw.get("dt", 1.0),
+            operator=_OPERATOR,
+            label="dt",
+            lower=math.nextafter(0.0, math.inf),
+        )
+        tolerance = finite_real(
+            G.graph.get("NODAL_EQUATION_TOLERANCE", 1e-3),
+            operator=_OPERATOR,
+            label="NODAL_EQUATION_TOLERANCE",
+            lower=0.0,
+        )
+        clip_aware = strict_bool(
+            G.graph.get("NODAL_EQUATION_CLIP_AWARE", True),
+            operator=_OPERATOR,
+            label="NODAL_EQUATION_CLIP_AWARE",
+        )
+        strict = strict_bool(
+            G.graph.get("NODAL_EQUATION_STRICT", False),
+            operator=_OPERATOR,
+            label="NODAL_EQUATION_STRICT",
+        )
+        measured = finite_real(
+            (epi_after - epi_before) / dt,
+            operator=_OPERATOR,
+            label="measured nodal derivative proposal",
+        )
+        expected = _checked_product(vf, dnfr, "expected nodal derivative proposal")
+        if clip_aware:
+            epi_min, epi_max = _configured_epi_bounds(G.graph)
+            theoretical = _checked_sum(
+                epi_before,
+                _checked_product(expected, dt, "nodal EPI increment proposal"),
+                "theoretical EPI proposal",
+            )
+            mode = str(G.graph.get("CLIP_MODE", "hard")).lower()
+            if mode not in ("hard", "soft"):
+                mode = "hard"
+            from ..dynamics.structural_clip import structural_clip
+
+            expected_epi = finite_real(
+                structural_clip(theoretical, lo=epi_min, hi=epi_max, mode=mode),
+                operator=_OPERATOR,
+                label="bounded nodal EPI proposal",
+            )
+            error = finite_real(
+                abs(epi_after - expected_epi),
+                operator=_OPERATOR,
+                label="nodal equation EPI error",
+                lower=0.0,
+            )
+        else:
+            error = finite_real(
+                abs(measured - expected),
+                operator=_OPERATOR,
+                label="nodal equation derivative error",
+                lower=0.0,
+            )
+        if strict and error > tolerance:
+            from .nodal_equation import NodalEquationViolation
+
+            raise NodalEquationViolation(
+                operator=self.name,
+                measured_depi_dt=measured,
+                expected_depi_dt=expected,
+                tolerance=tolerance,
+                details={
+                    "epi_before": epi_before,
+                    "epi_after": epi_after,
+                    "dt": dt,
+                    "vf": vf,
+                    "dnfr": dnfr,
+                    "error": error,
+                    "clip_aware": clip_aware,
+                },
             )
 
-            # Record event for analysis
-            events = G.graph.setdefault("thol_coherence_warnings", [])
-            events.append(
-                {
-                    "node": node,
-                    "coherence": coherence,
-                    "threshold": min_coherence,
-                    "sub_epi_count": len(sub_epis),
-                }
+    def _commit_proposal(
+        self, G: TNFRGraph, node: Any, proposal: _ExecutionProposal
+    ) -> None:
+        from ..alias import set_attr
+
+        bifurcation = proposal.bifurcation
+        if bifurcation is not None:
+            G.add_node(bifurcation.sub_node_id, **dict(bifurcation.sub_node_data))
+            G.nodes[node]["sub_nodes"] = list(bifurcation.sub_nodes)
+            hierarchy = G.graph.setdefault("hierarchy", {})
+            hierarchy[node] = list(bifurcation.hierarchy_children)
+            G.nodes[node]["sub_epis"] = list(bifurcation.sub_epis)
+
+        if proposal.depth_limit_reached is not None:
+            diagnostic = dict(proposal.depth_limit_reached)
+            G.nodes[node]["_thol_depth_limit_reached"] = True
+            G.graph.setdefault("thol_depth_limits", []).append(diagnostic)
+            logging.getLogger(__name__).warning(
+                "Node %r: THOL child depth %d reached configured maximum %d; "
+                "pressure was reorganized without creating another child.",
+                node,
+                diagnostic["depth"],
+                diagnostic["max_depth"],
             )
 
-    def _validate_preconditions(self, G: TNFRGraph, node: Any) -> None:
-        """Validate THOL-specific preconditions."""
-        from .preconditions import validate_self_organization
+        if proposal.subepi_amplitude_alignment is not None:
+            G.nodes[node]["_thol_subepi_amplitude_alignment"] = (
+                proposal.subepi_amplitude_alignment
+            )
+        if proposal.precondition_context is not None:
+            G.nodes[node]["_mutation_context"] = dict(proposal.precondition_context)
+        if proposal.no_bifurcation_expected is not None:
+            G.nodes[node]["_thol_no_bifurcation_expected"] = (
+                proposal.no_bifurcation_expected
+            )
 
-        validate_self_organization(G, node)
+    def _compute_epi_acceleration(self, G: TNFRGraph, node: Any) -> float:
+        """Read the signed value supplied by the shared structural derivative."""
+
+        from .nodal_equation import compute_d2epi_dt2
+
+        return finite_real(
+            compute_d2epi_dt2(G, node, store=False),
+            operator=_OPERATOR,
+            label="signed EPI acceleration",
+        )
 
     def _collect_metrics(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]
     ) -> dict[str, Any]:
-        """Collect THOL-specific metrics."""
         from .metrics import self_organization_metrics
 
         return self_organization_metrics(

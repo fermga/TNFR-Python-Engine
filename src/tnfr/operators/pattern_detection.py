@@ -8,13 +8,14 @@ Pattern Categories
 ------------------
 1. **Initiation Patterns**: Based on U1a (GENERATORS)
 2. **Closure Patterns**: Based on U1b (CLOSURES)
-3. **Convergence Patterns**: Based on U2 (STABILIZERS/DESTABILIZERS)
+3. **U2 Debt-Coverage Patterns**: Based on STABILIZERS/DESTABILIZERS
 4. **Resonance Patterns**: Based on U3 (COUPLING_RESONANCE)
 5. **Bifurcation Patterns**: Based on U4 (TRANSFORMERS)
 6. **Composite Patterns**: Combinations of above
 7. **Domain Patterns**: Application-specific patterns
 
-All patterns align with unified grammar constraints from UNIFIED_GRAMMAR_RULES.md.
+Pattern names are descriptive annotations mapped to grammar rules. Detection
+does not replace grammar validation or establish trajectory convergence.
 
 References
 ----------
@@ -101,8 +102,9 @@ class UnifiedPatternDetector:
     ------------
     - Explicit mapping of patterns to U1-U5 grammar rules (temporal + multi-scale)
     - Coherence-weighted scoring for pattern prioritization
-    - Detection of both canonical sequences and meta-patterns
-    - Grammar validation integrated with pattern recognition
+    - Detection of named fragments and meta-patterns
+    - Grammar-rule annotations integrated with pattern recognition; complete-word
+      validity remains the responsibility of the grammar validator
 
     Examples
     --------
@@ -132,7 +134,7 @@ class UnifiedPatternDetector:
             "regime_handoff": "U1b",
             "fractal_distribution": "U1b",
             "intentional_tension": "U1b",
-            # U2: Convergence patterns (STABILIZERS/DESTABILIZERS)
+            # U2: debt/coverage patterns (legacy public labels retained)
             "stabilization_cycle": "U2",
             "bounded_evolution": "U2",
             "stabilize": "U2",
@@ -323,9 +325,11 @@ class UnifiedPatternDetector:
     def detect_convergence_patterns(
         self, sequence: Sequence[str]
     ) -> list[PatternMatch]:
-        """Detect U2-based convergence patterns.
+        """Detect lexical U2 debt/coverage patterns.
 
-        Patterns involving STABILIZERS and DESTABILIZERS to ensure bounded evolution.
+        The method name and ``bounded_evolution`` pattern label are retained for
+        compatibility. These matches inspect operator labels and adjacency only;
+        they do not evaluate ``νf·ΔNFR`` or prove bounded evolution.
 
         Parameters
         ----------
@@ -335,7 +339,7 @@ class UnifiedPatternDetector:
         Returns
         -------
         list[PatternMatch]
-            list of detected convergence patterns
+            List of detected U2 lexical patterns.
         """
         patterns = []
 
@@ -351,7 +355,10 @@ class UnifiedPatternDetector:
                     end_idx=len(sequence) - 1,
                     confidence=1.0,
                     grammar_rule="U2",
-                    description="Destabilizers present without stabilizers (divergence risk)",
+                    description=(
+                        "Destabilizers present without declared U2 stabilizer "
+                        "coverage; trajectory behavior was not evaluated"
+                    ),
                 )
             )
 
@@ -365,11 +372,11 @@ class UnifiedPatternDetector:
                         end_idx=i + 1,
                         confidence=1.0,
                         grammar_rule="U2",
-                        description="Destabilizer → Stabilizer (bounded evolution)",
+                        description="Adjacent destabilizer → stabilizer coverage pair",
                     )
                 )
 
-        # Bounded evolution: alternating destabilizers and stabilizers
+        # Legacy "bounded_evolution" label: lexical alternation only.
         if len(sequence) >= 4:
             alternating = True
             for i in range(0, len(sequence) - 1, 2):
@@ -387,7 +394,10 @@ class UnifiedPatternDetector:
                         end_idx=len(sequence) - 1,
                         confidence=0.8,
                         grammar_rule="U2",
-                        description="Oscillation between destabilizers and stabilizers",
+                        description=(
+                            "Alternating destabilizer/stabilizer labels; "
+                            "boundedness is not inferred"
+                        ),
                     )
                 )
 

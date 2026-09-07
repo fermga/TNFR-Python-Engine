@@ -1,59 +1,30 @@
 #!/usr/bin/env python3
 """
-Example 117 — Emergent Geometry on the Residue Graph (Paley Factorization, Honest)
-=================================================================================
+Example 117 — Finite Spectral Probes on Quadratic-Residue Graphs
+===============================================================
 
-Bridges the number-theory arc (examples 100-102, 116) and the
-emergent-geometry arc (98-114) by asking the factorization-lab question with
-the canonical EMERGENT geometry only: does the structural-diffusion operator
-(the literal content of the canonical dNFR) "see" prime/factor structure on
-the quadratic-residue graph?
+The random-walk Laplacian is the operator of the isolated EPI diffusion
+channel.  This example applies it to graphs whose edges were constructed from
+``x*x mod n`` and records three finite observations.
 
-Canonical constraint (doctrine)
--------------------------------
-Everything here uses the EMERGENT geometry: the structural-diffusion operator
-L_rw = I - D^-1 W is exactly the canonical dNFR EPI channel
-(structural_diffusion.py, dNFR = neighbour_mean - self = -L_rw * EPI), and the
-symplectic substrate (Phi_s, K_phi, J_dnfr) is populated by the nodal dynamics.
-No classical lambda_2 telemetry; the ONLY arithmetic input is x^2 mod n (the
-residue-graph topology).
+1. Four sampled Paley primes have three distinct eigenvalues, while the
+   sampled composites vary; ``49`` is a direct counterexample to treating this
+   predicate as a primality test.
+2. Given a known candidate factor ``p``, ``eta^2`` measures whether selected
+   eigenvectors are constant on the supplied ``i mod p`` classes.  Supplying
+   ``p`` and computing these classes makes this a factor-conditioned
+   localization audit, not factor recovery.  Degenerate eigenspaces can also
+   change individual eigenvectors, so the table is tied to the returned basis.
+3. Extracted auxiliary substrate fields are compared on three seeded evolved
+   snapshots.  They do not reproduce the perfect localization of selected
+   diffusion eigenvectors in this table.  This finite observation is not a
+   general blindness theorem.
 
-Three measured results (all reproducible below)
------------------------------------------------
-Q1 PRIMALITY (Reading B, non-circular spectral emergence). The emergent
-   diffusion spectrum reproduces the Paley/strongly-regular rigidity: primes
-   n = 1 mod 4 give a 3-distinct-eigenvalue spectrum (a strongly regular graph
-   signature); composites drift to many distinct eigenvalues. This is the
-   genuine primes-OUT reading (g(n)=0 of benchmarks/paley_bridge.py), here in
-   the emergent operator. Caveat: prime powers (49 = 7^2) also give 3 distinct
-   values, so rigidity detects "prime-power-like", not strictly prime.
-
-Q2 FACTORIZATION (factor-OUT, partial). For a semiprime n = p*q the factor p
-   appears as an EXACT Fourier mode of the emergent spectrum: the coset-mod-p
-   localization eta^2 of a low eigenvector reaches 1.0 for most n = 1 mod 4
-   semiprimes, collapsing under a node-label shuffle. The factor is read off
-   the eigenvector without ever computing n % k or a gcd. It is PARTIAL: when
-   the factor mode sits at high frequency (some n = 3 mod 4) the low-mode scan
-   misses it (eta^2 ~ baseline).
-
-Q3 HONEST DOCTRINE (the decisive check). (a) The residue graph is REGULAR /
-   circulant, so the emergent random-walk operator L_rw = L_combinatorial / d
-   shares the classical Laplacian EIGENVECTORS exactly: the coset signal is the
-   residue-graph (CRT) structure re-expressed, NOT something the emergent
-   framing adds. (b) The genuinely-emergent symplectic substrate fields
-   (Phi_s, K_phi, J_dnfr), populated by the nodal dynamics, are BLIND to the
-   cosets (eta^2 ~ 0) - exactly like examples 103/116: the substrate re-expresses
-   what lives in the spectrum, it does not independently discover the factor.
-
-Honest scope
-------------
-This characterizes how the emergent geometry relates to spectral factorization.
-The factor signal is the residue-graph spectrum (a classical Paley Gauss-sum
-fact) re-expressed in the emergent operator; the emergent per-node substrate is
-blind to it. Genuine non-circular emergence (Reading B) EXISTS but is PARTIAL
-(misses n = 2 and many n = 3 mod 4) and lives in the real/self-adjoint spectral
-sector - the same e-pi / Fix(G)^perp wall as the paused TNFR-Riemann program.
-It does NOT factor arbitrary n, does NOT close any open problem.
+Regularity explains why the random-walk and combinatorial Laplacians share
+eigenspaces on these graphs.  The auxiliary symplectic substrate remains a
+declared ambient read-out initialized from graph fields; running the EPI update
+before extraction does not derive its harmonic flow from the nodal equation.
+No factoring algorithm, primality criterion, or open-problem result follows.
 
 References
 ----------
@@ -107,8 +78,9 @@ def residue_graph(n: int) -> nx.Graph:
 def coset_eta2(vec: np.ndarray, n: int, p: int) -> float:
     """Variance fraction of an eigenvector explained by the coset label i mod p.
 
-    eta^2 = between-coset variance / total variance. ~1 => the mode is a pure
-    function of (i mod p) (the factor signature); ~1/p is the random baseline.
+    eta^2 = between-coset variance / total variance. ~1 means that this vector
+    is nearly a function of the already supplied label ``i mod p``.  For
+    exchangeable noise, the finite-sample expectation is ``(p-1)/(n-1)``.
     """
     labels = np.array([i % p for i in range(n)])
     v = np.asarray(vec, float)
@@ -138,7 +110,7 @@ def best_coset_eta2(eigvecs: np.ndarray, n: int, p: int, k: int = 8) -> float:
 def _seed_and_evolve(
     G: nx.Graph, steps: int = 12, dt: float = 0.05, seed: int = 1
 ) -> None:
-    """Populate the emergent substrate by running the nodal equation."""
+    """Run a finite explicit-Euler pure-EPI update before field extraction."""
     rng = np.random.default_rng(seed)
     for nd in G.nodes():
         G.nodes[nd]["theta"] = float(rng.uniform(0, 2 * np.pi))
@@ -156,12 +128,12 @@ def _seed_and_evolve(
 
 
 def experiment_1_primality_rigidity():
-    """Q1: emergent diffusion spectrum reproduces Paley/SRG rigidity."""
+    """Q1: finite eigenvalue-count table for residue graphs."""
     print("=" * 74)
-    print("EXPERIMENT 1: Primality Rigidity in the Emergent Diffusion Spectrum")
+    print("EXPERIMENT 1: Eigenvalue Counts in a Finite Residue-Graph Table")
     print("=" * 74)
     print()
-    print("The emergent operator L_rw = I - D^-1 W (canonical dNFR EPI channel).")
+    print("L_rw = I - D^-1 W is the isolated canonical dNFR EPI channel.")
     print("Strongly-regular Paley primes (n = 1 mod 4) -> 3 distinct eigenvalues.")
     print()
     print(f"  {'n':>4} {'class':>9} {'n_distinct':>11} {'rigid?':>7}")
@@ -182,20 +154,21 @@ def experiment_1_primality_rigidity():
         rigid = "YES" if distinct == 3 else "no"
         print(f"  {n:>4} {cls:>9} {distinct:>11} {rigid:>7}")
     print()
-    print("-> primes n=1 mod4 are rigid (3 distinct); composites drift. Reading B")
-    print("   (primes-OUT) in the emergent spectrum. Caveat: 49=7^2 is also rigid")
-    print("   (prime-power-like), so rigidity != strict primality.")
+    print("-> all four sampled Paley primes have 3 values, but 49=7^2 does too.")
+    print("   This finite table therefore rejects the predicate as strict primality;")
+    print("   it does not characterize all primes, prime powers, or composites.")
     print()
 
 
 def experiment_2_factor_cosets():
-    """Q2: the factor p is an exact Fourier mode of the emergent spectrum."""
+    """Q2: test localization after a candidate factor is supplied."""
     print("=" * 74)
-    print("EXPERIMENT 2: Factor Recovery as Coset Localization (factor-OUT)")
+    print("EXPERIMENT 2: Factor-Conditioned Coset Localization")
     print("=" * 74)
     print()
-    print("For n=p*q, does a low emergent eigenvector localize on cosets mod p?")
-    print("eta^2 ~ 1 => the factor is read off the eigenvector (no n%k, no gcd).")
+    print("For n=p*q, supply p and test low diffusion modes on classes i mod p.")
+    print("Because p labels the classes, this validates a candidate; it does not")
+    print("recover an unknown factor from the eigenvector.")
     print()
     print(
         f"  {'n=p*q':>9} {'p':>3} {'eta2(mod p)':>12} {'baseline':>9} "
@@ -215,7 +188,7 @@ def experiment_2_factor_cosets():
     for n, p, q in cases:
         _, vecs = structural_eigenmodes(residue_graph(n))
         eta = best_coset_eta2(vecs, n, p)
-        base = 1.0 / p
+        base = (p - 1.0) / (n - 1.0)
         eta_shuf = best_coset_eta2(vecs[rng.permutation(n)], n, p)
         # the shuffle control is the real test: strong localization that the
         # label permutation destroys.
@@ -225,20 +198,20 @@ def experiment_2_factor_cosets():
             f"{eta_shuf:>9.4f} {verdict:>8}"
         )
     print()
-    print("-> the factor p appears as an EXACT coset mode (eta^2=1) for most")
-    print("   n=1 mod4 semiprimes, collapsing under shuffle. PARTIAL: when the")
-    print("   factor mode is high-frequency (51, 91) the low-mode scan misses it.")
+    print("-> six supplied candidates reach eta^2=1 in the returned low-mode")
+    print("   basis and two do not. This is a finite, basis-sensitive validation")
+    print("   table; the shuffled column is a control, not factor recovery.")
     print()
 
 
 def experiment_3_doctrine_check():
-    """Q3: regular graph => emergent=classical eigenvectors; substrate blind."""
+    """Q3: regularity identity plus finite auxiliary-field comparisons."""
     print("=" * 74)
-    print("EXPERIMENT 3: Honest Doctrine Check (regularity + substrate blindness)")
+    print("EXPERIMENT 3: Regularity and Auxiliary-Field Localization")
     print("=" * 74)
     print()
     print("(a) Residue graph regularity (spread 0 => L_rw = L_classical / d, so")
-    print("    the emergent operator SHARES the classical eigenvectors):")
+    print("    the random-walk operator SHARES classical Laplacian eigenspaces):")
     for n in (21, 65, 85):
         degs = [d for _, d in residue_graph(n).degree()]
         tag = "REGULAR" if max(degs) == min(degs) else "irregular"
@@ -247,10 +220,10 @@ def experiment_3_doctrine_check():
             f"(spread {max(degs) - min(degs)}) -> {tag}"
         )
     print()
-    print("    -> the coset signal is the CRT structure of the residue graph")
-    print("       re-expressed; the emergent framing does not add it.")
+    print("    -> any coset signal comes from the constructed residue graph;")
+    print("       changing vocabulary does not add spectral information.")
     print()
-    print("(b) Symplectic substrate (dynamics-populated) coset localization:")
+    print("(b) Auxiliary fields after one seeded finite EPI trajectory:")
     print(
         f"    {'n=p*q':>9} {'p':>3} {'eta2(diff)':>11} {'eta2(Phi_s)':>12} "
         f"{'eta2(K_phi)':>12} {'eta2(J_dnfr)':>13}"
@@ -271,34 +244,31 @@ def experiment_3_doctrine_check():
             f"{coset_eta2(jd, n, p):>13.4f}"
         )
     print()
-    print("    -> diffusion eigenvectors carry the factor (eta2~1); the emergent")
-    print("       per-node substrate fields are BLIND (eta2~0). The substrate")
-    print("       re-expresses the spectrum, it does not discover the factor.")
+    print("    -> the selected diffusion modes can localize perfectly for the")
+    print("       supplied p; these auxiliary field snapshots do not. Values up")
+    print("       to about 0.31 rule out calling every field 'near zero'.")
     print()
 
 
 def main():
     print()
-    print("  TNFR Example 117: Emergent Geometry on the Residue Graph")
-    print("  Paley factorization, honestly: spectrum carries it, substrate blind")
+    print("  TNFR Example 117: Finite Probes on Quadratic-Residue Graphs")
+    print("  Eigenvalue counts, factor-conditioned localization, field snapshots")
     print("  ==================================================================")
     print()
     experiment_1_primality_rigidity()
     experiment_2_factor_cosets()
     experiment_3_doctrine_check()
     print("=" * 74)
-    print("WHAT THIS ESTABLISHES")
+    print("SCOPED FINDINGS")
     print("=" * 74)
     print()
-    print("Using the EMERGENT geometry for everything (diffusion operator +")
-    print("symplectic substrate), the factor signal lives in the residue-graph")
-    print("SPECTRUM (a classical Paley Gauss-sum fact), which the emergent")
-    print("operator re-expresses exactly because the graph is regular. The")
-    print("genuinely-emergent per-node substrate is BLIND to the factor. This")
-    print("unifies factorization-lab with the emergent-geometry arc: Reading B")
-    print("(non-circular primes-OUT) is real but PARTIAL and spectral; the")
-    print("substrate adds no factoring power. Same e-pi / Fix(G)^perp wall as")
-    print("the paused Riemann program. No open problem is closed.")
+    print("The sampled Paley primes have a three-value spectrum, but composite")
+    print("49 shows that this is not a primality criterion. Coset localization")
+    print("is strong in six rows only after the candidate factor p is supplied,")
+    print("so the calculation is not a factorizer. Three auxiliary-field")
+    print("snapshots fail to reproduce that perfect localization. These finite")
+    print("results establish no universal blindness or arithmetic theorem.")
     print()
 
 

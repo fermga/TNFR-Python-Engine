@@ -20,7 +20,11 @@ References
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import math
+from collections.abc import Mapping, MutableMapping
+from dataclasses import dataclass
+from numbers import Real
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
@@ -29,6 +33,8 @@ from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import DELTA_PHI_MAX
 from ..constants.operational import EMERGENT_FREQ_BALANCE_CANONICAL
+from ..errors import TNFRValueError
+from ..utils import angle_diff
 
 __all__ = [
     "propagate_dissonance",
@@ -37,134 +43,400 @@ __all__ = [
 ]
 
 
+_PROPAGATION_MODES = frozenset(
+    {"phase_weighted", "uniform", "frequency_weighted"}
+)
+_PROPAGATION_EVENTS_KEY = "_oz_propagation"
+_MISSING = object()
+
+
+@dataclass(frozen=True, slots=True)
+class _DissonanceProposal:
+    """One fully validated neighbour update and its rollback snapshot."""
+
+    neighbor: Any
+    data: MutableMapping[str, Any]
+    new_dnfr: float
+    event: dict[str, Any]
+    had_primary_dnfr: bool
+    primary_dnfr_before: Any
+    events_before: list[Any] | None
+    events_length_before: int
+
+
+@dataclass(frozen=True, slots=True)
+class _DissonancePropagationPlan:
+    """Fully validated OZ neighbor transaction awaiting its commit."""
+
+    proposals: tuple[_DissonanceProposal, ...]
+    affected: frozenset[Any]
+
+
+def _finite_scalar(value: Any, label: str) -> float:
+    """Materialize one finite real scalar for the propagation transaction."""
+
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise TNFRValueError(f"{label} must be a finite real scalar")
+    try:
+        result = float(value)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(f"{label} must be a finite real scalar") from exc
+    if not math.isfinite(result):
+        raise TNFRValueError(f"{label} must be finite")
+    return result
+
+
+def _finite_nonnegative(value: Any, label: str) -> float:
+    result = _finite_scalar(value, label)
+    if result < 0.0:
+        raise TNFRValueError(f"{label} must be nonnegative")
+    return result
+
+
+def _read_node_scalar(
+    data: MutableMapping[str, Any],
+    aliases: tuple[str, ...],
+    default: float,
+    label: str,
+) -> float:
+    """Read the first declared alias strictly, without non-finite fallback."""
+
+    try:
+        raw = get_attr(
+            data,
+            aliases,
+            default,
+            strict=True,
+            conv=lambda item: item,
+        )
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(f"{label} must be a finite real scalar") from exc
+    return _finite_scalar(raw, label)
+
+
+def _coupling_weight(G: TNFRGraph, source: NodeId, target: NodeId) -> float:
+    """Read outgoing conductance, summing parallel edges when present."""
+
+    edge_data = G.get_edge_data(source, target)
+    if edge_data is None:
+        raise TNFRValueError(
+            f"OZ neighbor {target!r} has no outgoing edge from {source!r}"
+        )
+    if not isinstance(edge_data, Mapping):
+        raise TNFRValueError("OZ edge data must be a mapping")
+
+    if bool(G.is_multigraph()):
+        weights = []
+        for key, attributes in edge_data.items():
+            if not isinstance(attributes, Mapping):
+                raise TNFRValueError(
+                    f"OZ parallel edge {key!r} attributes must be a mapping"
+                )
+            weights.append(
+                _finite_nonnegative(
+                    attributes.get("weight", 1.0),
+                    f"OZ edge weight {source!r}->{target!r}[{key!r}]",
+                )
+            )
+        try:
+            combined = math.fsum(weights)
+        except OverflowError as exc:
+            raise TNFRValueError(
+                f"OZ aggregate edge weight {source!r}->{target!r} must be finite"
+            ) from exc
+        return _finite_nonnegative(
+            combined, f"OZ aggregate edge weight {source!r}->{target!r}"
+        )
+
+    return _finite_nonnegative(
+        edge_data.get("weight", 1.0),
+        f"OZ edge weight {source!r}->{target!r}",
+    )
+
+
+def _prepare_dissonance_propagation(
+    G: TNFRGraph,
+    source_node: NodeId,
+    dissonance_magnitude: float,
+    propagation_mode: str = "phase_weighted",
+    *,
+    dnfr_overrides: Mapping[Any, float] | None = None,
+) -> _DissonancePropagationPlan:
+    """Validate and materialize a complete OZ propagation transaction."""
+    if dnfr_overrides is None:
+        dnfr_overrides = {}
+    elif not isinstance(dnfr_overrides, Mapping):
+        raise TNFRValueError("OZ pressure overrides must be a mapping")
+
+    magnitude = _finite_nonnegative(dissonance_magnitude, "OZ dissonance magnitude")
+    if (
+        not isinstance(propagation_mode, str)
+        or propagation_mode not in _PROPAGATION_MODES
+    ):
+        supported = ", ".join(sorted(_PROPAGATION_MODES))
+        raise TNFRValueError(f"OZ propagation_mode must be one of: {supported}")
+
+    neighbors = list(G.neighbors(source_node))
+    if not neighbors:
+        return _DissonancePropagationPlan((), frozenset())
+
+    source_data = G.nodes[source_node]
+    if not isinstance(source_data, MutableMapping):
+        raise TNFRValueError("OZ source node data must be mutable mapping")
+    source_theta = _read_node_scalar(
+        source_data,
+        ALIAS_THETA,
+        0.0,
+        f"OZ source phase {source_node!r}",
+    )
+    source_vf = _finite_nonnegative(
+        _read_node_scalar(
+            source_data,
+            ALIAS_VF,
+            1.0,
+            f"OZ source structural frequency {source_node!r}",
+        ),
+        f"OZ source structural frequency {source_node!r}",
+    )
+
+    # These graph-level values are propagation policy thresholds, not glyph
+    # factors. A zero phase threshold makes the compatibility weight undefined.
+    phase_threshold = _finite_scalar(
+        G.graph.get("OZ_PHASE_THRESHOLD", DELTA_PHI_MAX),
+        "OZ phase threshold",
+    )
+    if phase_threshold <= 0.0:
+        raise TNFRValueError("OZ phase threshold must be positive")
+    min_propagation = _finite_nonnegative(
+        G.graph.get("OZ_MIN_PROPAGATION", 0.05),
+        "OZ minimum propagation",
+    )
+
+    # Phase one validates the complete outgoing neighborhood and materializes
+    # every proposal without mutating nodal state or propagation telemetry.
+    proposals: list[_DissonanceProposal] = []
+    seen: set[NodeId] = set()
+    for neighbor in neighbors:
+        if neighbor in seen:
+            raise TNFRValueError(
+                f"OZ outgoing neighborhood repeats node {neighbor!r}"
+            )
+        seen.add(neighbor)
+
+        neighbor_data = G.nodes[neighbor]
+        if not isinstance(neighbor_data, MutableMapping):
+            raise TNFRValueError(
+                f"OZ neighbor data {neighbor!r} must be mutable mapping"
+            )
+        neighbor_theta = _read_node_scalar(
+            neighbor_data,
+            ALIAS_THETA,
+            0.0,
+            f"OZ neighbor phase {neighbor!r}",
+        )
+        neighbor_vf = _finite_nonnegative(
+            _read_node_scalar(
+                neighbor_data,
+                ALIAS_VF,
+                1.0,
+                f"OZ neighbor structural frequency {neighbor!r}",
+            ),
+            f"OZ neighbor structural frequency {neighbor!r}",
+        )
+        has_dnfr_override = neighbor in dnfr_overrides
+        if has_dnfr_override:
+            neighbor_dnfr = _finite_scalar(
+                dnfr_overrides[neighbor],
+                f"OZ planned neighbor pressure {neighbor!r}",
+            )
+        else:
+            neighbor_dnfr = _read_node_scalar(
+                neighbor_data,
+                ALIAS_DNFR,
+                0.0,
+                f"OZ neighbor pressure {neighbor!r}",
+            )
+        coupling_weight = _coupling_weight(G, source_node, neighbor)
+
+        delta_theta = _finite_nonnegative(
+            abs(angle_diff(source_theta, neighbor_theta)),
+            f"OZ phase separation {source_node!r}->{neighbor!r}",
+        )
+        if delta_theta > phase_threshold:
+            continue
+
+        phase_weight = _finite_nonnegative(
+            1.0 - (delta_theta / phase_threshold),
+            f"OZ phase weight {source_node!r}->{neighbor!r}",
+        )
+
+        if propagation_mode == "frequency_weighted":
+            frequency_denominator = _finite_scalar(
+                max(neighbor_vf, source_vf, 1e-10),
+                f"OZ frequency denominator {source_node!r}->{neighbor!r}",
+            )
+            freq_weight = _finite_nonnegative(
+                min(neighbor_vf, source_vf) / frequency_denominator,
+                f"OZ frequency weight {source_node!r}->{neighbor!r}",
+            )
+        else:
+            freq_weight = 1.0
+
+        weighted_magnitude = _finite_nonnegative(
+            magnitude * coupling_weight,
+            f"OZ weighted magnitude {source_node!r}->{neighbor!r}",
+        )
+        phase_magnitude = _finite_nonnegative(
+            weighted_magnitude * phase_weight,
+            f"OZ phase-weighted magnitude {source_node!r}->{neighbor!r}",
+        )
+        propagated_dnfr = _finite_nonnegative(
+            phase_magnitude * freq_weight,
+            f"OZ propagated pressure {source_node!r}->{neighbor!r}",
+        )
+
+        if propagated_dnfr == 0.0 or propagated_dnfr < min_propagation:
+            continue
+
+        new_dnfr = _finite_scalar(
+            neighbor_dnfr + propagated_dnfr,
+            f"OZ proposed pressure {neighbor!r}",
+        )
+        events = neighbor_data.get(_PROPAGATION_EVENTS_KEY, _MISSING)
+        if events is _MISSING:
+            events_before = None
+            events_length_before = 0
+        elif isinstance(events, list):
+            events_before = events
+            events_length_before = len(events)
+        else:
+            raise TNFRValueError(
+                f"{_PROPAGATION_EVENTS_KEY} for neighbor {neighbor!r} "
+                "must be a list"
+            )
+
+        had_primary_dnfr = ALIAS_DNFR[0] in neighbor_data
+        if has_dnfr_override and had_primary_dnfr:
+            primary_dnfr_before = neighbor_dnfr
+        else:
+            primary_dnfr_before = neighbor_data.get(ALIAS_DNFR[0], _MISSING)
+
+        proposals.append(
+            _DissonanceProposal(
+                neighbor=neighbor,
+                data=neighbor_data,
+                new_dnfr=new_dnfr,
+                event={
+                    "from_node": source_node,
+                    "magnitude": propagated_dnfr,
+                    "phase_weight": phase_weight,
+                    "coupling_weight": coupling_weight,
+                },
+                had_primary_dnfr=had_primary_dnfr,
+                primary_dnfr_before=primary_dnfr_before,
+                events_before=events_before,
+                events_length_before=events_length_before,
+            )
+        )
+
+    return _DissonancePropagationPlan(
+        tuple(proposals), frozenset(proposal.neighbor for proposal in proposals)
+    )
+
+
+def _restore_dissonance_proposals(
+    proposals: tuple[_DissonanceProposal, ...] | list[_DissonanceProposal],
+) -> None:
+    """Restore proposal targets and telemetry containers in reverse order."""
+
+    for proposal in reversed(proposals):
+        if proposal.had_primary_dnfr:
+            proposal.data[ALIAS_DNFR[0]] = proposal.primary_dnfr_before
+        else:
+            proposal.data.pop(ALIAS_DNFR[0], None)
+
+        if proposal.events_before is None:
+            proposal.data.pop(_PROPAGATION_EVENTS_KEY, None)
+        else:
+            del proposal.events_before[proposal.events_length_before :]
+            proposal.data[_PROPAGATION_EVENTS_KEY] = proposal.events_before
+
+
+def _rollback_dissonance_propagation(plan: _DissonancePropagationPlan) -> None:
+    """Undo a successfully committed internal propagation plan."""
+
+    _restore_dissonance_proposals(plan.proposals)
+
+
+def _commit_dissonance_propagation(
+    plan: _DissonancePropagationPlan,
+) -> set[Any]:
+    """Commit one validated plan, rolling back any unexpected write failure."""
+
+    # The public Dissonance path prepares before applying local OZ. Reject a
+    # stale plan before the first neighbor write if lifecycle hooks changed one
+    # of the fields that the propagation transaction owns.
+    for proposal in plan.proposals:
+        if proposal.had_primary_dnfr:
+            if (
+                ALIAS_DNFR[0] not in proposal.data
+                or proposal.data[ALIAS_DNFR[0]] != proposal.primary_dnfr_before
+            ):
+                raise TNFRValueError(
+                    f"OZ propagation plan for {proposal.neighbor!r} became stale"
+                )
+        elif ALIAS_DNFR[0] in proposal.data:
+            raise TNFRValueError(
+                f"OZ propagation plan for {proposal.neighbor!r} became stale"
+            )
+
+        current_events = proposal.data.get(_PROPAGATION_EVENTS_KEY, _MISSING)
+        if proposal.events_before is None:
+            events_unchanged = current_events is _MISSING
+        else:
+            events_unchanged = (
+                current_events is proposal.events_before
+                and len(proposal.events_before) == proposal.events_length_before
+            )
+        if not events_unchanged:
+            raise TNFRValueError(
+                f"OZ propagation telemetry for {proposal.neighbor!r} became stale"
+            )
+
+    attempted: list[_DissonanceProposal] = []
+    try:
+        for proposal in plan.proposals:
+            attempted.append(proposal)
+            proposal.data[ALIAS_DNFR[0]] = proposal.new_dnfr
+            if proposal.events_before is None:
+                proposal.data[_PROPAGATION_EVENTS_KEY] = [proposal.event]
+            else:
+                proposal.events_before.append(proposal.event)
+    except BaseException:
+        _restore_dissonance_proposals(attempted)
+        raise
+
+    return set(plan.affected)
+
+
 def propagate_dissonance(
     G: TNFRGraph,
     source_node: NodeId,
     dissonance_magnitude: float,
     propagation_mode: str = "phase_weighted",
 ) -> set[NodeId]:
-    """Propagate OZ-induced dissonance to phase-compatible neighbors.
+    """Atomically propagate OZ pressure to phase-compatible outgoing neighbors.
 
-    When OZ is applied to a node, structural dissonance propagates through
-    the network following TNFR resonance principles:
-
-    1. **Phase compatibility**: Neighbors with |Δθ| < threshold receive more
-    2. **Frequency matching**: Higher νf neighbors respond more strongly
-    3. **Coupling strength**: Edge weights modulate propagation
-    4. **Distance decay**: Effect diminishes with topological distance
-
-    Parameters
-    ----------
-    G : TNFRGraph
-        Network containing nodes
-    source_node : NodeId
-        Node where OZ was applied
-    dissonance_magnitude : float
-        |ΔNFR| increase at source (typically from OZ metrics)
-    propagation_mode : str
-        'phase_weighted' (default), 'uniform', 'frequency_weighted'
-
-    Returns
-    -------
-    set[NodeId]
-        set of affected neighbor nodes
-
-    Notes
-    -----
-    Propagation follows coupling physics:
-
-    ΔNFR_neighbor = ΔNFR_source * w_coupling * w_phase * w_frequency
-
-    Where:
-    - w_coupling: Edge weight (default 1.0)
-    - w_phase: Phase compatibility factor
-    - w_frequency: Frequency matching factor
-
-    Examples
-    --------
-    >>> from tnfr.structural import create_nfr
-    >>> from tnfr.operators.definitions import Emission, Dissonance
-    >>> from tnfr.dynamics.propagation import propagate_dissonance
-    >>>
-    >>> G, node0 = create_nfr("source", epi=0.5, vf=1.0)
-    >>> # Add neighbors
-    >>> for i in range(3):
-    ...     G.add_node(f"n{i}")
-    ...     G.add_edge(node0, f"n{i}")
-    ...     Emission()(G, f"n{i}")
-    >>>
-    >>> # Apply OZ and propagate
-    >>> Dissonance()(G, node0)
-    >>> affected = propagate_dissonance(G, node0, 0.15)
-    >>> print(f"Affected neighbors: {len(affected)}")
-
-    See Also
-    --------
-    compute_network_dissonance_field : Compute field with distance decay
-    detect_bifurcation_cascade : Detect cascade-triggered bifurcations
+    The finite proposal is
+    ``magnitude * conductance * phase_weight * frequency_weight``. Directed
+    graphs use outgoing arcs and parallel conductances are summed. Validation
+    and proposal materialization precede every nodal or telemetry write.
     """
-    neighbors = list(G.neighbors(source_node))
-    if not neighbors:
-        return set()
 
-    affected = set()
-    source_theta = float(get_attr(G.nodes[source_node], ALIAS_THETA, 0.0))
-    source_vf = float(get_attr(G.nodes[source_node], ALIAS_VF, 1.0))
-
-    # Propagation threshold (configurable)
-    phase_threshold = float(G.graph.get("OZ_PHASE_THRESHOLD", DELTA_PHI_MAX))
-    min_propagation = float(G.graph.get("OZ_MIN_PROPAGATION", 0.05))
-
-    for neighbor in neighbors:
-        neighbor_theta = float(get_attr(G.nodes[neighbor], ALIAS_THETA, 0.0))
-        neighbor_vf = float(get_attr(G.nodes[neighbor], ALIAS_VF, 1.0))
-        neighbor_dnfr = float(get_attr(G.nodes[neighbor], ALIAS_DNFR, 0.0))
-
-        # Compute phase compatibility
-        delta_theta = abs(source_theta - neighbor_theta)
-        if delta_theta > phase_threshold:
-            continue  # Phase incompatible, no propagation
-
-        phase_weight = 1.0 - (delta_theta / phase_threshold)
-
-        # Compute frequency matching
-        if propagation_mode == "frequency_weighted":
-            freq_ratio = min(neighbor_vf, source_vf) / max(
-                neighbor_vf, source_vf, 1e-10
-            )
-            freq_weight = freq_ratio
-        else:
-            freq_weight = 1.0
-
-        # Get edge weight (coupling strength)
-        edge_data = G.get_edge_data(source_node, neighbor)
-        coupling_weight = edge_data.get("weight", 1.0) if edge_data else 1.0
-
-        # Compute propagated dissonance
-        propagated_dnfr = (
-            dissonance_magnitude * coupling_weight * phase_weight * freq_weight
-        )
-
-        if abs(propagated_dnfr) >= min_propagation:
-            # Apply propagated dissonance to neighbor
-            new_dnfr = neighbor_dnfr + propagated_dnfr
-            # Use first alias for consistency
-            G.nodes[neighbor][ALIAS_DNFR[0]] = new_dnfr
-            affected.add(neighbor)
-
-            # Log propagation for telemetry
-            if "_oz_propagation" not in G.nodes[neighbor]:
-                G.nodes[neighbor]["_oz_propagation"] = []
-            G.nodes[neighbor]["_oz_propagation"].append(
-                {
-                    "from_node": source_node,
-                    "magnitude": propagated_dnfr,
-                    "phase_weight": phase_weight,
-                    "coupling_weight": coupling_weight,
-                }
-            )
-
-    return affected
+    plan = _prepare_dissonance_propagation(
+        G, source_node, dissonance_magnitude, propagation_mode
+    )
+    return _commit_dissonance_propagation(plan)
 
 
 def compute_network_dissonance_field(

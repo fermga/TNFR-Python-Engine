@@ -1,73 +1,28 @@
-"""
-benchmarks/phase_wall.py
+"""Finite comparison of real-symmetric spectra and chosen complex phases.
 
-Camino 8 -- is the Riemann residue unreachable because the catalog is confined to
-the REAL / SELF-ADJOINT sector, while the residue is a CONTINUOUS PHASE on the
-e-pi circle?
+The benchmark retains the historical Camino-8 calculations while removing the
+claimed Riemann/Yang--Mills bridge. It checks four independent facts:
 
-commutant_bridge.py (Camino 7) unified the Riemann S_n-breaking gap and the
-Yang-Mills U(1) -> non-Abelian gap as ONE fact: confinement of the catalog to a
-COMMUTANT. This harness drills into WHY the open target is a phase. It is the exact
-mirror of Camino 7 for the e-pi edge of the structural-field tetrad: the four
-fields are the four orders of the derivative tower over the graph (AGENTS.md);
-they are *associated* with (phi, gamma, pi, e), but audit 2026 found only pi is a
-genuine structural scale (gamma/e/phi are an overlay). The catalog
-f(A, L) is built from the SYMMETRIC coupling A and the self-adjoint dNFR operator
-L = D - A. Self-adjoint => real spectrum => the only phases it carries are arg in
-{0, pi} (a sign). The Riemann residue S(T) = (1/pi) arg zeta(1/2 + iT) is a
-CONTINUOUS argument -- it lives on the circle, not on the real axis.
+* four explicitly listed functions of real-symmetric ``A`` and ``L`` have real
+  eigenvalues on one finite path graph;
+* sampled values of ``arg(zeta(1/2+iT))`` are generally away from the arguments
+  0 and pi of nonzero real numbers (or, without mpmath, the script samples a
+  separately defined finite prime-trace proxy);
+* an externally supplied ``log(p)`` diagonal produces a complex unitary after
+  applying ``exp(i t nu_f)``;
+* applying ``exp(i M)`` to a selected real-symmetric matrix gives unit-circle
+  eigenvalues, while a separate repository audit reports its own model status.
 
-THE CLAIM (real/scale wall vs phase/oscillation residue):
-  reachable:  f(A, L)  with A = A^T (mutual resonance) and L = D - A self-adjoint
-              => spectrum real => eigen-phase in {0, pi} (the real axis).
-  residue:    S(T) = (1/pi) arg zeta(1/2 + iT)  is a CONTINUOUS phase (the circle).
-  the gap:    {0, pi}  (real axis, scale sector)   vs   continuous arg  (e-pi circle).
-
-  The ONLY map from the real axis to a continuous phase is z |-> exp(i z): the e-pi
-  circle (Euler: exp(i pi) = -1). The canonical engine DOES own one such carrier --
-  the adelic unitary U(t) = diag(exp(i t nu_f)) with nu_f = log p (CANONICAL, see
-  src/tnfr/dynamics/adelic.py) -- and it reaches the circle. BUT its per-node
-  arithmetic content nu_f = log p is IMPOSED (a prime sieve), not produced by the
-  nodal equation: dEPI/dt = nu_f . dNFR reads nu_f as input. Promoting nu_f to a
-  circle-valued / Pontryagin-dual object (candidate P1 = E0) is the non-derivable
-  step (AGENTS.md B0*-beta: C1 reduces to (P-nu_f-Bijectivity) =
-  FORWARD_INDEPENDENT_OF_BACKWARD; C4 fails because S(T) is invariant under that
-  promotion). This is the EXACT mirror of the Yang-Mills Y3 gap: the canonical
-  gauge is U(1) (the same e-pi circle, a scalar phase exp(i phi)); the missing
-  ingredient -- non-commuting generators (YM) / derived prime frequencies (RH) --
-  is not nodal-derivable.
-
-ENGINE (known theorems -- independent ground truth, all pre-TNFR):
-  - Spectral theorem: a real symmetric (self-adjoint) matrix has a real spectrum;
-    hence arg(lambda) in {0, pi} (zero eigenvalues have undefined phase and are
-    excluded). Any polynomial / spectral function of symmetric A, L stays symmetric.
-  - Euler / Pontryagin: z |-> exp(i z) is the unique homomorphism R -> S^1; a
-    diagonal unitary diag(exp(i theta_k)) has eigen-phases theta_k on the circle.
-  - arg zeta(1/2 + iT) is a continuous real-valued function of T (Riemann-Siegel
-    theta / S(T)); it is not confined to {0, pi}.
-
-TNFR reading (AGENTS.md + src/tnfr/dynamics/adelic.py): nu_f = log p is a REAL
-per-node scalar frequency; the adelic phase exp(i t nu_f) is a DERIVED unitary
-rotation, not a generator, and its content (which primes, hence the residue's
-oscillation) is imposed, not derived. (Audit 2026: of the four tetrad constants
-only pi is a genuine structural scale; the others are an overlay.) The phase
-sector requires complexification through the e-pi circle, which leaves
-the self-adjoint catalog.
-
-HONEST SCOPE -- structural CHECKS pass; the THESIS verdict is OPEN, not PASS:
-  We show at machine precision that (1) every catalog f(A, L) has eigen-phases in
-  {0, pi}; (2) the residue S(T) is a continuous phase, disjoint from {0, pi}; (3)
-  the canonical adelic carrier reaches the circle but is non-self-adjoint and its
-  content nu_f = log p is imposed; (4) only the e-pi complexification leaves the
-  real catalog, and that step is the non-derivable Pontryagin promotion -- the
-  mirror of the YM Y3 gap (cross-checked against the canonical audit). This LOCATES
-  the obstruction as a real-vs-phase wall; it does NOT close it. Reaching S(T) is
-  RH-equivalent. R (continuum) and pi remain assumed substrate.
+These facts compare different operator classes. They do not characterize the
+engine's reachable set, define a map from ``S(T)`` into a graph state, locate an
+RH obstruction, or identify it with a Yang--Mills obstruction. The exponential
+and prime frequencies are selected inputs, and the U(1) language below denotes
+an external matrix model rather than a gauge generated by TNFR.
 
 Run:
     python benchmarks/phase_wall.py
 
-Status: RESEARCH (phase-wall falsifier; Camino 8 of the unification map).
+Status: RESEARCH benchmark; finite algebra and negative identification result.
 """
 
 from __future__ import annotations
@@ -85,7 +40,7 @@ sys.path.insert(
 )
 from composition_arithmetic import adj_spectrum  # noqa: E402
 
-# Optional: real Riemann zeta for the residue phase S(T).
+# Optional: principal zeta arguments for the finite sample.
 try:  # pragma: no cover - exercised only when mpmath is installed
     import mpmath  # noqa: E402
 
@@ -93,7 +48,7 @@ try:  # pragma: no cover - exercised only when mpmath is installed
 except Exception:  # pragma: no cover
     _HAVE_MPMATH = False
 
-# Optional: the canonical adelic engine (nu_f = log p phase carrier).
+# Optional source of an adelic-model ``log(p)`` phase carrier.
 try:  # pragma: no cover - exercised only when the package is importable
     from tnfr.dynamics.adelic import AdelicDynamics  # noqa: E402
 
@@ -101,8 +56,7 @@ try:  # pragma: no cover - exercised only when the package is importable
 except Exception:  # pragma: no cover
     _HAVE_ADELIC = False
 
-# Optional: the canonical Yang-Mills non-Abelian derivability verdict (Camino 7
-# mirror -- the same U(1) = e-pi circle is the canonical gauge).
+# Optional repository audit, reported without identifying its model with RH.
 try:  # pragma: no cover
     from tnfr.yang_mills import audit_nonabelian_derivability  # noqa: E402
 
@@ -114,23 +68,19 @@ TOL = 1e-9
 _ZERO_EIG = 1e-6  # eigenvalues below this have undefined phase
 _REAL_AXIS = np.array([0.0, np.pi, -np.pi])  # arg of a real number
 
-# Candidate "famous constants" for TEST 4's obstruction (audit 2026: only pi is a
-# genuine structural scale; the φ/γ/e ↔ tetrad correspondence is refuted overlay —
-# TEST 4 below shows exactly that any REAL combination of these stays on the axis).
+# Selected real coefficients for TEST 4. Only pi is a TNFR phase-wrap scale;
+# the other constants are external numerical inputs.
 PHI = (1.0 + np.sqrt(5.0)) / 2.0  # golden ratio (candidate coefficient; NOT structural)
 GAMMA = 0.5772156649015329  # Euler-Mascheroni (candidate coefficient; NOT structural)
 PI = np.pi  # the one genuine structural scale
 E = np.e  # Napier (candidate coefficient; NOT structural)
 
-# First few Riemann non-trivial zero heights (ground truth for sampling S(T)).
+# Approximate non-trivial-zero heights used only as sampling locations.
 _KNOWN_ZEROS = (14.1347, 21.0220, 25.0109, 30.4249, 32.9351, 37.5862)
 
 
 # --------------------------------------------------------------------------- #
-# Graph operators. The canonical discrete dNFR operator is the emergent
-# L_rw = I - D^-1 W; the self-adjoint combinatorial L = D - A below shares its
-# eigenspaces on the vertex-transitive graphs here (its real spectrum is the
-# structural content this harness reads).
+# Real graph matrices used by the finite comparison.
 # --------------------------------------------------------------------------- #
 def adjacency_laplacian(G, nodes):
     """Return (A, L) with A = A^T (mutual coupling) and L = D - A self-adjoint."""
@@ -146,9 +96,11 @@ def _matrix_function(S, f):
 
 
 def catalog_operators(A, L):
-    """A representative slice of the TNFR catalog: every entry is a function of the
-    symmetric A and the self-adjoint L = D - A, so each is real-symmetric.
-    exp(-L/2) is the REMESH-inf smooth-half heat kernel."""
+    """Return four selected real-symmetric matrices.
+
+    The set is not asserted to equal the engine's reachable catalog;
+    ``exp(-L/2)`` is an ordinary finite matrix heat kernel here.
+    """
     return {
         "A": A,
         "L = D - A": L,
@@ -192,10 +144,12 @@ def _sieve(n):
     return out
 
 
-def canonical_prime_frequencies(max_prime=30):
-    """Canonical nu_f = log p (from the adelic engine if importable, else a sieve).
-    These per-node REAL frequencies are IMPOSED arithmetic content, not produced by
-    the nodal equation dEPI/dt = nu_f . dNFR (which reads nu_f as input)."""
+def selected_prime_frequencies(max_prime=30):
+    """Return externally supplied ``log(p)`` values.
+
+    The historical function name is preserved. Values come from the optional
+    adelic model or a local sieve; this function does not derive them from TNFR.
+    """
     if _HAVE_ADELIC:
         eng = AdelicDynamics(max_prime=max_prime)
         return np.asarray(eng.nu_f, dtype=float), np.asarray(eng.primes, dtype=float)
@@ -203,15 +157,21 @@ def canonical_prime_frequencies(max_prime=30):
     return np.log(primes), primes
 
 
+# Historical API alias; the old name does not confer canonical status.
+canonical_prime_frequencies = selected_prime_frequencies
+
+
 def adelic_phase_unitary(t, nu_f):
-    """The canonical adelic carrier U(t) = diag(exp(i t nu_f)): a diagonal unitary
-    whose eigen-phases t.nu_f live on the e-pi circle S^1, not on the real axis."""
+    """Build the selected diagonal unitary ``diag(exp(i*t*nu_f))``."""
     return np.diag(np.exp(1j * t * nu_f))
 
 
-def riemann_s_phase(T, nu_f, primes):
-    """S(T) = (1/pi) arg zeta(1/2 + iT) via mpmath; fallback = the adelic geometric-
-    trace phase (1/pi) arg sum_p p^(-1/2) exp(i T log p). Both are CONTINUOUS in T."""
+def sampled_argument_value(T, nu_f, primes):
+    """Evaluate normalized zeta argument, or a distinct finite trace proxy.
+
+    The fallback is not ``S(T)`` and is retained only so the benchmark can run
+    without mpmath.
+    """
     if _HAVE_MPMATH:
         z = mpmath.zeta(mpmath.mpc(0.5, T))
         return float(mpmath.arg(z)) / np.pi
@@ -219,17 +179,21 @@ def riemann_s_phase(T, nu_f, primes):
     return float(np.angle(z)) / np.pi
 
 
+# Historical API alias. The fallback remains a distinct finite proxy.
+riemann_s_phase = sampled_argument_value
+
+
 # --------------------------------------------------------------------------- #
-# TEST 1 -- the real wall: every catalog f(A, L) has eigen-phases in {0, pi}
+# TEST 1 -- selected real-symmetric matrices have real spectra
 # --------------------------------------------------------------------------- #
-def test_catalog_is_real_axis():
+def test_selected_real_spectra():
     print("=" * 78)
     print(
-        "TEST 1 -- THE REAL WALL: the catalog f(A, L) is self-adjoint => arg "
+        "TEST 1 -- SELECTED REAL MATRICES: self-adjoint => arg "
         "in {0, pi}"
     )
     print("=" * 78)
-    # Prime-ladder path graph on the first primes (the Riemann-relevant topology).
+    # A path graph whose length is chosen from a short prime list.
     primes = _sieve(20)  # [2,3,5,7,11,13,17,19]
     G = nx.path_graph(len(primes))
     nodes = list(G.nodes())
@@ -253,31 +217,36 @@ def test_catalog_is_real_axis():
     print(f"  worst self-adjoint distance        : {herm_worst:.2e}")
     print(f"  worst eigen-phase distance to axis : {phase_worst:.2e}")
     print(
-        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- catalog spectrum is REAL; "
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the tested spectra are REAL; "
         "eigen-phase locked to {0, pi} (a sign, no continuous phase)"
     )
+    print("  This result applies to the four listed matrices, not every engine path.")
     print()
     return ok
 
 
 # --------------------------------------------------------------------------- #
-# TEST 2 -- the residue is a CONTINUOUS phase, disjoint from {0, pi}
+# TEST 2 -- sampled zeta arguments or proxy arguments are off the real axis
 # --------------------------------------------------------------------------- #
-def test_residue_is_continuous_phase():
+def test_sampled_argument_values():
     print("=" * 78)
     print(
-        "TEST 2 -- THE RESIDUE: S(T) = (1/pi) arg zeta(1/2 + iT) is a CONTINUOUS "
-        "phase"
+        "TEST 2 -- SAMPLED ARGUMENTS near selected zeta-zero heights"
     )
     print("=" * 78)
-    nu_f, primes = canonical_prime_frequencies(60)
-    source = "mpmath zeta(1/2+iT)" if _HAVE_MPMATH else "adelic trace phase"
+    nu_f, primes = selected_prime_frequencies(60)
+    source = (
+        "mpmath principal arg zeta(1/2+iT)"
+        if _HAVE_MPMATH
+        else "finite prime-trace proxy"
+    )
+    sample_label = "arg_zeta/pi" if _HAVE_MPMATH else "proxy"
     # Sample near and between the first non-trivial zeros.
     samples = []
     for z in _KNOWN_ZEROS:
         for off in (-0.7, 0.0, 0.9):
             T = z + off
-            s = riemann_s_phase(T, nu_f, primes)
+            s = sampled_argument_value(T, nu_f, primes)
             samples.append((T, s))
     arg_vals = np.array([np.pi * s for _, s in samples])  # back to radians
     dist_axis = distance_from_real_axis(arg_vals)
@@ -287,43 +256,45 @@ def test_residue_is_continuous_phase():
     spread = float(np.max(arg_vals) - np.min(arg_vals))
 
     print(f"  source                : {source}")
-    print(f"  samples               : {len(samples)} values of S(T) near zeros")
+    print(f"  samples               : {len(samples)} argument values near zero heights")
     for T, s in samples[:4]:
-        print(f"     S({T:6.3f}) = {s:+.4f}   (arg = {np.pi * s:+.4f} rad)")
+        print(
+            f"     {sample_label}({T:6.3f}) = {s:+.4f}   "
+            f"(arg = {np.pi * s:+.4f} rad)"
+        )
     print(f"  spread of arg          : {spread:.3f} rad")
     print(f"  max dist from {{0,pi}}   : {dist_axis:.3f} rad  (>> 0 => off the axis)")
     print(f"  samples off the axis   : {n_off_axis} / {len(samples)}")
-    # The residue is continuous (large spread, far from the real axis), so it can
-    # NEVER equal a catalog eigen-phase, which lives in {0, pi}.
+    # Finite descriptive thresholds; no reachability conclusion follows.
     ok = dist_axis > 0.3 and spread > 0.5 and n_off_axis >= len(samples) // 2
     print(
-        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- residue lives on the circle, "
-        "disjoint from the real-axis catalog spectrum"
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- this finite sample contains "
+        "arguments away from {0, pi}"
     )
+    print("  No map identifies these scalar samples with graph eigenvalue phases.")
     print()
     return ok
 
 
 # --------------------------------------------------------------------------- #
-# TEST 3 -- the canonical carrier reaches the circle, but is non-self-adjoint
-#           and its content nu_f = log p is IMPOSED, not derived
+# TEST 3 -- an externally specified log(p) diagonal and its unitary exponential
 # --------------------------------------------------------------------------- #
-def test_canonical_carrier_content_is_imposed():
+def test_selected_unitary_input():
     print("=" * 78)
     print(
-        "TEST 3 -- THE CARRIER: adelic U(t) = diag(exp(i t nu_f)) reaches the "
+        "TEST 3 -- SELECTED UNITARY: U(t) = diag(exp(i t nu_f)) reaches the "
         "circle,"
     )
     print("           but is non-self-adjoint and nu_f = log p is IMPOSED")
     print("=" * 78)
-    nu_f, primes = canonical_prime_frequencies(30)
-    origin = "tnfr.dynamics.adelic (CANONICAL)" if _HAVE_ADELIC else "local sieve"
+    nu_f, primes = selected_prime_frequencies(30)
+    origin = "tnfr.dynamics.adelic model" if _HAVE_ADELIC else "local sieve"
     U = adelic_phase_unitary(1.3, nu_f)
 
-    # (a) U reaches the phase sector: its eigen-phases are continuous, off-axis.
+    # (a) This selected unitary contains off-axis eigen-phases.
     u_phases = np.angle(np.diag(U))
     u_dist = distance_from_real_axis(u_phases)
-    reaches = u_dist > 0.3
+    contains_off_axis = u_dist > 0.3
     # (b) U is NOT self-adjoint and NOT a real f(A, L): it is unitary with complex
     #     spectrum on S^1 (a different operator class from the real catalog).
     non_herm = is_self_adjoint(U)
@@ -334,11 +305,11 @@ def test_canonical_carrier_content_is_imposed():
     #     arithmetic input, not a fixed point of the nodal equation.
     imposed = bool(np.allclose(nu_f, np.log(primes), atol=TOL))
 
-    ok = reaches and distinct_class and imposed
+    ok = contains_off_axis and distinct_class and imposed
     print(f"  nu_f source                 : {origin}")
     print(
-        f"  (a) carrier reaches circle  : max arg-dist from {{0,pi}} = "
-        f"{u_dist:.3f}  (continuous phase)"
+        f"  (a) unit-circle sample      : max arg-dist from {{0,pi}} = "
+        f"{u_dist:.3f}  (off-axis phase samples)"
     )
     print(
         f"  (b) non-self-adjoint        : ||U - U^dag|| = {non_herm:.3f}, "
@@ -347,24 +318,23 @@ def test_canonical_carrier_content_is_imposed():
     print("      => U is unitary on S^1, NOT a real-symmetric f(A, L)")
     print(
         f"  (c) content imposed         : nu_f == log(primes)? {imposed}  "
-        "(arithmetic input, not nodal-derived)"
+        "(arithmetic input, not derived by this script)"
     )
     print(
-        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the carrier exists (U(1) "
-        "phase) but its arithmetic content is FORWARD_INDEPENDENT_OF_BACKWARD"
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the constructed U(1) matrix "
+        "has the stated spectrum and uses supplied arithmetic content"
     )
     print()
     return ok
 
 
 # --------------------------------------------------------------------------- #
-# TEST 4 -- the e-pi channel + honest OPEN (mirror of the Yang-Mills Y3 gap)
+# TEST 4 -- one selected exponential construction plus an independent audit
 # --------------------------------------------------------------------------- #
-def test_e_pi_is_the_only_phase_channel():
+def test_selected_exponential_map():
     print("=" * 78)
     print(
-        "TEST 4 -- THE e-pi CHANNEL: real constants stay on the axis; only "
-        "exp(i .) escapes"
+        "TEST 4 -- SELECTED EXPONENTIAL: real combination vs exp(i M)"
     )
     print("=" * 78)
     primes = _sieve(20)
@@ -383,82 +353,79 @@ def test_e_pi_is_the_only_phase_channel():
     w = np.linalg.eigvalsh(M)
     circ_phases = np.angle(np.exp(1j * w))
     circ_dist = distance_from_real_axis(circ_phases)
-    escapes = circ_dist > 0.3  # complexification reaches continuous phase
+    contains_off_axis = circ_dist > 0.3
 
-    # (c) Yang-Mills mirror: the canonical gauge is U(1) (the SAME e-pi circle, a
-    #     scalar phase exp(i phi)); the non-derivable ingredient is the open gap.
-    verdict_line = "OPEN_DERIVABILITY_GAP (canonical default; package not imported)"
+    # (c) Report the independent repository audit without equating its domain.
+    verdict_line = "audit unavailable; finite matrix comparison only"
     canon_ok = True
     if _HAVE_AUDIT:
         try:
             report = audit_nonabelian_derivability()
             any_noncomm = any(c.has_noncommuting_generators for c in report.candidates)
             verdict_line = (
-                f"{report.verdict} ; gauge = "
-                f"{report.canonical_gauge_group} ; "
+                f"{report.verdict} ; "
                 f"non-commuting generators on any route = {any_noncomm}"
             )
-            canon_ok = (
-                report.verdict == "OPEN_DERIVABILITY_GAP"
-                and report.canonical_gauge_group == "U(1)"
-                and not any_noncomm
-            )
+            canon_ok = report.verdict == "OPEN_DERIVABILITY_GAP" and not any_noncomm
         except Exception as exc:  # pragma: no cover
-            verdict_line = f"(canonical audit unavailable: {exc})"
+            verdict_line = f"(repository audit unavailable: {exc})"
 
-    ok = real_axis and escapes and canon_ok
+    ok = real_axis and contains_off_axis and canon_ok
     print(
         f"  (a) phi.A + gamma.L + pi.L^2 + e.exp(-L/2) real-symmetric : "
         f"herm = {m_herm:.2e}, arg-dist = {m_dist:.2e}  (stays on axis)"
     )
     print(
-        f"  (b) exp(i .) sends spectrum onto the circle               : "
-        f"max arg-dist = {circ_dist:.3f}  (the e-pi escape)"
+        f"  (b) exp(i M) has unit-circle eigenvalues                  : "
+        f"max arg-dist = {circ_dist:.3f}"
     )
-    print("  (c) the e-pi circle IS the canonical U(1) gauge of Camino 7;")
-    print(f"      canonical YM audit: {verdict_line}")
+    print(f"  (c) independent repository audit: {verdict_line}")
     print(
-        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- four REAL constants never "
-        "leave {0,pi}; the phase needs exp(i .), whose content is non-derivable"
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- this real combination stays "
+        "on {0,pi}, while the explicitly applied exponential does not"
     )
+    print("  This does not prove that exponentiation is the engine's only phase route.")
     print()
     return ok
 
 
+# Historical callable names remain aliases for compatibility only.
+test_catalog_is_real_axis = test_selected_real_spectra
+test_residue_is_continuous_phase = test_sampled_argument_values
+test_canonical_carrier_content_is_imposed = test_selected_unitary_input
+test_e_pi_is_the_only_phase_channel = test_selected_exponential_map
+
+
 def main():
     print(__doc__)
-    t1 = test_catalog_is_real_axis()
-    t2 = test_residue_is_continuous_phase()
-    t3 = test_canonical_carrier_content_is_imposed()
-    t4 = test_e_pi_is_the_only_phase_channel()
+    t1 = test_selected_real_spectra()
+    t2 = test_sampled_argument_values()
+    t3 = test_selected_unitary_input()
+    t4 = test_selected_exponential_map()
 
     print("=" * 78)
     print("SUMMARY")
     print("=" * 78)
     print(
-        f"  TEST 1 real wall: catalog arg in {{0,pi}}     : {'PASS' if t1 else 'FAIL'}"
+        f"  TEST 1 selected real spectra in {{0,pi}}     : {'PASS' if t1 else 'FAIL'}"
     )
-    print(f"  TEST 2 residue S(T) is continuous phase     : {'PASS' if t2 else 'FAIL'}")
     print(
-        f"  TEST 3 carrier reaches circle, content imposed: {'PASS' if t3 else 'FAIL'}"
+        f"  TEST 2 sampled arguments leave {{0,pi}}      : "
+        f"{'PASS' if t2 else 'FAIL'}"
     )
-    print(f"  TEST 4 e-pi is the only phase channel       : {'PASS' if t4 else 'FAIL'}")
+    print(
+        f"  TEST 3 selected unitary, content imposed      : {'PASS' if t3 else 'FAIL'}"
+    )
+    print(f"  TEST 4 selected exponential leaves real axis: {'PASS' if t4 else 'FAIL'}")
     structural = t1 and t2 and t3 and t4
     print()
     print(f"  STRUCTURAL CHECKS: {'ALL PASS' if structural else 'SOME FAIL'}")
     print()
-    print("  THESIS VERDICT: OPEN / PARTIAL (by design -- the deepest path).")
-    print("  The residue is unreachable because the catalog is confined to the REAL")
-    print("  / SELF-ADJOINT sector (arg in {0, pi}), while S(T) = (1/pi) arg zeta is")
-    print("  a CONTINUOUS phase on the e-pi circle. The four tetrad constants (phi,")
-    print("  gamma, pi, e) are the four REAL scales of the derivative tower; the")
-    print("  phase sector requires the e-pi complexification z |-> exp(i z). The")
-    print("  canonical engine owns one carrier -- the adelic U(t) = diag(exp(i t")
-    print("  nu_f)), nu_f = log p -- but its arithmetic content is IMPOSED, not")
-    print("  nodal-derived (FORWARD_INDEPENDENT_OF_BACKWARD). This is the e-pi mirror")
-    print("  of the Yang-Mills U(1) gap (same circle, same OPEN verdict). It LOCATES")
-    print("  the obstruction as a real-vs-phase wall; reaching S(T) is RH-equivalent")
-    print("  and stays OPEN. R and pi remain assumed substrate.")
+    print("  SCOPE VERDICT: the selected finite real matrices, sampled scalar")
+    print("  arguments and constructed unitary have the reported properties.")
+    print("  They occupy different, externally chosen models. No reachability")
+    print("  theorem, S(T)-to-graph map, TNFR-derived gauge, or RH/YM obstruction")
+    print("  identification follows from these comparisons.")
     return 0 if structural else 1
 
 

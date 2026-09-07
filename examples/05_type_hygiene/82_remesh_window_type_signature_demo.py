@@ -8,14 +8,14 @@ Scope (mandatory honesty)
 This script is a *diagnostic only*.  It does **not** construct,
 promote, or modify any canonical operator.  It does **not** advance
 G4 = RH.  It is a *necessary-condition* check on whether canonical
-REMESH evolution on a TNFR graph carries an irreducible continuous-
-time or fractional-order kernel that the canonical integer-indexed
-window (τ_l, τ_g) ∈ ℕ × ℕ necessarily discretises away.
+finite REMESH traces on a TNFR graph show resolution sensitivity compatible
+with a continuous-time or fractional-order model. It cannot establish that
+such a kernel exists, nor that an integer-indexed window is insufficient.
 
 References
 ----------
 - ``theory/TNFR_RIEMANN_RESEARCH_NOTES.md`` §13quadraginta-tertia
-- ``theory/REMESH_INFINITY_DERIVATION.md`` §§1–8 (N15 closure)
+- ``theory/REMESH_INFINITY_DERIVATION.md`` (fixed-delay surrogate and open limit)
 - ``src/tnfr/riemann/remesh_window_type_signature.py``
 - ``src/tnfr/operators/remesh.py:1212::apply_network_remesh``
   (canonical integer-indexed implementation)
@@ -23,7 +23,12 @@ References
 
 from __future__ import annotations
 
+import sys
+
 from tnfr.riemann import compute_remesh_window_type_signature
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 
 def main() -> None:
@@ -70,12 +75,9 @@ def main() -> None:
         "                                  -> integer-indexed (tau_l, tau_g) in N x N suffices"
     )
     print("  - INDETERMINATE               : in between")
-    print(
-        "  - CONTINUOUS_KERNEL_NECESSARY : signature > 0.5 OR integer storage fraction < 1.0"
-    )
-    print(
-        "                                  -> continuous kernel K(t,s) may be required"
-    )
+    print("  - CONTINUOUS_KERNEL_NECESSARY : legacy threshold-bin label only")
+    print("                                  -> flags a continuous-kernel hypothesis for study;")
+    print("                                     neither bin proves necessity or sufficiency")
     print()
     print("Verdicts at the two resolutions:")
     print(f"  res 1 (24/16/4-8/8):  {cert1.verdict}")

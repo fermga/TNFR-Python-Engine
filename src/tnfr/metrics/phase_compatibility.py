@@ -1,7 +1,7 @@
 """Unified phase compatibility calculations for TNFR operators.
 
 This module provides canonical implementations of phase-based coupling strength
-calculations used by multiple TNFR operators (UM, RA, THOL). All operators that
+calculations used by the phase-coupled TNFR operators UM and RA. All operators that
 perform phase-based coupling or propagation MUST use these functions to ensure
 consistency with TNFR physics and Invariant #2.
 
@@ -36,7 +36,6 @@ Canonical Usage
 
 1. **UM (Coupling)**: Phase synchronization and network formation
 2. **RA (Resonance)**: Coherence propagation through phase-aligned paths
-3. **THOL (Self-organization)**: Sub-EPI propagation to coupled neighbors
 
 **Before Refactoring:**
 
@@ -87,7 +86,7 @@ True
 See Also
 --------
 
-operators.definitions : Operator implementations (UM, RA, THOL)
+operators.definitions : Operator implementations (UM, RA)
 metrics.phase_coherence : Kuramoto order parameter and phase metrics
 AGENTS.md : Invariant #2 - Phase Verification requirement
 UNIFIED_GRAMMAR_RULES.md : U3 - RESONANT COUPLING grammar rule
@@ -97,7 +96,7 @@ References
 
 .. [1] TNFR.pdf § 2.3: Phase synchronization and coupling
 .. [2] AGENTS.md: Invariant #2 - No coupling without phase verification
-.. [3] UNIFIED_GRAMMAR_RULES.md: U3 - Resonant Coupling requires |φᵢ - φⱼ| ≤ Δφ_max
+.. [3] UNIFIED_GRAMMAR_RULES.md: U3 - Resonant Coupling requires |wrap(φᵢ - φⱼ)| ≤ Δφ_max
 """
 
 from __future__ import annotations
@@ -163,7 +162,6 @@ def compute_phase_coupling_strength(
 
     - UM (Coupling): For determining link formation and synchronization strength
     - RA (Resonance): For gating coherence propagation to neighbors
-    - THOL (Self-organization): For sub-EPI propagation through coupled nodes
 
     **Invariant #2:** This function implements the explicit phase verification
     required by TNFR Invariant #2 (AGENTS.md). All coupling operations must
@@ -235,7 +233,6 @@ def is_phase_compatible(
 
     - **UM (Coupling)**: Gate link formation based on phase compatibility
     - **RA (Resonance)**: Filter neighbors for coherence propagation
-    - **THOL propagation**: Minimum coupling for sub-EPI propagation
 
     **Invariant #2:** This function provides a boolean interface to the
     phase verification requirement (AGENTS.md Invariant #2).

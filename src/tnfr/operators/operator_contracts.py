@@ -2,8 +2,8 @@
 
 This module is the authoritative, physics-grounded, TNFR.pdf-anchored
 specification of the **contracts** of the 13 structural operators: what each
-operator does to the node state under the nodal equation ``∂EPI/∂t = νf · ΔNFR``,
-expressed as a verifiable postcondition.
+operator does to the node state while remaining compatible with the nodal
+equation ``∂EPI/∂t = νf · ΔNFR``, expressed as a verifiable postcondition.
 
 It is the contract-layer companion of :mod:`grammar_canon` (which owns the U1-U6
 *grammatical role* layer). Together they fully specify each operator:
@@ -13,25 +13,26 @@ It is the contract-layer companion of :mod:`grammar_canon` (which owns the U1-U6
 
 Ground truth (doctrinal)
 ------------------------
-The canonical truth of an operator's contract is **the direct effect the glyph
-has on the node state** — the deterministic mutation applied by the ``_op_*``
-handlers in :mod:`tnfr.operators` — because that effect *is* the nodal dynamics
-``∂EPI/∂t = νf · ΔNFR``. It is NOT "whichever registry is richest". The three
-sources that agree are: (1) the nodal equation, (2) the ``_op_*`` direct effects,
-and (3) TNFR.pdf §2.2.1 "Matriz operativa de los símbolos nodales" (the per-glyph
-formal expressions, e.g. ``A'L ⇒ ∂EPI/∂t > 0, νf ≈ ν₀⁺``; ``I'L ⇒ ∂Wᵢ/∂t → 0,
-νf = const``).
+The executable ground truth of an operator contract is **the direct effect the
+glyph has on the node state** — the deterministic mutation applied by the
+``_op_*`` handlers in :mod:`tnfr.operators`. That mutation must remain
+compatible with ``∂EPI/∂t = νf · ΔNFR``; the equation alone does not determine
+all four state-channel updates. The three sources checked together are: (1) the
+nodal equation, (2) the ``_op_*`` direct effects, and (3) TNFR.pdf §2.2.1
+"Matriz operativa de los símbolos nodales" (the per-glyph formal expressions,
+e.g. ``A'L ⇒ ∂EPI/∂t > 0, νf ≈ ν₀⁺``; ``I'L ⇒ ∂Wᵢ/∂t → 0, νf = const``).
 
 The unifying structure (synergies)
 -----------------------------------
 The 13 operators distribute across the **four nodal-equation state channels**
-(the structural triad EPI/νf/θ plus the pressure ΔNFR). This single partition
-simultaneously *is*:
+(the structural triad EPI/νf/θ plus the pressure ΔNFR). This partition exposes:
 
   * the **dual-lever** (examples 37/130): the νf channel = capacity lever,
     the ΔNFR channel = pressure lever;
-  * the **tetrad driver** (example 39): the ΔNFR channel drives Φ_s (0th order,
-    measured |r| = 1.0); the θ channel drives |∇φ| (1st) and K_φ (2nd);
+  * the **tetrad read-out relation** (example 39): at fixed topology Φ_s is a
+    linear aggregation of ΔNFR, while θ determines |∇φ| and K_φ. ξ_C is a
+    nonlinear, state- and topology-dependent correlation estimate and has no
+    one-to-one primary operator channel;
   * the **number-theory grading** (example 147): the ΔNFR/pressure channel is the
     count-Ω arm, the νf/capacity channel is the size-log arm.
 
@@ -57,8 +58,10 @@ at NETWORK scale; the other twelve act at NODE scale:
                EPI recurrence ``EPI_new = (1-α)²·EPI(t) + α(1-α)·EPI(t-τ_l) +
                α·EPI(t-τ_g)`` (``apply_network_remesh``) plus topological
                base-from-fiber regeneration (``apply_topological_remesh``). Its
-               τ_g→∞ limit is the bounded self-adjoint projection ℛ_∞ (N15,
-               theory/REMESH_INFINITY_DERIVATION.md). REMESH is therefore an EPI
+               fixed-parameter history surrogate has a conditional Cesàro
+               fixed-point projection (N15,
+               theory/REMESH_INFINITY_DERIVATION.md); this is not the literal
+               runtime τ_g→∞ limit of ``apply_network_remesh``. REMESH is an EPI
                operator (it echoes the form across time/scale), distinguished
                from Emission/Reception/Resonance only by its NETWORK scale —
                which *is* U5 fractality. This connects the contract layer to the
@@ -108,12 +111,14 @@ __all__ = [
     "EffectDirection",
     "ContractContext",
     "OperatorContract",
+    "ContractIdentifiabilityCertificate",
     "OPERATOR_CONTRACTS",
     "contract_for",
     "iter_contracts",
     "operators_in_channel",
     "operators_at_scale",
     "english_name",
+    "contract_identifiability_certificate",
     "verify_contract_consistency",
 ]
 
@@ -170,12 +175,14 @@ class ContractContext(Enum):
     ADVISORY = "advisory"  # verified at network scale elsewhere
 
 
-# Tetrad field each channel drives (synergy with the structural-field tetrad).
+# Diagnostic relation between each channel and the structural-field tetrad.
+# ξ_C is deliberately absent from any one-to-one assignment: it depends on the
+# complete pressure field, topology and the estimator branch.
 _CHANNEL_TETRAD = {
-    StateChannel.EPI: "EPI (the form itself)",
-    StateChannel.NU_F: "νf — mobility/diffusivity (structural diffusion)",
+    StateChannel.EPI: "no unique tetrad component; effects require state recomputation",
+    StateChannel.NU_F: "no direct tetrad component; νf sets evolution rate",
     StateChannel.THETA: "|∇φ| (1st), K_φ (2nd) — phase gradient/curvature",
-    StateChannel.DELTA_NFR: "Φ_s — structural potential (0th order, |r|=1.0)",
+    StateChannel.DELTA_NFR: "Φ_s — linear source aggregation at fixed topology",
 }
 
 # Dual-lever arm each channel corresponds to (synergy with examples 37/130).
@@ -233,7 +240,11 @@ class OperatorContract:
 
     @property
     def tetrad_field(self) -> str:
-        """The tetrad field this operator's primary channel drives."""
+        """Describe the channel's scoped relation to tetrad diagnostics.
+
+        This compatibility property is descriptive. It does not assert that
+        the tetrad reconstructs an operator or the complete graph state.
+        """
         return _CHANNEL_TETRAD[self.primary_channel]
 
     @property
@@ -242,10 +253,28 @@ class OperatorContract:
         return _CHANNEL_LEVER[self.primary_channel]
 
 
+@dataclass(frozen=True, slots=True)
+class ContractIdentifiabilityCertificate:
+    """Equivalence classes induced by observable contract features.
+
+    This is a structural identifiability result for the declared feature set,
+    not an empirical classifier of engine trajectories.
+    """
+
+    features: tuple[str, ...]
+    signature_groups: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...]
+    uniquely_identifiable: tuple[str, ...]
+    ambiguous_groups: tuple[tuple[str, ...], ...]
+    all_operators_identifiable: bool
+    claim_status: str
+
+
 # ════════════════════════════════════════════════════════════════════════════
 # THE CANONICAL CONTRACTS — single source of truth (13 operators)
-# Ground truth: the direct _op_* effect on node state == the nodal dynamics,
-# anchored to TNFR.pdf §2.2.1 formal expressions. Ordered by nodal channel.
+# Ground truth for executable effects: the direct ``_op_*`` state mutation,
+# checked for compatibility with the nodal equation and anchored to TNFR.pdf
+# §2.2.1 formal expressions. The handler is an operator realization, not the
+# complete nodal dynamics. Contracts are ordered by their primary channel.
 # ════════════════════════════════════════════════════════════════════════════
 
 OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
@@ -387,11 +416,14 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         name=SELF_ORGANIZATION,
         english_name="SelfOrganization",
         glyph="THOL",
-        purpose="Autopoietic structuring: spawns sub-EPIs, preserves global form.",
+        purpose="Autopoietic reorganization: forms sub-EPIs while preserving global form.",
         primary_channel=StateChannel.DELTA_NFR,
-        primary_direction=EffectDirection.INCREASE,
+        primary_direction=EffectDirection.REORGANIZE,
         scale=OperatorScale.NODE,
-        postcondition="C(t) not catastrophic (≥ 90%, global form preserved)",
+        postcondition=(
+            "parent EPI, nu_f and phase fixed; DeltaNFR follows signed "
+            "acceleration; nested child creation preserves parent identity"
+        ),
         context=ContractContext.NETWORK,
         nodal_expression="T'HOL ⇒ ΔNFR += κ·∂²EPI/∂t² (sub-EPIs)",
         pdf_reference="TNFR.pdf §2.2.1 T'HOL — Autoorganización",
@@ -475,6 +507,52 @@ def english_name(identifier: str) -> str:
     return contract_for(identifier).english_name
 
 
+def contract_identifiability_certificate(
+    features: tuple[str, ...] = (
+        "primary_channel",
+        "primary_direction",
+        "scale",
+        "context",
+    ),
+) -> ContractIdentifiabilityCertificate:
+    """Partition operators by a declared instantaneous contract signature.
+
+    Supported features are the four executable contract classifications.  Two
+    operators in one returned group cannot be distinguished from these features
+    alone.  Text descriptions, glyphs and names are excluded because including
+    an identifier would make the inverse problem tautological.
+    """
+    allowed = {"primary_channel", "primary_direction", "scale", "context"}
+    if not features or len(set(features)) != len(features):
+        raise ValueError("features must be a nonempty tuple without duplicates")
+    unknown = set(features) - allowed
+    if unknown:
+        raise ValueError(f"unsupported contract features: {sorted(unknown)}")
+
+    grouped: dict[tuple[str, ...], list[str]] = {}
+    for contract in iter_contracts():
+        signature = tuple(getattr(contract, feature).value for feature in features)
+        grouped.setdefault(signature, []).append(contract.english_name)
+    groups = tuple(
+        (signature, tuple(names)) for signature, names in sorted(grouped.items())
+    )
+    unique = tuple(
+        names[0] for _, names in groups if len(names) == 1
+    )
+    ambiguous = tuple(names for _, names in groups if len(names) > 1)
+    return ContractIdentifiabilityCertificate(
+        features=tuple(features),
+        signature_groups=groups,
+        uniquely_identifiable=unique,
+        ambiguous_groups=ambiguous,
+        all_operators_identifiable=not ambiguous,
+        claim_status=(
+            "EXACT for declared contract features; trajectory and word "
+            "identification require temporal telemetry"
+        ),
+    )
+
+
 # ════════════════════════════════════════════════════════════════════════════
 # Self-consistency
 # ════════════════════════════════════════════════════════════════════════════
@@ -497,8 +575,9 @@ def verify_contract_consistency() -> None:
         assert (
             contract.glyph == canonical_glyph
         ), f"{name}: glyph drift {contract.glyph} != {canonical_glyph}"
-    # 3. The primary-channel partition is exactly the canonical nodal-channel
-    #    grouping (= the dual-lever / tetrad-driver / number-theory grading).
+    # 3. The primary-channel partition is exactly the canonical four-channel
+    #    grouping. νf and ΔNFR form the dual lever; the tetrad remains a lossy
+    #    diagnostic read-out rather than an operator-identification basis.
     by_channel = {ch: set(operators_in_channel(ch)) for ch in StateChannel}
     assert by_channel[StateChannel.EPI] == {
         "Emission",

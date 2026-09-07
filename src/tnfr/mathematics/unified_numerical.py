@@ -33,6 +33,14 @@ import math
 from dataclasses import dataclass
 from typing import Any, Iterable, Sequence
 
+from ..constants.canonical import (
+    FRAGMENTATION_THRESHOLD,
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
+    PI as CANONICAL_PI,
+    U6_STRUCTURAL_POTENTIAL_LIMIT,
+    XI_C_CRITICAL_RATIO,
+)
 from ..errors import TNFRValueError
 
 # UNIFIED NUMPY IMPORT - Single point of import for entire TNFR codebase
@@ -75,38 +83,35 @@ class TNFRConstants:
     """Numerical parameters for the unified numerical utilities.
 
     Of the constants that appear in TNFR, only π is a genuine structural
-    scale — the phase-wrap bound shared by |∇φ| and K_φ (K_φ = L_rw·φ). The
-    coherence-length scale is set by the spectral gap (ξ_C ∝ 1/√λ₂). Every
+    scale — the phase-wrap bound shared by |∇φ| and K_φ. In a smooth,
+    consistent unwrapped branch with matching normalization, K_φ has the
+    corresponding Laplacian linearization; the wrapped field is nonlinear. The
+    coherence-length estimator uses a state-dependent fit with `1/√λ₂` as a
+    connected-graph spectral comparison/fallback. Every
     other value below is a plain operational parameter or telemetry cut, not
     a derived structural scale.
     """
 
-    PI: float = math.pi  # π — genuine phase-wrap scale
+    PI: float = CANONICAL_PI  # π — exact phase-wrap scale
 
     # Coherence telemetry cuts (heuristic; not derived from the dynamics)
     MIN_BUSINESS_COHERENCE: float = 0.75  # strong-coherence cut (operational heuristic)
-    THOL_MIN_COLLECTIVE_COHERENCE: float = float(
-        1.0 / (math.pi + 1)
-    )  # fragmentation-risk cut C < 0.2415
+    # Deprecated, inert compatibility alias. This is the fragmentation-risk
+    # cut, not THOL amplitude alignment or an implicit U5 threshold.
+    THOL_MIN_COLLECTIVE_COHERENCE: float = float(FRAGMENTATION_THRESHOLD)
     HIGH_CORRELATION_THRESHOLD: float = 0.8  # Excellent stability threshold
 
     # Phase and frequency bounds
-    MAX_PHASE: float = 2.0 * math.pi  # Phase normalization bound
+    MAX_PHASE: float = 2.0 * PI  # Phase normalization bound
     MIN_STRUCTURAL_FREQUENCY: float = 0.0  # Hz_str minimum
     MAX_STRUCTURAL_FREQUENCY: float = 1000.0  # Hz_str practical maximum
 
     # Structural field bounds (audit 2026: only the π phase-wrap bounds are
     # genuine; the |∇φ| early-warning level is a heuristic, not a derived bound).
-    STRUCTURAL_POTENTIAL_ESCAPE_THRESHOLD: float = 2.0  # Δ Φ_s < 2.0 (empirical)
-    PHASE_GRADIENT_STABILITY_THRESHOLD: float = float(
-        math.pi / 16
-    )  # heuristic early-warning ≈ 0.196 (π/16; kinematic bound is |∇φ| ≤ π)
-    PHASE_CURVATURE_CONFINEMENT_THRESHOLD: float = float(
-        0.9 * PI
-    )  # |K_φ| < 0.9×π ≈ 2.8274 (phase wrap — genuine)
-    COHERENCE_LENGTH_CRITICAL_RATIO: float = (
-        PI  # ξ_C scale set by spectral gap (ξ_C ∝ 1/√λ₂)
-    )
+    STRUCTURAL_POTENTIAL_ESCAPE_THRESHOLD: float = U6_STRUCTURAL_POTENTIAL_LIMIT
+    PHASE_GRADIENT_STABILITY_THRESHOLD: float = GRAD_PHI_CANONICAL_THRESHOLD
+    PHASE_CURVATURE_CONFINEMENT_THRESHOLD: float = K_PHI_CANONICAL_THRESHOLD
+    COHERENCE_LENGTH_CRITICAL_RATIO: float = XI_C_CRITICAL_RATIO
 
     # Numerical precision constants
     FLOAT_TOLERANCE: float = 1e-12  # Numerical precision for TNFR operations

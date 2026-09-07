@@ -326,7 +326,7 @@ warning policies as any TNFR network:
 | $\Phi_s$ | π/4 ≈ 0.785 (per-node), π/2 ≈ 1.571 (drift), both selected policies | `PHI_S_VON_KOCH_THRESHOLD`, `U6_STRUCTURAL_POTENTIAL_LIMIT` |
 | $|\nabla\phi|$ | ≤ π (phase wrap); measured onset ≈0.29 is experiment-dependent | canonical wrapping / measured protocol |
 | $K_\phi$ | < 0.9·π ≈ 2.827 (phase-wrap safety) | `K_PHI_CANONICAL_THRESHOLD` |
-| $\xi_C$ | spectral gap (ξ_C ∝ 1/√λ₂) | Computed per network |
+| $\xi_C$ | state-dependent correlation fit, with a `1/√λ₂` graph-spectral fallback under its stated hypotheses | Computed per network |
 
 An earlier "arithmetic recalibration" introduced topology-specific thresholds
 expressed as φ/γ/e combinations (e.g. a $K_\phi$ threshold of 3.2275 that
@@ -354,10 +354,10 @@ facets:
   (6, 12, 24, 30, 36, …), the hubs of the divisibility lattice.
 - **Fractal.** The coherence length $\xi_C$ sets the region scale.
 
-The same nodal dynamics generates an **emergent geometry** (AGENTS.md §4),
-exposed by `conservation()` and `symplectic_substrate()`, which delegate to the
-canonical Structural Conservation Theorem and symplectic-substrate machinery
-applied to the divisibility network:
+The arithmetic network exposes structural read-outs through `conservation()`
+and initializes the separate auxiliary harmonic model through
+`symplectic_substrate()`.  These diagnostics do not show that the arithmetic
+nodal dynamics generates a symplectic geometry:
 
 - a **Noether-like charge diagnostic** $Q = \sum_i (\Phi_s(i) + K_\phi(i))$ and
   the nonnegative structural **energy candidate**
@@ -454,7 +454,7 @@ A factor candidate is TNFR-certified when $\geq 4$ of 8 criteria hold and $\geq 
 |-----------|-----------|---------------|
 | $\Delta\mathrm{NFR}$ gain | $\geq 0.15$ drop | Nodal equation convergence |
 | Coherence ratio | $0.72 \leq r \leq 1.38$ | Structural similarity |
-| $\Phi_s$ delta | $\leq 0.35$ | U6 structural-potential confinement |
+| $\Phi_s$ delta | $\leq 0.35$ | Selected factor-certification feature; not the canonical U6 $\pi/2$ drift policy |
 | Gradient delta | $\leq 0.40$ | Phase desynchronization limit |
 | Curvature delta | $\leq 0.45$ | Geometric stability |
 | Periodicity confidence | $\geq 0.55$ | Structural mode certainty |
@@ -491,7 +491,11 @@ The "partial" limitation of sector B (only $n\equiv 1\pmod 4$, §9.5) is **not**
 
 **The structural reason for the mod-4 split.** For $n\equiv 1\pmod 4$, $-1$ is a quadratic residue, so the residue graph is **symmetric**: the canonical operator $L_{rw}=I-D^{-1}W$ is self-adjoint and its spectrum is **real**. For $n\equiv 3\pmod 4$, $-1$ is **not** a residue, so the residue digraph is a **Paley tournament** (one directed edge per pair); the canonical operator is **non-self-adjoint** (a non-symmetric circulant, hence still *normal*) and its spectrum is **complex** — the arithmetic content lives in the **phase** (the imaginary part), which the real spectrum discards.
 
-**Doctrine compliance.** This is the *same* `structural_diffusion_operator` (the literal ΔNFR EPI channel) applied directly to a `networkx.DiGraph` — verified identical to a hand-built operator ($\max|\Delta|=0$). Nothing ad-hoc; the complex spectrum **is** the canonical emergent geometry on a directed graph. Only arithmetic input: $x^2\bmod n$.
+**Scope.** This is `structural_diffusion_operator` applied directly to a
+`networkx.DiGraph`, verified against a hand-built matrix
+($\max|\Delta|=0$). Its complex spectrum is a diagnostic of that directed
+linear transport operator; it is not the auxiliary symplectic substrate or a
+complete emergent geometry. The arithmetic input is $x^2\bmod n$.
 
 **Measured (all reproducible in example 119):**
 
@@ -505,7 +509,12 @@ The "partial" limitation of sector B (only $n\equiv 1\pmod 4$, §9.5) is **not**
 
 ### 9.7 The Symmetry Wall — Why the Substrate Is Blind and the Spectrum Is Not (MEASURED)
 
-§9.6 detects primality in the **global spectrum**; §9.5 and examples 103/116 found the **per-node symplectic substrate** ($\Phi_s$, $K_\phi$, $J_{\Delta\mathrm{NFR}}$) blind to arithmetic. These look contradictory — the *same* canonical emergent operator on the *same* residue digraph. Example [120_symmetry_wall_substrate_vs_spectrum.py](../examples/08_emergent_geometry/120_symmetry_wall_substrate_vs_spectrum.py) resolves the contradiction and unifies the arc with **one** structural mechanism: **vertex-transitivity**.
+§9.6 detects primality in a **global diffusion spectrum**; §9.5 and examples
+103/116 found the extracted per-node fields used to initialize the auxiliary
+substrate blind to arithmetic. These are different summaries of the same
+residue digraph, so their information content need not agree. Example
+[120_symmetry_wall_substrate_vs_spectrum.py](../examples/08_emergent_geometry/120_symmetry_wall_substrate_vs_spectrum.py)
+locates the finite observation loss at **vertex-transitivity**.
 
 **The mechanism.** The residue digraph is a **Cayley digraph** of $\mathbb{Z}_n$ with connection set $=$ the quadratic residues. Translation preserves the difference $j-i$ and acts transitively. Consequently an equivariant per-node observer applied to an invariant input must be orbit-constant; this does not constrain an arbitrary symmetry-breaking input.
 
@@ -599,7 +608,10 @@ where $\mathrm{Fix}(G)=\{\text{functions constant on the orbits of }\mathrm{Aut}
 - **M1**: equivariance $\lVert P_\sigma L_{rw}-L_{rw}P_\sigma\rVert=0$ (machine zero) for **every** automorphism.
 - **M2**: $\mathrm{rank}(P_{\mathrm{triv}})=$ #orbits exactly ($P_{\mathrm{triv}}=$ mean of $P_\sigma$).
 - **M3**: $L_{rw}$ preserves $\mathrm{Fix}(G)$ ($\sim10^{-17}$): block-diagonal.
-- **M4**: the canonical per-node symplectic substrate from a symmetric seed satisfies $P_{\mathrm{triv}}v=v$ exactly (orbit-constant); vertex-transitive $\Rightarrow$ $\sigma(\Phi_s)=0$ — the §9.7 blindness, now a **corollary**.
+- **M4**: the extracted per-node field vector used to initialize the auxiliary
+  substrate satisfies $P_{\mathrm{triv}}v=v$ for the symmetric seed
+  (orbit-constant); vertex-transitive $\Rightarrow$ $\sigma(\Phi_s)=0$ in this
+  declared construction.
 - **M5**: only the constant eigenmode has $\lVert P_{\mathrm{triv}}v\rVert=1$ (it **is** $\mathrm{Fix}(G)$); every node-separating mode has $\lVert P_{\mathrm{triv}}v\rVert=0$ ($\mathrm{Fix}(G)^\perp$).
 
 **The comparison.** Residue-graph symmetry, the measured substrate limitation,
@@ -638,7 +650,9 @@ $$\lambda(t)=\sum_{r\in H}\zeta^{tr}.$$
 
 ### 9.12 The Ontological Position of a Number (the emergent ladder)
 
-§9.5–9.7 answer "is primality emergent?" sector by sector. This subsection assembles them — together with the cardinal/operation emergence of the emergent-number arc — into the **ontological position** of a number: a ladder whose every rung is read from canonical TNFR structure/dynamics, measured in example [155_ontological_position_of_numbers.py](../examples/08_emergent_geometry/155_ontological_position_of_numbers.py).
+§9.5–9.7 compare which finite diagnostics distinguish primality. This
+subsection assembles them into a **diagnostic profile** for an integer, measured
+in example [155_ontological_position_of_numbers.py](../examples/08_emergent_geometry/155_ontological_position_of_numbers.py).
 
 | Layer | What $n$ **is** | Mechanism | Emergent? |
 |-------|-----------------|-----------|-----------|
@@ -858,11 +872,11 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 | [100_prime_families_orbits.py](../examples/07_number_theory/100_prime_families_orbits.py) | Special prime families (twin, cousin, sexy, Sophie Germain, safe, Cunningham, Mersenne, constellations) as orbits and level-sets of arithmetic maps on the zero-pressure fixed-point set $Z=\{\Delta\mathrm{NFR}=0\}$; three generator classes; detection exact, infinitude open (honest scope) |
 | [101_numbers_as_coupled_network.py](../examples/07_number_theory/101_numbers_as_coupled_network.py) | Numbers as a coupled TNFR network: $\Omega(n)$ grades both the per-node pressure $\Delta\mathrm{NFR}$ and the divisibility/GCD transport centrality ($r\approx 0.8$–$0.9$); primes ($\Omega{=}1$, $\Delta\mathrm{NFR}{=}0$) are the transport periphery, large primes isolated; correspondence-through-$\Omega$ not identity, not scale-free (honest scope) |
 | [102_nodal_flow_primes_equilibria.py](../examples/07_number_theory/102_nodal_flow_primes_equilibria.py) | The actual nodal flow $\partial\mathrm{EPI}/\partial t=\nu_f\Delta\mathrm{NFR}$ on numbers: primes are EXACTLY the equilibria (§4 theorem in motion, frozen) while composites drift $\Omega$-graded; refines §7.1 — primes are static low-$\Phi_s$ sinks but NOT dynamical attractors (diffusion flow pulls primes UP toward the composite bulk) |
-| [146_primality_grammatical_inertness.py](../examples/07_number_theory/146_primality_grammatical_inertness.py) | Bridges the operator-grammar thread (examples 139-145) to number theory: every operator acts through the single nodal rule $\partial\mathrm{EPI}/\partial t=\nu_f\Delta\mathrm{NFR}$, so on arithmetic nodes (where $\Delta\mathrm{NFR}$ is the §4 primality field) primes are the KERNEL of the capacity ($\nu_f$) lever — frozen under every grammatical program (the dual-lever, ex 37/130). prime $\iff \Delta\mathrm{NFR}{=}0 \iff C{=}1$ (maximal coherence); composite drift $=(\nu_f\text{ gain})\times$ pressure exactly; the U2 convergence target $\Delta\mathrm{NFR}\to 0$ IS primality, $C$ decreasing monotonically with $\Omega$ (coherence debt $=$ factorization complexity); a prime needs the EMPTY word (the identity of the star-free syntactic monoid, ex 145) — primality is grammatical inertness. Restates the §4 theorem through the grammar dynamics (grammar-lens reading); not new number theory (honest scope) |
-| [147_numbers_as_free_monoid_words.py](../examples/07_number_theory/147_numbers_as_free_monoid_words.py) | Deepens 146 to its algebraic core, uniting physics + grammar + number theory. By the FTA the multiplicative monoid $(\mathbb{N},\times)$ is the FREE COMMUTATIVE MONOID on the primes — numbers are words (primes = letters, $1$ = empty word, $\Omega$ = word length, $\times$ = concatenation). The coherence debt $\Delta\mathrm{NFR}$ splits by COMPOSITION LAW: the factorization channel $\zeta(\Omega-1)$ is ADDITIVE (a monoid homomorphism, $P_\Omega(mn)=P_\Omega(m)+P_\Omega(n)+\zeta$ exact — the free-monoid backbone), while the divisor $\eta(\tau-2)$ and abundance $\theta(\sigma/n-\ldots)$ channels are MULTIPLICATIVE (the divisor lattice). Multiplying by a prime is the unit destabilizer ($+\zeta$ per letter); the additive channel ALONE detects primality ($\Omega=1\iff$ prime). The DUAL-LEVER (ex 37/130) restricted to arithmetic IS the two canonical additive gradings of the free monoid: count $\Omega$ ($\to\Delta\mathrm{NFR}$ pressure) and size $\log n$ ($\to\nu_f$ capacity, ex 94). Fixes the dictionary physics dual-lever $\leftrightarrow$ free-monoid gradings $\leftrightarrow$ primality; classical multiplicative number theory restated through the lens (honest scope) |
+| [146_primality_grammatical_inertness.py](../examples/07_number_theory/146_primality_grammatical_inertness.py) | Tests the restricted scalar flow $\mathrm{EPI}_{k+1}=\mathrm{EPI}_k+dt\,\nu_f\Delta\mathrm{NFR}_{\rm arith}$ with arithmetic pressure held fixed. It verifies prime $\iff\Delta\mathrm{NFR}_{\rm arith}=0\iff C=1$, zero prime drift for sampled positive capacities, and exact capacity scaling of composite drift. Because no canonical graph operator or grammar history is applied, it does not prove grammatical inertness. Fixed positive composite pressure also gives an unbounded infinite-time integral, so the fixture is not a U2-convergence result or attraction toward primality. |
+| [147_numbers_as_free_monoid_words.py](../examples/07_number_theory/147_numbers_as_free_monoid_words.py) | Compares the classical free commutative monoid on the primes with the unit-coefficient arithmetic pressure. The exact content is the additive law for $\Omega$, the coprime multiplicative laws for $\tau$ and $\sigma$, and $\Omega(n)=1\iff n$ prime for $n\ge2$. Count $\Omega$ and log-size give a declared analogy with pressure and capacity; integers are not operator-grammar words, and prime multiplication is not a canonical destabilizer. |
 | [148_capacity_arm_carries_von_mangoldt.py](../examples/07_number_theory/148_capacity_arm_carries_von_mangoldt.py) | Answers which dual-lever arm carries the Riemann difficulty (and why the substrate is blind). The CAPACITY arm $\log n = \sum_{d\mid n}\Lambda(d)$ exactly (Möbius-inverse $\Lambda=\mu*\log$), so von Mangoldt — and $\psi(x)=\sum\Lambda$, the Chebyshev staircase carrying $S(T)$ (ex 96) — sits on the capacity ($\nu_f$, ex 147) arm. The Riemann ZEROS are the POLES of the capacity Dirichlet series $-\zeta'/\zeta(s)=\sum\Lambda(n)n^{-s}$ (P12; measured simple pole residue 1 at $\rho_1=\tfrac12+14.1347i$), while $\sum\Omega(n)n^{-s}=\zeta(s)P(s)$ has $\zeta$ in the numerator (zeros invisible to the PRESSURE arm). The pressure arm $\Omega$ is smooth (Erdős–Kac Gaussian CLT); the per-node substrate encodes pressure ($\Phi_s\leftarrow\Delta\mathrm{NFR}\leftarrow\Omega$), so it is structurally BLIND to the capacity/von-Mangoldt arm where the zeros live — the $\mathrm{Fix}(G)^\perp$ blindness of ex 103/116/120, now located on the dual-lever axis. Classical identities read through the lens; does not advance RH (G4 open, program paused at T-HP) (honest scope) |
 | [149_p14_is_the_capacity_arm_operator.py](../examples/07_number_theory/149_p14_is_the_capacity_arm_operator.py) | Identifies the canonical TNFR-Riemann Hamiltonian P14 as EXACTLY the capacity-arm operator of the dual-lever — the structural reason it sees the primes while the pressure substrate is blind (closes the loop of ex 148). Every P14 node $(p,k)$ carries $\nu_f = k\log p$ (CAPACITY, 20/20 exact) and $\Delta\mathrm{NFR}=0$ (PRESSURE neutral), so P14 puts all structural information on the capacity lever — the axis (log $=\nu_f$) carrying von Mangoldt + the zeros (ex 148). Inter-prime orthogonality (disconnected ladders, independent invariant subspaces) IS the Euler product at the operator level $=$ the free-monoid freedom (ex 147). The weighted trace reproduces $Z_{vM}(s)=-\zeta'/\zeta(s)$ to machine precision (certificate $\mathrm{overall\_ok}$), and the zeros are its poles. Unifies physics $\nu_f$-capacity $\leftrightarrow$ free-monoid size-grading $\leftrightarrow$ the prime-ladder Hamiltonian; no new operator, does not advance RH (G4 open, program paused at T-HP) (honest scope) |
-| [153_structural_frequency_rank_cyclotomy.py](../examples/07_number_theory/153_structural_frequency_rank_cyclotomy.py) | The canonical structural-diffusion operator (the $\Delta\mathrm{NFR}$ EPI channel, `structural_diffusion_operator`) on arithmetic Cayley networks has a structural-frequency RANK that unifies three modules. (M1) TWO-ARM PRIMALITY: primality is a simultaneous fixed point of BOTH dual-lever arms — per-node pressure $\Delta\mathrm{NFR}(n)=0$ (§4) AND global spectral rank $s_{QR}(m)=3$ (ex 119), 0 disagreements; both GROW with factorization complexity (corr$(\Delta\mathrm{NFR},\log A)=0.93$), bridging §4 $\leftrightarrow$ ex 119. (M2) CYCLOTOMY LAW: $s_k(p)=\gcd(k,p-1)+1$ (measured, 0 fails $k\le10$, $p<60$); the maximal rank $k+1$ is reached $\iff p\equiv1\pmod k \iff p$ splits completely in $\mathbb{Q}(\zeta_k)$ (0 mismatches); QR is the $k=2$ case. (M3) FREE-MONOID EXPONENTIAL GRADING: on squarefree $m$ the rank is (per-prime rank)$^\omega$ — QR $3^\omega$, unitary/Ramanujan $2^\omega$ — the EXPONENTIAL reading of the word length $\omega$ (ex 147) whose pressure counterpart is the LINEAR $\zeta(\omega-1)$. Underneath = classical Gauss periods/cyclotomy; NEW = the unified TNFR structural-diffusion framing; no open problem advanced (honest scope) |
+| [153_structural_frequency_rank_cyclotomy.py](../examples/07_number_theory/153_structural_frequency_rank_cyclotomy.py) | Applies the structural-diffusion spectrum to power-residue Cayley graphs. The exact cyclotomy law $s_k(p)=\gcd(k,p-1)+1$ is proved for the declared odd-prime construction from classical Gauss-period theory and checked on a finite grid. Other correlations and squarefree grading observations in the example remain finite measurements; no restoring primality dynamics or open-problem result follows. |
 
 ### 12.3 Test Coverage
 

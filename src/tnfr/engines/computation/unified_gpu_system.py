@@ -1,51 +1,25 @@
-"""TNFR Unified GPU System - Consolidated Engine and Memory Management.
+"""GPU compatibility facade with explicit backend provenance.
 
-CONSOLIDATION ACHIEVEMENT: This module unifies all TNFR GPU implementations
-including duplicate engines, memory managers, and device management under
-a single coherent interface following nodal equation dynamics principles.
+The facade discovers optional JAX, Torch, and CuPy devices, validates finite
+array inputs, records observed resource telemetry, and provides an explicit CPU
+fallback policy. Canonical graph pressure and canonical AL/RA graph commits use
+the shared CPU implementations until an accelerated implementation has matching
+directed, weighted, phase-gated, and transactional semantics.
 
-Unified Architecture:
-- Merges engines/computation/gpu_engine.py + parallel/gpu_engine.py
-- Consolidates gpu_memory_manager.py + unified_gpu_manager.py functionality
-- Single entry point for all GPU operations across TNFR
-- Intelligent backend selection (JAX, PyTorch, CuPy, NumPy)
-- Unified memory management with automatic fallback
-- Consistent error handling and resource cleanup
-
-Theoretical Foundation:
-GPU acceleration of nodal equation ∂EPI/∂t = νf · ΔNFR(t) via vectorized
-computation of structural field tetrad (Φ_s, |∇φ|, K_φ, ξ_C) and ΔNFR
-operations with optimal memory utilization.
-
-Consolidated Features:
-1. ΔNFR Computation: Fast vectorized structural pressure calculation
-2. Tetrad Fields: GPU-accelerated structural field computation
-3. Memory Management: Automatic device placement and cleanup
-4. Fallback Handling: Graceful CPU fallback for memory constraints
-5. Resource Monitoring: Real-time memory and utilization tracking
-6. Device Selection: Intelligent GPU selection and load balancing
-
-Performance Benefits:
-- Eliminates duplicate GPU engine instantiation
-- Unified memory pool management across operations
-- Automatic optimization based on operation characteristics
-- Consistent error handling and recovery patterns
-
-Status: UNIFIED GPU CONSOLIDATION - All GPU operations centralized
+Device availability alone is not performance evidence. Unknown resource fields
+remain ``None`` and no speedup is inferred without a measured accelerated run.
 """
 
 from __future__ import annotations
 
 import gc
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Callable
 
 import psutil
 
-from ...alias import get_attr
 from ...config import get_config
-from ...constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 
 # Unified mathematics backend integration
 from ...mathematics.backend import get_backend
@@ -61,9 +35,9 @@ class GPUDeviceInfo:
     device_id: int
     name: str
     backend: str  # "jax", "torch", "cupy"
-    total_memory_mb: float
-    free_memory_mb: float
-    utilization_percent: float
+    total_memory_mb: float | None
+    free_memory_mb: float | None
+    utilization_percent: float | None
     compute_capability: str | None = None
     is_available: bool = True
 
@@ -82,7 +56,7 @@ class GPUOperationResult:
 
     # Optional
     device_used: str | None = None
-    gpu_utilization: float = 0.0
+    gpu_utilization: float | None = None
 
     # Execution details
     fallback_used: bool = False
@@ -90,10 +64,92 @@ class GPUOperationResult:
 
     # Quality indicators
     precision: str = "float32"
-    convergence_achieved: bool = True
+    convergence_achieved: bool | None = None
 
     # Telemetry
     operation_metadata: dict[str, Any] = field(default_factory=dict)
+
+
+class GraphDeltaNFRResult(dict[Any, float]):
+    """Mapping result with honest backend provenance for graph ΔNFR reads."""
+
+    def __init__(
+        self,
+        values: dict[Any, float],
+        *,
+        backend_used: str,
+        fallback_used: bool,
+    ) -> None:
+        super().__init__(values)
+        self.backend_used = backend_used
+        self.fallback_used = fallback_used
+
+
+def _finite_real_array(value: Any, label: str) -> np.ndarray:
+    """Materialize one array-like input as finite binary64 real values."""
+
+    try:
+        raw = np.asarray(value)
+        object_view = np.asarray(value, dtype=object)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TypeError(f"{label} must contain finite real values") from exc
+    if raw.dtype.kind not in "iuf" or any(
+        isinstance(item, (bool, np.bool_)) for item in object_view.flat
+    ):
+        raise TypeError(f"{label} must contain finite real values")
+    try:
+        array = np.asarray(value, dtype=float)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TypeError(f"{label} must contain finite real values") from exc
+    if not bool(np.all(np.isfinite(array))):
+        raise ValueError(f"{label} must contain finite real values")
+    return array
+
+
+def _normalize_dense_nodal_inputs(
+    adjacency: Any,
+    epi: Any,
+    vf: Any,
+    phase: Any,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Validate and materialize the complete dense nodal input exactly once."""
+
+    weights = _finite_real_array(adjacency, "adjacency")
+    field = _finite_real_array(epi, "EPI")
+    capacity = _finite_real_array(vf, "nu_f")
+    phase_field = _finite_real_array(phase, "phase")
+    if weights.ndim != 2 or weights.shape[0] != weights.shape[1]:
+        raise ValueError("adjacency must be a square matrix")
+    if field.ndim != 1 or field.shape[0] != weights.shape[0]:
+        raise ValueError("EPI must be a vector aligned with adjacency")
+    for label, vector in (("nu_f", capacity), ("phase", phase_field)):
+        if vector.ndim != 1 or vector.shape[0] != field.shape[0]:
+            raise ValueError(f"{label} must be a vector aligned with EPI")
+    if bool(np.any(weights < 0.0)):
+        raise ValueError("adjacency conductance must be nonnegative")
+    if bool(np.any(capacity < 0.0)):
+        raise ValueError("nu_f must be nonnegative")
+    return weights, field, capacity, phase_field
+
+
+def _dense_epi_pressure_from_arrays(
+    weights: np.ndarray, field: np.ndarray
+) -> np.ndarray:
+    """Return row-normalized neighbour mean minus self from validated arrays."""
+
+    pressure = np.zeros_like(field, dtype=float)
+    if field.size == 0:
+        return pressure
+    row_scale = np.max(weights, axis=1)
+    active = row_scale > 0.0
+    if not bool(np.any(active)):
+        return pressure
+    normalized = np.zeros_like(weights, dtype=float)
+    normalized[active] = weights[active] / row_scale[active, None]
+    row_sum = np.sum(normalized[active], axis=1)
+    neighbor_mean = (normalized[active] @ field) / row_sum
+    pressure[active] = neighbor_mean - field[active]
+    return pressure
 
 
 @dataclass
@@ -130,37 +186,12 @@ class UnifiedGPUConfig:
 
 
 class TNFRUnifiedGPUSystem:
-    """Unified GPU System - Consolidated Engine and Memory Management.
+    """Route optional array operations and expose their actual provenance.
 
-    ARCHITECTURE: This system consolidates all TNFR GPU implementations under
-    a unified interface with intelligent backend routing, memory management,
-    and performance optimization.
-
-    Consolidates:
-    - engines/computation/gpu_engine.py (TNFRGPUEngine)
-    - parallel/gpu_engine.py (TNFRGPUEngine)
-    - engines/computation/gpu_memory_manager.py (TNFRGPUMemoryManager)
-    - engines/computation/unified_gpu_manager.py (TNFRUnifiedGPUManager)
-
-    Usage:
-        # Single entry point for all GPU operations
-        gpu_system = TNFRUnifiedGPUSystem()
-
-        # ΔNFR computation with automatic optimization
-        result = gpu_system.compute_delta_nfr_gpu(adjacency, epi, vf, phase)
-
-        # Structural field computation with memory management
-        result = gpu_system.compute_structural_fields(graph_data)
-
-        # Automatic fallback for memory-constrained operations
-        result = gpu_system.execute_with_fallback(operation, data)
-
-    Benefits:
-        - Eliminates GPU backend redundancy across codebase
-        - Unified memory management and device selection
-        - Consistent error handling and fallback patterns
-        - Automatic performance optimization
-        - Integrated with unified config and mathematics backend
+    The system owns device discovery, resource observations, backend selection,
+    cleanup, and explicitly configured CPU recovery. Graph-aware structural
+    operations retain the canonical CPU realization described by the module
+    contract until semantic parity is demonstrated by executable tests.
     """
 
     def __init__(self, config: UnifiedGPUConfig | None = None):
@@ -197,7 +228,8 @@ class TNFRUnifiedGPUSystem:
 
         if self.config.log_memory_usage:
             logger.info(
-                f"Initialized unified GPU system with {len(self._available_devices)} devices"
+                "Initialized unified GPU system with %d devices",
+                len(self._available_devices),
             )
 
     @property
@@ -224,6 +256,38 @@ class TNFRUnifiedGPUSystem:
         except Exception as e:
             logger.error(f"Failed to initialize GPU backends: {e}")
 
+    @staticmethod
+    def _read_gpu_memory_mb(
+        backend_info: dict[str, Any], field: str
+    ) -> float | None:
+        """Return an observed finite nonnegative memory value, if present."""
+
+        value = backend_info.get(field)
+        if value is None or isinstance(value, (bool, np.bool_)):
+            return None
+        try:
+            memory_mb = float(value)
+        except (TypeError, ValueError, OverflowError):
+            return None
+        if not np.isfinite(memory_mb) or memory_mb < 0.0:
+            return None
+        return memory_mb
+
+    @staticmethod
+    def _read_gpu_utilization(backend_info: dict[str, Any]) -> float | None:
+        """Return a validated observed percentage or None when unavailable."""
+
+        value = backend_info.get("utilization_percent")
+        if value is None or isinstance(value, (bool, np.bool_)):
+            return None
+        try:
+            utilization = float(value)
+        except (TypeError, ValueError, OverflowError):
+            return None
+        if not np.isfinite(utilization) or not 0.0 <= utilization <= 100.0:
+            return None
+        return utilization
+
     def _detect_available_devices(self) -> None:
         """Detect available GPU devices across all backends."""
         devices = []
@@ -243,9 +307,13 @@ class TNFRUnifiedGPUSystem:
                     device_id=0,
                     name=backend_info.get("device_name", "GPU Device"),
                     backend=backend_info["name"],
-                    total_memory_mb=backend_info.get("total_memory_mb", 0),
-                    free_memory_mb=backend_info.get("free_memory_mb", 0),
-                    utilization_percent=0.0,
+                    total_memory_mb=self._read_gpu_memory_mb(
+                        backend_info, "total_memory_mb"
+                    ),
+                    free_memory_mb=self._read_gpu_memory_mb(
+                        backend_info, "free_memory_mb"
+                    ),
+                    utilization_percent=self._read_gpu_utilization(backend_info),
                     is_available=True,
                 )
                 devices.append(device)
@@ -267,12 +335,32 @@ class TNFRUnifiedGPUSystem:
         strategy = self.config.device_selection_strategy
 
         if strategy == "memory_optimal":
-            # Select device with most free memory
-            return max(self._available_devices, key=lambda d: d.free_memory_mb)
+            # Prefer the largest observed capacity; unknown readings sort last.
+            return max(
+                self._available_devices,
+                key=lambda device: (
+                    device.free_memory_mb is not None,
+                    (
+                        device.free_memory_mb
+                        if device.free_memory_mb is not None
+                        else float("-inf")
+                    ),
+                ),
+            )
 
         elif strategy == "compute_optimal":
-            # Select device with lowest utilization
-            return min(self._available_devices, key=lambda d: d.utilization_percent)
+            # Prefer the lowest observed utilization; unknown readings sort last.
+            return min(
+                self._available_devices,
+                key=lambda device: (
+                    device.utilization_percent is None,
+                    (
+                        device.utilization_percent
+                        if device.utilization_percent is not None
+                        else float("inf")
+                    ),
+                ),
+            )
 
         elif strategy == "round_robin":
             # Round-robin selection with load balancing
@@ -289,129 +377,99 @@ class TNFRUnifiedGPUSystem:
 
     def compute_delta_nfr_gpu(
         self,
-        adjacency: np.ndarray,
-        epi: np.ndarray,
-        vf: np.ndarray,
-        phase: np.ndarray,
+        adjacency: Any,
+        epi: Any,
+        vf: Any,
+        phase: Any,
         **kwargs: Any,
     ) -> GPUOperationResult:
-        """Compute ΔNFR using GPU acceleration with automatic optimization.
+        """Compute the canonical dense EPI-channel structural pressure.
 
-        CONSOLIDATION: This unifies the compute_delta_nfr_gpu methods from both
-        duplicate GPU engines with enhanced memory management and fallback.
+        This compatibility entry point keeps its historical signature, but νf
+        and phase are inputs to other nodal channels and are not folded into
+        EPI pressure.  The current backend-specific kernel used a noncanonical
+        unnormalized sum, so this path deliberately reports a canonical CPU
+        fallback until an accelerated kernel has exact semantic parity.
 
         Parameters
         ----------
-        adjacency : np.ndarray
-            Graph adjacency matrix
-        epi : np.ndarray
-            EPI structural configuration values
-        vf : np.ndarray
-            Structural frequency values (νf)
-        phase : np.ndarray
-            Phase values (φ/θ)
+        adjacency : array-like
+            Square nonnegative conductance matrix.
+        epi : array-like
+            Finite real EPI structural configuration values.
+        vf : array-like
+            Structural frequency values (νf), accepted for API compatibility
+            and kept separate from pressure.
+        phase : array-like
+            Phase values (φ/θ), accepted for API compatibility and kept
+            separate from the pure EPI channel.
         **kwargs
             Additional computation parameters
 
         Returns
         -------
         GPUOperationResult
-            Unified result with ΔNFR values and performance metrics
+            Unified result with ``D^-1 W EPI - EPI`` and backend provenance.
         """
         import time
 
         start_time = time.perf_counter()
-        self._operation_stats["total_operations"] += 1
+        weights, field, capacity, phase_field = _normalize_dense_nodal_inputs(
+            adjacency, epi, vf, phase
+        )
+        result_data = _dense_epi_pressure_from_arrays(weights, field)
+        node_count = len(result_data)
 
-        # Check if GPU operation is feasible
-        if not self._can_handle_gpu_operation(adjacency, epi, vf, phase):
-            return self._fallback_to_cpu(
-                self._compute_delta_nfr_cpu, adjacency, epi, vf, phase, **kwargs
-            )
-
-        try:
-            # Use mathematics backend for GPU computation
-            result_data = self.math_backend.compute_delta_nfr(
-                adjacency, epi, vf, phase, **kwargs
-            )
-
-            computation_time = (time.perf_counter() - start_time) * 1000
-
-            # Update statistics
-            self._operation_stats["gpu_operations"] += 1
-            self._operation_stats["average_gpu_time_ms"] = (
-                self._operation_stats["average_gpu_time_ms"]
-                * (self._operation_stats["gpu_operations"] - 1)
-                + computation_time
-            ) / self._operation_stats["gpu_operations"]
-
-            # Create result
-            return GPUOperationResult(
-                result_data=result_data,
-                backend_used=self.math_backend.get_backend_info()["name"],
-                device_used=self._current_device.name if self._current_device else None,
-                computation_time_ms=computation_time,
-                memory_usage_mb=self._estimate_memory_usage(adjacency, epi, vf, phase),
-                gpu_utilization=self._get_current_gpu_utilization(),
-                operation_metadata={"operation": "delta_nfr", "nodes": len(epi)},
-            )
-
-        except Exception as e:
-            logger.warning(f"GPU ΔNFR computation failed: {e}")
-            self._operation_stats["memory_errors"] += 1
-            return self._fallback_to_cpu(
-                self._compute_delta_nfr_cpu, adjacency, epi, vf, phase, **kwargs
-            )
+        stats = getattr(self, "_operation_stats", None)
+        if isinstance(stats, dict):
+            stats["total_operations"] = stats.get("total_operations", 0) + 1
+            stats["cpu_fallbacks"] = stats.get("cpu_fallbacks", 0) + 1
+        computation_time = (time.perf_counter() - start_time) * 1000
+        return GPUOperationResult(
+            result_data=result_data,
+            backend_used="canonical-cpu",
+            device_used=None,
+            computation_time_ms=computation_time,
+            memory_usage_mb=self._estimate_memory_usage(
+                weights, field, capacity, phase_field
+            ),
+            fallback_used=True,
+            precision="float64",
+            gpu_utilization=None,
+            convergence_achieved=None,
+            operation_metadata={
+                "operation": "delta_nfr_epi_channel",
+                "nodes": node_count,
+                "semantics": "D^-1 W EPI - EPI",
+                "nu_f_applied": False,
+                "phase_applied": False,
+                "ignored_options": tuple(sorted(kwargs)),
+            },
+        )
 
     def compute_structural_fields(
         self, graph_data: np.ndarray, **kwargs: Any
     ) -> GPUOperationResult:
-        """Compute structural field tetrad using GPU acceleration.
+        """Reject the legacy array-only tetrad placeholder.
 
-        Computes the structural-field tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
-        with automatic memory management and fallback.
+        Φ_s, |∇φ|, K_φ and ξ_C require graph topology, distances and field
+        provenance that an anonymous matrix cannot supply.  Call the canonical
+        graph functions in :mod:`tnfr.physics.fields` instead.
         """
-        import time
+        raise NotImplementedError(
+            "Array-only structural fields cannot represent the canonical TNFR "
+            "tetrad; use tnfr.physics.fields with the source graph"
+        )
 
-        start_time = time.perf_counter()
+    def compute_delta_nfr_from_graph(self, graph: Any) -> GraphDeltaNFRResult:
+        """Read the canonical EPI-channel ΔNFR from a TNFR graph.
 
-        # Check GPU feasibility
-        if not self._can_handle_gpu_operation(graph_data):
-            return self._fallback_to_cpu(
-                self._compute_structural_fields_cpu, graph_data, **kwargs
-            )
-
-        try:
-            # Use mathematics backend for computation
-            result_data = self.math_backend.compute_structural_fields(
-                graph_data, **kwargs
-            )
-
-            computation_time = (time.perf_counter() - start_time) * 1000
-
-            return GPUOperationResult(
-                result_data=result_data,
-                backend_used=self.math_backend.get_backend_info()["name"],
-                device_used=self._current_device.name if self._current_device else None,
-                computation_time_ms=computation_time,
-                memory_usage_mb=self._estimate_memory_usage(graph_data),
-                operation_metadata={
-                    "operation": "structural_fields",
-                    "data_shape": graph_data.shape,
-                },
-            )
-
-        except Exception as e:
-            logger.warning(f"GPU structural fields computation failed: {e}")
-            return self._fallback_to_cpu(
-                self._compute_structural_fields_cpu, graph_data, **kwargs
-            )
-
-    def compute_delta_nfr_from_graph(self, graph: Any) -> dict[Any, float]:
-        """Compute ΔNFR directly from a TNFR graph using GPU acceleration.
-
-        Convenience method that extracts matrices from graph and computes
-        ΔNFR using GPU backend.
+        The dense low-level GPU kernel predates the graph transport contract
+        and cannot represent all directed, weighted and parallel-edge
+        conventions.  Until that kernel has semantic parity, this public graph
+        adapter delegates to the shared CPU structural-diffusion oracle.  The
+        returned mapping retains ``backend_used`` and ``fallback_used`` so the
+        caller can distinguish this compatibility fallback from acceleration.
 
         Parameters
         ----------
@@ -420,55 +478,77 @@ class TNFRUnifiedGPUSystem:
 
         Returns
         -------
-        dict[Any, float]
-            Mapping from node IDs to ΔNFR values
+        GraphDeltaNFRResult
+            Node-to-pressure mapping with backend provenance.  Values are the
+            pure EPI channel ``-L_rw @ EPI``; νf remains the separate capacity
+            multiplier in the nodal equation.
         """
-        # Extract node list (maintain order)
-        nodes = list(graph.nodes())
-        node_to_idx = {node: idx for idx, node in enumerate(nodes)}
-        n = len(nodes)
+        from ...physics.structural_diffusion import (
+            structural_diffusion_operator,
+            structural_field,
+        )
 
-        # Build matrices
-        adj_matrix = np.zeros((n, n))
-        epi_vec = np.zeros(n)
-        vf_vec = np.zeros(n)
-        phase_vec = np.zeros(n)
-
-        for i, node in enumerate(nodes):
-            epi_vec[i] = get_attr(graph.nodes[node], ALIAS_EPI, 0.0)
-            vf_vec[i] = get_attr(graph.nodes[node], ALIAS_VF, 0.0)
-            phase_vec[i] = get_attr(graph.nodes[node], ALIAS_THETA, 0.0)
-
-        for i, j in graph.edges():
-            idx_i = node_to_idx[i]
-            idx_j = node_to_idx[j]
-            adj_matrix[idx_i, idx_j] = 1.0
-            adj_matrix[idx_j, idx_i] = 1.0  # Undirected
-
-        # Compute using unified system
-        result = self.compute_delta_nfr_gpu(adj_matrix, epi_vec, vf_vec, phase_vec)
-
-        # Map back to node IDs
-        return {node: float(val) for node, val in zip(nodes, result.result_data)}
+        nodes, laplacian = structural_diffusion_operator(graph)
+        epi_field = structural_field(graph, nodes)
+        pressure = -(laplacian @ epi_field)
+        stats = getattr(self, "_operation_stats", None)
+        if isinstance(stats, dict):
+            stats["total_operations"] = stats.get("total_operations", 0) + 1
+            stats["cpu_fallbacks"] = stats.get("cpu_fallbacks", 0) + 1
+        result = GraphDeltaNFRResult(
+            {node: float(value) for node, value in zip(nodes, pressure)},
+            backend_used="canonical-cpu",
+            fallback_used=True,
+        )
+        self._last_graph_delta_nfr_result = result
+        return result
 
     def execute_with_fallback(
-        self, operation: Callable, *args: Any, **kwargs: Any
+        self,
+        operation: Callable[..., GPUOperationResult],
+        *args: Any,
+        cpu_fallback: Callable[..., Any] | None = None,
+        **kwargs: Any,
     ) -> GPUOperationResult:
-        """Execute operation with automatic GPU/CPU fallback.
+        """Execute a GPU callable and, when declared, a distinct CPU callable.
 
-        CONSOLIDATION: This unifies the execute_with_gpu_fallback functionality
-        from the unified_gpu_manager with enhanced error handling.
+        The successful-call path is backward compatible with the former API.
+        A failed GPU callable is never invoked a second time under a CPU label.
+        Callers that require recovery must provide cpu_fallback explicitly.
         """
+
+        if cpu_fallback is operation:
+            raise ValueError("cpu_fallback must be distinct from the GPU operation")
         try:
-            # Attempt GPU execution
             return operation(*args, **kwargs)
+        except Exception as exc:
+            fallback_enabled = bool(
+                getattr(
+                    getattr(self, "config", None),
+                    "enable_cpu_fallback",
+                    True,
+                )
+            )
+            if not fallback_enabled:
+                logger.warning(
+                    "GPU operation failed and CPU fallback is disabled: %s", exc
+                )
+                raise
+            if cpu_fallback is None:
+                logger.warning(
+                    "GPU operation failed and no distinct CPU fallback was "
+                    "provided: %s",
+                    exc,
+                )
+                raise
 
-        except Exception as e:
-            logger.warning(f"GPU operation failed, falling back to CPU: {e}")
-            self._operation_stats["cpu_fallbacks"] += 1
-
-            # Execute CPU fallback
-            return self._execute_cpu_fallback(operation, *args, **kwargs)
+            logger.warning(
+                "GPU operation failed; executing declared CPU fallback: %s", exc
+            )
+            stats = getattr(self, "_operation_stats", None)
+            if isinstance(stats, dict):
+                stats["cpu_fallbacks"] = stats.get("cpu_fallbacks", 0) + 1
+            return self._execute_cpu_fallback(cpu_fallback, *args, **kwargs)
 
     def execute_with_gpu_fallback(
         self,
@@ -477,14 +557,24 @@ class TNFRUnifiedGPUSystem:
         *args: Any,
         **kwargs: Any,
     ) -> tuple[Any, str]:
-        """Execute with GPU fallback (compatibility method)."""
+        """Execute distinct GPU/CPU callables under the configured policy."""
+
+        if cpu_fn is gpu_fn:
+            raise ValueError("cpu_fn must be distinct from gpu_fn")
         try:
-            # Try GPU function
             return gpu_fn(*args, **kwargs), "gpu"
-        except Exception as e:
-            logger.warning(f"GPU execution failed, falling back to CPU: {e}")
-            self._operation_stats["cpu_fallbacks"] += 1
-            # Fallback to CPU function
+        except Exception as exc:
+            if not self.config.enable_cpu_fallback:
+                logger.warning(
+                    "GPU execution failed and CPU fallback is disabled: %s", exc
+                )
+                raise
+            logger.warning(
+                "GPU execution failed; executing declared CPU fallback: %s", exc
+            )
+            stats = getattr(self, "_operation_stats", None)
+            if isinstance(stats, dict):
+                stats["cpu_fallbacks"] = stats.get("cpu_fallbacks", 0) + 1
             return cpu_fn(*args, **kwargs), "cpu"
 
     def has_gpu_backend(self) -> bool:
@@ -504,6 +594,8 @@ class TNFRUnifiedGPUSystem:
         # Check against current device memory
         if self._current_device:
             available_memory = self._current_device.free_memory_mb
+            if available_memory is None:
+                return False
             memory_threshold = available_memory * (
                 self.config.max_memory_usage_percent / 100.0
             )
@@ -512,69 +604,28 @@ class TNFRUnifiedGPUSystem:
 
         return False
 
-    def _fallback_to_cpu(
-        self, cpu_operation: Callable, *args: Any, **kwargs: Any
-    ) -> GPUOperationResult:
-        """Execute CPU fallback with unified result format."""
-        import time
-
-        start_time = time.perf_counter()
-        self._operation_stats["cpu_fallbacks"] += 1
-
-        try:
-            result_data = cpu_operation(*args, **kwargs)
-            computation_time = (time.perf_counter() - start_time) * 1000
-
-            return GPUOperationResult(
-                result_data=result_data,
-                backend_used="numpy",
-                computation_time_ms=computation_time,
-                memory_usage_mb=self._estimate_memory_usage(*args),
-                fallback_used=True,
-                operation_metadata={"fallback_reason": "memory_constraint"},
-            )
-
-        except Exception as e:
-            logger.error(f"CPU fallback also failed: {e}")
-            raise
-
     def _compute_delta_nfr_cpu(
         self,
-        adjacency: np.ndarray,
-        epi: np.ndarray,
-        vf: np.ndarray,
-        phase: np.ndarray,
+        adjacency: Any,
+        epi: Any,
+        vf: Any,
+        phase: Any,
         **kwargs: Any,
     ) -> np.ndarray:
-        """CPU fallback for ΔNFR computation."""
-        # Use NumPy for CPU computation
-        n_nodes = len(epi)
-        delta_nfr = np.zeros(n_nodes)
+        """Delegate legacy fallback calls to the canonical dense EPI kernel."""
 
-        for i in range(n_nodes):
-            neighbors = np.where(adjacency[i] > 0)[0]
-            if len(neighbors) == 0:
-                continue
-
-            # Compute structural pressure from neighbors
-            phase_diff = phase[neighbors] - phase[i]
-            epi_diff = epi[neighbors] - epi[i]
-            vf_influence = vf[neighbors] * adjacency[i, neighbors]
-
-            # ΔNFR = weighted sum of neighbor influences
-            delta_nfr[i] = np.sum(vf_influence * (epi_diff + 0.1 * np.sin(phase_diff)))
-
-        return delta_nfr
+        weights, field, _capacity, _phase = _normalize_dense_nodal_inputs(
+            adjacency, epi, vf, phase
+        )
+        return _dense_epi_pressure_from_arrays(weights, field)
 
     def _compute_structural_fields_cpu(
         self, graph_data: np.ndarray, **kwargs: Any
     ) -> np.ndarray:
-        """CPU fallback for structural fields computation."""
-        # Basic CPU implementation of tetrad fields
-        # This would integrate with unified_fields.py for full implementation
-        return np.zeros(
-            (4, graph_data.shape[0])
-        )  # Placeholder for (Φ_s, |∇φ|, K_φ, ξ_C)
+        """Reject the removed zero-tetrad compatibility placeholder."""
+        raise NotImplementedError(
+            "Canonical structural fields require a graph; use tnfr.physics.fields"
+        )
 
     def _execute_cpu_fallback(
         self, operation: Callable, *args: Any, **kwargs: Any
@@ -587,24 +638,46 @@ class TNFRUnifiedGPUSystem:
         result_data = operation(*args, **kwargs)
         computation_time = (time.perf_counter() - start_time) * 1000
 
+        if isinstance(result_data, GPUOperationResult):
+            return replace(
+                result_data,
+                fallback_used=True,
+                operation_metadata={
+                    **result_data.operation_metadata,
+                    "execution": "declared_cpu_fallback",
+                },
+            )
         return GPUOperationResult(
             result_data=result_data,
             backend_used="cpu_fallback",
             computation_time_ms=computation_time,
-            memory_usage_mb=0.0,
+            memory_usage_mb=self._estimate_memory_usage(*args),
             fallback_used=True,
-            operation_metadata={"execution": "cpu_fallback"},
+            gpu_utilization=None,
+            convergence_achieved=None,
+            operation_metadata={"execution": "declared_cpu_fallback"},
         )
 
-    def _estimate_memory_usage(self, *arrays: np.ndarray) -> float:
-        """Estimate memory usage in MB for arrays."""
-        return sum(array.nbytes for array in arrays) / (1024 * 1024)
+    def _estimate_memory_usage(self, *arrays: Any) -> float:
+        """Estimate materialized input storage in MiB."""
 
-    def _get_current_gpu_utilization(self) -> float:
-        """Get current GPU utilization percentage."""
+        total_bytes = 0
+        for value in arrays:
+            nbytes = getattr(value, "nbytes", None)
+            if nbytes is None:
+                try:
+                    nbytes = np.asarray(value).nbytes
+                except (TypeError, ValueError, OverflowError):
+                    continue
+            total_bytes += int(nbytes)
+        return total_bytes / (1024 * 1024)
+
+    def _get_current_gpu_utilization(self) -> float | None:
+        """Return the observed GPU utilization, if one is available."""
+
         if self._current_device:
             return self._current_device.utilization_percent
-        return 0.0
+        return None
 
     def cleanup_memory(self) -> None:
         """Clean up GPU memory and resources."""
@@ -729,13 +802,13 @@ def get_unified_gpu_system(
 
 # Convenience functions for direct GPU operations
 def compute_unified_delta_nfr(
-    adjacency: np.ndarray,
-    epi: np.ndarray,
-    vf: np.ndarray,
-    phase: np.ndarray,
+    adjacency: Any,
+    epi: Any,
+    vf: Any,
+    phase: Any,
     **kwargs: Any,
 ) -> GPUOperationResult:
-    """Compute ΔNFR using unified GPU system - convenience function."""
+    """Compute canonical dense EPI pressure with explicit backend provenance."""
     return get_unified_gpu_system().compute_delta_nfr_gpu(
         adjacency, epi, vf, phase, **kwargs
     )
@@ -744,7 +817,7 @@ def compute_unified_delta_nfr(
 def compute_unified_structural_fields(
     graph_data: np.ndarray, **kwargs: Any
 ) -> GPUOperationResult:
-    """Compute structural fields using unified GPU system - convenience function."""
+    """Reject the legacy array-only structural-tetrad placeholder."""
     return get_unified_gpu_system().compute_structural_fields(graph_data, **kwargs)
 
 
@@ -786,10 +859,6 @@ def execute_with_gpu_fallback(
     tuple[Any, str]
         (result, backend_used)
     """
-    try:
-        # Try GPU function
-        return gpu_fn(*args, **kwargs), "gpu"
-    except Exception as e:
-        logger.warning(f"GPU execution failed, falling back to CPU: {e}")
-        # Fallback to CPU function
-        return cpu_fn(*args, **kwargs), "cpu"
+    return get_unified_gpu_system().execute_with_gpu_fallback(
+        gpu_fn, cpu_fn, *args, **kwargs
+    )

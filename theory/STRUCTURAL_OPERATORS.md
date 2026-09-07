@@ -2,7 +2,8 @@
 
 ## Complete Specification of the 13 Canonical Operators
 
-**Status**: CANONICAL — All operators derived from the nodal equation  
+**Status**: CANONICAL registry specification; generative completeness over an
+independently defined admissible-transformation space remains open
 **Date**: March 2026  
 **Version**: 0.0.3.5
 **Prerequisite**: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §2 (Nodal Equation), [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) (Grammar U1–U6)
@@ -21,8 +22,8 @@
 8. [Coupling and Propagation](#8-coupling-and-propagation)
 9. [Transformers](#9-transformers)
 10. [Closure and Regime Operators](#10-closure-and-regime-operators)
-11. [Canonical Compositions](#11-canonical-compositions)
-12. [Per-Operator Energy Bounds](#12-per-operator-energy-bounds)
+11. [Fragments and Complete Words](#11-fragments-and-complete-words)
+12. [Operator Roles and Energy Diagnostics](#12-operator-roles-and-energy-diagnostics)
 13. [Postcondition Contracts](#13-postcondition-contracts)
 14. [Operator Constants Reference](#14-operator-constants-reference)
 15. [Implementation Reference](#15-implementation-reference)
@@ -33,21 +34,37 @@
 
 ## 1. Scope and Motivation
 
-Structural operators are the **exclusive mechanism** for modifying node state in TNFR networks. No direct mutation of EPI, $\nu_f$, $\theta$, or $\Delta\text{NFR}$ is permitted outside the operator algebra. This constraint is not a coding convention; it follows from the physics of the nodal equation:
+Registered structural operators are the canonical semantic interface for named
+node and network transformations. Declared numerical solvers are a separate,
+explicit evolution path: they may advance EPI only through the shared nodal
+integrator from finite `nu_f` and `DeltaNFR`, while recording the associated
+provenance or residual. Ad hoc state assignment outside these two declared
+paths is forbidden. Both paths remain constrained by the nodal equation:
 
 $$
 \frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t) \tag{NE}
 $$
 
-Each operator implements a specific transformation of the right-hand side of (NE). The 13 operators collectively span the space of physically meaningful structural transformations on a TNFR graph: creation, integration, stabilization, destabilization, coupling, propagation, freezing, dimensional change, self-organization, phase transformation, regime transition, and multi-scale recursion.
+Each registered operator implements a specific transformation tied to (NE). The
+13-operator catalog covers the engine's declared transformation categories:
+creation, integration, stabilization, destabilization, coupling, propagation,
+freezing, dimensional change, self-organization, phase transformation, regime
+transition, and multi-scale recursion. Coverage of this declared catalog does
+not prove that it generates every independently admissible TNFR transformation.
 
-### 1.1 Why Exactly 13
+### 1.1 Why the registered catalog has 13 members
 
-The operator count is not arbitrary. The 13 operators arise from exhaustive enumeration of independent transformations of the structural triad $(\text{EPI}, \nu_f, \phi)$ subject to:
+The registry contains 13 public semantic transformations satisfying:
 
 1. **Nodal equation compatibility**: Every transformation must be expressible as a modification of $\nu_f$, $\Delta\text{NFR}$, or the coupling structure.
 2. **Grammar closure**: The set must include generators (U1a), closures (U1b), stabilizers (U2), destabilizers (U2), coupling operators (U3), bifurcation triggers and handlers (U4), and multi-scale operators (U5).
-3. **Irreducibility**: No operator can be decomposed as a sequence of other operators without loss of physical semantics.
+3. **Semantic distinction**: Each member has a named physical contract. The
+   finite temporal-signature experiment separates their implementations on its
+   declared probes, but global algebraic irreducibility remains open.
+
+A proof of completeness first requires a transformation space defined without
+reference to this catalog. That is research line S10 in
+[CORE_RESEARCH_PROGRAM.md](CORE_RESEARCH_PROGRAM.md).
 
 ### 1.2 Conventions
 
@@ -56,7 +73,7 @@ Throughout this document:
 - English names (Emission, Reception, Coherence, ...) are the public API identifiers.
 - Operator gain magnitudes are operational parameters (only $\pi$ is a genuine structural scale); the engine-configuration tier in `canonical.py` is calibrated, not derived.
 - Grammar roles reference rules U1–U6 from [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md).
-- Energy bounds reference the Lyapunov analysis from [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md).
+- Energy diagnostics and their proof boundaries are discussed in [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md).
 
 ---
 
@@ -72,7 +89,10 @@ Each node $i$ carries three irreducible attributes:
 | Frequency | $\nu_{f,i}$ | $\mathbb{R}^+$ | Hz_str |
 | Phase | $\phi_i$ (or $\theta_i$) | $[0, 2\pi)$ | rad |
 
-The derived quantity $\Delta\text{NFR}_i$ (structural pressure) drives evolution. Every operator acts on one or more of $(\text{EPI}, \nu_f, \phi, \Delta\text{NFR})$.
+The derived quantity $\Delta\text{NFR}_i$ (structural pressure) drives evolution.
+Every operator has exactly one registered **primary** channel among
+$(\text{EPI}, \nu_f, \phi, \Delta\text{NFR})$; a concrete implementation may
+also update declared secondary channels.
 
 ### 2.2 Operator as Transformation
 
@@ -84,12 +104,20 @@ $$
 
 subject to:
 1. **Nodal equation**: The resulting state must be consistent with $\partial\text{EPI}/\partial t = \nu_f \cdot \Delta\text{NFR}$.
-2. **Grammar constraints**: The operator must satisfy its role within U1–U6.
+2. **Grammar constraints**: The operator must satisfy its declared U1--U5 role;
+   U6 is evaluated from before/after $\Phi_s$ telemetry.
 3. **Contracts**: Pre-conditions and post-conditions specific to each operator.
 
 ### 2.3 Composition
 
 Operators compose into sequences $[\hat{O}_1, \hat{O}_2, \ldots, \hat{O}_n]$ applied left-to-right. Grammar validation operates on the full sequence. The grammar is not commutative: the order of operators affects validity and outcome.
+
+SDK execution is operator-major across sequence positions, as are the
+supported GPU blocks. SDK EN/RA and GPU RA positions use the shared atomic
+two-phase Jacobi stage: all targets read one immutable snapshot before any
+proposal commits. Other operator stages retain operator-major Gauss-Seidel
+semantics until their cross-target write and merge rules are explicit. Thus the
+guarantee is stage-local and does not make a mixed word simultaneous.
 
 ---
 
@@ -97,12 +125,12 @@ Operators compose into sequences $[\hat{O}_1, \hat{O}_2, \ldots, \hat{O}_n]$ app
 
 The 13 operators partition into functional classes defined by their effect on the nodal equation:
 
-| Class | Operators | Effect on $|\Delta\text{NFR}|$ | Grammar Roles |
-|-------|-----------|-------------------------------|---------------|
+| Class | Operators | Declared structural role | Grammar Roles |
+|-------|-----------|--------------------------|---------------|
 | **Generators** | AL, NAV, REMESH | Create or activate EPI | U1a |
 | **Integrator** | EN | Integrates external input | — |
-| **Stabilizers** | IL, THOL | Reduce $|\Delta\text{NFR}|$ | U2 (negative feedback) |
-| **Destabilizers** | OZ, VAL | Increase $|\Delta\text{NFR}|$ | U2 (positive feedback) |
+| **Stabilizers** | IL, THOL | Direct pressure reduction (IL) or stabilizing reorganization (THOL) | U2 |
+| **Destabilizers** | OZ, ZHIR, VAL | Incur pressure, phase, or capacity debt | U2 |
 | **Coupling** | UM, RA | Phase synchronization | U3 |
 | **Transformers** | ZHIR, THOL | Bifurcation-driven change | U4a, U4b |
 | **Closure** | SHA, NAV, REMESH, OZ | Terminate sequences | U1b |
@@ -114,30 +142,39 @@ Some operators appear in multiple classes. THOL is simultaneously a stabilizer (
 
 ## 4. Generators
 
-Generators create EPI from null or dormant states. Grammar rule U1a requires that any sequence beginning from $\text{EPI} = 0$ must start with a generator.
+Generators declare creation or latent-state activation. Grammar rule U1a requires
+that a standalone sequence beginning from $\text{EPI}=0$ start with a registered
+generator.
 
-**Physics**: At $\text{EPI} = 0$, the nodal equation $\partial\text{EPI}/\partial t = \nu_f \cdot \Delta\text{NFR}$ is undefined — there is no structural form to evolve. A generator bootstraps the system into a state where evolution can proceed.
+**Scope**: The nodal derivative $\nu_f\Delta\text{NFR}$ is defined at
+$\text{EPI}=0$ whenever its factors are finite. U1a is an operator-history
+contract that makes the origin or reactivation of form explicit; it is not a
+repair for a mathematical singularity.
 
 ### 4.1 Emission (AL)
 
 **Physics**: Foundational activation of nodal resonance. Creates EPI from vacuum via resonant emission.
 
-**Transformation**:
+**Primary-channel transformation**:
 
 $$
-\text{EPI}' = \text{EPI} + b, \qquad \nu_f' > 0, \qquad \Delta\text{NFR}' > 0
+\text{EPI}' = \operatorname{clip}(\text{EPI} + b)
 $$
 
-where $b = 1/(\pi \cdot e) \approx 0.117$ is the canonical emission amplitude.
+where $b>0$ is the configured `AL_boost`. The direct glyph handler does not
+also write $\nu_f$, phase, or $\Delta\text{NFR}$.
 
-**Activation threshold**: $\text{EPI} < \text{EPI}_{\text{threshold}}$ where $\text{EPI}_{\text{threshold}} \approx 0.33$ (operational free magnitude — the AL contract fixes the channel and sign, not this threshold).
+**Activation threshold**: $\text{EPI} < \text{EPI}_{\text{threshold}}$ where the
+default $\text{EPI}_{\text{threshold}}=0.8$ is configurable through
+`AL_MAX_EPI_FOR_EMISSION` (an operational gate; the AL contract fixes the
+channel and sign, not this threshold).
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| Emission amplitude $b$ | $1/(\pi e) \approx 0.117$ | Transcendental base |
-| Activation threshold | $\approx 0.33$ | operational (free) |
+| Emission amplitude $b$ | configured positive gain | Operational parameter; channel and direction are contractual |
+| Activation threshold | $0.8$ by default | Configurable operational gate |
 
 **Properties**:
 - **Irreversible**: Sets an immutable activation flag. Re-emission increments an activation counter but preserves the original timestamp.
@@ -184,20 +221,41 @@ $$
 
 ### 4.3 Recursivity (REMESH)
 
-**Physics**: Propagates fractal pattern echoes across nested EPIs. Enforces multi-scale identity by linking current structure to prior states.
+**Physics**: Propagates fractal pattern echoes across nested EPIs. Tracks
+multi-scale identity by linking current structure to prior states; whether a
+particular trajectory preserves identity is checked from the resulting state.
 
 **Transformation**:
 
 $$
-\text{EPI}(t) \leftarrow \alpha \cdot \text{EPI}(t) + (1 - \alpha) \cdot \text{EPI}(t - \tau)
+\text{EPI}_{\rm raw}(t) = (1-\alpha)^2\text{EPI}(t)
+ + \alpha(1-\alpha)\text{EPI}(t-\tau_l)
+ + \alpha\text{EPI}(t-\tau_g),
+\qquad
+\text{EPI}_{\rm new}=\operatorname{clip}(\text{EPI}_{\rm raw})
 $$
 
-where $\alpha = 0.5$ (weighted average preserving energy exactly: $\Delta E = 0$).
+where the default is $\alpha=0.5$, but graph configuration can override it.
+The three raw coefficients sum to one for every $\alpha$ and form a convex
+combination when $0\leq\alpha\leq1$. The runtime returns without changing EPI
+until `_epi_hist` contains at least $\max(\tau_l,\tau_g)+1$ snapshots, and its
+hard or soft structural clipping can make the map nonlinear.
 
 **Properties**:
 - **Depth parameter**: Recursion depth $\geq 1$ (validated at construction; raises error if $< 1$).
-- **Multi-scale coherence**: For depth $> 1$, collective coherence must satisfy $C \geq 1/(\pi + 1) \approx 0.2413$ (U5 requirement).
-- **Energy-neutral**: The $\alpha = 0.5$ weighted average is exactly isometric ($\Delta E = 0$).
+- **U5 assessment boundary**: Declared depth records recursive structure but
+  does not prove a parent/child coherence target. For a concrete hierarchy,
+  `assess_u5_parent_child_coherence(..., alpha=...)` evaluates
+  $C_{\rm parent}\geq\alpha\sum C_{\rm child}$ from canonical per-node $C$;
+  $alpha$ is explicit and has no graph-independent default.
+- **Constant-history fixed point**: identical current, local-delay and
+  global-delay EPI snapshots are preserved before clipping.
+- **Energy scope**: convex averaging obeys a Jensen bound against the weighted
+  energy of all three input snapshots. It is not an isometry, and the current
+  EPI norm can rise or fall. The structural candidate energy does not contain
+  EPI directly, so a snapshot evaluation with every derived field held fixed
+  is unchanged; recomputation of pressure, fields or later dynamics supplies
+  no REMESH conservation law.
 
 **Grammar**: Generator (U1a), Closure (U1b).
 
@@ -205,19 +263,37 @@ where $\alpha = 0.5$ (weighted average preserving energy exactly: $\Delta E = 0$
 - Pre: Parent EPI properly formed; depth $\geq 1$.
 - Post: Nested structure maintained; parent identity preserved.
 
-**Asymptotic limit — REMESH-∞ (N15, May 2026)**:
+**Fixed-delay Cesàro surrogate (historical N15 programme)**:
 
-The two-stage canonical recurrence ($\beta = (1-\alpha)^2$, $\gamma = \alpha(1-\alpha)$, $\delta = \alpha$, defaults $\tau_l = 4$, $\tau_g = 8$) admits a well-defined asymptotic operator as $\tau_g \to \infty$:
+For a finite cyclic history window, remove clipping, fix
+$(\tau_l,\tau_g,\alpha)$ with $0<\alpha<1$, and let $S$ be the unitary cyclic
+shift. The auxiliary filter
 
-$$\mathcal{R}_\infty := \lim_{\tau_g \to \infty} \mathcal{R}_{\tau_l, \tau_g, \alpha} = P_{\ker(I - \mathcal{R})}$$
+$$F=\beta I+\gamma S^{\tau_l}+\delta S^{\tau_g}$$
 
-The limit exists as a **bounded self-adjoint orthogonal projection** on $H^2(D)$ (the Hilbert space of EPI histories with geometric weight). Its fixed-point subspace is spanned by Fourier modes at frequencies $\omega_k = 2\pi k / \mathrm{lcm}(\tau_l, \tau_g)$ — a uniform resonant lattice with spectral density $\rho = \mathrm{lcm}(\tau_l, \tau_g) / \pi$.
+is a normal contraction. Its Cesàro averages converge to the orthogonal
+projection onto $\ker(I-F)$. If the window length is compatible with the
+delays, those fixed modes satisfy both $z^{\tau_l}=1$ and $z^{\tau_g}=1$;
+their period is therefore $\gcd(\tau_l,\tau_g)$, not the historically stated
+$\operatorname{lcm}(\tau_l,\tau_g)$.
 
-**Conservation under $\mathcal{R}_\infty$**: The projected Noether charge $Q_\infty$ is exactly conserved; the projected energy $V_\infty \ge 0$ is monotone and decays at Cesàro $O(1/n)$ when $\tau_g / \tau_l \in \mathbb{Q}$ (default case: $8/4 = 2$).
+This finite cyclic filter is not the runtime history-update map. In particular,
+it does not prove a literal $\tau_g\to\infty$ limit for
+`apply_network_remesh`, whose required history, selected snapshot and clipping
+change with $\tau_g$. Orthogonality gives contraction only in the surrogate's
+declared history norm; it does not conserve the TNFR structural charge, make
+the structural candidate energy monotone, or provide a universal convergence
+rate.
 
-**Catalog-completeness consequence**: The 13-operator TNFR catalog is **closed under the REMESH-∞ limit**. No 14th operator is required for the asymptotic projection, its conservation structure, or its spectral characterization. TNFR universality is **structural/operational** (same $\mathcal{R}_\infty$ form across all networks reaching the limit) and **NOT spectral** (no direct match to Riemann, Kolmogorov $k^{-5/3}$, or RMT GUE/GOE).
+The projection can be computed without registering another engine operator.
+That is a software-reuse observation, not a catalog-completeness theorem. A
+proof that the 13 operators exhaust admissible TNFR transformations remains an
+open inverse problem requiring an independently defined transformation space.
 
-**Full derivation**: [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) §§1–23 (W1 existence, W2 conservation + Lyapunov, W3 spectrum + final verdict). Commit anchors: W1 `a1f298fd`, W2 `badac156`, W3 `48b0574a`.
+**Full corrected analysis**:
+[REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) §§1–23. It
+retains the historical N15 milestones and commit anchors (`a1f298fd`,
+`badac156`, `48b0574a`) while separating them from the current result.
 
 ---
 
@@ -227,24 +303,61 @@ The limit exists as a **bounded self-adjoint orthogonal projection** on $H^2(D)$
 
 **Physics**: Captures and integrates incoming resonance from the network environment. Reduces $\Delta\text{NFR}$ via structured integration of external signals.
 
-**Transformation**:
+**Runtime transformation**: let `r(EPI)` denote the centralized graph scalar
+reader. Raw real values and uniform-real BEPI embeddings retain their signed
+value; genuinely nonuniform or complex BEPI values use the maximum component
+magnitude. Let `B_i=ensure_bepi(EPI_i)` be the target operand. Reception first
+forms the unweighted arithmetic mean of the runtime neighbours,
+
+$$
+\bar r_i = \frac{1}{|N_i|}\sum_{j\in N_i}r(\mathrm{EPI}_j),
+$$
+
+then evaluates and structurally clips
+
+$$
+x_i' = \operatorname{clip}\!\left(\operatorname{float}
+\left((1-m)B_i+m\bar r_i\right)\right).
+$$
+
+Edge `weight` does not enter this neighbour average. For every uniform-real
+scalar embedding, including negative EPI, `float(B_i)=x_i`; the runtime and
+pure-EPI scalar readings therefore share the same signed state. With
+`0<=m<=1`, fixed support and values inside the declared EPI interval, the ideal
+real update is affine and its hard clip is inactive by convexity:
 
 $$
 \text{EPI}' = (1 - m) \cdot \text{EPI} + m \cdot \text{EPI}_{\text{in}}
 $$
 
-where $m = 1/(\pi + 1) \approx 0.2413$ is the canonical mixing fraction (transcendental correspondence).
+where $m$ is the configured reception mixing fraction (the standard graph
+configuration uses the selected $1/(\pi+1)$ policy value).
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| Mixing fraction $m$ | $1/(\pi + 1) \approx 0.2413$ | Transcendental π correspondence |
-| Contraction rate | $m(1 - m) \approx 0.183$ | Energy mixing contraction |
+| Mixing fraction $m$ | configured; standard policy $1/(\pi+1)$ | Operational interpolation weight |
+| Convexity term | $m(1-m)$ | Algebraic mixing diagnostic, not a full-energy contraction theorem |
 
 **Properties**:
 - **Source detection**: Detects emission sources within configurable distance (default: 2 hops) via `detect_emission_sources()`.
-- **Monotonic coherence**: Does not reduce $C(t)$ (energy mixing contraction ensures this).
+- **Runtime/transport separation**: Reception's unweighted neighbour mean can
+  differ from the conductance-weighted mean defining pure-EPI diffusion.
+- **Affine certificate boundary**: `certify_reception_epi_realization()` keeps
+  the ideal real map, represented binary64 coefficient matrix and actual
+  two-stage runtime value separate. It promotes the represented map only when
+  the declared scalar chart and clipping conditions pass and its consensus-row
+  identity is exact. Snapshot agreement with the runtime is diagnostic, not a
+  global floating-point linearity proof.
+- **Pressure refresh**: If a nontrivial local update changes the target by
+  `delta`, retaining the pre-update pure-EPI pressure leaves the exact defect
+  `delta L_rw e_i`. On connected positive conductance this is nonzero, so the
+  pressure must be recomputed before subsequent evolution is treated as the
+  pure-EPI channel.
+- **Coherence contract**: The requested reception is accepted only when the
+  measured $C(t)$ postcondition is non-decreasing. Convex EPI mixing alone does
+  not imply that network-level result.
 - **Source telemetry**: Records detected sources in metadata for analysis.
 
 **Grammar**: Integrator (no active destabilizer/stabilizer role).
@@ -257,11 +370,17 @@ where $m = 1/(\pi + 1) \approx 0.2413$ is the canonical mixing fraction (transce
 
 ## 6. Stabilizers
 
-Stabilizers provide negative feedback that ensures the convergence integral $\int \nu_f \cdot \Delta\text{NFR}\,dt$ remains bounded. Grammar rule U2 requires that every destabilizer ({OZ, ZHIR, VAL}) be compensated by a stabilizer ({IL, THOL}).
+Stabilizers are assigned negative-feedback roles intended to reduce U2 debt.
+Grammar rule U2 requires that every destabilizer ({OZ, ZHIR, VAL}) be
+compensated by a stabilizer ({IL, THOL}); this finite-word condition does not by
+itself prove that $\int \nu_f\Delta\mathrm{NFR}\,dt$ is bounded for every runtime
+realization.
 
 ### 6.1 Coherence (IL)
 
-**Physics**: Stabilizes structural form through negative feedback. The primary mechanism for ensuring bounded evolution.
+**Physics**: Stabilizes structural form through direct negative feedback on
+$|\Delta\text{NFR}|$. Bounded evolution still requires a specified trajectory,
+gains, timing and pressure law.
 
 **Transformation**:
 
@@ -269,7 +388,9 @@ $$
 \Delta\text{NFR}' = \Delta\text{NFR} \cdot (1 - \rho)
 $$
 
-where $\rho \approx 0.3$ is the canonical pressure reduction factor (from $\text{IL\_DNFR\_FACTOR} \approx 0.7$).
+where the default retention is
+$1-\rho=\pi/(\pi+1)\approx0.7585$, hence
+$\rho=1/(\pi+1)\approx0.2415$. The gain remains configurable.
 
 **Phase locking** (optional):
 
@@ -283,8 +404,8 @@ where $\lambda \approx 0.3$ is the phase locking coefficient and $\bar{\theta}_{
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| ΔNFR reduction factor | $0.75$ | operational glyph factor (IL stabiliser; free magnitude) |
-| Contraction rate $\rho$ | $1 - f^2 \approx 0.438$ | Energy contraction from glyph factor ($f = 0.75$) |
+| ΔNFR retention factor $f$ | $\pi/(\pi+1)\approx0.7585$ | Default `IL_dnfr_factor`; configurable gain |
+| Pressure-square reduction | $1-f^2\approx0.425$ | Isolated $\Delta\mathrm{NFR}^2$ term at the default; not a full-energy bound |
 | Phase locking $\lambda$ | $\approx 0.3$ | Configurable coupling strength |
 
 **Properties**:
@@ -302,6 +423,17 @@ where $\lambda \approx 0.3$ is the phase locking coefficient and $\bar{\theta}_{
 
 **Physics**: Autonomous emergence via bifurcation. Creates sub-EPIs when the structural acceleration exceeds the bifurcation threshold, implementing operational fractality.
 
+Its primary contract channel is $\Delta\text{NFR}$ with direction
+**reorganize**:
+
+$$
+\Delta\text{NFR}'=\Delta\text{NFR}+a\,\frac{\partial^2\text{EPI}}{\partial t^2}.
+$$
+
+The instantaneous magnitude can rise or fall with the signed acceleration.
+THOL's U2 stabilizer role comes from organizing a bifurcation while preserving
+global form; it is not a universal one-step pressure contraction.
+
 **Bifurcation detection**:
 
 $$
@@ -316,35 +448,57 @@ $$
 \text{EPI}_{\text{sub}} = \text{EPI}_{\text{parent}} \cdot 0.3 + \text{contribution}_{\text{metabolic}}
 $$
 
-where $0.3$ is the operational fractal scaling factor (a free parameter). The parent EPI receives a 10% emergence contribution: $\text{EPI}_{\text{parent}}' = \text{EPI}_{\text{parent}} + 0.1 \cdot \text{EPI}_{\text{sub}}$.
+where $0.3$ is the operational fractal scaling factor (a free parameter).
+The child is a nested coordinate with an explicit parent reference; it is not
+an additive mass term. THOL leaves the parent's scalar EPI coordinate and all
+neighbour EPI coordinates unchanged. Propagation of form belongs to Resonance
+(RA) and must appear explicitly in a grammar-valid word.
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
 | Fractal scale | $\approx 0.3$ | Operational fractal nesting (free parameter) |
-| Emergence contribution | $0.10$ | Parent EPI increment fraction |
-| Collective coherence min | $1/(\pi + 1) \approx 0.2413$ | U5 requirement |
+| U5 hierarchy coefficient $\alpha$ | explicit per assessment | No graph-independent default |
 | Sub-$\nu_f$ damping | $0.95$ | Child inherits 95% of parent frequency |
 | Bifurcation threshold $\tau$ | configurable (default $0.1$) | From graph configuration |
+| Pressure-reorganization gain $a$ | $1/(4\pi)\approx0.0796$ | Default `THOL_accel`; operational gain |
+
+`THOL_MIN_COLLECTIVE_COHERENCE` is a deprecated, inert compatibility
+alias for the general fragmentation-risk cut. It is not read by THOL and does
+not supply the explicit U5 coefficient.
 
 **Properties**:
 - **Autopoietic**: Creates independent sub-nodes with hierarchy metadata (bifurcation level, hierarchy path, parent reference).
 - **Metabolic integration**: When enabled, captures network signals and metabolizes them into sub-EPI values.
-- **Collective coherence enforcement**: Ensemble must maintain $C \geq 1/(\pi+1) \approx 0.2413$ (U5).
-- **Depth-limited**: Maximum nesting depth prevents unbounded recursion (default: 5 levels).
+- **Amplitude-alignment telemetry**: `compute_subepi_amplitude_alignment`
+  returns $1/(1+\operatorname{var}(a_{\rm child}))$ for stored child EPI
+  amplitudes (or zero when fewer than two exist). It is neither canonical
+  $C(t)$ nor a U5 decision. The historical
+  `compute_subepi_collective_coherence` name is only a compatibility alias.
+- **Explicit U5 telemetry**: `assess_u5_parent_child_coherence` evaluates
+  $C_{\rm parent}\geq\alpha\sum C_{\rm child}$ only when the hierarchy and
+  $\alpha$ are supplied. THOL does not enforce a hidden collective threshold.
+- **Depth-limited**: Maximum nesting depth prevents unbounded recursion
+  (default: 5 levels). At the limit THOL still applies its signed pressure
+  reorganization but records that no child was created.
+- **Channel-pure**: The parent and its neighbours keep their EPI coordinates;
+  any subsequent form propagation is an explicit RA stage.
 
 **Grammar**: Stabilizer (U2); Bifurcation Handler (U4a); Transformer (U4b).
 
 **Contract**:
 - Pre: Sufficient EPI history ($\geq 3$ points); $\nu_f > 0$; elevated $\Delta\text{NFR}$.
-- Post: Sub-EPIs spawned (if bifurcation); parent identity preserved; collective coherence $\geq 0.2413$.
+- Post: Sub-EPIs spawned (if bifurcation); parent identity and hierarchy metadata preserved.
 
 ---
 
 ## 7. Destabilizers
 
-Destabilizers increase $|\Delta\text{NFR}|$, driving the system away from equilibrium. Grammar rule U2 requires that destabilizers be compensated by stabilizers to ensure integral convergence.
+Destabilizers increase pressure or capacity stress under their contracts.
+Grammar rule U2 requires compensation by a stabilizer as a syntactic safety
+policy. Integral convergence additionally needs a declared pressure law,
+operator gains, timing, and state-space bounds.
 
 ### 7.1 Dissonance (OZ)
 
@@ -356,7 +510,9 @@ $$
 \Delta\text{NFR}' = f \cdot \Delta\text{NFR}
 $$
 
-where $f = 2.0$ is the operational amplification factor (OZ destabiliser; free magnitude — the contract fixes only the sign $f > 1$).
+where the default amplification is
+$f=(\pi+1)/\pi\approx1.3183$, the reciprocal of the default IL retention.
+It remains an operational gain; the contract fixes only $f>1$.
 
 **Bifurcation trigger**: When $\partial^2\text{EPI}/\partial t^2 > \tau$, the system enters a bifurcation-active state requiring a handler (IL or THOL per U4a).
 
@@ -364,8 +520,8 @@ where $f = 2.0$ is the operational amplification factor (OZ destabiliser; free m
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| Amplification factor $f$ | $2.0$ | operational (OZ destabiliser; free) |
-| Expansion rate $\kappa$ | $f^2 - 1 = 3.0$ | Energy expansion from glyph factor ($f = 2.0$) |
+| Amplification factor $f$ | $(\pi+1)/\pi\approx1.3183$ | Default `OZ_dnfr_factor`; configurable gain |
+| Pressure-square increase | $f^2-1\approx0.738$ | Isolated $\Delta\mathrm{NFR}^2$ term at the default; not a full-energy bound |
 
 **Properties**:
 - **Network propagation**: Optional cascading to neighbors via phase-weighted, uniform, or frequency-weighted modes.
@@ -380,23 +536,26 @@ where $f = 2.0$ is the operational amplification factor (OZ destabiliser; free m
 
 ### 7.2 Expansion (VAL)
 
-**Physics**: Increases structural degrees of freedom. Elevates EPI and $\nu_f$ by a canonical scaling factor derived from the four fundamental constants.
+**Physics**: Raises the $\nu_f$ capacity channel. This increases the response
+rate to any nonzero pressure without asserting an instantaneous $\Delta\text{NFR}$
+or EPI change.
 
 **Transformation**:
 
 $$
-\text{EPI}' = f_{\text{VAL}} \cdot \text{EPI}, \qquad f_{\text{VAL}} = \text{VAL\_scale} = 1.05
+\nu_f' = f_{\text{VAL}}\nu_f, \qquad
+f_{\text{VAL}}=\text{VAL\_scale}>1
 $$
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| Scale factor $f_{\text{VAL}}$ | $1.05$ | operational (VAL expansion; free) |
-| Expansion rate $\kappa$ | $f^2 - 1 \approx 0.139$ | Energy scaling |
+| Default scale factor $f_{\text{VAL}}$ | $1+1/(4\pi)\approx1.0796$ | Operational capacity step |
+| Nominal square-factor change | $f^2-1\approx0.166$ at the default | Algebraic $\nu_f^2$ diagnostic; the structural candidate energy has no explicit $\nu_f$ term |
 | Min EPI | $1/(2\pi) \approx 0.159$ | minimum structural base (π-fraction, tunable) |
 | Min coherence | $\sin(\pi/3) \approx 0.866$ | 60° harmonic coherence |
-| Bifurcation threshold | $1/(\pi + 1) \approx 0.2413$ | Detection threshold |
+| Bifurcation threshold | $1/(\pi + 1) \approx 0.2415$ | Detection threshold |
 
 **Grammar**: Destabilizer (U2).
 
@@ -428,7 +587,7 @@ $$
 |----------|-------|------------|
 | Compatibility threshold | $\pi/(\pi+1) \approx 0.7585$ | high-coherence gate |
 | Phase push | $1/(\pi + 1) \approx 0.241$ | Same physics as EN mixing |
-| $\Delta\text{NFR}$ reduction | $0.15$ | Phase sync pressure relief |
+| $\Delta\text{NFR}$ reduction | $1/(2\pi)\approx0.1592$ | Default phase-alignment pressure-relief gain |
 
 **Properties**:
 - **Phase verification mandatory**: Antiphase ($|\phi_i - \phi_j| > \Delta\phi_{\max}$) produces destructive interference; coupling is forbidden.
@@ -443,68 +602,245 @@ $$
 
 ### 8.2 Resonance (RA)
 
-**Physics**: Propagates coherent patterns through phase-aligned nodes. Amplifies network alignment while preserving pattern identity.
+**Physics**: Propagates coherent patterns through phase-aligned nodes. It may
+change the target's scalar EPI through neighbour mixing while preserving the
+pattern's signed/kind identity, and it conditionally amplifies local structural
+frequency.
 
-**Transformation**:
+Let the active RA neighbourhood be the individually U3-compatible subset
 
 $$
-\nu_f' = (1 + a) \cdot \nu_f, \qquad a = 0.05 \text{ (amplification factor)}
+N_i^{\mathrm{U3}}=
+\{j\in N_i:|\operatorname{wrap}(\theta_i-\theta_j)|\leq\Delta\phi_{\max}\}.
 $$
 
-EPI is propagated without identity change. The resonance threshold for detection is $\approx 0.198$ (operational; free detection sensitivity).
+The runtime rejects an isolate or an empty compatible subset. Its configured
+phase limit must satisfy $0\leq\Delta\phi_{\max}\leq\pi/2$; configuration may
+tighten but cannot relax the canonical gate. Only this subset contributes to
+the EPI mean, circular phase mean, and frequency trigger. With
+$r=\texttt{RA_epi_diff}$ and $c=\texttt{RA_phase_coupling}$,
 
-**Key constants**:
+$$
+\bar x_i=\frac{1}{|N_i^{\mathrm{U3}}|}\sum_{j\in N_i^{\mathrm{U3}}}x_j,
+\qquad
+x_i^*=\operatorname{clip}\!\left((1-r)x_i+r\bar x_i\right),
+$$
 
-| Constant | Value | Derivation |
-|----------|-------|------------|
-| Amplification factor $a$ | $0.05$ | Moderate amplification |
-| Expansion rate $\kappa$ | $(1+a)^2 - 1 \approx 0.103$ | Energy amplification bound |
-| Resonance threshold | $\approx 0.198$ | Detection threshold (operational, free) |
+$$
+\theta_i^*=\operatorname{wrap}_{[0,2\pi)}
+\left(\theta_i+c\,\operatorname{wrap}(\bar\theta_i-\theta_i)\right).
+$$
 
-**Properties**:
-- **Identity preservation**: EPI is circulated without alteration — the defining contract of resonance.
-- **Phase order parameter**: Computes synchronization quality across propagation range.
-- **Global $C(t)$ increase**: Network coherence increases through propagation.
+Here $\bar\theta_i$ is the unweighted circular mean of compatible phases. If
+the runtime's exact antipodal-pair guard or exactly zero represented resultant
+marks that mean undefined, phase remains unchanged; this operational guard is
+sufficient for those cancellation classes and is not a universal symbolic
+zero-resultant test. When $|\bar x_i|>10^{-9}$, the selected runtime trigger,
+
+$$
+\nu_{f,i}^*=(1+a)\nu_{f,i},\qquad
+a=\texttt{RA_vf_amplification}.
+$$
+
+The $10^{-9}$ trigger is operational binary64 policy, not a derived structural
+constant. Before EPI, phase, $\nu_f$, history, or RA metadata changes, the
+runtime requires
+
+$$
+0\leq r\leq1,\qquad a\geq0,\qquad0\leq c\leq1,
+$$
+
+finite scalar or uniform-real BEPI operands, a finite nondecreasing proposed
+frequency, and the identity gate below.
+
+**Key constants and domains**:
+
+| Quantity | Default | Runtime domain / status |
+|----------|---------|-------------------------|
+| EPI mix $r$ | $1/(2\pi)\approx0.1592$ | `[0,1]`; convex propagation |
+| Frequency amplification $a$ | $1/(8\pi)\approx0.0398$ | `[0,+infinity)`; nondecreasing capacity |
+| Phase coupling $c$ | $1/(4\pi)\approx0.0796$ | `[0,1]`; shortest-arc interpolation |
+| U3 phase limit | $\pi/2$ | `[0,pi/2]`; may only be tightened |
+| Capacity trigger | $10^{-9}$ | Operational binary64 threshold on $|\bar x_i|$ |
+| Resonance detection threshold | $\approx0.198$ | Separate operational detection sensitivity |
+
+**Identity contract**:
+
+- **Scalar change is allowed**: accepted RA replaces the target scalar by the
+  neighbour blend; preservation does not mean “EPI without alteration.”
+- **Sign identity**: a strict negative-to-positive or positive-to-negative
+  proposal is rejected. Exact zero is neutral: arriving at or departing from
+  zero does not invert a pre-existing nonzero sign.
+- **Kind identity**: an established nonempty `epi_kind` must remain exactly the
+  same. `None` and the empty string mean absent kind and may be initialized by
+  the existing neighbour/fallback convention.
+- **Independent gates**: sign compatibility cannot compensate for a kind
+  violation, or conversely. A failure is atomic for nodal state, glyph history,
+  and RA telemetry.
+
+**Runtime-to-theorem boundary**:
+
+- EN and RA are the first two catalog bridges. They reuse one neutral
+  unweighted-neighbour EPI kernel even when pure-EPI diffusion uses a
+  conductance-weighted mean.
+- `certify_resonance_epi_realization()` separates four layers: the ideal-real
+  convex EPI blend, the affine matrix assembled from represented binary64
+  coefficients, the actual two-stage binary64 proposal, and the accepted
+  identity-gated runtime snapshot. Only a represented map whose exact
+  consensus identity and declared scalar/clipping domain pass enters the affine
+  jump theorem.
+- A successful local frequency boost generally changes the post-RA metric
+  $h_i=d_i/\nu_{f,i}$. The fixed post-RA pure-EPI flow can still be certified;
+  arbitrary switching between pre/post generators is withheld unless their
+  represented metrics are exactly proportional. A displayed recovery time is
+  only an estimate; the Boolean fixed-post-flow recovery verdict comes from the
+  exact hybrid composer.
+- If accepted RA changes target EPI by $\delta$, retaining the prior pure-EPI
+  pressure creates the exact defect $\delta L_{rw}e_i$. Pressure must be
+  refreshed before subsequent evolution is interpreted as that isolated
+  channel. This does not identify or certify stored multichannel $\Delta NFR$.
+- Two-stage rounding, structural clipping, U3/identity gates, and the phase and
+  frequency channels prevent a global binary64 runtime-affinity claim.
+
+**Global $C(t)$ telemetry**: Optional before/after measurements report the
+realized network coherence response; propagation alone does not fix its sign.
 
 **Grammar**: Propagation (U3); requires phase verification.
 
 **Contract**:
-- Pre: Coherent EPI; active edges; adequate phase alignment.
-- Post: Global $C(t)$ raised; EPI identity preserved; $\nu_f$ moderately amplified.
+- Pre: Scalar or uniform-real coherent EPI; active edge; at least one
+  U3-compatible neighbour; factor, phase-limit, identity, and finite-state gates
+  pass.
+- Post: Scalar EPI may move within its preserved sign/kind identity class;
+  $\nu_f$ is nondecreasing and is amplified when the compatible neighbour field
+  crosses the operational trigger; any $C(t)$ change is measured rather than
+  assumed.
 
 ---
 
 ## 9. Transformers
 
-Transformers execute structural bifurcations — qualitative state changes that require both threshold energy (from prior destabilizers) and a stable base (from prior coherence). Grammar rule U4b requires recent destabilizer context ($\sim 3$ operations) and prior IL for ZHIR.
+Transformers execute structural bifurcations — qualitative state changes that
+require recent destabilizing context and, for ZHIR, a prior coherent base.
+Grammar rule U4b uses the configured three-operation recency window; this is
+finite-word bookkeeping, not a measured energy threshold or universal
+relaxation time.
 
 ### 9.1 Mutation (ZHIR)
 
-**Physics**: Controlled phase transformation. When the structural velocity $|\partial\text{EPI}/\partial t|$ exceeds a threshold $\xi$, the phase undergoes a discontinuous transition $\theta \to \theta'$.
+**Physics**: Controlled phase transformation. The nodal equation supplies the
+instantaneous prediction
+
+$$
+(\partial_t\mathrm{EPI})_{\mathrm{pred}}
+= \nu_f\,\Delta\mathrm{NFR}.
+$$
+
+This prediction describes the current capacity-pressure product. Its strict
+comparison with $\xi$ is a predictive diagnostic; it is not evidence that a
+growth rate has been observed and does not admit ZHIR by itself.
+
+**Observed temporal evidence**: the non-disableable runtime trigger instead
+uses the last two finite scalar EPI samples to form the signed secant
+
+$$
+\widehat{\partial_t\mathrm{EPI}}_{\mathrm{obs}}
+=\frac{\mathrm{EPI}_{k}-\mathrm{EPI}_{k-1}}{t_k-t_{k-1}}.
+$$
+
+Timestamped `epi_time_history` is physical-time evidence. It requires finite
+samples, a finite strictly positive interval, and a final sample that represents
+the current EPI endpoint (exactly under the runtime default; the pure
+certificate can declare a finite nonnegative absolute endpoint tolerance).
+When this channel is supplied it is authoritative: invalid or stale physical
+evidence does not fall back to an untimestamped history.
+
+For compatibility, `epi_history` and then `_epi_history` can provide legacy
+evidence. Their two samples are separated by one **operator step**, so the
+calculation reduces to `EPI[k] - EPI[k-1]`. Such evidence is explicitly marked
+`physical_time_resolved=False` and carries no physical-time or current-endpoint
+claim.
+
+The observed comparison is signed and strict:
+$\widehat{\partial_t\mathrm{EPI}}_{\mathrm{obs}}>\xi$. Equality, contraction,
+sub-threshold growth, missing evidence, invalid samples, a non-increasing
+physical timestamp, or a stale physical endpoint reject direct execution
+before its phase mutation. The gate also requires finite active capacity
+$\nu_f>0$; an explicitly configured `ZHIR_MIN_VF` may tighten that condition.
+The default `ZHIR_THRESHOLD_XI = 0.1` is an operational calibration, not a
+structural constant; a configured replacement must be finite and nonnegative.
+
+The pure `MutationTriggerCertificate` and the SDK `nodal_state()` read-out keep
+the predicted and observed rates and crossings separate. In particular,
+`near_bifurcation` is a legacy SDK alias of the **predicted** crossing, while
+`mutation_threshold_satisfied` reports only the observed strict threshold.
+Unavailable or invalid evidence leaves `observed_crossed=None` instead of
+inventing a negative observation. `rate_gap = observed - predicted` is reported
+only for valid physical-time evidence, where those rates share a time basis;
+it remains unavailable for a legacy operator-step difference.
+Neither interface evaluates the prior-IL/recent-destabilizer requirements and
+neither certifies U4b execution readiness.
+
+When a dynamic selector proposes ZHIR without valid crossing evidence or active
+capacity, it substitutes IL before ordinary grammar enforcement and records the
+requested and applied glyphs with the reason in `mutation_abstentions`.
+The SDK whole-word runner applies a stronger atomic boundary: before executing
+the first operator of a word containing ZHIR, it checks the temporal gate for
+every target node. It also rejects timestamped evidence when an earlier
+EPI-channel operator in that word would make the endpoint stale before ZHIR;
+legacy unit-operator-step evidence retains its compatibility interpretation.
+This preflight does not replace grammar validation or U4b. The fluent SDK's
+`apply_evidence_gated_mutation()` adds an explicitly experimental policy on top:
+when evidence is absent, stale, non-crossing or attached to inactive capacity,
+it executes a declared complete word without ZHIR and records the per-node
+evidence and abstention reason. It never constructs history; malformed evidence
+still raises, and direct sequence execution remains strict.
 
 **Phase transformation**:
 
 $$
-\theta' = \theta + 0.3 \cdot \Delta\text{NFR}
+\theta'=\operatorname{wrap}_{[0,2\pi)}\!\left(
+\theta+s\,\operatorname{sign}(\Delta\text{NFR})\right)
 $$
 
-The mutation is threshold-gated: it only activates when the system has accumulated sufficient structural pressure through prior destabilizers.
+where the default calibrated magnitude is
+$s=(1/\pi)(\pi/4)=1/4$ radians unless an explicit fixed shift is supplied.
+The runtime preconditions and U4b history determine whether the mutation is
+admissible; $|\Delta\text{NFR}|$ does not scale this phase step.
 
-**Bifurcation monitoring**: Computes $\partial^2\text{EPI}/\partial t^2$ and flags bifurcation potential when it exceeds $\tau$.
+**Bifurcation monitoring**: `compute_d2epi_dt2` estimates structural
+acceleration from three EPI-history samples. Timestamped histories use adjacent
+secant slopes over their physical intervals; legacy histories use the unit-step
+second difference. The result can flag bifurcation potential when it exceeds
+$\tau$. This acceleration diagnostic is distinct from both the instantaneous
+nodal prediction and the two-sample observed ZHIR gate.
 
-**Key constants**:
+**Key parameters**:
 
-| Constant | Value | Derivation |
-|----------|-------|------------|
-| $\nu_f$ viability threshold | $\approx 0.489$ | Mutation viability condition (operational, free) |
-| Phase shift coefficient | $0.3$ | ΔNFR-proportional phase shift |
-| Energy bound $|\Delta E|$ | $\leq 0.056$ per node | Quasi-isometric |
+| Parameter | Default | Runtime role / status |
+|-----------|---------|-----------------------|
+| Signed observed-growth threshold $\xi$ | `ZHIR_THRESHOLD_XI = 0.1` | Strict operator-admission calibration; operational, not structural |
+| Direct activity condition | $\nu_f>0$ | Zero capacity cannot execute the phase transformation |
+| Optional direct minimum | absent (`ZHIR_MIN_VF = 0`) | Tightens the activity condition only when configured explicitly |
+| Branch-selection threshold | `ZHIR_BIFURCATION_VF_THRESHOLD = 0.5` | Selects whether the bifurcation router proposes ZHIR; it is not a ZHIR operator precondition |
+| Default phase shift | $1/4$ rad | Calibrated magnitude; $\Delta\text{NFR}$ supplies direction only |
+| Sampled $|\Delta E|$ | $\leq 0.056$ per node in the referenced protocol | Finite observation, not an operator contract |
 
 **Grammar**: Transformer (U4b); Bifurcation Trigger (U4a).
 
 **Contract**:
-- Pre: $\nu_f \geq$ viability threshold; $|\partial\text{EPI}/\partial t| > \xi$; prior IL required (stable base); recent destabilizer within $\sim 3$ ops.
-- Post: Phase $\theta$ shifted; EPI identity preserved (qualitative nature unchanged); bifurcation potential flagged if $\partial^2\text{EPI}/\partial t^2 > \tau$.
+- Pre: active finite $\nu_f>0$ (and `ZHIR_MIN_VF`, only when explicitly
+  configured); valid two-sample temporal evidence satisfying the signed strict
+  inequality $\widehat{\partial_t\mathrm{EPI}}_{\mathrm{obs}}>\xi$; prior IL
+  for the stable base; and a recent destabilizer inside the configured U4b
+  window. Temporal evidence is either fresh timestamped physical evidence or
+  legacy unit-operator-step evidence under the compatibility contract. The
+  normal grammar route or the strict precondition route enforces the two U4b
+  context requirements.
+- Post: phase $\theta$ shifted; the structural identity `epi_kind` preserved;
+  bifurcation potential flagged if $\partial^2\text{EPI}/\partial t^2>\tau$.
+  After successful dispatch, `source_glyph` records `ZHIR` as provenance. That
+  provenance field does not define or overwrite `epi_kind`.
 
 ---
 
@@ -517,7 +853,8 @@ The mutation is threshold-gated: it only activates when the system has accumulat
 **Transformation**:
 
 $$
-\nu_f' = \nu_f \cdot f_{\text{SHA}} \approx 0.9 \cdot \nu_f \to 0, \qquad f_{\text{SHA}} = \text{SHA\_VF\_FACTOR} = 0.9
+\nu_f'=f_{\text{SHA}}\nu_f,\qquad
+f_{\text{SHA}}=1-1/(4\pi)\approx0.9204
 $$
 
 EPI is preserved via latency snapshot.
@@ -526,8 +863,8 @@ EPI is preserved via latency snapshot.
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| $\nu_f$ suppression factor | $0.9$ | Structural continuity (operational, SHA\_VF\_FACTOR) |
-| Energy bound $|\Delta E|$ | $\leq 0.187$ | Near-isometric |
+| $\nu_f$ suppression factor | $1-1/(4\pi)\approx0.9204$ | Operational `SHA_VF_FACTOR` |
+| Sampled $|\Delta E|$ | $\leq 0.187$ in the referenced protocol | Finite observation, not an operator contract |
 
 **Properties**:
 - **Latency state**: Activates a latent flag with timestamped EPI snapshot.
@@ -547,21 +884,23 @@ EPI is preserved via latency snapshot.
 **Transformation**:
 
 $$
-\nu_f' = f_{\text{NUL}} \cdot \nu_f, \qquad f_{\text{NUL}} = \text{NUL\_scale} = 0.9
+\nu_f'=f_{\text{NUL}}\nu_f,\qquad
+f_{\text{NUL}}=1-1/(4\pi)\approx0.9204
 $$
 
 Local $\Delta\text{NFR}$ density increases due to compression:
 
 $$
-\Delta\text{NFR}_{\text{density}}' = \frac{1}{\lambda} \cdot \Delta\text{NFR}_{\text{density}} \approx 1.111 \cdot \Delta\text{NFR}_{\text{density}}, \qquad \lambda = \text{NUL\_scale} = 0.9
+\Delta\text{NFR}'=\frac{1}{f_{\text{NUL}}}\Delta\text{NFR}
+\approx1.0865\,\Delta\text{NFR}
 $$
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
-| Scale factor | $0.9$ | Same operational ν_f step as SHA (NUL\_scale) |
-| Densification factor | $1/\lambda \approx 1.111$ | Geometric volume ratio (1/NUL\_scale) |
+| Scale factor | $1-1/(4\pi)\approx0.9204$ | Same operational $\nu_f$ step as SHA |
+| Densification factor | $1/f_{\text{NUL}}\approx1.0865$ | Reciprocal configured capacity factor |
 
 **Grammar**: Simplifier (no active grammar role; supports VAL reversals).
 
@@ -571,81 +910,108 @@ $$
 
 ---
 
-## 11. Canonical Compositions
+## 11. Fragments and Complete Words
 
-Operators combine into validated sequences that implement higher-level structural behaviors. All compositions must satisfy grammar rules U1–U6.
+Operators compose left-to-right. A named fragment is reusable syntax; a
+complete word is a concrete sequence evaluated against its execution context.
+Canonical U6 additionally needs before/after $\Phi_s$ snapshots and therefore
+cannot be certified from operator labels alone.
 
-### 11.1 Four Fundamental Patterns
+### 11.1 Named workflow fragments
 
-| Pattern | Sequence | Effect | Use case |
-|---------|----------|--------|----------|
-| **Bootstrap** | [AL, EN, IL, SHA] | Create → Integrate → Stabilize → Close | Network initialization |
-| **Stabilize** | [IL, SHA] | Stabilize → Close | Consolidation after changes |
-| **Explore** | [OZ, ZHIR, IL] | Destabilize → Transform → Stabilize | Breaking local optima |
-| **Propagate** | [RA, UM] | Resonate → Couple | Spreading coherence |
+| Fragment | Sequence | Structural intent | Missing standalone context |
+|----------|----------|-------------------|----------------------------|
+| **Bootstrap** | [AL, UM, IL] | Create → Couple → Stabilize | U1b closure; U3 phase values |
+| **Stabilize** | [IL, SHA] | Stabilize → Close | U1a generator when starting from null |
+| **Explore** | [OZ, ZHIR, IL] | Destabilize → Transform → Stabilize | U1a/U1b glue and prior IL for ZHIR |
+| **Propagate** | [RA, UM] | Resonate → Couple | U1a/U1b glue; U3 phase values |
 
-### 11.2 Extended Compositions
+These fragments are not asserted to be standalone valid words. For example,
+`[AL, IL, OZ, ZHIR, IL, SHA]` supplies the generator, prior stable base,
+recent destabilizer, handler/stabilizer and closure needed by the Explore body.
+
+### 11.2 Complete-word examples
 
 | Name | Sequence | Description |
 |------|----------|-------------|
 | Bifurcated base | [AL, EN, IL, OZ, ZHIR, IL, SHA] | Exploration with mutation and stabilization |
 | Bifurcated collapse | [AL, OZ, NUL, IL, SHA] | Stress testing with contraction recovery |
 | Theory system | [AL, NAV, UM, RA, IL, SHA] | Cognitive consolidation via coupling and resonance |
-| Full deployment | [AL, UM, RA, OZ, ZHIR, IL, SHA] | Integration pipeline with exploration |
+| Full deployment | [AL, UM, RA, IL, OZ, ZHIR, IL, SHA] | Integration pipeline with the prior IL required by ZHIR |
 | Minimal stabilizer | [AL, IL, SHA] | Shortest valid bootstrap-stabilize-close |
 | Contained crisis | [AL, EN, IL, OZ, SHA] | Crisis containment through intervention |
 | Phase lock | [AL, EN, IL, OZ, ZHIR, SHA] | Synchronization through mutation |
 | Resonance peak hold | [AL, EN, IL, RA, SHA] | Peak detection and maintenance |
 
-### 11.3 Grammar Validation of Compositions
+### 11.3 Validation boundary
 
-Every composition above satisfies:
-- **U1a**: Starts with generator (AL or NAV).
-- **U1b**: Ends with closure (SHA, NAV, REMESH, or OZ).
-- **U2**: Destabilizers (OZ, ZHIR, VAL) compensated by stabilizers (IL, THOL).
-- **U3**: Coupling (UM, RA) has phase verification.
-- **U4a**: Bifurcation triggers (OZ, ZHIR) accompanied by handlers (IL, THOL).
-- **U4b**: Transformers (ZHIR, THOL) have recent destabilizer context and prior IL.
+The sequence validator checks U1 initiation/closure, U2 debt coverage, U3
+operator awareness, U4 context, and declared U5 Recursivity depth. Actual U3
+phase compatibility is checked by operator preconditions. Canonical U6 is a
+separate snapshot observation. Thus a sequence-level pass is not full U1--U6
+trajectory certification and does not prove convergence.
 
 ---
 
-## 12. Per-Operator Energy Bounds
+## 12. Operator roles and energy diagnostics
 
-The structural energy functional $E = \frac{1}{2}\sum_i \left[\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 + J_\phi^2 + J_{\Delta\text{NFR}}^2\right]$ serves as a Lyapunov candidate. It is **emergent**: built entirely from the tetrad fields, it contains **no $\text{EPI}$ or $\nu_f$ term** (measured: scaling $\text{EPI}$ or $\nu_f$ on every node leaves $E$ unchanged; the phase $\theta$ and the pressure $\Delta\text{NFR}$ do enter it). Consequently each operator's energy role **is its canonical grammar U2 role**, derived from `config.physics_derivation` — not a separate energy algebra.
+The structural energy diagnostic
+$E = \frac{1}{2}\sum_i [\Phi_s^2 + |\nabla\phi|^2 + K_\phi^2 +
+J_\phi^2 + J_{\Delta\text{NFR}}^2]$ is nonnegative and can serve as a
+Lyapunov candidate for a specified dynamics. It contains no explicit EPI or
+$\nu_f$ term, although an operator can still change $E$ indirectly by updating
+phase, pressure, topology or coupled state. The grammar U2 role therefore does
+not determine the sign of $\Delta E$.
 
-### 12.1 Energy Classes (= Grammar U2 Role)
+### 12.1 Grammar U2 roles
 
-| Class | Operators | Mechanism |
-|-------|-----------|-----------|
-| **Stabiliser** ($\Delta E \leq 0$) | IL, THOL | Reduce $|\Delta\text{NFR}|$ (negative feedback) |
-| **Destabiliser** ($\Delta E \leq \kappa E$) | OZ, ZHIR, VAL | Raise $|\Delta\text{NFR}|$ (bounded expansion) |
-| **Neutral** ($\Delta E \approx 0$) | AL, EN, RA, REMESH (EPI/form); UM, SHA, NUL, NAV | Act on the form (LHS), capacity, phase, or controlled channel that the pressure functional does not penalise by its grammatical role |
+| Registry role | Operators | Structural intent |
+|---------------|-----------|-------------------|
+| **Stabiliser** | IL, THOL | Supply negative feedback or reorganize a perturbed state |
+| **Destabiliser** | OZ, ZHIR, VAL | Introduce pressure, phase or capacity perturbations that incur U2 debt |
+| **Neither U2 class** | AL, EN, RA, REMESH, UM, SHA, NUL, NAV | Their other grammar and operator contracts still apply |
 
-### 12.2 Energy Rate Table
+These sets are derived from the declared nodal-channel predicates in
+`config.physics_derivation`. They are policy classifications, not measured
+energy inequalities.
 
-| Operator | Class | Pressure factor | Rate |
-|----------|-------|-----------------|------|
-| IL | Stabiliser | $f = 0.75$ (operational) | $\rho = 1 - f = 0.25$ |
-| THOL | Stabiliser | accel $= 0.10$ | $\rho \approx 0.100$ |
-| OZ | Destabiliser | $f = 2.0$ (operational) | $\kappa = f - 1 = 1.0$ |
-| ZHIR | Destabiliser | $\theta$-shift $= 0.30$ | $\kappa \approx 0.300$ |
-| VAL | Destabiliser | $\nu_f$-scale $\approx 1.068$ | $\kappa \approx 0.068$ |
-| AL, EN, RA, REMESH | Neutral | — (write EPI, the LHS) | $0$ |
-| UM, SHA, NUL, NAV | Neutral | — (phase / capacity / controlled) | $0$ |
+### 12.2 Nominal operator parameters
 
-**Dual-lever note**: the *energy/Lyapunov role* (stabiliser/destabiliser, the sign of the $|\Delta\text{NFR}|$ feedback) is distinct from the *dual-lever* (§17.1, which RHS factor an operator modulates). VAL engages the capacity lever yet is a U2 destabiliser; NAV engages the pressure lever yet is U2-neutral (controlled trajectory). See `src/tnfr/physics/lyapunov.py`.
+| Operator | U2 role | Nominal parameter | What it does not prove |
+|----------|---------|-------------------|------------------------|
+| IL | Stabiliser | pressure factor $f=\pi/(\pi+1)\approx0.7585$ | A universal $\Delta E\leq0$ theorem |
+| THOL | Stabiliser | pressure-reorganization gain $a=1/(4\pi)\approx0.0796$ | A universal contraction rate |
+| OZ | Destabiliser | pressure factor $f=(\pi+1)/\pi\approx1.3183$ | A state-independent energy multiplier |
+| ZHIR | Destabiliser | default signed phase step $=1/4$ rad | A curvature or energy growth rate |
+| VAL | Destabiliser | $\nu_f$ scale $1+1/(4\pi)\approx1.0796$ | An instantaneous energy sign |
 
-### 12.3 Grammar U2 Lyapunov Theorem
+**Dual-lever note**: the U2 role is distinct from the dual-lever channel
+(§17.1). VAL engages the capacity lever yet is a U2 destabiliser; NAV engages
+the pressure lever but is outside the U2 destabiliser set because its declared
+trajectory is controlled. Actual energy change must be measured on the
+executed state transition.
 
-For any U2-compliant sequence (destabilizers compensated by stabilizers):
+### 12.3 Grammar U2 stability boundary
+
+U2 requires destabilizers to be compensated by stabilizers, but it does not
+prove for every compliant sequence that
 
 $$
 \sum_{\text{ops}} \Delta E_{\text{op}} \leq 0
 $$
 
-This guarantees that grammar-compliant evolution is Lyapunov-stable with respect to the structural energy functional.
+The operator registry supplies local role and nominal parameter metadata rather than a common
+Lyapunov proof for all realizations. Such a proof additionally needs a specified
+state functional, pressure law, timing and gain bounds. The fixed symmetric pure
+EPI channel is one class where this has now been established, including
+heterogeneous positive capacities. A declared affine EPI reset can also be
+bounded in the same metric exactly when it preserves the consensus subspace;
+the resulting rational Frobenius bound composes with elapsed diffusion time.
+This generic theorem does not certify any catalog operator until its runtime
+action is derived as that affine map on a declared domain.
 
-**Proof**: See [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) §1.3 and [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) §8.
+**Exact restricted result**: see
+[TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md).
 
 ---
 
@@ -669,11 +1035,24 @@ Every operator has a postcondition contract anchored to the **direct effect on n
 | 12 | Transition | NAV | $\Delta\text{NFR}$ | Controlled trajectory; no coherence collapse |
 | 13 | Recursivity | REMESH | EPI (network) | Nested structure maintained; parent identity preserved |
 
+The contract catalog is complete as a specification but is not instantaneously
+identifiable from its categorical fields. The exact certificate
+`contract_identifiability_certificate()` shows that channel, direction, scale
+and context leave Silence and Contraction in the same class. Their distinct
+semantics require a temporal or quantitative postcondition observation. This
+negative inverse result neither removes an operator nor proves completeness of
+the catalog over every admissible TNFR transformation.
+
 ---
 
 ## 14. Operator Constants Reference
 
-Operator gain magnitudes are **free operational parameters**: each operator's contract fixes its channel and sign (the canonical content), not its numeric magnitude, so the values below are operational calibrations. Only **$\pi$** is a genuine structural scale; $\varphi, \gamma, e$ are not structural scales and no longer appear in the engine. The authoritative, current values live in [`src/tnfr/constants/canonical.py`](../src/tnfr/constants/canonical.py) and the contracts in [`operators/operator_contracts.py`](../src/tnfr/operators/operator_contracts.py); the engine-configuration tier (cache, FFT, optimization, performance) is calibrated to operational targets, not derived.
+Operator gain magnitudes are **free operational parameters**: each operator's
+contract fixes its primary channel and qualitative direction or intent, not its
+numeric magnitude. The values below are operational calibrations. Only **$\pi$**
+is a genuine structural phase scale. The authoritative current values live in
+[`src/tnfr/constants/canonical.py`](../src/tnfr/constants/canonical.py) and the
+contracts in [`operators/operator_contracts.py`](../src/tnfr/operators/operator_contracts.py).
 
 ### 14.1 The structural scale
 
@@ -683,22 +1062,25 @@ Operator gain magnitudes are **free operational parameters**: each operator's co
 
 ### 14.2 Operator gain magnitudes (operational)
 
-Free operational parameters (the contract fixes channel + sign, not magnitude). Representative current values:
+Representative operational parameters (the contract fixes the channel and
+qualitative direction or intent, not every magnitude):
 
 | Constant | Value | Used by |
 |----------|-------|---------|
 | EN / THOL collective-coherence fraction | $1/(\pi + 1) \approx 0.241$ | EN mixing, UM phase push, THOL/VAL threshold (π-derived) |
-| SHA / NUL frequency factor | $0.9$ | SHA suppression, NUL compression ($\nu_f \to 0.9\,\nu_f$) |
-| NUL densification factor | $1/0.9 \approx 1.111$ | NUL ($1/\lambda$ geometric volume-ratio) |
-| VAL scale factor | $1.05$ | VAL expansion ($\nu_f \to 1.05\,\nu_f$) |
-| AL emission boost | $0.10$ | AL creation |
+| SHA / NUL frequency factor | $1-1/(4\pi)\approx0.9204$ | SHA suppression and NUL compression |
+| NUL densification factor | $1/(1-1/(4\pi))\approx1.0865$ | Reciprocal configured capacity factor |
+| VAL scale factor | $1+1/(4\pi)\approx1.0796$ | VAL capacity expansion |
+| AL emission boost | configured positive gain | AL creation; direct-handler fallback is `COUPLING_GENTLE` |
 | THOL fractal scale | $0.3$ | Sub-EPI scaling |
 
 The complete, authoritative set lives in `src/tnfr/constants/canonical.py`; among them the only genuine structural scale is the phase scale $\pi$ (the $1/(\pi+1)$ entry above is the one π-derived value).
 
 ### 14.3 Constant-Operator-Grammar Traceability
 
-The canonical content of each operator is its **channel and sign** (its contract), not its gain magnitude. The gains above are free operational parameters; the channel / grammar mapping is:
+The contract records each operator's **primary channel and qualitative
+direction or intent**. The gains above are operational parameters; the channel
+and grammar mapping is:
 
 ```
 OZ   (ΔNFR ↑, amplification)   →  U2 (destabilizer)
@@ -711,7 +1093,9 @@ THOL (sub-EPI, self-org)       →  U2 (stabilizer), U4b (transformer)
 AL   (EPI from vacuum)         →  U1a (generator)
 ```
 
-**Source**: `src/tnfr/constants/canonical.py` and `src/tnfr/operators/operator_contracts.py` (the contract source of truth: channel, sign, scale, postcondition).
+**Source**: `src/tnfr/constants/canonical.py` and
+`src/tnfr/operators/operator_contracts.py` (the contract source of truth:
+channel, direction, scale and postcondition).
 
 ---
 
@@ -725,10 +1109,12 @@ AL   (EPI from vacuum)         →  U1a (generator)
 | `src/tnfr/operators/definitions_base.py` | `Operator` abstract base class with `__call__` workflow |
 | `src/tnfr/operators/emission.py` | AL implementation |
 | `src/tnfr/operators/reception.py` | EN implementation |
+| `src/tnfr/operators/_neighbor_epi_kernel.py` | Shared unweighted EN/RA scalar-mean and blend kernel |
 | `src/tnfr/operators/coherence.py` | IL implementation |
 | `src/tnfr/operators/dissonance.py` | OZ implementation |
 | `src/tnfr/operators/coupling.py` | UM implementation |
 | `src/tnfr/operators/resonance.py` | RA implementation |
+| `src/tnfr/operators/_resonance_identity.py` | Shared RA factor, U3 phase-limit, sign/kind identity, and circular-mean gates |
 | `src/tnfr/operators/silence.py` | SHA implementation |
 | `src/tnfr/operators/expansion.py` | VAL implementation |
 | `src/tnfr/operators/contraction.py` | NUL implementation |
@@ -744,8 +1130,10 @@ AL   (EPI from vacuum)         →  U1a (generator)
 | `src/tnfr/operators/grammar.py` | Grammar validation (public API facade) |
 | `src/tnfr/operators/grammar_dynamics.py` | Incremental grammar-aware dynamics |
 | `src/tnfr/operators/grammar_application.py` | Pre-validated operator application |
-| `src/tnfr/physics/integrity.py` | 13/13 postcondition verification |
-| `src/tnfr/physics/lyapunov.py` | Per-operator energy bounds |
+| `src/tnfr/physics/integrity.py` | Sampled postcondition audit and runtime monitor |
+| `src/tnfr/physics/lyapunov.py` | Configured operator-role energy diagnostics |
+| `src/tnfr/physics/reception_realization.py` | Read-only EN runtime-to-affine-flow certificate |
+| `src/tnfr/physics/resonance_realization.py` | Read-only RA four-layer realization, identity, post-metric, and pressure audit |
 | `src/tnfr/constants/canonical.py` | All derived constants |
 
 ### 15.2 Base Operator Workflow
@@ -755,8 +1143,11 @@ The `Operator.__call__(G, node, **kw)` method implements the canonical execution
 1. **Precondition validation**: Operator-specific checks via `_validate_preconditions()`.
 2. **State capture**: Records $(\text{EPI}, \nu_f, \Delta\text{NFR}, \theta)$ before application.
 3. **Integrity snapshot** (pre): `_integrity_monitor.before_operator()`.
-4. **Grammar-enforced application**: Applies via `apply_glyph_with_grammar()` (U1–U6).
-5. **Integrity evaluation** (post): `_integrity_monitor.after_operator()` — verifies postconditions.
+4. **Grammar-aware application**: `apply_glyph_with_grammar()` enforces the
+   incremental operator-history checks available at execution time. Canonical
+   U6 requires a separate before/after field observation.
+5. **Integrity evaluation** (post): `_integrity_monitor.after_operator()`
+   evaluates the configured postcondition when monitoring is enabled.
 6. **Nodal equation validation** (optional): Checks $|\partial\text{EPI}/\partial t_{\text{measured}} - \nu_f \cdot \Delta\text{NFR}| \leq \epsilon$.
 7. **Metrics collection**: Operator-specific telemetry via `_collect_metrics()`.
 
@@ -766,8 +1157,10 @@ The `Operator.__call__(G, node, **kw)` method implements the canonical execution
 |---------|----------------------|
 | [04_operator_sequences.py](../examples/01_foundations/04_operator_sequences.py) | All 13 operators, canonical compositions |
 | [10_simplified_sdk_showcase.py](../examples/01_foundations/10_simplified_sdk_showcase.py) | SDK-level operator usage |
-| [29_lyapunov_stability_demo.py](../examples/02_physics_regimes/29_lyapunov_stability_demo.py) | All 13 energy bounds, Lyapunov stability |
+| [29_lyapunov_stability_demo.py](../examples/02_physics_regimes/29_lyapunov_stability_demo.py) | Configured per-operator energy-bound diagnostics and their scope |
 | [36_grammar_violation_detector.py](../examples/02_physics_regimes/36_grammar_violation_detector.py) | Grammar enforcement across sequences |
+| [163_reception_runtime_bridge.py](../examples/02_physics_regimes/163_reception_runtime_bridge.py) | EN ideal-real, represented, runtime-snapshot, and pressure-refresh boundary |
+| [164_resonance_runtime_bridge.py](../examples/02_physics_regimes/164_resonance_runtime_bridge.py) | RA U3 filter, identity gate, four realization layers, post-flow certificate, and switching abstention |
 
 ### 15.4 SDK Entry Points
 
@@ -776,10 +1169,10 @@ from tnfr.sdk import TNFR
 
 net = TNFR.create(20).ring().evolve(5)
 
-# Grammar-aware evolution (proactive U1-U6 enforcement)
+# Grammar-aware evolution (incremental operator-history checks)
 net.evolve_grammar_aware(steps=10)
 
-# Integrity check (13/13 postconditions)
+# Sampled contract audit; inspect evaluated coverage and individual outcomes
 report = net.integrity_check()
 
 # One-line self-optimization (auto operator selection)
@@ -791,45 +1184,72 @@ TNFRNetwork(G).focus(node).auto_optimize().execute()
 
 ## 16. Summary
 
-The 13 canonical TNFR operators form a complete, irreducible algebra for structural transformations governed by the nodal equation $\partial\text{EPI}/\partial t = \nu_f \cdot \Delta\text{NFR}(t)$.
+The canonical registry contains 13 operators with executable contracts and the
+operator roles used by U1--U5. U6 consumes before/after structural-potential
+telemetry rather than adding another operator role. The registry is complete as
+the engine's registered specification. Generative completeness and
+irreducibility over every admissible TNFR transformation have not been proved.
 
 **Key results**:
 
-1. **Completeness**: The operators span all independent transformations of the structural triad $(\text{EPI}, \nu_f, \phi)$ compatible with the nodal equation.
-2. **Irreducibility**: No operator decomposes into a composition of others without loss of physical semantics.
-3. **Grammar closure**: The operator set satisfies all grammar roles required by U1–U6.
+1. **Registry coverage**: All 13 declared transformations have implementations,
+   contracts and grammar metadata.
+2. **Identification boundary**: Contract categories alone merge Silence and
+   Contraction; quantitative one-step signatures separate all 13 only on the
+   declared deterministic probes.
+3. **Grammar-role coverage**: The operator set supplies the roles used by
+   U1--U5; U6 is evaluated from $\Phi_s$ snapshots.
 4. **Constants**: Operator gain magnitudes in `canonical.py` are operational parameters (only $\pi$ is a genuine structural scale); the engine-configuration tier is calibrated, not derived.
-5. **Lyapunov stability**: Grammar-compliant sequences reduce structural energy ($\sum \Delta E \leq 0$).
-6. **Runtime verification**: 13/13 postcondition contracts enforced by the structural integrity monitor.
-7. **Canonical compositions**: Standard patterns (Bootstrap, Stabilize, Explore, Propagate) encode common structural workflows.
-8. **Dual-lever structure**: Operators act through $\nu_f$ (capacity) or $\Delta\text{NFR}$ (pressure), explaining why grammar requires both U2 and U4.
-9. **Operator-tetrad coupling**: Each operator has a characteristic fingerprint across the four tetrad fields, confirming the tetrad is a complete basis for diagnosing operator effects.
-10. **Linear $\Phi_s$ response**: Structural potential responds linearly to $\Delta\text{NFR}$ perturbations ($|r| = 1.000$), confirming its 0th-order nature in the derivative tower.
+5. **Stability boundary**: Exact Lyapunov decrease is proved for restricted
+   pure-EPI diffusion classes; U2 compliance alone is not a global Lyapunov
+   theorem for arbitrary operator sequences.
+6. **Contract instrumentation**: The integrity subsystem can sample all 13
+   registered contracts and can observe or enforce evaluated runtime
+   postconditions. Coverage and outcomes must be reported separately.
+7. **Named fragments**: Bootstrap, Stabilize, Explore and Propagate encode
+   reusable workflow bodies that need grammar context to become complete words.
+8. **Four-channel structure**: Every contract has one primary channel among
+   EPI, $\nu_f$, phase, and $\Delta\text{NFR}$; only capacity and pressure are
+   the explicit multiplicative levers of the nodal rate.
+9. **Operator-tetrad coupling**: Finite experiments measure different tetrad
+   responses across operators. They do not prove tetrad completeness.
+10. **Scoped $\Phi_s$ linearity**: At fixed topology, structural potential is a
+    linear aggregation of the $\Delta\text{NFR}$ source. The reported
+    correlation coefficient belongs to one finite sweep.
 
 ---
 
 ## 17. Experimental Operator-Tetrad Synergies
 
-Computational experiments (Examples 37–39, seed 42, $n=20$, Erdos-Renyi $p=0.25$) reveal how the 13 operators couple to the structural field tetrad and conservation quantities. These findings are empirically reproducible and derive from the nodal equation.
+Computational experiments (Examples 37–39, seed 42, $n=20$, Erdos-Renyi
+$p=0.25$) report how executed operator requests change selected structural
+fields. The response tables are finite-protocol measurements; they do not
+derive universal causal fingerprints from the nodal equation.
 
-### 17.1 Operator Lever Classification
+### 17.1 Centralized Operator-Channel Classification
 
-The nodal equation $\partial\text{EPI}/\partial t = \nu_f \cdot \Delta\text{NFR}(t)$ has two independent factors. Each operator modulates EPI evolution through predominantly one of these "levers":
+The contract source of truth partitions operators by the primary state channel
+they write or control:
 
-| Lever | Operators | Mechanism |
+| Primary channel | Operators | Mechanism |
 |-------|-----------|-----------|
-| $\nu_f$ (capacity) | UM, SHA, VAL | Modify reorganization frequency |
-| $\Delta\text{NFR}$ (pressure) | IL, OZ, THOL, ZHIR, NAV | Modify reorganization pressure |
-| Both | NUL | Changes frequency and pressure simultaneously |
-| Neutral | AL, EN, RA, REMESH | Affect EPI directly or leave state unchanged |
+| EPI (form) | AL, EN, RA, REMESH | Write, integrate, propagate, or echo form |
+| $\nu_f$ (capacity) | SHA, VAL, NUL | Freeze, raise, or reduce reorganization capacity |
+| $\theta$ (phase) | UM, ZHIR | Synchronize or transform phase |
+| $\Delta\mathrm{NFR}$ (pressure) | IL, OZ, THOL, NAV | Stabilize, perturb, organize, or shift structural pressure |
 
-This dual-lever structure is why grammar requires both U2 (convergence of $\int \nu_f \cdot \Delta\text{NFR}\,dt$) and U4 (bifurcation control): different operators control different factors of the integrand.
+The nodal rate contains the capacity and pressure levers explicitly. EPI and
+phase operators affect the future rate through state and coupling updates. U2
+and U4 roles are independently derived from contract predicates; they must not
+be inferred solely from the primary channel.
 
 **Example**: NAV (Transition) produces the largest single $\Delta\text{NFR}$ change ($d = -0.444$), consistent with its role as a regime-shift operator.
 
 ### 17.2 Operator-Tetrad Fingerprint Matrix
 
-Each operator has a characteristic coupling profile to the four tetrad fields. Measured as percentage change per field after single operator application on a random 20-node network:
+One finite protocol measured percentage changes after single requested operator
+applications on a random 20-node network. These rows are sampled response
+profiles, not unique or universal operator fingerprints:
 
 | Operator | $\Phi_s$ (%) | $|\nabla\varphi|$ (%) | $K_\varphi$ (%) | $\xi_C$ (%) |
 |----------|-------------|----------------------|-----------------|-------------|
@@ -853,11 +1273,15 @@ Each operator has a characteristic coupling profile to the four tetrad fields. M
 - **IL** reduces $|\Delta\text{NFR}|$ via negative feedback (stabilizer contract).
 - **OZ** increases $|\Delta\text{NFR}|$ via positive feedback (destabilizer contract).
 
-The identical tetrad response occurs because the tetrad fields depend on the absolute state of $(\varphi_i, \Delta\text{NFR}_i)$ across the network, and a single-node perturbation of the same magnitude produces the same global field response regardless of sign. This symmetry breaks under repeated application: cumulative IL drives toward equilibrium while cumulative OZ drives toward divergence, as required by U2.
+The identical sampled response follows from this initial state and the absolute-
+value summaries used by the protocol. Repeated IL and OZ requests can separate,
+but U2 role labels alone do not determine convergence or divergence.
 
 ### 17.4 Structural Potential Linear Response
 
-**Result**: Coherence-length $\xi_C$ and structural potential $\Phi_s$ show a perfectly linear response to $\Delta\text{NFR}$ perturbation magnitude (Pearson $|r| = 1.000$).
+**Finite sweep**: $\Phi_s$ is linear in the source at fixed topology. The six
+sampled $\xi_C$ values are strongly nonlinear and state-dependent; no linear
+$\xi_C$ law is claimed.
 
 | $\Delta\text{NFR}_{\text{init}}$ | $d(\Phi_s)$ | $d(\xi_C)$ |
 |----------------------------------|-------------|------------|
@@ -868,32 +1292,43 @@ The identical tetrad response occurs because the tetrad fields depend on the abs
 | 0.50 | $-0.071$ | $-35.1$ |
 | 0.80 | $-0.113$ | $-1464$ |
 
-$\Phi_s$ response is linear across the full range, confirming the 0th-order (aggregation) nature of the structural potential from the derivative tower (§ Minimal Structural Degrees). The $\xi_C$ response transitions from linear to strongly nonlinear above $\Delta\text{NFR} \approx 0.3$, consistent with critical phenomena near the correlation divergence.
+$\Phi_s$ response is linear in this sweep, as expected from its source-aggregation
+definition. The reported $\xi_C$ nonlinearity above the sampled
+$\Delta\text{NFR}$ range is protocol-specific finite telemetry; it does not
+establish a correlation-length divergence or critical transition.
 
-### 17.5 Complete Causal Chain
+### 17.5 Diagnostic dependency chain
 
-The experimental data confirm a unidirectional causal chain:
+The implementation has a one-way read-out dependency:
 
 $$
-\text{Operator} \to (\nu_f, \Delta\text{NFR}) \to \frac{\partial\text{EPI}}{\partial t} \to \text{Tetrad Fields} \to (E, Q)
+\text{Operator} \to \text{updated nodal/graph state} \to
+\text{tetrad fields} \to (E,Q)
 $$
 
-The tetrad fields are diagnostics of nodal equation dynamics, not independent dynamical variables. This is evidenced by:
-- Emission (AL) modifies EPI directly ($+0.117$) without changing any tetrad field or conservation quantity.
-- Coupling (UM) modifies $(\nu_f, \Delta\text{NFR})$, which propagates to all four tetrad fields and both conservation quantities ($dE = -13.45$, $dQ = +7.62$).
+The fields are deterministic diagnostics of a fully specified state, not
+independent variables and not a complete observer. The numerical deltas reported
+by example 37 belong to one graph, node, seed and realized operator history;
+fallback substitutions are recorded explicitly.
 
 ### 17.6 Grammar-Energy Landscape
 
-Grammar-compliant sequences produce net energy descent across all four canonical patterns (Bootstrap, Stabilize, Explore, Propagate). The energy trajectory through a sequence traces a landscape that Grammar U2 constrains to be bounded.
+The example evaluates energy along several finite sequences. Its observed signs
+are properties of that protocol. U2 constrains operator-word roles but does not
+bound this quadratic energy for every pressure law or realization.
 
-**Lyapunov verification** (seed 42): The first Lyapunov cumulative product for a Bootstrap+Explore+Stabilize sequence is $\lambda = 1.288$ (not contractive over the full sequence), but the net energy change is $dE = -9.59$ (descent). This confirms that Lyapunov contractivity is sufficient but not necessary for energy descent — grammar compliance provides the stronger guarantee.
+**Finite diagnostic** (seed 42): the nominal cumulative multiplier for one
+Bootstrap+Explore+Stabilize sequence is $\lambda = 1.288$, while the observed
+net change is $dE=-9.59$. This shows only that this nominal multiplier does not
+predict the sign of that sampled transition. It supplies no stronger guarantee
+from grammar compliance.
 
 ### 17.7 Executable Demonstrations
 
 | Example | Experiment | Key metric |
 |---------|------------|------------|
-| `examples/02_physics_regimes/37_operator_tetrad_synergy.py` | Fingerprint matrix, energy signatures, safety envelope, Noether conservation | Per-operator tetrad coupling (%) |
-| `examples/02_physics_regimes/38_grammar_energy_landscape.py` | Energy landscape, Lyapunov bounds, canonical pattern comparison | Energy trajectory $E(t)$ through sequence |
+| `examples/02_physics_regimes/37_operator_tetrad_synergy.py` | Sampled response matrix, energy observations, policy checks and balance telemetry | Per-request realized operator and tetrad delta |
+| `examples/02_physics_regimes/38_grammar_energy_landscape.py` | Energy trajectory and nominal multiplier comparison | Observed $E(t)$ for the declared sequence |
 | `examples/02_physics_regimes/39_nodal_equation_decomposition.py` | Lever classification, causal chain, waveform trajectory, response functions | $\nu_f$ vs $\Delta\text{NFR}$ per operator |
 
 All experiments use seed 42 for reproducibility (Invariant #6).
@@ -904,7 +1339,7 @@ All experiments use seed 42 for reproducibility (Invariant #6).
 
 - Nodal equation derivation: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §2
 - Grammar rules U1–U6: [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
-- Energy bounds and Lyapunov stability: [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) §1
+- Energy diagnostics and scoped stability results: [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) §1
 - Conservation laws: [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md)
 - Variational formulation: [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md)
 - Structural field tetrad: [FUNDAMENTAL_THEORY.md](FUNDAMENTAL_THEORY.md) §3

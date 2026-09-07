@@ -1,6 +1,9 @@
 """TNFR Grammar: Core Grammar Validator
 
-GrammarValidator class - central validation engine for all grammar rules U1-U6.
+``GrammarValidator`` is the central validator for the operator-word rules
+U1--U5 and the U2-REMESH sub-rule. Canonical U6 is a before/after structural-
+potential observation implemented in :mod:`tnfr.operators.grammar_u6`; it
+cannot be decided from an operator sequence alone.
 
 Terminology (TNFR semantics):
 - "node" == resonant locus (structural coherence site); kept for NetworkX compatibility
@@ -46,10 +49,11 @@ from .grammar_types import (
 class GrammarValidator:
     """Validates sequences using canonical TNFR grammar constraints.
 
-    Implements U1-U5 rules that emerge inevitably from TNFR physics.
-    This is the single source of truth for grammar validation.
+    Implements the sequence-level U1--U5 engine policies. This is the central
+    sequence validator; canonical U6 requires field snapshots and is evaluated
+    by :mod:`tnfr.operators.grammar_u6`.
 
-    All rules derive from:
+    The policies are motivated and constrained by:
     - Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
     - Canonical invariants (AGENTS.md §3)
     - Formal contracts (AGENTS.md §4)
@@ -85,8 +89,10 @@ class GrammarValidator:
     ) -> tuple[bool, str]:
         """Validate U1a: Structural initiation.
 
-        Physical basis: If EPI=0, then ∂EPI/∂t is undefined or zero.
-        Cannot evolve structure that doesn't exist.
+        Contract basis: the derivative ``νf·ΔNFR`` is defined at ``EPI=0``
+        whenever its factors are finite. U1a is an operator-history policy:
+        a standalone word starting from the null state must declare how form
+        is generated or latent form is activated.
 
         Generators create structure from:
         - AL (Emission): vacuum via emission
@@ -131,11 +137,12 @@ class GrammarValidator:
 
     @staticmethod
     def validate_closure(sequence: list[Operator]) -> tuple[bool, str]:
-        """Validate U1b: Structural closure.
+        """Validate U1b: registered structural closure.
 
-        Physical basis: Sequences are bounded action potentials in structural
-        space. Like physical waves, they must have termination that leaves
-        system in coherent attractor states.
+        This syntactic rule checks whether the last operator belongs to the
+        registered closure set. Membership records an operational boundary; it
+        does not prove that the resulting trajectory is at a coherent
+        attractor.
 
         Closures stabilize via:
         - SHA (Silence): Terminal closure - freezes evolution (νf → 0)
@@ -175,19 +182,14 @@ class GrammarValidator:
 
     @staticmethod
     def validate_convergence(sequence: list[Operator]) -> tuple[bool, str]:
-        """Validate U2: Convergence and boundedness.
+        """Validate the finite-word U2 debt and coverage policy.
 
-        Physical basis: Without stabilizers, ∫νf·ΔNFR dt → ∞ (diverges).
-        Stabilizers provide negative feedback ensuring integral convergence.
-
-        From integrated nodal equation:
-            EPI(t_f) = EPI(t_0) + ∫_{t_0}^{t_f} νf·ΔNFR dτ
-
-        Without stabilizers:
-            d(ΔNFR)/dt > 0 always → ΔNFR ~ e^(λt) → integral diverges
-
-        With stabilizers (IL or THOL):
-            d(ΔNFR)/dt can be < 0 → ΔNFR bounded → integral converges
+        The public method name is retained for compatibility. The check counts
+        declared destabilizer debt, rejects any prefix above
+        ``U2_DEBT_CAPACITY``, and requires at least one declared stabilizer when
+        destabilizers occur. It does not integrate ``νf·ΔNFR`` or prove
+        convergence, boundedness, or a Lyapunov inequality for the executed
+        trajectory.
 
         Parameters
         ----------
@@ -214,7 +216,8 @@ class GrammarValidator:
         ]
 
         if not destabilizers_present:
-            # No destabilizers = no divergence risk
+            # No declared destabilizer means that U2 debt is not opened. Other
+            # dynamics can still be unbounded and require trajectory analysis.
             return True, "U2: not applicable (no destabilizers present)"
 
         # Check for stabilizers
@@ -226,14 +229,15 @@ class GrammarValidator:
             return (
                 False,
                 f"U2 violated: destabilizers {destabilizers_present} present "
-                f"without stabilizer. Integral ∫νf·ΔNFR dt may diverge. "
+                f"without declared stabilizer coverage. "
                 f"Add: {sorted(STABILIZERS)}",
             )
 
         return (
             True,
-            f"U2 satisfied: stabilizers {stabilizers_present} "
-            f"bound destabilizers {destabilizers_present}",
+            f"U2 coverage satisfied: stabilizers {stabilizers_present} "
+            f"cover destabilizers {destabilizers_present}; trajectory "
+            "boundedness remains a telemetry question",
         )
 
     @staticmethod
@@ -246,7 +250,7 @@ class GrammarValidator:
             without explicit phase verification (synchrony)".
 
             Resonance physics requires phase compatibility:
-                |φᵢ - φⱼ| ≤ Δφ_max
+                |wrap(φᵢ - φⱼ)| ≤ Δφ_max
 
             Without phase verification:
                 Nodes with incompatible phases (antiphase) could attempt coupling
@@ -311,7 +315,7 @@ class GrammarValidator:
         Bifurcation physics:
             If ∂²EPI/∂t² > τ → multiple reorganization paths viable
             → System enters bifurcation regime
-            → Requires handlers (THOL or IL) for stable transition
+            → Requires declared handling coverage (THOL or IL)
 
         Parameters
         ----------
@@ -366,19 +370,21 @@ class GrammarValidator:
     ) -> tuple[bool, str]:
         """Validate U4b: Transformers need context.
 
-        Physical basis: Bifurcations require threshold energy to cross
-        critical points. Transformers (ZHIR, THOL) need recent destabilizers
-        to provide sufficient |ΔNFR| for phase transitions.
+        Policy basis: transformers (ZHIR, THOL) need a recent declared
+        perturbation before a structural change. Because the destabilizer set
+        spans pressure (OZ), phase (ZHIR), and capacity (VAL), this label-only
+        check does not assert a common energy or |ΔNFR| threshold.
 
         ZHIR (Mutation) requirements:
             1. Prior IL: Stable base prevents transformation from chaos
-            2. Recent destabilizer: Threshold energy for bifurcation
+            2. Recent destabilizer: Declared perturbation context
 
         THOL (Self-organization) requirements:
-            1. Recent destabilizer: Disorder to self-organize
+            1. Recent destabilizer: Declared perturbation context
 
-        "Recent" = within BIFURCATION_WINDOW operators (ΔNFR decays via
-        structural relaxation; the window is the emergent relaxation time)
+        "Recent" = within ``BIFURCATION_WINDOW`` operator positions. The
+        window is calibrated from a scalar mean-rate surrogate and is a policy
+        parameter, not a topology-independent relaxation time.
 
         Parameters
         ----------
@@ -392,10 +398,9 @@ class GrammarValidator:
 
         Notes
         -----
-        Transformers need sufficient ΔNFR context. The single
-        BIFURCATION_WINDOW captures when |ΔNFR| remains above the
-        bifurcation threshold (the structural-relaxation reach; there is no
-        graduated strong/moderate/weak split).
+        The single ``BIFURCATION_WINDOW`` supplies one deterministic recency
+        rule for every destabilizer. It does not observe |ΔNFR| or establish
+        that a graph mode remains above a physical threshold.
         """
         # Check if sequence contains transformers
         transformer_ops = []
@@ -413,18 +418,16 @@ class GrammarValidator:
         # For each transformer, check context
         violations = []
         for idx, transformer_name, prior_il in transformer_ops:
-            # "Recent" = within the structural-relaxation window
-            # BIFURCATION_WINDOW (derived from the nodal equation: the discrete
-            # steps for a ΔNFR perturbation to relax into the coherence band).
-            # The window is topology-independent (mean L_rw eigenvalue =
-            # trace/N = 1), so a destabilizer beyond it HAS relaxed and is
-            # correctly no longer "recent" -- it does not scale with sequence
-            # length. Single source: config.operator_names.BIFURCATION_WINDOW.
+            # "Recent" is the configured scalar-surrogate policy window. It is
+            # deterministic and shared by all destabilizers but does not certify
+            # modal relaxation on the current topology. Single source:
+            # config.operator_names.BIFURCATION_WINDOW.
             window_start = max(0, idx - BIFURCATION_WINDOW)
             recent_destabilizers = []
-            # The relaxation window constrains destabilizing pressure. U4b
-            # requires a prior stable base, captured by the linear scan above
-            # without expiring earlier IL or rescanning each sequence prefix.
+            # The window constrains declared perturbation context across the
+            # pressure, phase, and capacity roles. U4b requires a prior stable
+            # base, captured by the linear scan above without expiring earlier
+            # IL or rescanning each sequence prefix.
 
             for j in range(window_start, idx):
                 op_name = getattr(
@@ -461,27 +464,13 @@ class GrammarValidator:
     def validate_remesh_amplification(
         sequence: list[Operator],
     ) -> tuple[bool, str]:
-        """Validate U2-REMESH: Recursive amplification control.
+        """Validate the finite-word U2-REMESH coverage sub-rule.
 
-            Physical basis: REMESH implements temporal coupling EPI(t) ↔ EPI(t-τ)
-            which creates feedback that amplifies structural changes. When combined
-            with destabilizers, this can cause unbounded growth.
-
-            From integrated nodal equation:
-                EPI(t_f) = EPI(t_0) + ∫_{t_0}^{t_f} νf·ΔNFR dτ
-
-            REMESH temporal mixing:
-                EPI_mixed = (1-α)·EPI_now + α·EPI_past
-
-            Without stabilizers:
-                REMESH + destabilizers → recursive amplification
-                → ∫ νf·ΔNFR dt → ∞ (feedback loop)
-                → System fragments
-
-            With stabilizers:
-                IL or THOL provides negative feedback
-                → Bounded recursive evolution
-                → ∫ νf·ΔNFR dt < ∞
+            REMESH mixes present and delayed EPI snapshots. When a word also
+            contains a declared destabilizer, policy requires IL or THOL. This
+            presence check records coverage only: it neither evaluates the
+            runtime delayed recurrence nor proves amplification, boundedness,
+            convergence, or fragmentation.
 
             Specific combinations requiring stabilizers:
                 - REMESH + VAL: Recursive expansion needs coherence stabilization
@@ -501,15 +490,12 @@ class GrammarValidator:
 
             Notes
             -----
-            This rule is DISTINCT from general U2 (convergence). While U2 checks
-            for destabilizers needing stabilizers, U2-REMESH specifically addresses
-        REMESH's amplification property: it multiplies the effect of
-        destabilizers
-            through recursive feedback across temporal/spatial scales.
+            This rule is distinct from the general U2 debt check. It records
+            the extra stabilizer obligation attached to a word containing both
+            REMESH and a destabilizer.
 
             Physical derivation: See src/tnfr/operators/remesh.py module docstring,
-        section "Grammar Implications from Physical Analysis" →
-        U2: CONVERGENCE.
+        section "Grammar implications" → U2 debt coverage.
         """
         # Check if sequence contains REMESH
         has_remesh = any(
@@ -543,65 +529,27 @@ class GrammarValidator:
         if not stabilizers_present:
             return (
                 False,
-                f"U2-REMESH violated: recursivity amplifies destabilizers "
-                f"{destabilizers_present} via recursive feedback. "
-                f"Integral ∫νf·ΔNFR dt may diverge (unbounded growth). "
-                f"Required: {sorted(STABILIZERS)} to bound recursive amplification",
+                f"U2-REMESH violated: recursivity appears with destabilizers "
+                f"{destabilizers_present} but has no declared stabilizer "
+                f"coverage. Required: {sorted(STABILIZERS)}",
             )
 
         return (
             True,
-            f"U2-REMESH satisfied: stabilizers {stabilizers_present} "
-            f"bound recursive amplification of {destabilizers_present}",
+            f"U2-REMESH coverage satisfied: stabilizers {stabilizers_present} "
+            f"cover recursivity with {destabilizers_present}; delayed-state "
+            "stability is not inferred",
         )
 
     @staticmethod
     def validate_multiscale_coherence(sequence: list[Operator]) -> tuple[bool, str]:
         """Validate U5: Multi-scale coherence preservation.
 
-            Physical basis: Multi-scale hierarchical structures created by REMESH
-            with depth>1 require coherence conservation across scales. This emerges
-            inevitably from the nodal equation applied to hierarchical systems.
-
-            From the nodal equation at each hierarchical level:
-                ∂EPI_parent/∂t = νf_parent · ΔNFR_parent(t)
-                ∂EPI_child_i/∂t = νf_child_i · ΔNFR_child_i(t)  for each child i
-
-            For hierarchical systems with N children:
-                EPI_parent = f(EPI_child_1, ..., EPI_child_N)  (structural coupling)
-
-            Taking time derivative and applying chain rule:
-                ∂EPI_parent/∂t = Σ (∂f/∂EPI_child_i) · ∂EPI_child_i/∂t
-                               = Σ w_i · νf_child_i · ΔNFR_child_i(t)
-
-            where w_i = ∂f/∂EPI_child_i are coupling weights.
-
-            Equating with nodal equation for parent:
-                νf_parent · ΔNFR_parent = Σ w_i · νf_child_i · ΔNFR_child_i
-
-            For coherence C(t) = measure of structural stability:
-                C_parent ~ 1/|ΔNFR_parent|  (lower pressure = higher coherence)
-                C_child_i ~ 1/|ΔNFR_child_i|
-
-            This gives the conservation inequality:
-                C_parent ≥ α · Σ C_child_i
-
-            Where α = (1/√N) · η_phase(N) · η_coupling(N) captures:
-            - 1/√N: Scale factor from coupling weight distribution
-            - η_phase: Phase synchronization efficiency (U3 requirement)
-            - η_coupling: Structural coupling efficiency losses
-            - Typical range: α ∈ [0.1, 0.4]
-
-            Without stabilizers:
-                Deep REMESH (depth>1) creates nested EPIs
-                → ΔNFR_parent grows from uncoupled child fluctuations
-                → C_parent decreases below α·ΣC_child
-                → Violation of conservation → System fragments
-
-            With stabilizers (IL or THOL):
-                IL/THOL reduce |ΔNFR| at each level (direct from operator contracts)
-                → Maintains C_parent ≥ α·ΣC_child at all hierarchical levels
-                → Conservation preserved → Bounded multi-scale evolution
+            The sequence layer can inspect declared Recursivity depth and require
+            a nearby scale stabilizer. It has no parent/child field snapshots, so
+            it cannot evaluate ``C_parent >= alpha*sum(C_child)`` or infer
+            multiscale conservation, boundedness, or fragmentation. Those are
+            trajectory-level observations with an explicit hierarchy and alpha.
 
             Parameters
             ----------
@@ -619,22 +567,21 @@ class GrammarValidator:
             - U2/U4b: TEMPORAL dimension (operator sequences in time)
             - U5: SPATIAL dimension (hierarchical nesting in structure)
 
-            Decision test case that passes U2+U4b but fails U5:
+            Sequence-policy example that passes U2+U4b but fails this U5 check:
                 [AL, REMESH(depth=3), SHA]
-                - U2: ✓ No destabilizers (trivially convergent)
+                - U2: ✓ No declared destabilizer debt
                 - U4b: ✓ REMESH not a transformer (U4b doesn't apply)
-                - U5: ✗ Deep recursivity without stabilization → fragmentation
+                - U5: ✗ Deep recursivity lacks declared scale-stabilizer coverage
 
-            Physical derivation: See UNIFIED_GRAMMAR_RULES.md § U5
-            Canonicity: STRONG (derived from nodal equation + structural coupling)
+            Scope analysis: see ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md``.
 
             References
             ----------
             - TNFR.pdf § 2.1: Nodal equation ∂EPI/∂t = νf · ΔNFR(t)
         - Problem statement: "The Pulse That Traverses Us.pdf"
             - AGENTS.md: Invariant #3 (Multi-Scale Fractality)
-            - Contract IL: Reduces |ΔNFR| at all scales
-            - Contract THOL: Autopoietic closure across hierarchical levels
+            - Contract IL: pressure-reduction role
+            - Contract THOL: autopoietic reorganization and hierarchy handling
         """
         from .recursivity import validate_recursivity_depth
 
@@ -658,9 +605,9 @@ class GrammarValidator:
         # For each deep REMESH, check for stabilizers in window
         violations = []
         for idx, depth in deep_remesh_indices:
-            # Scale stabilizers must fall within the structural-relaxation reach
-            # BIFURCATION_WINDOW on either side (the same topology-independent
-            # window as U4b; the +1 on window_end is the inclusive upper bound).
+            # Scale stabilizers must fall within the configured policy window
+            # on either side. This reuses BIFURCATION_WINDOW for deterministic
+            # bookkeeping; it is not a topology-independent physical reach.
             window_start = max(0, idx - BIFURCATION_WINDOW)
             window_end = min(len(sequence), idx + BIFURCATION_WINDOW + 1)
 
@@ -680,7 +627,8 @@ class GrammarValidator:
                     f"recursivity at position {idx} (depth={depth}) lacks scale "
                     f"stabilizer in window [{window_start}:{window_end}]. "
                     f"Deep hierarchical nesting requires {sorted(SCALE_STABILIZERS)} "
-                    f"for multi-scale coherence preservation (C_parent ≥ α·ΣC_child)"
+                    "for declared multi-scale coverage; evaluate parent/child "
+                    "coherence separately"
                 )
 
         if violations:
@@ -688,8 +636,8 @@ class GrammarValidator:
 
         return (
             True,
-            "U5 satisfied: deep recursivity has scale stabilizers "
-            "for multi-scale coherence preservation",
+            "U5 sequence coverage satisfied: deep recursivity has nearby scale "
+            "stabilizers; parent/child coherence was not measured",
         )
 
     @staticmethod
@@ -709,11 +657,10 @@ class GrammarValidator:
         **Status:** RESEARCH PHASE - Not Canonical
         **Canonicity:** MODERATE (40-55% confidence)
 
-        Physical basis: After destabilizers inject structural pressure (increase
-        |ΔNFR| and/or |∂²EPI/∂t²|), the network requires relaxation time for
-        stabilizers to restore boundedness. Applying a second destabilizer
-        too early causes nonlinear accumulation α(Δt) > 1 and risks coherence
-        fragmentation via bifurcation cascades.
+        Model premise: after declared destabilizers, a spacing surrogate may
+        flag possible accumulation before a stabilizer has acted. It is an
+        experimental warning and does not establish a relaxation time,
+        boundedness, or fragmentation for the executed graph.
 
         From post-bifurcation relaxation dynamics:
             ΔNFR(t) = ΔNFR_0 · exp(-t/τ_damp) + ΔNFR_eq
@@ -769,7 +716,7 @@ class GrammarValidator:
                 destabilizer_positions.append((i, op_name))
 
         if len(destabilizer_positions) < 2:
-            return True, "U6: not applicable (fewer than 2 destabilizers)"
+            return True, "U6-EXP: not applicable (fewer than 2 destabilizers)"
 
         # Estimate minimum operator spacing from τ_relax
         # Assumption: each operator ≈ 1 structural time unit
@@ -804,13 +751,14 @@ class GrammarValidator:
         if violations:
             return (
                 False,
-                f"U6 WARNING (experimental): {'; '.join(violations)}. "
+                f"U6-EXP WARNING (experimental): {'; '.join(violations)}. "
                 f"See docs/grammar/U6_TEMPORAL_ORDERING.md",
             )
 
         return (
             True,
-            f"U6 satisfied: destabilizers properly spaced (min {min_spacing} operators)",
+            f"U6-EXP surrogate satisfied: destabilizers spaced by the "
+            f"configured estimate (min {min_spacing} operators)",
         )
 
     def validate(
@@ -821,16 +769,21 @@ class GrammarValidator:
         k_top: float = 1.0,
         stop_on_first_error: bool = False,
     ) -> tuple[bool, list[str]]:
-        """Validate sequence using all unified canonical constraints.
+        """Validate the sequence-level grammar policies available here.
 
-        This validates pure TNFR physics:
+        This validates:
         - U1: Structural initiation & closure
-        - U2: Convergence & boundedness (+ U2-REMESH sub-rule)
-        - U3: Resonant coupling
+        - U2: finite debt/coverage policy (+ U2-REMESH sub-rule)
+        - U3: presence awareness; phase values are checked by operator preconditions
         - U4: Bifurcation dynamics
         - U5: Declared Recursivity depth and nearby scale stabilizers
         - U6-EXP: Temporal ordering (experimental; DISTINCT from canonical U6 = Φ_s
           confinement in grammar_u6.py — enabled only when experimental_u6=True)
+
+        Canonical U6 is absent because this method receives no before/after
+        structural-potential snapshots. A ``True`` result therefore means that
+        the available sequence policies passed; it is not full U1--U6 runtime
+        certification.
 
         Parameters
         ----------
@@ -856,8 +809,9 @@ class GrammarValidator:
 
         Performance
         -----------
-        Early exit (stop_on_first_error=True) can provide 10-30% speedup
-        when sequences have errors, at cost of incomplete diagnostics.
+        Early exit (stop_on_first_error=True) avoids later validation steps after
+        an error, at the cost of incomplete diagnostics. Runtime depends on the
+        sequence and which constraint fails.
         """
         messages = []
         all_valid = True
@@ -876,7 +830,7 @@ class GrammarValidator:
         if stop_on_first_error and not valid_closure:
             return False, messages
 
-        # U2: Convergence
+        # U2: finite debt and stabilizer coverage (legacy method name retained)
         valid_conv, msg_conv = self.validate_convergence(sequence)
         messages.append(f"U2: {msg_conv}")
         all_valid = all_valid and valid_conv

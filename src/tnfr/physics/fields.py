@@ -1,7 +1,7 @@
 """Structural field computations for TNFR physics.
 
 REORGANIZED (Nov 14, 2025): Canonical field implementations moved to modular
-submódules (canonical.py, extended.py) to reduce coupling and improve
+submodules (canonical.py, extended.py) to reduce coupling and improve
 maintainability. This module now acts as the public API, re-exporting all
 canonical fields and containing only research-phase utilities.
 
@@ -11,12 +11,18 @@ patterns.
 
 CANONICAL FIELDS (Read-Only Telemetry)
 ---------------------------------------
-All four structural fields have CANONICAL status as of November 12, 2025:
+All four structural fields form the canonical diagnostic interface:
 
 - Φ_s (Structural Potential): Global field from ΔNFR distribution
 - |∇φ| (Phase Gradient): Local phase desynchronization metric
 - K_φ (Phase Curvature): Geometric phase confinement indicator [now unified in Ψ = K_φ + i·J_φ]
-- ξ_C (Coherence Length): Spatial correlation scale
+- ξ_C (Coherence Length): State- and topology-dependent correlation estimate
+
+Canonical status specifies the required read-outs and their implementations.
+It does not prove that four lossy summaries reconstruct the graph state or its
+dynamics; minimal complete observability remains open. In particular, ξ_C is
+nonlinear in the sampled field and can use a spectral-gap fallback on supported
+symmetric graphs. Its provenance must be retained when interpretations differ.
 
 EXTENDED CANONICAL FIELDS (Promoted Nov 12, 2025)
 -------------------------------------------------
@@ -49,7 +55,7 @@ distribution.
 References
 ----------
 - UNIFIED_GRAMMAR_RULES.md § U6: STRUCTURAL POTENTIAL CONFINEMENT
-- docs/STRUCTURAL_FIELDS_TETRAD.md: Complete field validation
+- docs/STRUCTURAL_FIELDS_TETRAD.md: Field API and validation scope
 - docs/XI_C_CANONICAL_PROMOTION.md: ξ_C experimental validation
 - AGENTS.md § Structural Fields: Canonical tetrad documentation
 - TNFR.pdf § 2.1: Nodal equation foundation
@@ -59,6 +65,7 @@ from __future__ import annotations
 
 import math
 import time
+from numbers import Real
 from typing import Any
 
 from ..mathematics.unified_numerical import np
@@ -80,7 +87,7 @@ _ISING_2D_EXPONENT_TOLERANCE = 0.15
 # PUBLIC API: Import all canonical and extended canonical fields
 # ============================================================================
 
-# Canonical Structural Triad (Φ_s, |∇φ|, K_φ) + ξ_C experimental
+# Canonical diagnostic tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
 from .canonical import (
     CoherenceLengthEstimate,
     compute_phase_curvature,
@@ -335,6 +342,26 @@ _NFR_TOPOLOGY_ANNULAR_CONC_MAX = 1.10  # max/mean centrality below this = no
 #   distinguished center (ring/complete ~1.00; center-bearing forms >= 1.17).
 _NFR_TOPOLOGY_CENTER_TIER = 0.85  # centrality >= tier*max = a "center"
 #   (radial -> exactly 1 center; multinodal -> >= 2).
+_CANONICAL_NODAL_TOPOLOGY_ALPHA = 2.0
+
+
+def _validate_nodal_topology_alpha(alpha: float) -> float:
+    """Return the sole exponent covered by the calibrated topology labels."""
+    if isinstance(alpha, bool) or not isinstance(alpha, Real):
+        raise ValueError(
+            "canonical nodal-topology classification requires alpha=2.0"
+        )
+    try:
+        value = float(alpha)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise ValueError(
+            "canonical nodal-topology classification requires alpha=2.0"
+        ) from exc
+    if not math.isfinite(value) or value != _CANONICAL_NODAL_TOPOLOGY_ALPHA:
+        raise ValueError(
+            "canonical nodal-topology classification requires alpha=2.0"
+        )
+    return value
 
 
 def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
@@ -352,16 +379,17 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
 
     i.e. the same inverse-square kernel as :func:`compute_structural_potential`
     (grammar U6) but sourced uniformly. It therefore reads the *structural*
-    form of the region and is robust at the :math:`\Delta\mathrm{NFR}=0`
-    equilibrium, where the dynamical :math:`\Phi_s` vanishes (the relaxed
-    network is one uniform NFR).
+    form of the region even when the dynamical :math:`\Phi_s` vanishes. This
+    geometry-only read-out does not imply that every state channel is uniform
+    at a general :math:`\Delta\mathrm{NFR}=0` snapshot.
 
     The classification is emergent and threshold-light: the concentration
     ``max(c)/mean(c)`` separates the rotationally-symmetric annular form
     (:math:`\approx 1`) from center-bearing forms; among the latter, the count
     of near-maximal centers (``c >= 0.85*max``) is 1 for radial and >= 2 for
     multinodal. Both cuts are measured/validated on canonical topologies, not
-    physical constants.
+    physical constants.  ``alpha`` remains in the signature for compatibility
+    but must equal the calibrated canonical value ``2.0``.
 
     Returns
     -------
@@ -371,6 +399,7 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
         of variation), ``centrality`` (per-node geometric centrality) and
         ``n_nodes``.
     """
+    exponent = _validate_nodal_topology_alpha(alpha)
     if nx is None:
         raise RuntimeError("networkx is required for nodal-topology classification")
     nodes = list(G.nodes())
@@ -388,7 +417,9 @@ def classify_nodal_topology(G: Any, *, alpha: float = 2.0) -> dict[str, Any]:
 
     # Evaluate the documented unit-source geometry with exactly the same
     # weighted, outgoing distance kernel as the dynamical potential.
-    centrality = _compute_phi_s_exact(G, nodes, {node: 1.0 for node in nodes}, alpha)
+    centrality = _compute_phi_s_exact(
+        G, nodes, {node: 1.0 for node in nodes}, exponent
+    )
     vals = np.asarray([centrality[i] for i in nodes], dtype=float)
     mean = float(vals.mean())
     vmax = float(vals.max())
@@ -908,24 +939,24 @@ def compute_tensor_invariants(G: Any) -> dict[str, Any]:
 
 
 def compute_unified_telemetry(G: Any) -> dict[str, Any]:
-    """Compute complete unified field telemetry suite.
+    """Compute the unified field telemetry suite.
 
     Provides comprehensive telemetry combining:
-    - Canonical Structural Triad (Φ_s, |∇φ|, K_φ) + ξ_C correlation analysis
+    - Canonical diagnostic tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
     - Extended canonical (J_φ, J_ΔNFR)
     - Unified complex field (Ψ = K_φ + i·J_φ)
     - Emergent fields (χ, S, C)
     - Tensor invariants (ε, Q, conservation)
     - Emergent pulse (conservative rhythm: ω_k = √λ_k, beats, vibration energy)
 
-    The telemetry is *dual-face*: the canonical/extended blocks are the
-    dissipative read-out (the tetrad and coherence that relax to the
-    ΔNFR = 0 attractor), while the ``pulse`` block is the conservative twin
-    -- the resonant spectrum the substrate vibrates at, which does not
-    saturate.
+    The canonical/extended blocks are graph-state diagnostics. The ``pulse``
+    block belongs to the auxiliary graph-wave model. Their joint presence in
+    this dictionary is an API composition and does not identify an engine
+    trajectory with the conservative model or make the tetrad a complete state
+    observer.
 
     Args:
-        G: TNFR network with complete state data
+        G: TNFR network with the state attributes required by each diagnostic
 
     Returns:
         dict containing all unified field metrics for production telemetry
@@ -936,10 +967,10 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
         energy = np.mean(telemetry["tensor_invariants"]["energy_density"])
 
     References:
-        - Complete mathematical framework in MATHEMATICAL_UNIFICATION_EXECUTIVE_SUMMARY.md
-        - Production integration roadmap in COMPREHENSIVE_AUDIT_COMPLETION_2025.md
+        - Structural-field scope in docs/STRUCTURAL_FIELDS_TETRAD.md
+        - Coherence-length provenance in docs/XI_C_CANONICAL_PROMOTION.md
     """
-    # Canonical Structural Triad telemetry (validated post-recalibration)
+    # Canonical diagnostic tetrad telemetry.
     canonical_telemetry = compute_structural_telemetry(G)
 
     # Extended canonical fields
@@ -961,8 +992,7 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     except Exception:
         conservation = {}
 
-    # Emergent symplectic substrate (the geometry the dynamics generates;
-    # canonical source: symplectic_substrate.py)
+    # Auxiliary symplectic substrate initialized from extracted graph fields.
     try:
         from .symplectic_substrate import (
             background_potential,
@@ -981,11 +1011,10 @@ def compute_unified_telemetry(G: Any) -> dict[str, Any]:
     except Exception:
         symplectic_substrate = {}
 
-    # Emergent pulse -- the conservative-face rhythm read-out (the resonant
+    # Auxiliary graph-wave pulse -- the resonant
     # spectrum omega_k = sqrt(lambda_k), the dominant beat and the
-    # self-similar signature). The dissipative coherence telemetry saturates
-    # at the dNFR = 0 attractor; the pulse is its conservative twin, computed
-    # closed-form from the structural spectrum (structural_diffusion.py).
+    # self-similar signature), computed from the structural spectrum
+    # (structural_diffusion.py). It is not an inferred engine trajectory.
     try:
         from .structural_diffusion import compute_emergent_pulse
 
@@ -1035,7 +1064,7 @@ def analyze_optimization_potential(G: Any) -> dict[str, Any]:
         - field_analysis: Unified field characteristics
         - mathematical_insights: Structural properties for optimization
         - optimization_recommendations: Specific optimization strategies
-        - predicted_improvements: Expected performance gains
+        - predicted_improvements: Compatibility keys, ``None`` until measured
     """
     if not _SELF_OPTIMIZING_AVAILABLE:
         return {
@@ -1044,6 +1073,7 @@ def analyze_optimization_potential(G: Any) -> dict[str, Any]:
             "mathematical_insights": {},
             "optimization_recommendations": [],
             "predicted_improvements": {},
+            "performance_evidence": "not_measured",
         }
 
     # Get unified field telemetry
@@ -1094,27 +1124,11 @@ def analyze_optimization_potential(G: Any) -> dict[str, Any]:
         "mathematical_insights": mathematical_insights,
         "optimization_recommendations": field_optimization_hints,
         "predicted_improvements": {
-            "field_correlation_speedup": (
-                abs(correlation) * defaults.CORRELATION_SPEEDUP_FACTOR
-                if abs(correlation) > defaults.MODERATE_CORRELATION_THRESHOLD
-                else defaults.BASELINE_FACTOR
-            ),
-            "chirality_memory_reduction": min(
-                chirality_magnitude * defaults.CHIRALITY_MEMORY_FACTOR,
-                defaults.MAX_MEMORY_REDUCTION,
-            ),
-            "energy_computation_factor": (
-                max(
-                    defaults.MIN_ENERGY_FACTOR,
-                    min(
-                        avg_energy * defaults.ENERGY_SCALING_FACTOR,
-                        defaults.MAX_ENERGY_FACTOR,
-                    ),
-                )
-                if len(energy_density) > 0
-                else defaults.BASELINE_FACTOR
-            ),
+            "field_correlation_speedup": None,
+            "chirality_memory_reduction": None,
+            "energy_computation_factor": None,
         },
+        "performance_evidence": "not_measured",
     }
 
 
@@ -1178,87 +1192,63 @@ def recommend_field_optimization_strategy(
 
 def auto_optimize_field_computation(G: Any, **kwargs) -> dict[str, Any]:
     """
-    Automatically optimize field computation using learned strategies.
+    Analyze field computation and execute the available advisory path.
 
-    This function applies the self-optimizing engine to field computations,
-    learning from experience and automatically selecting the best strategy.
+    Recommendations are advisory. A strategy is not reported as applied unless a
+    distinct measured execution path exists.
 
     Args:
         G: TNFR network graph
         **kwargs: Additional parameters for optimization
 
     Returns:
-        Results of optimized field computation with performance metrics
+        Field telemetry, advisory details, and explicit measurement provenance
     """
     if not _SELF_OPTIMIZING_AVAILABLE:
-        # Fallback to standard computation
         return {
             "result": compute_unified_telemetry(G),
             "optimization_applied": False,
             "strategy_used": "fallback_standard",
-            "performance_improvement": 1.0,
+            "performance_improvement": None,
+            "performance_evidence": "not_measured",
             "error": "Self-optimizing engine not available",
         }
 
     start_time = time.perf_counter()
-
-    # Create and configure engine
-    engine = TNFRSelfOptimizingEngine(
-        optimization_objective=OptimizationObjective.BALANCE_ALL
-    )
+    del kwargs
 
     try:
-        # Get optimization recommendations
-        recommendations = recommend_field_optimization_strategy(G, "unified_telemetry")
-
-        # Record baseline performance
-        baseline_start = time.perf_counter()
-        baseline_result = compute_unified_telemetry(G)  # noqa: F841
-        baseline_time = time.perf_counter() - baseline_start
-
-        # Apply automatic optimization
-        optimization_result = engine.optimize_automatically(
-            G, "unified_field_computation", **kwargs
+        recommendations = recommend_field_optimization_strategy(
+            G, "unified_telemetry"
         )
-
-        # Compute optimized result
-        optimized_start = time.perf_counter()
-        optimized_result = compute_unified_telemetry(
-            G
-        )  # This would be optimized in practice
-        optimized_time = time.perf_counter() - optimized_start
-
-        # Calculate performance metrics
-        speedup_factor = baseline_time / max(
-            optimized_time, 0.001
-        )  # Avoid division by zero
-
-        total_time = time.perf_counter() - start_time
+        result = recommendations.get("unified_field_analysis")
+        if not result:
+            result = compute_unified_telemetry(G)
 
         return {
-            "result": optimized_result,
-            "optimization_applied": True,
-            "strategy_used": optimization_result.get("strategy_used", "unknown"),
-            "performance_improvement": speedup_factor,
-            "baseline_time": baseline_time,
-            "optimized_time": optimized_time,
-            "total_time": total_time,
+            "result": result,
+            "optimization_applied": False,
+            "strategy_used": "advisory_only",
+            "performance_improvement": None,
+            "performance_evidence": "not_measured",
+            "total_time": time.perf_counter() - start_time,
             "recommendations": recommendations,
-            "optimization_details": optimization_result,
+            "optimization_details": {
+                "message": "No alternate field-computation kernel is wired",
+                "learning_updated": False,
+            },
         }
 
     except Exception as e:
-        # Fallback with error information
-        fallback_result = compute_unified_telemetry(G)
         return {
-            "result": fallback_result,
+            "result": compute_unified_telemetry(G),
             "optimization_applied": False,
             "strategy_used": "fallback_error",
-            "performance_improvement": 1.0,
+            "performance_improvement": None,
+            "performance_evidence": "not_measured",
             "error": str(e),
             "total_time": time.perf_counter() - start_time,
         }
-
 
 # Import extended canonical fields (NEWLY PROMOTED Nov 12, 2025)
 # as fallback for development/testing environments

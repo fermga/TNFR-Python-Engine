@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 import sys
 
@@ -47,10 +48,20 @@ class TestFiniteScalingStudy:
             assert point.gap > 0.0
             assert point.lambda1 >= point.lambda0
             assert point.observed_u6_ratio == pytest.approx(0.75, abs=1e-10)
+            assert point.potential_magnitude_ratio == pytest.approx(1.5, abs=1e-10)
+            assert point.potential_magnitude_ratio_to_u6_drift_scale == pytest.approx(
+                0.75,
+                abs=1e-10,
+            )
+            assert not point.potential_magnitude_within_warning
+            assert not point.u6_drift_assessed
             assert point.metadata["finite_scope"] == "Y4_finite_scaling_only"
+            assert not point.metadata["u6_drift_assessed"]
         for group in report.grouped_scaling.values():
             assert group["positive_at_all_sizes"]
             assert group["scope"] == "finite_group_scaling_not_continuum_limit"
+            assert not group["u6_drift_assessed"]
+            assert group["target_potential_magnitude_ratio"] == pytest.approx(1.5)
             assert len(group["n_values"]) == 2
             assert len(group["mean_gaps"]) == 2
 
@@ -97,6 +108,37 @@ class TestFiniteScalingStudy:
             run_finite_scaling_study(n_values=(1,))
         with pytest.raises(ValueError):
             run_finite_scaling_study(target_u6_ratios=(-1.0,))
+
+    @pytest.mark.parametrize(
+        "kwargs",
+        [
+            {"n_values": (2.5,)},
+            {"n_values": (True,)},
+            {"seeds": (False,)},
+            {"target_u6_ratios": (math.nan,)},
+            {"target_u6_ratios": (math.inf,)},
+            {"target_u6_ratios": (True,)},
+            {"phase_spread": math.nan},
+            {"tolerance": 0.0},
+        ],
+    )
+    def test_scaling_rejects_silent_coercions_and_nonfinite_controls(self, kwargs):
+        with pytest.raises((TypeError, ValueError)):
+            run_finite_scaling_study(**kwargs)
+
+    def test_grid_scaling_uses_realized_node_count(self):
+        report = run_finite_scaling_study(
+            n_values=(8, 15),
+            topologies=("grid",),
+            seeds=(2,),
+            target_u6_ratios=(0.25,),
+        )
+
+        assert [point.n for point in report.points] == [8, 15]
+        assert [point.actual_n_nodes for point in report.points] == [4, 9]
+        assert [point.metadata["requested_n"] for point in report.points] == [8, 15]
+        group = next(iter(report.grouped_scaling.values()))
+        assert group["n_values"] == [4, 9]
 
     def test_imports_from_package_root(self):
         from tnfr import yang_mills

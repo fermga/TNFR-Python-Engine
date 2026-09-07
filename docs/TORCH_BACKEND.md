@@ -21,11 +21,13 @@ The backend uses the Torch installation and devices available in the caller's
 environment. Backend agreement is covered by
 [`tests/mathematics/test_backends.py`](../tests/mathematics/test_backends.py).
 
-TNFR does not currently ship
-`tnfr.engines.computation.gpu_engine.TNFRGPUEngine` or
-`examples/pytorch_cuda_demo.py`. Earlier versions of this document described
-those absent interfaces and unverified CUDA speedup ranges. Those claims are
-retired.
+TNFR does not currently ship the historical
+tnfr.engines.computation.gpu_engine.TNFRGPUEngine class. The
+[pytorch_cuda_demo.py](../examples/10_applications/pytorch_cuda_demo.py)
+filename is retained as a compatibility and provenance check: it verifies
+Torch operations against NumPy and reports the selected device. The canonical
+graph-pressure adapter currently reports a CPU realization. The example does
+not assert a CUDA speedup.
 
 A future GPU acceleration claim must include:
 

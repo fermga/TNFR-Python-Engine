@@ -257,13 +257,14 @@ def diagnose_resonance_readiness(G: TNFRGraph, node: Any) -> dict[str, Any]:
     """
     from ...alias import get_attr
     from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+    from ...constants.canonical import DELTA_PHI_MAX
     from ...utils.numeric import angle_diff
 
     # Get thresholds
     min_epi = float(G.graph.get("RA_MIN_SOURCE_EPI", 0.1))
     max_dissonance = float(G.graph.get("RA_MAX_DISSONANCE", 0.5))
     min_vf = float(G.graph.get("RA_MIN_VF", 0.01))
-    max_phase_diff = float(G.graph.get("RA_MAX_PHASE_DIFF", 1.0))
+    max_phase_diff = float(G.graph.get("RA_MAX_PHASE_DIFF", DELTA_PHI_MAX))
 
     # Get current state
     epi = abs(float(get_attr(G.nodes[node], ALIAS_EPI, 0.0)))

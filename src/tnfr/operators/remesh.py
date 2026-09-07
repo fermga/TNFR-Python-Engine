@@ -1,4 +1,4 @@
-"""Canonical REMESH operator: Recursive pattern propagation preserving structural coherence.
+"""Canonical REMESH operator: delayed, multi-scale EPI mixing.
 
 REMESH (Recursivity) - Glyph: REMESH
 ====================================
@@ -9,9 +9,9 @@ From the nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
 
 REMESH implements: **EPI(t) ↔ EPI(t-τ)** (operational fractality)
 
-REMESH enables patterns to echo across temporal and spatial scales while maintaining
-coherence. "What persists at one scale can be rewritten at another, with coherence
-propagating structurally, not imposed." - El pulso que nos atraviesa
+REMESH enables patterns to echo across temporal and spatial scales. Identity and
+coherence are contracts to monitor on the executed transition; the operator name
+alone does not certify either quantity.
 
 Canonical Physical Behavior
 ----------------------------
@@ -19,82 +19,88 @@ REMESH acts on the nodal equation by creating temporal/spatial coupling:
 
 1. **Memory Activation**: References EPI(t-τ) from structural history
 2. **Pattern Recognition**: Identifies similar EPIs across network (structural_similarity)
-3. **Coherent Propagation**: Propagates patterns maintaining identity (StructuralIdentity)
-4. **Scale Invariance**: Preserves structural properties across reorganizations
+3. **Identity Tracking**: Records whether propagated patterns match a declared
+   ``StructuralIdentity``
+4. **Multi-scale Operation**: Connects delayed form and topology operations
 
 Effect on nodal components:
-- EPI: Mixed with historical states (EPI_new = (1-α)·EPI_now + α·EPI_past)
-- νf: Can increase during memory activation (reactivation of dormant patterns)
-- ΔNFR: Implicitly calculated from reorganization (ΔNFR = ΔEPI/νf from nodal equation)
-- Phase: Preserved through StructuralIdentity tracking
+- EPI: Mixed with two delayed snapshots
+  (``(1-α)^2 EPI_now + α(1-α) EPI_local + α EPI_global`` before clipping)
+- νf: Not written by ``apply_network_remesh``; explicit identity-propagation
+  helpers can mix it and report that separate operation
+- ΔNFR: Not inferred by dividing ΔEPI by νf; downstream dynamics may recompute
+  pressure from the resulting graph state
+- Phase: Not written by delayed EPI mixing; it remains part of identity checks
 
 Operator Relationships (from Nodal Equation Physics)
 -----------------------------------------------------
-All relationships emerge naturally from how operators affect EPI, νf, ΔNFR, and phase:
+The following are registered composition motifs. They describe intended operator
+roles and are not, by themselves, complete grammar-valid words:
 
 ### REMESH Hierarchical (Central Control → Periphery)
-**Physics**: Controlled replication from center maintaining coherence descendente
+**Physics**: Controlled replication from center with descending-scale telemetry
 
 1. **IL (Coherence)**: Reduces |ΔNFR| → stabilizes each recursion level
-   - Relationship: Estabilización multinivel (coherence extended)
+   - Relationship: Multi-level stabilization (coherence extended)
    - Dynamics: REMESH propagates pattern, IL consolidates at each level
    - Sequence: REMESH → IL (recursive propagation → multi-level stabilization)
 
-2. **VAL (Expansion)**: Increases dim(EPI) → structural expansion
-   - Relationship: Expansión estructural coherente (fractal growth)
-   - Dynamics: REMESH replicates, VAL expands each replica maintaining form
-   - Sequence: VAL → REMESH (expand → replicate expanded form)
+2. **VAL (Expansion)**: Raises νf → increased reorganization capacity
+   - Relationship: Coherent structural expansion (fractal growth)
+   - Dynamics: VAL raises capacity; REMESH then mixes delayed form
+   - Sequence: VAL → REMESH (raise capacity → mix delayed form)
 
 3. **SHA (Silence)**: νf → 0 → latent memory
-   - Relationship: Estabilización de red latente (structural memory)
+   - Relationship: Latent-network stabilization (structural memory)
    - Dynamics: SHA freezes pattern (∂EPI/∂t → 0), REMESH propagates frozen state
    - Sequence: SHA → REMESH (freeze → propagate frozen memory)
    - **Critical**: NO functional redundancy - uses existing Silence operator
 
-4. **NUL (Contraction)**: Reduces dim(EPI) → compression
-   - Relationship: Compresión estructural coherente (fractal distillation)
-   - Dynamics: Complementary to VAL, reduces dimensionality maintaining identity
-   - Sequence: NUL → REMESH (compress → replicate compressed essence)
+4. **NUL (Contraction)**: Reduces νf and densifies ΔNFR
+   - Relationship: Coherent structural compression (fractal distillation)
+   - Dynamics: Complementary to VAL on capacity; REMESH then mixes delayed form
+   - Sequence: NUL → REMESH (reduce capacity → mix delayed form)
    - **Note**: Hierarchical simplification preserving core structure
 
 ### REMESH Rhizomatic (Decentralized Propagation)
 **Physics**: Propagation without fixed center, by local resonance
 
 1. **OZ (Dissonance)**: Increases |ΔNFR| → exploration
-   - Relationship: Bifurcación distribuida (distributed bifurcation)
+   - Relationship: Distributed bifurcation
    - Dynamics: REMESH + OZ creates decentralized local variations
    - Sequence: OZ → REMESH (destabilize → replicate variations)
 
 2. **UM (Coupling)**: φᵢ → φⱼ → structural connection
-   - Relationship: Acoplamiento multiescala (multi-scale coupling)
+   - Relationship: Multi-scale coupling
    - Dynamics: REMESH propagates, UM connects replicas without hierarchy
    - Sequence: REMESH → UM (propagate → connect peers)
 
 3. **THOL (Self-organization)**: Creates sub-EPIs → emergence
-   - Relationship: Auto-organización recursiva (recursive self-organization)
+   - Relationship: Recursive self-organization
    - Dynamics: REMESH + THOL generates emergent structures without center
    - Sequence: THOL → REMESH (emerge sub-EPIs → replicate emergent forms)
 
 ### REMESH Fractal Harmonic (Perfect Self-Similarity)
-**Physics**: Scale-symmetric replication maintaining perfect auto-similitud
+**Physics**: Scale-symmetric replication with self-similarity diagnostics
 
 1. **RA (Resonance)**: Amplifies coherently → propagation
-   - Relationship: Resonancia multiescala (multi-scale resonance)
-   - Dynamics: REMESH replicates, RA amplifies with perfect symmetry
-   - Sequence: REMESH → RA (replicate → amplify symmetrically)
+   - Relationship: Multi-scale resonance
+   - Dynamics: REMESH mixes delayed form, then RA propagates over an admissible
+     phase-compatible coupling; symmetry is a measured property of the state
+   - Sequence: REMESH → RA (mix delayed form → propagate resonantly)
 
 2. **NAV (Transition)**: Activates latent EPI → regime shift
-   - Relationship: Transición entre attractores fractales
+   - Relationship: Transition between fractal attractors
    - Dynamics: REMESH navigates between self-similar attractor states
    - Sequence: NAV → REMESH (transition → replicate new regime)
 
 3. **AL (Emission)**: Creates EPI from vacuum → generation
-   - Relationship: Emisión fractal (fractal emission)
+   - Relationship: Fractal emission
    - Dynamics: REMESH + AL generates self-similar patterns from origin
    - Sequence: AL → REMESH (emit seed → replicate fractally)
 
 4. **EN (Reception)**: Updates EPI from network → reception
-   - Relationship: Recepción multi-escala simétrica (symmetric multi-scale reception)
+   - Relationship: Symmetric multi-scale reception
    - Dynamics: EN captures patterns from multiple sources → REMESH replicates symmetrically
    - Sequence: EN → REMESH (receive multi-scale → propagate symmetrically)
    - **Note**: Pre-recursion operator that feeds REMESH
@@ -104,8 +110,8 @@ All relationships emerge naturally from how operators affect EPI, νf, ΔNFR, an
 **ZHIR (Mutation)**: Present in canonical relationships but NOT in types
 - **Physical Reason**: ZHIR is a TRANSFORMER that emerges POST-recursion
 - **Dynamics**: REMESH propagates → local variations + destabilizers → ZHIR transforms
-- **Grammar**: Requires IL previo + recent destabilizer (U4b)
-- **Relationship**: Mutación replicativa (replication facilitates mutation)
+- **Grammar**: Requires prior IL + a recent destabilizer (U4b)
+- **Relationship**: Replicative mutation
 - **Conclusion**: Operates AFTER REMESH completes, not during
 
 Grammar Implications from Physical Analysis
@@ -121,44 +127,45 @@ REMESH's physical behavior affects unified grammar rules (UNIFIED_GRAMMAR_RULES.
 - **Rule**: Sequences can begin with REMESH
 
 **U1b (Closure)**: REMESH is a CLOSURE operator
-- Distributes structure across scales leaving system in recursive attractor
-- Creates self-sustaining multi-scale coherence
+- Marks an operational boundary after distributing structure across scales
+- Does not by itself establish an attractor or self-sustaining coherence
 - **Rule**: Sequences can end with REMESH
 
-### U2: CONVERGENCE & BOUNDEDNESS
-**Physical Basis**: REMESH mixing with historical states can amplify or dampen ΔNFR
+### U2: FINITE DEBT AND COVERAGE POLICY
+**Scope**: REMESH mixing can raise or lower a current-state norm depending on
+the delayed snapshots and clipping.
 
 **Requirement**: REMESH + destabilizers → must include stabilizers
 - Example: REMESH + VAL (expansion) → requires IL (coherence)
-- Prevents: Unbounded growth through recursive expansion
+- Purpose: Records stabilizer coverage for recursive expansion risk
 - **Rule**: If REMESH precedes/follows VAL, OZ, or ZHIR → require IL or THOL
 
-**Integration Convergence**: ∫ νf · ΔNFR dt must converge
-- REMESH temporal mixing: (1-α)·EPI_now + α·EPI_past
-- Without stabilizers: Can create positive feedback loop
-- **Rule**: Stabilizers ensure convergence of recursive reorganization
+**Trajectory boundary**: finite-word coverage does not prove convergence of
+``∫νf·ΔNFR dt``. Such a result needs the delayed-state recurrence, gains,
+clipping, pressure law, time horizon, and a norm.
 
 ### U3: RESONANT COUPLING
 **Physical Basis**: REMESH propagates patterns - must verify phase compatibility
 
-**Requirement**: REMESH with UM or RA → verify |φᵢ - φⱼ| ≤ Δφ_max
+**Requirement**: REMESH with UM or RA → verify |wrap(φᵢ - φⱼ)| ≤ Δφ_max
 - REMESH creates replicas that must be phase-compatible for resonance
 - Antiphase replicas → destructive interference
 - **Rule**: StructuralIdentity.matches() includes phase verification
 - **Implementation**: Phase pattern captured and validated during propagation
 
 ### U4: BIFURCATION DYNAMICS
-**Physical Basis**: REMESH can trigger bifurcation through recursive amplification
+**Scope**: REMESH can transport an existing perturbation across scales; OZ and
+ZHIR retain their declared trigger roles.
 
-**U4a (Triggers Need Handlers)**: REMESH + destabilizers → need handlers
+**U4a (Triggers Need Handlers)**: OZ or ZHIR in a REMESH motif → need handlers
 - REMESH → THOL sequence: Recursion enables self-organization
 - Must handle emergent sub-EPIs from recursive bifurcation
 - **Rule**: REMESH + OZ or ZHIR → require THOL or IL handlers
 
-**U4b (Transformers Need Context)**: ZHIR requires REMESH context
+**U4b (Transformers Need Context)**: REMESH does not supply ZHIR's context
 - REMESH creates variations across scales
-- ZHIR then transforms local variations (post-recursion)
-- **Rule**: ZHIR after REMESH → requires prior IL + recent destabilizer
+- ZHIR may then transform local variations, but REMESH is not a destabilizer
+- **Rule**: ZHIR after REMESH still requires prior IL + a recent OZ/ZHIR/VAL
 
 Centralized Flow - No Redundancy
 ---------------------------------
@@ -187,16 +194,18 @@ This implementation maintains a single, centralized flow:
 Key Capabilities
 ----------------
 - Structural memory: Pattern recognition across network nodes
-- Identity preservation: Fractal lineage tracking across reorganizations
+- Identity monitoring: Fractal lineage tracking across reorganizations
 - Coherence conservation: Validating structural fidelity during remeshing
 - Multi-modal recursivity: Hierarchical, rhizomatic, and fractal harmonic modes
-- Grammar-compliant: All operations respect unified grammar rules (U1-U5)
+- Grammar integration: Callers can apply the shared U1--U5 sequence policies;
+  canonical U6 remains a separate before/after field observation
 """
 
 from __future__ import annotations
 
 import hashlib
 import heapq
+import math
 import random
 from collections import deque
 from collections.abc import Hashable, Iterable, Mapping, MutableMapping, Sequence
@@ -204,6 +213,7 @@ from dataclasses import dataclass, field
 from functools import cache
 from io import StringIO
 from itertools import combinations
+from numbers import Integral, Real
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from types import ModuleType
@@ -218,7 +228,12 @@ from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
 from ..rng import make_rng, resolve_graph_seed, validate_seed
 from ..types import RemeshMeta
-from ..utils import cached_import, edge_version_update, kahan_sum_nd
+from ..utils import angle_diff, cached_import, edge_version_update, kahan_sum_nd
+from .factor_contracts import (
+    canonical_glyph_factor_defaults,
+    validate_glyph_factor,
+    validate_glyph_factors,
+)
 
 CommunityGraph: TypeAlias = Any
 NetworkxModule: TypeAlias = ModuleType
@@ -347,11 +362,9 @@ class StructuralIdentity:
             node_phase = _as_float(get_attr(node_data, ALIAS_THETA, None))
             if node_phase is None:
                 return False
-            # Phase comparison with circular wrap-around
-            import math
-
-            phase_diff = abs(node_phase - self.phase_pattern)
-            phase_diff = min(phase_diff, 2 * math.pi - phase_diff)
+            # Phase identity is defined on the circle, independently of the
+            # selected numeric representative.
+            phase_diff = abs(angle_diff(node_phase, self.phase_pattern))
             if phase_diff > tol:
                 return False
 
@@ -619,15 +632,16 @@ def compute_structural_signature(
 ) -> Any:
     """Compute multidimensional structural signature of a node.
 
-    The signature captures the node's complete structural identity including:
+    The signature is an operational seven-feature identity proxy containing:
     - EPI: coherence magnitude
     - νf: structural frequency
     - θ: phase
     - ΔNFR: reorganization gradient
     - Topological properties: degree, local clustering
 
-    This signature enables REMESH's structural memory capability - recognizing
-    the same pattern across different nodes and scales.
+    This lossy signature enables REMESH's structural-memory heuristic for
+    recognizing similar patterns across nodes and scales. It does not reconstruct
+    the complete node, neighbourhood, or graph state.
 
     Parameters
     ----------
@@ -1160,6 +1174,40 @@ def _as_float(value: Any, default: float = 0.0) -> float:
         return default
 
 
+def _finite_remesh_scalar(value: Any, label: str) -> float:
+    """Materialize one finite real used by an atomic REMESH proposal."""
+
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise TNFRValueError(f"{label} must be a finite real scalar")
+    try:
+        result = float(value)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(f"{label} must be a finite real scalar") from exc
+    if not math.isfinite(result):
+        raise TNFRValueError(f"{label} must be finite")
+    return result
+
+
+def _finite_remesh_epi(value: Any, label: str) -> float:
+    """Require the signed scalar chart used by the REMESH affine recurrence."""
+
+    from ._epi_domain import require_real_scalar_epi
+
+    return require_real_scalar_epi(value, operator="Recursivity", label=label)
+
+
+def _positive_remesh_delay(G: CommunityGraph, key: str) -> int:
+    """Read a positive integral REMESH delay without lossy coercion."""
+
+    raw = get_param(G, key)
+    if isinstance(raw, bool) or not isinstance(raw, Integral):
+        raise TNFRValueError(f"{key} must be a positive integer")
+    value = int(raw)
+    if value <= 0:
+        raise TNFRValueError(f"{key} must be a positive integer")
+    return value
+
+
 def _ordered_edge(u: Hashable, v: Hashable) -> RemeshEdge:
     """Return a deterministic ordering for an undirected edge."""
 
@@ -1187,21 +1235,30 @@ def _get_networkx_modules() -> NetworkxModules:
 
 
 def _remesh_alpha_info(G: CommunityGraph) -> tuple[float, str]:
-    """Return ``(alpha, source)`` with explicit precedence."""
+    """Return a validated ``(alpha, source)`` with explicit precedence."""
     if bool(G.graph.get("REMESH_ALPHA_HARD", REMESH_DEFAULTS["REMESH_ALPHA_HARD"])):
-        val = _as_float(
-            G.graph.get("REMESH_ALPHA", REMESH_DEFAULTS["REMESH_ALPHA"]),
-            float(REMESH_DEFAULTS["REMESH_ALPHA"]),
+        value = G.graph.get("REMESH_ALPHA", REMESH_DEFAULTS["REMESH_ALPHA"])
+        return (
+            validate_glyph_factor("REMESH_alpha", value),
+            "REMESH_ALPHA",
         )
-        return val, "REMESH_ALPHA"
-    gf = G.graph.get("GLYPH_FACTORS", DEFAULTS.get("GLYPH_FACTORS", {}))
-    if "REMESH_alpha" in gf:
-        return _as_float(gf["REMESH_alpha"]), "GLYPH_FACTORS.REMESH_alpha"
+
+    raw_factors = G.graph.get("GLYPH_FACTORS")
+    if raw_factors is not None:
+        factors = validate_glyph_factors(raw_factors, glyph="REMESH")
+        if "REMESH_alpha" in factors:
+            return factors["REMESH_alpha"], "GLYPH_FACTORS.REMESH_alpha"
+
     if "REMESH_ALPHA" in G.graph:
-        return _as_float(G.graph["REMESH_ALPHA"]), "REMESH_ALPHA"
+        return (
+            validate_glyph_factor("REMESH_alpha", G.graph["REMESH_ALPHA"]),
+            "REMESH_ALPHA",
+        )
+
+    default = canonical_glyph_factor_defaults()["REMESH_alpha"]
     return (
-        float(REMESH_DEFAULTS["REMESH_ALPHA"]),
-        "REMESH_DEFAULTS.REMESH_ALPHA",
+        validate_glyph_factor("REMESH_alpha", default),
+        "GLYPH_FACTORS.REMESH_alpha(default)",
     )
 
 
@@ -1249,43 +1306,73 @@ def apply_network_remesh(G: CommunityGraph) -> None:
     from ..glyph_history import current_step_idx, ensure_history
 
     nx, _ = _get_networkx_modules()
-    tau_g = int(get_param(G, "REMESH_TAU_GLOBAL"))
-    tau_l = int(get_param(G, "REMESH_TAU_LOCAL"))
+    tau_g = _positive_remesh_delay(G, "REMESH_TAU_GLOBAL")
+    tau_l = _positive_remesh_delay(G, "REMESH_TAU_LOCAL")
     tau_req = max(tau_g, tau_l)
     alpha, alpha_src = _remesh_alpha_info(G)
-    G.graph["_REMESH_ALPHA_SRC"] = alpha_src
     hist = G.graph.get("_epi_hist", deque())
-    if len(hist) < tau_req + 1:
+    try:
+        history_length = len(hist)
+    except (OverflowError, TypeError) as exc:
+        raise TNFRValueError("_epi_hist must be a replayable indexed history") from exc
+    if history_length < tau_req + 1:
         return
-
-    past_g = hist[-(tau_g + 1)]
-    past_l = hist[-(tau_l + 1)]
+    try:
+        past_g = hist[-(tau_g + 1)]
+        past_l = hist[-(tau_l + 1)]
+    except (IndexError, KeyError, TypeError) as exc:
+        raise TNFRValueError("_epi_hist must support indexed delayed access") from exc
 
     topo_hash = _snapshot_topology(G, nx)
     epi_mean_before, epi_checksum_before = _snapshot_epi(G)
 
     # Get EPI bounds for structural preservation
-    epi_min = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
-    epi_max = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
+    epi_min = _finite_remesh_scalar(
+        G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)), "EPI_MIN"
+    )
+    epi_max = _finite_remesh_scalar(
+        G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)), "EPI_MAX"
+    )
+    if epi_min > epi_max:
+        raise TNFRValueError("EPI_MIN must not exceed EPI_MAX")
     clip_mode_str = str(G.graph.get("CLIP_MODE", "hard"))
     if clip_mode_str not in ("hard", "soft"):
         clip_mode_str = "hard"
     clip_mode = clip_mode_str  # type: ignore[assignment]
 
+    proposals: list[tuple[MutableMapping[str, Any], float]] = []
     for n, nd in G.nodes(data=True):
-        epi_now = _as_float(get_attr(nd, ALIAS_EPI, 0.0))
-        epi_old_l = _as_float(
-            past_l.get(n) if isinstance(past_l, Mapping) else None, epi_now
+        epi_now = _finite_remesh_epi(
+            get_attr(nd, ALIAS_EPI, 0.0, strict=True, conv=lambda value: value),
+            f"node {n!r} EPI",
         )
-        epi_old_g = _as_float(
-            past_g.get(n) if isinstance(past_g, Mapping) else None, epi_now
-        )
+        old_l_raw = past_l.get(n, epi_now) if isinstance(past_l, Mapping) else epi_now
+        old_g_raw = past_g.get(n, epi_now) if isinstance(past_g, Mapping) else epi_now
+        epi_old_l = _finite_remesh_epi(old_l_raw, f"node {n!r} local delayed EPI")
+        epi_old_g = _finite_remesh_epi(old_g_raw, f"node {n!r} global delayed EPI")
         mixed = (1 - alpha) * epi_now + alpha * epi_old_l
         mixed = (1 - alpha) * mixed + alpha * epi_old_g
+        mixed = _finite_remesh_scalar(mixed, f"node {n!r} REMESH proposal")
 
         # Apply structural boundary preservation to prevent overflow
-        mixed_clipped = structural_clip(mixed, lo=epi_min, hi=epi_max, mode=clip_mode)
+        mixed_clipped = _finite_remesh_scalar(
+            structural_clip(
+                mixed,
+                lo=epi_min,
+                hi=epi_max,
+                mode=clip_mode,
+                record_stats=False,
+            ),
+            f"node {n!r} bounded REMESH proposal",
+        )
+        proposals.append((nd, mixed_clipped))
+
+    # Commit only after every node and delayed sample has produced a valid
+    # finite proposal. This makes validation failure network-state atomic.
+    for nd, mixed_clipped in proposals:
         set_attr(nd, ALIAS_EPI, mixed_clipped)
+
+    G.graph["_REMESH_ALPHA_SRC"] = alpha_src
 
     epi_mean_after, epi_checksum_after = _snapshot_epi(G)
 

@@ -1,244 +1,178 @@
-# TNFR Directed Non-Normal Dynamics (R9)
+# TNFR Directed and Non-Normal Dynamics (R9)
 
-**Status**: normal/non-normal classification and transient amplification
-**DERIVED** (Kreiss) + **MEASURED** (exact circulant normality; transient gain and
-pseudospectral bound); the U2 generalization to non-normal transients is
-**OPEN / CONJECTURAL** (`NT-P09`). SciPy is optional — the Schur certificate is
-gated; the core is numpy-only.
-**Modules**: [src/tnfr/physics/directed_diffusion.py](../src/tnfr/physics/directed_diffusion.py),
-[src/tnfr/physics/spectral_projectors.py](../src/tnfr/physics/spectral_projectors.py) (extended) ·
-**Tests**: [tests/physics/test_directed_diffusion.py](../tests/physics/test_directed_diffusion.py) ·
-**Benchmark**: [benchmarks/directed_nonnormal_dynamics.py](../benchmarks/directed_nonnormal_dynamics.py) ·
-**Depends on**: C1 (outgoing `L_rw`), C4 (normal-only projectors).
+**Status:** exact finite-dimensional results are available for the fixed linear
+pure-EPI channel; sampled gains and benchmark correlations remain finite-family
+evidence. The canonical directed U2 metric, nonlinear operator extension,
+changing-topology theory, and universal U6 trajectory bound remain open.
 
-## 1. Why non-normality matters
+**Modules:**
+[directed_diffusion.py](../src/tnfr/physics/directed_diffusion.py),
+[transient_u2.py](../src/tnfr/physics/transient_u2.py),
+[nonnormal_prediction.py](../src/tnfr/physics/nonnormal_prediction.py),
+[heterogeneous_vf.py](../src/tnfr/physics/heterogeneous_vf.py), and
+[structural_diffusion.py](../src/tnfr/physics/structural_diffusion.py).
 
-The structural-diffusion operator `L_rw = I − D_out⁻¹ W` is symmetric (hence
-**normal**) only for undirected or vertex-transitive graphs. A general **directed**
-graph makes `L_rw` non-normal, and the naive spectral reading fails:
+## 1. Declared transport model
 
-- `eigh` is invalid — the operator is not symmetric;
-- a **stable spectrum** does not exclude **transient amplification**;
-- right eigenvectors are not orthogonal, so `Q Qᴴ` is **not** the spectral
-  projector (C4's `spectral_clusters` correctly raises `NonNormalOperatorError`
-  and points here).
+For finite nonnegative outgoing conductance, the EPI-only pressure is
 
-This module handles exactly the operators C4 refuses, with certificates that use
-`eigvals` / Schur, never `eigh`.
+$$p=\Delta\mathrm{NFR}_{\mathrm{epi}}=-L_{\mathrm{rw}}x,
+\qquad L_{\mathrm{rw}}=I-P,$$
 
-## 2. Two regimes (MEASURED)
+where positive rows of $P$ are normalized by outgoing strength and a
+zero-strength row is absorbing. The fixed scalar-capacity evolution is
 
-| digraph | normal | `α(−L)` | transient gain | Kreiss bound | amplifies |
-|---------|--------|---------|----------------|--------------|-----------|
-| circulant `C7{1,2}` (R2 residue) | **yes** | 0.000 | 1.000 | 1.000 | no |
-| circulant `C8{1,3}` | **yes** | 0.000 | 1.000 | 1.000 | no |
-| feed-forward chain + self-loops | **no** | −0.000 | 1.987 | 1.665 | **yes** |
-| asymmetric directed graph | **no** | −0.000 | 1.032 | 1.016 | **yes** |
+$$\dot x=-\nu_f L_{\mathrm{rw}}x.$$
 
-**Directed circulants are the benign case.** The R2 residue digraphs are
-circulant, hence normal (`commutator = 0`), so their diffusion is a contraction:
-transient gain `= 1`, no growth. The R2/C4 spectral machinery applies to them
-unchanged.
+This is one channel of the canonical pressure, on a fixed graph. It does not
+cover phase, frequency, topology, nonlinear operator gains, or graph mutation.
+Even for symmetric conductance, the raw random-walk matrix is generally only
+*similar* to a symmetric normalized Laplacian; Euclidean normality is a
+separate property.
 
-**General digraphs amplify.** The feed-forward and asymmetric graphs have a
-**stable** spectrum (`α(−L) ≤ 0`, asymptotically decaying) yet a transient gain
-**> 1** — `‖e^{−tL}‖₂` grows before it decays. Non-normality, not instability, is
-the source.
+## 2. Normality, spectrum, and metric
 
-## 3. The certificates (DERIVED)
+A non-normal generator can have a nonpositive spectral abscissa while its
+Euclidean semigroup norm grows transiently. Consequently:
 
-Added to [spectral_projectors.py](../src/tnfr/physics/spectral_projectors.py):
+- `eigh` is used only for symmetric/Hermitian representations;
+- right eigenvectors are not converted into projectors as $QQ^*$;
+- Schur/Riesz methods or direct semigroup and resolvent diagnostics are used;
+- the Kreiss resolvent quantity is a lower bound on peak semigroup gain, not an
+  equality or an infinite-window measurement.
 
-- `spectral_abscissa(A) = max_i Re λ_i(A)` — asymptotic growth rate
-  (`α(−L) ≤ 0` ⇒ stable), via `eigvals`.
-- `matrix_exponential(A)` — numpy-only scaling-and-squaring, so the transient
-  measures need no SciPy.
-- `transient_gain(A) = max_t ‖e^{tA}‖₂` — peak amplification; `≤ 1` for a normal
-  stable `A`, possibly `> 1` for a non-normal one.
-- `pseudospectral_bound(A) = sup_{Re z>0} Re(z)·‖(zI − A)⁻¹‖₂` — the Kreiss lower
-  bound. The **Kreiss matrix theorem** gives `K(A) ≤ sup_t ‖e^{tA}‖`, so a value
-  `> 1` **proves** transient growth from the resolvent alone (verified:
-  `Kreiss ≤ transient gain` in every non-normal case).
-- `schur_residual(A) = ‖A − Q T Qᴴ‖₂` — the correct unitary factorisation for
-  non-normal operators; **SciPy-gated** (`scipy.linalg.schur`), raising a clear
-  error when SciPy is absent so the numpy core never mishandles it silently.
+Directed circulants are normal and form a benign special case. General
+directed graphs need not be normal.
 
-`certify_directed_dynamics` bundles these into a `DirectedDynamicsCertificate`
-for the generator `−L_rw`.
+For a strongly connected row-stochastic $P$ with stationary distribution
+$\pi$, Jensen's inequality gives
 
-## 4. U2 scope — asymptotic only (OPEN)
+$$\|Pf\|_{2,\pi}\leq\|f\|_{2,\pi},\qquad
+\|f\|_{2,\pi}^2=\sum_i\pi_i f_i^2.$$
 
-The convergence reading `r_c = ν_f λ₂` describes **asymptotic** relaxation. For a
-non-normal generator the positive transient gain means `C(t)` can **dip before it
-relaxes**, a temporal risk for U6 monitoring. The U2 integral convergence
-`∫ ν_f ΔNFR dt < ∞` still holds asymptotically (the spectrum is stable), but:
+Because $e^{-tL}=e^{-t}\sum_{k\geq0}t^kP^k/k!$, the diffusion semigroup is a
+contraction in $L^2(\pi)$. This exact weighted result does not make the raw
+Euclidean norm canonical for U2. The APIs expose both metrics.
 
-> No generalized U2 bound is claimed for non-normal operators. Deriving how the
-> transient enters the integral convergence — and its interaction with U6
-> potential confinement — is left **open** (`NT-P09`).
+## 3. Exact pressure-transient criterion
 
-## 4b. Metric layer and U2 semantics (N03)
+For fixed $L=L_{\mathrm{rw}}$,
 
-The transient gain is **metric-dependent**, so no physical U2 conclusion may be
-drawn without an explicit norm. The N03 layer
-([directed_diffusion.py](../src/tnfr/physics/directed_diffusion.py)) exposes two
-norms and both integral readings, and **does not** decide U2.
+$$p=-Lx\quad\Longrightarrow\quad \dot p=-Lp.$$
 
-**The Euclidean transient is a metric artefact (DERIVED + MEASURED).** Let
-`P = D_out⁻¹ W` (row-stochastic) with stationary distribution `π` (`πᵀP = πᵀ`,
-`π > 0` for a strongly connected digraph). In the weighted inner product
-`⟨f, g⟩_π = Σ π_i f_i g_i`, Jensen gives
+When the graph has one consensus mode, $\operatorname{range}(L)$ is the
+non-consensus pressure space $\{p:\pi^Tp=0\}$. Let $V$ be an orthonormal basis
+of that space and $L_{\mathrm{sub}}=V^TLV$. Every vector in this restricted
+space is a reachable pressure. In the declared Euclidean metric, the
+logarithmic norm
 
-$$\lVert P f\rVert_{2,\pi}^2 = \sum_i \pi_i\Big(\sum_j P_{ij} f_j\Big)^2
-\le \sum_i \pi_i \sum_j P_{ij} f_j^2
-= \sum_j f_j^2 \underbrace{\sum_i \pi_i P_{ij}}_{=\,\pi_j}
-= \lVert f\rVert_{2,\pi}^2,$$
+$$\mu_2(-L_{\mathrm{sub}})=
+\lambda_{\max}\!\left(\frac{-L_{\mathrm{sub}}-L_{\mathrm{sub}}^T}{2}\right)$$
 
-so `‖P‖_{2,π} ≤ 1`. Since `e^{−tL} = e^{−t}\sum_k \tfrac{t^k}{k!} P^k` is a convex
-combination of `π`-contractions, `‖e^{−tL}‖_{2,π} ≤ 1`: **the diffusion semigroup
-is a contraction in `L²(π)`**. Measured (`stationary_transient_gain`,
-`is_stationary_contraction`): for every non-normal strongly connected digraph the
-Euclidean gain exceeds 1 (e.g. `1.03`, `1.02`) while the **stationary gain is
-exactly `1.0`**. The Euclidean transient amplification is a coordinate effect of
-the non-normal basis, not a `π`-weighted energy growth.
+has an exact qualitative meaning:
 
-**The U2 integral has two readings (report §16.2).** `u2_integral_readings`
-distinguishes the **signed** displacement `‖x(∞) − x(0)‖ = ‖∫₀^∞ ẋ\,dt‖`
-(reorganizations may cancel) from the **total structural variation**
-`∫₀^∞ ‖ẋ(s)‖\,ds` (no cancellation); always `net ≤ total`. Which one U2
-canonically means — "existence of the EPI limit" (net) vs "total pressure
-absorbed" (total) — is **not decided here**.
+- $\mu_2\leq0$ implies contraction for every time;
+- $\mu_2>0$ implies that some reachable pressure direction grows immediately.
 
-**The metric decision stays OPEN.** Three outcomes remain possible (report
-§16.3): (i) the transient is real in the canonical TNFR per-node energy (the
-unweighted / Euclidean norm) and must enter U2/U6; (ii) it is a coordinate effect
-and the canonical metric is `L²(π)`; (iii) both norms are useful and are exposed
-with distinct semantics. **U2 in [AGENTS.md](../AGENTS.md) §6 is not modified**
-until the gate (defined quantity, chosen metric, EPI-channel proof, normal +
-non-normal certificate, temporal U6 bound) is met.
+A negative spectral abscissa gives asymptotic decay and cannot exclude the
+second case. A fixed weighted counterexample in the test suite disproves the
+older conjecture that every random-walk digraph contracts in unweighted
+Euclidean pressure energy.
 
-## 4c. Structural-time theorem — νf as a clock (N04)
+`nonnormal_prediction.py` applies this theorem to a predeclared deterministic
+family. Its peak gains, rank correlations, and calibration/holdout accuracies
+are measurements of that finite family. The sign theorem itself is an exact
+matrix result and uses no fitted threshold.
 
-For a scalar common frequency `ν_f(t) ≥ 0`, the linear EPI transport
-`ẋ = −ν_f(t) L x` on a fixed graph has the **exact** solution
+## 4. U2 readings
 
-$$x(t) = e^{-s(t)\,L}\,x_0,\qquad s(t) = \int_0^t \nu_f(\tau)\,d\tau,$$
+The implementation distinguishes two finite-window quantities:
 
-because `L` is constant and all `ν_f(τ)L` commute. So `ν_f` is a **clock change**
-(a mobility, not a mass): it rescales the speed along a **fixed** state-space
-trajectory. Verified (`clock_change_residual`): an RK4 integrator of the
-time-varying ODE converges to `e^{−s(t)L}x_0` (`~3e-7`, shrinking with
-refinement).
+$$\left\|\int_0^T\dot x\,dt\right\|
+=\|x(T)-x(0)\|,
+\qquad
+\int_0^T\|\dot x\|\,dt.$$
 
-**Total reorganization is clock-invariant.** With the substitution `s = s(t)`,
-`ds = ν_f dt`,
+The first allows cancellation; the second is total variation, and the triangle
+inequality gives `net <= total`. Neither a sampled finite window nor a stable
+full-state spectrum alone proves an infinite-horizon U2 theorem. On the
+non-consensus subspace, a declared exponential envelope
 
-$$\int_0^\infty \nu_f(t)\,\lVert L\,e^{-s(t)L} Q x_0\rVert\,dt
-= \int_0^\infty \lVert L\,e^{-sL} Q x_0\rVert\,ds,$$
+$$\|e^{-sL}Q\|\leq M e^{-\omega s}$$
 
-so the accumulated structural variation depends on the **trajectory**, not the
-speed (`reorganization_time_invariance_residual`, `~3e-6`). Here `Q = I − 1πᵀ` is
-the projection out of the consensus mode; since `L·1 = 0` and `πᵀL = 0`,
-`LQ = QL = L` and `Q` commutes with the semigroup.
+yields the sufficient bound
 
-**Finite reorganization (the linear-EPI-channel U2 form).** On the non-consensus
-subspace `‖e^{−sL}Q‖ ≤ M e^{−ωs}` with `M = ` `sustained_gain` (`= 1` normal,
-`> 1` non-normal — the transient cost) and `ω = ` `nonconsensus_abscissa` (the
-spectral gap). Hence
+$$J\leq \frac{M\|LQ\|\|x_0\|}{\omega}.$$
 
-$$J = \int_0^\infty \lVert L\,e^{-sL} Q x_0\rVert\,ds \;\le\; \frac{M\,\lVert LQ\rVert\,\lVert x_0\rVert}{\omega},$$
+The bound is restricted to the fixed linear EPI channel and its stated norm.
+Choosing the canonical directed U2 metric and extending the result to the full
+four-channel dynamics remain open.
 
-`certify_structural_time` verifies `J ≤ bound` (measured: `J = 1.70 ≤ 2.20`). This
-is the exact, EPI-channel, scalar-frequency form of U2's `∫ ν_f ΔNFR dt < ∞`: the
-integral converges, and the non-normal cost is the finite factor `M`. It is
-**restricted** to the linear EPI channel with a **scalar** `ν_f` on a fixed graph;
-heterogeneous nodal `ν_f` (a diagonal `D_{ν_f}(t)`) is **not** a clock change and
-is out of scope (N13, `NT-P09` heterogeneous).
+## 5. U6 scope
 
-## 4d. Transient U2/U6 certificate — the ‖Q‖ artifact (N05)
+Canonical U6 compares structural-potential fields from two declared graph
+states using the centralized $\pi/2$ drift policy. The sampled quantity
 
-The N04 ambient gain `M = sup_s ‖e^{−sL} Q‖₂ > 1` for non-normal digraphs looks
-like transient amplification. **It is not.** Restrict the dynamics to the
-`L`-invariant non-consensus subspace `{y : πᵀy = 0}` with an **orthonormal** basis
-`V` (`VᵀV = I`) — i.e. measure the **Euclidean per-node energy** of the
-reorganizing component, `L_sub = Vᵀ L V`. Then:
+$$\max_{s,i}|\Phi_s(s)_i|$$
 
-- **No transient in the per-node energy.** The symmetric part
-  `½(L_sub + L_subᵀ)` is **positive definite** (`symmetric_part_min_eig > 0`), so
-  `‖e^{−s L_sub}‖₂ ≤ 1` for all `s`: the non-consensus semigroup is a genuine
-  **contraction**, `peak_gain = 1` (measured exactly for normal and non-normal),
-  and the Kreiss lower bound satisfies `kreiss ≤ peak_gain = 1`.
-- **The naive `>1` is the oblique projection.** `Q = I − 1πᵀ` is an **oblique**
-  projection when `π` is non-uniform, so `‖Q‖₂ > 1`. Measured:
-  `ambient_oblique_gain = ‖Q‖₂` **exactly** (the sup is at `s = 0`). The ambient
-  Euclidean `M > 1` is a **coordinate/projection artifact**, not dynamical growth.
+is an absolute magnitude, not a U6 drift. `TransientU2Certificate` therefore
+reports it as `peak_structural_potential_magnitude`, exposes its operator-norm
+bound, and sets `u6_drift_assessed=False`. The old
+`peak_structural_potential`, `structural_potential_bound`, and `u6_confined`
+names remain compatibility aliases with explicit legacy semantics.
 
-This **reinforces N03**: in *both* the stationary `L²(π)` norm (Jensen) *and* the
-Euclidean per-node energy, directed diffusion does **not** amplify the
-non-consensus component. Consequently the transient does **not** threaten U2
-convergence (`J ≤ M‖LQ‖‖x₀‖/ω` finite, N04) nor U6 confinement (`Φ_s(s) = −B L
-e^{−sL} Q x₀` with the canonical inverse-square `B`, `max_{s,i}|Φ_s(s)[i]| < π/2`
-over the full trajectory for a bounded perturbation). `certify_transient_u2`
-bundles all of these readings.
+`finite_schedule_readout` can evaluate mean potential drift from the initial
+state at declared segment endpoints. It still does not cover values between
+endpoints or an unobserved tail.
 
-**Evidence and status.** `symmetric_part_min_eig > 0` was measured on `2·10⁵`
-random strongly-connected digraphs *and* extreme in-hub constructions (worst
-`≈ +9·10⁻³`); no counterexample. The **general** positive-definiteness of
-`½(L_sub + L_subᵀ)` for every random-walk digraph is stated as a **CONJECTURE**
-(strong numerical evidence, no proof). It does **not** decide the canonical U2
-metric (`NT-P09b/c` OPEN) and does **not** modify U2/U6 in
-[AGENTS.md](../AGENTS.md).
+## 6. Structural time and heterogeneous capacity
 
-## 4e. Heterogeneous `ν_f` — where the clock change stops (N13)
+For a common scalar schedule $\nu_f(t)\geq0$ on a fixed graph,
 
-N04 needs a **common** `ν_f(t)`: then all generators `ν_f(τ)L` commute and
-`ẋ = −ν_f(t) L x` integrates to the clock change `x(t) = e^{−s(t)L}x₀`. A
-**heterogeneous** nodal frequency `D_{ν_f}(t) = diag(ν_f₁, …, ν_fₙ)` breaks this
-([heterogeneous_vf.py](../src/tnfr/physics/heterogeneous_vf.py)):
-`ẋ = −D_{ν_f}(t) L x` has generators `D_{ν_f}(t)L` that **do not commute**, so no
-clock change exists.
+$$x(t)=e^{-s(t)L}x_0,\qquad s(t)=\int_0^t\nu_f(\tau)\,d\tau.$$
 
-- **No clock change (DERIVED + MEASURED).** The commutator `‖[D₁L, D₂L]‖` is `0`
-  for a common schedule (both are multiples of `L`) but `> 0` for a heterogeneous
-  one (measured `0.88`, `1.43`). The scalar-time ansatz `e^{−s̄(t)L}x₀` with
-  `s̄ = ∫ mean_i ν_f_i` is exact (`residual ≈ 0`) for a common schedule and
-  **fails** for a heterogeneous one (`residual ≈ 0.09–0.13`, ` > 10×` larger) — the
-  N04 theorem does **not** extend.
-- **Frozen stability (MEASURED).** A fixed positive `D_{ν_f}` keeps `−D_{ν_f}L`
-  stable: `L·1 = 0 ⇒ D_{ν_f}L·1 = 0` (consensus preserved) and the spectral
-  abscissa is `≤ 0`. The non-consensus transient gain stays `= 1` on the tested
-  graphs (no heterogeneity-induced amplification observed).
-- **Uniform stability (OPEN).** Whether the time-varying / switched flow is
-  **uniformly** stable for all schedules is not settled here — switched systems can
-  destabilise even when each frozen mode is stable. `NT-P09` heterogeneous stays
-  **OPEN**; U2/U6 are **not** modified.
+This is an exact clock change because all generators are scalar multiples of
+one fixed $L$. Total variation expressed in structural time is invariant under
+that reparameterization, subject to the stated integral and decay hypotheses.
 
-## 5. Claim ledger
+For heterogeneous capacity $D_{\nu_f}(t)$, generators
+$D_{\nu_f}(t)L$ generally do not commute, so one scalar clock does not describe
+the trajectory. Several useful results survive:
 
-| Claim | Basis | Status |
-|-------|-------|--------|
-| directed circulants are normal | commutator `= 0` | **MEASURED** (exact) |
-| circulant diffusion has unit transient gain | normal contraction | **DERIVED** + MEASURED |
-| non-normal stable digraphs amplify transiently (Euclidean) | Kreiss theorem | **DERIVED** + MEASURED (`gain > 1`) |
-| `pseudospectral_bound ≤ transient_gain` | Kreiss matrix theorem | **DERIVED** + MEASURED |
-| Schur residual `= 0` | unitary factorisation | **MEASURED** (SciPy-gated) |
-| diffusion contracts in `L²(π)` (stationary gain `≤ 1`) | Jensen (N03) | **DERIVED** + MEASURED |
-| the Euclidean transient is metric-dependent | N03 metric layer | **MEASURED** (eucl `> 1`, stat `= 1`) |
-| `net ≤ total` U2 integral readings | triangle inequality | **DERIVED** + MEASURED |
-| `x(t) = e^{−s(t)L}x₀`, `s = ∫ν_f` (scalar-`ν_f` clock change) | commuting flow (N04) | **DERIVED** + MEASURED (RK4 `~3e-7`) |
-| total reorganization is clock-invariant | change of variables (N04) | **DERIVED** + MEASURED (`~3e-6`) |
-| `J ≤ M‖LQ‖‖x₀‖/ω` (finite reorganization) | exponential decay on `Q` (N04) | **DERIVED** + MEASURED |
-| non-consensus dynamics contracts in the Euclidean per-node energy (`peak = 1`) | `½(L_sub+L_subᵀ) ≻ 0` (N05) | **MEASURED** (2·10⁵ + in-hub, no counterexample) |
-| the ambient `M>1` is exactly the oblique factor `‖Q‖` | `Q` oblique, sup at `s=0` (N05) | **MEASURED** (`ambient = ‖Q‖`) |
-| `½(L_sub+L_subᵀ) ≻ 0` for every random-walk digraph | — | **CONJECTURAL** (no proof) |
-| scalar clock-change theorem does not extend to heterogeneous `ν_f` | `‖[D₁L,D₂L]‖ > 0` (N13) | **DERIVED** + MEASURED (ansatz residual large) |
-| a frozen positive `D_{ν_f}` keeps `−D_{ν_f}L` stable | consensus preserved, `α ≤ 0` (N13) | **MEASURED** |
-| uniform stability of the time-varying heterogeneous flow | — | **OPEN** (`NT-P09` heterogeneous) |
-| which norm/integral is the canonical U2 | — | **OPEN** (`NT-P09b/c`; gate not met) |
-| generalized U2 bound for non-normal transients | — | **OPEN / CONJECTURAL** (`NT-P09`) |
+1. A frozen nonnegative generator $-D_{\nu_f}L$ is Metzler with zero row sums,
+   so its semigroup preserves the scalar convex hull.
+2. For fixed positive capacity on a strongly connected graph, the invariant
+   measure is proportional to $\pi_i/\nu_{f,i}$.
+3. On fixed symmetric conductance $B=D-W$, the Dirichlet energy
+   $E_D=x^TBx/2$ obeys
+   $$\dot E_D=-(Bx)^TM(t)(Bx)\leq0,
+   \qquad M_{ii}(t)=\nu_{f,i}(t)/d_i,$$
+   for finite nonnegative time-varying capacity. Uniformly positive mobility
+   plus a divergent mobility clock gives a sufficient consensus bound.
+4. For switching among symmetric fixed-node regimes, the exact common-metric
+   theorem applies only when their normalized diagonal metrics agree up to a
+   positive scalar. Without that condition the provided certificate reports
+   that the theorem is unavailable; it does not infer instability.
 
-**Bottom line.** R9 separates the normal (directed circulant) regime, where the
-existing spectral machinery is exact, from the general non-normal regime, where a
-stable spectrum coexists with transient amplification. It certifies the latter
-with Kreiss / Schur measures — never `eigh` — and keeps the U2 reading explicitly
-asymptotic, leaving the transient's role in the convergence integral open.
+These statements do not create a single conserved mean for arbitrary changing
+capacity ratios, and they do not cover changing node sets.
+
+## 7. Claim ledger
+
+| Claim | Status |
+|---|---|
+| Directed circulants are normal | Exact algebraic property; numerically checked |
+| General non-normal stable generators may amplify in Euclidean norm | Exact possibility; finite witnesses measured |
+| Diffusion contracts in stationary $L^2(\pi)$ | Derived by Jensen |
+| $p=-Lx$ implies $\dot p=-Lp$ | Exact for fixed linear pure-EPI flow |
+| Sign of $\mu_2(-L_{\mathrm{sub}})$ classifies possible Euclidean pressure gain | Exact finite-dimensional theorem |
+| Spectral abscissa alone classifies transient pressure gain | False; counterexamples retained |
+| Every random-walk digraph contracts in restricted Euclidean pressure energy | False; weighted counterexample retained |
+| Scalar $\nu_f(t)$ is a clock change | Exact on a fixed graph |
+| General heterogeneous $\nu_f(t)$ is one scalar clock | False when generators do not commute |
+| Fixed-symmetric Dirichlet energy decreases under nonnegative heterogeneous capacity | Exact instantaneous identity |
+| Absolute $|\Phi_s|$ magnitude is U6 drift | False; compatibility aliases are marked |
+| Canonical directed U2 metric and full nonlinear bound | Open |
+| Universal U6 interval/tail safety from finite samples | Open |
+
+No result here changes U1-U6 or resolves an external open mathematical problem.

@@ -98,7 +98,7 @@ def main() -> None:
 
     # ---- Energy table (auxiliary) ------------------------------------
     print("\n" + "-" * 76)
-    print("E_TNFR[sigma; gauge]  (canonical Lyapunov energy)")
+    print("E_TNFR[sigma; gauge]  (structural snapshot-energy candidate)")
     print("-" * 76)
     header = "  sigma   " + "  ".join(f"{g:>14s}" for g in cert.gauges)
     print(header)

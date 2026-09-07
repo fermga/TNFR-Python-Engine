@@ -6,8 +6,8 @@ Tabulates two quantities across a Gaussian-width grid:
   computed both from the classical zero side and via the Weil-Guinand
   explicit formula using the canonical TNFR P14 prime-ladder
   Hamiltonian.
-* The canonical TNFR Lyapunov energy E_TNFR[sigma] of a structural
-  test state derived from h_sigma on the prime-ladder graph.
+* The nonnegative TNFR structural snapshot-energy candidate E_TNFR[sigma]
+  of a test state derived from h_sigma on the prime-ladder graph.
 
 It reports the ratio alpha(sigma) = W[sigma] / E_TNFR[sigma].  If
 alpha(sigma) > 0 across the grid, this is the operational TNFR-native

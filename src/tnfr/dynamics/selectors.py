@@ -33,7 +33,14 @@ from ..validation import (
     record_grammar_violation,
     soft_grammar_filters,
 )
-from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_SI
+from .aliases import (
+    ALIAS_D2EPI,
+    ALIAS_DNFR,
+    ALIAS_DSI,
+    ALIAS_EPI,
+    ALIAS_SI,
+    ALIAS_VF,
+)
 
 # ---------------------------------------------------------------------------
 # Score override thresholds for glyph selector
@@ -658,10 +665,92 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
         if g is None:
             continue
 
+        mutation_abstention: dict[str, Any] | None = None
+        try:
+            glyph_enum = g if isinstance(g, Glyph) else Glyph(str(g))
+        except ValueError:
+            glyph_enum = None
+        if glyph_enum is Glyph.ZHIR:
+            from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
+            from ..physics.mutation_trigger import certify_mutation_trigger
+            from ..operators._mutation_gate import validate_mutation_runtime_gate
+            from ..operators.preconditions import OperatorPreconditionError
+
+            node_data = G.nodes[n]
+            certificate = certify_mutation_trigger(
+                current_epi=get_attr(node_data, ALIAS_EPI, 0.0),
+                nu_f=get_attr(node_data, ALIAS_VF, 0.0),
+                delta_nfr=get_attr(node_data, ALIAS_DNFR, 0.0),
+                xi=G.graph.get(
+                    "ZHIR_THRESHOLD_XI", ZHIR_THRESHOLD_XI_CANONICAL
+                ),
+                epi_time_history=node_data.get("epi_time_history"),
+                epi_history=node_data.get("epi_history"),
+                legacy_epi_history=node_data.get("_epi_history"),
+            )
+            reason: str | None = None
+            if not certificate.capacity_active:
+                reason = "inactive_structural_capacity"
+            elif not certificate.evidence_valid:
+                reason = certificate.reason or "invalid_mutation_evidence"
+            elif not certificate.threshold_gate_satisfied:
+                reason = "observed_threshold_not_crossed"
+            else:
+                try:
+                    validate_mutation_runtime_gate(node_data, G.graph)
+                except OperatorPreconditionError as exc:
+                    # A finite positive capacity can still sit below an
+                    # explicitly configured operational floor. Invalid
+                    # configuration is not an admissible abstention and must
+                    # remain visible to the caller.
+                    if "configured minimum=" not in exc.reason:
+                        raise
+                    reason = "below_configured_capacity_floor"
+
+            if reason is not None:
+                requested = glyph_enum.value
+                g = Glyph.IL
+                mutation_abstention = {
+                    "node": n,
+                    "time": G.graph.get("_t", 0.0),
+                    "requested_glyph": requested,
+                    "applied_glyph": (
+                        g.value if isinstance(g, Glyph) else str(g)
+                    ),
+                    "reason": reason,
+                    "observed_depi_dt": certificate.observed_depi_dt,
+                    "xi": certificate.xi,
+                    "evidence_source": certificate.source,
+                    "time_basis": certificate.time_basis,
+                    "physical_time_resolved": (
+                        certificate.physical_time_resolved
+                    ),
+                }
+
         if use_canon:
             g = enforce_canonical_grammar(G, n, g)
+        if mutation_abstention is not None:
+            mutation_abstention["applied_glyph"] = (
+                g.value if isinstance(g, Glyph) else str(g)
+            )
+
+        abstentions: list[dict[str, Any]] | None = None
+        if mutation_abstention is not None:
+            raw_abstentions = hist.get("mutation_abstentions")
+            if raw_abstentions is None:
+                abstentions = []
+            elif isinstance(raw_abstentions, list):
+                abstentions = raw_abstentions
+            else:
+                raise TypeError("history['mutation_abstentions'] must be a list")
 
         apply_glyph(G, n, g, window=window)
+
+        if mutation_abstention is not None and abstentions is not None:
+            if "mutation_abstentions" not in hist:
+                hist["mutation_abstentions"] = abstentions
+            abstentions.append(mutation_abstention)
+            del abstentions[: -max(1, window)]
 
         if n in forced_al_nodes:
             h_al[n] = 0

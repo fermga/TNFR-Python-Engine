@@ -1,44 +1,26 @@
-"""
-benchmarks/chiral_involution.py
+"""Compare two sign-reversing involutions without identifying their domains.
 
-Camino 6 -- is the additive inverse of Z the SAME thing as the antiparticle?
+The benchmark verifies two standard finite statements:
 
-emergent_rationals.py (Camino 4) read the additive inverse -n as a consequence
-of bipartite coupling symmetry: spec(A) = -spec(A). The emergent-particles layer
-(tnfr.physics.emergent_particles) reads sign(W) of the winding number as
-structural chirality -- matter (W>0) vs. antimatter (W<0). This harness asks
-whether those are two readings of ONE structural operation: the chiral
-(sublattice) Z_2 involution of a bipartite TNFR graph.
+* on a bipartite graph, ``Gamma = diag(+1 on X, -1 on Y)`` anticommutes
+  with the adjacency matrix, hence its spectrum is symmetric under
+  ``lambda -> -lambda``;
+* on a declared phase loop, pointwise phase negation sends winding ``W`` to
+  ``-W`` and applying it twice recovers the original phase field.
 
-THE CLAIM (one involution, two representations):
-  A bipartite graph 2-colours into sublattices X, Y. Define the chirality
-  operator  Gamma = diag(+1 on X, -1 on Y). Then:
-    * NUMBER reading  -- Gamma ANTICOMMUTES with the coupling matrix A:
-        Gamma A Gamma = -A      (equivalently {Gamma, A} = 0).
-      Hence if A v = lambda v then A (Gamma v) = -lambda (Gamma v): every mode n
-      has a partner -n, so spec(A) = -spec(A). The additive inverse -n (N -> Z)
-      is forced by the coupling, not injected.
-    * PARTICLE reading -- the same conjugation acts on the phase field as the
-      charge conjugation  C : phi -> -phi, which sends the integer winding
-      W = (1/2pi) closed-loop circulation  to  -W. sign(W) flips:
-        matter (W>0)  <->  antimatter (W<0).
-  Both Gamma (on A) and C (on phi) are involutions (g^2 = id): one abstract Z_2,
-  realised on the coupling operator and on the phase field. And both inverses
-  share one neutral element / vacuum:
-        n + (-n) = 0          (additive identity of Z)
-        W + (-W) = 0          (a matter-antimatter pair has zero net topological
-                               charge -> annihilates to the scalar |W|=0 vacuum).
+Both transformations generate groups isomorphic to Z_2 and both reverse a
+signed observable. They act on different spaces, so these facts do not make
+them the same transformation or identify arithmetic inverses with physical
+charge conjugation. Likewise, ``W + (-W) = 0`` is an algebraic identity; this
+script does not combine two defects or simulate annihilation.
 
-CONTRAST WITH CAMINO 5 (the two different Z_2 of a bipartite graph):
-  equivariance_wall.py used graph AUTOMORPHISMS -- permutation matrices P that
-  COMMUTE with A (P A P^T = +A); the commuting symmetry builds the equivariance
-  WALL (a symmetric state cannot enter Fix(G)^perp). The chiral Gamma here is a
-  diagonal sign matrix, NOT a permutation: it ANTICOMMUTES (Gamma A Gamma = -A)
-  and is not an element of Aut(G). The commuting Z_2 makes the wall; the
-  anticommuting Z_2 makes the additive inverse / the antiparticle. Same graph,
-  two distinct Z_2 actions.
+CONTRAST WITH THE EQUIVARIANCE BENCHMARK:
+  graph-automorphism permutation matrices commute with adjacency, whereas the
+  diagonal sublattice matrix here anticommutes with it. These are distinct
+  representations and should not be merged merely because both square to the
+  identity.
 
-ENGINE (known theorems -- the independent ground truth, all pre-TNFR):
+GROUND TRUTH (standard graph and loop identities):
   - A graph is bipartite iff it is 2-colourable iff there is a diagonal sign
     matrix Gamma with Gamma A Gamma = -A (chiral / sublattice symmetry of
     bipartite tight-binding / SSH Hamiltonians). Then spec(A) = -spec(A).
@@ -46,29 +28,14 @@ ENGINE (known theorems -- the independent ground truth, all pre-TNFR):
     C : phi -> -phi  =>  W -> -W (definitional: circulation reverses sign).
   - Gamma^2 = I and C^2 = id: each generates a Z_2.
 
-TNFR reading: the canonical discrete dNFR / phase-curvature operator is the
-emergent random-walk Laplacian L_rw = I - D^-1 W (symmetric twin L_sym); A is the
-coupling matrix and D - A its imposed combinatorial cousin. The chirality here is
-carried by A's bipartite sublattice sign flip (operator-independent). The
-additive inverse from bipartite coupling
-is emergent_rationals.py piece (1); sign(W) = chirality / matter-vs-antimatter is
-the emergent_particles classification. This harness shows they coincide: one
-chiral Z_2.
-
-HONEST SCOPE:
-  This is a structural ANALOGY made exact at the level of Z_2 group actions on a
-  finite graph: the additive inverse and the charge conjugate are the same
-  involution in two representations. It does NOT claim TNFR derives the CPT
-  theorem, the physical existence of antimatter, or the Standard Model -- those
-  carry analytic and field-theoretic content far beyond a sublattice sign flip.
-  It also does not make arithmetic primality emergent (that is Camino 1/2). R
-  (continuum) and pi remain assumed substrate; this
-  is Z, not R. Nothing here touches G4 = RH, Navier-Stokes, or Yang-Mills.
+TNFR scope: adjacency is a graph-coupling read-out and winding is a closed-loop
+phase read-out. Their sign symmetries provide a comparison, not a derivation of
+integers, particles, CPT or the Standard Model.
 
 Run:
     python benchmarks/chiral_involution.py
 
-Status: RESEARCH (chiral-involution falsifier; Camino 6 of the unification map).
+Status: RESEARCH (negative identification result and finite symmetry checks).
 """
 
 from __future__ import annotations
@@ -87,11 +54,7 @@ sys.path.insert(
 from composition_arithmetic import adj_spectrum, automorphism_matrices  # noqa: E402
 from emergent_rationals import integer_spectrum, is_pm_symmetric  # noqa: E402
 
-from tnfr.physics.emergent_particles import (  # noqa: E402
-    classify_particle,
-    winding_number,
-    winding_ring,
-)
+from tnfr.physics.emergent_particles import winding_number, winding_ring  # noqa: E402
 
 TOL = 1e-9
 _TWO_PI = 2.0 * np.pi
@@ -108,7 +71,7 @@ def adjacency(G, nodes):
 def chirality_operator(G, nodes):
     """Gamma = diag(+1 on sublattice X, -1 on sublattice Y) from the bipartite
     2-colouring. Raises nx.NetworkXError if G is not bipartite (then no chiral
-    involution exists -- the additive inverse / antiparticle has no clean form)."""
+    involution exists -- spectral sign pairing then has no such certificate)."""
     color = nx.algorithms.bipartite.color(G)
     signs = np.array([1.0 if color[v] == 0 else -1.0 for v in nodes])
     return np.diag(signs)
@@ -125,18 +88,18 @@ def anticommutator_norm(M, P):
 
 
 def conjugate_phase_node(phi):
-    """Charge conjugation C : phi -> -phi, re-wrapped to [0, 2pi)."""
+    """Phase negation C: phi -> -phi, re-wrapped to [0, 2pi)."""
     y = (-phi) % _TWO_PI
     return float(y)
 
 
 # --------------------------------------------------------------------------- #
-# (1) chiral involution -> additive inverse (Z)
+# (1) chiral involution -> spectral sign pairing
 # --------------------------------------------------------------------------- #
-def test_chiral_gives_additive_inverse():
+def test_chiral_gives_spectral_sign_pairing():
     print("=" * 78)
     print("(1) chiral involution Gamma: Gamma A Gamma = -A  =>  spec(A) = -spec(A)")
-    print("    the additive inverse -n (N -> Z) is forced by bipartite coupling")
+    print("    bipartite coupling pairs each measured eigenvalue with its negative")
     print("=" * 78)
     bipartite = [
         ("C6", nx.cycle_graph(6)),
@@ -180,64 +143,61 @@ def test_chiral_gives_additive_inverse():
             f"spec +/- symmetric? {sym}   (non-bipartite contrast)"
         )
 
-    # integral bipartite -> SIGNED INTEGERS Z
+    # This particular finite graph happens to have integral paired eigenvalues.
     q3 = integer_spectrum(adj_spectrum(nx.hypercube_graph(3)))
     signed = sorted(set(int(v) for v in q3))
     z_ok = -min(signed) == max(signed)
     print(
-        f"  Q3 gives SIGNED INTEGERS: {signed}  -> N extends to Z   "
+        f"  Q3 has paired integral eigenvalues: {signed}   "
         f"({'OK' if z_ok else 'FAIL'})"
     )
 
     ok = all_ok and none_chiral and z_ok
     print(
-        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the chiral Z_2 builds -n; "
-        "without bipartiteness there is no such involution"
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the chiral Z_2 certifies "
+        "spectral sign pairing on these bipartite graphs"
     )
     print()
     return ok
 
 
 # --------------------------------------------------------------------------- #
-# (2) the same involution -> antiparticle (sign(W) flip)
+# (2) a distinct phase involution flips winding orientation
 # --------------------------------------------------------------------------- #
-def test_same_involution_gives_antiparticle():
+def test_phase_negation_flips_winding():
     print("=" * 78)
-    print("(2) the same conjugation C: phi -> -phi flips the winding W -> -W")
-    print("    sign(W) = chirality: matter (W>0) <-> antimatter (W<0)")
+    print("(2) phase negation C: phi -> -phi flips winding W -> -W")
+    print("    This is a loop-orientation result on a different state space.")
     print("=" * 78)
     n = 12
     all_ok = True
     for k in (1, 2, 3):
-        matter = winding_ring(n, k)
-        w_m, _ = winding_number(matter)
+        positive = winding_ring(n, k)
+        w_positive, _ = winding_number(positive)
 
-        # charge conjugate: negate every phase (the chiral Z_2 on the phase field)
-        antimatter = matter.copy()
-        for v in antimatter.nodes():
-            phi = antimatter.nodes[v]["phase"]
+        # Negate every phase: the loop-orientation Z_2 on the phase field.
+        negative = positive.copy()
+        for v in negative.nodes():
+            phi = negative.nodes[v]["phase"]
             cphi = conjugate_phase_node(phi)
-            antimatter.nodes[v]["phase"] = cphi
-            antimatter.nodes[v]["theta"] = cphi
-        w_a, _ = winding_number(antimatter)
-
-        cm = classify_particle(matter)
-        ca = classify_particle(antimatter)
+            negative.nodes[v]["phase"] = cphi
+            negative.nodes[v]["theta"] = cphi
+        w_negative, _ = winding_number(negative)
 
         # winding_ring(n, -k) is the SAME field (phi -> -phi); cross-check it
         direct = winding_ring(n, -k)
         w_d, _ = winding_number(direct)
         same_field = all(
             abs(
-                conjugate_phase_node(matter.nodes[v]["phase"])
+                conjugate_phase_node(positive.nodes[v]["phase"])
                 - direct.nodes[v]["phase"]
             )
             < 1e-9
-            for v in matter.nodes()
+            for v in positive.nodes()
         )
 
-        # C^2 = id: conjugating twice recovers matter
-        back = antimatter.copy()
+        # C^2 = id: negating twice recovers the initial orientation.
+        back = negative.copy()
         for v in back.nodes():
             cphi = conjugate_phase_node(back.nodes[v]["phase"])
             back.nodes[v]["phase"] = cphi
@@ -245,20 +205,20 @@ def test_same_involution_gives_antiparticle():
         w_back, _ = winding_number(back)
 
         ok = (
-            w_m == k
-            and w_a == -k
+            w_positive == k
+            and w_negative == -k
             and w_d == -k
             and same_field
             and w_back == k
-            and cm.chirality == 1
-            and ca.chirality == -1
-            and abs(cm.winding) == abs(ca.winding)
+            and w_positive > 0
+            and w_negative < 0
+            and abs(w_positive) == abs(w_negative)
         )
         all_ok &= ok
         print(
-            f"  k={k}: W(matter)={w_m:+d} (chirality {cm.chirality:+d}), "
-            f"C: W(antimatter)={w_a:+d} (chirality {ca.chirality:+d}), "
-            f"same |W|={abs(cm.winding) == abs(ca.winding)}"
+            f"  k={k}: W(positive)={w_positive:+d}, "
+            f"C: W(negative)={w_negative:+d}, "
+            f"same |W|={abs(w_positive) == abs(w_negative)}"
         )
         print(
             f"        winding_ring(n,-k)=W={w_d:+d} is the conjugate field? "
@@ -266,20 +226,20 @@ def test_same_involution_gives_antiparticle():
             f"{'OK' if ok else 'FAIL'}"
         )
     print(
-        f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- charge conjugation is "
-        "the chiral Z_2 acting on the phase field"
+        f"  VERDICT: {'PASS' if all_ok else 'FAIL'} -- phase negation is a "
+        "Z_2 action that reverses loop winding"
     )
     print()
     return all_ok
 
 
 # --------------------------------------------------------------------------- #
-# (3) shared vacuum: n + (-n) = 0  <->  W + (-W) = 0  (annihilation)
+# (3) compare two algebraic zero identities without identifying their domains
 # --------------------------------------------------------------------------- #
-def test_shared_vacuum_annihilation():
+def test_signed_zero_identities():
     print("=" * 78)
-    print("(3) shared neutral element: n + (-n) = 0  <->  W + (-W) = 0")
-    print("    additive identity of Z  <->  matter-antimatter pair annihilates")
+    print("(3) signed zero identities: n + (-n) = 0 and W + (-W) = 0")
+    print("    The values coincide; their state spaces remain distinct.")
     print("=" * 78)
     # number side: emergent eigenvalue n and its chiral mirror -n sum to 0
     q3 = integer_spectrum(adj_spectrum(nx.hypercube_graph(3)))
@@ -294,38 +254,37 @@ def test_shared_vacuum_annihilation():
             f"{mirror_present};  n+(-n)={n + (-n)}  (additive identity)"
         )
 
-    # particle side: matter W=+k and antimatter W=-k sum to net 0 = scalar vacuum
+    # Loop side: opposite winding integers sum to zero algebraically.
     nring = 12
-    particle_ok = True
+    winding_ok = True
     for k in (1, 2, 3):
         w_m, _ = winding_number(winding_ring(nring, k))
         w_a, _ = winding_number(winding_ring(nring, -k))
         net = w_m + w_a
-        # net winding 0 == the scalar / boson-like |W|=0 vacuum class
-        vac = classify_particle(winding_ring(nring, 0))
-        annihilates = (net == 0) and (vac.winding == 0)
-        particle_ok &= annihilates
+        zero_winding, _ = winding_number(winding_ring(nring, 0))
+        sums_to_zero = (net == 0) and (zero_winding == 0)
+        winding_ok &= sums_to_zero
         print(
-            f"  particle: W(matter)={w_m:+d} + W(antimatter)={w_a:+d} = "
-            f"net {net}  -> scalar |W|=0 vacuum? {vac.winding == 0}  "
-            f"({'annihilates' if annihilates else 'FAIL'})"
+            f"  winding: W+={w_m:+d} + W-={w_a:+d} = {net}; "
+            f"prepared W=0 sector? {zero_winding == 0}  "
+            f"({'OK' if sums_to_zero else 'FAIL'})"
         )
 
-    ok = number_ok and particle_ok
+    ok = number_ok and winding_ok
     print(
-        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- the additive zero of Z and "
-        "the |W|=0 vacuum are the same neutral element of the chiral Z_2"
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- both signed observables "
+        "obey a zero-sum identity; no cross-domain identity is inferred"
     )
     print()
     return ok
 
 
 # --------------------------------------------------------------------------- #
-# (4) it is ONE Z_2 -- and it ANTICOMMUTES (the contrast with Camino 5)
+# (4) compare two distinct Z_2 actions
 # --------------------------------------------------------------------------- #
-def test_one_z2_anticommuting_contrast():
+def test_two_z2_actions_contrast():
     print("=" * 78)
-    print("(4) ONE chiral Z_2 vs. Camino 5: automorphisms COMMUTE, Gamma ANTICOMMUTES")
+    print("(4) TWO Z_2 actions: an automorphism commutes; Gamma anticommutes")
     print("=" * 78)
     G = nx.cycle_graph(6)  # bipartite, Aut = D_6
     nodes = list(G.nodes())
@@ -334,7 +293,12 @@ def test_one_z2_anticommuting_contrast():
 
     # Camino-5 Z_2: a graph automorphism (permutation) commutes with A
     mats = automorphism_matrices(G, nodes)
-    P = next(M for M in mats if np.linalg.norm(M - eye) > 1e-9)  # any non-identity
+    P = next(
+        M
+        for M in mats
+        if np.linalg.norm(M - eye) > 1e-9
+        and np.linalg.norm(M @ M - eye) < TOL
+    )
     p_is_perm = bool(
         np.allclose(P.sum(axis=0), 1)
         and np.allclose(P.sum(axis=1), 1)
@@ -365,7 +329,7 @@ def test_one_z2_anticommuting_contrast():
     )
     print("  => both are involutions (Z_2), but the COMMUTING one builds the")
     print("     equivariance wall (Camino 5) while the ANTICOMMUTING one builds")
-    print("     the additive inverse / the antiparticle (Camino 6). Two distinct")
+    print("     spectral sign pairing. Two distinct")
     print("     Z_2 actions on the same bipartite graph.")
 
     ok = (
@@ -378,8 +342,8 @@ def test_one_z2_anticommuting_contrast():
         and g_anti < TOL
     )
     print(
-        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- one abstract Z_2, two reps; "
-        "anticommuting (not the Camino-5 commuting wall)"
+        f"  VERDICT: {'PASS' if ok else 'FAIL'} -- two Z_2 actions with "
+        "different representations and commutation relations"
     )
     print()
     return ok
@@ -389,17 +353,17 @@ def main():
     print(__doc__)
     results = [
         (
-            "(1) chiral involution -> additive inverse (Z)",
-            test_chiral_gives_additive_inverse(),
+            "(1) chiral involution -> spectral sign pairing",
+            test_chiral_gives_spectral_sign_pairing(),
         ),
         (
-            "(2) same involution -> antiparticle (sign(W) flip)",
-            test_same_involution_gives_antiparticle(),
+            "(2) phase negation -> winding sign flip",
+            test_phase_negation_flips_winding(),
         ),
-        ("(3) shared vacuum: n+(-n)=0 <-> W+(-W)=0", test_shared_vacuum_annihilation()),
+        ("(3) separate signed zero identities", test_signed_zero_identities()),
         (
-            "(4) one Z_2, anticommuting (contrast with Camino 5)",
-            test_one_z2_anticommuting_contrast(),
+            "(4) two Z_2 actions with distinct commutation",
+            test_two_z2_actions_contrast(),
         ),
     ]
     print("=" * 78)
@@ -411,18 +375,15 @@ def main():
     print()
     print(f"  OVERALL: {'ALL PASS' if overall else 'SOME FAIL'}")
     print()
-    print("  Reading: the additive inverse -n of Z and the antiparticle are ONE")
-    print("  structural operation -- the chiral (sublattice) Z_2 of a bipartite")
-    print("  TNFR graph. Gamma = diag(+/-1) anticommutes with the coupling A")
-    print("  (Gamma A Gamma = -A), forcing spec(A) = -spec(A): that is -n. The")
-    print("  same conjugation on the phase field, C: phi -> -phi, flips the")
-    print("  winding W -> -W: that is matter <-> antimatter. Their shared neutral")
-    print("  element is the same: n+(-n)=0 in Z is the |W|=0 scalar vacuum where a")
-    print("  matter-antimatter pair annihilates. CONTRAST: this Z_2 ANTICOMMUTES")
+    print("  Reading: the sublattice sign matrix and phase negation each generate")
+    print("  a Z_2 action and reverse a signed observable. Gamma anticommutes with")
+    print("  adjacency, forcing spectral +/- pairing; C: phi -> -phi reverses")
+    print("  loop winding. They act on different spaces and no canonical map")
+    print("  between those spaces is constructed. CONTRAST: Gamma ANTICOMMUTES")
     print("  with A, unlike the COMMUTING automorphism Z_2 that builds the Camino-5")
     print("  equivariance wall -- two different Z_2 on the same graph. HONEST SCOPE:")
     print("  exact finite Z_2 group actions on a graph; a precise structural")
-    print("  analogy, NOT a derivation of CPT, antimatter, or the Standard Model.")
+    print("  comparison, not a derivation of physical charge conjugation or CPT.")
     print("  R and pi remain assumed substrate; this is Z, not R;")
     print("  nothing here touches G4 = RH, Navier-Stokes, or Yang-Mills.")
     return 0 if overall else 1

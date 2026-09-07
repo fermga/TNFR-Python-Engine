@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..mathematics.unified_numerical import np
+from ..mathematics.unified_numerical import compute_circular_mean, np
+from ..metrics.trig import neighbor_phase_mean
+from ..utils import angle_diff
 from .metrics_core import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from .metrics_core import get_node_attr as _get_node_attr
 
@@ -68,9 +70,10 @@ def coupling_metrics(
 
         - theta_shift: Absolute phase change
         - theta_final: Post-coupling phase
-        - mean_neighbor_phase: Average phase of neighbors
+        - mean_neighbor_phase: Circular mean phase of neighbors
         - phase_alignment: Alignment with neighbors [0,1]
-        - phase_dispersion: Standard deviation of phases in local cluster
+        - phase_dispersion: Sample deviation of shortest-arc residuals in the
+          local cluster
         - is_synchronized: Boolean indicating strong synchronization (alignment > 0.8)
 
         **Frequency metrics:**
@@ -117,7 +120,6 @@ def coupling_metrics(
     operators.definitions.Coupling : UM operator implementation
     metrics.phase_coherence.compute_phase_alignment : Phase alignment computation
     """
-    import math
     import statistics
 
     theta_after = _get_node_attr(G, node, ALIAS_THETA)
@@ -128,9 +130,12 @@ def coupling_metrics(
 
     # Calculate phase coherence with neighbors
     if neighbor_count > 0:
-        phase_sum = sum(_get_node_attr(G, n, ALIAS_THETA) for n in neighbors)
-        mean_neighbor_phase = phase_sum / neighbor_count
-        phase_alignment = 1.0 - abs(theta_after - mean_neighbor_phase) / math.pi
+        import math
+
+        mean_neighbor_phase = float(neighbor_phase_mean(G, node))
+        phase_alignment = 1.0 - abs(
+            angle_diff(theta_after, mean_neighbor_phase)
+        ) / math.pi
     else:
         mean_neighbor_phase = theta_after
         phase_alignment = 0.0
@@ -139,7 +144,7 @@ def coupling_metrics(
     metrics = {
         "operator": "Coupling",
         "glyph": "UM",
-        "theta_shift": abs(theta_after - theta_before),
+        "theta_shift": abs(angle_diff(theta_after, theta_before)),
         "theta_final": theta_after,
         "neighbor_count": neighbor_count,
         "mean_neighbor_phase": mean_neighbor_phase,
@@ -209,10 +214,11 @@ def coupling_metrics(
             coupling_strength_total += edge_data.get("coupling", 0.0)
     metrics["coupling_strength_total"] = coupling_strength_total
 
-    # Phase dispersion (standard deviation of local phases)
+    # Phase dispersion around the circular mean, using shortest-arc residuals.
     if neighbor_count > 1:
         phases = [theta_after] + [_get_node_attr(G, n, ALIAS_THETA) for n in neighbors]
-        phase_std = statistics.stdev(phases)
+        local_mean = float(compute_circular_mean(phases))
+        phase_std = statistics.stdev(angle_diff(phase, local_mean) for phase in phases)
         metrics["phase_dispersion"] = phase_std
     else:
         metrics["phase_dispersion"] = 0.0

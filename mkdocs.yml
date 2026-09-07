@@ -43,6 +43,9 @@ nav:
       - Diagnostic scope: theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md
       - Minimal structural degrees: theory/MINIMAL_STRUCTURAL_DEGREES.md
       - Structural conservation: theory/STRUCTURAL_CONSERVATION_THEOREM.md
+      - Core dynamics program: theory/CORE_RESEARCH_PROGRAM.md
+      - Heterogeneous diffusion stability: theory/TNFR_DIFFUSION_STABILITY_THEOREM.md
+      - Scale, geometry and bridge: theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
       - Structural research program: theory/STRUCTURAL_RESEARCH_PROGRAM.md
   - Examples: examples/README.md
   - Development:

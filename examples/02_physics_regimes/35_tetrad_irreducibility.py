@@ -1,36 +1,19 @@
-"""Example 35: Structural Tetrad Irreducibility.
+"""Example 35: Structural tetrad diagnostic complementarity.
 
-Demonstrates that the four structural fields (Phi_s, |grad_phi|, K_phi,
-xi_C) constitute the **minimal and complete** basis for characterizing
-coherent systems.  Removing any single field creates a "structural blind
-spot" — a class of pathology that becomes invisible.
+The legacy filename is retained for discoverability. The experiment constructs
+four reproducible probes that emphasize different tetrad read-outs:
 
-Protocol (theory/MINIMAL_STRUCTURAL_DEGREES.md ss 6):
+- ``Phi_s`` aggregates graph-distance-weighted structural pressure.
+- ``|grad_phi|`` reports local unsigned phase mismatch.
+- ``K_phi`` reports signed circular phase curvature.
+- ``xi_C`` reports a non-local correlation estimate or spectral fallback.
 
-  For each field f in {Phi_s, |grad_phi|, K_phi, xi_C}:
-    1. Build a network in a known pathological state that is detectable
-       ONLY by f.
-    2. Show that *all other fields* remain in their safe ranges.
-    3. Show that f correctly flags the pathology.
-
-Expected blind spots:
-  - Without Phi_s:  Global pressure accumulation invisible; all local
-                    fields look safe, but Phi_s exceeds 0.785 (π/4)
-  - Without |grad_phi|:  Local fragmentation masked by high C(t)
-                    because C(t) is scaling-invariant; |grad_phi| shows
-                    gradient exceeding its heuristic early-warning (gamma/pi)
-  - Without K_phi:  Geometric singularities hidden; same |grad_phi|
-                    but hidden torsion/vortex; K_phi exceeds 2.83
-  - Without xi_C:  Phase transition undetectable; all pointwise fields
-                    safe, but correlation length diverges
-
-Physics basis:
-  Operator-derivative tower terminates at 2nd order (graph Laplacian).
-  xi_C captures the integral non-local information.  Together they
-  exhaust the independent structural information available.
-
-  See: theory/MINIMAL_STRUCTURAL_DEGREES.md
-  See: AGENTS.md ss Minimal Structural Degrees of Freedom
+The comparisons use selected monitoring policies. Only the wrapped phase
+bounds ``|grad_phi| <= pi`` and ``|K_phi| <= pi`` are exact. A crossed policy
+is a telemetry flag, and a finite ``xi_C`` relative to graph diameter does not
+prove correlation-length divergence or a phase transition. These finite probes
+show complementary information; they do not prove that the tetrad is minimal,
+complete, irreducible, or sufficient to reconstruct graph state or dynamics.
 """
 
 from __future__ import annotations
@@ -38,6 +21,7 @@ from __future__ import annotations
 import math
 import os
 import sys
+from typing import Any
 
 import networkx as nx
 import numpy as np
@@ -45,347 +29,224 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.constants import inject_defaults
-from tnfr.constants.canonical import GRAD_PHI_CANONICAL_THRESHOLD  # heuristic ≈ 0.1837 (|∇φ| early-warning)
-from tnfr.constants.canonical import K_PHI_CANONICAL_THRESHOLD  # 0.9*pi ~ 2.8274
-from tnfr.constants.canonical import PHI_S_VON_KOCH_THRESHOLD  # π/4 ≈ 0.785
+from tnfr.constants.canonical import (
+    GRAD_PHI_CANONICAL_THRESHOLD,
+    K_PHI_CANONICAL_THRESHOLD,
+    PHI_S_VON_KOCH_THRESHOLD,
+    PI,
+)
 from tnfr.physics.fields import (
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
-    estimate_coherence_length,
+    estimate_coherence_length_with_provenance,
 )
 
 
-def _build_and_inject(G: nx.Graph, seed: int = 42) -> None:
-    """Inject TNFR defaults and random initial conditions."""
+def _build_and_inject(graph: nx.Graph, seed: int = 42) -> None:
+    """Inject TNFR defaults and deterministic non-trivial node state."""
     rng = np.random.default_rng(seed)
-    inject_defaults(G)
-    for n in G.nodes():
-        G.nodes[n]["phase"] = rng.uniform(0, 2 * math.pi)
-        G.nodes[n]["theta"] = G.nodes[n]["phase"]
-        G.nodes[n]["delta_nfr"] = rng.uniform(-0.3, 0.3)
-        G.nodes[n]["nu_f"] = rng.uniform(0.8, 1.2)
+    inject_defaults(graph)
+    for node in graph.nodes():
+        phase = float(rng.uniform(0.0, 2.0 * PI))
+        graph.nodes[node]["phase"] = phase
+        graph.nodes[node]["theta"] = phase
+        graph.nodes[node]["delta_nfr"] = float(rng.uniform(-0.3, 0.3))
+        graph.nodes[node]["nu_f"] = float(rng.uniform(0.8, 1.2))
 
 
-def _safe_mean(d: dict) -> float:
-    vals = list(d.values())
-    return float(np.mean(vals)) if vals else 0.0
+def _set_phase(graph: nx.Graph, node: Any, phase: float) -> None:
+    """Set both supported phase keys to keep the probe representation aligned."""
+    graph.nodes[node]["phase"] = float(phase)
+    graph.nodes[node]["theta"] = float(phase)
 
 
-def _safe_max(d: dict) -> float:
-    vals = [abs(v) for v in d.values()]
-    return float(max(vals)) if vals else 0.0
+def _safe_max(values: dict[Any, float]) -> float:
+    return max((abs(float(value)) for value in values.values()), default=0.0)
 
 
-def _report_fields(G: nx.Graph, skip: str = "") -> dict[str, dict]:
-    """Compute all four fields, return dict + flags."""
-    phi_s = compute_structural_potential(G)
-    grad_phi = compute_phase_gradient(G)
-    k_phi = compute_phase_curvature(G)
-    xi_c = estimate_coherence_length(G)
+def _report_fields(graph: nx.Graph) -> dict[str, dict[str, Any]]:
+    """Capture tetrad summaries and label each comparison by its scope."""
+    phi_s = compute_structural_potential(graph)
+    grad_phi = compute_phase_gradient(graph)
+    k_phi = compute_phase_curvature(graph)
+    xi_c = estimate_coherence_length_with_provenance(graph)
+    diameter = float(nx.diameter(graph)) if nx.is_connected(graph) else float("nan")
+    xi_comparison = diameter
 
-    fields = {
+    return {
         "Phi_s": {
-            "values": phi_s,
-            "max_abs": _safe_max(phi_s),
-            "threshold": PHI_S_VON_KOCH_THRESHOLD,
-            "safe": _safe_max(phi_s) < PHI_S_VON_KOCH_THRESHOLD,
+            "value": _safe_max(phi_s),
+            "comparison": PHI_S_VON_KOCH_THRESHOLD,
+            "kind": "selected pi/4 policy",
+            "crossed": _safe_max(phi_s) >= PHI_S_VON_KOCH_THRESHOLD,
         },
         "|grad_phi|": {
-            "values": grad_phi,
-            "max_abs": _safe_max(grad_phi),
-            "threshold": GRAD_PHI_CANONICAL_THRESHOLD,
-            "safe": _safe_max(grad_phi) < GRAD_PHI_CANONICAL_THRESHOLD,
+            "value": _safe_max(grad_phi),
+            "comparison": GRAD_PHI_CANONICAL_THRESHOLD,
+            "kind": "selected pi/16 policy",
+            "crossed": _safe_max(grad_phi) >= GRAD_PHI_CANONICAL_THRESHOLD,
+            "exact_bound_holds": _safe_max(grad_phi) <= PI + 1e-12,
         },
         "K_phi": {
-            "values": k_phi,
-            "max_abs": _safe_max(k_phi),
-            "threshold": K_PHI_CANONICAL_THRESHOLD,
-            "safe": _safe_max(k_phi) < K_PHI_CANONICAL_THRESHOLD,
+            "value": _safe_max(k_phi),
+            "comparison": K_PHI_CANONICAL_THRESHOLD,
+            "kind": "selected 0.9pi margin",
+            "crossed": _safe_max(k_phi) >= K_PHI_CANONICAL_THRESHOLD,
+            "exact_bound_holds": _safe_max(k_phi) <= PI + 1e-12,
         },
         "xi_C": {
-            "values": xi_c,  # scalar
-            "mean": float(xi_c),
-            # xi_C is anomalous when it diverges beyond system diameter
-            "threshold": float(nx.diameter(G)) if nx.is_connected(G) else 10.0,
-            "safe": float(xi_c)
-            < (float(nx.diameter(G)) if nx.is_connected(G) else 10.0),
+            "value": float(xi_c.value),
+            "comparison": xi_comparison,
+            "kind": f"descriptive diameter; {xi_c.method}",
+            "crossed": bool(
+                math.isfinite(xi_c.value)
+                and math.isfinite(xi_comparison)
+                and xi_c.value >= xi_comparison
+            ),
         },
     }
-    return fields
 
 
-def _print_field_status(fields: dict, detecting_field: str) -> None:
-    """Print status table highlighting which field detects the pathology."""
+def _print_field_status(
+    fields: dict[str, dict[str, Any]], emphasized_field: str
+) -> None:
+    """Print field values without turning monitoring flags into diagnoses."""
     print(
-        f"  {'Field':<14}  {'Max/Mean':>10}  {'Threshold':>10}  {'Safe?':>6}  {'Detecting?':>11}"
+        f"  {'Field':<14}  {'Value':>10}  {'Comparison':>10}  "
+        f"{'At/above?':>9}  {'Scope':<34}  {'Focus':>5}"
     )
-    print("  " + "-" * 55)
+    print("  " + "-" * 92)
     for name, info in fields.items():
-        val = info.get("max_abs", info.get("mean", 0.0))
-        thr = info["threshold"]
-        safe = info["safe"]
-        detecting = "<<<" if name == detecting_field and not safe else ""
+        marker = "<<<" if name == emphasized_field else ""
         print(
-            f"  {name:<14}  {val:10.4f}  {thr:10.4f}  "
-            f"{'YES' if safe else 'NO':>6}  {detecting:>11}"
+            f"  {name:<14}  {info['value']:10.4g}  "
+            f"{info['comparison']:10.4g}  {str(info['crossed']):>9}  "
+            f"{info['kind']:<34}  {marker:>5}"
         )
 
 
-# ---------------------------------------------------------------------------
-# Blind spot 1: Without Phi_s — hidden global accumulation
-# ---------------------------------------------------------------------------
+def demo_pressure_aggregation_probe() -> None:
+    """Show that Phi_s carries graph-distance-weighted pressure information."""
+    print("=" * 72)
+    print("  PROBE 1: Structural-pressure aggregation")
+    print("=" * 72)
+    print("\n  Protocol: uniform phase with elevated DELTA_NFR on a star graph.\n")
 
+    graph = nx.star_graph(30)
+    _build_and_inject(graph, seed=10)
+    for node in graph.nodes():
+        _set_phase(graph, node, 0.25)
+        graph.nodes[node]["delta_nfr"] = 2.0
+    graph.nodes[0]["delta_nfr"] = 3.0
 
-def demo_blind_spot_phi_s() -> None:
-    """Construct a network where only Phi_s detects global pressure."""
-    print("=" * 65)
-    print("  BLIND SPOT 1: Without Phi_s — Hidden Global Accumulation")
-    print("=" * 65)
-    print("\n  Protocol: Inject large |DELTA_NFR| at hub nodes of a star graph")
-    print("  Result:   Phi_s exceeds threshold while local fields appear safe\n")
-
-    # Star graph with large DELTA_NFR at center
-    G = nx.star_graph(30)
-    _build_and_inject(G, seed=10)
-
-    # Force high DELTA_NFR at the hub (node 0) and neighbors to create
-    # distance-weighted accumulation visible only to Phi_s
-    G.nodes[0]["delta_nfr"] = 3.0
-    for nb in G.neighbors(0):
-        G.nodes[nb]["delta_nfr"] = 2.0
-        # Keep phases smooth so local gradients stay calm
-        G.nodes[nb]["phase"] = G.nodes[0]["phase"] + 0.01 * nb
-
-    fields = _report_fields(G, skip="Phi_s")
+    fields = _report_fields(graph)
     _print_field_status(fields, "Phi_s")
-
-    print(f"\n  Interpretation:")
-    if not fields["Phi_s"]["safe"]:
-        print(
-            f"    Phi_s DETECTS accumulation (max = {fields['Phi_s']['max_abs']:.4f})"
-        )
-    else:
-        print(
-            f"    Phi_s within threshold (max = {fields['Phi_s']['max_abs']:.4f}) — "
-            f"adjust DELTA_NFR amplitude for stronger accumulation"
-        )
-    print(f"    Without Phi_s, this global pressure accumulation is INVISIBLE.")
-    print(f"    C(t) alone misses catastrophic pressure.")
+    print("\n  Phi_s exposes non-local source aggregation while both exact")
+    print("  phase bounds remain satisfied. The pi/4 crossing is a selected")
+    print("  magnitude warning, not a graph-independent potential bound.")
 
 
-# ---------------------------------------------------------------------------
-# Blind spot 2: Without |grad_phi| — hidden local fragmentation
-# ---------------------------------------------------------------------------
+def demo_local_phase_mismatch_probe() -> None:
+    """Show the unsigned local mismatch carried by |grad_phi|."""
+    print("\n" + "=" * 72)
+    print("  PROBE 2: Local phase mismatch")
+    print("=" * 72)
+    print("\n  Protocol: two phase domains on a seeded small-world graph.\n")
 
-
-def demo_blind_spot_grad_phi() -> None:
-    """Construct a network where only |grad_phi| detects fragmentation."""
-    print("\n" + "=" * 65)
-    print("  BLIND SPOT 2: Without |grad_phi| — Hidden Fragmentation")
-    print("=" * 65)
-    print("\n  Protocol: Create adjacent nodes with opposite phases")
-    print("            but proportional DELTA_NFR (so C(t) stays high)\n")
-
-    G = nx.watts_strogatz_graph(40, 4, 0.2, seed=42)
-    _build_and_inject(G, seed=42)
-
-    # Create local fragmentation: a sharp phase boundary
-    nodes = sorted(G.nodes())
+    graph = nx.watts_strogatz_graph(40, 4, 0.2, seed=42)
+    _build_and_inject(graph, seed=42)
+    nodes = sorted(graph.nodes())
     half = len(nodes) // 2
-    for n in nodes[:half]:
-        G.nodes[n]["phase"] = 0.05
-        G.nodes[n]["delta_nfr"] = 0.1
-    for n in nodes[half:]:
-        G.nodes[n]["phase"] = math.pi - 0.05  # Nearly pi away
-        G.nodes[n]["delta_nfr"] = 0.1
+    for node in nodes[:half]:
+        _set_phase(graph, node, 0.05)
+        graph.nodes[node]["delta_nfr"] = 0.1
+    for node in nodes[half:]:
+        _set_phase(graph, node, PI - 0.05)
+        graph.nodes[node]["delta_nfr"] = 0.1
 
-    # DELTA_NFR is uniform => the auxiliary dispersion C_disp = 1 - (sigma/max)
-    # is high (the primary C(t) = 1/(1+mean|DNFR|+mean|dEPI|) would be too)
-    # But phase gradient at the boundary is extreme
-
-    fields = _report_fields(G, skip="|grad_phi|")
+    fields = _report_fields(graph)
     _print_field_status(fields, "|grad_phi|")
-
-    print(f"\n  Interpretation:")
-    if not fields["|grad_phi|"]["safe"]:
-        print(
-            f"    |grad_phi| DETECTS fragmentation "
-            f"(max = {fields['|grad_phi|']['max_abs']:.4f} > gamma/pi = {GRAD_PHI_CANONICAL_THRESHOLD:.4f})"
-        )
-    else:
-        print(
-            f"    |grad_phi| within threshold — {fields['|grad_phi|']['max_abs']:.4f}"
-        )
-    print(f"    C(t) is scaling-invariant: proportional DELTA_NFR has no effect.")
-    print(f"    Without |grad_phi|, the local desynchronization is INVISIBLE.")
+    print("\n  |grad_phi| records unsigned neighbor mismatch. K_phi may also")
+    print("  respond because the same phase boundary has curvature; this probe")
+    print("  demonstrates complementary readings rather than exclusive detection.")
 
 
-# ---------------------------------------------------------------------------
-# Blind spot 3: Without K_phi — hidden geometric singularities
-# ---------------------------------------------------------------------------
+def demo_phase_curvature_probe() -> None:
+    """Show the signed circular-curvature channel on a localized phase defect."""
+    print("\n" + "=" * 72)
+    print("  PROBE 3: Circular phase curvature")
+    print("=" * 72)
+    print("\n  Protocol: one localized phase defect on an otherwise uniform ring.\n")
 
+    graph = nx.cycle_graph(12)
+    _build_and_inject(graph, seed=7)
+    for node in graph.nodes():
+        _set_phase(graph, node, 0.0)
+        graph.nodes[node]["delta_nfr"] = 0.1
+    _set_phase(graph, 0, PI)
 
-def demo_blind_spot_k_phi() -> None:
-    """Construct a network where only K_phi detects torsion/vortex."""
-    print("\n" + "=" * 65)
-    print("  BLIND SPOT 3: Without K_phi — Hidden Geometric Singularity")
-    print("=" * 65)
-    print("\n  Protocol: Create a phase vortex (curl) around a node")
-    print("            with smooth gradients everywhere\n")
-
-    G = nx.cycle_graph(12)
-    _build_and_inject(G, seed=7)
-
-    # Phase vortex: phases increase monotonically around the ring
-    # Each neighbor pair has a small gradient, but the curvature
-    # (deviation from circular mean) is extreme at inversion points
-    n_nodes = len(G)
-    for i, n in enumerate(sorted(G.nodes())):
-        # Winding number = 1: phases from 0 to ~2*pi
-        G.nodes[n]["phase"] = 2 * math.pi * i / n_nodes
-        G.nodes[n]["theta"] = G.nodes[n]["phase"]
-        G.nodes[n]["delta_nfr"] = 0.1
-
-    fields = _report_fields(G, skip="K_phi")
+    fields = _report_fields(graph)
     _print_field_status(fields, "K_phi")
-
-    print(f"\n  Interpretation:")
-    if not fields["K_phi"]["safe"]:
-        print(
-            f"    K_phi DETECTS vortex (max = {fields['K_phi']['max_abs']:.4f} "
-            f"> 0.9*pi = {K_PHI_CANONICAL_THRESHOLD:.4f})"
-        )
-    else:
-        print(
-            f"    K_phi within threshold ({fields['K_phi']['max_abs']:.4f}) — "
-            f"vortex too smooth for this topology"
-        )
-    print(f"    |grad_phi| may also be elevated, but K_phi captures the")
-    print(f"    *curvature* (2nd derivative) that |grad_phi| misses.")
-    print(f"    Without K_phi, geometric singularities are INVISIBLE.")
+    print("\n  K_phi records signed departure from the circular neighbor mean;")
+    print("  |grad_phi| records mismatch magnitude. Both may cross their selected")
+    print("  policies, while their exact wrapped-angle bounds remain pi.")
 
 
-# ---------------------------------------------------------------------------
-# Blind spot 4: Without xi_C — hidden phase transition
-# ---------------------------------------------------------------------------
+def demo_nonlocal_scale_probe() -> None:
+    """Show xi_C provenance without claiming divergence or criticality."""
+    print("\n" + "=" * 72)
+    print("  PROBE 4: Non-local coherence-length read-out")
+    print("=" * 72)
+    print("\n  Protocol: uniform phase and pressure on a seeded small-world graph.\n")
 
+    graph = nx.watts_strogatz_graph(50, 4, 0.3, seed=42)
+    _build_and_inject(graph, seed=42)
+    for node in graph.nodes():
+        _set_phase(graph, node, 1.0)
+        graph.nodes[node]["delta_nfr"] = 0.1
 
-def demo_blind_spot_xi_c() -> None:
-    """Construct a network where only xi_C detects critical divergence."""
-    print("\n" + "=" * 65)
-    print("  BLIND SPOT 4: Without xi_C — Hidden Phase Transition")
-    print("=" * 65)
-    print("\n  Protocol: Create perfect long-range order (all phases equal)")
-    print("            so pointwise fields are safe but correlations diverge\n")
-
-    G = nx.watts_strogatz_graph(50, 4, 0.3, seed=42)
-    _build_and_inject(G, seed=42)
-
-    # Perfect synchronization: all phases identical
-    # This pushes xi_C toward system diameter (correlation "infinite")
-    for n in G.nodes():
-        G.nodes[n]["phase"] = 1.0  # Uniform phase
-        G.nodes[n]["theta"] = 1.0
-        G.nodes[n]["delta_nfr"] = 0.1
-
-    fields = _report_fields(G, skip="xi_C")
+    fields = _report_fields(graph)
     _print_field_status(fields, "xi_C")
-
-    print(f"\n  Interpretation:")
-    xi_mean = fields["xi_C"]["mean"]
-    xi_thr = fields["xi_C"]["threshold"]
-    if not fields["xi_C"]["safe"]:
-        print(
-            f"    xi_C DETECTS critical state (mean = {xi_mean:.4f} > "
-            f"diameter = {xi_thr:.1f})"
-        )
-    else:
-        print(
-            f"    xi_C within threshold (mean = {xi_mean:.4f}, "
-            f"diameter = {xi_thr:.1f})"
-        )
-    print(f"    All pointwise fields (Phi_s, |grad_phi|, K_phi) are bounded.")
-    print(f"    But the system is at criticality — long-range correlations")
-    print(f"    dominate.  Without xi_C, this is INVISIBLE.")
+    print("\n  Pointwise phase derivatives vanish, while xi_C still reports a")
+    print("  non-local scale with explicit estimator provenance. Its finite value")
+    print("  and diameter comparison do not establish divergence or a transition.")
 
 
-# ---------------------------------------------------------------------------
-# Summary: completeness proof by structural blind spots
-# ---------------------------------------------------------------------------
-
-
-def demo_irreducibility_summary() -> None:
-    """Summarize the four blind spots as an irreducibility argument."""
-    print("\n" + "=" * 65)
-    print("  IRREDUCIBILITY PROOF — Structural Blind Spot Summary")
-    print("=" * 65)
+def demo_complementarity_summary() -> None:
+    """Summarize the information each diagnostic retains and its limitation."""
+    print("\n" + "=" * 72)
+    print("  DIAGNOSTIC COMPLEMENTARITY SUMMARY")
+    print("=" * 72)
 
     table = [
-        ("Phi_s", "0th order (global)", "Global pressure accumulation", "C(t) alone"),
-        (
-            "|grad_phi|",
-            "1st order (local)",
-            "Local desynchronization",
-            "C(t) is scaling-invariant",
-        ),
-        (
-            "K_phi",
-            "2nd order (Laplacian)",
-            "Geometric singularity/vortex",
-            "|grad_phi| misses curvature",
-        ),
-        (
-            "xi_C",
-            "Non-local (integral)",
-            "Phase transition/criticality",
-            "All pointwise fields bounded",
-        ),
+        ("Phi_s", "source aggregation", "depends on pressure and graph metric"),
+        ("|grad_phi|", "unsigned local mismatch", "does not retain curvature sign"),
+        ("K_phi", "signed circular curvature", "is a local phase read-out"),
+        ("xi_C", "non-local length estimate", "fit/fallback and graph scope matter"),
     ]
+    print(f"\n  {'Field':<14}  {'Information retained':<28}  {'Scope limit':<38}")
+    print("  " + "-" * 84)
+    for field, information, limitation in table:
+        print(f"  {field:<14}  {information:<28}  {limitation:<38}")
 
-    print(
-        f"\n  {'Field':<14}  {'Order':<22}  {'Detects':<30}  {'Why others miss it':<30}"
-    )
-    print("  " + "-" * 100)
-    for field, order, detects, why in table:
-        print(f"  {field:<14}  {order:<22}  {detects:<30}  {why:<30}")
-
-    print(
-        f"""
-  The four fields exhaust the operator-derivative tower:
-
-    DELTA_NFR -> Sum 1/d^2 -> Phi_s          [0th, global]
-    phi       -> grad      -> |grad_phi|     [1st, local]
-              -> Laplacian -> K_phi           [2nd, local]
-              -> corr      -> xi_C            [integral, non-local]
-
-  Tower terminates at 2nd order (K_phi = L_rw . phi, the emergent
-  random-walk Laplacian -- NOT the imposed combinatorial D - A).
-  xi_C captures information missed by all pointwise operators.
-
-  Result: The tetrad (Phi_s, |grad_phi|, K_phi, xi_C) is MINIMAL
-  and COMPLETE — removing any field creates an undetectable pathology.
-"""
-    )
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
+    print("\n  These probes support using all four diagnostics together. They do")
+    print("  not prove a minimal or complete state basis, universal thresholds,")
+    print("  transition criticality, or reconstruction of the nodal trajectory.")
 
 
 def main() -> None:
     print()
-    print("*" * 65)
-    print("  TNFR Example 35: Structural Tetrad Irreducibility")
-    print("  Theory: MINIMAL_STRUCTURAL_DEGREES.md ss 6")
-    print("*" * 65)
+    print("*" * 72)
+    print("  TNFR Example 35: Structural Tetrad Diagnostic Complementarity")
+    print("  Finite seeded probes; exact bounds and selected policies separated")
+    print("*" * 72)
 
-    demo_blind_spot_phi_s()
-    demo_blind_spot_grad_phi()
-    demo_blind_spot_k_phi()
-    demo_blind_spot_xi_c()
-    demo_irreducibility_summary()
+    demo_pressure_aggregation_probe()
+    demo_local_phase_mismatch_probe()
+    demo_phase_curvature_probe()
+    demo_nonlocal_scale_probe()
+    demo_complementarity_summary()
 
 
 if __name__ == "__main__":

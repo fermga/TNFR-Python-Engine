@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..alias import get_attr
 from ..config.operator_names import BIFURCATION_WINDOW
+from ..constants.aliases import ALIAS_EPI_KIND
+from ..metrics.trig import neighbor_phase_mean
+from ..utils import angle_diff
 from .metrics_core import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from .metrics_core import get_node_attr as _get_node_attr
 
@@ -185,11 +189,10 @@ def expansion_metrics(G, node, vf_before: float, epi_before: float) -> dict[str,
 
     # Phase coherence with neighbors
     if neighbor_count > 0:
-        neighbor_theta_sum = sum(_get_node_attr(G, n, ALIAS_THETA) for n in neighbors)
-        mean_neighbor_theta = neighbor_theta_sum / neighbor_count
-        phase_diff = abs(theta - mean_neighbor_theta)
+        mean_neighbor_theta = float(neighbor_phase_mean(G, node))
+        phase_diff = abs(angle_diff(theta, mean_neighbor_theta))
         # Normalize to [0, 1], 1 = perfect alignment
-        phase_coherence_neighbors = 1.0 - min(phase_diff, math.pi) / math.pi
+        phase_coherence_neighbors = 1.0 - phase_diff / math.pi
     else:
         phase_coherence_neighbors = 0.0
 
@@ -386,10 +389,10 @@ def contraction_metrics(G, node, vf_before, epi_before):
 
 
 def self_organization_metrics(G, node, epi_before, vf_before):
-    """THOL - Enhanced metrics with cascade dynamics and collective coherence.
+    """THOL metrics for bifurcation, cascade, and measured sub-EPI alignment.
 
     Collects comprehensive THOL metrics including bifurcation, cascade propagation,
-    collective coherence of sub-EPIs, and metabolic activity indicators.
+    amplitude alignment of sub-EPIs and network-input provenance.
 
     Parameters
     ----------
@@ -432,26 +435,29 @@ def self_organization_metrics(G, node, epi_before, vf_before):
         - affected_node_count: Nodes reached by cascade
         - total_propagations: Total propagation events
 
-        **Collective coherence (NEW):**
+        **Sub-EPI amplitude alignment:**
 
-        - subepi_coherence: Coherence of sub-EPI ensemble [0,1]
+        - subepi_amplitude_alignment: Variance-based magnitude alignment [0,1]
+        - subepi_coherence: Deprecated compatibility alias for that alignment
         - metabolic_activity_index: Network context usage [0,1]
 
-        **Network emergence indicator (NEW):**
+        **U5 target:**
 
-        - network_emergence: Combined indicator (cascade + high coherence)
+        - u5_target_satisfied: Result only when THOL_U5_ALPHA is explicit
+        - u5_coherence_residual: C_parent - alpha*sum(C_child)
+        - network_emergence: Cascade plus an explicitly satisfied U5 target
 
     Notes
     -----
-    TNFR Principle: Complete traceability of self-organization dynamics.
-    These metrics enable reconstruction of entire cascade evolution,
-    validation of controlled emergence, and identification of collective
-    network phenomena.
+    These metrics support reconstruction of cascade evolution. Amplitude
+    alignment, network-input provenance, and U5 coherence remain separate
+    observations.
 
     See Also
     --------
     operators.metabolism.compute_cascade_depth : Cascade depth computation
-    operators.metabolism.compute_subepi_collective_coherence : Coherence metric
+    operators.metabolism.compute_subepi_amplitude_alignment : Amplitude diagnostic
+    physics.assess_u5_parent_child_coherence : Explicit U5 target
     operators.metabolism.compute_metabolic_activity_index : Metabolic tracking
     operators.cascade.detect_cascade : Cascade detection
     """
@@ -460,7 +466,7 @@ def self_organization_metrics(G, node, epi_before, vf_before):
         compute_cascade_depth,
         compute_metabolic_activity_index,
         compute_propagation_radius,
-        compute_subepi_collective_coherence,
+        compute_subepi_amplitude_alignment,
     )
 
     epi_after = _get_node_attr(G, node, ALIAS_EPI)
@@ -480,7 +486,19 @@ def self_organization_metrics(G, node, epi_before, vf_before):
     # NEW: Enhanced cascade and emergence metrics
     cascade_depth = compute_cascade_depth(G, node)
     propagation_radius = compute_propagation_radius(G)
-    subepi_coherence = compute_subepi_collective_coherence(G, node)
+    subepi_alignment = compute_subepi_amplitude_alignment(G, node)
+    u5_target_satisfied = None
+    u5_coherence_residual = None
+    if nested_epi_count and "THOL_U5_ALPHA" in G.graph:
+        from ..physics.multiscale_coherence import (
+            assess_u5_parent_child_coherence,
+        )
+
+        u5 = assess_u5_parent_child_coherence(
+            G, node, alpha=G.graph["THOL_U5_ALPHA"]
+        )
+        u5_target_satisfied = u5.satisfies_target
+        u5_coherence_residual = u5.residual
     metabolic_activity = compute_metabolic_activity_index(G, node)
 
     return {
@@ -503,13 +521,17 @@ def self_organization_metrics(G, node, epi_before, vf_before):
         "cascade_detected": cascade_analysis["is_cascade"],
         "affected_node_count": len(cascade_analysis["affected_nodes"]),
         "total_propagations": cascade_analysis["total_propagations"],
-        # NEW: Collective coherence
-        "subepi_coherence": subepi_coherence,
+        # Amplitude dispersion is not canonical coherence or U5.
+        "subepi_amplitude_alignment": subepi_alignment,
+        "subepi_coherence": subepi_alignment,  # compatibility alias
         "metabolic_activity_index": metabolic_activity,
-        # NEW: Network emergence indicator
+        # No U5 claim is made unless alpha was supplied explicitly.
+        "u5_target_satisfied": u5_target_satisfied,
+        "u5_coherence_residual": u5_coherence_residual,
         "network_emergence": (
-            cascade_analysis["is_cascade"]
-            and subepi_coherence > _PHASE_COHERENCE_COUPLING
+            cascade_analysis["is_cascade"] and u5_target_satisfied
+            if u5_target_satisfied is not None
+            else None
         ),
     }
 
@@ -521,6 +543,7 @@ def mutation_metrics(
     epi_before,
     vf_before=None,
     dnfr_before=None,
+    epi_kind_before=None,
 ):
     """ZHIR - Comprehensive mutation metrics with canonical structural indicators.
 
@@ -547,6 +570,9 @@ def mutation_metrics(
         νf before mutation (for frequency shift tracking)
     dnfr_before : float, optional
         ΔNFR before mutation (for pressure tracking)
+    epi_kind_before : str or None, optional
+        Structural identity captured before mutation. Operator provenance is
+        carried separately by ``source_glyph``/``last_glyph``.
 
     Returns
     -------
@@ -648,18 +674,16 @@ def mutation_metrics(
     d2epi = _get_node_attr(G, node, ALIAS_D2EPI, 0.0)
 
     # === THRESHOLD VERIFICATION ===
-    # Compute ∂EPI/∂t from history
-    epi_history = G.nodes[node].get("epi_history") or G.nodes[node].get(
-        "_epi_history", []
-    )
-    if len(epi_history) >= 2:
-        depi_dt = abs(epi_history[-1] - epi_history[-2])
-    else:
-        depi_dt = 0.0
+    # Read the exact immutable sample used by ZHIR's hard runtime gate. This
+    # keeps metrics signed and strict: contraction and equality do not trigger
+    # Mutation. A successful runtime application necessarily reports True.
+    from ._mutation_gate import mutation_threshold_sample
 
-    xi = float(G.graph.get("ZHIR_THRESHOLD_XI", 0.1))
-    threshold_met = depi_dt >= xi
-    threshold_ratio = depi_dt / xi if xi > 0 else 0.0
+    threshold_sample = mutation_threshold_sample(G.nodes[node], G.graph)
+    depi_dt = threshold_sample.depi_dt
+    xi = threshold_sample.xi
+    threshold_met = threshold_sample.crossed
+    threshold_ratio = None if xi == 0.0 else depi_dt / xi
 
     # === PHASE TRANSFORMATION ===
     # Extract transformation telemetry from glyph storage
@@ -670,7 +694,7 @@ def mutation_metrics(
     fixed_mode = G.nodes[node].get("_zhir_fixed_mode", False)
 
     # Compute theta shift
-    theta_shift = theta_after - theta_before
+    theta_shift = angle_diff(theta_after, theta_before)
     theta_shift_magnitude = abs(theta_shift)
 
     # Compute regimes if not stored
@@ -709,8 +733,13 @@ def mutation_metrics(
     bifurcation_event_count = len(bifurcation_events)
 
     # === STRUCTURAL PRESERVATION ===
-    epi_kind_before = G.nodes[node].get("_epi_kind_before")
-    epi_kind_after = G.nodes[node].get("epi_kind")
+    epi_kind_after = get_attr(
+        G.nodes[node],
+        ALIAS_EPI_KIND,
+        None,
+        strict=True,
+        conv=lambda value: None if value is None else str(value),
+    )
     identity_preserved = (
         epi_kind_before == epi_kind_after if epi_kind_before is not None else True
     )
@@ -733,14 +762,16 @@ def mutation_metrics(
         for n in neighbors:
             neighbor_theta = _get_node_attr(G, n, ALIAS_THETA)
             # Simplified: check if neighbor is in similar phase regime after mutation
-            phase_diff = abs(neighbor_theta - theta_after)
+            phase_diff = abs(angle_diff(neighbor_theta, theta_after))
             # If phase diff is large, neighbor might be impacted
             if phase_diff > phase_impact_threshold:
                 # Check if neighbor has changed recently (has history)
                 neighbor_theta_history = G.nodes[n].get("theta_history", [])
                 if len(neighbor_theta_history) >= 2:
                     neighbor_change = abs(
-                        neighbor_theta_history[-1] - neighbor_theta_history[-2]
+                        angle_diff(
+                            neighbor_theta_history[-1], neighbor_theta_history[-2]
+                        )
                     )
                     if (
                         neighbor_change > _NEIGHBOR_CHANGE_THRESHOLD
@@ -794,9 +825,9 @@ def mutation_metrics(
         "threshold_met": threshold_met,
         "threshold_ratio": threshold_ratio,
         "threshold_exceeded_by": max(0.0, depi_dt - xi),
-        "threshold_warning": G.nodes[node].get("_zhir_threshold_warning", False),
-        "threshold_validated": G.nodes[node].get("_zhir_threshold_met", False),
-        "threshold_unknown": G.nodes[node].get("_zhir_threshold_unknown", False),
+        "threshold_warning": not threshold_met,
+        "threshold_validated": threshold_met,
+        "threshold_unknown": False,
         # === PHASE TRANSFORMATION (ENHANCED) ===
         "theta_regime_before": regime_before,
         "theta_regime_after": regime_after,
@@ -982,11 +1013,7 @@ def transition_metrics(
 
     # === TRANSITION TYPE CLASSIFICATION ===
     # Calculate phase shift (properly wrapped)
-    phase_shift_raw = theta_after - theta_before
-    if phase_shift_raw > math.pi:
-        phase_shift_raw -= 2 * math.pi
-    elif phase_shift_raw < -math.pi:
-        phase_shift_raw += 2 * math.pi
+    phase_shift_raw = angle_diff(theta_after, theta_before)
 
     # Classify transition type
     if regime_origin == "latent":

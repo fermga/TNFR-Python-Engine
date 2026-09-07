@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+
 import networkx as nx
 
 from tnfr.operators.grammar_observations import observe_grammar
-from tnfr.operators import Coupling
+from tnfr.operators import Coupling, Silence
+from tnfr.types import serialize_bepi
 
 
 def test_observe_grammar_does_not_mutate_history_and_separates_phase_request():
@@ -83,3 +86,14 @@ def test_observe_grammar_accepts_explicit_postcondition_result_only():
     report = observe_grammar(graph, 0, ["SHA"], contract_satisfied=True)
     assert report.contract_postconditions_checked is True
     assert report.contract_satisfied is True
+
+
+def test_observe_grammar_reads_serialized_signed_scalar_epi_without_mutation():
+    graph = nx.Graph()
+    graph.add_node(0, EPI=serialize_bepi(-0.5), glyph_history=["AL"])
+    before = deepcopy(dict(graph.nodes[0]))
+
+    report = observe_grammar(graph, 0, [Silence()])
+
+    assert not report.sequence_message.startswith("grammar validation unavailable")
+    assert dict(graph.nodes[0]) == before

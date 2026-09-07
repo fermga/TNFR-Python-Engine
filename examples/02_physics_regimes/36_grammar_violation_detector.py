@@ -1,29 +1,15 @@
-"""Example 36: Grammar Violation Detector via Conservation Residuals.
+"""Example 36: heuristic alerts from structural-balance residuals.
 
-Demonstrates real-time detection and classification of grammar violations
-through conservation residuals.  When operator sequences violate U1-U6,
-the structural conservation law produces non-zero source terms:
+Compares a baseline with three synthetic perturbations and reports finite
+balance telemetry. The public detector retains historical grammar-shaped keys for
+compatibility, but those labels are heuristic hypotheses: residuals also depend
+on the pressure law, topology, timestep and discretization. They neither imply
+nor are implied by grammar validity.
 
-  d(rho)/dt + div(J) = S_grammar   where S != 0 iff grammar violated
-
-This detector uses conservation residuals to classify violations:
-  - U2 breach (convergence failure): elevated RMS residuals
-  - U3 breach (phase incompatibility): localized max residual spikes
-  - U6 breach (confinement): charge drift exceeds the U6 Phi_s bound (~1.571)
-
-Protocol (theory/STRUCTURAL_CONSERVATION_THEOREM.md ss 12):
-  1. Run grammar-compliant sequence -> measure baseline residuals
-  2. Introduce intentional violations -> measure elevated residuals
-  3. Classify violation type from residual signature
-  4. Quantify severity via grammar violation index (GVI)
-
-Physics basis:
-  Grammar symmetry (U1-U6) => S_grammar = 0 (conservation)
-  Breaking any grammar rule => S_grammar != 0 (detectable residual)
-  Each violation type produces a distinctive residual signature.
-
-  See: theory/STRUCTURAL_CONSERVATION_THEOREM.md ss 12
-  See: src/tnfr/physics/conservation.py::detect_grammar_violations_from_conservation
+U6 in particular observes mean absolute Phi_s drift between declared fields.
+The Noether-like charge drift printed here is a different quantity and cannot
+certify U6. Validate operator words with the grammar validator and phase/U6
+contracts with their dedicated checks.
 """
 
 from __future__ import annotations
@@ -77,14 +63,14 @@ def _evolve_compliant(G: nx.Graph, dt: float = 0.05) -> None:
             G.nodes[n]["delta_nfr"] += dt * (mean_dnfr - G.nodes[n]["delta_nfr"])
 
 
-def _inject_u2_violation(G: nx.Graph) -> None:
-    """Simulate U2 (convergence) breach: unbounded DELTA_NFR growth."""
+def _inject_pressure_amplification(G: nx.Graph) -> None:
+    """Apply a synthetic global pressure amplification."""
     for n in G.nodes():
         G.nodes[n]["delta_nfr"] *= 5.0  # Amplify without stabilizer
 
 
-def _inject_u3_violation(G: nx.Graph) -> None:
-    """Simulate U3 (phase incompatibility) breach: force antiphase coupling."""
+def _inject_antiphase_state(G: nx.Graph) -> None:
+    """Set an antiphase state without claiming a coupling event occurred."""
     nodes = sorted(G.nodes())
     for i, n in enumerate(nodes):
         if i % 2 == 0:
@@ -93,8 +79,8 @@ def _inject_u3_violation(G: nx.Graph) -> None:
             G.nodes[n]["phase"] = math.pi  # Antiphase
 
 
-def _inject_u6_violation(G: nx.Graph) -> None:
-    """Simulate U6 (confinement) breach: explosive DELTA_NFR at hub."""
+def _inject_local_pressure_spike(G: nx.Graph) -> None:
+    """Apply a synthetic localized pressure spike at a hub."""
     # Inject extreme DELTA_NFR at highest-degree node
     hub = max(G.nodes(), key=lambda n: G.degree(n))
     G.nodes[hub]["delta_nfr"] = 20.0
@@ -129,10 +115,10 @@ def demo_baseline() -> dict:
     print(f"    Max residual:        {balance.max_residual:.6f}")
     print(f"    Charge drift:        {balance.charge_drift:.6f}")
     print(f"    GVI:                 {balance.grammar_violation_index:.6f}")
-    print(f"    Violations detected: {violations['violations_detected']}")
-    print(f"    Violation types:     {violations['violation_types']}")
+    print(f"    Balance alert:       {violations['alerts_detected']}")
+    print(f"    Alert types:         {violations['alert_types']}")
     print(f"    Severity:            {violations['severity']:.4f}")
-    print(f"\n  Expected: No violations, low residuals (S_grammar ~ 0)")
+    print("\n  Baseline reference only; no grammar verdict follows from residual size.")
 
     return {
         "quality": balance.conservation_quality,
@@ -143,14 +129,14 @@ def demo_baseline() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 2. U2 violation: convergence failure
+# 2. Global pressure amplification
 # ---------------------------------------------------------------------------
 
 
-def demo_u2_violation(baseline: dict) -> None:
-    """Detect U2 (convergence) violation from residuals."""
+def demo_pressure_amplification(baseline: dict) -> None:
+    """Compare global pressure amplification with the baseline."""
     print("\n" + "=" * 65)
-    print("  2. U2 VIOLATION — Convergence Failure (Destabilizer w/o Stabilizer)")
+    print("  2. SYNTHETIC GLOBAL PRESSURE AMPLIFICATION")
     print("=" * 65)
 
     G = _build_graph()
@@ -159,7 +145,7 @@ def demo_u2_violation(baseline: dict) -> None:
     # Comply for a few steps, then violate U2
     for _ in range(5):
         _evolve_compliant(G)
-    _inject_u2_violation(G)  # Amplify DELTA_NFR without stabilizer
+    _inject_pressure_amplification(G)
     for _ in range(5):
         _evolve_compliant(G)
 
@@ -167,7 +153,7 @@ def demo_u2_violation(baseline: dict) -> None:
     balance = verify_conservation_balance(snap_before, snap_after, dt=10 * 0.05)
     violations = detect_grammar_violations_from_conservation(balance)
 
-    print(f"\n  Protocol: 5 compliant steps -> U2 breach -> 5 more steps")
+    print("\n  Protocol: 5 baseline steps -> pressure amplification -> 5 steps")
     print(
         f"    Conservation quality: {balance.conservation_quality:.4f}  "
         f"(baseline: {baseline['quality']:.4f})"
@@ -185,25 +171,25 @@ def demo_u2_violation(baseline: dict) -> None:
         f"(baseline: {baseline['drift']:.6f})"
     )
     print(f"    GVI:                 {balance.grammar_violation_index:.6f}")
-    print(f"    Violations detected: {violations['violations_detected']}")
-    print(f"    Violation types:     {violations['violation_types']}")
+    print(f"    Balance alert:       {violations['alerts_detected']}")
+    print(f"    Alert types:         {violations['alert_types']}")
     print(f"    Severity:            {violations['severity']:.4f}")
-    print(f"    Nodes violating:     {len(violations['nodes_violating'])} nodes")
+    print(f"    Nodes alerted:       {len(violations['nodes_alerted'])} nodes")
 
     rms_ratio = balance.rms_residual / max(baseline["rms"], 1e-10)
-    print(f"\n  Diagnostic: RMS ratio (violation/baseline) = {rms_ratio:.1f}x")
-    print(f"  Signature: ELEVATED RMS residual = convergence failure (U2)")
+    print(f"\n  Diagnostic: RMS ratio (perturbed/baseline) = {rms_ratio:.1f}x")
+    print("  Observation: global amplification changes the RMS balance residual.")
 
 
 # ---------------------------------------------------------------------------
-# 3. U3 violation: phase incompatibility
+# 3. Antiphase-state perturbation
 # ---------------------------------------------------------------------------
 
 
-def demo_u3_violation(baseline: dict) -> None:
-    """Detect U3 (phase incompatibility) violation from residuals."""
+def demo_antiphase_state(baseline: dict) -> None:
+    """Compare an antiphase-state perturbation with the baseline."""
     print("\n" + "=" * 65)
-    print("  3. U3 VIOLATION — Phase Incompatibility (Antiphase Coupling)")
+    print("  3. SYNTHETIC ANTIPHASE STATE")
     print("=" * 65)
 
     G = _build_graph()
@@ -211,7 +197,7 @@ def demo_u3_violation(baseline: dict) -> None:
 
     for _ in range(5):
         _evolve_compliant(G)
-    _inject_u3_violation(G)  # Force antiphase
+    _inject_antiphase_state(G)
     for _ in range(5):
         _evolve_compliant(G)
 
@@ -219,7 +205,7 @@ def demo_u3_violation(baseline: dict) -> None:
     balance = verify_conservation_balance(snap_before, snap_after, dt=10 * 0.05)
     violations = detect_grammar_violations_from_conservation(balance)
 
-    print(f"\n  Protocol: 5 compliant steps -> U3 breach -> 5 more steps")
+    print("\n  Protocol: 5 baseline steps -> antiphase state -> 5 steps")
     print(
         f"    Conservation quality: {balance.conservation_quality:.4f}  "
         f"(baseline: {baseline['quality']:.4f})"
@@ -237,25 +223,25 @@ def demo_u3_violation(baseline: dict) -> None:
         f"(baseline: {baseline['drift']:.6f})"
     )
     print(f"    GVI:                 {balance.grammar_violation_index:.6f}")
-    print(f"    Violations detected: {violations['violations_detected']}")
-    print(f"    Violation types:     {violations['violation_types']}")
+    print(f"    Balance alert:       {violations['alerts_detected']}")
+    print(f"    Alert types:         {violations['alert_types']}")
     print(f"    Severity:            {violations['severity']:.4f}")
-    print(f"    Nodes violating:     {len(violations['nodes_violating'])} nodes")
+    print(f"    Nodes alerted:       {len(violations['nodes_alerted'])} nodes")
 
     max_ratio = balance.max_residual / max(baseline["max"], 1e-10)
     print(f"\n  Diagnostic: Max residual ratio = {max_ratio:.1f}x")
-    print(f"  Signature: LOCALIZED MAX residual spikes = phase incompatibility (U3)")
+    print("  Observation: this state perturbation changes the maximum residual.")
 
 
 # ---------------------------------------------------------------------------
-# 4. U6 violation: confinement breach
+# 4. Localized pressure spike
 # ---------------------------------------------------------------------------
 
 
-def demo_u6_violation(baseline: dict) -> None:
-    """Detect U6 (confinement) violation from charge drift."""
+def demo_local_pressure_spike(baseline: dict) -> None:
+    """Compare a localized pressure spike with the baseline."""
     print("\n" + "=" * 65)
-    print("  4. U6 VIOLATION — Confinement Breach (Phi_s Escape)")
+    print("  4. SYNTHETIC LOCAL PRESSURE SPIKE")
     print("=" * 65)
 
     G = _build_graph()
@@ -263,7 +249,7 @@ def demo_u6_violation(baseline: dict) -> None:
 
     for _ in range(5):
         _evolve_compliant(G)
-    _inject_u6_violation(G)  # Explosive DELTA_NFR at hub
+    _inject_local_pressure_spike(G)
     for _ in range(5):
         _evolve_compliant(G)
 
@@ -271,7 +257,7 @@ def demo_u6_violation(baseline: dict) -> None:
     balance = verify_conservation_balance(snap_before, snap_after, dt=10 * 0.05)
     violations = detect_grammar_violations_from_conservation(balance)
 
-    print(f"\n  Protocol: 5 compliant steps -> U6 breach -> 5 more steps")
+    print("\n  Protocol: 5 baseline steps -> local pressure spike -> 5 steps")
     print(
         f"    Conservation quality: {balance.conservation_quality:.4f}  "
         f"(baseline: {baseline['quality']:.4f})"
@@ -289,14 +275,14 @@ def demo_u6_violation(baseline: dict) -> None:
         f"(baseline: {baseline['drift']:.6f})"
     )
     print(f"    GVI:                 {balance.grammar_violation_index:.6f}")
-    print(f"    Violations detected: {violations['violations_detected']}")
-    print(f"    Violation types:     {violations['violation_types']}")
+    print(f"    Balance alert:       {violations['alerts_detected']}")
+    print(f"    Alert types:         {violations['alert_types']}")
     print(f"    Severity:            {violations['severity']:.4f}")
-    print(f"    Nodes violating:     {len(violations['nodes_violating'])} nodes")
+    print(f"    Nodes alerted:       {len(violations['nodes_alerted'])} nodes")
 
     drift_ratio = balance.charge_drift / max(baseline["drift"], 1e-10)
     print(f"\n  Diagnostic: Charge drift ratio = {drift_ratio:.1f}x")
-    print(f"  Signature: CHARGE DRIFT > U6 Phi_s bound (~1.571) = breach (U6)")
+    print("  Observation: charge drift changes, but this is not the U6 Phi_s drift.")
 
 
 # ---------------------------------------------------------------------------
@@ -305,16 +291,16 @@ def demo_u6_violation(baseline: dict) -> None:
 
 
 def demo_severity_comparison() -> None:
-    """Compare all violation types on the same graph configuration."""
+    """Compare all synthetic perturbations on the same graph configuration."""
     print("\n" + "=" * 65)
     print("  5. COMPARATIVE SEVERITY ANALYSIS")
     print("=" * 65)
 
     scenarios = [
         ("Compliant", None),
-        ("U2 breach", _inject_u2_violation),
-        ("U3 breach", _inject_u3_violation),
-        ("U6 breach", _inject_u6_violation),
+        ("Pressure amp", _inject_pressure_amplification),
+        ("Antiphase", _inject_antiphase_state),
+        ("Local spike", _inject_local_pressure_spike),
     ]
 
     print(
@@ -347,14 +333,13 @@ def demo_severity_comparison() -> None:
 
     print(
         f"""
-  Violation signatures (from ss 12):
-    U2 (convergence):  High RMS residual (global instability)
-    U3 (phase):        High MAX residual (local incompatibility)
-    U6 (confinement):  High charge DRIFT (global escape)
+  These are overlapping response patterns, not rule identifiers:
+    global pressure amplification can raise RMS residuals;
+    an antiphase state can change maximum residuals;
+    a local pressure spike can change charge drift.
 
-  The conservation law acts as a universal grammar violation detector:
-    S_grammar = 0  <=>  Grammar U1-U6 satisfied
-    S_grammar > 0  ==>  Violation type classifiable from residual pattern
+  The same residual can arise from dynamics, topology or discretization.
+  Grammar and U6 decisions require their dedicated validators.
 """
     )
 
@@ -367,14 +352,14 @@ def demo_severity_comparison() -> None:
 def main() -> None:
     print()
     print("*" * 65)
-    print("  TNFR Example 36: Grammar Violation Detector")
-    print("  Theory: STRUCTURAL_CONSERVATION_THEOREM.md ss 12")
+    print("  TNFR Example 36: Structural-Balance Heuristic Alerts")
+    print("  Finite residual comparison; no grammar classifier")
     print("*" * 65)
 
     baseline = demo_baseline()
-    demo_u2_violation(baseline)
-    demo_u3_violation(baseline)
-    demo_u6_violation(baseline)
+    demo_pressure_amplification(baseline)
+    demo_antiphase_state(baseline)
+    demo_local_pressure_spike(baseline)
     demo_severity_comparison()
 
     print("=" * 65)
@@ -382,18 +367,13 @@ def main() -> None:
     print("=" * 65)
     print(
         f"""
-  Grammar Violation Detection via Conservation Residuals (ss 12):
+  Structural-balance residuals provide useful anomaly telemetry.
+  The finite scenarios show that different perturbations alter RMS, maximum
+  residual and charge drift in different amounts, but they do not establish
+  unique signatures or grammar equivalences.
 
-  Main result: S_grammar != 0  detects and classifies grammar violations.
-
-  Detected violation types:
-    U2 — Convergence failure:    RMS residual elevated globally
-    U3 — Phase incompatibility:  Max residual spikes at boundary nodes
-    U6 — Confinement breach:     Charge drift exceeds the U6 Phi_s bound (~1.571)
-
-  The conservation law provides a SINGLE diagnostic framework
-  for ALL grammar violations — no separate checker needed per rule.
-  This is the Noether-like consequence of grammar symmetry.
+  Use validate_grammar for U1-U5 symbol/history rules, explicit phase checks
+  for U3, and before/after structural-potential fields for the U6 policy.
 """
     )
 

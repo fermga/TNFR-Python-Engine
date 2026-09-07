@@ -1,9 +1,19 @@
 # Catalog Type-Hygiene Programme — Master Roadmap
 
-**Status**: ACTIVE
+**Status**: HISTORICAL PROGRAMME — completed implementation audit; current scope below
 **Started**: 2026-05 (T-νf), 2026-05 (T-EPI B1a)
 **Owner**: TNFR canonical-development team
 **Authority ladder**: nodal equation `∂EPI/∂t = νf · ΔNFR(t)` → GitHub repo → `AGENTS.md` → this document.
+
+> **Current scope and supersession (2026-09).** The B0–B11 results certify the
+> types, registry entries, public exports and reduction paths present in the
+> audited implementation. In this document, *closed*, *complete*, *forced* and
+> *minimal* are therefore programme-local terms. They do not prove that the 13
+> operators generate, classify or exhaust every admissible TNFR
+> transformation. That global completeness question remains open as research
+> line S10 in [CORE_RESEARCH_PROGRAM.md](CORE_RESEARCH_PROGRAM.md). The current
+> specification boundary is stated in
+> [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) §§1.1, 13 and 16.
 
 ---
 
@@ -21,9 +31,10 @@ properties), the programme runs a **falsifiable type-hygiene certification**:
 
 The certification produces, per ingredient, a verdict of:
 
-- **NEGATIVE** — the literal type is forced. Any richer envelope present in the
-  codebase is reclassified as *legitimate non-canonical research scaffolding*.
-- **POSITIVE** — the catalog is forcing a richer type than it currently uses;
+- **NEGATIVE** — within the audited implementation and stated axiom inventory,
+  no richer type is forced. Any richer envelope examined in the codebase is
+  reclassified as *legitimate non-canonical research scaffolding*.
+- **POSITIVE** — the audited catalog is forcing a richer type than it currently uses;
   the catalog is internally inconsistent at this point and must be extended.
   This would be a major event and would block downstream work until resolved.
 - **INDETERMINATE** — the diagnostic does not separate the alternatives; the
@@ -41,8 +52,9 @@ The certification produces, per ingredient, a verdict of:
 
 ### 1.3 Why now
 
-Post-N15 (REMESH-∞ closure, May 2026) and post-P49 (full ζ↔L attack-surface
-parity), the TNFR-Riemann program is **paused at the T-HP boundary**. Before
+After the finite fixed-delay projection that superseded the historical N15
+REMESH-∞ interpretation, and post-P49 (full ζ↔L attack-surface parity), the
+TNFR-Riemann program is **paused at the T-HP boundary**. Before
 either (a) attempting a new branch B1/B2/B3 for T-HP or (b) opening a new
 ambitious sub-program (e.g., Navier–Stokes), the catalog's internal type-
 hygiene must be certified piece by piece. This programme is the prerequisite
@@ -120,15 +132,19 @@ directly.
 
 #### B1 — T-EPI (Type of structural form)
 
-- **Anchor**: `src/tnfr/operators/nodal_equation.py:1–160`
-  (`compute_expected_depi_dt: (float, float) → float`); all 13 glyph operators
-  read/write scalar EPI via `get_neighbor_epi → float`; `_bepi_to_float`
-  down-projects via `max_magnitude`.
+- **Anchor**: `src/tnfr/operators/nodal_equation.py`
+  (`compute_expected_depi_dt: (float, float) → float`) and the centralized
+  scalarization contract in `src/tnfr/types.py`. `NodeNX` serializes EPI through
+  `BEPIElement`, but the trivial uniform-real embedding represents the same
+  signed scalar and is recovered by `real_scalar_epi`. Genuinely nonuniform or
+  complex BEPI values retain a magnitude projection for generic read-outs and
+  are rejected by scalar-only pure-EPI diffusion.
 - **Suspected non-canonical envelope**: `BEPIElement` Banach element
   $C^0([0,1], \mathbb{C}) \oplus \ell^2(\mathbb{C})$, fully formalised in
-  `src/tnfr/mathematics/epi.py:103` with `direct_sum`, `tensor`, `adjoint`,
-  `compose` but **not invoked by any of the 13 canonical operators**.
-  *Structurally stronger evidence than B0 had.*
+  `src/tnfr/mathematics/epi.py` with `direct_sum`, `tensor`, `adjoint` and
+  `compose`. The general Banach element is not promoted to the canonical scalar
+  EPI channel; its uniform-real embedding is an implementation representation,
+  not an additional structural degree of freedom.
 - **Diagnostic**: `src/tnfr/riemann/epi_type_signature.py` (two-axis: storage
   fraction + binned spectral entropy of scalar EPI(t)).
 - **Demo**: `examples/05_type_hygiene/79_epi_type_signature_demo.py`.
@@ -142,18 +158,22 @@ directly.
   | 1 | 24 | 64 | 32 | 0.876342 | 0.0000 | `BEPI_VALUED_NECESSARY`* |
   | 2 | 48 | 128 | 64 | 0.895673 | 0.0000 | `BEPI_VALUED_NECESSARY`* |
 
-  \* Cross-axis interpretation: storage uniformly scalar, spectral uniformly
+  \* These historical direct-graph probes did not exercise `NodeNX`'s serialized
+  scalar embedding. Cross-axis interpretation: canonical state uniformly
+  scalar, spectral uniformly
   multi-modal → motivates the **Temporal-Modal Equivalence Principle**
   (scalar EPI(t) trajectory encodes multi-modal content temporally rather
   than spatially-in-modes).
 - **Expected final verdict**: **NEGATIVE** at the canonical level (deferred to B1c).
-- **Status**: ✅ COMPLETE — B1a ✅, B1b ✅, B1c ✅. Final verdict: NEGATIVE.
+- **Status**: ✅ COMPLETE — B1a ✅, B1b ✅, B1c ✅. Final verdict: NEGATIVE for
+  a genuinely nonuniform or complex BEPI as canonical EPI state; the signed
+  uniform-real BEPI embedding is representation-equivalent to scalar EPI.
 
 #### B2 — T-φ (Type of phase)
 
 - **Anchor (to verify)**: phase stored as `float ∈ [0, 2π)` via
   `tnfr.mathematics.phase.wrap_angle`; coupling check
-  `|φᵢ − φⱼ| ≤ Δφ_max` (U3).
+  `|wrap(φᵢ − φⱼ)| ≤ Δφ_max` (U3).
 - **Suspected non-canonical envelope**: complex U(1) bundle element
   $e^{i\phi} \in S^1 \subset \mathbb{C}$, or multi-sheet cover of S¹ for
   topologically-charged phase windings.
@@ -310,9 +330,10 @@ of any underlying Tier 1+2 question is a necessary prerequisite.
   `E_UR = HiddenIntermediateRulecheckerState` classified. See research
   notes §13quinquaginta-octava (Phase a) and §13quinquaginta-nona (Phase c).
 
-#### B11 — Operator-catalog completeness and closure
+#### B11 — Operator-registry closure
 
-- **Reference**: `docs/OPERATOR_COMPLETENESS.md` (existing analysis).
+- **Reference**: [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) §§1.1, 13
+  and 16 (current completeness boundary).
 - **Type-hygiene angle**: confirm registry of exactly 13 operators is
   enforced as a closed set, with no "ghost" 14th operator construction
   reachable from the public API.
@@ -325,32 +346,34 @@ of any underlying Tier 1+2 question is a necessary prerequisite.
   `E_OC = HiddenFourteenthOperatorConstruction` classified. See research
   notes §13sexagesima (Phase a) and §13sexagesima-prima (Phase c).
 
-### Final — Composite meta-minimality theorem
+### Final — Historical composite implementation certificate
 
 All Tiers 1–4 are NEGATIVE under twelve distinct orthogonal CDMs
 (Pontryagin/measure-ν_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC, CCC,
-ACD, URC, OCD). The composite theorem is now stated and proven in the
-canonical-implementation sense at
+ACD, URC, OCD). The historical programme called their composition a theorem in
+the canonical-implementation sense at
 `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13sexagesima-secunda:
 
-> **Theorem (Catalog Minimality & Completeness)**. Under the
+> **Historical certificate (implementation type closure)**. Under the
 > 13-operator TNFR catalog and the unified grammar U1–U6, the per-node types
 > $(\nu_f, \mathrm{EPI}, \phi, \Delta\mathrm{NFR}) \in \mathbb{R}^+ \times
 > \mathbb{R} \times [0, 2\pi) \times \mathbb{R}$, the graph-level parameters
 > $(\tau_l, \tau_g, \Delta\phi_{\max}, w_{ij}) \in \mathbb{N}^2 \times [0, \pi]
 > \times \mathbb{R}_{\ge 0}$, the derived tetrad
 > $(\Phi_s, |\nabla\phi|, K_\phi, \xi_C)$, and the derived currents
-> $(J_\phi, J_{\Delta\mathrm{NFR}})$ are jointly the **minimal and complete**
-> structural state; no richer canonical envelope is forced and no scalar
-> ingredient can be eliminated without breaking the nodal equation contract
-> or U1–U6 closure.
+> $(J_\phi, J_{\Delta\mathrm{NFR}})$ close the audited implementation paths:
+> none of the twelve tested richer envelopes is required by those paths, and
+> the audited scalar ingredients cannot be removed while preserving the tested
+> contracts.
 
-Proof: composition of the twelve Phase c source-code traces (B0–B11).
+Evidence: composition of the twelve Phase c source-code traces (B0–B11).
 Twelve non-canonical envelopes (`E0`…`E_OC`) are classified as
 research-only. Scope guard: does NOT advance G4 = RH (Conjecture T-HP).
 
-This theorem is the natural endpoint of the programme. The programme is
-now closed.
+This certificate is the endpoint of the historical implementation audit. A
+finite source-code trace cannot prove irreducibility or completeness over an
+independently defined space of admissible transformations; that S10 problem is
+still open.
 
 ---
 
@@ -376,10 +399,10 @@ Verdict legend: `—` pending · `NEG` negative · `POS` positive · `IND` indet
 | B9 | Δ-aggregates-closure | ✅ | n/a | ✅ NEGATIVE | scalar-functionals of Tier-1+Tier-2 plus tetrad plus currents, ten CDMs orthogonal | research notes §13quinquaginta-septima |
 | **Tier 4 — Structural meta-properties** | | | | | | |
 | B10 | U-rules type-hygiene | ✅ | ✅ | ✅ | **NEGATIVE** (URC) | this commit (B10a) + this commit (B10c); research notes §13quinquaginta-octava + §13quinquaginta-nona |
-| B11 | Operator-catalog closure | ✅ | ✅ | ✅ | **NEGATIVE** (OCD) | this commit (B11a) + this commit (B11c); research notes §13sexagesima + §13sexagesima-prima |
-| **Final** | Meta-minimality theorem | ✅ | ✅ | ✅ | **ESTABLISHED** (composite) | this commit; research notes §13sexagesima-secunda |
+| B11 | Operator-registry closure | ✅ | ✅ | ✅ | **NEGATIVE** (OCD) | this commit (B11a) + this commit (B11c); research notes §13sexagesima + §13sexagesima-prima |
+| **Final** | Implementation type-closure certificate | ✅ | ✅ | ✅ | **ESTABLISHED IN AUDITED IMPLEMENTATION** | this commit; research notes §13sexagesima-secunda |
 
-**Progress as of 2026-05-27**: **PROGRAMME CLOSED**. 12 sub-questions complete (B0–B11 all NEGATIVE under twelve distinct orthogonal CDMs: Pontryagin/measure-ν_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC, CCC, ACD, URC, OCD). Composite meta-minimality theorem **ESTABLISHED** in the canonical-implementation sense at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13sexagesima-secunda. Twelve non-canonical research envelopes classified (E0, E1, E2, E3, E4, E5, E6, E_TC, E_CC, E_AC, E_UR, E_OC). B6 Phase c at `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §13quinquaginta-prima classifies E7 = `NodeIndexedCouplingWeights` as the seventh non-canonical research envelope; B7 Phase c at §13quinquaginta-tertia classifies E_TC = `HiddenIntermediateTensorState` as the eighth non-canonical research envelope; B8 Phase c at §13quinquaginta-quinta classifies E_CC = `HiddenIntermediateTensorStateOnCurrents` as the ninth non-canonical research envelope; B9 Phase c at §13quinquaginta-septima classifies E_AC = `HiddenIntermediateTensorStateOnAggregates` as the tenth non-canonical research envelope; B10 Phase c at §13quinquaginta-nona classifies E_UR = `HiddenIntermediateRulecheckerState` as the eleventh non-canonical research envelope; B11 Phase c at §13sexagesima-prima classifies E_OC = `HiddenFourteenthOperatorConstruction` as the twelfth non-canonical research envelope. L3* now promoted to *"empirically robust working heuristic with complete Tier-1/Tier-2 structural-orthogonality coverage, all three Tier-3 closures, and both Tier-4 closures orthogonally discharged"* — twelve CDMs act on twelve structurally distinct surfaces (field measure, element projection, phase wrap, scalar aggregation, temporal sampling, coupling verdict, mixing aggregation, tetrad-reduction closure, currents-reduction closure, aggregates-reduction closure, U-rules-type-hygiene, operator-catalog-closure), each unique to the canonical machinery at its surface. L3* prediction for the Final composite meta-minimality theorem: the twelve NEGATIVE verdicts assemble into a single statement under twelve orthogonal CDMs (composition deferred to a separate commit). Living discoveries log at §13triginta-septima; B4 closure at §13quadraginta-tertia / -quarta / -quinta; B5 closure at §13quadraginta-sexta / -septima / -octava; B6 closure at §13quadraginta-nona / §13quinquaginta / §13quinquaginta-prima; B7 closure at §13quinquaginta-secunda / §13quinquaginta-tertia; B8 closure at §13quinquaginta-quarta / §13quinquaginta-quinta; B9 closure at §13quinquaginta-sexta / §13quinquaginta-septima; B10 closure at §13quinquaginta-octava / §13quinquaginta-nona; B11 closure at §13sexagesima / §13sexagesima-prima.
+**Progress as of 2026-05-27**: **PROGRAMME CLOSED AS AN IMPLEMENTATION AUDIT**. 12 sub-questions complete (B0–B11 all NEGATIVE under twelve distinct orthogonal CDMs: Pontryagin/measure-ν_f, TMEP, PWDP, BSAD, DITS, STD, SWD, TRC, CCC, ACD, URC, OCD). The composite implementation certificate is established only for the inspected registry and code paths; admissible-transformation completeness remains open. Twelve non-canonical research envelopes were classified (E0, E1, E2, E3, E4, E5, E6, E_TC, E_CC, E_AC, E_UR, E_OC). The detailed historical phase and section references remain recorded in §3 and `theory/TNFR_RIEMANN_RESEARCH_NOTES.md` §§13triginta-septima–13sexagesima-secunda.
 
 ---
 
@@ -469,12 +492,15 @@ TNFR catalog. It does **not**:
 - discover new physical phenomena;
 - modify the 13-operator catalog;
 - change runtime behaviour of any operator.
+- prove that the registered operators exhaust an independently defined space
+  of admissible TNFR transformations;
+- prove global state minimality or operator irreducibility.
 
 It **does**:
 
-- replace catalog *claims* of minimality/completeness with falsifiable
-  *certifications* piece by piece;
-- classify all richer envelopes already present in the codebase
+- replace implementation-level type claims with falsifiable certifications
+  piece by piece;
+- classify the richer envelopes audited by B0–B11
   (Pontryagin-dual νf-measure, `BEPIElement` Banach EPI, candidate
   tensor-valued ΔNFR, etc.) as **legitimate non-canonical research
   scaffolding** rather than canonical types;
@@ -496,12 +522,15 @@ It **does**:
   - `§13triginta-prima/secunda/tertia` — B0 = T-νf complete record.
   - `§13triginta-quarta` — B1a = T-EPI pre-registration.
   - `§19.1` — full P1–P49 milestone table (TNFR-Riemann program).
-- `theory/REMESH_INFINITY_DERIVATION.md` — N15 closure, cross-reference for B4.
+- `theory/REMESH_INFINITY_DERIVATION.md` — finite fixed-delay replacement for
+  the historical N15 limit claim; literal runtime infinity remains open.
 - `theory/MINIMAL_STRUCTURAL_DEGREES.md` — background on the four-field tetrad
   (relevant to B7).
 - `theory/UNIFIED_GRAMMAR_RULES.md` — U1–U6 derivations (B10).
-- `theory/FUNDAMENTAL_THEORY.md` — structural-field tetrad (minimal derivative-tower basis; only π is a genuine structural scale).
-- `docs/OPERATOR_COMPLETENESS.md` — operator catalog completeness (B11).
+- `theory/FUNDAMENTAL_THEORY.md` — canonical four-field diagnostic interface;
+  reconstruction and universal minimality remain open.
+- [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) §§1.1, 13 and 16 — current
+  registry-closure and global-completeness boundary (B11).
 - `src/tnfr/riemann/nuf_type_signature.py` — B0 diagnostic.
 - `src/tnfr/riemann/epi_type_signature.py` — B1 diagnostic.
 - `examples/05_type_hygiene/78_nuf_type_signature_demo.py` — B0 demo.
@@ -509,7 +538,8 @@ It **does**:
 
 ### External
 
-- von Neumann (1932), *Mean Ergodic Theorem* — underpinning of N15 closure.
+- von Neumann (1932), *Mean Ergodic Theorem* — context for finite cyclic
+  projection; it does not establish a literal runtime REMESH-∞ limit.
 - Riemann–von Mangoldt counting function — referenced in N15 rule-outs.
 
 ---
@@ -535,5 +565,6 @@ phase review.
 
 ---
 
-**Document version**: 1.0 (2026-05-26)
-**Next review**: after B1c verdict (T-EPI complete).
+**Document version**: 1.1 (scope reconciliation, 2026-09-06)
+**Next review**: if S10 supplies an independently defined admissible
+transformation space or a new registry/type path invalidates a B0–B11 trace.

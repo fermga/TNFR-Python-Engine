@@ -29,6 +29,8 @@ contracts are centralized in [API Contracts](../docs/API_CONTRACTS.md).
 | [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) | Variational models and their stated bridge conditions |
 | [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Open-system and dissipative extensions |
 | [STRUCTURAL_STABILITY_AND_DYNAMICS.md](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Stability diagnostics and invariant monitoring |
+| [TNFR_DIFFUSION_STABILITY_THEOREM.md](TNFR_DIFFUSION_STABILITY_THEOREM.md) | Fixed/time-varying and exact-common-metric EPI diffusion, directed transient criterion, and conditional affine hybrid bounds |
+| [TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) | Pure-EPI quotient, coherence geometry, decoupled metriplectic bridge, and restricted S16 endpoint/path certificates |
 | [PHYSICAL_REGIME_CORRESPONDENCES.md](PHYSICAL_REGIME_CORRESPONDENCES.md) | Scoped comparisons with diffusive, inertial and modal regimes |
 | [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md) | Gauge and polarization models |
 | [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Derived field quantities |
@@ -52,6 +54,7 @@ contracts are centralized in [API Contracts](../docs/API_CONTRACTS.md).
 
 | Program | Document |
 | --- | --- |
+| Core dynamics S1-S16 | [CORE_RESEARCH_PROGRAM.md](CORE_RESEARCH_PROGRAM.md) |
 | Riemann and spectral ladders | [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) |
 | Navier-Stokes | [TNFR_NAVIER_STOKES_RESEARCH_NOTES.md](TNFR_NAVIER_STOKES_RESEARCH_NOTES.md) |
 | Yang-Mills | [TNFR_YANG_MILLS_RESEARCH_NOTES.md](TNFR_YANG_MILLS_RESEARCH_NOTES.md) |

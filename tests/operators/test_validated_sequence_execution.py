@@ -17,6 +17,7 @@ def _graph():
     graph.add_node(0, **{
         ALIAS_EPI[0]: 0.5, ALIAS_VF[0]: 1.0,
         ALIAS_DNFR[0]: 0.2, ALIAS_THETA[0]: 0.0,
+        "epi_history": [0.0, 0.2],
         "glyph_history": [], U2_DEBT_KEY: 0, PRIOR_COHERENCE_KEY: False,
     })
     return graph

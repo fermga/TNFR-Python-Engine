@@ -29,8 +29,10 @@ manifests:
 - advisory   : REMESH (a network-level echo, verified elsewhere)
 
 This is the difference between *asserting* the contracts (a docstring) and
-*measuring* them (this audit): 13/13 operators are shown to satisfy their
-canonical postcondition, with the measured before→after values printed.
+*measuring* them (this audit): all 13 catalog entries are exercised on the
+declared deterministic probes, with the measured before→after values printed.
+Passing those probes is evidence for the implemented postconditions; it is not
+a proof over every admissible state, graph, parameter or operator composition.
 
 A FIXED BUG
 ===========
@@ -55,6 +57,9 @@ References:
 import os
 import sys
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from tnfr.physics.integrity import audit_operator_contracts
@@ -62,9 +67,9 @@ from tnfr.sdk import TNFR
 
 
 def experiment_1_measured_audit():
-    """Measure all 13 operator-contract fidelities."""
+    """Measure all 13 catalog entries on the declared finite probes."""
     print("=" * 72)
-    print("EXPERIMENT 1: Measured operator-contract fidelity (13/13)")
+    print("EXPERIMENT 1: Finite-probe operator-contract report")
     print("=" * 72)
     print()
 
@@ -78,10 +83,11 @@ def experiment_1_measured_audit():
         )
     print()
     print(
-        f"-> {audit.n_satisfied}/{audit.n_operators} operators satisfy their "
-        f"canonical postcondition contract, MEASURED"
+        f"-> {audit.n_satisfied}/{audit.n_operators} catalog entries pass their "
+        f"declared postcondition probes"
     )
-    print(f"   (not merely asserted). all_satisfied = {audit.all_satisfied}")
+    print("   Scope: deterministic finite probes, not a universal certificate.")
+    print(f"   all_satisfied = {audit.all_satisfied}")
     print()
 
 
@@ -111,9 +117,9 @@ def experiment_2_context_matters():
 
 
 def experiment_3_sdk_audit():
-    """The SDK exposes the measured audit; integrity_check is fixed."""
+    """Contrast catalog fixtures with history-dependent monitor evidence."""
     print("=" * 72)
-    print("EXPERIMENT 3: SDK audit_operators() + fixed integrity_check()")
+    print("EXPERIMENT 3: Catalog probes vs recorded monitor evidence")
     print("=" * 72)
     print()
 
@@ -122,7 +128,7 @@ def experiment_3_sdk_audit():
     audit = net.audit_operators()
     print(
         f"  net.audit_operators(): all_satisfied={audit['all_satisfied']}, "
-        f"{audit['n_satisfied']}/{audit['n_operators']} operators"
+        f"{audit['n_satisfied']}/{audit['n_operators']} catalog probes"
     )
     print()
 
@@ -131,15 +137,16 @@ def experiment_3_sdk_audit():
         f"  net.integrity_check('IL'): nodes_checked="
         f"{check['nodes_checked']}, pass_rate={check['pass_rate']:.2f}"
     )
-    print("  (was nodes_checked=0 before the .passed -> .is_healthy fix)")
+    print("  No IL event was recorded after monitor attachment, so zero evidence")
+    print("  is the expected result; the method never fabricates a certificate.")
     print()
 
 
 def main():
     print()
     print("#" * 72)
-    print("# TNFR Example 115: Operator-Contract Fidelity Audit")
-    print("# measured, not asserted (invariant #4: Grammar Compliance)")
+    print("# TNFR Example 115: Finite Operator Postcondition Probes")
+    print("# deterministic regression evidence with explicit scope")
     print("#" * 72)
     print()
     experiment_1_measured_audit()
@@ -151,9 +158,8 @@ def main():
     audit = audit_operator_contracts()
     print(audit.summary())
     print()
-    print("The 13 canonical operators are MEASURED to satisfy their")
-    print("postcondition contracts in their correct canonical contexts.")
-    print("Validation tool for invariant #4; no operator physics changed.")
+    print("All 13 catalog entries pass the declared deterministic fixtures.")
+    print("This is regression evidence, not a universal operator certificate.")
 
 
 if __name__ == "__main__":

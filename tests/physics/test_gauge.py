@@ -1,9 +1,8 @@
-"""Tests for TNFR Gauge Structure — Local U(1) Symmetry of Complex Geometric Field.
+"""Tests for the auxiliary U(1) field-coordinate diagnostics.
 
-Validates the **Structural Gauge Theorem**: the complex geometric field
-Ψ = K_φ + i·J_φ admits a local U(1) gauge symmetry under which physical
-observables (ℰ, |Ψ|, C(t), |𝒯|², |𝒳|²) are exactly invariant while
-gauge-dependent quantities (Q, 𝒬, χ, arg Ψ) transform non-trivially.
+The local rotation identities are algebraic.  The bundled connection
+A=d(arg Ψ) is pure gauge, so its cycle sum vanishes analytically and the
+curvature/Yang-Mills-named outputs are numerical closure diagnostics.
 
 Tests verify:
 1.  Gauge transformation: K_φ'/J_φ' rotation by angle α
@@ -11,12 +10,12 @@ Tests verify:
 3.  Energy density ℰ invariance
 4.  Topological norm |𝒯|² = 𝒬² + 𝒬̃² invariance
 5.  Chirality norm |𝒳|² = χ² + χ̃² invariance
-6.  Symmetry breaking 𝒮 invariance
+6.  Symmetry breaking 𝒮 non-invariance
 7.  Noether charge Q NON-invariance (expected)
 8.  Gauge connection A_ij = arg(Ψ_j) − arg(Ψ_i) antisymmetry
 9.  Covariant derivative D_ij Ψ magnitude invariance
-10. Gauge curvature F_C on triangles (holonomy)
-11. Yang-Mills action S_YM ≥ 0
+10. Exact-connection cycle closure F_C ≈ 0
+11. Legacy Yang-Mills diagnostic is numerical residual only
 12. Energy decomposition consistency
 13. Interaction regime classification
 14. Multi-topology validation (WS, BA, Grid)
@@ -24,12 +23,11 @@ Tests verify:
 16. GaugeSnapshot capture
 17. Reproducibility under deterministic seeds
 
-TIER: CORE PHYSICS — gauge structure axiomatises internal field symmetry.
+TIER: AUXILIARY ALGEBRAIC MODEL — no operator or dynamical derivation.
 """
 
 from __future__ import annotations
 
-import copy
 import math
 import os
 import sys
@@ -44,6 +42,7 @@ from tnfr.constants import inject_defaults
 from tnfr.physics.canonical import compute_phase_curvature, compute_phase_gradient
 from tnfr.physics.extended import compute_dnfr_flux, compute_phase_current
 from tnfr.physics.gauge import (
+    GAUGE_CLOSURE_TOLERANCE,
     N_REGIMES,
     REGIME_ACTIVITY_SHARE,
     BianchiIdentityResult,
@@ -197,6 +196,18 @@ class TestGaugeTransformation:
         for n in ws_graph.nodes():
             assert abs(abs(result["psi"][n]) - abs(psi_before[n])) < 1e-10
 
+    @pytest.mark.parametrize(
+        "alpha",
+        [None, {0: True}, {0: math.nan}, {0: math.inf}, {0: "0.1"}],
+    )
+    def test_transformation_rejects_invalid_angle_inputs(self, alpha):
+        """Rotations reject invalid mappings and non-finite angles."""
+        graph = nx.path_graph(2)
+        inject_defaults(graph)
+        value = [] if alpha is None else alpha
+        with pytest.raises((TypeError, ValueError)):
+            apply_gauge_transformation(graph, value)
+
     def test_double_transform_composes(self, ws_graph):
         """Two successive transforms α₁, α₂ equal one transform α₁ + α₂."""
         rng = np.random.default_rng(77)
@@ -227,7 +238,7 @@ class TestGaugeTransformation:
 
 
 class TestGaugeInvariance:
-    """Validate that ℰ, |Ψ|, |𝒯|², |𝒳|², 𝒮 are gauge-invariant."""
+    """Validate the invariant norms and record variant legacy quantities."""
 
     def test_energy_density_invariant(self, ws_graph, random_alpha):
         """Energy density ℰ(i) exactly invariant under local U(1)."""
@@ -288,6 +299,18 @@ class TestGaugeInvariance:
         assert r1.energy_max_deviation == r2.energy_max_deviation
         assert r1.noether_charge_deviation == r2.noether_charge_deviation
 
+    def test_verify_supports_signed_seed(self, ws_graph):
+        """Signed seeds follow the repository deterministic convention."""
+        first = verify_gauge_invariance(ws_graph, seed=-42)
+        second = verify_gauge_invariance(ws_graph, seed=-42)
+        assert first == second
+
+    @pytest.mark.parametrize("tolerance", [0.0, -1.0, math.nan, math.inf, True])
+    def test_verify_rejects_invalid_tolerance(self, ws_graph, tolerance):
+        """An invariance threshold must be finite and strictly positive."""
+        with pytest.raises((TypeError, ValueError)):
+            verify_gauge_invariance(ws_graph, tolerance=tolerance)
+
     def test_invariance_factorisation(self, ws_graph):
         """Verify |𝒯|² = |Ψ|²·|Ω|² factorisation identity.
 
@@ -331,7 +354,7 @@ class TestMultiTopology:
 
 
 class TestGaugeConnection:
-    """Validate gauge connection A_ij = arg(Ψ_j) − arg(Ψ_i)."""
+    """Validate the exact connection A_ij = d(arg Ψ)_ij."""
 
     def test_antisymmetry(self, ws_graph):
         """A_ji = −A_ij for undirected graphs."""
@@ -422,7 +445,7 @@ class TestCovariantDerivative:
 
 
 class TestGaugeCurvature:
-    """Validate F_C = Σ_C A_ij (holonomy on cycles)."""
+    """Validate F_C = Σ_C A_ij closes for the exact connection."""
 
     def test_curvature_on_complete_graph(self):
         """Complete graph K_4 has many triangles; curvature computed."""
@@ -437,9 +460,36 @@ class TestGaugeCurvature:
 
         curv = compute_gauge_curvature(G)
         assert len(curv) > 0, "K_5 should have triangles"
-        # All curvature values in [−π, π]
+        # A=d(arg Ψ), so every cycle closes modulo floating-point error.
         for cycle, f in curv.items():
-            assert -math.pi - 1e-9 <= f <= math.pi + 1e-9
+            assert abs(f) <= GAUGE_CLOSURE_TOLERANCE
+
+    @pytest.mark.parametrize("topology", ["watts_strogatz", "barabasi_albert", "grid"])
+    def test_canonical_connection_is_pure_gauge_across_topologies(self, topology):
+        """Every detected cycle closes for arbitrary canonical snapshots."""
+        G = _make_tnfr_graph(25, topology, seed=171)
+        curv = compute_gauge_curvature(G)
+        assert all(abs(value) <= GAUGE_CLOSURE_TOLERANCE for value in curv.values())
+
+    def test_four_cycle_with_heterogeneous_labels_keeps_traversal(self):
+        """Cycle detection neither compares labels nor sorts away edge order."""
+        labels = [0, "one", (2,), frozenset({3})]
+        G = nx.cycle_graph(labels)
+        inject_defaults(G)
+        for index, node in enumerate(labels):
+            G.nodes[node]["phase"] = 0.7 * index
+            G.nodes[node]["delta_nfr"] = 0.2 * (index - 1)
+            G.nodes[node]["frequency"] = 1.0
+            G.nodes[node]["EPI"] = "epi"
+
+        curv = compute_gauge_curvature(G)
+        assert len(curv) == 1
+        cycle = next(iter(curv))
+        assert all(
+            G.has_edge(cycle[index], cycle[(index + 1) % len(cycle)])
+            for index in range(len(cycle))
+        )
+        assert abs(curv[cycle]) <= GAUGE_CLOSURE_TOLERANCE
 
     def test_curvature_zero_flat_connection(self):
         """Gauge-flat configuration: identical Ψ → F_C = 0 everywhere."""
@@ -455,10 +505,23 @@ class TestGaugeCurvature:
         for cycle, f in curv.items():
             assert abs(f) < 1e-6, f"Non-zero F on {cycle} for flat connection"
 
-    def test_yang_mills_action_nonnegative(self, ws_graph):
-        """Yang-Mills action S_YM = ½ΣF² ≥ 0."""
+    def test_yang_mills_action_is_only_closure_residual(self, ws_graph):
+        """The legacy action is at roundoff for A=d(arg Ψ)."""
         s_ym = compute_yang_mills_action(ws_graph)
-        assert s_ym >= 0.0
+        n_cycles = len(compute_gauge_curvature(ws_graph))
+        assert 0.0 <= s_ym <= 0.5 * n_cycles * GAUGE_CLOSURE_TOLERANCE**2
+
+    @pytest.mark.parametrize("value", [2, 0, -1])
+    def test_curvature_rejects_too_short_cycle_limit(self, value):
+        """Cycle closure is defined only for cycles of length at least three."""
+        with pytest.raises(ValueError):
+            compute_gauge_curvature(nx.cycle_graph(4), max_cycle_length=value)
+
+    @pytest.mark.parametrize("value", [3.0, True, "4"])
+    def test_curvature_rejects_noninteger_cycle_limit(self, value):
+        """Cycle limits are not silently coerced."""
+        with pytest.raises(TypeError):
+            compute_gauge_curvature(nx.cycle_graph(4), max_cycle_length=value)
 
     def test_yang_mills_zero_for_flat(self):
         """S_YM = 0 for a gauge-flat configuration."""
@@ -556,6 +619,12 @@ class TestGaugeSnapshot:
         snap = capture_gauge_snapshot(ws_graph)
         for n in ws_graph.nodes():
             assert abs(snap.psi_magnitude[n] - abs(snap.psi[n])) < 1e-12
+
+    def test_snapshot_declares_pure_gauge_scope(self, ws_graph):
+        """Dataclass semantics expose the exact-connection limitation."""
+        snap = capture_gauge_snapshot(ws_graph)
+        assert snap.canonical_connection_is_pure_gauge
+        assert snap.curvature_is_numerical_residual
 
 
 # ===================================================================
@@ -724,7 +793,7 @@ class TestEdgeCases:
 
 
 class TestMatterCurrent:
-    """Gauge-covariant matter current J_matter(i,j)."""
+    """Legacy invariant link-current residual J_matter(i,j)."""
 
     def test_antisymmetry(self, ws_graph):
         """J(j,i) = −J(i,j) for every oriented edge."""
@@ -733,16 +802,10 @@ class TestMatterCurrent:
             if (v, u) in j_mat:
                 assert abs(j_mat[(v, u)] + val) < 1e-12
 
-    def test_gauge_invariance(self, ws_graph, random_alpha):
-        """Matter current is gauge-invariant under local U(1)."""
-        j_before = compute_matter_current(ws_graph)
-        G2 = copy.deepcopy(ws_graph)
-        apply_gauge_transformation(G2, random_alpha)
-        j_after = compute_matter_current(G2)
-        for edge in j_before:
-            assert (
-                abs(j_before[edge] - j_after[edge]) < 1e-10
-            ), f"Matter current not gauge-invariant at edge {edge}"
+    def test_pure_gauge_link_current_is_numerical_zero(self, ws_graph):
+        """The correctly signed invariant bilinear is real for A=d(arg Ψ)."""
+        current = compute_matter_current(ws_graph)
+        assert max(map(abs, current.values()), default=0.0) < 1e-12
 
     def test_uniform_psi_zero_current(self):
         """Spatially uniform Ψ → zero matter current."""
@@ -772,12 +835,14 @@ class TestMatterCurrent:
 
 
 class TestYangMillsFieldEquations:
-    """Complete discrete Yang-Mills field equations."""
+    """Legacy-named consistency residual on the pure-gauge surface."""
 
     def test_result_type(self, ws_graph):
         """Returns YangMillsFieldEquations dataclass."""
         result = compute_yang_mills_equations(ws_graph)
         assert isinstance(result, YangMillsFieldEquations)
+        assert result.canonical_connection_is_pure_gauge
+        assert not result.is_dynamical_derivation
 
     def test_actions_non_negative(self, ws_graph):
         """S_YM ≥ 0 and S_matter ≥ 0."""
@@ -787,15 +852,23 @@ class TestYangMillsFieldEquations:
         assert eq.total_action >= eq.yang_mills_action
         assert eq.total_action >= eq.matter_action
 
-    def test_coupling_positive(self, ws_graph):
-        """Coupling constant g² ≥ 0."""
+    def test_self_scale_is_zero_after_closure_tolerance(self, ws_graph):
+        """No coupling is inferred from roundoff in an exact connection."""
         eq = compute_yang_mills_equations(ws_graph)
-        assert eq.coupling_constant >= 0.0
+        assert eq.coupling_constant == 0.0
+        assert eq.yang_mills_action == 0.0
+        assert eq.max_residual < 1e-12
 
     def test_explicit_coupling(self, ws_graph):
-        """User-specified coupling overrides self-determined g²."""
+        """User-specified diagnostic scale is preserved."""
         eq = compute_yang_mills_equations(ws_graph, coupling=1.0)
         assert eq.coupling_constant == pytest.approx(1.0, abs=1e-12)
+
+    @pytest.mark.parametrize("coupling", [True, "1", -1.0, math.nan, math.inf])
+    def test_invalid_explicit_coupling_rejected(self, ws_graph, coupling):
+        """Invalid diagnostic scales cannot be silently floored or propagated."""
+        with pytest.raises((TypeError, ValueError)):
+            compute_yang_mills_equations(ws_graph, coupling=coupling)
 
     def test_residual_structure(self, ws_graph):
         """Residuals are non-negative with correct mean/max."""
@@ -831,13 +904,16 @@ class TestYangMillsFieldEquations:
 
 
 class TestBianchiIdentity:
-    """Discrete Bianchi identity dF = d²A = 0."""
+    """Legacy-named verification of exact-connection cycle closure."""
 
     def test_satisfied_ws(self, ws_graph):
-        """Bianchi identity satisfied on Watts-Strogatz graph."""
+        """All checked cycles close on a Watts-Strogatz graph."""
         result = verify_bianchi_identity(ws_graph)
         assert isinstance(result, BianchiIdentityResult)
         assert result.num_coboundaries_tested > 0
+        assert result.num_cycles_tested == len(compute_gauge_curvature(ws_graph))
+        assert result.max_residual <= GAUGE_CLOSURE_TOLERANCE
+        assert result.is_satisfied
 
     @pytest.mark.parametrize("topo", ["watts_strogatz", "barabasi_albert", "grid"])
     def test_multi_topology(self, topo):
@@ -859,9 +935,15 @@ class TestBianchiIdentity:
         assert result.is_satisfied
         assert result.num_coboundaries_tested == 0
 
+    @pytest.mark.parametrize("tolerance", [True, "1e-8", -1.0, math.nan, math.inf])
+    def test_invalid_tolerance_rejected(self, ws_graph, tolerance):
+        """The closure comparison requires a finite non-negative tolerance."""
+        with pytest.raises((TypeError, ValueError)):
+            verify_bianchi_identity(ws_graph, tolerance=tolerance)
+
 
 class TestGaussLawResidual:
-    """Discrete Gauss law divergence constraint."""
+    """Legacy-named divergence of the numerical link-current residual."""
 
     def test_residual_per_node(self, ws_graph):
         """Returns one residual per node, all non-negative."""
@@ -892,7 +974,7 @@ class TestGaussLawResidual:
 
 
 class TestGaugeCouplingConstant:
-    """Self-determined gauge coupling g² = ⟨F²⟩."""
+    """Legacy mean-squared closure statistic g² = ⟨F²⟩."""
 
     def test_non_negative(self, ws_graph):
         """g² ≥ 0 always."""
@@ -911,26 +993,26 @@ class TestGaugeCouplingConstant:
         assert compute_gauge_coupling_constant(G) == 0.0
 
     def test_upper_bound(self, ws_graph):
-        """g² ≤ π² (maximum possible curvature squared)."""
+        """The closure statistic remains within its wrapped range."""
         g_sq = compute_gauge_coupling_constant(ws_graph)
         assert g_sq <= math.pi**2 + 1e-10
 
 
 class TestRegimeActivityCriterion:
-    """Emergent equipartition activity criterion (no overlay constant)."""
+    """Legacy equal-share activity reporting convention."""
 
     def test_share_is_equipartition(self):
-        """REGIME_ACTIVITY_SHARE = 1/N_REGIMES (max-entropy reference)."""
+        """REGIME_ACTIVITY_SHARE is the equal share of retained labels."""
         assert REGIME_ACTIVITY_SHARE == pytest.approx(1.0 / N_REGIMES, abs=1e-14)
 
     def test_four_regimes(self):
-        """Four gauge sectors (the tetrad of structural channels) => share=0.25."""
+        """Four retained labels imply a one-quarter reporting share."""
         assert N_REGIMES == 4
         assert REGIME_ACTIVITY_SHARE == pytest.approx(0.25, abs=1e-14)
 
 
 class TestFormalInteractionRegimes:
-    """Per-node formal regime classification with TNFR-derived thresholds."""
+    """Formalized historical four-label snapshot heuristic."""
 
     def test_result_type(self, ws_graph):
         """Returns InteractionRegimeMetrics."""
@@ -947,6 +1029,13 @@ class TestFormalInteractionRegimes:
             assert 0.0 <= m.strong_order_parameter  # can exceed 1 in principle
             assert 0.0 <= m.gravity_order_parameter <= 1.0 + 1e-12
 
+    def test_strong_like_slot_does_not_promote_roundoff(self, ws_graph):
+        """Pure-gauge closure noise cannot masquerade as confinement."""
+        for node in ws_graph.nodes():
+            metrics = classify_interaction_regime_formal(ws_graph, node)
+            assert metrics.strong_order_parameter == 0.0
+            assert metrics.regime_scores["strong_like"] == 0.0
+
     def test_scores_sum_to_one(self, ws_graph):
         """Normalised scores sum ≈ 1."""
         for node in ws_graph.nodes():
@@ -962,7 +1051,7 @@ class TestFormalInteractionRegimes:
             assert m.dominant_regime == max_regime
 
     def test_valid_regime_names(self, ws_graph):
-        """Dominant regime is one of the four canonical names."""
+        """Dominant regime is one of the four retained labels."""
         valid = {"em_like", "weak_like", "strong_like", "gravity_like"}
         for node in ws_graph.nodes():
             m = classify_interaction_regime_formal(ws_graph, node)
@@ -999,6 +1088,20 @@ class TestNetworkInteractionProfile:
         """Returns NetworkInteractionProfile."""
         profile = compute_network_interaction_profile(ws_graph)
         assert isinstance(profile, NetworkInteractionProfile)
+
+    def test_empty_graph_has_finite_zero_order_parameters(self):
+        """Empty-network aggregation must not emit NaN telemetry."""
+        profile = compute_network_interaction_profile(nx.Graph())
+        assert profile.mean_order_parameters == {
+            "em_like": 0.0,
+            "weak_like": 0.0,
+            "strong_like": 0.0,
+            "gravity_like": 0.0,
+        }
+        assert all(
+            math.isfinite(value) for value in profile.regime_fractions.values()
+        )
+        assert math.isfinite(profile.mixing_entropy)
 
     def test_distribution_sums_to_n(self, ws_graph):
         """Sum of regime counts equals number of nodes."""

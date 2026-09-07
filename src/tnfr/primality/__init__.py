@@ -11,6 +11,8 @@ is actually called without the dependency installed.
 
 from __future__ import annotations
 
+import math
+import numbers
 import sys
 from pathlib import Path
 from typing import Any
@@ -22,6 +24,29 @@ __all__ = [
     "structural_triad",
     "analyze",
 ]
+
+
+def _validate_candidate(n: int) -> int:
+    """Validate a primality candidate without lossy coercion."""
+    if isinstance(n, bool) or not isinstance(n, numbers.Integral):
+        raise TypeError("n must be an integer, not a truncated numeric value")
+    candidate = int(n)
+    if candidate < 2:
+        raise ValueError("n must be >= 2")
+    return candidate
+
+
+def _validate_tolerance(tolerance: float) -> float:
+    """Validate a finite non-negative primality tolerance."""
+    if isinstance(tolerance, bool) or isinstance(tolerance, (str, bytes)):
+        raise TypeError("tolerance must be a finite non-negative real scalar")
+    try:
+        normalized = float(tolerance)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TypeError("tolerance must be a finite non-negative real scalar") from exc
+    if not math.isfinite(normalized) or normalized < 0.0:
+        raise ValueError("tolerance must be finite and non-negative")
+    return normalized
 
 
 def _bootstrap_primality_test() -> None:
@@ -67,12 +92,15 @@ def _load_core() -> tuple[Any, Any, Any, Any]:
 
 def delta_nfr(n: int) -> float:
     """Compute arithmetic TNFR pressure $\\Delta NFR(n)$."""
+    n = _validate_candidate(n)
     _, tnfr_delta_nfr, _, _ = _load_core()
     return float(tnfr_delta_nfr(n))
 
 
 def is_prime(n: int, *, tolerance: float = 1e-10) -> tuple[bool, float]:
     """Run TNFR primality test and return ``(is_prime, delta_nfr)``."""
+    n = _validate_candidate(n)
+    tolerance = _validate_tolerance(tolerance)
     tnfr_is_prime, _, _, _ = _load_core()
     result, dnfr = tnfr_is_prime(n, tolerance=tolerance)
     return bool(result), float(dnfr)
@@ -80,18 +108,22 @@ def is_prime(n: int, *, tolerance: float = 1e-10) -> tuple[bool, float]:
 
 def component_breakdown(n: int) -> dict[str, Any]:
     """Return per-component $\\Delta NFR$ decomposition."""
+    n = _validate_candidate(n)
     _, _, tnfr_component_breakdown, _ = _load_core()
     return dict(tnfr_component_breakdown(n))
 
 
 def structural_triad(n: int) -> dict[str, Any]:
     """Return TNFR structural triad {EPI, vf, delta_nfr, local_coherence}."""
+    n = _validate_candidate(n)
     _, _, _, tnfr_structural_triad = _load_core()
     return dict(tnfr_structural_triad(n))
 
 
 def analyze(n: int, *, tolerance: float = 1e-10) -> dict[str, Any]:
     """Return complete canonical primality analysis payload for SDK/reporting."""
+    n = _validate_candidate(n)
+    tolerance = _validate_tolerance(tolerance)
     prime, dnfr = is_prime(n, tolerance=tolerance)
     breakdown = component_breakdown(n)
     triad = structural_triad(n)

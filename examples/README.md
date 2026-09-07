@@ -45,3 +45,6 @@ backend explicitly.
 The governing theory and claim status live in [theory/README.md](../theory/README.md).
 Public APIs and package ownership live in [ARCHITECTURE.md](../ARCHITECTURE.md).
 Test requirements live in [TESTING.md](../TESTING.md).
+
+Recent executable runtime bridges in `02_physics_regimes` are
+`163_reception_runtime_bridge.py` and `164_resonance_runtime_bridge.py`.

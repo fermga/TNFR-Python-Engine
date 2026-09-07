@@ -1,12 +1,17 @@
-"""B11 (OCD) Phase a — Operator-Catalog Discipline signature diagnostic.
+"""B11 (OCD) Phase a — Operator-registry discipline diagnostic.
 
-Empirical type-witness for the operator-catalog completeness/closure surface
-of the canonical 13-operator TNFR registry. This module probes the immutable
+Empirical schema witness for the declared 13-operator TNFR registry. This
+module probes the immutable
 registry exposed by ``src/tnfr/operators/registry.py``, the introspection
 metadata in ``src/tnfr/operators/introspection.py``, and the public exports
 in ``src/tnfr/operators/definitions.py``, and reports a single scalar
 "catalog-discipline signature" ``S_OC`` measuring the fraction of probes that
-violate canonical catalog-discipline invariants.
+violate the declared registry-schema checks.
+
+Passing these finite introspection checks establishes registry consistency and
+reload idempotence only. It does not define an independent space of admissible
+TNFR transformations, prove that the 13 registered operators generate that
+space, or rule out a future transformation with a distinct contract.
 
 Phase scope (B11 Phase a): methodological diagnostic only. Does NOT modify
 any canonical implementation. Does NOT advance G4 = RH (Conjecture T-HP,
@@ -15,7 +20,7 @@ discharge (NEGATIVE verdict + OCD promotion as twelfth CDM in the L3*
 orthogonality ledger) is delivered in a separate commit alongside the
 research-notes section.
 
-Canonical-catalog invariants (admissible classifications):
+Declared registry checks:
 
 - ``registry_size`` is the integer 13.
 - Every registry value is a subclass of ``Operator``.
@@ -39,8 +44,10 @@ breaks). The signature is the leakage rate
 
     S_OC := total_anomalies / total_probes ,
 
-with admissibility verdict ``CATALOG_DISCIPLINE_ADEQUATE`` when
-``S_OC == 0`` and ``CATALOG_DISCIPLINE_LEAKING`` otherwise.
+with the legacy registry-hygiene verdict ``CATALOG_DISCIPLINE_ADEQUATE`` when
+``S_OC == 0`` and ``CATALOG_DISCIPLINE_LEAKING`` otherwise. ``ADEQUATE`` here
+means internally aligned with the declared schema, not mathematically
+complete over admissible dynamics.
 """
 
 from __future__ import annotations
@@ -53,11 +60,11 @@ from ..operators.definitions import __all__ as definitions_all
 from ..operators.introspection import OPERATOR_METADATA, OperatorMeta
 from ..operators.registry import OPERATORS, _ensure_loaded
 
-# Canonical expected size of the TNFR operator catalog (immutable).
+# Declared expected size of the current TNFR operator registry.
 CANONICAL_CATALOG_SIZE: int = 13
 
-# Canonical lowercase registry keys (sourced from the registry itself; the
-# diagnostic only requires that the *count* and *string-ness* are correct).
+# Lowercase registry keys are sourced from the registry itself; the diagnostic
+# only requires that the *count* and *string-ness* are correct.
 # These are not hard-coded as a gating set — the diagnostic measures
 # structural invariants, not name identity.
 
@@ -78,6 +85,19 @@ _CANONICAL_OPERATOR_CLASS_NAMES: frozenset[str] = frozenset(
         "Mutation",
         "Transition",
         "Recursivity",
+    }
+)
+
+_DECLARED_NON_OPERATOR_EXPORTS: frozenset[str] = frozenset(
+    {
+        "Operator",
+        "OperatorMeta",
+        "OPERATOR_METADATA",
+        "get_operator_meta",
+        "iter_operator_meta",
+        "ExtendedGrammarError",
+        "collect_grammar_errors",
+        "make_grammar_error",
     }
 )
 
@@ -216,16 +236,19 @@ def _probe_metadata_registry_alignment() -> tuple[str, str]:
 
 def _probe_definitions_exports_cover_canonical_set() -> tuple[str, str]:
     exported = set(definitions_all)
-    missing = _CANONICAL_OPERATOR_CLASS_NAMES - exported
-    if not missing:
-        return "OK", "all 13 canonical class names exported"
-    return "ANOMALY", f"missing exports: {sorted(missing)}"
+    expected = _CANONICAL_OPERATOR_CLASS_NAMES | _DECLARED_NON_OPERATOR_EXPORTS
+    missing = expected - exported
+    extra = exported - expected
+    if not missing and not extra:
+        return "OK", "exports match the declared operator facade"
+    return "ANOMALY", (
+        f"export mismatch (missing={sorted(missing)}, extra={sorted(extra)})"
+    )
 
 
-def _probe_no_hidden_fourteenth_operator() -> tuple[str, str]:
-    # Strict canonical closure: even after _ensure_loaded(), only 13 names.
-    # Probe whether the registry mapping can be perturbed by re-invoking
-    # _ensure_loaded() (it must be idempotent and never expand past 13).
+def _probe_registry_reload_idempotence() -> tuple[str, str]:
+    """Check that reloading does not perturb the declared registry."""
+    # Probe whether re-invoking _ensure_loaded() perturbs the declared mapping.
     before = dict(OPERATORS)
     _ensure_loaded()
     after = dict(OPERATORS)
@@ -249,7 +272,8 @@ def compute_operator_catalog_discipline_signature() -> (
     -----
     The probes are pure read-only inspections of module-level mappings;
     no graph state is constructed. The diagnostic is deterministic and
-    requires no seed.
+    requires no seed. A zero anomaly score certifies only this finite registry
+    surface; it is not evidence of generative completeness or irreducibility.
     """
     _ensure_loaded()
 
@@ -272,7 +296,10 @@ def compute_operator_catalog_discipline_signature() -> (
             "definitions_exports_cover_canonical_set",
             _probe_definitions_exports_cover_canonical_set,
         ),
-        ("no_hidden_fourteenth_operator", _probe_no_hidden_fourteenth_operator),
+        # Historical identifier retained in serialized certificates. The
+        # implementation tests reload idempotence, not transformation-space
+        # completeness.
+        ("no_hidden_fourteenth_operator", _probe_registry_reload_idempotence),
     )
 
     probe_ids: list[str] = []
@@ -313,6 +340,8 @@ def compute_operator_catalog_discipline_signature() -> (
             "Diagnostic surface: registry (registry.py), introspection "
             "metadata (introspection.py), public exports "
             "(definitions.__all__).",
+            "A zero anomaly score certifies declared registry consistency, "
+            "not completeness over admissible TNFR transformations.",
             "No callable kernel, no measure, no operator-valued "
             "intermediate constructed.",
         ),

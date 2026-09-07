@@ -25,6 +25,9 @@ from benchmarks.benchmark_utils import (  # noqa: E402
     initialize_tnfr_nodes,
 )
 from src.tnfr.operators.definitions import Coherence, Dissonance  # noqa: E402
+from src.tnfr.constants.canonical import (  # noqa: E402
+    U6_STRUCTURAL_POTENTIAL_LIMIT,
+)
 from src.tnfr.physics.fields import (  # noqa: E402
     compute_phase_gradient,
     compute_structural_potential,
@@ -70,7 +73,10 @@ def main():
 
     print("\nResults:")
     print(f"- Topology: {topo}, nodes={n_nodes}, seed={seed}")
-    print(f"- Φ_s drift (U6 threshold < 2.0): {drift:.3f}")
+    print(
+        f"- Φ_s drift (selected U6 policy < "
+        f"{U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}): {drift:.3f}"
+    )
     print(f"- |∇φ| mean: {grad_mean_before:.3f} → {grad_mean_after:.3f}")
     print("- K_φ multiscale safety:")
     print(

@@ -104,9 +104,14 @@ def _seed(G, theta_of, epi_of, vf_of):
     from ..dynamics import default_compute_delta_nfr
 
     for nd in G.nodes():
+        epi = float(epi_of(nd))
         set_attr(G.nodes[nd], ALIAS_THETA, float(theta_of(nd)))
-        set_attr(G.nodes[nd], ALIAS_EPI, float(epi_of(nd)))
+        set_attr(G.nodes[nd], ALIAS_EPI, epi)
         set_attr(G.nodes[nd], ALIAS_VF, float(vf_of(nd)))
+        # The common fixture executes every canonical operator. ZHIR's
+        # non-disableable trigger therefore needs a replayable, signed-growth
+        # witness anchored to the live EPI value.
+        G.nodes[nd]["epi_history"] = [epi - 1.0, epi]
     default_compute_delta_nfr(G)
     return G
 

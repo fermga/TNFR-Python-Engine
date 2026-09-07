@@ -1,267 +1,166 @@
-"""04 - Operator Sequences: Grammar Rules in Action
+"""04 - Operator sequences: grammar and telemetry are separate decisions.
 
-PHYSICS: Demonstrates how operator sequences must follow TNFR grammar rules.
-LEARNING: Understand why certain operator combinations work while others fail.
+This example sends flat operator words to the canonical symbol/history
+validator and compares that Boolean result with an explicitly illustrative
+pressure-only response. The response is not an operator execution and is not
+used to validate grammar. Its purpose is to show why a favorable instantaneous
+telemetry change cannot repair an invalid word, and why a valid exploratory word
+need not decrease every diagnostic at every step.
 
-This shows the deep physics behind TNFR's unified grammar U1-U6.
+Runtime U3 phase compatibility, nested U5 structure and reference-dependent U6
+drift require state beyond this flat symbol/history call.
 """
 
-import networkx as nx
-import numpy as np
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from tnfr.operators.definitions import (
+    Coherence,
+    Coupling,
+    Dissonance,
+    Emission,
+    Mutation,
+    SelfOrganization,
+    Silence,
+)
+from tnfr.operators.grammar_validate import validate_grammar
 
 
-def simple_coherence_measure(G):
-    """Compute coherence from network properties."""
-    if G.number_of_nodes() == 0:
-        return 0.0
-
-    # Measure based on structural stress (DNFR) and connectivity
-    total_stress = sum(G.nodes[n].get("delta_nfr", 0.1) for n in G.nodes())
-    avg_stress = total_stress / G.number_of_nodes()
-
-    # Lower stress = higher coherence
-    coherence = 1.0 / (1.0 + avg_stress)
-    return coherence
+OPERATORS = {
+    "AL": Emission,
+    "IL": Coherence,
+    "OZ": Dissonance,
+    "UM": Coupling,
+    "SHA": Silence,
+    "THOL": SelfOrganization,
+    "ZHIR": Mutation,
+}
 
 
-def apply_sequence_effect(G, node, sequence_name, stress_changes):
-    """Apply a sequence of stress changes to simulate operators."""
-    initial_coherence = simple_coherence_measure(G)
+@dataclass(frozen=True)
+class SequenceCase:
+    name: str
+    glyphs: tuple[str, ...]
+    expected_valid: bool
+    illustrative_pressure_changes: tuple[float, ...]
 
-    print(f"   🔄 {sequence_name}")
-    print(f"      Initial coherence: {initial_coherence:.3f}")
 
-    # Apply stress changes sequentially
-    for i, stress_change in enumerate(stress_changes):
-        current_stress = G.nodes[node]["delta_nfr"]
-        new_stress = max(0.01, current_stress + stress_change)  # Keep positive
-        G.nodes[node]["delta_nfr"] = new_stress
+CASES = (
+    SequenceCase(
+        "U1 complete word",
+        ("AL", "IL", "SHA"),
+        True,
+        (-0.10, -0.15, 0.0),
+    ),
+    SequenceCase(
+        "U1 missing generator",
+        ("IL", "SHA"),
+        False,
+        (-0.10, 0.0),
+    ),
+    SequenceCase(
+        "U1 missing closure",
+        ("AL", "IL"),
+        False,
+        (-0.10, -0.15),
+    ),
+    SequenceCase(
+        "U2 balanced destabilizer",
+        ("AL", "OZ", "IL", "SHA"),
+        True,
+        (-0.10, +0.30, -0.25, 0.0),
+    ),
+    SequenceCase(
+        "U2 unpaid destabilizer",
+        ("AL", "OZ", "SHA"),
+        False,
+        (-0.10, +0.30, 0.0),
+    ),
+    SequenceCase(
+        "U4 contextual mutation",
+        ("AL", "IL", "OZ", "ZHIR", "THOL", "SHA"),
+        True,
+        (-0.10, -0.20, +0.25, +0.40, -0.35, 0.0),
+    ),
+    SequenceCase(
+        "U4 mutation without context",
+        ("AL", "ZHIR", "SHA"),
+        False,
+        (-0.10, +0.40, 0.0),
+    ),
+    SequenceCase(
+        "flat coupling word",
+        ("AL", "UM", "IL", "SHA"),
+        True,
+        (-0.10, -0.05, -0.15, 0.0),
+    ),
+)
 
-        step_coherence = simple_coherence_measure(G)
-        operator_effect = (
-            "↑" if stress_change < 0 else "↓" if stress_change > 0 else "→"
-        )
+
+def _pressure_proxy(changes: tuple[float, ...]) -> tuple[float, float]:
+    """Return before/after values of a one-node pressure-only proxy.
+
+    ``1/(1+|pressure|)`` resembles one factor of structural coherence, but it
+    omits nodal velocity and all other nodes. It is deliberately not labelled
+    canonical ``C(t)``.
+    """
+
+    pressure = 0.30
+    before = 1.0 / (1.0 + abs(pressure))
+    for change in changes:
+        pressure = max(0.01, pressure + change)
+    after = 1.0 / (1.0 + abs(pressure))
+    return before, after
+
+
+def _validate(case: SequenceCase) -> bool:
+    instances = [OPERATORS[glyph]() for glyph in case.glyphs]
+    return bool(validate_grammar(instances, epi_initial=0.0))
+
+
+def operator_sequences_demo() -> None:
+    """Compare canonical flat grammar decisions with independent telemetry."""
+
+    print("=" * 88)
+    print("TNFR OPERATOR WORDS: CANONICAL GRAMMAR VS ILLUSTRATIVE TELEMETRY")
+    print("=" * 88)
+    print("The validator checks flat U1/U2/U4 symbol and history constraints.")
+    print("The final column is an independent one-node pressure proxy.")
+    print()
+    print(
+        f"{'case':<31} {'word':<29} {'grammar':>8} "
+        f"{'expected':>9} {'proxy delta':>13}"
+    )
+    print("-" * 96)
+
+    mismatched_decisions = 0
+    for case in CASES:
+        valid = _validate(case)
+        before, after = _pressure_proxy(case.illustrative_pressure_changes)
+        proxy_delta = after - before
+        assert valid is case.expected_valid
+        if valid is not (proxy_delta >= 0.0):
+            mismatched_decisions += 1
         print(
-            f"      Step {i+1}: DNFR {current_stress:.3f} → {new_stress:.3f} {operator_effect}"
+            f"{case.name:<31} {' '.join(case.glyphs):<29} "
+            f"{str(valid):>8} {str(case.expected_valid):>9} {proxy_delta:>+13.5f}"
         )
 
-    final_coherence = simple_coherence_measure(G)
-    delta_coherence = final_coherence - initial_coherence
-
-    result_symbol = "✅" if delta_coherence >= 0 else "❌"
-    print(
-        f"      Final coherence: {final_coherence:.3f} (Δ{delta_coherence:+.3f}) {result_symbol}"
-    )
     print()
-
-    return final_coherence >= initial_coherence
-
-
-def operator_sequences_demo():
-    """Demonstrate TNFR grammar rules through operator sequences."""
-
-    print("=" * 80)
-    print(" " * 20 + "📐 OPERATOR SEQUENCES & GRAMMAR RULES 📐")
-    print("=" * 80)
+    print(f"Grammar/proxy sign disagreements in this finite table: {mismatched_decisions}")
+    print("A positive proxy delta does not make a word valid, and a negative one")
+    print("does not make it invalid. Grammar and trajectory telemetry answer")
+    print("different questions and must be evaluated independently.")
     print()
-    print("Testing operator sequences against TNFR unified grammar...")
-    print("PHYSICS: Grammar rules emerge from nodal equation ∂EPI/∂t = νf · ΔNFR(t)")
-    print(
-        "INSIGHT: Valid sequences preserve system coherence and prevent fragmentation"
-    )
-    print()
-
-    # Create test network
-    G = nx.cycle_graph(6)
-
-    # Initialize nodes with moderate structural stress
-    for node in G.nodes():
-        G.nodes[node]["EPI"] = 0.2
-        G.nodes[node]["nu_f"] = 1.0
-        G.nodes[node]["theta"] = 0.1 * node
-        G.nodes[node]["delta_nfr"] = 0.3  # Moderate stress
-
-    print("🏗️ NETWORK SETUP:")
-    print(f"   Nodes: {G.number_of_nodes()}, Edges: {G.number_of_edges()}")
-    print(f"   Topology: {nx.cycle_graph(6).__class__.__name__}")
-    print(f"   Initial coherence: {simple_coherence_measure(G):.3f}")
-    print()
-
-    print("🔬 GRAMMAR RULE EXPERIMENTS")
-    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print()
-
-    results = {}
-
-    print("📐 GRAMMAR U1: INITIATION & CLOSURE")
-    print("   Rule: Sequences must start with generators, end with closure")
-    print()
-
-    # Valid U1: Proper initiation and closure
-    valid_u1 = apply_sequence_effect(
-        G.copy(),
-        0,
-        "Valid U1: Emission → Coherence → Silence",
-        [-0.1, -0.15, 0.0],  # Generate, stabilize, close
-    )
-    results["Valid U1"] = valid_u1
-
-    # Invalid U1: No generator start
-    invalid_u1a = apply_sequence_effect(
-        G.copy(),
-        0,
-        "Invalid U1a: Coherence → Silence (no generator)",
-        [-0.1, 0.0],  # Missing generator
-    )
-    results["Invalid U1a"] = invalid_u1a
-
-    # Invalid U1: No closure
-    invalid_u1b = apply_sequence_effect(
-        G.copy(),
-        0,
-        "Invalid U1b: Emission → Coherence (no closure)",
-        [-0.1, -0.15],  # Missing closure
-    )
-    results["Invalid U1b"] = invalid_u1b
-
-    print("📐 GRAMMAR U2: CONVERGENCE & BOUNDEDNESS")
-    print("   Rule: Destabilizers must be paired with stabilizers")
-    print()
-
-    # Valid U2: Destabilizer with stabilizer
-    valid_u2 = apply_sequence_effect(
-        G.copy(),
-        0,
-        "Valid U2: Emission → Dissonance → Coherence → Silence",
-        [-0.1, +0.3, -0.25, 0.0],  # Generate, destabilize, stabilize, close
-    )
-    results["Valid U2"] = valid_u2
-
-    # Invalid U2: Destabilizer without stabilizer
-    invalid_u2 = apply_sequence_effect(
-        G.copy(),
-        0,
-        "Invalid U2: Emission → Dissonance → Silence",
-        [-0.1, +0.3, 0.0],  # Missing stabilizer
-    )
-    results["Invalid U2"] = invalid_u2
-
-    print("📐 GRAMMAR U4: BIFURCATION DYNAMICS")
-    print("   Rule: Bifurcation triggers need handlers")
-    print()
-
-    # Valid U4: Mutation with proper context
-    valid_u4 = apply_sequence_effect(
-        G.copy(),
-        0,
-        "Valid U4: Emission → Coherence → Dissonance → Mutation → Self-Org → Silence",
-        [-0.1, -0.2, +0.25, +0.4, -0.35, 0.0],  # Proper mutation sequence
-    )
-    results["Valid U4"] = valid_u4
-
-    # Invalid U4: Mutation without handler
-    invalid_u4 = apply_sequence_effect(
-        G.copy(),
-        0,
-        "Invalid U4: Emission → Mutation → Silence",
-        [-0.1, +0.4, 0.0],  # Mutation without context or handler
-    )
-    results["Invalid U4"] = invalid_u4
-
-    print("🎯 EXPERIMENTAL SEQUENCES")
-    print("   Testing creative but valid combinations")
-    print()
-
-    # Bootstrap sequence
-    bootstrap = apply_sequence_effect(
-        G.copy(),
-        0,
-        "Bootstrap: Emission → Coupling → Coherence → Silence",
-        [-0.1, -0.05, -0.15, 0.0],  # Classic bootstrap pattern
-    )
-    results["Bootstrap"] = bootstrap
-
-    # Exploration sequence
-    exploration = apply_sequence_effect(
-        G.copy(),
-        0,
-        "Exploration: Emission → Dissonance → Self-Org → Coherence → Silence",
-        [-0.1, +0.2, -0.1, -0.2, 0.0],  # Controlled exploration
-    )
-    results["Exploration"] = exploration
-
-    print("📊 SEQUENCE VALIDATION RESULTS")
-    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print()
-
-    valid_count = sum(1 for success in results.values() if success)
-    total_count = len(results)
-
-    print("🏆 SEQUENCE OUTCOMES:")
-    for sequence_name, is_valid in results.items():
-        status = "✅ VALID" if is_valid else "❌ INVALID"
-        print(f"   {sequence_name:<50}: {status}")
-
-    print()
-    print(f"📈 VALIDATION SUMMARY: {valid_count}/{total_count} sequences successful")
-    print(f"   Success rate: {valid_count/total_count:.1%}")
-    print()
-
-    print("🎯 GRAMMAR RULE INSIGHTS")
-    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print()
-    print("📐 THE UNIFIED GRAMMAR RULES:")
-    print()
-    print("   U1: INITIATION & CLOSURE")
-    print("      • Must start with generators (create from nothing)")
-    print("      • Must end with closure (stable endpoint)")
-    print("      • Physics: ∂EPI/∂t undefined at EPI=0")
-    print()
-    print("   U2: CONVERGENCE & BOUNDEDNESS")
-    print("      • Destabilizers need stabilizers")
-    print("      • Prevents ∫ νf·ΔNFR dt → ∞ divergence")
-    print("      • Physics: Integral convergence requirement")
-    print()
-    print("   U3: RESONANT COUPLING")
-    print("      • Coupling needs phase verification")
-    print("      • |φᵢ - φⱼ| ≤ Δφ_max required")
-    print("      • Physics: Antiphase = destructive interference")
-    print()
-    print("   U4: BIFURCATION DYNAMICS")
-    print("      • Triggers need handlers (chaos prevention)")
-    print("      • Transformers need context (threshold energy)")
-    print("      • Physics: ∂²EPI/∂t² > τ requires control")
-    print()
-    print("   U5: MULTI-SCALE COHERENCE")
-    print("      • Hierarchical stabilization required")
-    print("      • C_parent ≥ α · Σ C_child relationship")
-    print("      • Physics: Central limit theorem + chain rule")
-    print()
-    print("   U6: STRUCTURAL POTENTIAL CONFINEMENT")
-    print("      • Monitor Δ Φ_s < 2.0 escape threshold")
-    print("      • Passive equilibrium confinement")
-    print("      • Physics: Harmonic confinement principle")
-    print()
-    print("⚙️ WHY GRAMMAR MATTERS:")
-    print("   • Prevents system fragmentation")
-    print("   • Ensures mathematical consistency")
-    print("   • Enables predictable behavior")
-    print("   • Reflects deep physical constraints")
-    print()
-    print("🧠 APPLICATIONS:")
-    print("   • Validates all TNFR implementations")
-    print("   • Guides algorithm development")
-    print("   • Predicts system stability")
-    print("   • Enables automated validation")
-
-    if valid_count >= total_count * 0.7:
-        print()
-        print("✅ Grammar validation successful!")
-        print("📐 TNFR sequences follow physical laws!")
-    else:
-        print()
-        print("⚠️ Grammar violations detected!")
-        print("🔧 Sequence design needs improvement!")
+    print("Scope of the six rules")
+    print("----------------------")
+    print("U1: generator and closure boundaries for the declared initial state.")
+    print("U2: bounded destabilizer-debt policy; no general Lyapunov theorem.")
+    print("U3: phase compatibility on actual coupling/resonance endpoints.")
+    print("U4: trigger/handler and transformer-history requirements.")
+    print("U5: hierarchy-aware coherence for nested EPI structure.")
+    print("U6: before/after structural-potential drift telemetry.")
 
 
 if __name__ == "__main__":

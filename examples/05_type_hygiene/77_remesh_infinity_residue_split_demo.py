@@ -1,37 +1,27 @@
-"""P50 — REMESH-infinity Residue Split of the P31 Oscillatory Correction.
+"""P50 — finite fixed-delay Fourier split of the P31 signal.
 
-Function-space diagnostic that lifts the N15 REMESH-infinity closure
-(theory/REMESH_INFINITY_DERIVATION.md) into the TNFR-Riemann program.
+The public ``remesh_infinity`` names are retained for compatibility. This
+example evaluates the finite TNFR prime-ladder reconstruction
 
-Splits the canonical TNFR prime-ladder reconstruction
 S_TNFR(T) = -(1/pi) sum_{(mu, w)} (w/mu) sin(T mu) exp(-mu/2)
-into its projections on range(R_infinity) and ker(R_infinity), where
-R_infinity is the orthogonal projector onto the N15-resonant Fourier
-lattice {2 pi k / lcm(tau_l, tau_g)} at the canonical pair
-(tau_l, tau_g) = (4, 8).
 
-Pre-registered structural prediction
-------------------------------------
-The prime-ladder Fourier support is {k log p : p prime, k >= 1}.  By
-Baker's theorem on linear independence of logarithms of algebraic
-numbers, this set is disjoint from the rational-multiple-of-pi
-lattice that defines the N15-resonant subspace.  Therefore the
-canonical reconstruction S_TNFR(T) must lie asymptotically in
-ker(R_infinity).
+on a finite uniform grid, then projects its DFT onto the modes fixed by
+both delays. Their period is gcd(tau_l, tau_g). The lcm is used only to
+align the sample-window length. Off-grid frequencies leak into multiple
+DFT bins, so the reported fractions are finite-window measurements.
 
 Pre-registered verdicts
 -----------------------
-* RESIDUE_IN_KER_ONLY     branch B2 evidence at function-space level
-* RESIDUE_IN_RANGE_ONLY   refutes P31 as an oscillatory attack
-* RESIDUE_MIXED           gauge leak in P30 or boundary artefact
+* RESIDUE_IN_KER_ONLY     little energy in the selected fixed-delay bins
+* RESIDUE_IN_RANGE_ONLY   little energy in their orthogonal complement
+* RESIDUE_MIXED           both finite-window fractions exceed the threshold
 
 Honest scope
 ------------
 This diagnostic is complementary to the section 13vicies-novies
-graph-iteration-matrix tests (which operate on EPI-history state
-vectors); P50 operates on a function in H^2(T-axis).  It does NOT
-advance G4 = RH, does NOT close T-HP, does NOT promote any new
-canonical operator beyond the 13-operator catalog.
+runtime REMESH, which operates on stored EPI-history snapshots. P50 does
+not establish a literal tau_g -> infinity limit, identify the analytic
+support of S(T), advance G4 = RH, close T-HP, or prove catalog completeness.
 """
 
 from __future__ import annotations
@@ -54,16 +44,16 @@ def run(n_periods: int, n_primes: int, max_power: int) -> None:
 
 
 def main() -> None:
-    print("P50 — REMESH-infinity Residue Split" " (function-space diagnostic)")
-    print("Honest scope: structural-compatibility test.  Does NOT " "advance G4 = RH.")
+    print("P50 — Fixed-Delay Fourier Split" " (finite-window diagnostic)")
+    print("Honest scope: DFT-bin measurement. Does NOT advance G4 = RH.")
     print(
-        "Pre-registered prediction: RESIDUE_IN_KER_ONLY"
-        " (Baker's theorem on log p incommensurability)."
+        "Legacy verdict RESIDUE_IN_KER_ONLY means little finite-window "
+        "energy in the selected fixed-delay bins."
     )
 
-    # Two grid resolutions to test the asymptotic stability of the
-    # verdict; both span many REMESH-canonical periods (lcm(4, 8) = 8
-    # T-units per period).
+    # Two window lengths expose the sensitivity of finite spectral leakage.
+    # lcm(4, 8) = 8 is the backward-compatible sample-alignment unit;
+    # gcd(4, 8) = 4 determines the common fixed modes.
     run(n_periods=64, n_primes=200, max_power=8)
     run(n_periods=256, n_primes=400, max_power=8)
 

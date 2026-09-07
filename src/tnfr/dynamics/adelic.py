@@ -1,11 +1,9 @@
-"""
-TNFR Adelic Dynamics Engine
+"""Exploratory TNFR adelic scaling and trace-mismatch dynamics.
 
-Implementation of the Adelic Scaling Flow and the Nodal Equation derived from
-arithmetic geometry. This module drives the system towards the Riemann Zeros
-via the gradient flow of the Trace Mismatch Potential.
-
-Status: CANONICAL (Post-Critical Analysis)
+This module implements a finite diagnostic flow inspired by arithmetic geometry
+and the nodal equation. It evolves its declared state using a trace-mismatch
+potential. No theorem identifies its attractors with Riemann zeros or promotes
+this finite experiment to a canonical post-critical regime.
 """
 
 from dataclasses import dataclass

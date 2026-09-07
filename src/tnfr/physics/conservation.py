@@ -42,7 +42,11 @@ try:
 except ImportError:  # pragma: no cover
     nx = None
 
-from ..constants.canonical import K_PHI_CANONICAL_THRESHOLD, PI, U6_STRUCTURAL_POTENTIAL_LIMIT
+from ..constants.canonical import (
+    K_PHI_CANONICAL_THRESHOLD,
+    PI,
+    U6_STRUCTURAL_POTENTIAL_LIMIT,
+)
 from .canonical import (
     compute_phase_curvature,
     compute_phase_gradient,
@@ -53,7 +57,7 @@ from .unified import _capture_structural_fields, _energy_density_from_fields
 from .unified import compute_energy_density as _raw_energy_density
 
 # ---------------------------------------------------------------------------
-# Conservation diagnostic thresholds
+# Conservation diagnostic alert levels
 # ---------------------------------------------------------------------------
 _BALANCE_RMS_ALERT = 1.0
 _SECTOR_IMBALANCE_RATIO = 1.5
@@ -63,9 +67,37 @@ _SECTOR_IMBALANCE_RATIO = 1.5
 # ---------------------------------------------------------------------------
 
 
+class ConservationAlertLevels(dict[str, float]):
+    """Backward-compatible numeric alert mapping with explicit scope metadata.
+
+    The historical API returned a plain ``dict[str, float]`` from
+    :func:`compute_grammar_conservation_bounds`.  This subclass preserves that
+    mapping behaviour and its legacy keys while exposing why the values must
+    not be read as mathematical bounds or as grammar-rule classifiers.
+    """
+
+    scope = "finite_structural_balance_alerts"
+    thresholds_are_proven_bounds = False
+    grammar_validation_applicable = False
+    applicable_grammar_rules: tuple[str, ...] = ()
+    u6_drift_requires_reference = True
+
+    @property
+    def metadata(self) -> dict[str, Any]:
+        """Return detached scope metadata without changing numeric iteration."""
+        return {
+            "scope": self.scope,
+            "thresholds_are_proven_bounds": self.thresholds_are_proven_bounds,
+            "grammar_validation_applicable": self.grammar_validation_applicable,
+            "applicable_grammar_rules": self.applicable_grammar_rules,
+            "u6_drift_requires_reference": self.u6_drift_requires_reference,
+            "legacy_pi_scaled_alerts": True,
+        }
+
+
 @dataclass(frozen=True)
 class ConservationSnapshot:
-    """Single-time snapshot of all conserved quantities at every node.
+    """Single-time snapshot of structural balance fields at every node.
 
     Attributes
     ----------
@@ -104,7 +136,8 @@ class ConservationBalance:
     * ``residual[i] = Δρ(i)/Δt + ½[div J_before(i) + div J_after(i)]``
       — a finite-interval balance diagnostic, not a grammar validator.
     * ``mean_residual``, ``max_residual`` — aggregate diagnostics.
-    * ``conservation_quality`` — scalar in [0, 1]; 1 = perfect conservation.
+    * ``conservation_quality`` — scalar in [0, 1]; 1 means zero measured RMS
+      residual for this finite interval.
     * ``grammar_violation_index`` — legacy name for the mean absolute residual;
       zero does not certify grammar compliance.
     """
@@ -121,6 +154,14 @@ class ConservationBalance:
     total_charge_before: float
     total_charge_after: float
     charge_drift: float
+    diagnostic_scope: str = "two_snapshot_structural_balance"
+    grammar_validation_applicable: bool = False
+    assessed_grammar_rules: tuple[str, ...] = ()
+
+    @property
+    def balance_alert_index(self) -> float:
+        """Return the mean absolute residual under an accurate public name."""
+        return self.grammar_violation_index
 
 
 @dataclass
@@ -140,14 +181,44 @@ class ConservationTimeSeries:
 
     @property
     def is_conserved(self) -> bool:
-        """Return the legacy finite-series quality classification."""
-        if not self.conservation_quality:
+        """Return the legacy finite-series quality alert classification.
+
+        This alias neither proves a conservation law nor validates grammar.
+        Prefer :attr:`aggregate_balance_within_alert` in new code.
+        """
+        return self.aggregate_balance_within_alert
+
+    @property
+    def aggregate_balance_within_alert(self) -> bool:
+        """Whether measured interval quality reaches the legacy alert cut.
+
+        The synthetic baseline stored for the first snapshot has no preceding
+        interval and is excluded.
+        """
+        if len(self.conservation_quality) <= 1:
             return False
-        return float(np.mean(self.conservation_quality)) >= 0.9
+        return self.sampled_mean_quality >= 0.9
+
+    @property
+    def grammar_validation_applicable(self) -> bool:
+        """Grammar cannot be inferred from this residual time series."""
+        return False
+
+    @property
+    def sampled_mean_quality(self) -> float:
+        """Average quality over actual two-snapshot balance intervals."""
+        if len(self.conservation_quality) <= 1:
+            return 0.0
+        return float(np.mean(self.conservation_quality[1:]))
 
     @property
     def mean_quality(self) -> float:
-        """Average conservation quality across all recorded steps."""
+        """Compatibility name for :attr:`sampled_mean_quality`."""
+        return self.sampled_mean_quality
+
+    @property
+    def mean_quality_including_baseline(self) -> float:
+        """Return the historical mean including the synthetic first value."""
         if not self.conservation_quality:
             return 0.0
         return float(np.mean(self.conservation_quality))
@@ -194,15 +265,15 @@ def compute_current_divergence(G: Any) -> dict[Any, float]:
     r"""Compute discrete divergence of structural current div J(i).
 
     The structural current is J = (J_φ, J_ΔNFR).  On a graph, the
-    divergence at node i is approximated by the net outward flux:
+    stored quantity at node i uses the legacy neighbor-minus-center sign:
 
         div J(i) = (1/|N(i)|) Σ_{j∈N(i)} [
             (J_φ(j) - J_φ(i)) + (J_ΔNFR(j) - J_ΔNFR(i))
         ]
 
-    This is the discrete Laplacian applied to each current component,
-    consistent with the graph-theoretic divergence used in the Φ_s and
-    K_φ definitions.
+    Thus it is ``-L_rw`` applied to each current component for an unweighted
+    graph, conventionally an inward rather than outward flux. The public name
+    is retained for compatibility; all balance routines use this same sign.
 
     Parameters
     ----------
@@ -232,7 +303,7 @@ def _current_divergence_from_fields(
             continue
 
         deg = len(neighbors)
-        # Divergence = mean outward flux of both current components
+        # Legacy neighbor-minus-center (inward-flux / -L_rw) convention.
         div_j_phi = sum(j_phi.get(j, 0.0) - j_phi.get(i, 0.0) for j in neighbors) / deg
         div_j_dnfr = (
             sum(j_dnfr.get(j, 0.0) - j_dnfr.get(i, 0.0) for j in neighbors) / deg
@@ -248,7 +319,7 @@ def _current_divergence_from_fields(
 
 
 def capture_conservation_snapshot(G: Any) -> ConservationSnapshot:
-    """Capture all conserved quantities at the current instant.
+    """Capture structural charge, currents, and fields at one instant.
 
     This is a *read-only* operation that never mutates EPI.
 
@@ -320,7 +391,7 @@ def verify_conservation_balance(
     Returns
     -------
     ConservationBalance
-        Comprehensive diagnostics of the conservation law.
+        Finite-interval structural-balance diagnostics.
     """
     nodes = list(after.charge_density.keys())
 
@@ -350,7 +421,8 @@ def verify_conservation_balance(
     # Conservation quality: 1/(1 + RMS) maps [0, ∞) → (0, 1]
     quality = 1.0 / (1.0 + rms_res)
 
-    # Grammar violation index: proportional to mean |residual|
+    # Legacy field name. This is only the mean absolute balance residual and
+    # has no rule-classification semantics.
     gvi = float(np.mean(np.abs(residual_vals))) if len(residual_vals) > 0 else 0.0
 
     # Total charge tracking
@@ -383,7 +455,7 @@ def verify_conservation_balance(
 
 
 class ConservationTracker:
-    """Track conservation law compliance across a full operator sequence.
+    """Track finite structural-balance diagnostics across an operator sequence.
 
     Usage
     -----
@@ -394,7 +466,7 @@ class ConservationTracker:
     >>> Coherence()(G, node)
     >>> tracker.record(t=2.0)
     >>> report = tracker.report()
-    >>> print(f"Conserved: {report.is_conserved}")
+    >>> print(f"Within alert: {report.aggregate_balance_within_alert}")
     """
 
     def __init__(self, G: Any) -> None:
@@ -428,7 +500,9 @@ class ConservationTracker:
             self._series.mean_residuals.append(balance.mean_residual)
             self._series.rms_residuals.append(balance.rms_residual)
             self._series.conservation_quality.append(balance.conservation_quality)
-            self._series.grammar_violation_index.append(balance.grammar_violation_index)
+            self._series.grammar_violation_index.append(
+                balance.grammar_violation_index
+            )
             self._series.charge_drift.append(balance.charge_drift)
         else:
             # First snapshot — record initial charge only
@@ -474,9 +548,10 @@ def decompose_conservation_residual(
 
         Δρ/Δt = ΔΦ_s/Δt + ΔK_φ/Δt
 
-    This function separates the two contributions to identify whether
-    the residual comes from potential drift (global, grammar-U6 related)
-    or curvature drift (local, phase dynamics related).
+    This function separates potential-field and curvature-field contributions
+    to the measured residual.  Their magnitudes do not classify U2 or U3, and
+    potential drift evaluates the U6 policy only when compared with the
+    canonical two-snapshot threshold through a dedicated U6 checker.
 
     Divergence is evaluated using the **Crank-Nicolson (trapezoidal)**
     average of the before and after snapshots for O(Δt²) accuracy.
@@ -536,11 +611,11 @@ def decompose_conservation_residual(
 
 
 # ---------------------------------------------------------------------------
-# Theoretical bounds from grammar constraints
+# Legacy pi-scaled conservation alert levels
 # ---------------------------------------------------------------------------
 
 
-def compute_grammar_conservation_bounds(G: Any) -> dict[str, float]:
+def compute_grammar_conservation_bounds(G: Any) -> ConservationAlertLevels:
     r"""Compute legacy grammar-scaled diagnostic alert levels.
 
     The legacy alert construction combines:
@@ -549,59 +624,64 @@ def compute_grammar_conservation_bounds(G: Any) -> dict[str, float]:
     - the U6 drift policy ``ΔPhi_s < pi/2`` as a numeric scale;
     - the exact trigonometric bound ``|J_phi| <= 1``.
 
-    These values combine configured U3/U6 scales into monitoring thresholds.
-    They are not proved upper bounds on the residual of every grammar-valid
-    trajectory, so callers must not use them as a conservation certificate.
+    These values combine historical pi-scaled policies into monitoring alert
+    levels. They are not derived U2/U3/U6 bounds, do not evaluate any grammar
+    rule, and must not be used as a conservation or grammar certificate. The
+    returned object remains a ``dict`` subclass containing only numeric legacy
+    keys; its :attr:`ConservationAlertLevels.metadata` property exposes this
+    scope without breaking callers that iterate the numeric mapping.
 
     Returns
     -------
-    dict[str, float]
+    ConservationAlertLevels
         'max_charge_density'  : legacy policy-scaled alert level for |ρ|
         'max_current_magnitude' : legacy alert level for |J|
         'max_allowed_residual' : legacy alert level for |Δρ/Δt + div J|
-        'phi_s_confinement'   : π/2 (the U6 confinement bound)
+        'phi_s_confinement'   : legacy key for the π/2 U6 *drift alert scale*
         'k_phi_hotspot'       : 0.9×π ≈ 2.8274 (curvature hotspot threshold)
     """
     n_nodes = G.number_of_nodes()
 
-    # U6: |Φ_s| < π/2
-    phi_s_bound = U6_STRUCTURAL_POTENTIAL_LIMIT
+    # Legacy key/value retained. U6 constrains two-snapshot mean |ΔΦ_s|;
+    # it does not bound the magnitude |Φ_s| in one graph.
+    phi_s_alert = U6_STRUCTURAL_POTENTIAL_LIMIT
 
     # K_φ is bounded by π (wrapped angle difference)
     k_phi_bound = PI
 
-    # Maximum charge density
-    max_charge = phi_s_bound + k_phi_bound
+    # Historical composite alert, not a maximum charge-density theorem.
+    max_charge = phi_s_alert + k_phi_bound
 
     # J_φ = mean(sin(Δθ)), bounded by 1
     j_phi_bound = 1.0
 
-    # J_ΔNFR = mean(ΔNFR_j - ΔNFR_i), bounded by max|ΔNFR| spread
-    # Legacy alert proxy. U2/U6 alone do not bound pressure spread.
-    j_dnfr_bound = 2.0 * phi_s_bound
+    # Legacy J_ΔNFR alert proxy. U2/U6 do not bound pressure spread.
+    j_dnfr_alert = 2.0 * phi_s_alert
 
     # Maximum current magnitude
-    max_current = math.sqrt(j_phi_bound**2 + j_dnfr_bound**2)
+    max_current = math.sqrt(j_phi_bound**2 + j_dnfr_alert**2)
 
-    # Maximum divergence scales with max_current / connectivity
+    # Historical divergence alert derived from the composite current scale.
     avg_degree = 2.0 * G.number_of_edges() / max(n_nodes, 1)
-    max_div = 2.0 * max_current  # upper bound on discrete divergence
+    max_div = 2.0 * max_current
 
-    # Maximum allowed residual (charge rate + divergence)
+    # Historical residual alert, not a maximum allowed by grammar.
     max_residual = max_charge + max_div
 
-    return {
-        "max_charge_density": max_charge,
-        "max_current_magnitude": max_current,
-        "max_allowed_residual": max_residual,
-        "phi_s_confinement": phi_s_bound,
-        "k_phi_hotspot": K_PHI_CANONICAL_THRESHOLD,  # 0.9×π ≈ 2.8274 (canonical curvature hotspot threshold)
-        "average_degree": avg_degree,
-    }
+    return ConservationAlertLevels(
+        {
+            "max_charge_density": max_charge,
+            "max_current_magnitude": max_current,
+            "max_allowed_residual": max_residual,
+            "phi_s_confinement": phi_s_alert,
+            "k_phi_hotspot": K_PHI_CANONICAL_THRESHOLD,
+            "average_degree": avg_degree,
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
-# Grammar violation detection via conservation analysis
+# Legacy grammar-named entry point for balance alerts
 # ---------------------------------------------------------------------------
 
 
@@ -609,79 +689,103 @@ def detect_grammar_violations_from_conservation(
     balance: ConservationBalance,
     bounds: dict[str, float] | None = None,
 ) -> dict[str, Any]:
-    r"""Flag residual patterns associated with possible grammar violations.
+    r"""Report legacy-scaled balance alerts without classifying grammar.
 
-    High residuals are heuristic alerts, not a grammar validator: numerical
-    discretization, topology changes, or an external pressure law can produce
-    them even for a valid operator history.  Validate U1-U6 independently.
+    Residuals and charge drift contain no operator-history evidence and no
+    direct phase-admissibility evidence. They therefore cannot classify U2,
+    U3, or U6, and cannot validate U1-U6. Numerical discretization, topology
+    changes, source terms, or an external pressure law can all produce the
+    same values for grammatically different histories.
+
+    The function name and the legacy ``violations_*`` keys remain for API
+    compatibility. Those keys now report that no grammar verdict was made.
+    New ``alerts_*`` keys contain the actual finite-balance alerts.
 
     Parameters
     ----------
     balance : ConservationBalance
         Result from verify_conservation_balance.
     bounds : dict[str, float], optional
-        Bounds from compute_grammar_conservation_bounds.
+        Legacy alert levels from :func:`compute_grammar_conservation_bounds`.
 
     Returns
     -------
     dict with:
-        'violations_detected' : bool
-        'violation_count' : int
-        'violation_types' : list[str]
-        'severity' : float  (0 = none, 1 = extreme)
-        'nodes_violating' : list  (nodes with |residual| above threshold)
+        ``violations_detected`` is always ``False`` because grammar is not
+        assessed; ``alerts_detected``, ``alert_types``, ``severity`` and
+        ``nodes_alerted`` expose the legacy-scaled observations. Scope and
+        applicability metadata are included explicitly.
     """
-    threshold = U6_STRUCTURAL_POTENTIAL_LIMIT  # U6 structural-potential bound (π/2)
+    threshold = U6_STRUCTURAL_POTENTIAL_LIMIT
     if bounds is not None:
         threshold = bounds.get("max_allowed_residual", U6_STRUCTURAL_POTENTIAL_LIMIT)
 
-    violation_types: list[str] = []
-    nodes_violating: list[Any] = []
+    alert_types: list[str] = []
+    nodes_alerted: list[Any] = []
 
     for node, res in balance.residual.items():
         if abs(res) > threshold:
-            nodes_violating.append(node)
+            nodes_alerted.append(node)
 
-    # Classify violation types
+    if nodes_alerted:
+        alert_types.append("balance_residual_above_legacy_alert")
+
     if balance.charge_drift > U6_STRUCTURAL_POTENTIAL_LIMIT:
-        violation_types.append("U6_confinement_breach")
+        alert_types.append("charge_drift_above_legacy_pi_alert")
 
     if balance.rms_residual > _BALANCE_RMS_ALERT:
-        violation_types.append("U2_convergence_failure")
+        alert_types.append("balance_rms_above_legacy_alert")
 
     if balance.max_residual > 2 * threshold:
-        violation_types.append("U3_phase_incompatibility")
+        alert_types.append("balance_peak_above_legacy_alert")
 
     severity = min(1.0, balance.rms_residual / max(threshold, 1e-10))
 
     return {
-        "violations_detected": len(violation_types) > 0,
-        "violation_count": len(violation_types),
-        "violation_types": violation_types,
+        # Backward-compatible grammar-shaped fields: no grammar assessment was
+        # made, so these must never carry inferred U-rule failures.
+        "violations_detected": False,
+        "violation_count": 0,
+        "violation_types": [],
+        "nodes_violating": [],
+        # Accurate finite-balance alert surface.
+        "alerts_detected": bool(alert_types),
+        "alert_count": len(alert_types),
+        "alert_types": alert_types,
         "severity": severity,
-        "nodes_violating": nodes_violating,
+        "nodes_alerted": nodes_alerted,
+        "alert_threshold": threshold,
+        # Applicability metadata.
+        "diagnostic_scope": "two_snapshot_structural_balance_alerts",
+        "grammar_validation_applicable": False,
+        "grammar_validated": False,
+        "grammar_rules_assessed": (),
+        "thresholds_are_proven_bounds": False,
+        "u6_drift_requires_phi_s_reference": True,
     }
 
 
 # ---------------------------------------------------------------------------
-# Noether charge: total conserved quantity
+# Structural charge (historical Noether-like name)
 # ---------------------------------------------------------------------------
 
 
 def compute_noether_charge(G: Any) -> float:
-    r"""Compute the total Noether charge Q = Σ_i ρ(i) = Σ_i [Φ_s(i) + K_φ(i)].
+    r"""Compute the historically named tetrad charge candidate.
+
+    ``Q = Σ_i ρ(i) = Σ_i [Φ_s(i) + K_φ(i)]``.
 
     The charge Q integrates global (potential) and local (geometric)
     structural information into a single scalar.  Its drift must be measured
     along the actual trajectory; grammar compliance is neither sufficient nor
     inferred from a small drift.
 
-    This **tetrad** charge is **distinct** from the EPI-channel degree-weighted
-    total Σ_i deg(i)·EPI(i)
-    (:func:`tnfr.physics.structural_diffusion.degree_weighted_total`), the
-    conserved quantity of the random-walk diffusion: TNFR carries two distinct
-    conservation laws, on the tetrad fields and on the EPI field respectively
-    (see STRUCTURAL_CONSERVATION_THEOREM §8.7).
+    This tetrad charge candidate is distinct from the EPI-channel
+    degree-weighted total ``Σ_i deg(i)·EPI(i)``
+    (:func:`tnfr.physics.structural_diffusion.degree_weighted_total`). The
+    latter has an exact restricted conservation theorem for fixed symmetric
+    random-walk diffusion; this function provides no corresponding theorem for
+    the full tetrad dynamics.
 
     Parameters
     ----------
@@ -690,7 +794,7 @@ def compute_noether_charge(G: Any) -> float:
     Returns
     -------
     float
-        Total structural Noether charge.
+        Total structural-charge candidate.
     """
     charge = compute_charge_density(G)
     return sum(charge.values())
@@ -761,19 +865,19 @@ def analyze_sector_coupling(
 ) -> dict[str, float]:
     r"""Analyze coupling between potential and geometric conservation sectors.
 
-    The full conservation law decomposes into TWO coupled sectors:
+    The measured balance decomposes into two residual sectors:
 
     **Potential sector** (global, ΔNFR-driven):
         ∂Φ_s/∂t + div(J_ΔNFR) ≈ 0
-        - Conserves when ΔNFR redistributes without creation/destruction
-        - Violated by unconstrained destabilizers (grammar U2)
-        - Monitored by grammar U6 (|Φ_s| < π/2)
+        - Records pressure-field transport and source mismatch
+        - Does not classify the U2 stabilizer/debt rule
+        - U6 needs a two-snapshot mean |ΔΦ_s| comparison
 
     **Geometric sector** (local, phase-driven):
         ∂K_φ/∂t + div(J_φ) ≈ 0
-        - Conserves when phase curvature transports without source terms
-        - Violated by phase-incompatible operations (grammar U3)
-        - Monitored by curvature hotspot detection (|K_φ| < 2.8274)
+        - Records phase-curvature transport and source mismatch
+        - Does not assess U3 edge-phase admissibility
+        - The 0.9π hotspot cut is a selected alert inside the exact π wrap
 
     The cross-correlation summarizes co-variation between the two residual
     channels. It does not establish a causal coupling or derive the complex
@@ -830,7 +934,7 @@ def analyze_sector_coupling(
 
 
 # ---------------------------------------------------------------------------
-# Ward identities: per-operator conservation signatures
+# Ward-like diagnostics: per-operator finite-step signatures
 # ---------------------------------------------------------------------------
 
 
@@ -838,17 +942,22 @@ def analyze_sector_coupling(
 class WardIdentity:
     """Conservation signature of a single operator application.
 
-    A Ward identity constrains the expectation value of observables between
-    operator applications.  For operator O_k at step k:
+    This legacy-named object records finite before/after observables for one
+    reported operator application. It does not prove a symmetry or validate
+    the operator sequence. For operator O_k at step k:
 
-        ⟨Δρ⟩_k + ⟨div J⟩_k = ⟨S_k⟩
+        ΔQ_k/(N Δt_k) + mean_i[(div J_before + div J_after)/2]_i
+            = mean_i[S_k(i)]
+
+    Thus ``delta_charge`` is a total structural-charge-candidate change while
+    ``mean_source`` is a per-node rate residual. They are distinct quantities.
 
     Attributes
     ----------
     operator_name : str
         Name of the applied operator (e.g. "AL", "IL", "OZ").
     delta_charge : float
-        Total Noether charge change ΔQ = Q_after - Q_before.
+        Total structural-charge-candidate change ΔQ = Q_after - Q_before.
     delta_energy : float
         Energy functional change ΔE = E_after - E_before.
     mean_source : float
@@ -856,8 +965,9 @@ class WardIdentity:
     conservation_quality : float
         Balance quality for this single step.
     charge_character : str
-        Classification: 'source' (ΔQ > ε), 'sink' (ΔQ < -ε),
-        'transport' (|ΔQ| < ε), or 'exact' (ΔQ ≈ 0 and ΔE ≈ 0).
+        Finite-difference label: 'source' (ΔQ > ε), 'sink' (ΔQ < -ε),
+        'transport' (|ΔQ| < ε), or legacy 'exact' (both changes within ε).
+        The last label means threshold-neutral, not exact conservation.
     energy_character : str
         'dissipative' (ΔE < -ε), 'injective' (ΔE > ε), or 'neutral'.
     """
@@ -880,10 +990,11 @@ def compute_ward_identity(
     dt: float = 1.0,
     threshold: float = 0.01,
 ) -> WardIdentity:
-    r"""Compute the Ward identity for a single operator application.
+    r"""Compute a legacy-named Ward diagnostic for one observed step.
 
-    Measures how the operator changed conserved quantities and classifies
-    its conservation character.
+    Measures how the supplied snapshots changed structural charge and the
+    energy candidate. The labels are finite threshold classifications and
+    contain no grammar verdict.
 
     Parameters
     ----------
@@ -903,6 +1014,13 @@ def compute_ward_identity(
     -------
     WardIdentity
     """
+    if not isinstance(operator_name, str) or not operator_name.strip():
+        raise ValueError("operator_name must be a non-empty string")
+    if isinstance(threshold, bool):
+        raise TypeError("threshold must be a finite positive real number")
+    threshold = float(threshold)
+    if not np.isfinite(threshold) or threshold <= 0.0:
+        raise ValueError("threshold must be finite and strictly positive")
     balance = verify_conservation_balance(before, after, dt=dt)
 
     q_before = balance.total_charge_before
@@ -949,17 +1067,24 @@ def compute_ward_identity(
 
 def verify_sequence_ward_identity(
     identities: Sequence[WardIdentity],
+    *,
+    alert_level: float | None = None,
 ) -> dict[str, Any]:
     r"""Measure the sequence Ward residual ``Σ_k <S_k>``.
 
-    The legacy ``sequence_conserved`` flag applies a configured finite-sequence
-    threshold.  It does not infer grammar validity or prove that every valid
-    sequence has a vanishing source.
+    The legacy ``sequence_conserved`` flag applies a finite-sequence alert
+    level. It is retained as an alias for ``aggregate_balance_within_alert``;
+    it does not infer grammar validity or prove a conservation law. When no
+    alert level is supplied, the historical pi-scaled value is retained for
+    compatibility and is explicitly reported as a legacy alert, not a bound.
 
     Parameters
     ----------
     identities : Sequence[WardIdentity]
         Ordered Ward identities for each operator in the sequence.
+    alert_level : float, optional
+        Finite aggregate-source alert. Defaults to the historical
+        ``(pi/2) / n_steps`` scale.
 
     Returns
     -------
@@ -967,7 +1092,7 @@ def verify_sequence_ward_identity(
         'total_source' : float — Σ⟨S_k⟩ (should be ≈ 0)
         'total_charge_change' : float — net ΔQ
         'total_energy_change' : float — net ΔE
-        'sequence_conserved' : bool — True if |total_source| < threshold
+        'sequence_conserved' : legacy alias for a threshold comparison
         'operator_summary' : dict[str, int] — count by charge_character
     """
     total_source = sum(w.mean_source for w in identities)
@@ -979,13 +1104,27 @@ def verify_sequence_ward_identity(
         summary[w.charge_character] = summary.get(w.charge_character, 0) + 1
 
     n_steps = max(len(identities), 1)
-    threshold = U6_STRUCTURAL_POTENTIAL_LIMIT / n_steps  # Scale threshold with sequence length
+    if alert_level is None:
+        threshold = U6_STRUCTURAL_POTENTIAL_LIMIT / n_steps
+    else:
+        if isinstance(alert_level, bool):
+            raise TypeError("alert_level must be a finite positive real number")
+        threshold = float(alert_level)
+        if not np.isfinite(threshold) or threshold <= 0.0:
+            raise ValueError("alert_level must be finite and strictly positive")
+    within_alert = abs(total_source) < threshold
 
     return {
         "total_source": total_source,
         "total_charge_change": total_dq,
         "total_energy_change": total_de,
-        "sequence_conserved": abs(total_source) < threshold,
+        "sequence_conserved": within_alert,
+        "aggregate_balance_within_alert": within_alert,
+        "alert_threshold": threshold,
+        "thresholds_are_proven_bounds": False,
+        "grammar_validation_applicable": False,
+        "grammar_validated": False,
+        "diagnostic_scope": "finite_sequence_balance_aggregate",
         "operator_summary": summary,
     }
 
@@ -1088,8 +1227,9 @@ class SpectralConservation:
     The continuity equation mode-by-mode reads:
         dρ̂_k/dt + λ_k Ĵ_k = Ŝ_k
 
-    Low-frequency modes (small λ_k) → conservation regime.
-    High-frequency modes (large λ_k) → rapid relaxation.
+    Eigenvalue ordering supplies graph scales only. A static snapshot cannot
+    infer conservation at low frequency, relaxation at high frequency, U5
+    compliance, or the omitted time derivative.
 
     Attributes
     ----------
@@ -1100,12 +1240,15 @@ class SpectralConservation:
         Charge density coefficients ρ̂_k in the eigenbasis.
     div_spectrum : np.ndarray
         Current divergence coefficients in the eigenbasis.
-    conservation_by_mode : np.ndarray
-        Per-mode residual |dρ̂_k/dt + λ_k Ĵ_k| (lower = better conservation).
-    dominant_conservation_modes : int
-        Number of modes with residual below median.
+    modal_divergence_magnitude : np.ndarray
+        Static activity ``|div_hat_k|`` of the already-computed divergence.
+        No second Laplacian factor is applied.
+    low_divergence_activity_modes : int
+        Number of modes with divergence magnitude at or below its median.
     spectral_gap : float
         λ_1 — gap between zero mode and first non-trivial mode.
+    node_order : tuple
+        Node order used to build both field vectors and the Laplacian.
     """
 
     eigenvalues: Any  # np.ndarray
@@ -1114,6 +1257,17 @@ class SpectralConservation:
     conservation_by_mode: Any  # np.ndarray
     dominant_conservation_modes: int
     spectral_gap: float
+    node_order: tuple[Any, ...] = ()
+
+    @property
+    def modal_divergence_magnitude(self) -> Any:
+        """Accurate name for the legacy stored per-mode activity field."""
+        return self.conservation_by_mode
+
+    @property
+    def low_divergence_activity_modes(self) -> int:
+        """Accurate name for the legacy stored median-split count."""
+        return self.dominant_conservation_modes
 
 
 def compute_spectral_conservation(
@@ -1122,15 +1276,13 @@ def compute_spectral_conservation(
 ) -> SpectralConservation:
     r"""Decompose conservation fields in the normalized Laplacian eigenbasis.
 
-    Connects TNFR conservation to spectral graph theory.  The L_sym
-    eigenvalues determine at which structural scales conservation holds
-    most precisely:
-
-    - Global modes (k = 0, 1): total charge Q is most conserved
-    - Mesoscale modes: sector-level conservation with cross-coupling
-    - Local modes (k → N): rapid equilibration, sources/sinks active
-
-    This spectral hierarchy mirrors the U5 multi-scale coherence principle.
+    Represents one charge-density and current-divergence snapshot in the
+    ``L_sym`` eigenbasis. ``modal_divergence_magnitude=|div_hat_k|`` is a static
+    activity readout. The divergence has already been computed in node space,
+    so multiplying it by ``lambda_k`` again would apply an unintended second
+    graph derivative. The compatibility field ``conservation_by_mode`` exposes
+    the same array. With no ``d rho_hat / dt``, neither name is a per-mode
+    conservation residual or a U5 assessment.
 
     Parameters
     ----------
@@ -1146,16 +1298,14 @@ def compute_spectral_conservation(
     if snapshot is None:
         snapshot = capture_conservation_snapshot(G)
 
-    nodes = sorted(snapshot.charge_density.keys())
-    n = len(nodes)
-
     # Build the symmetric normalized Laplacian L_sym = I − D^{-1/2} W D^{-1/2},
     # whose spectrum is that of the canonical TNFR diffusion operator
     # L_rw = I − D⁻¹W (the EPI channel; see ``structural_diffusion``).  This is
-    # consistent with the §9.1 normalized divergence (∇·J = L_rw·J).
+    # The field vectors must use exactly the node order returned with L.
     from .structural_diffusion import symmetric_normalized_laplacian
 
-    _, L = symmetric_normalized_laplacian(G)
+    nodes, L = symmetric_normalized_laplacian(G)
+    n = len(nodes)
 
     # Eigendecomposition (orthonormal eigenbasis of L_sym)
     eigvals, eigvecs = np.linalg.eigh(L)
@@ -1167,13 +1317,13 @@ def compute_spectral_conservation(
     rho_hat = eigvecs.T @ rho_vec  # coefficients in eigenbasis
     div_hat = eigvecs.T @ div_vec
 
-    # Per-mode "conservation residual": for static snapshot,
-    # this is |λ_k · Ĵ_k| (transport rate per mode)
-    conservation_modes = np.abs(eigvals * div_hat)
+    # Static per-mode divergence magnitude. ``div_vec`` is already a graph
+    # divergence, so an additional eigenvalue factor would apply L twice.
+    divergence_activity = np.abs(div_hat)
 
-    # Number of well-conserved modes (below median residual)
-    median_res = float(np.median(conservation_modes)) if n > 0 else 0.0
-    n_conserved = int(np.sum(conservation_modes <= median_res + 1e-15))
+    # Median split is descriptive only; it is not a conservation verdict.
+    median_res = float(np.median(divergence_activity)) if n > 0 else 0.0
+    n_low_activity = int(np.sum(divergence_activity <= median_res + 1e-15))
 
     # Spectral gap
     sorted_eigs = np.sort(eigvals)
@@ -1183,14 +1333,15 @@ def compute_spectral_conservation(
         eigenvalues=eigvals,
         rho_spectrum=rho_hat,
         div_spectrum=div_hat,
-        conservation_by_mode=conservation_modes,
-        dominant_conservation_modes=n_conserved,
+        conservation_by_mode=divergence_activity,
+        dominant_conservation_modes=n_low_activity,
         spectral_gap=spectral_gap,
+        node_order=tuple(nodes),
     )
 
 
 # ---------------------------------------------------------------------------
-# Conservation scaling: q(N) ~ 1 - C/√N  verification
+# Historical conservation-quality scaling fit
 # ---------------------------------------------------------------------------
 
 
@@ -1202,12 +1353,13 @@ def compute_conservation_scaling(
 ) -> dict[str, Any]:
     r"""Measure conservation quality scaling with network size.
 
-    Verifies the theoretical prediction:
+    Fits the historical finite-sample ansatz:
 
         q(N) ~ 1 - C/√N
 
-    where C is a topology-dependent constant.  In the continuum limit
-    (N → ∞), q → 1 (exact conservation).
+    The returned fit and R² describe only the supplied graph family and
+    evolution procedure. They do not prove a continuum limit or exact
+    conservation as ``N -> infinity``.
 
     Parameters
     ----------
@@ -1301,6 +1453,7 @@ __all__ = [
     "ConservationSnapshot",
     "ConservationBalance",
     "ConservationTimeSeries",
+    "ConservationAlertLevels",
     "WardIdentity",
     "LyapunovResult",
     "SpectralConservation",

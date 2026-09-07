@@ -7,7 +7,7 @@ Usage after install:
   tnfr-is-prime --cached 17 97 197      # Force cached mode
 
 A number is prime iff ΔNFR(n) == 0, using the TNFR arithmetic pressure equation.
-This optimized version uses LRU caching for significant performance improvements.
+This version uses bounded LRU caches to reuse results for repeated inputs; no universal speedup is assumed.
 """
 
 from __future__ import annotations

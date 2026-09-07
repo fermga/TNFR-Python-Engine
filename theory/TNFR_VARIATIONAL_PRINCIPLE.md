@@ -1,8 +1,8 @@
 # TNFR Variational Principle — Lagrangian Action Formulation
 
-**Status**: Exact restricted EPI Dirichlet balance; scoped harmonic diagnostics; full tetrad/nodal bridge unresolved
+**Status**: Exact restricted EPI Dirichlet balance and decoupled metriplectic product; full coupled tetrad/nodal bridge unresolved
 **Module**: `src/tnfr/physics/variational.py`
-**Tests**: `tests/physics/test_diffusion_energy_balance.py`, `tests/physics/test_variational.py`, `tests/physics/test_symplectic_substrate.py`
+**Tests**: `tests/physics/test_diffusion_energy_balance.py`, `tests/physics/test_variational.py`, `tests/physics/test_symplectic_substrate.py`, `tests/physics/test_metriplectic_product.py`
 **Date**: 2026-09-05
 
 ---
@@ -137,6 +137,20 @@ This establishes the restricted identity, not a theorem about the different
 tetrad potential, changing graph weights, all four pressure channels, arbitrary
 discrete time steps, or a lift to the isotropic substrate.
 
+### 3.6 Exact Decoupled Metriplectic Product
+
+The harmonic substrate and the restricted EPI gradient flow can coexist in one
+block system `X'=J grad(H)-G grad(E_D)`. With zero cross blocks,
+`J grad(E_D)=0` and `G grad(H)=0`; therefore the substrate Hamiltonian is
+conserved while Dirichlet energy decreases. The implementation
+[`verify_metriplectic_product`](../src/tnfr/physics/metriplectic.py) verifies
+both degeneracies and both component vector fields.
+
+This is an exact direct product, not the missing coupled derivation. Since the
+cross blocks vanish, it supplies no pulse-relaxation feedback. A full bridge
+still requires nonzero cross tensors that preserve the same degeneracy laws.
+See [TNFR_SCALE_GEOMETRY_AND_BRIDGE.md](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md).
+
 ---
 
 ## 4. Grammar-Labelled Heuristics
@@ -161,23 +175,22 @@ the actual grammar requirements.
 
 ## 5. Operator Energy Heuristics and Local Symplectic Checks
 
-The historical classification table below records energy and snapshot-statistic expectations. It does **not** establish that engine operators are symplectomorphisms. A canonical transformation can change a particular Hamiltonian; energy conservation and symplecticity are distinct properties.
+Older code attached sign labels to operators. Those labels are priors for a
+snapshot statistic, not consequences of U2 or of the glyph factors. The
+five-field Hamiltonian has no explicit EPI or capacity term, while phase and
+pressure changes propagate through graph-dependent fields. Every realized sign
+therefore remains state-dependent and must be measured.
 
-| Operator | Legacy type | Expected effect on $H$ | Legacy statistic label |
-|----------|------|---------------|------------|
-| **AL** (Emission) | Generating | $\Delta H > 0$ | Expansive |
-| **EN** (Reception) | Canonical | $\Delta H \approx 0$ | Canonical |
-| **IL** (Coherence) | Dissipative | $\Delta H < 0$ | Dissipative |
-| **OZ** (Dissonance) | Generating | $\Delta H > 0$ | Expansive |
-| **UM** (Coupling) | Canonical | $\Delta H \approx 0$ | Canonical |
-| **RA** (Resonance) | Canonical | $\Delta H \approx 0$ | Canonical |
-| **SHA** (Silence) | Canonical | $\Delta H = 0$ | Canonical |
-| **VAL** (Expansion) | Generating | $\Delta H > 0$ | Expansive |
-| **NUL** (Contraction) | Dissipative | $\Delta H < 0$ | Dissipative |
-| **THOL** (Self-org.) | Canonical | $\Delta H \approx 0$ | Canonical |
-| **ZHIR** (Mutation) | Generating | $\Delta H > 0$ | Expansive |
-| **NAV** (Transition) | Canonical | $\Delta H \approx 0$ | Canonical |
-| **REMESH** (Recursivity) | Canonical | $\Delta H \approx 0$ | Canonical |
+| Operators | U2 bookkeeping role | Historical sign prior | Valid conclusion |
+|-----------|----------------------|-----------------------|------------------|
+| **IL, THOL** | Stabilizer | decrease | No universal $\Delta H$ sign |
+| **OZ, ZHIR, VAL** | Destabilizer | increase | No universal $\Delta H$ sign |
+| **AL, EN, UM, RA, SHA, NUL, NAV, REMESH** | Neutral | unchanged | U2 neutrality does not imply $\Delta H=0$ |
+
+The policy-multiplier layer in `physics.lyapunov` now exposes this scope through
+`is_energy_bound=False` and `is_lyapunov_certificate=False`. A canonical
+transformation can also change a particular Hamiltonian; energy conservation
+and symplecticity are separate properties.
 
 `check_symplectic_preservation(before, after, ...)` preserves its positional
 arguments and legacy ratio fields, but snapshots alone now return

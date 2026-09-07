@@ -1,28 +1,26 @@
-"""TNFR Example 114: What the Substrate Conserves — symplectomorphism,
+"""TNFR Example 114: What the specified substrate conserves — symplectic flow,
 adiabatic invariance, and the γ-dial.
 
-Example 113 built the bridge between the conservative symplectic substrate
-and the dissipative structural diffusion. This example explores three
+Example 113 placed the auxiliary conservative harmonic model beside the
+separate dissipative structural-diffusion model. This example explores three
 further consequences of that emergent geometry, none of which reopens any
 paused program:
 
-(a) OPERATOR SYMPLECTOMORPHISM. The substrate Hamiltonian flow U(t) =
+(a) FLOW SYMPLECTICITY. The substrate Hamiltonian flow U(t) =
     exp(t·X_H) is an EXACT symplectomorphism: it preserves the symplectic
     form, the loop action ∮p·dq, the Hamiltonian H_sub, and every action
-    variable I = ½|ζ|². The 13 canonical operators are canonical
-    transformations ON this substrate: most leave the global substrate
-    energy invariant, while UM (Coupling) collapses the geometric sector by
-    phase-synchronisation — the same collapse seen in the polarization
-    geometry (example 106).
+    variable I = ½|ζ|². Applying the 13 engine operators to a graph and then
+    re-extracting substrate coordinates gives finite-snapshot energy changes;
+    it does not test the Jacobian pullback required for symplecticity.
 
 (b) ADIABATIC INVARIANCE. The action I = E/ω is an ADIABATIC INVARIANT of
-    a slowly-varying structural frequency: when ν_f ramps slowly the action
+    the specified slowly-varying oscillator: when its frequency ramps slowly the action
     is conserved, when it ramps suddenly the action drifts. This is the
-    empirically-established adiabatic theorem (Ehrenfest 1916). ν_f is the
-    clock; the 13 operators are the canonical transforms that redistribute
-    the (adiabatically-conserved) actions.
+    numerical realization of the standard adiabatic result. Reading ω as ν_f
+    is a declared model convention, not an operator or nodal-equation theorem.
 
-(c) THE γ-DIAL. The damped substrate wave q̈ + γq̇ + Lq = 0 has a single
+(c) THE γ-DIAL. The separately posited damped graph-wave model
+    q̈ + γq̇ + Lq = 0 has a single
     dial γ. Example 113 took γ→∞ (overdamped projection onto diffusion).
     Here we take γ→0: the roots become the pure-imaginary pair s = ±i√λ_k,
     so every mode oscillates undamped at the standing-wave frequency
@@ -32,11 +30,11 @@ paused program:
 
 HONEST SCOPE
 ============
-Foundational geometry of the emergent substrate. The flow symplectomorphism
-and action-angle structure are exact; the adiabatic invariance is the
-Ehrenfest theorem with ν_f as the slow frequency; the γ-dial connects two
-canonical TNFR modules. Resolves no open program (Riemann G4,
-Navier–Stokes).
+The flow symplectomorphism and action-angle structure are exact for the
+specified harmonic model; the adiabatic calculation uses a prescribed scalar
+oscillator; the γ-dial belongs to the separate damped graph-wave model. None
+of these checks proves engine-operator symplecticity or resolves an open
+program.
 
 References:
 - src/tnfr/physics/symplectic_substrate.py (verify_adiabatic_invariance)
@@ -44,7 +42,7 @@ References:
 - examples/08_emergent_geometry/98_emergent_symplectic_substrate.py
 - examples/08_emergent_geometry/99_structural_diffusion.py
 - examples/08_emergent_geometry/113_overdamped_projection_bridge.py
-- AGENTS.md §"Emergent Symplectic Substrate (CANONICAL)"
+- AGENTS.md §"Emergent symplectic substrate"
 """
 
 import math
@@ -119,9 +117,9 @@ def _build(n=24, seed=11):
 
 
 def experiment_a_symplectomorphism():
-    """The substrate flow is an exact symplectomorphism; operators act on it."""
+    """Verify the substrate flow and report separate operator snapshot changes."""
     print("=" * 72)
-    print("(a) OPERATOR SYMPLECTOMORPHISM: the flow preserves everything")
+    print("(a) FLOW SYMPLECTICITY AND SEPARATE OPERATOR SNAPSHOTS")
     print("=" * 72)
     print()
 
@@ -148,9 +146,9 @@ def experiment_a_symplectomorphism():
         print(f"  t={t:>4.1f}  H_sub={substrate_hamiltonian(pt):.6f}  sum I={itot:.6f}")
     print()
 
-    # the 13 operators act ON the substrate: most preserve global energy,
-    # UM collapses the geometric sector (phase-sync, cf. polarization ex.106)
-    print("The 13 operators acting on the substrate (energy budget):")
+    # Re-extraction after operator application is an energy-response diagnostic.
+    # It does not evaluate an operator Jacobian or its symplectic pullback.
+    print("Re-extracted coordinates after each operator (snapshot response):")
     print(f"  baseline H_sub={H0:.4f}")
     print(f"  {'op':>7} {'H/H0':>8} {'E_geo/0':>8} {'E_pot/0':>8}  effect")
     Eg0 = geometric_sector_energy(p0)
@@ -168,23 +166,22 @@ def experiment_a_symplectomorphism():
             egr = geometric_sector_energy(p1) / Eg0
             epr = potential_sector_energy(p1) / Ep0
             effect = (
-                "preserves H_sub"
+                "small H_sub change"
                 if abs(hr - 1) < 0.05
                 else ("collapses E_geo" if egr < 0.5 else "redistributes")
             )
             print(f"  {name:>7} {hr:>8.4f} {egr:>8.4f} {epr:>8.4f}  {effect}")
     print()
     print("-> the FLOW is an exact symplectomorphism (preserves omega, H_sub,")
-    print("   actions, loop integral); the OPERATORS are canonical transforms")
-    print("   on it. UM collapses the geometric sector by phase-sync, exactly")
-    print("   the polarization-vector collapse of example 106.")
+    print("   actions and the loop integral). Operator rows only compare two")
+    print("   extracted snapshots; they do not certify symplectic maps.")
     print()
 
 
 def experiment_b_adiabatic():
     """The action is an adiabatic invariant of a slow nu_f ramp."""
     print("=" * 72)
-    print("(b) ADIABATIC INVARIANCE: slow nu_f conserves the action I=E/omega")
+    print("(b) ADIABATIC INVARIANCE OF A PRESCRIBED OSCILLATOR")
     print("=" * 72)
     print()
     print("Oscillator q'' + omega(t)^2 q = 0, omega ramped over time T_ramp.")
@@ -205,8 +202,8 @@ def experiment_b_adiabatic():
     print(f"  adiabatic invariant     : {cert.is_adiabatic_invariant}")
     print()
     print("-> as the ramp slows (eps=omega_dot/omega^2 -> 0) the action drift")
-    print("   collapses: I is the ADIABATIC INVARIANT. nu_f is the clock; the")
-    print("   13 operators redistribute the adiabatically-conserved actions.")
+    print("   collapses. Identifying omega with nu_f is an explicit convention")
+    print("   for this auxiliary oscillator; no operator result follows.")
     print()
 
 
@@ -254,7 +251,7 @@ def experiment_c_gamma_dial():
 def main():
     print()
     print("#" * 72)
-    print("# TNFR Example 114: What the Substrate Conserves")
+    print("# TNFR Example 114: What the Specified Substrate Conserves")
     print("# symplectomorphism (a) + adiabatic invariance (b) + gamma-dial (c)")
     print("#" * 72)
     print()
@@ -264,12 +261,12 @@ def main():
     print("=" * 72)
     print("SUMMARY")
     print("=" * 72)
-    print("(a) the substrate flow is an EXACT symplectomorphism; operators")
-    print("    are canonical transforms on it (UM collapses E_geo).")
-    print("(b) the action I=E/omega is an ADIABATIC INVARIANT of slow nu_f.")
+    print("(a) the substrate flow is an EXACT symplectomorphism; the operator")
+    print("    table is a snapshot response and does not test symplecticity.")
+    print("(b) I=E/omega is adiabatically invariant for the prescribed ramp.")
     print("(c) one dial gamma: gamma->0 standing waves, gamma->inf diffusion.")
     print()
-    print("Foundational emergent geometry. No open program resolved.")
+    print("Declared auxiliary models; no open program resolved.")
 
 
 if __name__ == "__main__":

@@ -1,16 +1,17 @@
-# TNFR–Hodge Discrete Cochain Research Notes
+# TNFR–Hodge Auxiliary Simplicial Baseline Notes
 
-**Status**: Pre-registered research programme; HC-1 diagnostic implemented; obstruction classified **Branch B3-leaning** (strong negative — no discrete TNFR closure of the actual conjecture)
+**Status**: HC-1 auxiliary simplicial baseline implemented; no TNFR tetrad-to-cochain bridge has been derived
 **Date**: 2026-06-13
-**Scope**: TNFR-internal discrete/combinatorial Hodge theory on the tetrad cochain tower; **not** a proof or attack on the Clay Hodge conjecture
-**Primary anchors**: nodal equation `∂EPI/∂t = νf · ΔNFR(t)`, structural field tetrad `(Φ_s, |∇φ|, K_φ, ξ_C)`, the k=1 Helmholtz–Hodge decomposition already shipped in `examples/107`
+**Scope**: standard finite simplicial Hodge theory used as an auxiliary comparison; **not** a proof or attack on the Clay Hodge conjecture
+**Primary anchors**: independently constructed incidence matrices in example 111; the canonical TNFR tetrad supplies only a comparison target
 
 ---
 
 ## 0. Terminology Discipline
 
-This programme is formulated in TNFR language only. References to the Hodge
-conjecture are treated as an **external comparison target**.
+References to the Hodge conjecture are treated as an **external comparison
+target**. The executable result below is standard combinatorial Hodge theory,
+not a consequence of the nodal equation or the 13 operators.
 
 No claim in this document should be read as a solution of the Clay Millennium
 Problem. The Clay Hodge conjecture asserts: on a non-singular complex
@@ -22,18 +23,25 @@ negative** about the reach of the discrete/structural setting.
 
 ---
 
-## 1. TNFR-Native Object: the Tetrad Cochain Tower
+## 1. Auxiliary simplicial cochain baseline
 
-Example 107 established the `k=1` Helmholtz–Hodge decomposition of the phase
-field on a graph (gradient ⊕ cycle). Extending the field to a 2-complex
-(triangles) gives the **full** discrete Hodge decomposition. The tetrad
-supplies the natural cochain degrees:
+Example 107 verifies an incidence-matrix orthogonality for an oriented EPI edge
+gradient and a selected circulation. Example 111 independently extends a graph
+to a finite 2-complex and computes its standard simplicial Hodge Laplacians.
+The carriers in that auxiliary complex are:
 
-| Degree | Tetrad object | Cochain |
+| Degree | Carrier | Cochain |
 | --- | --- | --- |
-| 0 | phase value | vertex 0-cochain |
-| 1 | phase gradient `|∇φ|` | edge 1-cochain |
-| 2 | phase curvature `K_φ` | triangle 2-cochain (discrete curl / holonomy) |
+| 0 | vertices | scalar vertex values |
+| 1 | oriented edges | signed edge values |
+| 2 | oriented faces | signed face values |
+
+The canonical `compute_phase_gradient` returns a nonnegative mean per **node**
+and discards edge orientation and sign. `compute_phase_curvature` also returns a
+wrapped scalar per **node**, not a face value. They therefore do not instantiate
+the 1- and 2-cochains in this table. A genuine TNFR bridge would need distinct
+oriented edge and face observables plus an explicit compatibility proof; neither
+is implemented here.
 
 With simplicial boundary maps `d1` (edges → vertices) and `d2` (triangles →
 edges), the combinatorial Hodge Laplacians are
@@ -49,23 +57,25 @@ Eckmann's theorem (1944): harmonic `k`-cochains `≅` homology `H_k`, so
 
 ---
 
-## 2. HC-1 Result (DONE)
+## 2. HC-1 auxiliary result (DONE)
 
 Reproduced in `examples/09_millennium/111_hodge_discrete_and_honest_gap.py`.
 
-- **Chain complex.** `d1 d2 = 0` to machine precision (the tetrad cochain
-  tower is a genuine complex).
-- **Eckmann, exact.** On a triangulated torus (`|V|=25, |E|=75, |T|=50`,
-  Euler `0`): harmonic dimensions `(dim ker L_0, L_1, L_2) = (1, 2, 1)` =
-  Betti `(1, 2, 1)`. The 2 harmonic 1-forms are closed (`|d1 h| ~ 1e-16`) and
-  co-closed (`|d2^T h| ~ 1e-15`).
-- **Topology tracking.** Octahedron (sphere) gives harmonic dims `(1, 0, 1)` =
-  Betti `(1, 0, 1)`; the torus gives `(1, 2, 1)`. The harmonic count is a
-  faithful topological invariant: the sphere has no 1-loops, the torus has 2
-  (the loops a TNFR phase field can wind around; cf. `examples/107`).
+- **Chain complex.** The independently constructed incidence matrices satisfy
+  `d1 d2 = 0` to machine precision, as required by a simplicial complex.
+- **Eckmann baseline.** On a triangulated torus (`|V|=25, |E|=75, |T|=50`,
+  Euler `0`), the numerically detected harmonic dimensions
+  `(dim ker L_0, L_1, L_2) = (1, 2, 1)` match Betti `(1, 2, 1)`. The two sampled
+  harmonic 1-forms are closed (`|d1 h| ~ 1e-16`) and co-closed
+  (`|d2^T h| ~ 1e-15`). Eckmann's theorem is the exact external result; the
+  reported ranks use a declared numerical tolerance.
+- **Topology comparison.** An octahedral sphere gives harmonic dimensions
+  `(1, 0, 1)` and the torus gives `(1, 2, 1)`. Betti numbers distinguish these
+  two complexes but are not complete invariants of topological spaces.
 
-**HC-1 verdict**: the TNFR cochain tower carries a complete discrete Hodge
-decomposition; harmonic = homology exactly, across spaces.
+**HC-1 verdict**: the auxiliary finite complexes reproduce the standard
+combinatorial Hodge decomposition. This does not establish a tetrad cochain
+tower or a new TNFR theorem.
 
 ---
 
@@ -79,16 +89,16 @@ discrete TNFR setting has **neither**:
   **complex structure**. The real combinatorial Laplacian `L_k` has no
   `(p,q)` bigrading — only one real harmonic space per degree.
 - **B. Algebraicity.** An "algebraic cycle" is cut out by polynomial
-  equations — strictly stronger than an "integer topological cycle." In the
-  combinatorial setting **every** harmonic class is already an integer
-  simplicial cycle (Eckmann), so the discrete analogue of the conjecture is
-  **trivially true** — precisely because the discrete setting cannot even
-  express the algebraicity distinction that is the whole difficulty.
+  equations — strictly stronger than a topological cycle. Finite simplicial
+  Hodge theory identifies harmonic representatives with real cohomology; it
+  neither makes every harmonic representative integral nor supplies the
+  algebraic-cycle subspace. The Hodge conjecture therefore has no faithful
+  analogue in this baseline.
 
-So TNFR's discrete Hodge captures the **topological** half (harmonic =
-homology) exactly and is **structurally blind** to the complex-algebraic
-content. This is the honest analogue of the Riemann result that the emergent
-substrate is "blind" to arithmetic content.
+The auxiliary discrete model captures topological cohomology and is blind to
+the complex-algebraic content. Since no map from the canonical TNFR fields to
+its cochains has been proved, even this topological result must not be promoted
+to a property of the tetrad.
 
 ---
 
@@ -100,10 +110,10 @@ substrate is "blind" to arithmetic content.
   Unlike P-vs-NP (PNP-2) or BSD (BSD-2), there is **no concrete discrete next
   milestone** toward the conjecture: bridging to `(p,p)` bigrading and
   algebraicity requires leaving the discrete/structural setting entirely.
-- **Branch B3-leaning** (no TNFR closure) — current classification. The
-  discrete TNFR setting is **structurally blind** to the actual conjecture;
-  the value delivered is a precise localisation of *why* Hodge is hard, not an
-  attack surface on it.
+- **Branch B3-leaning** (no closure through this baseline) — current
+  classification. This particular auxiliary finite model cannot express the
+  actual conjecture. That is a scope result about the model, not a proof that
+  every possible TNFR extension is incapable of doing so.
 
 This is the **strongest negative** of the TNFR Millennium programs. Where the
 Riemann `S(T)` residual, the NS cascade, the Yang–Mills continuum gap, and the
@@ -117,7 +127,8 @@ algebraic-complex structure at all.
 
 | HC | Title | Status |
 | --- | --- | --- |
-| HC-1 | Discrete Hodge on the tetrad cochain tower (Eckmann); honest gap | **DONE** (`examples/111`) |
+| HC-1 | Auxiliary finite simplicial Hodge baseline (Eckmann); honest gap | **DONE** (`examples/111`) |
+| HC-1b | Derive oriented TNFR edge/face cochains and prove compatibility with canonical telemetry | **OPEN** |
 | HC-2 | Whether any TNFR-native complex structure induces a `(p,p)` bigrading | open, **expected negative** |
 | HC-3 | Whether algebraicity has any structural (non-topological) TNFR analogue | open, **expected negative** |
 
@@ -128,14 +139,12 @@ is that the discrete/structural setting cannot supply either ingredient.
 
 ## 6. What This Program Does and Does Not Do
 
-**Does**: provide a TNFR-native discrete Hodge decomposition on the tetrad
-cochain tower; verify Eckmann (harmonic = homology) exactly; localise
-precisely the two features (complex `(p,p)` bigrading, algebraicity) that the
-discrete setting cannot represent; classify the obstruction honestly as the
-strongest negative (Branch B3-leaning).
+**Does**: reproduce standard finite simplicial Hodge calculations; compare two
+finite complexes with their expected Betti numbers; identify the missing
+complex `(p,p)` bigrading and algebraic-cycle data; expose the absent
+tetrad-to-cochain bridge.
 
-**Does not**: prove, disprove, or even attack the Hodge conjecture; claim any
-bridge from discrete harmonic classes to algebraic cycles; introduce a complex
-or Kähler structure. The TNFR value-add is a precise honest delimitation of
-the reach of the structural setting — consistent with the disciplined pattern
-of the Riemann, Navier–Stokes, Yang–Mills, P-vs-NP, and BSD programs.
+**Does not**: prove, disprove, or attack the Hodge conjecture; show that
+`|∇φ|` is an oriented 1-cochain or `K_φ` a face 2-cochain; claim a bridge from
+discrete harmonic classes to algebraic cycles; introduce a complex or Kähler
+structure.

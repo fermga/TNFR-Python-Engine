@@ -46,10 +46,10 @@ from tnfr.types import NodeId
 # Configure logging to reduce output
 logging.basicConfig(level=logging.ERROR)
 
-# Critical threshold from literature
-I_C_EXPECTED = 2.015
+# Historical candidate intensity used only as a descriptive split.
+REFERENCE_INTENSITY = 2.015
 
-# Optimized intensity grid - focus on critical region
+# Local grid around the historical candidate.
 INTENSITIES = np.array([1.900, 1.950, 2.000, 2.010, 2.015, 2.020, 2.030, 2.050, 2.100])
 
 TOPOLOGIES = ["ws", "scale_free", "grid"]
@@ -108,7 +108,9 @@ def xi_c_experiment(
 
         results["xi_c"] = xi_c
         results["phase_symmetry"] = phase_sym_result.get("symmetry_index", 0.0)
-        results["threshold_crossing"] = 1 if intensity > I_C_EXPECTED else 0
+        results["reference_crossing"] = (
+            1 if intensity > REFERENCE_INTENSITY else 0
+        )
 
         # Only compute canonical fields if needed for correlation
         if intensity in [2.000, 2.015, 2.030]:  # Sample points for correlation
@@ -121,7 +123,7 @@ def xi_c_experiment(
             results["k_phi_mean"] = np.mean(list(k_phi["values"]))
 
         if verbose:
-            print(f"    ξ_C = {xi_c:.3f}, symmetry = {results['phase_symmetry']:.3f}")
+            print(f"    xi_C = {xi_c:.3f}, symmetry = {results['phase_symmetry']:.3f}")
 
         return results
 
@@ -134,7 +136,7 @@ def xi_c_experiment(
 def run_fast_experiment():
     """Optimized multi-topology experiment"""
 
-    print("Starting optimized ξ_C validation experiment...")
+    print("Starting optimized xi_C validation experiment...")
     print(f"Intensities: {len(INTENSITIES)} points")
     print(f"Topologies: {TOPOLOGIES}")
     print(f"Runs per point: {RUNS_PER_POINT}")
@@ -172,15 +174,15 @@ def run_fast_experiment():
             ]
             if valid_xi_c:
                 mean_xi_c = np.mean(valid_xi_c)
-                print(f"  Mean ξ_C: {mean_xi_c:.3f} (n={len(valid_xi_c)})")
+                print(f"  Mean xi_C: {mean_xi_c:.3f} (n={len(valid_xi_c)})")
 
     return all_results
 
 
-def analyze_critical_threshold(results: List[Dict]) -> Dict[str, Any]:
-    """Fast analysis focusing on critical behavior"""
+def analyze_reference_intensity(results: List[Dict]) -> Dict[str, Any]:
+    """Compare samples below and above the legacy reference intensity."""
 
-    print("\n=== CRITICAL THRESHOLD ANALYSIS ===")
+    print("\n=== REFERENCE-INTENSITY COMPARISON ===")
 
     analysis = {}
 
@@ -192,7 +194,7 @@ def analyze_critical_threshold(results: List[Dict]) -> Dict[str, Any]:
         if not np.isnan(r["xi_c"]):
             by_topology[r["topology"]].append(r)
 
-    # Find critical behavior for each topology
+    # Compare both sampled sides for each topology.
     for topology in TOPOLOGIES:
         topo_results = by_topology.get(topology, [])
         if not topo_results:
@@ -206,7 +208,7 @@ def analyze_critical_threshold(results: List[Dict]) -> Dict[str, Any]:
                 by_intensity[intensity] = []
             by_intensity[intensity].append(r["xi_c"])
 
-        # Analyze transition
+        # Aggregate the finite measurements.
         intensities = sorted(by_intensity.keys())
         mean_xi_c = []
 
@@ -215,46 +217,56 @@ def analyze_critical_threshold(results: List[Dict]) -> Dict[str, Any]:
             mean_val = np.mean(xi_c_values)
             mean_xi_c.append(mean_val)
 
-        # Look for sharp transition around I_c = 2.015
-        pre_critical = [xi for i, xi in zip(intensities, mean_xi_c) if i < I_C_EXPECTED]
-        post_critical = [
-            xi for i, xi in zip(intensities, mean_xi_c) if i > I_C_EXPECTED
+        # Compare both sides of the historical candidate intensity.
+        below_reference = [
+            xi for i, xi in zip(intensities, mean_xi_c) if i < REFERENCE_INTENSITY
+        ]
+        above_reference = [
+            xi for i, xi in zip(intensities, mean_xi_c) if i > REFERENCE_INTENSITY
         ]
 
-        if pre_critical and post_critical:
-            pre_mean = np.mean(pre_critical)
-            post_mean = np.mean(post_critical)
-            transition_strength = (
-                abs(post_mean - pre_mean) / pre_mean if pre_mean > 0 else 0
+        if below_reference and above_reference:
+            below_mean = np.mean(below_reference)
+            above_mean = np.mean(above_reference)
+            relative_change = (
+                abs(above_mean - below_mean) / below_mean if below_mean > 0 else 0
             )
 
             analysis[topology] = {
-                "pre_critical_xi_c": pre_mean,
-                "post_critical_xi_c": post_mean,
-                "transition_strength": transition_strength,
+                "below_reference_xi_c": below_mean,
+                "above_reference_xi_c": above_mean,
+                "relative_change": relative_change,
                 "n_points": len(topo_results),
             }
 
             print(f"{topology.upper()}:")
-            print(f"  Pre-critical ξ_C: {pre_mean:.3f}")
-            print(f"  Post-critical ξ_C: {post_mean:.3f}")
-            print(f"  Transition strength: {transition_strength:.3f}")
+            print(f"  Below-reference xi_C: {below_mean:.3f}")
+            print(f"  Above-reference xi_C: {above_mean:.3f}")
+            print(f"  Relative change: {relative_change:.3f}")
             print(f"  Data points: {len(topo_results)}")
 
     return analysis
 
 
+def analyze_critical_threshold(results: List[Dict]) -> Dict[str, Any]:
+    """Compatibility alias for :func:`analyze_reference_intensity`.
+
+    The historical name does not imply that the reference is a critical point.
+    """
+    return analyze_reference_intensity(results)
+
+
 def main():
     """Fast experiment execution"""
 
-    print("ξ_C Fast Validation Experiment")
+    print("xi_C Fast Validation Experiment")
     print("=" * 40)
 
     # Run experiment
     results = run_fast_experiment()
 
-    # Analyze critical behavior
-    analysis = analyze_critical_threshold(results)
+    # Compare samples around the historical reference intensity.
+    analysis = analyze_reference_intensity(results)
 
     # Summary
     print("\n=== SUMMARY ===")
@@ -264,28 +276,30 @@ def main():
 
     all_xi_c = [r["xi_c"] for r in results if not np.isnan(r["xi_c"])]
     if all_xi_c:
-        print(f"Overall ξ_C range: {np.min(all_xi_c):.3f} - {np.max(all_xi_c):.3f}")
-        print(f"Mean ξ_C: {np.mean(all_xi_c):.3f} ± {np.std(all_xi_c):.3f}")
+        print(f"Overall xi_C range: {np.min(all_xi_c):.3f} - {np.max(all_xi_c):.3f}")
+        print(f"Mean xi_C: {np.mean(all_xi_c):.3f} +/- {np.std(all_xi_c):.3f}")
 
-    # Check if critical behavior observed
-    strong_transitions = sum(
+    # Count large descriptive changes; this is not a transition test.
+    large_changes = sum(
         1
         for topo_data in analysis.values()
-        if topo_data.get("transition_strength", 0) > 0.1
+        if topo_data.get("relative_change", 0) > 0.1
     )
 
     print(
-        f"\nTopologies showing strong transition (>10%): {strong_transitions}/{len(analysis)}"
+        f"\nTopologies with >10% cross-reference change: "
+        f"{large_changes}/{len(analysis)}"
     )
 
-    if strong_transitions >= 2:
-        print("✅ CRITICAL THRESHOLD BEHAVIOR CONFIRMED")
-        recommendation = "PROCEED with ξ_C canonical promotion"
+    if large_changes >= 2:
+        print("Descriptive change detected in multiple sampled topologies")
     else:
-        print("❌ Critical threshold behavior unclear")
-        recommendation = "NEED more investigation before promotion"
+        print("No broad descriptive change detected on this finite grid")
 
-    print(f"\nRECOMMENDATION: {recommendation}")
+    print(
+        "\nSCOPE: retain as a candidate measurement; a declared dynamic "
+        "finite-size protocol is required before any transition claim"
+    )
 
     return results, analysis
 

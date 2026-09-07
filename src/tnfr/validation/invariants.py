@@ -28,6 +28,7 @@ from typing import Any
 from ..constants import DEFAULTS, DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
 from ..constants.canonical import DELTA_PHI_MAX
 from ..types import NodeId, TNFRGraph
+from ..utils import angle_diff
 
 # ---------------------------------------------------------------------------
 # Invariant guardrail thresholds
@@ -275,7 +276,7 @@ class Invariant2_VfInHzStr(TNFRInvariant):
 
 
 class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
-    """Invariante 5: Explicit phase checks for coupling."""
+    """Invariant 5: Explicit circular phase checks for coupling."""
 
     invariant_id = 5
     description = "Explicit phase checks for coupling"
@@ -337,9 +338,7 @@ class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
                 ):
                     continue
 
-                phase_diff = abs(phase1 - phase2)
-                # Account for periodicity
-                phase_diff = min(phase_diff, 2 * math.pi - phase_diff)
+                phase_diff = abs(angle_diff(phase1, phase2))
 
                 # If the difference is very large, it may indicate decoupling
                 if phase_diff > self.phase_coupling_threshold:

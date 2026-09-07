@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 """
-Example 147 — Numbers as Words: the Dual-Lever Is the Two Gradings of the Free
-Monoid on Primes, and the Coherence Debt Splits by Composition Law
-==============================================================================
+Example 147 — Numbers as Words: Arithmetic Gradings and Pressure Channels
+==========================================================================
 
-Example 146 made primality grammatical inertness: primes are the kernel of the
-operator grammar (ΔNFR=0), composites carry a coherence debt graded by Ω. This
-deepens the synergy to its algebraic core, and ties together three threads at
-once — the dual-lever (physics, examples 37/130), the syntactic monoid (grammar,
-example 145), and primality (number theory, example 146).
+This example compares the classical free-commutative-monoid description of
+positive integers with the declared arithmetic pressure field.  It does not
+apply a canonical graph operator or identify integers with operator-grammar
+words.
 
 The structural starting point (Fundamental Theorem of Arithmetic)
 -----------------------------------------------------------------
@@ -18,15 +16,17 @@ on the primes. In the grammar lens this means numbers ARE words:
   * 1             = the empty word (the monoid identity),
   * Ω(n)          = the word length (number of prime letters with multiplicity),
   * multiplication = concatenation of words.
-This is the arithmetic counterpart of the operator grammar's syntactic monoid
-(example 145), whose identity is the empty word a prime "needs" (example 146).
+This supplies an algebraic analogy with the operator grammar's syntactic
+monoid (example 145), while the two monoids remain distinct objects.
 
 The new measured content: the coherence debt splits by composition law
 ----------------------------------------------------------------------
 The arithmetic ΔNFR (TNFR_NUMBER_THEORY.md §4) has three pressure channels:
-  factorization  P_Ω(n)  = ζ·(Ω(n)−1)                ζ = φ·γ
-  divisor        P_τ(n)  = η·(τ(n)−2)                η = (γ/φ)·π
-  abundance      P_σ(n)  = θ·(σ(n)/n − (1+1/n))      θ = 1/φ
+  factorization  P_Ω(n)  = Ω(n)−1
+  divisor        P_τ(n)  = τ(n)−2
+  abundance      P_σ(n)  = σ(n)/n − (1+1/n)
+
+The example uses the canonical unit coefficients ζ=η=θ=1.
 
 These three channels are distinguished by HOW THEY COMPOSE under multiplication:
   * Ω is COMPLETELY ADDITIVE: Ω(mn) = Ω(m)+Ω(n) for all m,n. So the factorization
@@ -34,23 +34,22 @@ These three channels are distinguished by HOW THEY COMPOSE under multiplication:
   * τ, σ are MULTIPLICATIVE (τ(mn)=τ(m)τ(n) for coprime m,n, similarly σ): the
     divisor/abundance channels carry the DIVISOR-LATTICE geometry.
 
-The dual-lever as the two gradings of the free monoid
------------------------------------------------------
-The free commutative monoid on primes has two canonical ADDITIVE gradings, and
-they are exactly the two arms of the TNFR dual-lever (examples 37/130) restricted
-to arithmetic:
+Two arithmetic gradings and the dual-lever analogy
+--------------------------------------------------
+The free commutative monoid on primes has two natural additive gradings.  They
+can be compared with the two channels of the TNFR nodal equation, but this is
+an algebraic correspondence rather than an identity of dynamics:
   * COUNT  Ω(n) = Σ e_p          → the ΔNFR factorization pressure channel,
   * SIZE   log n = Σ e_p·log p   → the νf capacity (example 94: a prime atom
                                     carries νf = log p).
-Both are monoid homomorphisms (ℕ,×) → (ℝ,+). Ω asks how MANY prime letters; log
-asks how BIG the word is. The dual-lever (pressure ΔNFR vs capacity νf) IS this
-pair of gradings.
+Both are monoid homomorphisms (ℕ,×) → (ℝ,+). Ω asks how many prime letters; log
+asks how large the word is.
 
 Doctrine compliance
 -------------------
-The arithmetic ΔNFR is the canonical per-node primality field
-(ArithmeticTNFRFormalism), read at the nodal level. The additivity/multiplicativity
-facts are exact properties of Ω/τ/σ; the constants ζ,η,θ are canonical.
+The arithmetic ΔNFR is the declared per-node primality field
+(``ArithmeticTNFRFormalism``), read at the nodal level with unit coefficients.
+The additivity and multiplicativity facts are exact properties of Ω, τ and σ.
 
 Three measured results
 ----------------------
@@ -61,33 +60,27 @@ M1 NUMBERS ARE WORDS; THE DEBT SPLITS BY COMPOSITION LAW. Ω is additive on ever
    channel does NOT compose additively. So ΔNFR = one ADDITIVE channel (Ω) + two
    MULTIPLICATIVE channels (τ, σ).
 
-M2 MULTIPLYING BY A PRIME IS THE UNIT DESTABILIZER; THE ADDITIVE CHANNEL BEARS
-   PRIMALITY. Building 1→2→6→30→210 one prime at a time raises the factorization
-   channel by exactly ζ each step (coherence C drops 1.00→0.21→0.096→0.049). The
+M2 MULTIPLYING BY A PRIME ADDS ONE UNIT TO THE FACTORIZATION CHANNEL. Building
+   1→2→6→30→210 one prime at a time raises that channel by exactly one. The
    additive channel ALONE detects primality: Ω(n)=1 ⟺ n prime (0 mismatches in
    [2,80]) — the §4 theorem is 3× redundant (each channel detects primality) but
    only the Ω channel is the clean free-monoid backbone; primes are the single
    letters (Ω=1), 1 is the empty word (Ω=0).
 
-M3 THE DUAL-LEVER = THE TWO ADDITIVE GRADINGS. Both Ω (count → ΔNFR pressure) and
-   log (size → νf capacity, ex 94) are exact additive monoid homomorphisms
-   (verified on every pair). The dual-lever restricted to arithmetic is precisely
-   these two gradings of the free monoid on primes: how many letters (Ω, the
-   pressure arm) and how big (log, the capacity arm). A prime is a single letter
-   (Ω=1) of size log p.
+M3 THE TWO GRADINGS GIVE A RESTRICTED DUAL-LEVER ANALOGY. Both Ω (count, compared
+   with pressure) and log (size, compared with capacity in example 94) are exact
+   additive monoid homomorphisms. This comparison does not identify the
+   arithmetic monoid with TNFR operator dynamics.
 
 Honest scope
 ------------
 Ω additive, τ/σ multiplicative, primes = irreducible generators of (ℕ,×), and
 the FTA free-monoid structure are all CLASSICAL facts. The NEW content is the
-TNFR-lens reading: the three ΔNFR pressure channels split by composition law (1
-additive + 2 multiplicative), the additive channel is the primality-bearing
-free-monoid backbone, and the dual-lever (ΔNFR pressure vs νf capacity, physics
-examples 37/130) IS the two canonical gradings (count Ω vs log-size) of that
-monoid. It restates classical multiplicative number theory through the grammar /
-dual-lever lens; it is not new number theory and closes no open problem. The
-value is the dictionary it fixes: physics dual-lever ↔ free-monoid gradings ↔
-primality — one algebraic statement across three modules.
+TNFR-lens reading: the three ΔNFR pressure channels split by composition law (one
+additive and two multiplicative), while count Ω and log-size provide a useful
+analogy for pressure and capacity. It restates classical multiplicative number
+theory through a declared comparison; it is not a proof about operator grammar,
+new number theory, or an open problem.
 
 References
 ----------
@@ -191,13 +184,13 @@ def experiment_1_composition_law():
     print("  -> dNFR = one ADDITIVE channel (Omega) + two MULTIPLICATIVE (tau,sigma)")
 
 
-def experiment_2_unit_destabilizer():
+def experiment_2_unit_factor_increment():
     print()
     print("=" * 72)
-    print("M2: multiplying by a prime = the unit destabilizer; the additive")
+    print("M2: multiplying by a prime adds one factorization unit; the additive")
     print("    channel alone bears primality (Omega=1 <=> prime)")
     print("=" * 72)
-    print("  building 2*3*5*7 one prime at a time (each x is a destabilizer):")
+    print("  building 2*3*5*7 one prime at a time:")
     acc = 1
     for p in (2, 3, 5, 7):
         acc *= p
@@ -216,14 +209,13 @@ def experiment_2_unit_destabilizer():
     print(f"  Omega(n)=1 <=> n prime: mismatches {mism}/79 (the additive channel")
     print("    alone detects primality; the section-4 theorem is 3x redundant but")
     print("    only Omega is the clean free-monoid backbone)")
-    print("  -> each prime-multiplication adds exactly zeta; the way back to")
-    print("     coherence (dNFR=0) is a single letter (prime) or the empty word (1).")
+    print("  -> each prime multiplication adds one unit to P_Omega.")
 
 
 def experiment_3_dual_lever_gradings():
     print()
     print("=" * 72)
-    print("M3: the dual-lever = the two additive gradings of the free monoid")
+    print("M3: two additive gradings give a restricted dual-lever analogy")
     print("=" * 72)
     add_omega = add_log = 0
     for m, n in _PAIRS:
@@ -248,9 +240,8 @@ def experiment_3_dual_lever_gradings():
     print("  sample primes (single letters, Omega=1, size log p):")
     for p in (2, 3, 5, 7, 11):
         print(f"    p={p:2d}  Omega=1  log p={math.log(p):.4f}")
-    print("  -> the dual-lever (pressure dNFR vs capacity nu_f) restricted to")
-    print("     arithmetic IS the two canonical gradings of the free monoid on")
-    print("     primes. One statement unifies physics, grammar and number theory.")
+    print("  -> this is an algebraic correspondence with pressure and capacity;")
+    print("     it is not an identity with canonical operator dynamics.")
 
 
 def main():
@@ -260,7 +251,7 @@ def main():
     print("#" * 72)
     print()
     experiment_1_composition_law()
-    experiment_2_unit_destabilizer()
+    experiment_2_unit_factor_increment()
     experiment_3_dual_lever_gradings()
     print()
     print("=" * 72)
@@ -272,9 +263,8 @@ def main():
     print("  composition law -- the factorization channel is ADDITIVE (the free-")
     print("  monoid backbone, +zeta per prime), the divisor/abundance channels")
     print("  are MULTIPLICATIVE (the divisor lattice). The dual-lever (pressure")
-    print("  dNFR vs capacity nu_f) IS the two additive gradings of the monoid:")
-    print("  count Omega and log-size. One algebraic statement across physics,")
-    print("  grammar and number theory. Restates classical multiplicative")
+    print("  dNFR vs capacity nu_f) is a restricted analogy with the two additive")
+    print("  gradings, count Omega and log-size. This restates classical multiplicative")
     print("  number theory through the lens; no new number theory, no open")
     print("  problem closed.")
     print()

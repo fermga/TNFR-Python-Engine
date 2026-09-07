@@ -23,6 +23,7 @@ from tnfr.operators.operator_contracts import (
     OperatorContract,
     OperatorScale,
     StateChannel,
+    contract_identifiability_certificate,
     contract_for,
     english_name,
     iter_contracts,
@@ -77,6 +78,18 @@ class TestSpecSelfConsistency:
         for name, c in OPERATOR_CONTRACTS.items():
             assert c.glyph == FUNCTION_TO_GLYPH[name].value
 
+    def test_contract_features_leave_silence_and_contraction_ambiguous(self) -> None:
+        certificate = contract_identifiability_certificate()
+        assert certificate.ambiguous_groups == (("Silence", "Contraction"),)
+        assert len(certificate.uniquely_identifiable) == 11
+        assert not certificate.all_operators_identifiable
+
+    def test_identifiability_features_cannot_include_names_or_duplicates(self) -> None:
+        with pytest.raises(ValueError, match="unsupported"):
+            contract_identifiability_certificate(("english_name",))
+        with pytest.raises(ValueError, match="duplicates"):
+            contract_identifiability_certificate(("scale", "scale"))
+
 
 class TestGroundTruthChannels:
     """The canonical channel of each operator matches the ground-truth effect."""
@@ -96,6 +109,12 @@ class TestGroundTruthChannels:
         # VAL/NUL act on the νf capacity channel (ground truth: _make_scale_op).
         assert contract_for("expansion").primary_channel is StateChannel.NU_F
         assert contract_for("contraction").primary_channel is StateChannel.NU_F
+
+    def test_self_organization_reorganizes_pressure(self) -> None:
+        """THOL's U2 role must not be represented as monotone pressure growth."""
+        contract = contract_for("self_organization")
+        assert contract.primary_channel is StateChannel.DELTA_NFR
+        assert contract.primary_direction is EffectDirection.REORGANIZE
 
     def test_recursivity_is_epi_at_network_scale(self) -> None:
         # REMESH is an EPI operator (echoes the form) at NETWORK scale (U5).

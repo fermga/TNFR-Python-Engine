@@ -79,6 +79,12 @@ def _apply_selected_glyph(G, node, glyph, window) -> None:
 
     apply_glyph(G, node, glyph, window=window)
 
+    _recognize_applied_patterns(G, node)
+
+
+def _recognize_applied_patterns(G, node) -> None:
+    """Recognize history patterns after an already committed canonical glyph."""
+
     # Check for IL sequences in node history after applying glyph
     if "glyph_history" in G.nodes[node]:
         history = G.nodes[node]["glyph_history"]

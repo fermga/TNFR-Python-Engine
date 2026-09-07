@@ -1,53 +1,32 @@
-"""Tests for TNFR Dissipative Conservation — Lindblad dynamics meets conservation.
-
-Validates the dissipative continuity theorem extension:
-
-    ∂ρ_s/∂t + div J = S_grammar + D[ρ]
-
-Tests verify:
-1. Snapshot capture: trace, purity, entropy computation
-2. Dissipation bound correctness: |D[ρ]| ≤ Σ_k ‖L_k‖² · (1 - Tr(ρ²))
-3. Purity monotonicity: Tr(ρ²) non-increasing under dissipation
-4. Entropy monotonicity: S(ρ) non-decreasing under dissipation
-5. Trace preservation: Tr(ρ) = 1 throughout evolution
-6. Contractivity: distance to steady state non-increasing
-7. Amplitude damping ground truth: known analytics
-8. Pure dephasing ground truth: diagonal preservation
-9. Dissipation rate analysis: spectral gap, relaxation time
-10. Grammar classification: regime identification
-"""
+"""Tests for scoped finite-dimensional Lindblad diagnostics."""
 
 from __future__ import annotations
 
 import math
-import os
-import sys
+from dataclasses import asdict, replace
 
 import numpy as np
 import pytest
 
-# Ensure src is on the path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
-
 from tnfr.physics.dissipative_conservation import (
     DissipativeBalance,
     DissipativeConservationTracker,
-    DissipativeSnapshot,
     DissipativeTimeSeries,
     analyze_dissipation_rates,
     capture_dissipative_snapshot,
     classify_dissipative_regime,
     compute_dissipation_bound,
     compute_dissipator_action,
+    compute_instantaneous_purity_rate,
     compute_purity_decay_bound,
+    is_unital_dissipator,
     predict_amplitude_damping_purity,
     predict_dephasing_purity,
+    steady_state_from_generator,
     verify_dissipative_balance,
 )
 
-# Try to import math backend for engine-based tests
 try:
-    from tnfr.mathematics.backend import ensure_numpy
     from tnfr.mathematics.dynamics import ContractiveDynamicsEngine
     from tnfr.mathematics.generators import build_lindblad_delta_nfr
     from tnfr.mathematics.spaces import HilbertSpace
@@ -57,512 +36,486 @@ except ImportError:
     HAS_ENGINE = False
 
 
-# ---------------------------------------------------------------------------
-# Helper factories
-# ---------------------------------------------------------------------------
-
-
-def _pure_state(dim: int = 2, state_index: int = 0) -> np.ndarray:
-    """Create a pure state |k><k|."""
-    psi = np.zeros(dim, dtype=np.complex128)
-    psi[state_index] = 1.0
-    return np.outer(psi, psi.conj())
+def _pure_state(index: int = 0) -> np.ndarray:
+    vector = np.zeros(2, dtype=np.complex128)
+    vector[index] = 1.0
+    return np.outer(vector, vector.conj())
 
 
 def _maximally_mixed(dim: int = 2) -> np.ndarray:
-    """Create the maximally mixed state I/d."""
     return np.eye(dim, dtype=np.complex128) / dim
 
 
-def _amplitude_damping_ops(gamma: float = 0.1) -> list:
-    """Qubit amplitude damping collapse operator: L = sqrt(γ)|0><1|."""
-    L = np.zeros((2, 2), dtype=np.complex128)
-    L[0, 1] = math.sqrt(gamma)
-    return [L]
+def _plus_state() -> np.ndarray:
+    vector = np.array([1.0, 1.0], dtype=np.complex128) / math.sqrt(2.0)
+    return np.outer(vector, vector.conj())
 
 
-def _dephasing_ops(gamma: float = 0.1) -> list:
-    """Qubit pure dephasing collapse operator: L = sqrt(γ/2) σ_z."""
+def _amplitude_damping_ops(gamma: float = 0.1) -> list[np.ndarray]:
+    operator = np.zeros((2, 2), dtype=np.complex128)
+    operator[0, 1] = math.sqrt(gamma)
+    return [operator]
+
+
+def _dephasing_ops(gamma: float = 0.1) -> list[np.ndarray]:
     sigma_z = np.diag([1.0, -1.0]).astype(np.complex128)
     return [math.sqrt(gamma / 2.0) * sigma_z]
 
 
-def _build_qubit_engine(hamiltonian, collapse_ops, nu_f=1.0, scale=1.0):
-    """Build a ContractiveDynamicsEngine for a qubit system."""
-    from tnfr.mathematics.generators import build_lindblad_delta_nfr
-    from tnfr.mathematics.spaces import HilbertSpace
+def _amplitude_damping_state(
+    density: np.ndarray, gamma: float, time: float
+) -> np.ndarray:
+    eta = math.exp(-gamma * time)
+    excited = float(density[1, 1].real)
+    return np.array(
+        [
+            [density[0, 0] + (1.0 - eta) * excited, math.sqrt(eta) * density[0, 1]],
+            [math.sqrt(eta) * density[1, 0], eta * density[1, 1]],
+        ],
+        dtype=np.complex128,
+    )
 
-    gen = build_lindblad_delta_nfr(
-        hamiltonian=hamiltonian,
+
+def _dephased_state(density: np.ndarray, gamma: float, time: float) -> np.ndarray:
+    result = density.copy()
+    decay = math.exp(-gamma * time)
+    result[0, 1] *= decay
+    result[1, 0] *= decay
+    return result
+
+
+def _build_qubit_engine(collapse_ops: list[np.ndarray]):
+    generator = build_lindblad_delta_nfr(
+        hamiltonian=np.zeros((2, 2), dtype=np.complex128),
         collapse_operators=collapse_ops,
         dim=2,
-        nu_f=nu_f,
-        scale=scale,
     )
-    hs = HilbertSpace(2)
-    return ContractiveDynamicsEngine(gen, hs)
+    return ContractiveDynamicsEngine(generator, HilbertSpace(2))
 
 
-# ---------------------------------------------------------------------------
-# 1. Snapshot capture
-# ---------------------------------------------------------------------------
+class TestSnapshotValidation:
+    def test_pure_and_mixed_state_invariants(self):
+        pure = capture_dissipative_snapshot(_pure_state())
+        mixed = capture_dissipative_snapshot(_maximally_mixed(3))
+
+        assert pure.trace == pytest.approx(1.0)
+        assert pure.purity == pytest.approx(1.0)
+        assert pure.von_neumann_entropy == pytest.approx(0.0)
+        assert mixed.purity == pytest.approx(1.0 / 3.0)
+        assert mixed.von_neumann_entropy == pytest.approx(math.log(3.0))
+
+    @pytest.mark.parametrize(
+        "density",
+        [
+            np.ones((2, 3)),
+            np.array([[1.0, 0.2], [0.0, 0.0]]),
+            2.0 * np.eye(2),
+            np.diag([1.1, -0.1]),
+            np.array([[np.nan, 0.0], [0.0, 1.0]]),
+        ],
+    )
+    def test_invalid_density_is_rejected(self, density):
+        with pytest.raises(ValueError):
+            capture_dissipative_snapshot(density)
+
+    @pytest.mark.parametrize("atol", [-1.0, float("nan")])
+    def test_invalid_snapshot_tolerance_is_rejected(self, atol):
+        with pytest.raises(ValueError):
+            capture_dissipative_snapshot(_pure_state(), atol=atol)
 
 
-class TestSnapshotCapture:
-    """Verify DissipativeSnapshot correctly captures state invariants."""
-
-    def test_pure_state_snapshot(self):
-        """Pure state: Tr=1, P=1, S=0."""
-        rho = _pure_state(2, 0)
-        snap = capture_dissipative_snapshot(rho)
-
-        assert abs(snap.trace - 1.0) < 1e-12
-        assert abs(snap.purity - 1.0) < 1e-12
-        assert abs(snap.von_neumann_entropy) < 1e-10
-        assert len(snap.eigenvalues) == 2
-        # One eigenvalue ~1, other ~0
-        eigs = sorted(snap.eigenvalues)
-        assert abs(eigs[0]) < 1e-10
-        assert abs(eigs[1] - 1.0) < 1e-10
-
-    def test_maximally_mixed_snapshot(self):
-        """Maximally mixed: Tr=1, P=1/d, S=ln(d)."""
-        dim = 3
-        rho = _maximally_mixed(dim)
-        snap = capture_dissipative_snapshot(rho)
-
-        assert abs(snap.trace - 1.0) < 1e-12
-        assert abs(snap.purity - 1.0 / dim) < 1e-12
-        assert abs(snap.von_neumann_entropy - math.log(dim)) < 1e-10
-
-    def test_mixed_qubit_snapshot(self):
-        """Partially mixed qubit: intermediary purity."""
-        rho = np.array([[0.7, 0.1 + 0.05j], [0.1 - 0.05j, 0.3]], dtype=np.complex128)
-        snap = capture_dissipative_snapshot(rho)
-
-        assert abs(snap.trace - 1.0) < 1e-12
-        assert 0.5 < snap.purity < 1.0  # Between maximally mixed and pure
-        assert snap.von_neumann_entropy > 0  # Not pure
-
-
-# ---------------------------------------------------------------------------
-# 2. Dissipation bound
-# ---------------------------------------------------------------------------
-
-
-class TestDissipationBound:
-    """Verify dissipation bound: |D[ρ]| ≤ Σ_k ‖L_k‖² (1 - P)."""
-
-    def test_pure_state_zero_bound(self):
-        """For P=1 (pure state), bound is zero."""
-        ops = _amplitude_damping_ops(0.1)
-        bound = compute_dissipation_bound(ops, purity=1.0)
-        assert abs(bound) < 1e-15
-
-    def test_maximally_mixed_nonzero_bound(self):
-        """For P=1/d, bound is positive."""
-        ops = _amplitude_damping_ops(0.5)
-        bound = compute_dissipation_bound(ops, purity=0.5)
-        assert bound > 0
-
-    def test_bound_scales_with_gamma(self):
-        """Bound increases with collapse operator strength."""
-        b1 = compute_dissipation_bound(_amplitude_damping_ops(0.1), purity=0.5)
-        b2 = compute_dissipation_bound(_amplitude_damping_ops(0.5), purity=0.5)
-        assert b2 > b1
-
-    def test_actual_dissipation_within_bound(self):
-        """D[ρ] norm ≤ theoretical bound (for a specific state)."""
+class TestDissipatorAlgebra:
+    def test_amplitude_damping_excited_state_action(self):
         gamma = 0.3
-        ops = _amplitude_damping_ops(gamma)
-        rho = np.array([[0.4, 0.2], [0.2, 0.6]], dtype=np.complex128)
-        purity = float(np.trace(rho @ rho).real)
+        action = compute_dissipator_action(
+            _pure_state(1), _amplitude_damping_ops(gamma)
+        )
+        assert np.allclose(action, np.diag([gamma, -gamma]))
+        assert np.trace(action) == pytest.approx(0.0)
 
-        D_rho = compute_dissipator_action(rho, ops)
-        actual_norm = float(np.linalg.norm(D_rho, ord="fro"))
-        bound = compute_dissipation_bound(ops, purity)
+    def test_pure_state_bound_is_nonzero_and_valid(self):
+        gamma = 0.3
+        density = _pure_state(1)
+        action_norm = np.linalg.norm(
+            compute_dissipator_action(density, _amplitude_damping_ops(gamma)),
+            ord="fro",
+        )
+        bound = compute_dissipation_bound(
+            _amplitude_damping_ops(gamma), purity=1.0
+        )
+        assert bound > 0.0
+        assert action_norm <= bound
 
-        # The bound is not always tight for Frobenius norm, but the
-        # dissipator action should be physically meaningful
-        assert actual_norm >= 0
-        assert bound >= 0
+    def test_ground_state_is_stationary_but_bound_need_not_be_tight(self):
+        operators = _amplitude_damping_ops(0.5)
+        assert np.allclose(compute_dissipator_action(_pure_state(0), operators), 0.0)
+        assert compute_dissipation_bound(operators, 1.0) > 0.0
 
+    def test_unitality_distinguishes_channels(self):
+        assert is_unital_dissipator(_dephasing_ops(0.2))
+        assert not is_unital_dissipator(_amplitude_damping_ops(0.2))
+        assert is_unital_dissipator([])
 
-# ---------------------------------------------------------------------------
-# 3. Dissipator action
-# ---------------------------------------------------------------------------
+    def test_purity_rate_sign_is_not_universal(self):
+        gamma = 0.4
+        operators = _amplitude_damping_ops(gamma)
+        excited_rate = compute_instantaneous_purity_rate(operators, _pure_state(1))
+        mostly_ground = np.diag([0.9, 0.1]).astype(np.complex128)
+        purifying_rate = compute_instantaneous_purity_rate(operators, mostly_ground)
 
+        assert excited_rate == pytest.approx(-2.0 * gamma)
+        assert purifying_rate > 0.0
 
-class TestDissipatorAction:
-    """Verify D[ρ] computation."""
+    def test_unital_dephasing_decreases_plus_state_purity(self):
+        rate = compute_instantaneous_purity_rate(
+            _dephasing_ops(0.25), _plus_state()
+        )
+        assert rate == pytest.approx(-0.25)
 
-    def test_dissipator_is_traceless(self):
-        """Tr(D[ρ]) = 0 always (trace-preserving generator)."""
-        ops = _amplitude_damping_ops(0.5)
-        rho = np.array([[0.6, 0.3], [0.3, 0.4]], dtype=np.complex128)
-        D = compute_dissipator_action(rho, ops)
-        assert abs(np.trace(D)) < 1e-12
+    @pytest.mark.parametrize(
+        "density,operators",
+        [
+            (_pure_state(1), _amplitude_damping_ops(0.7)),
+            (_plus_state(), _dephasing_ops(0.4)),
+            (np.diag([0.8, 0.2]).astype(np.complex128), _amplitude_damping_ops(0.3)),
+        ],
+    )
+    def test_absolute_purity_rate_bound(self, density, operators):
+        actual = abs(compute_instantaneous_purity_rate(operators, density))
+        bound = compute_purity_decay_bound(operators, density)
+        assert actual <= bound + 1e-12
 
-    def test_dissipator_hermitian(self):
-        """D[ρ] is Hermitian when ρ is Hermitian."""
-        ops = _dephasing_ops(0.5)
-        rho = np.array([[0.7, 0.2 - 0.1j], [0.2 + 0.1j, 0.3]], dtype=np.complex128)
-        D = compute_dissipator_action(rho, ops)
-        assert np.allclose(D, D.conj().T, atol=1e-12)
+    @pytest.mark.parametrize(
+        "operators",
+        [
+            [np.ones((2, 3))],
+            [np.eye(2), np.eye(3)],
+            [np.array([[np.inf, 0.0], [0.0, 0.0]])],
+            [np.array([[1e308, 0.0], [0.0, 0.0]])],
+        ],
+    )
+    def test_invalid_collapse_operators_are_rejected(self, operators):
+        with pytest.raises(ValueError):
+            compute_dissipator_action(_pure_state(), operators)
 
-    def test_no_dissipation_at_ground_state(self):
-        """Amplitude damping: D[|0><0|] = 0 (steady state)."""
-        ops = _amplitude_damping_ops(0.5)
-        rho_ground = _pure_state(2, 0)
-        D = compute_dissipator_action(rho_ground, ops)
-        assert np.allclose(D, 0.0, atol=1e-12)
-
-    def test_nonzero_for_excited_state(self):
-        """Amplitude damping: D[|1><1|] ≠ 0."""
-        ops = _amplitude_damping_ops(0.5)
-        rho_excited = _pure_state(2, 1)
-        D = compute_dissipator_action(rho_excited, ops)
-        assert np.linalg.norm(D) > 0.1
-
-
-# ---------------------------------------------------------------------------
-# 4. Purity decay bound
-# ---------------------------------------------------------------------------
-
-
-class TestPurityDecayBound:
-    """Verify purity decay: |dP/dt| ≤ 2 Σ_k ‖L_k‖² P(1 - P/d)."""
-
-    def test_pure_qubit_has_positive_bound(self):
-        """For P=1, d=2: bound = 2·‖L‖²·1·(1-1/2) = ‖L‖²."""
-        ops = _amplitude_damping_ops(0.5)
-        rho = _pure_state(2, 1)
-        bound = compute_purity_decay_bound(ops, rho)
-        assert bound > 0
-
-    def test_maximally_mixed_has_zero_bound(self):
-        """For P=1/d: bound = 2·‖L‖²·(1/d)·(1-1/d²) → small."""
-        ops = _amplitude_damping_ops(0.5)
-        rho = _maximally_mixed(2)
-        bound = compute_purity_decay_bound(ops, rho)
-        # Not exactly zero but very small for maximally mixed
-        assert bound >= 0
-
-
-# ---------------------------------------------------------------------------
-# 5. Dissipative balance
-# ---------------------------------------------------------------------------
+    @pytest.mark.parametrize("purity", [-0.1, 1.1, float("nan")])
+    def test_invalid_purity_is_rejected(self, purity):
+        with pytest.raises(ValueError):
+            compute_dissipation_bound(_amplitude_damping_ops(), purity)
 
 
-class TestDissipativeBalance:
-    """Verify balance between two snapshots."""
+class TestBalance:
+    def test_historical_dataclass_schema_is_constructor_and_payload_stable(self):
+        balance = DissipativeBalance(
+            0.8,
+            0.7,
+            -0.1,
+            0.2,
+            0.3,
+            0.1,
+            0.0,
+            1.0,
+            0.25,
+            0.05,
+            0.9,
+            True,
+        )
+        payload = asdict(balance)
+        assert list(payload)[:12] == [
+            "purity_before",
+            "purity_after",
+            "purity_decay_rate",
+            "entropy_before",
+            "entropy_after",
+            "entropy_production_rate",
+            "trace_drift",
+            "dissipation_bound",
+            "actual_dissipation",
+            "charge_leak_rate",
+            "contractivity_gap",
+            "is_contractive",
+        ]
+        assert "purity_change_rate" not in payload
+        assert "dissipator_action_norm" not in payload
+        assert balance.purity_change_rate == pytest.approx(-0.1)
+        assert balance.entropy_change_rate == pytest.approx(0.1)
+        assert balance.dissipator_action_norm == pytest.approx(0.25)
+        assert balance.frobenius_norm_loss_rate == pytest.approx(0.05)
 
-    def test_identical_snapshots_zero_rates(self):
-        """No change → zero rates."""
-        rho = _pure_state(2, 0)
-        s1 = capture_dissipative_snapshot(rho)
-        s2 = capture_dissipative_snapshot(rho)
-        bal = verify_dissipative_balance(s1, s2, dt=1.0)
+        changed = replace(
+            balance,
+            purity_decay_rate=-0.2,
+            actual_dissipation=0.4,
+        )
+        assert changed.purity_change_rate == pytest.approx(-0.2)
+        assert changed.dissipator_action_norm == pytest.approx(0.4)
 
-        assert abs(bal.purity_decay_rate) < 1e-12
-        assert abs(bal.entropy_production_rate) < 1e-12
-        assert bal.trace_drift < 1e-12
+    def test_without_fixed_point_contractivity_is_unknown(self):
+        snapshot = capture_dissipative_snapshot(_pure_state())
+        balance = verify_dissipative_balance(snapshot, snapshot)
+        assert not balance.contractivity_evaluated
+        assert not balance.is_contractive
+        assert math.isnan(balance.contractivity_gap)
 
-    def test_purity_decay_negative_under_mixing(self):
-        """Moving from pure to mixed: purity rate < 0."""
-        rho_pure = _pure_state(2, 0)
-        rho_mixed = 0.5 * _pure_state(2, 0) + 0.5 * _pure_state(2, 1)
-        s1 = capture_dissipative_snapshot(rho_pure)
-        s2 = capture_dissipative_snapshot(rho_mixed)
-        bal = verify_dissipative_balance(s1, s2, dt=1.0)
+    def test_trace_distance_to_fixed_point_is_used(self):
+        before = capture_dissipative_snapshot(_pure_state(1))
+        after = capture_dissipative_snapshot(np.diag([0.7, 0.3]))
+        balance = verify_dissipative_balance(
+            before, after, steady_state=_pure_state(0)
+        )
+        assert balance.contractivity_gap == pytest.approx(0.3)
+        assert balance.contractivity_evaluated
+        assert balance.is_contractive
 
-        assert bal.purity_decay_rate < 0  # Purity decreased
+    def test_balance_separates_state_change_and_dissipator_action(self):
+        before_density = np.diag([0.8, 0.2]).astype(np.complex128)
+        after_density = _amplitude_damping_state(before_density, 0.4, 0.1)
+        balance = verify_dissipative_balance(
+            capture_dissipative_snapshot(before_density),
+            capture_dissipative_snapshot(after_density),
+            dt=0.1,
+            collapse_operators=_amplitude_damping_ops(0.4),
+        )
+        assert balance.state_change_rate > 0.0
+        assert balance.dissipator_action_norm > 0.0
+        assert balance.dissipation_bound_satisfied
+        assert balance.unital_dissipator is False
+        assert balance.purity_change_rate > 0.0
+        assert balance.entropy_change_rate < 0.0
+        assert balance.actual_dissipation == balance.dissipator_action_norm
+        assert balance.charge_leak_rate == balance.frobenius_norm_loss_rate
 
-    def test_entropy_production_positive_under_mixing(self):
-        """Moving from pure to mixed: entropy rate > 0."""
-        rho_pure = _pure_state(2, 0)
-        rho_mixed = 0.5 * _pure_state(2, 0) + 0.5 * _pure_state(2, 1)
-        s1 = capture_dissipative_snapshot(rho_pure)
-        s2 = capture_dissipative_snapshot(rho_mixed)
-        bal = verify_dissipative_balance(s1, s2, dt=1.0)
-
-        assert bal.entropy_production_rate > 0  # Entropy increased
-
-    def test_contractivity_with_steady_state(self):
-        """Distance to steady state must not increase."""
-        rho_ss = _pure_state(2, 0)  # Ground state is steady state
-        rho_init = _pure_state(2, 1)  # Start from excited state
-        # Partially decayed state (closer to ground)
-        rho_mid = 0.7 * _pure_state(2, 0) + 0.3 * _pure_state(2, 1)
-
-        s1 = capture_dissipative_snapshot(rho_init)
-        s2 = capture_dissipative_snapshot(rho_mid)
-        bal = verify_dissipative_balance(s1, s2, dt=1.0, steady_state=rho_ss)
-
-        assert bal.contractivity_gap <= 1.0 + 1e-9
-        assert bal.is_contractive
-
-
-# ---------------------------------------------------------------------------
-# 6. Time series properties
-# ---------------------------------------------------------------------------
-
-
-class TestDissipativeTimeSeries:
-    """Verify DissipativeTimeSeries data structure."""
-
-    def test_empty_series(self):
-        ts = DissipativeTimeSeries()
-        assert not ts.is_contractive
-        assert ts.mean_purity_decay == 0.0
-        assert ts.total_entropy_produced == 0.0
-
-    def test_series_with_data(self):
-        ts = DissipativeTimeSeries()
-        ts.times = [0.0, 1.0, 2.0]
-        ts.purity = [1.0, 0.8, 0.7]
-        ts.entropy = [0.0, 0.2, 0.35]
-        ts.purity_decay_rate = [-0.2, -0.1]
-        ts.contractivity_gap = [0.9, 0.85]
-
-        assert ts.is_contractive  # All gaps < 1
-        assert ts.mean_purity_decay < 0
-        assert abs(ts.total_entropy_produced - 0.35) < 1e-12
-
-
-# ---------------------------------------------------------------------------
-# 7. Engine-coupled tracker tests (require mathematics backend)
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.skipif(not HAS_ENGINE, reason="Mathematics backend not available")
-class TestDissipativeConservationTracker:
-    """Test the full tracker with ContractiveDynamicsEngine."""
-
-    def _build_amplitude_damping_system(self, gamma=0.1):
-        """Build amplitude damping engine + tracker."""
-        H = np.zeros((2, 2), dtype=np.complex128)
-        ops = _amplitude_damping_ops(gamma)
-        engine = _build_qubit_engine(H, ops, nu_f=1.0, scale=1.0)
-        tracker = DissipativeConservationTracker(engine, collapse_operators=ops)
-        return engine, tracker
-
-    def test_trace_preservation(self):
-        """Trace must remain 1 throughout Lindblad evolution."""
-        engine, tracker = self._build_amplitude_damping_system(0.1)
-        rho_init = _pure_state(2, 1)  # |1><1|
-        report = tracker.evolve_and_track(rho_init, steps=20, dt=0.1)
-
-        for td in report.trace_drift:
-            assert td < 1e-8, f"Trace drift: {td}"
-
-    def test_purity_monotonically_decreasing(self):
-        """Purity must not increase under amplitude damping from |1>."""
-        engine, tracker = self._build_amplitude_damping_system(0.2)
-        rho_init = _pure_state(2, 1)
-        report = tracker.evolve_and_track(rho_init, steps=30, dt=0.1)
-
-        # Purity should be monotonically non-increasing (with tolerance)
-        for i in range(1, len(report.purity)):
-            assert (
-                report.purity[i] <= report.purity[i - 1] + 1e-9
-            ), f"Step {i}: P={report.purity[i]:.6f} > P_prev={report.purity[i-1]:.6f}"
-
-    def test_entropy_monotonically_increasing(self):
-        """Entropy must not decrease under amplitude damping."""
-        engine, tracker = self._build_amplitude_damping_system(0.2)
-        rho_init = _pure_state(2, 1)
-        report = tracker.evolve_and_track(rho_init, steps=30, dt=0.1)
-
-        # Entropy should be monotonically non-decreasing
-        # (Note: entropy can also decrease toward pure steady state; check overall trend)
-        # For amplitude damping starting from |1>, purity first decreases then
-        # increases once the state passes through the maximally mixed point.
-        # So we only check total entropy produced is non-negative
-        assert report.total_entropy_produced >= -1e-6
-
-    def test_contractivity_toward_steady_state(self):
-        """Distance to |0><0| should decrease step by step."""
-        engine, tracker = self._build_amplitude_damping_system(0.3)
-        rho_ss = _pure_state(2, 0)  # Ground state is the amplitude damping steady state
-        tracker.set_steady_state(rho_ss)
-
-        rho_init = _pure_state(2, 1)
-        report = tracker.evolve_and_track(rho_init, steps=20, dt=0.1)
-
-        # All contractivity gaps should be ≤ 1
-        for i, gap in enumerate(report.contractivity_gap):
-            if i == 0:
-                continue  # First entry is default
-            assert gap <= 1.0 + 1e-6, f"Step {i}: contractivity gap = {gap:.6f} > 1"
-
-    def test_steady_state_convergence(self):
-        """After sufficient steps, state should be close to |0><0|."""
-        engine, tracker = self._build_amplitude_damping_system(0.5)
-        rho_init = _pure_state(2, 1)
-        report = tracker.evolve_and_track(rho_init, steps=100, dt=0.1)
-
-        # Final purity should be close to 1 (steady state is pure)
-        assert report.purity[-1] > 0.95, f"Final purity {report.purity[-1]:.4f} too low"
-
-    def test_dephasing_diagonal_preservation(self):
-        """Pure dephasing: diagonal elements must not change."""
-        H = np.zeros((2, 2), dtype=np.complex128)
-        ops = _dephasing_ops(0.5)
-        engine = _build_qubit_engine(H, ops, nu_f=1.0, scale=1.0)
-
-        # Start with a state with known diagonals
-        rho_init = np.array([[0.7, 0.3 + 0.1j], [0.3 - 0.1j, 0.3]], dtype=np.complex128)
-
-        tracker = DissipativeConservationTracker(engine, collapse_operators=ops)
-        tracker.evolve_and_track(rho_init, steps=50, dt=0.1)
-
-        # Check that diagonals are preserved
-        _, last_snap = tracker._snapshots[-1]
-        rho_final = np.asarray(last_snap.density)
-
-        assert (
-            abs(rho_final[0, 0] - 0.7) < 1e-6
-        ), f"Diagonal[0,0] drifted: {rho_final[0,0]:.6f}"
-        assert (
-            abs(rho_final[1, 1] - 0.3) < 1e-6
-        ), f"Diagonal[1,1] drifted: {rho_final[1,1]:.6f}"
-
-        # Off-diagonals should have decayed
-        assert abs(rho_final[0, 1]) < abs(rho_init[0, 1])
-
-    def test_latest_balance(self):
-        """latest_balance property returns valid balance after evolution."""
-        engine, tracker = self._build_amplitude_damping_system(0.2)
-        rho_init = _pure_state(2, 1)
-        tracker.evolve_and_track(rho_init, steps=5, dt=0.1)
-
-        bal = tracker.latest_balance
-        assert bal is not None
-        assert isinstance(bal, DissipativeBalance)
-        assert bal.trace_drift < 1e-8
-
-
-# ---------------------------------------------------------------------------
-# 8. Analytical predictions
-# ---------------------------------------------------------------------------
+    @pytest.mark.parametrize("dt", [0.0, -1.0, float("nan")])
+    def test_invalid_time_step_is_rejected(self, dt):
+        snapshot = capture_dissipative_snapshot(_pure_state())
+        with pytest.raises(ValueError):
+            verify_dissipative_balance(snapshot, snapshot, dt=dt)
 
 
 class TestAnalyticalPredictions:
-    """Verify analytical prediction functions."""
-
-    def test_amplitude_damping_purity_at_t0(self):
-        """At t=0, predicted purity = initial purity."""
-        assert abs(predict_amplitude_damping_purity(0.5, 1.0, 0.0) - 0.5) < 1e-12
-
-    def test_amplitude_damping_purity_at_infinity(self):
-        """At t→∞, predicted purity → 1 (pure ground state)."""
-        p = predict_amplitude_damping_purity(0.3, 1.0, 100.0)
-        assert abs(p - 1.0) < 1e-6
-
-    def test_dephasing_purity_pure_state(self):
-        """Pure dephasing of |+> eventually leads to P → Σ ρ_ii²."""
-        # |+> state
-        psi_plus = np.array([1, 1], dtype=np.complex128) / math.sqrt(2)
-        rho_plus = np.outer(psi_plus, psi_plus.conj())
-
-        p_long = predict_dephasing_purity(rho_plus, 1.0, 100.0)
-        # At t→∞, only diagonals survive: P → 0.5² + 0.5² = 0.5
-        assert abs(p_long - 0.5) < 1e-4
-
-
-# ---------------------------------------------------------------------------
-# 9. Dissipation rate analysis
-# ---------------------------------------------------------------------------
-
-
-class TestDissipationRateAnalysis:
-    """Verify spectral analysis of Lindblad generators."""
-
-    @pytest.mark.skipif(not HAS_ENGINE, reason="Backend required")
-    def test_amplitude_damping_spectral_gap(self):
-        """Amplitude damping generator should have a finite spectral gap."""
-        H = np.zeros((2, 2), dtype=np.complex128)
-        ops = _amplitude_damping_ops(0.3)
-        gen = build_lindblad_delta_nfr(
-            hamiltonian=H, collapse_operators=ops, dim=2, nu_f=1.0, scale=1.0
+    @pytest.mark.parametrize("time", [0.0, 0.2, 1.0, 4.0])
+    def test_exact_qubit_amplitude_damping_prediction(self, time):
+        initial = np.array(
+            [[0.35, 0.12 + 0.08j], [0.12 - 0.08j, 0.65]],
+            dtype=np.complex128,
         )
-        gen_np = np.asarray(ensure_numpy(gen), dtype=np.complex128)
+        predicted = predict_amplitude_damping_purity(initial, 0.4, time)
+        evolved = _amplitude_damping_state(initial, 0.4, time)
+        actual = float(np.trace(evolved @ evolved).real)
+        assert predicted == pytest.approx(actual)
 
-        result = analyze_dissipation_rates(gen_np, dim=2)
+    def test_equal_initial_purity_does_not_identify_amplitude_damping(self):
+        ground = predict_amplitude_damping_purity(_pure_state(0), 0.5, 1.0)
+        excited = predict_amplitude_damping_purity(_pure_state(1), 0.5, 1.0)
+        assert ground == pytest.approx(1.0)
+        assert excited < 1.0
 
-        assert result["n_steady_modes"] >= 1  # At least one steady state
-        assert result["spectral_gap"] > 0  # Finite relaxation time
-        assert result["relaxation_time"] < float("inf")
-        assert result["relaxation_time"] > 0
+    def test_scalar_amplitude_input_is_explicitly_deprecated(self):
+        with pytest.warns(DeprecationWarning):
+            result = predict_amplitude_damping_purity(0.5, 1.0, 0.0)
+        assert result == pytest.approx(0.5)
 
-    @pytest.mark.skipif(not HAS_ENGINE, reason="Backend required")
-    def test_dephasing_spectral_gap(self):
-        """Dephasing has spectral gap > 0."""
-        H = np.zeros((2, 2), dtype=np.complex128)
-        ops = _dephasing_ops(0.5)
-        gen = build_lindblad_delta_nfr(
-            hamiltonian=H, collapse_operators=ops, dim=2, nu_f=1.0, scale=1.0
+    def test_historical_initial_purity_keyword_is_preserved(self):
+        with pytest.warns(DeprecationWarning):
+            result = predict_amplitude_damping_purity(
+                initial_purity=0.5,
+                gamma=1.0,
+                time=0.0,
+            )
+        assert result == pytest.approx(0.5)
+
+    def test_density_keyword_and_legacy_keyword_are_unambiguous(self):
+        assert predict_amplitude_damping_purity(
+            initial_density=_pure_state(1), gamma=0.5, time=0.0
+        ) == pytest.approx(1.0)
+        with pytest.raises(TypeError, match="only one"):
+            predict_amplitude_damping_purity(
+                initial_density=_pure_state(1),
+                initial_purity=1.0,
+                gamma=0.5,
+                time=0.0,
+            )
+        with pytest.raises(ValueError, match="must be scalar"):
+            predict_amplitude_damping_purity(
+                initial_purity=_pure_state(1), gamma=0.5, time=0.0
+            )
+
+    @pytest.mark.parametrize("time", [0.0, 0.3, 2.0])
+    def test_exact_dephasing_prediction(self, time):
+        initial = _plus_state()
+        predicted = predict_dephasing_purity(initial, 0.7, time)
+        evolved = _dephased_state(initial, 0.7, time)
+        actual = float(np.trace(evolved @ evolved).real)
+        assert predicted == pytest.approx(actual)
+
+
+class TestSpectralAnalysis:
+    @pytest.mark.skipif(not HAS_ENGINE, reason="Mathematics backend not available")
+    def test_amplitude_damping_has_unique_stationary_state(self):
+        operators = _amplitude_damping_ops(0.3)
+        engine = _build_qubit_engine(operators)
+        result = analyze_dissipation_rates(engine.generator, dim=2)
+
+        assert result["is_trace_preserving"]
+        assert not result["has_unstable_modes"]
+        assert result["n_steady_modes"] == 1
+        assert result["relaxes_to_unique_state"]
+        assert result["spectral_gap"] > 0.0
+
+    @pytest.mark.skipif(not HAS_ENGINE, reason="Mathematics backend not available")
+    def test_dephasing_has_stationary_manifold(self):
+        engine = _build_qubit_engine(_dephasing_ops(0.5))
+        result = analyze_dissipation_rates(engine.generator, dim=2)
+        assert result["n_steady_modes"] == 2
+        assert not result["relaxes_to_unique_state"]
+        assert result["spectral_gap"] > 0.0
+
+    def test_neutral_nonstationary_modes_preclude_relaxation_certificate(self):
+        generator = np.diag([0.0, 1.0j, -1.0j, -1.0]).astype(np.complex128)
+        result = analyze_dissipation_rates(generator, dim=2)
+        assert result["n_steady_modes"] == 1
+        assert result["has_neutral_nonstationary_modes"]
+        assert result["spectral_gap"] == 0.0
+        assert math.isinf(result["relaxation_time"])
+        assert not result["relaxes_to_unique_state"]
+
+    def test_steady_state_solver_rejects_non_trace_preserving_generator(self):
+        with pytest.raises(ValueError, match="not trace preserving"):
+            steady_state_from_generator(-np.eye(4), dim=2)
+
+    @pytest.mark.parametrize(
+        "generator,dim",
+        [(np.eye(3), 2), (np.eye(4), 0), (np.full((4, 4), np.nan), 2)],
+    )
+    def test_invalid_generator_is_rejected(self, generator, dim):
+        with pytest.raises(ValueError):
+            analyze_dissipation_rates(generator, dim)
+
+
+class TestClassification:
+    def test_classification_is_a_change_tier_not_a_grammar_verdict(self):
+        before = capture_dissipative_snapshot(_pure_state(1))
+        after = capture_dissipative_snapshot(_maximally_mixed())
+        balance = verify_dissipative_balance(before, after)
+        result = classify_dissipative_regime(balance)
+
+        assert result["change_tier"] == "large"
+        assert result["regime"] == "decoherence"  # compatibility label
+        assert result["purity_direction"] == "decreasing"
+        assert not result["grammar_status_inferred"]
+        assert "No U1--U6 status" in result["grammar_analog"]
+
+    def test_purification_is_classified_by_magnitude_and_direction(self):
+        before_density = np.diag([0.9, 0.1]).astype(np.complex128)
+        after_density = _amplitude_damping_state(before_density, 1.0, 1.0)
+        balance = verify_dissipative_balance(
+            capture_dissipative_snapshot(before_density),
+            capture_dissipative_snapshot(after_density),
         )
-        gen_np = np.asarray(ensure_numpy(gen), dtype=np.complex128)
-
-        result = analyze_dissipation_rates(gen_np, dim=2)
-
-        assert result["spectral_gap"] > 0
-        assert len(result["decay_rates"]) >= 1
+        result = classify_dissipative_regime(balance)
+        assert result["purity_direction"] == "increasing"
+        assert result["entropy_direction"] == "decreasing"
 
 
-# ---------------------------------------------------------------------------
-# 10. Grammar classification
-# ---------------------------------------------------------------------------
-
-
-class TestGrammarClassification:
-    """Verify regime classification in TNFR grammar terms."""
-
-    def test_weak_dissipation_regime(self):
-        """Tiny purity change → weak dissipation."""
-        rho1 = capture_dissipative_snapshot(
-            np.array([[0.9, 0.05], [0.05, 0.1]], dtype=np.complex128)
+class TestTimeSeriesCompatibility:
+    def test_signed_names_and_legacy_aliases_agree(self):
+        series = DissipativeTimeSeries(
+            times=[0.0, 1.0],
+            purity=[0.6, 0.7],
+            entropy=[0.5, 0.4],
+            purity_decay_rate=[0.0, 0.1],
+            entropy_production_rate=[0.0, -0.1],
+            contractivity_gap=[float("nan"), 0.8],
         )
-        # Very small change in the state
-        rho2 = capture_dissipative_snapshot(
-            np.array([[0.9001, 0.0499], [0.0499, 0.0999]], dtype=np.complex128)
+        assert series.is_contractive
+        assert series.mean_purity_decay == series.mean_purity_change
+        assert series.total_entropy_produced == series.total_entropy_change
+        series.purity_decay_rate = [-0.2]
+        assert series.purity_change_rate == [-0.2]
+
+        payload = asdict(series)
+        assert list(payload) == [
+            "times",
+            "purity",
+            "entropy",
+            "trace_drift",
+            "purity_decay_rate",
+            "entropy_production_rate",
+            "dissipation_bound",
+            "contractivity_gap",
+        ]
+        assert "purity_change_rate" not in payload
+        changed = replace(series, entropy_production_rate=[0.2])
+        assert changed.entropy_change_rate == [0.2]
+
+    def test_infinite_contractivity_ratio_is_a_violation(self):
+        series = DissipativeTimeSeries(contractivity_gap=[float("nan"), float("inf")])
+        assert not series.is_contractive
+
+
+@pytest.mark.skipif(not HAS_ENGINE, reason="Mathematics backend not available")
+class TestTracker:
+    def test_amplitude_damping_can_first_mix_then_purify(self):
+        operators = _amplitude_damping_ops(0.5)
+        tracker = DissipativeConservationTracker(
+            _build_qubit_engine(operators),
+            collapse_operators=operators,
+            steady_state=_pure_state(0),
         )
-        bal = verify_dissipative_balance(rho1, rho2, dt=1.0)
-        result = classify_dissipative_regime(bal)
-        assert result["regime"] == "weak_dissipation"
-        assert result["conservation_quality"] > 0.9
+        report = tracker.evolve_and_track(_pure_state(1), steps=200, dt=0.05)
+        minimum_index = int(np.argmin(report.purity))
 
-    def test_strong_dissipation_regime(self):
-        """Large purity change → strong dissipation."""
-        rho1 = capture_dissipative_snapshot(_pure_state(2, 1))
-        rho2 = capture_dissipative_snapshot(_maximally_mixed(2))
-        bal = verify_dissipative_balance(rho1, rho2, dt=1.0)
-        result = classify_dissipative_regime(bal)
-        assert result["regime"] in ("strong_dissipation", "decoherence")
-        assert result["conservation_quality"] < 0.5
+        assert 0 < minimum_index < len(report.purity) - 1
+        assert report.purity[minimum_index] == pytest.approx(0.5, abs=2e-3)
+        assert report.purity[-1] > report.purity[minimum_index]
+        assert report.entropy[-1] < max(report.entropy)
+        assert report.is_contractive
+        assert max(report.trace_drift) < 1e-8
 
+    def test_unital_dephasing_has_monotone_purity_loss(self):
+        operators = _dephasing_ops(0.5)
+        tracker = DissipativeConservationTracker(
+            _build_qubit_engine(operators), collapse_operators=operators
+        )
+        report = tracker.evolve_and_track(_plus_state(), steps=30, dt=0.1)
+        assert all(
+            later <= earlier + 1e-10
+            for earlier, later in zip(report.purity, report.purity[1:])
+        )
+        assert report.total_entropy_change > 0.0
+        assert not report.is_contractive  # no fixed point was selected
 
-# ---------------------------------------------------------------------------
-# 11. Compute steady state from generator
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.skipif(not HAS_ENGINE, reason="Backend required")
-class TestComputeSteadyState:
-    """Test automatic steady-state computation."""
-
-    def test_amplitude_damping_steady_is_ground(self):
-        """Amplitude damping steady state should be close to |0><0|."""
-        H = np.zeros((2, 2), dtype=np.complex128)
-        ops = _amplitude_damping_ops(0.3)
-        engine = _build_qubit_engine(H, ops, nu_f=1.0, scale=1.0)
-        tracker = DissipativeConservationTracker(engine, collapse_operators=ops)
-
-        rho_ss = tracker.compute_steady_state()
-        expected = _pure_state(2, 0)
-
+    def test_compute_steady_state_and_tracker_reset(self):
+        operators = _amplitude_damping_ops(0.3)
+        engine = _build_qubit_engine(operators)
+        tracker = DissipativeConservationTracker(engine, collapse_operators=operators)
+        stationary = tracker.compute_steady_state()
+        assert np.allclose(stationary, _pure_state(0), atol=1e-8)
         assert np.allclose(
-            rho_ss, expected, atol=1e-4
-        ), f"Steady state:\n{rho_ss}\nExpected:\n{expected}"
+            steady_state_from_generator(engine.generator, 2), _pure_state(0), atol=1e-8
+        )
+
+        first = tracker.evolve_and_track(_pure_state(1), steps=2, dt=0.1)
+        second = tracker.evolve_and_track(_pure_state(1), steps=1, dt=0.1)
+        assert len(first.times) == 3
+        assert len(second.times) == 2
+        assert tracker.latest_balance is not None
+
+    def test_nonstationary_reference_state_is_rejected(self):
+        operators = _amplitude_damping_ops(0.3)
+        engine = _build_qubit_engine(operators)
+        with pytest.raises(ValueError, match="not stationary"):
+            DissipativeConservationTracker(
+                engine,
+                collapse_operators=operators,
+                steady_state=_pure_state(1),
+            )
+
+    @pytest.mark.parametrize("steps,dt", [(-1, 0.1), (1, 0.0), (True, 0.1)])
+    def test_invalid_evolution_arguments(self, steps, dt):
+        operators = _amplitude_damping_ops(0.2)
+        tracker = DissipativeConservationTracker(
+            _build_qubit_engine(operators), collapse_operators=operators
+        )
+        with pytest.raises(ValueError):
+            tracker.evolve_and_track(_pure_state(1), steps=steps, dt=dt)

@@ -53,7 +53,7 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
     -----
     **Canonical bifurcation paths:**
 
-    - **ZHIR (Mutation)**: Viable if νf > 0.8 (sufficient for controlled transformation)
+    - **ZHIR (Mutation)**: Proposed if νf exceeds the configured branch-selection cut
     - **NUL (Contraction)**: Viable if EPI < 0.5 (safe collapse window)
     - **IL (Coherence)**: Always viable (universal resolution path)
     - **THOL (Self-organization)**: Viable if degree >= 2 (network support)
@@ -83,17 +83,17 @@ def get_bifurcation_paths(G: "TNFRGraph", node: "NodeId") -> list["Glyph"]:
         return []  # No bifurcation active
 
     # Get node state for path evaluation
-    abs(float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0)))
     epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
     vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
     degree = G.degree(node)
 
     paths = []
 
-    # ZHIR (Mutation) viable if sufficient νf for controlled transformation
+    # This threshold ranks ZHIR as a bifurcation branch. It is not the direct
+    # operator precondition, which uses the signed EPI-growth gate and active νf.
     zhir_threshold = float(
         G.graph.get("ZHIR_BIFURCATION_VF_THRESHOLD", ZHIR_VF_THRESHOLD_CANONICAL)
-    )  # ≈ 0.489 (operational)
+    )
     if vf > zhir_threshold:
         paths.append(Glyph.ZHIR)
 

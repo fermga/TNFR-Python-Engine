@@ -1,39 +1,29 @@
-"""
-TNFR Emergent Centralization Engine
+"""Snapshot centralization diagnostics for TNFR graph states.
 
-This module implements intelligent centralization patterns that emerge naturally
-from the mathematical structure of the nodal equation ∂EPI/∂t = νf · ΔNFR(t).
+The analyzers rank possible coordination nodes using graph spectrum, signed
+scalar EPI, structural frequency, and wrapped phase separation.  The nodal
+equation supplies the channel meanings, but it does not imply that EPI flows
+towards a graph center, that a high-frequency node is a coordinator, or that a
+recommended topology improves runtime, stability, or fault tolerance.
 
-Mathematical Foundation:
-The nodal equation reveals natural centralization principles:
-
-1. **Information Concentration**: EPI naturally flows to network centers
-2. **Frequency Synchronization**: High-νf nodes become natural coordinators
-3. **ΔNFR Equilibration**: Computation load balances across optimal topologies
-4. **Spectral Coordination**: Eigenmode structure defines natural hierarchies
-5. **Phase-Locked Networks**: Synchronous regions form computational clusters
-6. **Adaptive Topologies**: Network structure evolves to optimize computation
-
-Emergent Centralization Features:
-- Automatic discovery of computational coordination points
-- Dynamic load redistribution based on mathematical properties
-- Self-organizing computational hierarchies
-- Natural fault tolerance through mathematical redundancy
-- Adaptive resource allocation using spectral structure
-- Emergent consensus mechanisms via phase locking
-
-Status: CANONICAL EMERGENT CENTRALIZATION ENGINE
+This module therefore returns heuristic scores and a topology recommendation.
+It neither mutates topology nor benchmarks the recommendation.
 """
 
+import math
 import threading
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
+from numbers import Real
 from typing import Any
 
 from ..alias import get_attr
-from ..constants.aliases import ALIAS_THETA, ALIAS_VF
+from ..constants.aliases import ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
+from ..types import require_finite_real_scalar_epi
+from ..utils import angle_diff
 
 try:
     import networkx as nx
@@ -42,11 +32,6 @@ try:
 except ImportError:
     HAS_NETWORKX = False
     nx = None
-
-# Import TNFR components
-HAS_TNFR_ENGINES = True  # Assume available
-
-HAS_PHYSICS_FIELDS = True  # Assume available
 
 try:
     from ..mathematics.spectral import get_laplacian_spectrum
@@ -61,7 +46,6 @@ from ..constants.operational import (
     EMERGENT_COORDINATION_BOOST_CANONICAL,
     EMERGENT_COORDINATION_THRESHOLD_CANONICAL,
     EMERGENT_COUPLING_STRENGTH_CANONICAL,
-    EMERGENT_EFFICIENCY_GAIN_CANONICAL,
     EMERGENT_FREQ_BALANCE_CANONICAL,
     EMERGENT_STABILITY_THRESHOLD_CANONICAL,
     NODAL_OPT_COUPLING_CANONICAL,
@@ -73,6 +57,74 @@ try:
     HAS_SPECTRAL_STRUCTURAL_FUSION = True
 except ImportError:
     HAS_SPECTRAL_STRUCTURAL_FUSION = False
+
+
+def _node_scalar_epi(G: Any, node: Any) -> float:
+    """Read one finite signed scalar EPI through canonical alias precedence."""
+
+    raw = get_attr(
+        G.nodes[node],
+        ALIAS_EPI,
+        0.0,
+        strict=True,
+        conv=lambda value: value,
+    )
+    return require_finite_real_scalar_epi(raw, f"node {node!r} EPI")
+
+
+def _finite_nonnegative_mean(values: list[float], label: str) -> float:
+    """Average finite nonnegative values without overflowing their sum."""
+
+    if not values:
+        return 0.0
+    if any(value < 0.0 or not math.isfinite(value) for value in values):
+        raise TNFRValueError(f"{label} must contain finite nonnegative values")
+    scale = max(values)
+    if scale == 0.0:
+        return 0.0
+    result = scale * math.fsum(value / scale for value in values) / len(values)
+    if not math.isfinite(result):
+        raise TNFRValueError(f"{label} mean exceeds the finite scalar range")
+    return result
+
+
+def _finite_product(*values: float, label: str) -> float:
+    """Multiply finite factors and reject an unrepresentable result."""
+
+    result = math.prod(values)
+    if not math.isfinite(result):
+        raise TNFRValueError(f"{label} exceeds the finite scalar range")
+    return result
+
+
+def _node_real_channel(
+    G: Any,
+    node: Any,
+    aliases: tuple[str, ...],
+    default: float,
+    label: str,
+    *,
+    nonnegative: bool = False,
+) -> float:
+    """Read one finite real scalar channel through strict alias precedence."""
+
+    raw = get_attr(
+        G.nodes[node], aliases, default, strict=True, conv=lambda value: value
+    )
+    if isinstance(raw, (bool, np.bool_)) or not isinstance(raw, Real):
+        raise TNFRValueError(f"node {node!r} {label} must be a finite real scalar")
+    try:
+        value = float(raw)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(
+            f"node {node!r} {label} must be a finite real scalar"
+        ) from exc
+    if not math.isfinite(value) or (nonnegative and value < 0.0):
+        qualifier = "nonnegative finite" if nonnegative else "finite"
+        raise TNFRValueError(
+            f"node {node!r} {label} must be a {qualifier} real scalar"
+        )
+    return value
 
 
 class CentralizationStrategy(Enum):
@@ -93,7 +145,7 @@ class CentralizationNode:
     node_id: Any
     centrality_score: float
     coordination_capacity: float
-    current_load: float
+    current_load: float | None
     specialization: str  # type of coordination this node excels at
     connected_cluster: list[Any]  # Nodes coordinated by this center
     mathematical_signature: dict[str, Any]
@@ -101,7 +153,11 @@ class CentralizationNode:
 
 @dataclass
 class CentralizationPattern:
-    """Discovered centralization pattern in the network."""
+    """Discovered centralization pattern in the network.
+
+    ``efficiency_gain`` is a historical compatibility name for a bounded
+    coordination-coverage score. It is not a measured runtime gain.
+    """
 
     strategy: CentralizationStrategy
     coordination_nodes: list[CentralizationNode]
@@ -114,23 +170,29 @@ class CentralizationPattern:
 
 @dataclass
 class CentralizationResult:
-    """Result of centralization analysis and optimization."""
+    """Result of a read-only centralization recommendation.
+
+    No candidate topology is executed or benchmarked. Compatibility fields for
+    measured improvements therefore remain empty/``None``; ``diagnostic_scores``
+    contains the quantities that were actually computed.
+    """
 
     discovered_patterns: list[CentralizationPattern]
     optimal_strategy: CentralizationStrategy
     recommended_topology: dict[str, Any]
-    performance_improvements: dict[str, float]
-    coordination_efficiency: float
-    fault_tolerance: float
+    performance_improvements: dict[str, float | None]
+    coordination_efficiency: float | None
+    fault_tolerance: float | None
     execution_time: float
+    diagnostic_scores: dict[str, float | None] = field(default_factory=dict)
 
 
 class TNFREmergentCentralizationEngine:
     """
-    Engine for discovering and implementing emergent centralization patterns.
+    Rank candidate coordination patterns in one graph snapshot.
 
-    This engine analyzes the mathematical structure of TNFR networks to discover
-    natural coordination and centralization opportunities.
+    The engine produces diagnostics and recommendations only; it does not apply
+    topology changes or establish performance improvements.
     """
 
     def __init__(self, enable_adaptive_topology: bool = True):
@@ -188,8 +250,8 @@ class TNFREmergentCentralizationEngine:
         """
         Discover centralization based on spectral properties.
 
-        Uses eigenvector centrality and spectral structure to identify
-        natural coordination points.
+        Uses the magnitude of the Fiedler-vector component as a candidate
+        coordination score.
         """
         coordination_nodes = []
 
@@ -201,7 +263,7 @@ class TNFREmergentCentralizationEngine:
         # Get spectral decomposition
         eigenvalues, eigenvectors = get_laplacian_spectrum(G)
 
-        # Calculate eigenvector centrality from dominant eigenvector
+        # Read the Fiedler vector from the ordered Laplacian basis.
         if len(eigenvectors) > 0:
             # Use the Fiedler vector (second smallest eigenvalue) for coordination
             if len(eigenvalues) > 1:
@@ -215,8 +277,10 @@ class TNFREmergentCentralizationEngine:
                     if centrality > self.centrality_threshold:
                         # Calculate coordination capacity based on network position
                         degree = G.degree(node)
-                        epi_value = G.nodes[node].get("EPI", 0.0)
-                        vf_value = get_attr(G.nodes[node], ALIAS_VF, 1.0)
+                        epi_value = _node_scalar_epi(G, node)
+                        vf_value = _node_real_channel(
+                            G, node, ALIAS_VF, 1.0, "structural frequency", nonnegative=True
+                        )
 
                         # Mathematical signature for this coordination node
                         signature = {
@@ -236,13 +300,18 @@ class TNFREmergentCentralizationEngine:
                         neighbors = list(G.neighbors(node))
                         cluster = [node] + neighbors[
                             : int(degree * EMERGENT_COUPLING_STRENGTH_CANONICAL)
-                        ]  # Include most connected neighbors
+                        ]  # Deterministic prefix under graph neighbor iteration order
 
                         coord_node = CentralizationNode(
                             node_id=node,
                             centrality_score=centrality,
-                            coordination_capacity=degree * centrality * vf_value,
-                            current_load=0.0,  # Will be updated during operation
+                            coordination_capacity=_finite_product(
+                                float(degree),
+                                float(centrality),
+                                vf_value,
+                                label="spectral coordination capacity",
+                            ),
+                            current_load=None,  # No load measurement is available in this snapshot
                             specialization="spectral_coordination",
                             connected_cluster=cluster,
                             mathematical_signature=signature,
@@ -257,21 +326,26 @@ class TNFREmergentCentralizationEngine:
         """
         Discover centralization based on information (EPI) flow patterns.
 
-        Identifies nodes that naturally accumulate or distribute information.
+        Ranks nodes by EPI magnitude concentration and local signed contrast.
         """
         coordination_nodes = []
 
         if not HAS_NETWORKX or G is None:
             return coordination_nodes
 
-        # Analyze EPI distribution and flow
-        epi_values = {node: G.nodes[node].get("EPI", 0.0) for node in G.nodes()}
-        total_epi = sum(abs(epi) for epi in epi_values.values())
+        # Analyze the signed scalar EPI chart and its magnitude concentration.
+        epi_values = {node: _node_scalar_epi(G, node) for node in G.nodes()}
+        epi_magnitudes = {node: abs(value) for node, value in epi_values.items()}
+        magnitude_scale = max(epi_magnitudes.values(), default=0.0)
 
-        if total_epi > 0:
+        if magnitude_scale > 0.0:
+            scaled_total = math.fsum(
+                magnitude / magnitude_scale for magnitude in epi_magnitudes.values()
+            )
             for node in G.nodes():
-                epi = abs(epi_values[node])
-                epi_fraction = epi / total_epi
+                signed_epi = epi_values[node]
+                epi_magnitude = epi_magnitudes[node]
+                epi_fraction = (epi_magnitude / magnitude_scale) / scaled_total
 
                 # High EPI concentration indicates coordination potential
                 if (
@@ -279,22 +353,34 @@ class TNFREmergentCentralizationEngine:
                 ):  # ≈ 0.099 - Significant EPI concentration
                     # Analyze information flow capacity
                     neighbors = list(G.neighbors(node))
-                    neighbor_epi = [abs(epi_values.get(n, 0.0)) for n in neighbors]
+                    neighbor_epi = [epi_values[n] for n in neighbors]
 
-                    # Information gradient (how much EPI difference with neighbors)
-                    info_gradient = sum(abs(epi - nepi) for nepi in neighbor_epi) / max(
-                        1, len(neighbor_epi)
+                    # Mean signed-chart contrast with graph neighbors.
+                    contrasts = [
+                        abs(signed_epi - neighbor_value)
+                        for neighbor_value in neighbor_epi
+                    ]
+                    info_gradient = _finite_nonnegative_mean(
+                        contrasts, "neighbor EPI contrasts"
                     )
 
                     # Coordination capacity based on information processing
-                    vf_value = get_attr(G.nodes[node], ALIAS_VF, 1.0)
-                    coordination_capacity = epi_fraction * info_gradient * vf_value
+                    vf_value = _node_real_channel(
+                        G, node, ALIAS_VF, 1.0, "structural frequency", nonnegative=True
+                    )
+                    coordination_capacity = _finite_product(
+                        epi_fraction,
+                        info_gradient,
+                        vf_value,
+                        label="information coordination capacity",
+                    )
 
                     if coordination_capacity > self.coordination_threshold:
                         signature = {
                             "epi_concentration": epi_fraction,
                             "information_gradient": info_gradient,
-                            "total_information": epi,
+                            "epi_magnitude": epi_magnitude,
+                            "signed_epi": signed_epi,
                             "neighbor_count": len(neighbors),
                             "vf": vf_value,
                             "processing_capacity": coordination_capacity,
@@ -304,7 +390,7 @@ class TNFREmergentCentralizationEngine:
                         similar_nodes = [
                             n
                             for n in neighbors
-                            if abs(epi_values.get(n, 0.0) - epi)
+                            if abs(epi_values[n] - signed_epi)
                             < info_gradient * EMERGENT_FREQ_BALANCE_CANONICAL
                         ]
                         cluster = [node] + similar_nodes
@@ -313,7 +399,7 @@ class TNFREmergentCentralizationEngine:
                             node_id=node,
                             centrality_score=epi_fraction,
                             coordination_capacity=coordination_capacity,
-                            current_load=0.0,
+                            current_load=None,
                             specialization="information_coordination",
                             connected_cluster=cluster,
                             mathematical_signature=signature,
@@ -328,7 +414,7 @@ class TNFREmergentCentralizationEngine:
         """
         Discover centralization based on frequency (νf) hierarchy.
 
-        High-frequency nodes naturally become coordinators.
+        Ranks nodes by frequency relative to this snapshot and their neighbors.
         """
         coordination_nodes = []
 
@@ -336,7 +422,12 @@ class TNFREmergentCentralizationEngine:
             return coordination_nodes
 
         # Analyze νf distribution
-        vf_values = {node: get_attr(G.nodes[node], ALIAS_VF, 1.0) for node in G.nodes()}
+        vf_values = {
+            node: _node_real_channel(
+                G, node, ALIAS_VF, 1.0, "structural frequency", nonnegative=True
+            )
+            for node in G.nodes()
+        }
         max_vf = max(vf_values.values()) if vf_values else 1.0
 
         # High-frequency nodes become natural coordinators
@@ -352,13 +443,17 @@ class TNFREmergentCentralizationEngine:
                 neighbor_vf = [vf_values.get(n, 1.0) for n in neighbors]
 
                 # Frequency dominance over neighbors
-                frequency_advantage = sum(
-                    max(0, vf - nvf) for nvf in neighbor_vf
-                ) / max(1, len(neighbor_vf))
+                frequency_advantage = _finite_nonnegative_mean(
+                    [max(0.0, vf - nvf) for nvf in neighbor_vf],
+                    "neighbor frequency advantages",
+                )
 
                 degree = G.degree(node)
-                coordination_capacity = (
-                    relative_frequency * frequency_advantage * degree
+                coordination_capacity = _finite_product(
+                    relative_frequency,
+                    frequency_advantage,
+                    float(degree),
+                    label="frequency coordination capacity",
                 )
 
                 if coordination_capacity > self.coordination_threshold:
@@ -386,7 +481,7 @@ class TNFREmergentCentralizationEngine:
                         node_id=node,
                         centrality_score=relative_frequency,
                         coordination_capacity=coordination_capacity,
-                        current_load=0.0,
+                        current_load=None,
                         specialization="frequency_coordination",
                         connected_cluster=cluster,
                         mathematical_signature=signature,
@@ -410,7 +505,8 @@ class TNFREmergentCentralizationEngine:
 
         # Analyze phase distribution
         phase_values = {
-            node: get_attr(G.nodes[node], ALIAS_THETA, 0.0) for node in G.nodes()
+            node: _node_real_channel(G, node, ALIAS_THETA, 0.0, "phase")
+            for node in G.nodes()
         }
 
         for node in G.nodes():
@@ -420,16 +516,25 @@ class TNFREmergentCentralizationEngine:
             if len(neighbors) > 2:  # Need sufficient connections for coordination
                 neighbor_phases = [phase_values.get(n, 0.0) for n in neighbors]
 
-                # Calculate phase coherence with neighbors
-                phase_differences = [abs(phase - nphase) for nphase in neighbor_phases]
+                # Calculate coherence from shortest-arc phase separations.
+                phase_differences = [
+                    abs(angle_diff(phase, nphase)) for nphase in neighbor_phases
+                ]
                 avg_phase_diff = np.mean(phase_differences)
                 phase_coherence = 1.0 / (
                     1.0 + avg_phase_diff
                 )  # Higher coherence = lower differences
 
                 # Phase coordination capacity
-                vf = get_attr(G.nodes[node], ALIAS_VF, 1.0)
-                coordination_capacity = phase_coherence * len(neighbors) * vf
+                vf = _node_real_channel(
+                    G, node, ALIAS_VF, 1.0, "structural frequency", nonnegative=True
+                )
+                coordination_capacity = _finite_product(
+                    float(phase_coherence),
+                    float(len(neighbors)),
+                    vf,
+                    label="phase coordination capacity",
+                )
 
                 if (
                     phase_coherence > EMERGENT_CENTRALITY_THRESHOLD_CANONICAL
@@ -449,7 +554,7 @@ class TNFREmergentCentralizationEngine:
                     sync_neighbors = [
                         n
                         for n, nphase in zip(neighbors, neighbor_phases)
-                        if abs(phase - nphase) < sync_threshold
+                        if abs(angle_diff(phase, nphase)) < sync_threshold
                     ]
                     cluster = [node] + sync_neighbors
 
@@ -457,7 +562,7 @@ class TNFREmergentCentralizationEngine:
                         node_id=node,
                         centrality_score=phase_coherence,
                         coordination_capacity=coordination_capacity,
-                        current_load=0.0,
+                        current_load=None,
                         specialization="phase_coordination",
                         connected_cluster=cluster,
                         mathematical_signature=signature,
@@ -497,14 +602,24 @@ class TNFREmergentCentralizationEngine:
 
             if coordination_nodes:
                 # Calculate pattern metrics
-                total_capacity = sum(
+                capacities = [
                     node.coordination_capacity for node in coordination_nodes
+                ]
+                capacity_scale = max(capacities, default=0.0)
+                scaled_capacity_total = (
+                    math.fsum(value / capacity_scale for value in capacities)
+                    if capacity_scale > 0.0
+                    else 0.0
+                )
+                total_capacity_raw = capacity_scale * scaled_capacity_total
+                total_capacity = (
+                    total_capacity_raw if math.isfinite(total_capacity_raw) else None
                 )
                 avg_centrality = np.mean(
                     [node.centrality_score for node in coordination_nodes]
                 )
 
-                # Efficiency gain estimate (more coordination nodes = better load distribution)
+                # Bounded coordination-node coverage score (historical field name).
                 efficiency_gain = min(
                     len(coordination_nodes)
                     / len(G.nodes())
@@ -512,7 +627,7 @@ class TNFREmergentCentralizationEngine:
                     1.0,
                 )
 
-                # Stability measure (higher centrality = more stable)
+                # Mean detector centrality score (historical field name).
                 stability_measure = avg_centrality
 
                 # Mathematical basis
@@ -529,9 +644,12 @@ class TNFREmergentCentralizationEngine:
                 }
 
                 # Load distribution across coordination nodes
-                if total_capacity > 0:
+                if scaled_capacity_total > 0.0:
                     load_distribution = {
-                        node.node_id: node.coordination_capacity / total_capacity
+                        node.node_id: (
+                            node.coordination_capacity / capacity_scale
+                        )
+                        / scaled_capacity_total
                         for node in coordination_nodes
                     }
                 else:
@@ -554,9 +672,13 @@ class TNFREmergentCentralizationEngine:
         self, G: Any, objective: str = "efficiency"
     ) -> CentralizationResult:
         """
-        Optimize network centralization for the given objective.
+        Return the highest-scoring recommendation for the requested objective.
+
+        The compatibility method name predates its read-only behavior.
         """
         start_time = time.perf_counter()
+        with self._lock:
+            self.centralization_attempts += 1
 
         # Discover all centralization patterns
         patterns = self.discover_centralization_patterns(G)
@@ -567,9 +689,10 @@ class TNFREmergentCentralizationEngine:
                 optimal_strategy=CentralizationStrategy.SPECTRAL_DOMINANCE,
                 recommended_topology={},
                 performance_improvements={},
-                coordination_efficiency=0.0,
-                fault_tolerance=0.0,
+                coordination_efficiency=None,
+                fault_tolerance=None,
                 execution_time=time.perf_counter() - start_time,
+                diagnostic_scores={},
             )
 
         # Select optimal strategy based on objective
@@ -595,17 +718,22 @@ class TNFREmergentCentralizationEngine:
             },
         }
 
-        # Calculate performance improvements
-        performance_improvements = {
-            "coordination_efficiency": best_pattern.efficiency_gain,
-            "stability_improvement": best_pattern.stability_measure,
-            "load_balance_improvement": float(
-                1.0 - np.var(list(best_pattern.load_distribution.values()))
-            ),
+        # Snapshot scores. No before/after execution is performed here, so the
+        # compatibility improvement fields cannot carry measured claims.
+        load_values = list(best_pattern.load_distribution.values())
+        load_uniformity_score = (
+            float(1.0 - np.var(load_values)) if load_values else None
+        )
+        coordination_redundancy_fraction = len(
+            best_pattern.coordination_nodes
+        ) / max(1, len(G.nodes()))
+        diagnostic_scores = {
+            "coordination_coverage_score": float(best_pattern.efficiency_gain),
+            "centrality_stability_score": float(best_pattern.stability_measure),
+            "load_distribution_uniformity_score": load_uniformity_score,
+            "coordination_redundancy_fraction": coordination_redundancy_fraction,
         }
-
-        # Calculate fault tolerance (redundancy in coordination)
-        fault_tolerance = len(best_pattern.coordination_nodes) / max(1, len(G.nodes()))
+        performance_improvements: dict[str, float | None] = {}
 
         execution_time = time.perf_counter() - start_time
 
@@ -618,18 +746,18 @@ class TNFREmergentCentralizationEngine:
             self.current_coordination_nodes = {
                 node.node_id: node for node in best_pattern.coordination_nodes
             }
-            self.centralization_attempts += 1
-            if best_pattern.efficiency_gain > EMERGENT_EFFICIENCY_GAIN_CANONICAL:
-                self.successful_centralizations += 1
+            # Selection is recorded, but no execution-level success is inferred
+            # from the heuristic coverage score.
 
         return CentralizationResult(
             discovered_patterns=patterns,
             optimal_strategy=best_pattern.strategy,
             recommended_topology=recommended_topology,
             performance_improvements=performance_improvements,
-            coordination_efficiency=best_pattern.efficiency_gain,
-            fault_tolerance=fault_tolerance,
+            coordination_efficiency=None,
+            fault_tolerance=None,
             execution_time=execution_time,
+            diagnostic_scores=diagnostic_scores,
         )
 
     def get_centralization_statistics(self) -> dict[str, Any]:
@@ -641,7 +769,8 @@ class TNFREmergentCentralizationEngine:
             / max(1, self.centralization_attempts),
             "current_coordination_nodes": len(self.current_coordination_nodes),
             "discovered_patterns": len(self.discovered_patterns),
-            "adaptive_topology_enabled": self.enable_adaptive_topology,
+            "adaptive_topology_requested": self.enable_adaptive_topology,
+            "adaptive_topology_applied": False,
             "thresholds": {
                 "centrality": self.centrality_threshold,
                 "coordination": self.coordination_threshold,
@@ -650,8 +779,7 @@ class TNFREmergentCentralizationEngine:
             "available_modules": {
                 "networkx": HAS_NETWORKX,
                 "spectral": HAS_SPECTRAL,
-                "physics_fields": HAS_PHYSICS_FIELDS,
-                "tnfr_engines": HAS_TNFR_ENGINES,
+                "spectral_structural_fusion": HAS_SPECTRAL_STRUCTURAL_FUSION,
             },
         }
 

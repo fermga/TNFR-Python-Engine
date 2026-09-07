@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import (
     Callable,
     Hashable,
@@ -121,6 +122,9 @@ __all__ = (
     "EPIValue",
     "BEPIProtocol",
     "ensure_bepi",
+    "require_finite_real_scalar_epi",
+    "real_scalar_epi",
+    "scalarize_epi",
     "serialize_bepi",
     "serialize_bepi_json",
     "deserialize_bepi_json",
@@ -251,6 +255,10 @@ class BEPIProtocol(Protocol):
         spectral_transform: Callable[[np.ndarray], np.ndarray] | None = None,
     ) -> Any: ...
 
+    def real_scalar_embedding(self) -> float | None: ...
+
+    def scalar_projection(self) -> float: ...
+
 
 EPIValue: TypeAlias = BEPIProtocol
 #: BEPI Primary Information Structure carried by a node.
@@ -271,6 +279,29 @@ def _is_scalar(value: Any) -> bool:
     else:
         scalar_types = (int, float, complex, Real, np_scalar)
     return isinstance(value, scalar_types)
+
+
+def _decode_serialized_bepi_component(values: Any) -> Any:
+    """Decode JSON real/imag entries while leaving native components intact."""
+
+    try:
+        entries = tuple(values)
+    except TypeError:
+        return values
+    decoded: list[Any] = []
+    changed = False
+    for entry in entries:
+        if isinstance(entry, Mapping):
+            try:
+                entry = complex(entry["real"], entry["imag"])
+            except KeyError as exc:
+                raise TNFRValueError(
+                    "Serialized complex EPI entries require 'real' and 'imag'.",
+                    context={"received_keys": list(entry.keys())},
+                ) from exc
+            changed = True
+        decoded.append(entry)
+    return tuple(decoded) if changed else values
 
 
 def ensure_bepi(value: Any) -> "BEPIElement":
@@ -294,7 +325,11 @@ def ensure_bepi(value: Any) -> "BEPIElement":
                 f"Missing '{missing}' key for BEPI serialization.",
                 context={"missing_key": missing, "received_keys": list(value.keys())},
             ) from exc
-        return _BEPIElement(continuous, discrete, grid)
+        return _BEPIElement(
+            _decode_serialized_bepi_component(continuous),
+            _decode_serialized_bepi_component(discrete),
+            grid,
+        )
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
         if len(value) != 3:
             raise TNFRValueError(
@@ -304,6 +339,48 @@ def ensure_bepi(value: Any) -> "BEPIElement":
         continuous, discrete, grid = value
         return _BEPIElement(continuous, discrete, grid)
     raise TypeError(f"Unsupported BEPI value type: {type(value)!r}")
+
+
+def scalarize_epi(value: Any) -> float:
+    """Return the canonical scalar EPI read-out for any BEPI representation.
+
+    Normalising first makes live :class:`BEPIElement` instances and canonical
+    ``continuous/discrete/grid`` storage mappings follow exactly the same rule:
+    uniform real scalar embeddings retain their sign, while genuinely
+    non-scalar or complex elements reduce to their maximum component magnitude.
+    """
+
+    return float(ensure_bepi(value))
+
+
+def real_scalar_epi(value: Any) -> float | None:
+    """Return an exact signed scalar EPI embedding, or ``None`` if richer."""
+
+    return ensure_bepi(value).real_scalar_embedding()
+
+
+def require_finite_real_scalar_epi(value: Any, label: str = "EPI") -> float:
+    """Return a finite signed scalar EPI embedding or raise ``TNFRValueError``.
+
+    Scalar-only diagnostics must not collapse a richer BEPI element to a
+    magnitude, parse textual values, or turn logical state into physical
+    zero/one. This is the shared boundary for those read-outs.
+    """
+
+    numpy_bool = getattr(np, "bool_", None)
+    if isinstance(value, bool) or (
+        numpy_bool is not None and isinstance(value, numpy_bool)
+    ):
+        raise TNFRValueError(f"{label} must be a finite uniform-real EPI value")
+    try:
+        scalar = real_scalar_epi(value)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(
+            f"{label} must be a finite uniform-real EPI value"
+        ) from exc
+    if scalar is None or not math.isfinite(scalar):
+        raise TNFRValueError(f"{label} must be a finite uniform-real EPI value")
+    return float(scalar)
 
 
 def serialize_bepi(value: Any) -> dict[str, tuple[complex, ...] | tuple[float, ...]]:
@@ -385,18 +462,7 @@ def deserialize_bepi_json(
     ... }
     >>> bepi = deserialize_bepi_json(data)  # doctest: +SKIP
     """
-    from .mathematics import BEPIElement as _BEPIElement
-
-    def _dict_to_complex(d: dict[str, float] | float | complex) -> complex:
-        if isinstance(d, dict):
-            return complex(d["real"], d["imag"])
-        return complex(d)
-
-    continuous = [_dict_to_complex(v) for v in data["continuous"]]
-    discrete = [_dict_to_complex(v) for v in data["discrete"]]
-    grid = data["grid"]
-
-    return _BEPIElement(continuous, discrete, grid)
+    return ensure_bepi(data)
 
 
 DeltaNFR: TypeAlias = float

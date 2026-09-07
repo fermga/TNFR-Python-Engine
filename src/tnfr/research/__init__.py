@@ -17,6 +17,7 @@ from .claims import (
     is_valid_transition,
     validate_transition,
 )
+from .core_manifests import CoreExperimentManifest, current_git_source_provenance
 from .evidence_sidecar import EvidenceAdmissionError, EvidenceSidecar
 from .manifests import (
     ExperimentManifest,
@@ -31,6 +32,8 @@ __all__ = [
     "ClaimTransitionError",
     "CircularityAudit",
     "CircularityVerdict",
+    "CoreExperimentManifest",
+    "current_git_source_provenance",
     "ExperimentManifest",
     "EvidenceAdmissionError",
     "EvidenceSidecar",

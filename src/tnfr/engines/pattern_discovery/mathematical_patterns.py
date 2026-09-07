@@ -1,46 +1,29 @@
-"""
-TNFR Emergent Mathematical Pattern Engine
+"""Finite-snapshot mathematical pattern diagnostics for TNFR graphs.
 
-This module implements the natural mathematical patterns that emerge from the
-nodal equation ∂EPI/∂t = νf · ΔNFR(t) at multiple scales.
+The detectors compute graph-spectral fits, amplitude-distribution summaries,
+topology identities, and an order-dependent box-cover heuristic. The nodal
+equation fixes the meanings of EPI, structural frequency, and DeltaNFR; it does
+not by itself imply oscillations, entropy production, conservation under
+topology changes, fractal scaling, prediction skill, or quantum behavior.
 
-Mathematical Discovery:
-Through systematic analysis of the nodal equation, several deep patterns
-emerge:
-
-1. **Natural Eigenmodes**: The equation admits natural oscillatory
-    solutions
-2. **Spectral Resonance Cascades**: Harmonics naturally couple across
-    scales
-3. **Information-Theoretic Structure**: EPI evolution has intrinsic
-    entropy flow
-4. **Topological Invariants**: Network structure creates conservation
-    laws
-5. **Fractal Self-Similarity**: Patterns repeat at multiple temporal
-    scales
-6. **Emergent Symmetries**: Hidden symmetries appear in spectral domain
-
-These patterns enable:
-- Predictive compression of EPI trajectories
-- Automatic detection of critical transitions
-- Natural clustering of equivalent network states
-- Emergent quantum-like interference patterns
-- Self-organizing optimization strategies
-- Mathematical proof techniques for grammar convergence
-
-Status: EMERGENT MATHEMATICAL DISCOVERY ENGINE
+Historical result names are retained for compatibility. Each detector records
+its model scope and uses neutral performance fields unless a quantity is
+actually measured.
 """
 
 import importlib.util
+import math
 import time
-import weakref
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any, Mapping
 
+from ...alias import get_attr
+from ...constants.aliases import ALIAS_EPI
 from ...mathematics.unified_numerical import np
+from ...types import require_finite_real_scalar_epi
 
 # Import canonical constants for Phase 6 magic number elimination
 # Import PHASE 6 EXTENDED Canonical Constants for magic number elimination
@@ -48,17 +31,12 @@ from ..constants.operational import (
     OPT_ORCH_ARITHMETIC_BOOST_CANONICAL,
 )
 from ..constants.operational import (
-    PATTERNS_COMPRESSION_OSCILLATORY_CANONICAL,
-    PATTERNS_COMPRESSION_RATIO_CANONICAL,
     PATTERNS_COMPRESSION_SIGNIFICANT_CANONICAL,
     PATTERNS_CONFIDENCE_BROKEN_CANONICAL,
     PATTERNS_DIVERGENCE_THRESHOLD_CANONICAL,
     PATTERNS_ENTROPY_THRESHOLD_CANONICAL,
     PATTERNS_HIGH_CONFIDENCE_CANONICAL,
-    PATTERNS_HORIZON_LONG_CANONICAL,
-    PATTERNS_HORIZON_MEDIUM_CANONICAL,
     PATTERNS_HORIZON_PREDICTIVE_CANONICAL,
-    PATTERNS_HORIZON_SHORT_CANONICAL,
     PATTERNS_RSQUARED_HIGH_CANONICAL,
     PATTERNS_RSQUARED_THRESHOLD_CANONICAL,
     PATTERNS_SLOPE_MINIMAL_CANONICAL,
@@ -87,12 +65,6 @@ try:
     HAS_SPECTRAL = True
 except ImportError:
     HAS_SPECTRAL = False
-
-# Import GPU-aware mathematics backend for pattern acceleration
-try:
-    HAS_GPU_BACKENDS = True
-except ImportError:
-    HAS_GPU_BACKENDS = False
 
 try:
     from .multi_modal_cache import CacheEntryType, cache_unified_computation
@@ -142,13 +114,8 @@ except ImportError:
 # Helper utilities for detector subsystems (spectral, field, arithmetic)
 # ---------------------------------------------------------------------------
 
-try:
-    _GRAPH_STATE_CACHE: "weakref.WeakKeyDictionary[Any, dict[str, Any]]" = (
-        weakref.WeakKeyDictionary()
-    )
-except Exception:  # pragma: no cover - extremely unlikely
-    _GRAPH_STATE_CACHE = None  # type: ignore
-_GRAPH_STATE_FALLBACK: dict[int, dict[str, Any]] = {}
+_SHARED_FFT_ENGINE: Any | None = None
+
 _ARITHMETIC_CONTEXT: dict[str, Any] | None = None
 if HAS_INTEGRATION_HINTS:
     _INTEGRATION_HINT_MAPPING: dict[str, Any] = {
@@ -172,54 +139,22 @@ else:
     _INTEGRATION_HINT_MAPPING = {}
 
 
-def _graph_cache_for(graph: Any) -> dict[str, Any]:
-    """Return mutable cache bucket for a graph instance."""
-    if _GRAPH_STATE_CACHE is not None:
-        try:
-            cache = _GRAPH_STATE_CACHE.get(graph)
-        except TypeError:
-            cache = None
-        if cache is None:
-            cache = {}
-            try:
-                _GRAPH_STATE_CACHE[graph] = cache
-            except TypeError:
-                # Some lightweight containers (e.g., dict) are not
-                # weak-ref'able
-                pass
-        if cache is not None:
-            return cache
-    key = id(graph)
-    bucket = _GRAPH_STATE_FALLBACK.get(key)
-    if bucket is None:
-        bucket = {}
-        _GRAPH_STATE_FALLBACK[key] = bucket
-    return bucket
-
-
 def _get_spectral_basis(graph: Any) -> tuple[np.ndarray, np.ndarray] | None:
-    """Return (eigenvalues, eigenvectors) with lightweight caching."""
+    """Return a live graph Laplacian basis from the shared spectral reader."""
+
     if not HAS_SPECTRAL:
         return None
-    cache = _graph_cache_for(graph)
-    if "spectral_basis" in cache:
-        return cache["spectral_basis"]
     try:
-        eigenvalues, eigenvectors = get_laplacian_spectrum(graph)
+        return get_laplacian_spectrum(graph)
     except Exception:
         return None
-    cache["spectral_basis"] = (eigenvalues, eigenvectors)
-    return cache["spectral_basis"]
 
 
 def _field_snapshot(graph: Any) -> dict[str, Any]:
-    """Capture structural field telemetry when physics fields are available."""
+    """Capture structural-field telemetry for the current graph state."""
+
     if not HAS_PHYSICS_FIELDS:
         return {}
-    cache = _graph_cache_for(graph)
-    stamp = cache.get("field_snapshot")
-    if stamp is not None and (time.perf_counter() - stamp.get("timestamp", 0)) < 0.25:
-        return stamp
     try:
         phi_s = compute_structural_potential(graph)
         phase_grad = compute_phase_gradient(graph)
@@ -233,37 +168,35 @@ def _field_snapshot(graph: Any) -> dict[str, Any]:
             arr = np.array(values, dtype=float)
         if arr.size == 0:
             return {"mean": 0.0, "std": 0.0, "max": 0.0}
+        if not bool(np.all(np.isfinite(arr))):
+            raise ValueError("structural field snapshot must be finite")
         return {
             "mean": float(np.mean(arr)),
             "std": float(np.std(arr)),
             "max": float(np.max(arr)),
         }
 
-    snapshot = {
+    return {
         "structural_potential": _summaries(phi_s),
         "phase_gradient": _summaries(phase_grad),
         "timestamp": time.perf_counter(),
+        "scope": "live_snapshot",
     }
-    cache["field_snapshot"] = snapshot
-    return snapshot
 
 
 def _get_fft_engine() -> Any | None:
     """Provide a shared FFT dynamics engine instance."""
+
+    global _SHARED_FFT_ENGINE
     if not HAS_FFT_ENGINE:
         return None
-    cache = _GRAPH_STATE_FALLBACK.setdefault(-1, {})  # Global singleton bucket
-    engine = cache.get("fft_engine")
-    if engine is not None:
-        return engine
+    if _SHARED_FFT_ENGINE is not None:
+        return _SHARED_FFT_ENGINE
     try:
-        engine = FFTDynamicsEngine()
+        _SHARED_FFT_ENGINE = FFTDynamicsEngine()
     except Exception:
-        cache["fft_engine"] = None
         return None
-    cache["fft_engine"] = engine
-    return engine
-
+    return _SHARED_FFT_ENGINE
 
 def _arithmetic_context() -> dict[str, Any] | None:
     """Expose canonical arithmetic formalism references."""
@@ -311,37 +244,69 @@ def _augment_signature(
     return enriched
 
 
-def _extract_scalar_epi(val: Any) -> float:
-    """Extract scalar magnitude from potentially complex/dict EPI value."""
-    if isinstance(val, (int, float)):
-        return float(val)
-    if isinstance(val, complex):
-        return float(np.abs(val))
-    if isinstance(val, dict):
-        if "continuous" in val:
-            c = val["continuous"]
-            if isinstance(c, (tuple, list)) and len(c) > 0:
-                v = c[0]
-                return float(np.abs(v)) if isinstance(v, complex) else float(v)
-    return 0.0
+def _node_scalar_epi(G: Any, node: Any) -> float:
+    """Read one finite signed scalar EPI through canonical alias precedence."""
+
+    raw = get_attr(
+        G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
+    )
+    return require_finite_real_scalar_epi(raw, f"node {node!r} EPI")
+
+
+def _finite_nonnegative_mean(values: list[float]) -> float | None:
+    """Return a stable mean, or ``None`` if any value is not representable."""
+
+    if not values:
+        return 0.0
+    if any(value < 0.0 or not math.isfinite(value) for value in values):
+        return None
+    scale = max(values)
+    if scale == 0.0:
+        return 0.0
+    result = scale * math.fsum(value / scale for value in values) / len(values)
+    return result if math.isfinite(result) else None
+
+
+def _finite_squared_norm(values: np.ndarray) -> float | None:
+    """Return the squared Euclidean norm when binary64 can represent it."""
+
+    magnitudes = np.abs(np.asarray(values, dtype=float))
+    if magnitudes.size == 0:
+        return 0.0
+    scale = float(np.max(magnitudes))
+    if scale == 0.0:
+        return 0.0
+    normalized_sum = math.fsum(
+        float(value / scale) ** 2 for value in magnitudes
+    )
+    if scale > math.sqrt(float(np.finfo(float).max) / normalized_sum):
+        return None
+    result = scale * scale * normalized_sum
+    return result if math.isfinite(result) else None
+
+
+def _graph_epi_signal(G: Any) -> np.ndarray:
+    """Return the live signed scalar-EPI chart in graph iteration order."""
+
+    return np.asarray([_node_scalar_epi(G, node) for node in G.nodes()], dtype=float)
 
 
 class EmergentPatternType(Enum):
     """Types of emergent mathematical patterns."""
 
-    # Natural oscillatory modes
+    # Auxiliary graph-wave frequency ratios (historical enum label)
     EIGENMODE_RESONANCE = "eigenmode_resonance"
-    # Multi-scale harmonic coupling
+    # Snapshot spectral power-law fit (historical enum label)
     SPECTRAL_CASCADE = "spectral_cascade"
-    # Information theoretic structure
+    # Snapshot amplitude-distribution structure (historical enum label)
     ENTROPY_FLOW = "entropy_flow"
-    # Network conservation laws
+    # Fixed-topology snapshot identities
     TOPOLOGICAL_INVARIANT = "topological_invariant"
     # Self-similar patterns
     FRACTAL_SCALING = "fractal_scaling"
     # Hidden symmetries
     SYMMETRY_BREAKING = "symmetry_breaking"
-    # Wave-like interference
+    # Historical label for classical wave interference; no quantum-state claim.
     QUANTUM_INTERFERENCE = "quantum_interference"
     # Trajectory compression
     PREDICTIVE_COMPRESSION = "predictive_compression"
@@ -354,12 +319,12 @@ class EmergentPattern:
     """Discovered emergent mathematical pattern."""
 
     pattern_type: EmergentPatternType
-    discovery_confidence: float  # 0.0-1.0
+    discovery_confidence: float  # Detector fit/threshold score in [0, 1]
     mathematical_signature: dict[str, Any]
-    temporal_scale: float  # Characteristic time scale
-    spatial_scale: int  # Characteristic length scale
-    prediction_horizon: float  # How far ahead it can predict
-    compression_ratio: float  # Information compression achieved
+    temporal_scale: float  # Characteristic scale, 0 when not estimated
+    spatial_scale: int
+    prediction_horizon: float | None  # absent unless prediction was evaluated
+    compression_ratio: float | None  # absent unless a compressor was measured
     physical_interpretation: str
     applications: list[str] = field(default_factory=list)
 
@@ -375,18 +340,17 @@ class PatternDiscoveryResult:
     ]
     emergent_optimization_strategies: list[str]
     mathematical_invariants: dict[str, float]
-    compression_potential: float
-    predictive_accuracy: float
+    compression_potential: float | None
+    predictive_accuracy: float | None
     execution_time: float
 
 
 class TNFREmergentPatternEngine:
     """
-    Engine for discovering emergent mathematical patterns in TNFR dynamics.
+    Compute scoped pattern scores from a TNFR graph snapshot.
 
-    This engine analyzes the deep mathematical structure of the nodal
-    equation to discover patterns that emerge naturally at different scales
-    and contexts.
+    Detector confidence is a fit or threshold score, not held-out predictive
+    accuracy. No detector advances the nodal state.
     """
 
     def __init__(
@@ -397,10 +361,9 @@ class TNFREmergentPatternEngine:
         self.enable_caching = enable_caching
         self.analysis_depth = analysis_depth  # "shallow", "medium", "deep"
 
-        # Discovery state
+        # Discovery state. Class methods are live snapshot readers; the
+        # module-level convenience function may use the unified cache.
         self.discovered_patterns = {}
-        self.pattern_cache = {}
-        self.mathematical_invariants = {}
 
         # Performance tracking
         self.total_discoveries = 0
@@ -410,10 +373,11 @@ class TNFREmergentPatternEngine:
         self, G: Any, time_window: float = 10.0, frequency_resolution: int = 100
     ) -> list[EmergentPattern]:
         """
-        Discover natural eigenmode resonances in network dynamics.
+        Find near-harmonic ratios in the auxiliary graph-wave spectrum.
 
-        The nodal equation ∂EPI/∂t = νf · ΔNFR naturally admits oscillatory
-        solutions. These eigenmodes create resonant structures.
+        Laplacian eigenvalues define frequencies for the auxiliary graph-wave
+        comparison. This does not assert oscillatory solutions of the
+        first-order nodal equation.
         """
         patterns = []
 
@@ -461,7 +425,7 @@ class TNFREmergentPatternEngine:
         # Analyze natural frequencies
         natural_frequencies = np.sqrt(np.abs(eigenvalues))
 
-        # Find resonant combinations
+        # Find near-harmonic frequency ratios.
         resonant_pairs = []
         for i, freq1 in enumerate(natural_frequencies):
             for j, freq2 in enumerate(natural_frequencies[i + 1 :], i + 1):
@@ -476,7 +440,7 @@ class TNFREmergentPatternEngine:
                     ):
                         resonant_pairs.append((i, j, freq1, freq2, n, m))
 
-        # Create patterns for each resonance
+        # Create one diagnostic record for each accepted ratio.
         for i, j, freq1, freq2, n, m in resonant_pairs:
             integration_hint = _make_integration_hint(
                 "eigenmode_resonance",
@@ -496,7 +460,10 @@ class TNFREmergentPatternEngine:
                         "mode_indices": (i, j),
                         "frequencies": (freq1, freq2),
                         "harmonic_ratio": (n, m),
-                        "resonance_strength": (abs(freq1 - freq2) / (freq1 + freq2)),
+                        "relative_frequency_separation": (
+                            abs(freq1 - freq2) / (freq1 + freq2)
+                        ),
+                        "model_scope": "auxiliary_graph_wave_snapshot",
                         "coupling_coefficient": float(
                             np.dot(eigenvectors[:, i], eigenvectors[:, j])
                         ),
@@ -512,16 +479,16 @@ class TNFREmergentPatternEngine:
                     else float("inf")
                 ),
                 spatial_scale=node_count,
-                prediction_horizon=time_window,
-                # Can compress oscillatory patterns
-                compression_ratio=PATTERNS_COMPRESSION_RATIO_CANONICAL,
+                prediction_horizon=None,
+                # No compressor is run by this detector.
+                compression_ratio=None,
                 physical_interpretation=(
-                    "Harmonic coupling between modes " f"{i} and {j} with ratio {n}:{m}"
+                    "Near-harmonic auxiliary graph-wave frequencies for modes "
+                    f"{i} and {j} with ratio {n}:{m}"
                 ),
                 applications=[
-                    "resonance_prediction",
-                    "mode_coupling",
-                    "harmonic_analysis",
+                    "auxiliary_wave_mode_comparison",
+                    "harmonic_ratio_analysis",
                 ],
             )
             patterns.append(pattern)
@@ -534,8 +501,8 @@ class TNFREmergentPatternEngine:
         """
         Discover spectral energy cascades across scales.
 
-        Multi-scale coupling in TNFR creates natural energy cascades
-        similar to turbulence but in network-spectral space.
+        Fit a power law to one graph-spectral EPI power distribution. The
+        result is a snapshot fit, not evidence of a temporal energy cascade.
         """
         patterns = []
 
@@ -547,9 +514,7 @@ class TNFREmergentPatternEngine:
             return patterns
 
         # Get current EPI distribution
-        epi_signal = np.array(
-            [_extract_scalar_epi(G.nodes[node].get("EPI", 0.0)) for node in G.nodes()]
-        )
+        epi_signal = _graph_epi_signal(G)
 
         # Get spectral decomposition
         eigenvalues, eigenvectors = spectral_basis
@@ -579,7 +544,7 @@ class TNFREmergentPatternEngine:
                 else:
                     r_squared = np.corrcoef(log_freq, log_energy)[0, 1] ** 2
 
-                # Strong power law indicates cascade
+                # Record a strong snapshot power-law fit.
                 if (
                     r_squared > PATTERNS_RSQUARED_THRESHOLD_CANONICAL
                     and abs(slope) > PATTERNS_SLOPE_THRESHOLD_CANONICAL
@@ -636,7 +601,8 @@ class TNFREmergentPatternEngine:
                                     np.max(frequencies[valid_indices]),
                                 ),
                                 "r_squared": r_squared,
-                                "total_energy": np.sum(energy_spectrum),
+                                "total_spectral_power": np.sum(energy_spectrum),
+                                "model_scope": "graph_spectral_snapshot_fit",
                             },
                             field_snapshot=field_info if field_info else None,
                             fft_signature=fft_signature,
@@ -645,15 +611,14 @@ class TNFREmergentPatternEngine:
                         ),
                         temporal_scale=1.0 / np.max(frequencies[valid_indices]),
                         spatial_scale=len(G.nodes()),
-                        prediction_horizon=PATTERNS_HORIZON_LONG_CANONICAL,
-                        compression_ratio=(PATTERNS_COMPRESSION_OSCILLATORY_CANONICAL),
+                        prediction_horizon=None,
+                        compression_ratio=None,
                         physical_interpretation=(
-                            f"Energy cascade with exponent {slope:.2f}"
+                            f"Snapshot spectral power-law fit with exponent {slope:.2f}"
                         ),
                         applications=[
-                            "energy_prediction",
-                            "cascade_modeling",
-                            "multi_scale_analysis",
+                            "spectral_power_law_fit",
+                            "multi_scale_snapshot_analysis",
                         ],
                     )
                     patterns.append(pattern)
@@ -664,25 +629,27 @@ class TNFREmergentPatternEngine:
         self, G: Any, history_length: int = 10
     ) -> list[EmergentPattern]:
         """
-        Discover information-theoretic patterns in EPI evolution.
+        Compute amplitude entropy and mean edge contrast in one EPI snapshot.
 
-        The nodal equation has natural entropy production and flow.
+        A single state contains no entropy-production or temporal-flow evidence.
         """
         patterns = []
         node_count = len(G.nodes()) if hasattr(G, "nodes") else 0
-        if node_count == 0:
+        if node_count < 2:
             return patterns
         max_entropy = np.log(node_count)
 
         # Extract current state entropy
-        epi_values = [
-            _extract_scalar_epi(G.nodes[node].get("EPI", 0.0)) for node in G.nodes()
-        ]
-        epi_array = np.array(epi_values)
+        epi_array = _graph_epi_signal(G)
 
-        # Normalize to probability distribution
-        if np.sum(np.abs(epi_array)) > 0:
-            prob_dist = np.abs(epi_array) / np.sum(np.abs(epi_array))
+        # Normalize magnitudes after scaling, so several maximum finite
+        # EPI coordinates cannot overflow the intermediate sum.
+        epi_magnitudes = np.abs(epi_array)
+        magnitude_scale = float(np.max(epi_magnitudes, initial=0.0))
+        if magnitude_scale > 0.0:
+            scaled_magnitudes = epi_magnitudes / magnitude_scale
+            scaled_total = math.fsum(float(value) for value in scaled_magnitudes)
+            prob_dist = scaled_magnitudes / scaled_total
 
             # Compute Shannon entropy
             entropy = -np.sum(prob_dist * np.log(prob_dist + 1e-12))
@@ -693,15 +660,15 @@ class TNFREmergentPatternEngine:
 
             # Analyze entropy gradient across network
             if HAS_NETWORKX:
-                entropy_gradient = 0.0
+                edge_contrasts = []
                 for edge in G.edges():
                     u, v = edge
-                    epi_u = _extract_scalar_epi(G.nodes[u].get("EPI", 0.0))
-                    epi_v = _extract_scalar_epi(G.nodes[v].get("EPI", 0.0))
-                    entropy_gradient += abs(epi_u - epi_v)
-                entropy_gradient /= len(G.edges()) if len(G.edges()) > 0 else 1
+                    epi_u = _node_scalar_epi(G, u)
+                    epi_v = _node_scalar_epi(G, v)
+                    edge_contrasts.append(abs(epi_u - epi_v))
+                entropy_gradient = _finite_nonnegative_mean(edge_contrasts)
 
-                # Strong entropy flow indicates information-theoretic structure
+                # Record a nonuniform amplitude-distribution diagnostic.
                 if (
                     entropy > PATTERNS_ENTROPY_THRESHOLD_CANONICAL
                     and kl_divergence > PATTERNS_DIVERGENCE_THRESHOLD_CANONICAL
@@ -712,7 +679,7 @@ class TNFREmergentPatternEngine:
                         {
                             "entropy": float(entropy),
                             "kl_divergence": float(kl_divergence),
-                            "edge_entropy_gradient": float(entropy_gradient),
+                            "mean_edge_epi_contrast": entropy_gradient,
                         },
                     )
                     pattern = EmergentPattern(
@@ -722,25 +689,25 @@ class TNFREmergentPatternEngine:
                             {
                                 "shannon_entropy": entropy,
                                 "kl_divergence": kl_divergence,
-                                "entropy_gradient": entropy_gradient,
+                                "mean_edge_epi_contrast": entropy_gradient,
                                 "max_entropy": max_entropy,
-                                "entropy_efficiency": entropy / max_entropy,
-                                "information_density": np.sum(epi_array**2),
+                                "normalized_amplitude_entropy": entropy / max_entropy,
+                                "temporal_evidence": False,
+                                "squared_epi_norm": _finite_squared_norm(epi_array),
                             },
                             field_snapshot=field_info if field_info else None,
                             integration_hint=integration_hint,
                         ),
                         temporal_scale=1.0,
                         spatial_scale=int(np.sqrt(node_count)),
-                        prediction_horizon=PATTERNS_HORIZON_MEDIUM_CANONICAL,
-                        compression_ratio=entropy / max_entropy,
+                        prediction_horizon=None,
+                        compression_ratio=None,
                         physical_interpretation=(
-                            "Information flow with entropy production"
+                            "Snapshot amplitude entropy with mean edge EPI contrast"
                         ),
                         applications=[
-                            "information_theory",
-                            "compression",
-                            "prediction",
+                            "amplitude_distribution_analysis",
+                            "snapshot_comparison",
                         ],
                     )
                     patterns.append(pattern)
@@ -749,9 +716,10 @@ class TNFREmergentPatternEngine:
 
     def discover_topological_invariants(self, G: Any) -> list[EmergentPattern]:
         """
-        Discover topological invariants that constrain TNFR evolution.
+        Report identities and descriptors of the current graph topology.
 
-        Network topology creates conservation laws for certain quantities.
+        They remain fixed only while topology is held fixed; this detector does
+        not establish a conservation law for topology-changing dynamics.
         """
         patterns = []
 
@@ -762,7 +730,7 @@ class TNFREmergentPatternEngine:
         num_nodes = len(G.nodes())
         num_edges = len(G.edges())
 
-        # Euler characteristic for planar graphs
+        # Euler characteristic of the graph as a 1D cell complex.
         if num_nodes > 2:
             try:
                 # Attempt to compute number of faces for planar graphs
@@ -796,11 +764,10 @@ class TNFREmergentPatternEngine:
                         spectral_determinant = (
                             float(np.exp(log_det))
                             if log_det <= max_log
-                            else float("inf")
+                            else None
                         )
 
-                    # Check if invariants are preserved (they should be for
-                    # topology)
+                    # Verify the Laplacian trace identity for this snapshot.
                     degree_sum_check = abs(spectral_trace - np.sum(degrees)) < 1e-10
 
                     if degree_sum_check:
@@ -809,7 +776,7 @@ class TNFREmergentPatternEngine:
                             discovery_confidence=1.0,
                             mathematical_signature={
                                 "euler_characteristic": euler_char,
-                                "degree_sequence_invariant": (
+                                "normalized_degree_second_moment": (
                                     degree_sequence_invariant
                                 ),
                                 "spectral_trace": spectral_trace,
@@ -818,18 +785,20 @@ class TNFREmergentPatternEngine:
                                 "diameter": (
                                     nx.diameter(G)
                                     if nx.is_connected(G)
-                                    else float("inf")
+                                    else None
                                 ),
                             },
-                            temporal_scale=float("inf"),
+                            temporal_scale=0.0,
                             spatial_scale=num_nodes,
-                            prediction_horizon=float("inf"),
-                            compression_ratio=float("inf"),
-                            physical_interpretation=("Topological conservation law"),
+                            prediction_horizon=None,
+                            compression_ratio=None,
+                            physical_interpretation=(
+                                "Fixed-topology graph identities and descriptors"
+                            ),
                             applications=[
                                 "invariant_checking",
                                 "topology_verification",
-                                "conservation_laws",
+                                "fixed_topology_identity_checks",
                             ],
                         )
                         patterns.append(pattern)
@@ -845,7 +814,8 @@ class TNFREmergentPatternEngine:
         """
         Discover fractal self-similarity in network structure.
 
-        TNFR dynamics can exhibit fractal patterns across multiple scales.
+        Apply a greedy, node-order-dependent box-cover scaling heuristic to the
+        current graph. A good fit is evidence for this estimator only.
         """
         patterns = []
 
@@ -926,15 +896,15 @@ class TNFREmergentPatternEngine:
                     },
                     temporal_scale=1.0,
                     spatial_scale=int(np.mean(scales)),
-                    prediction_horizon=PATTERNS_HORIZON_SHORT_CANONICAL,
-                    compression_ratio=len(G.nodes()) / len(box_counts),
+                    prediction_horizon=None,
+                    compression_ratio=None,
                     physical_interpretation=(
-                        f"Fractal scaling with dimension {fractal_dim:.2f}"
+                        "Greedy box-cover scaling fit with estimated dimension "
+                        f"{fractal_dim:.2f}"
                     ),
                     applications=[
-                        "fractal_analysis",
-                        "multi_scale_modeling",
-                        "dimension_reduction",
+                        "greedy_box_cover_diagnostic",
+                        "multi_scale_snapshot_analysis",
                     ],
                 )
                 patterns.append(pattern)
@@ -947,7 +917,9 @@ class TNFREmergentPatternEngine:
         """
         Analyze interactions between discovered patterns.
 
-        Patterns can reinforce or interfere with each other.
+        Score pairwise overlap of reported spatial and temporal scales.
+
+        The score is descriptive and does not establish causal interaction.
         """
         interactions = {}
 
@@ -998,65 +970,41 @@ class TNFREmergentPatternEngine:
         # Analyze pattern interactions
         pattern_interactions = self.analyze_pattern_interactions(all_patterns)
 
-        # Generate emergent optimization strategies
+        # Promote performance strategies only when a detector explicitly
+        # carries measured compressor or prediction evidence. Built-in snapshot
+        # detectors currently carry neither.
         optimization_strategies = []
         for pattern in all_patterns:
-            if pattern.compression_ratio > PATTERNS_COMPRESSION_SIGNIFICANT_CANONICAL:
+            signature = pattern.mathematical_signature
+            if (
+                signature.get("compression_evaluated") is True
+                and pattern.compression_ratio is not None
+                and pattern.compression_ratio
+                > PATTERNS_COMPRESSION_SIGNIFICANT_CANONICAL
+            ):
                 optimization_strategies.append(
                     f"compress_using_{pattern.pattern_type.value}"
                 )
-            if pattern.prediction_horizon > PATTERNS_HORIZON_PREDICTIVE_CANONICAL:
+            if (
+                signature.get("prediction_evaluated") is True
+                and pattern.prediction_horizon is not None
+                and pattern.prediction_horizon > PATTERNS_HORIZON_PREDICTIVE_CANONICAL
+            ):
                 optimization_strategies.append(
                     f"predict_using_{pattern.pattern_type.value}"
                 )
 
-        # Compute mathematical invariants
-        invariants = {}
+        # Aggregate detector outputs without relabelling scores as measured
+        # compression or out-of-sample prediction accuracy.
+        invariants: dict[str, float] = {}
         if all_patterns:
-            compression_ratios = np.asarray(
-                [p.compression_ratio for p in all_patterns],
-                dtype=float,
-            )
-            # Robust multiplicative aggregation:
-            # - explicit inf propagation (some pattern classes intentionally set
-            #   compression_ratio = inf for idealized limits)
-            # - avoid overflow warnings from direct np.prod on large/infinite
-            #   factors by operating in log-domain for finite positive values
-            if np.any(np.isinf(compression_ratios)):
-                total_compression = float("inf")
-            elif np.any(compression_ratios == 0.0):
-                total_compression = 0.0
-            else:
-                safe_ratios = np.clip(
-                    compression_ratios,
-                    np.finfo(float).tiny,
-                    np.finfo(float).max,
-                )
-                log_total = float(np.sum(np.log(safe_ratios)))
-                max_log = float(np.log(np.finfo(float).max))
-                total_compression = (
-                    float(np.exp(log_total)) if log_total <= max_log else float("inf")
-                )
-
-            invariants["total_compression"] = total_compression
-            invariants["max_prediction_horizon"] = np.max(
-                [p.prediction_horizon for p in all_patterns]
-            )
-            invariants["average_confidence"] = np.mean(
-                [p.discovery_confidence for p in all_patterns]
+            invariants["pattern_count"] = float(len(all_patterns))
+            invariants["mean_detection_score"] = float(
+                np.mean([p.discovery_confidence for p in all_patterns])
             )
 
-        # Overall metrics
-        compression_potential = (
-            np.mean([p.compression_ratio for p in all_patterns])
-            if all_patterns
-            else 1.0
-        )
-        predictive_accuracy = (
-            np.mean([p.discovery_confidence for p in all_patterns])
-            if all_patterns
-            else 0.0
-        )
+        compression_potential = None
+        predictive_accuracy = None
 
         execution_time = time.perf_counter() - start_time
 
@@ -1080,9 +1028,12 @@ class TNFREmergentPatternEngine:
         return {
             "total_discoveries": self.total_discoveries,
             "pattern_counts": dict(self.pattern_statistics),
-            "cached_patterns": len(self.pattern_cache),
+            "cached_patterns": 0,
             "analysis_depth": self.analysis_depth,
-            "caching_enabled": self.enable_caching,
+            "analysis_depth_applied": False,
+            "caching_enabled": False,
+            "caching_requested": self.enable_caching,
+            "cache_scope": "module_convenience_function" if HAS_UNIFIED_CACHE else None,
             "available_modules": {
                 "scipy": HAS_SCIPY,
                 "spectral": HAS_SPECTRAL,
@@ -1143,7 +1094,11 @@ class TNFREmergentPatternEngine:
         raise ValueError rather than being serialized as misleading strings.
         """
         from datetime import datetime, timezone
-        from ..manifest import collect_manifest_telemetry, write_manifest_bundle
+        from ..manifest import (
+            collect_manifest_telemetry,
+            finite_json_state,
+            write_manifest_bundle,
+        )
 
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -1157,21 +1112,25 @@ class TNFREmergentPatternEngine:
         # Serialize discovered patterns
         patterns_serialized = []
         for pattern in discovery_result.discovered_patterns:
-            pattern_data = {
-                "pattern_type": pattern.pattern_type.value,
-                "confidence": float(pattern.discovery_confidence),
-                "temporal_scale": float(pattern.temporal_scale),
-                "spatial_scale": float(pattern.spatial_scale),
-                "prediction_horizon": float(pattern.prediction_horizon),
-                "compression_ratio": float(pattern.compression_ratio),
-                "physical_interpretation": pattern.physical_interpretation,
-                "applications": pattern.applications,
-                "mathematical_signature": {
-                    k: float(v) if isinstance(v, (int, float, np.number)) else str(v)
-                    for k, v in pattern.mathematical_signature.items()
-                    if not k.startswith("_")
-                },
+            public_signature = {
+                key: value
+                for key, value in pattern.mathematical_signature.items()
+                if not key.startswith("_")
             }
+            pattern_data = finite_json_state(
+                {
+                    "pattern_type": pattern.pattern_type.value,
+                    "confidence": pattern.discovery_confidence,
+                    "temporal_scale": pattern.temporal_scale,
+                    "spatial_scale": pattern.spatial_scale,
+                    "prediction_horizon": pattern.prediction_horizon,
+                    "compression_ratio": pattern.compression_ratio,
+                    "physical_interpretation": pattern.physical_interpretation,
+                    "applications": pattern.applications,
+                    "mathematical_signature": public_signature,
+                },
+                f"discovered_patterns.{pattern.pattern_type.value}",
+            )
             patterns_serialized.append(pattern_data)
 
         # Build manifest
@@ -1187,12 +1146,11 @@ class TNFREmergentPatternEngine:
             "discovered_patterns": patterns_serialized,
             "discovery_statistics": self._serialize_discovery_statistics(),
             "emergent_optimization_strategies": discovery_result.emergent_optimization_strategies,
-            "mathematical_invariants": {
-                k: float(v) if isinstance(v, (int, float, np.number)) else str(v)
-                for k, v in discovery_result.mathematical_invariants.items()
-            },
-            "compression_potential": float(discovery_result.compression_potential),
-            "predictive_accuracy": float(discovery_result.predictive_accuracy),
+            "mathematical_invariants": finite_json_state(
+                discovery_result.mathematical_invariants, "mathematical_invariants"
+            ),
+            "compression_potential": discovery_result.compression_potential,
+            "predictive_accuracy": discovery_result.predictive_accuracy,
         }
 
         # Write summary
@@ -1202,8 +1160,8 @@ class TNFREmergentPatternEngine:
             "pattern_count": len(patterns_serialized),
             "coherence": telemetry.get("coherence"),
             "sense_index": telemetry.get("sense_index"),
-            "compression_potential": float(discovery_result.compression_potential),
-            "predictive_accuracy": float(discovery_result.predictive_accuracy),
+            "compression_potential": discovery_result.compression_potential,
+            "predictive_accuracy": discovery_result.predictive_accuracy,
         }
         return write_manifest_bundle(
             output_dir, "pattern_manifest.json", "pattern_summary.json",
@@ -1233,7 +1191,7 @@ def discover_mathematical_patterns(G: Any, **kwargs) -> PatternDiscoveryResult:
 
 
 def analyze_emergent_symmetries(G: Any) -> dict[str, Any]:
-    """Analyze emergent symmetries in TNFR dynamics."""
+    """Collect snapshot patterns with symmetry-related graph descriptors."""
     engine = create_emergent_pattern_engine()
     result = engine.discover_all_patterns(G)
 
@@ -1256,9 +1214,11 @@ def analyze_emergent_symmetries(G: Any) -> dict[str, Any]:
             for p in symmetry_patterns
             if p.discovery_confidence < PATTERNS_CONFIDENCE_BROKEN_CANONICAL
         ],
-        "conservation_laws": [
+        "fixed_topology_identities": [
             p
             for p in symmetry_patterns
             if p.pattern_type == EmergentPatternType.TOPOLOGICAL_INVARIANT
         ],
+        # Compatibility key: no dynamical conservation law is established here.
+        "conservation_laws": [],
     }

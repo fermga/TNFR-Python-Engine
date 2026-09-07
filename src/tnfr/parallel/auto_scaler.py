@@ -1,12 +1,16 @@
-"""Auto-scaling and execution strategy recommendation for TNFR computations.
+"""Evidence-neutral execution-strategy recommendations for TNFR computations.
 
-Recommends optimal execution strategies based on network size, available
-resources, and hardware capabilities.
+The size thresholds in this module are configuration policy. They do not
+constitute benchmark evidence and therefore do not produce time, memory, or
+speedup estimates.
 """
 
 from __future__ import annotations
 
+import math
 from multiprocessing import cpu_count
+from numbers import Real
+from operator import index as integer_index
 from typing import Any
 
 # ---------------------------------------------------------------------------
@@ -16,11 +20,25 @@ _PARALLELIZATION_EFFICIENCY_ALERT = 0.5
 _MEMORY_EFFICIENCY_CRITICAL = 0.1
 
 
-class TNFRAutoScaler:
-    """Auto-scaler for TNFR parallel execution strategies.
+def _finite_nonnegative_metric(metrics: dict[str, Any], name: str) -> float | None:
+    """Read one finite nonnegative observation without inventing evidence."""
 
-    Analyzes network characteristics and system resources to recommend optimal
-    execution strategies (sequential, multiprocessing, GPU, or distributed).
+    value = metrics.get(name)
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, Real)
+        or not math.isfinite(float(value))
+        or float(value) < 0.0
+    ):
+        return None
+    return float(value)
+
+
+class TNFRAutoScaler:
+    """Apply a deterministic size policy to choose an execution strategy.
+
+    The recommendation preserves the legacy result keys but reports performance
+    estimates as None until a measured calibration interface is supplied.
 
     Examples
     --------
@@ -31,7 +49,9 @@ class TNFRAutoScaler:
     ...     available_memory_gb=8.0,
     ...     has_gpu=False
     ... )
-    >>> strategy['backend'] in ['sequential', 'multiprocessing']
+    >>> strategy["backend"] in ["sequential", "multiprocessing"]
+    True
+    >>> strategy["estimated_time_minutes"] is None
     True
     """
 
@@ -45,201 +65,144 @@ class TNFRAutoScaler:
         available_memory_gb: float = 8.0,
         has_gpu: bool = False,
     ) -> dict[str, Any]:
-        """Recommend optimal execution strategy for given configuration.
+        """Recommend an execution route under the configured size policy.
 
         Parameters
         ----------
         graph_size : int
-            Number of nodes in the network
+            Number of nodes in the network.
         available_memory_gb : float, default=8.0
-            Available system memory in gigabytes
+            Retained for API compatibility. It cannot be compared with an
+            estimate until measured memory evidence is available.
         has_gpu : bool, default=False
-            Whether GPU acceleration is available
+            Caller-declared GPU availability. It does not certify an
+            accelerated TNFR kernel or a speedup.
 
         Returns
         -------
         dict[str, Any]
-            Strategy recommendation with keys:
-            - backend: str (sequential/multiprocessing/gpu/distributed)
-            - workers: int (recommended worker count)
-            - explanation: str (reasoning)
-            - estimated_time_minutes: float (expected duration)
-            - estimated_memory_gb: float (expected memory usage)
+            Strategy recommendation with keys for the selected backend, worker
+            count, policy explanation, explicit performance-evidence status,
+            and nullable time and memory estimates.
 
         Notes
         -----
-        Strategy selection follows TNFR-aware heuristics:
-        - Small networks (<100): Sequential is fastest (overhead dominates)
-        - Medium networks (100-1000): Multiprocessing optimal
-        - Large networks (1000-10000) with GPU: Vectorized GPU
-        - Massive networks (>10000): Distributed computation required
+        Strategy selection follows configured size thresholds. These thresholds
+        are routing policy rather than measured performance claims.
         """
+        if isinstance(graph_size, bool):
+            raise TypeError("graph_size must be a nonnegative integer")
+        try:
+            graph_size = integer_index(graph_size)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise TypeError("graph_size must be a nonnegative integer") from exc
+        if graph_size < 0:
+            raise ValueError("graph_size must be a nonnegative integer")
+        if not isinstance(has_gpu, bool):
+            raise TypeError("has_gpu must be a boolean availability observation")
+        if (
+            isinstance(available_memory_gb, bool)
+            or not isinstance(available_memory_gb, Real)
+            or not math.isfinite(float(available_memory_gb))
+            or float(available_memory_gb) < 0.0
+        ):
+            raise ValueError("available_memory_gb must be finite and nonnegative")
+
         strategy: dict[str, Any] = {}
 
-        # Select backend based on size
         if graph_size < 100:
             strategy["backend"] = "sequential"
             strategy["workers"] = 1
             strategy["explanation"] = (
-                "Small network - sequential processing fastest due to overhead"
+                "Configured small-network policy selects sequential execution"
             )
-
         elif graph_size < 1000:
             strategy["backend"] = "multiprocessing"
-            strategy["workers"] = min(cpu_count(), graph_size // 50)
+            strategy["workers"] = max(1, min(cpu_count(), graph_size // 50))
             strategy["explanation"] = (
-                "Medium network - multiprocessing provides optimal speedup"
+                "Configured medium-network policy selects multiprocessing"
             )
-
-        elif graph_size < 10000 and has_gpu:
-            strategy["backend"] = "gpu"
-            strategy["workers"] = 1
-            strategy["gpu_engine"] = "jax"
-            strategy["explanation"] = (
-                "Large network with GPU - vectorized acceleration available"
-            )
-            strategy["use_gpu_strategies"] = True
-            strategy["preferred_operators"] = [
-                "AL",
-                "RA",
-            ]  # Matrix-intensive operations
-
         else:
             strategy["backend"] = "distributed"
-            strategy["workers"] = cpu_count() * 2
-            strategy["chunk_size"] = min(500, graph_size // 20)
+            strategy["workers"] = max(1, cpu_count() * 2)
+            strategy["chunk_size"] = max(1, min(500, graph_size // 20))
             strategy["explanation"] = (
-                "Massive network - distributed computation recommended"
+                "Configured large-network policy selects the distributed wrapper"
             )
 
-        # Estimate memory requirements
-        estimated_memory = self._estimate_memory_usage(graph_size, strategy["backend"])
-        strategy["estimated_memory_gb"] = estimated_memory
+        # Hardware presence does not establish a semantically compatible graph
+        # kernel. Keep the legacy routing hints explicit and inactive until one
+        # is supplied and benchmarked for the requested workload.
+        strategy["declared_gpu_available"] = has_gpu
+        strategy["use_gpu_strategies"] = False
+        strategy["preferred_operators"] = []
+        strategy["gpu_route_reason"] = (
+            "no_verified_generic_tnfr_graph_kernel"
+            if has_gpu
+            else "gpu_not_declared_available"
+        )
 
-        # Check memory constraints
-        if estimated_memory > available_memory_gb * 0.8:
-            strategy["warning"] = (
-                f"Estimated memory ({estimated_memory:.1f}GB) may exceed "
-                f"available memory ({available_memory_gb:.1f}GB)"
-            )
-            strategy["recommendation"] = (
-                "Consider distributed backend or smaller partition sizes"
-            )
-
-        # Estimate execution time
-        estimated_time = self._estimate_execution_time(graph_size, strategy["backend"])
-        strategy["estimated_time_minutes"] = estimated_time
-
+        # Graph size and a backend label cannot establish memory or runtime.
+        # Keep the historical keys so callers can handle explicit abstention.
+        strategy["estimated_memory_gb"] = self._estimate_memory_usage(
+            graph_size, strategy["backend"]
+        )
+        strategy["estimated_time_minutes"] = self._estimate_execution_time(
+            graph_size, strategy["backend"]
+        )
+        strategy["performance_evidence"] = "not_measured"
         return strategy
 
-    def _estimate_memory_usage(self, graph_size: int, backend: str) -> float:
-        """Estimate memory usage in gigabytes.
+    def _estimate_memory_usage(self, graph_size: int, backend: str) -> None:
+        """Return no estimate when no measured memory model is available.
 
-        Parameters
-        ----------
-        graph_size : int
-            Number of nodes
-        backend : str
-            Execution backend
-
-        Returns
-        -------
-        float
-            Estimated memory in GB
+        The arguments remain in this private signature for compatibility with
+        existing subclasses.
         """
-        # Base memory: ~1KB per node for attributes
-        base_memory_gb = graph_size * 0.001 / 1024
+        del graph_size, backend
+        return None
 
-        # Backend multipliers account for overhead
-        backend_multipliers = {
-            "sequential": 1.0,
-            "multiprocessing": 1.5,  # Serialization overhead
-            "gpu": 2.0,  # GPU + CPU copies
-            "distributed": 1.2,  # Network overhead minimal
-        }
+    def _estimate_execution_time(self, graph_size: int, backend: str) -> None:
+        """Return no estimate when no measured timing model is available.
 
-        multiplier = backend_multipliers.get(backend, 1.0)
-        return base_memory_gb * multiplier
-
-    def _estimate_execution_time(self, graph_size: int, backend: str) -> float:
-        """Estimate execution time in minutes.
-
-        Parameters
-        ----------
-        graph_size : int
-            Number of nodes
-        backend : str
-            Execution backend
-
-        Returns
-        -------
-        float
-            Estimated time in minutes
-
-        Notes
-        -----
-        Based on empirical observations. Actual times depend on:
-        - Network density (edges per node)
-        - Operator complexity
-        - Hardware specifications
-        - Cache efficiency
+        The arguments remain in this private signature for compatibility with
+        existing subclasses.
         """
-        # Base time per 1000 nodes (calibrated with benchmarks)
-        base_time_per_1k = {
-            "sequential": 2.0,  # 2 min per 1000 nodes
-            "multiprocessing": 0.5,  # 4x speedup typical
-            "gpu": 0.1,  # 20x speedup on modern GPUs
-            "distributed": 0.2,  # 10x speedup with cluster
-        }
-
-        time_factor = base_time_per_1k.get(backend, 2.0)
-        return (graph_size / 1000.0) * time_factor
+        del graph_size, backend
+        return None
 
     def get_optimization_suggestions(
         self, performance_metrics: dict[str, Any]
     ) -> list[str]:
-        """Generate optimization suggestions based on observed performance.
-
-        Parameters
-        ----------
-        performance_metrics : dict[str, Any]
-            Performance data from execution monitoring
-
-        Returns
-        -------
-        list[str]
-            list of actionable optimization suggestions
-        """
+        """Generate suggestions from supplied, observed performance metrics."""
         suggestions = []
 
-        # Check parallelization efficiency
-        if "parallelization_efficiency" in performance_metrics:
-            eff = performance_metrics["parallelization_efficiency"]
-            if eff < _PARALLELIZATION_EFFICIENCY_ALERT:
-                suggestions.append(
-                    "⚡ Low parallelization efficiency - consider reducing "
-                    "worker count or increasing partition size"
-                )
+        eff = _finite_nonnegative_metric(
+            performance_metrics, "parallelization_efficiency"
+        )
+        if eff is not None and eff < _PARALLELIZATION_EFFICIENCY_ALERT:
+            suggestions.append(
+                "⚡ Low parallelization efficiency - consider reducing "
+                "worker count or increasing partition size"
+            )
 
-        # Check memory usage
-        if "memory_efficiency" in performance_metrics:
-            mem_eff = performance_metrics["memory_efficiency"]
-            if mem_eff < _MEMORY_EFFICIENCY_CRITICAL:
-                suggestions.append(
-                    "💾 High memory usage - consider distributed execution "
-                    "or memory optimization"
-                )
+        mem_eff = _finite_nonnegative_metric(performance_metrics, "memory_efficiency")
+        if mem_eff is not None and mem_eff < _MEMORY_EFFICIENCY_CRITICAL:
+            suggestions.append(
+                "💾 High memory usage - consider distributed execution "
+                "or memory optimization"
+            )
 
-        # Check throughput
-        if "operations_per_second" in performance_metrics:
-            ops = performance_metrics["operations_per_second"]
-            if ops < 100:
-                suggestions.append(
-                    "📈 Low throughput - consider GPU backend or algorithm "
-                    "optimization"
-                )
+        ops = _finite_nonnegative_metric(performance_metrics, "operations_per_second")
+        if ops is not None and ops < 100:
+            suggestions.append(
+                "📈 Low throughput - profile supported backends and "
+                "algorithm choices"
+            )
 
         if not suggestions:
-            suggestions.append("✨ Performance looks optimal!")
+            suggestions.append(
+                "No threshold-based suggestion was triggered by the supplied metrics"
+            )
 
         return suggestions

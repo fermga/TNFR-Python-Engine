@@ -1,10 +1,11 @@
 r"""Y3 non-Abelian derivability audit for TNFR structural gauges.
 
-The current canonical TNFR gauge sector is the local U(1) symmetry of the
-complex geometric field Ψ = K_φ + i·J_φ.  This module audits whether a
-non-Abelian / multi-channel gauge sector can be derived from TNFR-internal
-structures without importing external group labels, hand-selected generators,
-or non-canonical per-node parameters.
+The complex diagnostic field Ψ = K_φ + i·J_φ admits an auxiliary local U(1)
+coordinate rotation.  Its derived scalar connection `A=d(arg Ψ)` is pure gauge;
+it is not an independently dynamical canonical gauge sector.  This module
+audits whether an Abelian or non-Abelian multi-channel gauge sector can instead
+be derived from TNFR-internal structures without importing external group
+labels, hand-selected generators, or non-canonical per-node parameters.
 
 The expected conservative verdict is ``OPEN_DERIVABILITY_GAP`` unless a route
 simultaneously supplies:
@@ -57,7 +58,13 @@ class NonAbelianCandidateAudit:
 
 @dataclass(frozen=True)
 class NonAbelianDerivabilityReport:
-    """Y3 report for non-Abelian derivability from TNFR data only."""
+    """Y3 report for non-Abelian derivability from TNFR data only.
+
+    ``canonical_gauge_group`` and ``u1_baseline_confirmed`` are legacy public
+    field names.  In current scope they describe the auxiliary scalar U(1)
+    coordinate model and its pure-gauge connection, not a canonical gauge
+    dynamics of the nodal equation.
+    """
 
     canonical_gauge_group: str
     u1_baseline_confirmed: bool
@@ -121,9 +128,15 @@ def audit_nonabelian_derivability(
         else "OPEN_DERIVABILITY_GAP"
     )
     summary = {
+        # Compatibility key: this names the auxiliary coordinate group, not a
+        # canonical independent gauge sector.
         "canonical_gauge_group": "U(1)",
+        "gauge_scope": "auxiliary_scalar_u1_pure_gauge_coordinate_model",
+        "connection_is_pure_gauge": True,
         "internal_field_rank": evidence["internal_field_rank"],
         "connection_scalar": evidence["connection_scalar"],
+        "cycle_closure_residual_scalar": evidence["curvature_scalar"],
+        # Historical compatibility key.
         "curvature_scalar": evidence["curvature_scalar"],
         "cycle_rank": evidence["cycle_rank"],
         "nested_epi_nodes": evidence["nested_epi_nodes"],

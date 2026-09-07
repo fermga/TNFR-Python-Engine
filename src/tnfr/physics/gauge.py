@@ -1,106 +1,52 @@
-r"""TNFR Gauge Structure — Local U(1) Symmetry of the Complex Geometric Field.
+r"""Auxiliary U(1) field-coordinate diagnostics for TNFR snapshots.
 
-This module derives and implements the **gauge structure** of the TNFR
-complex geometric field Ψ = K_φ + i·J_φ, establishing that the nodal
-dynamics possess a local U(1) symmetry with deep physical consequences.
+The complex read-out Ψ = K_φ + i·J_φ admits a nodewise rotation
 
-MAIN RESULT (Structural Gauge Theorem)
-=======================================
-The complex geometric field Ψ = K_φ + i·J_φ admits a **local U(1) gauge
-symmetry**:
+    Ψ(i) → exp(i α(i)) Ψ(i).
 
-    Ψ(i) → e^{iα(i)} Ψ(i)
+Local quadratic identities then preserve |Ψ|, the corresponding contribution
+to the snapshot energy, and the two bilinear norms exposed below.  This is an
+algebraic symmetry of the auxiliary field coordinates.  It does not establish
+a gauge symmetry of the nodal equation or of the 13 engine operators.
 
-under which the following quantities are **exactly gauge-invariant**:
+The public connection has a particularly restricted definition:
 
-1. **Energy density** ℰ(i) = Φ_s² + |∇φ|² + |Ψ|² + J_ΔNFR²
-2. **Field magnitude** |Ψ(i)|² = K_φ² + J_φ²
-3. **Coherence** C(t) (depends on ΔNFR/phase, not Ψ internal angle)
-4. **Topological norm** |𝒯|² = 𝒬² + 𝒬̃²
-5. **Chirality norm** |𝒳|² = χ² + χ̃²
+    A_ij = wrap(arg Ψ(j) - arg Ψ(i)).
 
-While the following transform as **U(1) multiplets** (NOT invariant):
+It is the wrapped discrete differential of a vertex phase and is therefore a
+pure-gauge connection.  Its cycle holonomy F_C vanishes analytically modulo
+2π.  ``compute_gauge_curvature`` retains the historical name and reports only
+floating-point closure residuals for this connection; those residuals are not
+independent curvature, vortices, flux, or confinement.  The legacy
+``strong_like`` channel likewise records a closure-residual score and is not a
+derived physical interaction sector.
 
-- 𝒬 and 𝒬̃ = K_φ·|∇φ| + J_φ·J_ΔNFR  rotate as a doublet
-- χ and χ̃ = |∇φ|·J_φ + K_φ·J_ΔNFR    rotate as a doublet
-- Noether charge Q = Σ(Φ_s + K_φ) is NOT invariant
-- Symmetry breaking 𝒮 = (|∇φ|² − K_φ²) + (J_φ² − J_ΔNFR²) is NOT
-  invariant (K_φ² and J_φ² individually change under rotation, even
-  though their sum |Ψ|² is preserved)
+The covariant-difference identities remain useful: if A is reconstructed from
+the rotated field, D_ij Ψ transforms by the phase at j and |D_ij Ψ| is
+invariant.  For the derived connection its magnitude reduces to the difference
+of endpoint magnitudes.  The Yang-Mills-named functions are compatibility
+diagnostics evaluated on this constrained pure-gauge surface; they do not vary
+an independent edge field or derive engine dynamics.
 
-DERIVATION
-==========
-The proof follows from the representation theory of U(1) on the 6D field
-space (Φ_s, |∇φ|, K_φ, J_φ, J_ΔNFR, ξ_C).
-
-**Step 1**: The gauge transformation acts only on the geometric-transport
-sector (K_φ, J_φ), leaving (Φ_s, |∇φ|, J_ΔNFR, ξ_C) as **gauge singlets**.
-
-**Step 2**: Under rotation by angle α(i):
-    K_φ'(i) = K_φ(i)·cos α(i) − J_φ(i)·sin α(i)
-    J_φ'(i) = K_φ(i)·sin α(i) + J_φ(i)·cos α(i)
-
-**Step 3**: Bilinear forms involving one Ψ-component and one singlet
-transform as 2D rotation doublets under α. Their quadratic norms
-(sum of squares) are invariant.
-
-**Step 4**: The natural **gauge connection** on edges emerges from the
-Ψ phase gradient:
-    A_ij = arg(Ψ_j) − arg(Ψ_i)  (wrapped to [−π, π])
-
-**Step 5**: The **discrete covariant derivative** along edge (i,j):
-    D_ij Ψ = Ψ(j) − e^{iA_ij} Ψ(i)
-
-Under Ψ → e^{iα}Ψ: D_ij Ψ → e^{iα(j)} D_ij Ψ  (covariant!)
-Hence |D_ij Ψ| is gauge-invariant.
-
-**Step 6**: The **gauge curvature** (field strength) on a cycle C:
-    F_C = Σ_{(i,j) ∈ C} A_ij  (discrete holonomy, wrapped)
-
-Non-zero F_C indicates gauge vortices — topological defects analogous
-to magnetic flux tubes.
-
-PHYSICAL INTERPRETATION
-=======================
-- **α(i)**: Internal angle controlling K_φ ↔ J_φ mixing at node i.
-  The split between geometric confinement and transport is gauge-dependent;
-  only their combined intensity |Ψ| is physical.
-
-- **U3 (phase verification)**: The TNFR coupling condition |φᵢ − φⱼ| ≤ Δφ_max
-  constrains the *external* phase φ. The *internal* gauge phase arg(Ψ) provides
-  an independent degree of freedom. Requiring A_ij continuity is a gauge-fixing
-  condition.
-
-- **UM (coupling) operator**: Creates gauge links between nodes — establishes
-  the connection field A_ij. Without UM, no parallel transport of Ψ exists.
-
-- **IL (coherence) operator**: Acts as the covariant derivative operator —
-  reduces gauge-variant fluctuations while preserving gauge-invariant quantities.
-
-- **Four interaction regimes** emerge from the gauge structure:
-    (1) em_like:      arg(Ψ) ≈ 0    (geometric-dominant, weak coupling)
-    (2) weak_like:    arg(Ψ) ≈ π/2  (transport-dominant, chiral asymmetry)
-    (3) strong_like:  |F_C| ≫ 0     (gauge confinement, strong curvature)
-    (4) gravity_like: Φ_s ≫ |Ψ|     (potential-dominant, long-range)
-
-STATUS: CANONICAL — Derived from first principles (nodal equation + U(1) representation theory).
+Status: auxiliary algebraic model with legacy public names.
 
 References
 ----------
 - Nodal equation: ∂EPI/∂t = νf · ΔNFR(t)  [TNFR.pdf §2.1]
-- Complex geometric field: src/tnfr/physics/unified.py (CANONICAL SOURCE)
+- Complex geometric field: src/tnfr/physics/unified.py
 - Conservation laws: src/tnfr/physics/conservation.py
 - Variational principle: src/tnfr/physics/variational.py
-- Grammar U3: theory/UNIFIED_GRAMMAR_RULES.md §U3
 """
 
 from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Any
+from numbers import Integral, Real
+from typing import Any, Mapping
 
 from ..mathematics.unified_numerical import np
+from ..rng import validate_seed
 
 try:
     import networkx as nx
@@ -127,7 +73,7 @@ from .unified import (
 
 @dataclass(frozen=True)
 class GaugeSnapshot:
-    """Complete gauge-theoretic state of a TNFR network at one instant.
+    """Auxiliary U(1) field-coordinate snapshot of a TNFR network.
 
     All quantities are read-only telemetry (no EPI mutation).
 
@@ -140,9 +86,9 @@ class GaugeSnapshot:
     psi_phase : dict[Any, float]
         Gauge-dependent internal phase arg(Ψ(i)).
     connection : dict[tuple, float]
-        Gauge connection A_ij on oriented edges.
+        Pure-gauge connection A_ij = d(arg Ψ)_ij on oriented edges.
     curvature : dict[tuple, float]
-        Gauge curvature (field strength) F_C on minimal cycles.
+        Floating-point cycle-closure residual F_C. Analytically zero.
     energy_density : dict[Any, float]
         Gauge-invariant energy density ℰ(i).
     topological_norm : dict[Any, float]
@@ -159,6 +105,16 @@ class GaugeSnapshot:
     energy_density: dict[Any, float]
     topological_norm: dict[Any, float]
     chirality_norm: dict[Any, float]
+
+    @property
+    def canonical_connection_is_pure_gauge(self) -> bool:
+        """Whether the bundled connection is a derived exact one-form."""
+        return True
+
+    @property
+    def curvature_is_numerical_residual(self) -> bool:
+        """Whether ``curvature`` contains only cycle-closure residuals."""
+        return True
 
 
 @dataclass(frozen=True)
@@ -180,7 +136,7 @@ class GaugeInvarianceResult:
     symmetry_breaking_max_deviation : float
         Maximum per-node 𝒮 change (expected: NOT invariant).
     noether_charge_deviation : float
-        Change in Noether charge Q (expected: NOT invariant).
+        Change in the legacy quantity named Noether charge (not invariant).
     coherence_deviation : float
         Change in C(t) (expected: invariant).
     details : dict[str, Any]
@@ -203,9 +159,29 @@ class GaugeInvarianceResult:
 # ---------------------------------------------------------------------------
 
 
+def _validated_gauge_angles(
+    G: Any,
+    alpha: Mapping[Any, Real],
+) -> dict[Any, float]:
+    """Materialize finite node angles, retaining zero for omitted nodes."""
+
+    if not isinstance(alpha, Mapping):
+        raise TypeError("alpha must be a mapping from nodes to finite angles")
+    result: dict[Any, float] = {}
+    for node in G.nodes():
+        value = alpha.get(node, 0.0)
+        if isinstance(value, bool) or not isinstance(value, Real):
+            raise TypeError("alpha values must be finite real numbers")
+        angle = float(value)
+        if not math.isfinite(angle):
+            raise ValueError("alpha values must be finite real numbers")
+        result[node] = angle
+    return result
+
+
 def apply_gauge_transformation(
     G: Any,
-    alpha: dict[Any, float],
+    alpha: Mapping[Any, Real],
 ) -> Any:
     """Apply local U(1) gauge transformation Ψ(i) → e^{iα(i)}·Ψ(i).
 
@@ -237,6 +213,7 @@ def apply_gauge_transformation(
     -----
     Read-only telemetry operation. Does not mutate EPI or graph state.
     """
+    angles = _validated_gauge_angles(G, alpha)
     k_phi = compute_phase_curvature(G)
     j_phi = compute_phase_current(G)
 
@@ -245,7 +222,7 @@ def apply_gauge_transformation(
     psi_prime: dict[Any, complex] = {}
 
     for node in G.nodes():
-        a = alpha.get(node, 0.0)
+        a = angles[node]
         cos_a = math.cos(a)
         sin_a = math.sin(a)
 
@@ -274,17 +251,22 @@ from ._helpers import wrap_angle as _wrap_angle
 
 
 def compute_gauge_connection(G: Any) -> dict[tuple, float]:
-    r"""Compute the gauge connection A_ij on oriented edges.
+    r"""Compute the pure-gauge connection A_ij on oriented edges.
 
-    The connection is the discrete analogue of the electromagnetic
-    vector potential:
+    The connection is the wrapped exact one-form
 
         A_ij = arg(Ψ_j) − arg(Ψ_i)  ∈ [−π, π)
 
-    Under gauge transformation Ψ → e^{iα}Ψ:
-        A_ij → A_ij + α(j) − α(i)
+    At endpoints where Ψ is nonzero, reconstructing it after
+    Ψ → e^{iα}Ψ gives, modulo 2π,
 
-    This is the standard gauge transformation of a U(1) connection.
+        A_ij → A_ij + α(j) − α(i).
+
+    Because A is derived from vertex phases, it has no independent edge
+    degree of freedom and every cycle holonomy is analytically zero.  Nodes
+    where |Ψ| is numerically zero use phase zero as a deterministic convention;
+    the phase and complex covariance law are undefined there, although the
+    covariant-difference magnitude remains the endpoint-amplitude contrast.
 
     Parameters
     ----------
@@ -322,8 +304,81 @@ def compute_gauge_connection(G: Any) -> dict[tuple, float]:
 
 
 # ---------------------------------------------------------------------------
-# Gauge curvature (field strength on cycles)
+# Cycle-closure residual of the pure-gauge connection
 # ---------------------------------------------------------------------------
+
+
+# Large enough to absorb a handful of wrapped binary64 angle operations while
+# remaining many orders below any TNFR phase scale.  This is a numerical
+# closure tolerance, not a physical threshold.
+GAUGE_CLOSURE_TOLERANCE = 64.0 * math.ulp(PI_CONST)
+
+
+def _canonical_cycle(cycle: list[Any], order: dict[Any, int]) -> tuple[Any, ...]:
+    """Return a deterministic traversal key without comparing node labels."""
+    start = min(range(len(cycle)), key=lambda idx: order[cycle[idx]])
+    forward = cycle[start:] + cycle[:start]
+    reverse = [forward[0], *reversed(forward[1:])]
+    forward_order = tuple(order[node] for node in forward)
+    reverse_order = tuple(order[node] for node in reverse)
+    return tuple(reverse if reverse_order < forward_order else forward)
+
+
+def _short_undirected_cycles(G: Any, max_cycle_length: int) -> list[tuple[Any, ...]]:
+    """Enumerate all triangles and four-cycles with deterministic keys."""
+    nodes = list(G.nodes())
+    order = {node: idx for idx, node in enumerate(nodes)}
+    adjacency = {node: set(G.neighbors(node)) for node in nodes}
+    cycles: set[tuple[Any, ...]] = set()
+
+    for u in nodes:
+        for v in adjacency[u]:
+            if order[v] <= order[u]:
+                continue
+            for w in adjacency[u] & adjacency[v]:
+                if order[w] <= order[v]:
+                    continue
+                cycles.add(_canonical_cycle([u, v, w], order))
+
+    if max_cycle_length >= 4 and len(nodes) <= 200:
+        for u_index, u in enumerate(nodes):
+            for w in nodes[u_index + 1 :]:
+                common = sorted(
+                    adjacency[u] & adjacency[w], key=order.__getitem__
+                )
+                for first in range(len(common)):
+                    for second in range(first + 1, len(common)):
+                        v = common[first]
+                        x = common[second]
+                        cycles.add(_canonical_cycle([u, v, w, x], order))
+
+    return sorted(cycles, key=lambda cycle: tuple(order[node] for node in cycle))
+
+
+def _short_directed_cycles(G: Any, max_cycle_length: int) -> list[tuple[Any, ...]]:
+    """Enumerate directed triangles and four-cycles without label ordering."""
+    nodes = list(G.nodes())
+    order = {node: idx for idx, node in enumerate(nodes)}
+    length_limit = max(3, min(max_cycle_length, 4))
+    cycles: set[tuple[Any, ...]] = set()
+
+    def visit(start: Any, current: Any, path: list[Any], seen: set[Any]) -> None:
+        for successor in G.successors(current):
+            if successor == start:
+                if len(path) >= 3:
+                    cycles.add(tuple(path))
+                continue
+            if (
+                len(path) < length_limit
+                and successor not in seen
+                and order[successor] >= order[start]
+            ):
+                visit(start, successor, [*path, successor], seen | {successor})
+
+    for start in nodes:
+        visit(start, start, [start], {start})
+
+    return sorted(cycles, key=lambda cycle: tuple(order[node] for node in cycle))
 
 
 def compute_gauge_curvature(
@@ -331,90 +386,62 @@ def compute_gauge_curvature(
     *,
     max_cycle_length: int = 6,
 ) -> dict[tuple, float]:
-    r"""Compute the gauge curvature (field strength) on minimal cycles.
+    r"""Compute cycle-closure residuals of the derived connection.
 
     The discrete curvature on a cycle C = (v_0, v_1, ..., v_k, v_0) is:
 
         F_C = Σ_{(i,j) ∈ C} A_ij  (mod 2π, wrapped to [−π, π])
 
-    This is the discrete holonomy — the Wilson loop of the gauge field.
-    Non-zero F_C indicates a **gauge vortex** (topological defect analogous
-    to magnetic flux in electrodynamics).
+    Since ``A_ij = d(arg Ψ)_ij`` is exact, the sum telescopes and F_C is
+    identically zero modulo 2π.  Returned non-zero values measure only
+    floating-point wrapping and accumulation error.  They cannot diagnose an
+    independent field strength, vortex, flux, or confinement.
 
-    For efficiency, we compute F on triangles (3-cycles) by default,
-    which are the minimal plaquettes of the graph.
+    The bounded implementation checks triangles and four-cycles by default.
 
     Parameters
     ----------
     G : TNFRGraph
     max_cycle_length : int, default=6
-        Maximum cycle length to consider. Triangles (3) are always included.
-        Use larger values for sparser graphs.
+        Three checks triangles only. Four and larger values also check
+        four-cycles. Values above four are retained for API compatibility;
+        this bounded implementation still checks cycles of length at most four.
 
     Returns
     -------
     dict[tuple_of_nodes, float]
-        Curvature F_C for each detected cycle (as sorted node tuple).
-        Values near 0 indicate gauge flatness; ±π indicates a vortex.
+        Wrapped closure residual F_C for each detected cycle.  Tuple order is
+        the actual deterministic cycle traversal, including for heterogeneous
+        node-label types.
 
     Notes
     -----
-    Read-only. Cycle detection uses networkx subgraph matching.
-    For large graphs, limit max_cycle_length to avoid combinatorial explosion.
+    Read-only.  Four-cycle enumeration is skipped above 200 nodes to retain the
+    historical cost bound; triangles are always checked.
     """
     if nx is None:
         raise RuntimeError("networkx required for cycle detection")
+    if isinstance(max_cycle_length, bool) or not isinstance(
+        max_cycle_length, Integral
+    ):
+        raise TypeError("max_cycle_length must be an integer of at least 3")
+    max_cycle_length = int(max_cycle_length)
+    if max_cycle_length < 3:
+        raise ValueError("max_cycle_length must be an integer of at least 3")
 
     connection = compute_gauge_connection(G)
     curvature: dict[tuple, float] = {}
-
-    # Find triangles (3-cycles) efficiently
-    nodes = list(G.nodes())
-    adj = {n: set(G.neighbors(n)) for n in nodes}
-
-    for u in nodes:
-        for v in adj[u]:
-            if v <= u:
-                continue
-            # Find common neighbors to form triangles
-            common = adj[u] & adj[v]
-            for w in common:
-                if w <= v:
-                    continue
-                # Triangle (u, v, w)
-                cycle_key = (u, v, w)
-
-                # Holonomy around the triangle: u→v→w→u
-                a_uv = connection.get((u, v), 0.0)
-                a_vw = connection.get((v, w), 0.0)
-                a_wu = connection.get((w, u), 0.0)
-                f = _wrap_angle(a_uv + a_vw + a_wu)
-                curvature[cycle_key] = f
-
-    # Find 4-cycles if requested and graph is sparse enough
-    if max_cycle_length >= 4 and len(nodes) <= 200:
-        for u in nodes:
-            for v in adj[u]:
-                if v <= u:
-                    continue
-                for w in adj[v]:
-                    if w <= v or w == u:
-                        continue
-                    # Check if w connects back to any neighbor of u
-                    for x in adj[w]:
-                        if x <= w or x == v or x == u:
-                            continue
-                        if x in adj[u]:
-                            # 4-cycle: u→v→w→x→u
-                            cycle_key = tuple(sorted([u, v, w, x]))
-                            if cycle_key not in curvature:
-                                a_uv = connection.get((u, v), 0.0)
-                                a_vw = connection.get((v, w), 0.0)
-                                a_wx = connection.get((w, x), 0.0)
-                                a_xu = connection.get((x, u), 0.0)
-                                f = _wrap_angle(a_uv + a_vw + a_wx + a_xu)
-                                curvature[cycle_key] = f
-
+    cycles = (
+        _short_directed_cycles(G, max_cycle_length)
+        if G.is_directed()
+        else _short_undirected_cycles(G, max_cycle_length)
+    )
+    for cycle in cycles:
+        links = [
+            connection[(cycle[index], cycle[(index + 1) % len(cycle)])]
+            for index in range(len(cycle))
+        ]
+        curvature[cycle] = _wrap_angle(math.fsum(links))
     return curvature
 
 
@@ -424,7 +451,7 @@ def compute_gauge_curvature(
 
 
 def compute_covariant_derivative(G: Any) -> dict[tuple, complex]:
-    r"""Compute the discrete covariant derivative of Ψ on each edge.
+    r"""Compute the legacy-named covariant difference of Ψ on each edge.
 
     The covariant derivative along edge (i, j) is:
 
@@ -432,18 +459,18 @@ def compute_covariant_derivative(G: Any) -> dict[tuple, complex]:
 
     where A_ij = arg(Ψ_j) − arg(Ψ_i) is the gauge connection.
 
-    Under gauge transformation Ψ → e^{iα}Ψ:
+    At nonzero field endpoints, under Ψ → e^{iα}Ψ and reconstruction of A:
         D_ij Ψ → e^{iα(j)} · D_ij Ψ    (covariant!)
 
-    Hence **|D_ij Ψ|** is gauge-invariant.
+    Hence **|D_ij Ψ|** is gauge-invariant. At a zero of Ψ, phase is undefined
+    and the implementation selects zero; the complex covariance formula then
+    depends on that convention, while the magnitude identity below remains
+    valid.
 
-    Physical interpretation:
-    - |D_ij Ψ| = 0: Perfect parallel transport (gauge-flat connection).
-    - |D_ij Ψ| large: Ψ field changes beyond what the connection explains;
-      indicates genuine gauge-invariant field variation.
-
-    The IL (coherence) operator reduces |D_ij Ψ| towards zero, acting as
-    a covariant stabilizer that smooths gauge-invariant field gradients.
+    For the bundled exact connection, phase transport cancels identically and
+    ``|D_ij Ψ| = ||Ψ(j)| - |Ψ(i)||`` up to floating error.  It therefore reads
+    endpoint amplitude contrast.  No engine-operator monotonicity follows from
+    this snapshot identity.
 
     Parameters
     ----------
@@ -662,12 +689,12 @@ def compute_dual_chirality(G: Any) -> dict[Any, float]:
 
 def verify_gauge_invariance(
     G: Any,
-    alpha: dict[Any, float] | None = None,
+    alpha: Mapping[Any, Real] | None = None,
     *,
     tolerance: float = 1e-10,
     seed: int | None = None,
 ) -> GaugeInvarianceResult:
-    r"""Verify gauge invariance of physical quantities under Ψ → e^{iα}Ψ.
+    r"""Verify auxiliary rotation identities under Ψ → e^{iα}Ψ.
 
     Applies a local gauge transformation and checks that all
     gauge-invariant quantities remain unchanged within tolerance.
@@ -700,11 +727,23 @@ def verify_gauge_invariance(
     GaugeInvarianceResult
         Comprehensive invariance diagnostic.
     """
+    if isinstance(tolerance, bool) or not isinstance(tolerance, Real):
+        raise TypeError("tolerance must be a finite positive real number")
+    tolerance = float(tolerance)
+    if not math.isfinite(tolerance) or tolerance <= 0.0:
+        raise ValueError("tolerance must be a finite positive real number")
+
     nodes = list(G.nodes())
 
     if alpha is None:
-        rng = np.random.RandomState(seed if seed is not None else 42)
-        alpha = {n: float(rng.uniform(0, 2 * math.pi)) for n in nodes}
+        validated_seed = validate_seed(
+            42 if seed is None else seed,
+            allow_none=False,
+        )
+        rng = np.random.default_rng(validated_seed & ((1 << 64) - 1))
+        angles = {n: float(rng.uniform(0, 2 * math.pi)) for n in nodes}
+    else:
+        angles = _validated_gauge_angles(G, alpha)
 
     # --- Before transformation ---
     psi_before = compute_complex_geometric_field(G)
@@ -725,7 +764,7 @@ def verify_gauge_invariance(
     c_before = compute_global_coherence(G)
 
     # --- Apply gauge transformation ---
-    transformed = apply_gauge_transformation(G, alpha)
+    transformed = apply_gauge_transformation(G, angles)
     k_phi_after = transformed["k_phi"]
     j_phi_after = transformed["j_phi"]
 
@@ -758,7 +797,8 @@ def verify_gauge_invariance(
         chi_dual = gp * jp + kp * jd
         chiral_norm_after[n] = chi * chi + chi_dual * chi_dual
 
-        # Symmetry breaking (should be invariant: K_φ² + J_φ² = |Ψ|² unchanged)
+        # Symmetry breaking is variant because its two Ψ terms have
+        # different signs even though K_φ² + J_φ² is unchanged.
         symbreak_after[n] = (gp**2 - kp**2) + (jp**2 - jd**2)
 
     # Noether charge after (NOT expected invariant)
@@ -796,11 +836,15 @@ def verify_gauge_invariance(
     )
 
     # Determine if alpha is non-trivial (at least some nodes have α ≠ 0)
-    has_nontrivial_alpha = any(abs(a) > 1e-10 for a in alpha.values())
+    has_nontrivial_alpha = any(abs(a) > 1e-10 for a in angles.values())
 
     details: dict[str, Any] = {
         "num_nodes": len(nodes),
-        "alpha_range": (min(alpha.values()), max(alpha.values())) if alpha else (0, 0),
+        "alpha_range": (
+            (min(angles.values()), max(angles.values()))
+            if angles
+            else (0.0, 0.0)
+        ),
         "has_nontrivial_alpha": has_nontrivial_alpha,
         "noether_charge_before": q_before,
         "noether_charge_after": q_after,
@@ -829,10 +873,10 @@ def verify_gauge_invariance(
 
 
 def capture_gauge_snapshot(G: Any) -> GaugeSnapshot:
-    """Capture complete gauge-theoretic state of the network.
+    """Capture the auxiliary U(1) field-coordinate diagnostics.
 
-    Computes all gauge fields, connection, curvature, and invariants
-    in a single pass. Read-only telemetry.
+    Computes the field coordinates, derived connection, cycle residuals, and
+    algebraic invariants in a single pass. Read-only telemetry.
 
     Parameters
     ----------
@@ -870,25 +914,24 @@ def classify_interaction_regime(
     G: Any,
     node: Any,
 ) -> dict[str, Any]:
-    r"""Classify the interaction regime at a node from the gauge structure.
+    r"""Compute the historical four-label field-coordinate heuristic.
 
-    Four interaction regimes emerge from the gauge field:
+    The labels are retained for API compatibility.  They do not identify
+    fundamental interactions and are not invariant under arbitrary local
+    rotations of Ψ:
 
     1. **em_like**: arg(Ψ) ≈ 0 or π — geometric-dominant (K_φ ≫ |J_φ|).
-       Nearly real Ψ; weak gauge curvature. Analogous to electromagnetic
-       regime where the field is nearly aligned with the "electric" axis.
+       Nearly real Ψ in the selected auxiliary coordinate frame.
 
     2. **weak_like**: arg(Ψ) ≈ ±π/2 — transport-dominant (|J_φ| ≫ K_φ).
-       Nearly imaginary Ψ; chiral asymmetry. Analogous to weak interaction
-       regime where chirality plays a central role.
+       Nearly imaginary Ψ in the selected auxiliary coordinate frame.
 
-    3. **strong_like**: Large gauge curvature |F_C| in surrounding plaquettes.
-       Analogous to strong interaction with colour confinement — gauge
-       flux is concentrated in tubes.
+    3. **strong_like**: Large numerical cycle-closure residual.  The canonical
+       connection is pure gauge, so this channel should be zero within
+       ``GAUGE_CLOSURE_TOLERANCE`` and cannot represent confinement.
 
     4. **gravity_like**: Φ_s ≫ |Ψ| — the structural potential dominates.
-       Long-range, universal coupling. The gauge sector contributes
-       negligibly compared to the potential sector.
+       Structural-potential magnitude dominates the Ψ magnitude.
 
     Parameters
     ----------
@@ -919,7 +962,10 @@ def classify_interaction_regime(
     adjacent_curvatures = [abs(f) for cycle, f in curvature.items() if node in cycle]
     mean_curv = float(np.mean(adjacent_curvatures)) if adjacent_curvatures else 0.0
 
-    # Regime scores (heuristic decomposition based on physics)
+    # Historical heuristic decomposition.  Suppress binary64 closure noise so
+    # the legacy strong_like slot cannot become active on an exact connection.
+    if mean_curv <= GAUGE_CLOSURE_TOLERANCE:
+        mean_curv = 0.0
     total = ps + psi_mag + mean_curv + 1e-15
 
     # em_like: K_φ-dominant → |cos(arg Ψ)| near 1
@@ -928,7 +974,7 @@ def classify_interaction_regime(
     # weak_like: J_φ-dominant → |sin(arg Ψ)| near 1
     weak_score = abs(math.sin(psi_phase)) * psi_mag / total if psi_mag > 1e-15 else 0.0
 
-    # strong_like: high gauge curvature
+    # strong_like: anomalous closure residual, not a physical interaction
     strong_score = mean_curv / total
 
     # gravity_like: Φ_s-dominant
@@ -954,7 +1000,7 @@ def classify_interaction_regime(
 
 
 def classify_network_regimes(G: Any) -> dict[str, Any]:
-    """Classify interaction regimes across the entire network.
+    """Aggregate the historical four-label snapshot heuristic.
 
     Returns
     -------
@@ -962,7 +1008,7 @@ def classify_network_regimes(G: Any) -> dict[str, Any]:
         - per_node: dict[node, dict] — regime classification per node
         - regime_distribution: dict[str, int] — count of each regime
         - dominant_regime: str — most common regime
-        - mean_gauge_curvature: float — network-wide mean |F_C|
+        - mean_gauge_curvature: float — mean cycle-closure residual
         - gauge_flatness: float — fraction of plaquettes with |F_C| < π/10
     """
     nodes = list(G.nodes())
@@ -1003,17 +1049,17 @@ def classify_network_regimes(G: Any) -> dict[str, Any]:
 
 
 def compute_yang_mills_action(G: Any) -> float:
-    r"""Compute the discrete Yang-Mills action of the gauge field.
+    r"""Compute the legacy quadratic cycle-closure diagnostic.
 
     The Yang-Mills action on a graph with plaquettes {C} is:
 
         S_YM = (1/2) Σ_C F_C²
 
-    where F_C is the gauge curvature on plaquette C.
+    where F_C is the floating-point closure residual on cycle C.
 
-    This measures the total "gauge energy" stored in the connection.
-    Under grammar-compliant evolution, S_YM should decrease (the
-    IL operator reduces gauge field fluctuations).
+    The canonical A=d(arg Ψ) is pure gauge, so this quantity is analytically
+    zero.  The historical function name is retained; a nonzero return measures
+    numerical closure error rather than Yang-Mills field energy.
 
     Parameters
     ----------
@@ -1031,7 +1077,7 @@ def compute_yang_mills_action(G: Any) -> float:
 
 
 def compute_gauge_energy_decomposition(G: Any) -> dict[str, float]:
-    r"""Decompose the total structural energy into gauge-theoretic sectors.
+    r"""Decompose snapshot energy into legacy field-coordinate sectors.
 
     The energy density ℰ = Φ_s² + |∇φ|² + |Ψ|² + J_ΔNFR² can be
     decomposed into sectors:
@@ -1040,10 +1086,10 @@ def compute_gauge_energy_decomposition(G: Any) -> dict[str, float]:
     2. **Gradient sector**: |∇φ|² — local phase stress
     3. **Gauge sector**: |Ψ|² = K_φ² + J_φ² — geometric-transport energy
     4. **Flux sector**: J_ΔNFR² — reorganisation transport
-    5. **Yang-Mills sector**: S_YM — gauge connection energy
+    5. **Legacy Yang-Mills diagnostic**: squared cycle-closure residual
 
-    This decomposition reveals which sector dominates the energy budget,
-    linking to the interaction regime classification.
+    The returned ``yang_mills_action`` is not included in ``total_energy`` and
+    is analytically zero for the derived connection.
 
     Parameters
     ----------
@@ -1083,11 +1129,10 @@ def compute_gauge_energy_decomposition(G: Any) -> dict[str, float]:
 
 
 # =========================================================================
-# FORMAL YANG-MILLS DERIVATION on TNFR Graphs
+# LEGACY YANG-MILLS-NAMED DIAGNOSTICS ON THE PURE-GAUGE SURFACE
 # =========================================================================
 #
-# The complete discrete Yang-Mills theory on a TNFR graph derives from the
-# action functional:
+# These APIs evaluate expressions borrowed from a lattice U(1) action:
 #
 #   S[A, Ψ] = S_YM + S_matter
 #            = (1/2g²) Σ_P F_P²  +  Σ_{(i,j)} |D_ij Ψ|²
@@ -1096,53 +1141,40 @@ def compute_gauge_energy_decomposition(G: Any) -> dict[str, float]:
 # D_ij is the covariant derivative, and the sum runs over all plaquettes P
 # and edges (i,j).
 #
-# The Euler-Lagrange equations δS/δA_ij = 0 yield the DISCRETE YANG-MILLS
-# FIELD EQUATIONS:
+# A genuine Euler-Lagrange equation δS/δA_ij = 0 requires A to be an
+# independently varied edge field.  This module instead fixes
+# A=d(arg Ψ), so F=0 analytically and no such dynamical derivation follows.
+# The residual function keeps the historical expression
 #
 #   (1/g²) Σ_{P ∋ (i,j)} ε_P(i,j) · sin(F_P) = J_matter(i,j)
 #
 # where ε_P(i,j) = ±1 is the orientation of edge (i,j) within plaquette P,
 # and J_matter is the matter current:
 #
-#   J_matter(i,j) = Im[ Ψ*(j) · e^{−iA_ij} · Ψ(i) ]
+#   J_matter(i,j) = Im[ Ψ*(j) · e^{+iA_ij} · Ψ(i) ]
 #
-# This is the lattice gauge theory analogue of the continuum equation
-# D_μ F^μν = J^ν, specialized to the TNFR U(1) gauge symmetry of Ψ.
-#
-# STRUCTURAL IDENTITIES:
-# 1. Bianchi identity: dF = d²A = 0 (automatic for Abelian U(1))
-# 2. Gauss law:   Σ_{j∈N(i)} J_matter(i,j) = 0 (current conservation)
-# 3. Ward identity: gauge symmetry ⟹ current conservation (Noether)
-#
-# DERIVATION from TNFR physics:
-# - The connection A_ij = arg(Ψ_j) − arg(Ψ_i) emerges from the complex
-#   geometric field Ψ = K_φ + i·J_φ (Step 4 in module docstring)
-# - The field strength F_C is the Wilson holonomy (Step 6)
-# - The coupling constant g² = ⟨F²⟩ / N_plaquettes is self-determined
-#   by the network's gauge field configuration
-# - Matter currents arise from the Ψ kinetic term (covariant derivative)
-#
-# References:
-# - Wilson (1974): Confinement of quarks, Phys. Rev. D 10, 2445
-# - Kogut (1979): Lattice gauge theory, Rev. Mod. Phys. 51, 659
-# - TNFR.pdf § 2.1 (nodal equation), AGENTS.md § Mathematical Unification
+# as a finite-snapshot consistency diagnostic.  Its legacy field names do not
+# assert a Yang-Mills sector, a Ward identity, or an operator derivation.
 # =========================================================================
 
 
 @dataclass(frozen=True)
 class YangMillsFieldEquations:
-    r"""Discrete Yang-Mills field equations on a TNFR graph.
+    r"""Legacy-named pure-gauge consistency diagnostics.
 
-    Derived from the action S[A, Ψ] = S_YM + S_matter via δS/δA = 0.
+    The fields evaluate the historical lattice-action formulas after imposing
+    A=d(arg Ψ).  They are not Euler-Lagrange equations of the TNFR engine,
+    because the implementation does not vary A independently.
 
     Attributes
     ----------
     matter_current : dict[tuple, float]
-        J_matter(i,j) = Im[Ψ*(j) · e^{−iA_ij} · Ψ(i)] per oriented edge.
+        J_matter(i,j) = Im[Ψ*(j) · e^{+iA_ij} · Ψ(i)] per oriented edge.
     gauge_divergence : dict[tuple, float]
         (1/g²) Σ_{P ∋ (i,j)} ε_P · sin(F_P) per edge (LHS of field eqn).
     equation_residual : dict[tuple, float]
-        |gauge_divergence − J_matter| per edge. Zero → equations satisfied.
+        |gauge_divergence − J_matter| per edge.  A numerical consistency
+        residual, not an engine equation-of-motion residual.
     yang_mills_action : float
         S_YM = (1/2g²) Σ_P F_P².
     matter_action : float
@@ -1150,7 +1182,8 @@ class YangMillsFieldEquations:
     total_action : float
         S_YM + S_matter.
     coupling_constant : float
-        g² = ⟨F²⟩ (self-determined from curvature statistics).
+        User-supplied scale or mean squared closure residual.  The derived
+        connection gives zero analytically.
     mean_residual : float
         Mean equation residual across all edges.
     max_residual : float
@@ -1167,25 +1200,36 @@ class YangMillsFieldEquations:
     mean_residual: float
     max_residual: float
 
+    @property
+    def canonical_connection_is_pure_gauge(self) -> bool:
+        """Whether the evaluated connection lacks independent edge freedom."""
+        return True
+
+    @property
+    def is_dynamical_derivation(self) -> bool:
+        """Whether this snapshot evaluation derives TNFR dynamics."""
+        return False
+
 
 @dataclass(frozen=True)
 class BianchiIdentityResult:
-    r"""Verification of the discrete Bianchi identity dF = 0.
+    r"""Verification of cycle closure for the exact derived connection.
 
-    For Abelian U(1) gauge theory, the Bianchi identity is automatically
-    satisfied because F = dA and d² = 0.  On a discrete graph, wrapping
-    corrections introduce residuals that should be at most O(machine ε).
+    The public class name is retained for compatibility.  On a graph, this
+    implementation checks F_C=0 for every enumerated cycle of A=d(arg Ψ); it
+    does not construct higher-dimensional cells on which a general dF could be
+    evaluated.
 
     Attributes
     ----------
     is_satisfied : bool
-        True if max_residual < tolerance.
+        True if max_residual <= tolerance.
     max_residual : float
-        Maximum Bianchi residual across all co-boundaries.
+        Maximum absolute cycle-closure residual.
     mean_residual : float
-        Mean Bianchi residual.
+        Mean absolute cycle-closure residual.
     num_coboundaries_tested : int
-        Number of co-boundary relations checked.
+        Number of cycles checked (legacy field name).
     """
 
     is_satisfied: bool
@@ -1193,41 +1237,34 @@ class BianchiIdentityResult:
     mean_residual: float
     num_coboundaries_tested: int
 
+    @property
+    def num_cycles_tested(self) -> int:
+        """Number of cycle-closure relations checked."""
+        return self.num_coboundaries_tested
+
 
 # ---------------------------------------------------------------------------
-# Regime activity criterion — emergent equipartition (audit 2026 redesign)
+# Legacy regime-score activity convention
 # ---------------------------------------------------------------------------
-# A node's interaction character is shared among the four gauge sectors
-# (em/weak/strong/gravity) as normalised scores that sum to 1. The neutral,
-# maximum-entropy reference is the equipartition share 1/N_REGIMES = 1/4: a
-# sector is "active" when it captures MORE than its fair quarter of the
-# four-channel budget. This boundary is derived purely from the NUMBER of
-# gauge sectors (the four structural channels of the tetrad), with NO
-# obsolete overlay constant.
-#
-# The earlier per-sector overlay thresholds were calibrated values whose
-# "derived" status was refuted by the 2026 tetrad audit (only π is a genuine
-# structural scale; the strong-sector boundary in particular carried the
-# refuted "Kuramoto critical coupling" justification). They are removed in
-# favour of this parameter-free criterion.
+# The four historical labels are normalised to a unit score budget.  A score
+# above the equal-share reference 1/4 is marked active.  This is a reporting
+# convention, not a derived TNFR threshold or a map to fundamental forces.
 N_REGIMES = 4
 REGIME_ACTIVITY_SHARE = 1.0 / N_REGIMES  # equipartition reference = 0.25
 
 
 @dataclass(frozen=True)
 class InteractionRegimeMetrics:
-    r"""Quantitative per-node interaction regime with an emergent activity rule.
+    r"""Per-node values for the historical four-label heuristic.
 
-    Four order parameters characterise the local interaction character; the
-    dominant regime is the one capturing the largest share of the four-sector
-    energy budget. Sector "activity" uses the parameter-free equipartition
-    criterion (audit 2026 redesign): a sector is active when its normalised
-    score exceeds 1/N_REGIMES = 0.25, the maximum-entropy reference. No
-    obsolete overlay constant enters the classification.
+    The names and fields are retained for compatibility.  ``em_like`` and
+    ``weak_like`` depend on the chosen Ψ coordinate angle, ``strong_like`` is
+    a numerical closure-residual slot, and ``gravity_like`` measures potential
+    dominance.  They are not four derived interactions.
 
     O_em  = |cos(arg Ψ)| — geometric (K_φ) dominance fraction
     O_wk  = |sin(arg Ψ)| — transport (J_φ) dominance fraction
-    O_st  = ⟨|F_C|⟩ / π  — mean normalised gauge curvature (π = phase-wrap scale)
+    O_st  = ⟨|F_C|⟩ / π  — normalised numerical closure residual
     O_gr  = Φ_s² / (Φ_s² + |Ψ|²) — potential dominance fraction
 
     Activity criterion (uniform across sectors):
@@ -1238,11 +1275,12 @@ class InteractionRegimeMetrics:
     node : Any
         Node identifier.
     em_order_parameter : float
-        O_em = |cos(arg Ψ)|. High → curvature-dominant, long-range.
+        O_em = |cos(arg Ψ)| in the selected auxiliary frame.
     weak_order_parameter : float
-        O_wk = |sin(arg Ψ)|. High → transport-dominant, chiral.
+        O_wk = |sin(arg Ψ)| in the selected auxiliary frame.
     strong_order_parameter : float
-        O_st = ⟨|F_C|⟩ / π.  High → gauge confinement.
+        O_st = ⟨|F_C|⟩ / π.  Values above numerical tolerance indicate
+        failure of pure-gauge cycle closure, not confinement.
     gravity_order_parameter : float
         O_gr = Φ_s² / (Φ_s² + |Ψ|²). High → potential-dominant.
     dominant_regime : str
@@ -1251,7 +1289,7 @@ class InteractionRegimeMetrics:
         Normalised scores for each regime (sum ≈ 1).
     above_threshold : dict[str, bool]
         Whether each regime's normalised score exceeds the equipartition
-        share 1/N_REGIMES = 0.25 (emergent activity, no overlay constant).
+        share 1/N_REGIMES = 0.25 (legacy reporting convention).
     mixing_angle : float
         arg(Ψ) in radians — the gauge-dependent mixing angle between
         geometric (K_φ) and transport (J_φ) sectors.
@@ -1270,7 +1308,7 @@ class InteractionRegimeMetrics:
 
 @dataclass(frozen=True)
 class NetworkInteractionProfile:
-    r"""Network-wide interaction regime analysis with reproducible metrics.
+    r"""Network aggregation of the historical four-label heuristic.
 
     Attributes
     ----------
@@ -1288,11 +1326,11 @@ class NetworkInteractionProfile:
         Shannon entropy H = −Σ p·ln(p) of the regime distribution.
         H = 0 → pure single regime; H = ln(4) ≈ 1.386 → uniform mixing.
     gauge_coupling_constant : float
-        g² = ⟨F²⟩ self-determined from the gauge field.
+        Mean squared numerical cycle-closure residual (legacy name).
     yang_mills_action : float
-        S_YM = (1/2g²) Σ F².
+        Quadratic cycle-closure residual (legacy name).
     mean_curvature : float
-        Network mean |F_C|.
+        Network mean absolute cycle-closure residual.
     gauge_flatness : float
         Fraction of plaquettes with |F_C| < π/10.
     """
@@ -1310,17 +1348,17 @@ class NetworkInteractionProfile:
 
 
 # ---------------------------------------------------------------------------
-# Matter current (gauge-covariant source)
+# Legacy gauge-invariant link-current expression
 # ---------------------------------------------------------------------------
 
 
 def compute_matter_current(G: Any) -> dict[tuple, float]:
-    r"""Compute the matter current J_matter(i,j) on each oriented edge.
+    r"""Compute the legacy-named invariant link current on each edge.
 
-    The matter current is the U(1) Noether current of the Ψ field,
-    sourcing the gauge field equations:
+    With the transport convention used by ``compute_covariant_derivative``,
+    the invariant bilinear is
 
-        J_matter(i,j) = Im[ Ψ*(j) · e^{−iA_ij} · Ψ(i) ]
+        J_matter(i,j) = Im[ Ψ*(j) · e^{+iA_ij} · Ψ(i) ].
 
     Under gauge transformation Ψ → e^{iα}Ψ, the current transforms as:
         J_matter → J_matter    (gauge-invariant!)
@@ -1329,10 +1367,10 @@ def compute_matter_current(G: Any) -> dict[tuple, float]:
         Im[e^{-iα(j)} Ψ*(j) · e^{i(A_ij + α(j) - α(i))} · e^{iα(i)} Ψ(i)]
         = Im[Ψ*(j) · e^{iA_ij} · Ψ(i)]
 
-    Physical interpretation:
-    - J > 0: net Ψ transport from i to j (geometric-transport current)
-    - J = 0: no net Ψ transport (parallel or antiparallel Ψ fields)
-    - The IL operator reduces |J| by smoothing Ψ field gradients.
+    For A=d(arg Ψ), the transported endpoint phases align and this imaginary
+    part is analytically zero.  Returned nonzero values are floating-point
+    residuals; this function does not establish a Noether or Ward current for
+    the nodal dynamics.
 
     Parameters
     ----------
@@ -1341,7 +1379,7 @@ def compute_matter_current(G: Any) -> dict[tuple, float]:
     Returns
     -------
     dict[(i, j), float]
-        Matter current per oriented edge. Antisymmetric: J(j,i) = −J(i,j).
+        Legacy link-current residual. Antisymmetric on undirected graphs.
     """
     psi = compute_complex_geometric_field(G)
     connection = compute_gauge_connection(G)
@@ -1353,9 +1391,12 @@ def compute_matter_current(G: Any) -> dict[tuple, float]:
         psi_v = psi.get(v, complex(0, 0))
         a_uv = connection.get((u, v), 0.0)
 
-        # J(u,v) = Im[ Ψ*(v) · e^{−iA_uv} · Ψ(u) ]
-        # = Im[ conj(Ψ_v) · (cos A - i sin A) · Ψ_u ]
-        transport = psi_v.conjugate() * complex(math.cos(a_uv), -math.sin(a_uv)) * psi_u
+        # The +A sign is required by A' = A + alpha(v) - alpha(u).
+        transport = (
+            psi_v.conjugate()
+            * complex(math.cos(a_uv), math.sin(a_uv))
+            * psi_u
+        )
         current[(u, v)] = transport.imag
 
         if not G.is_directed():
@@ -1365,7 +1406,7 @@ def compute_matter_current(G: Any) -> dict[tuple, float]:
 
 
 # ---------------------------------------------------------------------------
-# Yang-Mills field equations
+# Legacy Yang-Mills-named snapshot residual
 # ---------------------------------------------------------------------------
 
 
@@ -1374,45 +1415,50 @@ def compute_yang_mills_equations(
     *,
     coupling: float | None = None,
 ) -> YangMillsFieldEquations:
-    r"""Compute the discrete Yang-Mills field equations on the TNFR graph.
+    r"""Evaluate the historical lattice-action residual on a TNFR snapshot.
 
-    The field equations are obtained from δS/δA_ij = 0:
+    The returned fields preserve the public API for the expression
 
         (1/g²) Σ_{P ∋ (i,j)} ε_P(i,j) · sin(F_P) = J_matter(i,j)
 
-    For small F_P (weak-field limit), sin(F_P) ≈ F_P and we recover
-    the linearised Maxwell equations on the graph:  ∇²A ∝ J.
-
-    The coupling constant g² can be:
-    - Provided explicitly (coupling parameter)
-    - Self-determined from the graph: g² = ⟨F²⟩ (mean curvature squared)
+    but the canonical connection is constrained to A=d(arg Ψ), not varied
+    independently.  Consequently F_P and the invariant link current vanish
+    analytically.  This routine is a numerical consistency check and does not
+    derive a Maxwell/Yang-Mills equation or TNFR operator dynamics.
 
     Parameters
     ----------
     G : TNFRGraph
     coupling : float, optional
-        Gauge coupling g². If None, self-determined from ⟨F²⟩.
+        Non-negative diagnostic scale.  If None, use the mean squared closure
+        residual after suppressing binary64 noise.
 
     Returns
     -------
     YangMillsFieldEquations
     """
-    connection = compute_gauge_connection(G)
     curvature = compute_gauge_curvature(G)
     j_matter = compute_matter_current(G)
     cov_deriv = compute_covariant_derivative(G)
 
-    # --- Self-determined coupling constant ---
-    curv_values = list(curvature.values())
+    effective_curvature = {
+        cycle: 0.0 if abs(value) <= GAUGE_CLOSURE_TOLERANCE else value
+        for cycle, value in curvature.items()
+    }
+    curv_values = list(effective_curvature.values())
     if coupling is None:
-        if curv_values:
-            coupling = float(np.mean(np.array(curv_values) ** 2))
-        else:
-            coupling = 1.0  # default for tree graphs with no plaquettes
-    g_sq = max(coupling, 1e-15)
+        g_sq = float(np.mean(np.array(curv_values) ** 2)) if curv_values else 0.0
+    else:
+        if isinstance(coupling, bool) or not isinstance(coupling, Real):
+            raise TypeError("coupling must be a finite non-negative real number")
+        g_sq = float(coupling)
+        if not math.isfinite(g_sq) or g_sq < 0.0:
+            raise ValueError("coupling must be a finite non-negative real number")
+    if g_sq == 0.0 and any(value != 0.0 for value in curv_values):
+        raise ValueError("zero coupling is undefined for a nonzero closure residual")
 
-    # --- Yang-Mills action ---
-    s_ym = 0.5 / g_sq * sum(f * f for f in curv_values) if curv_values else 0.0
+    squared_closure = sum(value * value for value in curv_values)
+    s_ym = 0.5 * squared_closure / g_sq if g_sq > 0.0 else 0.0
 
     # --- Matter action ---
     s_matter = sum(abs(d) ** 2 for d in cov_deriv.values())
@@ -1442,9 +1488,9 @@ def compute_yang_mills_equations(
     for edge in j_matter:
         divg = 0.0
         for cycle_key, epsilon in edge_plaquettes.get(edge, []):
-            f_c = curvature.get(cycle_key, 0.0)
+            f_c = effective_curvature.get(cycle_key, 0.0)
             divg += epsilon * math.sin(f_c)
-        gauge_div[edge] = divg / g_sq
+        gauge_div[edge] = divg / g_sq if g_sq > 0.0 else 0.0
 
     # --- Equation residual ---
     residuals: dict[tuple, float] = {}
@@ -1470,7 +1516,7 @@ def compute_yang_mills_equations(
 
 
 # ---------------------------------------------------------------------------
-# Bianchi identity verification
+# Legacy-named exact-connection closure verification
 # ---------------------------------------------------------------------------
 
 
@@ -1479,21 +1525,12 @@ def verify_bianchi_identity(
     *,
     tolerance: float = 1e-10,
 ) -> BianchiIdentityResult:
-    r"""Verify the discrete Bianchi identity dF = 0.
+    r"""Verify cycle closure of A=d(arg Ψ) within ``tolerance``.
 
-    For Abelian U(1) gauge theory on a graph, the curvature F is the
-    exterior derivative of the connection A: F = dA.  The Bianchi identity
-    d²A = 0 is automatic for exact forms.
-
-    On a discrete graph with angle wrapping, we verify that for each node i
-    the sum of curvatures on adjacent plaquettes (with consistent orientation)
-    satisfies the co-boundary relation:
-
-        Σ_{P ∋ i} ε_i(P) · F_P ≈ 0
-
-    where ε_i(P) = +1 if i appears in P with positive circulation, −1 otherwise.
-
-    Non-zero residuals arise only from floating-point wrapping artifacts.
+    The historical function and result names are preserved.  Since a graph
+    supplies no higher-dimensional cells here, the implemented check is the
+    exact-one-form identity ``Σ_C A = 0 (mod 2π)`` on every enumerated cycle,
+    rather than a co-boundary sum around vertices.
 
     Parameters
     ----------
@@ -1504,6 +1541,12 @@ def verify_bianchi_identity(
     -------
     BianchiIdentityResult
     """
+    if isinstance(tolerance, bool) or not isinstance(tolerance, Real):
+        raise TypeError("tolerance must be a finite non-negative real number")
+    tolerance = float(tolerance)
+    if not math.isfinite(tolerance) or tolerance < 0.0:
+        raise ValueError("tolerance must be a finite non-negative real number")
+
     curvature = compute_gauge_curvature(G)
     if not curvature:
         return BianchiIdentityResult(
@@ -1513,31 +1556,12 @@ def verify_bianchi_identity(
             num_coboundaries_tested=0,
         )
 
-    # For each node, sum curvatures of adjacent plaquettes
-    # The algebraic Bianchi identity for U(1): d(dA) = 0
-    # Here we test per-node co-boundary sums
-    node_residuals: dict[Any, float] = {}
-    for node in G.nodes():
-        # Collect all plaquettes containing this node
-        total = 0.0
-        count = 0
-        for cycle_key, f_c in curvature.items():
-            if node in cycle_key:
-                total += f_c
-                count += 1
-        if count > 0:
-            # The residual measures deviation from cancellation;
-            # for exact forms dF=0 over the star of a vertex in
-            # a triangulation.  For generic graphs the per-node
-            # co-boundary is only approximate, so we normalise.
-            node_residuals[node] = abs(total / count)
-
-    residuals = list(node_residuals.values())
+    residuals = [abs(value) for value in curvature.values()]
     max_res = float(np.max(residuals)) if residuals else 0.0
     mean_res = float(np.mean(residuals)) if residuals else 0.0
 
     return BianchiIdentityResult(
-        is_satisfied=max_res < tolerance or len(residuals) == 0,
+        is_satisfied=max_res <= tolerance,
         max_residual=max_res,
         mean_residual=mean_res,
         num_coboundaries_tested=len(residuals),
@@ -1545,25 +1569,21 @@ def verify_bianchi_identity(
 
 
 # ---------------------------------------------------------------------------
-# Gauss law (discrete divergence constraint)
+# Legacy-named link-current divergence
 # ---------------------------------------------------------------------------
 
 
 def compute_gauss_law_residual(G: Any) -> dict[Any, float]:
-    r"""Compute the Gauss law residual at each node.
+    r"""Compute divergence magnitude of the legacy link current.
 
     The discrete Gauss law states that the divergence of the matter current
     at each node vanishes (current conservation):
 
         Σ_{j ∈ N(i)} J_matter(i, j) = 0
 
-    This is the local expression of the global U(1) gauge symmetry
-    (Noether theorem → Ward identity → current conservation).
-
-    Non-zero residuals indicate the configuration is not at a gauge-matter
-    equilibrium (the discrete Yang-Mills field equations are not satisfied).
-    This is expected for generic configurations and measures the degree of
-    departure from an extremum of the action S[A, Ψ].
+    For the derived pure-gauge link this current is analytically zero.  The
+    result therefore measures numerical cancellation only; it is not a Ward
+    identity or a certificate of an engine equilibrium.
 
     Parameters
     ----------
@@ -1572,7 +1592,7 @@ def compute_gauss_law_residual(G: Any) -> dict[Any, float]:
     Returns
     -------
     dict[node, float]
-        |Σ_j J(i,j)| per node.  Zero at YM equilibrium; non-zero otherwise.
+        |Σ_j J(i,j)| per node (legacy field interpretation).
     """
     j_matter = compute_matter_current(G)
 
@@ -1587,23 +1607,19 @@ def compute_gauss_law_residual(G: Any) -> dict[Any, float]:
 
 
 # ---------------------------------------------------------------------------
-# Gauge coupling constant
+# Legacy mean-squared closure statistic
 # ---------------------------------------------------------------------------
 
 
 def compute_gauge_coupling_constant(G: Any) -> float:
-    r"""Compute the self-determined gauge coupling constant g².
+    r"""Compute the mean squared cycle-closure residual (legacy name).
 
-    The coupling constant emerges from the gauge field statistics:
+    The historical statistic is
 
         g² = ⟨F²⟩ = (1/N_P) Σ_P  F_P²
 
-    where N_P is the number of plaquettes.
-
-    Physical interpretation:
-    - g² ≈ 0: weak coupling (nearly flat gauge field, em-like)
-    - g² ≈ π²: strong coupling (maximal curvature, confinement)
-    - intermediate g²: transitional coupling (no derived critical constant; audit 2026)
+    where N_P is the number of checked cycles.  It is zero analytically for
+    A=d(arg Ψ) and is not an independently determined coupling constant.
 
     Parameters
     ----------
@@ -1612,7 +1628,7 @@ def compute_gauge_coupling_constant(G: Any) -> float:
     Returns
     -------
     float
-        Self-determined coupling constant g² ≥ 0.
+        Mean squared floating-point closure residual, non-negative.
     """
     curvature = compute_gauge_curvature(G)
     if not curvature:
@@ -1622,7 +1638,7 @@ def compute_gauge_coupling_constant(G: Any) -> float:
 
 
 # ---------------------------------------------------------------------------
-# Formal interaction regime classification with TNFR-derived thresholds
+# Formalized version of the legacy four-label heuristic
 # ---------------------------------------------------------------------------
 
 
@@ -1630,14 +1646,12 @@ def classify_interaction_regime_formal(
     G: Any,
     node: Any,
 ) -> InteractionRegimeMetrics:
-    r"""Classify the interaction regime with formal TNFR structural metrics.
+    r"""Compute the formalized historical four-label snapshot heuristic.
 
-    Computes four order parameters at the node and classifies the dominant
-    interaction character.  Unlike the heuristic ``classify_interaction_regime``,
-    this function also reports per-sector ``above_threshold`` activity using the
-    parameter-free equipartition criterion (audit 2026 redesign): a sector is
-    active when its normalised score exceeds 1/N_REGIMES = 0.25. No obsolete
-    overlay constant enters the classification.
+    This function retains legacy labels and adds normalized-score reporting.
+    The equal-share activity cut is a reporting convention.  The first two
+    coordinates are gauge-frame dependent, the third is numerical closure
+    error, and only the potential-to-|Ψ| comparison is locally invariant.
 
     **Order parameters**:
 
@@ -1645,7 +1659,7 @@ def classify_interaction_regime_formal(
 
     2. O_wk = |sin(arg Ψ)| — transport (J_φ) contribution to |Ψ|.
 
-    3. O_st = ⟨|F_C|⟩ / π — normalised gauge curvature (π = phase-wrap scale).
+    3. O_st = ⟨|F_C|⟩ / π — normalised cycle-closure residual.
 
     4. O_gr = Φ_s² / (Φ_s² + |Ψ|²) — potential dominance.
 
@@ -1671,9 +1685,11 @@ def classify_interaction_regime_formal(
     psi_arg = float(np.angle(psi_val))
     ps = abs(phi_s.get(node, 0.0))
 
-    # Adjacent plaquette curvatures
+    # Adjacent cycle-closure residuals.  Suppress expected binary64 noise.
     adj_curv = [abs(f) for cycle, f in curvature.items() if node in cycle]
     mean_curv = float(np.mean(adj_curv)) if adj_curv else 0.0
+    if mean_curv <= GAUGE_CLOSURE_TOLERANCE:
+        mean_curv = 0.0
 
     # --- Order parameters ---
     # O_em: geometric dominance (K_φ axis)
@@ -1682,7 +1698,7 @@ def classify_interaction_regime_formal(
     # O_wk: transport dominance (J_φ axis)
     o_wk = abs(math.sin(psi_arg)) if psi_mag > 1e-15 else 0.0
 
-    # O_st: gauge curvature (confinement)
+    # O_st: anomalous closure residual; analytically zero for this connection
     o_st = mean_curv / PI_CONST if PI_CONST > 0 else 0.0
 
     # O_gr: potential dominance
@@ -1705,11 +1721,7 @@ def classify_interaction_regime_formal(
 
     dominant = max(scores, key=scores.get)  # type: ignore
 
-    # --- Regime activity (emergent equipartition criterion) ---
-    # A sector is "active" when its normalised score exceeds the neutral
-    # equipartition share 1/N_REGIMES = 0.25 (it captures more than its fair
-    # quarter of the four-channel budget). Derived from the number of gauge
-    # sectors, with no overlay constant; uniform across all four sectors.
+    # Historical equal-share activity convention.
     above = {k: scores[k] > REGIME_ACTIVITY_SHARE for k in scores}
 
     return InteractionRegimeMetrics(
@@ -1726,10 +1738,10 @@ def classify_interaction_regime_formal(
 
 
 def compute_network_interaction_profile(G: Any) -> NetworkInteractionProfile:
-    r"""Compute the full network interaction regime profile.
+    r"""Aggregate the historical four-label snapshot heuristic.
 
-    Aggregates per-node formal regime metrics into a reproducible
-    network-level profile with Shannon entropy mixing measure.
+    The legacy names are stable API.  The output is descriptive telemetry,
+    not a classification of fundamental interactions.
 
     Parameters
     ----------
@@ -1763,18 +1775,16 @@ def compute_network_interaction_profile(G: Any) -> NetworkInteractionProfile:
         if p > 1e-15:
             entropy -= p * math.log(p)
 
-    # Mean order parameters
+    # Mean order parameters. Empty networks carry finite zero telemetry.
+    def mean_parameter(attribute: str) -> float:
+        values = [getattr(metrics, attribute) for metrics in per_node.values()]
+        return float(np.mean(values)) if values else 0.0
+
     mean_ops: dict[str, float] = {
-        "em_like": float(np.mean([m.em_order_parameter for m in per_node.values()])),
-        "weak_like": float(
-            np.mean([m.weak_order_parameter for m in per_node.values()])
-        ),
-        "strong_like": float(
-            np.mean([m.strong_order_parameter for m in per_node.values()])
-        ),
-        "gravity_like": float(
-            np.mean([m.gravity_order_parameter for m in per_node.values()])
-        ),
+        "em_like": mean_parameter("em_order_parameter"),
+        "weak_like": mean_parameter("weak_order_parameter"),
+        "strong_like": mean_parameter("strong_order_parameter"),
+        "gravity_like": mean_parameter("gravity_order_parameter"),
     }
 
     # Gauge coupling and curvature

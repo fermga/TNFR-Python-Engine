@@ -1,8 +1,9 @@
-r"""TNFR Spectral Conservation Laws — Conservation in the Eigenvalue Domain.
+r"""TNFR spectral balance diagnostics in a Laplacian eigenbasis.
 
-Lifts the structural conservation theorem to the spectral (frequency) domain
-by expanding conservation fields in the graph Laplacian eigenbasis via the
-Graph Fourier Transform (GFT).
+Expands the finite structural balance fields in a graph-Laplacian eigenbasis
+via the Graph Fourier Transform (GFT). The transformation is algebraically
+exact for a fixed orthonormal basis; whether a supplied trajectory satisfies a
+conservation law remains an observed residual question.
 
 MAIN RESULT (Spectral Continuity Theorem):
 ==========================================
@@ -20,37 +21,35 @@ where:
     Ŝ_k = ⟨ψ_k | S⟩      (source term in mode k)
     λ_k                    (Laplacian eigenvalue = mode frequency)
 
-PHYSICAL INTERPRETATION:
-========================
-- **Low-frequency modes** (small λ_k): Global coherence — near-exact
-  conservation (Ŝ_k ≈ 0).  These modes correspond to U5 multi-scale
-  structure and persist under grammar-compliant evolution.
-
-- **High-frequency modes** (large λ_k): Local fluctuations — rapid
-  equilibration via λ_k · Ĵ_k dissipation.  Grammar violations
-  (S_grammar ≠ 0) manifest primarily in these modes.
+INTERPRETATION:
+===============
+- Small and large λ_k label smooth and oscillatory graph modes for the selected
+  Laplacian. Their residual magnitudes are data; U5 or grammar compliance does
+  not force a particular spectral band.
 
 - **Parseval conservation**: Energy in the spatial domain equals energy
   in the spectral domain:  ‖ρ‖² = Σ_k |ρ̂_k|².  Drift in this identity
   signals numerical or structural inconsistency.
 
-SPECTRAL ENERGY CONSERVATION:
-=============================
-The Lyapunov energy E = ½Σ_i [Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²]
+SPECTRAL STRUCTURAL ENERGY:
+===========================
+The nonnegative structural snapshot-energy candidate
+E = ½Σ_i [Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²]
 decomposes mode-by-mode:
 
     E_k = ½(|Φ̂_s_k|² + |∇̂φ_k|² + |K̂_φ_k|² + |Ĵ_φ_k|² + |Ĵ_ΔNFR_k|²)
 
-Under grammar compliance (U2): dE_k/dt ≤ 0 for stabilizer-dominated modes.
+The implementation reports each finite difference dE_k/dt. No sign follows
+from U2 labels alone.
 
 DERIVATION:
 ===========
-This module is derived via GFT of conservation.py equations.  The Laplacian
+This module applies the GFT to conservation.py diagnostics. The Laplacian
 eigenbasis diagonalizes the diffusion operator, making mode-by-mode analysis
-natural.  All results follow from the nodal equation ∂EPI/∂t = νf · ΔNFR(t)
-and the structural continuity theorem (theory/STRUCTURAL_CONSERVATION_THEOREM.md §9).
+natural. Parseval identities follow from orthonormality; dynamic conservation
+requires additional model hypotheses.
 
-STATUS: CANONICAL — Derived from spectral decomposition of proven conservation laws.
+STATUS: CANONICAL DIAGNOSTIC INTERFACE.
 
 References
 ----------
@@ -168,10 +167,12 @@ class SpectralWardIdentity:
 
 @dataclass(frozen=True)
 class SpectralLyapunovResult:
-    r"""Spectral Lyapunov stability — mode-by-mode energy analysis.
+    r"""Legacy-named mode-by-mode structural snapshot-energy analysis.
 
-    Decomposes the Lyapunov energy E = ½Σ_i[Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²]
-    into per-mode contributions via GFT.
+    Decomposes the nonnegative candidate
+    E = ½Σ_i[Φ_s² + |∇φ|² + K_φ² + J_φ² + J_ΔNFR²] into per-mode
+    contributions via GFT.  The class name is retained for compatibility; no
+    monotonicity follows without a specified dynamics.
 
     Attributes
     ----------
@@ -242,8 +243,10 @@ class SpectralSectorDecomposition:
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-# Canonical 5 conservation fields used for Lyapunov energy computation
-_LYAPUNOV_FIELDS: list[str] = ["phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"]
+# Five fields used for the structural snapshot-energy candidate.
+_STRUCTURAL_ENERGY_FIELDS: list[str] = [
+    "phi_s", "grad_phi", "k_phi", "j_phi", "j_dnfr"
+]
 
 
 def _snapshot_to_vectors(
@@ -278,9 +281,9 @@ def _compute_spectral_field_energies(
     vecs_before: dict[str, np.ndarray],
     vecs_after: dict[str, np.ndarray],
     eigvecs: np.ndarray,
-    fields: list[str] = _LYAPUNOV_FIELDS,
+    fields: list[str] = _STRUCTURAL_ENERGY_FIELDS,
 ) -> tuple[np.ndarray, np.ndarray, dict[str, tuple[float, float]]]:
-    r"""Per-mode Lyapunov energy from GFT of conservation fields.
+    r"""Per-mode structural snapshot energy from GFT of conservation fields.
 
     Computes E_k = ½ Σ_f |f̂_k|² for each mode k across the specified fields.
 
@@ -536,7 +539,7 @@ def compute_spectral_ward_identity(
 
 
 # ---------------------------------------------------------------------------
-# Spectral Lyapunov stability
+# Spectral structural snapshot-energy diagnostic
 # ---------------------------------------------------------------------------
 
 
@@ -547,15 +550,15 @@ def compute_spectral_lyapunov(
     dt: float = 1.0,
     stability_threshold: float = 1e-6,
 ) -> SpectralLyapunovResult:
-    r"""Spectral decomposition of Lyapunov energy stability.
+    r"""Spectral decomposition of a structural snapshot-energy candidate.
 
     Decomposes the structural energy functional E = ½Σ_i[Φ_s² + |∇φ|² + K_φ²
     + J_φ² + J_ΔNFR²] into per-mode contributions, then checks:
 
         dE_k/dt ≤ 0  (mode-stable)
 
-    Under grammar compliance (U2: convergence), the total spectral energy
-    derivative should be non-positive: Σ dE_k/dt ≤ 0.
+    The total derivative is the sum of the reported modal finite differences.
+    Its sign is trajectory-dependent; U2 validity alone does not determine it.
 
     Parameters
     ----------
@@ -579,12 +582,12 @@ def compute_spectral_lyapunov(
     vecs_before = _snapshot_to_vectors(before, nodes)
     vecs_after = _snapshot_to_vectors(after, nodes)
 
-    # Per-mode Lyapunov energy via unified helper
+    # Per-mode structural snapshot energy via the shared helper.
     energy_before, energy_after, _ = _compute_spectral_field_energies(
         vecs_before,
         vecs_after,
         eigvecs,
-        _LYAPUNOV_FIELDS,
+        _STRUCTURAL_ENERGY_FIELDS,
     )
 
     derivatives = (energy_after - energy_before) / dt
@@ -724,14 +727,14 @@ def compute_spectral_energy_conservation(
         vecs_before,
         vecs_after,
         eigvecs,
-        _LYAPUNOV_FIELDS,
+        _STRUCTURAL_ENERGY_FIELDS,
     )
 
     result: dict[str, float] = {}
     total_e0 = 0.0
     total_e1 = 0.0
 
-    for field in _LYAPUNOV_FIELDS:
+    for field in _STRUCTURAL_ENERGY_FIELDS:
         e0, e1 = per_field[field]
         denom = max(e0, 1e-15)
         result[f"{field}_drift"] = abs(e1 - e0) / denom
@@ -825,16 +828,22 @@ def classify_spectral_modes(
 # Public API
 # ---------------------------------------------------------------------------
 
+# Accurate aliases; legacy Lyapunov names remain API-compatible.
+SpectralStructuralEnergyResult = SpectralLyapunovResult
+compute_spectral_structural_energy = compute_spectral_lyapunov
+
 __all__ = [
     # Data structures
     "SpectralConservationBalance",
     "SpectralWardIdentity",
     "SpectralLyapunovResult",
+    "SpectralStructuralEnergyResult",
     "SpectralSectorDecomposition",
     # Core analysis
     "verify_spectral_conservation_balance",
     "compute_spectral_ward_identity",
     "compute_spectral_lyapunov",
+    "compute_spectral_structural_energy",
     "decompose_spectral_sectors",
     "compute_spectral_energy_conservation",
     "classify_spectral_modes",

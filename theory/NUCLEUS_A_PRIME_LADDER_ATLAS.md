@@ -152,4 +152,4 @@ This is explicitly **not** the recommended priority. See [NUCLEUS_B_EQUIVARIANCE
 - [TNFR_RIEMANN_RESEARCH_NOTES.md §13decies–§13vicies-octavo](TNFR_RIEMANN_RESEARCH_NOTES.md) — P31 + P32–P49 (χ-twisted L-track parity)
 - [TNFR_RIEMANN_RESEARCH_NOTES.md §13sexagesima-{tertia..novena}](TNFR_RIEMANN_RESEARCH_NOTES.md) — CCET closure rounds (basis for Nucleus B)
 - [NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md](NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md) — equivariance no-go lemmas, organisation plan for external publication
-- [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) — N15 closure, structurally identifies $\mathrm{range}(\mathcal{R}_\infty)$ with the smooth half of $\mathcal{F}$ (P28/P30) and $\ker(\mathcal{R}_\infty)$ with the oscillatory residue $S(T)$
+- [REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) — exact fixed-delay surrogate result and the unresolved status of any literal $\tau_g\to\infty$ operator or identification with $S(T)$

@@ -4,9 +4,9 @@ This module provides the canonical NumPy implementation of TNFR computational
 kernels. It leverages the existing vectorized functions in `dynamics.dnfr` and
 `metrics.sense_index` while providing a clean backend interface.
 
-The NumPy backend is the default and most stable implementation, thoroughly
-tested across all TNFR operations. It provides significant speedup over pure
-Python fallback (~1.3-1.6x for typical graphs) through vectorized operations.
+The NumPy backend is the default implementation. It uses vectorized operations;
+their realized speed and memory cost depend on graph shape, backend versions,
+and hardware and therefore require workload-specific measurement.
 
 Examples
 --------
@@ -36,10 +36,10 @@ class NumPyBackend(TNFRBackend):
     - Automatic sparse/dense strategy selection based on graph density
     - Optional multiprocessing for pure-Python fallback paths
 
-    Performance characteristics:
-    - 1.3-1.6x faster than Python fallback for typical graphs
-    - Scales efficiently to 10,000+ nodes
-    - Memory-efficient through strategic buffer caching
+    Execution characteristics:
+    - Vectorized kernels avoid Python-level loops where supported
+    - Sparse and dense paths are selected from graph structure
+    - Optional buffer caching trades retained memory for fewer allocations
 
     Attributes
     ----------
@@ -204,7 +204,7 @@ class NumPyBackend(TNFRBackend):
 
         Notes
         -----
-        The vectorized implementation achieves significant speedup through:
+        The vectorized implementation reduces Python-level work through:
         1. Batch neighbor accumulation via edge index arrays
         2. Vectorized phase dispersion with angle_diff_array
         3. Cached buffer reuse across invocations

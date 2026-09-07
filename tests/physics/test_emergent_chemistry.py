@@ -1,14 +1,4 @@
-"""Tests pinning the emergent-vs-postulated claims of ``emergent_chemistry``.
-
-Closes the audit gap (2026): the module's one rigorous emergent fact -- the
-(2l+1) angular degeneracy read from the structural-manifold Laplacian
-(Laplace-Beltrami) -- and its honest boundary -- the aufbau (n+l) order is a
-non-spectral counting postulate -- previously had NO direct tests (only
-SDK-output assertions existed). Also pins the canonical nucleus read-out
-(``classify_nodal_topology``: radial = emergent central nucleus) and the ball
-manifold's spherical-well closures 2, 8, 18 from benchmarks/emergent_shell_
-ordering.py.
-"""
+"""Tests for the assumption-explicit structural shell-model comparison."""
 
 from __future__ import annotations
 
@@ -22,6 +12,7 @@ from tnfr.physics.emergent_chemistry import (
     electron_configuration,
     emergent_magic_numbers,
     fibonacci_sphere_graph,
+    shell_closure_distance,
     structural_eigenmodes,
     valence_delta_nfr,
 )
@@ -62,8 +53,7 @@ def ball() -> nx.Graph:
 
 
 class TestAngularDegeneracyEmerges:
-    """M1: the (2l+1) angular multiplets emerge numerically from the sphere
-    Laplacian -- the one rigorous emergent fact of emergent_chemistry."""
+    """Finite spectral clustering on the constructed sphere graph."""
 
     def test_sphere_low_modes_are_2l_plus_1(self):
         shells = structural_eigenmodes(fibonacci_sphere_graph(162, 6),
@@ -74,6 +64,27 @@ class TestAngularDegeneracyEmerges:
         shells = structural_eigenmodes(fibonacci_sphere_graph(162, 6),
                                        max_modes=16)
         assert [sh.angular_index for sh in shells[:4]] == [0, 1, 2, 3]
+
+    def test_even_cluster_has_no_invented_angular_index(self):
+        shells = structural_eigenmodes(
+            nx.path_graph(4), max_modes=4, gap_factor=1000.0
+        )
+        assert len(shells) == 1
+        assert shells[0].multiplicity == 4
+        assert shells[0].angular_index is None
+
+    @pytest.mark.parametrize(
+        ("kwargs", "error"),
+        [
+            ({"max_modes": 0}, ValueError),
+            ({"max_modes": True}, TypeError),
+            ({"gap_factor": 0.0}, ValueError),
+            ({"gap_factor": float("nan")}, ValueError),
+        ],
+    )
+    def test_invalid_clustering_controls_are_rejected(self, kwargs, error):
+        with pytest.raises(error):
+            structural_eigenmodes(nx.path_graph(4), **kwargs)
 
 
 class TestAufbauIsPostulated:
@@ -110,9 +121,10 @@ class TestEmergentChemistryAPI:
     """Pin the module's public API directly (was only tested via the SDK)."""
 
     def test_noble_gas_is_zero_pressure_fixed_point(self):
-        # closed shell = DeltaNFR_chem = 0, the same equilibrium predicate as
-        # primality (is_structural_equilibrium).
+        # The independently defined shell distance reuses the scalar
+        # zero-pressure predicate; it does not share arithmetic dynamics.
         for z in (2, 10, 18):
+            assert shell_closure_distance(z) == 0.0
             assert valence_delta_nfr(z) == 0.0
             assert classify_element(z).closed_shell is True
             assert classify_element(z).reactivity == 0.0
@@ -124,6 +136,35 @@ class TestEmergentChemistryAPI:
     def test_electron_configuration_fills_to_Z(self):
         config = electron_configuration(10)
         assert sum(occ for _n, _l, occ in config) == 10
+
+    @pytest.mark.parametrize("value", [True, 2.5, float("nan")])
+    def test_non_integral_element_counts_are_rejected(self, value):
+        with pytest.raises((TypeError, ValueError)):
+            electron_configuration(value)
+
+    @pytest.mark.parametrize(
+        ("args", "error"),
+        [
+            ((5, 0), ValueError),
+            ((5, -1), ValueError),
+            ((5, 5), ValueError),
+            ((True, 1), TypeError),
+        ],
+    )
+    def test_invalid_sphere_controls_are_rejected(self, args, error):
+        with pytest.raises(error):
+            fibonacci_sphere_graph(*args)
+
+    def test_disconnected_sphere_discretization_is_rejected(self):
+        with pytest.raises(ValueError, match="disconnected graph"):
+            fibonacci_sphere_graph(100, 1)
+
+    @pytest.mark.parametrize("z", [119, 120, 132, 140, 148, 156])
+    def test_closed_and_magic_use_one_closure_set(self, z):
+        result = classify_element(z)
+        assert result.closed_shell is result.magic_number
+        assert result.closed_shell is False
+        assert result.delta_nfr == result.closure_distance
 
 
 class TestNucleusTopologyEmerges:

@@ -3,35 +3,34 @@
 Example 38 — Grammar Energy Landscape
 ======================================
 
-Maps the energy functional E through operator sequences, comparing
-grammar-compliant vs grammar-violating paths.
+Maps the candidate energy functional E through requested operator sequences
+while recording the glyph that the runtime actually applies. Incremental
+grammar enforcement can replace a rejected standalone request with a fallback.
 
 Physics
 -------
-The Lyapunov function E = 0.5 * sum_i [Phi_s^2 + |grad_phi|^2 + K_phi^2
-+ J_phi^2 + J_DNFR^2] must satisfy dE/dt <= 0 under grammar-compliant
-evolution (Structural Conservation Theorem, Noether-like).
+The candidate energy E = 0.5 * sum_i [Phi_s^2 + |grad_phi|^2 + K_phi^2
++ J_phi^2 + J_DNFR^2] is measured along grammar-labelled trajectories.
+Grammar compliance alone does not prove dE/dt <= 0.
 
 This experiment shows that:
-  - Grammar compliance (U1-U6) creates a monotone decreasing energy path
-  - Grammar violations allow energy to escape, breaking Lyapunov stability
-  - The Lyapunov bounds per operator (from lyapunov.py) predict the
-    contraction/expansion rate of each step
+  - A grammar-valid requested word can be checked for energy descent or growth
+  - Requested fragments can differ from their runtime-applied glyph traces
+  - The policy multipliers from lyapunov.py can be compared with measurements
 
 The energy landscape is the "potential surface" on which operator sequences
-trace trajectories. U2 (convergence) ensures trajectories are bounded;
-U4 (bifurcation) ensures controlled excursions; U1 (closure) ensures
-the trajectory terminates at an attractor.
+trace trajectories. U2, U4 and U1 constrain operator composition; additional
+dynamical hypotheses are required for boundedness, controlled excursions and
+attractor convergence.
 
 References
 ----------
-- theory/STRUCTURAL_CONSERVATION_THEOREM.md (Lyapunov proof)
-- theory/UNIFIED_GRAMMAR_RULES.md (U1-U6 ↔ energy bounds)
+- theory/STRUCTURAL_CONSERVATION_THEOREM.md (candidate and proof boundary)
+- theory/UNIFIED_GRAMMAR_RULES.md (U1-U6 sequence policies)
 - theory/STRUCTURAL_OPERATORS.md (per-operator energy classification)
 - src/tnfr/physics/lyapunov.py (operator Lyapunov bounds)
 """
 
-import copy
 import math
 import os
 import sys
@@ -59,20 +58,16 @@ from tnfr.operators.definitions import (
     Transition,
 )
 from tnfr.operators.grammar import validate_grammar
+from tnfr.operators.grammar_types import glyph_function_name
+from tnfr.operators.registry import get_operator_class
 from tnfr.physics.conservation import (
     capture_conservation_snapshot,
     compute_energy_functional,
     compute_lyapunov_derivative,
     compute_noether_charge,
 )
-from tnfr.physics.fields import (
-    compute_phase_curvature,
-    compute_phase_gradient,
-    compute_structural_potential,
-    estimate_coherence_length,
-)
 
-# Optional: Lyapunov bounds if available
+# Optional: legacy nominal multipliers if available
 try:
     from tnfr.physics.lyapunov import OPERATOR_LYAPUNOV_BOUNDS, prove_sequence_lyapunov
 
@@ -107,14 +102,41 @@ def _build_graph(n: int = 20, p: float = 0.25) -> nx.Graph:
     return G
 
 
-def _apply_op_and_record(G, node, op, name, history):
-    """Apply operator, record energy and tetrad snapshot."""
+def _history_codes(G: nx.Graph, node: int) -> tuple[str, ...]:
+    """Return the recorded runtime glyph trace without modifying it."""
+    history = G.nodes[node].get("glyph_history") or ()
+    return tuple(
+        str(getattr(item, "value", item)).removeprefix("Glyph.") for item in history
+    )
+
+
+def _apply_and_read_actual_glyph(G: nx.Graph, node: int, op) -> str:
+    """Apply one public operator and return the glyph appended by the runtime.
+
+    Operator exceptions deliberately propagate. A successful public call must
+    leave an auditable glyph-history change; otherwise the example fails rather
+    than inventing an applied label.
+    """
+    before = _history_codes(G, node)
+    op(G, node)
+    after = _history_codes(G, node)
+    if not after or after == before:
+        raise RuntimeError(
+            "operator call completed without an auditable glyph-history change"
+        )
+    return after[-1]
+
+
+def _operator_name_for_glyph(glyph: str) -> str:
+    """Resolve an applied glyph to the public operator class name."""
+    function_name = glyph_function_name(glyph)
+    return get_operator_class(function_name).__name__
+
+
+def _apply_op_and_record(G, node, op, requested, history):
+    """Apply an operator and record its requested and actual runtime glyphs."""
     snap_before = capture_conservation_snapshot(G)
-    try:
-        op(G, node)
-        applied = True
-    except Exception:
-        applied = False
+    actual = _apply_and_read_actual_glyph(G, node, op)
     snap_after = capture_conservation_snapshot(G)
     E = compute_energy_functional(G)
     Q = compute_noether_charge(G)
@@ -122,30 +144,32 @@ def _apply_op_and_record(G, node, op, name, history):
     history.append(
         {
             "step": len(history),
-            "op": name,
+            "requested": requested,
+            "actual": actual,
             "E": E,
             "Q": Q,
             "dE_dt": lyap.energy_derivative,
             "lyapunov_stable": lyap.is_stable,
-            "applied": applied,
+            "fallback": actual != requested,
         }
     )
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# EXPERIMENT 1: Grammar-Compliant Energy Trajectory
+# EXPERIMENT 1: Grammar-valid requested trajectory
 # ═══════════════════════════════════════════════════════════════════════
 
 
 def experiment_compliant_trajectory():
-    """Execute standard canonical patterns and track energy descent.
+    """Execute one grammar-valid requested word and track candidate energy.
 
     Sequences: Bootstrap [AL, UM, IL] -> Explore [OZ, IL] -> Stabilise [IL, SHA]
-    All grammar-compliant: U1a (generator start), U2 (destabiliser balanced),
-    U1b (closure end), U4a (OZ has IL handler).
+    The whole requested word passes the static validator. The runtime trace is
+    still recorded separately because standalone calls undergo incremental
+    selection one step at a time.
     """
     print("=" * 72)
-    print("  EXPERIMENT 1: Grammar-Compliant Energy Trajectory")
+    print("  EXPERIMENT 1: Grammar-Valid Requested Trajectory")
     print("  Sequence: Bootstrap -> Explore -> Stabilise")
     print("=" * 72)
 
@@ -171,7 +195,7 @@ def experiment_compliant_trajectory():
     print(f'\n  Sequence: {" -> ".join(seq_glyphs)}')
     print(f"  Grammar valid: {is_valid}")
 
-    # Lyapunov proof (if available)
+    # Legacy-named nominal multiplier diagnostic (if available)
     if _HAS_LYAPUNOV:
         op_names = [
             "Emission",
@@ -183,8 +207,8 @@ def experiment_compliant_trajectory():
             "Silence",
         ]
         proof = prove_sequence_lyapunov(op_names)
-        print(f"  Lyapunov net-contractive: {proof.is_net_contractive}")
-        print(f"  Net contraction factor:   {proof.cumulative_product:.6f}")
+        print(f"  Nominal product <= 1:      {proof.is_net_contractive}")
+        print(f"  Nominal multiplier product:{proof.cumulative_product:10.6f}")
 
     # Run and record
     history = []
@@ -193,12 +217,13 @@ def experiment_compliant_trajectory():
     history.append(
         {
             "step": 0,
-            "op": "INIT",
+            "requested": "INIT",
+            "actual": "INIT",
             "E": E0,
             "Q": Q0,
             "dE_dt": 0.0,
             "lyapunov_stable": True,
-            "applied": True,
+            "fallback": False,
         }
     )
 
@@ -206,26 +231,31 @@ def experiment_compliant_trajectory():
         _apply_op_and_record(G, target, op, name, history)
 
     # Print trajectory
+    print("\n  Actual values below are runtime-recorded glyphs.")
     print(
-        f'\n  {"Step":>5s} {"Op":>7s} {"E":>12s} {"dE/dt":>12s}'
-        f' {"Lyapunov":>10s} {"Q":>12s}'
+        f'  {"Step":>5s} {"Request":>8s} {"Actual":>8s} {"E":>12s}'
+        f' {"dE":>12s} {"Sign":>9s} {"Q":>12s}'
     )
     print("  " + "-" * 64)
     for h in history:
-        lyap = "STABLE" if h["lyapunov_stable"] else "UNSTABLE"
+        sign = "NON-POS" if h["lyapunov_stable"] else "POSITIVE"
         print(
-            f"  {h['step']:5d} {h['op']:>7s} {h['E']:12.6f}"
-            f" {h['dE_dt']:+12.6f}  {lyap:>10s} {h['Q']:12.6f}"
+            f"  {h['step']:5d} {h['requested']:>8s} {h['actual']:>8s}"
+            f" {h['E']:12.6f} {h['dE_dt']:+12.6f}"
+            f" {sign:>9s} {h['Q']:12.6f}"
         )
 
-    # Check energy trend
-    energies = [h["E"] for h in history if h["applied"]]
+    # Report the finite energy trend and any runtime replacements.
+    energies = [h["E"] for h in history]
     if len(energies) > 2:
         net_change = energies[-1] - energies[0]
         print(f"\n  Net energy change: {net_change:+.6f}")
         print(
-            f'  Energy trend: {"DECREASING (Lyapunov)" if net_change <= 0 else "INCREASING"}'
+            f'  Measured trend: {"NON-INCREASING" if net_change <= 0 else "INCREASING"}'
         )
+    replacements = sum(h["fallback"] for h in history)
+    print(f"  Runtime replacements: {replacements}")
+    print("  The measured sign is not a grammar-wide Lyapunov conclusion.")
 
     return history
 
@@ -236,7 +266,7 @@ def experiment_compliant_trajectory():
 
 
 def experiment_pattern_comparison():
-    """Compare energy trajectories of four canonical patterns.
+    """Compare four requested fragments and their actual runtime traces.
 
     From STRUCTURAL_OPERATORS.md:
       Bootstrap  = [AL, UM, IL]       (generator -> coupling -> stabilise)
@@ -245,8 +275,8 @@ def experiment_pattern_comparison():
       Propagate  = [RA, UM]           (resonance -> coupling)
     """
     print("\n" + "=" * 72)
-    print("  EXPERIMENT 2: Canonical Pattern Energy Comparison")
-    print("  (Bootstrap vs Stabilise vs Explore vs Propagate)")
+    print("  EXPERIMENT 2: Requested Fragment Energy Comparison")
+    print("  (runtime fallbacks are shown explicitly)")
     print("=" * 72)
 
     patterns = {
@@ -261,42 +291,44 @@ def experiment_pattern_comparison():
         target = 0
         E_init = compute_energy_functional(G)
         energies = [E_init]
+        actual_glyphs: list[str] = []
 
         for glyph, op in ops:
-            try:
-                op(G, target)
-            except Exception:
-                pass
+            actual_glyphs.append(_apply_and_read_actual_glyph(G, target, op))
             energies.append(compute_energy_functional(G))
 
-        glyphs = " -> ".join(g for g, _ in ops)
+        requested = " -> ".join(g for g, _ in ops)
+        applied = " -> ".join(actual_glyphs)
         dE = energies[-1] - energies[0]
         trend = "DESCENT" if dE <= 0 else "ASCENT"
-        print(f"\n  {pname:12s} [{glyphs}]")
+        print(f"\n  {pname:12s}")
+        print(f"    Requested: {requested}")
+        print(f"    Applied:   {applied}")
         print(f'    E: {" -> ".join(f"{e:.4f}" for e in energies)}')
         print(f"    Net dE = {dE:+.6f}  ({trend})")
 
-    print("\n  Expected (from U2):")
-    print("    Bootstrap:  mixed (generator injects, stabiliser removes)")
-    print("    Stabilise:  pure descent (IL is strict Lyapunov contractor)")
-    print("    Explore:    excursion then descent (OZ up, IL down)")
-    print("    Propagate:  mild (coupling redistributes, not generates)")
+    print("\n  Scope:")
+    print("    These named objects are fragments, applied on fresh graphs without")
+    print("    surrounding word context. When Applied differs from Requested, the")
+    print("    energy change belongs to the fallback trace and says nothing about")
+    print("    the rejected requested glyph.")
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# EXPERIMENT 3: Lyapunov Bound Accuracy
+# EXPERIMENT 3: Nominal policy multipliers vs measurement
 # ═══════════════════════════════════════════════════════════════════════
 
 
 def experiment_lyapunov_bounds():
-    """Compare theoretical Lyapunov bounds vs measured energy changes.
+    """Compare legacy policy multipliers with measured energy changes.
 
-    Each operator has a theoretical contraction/expansion rate from
-    lyapunov.py. We measure the actual rate and check if the bound holds.
+    The values in lyapunov.py are nominal role multipliers. They do not have
+    the units or hypotheses needed to bound the candidate-energy difference
+    measured here.
     """
     print("\n" + "=" * 72)
-    print("  EXPERIMENT 3: Lyapunov Bound Accuracy")
-    print("  (Predicted vs Measured Energy Change Per Operator)")
+    print("  EXPERIMENT 3: Nominal Policy vs Measured Energy Change")
+    print("  (fresh graph per request; actual fallback glyph shown)")
     print("=" * 72)
 
     if not _HAS_LYAPUNOV:
@@ -320,52 +352,41 @@ def experiment_lyapunov_bounds():
     ]
 
     print(
-        f'\n  {"Operator":22s} {"Class":14s} {"Predicted_rho":>14s}'
-        f' {"Measured_dE":>14s} {"Bound OK":>10s}'
+        f'\n  {"Requested":20s} {"Applied":22s} {"Policy":14s}'
+        f' {"Nominal":>10s} {"Measured dE":>14s} {"Sign":>9s}'
     )
-    print("  " + "-" * 78)
+    print("  " + "-" * 96)
 
     for op_name, cls in operators:
         G = _build_graph()
         target = 0
         E_before = compute_energy_functional(G)
 
-        try:
-            op = cls()
-            op(G, target)
-            E_after = compute_energy_functional(G)
-            dE = E_after - E_before
-        except Exception:
-            dE = float("nan")
+        actual_glyph = _apply_and_read_actual_glyph(G, target, cls())
+        actual_name = _operator_name_for_glyph(actual_glyph)
+        E_after = compute_energy_functional(G)
+        dE = E_after - E_before
 
-        # Get Lyapunov bound
-        bound = OPERATOR_LYAPUNOV_BOUNDS.get(op_name)
+        # Compare against the policy attached to what actually executed.
+        bound = OPERATOR_LYAPUNOV_BOUNDS.get(actual_name)
         if bound:
-            predicted = bound.contraction_rate
+            nominal = bound.contraction_rate
             eclass = bound.energy_class.name
-            # For stabilisers: dE should be <= 0 (contraction)
-            # For destabilisers: dE can be positive
-            if bound.energy_class.name == "STABILISER":
-                bound_ok = dE <= 0.01  # small tolerance
-            elif bound.energy_class.name == "DESTABILISER":
-                bound_ok = True  # destabilisers are expected to increase
-            else:
-                bound_ok = True  # neutral/mixed
         else:
-            predicted = float("nan")
+            nominal = float("nan")
             eclass = "UNKNOWN"
-            bound_ok = True
 
-        ok_str = "OK" if bound_ok else "VIOLATED"
+        sign = "DESCENT" if dE < -1e-12 else ("ASCENT" if dE > 1e-12 else "FLAT")
+        applied_label = f"{actual_glyph}/{actual_name}"
         print(
-            f"  {op_name:22s} {eclass:14s} {predicted:14.6f}"
-            f" {dE:+14.6f}  {ok_str:>10s}"
+            f"  {op_name:20s} {applied_label:22s} {eclass:14s}"
+            f" {nominal:10.6f} {dE:+14.6f} {sign:>9s}"
         )
 
     print("\n  Interpretation:")
-    print("  - STABILISER operators should have dE <= 0")
-    print("  - DESTABILISER operators may have dE > 0")
-    print("  - The contraction rate rho bounds the maximum reduction")
+    print("  - Policy and measured columns are distinct quantities.")
+    print("  - A fallback row characterizes the applied operator only.")
+    print("  - No quantitative bound is accepted or rejected by this table.")
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -374,20 +395,15 @@ def experiment_lyapunov_bounds():
 
 
 def experiment_grammar_energy_mapping():
-    """Map each grammar rule U1-U6 to its energy constraint.
+    """Annotate requested operators with grammar policies and measured energy.
 
-    This closes the loop: grammar -> physics -> energy -> conservation.
-
-    U1 (Initiation/Closure) -> Trajectory has defined start/end
-    U2 (Convergence)        -> Net energy bounded (Lyapunov)
-    U3 (Resonant Coupling)  -> Coupling preserves or reduces energy
-    U4 (Bifurcation)        -> Excursions controlled by handlers
-    U5 (Multi-Scale)        -> Hierarchical energy decomposition
-    U6 (Confinement)        -> Phi_s bounded by the U6 limit pi/2 ~ 1.571
+    Grammar rules constrain sequence form, debt, phase gates, bifurcation
+    context, nesting and potential drift. They do not assign a universal
+    candidate-energy change to an operator step.
     """
     print("\n" + "=" * 72)
-    print("  EXPERIMENT 4: Grammar Rule -> Energy Constraint Mapping")
-    print("  (Closing the loop: nodal eq -> grammar -> energy -> tetrad)")
+    print("  EXPERIMENT 4: Grammar Policy Annotations and Energy")
+    print("  (requested and actually applied glyphs are kept distinct)")
     print("=" * 72)
 
     G = _build_graph()
@@ -397,49 +413,56 @@ def experiment_grammar_energy_mapping():
     sequence_plan = [
         # Step, Op,         Grammar rules exercised
         ("AL", Emission(), "U1a (generator initiation)"),
-        ("EN", Reception(), "U3 (reception within coupling)"),
+        ("EN", Reception(), "continuation; EN has no U3 phase gate"),
         ("UM", Coupling(), "U3 (phase-gated coupling)"),
         ("OZ", Dissonance(), "U2, U4a (destabiliser needs handler)"),
-        ("IL", Coherence(), "U2 (convergence), U4a (handler)"),
+        ("IL", Coherence(), "U2 stabilizer, U4a handler role"),
         ("THOL", SelfOrganization(), "U2 (stabiliser), U4b (transformer)"),
-        ("IL", Coherence(), "U2 (additional stabilisation)"),
+        ("IL", Coherence(), "U2 stabilizer role"),
         ("SHA", Silence(), "U1b (closure)"),
     ]
 
-    print(f'\n  {"Step":>5s} {"Op":>5s} {"E":>12s} {"dE":>10s}' f' {"Rule":40s}')
-    print("  " + "-" * 76)
+    print(
+        f'\n  {"Step":>5s} {"Req":>5s} {"Actual":>8s} {"E":>12s}'
+        f' {"dE":>10s} {"Requested-policy annotation":42s}'
+    )
+    print("  " + "-" * 91)
 
     E_prev = compute_energy_functional(G)
     print(
-        f"  {'INIT':>5s} {'---':>5s} {E_prev:12.6f} {'---':>10s}"
-        f" {'Baseline state':40s}"
+        f"  {'INIT':>5s} {'---':>5s} {'---':>8s} {E_prev:12.6f}"
+        f" {'---':>10s} {'Baseline state':42s}"
     )
 
-    rule_effects = {}
-    for glyph, op, rule_desc in sequence_plan:
-        try:
-            op(G, target)
-        except Exception:
-            pass
+    replacements: list[tuple[str, str]] = []
+    for step, (glyph, op, rule_desc) in enumerate(sequence_plan, start=1):
+        actual = _apply_and_read_actual_glyph(G, target, op)
+        if actual != glyph:
+            replacements.append((glyph, actual))
         E = compute_energy_functional(G)
         dE = E - E_prev
         print(
-            f"  {len(rule_effects) + 1:5d} {glyph:>5s} {E:12.6f}"
-            f" {dE:+10.6f} {rule_desc:40s}"
+            f"  {step:5d} {glyph:>5s} {actual:>8s} {E:12.6f}"
+            f" {dE:+10.6f} {rule_desc:42s}"
         )
-        rule_effects[glyph] = {"dE": dE, "rule": rule_desc}
         E_prev = E
 
-    print("\n  Grammar-Energy Correspondence:")
-    print("  U1 (Init/Close): Defines energy trajectory boundaries")
-    print("  U2 (Convergence): sum(dE) over stabilisers compensates destabilisers")
-    print("  U3 (Coupling):    Phase-gated; conserves or mildly changes energy")
-    print("  U4 (Bifurcation): Temporary energy excursion within handler bounds")
-    print("  U5 (Multi-Scale): Sub-EPI energy additive; parent E >= sum(child E)")
+    print(f"\n  Runtime replacements: {len(replacements)}")
+    for requested, actual in replacements:
+        actual_name = _operator_name_for_glyph(actual)
+        print(f"    requested {requested} -> applied {actual}/{actual_name}")
+
+    print("\n  Grammar-policy scope:")
+    print("  U1: start/closure syntax; no candidate-energy sign follows")
+    print("  U2: destabilizer debt and stabilizer compensation policy")
+    print("  U3: phase-compatibility gate for UM/RA")
+    print("  U4: trigger/handler and transformer-context policy")
+    print("  U5: nested-coherence policy; not exercised by this flat sequence")
     print(
-        f"  U6 (Confinement): |Phi_s| < {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f} "
-        f"bounds max energy density"
+        f"  U6: selected max |Delta Phi_s| < {U6_STRUCTURAL_POTENTIAL_LIMIT:.3f}; "
+        "not evaluated here"
     )
+    print("  The dE column is measured output, not a consequence of these labels.")
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -452,7 +475,7 @@ def main():
     print("  TNFR Example 38: Grammar Energy Landscape")
     print("  Operator Sequences as Energy Trajectories")
     print("  " + "=" * 50)
-    print(f"  Seed: {SEED}  |  Theory: Conservation Theorem, U1-U6")
+    print(f"  Seed: {SEED}  |  Scope: candidate energy and U1-U6 policies")
     print()
 
     experiment_compliant_trajectory()
@@ -465,34 +488,33 @@ def main():
     print("=" * 72)
     print(
         """
-  1. Grammar-Compliant Trajectories:
-     Sequences satisfying U1-U6 trace *bounded* paths in energy space.
-     The energy functional E acts as a Lyapunov function: dE/dt <= 0
-     for net grammar-compliant evolution.
+  1. Grammar-Valid Requested Trajectory:
+     The first finite run records requested and runtime-applied glyphs for
+     one statically valid requested word.
+     Its observed sign does not establish a grammar-wide Lyapunov theorem.
 
-  2. Canonical Pattern Signatures:
-     Bootstrap: energy injection then stabilisation (net mild increase).
-     Stabilise: pure Lyapunov descent (guaranteed by IL contraction).
-     Explore:   controlled excursion (OZ up, then IL brings E back down).
-     Propagate: redistribution without net energy change.
+  2. Requested Fragment Signatures:
+     Each table reports both the requested fragment and the actual runtime
+     trace. A fallback trace cannot characterize the rejected request.
 
-  3. Lyapunov Bounds:
-     Theoretical per-operator bounds (from canonical constants, zero
-     empirical fitting) predict measured energy changes accurately.
-     This validates the operator energy classification in
-     STRUCTURAL_OPERATORS.md.
+  3. Nominal Policy Multipliers:
+     Legacy per-operator multipliers and measured candidate-energy changes
+     remain separate quantities; this example does not call one a bound.
 
-  4. Grammar-Energy Correspondence:
-     Each grammar rule maps to a specific energy constraint:
+  4. Grammar Policy Scope:
+     The rules constrain the following structural conditions:
        U1 -> trajectory existence and termination
-       U2 -> Lyapunov boundedness (integral convergence)
-       U3 -> coupling energy conservation
-       U4 -> controlled excursion within handler bounds
-       U5 -> hierarchical energy additivity
-       U6 -> maximum energy density confinement (pi/2 bound)
+       U2 -> destabilizer/stabilizer composition policy
+       U3 -> phase-compatible coupling gate
+       U4 -> trigger/handler and recency policy
+       U5 -> nested-coherence constraint
+       U6 -> selected structural-potential drift monitor
 
-     This completes the causal chain:
-       Nodal Equation -> Grammar Rules -> Energy Bounds -> Tetrad Safety
+     Candidate-energy changes are measured alongside these conditions;
+     no universal implication between them is asserted.
+
+  Operator exceptions propagate, and every successful row is labelled from
+  the actual glyph history written by the runtime.
 """
     )
 

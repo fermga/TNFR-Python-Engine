@@ -1,25 +1,16 @@
-"""
-Emergent Chemistry & Particles from TNFR Nodal Dynamics
-=======================================================
+"""Compare three structurally distinct read-outs without identifying them.
 
-Demonstration that chemistry and particle classes can be DERIVED from the TNFR
-nodal dynamics (∂EPI/∂t = νf·ΔNFR), following the same canonical template that the
-number-theory layer uses for primality — instead of being POSTULATED (random-seeded
-atoms, hand-placed "electron" vortices) as in the legacy ``tnfr.physics.patterns``
-analogy layer.
+* Arithmetic pressure is an exact but divisibility-informed primality
+  re-expression.
+* The chemical example combines a chosen S² graph, conventional shell
+  capacities, Madelung ordering and duet/octet closure rules.
+* The loop example measures winding on explicitly prepared phase rings.
 
-Unifying principle across all three domains — the SAME structural-equilibrium /
-quantization criterion:
-
-    Number theory : n is prime          ⟺  ΔNFR(n) = 0      (intrinsic: Ω, τ, σ)
-    Chemistry     : Z is noble (inert)  ⟺  ΔNFR_chem(Z) = 0 (emergent: shell filling)
-    Particles     : topological charge  ∈  ℤ (quantized)    (emergent: phase winding)
-
-The quantum regime is NOT imported: a bounded structural manifold admits only
-discrete resonant eigenmodes (TNFR discrete-mode regime), and a closed manifold
-admits only integer topological charges. Both facts already emerge from the nodal
-equation. Atomic number Z is an emergent count of filled eigenmodes; particle class
-is an emergent reading of the quantized winding number.
+The first two reuse a numerical zero-pressure predicate, while winding is a
+different topological invariant. Shared notation does not make their state
+spaces or dynamics equivalent. This example demonstrates the implemented
+calculations and their assumptions; it does not derive chemistry, quantum
+mechanics or particle species from the nodal equation.
 
 Run:
     python examples/07_number_theory/emergent_chemistry_particles_demo.py
@@ -27,14 +18,19 @@ Run:
 
 from __future__ import annotations
 
+import sys
+
 from tnfr.physics.emergent_chemistry import (
     classify_element,
     emergent_magic_numbers,
     fibonacci_sphere_graph,
     structural_eigenmodes,
 )
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 from tnfr.physics.emergent_particles import (
-    classify_particle,
+    classify_winding_sector,
     winding_number,
     winding_ring,
 )
@@ -47,7 +43,7 @@ try:
     from tnfr.mathematics.number_theory import ArithmeticTNFRParameters
 
     _HAS_NT = True
-except Exception:  # pragma: no cover - optional cross-check
+except (ImportError, ModuleNotFoundError):  # pragma: no cover - optional cross-check
     _HAS_NT = False
 
 
@@ -58,14 +54,14 @@ def _rule(title: str) -> None:
 
 
 def demo_number_theory_anchor() -> None:
-    """Canonical anchor: primality as ΔNFR = 0 (the template we follow)."""
-    _rule("ANCHOR — Number theory: primality as ΔNFR = 0 (canonical template)")
+    """Comparison anchor: arithmetic primality as ΔNFR = 0."""
+    _rule("COMPARISON — arithmetic primality as ΔNFR = 0")
     if not _HAS_NT:
         print("  (sympy/number_theory unavailable; skipping anchor)")
         return
     params = ArithmeticTNFRParameters()
     print(
-        "  Coefficients derive from (φ, γ, π, e): "
+        "  Canonical unit coefficients: "
         f"ζ={params.zeta:.4f}  η={params.eta:.4f}  θ={params.theta:.4f}"
     )
     print("  n   ΔNFR(n)   prime?")
@@ -77,31 +73,35 @@ def demo_number_theory_anchor() -> None:
         )
         dnfr = _NT.delta_nfr_value(n, terms, params)
         print(f"  {n:<3d} {dnfr:7.4f}   {bool(_sp.isprime(n))}")
-    print("  → ΔNFR = 0 exactly on primes. Triad derived from intrinsic Ω, τ, σ.")
+    print("  → ΔNFR = 0 on these primes; the calculation consumes Ω, τ and σ.")
 
 
 def demo_chemistry() -> None:
-    """Chemistry derived from structural eigenmodes."""
-    _rule("CHEMISTRY — atomic structure from structural eigenmodes")
+    """Run the assumption-explicit shell-model correspondence."""
+    _rule("CHEMICAL SHELL MODEL — assumptions plus graph-spectrum comparison")
 
-    print("\nSTEP 1 — eigenmode degeneracy EMERGES (structural Laplacian on S²)")
+    print("\nSTEP 1 — measured clusters on a constructed S² nearest-neighbour graph")
     G = fibonacci_sphere_graph(n_points=400, k_neighbors=6)
     shells = structural_eigenmodes(G)
     for s in shells:
+        angular = (
+            f"l={s.angular_index}; candidate 2l+1={s.multiplicity}"
+            if s.angular_index is not None
+            else f"unresolved angular label; multiplicity={s.multiplicity}"
+        )
         print(
-            f"  l={s.angular_index}  multiplicity (2l+1) = {s.multiplicity}"
-            f"   eigenvalue = {s.eigenvalue:.4f}"
+            f"  {angular}   eigenvalue = {s.eigenvalue:.4f}"
         )
     print(
-        f"  → emergent multiplicities {[s.multiplicity for s in shells]} "
-        "= angular eigenmodes 1,3,5,7 (NOT postulated)"
+        f"  → measured multiplicities {[s.multiplicity for s in shells]} "
+        "under this finite clustering protocol"
     )
 
-    print("\nSTEP 2 — magic numbers EMERGE from eigenmode filling (νf ∝ n+l)")
-    print(f"  emergent noble-gas Z : {emergent_magic_numbers()}")
-    print("  empirical noble gases: [2, 10, 18, 36, 54, 86]  (118 = predicted next)")
+    print("\nSTEP 2 — closures generated by assumed capacities and Madelung ordering")
+    print(f"  shell-model closure counts: {emergent_magic_numbers()}")
+    print("  comparison values: [2, 10, 18, 36, 54, 86, 118]")
 
-    print("\nSTEP 3 — octet rule as ΔNFR = 0 (same criterion as primality)")
+    print("\nSTEP 3 — selected duet/octet distance reported as ΔNFR_chem")
     samples = {
         1: "H",
         2: "He",
@@ -119,34 +119,42 @@ def demo_chemistry() -> None:
     print("   Z  el  valence  ΔNFR_chem   status")
     for Z, name in samples.items():
         e = classify_element(Z)
-        status = "CLOSED (noble)" if e.closed_shell else "reactive"
+        status = "model-closed" if e.closed_shell else "model-open"
         print(
             f"  {Z:>3d} {name:<3s}   {e.valence_electrons:>2d}     "
             f"{e.delta_nfr:7.4f}   {status}"
         )
     nobles_ok = all(classify_element(z).closed_shell for z in (2, 10, 18, 36, 54))
-    print(f"  → every noble gas has ΔNFR_chem = 0: {nobles_ok}")
-    print("  → halogens & alkali share |ΔNFR| = 1 (one structural step from closure)")
+    print(f"  → listed closed-shell cases have model ΔNFR_chem = 0: {nobles_ok}")
+    print("  → the assumed distance assigns selected neighbouring cases |ΔNFR| = 1")
 
 
 def demo_particles() -> None:
-    """Particle classes derived from the quantized topological charge."""
-    _rule("PARTICLES — coherent modes classified by quantized topological charge")
+    """Measure winding sectors on prepared phase rings."""
+    _rule("CLOSED PHASE LOOPS — winding-sector measurement")
 
-    print("\nTopological charge QUANTIZES (integer winding, any manifold size)")
+    print("\nWrapped circulation on explicitly prepared rings")
     print("  target   n=37   n=128   n=501   (measured winding W)")
     for target in (0.0, 1.0, 2.0, 3.0, -1.0, 1.5):
         ws = [winding_number(winding_ring(n, target))[0] for n in (37, 128, 501)]
-        note = "  ← half-integer forbidden → snaps to ℤ" if target == 1.5 else ""
+        note = (
+            "  ← sampled loop maps this real target to an integer class"
+            if target == 1.5
+            else ""
+        )
         print(f"  {target:+.1f}     {ws[0]:+d}      {ws[1]:+d}      {ws[2]:+d}{note}")
 
-    print("\nEmergent classification (output of measured invariants, not a label)")
-    print("   W   chirality   class")
+    print("\nStructural winding-sector read-out")
+    print("   W   orientation  class")
     for target in (0.0, 1.0, -1.0, 2.0, 3.0):
-        p = classify_particle(winding_ring(240, target))
-        chir = {1: "matter", -1: "antimatter", 0: "neutral"}[p.chirality]
-        print(f"  {p.winding:+d}   {chir:<10s}  {p.particle_class}")
-    print("  → |W|=0 boson-like, |W|=1 fermion-like, |W|≥2 composite; sign = chirality")
+        sector = classify_winding_sector(winding_ring(240, target))
+        orientation = {
+            1: "positive",
+            -1: "negative",
+            0: "neutral",
+        }[sector.orientation_sign]
+        print(f"  {sector.winding:+d}   {orientation:<10s}  {sector.winding_class}")
+    print("  → zero, unit and higher winding; sign records loop orientation")
 
 
 def main() -> None:
@@ -155,11 +163,11 @@ def main() -> None:
     demo_chemistry()
     demo_particles()
     _rule("SUMMARY")
-    print("  One criterion, three domains:")
+    print("  Three scoped read-outs:")
     print("    primality   : ΔNFR(n) = 0")
     print("    noble gas   : ΔNFR_chem(Z) = 0")
-    print("    particle    : topological charge ∈ ℤ")
-    print("  All derived from ∂EPI/∂t = νf·ΔNFR — none postulated.")
+    print("    phase loop  : wrapped winding W ∈ ℤ for a declared closed loop")
+    print("  The chemical rules and loop initial conditions are explicit inputs.")
 
 
 if __name__ == "__main__":

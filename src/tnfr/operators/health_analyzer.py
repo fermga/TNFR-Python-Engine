@@ -25,7 +25,6 @@ from ..config.operator_names import (
     TRANSFORMERS,
     TRANSITION,
 )
-from ..constants.canonical import THOL_MIN_COLLECTIVE_COHERENCE
 
 __all__ = [
     "SequenceHealthMetrics",
@@ -731,83 +730,49 @@ class SequenceHealthAnalyzer:
 
         return "unknown"
 
-    def analyze_thol_coherence(self, G: TNFRGraph) -> dict[str, Any] | None:
-        """Analyze collective coherence of THOL bifurcations across the network.
+    def analyze_thol_alignment(self, G: TNFRGraph) -> dict[str, Any] | None:
+        """Summarize variance-based sub-EPI amplitude alignment.
 
-        Examines all nodes that have undergone THOL bifurcation and provides
-        statistics on their collective coherence metrics.
-
-        Parameters
-        ----------
-        G : TNFRGraph
-            Graph containing nodes with potential THOL bifurcations
-
-        Returns
-        -------
-        dict or None
-            Dictionary containing coherence statistics:
-            - mean_coherence: Average coherence across all THOL nodes
-            - min_coherence: Lowest coherence value observed
-            - max_coherence: Highest coherence value observed
-            - nodes_below_threshold: Count of nodes with coherence < 0.3
-            - total_thol_nodes: Total nodes with sub-EPIs
-            Returns None if no THOL bifurcations exist in the network.
-
-        Notes
-        -----
-        TNFR Principle: Collective coherence measures the structural alignment
-        of emergent sub-EPIs. Low coherence may indicate chaotic fragmentation
-        rather than controlled emergence.
-
-        This metric is particularly useful for:
-        - Detecting pathological bifurcation patterns
-        - Monitoring network-wide self-organization quality
-        - Identifying nodes requiring stabilization
-
-        Examples
-        --------
-        >>> analyzer = SequenceHealthAnalyzer()
-        >>> # After running THOL operations on graph G
-        >>> coherence_stats = analyzer.analyze_thol_coherence(G)
-        >>> if coherence_stats:
-        ...     print(f"Mean coherence: {coherence_stats['mean_coherence']:.3f}")
-        ...     print(f"Nodes below threshold: {coherence_stats['nodes_below_threshold']}")
+        This readout does not use DeltaNFR or dEPI and therefore does not
+        certify canonical C(t), fragmentation, or U5. Use the explicit
+        parent/child assessment in tnfr.physics when a configured alpha is
+        available.
         """
-        # Find all nodes with sub-EPIs (THOL bifurcation occurred)
-        thol_nodes = []
-        for node in G.nodes():
-            if G.nodes[node].get("sub_epis"):
-                thol_nodes.append(node)
 
+        from .metabolism import compute_subepi_amplitude_alignment
+
+        thol_nodes = [
+            node for node in G.nodes() if G.nodes[node].get("sub_epis")
+        ]
         if not thol_nodes:
             return None
-
-        # Collect coherence values
-        coherences = []
-        for node in thol_nodes:
-            coh = G.nodes[node].get("_thol_collective_coherence")
-            if coh is not None:
-                coherences.append(coh)
-
-        if not coherences:
-            return None
-
-        # Compute statistics
-        mean_coherence = sum(coherences) / len(coherences)
-        min_coherence = min(coherences)
-        max_coherence = max(coherences)
-
-        # Get threshold from graph config (fallback: canonical 1/(π+1) ≈ 0.2415)
-        threshold = float(
-            G.graph.get("THOL_MIN_COLLECTIVE_COHERENCE", THOL_MIN_COLLECTIVE_COHERENCE)
-        )
-        nodes_below_threshold = sum(1 for c in coherences if c < threshold)
-
+        alignments = [
+            compute_subepi_amplitude_alignment(G, node) for node in thol_nodes
+        ]
         return {
-            "mean_coherence": mean_coherence,
-            "min_coherence": min_coherence,
-            "max_coherence": max_coherence,
-            "nodes_below_threshold": nodes_below_threshold,
+            "mean_alignment": sum(alignments) / len(alignments),
+            "min_alignment": min(alignments),
+            "max_alignment": max(alignments),
             "total_thol_nodes": len(thol_nodes),
-            "threshold": threshold,
+            "metric_kind": "subepi_amplitude_variance_proxy",
+            "u5_assessed": False,
+        }
+
+    def analyze_thol_coherence(self, G: TNFRGraph) -> dict[str, Any] | None:
+        """Compatibility wrapper for analyze_thol_alignment.
+
+        Historical coherence keys are retained as aliases. Threshold fields are
+        None because no derived amplitude-alignment threshold exists.
+        """
+
+        result = self.analyze_thol_alignment(G)
+        if result is None:
+            return None
+        return {
+            **result,
+            "mean_coherence": result["mean_alignment"],
+            "min_coherence": result["min_alignment"],
+            "max_coherence": result["max_alignment"],
+            "nodes_below_threshold": None,
+            "threshold": None,
         }

@@ -1,14 +1,14 @@
 """Simple TNFR SDK — Maximum Power, Minimum Complexity.
 
 The simplified TNFR API designed for 90% of use cases, now with full
-Structural Field Tetrad, conservation law monitoring, grammar-aware
+Structural Field Tetrad, finite structural-balance monitoring, grammar-aware
 dynamics, and research-grade telemetry.
 
 **DESIGN PRINCIPLE**:
 - **Intuitive**: Natural method names that read like English
 - **Chainable**: Fluent interface for rapid prototyping
-- **Complete**: Full TNFR physics under the hood
-- **Research-grade**: Structural Field Tetrad + conservation laws
+- **Integrated**: Core TNFR dynamics and diagnostics behind one interface
+- **Research-grade**: Structural Field Tetrad + scoped balance diagnostics
 
 **USAGE EXAMPLES**::
 
@@ -25,11 +25,11 @@ dynamics, and research-grade telemetry.
     tetrad = net.tetrad()
     # -> {'phi_s': {...}, 'grad_phi': {...}, 'k_phi': {...}, 'xi_c': float, ...}
 
-    # Conservation law monitoring
+    # Finite structural-balance monitoring
     conservation = net.conservation()
-    # -> {'noether_charge': Q, 'energy': E, 'lyapunov_stable': bool, ...}
+    # -> structural charge, candidate energy, sampled balance and legacy aliases
 
-    # Unified telemetry (all fields + invariants)
+    # Unified diagnostic fields and invariant read-outs
     telemetry = net.telemetry()
 
     # Grammar-aware evolution
@@ -38,22 +38,36 @@ dynamics, and research-grade telemetry.
 
 from __future__ import annotations
 
-import warnings
+import math
+from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 import networkx as nx
 
-from ..alias import get_attr, set_attr
+from ..alias import get_attr
 from ..constants import DEFAULTS
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..constants.aliases import (
+    ALIAS_DEPI,
+    ALIAS_DNFR,
+    ALIAS_EPI,
+    ALIAS_THETA,
+    ALIAS_VF,
+)
 from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as COHERENCE_STRONG
+from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
 from ..metrics.coherence import compute_coherence
 from ..metrics.common import is_structural_equilibrium, structural_coherence
 from ..metrics.sense_index import compute_Si
-from ..operators.nodal_equation import compute_d2epi_dt2, compute_expected_depi_dt
+from ..operators.nodal_equation import compute_d2epi_dt2
+from ..physics.mutation_trigger import (
+    MutationTriggerCertificate,
+    MutationTriggerInputError,
+    certify_mutation_trigger,
+)
+from ..types import BEPIProtocol, scalarize_epi
 
 # TNFR core imports
 from ..structural import create_nfr
@@ -61,15 +75,9 @@ from ._topology import grid_edges, nonnegative_integer, probability as validate_
 from ._topology import ring_edges, small_world_edges
 
 # Canonical telemetry marks (AGENTS.md §7) -- heuristic cuts, not fitted:
-#   C(t) > COHERENCE_STRONG (π/(π+1) ~0.7585, emergent gate) -> strong coherence
+#   C(t) > COHERENCE_STRONG (π/(π+1) ~0.7585, selected telemetry cut)
 #   Si   > SENSE_INDEX_EXCELLENT (~0.8)               -> excellent sense index
 SENSE_INDEX_EXCELLENT = 0.8
-
-# Canonical mutation/bifurcation threshold xi. ZHIR (Mutation) is the
-# structural bifurcation operator: it transforms phase when the structural
-# change rate crosses xi (AGENTS.md §5: "ZHIR transforms theta when
-# dEPI/dt > xi"). Mirrors the engine default ZHIR_THRESHOLD_XI.
-_ZHIR_THRESHOLD_XI_DEFAULT = 0.1
 
 # Canonical graph-node equilibrium tolerance (EPS_DNFR_STABLE ~ 1e-3): the same
 # cut the engine's stability tracker uses (metrics/coherence). The per-node
@@ -78,67 +86,98 @@ _ZHIR_THRESHOLD_XI_DEFAULT = 0.1
 _EPS_DNFR_STABLE_DEFAULT = float(DEFAULTS["EPS_DNFR_STABLE"])
 
 
-def _run_network_sequence(
-    G: nx.Graph,
-    operator_names: list[str],
+def _raw_alias_value(data: dict[str, Any], aliases: tuple[str, ...]) -> Any:
+    """Read the first present alias without coercing certificate inputs."""
+
+    for key in aliases:
+        if key in data:
+            return data[key]
+    return None
+
+
+def _certificate_epi_value(value: Any) -> Any:
+    """Scalarize canonical BEPI form while preserving invalid scalar inputs."""
+
+    serialized_bepi = isinstance(value, Mapping) and {
+        "continuous",
+        "discrete",
+        "grid",
+    }.issubset(value)
+    if isinstance(value, BEPIProtocol) or serialized_bepi:
+        return scalarize_epi(value)
+    return value
+
+
+def _certify_sdk_mutation_trigger(
     *,
-    cycles: int = 1,
-    validate: bool = True,
-    suppress_birth_warnings: bool = False,
-    context: dict[str, Any] | None = None,
-    on_step: Callable[[str], None] | None = None,
-) -> None:
-    """Evolve all nodes synchronously (lock-step) by an operator sequence.
+    node: Any | None,
+    current_epi: Any,
+    nu_f: Any,
+    delta_nfr: Any,
+    xi: Any,
+    epi_time_history: Any = None,
+    epi_history: Any = None,
+    legacy_epi_history: Any = None,
+) -> MutationTriggerCertificate:
+    """Build the pure trigger certificate and translate input errors for the SDK."""
 
-    Canonical network-evolution primitive shared by the SDK surfaces. Each
-    operator in *operator_names* is applied to EVERY node before advancing to
-    the next, honouring the temporal simultaneity of the nodal equation
-    dEPI/dt = nu_f * dNFR(t): the coupling operators (Reception, Resonance,
-    Coupling) see neighbours at the same time step. A row-major schedule
-    (whole sequence per node) would fracture coupling symmetry.
+    try:
+        return certify_mutation_trigger(
+            current_epi=_certificate_epi_value(current_epi),
+            nu_f=nu_f,
+            delta_nfr=delta_nfr,
+            xi=xi,
+            epi_time_history=epi_time_history,
+            epi_history=epi_history,
+            legacy_epi_history=legacy_epi_history,
+        )
+    except MutationTriggerInputError as exc:
+        context: dict[str, Any] = {
+            "field": exc.field,
+            "value": repr(exc.value),
+            "reason": exc.reason,
+        }
+        if node is not None:
+            context["node"] = node
+        raise TNFRValueError(
+            "Invalid nodal Mutation-trigger input.",
+            context=context,
+            suggestion=(
+                "Provide finite real EPI, nu_f, DeltaNFR channels and a "
+                "finite nonnegative Mutation threshold."
+            ),
+        ) from exc
 
-    When *validate* is True, canonical instance validation supplies explicit
-    remaining-word context for U4a's future handlers. Live U2/U3/U4b checks
-    still run at each node; a blocked step raises instead of substituting a
-    different operator. Earlier accepted steps are not rolled back. Without
-    validation, standalone incremental selection remains active. Form (EPI)
-    is created from the structural vacuum by the
-    Emission generator that opens canonical sequences -- never by direct
-    assignment (invariant #1; grammar U1).
+
+from ..operators.word_execution import (
+    preflight_network_mutation_sequence as _preflight_sdk_mutation_sequence,
+    run_network_sequence as _run_network_sequence,
+)
+# Private aliases are retained for downstream SDK compatibility; new code should
+# import the neutral public functions from tnfr.operators.
+
+
+def _first_interpolated_crossing(
+    samples: list[float], threshold: float
+) -> float | None:
+    """Estimate the first upward threshold crossing between sampled steps.
+
+    Returning a fractional step prevents two distinct crossings within the
+    same sampling interval from being reported as simultaneous. No crossing
+    is inferred beyond the observed trajectory.
     """
-    from ..operators.registry import get_operator_class
-    from ..operators.grammar_execution import ValidatedSequence
-    from ..validation import validate_sequence
 
-    names = list(operator_names)
-    if not names:
-        return
-    ops = [get_operator_class(n)() for n in names]
-    execution_word = ValidatedSequence(ops, context=context) if validate else None
-    if validate:
-        outcome = validate_sequence(names, context=context)
-        if not outcome.passed:
-            raise TNFRValueError(
-                "Invalid sequence: " + outcome.summary.get("message", "validation failed"),
-                context={"sequence": names, "outcome": outcome.summary},
-            )
-    compute = G.graph.get("compute_delta_nfr")
-    nodes = list(G.nodes())
-    with warnings.catch_warnings():
-        if suppress_birth_warnings:
-            warnings.filterwarnings("ignore", message=r".*has no sources.*")
-        for _ in range(cycles):
-            for index, op in enumerate(ops):
-                for node in nodes:
-                    G._last_operator_applied = op.name
-                    if execution_word is None:
-                        op(G, node)
-                    else:
-                        op(G, node, sequence_context=execution_word.step(index))
-                if callable(compute):
-                    compute(G)
-                if on_step is not None:
-                    on_step(op.name)
+    if not samples:
+        return None
+    if samples[0] >= threshold:
+        return 0.0
+    for index in range(1, len(samples)):
+        previous = samples[index - 1]
+        current = samples[index]
+        if previous < threshold <= current:
+            fraction = (threshold - previous) / (current - previous)
+            return float(index - 1) + fraction
+    return None
 
 
 try:
@@ -169,22 +208,20 @@ try:
 except ImportError:
     _HAS_FIELDS = False
 
-# Conservation laws (Noether-like)
+# Finite structural-balance diagnostics (historically Noether-like)
 try:
     from ..physics.conservation import (
         ConservationTracker,
-        capture_conservation_snapshot,
         compute_energy_functional,
         compute_lyapunov_derivative,
         compute_noether_charge,
-        verify_conservation_balance,
     )
 
     _HAS_CONSERVATION = True
 except ImportError:
     _HAS_CONSERVATION = False
 
-# Emergent symplectic substrate (geometry the nodal dynamics generates)
+# Auxiliary ambient symplectic model initialized from extracted graph fields
 try:
     from ..physics.symplectic_substrate import (
         background_potential,
@@ -236,8 +273,9 @@ except Exception:
 class TetradSnapshot:
     """Structural Field Tetrad snapshot — four canonical fields.
 
-    Captures the complete state of the TNFR Structural Field Tetrad
-    (Phi_s, |grad_phi|, K_phi, xi_C) at a single point in time.
+    Captures the complete four-field diagnostic read-out
+    (Phi_s, |grad_phi|, K_phi, xi_C) at a single point in time. These lossy
+    summaries do not reconstruct the complete TNFR graph state.
 
     Attributes
     ----------
@@ -316,8 +354,8 @@ class TetradSnapshot:
 class ConservationReport:
     """Finite-trajectory structural conservation diagnostics.
 
-    Captures the Noether-like tetrad charge, energy candidate, observed
-    finite-step energy change, and conservation-quality telemetry.
+    Captures the historically named tetrad charge candidate, energy candidate,
+    observed finite-step energy change, and balance-quality telemetry.
     """
 
     noether_charge: float = 0.0
@@ -325,25 +363,91 @@ class ConservationReport:
     lyapunov_stable: bool = True
     lyapunov_derivative: float = 0.0
     conservation_quality: float = 0.0
+    sample_available: bool = False
+
+    @property
+    def structural_charge(self) -> float:
+        """Accurately named view of the historical ``noether_charge`` field."""
+        return self.noether_charge
+
+    @property
+    def candidate_energy(self) -> float:
+        """Structural energy evaluated as a Lyapunov candidate."""
+        return self.energy
+
+    @property
+    def candidate_energy_nonincreasing(self) -> bool | None:
+        """Finite-step energy result, or ``None`` before an interval exists."""
+        if not self.sample_available:
+            return None
+        if not np.isfinite(self.lyapunov_derivative):
+            return None
+        return self.lyapunov_derivative <= 0.0
+
+    @property
+    def candidate_energy_within_numerical_tolerance(self) -> bool | None:
+        """Historical Lyapunov classification, including its tolerance."""
+        return self.lyapunov_stable if self.sample_available else None
+
+    @property
+    def candidate_energy_derivative(self) -> float | None:
+        """Sampled candidate-energy derivative, unavailable on first capture."""
+        return self.lyapunov_derivative if self.sample_available else None
+
+    @property
+    def balance_quality(self) -> float | None:
+        """Finite-step balance quality, unavailable on first capture."""
+        return self.conservation_quality if self.sample_available else None
 
     def summary(self) -> str:
-        """One-line conservation summary."""
-        stable_str = "STABLE" if self.lyapunov_stable else "UNSTABLE"
+        """One-line scoped balance and candidate-energy summary."""
+        if not self.sample_available:
+            return (
+                f"Q_candidate={self.noether_charge:.4f}, "
+                f"E_candidate={self.energy:.4f}, interval=UNSAMPLED"
+            )
+        exact_trend = self.candidate_energy_nonincreasing
+        if exact_trend is None:
+            trend = "UNDEFINED"
+        else:
+            trend = "NON-INCREASING" if exact_trend else "INCREASING"
         return (
-            f"Q={self.noether_charge:.4f}, E={self.energy:.4f}, "
-            f"dE/dt={self.lyapunov_derivative:.4f} ({stable_str}), "
-            f"quality={self.conservation_quality:.3f}"
+            f"Q_candidate={self.noether_charge:.4f}, "
+            f"E_candidate={self.energy:.4f}, "
+            f"candidate dE/dt={self.lyapunov_derivative:.4f} ({trend}), "
+            f"balance_quality={self.conservation_quality:.3f}"
         )
+
+
+def _empty_balance_alert_report(diagnostic_scope: str) -> dict[str, Any]:
+    """Build one consistent unsampled balance-alert result."""
+    return {
+        "sample_available": False,
+        "alerts_detected": False,
+        "alert_count": 0,
+        "alert_types": [],
+        "nodes_alerted": [],
+        "severity": 0.0,
+        # Backward-compatible grammar-shaped keys remain deliberately empty.
+        "violations_detected": False,
+        "violation_count": 0,
+        "violation_types": [],
+        "nodes_violating": [],
+        "diagnostic_scope": diagnostic_scope,
+        "grammar_validation_applicable": False,
+        "grammar_validated": False,
+        "grammar_rules_assessed": (),
+    }
 
 
 @dataclass
 class SymplecticReport:
-    """Emergent symplectic substrate diagnostics.
+    """Diagnostics for the auxiliary ambient symplectic substrate model.
 
-    Captures the geometry the nodal dynamics generates from itself: phase
-    space dimension 4N, the substrate Hamiltonian H_sub, the configuration
-    background U, the Liouville divergence (≈0), and whether the structure
-    is a valid symplectic manifold.
+    Extracted graph fields initialize a point in the ambient phase space
+    ``R^(4N)``. The report evaluates that model's harmonic Hamiltonian,
+    held-fixed configuration background, Liouville divergence, and canonical
+    symplectic structure. It does not derive this model from the nodal flow.
     """
 
     phase_space_dimension: int = 0
@@ -365,10 +469,10 @@ class SymplecticReport:
 
 @dataclass
 class FactorizationReport:
-    """Unified SDK report for canonical TNFR factorization.
+    """SDK report for canonical TNFR factorization.
 
     Bridges `tnfr.factorization.factorize()` with SDK-level telemetry and
-    optional network-coupled synergy diagnostics.
+    an optional, explicitly heuristic comparison to a caller-supplied network.
     """
 
     n: int
@@ -384,7 +488,7 @@ class FactorizationReport:
     operator_strategy_plan: dict[str, Any] | None = None
     spectral: dict[str, Any] = field(default_factory=dict)
     telemetry: dict[str, Any] = field(default_factory=dict)
-    network_synergy: dict[str, Any] | None = None
+    network_synergy: dict[str, Any] | None = None  # legacy field name
 
     def summary(self) -> str:
         certified = len(self.tnfr_certified_factors)
@@ -415,10 +519,10 @@ class FactorizationReport:
 
 @dataclass
 class PrimalityReport:
-    """Unified SDK report for canonical TNFR primality analysis.
+    """SDK report for canonical TNFR primality analysis.
 
     Bridges `tnfr.primality.analyze()` with SDK-level telemetry and
-    optional network-coupled synergy diagnostics.
+    an optional, explicitly heuristic comparison to a caller-supplied network.
     """
 
     n: int
@@ -427,10 +531,10 @@ class PrimalityReport:
     tolerance: float
     components: dict[str, Any] = field(default_factory=dict)
     triad: dict[str, Any] = field(default_factory=dict)
-    network_synergy: dict[str, Any] | None = None
+    network_synergy: dict[str, Any] | None = None  # legacy field name
 
     def summary(self) -> str:
-        status = "prime" if self.is_prime else "composite"
+        status = "prime" if self.is_prime else "not-prime"
         return f"n={self.n}, status={status}, delta_nfr={self.delta_nfr:.6g}"
 
     def to_dict(self) -> dict[str, Any]:
@@ -448,7 +552,14 @@ class PrimalityReport:
 
 @dataclass
 class NodalStateReport:
-    """Node-level nodal dynamics snapshot based on ∂EPI/∂t = νf·ΔNFR."""
+    """Node-level nodal dynamics snapshot based on ∂EPI/∂t = νf·ΔNFR.
+
+    ``expected_depi_dt`` is the nodal-equation prediction.  The retained
+    ``near_bifurcation`` name is a legacy alias of ``predicted_crossed``; it is
+    not an observed Mutation gate.  ``mutation_threshold_satisfied`` mirrors
+    only the observed strict threshold gate and does not assess U4b grammar or
+    operator execution readiness.
+    """
 
     node: Any
     epi: float
@@ -462,6 +573,27 @@ class NodalStateReport:
     equilibrium: bool
     active: bool
     near_bifurcation: bool
+    observed_depi_dt: float | None = None
+    predicted_crossed: bool | None = None
+    observed_crossed: bool | None = None
+    evidence_available: bool = False
+    evidence_valid: bool = False
+    source: str | None = None
+    time_basis: str | None = None
+    physical_time_resolved: bool = False
+    current_endpoint_matches_state: bool | None = None
+    reason: str | None = None
+    rate_gap: float | None = None
+    mutation_threshold_satisfied: bool = False
+
+    def __post_init__(self) -> None:
+        """Keep the legacy prediction alias coherent for direct construction."""
+
+        if self.predicted_crossed is None:
+            self.predicted_crossed = bool(self.near_bifurcation)
+        else:
+            self.predicted_crossed = bool(self.predicted_crossed)
+            self.near_bifurcation = self.predicted_crossed
 
     def summary(self) -> str:
         state = "active" if self.active else "inactive"
@@ -485,6 +617,24 @@ class NodalStateReport:
             "equilibrium": bool(self.equilibrium),
             "active": bool(self.active),
             "near_bifurcation": bool(self.near_bifurcation),
+            "observed_depi_dt": (
+                None
+                if self.observed_depi_dt is None
+                else float(self.observed_depi_dt)
+            ),
+            "predicted_crossed": bool(self.predicted_crossed),
+            "observed_crossed": self.observed_crossed,
+            "evidence_available": bool(self.evidence_available),
+            "evidence_valid": bool(self.evidence_valid),
+            "source": self.source,
+            "time_basis": self.time_basis,
+            "physical_time_resolved": bool(self.physical_time_resolved),
+            "current_endpoint_matches_state": self.current_endpoint_matches_state,
+            "reason": self.reason,
+            "rate_gap": None if self.rate_gap is None else float(self.rate_gap),
+            "mutation_threshold_satisfied": bool(
+                self.mutation_threshold_satisfied
+            ),
         }
 
 
@@ -494,7 +644,7 @@ class NodalDynamicsReport:
 
     nodes: dict[Any, NodalStateReport] = field(default_factory=dict)
     equilibrium_tolerance: float = _EPS_DNFR_STABLE_DEFAULT
-    bifurcation_threshold: float = _ZHIR_THRESHOLD_XI_DEFAULT
+    bifurcation_threshold: float = ZHIR_THRESHOLD_XI_CANONICAL
 
     def summary(self) -> str:
         n = len(self.nodes)
@@ -584,24 +734,35 @@ def _build_factorization_report(
         coherence_alignment = max(0.0, 1.0 - abs(net_coherence - coherence_score))
         nodal_drive = abs(arithmetic_nu_f * delta_nfr)
         drive_score = nodal_drive / (1.0 + nodal_drive)
-        # Equal-weight aggregate of the canonical components (coherence
-        # alignment and the nodal-drive |nu_f * dNFR| score) -- equipartition,
-        # avoiding arbitrary weighting.
-        synergy_index = (coherence_alignment + drive_score) / 2.0
-        topology_resonance = [
+        # Exploratory equal-weight comparison. No canonical map relates the
+        # caller-supplied graph to this arithmetic factorization instance.
+        alignment_score = (coherence_alignment + drive_score) / 2.0
+        size_divisible_candidates = [
             int(f)
             for f in candidate_factors
             if f > 1 and len(network.G.nodes()) % int(f) == 0
         ]
         network_synergy = {
+            "status": "heuristic_alignment",
+            "scope": (
+                "independent network supplied by caller; no canonical "
+                "cross-domain map"
+            ),
+            "weights": {"coherence_alignment": 0.5, "drive_score": 0.5},
             "network_nodes": len(network.G.nodes()),
             "network_coherence": net_coherence,
             "network_sense_index": net_si,
             "coherence_alignment": coherence_alignment,
             "nodal_drive": nodal_drive,
             "drive_score": drive_score,
-            "synergy_index": synergy_index,
-            "topology_resonance_factors": sorted(set(topology_resonance)),
+            "alignment_score": alignment_score,
+            "size_divisible_candidates": sorted(set(size_divisible_candidates)),
+            # Backward-compatible names; neither value certifies resonance.
+            "synergy_index": alignment_score,
+            "topology_resonance_factors": sorted(set(size_divisible_candidates)),
+            "legacy_name_warning": (
+                "synergy_index/topology_resonance_factors are historical names"
+            ),
         }
 
     return FactorizationReport(
@@ -643,15 +804,17 @@ def _build_primality_report(
         coherence_alignment = max(0.0, 1.0 - abs(net_coherence - local_coherence))
         pressure_ratio = abs(delta_nfr) / max(float(tolerance), 1e-15)
         pressure_score = 1.0 / (1.0 + pressure_ratio)
-        if is_prime:
-            prime_resonance = net_si
-        else:
-            prime_resonance = max(0.0, 1.0 - net_si)
-        # Equal-weight aggregate of the canonical components (coherence
-        # alignment, dNFR pressure score, Si-based prime resonance) --
-        # equipartition, avoiding arbitrary weighting.
-        synergy_index = (coherence_alignment + pressure_score + prime_resonance) / 3.0
+        # Exploratory equal-weight comparison. It deliberately excludes the
+        # old label-conditioned ``prime_resonance`` term, which injected the
+        # primality answer into its own score.
+        alignment_score = (coherence_alignment + pressure_score) / 2.0
         network_synergy = {
+            "status": "heuristic_alignment",
+            "scope": (
+                "independent network supplied by caller; no canonical "
+                "cross-domain map"
+            ),
+            "weights": {"coherence_alignment": 0.5, "pressure_score": 0.5},
             "network_nodes": len(network.G.nodes()),
             "network_coherence": net_coherence,
             "network_sense_index": net_si,
@@ -659,8 +822,9 @@ def _build_primality_report(
             "coherence_alignment": coherence_alignment,
             "pressure_ratio": pressure_ratio,
             "pressure_score": pressure_score,
-            "prime_resonance": prime_resonance,
-            "synergy_index": synergy_index,
+            "alignment_score": alignment_score,
+            "synergy_index": alignment_score,
+            "legacy_name_warning": "synergy_index is a historical field name",
         }
 
     return PrimalityReport(
@@ -720,7 +884,7 @@ class Results:
                 unsafe = [k for k, v in safety.items() if k != "overall" and not v]
                 lines.append(f"  WARNING: Unsafe fields: {', '.join(unsafe)}")
         if self.conservation is not None:
-            lines.append(f"  Conservation: {self.conservation.summary()}")
+            lines.append(f"  Balance diagnostics: {self.conservation.summary()}")
         return "\n".join(lines)
 
     def is_coherent(self) -> bool:
@@ -752,6 +916,20 @@ class Results:
             }
         if self.conservation is not None:
             d["conservation"] = {
+                "structural_charge": float(self.conservation.structural_charge),
+                "candidate_energy": float(self.conservation.candidate_energy),
+                "candidate_energy_nonincreasing": (
+                    self.conservation.candidate_energy_nonincreasing
+                ),
+                "candidate_energy_within_numerical_tolerance": (
+                    self.conservation.candidate_energy_within_numerical_tolerance
+                ),
+                "candidate_energy_derivative": (
+                    self.conservation.candidate_energy_derivative
+                ),
+                "balance_quality": self.conservation.balance_quality,
+                "sample_available": self.conservation.sample_available,
+                # Backward-compatible historical keys.
                 "noether_charge": float(self.conservation.noether_charge),
                 "energy": float(self.conservation.energy),
                 "lyapunov_stable": self.conservation.lyapunov_stable,
@@ -763,8 +941,8 @@ class Network:
     """Core TNFR Network — Essential Operations + Advanced Telemetry.
 
     Simplified interface to TNFR networks with structural field tetrad,
-    conservation law monitoring, grammar-aware dynamics, and integrity
-    checks for research-grade analysis.
+    finite structural-balance diagnostics, grammar-aware dynamics, and
+    operator-contract monitoring.
     """
 
     def __init__(self, graph: nx.Graph, name: str = "network", seed: int | None = None):
@@ -901,20 +1079,17 @@ class Network:
     ) -> Network:
         """Evolve the network by applying a canonical operator sequence.
 
-        The named *sequence* is resolved to canonical structural operators
-        and applied to the whole network in **lock-step** (synchronously):
-        each operator is applied to *every* node before advancing to the
-        next, honouring the temporal simultaneity of the nodal equation
-        ``dEPI/dt = vf * dNFR(t)`` -- the coupling operators (Resonance,
-        Coupling) see neighbours at the *same* time step. Form (EPI) is
-        created from the structural vacuum by the **Emission** generator that
-        opens every canonical sequence -- never by direct assignment
-        (invariant #1; the grammar U1 initiation rule).
+        The named *sequence* is resolved to canonical structural operators.
+        Execution is operator-major: each operator reaches every node before
+        the next operator begins. Reception and Resonance derive every target
+        proposal from one immutable stage snapshot and commit the stage
+        atomically (two-phase Jacobi). Other operators retain node-by-node
+        commits in graph iteration order until explicit merge laws exist.
 
-        Lock-step is the canonical network evolution. A row-major schedule
-        (whole sequence per node) would let Reception fire before any
-        neighbour has emitted, fracturing the coupling symmetry of a
-        symmetric graph (a measurable, non-physical artifact).
+        Form (EPI) is created from the structural vacuum by the **Emission**
+        generator that opens every canonical sequence -- never by direct
+        assignment (invariant #1; grammar U1). See
+        :func:`tnfr.operators.run_network_sequence` for the executable scheduling contract.
 
         Parameters
         ----------
@@ -957,9 +1132,9 @@ class Network:
                 },
                 suggestion=f"Choose from: {available}",
             )
-        # Lock-step network evolution from the canonical primitive. The
-        # sub-threshold birth phase (neighbour EPI < ACTIVE_EMISSION_THRESHOLD
-        # ~ 0.464) makes Reception correctly find no sources; that transient
+        # Network evolution from the shared SDK primitive.  The sub-threshold
+        # birth phase (neighbour EPI below the centralized operational source
+        # threshold) makes Reception correctly find no sources; that transient
         # warning is silenced on the high-level SDK surface.
         if record:
             # cycle-by-cycle so the canonical metrics step samples the rhythm
@@ -1010,12 +1185,12 @@ class Network:
     ) -> list[dict[str, Any]]:
         """Record canonical metrics after EACH operator (fine-grained dynamics).
 
-        Applies *sequence* in lock-step for *cycles* repetitions and records a
-        snapshot of C(t) and Si after every operator is applied to the whole
-        network, so the intra-sequence transient -- how each structural
-        operator moves the metrics -- can be studied, not just the post-cycle
-        fixed point. Reuses the canonical lock-step primitive via a per-step
-        callback.
+        Applies *sequence* with the shared operator-major mixed schedule for
+        *cycles* repetitions and records C(t) and Si after every stage.
+        Reception and Resonance use atomic two-phase Jacobi stages; remaining
+        operators use the documented graph-order commit schedule. The trace
+        exposes the implemented intra-sequence transient through the shared
+        executor callback.
 
         Parameters
         ----------
@@ -1140,9 +1315,16 @@ class Network:
     ) -> NodalStateReport:
         """Return node-level state from the canonical nodal equation.
 
-        Computes local triad state and derived dynamics:
-        - expected_depi_dt = νf·ΔNFR
-        - d2epi_dt2 from EPI history (finite differences)
+        Computes local triad state and derived dynamics without modifying the
+        graph:
+
+        - ``expected_depi_dt = nu_f * DeltaNFR`` is the instantaneous model
+          prediction;
+        - ``observed_depi_dt`` is a tri-state two-sample observation;
+        - ``d2epi_dt2`` is read from EPI history by a pure finite difference.
+
+        Mutation threshold evidence remains separate from U4b grammar and
+        operator execution readiness.
         """
         if node not in self.G:
             raise TNFRValueError(
@@ -1152,21 +1334,30 @@ class Network:
             )
 
         nd = self.G.nodes[node]
-        epi = float(get_attr(nd, ALIAS_EPI, 0.0) or 0.0)
-        nu_f = float(get_attr(nd, ALIAS_VF, 0.0) or 0.0)
-        delta_nfr = float(get_attr(nd, ALIAS_DNFR, 0.0) or 0.0)
+        epi_raw = _raw_alias_value(nd, ALIAS_EPI)
+        nu_f_raw = _raw_alias_value(nd, ALIAS_VF)
+        delta_nfr_raw = _raw_alias_value(nd, ALIAS_DNFR)
         phase = float(get_attr(nd, ALIAS_THETA, 0.0) or 0.0)
-        expected_depi_dt = float(compute_expected_depi_dt(self.G, node))
-        d2epi_dt2 = float(compute_d2epi_dt2(self.G, node))
 
-        # ZHIR (Mutation) is the canonical bifurcation operator: a node nears
-        # bifurcation when its structural change rate dEPI/dt = nu_f * dNFR
-        # crosses the mutation threshold xi (AGENTS.md §5).
-        xi = float(
+        xi_raw = (
             bifurcation_threshold
             if bifurcation_threshold is not None
-            else self.G.graph.get("ZHIR_THRESHOLD_XI", _ZHIR_THRESHOLD_XI_DEFAULT)
+            else self.G.graph.get("ZHIR_THRESHOLD_XI", ZHIR_THRESHOLD_XI_CANONICAL)
         )
+        trigger = _certify_sdk_mutation_trigger(
+            node=node,
+            current_epi=epi_raw,
+            nu_f=nu_f_raw,
+            delta_nfr=delta_nfr_raw,
+            xi=xi_raw,
+            epi_time_history=nd.get("epi_time_history"),
+            epi_history=nd.get("epi_history"),
+            legacy_epi_history=nd.get("_epi_history"),
+        )
+        epi = trigger.current_epi
+        nu_f = trigger.nu_f
+        delta_nfr = trigger.delta_nfr
+        d2epi_dt2 = float(compute_d2epi_dt2(self.G, node, store=False))
 
         return NodalStateReport(
             node=node,
@@ -1175,14 +1366,26 @@ class Network:
             delta_nfr=delta_nfr,
             coherence=structural_coherence(delta_nfr),
             phase=phase,
-            expected_depi_dt=expected_depi_dt,
+            expected_depi_dt=trigger.predicted_depi_dt,
             d2epi_dt2=d2epi_dt2,
             degree=int(self.G.degree(node)),
             equilibrium=is_structural_equilibrium(
                 delta_nfr, eps_dnfr=float(equilibrium_tolerance)
             ),
-            active=nu_f > 0.0,
-            near_bifurcation=abs(expected_depi_dt) > xi,
+            active=trigger.capacity_active,
+            near_bifurcation=trigger.predicted_crossed,
+            observed_depi_dt=trigger.observed_depi_dt,
+            predicted_crossed=trigger.predicted_crossed,
+            observed_crossed=trigger.observed_crossed,
+            evidence_available=trigger.evidence_available,
+            evidence_valid=trigger.evidence_valid,
+            source=trigger.source,
+            time_basis=trigger.time_basis,
+            physical_time_resolved=trigger.physical_time_resolved,
+            current_endpoint_matches_state=trigger.current_endpoint_matches_state,
+            reason=trigger.reason,
+            rate_gap=trigger.rate_gap,
+            mutation_threshold_satisfied=trigger.threshold_gate_satisfied,
         )
 
     def nodal_scan(
@@ -1196,6 +1399,22 @@ class Network:
 
         Useful for research diagnostics, bifurcation watch, and pressure maps.
         """
+        xi_raw = (
+            bifurcation_threshold
+            if bifurcation_threshold is not None
+            else self.G.graph.get("ZHIR_THRESHOLD_XI", ZHIR_THRESHOLD_XI_CANONICAL)
+        )
+        # Validate the shared threshold even for an empty scan.  The zero
+        # channels are only a carrier for the certificate's scalar-domain
+        # validation and do not create observational evidence.
+        xi = _certify_sdk_mutation_trigger(
+            node=None,
+            current_epi=0.0,
+            nu_f=0.0,
+            delta_nfr=0.0,
+            xi=xi_raw,
+        ).xi
+
         target_nodes = list(self.G.nodes()) if nodes is None else list(nodes)
         report_nodes: dict[Any, NodalStateReport] = {}
         for node in target_nodes:
@@ -1204,14 +1423,9 @@ class Network:
             report_nodes[node] = self.nodal_state(
                 node,
                 equilibrium_tolerance=equilibrium_tolerance,
-                bifurcation_threshold=bifurcation_threshold,
+                bifurcation_threshold=xi,
             )
 
-        xi = float(
-            bifurcation_threshold
-            if bifurcation_threshold is not None
-            else self.G.graph.get("ZHIR_THRESHOLD_XI", _ZHIR_THRESHOLD_XI_DEFAULT)
-        )
         return NodalDynamicsReport(
             nodes=report_nodes,
             equilibrium_tolerance=float(equilibrium_tolerance),
@@ -1233,7 +1447,7 @@ class Network:
         ).to_dict()
 
     def results(self) -> Results:
-        """Get comprehensive results including tetrad and conservation."""
+        """Get comprehensive results including tetrad and balance diagnostics."""
         tetrad = self.tetrad() if _HAS_FIELDS else None
         cons = self.conservation() if _HAS_CONSERVATION else None
         unified = self.telemetry() if _HAS_FIELDS else None
@@ -1309,64 +1523,86 @@ class Network:
             "j_dnfr": snap.j_dnfr,
         }
 
-    # === CONSERVATION LAWS ===
+    # === STRUCTURAL-BALANCE DIAGNOSTICS ===
 
-    def conservation(self) -> ConservationReport:
+    def _sample_structural_balance(self, dt: float = 1.0) -> Any:
+        """Record one read-only snapshot and return the latest interval.
+
+        ``ConservationTracker`` stores timestamp/snapshot pairs. Centralizing
+        sampling here keeps :meth:`conservation` and :meth:`balance_alerts`
+        consistent and prevents diagnostic methods from modifying graph state.
+        """
+        dt = float(dt)
+        if not np.isfinite(dt) or dt <= 0.0:
+            raise TNFRValueError("dt must be finite and positive")
+        if self._tracker is None:
+            self._tracker = ConservationTracker(self.G)
+        if self._tracker._snapshots:
+            sample_time = float(self._tracker._snapshots[-1][0]) + dt
+        else:
+            sample_time = 0.0
+        self._tracker.record(t=sample_time)
+        return self._tracker.latest_balance
+
+    def conservation(self, dt: float = 1.0) -> ConservationReport:
         """Compute finite-trajectory conservation diagnostics.
 
         Computes a Noether-like tetrad charge, a non-negative energy candidate,
         and an observed finite-step balance between the two most recent
-        snapshots. Grammar labels alone do not imply a zero residual or a
-        monotone energy trajectory.
+        diagnostic snapshots. ``dt`` is the declared time between consecutive
+        samples from :meth:`conservation` or :meth:`balance_alerts`. The first
+        call establishes a baseline and
+        reports ``sample_available=False``. Grammar labels alone do not imply
+        a zero residual or a monotone candidate-energy trajectory.
 
         Returns
         -------
         ConservationReport
-            noether_charge, energy, lyapunov_stable, lyapunov_derivative,
-            conservation_quality.
+            Accurate properties ``structural_charge``, ``candidate_energy``,
+            ``candidate_energy_nonincreasing`` and ``balance_quality`` plus
+            their backward-compatible historical fields.
         """
         if not _HAS_CONSERVATION:
             return ConservationReport()
         Q = compute_noether_charge(self.G)
         E = compute_energy_functional(self.G)
-        # Lyapunov: requires two snapshots
+        # Candidate-energy change and balance require two snapshots.
         lyap_stable = True
         lyap_deriv = 0.0
         quality = 1.0
-        if self._tracker is None:
-            self._tracker = ConservationTracker(self.G)
-        snap = capture_conservation_snapshot(self.G)
-        if self._tracker._snapshots:
-            prev = self._tracker._snapshots[-1]
-            balance = verify_conservation_balance(prev, snap)
+        balance = self._sample_structural_balance(dt=dt)
+        sample_available = balance is not None
+        if balance is not None:
             quality = balance.conservation_quality
-            lyap = compute_lyapunov_derivative(prev, snap)
+            _, previous = self._tracker._snapshots[-2]
+            _, current = self._tracker._snapshots[-1]
+            lyap = compute_lyapunov_derivative(previous, current, dt=dt)
             lyap_stable = lyap.is_stable
             lyap_deriv = lyap.energy_derivative
-        self._tracker._snapshots.append(snap)
         return ConservationReport(
             noether_charge=Q,
             energy=E,
             lyapunov_stable=lyap_stable,
             lyapunov_derivative=lyap_deriv,
             conservation_quality=quality,
+            sample_available=sample_available,
         )
 
     def symplectic_substrate(self) -> SymplecticReport:
-        """Diagnose the emergent symplectic substrate.
+        """Evaluate the auxiliary ambient symplectic substrate model.
 
-        The TNFR nodal dynamics generates its own geometry: a symplectic
-        phase space P = R^{4N} with canonical conjugate pairs (K_phi, J_phi)
-        and (Phi_s, J_dnfr), on which the auxiliary substrate Hamiltonian is
-        evaluated. The substrate flow is symplectic; this readout does not
-        certify every canonical engine operator as a symplectomorphism.
+        The extracted fields initialize two canonical pairs per graph node,
+        ``(K_phi, J_phi)`` and ``(Phi_s, J_dnfr)``, in ``P = R^(4N)``. The
+        model's exact harmonic flow is symplectic. This readout neither derives
+        that ambient flow from the nodal equation nor certifies any engine
+        operator as a symplectomorphism.
 
         Returns
         -------
         SymplecticReport
             phase_space_dimension, hamiltonian H_sub, background_potential U
-            (with H_sub + U = energy functional), liouville_divergence, and
-            is_valid_manifold.
+            (with H_sub + U equal to the evaluated auxiliary energy),
+            liouville_divergence, and is_valid_manifold for the ambient model.
         """
         if not _HAS_SUBSTRATE:
             return SymplecticReport()
@@ -1383,17 +1619,19 @@ class Network:
     # === UNIFIED TELEMETRY ===
 
     def telemetry(self) -> dict[str, Any]:
-        """Compute full unified telemetry (all fields + invariants).
+        """Compute the unified diagnostic telemetry mapping.
 
-        Aggregates the complete Structural Field Tetrad, complex geometric
-        field Psi, emergent fields (chirality, symmetry-breaking, coherence
-        coupling), and tensor invariants (energy density, topological charge).
+        Aggregates the complete four-field diagnostic read-out, complex
+        geometric field Psi, emergent fields (chirality, symmetry-breaking,
+        coherence coupling), and tensor invariants (energy density,
+        topological charge). These diagnostics do not reconstruct the complete
+        TNFR graph state or its evolution.
 
         Returns
         -------
         dict[str, Any]
-            Complete unified telemetry suite.  Empty dict if fields module
-            is unavailable.
+            Unified diagnostic fields and invariant read-outs. Empty dict if
+            the fields module is unavailable.
         """
         if not _HAS_FIELDS:
             return {}
@@ -1424,51 +1662,60 @@ class Network:
             return {}
         return compute_emergent_fields(self.G)
 
-    # === EMERGENT ONTOLOGY (particle / phase from graph state) ===
+    # === Structural winding and phase read-outs ===
 
-    def particle(self, order: list[Any] | None = None) -> dict[str, Any]:
-        """Classify this network's coherent mode as an emergent particle.
+    def winding(self, order: list[Any] | None = None) -> dict[str, Any]:
+        """Measure the phase-winding sector of a declared closed node order.
 
-        The class is an OUTPUT of the measured quantized topological winding
-        number W of the phase field along a closed loop -- not an imposed
-        label: ``|W| = 0`` -> boson/scalar-like, ``|W| = 1`` -> fermion-like,
-        ``|W| > 1`` -> composite; ``sign(W)`` -> chirality (matter /
-        antimatter-like). The integer ``W`` emerges *directly* as a topological
-        invariant of the dynamics -- this is the **physical-layer** read-out of
-        the same ``ΔNFR = 0`` fixed point whose **symbolic-layer** shadow is
-        the structural prime (:meth:`TNFR.primes`). Energy- and charge-density
-        telemetry support the integer invariant. Most informative after
-        :meth:`evolve`.
+        The integer ``W`` is the wrapped phase circulation on that loop. The
+        read-out distinguishes neutral, unit-winding and higher-winding sectors
+        and reports the sign as orientation. It does not identify physical
+        particle species, show that the engine created the winding, or equate
+        this invariant with an arithmetic or chemical zero-pressure state.
 
         Parameters
         ----------
         order : list, optional
             Node order defining the closed loop along which the winding is
-            measured. Defaults to the graph's node order.
+            measured. When omitted, a traversal is derived only if the entire
+            graph is one simple cycle; otherwise an explicit order is required.
 
         Returns
         -------
         dict
-            winding, raw_winding, chirality, energy_density,
-            charge_density_mean, particle_class, is_quantized.
+            Preferred fields include ``winding``, ``raw_winding``,
+            ``orientation_sign``, ``winding_class``, ``is_integral``,
+            ``cycle_nodes`` and explicitly scoped whole-graph snapshot
+            telemetry. Historical particle/charge/chirality names remain as
+            compatibility aliases.
         """
-        from ..physics.emergent_particles import classify_particle
+        from ..physics.emergent_particles import classify_winding_sector
 
-        return classify_particle(self.G, order=order).as_dict()
+        return classify_winding_sector(self.G, order=order).as_dict()
+
+    def particle(self, order: list[Any] | None = None) -> dict[str, Any]:
+        """Compatibility alias for :meth:`winding`.
+
+        The legacy method name does not assert that a winding sector is a
+        physical particle species.
+        """
+        return self.winding(order=order)
 
     def phase(self) -> dict[str, Any]:
-        """Classify the network's emergent structural phase.
+        """Return the network's operational structural-phase label.
 
-        Second-order symmetry breaking of the structural fields sets the
-        phase: ``non_life`` (symmetric, <S> ~ 0, |<chi>| ~ 0), ``critical``
-        (near the transition), or ``life`` (broken symmetry <S> != 0 with
-        non-zero chirality chi). Uses a sampling z-score significance test --
-        no magic constants. Most informative after :meth:`evolve`.
+        Signed global structural-field imbalances select the compatibility
+        labels ``non_life``, ``critical`` and ``life``.  Here ``critical``
+        means order imbalance without chirality imbalance; it does not certify
+        proximity to a phase transition.  The underlying standardized spatial
+        imbalance is a deterministic classifier input, not a significance
+        test for correlated graph nodes. Most informative after :meth:`evolve`.
 
         Returns
         -------
         dict
-            ``phase`` (``"non_life"`` / ``"critical"`` / ``"life"``),
+            The operational ``phase`` label (``"non_life"`` / ``"critical"`` /
+            ``"life"``),
             ``is_life`` (bool), the order parameter ``order_parameter`` (<S>),
             ``chirality_mean`` (<chi>), ``coherence_length`` (xi_C) and
             ``has_homochirality`` (bool).
@@ -1486,19 +1733,21 @@ class Network:
         }
 
     def gauge(self) -> dict[str, Any]:
-        """Classify the network's emergent gauge-interaction regimes.
+        """Return legacy auxiliary U(1) field-coordinate diagnostics.
 
-        The complex geometric field Psi = K_phi + i*J_phi carries an emergent
-        U(1) gauge connection on edges and curvature F_C on plaquettes. Each
-        node is classified into an interaction regime (em_like / weak_like /
-        strong_like / gravity_like) from arg(Psi) and the structural
-        potential. Most informative after :meth:`evolve`.
+        The complex diagnostic field Psi = K_phi + i*J_phi admits a local U(1)
+        coordinate rotation. Its derived connection A=d(arg Psi) is pure gauge,
+        so cycle values are floating-point closure residuals rather than
+        physical curvature. The historical interaction-regime labels are
+        heuristic compatibility fields computed from arg(Psi), residuals and
+        structural potential; they are not operator or force classifications.
 
         Returns
         -------
         dict
             ``per_node``, ``regime_distribution``, ``dominant_regime``,
-            ``mean_gauge_curvature`` (mean |F_C|) and ``gauge_flatness``.
+            accurately named pure-gauge residual aliases, and historical
+            ``mean_gauge_curvature`` / ``gauge_flatness`` compatibility keys.
         """
         from ..physics.gauge import classify_network_regimes
 
@@ -1509,7 +1758,8 @@ class Network:
 
         For symmetric adjacency, nodal decay rates are eigenvalues of
         diag(nu_f)*L_rw; only a common frequency gives nu_f*lambda_k.
-        Geometry supplies the separate proxy xi_C = 1/sqrt(lambda_2).
+        Geometry supplies the separate topology-only proxy
+        `1/sqrt(lambda_2)`; fitted xi_C remains state-dependent.
         Multiple stationary modes give a zero gap and an infinite proxy.
         Asymmetric adjacency has no symmetric geometry basis; its damping
         rates can be read directly with physics.relaxation_spectrum.
@@ -1520,8 +1770,8 @@ class Network:
             ``diffusivity`` (mean nu_f), ``relaxation_rates``
             (actual nodal decay rates ascending), ``spectral_gap`` (second
             nodal decay rate), ``structural_rank`` (distinct geometry modes) and
-            ``coherence_length`` (xi_C ~ 1/sqrt(lambda_2), independent of
-            the nu_f clock scale).
+            ``coherence_length`` (the topology-only `1/sqrt(lambda_2)`
+            proxy, independent of the nu_f clock scale).
         """
         from ..physics.structural_diffusion import (
             relaxation_spectrum,
@@ -1559,22 +1809,27 @@ class Network:
         This surfaces the NFR as the joint read-out of its three emergent
         facets, each from canonical quantities:
 
-        - RESONANT: proximity to the dNFR = 0 coherence attractor
+        - RESONANT: measured proximity to the zero-pressure fixed-point set;
+          dynamic equilibrium additionally requires a recorded dEPI value
           (:func:`~tnfr.metrics.common.is_structural_equilibrium`).
         - GEOMETRIC: the nodal topology radial / annular / multinodal
           (:func:`~tnfr.physics.fields.classify_nodal_topology`, read from the
           structural-potential geometry).
         - FRACTAL: the multi-scale coherence range xi_C (region size).
 
-        A fully relaxed network (dNFR -> 0) is one uniform NFR; off-equilibrium
-        the geometry differentiates sub-NFRs. Most informative after
+        Uniform attraction is proved only for the restricted fixed, connected
+        pure-EPI diffusion model. Missing nodal telemetry is reported as
+        unavailable rather than interpreted as zero. Most informative after
         :meth:`evolve`.
 
         Returns
         -------
         dict
             ``topology``, ``centers``, ``concentration`` (geometry);
-            ``coherence``, ``equilibrium_fraction`` (resonance);
+            ``coherence``, ``zero_pressure_fraction`` and
+            ``equilibrium_fraction`` (resonance, when available);
+            ``depi_dt_source`` identifies whether the rate was recorded or
+            evaluated from the nodal equation;
             ``coherence_length`` (xi_C, fractal/region scale); ``triad`` (mean
             EPI, nu_f and the Kuramoto phase synchrony); ``n_nodes``.
         """
@@ -1583,38 +1838,79 @@ class Network:
         topo = classify_nodal_topology(self.G)
         nodes = list(self.G.nodes())
         n = len(nodes)
-        if n:
-            dnfr = [
-                float(get_attr(self.G.nodes[k], ALIAS_DNFR, 0.0) or 0.0) for k in nodes
-            ]
-            eq_frac = sum(1 for d in dnfr if is_structural_equilibrium(d)) / n
-            epi_mean = (
-                sum(
-                    float(get_attr(self.G.nodes[k], ALIAS_EPI, 0.0) or 0.0)
-                    for k in nodes
-                )
-                / n
-            )
-            vf_mean = (
-                sum(
-                    float(get_attr(self.G.nodes[k], ALIAS_VF, 0.0) or 0.0)
-                    for k in nodes
-                )
-                / n
-            )
-            thetas = [
-                float(get_attr(self.G.nodes[k], ALIAS_THETA, 0.0) or 0.0) for k in nodes
-            ]
-            if np is not None:
-                phase_sync = float(abs(np.mean(np.exp(1j * np.asarray(thetas)))))
-            else:
-                phase_sync = 0.0
+        missing = object()
+
+        def complete_values(aliases: tuple[str, ...]) -> list[float] | None:
+            values: list[float] = []
+            for node in nodes:
+                raw = get_attr(self.G.nodes[node], aliases, missing)
+                if raw is missing or raw is None:
+                    return None
+                try:
+                    value = float(raw)
+                except (TypeError, ValueError, OverflowError):
+                    return None
+                if not math.isfinite(value):
+                    return None
+                values.append(value)
+            return values
+
+        dnfr = complete_values(ALIAS_DNFR) if n else None
+        recorded_depi = complete_values(ALIAS_DEPI) if n else None
+        epis = complete_values(ALIAS_EPI) if n else None
+        frequencies = complete_values(ALIAS_VF) if n else None
+        thetas = complete_values(ALIAS_THETA) if n else None
+
+        pressure_available = dnfr is not None
+        if recorded_depi is not None and dnfr is not None:
+            depi = recorded_depi
+            depi_dt_source = "recorded"
+        elif dnfr is not None and frequencies is not None:
+            # Evaluate the missing rate from the canonical nodal equation.
+            depi = [vf * pressure for vf, pressure in zip(frequencies, dnfr)]
+            depi_dt_source = "nodal_equation"
         else:
-            eq_frac = epi_mean = vf_mean = phase_sync = 0.0
+            depi = None
+            depi_dt_source = None
+        dynamic_available = dnfr is not None and depi is not None
+        triad_available = (
+            epis is not None and frequencies is not None and thetas is not None
+        )
+        zero_pressure_fraction = (
+            sum(1 for value in dnfr if is_structural_equilibrium(value)) / n
+            if pressure_available and n
+            else None
+        )
+        equilibrium_fraction = (
+            sum(
+                1
+                for pressure, rate in zip(dnfr, depi)
+                if is_structural_equilibrium(pressure, rate)
+            )
+            / n
+            if dynamic_available and n
+            else None
+        )
+        coherence = (
+            sum(
+                structural_coherence(pressure, rate)
+                for pressure, rate in zip(dnfr, depi)
+            )
+            / n
+            if dynamic_available and n
+            else None
+        )
+        epi_mean = sum(epis) / n if epis is not None and n else None
+        vf_mean = sum(frequencies) / n if frequencies is not None and n else None
+        phase_sync = (
+            float(abs(np.mean(np.exp(1j * np.asarray(thetas)))))
+            if thetas is not None and n and np is not None
+            else None
+        )
         try:
-            # Spectral coherence length xi_C ~ 1/sqrt(nu_f*lambda_2): the
-            # structural region scale, robust at the uniform dNFR=0 equilibrium
-            # (where the correlation-fit xi_C is undefined).
+            # Topology-only spectral comparison/fallback 1/sqrt(lambda_2).
+            # The primary fitted xi_C is state-dependent and may be undefined
+            # at a uniform DeltaNFR=0 equilibrium.
             xi_c = float(self.spectrum()["coherence_length"])
         except Exception:
             xi_c = float("nan")
@@ -1622,8 +1918,13 @@ class Network:
             "topology": topo["topology"],
             "centers": topo["centers"],
             "concentration": topo["concentration"],
-            "coherence": self.coherence(),
-            "equilibrium_fraction": eq_frac,
+            "coherence": coherence,
+            "zero_pressure_fraction": zero_pressure_fraction,
+            "equilibrium_fraction": equilibrium_fraction,
+            "pressure_telemetry_available": pressure_available,
+            "dynamic_telemetry_available": dynamic_available,
+            "depi_dt_source": depi_dt_source,
+            "triad_available": triad_available,
             "coherence_length": xi_c,
             "triad": {
                 "epi_mean": epi_mean,
@@ -1713,7 +2014,9 @@ class Network:
         graph, so it is computed once (not per step); (2) the per-NFR pulses
         typically lock with their neighbours (local resonance) **before** the
         global rhythm forms -- ``local_leads_global`` records that cascade
-        (clusters lock, then merge). Most informative from a perturbed /
+        (clusters lock, then merge). Threshold crossings are linearly
+        interpolated between samples so two crossings within one evolution
+        step retain their observed order. Most informative from a perturbed /
         off-equilibrium state.
 
         Returns
@@ -1722,9 +2025,10 @@ class Network:
             ``phase_coherence`` (R(t)), ``coherence`` (C(t)),
             ``local_resonance`` (mean per-NFR local resonance per step);
             ``synchronizing`` (bool, R rises overall), ``delta_R`` (net change),
-            ``asymptotic_R`` (final R), ``local_leads_global`` (bool: local
-            crosses 0.9 before R crosses 0.5); ``collective_pulse`` (the
-            invariant fundamental + dominant beat), ``steps``.
+            ``asymptotic_R`` (final R), ``local_leads_global`` (bool: the
+            interpolated local-0.9 crossing precedes the interpolated R-0.5
+            crossing); ``collective_pulse`` (the invariant fundamental +
+            dominant beat), ``steps``.
         """
         from ..gamma import kuramoto_R_psi
         from ..physics.structural_diffusion import (
@@ -1736,8 +2040,6 @@ class Network:
         r_t: list[float] = []
         c_t: list[float] = []
         local_t: list[float] = []
-        t_local: int | None = None
-        t_global: int | None = None
         for step in range(max(1, steps)):
             if step:
                 probe.evolve(1, sequence=sequence)
@@ -1747,14 +2049,12 @@ class Network:
             r_t.append(r)
             c_t.append(c)
             local_t.append(local)
-            if t_local is None and local >= 0.9:
-                t_local = step
-            if t_global is None and r >= 0.5:
-                t_global = step
         # the collective topological pulse is invariant under evolution on a
         # fixed graph -> compute it once, not per step
         pulse = compute_emergent_pulse(self.G)
         delta_r = r_t[-1] - r_t[0]
+        t_local = _first_interpolated_crossing(local_t, 0.9)
+        t_global = _first_interpolated_crossing(r_t, 0.5)
         local_leads = t_local is not None and (
             t_global is None or t_local < t_global
         )
@@ -1801,60 +2101,63 @@ class Network:
             return {}
         return compute_dnfr_flux(self.G)
 
-    def noether_charge(self) -> float:
-        """Total Noether charge Q = sum_i [Phi_s(i) + K_phi(i)]."""
+    def structural_charge(self) -> float:
+        """Tetrad charge candidate ``sum_i(Phi_s(i) + K_phi(i))``.
+
+        Its conservation must be tested on a declared trajectory; U1--U6
+        validity alone does not make it an exact Noether charge.
+        """
         if not _HAS_CONSERVATION:
             return 0.0
         return compute_noether_charge(self.G)
 
-    def energy(self) -> float:
-        """Total structural energy E = 0.5 * sum_i energy_density(i)."""
+    def noether_charge(self) -> float:
+        """Backward-compatible alias for :meth:`structural_charge`."""
+        return self.structural_charge()
+
+    def candidate_energy(self) -> float:
+        """Non-negative structural energy evaluated as a Lyapunov candidate."""
         if not _HAS_CONSERVATION:
             return 0.0
         return compute_energy_functional(self.G)
 
-    def grammar_violations(self, dt: float = 1.0) -> dict[str, Any]:
-        """Report heuristic grammar-risk signals from a conservation residual.
+    def energy(self) -> float:
+        """Backward-compatible alias for :meth:`candidate_energy`."""
+        return self.candidate_energy()
 
-        Requires at least two snapshots.  Takes snapshots before and
-        after a single evolution step (dt) and checks the conservation balance.
-        Canonical grammar validation remains authoritative: a residual cannot
-        by itself prove which, if any, grammar rule was violated.
+    def balance_alerts(self, dt: float = 1.0) -> dict[str, Any]:
+        """Sample read-only finite-balance alerts between consecutive calls.
+
+        The first call records a baseline and returns ``sample_available=False``.
+        Later calls compare the current graph with the preceding diagnostic
+        snapshot using the declared ``dt``. This method never evolves or
+        mutates the graph.
+        Residual alerts do not validate or classify U1--U6.
 
         Returns
         -------
-        dict with violations_detected, violation_types, severity, etc.
+        A balance-alert mapping with explicit grammar-inapplicability metadata.
+        Legacy ``violations_*`` keys remain false/empty for compatibility.
         """
         if not _HAS_CONSERVATION:
-            return {
-                "violations_detected": False,
-                "violation_types": [],
-                "severity": 0.0,
-            }
+            return _empty_balance_alert_report("conservation_module_unavailable")
         from ..physics.conservation import detect_grammar_violations_from_conservation
 
-        snap_before = capture_conservation_snapshot(self.G)
-        # Small stabilisation step for delta measurement
-        for n in self.G.nodes():
-            neighbors = list(self.G.neighbors(n))
-            if neighbors:
-                mean_ph = float(
-                    np.mean(
-                        [
-                            get_attr(self.G.nodes[nb], ALIAS_THETA, 0.0)
-                            for nb in neighbors
-                        ]
-                    )
-                )
-                cur = get_attr(self.G.nodes[n], ALIAS_THETA, 0.0)
-                set_attr(
-                    self.G.nodes[n],
-                    ALIAS_THETA,
-                    cur + dt * 0.05 * (mean_ph - cur),
-                )
-        snap_after = capture_conservation_snapshot(self.G)
-        balance = verify_conservation_balance(snap_before, snap_after, dt=dt * 0.05)
-        return detect_grammar_violations_from_conservation(balance)
+        balance = self._sample_structural_balance(dt=dt)
+        if balance is None:
+            return _empty_balance_alert_report("baseline_only")
+        result = detect_grammar_violations_from_conservation(balance)
+        result["sample_available"] = True
+        return result
+
+    def grammar_violations(self, dt: float = 1.0) -> dict[str, Any]:
+        """Backward-compatible alias for :meth:`balance_alerts`.
+
+        The legacy name is retained for callers, but the returned mapping
+        always states that grammar was not assessed. Use canonical grammar
+        validators on actual operator history for U1--U6 decisions.
+        """
+        return self.balance_alerts(dt=dt)
 
     # === GRAMMAR-AWARE DYNAMICS ===
 
@@ -1912,49 +2215,80 @@ class Network:
                     continue
         return self
 
-    # === INTEGRITY MONITORING ===
+    # === OPERATOR-CONTRACT AND BALANCE-ALERT MONITORING ===
 
     def integrity_check(self, operator_name: str = "coherence") -> dict[str, Any]:
-        """Run structural integrity check via postcondition monitor.
+        """Return recorded monitor evidence for one operator name.
+
+        Calling this method attaches a monitor if needed. Evidence is produced
+        only by later operator applications, where real before/after states are
+        available. The method never fabricates a postcondition result from the
+        current state alone.
 
         Parameters
         ----------
         operator_name : str
-            Operator NAME whose postconditions are verified (the canonical
-            public identifier, AGENTS.md §5; default 'coherence'). Glyph
-            codes are accepted but only names resolve a postcondition check.
+            Canonical operator name or glyph used to filter recorded reports.
 
         Returns
         -------
         dict[str, Any]
-            Integrity report with conservation_quality, lyapunov status,
-            charge drift, and per-node diagnostics.  Returns empty dict
-            if integrity module is unavailable.
+            Recorded postcondition results, finite balance alerts and sampled
+            candidate-energy changes. ``grammar_validated`` is false because
+            monitor telemetry does not replace history/state-aware validators.
+            Returns an empty dict if the integrity module is unavailable.
         """
         if not _HAS_INTEGRITY:
             return {}
         if self._monitor is None:
+            self._monitor = StructuralIntegrityMonitor.get(self.G)
+        if self._monitor is None:
             self._monitor = StructuralIntegrityMonitor(mode=MonitorMode.OBSERVE)
+            self._monitor.attach(self.G)
+        from ..operators.grammar_types import glyph_function_name
+
+        target_name = glyph_function_name(operator_name)
         reports: list[dict[str, Any]] = []
-        for node in list(self.G.nodes())[: min(10, len(self.G.nodes()))]:
-            try:
-                report = self._monitor.after_operator(self.G, node, operator_name)
-                reports.append(
-                    {
-                        "node": node,
-                        "passed": report.is_healthy,
-                        "details": str(report),
-                    }
-                )
-            except Exception:
-                continue
+        matching = [
+            report
+            for report in self._monitor.summary.reports
+            if glyph_function_name(report.operator) == target_name
+        ]
+        for report in matching[-10:]:
+            reports.append(
+                {
+                    "node": report.node,
+                    "within_monitor_policy": report.within_monitor_policy,
+                    "balance_quality": report.balance_quality,
+                    "balance_alerts": list(report.balance_alerts),
+                    "candidate_energy_derivative": (
+                        report.candidate_energy_derivative
+                    ),
+                    "candidate_energy_nonincreasing": (
+                        report.candidate_energy_nonincreasing
+                    ),
+                    "candidate_energy_within_numerical_tolerance": (
+                        report.candidate_energy_within_numerical_tolerance
+                    ),
+                    "structural_charge_drift": report.structural_charge_drift,
+                    "postcondition_evaluated": report.postcondition_evaluated,
+                    "postcondition_ok": report.postcondition_ok,
+                    "diagnostic_follow_up": report.diagnostic_follow_up,
+                    # Backward-compatible result key.
+                    "passed": report.is_healthy,
+                    "details": str(report),
+                }
+            )
         passed_count = sum(1 for r in reports if r.get("passed", False))
         return {
             "operator": operator_name,
+            "operator_name": target_name,
+            "evidence_available": bool(reports),
             "nodes_checked": len(reports),
             "passed": passed_count,
             "failed": len(reports) - passed_count,
             "pass_rate": passed_count / max(len(reports), 1),
+            "grammar_validated": False,
             "reports": reports,
         }
 
@@ -2329,6 +2663,15 @@ class TNFR:
                 "density": result.density,
             }
             if result.conservation is not None:
+                entry["structural_charge"] = result.conservation.structural_charge
+                entry["candidate_energy"] = result.conservation.candidate_energy
+                entry["candidate_energy_nonincreasing"] = (
+                    result.conservation.candidate_energy_nonincreasing
+                )
+                entry["candidate_energy_within_numerical_tolerance"] = (
+                    result.conservation.candidate_energy_within_numerical_tolerance
+                )
+                # Backward-compatible historical keys.
                 entry["noether_charge"] = result.conservation.noether_charge
                 entry["energy"] = result.conservation.energy
                 entry["lyapunov_stable"] = result.conservation.lyapunov_stable
@@ -2410,9 +2753,9 @@ class TNFR:
         TNFR_NUMBER_THEORY.md §9.5): the factor signal of a semiprime
         ``n = p*q`` appears as a *coset / Fourier mode* of the emergent
         structural-diffusion spectrum ``L_rw = I - D^{-1} W`` (the canonical
-        ``ΔNFR`` EPI channel) on the residue/Paley graph -- a *partially
-        emergent* read-out, not the symbolic per-node ``ΔNFR`` (which is blind
-        to the cosets). Honest scope: the residue graph is regular, so ``L_rw``
+        ``ΔNFR`` EPI channel) on the residue/Paley graph -- a non-circular
+        spectral diagnostic under that declared graph family, not the symbolic
+        per-node ``ΔNFR`` (which is blind to the cosets). Honest scope: the residue graph is regular, so ``L_rw``
         shares eigenvectors with the classical Laplacian and the coset signal
         is the CRT structure *re-expressed*, not added by the emergent framing;
         TNFR factorization is **not** a speedup over classical factoring.
@@ -2428,8 +2771,8 @@ class TNFR:
         certificate_dir : str | None
             Optional output directory for certificate artifacts.
         network : Network | None
-            If provided, computes synergy metrics between the factorization
-            telemetry and this network's structural state.
+            If provided, computes an explicitly heuristic alignment between
+            the factorization telemetry and this independently supplied graph.
         """
         if not _HAS_FACTORIZATION:
             raise TNFRValueError(
@@ -2460,12 +2803,13 @@ class TNFR:
         tolerance: float = 1e-10,
         network: Network | None = None,
     ) -> PrimalityReport:
-        """Canonical primality analysis via SDK, optionally fused with telemetry.
+        """Canonical primality analysis with optional heuristic graph alignment.
 
         Reads the arithmetic equilibrium ``ΔNFR_arith(n) = 0`` (**sector A** --
         an exact but *circular* re-expression that consumes ``n``'s
-        divisibility; the genuinely emergent primality is the spectral
-        sector B, see :meth:`primes` and theory §9.5).
+        divisibility). A separate non-circular spectral construction is exposed
+        through :meth:`factorize`; its finite coverage and hypotheses are
+        documented in theory §9.5.
         """
         if not _HAS_PRIMALITY:
             raise TNFRValueError(
@@ -2494,19 +2838,19 @@ class TNFR:
 
         A number ``n`` is structurally prime when its arithmetic reorganization
         pressure vanishes, ``ΔNFR_arith(n) = 0`` -- the exact nodal-equation
-        equilibrium (:func:`tnfr.metrics.common.is_structural_equilibrium`)
-        that a relaxed graph node and a noble-gas atom also satisfy.
+        equilibrium predicate
+        (:func:`tnfr.metrics.common.is_structural_equilibrium`). Other domain
+        models can reuse that numerical predicate without sharing a state
+        space or evolution law.
 
         Emergence status (theory/TNFR_NUMBER_THEORY.md §9.5). This method is
         **sector A**: the arithmetic ``ΔNFR`` is an *exact but circular*
-        re-expression that **consumes** ``n``'s divisibility ``(Ω, τ, σ)`` --
-        the symbolic shadow of the fixed point whose *physical*-layer read-out
-        is the directly-emergent particle winding ``W``
-        (:meth:`Network.particle`). The genuinely **emergent** primality is
-        **sector B** -- the spectral Paley/residue Fiedler gap (input only
+        re-expression that **consumes** ``n``'s divisibility ``(Ω, τ, σ)``.
+        A separate **sector B** studies the spectral Paley/residue Fiedler gap
+        (input only
         ``x^2 mod n``, primes-OUT, non-circular), carried by the spectral
-        factorizer (:meth:`factorize`), not by this arithmetic read-out. One
-        fixed point, a spectrum of emergence.
+        factorizer (:meth:`factorize`), not by this arithmetic read-out. These
+        are distinct constructions with different inputs and dynamics.
 
         Parameters
         ----------
@@ -2525,34 +2869,35 @@ class TNFR:
         """
         from ..mathematics.number_theory import ArithmeticTNFRNetwork
 
-        net = ArithmeticTNFRNetwork(int(max_number))
+        net = ArithmeticTNFRNetwork(max_number)
         candidates = net.detect_prime_candidates()
         primes = sorted(int(n) for n, _delta in candidates)
         return {
-            "max_number": int(max_number),
+            "max_number": net.max_number,
             "primes": primes,
             "count": len(primes),
         }
 
     @staticmethod
     def magic_numbers(max_n: int = 7) -> list[int]:
-        """Noble-gas atomic numbers from the structural shell-filling equilibrium.
+        """Closure counts from the assumption-explicit structural shell model.
 
         The closed-shell counts (2, 10, 18, 36, 54, 86, ...) combine two
         ingredients of *different* status:
 
-        - the subshell capacities ``2l+1`` **emerge** from the degenerate
-          eigenmodes of a closed structural manifold (its phase-curvature /
-          Laplace-Beltrami spectrum) -- a genuine dynamical emergence;
+        - a constructed S² graph numerically approximates multiplicities
+          ``2l+1``;
+        - occupation capacities ``2(2l+1)`` are assumed, including the factor
+          two;
         - the ``(n+l)`` filling order is an **assumed** integer count rule
           (Madelung), retained because the free manifold spectrum does not by
           itself reproduce it.
 
         A closed shell is ``ΔNFR_chem = 0``
         (:func:`tnfr.metrics.common.is_structural_equilibrium`): the chemical
-        read-out of the same fixed point as the structural prime -- another
-        symbolic-layer shadow of the equilibrium process whose physical
-        read-out is the particle winding.
+        zero-pressure state of this shell-filling model. It shares an abstract
+        predicate with arithmetic equilibrium but not its state space or
+        dynamics.
 
         Parameters
         ----------
@@ -2562,31 +2907,29 @@ class TNFR:
         Returns
         -------
         list[int]
-            The noble-gas atomic numbers.
+            The model closure counts used for noble-gas comparison.
         """
         from ..physics.emergent_chemistry import emergent_magic_numbers
 
-        return [int(z) for z in emergent_magic_numbers(max_n=int(max_n))]
+        return [int(z) for z in emergent_magic_numbers(max_n=max_n)]
 
     @staticmethod
     def element(Z: int, *, max_n: int = 7) -> dict[str, Any]:
         """Structural characterization of the element with count Z.
 
-        Pure-TNFR atomic structure: electron configuration, valence count,
-        structural valence pressure ``ΔNFR_chem`` and reactivity ``|ΔNFR|``.
-        The subshell capacities ``2l+1`` emerge from the manifold eigenmode
-        degeneracies; the ``(n+l)`` aufbau order is an *assumed* integer count
-        rule, not a spectral derivation. A closed shell is ``ΔNFR_chem(Z) = 0``
-        -- the chemical read-out of the *same* nodal-equation fixed point
-        (:func:`tnfr.metrics.common.is_structural_equilibrium`) as the
-        primality criterion ``ΔNFR_arith(n) = 0``: the symbolic-layer shadow of
-        the equilibrium process whose physical read-out is the particle
-        (:meth:`Network.particle`).
+        Structural shell-model characterization: configuration, valence count
+        and distance ``ΔNFR_chem`` to a declared closure. The constructed S²
+        graph supplies a numerical ``2l+1`` comparison; capacities
+        ``2(2l+1)``, the ``(n+l)`` order and duet/octet closures are assumed.
+        A closed shell is ``ΔNFR_chem(Z) = 0``
+        within the chemical model. The arithmetic criterion
+        ``ΔNFR_arith(n) = 0`` uses the same shared numerical predicate on a
+        different state space; this does not identify the two dynamics.
 
         Parameters
         ----------
         Z : int
-            Atomic number (count of filled structural eigenmodes).
+            Positive integer count allocated through the declared shell capacities.
         max_n : int
             Highest principal shell index available.
 
@@ -2594,11 +2937,12 @@ class TNFR:
         -------
         dict
             Z, configuration, valence_electrons, outer_shell_n, delta_nfr,
-            closed_shell, magic_number, reactivity, config_label.
+            closure_distance, closed_shell, magic_number, the legacy
+            reactivity alias, and config_label.
         """
         from ..physics.emergent_chemistry import classify_element
 
-        return classify_element(int(Z), max_n=int(max_n)).as_dict()
+        return classify_element(Z, max_n=max_n).as_dict()
 
     @staticmethod
     def guide() -> str:
@@ -2633,13 +2977,16 @@ class TNFR:
             ".j_phi() / .j_dnfr()          EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      33",
             ".tensor_invariants()           EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      20, 33",
             ".emergent_fields()             EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md      33",
-            ".noether_charge()              STRUCTURAL_CONSERVATION_THEOREM.md             34",
-            ".energy()                      STRUCTURAL_CONSERVATION_THEOREM.md             34",
+            ".structural_charge()           STRUCTURAL_CONSERVATION_THEOREM.md             17, 34",
+            ".candidate_energy()            STRUCTURAL_CONSERVATION_THEOREM.md             17, 34",
+            ".noether_charge() [alias]      STRUCTURAL_CONSERVATION_THEOREM.md             34",
+            ".energy() [alias]              STRUCTURAL_CONSERVATION_THEOREM.md             34",
             ".nodal_state(node)             TNFR.pdf §2.1 (nodal equation)                 04, 05",
             ".nodal_scan()                  TNFR.pdf §2.1 + U4 bifurcation diagnostics      07",
             ".nodal_profile(node)           TNFR nodal telemetry bridge                     10",
             ".nfr()                         TNFR.pdf §1.4.1 (NFR region of coherence)        —",
-            ".grammar_violations()          STRUCTURAL_CONSERVATION_THEOREM.md ss12        36",
+            ".balance_alerts()              STRUCTURAL_CONSERVATION_THEOREM.md ss12        17, 36",
+            ".grammar_violations() [alias]  STRUCTURAL_CONSERVATION_THEOREM.md ss12        36",
             ".telemetry()                   FUNDAMENTAL_THEORY.md                         10",
             ".auto_optimize()               AGENTS.md § Self-Optimizing Dynamics           30",
             "TNFR.factorize(n)              TNFR_NUMBER_THEORY.md                          40",
@@ -2653,8 +3000,8 @@ class TNFR:
             "  32 — Spiral attractors (golden spiral, KAM)",
             "  33 — Complex field unification (Psi = K_phi + i*J_phi)",
             "  34 — Conservation protocol suite (Noether, Lyapunov)",
-            "  35 — Tetrad irreducibility (blind spot verification)",
-            "  36 — Grammar violation detector (conservation residuals)",
+            "  35 — Tetrad diagnostic complementarity (finite probes)",
+            "  36 — Balance-alert limits and independent grammar validation",
             "",
             "Riemann program:               TNFR_RIEMANN_RESEARCH_NOTES.md                16, 18-23, 25",
             "Classical/Quantum regimes:      PHYSICAL_REGIME_CORRESPONDENCES.md             11-15",

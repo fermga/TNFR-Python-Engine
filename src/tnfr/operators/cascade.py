@@ -104,8 +104,8 @@ def detect_cascade(G: TNFRGraph) -> dict[str, Any]:
     - Invalidation: Automatic when dependencies change
     - Cost: Proportional to number of propagation events
 
-    For networks with >1000 nodes and frequent cascade queries, caching
-    provides significant speedup (~100x for cached calls).
+    Cache reuse avoids recomputing the traversal when the declared dependencies
+    are unchanged; no fixed speedup is implied.
 
     Examples
     --------

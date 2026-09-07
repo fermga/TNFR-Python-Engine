@@ -1,15 +1,15 @@
-"""Tests for TNFR Structural Integrity Monitor — closed-loop conservation enforcement.
+"""Tests for TNFR operator-contract monitoring and finite-step alerts.
 
-Validates the real-time conservation enforcement bridge between:
+Validates the real-time diagnostic bridge between:
   conservation.py → integrity.py → definitions_base.py → self_optimizing_engine.py
 
 Tests verify:
 1. MonitorMode semantics: OFF, OBSERVE, ENFORCE
 2. Postcondition evaluation for canonical operators
-3. Conservation quality assessment via snapshots
-4. Lyapunov stability detection (dE/dt ≤ 0)
-5. Noether charge drift tracking
-6. Grammar violation detection from conservation residuals
+3. Structural-balance quality assessment via snapshots
+4. Candidate-energy trend measurement
+5. Structural-charge drift tracking
+6. Separation of balance alerts from grammar validation
 7. IntegritySummary running statistics
 8. StructuralIntegrityViolation raised in ENFORCE mode
 9. Corrective suggestions generation
@@ -86,6 +86,24 @@ class TestMonitorCreation:
         monitor = StructuralIntegrityMonitor(mode=MonitorMode.ENFORCE)
         assert monitor.mode == MonitorMode.ENFORCE
 
+    @pytest.mark.parametrize(
+        ("kwargs", "parameter"),
+        [
+            ({"conservation_threshold": -0.1}, "conservation_threshold"),
+            ({"conservation_threshold": 1.1}, "conservation_threshold"),
+            ({"conservation_threshold": float("nan")}, "conservation_threshold"),
+            ({"lyapunov_tolerance": -0.1}, "lyapunov_tolerance"),
+            ({"lyapunov_tolerance": float("inf")}, "lyapunov_tolerance"),
+            ({"charge_drift_threshold": -0.1}, "charge_drift_threshold"),
+            ({"charge_drift_threshold": float("inf")}, "charge_drift_threshold"),
+        ],
+    )
+    def test_rejects_invalid_alert_thresholds(
+        self, kwargs: dict[str, float], parameter: str
+    ) -> None:
+        with pytest.raises(ValueError, match=parameter):
+            StructuralIntegrityMonitor(**kwargs)
+
     def test_attach_stores_in_graph(self) -> None:
         G = _make_graph()
         monitor = StructuralIntegrityMonitor()
@@ -155,20 +173,21 @@ class TestBeforeAfterCycle:
         assert isinstance(report, IntegrityReport)
 
     def test_enforce_mode_raises_on_unhealthy(self) -> None:
-        """ENFORCE mode should raise StructuralIntegrityViolation."""
+        """ENFORCE raises on a configured alert without calling it grammar."""
         G = _make_graph()
-        monitor = enable_integrity_monitor(G, mode=MonitorMode.ENFORCE)
+        monitor = enable_integrity_monitor(
+            G, mode=MonitorMode.ENFORCE, conservation_threshold=0.999999
+        )
         monitor.before_operator(G, 0)
-        # Tamper: reduce coherence dramatically to trigger violation
+        # Tamper: create a large finite balance residual.
         for n in G.nodes():
             G.nodes[n]["ΔNFR"] = 999.0
             G.nodes[n]["delta_nfr"] = 999.0
-        try:
+        with pytest.raises(StructuralIntegrityViolation) as exc_info:
             monitor.after_operator(G, 0, "Coherence")
-            # If it doesn't raise, the report might still be healthy
-            # depending on how conservation quality is computed
-        except StructuralIntegrityViolation:
-            pass  # Expected
+        assert exc_info.value.violation_type != "grammar"
+        assert exc_info.value.details["grammar_validated"] is False
+        assert exc_info.value.details["grammar_violations"] == []
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -548,7 +567,54 @@ class TestIntegrityReportHealth:
         assert report.energy_derivative is not None
         assert isinstance(report.is_lyapunov_stable, bool)
         assert isinstance(report.grammar_violations, list)
+        assert report.grammar_validated is False
+        assert report.grammar_violations == []
+        assert isinstance(report.balance_alerts, list)
+        assert report.balance_quality == report.conservation_quality
+        assert report.candidate_energy_derivative == report.energy_derivative
+        assert report.structural_charge_drift == report.noether_charge_drift
+        assert report.diagnostic_follow_up == report.corrective_suggestion
         assert isinstance(report.postcondition_ok, bool)
+
+    def test_large_residual_is_alert_not_grammar_verdict(self) -> None:
+        G = _make_graph()
+        monitor = enable_integrity_monitor(G)
+        monitor.before_operator(G, 0)
+        for n in G.nodes():
+            G.nodes[n]["delta_nfr"] = 1000.0 + n
+            G.nodes[n]["ΔNFR"] = 1000.0 + n
+        report = monitor.after_operator(G, 0, "Coherence")
+        assert report.balance_sample_available
+        assert report.balance_alerts
+        assert report.grammar_validated is False
+        assert report.grammar_violations == []
+
+    def test_exact_candidate_trend_is_separate_from_legacy_tolerance(self) -> None:
+        report = IntegrityReport(
+            operator="Coherence",
+            node=0,
+            energy_derivative=1e-7,
+            is_lyapunov_stable=True,
+            balance_sample_available=True,
+        )
+        assert report.candidate_energy_nonincreasing is False
+        assert report.candidate_energy_within_numerical_tolerance is True
+
+    def test_missing_interval_is_unsampled_and_never_reuses_prior_capture(self) -> None:
+        G = _make_graph()
+        monitor = enable_integrity_monitor(G)
+        monitor.before_operator(G, 0)
+        sampled = monitor.after_operator(G, 0, "Coherence")
+        unsampled = monitor.after_operator(G, 0, "Coherence")
+
+        assert sampled.balance_sample_available is True
+        assert unsampled.balance_sample_available is False
+        assert unsampled.balance_quality is None
+        assert unsampled.candidate_energy_derivative is None
+        assert unsampled.candidate_energy_nonincreasing is None
+        assert unsampled.structural_charge_drift is None
+        assert unsampled.postcondition_evaluated is False
+        assert monitor.summary.balance_samples == 1
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -596,6 +662,13 @@ class TestFeedbackVector:
         monitor.after_operator(G, 0, "Coherence")
         fv = monitor.feedback_vector()
         expected_keys = {
+            "balance_sample_count",
+            "balance_quality",
+            "candidate_energy_derivative",
+            "mean_structural_charge_drift",
+            "total_structural_charge_drift",
+            "structural_charge_drift",
+            "monitor_alert_rate",
             "conservation_quality",
             "energy_derivative",
             "charge_drift",
@@ -636,6 +709,20 @@ class TestFeedbackVector:
         fv = monitor.feedback_vector()
         # No operations yet → defaults
         assert fv["violation_rate"] == 0.0
+        assert fv["balance_sample_count"] == 0.0
+
+    def test_feedback_vector_separates_mean_and_total_charge_drift(self) -> None:
+        G = _make_graph()
+        monitor = enable_integrity_monitor(G)
+        monitor._summary.balance_samples = 4
+        monitor._summary.total_charge_drift = 2.0
+
+        fv = monitor.feedback_vector()
+
+        assert fv["mean_structural_charge_drift"] == pytest.approx(0.5)
+        assert fv["structural_charge_drift"] == pytest.approx(0.5)
+        assert fv["total_structural_charge_drift"] == pytest.approx(2.0)
+        assert fv["charge_drift"] == pytest.approx(2.0)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -771,8 +858,7 @@ class TestOperatorContractAudit:
         assert all(isinstance(r, OperatorContractResult) for r in audit.results)
 
     def test_all_thirteen_contracts_satisfied(self) -> None:
-        # every canonical operator satisfies its postcondition contract
-        # when MEASURED in its correct canonical context
+        # Every catalog entry passes its declared deterministic fixture.
         audit = audit_operator_contracts()
         assert audit.all_satisfied, audit.summary()
         assert audit.n_satisfied == 13
@@ -830,7 +916,7 @@ class TestOperatorContractAudit:
     def test_summary_contains_verdict(self) -> None:
         audit = audit_operator_contracts()
         text = audit.summary()
-        assert "ALL SATISFIED" in text
+        assert "ALL PROBES PASS" in text
         assert "13/13" in text
 
 
@@ -840,18 +926,26 @@ class TestSDKOperatorAudit:
     def test_sdk_audit_operators(self) -> None:
         from tnfr.sdk import TNFR
 
-        net = TNFR.create(16).random(0.3).evolve(2)
+        net = TNFR.create(16).ring().evolve(2)
         result = net.audit_operators()
         assert result["all_satisfied"] is True
         assert result["n_satisfied"] == 13
         assert result["n_operators"] == 13
         assert len(result["operators"]) == 13
 
-    def test_sdk_integrity_check_no_longer_empty(self) -> None:
-        # regression: integrity_check used to read a non-existent .passed
-        # attribute and silently skip every node (nodes_checked=0)
+    def test_sdk_integrity_check_requires_real_before_after_evidence(self) -> None:
         from tnfr.sdk import TNFR
+        from tnfr.operators.definitions import Coherence
 
-        net = TNFR.create(16).random(0.3).evolve(2)
+        net = TNFR.create(16).ring().evolve(2)
+        baseline = net.integrity_check("IL")
+        assert baseline["evidence_available"] is False
+        assert baseline["nodes_checked"] == 0
+
+        Coherence()(net.G, 0)
         result = net.integrity_check("IL")
+        assert result["evidence_available"] is True
         assert result["nodes_checked"] > 0
+        assert result["grammar_validated"] is False
+        assert all(r["postcondition_evaluated"] for r in result["reports"])
+        assert all("diagnostic_follow_up" in r for r in result["reports"])

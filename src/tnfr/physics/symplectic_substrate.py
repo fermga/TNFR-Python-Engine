@@ -107,7 +107,7 @@ __all__ = [
 ]
 
 
-# Canonical per-node block of the emergent symplectic form ω.
+# Per-node block of the auxiliary symplectic form ω.
 # Basis order: (q^A, p^A, q^B, p^B) = (K_φ, J_φ, Φ_s, J_ΔNFR).
 BLOCK_SYMPLECTIC_FORM = np.array(
     [
@@ -137,7 +137,7 @@ CONJUGATE_PAIR_LABELS = (
 
 @dataclass(frozen=True)
 class PhaseSpacePoint:
-    r"""A point in the emergent symplectic phase space P = ℝ^{4N}.
+    r"""A point in the auxiliary symplectic phase space P = ℝ^{4N}.
 
     Coordinates per node ``i`` are the two canonical conjugate pairs
 
@@ -192,7 +192,7 @@ class PhaseSpacePoint:
 
 @dataclass(frozen=True)
 class CanonicalStructureCertificate:
-    r"""Verification that the emergent geometry is a valid symplectic manifold.
+    r"""Verification of the declared auxiliary symplectic structure.
 
     Attributes
     ----------
@@ -245,7 +245,7 @@ class CanonicalStructureCertificate:
         """Human-readable one-line verdict."""
         ok = "VALID" if self.is_valid_symplectic_manifold else "INVALID"
         return (
-            f"Emergent symplectic substrate [{ok}]: dim={self.dimension}, "
+            f"Auxiliary symplectic substrate [{ok}]: dim={self.dimension}, "
             f"antisym={self.is_antisymmetric}, "
             f"nondeg={self.is_nondegenerate}, "
             f"closed={self.is_closed}, canonical_brackets="
@@ -259,15 +259,15 @@ class CanonicalStructureCertificate:
 class NoetherChargeCertificate:
     r"""Noether charges of the substrate flow and their conservation.
 
-    Noether's theorem on the emergent symplectic substrate: each
+    Noether's theorem on the auxiliary harmonic substrate: each
     continuous symmetry of the substrate Hamiltonian generates a
     conserved quantity along the Hamiltonian flow.
 
     Three symmetries with their charges:
 
     - **Time translation** → ``hamiltonian`` H_sub (total energy).
-    - **Geometric U(1)** (Ψ → e^{iα}Ψ, the :mod:`tnfr.physics.gauge`
-      symmetry of Ψ = K_φ + i·J_φ) → ``geometric_energy`` ½Σ|Ψ|²
+    - **Global geometric oscillator rotation** (Ψ → e^{iα}Ψ with one
+      constant α) → ``geometric_energy`` ½Σ|Ψ|²
       = ½Σ(K_φ² + J_φ²).
     - **Potential U(1)** (rotation of (Φ_s, J_ΔNFR)) →
       ``potential_energy`` ½Σ(Φ_s² + J_ΔNFR²).
@@ -276,12 +276,17 @@ class NoetherChargeCertificate:
     sector charges are *separately* conserved — the U(1)×U(1) symmetry
     refines the single time-translation conservation.
 
+    These oscillator rotations are global dynamical symmetries of ``H_sub``.
+    They are distinct from the node-dependent rephasing convention in
+    :mod:`tnfr.physics.gauge`, whose bundled connection is the pure gauge
+    ``d(arg Ψ)``. No local gauge charge or gauge-field dynamics follows here.
+
     Attributes
     ----------
     hamiltonian : float
         H_sub (time-translation charge).
     geometric_energy : float
-        ½Σ(K_φ² + J_φ²) = ½Σ|Ψ|² (geometric-U(1)/gauge charge).
+        ½Σ(K_φ² + J_φ²) = ½Σ|Ψ|² (global-rotation charge).
     potential_energy : float
         ½Σ(Φ_s² + J_ΔNFR²) (potential-U(1) charge).
     max_hamiltonian_drift : float
@@ -324,7 +329,7 @@ class NoetherChargeCertificate:
 class HermitianStructureCertificate:
     r"""Verification of the compatible Hermitian (flat Kähler) structure.
 
-    The emergent phase space carries a compatible triple (ω, J, g):
+    The auxiliary phase space carries a compatible triple (ω, J, g):
 
     - **ω** — the symplectic form (:data:`BLOCK_SYMPLECTIC_FORM`).
     - **J** — the complex structure J = −ω (:data:`BLOCK_COMPLEX_STRUCTURE`),
@@ -335,8 +340,7 @@ class HermitianStructureCertificate:
     These satisfy the compatibility ω(u, v) = g(J u, v), making each fiber
     ℝ⁴ ≅ ℂ² a Hermitian vector space.  The complex coordinates are
 
-        ζ^A = K_φ + i·J_φ = Ψ   (geometric sector, the gauge field of
-                                  :mod:`tnfr.physics.gauge`),
+        ζ^A = K_φ + i·J_φ = Ψ   (geometric complex coordinate),
         ζ^B = Φ_s + i·J_ΔNFR    (potential sector),
 
     so the substrate Hamiltonian is the **Kähler potential**
@@ -410,10 +414,12 @@ class IntegrabilityCertificate:
         I^A_i = ½(K_φ² + J_φ²) = ½|ζ^A|² = ½|Ψ|²   (geometric),
         I^B_i = ½(Φ_s² + J_ΔNFR²) = ½|ζ^B|²        (potential),
 
-    giving 2N independent integrals for a system of 2N degrees of freedom.
-    The actions are pairwise in involution ({I_i, I_j} = 0, structural — the
-    conjugate pairs are decoupled), conserved along the flow, and the
-    conjugate **angle variables** θ_i = arg ζ_i advance linearly
+    giving 2N integrals for a system of 2N degrees of freedom. Their
+    differentials are independent on the dense regular set where every
+    oscillator pair is nonzero. The actions are pairwise in involution
+    ({I_i, I_j} = 0, structurally, because the conjugate pairs are decoupled),
+    conserved along the flow, and the conjugate **angle variables**
+    θ_i = arg ζ_i advance linearly
     θ_i(t) = θ_i(0) − t where I_i>0. These are local action–angle coordinates
     in which the harmonic backbone is trivial (a rigid phase rotation per
     pair).  The sector action sums recover the Noether charges
@@ -430,7 +436,8 @@ class IntegrabilityCertificate:
     degrees_of_freedom : int
         Number of conjugate pairs, 2N.
     n_action_variables : int
-        Number of independent action integrals, 2N.
+        Number of action integrals, 2N; functional independence holds on the
+        regular set where every oscillator pair is nonzero.
     actions_in_involution : bool
         {I_i, I_j} = 0 for all action pairs.
     actions_conserved : bool
@@ -460,7 +467,7 @@ class IntegrabilityCertificate:
 
     @property
     def is_completely_integrable(self) -> bool:
-        """True when 2N independent actions are conserved and in involution."""
+        """True when the regular-set action family is conserved and in involution."""
         return (
             self.n_action_variables == self.degrees_of_freedom
             and self.actions_in_involution
@@ -495,17 +502,17 @@ class PoincareCartanCertificate:
       1-form, ω = dλ).  Equivalently the *absolute* invariant ∬ ω over any
       2-cycle.  At matrix level the flow map M(t) is **symplectic**
       (Mᵀ Ω M = Ω).
-    - **1 < k < N** — the intermediate invariants ∫ ω^k, encoded by the
-      **palindromic characteristic polynomial** of M(t): its spectrum is
-      the reciprocal symplectic set {e^{+it}, e^{−it}}, so every coefficient
-      (= a sum of 2k×2k principal symplectic minors = the ω^k invariant) is
-      preserved.
+    - **1 < k < N** — symplecticity implies ``φ_t^*(ω^k) = ω^k``.  The
+      palindromic characteristic polynomial of M(t) is a separate numerical
+      consistency check for its reciprocal symplectic spectrum; its
+      coefficients need not be constant as ``t`` changes.
     - **k = N** — the top invariant ω^N / N! is the **Liouville volume**
       (det M = 1).
 
-    On an action torus I = const, the relative invariant evaluates to the
-    **Bohr–Sommerfeld** quantum: ∮_{γ_i} p dq = 2π I_i, tying the integral
-    invariant to the action variables of :class:`IntegrabilityCertificate`.
+    On an action torus I = const, the classical identity is
+    ``|∮_{γ_i} p dq| = 2π I_i``. The legacy field name
+    ``bohr_sommerfeld_holds`` records this normalization only; the calculation
+    imposes no quantum condition, integer spectrum, physical ``ħ``, or statistics.
 
     Attributes
     ----------
@@ -517,12 +524,13 @@ class PoincareCartanCertificate:
     volume_preserved : bool
         det M = 1 (top invariant, Liouville volume).
     char_poly_palindromic : bool
-        Characteristic polynomial of M is palindromic (reciprocal
-        symplectic spectrum → the full ω^k tower is preserved).
+        Characteristic polynomial of M is palindromic, a consistency check
+        for its reciprocal symplectic spectrum.  Preservation of the full
+        ω^k tower follows from the verified pullback of ω.
     relative_invariant_preserved : bool
         ∮_γ p dq over an action-torus loop is constant along the flow.
     bohr_sommerfeld_holds : bool
-        |∮_γ p dq| = 2π I on the action torus.
+        Legacy name for the classical identity ``|∮_γ p dq| = 2π I``.
     max_omega_drift : float
         Max ‖Mᵀ Ω M − Ω‖ over sampled times.
     max_relative_drift : float
@@ -564,7 +572,7 @@ class PoincareCartanCertificate:
             f"palindromic={self.char_poly_palindromic}, "
             f"∮p·dq const={self.relative_invariant_preserved} "
             f"(drift {self.max_relative_drift:.1e}), "
-            f"Bohr–Sommerfeld={self.bohr_sommerfeld_holds} "
+            f"classical loop normalization={self.bohr_sommerfeld_holds} "
             f"(err {self.max_bohr_error:.1e})"
         )
 
@@ -672,9 +680,9 @@ class PolarizationSymmetryCertificate:
     acting on the (ζ^A, ζ^B) doublet.  This is exactly the **polarization
     symmetry** of a two-component complex field: the SAME mathematics as
     classical wave polarization (Stokes 1852, Poincaré 1892), an
-    empirically-demonstrated phenomenon.  U(2) = U(1) × SU(2): the U(1)
-    centre is the substrate flow itself, and the U(1)×U(1) Noether sectors
-    are the **Cartan torus** of U(2).
+    empirically-demonstrated phenomenon.  More precisely,
+    U(2) ≅ (U(1) × SU(2))/Z₂: the U(1) centre contains the substrate flow,
+    and the U(1)×U(1) Noether sectors form a **Cartan torus** of U(2).
 
     The SU(2) part supplies the three conserved **Stokes parameters** (the
     polarization 3-vector; the moment map of the global diagonal SU(2)):
@@ -686,10 +694,10 @@ class PolarizationSymmetryCertificate:
     These are the Stokes parameters of the doublet in the substrate's
     natural (Noether-charge) normalization; the textbook optical Stokes
     parameters are 2× these.  P_3 is the (already-known) sector-energy
-    difference, but **P_1 and P_2 are genuinely new conserved charges** —
-    the cross-sector correlations between the geometric and potential
-    sectors.  They satisfy the su(2) algebra under the canonical Poisson
-    bracket, {P_a, P_b} = 2 ε_abc P_c, and are conserved along the
+    difference, while P_1 and P_2 are additional conserved charges of this
+    declared harmonic flow: cross-sector correlations between the geometric
+    and potential sectors.  They satisfy the su(2) algebra under the canonical
+    Poisson bracket, {P_a, P_b} = 2 ε_abc P_c, and are conserved along the
     substrate flow (the diagonal U(1) ⊂ U(2) commutes with SU(2)).
 
     **Poincaré sphere (per-node geometric content)**: per node, the
@@ -707,11 +715,12 @@ class PolarizationSymmetryCertificate:
     rotation mixes the *physically distinct* geometric and potential
     sectors; it is canonical (preserves ω and H_sub) but is **not** one of
     the 13 operators. P_1, P_2, P_3 are exact conserved charges along the
-    substrate flow and diagnostics at the full nonlinear operator level.
+    substrate flow. They may be evaluated as snapshot read-outs after nonlinear
+    operators, but are not thereby conserved charges of those operator maps.
     The substrate is a CLASSICAL phase field: this is the polarization
-    (Stokes/Poincaré) of a wave, NOT a quantum two-level system — there is
-    no superposition or entanglement (the doublet is per-node, so the
-    global state is a product, a classical polarization texture).
+    (Stokes/Poincaré) of a wave, not a quantum two-level state. It supplies
+    no Born probabilities or quantum entanglement; the doublet is a per-node
+    classical field and the network is a classical polarization texture.
 
     Attributes
     ----------
@@ -785,12 +794,12 @@ class PolarizationSymmetryCertificate:
 
 @dataclass(frozen=True)
 class SubstrateGeometryReport:
-    r"""Consolidated report of the complete emergent geometric tower.
+    r"""Consolidated report of the auxiliary harmonic-geometry certificates.
 
-    Aggregates the six structural certificates produced by
+    Aggregates the seven model certificates produced by
     :func:`verify_substrate_geometry`, giving a single entry point to the
-    whole classical Hamiltonian-geometry tower derived from the nodal
-    dynamics: symplectic/Poisson/Liouville, Noether charges, Hermitian
+    declared classical Hamiltonian model initialized from graph read-outs:
+    symplectic/Poisson/Liouville, Noether charges, Hermitian
     (flat Kähler), complete integrability, Poincaré–Cartan invariants, and
     the Marsden–Weinstein reduction.
 
@@ -820,7 +829,7 @@ class SubstrateGeometryReport:
 
     @property
     def all_structures_valid(self) -> bool:
-        """True when every structure in the tower verifies."""
+        """True when every declared auxiliary-model certificate verifies."""
         return (
             self.canonical.is_valid_symplectic_manifold
             and self.noether.is_conserved
@@ -835,7 +844,7 @@ class SubstrateGeometryReport:
         """Multi-line verdict listing every structure in the tower."""
         ok = "ALL VALID" if self.all_structures_valid else "INCOMPLETE"
         lines = [
-            f"Emergent substrate geometry [{ok}] "
+            f"Auxiliary substrate geometry [{ok}] "
             f"(N={self.n_nodes}, dim P={self.phase_space_dimension}):",
             f"  1. {self.canonical.summary()}",
             f"  2. {self.noether.summary()}",
@@ -849,7 +858,7 @@ class SubstrateGeometryReport:
 
 
 def extract_phase_space_point(G: Any) -> PhaseSpacePoint:
-    r"""Extract the emergent phase-space point z(G) from a TNFR network.
+    r"""Initialize the auxiliary phase-space point z(G) from graph read-outs.
 
     Delegates to the canonical field functions (no recomputation of
     field formulas):
@@ -889,7 +898,7 @@ def extract_phase_space_point(G: Any) -> PhaseSpacePoint:
 
 
 def symplectic_form_matrix(n_nodes: int) -> Any:
-    r"""Return the emergent symplectic form ω as a 4N×4N block matrix.
+    r"""Return the auxiliary symplectic form ω as a 4N×4N block matrix.
 
     Block-diagonal with ``n_nodes`` copies of :data:`BLOCK_SYMPLECTIC_FORM`.
 
@@ -940,7 +949,7 @@ def symplectic_pullback_residual(jacobian: Any, n_nodes: int) -> float:
 def substrate_hamiltonian(point: PhaseSpacePoint) -> float:
     r"""Symplectic-core Hamiltonian H_sub = ½Σ(K_φ²+J_φ²+Φ_s²+J_ΔNFR²).
 
-    This is the part of the canonical TNFR energy functional that lives on
+    This is the part of the declared substrate energy functional that lives on
     the conjugate pairs (the symplectic core).  The full energy adds the
     configuration background ½Σ|∇φ|² (see :func:`background_potential`).
     """
@@ -1039,9 +1048,9 @@ def liouville_divergence(point: PhaseSpacePoint) -> float:
     r"""Phase-space divergence of the Hamiltonian flow, div(X_H).
 
     Equals tr(J · Hess H_sub).  For H_sub = ½|z|² the Hessian is the
-    identity, so div(X_H) = tr(J) = 0 exactly — Liouville's theorem.  This
-    is the structural reason the flow (and the operators that generate it)
-    preserve phase-space volume.
+    identity, so div(X_H) = tr(J) = 0 exactly — Liouville's theorem for
+    this declared vector field. This says nothing about an engine operator
+    unless its tangent map is separately shown to be symplectic.
 
     Returns
     -------
@@ -1091,7 +1100,7 @@ def _check_jacobi(n_nodes: int) -> bool:
 
 
 def verify_canonical_structure(G: Any) -> CanonicalStructureCertificate:
-    r"""Verify the emergent geometry of ``G`` is a valid symplectic manifold.
+    r"""Verify the auxiliary structure initialized from ``G``.
 
     Checks all structural conditions: antisymmetry, non-degeneracy,
     closedness, canonical Poisson brackets, the Jacobi identity, Liouville
@@ -1201,9 +1210,10 @@ def evolve_substrate_flow(point: PhaseSpacePoint, t: float) -> PhaseSpacePoint:
 def geometric_sector_energy(point: PhaseSpacePoint) -> float:
     r"""Geometric-sector Noether charge E_geo = ½Σ(K_φ² + J_φ²) = ½Σ|Ψ|².
 
-    This is the conserved charge of the geometric U(1) symmetry
-    Ψ → e^{iα}Ψ (Ψ = K_φ + i·J_φ), the gauge symmetry established in
-    :mod:`tnfr.physics.gauge`.  It is conserved along the substrate flow.
+    This is the charge of a constant global oscillator rotation
+    ``Ψ → e^{iα}Ψ`` in the declared harmonic model. It is conserved along
+    that substrate flow. It is not a charge for the node-dependent pure-gauge
+    coordinate transformation in :mod:`tnfr.physics.gauge`.
     """
     k = np.asarray(point.k_phi, dtype=float)
     j = np.asarray(point.j_phi, dtype=float)
@@ -1227,7 +1237,8 @@ def noether_charges(point: PhaseSpacePoint) -> dict[str, float]:
     Maps each continuous symmetry to its conserved quantity:
 
     - ``"time_translation"`` → H_sub (total energy)
-    - ``"geometric_u1"`` → ½Σ|Ψ|² (gauge U(1) of Ψ = K_φ + i·J_φ)
+    - ``"geometric_u1"`` → ½Σ|Ψ|² (global oscillator rotation;
+      historical key retained for compatibility)
     - ``"potential_u1"`` → ½Σ(Φ_s² + J_ΔNFR²)
 
     The total splits exactly: H_sub = E_geo + E_pot.
@@ -1359,13 +1370,12 @@ def to_complex_coordinates(point: PhaseSpacePoint) -> dict[str, Any]:
 
     Each conjugate pair (q, p) becomes a complex coordinate ζ = q + i·p:
 
-        ζ^A = K_φ + i·J_φ = Ψ   (geometric sector — the canonical complex
-                                  field of :mod:`tnfr.physics.gauge`),
+        ζ^A = K_φ + i·J_φ = Ψ   (geometric complex coordinate),
         ζ^B = Φ_s + i·J_ΔNFR     (potential sector).
 
-    So the gauge field Ψ is *not* an ad-hoc construction: it is the complex
-    coordinate the substrate's complex structure J induces on the geometric
-    sector.
+    This identifies the same algebraic pairing used by the graph diagnostic
+    ``Ψ``. It does not promote ``Ψ`` to an independent gauge field or derive
+    its node-dependent rephasing model from the harmonic flow.
 
     Parameters
     ----------
@@ -1476,9 +1486,10 @@ def to_action_angle(point: PhaseSpacePoint) -> dict[str, Any]:
         I^A = ½|Ψ|²   (geometric),   θ^A = arg Ψ,
         I^B = ½|ζ^B|² (potential),   θ^B = arg ζ^B.
 
-    Under the substrate flow the actions are conserved and the angles
-    advance linearly θ(t) = θ(0) − t, so these are global action–angle
-    coordinates in which the harmonic backbone is trivial.
+    Under the substrate flow the actions are conserved and every defined
+    angle advances linearly θ(t) = θ(0) − t. These are local action–angle
+    coordinates on the regular set I>0; ``np.angle(0) == 0`` is only a
+    numerical convention and is not treated as a physical angle.
 
     Parameters
     ----------
@@ -1535,11 +1546,14 @@ def verify_integrability(
 ) -> IntegrabilityCertificate:
     r"""Verify the substrate flow is completely integrable (Liouville–Arnold).
 
-    Confirms 2N action variables I = ½|ζ|² (one per conjugate pair) for a
+    Confirms 2N action functions I = ½|ζ|² (one per conjugate pair) for a
     2N-degree-of-freedom system, that they are pairwise in involution and
-    conserved along the flow, that the conjugate angles advance linearly
-    θ(t) = θ(0) − t, and that the sector action sums recover the Noether
-    charges (Σ I^A = E_geo, Σ I^B = E_pot).
+    conserved along the flow, that each defined conjugate angle advances
+    linearly θ(t) = θ(0) − t, and that the sector action sums recover the
+    Noether charges (Σ I^A = E_geo, Σ I^B = E_pot). Functional independence
+    is the analytic regular-set property of the decoupled oscillator family;
+    this finite certificate records the family size rather than estimating
+    rank at a possibly singular snapshot.
 
     HONEST SCOPE: integrability of the substrate harmonic backbone (the
     H_sub flow), not of the full nonlinear operator dynamics.
@@ -1564,6 +1578,8 @@ def verify_integrability(
     ib0 = aa0["action_potential"]
     tha0 = aa0["angle_geometric"]
     thb0 = aa0["angle_potential"]
+    active_a = ia0 > 0.0
+    active_b = ib0 > 0.0
 
     action_drift = 0.0
     angle_error = 0.0
@@ -1575,14 +1591,30 @@ def verify_integrability(
             float(np.max(np.abs(aa["action_geometric"] - ia0))),
             float(np.max(np.abs(aa["action_potential"] - ib0))),
         )
-        # angles must satisfy θ(t) = θ(0) − t (compared on the circle).
-        da = np.angle(np.exp(1j * (aa["angle_geometric"] - (tha0 - t))))
-        db = np.angle(np.exp(1j * (aa["angle_potential"] - (thb0 - t))))
-        angle_error = max(
-            angle_error,
-            float(np.max(np.abs(da))),
-            float(np.max(np.abs(db))),
-        )
+        # Defined angles satisfy θ(t) = θ(0) − t, compared on the circle.
+        # A zero-action oscillator stays at the origin and has no angle.
+        if np.any(active_a):
+            da = np.angle(
+                np.exp(
+                    1j
+                    * (
+                        aa["angle_geometric"][active_a]
+                        - (tha0[active_a] - t)
+                    )
+                )
+            )
+            angle_error = max(angle_error, float(np.max(np.abs(da))))
+        if np.any(active_b):
+            db = np.angle(
+                np.exp(
+                    1j
+                    * (
+                        aa["angle_potential"][active_b]
+                        - (thb0[active_b] - t)
+                    )
+                )
+            )
+            angle_error = max(angle_error, float(np.max(np.abs(db))))
 
     involution = _max_action_involution(point)
 
@@ -1606,7 +1638,7 @@ def verify_integrability(
 
 
 # ---------------------------------------------------------------------------
-# Poincaré–Cartan integral invariants: the ω^k tower and Bohr–Sommerfeld
+# Poincaré–Cartan integral invariants and classical loop normalization
 # ---------------------------------------------------------------------------
 
 
@@ -1657,8 +1689,9 @@ def loop_action_integral(action: float, *, n_points: int = 4000) -> float:
         (q, p) = (√(2I)·cos s, √(2I)·sin s),   s ∈ [0, 2π),
 
     and returns ∮ p dq by the trapezoidal rule over the closed loop.  The
-    exact value is −2π·I (the negative of the enclosed area π·(2I)); its
-    magnitude is the **Bohr–Sommerfeld** quantum 2π·I.
+    exact value is −2π·I (the negative of the enclosed area π·(2I)).
+    Its magnitude ``2π·I`` is a classical action-angle identity. This function
+    does not impose Bohr–Sommerfeld quantization.
 
     Parameters
     ----------
@@ -1691,12 +1724,14 @@ def verify_poincare_cartan(
 
     - **ω-preservation** (1st / relative invariant): the flow matrix M(t) is
       symplectic, Mᵀ Ω M = Ω, for every sampled time.
-    - **palindromic characteristic polynomial** of M(t): the reciprocal
-      symplectic spectrum {e^{±it}} encodes every intermediate invariant.
+    - **palindromic characteristic polynomial** of M(t): a consistency check
+      for the reciprocal symplectic spectrum {e^{±it}}.  The pullback of all
+      wedge powers ω^k follows from the verified pullback of ω.
     - **volume** (top invariant): det M = 1 (Liouville).
     - **relative invariant** ∮_γ p dq over an action-torus loop is constant
       along the flow.
-    - **Bohr–Sommerfeld**: |∮_γ p dq| = 2π I on the action torus.
+    - **classical loop normalization**: ``|∮_γ p dq| = 2π I`` on the
+      action torus (reported through a legacy Bohr–Sommerfeld-named field).
 
     Parameters
     ----------
@@ -1748,7 +1783,7 @@ def verify_poincare_cartan(
         relative_drift = max(relative_drift, abs(loop_t - base_loop))
     relative_ok = relative_drift < tolerance
 
-    # --- Bohr–Sommerfeld: |∮ p dq| = 2π I (quadrature tol is looser) ---
+    # --- Classical action-loop identity: |∮ p dq| = 2π I ---
     bohr_error = abs(abs(base_loop) - 2.0 * np.pi * action_star)
     bohr_ok = bohr_error < 1e-3
 
@@ -2090,10 +2125,10 @@ def verify_polarization_symmetry(
     HONEST SCOPE: a dynamical symmetry of the flat, isotropic H_sub
     backbone (the SU(2) mixes the physically distinct geometric and
     potential sectors and is not one of the 13 operators); the charges are
-    exact along the substrate flow and diagnostics at the full nonlinear
-    level.  This is the classical polarization (Stokes/Poincaré) of a wave
-    phase field — NOT a quantum two-level system (no superposition or
-    entanglement; the doublet is per-node, the global state a product).
+    exact along the substrate flow and may be evaluated only as snapshot
+    diagnostics after nonlinear engine updates. This is classical
+    Stokes/Poincaré wave polarization, not a quantum two-level state. It
+    supplies no Born probabilities or quantum entanglement.
 
     Parameters
     ----------
@@ -2184,19 +2219,19 @@ def verify_polarization_symmetry(
 
 
 # ---------------------------------------------------------------------------
-# Adiabatic invariance of the action: the slow-νf theorem
+# Adiabatic invariance in a ramped auxiliary oscillator
 # ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
 class AdiabaticInvarianceCertificate:
     r"""Verification that the substrate action I is an adiabatic invariant
-    under a slowly-varying structural frequency.
+    under a slowly varying oscillator frequency.
 
     The substrate backbone is a harmonic oscillator per conjugate pair with
     action I = ½|ζ|² = E/ω.  When the effective frequency ω is held fixed
     the action is exactly conserved (:class:`IntegrabilityCertificate`).
-    When ω is *driven* by a time-varying structural frequency ν_f(t), the
+    When ω is externally ramped, the
     action is no longer exactly conserved — but the **adiabatic theorem**
     (Ehrenfest 1916, an empirically established result) guarantees it is an
     *adiabatic invariant*: the relative drift |ΔI|/I → 0 as the ramp slows
@@ -2206,11 +2241,10 @@ class AdiabaticInvarianceCertificate:
     not certify the 13 engine operators or derive a varying stiffness from a
     change of the nodal clock.
 
-    HONEST SCOPE: this is the adiabatic theorem for the substrate harmonic
-    backbone with ν_f providing the slowly-varying frequency.  It is the
-    empirically-grounded Ehrenfest adiabatic invariance, not a new
-    postulate.  Measured by integrating a single oscillator q̈ + ω(t)²q = 0
-    with ω ramped over a window; no field formula is duplicated.
+    HONEST SCOPE: this is the adiabatic theorem for the auxiliary harmonic
+    oscillator. The implementation does not identify its stiffness frequency
+    ``ω`` with TNFR capacity ``νf``. It integrates a single oscillator
+    ``q̈ + ω(t)²q = 0`` with ω ramped over a window.
 
     Attributes
     ----------
@@ -2251,7 +2285,7 @@ class AdiabaticInvarianceCertificate:
             f"fast-ramp drift {self.fast_drift:.2e} -> "
             f"slow-ramp drift {self.slow_drift:.2e} "
             f"(decreases with slowness={self.drift_decreases_with_slowness}); "
-            f"nu_f is the clock, slow ramps conserve the action"
+            f"auxiliary oscillator ramp; slow ramps conserve the action"
         )
 
 
@@ -2298,14 +2332,14 @@ def verify_adiabatic_invariance(
     ramp_times: tuple[float, ...] = (1.0, 5.0, 20.0, 80.0),
     tolerance: float = 1e-2,
 ) -> AdiabaticInvarianceCertificate:
-    r"""Verify the substrate action is an adiabatic invariant of slow ν_f.
+    r"""Verify adiabatic action behavior in a ramped auxiliary oscillator.
 
     Probes the action I = E/ω of the substrate harmonic backbone under a
-    structural frequency ramped from ``omega_start`` to ``omega_end`` over a
+    oscillator frequency ramped from ``omega_start`` to ``omega_end`` over a
     range of ramp durations.  Confirms the adiabatic theorem: the relative
-    action drift shrinks as the ramp slows (the action is conserved in the
-    slow-ν_f limit), so ν_f acts as the clock whose slow variation preserves
-    the action while a fast variation injects/extracts it.
+    action drift shrinks as the ramp slows. ``omega`` is a parameter of this
+    comparison model; this function neither reads nor derives nodal capacity
+    ``νf`` and therefore establishes no adiabatic theorem for engine evolution.
 
     Parameters
     ----------
@@ -2343,12 +2377,12 @@ def verify_adiabatic_invariance(
 
 
 # ---------------------------------------------------------------------------
-# Consolidated entry point: the complete geometric tower in one call
+# Consolidated entry point for the auxiliary model certificates
 # ---------------------------------------------------------------------------
 
 
 def verify_substrate_geometry(G: Any) -> SubstrateGeometryReport:
-    r"""Verify the complete emergent geometric tower in a single call.
+    r"""Verify the auxiliary harmonic-model certificates in a single call.
 
     Runs all seven structural verifications and bundles their certificates
     into one :class:`SubstrateGeometryReport`:
@@ -2362,8 +2396,9 @@ def verify_substrate_geometry(G: Any) -> SubstrateGeometryReport:
     7. :func:`verify_polarization_symmetry` — polarization symmetry (U(2)),
        the Stokes parameters of the (ζ^A, ζ^B) doublet.
 
-    This is the consolidated entry point to the whole classical
-    Hamiltonian-geometry tower the nodal dynamics generates from itself.
+    This is a consolidated check of the specified ambient model after its
+    initial coordinates are extracted from ``G``. It is not a certificate for
+    subsequent graph dynamics or canonical operator maps.
 
     Parameters
     ----------

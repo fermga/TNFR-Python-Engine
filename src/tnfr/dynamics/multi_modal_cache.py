@@ -1,30 +1,19 @@
-"""
-TNFR Multi-Modal Unified Cache System
+"""Exact-state cache shared by read-only TNFR computation engines.
 
-This module implements the unified caching strategy that emerges naturally from
-the nodal equation ∂EPI/∂t = νf · ΔNFR(t):
-
-Mathematical Foundation:
-1. **Computational Dependencies**: All TNFR operations share common computational roots
-2. **Spectral Reuse**: Eigendecompositions can be shared across multiple operations
-3. **Field Correlation**: Structural fields (Φ_s, |∇φ|, K_φ, ξ_C) are mathematically linked
-4. **Temporal Coherence**: Multi-step computations can reuse intermediate results
-5. **Cross-Engine Synergy**: Cache sharing between optimization engines
-
-Key Features:
-- Cross-engine cache sharing (spectral ↔ nodal ↔ fields ↔ adelic)
-- Dependency-aware invalidation (topology change → invalidate all dependent caches)
-- Intelligent prefetching (predict likely next computations)
-- Memory-conscious eviction (mathematical importance-based LRU)
-- Multi-scale coherence (cache hierarchies matching EPI fractality)
-
-Status: CANONICAL UNIFIED CACHE SYSTEM
+Keys include graph identity, the complete logical graph snapshot, entry type,
+and explicit parameters. Stored values and cache hits are detached copies.
+Optional access tracking records hints only; it does not claim speculative
+execution or mathematical dependency equivalence.
 """
 
 import hashlib
+import math
 import time
 import weakref
+from functools import wraps
 from collections import OrderedDict
+from collections.abc import Mapping
+from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable
@@ -39,12 +28,6 @@ except ImportError:
     HAS_NETWORKX = False
     nx = None
 
-# Import existing cache infrastructure
-try:
-    _CACHE_AVAILABLE = True
-except ImportError:
-    _CACHE_AVAILABLE = False
-
 # Operational engine-tuning knobs (not TNFR physics) → tnfr.constants.operational
 from ..constants.operational import (
     MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL,
@@ -52,6 +35,145 @@ from ..constants.operational import (
     MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL,
 )
 
+
+_RUNTIME_GRAPH_KEYS = frozenset(
+    {
+        "_node_cache",
+        "_node_cache_weak",
+        "integrity_monitor",
+        "runtime_lock",
+    }
+)
+
+
+def _logical_graph_attributes(attributes: Mapping[Any, Any]) -> dict[Any, Any]:
+    """Exclude only opaque runtime attachments from a logical cache snapshot."""
+
+    return {
+        key: value
+        for key, value in attributes.items()
+        if key not in _RUNTIME_GRAPH_KEYS
+        and "cache" not in str(key).lower()
+        and "lock" not in str(key).lower()
+    }
+
+
+def cache_signature_token(value: Any, seen: set[int] | None = None) -> Any:
+    """Build a deterministic, shape-aware token for nested in-process values."""
+
+    if seen is None:
+        seen = set()
+    if value is None or isinstance(value, (bool, int, str, bytes)):
+        return (type(value).__name__, value)
+    if isinstance(value, float):
+        return ("float", value.hex())
+    if isinstance(value, complex):
+        return ("complex", value.real.hex(), value.imag.hex())
+    if isinstance(value, np.generic):
+        return cache_signature_token(value.item(), seen)
+    if isinstance(value, np.ndarray):
+        array = np.asarray(value)
+        if array.dtype.kind == "O":
+            return (
+                "object-array",
+                array.shape,
+                tuple(cache_signature_token(item, seen) for item in array.flat),
+            )
+        contiguous = np.ascontiguousarray(array)
+        return (
+            "array",
+            array.dtype.str,
+            array.shape,
+            hashlib.sha256(contiguous.tobytes()).hexdigest(),
+        )
+
+    object_id = id(value)
+    if object_id in seen:
+        return ("cycle", type(value).__module__, type(value).__qualname__)
+    seen.add(object_id)
+    try:
+        if isinstance(value, Mapping):
+            items = [
+                (
+                    cache_signature_token(key, seen),
+                    cache_signature_token(item, seen),
+                )
+                for key, item in value.items()
+            ]
+            return ("mapping", tuple(sorted(items, key=repr)))
+        if isinstance(value, (list, tuple)):
+            return (
+                type(value).__name__,
+                tuple(cache_signature_token(item, seen) for item in value),
+            )
+        if isinstance(value, (set, frozenset)):
+            items = [cache_signature_token(item, seen) for item in value]
+            return (type(value).__name__, tuple(sorted(items, key=repr)))
+        if hasattr(value, "nodes") and callable(value.nodes):
+            return _graph_state_token(value, seen)
+        return (
+            "object",
+            type(value).__module__,
+            type(value).__qualname__,
+            repr(value),
+        )
+    finally:
+        seen.remove(object_id)
+
+
+def cache_signature_digest(value: Any) -> str:
+    """Hash a deterministic type- and shape-aware cache-key token."""
+
+    token = cache_signature_token(value)
+    return hashlib.sha256(repr(token).encode("utf-8")).hexdigest()
+
+
+def _graph_state_token(graph: Any, seen: set[int] | None = None) -> Any:
+    """Snapshot node order, full node data, edges, and logical graph metadata."""
+
+    if seen is None:
+        seen = set()
+    directed = bool(graph.is_directed())
+    multigraph = bool(graph.is_multigraph())
+    nodes = tuple(
+        (
+            cache_signature_token(node, seen),
+            cache_signature_token(dict(data), seen),
+        )
+        for node, data in graph.nodes(data=True)
+    )
+    if multigraph:
+        edges = tuple(
+            (
+                cache_signature_token(left, seen),
+                cache_signature_token(right, seen),
+                cache_signature_token(key, seen),
+                cache_signature_token(dict(data), seen),
+            )
+            for left, right, key, data in graph.edges(keys=True, data=True)
+        )
+    else:
+        edges = tuple(
+            (
+                cache_signature_token(left, seen),
+                cache_signature_token(right, seen),
+                cache_signature_token(dict(data), seen),
+            )
+            for left, right, data in graph.edges(data=True)
+        )
+    return (
+        "graph",
+        type(graph).__module__,
+        type(graph).__qualname__,
+        directed,
+        multigraph,
+        cache_signature_token(
+            _logical_graph_attributes(graph.graph),
+            seen,
+        ),
+        nodes,
+        edges,
+    )
 
 class CacheEntryType(Enum):
     """Types of cached computations."""
@@ -83,6 +205,7 @@ class CacheEntry:
     entry_type: CacheEntryType
     data: Any
     graph_signature: str
+    graph_identity: int
     timestamp: float
     access_count: int = 0
     last_access: float = field(default_factory=time.time)
@@ -102,48 +225,36 @@ class CacheStatistics:
     miss_rate: float = 0.0
     eviction_count: int = 0
     invalidation_count: int = 0
+    cache_hit_count: int = 0
+    # Retained for serialized-statistics compatibility; engine identity is not tracked.
     cross_engine_reuse_count: int = 0
     memory_pressure_events: int = 0
 
 
 class TNFRUnifiedMultiModalCache:
-    """
-    Unified multi-modal cache system for all TNFR computations.
+    """Cache declared read-only results by exact graph state and parameters.
 
-    This cache system recognizes that all TNFR operations are mathematically
-    related through the nodal equation and can share computational artifacts.
+    Reuse is valid only when the entry type, graph object, complete logical
+    snapshot, and explicit parameters match. The cache does not infer that two
+    different computations share an artifact merely because both concern TNFR.
     """
 
     def __init__(self, max_size_mb: float = 512.0, enable_prefetching: bool = True):
-        self.max_size_mb = max_size_mb
+        if isinstance(max_size_mb, bool):
+            raise ValueError("max_size_mb must be a positive finite scalar")
+        self.max_size_mb = float(max_size_mb)
+        if not math.isfinite(self.max_size_mb) or self.max_size_mb <= 0.0:
+            raise ValueError("max_size_mb must be a positive finite scalar")
+        if not isinstance(enable_prefetching, bool):
+            raise ValueError("enable_prefetching must be boolean")
         self.enable_prefetching = enable_prefetching
 
         # Main cache storage (ordered for LRU)
         self._cache: OrderedDict[str, CacheEntry] = OrderedDict()
 
-        # Graph signature tracking (weak references to avoid memory leaks)
-        self._graph_signatures: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
-
-        # Dependency mapping
-        self._dependency_map: dict[CacheEntryType, set[CacheEntryType]] = {
-            # Spectral decomposition is fundamental - many things depend on it
-            CacheEntryType.SPECTRAL_DECOMPOSITION: {
-                CacheEntryType.STRUCTURAL_FIELDS,
-                CacheEntryType.TEMPORAL_TRAJECTORY,
-                CacheEntryType.CROSS_CORRELATION,
-            },
-            # Nodal states affect fields and temporal evolution
-            CacheEntryType.NODAL_STATE: {
-                CacheEntryType.STRUCTURAL_FIELDS,
-                CacheEntryType.TEMPORAL_TRAJECTORY,
-            },
-            # Topology analysis affects everything
-            CacheEntryType.TOPOLOGY_ANALYSIS: {
-                CacheEntryType.SPECTRAL_DECOMPOSITION,
-                CacheEntryType.NODAL_STATE,
-                CacheEntryType.STRUCTURAL_FIELDS,
-            },
-        }
+        # Stable per-object identities make graph-scoped invalidation exact.
+        self._graph_identities: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
+        self._next_graph_identity = 1
 
         # Statistics
         self.stats = CacheStatistics()
@@ -152,52 +263,31 @@ class TNFRUnifiedMultiModalCache:
 
         # Prefetching predictions
         self._access_patterns: dict[str, int] = {}
-        self._prefetch_queue: set[str] = set()
+
+    def _graph_identity(self, G: Any) -> int:
+        """Return a unique live-object token for graph-scoped invalidation."""
+
+        if G is None:
+            return 0
+        try:
+            identity = self._graph_identities.get(G)
+        except TypeError:
+            return id(G)
+        if identity is None:
+            identity = self._next_graph_identity
+            self._next_graph_identity += 1
+            self._graph_identities[G] = identity
+        return int(identity)
 
     def compute_graph_signature(self, G: Any) -> str:
-        """
-        Compute mathematical signature of graph structure.
+        """Hash the complete current logical state of one graph object."""
 
-        This signature captures the mathematical essence that determines
-        what cached computations are still valid.
-        """
         if not HAS_NETWORKX or G is None:
             return "null_graph"
-
-        # Check if we've already computed this
-        if G in self._graph_signatures:
-            return self._graph_signatures[G]
-
-        # Create signature from graph structure + node parameters
-        signature_elements = []
-
-        # Graph topology
-        signature_elements.append(f"nodes_{len(G.nodes())}")
-        signature_elements.append(f"edges_{len(G.edges())}")
-
-        # Node parameters (sorted for consistency)
-        node_params = []
-        for node in sorted(G.nodes()):
-            params = []
-            for attr in ["EPI", "nu_f", "phase", "ΔNFR"]:
-                value = G.nodes[node].get(attr, 0.0)
-                params.append(f"{attr}_{value:.6f}")
-            node_params.append(f"n{node}_{'_'.join(params)}")
-        signature_elements.extend(node_params[:10])  # Limit to first 10 for performance
-
-        # Edge structure (basic connectivity)
-        edge_hash = hashlib.md5(usedforsecurity=False)
-        for edge in sorted(G.edges()):
-            edge_hash.update(f"{edge[0]}_{edge[1]}".encode())
-        signature_elements.append(f"edges_hash_{edge_hash.hexdigest()[:8]}")
-
-        # Combine all elements
-        full_signature = "_".join(signature_elements)
-        signature_hash = hashlib.sha256(full_signature.encode()).hexdigest()[:16]
-
-        # Cache the signature
-        self._graph_signatures[G] = signature_hash
-        return signature_hash
+        identity = self._graph_identity(G)
+        token = _graph_state_token(G)
+        state_hash = cache_signature_digest(token)
+        return f"graph-{identity}:{state_hash}"
 
     def _generate_cache_key(
         self,
@@ -206,14 +296,8 @@ class TNFRUnifiedMultiModalCache:
         parameters: dict[str, Any] | None = None,
     ) -> str:
         """Generate unique cache key."""
-        key_parts = [entry_type.value, graph_signature]
-
-        if parameters:
-            # Sort parameters for consistent keys
-            param_str = "_".join(f"{k}_{v}" for k, v in sorted(parameters.items()))
-            key_parts.append(param_str)
-
-        return "_".join(key_parts)
+        parameter_hash = cache_signature_digest(parameters or {})
+        return f"{entry_type.value}:{graph_signature}:{parameter_hash}"
 
     def get(
         self,
@@ -223,11 +307,14 @@ class TNFRUnifiedMultiModalCache:
         computation_func: Callable | None = None,
         mathematical_importance: float = 1.0,
     ) -> Any:
-        """
-        Get cached computation or compute if not cached.
-
-        This is the main interface for all TNFR computations.
-        """
+        """Return an isolated cached value or compute and cache one."""
+        if not isinstance(entry_type, CacheEntryType):
+            raise TypeError("entry_type must be a CacheEntryType")
+        if isinstance(mathematical_importance, bool):
+            raise ValueError("mathematical_importance must be finite and nonnegative")
+        mathematical_importance = float(mathematical_importance)
+        if not math.isfinite(mathematical_importance) or mathematical_importance < 0.0:
+            raise ValueError("mathematical_importance must be finite and nonnegative")
         self._total_requests += 1
 
         # Generate cache key
@@ -246,9 +333,9 @@ class TNFRUnifiedMultiModalCache:
             self._cache.move_to_end(cache_key)
 
             self._cache_hits += 1
-            self.stats.cross_engine_reuse_count += 1
+            self.stats.cache_hit_count += 1
 
-            return entry.data
+            return deepcopy(entry.data)
 
         # Cache miss - compute if function provided
         if computation_func is None:
@@ -263,11 +350,17 @@ class TNFRUnifiedMultiModalCache:
             # Estimate size (rough approximation)
             size_estimate = self._estimate_size(result)
 
-            # Create cache entry
+            # Cache only values that can be isolated from their callers.
+            try:
+                cached_snapshot = deepcopy(result)
+            except Exception:
+                return result
+
             entry = CacheEntry(
                 entry_type=entry_type,
-                data=result,
+                data=cached_snapshot,
                 graph_signature=graph_signature,
+                graph_identity=self._graph_identity(G),
                 timestamp=time.time(),
                 mathematical_importance=mathematical_importance,
                 size_mb=size_estimate,
@@ -279,13 +372,13 @@ class TNFRUnifiedMultiModalCache:
 
             # Update access patterns for prefetching
             if self.enable_prefetching:
-                self._update_access_patterns(entry_type, cache_key)
+                self._update_access_patterns(entry_type)
 
             return result
 
-        except Exception as e:
-            # Don't cache failed computations
-            raise e
+        except Exception:
+            # Failed computations never create cache entries.
+            raise
 
     def _store_entry(self, cache_key: str, entry: CacheEntry) -> None:
         """Store entry in cache with size management."""
@@ -348,10 +441,13 @@ class TNFRUnifiedMultiModalCache:
         invalidated_count = 0
 
         # Determine what to invalidate based on trigger
-        if trigger == CacheInvalidationTrigger.TOPOLOGY_CHANGE:
-            # Topology change affects everything
-            invalidated_count = len(self._cache)
-            self._cache.clear()
+        if trigger in {
+            CacheInvalidationTrigger.TOPOLOGY_CHANGE,
+            CacheInvalidationTrigger.EDGE_WEIGHT_CHANGE,
+        }:
+            invalidated_count = self._invalidate_by_types(
+                set(CacheEntryType), G
+            )
 
         elif trigger == CacheInvalidationTrigger.NODE_PARAMETER_CHANGE:
             # Node parameter changes affect nodal states and dependent computations
@@ -359,6 +455,8 @@ class TNFRUnifiedMultiModalCache:
                 CacheEntryType.NODAL_STATE,
                 CacheEntryType.STRUCTURAL_FIELDS,
                 CacheEntryType.TEMPORAL_TRAJECTORY,
+                CacheEntryType.OPERATOR_SEQUENCE,
+                CacheEntryType.CROSS_CORRELATION,
             }
             invalidated_count = self._invalidate_by_types(types_to_invalidate, G)
 
@@ -366,12 +464,24 @@ class TNFRUnifiedMultiModalCache:
             # Operator application affects nodal states
             types_to_invalidate = {
                 CacheEntryType.NODAL_STATE,
+                CacheEntryType.STRUCTURAL_FIELDS,
                 CacheEntryType.TEMPORAL_TRAJECTORY,
+                CacheEntryType.OPERATOR_SEQUENCE,
+                CacheEntryType.CROSS_CORRELATION,
+            }
+            invalidated_count = self._invalidate_by_types(types_to_invalidate, G)
+
+        elif trigger == CacheInvalidationTrigger.TIME_EVOLUTION:
+            types_to_invalidate = {
+                CacheEntryType.NODAL_STATE,
+                CacheEntryType.STRUCTURAL_FIELDS,
+                CacheEntryType.TEMPORAL_TRAJECTORY,
+                CacheEntryType.OPERATOR_SEQUENCE,
+                CacheEntryType.CROSS_CORRELATION,
             }
             invalidated_count = self._invalidate_by_types(types_to_invalidate, G)
 
         elif affected_types:
-            # Custom invalidation
             invalidated_count = self._invalidate_by_types(affected_types, G)
 
         self.stats.invalidation_count += invalidated_count
@@ -381,14 +491,15 @@ class TNFRUnifiedMultiModalCache:
         self, types_to_invalidate: set[CacheEntryType], G: Any | None = None
     ) -> int:
         """Invalidate entries by type, optionally filtered by graph."""
-        graph_signature = self.compute_graph_signature(G) if G else None
+        graph_identity = self._graph_identity(G) if G is not None else None
 
         keys_to_remove = []
         for key, entry in self._cache.items():
-            # Check if entry type should be invalidated
             if entry.entry_type in types_to_invalidate:
-                # If graph specified, only invalidate entries for that graph
-                if graph_signature is None or entry.graph_signature == graph_signature:
+                if (
+                    graph_identity is None
+                    or entry.graph_identity == graph_identity
+                ):
                     keys_to_remove.append(key)
 
         # Remove invalidated entries
@@ -400,20 +511,12 @@ class TNFRUnifiedMultiModalCache:
         self.stats.total_entries = len(self._cache)
         return len(keys_to_remove)
 
-    def _update_access_patterns(
-        self, entry_type: CacheEntryType, cache_key: str
-    ) -> None:
-        """Update access patterns for prefetching predictions."""
-        pattern_key = f"{entry_type.value}"
+    def _update_access_patterns(self, entry_type: CacheEntryType) -> None:
+        """Record an access hint without claiming or executing prefetch work."""
+        pattern_key = entry_type.value
         self._access_patterns[pattern_key] = (
             self._access_patterns.get(pattern_key, 0) + 1
         )
-
-        # Simple prefetching: if spectral analysis accessed, prefetch fields
-        if entry_type == CacheEntryType.SPECTRAL_DECOMPOSITION:
-            self._prefetch_queue.add("structural_fields")
-        elif entry_type == CacheEntryType.NODAL_STATE:
-            self._prefetch_queue.add("temporal_trajectory")
 
     def _estimate_size(self, data: Any) -> float:
         """Rough estimation of data size in MB."""
@@ -433,14 +536,14 @@ class TNFRUnifiedMultiModalCache:
             self.stats.hit_rate = self._cache_hits / self._total_requests
             self.stats.miss_rate = 1.0 - self.stats.hit_rate
 
-        return self.stats
+        return deepcopy(self.stats)
 
     def clear(self) -> None:
         """Clear all cache entries."""
         self._cache.clear()
-        self._graph_signatures.clear()
+        self._graph_identities.clear()
+        self._next_graph_identity = 1
         self._access_patterns.clear()
-        self._prefetch_queue.clear()
 
         # Reset statistics
         self.stats = CacheStatistics()
@@ -462,7 +565,7 @@ class TNFRUnifiedMultiModalCache:
                 for entry_type in CacheEntryType
             },
             "access_patterns": dict(self._access_patterns),
-            "statistics": self.stats,
+            "statistics": deepcopy(self.stats),
         }
 
 
@@ -489,13 +592,17 @@ def cache_unified_computation(
     Decorator for caching unified computations.
 
     Usage:
-    @cache_unified_computation(CacheEntryType.SPECTRAL_DECOMPOSITION, importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL)  # = 1.16 (operational)
+    @cache_unified_computation(
+        CacheEntryType.SPECTRAL_DECOMPOSITION,
+        mathematical_importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL,
+    )
     def compute_spectrum(G):
         # computation here
         return eigenvalues, eigenvectors
     """
 
     def decorator(func: Callable) -> Callable:
+        @wraps(func)
         def wrapper(G: Any, *args, **kwargs) -> Any:
             # Extract parameters for cache key
             params = {}
@@ -505,7 +612,7 @@ def cache_unified_computation(
                 # Use function arguments as parameters
                 params.update(kwargs)
                 if args:
-                    params["args"] = str(args)
+                    params["args"] = args
 
             cache = get_unified_cache()
 
@@ -530,7 +637,7 @@ def cache_spectral_decomposition(G: Any, computation_func: Callable) -> Any:
         CacheEntryType.SPECTRAL_DECOMPOSITION,
         G,
         computation_func=computation_func,
-        mathematical_importance=MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL,  # π ≈ 3.1416 → canonical (Very important - many things depend on this)
+        mathematical_importance=MULTIMODAL_CACHE_TETRAD_IMPORTANCE_CANONICAL,
     )
 
 
@@ -544,7 +651,7 @@ def cache_structural_fields(
         G,
         parameters=field_params,
         computation_func=computation_func,
-        mathematical_importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL,  # = 1.16 (operational)
+        mathematical_importance=MULTIMODAL_CACHE_SPECTRAL_IMPORTANCE_CANONICAL,
     )
 
 

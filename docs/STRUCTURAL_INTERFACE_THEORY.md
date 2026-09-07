@@ -56,7 +56,8 @@ Examples of structural interfaces:
 All interface observables derive from existing canonical fields (see
 [STRUCTURAL_FIELDS_TETRAD.md](STRUCTURAL_FIELDS_TETRAD.md)):
 
-- edge phase-gate compliance (U3 resonant-coupling condition `|φᵢ − φⱼ| ≤ Δφ_max`);
+- edge phase-gate compliance (U3 resonant-coupling condition
+  `|wrap(φᵢ − φⱼ)| ≤ Δφ_max`);
 - phase-gradient stress `|∇φ|` (local desynchronisation);
 - phase-curvature stress `|K_φ|` (geometric phase torsion);
 - structural potential `Φ_s` (global pressure, reported as telemetry, not folded

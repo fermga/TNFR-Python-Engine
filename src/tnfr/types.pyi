@@ -55,7 +55,12 @@ __all__: tuple[str, ...] = (
     "EPIValue",
     "BEPIProtocol",
     "ensure_bepi",
+    "require_finite_real_scalar_epi",
+    "real_scalar_epi",
+    "scalarize_epi",
     "serialize_bepi",
+    "serialize_bepi_json",
+    "deserialize_bepi_json",
     "ZERO_BEPI_STORAGE",
     "DeltaNFR",
     "SecondDerivativeEPI",
@@ -128,15 +133,26 @@ NodeInitAttrMap: TypeAlias = MutableMapping[str, float]
 NodeAttrMap: TypeAlias = Mapping[str, Any]
 GammaSpec: TypeAlias = Mapping[str, Any]
 
-class BEPIProtocol(Protocol): ...
+class BEPIProtocol(Protocol):
+    def real_scalar_embedding(self) -> float | None: ...
+    def scalar_projection(self) -> float: ...
 
 EPIValue: TypeAlias = BEPIProtocol
 ZERO_BEPI_STORAGE: dict[str, tuple[complex, ...] | tuple[float, ...]]
 
 def ensure_bepi(value: Any) -> "BEPIElement": ...
+def require_finite_real_scalar_epi(value: Any, label: str = "EPI") -> float: ...
+def real_scalar_epi(value: Any) -> float | None: ...
+def scalarize_epi(value: Any) -> float: ...
 def serialize_bepi(
     value: Any,
 ) -> dict[str, tuple[complex, ...] | tuple[float, ...]]: ...
+def serialize_bepi_json(
+    value: Any,
+) -> dict[str, list[dict[str, float]] | list[float]]: ...
+def deserialize_bepi_json(
+    data: dict[str, list[dict[str, float]] | list[float]],
+) -> "BEPIElement": ...
 
 DeltaNFR: TypeAlias = float
 SecondDerivativeEPI: TypeAlias = float

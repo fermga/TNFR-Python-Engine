@@ -139,7 +139,7 @@ def certify_residue_edge_propagation(
         state_channel=contract.primary_channel.value,
         scale=contract.scale.value,
         preconditions=(
-            "U3 phase compatibility |phi_i - phi_j| <= dphi_max",
+            "U3 phase compatibility |wrap(phi_i - phi_j)| <= dphi_max",
             "identity (EPI kind) preserved",
         ),
         postconditions=(contract.postcondition,
